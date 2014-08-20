@@ -22,6 +22,7 @@
 #include <arch/cache.h>
 #include <delay.h>
 #include <edid.h>
+#include <symbols.h>
 #include <vbe.h>
 #include <boot/coreboot_tables.h>
 #include <device/i2c.h>
@@ -153,6 +154,6 @@ void lb_board(struct lb_header *header)
 	dma = (struct lb_range *)lb_new_record(header);
 	dma->tag = LB_TAB_DMA;
 	dma->size = sizeof(*dma);
-	dma->range_start = CONFIG_DRAM_DMA_START;
-	dma->range_size = CONFIG_DRAM_DMA_SIZE;
+	dma->range_start = (uintptr_t)_dma_coherent;
+	dma->range_size = _dma_coherent_size;
 }

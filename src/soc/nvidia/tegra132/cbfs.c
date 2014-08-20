@@ -19,12 +19,12 @@
 
 
 #include <cbfs.h>  /* This driver serves as a CBFS media source. */
+#include <symbols.h>
 
 #include "spi.h"
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {
 	return initialize_tegra_spi_cbfs_media(media,
-		(void*)CONFIG_CBFS_CACHE_ADDRESS,
-		CONFIG_CBFS_CACHE_SIZE);
+		_cbfs_cache, _cbfs_cache_size);
 }

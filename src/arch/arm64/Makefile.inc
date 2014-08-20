@@ -68,13 +68,11 @@ bootblock-y += ../../lib/memset.c
 bootblock-y += ../../lib/memcpy.c
 bootblock-y += ../../lib/memmove.c
 
-bootblock-y += bootblock.ld
-
 # Build the bootblock
 
-$(objcbfs)/bootblock.debug: $(obj)/arch/arm64/bootblock.bootblock.ld $$(bootblock-objs) $(obj)/config.h
+$(objcbfs)/bootblock.debug: $$(bootblock-objs) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) --start-group $(bootblock-objs) --end-group -T $(obj)/arch/arm64/bootblock.bootblock.ld
+	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.bootblock.ld
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
@@ -96,8 +94,6 @@ romstage-y += ../../lib/memmove.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-y += transition.c transition_asm.S
 
-romstage-y += romstage.ld
-
 rmodules_arm64-y += ../../lib/memset.c
 rmodules_arm64-y += ../../lib/memcpy.c
 rmodules_arm64-y += ../../lib/memmove.c
@@ -106,9 +102,9 @@ rmodules_arm64-y += eabi_compat.c
 # Build the romstage
 VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm64.o
 
-$(objcbfs)/romstage.debug: $$(romstage-objs) $(obj)/arch/arm64/romstage.romstage.ld
+$(objcbfs)/romstage.debug: $$(romstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) -nostdlib --gc-sections -static -o $@ -L$(obj) --start-group $(romstage-objs) --end-group -T $(obj)/arch/arm64/romstage.romstage.ld
+	$(LD_romstage) -nostdlib --gc-sections -static -o $@ -L$(obj) --start-group $(filter-out %.ld,$(romstage-objs)) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.romstage.ld
 
 endif # CONFIG_ARCH_ROMSTAGE_ARM64
 
@@ -144,18 +140,13 @@ secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += ../../lib/memcmp.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += ../../lib/memcpy.c
 
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
-ramstage-y += ramstage.ld
 
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
 # Build the ramstage
 
-$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(obj)/arch/arm64/ramstage.ramstage.ld
+$(objcbfs)/ramstage.debug: $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) -nostdlib --gc-sections -o $@ -L$(obj) --start-group $(ramstage-objs) --end-group -T $(obj)/arch/arm64/ramstage.ramstage.ld
-
-$(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) -nostdlib --gc-sections -r -o $@ --start-group $(ramstage-objs) --end-group
+	$(LD_ramstage) -nostdlib --gc-sections -o $@ -L$(obj) --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.ramstage.ld
 
 endif # CONFIG_ARCH_RAMSTAGE_ARM64

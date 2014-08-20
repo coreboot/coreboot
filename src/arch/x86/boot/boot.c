@@ -3,6 +3,7 @@
 #include <program_loading.h>
 #include <ip_checksum.h>
 #include <string.h>
+#include <symbols.h>
 
 /* When the ramstage is relocatable the elf loading ensures an elf image cannot
  * be loaded over the ramstage code. */
@@ -25,11 +26,10 @@ static void jmp_payload_no_bounce_buffer(void *entry)
 
 static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 {
-	extern unsigned char _ram_seg, _eram_seg;
 	unsigned long lb_start, lb_size;
 
-	lb_start = (unsigned long)&_ram_seg;
-	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
+	lb_start = (unsigned long)&_program;
+	lb_size = _program_size;
 
 	printk(BIOS_SPEW, "entry    = 0x%08lx\n", (unsigned long)entry);
 	printk(BIOS_SPEW, "lb_start = 0x%08lx\n", lb_start);

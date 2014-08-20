@@ -38,10 +38,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "ImgTec Pistachio Virtual Platform"
 
-config SYS_SDRAM_BASE
-	hex "SDRAM base address"
-	default 0x80000000
-
 config DRAM_SIZE_MB
 	int
 	default 256

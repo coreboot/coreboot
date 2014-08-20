@@ -42,14 +42,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Nyan"
 
-config DRAM_DMA_START
-	hex
-	default 0x90000000
-
-config DRAM_DMA_SIZE
-	hex
-	default 0x00200000
-
 choice
 	prompt "BCT boot media"
 	default NYAN_BCT_CFG_SPI

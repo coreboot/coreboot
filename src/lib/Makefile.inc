@@ -39,7 +39,8 @@ romstage-y += prog_ops.c
 romstage-y += memchr.c
 romstage-y += memcmp.c
 $(foreach arch,$(ARCH_SUPPORTED),\
-	    $(eval rmodules_$(arch)-y += memcmp.c))
+	    $(eval rmodules_$(arch)-y += memcmp.c) \
+	    $(eval rmodules_$(arch)-y += rmodule.ld))
 
 romstage-$(CONFIG_I2C_TPM) += delay.c
 romstage-y += cbfs.c cbfs_core.c
@@ -122,12 +123,20 @@ ramstage-y += halt.c
 smm-y += halt.c
 secmon-y += halt.c
 
+ifneq ($(CONFIG_ARCH_X86),y)
+# X86 bootblock and romstage use custom ldscripts that are all glued together,
+# so we need to exclude it here or it would pick these up as well
+bootblock-y += bootblock.ld
+romstage-y += romstage.ld
+endif
+ramstage-y += ramstage.ld
+
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c
 
 RMODULE_LDSCRIPT := $(src)/lib/rmodule.ld
-RMODULE_LDFLAGS  := -nostartfiles --gc-sections --emit-relocs -z defs -Bsymbolic -T$(RMODULE_LDSCRIPT)
+RMODULE_LDFLAGS  := -nostartfiles --gc-sections --emit-relocs -z defs -Bsymbolic -T $(RMODULE_LDSCRIPT)
 
 # rmodule_link_rules is a function that should be called with:
 # (1) the object name to link
@@ -137,8 +146,8 @@ RMODULE_LDFLAGS  := -nostartfiles --gc-sections --emit-relocs -z defs -Bsymbolic
 # It will create the necessary Make rules to create a rmodule. The resulting
 # rmdoule is named $(1).rmod
 define rmodule_link
-$(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(RMODTOOL)
-	$$(LD_rmodules_$(4)) $$(RMODULE_LDFLAGS) --defsym=__heap_size=$(strip $(3)) -o $$@ --start-group $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) --end-group
+$(strip $(1)): $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) $(obj)/lib/rmodule.rmodules_$(4).ld | $$(RMODTOOL)
+	$$(LD_rmodules_$(4)) --gc-sections -static -T $(obj)/lib/rmodule.rmodules_$(4).ld --defsym=__heap_size=$(strip $(3)) -o $$@ --start-group $(filter-out %.ld,$(2)) --end-group
 	$$(NM_rmodules_$(4)) -n $$@ > $$(basename $$@).map
 
 $(strip $(1)).rmod: $(strip $(1))

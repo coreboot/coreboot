@@ -35,10 +35,6 @@ config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/imgtec/pistachio/bootblock.c"
 
-config BOOTBLOCK_BASE
-	hex
-	default 0x9b000000
-
 config CBFS_ROM_OFFSET
 	hex
 	default 0x4100
@@ -48,31 +44,4 @@ config CBFS_HEADER_ROM_OFFSET
 	hex
 	default 0x4000
 
-config ROMSTAGE_BASE
-	hex
-	default 0x9b004000
-	help
-	  The address where romstage is supposed to be loaded, right above the
-	  bootblock.
-
-config CBMEM_CONSOLE_PRERAM_BASE
-        hex "memory address of the CBMEM console buffer"
-        default 0x9b00f800
-	help
-	  Allocate 4KB to the pre-ram console buffer, we should be able to use
-	  GRAM eventually and have a much larger buffer.
-
-config BOOTBLOCK_STACK_BOTTOM
-	hex
-	default 0x9b00e000
-	help
-	  This allocates 6KB of stack space. One needs to verify that this is
-	  sufficient.
-
-config BOOTBLOCK_STACK_TOP
-	hex
-	default CBMEM_CONSOLE_PRERAM_BASE
-	help
-	  Bootblock stack starts immediately under the CBMEM console buffer,
-	  stack location might be changed by romstage.
 endif

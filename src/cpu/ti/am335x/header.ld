@@ -21,14 +21,5 @@
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 
-TARGET(binary)
-SECTIONS
-{
-	.header : {
-		*(.header);
-	}
-
-	/DISCARD/ : {
-		*(*)
-	}
-}
+#define OMAP_HEADER 1
+#include "memlayout.ld"

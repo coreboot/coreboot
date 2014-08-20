@@ -20,6 +20,7 @@
 #include <config.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <symbols.h>
 
 #include "header.h"
 
@@ -70,6 +71,6 @@ struct omap_image_headers headers __attribute__((section(".header"))) = {
 	},
 	.image_header = {
 		.size = (uintptr_t)&header_load_size,
-		.destination = CONFIG_BOOTBLOCK_BASE
+		.destination = (uintptr_t)_dram
 	}
 };

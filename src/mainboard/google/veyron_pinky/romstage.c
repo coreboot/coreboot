@@ -35,6 +35,7 @@
 #include <soc/rockchip/rk3288/clock.h>
 #include <soc/rockchip/rk3288/pwm.h>
 #include <soc/rockchip/rk3288/grf.h>
+#include <symbols.h>
 #include "timer.h"
 
 static void regulate_vdd_log(unsigned int mv)
@@ -64,9 +65,9 @@ void main(void)
 	start_romstage_time = timestamp_get();
 #endif
 	/* used for MMU and CBMEM setup, in MB */
-	u32 dram_start = (CONFIG_SYS_SDRAM_BASE >> 20);
-	u32 dram_size = CONFIG_DRAM_SIZE_MB;
-	u32 dram_end = dram_start + dram_size;
+	u32 dram_start_mb = (uintptr_t)_dram/MiB;
+	u32 dram_size_mb = CONFIG_DRAM_SIZE_MB;
+	u32 dram_end_mb = dram_start_mb + dram_size_mb;
 
 	console_init();
 
@@ -81,15 +82,15 @@ void main(void)
 #endif
 	mmu_init();
 	/* Device memory below DRAM is uncached. */
-	mmu_config_range(0, dram_start, DCACHE_OFF);
+	mmu_config_range(0, dram_start_mb, DCACHE_OFF);
 	/* DRAM is cached. */
-	mmu_config_range(dram_start, dram_size, DCACHE_WRITEBACK);
+	mmu_config_range(dram_start_mb, dram_size_mb, DCACHE_WRITEBACK);
 	/* A window for DMA is uncached. */
-	mmu_config_range(CONFIG_DRAM_DMA_START >> 20,
-			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
+	mmu_config_range((uintptr_t)_dma_coherent/MiB,
+			 _dma_coherent_size/MiB, DCACHE_OFF);
 	/* The space above DRAM is uncached. */
-	if (dram_end < 4096)
-		mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
+	if (dram_end_mb < 4096)
+		mmu_config_range(dram_end_mb, 4096 - dram_end_mb, DCACHE_OFF);
 	dcache_mmu_enable();
 
 	cbmem_initialize_empty();

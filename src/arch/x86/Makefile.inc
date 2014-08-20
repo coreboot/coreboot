@@ -303,7 +303,7 @@ ramstage-srcs += $(src)/arch/x86/ramstage.ld
 
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(obj)/arch/x86/ramstage.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) --gc-sections -o $@ -L$(obj) $< -T $(obj)/arch/x86/ramstage.ramstage.ld
+	$(LD_ramstage) $(CPPFLAGS) --gc-sections -o $@ -L$(obj) $< -T $(obj)/arch/x86/ramstage.ramstage.ld
 
 endif
 

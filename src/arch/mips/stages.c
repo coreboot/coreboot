@@ -20,7 +20,7 @@
 #include <arch/stages.h>
 #include <arch/cache.h>
 
- __attribute__((section(".text.stage_entry.mips"))) void stage_entry(void)
+void stage_entry(void)
 {
 	main();
 }

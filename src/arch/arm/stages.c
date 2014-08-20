@@ -22,10 +22,10 @@
  * execution (bootblock entry and ramstage exit will depend on external
  * loading).
  *
- * Entry points must be placed at the location the previous stage jumps
- * to (the lowest address in the stage image). This is done by giving
- * stage_entry() its own section in .text and placing it first in the
- * linker script.
+ * Entry points should be set in the linker script and honored by CBFS,
+ * so text section layout shouldn't matter. Still, it doesn't hurt to put
+ * stage_entry first (which XXXstage.ld will do automatically through the
+ * .text.stage_entry section created by -ffunction-sections).
  */
 
 #include <arch/stages.h>

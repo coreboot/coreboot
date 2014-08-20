@@ -43,50 +43,6 @@ config CBFS_ROM_OFFSET
 	hex "offset of CBFS data in ROM"
 	default 0x40080
 
-config BOOTBLOCK_BASE
-	hex
-	default 0x40020000
-
-config ROMSTAGE_BASE
-	hex
-	default 0x40025000
-
-config SYS_SDRAM_BASE
-	hex
-	default 0x80000000
-
-config RAMSTAGE_BASE
-	hex
-	default 0x80200000
-
-config BOOTBLOCK_STACK_TOP
-	hex
-	default 0x40020000
-
-config BOOTBLOCK_STACK_BOTTOM
-	hex
-	default 0x4001c000
-
-config ROMSTAGE_STACK_TOP
-	hex
-	default 0x40020000
-
-config ROMSTAGE_STACK_BOTTOM
-	hex
-	default 0x4001c000
-
-config CBFS_CACHE_ADDRESS
-	hex "memory address to put CBFS cache data"
-	default 0x40006000
-
-config CBFS_CACHE_SIZE
-	hex "size of CBFS cache data"
-	default 0x00016000
-
-config CONSOLE_PRERAM_BUFFER_BASE
-	hex "memory address of the CBMEM console buffer"
-	default 0x40004020
-
 config MTS_DIRECTORY
 	string "Directory where MTS microcode files are located"
 	default "3rdparty/cpu/nvidia/tegra132/current/prod"

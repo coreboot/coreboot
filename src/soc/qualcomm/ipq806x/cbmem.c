@@ -19,9 +19,9 @@
 
 #include <cbmem.h>
 #include <stddef.h>
+#include <symbols.h>
 
 void *cbmem_top(void)
 {
-	return (void *)((uintptr_t)CONFIG_SYS_SDRAM_BASE +
-					(CONFIG_DRAM_SIZE_MB << 20));
+	return (void *)((uintptr_t)_dram + CONFIG_DRAM_SIZE_MB*MiB);
 }

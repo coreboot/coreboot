@@ -21,7 +21,7 @@
 // See LICENSE for license details. relating to the _start code in this file.
 #include <arch/encoding.h>
 
-.section ".start", "ax", %progbits
+.section ".text._start", "ax", %progbits
 // Maybe there's a better way.
 .space 0x2000
 .globl _start

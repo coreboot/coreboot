@@ -39,44 +39,4 @@ config SBL_BLOB
 	  ipq806x early initialization code, as supplied by the
 	  vendor.
 
-config BOOTBLOCK_BASE
-	hex "256K bytes left for TZBSP"
-	default 0x40600000
-
-config ROMSTAGE_BASE
-	hex
-	default 0x40620000
-
-config RAMSTAGE_BASE
-	hex
-	default 0x40640000
-
-config SYS_SDRAM_BASE
-	hex
-	default 0x40000000
-
-config CBMEM_CONSOLE_PRERAM_BASE
-	hex "memory address of the pre-RAM CBMEM console buffer"
-	default 0x40618000
-
-config STACK_TOP
-	hex
-	default 0x40600000
-
-config STACK_BOTTOM
-	hex
-	default 0x405fc000
-
-config CBFS_CACHE_ADDRESS
-	hex "memory address to put CBFS cache data"
-	default 0x405cc000
-
-config CBFS_CACHE_SIZE
-	hex "size of CBFS cache data"
-	default 0x00030000
-
-config TTB_BUFFER
-	hex "memory address for page tables"
-	default 0x2a05c000
-
 endif

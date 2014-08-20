@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2006 Advanced Micro Devices, Inc.
- * Copyright (C) 2008-2010 coresystems GmbH
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,46 +18,15 @@
  */
 
 /* We use ELF as output format. So that we can debug the code in some form. */
-OUTPUT_FORMAT("elf64-littleaarch64", "elf64-littleaarch64", "elf64-littleaarch64")
-OUTPUT_ARCH(aarch64)
+OUTPUT_ARCH(mips)
 
 PHDRS
 {
 	to_load PT_LOAD;
 }
 
+#ifdef __BOOTBLOCK__
+ENTRY(_start)
+#else
 ENTRY(stage_entry)
-TARGET(binary)
-SECTIONS
-{
-	. = CONFIG_BOOTBLOCK_BASE;
-
-	.bootblock . : {
-		*(.text.stage_entry);
-		KEEP(*(.id));
-		*(.text);
-		*(.text.*);
-		*(.rodata);
-		*(.rodata.*);
-		*(.data);
-		*(.data.*);
-		*(.bss);
-		*(.bss.*);
-		*(.sbss);
-		*(.sbss.*);
-	} : to_load = 0xff
-
-	/* arm64 chipsets need to define CONFIG_BOOTBLOCK_STACK_(TOP|BOTTOM) */
-	_stack = CONFIG_BOOTBLOCK_STACK_BOTTOM;
-	_estack = CONFIG_BOOTBLOCK_STACK_TOP;
-
-	preram_cbmem_console = CONFIG_CONSOLE_PRERAM_BUFFER_BASE;
-
-	/DISCARD/ : {
-		*(.comment)
-		*(.note)
-		*(.comment.*)
-		*(.note.*)
-		*(.ARM.*)
-	}
-}
+#endif

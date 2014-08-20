@@ -6,13 +6,14 @@
  */
 
 #include <config.h>
+#include <symbols.h>
 
 /*
  * Put CBMEM at top of RAM
  */
 static inline void *a1x_get_cbmem_top(void)
 {
-	return (void *)CONFIG_SYS_SDRAM_BASE + (CONFIG_DRAM_SIZE_MB << 20);
+	return _dram + (CONFIG_DRAM_SIZE_MB << 20);
 }
 
 /*

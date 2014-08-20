@@ -36,16 +36,4 @@ static u32 * const iram_secondary_base = (u32 *)0x02020018;
 #define OM_STAT_SPI  0x14
 #define OM_STAT_MASK 0x7f
 
-#if defined(__PRE_RAM__) && !defined(__ROMSTAGE__)
-	/* A small space in IRAM to hold the romstage-only image */
-	static void * const alternate_cbfs_buffer =
-			(void *)CONFIG_CBFS_CACHE_ADDRESS;
-	static size_t const alternate_cbfs_size = CONFIG_CBFS_CACHE_SIZE;
-#else
-	/* Just put this anywhere in RAM that's far enough from anything else */
-	/* TODO: Find a better way to "reserve" this region? */
-	static void * const alternate_cbfs_buffer = (void *)0x77400000;
-	static size_t const alternate_cbfs_size = 0xc00000;
-#endif
-
 #endif

@@ -114,7 +114,7 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(BCT_BIN) $(CBOOTIMAGE)
 	echo "Bctcopy    = 1;" >> $(BCT_WRAPPER)
 	echo "Bctfile    = $(BCT_BIN);" >> $(BCT_WRAPPER)
 	echo "MtsPreboot = $(PREBOOT_MTS_FILE),0x4000f000,0x4000f000,Complete;" >> $(BCT_WRAPPER)
-	echo "BootLoader = $<,$(CONFIG_BOOTBLOCK_BASE),$(CONFIG_BOOTBLOCK_BASE),Complete;" >> $(BCT_WRAPPER)
+	echo "BootLoader = $<,$(call loadaddr,bootblock),$(call loadaddr,bootblock),Complete;" >> $(BCT_WRAPPER)
 	@printf "    CBOOTIMAGE $(subst $(obj)/,,$(@))\n"
 	$(CBOOTIMAGE) $(CBOOTIMAGE_OPTS) $(BCT_WRAPPER) $@
 

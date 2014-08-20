@@ -21,16 +21,15 @@
 
 #include <console/console.h>
 #include <device/device.h>
-
+#include <symbols.h>
 
 #define RESERVED_SIZE_KB	(0x01500000 / KiB)
 
 static void soc_read_resources(device_t dev)
 {
 	/* Reserve bottom 0x150_0000 bytes for NSS, SMEM, etc. */
-	reserved_ram_resource(dev, 0,
-			CONFIG_SYS_SDRAM_BASE/KiB, RESERVED_SIZE_KB);
-	ram_resource(dev, 0, CONFIG_SYS_SDRAM_BASE/KiB + RESERVED_SIZE_KB,
+	reserved_ram_resource(dev, 0, (uintptr_t)_dram / KiB, RESERVED_SIZE_KB);
+	ram_resource(dev, 0, (uintptr_t)_dram / KiB + RESERVED_SIZE_KB,
 		     (CONFIG_DRAM_SIZE_MB * KiB) - RESERVED_SIZE_KB);
 }
 

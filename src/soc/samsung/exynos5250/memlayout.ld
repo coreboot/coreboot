@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2006 Advanced Micro Devices, Inc.
- * Copyright (C) 2008-2010 coresystems GmbH
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,43 +17,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* We use ELF as output format. So that we can debug the code in some form. */
-OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
-OUTPUT_ARCH(arm)
+#include <memlayout.h>
 
-PHDRS
-{
-	to_load PT_LOAD;
-}
+#include <arch/header.ld>
 
-ENTRY(_start)
+/*
+ * Note: The BootROM loads the 8K BL1 at [0x2020000:0x2022000), so the bootblock
+ * must be placed after that. After the handoff, the space can be reclaimed.
+ */
+
 SECTIONS
 {
-	. = CONFIG_BOOTBLOCK_BASE;
+	SRAM_START(0x2020000)
+	/* 13K hole, includes BL1 */
+	BOOTBLOCK(0x2023400, 32K)
+	/* 19K hole */
+	ROMSTAGE(0x2030000, 128K)
+	/* 32K hole */
+	TTB(0x2058000, 16K)
+	PRERAM_CBFS_CACHE(0x205C000, 96K)
+	STACK(0x2074000, 16K)
+	SRAM_END(0x2078000)
 
-	.bootblock . : {
-		*(.text._start);
-		KEEP(*(.id));
-		*(.text);
-		*(.text.*);
-		*(.rodata);
-		*(.rodata.*);
-		*(.data);
-		*(.data.*);
-		*(.bss);
-		*(.bss.*);
-		*(.sbss);
-		*(.sbss.*);
-		_end = .;
-	} : to_load = 0xff
-
-	preram_cbmem_console = CONFIG_CONSOLE_PRERAM_BUFFER_BASE;
-
-	/DISCARD/ : {
-		*(.comment)
-		*(.note)
-		*(.comment.*)
-		*(.note.*)
-		*(.ARM.*)
-	}
+	DRAM_START(0x40000000)
+	RAMSTAGE(0x40000000, 128K)
+	POSTRAM_CBFS_CACHE(0x41000000, 8M)
+	DMA_COHERENT(0x77300000, 1M)
 }

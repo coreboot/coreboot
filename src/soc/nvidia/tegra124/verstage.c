@@ -22,6 +22,8 @@
 #include <console/console.h>
 #include <soc/nvidia/tegra124/cache.h>
 #include <soc/nvidia/tegra124/early_configs.h>
+#include <stdlib.h>
+#include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static void enable_cache(void)
@@ -29,8 +31,9 @@ static void enable_cache(void)
 	mmu_init();
 	/* Whole space is uncached. */
 	mmu_config_range(0, 4096, DCACHE_OFF);
-	/* SRAM is cached. Round the size up to 2MB, the LPAE page size. */
-	mmu_config_range(0x40000000 >> 20, 1, DCACHE_WRITEBACK);
+	/* SRAM is cached. MMU code will round size up to page size. */
+	mmu_config_range((uintptr_t)_sram/MiB, div_round_up(_sram_size, MiB),
+			 DCACHE_WRITEBACK);
 	mmu_disable_range(0, 1);
 	dcache_mmu_enable();
 }

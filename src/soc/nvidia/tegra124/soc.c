@@ -26,6 +26,7 @@
 #include <soc/nvidia/tegra124/sdram.h>
 #include "chip.h"
 #include <soc/display.h>
+#include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* this sucks, but for now, fb size/location are hardcoded.
@@ -37,12 +38,12 @@ static void soc_enable(device_t dev)
 	u32 lcdbase = fb_base_mb();
 	unsigned long fb_size = FB_SIZE_MB;
 
-	ram_resource(dev, 0, CONFIG_SYS_SDRAM_BASE/KiB,
+	ram_resource(dev, 0, (uintptr_t)_dram/KiB,
 		(sdram_max_addressable_mb() - fb_size)*KiB -
-		CONFIG_SYS_SDRAM_BASE/KiB);
+		(uintptr_t)_dram/KiB);
 	mmio_resource(dev, 1, lcdbase*KiB, fb_size*KiB);
 
-	u32 sdram_end_mb = sdram_size_mb() + CONFIG_SYS_SDRAM_BASE/MiB;
+	u32 sdram_end_mb = sdram_size_mb() + (uintptr_t)_dram/MiB;
 
 	if (sdram_end_mb > sdram_max_addressable_mb())
 		ram_resource(dev, 2, sdram_max_addressable_mb()*KiB,

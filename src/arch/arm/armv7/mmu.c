@@ -31,6 +31,7 @@
 #include <config.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <symbols.h>
 
 #include <cbmem.h>
 #include <console/console.h>
@@ -90,7 +91,7 @@ typedef uint32_t pmd_t;
 static const unsigned int denom = 1;
 #endif	/* CONFIG_ARM_LPAE */
 
-static pmd_t *const ttb_buff = (pmd_t *)CONFIG_TTB_BUFFER;
+static pmd_t *const ttb_buff = (pmd_t *)_ttb;
 
 /*
  * mask/shift/size for pages and blocks
@@ -186,7 +187,7 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 void mmu_init(void)
 {
         if (CONFIG_ARM_LPAE) {
-                pgd_t *const pgd_buff = (pgd_t*)(CONFIG_TTB_BUFFER + 16*KiB);
+                pgd_t *const pgd_buff = (pgd_t*)(_ttb + 16*KiB);
                 pmd_t *pmd = ttb_buff;
                 int i;
 

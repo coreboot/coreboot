@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2006 Advanced Micro Devices, Inc.
- * Copyright (C) 2008-2010 coresystems GmbH
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,39 +17,31 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* We use ELF as output format. So that we can debug the code in some form. */
-OUTPUT_FORMAT("elf64-littleriscv", "elf64-littleriscv", "elf64-littleriscv")
-OUTPUT_ARCH(riscv)
+#include <memlayout.h>
 
-PHDRS
-{
-	to_load PT_LOAD;
-}
+#include <arch/header.ld>
 
-ENTRY(_start)
+/*
+ * Memory map for qemu vexpress-a9:
+ *
+ * 0x0000_0000: jump instruction (by qemu)
+ * 0x0001_0000: bootblock (entry of kernel / firmware)
+ * 0x0002_0000: romstage, assume up to 128KB in size.
+ * 0x0007_ff00: stack pointer
+ * 0x0010_0000: CBFS header
+ * 0x0011_0000: CBFS data
+ * 0x0100_0000: reserved for ramstage
+ * 0x1000_0000: I/O map address
+ */
+
 SECTIONS
 {
-	. = CONFIG_BOOTBLOCK_BASE;
+	/* TODO: does this thing emulate SRAM? */
 
-	.bootblock . : {
-		*(.start);
-		KEEP(*(.id));
-		*(.text);
-		*(.text.*);
-		*(.rodata);
-		*(.rodata.*);
-		*(.data);
-		*(.data.*);
-		*(.bss);
-		*(.bss.*);
-		*(.sbss);
-		*(.sbss.*);
-	} : to_load = 0xff
+	BOOTBLOCK(0x10000, 64K)
+	ROMSTAGE(0x20000, 128K)
+	STACK(0x000FC000, 16K)
 
-	/DISCARD/ : {
-		*(.comment)
-		*(.note)
-		*(.comment.*)
-		*(.note.*)
-	}
+	DRAM_START(0x01000000)
+	RAMSTAGE(0x01000000, 16M)
 }

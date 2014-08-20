@@ -25,19 +25,20 @@
 #include <device/device.h>
 #include <gpiolib.h>
 #include <string.h>
+#include <symbols.h>
 
 #include <soc/qualcomm/ipq806x/include/clock.h>
 #include <soc/qualcomm/ipq806x/include/gpio.h>
 #include <soc/qualcomm/ipq806x/include/usb.h>
 
 /* convenient shorthand (in MB) */
-#define DRAM_START           (CONFIG_SYS_SDRAM_BASE / MiB)
+#define DRAM_START           ((uintptr_t)_dram / MiB)
 #define DRAM_SIZE            (CONFIG_DRAM_SIZE_MB)
 #define DRAM_END             (DRAM_START + DRAM_SIZE)
 
 /* DMA memory for drivers */
-#define DMA_START            (CONFIG_DRAM_DMA_START / MiB)
-#define DMA_SIZE             (CONFIG_DRAM_DMA_SIZE / MiB)
+#define DMA_START            ((uintptr_t)_dma_coherent / MiB)
+#define DMA_SIZE             (_dma_coherent_size / MiB)
 
 #define USB_ENABLE_GPIO		51
 
@@ -134,8 +135,8 @@ void lb_board(struct lb_header *header)
 	dma = (struct lb_range *)lb_new_record(header);
 	dma->tag = LB_TAB_DMA;
 	dma->size = sizeof(*dma);
-	dma->range_start = CONFIG_DRAM_DMA_START;
-	dma->range_size = CONFIG_DRAM_DMA_SIZE;
+	dma->range_start = (uintptr_t)_dma_coherent;
+	dma->range_size = _dma_coherent_size;
 }
 
 static int read_gpio(gpio_t gpio_num)

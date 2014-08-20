@@ -42,17 +42,5 @@ ENTRY(_start)
 	 */
 	msr	cpsr_cxf, #0xdf
 
-	stack_init stack=.Stack size=.Stack_size seed=1 func=main
+	stack_init stack_top=_estack stack_bottom=_stack seed=1 func=main
 ENDPROC(_start)
-
-/* we do it this way because it's a 32-bit constant and
- * in some cases too far away to be loaded as just an offset
- * from IP
- */
-.align 2
-.Stack:
-	.word CONFIG_BOOTBLOCK_STACK_TOP
-.align 2
-/* create this size the same way we do in ramstage.ld: top-bottom */
-.Stack_size:
-	.word CONFIG_BOOTBLOCK_STACK_TOP - CONFIG_BOOTBLOCK_STACK_BOTTOM

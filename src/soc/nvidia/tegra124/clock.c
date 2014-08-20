@@ -20,6 +20,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <stdlib.h>
+#include <symbols.h>
 #include <arch/clock.h>
 #include "clk_rst.h"
 #include "flow.h"
@@ -485,7 +486,7 @@ void clock_cpu0_config(void *entry)
 {
 	void * const evp_cpu_reset = (uint8_t *)TEGRA_EVP_BASE + 0x100;
 
-	write32(CONFIG_STACK_TOP, &maincpu_stack_pointer);
+	write32((uintptr_t)_estack, &maincpu_stack_pointer);
 	write32((uintptr_t)entry, &maincpu_entry_point);
 	write32((uintptr_t)&maincpu_setup, evp_cpu_reset);
 

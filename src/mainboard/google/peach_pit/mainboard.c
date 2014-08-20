@@ -40,14 +40,11 @@
 #include <drivers/parade/ps8625/ps8625.h>
 #include <ec/google/chromeec/ec.h>
 #include <stdlib.h>
+#include <symbols.h>
 
 /* convenient shorthand (in MB) */
-#define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
+#define DRAM_START	((uintptr_t)_dram/MiB)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
-
-/* Arbitrary range of DMA memory for depthcharge's drivers */
-#define DMA_START	(0x77300000)
-#define DMA_SIZE	(0x00100000)
 
 static struct edid edid = {
 	.ha = 1366,
@@ -469,7 +466,8 @@ static void mainboard_enable(device_t dev)
 
 	/* set up caching for the DRAM */
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
-	mmu_config_range(DMA_START >> 20, DMA_SIZE >> 20, DCACHE_OFF);
+	mmu_config_range((uintptr_t)_dma_coherent/MiB,
+			 _dma_coherent_size/MiB, DCACHE_OFF);
 
 	const unsigned epll_hz = 192000000;
 	const unsigned sample_rate = 48000;
@@ -493,6 +491,6 @@ void lb_board(struct lb_header *header)
 	dma = (struct lb_range *)lb_new_record(header);
 	dma->tag = LB_TAB_DMA;
 	dma->size = sizeof(*dma);
-	dma->range_start = (intptr_t)DMA_START;
-	dma->range_size = DMA_SIZE;
+	dma->range_start = (uintptr_t)_dma_coherent;
+	dma->range_size = _dma_coherent_size;
 }

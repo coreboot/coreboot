@@ -24,6 +24,7 @@
 #include <fallback.h>
 #include <lib.h>
 #include <program_loading.h>
+#include <symbols.h>
 #include <timestamp.h>
 
 extern const struct prog_loader_ops vboot_payload_loader;

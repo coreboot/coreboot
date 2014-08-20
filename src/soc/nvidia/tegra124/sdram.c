@@ -23,6 +23,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <stdlib.h>
+#include <symbols.h>
 
 #include "emc.h"
 #include "mc.h"
@@ -643,5 +644,5 @@ int sdram_size_mb(void)
 
 uintptr_t sdram_max_addressable_mb(void)
 {
-	return MIN((CONFIG_SYS_SDRAM_BASE/MiB) + sdram_size_mb(), 4096);
+	return MIN(((uintptr_t)_dram/MiB) + sdram_size_mb(), 4096);
 }

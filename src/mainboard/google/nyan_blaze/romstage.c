@@ -39,6 +39,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/display.h>
+#include <symbols.h>
 #include <timestamp.h>
 
 static void __attribute__((noinline)) romstage(void)
@@ -52,29 +53,30 @@ static void __attribute__((noinline)) romstage(void)
 	sdram_init(get_sdram_config());
 
 	/* used for MMU and CBMEM setup, in MB */
-	u32 dram_start = (CONFIG_SYS_SDRAM_BASE >> 20);
-	u32 dram_end = sdram_max_addressable_mb();	/* plus one... */
-	u32 dram_size = dram_end - dram_start;
+	u32 dram_start_mb = (uintptr_t)_dram/MiB;
+	u32 dram_end_mb = sdram_max_addressable_mb();
+	u32 dram_size_mb = dram_end_mb - dram_start_mb;
 
 #if !CONFIG_VBOOT2_VERIFY_FIRMWARE
 	configure_l2_cache();
 	mmu_init();
 	/* Device memory below DRAM is uncached. */
-	mmu_config_range(0, dram_start, DCACHE_OFF);
-	/* SRAM is cached. Round the size up to 2MB, the LPAE page size. */
-	mmu_config_range(0x40000000 >> 20, 2, DCACHE_WRITEBACK);
+	mmu_config_range(0, dram_start_mb, DCACHE_OFF);
+	/* SRAM is cached. MMU code will round size up to page size. */
+	mmu_config_range((uintptr_t)_sram/MiB, div_round_up(_sram_size, MiB),
+			 DCACHE_WRITEBACK);
 	/* The space above DRAM is uncached. */
-	if (dram_end < 4096)
-		mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
+	if (dram_end_mb < 4096)
+		mmu_config_range(dram_end_mb, 4096 - dram_end_mb, DCACHE_OFF);
 	mmu_disable_range(0, 1);
 	dcache_mmu_enable();
 #endif
 
 	/* DRAM is cached. */
-	mmu_config_range(dram_start, dram_size, DCACHE_WRITEBACK);
+	mmu_config_range(dram_start_mb, dram_size_mb, DCACHE_WRITEBACK);
 	/* A window for DMA is uncached. */
-	mmu_config_range(CONFIG_DRAM_DMA_START >> 20,
-			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
+	mmu_config_range((uintptr_t)_dma_coherent/MiB,
+			 _dma_coherent_size/MiB, DCACHE_OFF);
 
 	/*
 	 * A watchdog reset only resets part of the system so it ends up in

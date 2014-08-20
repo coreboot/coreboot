@@ -61,14 +61,6 @@ config BOOT_MEDIA_SPI_BUS
         int
         default 2
 
-config DRAM_DMA_START
-	hex
-	default 0x10000000
-
-config DRAM_DMA_SIZE
-	hex
-	default 0x00200000
-
 config DRAM_SIZE_MB
 	int
 	default 2048

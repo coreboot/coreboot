@@ -27,6 +27,7 @@
 #include <halt.h>
 #include <lib.h>
 #include <string.h>
+#include <symbols.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>

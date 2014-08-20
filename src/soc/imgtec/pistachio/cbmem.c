@@ -21,9 +21,10 @@
 
 #include <cbmem.h>
 #include <stdlib.h>
+#include <symbols.h>
 
 void *cbmem_top(void)
 {
 	uintptr_t top = MIN(CONFIG_DRAM_SIZE_MB, 256) << 20;
-	return (void *)(top + CONFIG_SYS_SDRAM_BASE);
+	return _dram + top;
 }

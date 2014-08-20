@@ -21,6 +21,7 @@
 #define CPU_SAMSUNG_EXYNOS5250_CPU_H
 
 #include <arch/io.h>
+#include <symbols.h>
 
 /* Base address registers */
 #define EXYNOS5_GPIO_PART6_BASE		0x03860000	/* Z<6:0> */
@@ -76,7 +77,7 @@ extern struct tmu_info exynos5250_tmu_info;
 
 /* TODO clean up defines. */
 #define FB_SIZE_KB  4096
-#define RAM_BASE_KB (CONFIG_SYS_SDRAM_BASE >> 10)
+#define RAM_BASE_KB ((uintptr_t)_dram/KiB)
 #define RAM_SIZE_KB (CONFIG_DRAM_SIZE_MB << 10UL)
 
 static inline u32 get_fb_base_kb(void)

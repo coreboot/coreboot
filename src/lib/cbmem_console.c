@@ -21,6 +21,7 @@
 #include <console/cbmem_console.h>
 #include <cbmem.h>
 #include <arch/early_variables.h>
+#include <symbols.h>
 #include <string.h>
 
 /*
@@ -44,10 +45,8 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 /*
  * While running from ROM, before DRAM is initialized, some area in cache as
  * ram space is used for the console buffer storage. The size and location of
- * the area are defined in the config.
+ * the area are defined by the linker script with _(e)preram_cbmem_console.
  */
-
-extern struct cbmem_console preram_cbmem_console;
 
 #else
 
@@ -112,8 +111,8 @@ void cbmemc_init(void)
 		if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
 			flags = 0;
 
-	init_console_ptr(&preram_cbmem_console,
-			 CONFIG_CONSOLE_PRERAM_BUFFER_SIZE, flags);
+	init_console_ptr(_preram_cbmem_console,
+			_preram_cbmem_console_size, flags);
 #else
 	/*
 	 * Initializing before CBMEM is available, use static buffer to store

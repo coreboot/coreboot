@@ -31,6 +31,7 @@ SECTIONS
 	/* 16KB for the heap at 64KB */
 	. = 0x10000;
 	.heap : {
+		_program = .;
 		_heap = .;
 		. = 0x4000;
 		_eheap = .;
@@ -65,6 +66,7 @@ SECTIONS
 		 . = ALIGN(4);
 
 		_smm_c_handler_end = .;
+		_eprogram = .;
 	}
 
 	/DISCARD/ : {

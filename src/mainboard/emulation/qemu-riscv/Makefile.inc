@@ -17,3 +17,7 @@ bootblock-y += uart.c
 romstage-y += romstage.c
 romstage-y += uart.c
 ramstage-y += uart.c
+
+bootblock-y += memlayout.ld
+romstage-y += memlayout.ld
+ramstage-y += memlayout.ld

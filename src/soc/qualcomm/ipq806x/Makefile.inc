@@ -51,7 +51,7 @@ $(objcbfs)/bootblock.raw: $(objcbfs)/bootblock.elf
 # Add MBN header to allow SBL3 to start coreboot bootblock
 $(objcbfs)/bootblock.mbn: $(objcbfs)/bootblock.raw
 	@printf "    ADD MBN    $(subst $(obj)/,,$(@))\n"
-	./util/ipqheader/ipqheader.py $(CONFIG_BOOTBLOCK_BASE) $< $@.tmp
+	./util/ipqheader/ipqheader.py $(call loadaddr,bootblock) $< $@.tmp
 	@mv $@.tmp $@
 
 # Create a complete bootblock which will start up the system

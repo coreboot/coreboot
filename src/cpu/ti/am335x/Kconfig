@@ -12,46 +12,14 @@ config CPU_TI_AM335X
 
 if CPU_TI_AM335X
 
-config BOOTBLOCK_BASE
-	hex
-	default 0x402f0400
-
 config CBFS_ROM_OFFSET
 	# Calculated by BL1 + max bootblock size.
 	default 0x4c00
-
-# We need to leave a gap between the bootblock and the ROM stage so that when
-# it is "loaded" to a slightly different place in on chip memory, it doesn't
-# clobber the metadata needed to actually enter it.
-config ROMSTAGE_BASE
-	hex
-	default 0x402f5400
-
-# Stack may reside in either IRAM or DRAM. We will define it to live
-# at the top of IRAM for now.
-#
-# Stack grows downward, push operation stores register contents in
-# consecutive memory locations ending just below SP
-config STACK_TOP
-	hex
-	default 0x4030ce00
-
-config STACK_BOTTOM
-	hex
-	default 0x4030be00
-
-config STACK_SIZE
-	hex
-	default 0x1000
 
 ## TODO Change this to some better address not overlapping bootblock when
 ## cbfstool supports creating header in arbitrary location.
 config CBFS_HEADER_ROM_OFFSET
 	hex "offset of master CBFS header in ROM"
 	default 0x40
-
-config SYS_SDRAM_BASE
-	hex
-	default 0x40000000
 
 endif

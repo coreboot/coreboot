@@ -21,6 +21,7 @@
 #define CPU_SAMSUNG_EXYNOS5420_CPU_H
 
 #include <arch/io.h>
+#include <symbols.h>
 
 #define EXYNOS5_SRAM_BASE		0x02020000
 
@@ -84,7 +85,7 @@ extern struct tmu_info exynos5420_tmu_info;
 
 /* TODO clean up defines. */
 #define FB_SIZE_KB  4096
-#define RAM_BASE_KB (CONFIG_SYS_SDRAM_BASE >> 10)
+#define RAM_BASE_KB ((uintptr_t)_dram/KiB)
 #define RAM_SIZE_KB (CONFIG_DRAM_SIZE_MB << 10UL)
 
 static inline u32 get_fb_base_kb(void)

@@ -23,17 +23,5 @@
         .section ".text", "ax", %progbits
 
 ENTRY(main)
-	stack_init stack=.Stack size=.Stack_size seed=0 func=romstage
+	stack_init stack_top=_estack stack_bottom=_stack seed=0 func=romstage
 ENDPROC(main)
-
-/* we do it this way because it's a 32-bit constant and
- * in some cases too far away to be loaded as just an offset
- * from IP
- */
-.align 2
-.Stack:
-	.word CONFIG_ROMSTAGE_STACK_TOP
-.align 2
-.Stack_size:
-	.word CONFIG_ROMSTAGE_STACK_TOP - CONFIG_ROMSTAGE_STACK_BOTTOM
-

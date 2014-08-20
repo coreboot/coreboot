@@ -39,6 +39,7 @@
 #include <lib.h>
 #include <smp/atomic.h>
 #include <smp/spinlock.h>
+#include <symbols.h>
 #include <thread.h>
 
 #define MAX_APIC_IDS 256

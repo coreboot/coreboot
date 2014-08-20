@@ -16,7 +16,7 @@ thread_stacks:
 .space CONFIG_STACK_SIZE*CONFIG_NUM_THREADS
 #endif
 
-	.section ".textfirst", "ax", @progbits
+	.section ".text._start", "ax", @progbits
 	.code32
 	.globl _start
 	.globl __rmodule_entry

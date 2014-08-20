@@ -456,6 +456,11 @@ tools: $(objutil)/kconfig/conf $(objutil)/cbfstool/cbfstool $(objutil)/cbfstool/
 # Common recipes for all stages
 ###########################################################################
 
+# loadaddr can determine the load address of a stage, which may be needed for
+# platform-specific image headers (only works *after* the stage has been built)
+loadaddr = $(shell $(OBJDUMP_$(1)) -p $(objcbfs)/$(1).debug | \
+	     sed -ne '/LOAD/s/^.*vaddr 0x\([0-9a-fA-F]\{8\}\).*$$/0x\1/p')
+
 # find-substr is required for stages like romstage_null and romstage_xip to
 # eliminate the _* part of the string
 find-substr = $(word 1,$(subst _, ,$(1)))

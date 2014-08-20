@@ -14,6 +14,7 @@
  */
 #include <cbfs.h>
 #include <string.h>
+#include <symbols.h>
 #include <console/console.h>
 
 /* Simple memory-mapped ROM emulation. */
@@ -25,7 +26,7 @@ static int emu_rom_open(struct cbfs_media *media)
 
 static void *emu_rom_map(struct cbfs_media *media, size_t offset, size_t count)
 {
-        return (void*)(offset + CONFIG_BOOTBLOCK_BASE);
+        return (void*)offset;
 }
 
 static void *emu_rom_unmap(struct cbfs_media *media, const void *address)

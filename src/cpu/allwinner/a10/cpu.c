@@ -9,11 +9,12 @@
 #include <device/device.h>
 #include <cpu/cpu.h>
 #include <cbmem.h>
+#include <symbols.h>
 
 
 static void cpu_enable_resources(struct device *dev)
 {
-	ram_resource(dev, 0, CONFIG_SYS_SDRAM_BASE >> 10,
+	ram_resource(dev, 0, (uintptr_t)_dram/KiB,
 		     CONFIG_DRAM_SIZE_MB << 10);
 	/* TODO: Declare CBFS cache as reserved? There's no guarantee we won't
 	 * overwrite it. It seems to stay intact, being so high in RAM

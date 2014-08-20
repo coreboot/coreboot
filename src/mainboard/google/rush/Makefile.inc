@@ -40,3 +40,7 @@ ramstage-y += boardid.c
 ramstage-y += mainboard.c
 ramstage-y += reset.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+
+bootblock-y += memlayout.ld
+romstage-y += memlayout.ld
+ramstage-y += memlayout.ld

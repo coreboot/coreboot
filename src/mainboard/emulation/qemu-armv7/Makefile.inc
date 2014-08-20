@@ -28,3 +28,7 @@ ramstage-y += timer.c
 bootblock-y += mmio.c
 romstage-y += mmio.c
 ramstage-y += mmio.c
+
+bootblock-y += memlayout.ld
+romstage-y += memlayout.ld
+ramstage-y += memlayout.ld

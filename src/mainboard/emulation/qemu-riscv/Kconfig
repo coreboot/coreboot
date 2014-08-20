@@ -54,18 +54,6 @@ config DRAM_SIZE_MB
 # 0x0011_0000: CBFS data
 # 0x0100_0000: reserved for ramstage
 
-config BOOTBLOCK_BASE
-	hex
-	default 0x00000000
-
-config ROMSTAGE_BASE
-	hex
-	default 0x00020000
-
-config RAMSTAGE_BASE
-	hex
-	default 0x100000
-
 config BOOTBLOCK_ROM_OFFSET
 	hex
 	default 0x0
@@ -81,17 +69,5 @@ config CBFS_ROM_OFFSET
 config RAMTOP
 	hex
 	default 0x1000000
-
-config STACK_TOP
-	hex
-	default 0x0007ff00
-
-config STACK_BOTTOM
-	hex
-	default 0x00040000
-
-config STACK_SIZE
-	hex
-	default 0x0003ff00
 
 endif #  BOARD_EMULATION_QEMU_UCB_RISCV

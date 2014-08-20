@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/id.h>
+#include <symbols.h>
 #include "mc.h"
 #include "sdram.h"
 
@@ -105,7 +106,7 @@ static void memory_in_range(uintptr_t *base_mib, uintptr_t *end_mib,
 	uintptr_t end;
 	int i;
 
-	base = CONFIG_SYS_SDRAM_BASE / MiB;
+	base = (uintptr_t)_dram / MiB;
 	end = base + sdram_size_mb();
 
 	/* Requested limits out of range. */

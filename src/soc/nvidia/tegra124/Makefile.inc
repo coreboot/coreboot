@@ -103,6 +103,6 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(BCT_BIN) $(CBOOTIMAGE)
 	echo "Version    = 1;" > $(BCT_WRAPPER)
 	echo "Redundancy = 1;" >> $(BCT_WRAPPER)
 	echo "Bctfile    = $(BCT_BIN);" >> $(BCT_WRAPPER)
-	echo "BootLoader = $<,$(CONFIG_BOOTBLOCK_BASE),$(CONFIG_BOOTBLOCK_BASE),Complete;" >> $(BCT_WRAPPER)
+	echo "BootLoader = $<,$(call loadaddr,bootblock),$(call loadaddr,bootblock),Complete;" >> $(BCT_WRAPPER)
 	@printf "    CBOOTIMAGE $(subst $(obj)/,,$(@))\n"
 	$(CBOOTIMAGE) $(BCT_WRAPPER) $@

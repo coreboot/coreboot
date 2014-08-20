@@ -23,14 +23,14 @@ $(eval $(call create_class_compiler,omap-header,arm))
 
 real-target: $(obj)/MLO
 
-header_ld = $(src)/cpu/ti/am335x/header.ld
+header_ld = $(obj)/cpu/ti/am335x/header.omap-header.ld
 
 get_header_size= \
 	$(eval omap_header_info=$(shell $(CBFSTOOL) $(1) print | grep $(2))) \
 	$(shell echo $$(($(word 2,$(omap_header_info)) + \
 			 $(word 4,$(omap_header_info)))))
 
-$(obj)/omap-header.bin: $$(omap-header-objs) $$(header_ld) $(obj)/coreboot.rom
+$(obj)/omap-header.bin: $$(omap-header-objs) $(obj)/coreboot.rom
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_omap-header) -nostdlib -nostartfiles -static -include $(obj)/config.h \
 		-Wl,--defsym,header_load_size=$(strip \
@@ -46,3 +46,9 @@ $(obj)/MLO: $(obj)/coreboot.rom $(obj)/omap-header.bin
 	$(Q)cat $(obj)/omap-header.bin $(obj)/coreboot.rom > $@
 
 omap-header-y	+= header.c
+
+bootblock-y += memlayout.ld
+romstage-y += memlayout.ld
+ramstage-y += memlayout.ld
+omap-header-y += memlayout.ld
+omap-header-y += header.ld

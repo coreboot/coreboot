@@ -22,6 +22,7 @@
 #include "chromeos.h"
 #if CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE
 #include "fmap.h"
+#include "symbols.h"
 #include "vboot_handoff.h"
 #include <reset.h>
 #endif
@@ -253,7 +254,7 @@ void *vboot_load_stage(int stage_index,
 
 struct vb2_working_data * const vboot_get_working_data(void)
 {
-	return (struct vb2_working_data *)CONFIG_VBOOT_WORK_BUFFER_ADDRESS;
+	return (struct vb2_working_data *)_vboot2_work;
 }
 
 void vboot_reboot(void)

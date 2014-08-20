@@ -62,10 +62,8 @@ ENTRY(_thumb_start)
 	 * Initialize the stack to a known value. This is used to check for
 	 * stack overflow later in the boot process.
 	 */
-	ldr	r0, .Stack
-	ldr	r1, .Stack_size
-	sub	r0, r0, r1
-	ldr	r1, .Stack
+	ldr	r0, =_stack
+	ldr	r1, =_estack
 	ldr	r2, =0xdeadbeef
 init_stack_loop:
 	str	r2, [r0]
@@ -75,7 +73,7 @@ init_stack_loop:
 
 /* Set stackpointer in internal RAM to call bootblock main() */
 call_bootblock:
-	ldr	sp, .Stack /* Set up stack pointer */
+	ldr	sp, =_estack /* Set up stack pointer */
 	ldr	r0,=0x00000000
 	 /*
 	  * The current design of cpu_info places the struct at the top of the
@@ -89,15 +87,3 @@ wait_for_interrupt:
 	wfi
 	mov	pc, lr			@ back to my caller
 ENDPROC(_thumb_start)
-
-/* we do it this way because it's a 32-bit constant and
- * in some cases too far away to be loaded as just an offset
- * from IP
- */
-.align 2
-.Stack:
-	.word CONFIG_STACK_TOP
-.align 2
-/* create this size the same way we do in coreboot_ram.ld: top-bottom */
-.Stack_size:
-	.word CONFIG_STACK_TOP - CONFIG_STACK_BOTTOM

@@ -38,12 +38,10 @@ bootblock-y += \
 	$(top)/src/lib/memmove.c \
 	$(top)/src/lib/memset.c
 
-bootblock-y += bootblock.ld
-
-$(objcbfs)/bootblock.debug: $(obj)/arch/riscv/bootblock.bootblock.ld $$(bootblock-objs)
+$(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) \
-		-T $(obj)/arch/riscv/bootblock.bootblock.ld --start-group $(bootblock-objs) \
+		-T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.bootblock.ld --start-group $(filter-out %.ld,$(bootblock-objs)) \
 		$(LIBGCC_FILE_NAME_bootblock) --end-group
 
 endif
@@ -65,13 +63,11 @@ romstage-y += \
 
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
-romstage-y += romstage.ld
-
 # Build the romstage
 
-$(objcbfs)/romstage.debug: $$(romstage-objs) $(obj)/arch/riscv/romstage.romstage.ld
+$(objcbfs)/romstage.debug: $$(romstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/riscv/romstage.romstage.ld --start-group $(romstage-objs) --end-group
+	$(LD_romstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.romstage.ld --start-group $(filter-out %.ld,$(romstage-objs)) --end-group
 
 romstage-c-ccopts += $(riscv_flags)
 romstage-S-ccopts += $(riscv_asm_flags)
@@ -103,15 +99,13 @@ $(eval $(call create_class_compiler,rmodules,riscv))
 
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
-ramstage-y += ramstage.ld
-
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 
 # Build the ramstage
 
-$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(obj)/arch/riscv/ramstage.ramstage.ld
+$(objcbfs)/ramstage.debug: $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/riscv/ramstage.ramstage.ld --start-group $(ramstage-objs) --end-group
+	$(LD_ramstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.ramstage.ld --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group
 
 ramstage-c-ccopts += $(riscv_flags)
 ramstage-S-ccopts += $(riscv_asm_flags)

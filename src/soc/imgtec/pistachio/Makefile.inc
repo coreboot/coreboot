@@ -51,5 +51,5 @@ $(objcbfs)/bootblock.raw: $(objcbfs)/bootblock.elf
 # Create a complete bootblock which will start up the system
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw $(BIMGTOOL)
 	@printf "    BIMGTOOL   $(subst $(obj)/,,$(@))\n"
-	$(BIMGTOOL) $< $@ $(CONFIG_BOOTBLOCK_BASE)
+	$(BIMGTOOL) $< $@ $(call loadaddr,bootblock)
 

@@ -25,6 +25,7 @@
 
 #include <cbfs.h>
 #include <spi_flash.h>
+#include <symbols.h>
 
 /* SPI flash as CBFS media. */
 struct cbfs_spi_context {
@@ -80,8 +81,8 @@ static int init_cbfs_media_context(void)
 		if (!spi_context.spi_flash_info)
 			return -1;
 
-		spi_context.buffer.buffer = (void *)CONFIG_CBFS_CACHE_ADDRESS;
-		spi_context.buffer.size = CONFIG_CBFS_CACHE_SIZE;
+		spi_context.buffer.buffer = (void *)_cbfs_cache;
+		spi_context.buffer.size = _cbfs_cache_size;
 	}
 	return 0;
 

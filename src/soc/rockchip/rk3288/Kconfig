@@ -41,51 +41,6 @@ config BOOTBLOCK_CPU_INIT
 # 0x00000 Combined bootblock and ID Block
 # 0x08000 Master CBFS header.
 # 0x18000 Free for CBFS data.
-#
-# iRAM (96k) layout.
-# (Note: The BootROM will jump to 0xff704004 after loading bootblock,
-#  so the bootblock loading address must be at 0xff704004.)
-#
-# 0xFF70_0000 TTB (16KB).
-# 0xFF70_4004 Bootblock (max 16KB-4B).
-# 0xFF70_8000 verstage then romstage (max 40KB).
-# 0xFF71_2000 STACK (4KB).
-# 0xFF71_3000 CBFS mapping cache (4K)
-# 0xFF71_4000 vboot work buffer (16K)
-# 0xFF71_7FFF End of iRAM.
-
-config SYS_SRAM_BASE
-	hex "SRAM base address"
-	default 0xFF700000
-
-config SYS_SDRAM_BASE
-	hex "SDRAM base address"
-	default 0x00000000
-
-config STACK_TOP
-	hex "STACK TOP"
-	default 0xff713000
-
-config STACK_BOTTOM
-	hex "STACK BOTTOM"
-	default 0xff712000
-
-config BOOTBLOCK_BASE
-	hex
-	default 0xff704004
-
-# with vboot2, romstage is loaded over the verstage space
-config VERSTAGE_BASE
-	hex
-	default 0xff708000
-
-config ROMSTAGE_BASE
-	hex "ROM STAGE BASE"
-	default 0xff708000
-
-config RAMSTAGE_BASE
-	hex "RAMSTAGE BASE"
-	default 0x00200000
 
 config BOOTBLOCK_ROM_OFFSET
 	hex
@@ -98,33 +53,5 @@ config CBFS_HEADER_ROM_OFFSET
 config CBFS_ROM_OFFSET
 	hex
 	default 0x0018000
-
-config CBFS_SRAM_CACHE_ADDRESS
-	hex "sram memory address to put CBFS cache data"
-	default 0xff713000
-
-config CBFS_SRAM_CACHE_SIZE
-	hex "size of CBFS cache data"
-	default 0x00001000
-
-config VBOOT_WORK_BUFFER_ADDRESS
-	hex "memory address of vboot work buffer"
-	default 0xff714000
-
-config VBOOT_WORK_BUFFER_SIZE
-	hex "size of vboot work buffer"
-	default 0x00004000
-
-config CBFS_DRAM_CACHE_ADDRESS
-	hex "dram memory address to put CBFS cache data"
-	default 0x01000000
-
-config CBFS_DRAM_CACHE_SIZE
-	hex "size of CBFS cache data"
-	default 0x00100000
-
-config TTB_BUFFER
-	hex "memory address of the TTB buffer"
-	default 0xff700000
 
 endif

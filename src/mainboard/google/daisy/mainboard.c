@@ -36,19 +36,16 @@
 #include <soc/samsung/exynos5250/dp.h>
 #include <soc/samsung/exynos5250/periph.h>
 #include <soc/samsung/exynos5250/usb.h>
+#include <symbols.h>
 
 #include "exynos5250.h"
 
 #define MMC0_GPIO_PIN	(58)
 
 /* convenient shorthand (in MB) */
-#define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
+#define DRAM_START	((uintptr_t)_dram/MiB)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
 #define DRAM_END	(DRAM_START + DRAM_SIZE)	/* plus one... */
-
-/* Arbitrary range of DMA memory for depthcharge's drivers */
-#define DMA_START	(0x77300000)
-#define DMA_SIZE	(0x00100000)
 
 static struct edid edid = {
 	.ha = 1366,
@@ -333,7 +330,8 @@ static void mainboard_enable(device_t dev)
 	mmu_init();
 	mmu_config_range(0, DRAM_START, DCACHE_OFF);
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
-	mmu_config_range(DMA_START >> 20, DMA_SIZE >> 20, DCACHE_OFF);
+	mmu_config_range((uintptr_t)_dma_coherent/MiB,
+			 _dma_coherent_size/MiB, DCACHE_OFF);
 	mmu_config_range(DRAM_END, 4096 - DRAM_END, DCACHE_OFF);
 	dcache_mmu_enable();
 
@@ -359,6 +357,6 @@ void lb_board(struct lb_header *header)
 	dma = (struct lb_range *)lb_new_record(header);
 	dma->tag = LB_TAB_DMA;
 	dma->size = sizeof(*dma);
-	dma->range_start = (intptr_t)DMA_START;
-	dma->range_size = DMA_SIZE;
+	dma->range_start = (uintptr_t)_dma_coherent;
+	dma->range_size = _dma_coherent_size;
 }

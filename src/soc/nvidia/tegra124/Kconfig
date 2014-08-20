@@ -22,34 +22,6 @@ config BOOTBLOCK_CPU_INIT
 	  bootblock must load microcode or copy data from ROM before
 	  searching for the bootblock.
 
-# ROM image layout.
-#
-# 0x00000 Combined bootblock and BCT blob
-# 0x18000 Master CBFS header.
-# 0x18080 Free for CBFS data.
-#
-# iRAM (256k) layout.
-# (Note: The BootROM uses the address range [0x4000_0000:0x4000_E000) itself,
-#  so the bootblock loading address must be placed after that. After the
-#  handoff that area may be reclaimed for other uses, e.g. CBFS cache.)
-#
-# 0x4000_0000 TTB (16K+32B). 32B is for L1 table of LPAE.
-# 0x4000_4020 CBFS mapping cache (96K-32B)
-# 0x4001_C000 Stack (16KB... don't reduce without comparing LZMA scratchpad!).
-# 0x4002_0000 Bootblock (max 48KB).
-# 0x4002_C000 ROM stage (max 80KB).
-# 0x4003_FFFF End of iRAM.
-#
-# if VBOOT2_VERIFY_FIRMWARE,
-# 0x4000_0000 TTB (16K+32B). 32B is for L1 table of LPAE.
-# 0x4000_4020 CBMEM console area (8K-32B)
-# 0x4000_6000 CBFS mapping cache (72K)
-# 0x4001_8000 vboot work buffer (16K)
-# 0x4001_C000 Stack (16KB... don't reduce without comparing LZMA scratchpad!).
-# 0x4002_0000 bootblock and romstage (max 70KB).
-# 0x4003_1000 verstage (max 60KB).
-# 0x4003_FFFF End of iRAM.
-
 config BOOTBLOCK_ROM_OFFSET
 	hex
 	default 0x0
@@ -61,65 +33,6 @@ config CBFS_HEADER_ROM_OFFSET
 config CBFS_ROM_OFFSET
 	hex "offset of CBFS data in ROM"
 	default 0x18080
-
-config SYS_SDRAM_BASE
-	hex
-	default 0x80000000
-
-config BOOTBLOCK_BASE
-	hex
-	default 0x40020000
-
-# this has to be big enough to leave room big enough for the larger of the
-# bootblock and the romstage.
-config VERSTAGE_BASE
-	hex
-	default 0x40031000
-
-# with vboot2, romstage is loaded over to the bootblock space
-config ROMSTAGE_BASE
-	hex
-	default 0x40020000 if VBOOT2_VERIFY_FIRMWARE
-	default 0x4002c000
-
-config RAMSTAGE_BASE
-	hex
-	default 0x80200000
-
-config STACK_TOP
-	hex
-	default 0x40020000
-
-config STACK_BOTTOM
-	hex
-	default 0x4001c000
-
-# This is the ramstage thread stack, *not* the same as above! Currently unused.
-config STACK_SIZE
-	hex
-	default 0x800
-
-# TTB needs to be aligned to 16KB. Stick it in iRAM.
-config TTB_BUFFER
-	hex "memory address of the TTB buffer"
-	default 0x40000000
-
-config CBFS_CACHE_ADDRESS
-	hex "memory address to put CBFS cache data"
-	default 0x40004020
-
-config CBFS_CACHE_SIZE
-	hex "size of CBFS cache data"
-	default 0x00012000 if VBOOT2_VERIFY_FIRMWARE
-	default 0x00016000
-
-config VBOOT_WORK_BUFFER_ADDRESS
-	hex "memory address of vboot work buffer"
-	default 0x40018000
-
-config VBOOT_WORK_BUFFER_SIZE
-	hex "size of vboot work buffer"
-	default 0x00004000
 
 config TEGRA124_MODEL_TD570D
 	bool "TD570D"

@@ -30,6 +30,7 @@
 #include <soc/nvidia/tegra124/pmc.h>
 #include <soc/nvidia/tegra124/spi.h>
 #include <soc/nvidia/tegra/usb.h>
+#include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
@@ -268,6 +269,6 @@ void lb_board(struct lb_header *header)
 	dma = (struct lb_range *)lb_new_record(header);
 	dma->tag = LB_TAB_DMA;
 	dma->size = sizeof(*dma);
-	dma->range_start = CONFIG_DRAM_DMA_START;
-	dma->range_size = CONFIG_DRAM_DMA_SIZE;
+	dma->range_start = (uintptr_t)_dma_coherent;
+	dma->range_size = _dma_coherent_size;
 }

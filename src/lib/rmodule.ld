@@ -22,18 +22,21 @@ SECTIONS
 
 	.payload :  {
 		/* C code of the module. */
-		_ram_seg = .;
-		*(.textfirst);
+		_program = .;
+		*(.text._start);
+		*(.text.stage_entry);
 		*(.text);
 		*(.text.*);
 		/* C read-only data. */
 		. = ALIGN(16);
 
+#ifdef CONFIG_COVERAGE
 		__CTOR_LIST__ = .;
 		*(.ctors);
 		LONG(0);
 		LONG(0);
 		__CTOR_END__ = .;
+#endif
 
 		/* The driver sections are to allow linking coreboot's
 		 * ramstage with the rmodule linker. Any changes made in
@@ -68,6 +71,7 @@ SECTIONS
 		. = ALIGN(8);
 
 		/* Data section. */
+		. = ALIGN(64);	/* Mirror cache line alignment from ramstage. */
 		_sdata = .;
 		*(.data);
 		*(.data.*);
@@ -95,7 +99,7 @@ SECTIONS
 		_heap = .;
 		. = . + __heap_size;
 		_eheap = .;
-		_eram_seg = .;
+		_eprogram = .;
 	}
 
 	/DISCARD/ : {

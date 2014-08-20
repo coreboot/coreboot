@@ -1,9 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2006 Advanced Micro Devices, Inc.
- * Copyright (C) 2008-2010 coresystems GmbH
- * Copyright (C) 2014 Imagination Technologies
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,39 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-OUTPUT_ARCH(mips)
+#include <memlayout.h>
 
-ENTRY(_start)
-
-PHDRS
-{
-	to_load PT_LOAD;
-}
-
-preram_cbmem_console = CONFIG_CBMEM_CONSOLE_PRERAM_BASE;
+#include <arch/header.ld>
 
 SECTIONS
 {
-	. = CONFIG_BOOTBLOCK_BASE;
-
-	/* This section might be better named .setup */
-	.rom : {
-		_rom = .;
-		*(.start);
-		*(.id);
-		*(.text);
-		*(.text.*);
-		*(.rom.text);
-		*(.rom.data);
-		*(.rom.data.*);
-		*(.rodata.*);
-		_erom = .;
-	} : to_load = 0xff
-
-	/DISCARD/ : {
-		*(.comment)
-		*(.note)
-		*(.comment.*)
-		*(.note.*)
-	}
+	DRAM_START(0x0)
+	BOOTBLOCK(0x0, 64K)
+	ROMSTAGE(0x20000, 128K)
+	STACK(0x40000, 0x3ff00)
+	PRERAM_CBMEM_CONSOLE(0x80000, 8K)
+	RAMSTAGE(0x100000, 16M)
 }
+

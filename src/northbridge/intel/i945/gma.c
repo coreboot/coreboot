@@ -28,6 +28,8 @@
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>
 #include <string.h>
+#include <pc80/vga.h>
+#include <pc80/vga_io.h>
 
 #include "i945.h"
 #include "chip.h"
@@ -224,6 +226,22 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	       BASE_FREQUENCY * (5 * pixel_m1 + pixel_m2) / pixel_n
 	       / (pixel_p1 * 7));
 
+#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
+	write32(pmmio + PF_WIN_SZ(0), vactive | (hactive << 16));
+	write32(pmmio + PF_WIN_POS(0), 0);
+	write32(pmmio + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
+	write32(pmmio + PFIT_CONTROL, PFIT_ENABLE | (1 << PFIT_PIPE_SHIFT) | HORIZ_AUTO_SCALE | VERT_AUTO_SCALE);
+#else
+	/* Disable panel fitter (we're in native resolution).  */
+	write32(pmmio + PF_CTL(0), 0);
+	write32(pmmio + PF_WIN_SZ(0), 0);
+	write32(pmmio + PF_WIN_POS(0), 0);
+	write32(pmmio + PFIT_PGM_RATIOS, 0);
+	write32(pmmio + PFIT_CONTROL, 0);
+#endif
+
+	mdelay(1);
+
 	write32(pmmio + DSPCNTR(0), DISPPLANE_BGRX888
 		| DISPPLANE_SEL_PIPE_B | DISPPLANE_GAMMA_ENABLE);
 
@@ -271,15 +289,11 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 		(vactive + bottom_border + vfront_porch + vsync - 1)
 		| (vactive + bottom_border + vfront_porch - 1));
 
+#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
+	write32(pmmio + PIPESRC(1), (639 << 16) | 399);
+#else
 	write32(pmmio + PIPESRC(1), ((hactive - 1) << 16) | (vactive - 1));
-
-	/* Disable panel fitter (we're in native resolution).  */
-	write32(pmmio + PF_CTL(0), 0);
-	write32(pmmio + PF_WIN_SZ(0), 0);
-	write32(pmmio + PF_WIN_POS(0), 0);
-	write32(pmmio + PFIT_PGM_RATIOS, 0);
-	write32(pmmio + PFIT_CONTROL, 0);
-
+#endif
 	mdelay(1);
 
 	write32(pmmio + DSPSIZE(0), (hactive - 1) | ((vactive - 1) << 16));
@@ -374,12 +388,21 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	else
 		printk(BIOS_ERR, "ERROR: GTT is still Disabled!!!\n");
 
+#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
+	vga_misc_write(0x67);
+
+	write32(pmmio + DSPCNTR(0), DISPPLANE_SEL_PIPE_B);
+
+	write32(pmmio + VGACNTRL, 0x02c4008e | VGA_PIPE_B_SELECT);
+
+	vga_textmode_init();
+#else
 	printk(BIOS_SPEW, "memset %p to 0x00 for %d bytes\n",
 	       (void *)pgfx, hactive * vactive * 4);
 	memset((void *)pgfx, 0x00, hactive * vactive * 4);
 
 	set_vbe_mode_info_valid(&edid, pgfx);
-
+#endif
 	return 0;
 }
 #endif

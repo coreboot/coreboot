@@ -19,6 +19,8 @@
  * MA 02110-1301 USA
  */
 
+#define HAVE_LCD_SCREEN 1
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
@@ -80,8 +82,6 @@ DefinitionBlock(
 			}
 		}
 	}
-
-	#include "acpi/video.asl"
 
 	/* Chipset specific sleep states */
 	#include <southbridge/intel/i82801gx/acpi/sleepstates.asl>

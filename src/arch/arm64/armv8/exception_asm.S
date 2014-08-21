@@ -29,75 +29,98 @@
 
 #include <arch/asm.h>
 
-	.text
+.macro eentry lbl id
+	.align 7
+\lbl:
+	stp	x30, xzr, [sp, #-16]!
+	bl	exception_prologue
+	mov	x1, \id
+	bl	exception_handler
+.endm
 
-	.align 11
+	.align	11
 	.global exception_table
+
 exception_table:
-	.align 7
-	bl	exception_prologue
-	bl	exception_sync_el0
-	.align 7
-	bl	exception_prologue
-	bl	exception_irq_el0
-	.align 7
-	bl	exception_prologue
-	bl	exception_fiq_el0
-	.align 7
-	bl	exception_prologue
-	bl	exception_serror_el0
-	.align 7
-	bl	exception_prologue
-	bl	exception_sync
-	.align 7
-	bl	exception_prologue
-	bl	exception_irq
-	.align 7
-	bl	exception_prologue
-	bl	exception_fiq
-	.align 7
-	bl	exception_prologue
-	bl	exception_serror
 
-/*
- * Save state (register file + ELR) to stack
- * and set arguments x0 and x1 for exception call
- */
-ENTRY(exception_prologue)
-	stp	x29, x30, [sp, #-16]!
-	stp	x27, x28, [sp, #-16]!
-	stp	x25, x26, [sp, #-16]!
-	stp	x23, x24, [sp, #-16]!
-	stp	x21, x22, [sp, #-16]!
-	stp	x19, x20, [sp, #-16]!
-	stp	x17, x18, [sp, #-16]!
-	stp	x15, x16, [sp, #-16]!
-	stp	x13, x14, [sp, #-16]!
-	stp	x11, x12, [sp, #-16]!
-	stp	x9, x10, [sp, #-16]!
-	stp	x7, x8, [sp, #-16]!
-	stp	x5, x6, [sp, #-16]!
-	stp	x3, x4, [sp, #-16]!
-	stp	x1, x2, [sp, #-16]!
+eentry	sync_el3_sp0,#0
+eentry	irq_el3_sp0,#1
+eentry	fiq_el3_sp0,#2
+eentry	serror_el3_sp0,#3
+eentry	sync_el3_sp3,#4
+eentry	irq_el3_sp3,#5
+eentry	fiq_el3_sp3,#6
+eentry	serror_el3_sp3,#7
+eentry	sync_elx_64,#8
+eentry	irq_elx_64,#9
+eentry	fiq_elx_64,#10
+eentry	serror_elx_64,#11
+eentry	sync_elx_32,#12
+eentry	irq_elx_32,#13
+eentry	fiq_elx_32,#14
+eentry	serror_elx_32,#15
 
-	/* FIXME: Don't assume always running in EL2 */
-	mrs	x1, elr_el2
-	stp	x1, x0, [sp, #-16]!
+exception_prologue:
+	/* Save all registers x0-x29 */
+	stp	x28, x29, [sp, #-16]!
+	stp	x26, x27, [sp, #-16]!
+	stp	x24, x25, [sp, #-16]!
+	stp	x22, x23, [sp, #-16]!
+	stp	x20, x21, [sp, #-16]!
+	stp	x18, x19, [sp, #-16]!
+	stp	x16, x17, [sp, #-16]!
+	stp	x14, x15, [sp, #-16]!
+	stp	x12, x13, [sp, #-16]!
+	stp	x10, x11, [sp, #-16]!
+	stp	x8, x9, [sp, #-16]!
+	stp	x6, x7, [sp, #-16]!
+	stp	x4, x5, [sp, #-16]!
+	stp	x2, x3, [sp, #-16]!
+	stp	x0, x1, [sp, #-16]!
 
-	mrs	x1, esr_el2
-	mov	x0, sp
+	/* Save the exception reason on stack */
+	mrs	x1,  esr_el3
+
+	/* Save the return address on stack */
+	mrs	x0, elr_el3
+	stp	x0, x1, [sp, #-16]!
 
 	ret
-ENDPROC(exception_prologue)
-
-	.global exception_stack_end
-exception_stack_end:
-	.quad 0
 
 exception_handler:
-	.word 0
+	/* Save address of saved registers into x0
+	 * This acts as first argument to exception_dispatch
+	 */
+	mov	x0, sp
+	bl	exception_dispatch
+
+	/* Pop return address and exception reason saved on stack */
+	ldp	x0, x1, [sp], #16
+	msr	elr_el3, x0
+	msr	esr_el3, x1
+	/* Pop registers x0-x30 */
+	ldp	x0, x1, [sp], #16
+	ldp	x2, x3, [sp], #16
+	ldp	x4, x5, [sp], #16
+	ldp	x6, x7, [sp], #16
+	ldp	x8, x9, [sp], #16
+	ldp	x10, x11, [sp], #16
+	ldp	x12, x13, [sp], #16
+	ldp	x14, x15, [sp], #16
+	ldp	x16, x17, [sp], #16
+	ldp	x18, x19, [sp], #16
+	ldp	x20, x21, [sp], #16
+	ldp	x22, x23, [sp], #16
+	ldp	x24, x25, [sp], #16
+	ldp	x26, x27, [sp], #16
+	ldp	x28, x29, [sp], #16
+	ldp	x30, xzr, [sp], #16
+	eret
 
 	.global set_vbar
 set_vbar:
-	msr	vbar_el2, x0
+	/* Initialize the exception table address in vbar for EL3 */
+	msr	vbar_el3, x0
+	dsb	sy
+	isb
 	ret

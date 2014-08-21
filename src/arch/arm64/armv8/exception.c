@@ -32,98 +32,110 @@
 #include <arch/cache.h>
 #include <arch/exception.h>
 #include <console/console.h>
+#include <arch/lib_helpers.h>
 
-void exception_sync_el0(uint64_t *regs, uint64_t esr);
-void exception_irq_el0(uint64_t *regs, uint64_t esr);
-void exception_fiq_el0(uint64_t *regs, uint64_t esr);
-void exception_serror_el0(uint64_t *regs, uint64_t esr);
-void exception_sync(uint64_t *regs, uint64_t esr);
-void exception_irq(uint64_t *regs, uint64_t esr);
-void exception_fiq(uint64_t *regs, uint64_t esr);
-void exception_serror(uint64_t *regs, uint64_t esr);
+static unsigned int test_exc;
 
-static void print_regs(uint64_t *regs)
+struct exception_handler_info
+{
+	const char *name;
+};
+
+enum {
+	EXC_SYNC_SP0 = 0,
+	EXC_IRQ_SP0,
+	EXC_FIQ_SP0,
+	EXC_SERROR_SP0,
+	EXC_SYNC_SP3,
+	EXC_IRQ_SP3,
+	EXC_FIQ_SP3,
+	EXC_SERROR_SP3,
+	EXC_SYNC_ELX_64,
+	EXC_IRQ_ELX_64,
+	EXC_FIQ_ELX_64,
+	EXC_SERROR_ELX_64,
+	EXC_SYNC_ELX_32,
+	EXC_IRQ_ELX_32,
+	EXC_FIQ_ELX_32,
+	EXC_SERROR_ELX_32,
+	EXC_COUNT
+};
+
+static struct exception_handler_info exceptions[EXC_COUNT] = {
+	[EXC_SYNC_SP0] = { "_sync_sp_el0" },
+	[EXC_IRQ_SP0]  = { "_irq_sp_el0" },
+	[EXC_FIQ_SP0]  = { "_fiq_sp_el0" },
+	[EXC_SERROR_SP0] = {"_serror_sp_el0"},
+	[EXC_SYNC_SP3] = { "_sync_sp_el3" },
+	[EXC_IRQ_SP3]  = { "_irq_sp_el3" },
+	[EXC_FIQ_SP3]  = { "_fiq_sp_el3" },
+	[EXC_SERROR_SP3] = {"_serror_sp_el3"},
+	[EXC_SYNC_ELX_64] = { "_sync_elx_64" },
+	[EXC_IRQ_ELX_64]  = { "_irq_elx_64" },
+	[EXC_FIQ_ELX_64]  = { "_fiq_elx_64" },
+	[EXC_SERROR_ELX_64] = {"_serror_elx_64"},
+	[EXC_SYNC_ELX_32] = { "_sync_elx_32" },
+	[EXC_IRQ_ELX_32]  = { "_irq_elx_32" },
+	[EXC_FIQ_ELX_32]  = { "_fiq_elx_32" },
+	[EXC_SERROR_ELX_32] = {"_serror_elx_32"},
+};
+
+static void print_regs(struct exception_state *state)
 {
 	int i;
+	uint64_t far_el3;
 
-	/* ELR contains the restart PC at target exception level */
-	printk(BIOS_ERR, "ELR = 0x%016llx        ", regs[0]);
-	printk(BIOS_ERR, "X00 = 0x%016llx\n", regs[1]);
+	far_el3 = raw_read_far_el3();
 
-	for (i = 2; i < 31; i+=2) {
-		printk(BIOS_ERR, "X%02d = 0x%016llx        ", i - 1, regs[i]);
-		printk(BIOS_ERR, "X%02d = 0x%016llx\n", i, regs[i + 1]);
+	printk(BIOS_DEBUG, "ELR = 0x%016llx\n", state->elr);
+	printk(BIOS_DEBUG, "ESR = 0x%08llx\n", state->esr);
+	printk(BIOS_DEBUG, "FAR_EL3 = 0x%016llx\n", far_el3);
+	for (i = 0; i < 31; i++)
+		printk(BIOS_DEBUG, "X%02d = 0x%016llx\n", i, state->regs[i]);
+}
+
+void exception_dispatch(struct exception_state *state, int idx)
+{
+	if (idx >= EXC_COUNT) {
+		printk(BIOS_DEBUG, "Bad exception index %d.\n", idx);
+	} else {
+		struct exception_handler_info *info = &exceptions[idx];
+
+		if (info->name)
+			printk(BIOS_DEBUG, "exception %s\n", info->name);
+		else
+			printk(BIOS_DEBUG, "exception _not_used.\n");
 	}
+	print_regs(state);
+
+	if (test_exc) {
+		state->elr += 4;
+		test_exc = 0;
+		printk(BIOS_DEBUG, "new ELR = 0x%016llx\n", state->elr);
+	} else
+		die("exception");
 }
 
-void exception_sync_el0(uint64_t *regs, uint64_t esr)
+static uint64_t test_exception(void)
 {
-	printk(BIOS_ERR, "exception _sync_el0 (ESR = 0x%08llx)\n", esr);
-	print_regs(regs);
-	die("exception");
-}
+	uint64_t *a = (uint64_t *)0xfffffffff0000000ULL;
 
-void exception_irq_el0(uint64_t *regs, uint64_t esr)
-{
-	printk(BIOS_ERR, "exception _irq_el0 (ESR = 0x%08llx)\n", esr);
-	print_regs(regs);
-	die("exception");
-}
+	test_exc = 1;
 
-void exception_fiq_el0(uint64_t *regs, uint64_t esr)
-{
-	printk(BIOS_ERR, "exception _fiq_el0 (ESR = 0x%08llx)\n", esr);
-	print_regs(regs);
-	die("exception");
-}
+	printk(BIOS_DEBUG, "%llx\n", *a);
 
-void exception_serror_el0(uint64_t *regs, uint64_t esr)
-{
-	printk(BIOS_ERR, "exception _serror_el0 (ESR = 0x%08llx)\n", esr);
-	print_regs(regs);
-	die("exception");
-}
-
-void exception_sync(uint64_t *regs, uint64_t esr)
-{
-	printk(BIOS_ERR, "exception _sync (ESR = 0x%08llx)\n", esr);
-	print_regs(regs);
-	die("exception");
-}
-
-void exception_irq(uint64_t *regs, uint64_t esr)
-{
-	printk(BIOS_ERR, "exception _irq (ESR = 0x%08llx)\n", esr);
-	print_regs(regs);
-	die("exception");
-}
-
-void exception_fiq(uint64_t *regs, uint64_t esr)
-{
-	printk(BIOS_ERR, "exception _fiq (ESR = 0x%08llx)\n", esr);
-	print_regs(regs);
-	die("exception");
-}
-
-void exception_serror(uint64_t *regs, uint64_t esr)
-{
-	printk(BIOS_ERR, "exception _serror (ESR = 0x%08llx)\n", esr);
-	print_regs(regs);
-	die("exception");
+	return 0;
 }
 
 void exception_init(void)
 {
-	//uint32_t sctlr = read_sctlr();
-	/* Handle exceptions in ARM mode. */
-	//sctlr &= ~SCTLR_TE;
-	/* Set V=0 in SCTLR so VBAR points to the exception vector table. */
-	//sctlr &= ~SCTLR_V;
-	/* Enforce alignment temporarily. */
-	//write_sctlr(sctlr);
+	extern void *exception_table;
 
-	extern uint32_t exception_table[];
-	set_vbar((uintptr_t)exception_table);
+	set_vbar(&exception_table);
 
-	printk(BIOS_DEBUG, "Exception handlers installed.\n");
+	printk(BIOS_DEBUG, "ARM64: Exception handlers installed.\n");
+
+	printk(BIOS_DEBUG, "ARM64: Testing exception\n");
+	test_exception();
+	printk(BIOS_DEBUG, "ARM64: Done test exception\n");
 }

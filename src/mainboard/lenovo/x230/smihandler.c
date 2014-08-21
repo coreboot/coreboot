@@ -27,7 +27,6 @@
 #include <pc80/mc146818rtc.h>
 #include <ec/lenovo/h8/h8.h>
 #include <delay.h>
-#include "smi.h"
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>

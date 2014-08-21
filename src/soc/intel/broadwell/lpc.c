@@ -350,8 +350,6 @@ static void pch_pm_init(struct device *dev)
 	if (RCBA32(FD) & PCH_DISABLE_ADSPD)
 		RCBA32_OR(0x2b1c, (1 << 29));
 
-	/* Lock */
-	RCBA32_OR(0x3a6c, 0x00000001);
 }
 
 static void pch_cg_init(device_t dev)

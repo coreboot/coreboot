@@ -100,6 +100,9 @@ static void broadwell_finalize(void *unused)
 	reg_script_run_on_dev(SA_DEV_ROOT, system_agent_finalize_script);
 	reg_script_run_on_dev(PCH_DEV_LPC, pch_finalize_script);
 
+	/* Lock */
+	RCBA32_OR(0x3a6c, 0x00000001);
+
 	/* Read+Write the following registers */
 	MCHBAR32(0x6030) = MCHBAR32(0x6030);
 	MCHBAR32(0x6034) = MCHBAR32(0x6034);

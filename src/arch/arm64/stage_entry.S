@@ -55,6 +55,16 @@ ENTRY(arm64_el3_startup)
 	and     x0, x0, x1
 	msr     SCR_EL3, x0
 
+	/* Initialize SP_EL3 as exception stack */
+	ldr	x0, .exception_stack_top
+	cmp	x0, #0
+	b.eq	2f
+	msr	SPSel, #1
+	isb
+
+	mov	sp, x0
+
+	2:
 	/* Have stack pointer use SP_EL0. */
 	msr	SPSel, #0
 	isb
@@ -81,6 +91,8 @@ ENTRY(arm64_el3_startup)
 	 * to the Kconfig option for cpu0. However, this code can be relocated
 	 * and reused to start up secondary cpus.
 	 */
+	.exception_stack_top:
+		.quad CONFIG_EXCEPTION_STACK_TOP
 	.stack_top:
 		.quad _estack
 	.entry:

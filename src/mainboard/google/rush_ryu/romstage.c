@@ -58,11 +58,11 @@ void romstage_mainboard_init(void)
 	soc_configure_i2c6pad();
 
 	/* TPM */
-	i2c_init(2);
+	i2c_init(I2C3_BUS);
 	/* EC */
-	i2c_init(1);
+	i2c_init(I2C2_BUS);
 	/* I2C6 bus (audio, etc.) */
-	i2c_init(5);
+	i2c_init(I2C6_BUS);
 }
 
 void mainboard_configure_pmc(void)

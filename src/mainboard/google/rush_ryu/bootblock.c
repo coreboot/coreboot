@@ -27,7 +27,6 @@
 #include <soc/padconfig.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra132/clk_rst.h>
-#include <soc/nvidia/tegra132/spi.h>	/* FIXME: move back to soc code? */
 
 #include "pmic.h"
 
@@ -91,8 +90,6 @@ void bootblock_mainboard_init(void)
 	soc_configure_funits(funits, ARRAY_SIZE(funits));
 	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
 
-	i2c_init(4);
-	pmic_init(4);
-
-	tegra_spi_init(4);
+	i2c_init(I2CPWR_BUS);
+	pmic_init(I2CPWR_BUS);
 }

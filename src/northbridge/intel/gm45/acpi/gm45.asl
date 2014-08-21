@@ -81,9 +81,3 @@ Device (PDRC)
 
 // Integrated graphics 0:2.0
 #include "igd.asl"
-
-Scope (\)
-{
-	// backlight control, display switching, lid
-	#include "acpi/video.asl"
-}

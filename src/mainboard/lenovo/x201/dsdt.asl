@@ -45,9 +45,6 @@ DefinitionBlock(
 	/* General Purpose Events */
 	#include "acpi/gpe.asl"
 
-	/* mainboard specific devices */
-	#include "acpi/mainboard.asl"
-
 	#include <cpu/intel/model_206ax/acpi/cpu.asl>
 
 	Scope (\_SB) {

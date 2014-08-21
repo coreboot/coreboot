@@ -42,6 +42,22 @@ enum {
 	FUNIT_INDEX_MAX,
 };
 
+/*
+ * Note: these bus numbers are dependent on the driver implementations, and
+ * currently the I2C is 0-based and SPI is 1-based in its indexing.
+ */
+enum {
+
+	I2C2_BUS = 1,
+	I2C3_BUS = 2,
+	I2C5_BUS = 4,
+	I2CPWR_BUS = I2C5_BUS,
+	I2C6_BUS = 5,
+
+	SPI1_BUS = 1,
+	SPI4_BUS = 4,
+};
+
 struct funit_cfg {
 	uint32_t funit_index;
 	uint32_t clk_src_id;

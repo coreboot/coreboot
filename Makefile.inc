@@ -267,6 +267,14 @@ $(obj)/build.h: .xcompile
 	printf "#ifndef __BUILD_H\n" >> $(obj)/build.ht
 	printf "#define __BUILD_H\n\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" >> $(obj)/build.ht
+	if git update-index -q --refresh >/dev/null; ! git diff-index --quiet HEAD; then \
+	   printf "/* `LANG= TZ=UTC git log --date=local --pretty=format:%cd -1` UTC */\n" >> $(obj)/build.ht; \
+	   printf "#define COREBOOT_VERSION_TIMESTAMP `LANG= git log --pretty=format:%ct -1`\n" >> $(obj)/build.ht; \
+	else \
+	   printf "/* `LANG= TZ=UTC date` */\n" >> $(obj)/build.ht; \
+	   printf "#define COREBOOT_VERSION_TIMESTAMP `LANG= date +%s`\n" >> $(obj)/build.ht; \
+        fi
+	printf "#define COREBOOT_ORIGIN_GIT_REVISION \"`LANG= git log remotes/origin/master -1 --format=format:%h`\"\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_BUILD \"`LANG= date`\"\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_BUILD_YEAR_BCD 0x`LANG= date +"%y"`\n" >> $(obj)/build.ht
@@ -568,6 +576,8 @@ ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp ; \
 	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
 	$(CBFSTOOL) $@.tmp add -f $(obj)/config.tmp -n config -t raw; rm -f $(obj)/config.tmp ; fi
+	@printf "    REVISION   build.h\n"
+	if [ -f $(obj)/build.h ]; then $(CBFSTOOL) $@.tmp add -f $(obj)/build.h -n revision -t raw; fi
 endif
 ifeq ($(CONFIG_VBOOT_VERIFY_FIRMWARE),y)
 	$(CBFSTOOL) $@.tmp add-stage -f $(VBOOT_STUB) -n $(CONFIG_CBFS_PREFIX)/vboot -c $(CBFS_COMPRESS_FLAG)

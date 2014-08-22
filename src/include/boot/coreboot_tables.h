@@ -140,6 +140,14 @@ struct lb_string {
 	uint8_t  string[0];
 };
 
+#define LB_TAG_VERSION_TIMESTAMP	0x0026
+struct lb_timestamp {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t timestamp;
+};
+
+
 /* 0xe is taken by v3 */
 
 #define LB_TAG_SERIAL		0x000f

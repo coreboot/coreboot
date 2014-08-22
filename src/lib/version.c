@@ -35,6 +35,7 @@ const char mainboard_part_number[] = CONFIG_MAINBOARD_PART_NUMBER;
 const char coreboot_version[] = COREBOOT_VERSION;
 const char coreboot_extra_version[] = COREBOOT_EXTRA_VERSION;
 const char coreboot_build[] = COREBOOT_BUILD;
+const unsigned int coreboot_version_timestamp = COREBOOT_VERSION_TIMESTAMP;
 
 const char coreboot_compile_time[]   = COREBOOT_COMPILE_TIME;
 const char coreboot_compile_by[]     = COREBOOT_COMPILE_BY;

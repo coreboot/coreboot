@@ -298,6 +298,15 @@ static void lb_strings(struct lb_header *header)
 
 }
 
+static void lb_record_version_timestamp(struct lb_header *header)
+{
+	struct lb_timestamp *rec;
+	rec = (struct lb_timestamp *)lb_new_record(header);
+	rec->tag = LB_TAG_VERSION_TIMESTAMP;
+	rec->size = sizeof(*rec);
+	rec->timestamp = coreboot_version_timestamp;
+}
+
 void __attribute__((weak)) lb_board(struct lb_header *header) { /* NOOP */ }
 
 static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
@@ -409,6 +418,7 @@ unsigned long write_coreboot_table(
 
 	/* Record our various random string information */
 	lb_strings(head);
+	lb_record_version_timestamp(head);
 	/* Record our framebuffer */
 	lb_framebuffer(head);
 

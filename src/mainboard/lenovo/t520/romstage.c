@@ -40,6 +40,7 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <cbfs.h>
+#include "gpio.h"
 
 static void pch_enable_lpc(void)
 {
@@ -181,18 +182,7 @@ void main(unsigned long bist)
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
 
-	outl(0x3962a5ff, DEFAULT_GPIOBASE);
-	outl(0x8ebf6aff, DEFAULT_GPIOBASE + 4);
-	outl(0x66957f3b, DEFAULT_GPIOBASE + 0xc);
-	outl(0x00080000, DEFAULT_GPIOBASE + 0x20);
-	outl(0x00002082, DEFAULT_GPIOBASE + 0x2c);
-	outl(0x02ff06de, DEFAULT_GPIOBASE + 0x30);
-	outl(0x1f47f9f5, DEFAULT_GPIOBASE + 0x34);
-	outl(0xbdbffd47, DEFAULT_GPIOBASE + 0x38);
-	outl(0x000000f0, DEFAULT_GPIOBASE + 0x40);
-	outl(0x00000ff0, DEFAULT_GPIOBASE + 0x44);
-	outl(0x00000f4f, DEFAULT_GPIOBASE + 0x48);
-	outl(0x01000000, DEFAULT_GPIOBASE + 0x60);
+	setup_pch_gpios(&t520_gpio_map);
 
 	/* Initialize console device(s) */
 	console_init();

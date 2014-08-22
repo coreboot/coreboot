@@ -34,6 +34,7 @@ chip northbridge/intel/sandybridge
 
 	device domain 0 on
 		device pci 00.0 on end # host bridge
+		device pci 01.0 on end # NVIDIA Corporation GF119M [NVS 4200M]
 		device pci 02.0 on end # vga controller
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
@@ -54,7 +55,7 @@ chip northbridge/intel/sandybridge
 			register "gpi1_routing" = "2"
 			register "gpi8_routing" = "2"
 
-			# Enable SATA ports 0
+			# Enable SATA ports 0 (HDD bay) & 1 (ODD bay) & 2 (mSATA) & 3 (eSATA) & 4 (dock)
 			register "sata_port_map" = "0x1f"
 			# Set max SATA speed to 6.0 Gb/s
 			register "sata_interface_speed_support" = "0x3"
@@ -73,11 +74,14 @@ chip northbridge/intel/sandybridge
 			device pci 19.0 on end # Intel Gigabit Ethernet
 			device pci 1a.0 on end # USB2 EHCI #2
 			device pci 1b.0 on end # High Definition Audio
-			device pci 1c.0 on end # PCIe Port #1
+			device pci 1c.0 off end # PCIe Port #1
 			device pci 1c.1 on end # PCIe Port #2 Integrated Wireless LAN
-			device pci 1c.2 off end
-			device pci 1c.3 on end # PCIe Port #3 Express Card
-			device pci 1c.4 on end # PCIe Port #4 MMC/SDXC + IEEE1394
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 on end # PCIe Port #4 Express Card
+			device pci 1c.4 on end # PCIe Port #5 MMC/SDXC + IEEE1394
+			device pci 1c.5 off end # PCIe Port #6 Intel Ethernet PHY
+			device pci 1c.6 off end # PCIe Port #7 USB 3.0 only W520
+			device pci 1c.7 off end # PCIe Port #8
 			device pci 1d.0 on end # USB2 EHCI #1
 			device pci 1f.0 on #LPC bridge
 				chip ec/lenovo/pmh7
@@ -99,8 +103,6 @@ chip northbridge/intel/sandybridge
 					register "config1" = "0x09"
 					register "config2" = "0xa0"
 					register "config3" = "0xc2"
-
-					register "has_keyboard_backlight" = "1"
 
 					register "beepmask0" = "0x00"
 					register "beepmask1" = "0x86"

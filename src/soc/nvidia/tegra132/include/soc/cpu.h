@@ -17,20 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __SOC_NVIDIA_TEGRA132_CCPLEX_H__
-#define __SOC_NVIDIA_TEGRA132_CCPLEX_H__
+#ifndef __SOC_NVIDIA_TEGRA132_CPU_H__
+#define __SOC_NVIDIA_TEGRA132_CPU_H__
 
-#include <stdint.h>
+/*
+ * Start a core in 64-bit mode at the entry_64 address. Note that entry_64
+ * should be a 32-bit address.
+ */
+void start_cpu(int cpu, void *entry_64);
 
-#define MTS_LOAD_ADDRESS 0x82000000
+void reset_entry_32bit(void);
 
-/* Prepare the clocks and rails to start the cpu. */
-void ccplex_cpu_prepare(void);
+#endif /* __SOC_NVIDIA_TEGRA132_CPU_H__ */
 
-/* Loads the MTS microcode. Return 0 on success, < 0 on error. */
-int ccplex_load_mts(void);
-
-/* Start cpu0 and have it start executing at entry_addr */
-void ccplex_cpu_start(void *entry_addr);
-
-#endif /* __SOC_NVIDIA_TEGRA132_CCPLEX_H__ */

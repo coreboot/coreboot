@@ -20,6 +20,7 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
+romstage-y += 32bit_reset.S
 romstage-y += romstage_asm.S
 romstage-y += addressmap.c
 romstage-y += cbfs.c
@@ -27,6 +28,7 @@ romstage-y += cbmem.c
 romstage-y += timer.c
 romstage-y += ccplex.c
 romstage-y += clock.c
+romstage-y += cpu.c
 romstage-y += reset.c
 romstage-y += spi.c
 romstage-y += i2c.c
@@ -45,9 +47,11 @@ romstage-y += ../tegra/pinmux.c
 romstage-y += ../tegra/usb.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
+ramstage-y += 32bit_reset.S
 ramstage-y += addressmap.c
 ramstage-y += cbfs.c
 ramstage-y += cbmem.c
+ramstage-y += cpu.c
 ramstage-y += timer.c
 ramstage-y += clock.c
 ramstage-y += soc.c

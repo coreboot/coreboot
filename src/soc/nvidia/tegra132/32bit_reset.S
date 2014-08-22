@@ -17,20 +17,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __SOC_NVIDIA_TEGRA132_CCPLEX_H__
-#define __SOC_NVIDIA_TEGRA132_CCPLEX_H__
+/*
+ * This code is compiled for both arm64 and arm4, however the code is only
+ * executed by the armv8 cores coming out of reset.
+ */
 
-#include <stdint.h>
+#if !defined(__PRE_RAM__)
+#define INST .inst
+#else
+#define INST .word
+#endif
 
-#define MTS_LOAD_ADDRESS 0x82000000
-
-/* Prepare the clocks and rails to start the cpu. */
-void ccplex_cpu_prepare(void);
-
-/* Loads the MTS microcode. Return 0 on success, < 0 on error. */
-int ccplex_load_mts(void);
-
-/* Start cpu0 and have it start executing at entry_addr */
-void ccplex_cpu_start(void *entry_addr);
-
-#endif /* __SOC_NVIDIA_TEGRA132_CCPLEX_H__ */
+/*
+ * The Denver cores come up in aarch32 mode. In order to transition to
+ * 64-bit mode a write to the RMR (reest mangement register) with the
+ * AA64 bit (0) set while setting RR (reset request bit 1).
+ */
+.align 6
+.global reset_entry_32bit
+reset_entry_32bit:
+	INST	0xe3a00003	/* mov r0, #3 */
+	INST	0xee0c0f50	/* mcr 15, 0, r0, cr12, cr0, {2} */
+	INST	0xeafffffe	/* b . */

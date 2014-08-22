@@ -23,6 +23,7 @@
 #include <cbfs.h>
 #include <timer.h>
 #include <soc/addressmap.h>
+#include <soc/cpu.h>
 #include <soc/romstage.h>
 #include "clk_rst.h"
 #include "ccplex.h"
@@ -31,7 +32,6 @@
 #include "pmc.h"
 #include "power.h"
 
-#define EVP_CPU_RESET_VECTOR (void *)(uintptr_t)(TEGRA_EVP_BASE + 0x100)
 #define CLK_RST_REGS (void *)(uintptr_t)(TEGRA_CLK_RST_BASE)
 #define PMC_REGS (void *)(uintptr_t)(TEGRA_PMC_BASE)
 #define MTS_FILE_NAME "mts"
@@ -130,7 +130,6 @@ static void enable_cpu_power_partitions(void)
 	power_ungate_partition(POWER_PARTID_CE1);
 }
 
-
 static void request_ram_repair(void)
 {
 	struct flow_ctlr * const flow = (void *)(uintptr_t)TEGRA_FLOW_BASE;
@@ -164,73 +163,22 @@ void ccplex_cpu_prepare(void)
 	request_ram_repair();
 }
 
-static void start_cpu0(void)
+static void start_common_clocks(void)
 {
 	struct clk_rst_ctlr * const clk_rst = CLK_RST_REGS;
 
 	/* Clear fast CPU partition reset. */
 	write32(CRC_RST_CPUG_CLR_NONCPU, &clk_rst->rst_cpug_cmplx_clr);
 
-	/* Clear reset of CPU0 components. */
-	write32(CRC_RST_CPUG_CLR_CPU0 |
-		CRC_RST_CPUG_CLR_DBG0 |
-		CRC_RST_CPUG_CLR_CORE0 |
-		CRC_RST_CPUG_CLR_CX0 |
-		CRC_RST_CPUG_CLR_L2 |
-		CRC_RST_CPUG_CLR_PDBG, &clk_rst->rst_cpug_cmplx_clr);
-}
-
-/*
- * The Denver cores come up in aarch32 mode. In order to transition to
- * 64-bit mode a write to the RMR (reset mangement register) with the
- * AA64 bit (0) set while setting RR (reset request bit 1).
- */
-static const uint32_t aarch32to64[] = {
-	0xe3a00003,       /* mov     r0, #3 */
-	0xee0c0f50,       /* mcr     15, 0, r0, cr12, cr0, {2} */
-};
-
-static void load_aarch64_trampoline(void *addr)
-{
-	const size_t trampoline_size = sizeof(aarch32to64);
-	const void * const trampoline = &aarch32to64[0];
-
-	/* Copy trampoline into ram. */
-	memcpy(addr, trampoline, trampoline_size);
+	/* Clear reset of L2 and CoreSight components. */
+	write32(CRC_RST_CPUG_CLR_L2 | CRC_RST_CPUG_CLR_PDBG,
+		&clk_rst->rst_cpug_cmplx_clr);
 }
 
 void ccplex_cpu_start(void *entry_addr)
 {
-	struct tegra_pmc_regs * const pmc = PMC_REGS;
-	void * const evp_cpu_reset_vector = EVP_CPU_RESET_VECTOR;
-	void *trampoline;
-	uint32_t entry_point;
+	/* Enable common clocks for the shared resources between the cores. */
+	start_common_clocks();
 
-	/*
-	 * Just place the trampoline at the MTS_LOAD_ADDRESS. This assumes
-	 * the program to run doesn't overlap this address.
-	 */
-	const uint32_t trampoline_addr = MTS_LOAD_ADDRESS;
-	trampoline = (void *)(uintptr_t)trampoline_addr;
-
-	/* The arm entry points have bit 0 set if thumb code. Mask that off. */
-	entry_point = (uint32_t)(uintptr_t)entry_addr;
-
-	load_aarch64_trampoline(trampoline);
-
-	/* Warm reset vector is pulled from the PMC scratch registers. */
-	write32(entry_point, &pmc->secure_scratch34);
-	write32(0, &pmc->secure_scratch35);
-
-	printk(BIOS_DEBUG, "Starting CPU0 @ %p trampolining to %08x.\n",
-		trampoline, entry_point);
-
-	/*
-	 * The Denver cores start in 32-bit mode. Therefore a trampoline
-	 * is needed to get into 64-bit mode. Point the cold reset vector
-	 * to the trampoline location.
-	 */
-	write32(trampoline_addr, evp_cpu_reset_vector);
-
-	start_cpu0();
+	start_cpu(0, entry_addr);
 }

@@ -35,7 +35,7 @@ SPD_SOURCES += empty            # 0b1001
 SPD_SOURCES += samsung_8Gb      # 0b1010
 SPD_SOURCES += empty            # 0b1011
 SPD_SOURCES += hynix_8Gb        # 0b1100
-SPD_SOURCES += empty            # 0b1101
+SPD_SOURCES += hynix_16Gb       # 0b1101
 SPD_SOURCES += empty            # 0b1110
 SPD_SOURCES += empty            # 0b1111
 

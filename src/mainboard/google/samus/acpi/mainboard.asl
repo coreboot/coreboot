@@ -27,9 +27,8 @@ Scope (\_SB)
 			Return (\_SB.PCI0.LPCB.EC0.LIDS)
 		}
 
-		// There is no GPIO for LID, the EC pulses WAKE# pin instead.
-		// There is no GPE for WAKE#, so fake it with PCI_EXP_WAKE
-		Name (_PRW, Package(){ 0x69, 5 }) // PCI_EXP
+		// EC wake is GPIO27 which is a special DeepSX wake pin
+		Name (_PRW, Package(){ 0x70, 5 }) // GP27_EN
 	}
 
 	Device (PWRB)
@@ -187,6 +186,29 @@ Scope (\_SB.PCI0.I2C0)
 			} Else {
 				Return (0x0)
 			}
+		}
+	}
+
+	Device (HOTW)
+	{
+		Name (_HID, "PNP0A05")
+		Name (_DDN, "Hotword Wake")
+		Name (_UID, 1)
+		Name (GPIO, 46) /* HOTWORD_DET_L_3V3 */
+
+		Name (_PRW, Package() { GPIO, 3 })
+
+		Method (_DSW, 3, NotSerialized)
+		{
+			If (LEqual (Arg0, 1)) {
+				// Enable GPIO as wake source
+				\_SB.PCI0.LPCB.GPIO.GWAK (^GPIO)
+			}
+		}
+
+		Method (_STA)
+		{
+			Return (0xF)
 		}
 	}
 }

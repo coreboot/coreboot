@@ -35,7 +35,7 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 6: NATIVE: I2C1_SDA_GPIO6 */
 	PCH_GPIO_NATIVE,        /* 7: NATIVE: I2C1_SCL_GPIO7 */
 	PCH_GPIO_ACPI_SCI,      /* 8: PCH_LTE_WAKE_L */
-	PCH_GPIO_PIRQ,          /* 9: NFC_INT (PIRQ) */
+	PCH_GPIO_UNUSED,        /* 9: UNUSED */
 	PCH_GPIO_ACPI_SCI,      /* 10: PCH_WLAN_WAKE_L */
 	PCH_GPIO_UNUSED,        /* 11: UNUSED */
 	PCH_GPIO_UNUSED,        /* 12: UNUSED */
@@ -52,8 +52,8 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_OUT_LOW,       /* 23: PP3300_AUTOBAHN_EN */
 	PCH_GPIO_UNUSED,        /* 24: UNUSED */
 	PCH_GPIO_INPUT,         /* 25: EC_IN_RW */
-	PCH_GPIO_OUT_HIGH,      /* 26: NFC_EN */
-	PCH_GPIO_UNUSED,        /* 27: UNUSED */
+	PCH_GPIO_UNUSED,        /* 26: UNUSED */
+	PCH_GPIO_ACPI_SCI,      /* 27: PCH_WAKE_L */
 	PCH_GPIO_UNUSED,        /* 28: UNUSED */
 	PCH_GPIO_UNUSED,        /* 29: UNUSED */
 	PCH_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSWARN_L */
@@ -72,7 +72,7 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_OUT_HIGH,      /* 43: PP1800_CODEC_EN */
 	PCH_GPIO_UNUSED,        /* 44: UNUSED */
 	PCH_GPIO_PIRQ,          /* 45: DSP_INT (PIRQN) */
-	PCH_GPIO_PIRQ,          /* 46: HOTWORD_DET_L (PIRQO) */
+	PCH_GPIO_ACPI_SCI,      /* 46: HOTWORD_DET_L_3V3 (WAKE) */
 	PCH_GPIO_OUT_LOW,       /* 47: SSD_RESET_L */
 	PCH_GPIO_UNUSED,        /* 48: UNUSED */
 	PCH_GPIO_UNUSED,        /* 49: UNUSED */
@@ -90,7 +90,7 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 61: NATIVE: PCH_SUS_STAT */
 	PCH_GPIO_NATIVE,        /* 62: NATIVE: PCH_SUSCLK */
 	PCH_GPIO_NATIVE,        /* 63: NATIVE: PCH_SLP_S5_L */
-	PCH_GPIO_OUT_LOW,       /* 64: NFC_FW_UPDATE */
+	PCH_GPIO_UNUSED,        /* 64: UNUSED */
 	PCH_GPIO_INPUT,         /* 65: RAM_ID3 */
 	PCH_GPIO_INPUT,         /* 66: RAM_ID3_OLD (STRAP) */
 	PCH_GPIO_INPUT,         /* 67: RAM_ID0 */

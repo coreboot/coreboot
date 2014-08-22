@@ -781,8 +781,8 @@ static void shdr_write(struct elf_writer *ew, size_t n, struct buffer *m)
 
 	xdr->put32(m, shdr->sh_name);
 	xdr->put32(m, shdr->sh_type);
-	xdr->put32(m, shdr->sh_flags);
 	if (bit64) {
+		xdr->put64(m, shdr->sh_flags);
 		xdr->put64(m, shdr->sh_addr);
 		xdr->put64(m, shdr->sh_offset);
 		xdr->put64(m, shdr->sh_size);
@@ -791,6 +791,7 @@ static void shdr_write(struct elf_writer *ew, size_t n, struct buffer *m)
 		xdr->put64(m, shdr->sh_addralign);
 		xdr->put64(m, shdr->sh_entsize);
 	} else {
+		xdr->put32(m, shdr->sh_flags);
 		xdr->put32(m, shdr->sh_addr);
 		xdr->put32(m, shdr->sh_offset);
 		xdr->put32(m, shdr->sh_size);

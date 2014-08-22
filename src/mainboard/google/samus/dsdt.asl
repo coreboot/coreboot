@@ -30,7 +30,7 @@ DefinitionBlock(
 )
 {
 	// Some generic macros
-	#include "acpi/platform.asl"
+	#include <soc/intel/broadwell/acpi/platform.asl>
 
 	// global NVS and variables
 	#include <soc/intel/broadwell/acpi/globalnvs.asl>

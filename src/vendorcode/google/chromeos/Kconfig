@@ -50,6 +50,18 @@ config VBNV_SIZE
 	  CMOS storage size for VbNv data. This value must match cmos.layout
 	  in the mainboard directory.
 
+config CHROMEOS_VBNV_CMOS
+	bool "Vboot non-volatile storage in CMOS."
+	default n
+	help
+	  VBNV is stored in CMOS
+
+config CHROMEOS_VBNV_EC
+	bool "Vboot non-volatile storage in EC."
+	default n
+	help
+	  VBNV is stored in EC
+
 config CHROMEOS_RAMOOPS
 	bool "Reserve space for Chrome OS ramoops"
 	default y

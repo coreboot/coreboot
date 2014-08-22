@@ -59,8 +59,4 @@ config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "Apple Inc."
 
-config SEABIOS_PS2_TIMEOUT
-	int
-	default 3000
-
 endif

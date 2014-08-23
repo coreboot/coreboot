@@ -45,7 +45,7 @@ static struct ti65913_init_reg init_list[] = {
 //etc.
 };
 
-static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int delay)
+void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int delay)
 {
 	if (i2c_writeb(bus, TI65913_I2C_ADDR, reg, val)) {
 		printk(BIOS_ERR, "%s: reg = 0x%02X, value = 0x%02X failed!\n",

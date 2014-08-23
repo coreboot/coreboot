@@ -32,7 +32,7 @@ bootblock-y += pmic.c
 bootblock-y += reset.c
 
 romstage-y += chromeos.c
-romstage-y += reset.c
+romstage-y += pmic.c
 romstage-y += reset.c
 romstage-y += romstage.c
 romstage-y += sdram_configs.c

@@ -20,6 +20,8 @@
 #ifndef __MAINBOARD_GOOGLE_RUSH_RYU_PMIC_H__
 #define __MAINBOARD_GOOGLE_RUSH_RYU_PMIC_H__
 
+#include <stdint.h>
+
 /* A44/Ryu has a TI 65913 PMIC */
 enum {
 	TI65913_SMPS12_CTRL = 0x20,
@@ -84,8 +86,13 @@ enum {
 
 	TI65913_LDO_SHORT_STATUS1 = 0x6D,
 	TI65913_LDO_SHORT_STATUS2 = 0x6E,
+
+	TI65913_CLK32KGAUDIO_CTRL = 0xD5,
+
+	TI65913_PRIMARY_SECONDARY_PAD2 = 0xFB,
 };
 
+void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int delay);
 void pmic_init(unsigned bus);
 
 #endif /* __MAINBOARD_GOOGLE_RUSH_RYU_PMIC_H__ */

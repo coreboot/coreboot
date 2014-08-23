@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <delay.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>
@@ -24,11 +25,20 @@
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/romstage.h>
 
+#include "gpio.h"
+#include "pmic.h"
+
 static const struct pad_config padcfgs[] = {
 	/* AP_SYS_RESET_L */
 	PAD_CFG_GPIO_OUT1(GPIO_PI5, PINMUX_PULL_UP),
 	/* WP_L */
 	PAD_CFG_GPIO_INPUT(KB_ROW1, PINMUX_PULL_NONE),
+	/* MODEM_RESET */
+	PAD_CFG_GPIO_OUT0(KB_ROW11, PINMUX_PULL_DOWN),
+	/* MODEM_PWR_ON */
+	PAD_CFG_GPIO_OUT0(KB_ROW12, PINMUX_PULL_DOWN),
+	/* MDM_DET - expected to be pulled down by LTE modem */
+	PAD_CFG_GPIO_INPUT(GPIO_PV1, PINMUX_PULL_UP),
 };
 
 static const struct pad_config tpm_pads[] = {
@@ -50,6 +60,32 @@ static const struct funit_cfg funits[] = {
 	FUNIT_CFG(I2C6, PLLP, 400, NULL, 0),
 };
 
+static void lte_modem_init(void)
+{
+	int mdm_det;
+
+	/* A LTE modem is present if MDM_DET is pulled down by the modem */
+	mdm_det = gpio_get_in_value(MDM_DET);
+	if (mdm_det == 1)
+		return;
+
+	printk(BIOS_DEBUG, "Found LTE modem\n");
+
+	/* Enable PMIC CLK32KGAUDIO to drive CLK_MDM_32K */
+	pmic_write_reg(I2CPWR_BUS, TI65913_PRIMARY_SECONDARY_PAD2, 0x02, 0);
+	pmic_write_reg(I2CPWR_BUS, TI65913_CLK32KGAUDIO_CTRL, 0x01, 0);
+
+	/* FULL_CARD_POWER_OFF# (A44: MODEM_PWR_ON) and RESET#
+	 * (A44: MODEM_RESET) of the LTE modem are actively low and initially
+	 * pulled down by the pad config. To properly enable the LTE modem,
+	 * de-assert FULL_CARD_POWER_OFF#, wait for at least 10ms, and then
+	 * de-assert RESET#.
+	 */
+	gpio_output(MODEM_PWR_ON, 1);
+	udelay(15000);
+	gpio_output(MODEM_RESET, 1);
+}
+
 void romstage_mainboard_init(void)
 {
 	/* Bring up controller interfaces for ramstage loading. */
@@ -63,6 +99,8 @@ void romstage_mainboard_init(void)
 	i2c_init(I2C2_BUS);
 	/* I2C6 bus (audio, etc.) */
 	i2c_init(I2C6_BUS);
+
+	lte_modem_init();
 }
 
 void mainboard_configure_pmc(void)

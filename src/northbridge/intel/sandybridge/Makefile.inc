@@ -31,6 +31,8 @@ romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += raminit.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += raminit.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += raminit_native.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += ../../../device/dram/ddr3.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) += raminit_native.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) += ../../../device/dram/ddr3.c
 romstage-y += mrccache.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
@@ -56,6 +58,7 @@ mrc.cache-file := $(obj)/mrc.cache
 mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) := 0xfffd0000
 mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) := 0xfffd0000
 mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) := 0xfffe0000
+mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) := 0xfffe0000
 mrc.cache-position := $(mrc-cache-position-y)
 mrc.cache-type := 0xac
 endif

@@ -52,6 +52,7 @@ romstage-y += early_spi.c early_pch.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += early_me.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += early_me.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += early_thermal.c early_pch_native.c early_me_native.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) += early_thermal.c early_pch_native.c early_me_native.c
 
 ifeq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 IFD_BIN_PATH := $(objgenerated)/ifdfake.bin

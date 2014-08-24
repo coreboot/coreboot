@@ -55,6 +55,10 @@ config IVYBRIDGE_LVDS
 	bool
 	default n
 
+config SANDYBRIDGE_LVDS
+	bool
+	default n
+
 config MRC_CACHE_SIZE
 	hex
 	depends on !CHROMEOS

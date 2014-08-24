@@ -22,6 +22,11 @@ config BOARD_LENOVO_X201
 	help
 	  Lenovo X201 laptop. Consult wiki for details.
 
+config BOARD_LENOVO_X220
+	bool "ThinkPad X220"
+	help
+	  Lenovo X220 laptop. Consult wiki for details.
+
 config BOARD_LENOVO_X230
 	bool "ThinkPad X230"
 	help
@@ -50,6 +55,7 @@ endchoice
 source "src/mainboard/lenovo/x60/Kconfig"
 source "src/mainboard/lenovo/x200/Kconfig"
 source "src/mainboard/lenovo/x201/Kconfig"
+source "src/mainboard/lenovo/x220/Kconfig"
 source "src/mainboard/lenovo/x230/Kconfig"
 source "src/mainboard/lenovo/t520/Kconfig"
 source "src/mainboard/lenovo/t530/Kconfig"

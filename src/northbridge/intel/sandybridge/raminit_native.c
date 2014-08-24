@@ -1219,7 +1219,7 @@ static void write_mrreg(ramctr_timing * ctrl, int channel, int slotrank,
 {
 	wait_428c(channel);
 
-	printk(BIOS_SPEW, "MRd: %x <= %x\n", reg, val);
+	printram("MRd: %x <= %x\n", reg, val);
 
 	if (ctrl->rank_mirror[channel][slotrank]) {
 		reg = ((reg >> 1) & 1) | ((reg << 1) & 2);
@@ -1227,7 +1227,7 @@ static void write_mrreg(ramctr_timing * ctrl, int channel, int slotrank,
 		    | ((val & 0xa8) << 1);
 	}
 
-	printk(BIOS_SPEW, "MRd: %x <= %x\n", reg, val);
+	printram("MRd: %x <= %x\n", reg, val);
 
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f000);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x41001);
@@ -1365,24 +1365,24 @@ static void dram_mrscommands(ramctr_timing * ctrl)
 
 	for (rank = 0; rank < 4; rank++) {
 		// MR2
-		printk(BIOS_SPEW, "MR2 rank %d...", rank);
+		printram("MR2 rank %d...", rank);
 		dram_mr2(ctrl, rank);
-		printk(BIOS_SPEW, "done\n");
+		printram("done\n");
 
 		// MR3
-		printk(BIOS_SPEW, "MR3 rank %d...", rank);
+		printram("MR3 rank %d...", rank);
 		dram_mr3(ctrl, rank);
-		printk(BIOS_SPEW, "done\n");
+		printram("done\n");
 
 		// MR1
-		printk(BIOS_SPEW, "MR1 rank %d...", rank);
+		printram("MR1 rank %d...", rank);
 		dram_mr1(ctrl, rank);
-		printk(BIOS_SPEW, "done\n");
+		printram("done\n");
 
 		// MR0
-		printk(BIOS_SPEW, "MR0 rank %d...", rank);
+		printram("MR0 rank %d...", rank);
 		dram_mr0(ctrl, rank);
-		printk(BIOS_SPEW, "done\n");
+		printram("done\n");
 	}
 
 	write32(DEFAULT_MCHBAR + 0x4e20, 0x7);
@@ -1692,7 +1692,7 @@ static void discover_timA_coarse(ramctr_timing * ctrl, int channel,
 		FOR_ALL_LANES {
 			statistics[lane][timA] =
 			    !does_lane_work(ctrl, channel, slotrank, lane);
-			printk(BIOS_SPEW, "Astat: %d, %d, %d, %x, %x\n",
+			printram("Astat: %d, %d, %d, %x, %x\n",
 			       channel, slotrank, lane, timA,
 			       statistics[lane][timA]);
 		}
@@ -1703,9 +1703,9 @@ static void discover_timA_coarse(ramctr_timing * ctrl, int channel,
 		upperA[lane] = rn.end;
 		if (upperA[lane] < rn.middle)
 			upperA[lane] += 128;
-		printk(BIOS_SPEW, "Aval: %d, %d, %d, %x\n", channel, slotrank,
+		printram("Aval: %d, %d, %d, %x\n", channel, slotrank,
 		       lane, ctrl->timings[channel][slotrank].lanes[lane].timA);
-		printk(BIOS_SPEW, "Aend: %d, %d, %d, %x\n", channel, slotrank,
+		printram("Aend: %d, %d, %d, %x\n", channel, slotrank,
 		       lane, upperA[lane]);
 	}
 }
@@ -1744,12 +1744,12 @@ static void discover_timA_fine(ramctr_timing * ctrl, int channel, int slotrank,
 			if (statistics[lane][first_all + 25] == 100)
 				break;
 
-		printk(BIOS_SPEW, "lane %d: %d, %d\n", lane, last_zero,
+		printram("lane %d: %d, %d\n", lane, last_zero,
 		       first_all);
 
 		ctrl->timings[channel][slotrank].lanes[lane].timA =
 		    (last_zero + first_all) / 2 + upperA[lane];
-		printk(BIOS_SPEW, "Aval: %d, %d, %d, %x\n", channel, slotrank,
+		printram("Aval: %d, %d, %d, %x\n", channel, slotrank,
 		       lane, ctrl->timings[channel][slotrank].lanes[lane].timA);
 	}
 }
@@ -1777,18 +1777,18 @@ static void discover_402x(ramctr_timing * ctrl, int channel, int slotrank,
 			if (ctrl->timings[channel][slotrank].val_4024 < 2)
 				die("402x discovery failed");
 			ctrl->timings[channel][slotrank].val_4024 -= 2;
-			printk(BIOS_SPEW, "4024 -= 2;\n");
+			printram("4024 -= 2;\n");
 			continue;
 		}
 		ctrl->timings[channel][slotrank].val_4028 += 2;
-		printk(BIOS_SPEW, "4028 += 2;\n");
+		printram("4028 += 2;\n");
 		if (ctrl->timings[channel][slotrank].val_4028 >= 0x10)
 			die("402x discovery failed");
 		FOR_ALL_LANES if (works[lane]) {
 			ctrl->timings[channel][slotrank].lanes[lane].timA +=
 			    128;
 			upperA[lane] += 128;
-			printk(BIOS_SPEW, "increment %d, %d, %d\n", channel,
+			printram("increment %d, %d, %d\n", channel,
 			       slotrank, lane);
 		}
 	}
@@ -1839,8 +1839,8 @@ static void post_timA_change(ramctr_timing * ctrl, int channel, int slotrank,
 
 	ctrl->timings[channel][slotrank].val_4028 += shift_402x;
 	ctrl->timings[channel][slotrank].val_4024 += shift_402x;
-	printk(BIOS_SPEW, "4024 += %d;\n", shift_402x);
-	printk(BIOS_SPEW, "4028 += %d;\n", shift_402x);
+	printram("4024 += %d;\n", shift_402x);
+	printram("4028 += %d;\n", shift_402x);
 }
 
 static void read_training(ramctr_timing * ctrl)
@@ -1882,7 +1882,7 @@ static void read_training(ramctr_timing * ctrl)
 
 		if (all_high) {
 			ctrl->timings[channel][slotrank].val_4028--;
-			printk(BIOS_SPEW, "4028--;\n");
+			printram("4028--;\n");
 			FOR_ALL_LANES {
 				ctrl->timings[channel][slotrank].lanes[lane].
 				    timA -= 0x40;
@@ -1892,8 +1892,8 @@ static void read_training(ramctr_timing * ctrl)
 		} else if (some_high) {
 			ctrl->timings[channel][slotrank].val_4024++;
 			ctrl->timings[channel][slotrank].val_4028++;
-			printk(BIOS_SPEW, "4024++;\n");
-			printk(BIOS_SPEW, "4028++;\n");
+			printram("4024++;\n");
+			printram("4028++;\n");
 		}
 
 		program_timings(ctrl, channel);
@@ -1914,16 +1914,16 @@ static void read_training(ramctr_timing * ctrl)
 			ctrl->timings[channel][slotrank].lanes[lane].timA -= mnmx.timA_min_high * 0x40;
 		}
 		ctrl->timings[channel][slotrank].val_4028 -= mnmx.timA_min_high;
-		printk(BIOS_SPEW, "4028 -= %d;\n", mnmx.timA_min_high);
+		printram("4028 -= %d;\n", mnmx.timA_min_high);
 
 		post_timA_change(ctrl, channel, slotrank, &mnmx);
 
-		printk(BIOS_SPEW, "4/8: %d, %d, %x, %x\n", channel, slotrank,
+		printram("4/8: %d, %d, %x, %x\n", channel, slotrank,
 		       ctrl->timings[channel][slotrank].val_4024,
 		       ctrl->timings[channel][slotrank].val_4028);
 
 		FOR_ALL_LANES
-		    printk(BIOS_SPEW, "%d, %d, %d, %x\n", channel, slotrank,
+		    printram("%d, %d, %d, %x\n", channel, slotrank,
 			   lane,
 			   ctrl->timings[channel][slotrank].lanes[lane].timA);
 
@@ -2050,7 +2050,7 @@ static void discover_timC(ramctr_timing * ctrl, int channel, int slotrank)
 			statistics[lane][timC] =
 			    read32(DEFAULT_MCHBAR + 0x4340 + 4 * lane +
 				   0x400 * channel);
-			printk(BIOS_SPEW, "Cstat: %d, %d, %d, %x, %x\n",
+			printram("Cstat: %d, %d, %d, %x, %x\n",
 			       channel, slotrank, lane, timC,
 			       statistics[lane][timC]);
 		}
@@ -2061,7 +2061,7 @@ static void discover_timC(ramctr_timing * ctrl, int channel, int slotrank)
 		ctrl->timings[channel][slotrank].lanes[lane].timC = rn.middle;
 		if (rn.all)
 			die("timC discovery failed");
-		printk(BIOS_SPEW, "Cval: %d, %d, %d, %x\n", channel, slotrank,
+		printram("Cval: %d, %d, %d, %x\n", channel, slotrank,
 		       lane, ctrl->timings[channel][slotrank].lanes[lane].timC);
 	}
 }
@@ -2079,7 +2079,7 @@ static void fill_pattern0(ramctr_timing * ctrl, int channel, u32 a, u32 b)
 	unsigned j;
 	unsigned channel_offset =
 	    get_precedening_channels(ctrl, channel) * 0x40;
-	printk(BIOS_SPEW, "channel_offset=%x\n", channel_offset);
+	printram("channel_offset=%x\n", channel_offset);
 	for (j = 0; j < 16; j++)
 		write32(0x04000000 + channel_offset + 4 * j, j & 2 ? b : a);
 	sfence();
@@ -2259,7 +2259,7 @@ static void discover_timB(ramctr_timing * ctrl, int channel, int slotrank)
 			       (DEFAULT_MCHBAR + lane_registers[lane] +
 				channel * 0x100 + 4 + ((timB / 32) & 1) * 4)
 			       >> (timB % 32)) & 1);
-			printk(BIOS_SPEW, "Bstat: %d, %d, %d, %x, %x\n",
+			printram("Bstat: %d, %d, %d, %x, %x\n",
 			       channel, slotrank, lane, timB,
 			       statistics[lane][timB]);
 		}
@@ -2269,7 +2269,7 @@ static void discover_timB(ramctr_timing * ctrl, int channel, int slotrank)
 		ctrl->timings[channel][slotrank].lanes[lane].timB = rn.start;
 		if (rn.all)
 			die("timB discovery failed");
-		printk(BIOS_SPEW, "Bval: %d, %d, %d, %x\n", channel, slotrank,
+		printram("Bval: %d, %d, %d, %x\n", channel, slotrank,
 		       lane, ctrl->timings[channel][slotrank].lanes[lane].timB);
 	}
 }
@@ -2373,7 +2373,7 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 			    get_timB_high_adjust(res) * 64;
 
 			 printk(BIOS_DEBUG, "High adjust %d:%016llx\n", lane, res);
-			 printk(BIOS_SPEW, "Bval+: %d, %d, %d, %x\n", channel,
+			 printram("Bval+: %d, %d, %d, %x\n", channel,
 				slotrank, lane,
 				ctrl->timings[channel][slotrank].lanes[lane].
 				timB);
@@ -2477,9 +2477,9 @@ static void write_training(ramctr_timing * ctrl)
 
 	udelay(1);
 
-	printk(BIOS_SPEW, "CPE\n");
+	printram("CPE\n");
 	precharge(ctrl);
-	printk(BIOS_SPEW, "CPF\n");
+	printram("CPF\n");
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
 		read32(DEFAULT_MCHBAR + 0x4080 + 0x400 * channel + 4 * lane);
@@ -2581,7 +2581,7 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 
 	ctrl->timings[channel][slotrank] = saved_rt;
 
-	printk(BIOS_SPEW, "3lanes: %x\n", lanes_ok);
+	printram("3lanes: %x\n", lanes_ok);
 	return lanes_ok != ((1 << NUM_LANES) - 1);
 }
 
@@ -2725,7 +2725,7 @@ static int try_reg_4004_b30(ramctr_timing * ctrl, int r4004b30)
 			FOR_ALL_POPULATED_RANKS {
 				stat[slotrank][c320c + 127] =
 				    test_320c(ctrl, channel, slotrank);
-				printk(BIOS_SPEW, "3stat: %d, %d, %d: %d\n",
+				printram("3stat: %d, %d, %d: %d\n",
 				       channel, slotrank, c320c,
 				       stat[slotrank][c320c + 127]);
 			}
@@ -2735,7 +2735,7 @@ static int try_reg_4004_b30(ramctr_timing * ctrl, int r4004b30)
 			    get_longest_zero_run(stat[slotrank], 255);
 			ctrl->timings[channel][slotrank].val_320c =
 			    rn.middle - 127;
-			printk(BIOS_SPEW, "3val: %d, %d: %d\n", channel,
+			printram("3val: %d, %d: %d\n", channel,
 			       slotrank,
 			       ctrl->timings[channel][slotrank].val_320c);
 			if (rn.all || rn.length < MIN_C320C_LEN) {
@@ -2782,7 +2782,7 @@ static void discover_edges_real(ramctr_timing * ctrl, int channel, int slotrank,
 			ctrl->timings[channel][slotrank].lanes[lane].falling =
 			    edge;
 		}
-		printk(BIOS_SPEW, "edge %02x\n", edge);
+		printram("edge %02x\n", edge);
 		program_timings(ctrl, channel);
 
 		FOR_ALL_LANES {
@@ -2837,7 +2837,7 @@ static void discover_edges_real(ramctr_timing * ctrl, int channel, int slotrank,
 		edges[lane] = rn.middle;
 		if (rn.all)
 			die("edge discovery failed");
-		printk(BIOS_SPEW, "eval %d, %d, %d, %02x\n", channel, slotrank,
+		printram("eval %d, %d, %d, %02x\n", channel, slotrank,
 		       lane, edges[lane]);
 	}
 }
@@ -3038,8 +3038,8 @@ static void discover_edges_write_real(ramctr_timing * ctrl, int channel,
 		for (pat = 0; pat < NUM_PATTERNS; pat++) {
 			fill_pattern5(ctrl, channel, pat);
 			write32(DEFAULT_MCHBAR + 0x4288 + 0x400 * channel, 0x1f);
-			printk(BIOS_SPEW, "patterned\n");
-			printk(BIOS_SPEW, "[%x] = 0x%08x\n(%d, %d)\n",
+			printram("patterned\n");
+			printram("[%x] = 0x%08x\n(%d, %d)\n",
 			       0x3000 + 0x100 * channel, reg3000b24[i] << 24, channel,
 			       slotrank);
 			for (edge = 0; edge <= MAX_EDGE_TIMING; edge++) {
@@ -3115,11 +3115,10 @@ static void discover_edges_write_real(ramctr_timing * ctrl, int channel,
 						! !(raw_statistics[edge] & (1 << lane));
 				rn = get_longest_zero_run(statistics,
 							  MAX_EDGE_TIMING + 1);
-				printk(BIOS_SPEW,
-				       "edges: %d, %d, %d: 0x%x-0x%x-0x%x, 0x%x-0x%x\n",
-				       channel, slotrank, i, rn.start, rn.middle,
-				       rn.end, rn.start + ctrl->edge_offset[i],
-				       rn.end - ctrl->edge_offset[i]);
+				printram("edges: %d, %d, %d: 0x%x-0x%x-0x%x, 0x%x-0x%x\n",
+					 channel, slotrank, i, rn.start, rn.middle,
+					 rn.end, rn.start + ctrl->edge_offset[i],
+					 rn.end - ctrl->edge_offset[i]);
 				lower[lane] =
 					max(rn.start + ctrl->edge_offset[i], lower[lane]);
 				upper[lane] =
@@ -3131,7 +3130,7 @@ static void discover_edges_write_real(ramctr_timing * ctrl, int channel,
 	}
 
 	write32(DEFAULT_MCHBAR + 0x3000, 0);
-	printk(BIOS_SPEW, "CPA\n");
+	printram("CPA\n");
 }
 
 static void discover_edges_write(ramctr_timing * ctrl)
@@ -3270,12 +3269,11 @@ static void discover_timC_write(ramctr_timing * ctrl)
 									  MAX_TIMC + 1);
 						if (rn.all)
 							die("timC write discovery failed");
-						printk(BIOS_SPEW,
-						       "timC: %d, %d, %d: 0x%x-0x%x-0x%x, 0x%x-0x%x\n",
-						       channel, slotrank, i, rn.start,
-						       rn.middle, rn.end,
-						       rn.start + ctrl->timC_offset[i],
-						       rn.end - ctrl->timC_offset[i]);
+						printram("timC: %d, %d, %d: 0x%x-0x%x-0x%x, 0x%x-0x%x\n",
+							 channel, slotrank, i, rn.start,
+							 rn.middle, rn.end,
+							 rn.start + ctrl->timC_offset[i],
+							 rn.end - ctrl->timC_offset[i]);
 						lower[channel][slotrank][lane] =
 							max(rn.start + ctrl->timC_offset[i],
 							    lower[channel][slotrank][lane]);
@@ -3297,10 +3295,10 @@ static void discover_timC_write(ramctr_timing * ctrl)
 
 	write32(DEFAULT_MCHBAR + 0x4ea8, 0);
 
-	printk(BIOS_SPEW, "CPB\n");
+	printram("CPB\n");
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		printk(BIOS_SPEW, "timC [%d, %d, %d] = 0x%x\n", channel,
+		printram("timC [%d, %d, %d] = 0x%x\n", channel,
 		       slotrank, lane,
 		       (lower[channel][slotrank][lane] +
 			upper[channel][slotrank][lane]) / 2);
@@ -3642,12 +3640,12 @@ static void restore_timings(ramctr_timing * ctrl)
 			       0x400 * channel) | 0x200000);
 	}
 
-	printk(BIOS_SPEW, "CPE\n");
+	printram("CPE\n");
 
 	write32(DEFAULT_MCHBAR + 0x3400, 0);
 	write32(DEFAULT_MCHBAR + 0x4eb0, 0);
 
-	printk(BIOS_SPEW, "CP5b\n");
+	printram("CP5b\n");
 
 	FOR_ALL_POPULATED_CHANNELS {
 		program_timings(ctrl, channel);
@@ -3687,7 +3685,7 @@ static void restore_timings(ramctr_timing * ctrl)
 	/* mrs commands. */
 	dram_mrscommands(ctrl);
 
-	printk(BIOS_SPEW, "CP5c\n");
+	printram("CP5c\n");
 
 	write32(DEFAULT_MCHBAR + 0x3000, 0);
 
@@ -3834,15 +3832,15 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		read_training(&ctrl);
 		write_training(&ctrl);
 
-		printk(BIOS_SPEW, "CP5a\n");
+		printram("CP5a\n");
 
 		discover_edges(&ctrl);
 
-		printk(BIOS_SPEW, "CP5b\n");
+		printram("CP5b\n");
 
 		command_training(&ctrl);
 
-		printk(BIOS_SPEW, "CP5c\n");
+		printram("CP5c\n");
 
 		discover_edges_write(&ctrl);
 

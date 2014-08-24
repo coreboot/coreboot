@@ -64,9 +64,9 @@ static void rcba_config(void)
 {
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)
-	 * D28IP_P1IP  WLAN   INTA -> PIRQB
-	 * D28IP_P2IP  ETH0   INTB -> PIRQF
-	 * D28IP_P3IP  SDCARD INTC -> PIRQD
+	 * D28IP_P2IP  WLAN   INTA -> PIRQB
+	 * D28IP_P4IP  EXC    INTB -> PIRQF
+	 * D28IP_P5IP  SDCARD INTC -> PIRQD
 	 * D29IP_E1P   EHCI1  INTA -> PIRQD
 	 * D26IP_E2P   EHCI2  INTA -> PIRQF
 	 * D31IP_SIP   SATA   INTA -> PIRQB (MSI)
@@ -83,8 +83,8 @@ static void rcba_config(void)
 	RCBA32(D31IP) = (INTC << D31IP_TTIP) | (NOINT << D31IP_SIP2) |
 			(INTB << D31IP_SMIP) | (INTA << D31IP_SIP);
 	RCBA32(D29IP) = (INTA << D29IP_E1P);
-	RCBA32(D28IP) = (INTA << D28IP_P1IP) | (INTB << D28IP_P2IP) |
-			(INTC << D28IP_P3IP);
+	RCBA32(D28IP) = (INTA << D28IP_P2IP) | (INTB << D28IP_P4IP) |
+			(INTC << D28IP_P5IP);
 	RCBA32(D27IP) = (INTA << D27IP_ZIP);
 	RCBA32(D26IP) = (INTA << D26IP_E2P);
 	RCBA32(D25IP) = (NOINT << D25IP_LIP);
@@ -105,7 +105,7 @@ static void rcba_config(void)
 	(void) RCBA16(OIC);
 
 	/* Disable unused devices (board specific) */
-	RCBA32(FD) = 0x17f81fe3;
+	RCBA32(FD) = 0x1ee51fe3;
 	RCBA32(BUC) = 0;
 }
 

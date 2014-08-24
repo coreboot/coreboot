@@ -29,9 +29,9 @@ Method(_PRT)
 			// High Definition Audio	0:1b.0
 			Package() { 0x001bffff, 0, 0, 16 },//  D27IP_ZIP   HDA    INTA -> PIRQA (MSI)
 			// PCIe Root Ports		0:1c.x
-			Package() { 0x001cffff, 0, 0, 17 },//  D28IP_P1IP  WLAN   INTA -> PIRQB
-			Package() { 0x001cffff, 1, 0, 21 },//  D28IP_P2IP  ETH0   INTB -> PIRQF
-			Package() { 0x001cffff, 2, 0, 19 },//  D28IP_P3IP  SDCARD INTC -> PIRQD
+			Package() { 0x001cffff, 0, 0, 17 },//  D28IP_P2IP  WLAN   INTA -> PIRQB
+			Package() { 0x001cffff, 1, 0, 21 },//  D28IP_P4IP  EXC    INTB -> PIRQF
+			Package() { 0x001cffff, 2, 0, 19 },//  D28IP_P5IP  SDCARD INTC -> PIRQD
 			// EHCI	#1			0:1d.0
 			Package() { 0x001dffff, 0, 0, 19 },//  D29IP_E1P   EHCI1  INTA -> PIRQD
 			// EHCI	#2			0:1a.0

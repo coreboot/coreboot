@@ -35,15 +35,47 @@ struct console_output_driver *console_out;
 struct console_input_driver *console_in;
 static console_input_type last_getchar_input_type;
 
+static int output_driver_exists(struct console_output_driver *out)
+{
+	struct console_output_driver *head = console_out;
+
+	while (head) {
+		if (head == out)
+			return 1;
+		head = head->next;
+	}
+
+	return 0;
+}
+
+static int input_driver_exists(struct console_input_driver *in)
+{
+	struct console_input_driver *head = console_in;
+
+	while (head) {
+		if (head == in)
+			return 1;
+		head = head->next;
+	}
+
+	return 0;
+}
+
 void console_add_output_driver(struct console_output_driver *out)
 {
 	die_if(!out->putchar && !out->write, "Need at least one output func\n");
+	/* Check if this driver was already added to the console list */
+	if (output_driver_exists(out))
+		return;
 	out->next = console_out;
 	console_out = out;
 }
 
 void console_add_input_driver(struct console_input_driver *in)
 {
+	/* Check if this driver was already added to the console list */
+	if (input_driver_exists(in))
+		return;
 	in->next = console_in;
 	console_in = in;
 }

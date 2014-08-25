@@ -236,14 +236,37 @@ Device(EC)
 	    ^HKEY.RHK (0x1A)
        }
 
+       Method (_Q5C, 0, NotSerialized)
+       {
+	    ^HKEY.RTAB (0xB)
+       }
+
+       Method (_Q5D, 0, NotSerialized)
+       {
+	    ^HKEY.RTAB (0xC)
+       }
+
+       Method (_Q5E, 0, NotSerialized)
+       {
+	    ^HKEY.RTAB (0x9)
+       }
+
+       Method (_Q5F, 0, NotSerialized)
+       {
+	    ^HKEY.RTAB (0xA)
+       }
+
        Device (HKEY)
        {
 	       Name (_HID, EisaId ("IBM0068"))
 	       Name (BTN, 0)
+	       Name (BTAB, 0)
 	       /* MASK */
 	       Name (DHKN, 0x080C)
 	       /* Effective Mask */
 	       Name (EMSK, 0)
+	       /* Effective Mask for tablet */
+	       Name (ETAB, 0)
 	       /* Device enabled. */
 	       Name (EN, 0)
 	       Method (_STA, 0, NotSerialized)
@@ -254,12 +277,17 @@ Device(EC)
 	       Method (MHKP, 0, NotSerialized)
 	       {
 		    Store (BTN, Local0)
-		    If (LEqual (Local0, Zero)) {
-		       Return (Zero)
+		    If (LNotEqual (Local0, Zero)) {
+		       Store (Zero, BTN)
+		       Add (Local0, 0x1000, Local0)
+		       Return (Local0)
 		    }
-		    Store (Zero, BTN)
-		    Add (Local0, 0x1000, Local0)
-		    Return (Local0)
+		    Store (BTAB, Local0)
+		    If (LNotEqual (Local0, Zero)) {
+		       Store (Zero, BTAB)
+		       Add (Local0, 0x5000, Local0)
+		       Return (Local0)
+		    }
 	       }
 	       /* Report event  */
 	       Method (RHK, 1, NotSerialized) {
@@ -269,14 +297,24 @@ Device(EC)
 			 Notify (HKEY, 0x80)
 		      }
 	       }
+	       /* Report tablet  */
+	       Method (RTAB, 1, NotSerialized) {
+		      ShiftLeft (One, Subtract (Arg0, 1), Local0)
+		      If (And (ETAB, Local0)) {
+			 Store (Arg0, BTAB)
+			 Notify (HKEY, 0x80)
+		      }
+	       }
 	       /* Enable/disable all events.  */
 	       Method (MHKC, 1, NotSerialized) {
 			 If (Arg0) {
 				Store (DHKN, EMSK)
+				Store (Ones, ETAB)
 			 }
 			 Else
 			 {
 				Store (Zero, EMSK)
+				Store (Zero, ETAB)
 			 }
 			 Store (Arg0, EN)
 	       }

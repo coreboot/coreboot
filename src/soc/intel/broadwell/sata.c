@@ -92,6 +92,13 @@ static void sata_init(struct device *dev)
 	abar = (u8 *)(pci_read_config32(dev, PCI_BASE_ADDRESS_5));
 	printk(BIOS_DEBUG, "ABAR: %p\n", abar);
 
+	/* CAP (HBA Capabilities) : enable power management */
+	reg32 = read32(abar + 0x00);
+	reg32 |= 0x0c006000;  /* set PSC+SSC+SALP+SSS */
+	reg32 &= ~0x00020060; /* clear SXS+EMS+PMS */
+	reg32 |= (1 << 18);   /* SAM: SATA AHCI MODE ONLY */
+	write32(abar + 0x00, reg32);
+
 	/* PI (Ports implemented) */
 	write32(abar + 0x0c, config->sata_port_map);
 	(void) read32(abar + 0x0c); /* Read back 1 */

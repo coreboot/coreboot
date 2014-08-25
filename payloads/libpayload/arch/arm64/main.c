@@ -55,11 +55,13 @@ void start_main(void)
 {
 	extern int main(int argc, char **argv);
 
-	printf("hello libpayload world");
 	/* Gather system information. */
 	lib_get_sysinfo();
 
-
+#ifndef CONFIG_LP_SKIP_CONSOLE_INIT
+	console_init();
+#endif
+	printf("ARM64: Libpayload %s\n",__func__);
 	exception_init();
 
 	test_exception();

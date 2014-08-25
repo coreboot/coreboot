@@ -30,6 +30,7 @@
 //#define USB_DEBUG
 
 #include <libpayload.h>
+#include <arch/barrier.h>
 #include <arch/cache.h>
 #include "ehci.h"
 #include "ehci_private.h"
@@ -317,6 +318,14 @@ static int wait_for_tds(qtd_t *head)
 
 static int ehci_set_async_schedule(ehci_t *ehcic, int enable)
 {
+
+	/* Memory barrier to ensure that all memory accesses before we set the
+	 * async schedule are complete. It was observed especially in the case of
+	 * arm64, that netboot and usb stuff resulted in lots of errors possibly
+	 * due to CPU reordering. Hence, enforcing strict CPU ordering.
+	 */
+	mb();
+
 	/* Set async schedule status. */
 	if (enable)
 		ehcic->operation->usbcmd |= HC_OP_ASYNC_SCHED_EN;

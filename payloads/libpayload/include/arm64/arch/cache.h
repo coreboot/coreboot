@@ -70,24 +70,16 @@
 /*
  * Sync primitives
  */
-
 /* data memory barrier */
-static inline void dmb(void)
-{
-	asm volatile ("dmb sy" : : : "memory");
-}
-
+#define dmb_opt(opt)  asm volatile ("dmb " #opt : : : "memory")
 /* data sync barrier */
-static inline void dsb(void)
-{
-	asm volatile ("dsb sy" : : : "memory");
-}
-
+#define dsb_opt(opt)  asm volatile ("dsb " #opt : : : "memory")
 /* instruction sync barrier */
-static inline void isb(void)
-{
-	asm volatile ("isb" : : : "memory");
-}
+#define isb_opt(opt)  asm volatile ("isb " #opt : : : "memory")
+
+#define dmb() dmb_opt(sy)
+#define dsb() dsb_opt(sy)
+#define isb() isb_opt()
 
 /*
  * Low-level TLB maintenance operations

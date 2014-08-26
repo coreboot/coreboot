@@ -518,11 +518,11 @@ write_elf(const struct rmod_context *ctx, const struct buffer *in,
 	 * is considered a part of the program.
 	 */
 	total_size += buffer_size(&rmod_header);
-	total_size += ctx->phdr->p_memsz;
-	if (buffer_size(&relocs) + ctx->phdr->p_filesz > total_size) {
-		total_size -= ctx->phdr->p_memsz;
+	if (buffer_size(&relocs) + ctx->phdr->p_filesz > ctx->phdr->p_memsz) {
 		total_size += buffer_size(&relocs);
 		total_size += ctx->phdr->p_filesz;
+	} else {
+		total_size += ctx->phdr->p_memsz;
 	}
 
 	ret = add_section(ew, &rmod_header, ".header", addr,

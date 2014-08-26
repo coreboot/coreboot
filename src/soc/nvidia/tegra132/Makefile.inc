@@ -73,6 +73,10 @@ ramstage-y += spintable.S
 ramstage-y += mmu_operations.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += ../tegra/usb.c
+ramstage-$(CONFIG_ARCH_USE_SECURE_MONITOR) += secmon.c
+
+secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += cpu_lib.S
+secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += uart.c
 
 modules_arm-y += monotonic_timer.c
 VBOOT_STUB_DEPS += $(obj)/soc/nvidia/tegra132/monotonic_timer.rmodules_arm.o

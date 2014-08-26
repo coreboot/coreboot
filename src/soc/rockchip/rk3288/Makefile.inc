@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+IDBTOOL = util/rockchip/make_idb.py
+
 #bootblock-y += bootblock.c
 bootblock-y += cbmem.c
 bootblock-y += timer.c
@@ -43,3 +45,11 @@ ramstage-y += clock.c
 ramstage-y += spi.c
 ramstage-y += media.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
+
+$(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
+	cp $< $@
+
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
+	@printf "Generating: $(subst $(obj)/,,$(@))\n"
+	@mkdir -p $(dir $@)
+	@$(IDBTOOL) --from=$< --to=$@ --enable-align

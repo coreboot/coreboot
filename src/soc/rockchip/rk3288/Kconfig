@@ -54,6 +54,10 @@ config BOOTBLOCK_CPU_INIT
 # 0xFF71_3000 CBFS mapping cache (20K)
 # 0xFF71_7FFF End of iRAM.
 
+config SYS_SRAM_BASE
+	hex "SRAM base address"
+	default 0xFF700000
+
 config SYS_SDRAM_BASE
 	hex "SDRAM base address"
 	default 0x00000000

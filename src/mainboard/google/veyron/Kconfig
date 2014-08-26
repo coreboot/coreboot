@@ -44,6 +44,10 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 1
 
+config BOOT_MEDIA_SPI_BUS
+        int
+        default 2
+
 config DRAM_DMA_START
 	hex
 	default 0x10000000

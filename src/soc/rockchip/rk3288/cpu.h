@@ -20,7 +20,9 @@
 #ifndef __SOC_ROCKCHIP_RK3288_CPU_H__
 #define __SOC_ROCKCHIP_RK3288_CPU_H__
 
-#define RK_SETBITS(val, msk) (((msk) << 16) | (val))
+#define RK_CLRSETBITS(clr, set) ((((clr) | (set)) << 16) | set)
+#define RK_SETBITS(set) RK_CLRSETBITS(0, set)
+#define RK_CLRBITS(clr) RK_CLRSETBITS(clr, 0)
 
 #endif	/* __SOC_ROCKCHIP_RK3288_CPU_H__ */
 

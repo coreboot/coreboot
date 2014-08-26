@@ -64,11 +64,17 @@ check_member(rk3288_cru_reg, cru_emmc_con[1], 0x021c);
 
 static struct rk3288_cru_reg * const cru_ptr = (void *)CRU_BASE;
 
+#define PLL_DIVISORS(hz, _nr, _no) {\
+	.nr = _nr, .nf = (u32)((u64)hz * _nr * _no / 24000000), .no = _no};\
+	_Static_assert(((u64)hz * _nr * _no / 24000000) * 24000000 /\
+			(_nr * _no) == hz,\
+	#hz "Hz cannot be hit with PLL divisors in " __FILE__);
+
 /* apll = 816MHz, gpll = 594MHz, cpll = 384MHz, dpll = 300MHz */
-static const struct pll_div apll_init_cfg = {.nr = 1, .nf = 68, .no = 2};
-static const struct pll_div gpll_init_cfg = {.nr = 2, .nf = 198, .no = 4};
-static const struct pll_div cpll_init_cfg = {.nr = 2, .nf = 128, .no = 4};
-static const struct pll_div dpll_init_cfg = {.nr = 1, .nf = 50, .no = 4};
+static const struct pll_div apll_init_cfg = PLL_DIVISORS(APLL_HZ, 1, 2);
+static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 4);
+static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 2, 4);
+static const struct pll_div dpll_init_cfg = PLL_DIVISORS(DPLL_HZ, 1, 4);
 
 /*******************PLL CON0 BITS***************************/
 #define PLL_OD_MSK	(0x0F)
@@ -161,21 +167,21 @@ static const struct pll_div dpll_init_cfg = {.nr = 1, .nf = 50, .no = 4};
 static int rkclk_set_pll(u32 *pll_con, const struct pll_div *pll_div_cfg)
 {
 	/* enter rest */
-	writel(RK_SETBITS(PLL_RESET, PLL_RESET_MSK), &pll_con[3]);
+	writel(RK_SETBITS(PLL_RESET_MSK), &pll_con[3]);
 
-	writel(RK_SETBITS((pll_div_cfg->nr - 1) << PLL_NR_SHIFT, PLL_NR_MSK)
-		| RK_SETBITS((pll_div_cfg->no - 1), PLL_OD_MSK), &pll_con[0]);
+	writel(RK_CLRSETBITS(PLL_NR_MSK, (pll_div_cfg->nr - 1) << PLL_NR_SHIFT)
+	      | RK_CLRSETBITS(PLL_OD_MSK, (pll_div_cfg->no - 1)), &pll_con[0]);
 
-	writel(RK_SETBITS((pll_div_cfg->nf - 1), PLL_NF_MSK),
+	writel(RK_CLRSETBITS(PLL_NF_MSK, (pll_div_cfg->nf - 1)),
 		&pll_con[1]);
 
-	writel(RK_SETBITS(((pll_div_cfg->nf >> 1) - 1), PLL_BWADJ_MSK),
+	writel(RK_CLRSETBITS(PLL_BWADJ_MSK, ((pll_div_cfg->nf >> 1) - 1)),
 		&pll_con[2]);
 
 	udelay(10);
 
 	/* return form rest */
-	writel(RK_SETBITS(PLL_RESET_RESUME, PLL_RESET_MSK), &pll_con[3]);
+	writel(RK_CLRBITS(PLL_RESET_MSK), &pll_con[3]);
 
 	return 0;
 }
@@ -183,10 +189,10 @@ static int rkclk_set_pll(u32 *pll_con, const struct pll_div *pll_div_cfg)
 void rkclk_init(void)
 {
 	/* pll enter slow-mode */
-	writel(RK_SETBITS(APLL_MODE_SLOW, APLL_MODE_MSK)
-		| RK_SETBITS(GPLL_MODE_SLOW, GPLL_MODE_MSK)
-		| RK_SETBITS(CPLL_MODE_SLOW, CPLL_MODE_MSK)
-		| RK_SETBITS(DPLL_MODE_SLOW, DPLL_MODE_MSK),
+	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_SLOW)
+		| RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_SLOW)
+		| RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_SLOW)
+		| RK_CLRSETBITS(DPLL_MODE_MSK, DPLL_MODE_SLOW),
 		&cru_ptr->cru_mode_con);
 
 	/* init pll */
@@ -212,19 +218,19 @@ void rkclk_init(void)
 	 * core clock select apll, apll clk = 816MHz
 	 * arm clk = 816MHz, mpclk = 204MHz, m0clk = 408MHz
 	 */
-	writel(RK_SETBITS(CORE_SEL_APLL, CORE_SEL_PLL_MSK)
-		| RK_SETBITS(0 << A12_DIV_SHIFT, A12_DIV_MSK)
-		| RK_SETBITS(3 << MP_DIV_SHIFT, MP_DIV_MSK)
-		| RK_SETBITS(1, M0_DIV_MSK),
+	writel(RK_CLRBITS(CORE_SEL_PLL_MSK)
+		| RK_CLRSETBITS(A12_DIV_MSK, 0 << A12_DIV_SHIFT)
+		| RK_CLRSETBITS(MP_DIV_MSK, 3 << MP_DIV_SHIFT)
+		| RK_CLRSETBITS(M0_DIV_MSK, 1 << 0),
 		&cru_ptr->cru_clksel_con[0]);
 
 	/*
 	 * set up dependent divisors for L2RAM/ATCLK and PCLK clocks.
 	 * l2ramclk = 408MHz, atclk = 204MHz, pclk_dbg = 204MHz
 	 */
-	writel(RK_SETBITS(1, L2_DIV_MSK)
-		| RK_SETBITS((3 << ATCLK_DIV_SHIFT), ATCLK_DIV_MSK)
-		| RK_SETBITS((3 << PCLK_DBG_DIV_SHIFT), PCLK_DBG_DIV_MSK),
+	writel(RK_CLRSETBITS(L2_DIV_MSK, 1 << 0)
+		| RK_CLRSETBITS(ATCLK_DIV_MSK, (3 << ATCLK_DIV_SHIFT))
+		| RK_CLRSETBITS(PCLK_DBG_DIV_MSK, (3 << PCLK_DBG_DIV_SHIFT)),
 		&cru_ptr->cru_clksel_con[37]);
 
 	/*
@@ -233,33 +239,44 @@ void rkclk_init(void)
 	 * peri clock select gpll, gpll clk = 594MHz
 	 * aclk = 148.5MHz, hclk = 148.5Mhz, pclk = 74.25MHz
 	 */
-	writel(RK_SETBITS(PERI_SEL_GPLL, PERI_SEL_PLL_MSK)
-		| RK_SETBITS(1 << PERI_PCLK_DIV_SHIFT, PERI_PCLK_DIV_MSK)
-		| RK_SETBITS(0 << PERI_HCLK_DIV_SHIFT, PERI_HCLK_DIV_MSK)
-		| RK_SETBITS(3, PERI_ACLK_DIV_MSK),
+	writel(RK_SETBITS(PERI_SEL_PLL_MSK)
+		| RK_CLRSETBITS(PERI_PCLK_DIV_MSK, 1 << PERI_PCLK_DIV_SHIFT)
+		| RK_CLRSETBITS(PERI_HCLK_DIV_MSK, 0 << PERI_HCLK_DIV_SHIFT)
+		| RK_CLRSETBITS(PERI_ACLK_DIV_MSK, 3 << 0),
 		&cru_ptr->cru_clksel_con[10]);
 
 	/* PLL enter normal-mode */
-	writel(RK_SETBITS(APLL_MODE_NORM, APLL_MODE_MSK)
-		| RK_SETBITS(GPLL_MODE_NORM, GPLL_MODE_MSK)
-		| RK_SETBITS(CPLL_MODE_NORM, CPLL_MODE_MSK)
-		| RK_SETBITS(DPLL_MODE_NORM, DPLL_MODE_MSK),
+	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_NORM)
+		| RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_NORM)
+		| RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_NORM)
+		| RK_CLRSETBITS(DPLL_MODE_MSK, DPLL_MODE_NORM),
 		&cru_ptr->cru_mode_con);
 
 }
 
-void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy)
+void rkclk_configure_spi(unsigned int bus, unsigned int hz)
 {
-	u32 phy_ctl_srstn_shift = 4 + 5 * ch;
-	u32 ctl_psrstn_shift = 3 + 5 * ch;
-	u32 ctl_srstn_shift = 2 + 5 * ch;
-	u32 phy_psrstn_shift = 1 + 5 * ch;
-	u32 phy_srstn_shift = 5 * ch;
+	int src_clk_div = GPLL_HZ / hz;
 
-	writel(RK_SETBITS(phy << phy_ctl_srstn_shift, 1 << phy_ctl_srstn_shift)
-		| RK_SETBITS(ctl << ctl_psrstn_shift, 1 << ctl_psrstn_shift)
-		| RK_SETBITS(ctl << ctl_srstn_shift, 1 << ctl_srstn_shift)
-		| RK_SETBITS(phy << phy_psrstn_shift, 1 << phy_psrstn_shift)
-		| RK_SETBITS(phy << phy_srstn_shift, 1 << phy_srstn_shift),
-		&cru_ptr->cru_softrst_con[10]);
+	assert((src_clk_div - 1 < 127) && (src_clk_div * hz == GPLL_HZ));
+
+	switch (bus) {	/*select gpll as spi src clk, and set div*/
+	case 0:
+		writel(RK_CLRSETBITS(1 << 7 | 0x1f << 0, 1 << 7
+					     | (src_clk_div - 1) << 0),
+					     &cru_ptr->cru_clksel_con[25]);
+		break;
+	case 1:
+		writel(RK_CLRSETBITS(1 << 15 | 0x1f << 8, 1 << 15
+					      | (src_clk_div - 1) << 8),
+					      &cru_ptr->cru_clksel_con[25]);
+		break;
+	case 2:
+		writel(RK_CLRSETBITS(1 << 7 | 0x1f << 0, 1 << 7
+					     | (src_clk_div - 1) << 0),
+					     &cru_ptr->cru_clksel_con[39]);
+		break;
+	default:
+		printk(BIOS_ERR, "do not support this spi bus\n");
+	}
 }

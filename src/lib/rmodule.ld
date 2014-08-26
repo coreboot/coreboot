@@ -30,26 +30,30 @@ SECTIONS
 		__CTOR_LIST__ = .;
 		*(.ctors);
 		LONG(0);
+		LONG(0);
 		__CTOR_END__ = .;
 
 		/* The driver sections are to allow linking coreboot's
 		 * ramstage with the rmodule linker. Any changes made in
 		 * ramstage.ld should be made here as well. */
+		. = ALIGN(8);
 		pci_drivers = . ;
 		*(.rodata.pci_driver)
 		epci_drivers = . ;
+		. = ALIGN(8);
 		cpu_drivers = . ;
 		*(.rodata.cpu_driver)
 		ecpu_drivers = . ;
+		. = ALIGN(8);
 		_bs_init_begin = .;
 		*(.bs_init)
 		_bs_init_end = .;
 
-		. = ALIGN(4);
+		. = ALIGN(8);
 
 		*(.rodata);
 		*(.rodata.*);
-		. = ALIGN(4);
+		. = ALIGN(8);
 
 		/* The parameters section can be used to pass parameters
 		 * to a module, however there has to be an prior agreement
@@ -63,7 +67,7 @@ SECTIONS
 		_sdata = .;
 		*(.data);
 		*(.data.*);
-		. = ALIGN(4);
+		. = ALIGN(8);
 		_edata = .;
 
 		. = ALIGN(8);

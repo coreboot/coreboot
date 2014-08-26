@@ -104,6 +104,31 @@ static int should_emit_arm(struct rmod_context *ctx, Elf64_Rela *rel)
 	return (type == R_ARM_ABS32);
 }
 
+static int valid_reloc_aarch64(struct rmod_context *ctx, Elf64_Rela *rel)
+{
+	int type;
+
+	type = ELF64_R_TYPE(rel->r_info);
+
+	return (type == R_AARCH64_ADR_PREL_PG_HI21 ||
+		type == R_AARCH64_ADD_ABS_LO12_NC  ||
+		type == R_AARCH64_JUMP26 ||
+		type == R_AARCH64_LDST32_ABS_LO12_NC ||
+		type == R_AARCH64_CALL26 ||
+		type == R_AARCH64_ABS64 ||
+		type == R_AARCH64_LD_PREL_LO19 ||
+		type == R_AARCH64_ADR_PREL_LO21);
+}
+
+static int should_emit_aarch64(struct rmod_context *ctx, Elf64_Rela *rel)
+{
+	int type;
+
+	type = ELF64_R_TYPE(rel->r_info);
+
+	return (type == R_AARCH64_ABS64);
+}
+
 static struct arch_ops reloc_ops[] = {
 	{
 		.arch = EM_386,
@@ -114,6 +139,11 @@ static struct arch_ops reloc_ops[] = {
 		.arch = EM_ARM,
 		.valid_type = valid_reloc_arm,
 		.should_emit = should_emit_arm,
+	},
+	{
+		.arch = EM_AARCH64,
+		.valid_type = valid_reloc_aarch64,
+		.should_emit = should_emit_aarch64,
 	},
 };
 

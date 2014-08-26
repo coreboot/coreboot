@@ -15,4 +15,9 @@ config ARCH_RAMSTAGE_ARM64
 	bool
 	default n
 
+config ARCH_USE_SECURE_MONITOR
+	bool
+	default n
+	select RELOCATABLE_MODULES
+
 source src/arch/arm64/armv8/Kconfig

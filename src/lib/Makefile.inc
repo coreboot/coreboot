@@ -120,6 +120,7 @@ bootblock-y += halt.c
 romstage-y += halt.c
 ramstage-y += halt.c
 smm-y += halt.c
+secmon-y += halt.c
 
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c

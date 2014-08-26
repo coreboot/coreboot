@@ -19,6 +19,7 @@
 
 #include <arch/cache.h>
 #include <arch/lib_helpers.h>
+#include <arch/secmon.h>
 #include <arch/stages.h>
 #include <arch/transition.h>
 #include <cbmem.h>
@@ -28,17 +29,20 @@
 
 void arch_payload_run(const struct payload *payload)
 {
-	void (*doit)(void *) = payload->entry;
+	void (*payload_entry)(void *) = payload->entry;
+
 	void *cb_tables = cbmem_find(CBMEM_ID_CBTABLE);
 	uint8_t current_el = get_current_el();
 
 	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
 
+	secmon_run(payload_entry, cb_tables);
+
 	/* If current EL is not EL3, jump to payload at same EL. */
 	if (current_el != EL3) {
 		cache_sync_instructions();
 		/* Point of no-return */
-		doit(cb_tables);
+		payload_entry(cb_tables);
 	}
 
 	/* If current EL is EL3, we transition to payload in EL2. */

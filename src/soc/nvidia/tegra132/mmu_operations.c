@@ -84,6 +84,7 @@ void tegra132_mmu_init(void)
 {
 	uintptr_t tz_base_mib;
 	size_t tz_size_mib;
+	size_t ttb_size_mib;
 	struct memranges *map = &t132_mmap_ranges;
 
 	tegra132_memrange_init(map);
@@ -92,7 +93,7 @@ void tegra132_mmu_init(void)
 	/* Place page tables at the base of the trust zone region. */
 	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
 	tz_base_mib *= MiB;
-	tz_size_mib *= MiB;
-	mmu_init(map, (void *)tz_base_mib, tz_size_mib);
+	ttb_size_mib = TTB_SIZE * MiB;
+	mmu_init(map, (void *)tz_base_mib, ttb_size_mib);
 	mmu_enable(tz_base_mib);
 }

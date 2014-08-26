@@ -101,7 +101,7 @@ config MTS_DIRECTORY
 
 config TRUSTZONE_CARVEOUT_SIZE_MB
 	hex "Size of Trust Zone region"
-	default 0x1
+	default 0x4
 	help
 	  Size of Trust Zone area in MiB to reserve in memory map.
 

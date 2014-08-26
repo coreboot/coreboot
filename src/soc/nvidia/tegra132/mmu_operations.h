@@ -22,4 +22,7 @@
 
 void tegra132_mmu_init(void);
 
+/* Default ttb size of 1MiB */
+#define TTB_SIZE 0x1
+
 #endif //__SOC_NVIDIA_TEGRA132_MMU_OPERATIONS_H__

@@ -259,10 +259,8 @@ static int collect_relocations(struct rmod_context *ctx)
 
 	nrelocs = ctx->nrelocs;
 	INFO("%d relocations to be emitted.\n", nrelocs);
-	if (!nrelocs) {
-		ERROR("No valid relocations in file.\n");
-		return -1;
-	}
+	if (!nrelocs)
+		return 0;
 
 	/* Reset the counter for indexing into the array. */
 	ctx->nrelocs = 0;
@@ -536,10 +534,13 @@ write_elf(const struct rmod_context *ctx, const struct buffer *in,
 		goto out;
 	addr += ctx->phdr->p_filesz;
 
-	ret = add_section(ew, &relocs, ".relocs", addr, buffer_size(&relocs));
-	if (ret < 0)
-		goto out;
-	addr += buffer_size(&relocs);
+	if (ctx->nrelocs) {
+		ret = add_section(ew, &relocs, ".relocs", addr,
+				  buffer_size(&relocs));
+		if (ret < 0)
+			goto out;
+		addr += buffer_size(&relocs);
+	}
 
 	if (total_size != addr) {
 		ret = add_section(ew, NULL, ".empty", addr, total_size - addr);

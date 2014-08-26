@@ -91,6 +91,8 @@
 #define EM_XTENSA	94		/* Tensilica Xtensa Architecture */
 #define EM_NUM		95
 
+#define EM_AARCH64	183		/* ARM Aarch64 Architecture */
+
 /* Values for p_type. */
 #define PT_NULL		0	/* Unused entry. */
 #define PT_LOAD		1	/* Loadable segment. */

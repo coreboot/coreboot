@@ -25,6 +25,7 @@
 #include <string.h>
 #include <broadwell/pci_devs.h>
 #include <broadwell/me.h>
+#include <delay.h>
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 
@@ -279,3 +280,38 @@ void intel_me_status(void)
 	printk(BIOS_DEBUG, "\n");
 }
 #endif
+
+void intel_me_hsio_version(uint16_t *version, uint16_t *checksum)
+{
+	int count;
+	u32 hsiover;
+	struct me_hfs hfs;
+
+	/* Query for HSIO version, overloads H_GS and HFS */
+	pci_write_config32(PCH_DEV_ME, PCI_ME_H_GS,
+			   ME_HSIO_MESSAGE | ME_HSIO_CMD_GETHSIOVER);
+
+	/* Must wait for ME acknowledgement */
+	for (count = ME_RETRY; count > 0; --count) {
+		me_read_dword_ptr(&hfs, PCI_ME_HFS);
+		if (hfs.bios_msg_ack)
+			break;
+		udelay(ME_DELAY);
+	}
+	if (!count) {
+		printk(BIOS_ERR, "ERROR: ME failed to respond\n");
+		return;
+	}
+
+	/* HSIO version should be in HFS_5 */
+	hsiover = pci_read_config32(PCH_DEV_ME, PCI_ME_HFS5);
+	*version = hsiover >> 16;
+	*checksum = hsiover & 0xffff;
+
+	printk(BIOS_DEBUG, "ME: HSIO Version            : %d (CRC 0x%04x)\n",
+	       *version, *checksum);
+
+	/* Reset registers to normal behavior */
+	pci_write_config32(PCH_DEV_ME, PCI_ME_H_GS,
+			   ME_HSIO_MESSAGE | ME_HSIO_CMD_GETHSIOVER);
+}

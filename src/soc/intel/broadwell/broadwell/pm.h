@@ -131,6 +131,8 @@ struct chipset_power_state {
 	uint16_t gen_pmcon2;
 	uint16_t gen_pmcon3;
 	int prev_sleep_state;
+	uint16_t hsio_version;
+	uint16_t hsio_checksum;
 };
 
 /* PM1_CNT */

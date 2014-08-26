@@ -106,6 +106,10 @@ void romstage_common(struct romstage_params *params)
 	/* Print ME state before MRC */
 	intel_me_status();
 
+	/* Save ME HSIO version */
+	intel_me_hsio_version(&params->power_state->hsio_version,
+			      &params->power_state->hsio_checksum);
+
 	/* Initialize RAM */
 	raminit(params->pei_data);
 

@@ -98,6 +98,10 @@ struct me_uma {
 #define  ME_INIT_STATUS_ERROR	2
 #define  ME_INIT_STATUS_SUCCESS_OTHER 3 /* SEE ME9 BWG */
 
+#define ME_HSIO_MESSAGE		(7 << 28)
+#define ME_HSIO_CMD_GETHSIOVER	1
+#define ME_HSIO_CMD_CLOSE	0
+
 struct me_did {
 	u32 uma_base: 16;
 	u32 reserved: 7;
@@ -196,6 +200,8 @@ struct me_hfs2 {
 	u32 current_pmevent: 4;
 	u32 progress_code: 4;
 } __attribute__ ((packed));
+
+#define PCI_ME_HFS5		0x68
 
 #define PCI_ME_H_GS2		0x70
 #define   PCI_ME_MBP_GIVE_UP	0x01
@@ -490,6 +496,7 @@ struct me_fwcaps {
 } __attribute__ ((packed));
 
 void intel_me_finalize(void);
+void intel_me_hsio_version(uint16_t *version, uint16_t *checksum);
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 /* Defined in me_status.c for both romstage and ramstage */

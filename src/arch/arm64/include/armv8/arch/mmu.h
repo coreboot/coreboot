@@ -162,7 +162,9 @@
 #define TCR_TBI_USED               (0x0 << TCR_TBI_SHIFT)
 #define TCR_TBI_IGNORED            (0x1 << TCR_TBI_SHIFT)
 
-void mmu_init(struct memranges *,uint64_t *,uint64_t);
-void mmu_enable(uint64_t);
+/* Initialize the MMU TTB tables provide the range sequence and ttb buffer. */
+void mmu_init(struct memranges *ranges, uint64_t *ttb, uint64_t ttb_size);
+/* Enable the mmu based on previous mmu_init(). */
+void mmu_enable(void);
 
 #endif // __ARCH_ARM64_MMU_H__

@@ -285,7 +285,7 @@ static uint32_t is_mmu_enabled(void)
 	return (sctlr & SCTLR_M);
 }
 
-void mmu_enable(uint64_t ttbr)
+void mmu_enable(void)
 {
 	uint32_t sctlr;
 
@@ -301,7 +301,7 @@ void mmu_enable(uint64_t ttbr)
 			  TCR_TBI_USED);
 
 	/* Initialize TTBR */
-	raw_write_ttbr0_el3(ttbr);
+	raw_write_ttbr0_el3((uintptr_t)xlat_addr);
 
 	/* Ensure all translation table writes are committed before enabling MMU */
 	dsb();

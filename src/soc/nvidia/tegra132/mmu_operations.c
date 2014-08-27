@@ -95,5 +95,5 @@ void tegra132_mmu_init(void)
 	tz_base_mib *= MiB;
 	ttb_size_mib = TTB_SIZE * MiB;
 	mmu_init(map, (void *)tz_base_mib, ttb_size_mib);
-	mmu_enable(tz_base_mib);
+	mmu_enable();
 }

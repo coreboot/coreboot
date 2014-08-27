@@ -213,6 +213,11 @@ static int qemu_get_smbios_data17(int handle, int parent_handle, unsigned long *
 static int qemu_get_smbios_data(device_t dev, int *handle, unsigned long *current)
 {
 	int len;
+
+	len = fw_cfg_smbios_tables(handle, current);
+	if (len != 0)
+		return len;
+
 	len = qemu_get_smbios_data16(*handle, current);
 	len += qemu_get_smbios_data17(*handle+1, *handle, current);
 	*handle += 2;

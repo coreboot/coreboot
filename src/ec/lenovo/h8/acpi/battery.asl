@@ -223,7 +223,7 @@ Device (BAT0)
 		if (B0PR) {
 			Return (BSTA(0, BATI, B0CH, B0DI))
 		} else {
-			Return (BATS)
+			Return (Package () { 0, 0, 0, 0 })
 		}
 	}
 
@@ -281,7 +281,7 @@ Device (BAT1)
 		if (B1PR) {
 			Return (BSTA(0x10, BATI, B1CH, B1DI))
 		} else {
-			Return (BATS)
+			Return (Package () { 0, 0, 0, 0 })
 		}
 	}
 

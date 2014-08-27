@@ -231,12 +231,11 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 		switch (s[i].command) {
 		case BIOS_LINKER_LOADER_COMMAND_ALLOCATE:
 			current = ALIGN(current, s[i].alloc.align);
-			printk(BIOS_DEBUG, "QEMU: loading \"%s\" to 0x%lx\n",
-			       s[i].alloc.file, current);
-
 			rc = fw_cfg_check_file(s[i].alloc.file);
 			if (rc < 0)
 				goto err;
+			printk(BIOS_DEBUG, "QEMU: loading \"%s\" to 0x%lx (len %d)\n",
+			       s[i].alloc.file, current, rc);
 			fw_cfg_load_file(s[i].alloc.file, (void*)current);
 			addrs[i] = current;
 			current += rc;

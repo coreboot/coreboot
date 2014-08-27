@@ -58,4 +58,17 @@ void *cpu_get_stack(unsigned int cpu);
 /* Return the top of the exception stack for the specified cpu. */
 void *cpu_get_exception_stack(unsigned int cpu);
 
+/*
+ * Do the necessary work to prepare for secondary CPUs coming up. The
+ * SoC will call this function before bringing up the other CPUs. The
+ * entry point for the seoncdary CPUs is returned.
+ */
+void *prepare_secondary_cpu_startup(void);
+
+/*
+ * Function provided by the SoC code that is called for each secondary
+ * CPU startup.
+ */
+void soc_secondary_cpu_init(void);
+
 #endif /* __ARCH_CPU_H__ */

@@ -17,9 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/stages.h>
+#include <arch/cache.h>
 #include <arch/cpu.h>
-
+#include <arch/exception.h>
+#include <arch/mmu.h>
+#include <arch/stages.h>
 
 /*
  * This variable holds entry point for CPUs starting up. Before the other
@@ -29,6 +31,11 @@
 void (*c_entry)(void) = &arm64_init;
 
 void __attribute__((weak)) arm64_soc_init(void)
+{
+	/* Default weak implementation does nothing. */
+}
+
+void __attribute__((weak)) soc_secondary_cpu_init(void)
 {
 	/* Default weak implementation does nothing. */
 }
@@ -56,4 +63,25 @@ void arm64_init(void)
 	seed_stack();
 	arm64_soc_init();
 	main();
+}
+
+static void secondary_cpu_start(void)
+{
+	mmu_enable();
+	exception_hwinit();
+	soc_secondary_cpu_init();
+	/*
+	 * TODO(adurbin): need a proper place to park the CPUs. Currently
+	 * assuming SoC code does the appropriate thing.
+	 */
+	while (1);
+}
+
+extern void arm64_cpu_startup(void);
+void *prepare_secondary_cpu_startup(void)
+{
+	c_entry = &secondary_cpu_start;
+	dcache_clean_invalidate_by_mva(c_entry, sizeof(c_entry));
+
+	return &arm64_cpu_startup;
 }

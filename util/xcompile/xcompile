@@ -172,7 +172,7 @@ SUPPORTED_ARCHITECTURE="x86 arm arm64 riscv mipsel"
 
 arch_config_arm() {
 	TARCH="arm"
-	TBFDARCH="littlearm"
+	TBFDARCHS="littlearm"
 	TCLIST="armv7a armv7-a"
 	TWIDTH="32"
 	TSUPP="arm armv4 armv7"
@@ -181,7 +181,7 @@ arch_config_arm() {
 
 arch_config_arm64() {
 	TARCH="arm64"
-	TBFDARCH="littleaarch64"
+	TBFDARCHS="littleaarch64"
 	TCLIST="aarch64"
 	TWIDTH="64"
 	TSUPP="arm64 armv8_64"
@@ -190,7 +190,7 @@ arch_config_arm64() {
 
 arch_config_riscv() {
 	TARCH="riscv"
-	TBFDARCH="littleriscv"
+	TBFDARCHS="littleriscv"
 	TCLIST="riscv"
 	TWIDTH="64"
 	TABI="elf"
@@ -198,7 +198,7 @@ arch_config_riscv() {
 
 arch_config_x86() {
 	TARCH="x86_32"
-	TBFDARCH="i386"
+	TBFDARCHS="i386"
 	TCLIST="i386 x86_64"
 	TWIDTH="32"
 	TABI="elf"
@@ -206,7 +206,7 @@ arch_config_x86() {
 
 arch_config_mipsel() {
 	TARCH="mipsel"
-	TBFDARCH="littlemips"
+	TBFDARCHS="tradlittlemips littlemips"
 	TCLIST="mipsel"
 	TWIDTH="32"
 	TABI="elf"
@@ -238,10 +238,13 @@ test_architecture() {
 	echo "# $architecture TARCH_SEARCH=$search"
 
 	# Search toolchain by checking assembler capability.
-	for gccprefixes in $search ""; do
-		program_exists "${gccprefixes}as" || continue
-		testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "" && break
-		testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "TRUE" && break
+	for TBFDARCH in $TBFDARCHS; do
+		for gccprefixes in $search ""; do
+			program_exists "${gccprefixes}as" || continue
+			testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "" && break
+			testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "TRUE" && break
+		done
+		[ "$GCCPREFIX" = "invalid" ] || break
 	done
 
 	if [ "$GCCPREFIX" = "invalid" ]; then

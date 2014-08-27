@@ -30,13 +30,58 @@
 #error Need to know what ELx processor starts up in.
 #endif
 
+#define STACK_SZ CONFIG_STACK_SIZE
+#define EXCEPTION_STACK_SZ CONFIG_STACK_SIZE
+
+/*
+ * The stacks for each of the armv8 cores grows down from _estack. It is sized
+ * according to MAX_CPUS. Additionally provide exception stacks for each CPU.
+ */
+.section .bss, "aw", @nobits
+.global _stack
+.global _estack
+.balign STACK_SZ
+_stack:
+.space CONFIG_MAX_CPUS*STACK_SZ
+_estack:
+
+.global _stack_exceptions
+.global _estack_exceptions
+.balign EXCEPTION_STACK_SZ
+_stack_exceptions:
+.space CONFIG_MAX_CPUS*EXCEPTION_STACK_SZ
+_estack_exceptions:
+
+ENTRY(cpu_get_stack)
+	mov	x1, #STACK_SZ
+	mul	x0, x0, x1
+	ldr	x1, 1f
+	sub	x0, x1, x0
+	ret
+.align 3
+1:
+	.quad	_estack
+ENDPROC(cpu_get_stack)
+
+ENTRY(cpu_get_exception_stack)
+	mov	x1, #EXCEPTION_STACK_SZ
+	mul	x0, x0, x1
+	ldr	x1, 1f
+	sub	x0, x1, x0
+	ret
+.align 3
+1:
+	.quad	_estack_exceptions
+ENDPROC(cpu_get_exception_stack)
+
+
 ENTRY(seed_stack)
 	/*
 	 * Initialize the stack to a known value. This is used to check for
 	 * stack overflow later in the boot process.
 	 */
 	ldr	x0, .stack_bottom
-	ldr	x1, .stack_top
+	mov	x1, sp
 	ldr	x2, =0xdeadbeefdeadbeef
 	ldr	x3, =0x8
 
@@ -59,36 +104,26 @@ ENDPROC(seed_stack)
  * stack while keeping SP_ELx reserved for exception entry.
  */
 ENTRY(arm64_c_environment)
-	ldr	x0, .exception_stack_top
-	cmp	x0, #0
-	b.eq	2f
+	bl	smp_processor_id	/* x0 = cpu */
+	mov	x24, x0
+
+
+	/* Set the exception stack for this cpu. */
+	bl	cpu_get_exception_stack
 	msr	SPSel, #1
 	isb
-
 	mov	sp, x0
 
-	2:
 	/* Have stack pointer use SP_EL0. */
 	msr	SPSel, #0
 	isb
 
-	/* Load up the stack if non-zero. */
-	ldr	x0, .stack_top
-	cmp	x0, #0
-	b.eq	1f
+	/* Set stack for this cpu. */
+	mov	x0, x24		/* x0 = cpu */
+	bl	cpu_get_stack
 	mov	sp, x0
-	1:
 
-	ldr	x1, .entry
-	br	x1
-
-	.align 4
-	.exception_stack_top:
-		.quad CONFIG_EXCEPTION_STACK_TOP
-	.stack_top:
-		.quad _estack
-	.entry:
-		.quad seed_stack
+	b	seed_stack
 ENDPROC(arm64_c_environment)
 
 CPU_RESET_ENTRY(arm64_cpu_startup)

@@ -40,13 +40,16 @@ struct cpu_info {
 #endif
 };
 
-struct cpuinfo_arm {
-        uint8_t    arm;            /* CPU family */
-        uint8_t    arm_vendor;     /* CPU vendor */
-        uint8_t    arm_model;
-};
-
 #endif
 
 struct cpu_info *cpu_info(void);
+
+/*
+ * Returns logical cpu in range [0:MAX_CPUS). SoC should define this.
+ * Additionally, this is needed early in arm64 init so it should not
+ * rely on a stack. Standard clobber list is fair game: x0-x7 and x0
+ * returns the logical cpu number.
+ */
+unsigned int smp_processor_id(void);
+
 #endif /* __ARCH_CPU_H__ */

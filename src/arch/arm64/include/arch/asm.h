@@ -20,19 +20,25 @@
 #ifndef __ARM_ARM64_ASM_H
 #define __ARM_ARM64_ASM_H
 
-#define ALIGN .align 0
-
 #define ENDPROC(name) \
 	.type name, %function; \
 	END(name)
 
-#define ENTRY(name) \
+#define ENTRY_WITH_ALIGN(name, bits) \
 	.section .text.name, "ax", %progbits; \
 	.global name; \
-	ALIGN; \
+	.align bits; \
 	name:
+
+#define ENTRY(name) ENTRY_WITH_ALIGN(name, 0)
 
 #define END(name) \
 	.size name, .-name
+
+/*
+ * Certain SoCs have an alignment requiremnt for the CPU reset vector.
+ * Align to a 64 byte typical cacheline for now.
+ */
+#define CPU_RESET_ENTRY(name) ENTRY_WITH_ALIGN(name, 6)
 
 #endif	/* __ARM_ARM64_ASM_H */

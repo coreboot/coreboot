@@ -20,6 +20,16 @@
 
 #include <arch/asm.h>
 
+#if CONFIG_ARM64_CPUS_START_IN_EL3
+#define SCTLR_ELx sctlr_el3
+#elif CONFIG_ARM64_CPUS_START_IN_EL2
+#define SCTLR_ELx sctlr_el2
+#elif CONFIG_ARM64_CPUS_START_IN_EL1
+#define SCTLR_ELx sctlr_el1
+#else
+#error Need to know what ELx processor starts up in.
+#endif
+
 ENTRY(seed_stack)
 	/*
 	 * Initialize the stack to a known value. This is used to check for
@@ -43,19 +53,12 @@ load_stack:
 		.quad _stack
 ENDPROC(seed_stack)
 
-ENTRY(arm64_el3_startup)
-	/* Set all bits in SCTLR_EL3 to 0 except RES1 and RES0 */
-	mrs     x0, SCTLR_EL3
-	ldr     x1, .SCTLR_MASK
-	and     x0, x0, x1
-	msr	SCTLR_EL3, x0
-	/* Set all bits in SCR_EL3 to 0 except RES1 and RES0 */
-	mrs     x0, SCR_EL3
-	ldr     x1, .SCR_MASK
-	and     x0, x0, x1
-	msr     SCR_EL3, x0
-
-	/* Initialize SP_EL3 as exception stack */
+/*
+ * Boot strap the processor into a C environemnt. That consists of providing
+ * 16-byte aligned stack. The programming enviroment uses SP_EL0 as its main
+ * stack while keeping SP_ELx reserved for exception entry.
+ */
+ENTRY(arm64_c_environment)
 	ldr	x0, .exception_stack_top
 	cmp	x0, #0
 	b.eq	2f
@@ -80,27 +83,25 @@ ENTRY(arm64_el3_startup)
 	br	x1
 
 	.align 4
-	.SCTLR_MASK:
-		.quad 0x0FFFFEFF0
-
-	.SCR_MASK:
-		.quad 0x0FFFFC070
-	.align 4
-	/*
-	 * By default branch to main() and initialize the stack according
-	 * to the Kconfig option for cpu0. However, this code can be relocated
-	 * and reused to start up secondary cpus.
-	 */
 	.exception_stack_top:
 		.quad CONFIG_EXCEPTION_STACK_TOP
 	.stack_top:
 		.quad _estack
 	.entry:
 		.quad seed_stack
-ENDPROC(arm64_el3_startup)
-.global arm64_el3_startup_end
-arm64_el3_startup_end:
+ENDPROC(arm64_c_environment)
+
+CPU_RESET_ENTRY(arm64_cpu_startup)
+	mrs	x0, SCTLR_ELx
+	bic	x0, x0, #(1 << 25)	/* Little Endian */
+	bic	x0, x0, #(1 << 19)	/* XN not enforced */
+	bic	x0, x0, #(1 << 12)	/* Disable Instruction Cache */
+	bic	x0, x0, #0xf		/* Clear SA, C, A, and M */
+	msr	SCTLR_ELx, x0
+	isb
+	b	arm64_c_environment
+ENDPROC(arm64_cpu_startup)
 
 ENTRY(stage_entry)
-	b	arm64_el3_startup
+	b	arm64_cpu_startup
 ENDPROC(stage_entry)

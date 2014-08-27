@@ -33,9 +33,7 @@ PHDRS
 SECTIONS
 {
 	. = CONFIG_RAMSTAGE_BASE;
-	/* First we place the code and read only data (typically const declared).
-	 * This could theoretically be placed in rom.
-	 */
+
 	.text : {
 		_text = .;
 		_start = .;
@@ -51,16 +49,17 @@ SECTIONS
 		__CTOR_LIST__ = .;
 		KEEP(*(.ctors));
 		LONG(0);
+		LONG(0);
 		__CTOR_END__ = .;
 	}
 
 	.rodata : {
+		. = ALIGN(64);
 		_rodata = .;
-		. = ALIGN(16);
 		console_drivers = .;
 		KEEP(*(.rodata.console_drivers));
 		econsole_drivers = . ;
-		. = ALIGN(16);
+		. = ALIGN(64);
 		pci_drivers = . ;
 		KEEP(*(.rodata.pci_driver));
 		epci_drivers = . ;
@@ -72,52 +71,39 @@ SECTIONS
 		LONG(0);
 		LONG(0);
 		_bs_init_end = .;
+		. = ALIGN(64);
 		*(.rodata)
 		*(.rodata.*)
-		/* kevinh/Ispiri - Added an align, because the objcopy tool
-		 * incorrectly converts sections that are not long word aligned.
-		 */
-		 . = ALIGN(16);
-
 		_erodata = .;
 	}
-	/* After the code we place initialized data (typically initialized
-	 * global variables). This gets copied into ram by startup code.
-	 * __data_start and __data_end shows where in ram this should be placed,
-	 * whereas __data_loadstart and __data_loadend shows where in rom to
-	 * copy from.
-	 */
+
 	.data : {
+		 . = ALIGN(64);
 		_data = .;
 		*(.data)
+		*(.data.*)
+		 . = ALIGN(64);
 		_edata = .;
 	}
 
-	/* bss does not contain data, it is just a space that should be zero
-	 * initialized on startup. (typically uninitialized global variables)
-	 * crt0.S fills between _bss and _ebss with zeroes.
-	 */
-	_bss = .;
-	.bss . : {
+	.bss : {
+		 . = ALIGN(64);
+		_bss = .;
 		*(.bss)
-		*(.sbss)
+		*(.bss.*)
+		*(.sbss.*)
 		*(COMMON)
-		. = ALIGN(16);
+		. = ALIGN(64);
+		_ebss = .;
 	}
-	_ebss = .;
-	_end = .;
 
-	/* coreboot really "ends" here. Only heap and stack are placed after
-	 * this line.
-	 */
-
-	_heap = .;
-	.heap . : {
+	.heap : {
+		_heap = .;
 		/* Reserve CONFIG_HEAP_SIZE bytes for the heap */
-		. = CONFIG_HEAP_SIZE ;
-		. = ALIGN(16);
+		. = . + CONFIG_HEAP_SIZE ;
+		. = ALIGN(64);
+		_eheap = .;
 	}
-	_eheap = .;
 
 	/* arm64 chipsets need to define CONFIG_RAMSTAGE_STACK_(TOP|BOTTOM) */
 	_stack = CONFIG_RAMSTAGE_STACK_BOTTOM;

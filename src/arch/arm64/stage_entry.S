@@ -99,7 +99,13 @@ ENTRY(arm64_c_environment)
 	bl	cpu_get_stack
 	mov	sp, x0
 
-	b	arm64_init
+	/* Get entry point by dereferencing c_entry. */
+	ldr	x0, 1f
+	ldr	x0, [x0]
+	br	x0
+.align 3
+	1:
+	.quad	c_entry
 ENDPROC(arm64_c_environment)
 
 CPU_RESET_ENTRY(arm64_cpu_startup)

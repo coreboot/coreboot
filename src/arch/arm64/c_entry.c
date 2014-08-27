@@ -20,6 +20,14 @@
 #include <arch/stages.h>
 #include <arch/cpu.h>
 
+
+/*
+ * This variable holds entry point for CPUs starting up. Before the other
+ * CPUs are brought up this value will change to provide the secondary
+ * code path.
+ */
+void (*c_entry)(void) = &arm64_init;
+
 void __attribute__((weak)) arm64_soc_init(void)
 {
 	/* Default weak implementation does nothing. */

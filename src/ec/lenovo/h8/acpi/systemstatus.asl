@@ -27,37 +27,37 @@ Scope (\_SI)
 		If (LEqual (Arg0, 0)) {
 			/* Indicator off */
 
-			/* power LED off */
-			\_SB.PCI0.LPCB.EC.LED(0x00)
-			/* suspend LED off */
-			\_SB.PCI0.LPCB.EC.LED(0x07)
+			/* power TLED off */
+			\_SB.PCI0.LPCB.EC.TLED(0x00)
+			/* suspend TLED off */
+			\_SB.PCI0.LPCB.EC.TLED(0x07)
 		}
 
 		If (LEqual (Arg0, 1)) {
 			/* working state */
 
-			/* power LED on */
-			\_SB.PCI0.LPCB.EC.LED(0x80)
-			/* suspend LED off */
-			\_SB.PCI0.LPCB.EC.LED(0x07)
+			/* power TLED on */
+			\_SB.PCI0.LPCB.EC.TLED(0x80)
+			/* suspend TLED off */
+			\_SB.PCI0.LPCB.EC.TLED(0x07)
 		}
 
 		If (LEqual (Arg0, 2)) {
 			/* waking state */
 
 			/* power LED on */
-			\_SB.PCI0.LPCB.EC.LED(0x80)
+			\_SB.PCI0.LPCB.EC.TLED(0x80)
 			/* suspend LED blinking */
-			\_SB.PCI0.LPCB.EC.LED(0xc7)
+			\_SB.PCI0.LPCB.EC.TLED(0xc7)
 		}
 
 		If (LEqual (Arg0, 3)) {
 			/* sleep state */
 
-			/* power LED off */
-			\_SB.PCI0.LPCB.EC.LED(0x00)
-			/* suspend LED on */
-			\_SB.PCI0.LPCB.EC.LED(0x87)
+			/* power TLED off */
+			\_SB.PCI0.LPCB.EC.TLED(0x00)
+			/* suspend TLED on */
+			\_SB.PCI0.LPCB.EC.TLED(0x87)
 		}
 	}
 }

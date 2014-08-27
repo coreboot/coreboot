@@ -70,7 +70,7 @@ Device(EC)
 		Return (ECMD)
 	}
 
-	Method (LED, 1, NotSerialized)
+	Method (TLED, 1, NotSerialized)
 	{
 		Store(Arg0, LEDS)
 	}

@@ -31,6 +31,7 @@
 #include <broadwell/pci_devs.h>
 #include <broadwell/rcba.h>
 #include <chip.h>
+#include <broadwell/cpu.h>
 
 static void pcie_update_cfg8(device_t dev, int reg, u8 mask, u8 or);
 static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or);
@@ -107,6 +108,7 @@ static void root_port_init_config(device_t dev)
 		rpc.new_rpfn = rpc.orig_rpfn;
 		rpc.num_ports = NUM_ROOT_PORTS;
 		rpc.gbe_port = -1;
+		pcie_update_cfg8(dev, 0xf5, 0xa, 0x5);
 
 		rpc.pin_ownership = pci_read_config32(dev, 0x410);
 		root_port_config_update_gbe_port();
@@ -176,6 +178,7 @@ static void pcie_enable_clock_gating(void)
 {
 	int i;
 	int enabled_ports = 0;
+	int is_broadwell = !!(cpu_family_model() == BROADWELL_FAMILY_ULT);
 
 	for (i = 0; i < rpc.num_ports; i++) {
 		device_t dev;
@@ -216,9 +219,13 @@ static void pcie_enable_clock_gating(void)
 		pcie_update_cfg8(dev, 0xe8, ~(3 << 2), (2 << 2));
 
 		/* Update PECR1 register. */
-		pcie_update_cfg8(dev, 0xe8, ~0, 1);
-		pcie_update_cfg8(dev, 0x324, ~(1 << 5), (1 < 5));
-
+		pcie_update_cfg8(dev, 0xe8, ~0, 3);
+		if (is_broadwell) {
+			pcie_update_cfg(dev, 0x324, ~((1 << 5) | (1 << 14)),
+					((1 << 5) | (1 << 14)));
+		} else {
+			pcie_update_cfg(dev, 0x324, ~(1 << 5), (1 << 5));
+		}
 		/* Per-Port CLKREQ# handling. */
 		if (gpio_is_native(18 + rp - 1))
 			pcie_update_cfg(dev, 0x420, ~0, (3 << 29));
@@ -455,9 +462,6 @@ static void pch_pcie_early(struct device *dev)
 		/* Set unique clock exit latency in MPC register. */
 		pcie_update_cfg(dev, 0xd8, ~(0x7 << 18), (0x7 << 18));
 
-		/* Set L1 exit latency in LCAP register. */
-		pcie_update_cfg(dev, 0x4c, ~(0x7 << 15), (0x4 << 15));
-
 		switch (rp) {
 		case 1:
 			pcie_add_0x0202000_iobp(0xe9002440);
@@ -515,7 +519,7 @@ static void pch_pcie_early(struct device *dev)
 	/* Set Invalid Receive Range Check Enable in MPC register. */
 	pcie_update_cfg(dev, 0xd8, ~0, (1 << 25));
 
-	pcie_update_cfg8(dev, 0xf5, 0x3f, 0);
+	pcie_update_cfg8(dev, 0xf5, 0x0f, 0);
 
 	if (rp == 1 || rp == 5 || rp == 6)
 		pcie_update_cfg8(dev, 0xf7, ~0xc, 0);

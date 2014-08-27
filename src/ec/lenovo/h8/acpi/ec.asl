@@ -75,6 +75,12 @@ Device(EC)
 		Store(Arg0, LEDS)
 	}
 
+	/* Not used for coreboot. Provided for compatibility with thinkpad-acpi.  */
+	Method (LED, 2, NotSerialized)
+	{
+		TLED(Or(Arg0, Arg1))
+	}
+
 	Method (_INI, 0, NotSerialized)
 	{
 	}

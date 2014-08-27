@@ -27,6 +27,9 @@
  * SUCH DAMAGE.
  */
 
+#define __ASSEMBLY__
+#include <arch/lib_helpers.h>
+
 	.text
 
 	/* Macro for exception entry
@@ -89,10 +92,10 @@ exception_prologue:
 	stp     x0, x1, [sp, #-16]!
 
 	/* Save the exception reason on stack */
-	mrs     x1,  esr_el3
+	read_current x1, esr
 
 	/* Save the return address on stack */
-	mrs     x0, elr_el3
+	read_current x0, elr
 	stp     x0, x1, [sp, #-16]!
 
 	ret
@@ -106,8 +109,8 @@ exception_handler:
 
 	/* Pop return address saved on stack */
 	ldp     x0, x1, [sp], #16
-	msr     elr_el3, x0
-	msr     esr_el3, x1
+	write_current elr, x0, x2
+	write_current esr, x1, x2
 	/* Pop exception reason saved on stack, followed by regs x0-x30 */
 	ldp     x0, x1, [sp], #16
 	ldp     x2, x3, [sp], #16
@@ -129,7 +132,5 @@ exception_handler:
 
 	.global set_vbar
 set_vbar:
-	/* Initialize the exception table address in vbar for EL3 */
-	/* FIXME: Do we need to initialize for other levels too? EL1/EL2 */
-	msr     vbar_el3, x0
+	write_current vbar, x0, x1
 	ret

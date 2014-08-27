@@ -39,7 +39,7 @@
 void tlb_invalidate_all(void)
 {
 	/* TLBIALL includes dTLB and iTLB on systems that have them. */
-	tlbiall_el3();
+	tlbiall_current();
 	dsb();
 	isb();
 }
@@ -127,18 +127,18 @@ void dcache_mmu_disable(void)
 	uint32_t sctlr;
 
 	dcache_clean_invalidate_all();
-	sctlr = raw_read_sctlr_el3();
+	sctlr = raw_read_sctlr_current();
 	sctlr &= ~(SCTLR_C | SCTLR_M);
-	raw_write_sctlr_el3(sctlr);
+	raw_write_sctlr_current(sctlr);
 }
 
 void dcache_mmu_enable(void)
 {
 	uint32_t sctlr;
 
-	sctlr = raw_read_sctlr_el3();
+	sctlr = raw_read_sctlr_current();
 	sctlr |= SCTLR_C | SCTLR_M;
-	raw_write_sctlr_el3(sctlr);
+	raw_write_sctlr_current(sctlr);
 }
 
 void cache_sync_instructions(void)

@@ -26,6 +26,7 @@
 #define EINVAL  2
 
 struct soc_nvidia_tegra132_config {
+	int bring_up_secondary_cpu;
 };
 
 #endif /* __SOC_NVIDIA_TEGRA132_CHIP_H__ */

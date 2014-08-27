@@ -21,11 +21,15 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
+#include <arch/cpu.h>
+#include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <soc/cpu.h>
 #include <soc/ramstage.h>
 #include <soc/nvidia/tegra/apbmisc.h>
+#include "chip.h"
 
 static void soc_read_resources(device_t dev)
 {
@@ -56,11 +60,52 @@ static void soc_read_resources(device_t dev)
 	ram_resource(dev, index++, begin * KiB, size * KiB);
 }
 
+static volatile int secondary_cpu_up;
+
+void soc_secondary_cpu_init(void)
+{
+	printk(BIOS_INFO, "CPU%d is up!\n", smp_processor_id());
+	gic_init();
+	dmb();
+	secondary_cpu_up = 1;
+}
+
+static void start_secondary_cpu(void)
+{
+	struct mono_time t1, t2;
+	const long timeout_us = 20 * USECS_PER_MSEC;
+
+	timer_monotonic_get(&t1);
+	start_cpu(1, prepare_secondary_cpu_startup());
+	/* Wait for the other core to come up. */
+	while (1) {
+		long waited_us;
+
+		timer_monotonic_get(&t2);
+		waited_us = mono_time_diff_microseconds(&t1, &t2);
+
+		if (secondary_cpu_up) {
+			printk(BIOS_INFO, "Secondary CPU start took %ld us.\n",
+				waited_us);
+			break;
+		}
+		if (waited_us > timeout_us) {
+			printk(BIOS_WARNING, "CPU startup timeout!\n");
+			break;
+		}
+	}
+}
+
 static void soc_init(device_t dev)
 {
+	struct soc_nvidia_tegra132_config *config = dev->chip_info;
+
 	printk(BIOS_INFO, "CPU: Tegra132\n");
 	clock_init_arm_generic_timer();
 	gic_init();
+
+	if (config->bring_up_secondary_cpu)
+		start_secondary_cpu();
 }
 
 static void soc_noop(device_t dev)

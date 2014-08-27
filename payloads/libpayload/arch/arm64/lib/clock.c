@@ -1,8 +1,7 @@
 /*
- * This file is part of the libpayload project.
+ * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright 2014 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,52 +25,16 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * clock.c: Functions for accessing clock and timer related registers
+ * Reference: ARM Architecture Reference Manual, ARMv8-A edition
  */
 
-#ifndef _ARCH_IO_H
-#define _ARCH_IO_H
-
 #include <stdint.h>
-#include <arch/cache.h>
+
 #include <arch/lib_helpers.h>
 
-static inline uint8_t readb(volatile const void *_a)
+void set_cntfrq(uint32_t freq)
 {
-	dmb();
-	return *(volatile const uint8_t *)_a;
+	__asm__ __volatile__("msr cntfrq_el0, %0" :: "r"(freq));
 }
-
-static inline uint16_t readw(volatile const void *_a)
-{
-	dmb();
-	return *(volatile const uint16_t *)_a;
-}
-
-static inline uint32_t readl(volatile const void *_a)
-{
-	dmb();
-	return *(volatile const uint32_t *)_a;
-}
-
-static inline void writeb(uint8_t _v, volatile void *_a)
-{
-	dmb();
-	*(volatile uint8_t *)_a = _v;
-	dmb();
-}
-
-static inline void writew(uint16_t _v, volatile void *_a)
-{
-	dmb();
-	*(volatile uint16_t *)_a = _v;
-	dmb();
-}
-
-static inline void writel(uint32_t _v, volatile void *_a)
-{
-	dmb();
-	*(volatile uint32_t *)_a = _v;
-	dmb();
-}
-
-#endif

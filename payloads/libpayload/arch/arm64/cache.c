@@ -34,6 +34,7 @@
 #include <stdint.h>
 
 #include <arch/cache.h>
+#include <arch/lib_helpers.h>
 
 void tlb_invalidate_all(void)
 {
@@ -60,7 +61,7 @@ unsigned int dcache_line_bytes(void)
 	if (line_bytes)
 		return line_bytes;
 
-	ccsidr = read_ccsidr();
+	ccsidr = raw_read_ccsidr_el1();
 	/* [2:0] - Indicates (Log2(number of words in cache line)) - 2 */
 	line_bytes = 1 << ((ccsidr & 0x7) + 2);	/* words per line */
 	line_bytes *= sizeof(unsigned int);	/* bytes per word */
@@ -126,18 +127,18 @@ void dcache_mmu_disable(void)
 	uint32_t sctlr;
 
 	dcache_clean_invalidate_all();
-	sctlr = read_sctlr_el3();
+	sctlr = raw_read_sctlr_el3();
 	sctlr &= ~(SCTLR_C | SCTLR_M);
-	write_sctlr_el3(sctlr);
+	raw_write_sctlr_el3(sctlr);
 }
 
 void dcache_mmu_enable(void)
 {
 	uint32_t sctlr;
 
-	sctlr = read_sctlr_el3();
+	sctlr = raw_read_sctlr_el3();
 	sctlr |= SCTLR_C | SCTLR_M;
-	write_sctlr_el3(sctlr);
+	raw_write_sctlr_el3(sctlr);
 }
 
 void cache_sync_instructions(void)

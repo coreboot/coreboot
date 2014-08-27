@@ -1,8 +1,7 @@
 /*
- * This file is part of the libpayload project.
+ * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright 2014 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,52 +25,59 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * tlb.c: System intructions for TLB maintenance.
+ * Reference: ARM Architecture Reference Manual, ARMv8-A edition
  */
 
-#ifndef _ARCH_IO_H
-#define _ARCH_IO_H
-
 #include <stdint.h>
-#include <arch/cache.h>
+
 #include <arch/lib_helpers.h>
 
-static inline uint8_t readb(volatile const void *_a)
+/* TLBIALL */
+void tlbiall_el1(void)
 {
-	dmb();
-	return *(volatile const uint8_t *)_a;
+	__asm__ __volatile__("tlbi alle1\n\t" : : : "memory");
 }
 
-static inline uint16_t readw(volatile const void *_a)
+void tlbiall_el2(void)
 {
-	dmb();
-	return *(volatile const uint16_t *)_a;
+	__asm__ __volatile__("tlbi alle2\n\t" : : : "memory");
 }
 
-static inline uint32_t readl(volatile const void *_a)
+void tlbiall_el3(void)
 {
-	dmb();
-	return *(volatile const uint32_t *)_a;
+	__asm__ __volatile__("tlbi alle3\n\t" : : : "memory");
 }
 
-static inline void writeb(uint8_t _v, volatile void *_a)
+void tlbiall_current(void)
 {
-	dmb();
-	*(volatile uint8_t *)_a = _v;
-	dmb();
+	SWITCH_CASE_TLBI(tlbiall);
 }
 
-static inline void writew(uint16_t _v, volatile void *_a)
+/* TLBIALLIS */
+void tlbiallis_el1(void)
 {
-	dmb();
-	*(volatile uint16_t *)_a = _v;
-	dmb();
+	__asm__ __volatile__("tlbi alle1is\n\t" : : : "memory");
 }
 
-static inline void writel(uint32_t _v, volatile void *_a)
+void tlbiallis_el2(void)
 {
-	dmb();
-	*(volatile uint32_t *)_a = _v;
-	dmb();
+	__asm__ __volatile__("tlbi alle2is\n\t" : : : "memory");
 }
 
-#endif
+void tlbiallis_el3(void)
+{
+	__asm__ __volatile__("tlbi alle3is\n\t" : : : "memory");
+}
+
+void tlbiallis_current(void)
+{
+	SWITCH_CASE_TLBI(tlbiallis);
+}
+
+/* TLBIVAA */
+void tlbivaa_el1(uint64_t va)
+{
+	__asm__ __volatile__("tlbi vaae1, %0\n\t" : : "r" (va) : "memory");
+}

@@ -1,8 +1,7 @@
 /*
- * This file is part of the libpayload project.
+ * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright 2014 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,52 +25,69 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * cache.c: Cache Maintenance Instructions
+ * Reference: ARM Architecture Reference Manual, ARMv8-A edition
  */
 
-#ifndef _ARCH_IO_H
-#define _ARCH_IO_H
-
 #include <stdint.h>
-#include <arch/cache.h>
+
 #include <arch/lib_helpers.h>
 
-static inline uint8_t readb(volatile const void *_a)
+void dccisw(uint64_t cisw)
 {
-	dmb();
-	return *(volatile const uint8_t *)_a;
+	__asm__ __volatile__("dc cisw, %0\n\t" : : "r" (cisw) :"memory");
 }
 
-static inline uint16_t readw(volatile const void *_a)
+void dccivac(uint64_t civac)
 {
-	dmb();
-	return *(volatile const uint16_t *)_a;
+	__asm__ __volatile__("dc civac, %0\n\t" : : "r" (civac) :"memory");
 }
 
-static inline uint32_t readl(volatile const void *_a)
+void dccsw(uint64_t csw)
 {
-	dmb();
-	return *(volatile const uint32_t *)_a;
+	__asm__ __volatile__("dc csw, %0\n\t" : : "r" (csw) :"memory");
 }
 
-static inline void writeb(uint8_t _v, volatile void *_a)
+void dccvac(uint64_t cvac)
 {
-	dmb();
-	*(volatile uint8_t *)_a = _v;
-	dmb();
+	__asm__ __volatile__("dc cvac, %0\n\t" : : "r" (cvac) :"memory");
 }
 
-static inline void writew(uint16_t _v, volatile void *_a)
+void dccvau(uint64_t cvau)
 {
-	dmb();
-	*(volatile uint16_t *)_a = _v;
-	dmb();
+	__asm__ __volatile__("dc cvau, %0\n\t" : : "r" (cvau) :"memory");
 }
 
-static inline void writel(uint32_t _v, volatile void *_a)
+void dcisw(uint64_t isw)
 {
-	dmb();
-	*(volatile uint32_t *)_a = _v;
-	dmb();
+	__asm__ __volatile__("dc isw, %0\n\t" : : "r" (isw) :"memory");
 }
 
-#endif
+void dcivac(uint64_t ivac)
+{
+	__asm__ __volatile__("dc ivac, %0\n\t" : : "r" (ivac) :"memory");
+}
+
+void dczva(uint64_t zva)
+{
+	__asm__ __volatile__("dc zva, %0\n\t" : : "r" (zva) :"memory");
+}
+
+void iciallu(void)
+{
+	__asm__ __volatile__("ic iallu\n\t" : : :"memory");
+}
+
+void icialluis(void)
+{
+	__asm__ __volatile__("ic ialluis\n\t" : : :"memory");
+}
+
+void icivau(uint64_t ivau)
+{
+	__asm__ __volatile__("ic ivau, %0\n\t" : : "r" (ivau) :"memory");
+}
+
+
+

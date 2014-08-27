@@ -30,13 +30,9 @@
 #include <stdlib.h>
 #include <arch/cpu.h>
 
-/* Return the cpu struct which is at the high memory address of the stack.
- */
+static struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
+
 struct cpu_info *cpu_info(void)
 {
-	uintptr_t addr = ALIGN((uintptr_t)__builtin_frame_address(0),
-		CONFIG_STACK_SIZE);
-	addr -= sizeof(struct cpu_info);
-	return (void *)addr;
+	return &cpu_infos[smp_processor_id()];
 }
-

@@ -25,6 +25,7 @@
 #include <kconfig.h>
 #include <stdlib.h>
 #include <string.h>
+#include <smbios.h>
 #include <pc80/mc146818rtc.h>
 
 #include "h8.h"
@@ -166,11 +167,26 @@ u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
 	return i;
 }
 
+static void h8_smbios_strings(device_t dev, struct smbios_type11 *t)
+{
+	char tpec[] = "IBM ThinkPad Embedded Controller -[                 ]-";
+
+	h8_build_id_and_function_spec_version(tpec + 35, 17);
+
+	t->count = smbios_add_string(t->eos, tpec);
+}
+
+struct device_operations h8_dev_ops = {
+	.get_smbios_strings = h8_smbios_strings
+};
+
 static void h8_enable(device_t dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 	u8 val, tmp;
 	u8 beepmask0, beepmask1, config1;
+
+	dev->ops = &h8_dev_ops;
 
 	h8_log_ec_version();
 
@@ -279,5 +295,5 @@ static void h8_enable(device_t dev)
 
 struct chip_operations ec_lenovo_h8_ops = {
 	CHIP_NAME("Lenovo H8 EC")
-	.enable_dev = h8_enable
+	.enable_dev = h8_enable,
 };

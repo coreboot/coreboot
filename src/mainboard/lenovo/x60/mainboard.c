@@ -136,20 +136,6 @@ static void mainboard_init(device_t dev)
 	}
 }
 
-static int mainboard_smbios_data(device_t dev, int *handle, unsigned long *current)
-{
-	int len;
-	char tpec[] = "IBM ThinkPad Embedded Controller -[                 ]-";
-	const char *oem_strings[] = {
-		tpec,
-	};
-
-	h8_build_id_and_function_spec_version(tpec + 35, 17);
-	len = smbios_write_type11(current, (*handle)++, oem_strings, ARRAY_SIZE(oem_strings));
-
-	return len;
-}
-
 const char *smbios_mainboard_bios_version(void)
 {
 	/* Satisfy thinkpad_acpi.  */
@@ -162,7 +148,6 @@ const char *smbios_mainboard_bios_version(void)
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
-	dev->ops->get_smbios_data = mainboard_smbios_data;
 }
 
 struct chip_operations mainboard_ops = {

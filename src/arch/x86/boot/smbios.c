@@ -253,7 +253,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;
-	t->_type = SMBIOS_ENCLOSURE_DESKTOP;
+	t->_type = SMBIOS_ENCLOSURE_NOTEBOOK;
 	t->security_status = SMBIOS_STATE_SAFE;
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
@@ -295,21 +295,31 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	return len;
 }
 
-int smbios_write_type11(unsigned long *current, int handle, const char **oem_strings, int count)
+static int smbios_write_type11(unsigned long *current, int *handle)
 {
 	struct smbios_type11 *t = (struct smbios_type11 *)*current;
-	int i, len;
+	int len;
+	device_t dev;
 
 	memset(t, 0, sizeof *t);
 	t->type = SMBIOS_OEM_STRINGS;
-	t->handle = handle;
+	t->handle = *handle;
 	t->length = len = sizeof *t - 2;
 
-	for (i = 0; i < count; i++)
-		t->count = smbios_add_string(t->eos, oem_strings[i]);
+	for(dev = all_devices; dev; dev = dev->next) {
+		if (dev->ops && dev->ops->get_smbios_strings)
+			dev->ops->get_smbios_strings(dev, t);
+	}
+
+	if (t->count == 0) {
+		memset(t, 0, sizeof *t);
+		return 0;
+	}
 
 	len += smbios_string_table_len(t->eos);
+
 	*current += len;
+	(*handle)++;
 	return len;
 }
 
@@ -398,6 +408,7 @@ unsigned long smbios_write_tables(unsigned long current)
 	len += smbios_write_type2(&current, handle++);
 	len += smbios_write_type3(&current, handle++);
 	len += smbios_write_type4(&current, handle++);
+	len += smbios_write_type11(&current, &handle);
 #if CONFIG_ELOG
 	len += elog_smbios_write_type15(&current, handle++);
 #endif

@@ -39,6 +39,8 @@ struct exception_state
 	uint64_t regs[31];
 } __attribute__((packed));
 
+/* Initialize the exception handling on the current CPU. */
+void exception_hwinit(void);
 void exception_init(void);
 void set_vbar(void *vbar);
 void exception_dispatch(struct exception_state *state, int idx);

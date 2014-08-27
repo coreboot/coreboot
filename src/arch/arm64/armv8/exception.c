@@ -127,11 +127,16 @@ static uint64_t test_exception(void)
 	return 0;
 }
 
-void exception_init(void)
+void exception_hwinit(void)
 {
 	extern void *exception_table;
-
 	set_vbar(&exception_table);
+}
+
+void exception_init(void)
+{
+	/* Load the exception table. */
+	exception_hwinit();
 
 	printk(BIOS_DEBUG, "ARM64: Exception handlers installed.\n");
 

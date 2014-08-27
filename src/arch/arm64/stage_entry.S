@@ -74,30 +74,6 @@ ENTRY(cpu_get_exception_stack)
 	.quad	_estack_exceptions
 ENDPROC(cpu_get_exception_stack)
 
-
-ENTRY(seed_stack)
-	/*
-	 * Initialize the stack to a known value. This is used to check for
-	 * stack overflow later in the boot process.
-	 */
-	ldr	x0, .stack_bottom
-	mov	x1, sp
-	ldr	x2, =0xdeadbeefdeadbeef
-	ldr	x3, =0x8
-
-init_stack_loop:
-	str	x2, [x0]
-	add	x0, x0, x3
-	cmp	x0, x1
-	bne	init_stack_loop
-
-load_stack:
-	b	arm64_init
-	.align	4
-	.stack_bottom:
-		.quad _stack
-ENDPROC(seed_stack)
-
 /*
  * Boot strap the processor into a C environemnt. That consists of providing
  * 16-byte aligned stack. The programming enviroment uses SP_EL0 as its main
@@ -123,7 +99,7 @@ ENTRY(arm64_c_environment)
 	bl	cpu_get_stack
 	mov	sp, x0
 
-	b	seed_stack
+	b	arm64_init
 ENDPROC(arm64_c_environment)
 
 CPU_RESET_ENTRY(arm64_cpu_startup)

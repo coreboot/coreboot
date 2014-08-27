@@ -52,6 +52,7 @@ ramstage-y += addressmap.c
 ramstage-y += cbfs.c
 ramstage-y += cbmem.c
 ramstage-y += cpu.c
+ramstage-y += cpu_lib.S
 ramstage-y += timer.c
 ramstage-y += clock.c
 ramstage-y += soc.c

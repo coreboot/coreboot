@@ -101,7 +101,7 @@ VERSTAGE_LIB = $(obj)/vendorcode/google/chromeos/verstage.a
 
 INCLUDES += -I$(VB_SOURCE)/firmware/2lib/include
 INCLUDES += -I$(VB_SOURCE)/firmware/include
-verstage-y += vboot_main.c fmap.c chromeos.c
+verstage-y += verstage.c fmap.c chromeos.c
 verstage-y += antirollback.c vbnv_ec.c
 romstage-y += vboot_handoff.c
 

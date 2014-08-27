@@ -30,8 +30,10 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "sdram_configs.h"
 #include <soc/nvidia/tegra/i2c.h>
+#include <soc/nvidia/tegra124/cache.h>
 #include <soc/nvidia/tegra124/chip.h>
 #include <soc/nvidia/tegra124/clk_rst.h>
+#include <soc/nvidia/tegra124/early_configs.h>
 #include <soc/nvidia/tegra124/power.h>
 #include <soc/nvidia/tegra124/sdram.h>
 #include <soc/addressmap.h>
@@ -39,120 +41,12 @@
 #include <soc/display.h>
 #include <timestamp.h>
 
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
-
-enum {
-	L2CTLR_ECC_PARITY = 0x1 << 21,
-	L2CTLR_TAG_RAM_LATENCY_MASK = 0x7 << 6,
-	L2CTLR_TAG_RAM_LATENCY_CYCLES_3 = 2 << 6,
-	L2CTLR_DATA_RAM_LATENCY_MASK = 0x7 << 0,
-	L2CTLR_DATA_RAM_LATENCY_CYCLES_3  = 2 << 0
-};
-
-enum {
-	L2ACTLR_FORCE_L2_LOGIC_CLOCK_ENABLE_ACTIVE = 0x1 << 27,
-	L2ACTLR_ENABLE_HAZARD_DETECT_TIMEOUT = 0x1 << 7,
-	L2ACTLR_DISABLE_CLEAN_EVICT_PUSH_EXTERNAL = 0x1 << 3
-};
-
-/* Configures L2 Control Register to use 3 cycles for DATA/TAG RAM latency. */
-static void configure_l2ctlr(void)
-{
-   uint32_t val;
-
-   val = read_l2ctlr();
-   val &= ~(L2CTLR_DATA_RAM_LATENCY_MASK | L2CTLR_TAG_RAM_LATENCY_MASK);
-   val |= (L2CTLR_DATA_RAM_LATENCY_CYCLES_3 | L2CTLR_TAG_RAM_LATENCY_CYCLES_3 |
-	   L2CTLR_ECC_PARITY);
-   write_l2ctlr(val);
-}
-
-/* Configures L2 Auxiliary Control Register for Cortex A15. */
-static void configure_l2actlr(void)
-{
-   uint32_t val;
-
-   val = read_l2actlr();
-   val |= (L2ACTLR_DISABLE_CLEAN_EVICT_PUSH_EXTERNAL |
-	   L2ACTLR_ENABLE_HAZARD_DETECT_TIMEOUT |
-	   L2ACTLR_FORCE_L2_LOGIC_CLOCK_ENABLE_ACTIVE);
-   write_l2actlr(val);
-}
-
-static void setup_pinmux(void)
-{
-	// Write protect.
-	gpio_input_pullup(GPIO(R1));
-	// Recovery mode.
-	gpio_input_pullup(GPIO(Q7));
-	// Lid switch.
-	gpio_input_pullup(GPIO(R4));
-	// Power switch.
-	gpio_input_pullup(GPIO(Q0));
-	// Developer mode.
-	gpio_input_pullup(GPIO(Q6));
-	// EC in RW.
-	gpio_input_pullup(GPIO(U4));
-
-	// route PU4/5 to GMI to remove conflict w/PWM1/2.
-	pinmux_set_config(PINMUX_GPIO_PU4_INDEX, PINMUX_GPIO_PU4_FUNC_NOR);        //s/b GMI
-	pinmux_set_config(PINMUX_GPIO_PU5_INDEX, PINMUX_GPIO_PU5_FUNC_NOR);        //s/b GMI
-
-	// SOC and TPM reset GPIO, active low.
-	gpio_output(GPIO(I5), 1);
-
-	// SPI1 MOSI
-	pinmux_set_config(PINMUX_ULPI_CLK_INDEX, PINMUX_ULPI_CLK_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 MISO
-	pinmux_set_config(PINMUX_ULPI_DIR_INDEX, PINMUX_ULPI_DIR_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 SCLK
-	pinmux_set_config(PINMUX_ULPI_NXT_INDEX, PINMUX_ULPI_NXT_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 CS0
-	pinmux_set_config(PINMUX_ULPI_STP_INDEX, PINMUX_ULPI_STP_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-
-	// I2C3 (cam) clock.
-	pinmux_set_config(PINMUX_CAM_I2C_SCL_INDEX,
-			  PINMUX_CAM_I2C_SCL_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
-	// I2C3 (cam) data.
-	pinmux_set_config(PINMUX_CAM_I2C_SDA_INDEX,
-			  PINMUX_CAM_I2C_SDA_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
-
-	// switch unused pin to GPIO
-	gpio_set_mode(GPIO(X3), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(X4), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(X5), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(X6), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(X7), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(W3), GPIO_MODE_GPIO);
-}
-
-static void configure_ec_spi_bus(void)
-{
-	clock_configure_source(sbc1, CLK_M, 3000);
-}
-
-static void configure_tpm_i2c_bus(void)
-{
-	clock_configure_i2c_scl_freq(i2c3, PLLP, 400);
-
-	i2c_init(2);
-}
-
 static void __attribute__((noinline)) romstage(void)
 {
 	timestamp_init(0);
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	configure_l2ctlr();
-	configure_l2actlr();
+	configure_l2_cache();
 
 	console_init();
 	exception_init();
@@ -191,13 +85,10 @@ static void __attribute__((noinline)) romstage(void)
 
 	cbmem_initialize_empty();
 
-	// Enable additional peripherals we need for ROM stage.
-	clock_enable_clear_reset(0, CLK_H_SBC1, CLK_U_I2C3, 0, 0, 0);
+	timestamp_init(0);
+	timestamp_add(TS_START_ROMSTAGE, romstage_start_time);
 
-	setup_pinmux();
-
-	configure_ec_spi_bus();
-	configure_tpm_i2c_bus();
+	early_mainboard_init();
 
 #if CONFIG_VBOOT2_VERIFY_FIRMWARE
 	vboot_create_handoff((void *)CONFIG_VBOOT_WORK_BUFFER_ADDRESS);

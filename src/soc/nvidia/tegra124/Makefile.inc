@@ -32,6 +32,7 @@ verstage-y += ../tegra/i2c.c
 verstage-y += ../tegra/pinmux.c
 verstage-y += clock.c
 verstage-y += i2c.c
+verstage-y += cache.c
 
 romstage-y += cbfs.c
 romstage-y += cbmem.c
@@ -48,6 +49,7 @@ romstage-y += ../tegra/i2c.c
 romstage-$(CONFIG_SOFTWARE_I2C) += ../tegra/software_i2c.c
 romstage-y += ../tegra/pinmux.c
 romstage-y += timer.c
+romstage-y += cache.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 ramstage-y += cbfs.c

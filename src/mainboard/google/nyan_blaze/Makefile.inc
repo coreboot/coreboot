@@ -30,10 +30,12 @@ subdirs-y += bct
 bootblock-y += bootblock.c
 bootblock-y += pmic.c
 bootblock-y += reset.c
+bootblock-y += early_configs.c
 
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 verstage-y += reset.c
 
+romstage-y += early_configs.c
 romstage-y += reset.c
 romstage-y += romstage.c
 romstage-y += sdram_configs.c

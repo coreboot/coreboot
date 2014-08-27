@@ -3,6 +3,7 @@
 #include <antirollback.h>
 #include <arch/exception.h>
 #include <arch/stages.h>
+#include <soc/nvidia/tegra124/cache.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
@@ -123,7 +124,7 @@ static void recovery(void)
 	if (entry != (void *)-1)
 		stage_exit(entry);
 
-	for(;;);
+	for (;;);
 }
 
 static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
@@ -135,13 +136,12 @@ static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 	int rv;
 
 	expected_size = fw_main->size;
-	offset= fw_main->offset_addr;
+	offset = fw_main->offset_addr;
 
 	/* Start the body hash */
 	rv = vb2api_init_hash(ctx, VB2_HASH_TAG_FW_BODY, &expected_size);
-	if (rv) {
+	if (rv)
 		return rv;
-	}
 
 	/* Extend over the body */
 	while (expected_size) {
@@ -157,21 +157,20 @@ static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 			return rv;
 
 		expected_size -= block_size;
-		offset+= block_size;
+		offset += block_size;
 	}
 
 	/* Check the result */
 	rv = vb2api_check_hash(ctx);
-	if (rv) {
+	if (rv)
 		return rv;
-	}
 
 	return VB2_SUCCESS;
 }
 
 static int locate_fw_components(struct vb2_context *ctx,
-                                 struct vboot_region *fw_main,
-                                 struct components *fw_info)
+				struct vboot_region *fw_main,
+				struct components *fw_info)
 {
 	if (is_slot_a(ctx))
 		locate_region("FW_MAIN_A", fw_main);
@@ -181,15 +180,15 @@ static int locate_fw_components(struct vb2_context *ctx,
 		return 1;
 
 	if (vboot_get_region(fw_main->offset_addr,
-	                     sizeof(*fw_info), fw_info) == NULL)
+			     sizeof(*fw_info), fw_info) == NULL)
 		return 1;
 	return 0;
 }
 
 static struct cbfs_stage *load_stage(struct vb2_context *ctx,
-                                     int stage_index,
-                                     struct vboot_region *fw_main,
-                                     struct components *fw_info)
+				     int stage_index,
+				     struct vboot_region *fw_main,
+				     struct components *fw_info)
 {
 	struct cbfs_stage *stage;
 	uint32_t fc_addr;
@@ -221,51 +220,13 @@ static void enter_stage(struct cbfs_stage *stage)
 	memset((void *) (uintptr_t)stage->load, 0, stage->memlen);
 
 	if (cbfs_decompress(stage->compression,
-	                    (unsigned char *)stage + sizeof(*stage),
-	                    (void *) (uintptr_t) stage->load,
-	                    stage->len))
+			    (unsigned char *)stage + sizeof(*stage),
+			    (void *) (uintptr_t) stage->load,
+			    stage->len))
 		return;
 
 	VBDEBUG("Jumping to entry @%llx.\n", stage->entry);
 	stage_exit((void *)(uintptr_t)stage->entry);
-}
-
-enum {
-	L2CTLR_ECC_PARITY = 0x1 << 21,
-	L2CTLR_TAG_RAM_LATENCY_MASK = 0x7 << 6,
-	L2CTLR_TAG_RAM_LATENCY_CYCLES_3 = 2 << 6,
-	L2CTLR_DATA_RAM_LATENCY_MASK = 0x7 << 0,
-	L2CTLR_DATA_RAM_LATENCY_CYCLES_3  = 2 << 0
-};
-
-enum {
-	L2ACTLR_FORCE_L2_LOGIC_CLOCK_ENABLE_ACTIVE = 0x1 << 27,
-	L2ACTLR_ENABLE_HAZARD_DETECT_TIMEOUT = 0x1 << 7,
-	L2ACTLR_DISABLE_CLEAN_EVICT_PUSH_EXTERNAL = 0x1 << 3
-};
-
-/* Configures L2 Control Register to use 3 cycles for DATA/TAG RAM latency. */
-static void configure_l2ctlr(void)
-{
-   uint32_t val;
-
-   val = read_l2ctlr();
-   val &= ~(L2CTLR_DATA_RAM_LATENCY_MASK | L2CTLR_TAG_RAM_LATENCY_MASK);
-   val |= (L2CTLR_DATA_RAM_LATENCY_CYCLES_3 | L2CTLR_TAG_RAM_LATENCY_CYCLES_3 |
-	   L2CTLR_ECC_PARITY);
-   write_l2ctlr(val);
-}
-
-/* Configures L2 Auxiliary Control Register for Cortex A15. */
-static void configure_l2actlr(void)
-{
-   uint32_t val;
-
-   val = read_l2actlr();
-   val |= (L2ACTLR_DISABLE_CLEAN_EVICT_PUSH_EXTERNAL |
-	   L2ACTLR_ENABLE_HAZARD_DETECT_TIMEOUT |
-	   L2ACTLR_FORCE_L2_LOGIC_CLOCK_ENABLE_ACTIVE);
-   write_l2actlr(val);
 }
 
 static void enable_cache(void)
@@ -313,8 +274,7 @@ void __attribute__((noinline)) select_firmware(void)
 	int rv;
 
 	/* Do minimum to enable cache and run vboot at full speed */
-	configure_l2ctlr();
-	configure_l2actlr();
+	configure_l2_cache();
 	console_init();
 	exception_init();
 	enable_cache();
@@ -395,5 +355,5 @@ void __attribute__((noinline)) select_firmware(void)
 
 	/* Shouldn't reach here */
 	VBDEBUG("Halting\n");
-	for(;;);
+	for (;;);
 }

@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <stdint.h>
 #include <console/console.h>
@@ -80,6 +81,13 @@ static void gicd_write_regs(struct gicd *gicd, size_t offset,
 			interrupts_per_reg, val);
 }
 
+static void gicd_write_banked_regs(struct gicd *gicd, size_t offset,
+				size_t interrupts_per_reg, uint32_t val)
+{
+	/* 1st 32 interrupts are banked per CPU. */
+	gic_write_regs(gicd->base, offset, 32, interrupts_per_reg, val);
+}
+
 static void gicd_init(struct gicd *gicd, uintptr_t base)
 {
 	uint32_t typer;
@@ -98,6 +106,7 @@ void gic_init(void)
 {
 	struct gicd gicd;
 	uint32_t * const gicc = (void *)(uintptr_t)TEGRA_GICC_BASE;
+	uint32_t cpu_mask;
 
 	gicd_init(&gicd, TEGRA_GICD_BASE);
 
@@ -108,8 +117,22 @@ void gic_init(void)
 	gic_write(gicc, GICC_CTLR, ENABLE_GRP0 | ENABLE_GRP1);
 	gic_write(gicc, GICC_PMR, 1 << 7);
 
-	/* All interrupts route go to CPU 0. */
-	gicd_write_regs(&gicd, GICD_ITARGETSR, 4, 0x01010101);
+	cpu_mask = 1 << smp_processor_id();
+	cpu_mask |= cpu_mask << 8;
+	cpu_mask |= cpu_mask << 16;
+
+	/* Only write banked registers for secondary CPUs. */
+	if (smp_processor_id()) {
+		gicd_write_banked_regs(&gicd, GICD_ITARGETSR, 4, cpu_mask);
+		/* Put interrupts into Group 1. */
+		gicd_write_banked_regs(&gicd, GICD_IGROUPR, 32, 0xffffffff);
+		/* Allow Non-secure access to everything. */
+		gicd_write_banked_regs(&gicd, GICD_NSACR, 16, 0xffffffff);
+		return;
+	}
+
+	/* All interrupts routed to processors that execute this function. */
+	gicd_write_regs(&gicd, GICD_ITARGETSR, 4, cpu_mask);
 	/* Put all interrupts into Gropup 1. */
 	gicd_write_regs(&gicd, GICD_IGROUPR, 32, 0xffffffff);
 	/* Allow Non-secure access to everything. */

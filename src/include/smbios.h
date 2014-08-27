@@ -115,6 +115,12 @@ struct smbios_type2 {
 	char eos[2];
 } __attribute__((packed));
 
+enum
+{
+	SMBIOS_ENCLOSURE_DESKTOP = 3,
+	SMBIOS_ENCLOSURE_NOTEBOOK = 9,
+};
+
 struct smbios_type3 {
 	u8 type;
 	u8 length;

@@ -114,7 +114,9 @@ static void bochs_init(device_t dev)
 	edid.x_resolution = width;
 	edid.y_resolution = height;
 	edid.bytes_per_line = width * 4;
-	edid.bpp = 32;
+	edid.framebuffer_bits_per_pixel = 32;
+	edid.panel_bits_per_color = 8;
+	edid.panel_bits_per_pixel = 24;
 	set_vbe_mode_info_valid(&edid, addr);
 #else
 	vga_misc_write(0x1);

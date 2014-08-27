@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __ROCKCHIP_RK3288_TIMER_H__
-#define __ROCKCHIP_RK3288_TIMER_H__
+#ifndef __SOC_ROCKCHIP_RK3288_TIMER_H__
+#define __SOC_ROCKCHIP_RK3288_TIMER_H__
 
 #include "addressmap.h"
 
@@ -40,4 +40,4 @@ static struct rk3288_timer * const timer7_ptr = (void *)TIMER7_BASE;
 
 void rk3288_init_timer(void);
 
-#endif	/* __ROCKCHIP_RK3288_TIMER_H__ */
+#endif	/* __SOC_ROCKCHIP_RK3288_TIMER_H__ */

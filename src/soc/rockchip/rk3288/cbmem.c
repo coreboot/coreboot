@@ -19,11 +19,9 @@
 
 #include <stddef.h>
 #include <cbmem.h>
-
-#define FB_SIZE_MB	4
+#include "soc.h"
 void *cbmem_top(void)
 {
-	return (void *)(CONFIG_SYS_SDRAM_BASE +
-			(CONFIG_DRAM_SIZE_MB - FB_SIZE_MB)*MiB);
+	return (void *)(get_fb_base_kb()*KiB);
 }
 

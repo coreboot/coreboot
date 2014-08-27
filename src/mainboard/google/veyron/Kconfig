@@ -42,7 +42,7 @@ config MAINBOARD_VENDOR
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
-	default 1
+	default 0
 
 config BOOT_MEDIA_SPI_BUS
         int

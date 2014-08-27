@@ -339,3 +339,34 @@ void rkclk_configure_spi(unsigned int bus, unsigned int hz)
 		printk(BIOS_ERR, "do not support this spi bus\n");
 	}
 }
+
+static u32 clk_gcd(u32 a, u32 b)
+{
+	while (b != 0) {
+		int r = b;
+		b = a % b;
+		a = r;
+	}
+	return a;
+}
+
+void rkclk_configure_i2s(unsigned int hz)
+{
+	int n, d;
+	int v;
+
+	/* i2s source clock: gpll
+	   i2s0_outclk_sel: clk_i2s
+	   i2s0_clk_sel: divider ouput from fraction
+	   i2s0_pll_div_con: 0*/
+	writel(RK_CLRSETBITS(1 << 15 | 1 << 12 | 3 << 8 | 0x7f << 0 ,
+			     1 << 15 | 0 << 12 | 1 << 8 | 0 << 0),
+			     &cru_ptr->cru_clksel_con[4]);
+
+	/* set frac divider */
+	v = clk_gcd(GPLL_HZ, hz);
+	n = (GPLL_HZ / v) & (0xffff);
+	d = (hz / v) & (0xffff);
+	assert(hz == GPLL_HZ / n * d);
+	writel(d << 16 | n, &cru_ptr->cru_clksel_con[8]);
+}

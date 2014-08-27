@@ -21,14 +21,14 @@ IDBTOOL = util/rockchip/make_idb.py
 
 #bootblock-y += bootblock.c
 bootblock-y += cbmem.c
-bootblock-y += timer.c
-bootblock-y += monotonic_timer.c
-bootblock-y += media.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
+bootblock-y += timer.c
+bootblock-y += monotonic_timer.c
 bootblock-y += clock.c
 bootblock-y += spi.c
+bootblock-y += media.c
 
 romstage-y += cbmem.c
 romstage-y += timer.c

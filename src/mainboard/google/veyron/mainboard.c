@@ -24,10 +24,102 @@
 #include <edid.h>
 #include <vbe.h>
 #include <boot/coreboot_tables.h>
+#include <device/i2c.h>
+#include <soc/rockchip/rk3288/gpio.h>
+#include <soc/rockchip/rk3288/soc.h>
+#include <soc/rockchip/rk3288/pmu.h>
+#include <soc/rockchip/rk3288/clock.h>
+#include <soc/rockchip/rk3288/spi.h>
+#include "pmic.h"
+
+#define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
+#define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
+#define DRAM_END	(DRAM_START + DRAM_SIZE)
+
+static void setup_gpio(void)
+{
+	/*SOC and TPM reset GPIO, active high.*/
+	gpio_output((gpio_t){.port = 0, .bank = GPIO_B, .idx = 2}, 0);
+
+	/* Configure GPIO for lcd_bl_en */
+	gpio_output((gpio_t){.port = 7, .bank = GPIO_A, .idx = 2}, 1);
+
+	/*Configure backlight PWM 100% brightness*/
+	gpio_output((gpio_t){.port = 7, .bank = GPIO_A, .idx = 0}, 0);
+
+	/* Configure GPIO for lcd_en */
+	gpio_output((gpio_t){.port = 7, .bank = GPIO_B, .idx = 7}, 1);
+}
+
+static void setup_iomux(void)
+{
+	/*i2c0 for pmic*/
+	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
+	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
+
+	/*i2c1 for tpm*/
+	writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);
+
+	/*i2c2 for codec*/
+	writel(IOMUX_I2C2, &rk3288_grf->iomux_i2c2);
+
+	writel(IOMUX_SPI0, &rk3288_grf->iomux_spi0);
+	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
+	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
+	writel(IOMUX_LCDC, &rk3288_grf->iomux_lcdc);
+	writel(IOMUX_SDMMC0, &rk3288_grf->iomux_sdmmc0);
+	writel(IOMUX_EMMCDATA, &rk3288_grf->iomux_emmcdata);
+	writel(IOMUX_EMMCPWREN, &rk3288_grf->iomux_emmcpwren);
+	writel(IOMUX_EMMCCMD, &rk3288_grf->iomux_emmccmd);
+}
+
+static void setup_usb_poweron(void)
+{
+	/* Configure GPIO for usb1_pwr_en */
+	gpio_output((gpio_t){.port = 0, .bank = GPIO_B, .idx = 3}, 1);
+
+	/* Configure GPIO for usb2_pwr_en */
+	gpio_output((gpio_t){.port = 0, .bank = GPIO_B, .idx = 4}, 1);
+
+	/* Configure GPIO for 5v_drv */
+	gpio_output((gpio_t){.port = 7, .bank = GPIO_B, .idx = 3}, 1);
+}
+
+static void configure_sdmmc(void)
+{
+	/* Configure GPIO for sd_en */
+	gpio_output((gpio_t){.port = 7, .bank = GPIO_C, .idx = 5}, 1);
+
+	/* Configure GPIO for sd_detec */
+	gpio_input_pullup((gpio_t){.port = 7, .bank = GPIO_A, .idx = 5});
+
+	/*use sdmmc0 io, disable JTAG function*/
+	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
+}
+
+static void configure_emmc(void)
+{
+	/* Configure GPIO for emmc_pwrctrl */
+	gpio_output((gpio_t){.port = 7, .bank = GPIO_B, .idx = 4}, 1);
+}
+
+static void configure_i2s(void)
+{
+	/*AUDIO IO domain 1.8V voltage selection*/
+	writel(RK_SETBITS(1 << 6), &rk3288_grf->io_vsel);
+	rkclk_configure_i2s(12288000);
+}
 
 static void mainboard_init(device_t dev)
 {
-
+	setup_iomux();
+	pmic_init(0);
+	setup_gpio();
+	setup_usb_poweron();
+	configure_sdmmc();
+	configure_emmc();
+	configure_i2s();
+	rockchip_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS);
 }
 
 static void mainboard_enable(device_t dev)

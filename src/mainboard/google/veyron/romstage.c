@@ -27,17 +27,34 @@
 #include <timestamp.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/rockchip/rk3288/sdram.h>
+#include <soc/rockchip/rk3288/clock.h>
+#include "timer.h"
 
 void main(void)
 {
-	console_init();
-
+#if CONFIG_COLLECT_TIMESTAMPS
+	uint64_t start_romstage_time;
+	uint64_t before_dram_time;
+	uint64_t after_dram_time;
+	uint64_t base_time = timestamp_get();
+	start_romstage_time = timestamp_get();
+#endif
 	/* used for MMU and CBMEM setup, in MB */
 	u32 dram_start = (CONFIG_SYS_SDRAM_BASE >> 20);
 	u32 dram_size = CONFIG_DRAM_SIZE_MB;
 	u32 dram_end = dram_start + dram_size;
+
+	console_init();
+
+#if CONFIG_COLLECT_TIMESTAMPS
+	before_dram_time = timestamp_get();
+#endif
 	sdram_init(get_sdram_config());
+#if CONFIG_COLLECT_TIMESTAMPS
+	after_dram_time = timestamp_get();
+#endif
 	mmu_init();
 	/* Device memory below DRAM is uncached. */
 	mmu_config_range(0, dram_start, DCACHE_OFF);
@@ -49,10 +66,18 @@ void main(void)
 	/* The space above DRAM is uncached. */
 	if (dram_end < 4096)
 		mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
-	mmu_disable_range(0, 1);
 	dcache_mmu_enable();
+
+	setup_chromeos_gpios();
 
 	cbmem_initialize_empty();
 
+#if CONFIG_COLLECT_TIMESTAMPS
+	timestamp_init(base_time);
+	timestamp_add(TS_START_ROMSTAGE, start_romstage_time);
+	timestamp_add(TS_BEFORE_INITRAM, before_dram_time);
+	timestamp_add(TS_AFTER_INITRAM, after_dram_time);
+	timestamp_add_now(TS_END_ROMSTAGE);
+#endif
 	run_ramstage();
 }

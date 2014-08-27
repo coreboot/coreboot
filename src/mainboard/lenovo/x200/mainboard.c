@@ -125,11 +125,6 @@ const char *smbios_mainboard_bios_version(void)
 		return "CBET4000 " COREBOOT_VERSION;
 }
 
-const char *smbios_mainboard_version(void)
-{
-	return "Lenovo X200";
-}
-
 static int mainboard_smbios_data(device_t dev, int *handle, unsigned long *current)
 {
 	int len;

@@ -133,11 +133,6 @@ static int int15_handler(void)
 }
 #endif
 
-const char *smbios_mainboard_version(void)
-{
-	return "ThinkPad T520";
-}
-
 /* Audio Setup */
 
 static void verb_setup(void)

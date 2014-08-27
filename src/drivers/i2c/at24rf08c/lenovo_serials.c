@@ -26,35 +26,62 @@
 #include <console/console.h>
 #include "lenovo.h"
 
-static void at24rf08c_read_string(u8 bank, u8 start, u8 len, char *result)
-{
-	int i;
-	device_t dev;
+#define ERROR_STRING "*INVALID*"
 
+static device_t at24rf08c_find_bank(u8 bank)
+{
+	device_t dev;
 	dev = dev_find_slot_on_smbus(1, 0x54 | bank);
-	if (dev == 0) {
+	if (!dev)
 		printk(BIOS_WARNING, "EEPROM not found\n");
-		memcpy(result, "*INVALID*", sizeof ("*INVALID*"));
-		return;
+	return dev;
+}
+
+static int at24rf08c_read_byte(device_t dev, u8 addr)
+{
+	int t = -1;
+	int j;
+
+        /* After a register write AT24RF08C (which we issued in init function)
+	   sometimes stops responding. Retry several times in case of failure.
+	*/
+	for (j = 0; j < 100; j++) {
+		t = smbus_read_byte(dev, addr);
+		if (t >= 0)
+			return t;
 	}
 
+	return t;
+}
+
+static void at24rf08c_read_string_dev(device_t dev, u8 start,
+				      u8 len, char *result)
+{
+	int i;
 	for (i = 0; i < len; i++) {
-		int t;
-		int j;
-		/* After a register write AT24RF08C (which we issued in init function) sometimes stops responding.
-		   Retry several times in case of failure.
-		*/
-		for (j = 0; j < 100; j++) {
-			t = smbus_read_byte(dev, start + i);
-			if (t >= 0)
-				break;
-		}
+		int t = at24rf08c_read_byte(dev, start + i);
+
 		if (t < 0x20 || t > 0x7f) {
-			memcpy(result, "*INVALID*", sizeof ("*INVALID*"));
+			memcpy(result, ERROR_STRING, sizeof (ERROR_STRING));
 			return;
 		}
 		result[i] = t;
 	}
+	result[len] = '\0';
+}
+
+static void at24rf08c_read_string(u8 bank, u8 start, u8 len, char *result)
+{
+	device_t dev;
+
+	dev = at24rf08c_find_bank(bank);
+	if (dev == 0) {
+		printk(BIOS_WARNING, "EEPROM not found\n");
+		memcpy(result, ERROR_STRING, sizeof (ERROR_STRING));
+		return;
+	}
+
+	at24rf08c_read_string_dev(dev, start, len, result);
 }
 
 const char *smbios_mainboard_serial_number(void)
@@ -140,4 +167,34 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 	already_read = 1;
 
 	memcpy (uuid, result, 16);
+}
+
+const char *smbios_mainboard_version(void)
+{
+	static char result[100];
+	static int already_read;
+	device_t dev;
+	int len;
+
+	if (already_read)
+		return result;
+
+	memset (result, 0, sizeof (result));
+
+	dev = at24rf08c_find_bank(2);
+	if (dev == 0) {
+		memcpy(result, ERROR_STRING, sizeof (ERROR_STRING));
+		return result;
+	}
+
+	len = at24rf08c_read_byte(dev, 0x26) - 2;
+	if (len < 0 || len > sizeof(result) - 1) {
+		memcpy(result, ERROR_STRING, sizeof (ERROR_STRING));
+		return result;
+	}
+
+	at24rf08c_read_string_dev(dev, 0x27, len, result);
+
+	already_read = 1;
+	return result;
 }

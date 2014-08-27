@@ -143,11 +143,6 @@ const char *smbios_mainboard_bios_version(void)
 		return "CBET4000 " COREBOOT_VERSION;
 }
 
-const char *smbios_mainboard_version(void)
-{
-	return "ThinkPad X220";
-}
-
 /* Audio Setup */
 
 static void verb_setup(void)

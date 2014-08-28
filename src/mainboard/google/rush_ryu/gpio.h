@@ -22,8 +22,21 @@
 
 #include <soc/nvidia/tegra132/gpio.h>
 
-/* LTE modem related GPIOs */
+/* Board ID definitions. */
 enum {
+	BOARD_ID_PROTO_0	= 0,
+	BOARD_ID_PROTO_1	= 1,
+	BOARD_ID_EVT		= 2,
+	BOARD_ID_DVT		= 3,
+	BOARD_ID_PVT		= 4,
+	BOARD_ID_MP		= 5,
+};
+
+enum {
+	/* Board ID related GPIOS. */
+	BD_ID0		= GPIO(Q3),
+	BD_ID1		= GPIO(Q4),
+	/* LTE modem related GPIOs */
 	MODEM_RESET	= GPIO(S3),
 	MODEM_PWR_ON	= GPIO(S4),
 	MDM_DET		= GPIO(V1),

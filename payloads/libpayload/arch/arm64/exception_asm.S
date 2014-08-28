@@ -35,11 +35,13 @@
 	 * Move exception id into x1
 	 * Branch to exception_handler
 	 */
-.macro eentry id
-	stp     x30, xzr, [sp, #-16]!
-	bl      exception_prologue
-	mov     x1, \id
-	bl      exception_handler
+.macro eentry lbl id
+	.align 7
+\lbl:
+	stp	x30, xzr, [sp, #-16]!
+	bl	exception_prologue
+	mov	x1, \id
+	bl	exception_handler
 .endm
 
 	/* Exception table has 16 entries and each of 128 bytes
@@ -51,37 +53,22 @@
 	.global exception_table
 exception_table:
 
-	.align  7
-sync_el0:
-	eentry #0
-
-	.align  7
-irq_el0:
-	eentry #0
-
-	.align  7
-fiq_el0:
-	eentry #0
-
-	.align  7
-serror_el0:
-	eentry #0
-
-	.align  7
-sync_elx:
-	eentry #1
-
-	.align  7
-irq_elx:
-	eentry #2
-
-	.align  7
-fiq_elx:
-	eentry #3
-
-	.align  7
-serror_elx:
-	eentry #4
+eentry	sync_sp0,#0
+eentry	irq_sp0,#1
+eentry	fiq_sp0,#2
+eentry	serror_sp0,#3
+eentry	sync_spx,#4
+eentry	irq_spx,#5
+eentry	fiq_spx,#6
+eentry	serror_spx,#7
+eentry	sync_elx_64,#8
+eentry	irq_elx_64,#9
+eentry	fiq_elx_64,#10
+eentry	serror_elx_64,#11
+eentry	sync_elx_32,#12
+eentry	irq_elx_32,#13
+eentry	fiq_elx_32,#14
+eentry	serror_elx_32,#15
 
 exception_prologue:
 	/* Save all registers x0-x29 */
@@ -119,6 +106,8 @@ exception_handler:
 
 	/* Pop return address saved on stack */
 	ldp     x0, x1, [sp], #16
+	msr     elr_el3, x0
+	msr     esr_el3, x1
 	/* Pop exception reason saved on stack, followed by regs x0-x30 */
 	ldp     x0, x1, [sp], #16
 	ldp     x2, x3, [sp], #16

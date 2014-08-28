@@ -44,11 +44,22 @@ struct exception_state
 extern struct exception_state *exception_state;
 
 enum {
-	EXC_INV = 0,
-	EXC_SYNC = 1,
-	EXC_IRQ = 2,
-	EXC_FIQ = 3,
-	EXC_SERROR = 4,
+	EXC_SYNC_SP0 = 0,
+	EXC_IRQ_SP0,
+	EXC_FIQ_SP0,
+	EXC_SERROR_SP0,
+	EXC_SYNC_SPX,
+	EXC_IRQ_SPX,
+	EXC_FIQ_SPX,
+	EXC_SERROR_SPX,
+	EXC_SYNC_ELX_64,
+	EXC_IRQ_ELX_64,
+	EXC_FIQ_ELX_64,
+	EXC_SERROR_ELX_64,
+	EXC_SYNC_ELX_32,
+	EXC_IRQ_ELX_32,
+	EXC_FIQ_ELX_32,
+	EXC_SERROR_ELX_32,
 	EXC_COUNT
 };
 

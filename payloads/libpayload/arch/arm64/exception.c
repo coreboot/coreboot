@@ -40,22 +40,34 @@ struct exception_handler_info
 
 static exception_hook hook;
 struct exception_state *exception_state;
+
 static struct exception_handler_info exceptions[EXC_COUNT] = {
-	[EXC_INV]  = { "_invalid_exception" },
-	[EXC_SYNC] = { "_sync" },
-	[EXC_IRQ]  = { "_irq" },
-	[EXC_FIQ]  = { "_fiq" },
-	[EXC_SERROR] = {"_serror"}
+	[EXC_SYNC_SP0] = { "_sync_sp_el0" },
+	[EXC_IRQ_SP0]  = { "_irq_sp_el0" },
+	[EXC_FIQ_SP0]  = { "_fiq_sp_el0" },
+	[EXC_SERROR_SP0] = {"_serror_sp_el0"},
+	[EXC_SYNC_SPX] = { "_sync_spx" },
+	[EXC_IRQ_SPX]  = { "_irq_spx" },
+	[EXC_FIQ_SPX]  = { "_fiq_spx" },
+	[EXC_SERROR_SPX] = {"_serror_spx"},
+	[EXC_SYNC_ELX_64] = { "_sync_elx_64" },
+	[EXC_IRQ_ELX_64]  = { "_irq_elx_64" },
+	[EXC_FIQ_ELX_64]  = { "_fiq_elx_64" },
+	[EXC_SERROR_ELX_64] = {"_serror_elx_64"},
+	[EXC_SYNC_ELX_32] = { "_sync_elx_32" },
+	[EXC_IRQ_ELX_32]  = { "_irq_elx_32" },
+	[EXC_FIQ_ELX_32]  = { "_fiq_elx_32" },
+	[EXC_SERROR_ELX_32] = {"_serror_elx_32"},
 };
 
 static void print_regs(struct exception_state *state)
 {
 	int i;
 
-	printf("ELR = 0x%016llx        ",state->elr);
-	printf("ESR = 0x%08llx         ",state->esr);
+	printf("ELR = 0x%016llx\n",state->elr);
+	printf("ESR = 0x%08llx\n",state->esr);
 	for (i = 0; i < 31; i++) {
-		printf("X%02d = 0x%016llx        ", i, state->regs[i]);
+		printf("X%02d = 0x%016llx\n", i, state->regs[i]);
 	}
 }
 
@@ -78,8 +90,11 @@ void exception_dispatch(struct exception_state *state, int idx)
 	}
 	print_regs(state);
 
-	if (test_exc)
+	if (test_exc) {
+		state->elr += 4;
 		test_exc = 0;
+		printf("returning back now\n");
+	}
 	else
 		halt();
 }
@@ -87,7 +102,7 @@ void exception_dispatch(struct exception_state *state, int idx)
 void exception_init(void)
 {
 	extern void* exception_table;
-	set_vbar(exception_table);
+	set_vbar(&exception_table);
 }
 
 void exception_install_hook(exception_hook h)

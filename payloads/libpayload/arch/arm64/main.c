@@ -37,13 +37,15 @@ char *main_argv[MAX_ARGC_COUNT];
 
 unsigned int test_exc;
 
-int test_exception(void);
-int test_exception(void)
+static int test_exception(void)
 {
-	int a = 1;
-	int b = 0;
+	uint64_t *a = (uint64_t *)0xfffffffff0000000ULL;
+
 	test_exc = 1;
-	return a/b;
+
+	printf("%llx\n", *a);
+
+	return 0;
 }
 
 /**

@@ -18,10 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <string.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
+#include <arch/cache.h>
+#include <cbmem.h>
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/addressmap.h>
@@ -62,12 +65,69 @@ static void soc_read_resources(device_t dev)
 
 static volatile int secondary_cpu_up;
 
+static void *spintable_entry;
+static uint64_t * const spintable_magic = (void *)(uintptr_t)0x80000008;
+
+static void spintable_init(void)
+{
+	extern void __wait_for_spin_table_request(void);
+	const size_t spintable_entry_size = 4096;
+
+	spintable_entry =
+		cbmem_add(0x11111111, spintable_entry_size);
+
+	memcpy(spintable_entry, __wait_for_spin_table_request,
+		spintable_entry_size);
+
+	/* Ensure the memory location is zero'd out. */
+	*spintable_magic = 0;
+
+	dcache_clean_invalidate_by_mva(spintable_magic,
+					sizeof(*spintable_magic));
+	dcache_clean_invalidate_by_mva(&spintable_entry,
+					sizeof(spintable_entry));
+	dcache_clean_invalidate_by_mva(spintable_entry, spintable_entry_size);
+	dsb();
+}
+
+static void spintable_wait(void)
+{
+	uint32_t sctlr_el2;
+	uint32_t spsr_el3;
+	uint32_t scr_el3;
+
+	sctlr_el2 = raw_read_sctlr_el2();
+	/* Make sure EL2 is in little endian without any caching enabled. */
+	sctlr_el2 &= ~(1 << 25);
+	sctlr_el2 &= ~(1 << 19);
+	sctlr_el2 &= ~(1 << 12);
+	sctlr_el2 &= ~0xf;
+	raw_write_sctlr_el2(sctlr_el2);
+	/* Ensure enter into EL2t with interrupts disabled. */
+	spsr_el3 = (1 << 9) | (0xf << 6) | (1 << 3);
+	raw_write_spsr_el3(spsr_el3);
+	raw_write_elr_el3((uintptr_t)spintable_entry);
+	/*
+	 * Lower exception level is 64 bit. HVC and SMC allowed. EL0 and EL1
+	 * in non-secure mode. No interrupts routed to EL3.
+	 */
+	scr_el3 = raw_read_scr_el3();
+	scr_el3 |= (1 << 10) | (1 << 8) | (0x3 << 4) | (1 << 0);
+	scr_el3 &= ~((0x7 << 1) | (1 << 7) | (1 << 9) | (1 << 13) | (1 << 12));
+	raw_write_scr_el3(scr_el3);
+	isb();
+	asm volatile(
+		"mov	x0, %0\n\t"
+		"eret\n\t" : : "r" (spintable_magic) : "x0" );
+}
+
 void soc_secondary_cpu_init(void)
 {
 	printk(BIOS_INFO, "CPU%d is up!\n", smp_processor_id());
 	gic_init();
 	dmb();
 	secondary_cpu_up = 1;
+	spintable_wait();
 }
 
 static void start_secondary_cpu(void)
@@ -104,8 +164,10 @@ static void soc_init(device_t dev)
 	clock_init_arm_generic_timer();
 	gic_init();
 
-	if (config->bring_up_secondary_cpu)
+	if (config->bring_up_secondary_cpu) {
+		spintable_init();
 		start_secondary_cpu();
+	}
 }
 
 static void soc_noop(device_t dev)

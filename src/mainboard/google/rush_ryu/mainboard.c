@@ -50,7 +50,16 @@ static const struct funit_cfg funits[] = {
 
 static void mainboard_init(device_t dev)
 {
+	/* PLLD should be 2 * pixel clock (301620khz). */
+	const uint32_t req_disp_clk =  301620 * 1000 * 2;
+	uint32_t disp_clk;
+
 	soc_configure_funits(funits, ARRAY_SIZE(funits));
+	disp_clk = clock_display(req_disp_clk);
+
+	if (disp_clk != req_disp_clk)
+		printk(BIOS_DEBUG, "display clock: %u vs %u (r)\n", disp_clk,
+			req_disp_clk);
 }
 
 static void mainboard_enable(device_t dev)

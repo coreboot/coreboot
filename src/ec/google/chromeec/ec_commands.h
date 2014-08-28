@@ -253,6 +253,7 @@ enum host_event_code {
 	EC_HOST_EVENT_HANG_DETECT = 20,
 	/* Hang detect logic detected a hang and warm rebooted the AP */
 	EC_HOST_EVENT_HANG_REBOOT = 21,
+	EC_HOST_EVENT_PD_MCU = 22,
 
 	/*
 	 * The high bit of the event mask is not used as a host event code.  If

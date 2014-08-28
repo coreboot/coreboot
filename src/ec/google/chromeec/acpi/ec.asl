@@ -303,6 +303,15 @@ Device (EC0)
 		}
 	}
 
+#ifdef EC_ENABLE_PD_MCU_DEVICE
+	// PD event
+	Method (_Q16, 0, NotSerialized)
+	{
+		Store ("EC: GOT PD EVENT", Debug)
+		Notify (ECPD, 0x80)
+	}
+#endif
+
 	/*
 	 * Dynamic Platform Thermal Framework support
 	 */
@@ -434,5 +443,9 @@ Device (EC0)
 
 #ifdef EC_ENABLE_ALS_DEVICE
 	#include "als.asl"
+#endif
+
+#ifdef EC_ENABLE_PD_MCU_DEVICE
+	#include "pd.asl"
 #endif
 }

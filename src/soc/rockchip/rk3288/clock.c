@@ -70,11 +70,10 @@ static struct rk3288_cru_reg * const cru_ptr = (void *)CRU_BASE;
 			(_nr * _no) == hz,\
 	#hz "Hz cannot be hit with PLL divisors in " __FILE__);
 
-/* apll = 816MHz, gpll = 594MHz, cpll = 384MHz, dpll = 300MHz */
+/* apll = 816MHz, gpll = 594MHz, cpll = 384MHz */
 static const struct pll_div apll_init_cfg = PLL_DIVISORS(APLL_HZ, 1, 2);
 static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 4);
 static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 2, 4);
-static const struct pll_div dpll_init_cfg = PLL_DIVISORS(DPLL_HZ, 1, 4);
 
 /*******************PLL CON0 BITS***************************/
 #define PLL_OD_MSK	(0x0F)
@@ -191,23 +190,21 @@ void rkclk_init(void)
 	/* pll enter slow-mode */
 	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_SLOW)
 		| RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_SLOW)
-		| RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_SLOW)
-		| RK_CLRSETBITS(DPLL_MODE_MSK, DPLL_MODE_SLOW),
+		| RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_SLOW),
 		&cru_ptr->cru_mode_con);
 
 	/* init pll */
 	rkclk_set_pll(&cru_ptr->cru_apll_con[0], &apll_init_cfg);
 	rkclk_set_pll(&cru_ptr->cru_gpll_con[0], &gpll_init_cfg);
 	rkclk_set_pll(&cru_ptr->cru_cpll_con[0], &cpll_init_cfg);
-	rkclk_set_pll(&cru_ptr->cru_dpll_con[0], &dpll_init_cfg);
 
 	/* waiting for pll lock */
 	while (1) {
 		if ((readl(&rk3288_grf->soc_status[1])
 			& (SOCSTS_APLL_LOCK | SOCSTS_CPLL_LOCK
-			   | SOCSTS_DPLL_LOCK | SOCSTS_GPLL_LOCK))
+			   | SOCSTS_GPLL_LOCK))
 			== (SOCSTS_APLL_LOCK | SOCSTS_CPLL_LOCK
-			   | SOCSTS_GPLL_LOCK | SOCSTS_DPLL_LOCK))
+			   | SOCSTS_GPLL_LOCK))
 			break;
 		udelay(1);
 	}
@@ -248,10 +245,72 @@ void rkclk_init(void)
 	/* PLL enter normal-mode */
 	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_NORM)
 		| RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_NORM)
-		| RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_NORM)
-		| RK_CLRSETBITS(DPLL_MODE_MSK, DPLL_MODE_NORM),
+		| RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_NORM),
 		&cru_ptr->cru_mode_con);
 
+}
+
+void rkclk_configure_ddr(unsigned int hz)
+{
+	struct pll_div dpll_cfg;
+
+	if (hz <= 150000000) {
+		dpll_cfg.nr = 3;
+		dpll_cfg.no = 8;
+	} else if (hz <= 540000000) {
+		dpll_cfg.nr = 6;
+		dpll_cfg.no = 4;
+	} else {
+		dpll_cfg.nr = 1;
+		dpll_cfg.no = 1;
+	}
+
+	dpll_cfg.nf = (hz / 1000 * dpll_cfg.nr * dpll_cfg.no) / 24000;
+	assert(dpll_cfg.nf < 4096
+		&& hz == dpll_cfg.nf * 24000 / (dpll_cfg.nr * dpll_cfg.no)
+		* 1000);
+	/* pll enter slow-mode */
+	writel(RK_CLRSETBITS(DPLL_MODE_MSK, DPLL_MODE_SLOW),
+		&cru_ptr->cru_mode_con);
+
+	rkclk_set_pll(&cru_ptr->cru_dpll_con[0], &dpll_cfg);
+
+	/* waiting for pll lock */
+	while (1) {
+		if (readl(&rk3288_grf->soc_status[1]) & SOCSTS_DPLL_LOCK)
+			break;
+		udelay(1);
+	}
+
+	/* PLL enter normal-mode */
+	writel(RK_CLRSETBITS(DPLL_MODE_MSK, DPLL_MODE_NORM),
+		&cru_ptr->cru_mode_con);
+}
+
+void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy)
+{
+	u32 phy_ctl_srstn_shift = 4 + 5 * ch;
+	u32 ctl_psrstn_shift = 3 + 5 * ch;
+	u32 ctl_srstn_shift = 2 + 5 * ch;
+	u32 phy_psrstn_shift = 1 + 5 * ch;
+	u32 phy_srstn_shift = 5 * ch;
+
+	writel(RK_CLRSETBITS(1 << phy_ctl_srstn_shift,
+			     phy << phy_ctl_srstn_shift)
+		| RK_CLRSETBITS(1 << ctl_psrstn_shift, ctl << ctl_psrstn_shift)
+		| RK_CLRSETBITS(1 << ctl_srstn_shift, ctl << ctl_srstn_shift)
+		| RK_CLRSETBITS(1 << phy_psrstn_shift, phy << phy_psrstn_shift)
+		| RK_CLRSETBITS(1 << phy_srstn_shift, phy << phy_srstn_shift),
+		&cru_ptr->cru_softrst_con[10]);
+}
+
+void rkclk_ddr_phy_ctl_reset(u32 ch, u32 n)
+{
+	u32 phy_ctl_srstn_shift = 4 + 5 * ch;
+
+	writel(RK_CLRSETBITS(1 << phy_ctl_srstn_shift,
+			     n << phy_ctl_srstn_shift),
+		&cru_ptr->cru_softrst_con[10]);
 }
 
 void rkclk_configure_spi(unsigned int bus, unsigned int hz)

@@ -39,7 +39,7 @@ romstage-y += clock.c
 romstage-y += gpio.c
 romstage-y += spi.c
 romstage-y += media.c
-
+romstage-y += sdram.c
 
 ramstage-y += cbmem.c
 ramstage-y += timer.c

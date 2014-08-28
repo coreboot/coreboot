@@ -25,9 +25,10 @@
 #include "cpu.h"
 
 struct rk3288_grf_gpio_lh {
-	u32 gpiol;
-	u32 gpioh;
+	u32 l;
+	u32 h;
 };
+check_member(rk3288_grf_gpio_lh, h, 0x4);
 
 struct rk3288_grf_regs {
 	u32 reserved[3];
@@ -154,6 +155,41 @@ struct rk3288_grf_regs {
 	u32 soc_con16;
 };
 check_member(rk3288_grf_regs, soc_con16, 0x3a8);
+
+struct rk3288_sgrf_regs {
+	u32 soc_con0;
+	u32 soc_con1;
+	u32 soc_con2;
+	u32 soc_con3;
+	u32 soc_con4;
+	u32 soc_con5;
+	u32 reserved1[(0x20-0x18)/4];
+	u32 busdmac_con[2];
+	u32 reserved2[(0x40-0x28)/4];
+	u32 cpu_con[3];
+	u32 reserved3[(0x50-0x4c)/4];
+	u32 soc_con6;
+	u32 soc_con7;
+	u32 soc_con8;
+	u32 soc_con9;
+	u32 soc_con10;
+	u32 soc_con11;
+	u32 soc_con12;
+	u32 soc_con13;
+	u32 soc_con14;
+	u32 soc_con15;
+	u32 soc_con16;
+	u32 soc_con17;
+	u32 soc_con18;
+	u32 soc_con19;
+	u32 soc_con20;
+	u32 soc_con21;
+	u32 reserved4[(0x100-0x90)/4];
+	u32 soc_status[2];
+	u32 reserved5[(0x120-0x108)/4];
+	u32 fast_boot_addr;
+};
+check_member(rk3288_sgrf_regs, fast_boot_addr, 0x0120);
 
 static struct rk3288_grf_regs * const rk3288_grf = (void *)GRF_BASE;
 static struct rk3288_sgrf_regs * const rk3288_sgrf = (void *)GRF_SECURE_BASE;

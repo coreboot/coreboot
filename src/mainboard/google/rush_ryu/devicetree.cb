@@ -18,5 +18,7 @@
 ##
 
 chip soc/nvidia/tegra132
-     device cpu_cluster 0 on end
+	register bring_up_secondary_cpu = "1"
+
+	device cpu_cluster 0 on end
 end

@@ -109,7 +109,11 @@ void write_tables(void)
 #endif /* CONFIG_GENERATE_MP_TABLE */
 
 #if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_DYNAMIC_CBMEM
+#define MAX_ACPI_SIZE (144 * 1024)
+#else
 #define MAX_ACPI_SIZE (45 * 1024)
+#endif
 	post_code(0x9c);
 
 	/* Write ACPI tables to F segment and high tables area */

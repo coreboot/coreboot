@@ -38,24 +38,23 @@ ENTRY(_entry)
 	ldr x1, 1f
 	str x0, [x1]
 
-	/* TODO: disable interrupts */
+	/* Setup exception stack */
+	ldr x1, 3f
+	msr SPSel, #1
+	isb
 
-	/* TODO: Clear BSS */
+	mov sp, x1
 
 	/* Setup new stack */
 	ldr x1, 2f
-	mov sp, x1
+	msr SPSel, #0
+	isb
 
-	/* TODO: Save old stack pointer and link register */
+	mov sp, x1
 
 	/* Let's rock. */
 	bl start_main
 
-	/* %r0 has the return value - pass it on unmolested */
-
-	/* TODO: restore old stack pointer and link register */
-
-	/* Return to the original context. */
 	ret
 ENDPROC(_entry)
 
@@ -64,3 +63,5 @@ ENDPROC(_entry)
 .quad	cb_header_ptr
 2:
 .quad	_stack
+3:
+.quad   _exc_stack

@@ -82,6 +82,11 @@ SECTIONS
 		. += STACK_SIZE;
 		. = ALIGN(16);
 		_stack = .;
+
+		_exc_estack = .;
+		. += STACK_SIZE;
+		. = ALIGN(16);
+		_exc_stack = .;
 	}
 
 	_end = .;

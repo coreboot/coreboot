@@ -60,6 +60,10 @@ enum {
 	REG_SCRIPT_TYPE_RES,
 	REG_SCRIPT_TYPE_IOSF,
 	REG_SCRIPT_TYPE_MSR,
+
+	/* Insert other platform independent values above this comment */
+
+	REG_SCRIPT_TYPE_PLATFORM_BASE = 0x10000
 };
 
 enum {
@@ -84,6 +88,24 @@ struct reg_script {
 		unsigned int res_index;
 	};
 };
+
+struct reg_script_context {
+	device_t dev;
+	struct resource *res;
+	const struct reg_script *step;
+};
+
+#ifndef __PRE_RAM__
+struct reg_script_bus_entry {
+	int type;
+	uint64_t (*reg_script_read)(struct reg_script_context *ctx);
+	void (*reg_script_write)(struct reg_script_context *ctx);
+};
+
+/* Get the address and length of the platform bus table */
+const struct reg_script_bus_entry *platform_bus_table(size_t *table_entries);
+
+#endif	/* __PRE_RAM */
 
 /* Internal helper Macros. */
 
@@ -271,6 +293,8 @@ struct reg_script {
 #define REG_RES_POLL32(bar_, reg_, mask_, value_, timeout_) \
 	REG_SCRIPT_RES(POLL, 32, bar_, reg_, mask_, value_, timeout_)
 
+
+#if CONFIG_SOC_INTEL_BAYTRAIL
 /*
  * IO Sideband Function
  */
@@ -290,6 +314,7 @@ struct reg_script {
 	REG_IOSF_RMW(unit_, reg_, 0xffffffff, value_)
 #define REG_IOSF_POLL(unit_, reg_, mask_, value_, timeout_) \
 	REG_SCRIPT_IOSF(POLL, unit_, reg_, mask_, value_, timeout_)
+#endif	/* CONFIG_SOC_INTEL_BAYTRAIL */
 
 /*
  * CPU Model Specific Register

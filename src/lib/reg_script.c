@@ -41,12 +41,6 @@
 #define EMPTY_DEV NULL
 #endif
 
-struct reg_script_context {
-	device_t dev;
-	struct resource *res;
-	const struct reg_script *step;
-};
-
 static inline void reg_script_set_dev(struct reg_script_context *ctx,
                                       device_t dev)
 {
@@ -243,9 +237,9 @@ static void reg_script_write_res(struct reg_script_context *ctx)
 	reg_script_set_step(ctx, step);
 }
 
+#if CONFIG_SOC_INTEL_BAYTRAIL
 static uint32_t reg_script_read_iosf(struct reg_script_context *ctx)
 {
-#if CONFIG_SOC_INTEL_BAYTRAIL
 	const struct reg_script *step = reg_script_get_step(ctx);
 
 	switch (step->id) {
@@ -296,13 +290,11 @@ static uint32_t reg_script_read_iosf(struct reg_script_context *ctx)
 		       step->id);
 		break;
 	}
-#endif
 	return 0;
 }
 
 static void reg_script_write_iosf(struct reg_script_context *ctx)
 {
-#if CONFIG_SOC_INTEL_BAYTRAIL
 	const struct reg_script *step = reg_script_get_step(ctx);
 
 	switch (step->id) {
@@ -374,8 +366,9 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 		       step->id);
 		break;
 	}
-#endif
 }
+#endif
+
 
 static uint64_t reg_script_read_msr(struct reg_script_context *ctx)
 {
@@ -401,6 +394,36 @@ static void reg_script_write_msr(struct reg_script_context *ctx)
 #endif
 }
 
+#ifndef __PRE_RAM__
+/* Default routine provided for systems without platform specific busses */
+const struct reg_script_bus_entry *__attribute__((weak))
+	platform_bus_table(size_t *table_entries)
+{
+	/* No platform bus type table supplied */
+	*table_entries = 0;
+	return NULL;
+}
+
+/* Locate the structure containing the platform specific bus access routines */
+static const struct reg_script_bus_entry
+	*find_bus(const struct reg_script *step)
+{
+	const struct reg_script_bus_entry *bus;
+	size_t table_entries;
+	size_t i;
+
+	/* Locate the platform specific bus */
+	bus = platform_bus_table(&table_entries);
+	for (i = 0; i < table_entries; i++) {
+		if (bus[i].type == step->type)
+			return &bus[i];
+	}
+
+	/* Bus not found */
+	return NULL;
+}
+#endif
+
 static uint64_t reg_script_read(struct reg_script_context *ctx)
 {
 	const struct reg_script *step = reg_script_get_step(ctx);
@@ -414,10 +437,27 @@ static uint64_t reg_script_read(struct reg_script_context *ctx)
 		return reg_script_read_mmio(ctx);
 	case REG_SCRIPT_TYPE_RES:
 		return reg_script_read_res(ctx);
-	case REG_SCRIPT_TYPE_IOSF:
-		return reg_script_read_iosf(ctx);
 	case REG_SCRIPT_TYPE_MSR:
 		return reg_script_read_msr(ctx);
+#if CONFIG_SOC_INTEL_BAYTRAIL
+	case REG_SCRIPT_TYPE_IOSF:
+		return reg_script_read_iosf(ctx);
+#endif
+	default:
+#ifndef __PRE_RAM__
+		{
+			const struct reg_script_bus_entry *bus;
+
+			/* Read from the platform specific bus */
+			bus = find_bus(step);
+			if (NULL != bus)
+				return bus->reg_script_read(ctx);
+		}
+#endif
+		printk(BIOS_ERR,
+			"Unsupported read type (0x%x) for this device!\n",
+			step->type);
+		break;
 	}
 	return 0;
 }
@@ -439,11 +479,30 @@ static void reg_script_write(struct reg_script_context *ctx)
 	case REG_SCRIPT_TYPE_RES:
 		reg_script_write_res(ctx);
 		break;
+	case REG_SCRIPT_TYPE_MSR:
+		reg_script_write_msr(ctx);
+		break;
+#if CONFIG_SOC_INTEL_BAYTRAIL
 	case REG_SCRIPT_TYPE_IOSF:
 		reg_script_write_iosf(ctx);
 		break;
-	case REG_SCRIPT_TYPE_MSR:
-		reg_script_write_msr(ctx);
+#endif
+	default:
+#ifndef __PRE_RAM__
+		{
+			const struct reg_script_bus_entry *bus;
+
+			/* Write to the platform specific bus */
+			bus = find_bus(step);
+			if (NULL != bus) {
+				bus->reg_script_write(ctx);
+				return;
+			}
+		}
+#endif
+		printk(BIOS_ERR,
+			"Unsupported write type (0x%x) for this device!\n",
+			step->type);
 		break;
 	}
 }

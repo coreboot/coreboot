@@ -144,6 +144,10 @@ detect_special_flags() {
 		# specify -mmsse, etc flags.
 		CFLAGS="$CFLAGS  -march=i686"
 		;;
+	mipsel)
+		testcc "$CC" "$CFLAGS -mno-abicalls -fno-pic" && \
+                  CFLAGS+=" -mno-abicalls -fno-pic"
+		;;
 	esac
 }
 

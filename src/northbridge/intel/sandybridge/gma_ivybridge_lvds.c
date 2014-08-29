@@ -36,54 +36,6 @@
 
 #if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 
-static size_t generate_vbt(const struct northbridge_intel_sandybridge_config *conf,
-			   void *vbt)
-{
-	struct vbt_header *head = vbt;
-	struct bdb_header *bdb_head;
-	struct bdb_general_features *genfeat;
-	u8 *ptr;
-
-	memset(head, 0, sizeof (*head));
-
-	memcpy(head->signature, "$VBT SNB/IVB-MOBILE ", 20);
-	head->version = 100;
-	head->header_size = sizeof (*head);
-	head->bdb_offset = sizeof (*head);
-
-	bdb_head = (struct bdb_header *) (head + 1);
-	memset(bdb_head, 0, sizeof (*bdb_head));
-	memcpy(bdb_head->signature, "BIOS_DATA_BLOCK ", 16);
-	bdb_head->version = 0xa8;
-	bdb_head->header_size = sizeof (*bdb_head);
-
-	ptr = (u8 *) (bdb_head + 1);
-
-	ptr[0] = BDB_GENERAL_FEATURES;
-	ptr[1] = sizeof (*genfeat);
-	ptr[2] = sizeof (*genfeat) >> 8;
-	ptr += 3;
-
-	genfeat = (struct bdb_general_features *) ptr;
-	memset(genfeat, 0, sizeof (*genfeat));
-	genfeat->panel_fitting = 3;
-	genfeat->flexaim = 1;
-	genfeat->download_ext_vbt = 1;
-	genfeat->enable_ssc = conf->gpu_use_spread_spectrum_clock;
-	genfeat->ssc_freq = !conf->gpu_link_frequency_270_mhz;
-	genfeat->rsvd10 = 0x4;
-	genfeat->legacy_monitor_detect = 1;
-	genfeat->int_crt_support = 1;
-	genfeat->dp_ssc_enb = 1;
-
-	ptr += sizeof (*genfeat);
-
-	bdb_head->bdb_size = ptr - (u8 *)bdb_head;
-	head->vbt_size = ptr - (u8 *)head;
-	head->vbt_checksum = 0;
-	return ptr - (u8 *)head;
-}
-
 static void link_train(u32 mmio)
 {
 	write32(mmio+0xf000c,0x40);
@@ -207,8 +159,8 @@ static void enable_port(u32 mmio)
 	read32(mmio + 0xc4000);
 }
 
-int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
-		u32 physbase, u16 piobase, u32 mmio, u32 lfb)
+int i915lightup_sandy(const struct i915_gpu_controller_info *info,
+		      u32 physbase, u16 piobase, u32 mmio, u32 lfb)
 {
 	int i;
 	u8 edid_data[128];
@@ -277,7 +229,7 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 	u32 candp1, candn;
 	u32 best_delta = 0xffffffff;
 
-	u32 target_frequency = info->gpu_lvds_dual_channel ? edid.pixel_clock
+	u32 target_frequency = info->lvds_dual_channel ? edid.pixel_clock
 		: (2 * edid.pixel_clock);
 	u32 pixel_p1 = 1;
 	u32 pixel_n = 1;
@@ -350,7 +302,7 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 		return 0;
 	}
 
-	u32 link_frequency = info->gpu_link_frequency_270_mhz ? 270000 : 162000;
+	u32 link_frequency = info->link_frequency_270_mhz ? 270000 : 162000;
 	u32 data_m1;
 	u32 data_n1 = 0x00800000;
 	u32 link_m1;
@@ -359,7 +311,7 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 	link_m1 = ((uint64_t)link_n1 * edid.pixel_clock) / link_frequency;
 
 	data_m1 = ((uint64_t)data_n1 * 18 * edid.pixel_clock)
-		/ (link_frequency * 8 * (info->gpu_lvds_num_lanes ? : 1));
+		/ (link_frequency * 8 * (info->lvds_num_lanes ? : 1));
 
 	printk(BIOS_INFO, "bringing up panel at resolution %d x %d\n",
 	       hactive, vactive);
@@ -371,10 +323,10 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 	       hsync, vsync);
 	printk(BIOS_DEBUG, "Front porch %d x %d\n",
 	       hfront_porch, vfront_porch);
-	printk(BIOS_DEBUG, (info->gpu_use_spread_spectrum_clock
+	printk(BIOS_DEBUG, (info->use_spread_spectrum_clock
 			    ? "Spread spectrum clock\n" : "DREF clock\n"));
 	printk(BIOS_DEBUG,
-	       info->gpu_lvds_dual_channel ? "Dual channel\n" : "Single channel\n");
+	       info->lvds_dual_channel ? "Dual channel\n" : "Single channel\n");
 	printk(BIOS_DEBUG, "Polarities %d, %d\n",
 	       hpolarity, vpolarity);
 	printk(BIOS_DEBUG, "Data M1=%d, N1=%d\n",
@@ -391,12 +343,12 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 
 	write32(mmio + PCH_LVDS,
 		(hpolarity << 20) | (vpolarity << 21)
-		| (info->gpu_lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (info->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);
 	write32(mmio + BLC_PWM_CPU_CTL2, (1 << 31));
-	write32(mmio + PCH_DREF_CONTROL, (info->gpu_use_spread_spectrum_clock
+	write32(mmio + PCH_DREF_CONTROL, (info->use_spread_spectrum_clock
 					  ? 0x1002 : 0x400));
 	mdelay(1);
 	write32(mmio + PCH_PP_CONTROL, PANEL_UNLOCK_REGS
@@ -406,10 +358,10 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 		| ((pixel_m1 - 2) << 8) | pixel_m2);
 	write32(mmio + _PCH_DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
-		| (info->gpu_lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		| (info->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (0x10000 << (pixel_p1 - 1))
-		| ((info->gpu_use_spread_spectrum_clock ? 3 : 0) << 13)
+		| ((info->use_spread_spectrum_clock ? 3 : 0) << 13)
 		| (0x1 << (pixel_p1 - 1)));
 
 	mdelay(1);
@@ -418,10 +370,10 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 	mdelay(1);
 	write32(mmio + _PCH_DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
-		| (info->gpu_lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		| (info->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (0x10000 << (pixel_p1 - 1))
-		| ((info->gpu_use_spread_spectrum_clock ? 3 : 0) << 13)
+		| ((info->use_spread_spectrum_clock ? 3 : 0) << 13)
 		| (0x1 << (pixel_p1 - 1)));
 	/* Re-lock the registers.  */
 	write32(mmio + PCH_PP_CONTROL,
@@ -429,7 +381,7 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 
 	write32(mmio + PCH_LVDS,
 		(hpolarity << 20) | (vpolarity << 21)
-		| (info->gpu_lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (info->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);
@@ -526,7 +478,7 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 	write32(mmio + PCH_LVDS,
 		LVDS_PORT_ENABLE
 		| (hpolarity << 20) | (vpolarity << 21)
-		| (info->gpu_lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (info->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);
@@ -562,35 +514,9 @@ int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
 #endif
 
 	/* Linux relies on VBT for panel info.  */
-	optionrom_header_t *oh = (void *)PCI_VGA_RAM_IMAGE_START;
-	optionrom_pcir_t *pcir;
-	size_t vbt_size;
-	size_t fake_oprom_size;
-	struct device *dev;
+	generate_fake_intel_oprom(info, dev_find_slot(0, PCI_DEVFN(2, 0)),
+				  "$VBT SNB/IVB-MOBILE ");
 
-	dev = dev_find_slot(0, PCI_DEVFN(2, 0));
-
-	memset(oh, 0, 8192);
-
-	oh->signature = OPROM_SIGNATURE;
-	oh->pcir_offset = 0x40;
-	oh->vbt_offset = 0x80;
-
-	pcir = (void *)(PCI_VGA_RAM_IMAGE_START + 0x40);
-	pcir->signature = 0x52494350;	// PCIR
-	pcir->vendor = dev->vendor;
-	pcir->device = dev->device;
-	pcir->length = sizeof(*pcir);
-	pcir->revision = dev->class;
-	pcir->classcode[0] = dev->class >> 8;
-	pcir->classcode[1] = dev->class >> 16;
-	pcir->classcode[2] = dev->class >> 24;
-	pcir->indicator = 0x80;
-
-	vbt_size = generate_vbt (info, (void *)(PCI_VGA_RAM_IMAGE_START + 0x80));
-	fake_oprom_size = (0x80 + vbt_size + 511) / 512;
-	oh->size = fake_oprom_size;
-	pcir->imagelength = fake_oprom_size;
 	return 1;
 }
 

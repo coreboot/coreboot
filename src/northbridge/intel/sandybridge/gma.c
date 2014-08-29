@@ -278,12 +278,12 @@ u32 map_oprom_vendev(u32 vendev)
 
 static struct resource *gtt_res = NULL;
 
-static inline u32 gtt_read(u32 reg)
+u32 gtt_read(u32 reg)
 {
 	return read32(gtt_res->base + reg);
 }
 
-static inline void gtt_write(u32 reg, u32 data)
+void gtt_write(u32 reg, u32 data)
 {
 	write32(gtt_res->base + reg, data);
 }
@@ -295,7 +295,7 @@ static inline void gtt_write_powermeter(const struct gt_powermeter *pm)
 }
 
 #define GTT_RETRY 1000
-static int gtt_poll(u32 reg, u32 mask, u32 value)
+int gtt_poll(u32 reg, u32 mask, u32 value)
 {
 	unsigned try = GTT_RETRY;
 	u32 data;
@@ -595,7 +595,7 @@ static void gma_func0_init(struct device *dev)
 	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 	graphics_base = dev->resource_list[1].base;
 
-	int lightup_ok = i915lightup_sandy(conf, physbase, iobase, mmiobase, graphics_base);
+	int lightup_ok = i915lightup_sandy(&conf->gfx, physbase, iobase, mmiobase, graphics_base);
 	if (lightup_ok)
 		gfx_set_init_done(1);
 #endif

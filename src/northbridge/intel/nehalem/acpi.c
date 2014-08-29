@@ -31,6 +31,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <drivers/intel/gma/intel_bios.h>
 #include <build.h>
 #include <arch/acpigen.h>
 #include <cpu/cpu.h>

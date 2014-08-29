@@ -236,8 +236,8 @@ static int run(int index)
 	return i+1;
 }
 
-int i915lightup(const struct northbridge_intel_sandybridge_config *info,
-		u32 pphysbase, u16 piobase, u32 pmmio, u32 pgfx)
+int i915lightup_sandy(const struct i915_gpu_controller_info *info,
+		      u32 pphysbase, u16 piobase, u32 pmmio, u32 pgfx)
 {
 	static struct edid edid;
 	int edid_ok;

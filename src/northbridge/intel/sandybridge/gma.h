@@ -114,59 +114,7 @@ typedef struct {
 	opregion_vbt_t vbt;
 } __attribute__((packed)) igd_opregion_t;
 
-/* Intel Video BIOS (Option ROM) */
-typedef struct {
-	u16	signature;
-	u8	size;
-	u8	reserved[21];
-	u16	pcir_offset;
-	u16	vbt_offset;
-} __attribute__((packed)) optionrom_header_t;
+struct i915_gpu_controller_info;
 
-#define OPROM_SIGNATURE 0xaa55
-
-typedef struct {
-	u32 signature;
-	u16 vendor;
-	u16 device;
-	u16 reserved1;
-	u16 length;
-	u8  revision;
-	u8  classcode[3];
-	u16 imagelength;
-	u16 coderevision;
-	u8  codetype;
-	u8  indicator;
-	u16 reserved2;
-} __attribute__((packed)) optionrom_pcir_t;
-
-typedef struct {
-	u8  hdr_signature[20];
-	u16 hdr_version;
-	u16 hdr_size;
-	u16 hdr_vbt_size;
-	u8  hdr_vbt_checksum;
-	u8  hdr_reserved;
-	u32 hdr_vbt_datablock;
-	u32 hdr_aim[4];
-	u8  datahdr_signature[16];
-	u16 datahdr_version;
-	u16 datahdr_size;
-	u16 datahdr_datablocksize;
-	u8  coreblock_id;
-	u16 coreblock_size;
-	u16 coreblock_biossize;
-	u8  coreblock_biostype;
-	u8  coreblock_releasestatus;
-	u8  coreblock_hwsupported;
-	u8  coreblock_integratedhw;
-	u8  coreblock_biosbuild[4];
-	u8  coreblock_biossignon[155];
-} __attribute__((packed)) optionrom_vbt_t;
-
-#define VBT_SIGNATURE 0x54425624
-
-struct northbridge_intel_sandybridge_config;
-
-int i915lightup_sandy(const struct northbridge_intel_sandybridge_config *info,
+int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 		u32 physbase, u16 pio, u32 mmio, u32 lfb);

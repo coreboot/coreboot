@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <drivers/intel/gma/i915.h>
+
 /*
  * Digital Port Hotplug Enable:
  *  0x04 = Enabled, 2ms short pulse
@@ -39,8 +41,5 @@ struct northbridge_intel_sandybridge_config {
 	u32 gpu_cpu_backlight;	/* CPU Backlight PWM value */
 	u32 gpu_pch_backlight;	/* PCH Backlight PWM value */
 
-	int gpu_use_spread_spectrum_clock;
-	int gpu_lvds_dual_channel;
-	int gpu_link_frequency_270_mhz;
-	int gpu_lvds_num_lanes;
+	struct i915_gpu_controller_info gfx;
 };

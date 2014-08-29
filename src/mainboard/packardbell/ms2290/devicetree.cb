@@ -35,10 +35,10 @@ chip northbridge/intel/nehalem
 	register "gpu_panel_power_backlight_off_delay" = "3000"
 	register "gpu_cpu_backlight" = "0x58d"
 	register "gpu_pch_backlight" = "0x061a061a"
-	register "gpu_use_spread_spectrum_clock" = "0"
-	register "gpu_lvds_dual_channel" = "1"
-	register "gpu_link_frequency_270_mhz" = "1"
-	register "gpu_lvds_num_lanes" = "4"
+	register "gfx.use_spread_spectrum_clock" = "0"
+	register "gfx.lvds_dual_channel" = "1"
+	register "gfx.link_frequency_270_mhz" = "1"
+	register "gfx.lvds_num_lanes" = "4"
 
 	device cpu_cluster 0 on
 		chip cpu/intel/model_2065x

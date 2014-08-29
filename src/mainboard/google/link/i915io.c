@@ -18,6 +18,7 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 #include "i915io.h"
 
 struct iodef iodefs[] = {

@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef INTEL_I915_H
+#define INTEL_I915_H 1
+
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/drm_dp_helper.h>
 #include <edid.h>
@@ -282,6 +285,14 @@ int gtt_poll(u32 reg, u32 mask, u32 value);
 void gtt_write(u32 reg, u32 data);
 u32 gtt_read(u32 reg);
 
+struct i915_gpu_controller_info
+{
+	int use_spread_spectrum_clock;
+	int lvds_dual_channel;
+	int link_frequency_270_mhz;
+	int lvds_num_lanes;
+};
+
 int i915lightup(unsigned int physbase, unsigned int mmio,
 		unsigned int gfx, unsigned int init_fb);
 int panel_lightup(struct intel_dp *dp, unsigned int init_fb);
@@ -289,3 +300,11 @@ void *igd_make_opregion(void);
 
 /* display.c */
 void compute_display_params(struct intel_dp *dp);
+
+/* vbt.c */
+struct device;
+void
+generate_fake_intel_oprom(const struct i915_gpu_controller_info *conf,
+			  struct device *dev, const char *idstr);
+
+#endif

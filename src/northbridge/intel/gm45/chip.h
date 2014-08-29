@@ -21,11 +21,10 @@
 #ifndef NORTHBRIDGE_INTEL_GM45_CHIP_H
 #define NORTHBRIDGE_INTEL_GM45_CHIP_H
 
+#include <drivers/intel/gma/i915.h>
+
 struct northbridge_intel_gm45_config {
-	int gpu_use_spread_spectrum_clock;
-	int gpu_lvds_dual_channel;
-	int gpu_link_frequency_270_mhz;
-	int gpu_lvds_num_lanes;
+	struct i915_gpu_controller_info gfx;
 };
 
 #endif				/* NORTHBRIDGE_INTEL_GM45_CHIP_H */

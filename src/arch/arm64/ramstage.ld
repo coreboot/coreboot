@@ -105,10 +105,6 @@ SECTIONS
 		_eheap = .;
 	}
 
-	/* arm64 chipsets need to define CONFIG_RAMSTAGE_STACK_(TOP|BOTTOM) */
-	_stack = CONFIG_RAMSTAGE_STACK_BOTTOM;
-	_estack = CONFIG_RAMSTAGE_STACK_TOP;
-
 	/* The ram segment. This includes all memory used by the memory
 	 * resident copy of coreboot, except the tables that are produced on
 	 * the fly, but including stack and heap.

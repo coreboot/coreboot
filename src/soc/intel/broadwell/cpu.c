@@ -103,32 +103,6 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x11] = 128,
 };
 
-u32 cpu_family_model(void)
-{
-	return cpuid_eax(1) & 0x0fff0ff0;
-}
-
-u32 cpu_stepping(void)
-{
-	return cpuid_eax(1) & 0xf;
-}
-
-/* Dynamically determine if the part is ULT. */
-int cpu_is_ult(void)
-{
-	static int ult = -1;
-
-	if (ult < 0) {
-		u32 fm = cpu_family_model();
-		if (fm == BROADWELL_FAMILY_ULT || fm == HASWELL_FAMILY_ULT)
-			ult = 1;
-		else
-			ult = 0;
-	}
-
-	return ult;
-}
-
 /* The core 100MHz BLCK is disabled in deeper c-states. One needs to calibrate
  * the 100MHz BCLCK against the 24MHz BLCK to restore the clocks properly
  * when a core is woken up. */

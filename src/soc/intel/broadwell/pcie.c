@@ -144,6 +144,7 @@ static void root_port_init_config(device_t dev)
 		break;
 	}
 
+	pcie_update_cfg(dev, 0x418, 0, 0x02000430);
 	/* Cache pci device. */
 	rpc.ports[rp - 1] = dev;
 }

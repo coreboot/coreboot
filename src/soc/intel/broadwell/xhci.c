@@ -25,6 +25,7 @@
 #include <arch/io.h>
 #include <broadwell/ramstage.h>
 #include <broadwell/xhci.h>
+#include <broadwell/cpu.h>
 
 #ifdef __SMM__
 static u8 *usb_xhci_mem_base(device_t dev)
@@ -147,6 +148,7 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 	u16 reg16;
 	u32 reg32;
 	u8 *mem_base = usb_xhci_mem_base(dev);
+	u8 is_broadwell = !!(cpu_family_model() == BROADWELL_FAMILY_ULT);
 
 	if (!mem_base || slp_typ < 3)
 		return;
@@ -156,6 +158,9 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 	reg16 &= ~XHCI_PWR_CTL_SET_MASK;
 	reg16 |= XHCI_PWR_CTL_SET_D0;
 	pci_write_config16(dev, XHCI_PWR_CTL_STS, reg16);
+
+	if (!is_broadwell) {
+		/* This WA is only for lpt */
 
 	/* Clear PCI 0xB0[14:13] */
 	reg32 = pci_read_config32(dev, 0xb0);
@@ -174,6 +179,11 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 	reg32 = read32(mem_base + 0x80e0);
 	reg32 |= (1 << 15);
 	write32(mem_base + 0x80e0, reg32);
+	}
+
+	reg32 = read32(mem_base + 0x8154);
+	reg32 &= ~(1 << 31);
+	write32(mem_base + 0x8154, reg32);
 
 	/* Set D3Hot state and enable PME */
 	pci_or_config16(dev, XHCI_PWR_CTL_STS, XHCI_PWR_CTL_SET_D3);

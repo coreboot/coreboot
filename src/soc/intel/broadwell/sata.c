@@ -209,6 +209,10 @@ static void sata_init(struct device *dev)
 	reg32 |= (1 << 31) | (1 << 30) | (1 << 29);
 	pci_write_config32(dev, 0x300, reg32);
 
+	reg32 = pci_read_config32(dev, 0x98);
+	reg32 |= 1 << 29;
+	pci_write_config32(dev, 0x98, reg32);
+
 	/* Register Lock */
 	reg32 = pci_read_config32(dev, 0x9c);
 	reg32 |= (1 << 31);

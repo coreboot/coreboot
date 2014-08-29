@@ -146,6 +146,7 @@ void google_chromeec_check_ec_image(int expected_type)
 		cec_cmd.cmd_size_in = sizeof(reboot_ec);
 		cec_cmd.cmd_size_out = 0; /* ignore response, if any */
 		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
+		post_code(0); /* clear current post code */
 		google_chromeec_command(&cec_cmd);
 		udelay(1000);
 		hard_reset();
@@ -451,6 +452,7 @@ void google_chromeec_init(void)
 		cec_cmd.cmd_size_in = sizeof(reboot_ec);
 		cec_cmd.cmd_size_out = 0; /* ignore response, if any */
 		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
+		post_code(0); /* clear current post code */
 		google_chromeec_command(&cec_cmd);
 		udelay(1000);
 		hard_reset();

@@ -565,3 +565,9 @@ $(obj)/coreboot.pre: $(objcbfs)/$(ROMSTAGE_ELF) $(obj)/coreboot.pre1 $(CBFSTOOL)
 		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
 		$(CBFSTOOL_PRE_OPTS)
 	mv $@.tmp $@
+
+JENKINS_PAYLOAD=none
+what-jenkins-does:
+	util/abuild/abuild -B -J -y -c 4 -p $(JENKINS_PAYLOAD)
+	(cd payloads/libpayload; $(MAKE) CONFIG_CCACHE=y V=$(V) Q=$(Q) junit.xml)
+	$(MAKE) V=$(V) Q=$(Q) -C util/cbmem junit.xml

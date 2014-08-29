@@ -19,10 +19,10 @@
 
 #include <arch/io.h>
 #include <reset.h>
-#include <soc/nvidia/tegra132/gpio.h>
+#include "gpio.h"
 
 void hard_reset(void)
 {
-	gpio_output(GPIO(I5), 0);
+	gpio_output(AP_SYS_RESET_L, 0);
 	while(1);
 }

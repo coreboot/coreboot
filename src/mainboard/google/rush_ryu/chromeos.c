@@ -23,16 +23,16 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <soc/nvidia/tegra132/gpio.h>
+#include "gpio.h"
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	int count = 0;
 
 	/* Write Protect: active low */
-	gpios->gpios[count].port = GPIO_R1_INDEX;
+	gpios->gpios[count].port = WRITE_PROTECT_L_INDEX;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get_in_value(GPIO(R1));
+	gpios->gpios[count].value = gpio_get_in_value(WRITE_PROTECT_L);
 	strncpy((char *)gpios->gpios[count].name, "write protect",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -48,7 +48,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* TODO(adurbin): add lid switch */
 
 	/* Power: active low */
-	gpios->gpios[count].port = GPIO_Q0_INDEX;
+	gpios->gpios[count].port = POWER_BUTTON_L_INDEX,
 	gpios->gpios[count].polarity = ACTIVE_LOW;
 	gpios->gpios[count].value = 1;
 	strncpy((char *)gpios->gpios[count].name, "power",
@@ -85,5 +85,5 @@ int get_recovery_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return !gpio_get_in_value(GPIO(R1));
+	return !gpio_get_in_value(WRITE_PROTECT_L);
 }

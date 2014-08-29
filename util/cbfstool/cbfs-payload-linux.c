@@ -302,9 +302,8 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	                   PAYLOAD_SEGMENT_CODE, kernel_base);
 
 	/* trampoline */
-	uint64_t entrypoint = 0x40000; /*TODO: any better place? */
 	bzp_output_segment(&bzp, &bzp.trampoline,
-	                   PAYLOAD_SEGMENT_CODE, entrypoint);
+	                   PAYLOAD_SEGMENT_CODE, TRAMPOLINE_ENTRY_LOC);
 
 	/* cmdline */
 	bzp_output_segment(&bzp, &bzp.cmdline,
@@ -315,7 +314,7 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	                   PAYLOAD_SEGMENT_DATA, initrd_base);
 
 	/* Terminating entry segment. */
-	bzp_output_segment(&bzp, NULL, PAYLOAD_SEGMENT_ENTRY, entrypoint);
+	bzp_output_segment(&bzp, NULL, PAYLOAD_SEGMENT_ENTRY, TRAMPOLINE_ENTRY_LOC);
 
 	/* Set size of buffer taking into account potential compression. */
 	buffer_set_size(&bzp.output, bzp.offset);

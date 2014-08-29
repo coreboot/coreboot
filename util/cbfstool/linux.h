@@ -26,16 +26,12 @@
  */
 
 #include <stdint.h>
+#include "linux_trampoline.h"
 
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
-
-#define LINUX_PARAM_LOC 0x90000
-#define COMMAND_LINE_LOC 0x91000
-#define GDT_LOC 0x92000
-#define STACK_LOC 0x93000
 
 #define E820MAX	32		/* number of entries in E820MAP */
 struct e820entry {

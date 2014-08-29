@@ -20,7 +20,7 @@
 #
 
 config CPU_IMGTEC_DANUBE
-	select CPU_MIPS32R2
+	select CPU_MIPS
 	select DYNAMIC_CBMEM
 	select HAVE_UART_MEMORY_MAPPED
 	select HAVE_UART_SPECIAL

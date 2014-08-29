@@ -19,14 +19,24 @@
 # MA 02110-1301 USA
 #
 
+# We enable CBFS_SPI_WRAPPER for Danuibe targets.
+bootblock-y += spi.c
+romstage-y += spi.c
+ramstage-y += spi.c
+
 ifeq ($(CONFIG_CONSOLE_SERIAL_UART),y)
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 romstage-y += uart.c
 ramstage-y += uart.c
 endif
 
-romstage-y += cbmem.c
+bootblock-y += timestamp.c
+
 ramstage-y += cbmem.c
+ramstage-y += timestamp.c
+
+romstage-y += cbmem.c
+romstage-y += timestamp.c
 
 # Generate the actual coreboot bootblock code
 $(objcbfs)/bootblock.raw: $(objcbfs)/bootblock.elf
@@ -38,3 +48,4 @@ $(objcbfs)/bootblock.raw: $(objcbfs)/bootblock.elf
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw $(BIMGTOOL)
 	@printf "    BIMGTOOL   $(subst $(obj)/,,$(@))\n"
 	$(BIMGTOOL) $< $@ $(CONFIG_BOOTBLOCK_BASE)
+

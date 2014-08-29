@@ -48,9 +48,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* TODO(adurbin): add lid switch */
 
 	/* Power: active low */
-	gpios->gpios[count].port = POWER_BUTTON_L_INDEX,
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = 1;
+	gpios->gpios[count].port = POWER_BUTTON_INDEX,
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = gpio_get_in_value(POWER_BUTTON);
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);
 	count++;

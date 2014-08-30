@@ -202,6 +202,8 @@ static struct device_operations pci_domain_ops = {
 	.init             = mch_domain_init,
 	.scan_bus         = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
+	.write_acpi_tables = northbridge_write_acpi_tables,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 

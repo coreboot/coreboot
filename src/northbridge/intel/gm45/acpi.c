@@ -27,6 +27,9 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <cbmem.h>
+#include <arch/acpigen.h>
+#include <cpu/cpu.h>
 #include "gm45.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -103,5 +106,31 @@ unsigned long acpi_fill_dmar(unsigned long current)
 	current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, IOMMU_BASE4);
 
 	/* TODO: reserve GTT for 0.2.0 and 0.2.1? */
+	return current;
+}
+
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
+unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp)
+{
+	unsigned long current;
+#if CONFIG_IOMMU
+	acpi_dmar_t *dmar;
+#endif
+
+	current = start;
+
+#if CONFIG_IOMMU
+	printk(BIOS_DEBUG, "ACPI:     * DMAR\n");
+	dmar = (acpi_dmar_t *) current;
+	acpi_create_dmar(dmar);
+	current += dmar->header.length;
+	ALIGN_CURRENT;
+	acpi_add_table(rsdp, dmar);
+#endif
+
+	ALIGN_CURRENT;
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+
 	return current;
 }

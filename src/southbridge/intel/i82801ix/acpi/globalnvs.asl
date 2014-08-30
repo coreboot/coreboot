@@ -31,7 +31,8 @@ Name(\DSEN, 1)		// Display Output Switching Enable
  */
 
 
-OperationRegion (GNVS, SystemMemory, 0xC0DEBABE, 0x100)
+External(NVSA)
+OperationRegion (GNVS, SystemMemory, NVSA, 0x100)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */

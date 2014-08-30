@@ -31,7 +31,11 @@
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
+#include <arch/acpigen.h>
+#include <cbmem.h>
+#include <string.h>
 #include "i82801ix.h"
+#include "nvs.h"
 
 #define NMI_OFF	0
 
@@ -534,6 +538,26 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+#if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+static void southbridge_inject_dsdt(void)
+{
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+
+	if (gnvs) {
+		int scopelen;
+		memset(gnvs, 0, sizeof (*gnvs));
+		acpi_create_gnvs(gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to SSDT.  */
+		scopelen = acpigen_write_scope("\\");
+		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_patch_len(scopelen - 1);
+	}
+}
+#endif
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -542,6 +566,10 @@ static struct device_operations device_ops = {
 	.read_resources		= i82801ix_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+#if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
+	.write_acpi_tables      = acpi_write_hpet,
+#endif
 	.init			= lpc_init,
 	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_ops,

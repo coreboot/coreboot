@@ -429,6 +429,9 @@ u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
 
 void init_iommu(void);
+
+struct acpi_rsdp;
+unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp);
 #endif
 
 #endif

@@ -163,7 +163,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *dsdt;
 	acpi_header_t *ecdt;
 
-	void *gnvs, *smi1;
+	void *gnvs;
 
 	current = start;
 
@@ -268,22 +268,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += 0x100;
 	ALIGN_CURRENT;
 
-	for (i=0; i < dsdt->length; i++) {
-		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEDEAD) {
-			printk(BIOS_DEBUG, "ACPI: Patching up SMI1 area in DSDT at offset 0x%04x -> 0x%08x\n", i, (u32)current);
-			*(u32*)(((u32)dsdt) + i) = current; // 0x100 bytes
-			break;
-		}
-	}
-
-	/* Keep pointer around */
-	smi1 = (void *)current;
-
-	current += 0x100;
-	ALIGN_CURRENT;
-
 	/* And tell SMI about it */
-	smm_setup_structures(gnvs, NULL, smi1);
+	smm_setup_structures(gnvs, NULL, NULL);
 
 	/* We patched up the DSDT, so we need to recalculate the checksum */
 	dsdt->checksum = 0;

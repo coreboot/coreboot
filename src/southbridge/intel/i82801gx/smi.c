@@ -387,7 +387,5 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 	 * after we relocated the GNVS, so this is not troublesome.
 	 */
 	*(u32 *)0x500 = (u32)gnvs;
-	*(u32 *)0x504 = (u32)tcg;
-	*(u32 *)0x508 = (u32)smi1;
 	outb(0xea, 0xb2);
 }

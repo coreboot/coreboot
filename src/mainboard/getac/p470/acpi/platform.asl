@@ -44,15 +44,6 @@ Method(TRAP, 1, Serialized)
 	Return (SMIF)		// Return value of SMI handler
 }
 
-/* SMI Function Trap */
-OperationRegion(SMI1, SystemMemory, 0xC0DEDEAD, 0x100)
-Field(SMI1, AnyAcc, NoLock, Preserve)
-{
-	BCMD,  8,
-	DID,  32,
-	INFO, 1024
-}
-
 /* The _PIC method is called by the OS to choose between interrupt
  * routing via the i8259 interrupt controller or the APIC.
  *
@@ -77,11 +68,6 @@ Method(_PTS,1)
 
 	Store(0, \_SB.ACFG)
 
-	// Are we going to S3?
-	If (LEqual(Arg0, 3)) {
-		Store (0x4c, BCMD)
-	}
-
 	// Are we going to S4?
 	If (Lequal(Arg0, 4)) {
 		TRAP(0xe7)
@@ -90,7 +76,6 @@ Method(_PTS,1)
 
 	// Are we going to S5?
 	If (Lequal(Arg0, 5)) {
-		Store (0x4b, BCMD)
 		TRAP(0xde)
 	}
 

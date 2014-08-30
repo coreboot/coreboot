@@ -49,8 +49,6 @@ u8 smm_initialized = 0;
  * by coreboot.
  */
 global_nvs_t *gnvs = (global_nvs_t *)0x0;
-void *tcg = (void *)0x0;
-void *smi1 = (void *)0x0;
 
 /**
  * @brief read and clear PM1_STS
@@ -407,10 +405,8 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 			return;
 		}
 		gnvs = *(global_nvs_t **)0x500;
-		tcg  = *(void **)0x504;
-		smi1 = *(void **)0x508;
 		smm_initialized = 1;
-		printk(BIOS_DEBUG, "SMI#: Setting up structures to %p, %p, %p\n", gnvs, tcg, smi1);
+		printk(BIOS_DEBUG, "SMI#: Setting up structures to %p\n", gnvs);
 		break;
 	default:
 		printk(BIOS_DEBUG, "SMI#: Unknown function APM_CNT=%02x\n", reg8);
@@ -558,18 +554,7 @@ static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *st
 	/* IOTRAP(2) currently unused
 	 * IOTRAP(1) currently unused */
 
-	/* IOTRAP(0) SMIC */
-	if (IOTRAP(0)) {
-		if (!(trap_cycle & (1 << 24))) { // It's a write
-			printk(BIOS_DEBUG, "SMI1 command\n");
-			data = RCBA32(0x1e18);
-			data &= mask;
-			// if (smi1)
-			// 	southbridge_smi_command(data);
-			// return;
-		}
-		// Fall through to debug
-	}
+	/* IOTRAP(0) SMIC: currently unused  */
 
 	printk(BIOS_DEBUG, "  trapped io address = 0x%x\n", trap_cycle & 0xfffc);
 	for (i=0; i < 4; i++) if(IOTRAP(i)) printk(BIOS_DEBUG, "  TRAP = %d\n", i);

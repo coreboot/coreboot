@@ -275,9 +275,5 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 	printk(BIOS_INFO, "ACPI: done.\n");
 
-	/* Enable Dummy DCC ON# for DVI */
-	printk(BIOS_DEBUG, "Laptop handling...\n");
-	outb(inb(0x60f) & ~(1 << 5), 0x60f);
-
 	return current;
 }

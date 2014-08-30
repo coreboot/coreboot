@@ -247,15 +247,17 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 	header->checksum = acpi_checksum((void *)mcfg, header->length);
 }
 
+#if !IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 /*
  * This can be overridden by platform ACPI setup code, if it calls
  * acpi_create_ssdt_generator().
  */
 unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(
-			unsigned long current, const char *oem_table_id)
+	unsigned long current, const char *oem_table_id)
 {
 	return current;
 }
+#endif
 
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 {
@@ -273,7 +275,17 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 	ssdt->length = sizeof(acpi_header_t);
 
 	acpigen_set_current((char *) current);
-	current = acpi_fill_ssdt_generator(current, oem_table_id);
+	{
+#if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+		device_t dev;
+		for (dev = all_devices; dev; dev = dev->next)
+			if (dev->ops && dev->ops->acpi_fill_ssdt_generator) {
+				current = dev->ops->acpi_fill_ssdt_generator(current, oem_table_id);
+			}
+#else
+		current = acpi_fill_ssdt_generator(current, oem_table_id);
+#endif
+	}
 
 	/* (Re)calculate length and checksum. */
 	ssdt->length = current - (unsigned long)ssdt;
@@ -455,6 +467,24 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
+unsigned long acpi_write_hpet(unsigned long current, acpi_rsdp_t *rsdp)
+{
+	acpi_hpet_t *hpet;
+
+	/*
+	 * We explicitly add these tables later on:
+	 */
+	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
+
+	hpet = (acpi_hpet_t *) current;
+	current += sizeof(acpi_hpet_t);
+	current = ALIGN(current, 16);
+	acpi_create_hpet(hpet);
+	acpi_add_table(rsdp, hpet);
+
+	return current;
+}
+
 void acpi_create_facs(acpi_facs_t *facs)
 {
 	memset((void *)facs, 0, sizeof(acpi_facs_t));
@@ -619,6 +649,123 @@ void acpi_write_hest(acpi_hest_t *hest)
 	/* Calculate checksums. */
 	header->checksum = acpi_checksum((void *)hest, header->length);
 }
+
+#if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+
+extern const unsigned char AmlCode[];
+
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
+unsigned long write_acpi_tables(unsigned long start)
+{
+	unsigned long current;
+	acpi_rsdp_t *rsdp;
+	acpi_rsdt_t *rsdt;
+	acpi_xsdt_t *xsdt;
+	acpi_fadt_t *fadt;
+	acpi_facs_t *facs;
+#if CONFIG_HAVE_ACPI_SLIC
+	acpi_header_t *slic;
+#endif
+	acpi_header_t *ssdt;
+	acpi_header_t *dsdt;
+	acpi_mcfg_t *mcfg;
+	acpi_madt_t *madt;
+	device_t dev;
+
+	current = start;
+
+	/* Align ACPI tables to 16byte */
+	ALIGN_CURRENT;
+
+	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx.\n", start);
+
+	/* We need at least an RSDP and an RSDT Table */
+	rsdp = (acpi_rsdp_t *) current;
+	current += sizeof(acpi_rsdp_t);
+	ALIGN_CURRENT;
+	rsdt = (acpi_rsdt_t *) current;
+	current += sizeof(acpi_rsdt_t);
+	ALIGN_CURRENT;
+	xsdt = (acpi_xsdt_t *) current;
+	current += sizeof(acpi_xsdt_t);
+	ALIGN_CURRENT;
+
+	/* clear all table memory */
+	memset((void *) start, 0, current - start);
+
+	acpi_write_rsdp(rsdp, rsdt, xsdt);
+	acpi_write_rsdt(rsdt);
+	acpi_write_xsdt(xsdt);
+
+	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
+	facs = (acpi_facs_t *) current;
+	current += sizeof(acpi_facs_t);
+	ALIGN_CURRENT;
+	acpi_create_facs(facs);
+
+	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
+	dsdt = (acpi_header_t *) current;
+	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
+	current += dsdt->length;
+	memcpy(dsdt, &AmlCode, dsdt->length);
+
+	ALIGN_CURRENT;
+
+	printk(BIOS_DEBUG, "ACPI:    * FADT\n");
+	fadt = (acpi_fadt_t *) current;
+	current += sizeof(acpi_fadt_t);
+	ALIGN_CURRENT;
+
+	acpi_create_fadt(fadt, facs, dsdt);
+	acpi_add_table(rsdp, fadt);
+
+#if CONFIG_HAVE_ACPI_SLIC
+	printk(BIOS_DEBUG, "ACPI:     * SLIC\n");
+	slic = (acpi_header_t *)current;
+	current += acpi_create_slic(current);
+	ALIGN_CURRENT;
+	acpi_add_table(rsdp, slic);
+#endif
+
+	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
+	ssdt = (acpi_header_t *)current;
+	acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
+	current += ssdt->length;
+	acpi_add_table(rsdp, ssdt);
+	ALIGN_CURRENT;
+
+	printk(BIOS_DEBUG, "ACPI:    * MCFG\n");
+	mcfg = (acpi_mcfg_t *) current;
+	acpi_create_mcfg(mcfg);
+	if (mcfg->header.length > sizeof(acpi_mcfg_t)) {
+		current += mcfg->header.length;
+		ALIGN_CURRENT;
+		acpi_add_table(rsdp, mcfg);
+	}
+
+	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
+
+	madt = (acpi_madt_t *) current;
+	acpi_create_madt(madt);
+	if (madt->header.length > sizeof(acpi_madt_t)) {
+		current+=madt->header.length;
+		acpi_add_table(rsdp,madt);
+	}
+	ALIGN_CURRENT;
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		if (dev->ops && dev->ops->write_acpi_tables) {
+			current = dev->ops->write_acpi_tables(current, rsdp);
+			ALIGN_CURRENT;
+		}
+	}
+
+	printk(BIOS_INFO, "ACPI: done.\n");
+	return current;
+}
+#endif
 
 #if CONFIG_HAVE_ACPI_RESUME
 void acpi_resume(void *wake_vec)

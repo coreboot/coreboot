@@ -490,8 +490,10 @@ unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
 unsigned long acpi_fill_srat(unsigned long current);
 unsigned long acpi_fill_slit(unsigned long current);
+#if !IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 unsigned long acpi_fill_ssdt_generator(unsigned long current,
 				       const char *oem_table_id);
+#endif
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt);
 
@@ -526,6 +528,7 @@ void acpi_create_srat(acpi_srat_t *srat);
 void acpi_create_slit(acpi_slit_t *slit);
 
 void acpi_create_hpet(acpi_hpet_t *hpet);
+unsigned long acpi_write_hpet(unsigned long start, acpi_rsdp_t *rsdp);
 
 void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 

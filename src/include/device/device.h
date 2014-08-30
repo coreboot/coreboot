@@ -40,6 +40,7 @@ struct chip_operations {
 struct bus;
 
 struct smbios_type11;
+struct acpi_rsdp;
 
 struct device_operations {
 	void (*read_resources)(device_t dev);
@@ -55,6 +56,11 @@ struct device_operations {
 #if CONFIG_GENERATE_SMBIOS_TABLES
 	int (*get_smbios_data)(device_t dev, int *handle, unsigned long *current);
 	void (*get_smbios_strings)(device_t dev, struct smbios_type11 *t);
+#endif
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+	unsigned long (*write_acpi_tables)(unsigned long start,  struct acpi_rsdp *rsdp);
+	unsigned long (*acpi_fill_ssdt_generator)(unsigned long current,
+						  const char *oem_table_id);
 #endif
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;

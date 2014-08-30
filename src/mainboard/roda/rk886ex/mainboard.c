@@ -131,6 +131,9 @@ static void mainboard_enable(device_t dev)
 #if DUMP_RUNTIME_REGISTERS
 	dump_runtime_registers();
 #endif
+	/* Enable Dummy DCC ON# for DVI */
+	printk(BIOS_DEBUG, "Laptop handling...\n");
+	outb(inb(0x60f) & ~(1 << 5), 0x60f);
 }
 
 struct chip_operations mainboard_ops = {

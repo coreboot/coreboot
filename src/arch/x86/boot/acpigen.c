@@ -223,7 +223,12 @@ int acpigen_emit_namestring(const char *namepath) {
 		namepath++;
 	}
 
-	ASSERT(namepath[0] != '\0');
+	/* If we have only \\ or only ^...^. Then we need to put a null
+	   name (0x00). */
+	if(namepath[0] == '\0') {
+		len += acpigen_emit_byte(0x00);
+		return len;
+	}
 
 	i = 0;
 	while (namepath[i] != '\0') {

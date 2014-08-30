@@ -31,6 +31,10 @@
 #include <cpu/cpu.h>
 #include "i82801gx.h"
 #include <cpu/x86/smm.h>
+#include <arch/acpigen.h>
+#include <cbmem.h>
+#include <string.h>
+#include "nvs.h"
 
 #define NMI_OFF	0
 
@@ -488,6 +492,24 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+static void southbridge_inject_dsdt(void)
+{
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+
+	if (gnvs) {
+		int scopelen;
+		memset(gnvs, 0, sizeof(*gnvs));
+		acpi_create_gnvs(gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to SSDT.  */
+		scopelen = acpigen_write_scope("\\");
+		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_patch_len(scopelen - 1);
+	}
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -496,6 +518,8 @@ static struct device_operations device_ops = {
 	.read_resources		= i82801gx_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
+	.write_acpi_tables      = acpi_write_hpet,
 	.init			= lpc_init,
 	.scan_bus		= scan_static_bus,
 	.enable			= i82801gx_enable,

@@ -260,6 +260,7 @@ static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
 	.set_resources    = mc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 #if CONFIG_HAVE_ACPI_RESUME
 	.init             = northbridge_init,
 #endif

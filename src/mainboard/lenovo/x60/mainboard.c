@@ -40,6 +40,7 @@
 #include <smbios.h>
 #include <build.h>
 #include <drivers/intel/gma/int15.h>
+#include "drivers/lenovo/lenovo.h"
 
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
@@ -109,9 +110,15 @@ const char *smbios_mainboard_bios_version(void)
 		return "CBET4000 " COREBOOT_VERSION;
 }
 
+static void fill_ssdt(void)
+{
+	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 1);
+}
+
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
 }
 
 struct chip_operations mainboard_ops = {

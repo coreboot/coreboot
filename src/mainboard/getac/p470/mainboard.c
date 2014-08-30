@@ -28,6 +28,8 @@
 
 #include "ec_oem.c"
 
+#include "mainboard.h"
+
 #define MAX_LCD_BRIGHTNESS	0xd8
 
 static void ec_enable(void)
@@ -87,6 +89,8 @@ static void mainboard_init(device_t dev)
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
+
 	pcie_limit_power();
 }
 

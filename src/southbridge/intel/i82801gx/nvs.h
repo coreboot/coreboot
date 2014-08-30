@@ -135,3 +135,5 @@ typedef struct {
 	u8	bten;
 	u8	rsvd13[14];
 } __attribute__((packed)) global_nvs_t;
+
+void acpi_create_gnvs(global_nvs_t *gnvs);

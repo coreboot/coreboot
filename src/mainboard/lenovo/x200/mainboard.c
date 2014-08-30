@@ -85,7 +85,7 @@ static int int15_handler(void)
 		   It's controlled by a DIP switch but was always
 		   set to 4 while only values of 5 and 6 worked. */
 		X86_AX = 0x005f;
-		X86_CX = (inb(0x60f) & 0x0f) + 1;
+		X86_CX = 0x2;
 		break;
 	case 0x5f70:
 		/* Sandybridge boards return 0 here. */

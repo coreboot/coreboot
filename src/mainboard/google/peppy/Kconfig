@@ -21,6 +21,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select INTEL_DP
 	select INTEL_DDI
+	select INTEL_INT15
 
 config VBOOT_RAMSTAGE_INDEX
 	hex

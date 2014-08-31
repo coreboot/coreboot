@@ -33,41 +33,10 @@
 #include <pc80/mc146818rtc.h>
 #include <arch/x86/include/arch/acpigen.h>
 #include <smbios.h>
-#include <x86emu/x86emu.h>
+#include <drivers/intel/gma/int15.h>
 #include <device/azalia_device.h>
 #include "hda_verb.h"
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
-
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-static int int15_handler(void)
-{
-	/* The right way to do this is to move this handler code into
-	 * the mainboard or northbridge code.
-	 * TODO: completely move to mainboards / chipsets.
-	 */
-	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
-	       __func__, X86_AX, X86_BX, X86_CX, X86_DX);
-
-	switch (X86_AX) {
-	case 0x5f35: /* Boot Display */
-		X86_AX = 0x005f; // Success
-		X86_CL = PANEL;
-		break;
-	case 0x5f40: /* Boot Panel Type */
-		X86_AX = 0x005f; // Success
-		X86_CL = 3;
-		printk(BIOS_DEBUG, "DISPLAY=%x\n", X86_CL);
-		break;
-	default:
-		/* Interrupt was not handled */
-		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
-		return 0;
-	}
-
-	/* Interrupt handled */
-	return 1;
-}
-#endif
 
 int get_cst_entries(acpi_cstate_t **entries)
 {
@@ -76,10 +45,7 @@ int get_cst_entries(acpi_cstate_t **entries)
 
 static void mainboard_init(device_t dev)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-	/* Install custom int15 handler for VGA OPROM */
-	mainboard_interrupt_handlers(0x15, &int15_handler);
-#endif
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, PANEL, 3);
 }
 
 static void mainboard_enable(device_t dev)

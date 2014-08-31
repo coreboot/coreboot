@@ -32,3 +32,7 @@ config INTEL_DDI
 config INTEL_EDID
 	bool
 	default n
+
+config INTEL_INT15
+	bool
+	default n

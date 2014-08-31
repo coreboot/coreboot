@@ -41,7 +41,7 @@
 #include "dock.h"
 #include "hda_verb.h"
 #include <arch/x86/include/arch/acpigen.h>
-#include <x86emu/regs.h>
+#include <drivers/intel/gma/int15.h>
 #include <arch/interrupt.h>
 #include <pc80/keyboard.h>
 #include <cpu/x86/lapic.h>
@@ -60,34 +60,6 @@ int get_cst_entries(acpi_cstate_t ** entries)
 	*entries = cst_entries;
 	return ARRAY_SIZE(cst_entries);
 }
-
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-
-static int int15_handler(void)
-{
-	switch ((X86_EAX & 0xffff)) {
-		/* Get boot display.  */
-	case 0x5f35:
-		X86_EAX = 0x5f;
-		/* The flags are:
-		   1 - VGA
-		   4 - DisplayPort
-		   8 - LCD
-		 */
-		X86_ECX = 0x8;
-
-		return 1;
-	case 0x5f40:
-		X86_EAX = 0x5f;
-		X86_ECX = 0x2;
-		return 1;
-	default:
-		printk(BIOS_WARNING, "Unknown INT15 function %04x!\n",
-		       X86_EAX & 0xffff);
-		return 0;
-	}
-}
-#endif
 
 const char *smbios_mainboard_bios_version(void)
 {
@@ -172,10 +144,7 @@ static void mainboard_enable(device_t dev)
 	if (dev0 && pci_read_config32(dev0, SKPAD) == SKPAD_ACPI_S3_MAGIC)
 		ec_write(0x0c, 0xc7);
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-	/* Install custom int15 handler for VGA OPROM */
-	mainboard_interrupt_handlers(0x15, &int15_handler);
-#endif
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_LFP, 2);
 
 	verb_setup();
 }

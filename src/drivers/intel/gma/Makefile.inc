@@ -20,3 +20,6 @@
 ramstage-$(CONFIG_INTEL_DP) += intel_dp.c drm_dp_helper.c display.c
 ramstage-$(CONFIG_INTEL_DDI) += intel_ddi.c
 ramstage-$(CONFIG_INTEL_EDID) += edid.c
+ifeq ($(CONFIG_VGA_ROM_RUN),y)
+ramstage-$(CONFIG_INTEL_INT15) += int15.c
+endif

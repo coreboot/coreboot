@@ -36,7 +36,7 @@
 #include <pc80/mc146818rtc.h>
 #include <arch/x86/include/arch/acpigen.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-#include <x86emu/regs.h>
+#include <drivers/intel/gma/int15.h>
 #include <arch/interrupt.h>
 #endif
 #include <pc80/keyboard.h>
@@ -57,34 +57,6 @@ int get_cst_entries(acpi_cstate_t ** entries)
 	*entries = cst_entries;
 	return ARRAY_SIZE(cst_entries);
 }
-
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-
-static int int15_handler(void)
-{
-	switch ((X86_EAX & 0xffff)) {
-		/* Get boot display.  */
-	case 0x5f35:
-		X86_EAX = 0x5f;
-		/* The flags are:
-		   1 - VGA
-		   4 - DisplayPort
-		   8 - LCD
-		 */
-		X86_ECX = 0x8;
-
-		return 1;
-	case 0x5f40:
-		X86_EAX = 0x5f;
-		X86_ECX = 0x2;
-		return 1;
-	default:
-		printk(BIOS_WARNING, "Unknown INT15 function %04x!\n",
-		       X86_EAX & 0xffff);
-		return 0;
-	}
-}
-#endif
 
 /* Audio Setup */
 
@@ -160,10 +132,7 @@ static void mainboard_enable(device_t dev)
 	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0x1f, 0)), GPIO_CNTL,
 			  0x10);
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-	/* Install custom int15 handler for VGA OPROM */
-	mainboard_interrupt_handlers(0x15, &int15_handler);
-#endif
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_LFP, 2);
 
 	/* This sneaked in here, because EasyNote has no SuperIO chip.
 	 */

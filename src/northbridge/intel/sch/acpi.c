@@ -25,6 +25,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <cbmem.h>
+#include <arch/acpigen.h>
+#include <cpu/cpu.h>
+#include "sch.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {

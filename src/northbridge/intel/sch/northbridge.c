@@ -281,6 +281,7 @@ static struct device_operations mc_ops = {
 #if CONFIG_HAVE_ACPI_RESUME
 	.init			= northbridge_init,
 #endif
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 	.scan_bus		= 0,
 	.ops_pci		= &intel_pci_ops,
 };

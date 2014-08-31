@@ -30,6 +30,9 @@
 #include <device/pci_ids.h>
 #include <build.h>
 #include "haswell.h"
+#include <cbmem.h>
+#include <arch/acpigen.h>
+#include <cpu/cpu.h>
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -190,4 +193,11 @@ int init_igd_opregion(igd_opregion_t *opregion)
 	enable_tco_sci();
 
 	return 0;
+}
+
+unsigned long northbridge_acpi_fill_ssdt_generator(unsigned long current,
+						   const char *oem_table_id)
+{
+	generate_cpu_entries();
+	return (unsigned long) (acpigen_get_current());
 }

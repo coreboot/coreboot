@@ -36,6 +36,8 @@
 #include <string.h>
 #include "nvs.h"
 #include "pch.h"
+#include <arch/acpigen.h>
+#include <cbmem.h>
 
 #define NMI_OFF	0
 
@@ -741,6 +743,63 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+static unsigned long southbridge_fill_ssdt(unsigned long current, const char *oem_table_id)
+{
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+
+	if (gnvs) {
+		int scopelen;
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((unsigned long)gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to SSDT.  */
+		scopelen = acpigen_write_scope("\\");
+		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_patch_len(scopelen - 1);
+	}
+
+	return (unsigned long) (acpigen_get_current());
+}
+
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
+static unsigned long southbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp)
+{
+	unsigned long current;
+	acpi_hpet_t *hpet;
+	acpi_header_t *ssdt;
+
+	current = start;
+
+	/* Align ACPI tables to 16byte */
+	ALIGN_CURRENT;
+
+	/*
+	 * We explicitly add these tables later on:
+	 */
+	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
+
+	hpet = (acpi_hpet_t *) current;
+	current += sizeof(acpi_hpet_t);
+	ALIGN_CURRENT;
+	acpi_create_intel_hpet(hpet);
+	acpi_add_table(rsdp, hpet);
+
+	ALIGN_CURRENT;
+
+	printk(BIOS_DEBUG, "ACPI:     * SSDT2\n");
+	ssdt = (acpi_header_t *)current;
+	acpi_create_serialio_ssdt(ssdt);
+	current += ssdt->length;
+	acpi_add_table(rsdp, ssdt);
+	ALIGN_CURRENT;
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+	return current;
+}
+
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -749,6 +808,8 @@ static struct device_operations device_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.write_acpi_tables      = southbridge_write_acpi_tables,
 	.init			= lpc_init,
 	.enable			= pch_lpc_enable,
 	.scan_bus		= scan_static_bus,

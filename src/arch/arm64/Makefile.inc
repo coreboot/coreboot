@@ -61,6 +61,8 @@ bootblock-y += c_entry.c
 bootblock-y += stage_entry.S
 bootblock-y += stages.c
 bootblock-y += eabi_compat.c
+bootblock-y += transition.c transition_asm.S
+
 bootblock-y += ../../lib/memset.c
 bootblock-y += ../../lib/memcpy.c
 bootblock-y += ../../lib/memmove.c
@@ -88,6 +90,7 @@ romstage-y += ../../lib/memset.c
 romstage-y += ../../lib/memcpy.c
 romstage-y += ../../lib/memmove.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+romstage-y += transition.c transition_asm.S
 
 rmodules_arm64-y += ../../lib/memset.c
 rmodules_arm64-y += ../../lib/memcpy.c
@@ -120,6 +123,8 @@ ramstage-y += ../../lib/memset.c
 ramstage-y += ../../lib/memcpy.c
 ramstage-y += ../../lib/memmove.c
 ramstage-y += stage_entry.S
+ramstage-y += transition.c transition_asm.S
+
 rmodules_arm64-y += ../../lib/memset.c
 rmodules_arm64-y += ../../lib/memcpy.c
 rmodules_arm64-y += ../../lib/memmove.c

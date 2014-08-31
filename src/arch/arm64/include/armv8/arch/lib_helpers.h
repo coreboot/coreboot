@@ -22,6 +22,9 @@
  * file.
  */
 
+#ifndef __ARCH_LIB_HELPERS_H__
+#define __ARCH_LIB_HELPERS_H__
+
 #define EL0               0
 #define EL1               1
 #define EL2               2
@@ -29,6 +32,96 @@
 
 #define CURRENT_EL_MASK   0x3
 #define CURRENT_EL_SHIFT  2
+
+#ifdef __ASSEMBLY__
+
+/* Macro to switch to label based on current el */
+.macro switch_el xreg label1 label2 label3
+	mrs	\xreg, CurrentEL
+	/* Currently at EL1 */
+	 cmp	\xreg, #(EL1 << CURRENT_EL_SHIFT)
+	b.eq	\label1
+	/* Currently at EL2 */
+	cmp	\xreg, #(EL2 << CURRENT_EL_SHIFT)
+	b.eq	\label2
+	/* Currently at EL3 */
+	cmp	\xreg, #(EL3 << CURRENT_EL_SHIFT)
+	b.eq	\label3
+.endm
+
+/* Macro to read sysreg at current EL
+   xreg - reg in which read value needs to be stored
+   sysreg - system reg that is to be read
+*/
+.macro read_current xreg sysreg
+	switch_el \xreg, 101f, 102f, 103f
+101:
+	mrs	\xreg, \sysreg\()_el1
+	b	104f
+102:
+	mrs	\xreg, \sysreg\()_el2
+	b	104f
+103:
+	mrs	\xreg, \sysreg\()_el3
+	b	104f
+104:
+.endm
+
+/* Macro to write sysreg at current EL
+   xreg - reg from which value needs to be written
+   sysreg - system reg that is to be written
+   temp - temp reg that can be used to read current EL
+*/
+.macro write_current sysreg xreg temp
+	switch_el \temp, 101f, 102f, 103f
+101:
+	msr	\sysreg\()_el1, \xreg
+	b	104f
+102:
+	msr	\sysreg\()_el2, \xreg
+	b	104f
+103:
+	msr	\sysreg\()_el3, \xreg
+	b	104f
+104:
+.endm
+
+/* Macro to read sysreg at current EL - 1
+   xreg - reg in which read value needs to be stored
+   sysreg - system reg that is to be read
+*/
+.macro read_lower xreg sysreg
+	switch_el \xreg, 101f, 102f, 103f
+101:
+	b	104f
+102:
+	mrs	\xreg, \sysreg\()_el1
+	b	104f
+103:
+	mrs	\xreg, \sysreg\()_el2
+	b	104f
+104:
+.endm
+
+/* Macro to write sysreg at current EL - 1
+   xreg - reg from which value needs to be written
+   sysreg - system reg that is to be written
+   temp - temp reg that can be used to read current EL
+*/
+.macro write_lower sysreg xreg temp
+	switch_el \temp, 101f, 102f, 103f
+101:
+	b	104f
+102:
+	msr	\sysreg\()_el1, \xreg
+	b	104f
+103:
+	msr	\sysreg\()_el2, \xreg
+	b	104f
+104:
+.endm
+
+#else
 
 #define DAIF_DBG_BIT      (1<<3)
 #define DAIF_ABT_BIT      (1<<2)
@@ -290,3 +383,7 @@ void tlbiallis_el2(void);
 void tlbiallis_el3(void);
 void tlbiallis_current(void);
 void tlbivaa_el1(uint64_t va);
+
+#endif // __ASSEMBLY__
+
+#endif // __ARCH_LIB_HELPERS_H__

@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "i915_reg.h"
-#include "drm_dp_helper.h"
+#include <drivers/intel/gma/i915_reg.h>
+#include <drivers/intel/gma/drm_dp_helper.h>
 
 /* things that are, strangely, not defined anywhere? */
 #define PCH_PP_UNLOCK 0xabcd0000

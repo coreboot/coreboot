@@ -20,8 +20,11 @@
 #include <arch/acpi.h>
 #include <bootstate.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
 
-#include "agesawrapper.h"
+#include <agesawrapper.h>
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 
 #if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
@@ -31,6 +34,9 @@
 #include <sb_cimx.h>
 #endif
 
+#define NORTHBRIDGE_00700F00 IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY_16KB)
+#define NORTHBRIDGE_00730F01 IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_00730F01)
+
 static void agesawrapper_post_device(void *unused)
 {
 	if (acpi_is_wakeup_s3())
@@ -38,7 +44,7 @@ static void agesawrapper_post_device(void *unused)
 
 	AGESAWRAPPER(amdinitlate);
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY_16KB)
+#if (NORTHBRIDGE_00700F00) || (NORTHBRIDGE_00730F01)
 	device_t dev;
 	u32 value;
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0)); /* clear IoapicSbFeatureEn */

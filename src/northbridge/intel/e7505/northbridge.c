@@ -8,6 +8,13 @@
 #include <string.h>
 #include "e7505.h"
 #include <cbmem.h>
+#include <arch/acpi.h>
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+        /* Just a dummy */
+        return current;
+}
 
 static void pci_domain_set_resources(device_t dev)
 {

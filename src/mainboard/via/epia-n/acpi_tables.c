@@ -36,8 +36,6 @@
 #include <device/pci_ids.h>
 #include "southbridge/via/vt8237r/vt8237r.h"
 
-extern const unsigned char AmlCode[];
-
 /*
  * These 8 macros are copied from <arch/smp/mpspec.h>, I have to do this
  * since the "CONFIG_GENERATE_MP_TABLE = 0", and also since
@@ -115,71 +113,5 @@ unsigned long acpi_fill_madt(unsigned long current)
 unsigned long acpi_fill_srat(unsigned long current)
 {
 	/* No NUMA, no SRAT */
-	return current;
-}
-
-unsigned long write_acpi_tables(unsigned long start)
-{
-	unsigned long current;
-	acpi_rsdp_t *rsdp;
-	acpi_rsdt_t *rsdt;
-	acpi_madt_t *madt;
-	acpi_fadt_t *fadt;
-	acpi_facs_t *facs;
-	acpi_header_t *dsdt;
-
-	/* Align ACPI tables to 16byte */
-	start   = ALIGN(start, 16);
-	current = start;
-
-	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
-
-	/* We need at least an RSDP and an RSDT Table */
-	rsdp = (acpi_rsdp_t *) current;
-	current += sizeof(acpi_rsdp_t);
-	rsdt = (acpi_rsdt_t *) current;
-	current += sizeof(acpi_rsdt_t);
-
-	/* clear all table memory */
-	memset((void *)start, 0, current - start);
-
-	acpi_write_rsdp(rsdp, rsdt, NULL);
-	acpi_write_rsdt(rsdt);
-
-	/*
-	 * We explicitly add these tables later on:
-	 */
-	printk(BIOS_DEBUG, "ACPI:     * FACS\n");
-	current = ALIGN(current, 64);
-	facs = (acpi_facs_t *) current;
-	current += sizeof(acpi_facs_t);
-	acpi_create_facs(facs);
-
-	printk(BIOS_DEBUG, "ACPI:     * DSDT\n");
-	dsdt = (acpi_header_t *)current;
-	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
-	current += dsdt->length;
-	memcpy(dsdt, &AmlCode, dsdt->length);
-#if 0
-	dsdt->checksum = 0; // don't trust intel iasl compiler to get this right
-	dsdt->checksum = acpi_checksum(dsdt,dsdt->length);
-#endif
-	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n",dsdt,dsdt->length);
-	printk(BIOS_DEBUG, "ACPI:     * FADT\n");
-
-	fadt = (acpi_fadt_t *) current;
-	current += sizeof(acpi_fadt_t);
-
-	acpi_create_fadt(fadt,facs,dsdt);
-	acpi_add_table(rsdp,fadt);
-
-	/* If we want IOAPIC Support Linux wants it in MADT. */
-	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
-	madt = (acpi_madt_t *) current;
-	acpi_create_madt(madt);
-	current += madt->header.length;
-	acpi_add_table(rsdp, madt);
-
-	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }

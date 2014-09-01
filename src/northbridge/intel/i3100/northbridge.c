@@ -33,6 +33,7 @@
 #include <cpu/cpu.h>
 #include "chip.h"
 #include "i3100.h"
+#include <arch/acpi.h>
 
 
 static u32 max_bus;
@@ -174,6 +175,30 @@ static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	device_t dev;
+	u64 mmcfg;
+
+	dev = dev_find_device(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_3100_MC, 0);	// 0:0x13.0
+	if (!dev)
+		return current;
+
+	// MMCFG not supported or not enabled.
+	mmcfg = ((u64) pci_read_config16(dev, 0xce)) << 16;
+	if (!mmcfg)
+		return current;
+
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
+			mmcfg, 0x0, 0x0, 0xff);
+
+	return current;
+}
+
+#endif
 
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem = intel_set_subsystem,

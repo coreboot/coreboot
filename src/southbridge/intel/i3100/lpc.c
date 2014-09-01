@@ -31,6 +31,7 @@
 #include <pc80/i8259.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include <arch/acpi.h>
 #include "i3100.h"
 
 #define ACPI_BAR 0x40
@@ -453,6 +454,9 @@ static struct device_operations lpc_ops  = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = i3100_lpc_enable_resources,
 	.init             = lpc_init,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+#endif
 	.scan_bus         = scan_static_bus,
 	.enable           = i3100_enable,
 	.ops_pci          = &lops_pci,

@@ -26,6 +26,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include "chip.h"
+
 void i82371eb_enable(device_t dev);
 void i82371eb_hard_reset(void);
 #else

@@ -19,8 +19,6 @@
 
 #include <arch/acpi.h>
 
-extern const unsigned char AmlCode[];
-
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	/* mainboard has no ioapic */

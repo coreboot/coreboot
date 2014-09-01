@@ -6,3 +6,11 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
 	default "southbridge/intel/i82371eb/bootblock.c"
 	depends on SOUTHBRIDGE_INTEL_I82371EB
 
+
+if SOUTHBRIDGE_INTEL_I82371EB
+
+config SOUTH_BRIDGE_OPTIONS # dummy
+	def_bool y
+	select PER_DEVICE_ACPI_TABLES
+
+endif

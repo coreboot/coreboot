@@ -482,6 +482,8 @@ typedef struct acpi_tstate {
 	u32 status;
 } __attribute__ ((packed)) acpi_tstate_t;
 
+unsigned long fw_cfg_acpi_tables(unsigned long start);
+
 /* These are implemented by the target port or north/southbridge. */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);

@@ -539,7 +539,6 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-#if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 static void southbridge_inject_dsdt(void)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
@@ -564,7 +563,6 @@ static void southbridge_fill_ssdt(void)
 
 	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);
 }
-#endif
 
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
@@ -574,11 +572,9 @@ static struct device_operations device_ops = {
 	.read_resources		= i82801ix_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-#if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
-#endif
 	.init			= lpc_init,
 	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_ops,

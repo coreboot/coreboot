@@ -687,6 +687,11 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt)
 
 extern const unsigned char AmlCode[];
 
+unsigned long __attribute__ ((weak)) fw_cfg_acpi_tables(unsigned long start)
+{
+	return 0;
+}
+
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long write_acpi_tables(unsigned long start)
 {
@@ -704,11 +709,16 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_mcfg_t *mcfg;
 	acpi_madt_t *madt;
 	struct device *dev;
+	unsigned long fw;
 
 	current = start;
 
 	/* Align ACPI tables to 16byte */
 	ALIGN_CURRENT;
+
+	fw = fw_cfg_acpi_tables(current);
+	if (fw)
+		return fw;
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx.\n", start);
 

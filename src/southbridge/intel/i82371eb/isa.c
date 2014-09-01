@@ -26,6 +26,10 @@
 #include <pc80/isa-dma.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/ioapic.h>
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
+#endif
 #include "i82371eb.h"
 
 #if CONFIG_IOAPIC
@@ -124,10 +128,22 @@ static void sb_read_resources(struct device *dev)
 #endif
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+static void southbridge_acpi_fill_ssdt_generator(void)
+{
+	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
+	generate_cpu_entries();
+}
+#endif
+
 static const struct device_operations isa_ops = {
 	.read_resources		= sb_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
+#endif
 	.init			= isa_init,
 	.scan_bus		= scan_static_bus,	/* TODO: Needed? */
 	.enable			= 0,

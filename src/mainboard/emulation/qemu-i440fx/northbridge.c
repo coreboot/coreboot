@@ -16,6 +16,7 @@
 #include "fw_cfg_if.h"
 
 #include "memory.c"
+#include "acpi.h"
 
 static unsigned long qemu_get_high_memory_size(void)
 {

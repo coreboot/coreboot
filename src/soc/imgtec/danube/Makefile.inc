@@ -36,6 +36,7 @@ ramstage-y += cbmem.c
 ramstage-y += timestamp.c
 
 romstage-y += cbmem.c
+romstage-y += romstage.c
 romstage-y += timestamp.c
 
 # Generate the actual coreboot bootblock code

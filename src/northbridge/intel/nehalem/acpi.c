@@ -32,6 +32,10 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <build.h>
+#include <arch/acpigen.h>
+#include <cpu/cpu.h>
+#include <drivers/intel/gma/i915.h>
+#include <cbmem.h>
 #include "nehalem.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -195,3 +199,22 @@ int init_igd_opregion(igd_opregion_t * opregion)
 
 	return 0;
 }
+
+void *igd_make_opregion(void)
+{
+	igd_opregion_t *opregion;
+
+	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
+	opregion = cbmem_add(CBMEM_ID_IGD_OPREGION, sizeof (*opregion));
+	if (opregion)
+		init_igd_opregion(opregion);
+	return opregion;
+}
+
+unsigned long northbridge_acpi_fill_ssdt_generator(unsigned long current,
+						   const char *oem_table_id)
+{
+	generate_cpu_entries();
+	return (unsigned long) (acpigen_get_current());
+}
+

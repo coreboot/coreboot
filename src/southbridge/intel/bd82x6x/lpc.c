@@ -30,7 +30,11 @@
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <elog.h>
+#include <arch/acpigen.h>
+#include <drivers/intel/gma/i915.h>
+#include <cbmem.h>
 #include "pch.h"
+#include "nvs.h"
 
 #define NMI_OFF	0
 
@@ -663,6 +667,31 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+static unsigned long southbridge_fill_ssdt(unsigned long current, const char *oem_table_id)
+{
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+	void *opregion;
+
+	/* Calling northbridge code as gnvs contains opregion address.  */
+	opregion = igd_make_opregion();
+
+	if (gnvs) {
+		int scopelen;
+		acpi_create_gnvs(gnvs);
+		/* IGD OpRegion Base Address */
+		gnvs->aslb = (u32)opregion;
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to SSDT.  */
+		scopelen = acpigen_write_scope("\\");
+		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_patch_len(scopelen - 1);
+	}
+
+	return (unsigned long) (acpigen_get_current());
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -671,6 +700,8 @@ static struct device_operations device_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pch_lpc_enable_resources,
+	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
 	.init			= lpc_init,
 	.enable			= pch_lpc_enable,
 	.scan_bus		= scan_static_bus,

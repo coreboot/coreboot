@@ -48,6 +48,7 @@
 #include <device/pci.h>
 #include <smbios.h>
 #include <build.h>
+#include "drivers/lenovo/lenovo.h"
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},
@@ -119,12 +120,20 @@ static void mainboard_init(device_t dev)
 			   0x42, 0x142);
 }
 
+static unsigned long fill_ssdt(unsigned long current,
+			       const char *oem_table_id)
+{
+	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
+	return (unsigned long) (acpigen_get_current());
+}
+
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0;
 	u16 pmbase;
 
 	dev->ops->init = mainboard_init;
+	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
 
 	pmbase = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
 				   PMBASE) & 0xff80;

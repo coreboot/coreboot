@@ -285,6 +285,7 @@ u32 gtt_read(u32 reg);
 int i915lightup(unsigned int physbase, unsigned int mmio,
 		unsigned int gfx, unsigned int init_fb);
 int panel_lightup(struct intel_dp *dp, unsigned int init_fb);
+void *igd_make_opregion(void);
 
 /* display.c */
 void compute_display_params(struct intel_dp *dp);

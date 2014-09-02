@@ -444,6 +444,8 @@ static struct device_operations mc_ops = {
 	.enable           = northbridge_enable,
 	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,
+	.acpi_fill_ssdt_generator = northbridge_acpi_fill_ssdt_generator,
+
 };
 
 static const struct pci_driver mc_driver_0100 __pci_driver = {

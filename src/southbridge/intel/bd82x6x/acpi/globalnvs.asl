@@ -31,8 +31,8 @@ Name(\DSEN, 1)		// Display Output Switching Enable
  * we have to fix it up in coreboot's ACPI creation phase.
  */
 
-
-OperationRegion (GNVS, SystemMemory, 0xC0DEBABE, 0xf00)
+External(NVSA)
+OperationRegion (GNVS, SystemMemory, NVSA, 0xf00)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */

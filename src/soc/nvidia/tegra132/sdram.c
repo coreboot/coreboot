@@ -475,7 +475,10 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 		   (param->EmcDevSelect << EMC_NOP_NOP_DEV_SELECTN_SHIFT)),
 		  &regs->nop,
 		  EMC_NOP_NOP_CMD_MASK | EMC_NOP_NOP_DEV_SELECTN_MASK);
+}
 
+static void sdram_init_ddr3(const struct sdram_params *param, struct tegra_emc_regs *regs)
+{
 	/* Write mode registers */
 	writel(param->EmcEmrs2, &regs->emrs2);
 	writel(param->EmcEmrs3, &regs->emrs3);
@@ -483,7 +486,44 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 	writel(param->EmcMrs, &regs->mrs);
 
 	if (param->EmcExtraModeRegWriteEnable) {
-		writel(param->EmcMrwExtra, &regs->mrs);
+		writel(param->EmcMrsExtra, &regs->mrs);
+	}
+
+	writel(param->EmcZcalInitDev0, &regs->zq_cal);
+	udelay(param->EmcZcalInitWait);
+
+	if ((param->EmcDevSelect & 2) == 0) {
+		writel(param->EmcZcalInitDev1, &regs->zq_cal);
+		udelay(param->EmcZcalInitWait);
+	}
+}
+
+static void sdram_init_lpddr3(const struct sdram_params *param, struct tegra_emc_regs *regs)
+{
+	/* Precharge all banks. DEV_SELECTN = 0 => Select all devices */
+	writel(((param->EmcDevSelect << EMC_REF_DEV_SELECTN_SHIFT) | 1), &regs->pre);
+
+	/* Send Reset MRW command */
+	writel(param->EmcMrwResetCommand, &regs->mrw);
+	udelay(param->EmcMrwResetNInitWait);
+
+	writel(param->EmcZcalInitDev0, &regs->mrw);
+	udelay(param->EmcZcalInitWait);
+
+	if ((param->EmcDevSelect & 2) == 0)
+	{
+		writel(param->EmcZcalInitDev1, &regs->mrw);
+		udelay(param->EmcZcalInitWait);
+	}
+
+	/* Write mode registers */
+	writel(param->EmcMrw2, &regs->mrw2);
+	writel(param->EmcMrw1, &regs->mrw);
+	writel(param->EmcMrw3, &regs->mrw3);
+	writel(param->EmcMrw4, &regs->mrw4);
+
+	if (param->EmcExtraModeRegWriteEnable) {
+		writel(param->EmcMrwExtra, &regs->mrw);
 	}
 }
 
@@ -493,14 +533,12 @@ static void sdram_init_zq_calibration(const struct sdram_params *param,
 	if ((param->EmcZcalWarmColdBootEnables &
 	     EMC_ZCAL_WARM_COLD_BOOT_ENABLES_COLDBOOT_MASK) == 1) {
 		/* Need to initialize ZCAL on coldboot. */
-		writel(param->EmcZcalInitDev0, &regs->zq_cal);
-		udelay(param->EmcZcalInitWait);
-
-		if ((param->EmcDevSelect & 2) == 0) {
-			writel(param->EmcZcalInitDev1, &regs->zq_cal);
-			udelay(param->EmcZcalInitWait);
-		}
+		if (param->MemoryType == NvBootMemoryType_Ddr3)
+			sdram_init_ddr3(param, regs);
+		else if (param->MemoryType == NvBootMemoryType_LpDdr2)
+			sdram_init_lpddr3(param, regs);
 	} else {
+		/* Wait for DLL stablization time even without ZCAL */
 		udelay(param->EmcZcalInitWait);
 	}
 }
@@ -573,7 +611,8 @@ void sdram_init(const struct sdram_params *param)
 		param->MemoryType, clock_get_pll_input_khz() *
 		param->PllMFeedbackDivider / param->PllMInputDivider /
 		(1 + param->PllMSelectDiv2));
-	if (param->MemoryType != NvBootMemoryType_Ddr3)
+	if (param->MemoryType != NvBootMemoryType_Ddr3 &&
+	    param->MemoryType != NvBootMemoryType_LpDdr2)
 		die("Unsupported memory type!\n");
 
 	sdram_configure_pmc(param, pmc);

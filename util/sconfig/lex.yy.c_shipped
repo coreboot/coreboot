@@ -368,8 +368,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 30
-#define YY_END_OF_BUFFER 31
+#define YY_NUM_RULES 31
+#define YY_END_OF_BUFFER 32
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -379,19 +379,19 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[116] =
     {   0,
-        0,    0,   31,   29,    1,    3,   29,   29,   29,   25,
-       25,   23,   26,   29,   26,   26,   26,   29,   29,   29,
-       29,   29,   29,   29,    1,    3,   29,    0,   29,    0,
-        2,   25,   26,   29,   29,   29,   29,   26,   29,   29,
-       29,   29,   29,   18,   29,   29,   29,    7,   29,   29,
-       29,   29,   28,   28,   24,   29,   29,   29,   29,   29,
-       17,   22,   12,   29,   29,   16,   29,    8,    9,   11,
-       29,   29,   27,    4,   29,   29,   29,   29,   29,   29,
-       29,   29,   29,   29,   29,   29,   29,   13,   29,   29,
-       29,    5,   15,   29,   10,   29,   29,   29,   20,   29,
+        0,    0,   32,   30,    1,    3,   30,   30,   30,   26,
+       26,   24,   27,   30,   27,   27,   27,   30,   30,   30,
+       30,   30,   30,   30,    1,    3,   30,    0,   30,    0,
+        2,   26,   27,   30,   30,   30,   30,   27,   30,   30,
+       30,   30,   30,   19,   30,   30,   30,    7,   30,   30,
+       30,   30,   29,   29,   25,   30,   30,   15,   30,   30,
+       18,   23,   12,   30,   30,   17,   30,    8,    9,   11,
+       30,   30,   28,    4,   30,   30,   30,   30,   30,   30,
+       30,   30,   30,   30,   30,   30,   30,   13,   30,   30,
+       30,    5,   16,   30,   10,   30,   30,   30,   21,   30,
 
-       29,   29,   29,   29,    6,   29,   29,   29,   29,   29,
-       19,   29,   14,   21,    0
+       30,   30,   30,   30,    6,   30,   30,   30,   30,   30,
+       20,   30,   14,   22,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -888,43 +888,43 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-{yylval.number=DOMAIN; return(BUS);}
+{yylval.number=CPU; return(BUS);}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-{yylval.number=IRQ; return(RESOURCE);}
+{yylval.number=DOMAIN; return(BUS);}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-{yylval.number=DRQ; return(RESOURCE);}
+{yylval.number=IRQ; return(RESOURCE);}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-{yylval.number=IO; return(RESOURCE);}
+{yylval.number=DRQ; return(RESOURCE);}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-{return(IOAPIC_IRQ);}
+{yylval.number=IO; return(RESOURCE);}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-{return(INHERIT);}
+{return(IOAPIC_IRQ);}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-{return(SUBSYSTEMID);}
+{return(INHERIT);}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-{return(END);}
+{return(SUBSYSTEMID);}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-{return(EQUALS);}
+{return(END);}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-{yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(NUMBER);}
+{return(EQUALS);}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
@@ -936,18 +936,22 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-{yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(PCIINT);}
+{yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(NUMBER);}
 	YY_BREAK
 case 28:
-/* rule 28 can match eol */
+YY_RULE_SETUP
+{yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(PCIINT);}
+	YY_BREAK
+case 29:
+/* rule 29 can match eol */
 YY_RULE_SETUP
 {yylval.string = malloc(yyleng-1); strncpy(yylval.string, yytext+1, yyleng-2); yylval.string[yyleng-2]='\0'; return(STRING);}
 	YY_BREAK
-case 29:
+case 30:
 YY_RULE_SETUP
 {yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(STRING);}
 	YY_BREAK
-case 30:
+case 31:
 YY_RULE_SETUP
 ECHO;
 	YY_BREAK

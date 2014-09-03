@@ -52,16 +52,17 @@
      I2C = 270,
      APIC = 271,
      CPU_CLUSTER = 272,
-     DOMAIN = 273,
-     IRQ = 274,
-     DRQ = 275,
-     IO = 276,
-     NUMBER = 277,
-     SUBSYSTEMID = 278,
-     INHERIT = 279,
-     IOAPIC_IRQ = 280,
-     IOAPIC = 281,
-     PCIINT = 282
+     CPU = 273,
+     DOMAIN = 274,
+     IRQ = 275,
+     DRQ = 276,
+     IO = 277,
+     NUMBER = 278,
+     SUBSYSTEMID = 279,
+     INHERIT = 280,
+     IOAPIC_IRQ = 281,
+     IOAPIC = 282,
+     PCIINT = 283
    };
 #endif
 

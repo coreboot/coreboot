@@ -39,6 +39,7 @@ pnp		{yylval.number=PNP; return(BUS);}
 i2c		{yylval.number=I2C; return(BUS);}
 lapic		{yylval.number=APIC; return(BUS);}
 cpu_cluster	{yylval.number=CPU_CLUSTER; return(BUS);}
+cpu		{yylval.number=CPU; return(BUS);}
 domain		{yylval.number=DOMAIN; return(BUS);}
 irq		{yylval.number=IRQ; return(RESOURCE);}
 drq		{yylval.number=DRQ; return(RESOURCE);}

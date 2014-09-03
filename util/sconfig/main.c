@@ -272,6 +272,10 @@ struct device *new_device(struct device *parent, struct device *busdev, const in
 		new_d->path = ".type=DEVICE_PATH_CPU_CLUSTER,{.cpu_cluster={ .cluster = 0x%x }}";
 		break;
 
+	case CPU:
+		new_d->path = ".type=DEVICE_PATH_CPU,{.cpu={ .id = 0x%x }}";
+		break;
+
 	case DOMAIN:
 		new_d->path = ".type=DEVICE_PATH_DOMAIN,{.domain={ .domain = 0x%x }}";
 		break;

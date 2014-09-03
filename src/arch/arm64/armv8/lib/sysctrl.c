@@ -522,6 +522,16 @@ void raw_write_mair_current(uint64_t mair)
 	SWITCH_CASE_WRITE(raw_write_mair,mair);
 }
 
+/* MIDR */
+uint32_t raw_read_midr_el1(void)
+{
+	uint32_t midr_el1;
+
+	__asm__ __volatile__("mrs %0, MIDR_EL1\n\t" : "=r" (midr_el1) :  : "memory");
+
+	return midr_el1;
+}
+
 /* MPIDR */
 uint64_t raw_read_mpidr_el1(void)
 {

@@ -214,6 +214,7 @@ uint64_t raw_read_mair_el3(void);
 void raw_write_mair_el3(uint64_t mair_el3);
 uint64_t raw_read_mair_current(void);
 void raw_write_mair_current(uint64_t mair);
+uint32_t raw_read_midr_el1(void);
 uint64_t raw_read_mpidr_el1(void);
 uint32_t raw_read_rmr_el1(void);
 void raw_write_rmr_el1(uint32_t rmr_el1);

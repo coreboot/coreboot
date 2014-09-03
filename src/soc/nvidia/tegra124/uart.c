@@ -95,8 +95,17 @@ static int tegra124_uart_tst_byte(struct tegra124_uart *uart_ptr)
 
 unsigned int uart_platform_base(int idx)
 {
-	//TODO:return the correct address based on which UART has been selected
-	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
+	//Default to UART A
+	unsigned int base = 0x70006000;
+	//UARTs A - E are mapped as index 0 - 4
+	if ((idx < 5) && (idx >= 0)) {
+		if (idx != 1) { //not UART B
+			base += idx * 0x100;
+		} else {
+			base += 0x40;
+		}
+	}
+	return base;
 }
 
 void uart_init(int idx)

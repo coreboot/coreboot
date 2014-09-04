@@ -40,6 +40,7 @@ libc-y += memcpy.S memset.S memmove.S
 libc-y += exception_asm.S exception.c
 libc-y += cache.c cpu.S
 libc-y += selfboot.c
+libc-y += mmu.c
 libcbfs-$(CONFIG_LP_CBFS) += dummy_media.c
 
 libgdb-y += gdb.c

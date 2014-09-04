@@ -107,9 +107,6 @@ void tlb_invalidate_all(void);
  * Generalized setup/init functions
  */
 
-/* mmu initialization (set page table address, set permissions, etc) */
-void mmu_init(void);
-
 enum dcache_policy {
 	DCACHE_OFF,
 	DCACHE_WRITEBACK,

@@ -3,3 +3,6 @@
 	url = ../blobs.git
 	update = none
 	ignore = dirty
+[submodule "util/nvidia-cbootimage"]
+	path = util/nvidia-cbootimage
+	url = ../nvidia-cbootimage.git

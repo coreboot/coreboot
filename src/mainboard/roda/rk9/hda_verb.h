@@ -18,12 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#define PIN_CFG(pin, val) \
-	(pin << 20) | ( 0x71c << 8) | (val & 0xff), \
-	(pin << 20) | ( 0x71d << 8) | ((val >> 8) & 0xff), \
-	(pin << 20) | ( 0x71e << 8) | ((val >> 16) & 0xff), \
-	(pin << 20) | ( 0x71f << 8) | ((val >> 24) & 0xff), \
-
 static const u32 mainboard_cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0262,	// Codec Vendor / Device ID: Realtek ALC262
@@ -33,29 +27,29 @@ static const u32 mainboard_cim_verb_data[] = {
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x11), S/PDIF-OUT2: not connected */
-	PIN_CFG(0x11, 0x411111f0)
+	AZALIA_PIN_CFG(0, 0x11, 0x411111f0),
 	/* Pin Complex (NID 0x14), LINE_OUT (port D): Speakers */
-	PIN_CFG(0x14, 0x99130110)
+	AZALIA_PIN_CFG(0, 0x14, 0x99130110),
 	/* Pin Complex (NID 0x15), HP_OUT (port A): Head phones */
-	PIN_CFG(0x15, 0x0121411f)
+	AZALIA_PIN_CFG(0, 0x15, 0x0121411f),
 	/* Pin Complex (NID 0x16), MONO-OUT: not connected */
-	PIN_CFG(0x16, 0x411111f0)
+	AZALIA_PIN_CFG(0, 0x16, 0x411111f0),
 	/* Pin Complex (NID 0x18), MIC1 (port B): Microphone */
-	PIN_CFG(0x18, 0x01a19920)
+	AZALIA_PIN_CFG(0, 0x18, 0x01a19920),
 	/* Pin Complex (NID 0x19), MIC2 (port F): not connected */
-	PIN_CFG(0x19, 0x411111f0)
+	AZALIA_PIN_CFG(0, 0x19, 0x411111f0),
 	/* Pin Complex (NID 0x1a), LINE1 (port C): Line-In */
-	PIN_CFG(0x1a, 0x01813121)
+	AZALIA_PIN_CFG(0, 0x1a, 0x01813121),
 	/* Pin Complex (NID 0x1b), LINE2 (port E): MDC */
-	PIN_CFG(0x1b, 0x9983012f)
+	AZALIA_PIN_CFG(0, 0x1b, 0x9983012f),
 	/* Pin Complex (NID 0x1c), CD_IN */
-	PIN_CFG(0x1c, 0x593301f0)
+	AZALIA_PIN_CFG(0, 0x1c, 0x593301f0),
 	/* Pin Complex (NID 0x1d), PCBEEP */
-	PIN_CFG(0x1d, 0x4014022d)
+	AZALIA_PIN_CFG(0, 0x1d, 0x4014022d),
 	/* Pin Complex (NID 0x1e), S/PDIF-OUT: not connected */
-	PIN_CFG(0x1e, 0x411111f0)
+	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
 	/* Pin Complex (NID 0x1f), S/PDIF-IN: not connected */
-	PIN_CFG(0x1f, 0x411111f0)
+	AZALIA_PIN_CFG(0, 0x1f, 0x411111f0)
 };
 
 static const u32 mainboard_pc_beep_verbs[] = {

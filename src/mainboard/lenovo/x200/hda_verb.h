@@ -18,12 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#define PIN_CFG(pin, val) \
-	(pin << 20) | ( 0x71c << 8) | (val & 0xff), \
-	(pin << 20) | ( 0x71d << 8) | ((val >> 8) & 0xff), \
-	(pin << 20) | ( 0x71e << 8) | ((val >> 16) & 0xff), \
-	(pin << 20) | ( 0x71f << 8) | ((val >> 24) & 0xff)
-
 static const u32 mainboard_cim_verb_data[] = {
 	/* coreboot specific header */
 	0x14f15051,	// Conexant CX20561 (Hermosa)
@@ -32,14 +26,14 @@ static const u32 mainboard_cim_verb_data[] = {
 
 	/* Pin Widget Verb Table */
 
-	PIN_CFG(0x16, 0x042140f0),
-	PIN_CFG(0x17, 0x61a190f0),
-	PIN_CFG(0x18, 0x04a190f0),
-	PIN_CFG(0x19, 0x612140f0),
-	PIN_CFG(0x1a, 0x901701f0),
-	PIN_CFG(0x1b, 0x40f001f0),
-	PIN_CFG(0x1c, 0x40f001f0),
-	PIN_CFG(0x1d, 0x90a601f0)
+	AZALIA_PIN_CFG(0, 0x16, 0x042140f0),
+	AZALIA_PIN_CFG(0, 0x17, 0x61a190f0),
+	AZALIA_PIN_CFG(0, 0x18, 0x04a190f0),
+	AZALIA_PIN_CFG(0, 0x19, 0x612140f0),
+	AZALIA_PIN_CFG(0, 0x1a, 0x901701f0),
+	AZALIA_PIN_CFG(0, 0x1b, 0x40f001f0),
+	AZALIA_PIN_CFG(0, 0x1c, 0x40f001f0),
+	AZALIA_PIN_CFG(0, 0x1d, 0x90a601f0)
 };
 
 static const u32 mainboard_pc_beep_verbs[] = {

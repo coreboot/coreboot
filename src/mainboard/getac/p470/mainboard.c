@@ -24,9 +24,7 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <device/azalia_device.h>
 
-#include "hda_verb.h"
 
 #include "ec_oem.c"
 
@@ -78,11 +76,6 @@ static void pcie_limit_power(void)
 #endif
 }
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-}
 
 static void mainboard_init(device_t dev)
 {
@@ -95,7 +88,6 @@ static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
 	pcie_limit_power();
-	verb_setup();
 }
 
 struct chip_operations mainboard_ops = {

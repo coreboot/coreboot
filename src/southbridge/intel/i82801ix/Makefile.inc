@@ -28,6 +28,8 @@ ramstage-y += hdaudio.c
 ramstage-y += thermal.c
 ramstage-y += smbus.c
 
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+
 ramstage-y += ../i82801gx/reset.c
 ramstage-y += ../i82801gx/watchdog.c
 

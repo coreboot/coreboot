@@ -35,11 +35,9 @@
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <device/azalia_device.h>
 
 #include <pc80/mc146818rtc.h>
 #include "dock.h"
-#include "hda_verb.h"
 #include <arch/x86/include/arch/acpigen.h>
 #include <drivers/intel/gma/int15.h>
 #include <arch/interrupt.h>
@@ -71,13 +69,7 @@ const char *smbios_mainboard_bios_version(void)
 		return "CBET4000 " COREBOOT_VERSION;
 }
 
-/* Audio Setup */
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-}
 
 static void mainboard_init(device_t dev)
 {
@@ -155,7 +147,6 @@ static void mainboard_enable(device_t dev)
 
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_LFP, 2);
 
-	verb_setup();
 }
 
 struct chip_operations mainboard_ops = {

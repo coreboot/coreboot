@@ -24,7 +24,6 @@
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
-#include <device/azalia_device.h>
 
 /* Hardware Monitor */
 
@@ -160,14 +159,7 @@ static void hwm_setup(void)
 	hwm_write(0x40, 0x01); // Init, but no SMI#
 }
 
-/* Audio Setup */
 
-static void verb_setup(void)
-{
-	// Default VERB is fine on this mainboard.
-	cim_verb_data = NULL;
-	cim_verb_data_size = 0;
-}
 
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
@@ -175,7 +167,6 @@ static void verb_setup(void)
 static void mainboard_enable(device_t dev)
 {
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_DEFAULT, 3);
-	verb_setup();
 	hwm_setup();
 }
 

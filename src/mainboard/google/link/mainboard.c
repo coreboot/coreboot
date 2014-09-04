@@ -39,8 +39,6 @@
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
-#include <device/azalia_device.h>
-#include "hda_verb.h"
 
 /* placeholder for evenual link post. Not sure what we'll
  * do but it will look nice
@@ -149,15 +147,7 @@ static int int15_handler(void)
 }
 #endif
 
-/* Audio Setup */
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-	pc_beep_verbs = mainboard_pc_beep_verbs;
-	pc_beep_verbs_size = mainboard_pc_beep_verbs_size;
-}
 
 static void mainboard_init(device_t dev)
 {
@@ -222,7 +212,6 @@ static void mainboard_enable(device_t dev)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
-	verb_setup();
 }
 
 struct chip_operations mainboard_ops = {

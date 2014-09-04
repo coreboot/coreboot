@@ -34,6 +34,8 @@ ramstage-y += me.c
 ramstage-y += me_8.x.c
 ramstage-y += smbus.c
 
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+
 ramstage-y += me_status.c
 ramstage-y += reset.c
 ramstage-y += watchdog.c

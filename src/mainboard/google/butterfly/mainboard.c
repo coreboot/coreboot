@@ -36,8 +36,6 @@
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/quanta/ene_kb3940q/ec.h>
-#include <device/azalia_device.h>
-#include "hda_verb.h"
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/fmap.h>
 #else
@@ -194,16 +192,7 @@ void mainboard_suspend_resume(void)
 	outb(0xcb, 0xb2);
 }
 
-/* Audio Setup */
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-	pc_beep_verbs = mainboard_pc_beep_verbs;
-	pc_beep_verbs_size = mainboard_pc_beep_verbs_size;
-
-}
 
 static void mainboard_init(device_t dev)
 {
@@ -294,7 +283,6 @@ static void mainboard_enable(device_t dev)
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = butterfly_onboard_smbios_data;
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
-	verb_setup();
 }
 
 struct chip_operations mainboard_ops = {

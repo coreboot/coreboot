@@ -32,22 +32,12 @@
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
-#include <device/azalia_device.h>
 
-#include "hda_verb.h"
 
 #if CONFIG_GENERATE_ACPI_TABLES
 #include "cstates.c" /* Include it, as the linker won't find
 			the overloaded weak function in there. */
 #endif
-
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-	pc_beep_verbs = mainboard_pc_beep_verbs;
-	pc_beep_verbs_size = ARRAY_SIZE(mainboard_pc_beep_verbs);
-}
 
 const char *smbios_mainboard_bios_version(void)
 {
@@ -68,7 +58,6 @@ static void mainboard_init(device_t dev)
 
 static void mainboard_enable(device_t dev)
 {
-	verb_setup();
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_CENTERING, GMA_INT15_BOOT_DISPLAY_DEFAULT, 2);
 
 	dev->ops->init = mainboard_init;

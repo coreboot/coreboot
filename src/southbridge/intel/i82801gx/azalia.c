@@ -25,6 +25,7 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <device/azalia_device.h>
 #include "i82801gx.h"
 
 #define HDA_ICII_REG 0x68
@@ -89,9 +90,6 @@ no_codec:
 	printk(BIOS_DEBUG, "Azalia: No codec!\n");
 	return 0;
 }
-
-const u32 * cim_verb_data = NULL;
-u32 cim_verb_data_size = 0;
 
 static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
 {

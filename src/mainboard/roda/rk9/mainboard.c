@@ -26,21 +26,11 @@
 #include <drivers/intel/gma/int15.h>
 #include <pc80/keyboard.h>
 #include <ec/acpi/ec.h>
-#include <device/azalia_device.h>
-#include "hda_verb.h"
 
 #if CONFIG_GENERATE_ACPI_TABLES
 #include "cstates.c" /* Include it, as the linker won't find
 			the overloaded weak function in there. */
 #endif
-
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-	pc_beep_verbs = mainboard_pc_beep_verbs;
-	pc_beep_verbs_size = ARRAY_SIZE(mainboard_pc_beep_verbs);
-}
 
 static void ec_setup(void)
 {
@@ -59,7 +49,6 @@ static void ec_setup(void)
 static void mainboard_enable(device_t dev)
 {
 	ec_setup();
-	verb_setup();
 	/* LCD panel type is SIO GPIO40-43.
 	   It's controlled by a DIP switch but was always
 	   set to 4 while only values of 5 and 6 worked. */

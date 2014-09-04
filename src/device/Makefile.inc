@@ -14,6 +14,10 @@ ramstage-$(CONFIG_PCI) += pci_ops.c
 ramstage-$(CONFIG_PCI) += pci_early.c
 ramstage-y += smbus_ops.c
 
+ifeq ($(CONFIG_AZALIA_PLUGIN_SUPPORT),y)
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+endif
+
 romstage-y += device_romstage.c
 romstage-$(CONFIG_PCI) += pci_early.c
 

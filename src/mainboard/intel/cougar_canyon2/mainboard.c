@@ -32,8 +32,6 @@
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include <southbridge/intel/fsp_bd82x6x/pch.h>
-#include <device/azalia_device.h>
-#include "hda_verb.h"
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 void mainboard_suspend_resume(void)
@@ -43,13 +41,7 @@ void mainboard_suspend_resume(void)
 }
 #endif
 
-/* Audio Setup */
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-}
 
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
@@ -57,7 +49,6 @@ static void verb_setup(void)
 static void mainboard_enable(device_t dev)
 {
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_EDP, GMA_INT15_PANEL_FIT_CENTERING, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
-	verb_setup();
 }
 
 struct chip_operations mainboard_ops = {

@@ -34,8 +34,6 @@
 #include <arch/x86/include/arch/acpigen.h>
 #include <smbios.h>
 #include <drivers/intel/gma/int15.h>
-#include <device/azalia_device.h>
-#include "hda_verb.h"
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
 int get_cst_entries(acpi_cstate_t **entries)
@@ -51,8 +49,6 @@ static void mainboard_init(device_t dev)
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
 }
 
 struct chip_operations mainboard_ops = {

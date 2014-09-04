@@ -30,6 +30,8 @@ ramstage-y += smbus.c
 ramstage-y += usb.c
 ramstage-y += usb_ehci.c
 
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+
 ramstage-y += reset.c
 ramstage-y += watchdog.c
 

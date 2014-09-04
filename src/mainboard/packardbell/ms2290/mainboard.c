@@ -43,8 +43,6 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <smbios.h>
-#include <device/azalia_device.h>
-#include "hda_verb.h"
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},
@@ -58,13 +56,7 @@ int get_cst_entries(acpi_cstate_t ** entries)
 	return ARRAY_SIZE(cst_entries);
 }
 
-/* Audio Setup */
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-}
 
 static void mainboard_enable(device_t dev)
 {
@@ -137,7 +129,6 @@ static void mainboard_enable(device_t dev)
 	/* This sneaked in here, because EasyNote has no SuperIO chip.
 	 */
 	pc_keyboard_init();
-	verb_setup();
 }
 
 struct chip_operations mainboard_ops = {

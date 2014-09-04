@@ -26,13 +26,9 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <device/azalia_device.h>
 #include "pch.h"
 #include "hda_verb.h"
-
-const u32 * cim_verb_data = NULL;
-u32 cim_verb_data_size = 0;
-const u32 * pc_beep_verbs = NULL;
-u32 pc_beep_verbs_size = 0;
 
 static void codecs_init(u32 base, u32 codec_mask)
 {
@@ -46,7 +42,7 @@ static void codecs_init(u32 base, u32 codec_mask)
 				       cim_verb_data);
 	}
 
-	if (pc_beep_verbs_size && pc_beep_verbs)
+	if (pc_beep_verbs_size)
 		hda_codec_write(base, pc_beep_verbs_size, pc_beep_verbs);
 }
 

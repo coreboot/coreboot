@@ -24,18 +24,10 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <device/azalia_device.h>
-#include "hda_verb.h"
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-}
 
 static void mainboard_enable(device_t dev)
 {
-	verb_setup();
 }
 
 struct chip_operations mainboard_ops = {

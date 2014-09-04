@@ -20,15 +20,26 @@
 #ifndef DEVICE_AZALIA_H
 #define DEVICE_AZALIA_H
 
+#include <types.h>
+#include <string.h>
+#include <console/console.h>
+#include <arch/acpi.h>
+#include <arch/io.h>
+#include <arch/interrupt.h>
+#include <build.h>
+
 #include <device/device.h>
 
 void azalia_audio_init(struct device *dev);
 extern struct device_operations default_azalia_audio_ops;
 
-extern const u32 *cim_verb_data;
-extern u32 cim_verb_data_size;
-extern const u32 *pc_beep_verbs;
-extern u32 pc_beep_verbs_size;
+extern const u32 cim_verb_data[];
+extern const u32 cim_verb_data_size;
+extern const u32 pc_beep_verbs[];
+extern const u32 pc_beep_verbs_size;
+
+#define AZALIA_ARRAY_SIZES const u32 pc_beep_verbs_size = ARRAY_SIZE(pc_beep_verbs); \
+	const u32 cim_verb_data_size = sizeof(cim_verb_data)
 
 #define AZALIA_PIN_CFG(codec, pin, val)		    \
 	((codec) << 28) | ((pin) << 20) | ( 0x71c << 8) | ((val) & 0xff),	\

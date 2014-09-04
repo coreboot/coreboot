@@ -35,6 +35,8 @@ ramstage-y += smbus.c
 ramstage-y += hda_verb.c
 ramstage-$(CONFIG_INTEL_LYNXPOINT_LP) += serialio.c
 
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+
 ramstage-y += rcba.c
 ramstage-y += me_status.c
 ramstage-y += reset.c

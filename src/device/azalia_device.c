@@ -110,9 +110,6 @@ no_codec:
 	return 0;
 }
 
-const u32 *cim_verb_data = NULL;
-u32 cim_verb_data_size = 0;
-
 static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
 {
 	printk(BIOS_DEBUG, "azalia_audio: dev=%s\n", dev_path(dev));

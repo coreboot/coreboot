@@ -31,16 +31,6 @@
  *
  */
 
-/* By default we assume that the DC instruction can be used to zero
-   data blocks more efficiently.  In some circumstances this might be
-   unsafe, for example in an asymmetric multiprocessor environment with
-   different DC clear lengths (neither the upper nor lower lengths are
-   safe to use).  The feature can be disabled by defining DONT_USE_DC.
-
-   If code may be run in a virtualized environment, then define
-   MAYBE_VIRT.  This will cause the code to cache the system register
-   values rather than re-reading them each call.  */
-
 #define dstin		x0
 #define val		w1
 #define count		x2
@@ -57,7 +47,6 @@
 #define dst		x8
 #define tmp3w		w9
 
-
 .macro def_fn f p2align=0
 .text
 .p2align \p2align
@@ -70,9 +59,6 @@ def_fn memset p2align=6
 
 	mov	dst, dstin		/* Preserve return value.  */
 	ands	A_lw, val, #255
-#ifndef DONT_USE_DC
-	b.eq	.Lzero_mem
-#endif
 	orr	A_lw, A_lw, A_lw, lsl #8
 	orr	A_lw, A_lw, A_lw, lsl #16
 	orr	A_l, A_l, A_l, lsl #32
@@ -148,95 +134,3 @@ def_fn memset p2align=6
 	add	dst, dst, #16
 	b.ne	.Ltail63
 	ret
-
-#ifndef DONT_USE_DC
-	/* For zeroing memory, check to see if we can use the ZVA feature to
-	 * zero entire 'cache' lines.  */
-.Lzero_mem:
-	mov	A_l, #0
-	cmp	count, #63
-	b.le	.Ltail_maybe_tiny
-	neg	tmp2, dst
-	ands	tmp2, tmp2, #15
-	b.eq	1f
-	sub	count, count, tmp2
-	stp	A_l, A_l, [dst]
-	add	dst, dst, tmp2
-	cmp	count, #63
-	b.le	.Ltail63
-1:
-	/* For zeroing small amounts of memory, it's not worth setting up
-	 * the line-clear code.  */
-	cmp	count, #128
-	b.lt	.Lnot_short
-#ifdef MAYBE_VIRT
-	/* For efficiency when virtualized, we cache the ZVA capability.  */
-	adrp	tmp2, .Lcache_clear
-	ldr	zva_len, [tmp2, #:lo12:.Lcache_clear]
-	tbnz	zva_len, #31, .Lnot_short
-	cbnz	zva_len, .Lzero_by_line
-	mrs	tmp1, dczid_el0
-	tbz	tmp1, #4, 1f
-	/* ZVA not available.  Remember this for next time.  */
-	mov	zva_len, #~0
-	str	zva_len, [tmp2, #:lo12:.Lcache_clear]
-	b	.Lnot_short
-1:
-	mov	tmp3w, #4
-	and	zva_len, tmp1w, #15	/* Safety: other bits reserved.  */
-	lsl	zva_len, tmp3w, zva_len
-	str	zva_len, [tmp2, #:lo12:.Lcache_clear]
-#else
-	mrs	tmp1, dczid_el0
-	tbnz	tmp1, #4, .Lnot_short
-	mov	tmp3w, #4
-	and	zva_len, tmp1w, #15	/* Safety: other bits reserved.  */
-	lsl	zva_len, tmp3w, zva_len
-#endif
-
-.Lzero_by_line:
-	/* Compute how far we need to go to become suitably aligned.  We're
-	 * already at quad-word alignment.  */
-	cmp	count, zva_len_x
-	b.lt	.Lnot_short		/* Not enough to reach alignment.  */
-	sub	zva_bits_x, zva_len_x, #1
-	neg	tmp2, dst
-	ands	tmp2, tmp2, zva_bits_x
-	b.eq	1f			/* Already aligned.  */
-	/* Not aligned, check that there's enough to copy after alignment.  */
-	sub	tmp1, count, tmp2
-	cmp	tmp1, #64
-	ccmp	tmp1, zva_len_x, #8, ge	/* NZCV=0b1000 */
-	b.lt	.Lnot_short
-	/* We know that there's at least 64 bytes to zero and that it's safe
-	 * to overrun by 64 bytes.  */
-	mov	count, tmp1
-2:
-	stp	A_l, A_l, [dst]
-	stp	A_l, A_l, [dst, #16]
-	stp	A_l, A_l, [dst, #32]
-	subs	tmp2, tmp2, #64
-	stp	A_l, A_l, [dst, #48]
-	add	dst, dst, #64
-	b.ge	2b
-	/* We've overrun a bit, so adjust dst downwards.  */
-	add	dst, dst, tmp2
-1:
-	sub	count, count, zva_len_x
-3:
-	dc	zva, dst
-	add	dst, dst, zva_len_x
-	subs	count, count, zva_len_x
-	b.ge	3b
-	ands	count, count, zva_bits_x
-	b.ne	.Ltail_maybe_long
-	ret
-	.size	memset, .-memset
-#ifdef MAYBE_VIRT
-	.bss
-	.p2align 2
-	.Lcache_clear:
-	.space 4
-#endif
-#endif /* DONT_USE_DC */
-

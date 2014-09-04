@@ -32,7 +32,6 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include "hda_verb.h"
 #include "onboard.h"
 #include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>
@@ -40,6 +39,7 @@
 #include <device/pci.h>
 #include <ec/quanta/it8518/ec.h>
 #include <device/azalia_device.h>
+#include "hda_verb.h"
 
 void mainboard_suspend_resume(void)
 {

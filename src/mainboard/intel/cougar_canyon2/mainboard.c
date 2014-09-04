@@ -31,9 +31,9 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include "hda_verb.h"
 #include <southbridge/intel/fsp_bd82x6x/pch.h>
 #include <device/azalia_device.h>
+#include "hda_verb.h"
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 void mainboard_suspend_resume(void)

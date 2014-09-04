@@ -78,64 +78,34 @@ static const u32 mainboard_cim_verb_data[] = {
 	/* Pin Widget Verb Table */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x144DC0C2 */
-	0x001720c2,
-	0x001721c0,
-	0x0017224d,
-	0x00172314,
+	AZALIA_SUBVENDOR(0x0, 0x144dc0c2),
 
 	/* Pin Complex (NID 0x0B)  Port-G Analog Unknown  Speaker at Int N/A */
-	0x00b71cf0,
-	0x00b71d00,
-	0x00b71e17,
-	0x00b71f90,
+	AZALIA_PIN_CFG(0x0, 0x0b, 0x901700f0),
 
 	/* Pin Complex (NID 0x0C)  N/C */
-	0x00c71cf0,
-	0x00c71d00,
-	0x00c71ef0,
-	0x00c71f70,
+	AZALIA_PIN_CFG(0x0, 0x0c, 0x70f000f0),
 
 	/* Pin Complex (NID 0x0D)  N/C */
-	0x00d71cf0,
-	0x00d71d00,
-	0x00d71ef0,
-	0x00d71f70,
+	AZALIA_PIN_CFG(0x0, 0x0d, 0x70f000f0),
 
 	/* Pin Complex (NID 0x0E)  N/C */
-	0x00e71cf0,
-	0x00e71d00,
-	0x00e71ef0,
-	0x00e71f70,
+	AZALIA_PIN_CFG(0x0, 0x0e, 0x70f000f0),
 
 	/* Pin Complex (NID 0x0F)  N/C */
-	0x00f71cf0,
-	0x00f71d00,
-	0x00f71ef0,
-	0x00f71f70,
+	AZALIA_PIN_CFG(0x0, 0x0f, 0x70f000f0),
 
 	/* Pin Complex (NID 0x10)  Port-D 1/8 Black HP Out at Ext Left */
-	0x01071cf0,
-	0x01071d10,
-	0x01071e21,
-	0x01071f03,
+	AZALIA_PIN_CFG(0x0, 0x10, 0x032110f0),
 
 	/* Pin Complex (NID 0x11) Port-B Click Mic */
-	0x01171cf0,
-	0x01171d00,
-	0x01171ea7,
-	0x01171f90,
+	AZALIA_PIN_CFG(0x0, 0x11, 0x90a700f0),
 
 	/* Pin Complex (NID 0x12) Port-C Combo Jack Mic or D-Mic */
-	0x01271cf0,
-	0x01271d10,
-	0x01271ea1,
-	0x01271f03,
+	AZALIA_PIN_CFG(0x0, 0x12, 0x03a110f0),
 
 	/* Pin Complex (NID 0x13) What you hear */
-	0x01371cf0,
-	0x01371d00,
-	0x01371ed6,
-	0x01371f90,
+	AZALIA_PIN_CFG(0x0, 0x13, 0x90d600f0),
 
 	/* coreboot specific header */
 	0x80862806,	// Codec Vendor / Device ID: Intel CougarPoint HDMI
@@ -143,28 +113,16 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x00000004,	// Number of jacks
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
-	0x30172001,
-	0x30172101,
-	0x30172286,
-	0x30172380,
+	AZALIA_SUBVENDOR(0x3, 0x80860101),
 
 	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
-	0x30571c10,
-	0x30571d00,
-	0x30571e56,
-	0x30571f18,
+	AZALIA_PIN_CFG(0x3, 0x05, 0x18560010),
 
 	/* Pin Complex (NID 0x06) Digital Out at Int HDMI */
-	0x30671c20,
-	0x30671d00,
-	0x30671e56,
-	0x30671f18,
+	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
 
 	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
-	0x30771c30,
-	0x30771d00,
-	0x30771e56,
-	0x30771f18
+	AZALIA_PIN_CFG(0x3, 0x07, 0x18560030)
 };
 
 

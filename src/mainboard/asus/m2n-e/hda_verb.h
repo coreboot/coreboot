@@ -32,89 +32,47 @@ static const u32 mainboard_cim_verb_data[] = {
 
 	/* NID 0x01, FUNCTION, Designates this device as an audio codec */
 	/* Set the Implementation ID (IID), here: 0x104381f6. */
-	0x001720f6,
-	0x00172181,
-	0x00172243,
-	0x00172310,
+	AZALIA_SUBVENDOR(0x0, 0x104381f6),
 
 	/* "Pin complex" HDA widgets. Comments: Node ID, Name, Description. */
 
 	/* NID 0x11, Port A, Front panel headphone jack */
-	0x01171c30,
-	0x01171d41,
-	0x01171e21,
-	0x01171f02,
+	AZALIA_PIN_CFG(0x0, 0x11, 0x02214130),
 
 	/* NID 0x12, Port D, Rear panel front speaker jack */
-	0x01271c10,
-	0x01271d40,
-	0x01271e01,
-	0x01271f01,
+	AZALIA_PIN_CFG(0x0, 0x12, 0x01014010),
 
 	/* NID 0x13, MONO_OUT, Monaural output pin */
-	0x01371cf0,
-	0x01371d11,
-	0x01371e17,
-	0x01371f51,
+	AZALIA_PIN_CFG(0x0, 0x13, 0x511711f0),
 
 	/* NID 0x14, Port B, Front panel microphone jack */
-	0x01471c22,
-	0x01471d91,
-	0x01471ea1,
-	0x01471f02,
+	AZALIA_PIN_CFG(0x0, 0x14, 0x02a19122),
 
 	/* NID 0x15, Port C, Rear panel line-in jack */
-	0x01571c21,
-	0x01571d30,
-	0x01571e81,
-	0x01571f01,
+	AZALIA_PIN_CFG(0x0, 0x15, 0x01813021),
 
 	/* NID 0x16, Port F, Rear panel surround-back (5.1) jack */
-	0x01671c12,
-	0x01671d10,
-	0x01671e01,
-	0x01671f01,
+	AZALIA_PIN_CFG(0x0, 0x16, 0x01011012),
 
 	/* NID 0x17, Port E, Rear panel microphone jack */
-	0x01771c20,
-	0x01771d90,
-	0x01771ea1,
-	0x01771f01,
+	AZALIA_PIN_CFG(0x0, 0x17, 0x01a19020),
 
 	/* NID 0x18, CD IN, Analog CD input */
-	0x01871c2e,
-	0x01871d11,
-	0x01871e33,
-	0x01871f99,
+	AZALIA_PIN_CFG(0x0, 0x18, 0x9933112e),
 
 	/* NID 0x1a, Analog PCBEEP, External analog PCBEEP signal input */
-	0x01a71cf0,
-	0x01a71d01,
-	0x01a71ef3,
-	0x01a71f99,
+	AZALIA_PIN_CFG(0x0, 0x1a, 0x99f301f0),
 
 	/* NID 0x1b, S/PDIF Out, S/PDIF output pin */
-	0x01b71cf0,
-	0x01b71df1,
-	0x01b71e45,
-	0x01b71f01,
+	AZALIA_PIN_CFG(0x0, 0x1b, 0x0145f1f0),
 
 	/* NID 0x1c, S/PDIF In, S/PDIF input pin */
-	0x01c71cf0,
-	0x01c71df1,
-	0x01c71ec5,
-	0x01c71f41,
+	AZALIA_PIN_CFG(0x0, 0x1c, 0x41c5f1f0),
 
 	/* NID 0x24, Port G, Rear panel C/LFE jack */
-	0x02471c11,
-	0x02471d60,
-	0x02471e01,
-	0x02471f01,
+	AZALIA_PIN_CFG(0x0, 0x24, 0x01016011),
 
 	/* NID 0x25, Port H, Rear panel surround-side (7.1) jack */
-	0x02571c14,
-	0x02571d20,
-	0x02571e01,
-	0x02571f01,
+	AZALIA_PIN_CFG(0x0, 0x25, 0x01012014),
 };
 

@@ -24,72 +24,55 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x0000000c,	// Number of jacks (NID entries)
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10ec0283 */
-	0x00172083,
-	0x00172102,
-	0x001722ec,
-	0x00172310,
+	AZALIA_SUBVENDOR(0x0, 0x10ec0283),
 
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) DMIC - interior mobile lid */
-	0x01271c10,
-	0x01271d10,
-	0x01271ea6,
-	0x01271fb7,
+	AZALIA_PIN_CFG(0x0, 0x12, 0xb7a61010),
 
 	/* Pin Complex (NID 0x14) SPKR-OUT PORTD */
-	0x01471c10, // group 1, front left/right
-	0x01471d01, // no connector, no jack detect
-	0x01471e17, // speaker out, analog
-	0x01471f90, // fixed function, internal
+	// group 1, front left/right
+	// no connector, no jack detect
+	// speaker out, analog
+	// fixed function, internal
+	AZALIA_PIN_CFG(0x0, 0x14, 0x90170110),
 
 	/* Pin Complex (NID 0x17)  */
-	0x01771cf0,
-	0x01771d11,
-	0x01771e11,
-	0x01771f41,
+	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
 
 	/* Pin Complex (NID 0x18)  MIC1 PORTB */
-	0x01971c11, // group 1, cap 1
-	0x01971d10, // black, jack detect
-	0x01971ea7, // mic in, analog
-	0x01971f03, // connector, left panel
+	// group 1, cap 1
+	// black, jack detect
+	// mic in, analog
+	// connector, left panel
+	AZALIA_PIN_CFG(0x0, 0x19, 0x03a71011),
 
 	/* Pin Complex (NID 0x19)  MIC2 PORTF */
-	0x01871cf0,
-	0x01871d11,
-	0x01871e11,
-	0x01871f41,
+	AZALIA_PIN_CFG(0x0, 0x18, 0x411111f0),
 
 	/* Pin Complex (NID 0x1A)  LINE1 PORTC */
-	0x01a71cf0,
-	0x01a71d11,
-	0x01a71e11,
-	0x01a71f41,
+	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
 
 	/* Pin Complex (NID 0x1B)  LINE2 PORTE */
-	0x01a71cf0,
-	0x01a71d11,
-	0x01a71e11,
-	0x01a71f41,
+	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
 
 	/* Pin Complex (NID 0x1d)  PCBeep */
-	0x01d71c2d, // eapd low on ex-amp, laptop, custom enable
-	0x01d71d81, // mute spkr on hpout
-	0x01d71e15, // pcbeep en able, checksum
-	0x01d71f40, // no physical, internal
+	// eapd low on ex-amp, laptop, custom enable
+	// mute spkr on hpout
+	// pcbeep en able, checksum
+	// no physical, internal
+	AZALIA_PIN_CFG(0x0, 0x1d, 0x4015812d),
 
 	/* Pin Complex (NID 0x1E)  SPDIF-OUT */
-	0x01e71cf0,
-	0x01e71d11,
-	0x01e71e11,
-	0x01e71f41,
+	AZALIA_PIN_CFG(0x0, 0x1e, 0x411111f0),
 
 	/* Pin Complex (NID 0x21) HPOUT PORT-I */
-	0x02171c1f, // group1,
-	0x02171d10, // black, jack detect
-	0x02171e21, // HPOut, 1/8 stereo
-	0x02171f03, // connector, left panel
+	// group1,
+	// black, jack detect
+	// HPOut, 1/8 stereo
+	// connector, left panel
+	AZALIA_PIN_CFG(0x0, 0x21, 0x0321101f),
 
 	/* Undocumented settings from Realtek (needed for beep_gen) */
 	/* Widget node 0x20 */

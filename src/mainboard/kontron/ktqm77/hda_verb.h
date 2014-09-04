@@ -25,10 +25,7 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x0000000c,	// Number of jacks
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x11060000 */
-	0x00172000,
-	0x00172100,
-	0x00172206,
-	0x00172311,
+	AZALIA_SUBVENDOR(0x0, 0x11060000),
 
 	/* Pin Widget Verb Table */
 
@@ -105,26 +102,14 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x00000004,	// Number of jacks
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
-	0x00172001,
-	0x00172101,
-	0x00172286,
-	0x00172380,
+	AZALIA_SUBVENDOR(0x0, 0x80860101),
 
 	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
-	0x30571c10,
-	0x30571d00,
-	0x30571e56,
-	0x30571f58,
+	AZALIA_PIN_CFG(0x3, 0x05, 0x58560010),
 
 	/* Pin Complex (NID 0x06) Digital Out at Int HDMI */
-	0x30671c20,
-	0x30671d00,
-	0x30671e56,
-	0x30671f18,
+	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
 
 	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
-	0x30771c30,
-	0x30771d00,
-	0x30771e56,
-	0x30771f18
+	AZALIA_PIN_CFG(0x3, 0x07, 0x18560030)
 };

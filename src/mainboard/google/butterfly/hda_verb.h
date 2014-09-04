@@ -36,58 +36,37 @@ static const u32 mainboard_cim_verb_data[] = {
 /* Bits 7:0  - Payload */
 
 /* NID 0x01 - NodeInfo */
-	0x001720F9,
-	0x00172118,
-	0x0017223C,
-	0x00172310,
+	AZALIA_SUBVENDOR(0x0, 0x103C18F9),
 
 /* NID 0x0A - External Microphone Connector
  * Config=0x04A11020 (External,Right; MicIn,3.5mm; Black,JD; DA,Seq)
  */
-	0x00A71C20,
-	0x00A71D10,
-	0x00A71EA1,
-	0x00A71F04,
+	AZALIA_PIN_CFG(0x0, 0x0A, 0x04A11020),
 
 /* NID 0x0B - Headphone Connector
  * Config=0x0421101F (External,Right; HP,3.5mm; Black,JD; DA,Seq)
  */
-	0x00B71C1F,
-	0x00B71D10,
-	0x00B71E21,
-	0x00B71F04,
+	AZALIA_PIN_CFG(0x0, 0x0B, 0x0421101F),
 
 /* NID 0x0C - Not connected
  * Config=0x40F000F0 (N/A,N/A; Other,Unknown; Unknown,JD; DA,Seq)
  */
-	0x00C71CF0,
-	0x00C71D00,
-	0x00C71EF0,
-	0x00C71F40,
+	AZALIA_PIN_CFG(0x0, 0x0C, 0x40F000F0),
 
 /* NID 0x0D - Internal Speakers
  * Config=0x90170110 (Fixed,Int; Speaker,Other Analog; Unknown,nJD; DA,Seq)
  */
-	0x00D71C10,
-	0x00D71D01,
-	0x00D71E17,
-	0x00D71F90,
+	AZALIA_PIN_CFG(0x0, 0x0D, 0x90170110),
 
 /* NID 0x0F - Not connected
  * Config=0x40F000F0
  */
-	0x00F71CF0,
-	0x00F71D00,
-	0x00F71EF0,
-	0x00F71F40,
+	AZALIA_PIN_CFG(0x0, 0x0F, 0x40F000F0),
 
 /* NID 0x11 - Internal Microphone
  * Config=0xD5A30140 (Fixed internal,Top; Mic In,ATIPI; Unknown,nJD; DA,Seq)
  */
-	0x01171C40,
-	0x01171D01,
-	0x01171EA3,
-	0x01171FD5,
+	AZALIA_PIN_CFG(0x0, 0x11, 0xD5A30140),
 
 	/*
 	 * Hardware EQ Parameters
@@ -232,28 +211,16 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x00000004,	// Number of IDs
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
-	0x30172001,
-	0x30172101,
-	0x30172286,
-	0x30172380,
+	AZALIA_SUBVENDOR(0x3, 0x80860101),
 
 	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
-	0x30571c10,
-	0x30571d00,
-	0x30571e56,
-	0x30571f18,
+	AZALIA_PIN_CFG(0x3, 0x05, 0x18560010),
 
 	/* Pin Complex (NID 0x06) Digital Out at Int HDMI */
-	0x30671c20,
-	0x30671d00,
-	0x30671e56,
-	0x30671f18,
+	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
 
 	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
-	0x30771c30,
-	0x30771d00,
-	0x30771e56,
-	0x30771f18
+	AZALIA_PIN_CFG(0x3, 0x07, 0x18560030)
 };
 
 static const u32 mainboard_pc_beep_verbs[] = {

@@ -34,7 +34,6 @@
 #include <ec/acpi/ec.h>
 
 #include <pc80/mc146818rtc.h>
-#include "hda_verb.h"
 #include <arch/x86/include/arch/acpigen.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 #include <x86emu/regs.h>
@@ -45,6 +44,7 @@
 #include <device/pci.h>
 #include <smbios.h>
 #include <device/azalia_device.h>
+#include "hda_verb.h"
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},

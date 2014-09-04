@@ -34,9 +34,9 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include "hda_verb.h"
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <device/azalia_device.h>
+#include "hda_verb.h"
 #include "ec.h"
 #include "onboard.h"
 

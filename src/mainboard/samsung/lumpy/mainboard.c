@@ -33,12 +33,12 @@
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include <ec/smsc/mec1308/ec.h>
-#include "hda_verb.h"
 #include "ec.h"
 #include "onboard.h"
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
 #include <device/azalia_device.h>
+#include "hda_verb.h"
 
 void mainboard_suspend_resume(void)
 {

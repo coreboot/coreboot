@@ -33,7 +33,6 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include "hda_verb.h"
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
 #include <device/pci.h>
@@ -42,6 +41,7 @@
 #include <ec/lenovo/h8/h8.h>
 #include <build.h>
 #include <device/azalia_device.h>
+#include "hda_verb.h"
 
 void mainboard_suspend_resume(void)
 {

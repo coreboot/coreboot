@@ -29,72 +29,59 @@ static const u32 mainboard_cim_verb_data[] = {
 	/* Bits 7:0  - Payload */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10ec0283 */
-	0x00172083,
-	0x00172102,
-	0x001722ec,
-	0x00172310,
+	AZALIA_SUBVENDOR(0x0, 0x10ec0283),
 
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) DMIC - Disabled */
-	0x01271cf0, //
-	0x01271d11, //
-	0x01271e11, //
-	0x01271f41, //
+	AZALIA_PIN_CFG(0x0, 0x12, 0x411111f0),
 
 	/* Pin Complex (NID 0x14) SPKR-OUT - Internal Speakers */
-	0x01471c10, // group 1, cap 0
-	0x01471d01, // no connector, no jack detect
-	0x01471e17, // speaker out, analog
-	0x01471f90, // fixed function, internal, Location N/A
+	// group 1, cap 0
+	// no connector, no jack detect
+	// speaker out, analog
+	// fixed function, internal, Location N/A
+	AZALIA_PIN_CFG(0x0, 0x14, 0x90170110),
 
 	/* Pin Complex (NID 0x17) MONO Out - Disabled */
-	0x01771cf0, //
-	0x01771d11, //
-	0x01771e11, //
-	0x01771f41, //
+	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
 
 	/* Pin Complex (NID 0x18) Disabled */
-	0x01871cf0, //
-	0x01871d11, //
-	0x01871e11, //
-	0x01871f41, //
+	AZALIA_PIN_CFG(0x0, 0x18, 0x411111f0),
 
 	/* Pin Complex (NID 0x19)  MIC2 - 3.5mm Jack */
-	0x01971c20, // group2, cap 0
-	0x01971d10, // black, jack detect
-	0x01971ea1, // Mic in, 3.5mm Jack
-	0x01971f03, // connector, External left panel
+	// group2, cap 0
+	// black, jack detect
+	// Mic in, 3.5mm Jack
+	// connector, External left panel
+	AZALIA_PIN_CFG(0x0, 0x19, 0x03a11020),
 
 	/* Pin Complex (NID 0x1A)  LINE1 - Internal Mic */
-	0x01a71c11, // group 1, cap 1
-	0x01a71d01, // no connector, no jack detect
-	0x01a71ea7, // mic in, analog connection
-	0x01a71f90, // Fixed function, internal, Location N/A
+	// group 1, cap 1
+	// no connector, no jack detect
+	// mic in, analog connection
+	// Fixed function, internal, Location N/A
+	AZALIA_PIN_CFG(0x0, 0x1a, 0x90a70111),
 
 	/* Pin Complex (NID 0x1B)  LINE2 - Disabled */
-	0x01b71cf0, //
-	0x01b71d11, //
-	0x01b71e11, //
-	0x01b71f41, //
+	AZALIA_PIN_CFG(0x0, 0x1b, 0x411111f0),
 
 	/* Pin Complex (NID 0x1D)  PCBeep */
-	0x01d71c2d, // eapd low on ex-amp, laptop, custom enable
-	0x01d71d81, // mute spkr on hpout
-	0x01d71e15, // pcbeep en able, checksum
-	0x01d71f40, // no physical, Internal, Location N/A
+	// eapd low on ex-amp, laptop, custom enable
+	// mute spkr on hpout
+	// pcbeep en able, checksum
+	// no physical, Internal, Location N/A
+	AZALIA_PIN_CFG(0x0, 0x1d, 0x4015812d),
 
 	/* Pin Complex (NID 0x1E)  SPDIF-OUT - Disabled*/
-	0x01e71cf0, //
-	0x01e71d11, //
-	0x01e71e11, //
-	0x01e71f41, //
+	AZALIA_PIN_CFG(0x0, 0x1e, 0x411111f0),
 
 	/* Pin Complex (NID 0x21) HP-OUT - 3.5mm Jack*/
-	0x02171c21, // group2, cap 1
-	0x02171d10, // black, jack detect
-	0x02171e21, // HPOut, 3.5mm Jack
-	0x02171f03, // connector, left panel
+	// group2, cap 1
+	// black, jack detect
+	// HPOut, 3.5mm Jack
+	// connector, left panel
+	AZALIA_PIN_CFG(0x0, 0x21, 0x03211021),
 
 	/* Undocumented settings from Realtek (needed for beep_gen) */
 	/* Widget node 0x20 */

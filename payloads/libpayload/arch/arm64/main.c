@@ -29,6 +29,7 @@
 
 #include <exception.h>
 #include <libpayload.h>
+#include <arch/mmu.h>
 
 unsigned int main_argc;    /**< The argc value to pass to main() */
 
@@ -48,6 +49,64 @@ static int test_exception(void)
 	return 0;
 }
 
+/*
+ * Func: pre_sysinfo_scan_mmu_setup
+ * Desc: We need to setup and enable MMU before we can go to scan coreboot
+ * tables. However, we are not sure what all memory regions to map. Thus,
+ * initializing minimum required memory ranges
+ */
+static void pre_sysinfo_scan_mmu_setup(void)
+{
+	uint64_t start = (uint64_t)&_start;
+	uint64_t end = (uint64_t)&_end;
+
+	/* Memory range 1: Covers the area occupied by payload */
+	mmu_presysinfo_memory_used(start, end - start);
+
+	/*
+	 * Memory range 2: Coreboot tables
+	 *
+	 * Maximum size is assumed 2 pages in case it crosses the GRANULE_SIZE
+	 * boundary
+	 */
+	mmu_presysinfo_memory_used((uint64_t)get_cb_header_ptr(),
+				   2 * GRANULE_SIZE);
+
+	mmu_presysinfo_enable();
+}
+
+/*
+ * Func: post_sysinfo_scan_mmu_setup
+ * Desc: Once we have scanned coreboot tables, we have complete information
+ * about different memory ranges. Thus, we can perform a complete mmu
+ * initialization. Also, this takes care of DMA area setup
+ */
+static void post_sysinfo_scan_mmu_setup(void)
+{
+	struct memrange *ranges;
+	uint64_t nranges;
+	struct mmu_ranges mmu_ranges;
+	struct mmu_memrange *dma_range;
+
+	/* Get memrange info from lib_sysinfo */
+	lib_sysinfo_get_memranges(&ranges, &nranges);
+
+	/* Get memory ranges for mmu init from lib_sysinfo memrange */
+	dma_range = mmu_init_ranges_from_sysinfo(ranges, nranges, &mmu_ranges);
+
+	/* Disable mmu */
+	mmu_disable();
+
+	/* Init mmu */
+	mmu_init(&mmu_ranges);
+
+	/* Enable mmu */
+	mmu_enable();
+
+	/* Init dma memory */
+	init_dma_memory((void *)dma_range->base, dma_range->size);
+}
+
 /**
  * This is our C entry function - set up the system
  * and jump into the payload entry point.
@@ -57,12 +116,17 @@ void start_main(void)
 {
 	extern int main(int argc, char **argv);
 
+	pre_sysinfo_scan_mmu_setup();
+
 	/* Gather system information. */
 	lib_get_sysinfo();
 
 #ifndef CONFIG_LP_SKIP_CONSOLE_INIT
 	console_init();
 #endif
+
+	post_sysinfo_scan_mmu_setup();
+
 	printf("ARM64: Libpayload %s\n",__func__);
 	exception_init();
 

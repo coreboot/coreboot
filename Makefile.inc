@@ -568,6 +568,6 @@ $(obj)/coreboot.pre: $(objcbfs)/$(ROMSTAGE_ELF) $(obj)/coreboot.pre1 $(CBFSTOOL)
 
 JENKINS_PAYLOAD=none
 what-jenkins-does:
-	util/abuild/abuild -B -J -y -c 4 -p $(JENKINS_PAYLOAD)
+	util/abuild/abuild -B -J -y -c 4 -z -p $(JENKINS_PAYLOAD)
 	(cd payloads/libpayload; $(MAKE) CONFIG_CCACHE=y V=$(V) Q=$(Q) junit.xml)
 	$(MAKE) V=$(V) Q=$(Q) -C util/cbmem junit.xml

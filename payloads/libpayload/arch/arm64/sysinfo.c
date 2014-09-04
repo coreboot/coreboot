@@ -62,3 +62,10 @@ int lib_get_sysinfo(void)
 
 	return ret;
 }
+
+void lib_sysinfo_get_memranges(struct memrange **ranges,
+			       uint64_t *nranges)
+{
+	*ranges = &lib_sysinfo.memrange[0];
+	*nranges = lib_sysinfo.n_memranges;
+}

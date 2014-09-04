@@ -258,6 +258,8 @@ uint32_t raw_read_tcr_el2(void);
 void raw_write_tcr_el2(uint32_t tcr_el2);
 uint32_t raw_read_tcr_el3(void);
 void raw_write_tcr_el3(uint32_t tcr_el3);
+uint64_t raw_read_tcr_current(void);
+void raw_write_tcr_current(uint64_t tcr);
 uint64_t raw_read_ttbr0_el1(void);
 void raw_write_ttbr0_el1(uint64_t ttbr0_el1);
 uint64_t raw_read_ttbr0_el2(void);

@@ -757,6 +757,16 @@ void raw_write_tcr_el3(uint32_t tcr_el3)
 	__asm__ __volatile__("msr TCR_EL3, %0\n\t" : : "r" (tcr_el3) : "memory");
 }
 
+uint64_t raw_read_tcr_current(void)
+{
+	SWITCH_CASE_READ(raw_read_tcr, tcr, uint64_t);
+}
+
+void raw_write_tcr_current(uint64_t tcr)
+{
+	SWITCH_CASE_WRITE(raw_write_tcr, tcr);
+}
+
 /* TTBR0 */
 uint64_t raw_read_ttbr0_el1(void)
 {

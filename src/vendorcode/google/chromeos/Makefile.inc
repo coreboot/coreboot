@@ -71,7 +71,7 @@ VBOOT_STUB_DEPS += $(obj)/arch/x86/lib/memcpy.rmodules_$(ARCH-romstage-y).o
 VBOOT_STUB_DEPS += $(VB_LIB)
 # Remove the '-include' option since that will break vboot's build and ensure
 # vboot_reference can get to coreboot's include files.
-VBOOT_CFLAGS += $(patsubst -I%,-I../%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_romstage)))
+VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_romstage)))
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 VBOOT_CFLAGS += $(rmodules_$(ARCH-ROMSTAGE-y)-c-ccopts)
 
@@ -89,7 +89,7 @@ $(VB_LIB):
 		CFLAGS="$(VBOOT_CFLAGS)" \
 		make -C $(VB_SOURCE) \
 		$(VBOOT_MAKEFLAGS) \
-		BUILD=../$(dir $(VB_LIB)) \
+		BUILD=$(top)/$(dir $(VB_LIB)) \
 		V=$(V) \
 		fwlib
 
@@ -97,10 +97,17 @@ endif
 
 ifeq ($(CONFIG_VBOOT2_VERIFY_FIRMWARE),y)
 VB_SOURCE := vboot_reference
-VERSTAGE_LIB = $(obj)/vendorcode/google/chromeos/verstage.a
-
 INCLUDES += -I$(VB_SOURCE)/firmware/2lib/include
 INCLUDES += -I$(VB_SOURCE)/firmware/include
+
+verstage-c-ccopts += -D__PRE_RAM__ -D__VER_STAGE__
+verstage-S-ccopts += -D__PRE_RAM__ -D__VER_STAGE__
+
+ifeq ($(CONFIG_RETURN_FROM_VERSTAGE),y)
+bootblock-y += verstub.c
+else
+verstage-y += verstub.c
+endif
 verstage-y += verstage.c fmap.c chromeos.c
 verstage-y += antirollback.c vbnv_ec.c
 romstage-y += vboot_handoff.c
@@ -121,13 +128,10 @@ $(VB2_LIB): $(obj)/config.h
 		BUILD=$(top)/$(dir $(VB2_LIB)) \
 		V=$(V) \
 		fwlib2
-	mv $@ $@.tmp
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY_verstage) --prefix-symbols=verstage_ $@.tmp $@
 
-$(VERSTAGE_LIB): $$(verstage-objs)
-	@printf "    AR         $(subst $(obj)/,,$(@))\n"
-	$(AR_verstage) rc $@.tmp $(verstage-objs)
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY_verstage) --prefix-symbols=verstage_ $@.tmp $@
-endif
+VERSTAGE_ELF = $(objcbfs)/verstage.elf
+cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage
+fallback/verstage-file = $(VERSTAGE_ELF)
+fallback/verstage-type = stage
+fallback/verstage-compression = none
+endif  # CONFIG_VBOOT2_VERIFY_FIRMWARE

@@ -34,25 +34,8 @@
 #include <stdlib.h>
 #include <timestamp.h>
 #include "chromeos.h"
-#include "fmap.h"
 #include "vboot_context.h"
 #include "vboot_handoff.h"
-
-/* The FW areas consist of multiple components. At the beginning of
- * each area is the number of total compoments as well as the size and
- * offset for each component. One needs to caculate the total size of the
- * signed firmware region based off of the embedded metadata. */
-
-struct component_entry {
-	uint32_t offset;
-	uint32_t size;
-} __attribute__((packed));
-
-struct components {
-	uint32_t num_components;
-	struct component_entry entries[0];
-} __attribute__((packed));
-
 
 #define TEMP_CBMEM_ID_VBOOT	0xffffffff
 #define TEMP_CBMEM_ID_VBLOCKS	0xfffffffe
@@ -93,24 +76,13 @@ static void fatal_error(void)
 	hard_reset();
 }
 
-static void locate_region(const char *name, struct vboot_region *region)
-{
-	region->size = find_fmap_entry(name, (void **)&region->offset_addr);
-}
-
 static int fw_region_size(struct vboot_region *r)
 {
-	struct components *fw_info;
+	struct vboot_components *fw_info;
 	int32_t size;
-	size_t req_size;
 	int i;
 
-	req_size = sizeof(*fw_info);
-	req_size += sizeof(struct component_entry) * MAX_PARSED_FW_COMPONENTS;
-
-	/* This will leak a mapping. */
-	fw_info = vboot_get_region(r->offset_addr, req_size, NULL);
-
+	fw_info = vboot_locate_components(r);
 	if (fw_info == NULL)
 		return -1;
 
@@ -118,7 +90,7 @@ static int fw_region_size(struct vboot_region *r)
 		return -1;
 
 	size = sizeof(*fw_info);
-	size += sizeof(struct component_entry) * fw_info->num_components;
+	size += sizeof(struct vboot_component_entry) * fw_info->num_components;
 
 	for (i = 0; i < fw_info->num_components; i++)
 		size += ALIGN(fw_info->entries[i].size, sizeof(uint32_t));
@@ -190,9 +162,8 @@ static int vboot_fill_params(struct vboot_context *ctx)
 
 static void fill_handoff(struct vboot_context *context)
 {
-	struct components *fw_info;
+	struct vboot_components *fw_info;
 	struct vboot_region *region;
-	size_t req_size;
 	int i;
 
 	/* Fix up the handoff structure. */
@@ -207,12 +178,7 @@ static void fill_handoff(struct vboot_context *context)
 	else
 		return;
 
-	req_size = sizeof(*fw_info);
-	req_size += sizeof(struct component_entry) * MAX_PARSED_FW_COMPONENTS;
-
-	/* This will leak a mapping. */
-	fw_info = vboot_get_region(region->offset_addr, req_size, NULL);
-
+	fw_info = vboot_locate_components(region);
 	if (fw_info == NULL)
 		return;
 
@@ -273,11 +239,11 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 	cparams.shared_data_size = VB_SHARED_DATA_MIN_SIZE;
 	cparams.caller_context = &context;
 
-	locate_region("GBB", &context.gbb);
-	locate_region("VBLOCK_A", &context.vblock_a);
-	locate_region("VBLOCK_B", &context.vblock_b);
-	locate_region("FW_MAIN_A", &context.fw_a);
-	locate_region("FW_MAIN_B", &context.fw_b);
+	vboot_locate_region("GBB", &context.gbb);
+	vboot_locate_region("VBLOCK_A", &context.vblock_a);
+	vboot_locate_region("VBLOCK_B", &context.vblock_b);
+	vboot_locate_region("FW_MAIN_A", &context.fw_a);
+	vboot_locate_region("FW_MAIN_B", &context.fw_b);
 
 	/* Check all fmap entries. */
 	if (context.fw_a.size < 0 || context.fw_b.size < 0 ||

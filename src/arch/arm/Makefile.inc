@@ -72,7 +72,10 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM
 # verification stage
 ###############################################################################
 
-verstage-y += early_console.c
+$(objcbfs)/verstage.debug: $$(verstage-objs) $(src)/arch/arm/verstage.ld $(obj)/ldoptions $$(VB2_LIB)
+	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --start-group $(verstage-objs) --end-group -T $(src)/arch/arm/verstage.ld
+
 verstage-y += div0.c
 verstage-y += eabi_compat.c
 verstage-y += memset.S

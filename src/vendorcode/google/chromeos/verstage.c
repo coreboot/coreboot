@@ -1,56 +1,36 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2014 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
 #include <2api.h>
 #include <2struct.h>
 #include <antirollback.h>
-#include <arch/exception.h>
-#include <arch/stages.h>
-#include <soc/nvidia/tegra124/cache.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
-#include <reset.h>
-#include <soc/addressmap.h>
-#include <soc/clock.h>
 #include <string.h>
 
 #include "chromeos.h"
-#include "fmap.h"
 
-#define VBDEBUG(format, args...) \
-	printk(BIOS_INFO, "%s():%d: " format,  __func__, __LINE__, ## args)
-#define TODO_BLOCK_SIZE 8192
-#define MAX_PARSED_FW_COMPONENTS 5
-#define ROMSTAGE_INDEX 2
-
-struct component_entry {
-	uint32_t offset;
-	uint32_t size;
-} __attribute__((packed));
-
-struct components {
-	uint32_t num_components;
-	struct component_entry entries[MAX_PARSED_FW_COMPONENTS];
-} __attribute__((packed));
-
-struct vboot_region {
-	uintptr_t offset_addr;
-	int32_t size;
-};
-
-static void locate_region(const char *name, struct vboot_region *region)
-{
-	region->size = find_fmap_entry(name, (void **)&region->offset_addr);
-	VBDEBUG("Located %s @%x\n", name, region->offset_addr);
-}
+#define TODO_BLOCK_SIZE 1024
 
 static int is_slot_a(struct vb2_context *ctx)
 {
 	return !(ctx->flags & VB2_CONTEXT_FW_SLOT_B);
-}
-
-static int in_ro(void)
-{
-	/* TODO: Implement */
-	return 1;
 }
 
 /* exports */
@@ -61,7 +41,7 @@ void vb2ex_printf(const char *func, const char *fmt, ...)
 
 	printk(BIOS_INFO, "VB2:%s() ", func);
 	va_start(args, fmt);
-	printk(BIOS_INFO, fmt, args);
+	vprintk(BIOS_INFO, fmt, args);
 	va_end(args);
 
 	return;
@@ -70,7 +50,7 @@ void vb2ex_printf(const char *func, const char *fmt, ...)
 int vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 {
 	uint32_t rv;
-	VBDEBUG("Clearing TPM owner\n");
+	printk(BIOS_INFO, "Clearing TPM owner\n");
 	rv = tpm_clear_and_reenable();
 	if (rv)
 		return VB2_ERROR_EX_TPM_CLEAR_OWNER;
@@ -87,13 +67,13 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 
 	switch (index) {
 	case VB2_RES_GBB:
-		locate_region("GBB", &region);
+		vboot_locate_region("GBB", &region);
 		break;
 	case VB2_RES_FW_VBLOCK:
 		if (is_slot_a(ctx))
-			locate_region("VBLOCK_A", &region);
+			vboot_locate_region("VBLOCK_A", &region);
 		else
-			locate_region("VBLOCK_B", &region);
+			vboot_locate_region("VBLOCK_B", &region);
 		break;
 	default:
 		return VB2_ERROR_EX_READ_RESOURCE_INDEX;
@@ -108,29 +88,10 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
-static void reboot(void)
-{
-	cpu_reset();
-}
-
-static void recovery(void)
-{
-	void *entry;
-
-	if (!in_ro())
-		reboot();
-
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/romstage");
-	if (entry != (void *)-1)
-		stage_exit(entry);
-
-	for (;;);
-}
-
 static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 {
 	uint32_t expected_size;
-	uint8_t block[TODO_BLOCK_SIZE];
+	MAYBE_STATIC uint8_t block[TODO_BLOCK_SIZE];
 	size_t block_size = sizeof(block);
 	uintptr_t offset;
 	int rv;
@@ -168,75 +129,18 @@ static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 	return VB2_SUCCESS;
 }
 
-static int locate_fw_components(struct vb2_context *ctx,
-				struct vboot_region *fw_main,
-				struct components *fw_info)
+static int locate_firmware(struct vb2_context *ctx,
+			   struct vboot_region *fw_main)
 {
 	if (is_slot_a(ctx))
-		locate_region("FW_MAIN_A", fw_main);
+		vboot_locate_region("FW_MAIN_A", fw_main);
 	else
-		locate_region("FW_MAIN_B", fw_main);
+		vboot_locate_region("FW_MAIN_B", fw_main);
+
 	if (fw_main->size < 0)
 		return 1;
 
-	if (vboot_get_region(fw_main->offset_addr,
-			     sizeof(*fw_info), fw_info) == NULL)
-		return 1;
 	return 0;
-}
-
-static struct cbfs_stage *load_stage(struct vb2_context *ctx,
-				     int stage_index,
-				     struct vboot_region *fw_main,
-				     struct components *fw_info)
-{
-	struct cbfs_stage *stage;
-	uint32_t fc_addr;
-	uint32_t fc_size;
-
-	/* Check for invalid address. */
-	fc_addr = fw_main->offset_addr + fw_info->entries[stage_index].offset;
-	fc_size = fw_info->entries[stage_index].size;
-	if (fc_addr == 0 || fc_size == 0) {
-		VBDEBUG("romstage address invalid.\n");
-		return NULL;
-	}
-
-	/* Loading to cbfs cache. This stage data must be retained until it's
-	 * decompressed. */
-	stage = vboot_get_region(fc_addr, fc_size, NULL);
-
-	if (stage == NULL) {
-		VBDEBUG("Unable to load a stage.\n");
-		return NULL;
-	}
-
-	return stage;
-}
-
-static void enter_stage(struct cbfs_stage *stage)
-{
-	/* Stages rely the below clearing so that the bss is initialized. */
-	memset((void *) (uintptr_t)stage->load, 0, stage->memlen);
-
-	if (cbfs_decompress(stage->compression,
-			    (unsigned char *)stage + sizeof(*stage),
-			    (void *) (uintptr_t) stage->load,
-			    stage->len))
-		return;
-
-	VBDEBUG("Jumping to entry @%llx.\n", stage->entry);
-	stage_exit((void *)(uintptr_t)stage->entry);
-}
-
-static void enable_cache(void)
-{
-	mmu_init();
-	mmu_config_range(0, CONFIG_SYS_SDRAM_BASE >> 20, DCACHE_OFF);
-	mmu_config_range(0x40000000 >> 20, 2, DCACHE_WRITEBACK);
-	mmu_disable_range(0, 1);
-	VBDEBUG("Enabling cache\n");
-	dcache_mmu_enable();
 }
 
 /**
@@ -245,45 +149,37 @@ static void enable_cache(void)
 static void save_if_needed(struct vb2_context *ctx)
 {
 	if (ctx->flags & VB2_CONTEXT_NVDATA_CHANGED) {
-		VBDEBUG("Saving nvdata\n");
+		printk(BIOS_INFO, "Saving nvdata\n");
 		save_vbnv(ctx->nvdata);
 		ctx->flags &= ~VB2_CONTEXT_NVDATA_CHANGED;
 	}
 	if (ctx->flags & VB2_CONTEXT_SECDATA_CHANGED) {
-		VBDEBUG("Saving secdata\n");
+		printk(BIOS_INFO, "Saving secdata\n");
 		antirollback_write_space_firmware(ctx);
 		ctx->flags &= ~VB2_CONTEXT_SECDATA_CHANGED;
 	}
 }
 
 /**
- * Load and verify the next stage from RW image and jump to it
- *
- * If validation fails, it exits to romstage for recovery or reboots.
+ * Verify and select the firmware in the RW image
  *
  * TODO: Avoid loading a stage twice (once in hash_body & again in load_stage).
  * when per-stage verification is ready.
  */
-void __attribute__((noinline)) select_firmware(void)
+#if CONFIG_RETURN_FROM_VERSTAGE
+void main(void)
+#else
+void verstage_main(void)
+#endif /* CONFIG_RETURN_FROM_VERSTAGE */
 {
 	struct vb2_context ctx;
-	uint8_t *workbuf = (uint8_t *)CONFIG_VBOOT_WORK_BUFFER_ADDRESS;
-	struct vboot_region fw_main;
-	struct components fw_info;
-	struct cbfs_stage *stage;
+	struct vb2_working_data *wd = vboot_get_working_data();
 	int rv;
 
-	/* Do minimum to enable cache and run vboot at full speed */
-	configure_l2_cache();
-	console_init();
-	exception_init();
-	enable_cache();
-
-	/* Set up context */
+	/* Set up context and work buffer */
 	memset(&ctx, 0, sizeof(ctx));
-	ctx.workbuf = workbuf;
-	ctx.workbuf_size = CONFIG_VBOOT_WORK_BUFFER_SIZE;
-	memset(ctx.workbuf, 0, ctx.workbuf_size);
+	ctx.workbuf = wd->buffer;
+	ctx.workbuf_size = wd->buffer_size;
 
 	/* Read nvdata from a non-volatile storage */
 	read_vbnv(ctx.nvdata);
@@ -301,59 +197,53 @@ void __attribute__((noinline)) select_firmware(void)
 	}
 
 	/* Do early init */
-	VBDEBUG("Phase 1\n");
+	printk(BIOS_INFO, "Phase 1\n");
 	rv = vb2api_fw_phase1(&ctx);
 	if (rv) {
-		VBDEBUG("Recovery requested (%x)\n", rv);
+		printk(BIOS_INFO, "Recovery requested (%x)\n", rv);
 		/* If we need recovery mode, leave firmware selection now */
 		save_if_needed(&ctx);
-		recovery();
+		return;
 	}
 
 	/* Determine which firmware slot to boot */
-	VBDEBUG("Phase 2\n");
+	printk(BIOS_INFO, "Phase 2\n");
 	rv = vb2api_fw_phase2(&ctx);
 	if (rv) {
-		VBDEBUG("Reboot requested (%x)\n", rv);
+		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
 		save_if_needed(&ctx);
-		reboot();
+		vboot_reboot();
 	}
 
 	/* Try that slot */
-	VBDEBUG("Phase 3\n");
+	printk(BIOS_INFO, "Phase 3\n");
 	rv = vb2api_fw_phase3(&ctx);
 	if (rv) {
-		VBDEBUG("Reboot requested (%x)\n", rv);
+		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
 		save_if_needed(&ctx);
-		reboot();
+		vboot_reboot();
 	}
 
-	VBDEBUG("Phase 4\n");
-	rv = locate_fw_components(&ctx, &fw_main, &fw_info);
-	if (rv) {
-		VBDEBUG("Failed to locate firmware components\n");
-		reboot();
-	}
-	rv = hash_body(&ctx, &fw_main);
-	stage = load_stage(&ctx, ROMSTAGE_INDEX, &fw_main, &fw_info);
-	if (stage == NULL) {
-		VBDEBUG("Failed to load stage\n");
-		reboot();
-	}
+	printk(BIOS_INFO, "Phase 4\n");
+	rv = locate_firmware(&ctx, &wd->selected_region);
+	if (rv)
+		die("Failed to read FMAP to locate firmware");
+
+	rv = hash_body(&ctx, &wd->selected_region);
 	save_if_needed(&ctx);
 	if (rv) {
-		VBDEBUG("Reboot requested (%x)\n", rv);
-		reboot();
+		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
+		vboot_reboot();
 	}
 
-	/* TODO: Do we need to lock secdata? */
-	VBDEBUG("Locking TPM\n");
+	/* Lock TPM */
+	rv = antirollback_lock_space_firmware();
+	if (rv) {
+		printk(BIOS_INFO, "Failed to lock TPM (%x)\n", rv);
+		vb2api_fail(&ctx, VB2_RECOVERY_RO_TPM_L_ERROR, 0);
+		save_if_needed(&ctx);
+		vboot_reboot();
+	}
 
-	/* Load next stage and jump to it */
-	VBDEBUG("Jumping to rw-romstage @%llx\n", stage->entry);
-	enter_stage(stage);
-
-	/* Shouldn't reach here */
-	VBDEBUG("Halting\n");
-	for (;;);
+	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
 }

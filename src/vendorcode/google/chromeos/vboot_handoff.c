@@ -19,6 +19,8 @@
 
 #include <2recovery_reasons.h>
 #include <2struct.h>
+#include <arch/stages.h>
+#include <assert.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
@@ -33,13 +35,33 @@
 #include "vboot_handoff.h"
 #include <vboot_struct.h>
 
+static void *load_ramstage(struct vboot_handoff *vboot_handoff,
+			   struct vboot_region *fw_main)
+{
+	struct vboot_components *fw_info;
+	int i;
+
+	fw_info = vboot_locate_components(fw_main);
+	if (fw_info == NULL)
+		die("failed to locate firmware components\n");
+
+	/* these offset & size are used to load a rw boot loader */
+	for (i = 0; i < fw_info->num_components; i++) {
+		vboot_handoff->components[i].address =
+			fw_main->offset_addr + fw_info->entries[i].offset;
+		vboot_handoff->components[i].size = fw_info->entries[i].size;
+	}
+
+	return vboot_load_stage(CONFIG_VBOOT_RAMSTAGE_INDEX, fw_main, fw_info);
+}
+
 /**
  * Sets vboot_handoff based on the information in vb2_shared_data
  *
  * TODO: Read wp switch to set VBSD_BOOT_FIRMWARE_WP_ENABLED
  */
 static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
-                               struct vb2_shared_data *vb2_sd)
+			       struct vb2_shared_data *vb2_sd)
 {
 	VbSharedDataHeader *vb_sd =
 		(VbSharedDataHeader *)vboot_handoff->shared_data;
@@ -49,7 +71,6 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 
 	vboot_handoff->selected_firmware = vb2_sd->fw_slot;
 
-	/* TODO: fw_slot is never 0xff while firmware_index can. */
 	vb_sd->firmware_index = vb2_sd->fw_slot;
 
 	vb_sd->magic = VB_SHARED_DATA_MAGIC;
@@ -61,7 +82,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 	if (vb2_sd->recovery_reason) {
 		vb_sd->firmware_index = 0xFF;
 		if (vb2_sd->recovery_reason == VB2_RECOVERY_RO_MANUAL)
-                        vb_sd->flags |= VBSD_BOOT_REC_SWITCH_ON;
+			vb_sd->flags |= VBSD_BOOT_REC_SWITCH_ON;
 		*oflags |= VB_INIT_OUT_ENABLE_RECOVERY;
 		*oflags |= VB_INIT_OUT_CLEAR_RAM;
 		*oflags |= VB_INIT_OUT_ENABLE_DISPLAY;
@@ -75,6 +96,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		vb_sd->flags |= VBSD_BOOT_DEV_SWITCH_ON;
 		vb_sd->flags |= VBSD_LF_DEV_SWITCH_ON;
 	}
+	/* TODO: Set these in depthcharge */
 	if (CONFIG_VIRTUAL_DEV_SWITCH)
 		vb_sd->flags |= VBSD_HONOR_VIRT_DEV_SWITCH;
 	if (CONFIG_EC_SOFTWARE_SYNC) {
@@ -92,51 +114,58 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 	if (vb2_sd->workbuf_preamble_size) {
 		struct vb2_fw_preamble *fp;
 		uintptr_t dst, src;
-		printk(BIOS_ERR, "Copying FW preamble\n");
+		printk(BIOS_INFO, "Copying FW preamble\n");
 		fp = (struct vb2_fw_preamble *)( (uintptr_t)vb2_sd +
 				vb2_sd->workbuf_preamble_offset);
-		src = (uintptr_t)&fp->kernel_subkey + fp->kernel_subkey.key_offset;
+		src = (uintptr_t)&fp->kernel_subkey +
+				fp->kernel_subkey.key_offset;
 		dst = (uintptr_t)vb_sd + sizeof(VbSharedDataHeader);
-		memcpy((void *)dst, (void *)src, fp->kernel_subkey.key_size);
-                vb_sd->data_used += fp->kernel_subkey.key_size;
+		assert(dst + fp->kernel_subkey.key_size <=
+		       (uintptr_t)vboot_handoff + sizeof(*vboot_handoff));
+		memcpy((void *)dst, (void *)src,
+		       fp->kernel_subkey.key_size);
+		vb_sd->data_used += fp->kernel_subkey.key_size;
 		vb_sd->kernel_subkey.key_offset =
 				dst - (uintptr_t)&vb_sd->kernel_subkey;
 		vb_sd->kernel_subkey.key_size = fp->kernel_subkey.key_size;
 		vb_sd->kernel_subkey.algorithm = fp->kernel_subkey.algorithm;
-		vb_sd->kernel_subkey.key_version = fp->kernel_subkey.key_version;
+		vb_sd->kernel_subkey.key_version =
+				fp->kernel_subkey.key_version;
 	}
 
 	vb_sd->recovery_reason = vb2_sd->recovery_reason;
 }
 
 /**
- * Create vboot handoff struct
- *
- *      struct vboot_handoff {
- *              VbInitParams init_params;
- *              uint32_t selected_firmware;
- *              struct firmware_component components[MAX_PARSED_FW_COMPONENTS];
- *              char shared_data[VB_SHARED_DATA_MIN_SIZE];
- *      } __attribute__((packed));
+ * Load ramstage and return the entry point
  */
-void vboot_create_handoff(void *vboot_workbuf)
+void *vboot_load_ramstage(void)
 {
 	struct vboot_handoff *vh;
 	struct vb2_shared_data *sd;
+	struct vb2_working_data *wd = vboot_get_working_data();
 
-	sd = (struct vb2_shared_data *)vboot_workbuf;
+	sd = (struct vb2_shared_data *)wd->buffer;
 	sd->workbuf_hash_offset = 0;
 	sd->workbuf_hash_size = 0;
 
-	printk(BIOS_INFO, "Creating vboot_handoff structure\n");
+	printk(BIOS_INFO, "creating vboot_handoff structure\n");
 	vh = cbmem_add(CBMEM_ID_VBOOT_HANDOFF, sizeof(*vh));
-
-	if (vh == NULL) {
-		printk(BIOS_ERR, "Could not add vboot_handoff structure\n");
-		return;
-	}
+	if (vh == NULL)
+		/* we don't need to failover gracefully here because this
+		 * shouldn't happen with the image that has passed QA. */
+		die("failed to allocate vboot_handoff structure\n");
 
 	memset(vh, 0, sizeof(*vh));
 
+	/* needed until we finish transtion to vboot2 for kernel verification */
 	fill_vboot_handoff(vh, sd);
+
+	if (vboot_is_readonly_path(wd))
+		/* we're on recovery path. continue to ro-ramstage. */
+		return NULL;
+
+	printk(BIOS_INFO,
+	       "loading ramstage from Slot %c\n", sd->fw_slot ? 'B' : 'A');
+	return load_ramstage(vh, &wd->selected_region);
 }

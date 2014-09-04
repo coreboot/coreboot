@@ -46,8 +46,6 @@ static void __attribute__((noinline)) romstage(void)
 	timestamp_init(0);
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	configure_l2_cache();
-
 	console_init();
 	exception_init();
 
@@ -58,21 +56,25 @@ static void __attribute__((noinline)) romstage(void)
 	u32 dram_end = sdram_max_addressable_mb();	/* plus one... */
 	u32 dram_size = dram_end - dram_start;
 
+#if !CONFIG_VBOOT2_VERIFY_FIRMWARE
+	configure_l2_cache();
 	mmu_init();
 	/* Device memory below DRAM is uncached. */
 	mmu_config_range(0, dram_start, DCACHE_OFF);
 	/* SRAM is cached. Round the size up to 2MB, the LPAE page size. */
 	mmu_config_range(0x40000000 >> 20, 2, DCACHE_WRITEBACK);
-	/* DRAM is cached. */
-	mmu_config_range(dram_start, dram_size, DCACHE_WRITEBACK);
-	/* A window for DMA is uncached. */
-	mmu_config_range(CONFIG_DRAM_DMA_START >> 20,
-			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
 	/* The space above DRAM is uncached. */
 	if (dram_end < 4096)
 		mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
 	mmu_disable_range(0, 1);
 	dcache_mmu_enable();
+#endif
+
+	/* DRAM is cached. */
+	mmu_config_range(dram_start, dram_size, DCACHE_WRITEBACK);
+	/* A window for DMA is uncached. */
+	mmu_config_range(CONFIG_DRAM_DMA_START >> 20,
+			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
 
 	/*
 	 * A watchdog reset only resets part of the system so it ends up in
@@ -91,8 +93,9 @@ static void __attribute__((noinline)) romstage(void)
 	early_mainboard_init();
 
 #if CONFIG_VBOOT2_VERIFY_FIRMWARE
-	vboot_create_handoff((void *)CONFIG_VBOOT_WORK_BUFFER_ADDRESS);
+	entry = vboot_load_ramstage();
 #else
+	early_mainboard_init();
 	vboot_verify_firmware(romstage_handoff_find_or_add());
 #endif
 
@@ -102,7 +105,9 @@ static void __attribute__((noinline)) romstage(void)
 /* Stub to force arm_init_caches to the top, before any stack/memory accesses */
 void main(void)
 {
+#if !CONFIG_VBOOT2_VERIFY_FIRMWARE
 	asm volatile ("bl arm_init_caches"
 		      ::: "r0","r1","r2","r3","r4","r5","ip");
+#endif
 	romstage();
 }

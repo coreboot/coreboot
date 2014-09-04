@@ -21,21 +21,12 @@
 
 #include <stdint.h>
 #include <vboot_api.h>
+#include "chromeos.h"
 
 struct cbmem_entry;
 
 /* The vboot context structure provides all the necessary data for invoking
  * vboot. The vboot loader sets everything up for vboot module to use. */
-
-struct vboot_region {
-	/*
-	 * The offset_addr field may be an offset or an address. It depends
-	 * on the capabilities of the underlying architecture.
-	 */
-	uintptr_t offset_addr;
-	int32_t size;
-};
-
 struct vboot_context {
 	struct vboot_handoff *handoff;
 	VbCommonParams *cparams;

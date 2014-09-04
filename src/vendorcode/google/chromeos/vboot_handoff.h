@@ -21,16 +21,7 @@
 
 #include <vboot_api.h>
 #include <vboot_struct.h>
-
-/*
- * The vboot handoff structure keeps track of a maximum number of firmware
- * components in the verfieid RW area of flash.  This is not a restriction on
- * the number of components packed in a firmware block. It's only the maximum
- * number of parsed firmware components (address and size) included in the
- * handoff structure.
- */
-
-#define MAX_PARSED_FW_COMPONENTS 5
+#include "chromeos.h"
 
 struct firmware_component {
 	uint32_t address;

@@ -131,8 +131,6 @@ ramstage-postprocess=$(foreach d,$(sort $(dir $(1))), \
 	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(1)); $$(LD_ramstage) -o $$@ -r $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(call files-in-dir,$(d),$(1)),$(ramstage-objs))))
 
-verstage-c-ccopts:=-D__PRE_RAM__ -D__VER_STAGE__
-verstage-S-ccopts:=-D__PRE_RAM__ -D__VER_STAGE__
 romstage-c-ccopts:=-D__PRE_RAM__
 romstage-S-ccopts:=-D__PRE_RAM__
 ifeq ($(CONFIG_TRACE),y)
@@ -359,10 +357,6 @@ $(obj)/%.ramstage.o $(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $
 $(obj)/%.romstage.o $(abspath $(obj))/%.romstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_romstage) -MMD $(CFLAGS_romstage) $(CPPFLAGS_romstage) $(romstage-c-ccopts) -c -o $@ $<
-
-$(obj)/%.verstage.o $(abspath $(obj))/%.verstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_verstage) -MMD $(CFLAGS_verstage) $(verstage-c-ccopts) -c -o $@ $<
 
 $(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

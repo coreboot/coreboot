@@ -47,6 +47,38 @@ struct romstage_handoff;
 /* TODO(shawnn): Remove these CONFIGs and define default weak functions
  * that can be overridden in the platform / MB code. */
 #if CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE
+struct vboot_region {
+	uintptr_t offset_addr;
+	int32_t size;
+};
+
+/*
+ * The vboot handoff structure keeps track of a maximum number of firmware
+ * components in the verfieid RW area of flash.  This is not a restriction on
+ * the number of components packed in a firmware block. It's only the maximum
+ * number of parsed firmware components (address and size) included in the
+ * handoff structure.
+ */
+#define MAX_PARSED_FW_COMPONENTS 5
+
+/* The FW areas consist of multiple components. At the beginning of
+ * each area is the number of total compoments as well as the size and
+ * offset for each component. One needs to caculate the total size of the
+ * signed firmware region based off of the embedded metadata. */
+struct vboot_component_entry {
+	uint32_t offset;
+	uint32_t size;
+} __attribute__((packed));
+
+struct vboot_components {
+	uint32_t num_components;
+	struct vboot_component_entry entries[0];
+} __attribute__((packed));
+
+void vboot_locate_region(const char *name, struct vboot_region *region);
+
+struct vboot_components *vboot_locate_components(struct vboot_region *region);
+
 /*
  * This is a dual purpose routine. If dest is non-NULL the region at
  * offset_addr will be read into the area pointed to by dest.  If dest
@@ -87,8 +119,31 @@ static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
 
 #if CONFIG_VBOOT2_VERIFY_FIRMWARE
-void select_firmware(void);
-void vboot_create_handoff(void * vboot_workbuf);
-#endif
+void *vboot_load_ramstage(void);
+void vboot2_verify_firmware(void);
+void verstage_main(void);
+void *vboot_load_stage(int stage_index,
+		       struct vboot_region *fw_main,
+		       struct vboot_components *fw_info);
+void vboot_reboot(void);
+
+/*
+ * this is placed at the start of the vboot work buffer. selected_region is used
+ * for the verstage to return the location of the selected slot. buffer is used
+ * by the vboot2 core.
+ *
+ * TODO: Make the sizes of the struct and its members independent of cpu
+ * architectures as it crosses stage boundaries.
+ */
+struct vb2_working_data {
+	struct vboot_region selected_region;
+	size_t buffer_size;
+	uint8_t *buffer;
+};
+
+struct vb2_working_data * const vboot_get_working_data(void);
+int vboot_is_slot_selected(struct vb2_working_data *wd);
+int vboot_is_readonly_path(struct vb2_working_data *wd);
+#endif /* CONFIG_VBOOT2_VERIFY_FIRMWARE */
 
 #endif

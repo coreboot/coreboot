@@ -38,6 +38,16 @@ config BOOTBLOCK_CPU_INIT
 # 0x4002_0000 Bootblock (max 48KB).
 # 0x4002_C000 ROM stage (max 80KB).
 # 0x4003_FFFF End of iRAM.
+#
+# if VBOOT2_VERIFY_FIRMWARE,
+# 0x4000_0000 TTB (16K+32B). 32B is for L1 table of LPAE.
+# 0x4000_4020 CBMEM console area (8K-32B)
+# 0x4000_6000 CBFS mapping cache (72K)
+# 0x4001_8000 vboot work buffer (16K)
+# 0x4001_C000 Stack (16KB... don't reduce without comparing LZMA scratchpad!).
+# 0x4002_0000 bootblock and romstage (max 70KB).
+# 0x4003_1000 verstage (max 60KB).
+# 0x4003_FFFF End of iRAM.
 
 config BOOTBLOCK_ROM_OFFSET
 	hex
@@ -45,12 +55,10 @@ config BOOTBLOCK_ROM_OFFSET
 
 config CBFS_HEADER_ROM_OFFSET
 	hex "offset of master CBFS header in ROM"
-	default 0x1e000 if VBOOT2_VERIFY_FIRMWARE
 	default 0x18000
 
 config CBFS_ROM_OFFSET
 	hex "offset of CBFS data in ROM"
-	default 0x1e080 if VBOOT2_VERIFY_FIRMWARE
 	default 0x18080
 
 config SYS_SDRAM_BASE
@@ -61,9 +69,16 @@ config BOOTBLOCK_BASE
 	hex
 	default 0x40020000
 
+# this has to be big enough to leave room big enough for the larger of the
+# bootblock and the romstage.
+config VERSTAGE_BASE
+	hex
+	default 0x40031000
+
+# with vboot2, romstage is loaded over to the bootblock space
 config ROMSTAGE_BASE
 	hex
-	default 0x4002d000 if VBOOT2_VERIFY_FIRMWARE
+	default 0x40020000 if VBOOT2_VERIFY_FIRMWARE
 	default 0x4002c000
 
 config RAMSTAGE_BASE
@@ -94,7 +109,8 @@ config CBFS_CACHE_ADDRESS
 
 config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
-	default 0x00017fe0
+	default 0x00012000 if VBOOT2_VERIFY_FIRMWARE
+	default 0x00016000
 
 config VBOOT_WORK_BUFFER_ADDRESS
 	hex "memory address of vboot work buffer"

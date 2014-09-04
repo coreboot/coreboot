@@ -35,26 +35,16 @@
 /* This pointer gets set in head.S and is passed in from coreboot. */
 void *cb_header_ptr;
 
-static void cb_parse_dma(void *ptr)
-{
-	struct lb_range *dma = (struct lb_range *)ptr;
-	init_dma_memory(phys_to_virt(dma->range_start), dma->range_size);
-}
+/* == Architecture specific == */
 
 int cb_parse_arch_specific(struct cb_record *rec, struct sysinfo_t *info)
 {
 	switch(rec->tag) {
-	case CB_TAG_DMA:
-		cb_parse_dma(rec);
-		break;
 	default:
 		return 0;
 	}
 	return 1;
 }
-
-/* == Architecture specific == */
-/* FIXME put in actual address range */
 
 int get_coreboot_info(struct sysinfo_t *info)
 {

@@ -24,6 +24,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <elog.h>
+#include <cbmem.h>
 #include <pc80/mc146818rtc.h>
 #include "sandybridge.h"
 
@@ -173,4 +174,30 @@ void sandybridge_early_initialization(int chipset_type)
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, DEVEN_HOST | DEVEN_IGD);
 
 	sandybridge_setup_graphics();
+}
+
+void northbridge_romstage_finalize(int s3resume)
+{
+	MCHBAR16(SSKPD) = 0xCAFE;
+
+#if CONFIG_HAVE_ACPI_RESUME
+	/* If there is no high memory area, we didn't boot before, so
+	 * this is not a resume. In that case we just create the cbmem toc.
+	 */
+
+	*(u32 *)CBMEM_BOOT_MODE = 0;
+	*(u32 *)CBMEM_RESUME_BACKUP = 0;
+
+	if (s3resume) {
+		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+		if (resume_backup_memory) {
+			*(u32 *)CBMEM_BOOT_MODE = 2;
+			*(u32 *)CBMEM_RESUME_BACKUP = (u32)resume_backup_memory;
+		}
+		/* Magic for S3 resume */
+		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
+	} else {
+		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
+	}
+#endif
 }

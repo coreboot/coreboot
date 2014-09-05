@@ -209,6 +209,7 @@ void intel_sandybridge_finalize_smm(void);
 int bridge_silicon_revision(void);
 void sandybridge_early_initialization(int chipset_type);
 void sandybridge_late_initialization(void);
+void northbridge_romstage_finalize(int s3resume);
 
 /* debugging functions */
 void print_pci_devices(void);

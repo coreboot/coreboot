@@ -238,28 +238,8 @@ void main(unsigned long bist)
 	rcba_config();
 	post_code(0x3d);
 
-	MCHBAR16(SSKPD) = 0xCAFE;
+	northbridge_romstage_finalize(s3resume);
 
-#if CONFIG_HAVE_ACPI_RESUME
-	/* If there is no high memory area, we didn't boot before, so
-	 * this is not a resume. In that case we just create the cbmem toc.
-	 */
-
-	*(u32 *)CBMEM_BOOT_MODE = 0;
-	*(u32 *)CBMEM_RESUME_BACKUP = 0;
-
-	if (s3resume) {
-		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-		if (resume_backup_memory) {
-			*(u32 *)CBMEM_BOOT_MODE = 2;
-			*(u32 *)CBMEM_RESUME_BACKUP = (u32)resume_backup_memory;
-		}
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
-	} else {
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
-	}
-#endif
 	post_code(0x3f);
 	timestamp_add_now(TS_END_ROMSTAGE);
 }

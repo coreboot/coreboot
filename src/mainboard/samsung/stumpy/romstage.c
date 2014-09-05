@@ -327,35 +327,17 @@ void main(unsigned long bist)
 	quick_ram_check();
 	post_code(0x3e);
 
-	MCHBAR16(SSKPD) = 0xCAFE;
 	cbmem_was_initted = !cbmem_recovery(boot_mode==2);
 	if (boot_mode!=2)
 		save_mrc_data(&pei_data);
 
-#if CONFIG_HAVE_ACPI_RESUME
-	/* If there is no high memory area, we didn't boot before, so
-	 * this is not a resume. In that case we just create the cbmem toc.
-	 */
-
-	*(u32 *)CBMEM_BOOT_MODE = 0;
-	*(u32 *)CBMEM_RESUME_BACKUP = 0;
-
-	if ((boot_mode == 2) && cbmem_was_initted) {
-		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-		if (resume_backup_memory) {
-			*(u32 *)CBMEM_BOOT_MODE = boot_mode;
-			*(u32 *)CBMEM_RESUME_BACKUP = (u32)resume_backup_memory;
-		}
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
-	} else if (boot_mode == 2) {
+	if (boot_mode==2 && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
 		outb(0x6, 0xcf9);
 		hlt();
-	} else {
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
 	}
-#endif
+	northbridge_romstage_finalize(boot_mode==2);
+
 	post_code(0x3f);
 #if CONFIG_CHROMEOS
 	init_chromeos(boot_mode);

@@ -20,6 +20,9 @@
 
 #include <arch/io.h>
 #include <timestamp.h>
+#include "pch.h"
+#include <arch/acpi.h>
+#include <console/console.h>
 
 #if CONFIG_COLLECT_TIMESTAMPS
 tsc_t get_initial_timestamp(void)
@@ -31,3 +34,31 @@ tsc_t get_initial_timestamp(void)
 	return base_time;
 }
 #endif
+
+
+int southbridge_detect_s3_resume(void)
+{
+	u32 pm1_cnt;
+	u16 pm1_sts;
+
+	/* Check PM1_STS[15] to see if we are waking from Sx */
+	pm1_sts = inw(DEFAULT_PMBASE + PM1_STS);
+
+	/* Read PM1_CNT[12:10] to determine which Sx state */
+	pm1_cnt = inl(DEFAULT_PMBASE + PM1_CNT);
+
+	if ((pm1_sts & WAK_STS) && ((pm1_cnt >> 10) & 7) == 5) {
+		if (acpi_s3_resume_allowed()) {
+			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
+			/* Clear SLP_TYPE. This will break stage2 but
+			 * we care for that when we get there.
+			 */
+			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + PM1_CNT);
+			return 1;
+		} else {
+			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
+		}
+	}
+
+	return 0;
+}

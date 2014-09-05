@@ -152,8 +152,6 @@ init_usb (void)
 void main(unsigned long bist)
 {
 	int s3resume = 0;
-	u32 pm1_cnt;
-	u16 pm1_sts;
 	spd_raw_data spd[4];
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
@@ -189,24 +187,7 @@ void main(unsigned long bist)
 	sandybridge_early_initialization(SANDYBRIDGE_MOBILE);
 	printk(BIOS_DEBUG, "Back from sandybridge_early_initialization()\n");
 
-	/* Check PM1_STS[15] to see if we are waking from Sx */
-	pm1_sts = inw(DEFAULT_PMBASE + PM1_STS);
-
-	/* Read PM1_CNT[12:10] to determine which Sx state */
-	pm1_cnt = inl(DEFAULT_PMBASE + PM1_CNT);
-
-	if ((pm1_sts & WAK_STS) && ((pm1_cnt >> 10) & 7) == 5) {
-		if (acpi_s3_resume_allowed()) {
-			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-			s3resume = 1;
-			/* Clear SLP_TYPE. This will break stage2 but
-			 * we care for that when we get there.
-			 */
-			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + PM1_CNT);
-		} else {
-			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-		}
-	}
+	s3resume = southbridge_detect_s3_resume();
 
 	post_code(0x38);
 	/* Enable SPD ROMs and DDR-III DRAM */

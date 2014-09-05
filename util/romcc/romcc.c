@@ -15161,9 +15161,6 @@ static void free_basic_block(struct compile_state *state, struct block *block)
 		}
 	}
 	memset(block, -1, sizeof(*block));
-#ifndef WIN32
-	xfree(block);
-#endif
 }
 
 static void free_basic_blocks(struct compile_state *state,

@@ -98,11 +98,11 @@ static const struct funit_cfg_data funit_data[] =  {
 _Static_assert(ARRAY_SIZE(funit_data) == FUNIT_INDEX_MAX,
 		"funit_cfg_data array not filled out!");
 
-static inline uint32_t get_clk_src_freq(uint32_t clk_src)
+static inline uint32_t get_clk_src_freq(uint32_t clk_src_freq_id)
 {
 	uint32_t freq = 0;
 
-	switch(clk_src) {
+	switch (clk_src_freq_id) {
 	case CLK_M:
 		freq = TEGRA_CLK_M_KHZ;
 		break;
@@ -111,7 +111,7 @@ static inline uint32_t get_clk_src_freq(uint32_t clk_src)
 		break;
 	default:
 		printk(BIOS_SPEW, "%s ERROR: Unknown clk_src %d\n",
-		       __func__,clk_src);
+		       __func__, clk_src_freq_id);
 	}
 
 	return freq;
@@ -125,7 +125,7 @@ static void configure_clock(const struct funit_cfg * const entry,
 	uint32_t clk_div_mask;
 	uint32_t clk_src_freq;
 
-	clk_src_freq = get_clk_src_freq(entry->clk_src_id);
+	clk_src_freq = get_clk_src_freq(entry->clk_src_freq_id);
 
 	if (strncmp(funit->name, funit_i2c, strlen(funit_i2c)) == 0) {
 		/* I2C funit */

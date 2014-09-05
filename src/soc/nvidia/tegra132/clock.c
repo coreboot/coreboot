@@ -400,7 +400,8 @@ clock_display(u32 frequency)
  * been determined through trial and error (must lead to div 13 at 24MHz). */
 void clock_early_uart(void)
 {
-	write32(CLK_M << CLK_SOURCE_SHIFT | CLK_UART_DIV_OVERRIDE |
+	write32(CLK_SRC_DEV_ID(UARTA, CLK_M) << CLK_SOURCE_SHIFT |
+		CLK_UART_DIV_OVERRIDE |
 		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900), &clk_rst->clk_src_uarta);
 	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_UARTA);
 	udelay(2);

@@ -61,6 +61,7 @@ enum {
 struct funit_cfg {
 	uint32_t funit_index;
 	uint32_t clk_src_id;
+	uint32_t clk_src_freq_id;
 	uint32_t clk_dev_freq_khz;
 	struct pad_config const* pad_cfg;
 	size_t pad_cfg_size;
@@ -69,7 +70,8 @@ struct funit_cfg {
 #define FUNIT_CFG(_funit,_clk_src,_clk_freq,_cfg,_cfg_size)		\
 	{								\
 		.funit_index = FUNIT_INDEX(_funit),			\
-		.clk_src_id = _clk_src,					\
+		.clk_src_id = CLK_SRC_DEV_ID(_funit, _clk_src),		\
+		.clk_src_freq_id = CLK_SRC_FREQ_ID(_funit, _clk_src),	\
 		.clk_dev_freq_khz = _clk_freq,				\
 		.pad_cfg = _cfg,					\
 		.pad_cfg_size = _cfg_size,				\

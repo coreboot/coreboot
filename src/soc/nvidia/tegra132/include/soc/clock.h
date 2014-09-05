@@ -176,6 +176,52 @@ enum {
 	CLK_X_SPARE = 0x1 << 0,
 };
 
+enum {
+	PLLP = 0,
+	PLLC2 = 1,
+	PLLC = 2,
+	PLLC3 = 3,
+	PLLM = 4,
+	CLK_M = 5,
+	CLK_S = 6,
+	PLLE = 7,
+	PLLA = 8,
+	UNUSED = 100,
+};
+
+#define CLK_SRC_DEV_ID(dev, src)	CLK_SRC_##dev##_##src
+#define CLK_SRC_FREQ_ID(dev, src)	CLK_SRC_FREQ_##dev##_##src
+
+#define CLK_SRC_DEVICE(dev, a, b, c, d, e, f, g) \
+	CLK_SRC_DEV_ID(dev, a) = 0,		 \
+	CLK_SRC_DEV_ID(dev, b) = 1,		 \
+	CLK_SRC_DEV_ID(dev, c) = 2,		 \
+	CLK_SRC_DEV_ID(dev, d) = 3,		 \
+	CLK_SRC_DEV_ID(dev, e) = 4,		 \
+	CLK_SRC_DEV_ID(dev, f) = 5,		 \
+	CLK_SRC_DEV_ID(dev, g) = 6,	         \
+	CLK_SRC_FREQ_ID(dev, a) = a,		 \
+	CLK_SRC_FREQ_ID(dev, b) = b,		 \
+	CLK_SRC_FREQ_ID(dev, c) = c,		 \
+	CLK_SRC_FREQ_ID(dev, d) = d,		 \
+	CLK_SRC_FREQ_ID(dev, e) = e,		 \
+	CLK_SRC_FREQ_ID(dev, f) = f,		 \
+	CLK_SRC_FREQ_ID(dev, g) = g
+
+enum {
+	CLK_SRC_DEVICE(host1x, PLLM, PLLC2, PLLC, PLLC3, PLLP, UNUSED, PLLA),
+	CLK_SRC_DEVICE(I2C2, PLLP, PLLC2, PLLC, PLLC3, PLLM, UNUSED, CLK_M),
+	CLK_SRC_DEVICE(I2C3, PLLP, PLLC2, PLLC, PLLC3, PLLM, UNUSED, CLK_M),
+	CLK_SRC_DEVICE(I2C5, PLLP, PLLC2, PLLC, PLLC3, PLLM, UNUSED, CLK_M),
+	CLK_SRC_DEVICE(I2C6, PLLP, PLLC2, PLLC, PLLC3, PLLM, UNUSED, CLK_M),
+	CLK_SRC_DEVICE(mselect, PLLP, PLLC2, PLLC, PLLC3, PLLM, CLK_S, CLK_M),
+	CLK_SRC_DEVICE(SBC1, PLLP, PLLC2, PLLC, PLLC3, PLLM, UNUSED, CLK_M),
+	CLK_SRC_DEVICE(SBC4, PLLP, PLLC2, PLLC, PLLC3, PLLM, UNUSED, CLK_M),
+	CLK_SRC_DEVICE(SDMMC3, PLLP, PLLC2, PLLC, PLLC3, PLLM, PLLE, CLK_M),
+	CLK_SRC_DEVICE(SDMMC4, PLLP, PLLC2, PLLC, PLLC3, PLLM, PLLE, CLK_M),
+	CLK_SRC_DEVICE(UARTA, PLLP, PLLC2, PLLC, PLLC3, PLLM, UNUSED, CLK_M),
+};
+
 /* PLL stabilization delay in usec */
 #define CLOCK_PLL_STABLE_DELAY_US 300
 
@@ -242,38 +288,10 @@ static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
 #define CLK_DIV_MASK              0xff
 #define CLK_DIV_MASK_I2C          0xffff
 
-#define clock_configure_irregular_source(device, src, freq, src_id) \
-	_clock_set_div(&clk_rst->clk_src_##device, #device, \
-		       get_clk_div(TEGRA_##src##_KHZ, freq), CLK_DIV_MASK, src_id)
-
-/* Warning: Some devices just use different bits for the same sources for no
- * apparent reason. *Always* double-check the TRM before trusting this macro. */
-#define clock_configure_source(device, src, freq) \
-	clock_configure_irregular_source(device, src, freq, src)
-
-/* The I2C divisors are not 7.1 divisors like the others, they divide by n + 1
- * directly. Also, there are internal divisors in the I2C controller itself.
- * We can deal with those here and make it easier to select what the actual
- * bus frequency will be. The 0x19 value is the default divisor in the
- * clk_divisor register in the controller, and 8 is just a magic number in the
- * documentation.
- */
-#define clock_configure_i2c_scl_freq(device, src, freq) \
-	_clock_set_div(&clk_rst->clk_src_##device, #device, \
-		       get_i2c_clk_div(TEGRA_##src##_KHZ, freq),	\
-		       CLK_DIV_MASK_I2C, src)
-
-enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
-	PLLP = 0,
-	PLLC2 = 1,
-	PLLC = 2,
-	PLLD = 2,
-	PLLC3 = 3,
-	PLLA = 3,
-	PLLM = 4,
-	PLLD2 = 5,
-	CLK_M = 6,
-};
+#define clock_configure_source(device, src, freq)			\
+	_clock_set_div(&clk_rst->clk_src_##device, #device,		\
+		       get_clk_div(TEGRA_##src##_KHZ, freq), CLK_DIV_MASK, \
+		       CLK_SRC_DEV_ID(device, src))
 
 /* soc-specific */
 #define TEGRA_CLK_M_KHZ	 clock_get_osc_khz()

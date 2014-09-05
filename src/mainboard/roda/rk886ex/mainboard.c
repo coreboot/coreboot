@@ -63,6 +63,13 @@ static void dump_runtime_registers(void)
 }
 #endif
 
+static void mainboard_final(device_t dev)
+{
+	/* Enable Dummy DCC ON# for DVI */
+	printk(BIOS_DEBUG, "Laptop handling...\n");
+	outb(inb(0x60f) & ~(1 << 5), 0x60f);
+}
+
 static void mainboard_enable(device_t dev)
 {
 	/* Configure the MultiKey controller */
@@ -81,9 +88,8 @@ static void mainboard_enable(device_t dev)
 #if DUMP_RUNTIME_REGISTERS
 	dump_runtime_registers();
 #endif
-	/* Enable Dummy DCC ON# for DVI */
-	printk(BIOS_DEBUG, "Laptop handling...\n");
-	outb(inb(0x60f) & ~(1 << 5), 0x60f);
+
+	dev->ops->final = mainboard_final;
 }
 
 struct chip_operations mainboard_ops = {

@@ -42,7 +42,7 @@ config DCACHE_RAM_SIZE
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ThinkPad X60 / X60s / X60t"
+	default "ThinkPad X60"
 
 config MMCONF_BASE_ADDRESS
 	hex

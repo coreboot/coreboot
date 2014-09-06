@@ -31,9 +31,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <cbmem.h>
-#include <console/console.h>
-
 #include <memrange.h>
 #include <arch/mmu.h>
 #include <arch/lib_helpers.h>
@@ -110,7 +107,6 @@ static uint64_t *get_new_table(void)
 	uint64_t *new;
 
 	if (free_idx >= max_tables) {
-		printk(BIOS_ERR,"ARM64 MMU: No free table\n");
 		return NULL;
 	}
 
@@ -233,7 +229,6 @@ static void init_mmap_entry(struct range_entry *r)
 		uint64_t ret;
 
 		if (sanity_check(base_addr,temp_size)) {
-			printk(BIOS_ERR, "ARM64 MMU: sanity check failed\n");
 			return;
 		}
 
@@ -259,7 +254,6 @@ void mmu_init(struct memranges *mmap_ranges,
 	struct range_entry *mmap_entry;
 
 	if (sanity_check((uint64_t)ttb_buffer, ttb_size)) {
-		printk(BIOS_ERR, "ARM64: Sanity failed for ttb\n");
 		return;
 	}
 
@@ -267,22 +261,9 @@ void mmu_init(struct memranges *mmap_ranges,
 	max_tables = (ttb_size >> GRANULE_SIZE_SHIFT);
 	xlat_addr = ttb_buffer;
 
-	printk(BIOS_DEBUG, "ARM64: TTB_BUFFER: 0x%p Max Tables: %d\n",
-	       (void*)xlat_addr, max_tables);
-
 	memranges_each_entry(mmap_entry, mmap_ranges) {
 		init_mmap_entry(mmap_entry);
 	}
-	printk(BIOS_DEBUG, "ARM64: MMU init done\n");
-}
-
-static uint32_t is_mmu_enabled(void)
-{
-	uint32_t sctlr;
-
-	sctlr = raw_read_sctlr_el3();
-
-	return (sctlr & SCTLR_M);
 }
 
 void mmu_enable(void)
@@ -313,9 +294,4 @@ void mmu_enable(void)
 	raw_write_sctlr_el3(sctlr);
 
 	isb();
-
-	if (is_mmu_enabled())
-		printk(BIOS_DEBUG, "ARM64: MMU enable done\n");
-	else
-		printk(BIOS_DEBUG, "ARM64: MMU enable failed\n");
 }

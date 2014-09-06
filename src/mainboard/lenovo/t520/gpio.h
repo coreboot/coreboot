@@ -22,7 +22,6 @@
 
 #include "southbridge/intel/bd82x6x/gpio.h"
 
-
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0  = GPIO_MODE_GPIO,   // -USB30_SMI - input
 	.gpio1  = GPIO_MODE_GPIO,   // -EC_SCI - input
@@ -129,8 +128,8 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 };
 
 const struct pch_gpio_set1 pch_gpio_set1_invert = {
-	.gpio2 = GPIO_INVERT,
-	.gpio8 = GPIO_INVERT,
+	.gpio1 = GPIO_INVERT,
+	.gpio7 = GPIO_INVERT,
 	.gpio13 = GPIO_INVERT,
 };
 
@@ -147,10 +146,10 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio37 = GPIO_MODE_NATIVE, // SATA3GP - ESATA_DTCT to GPIO 34
 	.gpio38 = GPIO_MODE_GPIO,   // planarid2 - input
 	.gpio39 = GPIO_MODE_GPIO,   // planarid3 - input
-	.gpio40 = GPIO_MODE_GPIO,   // OC1 - -USB_PORT1_OC1 - input XXX
-	.gpio41 = GPIO_MODE_NATIVE, // OC2 -MDC_KILL
-	.gpio42 = GPIO_MODE_NATIVE, // SMB_3B_EN - output
-	.gpio43 = GPIO_MODE_GPIO,   // OC4 - pullup
+	.gpio40 = GPIO_MODE_NATIVE, // OC1 - -USB_PORT1_OC1 - input
+	.gpio41 = GPIO_MODE_GPIO,   // OC2 -MDC_KILL
+	.gpio42 = GPIO_MODE_GPIO,   // SMB_3B_EN - output
+	.gpio43 = GPIO_MODE_NATIVE, // OC4 - pullup
 	.gpio44 = GPIO_MODE_NATIVE, // PCIECLKRQ5 - -CLKREQ_GBE - input
 	.gpio45 = GPIO_MODE_NATIVE, // PCIECLKRQ6 - -CLKREQ_USB30_TR - input
 	.gpio46 = GPIO_MODE_NATIVE, // PCIECLKRQ7 - pullup
@@ -244,18 +243,18 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 };
 
 const struct pch_gpio_set3 pch_gpio_set3_mode = {
-	.gpio64 = GPIO_MODE_GPIO,   // NC
-	.gpio65 = GPIO_MODE_GPIO,   // NC
-	.gpio66 = GPIO_MODE_GPIO,   // NC
-	.gpio67 = GPIO_MODE_GPIO,   // NC
-	.gpio68 = GPIO_MODE_NATIVE, // -INT_MIC_DTCT - input
-	.gpio69 = GPIO_MODE_NATIVE, // mic enable bit - low enable - pulldown
-	.gpio70 = GPIO_MODE_NATIVE, // -WWAN_DTCT - input
-	.gpio71 = GPIO_MODE_NATIVE, // -USB_SUBCARD_DTCT - input
-	.gpio72 = GPIO_MODE_GPIO,   // BATLOW - input
-	.gpio73 = GPIO_MODE_GPIO,   // pullup
-	.gpio74 = GPIO_MODE_GPIO,   // pullup
-	.gpio75 = GPIO_MODE_GPIO,   // SML1DATA - EC_SDA2 - i/o
+	.gpio64 = GPIO_MODE_NATIVE, // NC
+	.gpio65 = GPIO_MODE_NATIVE, // NC
+	.gpio66 = GPIO_MODE_NATIVE, // NC
+	.gpio67 = GPIO_MODE_NATIVE, // NC
+	.gpio68 = GPIO_MODE_GPIO,   // -INT_MIC_DTCT - input
+	.gpio69 = GPIO_MODE_GPIO,   // mic enable bit - low enable - pulldown
+	.gpio70 = GPIO_MODE_GPIO,   // -WWAN_DTCT - input
+	.gpio71 = GPIO_MODE_GPIO,   // -USB_SUBCARD_DTCT - input
+	.gpio72 = GPIO_MODE_NATIVE, // BATLOW - input
+	.gpio73 = GPIO_MODE_NATIVE, // pullup
+	.gpio74 = GPIO_MODE_NATIVE, // pullup
+	.gpio75 = GPIO_MODE_NATIVE, // SML1DATA - EC_SDA2 - i/o
 };
 
 const struct pch_gpio_set3 pch_gpio_set3_direction = {

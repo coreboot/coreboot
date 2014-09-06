@@ -1,5 +1,4 @@
 Category: laptop
-Board name: T520
 ROM package: WSON-8
 ROM protocol: SPI
 ROM socketed: n

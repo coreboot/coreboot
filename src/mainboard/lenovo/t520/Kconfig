@@ -39,7 +39,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "4242W1A"
+	default "ThinkPad T520"
 
 config MMCONF_BASE_ADDRESS
 	hex

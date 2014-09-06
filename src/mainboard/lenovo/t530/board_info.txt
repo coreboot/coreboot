@@ -1,5 +1,4 @@
 Category: laptop
-Board name: T530
 ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n

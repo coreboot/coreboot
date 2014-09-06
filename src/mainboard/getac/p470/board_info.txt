@@ -1,2 +1,4 @@
 Category: laptop
 Board URL: http://en.getac.com/AP/MISC/M0100/F0110_DownLoad_File.aspx?bullid=AllBull&fileid=105261&DomainLang=100020&DomainRegion=100027
+ROM protocol: SPI
+Flashrom support: y

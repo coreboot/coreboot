@@ -23,6 +23,7 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <drivers/intel/gma/int15.h>
 
 
 #include "ec_oem.c"
@@ -81,6 +82,7 @@ static void pcie_limit_power(void)
 static void mainboard_init(device_t dev)
 {
 	ec_enable();
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_TXT_STRETCH, 0, 3);
 }
 
 // mainboard_enable is executed as first thing after

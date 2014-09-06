@@ -47,7 +47,6 @@ int sdram_size_mb(void)
 	total_size = (read32(&mc->emem_cfg) >> MC_EMEM_CFG_SIZE_MB_SHIFT) &
 		      MC_EMEM_CFG_SIZE_MB_MASK;
 
-	printk(BIOS_DEBUG, "%s: Total SDRAM (MB): %u\n", __func__, total_size);
 	return total_size;
 }
 

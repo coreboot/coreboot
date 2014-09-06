@@ -52,12 +52,6 @@ struct cpu_info *cpu_info(void);
  */
 unsigned int smp_processor_id(void);
 
-/* Return the top of the stack for the specified cpu. */
-void *cpu_get_stack(unsigned int cpu);
-
-/* Return the top of the exception stack for the specified cpu. */
-void *cpu_get_exception_stack(unsigned int cpu);
-
 /*
  * Do the necessary work to prepare for secondary CPUs coming up. The
  * SoC will call this function before bringing up the other CPUs. The

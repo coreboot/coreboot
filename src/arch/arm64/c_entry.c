@@ -22,6 +22,7 @@
 #include <arch/exception.h>
 #include <arch/mmu.h>
 #include <arch/stages.h>
+#include "cpu-internal.h"
 
 /*
  * This variable holds entry point for CPUs starting up. Before the other

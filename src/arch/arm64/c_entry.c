@@ -36,11 +36,6 @@ void __attribute__((weak)) arm64_soc_init(void)
 	/* Default weak implementation does nothing. */
 }
 
-void __attribute__((weak)) soc_secondary_cpu_init(void)
-{
-	/* Default weak implementation does nothing. */
-}
-
 static void seed_stack(void)
 {
 	char *stack_begin;
@@ -70,15 +65,6 @@ static void secondary_cpu_start(void)
 {
 	mmu_enable();
 	exception_hwinit();
-
-	if (!IS_ENABLED(CONFIG_SMP)) {
-		soc_secondary_cpu_init();
-		/*
-		 * TODO(adurbin): need a proper place to park the CPUs.
-		 * Currently assuming SoC code does the appropriate thing.
-		 */
-		while (1);
-	}
 
 	/* This will never return. */
 	arch_secondary_cpu_init();

@@ -97,19 +97,6 @@ int arch_run_on_all_cpus(struct cpu_action *action);
 int arch_run_on_cpu_async(unsigned int cpu, struct cpu_action *action);
 int arch_run_on_all_cpus_async(struct cpu_action *action);
 
-/*
- * Do the necessary work to prepare for secondary CPUs coming up. The
- * SoC will call this function before bringing up the other CPUs. The
- * entry point for the seoncdary CPUs is returned.
- */
-void *prepare_secondary_cpu_startup(void);
-
-/*
- * Function provided by the SoC code that is called for each secondary
- * CPU startup.
- */
-void soc_secondary_cpu_init(void);
-
 #endif /* !__PRE_RAM__ */
 
 /*

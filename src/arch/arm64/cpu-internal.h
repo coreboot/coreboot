@@ -20,6 +20,11 @@
 #ifndef ARCH_CPU_INTERNAL_H
 #define ARCH_CPU_INTERNAL_H
 
+/*
+ * Code path for the non-BSP CPUs. This is an internal function used.
+ */
+void arch_secondary_cpu_init(void);
+
 /* Return the top of the stack for the specified cpu. */
 void *cpu_get_stack(unsigned int cpu);
 

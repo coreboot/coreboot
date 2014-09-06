@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2012 Google Inc.
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,32 +25,77 @@
 #if !defined(__PRE_RAM__)
 #include <device/device.h>
 
-struct cpu_driver {
-	struct device_operations *ops;
-	struct cpu_device_id *id_table;
+enum {
+	CPU_ID_END = 0x00000000,
 };
 
-struct thread;
+struct cpu_device_id {
+	uint32_t midr;
+};
+
+struct cpu_driver {
+	/* This is excessive as init() is the only one called. */
+	struct device_operations *ops;
+	const struct cpu_device_id *id_table;
+};
+
+/* Action to run. */
+struct cpu_action {
+	void (*run)(void *arg);
+	void *arg;
+};
+
+/*
+ * Actions are queued to 'todo'. When picked up 'todo' is cleared. The
+ * 'completed' field is set to the original 'todo' value when the action
+ * is complete.
+ */
+struct cpu_action_queue {
+	struct cpu_action *todo;
+	struct cpu_action *completed;
+};
 
 struct cpu_info {
 	device_t cpu;
-	unsigned long index;
-#if CONFIG_COOP_MULTITASKING
-	struct thread *thread;
-#endif
+	struct cpu_action_queue action_queue;
+	unsigned int online;
+	/* Current assumption is that id matches smp_processor_id(). */
+	unsigned int id;
 };
 
-#endif
-
+/* Obtain cpu_info for current executing CPU. */
 struct cpu_info *cpu_info(void);
 
+/* Control routines for starting CPUs. */
+struct cpu_control_ops {
+	/* Return the maximum number of CPUs supported. */
+	size_t (*total_cpus)(void);
+	/*
+	 * Start the requested CPU and have it start running entry().
+	 * Returns 0 on success, < 0 on error.
+	 */
+	int (*start_cpu)(unsigned int id, void (*entry)(void));
+};
+
 /*
- * Returns logical cpu in range [0:MAX_CPUS). SoC should define this.
- * Additionally, this is needed early in arm64 init so it should not
- * rely on a stack. Standard clobber list is fair game: x0-x7 and x0
- * returns the logical cpu number.
+ * Initialize all DEVICE_PATH_CPUS under the DEVICE_PATH_CPU_CLUSTER cluster.
+ * type DEVICE_PATH_CPUS. Start up is controlled by cntrl_ops.
  */
-unsigned int smp_processor_id(void);
+void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops);
+
+/*
+ * Run cpu_action returning < 0 on error, 0 on success. There are synchronous
+ * and asynchronous methods. Both cases ensure the action has been picked up
+ * by the target cpu. The synchronous variants will wait for the action to
+ * be completed before returning.
+ *
+ * Though the current implementation allows queuing actions on the main cpu,
+ * the main cpu doesn't process its own queue.
+ */
+int arch_run_on_cpu(unsigned int cpu, struct cpu_action *action);
+int arch_run_on_all_cpus(struct cpu_action *action);
+int arch_run_on_cpu_async(unsigned int cpu, struct cpu_action *action);
+int arch_run_on_all_cpus_async(struct cpu_action *action);
 
 /*
  * Do the necessary work to prepare for secondary CPUs coming up. The
@@ -64,5 +109,15 @@ void *prepare_secondary_cpu_startup(void);
  * CPU startup.
  */
 void soc_secondary_cpu_init(void);
+
+#endif /* !__PRE_RAM__ */
+
+/*
+ * Returns logical cpu in range [0:MAX_CPUS). SoC should define this.
+ * Additionally, this is needed early in arm64 init so it should not
+ * rely on a stack. Standard clobber list is fair game: x0-x7 and x0
+ * returns the logical cpu number.
+ */
+unsigned int smp_processor_id(void);
 
 #endif /* __ARCH_CPU_H__ */

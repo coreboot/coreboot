@@ -70,12 +70,18 @@ static void secondary_cpu_start(void)
 {
 	mmu_enable();
 	exception_hwinit();
-	soc_secondary_cpu_init();
-	/*
-	 * TODO(adurbin): need a proper place to park the CPUs. Currently
-	 * assuming SoC code does the appropriate thing.
-	 */
-	while (1);
+
+	if (!IS_ENABLED(CONFIG_SMP)) {
+		soc_secondary_cpu_init();
+		/*
+		 * TODO(adurbin): need a proper place to park the CPUs.
+		 * Currently assuming SoC code does the appropriate thing.
+		 */
+		while (1);
+	}
+
+	/* This will never return. */
+	arch_secondary_cpu_init();
 }
 
 extern void arm64_cpu_startup(void);

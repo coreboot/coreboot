@@ -22,8 +22,8 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <arch/cpu.h>
 #include <arch/cache.h>
+#include <cpu/cpu.h>
 #include <cbmem.h>
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -40,7 +40,6 @@ static void soc_read_resources(device_t dev)
 	int i; uintptr_t begin, end;
 	size_t size;
 
-	printk(BIOS_DEBUG, "%s: entry, device = %p\n", __func__, dev);
 	for (i = 0; i < CARVEOUT_NUM; i++) {
 		carveout_range(i, &begin, &size);
 		if (size == 0)
@@ -62,8 +61,6 @@ static void soc_read_resources(device_t dev)
 	size = end - begin;
 	ram_resource(dev, index++, begin * KiB, size * KiB);
 }
-
-static volatile int secondary_cpu_up;
 
 static void *spintable_entry;
 static uint64_t * const spintable_magic = (void *)(uintptr_t)0x80000008;
@@ -90,7 +87,7 @@ static void spintable_init(void)
 	dsb();
 }
 
-static void spintable_wait(void)
+static void spintable_wait(void *monitor_address)
 {
 	uint32_t sctlr_el2;
 	uint32_t spsr_el3;
@@ -118,56 +115,39 @@ static void spintable_wait(void)
 	isb();
 	asm volatile(
 		"mov	x0, %0\n\t"
-		"eret\n\t" : : "r" (spintable_magic) : "x0" );
+		"eret\n\t" : : "r" (monitor_address) : "x0" );
 }
 
-void soc_secondary_cpu_init(void)
+static size_t cntrl_total_cpus(void)
 {
-	printk(BIOS_INFO, "CPU%d is up!\n", smp_processor_id());
-	gic_init();
-	dmb();
-	secondary_cpu_up = 1;
-	spintable_wait();
+	return CONFIG_MAX_CPUS;
 }
 
-static void start_secondary_cpu(void)
+static int cntrl_start_cpu(unsigned int id, void (*entry)(void))
 {
-	struct mono_time t1, t2;
-	const long timeout_us = 20 * USECS_PER_MSEC;
-
-	timer_monotonic_get(&t1);
-	start_cpu(1, prepare_secondary_cpu_startup());
-	/* Wait for the other core to come up. */
-	while (1) {
-		long waited_us;
-
-		timer_monotonic_get(&t2);
-		waited_us = mono_time_diff_microseconds(&t1, &t2);
-
-		if (secondary_cpu_up) {
-			printk(BIOS_INFO, "Secondary CPU start took %ld us.\n",
-				waited_us);
-			break;
-		}
-		if (waited_us > timeout_us) {
-			printk(BIOS_WARNING, "CPU startup timeout!\n");
-			break;
-		}
-	}
+	if (id != 1)
+		return -1;
+	start_cpu(1, entry);
+	return 0;
 }
+
+static struct cpu_control_ops cntrl_ops = {
+	.total_cpus = cntrl_total_cpus,
+	.start_cpu = cntrl_start_cpu,
+};
 
 static void soc_init(device_t dev)
 {
-	struct soc_nvidia_tegra132_config *config = dev->chip_info;
+	struct cpu_action action = {
+		.run = spintable_wait,
+		.arg = spintable_magic,
+	};
 
-	printk(BIOS_INFO, "CPU: Tegra132\n");
 	clock_init_arm_generic_timer();
-	gic_init();
 
-	if (config->bring_up_secondary_cpu) {
-		spintable_init();
-		start_secondary_cpu();
-	}
+	spintable_init();
+	arch_initialize_cpus(dev, &cntrl_ops);
+	arch_run_on_cpu_async(1, &action);
 }
 
 static void soc_noop(device_t dev)
@@ -179,12 +159,13 @@ static struct device_operations soc_ops = {
 	.set_resources    = soc_noop,
 	.enable_resources = soc_noop,
 	.init             = soc_init,
-	.scan_bus         = 0,
+	.scan_bus         = NULL,
 };
 
 static void enable_tegra132_dev(device_t dev)
 {
-	dev->ops = &soc_ops;
+	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+		dev->ops = &soc_ops;
 }
 
 static void tegra132_init(void *chip_info)
@@ -203,4 +184,23 @@ struct chip_operations soc_nvidia_tegra132_ops = {
 	CHIP_NAME("SOC Nvidia Tegra132")
 	.init = tegra132_init,
 	.enable_dev = enable_tegra132_dev,
+};
+
+static void tegra132_cpu_init(device_t cpu)
+{
+	gic_init();
+}
+
+static const struct cpu_device_id ids[] = {
+	{ 0x4e0f0000 },
+	{ CPU_ID_END },
+};
+
+static struct device_operations cpu_dev_ops = {
+	.init = tegra132_cpu_init,
+};
+
+static const struct cpu_driver driver __cpu_driver = {
+	.ops      = &cpu_dev_ops,
+	.id_table = ids,
 };

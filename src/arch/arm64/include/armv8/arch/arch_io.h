@@ -24,6 +24,7 @@
 #define __ASM_ARM64_ARCH_IO_H
 
 #include <stdint.h>
+#include <arch/barrier.h>
 #include <arch/lib_helpers.h>
 
 static inline uint8_t read8(const void *addr)

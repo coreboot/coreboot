@@ -290,8 +290,3 @@ void tlbiallis_el2(void);
 void tlbiallis_el3(void);
 void tlbiallis_current(void);
 void tlbivaa_el1(uint64_t va);
-
-/* Memory barrier */
-void dmb(void);
-void dsb(void);
-void isb(void);

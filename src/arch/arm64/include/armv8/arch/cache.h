@@ -35,6 +35,7 @@
 #include <config.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <arch/barrier.h>
 
 /* SCTLR_ELx common bits */
 #define SCTLR_M		(1 << 0)	/* MMU enable			*/

@@ -29,10 +29,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkPad X201"
 
-config MAINBOARD_VENDOR
-	string
-	default "LENOVO"
-
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000

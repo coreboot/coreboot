@@ -63,6 +63,6 @@ source "src/mainboard/lenovo/t60/Kconfig"
 
 config MAINBOARD_VENDOR
 	string
-	default "Lenovo"
+	default "LENOVO"
 
 endif # VENDOR_LENOVO

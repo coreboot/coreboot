@@ -73,8 +73,4 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x21fa
 
-config MAINBOARD_VENDOR
-	string
-	default "LENOVO"
-
 endif # BOARD_LENOVO_X230

@@ -40,6 +40,7 @@
 static unsigned int max_tables;
 /* Address of ttb buffer */
 static uint64_t *xlat_addr;
+static int free_idx;
 
 static const uint64_t level_to_addr_mask[] = {
 	L1_ADDR_MASK,
@@ -74,7 +75,6 @@ static uint64_t get_block_attr(unsigned long tag)
 		attr |= BLOCK_INDEX_MEM_DEV_NGNRNE << BLOCK_INDEX_SHIFT;
 	}
 
-
 	return attr;
 }
 
@@ -103,7 +103,6 @@ static uint64_t table_desc_valid(uint64_t desc)
  */
 static uint64_t *get_new_table(void)
 {
-	static int free_idx = 1;
 	uint64_t *new;
 
 	if (free_idx >= max_tables) {
@@ -260,6 +259,7 @@ void mmu_init(struct memranges *mmap_ranges,
 	memset((void*)ttb_buffer, 0, GRANULE_SIZE);
 	max_tables = (ttb_size >> GRANULE_SIZE_SHIFT);
 	xlat_addr = ttb_buffer;
+	free_idx = 1;
 
 	memranges_each_entry(mmap_entry, mmap_ranges) {
 		init_mmap_entry(mmap_entry);

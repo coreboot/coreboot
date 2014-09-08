@@ -1,5 +1,3 @@
-CBOOTIMAGE = cbootimage
-
 bootblock-y += bootblock.c
 bootblock-y += bootblock_asm.S
 bootblock-y += cbfs.c
@@ -40,13 +38,13 @@ CPPFLAGS_common += -Isrc/soc/nvidia/tegra124/include/
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	cp $< $@
 
-$(obj)/generated/bct.bin: $(obj)/generated/bct.cfg
+$(obj)/generated/bct.bin: $(obj)/generated/bct.cfg $(CBOOTIMAGE)
 	@printf "    CBOOTIMAGE $(subst $(obj)/,,$(@))\n"
 	$(CBOOTIMAGE) -gbct --soc tegra124 $< $@
 
 BCT_BIN = $(obj)/generated/bct.bin
 BCT_WRAPPER = $(obj)/generated/bct.wrapper
-$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(BCT_BIN)
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(BCT_BIN) $(CBOOTIMAGE)
 	echo "Version    = 1;" > $(BCT_WRAPPER)
 	echo "Redundancy = 1;" >> $(BCT_WRAPPER)
 	echo "Bctfile    = $(BCT_BIN);" >> $(BCT_WRAPPER)

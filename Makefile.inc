@@ -228,7 +228,8 @@ endif
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
-		   $(objutil)/ifdfake $(objutil)/options $(objutil)/fletcher
+		   $(objutil)/ifdfake $(objutil)/options $(objutil)/fletcher \
+		   $(objutil)/cbootimage
 
 #######################################################################
 # generate build support files
@@ -304,6 +305,17 @@ FLETCHER:=$(objutil)/fletcher/fletcher
 $(FLETCHER): $(top)/util/fletcher/fletcher.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
+
+CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
+
+$(CBOOTIMAGE): $(top)/util/nvidia-cbootimage/Makefile
+	@printf "    MAKE     $(subst $(obj)/,,$(@))\n"
+	$(MAKE) -C $(top)/util/nvidia-cbootimage
+	cp $(top)/util/nvidia-cbootimage/src/cbootimage $@
+
+$(top)/util/nvidia-cbootimage/Makefile:
+	cd $(top)/util/nvidia-cbootimage/; \
+	./autogen.sh >/dev/null
 
 #######################################################################
 # needed objects that every mainboard uses
@@ -413,7 +425,7 @@ crosstools-arm: clean-for-update
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean
 
-tools: $(objutil)/kconfig/conf $(objutil)/cbfstool/cbfstool $(objutil)/cbfstool/rmodtool $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE)
+tools: $(objutil)/kconfig/conf $(objutil)/cbfstool/cbfstool $(objutil)/cbfstool/rmodtool $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE)
 
 ###########################################################################
 # Common recipes for all stages

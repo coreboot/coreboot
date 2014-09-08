@@ -217,6 +217,8 @@ uint32_t raw_read_spsel(void);
 void raw_write_spsel(uint32_t spsel);
 uint64_t raw_read_sp_el3(void);
 void raw_write_sp_el3(uint64_t sp_el3);
+uint64_t raw_read_sp_elx(uint32_t el);
+void raw_write_sp_elx(uint64_t sp_elx, uint32_t el);
 uint32_t raw_read_spsr_abt(void);
 void raw_write_spsr_abt(uint32_t spsr_abt);
 uint32_t raw_read_spsr_el1(void);

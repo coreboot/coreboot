@@ -325,6 +325,16 @@ void raw_write_sp_el3(uint64_t sp_el3)
 		raw_write_spsel(spsel);
 }
 
+uint64_t raw_read_sp_elx(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_sp, sp, uint64_t, el);
+}
+
+void raw_write_sp_elx(uint64_t sp_elx, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_sp, sp_elx, el);
+}
+
 /* SPSR */
 uint32_t raw_read_spsr_abt(void)
 {

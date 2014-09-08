@@ -37,7 +37,9 @@
  * revision.
  */
 
-uint8_t board_id(void)
+static int board_id_value = -1;
+
+static uint8_t get_board_id(void)
 {
 	uint8_t bid;
 	gpio_t hw_rev_gpios[] = {29, 30, 68};
@@ -49,4 +51,12 @@ uint8_t board_id(void)
 	printk(BIOS_INFO, "Board ID %d\n", bid);
 
 	return bid;
+}
+
+uint8_t board_id(void)
+{
+	if (board_id_value < 0)
+		board_id_value = get_board_id();
+
+	return board_id_value;
 }

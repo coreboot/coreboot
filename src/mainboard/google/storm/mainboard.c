@@ -91,10 +91,24 @@ static void setup_tpm(void)
 	gpio_set_out_value(TPM_RESET_GPIO, 1);
 }
 
+#define SW_RESET_GPIO 26
+static void deassert_sw_reset(void)
+{
+	if (board_id() == 0)
+		return;
+
+	/* only proto0.2 and later care about this. */
+	gpio_tlmm_config_set(SW_RESET_GPIO, FUNC_SEL_GPIO,
+			     GPIO_PULL_UP, GPIO_4MA, GPIO_ENABLE);
+
+	gpio_set_out_value(SW_RESET_GPIO, 1);
+}
+
 static void mainboard_init(device_t dev)
 {
 	 setup_mmu();
 	 setup_usb();
+	 deassert_sw_reset();
 	 setup_tpm();
 }
 

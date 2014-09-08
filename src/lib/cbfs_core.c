@@ -153,7 +153,7 @@ ssize_t cbfs_locate_file(struct cbfs_media *media, struct cbfs_file *file,
 			uint32_t new_align = align;
 			if (offset % align)
 				new_align += align - (offset % align);
-			ERROR("ERROR: No file header found at 0x%x - "
+			LOG("WARNING: No file header found at 0x%x - "
 			      "try next aligned address: 0x%x.\n", offset,
 			      offset + new_align);
 			offset += new_align;

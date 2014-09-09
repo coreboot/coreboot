@@ -38,7 +38,6 @@ bootblock-$(CONFIG_ARM_BOOTBLOCK_NORMAL) += bootblock_normal.c
 bootblock-y += cache.c
 bootblock-y += cpu.S
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception_asm.S
 
 bootblock-c-ccopts += $(armv8_flags)
 bootblock-S-ccopts += $(armv8_asm_flags)
@@ -53,7 +52,6 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV8_64),y)
 romstage-y += cache.c
 romstage-y += cpu.S
 romstage-y += exception.c
-romstage-y += exception_asm.S
 
 romstage-c-ccopts += $(armv8_flags)
 romstage-S-ccopts += $(armv8_asm_flags)
@@ -71,7 +69,6 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV8_64),y)
 ramstage-y += cache.c
 ramstage-y += cpu.S
 ramstage-y += exception.c
-ramstage-y += exception_asm.S
 ramstage-y += mmu.c
 
 ramstage-c-ccopts += $(armv8_flags)

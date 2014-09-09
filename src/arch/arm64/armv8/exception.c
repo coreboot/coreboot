@@ -31,6 +31,7 @@
 #include <types.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
+#include <arch/transition.h>
 #include <console/console.h>
 #include <arch/lib_helpers.h>
 
@@ -80,24 +81,28 @@ static struct exception_handler_info exceptions[EXC_COUNT] = {
 	[EXC_SERROR_ELX_32] = {"_serror_elx_32"},
 };
 
-static void print_regs(struct exception_state *state)
+static void print_regs(struct exc_state *exc_state)
 {
 	int i;
-	uint64_t far_el3;
+	struct elx_state *elx = &exc_state->elx;
+	struct regs *regs = &exc_state->regs;
 
-	far_el3 = raw_read_far_el3();
+	uint64_t elx_esr = raw_read_esr_current();
+	uint64_t elx_far = raw_read_far_current();
 
-	printk(BIOS_DEBUG, "ELR = 0x%016llx\n", state->elr);
-	printk(BIOS_DEBUG, "ESR = 0x%08llx\n", state->esr);
-	printk(BIOS_DEBUG, "FAR_EL3 = 0x%016llx\n", far_el3);
-	for (i = 0; i < 31; i++)
-		printk(BIOS_DEBUG, "X%02d = 0x%016llx\n", i, state->regs[i]);
+	printk(BIOS_DEBUG, "ELR = 0x%016llx\n", elx->elr);
+	printk(BIOS_DEBUG, "ESR = 0x%016llx\n", elx_esr);
+	printk(BIOS_DEBUG, "SPSR = 0x%08llx\n", elx->spsr);
+	printk(BIOS_DEBUG, "FAR = 0x%016llx\n", elx_far);
+	for (i = X0_INDEX; i < XMAX_INDEX; i++)
+		printk(BIOS_DEBUG, "X%02d = 0x%016llx\n", i, regs->x[i]);
 }
 
-void exception_dispatch(struct exception_state *state, int idx)
+void exc_dispatch(struct exc_state *exc_state, uint64_t idx)
 {
 	if (idx >= EXC_COUNT) {
-		printk(BIOS_DEBUG, "Bad exception index %d.\n", idx);
+		printk(BIOS_DEBUG, "Bad exception index %lx.\n",
+		       (unsigned long)idx);
 	} else {
 		struct exception_handler_info *info = &exceptions[idx];
 
@@ -106,14 +111,17 @@ void exception_dispatch(struct exception_state *state, int idx)
 		else
 			printk(BIOS_DEBUG, "exception _not_used.\n");
 	}
-	print_regs(state);
+	print_regs(exc_state);
 
 	if (test_exc) {
-		state->elr += 4;
+		exc_state->elx.elr += 4;
+		raw_write_elr_current(exc_state->elx.elr);
 		test_exc = 0;
-		printk(BIOS_DEBUG, "new ELR = 0x%016llx\n", state->elr);
+		printk(BIOS_DEBUG, "new ELR = 0x%016llx\n", exc_state->elx.elr);
 	} else
 		die("exception");
+
+	exc_exit(&exc_state->regs);
 }
 
 static uint64_t test_exception(void)
@@ -129,8 +137,7 @@ static uint64_t test_exception(void)
 
 void exception_hwinit(void)
 {
-	extern void *exception_table;
-	set_vbar(&exception_table);
+	exc_set_vbar();
 }
 
 void exception_init(void)

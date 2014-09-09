@@ -177,7 +177,7 @@ static void tegra132_init(void *chip_info)
 	printk(BIOS_INFO, "chip %x rev %02x.%x\n",
 		rev.chip_id, rev.major, rev.minor);
 
-	printk(BIOS_INFO, "MTS build %08x\n", raw_read_aidr_el1());
+	printk(BIOS_INFO, "MTS build %u\n", raw_read_aidr_el1());
 }
 
 struct chip_operations soc_nvidia_tegra132_ops = {

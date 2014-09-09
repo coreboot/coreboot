@@ -302,6 +302,13 @@ void __attribute__((weak)) smbios_mainboard_set_uuid(u8 *uuid)
 	/* leave all zero */
 }
 
+#ifdef CONFIG_MAINBOARD_FAMILY
+const char *smbios_mainboard_family(void)
+{
+	return CONFIG_MAINBOARD_FAMILY;
+}
+#endif /* CONFIG_MAINBOARD_FAMILY */
+
 static int smbios_write_type1(unsigned long *current, int handle)
 {
 	struct smbios_type1 *t = (struct smbios_type1 *)*current;
@@ -334,6 +341,9 @@ static int smbios_write_type2(unsigned long *current, int handle)
 	t->product_name = smbios_add_string(t->eos, smbios_mainboard_product_name());
 	t->serial_number = smbios_add_string(t->eos, smbios_mainboard_serial_number());
 	t->version = smbios_add_string(t->eos, smbios_mainboard_version());
+#ifdef CONFIG_MAINBOARD_FAMILY
+	t->family = smbios_add_string(t->eos, smbios_mainboard_family());
+#endif
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;

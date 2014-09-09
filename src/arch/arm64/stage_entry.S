@@ -19,16 +19,8 @@
 
 
 #include <arch/asm.h>
-
-#if CONFIG_ARM64_CPUS_START_IN_EL3
-#define SCTLR_ELx sctlr_el3
-#elif CONFIG_ARM64_CPUS_START_IN_EL2
-#define SCTLR_ELx sctlr_el2
-#elif CONFIG_ARM64_CPUS_START_IN_EL1
-#define SCTLR_ELx sctlr_el1
-#else
-#error Need to know what ELx processor starts up in.
-#endif
+#define __ASSEMBLY__
+#include <arch/lib_helpers.h>
 
 #define STACK_SZ CONFIG_STACK_SIZE
 #define EXCEPTION_STACK_SZ CONFIG_STACK_SIZE
@@ -109,12 +101,12 @@ ENTRY(arm64_c_environment)
 ENDPROC(arm64_c_environment)
 
 CPU_RESET_ENTRY(arm64_cpu_startup)
-	mrs	x0, SCTLR_ELx
+        read_current x0, sctlr
 	bic	x0, x0, #(1 << 25)	/* Little Endian */
 	bic	x0, x0, #(1 << 19)	/* XN not enforced */
 	bic	x0, x0, #(1 << 12)	/* Disable Instruction Cache */
 	bic	x0, x0, #0xf		/* Clear SA, C, A, and M */
-	msr	SCTLR_ELx, x0
+	write_current sctlr, x0, x1
 	isb
 	b	arm64_c_environment
 ENDPROC(arm64_cpu_startup)

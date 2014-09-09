@@ -55,6 +55,10 @@ config SYS_SDRAM_BASE
 	hex
 	default 0x40000000
 
+config CBMEM_CONSOLE_PRERAM_BASE
+	hex "memory address of the pre-RAM CBMEM console buffer"
+	default 0x40618000
+
 config STACK_TOP
 	hex
 	default 0x40600000

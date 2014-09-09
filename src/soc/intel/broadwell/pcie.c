@@ -113,6 +113,7 @@ static void root_port_init_config(device_t dev)
 		rpc.pin_ownership = pci_read_config32(dev, 0x410);
 		root_port_config_update_gbe_port();
 
+		pcie_update_cfg8(dev, 0xe2, ~(3 << 4), (3 << 4));
 		if (dev->chip_info != NULL) {
 			config_t *config = dev->chip_info;
 			rpc.coalesce = config->pcie_port_coalesce;

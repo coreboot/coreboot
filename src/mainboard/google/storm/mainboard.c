@@ -97,11 +97,16 @@ static void deassert_sw_reset(void)
 	if (board_id() == 0)
 		return;
 
-	/* only proto0.2 and later care about this. */
+	/*
+	 * only proto0.2 and later care about this. This signal is eventually
+	 * driving the ehernet switch reset input, which is active low. But
+	 * since this signal gets inverted along the way, the GPIO needs to be
+	 * driven low to take the switch out of reset.
+	 */
 	gpio_tlmm_config_set(SW_RESET_GPIO, FUNC_SEL_GPIO,
 			     GPIO_PULL_UP, GPIO_4MA, GPIO_ENABLE);
 
-	gpio_set_out_value(SW_RESET_GPIO, 1);
+	gpio_set_out_value(SW_RESET_GPIO, 0);
 }
 
 static void mainboard_init(device_t dev)

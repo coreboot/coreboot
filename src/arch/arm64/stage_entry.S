@@ -17,6 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/*
+ * ======================== stage_entry.S =====================================
+ * This file acts as an entry point to the different stages of arm64 as well as
+ * for the secure monitor. They share the same process of setting up stacks and
+ * jumping to c code. It is important to save x25 from corruption as it contains
+ * the argument for secure monitor.
+ * =============================================================================
+ */
 
 #include <arch/asm.h>
 #define __ASSEMBLY__
@@ -71,6 +79,10 @@ ENDPROC(cpu_get_exception_stack)
  * 16-byte aligned stack. The programming enviroment uses SP_EL0 as its main
  * stack while keeping SP_ELx reserved for exception entry.
  */
+/*
+ * IMPORTANT: Ensure x25 is not corrupted because it saves the argument to
+ * secmon
+ */
 ENTRY(arm64_c_environment)
 	bl	smp_processor_id	/* x0 = cpu */
 	mov	x24, x0
@@ -92,13 +104,21 @@ ENTRY(arm64_c_environment)
 	mov	sp, x0
 
 	/* Get entry point by dereferencing c_entry. */
-	ldr	x0, 1f
-	ldr	x0, [x0]
-	br	x0
+	ldr	x1, 1f
+	ldr	x1, [x1]
+	/* Move back the arguments from x25 to x0 */
+	mov     x0, x25
+	br	x1
 .align 3
 	1:
 	.quad	c_entry
 ENDPROC(arm64_c_environment)
+
+ENTRY(__rmodule_entry)
+	/* Save the arguments to secmon in x25 */
+	mov    x25, x0
+	b      arm64_c_environment
+ENDPROC(__rmodule_entry)
 
 CPU_RESET_ENTRY(arm64_cpu_startup)
         read_current x0, sctlr

@@ -59,8 +59,8 @@ config BOARD_GOOGLE_STORM
 	bool "Storm"
 config BOARD_GOOGLE_STOUT
 	bool "Stout"
-config BOARD_GOOGLE_VEYRON
-	bool "Veyron"
+config BOARD_GOOGLE_VEYRON_PINKY
+	bool "Veyron_Pinky"
 
 endchoice
 
@@ -83,7 +83,7 @@ source "src/mainboard/google/samus/Kconfig"
 source "src/mainboard/google/slippy/Kconfig"
 source "src/mainboard/google/storm/Kconfig"
 source "src/mainboard/google/stout/Kconfig"
-source "src/mainboard/google/veyron/Kconfig"
+source "src/mainboard/google/veyron_pinky/Kconfig"
 
 config MAINBOARD_VENDOR
 	string "Mainboard Vendor"

@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-if BOARD_GOOGLE_VEYRON
+if BOARD_GOOGLE_VEYRON_PINKY
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -30,11 +30,11 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config MAINBOARD_DIR
 	string
-	default google/veyron
+	default google/veyron_pinky
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Veyron"
+	default "Veyron_Pinky"
 
 config MAINBOARD_VENDOR
 	string
@@ -60,4 +60,4 @@ config DRAM_SIZE_MB
 	int
 	default 2048
 
-endif #  BOARD_GOOGLE_VEYRON
+endif #  BOARD_GOOGLE_VEYRON_PINKY

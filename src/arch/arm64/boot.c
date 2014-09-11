@@ -18,17 +18,36 @@
  */
 
 #include <arch/cache.h>
+#include <arch/lib_helpers.h>
 #include <arch/stages.h>
+#include <arch/transition.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <program_loading.h>
+#include <string.h>
 
 void arch_payload_run(const struct payload *payload)
 {
 	void (*doit)(void *) = payload->entry;
 	void *cb_tables = cbmem_find(CBMEM_ID_CBTABLE);
+	uint8_t current_el = get_current_el();
 
 	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
+
+	/* If current EL is not EL3, jump to payload at same EL. */
+	if (current_el != EL3) {
+		cache_sync_instructions();
+		/* Point of no-return */
+		doit(cb_tables);
+	}
+
+	/* If current EL is EL3, we transition to payload in EL2. */
+	struct exc_state exc_state;
+
+	memset(&exc_state, 0, sizeof(exc_state));
+
+	exc_state.elx.spsr = get_eret_el(EL2, SPSR_USE_L);
+
 	cache_sync_instructions();
-	doit(cb_tables);
+	transition_with_entry(payload->entry, cb_tables, &exc_state);
 }

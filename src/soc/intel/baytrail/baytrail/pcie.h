@@ -98,5 +98,5 @@
 #define PHYCTL4			0x408
 # define SQDIS			(1 << 27)
 
-
+#define PCIE_ROOT_PORT_COUNT	4
 #endif /* _BAYTRAIL_PCIE_H_ */

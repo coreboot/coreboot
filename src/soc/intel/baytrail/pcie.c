@@ -155,6 +155,35 @@ static void check_port_enabled(device_t dev)
 	}
 }
 
+static u8 all_ports_no_dev_present(device_t dev)
+{
+	u8 func;
+	u8 temp = dev->path.pci.devfn;
+	u8 device_not_present = 1;
+	u8 data;
+
+	for (func = 1; func < PCIE_ROOT_PORT_COUNT; func++) {
+		dev->path.pci.devfn &= ~0x7;
+		dev->path.pci.devfn |= func;
+
+		/* is pcie device there */
+		if (pci_read_config32(dev, 0) == 0xFFFFFFFF)
+			continue;
+
+		data = pci_read_config8(dev, XCAP + 3) | (SI >> 24);
+		pci_write_config8(dev, XCAP + 3, data);
+
+		/* is any device present */
+		if ((pci_read_config32(dev, SLCTL_SLSTS) & PDS)) {
+			device_not_present = 0;
+			break;
+		}
+	}
+
+	dev->path.pci.devfn = temp;
+	return device_not_present;
+}
+
 static void check_device_present(device_t dev)
 {
 	/* Set slot implemented. */
@@ -163,8 +192,14 @@ static void check_device_present(device_t dev)
 	/* No device present. */
 	if (!(pci_read_config32(dev, SLCTL_SLSTS) & PDS)) {
 		printk(BIOS_DEBUG, "No PCIe device present.\n");
-		reg_script_run_on_dev(dev, no_dev_behind_port);
-		dev->enabled = 0;
+		if (is_first_port(dev)) {
+			if (all_ports_no_dev_present(dev)) {
+				reg_script_run_on_dev(dev, no_dev_behind_port);
+				dev->enabled = 0;
+			}
+		} else {
+			dev->enabled = 0;
+		}
 	} else if(!dev->enabled) {
 		/* Port is disabled, but device present. Disable link. */
 		pci_write_config32(dev, LCTL,

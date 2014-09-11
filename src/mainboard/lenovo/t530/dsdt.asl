@@ -37,7 +37,6 @@ DefinitionBlock(
 {
 	// Some generic macros
 	#include "acpi/platform.asl"
-	#include "acpi/mainboard.asl"
 
 	// global NVS and variables
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>

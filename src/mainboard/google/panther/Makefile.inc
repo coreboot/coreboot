@@ -17,8 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-romstage-$(CONFIG_CHROMEOS) += chromeos.c
-ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+romstage-y += chromeos.c
+ramstage-y += chromeos.c
 ramstage-y += lan.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c

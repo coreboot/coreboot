@@ -19,7 +19,7 @@
 
 #include <string.h>
 #include <arch/io.h>
-#include <boot/coreboot_tables.h>
+#include <bootmode.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/lynxpoint/pch.h>
@@ -32,23 +32,10 @@
 #define FLAG_REC_MODE	1
 #define FLAG_DEV_MODE	2
 
-#define GPIO_COUNT	6
-#define ACTIVE_LOW	0
-#define ACTIVE_HIGH	1
-
 #ifndef __PRE_RAM__
-static void fill_lb_gpio(struct lb_gpio *gpio, int num,
-			 int polarity, const char *name, int force)
-{
-	memset(gpio, 0, sizeof(*gpio));
-	gpio->port = num;
-	gpio->polarity = polarity;
-	if (force >= 0)
-		gpio->value = force;
-	else if (num >= 0)
-		gpio->value = get_gpio(num);
-	strncpy((char *)gpio->name, name, GPIO_MAX_NAME_LENGTH);
-}
+#include <boot/coreboot_tables.h>
+
+#define GPIO_COUNT	6
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -65,7 +52,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		     get_developer_mode_switch());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "lid", 1);
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "power", 0);
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", oprom_is_loaded);
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", gfx_get_init_done());
 }
 #endif
 
@@ -97,7 +84,7 @@ int get_recovery_mode_switch(void)
 }
 
 #ifdef __PRE_RAM__
-void save_chromeos_gpios(void)
+void init_bootmode_straps(void)
 {
 	u32 flags = 0;
 

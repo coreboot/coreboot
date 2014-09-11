@@ -18,5 +18,8 @@
 ##
 
 chip soc/nvidia/tegra132
-     device cpu_cluster 0 on end
+	device cpu_cluster 0 on
+		device cpu 0 on end
+		device cpu 1 on end
+	end
 end

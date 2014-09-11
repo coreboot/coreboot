@@ -22,6 +22,7 @@ subdirs-y += ati
 subdirs-y += dec
 subdirs-y += emulation
 subdirs-y += generic
+subdirs-y += gic
 subdirs-y += i2c
 subdirs-y += intel
 subdirs-y += lenovo

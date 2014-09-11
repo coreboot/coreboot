@@ -23,6 +23,7 @@ source src/drivers/dec/Kconfig
 source src/drivers/elog/Kconfig
 source src/drivers/emulation/Kconfig
 source src/drivers/generic/Kconfig
+source src/drivers/gic/Kconfig
 source src/drivers/i2c/Kconfig
 source src/drivers/ics/Kconfig
 source src/drivers/intel/Kconfig

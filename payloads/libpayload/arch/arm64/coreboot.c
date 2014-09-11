@@ -60,3 +60,8 @@ int get_coreboot_info(struct sysinfo_t *info)
 {
 	return cb_parse_header(cb_header_ptr, 1, info);
 }
+
+void *get_cb_header_ptr(void)
+{
+	return cb_header_ptr;
+}

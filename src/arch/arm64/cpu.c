@@ -299,6 +299,11 @@ void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops)
 	}
 
 	bus = cluster->link_list;
+
+	/* Check if no children under this device. */
+	if (bus == NULL)
+		return;
+
 	entry = prepare_secondary_cpu_startup();
 
 	/* Initialize the cpu_info structures. */

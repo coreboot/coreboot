@@ -50,6 +50,7 @@ ramstage-y += clock.c
 ramstage-y += spi.c
 ramstage-y += gpio.c
 ramstage-y += media.c
+ramstage-y += rk808.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf

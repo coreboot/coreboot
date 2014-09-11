@@ -29,8 +29,8 @@
 #include <soc/rockchip/rk3288/soc.h>
 #include <soc/rockchip/rk3288/pmu.h>
 #include <soc/rockchip/rk3288/clock.h>
+#include <soc/rockchip/rk3288/rk808.h>
 #include <soc/rockchip/rk3288/spi.h>
-#include "pmic.h"
 
 #define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
@@ -108,6 +108,14 @@ static void configure_i2s(void)
 	/*AUDIO IO domain 1.8V voltage selection*/
 	writel(RK_SETBITS(1 << 6), &rk3288_grf->io_vsel);
 	rkclk_configure_i2s(12288000);
+}
+
+static void pmic_init(unsigned int bus)
+{
+	rk808_configure_ldo(bus, 4, 1800);	/* VCC18_LCD */
+	rk808_configure_ldo(bus, 5, 1800);	/* VCC18_CODEC */
+	rk808_configure_ldo(bus, 6, 1000);	/* VCC10_LCD */
+	rk808_configure_ldo(bus, 8, 3300);	/* VCCIO_SD */
 }
 
 static void mainboard_init(device_t dev)

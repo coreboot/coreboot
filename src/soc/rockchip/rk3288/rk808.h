@@ -19,5 +19,7 @@
 
 #ifndef __SOC_ROCKCHIP_RK3288_PMIC_H__
 #define __SOC_ROCKCHIP_RK3288_PMIC_H__
-void pmic_init(unsigned int bus);
+
+void rk808_configure_ldo(uint8_t bus, int ldo, int millivolts);
+
 #endif

@@ -30,7 +30,6 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/cpu.h>
-#include <soc/ramstage.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 #include "chip.h"
 
@@ -188,7 +187,6 @@ struct chip_operations soc_nvidia_tegra132_ops = {
 
 static void tegra132_cpu_init(device_t cpu)
 {
-	gic_init();
 }
 
 static const struct cpu_device_id ids[] = {

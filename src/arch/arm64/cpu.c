@@ -23,6 +23,7 @@
 #include <arch/lib_helpers.h>
 #include <cpu/cpu.h>
 #include <console/console.h>
+#include <gic.h>
 #include "cpu-internal.h"
 
 static struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
@@ -89,6 +90,9 @@ static void init_this_cpu(void *arg)
 	device_t dev = ci->cpu;
 
 	cpu_set_device_operations(dev);
+
+	/* Initialize the GIC. */
+	gic_init();
 
 	if (dev->ops != NULL && dev->ops->init != NULL) {
 		dev->initialized = 1;

@@ -223,7 +223,7 @@ void *vboot_load_stage(int stage_index,
 		       struct vboot_components *fw_info)
 {
 	struct cbfs_stage *stage;
-	uint32_t fc_addr;
+	uintptr_t fc_addr;
 	uint32_t fc_size;
 
 	if (stage_index >= fw_info->num_components) {
@@ -267,18 +267,9 @@ struct vb2_working_data * const vboot_get_working_data(void)
 	return (struct vb2_working_data *)CONFIG_VBOOT_WORK_BUFFER_ADDRESS;
 }
 
-int vboot_is_slot_selected(struct vb2_working_data *wd)
-{
-	return wd->selected_region.size > 0;
-}
-
-int vboot_is_readonly_path(struct vb2_working_data *wd)
-{
-	return wd->selected_region.size == 0;
-}
-
 void vboot_reboot(void)
 {
 	hard_reset();
 }
+
 #endif

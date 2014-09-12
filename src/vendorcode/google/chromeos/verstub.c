@@ -30,7 +30,7 @@ static struct vb2_working_data *init_vb2_working_data(void)
 	wd = vboot_get_working_data();
 	memset(wd, 0, CONFIG_VBOOT_WORK_BUFFER_SIZE);
 	/* 8-byte alignment for ARMv7 */
-	wd->buffer = (uint8_t *)ALIGN_UP((uintptr_t)&wd[1], 8);
+	wd->buffer = ALIGN_UP((uintptr_t)&wd[1], 8);
 	wd->buffer_size = CONFIG_VBOOT_WORK_BUFFER_SIZE + (uintptr_t)wd
 			- (uintptr_t)wd->buffer;
 
@@ -74,12 +74,14 @@ void vboot2_verify_firmware(void)
 	entry = NULL;
 	if (vboot_is_slot_selected(wd)) {
 		/* RW A or B */
-		struct vboot_components *fw_info =
-				vboot_locate_components(&wd->selected_region);
+		struct vboot_region fw_main;
+		struct vboot_components *fw_info;
+		vb2_get_selected_region(wd, &fw_main);
+		fw_info = vboot_locate_components(&fw_main);
 		if (fw_info == NULL)
 			die("failed to locate firmware components\n");
 		entry = vboot_load_stage(CONFIG_VBOOT_ROMSTAGE_INDEX,
-					 &wd->selected_region, fw_info);
+					 &fw_main, fw_info);
 	} else if (vboot_is_readonly_path(wd)) {
 		/* RO */
 		entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,

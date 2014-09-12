@@ -130,20 +130,42 @@ void vboot_reboot(void);
 /*
  * this is placed at the start of the vboot work buffer. selected_region is used
  * for the verstage to return the location of the selected slot. buffer is used
- * by the vboot2 core.
- *
- * TODO: Make the sizes of the struct and its members independent of cpu
- * architectures as it crosses stage boundaries.
+ * by the vboot2 core. Keep the struct cpu architecture agnostic as it crosses
+ * stage boundaries.
  */
 struct vb2_working_data {
-	struct vboot_region selected_region;
-	size_t buffer_size;
-	uint8_t *buffer;
+	uint32_t selected_region_offset;
+	uint32_t selected_region_size;
+	uint64_t buffer_size;
+	uint64_t buffer;
 };
 
 struct vb2_working_data * const vboot_get_working_data(void);
-int vboot_is_slot_selected(struct vb2_working_data *wd);
-int vboot_is_readonly_path(struct vb2_working_data *wd);
+
+static inline void vb2_get_selected_region(struct vb2_working_data *wd,
+			     struct vboot_region *region)
+{
+	region->offset_addr = wd->selected_region_offset;
+	region->size = wd->selected_region_size;
+}
+
+static inline void vb2_set_selected_region(struct vb2_working_data *wd,
+			     struct vboot_region *region)
+{
+	wd->selected_region_offset = region->offset_addr;
+	wd->selected_region_size = region->size;
+}
+
+static inline int vboot_is_slot_selected(struct vb2_working_data *wd)
+{
+	return wd->selected_region_size > 0;
+}
+
+static inline int vboot_is_readonly_path(struct vb2_working_data *wd)
+{
+	return wd->selected_region_size == 0;
+}
+
 #endif /* CONFIG_VBOOT2_VERIFY_FIRMWARE */
 
 #endif

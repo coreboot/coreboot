@@ -143,9 +143,10 @@ void *vboot_load_ramstage(void)
 {
 	struct vboot_handoff *vh;
 	struct vb2_shared_data *sd;
+	struct vboot_region fw_main;
 	struct vb2_working_data *wd = vboot_get_working_data();
 
-	sd = (struct vb2_shared_data *)wd->buffer;
+	sd = (struct vb2_shared_data *)(uintptr_t)wd->buffer;
 	sd->workbuf_hash_offset = 0;
 	sd->workbuf_hash_size = 0;
 
@@ -167,5 +168,7 @@ void *vboot_load_ramstage(void)
 
 	printk(BIOS_INFO,
 	       "loading ramstage from Slot %c\n", sd->fw_slot ? 'B' : 'A');
-	return load_ramstage(vh, &wd->selected_region);
+	vb2_get_selected_region(wd, &fw_main);
+
+	return load_ramstage(vh, &fw_main);
 }

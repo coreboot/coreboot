@@ -173,12 +173,13 @@ void verstage_main(void)
 #endif /* CONFIG_RETURN_FROM_VERSTAGE */
 {
 	struct vb2_context ctx;
+	struct vboot_region fw_main;
 	struct vb2_working_data *wd = vboot_get_working_data();
 	int rv;
 
 	/* Set up context and work buffer */
 	memset(&ctx, 0, sizeof(ctx));
-	ctx.workbuf = wd->buffer;
+	ctx.workbuf = (uint8_t *)(uintptr_t)wd->buffer;
 	ctx.workbuf_size = wd->buffer_size;
 
 	/* Read nvdata from a non-volatile storage */
@@ -225,11 +226,11 @@ void verstage_main(void)
 	}
 
 	printk(BIOS_INFO, "Phase 4\n");
-	rv = locate_firmware(&ctx, &wd->selected_region);
+	rv = locate_firmware(&ctx, &fw_main);
 	if (rv)
 		die("Failed to read FMAP to locate firmware");
 
-	rv = hash_body(&ctx, &wd->selected_region);
+	rv = hash_body(&ctx, &fw_main);
 	save_if_needed(&ctx);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
@@ -246,4 +247,5 @@ void verstage_main(void)
 	}
 
 	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
+	vb2_set_selected_region(wd, &fw_main);
 }

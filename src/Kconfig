@@ -642,6 +642,17 @@ config SEABIOS_MALLOC_UPPERMEMORY
 	  hardware.  In general, if this is desired, the option will be
 	  set to 'N' by the chipset Kconfig.
 
+config SEABIOS_VGA_COREBOOT
+	prompt "Include generated option rom that implements legacy VGA BIOS compatibility" if PAYLOAD_SEABIOS
+	default n
+	depends on !VGA_BIOS && MAINBOARD_DO_NATIVE_VGA_INIT
+	bool
+	help
+	  Coreboot can initialize the GPU of some mainboards.
+
+	  After initializing the GPU, the information about it can be passed to the payload.
+	  Provide an option rom that implements this legacy VGA BIOS compatibility requirement.
+
 choice
 	prompt "GRUB2 version"
 	default GRUB2_MASTER
@@ -688,6 +699,11 @@ config PAYLOAD_FILE
 config PAYLOAD_FILE
 	depends on PAYLOAD_SEABIOS
 	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
+
+config PAYLOAD_VGABIOS_FILE
+	string
+	depends on PAYLOAD_SEABIOS && SEABIOS_VGA_COREBOOT
+	default "payloads/external/SeaBIOS/seabios/out/vgabios.bin"
 
 config PAYLOAD_FILE
 	depends on PAYLOAD_FILO

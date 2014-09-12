@@ -531,6 +531,10 @@ ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
 	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_PS2_TIMEOUT) -n etc/ps2-keyboard-spinup
 endif
 endif
+ifeq ($(CONFIG_SEABIOS_VGA_COREBOOT),y)
+	@printf "    SeaBIOS    Adding generated legacy VGA option rom.\n"
+	$(CBFSTOOL) $@.tmp add -f $(CONFIG_PAYLOAD_VGABIOS_FILE) -n vgaroms/seavgabios.bin -t raw
+endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"
 	if [ -f $(DOTCONFIG) ]; then \

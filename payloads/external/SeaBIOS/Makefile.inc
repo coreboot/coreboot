@@ -37,6 +37,10 @@ endif
 ifneq ($(CONFIG_SEABIOS_THREAD_OPTIONROMS),y)
 	echo "# CONFIG_THREAD_OPTIONROMS is not set" >> seabios/.config
 endif
+ifeq ($(CONFIG_SEABIOS_VGA_COREBOOT),y)
+	echo "CONFIG_VGA_COREBOOT=y" >> seabios/.config
+	echo "CONFIG_BUILD_VGABIOS=y" >> seabios/.config
+endif
 	# This shows how to force a previously set .config option *off*
 	#echo "# CONFIG_SMBIOS is not set" >> seabios/.config
 	$(MAKE) -C seabios olddefconfig OUT=out/

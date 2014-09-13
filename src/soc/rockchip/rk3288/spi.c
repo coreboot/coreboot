@@ -171,77 +171,121 @@ static int rockchip_spi_wait_till_not_busy(struct rockchip_spi *regs)
 	return -1;
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int sout,
-	     void *din, unsigned int sin)
+static void set_tmod(struct rockchip_spi *regs, unsigned int tmod)
 {
-	unsigned int len;
-	unsigned int bytes_remaining;
-	uint8_t *p;
+	clrsetbits_le32(&regs->ctrlr0, SPI_TMOD_MASK << SPI_TMOD_OFFSET,
+				      tmod << SPI_TMOD_OFFSET);
+}
+
+static void set_transfer_mode(struct rockchip_spi *regs,
+		unsigned int sout, unsigned int sin)
+{
+	if (!sin && !sout)
+		return;
+	else if (sin && sout)
+		set_tmod(regs, SPI_TMOD_TR);	/* tx and rx */
+	else if (!sin)
+		set_tmod(regs, SPI_TMOD_TO);	/* tx only */
+	else if (!sout)
+		set_tmod(regs, SPI_TMOD_RO);	/* rx only */
+}
+
+/* returns 0 to indicate success, <0 otherwise */
+static int do_xfer(struct spi_slave *slave, const void *dout,
+	unsigned int *bytes_out, void *din, unsigned int *bytes_in)
+{
 	struct rockchip_spi *regs = to_rockchip_spi(slave)->regs;
+	uint8_t *in_buf = din;
+	uint8_t *out_buf = (uint8_t *)dout;
+	unsigned int min_xfer;
 
-	if (dout) {
-		len = sout;
-		p = (uint8_t *) dout;
-		bytes_remaining = len;
-		writel(0, &regs->spienr);	/*disable spi */
-		writel(len - 1, &regs->ctrlr1);	/*wrtie len */
+	if (*bytes_out == 0)
+		min_xfer = *bytes_in;
+	else if (*bytes_in == 0)
+		min_xfer = *bytes_out;
+	else
+		min_xfer = MIN(*bytes_in, *bytes_out);
 
-		/*tx only */
-		clrsetbits_le32(&regs->ctrlr0, SPI_TMOD_MASK << SPI_TMOD_OFFSET,
-					      SPI_TMOD_TO << SPI_TMOD_OFFSET);
-		writel(1, &regs->spienr);/*enable spi */
-		while (bytes_remaining) {
-			if ((readl(&regs->txflr) & 0x3f) < SPI_FIFO_DEPTH) {
-				writel(*p++, &regs->txdr);
-				bytes_remaining--;
-			}
+	while (min_xfer) {
+		uint32_t sr = readl(&regs->sr);
+		int xferred = 0;	/* in either (or both) directions */
+
+		if (*bytes_out && !(sr & SR_TF_FULL)) {
+			writel(*out_buf, &regs->txdr);
+			out_buf++;
+			*bytes_out -= 1;
+			xferred = 1;
 		}
-		if (rockchip_spi_wait_till_not_busy(regs))
-			return -1;
-	}
-	if (din) {
-		len = sin;
-		p = (uint8_t *) din;
-		writel(0, &regs->spienr);	/*disable spi */
-		writel(len - 1, &regs->ctrlr1);	/*write len */
 
-		/*rx only */
-		clrsetbits_le32(&regs->ctrlr0, SPI_TMOD_MASK << SPI_TMOD_OFFSET,
-					      SPI_TMOD_RO << SPI_TMOD_OFFSET);
-		while (len) {
-			writel(0, &regs->spienr);/*disable spi */
-			bytes_remaining = MIN(len, 0xffff);
-			writel(bytes_remaining - 1, &regs->ctrlr1);
-			len -= bytes_remaining;
-			writel(1, &regs->spienr);/*enable spi */
-			while (bytes_remaining) {
-				if (readl(&regs->rxflr) & 0x3f) {
-					*p = readl(&regs->rxdr) & 0xff;
-					p += 1;
-					bytes_remaining--;
-				}
-			}
+		if (*bytes_in && !(sr & SR_RF_EMPT)) {
+			*in_buf = readl(&regs->rxdr) & 0xff;
+			in_buf++;
+			*bytes_in -= 1;
+			xferred = 1;
 		}
-		if (rockchip_spi_wait_till_not_busy(regs))
-			return -1;
+
+		min_xfer -= xferred;
 	}
+
+	if (rockchip_spi_wait_till_not_busy(regs)) {
+		printk(BIOS_ERR, "Timed out waiting on SPI transfer\n");
+		return -1;
+	}
+
 	return 0;
 }
 
-static int rockchip_spi_read(struct spi_slave *slave, void *dest, uint32_t len,
-			     uint32_t off)
+int spi_xfer(struct spi_slave *slave, const void *dout,
+		unsigned int bytes_out, void *din, unsigned int bytes_in)
 {
-	unsigned int cmd;
+	struct rockchip_spi *regs = to_rockchip_spi(slave)->regs;
+	int ret = 0;
 
-	spi_claim_bus(slave);
-	cmd = swab32(off) | SF_READ_DATA_CMD;
-	if (spi_xfer(slave, &cmd, sizeof(cmd), dest, len)) {
-		printk(BIOS_DEBUG, "rockchip_spi_read err\n");
-		spi_release_bus(slave);
-		return -1;
+	/*
+	 * RK3288 SPI controller can transfer up to 65536 data frames (bytes
+	 * in our case) continuously. Break apart large requests as necessary.
+	 *
+	 * FIXME: And by 65536, we really mean 65535. If 0xffff is written to
+	 * ctrlr1, all bytes that we see in rxdr end up being 0x00. 0xffff - 1
+	 * seems to work fine.
+	 */
+	while (bytes_out || bytes_in) {
+		unsigned int in_now = MIN(bytes_in, 0xffff);
+		unsigned int out_now = MIN(bytes_out, 0xffff);
+		unsigned int in_rem, out_rem;
+
+		rockchip_spi_enable_chip(regs, 0);
+
+		/* Enable/disable transmitter and receiver as needed to
+		 * avoid sending or reading spurious bits. */
+		set_transfer_mode(regs, bytes_out, bytes_in);
+
+		/* MAX() in case either counter is 0 */
+		writel(MAX(in_now, out_now) - 1, &regs->ctrlr1);
+
+		rockchip_spi_enable_chip(regs, 1);
+
+		in_rem = in_now;
+		out_rem = out_now;
+		ret = do_xfer(slave, dout, &out_rem, din, &in_rem);
+		if (ret < 0)
+			break;
+
+		if (bytes_out) {
+			unsigned int sent = out_now - out_rem;
+			bytes_out -= sent;
+			dout += sent;
+		}
+
+		if (bytes_in) {
+			unsigned int received = in_now - in_rem;
+			bytes_in -= received;
+			din += received;
+		}
 	}
-	spi_release_bus(slave);
-	return len;
+
+	rockchip_spi_enable_chip(regs, 0);
+	return ret < 0 ? ret : 0;
 }
 
 struct rockchip_spi_media {
@@ -262,10 +306,28 @@ static int rockchip_spi_cbfs_close(struct cbfs_media *media)
 static size_t rockchip_spi_cbfs_read(struct cbfs_media *media, void *dest,
 				     size_t offset, size_t count)
 {
+	unsigned int cmd;
 	struct rockchip_spi_media *spi =
 	    (struct rockchip_spi_media *)media->context;
+	int ret;
 
-	return rockchip_spi_read(spi->slave, dest, count, offset);
+	spi_claim_bus(spi->slave);
+	cmd = swab32(offset) | SF_READ_DATA_CMD;
+	if (spi_xfer(spi->slave, &cmd, sizeof(cmd), NULL, 0)) {
+		printk(BIOS_DEBUG, "%s: could not send command\n", __func__);
+		ret = 0;
+		goto rockchip_spi_cbfs_read_done;
+	}
+
+	if (spi_xfer(spi->slave, NULL, 0, dest, count)) {
+		printk(BIOS_DEBUG, "%s: could not receive data\n", __func__);
+		ret = 0;
+		goto rockchip_spi_cbfs_read_done;
+	}
+
+rockchip_spi_cbfs_read_done:
+	spi_release_bus(spi->slave);
+	return ret < 0 ? 0 : count;
 }
 
 static void *rockchip_spi_cbfs_map(struct cbfs_media *media, size_t offset,

@@ -33,6 +33,64 @@
 #define CURRENT_EL_MASK   0x3
 #define CURRENT_EL_SHIFT  2
 
+#define SPSR_USE_L           0
+#define SPSR_USE_H           1
+#define SPSR_L_H_MASK        1
+#define SPSR_M_SHIFT         4
+#define SPSR_ERET_32         (1 << SPSR_M_SHIFT)
+#define SPSR_ERET_64         (0 << SPSR_M_SHIFT)
+#define SPSR_FIQ_SHIFT       6
+#define SPSR_FIQ_MASK        (0 << SPSR_FIQ_SHIFT)
+#define SPSR_FIQ_ENABLE      (1 << SPSR_FIQ_SHIFT)
+#define SPSR_IRQ_SHIFT       7
+#define SPSR_IRQ_MASK        (0 << SPSR_IRQ_SHIFT)
+#define SPSR_IRQ_ENABLE      (1 << SPSR_IRQ_SHIFT)
+#define SPSR_SERROR_SHIFT    8
+#define SPSR_SERROR_MASK     (0 << SPSR_SERROR_SHIFT)
+#define SPSR_SERROR_ENABLE   (1 << SPSR_SERROR_SHIFT)
+#define SPSR_DEBUG_SHIFT     9
+#define SPSR_DEBUG_MASK      (0 << SPSR_DEBUG_SHIFT)
+#define SPSR_DEBUG_ENABLE    (1 << SPSR_DEBUG_SHIFT)
+
+#define SCR_NS               1
+#define SCR_RES1             (0x3 << 4)
+#define SCR_SMC_SHIFT        7
+#define SCR_SMC_DISABLE      (1 << SCR_SMC_SHIFT)
+#define SCR_SMC_ENABLE       (0 << SCR_SMC_SHIFT)
+#define SCR_HVC_SHIFT        8
+#define SCR_HVC_DISABLE      (0 << SCR_HVC_SHIFT)
+#define SCR_HVC_ENABLE       (1 << SCR_HVC_SHIFT)
+#define SCR_RW_SHIFT         10
+#define SCR_LOWER_AARCH64    (1 << SCR_RW_SHIFT)
+#define SCR_LOWER_AARCH32    (0 << SCR_RW_SHIFT)
+
+#define HCR_RW_SHIFT         31
+#define HCR_LOWER_AARCH64    (1 << HCR_RW_SHIFT)
+#define HCR_LOWER_AARCH32    (0 << HCR_RW_SHIFT)
+
+#define SCTLR_MMU_ENABLE     1
+#define SCTLR_MMU_DISABLE    0
+#define SCTLR_ACE_SHIFT      1
+#define SCTLR_ACE_ENABLE     (1 << SCTLR_ACE_SHIFT)
+#define SCTLR_ACE_DISABLE    (0 << SCTLR_ACE_SHIFT)
+#define SCTLR_CACHE_SHIFT    2
+#define SCTLR_CACHE_ENABLE   (1 << SCTLR_CACHE_SHIFT)
+#define SCTLR_CACHE_DISABLE  (0 << SCTLR_CACHE_SHIFT)
+#define SCTLR_SAE_SHIFT      3
+#define SCTLR_SAE_ENABLE     (1 << SCTLR_SAE_SHIFT)
+#define SCTLR_SAE_DISABLE    (0 << SCTLR_SAE_SHIFT)
+#define SCTLR_RES1           ((0x3 << 4) | (0x1 << 11) | (0x1 << 16) |	\
+			      (0x1 << 18) | (0x3 << 22) | (0x3 << 28))
+#define SCTLR_ICE_SHIFT      12
+#define SCTLR_ICE_ENABLE     (1 << SCTLR_ICE_SHIFT)
+#define SCTLR_ICE_DISABLE    (0 << SCTLR_ICE_SHIFT)
+#define SCTLR_WXN_SHIFT      19
+#define SCTLR_WXN_ENABLE     (1 << SCTLR_WXN_SHIFT)
+#define SCTLR_WXN_DISABLE    (0 << SCTLR_WXN_SHIFT)
+#define SCTLR_ENDIAN_SHIFT   25
+#define SCTLR_LITTLE_END     (0 << SCTLR_ENDIAN_SHIFT)
+#define SCTLR_BIG_END        (1 << SCTLR_ENDIAN_SHIFT)
+
 #ifdef __ASSEMBLY__
 
 /* Macro to switch to label based on current el */

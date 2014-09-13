@@ -592,7 +592,7 @@ choice
 	depends on PAYLOAD_SEABIOS
 
 config SEABIOS_STABLE
-	bool "1.7.4"
+	bool "1.7.5"
 	help
 	  Stable SeaBIOS version
 config SEABIOS_MASTER

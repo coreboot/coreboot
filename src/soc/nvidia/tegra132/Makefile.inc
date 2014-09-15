@@ -66,6 +66,13 @@ ramstage-y += cbmem.c
 ramstage-y += cpu.c
 ramstage-y += cpu_lib.S
 ramstage-y += clock.c
+ramstage-y += display.c
+ramstage-y += tegra_dsi.c
+ramstage-y += mipi_dsi.c
+ramstage-y += mipi.c
+ramstage-y += mipi-phy.c
+ramstage-y += ./jdi_25x18_display/panel-jdi-lpm102a188a.c
+
 ramstage-y += soc.c
 ramstage-y += spi.c
 ramstage-y += i2c.c

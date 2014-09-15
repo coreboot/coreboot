@@ -24,6 +24,7 @@
 
 #ifndef __SOC_NVIDIA_TEGRA_DC_H
 #define __SOC_NVIDIA_TEGRA_DC_H
+#include <stddef.h>
 
 /* Register definitions for the Tegra display controller */
 

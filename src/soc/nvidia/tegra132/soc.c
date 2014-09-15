@@ -76,11 +76,6 @@ static struct cpu_control_ops cntrl_ops = {
 	.start_cpu = cntrl_start_cpu,
 };
 
-void display_startup(device_t dev)
-{
-	printk(BIOS_INFO, "Entering %s()\n", __func__);
-}
-
 static void soc_init(device_t dev)
 {
 	struct soc_nvidia_tegra132_config *cfg;

@@ -52,17 +52,52 @@
 #define SPSR_DEBUG_MASK      (0 << SPSR_DEBUG_SHIFT)
 #define SPSR_DEBUG_ENABLE    (1 << SPSR_DEBUG_SHIFT)
 
-#define SCR_NS               1
+#define SCR_NS_SHIFT         0
+#define SCR_NS_MASK          (1 << SCR_NS_SHIFT)
+#define SCR_NS_ENABLE        (1 << SCR_NS_SHIFT)
+#define SCR_NS_DISABLE       (0 << SCR_NS_SHIFT)
+#define SCR_NS               SCR_NS_ENABLE
 #define SCR_RES1             (0x3 << 4)
+#define SCR_IRQ_SHIFT        2
+#define SCR_IRQ_MASK         (1 << SCR_IRQ_SHIFT)
+#define SCR_IRQ_ENABLE       (1 << SCR_IRQ_SHIFT)
+#define SCR_IRQ_DISABLE      (0 << SCR_IRQ_SHIFT)
+#define SCR_FIQ_SHIFT        2
+#define SCR_FIQ_MASK         (1 << SCR_FIQ_SHIFT)
+#define SCR_FIQ_ENABLE       (1 << SCR_FIQ_SHIFT)
+#define SCR_FIQ_DISABLE      (0 << SCR_FIQ_SHIFT)
+#define SCR_EA_SHIFT         3
+#define SCR_EA_MASK          (1 << SCR_EA_SHIFT)
+#define SCR_EA_ENABLE        (1 << SCR_EA_SHIFT)
+#define SCR_EA_DISABLE       (0 << SCR_EA_SHIFT)
 #define SCR_SMC_SHIFT        7
+#define SCR_SMC_MASK         (1 << SCR_SMC_SHIFT)
 #define SCR_SMC_DISABLE      (1 << SCR_SMC_SHIFT)
 #define SCR_SMC_ENABLE       (0 << SCR_SMC_SHIFT)
 #define SCR_HVC_SHIFT        8
+#define SCR_HVC_MASK         (1 << SCR_HVC_SHIFT)
 #define SCR_HVC_DISABLE      (0 << SCR_HVC_SHIFT)
 #define SCR_HVC_ENABLE       (1 << SCR_HVC_SHIFT)
+#define SCR_SIF_SHIFT        9
+#define SCR_SIF_MASK         (1 << SCR_SIF_SHIFT)
+#define SCR_SIF_ENABLE       (1 << SCR_SIF_SHIFT)
+#define SCR_SIF_DISABLE      (0 << SCR_SIF_SHIFT)
 #define SCR_RW_SHIFT         10
+#define SCR_RW_MASK          (1 << SCR_RW_SHIFT)
 #define SCR_LOWER_AARCH64    (1 << SCR_RW_SHIFT)
 #define SCR_LOWER_AARCH32    (0 << SCR_RW_SHIFT)
+#define SCR_ST_SHIFT         11
+#define SCR_ST_MASK          (1 << SCR_ST_SHIFT)
+#define SCR_ST_ENABLE        (1 << SCR_ST_SHIFT)
+#define SCR_ST_DISABLE       (0 << SCR_ST_SHIFT)
+#define SCR_TWI_SHIFT        12
+#define SCR_TWI_MASK         (1 << SCR_TWI_SHIFT)
+#define SCR_TWI_ENABLE       (1 << SCR_TWI_SHIFT)
+#define SCR_TWI_DISABLE      (0 << SCR_TWI_SHIFT)
+#define SCR_TWE_SHIFT        13
+#define SCR_TWE_MASK         (1 << SCR_TWE_SHIFT)
+#define SCR_TWE_ENABLE       (1 << SCR_TWE_SHIFT)
+#define SCR_TWE_DISABLE      (0 << SCR_TWE_SHIFT)
 
 #define HCR_RW_SHIFT         31
 #define HCR_LOWER_AARCH64    (1 << HCR_RW_SHIFT)

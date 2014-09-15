@@ -84,12 +84,51 @@ static int cpu_set_device_operations(device_t dev)
 	return 0;
 }
 
+/* Set up default SCR values. */
+static void el3_init(void)
+{
+	uint32_t scr;
+
+	if (get_current_el() != EL3)
+		return;
+
+	scr = raw_read_scr_el3();
+	/* Default to non-secure EL1 and EL0. */
+	scr &= ~(SCR_NS_MASK);
+	scr |= SCR_NS_ENABLE;
+	/* Disable IRQ, FIQ, and external abort interrupt routing. */
+	scr &= ~(SCR_IRQ_MASK | SCR_FIQ_MASK | SCR_EA_MASK);
+	scr |= SCR_IRQ_DISABLE | SCR_FIQ_DISABLE | SCR_EA_DISABLE;
+	/* Enable HVC */
+	scr &= ~(SCR_HVC_MASK);
+	scr |= SCR_HVC_ENABLE;
+	/* Disable SMC */
+	scr &= ~(SCR_SMC_MASK);
+	scr |= SCR_SMC_DISABLE;
+	/* Disable secure instruction fetches. */
+	scr &= ~(SCR_SIF_MASK);
+	scr |= SCR_SIF_DISABLE;
+	/* All lower exception levels 64-bit by default. */
+	scr &= ~(SCR_RW_MASK);
+	scr |= SCR_LOWER_AARCH64;
+	/* Disable secure EL1 access to secure timer. */
+	scr &= ~(SCR_ST_MASK);
+	scr |= SCR_ST_DISABLE;
+	/* Don't trap on WFE or WFI instructions. */
+	scr &= ~(SCR_TWI_MASK | SCR_TWE_MASK);
+	scr |= SCR_TWI_DISABLE | SCR_TWE_DISABLE;
+	raw_write_scr_el3(scr);
+	isb();
+}
+
 static void init_this_cpu(void *arg)
 {
 	struct cpu_info *ci = arg;
 	device_t dev = ci->cpu;
 
 	cpu_set_device_operations(dev);
+
+	el3_init();
 
 	/* Initialize the GIC. */
 	gic_init();

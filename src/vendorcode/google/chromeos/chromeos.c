@@ -107,7 +107,7 @@ int vboot_skip_display_init(void)
 #endif
 }
 
-#ifdef __PRE_RAM__
+#ifdef __ROMSTAGE__
 void __attribute__((weak)) save_chromeos_gpios(void)
 {
 	// Can be implemented by a mainboard

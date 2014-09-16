@@ -211,12 +211,6 @@ int gpio_set_value(unsigned gpio, int value)
  */
 #define GPIO_DELAY_US	15
 
-#ifndef __BOOTBLOCK__
-/*
- * FIXME(dhendrix): These functions use udelay, which has dependencies on
- * pwm code and timer code. These aren't necessary for the bootblock and
- * bloat the image significantly.
- */
 int gpio_read_mvl3(unsigned gpio)
 {
 	int high, low;
@@ -252,7 +246,6 @@ int gpio_read_mvl3(unsigned gpio)
 
 	return value;
 }
-#endif	/* __BOOTBLOCK__ */
 
 /*
  * Display Exynos GPIO information

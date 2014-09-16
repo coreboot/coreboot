@@ -116,12 +116,14 @@ ramstage-postprocess=$(foreach d,$(sort $(dir $(filter-out %.ld,$(1)))), \
 	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); $$(LD_ramstage) -o $$@ -r $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(filter-out %.ld, $(call files-in-dir,$(d),$(1))),$(ramstage-objs))))
 
-romstage-generic-ccopts += -D__PRE_RAM__
+bootblock-generic-ccopts += -D__PRE_RAM__ -D__BOOTBLOCK__
+romstage-generic-ccopts += -D__PRE_RAM__ -D__ROMSTAGE__
+ramstage-generic-ccopts += -D__RAMSTAGE__
 ifeq ($(CONFIG_TRACE),y)
-ramstage-c-ccopts:= -finstrument-functions
+ramstage-c-ccopts += -finstrument-functions
 endif
 ifeq ($(CONFIG_COVERAGE),y)
-ramstage-c-ccopts+=-fprofile-arcs -ftest-coverage
+ramstage-c-ccopts += -fprofile-arcs -ftest-coverage
 endif
 
 # try to fetch non-optional submodules if the source is under git
@@ -131,8 +133,6 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 # unless explicitly requested and enabled through --checkout
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty))
 endif
-
-bootblock-generic-ccopts += -D__BOOTBLOCK__ -D__PRE_RAM__
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)

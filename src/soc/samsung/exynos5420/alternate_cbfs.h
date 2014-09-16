@@ -36,7 +36,7 @@ static u32 * const iram_secondary_base = (u32 *)0x02020018;
 #define OM_STAT_SPI  0x14
 #define OM_STAT_MASK 0x7f
 
-#if defined(__BOOT_BLOCK__)
+#if defined(__PRE_RAM__) && !defined(__ROMSTAGE__)
 	/* A small space in IRAM to hold the romstage-only image */
 	static void * const alternate_cbfs_buffer =
 			(void *)CONFIG_CBFS_CACHE_ADDRESS;

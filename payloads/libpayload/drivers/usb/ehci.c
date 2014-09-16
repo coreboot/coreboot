@@ -643,7 +643,8 @@ static void *ehci_create_intr_queue(
 			return NULL;
 	}
 
-	intr_queue_t *const intrq = (intr_queue_t *)malloc(sizeof(intr_queue_t));
+	intr_queue_t *const intrq = (intr_queue_t *)dma_memalign(64,
+		sizeof(intr_queue_t));
 	/*
 	 * reqcount data chunks
 	 * plus one more spare, which we'll leave out of queue

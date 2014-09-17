@@ -56,6 +56,7 @@ static void seed_stack(void)
 
 void arm64_init(void)
 {
+	cpu_set_bsp();
 	seed_stack();
 	arm64_soc_init();
 	main();

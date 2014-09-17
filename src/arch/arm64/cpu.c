@@ -27,6 +27,7 @@
 #include "cpu-internal.h"
 
 static struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
+struct cpu_info *bsp_cpu_info;
 
 static inline struct cpu_info *cpu_info_for_cpu(unsigned int id)
 {

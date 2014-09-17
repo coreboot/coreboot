@@ -66,6 +66,19 @@ struct cpu_info {
 /* Obtain cpu_info for current executing CPU. */
 struct cpu_info *cpu_info(void);
 
+extern struct cpu_info *bsp_cpu_info;
+
+/* Ran only by BSP at initial boot strapping. */
+static inline void cpu_set_bsp(void)
+{
+	bsp_cpu_info = cpu_info();
+}
+
+static inline int cpu_is_bsp(void)
+{
+	return cpu_info() == bsp_cpu_info;
+}
+
 /* Control routines for starting CPUs. */
 struct cpu_control_ops {
 	/* Return the maximum number of CPUs supported. */

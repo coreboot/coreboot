@@ -297,6 +297,21 @@ static int __arch_run_on_all_cpus(struct cpu_action *action, int sync)
 	return 0;
 }
 
+static int __arch_run_on_all_cpus_but_self(struct cpu_action *action, int sync)
+{
+	int i;
+	struct cpu_info *me = cpu_info();
+
+	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
+		struct cpu_info *ci = cpu_info_for_cpu(i);
+		if (ci == me)
+			continue;
+		action_run_on_cpu(ci, action, sync);
+	}
+
+	return 0;
+}
+
 int arch_run_on_all_cpus(struct cpu_action *action)
 {
 	return __arch_run_on_all_cpus(action, 1);
@@ -305,6 +320,16 @@ int arch_run_on_all_cpus(struct cpu_action *action)
 int arch_run_on_all_cpus_async(struct cpu_action *action)
 {
 	return __arch_run_on_all_cpus(action, 0);
+}
+
+int arch_run_on_all_cpus_but_self(struct cpu_action *action)
+{
+	return __arch_run_on_all_cpus_but_self(action, 1);
+}
+
+int arch_run_on_all_cpus_but_self_async(struct cpu_action *action)
+{
+	return __arch_run_on_all_cpus_but_self(action, 0);
 }
 
 void arch_secondary_cpu_init(void)

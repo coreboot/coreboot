@@ -94,8 +94,10 @@ void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops);
  */
 int arch_run_on_cpu(unsigned int cpu, struct cpu_action *action);
 int arch_run_on_all_cpus(struct cpu_action *action);
+int arch_run_on_all_cpus_but_self(struct cpu_action *action);
 int arch_run_on_cpu_async(unsigned int cpu, struct cpu_action *action);
 int arch_run_on_all_cpus_async(struct cpu_action *action);
+int arch_run_on_all_cpus_but_self_async(struct cpu_action *action);
 
 #endif /* !__PRE_RAM__ */
 

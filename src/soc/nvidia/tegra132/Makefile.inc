@@ -69,7 +69,6 @@ ramstage-y += ../tegra/gpio.c
 ramstage-y += ../tegra/i2c.c
 ramstage-y += ../tegra/pinmux.c
 ramstage-y += ramstage.c
-ramstage-y += spintable.S
 ramstage-y += mmu_operations.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += ../tegra/usb.c

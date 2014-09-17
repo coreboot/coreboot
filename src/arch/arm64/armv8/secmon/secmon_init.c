@@ -24,6 +24,7 @@
 #include <arch/exception.h>
 #include <arch/lib_helpers.h>
 #include <arch/secmon.h>
+#include <arch/smc.h>
 #include <arch/transition.h>
 #include <console/console.h>
 #include <rmodule.h>
@@ -40,20 +41,6 @@ static void cpu_init(int bsp)
 		cpu_set_bsp();
 }
 
-static void secmon_el3_init(void)
-{
-	uint32_t scr;
-
-	scr = raw_read_scr_el3();
-
-	/* Enable SMC */
-	scr &= ~(SCR_SMC_MASK);
-	scr |= SCR_SMC_ENABLE;
-
-	raw_write_scr_el3(scr);
-	isb();
-}
-
 static void secmon_init(struct secmon_params *params, int bsp)
 {
 	struct exc_state exc_state;
@@ -61,7 +48,7 @@ static void secmon_init(struct secmon_params *params, int bsp)
 	exception_hwinit();
 	cpu_init(bsp);
 
-	secmon_el3_init();
+	smc_init();
 
 	/*
 	 * Check if the arg is non-NULL

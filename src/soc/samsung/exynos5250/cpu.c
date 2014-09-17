@@ -62,7 +62,6 @@ static void set_cpu_id(void)
 static void exynos_displayport_init(device_t dev, u32 lcdbase,
 		unsigned long fb_size)
 {
-	int ret;
 	struct soc_samsung_exynos5250_config *conf = dev->chip_info;
 	/* put these on the stack. If, at some point, we want to move
 	 * this code to a pre-ram stage, it will be much easier.
@@ -108,7 +107,7 @@ static void exynos_displayport_init(device_t dev, u32 lcdbase,
 
 	printk(BIOS_DEBUG, "Initializing Exynos LCD.\n");
 
-	ret = lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
+	lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
 }
 
 static void cpu_enable(device_t dev)

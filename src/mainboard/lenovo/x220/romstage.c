@@ -105,45 +105,6 @@ static void rcba_config(void)
 	RCBA32(BUC) = 0;
 }
 
-static void
-init_usb (void)
-{
-	const u32 rcba_dump[64] = {
-		/* 3500 */ 0x20000153, 0x20000f57, 0x20000f57, 0x20000f57,
-		/* 3510 */ 0x20000f57, 0x20000f57, 0x20000153, 0x20000153,
-		/* 3520 */ 0x20000f57, 0x20000f57, 0x20000f57, 0x20000f57,
-		/* 3530 */ 0x20000f57, 0x20000f57, 0x00000000, 0x00000000,
-		/* 3540 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3550 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3560 */ 0x020c0001, 0x000024a3, 0x00040002, 0x01000050,
-		/* 3570 */ 0x02000772, 0x16000f9f, 0x1800ff4f, 0x0001d630,
-		/* 3580 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3590 */ 0x00000003, 0x000000c0, 0x00000000, 0x00000000,
-		/* 35a0 */ 0x0fc00201, 0x102d0200, 0x00000000, 0x00000000,
-		/* 35b0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35c0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35d0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35e0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35f0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-	};
-	int i;
-	/* Activate PMBAR.  */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE + 4, 0);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
-
-	/* Unlock registers.  */
-	outw (inw (DEFAULT_PMBASE | 0x003c) | 2, DEFAULT_PMBASE | 0x003c);
-
-	for (i = 0; i < 64; i++)
-		write32 (DEFAULT_RCBABASE | (0x3500 + 4 * i), rcba_dump[i]);
-
-	pcie_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
-
-	/* Relock registers.  */
-	outw (0x0000, DEFAULT_PMBASE | 0x003c);
-}
-
 #include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
@@ -179,7 +140,22 @@ void main(unsigned long bist)
 	outl(0x00000ff0, DEFAULT_GPIOBASE + 0x44);
 	outl(0x00000fcf, DEFAULT_GPIOBASE + 0x48);
 
-	init_usb();
+	early_usb_init((struct southbridge_usb_port []) {
+			{ 1, 0, 0 },
+			{ 1, 1, 1 },
+			{ 1, 1, 3 },
+			{ 1, 1, 3 },
+			{ 1, 1, -1 },
+			{ 1, 1, -1 },
+			{ 1, 0, 2 },
+			{ 1, 0, 2 },
+			{ 1, 1, 6 },
+			{ 1, 1, 5 },
+			{ 1, 1, 6 },
+			{ 1, 1, 6 },
+			{ 1, 1, 7 },
+			{ 1, 1, 6 },
+	         });
 
 	/* Initialize console device(s) */
 	console_init();

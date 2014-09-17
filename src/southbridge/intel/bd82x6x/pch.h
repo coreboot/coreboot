@@ -77,6 +77,17 @@ int early_spi_read(u32 offset, u32 size, u8 *buffer);
 void early_thermal_init(void);
 void early_pch_init_native(void);
 int southbridge_detect_s3_resume(void);
+
+struct southbridge_usb_port
+{
+	int enabled;
+	int current;
+	int oc_pin;
+};
+
+void
+early_usb_init (const struct southbridge_usb_port *portmap);
+
 #endif
 #endif
 

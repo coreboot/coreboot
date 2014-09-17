@@ -133,7 +133,7 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 clk_out_enb_x;		/* _CLK_OUT_ENB_X_0,        0x280 */
 	u32 clk_enb_x_set;		/* _CLK_ENB_X_SET_0,        0x284 */
 	u32 clk_enb_x_clr;		/* _CLK_ENB_X_CLR_0,        0x288 */
-	u32 rst_devices_x;		/* _RST_DEVICES_X_0,        0x28c */
+	u32 rst_dev_x;			/* _RST_DEVICES_X_0,        0x28c */
 	u32 rst_dev_x_set;		/* _RST_DEV_X_SET_0,        0x290 */
 	u32 rst_dev_x_clr;		/* _RST_DEV_X_CLR_0,        0x294 */
 	u32 _rsv19[23];			/*                      0x298-2f0 */

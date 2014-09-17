@@ -51,15 +51,19 @@ static void remove_clamps(int id)
 		;
 }
 
-static void enable_sor_periphs(void)
+static void enable_sor_periph_clocks(void)
 {
-	u32 lclks = CLK_L_HOST1X;
-	u32 hclks = CLK_H_MIPI_CAL | CLK_H_HDMI | CLK_H_DSI;
-	u32 uclks = CLK_U_DSIB;
-	u32 wclks = CLK_W_DP2 | CLK_W_HDA2HDMICODEC;
-	u32 xclks = CLK_X_DPAUX | CLK_X_SOR0 | CLK_X_HDMI_AUDIO;
+	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_HOST1X);
+	setbits_le32(&clk_rst->clk_out_enb_x, CLK_X_DPAUX);
 
-	clock_enable(lclks, hclks, uclks, 0, wclks, xclks);
+	/* Give clocks time to stabilize. */
+	udelay(IO_STABILIZATION_DELAY);
+}
+
+static void disable_sor_periph_clocks(void)
+{
+	clrbits_le32(&clk_rst->clk_out_enb_l, CLK_L_HOST1X);
+	clrbits_le32(&clk_rst->clk_out_enb_x, CLK_X_DPAUX);
 
 	/* Give clocks time to stabilize. */
 	udelay(IO_STABILIZATION_DELAY);
@@ -67,32 +71,42 @@ static void enable_sor_periphs(void)
 
 static void unreset_sor_periphs(void)
 {
-	u32 lclks = CLK_L_HOST1X;
-	u32 hclks = CLK_H_MIPI_CAL | CLK_H_HDMI | CLK_H_DSI;
-	u32 uclks = CLK_U_DSIB;
-	u32 wclks = CLK_W_DP2 | CLK_W_HDA2HDMICODEC;
-	u32 xclks = CLK_X_DPAUX | CLK_X_SOR0 | CLK_X_HDMI_AUDIO;
-
-	clock_clear_reset(lclks, hclks, uclks, 0, wclks, xclks);
+	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_HOST1X);
+	clrbits_le32(&clk_rst->rst_dev_x, CLK_X_DPAUX);
 }
 
 void soc_configure_i2c6pad(void)
 {
 	/*
 	 * I2C6 on Tegra124/132 requires some special init.
-	 * The SOR block must be unpowergated, and several
+	 * The SOR block must be unpowergated, and a couple of
 	 * display-based peripherals must be clocked and taken
 	 * out of reset so that a DPAUX register can be
 	 * configured to enable the I2C6 mux routing.
+	 * Afterwards, we can disable clocks to the display blocks
+	 * and put Host1X back in reset. DPAUX must remain out of
+	 * reset and the SOR partition must remained unpowergated.
 	 */
 	power_ungate_partition(POWER_PARTID_SOR);
-	enable_sor_periphs();
-	remove_clamps(POWER_PARTID_SOR);
-	unreset_sor_periphs();
 
 	/* Host1X needs a valid clock source so DPAUX can be accessed */
 	clock_configure_source(host1x, PLLP, 204000);
 
+	enable_sor_periph_clocks();
+	remove_clamps(POWER_PARTID_SOR);
+	unreset_sor_periphs();
+
 	/* Now we can write the I2C6 mux in DPAUX */
 	write32(I2C6_PADCTL, (void *)DPAUX_HYBRID_PADCTL);
+
+	/*
+	 * Delay before turning off Host1X/DPAUX clocks.
+	 * This delay is needed to keep the sequence from
+	 * hanging the system.
+	 */
+	udelay(CLOCK_PLL_STABLE_DELAY_US);
+
+	/* Stop Host1X/DPAUX clocks and reset Host1X */
+	disable_sor_periph_clocks();
+	setbits_le32(&clk_rst->rst_dev_l, CLK_L_HOST1X);
 }

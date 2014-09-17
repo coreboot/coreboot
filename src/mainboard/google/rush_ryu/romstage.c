@@ -24,7 +24,6 @@
 #include <soc/padconfig.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/romstage.h>
-
 #include "gpio.h"
 #include "pmic.h"
 
@@ -93,6 +92,7 @@ void romstage_mainboard_init(void)
 	/* Bring up controller interfaces for ramstage loading. */
 	soc_configure_funits(funits, ARRAY_SIZE(funits));
 	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
+	soc_configure_i2c6pad();
 
 	/* TPM */
 	i2c_init(I2C3_BUS);

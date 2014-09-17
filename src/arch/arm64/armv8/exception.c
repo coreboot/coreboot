@@ -29,56 +29,30 @@
 
 #include <stdint.h>
 #include <types.h>
+#include <arch/barrier.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
 #include <arch/transition.h>
 #include <console/console.h>
 #include <arch/lib_helpers.h>
 
-static unsigned int test_exc;
-
-struct exception_handler_info
-{
-	const char *name;
-};
-
-enum {
-	EXC_SYNC_SP0 = 0,
-	EXC_IRQ_SP0,
-	EXC_FIQ_SP0,
-	EXC_SERROR_SP0,
-	EXC_SYNC_SP3,
-	EXC_IRQ_SP3,
-	EXC_FIQ_SP3,
-	EXC_SERROR_SP3,
-	EXC_SYNC_ELX_64,
-	EXC_IRQ_ELX_64,
-	EXC_FIQ_ELX_64,
-	EXC_SERROR_ELX_64,
-	EXC_SYNC_ELX_32,
-	EXC_IRQ_ELX_32,
-	EXC_FIQ_ELX_32,
-	EXC_SERROR_ELX_32,
-	EXC_COUNT
-};
-
-static struct exception_handler_info exceptions[EXC_COUNT] = {
-	[EXC_SYNC_SP0] = { "_sync_sp_el0" },
-	[EXC_IRQ_SP0]  = { "_irq_sp_el0" },
-	[EXC_FIQ_SP0]  = { "_fiq_sp_el0" },
-	[EXC_SERROR_SP0] = {"_serror_sp_el0"},
-	[EXC_SYNC_SP3] = { "_sync_sp_el3" },
-	[EXC_IRQ_SP3]  = { "_irq_sp_el3" },
-	[EXC_FIQ_SP3]  = { "_fiq_sp_el3" },
-	[EXC_SERROR_SP3] = {"_serror_sp_el3"},
-	[EXC_SYNC_ELX_64] = { "_sync_elx_64" },
-	[EXC_IRQ_ELX_64]  = { "_irq_elx_64" },
-	[EXC_FIQ_ELX_64]  = { "_fiq_elx_64" },
-	[EXC_SERROR_ELX_64] = {"_serror_elx_64"},
-	[EXC_SYNC_ELX_32] = { "_sync_elx_32" },
-	[EXC_IRQ_ELX_32]  = { "_irq_elx_32" },
-	[EXC_FIQ_ELX_32]  = { "_fiq_elx_32" },
-	[EXC_SERROR_ELX_32] = {"_serror_elx_32"},
+static const char *exception_names[NUM_EXC_VIDS] = {
+	[EXC_VID_CUR_SP_EL0_SYNC] = "_sync_sp_el0",
+	[EXC_VID_CUR_SP_EL0_IRQ] = "_irq_sp_el0",
+	[EXC_VID_CUR_SP_EL0_FIRQ] = "_fiq_sp_el0",
+	[EXC_VID_CUR_SP_EL0_SERR] = "_serror_sp_el0",
+	[EXC_VID_CUR_SP_ELX_SYNC] = "_sync_sp_el3",
+	[EXC_VID_CUR_SP_ELX_IRQ] = "_irq_sp_el3",
+	[EXC_VID_CUR_SP_ELX_FIQ] = "_fiq_sp_el3",
+	[EXC_VID_CUR_SP_ELX_SERR] = "_serror_sp_el3",
+	[EXC_VID_LOW64_SYNC] = "_sync_elx_64",
+	[EXC_VID_LOW64_IRQ] = "_irq_elx_64",
+	[EXC_VID_LOW64_FIQ] = "_fiq_elx_64",
+	[EXC_VID_LOW64_SERR] = "_serror_elx_64",
+	[EXC_VID_LOW32_SYNC] = "_sync_elx_32",
+	[EXC_VID_LOW32_IRQ] = "_irq_elx_32",
+	[EXC_VID_LOW32_FIQ] = "_fiq_elx_32",
+	[EXC_VID_LOW32_SERR] = "_serror_elx_32"
 };
 
 static void print_regs(struct exc_state *exc_state)
@@ -98,39 +72,122 @@ static void print_regs(struct exc_state *exc_state)
 		printk(BIOS_DEBUG, "X%02d = 0x%016llx\n", i, regs->x[i]);
 }
 
-void exc_dispatch(struct exc_state *exc_state, uint64_t idx)
+
+static struct exception_handler *handlers[NUM_EXC_VIDS];
+
+
+int exception_handler_register(uint64_t vid, struct exception_handler *h)
 {
-	if (idx >= EXC_COUNT) {
-		printk(BIOS_DEBUG, "Bad exception index %lx.\n",
-		       (unsigned long)idx);
-	} else {
-		struct exception_handler_info *info = &exceptions[idx];
+	if (vid >= NUM_EXC_VIDS)
+		return -1;
 
-		if (info->name)
-			printk(BIOS_DEBUG, "exception %s\n", info->name);
-		else
-			printk(BIOS_DEBUG, "exception _not_used.\n");
+	/* Just place at head of queue. */
+	h->next = handlers[vid];
+	store_release(&handlers[vid], h);
+
+	return 0;
+}
+
+int exception_handler_unregister(uint64_t vid, struct exception_handler *h)
+{
+	struct exception_handler *cur;
+	struct exception_handler **prev;
+
+	if (vid >= NUM_EXC_VIDS)
+		return -1;
+
+	prev = &handlers[vid];
+
+	for (cur = handlers[vid]; cur != NULL; cur = cur->next) {
+		if (cur != h)
+			continue;
+		/* Update previous pointer. */
+		store_release(prev, cur->next);
+		return 0;
 	}
-	print_regs(exc_state);
 
-	if (test_exc) {
-		exc_state->elx.elr += 4;
-		raw_write_elr_current(exc_state->elx.elr);
-		test_exc = 0;
-		printk(BIOS_DEBUG, "new ELR = 0x%016llx\n", exc_state->elx.elr);
-	} else
-		die("exception");
+	/* Not found */
+	return -1;
+}
 
-	exc_exit(&exc_state->regs);
+static void print_exception_info(struct exc_state *state, uint64_t idx)
+{
+	if (idx < NUM_EXC_VIDS)
+		printk(BIOS_DEBUG, "exception %s\n", exception_names[idx]);
+
+	print_regs(state);
+}
+
+static void print_exception_and_die(struct exc_state *state, uint64_t idx)
+{
+	print_exception_info(state, idx);
+	die("exception death");
+}
+
+
+static int handle_exception(struct exc_state *state, uint64_t idx)
+{
+	int ret = EXC_RET_ABORT;
+
+	struct exception_handler *h;
+
+	for (h = handlers[idx]; h != NULL; h = h->next) {
+		int hret;
+
+		hret = h->handler(state, idx);
+
+		if (hret > ret)
+			ret = hret;
+	}
+
+	return ret;
+}
+
+void exc_dispatch(struct exc_state *state, uint64_t idx)
+{
+	int ret;
+
+	if (idx >= NUM_EXC_VIDS) {
+		printk(BIOS_DEBUG, "Bad exception index %x.\n", (int)idx);
+		print_exception_and_die(state, idx);
+	}
+
+	ret = handle_exception(state, idx);
+
+	if (ret == EXC_RET_ABORT)
+		print_exception_and_die(state, idx);
+
+	if (ret == EXC_RET_IGNORED || ret == EXC_RET_HANDLED_DUMP_STATE)
+		print_exception_info(state, idx);
+
+	exc_exit(&state->regs);
+}
+
+
+static int test_exception_handler(struct exc_state *state, uint64_t vector_id)
+{
+	/* Update instruction pointer to next instrution. */
+	state->elx.elr += sizeof(uint32_t);
+	raw_write_elr_current(state->elx.elr);
+	return EXC_RET_HANDLED;
 }
 
 static uint64_t test_exception(void)
 {
-	uint64_t *a = (uint64_t *)0xfffffffff0000000ULL;
+	struct exception_handler sync_elx;
+	struct exception_handler sync_el0;
+	unsigned long long *a = (void *)0xffffffff00000000ULL;
 
-	test_exc = 1;
+	sync_elx.handler = &test_exception_handler;
+	sync_el0.handler = &test_exception_handler;
 
-	printk(BIOS_DEBUG, "%llx\n", *a);
+	exception_handler_register(EXC_VID_CUR_SP_ELX_SYNC, &sync_elx);
+	exception_handler_register(EXC_VID_CUR_SP_EL0_SYNC, &sync_el0);
+
+	force_read(*a);
+
+	exception_handler_unregister(EXC_VID_CUR_SP_ELX_SYNC, &sync_elx);
+	exception_handler_unregister(EXC_VID_CUR_SP_EL0_SYNC, &sync_el0);
 
 	return 0;
 }

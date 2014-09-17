@@ -42,6 +42,24 @@
 #define STACK_POP_BYTES	 16
 #define STACK_PUSH_BYTES -16
 
+#define EXC_VID_CUR_SP_EL0_SYNC		0
+#define EXC_VID_CUR_SP_EL0_IRQ		1
+#define EXC_VID_CUR_SP_EL0_FIRQ		2
+#define EXC_VID_CUR_SP_EL0_SERR		3
+#define EXC_VID_CUR_SP_ELX_SYNC		4
+#define EXC_VID_CUR_SP_ELX_IRQ		5
+#define EXC_VID_CUR_SP_ELX_FIQ		6
+#define EXC_VID_CUR_SP_ELX_SERR		7
+#define EXC_VID_LOW64_SYNC		8
+#define EXC_VID_LOW64_IRQ		9
+#define EXC_VID_LOW64_FIQ		10
+#define EXC_VID_LOW64_SERR		11
+#define EXC_VID_LOW32_SYNC		12
+#define EXC_VID_LOW32_IRQ		13
+#define EXC_VID_LOW32_FIQ		14
+#define EXC_VID_LOW32_SERR		15
+#define NUM_EXC_VIDS			16
+
 #ifndef __ASSEMBLY__
 
 #include <stdint.h>

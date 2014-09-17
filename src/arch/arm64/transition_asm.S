@@ -77,22 +77,22 @@
  */
 ENTRY_WITH_ALIGN(exc_vectors, 11)
 
-eentry	sync_curr_sp0,#0
-eentry	irq_curr_sp0,#1
-eentry	fiq_curr_sp0,#2
-eentry	serror_curr_sp0,#3
-eentry	sync_curr_spx,#4
-eentry	irq_curr_spx,#5
-eentry	fiq_curr_spx,#6
-eentry	serror_curr_spx,#7
-eentry	sync_lower_64,#8
-eentry	irq_lower_64,#9
-eentry	fiq_lower_64,#10
-eentry	serror_lower_64,#11
-eentry	sync_lower_32,#12
-eentry	irq_lower_32,#13
-eentry	fiq_lower_32,#14
-eentry	serror_lower_32,#15
+eentry	sync_curr_sp0, #EXC_VID_CUR_SP_EL0_SYNC
+eentry	irq_curr_sp0, #EXC_VID_CUR_SP_EL0_IRQ
+eentry	fiq_curr_sp0, #EXC_VID_CUR_SP_EL0_FIRQ
+eentry	serror_curr_sp0, #EXC_VID_CUR_SP_EL0_SERR
+eentry	sync_curr_spx, #EXC_VID_CUR_SP_ELX_SYNC
+eentry	irq_curr_spx, #EXC_VID_CUR_SP_ELX_IRQ
+eentry	fiq_curr_spx, #EXC_VID_CUR_SP_ELX_FIQ
+eentry	serror_curr_spx, #EXC_VID_CUR_SP_ELX_SERR
+eentry	sync_lower_64, #EXC_VID_LOW64_SYNC
+eentry	irq_lower_64, #EXC_VID_LOW64_IRQ
+eentry	fiq_lower_64, #EXC_VID_LOW64_FIQ
+eentry	serror_lower_64, #EXC_VID_LOW64_SERR
+eentry	sync_lower_32, #EXC_VID_LOW32_SYNC
+eentry	irq_lower_32, #EXC_VID_LOW32_IRQ
+eentry	fiq_lower_32, #EXC_VID_LOW32_FIQ
+eentry	serror_lower_32, #EXC_VID_LOW32_SERR
 
 ENDPROC(exc_vectors)
 

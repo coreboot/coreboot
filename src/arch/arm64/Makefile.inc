@@ -123,6 +123,7 @@ ramstage-y += ../../lib/memset.c
 ramstage-y += ../../lib/memcpy.c
 ramstage-y += ../../lib/memmove.c
 ramstage-y += stage_entry.S
+ramstage-$(CONFIG_ARCH_SPINTABLE) += spintable.c spintable_asm.S
 ramstage-y += transition.c transition_asm.S
 
 rmodules_arm64-y += ../../lib/memset.c

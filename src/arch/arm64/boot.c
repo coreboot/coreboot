@@ -21,6 +21,7 @@
 #include <arch/lib_helpers.h>
 #include <arch/secmon.h>
 #include <arch/stages.h>
+#include <arch/spintable.h>
 #include <arch/transition.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -37,6 +38,9 @@ void arch_payload_run(const struct payload *payload)
 	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
 
 	secmon_run(payload_entry, cb_tables);
+
+	/* Start the other CPUs spinning. */
+	spintable_start();
 
 	/* If current EL is not EL3, jump to payload at same EL. */
 	if (current_el != EL3) {

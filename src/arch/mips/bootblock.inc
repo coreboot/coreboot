@@ -23,13 +23,13 @@
 .globl _start
 _start:
 	/* Set the stack pointer */
-	li	$sp, CONFIG_STACK_TOP
+	li	$sp, CONFIG_BOOTBLOCK_STACK_TOP
 
 	/*
 	 * Initialise the stack to a known value, used later to check for
 	 * overflow.
 	 */
-	li	$t0, CONFIG_STACK_BOTTOM
+	li	$t0, CONFIG_BOOTBLOCK_STACK_BOTTOM
 	addi	$t1, $sp, -4
 	li	$t2, 0xdeadbeef
 1:	sw	$t2, 0($t0)

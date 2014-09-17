@@ -57,15 +57,17 @@ config CBMEM_CONSOLE_PRERAM_BASE
 	  Allocate 4KB to the pre-ram console buffer, we should be able to use
 	  GRAM eventually and have a much larger buffer.
 
-config STACK_TOP
+config BOOTBLOCK_STACK_BOTTOM
+	hex
+	default 0x9b00e000
+	help
+	  This allocates 6KB of stack space. One needs to verify that this is
+	  sufficient.
+
+config BOOTBLOCK_STACK_TOP
 	hex
 	default CBMEM_CONSOLE_PRERAM_BASE
-
-config STACK_BOTTOM
-	hex
-	default 0x9b00f000
 	help
-	  Allocating 12KB for the stack, should be able to have more once GRAM
-	  is available.
-
+	  Bootblock stack starts immediately under the CBMEM console buffer,
+	  stack location might be changed by romstage.
 endif

@@ -18,6 +18,8 @@
 ##
 
 chip soc/nvidia/tegra132
+	register  "spintable_addr" = "0x80000008"
+
 	device cpu_cluster 0 on
 		device cpu 0 on end
 		device cpu 1 on end

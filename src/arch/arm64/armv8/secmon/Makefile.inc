@@ -32,6 +32,8 @@ secmon-c-ccopts += -I$(src)/arch/arm64/include/armv8/ -include $(src)/include/kc
 secmon-S-ccopts += -I$(src)/arch/arm64/include/armv8/ -include $(src)/include/kconfig.h -D__SECMON__
 
 secmon-y += secmon_init.c
+secmon-y += ../exception.c
+secmon-y += ../../cpu.c
 secmon-y += ../../transition_asm.S ../../transition.c
 
 ramstage-srcs += $(SECMON_SRC)

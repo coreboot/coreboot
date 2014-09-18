@@ -25,6 +25,7 @@
 #include <arch/lib_helpers.h>
 #include <arch/secmon.h>
 #include <arch/spintable.h>
+#include <arch/stages.h>
 #include <console/console.h>
 #include <rmodule.h>
 #include <string.h>
@@ -85,15 +86,22 @@ struct secmon_runit {
 static void secmon_start(void *arg)
 {
 	uint32_t scr;
+	secmon_entry_t entry;
 	struct secmon_params *p = NULL;
 	struct secmon_runit *r = arg;
 
+	entry = r->entry;
+
 	if (cpu_is_bsp())
 		p = &r->bsp_params;
-	else if (r->secondary_params.entry != NULL)
-		p = &r->secondary_params;
+	else {
+		entry = secondary_entry_point(entry);
+		if (r->secondary_params.entry != NULL)
+			p = &r->secondary_params;
+	}
 
-	printk(BIOS_DEBUG, "CPU%x entering secure monitor.\n", cpu_info()->id);
+	printk(BIOS_DEBUG, "CPU%x entering secure monitor %p.\n",
+		cpu_info()->id, entry);
 
 	/* We want to enforce the following policies:
 	 * NS bit is set for lower EL
@@ -102,7 +110,7 @@ static void secmon_start(void *arg)
 	scr |= SCR_NS;
 	raw_write_scr_el3(scr);
 
-	r->entry(p);
+	entry(p);
 }
 
 void secmon_run(void (*entry)(void *), void *cb_tables)

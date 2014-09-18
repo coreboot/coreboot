@@ -21,6 +21,7 @@
 
 #include <arch/barrier.h>
 #include <arch/io.h>
+#include <arch/exception.h>
 #include <arch/lib_helpers.h>
 #include <arch/secmon.h>
 #include <arch/transition.h>
@@ -28,14 +29,15 @@
 #include <rmodule.h>
 #include <stddef.h>
 
-static void secmon_wait(void)
+static void cpu_init(int bsp)
 {
-	/*
-	 * TODO(furquan): This should be a point of no-return. Once we have PSCI
-	 * support we need to respond to kernel calls
-	 */
-	while (1)
-		wfe();
+	struct cpu_info *ci = cpu_info();
+
+	ci->id = smp_processor_id();
+	cpu_mark_online(ci);
+
+	if (bsp)
+		cpu_set_bsp();
 }
 
 static void secmon_el3_init(void)
@@ -52,12 +54,12 @@ static void secmon_el3_init(void)
 	isb();
 }
 
-static void secmon_init(void *arg)
+static void secmon_init(struct secmon_params *params, int bsp)
 {
 	struct exc_state exc_state;
-	struct secmon_params *params = arg;
 
-	printk(BIOS_DEBUG, "ARM64: secmon in %s\n", __func__);
+	exception_hwinit();
+	cpu_init(bsp);
 
 	secmon_el3_init();
 
@@ -66,18 +68,29 @@ static void secmon_init(void *arg)
 	 * 1) If yes, we make an EL2 transition to that entry point
 	 * 2) If no, we just wait
 	 */
-	if (params == NULL) {
-		secmon_wait();
+	if (params != NULL) {
+		memset(&exc_state, 0, sizeof(exc_state));
+		exc_state.elx.spsr =
+			get_eret_el(params->elx_el, params->elx_mode);
+
+		transition_with_entry(params->entry, params->arg, &exc_state);
 	}
 
-	memset(&exc_state, 0, sizeof(exc_state));
-	exc_state.elx.spsr = get_eret_el(params->elx_el, params->elx_mode);
+	arch_cpu_wait_for_action();
+}
 
-	transition_with_entry(params->entry, params->arg, &exc_state);
+static void secmon_init_bsp(void *arg)
+{
+	secmon_init(arg, 1);
+}
+
+static void secmon_init_nonbsp(void *arg)
+{
+	secmon_init(arg, 0);
 }
 
 /*
  * This variable holds entry point for secmon init code. Once the stacks are
  * setup by the stage_entry.S, it jumps to c_entry.
  */
-void (*c_entry)(void*) = &secmon_init;
+void (*c_entry[2])(void*) = { &secmon_init_bsp, &secmon_init_nonbsp };

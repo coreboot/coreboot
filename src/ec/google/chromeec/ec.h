@@ -36,10 +36,15 @@ int google_ec_running_ro(void);
 void google_chromeec_init(void);
 #endif
 
+#ifdef __PRE_RAM__
 /* If recovery mode is enabled and EC is not running RO firmware reboot. */
 void google_chromeec_early_init(void);
+void google_chromeec_early_pd_init(void);
 /* Reboot if EC firmware is not expected type. */
 void google_chromeec_check_ec_image(int expected_type);
+void google_chromeec_check_pd_image(int expected_type);
+#endif
+
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
 u16 google_chromeec_get_board_version(void);
 u32 google_chromeec_get_events_b(void);
@@ -67,6 +72,7 @@ struct chromeec_command {
 	uint16_t    cmd_size_in;  /* size of command data */
 	uint16_t    cmd_size_out; /* expected size of command response in,
 				   * actual received size out */
+	int         cmd_dev_index;/* device index for passthru */
 };
 
 /*

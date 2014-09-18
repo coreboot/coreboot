@@ -55,6 +55,7 @@ int google_chromeec_kbbacklight(int percent)
 	cec_cmd.cmd_data_out = &rsp_backlight;
 	cec_cmd.cmd_size_in = sizeof(cmd_backlight);
 	cec_cmd.cmd_size_out = sizeof(rsp_backlight);
+	cec_cmd.cmd_dev_index = 0;
 	google_chromeec_command(&cec_cmd);
 	printk(BIOS_DEBUG, "Google Chrome set keyboard backlight: %x status (%x)\n",
 	       rsp_backlight.percent, cec_cmd.cmd_code);
@@ -87,6 +88,7 @@ static u32 google_chromeec_get_mask(u8 type)
 	cmd.cmd_size_in = sizeof(req);
 	cmd.cmd_data_out = &rsp;
 	cmd.cmd_size_out = sizeof(rsp);
+	cmd.cmd_dev_index = 0;
 
 	if (google_chromeec_command(&cmd) == 0)
 		return rsp.mask;
@@ -106,6 +108,7 @@ static int google_chromeec_set_mask(u8 type, u32 mask)
 	cmd.cmd_size_in = sizeof(req);
 	cmd.cmd_data_out = &rsp;
 	cmd.cmd_size_out = sizeof(rsp);
+	cmd.cmd_dev_index = 0;
 
 	return google_chromeec_command(&cmd);
 }
@@ -123,16 +126,18 @@ int google_chromeec_clear_events_b(u32 mask)
 }
 
 #ifndef __SMM__
+#ifdef __PRE_RAM__
 void google_chromeec_check_ec_image(int expected_type)
 {
 	struct chromeec_command cec_cmd;
-	struct ec_response_get_version cec_resp = {{0}};
+	struct ec_response_get_version cec_resp = { { 0 } };
 
 	cec_cmd.cmd_code = EC_CMD_GET_VERSION;
 	cec_cmd.cmd_version = 0;
 	cec_cmd.cmd_data_out = &cec_resp;
 	cec_cmd.cmd_size_in = 0;
 	cec_cmd.cmd_size_out = sizeof(cec_resp);
+	cec_cmd.cmd_dev_index = 0;
 	google_chromeec_command(&cec_cmd);
 
 	if (cec_cmd.cmd_code || cec_resp.current_image != expected_type) {
@@ -145,6 +150,7 @@ void google_chromeec_check_ec_image(int expected_type)
 		cec_cmd.cmd_data_in = &reboot_ec;
 		cec_cmd.cmd_size_in = sizeof(reboot_ec);
 		cec_cmd.cmd_size_out = 0; /* ignore response, if any */
+		cec_cmd.cmd_dev_index = 0;
 		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
 		post_code(0); /* clear current post code */
 		google_chromeec_command(&cec_cmd);
@@ -163,6 +169,46 @@ void google_chromeec_early_init(void)
 	}
 }
 
+void google_chromeec_check_pd_image(int expected_type)
+{
+	struct chromeec_command cec_cmd;
+	struct ec_response_get_version cec_resp = { { 0 } };
+
+	cec_cmd.cmd_code = EC_CMD_GET_VERSION;
+	cec_cmd.cmd_version = 0;
+	cec_cmd.cmd_data_out = &cec_resp;
+	cec_cmd.cmd_size_in = 0;
+	cec_cmd.cmd_size_out = sizeof(cec_resp);
+	cec_cmd.cmd_dev_index = 1; /* PD */
+	google_chromeec_command(&cec_cmd);
+
+	if (cec_cmd.cmd_code || cec_resp.current_image != expected_type) {
+		struct ec_params_reboot_ec reboot_ec;
+		/* Reboot the PD and make it come back in RO mode */
+		reboot_ec.cmd = EC_REBOOT_COLD;
+		reboot_ec.flags = 0;
+		cec_cmd.cmd_code = EC_CMD_REBOOT_EC;
+		cec_cmd.cmd_version = 0;
+		cec_cmd.cmd_data_in = &reboot_ec;
+		cec_cmd.cmd_size_in = sizeof(reboot_ec);
+		cec_cmd.cmd_size_out = 0; /* ignore response, if any */
+		cec_cmd.cmd_dev_index = 1; /* PD */
+		printk(BIOS_DEBUG, "Rebooting PD to RO mode\n");
+		google_chromeec_command(&cec_cmd);
+		udelay(1000);
+	}
+}
+
+/* Check for recovery mode and ensure PD is in RO */
+void google_chromeec_early_pd_init(void)
+{
+	/* If in recovery ensure PD is running RO firmware. */
+	if (recovery_mode_enabled()) {
+		google_chromeec_check_pd_image(EC_IMAGE_RO);
+	}
+}
+#endif
+
 u16 google_chromeec_get_board_version(void)
 {
 	struct chromeec_command cmd;
@@ -173,6 +219,7 @@ u16 google_chromeec_get_board_version(void)
 	cmd.cmd_size_in = 0;
 	cmd.cmd_size_out = sizeof(board_v);
 	cmd.cmd_data_out = &board_v;
+	cmd.cmd_dev_index = 0;
 
 	if (google_chromeec_command(&cmd) != 0)
 		return 0;
@@ -196,6 +243,7 @@ int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len)
 	cec_cmd.cmd_data_out = &rsp_vbnvcontext;
 	cec_cmd.cmd_size_in = sizeof(cmd_vbnvcontext);
 	cec_cmd.cmd_size_out = is_read ? sizeof(rsp_vbnvcontext) : 0;
+	cec_cmd.cmd_dev_index = 0;
 
 	cmd_vbnvcontext.op = is_read ? EC_VBNV_CONTEXT_OP_READ :
 					EC_VBNV_CONTEXT_OP_WRITE;
@@ -281,6 +329,7 @@ int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 	cmd.cmd_size_in = size + write_len;
 	cmd.cmd_data_out = r;
 	cmd.cmd_size_out = sizeof(*r) + read_len;
+	cmd.cmd_dev_index = 0;
 	rv = google_chromeec_command(&cmd);
 	if (rv != 0)
 		return rv;
@@ -384,6 +433,7 @@ int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode)
 	cmd.cmd_data_in = &set_mode;
 	cmd.cmd_size_out = 0;
 	cmd.cmd_data_out = NULL;
+	cmd.cmd_dev_index = 0;
 
 	return google_chromeec_command(&cmd);
 }
@@ -403,6 +453,7 @@ int google_chromeec_hello(void)
 	cec_cmd.cmd_data_out = &rsp_hello.out_data;
 	cec_cmd.cmd_size_in = sizeof(cmd_hello.in_data);
 	cec_cmd.cmd_size_out = sizeof(rsp_hello.out_data);
+	cec_cmd.cmd_dev_index = 0;
 	google_chromeec_command(&cec_cmd);
 	printk(BIOS_DEBUG, "Google Chrome EC: Hello got back %x status (%x)\n",
 	       rsp_hello.out_data, cec_cmd.cmd_code);
@@ -425,6 +476,7 @@ void google_chromeec_init(void)
 	cec_cmd.cmd_data_out = &cec_resp;
 	cec_cmd.cmd_size_in = 0;
 	cec_cmd.cmd_size_out = sizeof(cec_resp);
+	cec_cmd.cmd_dev_index = 0;
 	google_chromeec_command(&cec_cmd);
 
 	if (cec_cmd.cmd_code) {
@@ -451,6 +503,7 @@ void google_chromeec_init(void)
 		cec_cmd.cmd_data_in = &reboot_ec;
 		cec_cmd.cmd_size_in = sizeof(reboot_ec);
 		cec_cmd.cmd_size_out = 0; /* ignore response, if any */
+		cec_cmd.cmd_dev_index = 0;
 		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
 		post_code(0); /* clear current post code */
 		google_chromeec_command(&cec_cmd);

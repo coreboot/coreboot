@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+/* Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -57,18 +57,22 @@
 #define EC_MEMMAP_TEXT_MAX     8   /* Size of a string in the memory map */
 
 /* The offset address of each type of data in mapped memory. */
-#define EC_MEMMAP_TEMP_SENSOR      0x00 /* Temp sensors */
-#define EC_MEMMAP_FAN              0x10 /* Fan speeds */
-#define EC_MEMMAP_TEMP_SENSOR_B    0x18 /* Temp sensors (second set) */
-#define EC_MEMMAP_ID               0x20 /* 'E' 'C' */
+#define EC_MEMMAP_TEMP_SENSOR      0x00 /* Temp sensors 0x00 - 0x0f */
+#define EC_MEMMAP_FAN              0x10 /* Fan speeds 0x10 - 0x17 */
+#define EC_MEMMAP_TEMP_SENSOR_B    0x18 /* More temp sensors 0x18 - 0x1f */
+#define EC_MEMMAP_ID               0x20 /* 0x20 == 'E', 0x21 == 'C' */
 #define EC_MEMMAP_ID_VERSION       0x22 /* Version of data in 0x20 - 0x2f */
 #define EC_MEMMAP_THERMAL_VERSION  0x23 /* Version of data in 0x00 - 0x1f */
 #define EC_MEMMAP_BATTERY_VERSION  0x24 /* Version of data in 0x40 - 0x7f */
 #define EC_MEMMAP_SWITCHES_VERSION 0x25 /* Version of data in 0x30 - 0x33 */
 #define EC_MEMMAP_EVENTS_VERSION   0x26 /* Version of data in 0x34 - 0x3f */
-#define EC_MEMMAP_HOST_CMD_FLAGS   0x27 /* Host command interface flags */
-#define EC_MEMMAP_SWITCHES         0x30
-#define EC_MEMMAP_HOST_EVENTS      0x34
+#define EC_MEMMAP_HOST_CMD_FLAGS   0x27 /* Host cmd interface flags (8 bits) */
+/* Unused 0x28 - 0x2f */
+#define EC_MEMMAP_SWITCHES         0x30	/* 8 bits */
+/* Unused 0x31 - 0x33 */
+#define EC_MEMMAP_HOST_EVENTS      0x34 /* 32 bits */
+/* Reserve 0x38 - 0x3f for additional host event-related stuff */
+/* Battery values are all 32 bits */
 #define EC_MEMMAP_BATT_VOLT        0x40 /* Battery Present Voltage */
 #define EC_MEMMAP_BATT_RATE        0x44 /* Battery Present Rate */
 #define EC_MEMMAP_BATT_CAP         0x48 /* Battery Remaining Capacity */
@@ -77,11 +81,24 @@
 #define EC_MEMMAP_BATT_DVLT        0x54 /* Battery Design Voltage */
 #define EC_MEMMAP_BATT_LFCC        0x58 /* Battery Last Full Charge Capacity */
 #define EC_MEMMAP_BATT_CCNT        0x5c /* Battery Cycle Count */
+/* Strings are all 8 bytes (EC_MEMMAP_TEXT_MAX) */
 #define EC_MEMMAP_BATT_MFGR        0x60 /* Battery Manufacturer String */
 #define EC_MEMMAP_BATT_MODEL       0x68 /* Battery Model Number String */
 #define EC_MEMMAP_BATT_SERIAL      0x70 /* Battery Serial Number String */
 #define EC_MEMMAP_BATT_TYPE        0x78 /* Battery Type String */
-#define EC_MEMMAP_ALS              0x80 /* ALS readings in lux (uint16_t) */
+#define EC_MEMMAP_ALS              0x80 /* ALS readings in lux (2 X 16 bits) */
+/* Unused 0x84 - 0x8f */
+#define EC_MEMMAP_ACC_STATUS       0x90 /* Accelerometer status (8 bits )*/
+/* Unused 0x91 */
+#define EC_MEMMAP_ACC_DATA         0x92 /* Accelerometer data 0x92 - 0x9f */
+#define EC_MEMMAP_GYRO_DATA        0xa0 /* Gyroscope data 0xa0 - 0xa5 */
+/* Unused 0xa6 - 0xfe (remember, 0xff is NOT part of the memmap region) */
+
+
+/* Define the format of the accelerometer mapped memory status byte. */
+#define EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK  0x0f
+#define EC_MEMMAP_ACC_STATUS_BUSY_BIT        (1 << 4)
+#define EC_MEMMAP_ACC_STATUS_PRESENCE_BIT    (1 << 7)
 
 /* Number of temp sensors at EC_MEMMAP_TEMP_SENSOR */
 #define EC_TEMP_SENSOR_ENTRIES     16
@@ -206,7 +223,8 @@ enum ec_status {
 	EC_RES_OVERFLOW = 11,		/* Table / data overflow */
 	EC_RES_INVALID_HEADER = 12,     /* Header contains invalid data */
 	EC_RES_REQUEST_TRUNCATED = 13,  /* Didn't get the entire request */
-	EC_RES_RESPONSE_TOO_BIG = 14    /* Response was too big to handle */
+	EC_RES_RESPONSE_TOO_BIG = 14,   /* Response was too big to handle */
+	EC_RES_BUS_ERROR = 15           /* Communications bus error */
 };
 
 /*
@@ -253,6 +271,8 @@ enum host_event_code {
 	EC_HOST_EVENT_HANG_DETECT = 20,
 	/* Hang detect logic detected a hang and warm rebooted the AP */
 	EC_HOST_EVENT_HANG_REBOOT = 21,
+
+	/* PD MCU triggering host event */
 	EC_HOST_EVENT_PD_MCU = 22,
 
 	/*
@@ -484,7 +504,7 @@ struct ec_host_response {
 /*
  * Notes on commands:
  *
- * Each command is an 8-byte command value.  Commands which take params or
+ * Each command is an 16-bit command value.  Commands which take params or
  * return response data specify structs for that data.  If no struct is
  * specified, the command does not input or output data, respectively.
  * Parameter/response length is implicit in the structs.  Some underlying
@@ -935,7 +955,7 @@ struct rgb_s {
 /* List of tweakable parameters. NOTE: It's __packed so it can be sent in a
  * host command, but the alignment is the same regardless. Keep it that way.
  */
-struct lightbar_params {
+struct lightbar_params_v0 {
 	/* Timing */
 	int32_t google_ramp_up;
 	int32_t google_ramp_down;
@@ -969,32 +989,81 @@ struct lightbar_params {
 	struct rgb_s color[8];			/* 0-3 are Google colors */
 } __packed;
 
+struct lightbar_params_v1 {
+	/* Timing */
+	int32_t google_ramp_up;
+	int32_t google_ramp_down;
+	int32_t s3s0_ramp_up;
+	int32_t s0_tick_delay[2];		/* AC=0/1 */
+	int32_t s0a_tick_delay[2];		/* AC=0/1 */
+	int32_t s0s3_ramp_down;
+	int32_t s3_sleep_for;
+	int32_t s3_ramp_up;
+	int32_t s3_ramp_down;
+	int32_t tap_tick_delay;
+	int32_t tap_display_time;
+
+	/* Tap-for-battery params */
+	uint8_t tap_pct_red;
+	uint8_t tap_pct_green;
+	uint8_t tap_seg_min_on;
+	uint8_t tap_seg_max_on;
+	uint8_t tap_seg_osc;
+	uint8_t tap_idx[3];
+
+	/* Oscillation */
+	uint8_t osc_min[2];			/* AC=0/1 */
+	uint8_t osc_max[2];			/* AC=0/1 */
+	uint8_t w_ofs[2];			/* AC=0/1 */
+
+	/* Brightness limits based on the backlight and AC. */
+	uint8_t bright_bl_off_fixed[2];		/* AC=0/1 */
+	uint8_t bright_bl_on_min[2];		/* AC=0/1 */
+	uint8_t bright_bl_on_max[2];		/* AC=0/1 */
+
+	/* Battery level thresholds */
+	uint8_t battery_threshold[LB_BATTERY_LEVELS - 1];
+
+	/* Map [AC][battery_level] to color index */
+	uint8_t s0_idx[2][LB_BATTERY_LEVELS];	/* AP is running */
+	uint8_t s3_idx[2][LB_BATTERY_LEVELS];	/* AP is sleeping */
+
+	/* Color palette */
+	struct rgb_s color[8];			/* 0-3 are Google colors */
+} __packed;
+
 struct ec_params_lightbar {
 	uint8_t cmd;		      /* Command (see enum lightbar_command) */
 	union {
 		struct {
 			/* no args */
-		} dump, off, on, init, get_seq, get_params, version;
+		} dump, off, on, init, get_seq, get_params_v0, get_params_v1,
+			version, get_brightness, get_demo;
 
-		struct num {
+		struct {
 			uint8_t num;
-		} brightness, seq, demo;
+		} set_brightness, seq, demo;
 
-		struct reg {
+		struct {
 			uint8_t ctrl, reg, value;
 		} reg;
 
-		struct rgb {
+		struct {
 			uint8_t led, red, green, blue;
-		} rgb;
+		} set_rgb;
 
-		struct lightbar_params set_params;
+		struct {
+			uint8_t led;
+		} get_rgb;
+
+		struct lightbar_params_v0 set_params_v0;
+		struct lightbar_params_v1 set_params_v1;
 	};
 } __packed;
 
 struct ec_response_lightbar {
 	union {
-		struct dump {
+		struct {
 			struct {
 				uint8_t reg;
 				uint8_t ic0;
@@ -1002,20 +1071,26 @@ struct ec_response_lightbar {
 			} vals[23];
 		} dump;
 
-		struct get_seq {
+		struct  {
 			uint8_t num;
-		} get_seq;
+		} get_seq, get_brightness, get_demo;
 
-		struct lightbar_params get_params;
+		struct lightbar_params_v0 get_params_v0;
+		struct lightbar_params_v1 get_params_v1;
 
-		struct version {
+		struct {
 			uint32_t num;
 			uint32_t flags;
 		} version;
 
 		struct {
+			uint8_t red, green, blue;
+		} get_rgb;
+
+		struct {
 			/* no return params */
-		} off, on, init, brightness, seq, reg, rgb, demo, set_params;
+		} off, on, init, set_brightness, seq, reg, set_rgb,
+			demo, set_params_v0, set_params_v1;
 	};
 } __packed;
 
@@ -1025,15 +1100,20 @@ enum lightbar_command {
 	LIGHTBAR_CMD_OFF = 1,
 	LIGHTBAR_CMD_ON = 2,
 	LIGHTBAR_CMD_INIT = 3,
-	LIGHTBAR_CMD_BRIGHTNESS = 4,
+	LIGHTBAR_CMD_SET_BRIGHTNESS = 4,
 	LIGHTBAR_CMD_SEQ = 5,
 	LIGHTBAR_CMD_REG = 6,
-	LIGHTBAR_CMD_RGB = 7,
+	LIGHTBAR_CMD_SET_RGB = 7,
 	LIGHTBAR_CMD_GET_SEQ = 8,
 	LIGHTBAR_CMD_DEMO = 9,
-	LIGHTBAR_CMD_GET_PARAMS = 10,
-	LIGHTBAR_CMD_SET_PARAMS = 11,
+	LIGHTBAR_CMD_GET_PARAMS_V0 = 10,
+	LIGHTBAR_CMD_SET_PARAMS_V0 = 11,
 	LIGHTBAR_CMD_VERSION = 12,
+	LIGHTBAR_CMD_GET_BRIGHTNESS = 13,
+	LIGHTBAR_CMD_GET_RGB = 14,
+	LIGHTBAR_CMD_GET_DEMO = 15,
+	LIGHTBAR_CMD_GET_PARAMS_V1 = 16,
+	LIGHTBAR_CMD_SET_PARAMS_V1 = 17,
 	LIGHTBAR_NUM_CMDS
 };
 
@@ -1145,6 +1225,182 @@ enum ec_vboot_hash_status {
 #define EC_VBOOT_HASH_OFFSET_RW 0xfffffffd
 
 /*****************************************************************************/
+/*
+ * Motion sense commands. We'll make separate structs for sub-commands with
+ * different input args, so that we know how much to expect.
+ */
+#define EC_CMD_MOTION_SENSE_CMD 0x2B
+
+/* Motion sense commands */
+enum motionsense_command {
+	/*
+	 * Dump command returns all motion sensor data including motion sense
+	 * module flags and individual sensor flags.
+	 */
+	MOTIONSENSE_CMD_DUMP = 0,
+
+	/*
+	 * Info command returns data describing the details of a given sensor,
+	 * including enum motionsensor_type, enum motionsensor_location, and
+	 * enum motionsensor_chip.
+	 */
+	MOTIONSENSE_CMD_INFO = 1,
+
+	/*
+	 * EC Rate command is a setter/getter command for the EC sampling rate
+	 * of all motion sensors in milliseconds.
+	 */
+	MOTIONSENSE_CMD_EC_RATE = 2,
+
+	/*
+	 * Sensor ODR command is a setter/getter command for the output data
+	 * rate of a specific motion sensor in millihertz.
+	 */
+	MOTIONSENSE_CMD_SENSOR_ODR = 3,
+
+	/*
+	 * Sensor range command is a setter/getter command for the range of
+	 * a specified motion sensor in +/-G's or +/- deg/s.
+	 */
+	MOTIONSENSE_CMD_SENSOR_RANGE = 4,
+
+	/*
+	 * Setter/getter command for the keyboard wake angle. When the lid
+	 * angle is greater than this value, keyboard wake is disabled in S3,
+	 * and when the lid angle goes less than this value, keyboard wake is
+	 * enabled. Note, the lid angle measurement is an approximate,
+	 * un-calibrated value, hence the wake angle isn't exact.
+	 */
+	MOTIONSENSE_CMD_KB_WAKE_ANGLE = 5,
+
+	/* Number of motionsense sub-commands. */
+	MOTIONSENSE_NUM_CMDS
+};
+
+enum motionsensor_id {
+	EC_MOTION_SENSOR_ACCEL_BASE = 0,
+	EC_MOTION_SENSOR_ACCEL_LID = 1,
+	EC_MOTION_SENSOR_GYRO = 2,
+
+	/*
+	 * Note, if more sensors are added and this count changes, the padding
+	 * in ec_response_motion_sense dump command must be modified.
+	 */
+	EC_MOTION_SENSOR_COUNT = 3
+};
+
+/* List of motion sensor types. */
+enum motionsensor_type {
+	MOTIONSENSE_TYPE_ACCEL = 0,
+	MOTIONSENSE_TYPE_GYRO = 1,
+};
+
+/* List of motion sensor locations. */
+enum motionsensor_location {
+	MOTIONSENSE_LOC_BASE = 0,
+	MOTIONSENSE_LOC_LID = 1,
+};
+
+/* List of motion sensor chips. */
+enum motionsensor_chip {
+	MOTIONSENSE_CHIP_KXCJ9 = 0,
+	MOTIONSENSE_CHIP_LSM6DS0 = 1,
+};
+
+/* Module flag masks used for the dump sub-command. */
+#define MOTIONSENSE_MODULE_FLAG_ACTIVE (1<<0)
+
+/* Sensor flag masks used for the dump sub-command. */
+#define MOTIONSENSE_SENSOR_FLAG_PRESENT (1<<0)
+
+/*
+ * Send this value for the data element to only perform a read. If you
+ * send any other value, the EC will interpret it as data to set and will
+ * return the actual value set.
+ */
+#define EC_MOTION_SENSE_NO_VALUE -1
+
+struct ec_params_motion_sense {
+	uint8_t cmd;
+	union {
+		/* Used for MOTIONSENSE_CMD_DUMP. */
+		struct {
+			/* no args */
+		} dump;
+
+		/*
+		 * Used for MOTIONSENSE_CMD_EC_RATE and
+		 * MOTIONSENSE_CMD_KB_WAKE_ANGLE.
+		 */
+		struct {
+			/* Data to set or EC_MOTION_SENSE_NO_VALUE to read. */
+			int16_t data;
+		} ec_rate, kb_wake_angle;
+
+		/* Used for MOTIONSENSE_CMD_INFO. */
+		struct {
+			/* Should be element of enum motionsensor_id. */
+			uint8_t sensor_num;
+		} info;
+
+		/*
+		 * Used for MOTIONSENSE_CMD_SENSOR_ODR and
+		 * MOTIONSENSE_CMD_SENSOR_RANGE.
+		 */
+		struct {
+			/* Should be element of enum motionsensor_id. */
+			uint8_t sensor_num;
+
+			/* Rounding flag, true for round-up, false for down. */
+			uint8_t roundup;
+
+			uint16_t reserved;
+
+			/* Data to set or EC_MOTION_SENSE_NO_VALUE to read. */
+			int32_t data;
+		} sensor_odr, sensor_range;
+	};
+} __packed;
+
+struct ec_response_motion_sense {
+	union {
+		/* Used for MOTIONSENSE_CMD_DUMP. */
+		struct {
+			/* Flags representing the motion sensor module. */
+			uint8_t module_flags;
+
+			/* Flags for each sensor in enum motionsensor_id. */
+			uint8_t sensor_flags[EC_MOTION_SENSOR_COUNT];
+
+			/* Array of all sensor data. Each sensor is 3-axis. */
+			int16_t data[3*EC_MOTION_SENSOR_COUNT];
+		} dump;
+
+		/* Used for MOTIONSENSE_CMD_INFO. */
+		struct {
+			/* Should be element of enum motionsensor_type. */
+			uint8_t type;
+
+			/* Should be element of enum motionsensor_location. */
+			uint8_t location;
+
+			/* Should be element of enum motionsensor_chip. */
+			uint8_t chip;
+		} info;
+
+		/*
+		 * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR,
+		 * MOTIONSENSE_CMD_SENSOR_RANGE, and
+		 * MOTIONSENSE_CMD_KB_WAKE_ANGLE.
+		 */
+		struct {
+			/* Current value of the parameter queried. */
+			int32_t ret;
+		} ec_rate, sensor_odr, sensor_range, kb_wake_angle;
+	};
+} __packed;
+
+/*****************************************************************************/
 /* USB charging control commands */
 
 /* Set USB port charging mode */
@@ -1215,8 +1471,40 @@ struct ec_response_rtc {
 /*****************************************************************************/
 /* Port80 log access */
 
+/* Maximum entries that can be read/written in a single command */
+#define EC_PORT80_SIZE_MAX 32
+
 /* Get last port80 code from previous boot */
 #define EC_CMD_PORT80_LAST_BOOT 0x48
+#define EC_CMD_PORT80_READ 0x48
+
+enum ec_port80_subcmd {
+	EC_PORT80_GET_INFO = 0,
+	EC_PORT80_READ_BUFFER,
+};
+
+struct ec_params_port80_read {
+	uint16_t subcmd;
+	union {
+		struct {
+			uint32_t offset;
+			uint32_t num_entries;
+		} read_buffer;
+	};
+} __packed;
+
+struct ec_response_port80_read {
+	union {
+		struct {
+			uint32_t writes;
+			uint32_t history_size;
+			uint32_t last_boot;
+		} get_info;
+		struct {
+			uint16_t codes[EC_PORT80_SIZE_MAX];
+		} data;
+	};
+} __packed;
 
 struct ec_response_port80_last_boot {
 	uint16_t code;
@@ -1316,6 +1604,18 @@ struct ec_params_tmp006_set_calibration {
 	float b1;
 	float b2;
 } __packed;
+
+/* Read raw TMP006 data */
+#define EC_CMD_TMP006_GET_RAW 0x55
+
+struct ec_params_tmp006_get_raw {
+	uint8_t index;
+} __packed;
+
+struct ec_response_tmp006_get_raw {
+	int32_t t;  /* In 1/100 K */
+	int32_t v;  /* In nV */
+};
 
 /*****************************************************************************/
 /* MKBP - Matrix KeyBoard Protocol */
@@ -1515,9 +1815,39 @@ struct ec_params_switch_enable_backlight {
 
 /* Enable/disable WLAN/Bluetooth */
 #define EC_CMD_SWITCH_ENABLE_WIRELESS 0x91
+#define EC_VER_SWITCH_ENABLE_WIRELESS 1
 
-struct ec_params_switch_enable_wireless {
+/* Version 0 params; no response */
+struct ec_params_switch_enable_wireless_v0 {
 	uint8_t enabled;
+} __packed;
+
+/* Version 1 params */
+struct ec_params_switch_enable_wireless_v1 {
+	/* Flags to enable now */
+	uint8_t now_flags;
+
+	/* Which flags to copy from now_flags */
+	uint8_t now_mask;
+
+	/*
+	 * Flags to leave enabled in S3, if they're on at the S0->S3
+	 * transition.  (Other flags will be disabled by the S0->S3
+	 * transition.)
+	 */
+	uint8_t suspend_flags;
+
+	/* Which flags to copy from suspend_flags */
+	uint8_t suspend_mask;
+} __packed;
+
+/* Version 1 response */
+struct ec_response_switch_enable_wireless_v1 {
+	/* Flags to enable now */
+	uint8_t now_flags;
+
+	/* Flags to leave enabled in S3 */
+	uint8_t suspend_flags;
 } __packed;
 
 /*****************************************************************************/
@@ -1534,12 +1864,45 @@ struct ec_params_gpio_set {
 /* Get GPIO value */
 #define EC_CMD_GPIO_GET 0x93
 
+/* Version 0 of input params and response */
 struct ec_params_gpio_get {
 	char name[32];
 } __packed;
 struct ec_response_gpio_get {
 	uint8_t val;
 } __packed;
+
+/* Version 1 of input params and response */
+struct ec_params_gpio_get_v1 {
+	uint8_t subcmd;
+	union {
+		struct {
+			char name[32];
+		} get_value_by_name;
+		struct {
+			uint8_t index;
+		} get_info;
+	};
+} __packed;
+
+struct ec_response_gpio_get_v1 {
+	union {
+		struct {
+			uint8_t val;
+		} get_value_by_name, get_count;
+		struct {
+			uint8_t val;
+			char name[32];
+			uint32_t flags;
+		} get_info;
+	};
+} __packed;
+
+enum gpio_get_subcmd {
+	EC_GPIO_GET_BY_NAME = 0,
+	EC_GPIO_GET_COUNT = 1,
+	EC_GPIO_GET_INFO = 2,
+};
 
 /*****************************************************************************/
 /* I2C commands. Only available when flash write protect is unlocked. */
@@ -1609,12 +1972,19 @@ struct ec_params_charge_control {
 /*****************************************************************************/
 
 /*
- * Cut off battery power output if the battery supports.
+ * Cut off battery power immediately or after the host has shut down.
  *
- * For unsupported battery, just don't implement this command and lets EC
- * return EC_RES_INVALID_COMMAND.
+ * return EC_RES_INVALID_COMMAND if unsupported by a board/battery.
+ *	  EC_RES_SUCCESS if the command was successful.
+ *	  EC_RES_ERROR if the cut off command failed.
  */
 #define EC_CMD_BATTERY_CUT_OFF 0x99
+
+#define EC_BATTERY_CUTOFF_FLAG_AT_SHUTDOWN	(1 << 0)
+
+struct ec_params_battery_cutoff {
+	uint8_t flags;
+} __packed;
 
 /*****************************************************************************/
 /* USB port mux control. */
@@ -1679,9 +2049,6 @@ struct ec_response_power_info {
 /* I2C passthru command */
 
 #define EC_CMD_I2C_PASSTHRU 0x9e
-
-/* Slave address is 10 (not 7) bit */
-#define EC_I2C_FLAG_10BIT	(1 << 16)
 
 /* Read data; if not present, message is a write */
 #define EC_I2C_FLAG_READ	(1 << 15)
@@ -1769,14 +2136,79 @@ struct ec_params_hang_detect {
 } __packed;
 
 /*****************************************************************************/
-/* Debug commands for battery charging */
+/* Commands for battery charging */
 
 /*
- * Dump charge state machine context.
- *
- * Response is a binary dump of charge state machine context.
+ * This is the single catch-all host command to exchange data regarding the
+ * charge state machine (v2 and up).
  */
-#define EC_CMD_CHARGE_DUMP 0xa0
+#define EC_CMD_CHARGE_STATE 0xa0
+
+/* Subcommands for this host command */
+enum charge_state_command {
+	CHARGE_STATE_CMD_GET_STATE,
+	CHARGE_STATE_CMD_GET_PARAM,
+	CHARGE_STATE_CMD_SET_PARAM,
+	CHARGE_STATE_NUM_CMDS
+};
+
+/*
+ * Known param numbers are defined here. Ranges are reserved for board-specific
+ * params, which are handled by the particular implementations.
+ */
+enum charge_state_params {
+	CS_PARAM_CHG_VOLTAGE,	      /* charger voltage limit */
+	CS_PARAM_CHG_CURRENT,	      /* charger current limit */
+	CS_PARAM_CHG_INPUT_CURRENT,   /* charger input current limit */
+	CS_PARAM_CHG_STATUS,	      /* charger-specific status */
+	CS_PARAM_CHG_OPTION,	      /* charger-specific options */
+	/* How many so far? */
+	CS_NUM_BASE_PARAMS,
+
+	/* Range for CONFIG_CHARGER_PROFILE_OVERRIDE params */
+	CS_PARAM_CUSTOM_PROFILE_MIN = 0x10000,
+	CS_PARAM_CUSTOM_PROFILE_MAX = 0x1ffff,
+
+	/* Other custom param ranges go here... */
+};
+
+struct ec_params_charge_state {
+	uint8_t cmd;				/* enum charge_state_command */
+	union {
+		struct {
+			/* no args */
+		} get_state;
+
+		struct {
+			uint32_t param;		/* enum charge_state_param */
+		} get_param;
+
+		struct {
+			uint32_t param;		/* param to set */
+			uint32_t value;		/* value to set */
+		} set_param;
+	};
+} __packed;
+
+struct ec_response_charge_state {
+	union {
+		struct {
+			int ac;
+			int chg_voltage;
+			int chg_current;
+			int chg_input_current;
+			int batt_state_of_charge;
+		} get_state;
+
+		struct {
+			uint32_t value;
+		} get_param;
+		struct {
+			/* no return values */
+		} set_param;
+	};
+} __packed;
+
 
 /*
  * Set maximum battery charging current.
@@ -1830,6 +2262,108 @@ struct ec_params_sb_wr_block {
 	uint8_t reg;
 	uint16_t data[32];
 } __packed;
+
+
+/*****************************************************************************/
+/* Battery vendor parameters
+ *
+ * Get or set vendor-specific parameters in the battery. Implementations may
+ * differ between boards or batteries. On a set operation, the response
+ * contains the actual value set, which may be rounded or clipped from the
+ * requested value.
+ */
+
+#define EC_CMD_BATTERY_VENDOR_PARAM 0xb4
+
+enum ec_battery_vendor_param_mode {
+	BATTERY_VENDOR_PARAM_MODE_GET = 0,
+	BATTERY_VENDOR_PARAM_MODE_SET,
+};
+
+struct ec_params_battery_vendor_param {
+	uint32_t param;
+	uint32_t value;
+	uint8_t mode;
+} __packed;
+
+struct ec_response_battery_vendor_param {
+	uint32_t value;
+} __packed;
+
+/*****************************************************************************/
+/*
+ * Smart Battery Firmware Update Commands
+ */
+#define EC_CMD_SB_FW_UPDATE 0xb5
+
+enum ec_sb_fw_update_subcmd {
+	EC_SB_FW_UPDATE_PREPARE  = 0x0,
+	EC_SB_FW_UPDATE_INFO     = 0x1, /*query sb info */
+	EC_SB_FW_UPDATE_BEGIN    = 0x2, /*check if protected */
+	EC_SB_FW_UPDATE_WRITE    = 0x3, /*check if protected */
+	EC_SB_FW_UPDATE_END      = 0x4,
+	EC_SB_FW_UPDATE_STATUS   = 0x5,
+	EC_SB_FW_UPDATE_PROTECT  = 0x6,
+	EC_SB_FW_UPDATE_MAX      = 0x7,
+};
+
+#define SB_FW_UPDATE_CMD_WRITE_BLOCK_SIZE 32
+#define SB_FW_UPDATE_CMD_STATUS_SIZE 2
+#define SB_FW_UPDATE_CMD_INFO_SIZE 8
+
+struct ec_sb_fw_update_header {
+	uint16_t subcmd;  /* enum ec_sb_fw_update_subcmd */
+	uint16_t fw_id;   /* firmware id */
+} __packed;
+
+struct ec_params_sb_fw_update {
+	struct ec_sb_fw_update_header hdr;
+	union {
+		/* EC_SB_FW_UPDATE_PREPARE  = 0x0 */
+		/* EC_SB_FW_UPDATE_INFO     = 0x1 */
+		/* EC_SB_FW_UPDATE_BEGIN    = 0x2 */
+		/* EC_SB_FW_UPDATE_END      = 0x4 */
+		/* EC_SB_FW_UPDATE_STATUS   = 0x5 */
+		/* EC_SB_FW_UPDATE_PROTECT  = 0x6 */
+		struct {
+			/* no args */
+		} dummy;
+
+		/* EC_SB_FW_UPDATE_WRITE    = 0x3 */
+		struct {
+			uint8_t  data[SB_FW_UPDATE_CMD_WRITE_BLOCK_SIZE];
+		} write;
+	};
+} __packed;
+
+struct ec_response_sb_fw_update {
+	union {
+		/* EC_SB_FW_UPDATE_INFO     = 0x1 */
+		struct {
+			uint8_t data[SB_FW_UPDATE_CMD_INFO_SIZE];
+		} info;
+
+		/* EC_SB_FW_UPDATE_STATUS   = 0x5 */
+		struct {
+			uint8_t data[SB_FW_UPDATE_CMD_STATUS_SIZE];
+		} status;
+	};
+} __packed;
+
+/*
+ * Entering Verified Boot Mode Command
+ * Default mode is VBOOT_MODE_NORMAL if EC did not receive this command.
+ * Valid Modes are: normal, developer, and recovery.
+ */
+#define EC_CMD_ENTERING_MODE 0xb6
+
+struct ec_params_entering_mode {
+	int vboot_mode;
+} __packed;
+
+#define VBOOT_MODE_NORMAL    0
+#define VBOOT_MODE_DEVELOPER 1
+#define VBOOT_MODE_RECOVERY  2
 
 /*****************************************************************************/
 /* System commands */
@@ -2020,11 +2554,132 @@ struct ec_params_reboot_ec {
  * Header bytes greater than this indicate a later version. For example,
  * EC_CMD_VERSION0 + 1 means we are using version 1.
  *
- * The old EC interface must not use commands 0dc or higher.
+ * The old EC interface must not use commands 0xdc or higher.
  */
 #define EC_CMD_VERSION0 0xdc
 
+/*****************************************************************************/
+/*
+ * PD commands
+ *
+ * These commands are for PD MCU communication.
+ */
+
+/* EC to PD MCU exchange status command */
+#define EC_CMD_PD_EXCHANGE_STATUS 0x100
+
+/* Status of EC being sent to PD */
+struct ec_params_pd_status {
+	int8_t batt_soc; /* battery state of charge */
+} __packed;
+
+/* Status of PD being sent back to EC */
+#define PD_STATUS_HOST_EVENT (1 << 0)
+struct ec_response_pd_status {
+	uint32_t status;      /* PD MCU status */
+	uint32_t curr_lim_ma; /* input current limit */
+} __packed;
+
+/* Set USB type-C port role and muxes */
+#define EC_CMD_USB_PD_CONTROL 0x101
+
+enum usb_pd_control_role {
+	USB_PD_CTRL_ROLE_NO_CHANGE = 0,
+	USB_PD_CTRL_ROLE_TOGGLE_ON = 1, /* == AUTO */
+	USB_PD_CTRL_ROLE_TOGGLE_OFF = 2,
+	USB_PD_CTRL_ROLE_FORCE_SINK = 3,
+	USB_PD_CTRL_ROLE_FORCE_SOURCE = 4,
+	USB_PD_CTRL_ROLE_COUNT
+};
+
+enum usb_pd_control_mux {
+	USB_PD_CTRL_MUX_NO_CHANGE = 0,
+	USB_PD_CTRL_MUX_NONE = 1,
+	USB_PD_CTRL_MUX_USB = 2,
+	USB_PD_CTRL_MUX_DP = 3,
+	USB_PD_CTRL_MUX_DOCK = 4,
+	USB_PD_CTRL_MUX_AUTO = 5,
+	USB_PD_CTRL_MUX_COUNT
+};
+
+struct ec_params_usb_pd_control {
+	uint8_t port;
+	uint8_t role;
+	uint8_t mux;
+} __packed;
+
+struct ec_response_usb_pd_control {
+	uint8_t enabled;
+	uint8_t role;
+	uint8_t polarity;
+	uint8_t state;
+} __packed;
+
+/* Write USB-PD device FW */
+#define EC_CMD_USB_PD_FW_UPDATE 0x110
+
+enum usb_pd_fw_update_cmds {
+	USB_PD_FW_REBOOT,
+	USB_PD_FW_FLASH_ERASE,
+	USB_PD_FW_FLASH_WRITE,
+	USB_PD_FW_FLASH_HASH,
+};
+
+struct ec_params_usb_pd_fw_update {
+	uint8_t cmd;
+	uint8_t dev_id;
+	uint8_t port;
+	uint8_t reserved;  /* reserved */
+	uint32_t size;     /* Size to write in bytes */
+	/* Followed by data to write */
+} __packed;
+
+/* Write USB-PD Accessory RW_HASH table entry */
+#define EC_CMD_USB_PD_RW_HASH_ENTRY 0x111
+#define SHA1_DIGEST_SIZE 20
+struct ec_params_usb_pd_rw_hash_entry {
+	uint8_t dev_id;
+	union {
+		uint8_t b[SHA1_DIGEST_SIZE];
+		uint32_t w[SHA1_DIGEST_SIZE/4];
+	} dev_rw_hash;
+} __packed;
+
+/* Read USB-PD Accessory info */
+#define EC_CMD_USB_PD_DEV_INFO 0x112
+
+struct ec_params_usb_pd_info_request {
+	uint8_t port;
+} __packed;
+
 #endif  /* !__ACPI__ */
+
+/*****************************************************************************/
+/*
+ * Passthru commands
+ *
+ * Some platforms have sub-processors chained to each other.  For example.
+ *
+ *     AP <--> EC <--> PD MCU
+ *
+ * The top 2 bits of the command number are used to indicate which device the
+ * command is intended for.  Device 0 is always the device receiving the
+ * command; other device mapping is board-specific.
+ *
+ * When a device receives a command to be passed to a sub-processor, it passes
+ * it on with the device number set back to 0.  This allows the sub-processor
+ * to remain blissfully unaware of whether the command originated on the next
+ * device up the chain, or was passed through from the AP.
+ *
+ * In the above example, if the AP wants to send command 0x0002 to the PD MCU,
+ *     AP sends command 0x4002 to the EC
+ *     EC sends command 0x0002 to the PD MCU
+ *     EC forwards PD MCU response back to the AP
+ */
+
+/* Offset and max command number for sub-device n */
+#define EC_CMD_PASSTHRU_OFFSET(n) (0x4000 * (n))
+#define EC_CMD_PASSTHRU_MAX(n) (EC_CMD_PASSTHRU_OFFSET(n) + 0x3fff)
 
 /*****************************************************************************/
 /*

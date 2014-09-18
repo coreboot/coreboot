@@ -105,6 +105,8 @@ ENTRY(arm64_c_environment)
 
 	/* Get entry point by dereferencing c_entry. */
 	ldr	x1, 1f
+	/* Retrieve entry in c_entry array using  x26 as the index. */
+	adds	x1, x1, x26, lsl #3
 	ldr	x1, [x1]
 	/* Move back the arguments from x25 to x0 */
 	mov     x0, x25
@@ -114,14 +116,28 @@ ENTRY(arm64_c_environment)
 	.quad	c_entry
 ENDPROC(arm64_c_environment)
 
+/* The first 2 instructions are for BSP and secondary CPUs,
+ * respectively. x26 holds the index into c_entry array. */
+.macro split_bsp_path
+	b	2000f
+	b	2001f
+	2000:
+	mov	x26, #0
+	b	2002f
+	2001:
+	mov	x26, #1
+	2002:
+.endm
+
 ENTRY(__rmodule_entry)
+	split_bsp_path
 	/* Save the arguments to secmon in x25 */
-	mov    x25, x0
-	b      arm64_c_environment
+	mov	x25, x0
+	b	arm64_c_environment
 ENDPROC(__rmodule_entry)
 
-CPU_RESET_ENTRY(arm64_cpu_startup)
-        read_current x0, sctlr
+ENTRY(_arm64_cpu_startup)
+	read_current x0, sctlr
 	bic	x0, x0, #(1 << 25)	/* Little Endian */
 	bic	x0, x0, #(1 << 19)	/* XN not enforced */
 	bic	x0, x0, #(1 << 12)	/* Disable Instruction Cache */
@@ -129,8 +145,14 @@ CPU_RESET_ENTRY(arm64_cpu_startup)
 	write_current sctlr, x0, x1
 	isb
 	b	arm64_c_environment
+ENDPROC(_arm64_cpu_startup)
+
+CPU_RESET_ENTRY(arm64_cpu_startup)
+	split_bsp_path
+	b	_arm64_cpu_startup
 ENDPROC(arm64_cpu_startup)
 
 ENTRY(stage_entry)
-	b	arm64_cpu_startup
+	split_bsp_path
+	b	_arm64_cpu_startup
 ENDPROC(stage_entry)

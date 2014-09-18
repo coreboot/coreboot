@@ -24,13 +24,6 @@
 #include <arch/stages.h>
 #include "cpu-internal.h"
 
-/*
- * This variable holds entry point for CPUs starting up. Before the other
- * CPUs are brought up this value will change to provide the secondary
- * code path.
- */
-void (*c_entry)(void) = &arm64_init;
-
 void __attribute__((weak)) arm64_soc_init(void)
 {
 	/* Default weak implementation does nothing. */
@@ -54,7 +47,7 @@ static void seed_stack(void)
 		*slot++ = 0xdeadbeefdeadbeefULL;
 }
 
-void arm64_init(void)
+static void arm64_init(void)
 {
 	cpu_set_bsp();
 	seed_stack();
@@ -71,11 +64,15 @@ static void secondary_cpu_start(void)
 	arch_secondary_cpu_init();
 }
 
+/*
+ * This variable holds entry point for CPUs starting up. The first
+ * element is the BSP path, and the second is the non-BSP path.
+ */
+void (*c_entry[2])(void) = { &arm64_init, &secondary_cpu_start };
+
 extern void arm64_cpu_startup(void);
+
 void *prepare_secondary_cpu_startup(void)
 {
-	c_entry = &secondary_cpu_start;
-	dcache_clean_invalidate_by_mva(c_entry, sizeof(c_entry));
-
-	return &arm64_cpu_startup;
+	return secondary_entry_point(&arm64_cpu_startup);
 }

@@ -20,18 +20,30 @@
 #ifndef __ARCH_STAGES_H
 #define __ARCH_STAGES_H
 
+#include <stdint.h>
+
 extern void main(void);
 
 void stage_entry(void);
 void stage_exit(void *);
 void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size);
 
-/* C entry point for all arm64 stages. */
-void arm64_init(void);
-
 /* This function is called upon initial entry of each stage. It is called prior
  * to main(). That means all of the common infrastructure will most likely not
  * be available to be used (such as console). */
 void arm64_soc_init(void);
+
+/*
+ * Stages and rmodules have 2 entry points: BSP and non-BSP. Provided
+ * a pointer the correct non-BSP entry point will be returned. The
+ * first instruction is for BSP and the 2nd is for non-BSP. Instructions
+ * are all 32-bit on arm64.
+ */
+static inline void *secondary_entry_point(void *e)
+{
+	uintptr_t nonbsp = (uintptr_t)e;
+
+	return (void *)(nonbsp + sizeof(uint32_t));
+}
 
 #endif

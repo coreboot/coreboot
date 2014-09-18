@@ -61,4 +61,12 @@ config DRAM_SIZE_MB
 	int
 	default 2048
 
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x1
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x20
+
 endif #  BOARD_GOOGLE_VEYRON_PINKY

@@ -33,7 +33,7 @@
 #define RETRY_COUNT	3
 /* 100000us = 100ms */
 #define I2C_TIMEOUT_US	100000
-#define I2C_BUS_MAX 6
+#define I2C_BUS_MAX	6
 #define I2C_NOACK	2
 #define I2C_TIMEOUT	3
 
@@ -148,7 +148,7 @@ static int i2c_read(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 
 	writel(I2C_8BIT | segment.chip << 1 | 1, &reg_addr->i2c_mrxaddr);
 	writel(0, &reg_addr->i2c_mrxraddr);
-	con = I2C_MODE_TRX | I2C_EN;
+	con = I2C_MODE_TRX | I2C_EN | I2C_ACT2NAK;
 	while (bytes_remaining) {
 		bytes_transfered = MIN(bytes_remaining, 32);
 		bytes_remaining -= bytes_transfered;
@@ -175,7 +175,7 @@ static int i2c_read(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 			printk(BIOS_ERR, "I2C Read::Recv Data Timeout\n");
 			writel(0, &reg_addr->i2c_mrxcnt);
 			writel(0, &reg_addr->i2c_con);
-			return	I2C_TIMEOUT;
+			return I2C_TIMEOUT;
 		}
 
 		for (i = 0; i < words_transfered; i++) {
@@ -187,7 +187,7 @@ static int i2c_read(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 				*data++ = (rxdata >> (j * 8)) & 0xff;
 			}
 		}
-		con = I2C_MODE_RX | I2C_EN;
+		con = I2C_MODE_RX | I2C_EN | I2C_ACT2NAK;
 	}
 	return res;
 }
@@ -221,7 +221,7 @@ static int i2c_write(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 		}
 
 		writel(I2C_CLEANI, &reg_addr->i2c_ipd);
-		writel(I2C_EN | I2C_MODE_TX, &reg_addr->i2c_con);
+		writel(I2C_EN | I2C_MODE_TX | I2C_ACT2NAK, &reg_addr->i2c_con);
 		writel(bytes_transfered, &reg_addr->i2c_mtxcnt);
 
 		timeout = I2C_TIMEOUT_US;
@@ -240,7 +240,7 @@ static int i2c_write(struct rk3288_i2c_regs *reg_addr, struct i2c_seg segment)
 			printk(BIOS_ERR, "I2C Write::Send Data Timeout\n");
 			writel(0, &reg_addr->i2c_mtxcnt);
 			writel(0, &reg_addr->i2c_con);
-			return	I2C_TIMEOUT;
+			return I2C_TIMEOUT;
 		}
 
 		bytes_remaining -= bytes_transfered;
@@ -266,7 +266,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
 	int i;
 	int res = 0;
 	struct rk3288_i2c_regs *regs = i2c_bus[bus];
-	struct i2c_seg  *seg = segments;
+	struct i2c_seg *seg = segments;
 
 	for (i = 0; i < seg_count; i++, seg++) {
 		res = i2c_do_xfer(regs, *seg);

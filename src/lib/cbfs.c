@@ -144,7 +144,7 @@ void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
 	      "allocated=%zd, size=%zd, last_allocate=%zd\n",
 	    offset, count, buffer->allocated, buffer->size,
 	    buffer->last_allocate);
-	if (buffer->allocated + count >= buffer->size)
+	if (buffer->allocated + count > buffer->size)
 		return CBFS_MEDIA_INVALID_MAP_ADDRESS;
 	if (media->read(media, address, offset, count) != count) {
 		ERROR("simple_buffer: fail to read %zd bytes from 0x%zx\n",

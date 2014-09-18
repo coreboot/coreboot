@@ -27,6 +27,7 @@
 #include <soc/funitcfg.h>
 #include <soc/padconfig.h>
 #include <soc/nvidia/tegra132/clk_rst.h>
+#include <soc/nvidia/tegra/i2c.h>
 
 static const struct pad_config mmcpads[] = {
 	/* MMC4 (eMMC) */
@@ -45,6 +46,8 @@ static const struct pad_config mmcpads[] = {
 static const struct funit_cfg funits[] = {
 	/* MMC on SDMMC4 controller at 48MHz. */
 	FUNIT_CFG(SDMMC4, PLLP, 48000, mmcpads, ARRAY_SIZE(mmcpads)),
+	/* I2C6 for audio, temp sensor, etc. */
+	FUNIT_CFG(I2C6, PLLP, 400, NULL, 0),
 	FUNIT_CFG_USB(USBD),
 };
 
@@ -60,6 +63,10 @@ static void mainboard_init(device_t dev)
 	if (disp_clk != req_disp_clk)
 		printk(BIOS_DEBUG, "display clock: %u vs %u (r)\n", disp_clk,
 			req_disp_clk);
+
+	/* I2C6 bus (audio, etc.) */
+	soc_configure_i2c6pad();
+	i2c_init(I2C6_BUS);
 }
 
 static void mainboard_enable(device_t dev)

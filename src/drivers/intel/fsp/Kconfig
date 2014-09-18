@@ -63,6 +63,7 @@ config ENABLE_FSP_FAST_BOOT
 
 config ENABLE_MRC_CACHE
 	bool
+	default y if HAVE_ACPI_RESUME
 	default n
 	help
 	  Enabling this feature will cause MRC data to be cached in NV storage.

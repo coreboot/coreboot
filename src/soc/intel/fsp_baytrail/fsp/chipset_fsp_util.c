@@ -28,7 +28,11 @@
 #include <baytrail/pci_devs.h>
 #include <drivers/intel/fsp/fsp_util.h>
 #include "../chip.h"
+#include <arch/io.h>
 #include <baytrail/reset.h>
+#include <baytrail/pmc.h>
+#include <baytrail/acpi.h>
+#include <baytrail/iomap.h>
 
 #ifdef __PRE_RAM__
 #include <baytrail/romstage.h>
@@ -307,17 +311,42 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 		FSP_INFO_HEADER *fsp_ptr)
 {
 	FSP_INIT_RT_BUFFER *pFspRtBuffer = pFspInitParams->RtBufferPtr;
+	uint32_t prev_sleep_state;
+
+	/* Get previous sleep state but don't clear */
+	prev_sleep_state = chipset_prev_sleep_state(0);
+	printk(BIOS_INFO, "prev_sleep_state = S%d\n", prev_sleep_state);
 
 	/* Initialize the UPD Data */
 	GetUpdDefaultFromFsp (fsp_ptr, pFspRtBuffer->Common.UpdDataRgnPtr);
 	ConfigureDefaultUpdData(pFspRtBuffer->Common.UpdDataRgnPtr);
 	pFspInitParams->NvsBufferPtr = NULL;
-	pFspRtBuffer->Common.BootMode = BOOT_WITH_FULL_CONFIGURATION;
 
-#if IS_ENABLED(CONFIG_ENABLE_FSP_FAST_BOOT)
+#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
 	/* Find the fastboot cache that was saved in the ROM */
 	pFspInitParams->NvsBufferPtr = find_and_set_fastboot_cache();
 #endif
+
+	if (prev_sleep_state == 3) {
+		/* S3 resume */
+		if ( pFspInitParams->NvsBufferPtr == NULL) {
+			/* If waking from S3 and no cache then. */
+			printk(BIOS_WARNING, "No MRC cache found in S3 resume path.\n");
+			post_code(POST_RESUME_FAILURE);
+			/* Clear Sleep Type */
+			outl(inl(ACPI_BASE_ADDRESS + PM1_CNT) &
+				~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
+			/* Reboot */
+			printk(BIOS_WARNING,"Rebooting..\n" );
+			warm_reset();
+			/* Should not reach here.. */
+			die("Reboot System\n");
+		}
+		pFspRtBuffer->Common.BootMode = BOOT_ON_S3_RESUME;
+	} else {
+		/* Not S3 resume */
+		pFspRtBuffer->Common.BootMode = BOOT_WITH_FULL_CONFIGURATION;
+	}
 
 	return;
 }

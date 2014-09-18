@@ -24,6 +24,7 @@
 #include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/stages.h>
+#include <arch/early_variables.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
@@ -43,6 +44,51 @@
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
 #include <console/cbmem_console.h>
+
+/* Return 0, 3, 4 or 5 to indicate the previous sleep state. */
+uint32_t chipset_prev_sleep_state(uint32_t clear)
+{
+	/* Default to S0. */
+	uint32_t prev_sleep_state = 0;
+	uint32_t pm1_sts;
+	uint32_t pm1_cnt;
+	uint32_t gen_pmcon1;
+
+	/* Read Power State */
+	pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
+	pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
+
+	printk(BIOS_DEBUG, "PM1_STS = 0x%x PM1_CNT = 0x%x GEN_PMCON1 = 0x%x\n",
+		pm1_sts, pm1_cnt, gen_pmcon1);
+
+	if (pm1_sts & WAK_STS) {
+		switch ((pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
+	#if CONFIG_HAVE_ACPI_RESUME
+		case SLP_TYP_S3:
+			prev_sleep_state = 3;
+			break;
+	#endif
+		case SLP_TYP_S4:
+			prev_sleep_state = 4;
+			break;
+
+		case SLP_TYP_S5:
+			prev_sleep_state = 5;
+			break;
+		}
+		/* If set Clear SLP_TYP. */
+		if (clear == 1) {
+			outl(pm1_cnt & ~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
+		}
+	}
+
+	if (gen_pmcon1 & (PWR_FLR | SUS_PWR_FLR)) {
+		prev_sleep_state = 5;
+	}
+
+	return prev_sleep_state;
+}
 
 static void program_base_addresses(void)
 {
@@ -174,6 +220,8 @@ void * asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	int cbmem_was_initted;
 	void *cbmem_hob_ptr;
+	uint32_t prev_sleep_state;
+	struct romstage_handoff *handoff;
 
 #if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
 	tsc_t after_initram_time = rdtsc();
@@ -193,6 +241,10 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 
 	printk(BIOS_DEBUG, "FSP Status: 0x%0x\n", (u32)status);
 
+	/* Get previous sleep state again and clear */
+	prev_sleep_state = chipset_prev_sleep_state(1);
+	printk(BIOS_DEBUG, "%s: prev_sleep_state = S%d\n", __func__, prev_sleep_state);
+
 	report_platform_info();
 
 #if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
@@ -203,15 +255,25 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	late_mainboard_romstage_entry();
 	post_code(0x4c);
 
-	quick_ram_check();
-	post_code(0x4d);
+	/* if S3 resume skip ram check */
+	if (prev_sleep_state != 3) {
+		quick_ram_check();
+		post_code(0x4d);
+	}
 
-	cbmem_was_initted = !cbmem_recovery(0);
+	cbmem_was_initted = !cbmem_recovery(prev_sleep_state == 3);
 
 	/* Save the HOB pointer in CBMEM to be used in ramstage*/
 	cbmem_hob_ptr = cbmem_add (CBMEM_ID_HOB_POINTER, sizeof(*hob_list_ptr));
 	*(u32*)cbmem_hob_ptr = (u32)hob_list_ptr;
 	post_code(0x4e);
+
+	handoff = romstage_handoff_find_or_add();
+	if (handoff != NULL)
+		handoff->s3_resume = (prev_sleep_state == 3);
+	else
+		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+
 
 #if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
 	timestamp_init(base_time);

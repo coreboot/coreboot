@@ -23,6 +23,7 @@
 #define asmlinkage
 
 #if !defined(__PRE_RAM__)
+#include <arch/barrier.h>
 #include <device/device.h>
 
 enum {
@@ -67,6 +68,12 @@ struct cpu_info {
 struct cpu_info *cpu_info(void);
 
 extern struct cpu_info *bsp_cpu_info;
+extern struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
+
+static inline struct cpu_info *cpu_info_for_cpu(unsigned int id)
+{
+	return &cpu_infos[id];
+}
 
 /* Ran only by BSP at initial boot strapping. */
 static inline void cpu_set_bsp(void)
@@ -77,6 +84,16 @@ static inline void cpu_set_bsp(void)
 static inline int cpu_is_bsp(void)
 {
 	return cpu_info() == bsp_cpu_info;
+}
+
+static inline int cpu_online(struct cpu_info *ci)
+{
+	return load_acquire(&ci->online) != 0;
+}
+
+static inline void cpu_mark_online(struct cpu_info *ci)
+{
+	store_release(&ci->online, 1);
 }
 
 /* Control routines for starting CPUs. */
@@ -111,6 +128,9 @@ int arch_run_on_all_cpus_but_self(struct cpu_action *action);
 int arch_run_on_cpu_async(unsigned int cpu, struct cpu_action *action);
 int arch_run_on_all_cpus_async(struct cpu_action *action);
 int arch_run_on_all_cpus_but_self_async(struct cpu_action *action);
+
+/* Wait for actions to be perfomed. */
+void arch_cpu_wait_for_action(void);
 
 #endif /* !__PRE_RAM__ */
 

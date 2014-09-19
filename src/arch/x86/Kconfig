@@ -49,10 +49,6 @@ config RAMBASE
 	hex
 	default 0x100000
 
-config STACK_SIZE
-	hex
-	default 0x1000
-
 # This is something you almost certainly don't want to mess with.
 # How many SIPIs do we send when starting up APs and cores?
 # The answer in 2000 or so was '2'. Nowadays, on many systems,

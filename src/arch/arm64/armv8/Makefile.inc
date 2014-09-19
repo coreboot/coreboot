@@ -32,11 +32,10 @@ armv8_asm_flags = $(armv8_flags)
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV8_64),y)
 
-ifneq ($(CONFIG_ARM_BOOTBLOCK_CUSTOM),y)
+ifneq ($(CONFIG_ARM64_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.S
+bootblock-y += bootblock_simple.c
 endif
-bootblock-$(CONFIG_ARM_BOOTBLOCK_SIMPLE) += bootblock_simple.c
-bootblock-$(CONFIG_ARM_BOOTBLOCK_NORMAL) += bootblock_normal.c
 bootblock-y += cache.c
 bootblock-y += cpu.S
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c

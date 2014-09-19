@@ -311,6 +311,14 @@ source src/drivers/intel/fsp/Kconfig
 
 endmenu
 
+config CPU_HAS_BOOTBLOCK_INIT
+	bool
+	default n
+
+config MAINBOARD_HAS_BOOTBLOCK_INIT
+	bool
+	default n
+
 source src/device/Kconfig
 
 menu "Generic Drivers"
@@ -336,6 +344,10 @@ config RAMTOP
 config HEAP_SIZE
 	hex
 	default 0x4000
+
+config STACK_SIZE
+	hex
+	default 0x1000
 
 config MAX_CPUS
 	int

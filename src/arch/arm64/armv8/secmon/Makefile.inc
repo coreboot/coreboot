@@ -33,6 +33,7 @@ secmon-S-ccopts += -I$(src)/arch/arm64/include/armv8/ -include $(src)/include/kc
 
 secmon-y += secmon_init.c
 secmon-y += smc.c
+secmon-y += trampoline.S
 secmon-y += ../exception.c
 secmon-y += ../../cpu.c
 secmon-y += ../../transition_asm.S ../../transition.c

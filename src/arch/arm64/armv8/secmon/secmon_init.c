@@ -29,6 +29,7 @@
 #include <console/console.h>
 #include <rmodule.h>
 #include <stddef.h>
+#include "secmon.h"
 
 static void cpu_init(int bsp)
 {
@@ -62,7 +63,11 @@ static void secmon_init(struct secmon_params *params, int bsp)
 
 		transition_with_entry(params->entry, params->arg, &exc_state);
 	}
+	secmon_wait_for_action();
+}
 
+void secmon_wait_for_action(void)
+{
 	arch_cpu_wait_for_action();
 }
 

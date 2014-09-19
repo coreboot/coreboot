@@ -139,10 +139,6 @@ void secmon_run(void (*entry)(void *), void *cb_tables)
 
 	runit.bsp_params.entry = entry;
 	runit.bsp_params.arg = cb_tables;
-	runit.bsp_params.elx_el = EL2;
-	runit.bsp_params.elx_mode = SPSR_USE_L;
-	runit.secondary_params.elx_el = EL2;
-	runit.secondary_params.elx_mode = SPSR_USE_L;
 
 	spin_attrs = spintable_get_attributes();
 

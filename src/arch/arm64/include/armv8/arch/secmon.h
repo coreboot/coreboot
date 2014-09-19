@@ -27,8 +27,6 @@
 struct secmon_params {
 	void (*entry)(void *);
 	void *arg;
-	uint8_t elx_el;
-	uint8_t elx_mode;
 };
 
 void secmon_run(void (*entry)(void *), void *arg);

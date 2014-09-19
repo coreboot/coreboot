@@ -186,10 +186,22 @@ static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 1, 2);
 #define GPLL_MODE_SLOW	(0 << 12)
 #define GPLL_MODE_NORM	(1 << 12)
 
+#define NPLL_MODE_MSK	(0x3 << 14)
+#define NPLL_MODE_SLOW	(0 << 14)
+#define NPLL_MODE_NORM	(1 << 14)
+
 #define SOCSTS_DPLL_LOCK	(1 << 5)
 #define SOCSTS_APLL_LOCK	(1 << 6)
 #define SOCSTS_CPLL_LOCK	(1 << 7)
 #define SOCSTS_GPLL_LOCK	(1 << 8)
+#define SOCSTS_NPLL_LOCK	(1 << 9)
+
+#define VCO_MAX_KHZ	(2200 * (MHz/KHz))
+#define VCO_MIN_KHZ	(440 * (MHz/KHz))
+#define OUTPUT_MAX_KHZ	(2200 * (MHz/KHz))
+#define OUTPUT_MIN_KHZ	27500
+#define FREF_MAX_KHZ	(2200 * (MHz/KHz))
+#define FREF_MIN_KHZ	269
 
 static int rkclk_set_pll(u32 *pll_con, const struct pll_div *div)
 {
@@ -200,8 +212,8 @@ static int rkclk_set_pll(u32 *pll_con, const struct pll_div *div)
 	printk(BIOS_DEBUG, "Configuring PLL at %p with NF = %d, NR = %d and "
 	       "NO = %d (VCO = %uKHz, output = %uKHz)\n",
 	       pll_con, div->nf, div->nr, div->no, vco_khz, output_khz);
-	assert(vco_khz >= 440*(MHz/KHz) && vco_khz <= 2200*(MHz/KHz) &&
-	       output_khz >= 27500 && output_khz <= 2200*(MHz/KHz) &&
+	assert(vco_khz >= VCO_MIN_KHZ && vco_khz <= VCO_MAX_KHZ &&
+	       output_khz >= OUTPUT_MIN_KHZ && output_khz <= OUTPUT_MAX_KHZ &&
 	       (div->no == 1 || !(div->no % 2)));
 
 	/* enter rest */
@@ -317,7 +329,7 @@ void rkclk_init(void)
 
 }
 
-void rkclk_configure_cpu()
+void rkclk_configure_cpu(void)
 {
 	/* pll enter slow-mode */
 	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_SLOW),
@@ -490,4 +502,142 @@ void rkclk_configure_tsadc(unsigned int hz)
 	assert((div - 1 < 64) && (div * hz == 32 * KHz));
 	writel(RK_CLRSETBITS(0x3f << 0, (div - 1) << 0),
 			&cru_ptr->cru_clksel_con[2]);
+}
+
+static int pll_para_config(u32 freq_hz, struct pll_div *div)
+{
+	u32 ref_khz = OSC_HZ / KHz, nr, nf = 0;
+	u32 fref_khz;
+	u32 diff_khz, best_diff_khz;
+	const u32 max_nr = 1 << 6, max_nf = 1 << 12, max_no = 1 << 4;
+	u32 vco_khz;
+	u32 no = 1;
+	u32 freq_khz = freq_hz / KHz;
+
+	if (!freq_hz) {
+		printk(BIOS_ERR, "%s: the frequency can not be 0 Hz\n", __func__);
+		return -1;
+	}
+	no = div_round_up(VCO_MIN_KHZ, freq_khz);
+
+	/* only even divisors (and 1) are supported */
+	if (no > 1)
+		no = div_round_up(no, 2) * 2;
+	vco_khz = freq_khz * no;
+	if (vco_khz < VCO_MIN_KHZ || vco_khz > VCO_MAX_KHZ || no > max_no) {
+		printk(BIOS_ERR, "%s: Cannot find out a supported VCO"
+		" for Frequency (%uHz).\n", __func__, freq_hz);
+		return -1;
+	}
+	div->no = no;
+
+	best_diff_khz = vco_khz;
+	for (nr = 1; nr < max_nr && best_diff_khz; nr++) {
+		fref_khz = ref_khz / nr;
+		if (fref_khz < FREF_MIN_KHZ)
+			break;
+		if (fref_khz > FREF_MAX_KHZ)
+			continue;
+
+		nf = vco_khz / fref_khz;
+		if (nf >= max_nf)
+			continue;
+		diff_khz = vco_khz - nf * fref_khz;
+		if (nf + 1 < max_nf && diff_khz > fref_khz / 2) {
+			nf++;
+			diff_khz = fref_khz - diff_khz;
+		}
+
+		if (diff_khz >= best_diff_khz)
+			continue;
+
+		best_diff_khz = diff_khz;
+		div->nr = nr;
+		div->nf = nf;
+	}
+
+	if (best_diff_khz > 4 * (MHz/KHz)) {
+		printk(BIOS_ERR, "%s: Failed to match output frequency %u, "
+		       "difference is %u Hz,exceed 4MHZ\n", __func__, freq_hz,
+		       best_diff_khz * KHz);
+		return -1;
+	}
+
+	return 0;
+}
+
+void rkclk_configure_edp(void)
+{
+	/* rst edp */
+	writel(RK_SETBITS(1 << 15), &cru_ptr->cru_softrst_con[6]);
+	udelay(1);
+	writel(RK_CLRBITS(1 << 15), &cru_ptr->cru_softrst_con[6]);
+
+	/* clk_edp_24M source: 24M */
+	writel(RK_SETBITS(1 << 15), &cru_ptr->cru_clksel_con[28]);
+}
+
+void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz)
+{
+	u32 div;
+
+	/* vop aclk source clk: cpll */
+	div = CPLL_HZ / aclk_hz;
+	assert((div - 1 < 64) && (div * aclk_hz == CPLL_HZ));
+
+	switch (vop_id) {
+	case 0:
+		writel(RK_CLRSETBITS(3 << 6 | 0x1f << 0,
+					0 << 6 | (div - 1) << 0),
+					&cru_ptr->cru_clksel_con[31]);
+		break;
+
+	case 1:
+		writel(RK_CLRSETBITS(3 << 14 | 0x1f << 8,
+					0 << 14 | (div - 1) << 8),
+					&cru_ptr->cru_clksel_con[31]);
+		break;
+	}
+}
+
+
+int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz)
+{
+	struct pll_div npll_config = {0};
+
+	if (pll_para_config(dclk_hz, &npll_config))
+		return -1;
+
+	/* npll enter slow-mode */
+	writel(RK_CLRSETBITS(NPLL_MODE_MSK, NPLL_MODE_SLOW),
+		&cru_ptr->cru_mode_con);
+
+	rkclk_set_pll(&cru_ptr->cru_npll_con[0], &npll_config);
+
+	/* waiting for pll lock */
+	while (1) {
+		if (readl(&rk3288_grf->soc_status[1]) & SOCSTS_NPLL_LOCK)
+			break;
+		udelay(1);
+	}
+
+	/* npll enter normal-mode */
+	writel(RK_CLRSETBITS(NPLL_MODE_MSK, NPLL_MODE_NORM),
+		&cru_ptr->cru_mode_con);
+
+	/* vop dclk source clk: npll,dclk_div: 1 */
+	switch (vop_id) {
+	case 0:
+		writel(RK_CLRSETBITS(0xff << 8 | 3 << 0,
+					0 << 8 | 2 << 0),
+					&cru_ptr->cru_clksel_con[27]);
+		break;
+
+	case 1:
+		writel(RK_CLRSETBITS(0xff << 8 | 3 << 6,
+					0 << 8 | 2 << 6),
+					&cru_ptr->cru_clksel_con[29]);
+		break;
+	}
+	return 0;
 }

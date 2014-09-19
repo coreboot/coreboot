@@ -120,25 +120,25 @@ static void configure_codec(void)
 	rkclk_configure_i2s(12288000);
 }
 
-static void configure_lcd(void)
+static void configure_vop(void)
 {
 	writel(IOMUX_LCDC, &rk3288_grf->iomux_lcdc);
 
+	/* lcdc(vop) iodomain select 1.8V */
+	writel(RK_SETBITS(1 << 0), &rk3288_grf->io_vsel);
+
 	switch (board_id()) {
 	case 0:
-		rk808_configure_ldo(PMIC_BUS, 4, 1800);	/* VCC18_LCD */
-		rk808_configure_ldo(PMIC_BUS, 6, 1000);	/* VCC10_LCD */
-		gpio_output(GPIO(7, B, 7), 1);		/* LCD_EN */
+		rk808_configure_ldo(PMIC_BUS, 4, 1800); /* VCC18_LCD */
+		rk808_configure_ldo(PMIC_BUS, 6, 1000); /* VCC10_LCD */
+		gpio_output(GPIO(7, B, 7), 1); /* LCD_EN */
 		break;
 	default:
-		rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD */
+		rk808_configure_switch(PMIC_BUS, 2, 1); /* VCC18_LCD */
 		rk808_configure_ldo(PMIC_BUS, 7, 2500); /* VCC10_LCD_PWREN_H */
-		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
+		rk808_configure_switch(PMIC_BUS, 1, 1); /* VCC33_LCD */
 		break;
 	}
-
-	gpio_output(GPIO(7, A, 0), 0);			/* LCDC_BL */
-	gpio_output(GPIO(7, A, 2), 1);			/* BL_EN */
 }
 
 static void mainboard_init(device_t dev)
@@ -153,7 +153,7 @@ static void mainboard_init(device_t dev)
 	configure_sdmmc();
 	configure_emmc();
 	configure_codec();
-	configure_lcd();
+	configure_vop();
 }
 
 static void mainboard_enable(device_t dev)

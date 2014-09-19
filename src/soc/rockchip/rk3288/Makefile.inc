@@ -66,6 +66,9 @@ ramstage-y += gpio.c
 ramstage-y += media.c
 ramstage-y += rk808.c
 ramstage-y += pwm.c
+ramstage-y += vop.c
+ramstage-y += edp.c
+ramstage-y += display.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 CPPFLAGS_common += -Isrc/soc/rockchip/rk3288/include/

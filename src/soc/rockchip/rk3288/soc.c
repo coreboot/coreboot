@@ -23,23 +23,34 @@
 #include <delay.h>
 #include <device/device.h>
 #include <gpio.h>
+#include <soc/display.h>
 #include <soc/soc.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "chip.h"
 
-static void soc_enable(device_t dev)
+static void soc_init(device_t dev)
 {
+	unsigned long fb_size = FB_SIZE_KB * KiB;
+	u32 lcdbase = get_fb_base_kb() * KiB;
+
 	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB);
+	mmio_resource(dev, 1, lcdbase / KiB, fb_size / KiB);
+
+	if (vboot_skip_display_init())
+		printk(BIOS_INFO, "Skipping display init.\n");
+	else
+		rk_display_init(dev, lcdbase, fb_size);
 }
 
 static struct device_operations soc_ops = {
 	.read_resources   = DEVICE_NOOP,
 	.set_resources    = DEVICE_NOOP,
-	.enable_resources = soc_enable,
-	.init             = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = soc_init,
 	.scan_bus         = 0,
 };
 

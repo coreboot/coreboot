@@ -27,6 +27,7 @@
 #define APLL_HZ		(1800*MHz)
 #define GPLL_HZ		(594*MHz)
 #define CPLL_HZ		(384*MHz)
+#define NPLL_HZ		(384*MHz)
 
 #define PD_BUS_ACLK_HZ	(148500*KHz)
 #define PD_BUS_HCLK_HZ	(148500*KHz)
@@ -44,5 +45,7 @@ void rkclk_configure_ddr(unsigned int hz);
 void rkclk_configure_i2s(unsigned int hz);
 void rkclk_configure_cpu(void);
 void rkclk_configure_tsadc(unsigned int hz);
-
+void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz);
+int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz);
+void rkclk_configure_edp(void);
 #endif	/* __SOC_ROCKCHIP_RK3288_CLOCK_H__ */

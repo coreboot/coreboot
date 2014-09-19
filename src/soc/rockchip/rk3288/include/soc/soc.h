@@ -27,7 +27,7 @@
 #define RK_SETBITS(set) RK_CLRSETBITS(0, set)
 #define RK_CLRBITS(clr) RK_CLRSETBITS(clr, 0)
 
-#define FB_SIZE_KB  4096
+#define FB_SIZE_KB  8192
 #define RAM_BASE_KB ((uintptr_t)_dram >> 10)
 #define RAM_SIZE_KB (CONFIG_DRAM_SIZE_MB << 10UL)
 

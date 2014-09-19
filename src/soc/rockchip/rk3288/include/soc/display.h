@@ -17,19 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_CHIP_H__
-#define __SOC_ROCKCHIP_RK3288_CHIP_H__
+#ifndef __SOC_ROCKCHIP_RK3288_DISPLAY_H__
+#define __SOC_ROCKCHIP_RK3288_DISPLAY_H__
 
-#include <soc/gpio.h>
+void rk_display_init(device_t dev, u32 lcdbase,
+		unsigned long fb_size);
 
-struct soc_rockchip_rk3288_config {
-	u32 vop_id;
-	gpio_t lcd_bl_pwm_gpio;
-	gpio_t lcd_bl_en_gpio;
-	u32 lcd_power_on_udelay;
-	u32 bl_power_on_udelay;
-	u32 bl_pwm_to_enable_udelay;
-	u32 framebuffer_bits_per_pixel;
-};
+#endif
 
-#endif /* __SOC_ROCKCHIP_RK3288_CHIP_H__ */
+
+
+

@@ -23,11 +23,10 @@
 #include <arch/io.h>
 #include <arch/exception.h>
 #include <arch/lib_helpers.h>
+#include <arch/psci.h>
 #include <arch/secmon.h>
 #include <arch/smc.h>
-#include <arch/transition.h>
 #include <console/console.h>
-#include <rmodule.h>
 #include <stddef.h>
 #include "secmon.h"
 
@@ -44,25 +43,16 @@ static void cpu_init(int bsp)
 
 static void secmon_init(struct secmon_params *params, int bsp)
 {
-	struct exc_state exc_state;
-
 	exception_hwinit();
 	cpu_init(bsp);
 
 	smc_init();
+	psci_init();
 
-	/*
-	 * Check if the arg is non-NULL
-	 * 1) If yes, we make an EL2 transition to that entry point
-	 * 2) If no, we just wait
-	 */
-	if (params != NULL) {
-		memset(&exc_state, 0, sizeof(exc_state));
-		exc_state.elx.spsr =
-			get_eret_el(params->elx_el, params->elx_mode);
+	/* Turn on CPU if params are not NULL. */
+	if (params != NULL)
+		psci_turn_on_self(params->entry, params->arg);
 
-		transition_with_entry(params->entry, params->arg, &exc_state);
-	}
 	secmon_wait_for_action();
 }
 

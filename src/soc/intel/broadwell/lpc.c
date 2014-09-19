@@ -207,6 +207,9 @@ static const struct reg_script pch_misc_init_script[] = {
 	/* Clear status bits to prevent unexpected wake */
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x3310, 0x0000002f),
 	REG_MMIO_RMW32(RCBA_BASE_ADDRESS + 0x3f02, ~0x0000000f, 0),
+	/* Enable PCIe Releaxed Order */
+	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x2314, (1 << 31) | (1 << 7)),
+	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x1114, (1 << 15) | (1 << 14)),
 	/* Setup SERIRQ, enable continuous mode */
 	REG_PCI_OR8(SERIRQ_CNTL, (1 << 7) | (1 << 6)),
 #if !CONFIG_SERIRQ_CONTINUOUS_MODE

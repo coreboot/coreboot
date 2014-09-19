@@ -73,41 +73,55 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 	return dest;
 }
 
-void * cbfs_load_stage(struct cbfs_media *media, const char *name)
+void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset)
 {
-	struct cbfs_stage *stage = (struct cbfs_stage *)
-	cbfs_get_file_content(media, name, CBFS_TYPE_STAGE, NULL);
-	/* this is a mess. There is no ntohll. */
-	/* for now, assume compatible byte order until we solve this. */
-	uintptr_t entry;
-	uint32_t final_size;
+	struct cbfs_stage stage;
 
-	if (stage == NULL)
-		return (void *) -1;
+	if (cbfs_read(media, &stage, offset, sizeof(stage)) != sizeof(stage)) {
+		ERROR("ERROR: failed to read stage header\n");
+		return (void *)-1;
+	}
 
-	LOG("loading stage %s @ 0x%llx (%d bytes), entry @ 0x%llx\n",
-			name,
-			stage->load, stage->memlen,
-			stage->entry);
-
-	final_size = cbfs_decompress(stage->compression,
-				     ((unsigned char *) stage) +
-				     sizeof(struct cbfs_stage),
-				     (void *) (uintptr_t) stage->load,
-				     stage->len);
-	if (!final_size)
-		return (void *) -1;
+	LOG("loading stage @ 0x%llx (%d bytes), entry @ 0x%llx\n",
+	    stage.load, stage.memlen, stage.entry);
 
 	/* Stages rely the below clearing so that the bss is initialized. */
-	memset((void *)((uintptr_t)stage->load + final_size), 0,
-	       stage->memlen - final_size);
+	memset((void *)(uintptr_t)stage.load, 0, stage.memlen);
 
-	DEBUG("stage loaded.\n");
+	if (stage.compression == CBFS_COMPRESS_NONE) {
+		if (cbfs_read(media, (void *)(uintptr_t)stage.load,
+			      offset + sizeof(stage), stage.len) != stage.len) {
+			ERROR("ERROR: Reading stage failed.\n");
+			return (void *)-1;
+		}
+	} else {
+		void *data = media->map(media, offset + sizeof(stage),
+					stage.len);
+		if (data == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
+			ERROR("ERROR: Mapping stage failed.\n");
+			return (void *)-1;
+		}
+		if (!cbfs_decompress(stage.compression, data,
+				    (void *)(uintptr_t)stage.load, stage.len))
+			return (void *)-1;
+		media->unmap(media, data);
+	}
 
-	entry = stage->entry;
-	// entry = ntohll(stage->entry);
+	DEBUG("stage loaded\n");
 
-	return (void *) entry;
+	return (void *)(uintptr_t)stage.entry;
+}
+
+void *cbfs_load_stage(struct cbfs_media *media, const char *name)
+{
+	struct cbfs_file file;
+	ssize_t offset;
+
+	offset = cbfs_locate_file(media, &file, name);
+	if (offset < 0 || file.type != CBFS_TYPE_STAGE)
+		return (void *)-1;
+
+	return cbfs_load_stage_by_offset(media, offset);
 }
 
 /* Simple buffer */

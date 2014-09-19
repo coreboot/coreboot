@@ -222,9 +222,10 @@ void *vboot_load_stage(int stage_index,
 		       struct vboot_region *fw_main,
 		       struct vboot_components *fw_info)
 {
-	struct cbfs_stage *stage;
+	struct cbfs_media default_media, *media = &default_media;
 	uintptr_t fc_addr;
 	uint32_t fc_size;
+	void *entry;
 
 	if (stage_index >= fw_info->num_components) {
 		printk(BIOS_INFO, "invalid stage index\n");
@@ -239,27 +240,15 @@ void *vboot_load_stage(int stage_index,
 		return NULL;
 	}
 
-	/* Loading to cbfs cache. This stage data must be retained until it's
-	 * decompressed. */
-	stage = vboot_get_region(fc_addr, fc_size, NULL);
+	init_default_cbfs_media(media);
 
-	if (stage == NULL) {
-		printk(BIOS_INFO, "failed to load a stage\n");
-		return NULL;
-	}
-
-	/* Stages rely the below clearing so that the bss is initialized. */
-	memset((void *) (uintptr_t)stage->load, 0, stage->memlen);
-
-	if (cbfs_decompress(stage->compression,
-			    (unsigned char *)stage + sizeof(*stage),
-			    (void *) (uintptr_t) stage->load,
-			    stage->len)) {
-		printk(BIOS_INFO, "failed to decompress a stage\n");
-		return NULL;
-	}
-
-	return (void *)(uintptr_t)stage->entry;
+	/* we're making cbfs access offset outside of the region managed by
+	 * cbfs. this works because cbfs_load_stage_by_offset does not check
+	 * the offset. */
+	entry = cbfs_load_stage_by_offset(media, fc_addr);
+	if (entry == (void *)-1)
+		entry = NULL;
+	return entry;
 }
 
 struct vb2_working_data * const vboot_get_working_data(void)

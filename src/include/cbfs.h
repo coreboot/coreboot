@@ -55,6 +55,7 @@
 void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 			  uint16_t device, void * dest);
 void *cbfs_load_stage(struct cbfs_media *media, const char *name);
+void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset);
 
 /* Simple buffer for streaming media. */
 struct cbfs_simple_buffer {

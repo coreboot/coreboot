@@ -84,7 +84,7 @@ int smc_register_range(uint32_t min, uint32_t max, int (*h)(struct smc_call *))
 
 static int smc_cleanup(struct exc_state *state, struct smc_call *smc, int ret)
 {
-	memcpy(&state->regs.x, &smc->results, ARRAY_SIZE(smc->results));
+	memcpy(&state->regs.x, &smc->results, sizeof(smc->results));
 
 	return ret;
 }
@@ -103,15 +103,15 @@ static int smc_handler(struct exc_state *state, uint64_t vector_id)
 	uint32_t esr;
 	struct smc_range *r;
 
-	memcpy(&smc->args, &state->regs.x, ARRAY_SIZE(smc->args));
-	memcpy(&smc->results, &state->regs.x, ARRAY_SIZE(smc->results));
+	memcpy(&smc->args, &state->regs.x, sizeof(smc->args));
+	memcpy(&smc->results, &state->regs.x, sizeof(smc->results));
 
 	esr = raw_read_esr_el3();
 	exception_class = (esr >> 26) & 0x3f;
 
 	/* No support for 32-bit SMC calls. */
 	if (exception_class == EC_SMC32)
-		smc_return_with_error(state, smc);
+		return smc_return_with_error(state, smc);
 
 	/* Check to ensure this is an SMC from aarch64. */
 	if (exception_class != EC_SMC64)
@@ -119,7 +119,7 @@ static int smc_handler(struct exc_state *state, uint64_t vector_id)
 
 	/* Ensure immediate value is 0. */
 	if ((esr & 0xffff) != 0)
-		smc_return_with_error(state, smc);
+		return smc_return_with_error(state, smc);
 
 	r = smc_handler_by_function(smc_function_id(smc));
 

@@ -47,9 +47,6 @@ enum {
 	CLK_X_SET = 5,
 };
 
-#define CLK_RST_REG(field_) \
-	&(((struct clk_rst_ctlr *)TEGRA_CLK_RST_BASE)->field_)
-
 #define CLK_SET_REGS(x)					\
 	{						\
 		CLK_RST_REG(clk_enb_##x##_set),		\

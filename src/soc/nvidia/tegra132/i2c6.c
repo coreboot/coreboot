@@ -53,8 +53,7 @@ static void remove_clamps(int id)
 
 static void enable_sor_periph_clocks(void)
 {
-	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_HOST1X);
-	setbits_le32(&clk_rst->clk_out_enb_x, CLK_X_DPAUX);
+	clock_enable(CLK_L_HOST1X, 0, 0, 0, 0, CLK_X_DPAUX);
 
 	/* Give clocks time to stabilize. */
 	udelay(IO_STABILIZATION_DELAY);
@@ -62,8 +61,7 @@ static void enable_sor_periph_clocks(void)
 
 static void disable_sor_periph_clocks(void)
 {
-	clrbits_le32(&clk_rst->clk_out_enb_l, CLK_L_HOST1X);
-	clrbits_le32(&clk_rst->clk_out_enb_x, CLK_X_DPAUX);
+	clock_disable(CLK_L_HOST1X, 0, 0, 0, 0, CLK_X_DPAUX);
 
 	/* Give clocks time to stabilize. */
 	udelay(IO_STABILIZATION_DELAY);
@@ -71,8 +69,7 @@ static void disable_sor_periph_clocks(void)
 
 static void unreset_sor_periphs(void)
 {
-	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_HOST1X);
-	clrbits_le32(&clk_rst->rst_dev_x, CLK_X_DPAUX);
+	clock_clr_reset(CLK_L_HOST1X, 0, 0, 0, 0, CLK_X_DPAUX);
 }
 
 void soc_configure_i2c6pad(void)
@@ -108,5 +105,5 @@ void soc_configure_i2c6pad(void)
 
 	/* Stop Host1X/DPAUX clocks and reset Host1X */
 	disable_sor_periph_clocks();
-	setbits_le32(&clk_rst->rst_dev_l, CLK_L_HOST1X);
+	clock_set_reset_l(CLK_L_HOST1X);
 }

@@ -226,6 +226,7 @@ enum {
 #define CLOCK_PLL_STABLE_DELAY_US 300
 
 #define IO_STABILIZATION_DELAY (2)
+#define LOGIC_STABILIZATION_DELAY (2)
 
 /* Calculate clock fractional divider value from ref and target frequencies.
  * This is for a U7.1 format. This is not well written up in the book and
@@ -301,6 +302,71 @@ static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
 #define TEGRA_PLLD_KHZ   (925000)
 #define TEGRA_PLLU_KHZ   (960000)
 
+#define clock_enable(l, h, u, v, w, x)					\
+	do {								\
+		u32 bits[DEV_CONFIG_BLOCKS] = {l, h, u, v, w, x};	\
+		clock_enable_regs(bits);				\
+	} while (0)
+
+#define clock_disable(l, h, u, v, w, x)					\
+	do {								\
+		u32 bits[DEV_CONFIG_BLOCKS] = {l, h, u, v, w, x};	\
+		clock_disable_regs(bits);				\
+	} while (0)
+
+#define clock_set_reset(l, h, u, v, w, x)				\
+	do {								\
+		u32 bits[DEV_CONFIG_BLOCKS] = {l, h, u, v, w, x};	\
+		clock_set_reset_regs(bits);				\
+	} while (0)
+
+#define clock_clr_reset(l, h, u, v, w, x)				\
+	do {								\
+		u32 bits[DEV_CONFIG_BLOCKS] = {l, h, u, v, w, x};	\
+		clock_clr_reset_regs(bits);				\
+	} while (0)
+
+#define clock_enable_l(l)		clock_enable(l, 0, 0, 0, 0, 0)
+#define clock_enable_h(h)		clock_enable(0, h, 0, 0, 0, 0)
+#define clock_enable_u(u)		clock_enable(0, 0, u, 0, 0, 0)
+#define clock_enable_v(v)		clock_enable(0, 0, 0, v, 0, 0)
+#define clock_enable_w(w)		clock_enable(0, 0, 0, 0, w, 0)
+#define clock_enable_x(x)		clock_enable(0, 0, 0, 0, 0, x)
+
+#define clock_disable_l(l)		clock_disable(l, 0, 0, 0, 0, 0)
+#define clock_disable_h(h)		clock_disable(0, h, 0, 0, 0, 0)
+#define clock_disable_u(u)		clock_disable(0, 0, u, 0, 0, 0)
+#define clock_disable_v(v)		clock_disable(0, 0, 0, v, 0, 0)
+#define clock_disable_w(w)		clock_disable(0, 0, 0, 0, w, 0)
+#define clock_disable_x(x)		clock_disable(0, 0, 0, 0, 0, x)
+
+#define clock_set_reset_l(l)		clock_set_reset(l, 0, 0, 0, 0, 0)
+#define clock_set_reset_h(h)		clock_set_reset(0, h, 0, 0, 0, 0)
+#define clock_set_reset_u(u)		clock_set_reset(0, 0, u, 0, 0, 0)
+#define clock_set_reset_v(v)		clock_set_reset(0, 0, 0, v, 0, 0)
+#define clock_set_reset_w(w)		clock_set_reset(0, 0, 0, 0, w, 0)
+#define clock_set_reset_x(x)		clock_set_reset(0, 0, 0, 0, 0, x)
+
+#define clock_clr_reset_l(l)		clock_clr_reset(l, 0, 0, 0, 0, 0)
+#define clock_clr_reset_h(h)		clock_clr_reset(0, h, 0, 0, 0, 0)
+#define clock_clr_reset_u(u)		clock_clr_reset(0, 0, u, 0, 0, 0)
+#define clock_clr_reset_v(v)		clock_clr_reset(0, 0, 0, v, 0, 0)
+#define clock_clr_reset_w(w)		clock_clr_reset(0, 0, 0, 0, w, 0)
+#define clock_clr_reset_x(x)		clock_clr_reset(0, 0, 0, 0, 0, x)
+
+#define clock_enable_clear_reset_l(l)			\
+	clock_enable_clear_reset(l, 0, 0, 0, 0, 0)
+#define clock_enable_clear_reset_h(h)			\
+	clock_enable_clear_reset(0, h, 0, 0, 0, 0)
+#define clock_enable_clear_reset_u(u)			\
+	clock_enable_clear_reset(0, 0, u, 0, 0, 0)
+#define clock_enable_clear_reset_v(v)			\
+	clock_enable_clear_reset(0, 0, 0, v, 0, 0)
+#define clock_enable_clear_reset_w(w)			\
+	clock_enable_clear_reset(0, 0, 0, 0, w, 0)
+#define clock_enable_clear_reset_x(x)			\
+	clock_enable_clear_reset(0, 0, 0, 0, 0, x)
+
 int clock_get_osc_khz(void);
 int clock_get_pll_input_khz(void);
 u32 clock_display(u32 frequency);
@@ -311,8 +377,10 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 		 u32 same_freq);
 void clock_cpu0_config(void);
 void clock_halt_avp(void);
-void clock_enable(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
-void clock_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
+void clock_enable_regs(u32 bits[DEV_CONFIG_BLOCKS]);
+void clock_disable_regs(u32 bits[DEV_CONFIG_BLOCKS]);
+void clock_set_reset_regs(u32 bits[DEV_CONFIG_BLOCKS]);
+void clock_clr_reset_regs(u32 bits[DEV_CONFIG_BLOCKS]);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
 void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg, u32* rst_dev_clr_reg);
 void clock_reset_l(u32 l);

@@ -151,7 +151,7 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 clk_enb_h_set;		/* _CLK_ENB_H_SET           0x328 */
 	u32 clk_enb_h_clr;		/* _CLK_ENB_H_CLR           0x32c */
 	u32 clk_enb_u_set;		/* _CLK_ENB_U_SET           0x330 */
-	u32 clk_enb_u_clk;		/* _CLK_ENB_U_CLR           0x334 */
+	u32 clk_enb_u_clr;		/* _CLK_ENB_U_CLR           0x334 */
 	u32 _rsv22;			/*                          0x338 */
 	u32 ccplex_pg_sm_ovrd;		/* _CCPLEX_PG_SM_OVRD,      0x33c */
 	u32 rst_cpu_cmplx_set;		/* _RST_CPU_CMPLX_SET,      0x340 */
@@ -300,6 +300,12 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 clk_src_i2c6;		/* _CLK_SOURCE_I2C6,        0x65c */
 };
 check_member(clk_rst_ctlr, clk_src_i2c6, 0x65C);
+
+#define CLK_RST_REG(field_)					\
+	(&(((struct clk_rst_ctlr *)TEGRA_CLK_RST_BASE)->field_))
+
+/* L, H, U, V, W, X */
+#define DEV_CONFIG_BLOCKS               6
 
 #define TEGRA_DEV_L			0
 #define TEGRA_DEV_H			1

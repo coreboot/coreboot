@@ -23,6 +23,7 @@
 #include <cbfs.h>
 #include <timer.h>
 #include <soc/addressmap.h>
+#include <soc/clock.h>
 #include <soc/cpu.h>
 #include <soc/romstage.h>
 #include "clk_rst.h"
@@ -109,16 +110,8 @@ int ccplex_load_mts(void)
 
 static void enable_cpu_clocks(void)
 {
-	struct clk_rst_ctlr * const clk_rst = CLK_RST_REGS;
-	uint32_t reg;
-
-	reg = read32(&clk_rst->clk_enb_l_set);
-	reg |= CLK_ENB_CPU;
-	write32(reg, &clk_rst->clk_enb_l_set);
-
-	reg = read32(&clk_rst->clk_enb_v_set);
-	reg |= SET_CLK_ENB_CPUG_ENABLE | SET_CLK_ENB_CPULP_ENABLE;
-	write32(reg, &clk_rst->clk_enb_v_set);
+	clock_enable(CLK_ENB_CPU, 0, 0, SET_CLK_ENB_CPUG_ENABLE |
+		     SET_CLK_ENB_CPULP_ENABLE, 0, 0);
 }
 
 static void enable_cpu_power_partitions(void)

@@ -403,9 +403,8 @@ void clock_early_uart(void)
 	write32(CLK_SRC_DEV_ID(UARTA, CLK_M) << CLK_SOURCE_SHIFT |
 		CLK_UART_DIV_OVERRIDE |
 		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900), &clk_rst->clk_src_uarta);
-	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_UARTA);
-	udelay(2);
-	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_UARTA);
+
+	clock_enable_clear_reset_l(CLK_L_UARTA);
 }
 
 /* Enable output clock (CLK1~3) for external peripherals. */
@@ -593,36 +592,70 @@ void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg,
 	writel(val, rst_dev_clr_reg);
 }
 
-void clock_enable(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
+static u32 * const clk_enb_set_arr[DEV_CONFIG_BLOCKS] = {
+	CLK_RST_REG(clk_enb_l_set),
+	CLK_RST_REG(clk_enb_h_set),
+	CLK_RST_REG(clk_enb_u_set),
+	CLK_RST_REG(clk_enb_v_set),
+	CLK_RST_REG(clk_enb_w_set),
+	CLK_RST_REG(clk_enb_x_set),
+};
+
+static u32 * const clk_enb_clr_arr[DEV_CONFIG_BLOCKS] = {
+	CLK_RST_REG(clk_enb_l_clr),
+	CLK_RST_REG(clk_enb_h_clr),
+	CLK_RST_REG(clk_enb_u_clr),
+	CLK_RST_REG(clk_enb_v_clr),
+	CLK_RST_REG(clk_enb_w_clr),
+	CLK_RST_REG(clk_enb_x_clr),
+};
+
+static u32 * const rst_dev_set_arr[DEV_CONFIG_BLOCKS] = {
+	CLK_RST_REG(rst_dev_l_set),
+	CLK_RST_REG(rst_dev_h_set),
+	CLK_RST_REG(rst_dev_u_set),
+	CLK_RST_REG(rst_dev_v_set),
+	CLK_RST_REG(rst_dev_w_set),
+	CLK_RST_REG(rst_dev_x_set),
+};
+
+static u32 * const rst_dev_clr_arr[DEV_CONFIG_BLOCKS] = {
+	CLK_RST_REG(rst_dev_l_clr),
+	CLK_RST_REG(rst_dev_h_clr),
+	CLK_RST_REG(rst_dev_u_clr),
+	CLK_RST_REG(rst_dev_v_clr),
+	CLK_RST_REG(rst_dev_w_clr),
+	CLK_RST_REG(rst_dev_x_clr),
+};
+
+static void clock_write_regs(u32 * const regs[DEV_CONFIG_BLOCKS],
+			     u32 bits[DEV_CONFIG_BLOCKS])
 {
-	if (l)
-		writel(l, &clk_rst->clk_enb_l_set);
-	if (h)
-		writel(h, &clk_rst->clk_enb_h_set);
-	if (u)
-		writel(u, &clk_rst->clk_enb_u_set);
-	if (v)
-		writel(v, &clk_rst->clk_enb_v_set);
-	if (w)
-		writel(w, &clk_rst->clk_enb_w_set);
-	if (x)
-		writel(x, &clk_rst->clk_enb_x_set);
+	int i = 0;
+
+	for (; i < DEV_CONFIG_BLOCKS; i++)
+		if (bits[i])
+			writel(bits[i], regs[i]);
 }
 
-void clock_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
+void clock_enable_regs(u32 bits[DEV_CONFIG_BLOCKS])
 {
-	if (l)
-		writel(l, &clk_rst->rst_dev_l_clr);
-	if (h)
-		writel(h, &clk_rst->rst_dev_h_clr);
-	if (u)
-		writel(u, &clk_rst->rst_dev_u_clr);
-	if (v)
-		writel(v, &clk_rst->rst_dev_v_clr);
-	if (w)
-		writel(w, &clk_rst->rst_dev_w_clr);
-	if (x)
-		writel(x, &clk_rst->rst_dev_x_clr);
+	clock_write_regs(clk_enb_set_arr, bits);
+}
+
+void clock_disable_regs(u32 bits[DEV_CONFIG_BLOCKS])
+{
+	clock_write_regs(clk_enb_clr_arr, bits);
+}
+
+void clock_set_reset_regs(u32 bits[DEV_CONFIG_BLOCKS])
+{
+	clock_write_regs(rst_dev_set_arr, bits);
+}
+
+void clock_clr_reset_regs(u32 bits[DEV_CONFIG_BLOCKS])
+{
+	clock_write_regs(rst_dev_clr_arr, bits);
 }
 
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
@@ -632,47 +665,48 @@ void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
 	/* Give clocks time to stabilize. */
 	udelay(IO_STABILIZATION_DELAY);
 
-	clock_clear_reset(l, h, u, v, w, x);
+	clock_clr_reset(l, h, u, v, w, x);
+}
+
+static void clock_reset_dev(u32 *setaddr, u32 *clraddr, u32 bit)
+{
+	writel(bit, setaddr);
+	udelay(LOGIC_STABILIZATION_DELAY);
+	writel(bit, clraddr);
 }
 
 void clock_reset_l(u32 bit)
 {
-	writel(bit, &clk_rst->rst_dev_l_set);
-	udelay(1);
-	writel(bit, &clk_rst->rst_dev_l_clr);
+	clock_reset_dev(CLK_RST_REG(rst_dev_l_set), CLK_RST_REG(rst_dev_l_clr),
+			bit);
 }
 
 void clock_reset_h(u32 bit)
 {
-	writel(bit, &clk_rst->rst_dev_h_set);
-	udelay(1);
-	writel(bit, &clk_rst->rst_dev_h_clr);
+	clock_reset_dev(CLK_RST_REG(rst_dev_h_set), CLK_RST_REG(rst_dev_h_clr),
+			bit);
 }
 
 void clock_reset_u(u32 bit)
 {
-	writel(bit, &clk_rst->rst_dev_u_set);
-	udelay(1);
-	writel(bit, &clk_rst->rst_dev_u_clr);
+	clock_reset_dev(CLK_RST_REG(rst_dev_u_set), CLK_RST_REG(rst_dev_u_clr),
+			bit);
 }
 
 void clock_reset_v(u32 bit)
 {
-	writel(bit, &clk_rst->rst_dev_v_set);
-	udelay(1);
-	writel(bit, &clk_rst->rst_dev_v_clr);
+	clock_reset_dev(CLK_RST_REG(rst_dev_v_set), CLK_RST_REG(rst_dev_v_clr),
+			bit);
 }
 
 void clock_reset_w(u32 bit)
 {
-	writel(bit, &clk_rst->rst_dev_w_set);
-	udelay(1);
-	writel(bit, &clk_rst->rst_dev_w_clr);
+	clock_reset_dev(CLK_RST_REG(rst_dev_w_set), CLK_RST_REG(rst_dev_w_clr),
+			bit);
 }
 
 void clock_reset_x(u32 bit)
 {
-	writel(bit, &clk_rst->rst_dev_x_set);
-	udelay(1);
-	writel(bit, &clk_rst->rst_dev_x_clr);
+	clock_reset_dev(CLK_RST_REG(rst_dev_x_set), CLK_RST_REG(rst_dev_x_clr),
+			bit);
 }

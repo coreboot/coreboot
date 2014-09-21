@@ -31,7 +31,6 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include "hda_verb.h"
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>

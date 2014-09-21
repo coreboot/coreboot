@@ -31,7 +31,6 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include "hda_verb.h"
 #include "onboard.h"
 #include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>

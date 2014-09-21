@@ -245,7 +245,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 		PWDA, 1,
 	}
 
-	OperationRegion (GVAR, SystemMemory, 0xBADEAFFE, 0x100)
+	External(\NVSA)
+
+	OperationRegion (GVAR, SystemMemory, \NVSA, 0x100)
 	Field (GVAR, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0x00),

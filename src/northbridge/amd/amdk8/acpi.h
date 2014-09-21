@@ -21,6 +21,6 @@
 #define AMDK8_ACPI_H
 #include <arch/acpigen.h>
 
-int k8acpi_write_vars(void);
+void k8acpi_write_vars(void);
 
 #endif

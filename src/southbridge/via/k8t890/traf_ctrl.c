@@ -21,6 +21,9 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
+#include <cpu/amd/model_fxx_powernow.h>
 #include "k8t890.h"
 
 extern unsigned long log2(unsigned long x);
@@ -122,11 +125,24 @@ static void traf_ctrl_enable_k8t890(struct device *dev)
 	pci_write_config8(dev, 0x60, 0x80 | reg);
 }
 
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+
+static void southbridge_acpi_fill_ssdt_generator(void) {
+	amd_model_fxx_generate_powernow(0, 0, 0);
+	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
+}
+
+#endif
+
 static const struct device_operations traf_ctrl_ops_m = {
 	.read_resources		= apic_mmconfig_read_resources,
 	.set_resources		= mmconfig_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= traf_ctrl_enable_k8m890,
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
+#endif
 	.ops_pci		= 0,
 };
 
@@ -135,10 +151,34 @@ static const struct device_operations traf_ctrl_ops_t = {
 	.set_resources		= mmconfig_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= traf_ctrl_enable_k8t890,
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+#endif
 	.ops_pci		= 0,
 };
 
 /* K8X800 chipsets have no APIC; no 800 PCI ids here */
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	device_t dev;
+	struct resource *res;
+
+	dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_K8T890CE_5, 0);
+	if (!dev)
+		dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_K8T890CF_5, 0);
+	if (!dev)
+		dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_K8M890CE_5, 0);
+	if (!dev)
+		return current;
+
+	res = find_resource(dev, K8T890_MMCONFIG_MBAR);
+	if (res) {
+		current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)
+				current, res->base, 0x0, 0x0, 0xff);
+	}
+	return current;
+}
 
 
 static const struct pci_driver northbridge_driver_t __pci_driver = {

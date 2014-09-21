@@ -26,7 +26,16 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <arch/acpi.h>
 #include "mcp55.h"
+
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Not implemented */
+	return current;
+}
+#endif
 
 static struct device_operations ht_ops = {
 	.read_resources   = pci_dev_read_resources,

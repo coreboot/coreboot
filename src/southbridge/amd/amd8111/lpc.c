@@ -11,7 +11,13 @@
 #include <pc80/isa-dma.h>
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
+#include <cpu/amd/model_fxx_powernow.h>
+#endif
 #include <stdlib.h>
+#include <string.h>
 #include "amd8111.h"
 
 #define NMI_OFF 0
@@ -112,6 +118,26 @@ static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+
+extern u16 pm_base;
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
+}
+
+static void southbridge_acpi_fill_ssdt_generator(void) {
+#if CONFIG_SET_FIDVID
+	amd_model_fxx_generate_powernow(pm_base + 0x10, 6, 1);
+	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
+#endif
+}
+
+#endif
+
+
 static struct pci_operations lops_pci = {
 	.set_subsystem = lpci_set_subsystem,
 };
@@ -121,6 +147,10 @@ static struct device_operations lpc_ops  = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = lpc_init,
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
+#endif
 	.scan_bus         = scan_static_bus,
 	.enable           = amd8111_enable,
 	.ops_pci          = &lops_pci,

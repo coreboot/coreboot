@@ -30,6 +30,7 @@
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include <arch/acpi.h>
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -316,6 +317,9 @@ static struct device_operations lpc_ops = {
 	.read_resources   = ck804_lpc_read_resources,
 	.set_resources    = ck804_lpc_set_resources,
 	.enable_resources = ck804_lpc_enable_resources,
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+#endif
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,
 	// .enable        = ck804_enable,
@@ -345,6 +349,9 @@ static struct device_operations lpc_slave_ops = {
 	.read_resources   = ck804_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+#endif
 	.init             = lpc_slave_init,
 	// .enable        = ck804_enable,
 	.ops_pci          = &ck804_pci_ops,

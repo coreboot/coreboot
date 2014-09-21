@@ -16,6 +16,10 @@
 #include <string.h>
 #include <lib.h>
 #include <cpu/cpu.h>
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#include <arch/acpi.h>
+#include "acpi.h"
+#endif
 
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/mtrr.h>
@@ -580,10 +584,42 @@ static void mcf0_control_init(struct device *dev)
 #endif
 }
 
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+static unsigned long northbridge_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp)
+{
+	unsigned long current;
+	acpi_srat_t *srat;
+	acpi_slit_t *slit;
+
+	current = start;
+
+	current = ALIGN(current, 16);
+	srat = (acpi_srat_t *) current;
+	printk(BIOS_DEBUG, "ACPI:    * SRAT @ %p\n", srat);
+	acpi_create_srat(srat);
+	current += srat->header.length;
+	acpi_add_table(rsdp, srat);
+
+	/* SLIT */
+	current = ALIGN(current, 16);
+	slit = (acpi_slit_t *) current;
+	printk(BIOS_DEBUG, "ACPI:    * SLIT @ %p\n", slit);
+	acpi_create_slit(slit);
+	current+=slit->header.length;
+	acpi_add_table(rsdp,slit);
+
+	return current;
+}
+#endif
+
 static struct device_operations northbridge_operations = {
 	.read_resources	  = amdk8_read_resources,
 	.set_resources	  = amdk8_set_resources,
 	.enable_resources = pci_dev_enable_resources,
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+	.acpi_fill_ssdt_generator = k8acpi_write_vars,
+	.write_acpi_tables = northbridge_write_acpi_tables,
+#endif
 	.init		  = mcf0_control_init,
 	.scan_bus	  = amdk8_scan_chains,
 	.enable		  = 0,

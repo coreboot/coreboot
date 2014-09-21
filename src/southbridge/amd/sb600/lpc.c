@@ -24,9 +24,13 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include <arch/acpi.h>
+#include <cpu/amd/model_fxx_powernow.h>
 #include "sb600.h"
 
 static void lpc_init(device_t dev)
@@ -215,6 +219,16 @@ static void sb600_lpc_enable_resources(device_t dev)
 	sb600_lpc_enable_childrens_resources(dev);
 }
 
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+
+extern u16 pm_base;
+
+static void southbridge_acpi_fill_ssdt_generator(void) {
+	amd_model_fxx_generate_powernow(pm_base + 8, 6, 1);
+}
+
+#endif
+
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
@@ -223,6 +237,10 @@ static struct device_operations lpc_ops = {
 	.read_resources = sb600_lpc_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = sb600_lpc_enable_resources,
+#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
+#endif
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,
 	/* .enable           = sb600_enable, */

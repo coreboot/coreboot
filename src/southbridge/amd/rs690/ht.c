@@ -23,6 +23,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <lib.h>
+#include <arch/acpi.h>
 #include "rs690.h"
 
 static void ht_dev_set_resources(device_t dev)
@@ -82,6 +83,23 @@ static void ht_dev_set_resources(device_t dev)
 	}
 #endif
 	pci_dev_set_resources(dev);
+}
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+#if CONFIG_EXT_CONF_SUPPORT
+	struct resource *res;
+	resource_t mmconf_base = EXT_CONF_BASE_ADDRESS; // default
+
+	device_t dev = dev_find_slot(0,PCI_DEVFN(0,0));
+	// we report mmconf base
+	res = probe_resource(dev, 0x1C);
+	if( res )
+		mmconf_base = res->base;
+
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current, mmconf_base, 0x0, 0x0, 0x1f); // Fix me: should i reserve 255 busses ?
+#endif
+	return current;
 }
 
 static void ht_dev_read_resources(device_t dev)

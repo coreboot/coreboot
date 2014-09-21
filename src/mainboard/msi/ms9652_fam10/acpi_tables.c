@@ -37,12 +37,6 @@
 
 extern const unsigned char AmlCode[];
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	/* Not implemented */
-	return current;
-}
-
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	unsigned int gsi_base = 0x18;

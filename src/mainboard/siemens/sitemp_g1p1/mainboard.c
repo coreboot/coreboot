@@ -38,6 +38,7 @@
 #include <x86emu/x86emu.h>
 #endif
 #include "int15_func.h"
+#include "mainboard.h"
 
 // ****LCD panel ID support: *****
 // Callback Sub-Function 00h - Get LCD Panel ID
@@ -846,6 +847,7 @@ static void mainboard_enable(device_t dev)
 	update_subsystemid(dev);
 
 	dev->ops->init = mainboard_init;  // rest of mainboard init later
+	dev->ops->acpi_inject_dsdt_generator = mainboard_inject_dsdt;
 }
 
 struct chip_operations mainboard_ops = {

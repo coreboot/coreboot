@@ -33,16 +33,9 @@
 #include <arch/cpu.h>
 #include <cpu/amd/model_fxx_powernow.h>
 #include <southbridge/amd/rs690/rs690.h>
+#include "mainboard.h"
+#include <cbmem.h>
 
-extern u16 pm_base;
-
-/*
-* Assume the max pstate number is 8
-* 0x21(33 bytes) is one package length of _PSS package
-*/
-
-#define Maxpstate 8
-#define Defpkglength 0x21
 #define GLOBAL_VARS_SIZE 0x100
 
 typedef struct {
@@ -68,24 +61,6 @@ static void acpi_write_gvars(global_vars_t *gvars)
 		gvars->pcba = res->base;
 
 	gvars->mpen = 1;
-}
-
-extern const unsigned char AmlCode[];
-
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	struct resource *res;
-	resource_t mmconf_base = EXT_CONF_BASE_ADDRESS; // default
-
-	device_t dev = dev_find_slot(0,PCI_DEVFN(0,0));
-	// we report mmconf base
-	res = probe_resource(dev, 0x1C);
-	if( res )
-		mmconf_base = res->base;
-
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current, mmconf_base, 0x0, 0x0, 0x1f); // Fix me: should i reserve 255 busses ?
-
-	return current;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)
@@ -116,133 +91,19 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id) {
-	k8acpi_write_vars();
-	amd_model_fxx_generate_powernow(pm_base + 8, 6, 1);
-	return (unsigned long) (acpigen_get_current());
-}
-
-#define ALIGN_CURRENT current = (ALIGN(current, 16))
-
-unsigned long write_acpi_tables(unsigned long start)
+void mainboard_inject_dsdt(void)
 {
-	unsigned long current;
-	int i;
+	global_vars_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, GLOBAL_VARS_SIZE);
 
-	acpi_rsdp_t *rsdp;
-	acpi_rsdt_t *rsdt;
-	acpi_srat_t *srat;
-	acpi_xsdt_t *xsdt;
-	acpi_mcfg_t *mcfg;
-	acpi_hpet_t *hpet;
-	acpi_madt_t *madt;
-	acpi_fadt_t *fadt;
-	acpi_facs_t *facs;
-	acpi_header_t *dsdt;
-	acpi_header_t *ssdt;
+	if (gnvs) {
+		int scopelen;
+		memset(gnvs, 0, sizeof(*gnvs));
+		acpi_write_gvars(gnvs);
 
-	get_bus_conf();		/* it will get sblk, pci1234, hcdn, and sbdn */
-
-	/* Align ACPI tables to 16byte */
-	current = start;
-	ALIGN_CURRENT;
-
-	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
-
-	/* We need at least an RSDP and an RSDT Table */
-	rsdp = (acpi_rsdp_t *) current;
-	current += sizeof(acpi_rsdp_t);
-	ALIGN_CURRENT;
-	rsdt = (acpi_rsdt_t *) current;
-	current += sizeof(acpi_rsdt_t);
-	ALIGN_CURRENT;
-	xsdt = (acpi_xsdt_t *) current;
-	current += sizeof(acpi_xsdt_t);
-	ALIGN_CURRENT;
-
-	/* clear all table memory */
-	memset((void *)start, 0, current - start);
-
-	acpi_write_rsdp(rsdp, rsdt, xsdt);
-	acpi_write_rsdt(rsdt);
-	acpi_write_xsdt(xsdt);
-	/*
-	 * We explicitly add these tables later on:
-	 */
-	current = ALIGN(current, 64);
-	/* FACS */
-	printk(BIOS_DEBUG, "ACPI:     * FACS\n");
-	facs = (acpi_facs_t *) current;
-	acpi_create_facs(facs);
-	current += sizeof(acpi_facs_t);
-
-	 /* HPET */
-	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
-	hpet = (acpi_hpet_t *) current;
-	acpi_create_hpet(hpet);
-	current += sizeof(acpi_hpet_t);
-	acpi_add_table(rsdp, hpet);
-
-	/* If we want to use HPET Timers Linux wants an MADT */
-	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
-	madt = (acpi_madt_t *) current;
-	acpi_create_madt(madt);
-	current += madt->header.length;
-	acpi_add_table(rsdp, madt);
-
-	/* MCFG */
-	printk(BIOS_DEBUG, "ACPI:    * MCFG\n");
-	mcfg = (acpi_mcfg_t *) current;
-	acpi_create_mcfg(mcfg);
-	current += mcfg->header.length;
-	acpi_add_table(rsdp, mcfg);
-
-	/* SSDT */
-	printk(BIOS_DEBUG, "ACPI:    * SSDT\n");
-	ssdt = (acpi_header_t *)current;
-	acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
-	current += ssdt->length;
-	acpi_add_table(rsdp, ssdt);
-
-	/* DSDT */
-	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
-	dsdt = (acpi_header_t *)current;
-	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
-	current += dsdt->length;
-	memcpy(dsdt, &AmlCode, dsdt->length);
-
-	/* Pack gvars into the ACPI table area */
-	for (i=0; i < dsdt->length; i++) {
-		if (*(u32*)(((u32)dsdt) + i) == 0xBADEAFFE) {
-			printk(BIOS_DEBUG, "ACPI: Patching up globals in DSDT at offset 0x%04x -> 0x%08lx\n", i, current);
-			*(u32*)(((u32)dsdt) + i) = current;
-			break;
-		}
+		/* Add it to SSDT.  */
+		scopelen = acpigen_write_scope("\\");
+		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_patch_len(scopelen - 1);
 	}
-
-	/* And fill it */
-	acpi_write_gvars((global_vars_t *)current);
-	current += GLOBAL_VARS_SIZE;
-	/* We patched up the DSDT, so we need to recalculate the checksum */
-	dsdt->checksum = 0;
-	dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
-	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
-
-	/* FADT */
-	printk(BIOS_DEBUG, "ACPI:    * FADT\n");
-	fadt = (acpi_fadt_t *) current;
-	current += sizeof(acpi_fadt_t);
-	acpi_create_fadt(fadt, facs, dsdt);
-	acpi_add_table(rsdp, fadt);
-
-	/* SRAT */
-	printk(BIOS_DEBUG, "ACPI:    * SRAT\n");
-	srat = (acpi_srat_t *) current;
-	acpi_create_srat(srat);
-	acpi_add_table(rsdp, srat);
-
-	printk(BIOS_DEBUG, "current = %lx\n", current);
-
-	printk(BIOS_INFO, "ACPI: done.\n");
-	return current;
 }
+

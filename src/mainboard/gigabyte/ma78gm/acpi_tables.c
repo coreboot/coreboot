@@ -37,12 +37,6 @@ extern const unsigned char AmlCode_ssdt4[];
 extern const unsigned char AmlCode_ssdt5[];
 #endif
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	/* Just a dummy */
-	return current;
-}
-
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	/* create all subtables for processors */

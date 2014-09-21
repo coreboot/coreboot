@@ -60,12 +60,6 @@ unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_ta
 	return (unsigned long) (acpigen_get_current());
 }
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	/* Just a dummy */
-	return current;
-}
-
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	/* create all subtables for processors */

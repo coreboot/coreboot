@@ -114,9 +114,9 @@ ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 $(objcbfs)/ramstage.debug: $$(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) $(src)/arch/arm/ramstage.ld $(obj)/ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_ramstage) -m armelf_linux_eabi -o $@ -L$(obj) $< -T $(src)/arch/arm/ramstage.ld
+	$(LD_ramstage) -m armelf_linux_eabi --gc-sections -o $@ -L$(obj) $< -T $(src)/arch/arm/ramstage.ld
 else
-	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -Wl,--start-group $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) -Wl,--end-group -T $(src)/arch/arm/ramstage.ld
+	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -Wl,--start-group $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) -Wl,--end-group -T $(src)/arch/arm/ramstage.ld
 endif
 
 $(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage)

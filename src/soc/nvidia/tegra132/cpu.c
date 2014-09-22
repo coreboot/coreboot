@@ -25,13 +25,10 @@
 #include "pmc.h"
 
 #define EVP_CPU_RESET_VECTOR (void *)(uintptr_t)(TEGRA_EVP_BASE + 0x100)
-#define CLK_RST_REGS (void *)(uintptr_t)(TEGRA_CLK_RST_BASE)
 #define PMC_REGS (void *)(uintptr_t)(TEGRA_PMC_BASE)
 
 static void enable_core_clocks(int cpu)
 {
-	struct clk_rst_ctlr * const clk_rst = CLK_RST_REGS;
-
 	const uint32_t cpu0_clocks = CRC_RST_CPUG_CLR_CPU0 |
 					CRC_RST_CPUG_CLR_DBG0 |
 					CRC_RST_CPUG_CLR_CORE0 |
@@ -43,9 +40,9 @@ static void enable_core_clocks(int cpu)
 
 	/* Clear reset of CPU components. */
 	if (cpu == 0)
-		write32(cpu0_clocks, &clk_rst->rst_cpug_cmplx_clr);
+		write32(cpu0_clocks, CLK_RST_REG(rst_cpug_cmplx_clr));
 	else
-		write32(cpu1_clocks, &clk_rst->rst_cpug_cmplx_clr);
+		write32(cpu1_clocks, CLK_RST_REG(rst_cpug_cmplx_clr));
 }
 
 static void set_armv8_32bit_reset_vector(uintptr_t entry)

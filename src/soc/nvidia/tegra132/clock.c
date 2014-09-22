@@ -28,7 +28,6 @@
 #include "pmc.h"
 #include "sysctr.h"
 
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 static struct clst_clk_ctlr *clst_clk = (void *)TEGRA_CLUSTER_CLOCK_BASE;
 static struct flow_ctlr *flow = (void *)TEGRA_FLOW_BASE;
 static struct tegra_pmc_regs *pmc = (void *)TEGRA_PMC_BASE;
@@ -164,7 +163,7 @@ struct {
  */
 static u32 clock_get_osc_bits(void)
 {
-	return (readl(&clk_rst->osc_ctrl) & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
+	return (readl(CLK_RST_REG(osc_ctrl)) & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
 }
 
 int clock_get_osc_khz(void)
@@ -174,7 +173,7 @@ int clock_get_osc_khz(void)
 
 int clock_get_pll_input_khz(void)
 {
-	u32 osc_ctrl = readl(&clk_rst->osc_ctrl);
+	u32 osc_ctrl = readl(CLK_RST_REG(osc_ctrl));
 	u32 osc_bits = (osc_ctrl & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
 	u32 pll_ref_div = (osc_ctrl & OSC_PREDIV_MASK) >> OSC_PREDIV_SHIFT;
 	return osc_table[osc_bits].khz >> pll_ref_div;
@@ -204,13 +203,13 @@ void sor_clock_stop(void)
 	 * FIXME: this has to be cleaned up a bit more.
 	 * Waiting on some new info from Nvidia.
 	 */
-	clrbits_le32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0 | SOR0_CLK_SEL1);
+	clrbits_le32(CLK_RST_REG(clk_src_sor), SOR0_CLK_SEL0 | SOR0_CLK_SEL1);
 }
 
 void sor_clock_start(void)
 {
 	/* uses PLLP, has a non-standard bit layout. */
-	setbits_le32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0);
+	setbits_le32(CLK_RST_REG(clk_src_sor), SOR0_CLK_SEL0);
 }
 
 static void init_pll(u32 *base, u32 *misc, const union pll_fields pll, u32 lock)
@@ -241,19 +240,19 @@ static void init_utmip_pll(void)
 	int khz = clock_get_pll_input_khz();
 
 	/* Shut off PLL crystal clock while we mess with it */
-	clrbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
+	clrbits_le32(CLK_RST_REG(utmip_pll_cfg2), 1 << 30); /* PHY_XTAL_CLKEN */
 	udelay(1);
 
 	write32(80 << 16 |			/* (rst) phy_divn */
 		1 << 8 |			/* (rst) phy_divm */
-		0, &clk_rst->utmip_pll_cfg0);	/* 960MHz * 1 / 80 == 12 MHz */
+		0, CLK_RST_REG(utmip_pll_cfg0));/* 960MHz * 1 / 80 == 12 MHz */
 
 	write32(div_round_up(khz, 8000) << 27 |	/* pllu_enbl_cnt / 8 (1us) */
 		0 << 16 |			/* PLLU pwrdn */
 		0 << 14 |			/* pll_enable pwrdn */
 		0 << 12 |			/* pll_active pwrdn */
 		div_round_up(khz, 102) << 0 |	/* phy_stbl_cnt / 256 (2.5ms) */
-		0, &clk_rst->utmip_pll_cfg1);
+		0, CLK_RST_REG(utmip_pll_cfg1));
 
 	/* TODO: TRM can't decide if actv is 5us or 10us, keep an eye on it */
 	write32(0 << 24 |			/* SAMP_D/XDEV pwrdn */
@@ -262,9 +261,9 @@ static void init_utmip_pll(void)
 		0 << 4 |			/* SAMP_C/USB3 pwrdn */
 		0 << 2 |			/* SAMP_B/XHOST pwrdn */
 		0 << 0 |			/* SAMP_A/USBD pwrdn */
-		0, &clk_rst->utmip_pll_cfg2);
+		0, CLK_RST_REG(utmip_pll_cfg2));
 
-	setbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
+	setbits_le32(CLK_RST_REG(utmip_pll_cfg2), 1 << 30); /* PHY_XTAL_CLKEN */
 }
 
 /* Graphics just has to be different. There's a few more bits we
@@ -274,7 +273,7 @@ static void init_utmip_pll(void)
 static void graphics_pll(void)
 {
 	int osc = clock_get_osc_bits();
-	u32 *cfg = &clk_rst->plldp_ss_cfg;
+	u32 *cfg = CLK_RST_REG(plldp_ss_cfg);
 	/* the vendor code sets the dither bit (28)
 	 * an undocumented bit (24)
 	 * and clamp while we mess with it (22)
@@ -287,7 +286,7 @@ static void graphics_pll(void)
 	 */
 	u32 scfg = (1 << 28) | (1 << 24) | (1 << 22);
 	writel(scfg, cfg);
-	init_pll(&clk_rst->plldp_base, &clk_rst->plldp_misc,
+	init_pll(CLK_RST_REG(plldp_base), CLK_RST_REG(plldp_misc),
 		osc_table[osc].plldp, PLLDPD2_MISC_LOCK_ENABLE);
 	/* leave dither and undoc bits set, release clamp */
 	scfg = (1<<28) | (1<<24);
@@ -386,7 +385,7 @@ clock_display(u32 frequency)
 	printk(BIOS_DEBUG, "%s: PLLD=%u ref=%u, m/n/p/cpcon=%u/%u/%u/%u\n",
 	       __func__, rounded_rate, ref, plld.m, plld.n, plld.p, plld.cpcon);
 
-	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, plld,
+	init_pll(CLK_RST_REG(plld_base), CLK_RST_REG(plld_misc), plld,
 		 (PLLUD_MISC_LOCK_ENABLE | PLLD_MISC_CLK_ENABLE));
 
 	return rounded_rate;
@@ -402,7 +401,7 @@ void clock_early_uart(void)
 {
 	write32(CLK_SRC_DEV_ID(UARTA, CLK_M) << CLK_SOURCE_SHIFT |
 		CLK_UART_DIV_OVERRIDE |
-		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900), &clk_rst->clk_src_uarta);
+		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900), CLK_RST_REG(clk_src_uarta));
 
 	clock_enable_clear_reset_l(CLK_L_UARTA);
 }
@@ -451,22 +450,22 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	 * values after coldboot reset).
 	 */
 
-	writel(misc1, &clk_rst->pllm_misc1);
-	writel(misc2, &clk_rst->pllm_misc2);
+	writel(misc1, CLK_RST_REG(pllm_misc1));
+	writel(misc2, CLK_RST_REG(pllm_misc2));
 
 	/* PLLM.BASE needs BYPASS=0, different from general init_pll */
-	base = readl(&clk_rst->pllm_base);
+	base = readl(CLK_RST_REG(pllm_base));
 	base &= ~(PLLCMX_BASE_DIVN_MASK | PLLCMX_BASE_DIVM_MASK |
 		  PLLM_BASE_DIVP_MASK | PLL_BASE_BYPASS);
 	base |= ((m << PLL_BASE_DIVM_SHIFT) | (n << PLL_BASE_DIVN_SHIFT) |
 		 (p << PLL_BASE_DIVP_SHIFT));
-	writel(base, &clk_rst->pllm_base);
+	writel(base, CLK_RST_REG(pllm_base));
 
-	setbits_le32(&clk_rst->pllm_base, PLL_BASE_ENABLE);
+	setbits_le32(CLK_RST_REG(pllm_base), PLL_BASE_ENABLE);
 	/* stable_time is required, before we can start to check lock. */
 	udelay(stable_time);
 
-	while (!(readl(&clk_rst->pllm_base) & PLL_BASE_LOCK))
+	while (!(readl(CLK_RST_REG(pllm_base)) & PLL_BASE_LOCK))
 		udelay(1);
 
 	/*
@@ -476,11 +475,11 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	udelay(10);
 
 	/* Put OUT1 out of reset state (start to output). */
-	setbits_le32(&clk_rst->pllm_out, PLLM_OUT1_RSTN_RESET_DISABLE);
+	setbits_le32(CLK_RST_REG(pllm_out), PLLM_OUT1_RSTN_RESET_DISABLE);
 
 	/* Enable and start MEM(MC) and EMC. */
 	clock_enable_clear_reset(0, CLK_H_MEM | CLK_H_EMC, 0, 0, 0, 0);
-	writel(emc_source, &clk_rst->clk_src_emc);
+	writel(emc_source, CLK_RST_REG(clk_src_emc));
 	udelay(IO_STABILIZATION_DELAY);
 }
 
@@ -536,24 +535,24 @@ void clock_init(void)
 	u32 osc = clock_get_osc_bits();
 
 	/* Set PLLC dynramp_step A to 0x2b and B to 0xb (from U-Boot -- why? */
-	writel(0x2b << 17 | 0xb << 9, &clk_rst->pllc_misc2);
+	writel(0x2b << 17 | 0xb << 9, CLK_RST_REG(pllc_misc2));
 
 	/* Max out the AVP clock before everything else (need PLLC for that). */
-	init_pll(&clk_rst->pllc_base, &clk_rst->pllc_misc,
+	init_pll(CLK_RST_REG(pllc_base), CLK_RST_REG(pllc_misc),
 		osc_table[osc].pllc, PLLC_MISC_LOCK_ENABLE);
 
 	/* Typical ratios are 1:2:2 or 1:2:3 sclk:hclk:pclk (See: APB DMA
 	 * features section in the TRM). */
 	write32(1 << HCLK_DIVISOR_SHIFT | 0 << PCLK_DIVISOR_SHIFT,
-		&clk_rst->clk_sys_rate);	/* pclk = hclk = sclk/2 */
+		CLK_RST_REG(clk_sys_rate));	/* pclk = hclk = sclk/2 */
 	write32(CLK_DIVIDER(TEGRA_PLLC_KHZ, 300000) << PLL_OUT_RATIO_SHIFT |
-		PLL_OUT_CLKEN | PLL_OUT_RSTN, &clk_rst->pllc_out);
+		PLL_OUT_CLKEN | PLL_OUT_RSTN, CLK_RST_REG(pllc_out));
 	write32(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT |
 		SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT,
-		&clk_rst->sclk_brst_pol);		/* sclk = 300 MHz */
+		CLK_RST_REG(sclk_brst_pol));		/* sclk = 300 MHz */
 
 	/* Change the oscillator drive strength (from U-Boot -- why?) */
-	clrsetbits_le32(&clk_rst->osc_ctrl, OSC_XOFS_MASK,
+	clrsetbits_le32(CLK_RST_REG(osc_ctrl), OSC_XOFS_MASK,
 			OSC_DRIVE_STRENGTH << OSC_XOFS_SHIFT);
 
 	/*
@@ -569,15 +568,15 @@ void clock_init(void)
 		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT |
 		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 48000) << PLL_OUT_RATIO_SHIFT |
 		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT2_SHIFT,
-		&clk_rst->pllp_outa);
+		CLK_RST_REG(pllp_outa));
 	write32((CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000) << PLL_OUT_RATIO_SHIFT |
 		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT3_SHIFT |
 		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT |
 		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
-		&clk_rst->pllp_outb);
+		CLK_RST_REG(pllp_outb));
 
 	/* init pllu */
-	init_pll(&clk_rst->pllu_base, &clk_rst->pllu_misc,
+	init_pll(CLK_RST_REG(pllu_base), CLK_RST_REG(pllu_misc),
 		osc_table[osc].pllu, PLLUD_MISC_LOCK_ENABLE);
 
 	init_utmip_pll();

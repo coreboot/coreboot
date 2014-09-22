@@ -33,7 +33,6 @@
 #include "pmc.h"
 #include "power.h"
 
-#define CLK_RST_REGS (void *)(uintptr_t)(TEGRA_CLK_RST_BASE)
 #define PMC_REGS (void *)(uintptr_t)(TEGRA_PMC_BASE)
 #define MTS_FILE_NAME "mts"
 
@@ -45,15 +44,14 @@ static int ccplex_start(void)
 	const uint32_t cxreset1_mask = 1 << 21;
 	uint32_t reg;
 	struct tegra_pmc_regs * const pmc = PMC_REGS;
-	struct clk_rst_ctlr * const clk_rst = CLK_RST_REGS;
 
 	/* Set the handshake bit to be knocked down. */
 	write32(handshake_mask, &pmc->scratch118);
 
 	/* Assert nCXRSET[1] */
-	reg = read32(&clk_rst->rst_cpu_cmplx_set);
+	reg = read32(CLK_RST_REG(rst_cpu_cmplx_set));
 	reg |= cxreset1_mask;
-	write32(reg, &clk_rst->rst_cpu_cmplx_set);
+	write32(reg, CLK_RST_REG(rst_cpu_cmplx_set));
 
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 	while (1) {
@@ -158,14 +156,12 @@ void ccplex_cpu_prepare(void)
 
 static void start_common_clocks(void)
 {
-	struct clk_rst_ctlr * const clk_rst = CLK_RST_REGS;
-
 	/* Clear fast CPU partition reset. */
-	write32(CRC_RST_CPUG_CLR_NONCPU, &clk_rst->rst_cpug_cmplx_clr);
+	write32(CRC_RST_CPUG_CLR_NONCPU, CLK_RST_REG(rst_cpug_cmplx_clr));
 
 	/* Clear reset of L2 and CoreSight components. */
 	write32(CRC_RST_CPUG_CLR_L2 | CRC_RST_CPUG_CLR_PDBG,
-		&clk_rst->rst_cpug_cmplx_clr);
+		CLK_RST_REG(rst_cpug_cmplx_clr));
 }
 
 void ccplex_cpu_start(void *entry_addr)

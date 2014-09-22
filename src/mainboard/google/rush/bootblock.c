@@ -31,8 +31,6 @@
 
 #include "pmic.h"
 
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
-
 static const struct pad_config uart_console_pads[] = {
 	/* UARTA: tx and rx. */
 	PAD_CFG_SFIO(KB_ROW9, PINMUX_PULL_NONE, UA3),
@@ -81,7 +79,7 @@ void bootblock_mainboard_early_init(void)
 static void set_clock_sources(void)
 {
 	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
-	writel(PLLP << CLK_SOURCE_SHIFT, &clk_rst->clk_src_uarta);
+	writel(PLLP << CLK_SOURCE_SHIFT, CLK_RST_REG(clk_src_uarta));
 }
 
 void bootblock_mainboard_init(void)

@@ -65,11 +65,11 @@ config STACK_BOTTOM
 
 config CBFS_CACHE_ADDRESS
 	hex "memory address to put CBFS cache data"
-	default 0x405e6000
+	default 0x405cc000
 
 config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
-	default 0x00016000
+	default 0x00030000
 
 config TTB_BUFFER
 	hex "memory address for page tables"

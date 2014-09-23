@@ -263,6 +263,19 @@ struct lb_board_id {
 	uint32_t board_id;
 };
 
+#define LB_TAG_MAC_ADDRS	0x0026
+struct mac_address {
+	uint8_t mac_addr[6];
+	uint8_t pad[2];		/* Pad it to 8 bytes to keep it simple. */
+};
+
+struct lb_macs {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t count;
+	struct mac_address mac_addrs[0];
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

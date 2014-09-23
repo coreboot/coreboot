@@ -16,12 +16,16 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
+bootblock-y += reset.c
+
+verstage-y += reset.c
 
 romstage-y += romstage.c
 romstage-y += chromeos.c
 romstage-y += sdram_configs.c
+romstage-y += reset.c
 
 ramstage-y += boardid.c
 ramstage-y += chromeos.c
 ramstage-y += mainboard.c
-
+ramstage-y += reset.c

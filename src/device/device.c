@@ -1139,10 +1139,8 @@ static void init_dev(struct device *dev)
 
 	if (!dev->initialized && dev->ops && dev->ops->init) {
 #if CONFIG_HAVE_MONOTONIC_TIMER
-		struct mono_time start_time;
-		struct rela_time dev_init_time;
-
-		timer_monotonic_get(&start_time);
+		struct stopwatch sw;
+		stopwatch_init(&sw);
 #endif
 		if (dev->path.type == DEVICE_PATH_I2C) {
 			printk(BIOS_DEBUG, "smbus: %s[%d]->",
@@ -1153,9 +1151,8 @@ static void init_dev(struct device *dev)
 		dev->initialized = 1;
 		dev->ops->init(dev);
 #if CONFIG_HAVE_MONOTONIC_TIMER
-		dev_init_time = current_time_from(&start_time);
 		printk(BIOS_DEBUG, "%s init %ld usecs\n", dev_path(dev),
-		       rela_time_in_microseconds(&dev_init_time));
+			stopwatch_duration_usecs(&sw));
 #endif
 	}
 }

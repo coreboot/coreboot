@@ -44,20 +44,21 @@ static int __wait(unsigned bus, int timeout_us, int for_scl)
 	int us;
 	int sda = software_i2c[bus]->get_sda(bus);
 	int scl = software_i2c[bus]->get_scl(bus);
-	struct mono_time start;
-	timer_monotonic_get(&start);
+	struct stopwatch sw;
+
+	stopwatch_init_usecs_expire(&sw, timeout_us);
 
 	do {
 		int old_sda = sda;
 		int old_scl = scl;
-		struct rela_time diff = current_time_from(&start);
-		us = rela_time_in_microseconds(&diff);
+
+		us = stopwatch_duration_usecs(&sw);
 
 		if (old_sda != (sda = software_i2c[bus]->get_sda(bus)))
 			spew("[SDA transitioned to %d after %dus] ", sda, us);
 		if (old_scl != (scl = software_i2c[bus]->get_scl(bus)))
 			spew("[SCL transitioned to %d after %dus] ", scl, us);
-	} while (us < timeout_us && (!for_scl || !scl));
+	} while (!stopwatch_expired(&sw) && (!for_scl || !scl));
 
 	return scl;
 }

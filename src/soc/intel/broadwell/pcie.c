@@ -99,6 +99,27 @@ static void root_port_config_update_gbe_port(void)
 	}
 }
 
+static void pcie_iosf_port_grant_count(device_t dev)
+{
+	u8 update_val;
+	u32 rpcd = (pci_read_config32(dev, 0xfc) > 14) & 0x3;
+
+	switch (rpcd) {
+	case 1:
+	case 3:
+		update_val = 0x02;
+		break;
+	case 2:
+		update_val = 0x22;
+		break;
+	default:
+		update_val = 0x00;
+		break;
+	}
+
+	RCBA32(0x103C) = (RCBA32(0x103C) & (~0xff)) | update_val;
+}
+
 static void root_port_init_config(device_t dev)
 {
 	int rp;
@@ -108,7 +129,10 @@ static void root_port_init_config(device_t dev)
 		rpc.new_rpfn = rpc.orig_rpfn;
 		rpc.num_ports = NUM_ROOT_PORTS;
 		rpc.gbe_port = -1;
-		pcie_update_cfg8(dev, 0xf5, 0xa, 0x5);
+		/* RP0 f5[3:0] = 0101b*/
+		pcie_update_cfg8(dev, 0xf5, ~0xa, 0x5);
+
+		pcie_iosf_port_grant_count(dev);
 
 		rpc.pin_ownership = pci_read_config32(dev, 0x410);
 		root_port_config_update_gbe_port();

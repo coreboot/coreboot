@@ -40,6 +40,7 @@ romstage-y += timer.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += cbmem.c
 
+ramstage-y += blobs_init.c
 ramstage-y += cbmem.c
 ramstage-y += clock.c
 ramstage-y += gpio.c
@@ -48,6 +49,7 @@ ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += usb.c
+ramstage-y += tz_wrapper.S
 
 ifeq ($(CONFIG_USE_BLOBS),y)
 

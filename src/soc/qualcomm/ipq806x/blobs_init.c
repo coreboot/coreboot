@@ -27,10 +27,11 @@
 
 #include "mbn_header.h"
 
-static struct mbn_header *map_ipq_blob(const char *file_name)
+static void *load_ipq_blob(const char *file_name)
 {
 	struct cbfs_file *blob_file;
 	struct mbn_header *blob_mbn;
+	void *blob_dest;
 
 	blob_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, file_name);
 	if (!blob_file)
@@ -44,35 +45,55 @@ static struct mbn_header *map_ipq_blob(const char *file_name)
 	    (blob_mbn->mbn_total_size > ntohl(blob_file->len)))
 		return NULL;
 
-	return blob_mbn;
+	blob_dest = (void *) blob_mbn->mbn_destination;
+	if (blob_mbn->mbn_destination) {
+		/* Copy the blob to the appropriate memory location. */
+		memcpy(blob_dest, blob_mbn + 1, blob_mbn->mbn_total_size);
+		cache_sync_instructions();
+		return blob_dest;
+	}
+
+	/*
+	 * The blob did not have to be relocated, return its address in CBFS
+	 * cache.
+	 */
+	return blob_mbn + 1;
 }
+
+#ifdef __PRE_RAM__
 
 int initialize_dram(void)
 {
-	struct mbn_header *cdt_mbn;
-	struct mbn_header *ddr_mbn;
+	void *cdt;
 	int (*ddr_init_function)(void *cdt_header);
 
-	cdt_mbn = map_ipq_blob("cdt.mbn");
-	ddr_mbn = map_ipq_blob("ddr.mbn");
+	cdt = load_ipq_blob("cdt.mbn");
+	ddr_init_function = load_ipq_blob("ddr.mbn");
 
-	if (!cdt_mbn || !ddr_mbn) {
-		printk(BIOS_ERR, "cdt.mbn: %p, ddr.mbn: %p\n",
-		       cdt_mbn, ddr_mbn);
+	if (!cdt || !ddr_init_function) {
+		printk(BIOS_ERR, "cdt: %p, ddr_init_function: %p\n",
+		       cdt, ddr_init_function);
 		die("could not find DDR initialization blobs\n");
 	}
 
-	/* Actual area where DDR init is going to be running */
-	ddr_init_function = (int (*)(void *))ddr_mbn->mbn_destination;
-
-	/* Copy core into the appropriate memory location. */
-	memcpy(ddr_init_function, ddr_mbn + 1, ddr_mbn->mbn_total_size);
-	cache_sync_instructions();
-
-	if (ddr_init_function(cdt_mbn + 1) < 0) /* Skip mbn header. */
+	if (ddr_init_function(cdt) < 0)
 		die("Fail to Initialize DDR\n");
 
 	printk(BIOS_INFO, "DDR initialized\n");
 
 	return 0;
 }
+
+#else  /* __PRE_RAM__ */
+
+void start_tzbsp(void)
+{
+	void *tzbsp = load_ipq_blob("tz.mbn");
+
+	if (!tzbsp)
+		die("could not find or map TZBSP\n");
+
+	tz_init_wrapper(0, 0, tzbsp);
+}
+
+#endif  /* !__PRE_RAM__ */

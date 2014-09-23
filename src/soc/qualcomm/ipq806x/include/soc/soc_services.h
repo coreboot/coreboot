@@ -27,4 +27,9 @@ extern u8 _memlayout_cbmem_top[];
 /* Returns zero on success, nonzero on failure. */
 int initialize_dram(void);
 
+/* Loads and runs TZBSP, switches into user mode. */
+void start_tzbsp(void);
+
+int tz_init_wrapper(int, int, void *);
+
 #endif

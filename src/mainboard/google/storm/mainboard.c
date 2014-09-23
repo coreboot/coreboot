@@ -24,6 +24,7 @@
 #include <device/device.h>
 #include <gpio.h>
 #include <soc/clock.h>
+#include <soc/soc_services.h>
 #include <soc/usb.h>
 #include <symbols.h>
 
@@ -109,6 +110,7 @@ static void assert_sw_reset(void)
 
 static void mainboard_init(device_t dev)
 {
+	 start_tzbsp();
 	 setup_mmu();
 	 setup_usb();
 	 assert_sw_reset();

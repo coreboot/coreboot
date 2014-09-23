@@ -416,8 +416,7 @@ static inline u32 rx_fifo_count(struct tegra_spi_channel *spi)
 static int tegra_spi_pio_finish(struct tegra_spi_channel *spi)
 {
 	u8 *p = spi->in_buf;
-	struct mono_time start;
-	struct rela_time rt;
+	struct stopwatch sw;
 
 	clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN | SPI_CMD1_TX_EN);
 
@@ -425,12 +424,11 @@ static int tegra_spi_pio_finish(struct tegra_spi_channel *spi)
 	 * Allow some time in case the Rx FIFO does not yet have
 	 * all packets pushed into it. See chrome-os-partner:24215.
 	 */
-	timer_monotonic_get(&start);
+	stopwatch_init_usecs_expire(&sw, SPI_FIFO_XFER_TIMEOUT_US);
 	do {
 		if (rx_fifo_count(spi) == spi_byte_count(spi))
 			break;
-		rt = current_time_from(&start);
-	} while (rela_time_in_microseconds(&rt) < SPI_FIFO_XFER_TIMEOUT_US);
+	} while (!stopwatch_expired(&sw));
 
 	while (!(read32(&spi->regs->fifo_status) &
 				SPI_FIFO_STATUS_RX_FIFO_EMPTY)) {

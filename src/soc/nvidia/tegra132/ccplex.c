@@ -38,9 +38,8 @@
 
 static int ccplex_start(void)
 {
-	struct mono_time t1, t2;
-	const long timeout_us = 1500000;
-	long wait_time;
+	struct stopwatch sw;
+	const long timeout_ms = 1500;
 	const uint32_t handshake_mask = 1;
 	const uint32_t cxreset1_mask = 1 << 21;
 	uint32_t reg;
@@ -55,24 +54,22 @@ static int ccplex_start(void)
 	reg |= cxreset1_mask;
 	write32(reg, &clk_rst->rst_cpu_cmplx_set);
 
-	timer_monotonic_get(&t1);
+	stopwatch_init_msecs_expire(&sw, timeout_ms);
 	while (1) {
 		reg = read32(&pmc->scratch118);
-		timer_monotonic_get(&t2);
-
-		wait_time = mono_time_diff_microseconds(&t1, &t2);
 
 		/* Wait for the bit to be knocked down. */
 		if ((reg & handshake_mask) != handshake_mask)
 			break;
 
-		if (wait_time >= timeout_us) {
+		if (stopwatch_expired(&sw)) {
 			printk(BIOS_DEBUG, "MTS handshake timeout.\n");
 			return -1;
 		}
 	}
 
-	printk(BIOS_DEBUG, "MTS handshake took %ld us.\n", wait_time);
+	printk(BIOS_DEBUG, "MTS handshake took %ld us.\n",
+		stopwatch_duration_usecs(&sw));
 
 	return 0;
 }
@@ -140,7 +137,7 @@ static void request_ram_repair(void)
 	const uint32_t req = 1 << 0;
 	const uint32_t sts = 1 << 1;
 	uint32_t reg;
-	struct mono_time t1, t2;
+	struct stopwatch sw;
 
 	printk(BIOS_DEBUG, "Requesting RAM repair.\n");
 
@@ -148,12 +145,12 @@ static void request_ram_repair(void)
 	reg |= req;
 	write32(reg, &flow->ram_repair);
 
-	timer_monotonic_get(&t1);
-	while ((read32(&flow->ram_repair) & sts) != sts);
-	timer_monotonic_get(&t2);
+	stopwatch_init(&sw);
+	while ((read32(&flow->ram_repair) & sts) != sts)
+		;
 
 	printk(BIOS_DEBUG, "RAM repair complete in %ld usecs.\n",
-		mono_time_diff_microseconds(&t1, &t2));
+		stopwatch_duration_usecs(&sw));
 }
 
 void ccplex_cpu_prepare(void)

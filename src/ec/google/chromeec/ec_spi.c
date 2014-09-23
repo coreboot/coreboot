@@ -57,9 +57,9 @@ static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 	}
 
 	uint8_t byte;
-	struct mono_time start;
-	struct rela_time rt;
-	timer_monotonic_get(&start);
+	struct stopwatch sw;
+	// Wait 1s for a framing byte.
+	stopwatch_init_usecs_expire(&sw, USECS_PER_SEC);
 	while (1) {
 		if (spi_xfer(slave, NULL, 0, &byte, sizeof(byte))) {
 			printk(BIOS_ERR, "%s: Failed to receive byte.\n",
@@ -70,9 +70,7 @@ static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 		if (byte == EcFramingByte)
 			break;
 
-		// Wait 1s for a framing byte.
-		rt = current_time_from(&start);
-		if (rela_time_in_microseconds(&rt) > 1000 * 1000) {
+		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR,
 			       "%s: Timeout waiting for framing byte.\n",
 			       __func__);

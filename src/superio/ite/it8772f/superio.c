@@ -22,6 +22,7 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <arch/io.h>
+#include <delay.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
 
@@ -38,6 +39,34 @@ static inline void it8772f_envc_write(struct resource *res, u8 addr, u8 value)
 {
 	outb(addr, res->base + 5);
 	outb(value, res->base + 6);
+}
+
+static void it8772f_extemp_force_idle_status(struct resource *res)
+{
+	u8 reg;
+	int retries = 10;
+
+	/* Wait up to 10ms for non-busy state. */
+	while (retries > 0) {
+		reg = it8772f_envc_read(res, IT8772F_EXTEMP_STATUS);
+
+		if ((reg & IT8772F_EXTEMP_STATUS_HOST_BUSY) == 0x0)
+			break;
+
+		retries--;
+
+		mdelay(1);
+	}
+
+	if (retries == 0 && (reg & IT8772F_EXTEMP_STATUS_HOST_BUSY) == 0x1) {
+		/*
+		 * SIO is busy due to unfinished peci transaction.
+		 * Re-configure Register 0x8E to terminate processes.
+		 */
+		it8772f_envc_write(res, IT8772F_EXTEMP_CONTROL,
+			IT8772F_EXTEMP_CONTROL_AUTO_4HZ |
+			IT8772F_EXTEMP_CONTROL_AUTO_START);
+	}
 }
 
 /*
@@ -142,6 +171,13 @@ static void it8772f_init(struct device *dev)
 			it8772f_enable_fan(res, 2);
 		if (conf->fan3_enable)
 			it8772f_enable_fan(res, 3);
+
+		/*
+		 * System may get wrong temperature data when SIO is in
+		 * busy state. Therefore, check the status and terminate
+		 * processes if needed.
+		 */
+		it8772f_extemp_force_idle_status(res);
 		break;
 	case IT8772F_GPIO:
 		/* Set GPIO output levels */

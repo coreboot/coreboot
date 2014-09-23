@@ -100,7 +100,7 @@ config VBOOT_VERIFY_FIRMWARE
 config VBOOT2_VERIFY_FIRMWARE
 	bool "Firmware Verification with vboot2"
 	default n
-	depends on CHROMEOS
+	depends on CHROMEOS && HAVE_HARD_RESET
 	help
 	  Enabling VBOOT2_VERIFY_FIRMWARE will use vboot2 to verify the romstage
 	  and boot loader.

@@ -61,7 +61,7 @@ void vboot2_verify_firmware(void)
 	/* load verstage from RO */
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
 				CONFIG_CBFS_PREFIX "/verstage");
-	if (entry == -1)
+	if (entry == (void *)-1)
 		die("failed to load verstage");
 
 	/* verify and select a slot */

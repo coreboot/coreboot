@@ -104,7 +104,7 @@ verstage-c-ccopts += -D__PRE_RAM__ -D__VER_STAGE__
 verstage-S-ccopts += -D__PRE_RAM__ -D__VER_STAGE__
 
 ifeq ($(CONFIG_RETURN_FROM_VERSTAGE),y)
-bootblock-y += verstub.c
+bootblock-y += verstub.c chromeos.c
 else
 verstage-y += verstub.c
 endif

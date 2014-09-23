@@ -118,9 +118,10 @@ static inline void chromeos_ram_oops_init(chromeos_acpi_t *chromeos) {}
 static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
 
+void vboot2_verify_firmware(void);
+
 #if CONFIG_VBOOT2_VERIFY_FIRMWARE
 void *vboot_load_ramstage(void);
-void vboot2_verify_firmware(void);
 void verstage_main(void);
 void *vboot_load_stage(int stage_index,
 		       struct vboot_region *fw_main,

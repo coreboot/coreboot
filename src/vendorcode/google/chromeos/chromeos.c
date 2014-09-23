@@ -173,7 +173,7 @@ struct vboot_components *vboot_locate_components(struct vboot_region *region)
 	size_t req_size;
 	struct vboot_components *vbc;
 
-	req_size = sizeof(*region);
+	req_size = sizeof(*vbc);
 	req_size += sizeof(struct vboot_component_entry) *
 			MAX_PARSED_FW_COMPONENTS;
 
@@ -259,6 +259,7 @@ struct vb2_working_data * const vboot_get_working_data(void)
 void vboot_reboot(void)
 {
 	hard_reset();
+	die("failed to reboot");
 }
 
 #endif

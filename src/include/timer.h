@@ -175,4 +175,64 @@ static inline long mono_time_diff_microseconds(const struct mono_time *t1,
 	return rela_time_in_microseconds(&rt);
 }
 
+struct stopwatch {
+	struct mono_time start;
+	struct mono_time current;
+	struct mono_time expires;
+};
+
+static inline void stopwatch_init(struct stopwatch *sw)
+{
+	timer_monotonic_get(&sw->start);
+	sw->current = sw->expires = sw->start;
+}
+
+static inline void stopwatch_init_usecs_expire(struct stopwatch *sw, long us)
+{
+	stopwatch_init(sw);
+	mono_time_add_usecs(&sw->expires, us);
+}
+
+static inline void stopwatch_init_msecs_expire(struct stopwatch *sw, long ms)
+{
+	stopwatch_init_usecs_expire(sw, USECS_PER_MSEC * ms);
+}
+
+/*
+ * Tick the stopwatch to collect the current time.
+ */
+static inline void stopwatch_tick(struct stopwatch *sw)
+{
+	timer_monotonic_get(&sw->current);
+}
+
+/*
+ * Tick and check the stopwatch for expiration. Returns non-zero on exipration.
+ */
+static inline int stopwatch_expired(struct stopwatch *sw)
+{
+	stopwatch_tick(sw);
+	return !mono_time_before(&sw->current, &sw->expires);
+}
+
+/*
+ * Return number of microseconds since starting the stopwatch.
+ */
+static inline long stopwatch_duration_usecs(struct stopwatch *sw)
+{
+	/*
+	 * If the stopwatch hasn't been ticked (current == start) tick
+	 * the stopwatch to gather the accumulated time.
+	 */
+	if (!mono_time_cmp(&sw->start, &sw->current))
+		stopwatch_tick(sw);
+
+	return mono_time_diff_microseconds(&sw->start, &sw->current);
+}
+
+static inline long stopwatch_duration_msecs(struct stopwatch *sw)
+{
+	return stopwatch_duration_usecs(sw) / USECS_PER_MSEC;
+}
+
 #endif /* TIMER_H */

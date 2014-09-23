@@ -79,6 +79,28 @@ static inline void tegra_sor_write_field(struct tegra_dc_sor_data *sor,
 	tegra_sor_writel(sor, reg, reg_val);
 }
 
+void tegra_dp_disable_tx_pu(struct tegra_dc_sor_data *sor)
+{
+	tegra_sor_write_field(sor,
+			NV_SOR_DP_PADCTL(sor->portnum),
+			NV_SOR_DP_PADCTL_TX_PU_MASK,
+			NV_SOR_DP_PADCTL_TX_PU_DISABLE);
+}
+
+void tegra_dp_set_pe_vs_pc(struct tegra_dc_sor_data *sor, u32 mask,
+				u32 pe_reg, u32 vs_reg, u32 pc_reg, u8 pc_supported)
+{
+	tegra_sor_write_field(sor, NV_SOR_PR(sor->portnum),
+					mask, pe_reg);
+	tegra_sor_write_field(sor, NV_SOR_DC(sor->portnum),
+					mask, vs_reg);
+	if (pc_supported) {
+		tegra_sor_write_field(
+				sor, NV_SOR_POSTCURSOR(sor->portnum),
+				mask, pc_reg);
+	}
+}
+
 static u32 tegra_dc_sor_poll_register(struct tegra_dc_sor_data *sor,
 	u32 reg, u32 mask, u32 exp_val, u32 poll_interval_us, u32 timeout_us)
 {
@@ -872,4 +894,34 @@ void tegra_dc_sor_power_down_unused_lanes(struct tegra_dc_sor_data *sor)
 	tegra_sor_writel(sor, NV_SOR_LANE_DRIVE_CURRENT(sor->portnum),
 				drive_current);
 	tegra_sor_writel(sor, NV_SOR_PR(sor->portnum), pre_emphasis);
+}
+
+void tegra_sor_precharge_lanes(struct tegra_dc_sor_data *sor)
+{
+	const struct tegra_dc_dp_link_config *cfg = sor->link_cfg;
+	u32 val = 0;
+
+	switch (cfg->lane_count) {
+	case 4:
+		val |= (NV_SOR_DP_PADCTL_PD_TXD_3_NO |
+			NV_SOR_DP_PADCTL_PD_TXD_2_NO);
+		/* fall through */
+	case 2:
+		val |= NV_SOR_DP_PADCTL_PD_TXD_1_NO;
+		/* fall through */
+	case 1:
+		val |= NV_SOR_DP_PADCTL_PD_TXD_0_NO;
+		break;
+	default:
+		printk(BIOS_ERR,
+			"dp: invalid lane number %d\n", cfg->lane_count);
+		return;
+	}
+
+	tegra_sor_write_field(sor, NV_SOR_DP_PADCTL(sor->portnum),
+		(0xf << NV_SOR_DP_PADCTL_COMODE_TXD_0_DP_TXD_2_SHIFT),
+		(val << NV_SOR_DP_PADCTL_COMODE_TXD_0_DP_TXD_2_SHIFT));
+	udelay(100);
+	tegra_sor_write_field(sor, NV_SOR_DP_PADCTL(sor->portnum),
+		(0xf << NV_SOR_DP_PADCTL_COMODE_TXD_0_DP_TXD_2_SHIFT), 0);
 }

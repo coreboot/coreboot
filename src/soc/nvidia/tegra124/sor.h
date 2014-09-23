@@ -695,6 +695,7 @@
 #define NV_SOR_DP_PADCTL_TX_PU_SHIFT				(22)
 #define NV_SOR_DP_PADCTL_TX_PU_DISABLE				(0 << 22)
 #define NV_SOR_DP_PADCTL_TX_PU_ENABLE				(1 << 22)
+#define NV_SOR_DP_PADCTL_TX_PU_MASK				(1 << 22)
 #define NV_SOR_DP_PADCTL_REG_CTRL_SHIFT				(20)
 #define NV_SOR_DP_PADCTL_REG_CTRL_DEFAULT_MASK			(0x3 << 20)
 #define NV_SOR_DP_PADCTL_VCMMODE_SHIFT				(16)
@@ -878,6 +879,8 @@ struct tegra_dc_dp_link_config {
 	u32	drive_current;
 	u32     preemphasis;
 	u32	postcursor;
+	u8	aux_rd_interval;
+	u8	tps3_supported;
 };
 
 /* TODO: just pull these up into one struct? Need to see how this impacts
@@ -917,4 +920,8 @@ void tegra_dc_sor_attach(struct tegra_dc_sor_data *sor);
 void tegra_dc_sor_set_lane_parm(struct tegra_dc_sor_data *sor,
 			const struct tegra_dc_dp_link_config *link_cfg);
 void tegra_dc_sor_power_down_unused_lanes(struct tegra_dc_sor_data *sor);
+void tegra_sor_precharge_lanes(struct tegra_dc_sor_data *sor);
+void tegra_dp_disable_tx_pu(struct tegra_dc_sor_data *sor);
+void tegra_dp_set_pe_vs_pc(struct tegra_dc_sor_data *sor, u32 mask,
+				u32 pe_reg, u32 vs_reg, u32 pc_reg, u8 pc_supported);
 #endif /*__TEGRA124_SOR_H__ */

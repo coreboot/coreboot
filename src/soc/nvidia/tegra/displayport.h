@@ -138,6 +138,146 @@
 #define DP_AUX_TIMEOUT_MS		40
 #define DP_DPCP_RETRY_SLEEP_NS		400
 
+static const u32 tegra_dp_vs_regs[][4][4] = {
+	/* postcursor2 L0 */
+	{
+		/* pre-emphasis: L0, L1, L2, L3 */
+		{0x13, 0x19, 0x1e, 0x28}, /* voltage swing: L0 */
+		{0x1e, 0x25, 0x2d}, /* L1 */
+		{0x28, 0x32}, /* L2 */
+		{0x3c}, /* L3 */
+	},
+
+	/* postcursor2 L1 */
+	{
+		{0x12, 0x17, 0x1b, 0x25},
+		{0x1c, 0x23, 0x2a},
+		{0x25, 0x2f},
+		{0x39},
+	},
+
+	/* postcursor2 L2 */
+	{
+		{0x12, 0x16, 0x1a, 0x22},
+		{0x1b, 0x20, 0x27},
+		{0x24, 0x2d},
+		{0x36},
+	},
+
+	/* postcursor2 L3 */
+	{
+		{0x11, 0x14, 0x17, 0x1f},
+		{0x19, 0x1e, 0x24},
+		{0x22, 0x2a},
+		{0x32},
+	},
+};
+
+static const u32 tegra_dp_pe_regs[][4][4] = {
+	/* postcursor2 L0 */
+	{
+		/* pre-emphasis: L0, L1, L2, L3 */
+		{0x00, 0x09, 0x13, 0x25}, /* voltage swing: L0 */
+		{0x00, 0x0f, 0x1e}, /* L1 */
+		{0x00, 0x14}, /* L2 */
+		{0x00}, /* L3 */
+	},
+
+	/* postcursor2 L1 */
+	{
+		{0x00, 0x0a, 0x14, 0x28},
+		{0x00, 0x0f, 0x1e},
+		{0x00, 0x14},
+		{0x00},
+	},
+
+	/* postcursor2 L2 */
+	{
+		{0x00, 0x0a, 0x14, 0x28},
+		{0x00, 0x0f, 0x1e},
+		{0x00, 0x14},
+		{0x00},
+	},
+
+	/* postcursor2 L3 */
+	{
+		{0x00, 0x0a, 0x14, 0x28},
+		{0x00, 0x0f, 0x1e},
+		{0x00, 0x14},
+		{0x00},
+	},
+};
+
+static const u32 tegra_dp_pc_regs[][4][4] = {
+	/* postcursor2 L0 */
+	{
+		/* pre-emphasis: L0, L1, L2, L3 */
+		{0x00, 0x00, 0x00, 0x00}, /* voltage swing: L0 */
+		{0x00, 0x00, 0x00}, /* L1 */
+		{0x00, 0x00}, /* L2 */
+		{0x00}, /* L3 */
+	},
+
+	/* postcursor2 L1 */
+	{
+		{0x02, 0x02, 0x04, 0x05},
+		{0x02, 0x04, 0x05},
+		{0x04, 0x05},
+		{0x05},
+	},
+
+	/* postcursor2 L2 */
+	{
+		{0x04, 0x05, 0x08, 0x0b},
+		{0x05, 0x09, 0x0b},
+		{0x08, 0x0a},
+		{0x0b},
+	},
+
+	/* postcursor2 L3 */
+	{
+		{0x05, 0x09, 0x0b, 0x12},
+		{0x09, 0x0d, 0x12},
+		{0x0b, 0x0f},
+		{0x12},
+	},
+};
+
+static const u32 tegra_dp_tx_pu[][4][4] = {
+	/* postcursor2 L0 */
+	{
+		/* pre-emphasis: L0, L1, L2, L3 */
+		{0x20, 0x30, 0x40, 0x60}, /* voltage swing: L0 */
+		{0x30, 0x40, 0x60}, /* L1 */
+		{0x40, 0x60}, /* L2 */
+		{0x60}, /* L3 */
+	},
+
+	/* postcursor2 L1 */
+	{
+		{0x20, 0x20, 0x30, 0x50},
+		{0x30, 0x40, 0x50},
+		{0x40, 0x50},
+		{0x60},
+	},
+
+	/* postcursor2 L2 */
+	{
+		{0x20, 0x20, 0x30, 0x40},
+		{0x30, 0x30, 0x40},
+		{0x40, 0x50},
+		{0x60},
+	},
+
+	/* postcursor2 L3 */
+	{
+		{0x20, 0x20, 0x20, 0x40},
+		{0x30, 0x30, 0x40},
+		{0x40, 0x40},
+		{0x60},
+	},
+};
+
 enum {
 	driveCurrent_Level0 = 0,
 	driveCurrent_Level1 = 1,
@@ -160,6 +300,20 @@ enum {
 	postCursor2_Supported
 };
 
+static inline int tegra_dp_is_max_vs(u32 pe, u32 vs)
+{
+	return (vs < (driveCurrent_Level3 - pe)) ? 0 : 1;
+}
+
+static inline int tegra_dp_is_max_pe(u32 pe, u32 vs)
+{
+	return (pe < (preEmphasis_Level3 - vs)) ? 0 : 1;
+}
+
+static inline int tegra_dp_is_max_pc(u32 pc)
+{
+	return (pc < postCursor2_Level3) ? 0 : 1;
+}
 
 /* the +10ms is the time for power rail going up from 10-90% or
    90%-10% on powerdown */
@@ -200,6 +354,7 @@ struct tegra_dc_dp_data {
 #define NV_DPCD_MAX_LANE_COUNT_LANE_1			(0x00000001)
 #define NV_DPCD_MAX_LANE_COUNT_LANE_2			(0x00000002)
 #define NV_DPCD_MAX_LANE_COUNT_LANE_4			(0x00000004)
+#define NV_DPCD_MAX_LANE_COUNT_TPS3_SUPPORTED_YES       (0x00000001 << 6)
 #define NV_DPCD_MAX_LANE_COUNT_ENHANCED_FRAMING_NO	(0x00000000 << 7)
 #define NV_DPCD_MAX_LANE_COUNT_ENHANCED_FRAMING_YES	(0x00000001 << 7)
 #define NV_DPCD_MAX_DOWNSPREAD				(0x00000003)
@@ -212,6 +367,7 @@ struct tegra_dc_dp_data {
 #define NV_DPCD_EDP_CONFIG_CAP_ASC_RESET_YES		(0x00000001)
 #define NV_DPCD_EDP_CONFIG_CAP_FRAMING_CHANGE_NO	(0x00000000 << 1)
 #define NV_DPCD_EDP_CONFIG_CAP_FRAMING_CHANGE_YES	(0x00000001 << 1)
+#define NV_DPCD_TRAINING_AUX_RD_INTERVAL				(0x0000000E)
 #define NV_DPCD_LINK_BANDWIDTH_SET			(0x00000100)
 #define NV_DPCD_LANE_COUNT_SET				(0x00000101)
 #define NV_DPCD_LANE_COUNT_SET_ENHANCEDFRAMING_F	(0x00000000 << 7)
@@ -230,8 +386,10 @@ struct tegra_dc_dp_data {
 #define NV_DPCD_TRAINING_LANE3_SET			(0x00000106)
 #define NV_DPCD_TRAINING_LANEX_SET_DC_SHIFT		0
 #define NV_DPCD_TRAINING_LANEX_SET_DC_MAX_REACHED_T	(0x00000001 << 2)
+#define NV_DPCD_TRAINING_LANEX_SET_DC_MAX_REACHED_F     (0x00000000 << 2)
 #define NV_DPCD_TRAINING_LANEX_SET_PE_SHIFT		3
 #define NV_DPCD_TRAINING_LANEX_SET_PE_MAX_REACHED_T	(0x00000001 << 5)
+#define NV_DPCD_TRAINING_LANEX_SET_PE_MAX_REACHED_F	(0x00000000 << 5)
 #define NV_DPCD_DOWNSPREAD_CTRL				(0x00000107)
 #define NV_DPCD_DOWNSPREAD_CTRL_SPREAD_AMP_NONE		(0x00000000 << 4)
 #define NV_DPCD_DOWNSPREAD_CTRL_SPREAD_AMP_LT_0_5	(0x00000001 << 4)
@@ -246,8 +404,10 @@ struct tegra_dc_dp_data {
 #define NV_DPCD_TRAINING_LANE2_3_SET2			(0x00000110)
 #define NV_DPCD_LANEX_SET2_PC2_SHIFT			0
 #define NV_DPCD_LANEX_SET2_PC2_MAX_REACHED_T		(0x00000001 << 2)
+#define NV_DPCD_LANEX_SET2_PC2_MAX_REACHED_F		(0x00000000 << 2)
 #define NV_DPCD_LANEXPLUS1_SET2_PC2_SHIFT		4
 #define NV_DPCD_LANEXPLUS1_SET2_PC2_MAX_REACHED_T	(0x00000001 << 6)
+#define NV_DPCD_LANEXPLUS1_SET2_PC2_MAX_REACHED_F	(0x00000000 << 6)
 #define NV_DPCD_SINK_COUNT				(0x00000200)
 #define NV_DPCD_DEVICE_SERVICE_IRQ_VECTOR		(0x00000201)
 #define NV_DPCD_DEVICE_SERVICE_IRQ_VECTOR_AUTO_TEST_NO	(0x00000000 << 1)

@@ -35,6 +35,9 @@
 /* Allow a maximum of 8 GPIOs */
 #define SYSINFO_MAX_GPIOS 8
 
+/* Up to 10 MAC addresses */
+#define SYSINFO_MAX_MACS 10
+
 #include <coreboot_tables.h>
 
 struct cb_serial;
@@ -86,6 +89,8 @@ struct sysinfo_t {
 #ifdef CONFIG_LP_CHROMEOS
 	int num_gpios;
 	struct cb_gpio gpios[SYSINFO_MAX_GPIOS];
+	int num_macs;
+	struct mac_address macs[SYSINFO_MAX_MACS];
 #endif
 
 	unsigned long *mbtable; /** Pointer to the multiboot table */

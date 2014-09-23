@@ -114,6 +114,20 @@ static void cb_parse_vdat(unsigned char *ptr, struct sysinfo_t *info)
 	info->vdat_addr = phys_to_virt(vdat->range_start);
 	info->vdat_size = vdat->range_size;
 }
+
+static void cb_parse_mac_addresses(unsigned char *ptr,
+				   struct sysinfo_t *info)
+{
+	struct cb_macs *macs = (struct cb_macs *)ptr;
+	int i;
+
+	info->num_macs = (macs->count < ARRAY_SIZE(info->macs)) ?
+		macs->count : ARRAY_SIZE(info->macs);
+
+	for (i = 0; i < info->num_macs; i++)
+		info->macs[i] = macs->mac_addrs[i];
+}
+
 #endif
 
 static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
@@ -290,6 +304,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_VBOOT_HANDOFF:
 			cb_parse_vboot_handoff(ptr, info);
+			break;
+		case CB_TAG_MAC_ADDRS:
+			cb_parse_mac_addresses(ptr, info);
 			break;
 #endif
 		case CB_TAG_TIMESTAMPS:

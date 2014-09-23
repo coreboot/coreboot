@@ -224,6 +224,18 @@ struct cb_x86_rom_mtrr {
 	uint32_t index;
 };
 
+#define CB_TAG_MAC_ADDRS       0x0026
+struct mac_address {
+	uint8_t mac_addr[6];
+	uint8_t pad[2];         /* Pad it to 8 bytes to keep it simple. */
+};
+
+struct cb_macs {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t count;
+	struct mac_address mac_addrs[0];
+};
 
 #define CB_TAG_CMOS_OPTION_TABLE 0x00c8
 struct cb_cmos_option_table {

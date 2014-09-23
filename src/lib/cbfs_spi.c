@@ -70,26 +70,30 @@ static void *cbfs_media_unmap(struct cbfs_media *media,
 	return cbfs_simple_buffer_unmap(&context->buffer, address);
 }
 
+static int init_cbfs_media_context(void)
+{
+	if (!spi_context.spi_flash_info) {
+
+		spi_context.spi_flash_info = spi_flash_probe
+			(CONFIG_BOOT_MEDIA_SPI_BUS, 0);
+
+		if (!spi_context.spi_flash_info)
+			return -1;
+
+		spi_context.buffer.buffer = (void *)CONFIG_CBFS_CACHE_ADDRESS;
+		spi_context.buffer.size = CONFIG_CBFS_CACHE_SIZE;
+	}
+	return 0;
+
+}
 int init_default_cbfs_media(struct cbfs_media *media)
 {
-	if (spi_context.buffer.buffer)
-		return 0; /* It has been already initialized. */
-
-	spi_context.spi_flash_info = spi_flash_probe
-		(CONFIG_BOOT_MEDIA_SPI_BUS, 0);
-	if (!spi_context.spi_flash_info)
-		return -1;
-
-	spi_context.buffer.buffer = (void *)CONFIG_CBFS_CACHE_ADDRESS;
-	spi_context.buffer.size = CONFIG_CBFS_CACHE_SIZE;
-
 	media->context = &spi_context;
-
 	media->open = cbfs_media_open;
 	media->close = cbfs_media_close;
 	media->read = cbfs_media_read;
 	media->map = cbfs_media_map;
 	media->unmap = cbfs_media_unmap;
 
-	return 0;
+	return init_cbfs_media_context();
 }

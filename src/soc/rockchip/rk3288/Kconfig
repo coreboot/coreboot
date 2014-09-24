@@ -29,7 +29,6 @@ config SOC_ROCKCHIP_RK3288
 	select HAVE_UART_MEMORY_MAPPED
 	select HAVE_UART_SPECIAL
 	select BOOTBLOCK_CONSOLE
-	select DYNAMIC_CBMEM
 
 if SOC_ROCKCHIP_RK3288
 
@@ -49,9 +48,10 @@ config BOOTBLOCK_CPU_INIT
 #
 # 0xFF70_0000 TTB (16KB).
 # 0xFF70_4004 Bootblock (max 16KB-4B).
-# 0xFF70_8000 ROM stage (max 40KB).
+# 0xFF70_8000 verstage then romstage (max 40KB).
 # 0xFF71_2000 STACK (4KB).
-# 0xFF71_3000 CBFS mapping cache (20K)
+# 0xFF71_3000 CBFS mapping cache (4K)
+# 0xFF71_4000 vboot work buffer (16K)
 # 0xFF71_7FFF End of iRAM.
 
 config SYS_SRAM_BASE
@@ -73,6 +73,11 @@ config STACK_BOTTOM
 config BOOTBLOCK_BASE
 	hex
 	default 0xff704004
+
+# with vboot2, romstage is loaded over the verstage space
+config VERSTAGE_BASE
+	hex
+	default 0xff708000
 
 config ROMSTAGE_BASE
 	hex "ROM STAGE BASE"
@@ -100,7 +105,15 @@ config CBFS_SRAM_CACHE_ADDRESS
 
 config CBFS_SRAM_CACHE_SIZE
 	hex "size of CBFS cache data"
-	default 0x00005000
+	default 0x00001000
+
+config VBOOT_WORK_BUFFER_ADDRESS
+	hex "memory address of vboot work buffer"
+	default 0xff714000
+
+config VBOOT_WORK_BUFFER_SIZE
+	hex "size of vboot work buffer"
+	default 0x00004000
 
 config CBFS_DRAM_CACHE_ADDRESS
 	hex "dram memory address to put CBFS cache data"

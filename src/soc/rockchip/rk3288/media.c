@@ -24,7 +24,7 @@
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {
-#if defined(__BOOT_BLOCK__)
+#if defined(__BOOT_BLOCK__) || defined(__VER_STAGE__)
 	return initialize_rockchip_spi_cbfs_media(media,
 		(void *)CONFIG_CBFS_SRAM_CACHE_ADDRESS,
 		CONFIG_CBFS_SRAM_CACHE_SIZE);

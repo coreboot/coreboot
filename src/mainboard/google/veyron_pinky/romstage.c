@@ -18,6 +18,7 @@
  */
 
 #include <types.h>
+#include <arch/stages.h>
 #include <armv7.h>
 #include <cbfs.h>
 #include <console/console.h>
@@ -68,8 +69,6 @@ void main(void)
 		mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
 	dcache_mmu_enable();
 
-	setup_chromeos_gpios();
-
 	cbmem_initialize_empty();
 
 #if CONFIG_COLLECT_TIMESTAMPS
@@ -79,5 +78,12 @@ void main(void)
 	timestamp_add(TS_AFTER_INITRAM, after_dram_time);
 	timestamp_add_now(TS_END_ROMSTAGE);
 #endif
+
+#if IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE)
+	void *entry = vboot_load_ramstage();
+	if (entry != NULL)
+		stage_exit(entry);
+#endif
+
 	run_ramstage();
 }

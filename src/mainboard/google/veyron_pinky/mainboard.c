@@ -57,13 +57,9 @@ static void setup_iomux(void)
 	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
 	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 
-	/*i2c1 for tpm*/
-	writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);
-
 	/*i2c2 for codec*/
 	writel(IOMUX_I2C2, &rk3288_grf->iomux_i2c2);
 
-	writel(IOMUX_SPI0, &rk3288_grf->iomux_spi0);
 	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
 	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
 	writel(IOMUX_LCDC, &rk3288_grf->iomux_lcdc);
@@ -127,7 +123,6 @@ static void mainboard_init(device_t dev)
 	configure_sdmmc();
 	configure_emmc();
 	configure_i2s();
-	rockchip_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS);
 }
 
 static void mainboard_enable(device_t dev)

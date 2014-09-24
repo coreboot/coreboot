@@ -29,6 +29,16 @@ bootblock-y += monotonic_timer.c
 bootblock-y += clock.c
 bootblock-y += spi.c
 bootblock-y += media.c
+bootblock-y += gpio.c
+
+verstage-y += monotonic_timer.c
+verstage-y += spi.c
+verstage-y += timer.c
+verstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
+verstage-y += gpio.c
+verstage-y += clock.c
+verstage-y += i2c.c
+verstage-y += media.c
 
 romstage-y += cbmem.c
 romstage-y += timer.c

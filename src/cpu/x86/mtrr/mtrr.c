@@ -51,8 +51,8 @@
 #define OS_MTRRS   2
 #define MTRRS      (BIOS_MTRRS + OS_MTRRS)
 /*
- * Static storage size for variable MTRRs. Its sized sufficiently large to
- * handle different types of CPUs. Empiricially, 16 variable MTRRs has not
+ * Static storage size for variable MTRRs. It's sized sufficiently large to
+ * handle different types of CPUs. Empirically, 16 variable MTRRs has not
  * yet been observed.
  */
 #define NUM_MTRR_STATIC_STORAGE 16
@@ -769,7 +769,7 @@ static void commit_var_mtrrs(const struct var_mtrr_solution *sol)
 {
 	int i;
 
-	/* Write out the variable MTTRs. */
+	/* Write out the variable MTRRs. */
 	disable_cache();
 	for (i = 0; i < sol->num_used; i++) {
 		wrmsr(MTRRphysBase_MSR(i), sol->regs[i].base);
@@ -778,6 +778,7 @@ static void commit_var_mtrrs(const struct var_mtrr_solution *sol)
 	/* Clear the ones that are unused. */
 	for (; i < total_mtrrs; i++)
 		clear_var_mtrr(i);
+	enable_var_mtrr(sol->mtrr_default_type);
 	enable_cache();
 
 }
@@ -800,7 +801,6 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	}
 
 	commit_var_mtrrs(sol);
-	enable_var_mtrr(sol->mtrr_default_type);
 }
 
 void x86_setup_mtrrs(void)

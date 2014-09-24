@@ -920,6 +920,7 @@ void tegra_dc_sor_attach(struct tegra_dc_sor_data *sor);
 void tegra_dc_sor_set_lane_parm(struct tegra_dc_sor_data *sor,
 			const struct tegra_dc_dp_link_config *link_cfg);
 void tegra_dc_sor_power_down_unused_lanes(struct tegra_dc_sor_data *sor);
+void tegra_dc_sor_set_voltage_swing(struct tegra_dc_sor_data *sor);
 void tegra_sor_precharge_lanes(struct tegra_dc_sor_data *sor);
 void tegra_dp_disable_tx_pu(struct tegra_dc_sor_data *sor);
 void tegra_dp_set_pe_vs_pc(struct tegra_dc_sor_data *sor, u32 mask,

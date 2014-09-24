@@ -1254,6 +1254,9 @@ static int tegra_dp_do_link_training(struct tegra_dc_dp_data *dp,
 				printk(BIOS_ERR, "dp: full link training failed\n");
 				return ret;
 			}
+	} else {
+		/* set to a known-good drive setting if fast link succeeded */
+		tegra_dc_sor_set_voltage_swing(&dp->sor);
 	}
 
 	/* Everything goes well, double check the link config */

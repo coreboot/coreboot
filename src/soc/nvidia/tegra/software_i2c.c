@@ -18,7 +18,7 @@
  */
 
 #include <device/i2c.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/pinmux.h>
 
 #include "i2c.h"
@@ -58,12 +58,12 @@ static void tegra_set_scl(unsigned bus, int high)
 
 static int tegra_get_sda(unsigned bus)
 {
-	return gpio_get_in_value(pins[bus].sda);
+	return gpio_get(pins[bus].sda);
 }
 
 static int tegra_get_scl(unsigned bus)
 {
-	return gpio_get_in_value(pins[bus].scl);
+	return gpio_get(pins[bus].scl);
 }
 
 static struct software_i2c_ops tegra_ops = {

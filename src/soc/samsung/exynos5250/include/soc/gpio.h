@@ -22,6 +22,8 @@
 
 #include <soc/cpu.h>
 
+/* TODO: Align interface to src/include/gpio.h! */
+
 struct gpio_bank {
 	unsigned int	con;
 	unsigned int	dat;

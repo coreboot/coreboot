@@ -19,13 +19,13 @@
 
 #include <arch/cache.h>
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <edid.h>
-#include <boot/coreboot_tables.h>
 #include <device/i2c.h>
-#include <soc/gpio.h>
+#include <edid.h>
+#include <gpio.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
 #include <soc/pmu.h>

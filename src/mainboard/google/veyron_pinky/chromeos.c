@@ -21,7 +21,7 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -47,7 +47,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Write Protect: active low */
 	gpios->gpios[count].port = GPIO_WP.raw;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get_in_value(GPIO_WP);
+	gpios->gpios[count].value = gpio_get(GPIO_WP);
 	strncpy((char *)gpios->gpios[count].name, "write protect",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -63,14 +63,14 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Lid: active high */
 	gpios->gpios[count].port = GPIO_LID.raw;
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = gpio_get_in_value(GPIO_LID);
+	gpios->gpios[count].value = gpio_get(GPIO_LID);
 	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
 	count++;
 
 	/* Power:GPIO active high */
 	gpios->gpios[count].port = GPIO_POWER.raw;
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = gpio_get_in_value(GPIO_POWER);
+	gpios->gpios[count].value = gpio_get(GPIO_POWER);
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -99,7 +99,7 @@ int get_recovery_mode_switch(void)
 	uint32_t ec_events;
 
 	/* The GPIO is active low. */
-	if (!gpio_get_in_value(GPIO_RECOVERY))
+	if (!gpio_get(GPIO_RECOVERY))
 		return 1;
 
 	ec_events = google_chromeec_get_events_b();
@@ -109,6 +109,6 @@ int get_recovery_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return !gpio_get_in_value(GPIO_WP);
+	return !gpio_get(GPIO_WP);
 }
 

@@ -21,10 +21,10 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <device/i2c.h>
+#include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/clk_rst.h>
 #include <soc/clock.h>
-#include <soc/gpio.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/pinmux.h>
 #include <soc/spi.h>	/* FIXME: move back to soc code? */

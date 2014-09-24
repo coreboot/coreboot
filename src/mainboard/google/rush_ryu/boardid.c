@@ -19,7 +19,6 @@
 
 #include <boardid.h>
 #include <console/console.h>
-#include <soc/gpio.h>
 #include <stdlib.h>
 
 #include "gpio.h"
@@ -75,8 +74,7 @@ uint8_t board_id(void)
 		int tristate_id;
 		gpio_t gpio[] = { BD_ID0, BD_ID1 };
 
-		tristate_id = gpio_get_in_tristate_values(gpio,
-							ARRAY_SIZE(gpio), 0);
+		tristate_id = gpio_get_tristates(gpio, ARRAY_SIZE(gpio), 0);
 
 		for (i = 0; i < ARRAY_SIZE(bdid_map); i++) {
 			if (tristate_id != bdid_map[i].tri_state_value)

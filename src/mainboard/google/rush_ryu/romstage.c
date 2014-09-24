@@ -69,7 +69,7 @@ static void lte_modem_init(void)
 	int mdm_det;
 
 	/* A LTE modem is present if MDM_DET is pulled down by the modem */
-	mdm_det = gpio_get_in_value(MDM_DET);
+	mdm_det = gpio_get(MDM_DET);
 	if (mdm_det == 1)
 		return;
 

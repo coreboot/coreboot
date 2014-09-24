@@ -29,7 +29,7 @@
  */
 
 #include <arch/io.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/iomap.h>
 
 /*******************************************************
@@ -116,7 +116,7 @@ unsigned *out - Value of GPIO output
 
 Return : None
 *******************************************************/
-int gpio_get_in_value(gpio_t gpio)
+int gpio_get(gpio_t gpio)
 {
 	if (gpio_not_valid(gpio))
 		return -1;
@@ -126,7 +126,7 @@ int gpio_get_in_value(gpio_t gpio)
 		GPIO_IO_IN_MASK;
 }
 
-void gpio_set_out_value(gpio_t gpio, int value)
+void gpio_set(gpio_t gpio, int value)
 {
 	if (gpio_not_valid(gpio))
 		return;

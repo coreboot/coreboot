@@ -19,10 +19,10 @@
 
 #include <arch/io.h>
 #include <console/console.h>
-#include <soc/soc.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/grf.h>
 #include <soc/pmu.h>
+#include <soc/soc.h>
 #include <stdlib.h>
 
 struct rk3288_gpio_regs *gpio_port[] = {
@@ -72,7 +72,7 @@ void gpio_input_pullup(gpio_t gpio)
 	__gpio_input(gpio, PULLUP);
 }
 
-int gpio_get_in_value(gpio_t gpio)
+int gpio_get(gpio_t gpio)
 {
 	return (readl(&gpio_port[gpio.port]->ext_porta) >> gpio.num) & 0x1;
 }

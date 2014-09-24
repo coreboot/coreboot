@@ -19,7 +19,7 @@
 
 #include <boardid.h>
 #include <console/console.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <stdlib.h>
 
 uint8_t board_id(void)
@@ -38,7 +38,7 @@ uint8_t board_id(void)
 		id = 0;
 		for (i = 0; i < ARRAY_SIZE(pins); i++) {
 			gpio_input(pins[i]);
-			id |= gpio_get_in_value(pins[i]) << i;
+			id |= gpio_get(pins[i]) << i;
 		}
 		printk(BIOS_SPEW, "Board ID: %#x.\n", id);
 	}

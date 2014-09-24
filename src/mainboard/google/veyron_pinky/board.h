@@ -21,7 +21,7 @@
 #define __MAINBOARD_GOOGLE_VEYRON_PINKY_BOARD_H
 
 #include <boardid.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 #define PMIC_BUS 0
 

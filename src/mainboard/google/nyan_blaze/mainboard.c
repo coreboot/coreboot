@@ -21,10 +21,10 @@
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <elog.h>
+#include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/clk_rst.h>
-#include <soc/gpio.h>
 #include <soc/mc.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra/usb.h>

@@ -23,9 +23,8 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <gpiolib.h>
+#include <gpio.h>
 #include <soc/clock.h>
-#include <soc/gpio.h>
 #include <soc/usb.h>
 #include <string.h>
 #include <symbols.h>
@@ -46,7 +45,7 @@ static void setup_usb(void)
 #if !CONFIG_BOARD_VARIANT_AP148
 	gpio_tlmm_config_set(USB_ENABLE_GPIO, FUNC_SEL_GPIO,
 			     GPIO_PULL_UP, GPIO_10MA, GPIO_ENABLE);
-	gpio_set_out_value(USB_ENABLE_GPIO, 1);
+	gpio_set(USB_ENABLE_GPIO, 1);
 #endif
 	usb_clock_config();
 
@@ -86,9 +85,9 @@ static void setup_tpm(void)
 	 * make it twice as long. If the output was driven low originally, the
 	 * reset pulse will be even longer.
 	 */
-	gpio_set_out_value(TPM_RESET_GPIO, 0);
+	gpio_set(TPM_RESET_GPIO, 0);
 	udelay(160);
-	gpio_set_out_value(TPM_RESET_GPIO, 1);
+	gpio_set(TPM_RESET_GPIO, 1);
 }
 
 #define SW_RESET_GPIO 26
@@ -106,7 +105,7 @@ static void deassert_sw_reset(void)
 	gpio_tlmm_config_set(SW_RESET_GPIO, FUNC_SEL_GPIO,
 			     GPIO_PULL_UP, GPIO_4MA, GPIO_ENABLE);
 
-	gpio_set_out_value(SW_RESET_GPIO, 0);
+	gpio_set(SW_RESET_GPIO, 0);
 }
 
 static void mainboard_init(device_t dev)
@@ -148,7 +147,7 @@ static int read_gpio(gpio_t gpio_num)
 	gpio_tlmm_config_set(gpio_num, GPIO_FUNC_DISABLE,
 			     GPIO_NO_PULL, GPIO_2MA, GPIO_DISABLE);
 	udelay(10); /* Should be enough to settle. */
-	return gpio_get_in_value(gpio_num);
+	return gpio_get(gpio_num);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

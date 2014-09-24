@@ -18,7 +18,7 @@
  */
 
 #include <arch/io.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <reset.h>
 
 #include "board.h"

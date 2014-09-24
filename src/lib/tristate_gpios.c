@@ -18,9 +18,9 @@
  */
 
 #include <delay.h>
-#include <gpiolib.h>
+#include <gpio.h>
 
-int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int tertiary)
+int gpio_get_tristates(gpio_t gpio[], int num_gpio, int tertiary)
 {
 	/*
 	 * GPIOs which are tied to stronger external pull up or pull down
@@ -45,7 +45,7 @@ int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int tertiary)
 
 	/* Get gpio values at internal pull up */
 	for (index = 0; index < num_gpio; ++index)
-		value[index] = gpio_get_in_value(gpio[index]);
+		value[index] = gpio_get(gpio[index]);
 
 	/* Enable internal pull down */
 	for (index = 0; index < num_gpio; ++index)
@@ -67,7 +67,7 @@ int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int tertiary)
 			id *= 3;
 		else
 			id <<= 2;
-		temp = gpio_get_in_value(gpio[index]);
+		temp = gpio_get(gpio[index]);
 		id += ((value[index] ^ temp) << 1) | temp;
 	}
 

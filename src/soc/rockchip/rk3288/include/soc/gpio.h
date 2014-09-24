@@ -67,10 +67,4 @@ enum {
 	GPIO_D,
 };
 
-void gpio_input(gpio_t gpio);
-void gpio_input_pulldown(gpio_t gpio);
-void gpio_input_pullup(gpio_t gpio);
-void gpio_output(gpio_t gpio, int value);
-int gpio_get_in_value(gpio_t gpio);
-
-#endif	/* _ASM_ROCKCHIP_GPIO_H_ */
+#endif	/* __SOC_ROCKCHIP_RK3288_GPIO_H__ */

@@ -20,8 +20,8 @@
 #ifndef __SOC_NVIDIA_TEGRA124_CHIP_H__
 #define __SOC_NVIDIA_TEGRA124_CHIP_H__
 #include <arch/cache.h>
+#include <gpio.h>
 #include <soc/addressmap.h>
-#include <soc/gpio.h>
 
 #define EFAULT  1
 #define EINVAL  2

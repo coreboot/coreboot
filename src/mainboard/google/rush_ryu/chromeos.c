@@ -33,7 +33,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Write Protect: active low */
 	gpios->gpios[count].port = WRITE_PROTECT_L_INDEX;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get_in_value(WRITE_PROTECT_L);
+	gpios->gpios[count].value = gpio_get(WRITE_PROTECT_L);
 	strncpy((char *)gpios->gpios[count].name, "write protect",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -51,7 +51,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Power: active low */
 	gpios->gpios[count].port = POWER_BUTTON_INDEX,
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = gpio_get_in_value(POWER_BUTTON);
+	gpios->gpios[count].value = gpio_get(POWER_BUTTON);
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -86,5 +86,5 @@ int get_recovery_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return !gpio_get_in_value(WRITE_PROTECT_L);
+	return !gpio_get(WRITE_PROTECT_L);
 }

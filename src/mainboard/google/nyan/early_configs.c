@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/early_configs.h>
-#include <soc/gpio.h>
 #include <soc/nvidia/tegra/i2c.h>
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;

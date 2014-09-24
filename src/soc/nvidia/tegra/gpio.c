@@ -19,16 +19,15 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <gpio.h>
 #include <soc/addressmap.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <delay.h>
-#include <gpiolib.h>
 
-#include "gpio.h"
 #include "pinmux.h"
 
-void __gpio_input(gpio_t gpio, u32 pull)
+static void __gpio_input(gpio_t gpio, u32 pull)
 {
 	u32 pinmux_config = PINMUX_INPUT_ENABLE | pull;
 
@@ -38,10 +37,10 @@ void __gpio_input(gpio_t gpio, u32 pull)
 	pinmux_set_config(gpio >> GPIO_PINMUX_SHIFT, pinmux_config);
 }
 
-void __gpio_output(gpio_t gpio, int value, u32 od)
+static void __gpio_output(gpio_t gpio, int value, u32 od)
 {
 	gpio_set_int_enable(gpio, 0);
-	gpio_set_out_value(gpio, value);
+	gpio_set(gpio, value);
 	gpio_set_out_enable(gpio, 1);
 	gpio_set_mode(gpio, GPIO_MODE_GPIO);
 	pinmux_set_config(gpio >> GPIO_PINMUX_SHIFT, PINMUX_PULL_NONE | od);
@@ -121,7 +120,7 @@ int gpio_get_out_enable(gpio_t gpio)
 	return (port & (1 << bit)) != 0;
 }
 
-void gpio_set_out_value(gpio_t gpio, int value)
+void gpio_set(gpio_t gpio, int value)
 {
 	int bit = gpio % GPIO_GPIOS_PER_PORT;
 	gpio_write_port(gpio & ((1 << GPIO_PINMUX_SHIFT) - 1),
@@ -137,7 +136,7 @@ int gpio_get_out_value(gpio_t gpio)
 	return (port & (1 << bit)) != 0;
 }
 
-int gpio_get_in_value(gpio_t gpio)
+int gpio_get(gpio_t gpio)
 {
 	int bit = gpio % GPIO_GPIOS_PER_PORT;
 	u32 port = gpio_read_port(gpio & ((1 << GPIO_PINMUX_SHIFT) - 1),
@@ -211,4 +210,14 @@ void gpio_input_pullup(gpio_t gpio)
 void gpio_input(gpio_t gpio)
 {
 	__gpio_input(gpio, PINMUX_PULL_NONE);
+}
+
+void gpio_output(gpio_t gpio, int value)
+{
+	__gpio_output(gpio, value, 0);
+}
+
+void gpio_output_open_drain(gpio_t gpio, int value)
+{
+	__gpio_output(gpio, value, PINMUX_OPEN_DRAIN);
 }

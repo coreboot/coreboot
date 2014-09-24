@@ -33,7 +33,7 @@
 #ifndef __SOC_QUALCOMM_IPQ806X_GPIO_H_
 #define __SOC_QUALCOMM_IPQ806X_GPIO_H_
 
-#include <gpiolib.h>
+#include <types.h>
 
 #define GPIO_FUNC_ENABLE			1
 #define GPIO_FUNC_DISABLE			0
@@ -89,6 +89,8 @@
 /* GPIO IO: Shift */
 #define GPIO_IO_IN_SHIFT      0
 #define GPIO_IO_OUT_SHIFT     1
+
+typedef u32 gpio_t;
 
 void gpio_tlmm_config_set(gpio_t gpio, unsigned int func,
 			  unsigned int pull, unsigned int drvstr,

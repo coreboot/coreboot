@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/soc.h>
 #include <stddef.h>
 #include <stdlib.h>

@@ -18,15 +18,15 @@
  */
 
 #include <boardid.h>
-#include <gpiolib.h>
+#include <gpio.h>
 #include <console/console.h>
 #include <stdlib.h>
 
 /*
  * Storm boards dedicate to the board ID three GPIOs in tertiary mode: 29, 30
  * and 68. On proto0 GPIO68 is used and tied low, so it reads as 'zero' by
- * gpio_get_in_tristate_values(), whereas the other two pins are not connected
- * and read as 'two'. This results in gpio_get_in_tristate_values() returning
+ * gpio_get_tristates(), whereas the other two pins are not connected
+ * and read as 'two'. This results in gpio_get_tristates() returning
  * 8 on proto0.
  *
  * Three tertitiary signals could represent 27 different values. To make
@@ -45,8 +45,7 @@ static uint8_t get_board_id(void)
 	gpio_t hw_rev_gpios[] = {29, 30, 68};
 	int offset = 19;
 
-	bid = gpio_get_in_tristate_values(hw_rev_gpios,
-					  ARRAY_SIZE(hw_rev_gpios), 1);
+	bid = gpio_get_tristates(hw_rev_gpios, ARRAY_SIZE(hw_rev_gpios), 1);
 	bid = (bid + offset) % 27;
 	printk(BIOS_INFO, "Board ID %d\n", bid);
 

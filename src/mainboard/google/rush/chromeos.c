@@ -21,7 +21,7 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -32,7 +32,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Write Protect: active low */
 	gpios->gpios[count].port = GPIO_R1_INDEX;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get_in_value(GPIO(R1));
+	gpios->gpios[count].value = gpio_get(GPIO(R1));
 	strncpy((char *)gpios->gpios[count].name, "write protect",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -90,5 +90,5 @@ int get_recovery_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return !gpio_get_in_value(GPIO(R1));
+	return !gpio_get(GPIO(R1));
 }

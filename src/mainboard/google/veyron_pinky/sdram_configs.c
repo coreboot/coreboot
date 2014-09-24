@@ -18,8 +18,8 @@
  */
 #include <arch/io.h>
 #include <console/console.h>
+#include <gpio.h>
 #include <soc/sdram.h>
-#include <soc/gpio.h>
 #include <string.h>
 #include <types.h>
 
@@ -56,10 +56,10 @@ u32 sdram_get_ram_code(void)
 	gpio_input(GPIO_RAMCODE2);
 	gpio_input(GPIO_RAMCODE3);
 
-	code = gpio_get_in_value(GPIO_RAMCODE3) << 3
-			| gpio_get_in_value(GPIO_RAMCODE2) << 2
-			| gpio_get_in_value(GPIO_RAMCODE1) << 1
-			| gpio_get_in_value(GPIO_RAMCODE0) << 0;
+	code = gpio_get(GPIO_RAMCODE3) << 3
+			| gpio_get(GPIO_RAMCODE2) << 2
+			| gpio_get(GPIO_RAMCODE1) << 1
+			| gpio_get(GPIO_RAMCODE0) << 0;
 
 	return code;
 }

@@ -21,28 +21,14 @@
 #define __SOC_NVIDIA_TEGRA_GPIO_H__
 
 #include <stdint.h>
-#include <gpiolib.h>
 
 #include "pinmux.h"
+
+typedef u32 gpio_t;
 
 #define GPIO_PINMUX_SHIFT 16
 #define GPIO(name) ((gpio_t)(GPIO_##name##_INDEX | \
 			     (PINMUX_GPIO_##name << GPIO_PINMUX_SHIFT)))
-
-void __gpio_output(gpio_t gpio, int value, u32 open_drain);
-void __gpio_input(gpio_t gpio, u32 pull);
-
-/* Higher level function wrappers for common GPIO configurations. */
-
-static inline void gpio_output(gpio_t gpio, int value)
-{
-	__gpio_output(gpio, value, 0);
-}
-
-static inline void gpio_output_open_drain(gpio_t gpio, int value)
-{
-	__gpio_output(gpio, value, PINMUX_OPEN_DRAIN);
-}
 
 /* Functions to modify specific GPIO control values. */
 
@@ -71,6 +57,8 @@ void gpio_set_int_level(gpio_t gpio, int high_rise, int edge, int delta);
 void gpio_get_int_level(gpio_t gpio, int *high_rise, int *edge, int *delta);
 
 void gpio_set_int_clear(gpio_t gpio);
+
+void gpio_output_open_drain(gpio_t gpio, int value);
 
 /* Hardware definitions. */
 

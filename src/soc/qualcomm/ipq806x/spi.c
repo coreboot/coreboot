@@ -4,7 +4,7 @@
 
 #include <arch/io.h>
 #include <delay.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/iomap.h>
 #include <soc/spi.h>
 #include <stdlib.h>

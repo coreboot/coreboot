@@ -1,7 +1,7 @@
 
 /* * Copyright (c) 2012 - 2013 The Linux Foundation. All rights reserved.* */
 
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/cdp.h>
 #include <types.h>
 

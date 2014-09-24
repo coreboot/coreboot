@@ -17,11 +17,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __SRC_INCLUDE_GPIOLIB_H__
-#define __SRC_INCLUDE_GPIOLIB_H__
+#ifndef __SRC_INCLUDE_GPIO_H__
+#define __SRC_INCLUDE_GPIO_H__
 
-/* A generic type, use accessor macros to actually access the hardware. */
-typedef unsigned gpio_t;
+#include <soc/gpio.h>
+#include <types.h>
+
+/* <soc/gpio.h> must typedef a gpio_t that fits in 32 bits. */
+_Static_assert(sizeof(gpio_t) <= sizeof(u32), "gpio_t doesn't fit in lb_gpio");
+
+/* The following functions must be implemented by SoC/board code. */
+int gpio_get(gpio_t gpio);
+void gpio_set(gpio_t gpio, int value);
+void gpio_input_pulldown(gpio_t gpio);
+void gpio_input_pullup(gpio_t gpio);
+void gpio_input(gpio_t gpio);
+void gpio_output(gpio_t gpio, int value);
 
 /*
  * Read the value presented by the set of GPIOs, when each pin is interpreted
@@ -36,16 +47,6 @@ typedef unsigned gpio_t;
  * tertiary: 1: pins are interpreted as a quad coded tertiary.
  *           0: pins are interpreted as a set of two bit fields.
  */
-int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int tertiary);
+int gpio_get_tristates(gpio_t gpio[], int num_gpio, int tertiary);
 
-/*
- * The following functions are not provided by the common library, but must be
- * implemented by the appropriate SOC/board instead.
- */
-int gpio_get_in_value(gpio_t gpio);
-void gpio_set_out_value(gpio_t gpio, int value);
-void gpio_input_pulldown(gpio_t gpio);
-void gpio_input_pullup(gpio_t gpio);
-void gpio_input(gpio_t gpio);
-
-#endif
+#endif /* __SRC_INCLUDE_GPIO_H__ */

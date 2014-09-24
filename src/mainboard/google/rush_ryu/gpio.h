@@ -20,7 +20,7 @@
 #ifndef __MAINBOARD_GOOGLE_RUSH_RYU_GPIO_H__
 #define __MAINBOARD_GOOGLE_RUSH_RYU_GPIO_H__
 
-#include <soc/gpio.h>
+#include <gpio.h>
 
 /* Board ID definitions. */
 enum {

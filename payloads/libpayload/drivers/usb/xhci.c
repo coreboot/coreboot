@@ -551,6 +551,14 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 		} else {
 			TRB_SET(TT, trb, TRB_NORMAL);
 		}
+		/*
+		 * This is a workaround for Synopsys DWC3. If the ENT flag is
+		 * not set for the Normal and Data Stage TRBs. We get Event TRB
+		 * with length 0x20d from the controller when we enqueue a TRB
+		 * for the IN endpoint with length 0x200.
+		 */
+		if (!length)
+			TRB_SET(ENT, trb, 1);
 
 		xhci_enqueue_trb(tr);
 

@@ -93,6 +93,9 @@ enum { TRB_DIR_OUT = 0, TRB_DIR_IN = 1 };
 #define TRB_TC_FIELD		control		/* TC - Toggle Cycle */
 #define TRB_TC_START		1
 #define TRB_TC_LEN		1
+#define TRB_ENT_FIELD		control		/* ENT - Evaluate Next TRB */
+#define TRB_ENT_START		1
+#define TRB_ENT_LEN		1
 #define TRB_ISP_FIELD		control		/* ISP - Interrupt-on Short Packet */
 #define TRB_ISP_START		2
 #define TRB_ISP_LEN		1

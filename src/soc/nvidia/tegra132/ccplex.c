@@ -67,7 +67,7 @@ static int ccplex_start(void)
 		}
 	}
 
-	printk(BIOS_DEBUG, "MTS handshake took %ld us.\n",
+	printk(BIOS_DEBUG, "MTS handshake took %ld usecs.\n",
 		stopwatch_duration_usecs(&sw));
 
 	return 0;
@@ -78,6 +78,8 @@ int ccplex_load_mts(void)
 	struct cbfs_file file;
 	ssize_t offset;
 	size_t nread;
+	struct stopwatch sw;
+
 	/*
 	 * MTS location is hard coded to this magic address. The hardware will
 	 * take the MTS from this location and place it in the final resting
@@ -86,6 +88,7 @@ int ccplex_load_mts(void)
 	void * const mts = (void *)(uintptr_t)MTS_LOAD_ADDRESS;
 	struct cbfs_media *media = CBFS_DEFAULT_MEDIA;
 
+	stopwatch_init(&sw);
 	offset = cbfs_locate_file(media, &file, MTS_FILE_NAME);
 	if (offset < 0) {
 		printk(BIOS_DEBUG, "MTS file not found: %s\n", MTS_FILE_NAME);
@@ -101,7 +104,8 @@ int ccplex_load_mts(void)
 		return -1;
 	}
 
-	printk(BIOS_DEBUG, "MTS: %zu bytes loaded @ %p\n", nread, mts);
+	printk(BIOS_DEBUG, "MTS: %zu bytes loaded @ %p in %ld usecs.\n",
+	       nread, mts, stopwatch_duration_usecs(&sw));
 
 	return ccplex_start();
 }

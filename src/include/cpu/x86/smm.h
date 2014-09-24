@@ -460,6 +460,7 @@ typedef struct {
 #define APM_CNT_MBI_UPDATE	0xeb
 #define APM_CNT_GNVS_UPDATE	0xea
 #define APM_CNT_FINALIZE	0xcb
+#define APM_CNT_LEGACY		0xcc
 #define APM_STS		0xb3
 
 /* SMI handler function prototypes */

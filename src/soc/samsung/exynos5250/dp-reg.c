@@ -120,7 +120,7 @@ unsigned int s5p_dp_get_pll_lock_status(struct s5p_dp_device *dp)
 int s5p_dp_init_analog_func(struct s5p_dp_device *dp)
 {
 	u32 reg;
-	struct mono_time current, end;
+	struct stopwatch sw;
 	struct exynos5_dp *base = dp->base;
 
 	writel(0x00, &base->dp_phy_pd);
@@ -135,17 +135,14 @@ int s5p_dp_init_analog_func(struct s5p_dp_device *dp)
 
 		clrbits_le32(&base->dp_pll_ctl, DP_PLL_PD);
 
-		timer_monotonic_get(&current);
-		end = current;
-		mono_time_add_msecs(&end, PLL_LOCK_TIMEOUT);
+		stopwatch_init_msecs_expire(&sw, PLL_LOCK_TIMEOUT);
 
 		while (s5p_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
-			if (mono_time_after(&current, &end)) {
+			if (stopwatch_expired(&sw)) {
 				printk(BIOS_ERR, "%s: PLL is not locked\n",
 						__func__);
 				return -1;
 			}
-			timer_monotonic_get(&current);
 		}
 	}
 
@@ -435,13 +432,11 @@ void s5p_dp_enable_video_master(struct s5p_dp_device *dp)
 int s5p_dp_is_video_stream_on(struct s5p_dp_device *dp)
 {
 	u32 reg, i = 0;
-	struct mono_time current, end;
+	struct stopwatch sw;
 	struct exynos5_dp *base = dp->base;
 
 	/* Wait for 4 VSYNC_DET interrupts */
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_msecs(&end, STREAM_ON_TIMEOUT);
+	stopwatch_init_msecs_expire(&sw, STREAM_ON_TIMEOUT);
 
 	do {
 		reg = readl(&base->common_int_sta_1);
@@ -451,8 +446,7 @@ int s5p_dp_is_video_stream_on(struct s5p_dp_device *dp)
 		}
 		if (i == 4)
 			break;
-		timer_monotonic_get(&current);
-	} while (mono_time_before(&current, &end));
+	} while (!stopwatch_expired(&sw));
 
 	if (i != 4) {
 		printk(BIOS_DEBUG, "s5p_dp_is_video_stream_on timeout\n");

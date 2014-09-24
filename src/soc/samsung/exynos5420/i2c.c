@@ -415,16 +415,13 @@ static int hsi2c_check_transfer(struct hsi2c_regs *regs)
  */
 static int hsi2c_wait_for_transfer(struct hsi2c_regs *i2c)
 {
-	struct mono_time current, end;
+	struct stopwatch sw;
 
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_usecs(&end, Hsi2cTimeout * 1000);
-	while (mono_time_before(&current, &end)) {
+	stopwatch_init_msecs_expire(&sw, Hsi2cTimeout);
+	while (!stopwatch_expired(&sw)) {
 		int ret = hsi2c_check_transfer(i2c);
 		if (ret)
 			return ret;
-		timer_monotonic_get(&current);
 	}
 	return 0;
 }

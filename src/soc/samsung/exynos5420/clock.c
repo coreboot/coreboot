@@ -561,7 +561,7 @@ int clock_epll_set_rate(unsigned long rate)
 	unsigned int epll_con, epll_con_k;
 	unsigned int i;
 	unsigned int lockcnt;
-	struct mono_time current, end;
+	struct stopwatch sw;
 
 	epll_con = readl(&exynos_clock->epll_con0);
 	epll_con &= ~((EPLL_CON0_LOCK_DET_EN_MASK <<
@@ -595,17 +595,14 @@ int clock_epll_set_rate(unsigned long rate)
 	writel(epll_con, &exynos_clock->epll_con0);
 	writel(epll_con_k, &exynos_clock->epll_con1);
 
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_msecs(&end, TIMEOUT_EPLL_LOCK);
+	stopwatch_init_msecs_expire(&sw, TIMEOUT_EPLL_LOCK);
 
 	while (!(readl(&exynos_clock->epll_con0) &
 			(0x1 << EXYNOS5_EPLLCON0_LOCKED_SHIFT))) {
-		if (mono_time_after(&current, &end)) {
+		if (stopwatch_expired(&sw)) {
 			printk(BIOS_DEBUG, "%s: Timeout waiting for EPLL lock\n", __func__);
 			return -1;
 		}
-		timer_monotonic_get(&current);
 	}
 
 	return 0;

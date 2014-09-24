@@ -181,7 +181,7 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 {
 	int timeout = 0;
 	struct exynos5_dp *base = dp->base;
-	struct mono_time start, current, end;
+	struct stopwatch sw;
 	s5p_dp_config_video_slave_mode(dp, video_info);
 
 	s5p_dp_set_video_color_format(dp, video_info->color_depth,
@@ -194,20 +194,17 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 		return -ERR_PLL_NOT_UNLOCKED;
 	}
 
-	timer_monotonic_get(&start);
-	end = current = start;
-	mono_time_add_usecs(&end, STREAM_ON_TIMEOUT * USECS_PER_MSEC);
+	stopwatch_init_msecs_expire(&sw, STREAM_ON_TIMEOUT);
 	do {
 		if (s5p_dp_is_slave_video_stream_clock_on(dp) == 0) {
 			timeout++;
 			break;
 		}
-		timer_monotonic_get(&current);
-	} while (mono_time_before(&current, &end));
+	} while (!stopwatch_expired(&sw));
 
 	if (!timeout) {
 		printk(BIOS_ERR, "Video Clock Not ok after %ldus.\n",
-				mono_time_diff_microseconds(&start, &end));
+				stopwatch_duration_usecs(&sw));
 		return -ERR_VIDEO_CLOCK_BAD;
 	}
 
@@ -402,23 +399,20 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	int pll_is_locked = 0;
 	u32 data;
 	int lane;
-	struct mono_time current, end;
+	struct stopwatch sw;
 	struct exynos5_dp *base = dp->base;
 
 	/* Stop Video */
 	clrbits_le32(&base->video_ctl_1, VIDEO_EN);
 
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_msecs(&end, PLL_LOCK_TIMEOUT);
+	stopwatch_init_msecs_expire(&sw, PLL_LOCK_TIMEOUT);
 
 	while ((pll_is_locked = s5p_dp_get_pll_lock_status(dp)) == PLL_UNLOCKED) {
-		if (mono_time_after(&current, &end)) {
+		if (stopwatch_expired(&sw)) {
 			/* Ignore this error, and try to continue */
 			printk(BIOS_ERR, "PLL is not locked yet.\n");
 			break;
 		}
-		timer_monotonic_get(&current);
 	}
 	printk(BIOS_SPEW, "PLL is %slocked\n",
 			pll_is_locked == PLL_LOCKED ? "": "not ");

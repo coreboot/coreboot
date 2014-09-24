@@ -34,10 +34,6 @@ struct mono_time {
 	long microseconds;
 };
 
-struct rela_time {
-	long microseconds;
-};
-
 /* A timeout_callback structure is used for the book keeping for scheduling
  * work in the future. When a callback is called the structure can be
  * re-used for scheduling as it is not being tracked by the core timer
@@ -91,12 +87,6 @@ static inline void mono_time_add_msecs(struct mono_time *mt, long ms)
 	mono_time_add_usecs(mt, ms * USECS_PER_MSEC);
 }
 
-static inline void mono_time_add_rela_time(struct mono_time *mt,
-                                           const struct rela_time *t)
-{
-	mono_time_add_usecs(mt, t->microseconds);
-}
-
 /* Compare two absolute times: Return -1, 0, or 1 if t1 is <, =, or > t2,
  * respectively. */
 static inline int mono_time_cmp(const struct mono_time *t1,
@@ -109,33 +99,6 @@ static inline int mono_time_cmp(const struct mono_time *t1,
 		return -1;
 
 	return 1;
-}
-
-static inline int rela_time_cmp(const struct rela_time *t1,
-                                const struct rela_time *t2)
-{
-	if (t1->microseconds == t2->microseconds)
-		return 0;
-
-	if (t1->microseconds < t2->microseconds)
-		return -1;
-
-	return 1;
-}
-
-/* Initialize a rela_time structure. */
-static inline struct rela_time rela_time_init_usecs(long us)
-{
-	struct rela_time t;
-	t.microseconds = us;
-	return t;
-}
-
-/* Return time difference between t1 and t2. i.e. t2 - t1. */
-static struct rela_time mono_time_diff(const struct mono_time *t1,
-                                       const struct mono_time *t2)
-{
-	return rela_time_init_usecs(t2->microseconds - t1->microseconds);
 }
 
 /* Return true if t1 after t2  */
@@ -152,27 +115,11 @@ static inline int mono_time_before(const struct mono_time *t1,
 	return mono_time_cmp(t1, t2) < 0;
 }
 
-/* Return the difference between now and t. */
-static inline struct rela_time current_time_from(const struct mono_time *t)
-{
-	struct mono_time now;
-
-	timer_monotonic_get(&now);
-	return mono_time_diff(t, &now);
-
-}
-
-static inline long rela_time_in_microseconds(const struct rela_time *rt)
-{
-	return rt->microseconds;
-}
-
+/* Return time difference between t1 and t2. i.e. t2 - t1. */
 static inline long mono_time_diff_microseconds(const struct mono_time *t1,
 					       const struct mono_time *t2)
 {
-	struct rela_time rt;
-	rt = mono_time_diff(t1, t2);
-	return rela_time_in_microseconds(&rt);
+	return t2->microseconds - t1->microseconds;
 }
 
 struct stopwatch {

@@ -98,6 +98,11 @@ config ARCH_ARM64
         help
           Support the ARM64 architecture
 
+config ARCH_MIPS
+	bool "MIPS"
+	help
+	  Support the MIPS architecture
+
 endchoice
 
 config MEMMAP_RAM_ONLY
@@ -390,6 +395,13 @@ config TIMER_IPQ806X
 
 config TIMER_RK
 	bool "Timer for Rockchip"
+
+config TIMER_BG4CD
+	bool "Marvell BG4CD"
+
+config TIMER_IMG_PISTACHIO
+	bool "Timer for IMG Pistachio"
+
 endchoice
 
 config TIMER_MCT_HZ

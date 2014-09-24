@@ -110,10 +110,12 @@ detect_special_flags() {
 			# testcc "$CC" "$CFLAGS -mcpu=cortex-a9" &&
 			#	CFLAGS="$CFLAGS -mcpu=cortex-a9"
 			;;
-	esac
 
-	case "$architecture" in
 		arm64-generic )
+			;;
+		mips )
+			testcc "$CC" "CFLAGS -mxgot" &&
+				CFLAGS="$CFLAGS -mxgot"
 			;;
 	esac
 }
@@ -140,7 +142,7 @@ touch "$TMPFILE"
 trap clean_up EXIT
 
 # Architecture definition
-SUPPORTED_ARCHITECTURE="x86 arm arm64"
+SUPPORTED_ARCHITECTURE="arm arm64 mipsel x86"
 
 # ARM Architecture
 TARCH_arm="arm"
@@ -154,18 +156,25 @@ TBFDARCH_arm64="littleaarch64"
 TCLIST_arm64="aarch64"
 TWIDTH_arm64="64"
 
+# MIPS Architecture (Little Endian)
+TARCH_mipsel="mipsel"
+TBFDARCH_mipsel="tradlittlemips littlemips"
+TCLIST_mipsel="mipsel"
+TWIDTH_mipsel="32"
+
 # X86 Architecture
 TARCH_x86="i386"
 TBFDARCH_x86="i386"
 TCLIST_x86="i386 x86_64"
 TWIDTH_x86="32"
+
 XGCCPATH=${1:-"`pwd`/../../util/crossgcc/xgcc/bin/"}
 
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURE; do
 	GCCPREFIX="invalid"
 	TARCH="$(eval echo \$TARCH_$architecture)"
-	TBFDARCH="$(eval echo \$TBFDARCH_$architecture)"
+	TBFDARCHS="$(eval echo \$TBFDARCH_$architecture)"
 	TCLIST="$(eval echo \$TCLIST_$architecture)"
 	TWIDTH="$(eval echo \$TWIDTH_$architecture)"
 	[ -z "$TARCH" -o -z "$TCLIST" -o -z "$TWIDTH" ] &&
@@ -186,10 +195,13 @@ for architecture in $SUPPORTED_ARCHITECTURE; do
 	echo "# $architecture TARCH_SEARCH=$search"
 
 	# Search toolchain by checking assembler capability.
-	for gccprefixes in $search ""; do
-		program_exists "${gccprefixes}as" || continue
-		testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "" && break
-		testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "TRUE" && break
+	for TBFDARCH in $TBFDARCHS; do
+		for gccprefixes in $search ""; do
+			program_exists "${gccprefixes}as" || continue
+			testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "" && break
+			testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "TRUE" && break
+		done
+		[ "$GCCPREFIX" = "invalid" ] || break
 	done
 
 	if [ "$GCCPREFIX" = "invalid" ]; then

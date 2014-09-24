@@ -93,6 +93,7 @@ include $(HAVE_DOTCONFIG)
 
 ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCHDIR-$(CONFIG_LP_ARCH_ARM64)   := arm64
+ARCHDIR-$(CONFIG_LP_ARCH_MIPS)    := mips
 ARCHDIR-$(CONFIG_LP_ARCH_X86)     := x86
 
 ARCH-y := $(ARCHDIR-y)
@@ -102,6 +103,7 @@ ARCH-y := $(ARCHDIR-y)
 ARCH-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCH-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCH-$(CONFIG_LP_ARCH_X86)     := i386
+ARCH-$(CONFIG_LP_ARCH_MIPS)    := mipsel
 
 CC := $(CC_$(ARCH-y))
 AS := $(AS_$(ARCH-y))

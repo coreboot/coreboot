@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # libpayload version: 0.2.0
-# Mon Jan  5 15:27:43 2015
+# Wed Mar 18 16:11:08 2015
 #
 
 #
@@ -19,6 +19,7 @@
 # CONFIG_LP_ARCH_ARM is not set
 CONFIG_LP_ARCH_X86=y
 # CONFIG_LP_ARCH_ARM64 is not set
+# CONFIG_LP_ARCH_MIPS is not set
 # CONFIG_LP_MEMMAP_RAM_ONLY is not set
 # CONFIG_LP_MULTIBOOT is not set
 

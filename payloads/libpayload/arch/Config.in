@@ -28,5 +28,6 @@
 ##
 
 source "arch/arm/Config.in"
-source "arch/x86/Config.in"
 source "arch/arm64/Config.in"
+source "arch/mips/Config.in"
+source "arch/x86/Config.in"

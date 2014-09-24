@@ -17,35 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <base3.h>
 #include <boardid.h>
 #include <console/console.h>
 #include <stdlib.h>
 
 #include "gpio.h"
 
-/*
- * +------------------+---------+
- * | BD_ID_STRAP[1:0] |  PHASE  |
- * +------------------+---------+
- * |         00       |  PROTO0 |
- * +------------------+---------+
- * |         01       |  PROTO1 |
- * +------------------+---------+
- * |         0Z       |   EVT   |
- * +------------------+---------+
- * |         10       |   DVT   |
- * +------------------+---------+
- * |         11       |   PVT   |
- * +------------------+---------+
- * |         1Z       |   MP    |
- * +------------------+---------+
- * |         Z0       |         |
- * +------------------+---------+
- * |         Z1       |         |
- * +------------------+---------+
- * |         ZZ       |         |
- * +------------------+---------+
- */
 struct id_to_str {
 	const char *str;
 	int tri_state_value;
@@ -53,15 +31,15 @@ struct id_to_str {
 };
 
 static const struct id_to_str bdid_map[] = {
-	{ "PROTO 0", 0x00, BOARD_ID_PROTO_0 },
-	{ "PROTO 1", 0x01, BOARD_ID_PROTO_1 },
-	{ "EVT", 0x02, BOARD_ID_EVT },
-	{ "DVT", 0x04, BOARD_ID_DVT },
-	{ "PVT", 0x05, BOARD_ID_PVT },
-	{ "MP", 0x06, BOARD_ID_MP },
-	{ "Z0", 0x08, -1 },
-	{ "Z1", 0x09, -1 },
-	{ "ZZ", 0x0a, -1 },
+	{ "PROTO 0",	BASE3(0, 0),	BOARD_ID_PROTO_0 },
+	{ "PROTO 1",	BASE3(0, 1),	BOARD_ID_PROTO_1 },
+	{ "EVT",	BASE3(0, Z),	BOARD_ID_EVT },
+	{ "DVT",	BASE3(1, 0),	BOARD_ID_DVT },
+	{ "PVT",	BASE3(1, 1),	BOARD_ID_PVT },
+	{ "MP",		BASE3(1, Z),	BOARD_ID_MP },
+	{ "Z0",		BASE3(Z, 0),	-1 },
+	{ "Z1",		BASE3(Z, 1),	-1 },
+	{ "ZZ",		BASE3(Z, Z),	-1 },
 };
 
 uint8_t board_id(void)
@@ -72,9 +50,9 @@ uint8_t board_id(void)
 		const char *idstr = "Unknown";
 		int i;
 		int tristate_id;
-		gpio_t gpio[] = { BD_ID0, BD_ID1 };
+		gpio_t gpio[] = {[1] = BD_ID1, [0] = BD_ID0};	/* ID0 is LSB */
 
-		tristate_id = gpio_get_tristates(gpio, ARRAY_SIZE(gpio), 0);
+		tristate_id = gpio_get_tristates(gpio, ARRAY_SIZE(gpio));
 
 		for (i = 0; i < ARRAY_SIZE(bdid_map); i++) {
 			if (tristate_id != bdid_map[i].tri_state_value)

@@ -36,17 +36,13 @@ void gpio_output(gpio_t gpio, int value);
 
 /*
  * Read the value presented by the set of GPIOs, when each pin is interpreted
- * as a number in 0..2 range depending on the external pullup situation.
+ * as a base-3 digit (LOW = 0, HIGH = 1, Z/floating = 2).
+ * Example: X1 = Z, X2 = 1 -> gpio_get_tristates({GPIO(X1), GPIO(X2)}) = 5
+ * BASE3() from <base3.h> can generate numbers to compare the result to.
  *
- * Depending on the third parameter, the return value is either a set of two
- * bit fields, each representing one GPIO value, or a number where each GPIO is
- * included multiplied by 3^gpio_num, resulting in a true tertiary value.
- *
- * gpio[]: pin positions to read. little-endian (less significant value first).
+ * gpio[]: pin positions to read. gpio[0] is less significant than gpio[1].
  * num_gpio: number of pins to read.
- * tertiary: 1: pins are interpreted as a quad coded tertiary.
- *           0: pins are interpreted as a set of two bit fields.
  */
-int gpio_get_tristates(gpio_t gpio[], int num_gpio, int tertiary);
+int gpio_get_tristates(gpio_t gpio[], int num_gpio);
 
 #endif /* __SRC_INCLUDE_GPIO_H__ */

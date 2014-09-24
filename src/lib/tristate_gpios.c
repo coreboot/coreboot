@@ -17,10 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <base3.h>
+#include <console/console.h>
 #include <delay.h>
 #include <gpio.h>
 
-int gpio_get_tristates(gpio_t gpio[], int num_gpio, int tertiary)
+int gpio_get_tristates(gpio_t gpio[], int num_gpio)
 {
 	/*
 	 * GPIOs which are tied to stronger external pull up or pull down
@@ -31,6 +33,7 @@ int gpio_get_tristates(gpio_t gpio[], int num_gpio, int tertiary)
 	 * internally pulled to.
 	 */
 
+	static const char tristate_char[] = {[0] = '0', [1] = '1', [Z] = 'Z'};
 	int temp;
 	int index;
 	int id = 0;
@@ -62,14 +65,14 @@ int gpio_get_tristates(gpio_t gpio[], int num_gpio, int tertiary)
 	 *  1: pull up
 	 *  2: floating
 	 */
+	printk(BIOS_DEBUG, "Reading tristate GPIOs: ");
 	for (index = num_gpio - 1; index >= 0; --index) {
-		if (tertiary)
-			id *= 3;
-		else
-			id <<= 2;
 		temp = gpio_get(gpio[index]);
-		id += ((value[index] ^ temp) << 1) | temp;
+		temp |= ((value[index] ^ temp) << 1);
+		printk(BIOS_DEBUG, "%c ", tristate_char[temp]);
+		id = (id * 3) + temp;
 	}
+	printk(BIOS_DEBUG, "= %d\n", id);
 
 	/* Disable pull up / pull down to conserve power */
 	for (index = 0; index < num_gpio; ++index)

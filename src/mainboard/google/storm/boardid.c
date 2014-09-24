@@ -42,10 +42,10 @@ static int board_id_value = -1;
 static uint8_t get_board_id(void)
 {
 	uint8_t bid;
-	gpio_t hw_rev_gpios[] = {29, 30, 68};
+	gpio_t hw_rev_gpios[] = {[2] = 68, [1] = 30, [0] = 29};	/* 29 is LSB */
 	int offset = 19;
 
-	bid = gpio_get_tristates(hw_rev_gpios, ARRAY_SIZE(hw_rev_gpios), 1);
+	bid = gpio_get_tristates(hw_rev_gpios, ARRAY_SIZE(hw_rev_gpios));
 	bid = (bid + offset) % 27;
 	printk(BIOS_INFO, "Board ID %d\n", bid);
 

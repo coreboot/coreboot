@@ -266,21 +266,17 @@ static void bs_sample_time(struct boot_state *state)
 
 static void bs_report_time(struct boot_state *state)
 {
-	struct rela_time entry_time;
-	struct rela_time run_time;
-	struct rela_time exit_time;
-	struct boot_state_times *times;
+	long entry_time;
+	long run_time;
+	long exit_time;
+	struct mono_time *samples = &state->times.samples[0];
 
-	times = &state->times;
-	entry_time = mono_time_diff(&times->samples[0], &times->samples[1]);
-	run_time = mono_time_diff(&times->samples[1], &times->samples[2]);
-	exit_time = mono_time_diff(&times->samples[2], &times->samples[3]);
+	entry_time = mono_time_diff_microseconds(&samples[0], &samples[1]);
+	run_time = mono_time_diff_microseconds(&samples[1], &samples[2]);
+	exit_time = mono_time_diff_microseconds(&samples[2], &samples[3]);
 
 	printk(BIOS_DEBUG, "BS: %s times (us): entry %ld run %ld exit %ld\n",
-	       state->name,
-	       rela_time_in_microseconds(&entry_time),
-	       rela_time_in_microseconds(&run_time),
-	       rela_time_in_microseconds(&exit_time));
+	       state->name, entry_time, run_time, exit_time);
 }
 #else
 static inline void bs_sample_time(struct boot_state *state) {}

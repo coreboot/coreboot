@@ -167,14 +167,13 @@ void spi_release_bus(struct spi_slave *slave)
 
 static int rockchip_spi_wait_till_not_busy(struct rockchip_spi *regs)
 {
-	struct mono_time start;
-	struct rela_time rt;
-	timer_monotonic_get(&start);
+	struct stopwatch sw;
+
+	stopwatch_init_usecs_expire(&sw, SPI_TIMEOUT_US);
 	do {
 		if (!(readl(&regs->sr) & SR_BUSY))
 			return 0;
-		rt = current_time_from(&start);
-	} while (rela_time_in_microseconds(&rt) < SPI_TIMEOUT_US);
+	} while (!stopwatch_expired(&sw));
 	printk(BIOS_DEBUG,
 	       "RK SPI: Status keeps busy for 1000us after a read/write!\n");
 	return -1;

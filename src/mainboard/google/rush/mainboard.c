@@ -106,11 +106,3 @@ struct chip_operations mainboard_ops = {
         .name   = "rush",
         .enable_dev = mainboard_enable,
 };
-
-
-void mainboard_add_memory_ranges(struct memranges *map)
-{
-	/* Create non-cacheable region for DMA operations. */
-	memranges_insert(map, CONFIG_DRAM_DMA_START, CONFIG_DRAM_DMA_SIZE,
-			 MA_MEM  | MA_MEM_NC | MA_NS | MA_RW);
-}

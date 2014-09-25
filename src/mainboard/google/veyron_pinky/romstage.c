@@ -28,10 +28,31 @@
 #include <timestamp.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
+#include <stdlib.h>
+#include <assert.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/rockchip/rk3288/sdram.h>
 #include <soc/rockchip/rk3288/clock.h>
+#include <soc/rockchip/rk3288/pwm.h>
+#include <soc/rockchip/rk3288/grf.h>
 #include "timer.h"
+
+static void regulate_vdd_log(unsigned int mv)
+{
+	unsigned int duty_ns;
+	const u32 period_ns = 2000;	/* pwm period: 2000ns */
+	const u32 max_regulator_mv = 1350;	/* 1.35V */
+	const u32 min_regulator_mv = 870;	/* 0.87V */
+
+	writel(IOMUX_PWM1, &rk3288_grf->iomux_pwm1);
+
+	assert((mv >= min_regulator_mv) && (mv <= max_regulator_mv));
+
+	duty_ns = (max_regulator_mv - mv) * period_ns /
+			(max_regulator_mv - min_regulator_mv);
+
+	pwm_init(1, period_ns, duty_ns);
+}
 
 void main(void)
 {
@@ -49,6 +70,8 @@ void main(void)
 
 	console_init();
 
+	/* vdd_log 1200mv is enough for ddr run 666Mhz */
+	regulate_vdd_log(1200);
 #if CONFIG_COLLECT_TIMESTAMPS
 	before_dram_time = timestamp_get();
 #endif

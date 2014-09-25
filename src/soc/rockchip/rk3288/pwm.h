@@ -17,27 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __SOC_ROCKCHIP_RK3288_CLOCK_H__
-#define __SOC_ROCKCHIP_RK3288_CLOCK_H__
+#ifndef __SOC_ROCKCHIP_RK3288_PWM_H__
+#define __SOC_ROCKCHIP_RK3288_PWM_H__
 
-#include "addressmap.h"
+void pwm_init(u32 id, u32 period_ns, u32 duty_ns);
 
-#define APLL_HZ		816000000
-#define GPLL_HZ		594000000
-#define CPLL_HZ		384000000
+#endif
 
-#define PD_BUS_ACLK_HZ	148500000
-#define PD_BUS_HCLK_HZ	148500000
-#define PD_BUS_PCLK_HZ	74250000
-
-#define PERI_ACLK_HZ	148500000
-#define PERI_HCLK_HZ	148500000
-#define PERI_PCLK_HZ	74250000
-
-void rkclk_init(void);
-void rkclk_configure_spi(unsigned int bus, unsigned int hz);
-void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy);
-void rkclk_ddr_phy_ctl_reset(u32 ch, u32 n);
-void rkclk_configure_ddr(unsigned int hz);
-void rkclk_configure_i2s(unsigned int hz);
-#endif	/* __SOC_ROCKCHIP_RK3288_CLOCK_H__ */

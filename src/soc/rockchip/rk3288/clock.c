@@ -109,6 +109,32 @@ static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 2, 4);
 /* m0 core axi clock div: clk = clk_src / (div_con + 1) */
 #define M0_DIV_MSK	(0xF)
 
+/*******************CLKSEL1 BITS***************************/
+/* pd bus clk pll sel: codec or general */
+#define PD_BUS_SEL_PLL_MSK	(1 << 15)
+#define PD_BUS_SEL_CPLL	(0 << 15)
+#define PD_BUS_SEL_GPLL	(1 << 15)
+
+/* pd bus pclk div:
+ * pclk = pd_bus_aclk /(div + 1)
+ */
+#define PD_BUS_PCLK_DIV_SHIFT	(12)
+#define PD_BUS_PCLK_DIV_MSK	(0x7 << 12)
+
+/* pd bus hclk div:
+ * aclk_bus: hclk_bus = 1:1 or 2:1 or 4:1
+ */
+#define PD_BUS_HCLK_DIV_SHIFT	(8)
+#define PD_BUS_HCLK_DIV_MSK	(0x3 << 8)
+
+/* pd bus aclk div:
+ * pd_bus_aclk = pd_bus_src_clk /(div0 * div1)
+ */
+#define PD_BUS_ACLK_DIV0_SHIFT	(3)
+#define PD_BUS_ACLK_DIV0_MASK	(0x1f << 3)
+#define PD_BUS_ACLK_DIV1_SHIFT	(0)
+#define PD_BUS_ACLK_DIV1_MASK	(0x7 << 0)
+
 /*******************CLKSEL10 BITS***************************/
 /* peripheral bus clk pll sel: codec or general */
 #define PERI_SEL_PLL_MSK	(1 << 15)
@@ -133,6 +159,7 @@ static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 2, 4);
  */
 #define PERI_ACLK_DIV_SHIFT	(0x0)
 #define PERI_ACLK_DIV_MSK	(0x1F)
+#define PERI_ACLK_DIV_SHIFT	(0)
 
 /*******************CLKSEL37 BITS***************************/
 #define L2_DIV_MSK	(0x7)
@@ -186,8 +213,28 @@ static int rkclk_set_pll(u32 *pll_con, const struct pll_div *pll_div_cfg)
 	return 0;
 }
 
+/*
+    TODO:
+    it should be replaced by lib.h function
+   'unsigned long log2(unsigned long x)'
+*/
+static unsigned int log2(unsigned int value)
+{
+	unsigned int div = 0;
+
+	while (value != 1) {
+		div++;
+		value = ALIGN_UP(value, 2) / 2;
+	}
+	return div;
+}
+
 void rkclk_init(void)
 {
+	u32 aclk_div;
+	u32 hclk_div;
+	u32 pclk_div;
+
 	/* pll enter slow-mode */
 	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_SLOW)
 		| RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_SLOW)
@@ -232,15 +279,51 @@ void rkclk_init(void)
 		&cru_ptr->cru_clksel_con[37]);
 
 	/*
+	 * pd_bus clock pll source selection and
+	 * set up dependent divisors for PCLK/HCLK and ACLK clocks.
+	 */
+	aclk_div = GPLL_HZ / PD_BUS_ACLK_HZ - 1;
+	assert((aclk_div + 1) * PD_BUS_ACLK_HZ == GPLL_HZ && aclk_div < 0x1f);
+	hclk_div = PD_BUS_ACLK_HZ / PD_BUS_HCLK_HZ - 1;
+	assert((hclk_div + 1) * PD_BUS_HCLK_HZ ==
+		PD_BUS_ACLK_HZ && (hclk_div < 0x4) && (hclk_div != 0x2));
+
+	pclk_div = PD_BUS_ACLK_HZ / PD_BUS_PCLK_HZ - 1;
+	assert((pclk_div + 1) * PD_BUS_PCLK_HZ ==
+		PD_BUS_ACLK_HZ && pclk_div < 0x7);
+
+	writel(RK_SETBITS(PD_BUS_SEL_GPLL)
+		| RK_CLRSETBITS(PD_BUS_PCLK_DIV_MSK,
+		pclk_div << PD_BUS_PCLK_DIV_SHIFT)
+		| RK_CLRSETBITS(PD_BUS_HCLK_DIV_MSK,
+		hclk_div << PD_BUS_HCLK_DIV_SHIFT)
+		| RK_CLRSETBITS(PD_BUS_ACLK_DIV0_MASK,
+		aclk_div << PD_BUS_ACLK_DIV0_SHIFT)
+		| RK_CLRSETBITS(PD_BUS_ACLK_DIV1_MASK, 0 << 0),
+		&cru_ptr->cru_clksel_con[1]);
+
+	/*
 	 * peri clock pll source selection and
 	 * set up dependent divisors for PCLK/HCLK and ACLK clocks.
-	 * peri clock select gpll, gpll clk = 594MHz
-	 * aclk = 148.5MHz, hclk = 148.5Mhz, pclk = 74.25MHz
 	 */
-	writel(RK_SETBITS(PERI_SEL_PLL_MSK)
-		| RK_CLRSETBITS(PERI_PCLK_DIV_MSK, 1 << PERI_PCLK_DIV_SHIFT)
-		| RK_CLRSETBITS(PERI_HCLK_DIV_MSK, 0 << PERI_HCLK_DIV_SHIFT)
-		| RK_CLRSETBITS(PERI_ACLK_DIV_MSK, 3 << 0),
+	aclk_div = GPLL_HZ / PERI_ACLK_HZ - 1;
+	assert((aclk_div + 1) * PERI_ACLK_HZ == GPLL_HZ && aclk_div < 0x1f);
+
+	hclk_div = log2(PERI_ACLK_HZ / PERI_HCLK_HZ);
+	assert((1 << hclk_div) * PERI_HCLK_HZ ==
+		PERI_ACLK_HZ && (hclk_div < 0x4));
+
+	pclk_div = log2(PERI_ACLK_HZ / PERI_PCLK_HZ);
+	assert((1 << pclk_div) * PERI_PCLK_HZ ==
+		PERI_ACLK_HZ && (pclk_div < 0x4));
+
+	writel(RK_SETBITS(PERI_SEL_GPLL)
+		| RK_CLRSETBITS(PERI_PCLK_DIV_MSK,
+		pclk_div << PERI_PCLK_DIV_SHIFT)
+		| RK_CLRSETBITS(PERI_HCLK_DIV_MSK,
+		hclk_div << PERI_HCLK_DIV_SHIFT)
+		| RK_CLRSETBITS(PERI_ACLK_DIV_MSK,
+		aclk_div << PERI_ACLK_DIV_SHIFT),
 		&cru_ptr->cru_clksel_con[10]);
 
 	/* PLL enter normal-mode */

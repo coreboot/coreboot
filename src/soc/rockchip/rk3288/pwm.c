@@ -1,0 +1,90 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2014 Rockchip Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+#include <console/console.h>
+#include <arch/io.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <timer.h>
+#include <delay.h>
+
+#include "addressmap.h"
+#include "grf.h"
+#include "soc.h"
+#include "pwm.h"
+#include "clock.h"
+
+struct pwm_ctl {
+	u32	pwm_cnt;
+	u32	pwm_period_hpr;
+	u32	pwm_duty_lpr;
+	u32	pwm_ctrl;
+};
+
+struct rk3288_pwm_regs {
+	struct pwm_ctl pwm[4];
+	u32	intsts;
+	u32	int_en;
+};
+check_member(rk3288_pwm_regs, int_en, 0x44);
+
+#define RK_PWM_DISABLE                  (0 << 0)
+#define RK_PWM_ENABLE                   (1 << 0)
+
+
+#define PWM_ONE_SHOT                    (0 << 1)
+#define PWM_CONTINUOUS                  (1 << 1)
+#define RK_PWM_CAPTURE                  (1 << 2)
+
+#define PWM_DUTY_POSTIVE                (1 << 3)
+#define PWM_DUTY_NEGATIVE               (0 << 3)
+
+#define PWM_INACTIVE_POSTIVE            (1 << 4)
+#define PWM_INACTIVE_NEGATIVE           (0 << 4)
+
+#define PWM_OUTPUT_LEFT                 (0 << 5)
+#define PWM_OUTPUT_CENTER               (1 << 5)
+
+#define PWM_LP_ENABLE                   (1 << 8)
+#define PWM_LP_DISABLE                  (0 << 8)
+
+#define PWM_SEL_SCALE_CLK			(1 << 9)
+#define PWM_SEL_SRC_CLK				(0 << 9)
+
+struct rk3288_pwm_regs *rk3288_pwm = (void *)RK_PWM0123_BASE;
+
+void pwm_init(u32 id, u32 period_ns, u32 duty_ns)
+{
+	unsigned long period, duty;
+
+	/*use rk pwm*/
+	writel(RK_SETBITS(1 << 0), &rk3288_grf->soc_con2);
+
+	writel(PWM_SEL_SRC_CLK | PWM_OUTPUT_LEFT | PWM_LP_DISABLE |
+		PWM_CONTINUOUS | PWM_DUTY_POSTIVE | PWM_INACTIVE_POSTIVE |
+		RK_PWM_DISABLE,
+		&rk3288_pwm->pwm[id].pwm_ctrl);
+
+	period = (PD_BUS_PCLK_HZ / 1000) * period_ns / USECS_PER_SEC;
+	duty = (PD_BUS_PCLK_HZ / 1000) * duty_ns / USECS_PER_SEC;
+
+	writel(period, &rk3288_pwm->pwm[id].pwm_period_hpr);
+	writel(duty, &rk3288_pwm->pwm[id].pwm_duty_lpr);
+	setbits_le32(&rk3288_pwm->pwm[id].pwm_ctrl, RK_PWM_ENABLE);
+}

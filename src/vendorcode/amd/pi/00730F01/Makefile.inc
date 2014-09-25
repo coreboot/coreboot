@@ -33,7 +33,7 @@ AGESA_ROOT = $(call strip_quotes,$(src)/../$(CONFIG_AGESA_BINARY_PI_PATH))
 
 AGESA_INC = -I$(obj)
 
-AGESA_INC += -Isrc/mainboard/$(MAINBOARDDIR)
+AGESA_INC += -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)/binaryPI
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/Include
@@ -49,29 +49,40 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
 
 AGESA_INC += -I$(src)/southbridge/amd/agesa/hudson
 
-AGESA_INC += -Isrc/arch/x86/include
-AGESA_INC += -Isrc/include
+AGESA_INC += -I$(src)/arch/x86/include
+AGESA_INC += -I$(src)/include
 
-CFLAGS_x86_32 += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss -fno-strict-aliasing
+AGESA_CFLAGS += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss -fno-strict-aliasing
+CFLAGS_x86_32 += $(AGESA_CFLAGS)
 
 export AGESA_ROOT := $(AGESA_ROOT)
 export AGESA_INC  := $(AGESA_INC)
 export AGESA_CFLAGS  := $(AGESA_CFLAGS)
+
 CC_bootblock := $(CC_bootblock) $(AGESA_INC) $(AGESA_CFLAGS)
 CC_romstage := $(CC_romstage) $(AGESA_INC) $(AGESA_CFLAGS)
 CC_ramstage := $(CC_ramstage) $(AGESA_INC) $(AGESA_CFLAGS)
 CC_x86_32 := $(CC_x86_32) $(AGESA_INC) $(AGESA_CFLAGS)
+
 #######################################################################
 
 define create_agesa_cp_template
 
 # $1 AGESA source file
 # $2 AGESA copy-to location
-$(agesa_obj_path)/$1: $2
-	@printf "    AGESA      Copying $$(notdir $$(@F)) => $$(@D)\n"
-	cp -pf $$? $$(@D)
+$(agesa_src_path)/$(notdir $2): $2 $(agesa_src_path)
+	@printf "    AGESA      Copying $$(notdir $2) => $$(@D)\n"
+	if [ ! -r $(agesa_src_path)/$(notdir $2) ]; then                   \
+		cp -uf $2 $$(@D);                                                     \
+	fi
 
-libAgesa.$1: $(agesa_obj_path) $(agesa_obj_path)/$1
+$(agesa_obj_path)/$1.libagesa.o: $(agesa_src_path)/$(notdir $2) $(obj)/config.h $(src)/include/kconfig.h $(agesa_obj_path)
+	@printf "    CC         $(subst $(agesa_obj_path)/,,$$(@))\n"
+	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)                 \
+	               $(AGESA_INC)                                               \
+	               -include $(obj)/config.h -include $(src)/include/kconfig.h \
+	               -o $$@                                                     \
+	               $(agesa_src_path)/$(notdir $2)
 
 endef
 
@@ -82,18 +93,18 @@ classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa
 $(eval $(call create_class_compiler,libagesa,x86_32))
 
 agesa_src_files := $(strip $(sort $(foreach file,$(strip $(agesa_raw_files)),$(call strip_quotes,$(file)))))
-agesa_obj_path := $(strip $(obj)/agesa)
+agesa_obj_path := $(strip $(obj)/vendorcode/amd)
+agesa_src_path := $(strip $(obj)/agesa)
 agesa_src_copies := $(strip $(foreach file,$(agesa_src_files),$(agesa_obj_path)/$(notdir $(file))))
 agesa_obj_copies := $(strip $(agesa_src_copies:.c=.libagesa.o))
 
+$(agesa_src_path):
+	mkdir -p $@
+
 $(agesa_obj_path):
-	mkdir $@
+	mkdir -p $@
 
-$(foreach file,$(strip $(agesa_src_files)),$(eval $(call create_agesa_cp_template,$(notdir $(file)),$(file))))
-
-$(agesa_obj_path)/%.libagesa.o: libAgesa.%.c
-	@printf "    CC         $(subst $(agesa_obj_path)/,,$(@))\n"
-	$(CC_libagesa) -MMD $(CFLAGS_libagesa) $(AGESA_INC) -c -o $@ $(agesa_obj_path)/$*.c
+$(foreach file,$(strip $(agesa_src_files)),$(eval $(call create_agesa_cp_template,$(basename $(notdir $(file))),$(file))))
 
 $(obj)/agesa/libagesa.00730F01.a: $(agesa_obj_copies)
 	@printf "    AGESA      $(subst $(agesa_obj_path)/,,$(@))\n"

@@ -23,36 +23,9 @@
 #include <soc/timer.h>
 #include <timer.h>
 
-void init_timer(void)
-{
-}
-
 void rk3288_init_timer(void)
 {
 	write32(TIMER_LOAD_VAL, &timer7_ptr->timer_load_count0);
 	write32(TIMER_LOAD_VAL, &timer7_ptr->timer_load_count1);
 	write32(1, &timer7_ptr->timer_ctrl_reg);
 }
-
-/* delay x useconds */
-void udelay(unsigned usec)
-{
-	struct mono_time current, end;
-
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_usecs(&end, usec);
-
-	if (mono_time_after(&current, &end)) {
-		printk(BIOS_EMERG, "udelay: 0x%08x is impossibly large\n",
-				usec);
-		/* There's not much we can do if usec is too big. Use a long,
-		 * paranoid delay value and hope for the best... */
-		end = current;
-		mono_time_add_usecs(&end, USECS_PER_SEC);
-	}
-
-	while (mono_time_before(&current, &end))
-		timer_monotonic_get(&current);
-}
-

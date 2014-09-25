@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2009 Samsung Electronics
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,39 +18,25 @@
  */
 
 #include <console/console.h>
-#include <delay.h>
-#include <soc/clk.h>
-#include <thread.h>
 #include <timer.h>
+#include <delay.h>
+#include <thread.h>
 
-void init_timer(void)
-{
-	/* Nothing to do because we manually
-	 * call mct_start() in the bootblock
-	 */
-}
-
-/* delay x useconds */
 void udelay(unsigned usec)
 {
-	struct mono_time current, end;
+	struct stopwatch sw;
+
+	/*
+	 * As the timer granularity is in microseconds pad the
+	 * requested delay by one to get at least >= requested usec delay.
+	 */
+	usec += 1;
 
 	if (!thread_yield_microseconds(usec))
 		return;
 
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_usecs(&end, usec);
+	stopwatch_init_usecs_expire(&sw, usec);
 
-	if (mono_time_after(&current, &end)) {
-		printk(BIOS_EMERG, "udelay: 0x%08x is impossibly large\n",
-				usec);
-		/* There's not much we can do if usec is too big. Use a long,
-		 * paranoid delay value and hope for the best... */
-		end = current;
-		mono_time_add_usecs(&end, USECS_PER_SEC);
-	}
-
-	while (mono_time_before(&current, &end))
-		timer_monotonic_get(&current);
+	while (!stopwatch_expired(&sw))
+		;
 }

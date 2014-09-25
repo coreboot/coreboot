@@ -360,6 +360,13 @@ config HAVE_MONOTONIC_TIMER
 	help
 	 The board/chipset provides a monotonic timer.
 
+config GENERIC_UDELAY
+	def_bool n
+	depends on HAVE_MONOTONIC_TIMER
+	help
+	 The board/chipset uses a generic udelay function utilizing the
+	 monotonic timer.
+
 config TIMER_QUEUE
 	def_bool n
 	depends on HAVE_MONOTONIC_TIMER

@@ -22,6 +22,8 @@ bootblock-y += prog_ops.c
 bootblock-y += cbfs.c cbfs_core.c
 bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 
+bootblock-$(CONFIG_GENERIC_UDELAY) += timer.c
+
 bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
@@ -61,6 +63,8 @@ romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += gcc.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
 endif
 
+romstage-$(CONFIG_GENERIC_UDELAY) += timer.c
+
 ramstage-y += prog_ops.c
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c
@@ -89,6 +93,7 @@ ramstage-y += memrange.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 ramstage-$(CONFIG_TERTIARY_BOARD_ID) += tristate_gpios.c
+ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 romstage-y += cbmem_common.c dynamic_cbmem.c
 ramstage-y += cbmem_common.c dynamic_cbmem.c

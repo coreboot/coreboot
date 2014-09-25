@@ -123,3 +123,30 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 
 	pch_iobp_write(address, data);
 }
+
+void pch_iobp_exec(u32 addr, u16 op_code, u8 route_id, u32 *data, u8 *resp)
+{
+	if (!data || !resp)
+		return;
+
+	*resp = -1;
+	if (!iobp_poll())
+		return;
+
+	/* RCBA2330[31:0] = Address */
+	RCBA32(IOBPIRI) = addr;
+	/* RCBA2338[15:8] = opcode */
+	RCBA16(IOBPS) = (RCBA16(IOBPS) & 0x00ff) | op_code;
+	/* RCBA233A[15:8] = 0xf0 RCBA233A[7:0] = Route ID */
+	RCBA16(IOBPU) = IOBPU_MAGIC | route_id;
+
+	RCBA32(IOBPD) = *data;
+	/* Set RCBA2338[0] to trigger IOBP transaction*/
+	RCBA16(IOBPS) = RCBA16(IOBPS) | 0x1;
+
+	if (!iobp_poll())
+		return;
+
+	*resp = (RCBA16(IOBPS) & IOBPS_TX_MASK) >> 1;
+	*data = RCBA32(IOBPD);
+}

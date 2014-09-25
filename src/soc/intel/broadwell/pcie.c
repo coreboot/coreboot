@@ -123,6 +123,8 @@ static void pcie_iosf_port_grant_count(device_t dev)
 static void root_port_init_config(device_t dev)
 {
 	int rp;
+	u32 data;
+	u8 resp, id;
 
 	if (root_port_is_first(dev)) {
 		rpc.orig_rpfn = RCBA32(RPFN);
@@ -170,6 +172,15 @@ static void root_port_init_config(device_t dev)
 	}
 
 	pcie_update_cfg(dev, 0x418, 0, 0x02000430);
+
+	/* set RP0 PCICFG E2h[5:4] = 11b before configuring ASPM */
+	if (root_port_is_first(dev)) {
+		id = 0xe0 + (u8)(RCBA32(RPFN) & 0x07);
+		pch_iobp_exec(0xE00000E0, IOBP_PCICFG_READ, id, &data, &resp);
+		data |= (0x30 << 16);
+		pch_iobp_exec(0xE00000E0, IOBP_PCICFG_WRITE, id, &data, &resp);
+	}
+
 	/* Cache pci device. */
 	rpc.ports[rp - 1] = dev;
 }

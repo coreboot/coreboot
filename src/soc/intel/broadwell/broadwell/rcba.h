@@ -76,6 +76,8 @@
 #define  IOBPS_WRITE	0x0700
 #define IOBPU		0x233a
 #define  IOBPU_MAGIC	0xf000
+#define  IOBP_PCICFG_READ	0x0400
+#define  IOBP_PCICFG_WRITE	0x0500
 
 #define D31IP		0x3100	/* 32bit */
 #define D31IP_TTIP	24	/* Thermal Throttle Pin */

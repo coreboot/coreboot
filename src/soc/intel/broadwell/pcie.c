@@ -547,15 +547,14 @@ static void pch_pcie_early(struct device *dev)
 
 	pcie_update_cfg8(dev, 0xf5, 0x0f, 0);
 
+	/* Set Extended Capability to offset 200h and Advanced Error Report. */
+	pcie_update_cfg(dev, 0x100, ~(1 << 29) & ~0xfffff, (1 << 29) | 0x10001);
+
 	if (rp == 1 || rp == 5 || rp == 6)
 		pcie_update_cfg8(dev, 0xf7, ~0xc, 0);
 
 	/* Set EOI forwarding disable. */
 	pcie_update_cfg(dev, 0xd4, ~0, (1 << 1));
-
-	/* Set something involving advanced error reporting. */
-	pcie_update_cfg(dev, 0x100, ~((1 << 20) - 1), 0x10001);
-	pcie_update_cfg(dev, 0x100, ~0, (1 << 29));
 
 	/* Read and write back write-once capability registers. */
 	pcie_update_cfg(dev, 0x34, ~0, 0);

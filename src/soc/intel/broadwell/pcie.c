@@ -523,8 +523,8 @@ static void pch_pcie_early(struct device *dev)
 		pcie_update_cfg(dev, 0x338, ~(1 << 26), 0);
 	}
 
-	/* Enable LTR in Root Port. */
-	pcie_update_cfg(dev, 0x64, ~(1 << 11), (1 << 11));
+	/* Enable LTR in Root Port. Disable OBFF. */
+	pcie_update_cfg(dev, 0x64, ~(1 << 11) & ~(3 << 18), (1 << 11));
 	pcie_update_cfg(dev, 0x68, ~(1 << 10), (1 << 10));
 
 	pcie_update_cfg(dev, 0x318, ~(0xffff << 16), (0x1414 << 16));
@@ -549,6 +549,11 @@ static void pch_pcie_early(struct device *dev)
 
 	/* Set Extended Capability to offset 200h and Advanced Error Report. */
 	pcie_update_cfg(dev, 0x100, ~(1 << 29) & ~0xfffff, (1 << 29) | 0x10001);
+
+	pcie_update_cfg(dev, 0x320, ~(3 << 20) & ~(7 << 6),
+		(1 << 20) | (3 << 6));
+	/* Enable Relaxed Order from Root Port. */
+	pcie_update_cfg(dev, 0x320, ~(3 << 23), (3 << 23));
 
 	if (rp == 1 || rp == 5 || rp == 6)
 		pcie_update_cfg8(dev, 0xf7, ~0xc, 0);

@@ -30,6 +30,7 @@
 //#define USB_DEBUG
 
 #include <libpayload.h>
+#include <kconfig.h>
 #include "ehci.h"
 #include "ehci_private.h"
 
@@ -91,6 +92,8 @@ ehci_rh_hand_over_port (usbdev_t *dev, int port)
 static void
 ehci_rh_scanport (usbdev_t *dev, int port)
 {
+	usb_speed port_speed;
+
 	if (RH_INST(dev)->devices[port]!=-1) {
 		usb_debug("Unregister device at port %x\n", port+1);
 		usb_detach_device(dev->controller, RH_INST(dev)->devices[port]);
@@ -99,7 +102,9 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 	/* device connected, handle */
 	if (RH_INST(dev)->ports[port] & P_CURR_CONN_STATUS) {
 		mdelay(100); // usb20 spec 9.1.2
-		if ((RH_INST(dev)->ports[port] & P_LINE_STATUS) == P_LINE_STATUS_LOWSPEED) {
+		if (!IS_ENABLED(CONFIG_LP_USB_EHCI_HOSTPC_ROOT_HUB_TT) &&
+				(RH_INST(dev)->ports[port] & P_LINE_STATUS) ==
+				P_LINE_STATUS_LOWSPEED) {
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
@@ -133,8 +138,16 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
-		usb_debug("port %x hosts a USB2 device\n", port+1);
-		RH_INST(dev)->devices[port] = usb_attach_device(dev->controller, dev->address, port, 2);
+		if (IS_ENABLED(CONFIG_LP_USB_EHCI_HOSTPC_ROOT_HUB_TT)) {
+			port_speed = (usb_speed)
+				((EHCI_INST(dev->controller)->operation->hostpc
+				>> 25) & 0x03);
+		} else {
+			usb_debug("port %x hosts a USB2 device\n", port+1);
+			port_speed = HIGH_SPEED;
+		}
+		RH_INST(dev)->devices[port] = usb_attach_device(dev->controller
+			, dev->address, port, port_speed);
 	}
 	/* RW/C register, so clear it by writing 1 */
 	RH_INST(dev)->ports[port] |= P_CONN_STATUS_CHANGE;
@@ -186,12 +199,12 @@ ehci_rh_init (usbdev_t *dev)
 	}
 	mdelay(20); // ehci spec 2.3.9
 
+	dev->speed = HIGH_SPEED;
+	dev->address = 0;
+	dev->hub = -1;
+	dev->port = -1;
 	for (i=0; i < RH_INST(dev)->n_ports; i++) {
 		RH_INST(dev)->devices[i] = -1;
 		ehci_rh_scanport(dev, i);
 	}
-
-	dev->address = 0;
-	dev->hub = -1;
-	dev->port = -1;
 }

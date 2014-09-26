@@ -203,7 +203,7 @@ static int closest_usb2_hub(const usbdev_t *dev, int *const addr, int *const por
 	const usbdev_t *usb1dev;
 	do {
 		usb1dev = dev;
-		if ((dev->hub > 0) && (dev->hub < 128))
+		if ((dev->hub >= 0) && (dev->hub < 128))
 			dev = dev->controller->devices[dev->hub];
 		else
 			dev = NULL;

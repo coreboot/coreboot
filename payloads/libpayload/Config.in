@@ -488,6 +488,16 @@ config USB_HUB
 	  Select this option if you want to compile in support for USB hubs.
 	  Say Y here unless you know exactly what you are doing.
 
+config USB_EHCI_HOSTPC_ROOT_HUB_TT
+	bool "Support for USB EHCI ROOT HUB that has TT"
+	depends on USB_EHCI
+	default n
+	help
+	  Select this option if USB EHCI root hub supports TT (Transaction
+	  Translator).
+	  To support this TT feature we read port-speed from non-standard
+	  register HOSTPC (offset 84h of Operational Register base).
+
 config USB_MSC
 	bool "Support for USB storage"
 	depends on USB

@@ -340,12 +340,12 @@ static struct rk3288_msch_regs * const rk3288_msch[2] = {
 #define PRT_DLLSRST(n)			((n) << 0)
 
 /* PTR1 */
-#define PRT_DINIT1(n)			((n) << 19)
 #define PRT_DINIT0(n)			((n) << 0)
+#define PRT_DINIT1(n)			((n) << 19)
 
 /* PTR2 */
-#define PRT_DINIT3(n)			((n) << 17)
 #define PRT_DINIT2(n)			((n) << 0)
+#define PRT_DINIT3(n)			((n) << 17)
 
 /* DCR */
 #define DDRMD_LPDDR			0
@@ -442,6 +442,7 @@ static struct rk3288_msch_regs * const rk3288_msch[2] = {
 #define DPDE_CMD			(9)
 
 #define LPDDR2_MA(n)			(((n) & 0xff) << 4)
+#define LPDDR2_OP(n)			(((n) & 0xff) << 12)
 
 #define START_CMD			(1u << 31)
 
@@ -620,7 +621,7 @@ static void pctl_cfg(u32 channel,
 		writel(sdram_params->pctl_timing.tcwl - 1,
 		       &ddr_pctl_regs->dfitphywrlat);
 		writel(MDDR_LPDDR2_CLK_STOP_IDLE(0) | DDR3_EN
-		       | DDR2_DDR3_BL_8 | TFAW_CFG(5) | PD_EXIT_SLOW
+		       | DDR2_DDR3_BL_8 | TFAW_CFG(6) | PD_EXIT_SLOW
 		       | PD_TYPE(1) | PD_IDLE(0), &ddr_pctl_regs->mcfg);
 		writel(MSCH_MAINDDR3(channel, 1), &rk3288_grf->soc_con0);
 
@@ -650,12 +651,19 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 	writel(sdram_params->noc_activate, &msch_regs->activate);
 	writel(BUSWRTORD(2) | BUSRDTOWR(2) | BUSRDTORD(1),
 		&msch_regs->devtodev);
-	writel(PRT_ITMSRST(8) | PRT_DLLLOCK(2750) | PRT_DLLSRST(27),
-	       &ddr_publ_regs->ptr[0]);
-	/* tDINIT1=400ns (533MHz), tDINIT0=500us (533MHz) */
-	writel(PRT_DINIT1(213) | PRT_DINIT0(266525), &ddr_publ_regs->ptr[1]);
-	/* tDINIT3=1us (533MHz), tDINIT2=200us (533MHz) */
-	writel(PRT_DINIT3(534) | PRT_DINIT2(106610), &ddr_publ_regs->ptr[2]);
+	writel(PRT_DLLLOCK(div_round_up(sdram_params->ddr_freq / 1000000
+		* 5120, 1000))
+		| PRT_DLLSRST(div_round_up(sdram_params->ddr_freq / 1000000
+		* 50, 1000))
+		| PRT_ITMSRST(8), &ddr_publ_regs->ptr[0]);
+	writel(PRT_DINIT0(div_round_up(sdram_params->ddr_freq / 1000000
+		* 500000, 1000))
+		| PRT_DINIT1(div_round_up(sdram_params->ddr_freq / 1000000
+		* 400, 1000)), &ddr_publ_regs->ptr[1]);
+	writel(PRT_DINIT2(div_round_up(sdram_params->ddr_freq / 1000000
+		* 200000, 1000))
+		| PRT_DINIT3(div_round_up(sdram_params->ddr_freq / 1000000
+		* 1000, 1000)), &ddr_publ_regs->ptr[2]);
 
 	switch (sdram_params->dramtype) {
 	case LPDDR3:
@@ -860,7 +868,7 @@ static int data_training(u32 channel,
 		}
 	}
 	/* send some auto refresh to complement the lost while DTT */
-	for (i = 0; i < (rank > 1 ? 4 : 2); i++)
+	for (i = 0; i < (rank > 1 ? 8 : 4); i++)
 		send_command(ddr_pctl_regs, rank, REF_CMD, 0);
 
 	if (sdram_params->dramtype != LPDDR3)
@@ -962,7 +970,10 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 	int zqcr;
 	printk(BIOS_INFO, "Starting SDRAM initialization...\n");
 
-	if (sdram_params->ddr_freq > 533000000)
+	if ((sdram_params->dramtype == DDR3
+		&& sdram_params->ddr_freq > 800000000)
+		|| (sdram_params->dramtype == LPDDR3
+		&& sdram_params->ddr_freq > 533000000))
 		die("SDRAM frequency is to high!");
 
 	rkclk_configure_ddr(sdram_params->ddr_freq);
@@ -1011,6 +1022,10 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 		if (sdram_params->dramtype == LPDDR3) {
 			/* LPDDR2/LPDDR3 need to wait DAI complete, max 10us */
 			udelay(10);
+			send_command(ddr_pctl_regs,
+				(sdram_params->ch[channel].rank | 1),
+				MRS_CMD, LPDDR2_MA(11) |
+				sdram_params->odt ? LPDDR2_OP(3) : 0);
 			if (channel == 0) {
 				writel(0, &ddr_pctl_regs->mrrcfg0);
 				send_command(ddr_pctl_regs, 1, MRR_CMD,

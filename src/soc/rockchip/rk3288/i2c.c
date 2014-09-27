@@ -30,6 +30,9 @@
 #include "addressmap.h"
 #include "grf.h"
 #include "soc.h"
+#include "i2c.h"
+#include "clock.h"
+
 #define RETRY_COUNT	3
 /* 100000us = 100ms */
 #define I2C_TIMEOUT_US	100000
@@ -274,4 +277,40 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
 			break;
 	}
 	return res;
+}
+
+void i2c_init(unsigned int bus, unsigned int hz)
+{
+	unsigned int clk_div;
+	unsigned int divl;
+	unsigned int divh;
+	unsigned int i2c_src_clk;
+	struct rk3288_i2c_regs *regs = i2c_bus[bus];
+
+	/*i2c0,i2c2 src clk from pd_bus_pclk
+	other i2c src clk from peri_pclk
+	*/
+	switch (bus) {
+	case 0:
+	case 2:
+		i2c_src_clk = PD_BUS_PCLK_HZ;
+		break;
+	case 1:
+	case 3:
+	case 4:
+	case 5:
+		i2c_src_clk = PERI_PCLK_HZ;
+		break;
+	default:
+		break;
+	}
+
+	/*SCL Divisor = 8*(CLKDIVL + 1 + CLKDIVH + 1)
+	  SCL = PCLK/ SCLK Divisor
+	*/
+	clk_div = div_round_up(i2c_src_clk, hz * 8) - 2;
+	divh = clk_div / 2;
+	divl = ALIGN_UP(clk_div, 2) / 2;
+	assert((divh < 65536) && (divl < 65536));
+	writel((divh << 16) | (divl << 0), &regs->i2c_clkdiv);
 }

@@ -26,6 +26,7 @@
 #include "grf.h"
 #include "spi.h"
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <soc/rockchip/rk3288/i2c.h>
 
 static void bootblock_cpu_init(void)
 {
@@ -34,11 +35,15 @@ static void bootblock_cpu_init(void)
 	writel(IOMUX_SPI2_TXRX, &rk3288_grf->iomux_spi2txrx);
 	/*i2c1 for tpm*/
 	writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);
+
 	/* spi0 for chrome ec */
 	writel(IOMUX_SPI0, &rk3288_grf->iomux_spi0);
 	rk3288_init_timer();
 	console_init();
 	rkclk_init();
+
+	/*i2c1 for tpm 400khz*/
+	i2c_init(1, 400000);
 	rockchip_spi_init(CONFIG_BOOT_MEDIA_SPI_BUS);
 	rockchip_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS);
 	setup_chromeos_gpios();

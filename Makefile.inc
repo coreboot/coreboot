@@ -308,14 +308,7 @@ $(FLETCHER): $(top)/util/fletcher/fletcher.c
 
 CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
 
-$(CBOOTIMAGE): $(top)/util/nvidia-cbootimage/Makefile
-	@printf "    MAKE     $(subst $(obj)/,,$(@))\n"
-	$(MAKE) -C $(top)/util/nvidia-cbootimage
-	cp $(top)/util/nvidia-cbootimage/src/cbootimage $@
-
-$(top)/util/nvidia-cbootimage/Makefile:
-	cd $(top)/util/nvidia-cbootimage/; \
-	./autogen.sh >/dev/null
+subdirs-y += util/nvidia
 
 #######################################################################
 # needed objects that every mainboard uses

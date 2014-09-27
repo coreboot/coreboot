@@ -21,8 +21,10 @@
 #include <soc/rockchip/rk3288/gpio.h>
 #include <reset.h>
 
+#include "board.h"
+
 void hard_reset(void)
 {
-	gpio_output(GPIO(0, B, 2), 1);
+	gpio_output(GPIO_RESET, 1);
 	while (1);
 }

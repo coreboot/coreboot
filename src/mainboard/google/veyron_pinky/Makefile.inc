@@ -17,12 +17,15 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 bootblock-y += bootblock.c
+bootblock-y += boardid.c
 bootblock-y += chromeos.c
 bootblock-y += reset.c
 
+verstage-y += boardid.c
 verstage-y += chromeos.c
 verstage-y += reset.c
 
+romstage-y += boardid.c
 romstage-y += romstage.c
 romstage-y += chromeos.c
 romstage-y += sdram_configs.c

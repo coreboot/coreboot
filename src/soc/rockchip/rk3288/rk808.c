@@ -26,6 +26,7 @@
 
 #define RK808_ADDR	0x1b
 
+#define DCDC_EN		0x23
 #define LDO_EN		0x24
 #define LDO_ONSEL(i)	(0x39 + 2 * i)
 #define LDO_SLPSEL(i)	(0x3a + 2 * i)
@@ -37,6 +38,12 @@ static void rk808_clrsetbits(uint8_t bus, uint8_t reg, uint8_t clr, uint8_t set)
 	if (i2c_readb(bus, RK808_ADDR, reg, &value) ||
 	    i2c_writeb(bus, RK808_ADDR, reg, (value & ~clr) | set))
 		printk(BIOS_ERR, "ERROR: Cannot set Rk808[%#x]!\n", reg);
+}
+
+void rk808_configure_switch(uint8_t bus, int sw, int enabled)
+{
+	assert(sw == 1 || sw == 2);
+	rk808_clrsetbits(bus, DCDC_EN, 1 << (sw + 4), !!enabled << (sw + 4));
 }
 
 void rk808_configure_ldo(uint8_t bus, int ldo, int millivolts)

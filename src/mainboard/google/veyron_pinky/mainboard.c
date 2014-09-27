@@ -32,97 +32,106 @@
 #include <soc/rockchip/rk3288/rk808.h>
 #include <soc/rockchip/rk3288/spi.h>
 
-#define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
-#define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
-#define DRAM_END	(DRAM_START + DRAM_SIZE)
+#include "board.h"
 
-static void setup_gpio(void)
+static void configure_usb(void)
 {
-	/*SOC and TPM reset GPIO, active high.*/
-	gpio_output(GPIO(0, B, 2), 0);
+	gpio_output(GPIO(0, B, 3), 1);			/* HOST1_PWR_EN */
+	gpio_output(GPIO(0, B, 4), 1);			/* USBOTG_PWREN_H */
 
-	/* Configure GPIO for lcd_bl_en */
-	gpio_output(GPIO(7, A, 2), 1);
-
-	/*Configure backlight PWM 100% brightness*/
-	gpio_output(GPIO(7, A, 0), 0);
-
-	/* Configure GPIO for lcd_en */
-	gpio_output(GPIO(7, B, 7), 1);
-}
-
-static void setup_iomux(void)
-{
-	/*i2c0 for pmic*/
-	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
-	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
-
-	/*i2c2 for codec*/
-	writel(IOMUX_I2C2, &rk3288_grf->iomux_i2c2);
-
-	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
-	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
-	writel(IOMUX_LCDC, &rk3288_grf->iomux_lcdc);
-	writel(IOMUX_SDMMC0, &rk3288_grf->iomux_sdmmc0);
-	writel(IOMUX_EMMCDATA, &rk3288_grf->iomux_emmcdata);
-	writel(IOMUX_EMMCPWREN, &rk3288_grf->iomux_emmcpwren);
-	writel(IOMUX_EMMCCMD, &rk3288_grf->iomux_emmccmd);
-}
-
-static void setup_usb_poweron(void)
-{
-	/* Configure GPIO for usb1_pwr_en */
-	gpio_output(GPIO(0, B, 3), 1);
-
-	/* Configure GPIO for usb2_pwr_en */
-	gpio_output(GPIO(0, B, 4), 1);
-
-	/* Configure GPIO for 5v_drv */
-	gpio_output(GPIO(7, B, 3), 1);
+	switch (board_id()) {
+	case 0:
+		gpio_output(GPIO(7, B, 3), 1);		/* 5V_DRV */
+		break;
+	default:
+		break;	/* 5V_DRV moved to EC after rev1 */
+	}
 }
 
 static void configure_sdmmc(void)
 {
-	/* Configure GPIO for sd_en */
-	gpio_output(GPIO(7, C, 5), 1);
+	writel(IOMUX_SDMMC0, &rk3288_grf->iomux_sdmmc0);
 
-	/* Configure GPIO for sd_detec */
-	gpio_input_pullup(GPIO(7, A, 5));
-
-	/*use sdmmc0 io, disable JTAG function*/
+	/* use sdmmc0 io, disable JTAG function */
 	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
+
+	switch (board_id()) {
+	case 0:
+		rk808_configure_ldo(PMIC_BUS, 8, 3300);	/* VCCIO_SD */
+		gpio_output(GPIO(7, C, 5), 1);		/* SD_EN */
+		break;
+	default:
+		rk808_configure_ldo(PMIC_BUS, 4, 3300); /* VCCIO_SD */
+		rk808_configure_ldo(PMIC_BUS, 5, 3300); /* VCC33_SD */
+		break;
+	}
+
+	gpio_input(GPIO(7, A, 5));		/* SD_DET */
 }
 
 static void configure_emmc(void)
 {
-	/* Configure GPIO for emmc_pwrctrl */
-	gpio_output(GPIO(7, B, 4), 1);
+	writel(IOMUX_EMMCDATA, &rk3288_grf->iomux_emmcdata);
+	writel(IOMUX_EMMCPWREN, &rk3288_grf->iomux_emmcpwren);
+	writel(IOMUX_EMMCCMD, &rk3288_grf->iomux_emmccmd);
+
+	gpio_output(GPIO(7, B, 4), 1);			/* EMMC_RST_L */
 }
 
-static void configure_i2s(void)
+static void configure_codec(void)
 {
-	/*AUDIO IO domain 1.8V voltage selection*/
+	writel(IOMUX_I2C2, &rk3288_grf->iomux_i2c2);	/* CODEC I2C */
+
+	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
+	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
+
+	switch (board_id()) {
+	case 0:
+		rk808_configure_ldo(PMIC_BUS, 5, 1800);	/* VCC18_CODEC */
+		break;
+	default:
+		rk808_configure_ldo(PMIC_BUS, 6, 1800);	/* VCC18_CODEC */
+		break;
+	}
+
+	/* AUDIO IO domain 1.8V voltage selection */
 	writel(RK_SETBITS(1 << 6), &rk3288_grf->io_vsel);
 	rkclk_configure_i2s(12288000);
 }
 
-static void pmic_init(unsigned int bus)
+static void configure_lcd(void)
 {
-	rk808_configure_ldo(bus, 4, 1800);	/* VCC18_LCD */
-	rk808_configure_ldo(bus, 5, 1800);	/* VCC18_CODEC */
-	rk808_configure_ldo(bus, 6, 1000);	/* VCC10_LCD */
-	rk808_configure_ldo(bus, 8, 3300);	/* VCCIO_SD */
+	writel(IOMUX_LCDC, &rk3288_grf->iomux_lcdc);
+
+	switch (board_id()) {
+	case 0:
+		rk808_configure_ldo(PMIC_BUS, 4, 1800);	/* VCC18_LCD */
+		rk808_configure_ldo(PMIC_BUS, 6, 1000);	/* VCC10_LCD */
+		gpio_output(GPIO(7, B, 7), 1);		/* LCD_EN */
+		break;
+	default:
+		rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD */
+		rk808_configure_ldo(PMIC_BUS, 7, 3300); /* VCC10_LCD_PWREN_H */
+		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
+		break;
+	}
+
+	gpio_output(GPIO(7, A, 0), 0);			/* LCDC_BL */
+	gpio_output(GPIO(7, A, 2), 1);			/* BL_EN */
 }
 
 static void mainboard_init(device_t dev)
 {
-	setup_iomux();
-	pmic_init(0);
-	setup_gpio();
-	setup_usb_poweron();
+	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL); /* PMIC I2C */
+	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA); /* PMIC I2C */
+
+	gpio_output(GPIO_RESET, 0);
+
+	configure_usb();
 	configure_sdmmc();
 	configure_emmc();
-	configure_i2s();
+	configure_codec();
+	configure_lcd();
 }
 
 static void mainboard_enable(device_t dev)

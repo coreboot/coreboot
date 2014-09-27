@@ -23,6 +23,6 @@
 
 void hard_reset(void)
 {
-	gpio_output((gpio_t){.port = 0, .bank = GPIO_B, .idx = 2}, 1);
+	gpio_output(GPIO(0, B, 2), 1);
 	while (1);
 }

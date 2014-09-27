@@ -23,6 +23,8 @@
 #include "addressmap.h"
 #include "grf.h"
 
+#define GPIO(p, b, i) ((gpio_t){.port = p, .bank = GPIO_##b, .idx = i})
+
 struct rk3288_gpio_regs {
 	u32 swporta_dr;
 	u32 swporta_ddr;

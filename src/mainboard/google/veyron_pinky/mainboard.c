@@ -39,16 +39,16 @@
 static void setup_gpio(void)
 {
 	/*SOC and TPM reset GPIO, active high.*/
-	gpio_output((gpio_t){.port = 0, .bank = GPIO_B, .idx = 2}, 0);
+	gpio_output(GPIO(0, B, 2), 0);
 
 	/* Configure GPIO for lcd_bl_en */
-	gpio_output((gpio_t){.port = 7, .bank = GPIO_A, .idx = 2}, 1);
+	gpio_output(GPIO(7, A, 2), 1);
 
 	/*Configure backlight PWM 100% brightness*/
-	gpio_output((gpio_t){.port = 7, .bank = GPIO_A, .idx = 0}, 0);
+	gpio_output(GPIO(7, A, 0), 0);
 
 	/* Configure GPIO for lcd_en */
-	gpio_output((gpio_t){.port = 7, .bank = GPIO_B, .idx = 7}, 1);
+	gpio_output(GPIO(7, B, 7), 1);
 }
 
 static void setup_iomux(void)
@@ -76,22 +76,22 @@ static void setup_iomux(void)
 static void setup_usb_poweron(void)
 {
 	/* Configure GPIO for usb1_pwr_en */
-	gpio_output((gpio_t){.port = 0, .bank = GPIO_B, .idx = 3}, 1);
+	gpio_output(GPIO(0, B, 3), 1);
 
 	/* Configure GPIO for usb2_pwr_en */
-	gpio_output((gpio_t){.port = 0, .bank = GPIO_B, .idx = 4}, 1);
+	gpio_output(GPIO(0, B, 4), 1);
 
 	/* Configure GPIO for 5v_drv */
-	gpio_output((gpio_t){.port = 7, .bank = GPIO_B, .idx = 3}, 1);
+	gpio_output(GPIO(7, B, 3), 1);
 }
 
 static void configure_sdmmc(void)
 {
 	/* Configure GPIO for sd_en */
-	gpio_output((gpio_t){.port = 7, .bank = GPIO_C, .idx = 5}, 1);
+	gpio_output(GPIO(7, C, 5), 1);
 
 	/* Configure GPIO for sd_detec */
-	gpio_input_pullup((gpio_t){.port = 7, .bank = GPIO_A, .idx = 5});
+	gpio_input_pullup(GPIO(7, A, 5));
 
 	/*use sdmmc0 io, disable JTAG function*/
 	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
@@ -100,7 +100,7 @@ static void configure_sdmmc(void)
 static void configure_emmc(void)
 {
 	/* Configure GPIO for emmc_pwrctrl */
-	gpio_output((gpio_t){.port = 7, .bank = GPIO_B, .idx = 4}, 1);
+	gpio_output(GPIO(7, B, 4), 1);
 }
 
 static void configure_i2s(void)

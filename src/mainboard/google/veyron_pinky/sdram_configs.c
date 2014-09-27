@@ -42,10 +42,10 @@ static struct rk3288_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 1111 */
 };
 
-#define GPIO_RAMCODE0	(gpio_t){.port = 8, .bank = GPIO_A, .idx = 0}
-#define GPIO_RAMCODE1	(gpio_t){.port = 8, .bank = GPIO_A, .idx = 1}
-#define GPIO_RAMCODE2	(gpio_t){.port = 8, .bank = GPIO_A, .idx = 2}
-#define GPIO_RAMCODE3	(gpio_t){.port = 8, .bank = GPIO_A, .idx = 3}
+#define GPIO_RAMCODE0	GPIO(8, A, 0)
+#define GPIO_RAMCODE1	GPIO(8, A, 1)
+#define GPIO_RAMCODE2	GPIO(8, A, 2)
+#define GPIO_RAMCODE3	GPIO(8, A, 3)
 
 u32 sdram_get_ram_code(void)
 {

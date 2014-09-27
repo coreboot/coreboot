@@ -25,10 +25,10 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/rockchip/rk3288/gpio.h>
 
-#define GPIO_WP		(gpio_t){.port = 7, .bank = GPIO_A, .idx = 6}
-#define GPIO_LID	(gpio_t){.port = 7, .bank = GPIO_B, .idx = 5}
-#define GPIO_POWER	(gpio_t){.port = 0, .bank = GPIO_A, .idx = 5}
-#define GPIO_RECOVERY	(gpio_t){.port = 0, .bank = GPIO_B, .idx = 1}
+#define GPIO_WP		GPIO(7, A, 6)
+#define GPIO_LID	GPIO(7, B, 5)
+#define GPIO_POWER	GPIO(0, A, 5)
+#define GPIO_RECOVERY	GPIO(0, B, 1)
 
 void setup_chromeos_gpios(void)
 {

@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <delay.h>
 #include "ec.h"
 #include "ec_commands.h"
 #include <spi-generic.h>
@@ -49,6 +50,10 @@ static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 	struct spi_slave *slave = (struct spi_slave *)context;
 
 	spi_claim_bus(slave);
+
+	 /* Allow EC to ramp up clock after being awaken.
+	  * See chrome-os-partner:32223 for more details. */
+	udelay(CONFIG_EC_GOOGLE_CHROMEEC_SPI_WAKEUP_DELAY_US);
 
 	if (spi_xfer(slave, req_buf, req_size, NULL, 0)) {
 		printk(BIOS_ERR, "%s: Failed to send request.\n", __func__);

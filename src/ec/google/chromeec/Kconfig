@@ -43,6 +43,13 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	depends on EC_GOOGLE_CHROMEEC_SPI
 	hex "SPI bus for Google's Chrome EC"
 
+config EC_GOOGLE_CHROMEEC_SPI_WAKEUP_DELAY_US
+	depends on EC_GOOGLE_CHROMEEC_SPI
+	int
+	default 0
+	help
+	  Force delay after asserting /CS to allow EC to wakeup.
+
 config EC_GOOGLE_CHROMEEC_SPI_CHIP
 	depends on EC_GOOGLE_CHROMEEC_SPI
 	hex

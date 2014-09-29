@@ -63,6 +63,10 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	if (ps->gpe0_sts[GPE_STD] & SMB_WAK_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_SMBUS, 0);
 
+	/* GPIO27 */
+	if (ps->gpe0_sts[GPE_STD] & GP27_STS)
+		elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, 27);
+
 	/* Log GPIO events in set 1-3 */
 	pch_log_gpio_gpe(ps->gpe0_sts[GPE_31_0], ps->gpe0_en[GPE_31_0], 0);
 	pch_log_gpio_gpe(ps->gpe0_sts[GPE_63_32], ps->gpe0_en[GPE_63_32], 32);

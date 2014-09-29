@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 	checksum = fletcher32(&buffer[2], filesize/2 - 2);
 	*((uint32_t *)& buffer[2]) = checksum;
 #ifndef DEBUG
-	if ((argc == 2) && !strncmp(argv[1], debugoption, sizeof(debugoption+1))) {
+	if ((argc == 2) && (strcmp(argv[1], debugoption) == 0)) {
 #endif
 		fprintf(stderr, "Fletcher's Checksum: %x\n", checksum);
 #ifndef DEBUG

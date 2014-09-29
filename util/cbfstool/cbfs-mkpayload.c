@@ -79,8 +79,9 @@ int parse_elf_to_payload(const struct buffer *input,
 	int segments = 1;
 	int isize = 0, osize = 0;
 	int doffset = 0;
-	struct cbfs_payload_segment *segs;
+	struct cbfs_payload_segment *segs = NULL;
 	int i;
+	int ret = 0;
 
 	comp_func_ptr compress = compression_function(algo);
 	if (!compress)
@@ -133,12 +134,16 @@ int parse_elf_to_payload(const struct buffer *input,
 	}
 	/* allocate the segment header array */
 	segs = calloc(segments, sizeof(*segs));
-	if (segs == NULL)
-		return -1;
+	if (segs == NULL) {
+		ret = -1;
+		goto out;
+	}
 	/* Allocate a block of memory to store the data in */
 	if (buffer_create(output, (segments * sizeof(*segs)) + isize,
-			  input->name) != 0)
-		return -1;
+			  input->name) != 0) {
+		ret = -1;
+		goto out;
+	}
 	memset(output->data, 0, output->size);
 
 	doffset = (segments * sizeof(*segs));
@@ -208,7 +213,8 @@ int parse_elf_to_payload(const struct buffer *input,
 		if (compress((char *)&header[phdr[i].p_offset],
 			     phdr[i].p_filesz, output->data + doffset, &len)) {
 			buffer_delete(output);
-			return -1;
+			ret = -1;
+			goto out;
 		}
 		segs[segments].len = len;
 
@@ -233,7 +239,12 @@ int parse_elf_to_payload(const struct buffer *input,
 
 	output->size = (segments * sizeof(*segs)) + osize;
 	xdr_segs(output, segs, segments);
-	return 0;
+
+out:
+	if (segs) free(segs);
+	if (shdr) free(shdr);
+	if (phdr) free(phdr);
+	return ret;
 }
 
 int parse_flat_binary_to_payload(const struct buffer *input,

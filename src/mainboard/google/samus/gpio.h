@@ -24,6 +24,8 @@
 
 #define SAMUS_GPIO_PP3300_AUTOBAHN_EN	23
 #define SAMUS_GPIO_SSD_RESET_L		47
+#define SAMUS_GPIO_WLAN_DISABLE_L	42
+#define SAMUS_GPIO_LTE_DISABLE_L	59
 
 static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 0: UNUSED */

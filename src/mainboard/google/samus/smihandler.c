@@ -31,10 +31,7 @@
 #include <broadwell/pm.h>
 #include <broadwell/smm.h>
 #include "ec.h"
-
-#define GPIO_SSD_RESET_L    47
-#define GPIO_WLAN_DISABLE_L 42
-#define GPIO_LTE_DISABLE_L  59
+#include "gpio.h"
 
 int mainboard_io_trap_handler(int smif)
 {
@@ -104,11 +101,11 @@ void mainboard_smi_sleep(u8 slp_typ)
 		}
 
 		/* Put SSD in reset to prevent leak. */
-		set_gpio(GPIO_SSD_RESET_L, 0);
+		set_gpio(SAMUS_GPIO_SSD_RESET_L, 0);
 		/* Prevent leak from standby rail to WLAN rail in S3. */
-		set_gpio(GPIO_WLAN_DISABLE_L, 0);
+		set_gpio(SAMUS_GPIO_WLAN_DISABLE_L, 0);
 		/* Disable LTE */
-		set_gpio(GPIO_LTE_DISABLE_L, 0);
+		set_gpio(SAMUS_GPIO_LTE_DISABLE_L, 0);
 
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
@@ -122,11 +119,11 @@ void mainboard_smi_sleep(u8 slp_typ)
 		}
 
 		/* Put SSD in reset to prevent leak. */
-		set_gpio(GPIO_SSD_RESET_L, 0);
+		set_gpio(SAMUS_GPIO_SSD_RESET_L, 0);
 		/* Prevent leak from standby rail to WLAN rail in S5. */
-		set_gpio(GPIO_WLAN_DISABLE_L, 0);
+		set_gpio(SAMUS_GPIO_WLAN_DISABLE_L, 0);
 		/* Disable LTE */
-		set_gpio(GPIO_LTE_DISABLE_L, 0);
+		set_gpio(SAMUS_GPIO_LTE_DISABLE_L, 0);
 
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);

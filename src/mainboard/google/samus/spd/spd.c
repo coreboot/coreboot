@@ -93,10 +93,6 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	int spd_file_len;
 	struct cbfs_file *spd_file;
 
-	/* Proto2B boards use a different GPIO for SPD index bit 3 */
-	if (google_chromeec_get_board_version() <= SAMUS_EC_BOARD_PROTO2_A)
-		spd_bits[3] = SPD_GPIO_BIT3_OLD;
-
 	spd_gpio[0] = get_gpio(spd_bits[0]);
 	spd_gpio[1] = get_gpio(spd_bits[1]);
 	spd_gpio[2] = get_gpio(spd_bits[2]);

@@ -53,7 +53,8 @@ typedef struct {
 	u32	obsolete_cmem; /* 0x19 - 0x1c - CBMEM TOC */
 	u32	cbmc; /* 0x1d - 0x20 - Coreboot Memory Console */
 	u32	pm1i; /* 0x21 - 0x24 - PM1 wake status bit */
-	u8	rsvd3[219];
+	u32	gpei; /* 0x25 - 0x28 - GPE wake status bit */
+	u8	rsvd3[215];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

@@ -83,6 +83,8 @@
 #define TCO2_STS		0x66
 #define  TCO2_STS_SECOND_TO	(1 << 1)
 
+#define GPE0_REG_MAX		4
+#define GPE0_REG_SIZE		32
 #define GPE0_STS(x)		(0x80 + (x * 4))
 #define  GPE_31_0		0	/* 0x80/0x90 = GPE[31:0] */
 #define  GPE_63_32		1	/* 0x84/0x94 = GPE[63:32] */

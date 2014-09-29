@@ -36,7 +36,7 @@ Field (POST, ByteAcc, Lock, Preserve)
 }
 
 /* SMI I/O Trap */
-Method(TRAP, 1, Serialized)
+Method (TRAP, 1, Serialized)
 {
 	Store (Arg0, SMIF)	// SMI Function
 	Store (0, TRP0)		// Generate trap
@@ -50,29 +50,42 @@ Method(TRAP, 1, Serialized)
  * with a parameter of 1 for Local Apic/IOAPIC configuration.
  */
 
-Method(_PIC, 1)
+Method (_PIC, 1)
 {
-	// Remember the OS' IRQ routing choice.
-	Store(Arg0, PICM)
+	/* Remember the OS' IRQ routing choice. */
+	Store (Arg0, PICM)
 }
 
-/* The _PTS method (Prepare To Sleep) is called before the OS is
+/*
+ * The _PTS method (Prepare To Sleep) is called before the OS is
  * entering a sleep state. The sleep state number is passed in Arg0
  */
 
-Method(_PTS,1)
+Method (_PTS, 1)
 {
 }
 
 /* The _WAK method is called on system wakeup */
 
-Method(_WAK,1)
+Method (_WAK, 1)
 {
-	Return(Package(){0,0})
+	Return (Package (){ 0, 0 })
 }
 
-Method (_SWS)
+Scope (\_SB)
 {
-	/* Index into PM1 for device that caused wake */
-	Return (\PM1I)
+	Method (_SWS)
+	{
+		/* Index into PM1 for device that caused wake */
+		Return (\PM1I)
+	}
+}
+
+Scope (\_GPE)
+{
+	Method (_SWS)
+	{
+		/* Index into GPE for device that caused wake */
+		Return (\GPEI)
+	}
 }

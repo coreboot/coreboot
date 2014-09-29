@@ -62,6 +62,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	CMEM,	32,	// 0x19 - 0x1c - CBMEM TOC
 	CBMC,	32,	// 0x1d - 0x20 - Coreboot Memory Console
 	PM1I,	32,	// 0x21 - 0x24 - PM1 wake status bit
+	GPEI,	32,	// 0x25 - 0x28 - GPE wake status bit
 
 	/* ChromeOS specific */
 	Offset (0x100),

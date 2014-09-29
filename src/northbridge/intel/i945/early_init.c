@@ -502,7 +502,7 @@ static void i945_setup_dmi_rcrb(void)
 	DMIBAR32(0x338) = DMIBAR32(0x334);
 	DMIBAR32(0x338) = DMIBAR32(0x338);
 
-	if (i945_silicon_revision() == 1 && ((MCHBAR8(0xe08) & (1 << 5)) == 1)) {
+	if (i945_silicon_revision() == 1 && (MCHBAR8(DFT_STRAP1) & (1 << 5))) {
 		if ((MCHBAR32(0x214) & 0xf) != 0x3) {
 			printk(BIOS_INFO, "DMI link requires A1 stepping workaround. Rebooting.\n");
 			reg32 = DMIBAR32(0x224);

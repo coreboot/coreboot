@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#undef ENABLE_TOUCH_WAKE
+
 Scope (\_SB)
 {
 	Device (LID0)
@@ -34,20 +36,6 @@ Scope (\_SB)
 	Device (PWRB)
 	{
 		Name(_HID, EisaId("PNP0C0C"))
-	}
-
-	Device (TPAD)
-	{
-		Name (_HID, EisaId("PNP0C0E"))
-		Name (_UID, 1)
-		Name (_PRW, Package() { 13, 0x3 }) // GPIO13
-	}
-
-	Device (TSCR)
-	{
-		Name (_HID, EisaId("PNP0C0E"))
-		Name (_UID, 2)
-		Name (_PRW, Package() { 14, 0x3 }) // GPIO14
 	}
 
 	// Keyboard Backlight interface via EC
@@ -134,6 +122,7 @@ Scope (\_SB.PCI0.I2C0)
 		Name (_UID, 2)
 		Name (_S0W, 4)
 		Name (ISTP, 1) /* Touchpad */
+		Name (GPIO, 13) /* TRACKPAD_INT_L */
 
 		Name (_CRS, ResourceTemplate()
 		{
@@ -148,6 +137,18 @@ Scope (\_SB.PCI0.I2C0)
 			// GPIO13 is PIRQL
 			Interrupt (ResourceConsumer, Edge, ActiveLow) { 27 }
 		})
+
+		Name (_PRW, Package() { GPIO, 3 })
+
+#ifdef ENABLE_TOUCH_WAKE
+		Method (_DSW, 3, NotSerialized)
+		{
+			If (LEqual (Arg0, 1)) {
+				// Enable GPIO as wake source
+				\_SB.PCI0.LPCB.GPIO.GWAK (^GPIO)
+			}
+		}
+#endif
 
 		Method (_STA)
 		{
@@ -254,6 +255,7 @@ Scope (\_SB.PCI0.I2C1)
 		Name (_UID, 5)
 		Name (_S0W, 4)
 		Name (ISTP, 0) /* TouchScreen */
+		Name (GPIO, 14) /* TOUCH_INT_L */
 
 		Name (_CRS, ResourceTemplate()
 		{
@@ -268,6 +270,18 @@ Scope (\_SB.PCI0.I2C1)
 			// GPIO14 is PIRQM
 			Interrupt (ResourceConsumer, Edge, ActiveLow) { 28 }
 		})
+
+		Name (_PRW, Package() { GPIO, 3 })
+
+#ifdef ENABLE_TOUCH_WAKE
+		Method (_DSW, 3, NotSerialized)
+		{
+			If (LEqual (Arg0, 1)) {
+				// Enable GPIO as wake source
+				\_SB.PCI0.LPCB.GPIO.GWAK (^GPIO)
+			}
+		}
+#endif
 
 		Method (_STA)
 		{

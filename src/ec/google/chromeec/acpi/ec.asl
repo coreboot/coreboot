@@ -312,6 +312,13 @@ Device (EC0)
 	}
 #endif
 
+	// Battery Status
+	Method (_Q17, 0, NotSerialized)
+	{
+		Store ("EC: BATTERY STATUS", Debug)
+		Notify (BAT0, 0x80)
+	}
+
 	/*
 	 * Dynamic Platform Thermal Framework support
 	 */

@@ -126,9 +126,7 @@ Device (BAT0)
 		Return (PBIF)
 	}
 
-	// Extended Battery info method is disabled for now due to
-	// a bug in the Linux kernel: http://crosbug.com/28747
-	Method (XBIX, 0, Serialized)
+	Method (_BIX, 0, Serialized)
 	{
 		// Last Full Charge Capacity
 		Store (BTDF, Index (PBIX, 3))

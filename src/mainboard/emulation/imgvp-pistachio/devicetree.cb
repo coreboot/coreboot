@@ -19,7 +19,7 @@
 # MA 02110-1301 USA
 #
 
-chip soc/imgtec/danube
+chip soc/imgtec/pistachio
 	chip drivers/generic/generic # I2C0 controller
 		device i2c 6 on end # Fake component for testing
 	end

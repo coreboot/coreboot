@@ -19,24 +19,24 @@
 # MA 02110-1301 USA
 #
 
-if BOARD_EMULATION_IMGVP_DANUBE
+if BOARD_EMULATION_IMGVP_PISTACHIO
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOOTBLOCK_CONSOLE
-	select CPU_IMGTEC_DANUBE
+	select CPU_IMGTEC_PISTACHIO
 
 config MAINBOARD_DIR
 	string
-	default emulation/imgvp-danube
+	default emulation/imgvp-pistachio
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ImgTec Danube Virtual Platform"
+	default "ImgTec Pistachio Virtual Platform"
 
 config BOOTBLOCK_MAINBOARD_INIT
 	string
-	default "mainboard/emulation/imgvp-danube/bootblock.c"
+	default "mainboard/emulation/imgvp-pistachio/bootblock.c"
 
 config SYS_SDRAM_BASE
 	hex "SDRAM base address"

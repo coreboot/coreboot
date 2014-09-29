@@ -5,7 +5,6 @@ choice
 
 config BOARD_EMULATION_QEMU_X86_I440FX
 	bool "QEMU x86 i440fx/piix4 (aka qemu -M pc)"
-
 config BOARD_EMULATION_QEMU_X86_Q35
 	bool "QEMU x86 q35/ich9 (aka qemu -M q35, since v1.4)"
 
@@ -15,8 +14,8 @@ config BOARD_EMULATION_QEMU_ARMV7
 config BOARD_EMULATION_QEMU_UCB_RISCV
 	bool "QEMU ucb riscv"
 
-config BOARD_EMULATION_IMGVP_DANUBE
-	bool "ImgTec Danube Virtual Platform"
+config BOARD_EMULATION_IMGVP_PISTACHIO
+	bool "ImgTec Pistachio Virtual Platform"
 
 endchoice
 
@@ -29,7 +28,7 @@ source "src/mainboard/emulation/qemu-i440fx/Kconfig"
 source "src/mainboard/emulation/qemu-q35/Kconfig"
 source "src/mainboard/emulation/qemu-armv7/Kconfig"
 source "src/mainboard/emulation/qemu-riscv/Kconfig"
-source "src/mainboard/emulation/imgvp-danube/Kconfig"
+source "src/mainboard/emulation/imgvp-pistachio/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

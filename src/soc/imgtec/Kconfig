@@ -1,1 +1,1 @@
-source src/soc/imgtec/danube/Kconfig
+source src/soc/imgtec/pistachio/Kconfig

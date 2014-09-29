@@ -25,7 +25,7 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOOTBLOCK_CONSOLE
 	select CONFIG_SPI_FLASH_WINBOND
-	select CPU_IMGTEC_DANUBE
+	select CPU_IMGTEC_PISTACHIO
         select COMMON_CBFS_SPI_WRAPPER
         select MAINBOARD_HAS_BOOTBLOCK_INIT
 	select SPI_FLASH
@@ -36,7 +36,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ImgTec Danube Virtual Platform"
+	default "ImgTec Pistachio Virtual Platform"
 
 config SYS_SDRAM_BASE
 	hex "SDRAM base address"

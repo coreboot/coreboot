@@ -142,7 +142,7 @@ static unsigned int uart_baudrate_divisor(unsigned int baudrate,
 	return (1 + (2 * refclk) / (baudrate * oversample)) / 2;
 }
 
-static void danube_uart_init(void)
+static void pistachio_uart_init(void)
 {
 	u32 base = uart_platform_base(0);
 	if (!base)
@@ -154,7 +154,7 @@ static void danube_uart_init(void)
 	uart8250_mem_init(base, div);
 }
 
-static void danube_uart_tx_byte(unsigned char data)
+static void pistachio_uart_tx_byte(unsigned char data)
 {
 	u32 base = uart_platform_base(0);
 	if (!base)
@@ -162,7 +162,7 @@ static void danube_uart_tx_byte(unsigned char data)
 	uart8250_mem_tx_byte(base, data);
 }
 
-static unsigned char danube_uart_rx_byte(void)
+static unsigned char pistachio_uart_rx_byte(void)
 {
 	u32 base = uart_platform_base(0);
 	if (!base)
@@ -170,7 +170,7 @@ static unsigned char danube_uart_rx_byte(void)
 	return uart8250_mem_rx_byte(base);
 }
 
-static void danube_uart_tx_flush(void)
+static void pistachio_uart_tx_flush(void)
 {
 	u32 base = uart_platform_base(0);
 	if (!base)
@@ -180,11 +180,11 @@ static void danube_uart_tx_flush(void)
 
 #if !defined(__PRE_RAM__)
 
-static const struct console_driver danube_uart_console __console = {
-	.init     = danube_uart_init,
-	.tx_byte  = danube_uart_tx_byte,
-	.tx_flush = danube_uart_tx_flush,
-	.rx_byte  = danube_uart_rx_byte,
+static const struct console_driver pistachio_uart_console __console = {
+	.init     = pistachio_uart_init,
+	.tx_byte  = pistachio_uart_tx_byte,
+	.tx_flush = pistachio_uart_tx_flush,
+	.rx_byte  = pistachio_uart_rx_byte,
 };
 
 uint32_t uartmem_getbaseaddr(void)
@@ -196,22 +196,22 @@ uint32_t uartmem_getbaseaddr(void)
 
 void uart_init(void)
 {
-	danube_uart_init();
+	pistachio_uart_init();
 }
 
 void uart_tx_byte(unsigned char data)
 {
-	danube_uart_tx_byte(data);
+	pistachio_uart_tx_byte(data);
 }
 
 unsigned char uart_rx_byte(void)
 {
-	return danube_uart_rx_byte();
+	return pistachio_uart_rx_byte();
 }
 
 void uart_tx_flush(void)
 {
-	danube_uart_tx_flush();
+	pistachio_uart_tx_flush();
 }
 
 #endif /* __PRE_RAM__ */

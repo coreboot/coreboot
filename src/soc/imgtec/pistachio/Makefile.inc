@@ -19,7 +19,7 @@
 # MA 02110-1301 USA
 #
 
-# We enable CBFS_SPI_WRAPPER for Danuibe targets.
+# We enable CBFS_SPI_WRAPPER for Pistachio targets.
 bootblock-y += spi.c
 romstage-y += spi.c
 ramstage-y += spi.c

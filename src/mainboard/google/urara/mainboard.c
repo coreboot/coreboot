@@ -24,7 +24,7 @@
 
 static void mainboard_enable(device_t dev)
 {
-	printk(BIOS_INFO, "Enable Danube device...\n");
+	printk(BIOS_INFO, "Enable Pistachio device...\n");
 }
 
 struct chip_operations mainboard_ops = {

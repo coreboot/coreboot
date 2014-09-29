@@ -1,1 +1,1 @@
-subdirs-$(CONFIG_CPU_IMGTEC_DANUBE) += danube
+subdirs-$(CONFIG_CPU_IMGTEC_PISTACHIO) += pistachio

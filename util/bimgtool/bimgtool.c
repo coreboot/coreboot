@@ -137,7 +137,7 @@ static void usage(FILE *f)
 		"\n"
 		"bimgtool is a simple tool which generates boot images in the "
 		"BIMG format used in systems designed by Imagination "
-		"Technologies, for example the Danube SoC. This version of the "
+		"Technologies, for example the Pistachio SoC. This version of the "
 		"tool generates BIMG version 1.0 images.\n"
 		"\n"
 		"  input:          The binary file to be converted to a BIMG\n"

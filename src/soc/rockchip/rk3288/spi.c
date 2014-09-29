@@ -33,7 +33,6 @@
 struct rockchip_spi_slave {
 	struct spi_slave slave;
 	struct rockchip_spi *regs;
-	unsigned int speed_hz;
 	unsigned int fifo_size;
 };
 
@@ -47,13 +46,11 @@ static struct rockchip_spi_slave rockchip_spi_slaves[3] = {
 		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
 		   },
 	 .regs = (void *)SPI0_BASE,
-	 .speed_hz = 9000000,
 	 .fifo_size = 32,
 	},
 	{
 	 .slave = {.bus = 1, .rw = SPI_READ_FLAG,},
 	 .regs = (void *)SPI1_BASE,
-	 .speed_hz = 11000000,
 	 .fifo_size = 32,
 	},
 	{
@@ -62,7 +59,6 @@ static struct rockchip_spi_slave rockchip_spi_slaves[3] = {
 		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
 		   },
 	 .regs = (void *)SPI2_BASE,
-	 .speed_hz = 11000000,
 	 .fifo_size = 32,
 	},
 
@@ -110,7 +106,7 @@ static void rockchip_spi_set_clk(struct rockchip_spi *regs, unsigned int hz)
 	writel(clk_div, &regs->baudr);
 }
 
-void rockchip_spi_init(unsigned int bus)
+void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 {
 	struct rockchip_spi_slave *espi = &rockchip_spi_slaves[bus];
 	struct rockchip_spi *regs = espi->regs;
@@ -118,7 +114,7 @@ void rockchip_spi_init(unsigned int bus)
 
 	rkclk_configure_spi(bus, SPI_SRCCLK_HZ);
 	rockchip_spi_enable_chip(regs, 0);
-	rockchip_spi_set_clk(regs, espi->speed_hz);
+	rockchip_spi_set_clk(regs, speed_hz);
 
 	/* Operation Mode */
 	ctrlr0 = (SPI_OMOD_MASTER << SPI_OMOD_OFFSET);

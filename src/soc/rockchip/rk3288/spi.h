@@ -199,6 +199,6 @@ check_member(rockchip_spi, rxdr, 0x800);
 int initialize_rockchip_spi_cbfs_media(struct cbfs_media *media,
 				     void *buffer_address,
 				     size_t buffer_size);
-void rockchip_spi_init(unsigned int bus);
+void rockchip_spi_init(unsigned int bus, unsigned int speed_hz);
 
 #endif

@@ -169,6 +169,8 @@ Scope (\_SB.PCI0.I2C0)
 		Name (_HID, "RT5677CE")
 		Name (_DDN, "RT5667 Codec")
 		Name (_UID, 1)
+		Name (WAKE, 45) /* DSP_INT (use as codec wake) */
+
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (
@@ -178,8 +180,46 @@ Scope (\_SB.PCI0.I2C0)
 				AddressingMode7Bit,       // AddressingMode
 				"\\_SB.PCI0.I2C0",        // ResourceSource
 			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow){ 30 }
+
+			/* GPIO46 is PIRQO (use HOTWORD_DET as codec IRQ) */
+			Interrupt (ResourceConsumer, Edge, ActiveLow) { 30 }
+
+			/*
+			 * Codec GPIOs are 1-based in the schematic
+			 *
+			 * [0] = Jack Detect (INPUT)
+			 * [1] = Mic Present (INPUT)
+			 * [2] = Interrupt to the host (OUTPUT)
+			 * [3] = Interrupt to the host (OUTPUT)
+			 */
+
+			/* Index 0:  Jack Detect - PLUG_DET is GPIO5 */
+			GpioIo (Exclusive, PullUp, , , IoRestrictionInputOnly,
+				"\\_SB.PCI0.I2C0.CODC") { 4 }
+
+			/* Index 1:  Mic Present - MIC_PRESENT_L is GPIO6 */
+			GpioIo (Exclusive, PullUp, , , IoRestrictionInputOnly,
+				"\\_SB.PCI0.I2C0.CODC") { 5 }
+
+			/* Index 2:  Codec IRQ - HOTWORD_DET_L is GPIO1 */
+			GpioIo (Exclusive, PullUp, , , IoRestrictionOutputOnly,
+				"\\_SB.PCI0.I2C0.CODC") { 0 }
+
+			/* Index 3:  Codec Wake - DSP_INT is GPIO4 */
+			GpioIo (Exclusive, PullUp, , , IoRestrictionOutputOnly,
+				"\\_SB.PCI0.I2C0.CODC") { 3 }
 		})
+
+		Name (_PRW, Package() { WAKE, 3 })
+
+		Method (_DSW, 3, NotSerialized)
+		{
+			If (LEqual (Arg0, 1)) {
+				// Enable GPIO as wake source
+				\_SB.PCI0.LPCB.GPIO.GWAK (^WAKE)
+			}
+		}
+
 		Method (_STA)
 		{
 			If (LEqual (\S1EN, 1)) {
@@ -187,29 +227,6 @@ Scope (\_SB.PCI0.I2C0)
 			} Else {
 				Return (0x0)
 			}
-		}
-	}
-
-	Device (HOTW)
-	{
-		Name (_HID, "PNP0A05")
-		Name (_DDN, "Hotword Wake")
-		Name (_UID, 1)
-		Name (GPIO, 46) /* HOTWORD_DET_L_3V3 */
-
-		Name (_PRW, Package() { GPIO, 3 })
-
-		Method (_DSW, 3, NotSerialized)
-		{
-			If (LEqual (Arg0, 1)) {
-				// Enable GPIO as wake source
-				\_SB.PCI0.LPCB.GPIO.GWAK (^GPIO)
-			}
-		}
-
-		Method (_STA)
-		{
-			Return (0xF)
 		}
 	}
 }

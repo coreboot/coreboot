@@ -73,8 +73,8 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 42: WLAN_DISABLE_L */
 	PCH_GPIO_OUT_HIGH,      /* 43: PP1800_CODEC_EN */
 	PCH_GPIO_UNUSED,        /* 44: UNUSED */
-	PCH_GPIO_PIRQ,          /* 45: DSP_INT (PIRQN) */
-	PCH_GPIO_ACPI_SCI,      /* 46: HOTWORD_DET_L_3V3 (WAKE) */
+	PCH_GPIO_ACPI_SCI,      /* 45: DSP_INT - Codec Wake */
+	PCH_GPIO_PIRQ,          /* 46: HOTWORD_DET_L_3V3 (PIRQO) - Codec IRQ */
 	PCH_GPIO_OUT_LOW,       /* 47: SSD_RESET_L */
 	PCH_GPIO_UNUSED,        /* 48: UNUSED */
 	PCH_GPIO_UNUSED,        /* 49: UNUSED */

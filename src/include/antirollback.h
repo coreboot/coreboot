@@ -15,6 +15,9 @@
 
 /* TPM NVRAM location indices. */
 #define FIRMWARE_NV_INDEX               0x1007
+#define KERNEL_NV_INDEX                 0x1008
+/* This is just an opaque space for backup purposes */
+#define BACKUP_NV_INDEX                 0x1009
 
 /* Structure definitions for TPM spaces */
 

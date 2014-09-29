@@ -757,7 +757,7 @@ static void i945_setup_pci_express_x16(void)
 		/* Set voltage specific parameters */
 		reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xe80);
 		reg32 &= (0xf << 4);	/* Default case 1.05V */
-		if ((MCHBAR32(0xe08) & (1 << 20)) == 0) {	/* 1.50V */
+		if ((MCHBAR32(DFT_STRAP1) & (1 << 20)) == 0) {	/* 1.50V */
 			reg32 |= (7 << 4);
 		}
 		pci_write_config32(PCI_DEV(0, 0x01, 0), 0xe80, reg32);

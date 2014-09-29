@@ -379,43 +379,22 @@ u32 google_chromeec_get_wake_mask(void)
 		EC_CMD_HOST_EVENT_GET_WAKE_MASK);
 }
 
-#if CONFIG_ELOG
-/* Find the last port80 code from the previous boot */
-static u16 google_chromeec_get_port80_last_boot(void)
-{
-	struct ec_response_port80_last_boot rsp;
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_PORT80_LAST_BOOT,
-		.cmd_data_out = &rsp,
-		.cmd_size_out = sizeof(rsp),
-	};
-
-	/* Get last port80 code */
-	if (google_chromeec_command(&cmd) == 0)
-		return rsp.code;
-
-	return 0;
-}
-#endif
-
 void google_chromeec_log_events(u32 mask)
 {
 #if CONFIG_ELOG
 	u8 event;
-	u16 code;
+	u32 wake_mask;
 
-	/* Find the last port80 code */
-	code = google_chromeec_get_port80_last_boot();
-
-	/* Log the last post code only if it is abornmal */
-	if (code > 0 && code != POST_OS_BOOT && code != POST_OS_RESUME)
-		printk(BIOS_DEBUG, "Chrome EC: Last POST code was 0x%02x\n",
-		       code);
+	/* Set wake mask so events will be read from ACPI interface */
+	wake_mask = google_chromeec_get_wake_mask();
+	google_chromeec_set_wake_mask(mask);
 
 	while ((event = google_chromeec_get_event()) != 0) {
 		if (EC_HOST_EVENT_MASK(event) & mask)
 			elog_add_event_byte(ELOG_TYPE_EC_EVENT, event);
 	}
+
+	google_chromeec_set_wake_mask(wake_mask);
 #endif
 }
 

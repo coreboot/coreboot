@@ -33,11 +33,11 @@
 struct rockchip_spi_slave {
 	struct spi_slave slave;
 	struct rockchip_spi *regs;
-	unsigned int fifo_size;
 };
 
 #define SPI_TIMEOUT_US	1000
 #define SPI_SRCCLK_HZ   99000000
+#define SPI_FIFO_DEPTH	32
 
 static struct rockchip_spi_slave rockchip_spi_slaves[3] = {
 	{
@@ -46,12 +46,10 @@ static struct rockchip_spi_slave rockchip_spi_slaves[3] = {
 		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
 		   },
 	 .regs = (void *)SPI0_BASE,
-	 .fifo_size = 32,
 	},
 	{
 	 .slave = {.bus = 1, .rw = SPI_READ_FLAG,},
 	 .regs = (void *)SPI1_BASE,
-	 .fifo_size = 32,
 	},
 	{
 	 .slave = {
@@ -59,7 +57,6 @@ static struct rockchip_spi_slave rockchip_spi_slaves[3] = {
 		   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG,
 		   },
 	 .regs = (void *)SPI2_BASE,
-	 .fifo_size = 32,
 	},
 
 };
@@ -108,8 +105,7 @@ static void rockchip_spi_set_clk(struct rockchip_spi *regs, unsigned int hz)
 
 void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 {
-	struct rockchip_spi_slave *espi = &rockchip_spi_slaves[bus];
-	struct rockchip_spi *regs = espi->regs;
+	struct rockchip_spi *regs = rockchip_spi_slaves[bus].regs;
 	unsigned int ctrlr0 = 0;
 
 	rkclk_configure_spi(bus, SPI_SRCCLK_HZ);
@@ -145,9 +141,9 @@ void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 
 	writel(ctrlr0, &regs->ctrlr0);
 
-	/*fifo depth */
-	writel(espi->fifo_size / 2 - 1, &regs->txftlr);
-	writel(espi->fifo_size / 2 - 1, &regs->rxftlr);
+	/* fifo depth */
+	writel(SPI_FIFO_DEPTH / 2 - 1, &regs->txftlr);
+	writel(SPI_FIFO_DEPTH / 2 - 1, &regs->rxftlr);
 }
 
 int spi_claim_bus(struct spi_slave *slave)
@@ -182,7 +178,6 @@ int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int sout,
 	unsigned int bytes_remaining;
 	uint8_t *p;
 	struct rockchip_spi *regs = to_rockchip_spi(slave)->regs;
-	struct rockchip_spi_slave *espi = to_rockchip_spi(slave);
 
 	if (dout) {
 		len = sout;
@@ -196,8 +191,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int sout,
 					      SPI_TMOD_TO << SPI_TMOD_OFFSET);
 		writel(1, &regs->spienr);/*enable spi */
 		while (bytes_remaining) {
-			if ((readl(&regs->txflr) & 0x3f)
-			    < espi->fifo_size) {
+			if ((readl(&regs->txflr) & 0x3f) < SPI_FIFO_DEPTH) {
 				writel(*p++, &regs->txdr);
 				bytes_remaining--;
 			}

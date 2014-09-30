@@ -40,6 +40,10 @@ static const struct pad_config padcfgs[] = {
 	PAD_CFG_GPIO_INPUT(GPIO_PV1, PINMUX_PULL_UP),
 	/* Power Button - active high */
 	PAD_CFG_GPIO_INPUT(KB_COL0, PINMUX_PULL_UP),
+	/* BTN_AP_VOLD_L - active low */
+	PAD_CFG_GPIO_INPUT(KB_COL6, PINMUX_PULL_UP),
+	/* BTN_AP_VOLU_L - active low */
+	PAD_CFG_GPIO_INPUT(KB_COL7, PINMUX_PULL_UP),
 };
 
 static const struct pad_config tpm_pads[] = {

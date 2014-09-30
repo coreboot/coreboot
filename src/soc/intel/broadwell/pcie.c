@@ -558,8 +558,11 @@ static void pch_pcie_early(struct device *dev)
 
 	pcie_update_cfg8(dev, 0xf5, 0x0f, 0);
 
-	/* Set Extended Capability to offset 200h and Advanced Error Report. */
+	/* Set AER Extended Cap ID to 01h and Next Cap Pointer to 200h. */
 	pcie_update_cfg(dev, 0x100, ~(1 << 29) & ~0xfffff, (1 << 29) | 0x10001);
+
+	/* Set L1 Sub-State Cap ID to 1Eh and Next Cap Pointer to None. */
+	pcie_update_cfg(dev, 0x200, ~0xffff, 0x001e);
 
 	pcie_update_cfg(dev, 0x320, ~(3 << 20) & ~(7 << 6),
 		(1 << 20) | (3 << 6));

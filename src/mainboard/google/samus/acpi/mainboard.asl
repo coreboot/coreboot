@@ -193,7 +193,7 @@ Scope (\_SB.PCI0.I2C0)
 			)
 
 			/* GPIO46 is PIRQO (use HOTWORD_DET as codec IRQ) */
-			Interrupt (ResourceConsumer, Edge, ActiveLow) { 30 }
+			Interrupt (ResourceConsumer, Edge, ActiveHigh) { 30 }
 
 			/*
 			 * Codec GPIOs are 1-based in the schematic

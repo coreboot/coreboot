@@ -1161,7 +1161,6 @@ config POWER_BUTTON_IS_OPTIONAL
 
 config REG_SCRIPT
 	bool
-	default y if ARCH_X86
 	default n
 	help
 	  Internal option that controls whether we compile in register scripts.

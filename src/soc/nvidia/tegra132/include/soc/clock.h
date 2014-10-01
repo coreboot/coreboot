@@ -290,7 +290,7 @@ static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
 #define CLK_DIV_MASK_I2C          0xffff
 
 #define clock_configure_source(device, src, freq)			\
-	_clock_set_div(&clk_rst->clk_src_##device, #device,		\
+	_clock_set_div(CLK_RST_REG(clk_src_##device), #device,		\
 		       get_clk_div(TEGRA_##src##_KHZ, freq), CLK_DIV_MASK, \
 		       CLK_SRC_DEV_ID(device, src))
 

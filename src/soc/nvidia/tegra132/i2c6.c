@@ -31,7 +31,6 @@
 #define DPAUX_HYBRID_PADCTL	0x545C0124
 
 static struct tegra_pmc_regs * const pmc = (void *)TEGRA_PMC_BASE;
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 
 static int partition_clamp_on(int id)
 {

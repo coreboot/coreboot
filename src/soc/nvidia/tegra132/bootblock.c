@@ -34,8 +34,6 @@ void __attribute__((weak)) bootblock_mainboard_early_init(void)
 	/* Empty default implementation. */
 }
 
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
-
 void main(void)
 {
 	// enable pinmux clamp inputs

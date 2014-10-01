@@ -202,6 +202,7 @@ Scope (\_SB.PCI0.I2C0)
 			 * [1] = Mic Present (INPUT)
 			 * [2] = Interrupt to the host (OUTPUT)
 			 * [3] = Interrupt to the host (OUTPUT)
+			 * [4] = Headphone amp control (OUTPUT)
 			 */
 
 			/* Index 0:  Jack Detect - PLUG_DET is GPIO5 */
@@ -219,6 +220,10 @@ Scope (\_SB.PCI0.I2C0)
 			/* Index 3:  Codec Wake - DSP_INT is GPIO4 */
 			GpioIo (Exclusive, PullUp, , , IoRestrictionOutputOnly,
 				"\\_SB.PCI0.I2C0.CODC") { 3 }
+
+			/* Index 4:  Headphone amp - HP_AMP_SHDN_L is GPIO2 */
+			GpioIo (Exclusive, PullDown, , , IoRestrictionOutputOnly,
+				"\\_SB.PCI0.I2C0.CODC") { 1 }
 		})
 
 		Name (_PRW, Package() { WAKE, 3 })

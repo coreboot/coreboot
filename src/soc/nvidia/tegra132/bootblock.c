@@ -64,6 +64,8 @@ void main(void)
 
 	printk(BIOS_INFO, "T132 bootblock: Clock init done\n");
 
+	pmc_print_rst_status();
+
 	bootblock_mainboard_init();
 
 	printk(BIOS_INFO, "T132 bootblock: Mainboard bootblock init done\n");

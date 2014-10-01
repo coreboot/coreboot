@@ -8,6 +8,7 @@ bootblock-y += i2c.c
 bootblock-y += dma.c
 bootblock-y += monotonic_timer.c
 bootblock-y += padconfig.c
+bootblock-y += power.c
 bootblock-y += funitcfg.c
 bootblock-y += reset.c
 bootblock-y += ../tegra/gpio.c

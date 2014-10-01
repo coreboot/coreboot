@@ -19,6 +19,7 @@
  */
 
 #include <arch/io.h>
+#include <assert.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
 
@@ -54,4 +55,25 @@ void power_ungate_partition(uint32_t id)
 	}
 
 	printk(BIOS_INFO, "Ungated power partition %d.\n", id);
+}
+
+uint8_t pmc_rst_status(void)
+{
+	return read32(&pmc->rst_status) & PMC_RST_STATUS_SOURCE_MASK;
+}
+
+static const char *pmc_rst_status_str[PMC_RST_STATUS_NUM_SOURCES] = {
+	[PMC_RST_STATUS_SOURCE_POR] = "POR",
+	[PMC_RST_STATUS_SOURCE_WATCHDOG] = "Watchdog",
+	[PMC_RST_STATUS_SOURCE_SENSOR] = "Sensor",
+	[PMC_RST_STATUS_SOURCE_SW_MAIN] = "SW Main",
+	[PMC_RST_STATUS_SOURCE_LP0] = "LP0",
+};
+
+void pmc_print_rst_status(void)
+{
+	uint8_t rst_status = pmc_rst_status();
+	assert(rst_status < PMC_RST_STATUS_NUM_SOURCES);
+	printk(BIOS_INFO, "PMC Reset Status: %s\n",
+	       pmc_rst_status_str[rst_status]);
 }

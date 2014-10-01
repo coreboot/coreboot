@@ -39,6 +39,8 @@ static const struct reg_script smbus_init_script[] = {
 	REG_IO_WRITE8(SMBUS_BASE_ADDRESS + SMBHSTCTL, 0),
 	/* Clear errors */
 	REG_IO_WRITE8(SMBUS_BASE_ADDRESS + SMBHSTSTAT, 0xff),
+	/* Indicate the end of this array by REG_SCRIPT_END */
+	REG_SCRIPT_END,
 };
 
 void enable_smbus(void)

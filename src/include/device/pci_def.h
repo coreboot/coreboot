@@ -375,9 +375,11 @@
 #define  PCI_EXP_LNKCAP_ASPMS	0xc00	/* ASPM Support */
 #define  PCI_EXP_LNKCAP_L0SEL	0x7000	/* L0s Exit Latency */
 #define  PCI_EXP_LNKCAP_L1EL	0x38000	/* L1 Exit Latency */
+#define  PCI_EXP_CLK_PM		0x40000	/* Clock Power Management */
 #define PCI_EXP_LNKCTL		16	/* Link Control */
 #define  PCI_EXP_LNKCTL_RL	0x20	/* Retrain Link */
 #define  PCI_EXP_LNKCTL_CCC	0x40	/* Common Clock COnfiguration */
+#define  PCI_EXP_EN_CLK_PM	0x100	/* Enable Clock Power Management */
 #define PCI_EXP_LNKSTA		18	/* Link Status */
 #define  PCI_EXP_LNKSTA_LT	0x800	/* Link Training */
 #define  PCI_EXP_LNKSTA_SLC	0x1000	/* Slot Clock Configuration */

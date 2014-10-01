@@ -90,6 +90,23 @@ static void pciexp_enable_common_clock(device_t root, unsigned root_cap,
 }
 #endif /* CONFIG_PCIEXP_COMMON_CLOCK */
 
+#if CONFIG_PCIEXP_CLK_PM
+static void pciexp_enable_clock_power_pm(device_t endp, unsigned endp_cap)
+{
+	/* check if per port clk req is supported in device */
+	u32 endp_ca;
+	u16 lnkctl;
+	endp_ca = pci_read_config32(endp, endp_cap + PCI_EXP_LNKCAP);
+	if ((endp_ca & PCI_EXP_CLK_PM) == 0) {
+		printk(BIOS_INFO, "PCIE CLK PM is not supported by endpoint");
+		return;
+	}
+	lnkctl = pci_read_config16(endp, endp_cap + PCI_EXP_LNKCTL);
+	lnkctl = lnkctl | PCI_EXP_EN_CLK_PM;
+	pci_write_config16(endp, endp_cap + PCI_EXP_LNKCTL, lnkctl);
+}
+#endif /* CONFIG_PCIEXP_CLK_PM */
+
 #if CONFIG_PCIEXP_ASPM
 /*
  * Determine the ASPM L0s or L1 exit latency for a link
@@ -198,6 +215,11 @@ static void pciexp_tune_dev(device_t dev)
 #if CONFIG_PCIEXP_COMMON_CLOCK
 	/* Check for and enable Common Clock */
 	pciexp_enable_common_clock(root, root_cap, dev, cap);
+#endif
+
+#if CONFIG_PCIEXP_CLK_PM
+	/* Check if per port CLK req is supported by endpoint*/
+	pciexp_enable_clock_power_pm(dev, cap);
 #endif
 
 #if CONFIG_PCIEXP_ASPM

@@ -251,6 +251,14 @@ config PCIEXP_ASPM
 	help
 	  Detect and enable ASPM on PCIe links.
 
+config PCIEXP_CLK_PM
+	prompt "Enable PCIe Clock Power Management"
+	bool
+	depends on PCIEXP_PLUGIN_SUPPORT
+	default n
+	help
+	  Detect and enable Clock Power Management on PCIe.
+
 config PCI_BUS_SEGN_BITS
 	int
 	default 0

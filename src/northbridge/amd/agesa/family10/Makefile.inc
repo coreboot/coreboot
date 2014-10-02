@@ -18,5 +18,3 @@
 #
 
 ramstage-y += northbridge.c
-
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ssdt.asl

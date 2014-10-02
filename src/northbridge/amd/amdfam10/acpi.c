@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <device/pci.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -162,112 +163,6 @@ unsigned long acpi_fill_slit(unsigned long current)
 	return current;
 }
 
-// moved from mb acpi_tables.c
-static void intx_to_stream(u32 val, u32 len, u8 *dest)
-{
-	int i;
-	for(i=0;i<len;i++) {
-		*(dest+i) = (val >> (8*i)) & 0xff;
-	}
-}
-
-static void int_to_stream(u32 val, u8 *dest)
-{
-	return intx_to_stream(val, 4, dest);
-}
-
-// used by acpi_tables.h
-void update_ssdt(void *ssdt)
-{
-	u8 *BUSN;
-	u8 *MMIO;
-	u8 *PCIO;
-	u8 *SBLK;
-	u8 *TOM1;
-	u8 *SBDN;
-	u8 *HCLK;
-	u8 *HCDN;
-	u8 *CBST;
-	u8 *CBBX;
-	u8 *CBS2;
-	u8 *CBB2;
-
-
-	int i;
-	u32 dword;
-	msr_t msr;
-
-	// the offset could be different if have different HC_NUMS, and HC_POSSIBLE_NUM and ssdt.asl
-	BUSN = ssdt+0x3b; //+5 will be next BUSN
-	MMIO = ssdt+0xe4; //+5 will be next MMIO
-	PCIO = ssdt+0x36d; //+5 will be next PCIO
-	SBLK = ssdt+0x4b2; // one byte
-	TOM1 = ssdt+0x4b9; //
-	SBDN = ssdt+0x4c3;//
-	HCLK = ssdt+0x4d1; //+5 will be next HCLK
-	HCDN = ssdt+0x57a; //+5 will be next HCDN
-	CBBX = ssdt+0x61f; //
-	CBST = ssdt+0x626;
-	CBB2 = ssdt+0x62d; //
-	CBS2 = ssdt+0x634;
-
-	for(i=0;i<HC_NUMS;i++) {
-		dword = sysconf.ht_c_conf_bus[i];
-		int_to_stream(dword, BUSN+i*5);
-	}
-
-	for(i=0;i<(HC_NUMS*2);i++) { // FIXME: change to more chain
-		dword = sysconf.conf_mmio_addrx[i]; //base
-		int_to_stream(dword, MMIO+(i*2)*5);
-		dword = sysconf.conf_mmio_addr[i]; //mask
-		int_to_stream(dword, MMIO+(i*2+1)*5);
-	}
-	for(i=0;i<HC_NUMS;i++) { // FIXME: change to more chain
-		dword = sysconf.conf_io_addrx[i];
-		int_to_stream(dword, PCIO+(i*2)*5);
-		dword = sysconf.conf_io_addr[i];
-		int_to_stream(dword, PCIO+(i*2+1)*5);
-	}
-
-	*SBLK = (u8)(sysconf.sblk);
-
-	msr = rdmsr(TOP_MEM);
-	int_to_stream(msr.lo, TOM1);
-
-	int_to_stream(sysconf.sbdn, SBDN);
-
-	for(i=0;i<sysconf.hc_possible_num;i++) {
-		int_to_stream(sysconf.pci1234[i], HCLK + i*5);
-		int_to_stream(sysconf.hcdn[i],	   HCDN + i*5);
-	}
-	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
-		int_to_stream(0x00000000, HCLK + i*5);
-		int_to_stream(0x20202020, HCDN + i*5);
-	}
-
-	*CBBX = (u8)(CONFIG_CBB);
-
-	if(CONFIG_CBB == 0xff) {
-		*CBST = (u8) (0x0f);
-	} else {
-		if((sysconf.pci1234[0] >> 12) & 0xff) { //sb chain on  other than bus 0
-			*CBST = (u8) (0x0f);
-		}
-		else {
-			*CBST = (u8) (0x00);
-		}
-	}
-
-	if((CONFIG_CBB == 0xff) && (sysconf.nodes>32)) {
-		 *CBS2 = 0x0f;
-		 *CBB2 = (u8)(CONFIG_CBB-1);
-	} else {
-		*CBS2 = 0x00;
-		*CBB2 = 0x00;
-	}
-
-}
-
 void update_ssdtx(void *ssdtx, int i)
 {
 	u8 *PCI;
@@ -290,3 +185,147 @@ void update_ssdtx(void *ssdtx, int i)
 
 }
 
+void northbridge_acpi_write_vars(void)
+{
+	msr_t msr;
+	char pscope[] = "\\_SB.PCI0";
+	int i;
+
+	get_bus_conf();	/* it will get sblk, pci1234, hcdn, and sbdn */
+
+	acpigen_write_scope(pscope);
+
+	acpigen_write_name("BUSN");
+	acpigen_write_package(HC_NUMS);
+	for(i=0; i<HC_NUMS; i++) {
+		acpigen_write_dword(sysconf.ht_c_conf_bus[i]);
+	}
+	// minus the opcode
+	acpigen_pop_len();
+
+	acpigen_write_name("MMIO");
+
+	acpigen_write_package(HC_NUMS * 4);
+
+	for(i=0;i<(HC_NUMS*2);i++) { // FIXME: change to more chain
+		acpigen_write_dword(sysconf.conf_mmio_addrx[i]); //base
+		acpigen_write_dword(sysconf.conf_mmio_addr[i]); //mask
+	}
+	// minus the opcode
+	acpigen_pop_len();
+
+	acpigen_write_name("PCIO");
+
+	acpigen_write_package(HC_NUMS * 2);
+
+	for(i=0;i<HC_NUMS;i++) { // FIXME: change to more chain
+		acpigen_write_dword(sysconf.conf_io_addrx[i]);
+		acpigen_write_dword(sysconf.conf_io_addr[i]);
+	}
+
+	// minus the opcode
+	acpigen_pop_len();
+
+	acpigen_write_name_byte("SBLK", sysconf.sblk);
+
+	msr = rdmsr(TOP_MEM);
+	acpigen_write_name_dword("TOM1", msr.lo);
+
+	msr = rdmsr(TOP_MEM2);
+	/*
+	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
+	 * here.
+	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
+	 * slide 22ff.
+	 * Shift value right by 20 bit to make it fit into 32bit,
+	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
+	 */
+	acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+
+
+	acpigen_write_name_dword("SBDN", sysconf.sbdn);
+
+	acpigen_write_name("HCLK");
+
+	acpigen_write_package(HC_POSSIBLE_NUM);
+
+	for(i=0;i<sysconf.hc_possible_num;i++) {
+		acpigen_write_dword(sysconf.pci1234[i]);
+	}
+	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+		acpigen_write_dword(0x00000000);
+	}
+	// minus the opcode
+	acpigen_pop_len();
+
+	acpigen_write_name("HCDN");
+
+	acpigen_write_package(HC_POSSIBLE_NUM);
+
+	for(i=0;i<sysconf.hc_possible_num;i++) {
+		acpigen_write_dword(sysconf.hcdn[i]);
+	}
+	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+		acpigen_write_dword(0x20202020);
+	}
+	// minus the opcode
+	acpigen_pop_len();
+
+	acpigen_write_name_byte("CBB", CONFIG_CBB);
+
+	u8 CBST, CBB2, CBS2;
+
+	if(CONFIG_CBB == 0xff) {
+		CBST = (u8) (0x0f);
+	} else {
+		if((sysconf.pci1234[0] >> 12) & 0xff) { //sb chain on  other than bus 0
+			CBST = (u8) (0x0f);
+		}
+		else {
+			CBST = (u8) (0x00);
+		}
+	}
+
+	acpigen_write_name_byte("CBST", CBST);
+
+	if((CONFIG_CBB == 0xff) && (sysconf.nodes>32)) {
+		 CBS2 = 0x0f;
+		 CBB2 = (u8)(CONFIG_CBB-1);
+	} else {
+		CBS2 = 0x00;
+		CBB2 = 0x00;
+	}
+
+	acpigen_write_name_byte("CBB2", CBB2);
+	acpigen_write_name_byte("CBS2", CBS2);
+
+	//minus opcode
+	acpigen_pop_len();
+}
+
+unsigned long northbridge_write_acpi_tables(unsigned long current,
+	struct acpi_rsdp *rsdp)
+{
+	acpi_srat_t *srat;
+	acpi_slit_t *slit;
+
+	get_bus_conf();	/* it will get sblk, pci1234, hcdn, and sbdn */
+
+	/* SRAT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
+	srat = (acpi_srat_t *) current;
+	acpi_create_srat(srat);
+	current += srat->header.length;
+	acpi_add_table(rsdp, srat);
+
+	/* SLIT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
+	slit = (acpi_slit_t *) current;
+	acpi_create_slit(slit);
+	current += slit->header.length;
+	acpi_add_table(rsdp, slit);
+
+	return current;
+}

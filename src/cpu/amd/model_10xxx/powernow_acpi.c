@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2009 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-DefinitionBlock ("SSPR.aml", "SSDT", 1, "AMD-FAM10", "AMD-ACPI", 100925441)
+#include <console/console.h>
+#include <stdint.h>
+#include <cpu/x86/msr.h>
+#include <arch/acpigen.h>
+#include <cpu/amd/powernow.h>
+
+/* FIXME: this should be implemented but right now all boards hardcode it.  */
+int amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
-	Scope (\_SB)
-	{
-		Processor (\_SB.CPAA, 0xbb, 0x120, 6) // CPU0 and 0x01 need to be updated
-		{
-			Name(_PCT, Package ()
-			{
-				ResourceTemplate() {Register (FFixedHW, 0, 0, 0)}, //PERF_CTRL
-				ResourceTemplate() {Register (FFixedHW, 0, 0, 0)}, //PERF_STATUS
-			})
-
-			Name(_PSS, Package()
-			{
-				Package(0x06) {0x1111, 0x222222, 0x3333, 0x4444, 0x55, 0x66 },
-				Package(0x06) {0x7777, 0x222222, 0x3333, 0x4444, 0x55, 0x66 },
-				Package(0x06) {0x8888, 0x222222, 0x3333, 0x4444, 0x55, 0x66 },
-			})
-		}
-
-	}
+	return 0;
 }

@@ -118,8 +118,6 @@ unsigned long acpi_fill_srat(unsigned long current)
 {
 	struct acpi_srat_mem_state srat_mem_state;
 
-	get_bus_conf();
-
 	/* create all subtables for processors */
 	current = acpi_create_srat_lapics(current);
 
@@ -142,8 +140,6 @@ unsigned long acpi_fill_slit(unsigned long current)
 	/* need to find out the node num at first */
 	/* fill the first 8 byte with that num */
 	/* fill the next num*num byte with distance, local is 10, 1 hop mean 20, and 2 hop with 30.... */
-
-	get_bus_conf();
 
 	/* because We has assume that we know the topology of the HT connection, So we can have set if we know the node_num */
 	static u8 hops_8[] = {   0, 1, 1, 2, 2, 3, 3, 4,

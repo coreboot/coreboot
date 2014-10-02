@@ -147,10 +147,19 @@ static void lpc_init(device_t dev)
 	printk(BIOS_DEBUG, "SB800 - Late.c - lpc_init - End.\n");
 }
 
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
+}
+
 static struct device_operations lpc_ops = {
         .read_resources = lpc_read_resources,
         .set_resources = lpc_set_resources,
         .enable_resources = pci_dev_enable_resources,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+	.write_acpi_tables = acpi_write_hpet,
+#endif
         .init = lpc_init,
         .scan_bus = scan_static_bus,
         .ops_pci = &lops_pci,

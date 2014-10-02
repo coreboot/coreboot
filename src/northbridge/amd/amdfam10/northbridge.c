@@ -613,6 +613,10 @@ static struct device_operations northbridge_operations = {
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = mcf0_control_init,
 	.scan_bus	  = amdfam10_scan_chains,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.write_acpi_tables = northbridge_write_acpi_tables,
+	.acpi_fill_ssdt_generator = northbridge_acpi_write_vars,
+#endif
 	.enable		  = 0,
 	.ops_pci	  = 0,
 };

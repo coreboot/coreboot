@@ -26,7 +26,14 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include "sb800.h"
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+       /* Just a dummy */
+       return current;
+}
 
 static void lpc_init(device_t dev)
 {
@@ -243,6 +250,9 @@ static struct device_operations lpc_ops = {
 	.read_resources = sb800_lpc_read_resources,
 	.set_resources = sb800_lpc_set_resources,
 	.enable_resources = sb800_lpc_enable_resources,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+	.write_acpi_tables      = acpi_write_hpet,
+#endif
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,
 	.ops_pci = &lops_pci,

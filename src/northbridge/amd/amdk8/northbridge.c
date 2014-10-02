@@ -593,6 +593,9 @@ static unsigned long northbridge_write_acpi_tables(unsigned long start, acpi_rsd
 
 	current = start;
 
+	/* Fills sysconf structure needed for SRAT and SLIT.  */
+	get_bus_conf();
+
 	current = ALIGN(current, 16);
 	srat = (acpi_srat_t *) current;
 	printk(BIOS_DEBUG, "ACPI:    * SRAT @ %p\n", srat);

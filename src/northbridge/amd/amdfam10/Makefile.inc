@@ -2,7 +2,6 @@ ramstage-y += northbridge.c
 ramstage-y += misc_control.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ssdt.asl
 
 ramstage-y += get_pci1234.c
 

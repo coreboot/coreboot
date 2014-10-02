@@ -50,6 +50,8 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 ## verification stage
 ################################################################################
 
+ifeq ($(CONFIG_ARCH_VERSTAGE_ARM_V7),y)
+
 verstage-c-ccopts += $(armv7_flags)
 verstage-S-ccopts += $(armv7_asm_flags)
 verstage-y += cache.c
@@ -57,6 +59,8 @@ verstage-y += cpu.S
 verstage-y += exception.c
 verstage-y += exception_asm.S
 verstage-y += mmu.c
+
+endif # CONFIG_ARCH_VERSTAGE_ARMV7
 
 ###############################################################################
 # romstage

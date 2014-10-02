@@ -76,6 +76,26 @@ $(objcbfs)/bootblock.debug: $$(bootblock-objs) $(obj)/config.h
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
+###############################################################################
+# verification stage
+###############################################################################
+
+ifeq ($(CONFIG_ARCH_VERSTAGE_ARM64),y)
+
+$(objcbfs)/verstage.debug: $$(verstage-objs) $$(VB2_LIB) $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld $(obj)/config.h
+	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --start-group $(verstage-objs) $(VBS_LIB) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
+
+verstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
+verstage-y += div0.c
+verstage-y += eabi_compat.c
+verstage-y += ../../lib/memset.c
+verstage-y += ../../lib/memcpy.c
+verstage-y += ../../lib/memmove.c
+verstage-y += stages.c
+
+endif # CONFIG_ARCH_VERSTAGE_ARM64
+
 ################################################################################
 # romstage
 ################################################################################

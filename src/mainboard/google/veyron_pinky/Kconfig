@@ -81,4 +81,9 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
 
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on CONSOLE_SERIAL_UART
+	default 0xFF690000
+
 endif #  BOARD_GOOGLE_VEYRON_PINKY

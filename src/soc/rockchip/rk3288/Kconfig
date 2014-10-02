@@ -127,9 +127,4 @@ config TTB_BUFFER
 	hex "memory address of the TTB buffer"
 	default 0xff700000
 
-config CONSOLE_SERIAL_UART_ADDRESS
-	hex
-	depends on CONSOLE_SERIAL_UART
-	default 0xFF690000
-
 endif

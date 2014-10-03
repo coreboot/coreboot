@@ -271,6 +271,14 @@ config EARLY_PCI_BRIDGE
 	  This option enables static configuration for a single pre-defined
 	  PCI bridge function on bus 0.
 
+config PCIEXP_L1_SUB_STATE
+	prompt "Enable PCIe ASPM L1 SubState"
+	bool
+	depends on PCIEXP_PLUGIN_SUPPORT && MMCONF_SUPPORT
+	default n
+	help
+	  Detect and enable ASPM on PCIe links.
+
 if EARLY_PCI_BRIDGE
 
 config EARLY_PCI_BRIDGE_DEVICE

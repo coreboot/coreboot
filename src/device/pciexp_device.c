@@ -25,6 +25,31 @@
 #include <device/pci_ids.h>
 #include <device/pciexp.h>
 
+#if IS_ENABLED(CONFIG_MMCONF_SUPPORT)
+unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap)
+{
+	unsigned int this_cap_offset, next_cap_offset;
+	unsigned int this_cap, cafe;
+
+	this_cap_offset = PCIE_EXT_CAP_OFFSET;
+	do {
+		this_cap = pci_mmio_read_config32(dev, this_cap_offset);
+		next_cap_offset = this_cap >> 20;
+		this_cap &= 0xffff;
+		cafe = pci_mmio_read_config32(dev, this_cap_offset + 4);
+		cafe &= 0xffff;
+		if (this_cap == cap)
+			return this_cap_offset;
+		else if (cafe == cap)
+			return this_cap_offset + 4;
+		else
+			this_cap_offset = next_cap_offset;
+	} while (next_cap_offset != 0);
+
+	return 0;
+}
+#endif
+
 #if CONFIG_PCIEXP_COMMON_CLOCK
 /*
  * Re-train a PCIe link
@@ -106,6 +131,160 @@ static void pciexp_enable_clock_power_pm(device_t endp, unsigned endp_cap)
 	pci_write_config16(endp, endp_cap + PCI_EXP_LNKCTL, lnkctl);
 }
 #endif /* CONFIG_PCIEXP_CLK_PM */
+
+#if IS_ENABLED(CONFIG_PCIEXP_L1_SUB_STATE) && IS_ENABLED(CONFIG_MMCONF_SUPPORT)
+static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or)
+{
+	u32 reg32;
+
+	reg32 = pci_mmio_read_config32(dev, reg);
+	reg32 &= mask;
+	reg32 |= or;
+	pci_mmio_write_config32(dev, reg, reg32);
+}
+
+static void pciexp_config_max_latency(device_t root, device_t dev)
+{
+	unsigned int cap;
+	cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID);
+	if (root->ops->ops_pci->set_L1_ss_latency != NULL)
+		root->ops->ops_pci->set_L1_ss_latency(dev, cap + 4);
+}
+
+static void pciexp_enable_ltr(device_t dev)
+{
+	unsigned int cap;
+	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+
+	pcie_update_cfg(dev, cap + 0x28, ~(1 << 10), 1 << 10);
+}
+
+static unsigned char pciexp_L1_substate_cal(device_t dev, unsigned int endp_cap,
+	unsigned int *data)
+{
+	unsigned char mult[4] = {2, 10, 100, 0};
+
+	unsigned int L1SubStateSupport = *data & 0xf;
+	unsigned int comm_mode_rst_time = (*data >> 8) & 0xff;
+	unsigned int power_on_scale = (*data >> 16) & 0x3;
+	unsigned int power_on_value = (*data >> 19) & 0x1f;
+
+	unsigned int endp_data = pci_mmio_read_config32(dev, endp_cap + 4);
+	unsigned int endp_L1SubStateSupport = endp_data & 0xf;
+	unsigned int endp_comm_mode_restore_time = (endp_data >> 8) & 0xff;
+	unsigned int endp_power_on_scale = (endp_data >> 16) & 0x3;
+	unsigned int endp_power_on_value = (endp_data >> 19) & 0x1f;
+
+	L1SubStateSupport &= endp_L1SubStateSupport;
+
+	if (L1SubStateSupport == 0)
+		return 0;
+
+	if (power_on_value * mult[power_on_scale] <
+		endp_power_on_value * mult[endp_power_on_scale]) {
+		power_on_value = endp_power_on_value;
+		power_on_scale = endp_power_on_scale;
+	}
+	if (comm_mode_rst_time < endp_comm_mode_restore_time)
+		comm_mode_rst_time = endp_comm_mode_restore_time;
+
+	*data = (comm_mode_rst_time << 8) | (power_on_scale << 16)
+		| (power_on_value << 19) | L1SubStateSupport;
+
+	return 1;
+}
+
+static void pciexp_L1_substate_commit(device_t root, device_t dev,
+	unsigned int root_cap, unsigned int end_cap)
+{
+	device_t dev_t;
+	unsigned char L1_ss_ok;
+	unsigned int rp_L1_support = pci_mmio_read_config32(root, root_cap + 4);
+	unsigned int L1SubStateSupport;
+	unsigned int comm_mode_rst_time;
+	unsigned int power_on_scale;
+	unsigned int endp_power_on_value;
+
+	for (dev_t = dev; dev_t; dev_t = dev_t->sibling) {
+		/*
+		 * rp_L1_support is init'd above from root port.
+		 * it needs coordination with endpoints to reach in common.
+		 * if certain endpoint doesn't support L1 Sub-State, abort
+		 * this feature enabling.
+		 */
+		L1_ss_ok = pciexp_L1_substate_cal(dev_t, end_cap,
+						&rp_L1_support);
+		if (!L1_ss_ok)
+			return;
+	}
+
+	L1SubStateSupport = rp_L1_support & 0xf;
+	comm_mode_rst_time = (rp_L1_support >> 8) & 0xff;
+	power_on_scale = (rp_L1_support >> 16) & 0x3;
+	endp_power_on_value = (rp_L1_support >> 19) & 0x1f;
+
+	printk(BIOS_INFO, "L1 Sub-State supported from root port %d\n",
+		root->path.pci.devfn >> 3);
+	printk(BIOS_INFO, "L1 Sub-State Support = 0x%x\n", L1SubStateSupport);
+	printk(BIOS_INFO, "CommonModeRestoreTime = 0x%x\n", comm_mode_rst_time);
+	printk(BIOS_INFO, "Power On Value = 0x%x, Power On Scale = 0x%x\n",
+		endp_power_on_value, power_on_scale);
+
+	pciexp_enable_ltr(root);
+
+	pcie_update_cfg(root, root_cap + 0x08, ~0xff00,
+		(comm_mode_rst_time << 8));
+
+	pcie_update_cfg(root, root_cap + 0x0c , 0xffffff04,
+		(endp_power_on_value << 3) | (power_on_scale));
+
+	pcie_update_cfg(root, root_cap + 0x08, ~0xe3ff0000,
+		(1 << 21) | (1 << 23) | (1 << 30));
+
+	pcie_update_cfg(root, root_cap + 0x08, ~0xf,
+		L1SubStateSupport);
+
+	for (dev_t = dev; dev_t; dev_t = dev_t->sibling) {
+		pcie_update_cfg(dev_t, end_cap + 0x08, ~0xff00,
+			(comm_mode_rst_time << 8));
+
+		pcie_update_cfg(dev_t, end_cap + 0x0c , 0xffffff04,
+			(endp_power_on_value << 3) | (power_on_scale));
+
+		pcie_update_cfg(dev_t, end_cap + 0x08, ~0xe3ff0000,
+			(1 << 21) | (1 << 23) | (1 << 30));
+
+		pcie_update_cfg(dev_t, end_cap + 0x08, ~0xf,
+			L1SubStateSupport);
+
+		pciexp_enable_ltr(dev_t);
+
+		pciexp_config_max_latency(root, dev_t);
+	}
+}
+
+static void pciexp_config_L1_sub_state(device_t root, device_t dev)
+{
+	unsigned int root_cap, end_cap;
+
+	/* Do it for function 0 only */
+	if (dev->path.pci.devfn & 0x7)
+		return;
+
+	root_cap = pciexp_find_extended_cap(root, PCIE_EXT_CAP_L1SS_ID);
+	if (!root_cap)
+		return;
+
+	end_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_L1SS_ID);
+	if (!end_cap) {
+		end_cap = pciexp_find_extended_cap(dev, 0xcafe);
+		if (!end_cap)
+			return;
+	}
+
+	pciexp_L1_substate_commit(root, dev, root_cap, end_cap);
+}
+#endif /* CONFIG_PCIEXP_L1_SUB_STATE */
 
 #if CONFIG_PCIEXP_ASPM
 /*
@@ -221,6 +400,11 @@ static void pciexp_tune_dev(device_t dev)
 	/* Check if per port CLK req is supported by endpoint*/
 	pciexp_enable_clock_power_pm(dev, cap);
 #endif
+
+#if CONFIG_PCIEXP_L1_SUB_STATE
+	/* Enable L1 Sub-State when both root port and endpoint support */
+	pciexp_config_L1_sub_state(root, dev);
+#endif /* CONFIG_PCIEXP_L1_SUB_STATE */
 
 #if CONFIG_PCIEXP_ASPM
 	/* Check for and enable ASPM */

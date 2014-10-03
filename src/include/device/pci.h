@@ -33,6 +33,7 @@
 struct pci_operations {
 	/* set the Subsystem IDs for the PCI device */
 	void (*set_subsystem)(device_t dev, unsigned vendor, unsigned device);
+	void (*set_L1_ss_latency)(device_t dev, unsigned int off);
 };
 
 /* Common pci bus operations */

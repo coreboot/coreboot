@@ -405,6 +405,12 @@
 #define PCI_EXT_CAP_ID_DSN	3
 #define PCI_EXT_CAP_ID_PWR	4
 
+/* Extended Capability lists*/
+#define PCIE_EXT_CAP_OFFSET	0x100
+#define  PCIE_EXT_CAP_AER_ID	0x0001
+#define  PCIE_EXT_CAP_L1SS_ID	0x001E
+#define  PCIE_EXT_CAP_LTR_ID	0x0018
+
 /* Advanced Error Reporting */
 #define PCI_ERR_UNCOR_STATUS	4	/* Uncorrectable Error Status */
 #define  PCI_ERR_UNC_TRAIN	0x00000001	/* Training */

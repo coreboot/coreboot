@@ -15,4 +15,5 @@ unsigned int pciexp_scan_bridge(device_t dev, unsigned int max);
 
 extern struct device_operations default_pciexp_ops_bus;
 
+unsigned int pciexp_find_extended_cap(device_t dev, unsigned int cap);
 #endif /* DEVICE_PCIEXP_H */

@@ -39,6 +39,10 @@ _start:
 	/* Run main */
 	b	main
 
-	/* Should never return from main. */
-2:
+	/*
+	 * Should never return from main. Make sure there is no branch in the
+	 * branch delay slot.
+	 */
+2:	nop
 	b	2b
+	nop	/* Make sure there is no branch after this either. */

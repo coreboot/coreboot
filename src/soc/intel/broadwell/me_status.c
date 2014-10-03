@@ -27,6 +27,12 @@
 #include <broadwell/me.h>
 #include <delay.h>
 
+static inline void me_read_dword_ptr(void *ptr, int offset)
+{
+	u32 dword = pci_read_config32(PCH_DEV_ME, offset);
+	memcpy(ptr, &dword, sizeof(dword));
+}
+
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 
 /* HFS1[3:0] Current Working State Values */
@@ -200,12 +206,6 @@ static const char *me_progress_policy_values[] = {
 	[ME_HFS2_STATE_POLICY_VSCC_NO_MATCH] =
 	"Required VSCC values for flash parts do not match",
 };
-
-static inline void me_read_dword_ptr(void *ptr, int offset)
-{
-	u32 dword = pci_read_config32(PCH_DEV_ME, offset);
-	memcpy(ptr, &dword, sizeof(dword));
-}
 
 void intel_me_status(void)
 {

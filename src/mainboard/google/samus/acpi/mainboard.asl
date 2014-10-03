@@ -171,6 +171,14 @@ Scope (\_SB.PCI0.I2C0)
 		Name (_UID, 1)
 		Name (WAKE, 45) /* DSP_INT (use as codec wake) */
 
+		Name (DCLK, 0)  /* RT5677_DMIC_CLK1 */
+		Name (IN1, 1)   /* IN1 differential */
+		Name (IN2, 0)   /* IN2 not differential */
+		Name (OUT1, 1)  /* LOUT1 differential */
+		Name (OUT2, 1)  /* LOUT2 differential */
+		Name (OUT3, 0)  /* LOUT3 differential */
+		Name (ASRC, 1)  /* Enable I2S1 ASRC */
+
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (

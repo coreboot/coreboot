@@ -173,11 +173,14 @@ static void root_port_init_config(device_t dev)
 
 	pcie_update_cfg(dev, 0x418, 0, 0x02000430);
 
-	/* set RP0 PCICFG E2h[5:4] = 11b before configuring ASPM */
 	if (root_port_is_first(dev)) {
+		/*
+		 * set RP0 PCICFG E2h[5:4] = 11b and E1h[6] = 1
+		 * before configuring ASPM
+		 */
 		id = 0xe0 + (u8)(RCBA32(RPFN) & 0x07);
 		pch_iobp_exec(0xE00000E0, IOBP_PCICFG_READ, id, &data, &resp);
-		data |= (0x30 << 16);
+		data |= ((0x30 << 16) | (0x40 << 8));
 		pch_iobp_exec(0xE00000E0, IOBP_PCICFG_WRITE, id, &data, &resp);
 	}
 
@@ -265,7 +268,11 @@ static void pcie_enable_clock_gating(void)
 		}
 		/* Per-Port CLKREQ# handling. */
 		if (gpio_is_native(18 + rp - 1))
-			pcie_update_cfg(dev, 0x420, ~0, (3 << 29));
+			/*
+			 * In addition to D28Fx PCICFG 420h[30:29] = 11b,
+			 * set 420h[17] = 0b and 420[0] = 1b for L1 SubState.
+			 */
+			pcie_update_cfg(dev, 0x420, ~0x20000, (3 << 29) | 1);
 
 		/* Configure shared resource clock gating. */
 		if (rp == 1 || rp == 5 || rp == 6)

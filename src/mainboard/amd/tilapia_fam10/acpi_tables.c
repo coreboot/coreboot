@@ -176,9 +176,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
 	acpi_add_table(rsdp,ssdt);
 
-	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
-	current = acpi_add_ssdt_pstates(rsdp, current);
-
 #if CONFIG_ACPI_SSDTX_NUM >= 1
 
 	/* same htio, but different position? We may have to copy,

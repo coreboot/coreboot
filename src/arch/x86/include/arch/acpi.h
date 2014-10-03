@@ -573,9 +573,6 @@ void acpi_jump_to_wakeup(void *wakeup_addr);
 int __attribute__((weak)) acpi_get_sleep_type(void);
 #endif	/* IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) */
 
-/* northbridge/amd/amdfam10/amdfam10_acpi.c */
-unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
-
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(void);
 

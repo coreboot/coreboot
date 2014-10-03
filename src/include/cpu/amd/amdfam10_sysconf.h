@@ -56,8 +56,6 @@ struct amdfam10_sysconf_t {
 
 	msr_t msr_pstate[NODE_NUMS * 5]; // quad cores all cores in one node should be the same, and p0,..p5
 	unsigned needs_update_pstate_msrs;
-	struct p_state_t p_state[NODE_NUMS * 5];
-	unsigned p_state_num;
 
 	unsigned bsp_apicid;
 	int enabled_apic_ext_id;

@@ -3,10 +3,22 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cbmem.h>
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
+}
+
+#endif
+
 
 static void pci_domain_set_resources(device_t dev)
 {

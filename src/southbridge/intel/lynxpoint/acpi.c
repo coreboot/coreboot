@@ -78,8 +78,8 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 	memcpy(&ssdt->signature, "SSDT", 4);
 	ssdt->revision = 2;
 	memcpy(&ssdt->oem_id, OEM_ID, 6);
-	memcpy(&ssdt->oem_table_id, ACPI_TABLE_CREATOR, 8);
-	ssdt->oem_revision = 42;
+	memcpy(&ssdt->oem_table_id, "SERIALIO", 8);
+	ssdt->oem_revision = 43;
 	memcpy(&ssdt->asl_compiler_id, ASLC, 4);
 	ssdt->asl_compiler_revision = 42;
 	ssdt->length = sizeof(acpi_header_t);

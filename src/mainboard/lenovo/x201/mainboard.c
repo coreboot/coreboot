@@ -112,11 +112,9 @@ static void mainboard_init(device_t dev)
 			   0x42, 0x142);
 }
 
-static unsigned long fill_ssdt(unsigned long current,
-			       const char *oem_table_id)
+static void fill_ssdt(void)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
-	return (unsigned long) (acpigen_get_current());
 }
 
 static void mainboard_enable(device_t dev)

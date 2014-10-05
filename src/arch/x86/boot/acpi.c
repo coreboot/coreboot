@@ -281,8 +281,9 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 		device_t dev;
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->ops && dev->ops->acpi_fill_ssdt_generator) {
-				current = dev->ops->acpi_fill_ssdt_generator(current, oem_table_id);
+				dev->ops->acpi_fill_ssdt_generator();
 			}
+		current = (unsigned long) acpigen_get_current();
 #else
 		current = acpi_fill_ssdt_generator(current, oem_table_id);
 #endif

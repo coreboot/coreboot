@@ -59,8 +59,7 @@ struct device_operations {
 #endif
 #if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 	unsigned long (*write_acpi_tables)(unsigned long start,  struct acpi_rsdp *rsdp);
-	unsigned long (*acpi_fill_ssdt_generator)(unsigned long current,
-						  const char *oem_table_id);
+	void (*acpi_fill_ssdt_generator)(void);
 	void (*acpi_inject_dsdt_generator)(void);
 #endif
 	const struct pci_operations *ops_pci;

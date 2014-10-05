@@ -463,7 +463,7 @@ static struct device_operations mc_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = northbridge_init,
 	.enable           = northbridge_enable,
-	.acpi_fill_ssdt_generator = northbridge_acpi_fill_ssdt_generator,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,
 };

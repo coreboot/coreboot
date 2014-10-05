@@ -211,11 +211,3 @@ void *igd_make_opregion(void)
 		init_igd_opregion(opregion);
 	return opregion;
 }
-
-unsigned long northbridge_acpi_fill_ssdt_generator(unsigned long current,
-						   const char *oem_table_id)
-{
-	generate_cpu_entries();
-	return (unsigned long) (acpigen_get_current());
-}
-

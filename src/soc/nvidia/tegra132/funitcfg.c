@@ -176,3 +176,9 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 		soc_configure_pads(entry->pad_cfg,entry->pad_cfg_size);
 	}
 }
+
+void __attribute__((weak)) usb_setup_utmip(void *usb_base)
+{
+	/* default empty implementation required if usb.c is not included */
+	printk(BIOS_ERR, "USB setup is not supported in current stage\n");
+}

@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <cpu/x86/msr.h>
 #include <arch/acpigen.h>
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
@@ -878,7 +878,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 #endif
 
 
-int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+int amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
 	int lens;
 	char pscope[] = "\\_PR";

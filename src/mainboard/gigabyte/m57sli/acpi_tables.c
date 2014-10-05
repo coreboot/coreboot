@@ -30,7 +30,7 @@
 #include <device/device.h>
 #include <device/pci_ids.h>
 #include "northbridge/amd/amdk8/acpi.h"
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include <device/pci.h>
 #include <cpu/amd/amdk8_sysconf.h>
 

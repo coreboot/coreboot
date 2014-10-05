@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef MODEL_FXX_POWERNOW_H
-#define MODEL_FXX_POWERNOW_H
+#ifndef POWERNOW_H
+#define POWERNOW_H
 
-int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP);
+int amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP);
 
 #endif

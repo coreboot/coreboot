@@ -19,7 +19,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdk8_sysconf.h>
 #include "../../../northbridge/amd/amdk8/acpi.h"
-//#include <cpu/amd/model_fxx_powernow.h>
+//#include <cpu/amd/powernow.h>
 
 /* APIC */
 unsigned long acpi_fill_madt(unsigned long current)

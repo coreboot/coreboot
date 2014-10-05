@@ -30,7 +30,7 @@
 #include <device/device.h>
 #include <device/pci_ids.h>
 //#include "northbridge/amd/amdfam10/amdfam10_acpi.h"
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include <device/pci.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 #include "mb_sysconf.h"
@@ -93,7 +93,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
 {
 	//k8acpi_write_vars();
-	//amd_model_fxx_generate_powernow(0, 0, 0);
+	//amd_generate_powernow(0, 0, 0);
 	//return (unsigned long) (acpigen_get_current());
 	return 0;
 }

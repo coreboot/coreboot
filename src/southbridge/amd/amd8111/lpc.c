@@ -14,7 +14,7 @@
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #endif
 #include <stdlib.h>
 #include <string.h>
@@ -130,7 +130,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 static void southbridge_acpi_fill_ssdt_generator(void) {
 #if CONFIG_SET_FIDVID
-	amd_model_fxx_generate_powernow(pm_base + 0x10, 6, 1);
+	amd_generate_powernow(pm_base + 0x10, 6, 1);
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
 #endif
 }

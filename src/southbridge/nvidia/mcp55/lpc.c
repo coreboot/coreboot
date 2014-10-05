@@ -40,7 +40,7 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #endif
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include "mcp55.h"
 
 #define NMI_OFF	0
@@ -285,7 +285,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 
 static void southbridge_acpi_fill_ssdt_generator(void)
 {
-	amd_model_fxx_generate_powernow(0, 0, 0);
+	amd_generate_powernow(0, 0, 0);
 }
 
 #endif

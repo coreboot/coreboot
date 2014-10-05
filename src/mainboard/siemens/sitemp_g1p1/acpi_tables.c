@@ -31,7 +31,7 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include <../../../northbridge/amd/amdk8/acpi.h>
 #include <arch/cpu.h>
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include <southbridge/amd/rs690/rs690.h>
 #include "mainboard.h"
 #include <cbmem.h>

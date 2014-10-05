@@ -31,7 +31,7 @@
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include "sb700.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -271,7 +271,7 @@ static void sb700_lpc_enable_resources(device_t dev)
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 
 static void southbridge_acpi_fill_ssdt_generator(void) {
-	amd_model_fxx_generate_powernow(ACPI_CPU_CONTROL, 6, 1);
+	amd_generate_powernow(ACPI_CPU_CONTROL, 6, 1);
 }
 
 #endif

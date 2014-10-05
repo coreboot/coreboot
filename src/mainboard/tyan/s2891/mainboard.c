@@ -1,15 +1,13 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/acpi.h>
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cpu/amd/amdk8_sysconf.h>
 
-extern u16 pm_base;
-
 static void mainboard_acpi_fill_ssdt_generator(void) {
-	amd_model_fxx_generate_powernow(0, 0, 0);
+	amd_generate_powernow(0, 0, 0);
 }
 
 static void mainboard_enable(device_t dev)

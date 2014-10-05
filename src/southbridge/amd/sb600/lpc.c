@@ -30,7 +30,7 @@
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include "sb600.h"
 
 static void lpc_init(device_t dev)
@@ -224,7 +224,7 @@ static void sb600_lpc_enable_resources(device_t dev)
 extern u16 pm_base;
 
 static void southbridge_acpi_fill_ssdt_generator(void) {
-	amd_model_fxx_generate_powernow(pm_base + 8, 6, 1);
+	amd_generate_powernow(pm_base + 8, 6, 1);
 }
 
 #endif

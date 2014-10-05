@@ -32,7 +32,7 @@
 #include "southbridge/via/vt8237r/vt8237r.h"
 #include "southbridge/via/k8t890/k8t890.h"
 #include "northbridge/amd/amdk8/acpi.h"
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include <cpu/amd/amdk8_sysconf.h>
 
 void get_bus_conf(void)

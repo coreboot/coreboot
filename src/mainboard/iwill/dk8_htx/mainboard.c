@@ -1,7 +1,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/acpi.h>
-#include <cpu/amd/model_fxx_powernow.h>
+#include <cpu/amd/powernow.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cpu/amd/amdk8_sysconf.h>

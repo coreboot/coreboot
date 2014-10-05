@@ -76,9 +76,12 @@ config BOOT_MEDIA_SPI_CHIP_SELECT
 	help
 	  Which chip select to use for boot media.
 
+# For ryu, we are using vboot2. Thus, index for stages:
+# VBOOT_ROMSTAGE_INDEX -> Use default value of 0x2
+# VBOOT_RAMSTAGE_INDEX -> Use 0x3
 config VBOOT_RAMSTAGE_INDEX
 	hex
-	default 0x2
+	default 0x3
 
 config DRIVER_TPM_I2C_BUS
 	hex

@@ -17,28 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <memlayout.h>
+#ifndef __SOC_NVIDIA_TEGRA132_SOC_VERSTAGE_H__
+#define __SOC_NVIDIA_TEGRA132_SOC_VERSTAGE_H__
 
-#include <arch/header.ld>
+void verstage_mainboard_init(void);
 
-/*
- * Note: The BootROM uses the address range [0x4000_0000:0x4000_E000) itself,
- * so the bootblock loading address must be placed after that. After the
- * handoff that area may be reclaimed for other uses, e.g. CBFS cache.
- * TODO: Did this change on Tegra132? What's the new valid range?
- */
-
-SECTIONS
-{
-	SRAM_START(0x40000000)
-	/* 16K hole */
-	PRERAM_CBMEM_CONSOLE(0x40004000, 8K)
-	CBFS_CACHE(0x40006000, 88K)
-	STACK(0x4001C000, 16K)
-	BOOTBLOCK(0x40020000, 20K)
-	ROMSTAGE(0x40025000, 108K)
-	SRAM_END(0x40040000)
-
-	DRAM_START(0x80000000)
-	RAMSTAGE(0x80200000, 192K)
-}
+#endif /* __SOC_NVIDIA_TEGRA132_SOC_VERSTAGE_H__ */

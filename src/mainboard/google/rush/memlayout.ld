@@ -1,1 +1,1 @@
-#include <soc/memlayout.ld>
+#include <soc/memlayout_vboot.ld>

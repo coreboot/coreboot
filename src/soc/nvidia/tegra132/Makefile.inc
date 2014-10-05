@@ -20,6 +20,20 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
+verstage-y += verstage.c
+verstage-y += cbfs.c
+verstage-y += dma.c
+verstage-y += monotonic_timer.c
+verstage-y += spi.c
+verstage-y += padconfig.c
+verstage-y += funitcfg.c
+verstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
+verstage-y += ../tegra/gpio.c
+verstage-y += ../tegra/i2c.c
+verstage-y += ../tegra/pinmux.c
+verstage-y += clock.c
+verstage-y += i2c.c
+
 romstage-y += 32bit_reset.S
 romstage-y += romstage_asm.S
 romstage-y += addressmap.c

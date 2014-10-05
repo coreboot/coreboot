@@ -707,8 +707,25 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
 	dsdt = (acpi_header_t *) current;
 	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
-	current += dsdt->length;
-	memcpy(dsdt, &AmlCode, dsdt->length);
+	if (dsdt->length >= sizeof(acpi_header_t)) {
+		current += sizeof(acpi_header_t);
+
+		acpigen_set_current((char *) current);
+		for (dev = all_devices; dev; dev = dev->next)
+			if (dev->ops && dev->ops->acpi_inject_dsdt_generator) {
+				dev->ops->acpi_inject_dsdt_generator();
+			}
+		current = (unsigned long) acpigen_get_current();
+		memcpy((char *)current,
+		       (char *)&AmlCode + sizeof(acpi_header_t),
+		       dsdt->length - sizeof(acpi_header_t));
+		current += dsdt->length - sizeof(acpi_header_t);
+
+		/* (Re)calculate length and checksum. */
+		dsdt->length = current - (unsigned long)dsdt;
+		dsdt->checksum = 0;
+		dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
+	}
 
 	ALIGN_CURRENT;
 

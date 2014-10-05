@@ -665,7 +665,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static unsigned long southbridge_fill_ssdt(unsigned long current, const char *oem_table_id)
+static void southbridge_inject_dsdt(void)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
 	void *opregion;
@@ -689,8 +689,6 @@ static unsigned long southbridge_fill_ssdt(unsigned long current, const char *oe
 		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
 		acpigen_patch_len(scopelen - 1);
 	}
-
-	return (unsigned long) (acpigen_get_current());
 }
 
 static struct pci_operations pci_ops = {
@@ -701,7 +699,7 @@ static struct device_operations device_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pch_lpc_enable_resources,
-	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.write_acpi_tables      = acpi_write_hpet,
 	.init			= lpc_init,
 	.enable			= pch_lpc_enable,

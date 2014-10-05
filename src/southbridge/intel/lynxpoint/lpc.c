@@ -743,7 +743,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static unsigned long southbridge_fill_ssdt(unsigned long current, const char *oem_table_id)
+static void southbridge_inject_dsdt(void)
 {
 	global_nvs_t *gnvs;
 
@@ -761,13 +761,11 @@ static unsigned long southbridge_fill_ssdt(unsigned long current, const char *oe
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 
-		/* Add it to SSDT.  */
+		/* Add it to DSDT.  */
 		scopelen = acpigen_write_scope("\\");
 		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
 		acpigen_patch_len(scopelen - 1);
 	}
-
-	return (unsigned long) (acpigen_get_current());
 }
 
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
@@ -815,7 +813,7 @@ static struct device_operations device_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
+	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.write_acpi_tables      = southbridge_write_acpi_tables,
 	.init			= lpc_init,
 	.enable			= pch_lpc_enable,

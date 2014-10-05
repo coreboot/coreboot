@@ -61,6 +61,7 @@ struct device_operations {
 	unsigned long (*write_acpi_tables)(unsigned long start,  struct acpi_rsdp *rsdp);
 	unsigned long (*acpi_fill_ssdt_generator)(unsigned long current,
 						  const char *oem_table_id);
+	void (*acpi_inject_dsdt_generator)(void);
 #endif
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;

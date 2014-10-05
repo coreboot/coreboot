@@ -118,6 +118,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 				u16 seg_nr, u8 start, u8 end)
 {
+	memset(mmconfig, 0, sizeof(*mmconfig));
 	mmconfig->base_address = base;
 	mmconfig->base_reserved = 0;
 	mmconfig->pci_segment_group_number = seg_nr;

@@ -34,6 +34,7 @@
 #include <arch/acpigen.h>
 #include <drivers/intel/gma/i915.h>
 #include <cbmem.h>
+#include <string.h>
 #include "pch.h"
 #include "nvs.h"
 
@@ -674,6 +675,9 @@ static unsigned long southbridge_fill_ssdt(unsigned long current, const char *oe
 
 	if (gnvs) {
 		int scopelen;
+
+		memset(gnvs, 0, sizeof (*gnvs));
+
 		acpi_create_gnvs(gnvs);
 		/* IGD OpRegion Base Address */
 		gnvs->aslb = (u32)opregion;

@@ -745,7 +745,14 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 static unsigned long southbridge_fill_ssdt(unsigned long current, const char *oem_table_id)
 {
-	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+	global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+		if (gnvs)
+			memset(gnvs, 0, sizeof(*gnvs));
+	}
 
 	if (gnvs) {
 		int scopelen;

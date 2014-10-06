@@ -1353,21 +1353,8 @@ utilities suite. Get it at
 \subsection {Booting Payloads}
 coreboot can load a payload binary from a Flash device or IDE. This
 payload can be a boot loader, like FILO or Etherboot, a kernel image, or
-any other static ELF binary.
-
-To create a Linux kernel image, that is bootable in coreboot, you have
-to use mkelfImage. The command line I used, looks like follows:
-
-\begin{verbatim}
-    objdir/sbin/mkelfImage t bzImagei386 kernel /boot/vmlinuz \
-             commandline="console=ttyS0,115200 root=/dev/hda3" \
-             initrd=/boot/initrd output vmlinuz.elf
-\end{verbatim}
-
-
-This will create the file \texttt{vmlinuz.elf} from a distribution
-kernel, console redirected to the serial port and using an initial
-ramdisk.
+any other static ELF binary. If you specify a bzImage as the payload,
+the cbfs utility will figure out how to create a coreboot payload from it.
 
 \subsection{Kernel on dhcp/tftp}
 

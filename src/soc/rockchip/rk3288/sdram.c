@@ -538,8 +538,8 @@ static void phy_dll_bypass_set(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 	u32 freq)
 {
 	int i;
-	if (freq <= 250000000) {
-		if (freq <= 150000000)
+	if (freq <= 250*MHz) {
+		if (freq <= 150*MHz)
 			clrbits_le32(&ddr_publ_regs->dllgcr, SBIAS_BYPASS);
 		else
 			setbits_le32(&ddr_publ_regs->dllgcr, SBIAS_BYPASS);
@@ -651,19 +651,19 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 	writel(sdram_params->noc_activate, &msch_regs->activate);
 	writel(BUSWRTORD(2) | BUSRDTOWR(2) | BUSRDTORD(1),
 		&msch_regs->devtodev);
-	writel(PRT_DLLLOCK(div_round_up(sdram_params->ddr_freq / 1000000
-		* 5120, 1000))
-		| PRT_DLLSRST(div_round_up(sdram_params->ddr_freq / 1000000
-		* 50, 1000))
+	writel(PRT_DLLLOCK(div_round_up(sdram_params->ddr_freq/MHz
+			   * 5120, 1000))
+		| PRT_DLLSRST(div_round_up(sdram_params->ddr_freq/MHz
+			      * 50, 1000))
 		| PRT_ITMSRST(8), &ddr_publ_regs->ptr[0]);
-	writel(PRT_DINIT0(div_round_up(sdram_params->ddr_freq / 1000000
-		* 500000, 1000))
-		| PRT_DINIT1(div_round_up(sdram_params->ddr_freq / 1000000
-		* 400, 1000)), &ddr_publ_regs->ptr[1]);
-	writel(PRT_DINIT2(div_round_up(sdram_params->ddr_freq / 1000000
-		* 200000, 1000))
-		| PRT_DINIT3(div_round_up(sdram_params->ddr_freq / 1000000
-		* 1000, 1000)), &ddr_publ_regs->ptr[2]);
+	writel(PRT_DINIT0(div_round_up(sdram_params->ddr_freq/MHz
+			  * 500000, 1000))
+		| PRT_DINIT1(div_round_up(sdram_params->ddr_freq/MHz
+			     * 400, 1000)), &ddr_publ_regs->ptr[1]);
+	writel(PRT_DINIT2(div_round_up(sdram_params->ddr_freq/MHz
+			  * 200000, 1000))
+		| PRT_DINIT3(div_round_up(sdram_params->ddr_freq/MHz
+			     * 1000, 1000)), &ddr_publ_regs->ptr[2]);
 
 	switch (sdram_params->dramtype) {
 	case LPDDR3:
@@ -971,9 +971,9 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 	printk(BIOS_INFO, "Starting SDRAM initialization...\n");
 
 	if ((sdram_params->dramtype == DDR3
-		&& sdram_params->ddr_freq > 800000000)
+		&& sdram_params->ddr_freq > 800*MHz)
 		|| (sdram_params->dramtype == LPDDR3
-		&& sdram_params->ddr_freq > 533000000))
+		&& sdram_params->ddr_freq > 533*MHz))
 		die("SDRAM frequency is to high!");
 
 	rkclk_configure_ddr(sdram_params->ddr_freq);

@@ -21,10 +21,11 @@
 #define __SOC_ROCKCHIP_RK3288_TIMER_H__
 
 #include <inttypes.h>
+#include <timer.h>
 #include "addressmap.h"
 
-#define SYS_CLK_FREQ	24000000
-static const u32 clocks_per_usec = SYS_CLK_FREQ/1000000;
+#define SYS_CLK_FREQ	(24*MHz)
+static const u32 clocks_per_usec = SYS_CLK_FREQ/USECS_PER_SEC;
 
 struct rk3288_timer {
 	u32 timer_load_count0;

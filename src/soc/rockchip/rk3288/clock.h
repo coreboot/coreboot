@@ -22,17 +22,17 @@
 
 #include "addressmap.h"
 
-#define APLL_HZ		816000000
-#define GPLL_HZ		594000000
-#define CPLL_HZ		384000000
+#define APLL_HZ		(816*MHz)
+#define GPLL_HZ		(594*MHz)
+#define CPLL_HZ		(384*MHz)
 
-#define PD_BUS_ACLK_HZ	148500000
-#define PD_BUS_HCLK_HZ	148500000
-#define PD_BUS_PCLK_HZ	74250000
+#define PD_BUS_ACLK_HZ	(148500*KHz)
+#define PD_BUS_HCLK_HZ	(148500*KHz)
+#define PD_BUS_PCLK_HZ	(74250*KHz)
 
-#define PERI_ACLK_HZ	148500000
-#define PERI_HCLK_HZ	148500000
-#define PERI_PCLK_HZ	74250000
+#define PERI_ACLK_HZ	(148500*KHz)
+#define PERI_HCLK_HZ	(148500*KHz)
+#define PERI_PCLK_HZ	(74250*KHz)
 
 void rkclk_init(void);
 void rkclk_configure_spi(unsigned int bus, unsigned int hz);

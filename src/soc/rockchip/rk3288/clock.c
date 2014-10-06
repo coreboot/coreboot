@@ -65,8 +65,8 @@ check_member(rk3288_cru_reg, cru_emmc_con[1], 0x021c);
 static struct rk3288_cru_reg * const cru_ptr = (void *)CRU_BASE;
 
 #define PLL_DIVISORS(hz, _nr, _no) {\
-	.nr = _nr, .nf = (u32)((u64)hz * _nr * _no / 24000000), .no = _no};\
-	_Static_assert(((u64)hz * _nr * _no / 24000000) * 24000000 /\
+	.nr = _nr, .nf = (u32)((u64)hz * _nr * _no / (24*MHz)), .no = _no};\
+	_Static_assert(((u64)hz * _nr * _no / (24*MHz)) * (24*MHz) /\
 			(_nr * _no) == hz,\
 	#hz "Hz cannot be hit with PLL divisors in " __FILE__);
 
@@ -337,10 +337,10 @@ void rkclk_configure_ddr(unsigned int hz)
 {
 	struct pll_div dpll_cfg;
 
-	if (hz <= 150000000) {
+	if (hz <= 150*MHz) {
 		dpll_cfg.nr = 3;
 		dpll_cfg.no = 8;
-	} else if (hz <= 540000000) {
+	} else if (hz <= 540*MHz) {
 		dpll_cfg.nr = 6;
 		dpll_cfg.no = 4;
 	} else {
@@ -348,10 +348,9 @@ void rkclk_configure_ddr(unsigned int hz)
 		dpll_cfg.no = 1;
 	}
 
-	dpll_cfg.nf = (hz / 1000 * dpll_cfg.nr * dpll_cfg.no) / 24000;
-	assert(dpll_cfg.nf < 4096
-		&& hz == dpll_cfg.nf * 24000 / (dpll_cfg.nr * dpll_cfg.no)
-		* 1000);
+	dpll_cfg.nf = (hz/KHz * dpll_cfg.nr * dpll_cfg.no) / (24*KHz);
+	assert(dpll_cfg.nf < 4096 && hz == dpll_cfg.nf * (24*KHz) /
+					   (dpll_cfg.nr * dpll_cfg.no) * 1000);
 	/* pll enter slow-mode */
 	writel(RK_CLRSETBITS(DPLL_MODE_MSK, DPLL_MODE_SLOW),
 		&cru_ptr->cru_mode_con);

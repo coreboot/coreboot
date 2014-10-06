@@ -36,7 +36,7 @@ struct rockchip_spi_slave {
 };
 
 #define SPI_TIMEOUT_US	1000
-#define SPI_SRCCLK_HZ   99000000
+#define SPI_SRCCLK_HZ   (99*MHz)
 #define SPI_FIFO_DEPTH	32
 
 static struct rockchip_spi_slave rockchip_spi_slaves[3] = {

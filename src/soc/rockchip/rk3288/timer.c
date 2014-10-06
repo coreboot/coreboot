@@ -18,7 +18,6 @@
  */
 
 #include <console/console.h>
-#include <timer.h>
 #include <delay.h>
 #include <arch/io.h>
 #include "timer.h"

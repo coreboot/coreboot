@@ -70,7 +70,7 @@
         .noc_timing = 0x30B25564,
         .noc_activate = 0x627,
         .ddrconfig = 3,
-        .ddr_freq = 666000000,
+        .ddr_freq = 666*MHz,
         .dramtype = DDR3,
         .num_channels = 2,
         .stride = 9,

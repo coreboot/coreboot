@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <arch/io.h>
 #include <stdint.h>
+#include <string.h>
 #include <console/console.h>
 #include <delay.h>
 #include "clock.h"
@@ -65,15 +66,15 @@ check_member(rk3288_cru_reg, cru_emmc_con[1], 0x021c);
 static struct rk3288_cru_reg * const cru_ptr = (void *)CRU_BASE;
 
 #define PLL_DIVISORS(hz, _nr, _no) {\
-	.nr = _nr, .nf = (u32)((u64)hz * _nr * _no / (24*MHz)), .no = _no};\
-	_Static_assert(((u64)hz * _nr * _no / (24*MHz)) * (24*MHz) /\
-			(_nr * _no) == hz,\
-	#hz "Hz cannot be hit with PLL divisors in " __FILE__);
+	.nr = _nr, .nf = (u32)((u64)hz * _nr * _no / OSC_HZ), .no = _no};\
+	_Static_assert(((u64)hz * _nr * _no / OSC_HZ) * OSC_HZ /\
+		       (_nr * _no) == hz, #hz "Hz cannot be hit with PLL "\
+		       "divisors on line " STRINGIFY(__LINE__));
 
-/* apll = 816MHz, gpll = 594MHz, cpll = 384MHz */
-static const struct pll_div apll_init_cfg = PLL_DIVISORS(APLL_HZ, 1, 2);
-static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 4);
-static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 2, 4);
+/* Keep divisors as low as possible to reduce jitter and power usage. */
+static const struct pll_div apll_init_cfg = PLL_DIVISORS(APLL_HZ, 1, 1);
+static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 2);
+static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 1, 2);
 
 /*******************PLL CON0 BITS***************************/
 #define PLL_OD_MSK	(0x0F)
@@ -190,19 +191,28 @@ static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 2, 4);
 #define SOCSTS_CPLL_LOCK	(1 << 7)
 #define SOCSTS_GPLL_LOCK	(1 << 8)
 
-static int rkclk_set_pll(u32 *pll_con, const struct pll_div *pll_div_cfg)
+static int rkclk_set_pll(u32 *pll_con, const struct pll_div *div)
 {
+	/* All PLLs have same VCO and output frequency range restrictions. */
+	u32 vco_khz = OSC_HZ/KHz * div->nf / div->nr;
+	u32 output_khz = vco_khz / div->no;
+
+	printk(BIOS_DEBUG, "Configuring PLL at %p with NF = %d, NR = %d and "
+	       "NO = %d (VCO = %uKHz, output = %uKHz)\n",
+	       pll_con, div->nf, div->nr, div->no, vco_khz, output_khz);
+	assert(vco_khz >= 440*(MHz/KHz) && vco_khz <= 2200*(MHz/KHz) &&
+	       output_khz >= 27500 && output_khz <= 2200*(MHz/KHz) &&
+	       (div->no == 1 || !(div->no % 2)));
+
 	/* enter rest */
 	writel(RK_SETBITS(PLL_RESET_MSK), &pll_con[3]);
 
-	writel(RK_CLRSETBITS(PLL_NR_MSK, (pll_div_cfg->nr - 1) << PLL_NR_SHIFT)
-	      | RK_CLRSETBITS(PLL_OD_MSK, (pll_div_cfg->no - 1)), &pll_con[0]);
+	writel(RK_CLRSETBITS(PLL_NR_MSK, (div->nr - 1) << PLL_NR_SHIFT)
+	       | RK_CLRSETBITS(PLL_OD_MSK, (div->no - 1)), &pll_con[0]);
 
-	writel(RK_CLRSETBITS(PLL_NF_MSK, (pll_div_cfg->nf - 1)),
-		&pll_con[1]);
+	writel(RK_CLRSETBITS(PLL_NF_MSK, (div->nf - 1)), &pll_con[1]);
 
-	writel(RK_CLRSETBITS(PLL_BWADJ_MSK, ((pll_div_cfg->nf >> 1) - 1)),
-		&pll_con[2]);
+	writel(RK_CLRSETBITS(PLL_BWADJ_MSK, ((div->nf >> 1) - 1)), &pll_con[2]);
 
 	udelay(10);
 
@@ -352,20 +362,23 @@ void rkclk_configure_ddr(unsigned int hz)
 {
 	struct pll_div dpll_cfg;
 
-	if (hz <= 150*MHz) {
-		dpll_cfg.nr = 3;
-		dpll_cfg.no = 8;
-	} else if (hz <= 540*MHz) {
-		dpll_cfg.nr = 6;
-		dpll_cfg.no = 4;
-	} else {
-		dpll_cfg.nr = 1;
-		dpll_cfg.no = 1;
+	switch (hz) {
+	case 300*MHz:
+		dpll_cfg = (struct pll_div){.nf = 25, .nr = 2, .no = 1};
+		break;
+	case 533*MHz:	/* actually 533.3P MHz */
+		dpll_cfg = (struct pll_div){.nf = 400, .nr = 9, .no = 2};
+		break;
+	case 666*MHz:	/* actually 666.6P MHz */
+		dpll_cfg = (struct pll_div){.nf = 500, .nr = 9, .no = 2};
+		break;
+	case 800*MHz:
+		dpll_cfg = (struct pll_div){.nf = 100, .nr = 3, .no = 1};
+		break;
+	default:
+		die("Unsupported SDRAM frequency, add to clock.c!");
 	}
 
-	dpll_cfg.nf = (hz/KHz * dpll_cfg.nr * dpll_cfg.no) / (24*KHz);
-	assert(dpll_cfg.nf < 4096 && hz == dpll_cfg.nf * (24*KHz) /
-					   (dpll_cfg.nr * dpll_cfg.no) * 1000);
 	/* pll enter slow-mode */
 	writel(RK_CLRSETBITS(DPLL_MODE_MSK, DPLL_MODE_SLOW),
 		&cru_ptr->cru_mode_con);

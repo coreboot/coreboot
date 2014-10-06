@@ -23,9 +23,9 @@
 #include <inttypes.h>
 #include <timer.h>
 #include "addressmap.h"
+#include "clock.h"
 
-#define SYS_CLK_FREQ	(24*MHz)
-static const u32 clocks_per_usec = SYS_CLK_FREQ/USECS_PER_SEC;
+static const u32 clocks_per_usec = OSC_HZ/USECS_PER_SEC;
 
 struct rk3288_timer {
 	u32 timer_load_count0;

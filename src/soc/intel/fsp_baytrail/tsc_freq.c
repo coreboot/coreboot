@@ -21,11 +21,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <baytrail/msr.h>
-#if !defined(__PRE_RAM__)
-#include <baytrail/ramstage.h>
-#else
-#include <baytrail/romstage.h>
-#endif
 
 unsigned bus_freq_khz(void)
 {
@@ -57,6 +52,11 @@ unsigned long tsc_freq_mhz(void)
 }
 
 #if !defined(__SMM__)
+#if !defined(__PRE_RAM__)
+#include <baytrail/ramstage.h>
+#else
+#include <baytrail/romstage.h>
+#endif
 
 void set_max_freq(void)
 {

@@ -19,8 +19,8 @@
  * MA 02110-1301 USA
  */
 
-#include <soc/intel/baytrail/baytrail/iomap.h>
-#include <soc/intel/baytrail/baytrail/irq.h>
+#include <soc/iomap.h>
+#include <soc/irq.h>
 
 /* SouthCluster GPIO */
 Device (GPSC)

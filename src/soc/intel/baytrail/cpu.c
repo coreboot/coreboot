@@ -30,11 +30,11 @@
 #include <cpu/x86/smm.h>
 #include <reg_script.h>
 
-#include <baytrail/iosf.h>
-#include <baytrail/msr.h>
-#include <baytrail/pattrs.h>
-#include <baytrail/ramstage.h>
-#include <baytrail/smm.h>
+#include <soc/iosf.h>
+#include <soc/msr.h>
+#include <soc/pattrs.h>
+#include <soc/ramstage.h>
+#include <soc/smm.h>
 
 static void smm_relocate(void *unused);
 static void enable_smis(void *unused);

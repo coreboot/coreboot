@@ -24,10 +24,10 @@
 #include <device/pci_ids.h>
 #include <reg_script.h>
 
-#include <baytrail/pci_devs.h>
-#include <baytrail/pcie.h>
-#include <baytrail/ramstage.h>
-#include <baytrail/smm.h>
+#include <soc/pci_devs.h>
+#include <soc/pcie.h>
+#include <soc/ramstage.h>
+#include <soc/smm.h>
 
 #include "chip.h"
 

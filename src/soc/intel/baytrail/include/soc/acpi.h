@@ -21,7 +21,7 @@
 #define _BAYTRAIL_ACPI_H_
 
 #include <arch/acpi.h>
-#include <baytrail/nvs.h>
+#include <soc/nvs.h>
 
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
 void acpi_fill_in_fadt(acpi_fadt_t *fadt);

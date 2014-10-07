@@ -30,8 +30,8 @@
 #include <vendorcode/google/chromeos/vboot_handoff.h>
 #endif
 
-#include <baytrail/ramstage.h>
-#include <baytrail/efi_wrapper.h>
+#include <soc/ramstage.h>
+#include <soc/efi_wrapper.h>
 
 static inline struct ramstage_cache *next_cache(struct ramstage_cache *c)
 {

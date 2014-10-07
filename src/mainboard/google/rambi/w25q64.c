@@ -18,7 +18,7 @@
  */
 
 #include <string.h>
-#include <baytrail/spi.h>
+#include <soc/spi.h>
 
 /*
  * SPI lockdown configuration W25Q64FW.

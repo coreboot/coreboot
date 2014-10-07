@@ -22,9 +22,9 @@
 #include <delay.h>
 #include <console/console.h>
 
-#include <baytrail/iomap.h>
-#include <baytrail/romstage.h>
-#include <baytrail/spi.h>
+#include <soc/iomap.h>
+#include <soc/romstage.h>
+#include <soc/spi.h>
 
 #define SPI_CYCLE_DELAY 10 				/* 10us */
 #define SPI_CYCLE_TIMEOUT 400000 / SPI_CYCLE_DELAY	/* 400ms */

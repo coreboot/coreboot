@@ -18,9 +18,9 @@
  */
 
 #include <arch/io.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/ramstage.h>
-#include <baytrail/sata.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
+#include <soc/sata.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>

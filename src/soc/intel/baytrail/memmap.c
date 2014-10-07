@@ -19,8 +19,8 @@
 
 #include <arch/io.h>
 #include <cbmem.h>
-#include <baytrail/iosf.h>
-#include <baytrail/smm.h>
+#include <soc/iosf.h>
+#include <soc/smm.h>
 
 uintptr_t smm_region_start(void)
 {

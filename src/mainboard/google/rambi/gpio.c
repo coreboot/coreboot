@@ -18,7 +18,7 @@
  */
 
 #include <stdlib.h>
-#include <baytrail/gpio.h>
+#include <soc/gpio.h>
 #include "irqroute.h"
 
 /* TODO(SHAWNN): Modify gpios labeled 'INT' for interrupt handling */

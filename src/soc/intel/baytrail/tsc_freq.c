@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
-#include <baytrail/msr.h>
+#include <soc/msr.h>
 
 unsigned bus_freq_khz(void)
 {
@@ -53,9 +53,9 @@ unsigned long tsc_freq_mhz(void)
 
 #if !defined(__SMM__)
 #if !defined(__PRE_RAM__)
-#include <baytrail/ramstage.h>
+#include <soc/ramstage.h>
 #else
-#include <baytrail/romstage.h>
+#include <soc/romstage.h>
 #endif
 
 void set_max_freq(void)

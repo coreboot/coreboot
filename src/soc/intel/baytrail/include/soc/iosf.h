@@ -21,7 +21,7 @@
 #define _BAYTRAIL_IOSF_H_
 
 #include <stdint.h>
-#include <baytrail/pci_devs.h>
+#include <soc/pci_devs.h>
 
 /*
  * The Bay Trail SoC has a message network called IOSF Sideband. The access

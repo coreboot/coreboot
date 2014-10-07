@@ -25,10 +25,10 @@
 #include <reg_script.h>
 
 #include <soc/intel/common/hda_verb.h>
-#include <baytrail/iomap.h>
-#include <baytrail/iosf.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/ramstage.h>
+#include <soc/iomap.h>
+#include <soc/iosf.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 
 static const struct reg_script init_ops[] = {
 	/* Enable no snoop traffic. */

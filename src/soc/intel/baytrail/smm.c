@@ -27,9 +27,9 @@
 #include <cpu/x86/smm.h>
 #include <string.h>
 
-#include <baytrail/iomap.h>
-#include <baytrail/pmc.h>
-#include <baytrail/smm.h>
+#include <soc/iomap.h>
+#include <soc/pmc.h>
+#include <soc/smm.h>
 
 /* Save settings which will be committed in SMI functions. */
 static uint32_t smm_save_params[SMM_SAVE_PARAM_COUNT];

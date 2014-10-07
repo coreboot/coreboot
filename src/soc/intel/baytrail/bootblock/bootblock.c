@@ -21,7 +21,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
-#include <baytrail/iosf.h>
+#include <soc/iosf.h>
 #include <cpu/intel/microcode/microcode.c>
 
 static void set_var_mtrr(int reg, uint32_t base, uint32_t size, int type)

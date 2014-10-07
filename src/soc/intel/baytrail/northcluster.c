@@ -24,10 +24,10 @@
 #include <device/pci_ids.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#include <baytrail/iomap.h>
-#include <baytrail/iosf.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/ramstage.h>
+#include <soc/iomap.h>
+#include <soc/iosf.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 
 /* Host Memory Map:
  *

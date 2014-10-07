@@ -22,7 +22,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <reg_script.h>
-#include <baytrail/iosf.h>
+#include <soc/iosf.h>
 
 #define MAKE_MASK_INCLUSIVE(msb) \
 	((1ULL << (1 + (msb))) - 1)

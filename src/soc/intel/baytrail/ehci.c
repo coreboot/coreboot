@@ -25,12 +25,12 @@
 #include <stdint.h>
 #include <reg_script.h>
 
-#include <baytrail/iomap.h>
-#include <baytrail/iosf.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/pmc.h>
-#include <baytrail/ramstage.h>
-#include <baytrail/ehci.h>
+#include <soc/iomap.h>
+#include <soc/iosf.h>
+#include <soc/pci_devs.h>
+#include <soc/pmc.h>
+#include <soc/ramstage.h>
+#include <soc/ehci.h>
 
 #include "chip.h"
 

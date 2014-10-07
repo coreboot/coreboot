@@ -25,13 +25,13 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <halt.h>
-#include <baytrail/gpio.h>
+#include <soc/gpio.h>
 #include <soc/intel/common/mrc_cache.h>
-#include <baytrail/iomap.h>
-#include <baytrail/iosf.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/reset.h>
-#include <baytrail/romstage.h>
+#include <soc/iomap.h>
+#include <soc/iosf.h>
+#include <soc/pci_devs.h>
+#include <soc/reset.h>
+#include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 

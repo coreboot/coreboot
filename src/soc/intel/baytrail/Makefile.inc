@@ -52,7 +52,7 @@ ramstage-y += hda.c
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c
 
-CPPFLAGS_common += -Isrc/soc/intel/baytrail/
+CPPFLAGS_common += -Isrc/soc/intel/baytrail/include
 
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware

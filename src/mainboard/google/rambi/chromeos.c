@@ -22,7 +22,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <baytrail/gpio.h>
+#include <soc/gpio.h>
 
 #if CONFIG_EC_GOOGLE_CHROMEEC
 #include "ec.h"

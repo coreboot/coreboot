@@ -31,14 +31,14 @@
 #include <pc80/mc146818rtc.h>
 #include <drivers/uart/uart8250reg.h>
 
-#include <baytrail/iomap.h>
-#include <baytrail/irq.h>
-#include <baytrail/lpc.h>
-#include <baytrail/nvs.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/pmc.h>
-#include <baytrail/ramstage.h>
-#include <baytrail/spi.h>
+#include <soc/iomap.h>
+#include <soc/irq.h>
+#include <soc/lpc.h>
+#include <soc/nvs.h>
+#include <soc/pci_devs.h>
+#include <soc/pmc.h>
+#include <soc/ramstage.h>
+#include <soc/spi.h>
 #include "chip.h"
 
 static inline void

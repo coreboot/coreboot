@@ -33,12 +33,12 @@
 #include <cpu/x86/tsc.h>
 #include <cpu/intel/turbo.h>
 
-#include <baytrail/acpi.h>
-#include <baytrail/iomap.h>
-#include <baytrail/irq.h>
-#include <baytrail/msr.h>
-#include <baytrail/pattrs.h>
-#include <baytrail/pmc.h>
+#include <soc/acpi.h>
+#include <soc/iomap.h>
+#include <soc/irq.h>
+#include <soc/msr.h>
+#include <soc/pattrs.h>
+#include <soc/pmc.h>
 
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/gnvs.h>

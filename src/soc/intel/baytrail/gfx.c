@@ -26,10 +26,10 @@
 #include <reg_script.h>
 #include <stdlib.h>
 
-#include <baytrail/gfx.h>
-#include <baytrail/iosf.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/ramstage.h>
+#include <soc/gfx.h>
+#include <soc/iosf.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 
 #include "chip.h"
 

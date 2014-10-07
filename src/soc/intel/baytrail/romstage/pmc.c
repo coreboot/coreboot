@@ -22,12 +22,12 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <baytrail/iomap.h>
-#include <baytrail/iosf.h>
-#include <baytrail/lpc.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/pmc.h>
-#include <baytrail/romstage.h>
+#include <soc/iomap.h>
+#include <soc/iosf.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <soc/pmc.h>
+#include <soc/romstage.h>
 #include "../chip.h"
 
 void tco_disable(void)

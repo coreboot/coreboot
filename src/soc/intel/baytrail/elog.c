@@ -28,8 +28,8 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <elog.h>
-#include <baytrail/iomap.h>
-#include <baytrail/pmc.h>
+#include <soc/iomap.h>
+#include <soc/pmc.h>
 
 static void log_power_and_resets(const struct chipset_power_state *ps)
 {

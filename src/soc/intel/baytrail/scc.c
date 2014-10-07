@@ -25,9 +25,9 @@
 #include <device/pci_ids.h>
 #include <reg_script.h>
 
-#include <baytrail/iosf.h>
-#include <baytrail/nvs.h>
-#include <baytrail/ramstage.h>
+#include <soc/iosf.h>
+#include <soc/nvs.h>
+#include <soc/ramstage.h>
 
 static const struct reg_script scc_start_dll[] = {
 	/* Configure master DLL. */

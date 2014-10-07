@@ -21,7 +21,7 @@
 #define _BAYTRAIL_RAMSTAGE_H_
 
 #include <device/device.h>
-#include <chip.h>
+#include <soc/intel/baytrail/chip.h>
 
 /* The baytrail_init_pre_device() function is called prior to device
  * initialization, but it's after console and cbmem has been reinitialized. */

@@ -18,7 +18,7 @@
  */
 
 #include <arch/io.h>
-#include <baytrail/iosf.h>
+#include <soc/iosf.h>
 
 #if !defined(__PRE_RAM__)
 #define IOSF_PCI_BASE (CONFIG_MMCONF_BASE_ADDRESS + (IOSF_PCI_DEV << 12))

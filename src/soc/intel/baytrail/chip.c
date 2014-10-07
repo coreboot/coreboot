@@ -22,8 +22,8 @@
 #include <device/pci.h>
 #include <arch/pci_ops.h>
 
-#include <baytrail/pci_devs.h>
-#include <baytrail/ramstage.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 #include "chip.h"
 
 static void pci_domain_set_resources(device_t dev)

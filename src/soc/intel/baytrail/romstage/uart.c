@@ -18,11 +18,11 @@
  */
 
 #include <arch/io.h>
-#include <baytrail/gpio.h>
-#include <baytrail/iomap.h>
-#include <baytrail/lpc.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/romstage.h>
+#include <soc/gpio.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <soc/romstage.h>
 
 void byt_config_com1_and_enable(void)
 {

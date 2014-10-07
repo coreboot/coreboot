@@ -24,10 +24,10 @@
 #include <device/pci_ids.h>
 #include <reg_script.h>
 
-#include <baytrail/iosf.h>
-#include <baytrail/nvs.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/ramstage.h>
+#include <soc/iosf.h>
+#include <soc/nvs.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 #include "chip.h"
 
 #define CAP_OVERRIDE_LOW 0xa0

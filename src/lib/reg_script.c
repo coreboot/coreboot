@@ -31,7 +31,7 @@
 #endif
 
 #if CONFIG_SOC_INTEL_BAYTRAIL
-#include <baytrail/iosf.h>
+#include <soc/iosf.h>	/* TODO: wrap in <soc/reg_script.h, remove #ifdef? */
 #endif
 
 #define POLL_DELAY 100 /* 100us */

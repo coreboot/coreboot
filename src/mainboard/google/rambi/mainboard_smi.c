@@ -25,8 +25,8 @@
 #include <ec/google/chromeec/ec.h>
 #include "ec.h"
 
-#include <baytrail/nvs.h>
-#include <baytrail/pmc.h>
+#include <soc/nvs.h>
+#include <soc/pmc.h>
 
 /* The wake gpio is SUS_GPIO[0]. */
 #define WAKE_GPIO_EN SUS_GPIO_EN0

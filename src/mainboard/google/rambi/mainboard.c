@@ -36,7 +36,7 @@
 #include <smbios.h>
 #include "ec.h"
 #include "onboard.h"
-#include <baytrail/gpio.h>
+#include <soc/gpio.h>
 #include <bootstate.h>
 
 void mainboard_suspend_resume(void)

@@ -34,15 +34,15 @@
 #include <romstage_handoff.h>
 #include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <baytrail/gpio.h>
-#include <baytrail/iomap.h>
-#include <baytrail/lpc.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/pmc.h>
-#include <baytrail/reset.h>
-#include <baytrail/romstage.h>
-#include <baytrail/smm.h>
-#include <baytrail/spi.h>
+#include <soc/gpio.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <soc/pmc.h>
+#include <soc/reset.h>
+#include <soc/romstage.h>
+#include <soc/smm.h>
+#include <soc/spi.h>
 
 /* The cache-as-ram assembly file calls romstage_main() after setting up
  * cache-as-ram.  romstage_main() will then call the mainboards's

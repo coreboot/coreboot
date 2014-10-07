@@ -21,10 +21,10 @@
 #include <arch/io.h>
 #include <console/console.h>
 
-#include <baytrail/iomap.h>
-#include <baytrail/lpc.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/pmc.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <soc/pmc.h>
 
 #if defined(__SMM__)
 

@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
-#include <baytrail/mrc_wrapper.h>
+#include <soc/mrc_wrapper.h>
 
 struct romstage_params {
 	unsigned long bist;

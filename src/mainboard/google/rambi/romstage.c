@@ -21,9 +21,9 @@
 #include <string.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <baytrail/gpio.h>
-#include <baytrail/mrc_wrapper.h>
-#include <baytrail/romstage.h>
+#include <soc/gpio.h>
+#include <soc/mrc_wrapper.h>
+#include <soc/romstage.h>
 
 /*
  * RAM_ID[2:0] are on GPIO_SSUS[39:37]

@@ -22,7 +22,7 @@
 #define _BAYTRAIL_NVS_H_
 
 #include <vendorcode/google/chromeos/gnvs.h>
-#include <baytrail/device_nvs.h>
+#include <soc/device_nvs.h>
 
 typedef struct {
 	/* Miscellaneous */

@@ -31,8 +31,8 @@
 #include <device/pci_ids.h>
 #include <spi_flash.h>
 
-#include <baytrail/lpc.h>
-#include <baytrail/pci_devs.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
 
 #ifdef __SMM__
 #define pci_read_config_byte(dev, reg, targ)\

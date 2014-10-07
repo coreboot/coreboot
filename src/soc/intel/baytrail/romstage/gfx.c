@@ -18,9 +18,9 @@
  */
 
 #include <arch/io.h>
-#include <baytrail/gfx.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/romstage.h>
+#include <soc/gfx.h>
+#include <soc/pci_devs.h>
+#include <soc/romstage.h>
 
 void gfx_init(void)
 {

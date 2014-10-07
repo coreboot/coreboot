@@ -18,8 +18,8 @@
  */
 
 #include <arch/io.h>
-#include <baytrail/pmc.h>
-#include <baytrail/reset.h>
+#include <soc/pmc.h>
+#include <soc/reset.h>
 
 void cold_reset(void)
 {

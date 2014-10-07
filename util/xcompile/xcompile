@@ -167,7 +167,7 @@ EOF
 }
 
 # Architecture definition
-SUPPORTED_ARCHITECTURE="x86 arm aarch64"
+SUPPORTED_ARCHITECTURE="x86 arm aarch64 riscv"
 
 arch_config_arm() {
 	TARCH="arm"
@@ -183,6 +183,14 @@ arch_config_aarch64() {
 	TCLIST="aarch64"
 	TWIDTH="64"
 	TABI="eabi"
+}
+
+arch_config_riscv() {
+	TARCH="riscv"
+	TBFDARCH="littleriscv"
+	TCLIST="riscv"
+	TWIDTH="64"
+	TABI="elf"
 }
 
 arch_config_x86() {
@@ -213,6 +221,7 @@ test_architecture() {
 		search="$search $XGCCPATH$toolchain-$TABI-"
 		search="$search $toolchain-$TABI-"
 		search="$search $toolchain-linux-gnu-"
+		search="$search $toolchain-"
 	done
 	echo "# $architecture TARCH_SEARCH=$search"
 

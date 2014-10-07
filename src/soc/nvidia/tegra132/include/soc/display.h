@@ -197,6 +197,4 @@ void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 		     u32 lane_count, u32 enhanced_framing, u32 panel_edp,
 		     u32 pclkfreq, u32 linkfreq);
 
-#define FB_SIZE_MB (32)
-
 #endif /* __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_DISPLAY_H__ */

@@ -23,18 +23,18 @@
 void *cbmem_top(void)
 {
 	static uintptr_t addr;
-	size_t fb_size;
 
-	/*
-	 * FIXME(adurbin): The TZ registers are not accessible to the AVP.
-	 * Therefore, if there is a TZ carveout then it needs to be handled
-	 * here while executing on the AVP in order to properly place the
-	 * CBMEM region.
-	 */
+	if (addr == 0) {
+		uintptr_t begin_mib;
+		uintptr_t end_mib;
 
-	/* CBMEM starts downwards from the framebuffer. */
-	if (addr == 0)
-		addr = framebuffer_attributes(&fb_size);
+		memory_in_range_below_4gb(&begin_mib, &end_mib);
+		/* Make sure we consume everything up to 4GiB. */
+		if (end_mib == 4096)
+			addr = ~(uint32_t)0;
+		else
+			addr = end_mib << 20;
+	}
 
-	return (void *)(addr << 20UL);
+	return (void *)addr;
 }

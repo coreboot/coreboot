@@ -47,12 +47,6 @@ static void soc_read_resources(device_t dev)
 		reserved_ram_resource(dev, index++, begin * KiB, size * KiB);
 	}
 
-	/*
-	 * TODO: Frame buffer needs to handled as a carveout from the below_4G
-	 * uintptr_t framebuffer_begin = framebuffer_attributes(&framebuffer_size);
-	 */
-
-
 	memory_in_range_below_4gb(&begin, &end);
 	size = end - begin;
 	ram_resource(dev, index++, begin * KiB, size * KiB);

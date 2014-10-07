@@ -130,7 +130,4 @@ void mainboard_add_memory_ranges(struct memranges *map);
  */
 void trustzone_region_init(void);
 
-/* Return pointer and size in 1MiB units. */
-uintptr_t framebuffer_attributes(size_t *size_mib);
-
 #endif /* __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_ADDRESS_MAP_H__ */

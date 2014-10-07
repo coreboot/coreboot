@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
-#include <soc/display.h>
 #include <soc/id.h>
 #include "mc.h"
 #include "sdram.h"
@@ -164,20 +163,6 @@ void memory_in_range_above_4gb(uintptr_t *base_mib, uintptr_t *end_mib)
 	*base_mib = 4096;
 	*end_mib = ~0UL;
 	memory_in_range(base_mib, end_mib, 0);
-}
-
-uintptr_t framebuffer_attributes(size_t *size_mib)
-{
-	uintptr_t begin;
-	uintptr_t end;
-
-	/* Place the framebuffer just below the 32-bit addressable limit. */
-	memory_in_range_below_4gb(&begin, &end);
-
-	*size_mib = FB_SIZE_MB;
-	end -= *size_mib;
-
-	return end;
 }
 
 void trustzone_region_init(void)

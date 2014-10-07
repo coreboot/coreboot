@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <bootmode.h>
 #include <console/console.h>
@@ -522,7 +523,7 @@ static void igd_init(struct device *dev)
 		reg_script_run_on_dev(dev, haswell_late_init_script);
 	}
 
-	if (!gfx_get_init_done()) {
+	if (!gfx_get_init_done() && acpi_slp_type != 3) {
 		/*
 		 * Enable DDI-A if the Option ROM did not execute:
 		 *

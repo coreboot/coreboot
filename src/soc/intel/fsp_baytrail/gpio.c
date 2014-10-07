@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <baytrail/gpio.h>
 #include <baytrail/pmc.h>
+#include <baytrail/smm.h>
 
 /* GPIO-to-Pad LUTs */
 static const u8 gpncore_gpio_to_pad[GPNCORE_COUNT] =

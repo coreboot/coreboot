@@ -180,13 +180,14 @@ static struct lb_cbmem_ref parse_cbmem_ref(struct lb_cbmem_ref *cbmem_ref)
 	return ret;
 }
 
-static int parse_cbtable(u64 address)
+static int parse_cbtable(u64 address, size_t table_size)
 {
 	int i, found = 0;
 	void *buf;
 
-	debug("Looking for coreboot table at %" PRIx64 "\n", address);
-	buf = map_memory(address);
+	debug("Looking for coreboot table at %" PRIx64 " %zd bytes.\n",
+		address, table_size);
+	buf = map_memory_size(address, table_size);
 
 	/* look at every 16 bytes within 4K of the base */
 
@@ -252,7 +253,7 @@ static int parse_cbtable(u64 address)
 					*(struct lb_forward *) lbr_p;
 				debug("    Found forwarding entry.\n");
 				unmap_memory();
-				return parse_cbtable(lbf_p.forward);
+				return parse_cbtable(lbf_p.forward, table_size);
 			}
 			default:
 				break;
@@ -434,16 +435,22 @@ static void dump_timestamps(void)
 {
 	int i;
 	struct timestamp_table *tst_p;
+	size_t size;
 
 	if (timestamps.tag != LB_TAG_TIMESTAMPS) {
 		fprintf(stderr, "No timestamps found in coreboot table.\n");
 		return;
 	}
 
-	tst_p = (struct timestamp_table *)
-			map_memory((unsigned long)timestamps.cbmem_addr);
+	size = sizeof(*tst_p);
+	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size);
 
 	printf("%d entries total:\n\n", tst_p->num_entries);
+	size += tst_p->num_entries * sizeof(tst_p->entries[0]);
+
+	unmap_memory();
+	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size);
+
 	for (i = 0; i < tst_p->num_entries; i++) {
 		const struct timestamp_entry *tse_p = tst_p->entries + i;
 		timestamp_print_entry(tse_p->entry_id, tse_p->entry_stamp,
@@ -466,7 +473,8 @@ static void dump_console(void)
 		return;
 	}
 
-	console_p = map_memory((unsigned long)console.cbmem_addr);
+	console_p = map_memory_size((unsigned long)console.cbmem_addr,
+					2 * sizeof(uint32_t));
 	/* The in-memory format of the console area is:
 	 *  u32  size
 	 *  u32  cursor
@@ -481,6 +489,7 @@ static void dump_console(void)
 	if (size > cursor)
 		size = cursor;
 	console_c = malloc(size + 1);
+	unmap_memory();
 	if (!console_c) {
 		fprintf(stderr, "Not enough memory for console.\n");
 		exit(1);
@@ -508,7 +517,7 @@ static void hexdump(unsigned long memory, int length)
 	uint8_t *m;
 	int all_zero = 0;
 
-	m = map_memory((intptr_t)memory);
+	m = map_memory_size((intptr_t)memory, length);
 
 	if (length > MAP_BYTES) {
 		printf("Truncating hex dump from %d to %d bytes\n\n",
@@ -658,7 +667,7 @@ static void dump_cbmem_toc(void)
 
 	start = unpack_lb64(cbmem.start);
 
-	cbmem_area = map_memory(start);
+	cbmem_area = map_memory_size(start, unpack_lb64(cbmem.size));
 	entries = (struct cbmem_entry *)cbmem_area;
 
 	if (entries[0].magic == CBMEM_MAGIC) {
@@ -671,16 +680,12 @@ static void dump_cbmem_toc(void)
 		rootptr -= sizeof(struct cbmem_root_pointer);
 		unmap_memory();
 		struct cbmem_root_pointer *r =
-			(struct cbmem_root_pointer *)map_memory(rootptr);
+			map_memory_size(rootptr, sizeof(*r));
 		if (r->magic == CBMEM_POINTER_MAGIC) {
 			struct cbmem_root *root;
 			uint64_t rootaddr = r->root;
 			unmap_memory();
-			/* Note that this only works because our default mmap
-			 * size is 1MiB which happens to be larger than the
-			 * root entry size which is default to be 4KiB.
-			 */
-			root = (struct cbmem_root *)map_memory(rootaddr);
+			root = map_memory_size(rootaddr, ROOT_MIN_SIZE);
 			dump_dynamic_cbmem_toc(root);
 		} else
 			fprintf(stderr, "No valid coreboot CBMEM root pointer found.\n");
@@ -1036,8 +1041,9 @@ int main(int argc, char** argv)
 	}
 
 	int i;
-	u8 *baseaddr_buffer = alloca(addr_cells * 4);
-	if (read(fd, baseaddr_buffer, addr_cells * 4) < 0) {
+	size_t size_to_read = addr_cells * 4 + size_cells * 4;
+	u8 *dtbuffer = alloca(size_to_read);
+	if (read(fd, dtbuffer, size_to_read) < 0) {
 		perror(reg);
 		return 1;
 	}
@@ -1047,17 +1053,24 @@ int main(int argc, char** argv)
 	u64 baseaddr = 0;
 	for (i = 0; i < addr_cells * 4; i++) {
 		baseaddr <<= 8;
-		baseaddr |= baseaddr_buffer[i];
+		baseaddr |= *dtbuffer;
+		dtbuffer++;
+	}
+	u64 cb_table_size = 0;
+	for (i = 0; i < size_cells * 4; i++) {
+		cb_table_size <<= 8;
+		cb_table_size |= *dtbuffer;
+		dtbuffer++;
 	}
 
-	parse_cbtable(baseaddr);
+	parse_cbtable(baseaddr, cb_table_size);
 #else
 	int j;
 	static const int possible_base_addresses[] = { 0, 0xf0000 };
 
 	/* Find and parse coreboot table */
 	for (j = 0; j < ARRAY_SIZE(possible_base_addresses); j++) {
-		if (parse_cbtable(possible_base_addresses[j]))
+		if (parse_cbtable(possible_base_addresses[j], MAP_BYTES))
 			break;
 	}
 #endif

@@ -62,6 +62,11 @@ config CHROMEOS_VBNV_EC
 	help
 	  VBNV is stored in EC
 
+config CHROMEOS_VBNV_FLASH
+	def_bool n
+	help
+	  VBNV is stored in flash storage
+
 config CHROMEOS_RAMOOPS
 	bool "Reserve space for Chrome OS ramoops"
 	default y

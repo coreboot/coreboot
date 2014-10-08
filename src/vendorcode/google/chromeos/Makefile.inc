@@ -109,7 +109,10 @@ else
 verstage-y += verstub.c
 endif
 verstage-y += verstage.c fmap.c chromeos.c
-verstage-y += antirollback.c vbnv_ec.c
+verstage-y += antirollback.c
+verstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
+verstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
+verstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 romstage-y += vboot_handoff.c
 
 VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-VERSTAGE-y))

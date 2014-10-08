@@ -25,6 +25,8 @@ config BOARD_GOOGLE_BOLT
 	bool "Bolt"
 config BOARD_GOOGLE_BUTTERFLY
 	bool "Butterfly"
+config BOARD_GOOGLE_COSMOS
+	bool "Cosmos"
 config BOARD_GOOGLE_DAISY
 	bool "Daisy"
 config BOARD_GOOGLE_FALCO
@@ -68,6 +70,7 @@ endchoice
 
 source "src/mainboard/google/bolt/Kconfig"
 source "src/mainboard/google/butterfly/Kconfig"
+source "src/mainboard/google/cosmos/Kconfig"
 source "src/mainboard/google/daisy/Kconfig"
 source "src/mainboard/google/falco/Kconfig"
 source "src/mainboard/google/link/Kconfig"

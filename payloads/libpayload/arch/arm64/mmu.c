@@ -54,7 +54,7 @@ static uint8_t ttb_buffer[TTB_DEFAULT_SIZE] __attribute__((aligned(GRANULE_SIZE)
  * the DMA buffer is being placed in a sane location and does not overlap any of
  * the used mem ranges.
  */
-struct mmu_ranges usedmem_ranges;
+static struct mmu_ranges usedmem_ranges;
 
 static const uint64_t level_to_addr_mask[] = {
 	L1_ADDR_MASK,
@@ -427,6 +427,29 @@ static int mmu_is_dma_range_valid(uint64_t dma_base,
 }
 
 /*
+ * Func: mmu_add_memrange
+ * Desc: Adds a new memory range
+ */
+static struct mmu_memrange* mmu_add_memrange(struct mmu_ranges *r,
+						uint64_t base, uint64_t size,
+						uint64_t type)
+{
+	struct mmu_memrange *curr = NULL;
+	int i = r->used;
+
+	if (i < ARRAY_SIZE(r->entries)) {
+		curr = &r->entries[i];
+		curr->base = base;
+		curr->size = size;
+		curr->type = type;
+
+		r->used = i + 1;
+	}
+
+	return curr;
+}
+
+/*
  * Func: mmu_add_dma_range
  * Desc: Add a memrange for dma operations. This is special because we want to
  * initialize this memory as non-cacheable. We have a constraint that the DMA
@@ -458,7 +481,7 @@ static struct mmu_memrange* mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
 		 * We need to ensure that we do not step over payload regions or
 		 * the coreboot_table
 		 */
-		do {
+		while (1) {
 			/*
 			 * If end_addr is aligned to GRANULE_SIZE,
 			 * then base_addr will be too.
@@ -472,7 +495,13 @@ static struct mmu_memrange* mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
 
 			if (base_addr < r[i].base)
 				break;
-		} while (mmu_is_dma_range_valid(base_addr, end_addr) == 0);
+
+			if (mmu_is_dma_range_valid(base_addr, end_addr))
+				break;
+
+			/* Drop to the next address. */
+			end_addr -= 1;
+		}
 
 		if (base_addr < r[i].base)
 			continue;
@@ -557,6 +586,9 @@ struct mmu_memrange *mmu_init_ranges_from_sysinfo(struct memrange *cb_ranges,
 {
 	struct mmu_memrange *dma_range;
 
+	/* Initialize mmu_ranges to contain no entries. */
+	mmu_ranges->used = 0;
+
 	/* Extract ranges from memrange in lib_sysinfo */
 	mmu_extract_ranges(cb_ranges, ncb, mmu_ranges);
 
@@ -567,28 +599,6 @@ struct mmu_memrange *mmu_init_ranges_from_sysinfo(struct memrange *cb_ranges,
 		mmu_error();
 
 	return dma_range;
-}
-
-/*
- * Func: mmu_add_memrange
- * Desc: Adds a new memory range
- */
-struct mmu_memrange* mmu_add_memrange(struct mmu_ranges *r, uint64_t base,
-				      uint64_t size, uint64_t type)
-{
-	struct mmu_memrange *curr = NULL;
-	int i = r->used;
-
-	if (i < ARRAY_SIZE(r->entries)) {
-		curr = &r->entries[i];
-		curr->base = base;
-		curr->size = size;
-		curr->type = type;
-
-		r->used = i + 1;
-	}
-
-	return curr;
 }
 
 /*

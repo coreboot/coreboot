@@ -200,10 +200,6 @@ struct mmu_memrange* mmu_init_ranges_from_sysinfo(struct memrange *cb_ranges,
 						  uint64_t ncb,
 						  struct mmu_ranges *mmu_ranges);
 
-/* Add a new mmu_memrange */
-struct mmu_memrange* mmu_add_memrange(struct mmu_ranges *r, uint64_t base,
-				      uint64_t size, uint64_t type);
-
 /*
  * Functions for handling the initialization of memory ranges and enabling mmu
  * before coreboot tables are parsed

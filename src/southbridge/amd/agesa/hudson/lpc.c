@@ -29,6 +29,7 @@
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include <arch/acpi.h>
 #include "hudson.h"
 
 static void lpc_init(device_t dev)
@@ -313,6 +314,13 @@ static void hudson_lpc_enable_resources(device_t dev)
 	hudson_lpc_enable_childrens_resources(dev);
 }
 
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
+}
+
+
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
@@ -320,6 +328,9 @@ static struct pci_operations lops_pci = {
 static struct device_operations lpc_ops = {
 	.read_resources = hudson_lpc_read_resources,
 	.set_resources = hudson_lpc_set_resources,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+	.write_acpi_tables = acpi_write_hpet,
+#endif
 	.enable_resources = hudson_lpc_enable_resources,
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,

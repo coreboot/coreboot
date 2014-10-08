@@ -18,6 +18,8 @@
  */
 
 #include <console/console.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <arch/io.h>
 #include <stdint.h>
 #include <device/device.h>
@@ -816,9 +818,119 @@ static void cpu_bus_init(device_t dev)
 
 /* North Bridge Structures */
 
+
+unsigned long acpi_fill_hest(acpi_hest_t *hest)
+{
+	void *addr, *current;
+
+	/* Skip the HEST header. */
+	current = (void *)(hest + 1);
+
+	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
+	if (addr != NULL)
+		current += acpi_create_hest_error_source(hest, current, 0, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+
+	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
+	if (addr != NULL)
+		current += acpi_create_hest_error_source(hest, current, 1, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+
+	return (unsigned long)current;
+}
+
+/* Implemented with AGESA-specific code. Dummy to keep linker happy.  */
+unsigned long acpi_fill_slit(unsigned long current)
+{
+	return current;
+}
+
+/* Implemented with AGESA-specific code. Dummy to keep linker happy.  */
+unsigned long acpi_fill_srat(unsigned long current)
+{
+	return current;
+}
+
+static void northbridge_fill_ssdt_generator(void)
+{
+	msr_t msr;
+	char pscope[] = "\\_SB.PCI0";
+
+	acpigen_write_scope(pscope);
+	msr = rdmsr(TOP_MEM);
+	acpigen_write_name_dword("TOM1", msr.lo);
+	msr = rdmsr(TOP_MEM2);
+	/*
+	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
+	 * here.
+	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
+	 * slide 22ff.
+	 * Shift value right by 20 bit to make it fit into 32bit,
+	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
+	 */
+	acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+	acpigen_pop_len();
+}
+
+static unsigned long agesa_write_acpi_tables(unsigned long current,
+					     acpi_rsdp_t *rsdp)
+{
+	acpi_srat_t *srat;
+	acpi_slit_t *slit;
+	acpi_header_t *ssdt;
+	acpi_hest_t *hest;
+
+	/* HEST */
+	current = ALIGN(current, 8);
+	hest = (acpi_hest_t *)current;
+	acpi_write_hest((void *)current);
+	acpi_add_table(rsdp, (void *)current);
+	current += ((acpi_header_t *)current)->length;
+
+	/* SRAT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
+	srat = (acpi_srat_t *) agesawrapper_getlateinitptr (PICK_SRAT);
+	if (srat != NULL) {
+		memcpy((void *)current, srat, srat->header.length);
+		srat = (acpi_srat_t *) current;
+		//acpi_create_srat(srat);
+		current += srat->header.length;
+		acpi_add_table(rsdp, srat);
+	}
+
+	/* SLIT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
+	slit = (acpi_slit_t *) agesawrapper_getlateinitptr (PICK_SLIT);
+	if (slit != NULL) {
+		memcpy((void *)current, slit, slit->header.length);
+		slit = (acpi_slit_t *) current;
+		//acpi_create_slit(slit);
+		current += slit->header.length;
+		acpi_add_table(rsdp, slit);
+	}
+
+	/* SSDT */
+	current = ALIGN(current, 16);
+	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
+	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
+	if (ssdt != NULL) {
+		memcpy((void *)current, ssdt, ssdt->length);
+		ssdt = (acpi_header_t *) current;
+		current += ssdt->length;
+		acpi_add_table(rsdp,ssdt);
+	}
+
+	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
+
+	return current;
+}
+
+
 static struct device_operations northbridge_operations = {
     .read_resources   = read_resources,
     .set_resources    = set_resources,
+    .acpi_fill_ssdt_generator = northbridge_fill_ssdt_generator,
+    .write_acpi_tables = agesa_write_acpi_tables,
   .enable_resources = pci_dev_enable_resources,
   .init             = northbridge_init,
   .enable           = 0,

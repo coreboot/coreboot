@@ -27,6 +27,7 @@
 #include <pc80/i8259.h>
 #include <console/console.h>	/* printk */
 #include <device/pci_ehci.h>
+#include <arch/acpi.h>
 #include "lpc.h"		/* lpc_read_resources */
 #include "SbPlatform.h" 	/* Platfrom Specific Definitions */
 #include "chip.h" 		/* struct southbridge_amd_cimx_sb900_config */
@@ -117,11 +118,20 @@ static void lpc_init(device_t dev)
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_init - End.\n");
 }
 
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
+}
+
 static struct device_operations lpc_ops = {
         .read_resources = lpc_read_resources,
         .set_resources = lpc_set_resources,
         .enable_resources = lpc_enable_resources,
         .init = lpc_init,
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+	.write_acpi_tables = acpi_write_hpet,
+#endif
         .scan_bus = scan_static_bus,
         .ops_pci = &lops_pci,
 };

@@ -46,6 +46,7 @@
 #include <baytrail/msr.h>
 #include <baytrail/pattrs.h>
 #include <baytrail/pmc.h>
+#include <cpu/cpu.h>
 #include <cbmem.h>
 
 #include "chip.h"
@@ -401,9 +402,8 @@ static int calculate_power(int tdp, int p1_ratio, int ratio)
 	return (int)power;
 }
 
-static int generate_P_state_entries(int core, int cores_per_package)
+static void generate_P_state_entries(int core, int cores_per_package)
 {
-	int len, len_pss;
 	int ratio_min, ratio_max, ratio_turbo, ratio_step, ratio_range_2;
 	int coord_type, power_max, power_unit, num_entries;
 	int ratio, power, clock, clock_max;
@@ -431,16 +431,16 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
 
 	/* Write _PCT indicating use of FFixedHW */
-	len = acpigen_write_empty_PCT();
+	acpigen_write_empty_PCT();
 
 	/* Write _PPC with NVS specified limit on supported P-state */
-	len += acpigen_write_PPC_NVS();
+	acpigen_write_PPC_NVS();
 
 	/* Write PSD indicating configured coordination type */
-	len += acpigen_write_PSD_package(core, 1, coord_type);
+	acpigen_write_PSD_package(core, 1, coord_type);
 
 	/* Add P-state entries in _PSS table */
-	len += acpigen_write_name("_PSS");
+	acpigen_write_name("_PSS");
 
 	/* Determine ratio points */
 	ratio_step = 1;
@@ -453,14 +453,14 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	/* P[T] is Turbo state if enabled */
 	if (get_turbo_state() == TURBO_ENABLED) {
 		/* _PSS package count including Turbo */
-		len_pss = acpigen_write_package(num_entries + 2);
+		acpigen_write_package(num_entries + 2);
 
 		ratio_turbo = pattrs->iacore_ratios[IACORE_TURBO];
 		vid_turbo = pattrs->iacore_vids[IACORE_TURBO];
 		control_status = (ratio_turbo << 8) | vid_turbo;
 
 		/* Add entry for Turbo ratio */
-		len_pss += acpigen_write_PSS_package(
+		acpigen_write_PSS_package(
 			clock_max + 1,		/*MHz*/
 			power_max,		/*mW*/
 			10,			/*lat1*/
@@ -469,14 +469,14 @@ static int generate_P_state_entries(int core, int cores_per_package)
 			control_status);	/*status*/
 	} else {
 		/* _PSS package count without Turbo */
-		len_pss = acpigen_write_package(num_entries + 1);
+		acpigen_write_package(num_entries + 1);
 		ratio_turbo = ratio_max;
 		vid_turbo = vid_max;
 	}
 
 	/* First regular entry is max non-turbo ratio */
 	control_status = (ratio_max << 8) | vid_max;
-	len_pss += acpigen_write_PSS_package(
+	acpigen_write_PSS_package(
 		clock_max,		/*MHz*/
 		power_max,		/*mW*/
 		10,			/*lat1*/
@@ -504,7 +504,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		clock = (ratio * pattrs->bclk_khz) / 1000;
 		control_status = (ratio << 8) | (vid & 0xff);
 
-		len_pss += acpigen_write_PSS_package(
+		acpigen_write_PSS_package(
 			clock,			/*MHz*/
 			power,			/*mW*/
 			10,			/*lat1*/
@@ -514,15 +514,12 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	}
 
 	/* Fix package length */
-	len_pss--;
-	acpigen_patch_len(len_pss);
-
-	return len + len_pss;
+	acpigen_pop_len();
 }
 
 void generate_cpu_entries(void)
 {
-	int len_pr, core;
+	int core;
 	int pcontrol_blk = get_pmbase(), plen = 6;
 	const struct pattrs *pattrs = pattrs_get();
 
@@ -533,23 +530,22 @@ void generate_cpu_entries(void)
 		}
 
 		/* Generate processor \_PR.CPUx */
-		len_pr = acpigen_write_processor(
+		acpigen_write_processor(
 			core, pcontrol_blk, plen);
 
 		/* Generate  P-state tables */
-		len_pr += generate_P_state_entries(
+		generate_P_state_entries(
 			core, pattrs->num_cpus);
 
 		/* Generate C-state tables */
-		len_pr += acpigen_write_CST_package(
+		acpigen_write_CST_package(
 			cstate_map, ARRAY_SIZE(cstate_map));
 
 		/* Generate T-state tables */
-		len_pr += generate_T_state_entries(
+		generate_T_state_entries(
 			core, pattrs->num_cpus);
 
-		len_pr--;
-		acpigen_patch_len(len_pr);
+		acpigen_pop_len();
 	}
 }
 
@@ -573,4 +569,57 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	                                        sci_flags);
 
 	return current;
+}
+
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
+
+unsigned long southcluster_write_acpi_tables(unsigned long current,
+					     struct acpi_rsdp *rsdp)
+{
+	acpi_header_t *ssdt2;
+
+	current = acpi_write_hpet(current, rsdp);
+	ALIGN_CURRENT;
+
+	ssdt2 = (acpi_header_t *)current;
+	memset(ssdt2, 0, sizeof(acpi_header_t));
+	acpi_create_serialio_ssdt(ssdt2);
+	if (ssdt2->length) {
+		current += ssdt2->length;
+		acpi_add_table(rsdp, ssdt2);
+		printk(BIOS_DEBUG, "ACPI:     * SSDT2 @ %p Length %x\n",ssdt2,
+		       ssdt2->length);
+		ALIGN_CURRENT;
+	} else {
+		ssdt2 = NULL;
+		printk(BIOS_DEBUG, "ACPI:     * SSDT2 not generated.\n");
+	}
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+
+	return current;
+}
+
+void southcluster_inject_dsdt(void)
+{
+	global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+		if (gnvs)
+			memset(gnvs, 0, sizeof(*gnvs));
+	}
+
+	if (gnvs) {
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((unsigned long)gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to DSDT.  */
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_pop_len();
+	}
 }

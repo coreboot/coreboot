@@ -32,7 +32,7 @@
 #include <cbmem.h>
 #include <baytrail/baytrail.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
-
+#include <arch/acpi.h>
 
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;
@@ -201,6 +201,7 @@ static void nc_enable(device_t dev)
 
 static struct device_operations nc_ops = {
 	.read_resources   = nc_read_resources,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 	.set_resources    = NULL,
 	.enable_resources = NULL,
 	.init             = NULL,

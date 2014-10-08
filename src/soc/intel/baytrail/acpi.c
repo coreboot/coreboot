@@ -295,24 +295,20 @@ static acpi_tstate_t baytrail_tss_table[] = {
 	{ 13, 125, 0, 0x12, 0 },
 };
 
-static int generate_T_state_entries(int core, int cores_per_package)
+static void generate_T_state_entries(int core, int cores_per_package)
 {
-	int len;
-
 	/* Indicate SW_ALL coordination for T-states */
-	len = acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
+	acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
 
 	/* Indicate FFixedHW so OS will use MSR */
-	len += acpigen_write_empty_PTC();
+	acpigen_write_empty_PTC();
 
 	/* Set NVS controlled T-state limit */
-	len += acpigen_write_TPC("\\TLVL");
+	acpigen_write_TPC("\\TLVL");
 
 	/* Write TSS table for MSR access */
-	len += acpigen_write_TSS_package(
+	acpigen_write_TSS_package(
 		ARRAY_SIZE(baytrail_tss_table), baytrail_tss_table);
-
-	return len;
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)
@@ -336,9 +332,8 @@ static int calculate_power(int tdp, int p1_ratio, int ratio)
 	return (int)power;
 }
 
-static int generate_P_state_entries(int core, int cores_per_package)
+static void generate_P_state_entries(int core, int cores_per_package)
 {
-	int len, len_pss;
 	int ratio_min, ratio_max, ratio_turbo, ratio_step, ratio_range_2;
 	int coord_type, power_max, power_unit, num_entries;
 	int ratio, power, clock, clock_max;
@@ -366,16 +361,16 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
 
 	/* Write _PCT indicating use of FFixedHW */
-	len = acpigen_write_empty_PCT();
+	acpigen_write_empty_PCT();
 
 	/* Write _PPC with NVS specified limit on supported P-state */
-	len += acpigen_write_PPC_NVS();
+	acpigen_write_PPC_NVS();
 
 	/* Write PSD indicating configured coordination type */
-	len += acpigen_write_PSD_package(core, 1, coord_type);
+	acpigen_write_PSD_package(core, 1, coord_type);
 
 	/* Add P-state entries in _PSS table */
-	len += acpigen_write_name("_PSS");
+	acpigen_write_name("_PSS");
 
 	/* Determine ratio points */
 	ratio_step = 1;
@@ -388,14 +383,14 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	/* P[T] is Turbo state if enabled */
 	if (get_turbo_state() == TURBO_ENABLED) {
 		/* _PSS package count including Turbo */
-		len_pss = acpigen_write_package(num_entries + 2);
+		acpigen_write_package(num_entries + 2);
 
 		ratio_turbo = pattrs->iacore_ratios[IACORE_TURBO];
 		vid_turbo = pattrs->iacore_vids[IACORE_TURBO];
 		control_status = (ratio_turbo << 8) | vid_turbo;
 
 		/* Add entry for Turbo ratio */
-		len_pss += acpigen_write_PSS_package(
+		acpigen_write_PSS_package(
 			clock_max + 1,		/*MHz*/
 			power_max,		/*mW*/
 			10,			/*lat1*/
@@ -404,14 +399,14 @@ static int generate_P_state_entries(int core, int cores_per_package)
 			control_status);	/*status*/
 	} else {
 		/* _PSS package count without Turbo */
-		len_pss = acpigen_write_package(num_entries + 1);
+		acpigen_write_package(num_entries + 1);
 		ratio_turbo = ratio_max;
 		vid_turbo = vid_max;
 	}
 
 	/* First regular entry is max non-turbo ratio */
 	control_status = (ratio_max << 8) | vid_max;
-	len_pss += acpigen_write_PSS_package(
+	acpigen_write_PSS_package(
 		clock_max,		/*MHz*/
 		power_max,		/*mW*/
 		10,			/*lat1*/
@@ -439,7 +434,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		clock = (ratio * pattrs->bclk_khz) / 1000;
 		control_status = (ratio << 8) | (vid & 0xff);
 
-		len_pss += acpigen_write_PSS_package(
+		acpigen_write_PSS_package(
 			clock,			/*MHz*/
 			power,			/*mW*/
 			10,			/*lat1*/
@@ -449,15 +444,12 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	}
 
 	/* Fix package length */
-	len_pss--;
-	acpigen_patch_len(len_pss);
-
-	return len + len_pss;
+	acpigen_pop_len();
 }
 
 void generate_cpu_entries(void)
 {
-	int len_pr, core;
+	int core;
 	int pcontrol_blk = get_pmbase(), plen = 6;
 	const struct pattrs *pattrs = pattrs_get();
 
@@ -468,23 +460,22 @@ void generate_cpu_entries(void)
 		}
 
 		/* Generate processor \_PR.CPUx */
-		len_pr = acpigen_write_processor(
+		acpigen_write_processor(
 			core, pcontrol_blk, plen);
 
 		/* Generate  P-state tables */
-		len_pr += generate_P_state_entries(
+		generate_P_state_entries(
 			core, pattrs->num_cpus);
 
 		/* Generate C-state tables */
-		len_pr += acpigen_write_CST_package(
+		acpigen_write_CST_package(
 			cstate_map, ARRAY_SIZE(cstate_map));
 
 		/* Generate T-state tables */
-		len_pr += generate_T_state_entries(
+		generate_T_state_entries(
 			core, pattrs->num_cpus);
 
-		len_pr--;
-		acpigen_patch_len(len_pr);
+		acpigen_pop_len();
 	}
 }
 

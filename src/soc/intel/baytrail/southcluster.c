@@ -40,6 +40,9 @@
 #include <soc/ramstage.h>
 #include <soc/spi.h>
 #include "chip.h"
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
+#include <cpu/cpu.h>
 
 static inline void
 add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
@@ -510,9 +513,36 @@ void southcluster_enable_dev(device_t dev)
 	}
 }
 
+static void southcluster_inject_dsdt(void)
+{
+	global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+		if (gnvs)
+			memset(gnvs, 0, sizeof(*gnvs));
+	}
+
+	if (gnvs) {
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((unsigned long)gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to DSDT.  */
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_pop_len();
+	}
+}
+
+
 static struct device_operations device_ops = {
 	.read_resources		= sc_read_resources,
 	.set_resources		= pci_dev_set_resources,
+	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
+	.write_acpi_tables      = acpi_write_hpet,
 	.enable_resources	= NULL,
 	.init			= sc_init,
 	.enable			= southcluster_enable_dev,

@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <arch/acpi.h>
 
 #include <soc/iomap.h>
 #include <soc/iosf.h>
@@ -133,6 +134,7 @@ static void nc_read_resources(device_t dev)
 
 static struct device_operations nc_ops = {
 	.read_resources   = nc_read_resources,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 	.set_resources    = NULL,
 	.enable_resources = NULL,
 	.init             = NULL,

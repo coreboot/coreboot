@@ -39,10 +39,14 @@
 #include <baytrail/irq.h>
 #include <baytrail/lpc.h>
 #include <baytrail/nvs.h>
+#include <baytrail/acpi.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/pmc.h>
 #include <baytrail/ramstage.h>
 #include "chip.h"
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
+#include <cpu/cpu.h>
 
 #define ENABLE_ACPI_MODE_IN_COREBOOT	0
 #define TEST_SMM_FLASH_LOCKDOWN		0
@@ -598,6 +602,8 @@ void southcluster_enable_dev(device_t dev)
 static struct device_operations device_ops = {
 	.read_resources		= sc_read_resources,
 	.set_resources		= pci_dev_set_resources,
+	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
+	.write_acpi_tables      = southcluster_write_acpi_tables,
 	.enable_resources	= NULL,
 	.init			= sc_init,
 	.enable			= southcluster_enable_dev,

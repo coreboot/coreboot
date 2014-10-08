@@ -391,48 +391,12 @@ void mmu_enable(void)
 }
 
 /*
- * Func: mmu_is_dma_range_valid
- * Desc: We need to ensure that the dma buffer being allocated doesnt overlap
- * with any used memory range. Basically:
- * 1. Memory ranges used by the payload (usedmem_ranges)
- * 2. Any area that falls below _end symbol in linker script (Kernel needs to be
- * loaded in lower areas of memory, So, the payload linker script can have
- * kernel memory below _start and _end. Thus, we want to make sure we do not
- * step in those areas as well.
- * Returns: 1 on success, 0 on error
- * ASSUMPTION: All the memory used by payload resides below the program
- * proper. If there is any memory used above the _end symbol, then it should be
- * marked as used memory in usedmem_ranges during the presysinfo_scan.
- */
-static int mmu_is_dma_range_valid(uint64_t dma_base,
-				  uint64_t dma_end)
-{
-	uint64_t payload_end = (uint64_t)&_end;
-	uint64_t i = 0;
-	struct mmu_memrange *r = &usedmem_ranges.entries[0];
-
-	if ((dma_base <= payload_end) || (dma_end <= payload_end))
-		return 0;
-
-	for (; i < usedmem_ranges.used; i++) {
-		uint64_t start = r[i].base;
-		uint64_t end = start + r[i].size;
-
-		if (((dma_base >= start) && (dma_base <= end)) ||
-		    ((dma_end >= start) && (dma_end <= end)))
-			return 0;
-	}
-
-	return 1;
-}
-
-/*
  * Func: mmu_add_memrange
  * Desc: Adds a new memory range
  */
-static struct mmu_memrange* mmu_add_memrange(struct mmu_ranges *r,
-						uint64_t base, uint64_t size,
-						uint64_t type)
+static struct mmu_memrange *mmu_add_memrange(struct mmu_ranges *r,
+					     uint64_t base, uint64_t size,
+					     uint64_t type)
 {
 	struct mmu_memrange *curr = NULL;
 	int i = r->used;
@@ -449,54 +413,119 @@ static struct mmu_memrange* mmu_add_memrange(struct mmu_ranges *r,
 	return curr;
 }
 
+/* Structure to define properties of new memrange request */
+struct mmu_new_range_prop {
+	/* Type of memrange */
+	uint64_t type;
+	/* Size of the range */
+	uint64_t size;
+	/*
+	 * If any restrictions on the max addr limit(This addr is exclusive for
+	 * the range), else 0
+	 */
+	uint64_t lim_excl;
+	/* If any restrictions on alignment of the range base, else 0 */
+	uint64_t align;
+	/*
+	 * Function to test whether selected range is fine.
+	 * NULL=any range is fine
+	 * Return value 1=valid range, 0=otherwise
+	 */
+	int (*is_valid_range)(uint64_t, uint64_t);
+	/* From what type of source range should this range be extracted */
+	uint64_t src_type;
+};
+
 /*
- * Func: mmu_add_dma_range
- * Desc: Add a memrange for dma operations. This is special because we want to
- * initialize this memory as non-cacheable. We have a constraint that the DMA
- * buffer should be below 4GiB(32-bit only). So, we lookup a TYPE_NORMAL_MEM
- * from the lowest available addresses and align it to page size i.e. 64KiB.
+ * Func: mmu_is_range_free
+ * Desc: We need to ensure that the new range being allocated doesnt overlap
+ * with any used memory range. Basically:
+ * 1. Memory ranges used by the payload (usedmem_ranges)
+ * 2. Any area that falls below _end symbol in linker script (Kernel needs to be
+ * loaded in lower areas of memory, So, the payload linker script can have
+ * kernel memory below _start and _end. Thus, we want to make sure we do not
+ * step in those areas as well.
+ * Returns: 1 on success, 0 on error
+ * ASSUMPTION: All the memory used by payload resides below the program
+ * proper. If there is any memory used above the _end symbol, then it should be
+ * marked as used memory in usedmem_ranges during the presysinfo_scan.
  */
-static struct mmu_memrange* mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
+static int mmu_is_range_free(uint64_t r_base,
+			     uint64_t r_end)
+{
+	uint64_t payload_end = (uint64_t)&_end;
+	uint64_t i;
+	struct mmu_memrange *r = &usedmem_ranges.entries[0];
+
+	/* Allocate memranges only above payload */
+	if ((r_base <= payload_end) || (r_end <= payload_end))
+		return 0;
+
+	for (i = 0; i < usedmem_ranges.used; i++) {
+		uint64_t start = r[i].base;
+		uint64_t end = start + r[i].size;
+
+		if (((r_base >= start) && (r_base <= end)) ||
+		    ((r_end >= start) && (r_end <= end)))
+			return 0;
+	}
+
+	return 1;
+}
+
+/*
+ * Func: mmu_get_new_range
+ * Desc: Add a requested new memrange. We take as input set of all memranges and
+ * a structure to define the new memrange properties i.e. its type, size,
+ * max_addr it can grow upto, alignment restrictions, source type to take range
+ * from and finally a function pointer to check if the chosen range is valid.
+ */
+static struct mmu_memrange *mmu_get_new_range(struct mmu_ranges *mmu_ranges,
+					      struct mmu_new_range_prop *new)
 {
 	int i = 0;
 	struct mmu_memrange *r = &mmu_ranges->entries[0];
 
+	if (new->size == 0) {
+		printf("MMU Error: Invalid range size\n");
+		return NULL;
+	}
+
 	for (; i < mmu_ranges->used; i++) {
 
-		if ((r[i].type != TYPE_NORMAL_MEM) ||
-		    (r[i].size < DMA_DEFAULT_SIZE) ||
-		    (r[i].base >= MIN_64_BIT_ADDR))
+		if ((r[i].type != new->src_type) ||
+		    (r[i].size < new->size) ||
+		    (new->lim_excl && (r[i].base >= new->lim_excl)))
 			continue;
 
 		uint64_t base_addr;
 		uint64_t range_end_addr = r[i].base + r[i].size;
-		uint64_t size;
 		uint64_t end_addr = range_end_addr;
 
-		/* Make sure we choose only 32-bit address range for DMA */
-		if (end_addr > MIN_64_BIT_ADDR)
-			end_addr = MIN_64_BIT_ADDR;
+		/* Make sure we do not go above max if it is non-zero */
+		if (new->lim_excl && (end_addr >= new->lim_excl))
+			end_addr = new->lim_excl;
 
-		/*
-		 * We need to ensure that we do not step over payload regions or
-		 * the coreboot_table
-		 */
 		while (1) {
 			/*
-			 * If end_addr is aligned to GRANULE_SIZE,
-			 * then base_addr will be too.
-			 * (DMA_DEFAULT_SIZE is multiple of GRANULE_SIZE)
+			 * In case of alignment requirement,
+			 * if end_addr is aligned, then base_addr will be too.
 			 */
-			assert((DMA_DEFAULT_SIZE % GRANULE_SIZE) == 0);
-			end_addr = ALIGN_DOWN(end_addr, GRANULE_SIZE);
+			if (new->align)
+				end_addr = ALIGN_DOWN(end_addr, new->align);
 
-			base_addr = end_addr - DMA_DEFAULT_SIZE;
-			size = end_addr - base_addr;
+			base_addr = end_addr - new->size;
 
 			if (base_addr < r[i].base)
 				break;
 
-			if (mmu_is_dma_range_valid(base_addr, end_addr))
+			/*
+			 * If the selected range is not used and valid for the
+			 * user, move ahead with it
+			 */
+			if (mmu_is_range_free(base_addr, end_addr) &&
+			    ((new->is_valid_range == NULL) ||
+			     new->is_valid_range(base_addr, end_addr)))
 				break;
 
 			/* Drop to the next address. */
@@ -506,11 +535,6 @@ static struct mmu_memrange* mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
 		if (base_addr < r[i].base)
 			continue;
 
-		if (r[i].size == size) {
-			r[i].type = TYPE_DMA_MEM;
-			return &r[i];
-		}
-
 		if (end_addr != range_end_addr) {
 			/* Add a new memrange since we split up one
 			 * range crossing the 4GiB boundary or doing an
@@ -519,13 +543,19 @@ static struct mmu_memrange* mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
 			r[i].size -= (range_end_addr - end_addr);
 			if (mmu_add_memrange(mmu_ranges, end_addr,
 					     range_end_addr - end_addr,
-					     TYPE_NORMAL_MEM) == NULL)
+					     r[i].type) == NULL)
 				mmu_error();
 		}
 
-		r[i].size -= size;
+		if (r[i].size == new->size) {
+			r[i].type = new->type;
+			return &r[i];
+		}
 
-		r = mmu_add_memrange(mmu_ranges, base_addr, size, TYPE_DMA_MEM);
+		r[i].size -= new->size;
+
+		r = mmu_add_memrange(mmu_ranges, base_addr, new->size,
+				     new->type);
 
 		if (r == NULL)
 			mmu_error();
@@ -534,8 +564,56 @@ static struct mmu_memrange* mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
 	}
 
 	/* Should never reach here if everything went fine */
-	printf("ARM64 ERROR: No DMA region allocated\n");
+	printf("ARM64 ERROR: No region allocated\n");
 	return NULL;
+}
+
+/*
+ * Func: mmu_alloc_range
+ * Desc: Call get_new_range to get a new memrange which is unused and mark it as
+ * used to avoid same range being allocated for different purposes.
+ */
+static struct mmu_memrange *mmu_alloc_range(struct mmu_ranges *mmu_ranges,
+					    struct mmu_new_range_prop *p)
+{
+	struct mmu_memrange *r = mmu_get_new_range(mmu_ranges, p);
+
+	if (r == NULL)
+		return NULL;
+
+	/*
+	 * Mark this memrange as used memory. Important since function
+	 * can be called multiple times and we do not want to reuse some
+	 * range already allocated.
+	 */
+	if (mmu_add_memrange(&usedmem_ranges, r->base, r->size, r->type)
+	    == NULL)
+		mmu_error();
+
+	return r;
+}
+
+/*
+ * Func: mmu_add_dma_range
+ * Desc: Add a memrange for dma operations. This is special because we want to
+ * initialize this memory as non-cacheable. We have a constraint that the DMA
+ * buffer should be below 4GiB(32-bit only). So, we lookup a TYPE_NORMAL_MEM
+ * from the lowest available addresses and align it to page size i.e. 64KiB.
+ */
+static struct mmu_memrange *mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
+{
+	struct mmu_new_range_prop prop;
+
+	prop.type = TYPE_DMA_MEM;
+	/* DMA_DEFAULT_SIZE is multiple of GRANULE_SIZE */
+	assert((DMA_DEFAULT_SIZE % GRANULE_SIZE) == 0);
+	prop.size = DMA_DEFAULT_SIZE;
+	prop.lim_excl = MIN_64_BIT_ADDR;
+	prop.align = GRANULE_SIZE;
+	prop.is_valid_range = NULL;
+	prop.src_type = TYPE_NORMAL_MEM;
+
+	return mmu_alloc_range(mmu_ranges, &prop);
 }
 
 /*

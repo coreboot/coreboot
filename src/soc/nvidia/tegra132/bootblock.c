@@ -29,6 +29,29 @@
 
 #include "power.h"
 
+#define BCT_OFFSET_IN_BIT	0x50
+#define ODMDATA_OFFSET_IN_BCT	0x6A8
+#define TEGRA_SRAM_MAX		(TEGRA_SRAM_BASE + TEGRA_SRAM_SIZE)
+
+static void save_odmdata(void)
+{
+	struct tegra_pmc_regs *pmc = (struct tegra_pmc_regs*)TEGRA_PMC_BASE;
+	uintptr_t bct_offset;
+	u32 odmdata;
+
+	// pmc.odmdata: [18:19]: console type, [15:17]: UART id.
+	// TODO(twarren) ODMDATA is stored in the BCT, from bct/odmdata.cfg.
+	// I use the BCT offset in the BIT in SRAM to locate the BCT, and
+	// pick up the ODMDATA word at BCT offset 0x6A8. I could use a BCT
+	// struct header from cbootimage, but it seems like overkill for this.
+
+	bct_offset = read32((void *)(TEGRA_SRAM_BASE + BCT_OFFSET_IN_BIT));
+	if (bct_offset > TEGRA_SRAM_BASE && bct_offset < TEGRA_SRAM_MAX) {
+		odmdata = read32((void *)(bct_offset + ODMDATA_OFFSET_IN_BCT));
+		write32(odmdata, &pmc->odmdata);
+	}
+}
+
 void __attribute__((weak)) bootblock_mainboard_early_init(void)
 {
 	/* Empty default implementation. */
@@ -51,6 +74,9 @@ void main(void)
 	clock_enable_clear_reset(CLK_L_CACHE2 | CLK_L_TMR,
 				 CLK_H_APBDMA,
 				 0, CLK_V_MSELECT, 0, 0);
+
+	/* Find ODMDATA in IRAM and save it to scratch reg */
+	save_odmdata();
 
 	bootblock_mainboard_early_init();
 

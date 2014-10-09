@@ -121,11 +121,11 @@ void start_main(void)
 	/* Gather system information. */
 	lib_get_sysinfo();
 
+	post_sysinfo_scan_mmu_setup();
+
 #ifndef CONFIG_LP_SKIP_CONSOLE_INIT
 	console_init();
 #endif
-
-	post_sysinfo_scan_mmu_setup();
 
 	printf("ARM64: Libpayload %s\n",__func__);
 	exception_init();

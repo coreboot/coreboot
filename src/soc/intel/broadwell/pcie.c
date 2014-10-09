@@ -651,8 +651,15 @@ static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 		pci_write_config32(dev, 0x94, (device << 16) | vendor);
 }
 
+static void pcie_set_L1_ss_max_latency(device_t dev, unsigned int off)
+{
+	/* Set max snoop and non-snoop latency for Broadwell */
+	pci_mmio_write_config32(dev, off, 0x10031003);
+}
+
 static struct pci_operations pcie_ops = {
 	.set_subsystem = pcie_set_subsystem,
+	.set_L1_ss_latency = pcie_set_L1_ss_max_latency,
 };
 
 static struct device_operations device_ops = {

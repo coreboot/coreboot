@@ -248,6 +248,10 @@ void intel_me_status(void)
 		       me_progress_rom_values[hfs2->current_state]);
 		break;
 
+	case ME_HFS2_PHASE_UKERNEL:	/* uKernel Phase */
+		printk(BIOS_DEBUG, "0x%02x", hfs2->current_state);
+		break;
+
 	case ME_HFS2_PHASE_BUP:		/* Bringup Phase */
 		if (hfs2->current_state < ARRAY_SIZE(me_progress_bup_values)
 		    && me_progress_bup_values[hfs2->current_state])
@@ -274,7 +278,7 @@ void intel_me_status(void)
 		break;
 
 	default:
-		printk(BIOS_DEBUG, "Unknown phase: 0x%02x sate: 0x%02x",
+		printk(BIOS_DEBUG, "Unknown phase: 0x%02x state: 0x%02x",
 		       hfs2->progress_code, hfs2->current_state);
 	}
 	printk(BIOS_DEBUG, "\n");

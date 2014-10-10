@@ -345,9 +345,14 @@ enum dcache_policy {
 };
 
 /* disable the mmu for a range. Primarily useful to lock out address 0. */
-void mmu_disable_range(unsigned long start_mb, unsigned long size_mb);
+void mmu_disable_range(u32 start_mb, u32 size_mb);
 /* mmu range configuration (set dcache policy) */
-void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
-						enum dcache_policy policy);
+void mmu_config_range(u32 start_mb, u32 size_mb, enum dcache_policy policy);
+
+/* Reconfigure memory mappings at the fine-grained (4K) page level. Must be
+ * called on a range contained within a single, already mapped block/superpage.
+ * Careful: Do NOT map over this address range with mmu_config_range() again
+ * later, or you will leak resources and may desync your TLB! */
+void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy);
 
 #endif /* ARM_CACHE_H */

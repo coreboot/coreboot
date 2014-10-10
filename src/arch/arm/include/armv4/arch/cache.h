@@ -72,23 +72,4 @@ void cache_sync_instructions(void);
 /* tlb invalidate all */
 void tlb_invalidate_all(void);
 
-/*
- * Generalized setup/init functions
- */
-
-/* mmu initialization (set page table address, set permissions, etc) */
-void mmu_init(void);
-
-enum dcache_policy {
-	DCACHE_OFF,
-	DCACHE_WRITEBACK,
-	DCACHE_WRITETHROUGH,
-};
-
-/* disable the mmu for a range. Primarily useful to lock out address 0. */
-void mmu_disable_range(unsigned long start_mb, unsigned long size_mb);
-/* mmu range configuration (set dcache policy) */
-void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
-						enum dcache_policy policy);
-
 #endif /* ARM_CACHE_H */

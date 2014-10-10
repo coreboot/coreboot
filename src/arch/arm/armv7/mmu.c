@@ -42,7 +42,7 @@
 #if CONFIG_ARM_LPAE
 /* See B3.6.2 of ARMv7 Architecture Reference Manual */
 /* TODO: Utilize the contiguous hint flag */
-#define ATTR_BASE (\
+#define ATTR_BLOCK (\
 	0ULL << 54 |	/* XN. 0:Not restricted */ \
 	0ULL << 53 |	/* PXN. 0:Not restricted */ \
 	1 << 10 |	/* AF. 1:Accessed. This is to prevent access \
@@ -52,16 +52,18 @@
 	0 << 1 | 	/* block/table. 0:block entry */ \
 	1 << 0		/* validity. 1:valid */ \
 	)
-#define ATTR_NC		(ATTR_BASE | (MAIR_INDX_NC << 2) | \
-			(1ULL << 53) | (1ULL << 54))
-#define ATTR_WT		(ATTR_BASE | (MAIR_INDX_WT << 2))
-#define ATTR_WB		(ATTR_BASE | (MAIR_INDX_WB << 2))
+#define ATTR_PAGE	(ATTR_BLOCK | 1 << 1)
+#define ATTR_NEXTLEVEL	(0x3)
+#define ATTR_NC		((MAIR_INDX_NC << 2) | (1ULL << 53) | (1ULL << 54))
+#define ATTR_WT		(MAIR_INDX_WT << 2)
+#define ATTR_WB		(MAIR_INDX_WB << 2)
 
+#define PAGE_MASK	0x000ffffffffff000ULL
+#define BLOCK_MASK	0x000fffffffe00000ULL
+#define NEXTLEVEL_MASK	PAGE_MASK
 #define BLOCK_SHIFT	21
 
-typedef uint64_t pgd_t;
-typedef uint64_t pmd_t;
-static const unsigned int denom = 2;
+typedef uint64_t pte_t;
 #else	/* CONFIG_ARM_LPAE */
 	/*
 	 * Section entry bits:
@@ -79,27 +81,28 @@ static const unsigned int denom = 2;
 	 *     2 - B, 1 for bufferable
 	 *  1: 0 - 0b10 to indicate section entry
 	 */
-#define ATTR_BASE	((3 << 10) | 0x2)
-#define ATTR_NC		(ATTR_BASE | (1 << 4))
-#define ATTR_WT		(ATTR_BASE | (1 << 3))
-#define ATTR_WB		(ATTR_BASE | (1 << 3) | (1 << 2))
+#define ATTR_BLOCK	((3 << 10) | 0x2)
+#define ATTR_PAGE	((3 << 4) | 0x2)
+#define ATTR_NEXTLEVEL	(0x1)
+#define ATTR_NC		(1 << 4)
+#define ATTR_WT		(1 << 3)
+#define ATTR_WB		((1 << 3) | (1 << 2))
 
+#define PAGE_MASK	0xfffff000UL
+#define BLOCK_MASK	0xfff00000UL
+#define NEXTLEVEL_MASK	0xfffffc00UL
 #define BLOCK_SHIFT	20
 
-typedef uint32_t pgd_t;
-typedef uint32_t pmd_t;
-static const unsigned int denom = 1;
+typedef uint32_t pte_t;
 #endif	/* CONFIG_ARM_LPAE */
-
-static pmd_t *const ttb_buff = (pmd_t *)_ttb;
 
 /*
  * mask/shift/size for pages and blocks
  */
 #define PAGE_SHIFT	12
 #define PAGE_SIZE	(1UL << PAGE_SHIFT)
-#define PAGE_MASK	~((1UL << PAGE_SHIFT) - 1)
 #define BLOCK_SIZE	(1UL << BLOCK_SHIFT)
+#define SUBTABLE_SIZE	((1 << (BLOCK_SHIFT - PAGE_SHIFT)) * sizeof(pte_t))
 
 /*
  * MAIR Index
@@ -108,69 +111,124 @@ static pmd_t *const ttb_buff = (pmd_t *)_ttb;
 #define MAIR_INDX_WT	1
 #define MAIR_INDX_WB	2
 
-static void mmu_flush_page_table_entry_range(
-		unsigned long start_mb, unsigned long size_mb)
+static pte_t *const ttb_buff = (void *)_ttb;
+static int used_tables = 0;
+
+/* Not all boards want to use subtables and declare them in memlayout.ld. This
+ * outputs two 0x00000000 symbols if they don't, making _ttb_subtables_size 0.
+ * (I would like to explicitly assign them to 0 here, but that triggers
+ * https://sourceware.org/bugzilla/show_bug.cgi?id=1038 in GNU as.) */
+asm (".weak _ttb_subtables, _ettb_subtables");
+
+static struct {
+	pte_t value;
+	const char *name;
+} attrs[] = {
+	[DCACHE_OFF] = {.value = ATTR_NC, .name = "uncached"},
+	[DCACHE_WRITEBACK] = {.value = ATTR_WB, .name = "writeback"},
+	[DCACHE_WRITETHROUGH] = {.value = ATTR_WT, .name = "writethrough"},
+};
+
+/* Fills page table entries in |table| from |start_idx| to |end_idx| with |attr|
+ * and performs necessary invalidations. |offset| is the start address of the
+ * area described by |table|, and |shift| is the size-shift of each frame. */
+static void mmu_fill_table(pte_t *table, u32 start_idx, u32 end_idx,
+			   uintptr_t offset, u32 shift, pte_t attr)
 {
 	int i;
 
+	/* Write out page table entries. */
+	for (i = start_idx; i < end_idx; i++)
+		table[i] = (offset + (i << shift)) | attr;
+
 	/* Flush the page table entries from the dcache. */
-	for (i = start_mb/denom; i*denom < start_mb + size_mb; i++)
-		dccmvac((uintptr_t)&ttb_buff[i]);
+	for (i = start_idx; i < end_idx; i++)
+		dccmvac((uintptr_t)&table[i]);
 	dsb();
+
 	/* Invalidate the TLB entries. */
-	for (i = start_mb/denom; i*denom < start_mb + size_mb; i++)
-		tlbimvaa(i*denom*MiB);
+	for (i = start_idx; i < end_idx; i++)
+		tlbimvaa(offset + (i << shift));
 	dsb();
 	isb();
 }
 
-void mmu_disable_range(unsigned long start_mb, unsigned long size_mb)
+static pte_t *mmu_create_subtable(pte_t *pgd_entry)
 {
-	int i;
+	if (used_tables >= _ttb_subtables_size / SUBTABLE_SIZE)
+		die("Not enough room for another sub-pagetable!");
 
-	printk(BIOS_DEBUG, "Disabling: [0x%08lx:0x%08lx)\n",
-			start_mb*MiB, start_mb*MiB + size_mb*MiB);
+	/* We assume that *pgd_entry must already be a valid block mapping. */
+	uintptr_t start_addr = (uintptr_t)(*pgd_entry & BLOCK_MASK);
+	pte_t *table = (void *)(_ttb_subtables + used_tables++ * SUBTABLE_SIZE);
+	printk(BIOS_DEBUG, "Creating new subtable @%p for [%#.8x:%#.8lx)\n",
+	       table, start_addr, start_addr + BLOCK_SIZE);
 
-	for (i = start_mb/denom; i*denom < start_mb + size_mb; i++)
-		ttb_buff[i] = 0;
+	/* Initialize the new subtable with entries of the same attributes
+	 * (XN bit moves from 4 to 0, set PAGE unless block was unmapped). */
+	pte_t attr = *pgd_entry & ~(BLOCK_MASK);
+	if (!IS_ENABLED(CONFIG_ARM_LPAE) && (attr & (1 << 4)))
+		attr = ((attr & ~(1 << 4)) | (1 << 0));
+	if (attr & ATTR_BLOCK)
+		attr = (attr & ~ATTR_BLOCK) | ATTR_PAGE;
+	mmu_fill_table(table, 0, SUBTABLE_SIZE / sizeof(pte_t),
+		       start_addr, PAGE_SHIFT, attr);
 
-	mmu_flush_page_table_entry_range(start_mb, size_mb);
+	/* Replace old entry in upper level table to point at subtable. */
+	*pgd_entry = (pte_t)(uintptr_t)table | ATTR_NEXTLEVEL;
+	dccmvac((uintptr_t)pgd_entry);
+	dsb();
+	tlbimvaa(start_addr);
+	dsb();
+	isb();
+
+	return table;
 }
 
-void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
-		enum dcache_policy policy)
+void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy)
 {
-	const char *str = NULL;
-	pmd_t attr;
-	int i;
+	pte_t *pgd_entry = &ttb_buff[start_kb / (BLOCK_SIZE/KiB)];
+	pte_t *table = (void *)(uintptr_t)(*pgd_entry & NEXTLEVEL_MASK);
 
-	switch(policy) {
-	case DCACHE_OFF:
-		/* XN set to avoid prefetches to uncached/unbuffered regions */
-		attr = ATTR_NC;
-		str = "off";
-		break;
-	case DCACHE_WRITEBACK:
-		attr = ATTR_WB;
-		str = "writeback";
-		break;
-	case DCACHE_WRITETHROUGH:
-		attr = ATTR_WT;
-		str = "writethrough";
-		break;
-	default:
-		printk(BIOS_ERR, "unknown dcache policy: %02x\n", policy);
-		return;
-	}
+	/* Make sure the range is contained within a single superpage. */
+	assert(((start_kb + size_kb - 1) & (BLOCK_MASK/KiB))
+	       == (start_kb & (BLOCK_MASK/KiB)) && start_kb < 4 * (GiB/KiB));
 
-	printk(BIOS_DEBUG, "Setting dcache policy: [0x%08lx:0x%08lx) [%s]\n",
-			start_mb << 20, ((start_mb + size_mb) << 20), str);
+	if ((*pgd_entry & ~NEXTLEVEL_MASK) != ATTR_NEXTLEVEL)
+		table = mmu_create_subtable(pgd_entry);
 
-	/* Write out page table entries. */
-	for (i = start_mb/denom; i*denom < start_mb + size_mb; i++)
-		ttb_buff[i] = ((pmd_t)i << BLOCK_SHIFT) | attr;
+	/* Always _one_ _damn_ bit that won't fit... (XN moves from 4 to 0) */
+	pte_t attr = attrs[policy].value;
+	if (!IS_ENABLED(CONFIG_ARM_LPAE) && (attr & (1 << 4)))
+		attr = ((attr & ~(1 << 4)) | (1 << 0));
 
-	mmu_flush_page_table_entry_range(start_mb, size_mb);
+	/* Mask away high address bits that are handled by upper level table. */
+	u32 mask = BLOCK_SIZE/KiB - 1;
+	printk(BIOS_DEBUG, "Mapping address range [%#.8x:%#.8x) as %s\n",
+	       start_kb * KiB, (start_kb + size_kb) * KiB, attrs[policy].name);
+	mmu_fill_table(table, (start_kb & mask) / (PAGE_SIZE/KiB),
+		       div_round_up((start_kb + size_kb) & mask, PAGE_SIZE/KiB),
+		       (start_kb & ~mask) * KiB, PAGE_SHIFT, ATTR_PAGE | attr);
+}
+
+void mmu_disable_range(u32 start_mb, u32 size_mb)
+{
+	printk(BIOS_DEBUG, "Setting address range [%#.8x:%#.8x) as unmapped\n",
+	       start_mb * MiB, (start_mb + size_mb) * MiB);
+	assert(start_mb + size_mb <= 4 * (GiB/MiB));
+	mmu_fill_table(ttb_buff, start_mb / (BLOCK_SIZE/MiB),
+		       div_round_up(start_mb + size_mb, BLOCK_SIZE/MiB),
+		       0, BLOCK_SHIFT, 0);
+}
+
+void mmu_config_range(u32 start_mb, u32 size_mb, enum dcache_policy policy)
+{
+	printk(BIOS_DEBUG, "Mapping address range [%#.8x:%#.8x) as %s\n",
+	       start_mb * MiB, (start_mb + size_mb) * MiB, attrs[policy].name);
+	assert(start_mb + size_mb <= 4 * (GiB/MiB));
+	mmu_fill_table(ttb_buff, start_mb / (BLOCK_SIZE/MiB),
+		       div_round_up(start_mb + size_mb, BLOCK_SIZE/MiB),
+		       0, BLOCK_SHIFT, ATTR_BLOCK | attrs[policy].value);
 }
 
 /*
@@ -187,8 +245,8 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 void mmu_init(void)
 {
         if (CONFIG_ARM_LPAE) {
-                pgd_t *const pgd_buff = (pgd_t*)(_ttb + 16*KiB);
-                pmd_t *pmd = ttb_buff;
+                pte_t *const pgd_buff = (pte_t*)(_ttb + 16*KiB);
+                pte_t *pmd = ttb_buff;
                 int i;
 
                 printk(BIOS_DEBUG, "LPAE Translation tables are @ %p\n",
@@ -214,8 +272,8 @@ void mmu_init(void)
                  * See B3.6.1 of ARMv7 Architecture Reference Manual
                  */
                 for (i = 0; i < 4; i++) {
-                        pgd_buff[i] = ((uint32_t)pmd & PAGE_MASK) |
-                                3;	/* 0b11: valid table entry */
+                        pgd_buff[i] = ((uint32_t)pmd & NEXTLEVEL_MASK) |
+                                ATTR_NEXTLEVEL;
                         pmd += BLOCK_SIZE / PAGE_SIZE;
                 }
 

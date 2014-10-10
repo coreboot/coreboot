@@ -69,6 +69,10 @@ extern u8 _ttb[];
 extern u8 _ettb[];
 #define _ttb_size (_ettb - _ttb)
 
+extern u8 _ttb_subtables[];
+extern u8 _ettb_subtables[];
+#define _ttb_subtables_size (_ettb_subtables - _ttb_subtables)
+
 extern u8 _dma_coherent[];
 extern u8 _edma_coherent[];
 #define _dma_coherent_size (_edma_coherent - _dma_coherent)

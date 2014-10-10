@@ -27,6 +27,11 @@
 	_ = ASSERT(size >= 16K + IS_ENABLED(CONFIG_ARM_LPAE) * 32, \
 		"TTB must be 16K (+ 32 for LPAE)!");
 
+#define TTB_SUBTABLES(addr, size) \
+	REGION(ttb_subtables, addr, size, IS_ENABLED(CONFIG_ARM_LPAE)*3K + 1K) \
+	_ = ASSERT(size % (1K + 3K * IS_ENABLED(CONFIG_ARM_LPAE)) == 0, \
+		"TTB subtable region must be evenly divisible by table size!");
+
 /* ARM stacks need 8-byte alignment and stay in one place through ramstage. */
 #define STACK(addr, size) REGION(stack, addr, size, 8)
 

@@ -33,9 +33,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <timestamp.h>
-#include "chromeos.h"
-#include "vboot_context.h"
-#include "vboot_handoff.h"
+#include "../chromeos.h"
+#include "../vboot_context.h"
+#include "../vboot_handoff.h"
 
 #define TEMP_CBMEM_ID_VBOOT	0xffffffff
 #define TEMP_CBMEM_ID_VBLOCKS	0xfffffffe

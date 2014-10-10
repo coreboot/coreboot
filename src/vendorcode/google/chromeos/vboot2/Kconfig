@@ -1,0 +1,43 @@
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2014 The ChromiumOS Authors.  All rights reserved.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+config VBOOT2_VERIFY_FIRMWARE
+	bool "Firmware Verification with vboot2"
+	default n
+	depends on CHROMEOS && HAVE_HARD_RESET
+	help
+	  Enabling VBOOT2_VERIFY_FIRMWARE will use vboot2 to verify the romstage
+	  and boot loader.
+
+config RETURN_FROM_VERSTAGE
+	bool "return from verstage"
+	default n
+	depends on VBOOT2_VERIFY_FIRMWARE
+	help
+	  If this is set, the verstage returns back to the bootblock instead of
+	  exits to the romstage so that the verstage space can be reused by the
+	  romstage. Useful if a ram space is too small to fit both the verstage
+	  and the romstage.
+
+config VBOOT_ROMSTAGE_INDEX
+	hex
+	default 2
+	depends on VBOOT2_VERIFY_FIRMWARE
+	help
+	  This is the index of the romstage component in the verified
+	  firmware block.

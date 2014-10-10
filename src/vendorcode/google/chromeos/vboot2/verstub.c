@@ -21,7 +21,8 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
-#include "chromeos.h"
+#include "../chromeos.h"
+#include "misc.h"
 #include "symbols.h"
 
 static struct vb2_working_data *init_vb2_working_data(void)
@@ -33,7 +34,7 @@ static struct vb2_working_data *init_vb2_working_data(void)
 	/* 8-byte alignment for ARMv7 */
 	wd->buffer = ALIGN_UP((uintptr_t)&wd[1], 8);
 	wd->buffer_size = _vboot2_work_size + (uintptr_t)wd
-			                    - (uintptr_t)wd->buffer;
+			- (uintptr_t)wd->buffer;
 
 	return wd;
 }

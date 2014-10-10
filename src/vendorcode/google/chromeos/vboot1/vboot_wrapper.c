@@ -25,8 +25,8 @@
 #include <rmodule.h>
 #include <stdlib.h>
 #include <string.h>
-#include "vboot_context.h"
-#include "vboot_handoff.h"
+#include "../vboot_context.h"
+#include "../vboot_handoff.h"
 
 /* Keep a global context pointer around for the callbacks to use. */
 static struct vboot_context *gcontext;

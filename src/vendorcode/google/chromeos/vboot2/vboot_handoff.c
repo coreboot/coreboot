@@ -30,10 +30,11 @@
 #include <console/vtxprintf.h>
 #include <stdlib.h>
 #include <timestamp.h>
-#include "chromeos.h"
-#include "fmap.h"
-#include "vboot_handoff.h"
 #include <vboot_struct.h>
+#include "../chromeos.h"
+#include "../fmap.h"
+#include "../vboot_handoff.h"
+#include "misc.h"
 
 static void *load_ramstage(struct vboot_handoff *vboot_handoff,
 			   struct vboot_region *fw_main)
@@ -115,7 +116,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		struct vb2_fw_preamble *fp;
 		uintptr_t dst, src;
 		printk(BIOS_INFO, "Copying FW preamble\n");
-		fp = (struct vb2_fw_preamble *)( (uintptr_t)vb2_sd +
+		fp = (struct vb2_fw_preamble *)((uintptr_t)vb2_sd +
 				vb2_sd->workbuf_preamble_offset);
 		src = (uintptr_t)&fp->kernel_subkey +
 				fp->kernel_subkey.key_offset;
@@ -139,7 +140,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 /**
  * Load ramstage and return the entry point
  */
-void *vboot_load_ramstage(void)
+void *vboot2_load_ramstage(void)
 {
 	struct vboot_handoff *vh;
 	struct vb2_shared_data *sd;

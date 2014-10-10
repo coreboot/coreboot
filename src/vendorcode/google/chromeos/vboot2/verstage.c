@@ -24,7 +24,8 @@
 #include <console/vtxprintf.h>
 #include <string.h>
 
-#include "chromeos.h"
+#include "../chromeos.h"
+#include "misc.h"
 
 #define TODO_BLOCK_SIZE 1024
 

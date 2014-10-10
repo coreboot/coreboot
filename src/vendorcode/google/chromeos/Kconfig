@@ -94,22 +94,6 @@ config FLASHMAP_OFFSET
 	help
 	  Offset of flash map in firmware image
 
-config VBOOT_VERIFY_FIRMWARE
-	bool "Verify firmware with vboot."
-	default n
-	select RELOCATABLE_MODULES
-	help
-	  Enabling VBOOT_VERIFY_FIRMWARE will use vboot to verify the ramstage
-	  and boot loader.
-
-config VBOOT2_VERIFY_FIRMWARE
-	bool "Firmware Verification with vboot2"
-	default n
-	depends on CHROMEOS && HAVE_HARD_RESET
-	help
-	  Enabling VBOOT2_VERIFY_FIRMWARE will use vboot2 to verify the romstage
-	  and boot loader.
-
 config EC_SOFTWARE_SYNC
 	bool "Enable EC software sync"
 	default n
@@ -141,16 +125,6 @@ config VIRTUAL_DEV_SWITCH
 	help
 	  Whether this platform has a virtual developer switch.
 
-config RETURN_FROM_VERSTAGE
-	bool "return from verstage"
-	default n
-	depends on VBOOT2_VERIFY_FIRMWARE
-	help
-	  If this is set, the verstage returns back to the bootblock instead of
-	  exits to the romstage so that the verstage space can be reused by the
-	  romstage. Useful if a ram space is too small to fit both the verstage
-	  and the romstage.
-
 # These VBOOT_X_INDEX are the position of X in FW_MAIN_A/B region. The index
 # table is created by cros_bundle_firmware at build time based on the positions
 # of the blobs listed in fmap.dts and stored at the top of FW_MAIN_A/B region.
@@ -164,28 +138,12 @@ config VBOOT_BOOT_LOADER_INDEX
 	  This is the index of the bootloader component in the verified
 	  firmware block.
 
-config VBOOT_ROMSTAGE_INDEX
-	hex
-	default 2
-	depends on VBOOT2_VERIFY_FIRMWARE
-	help
-	  This is the index of the romstage component in the verified
-	  firmware block.
-
 config VBOOT_RAMSTAGE_INDEX
 	hex "Ramstage component index"
 	default 1
 	depends on VBOOT_VERIFY_FIRMWARE || VBOOT2_VERIFY_FIRMWARE
 	help
 	  This is the index of the ramstage component in the verified
-	  firmware block.
-
-config VBOOT_REFCODE_INDEX
-	hex "Reference code firmware index"
-	default 1
-	depends on VBOOT_VERIFY_FIRMWARE
-	help
-	  This is the index of the reference code component in the verified
 	  firmware block.
 
 config NO_TPM_RESUME
@@ -196,5 +154,8 @@ config NO_TPM_RESUME
 	  boards, booting Windows will break if the TPM resume command
 	  is sent during an S3 resume.
 
-endif
+source src/vendorcode/google/chromeos/vboot1/Kconfig
+source src/vendorcode/google/chromeos/vboot2/Kconfig
+
+endif # CHROMEOS
 endmenu

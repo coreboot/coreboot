@@ -117,7 +117,7 @@ void main(void)
 #endif
 
 #if IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE)
-	void *entry = vboot_load_ramstage();
+	void *entry = vboot2_load_ramstage();
 	if (entry != NULL)
 		stage_exit(entry);
 #endif

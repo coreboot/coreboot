@@ -19,8 +19,8 @@
 
 /* This file contains macro definitions for memlayout.ld linker scripts. */
 
-#ifndef __CHROMEOS_MEMLAYOUT_H
-#define __CHROMEOS_MEMLAYOUT_H
+#ifndef __CHROMEOS_VBOOT2_MEMLAYOUT_H
+#define __CHROMEOS_VBOOT2_MEMLAYOUT_H
 
 #define VBOOT2_WORK(addr, size) \
 	REGION(vboot2_work, addr, size, 4) \
@@ -31,7 +31,7 @@
 		SET_COUNTER(VERSTAGE, addr) \
 		_ = ASSERT(_everstage - _verstage <= sz, \
 			STR(Verstage exceeded its allotted size! (sz))); \
-		INCLUDE "vendorcode/google/chromeos/verstage.verstage.ld"
+		INCLUDE "vendorcode/google/chromeos/vboot2/verstage.verstage.ld"
 #else
 	#define VERSTAGE(addr, sz) \
 		SET_COUNTER(VERSTAGE, addr) \
@@ -44,4 +44,4 @@
 	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) ROMSTAGE(addr, size)
 #endif
 
-#endif /* __CHROMEOS_MEMLAYOUT_H */
+#endif /* __CHROMEOS_VBOOT2_MEMLAYOUT_H */

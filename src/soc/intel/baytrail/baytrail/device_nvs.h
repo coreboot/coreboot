@@ -62,6 +62,7 @@ typedef struct {
 
 	/* Extra */
 	u32	lpe_fw; /* LPE Firmware */
+	u8	rsvd1[3930]; /* Add padding so sizeof(device_nvs_t) == 0x1000 */
 } __attribute__((packed)) device_nvs_t;
 
 #endif

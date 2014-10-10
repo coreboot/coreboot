@@ -32,6 +32,7 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
 	select SPI_FLASH
+	select PER_DEVICE_ACPI_TABLES
 
 config EHCI_BAR
 	hex

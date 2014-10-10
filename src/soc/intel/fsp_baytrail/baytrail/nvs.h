@@ -61,6 +61,9 @@ typedef struct {
 	u32	cbmc; /* 0x38 - coreboot memconsole */
 	u8	rsvd3[196];
 
+	/* Pad 0x0100-0x0fff */
+	u8	rsvd4[3840];
+
 	/* Baytrail LPSS (0x1000) */
 	device_nvs_t dev;
 } __attribute__((packed)) global_nvs_t;

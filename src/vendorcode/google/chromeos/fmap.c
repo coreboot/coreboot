@@ -51,7 +51,8 @@ const struct fmap *fmap_find(void)
 	media->close(media);
 #endif
 
-	if (memcmp(fmap, FMAP_SIGNATURE, sizeof(FMAP_SIGNATURE)-1)) {
+	if (fmap == CBFS_MEDIA_INVALID_MAP_ADDRESS ||
+	    memcmp(fmap, FMAP_SIGNATURE, sizeof(FMAP_SIGNATURE) - 1)) {
 		printk(BIOS_DEBUG, "No FMAP found at %p.\n", fmap);
 		return NULL;
 	}

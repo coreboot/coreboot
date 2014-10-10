@@ -616,6 +616,25 @@ static struct mmu_memrange *mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
 	return mmu_alloc_range(mmu_ranges, &prop);
 }
 
+static struct mmu_memrange *_mmu_add_fb_range(
+		uint32_t size,
+		struct mmu_ranges *mmu_ranges)
+{
+	struct mmu_new_range_prop prop;
+
+	prop.type = TYPE_DMA_MEM;
+
+	/* make sure to allocate a size of multiple of GRANULE_SIZE */
+	size = ALIGN_UP(size, GRANULE_SIZE);
+	prop.size = size;
+	prop.lim_excl = MIN_64_BIT_ADDR;
+	prop.align = MB_SIZE;
+	prop.is_valid_range = NULL;
+	prop.src_type = TYPE_NORMAL_MEM;
+
+	return mmu_alloc_range(mmu_ranges, &prop);
+}
+
 /*
  * Func: mmu_extract_ranges
  * Desc: Assumption is that coreboot tables have memranges in sorted
@@ -653,6 +672,33 @@ static void mmu_extract_ranges(struct memrange *cb_ranges,
 	}
 }
 
+static void mmu_add_fb_range(struct mmu_ranges *mmu_ranges)
+{
+	struct mmu_memrange *fb_range;
+	struct cb_framebuffer *framebuffer = lib_sysinfo.framebuffer;
+	uint32_t fb_size;
+
+	/*
+	 * Check whether framebuffer is needed
+	 * or framebuffer address has been set already
+	 */
+	if (framebuffer == NULL)
+		return;
+	if (framebuffer->physical_address)
+		return;
+	fb_size = framebuffer->bytes_per_line * framebuffer->y_resolution;
+	if (!fb_size)
+		return;
+
+	/* Allocate framebuffer */
+	fb_range = _mmu_add_fb_range(fb_size, mmu_ranges);
+	if (fb_range == NULL)
+		mmu_error();
+
+	/* Set framebuffer address */
+	framebuffer->physical_address = fb_range->base;
+}
+
 /*
  * Func: mmu_init_ranges
  * Desc: Initialize mmu_memranges based on the memranges obtained from coreboot
@@ -672,6 +718,9 @@ struct mmu_memrange *mmu_init_ranges_from_sysinfo(struct memrange *cb_ranges,
 
 	/* Get a range for dma */
 	dma_range = mmu_add_dma_range(mmu_ranges);
+
+	/* Get a range for framebuffer */
+	mmu_add_fb_range(mmu_ranges);
 
 	if (dma_range == NULL)
 		mmu_error();

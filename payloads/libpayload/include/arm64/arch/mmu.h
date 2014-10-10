@@ -181,6 +181,8 @@ extern char _start[], _end[];
 #define DMA_DEFAULT_SIZE           (0x20 * GRANULE_SIZE)
 #define TTB_DEFAULT_SIZE           0x100000
 
+#define MB_SIZE			   (1UL << 20)
+
 /* Initialize the MMU TTB tables using the mmu_ranges */
 uint64_t mmu_init(struct mmu_ranges *mmu_ranges);
 

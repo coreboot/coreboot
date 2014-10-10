@@ -117,6 +117,8 @@ struct tegra_mc_regs {
 };
 
 enum {
+	MC_SMMU_CONFIG_ENABLE = 1,
+
 	MC_EMEM_CFG_SIZE_MB_SHIFT = 0,
 	MC_EMEM_CFG_SIZE_MB_MASK = 0x3fff,
 

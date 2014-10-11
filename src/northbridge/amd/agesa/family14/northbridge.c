@@ -907,19 +907,6 @@ static unsigned long agesa_write_acpi_tables(unsigned long current,
 	return current;
 }
 
-
-/* Implemented with AGESA-specific code. Dummy to keep linker happy.  */
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	return current;
-}
-
-/* Implemented with AGESA-specific code. Dummy to keep linker happy.  */
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	return current;
-}
-
 static struct device_operations northbridge_operations = {
 	.read_resources = nb_read_resources,
 	.set_resources = nb_set_resources,

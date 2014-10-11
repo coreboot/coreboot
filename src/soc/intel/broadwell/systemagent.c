@@ -416,18 +416,6 @@ static void systemagent_init(struct device *dev)
 	set_power_limits(28);
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	/* No NUMA, no SRAT */
-	return current;
-}
-
 static struct device_operations systemagent_ops = {
 	.read_resources   = &systemagent_read_resources,
 	.acpi_fill_ssdt_generator = &generate_cpu_entries,

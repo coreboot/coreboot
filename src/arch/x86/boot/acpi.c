@@ -325,7 +325,8 @@ int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
 }
 
 /* http://www.microsoft.com/whdc/system/sysinternals/sratdwn.mspx */
-void acpi_create_srat(acpi_srat_t *srat)
+void acpi_create_srat(acpi_srat_t *srat,
+		      unsigned long (*acpi_fill_srat)(unsigned long current))
 {
 	acpi_header_t *header = &(srat->header);
 	unsigned long current = (unsigned long)srat + sizeof(acpi_srat_t);
@@ -412,7 +413,8 @@ unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 segment,
 }
 
 /* http://h21007.www2.hp.com/portal/download/files/unprot/Itanium/slit.pdf */
-void acpi_create_slit(acpi_slit_t *slit)
+void acpi_create_slit(acpi_slit_t *slit,
+		      unsigned long (*acpi_fill_slit)(unsigned long current))
 {
 	acpi_header_t *header = &(slit->header);
 	unsigned long current = (unsigned long)slit + sizeof(acpi_slit_t);

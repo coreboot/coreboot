@@ -198,12 +198,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	device_t dev;
@@ -219,11 +213,5 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
 					     reg & 0xf0000000, 0x0, 0x0, 255);
-	return current;
-}
-
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	/* No NUMA, no SRAT */
 	return current;
 }

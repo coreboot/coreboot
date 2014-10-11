@@ -109,7 +109,7 @@ static void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1);
 }
 
-unsigned long acpi_fill_srat(unsigned long current)
+static unsigned long acpi_fill_srat(unsigned long current)
 {
 	struct acpi_srat_mem_state srat_mem_state;
 
@@ -130,7 +130,7 @@ unsigned long acpi_fill_srat(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
+static unsigned long acpi_fill_slit(unsigned long current)
 {
 	/* Implement SLIT algorithm in BKDG Rev. 3.62 § 2.3.6.1
 	 * Fill the first 8 bytes with the node number,
@@ -342,7 +342,7 @@ unsigned long northbridge_write_acpi_tables(unsigned long current,
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
 	srat = (acpi_srat_t *) current;
-	acpi_create_srat(srat);
+	acpi_create_srat(srat, acpi_fill_srat);
 	current += srat->header.length;
 	acpi_add_table(rsdp, srat);
 
@@ -350,7 +350,7 @@ unsigned long northbridge_write_acpi_tables(unsigned long current,
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
 	slit = (acpi_slit_t *) current;
-	acpi_create_slit(slit);
+	acpi_create_slit(slit, acpi_fill_slit);
 	current += slit->header.length;
 	acpi_add_table(rsdp, slit);
 

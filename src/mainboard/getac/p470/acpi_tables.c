@@ -118,18 +118,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	/* No NUMA, no SRAT */
-	return current;
-}
-
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp)
 {

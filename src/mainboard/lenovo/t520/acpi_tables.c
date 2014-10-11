@@ -65,14 +65,3 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	acpi_update_thermal_table(gnvs);
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	/* No NUMA, no SRAT */
-	return current;
-}

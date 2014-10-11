@@ -114,7 +114,7 @@ static void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1);
 }
 
-unsigned long acpi_fill_srat(unsigned long current)
+static unsigned long acpi_fill_srat(unsigned long current)
 {
 	struct acpi_srat_mem_state srat_mem_state;
 
@@ -135,7 +135,7 @@ unsigned long acpi_fill_srat(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
+static unsigned long acpi_fill_slit(unsigned long current)
 {
 	/* need to find out the node num at first */
 	/* fill the first 8 byte with that num */
@@ -200,6 +200,35 @@ unsigned long acpi_fill_slit(unsigned long current)
 	}
 
 	current += 8+nodes*nodes;
+
+	return current;
+}
+
+unsigned long northbridge_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp)
+{
+	unsigned long current;
+	acpi_srat_t *srat;
+	acpi_slit_t *slit;
+
+	current = start;
+
+	/* Fills sysconf structure needed for SRAT and SLIT.  */
+	get_bus_conf();
+
+	current = ALIGN(current, 16);
+	srat = (acpi_srat_t *) current;
+	printk(BIOS_DEBUG, "ACPI:    * SRAT @ %p\n", srat);
+	acpi_create_srat(srat, acpi_fill_srat);
+	current += srat->header.length;
+	acpi_add_table(rsdp, srat);
+
+	/* SLIT */
+	current = ALIGN(current, 16);
+	slit = (acpi_slit_t *) current;
+	printk(BIOS_DEBUG, "ACPI:    * SLIT @ %p\n", slit);
+	acpi_create_slit(slit, acpi_fill_slit);
+	current+=slit->header.length;
+	acpi_add_table(rsdp,slit);
 
 	return current;
 }

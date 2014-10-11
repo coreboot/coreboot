@@ -489,8 +489,6 @@ unsigned long fw_cfg_acpi_tables(unsigned long start);
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
-unsigned long acpi_fill_srat(unsigned long current);
-unsigned long acpi_fill_slit(unsigned long current);
 #if !IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 unsigned long acpi_fill_ssdt_generator(unsigned long current,
 				       const char *oem_table_id);
@@ -527,9 +525,11 @@ int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek,
 int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 			      u16 seg_nr, u8 start, u8 end);
 unsigned long acpi_create_srat_lapics(unsigned long current);
-void acpi_create_srat(acpi_srat_t *srat);
+void acpi_create_srat(acpi_srat_t *srat,
+		      unsigned long (*acpi_fill_srat)(unsigned long current));
 
-void acpi_create_slit(acpi_slit_t *slit);
+void acpi_create_slit(acpi_slit_t *slit,
+		      unsigned long (*acpi_fill_slit)(unsigned long current));
 
 #if ENV_RAMSTAGE
 void acpi_create_hpet(acpi_hpet_t *hpet);

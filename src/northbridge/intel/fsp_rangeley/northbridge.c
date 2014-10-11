@@ -201,18 +201,6 @@ static void northbridge_enable(device_t dev)
 {
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	/* No NUMA, no SRAT */
-	return current;
-}
-
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem    = intel_set_subsystem,
 };

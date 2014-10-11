@@ -30,18 +30,6 @@
 #include <assert.h>
 #include "bus.h"
 
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	unsigned int irq_start = 0;

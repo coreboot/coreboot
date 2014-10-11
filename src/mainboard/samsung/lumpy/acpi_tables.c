@@ -92,15 +92,3 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 
 	gnvs->chromeos.vbt2 = ec_read(0xcb) ? ACTIVE_ECFW_RW : ACTIVE_ECFW_RO;
 }
-
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	/* No NUMA, no SRAT */
-	return current;
-}

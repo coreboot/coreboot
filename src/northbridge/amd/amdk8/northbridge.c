@@ -579,37 +579,6 @@ static void mcf0_control_init(struct device *dev)
 #endif
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-static unsigned long northbridge_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp)
-{
-	unsigned long current;
-	acpi_srat_t *srat;
-	acpi_slit_t *slit;
-
-	current = start;
-
-	/* Fills sysconf structure needed for SRAT and SLIT.  */
-	get_bus_conf();
-
-	current = ALIGN(current, 16);
-	srat = (acpi_srat_t *) current;
-	printk(BIOS_DEBUG, "ACPI:    * SRAT @ %p\n", srat);
-	acpi_create_srat(srat);
-	current += srat->header.length;
-	acpi_add_table(rsdp, srat);
-
-	/* SLIT */
-	current = ALIGN(current, 16);
-	slit = (acpi_slit_t *) current;
-	printk(BIOS_DEBUG, "ACPI:    * SLIT @ %p\n", slit);
-	acpi_create_slit(slit);
-	current+=slit->header.length;
-	acpi_add_table(rsdp,slit);
-
-	return current;
-}
-#endif
-
 static struct device_operations northbridge_operations = {
 	.read_resources	  = amdk8_read_resources,
 	.set_resources	  = amdk8_set_resources,

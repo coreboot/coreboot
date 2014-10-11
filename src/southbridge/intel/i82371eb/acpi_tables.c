@@ -61,18 +61,6 @@ void generate_cpu_entries(void)
 	acpigen_pop_len();
 }
 
-unsigned long __attribute__((weak)) acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
-unsigned long __attribute__((weak)) acpi_fill_srat(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	/* chipset doesn't have mmconfig */

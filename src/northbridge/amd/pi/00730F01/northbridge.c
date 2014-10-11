@@ -465,18 +465,6 @@ unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-/* Implemented with AGESA-specific code. Dummy to keep linker happy.  */
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	return current;
-}
-
-/* Implemented with AGESA-specific code. Dummy to keep linker happy.  */
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	return current;
-}
-
 static void northbridge_fill_ssdt_generator(void)
 {
 	msr_t msr;

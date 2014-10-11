@@ -284,7 +284,7 @@ void i2c_init(unsigned int bus, unsigned int hz)
 	unsigned int clk_div;
 	unsigned int divl;
 	unsigned int divh;
-	unsigned int i2c_src_clk;
+	unsigned int i2c_src_clk = 0;
 	struct rk3288_i2c_regs *regs = i2c_bus[bus];
 
 	/*i2c0,i2c2 src clk from pd_bus_pclk
@@ -308,9 +308,9 @@ void i2c_init(unsigned int bus, unsigned int hz)
 	/*SCL Divisor = 8*(CLKDIVL + 1 + CLKDIVH + 1)
 	  SCL = PCLK/ SCLK Divisor
 	*/
-	clk_div = div_round_up(i2c_src_clk, hz * 8) - 2;
-	divh = clk_div / 2;
-	divl = ALIGN_UP(clk_div, 2) / 2;
+	clk_div = div_round_up(i2c_src_clk, hz * 8);
+	divh = clk_div * 3 / 7 - 1;
+	divl = clk_div - divh - 2;
 	assert((divh < 65536) && (divl < 65536));
 	writel((divh << 16) | (divl << 0), &regs->i2c_clkdiv);
 }

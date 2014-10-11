@@ -67,10 +67,6 @@ static void acpi_update_thermal_table(global_nvs_t *gnvs)
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	gnvs_ = gnvs;
-	memset((void *)gnvs, 0, sizeof(*gnvs));
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
-	gnvs->pcnt = dev_count_cpu();
 
 	/* Enable Front USB ports in S3 by default */
 	gnvs->s3u0 = 1;
@@ -90,11 +86,6 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->did[2] = 0x80000410;
 	gnvs->did[3] = 0x80000410;
 	gnvs->did[4] = 0x00000005;
-
-#if CONFIG_CHROMEOS
-	// TODO(reinauer) this could move elsewhere?
-	chromeos_init_vboot(&(gnvs->chromeos));
-#endif
 
 	acpi_update_thermal_table(gnvs);
 

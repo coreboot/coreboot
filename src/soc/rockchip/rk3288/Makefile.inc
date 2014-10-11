@@ -31,6 +31,7 @@ bootblock-y += spi.c
 bootblock-y += media.c
 bootblock-y += gpio.c
 bootblock-y += i2c.c
+bootblock-y += rk808.c
 
 verstage-y += monotonic_timer.c
 verstage-y += spi.c

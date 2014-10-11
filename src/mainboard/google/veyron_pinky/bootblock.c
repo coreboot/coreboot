@@ -22,11 +22,24 @@
 #include <bootblock_common.h>
 #include <soc/rockchip/rk3288/grf.h>
 #include <soc/rockchip/rk3288/spi.h>
+#include <soc/rockchip/rk3288/rk808.h>
+#include <soc/rockchip/rk3288/clock.h>
+#include <soc/rockchip/rk3288/pmu.h>
+#include <soc/rockchip/rk3288/i2c.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#include "board.h"
 
 void bootblock_mainboard_init(void)
 {
-	/* i2c1 for tpm*/
+	/* cpu frequency will up to 1.8GHz, so the buck1 must up to 1.3v */
+	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
+	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
+	i2c_init(PMIC_BUS, 400*KHz);
+	rk808_configure_buck(PMIC_BUS, 1, 1300);
+	rkclk_configure_cpu();
+
+	/* i2c1 for tpm */
 	writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);
 
 	/* spi2 for firmware ROM */

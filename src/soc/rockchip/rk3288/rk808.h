@@ -22,5 +22,6 @@
 
 void rk808_configure_switch(uint8_t bus, int sw, int enabled);
 void rk808_configure_ldo(uint8_t bus, int ldo, int millivolts);
+void rk808_configure_buck(uint8_t bus, int buck, int millivolts);
 
 #endif

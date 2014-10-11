@@ -22,12 +22,15 @@
 #include <device/i2c.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <delay.h>
 #include "rk808.h"
 
 #define RK808_ADDR	0x1b
 
 #define DCDC_EN		0x23
 #define LDO_EN		0x24
+#define BUCK1SEL	0x2f
+#define BUCK4SEL	0x38
 #define LDO_ONSEL(i)	(0x39 + 2 * i)
 #define LDO_SLPSEL(i)	(0x3a + 2 * i)
 
@@ -56,12 +59,12 @@ void rk808_configure_ldo(uint8_t bus, int ldo, int millivolts)
 	case 4:
 	case 5:
 	case 8:
-		vsel = millivolts / 100 - 18;
+		vsel = div_round_up(millivolts, 100) - 18;
 		break;
 	case 3:
 	case 6:
 	case 7:
-		vsel = millivolts / 100 - 8;
+		vsel = div_round_up(millivolts, 100) - 8;
 		break;
 	default:
 		die("Unknown LDO index!");
@@ -70,4 +73,30 @@ void rk808_configure_ldo(uint8_t bus, int ldo, int millivolts)
 
 	rk808_clrsetbits(bus, LDO_ONSEL(ldo), 0x1f, vsel);
 	rk808_clrsetbits(bus, LDO_EN, 0, 1 << (ldo - 1));
+}
+
+void rk808_configure_buck(uint8_t bus, int buck, int millivolts)
+{
+	uint8_t vsel;
+	uint8_t buck_reg;
+
+	switch (buck) {
+	case 1:
+	case 2:
+		/*base on 725mv, use 25mv step */
+		vsel = (div_round_up(millivolts, 25) - 29) * 2 + 1;
+		assert(vsel <= 0x3f);
+		buck_reg = BUCK1SEL + 4 * (buck - 1);
+		break;
+	case 4:
+		vsel = div_round_up(millivolts, 100) - 18;
+		assert(vsel <= 0xf);
+		buck_reg = BUCK4SEL;
+		break;
+	default:
+		die("fault buck index!");
+	}
+	rk808_clrsetbits(bus, buck_reg, 0x3f, vsel);
+	rk808_clrsetbits(bus, DCDC_EN, 0, 1 << (buck - 1));
+	udelay(225);/* Must wait for voltage to stabilize */
 }

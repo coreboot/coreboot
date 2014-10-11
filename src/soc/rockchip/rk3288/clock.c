@@ -235,47 +235,22 @@ void rkclk_init(void)
 	u32 pclk_div;
 
 	/* pll enter slow-mode */
-	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_SLOW)
-		| RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_SLOW)
+	writel(RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_SLOW)
 		| RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_SLOW),
 		&cru_ptr->cru_mode_con);
 
 	/* init pll */
-	rkclk_set_pll(&cru_ptr->cru_apll_con[0], &apll_init_cfg);
 	rkclk_set_pll(&cru_ptr->cru_gpll_con[0], &gpll_init_cfg);
 	rkclk_set_pll(&cru_ptr->cru_cpll_con[0], &cpll_init_cfg);
 
 	/* waiting for pll lock */
 	while (1) {
 		if ((readl(&rk3288_grf->soc_status[1])
-			& (SOCSTS_APLL_LOCK | SOCSTS_CPLL_LOCK
-			   | SOCSTS_GPLL_LOCK))
-			== (SOCSTS_APLL_LOCK | SOCSTS_CPLL_LOCK
-			   | SOCSTS_GPLL_LOCK))
+			& (SOCSTS_CPLL_LOCK | SOCSTS_GPLL_LOCK))
+			== (SOCSTS_CPLL_LOCK | SOCSTS_GPLL_LOCK))
 			break;
 		udelay(1);
 	}
-
-	/*
-	 * core clock pll source selection and
-	 * set up dependent divisors for MPAXI/M0AXI and ARM clocks.
-	 * core clock select apll, apll clk = 816MHz
-	 * arm clk = 816MHz, mpclk = 204MHz, m0clk = 408MHz
-	 */
-	writel(RK_CLRBITS(CORE_SEL_PLL_MSK)
-		| RK_CLRSETBITS(A12_DIV_MSK, 0 << A12_DIV_SHIFT)
-		| RK_CLRSETBITS(MP_DIV_MSK, 3 << MP_DIV_SHIFT)
-		| RK_CLRSETBITS(M0_DIV_MSK, 1 << 0),
-		&cru_ptr->cru_clksel_con[0]);
-
-	/*
-	 * set up dependent divisors for L2RAM/ATCLK and PCLK clocks.
-	 * l2ramclk = 408MHz, atclk = 204MHz, pclk_dbg = 204MHz
-	 */
-	writel(RK_CLRSETBITS(L2_DIV_MSK, 1 << 0)
-		| RK_CLRSETBITS(ATCLK_DIV_MSK, (3 << ATCLK_DIV_SHIFT))
-		| RK_CLRSETBITS(PCLK_DBG_DIV_MSK, (3 << PCLK_DBG_DIV_SHIFT)),
-		&cru_ptr->cru_clksel_con[37]);
 
 	/*
 	 * pd_bus clock pll source selection and
@@ -326,11 +301,51 @@ void rkclk_init(void)
 		&cru_ptr->cru_clksel_con[10]);
 
 	/* PLL enter normal-mode */
-	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_NORM)
-		| RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_NORM)
+	writel(RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_NORM)
 		| RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_NORM),
 		&cru_ptr->cru_mode_con);
 
+}
+
+void rkclk_configure_cpu()
+{
+	/* pll enter slow-mode */
+	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_SLOW),
+		&cru_ptr->cru_mode_con);
+
+	rkclk_set_pll(&cru_ptr->cru_apll_con[0], &apll_init_cfg);
+
+	/* waiting for pll lock */
+	while (1) {
+		if (readl(&rk3288_grf->soc_status[1]) & SOCSTS_APLL_LOCK)
+			break;
+		udelay(1);
+	}
+
+	/*
+	 * core clock pll source selection and
+	 * set up dependent divisors for MPAXI/M0AXI and ARM clocks.
+	 * core clock select apll, apll clk = 1800MHz
+	 * arm clk = 1800MHz, mpclk = 450MHz, m0clk = 900MHz
+	 */
+	writel(RK_CLRBITS(CORE_SEL_PLL_MSK)
+		| RK_CLRSETBITS(A12_DIV_MSK, 0 << A12_DIV_SHIFT)
+		| RK_CLRSETBITS(MP_DIV_MSK, 3 << MP_DIV_SHIFT)
+		| RK_CLRSETBITS(M0_DIV_MSK, 1 << 0),
+		&cru_ptr->cru_clksel_con[0]);
+
+	/*
+	 * set up dependent divisors for L2RAM/ATCLK and PCLK clocks.
+	 * l2ramclk = 900MHz, atclk = 450MHz, pclk_dbg = 450MHz
+	 */
+	writel(RK_CLRSETBITS(L2_DIV_MSK, 1 << 0)
+		| RK_CLRSETBITS(ATCLK_DIV_MSK, (3 << ATCLK_DIV_SHIFT))
+		| RK_CLRSETBITS(PCLK_DBG_DIV_MSK, (3 << PCLK_DBG_DIV_SHIFT)),
+		&cru_ptr->cru_clksel_con[37]);
+
+	/* PLL enter normal-mode */
+	writel(RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_NORM),
+		&cru_ptr->cru_mode_con);
 }
 
 void rkclk_configure_ddr(unsigned int hz)

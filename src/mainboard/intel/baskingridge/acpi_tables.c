@@ -65,10 +65,6 @@ static void acpi_update_thermal_table(global_nvs_t *gnvs)
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
-	gnvs->pcnt = dev_count_cpu();
-
 	/* Enable USB ports in S3 */
 	gnvs->s3u0 = 1;
 	gnvs->s3u1 = 1;
@@ -92,14 +88,9 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->did[4] = 0x00000005;
 
 #if CONFIG_CHROMEOS
-	// TODO(reinauer) this could move elsewhere?
-	chromeos_init_vboot(&(gnvs->chromeos));
 	/* Emerald Lake has no EC (?) */
 	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 #endif
-
-	/* Update the mem console pointer. */
-	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 
 	acpi_update_thermal_table(gnvs);
 }

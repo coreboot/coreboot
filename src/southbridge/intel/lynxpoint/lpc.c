@@ -756,7 +756,20 @@ static void southbridge_inject_dsdt(void)
 
 	if (gnvs) {
 		int scopelen;
+
 		acpi_create_gnvs(gnvs);
+
+		gnvs->apic = 1;
+		gnvs->mpen = 1; /* Enable Multi Processing */
+		gnvs->pcnt = dev_count_cpu();
+
+#if CONFIG_CHROMEOS
+		chromeos_init_vboot(&(gnvs->chromeos));
+#endif
+
+		/* Update the mem console pointer. */
+		gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
+
 		acpi_save_gnvs((unsigned long)gnvs);
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);

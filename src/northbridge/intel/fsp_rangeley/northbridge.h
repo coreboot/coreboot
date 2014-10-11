@@ -72,6 +72,7 @@ void dump_pci_devices(void);
 void dump_spd_registers(void);
 void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
+void northbridge_acpi_fill_ssdt_generator(void);
 
 #endif /* #ifndef __ASSEMBLER__ */
 #endif /* #ifndef __ACPI__ */

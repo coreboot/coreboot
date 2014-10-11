@@ -30,6 +30,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <build.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include "northbridge.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -63,4 +65,16 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 			pciexbar, 0x0, 0x0, max_buses - 1);
 
 	return current;
+}
+
+void northbridge_acpi_fill_ssdt_generator(void)
+{
+	u32 bmbound;
+	char pscope[] = "\\_SB.PCI0";
+
+	bmbound = sideband_read(B_UNIT, BMBOUND);
+	acpigen_write_scope(pscope);
+	acpigen_write_name_dword("BMBD", bmbound);
+	acpigen_pop_len();
+	generate_cpu_entries();
 }

@@ -31,8 +31,13 @@
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <elog.h>
+#include <string.h>
+#include <cbmem.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include "soc.h"
 #include "irq.h"
+#include "nvs.h"
 
 #define NMI_OFF	0
 
@@ -426,6 +431,26 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+static void southbridge_inject_dsdt(void)
+{
+	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+
+	if (gnvs) {
+		memset(gnvs, 0, sizeof(*gnvs));
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((unsigned long)gnvs);
+#if CONFIG_HAVE_SMI_HANDLER
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+#endif
+
+		/* Add it to DSDT.  */
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_pop_len();
+	}
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -435,6 +460,8 @@ static struct device_operations device_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= soc_lpc_enable_resources,
 	.init			= lpc_init,
+	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.enable			= soc_lpc_enable,
 	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_ops,

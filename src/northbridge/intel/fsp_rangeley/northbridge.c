@@ -212,6 +212,18 @@ static void northbridge_enable(device_t dev)
 {
 }
 
+unsigned long acpi_fill_slit(unsigned long current)
+{
+	// Not implemented
+	return current;
+}
+
+unsigned long acpi_fill_srat(unsigned long current)
+{
+	/* No NUMA, no SRAT */
+	return current;
+}
+
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem    = intel_set_subsystem,
 };
@@ -231,6 +243,7 @@ static struct device_operations mc_ops = {
 	.set_resources    = mc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = northbridge_init,
+	.acpi_fill_ssdt_generator = northbridge_acpi_fill_ssdt_generator,
 	.enable           = northbridge_enable,
 	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,

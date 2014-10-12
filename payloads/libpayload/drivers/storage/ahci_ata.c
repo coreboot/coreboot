@@ -56,7 +56,7 @@ ssize_t ahci_ata_read_sectors(ata_dev_t *const ata_dev,
 		       printf("ahci: Sector count too high (max. 256).\n");
 		       count = 256;
 		}
-#ifdef CONFIG_STORAGE_64BIT_LBA
+#ifdef CONFIG_LP_STORAGE_64BIT_LBA
 	} else if (ata_dev->read_cmd == ATA_READ_DMA_EXT) {
 		if (start >= (1ULL << 48)) {
 			printf("ahci: Sector is not 48-bit addressable.\n");
@@ -84,7 +84,7 @@ ssize_t ahci_ata_read_sectors(ata_dev_t *const ata_dev,
 	dev->cmdtable->fis[ 6] = (start >> 16) & 0xff;
 	dev->cmdtable->fis[ 7] = FIS_H2D_DEV_LBA;
 	dev->cmdtable->fis[ 8] = (start >> 24) & 0xff;
-#ifdef CONFIG_STORAGE_64BIT_LBA
+#ifdef CONFIG_LP_STORAGE_64BIT_LBA
 	if (ata_dev->read_cmd == ATA_READ_DMA_EXT) {
 		dev->cmdtable->fis[ 9] = (start >> 32) & 0xff;
 		dev->cmdtable->fis[10] = (start >> 40) & 0xff;

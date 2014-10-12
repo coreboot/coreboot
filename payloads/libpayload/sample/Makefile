@@ -31,9 +31,9 @@
 include ../.xcompile
 include ../.config
 
-ARCH-$(CONFIG_ARCH_ARMV)   := arm
-ARCH-$(CONFIG_ARCH_POWERPC) := powerpc
-ARCH-$(CONFIG_ARCH_X86)     := i386
+ARCH-$(CONFIG_LP_ARCH_ARMV)    := arm
+ARCH-$(CONFIG_LP_ARCH_POWERPC) := powerpc
+ARCH-$(CONFIG_LP_ARCH_X86)     := i386
 
 CC := $(CC_$(ARCH-y))
 AS := $(AS_$(ARCH-y))

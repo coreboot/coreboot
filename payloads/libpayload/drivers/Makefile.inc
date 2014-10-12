@@ -51,8 +51,8 @@ libc-$(CONFIG_LP_GEODELX_VIDEO_CONSOLE) += video/geodelx.c
 libc-$(CONFIG_LP_GEODELX_VIDEO_CONSOLE) += video/font8x16.c
 
 # coreboot generic framebuffer driver
-libc-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += video/corebootfb.c
-libc-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += video/font8x16.c
+libc-$(CONFIG_LP_COREBOOT_VIDEO_CONSOLE) += video/corebootfb.c
+libc-$(CONFIG_LP_COREBOOT_VIDEO_CONSOLE) += video/font8x16.c
 
 # AHCI/ATAPI driver
 libc-$(CONFIG_LP_STORAGE) += storage/storage.c

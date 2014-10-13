@@ -26,6 +26,7 @@
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <soc/power.h>
+#include <timestamp.h>
 
 #define BCT_OFFSET_IN_BIT	0x50
 #define ODMDATA_OFFSET_IN_BCT	0x6A8
@@ -57,6 +58,9 @@ void __attribute__((weak)) bootblock_mainboard_early_init(void)
 
 void main(void)
 {
+	timestamp_init(0);
+	timestamp_add_now(TS_START_BOOTBLOCK);
+
 	// enable JTAG at the earliest stage
 	enable_jtag();
 

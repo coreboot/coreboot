@@ -31,6 +31,7 @@
 #include <soc/sdram_configs.h>
 #include <soc/romstage.h>
 #include <timer.h>
+#include <timestamp.h>
 
 void __attribute__((weak)) romstage_mainboard_init(void)
 {
@@ -39,6 +40,8 @@ void __attribute__((weak)) romstage_mainboard_init(void)
 
 void romstage(void)
 {
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	console_init();
 	exception_init();
 
@@ -51,6 +54,8 @@ void romstage(void)
 	sdram_init(get_sdram_config());
 	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
 #endif
+
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/*
 	 * Trust Zone needs to be initialized after the DRAM initialization

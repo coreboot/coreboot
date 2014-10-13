@@ -24,6 +24,7 @@
 #include <console/console.h>
 #include <soc/verstage.h>
 #include <program_loading.h>
+#include <timestamp.h>
 
 void __attribute__((weak)) verstage_mainboard_init(void)
 {
@@ -33,6 +34,7 @@ void __attribute__((weak)) verstage_mainboard_init(void)
 static void verstage(void)
 {
 	console_init();
+	timestamp_add_now(TS_START_VBOOT);
 	exception_init();
 	verstage_mainboard_init();
 

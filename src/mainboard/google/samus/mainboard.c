@@ -32,10 +32,24 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include <ec/google/chromeec/ec.h>
 #include "ec.h"
 
 void mainboard_suspend_resume(void)
 {
+}
+
+const char *smbios_mainboard_version(void)
+{
+	switch (google_chromeec_get_board_version()) {
+	case SAMUS_EC_BOARD_VERSION_EVT:
+		return "EVT";
+	case SAMUS_EC_BOARD_VERSION_EVT2:
+		return "EVT2";
+	case SAMUS_EC_BOARD_VERSION_EVT3:
+		return "EVT3";
+	}
+	return "Unknown";
 }
 
 static void mainboard_init(device_t dev)

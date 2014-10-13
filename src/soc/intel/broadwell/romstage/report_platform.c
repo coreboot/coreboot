@@ -41,7 +41,7 @@ static struct {
 	{ CPUID_HASWELL_HALO,   "Haswell Perf Halo" },
 	{ CPUID_BROADWELL_C0,   "Broadwell C0" },
 	{ CPUID_BROADWELL_D0,   "Broadwell D0" },
-	{ CPUID_BROADWELL_E0,   "Broadwell E0" },
+	{ CPUID_BROADWELL_E0,   "Broadwell E0 or F0" },
 };
 
 static struct {

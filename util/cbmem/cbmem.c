@@ -384,6 +384,8 @@ static const struct timestamp_id_to_name {
 	{ TS_START_COPYRAM,	"start of copying ram stage" },
 	{ TS_END_COPYRAM,	"end of copying ram stage" },
 	{ TS_START_RAMSTAGE,	"start of ramstage" },
+	{ TS_START_BOOTBLOCK,   "start of bootblock" },
+	{ TS_END_BOOTBLOCK,     "end of bootblock" },
 	{ TS_DEVICE_ENUMERATE,	"device enumeration" },
 	{ TS_DEVICE_CONFIGURE,	"device configuration" },
 	{ TS_DEVICE_ENABLE,	"device enable" },

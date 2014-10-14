@@ -40,6 +40,7 @@
 #define CMD_M25PXX_READ		0x03	/* Read Data Bytes */
 #define CMD_M25PXX_FAST_READ	0x0b	/* Read Data Bytes at Higher Speed */
 #define CMD_M25PXX_PP		0x02	/* Page Program */
+#define CMD_M25PXX_SSE		0x20	/* Subsector Erase */
 #define CMD_M25PXX_SE		0xd8	/* Sector Erase */
 #define CMD_M25PXX_BE		0xc7	/* Bulk Erase */
 #define CMD_M25PXX_DP		0xb9	/* Deep Power-down */
@@ -53,9 +54,17 @@
 #define STM_ID_M25P64		0x17
 #define STM_ID_M25P80		0x14
 #define STM_ID_M25P128		0x18
+#define STM_ID_USE_ALT_ID	0xFF
 
+/* Some SPI flash share the same .idcode1 (idcode[2]). To handle this without
+ * (possibly) breaking existing implementations, add the new device at the top
+ * of the flash table array and set its .idcode1 = STM_ID_USE_ALT_ID. The .id
+ * is then (idcode[1] << 8 | idcode[2]).
+ */
 struct stmicro_spi_flash_params {
 	u8 idcode1;
+	u8 op_erase;
+	u16 id;
 	u16 page_size;
 	u16 pages_per_sector;
 	u16 nr_sectors;
@@ -76,7 +85,17 @@ static inline struct stmicro_spi_flash *to_stmicro_spi_flash(struct spi_flash
 
 static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	{
+		.idcode1 = STM_ID_USE_ALT_ID,
+		.id = 0xbb18,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 4096,
+		.name = "N25Q128",
+	},
+	{
 		.idcode1 = STM_ID_M25P10,
+		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 128,
 		.nr_sectors = 4,
@@ -84,6 +103,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 	{
 		.idcode1 = STM_ID_M25P16,
+		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 32,
@@ -91,6 +111,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 	{
 		.idcode1 = STM_ID_M25P20,
+		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 4,
@@ -98,6 +119,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 	{
 		.idcode1 = STM_ID_M25P32,
+		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 64,
@@ -105,6 +127,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 	{
 		.idcode1 = STM_ID_M25P40,
+		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 8,
@@ -112,6 +135,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 	{
 		.idcode1 = STM_ID_M25P64,
+		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 128,
@@ -119,6 +143,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 	{
 		.idcode1 = STM_ID_M25P80,
+		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 16,
@@ -126,6 +151,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 	{
 		.idcode1 = STM_ID_M25P128,
+		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 1024,
 		.nr_sectors = 64,
@@ -202,7 +228,9 @@ out:
 
 static int stmicro_erase(struct spi_flash *flash, u32 offset, size_t len)
 {
-	return spi_flash_cmd_erase(flash, CMD_M25PXX_SE, offset, len);
+	struct stmicro_spi_flash *stm = to_stmicro_spi_flash(flash);
+
+	return spi_flash_cmd_erase(flash, stm->params->op_erase, offset, len);
 }
 
 struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
@@ -226,7 +254,12 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 
 	for (i = 0; i < ARRAY_SIZE(stmicro_spi_flash_table); i++) {
 		params = &stmicro_spi_flash_table[i];
-		if (params->idcode1 == idcode[2]) {
+		if (params->idcode1 == STM_ID_USE_ALT_ID) {
+			if (params->id == ((idcode[1] << 8) | idcode[2])) {
+				break;
+			}
+		}
+		else if (params->idcode1 == idcode[2]) {
 			break;
 		}
 	}

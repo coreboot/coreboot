@@ -63,6 +63,7 @@ bootblock-y += stage_entry.S
 bootblock-y += stages.c
 bootblock-y += eabi_compat.c
 bootblock-y += transition.c transition_asm.S
+bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 bootblock-y += ../../lib/memset.c
 bootblock-y += ../../lib/memcpy.c
@@ -93,6 +94,7 @@ verstage-y += ../../lib/memset.c
 verstage-y += ../../lib/memcpy.c
 verstage-y += ../../lib/memmove.c
 verstage-y += stages.c
+verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 endif # CONFIG_ARCH_VERSTAGE_ARM64
 

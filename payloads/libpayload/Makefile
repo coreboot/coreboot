@@ -48,7 +48,7 @@ export src := src
 export srck := $(top)/util/kconfig
 export obj ?= build
 export objutil ?= $(obj)/util
-export objk := $(objutil)/kconfig
+export objk := $(objutil)/lp_kconfig
 
 
 export KCONFIG_AUTOHEADER := $(obj)/config.h
@@ -272,7 +272,7 @@ printall:
 
 endif
 
-$(shell mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(additional-dirs) $(alldirs))
+$(shell mkdir -p $(obj) $(objk)/lxdialog $(additional-dirs) $(alldirs))
 
 cscope:
 	cscope -bR

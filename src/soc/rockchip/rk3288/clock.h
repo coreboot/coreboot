@@ -43,4 +43,6 @@ void rkclk_ddr_phy_ctl_reset(u32 ch, u32 n);
 void rkclk_configure_ddr(unsigned int hz);
 void rkclk_configure_i2s(unsigned int hz);
 void rkclk_configure_cpu(void);
+void rkclk_configure_tsadc(unsigned int hz);
+
 #endif	/* __SOC_ROCKCHIP_RK3288_CLOCK_H__ */

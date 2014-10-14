@@ -480,3 +480,14 @@ void rkclk_configure_i2s(unsigned int hz)
 	assert(hz == GPLL_HZ / n * d);
 	writel(d << 16 | n, &cru_ptr->cru_clksel_con[8]);
 }
+
+void rkclk_configure_tsadc(unsigned int hz)
+{
+	u32 div;
+	u32 src_clk = 32 * KHz; /* tsadc source clock is 32KHz*/
+
+	div = src_clk / hz;
+	assert((div - 1 < 64) && (div * hz == 32 * KHz));
+	writel(RK_CLRSETBITS(0x3f << 0, (div - 1) << 0),
+			&cru_ptr->cru_clksel_con[2]);
+}

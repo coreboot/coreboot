@@ -54,6 +54,7 @@ struct rk3288_pmu_regs {
 	union {
 		u32 gpio0b_iomux;
 		u32 iomux_i2c0sda;
+		u32 iomux_tsadc_int;
 	};
 	union {
 		u32 gpio0c_iomux;
@@ -69,7 +70,8 @@ check_member(rk3288_pmu_regs, sys_reg[3], 0x00a0);
 
 static struct rk3288_pmu_regs * const rk3288_pmu = (void *)PMU_BASE;
 
-#define IOMUX_I2C0SDA	1 << 14
-#define IOMUX_I2C0SCL	1 << 0
+#define IOMUX_I2C0SDA	(1 << 14)
+#define IOMUX_I2C0SCL	(1 << 0)
+#define	IOMUX_TSADC_INT	(1 << 4)
 
 #endif

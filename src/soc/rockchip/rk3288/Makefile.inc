@@ -53,6 +53,7 @@ romstage-y += spi.c
 romstage-y += media.c
 romstage-y += sdram.c
 romstage-y += pwm.c
+romstage-y += tsadc.c
 
 ramstage-y += soc.c
 ramstage-y += cbmem.c

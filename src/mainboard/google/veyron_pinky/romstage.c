@@ -35,6 +35,7 @@
 #include <soc/rockchip/rk3288/clock.h>
 #include <soc/rockchip/rk3288/pwm.h>
 #include <soc/rockchip/rk3288/grf.h>
+#include <soc/rockchip/rk3288/tsadc.h>
 #include <symbols.h>
 #include "timer.h"
 
@@ -86,6 +87,7 @@ void main(void)
 
 	console_init();
 	configure_l2ctlr();
+	tsadc_init();
 
 	/* vdd_log 1200mv is enough for ddr run 666Mhz */
 	regulate_vdd_log(1200);

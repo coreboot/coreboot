@@ -62,6 +62,7 @@ bootblock-y += memcpy.S
 bootblock-y += memmove.S
 bootblock-y += div0.c
 bootblock-y += clock.c
+bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 $(objcbfs)/bootblock.debug: $$(bootblock-objs) $$(VERSTAGE_LIB)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -83,6 +84,7 @@ verstage-y += memset.S
 verstage-y += memcpy.S
 verstage-y += memmove.S
 verstage-y += stages.c
+verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 ###############################################################################
 # romstage

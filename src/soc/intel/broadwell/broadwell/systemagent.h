@@ -36,6 +36,11 @@
 #define IGD_BROADWELL_H_GT2	0x1612
 #define IGD_BROADWELL_H_GT3	0x1622
 
+#define MCH_BROADWELL_ID_U_Y	0x1604
+#define MCH_BROADWELL_REV_D0	0x06
+#define MCH_BROADWELL_REV_E0	0x08
+#define MCH_BROADWELL_REV_F0	0x09
+
 /* Device 0:0.0 PCI configuration space */
 
 #define EPBAR		0x40

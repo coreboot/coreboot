@@ -122,14 +122,14 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 		die("Missing SPD data.");
 
 	memcpy(pei_data->spd_data[0][0],
-		spd_file + spd_index, SPD_LEN);
+		spd_file + (spd_index * SPD_LEN), SPD_LEN);
 	/* Index 0-2 are 4GB config with both CH0 and CH1.
 	 * Index 4-6 are 2GB config with CH0 only. */
 	if (spd_index > 3)
 		pei_data->dimm_channel1_disabled = 3;
 	else
 		memcpy(pei_data->spd_data[1][0],
-			spd_file + spd_index, SPD_LEN);
+			spd_file + (spd_index * SPD_LEN), SPD_LEN);
 
 	/* Make sure a valid SPD was found */
 	if (pei_data->spd_data[0][0][0] == 0)

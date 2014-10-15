@@ -88,15 +88,22 @@ static void pch_enable_d3hot(device_t dev)
 	pci_write_config32(dev, PCH_PCS, reg32);
 }
 
+/* RCBA function disable and posting read to flush the transaction */
+static void rcba_function_disable(u32 reg, u32 bit)
+{
+	RCBA32_OR(reg, bit);
+	RCBA32(reg);
+}
+
 /* Set bit in Function Disable register to hide this device */
 void pch_disable_devfn(device_t dev)
 {
 	switch (dev->path.pci.devfn) {
 	case PCH_DEVFN_ADSP: /* Audio DSP */
-		RCBA32_OR(FD, PCH_DISABLE_ADSPD);
+		rcba_function_disable(FD, PCH_DISABLE_ADSPD);
 		break;
 	case PCH_DEVFN_XHCI: /* XHCI */
-		RCBA32_OR(FD, PCH_DISABLE_XHCI);
+		rcba_function_disable(FD, PCH_DISABLE_XHCI);
 		break;
 	case PCH_DEVFN_SDMA: /* DMA */
 		pch_enable_d3hot(dev);
@@ -127,26 +134,26 @@ void pch_disable_devfn(device_t dev)
 		pch_iobp_update(SIO_IOBP_FUNCDIS6, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCH_DEVFN_ME: /* MEI #1 */
-		RCBA32_OR(FD2, PCH_DISABLE_MEI1);
+		rcba_function_disable(FD2, PCH_DISABLE_MEI1);
 		break;
 	case PCH_DEVFN_ME_2: /* MEI #2 */
-		RCBA32_OR(FD2, PCH_DISABLE_MEI2);
+		rcba_function_disable(FD2, PCH_DISABLE_MEI2);
 		break;
 	case PCH_DEVFN_ME_IDER: /* IDE-R */
-		RCBA32_OR(FD2, PCH_DISABLE_IDER);
+		rcba_function_disable(FD2, PCH_DISABLE_IDER);
 		break;
 	case PCH_DEVFN_ME_KT: /* KT */
-		RCBA32_OR(FD2, PCH_DISABLE_KT);
+		rcba_function_disable(FD2, PCH_DISABLE_KT);
 		break;
 	case PCH_DEVFN_SDIO: /* SDIO */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS7, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCH_DEVFN_GBE: /* Gigabit Ethernet */
-		RCBA32_OR(BUC, PCH_DISABLE_GBE);
+		rcba_function_disable(BUC, PCH_DISABLE_GBE);
 		break;
 	case PCH_DEVFN_HDA: /* HD Audio Controller */
-		RCBA32_OR(FD, PCH_DISABLE_HD_AUDIO);
+		rcba_function_disable(FD, PCH_DISABLE_HD_AUDIO);
 		break;
 	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 0): /* PCI Express Root Port 1 */
 	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 1): /* PCI Express Root Port 2 */
@@ -156,25 +163,26 @@ void pch_disable_devfn(device_t dev)
 	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 5): /* PCI Express Root Port 6 */
 	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 6): /* PCI Express Root Port 7 */
 	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 7): /* PCI Express Root Port 8 */
-		RCBA32_OR(FD, PCH_DISABLE_PCIE(PCI_FUNC(dev->path.pci.devfn)));
+		rcba_function_disable(FD,
+			PCH_DISABLE_PCIE(PCI_FUNC(dev->path.pci.devfn)));
 		break;
 	case PCH_DEVFN_EHCI: /* EHCI #1 */
-		RCBA32_OR(FD, PCH_DISABLE_EHCI1);
+		rcba_function_disable(FD, PCH_DISABLE_EHCI1);
 		break;
 	case PCH_DEVFN_LPC: /* LPC */
-		RCBA32_OR(FD, PCH_DISABLE_LPC);
+		rcba_function_disable(FD, PCH_DISABLE_LPC);
 		break;
 	case PCH_DEVFN_SATA: /* SATA #1 */
-		RCBA32_OR(FD, PCH_DISABLE_SATA1);
+		rcba_function_disable(FD, PCH_DISABLE_SATA1);
 		break;
 	case PCH_DEVFN_SMBUS: /* SMBUS */
-		RCBA32_OR(FD, PCH_DISABLE_SMBUS);
+		rcba_function_disable(FD, PCH_DISABLE_SMBUS);
 		break;
 	case PCH_DEVFN_SATA2: /* SATA #2 */
-		RCBA32_OR(FD, PCH_DISABLE_SATA2);
+		rcba_function_disable(FD, PCH_DISABLE_SATA2);
 		break;
 	case PCH_DEVFN_THERMAL: /* Thermal Subsystem */
-		RCBA32_OR(FD, PCH_DISABLE_THERMAL);
+		rcba_function_disable(FD, PCH_DISABLE_THERMAL);
 		break;
 	}
 }

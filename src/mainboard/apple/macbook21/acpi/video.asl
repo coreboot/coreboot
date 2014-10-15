@@ -19,8 +19,6 @@
  * MA 02110-1301 USA
  */
 
-#include "smi.h"
-
 Device (DSPC)
 {
 	Name (_ADR, 0x00020001)

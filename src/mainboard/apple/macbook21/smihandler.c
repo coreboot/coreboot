@@ -26,7 +26,6 @@
 #include "southbridge/intel/i82801gx/i82801gx.h"
 #include <pc80/mc146818rtc.h>
 #include <delay.h>
-#include "smi.h"
 
 /* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler

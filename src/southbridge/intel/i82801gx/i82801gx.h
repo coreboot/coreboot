@@ -44,6 +44,7 @@ extern void i82801gx_enable(device_t dev);
 #else
 void enable_smbus(void);
 int smbus_read_byte(unsigned device, unsigned address);
+int southbridge_detect_s3_resume(void);
 #endif
 #endif
 

@@ -350,7 +350,7 @@ static inline void barrier(void) { asm("" ::: "memory"); }
 
 int i945_silicon_revision(void);
 void i945_early_initialization(void);
-void i945_late_initialization(void);
+void i945_late_initialization(int s3resume);
 
 /* provided by mainboard code */
 void setup_ich7_gpios(void);

@@ -22,6 +22,8 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
+#include <cbmem.h>
+#include <string.h>
 #include "i945.h"
 
 int i945_silicon_revision(void)
@@ -887,7 +889,34 @@ void i945_early_initialization(void)
 	RCBA32(0x2010) |= (1 << 10);
 }
 
-void i945_late_initialization(void)
+static void i945_prepare_resume(int s3resume)
+{
+	int cbmem_was_initted;
+
+	cbmem_was_initted = !cbmem_recovery(s3resume);
+
+	/* If there is no high memory area, we didn't boot before, so
+	 * this is not a resume. In that case we just create the cbmem toc.
+	 */
+	if (s3resume && cbmem_was_initted) {
+		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+
+		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption
+		 * through stage 2. We could keep stuff like stack and heap in high tables
+		 * memory completely, but that's a wonderful clean up task for another
+		 * day.
+		 */
+		if (resume_backup_memory)
+			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE,
+			       HIGH_MEMORY_SAVE);
+
+		/* Magic for S3 resume */
+		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD,
+				   SKPAD_ACPI_S3_MAGIC);
+	}
+}
+
+void i945_late_initialization(int s3resume)
 {
 	i945_setup_egress_port();
 
@@ -902,4 +931,25 @@ void i945_late_initialization(void)
 	i945_setup_pci_express_x16();
 
 	i945_setup_root_complex_topology();
+
+#if !CONFIG_HAVE_ACPI_RESUME
+#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
+#if CONFIG_DEBUG_RAM_SETUP
+	sdram_dump_mchbar_registers();
+
+	{
+		/* This will not work if TSEG is in place! */
+		u32 tom = pci_read_config32(PCI_DEV(0, 2, 0), 0x5c);
+
+		printk(BIOS_DEBUG, "TOM: 0x%08x\n", tom);
+		ram_check(0x00000000, 0x000a0000);
+		ram_check(0x00100000, tom);
+	}
+#endif
+#endif
+#endif
+
+	MCHBAR16(SSKPD) = 0xCAFE;
+
+	i945_prepare_resume(s3resume);
 }

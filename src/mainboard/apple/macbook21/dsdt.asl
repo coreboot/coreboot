@@ -38,9 +38,6 @@ DefinitionBlock(
 	// global NVS and variables
 	#include <southbridge/intel/i82801gx/acpi/globalnvs.asl>
 
-	// General Purpose Events
-	#include "acpi/gpe.asl"
-
 	Scope (\_SB) {
 		Device (PCI0)
 		{

@@ -55,6 +55,25 @@ static void regulate_vdd_log(unsigned int mv)
 	pwm_init(1, period_ns, duty_ns);
 }
 
+static void configure_l2ctlr(void)
+{
+	uint32_t l2ctlr;
+
+	l2ctlr = read_l2ctlr();
+	l2ctlr &= 0xfffc0000; /* clear bit0~bit17 */
+
+	/*
+	* Data RAM write latency: 2 cycles
+	* Data RAM read latency: 2 cycles
+	* Data RAM setup latency: 1 cycle
+	* Tag RAM write latency: 1 cycle
+	* Tag RAM read latency: 1 cycle
+	* Tag RAM setup latency: 1 cycle
+	*/
+	l2ctlr |= (1 << 3 | 1 << 0);
+	write_l2ctlr(l2ctlr);
+}
+
 void main(void)
 {
 #if CONFIG_COLLECT_TIMESTAMPS
@@ -66,6 +85,7 @@ void main(void)
 #endif
 
 	console_init();
+	configure_l2ctlr();
 
 	/* vdd_log 1200mv is enough for ddr run 666Mhz */
 	regulate_vdd_log(1200);

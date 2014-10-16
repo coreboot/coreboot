@@ -15,7 +15,7 @@
 
 #define VEXPRESS_UART0_IO_ADDRESS      (0x10009000)
 
-unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	return VEXPRESS_UART0_IO_ADDRESS;
 }

@@ -302,6 +302,6 @@ void mmu_init(void)
 		0 << 16 | 0 << 0	/* Use TTBR0 for all addresses */
 		);
 
-	/* disable domain-level checking of permissions */
-	write_dacr(~0);
+	/* Set domain 0 to Client so XN bit works (to prevent prefetches) */
+	write_dacr(0x5);
 }

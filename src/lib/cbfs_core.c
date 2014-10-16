@@ -220,7 +220,7 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 		case CBFS_COMPRESS_NONE:
 			/* Reads need to be aligned at 4 bytes to avoid
 			   poor flash performance.  */
-			while (len && ((u32)src & 3)) {
+			while (len && ((uintptr_t)src & 3)) {
 				*(u8*)dst++ = *(u8*)src++;
 				len--;
 			}

@@ -17,10 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cache.h>
 #include <arch/io.h>
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <soc/rockchip/rk3288/grf.h>
+#include <symbols.h>
 #include "addressmap.h"
 #include "timer.h"
 #include "clock.h"
@@ -41,4 +43,13 @@ static void bootblock_cpu_init(void)
 	}
 
 	rkclk_init();
+
+	mmu_init();
+	/* Start with a clean slate. */
+	mmu_config_range(0, 4096, DCACHE_OFF);
+	/* SRAM is tightly wedged between registers, need to use subtables. Map
+	 * write-through as equivalent for non-cacheable without XN on A17. */
+	mmu_config_range_kb((uintptr_t)_sram/KiB,
+			    _sram_size/KiB, DCACHE_WRITETHROUGH);
+	dcache_mmu_enable();
 }

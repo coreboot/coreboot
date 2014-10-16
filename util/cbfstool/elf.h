@@ -2688,4 +2688,48 @@ typedef Elf32_Addr Elf32_Conflict;
 #define R_M32R_NUM		256	/* Keep this the last entry. */
 
 
+/* RISC-V relocation types */
+#define R_RISCV_NONE		0
+#define R_RISCV_32		2
+#define R_RISCV_REL32		3
+#define R_RISCV_JAL		4
+#define R_RISCV_HI20		5
+#define R_RISCV_LO12_I		6
+#define R_RISCV_LO12_S		7
+#define R_RISCV_PCREL_LO12_I	8
+#define R_RISCV_PCREL_LO12_S	9
+#define R_RISCV_BRANCH		10
+#define R_RISCV_CALL		11
+#define R_RISCV_PCREL_HI20	12
+#define R_RISCV_CALL_PLT	13
+#define R_RISCV_64		18
+#define R_RISCV_GOT_HI20	22
+#define R_RISCV_GOT_LO12	23
+#define R_RISCV_COPY		24
+#define R_RISCV_JUMP_SLOT	25
+/* TLS relocations */
+#define R_RISCV_TPREL_HI20	30
+#define R_RISCV_TPREL_LO12_I	31
+#define R_RISCV_TPREL_LO12_S	32
+#define R_RISCV_TLS_DTPMOD32	38
+#define R_RISCV_TLS_DTPREL32	39
+#define R_RISCV_TLS_DTPMOD64	40
+#define R_RISCV_TLS_DTPREL64	41
+#define R_RISCV_TLS_GD		42
+#define R_RISCV_TLS_DTPREL_HI16	44
+#define R_RISCV_TLS_DTPREL_LO16	45
+#define R_RISCV_TLS_GOTTPREL	46
+#define R_RISCV_TLS_TPREL32	47
+#define R_RISCV_TLS_TPREL64	48
+#define R_RISCV_TLS_GOT_HI20	51
+#define R_RISCV_TLS_GOT_LO12	52
+#define R_RISCV_TLS_GD_HI20	53
+#define R_RISCV_TLS_GD_LO12	54
+#define R_RISCV_GLOB_DAT	57
+#define R_RISCV_ADD32		58
+#define R_RISCV_ADD64		59
+#define R_RISCV_SUB32		60
+#define R_RISCV_SUB64		61
+
+#define EM_RISCV	0xF3
 #endif	/* elf.h */

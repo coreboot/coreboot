@@ -100,6 +100,9 @@ void exception_prefetch_abort(uint32_t *regs)
 	printk(BIOS_ERR, "exception _prefetch_abort\n");
 	regs[15] -= 4;
 	print_regs(regs);
+	printk(BIOS_ERR, "IFAR = %#.8x\n", read_ifar());
+	printk(BIOS_ERR, "IFSR = %#.8x\n", read_ifsr());
+	printk(BIOS_ERR, "AIFSR = %#.8x\n", read_aifsr());
 	dump_stack(regs[13], 512);
 	die("exception");
 }
@@ -109,6 +112,9 @@ void exception_data_abort(uint32_t *regs)
 	printk(BIOS_ERR, "exception _data_abort\n");
 	regs[15] -= 8;
 	print_regs(regs);
+	printk(BIOS_ERR, "DFAR = %#.8x\n", read_dfar());
+	printk(BIOS_ERR, "DFSR = %#.8x\n", read_dfsr());
+	printk(BIOS_ERR, "ADFSR = %#.8x\n", read_adfsr());
 	dump_stack(regs[13], 512);
 	die("exception");
 }

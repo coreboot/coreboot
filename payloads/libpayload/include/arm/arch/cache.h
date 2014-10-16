@@ -268,6 +268,54 @@ static inline void write_sctlr(uint32_t val)
 	isb();
 }
 
+/* read data fault address register (DFAR) */
+static inline uint32_t read_dfar(void)
+{
+	uint32_t val;
+	asm volatile ("mrc p15, 0, %0, c6, c0, 0" : "=r" (val));
+	return val;
+}
+
+/* read data fault status register (DFSR) */
+static inline uint32_t read_dfsr(void)
+{
+	uint32_t val;
+	asm volatile ("mrc p15, 0, %0, c5, c0, 0" : "=r" (val));
+	return val;
+}
+
+/* read instruction fault address register (IFAR) */
+static inline uint32_t read_ifar(void)
+{
+	uint32_t val;
+	asm volatile ("mrc p15, 0, %0, c6, c0, 2" : "=r" (val));
+	return val;
+}
+
+/* read instruction fault status register (IFSR) */
+static inline uint32_t read_ifsr(void)
+{
+	uint32_t val;
+	asm volatile ("mrc p15, 0, %0, c5, c0, 1" : "=r" (val));
+	return val;
+}
+
+/* read auxiliary data fault status register (ADFSR) */
+static inline uint32_t read_adfsr(void)
+{
+	uint32_t val;
+	asm volatile ("mrc p15, 0, %0, c5, c1, 0" : "=r" (val));
+	return val;
+}
+
+/* read auxiliary instruction fault status register (AIFSR) */
+static inline uint32_t read_aifsr(void)
+{
+	uint32_t val;
+	asm volatile ("mrc p15, 0, %0, c5, c1, 1" : "=r" (val));
+	return val;
+}
+
 /*
  * Cache maintenance API
  */

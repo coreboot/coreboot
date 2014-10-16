@@ -90,6 +90,18 @@ void exception_dispatch(u32 idx)
 
 	printf("%s Exception\n", names[idx]);
 	print_regs();
+	switch (idx) {
+	case EXC_PABORT:
+		printf("IFAR = %#.8x\n", read_ifar());
+		printf("IFSR = %#.8x\n", read_ifsr());
+		printf("AIFSR = %#.8x\n", read_aifsr());
+		break;
+	case EXC_DABORT:
+		printf("DFAR = %#.8x\n", read_dfar());
+		printf("DFSR = %#.8x\n", read_dfsr());
+		printf("ADFSR = %#.8x\n", read_adfsr());
+		break;
+	};
 	dump_stack(exception_state.regs[13], 512);
 	halt();
 }

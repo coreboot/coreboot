@@ -31,6 +31,8 @@ DefinitionBlock(
 	0x20090419	// OEM revision
 )
 {
+	#include <southbridge/intel/i82801gx/acpi/platform.asl>
+
 	// Some generic macros
 	#include "acpi/platform.asl"
 
@@ -45,6 +47,8 @@ DefinitionBlock(
 
 	// Thermal Zone
 	#include "acpi/thermal.asl"
+
+	#include <cpu/intel/model_6dx/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

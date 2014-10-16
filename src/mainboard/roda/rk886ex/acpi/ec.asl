@@ -107,6 +107,9 @@ Device(EC0)
 		Store("_Q30: AC In/Out", Debug)
 		Notify(ADP1, 0x80)	// Tell the Power Adapter
 		PNOT()			// and the CPU and Battery
+		// Notify the Batteries
+		Notify(BAT1, 0x80) // Execute BAT1 _BST
+		Notify(BAT2, 0x80) // Execute BAT2 _BST
 	}
 
 	Method (_Q31, 0)

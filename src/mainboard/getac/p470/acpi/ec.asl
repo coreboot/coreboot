@@ -120,6 +120,8 @@ Device(EC0)
 		}
 
 		PNOT()
+		Notify(\_SB.BAT0, 0x80) // Execute BAT0 _BST
+		Notify(\_SB.BAT1, 0x80) // Execute BAT1 _BST
 	}
 
 	Method (_Q02, 0)
@@ -133,12 +135,16 @@ Device(EC0)
 		}
 
 		PNOT()
+		Notify(\_SB.BAT0, 0x80) // Execute BAT0 _BST
+		Notify(\_SB.BAT1, 0x80) // Execute BAT1 _BST
 	}
 
 	Method (_Q05, 0)
 	{
 		Notify(SLPB, 0x80)
 		PNOT()
+		Notify(\_SB.BAT0, 0x80) // Execute BAT0 _BST
+		Notify(\_SB.BAT1, 0x80) // Execute BAT1 _BST
 	}
 
 	Method (_Q07, 0)

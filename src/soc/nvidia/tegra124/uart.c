@@ -95,7 +95,7 @@ static int tegra124_uart_tst_byte(struct tegra124_uart *uart_ptr)
 	return (read8(&uart_ptr->lsr) & UART8250_LSR_DR) == UART8250_LSR_DR;
 }
 
-unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	//Default to UART A
 	unsigned int base = 0x70006000;

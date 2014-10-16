@@ -157,7 +157,7 @@ static void exynos5_uart_tx_flush(struct s5p_uart *uart)
 	while (readl(&uart->ufstat) & 0x1ff0000);
 }
 
-unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	if (idx < 4)
 		return 0x12c00000 + idx * 0x10000;

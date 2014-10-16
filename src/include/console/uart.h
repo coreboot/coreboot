@@ -45,7 +45,7 @@ void uart_tx_byte(int idx, unsigned char data);
 void uart_tx_flush(int idx);
 unsigned char uart_rx_byte(int idx);
 
-unsigned int uart_platform_base(int idx);
+uintptr_t uart_platform_base(int idx);
 
 #if !defined(__ROMCC__)
 static inline void *uart_platform_baseptr(int idx)

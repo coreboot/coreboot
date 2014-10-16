@@ -12,7 +12,7 @@
 
 #include "memmap.h"
 
-unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	/* UART blocks are mapped 0x400 bytes apart */
 	if (idx < 8)

@@ -153,7 +153,7 @@ unsigned int uart_platform_refclk(void)
 	return 48000000;
 }
 
-unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	const unsigned int bases[] = {
 		0x44e09000, 0x48022000, 0x48024000,

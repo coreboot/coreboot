@@ -149,7 +149,7 @@ static void exynos5_uart_tx_byte(struct s5p_uart *uart, unsigned char data)
 	writeb(data, &uart->utxh);
 }
 
-unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	if (idx < 4)
 		return 0x12c00000 + idx * 0x10000;

@@ -105,7 +105,7 @@ static void uart8250_init(unsigned base_port, unsigned divisor)
 
 static const unsigned bases[] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8 };
 
-unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	if (idx < ARRAY_SIZE(bases))
 		return bases[idx];

@@ -77,7 +77,7 @@ static int oxpcie_uart_active(void)
 	return (car_get_var(oxpcie_present));
 }
 
-unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	if (idx == 0 && oxpcie_uart_active())
 		return uart0_base;

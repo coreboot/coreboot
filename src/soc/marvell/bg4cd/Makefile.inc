@@ -19,23 +19,23 @@
 
 bootblock-y += cbmem.c
 bootblock-y += i2c.c
-bootblock-y += media.c
 bootblock-y += monotonic_timer.c
+bootblock-$(CONFIG_SPI_FLASH) += spi.c
 
 verstage-y += i2c.c
-verstage-y += media.c
 verstage-y += monotonic_timer.c
+verstage-$(CONFIG_SPI_FLASH) += spi.c
 
 romstage-y += cbmem.c
 romstage-y += i2c.c
-romstage-y += media.c
 romstage-y += monotonic_timer.c
 romstage-y += sdram.c
+romstage-$(CONFIG_SPI_FLASH) += spi.c
 
 ramstage-y += cbmem.c
 ramstage-y += i2c.c
-ramstage-y += media.c
 ramstage-y += monotonic_timer.c
+ramstage-$(CONFIG_SPI_FLASH) += spi.c
 
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	cp $< $@

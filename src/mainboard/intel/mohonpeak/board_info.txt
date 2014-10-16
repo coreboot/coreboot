@@ -1,0 +1,3 @@
+Category: eval
+ROM protocol: SPI
+Flashrom support: y

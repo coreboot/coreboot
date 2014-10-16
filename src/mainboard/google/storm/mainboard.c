@@ -136,6 +136,11 @@ void lb_board(struct lb_header *header)
 	dma->size = sizeof(*dma);
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = _dma_coherent_size;
+
+#if IS_ENABLED(CONFIG_CHROMEOS)
+	/* Retrieve the switch interface MAC addressses. */
+	lb_table_add_macs_from_vpd(header);
+#endif
 }
 
 static int read_gpio(gpio_t gpio_num)

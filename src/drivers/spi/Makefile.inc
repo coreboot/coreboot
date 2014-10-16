@@ -20,6 +20,17 @@ romstage-$(CONFIG_SPI_FLASH_SST) += sst.c
 romstage-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 romstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 romstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
+
+verstage-$(CONFIG_SPI_FLASH) += spi_flash.c
+verstage-$(CONFIG_SPI_FLASH_EON) += eon.c
+verstage-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
+verstage-$(CONFIG_SPI_FLASH_MACRONIX) += macronix.c
+verstage-$(CONFIG_SPI_FLASH_SPANSION) += spansion.c
+verstage-$(CONFIG_SPI_FLASH_SST) += sst.c
+verstage-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
+verstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
+verstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
+
 endif
 
 ramstage-$(CONFIG_SPI_FLASH) += spi_flash.c

@@ -18,7 +18,6 @@
  */
 
 #include <cpu/x86/post_code.h>
-#include <cpu/x86/stack.h>
 
 .section ".rom.data", "a", @progbits
 .section ".rom.text", "ax", @progbits

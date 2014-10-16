@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
@@ -63,7 +62,7 @@ __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
 
-	movl	$ROMSTAGE_STACK, %esp
+	movl	$CONFIG_RAMTOP, %esp
 	movl	%esp, %ebp
 	call	copy_and_run
 

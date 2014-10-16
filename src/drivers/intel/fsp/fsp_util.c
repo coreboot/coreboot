@@ -19,7 +19,6 @@
 
 #include <types.h>
 #include <string.h>
-#include <cpu/x86/stack.h>
 #include <console/console.h>
 #include <bootstate.h>
 #include <cbmem.h>
@@ -81,7 +80,7 @@ void __attribute__ ((noreturn)) fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
 #endif
 
 	memset((void*)&FspRtBuffer, 0, sizeof(FSP_INIT_RT_BUFFER));
-	FspRtBuffer.Common.StackTop = (u32 *)ROMSTAGE_STACK;
+	FspRtBuffer.Common.StackTop = (u32 *)CONFIG_RAMTOP;
 	FspInitParams.NvsBufferPtr = NULL;
 
 #if IS_ENABLED(CONFIG_FSP_USES_UPD)

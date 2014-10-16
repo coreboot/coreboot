@@ -25,7 +25,6 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/x86/stack.h>
 #include <lib.h>
 #include <timestamp.h>
 #include <arch/io.h>
@@ -85,7 +84,7 @@ static unsigned long choose_top_of_stack(void)
 	                                     ROMSTAGE_RAM_STACK_SIZE);
 	stack_top += ROMSTAGE_RAM_STACK_SIZE;
 #else
-	stack_top = ROMSTAGE_STACK;
+	stack_top = CONFIG_RAMTOP;
 #endif
 	return stack_top;
 }

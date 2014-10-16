@@ -19,7 +19,6 @@
 
 #include <types.h>
 #include <string.h>
-#include <cpu/x86/stack.h>
 #include <console/console.h>
 #include <bootstate.h>
 #include <cbmem.h>

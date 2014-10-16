@@ -11,7 +11,7 @@ __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* clear direction flag */
 
-	movl $ROMSTAGE_STACK, %esp
+	movl $CONFIG_RAMTOP, %esp
 	movl	%esp, %ebp
 	call copy_and_run
 

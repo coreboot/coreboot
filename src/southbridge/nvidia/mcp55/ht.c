@@ -29,7 +29,7 @@
 #include <arch/acpi.h>
 #include "mcp55.h"
 
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	/* Not implemented */

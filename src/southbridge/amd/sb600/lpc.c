@@ -219,7 +219,7 @@ static void sb600_lpc_enable_resources(device_t dev)
 	sb600_lpc_enable_childrens_resources(dev);
 }
 
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 
 extern u16 pm_base;
 
@@ -237,7 +237,7 @@ static struct device_operations lpc_ops = {
 	.read_resources = sb600_lpc_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = sb600_lpc_enable_resources,
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 #endif

@@ -36,7 +36,7 @@
 #include <cpu/x86/lapic.h>
 #include <arch/acpi.h>
 #include <stdlib.h>
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #endif
@@ -281,7 +281,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 	.devices = lpc_ids,
 };
 
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 
 static void southbridge_acpi_fill_ssdt_generator(void)
 {
@@ -294,7 +294,7 @@ static struct device_operations lpc_slave_ops = {
 	.read_resources   = mcp55_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 	.write_acpi_tables      = acpi_write_hpet,
 #endif

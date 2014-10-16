@@ -16,7 +16,7 @@
 #include <string.h>
 #include <lib.h>
 #include <cpu/cpu.h>
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 #include <arch/acpi.h>
 #include "acpi.h"
 #endif
@@ -584,7 +584,7 @@ static void mcf0_control_init(struct device *dev)
 #endif
 }
 
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 static unsigned long northbridge_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp)
 {
 	unsigned long current;
@@ -616,7 +616,7 @@ static struct device_operations northbridge_operations = {
 	.read_resources	  = amdk8_read_resources,
 	.set_resources	  = amdk8_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt_generator = k8acpi_write_vars,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 #endif

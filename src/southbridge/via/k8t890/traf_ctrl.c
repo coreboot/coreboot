@@ -125,7 +125,7 @@ static void traf_ctrl_enable_k8t890(struct device *dev)
 	pci_write_config8(dev, 0x60, 0x80 | reg);
 }
 
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
 static void southbridge_acpi_fill_ssdt_generator(void) {
 	amd_model_fxx_generate_powernow(0, 0, 0);
@@ -139,7 +139,7 @@ static const struct device_operations traf_ctrl_ops_m = {
 	.set_resources		= mmconfig_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= traf_ctrl_enable_k8m890,
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 #endif
@@ -151,7 +151,7 @@ static const struct device_operations traf_ctrl_ops_t = {
 	.set_resources		= mmconfig_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= traf_ctrl_enable_k8t890,
-#if IS_ENABLED(CONFIG_GENERATE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.write_acpi_tables      = acpi_write_hpet,
 #endif
 	.ops_pci		= 0,

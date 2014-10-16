@@ -28,6 +28,7 @@
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include "hudson.h"
+#include "imc.h"
 #include "smbus.h"
 #include "smi.h"
 
@@ -161,8 +162,17 @@ static void hudson_init(void *chip_info)
 	hudson_init_acpi_ports();
 }
 
+static void hudson_final(void *chip_info)
+{
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+	/* AMD AGESA does not enable thermal zone, so we enable it here. */
+	enable_imc_thermal_zone();
+#endif
+}
+
 struct chip_operations southbridge_amd_agesa_hudson_ops = {
 	CHIP_NAME("ATI HUDSON")
 	.enable_dev = hudson_enable,
-	.init = hudson_init
+	.init = hudson_init,
+	.final = hudson_final
 };

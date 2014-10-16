@@ -652,6 +652,42 @@ void acpi_write_hest(acpi_hest_t *hest)
 	header->checksum = acpi_checksum((void *)hest, header->length);
 }
 
+#if IS_ENABLED(CONFIG_COMMON_FADT)
+void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt)
+{
+	acpi_header_t *header = &(fadt->header);
+
+	memset((void *) fadt, 0, sizeof(acpi_fadt_t));
+	memcpy(header->signature, "FACP", 4);
+	header->length = sizeof(acpi_fadt_t);
+	header->revision = 3;
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+	header->asl_compiler_revision = 0;
+
+	fadt->firmware_ctrl = (unsigned long) facs;
+	fadt->dsdt = (unsigned long) dsdt;
+
+	fadt->x_firmware_ctl_l = (unsigned long)facs;
+	fadt->x_firmware_ctl_h = 0;
+	fadt->x_dsdt_l = (unsigned long)dsdt;
+	fadt->x_dsdt_h = 0;
+
+	if(IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP)) {
+		fadt->preferred_pm_profile = PM_MOBILE;
+	} else {
+		fadt->preferred_pm_profile = PM_DESKTOP;
+	}
+
+	southbridge_fill_fadt(fadt);
+	mainboard_fill_fadt(fadt);
+
+	header->checksum =
+	    acpi_checksum((void *) fadt, header->length);
+}
+#endif
+
 #if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 
 extern const unsigned char AmlCode[];

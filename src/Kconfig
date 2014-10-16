@@ -474,6 +474,10 @@ config PER_DEVICE_ACPI_TABLES
 	bool
 	default n
 
+config COMMON_FADT
+	bool
+	default n
+
 #These Options are here to avoid "undefined" warnings.
 #The actual selection and help texts are in the following menu.
 

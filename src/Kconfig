@@ -236,6 +236,10 @@ config BOOTBLOCK_NORMAL
 
 endchoice
 
+config SYSTEM_TYPE_LAPTOP
+       default n
+       bool
+
 config BOOTBLOCK_SOURCE
 	string
 	default "bootblock_simple.c" if BOOTBLOCK_SIMPLE

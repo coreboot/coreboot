@@ -196,16 +196,6 @@ void write_tables(void)
 
 	post_code(0x9e);
 
-	/* Let's prepare the ACPI S3 Resume area now already, so we can rely on
-	 * it begin there during reboot time. We don't need the pointer, nor
-	 * the result right now. If it fails, ACPI resume will be disabled.
-	 */
-	if (HIGH_MEMORY_SAVE && acpi_s3_resume_allowed())
-		cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
-
-	if (HIGH_MEMORY_SCRATCH && acpi_s3_resume_allowed())
-		cbmem_add(CBMEM_ID_RESUME_SCRATCH, HIGH_MEMORY_SCRATCH);
-
 #define MAX_COREBOOT_TABLE_SIZE (32 * 1024)
 	post_code(0x9d);
 

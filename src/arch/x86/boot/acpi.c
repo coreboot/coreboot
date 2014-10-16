@@ -878,6 +878,23 @@ void acpi_fail_wakeup(void)
 		acpi_slp_type = 0;
 }
 
+void acpi_prepare_resume_backup(void)
+{
+	if (!acpi_s3_resume_allowed())
+		return;
+
+	/* Let's prepare the ACPI S3 Resume area now already, so we can rely on
+	 * it being there during reboot time. We don't need the pointer, nor
+	 * the result right now. If it fails, ACPI resume will be disabled.
+	 */
+
+	if (HIGH_MEMORY_SAVE)
+		cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
+
+	if (HIGH_MEMORY_SCRATCH)
+		cbmem_add(CBMEM_ID_RESUME_SCRATCH, HIGH_MEMORY_SCRATCH);
+}
+
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)
 {
 	if (strncmp((char *)rsdp, RSDP_SIG, sizeof(RSDP_SIG) - 1) != 0)

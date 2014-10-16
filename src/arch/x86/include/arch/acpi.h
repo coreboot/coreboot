@@ -569,6 +569,7 @@ int acpi_is_wakeup_early(void);
 
 void acpi_fail_wakeup(void);
 void acpi_resume(void *wake_vec);
+void acpi_prepare_resume_backup(void);
 void __attribute__((weak)) mainboard_suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);

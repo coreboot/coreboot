@@ -140,7 +140,7 @@ SUPPORTED_ARCHITECTURE="x86 arm"
 # ARM Architecture
 TARCH_arm="arm"
 TBFDARCH_arm="littlearm"
-TCLIST_arm="armv7a"
+TCLIST_arm="armv7a armv7-a"
 TWIDTH_arm="32"
 
 # X86 Architecture

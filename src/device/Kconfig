@@ -282,9 +282,21 @@ config EARLY_PCI_MMIO_BASE
 
 endif # EARLY_PCI_BRIDGE
 
-endmenu
+config SUBSYSTEM_VENDOR_ID
+	hex "Override PCI Subsystem Vendor ID"
+	depends on PCI
+	default "0x0000"
+	help
+	  This config option will override the devicetree settings for
+	  PCI Subsystem Vendor ID.
 
-menu "VGA BIOS"
+config SUBSYSTEM_DEVICE_ID
+	hex "Override PCI Subsystem Device ID"
+	depends on PCI
+	default "0x0000"
+	help
+	  This config option will override the devicetree settings for
+	  PCI Subsystem Device ID.
 
 config VGA_BIOS
 	bool "Add a VGA BIOS image"
@@ -334,6 +346,35 @@ config MBI_FILE
 	default "mbi.bin"
 	help
 	  The path and filename of the file to use as VGA BIOS.
+
+config PXE_ROM
+	bool "Add a PXE ROM image"
+	help
+	  Select this option if you have a PXE ROM image that you would
+	  like to add to your ROM.
+
+config PXE_ROM_FILE
+	string "PXE ROM filename"
+	depends on PXE_ROM
+	default "pxe.rom"
+	help
+	  The path and filename of the file to use as PXE ROM.
+
+config PXE_ROM_ID
+	string "network card PCI IDs"
+	depends on PXE_ROM
+	default "10ec,8168"
+	help
+	  The comma-separated PCI vendor and device ID that would associate
+	  your PXE ROM to your network card.
+
+	  Example: 10ec,8168
+
+	  In the above example 10ec is the PCI vendor ID (in hex, but without
+	  the "0x" prefix) and 8168 specifies the PCI device ID of the
+	  network card (also in hex, without "0x" prefix).
+
+	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
 endmenu
 
@@ -510,51 +551,3 @@ config BOOTSPLASH_FILE
 	  screen. The file format has to be jpg.
 
 endmenu
-
-menu "PXE ROM"
-config PXE_ROM
-	bool "Add a PXE ROM image"
-	help
-	  Select this option if you have a PXE ROM image that you would
-	  like to add to your ROM.
-
-config PXE_ROM_FILE
-	string "PXE ROM filename"
-	depends on PXE_ROM
-	default "pxe.rom"
-	help
-	  The path and filename of the file to use as PXE ROM.
-
-config PXE_ROM_ID
-	string "network card PCI IDs"
-	depends on PXE_ROM
-	default "10ec,8168"
-	help
-	  The comma-separated PCI vendor and device ID that would associate
-	  your PXE ROM to your network card.
-
-	  Example: 10ec,8168
-
-	  In the above example 10ec is the PCI vendor ID (in hex, but without
-	  the "0x" prefix) and 8168 specifies the PCI device ID of the
-	  network card (also in hex, without "0x" prefix).
-
-	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
-
-endmenu
-
-config SUBSYSTEM_VENDOR_ID
-	hex "Override PCI Subsystem Vendor ID"
-	depends on PCI
-	default "0x0000"
-	help
-	  This config option will override the devicetree settings for
-	  PCI Subsystem Vendor ID.
-
-config SUBSYSTEM_DEVICE_ID
-	hex "Override PCI Subsystem Device ID"
-	depends on PCI
-	default "0x0000"
-	help
-	  This config option will override the devicetree settings for
-	  PCI Subsystem Device ID.

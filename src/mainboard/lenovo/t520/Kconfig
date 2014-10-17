@@ -4,7 +4,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select SYSTEM_TYPE_LAPTOP
 	select CPU_INTEL_SOCKET_RPGA988B
-	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE
 	select SOUTHBRIDGE_INTEL_BD82X6X
 	select EC_LENOVO_PMH7
 	select EC_LENOVO_H8
@@ -27,7 +27,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config HAVE_MRC_CACHE
 	bool
-	default n
+	default y
 
 config HAVE_IFD_BIN
 	bool
@@ -52,10 +52,6 @@ config MAINBOARD_VERSION
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
-
-config CACHE_ROM_SIZE_OVERRIDE
-	hex
-	default 0x800000
 
 config IRQ_SLOT_COUNT
 	int

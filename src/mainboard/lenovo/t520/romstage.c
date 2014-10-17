@@ -33,7 +33,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/gpio.h>
 #include <arch/cpu.h>
@@ -112,61 +112,13 @@ static void rcba_config(void)
 #include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
-	int boot_mode = 0;
-	int cbmem_was_initted;
+	int s3resume = 0;
+	spd_raw_data spd[4];
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		outb(0x6, 0xcf9);
 		hlt ();
 	}
-
-	struct pei_data pei_data = {
-		.pei_version = PEI_VERSION,
-		.mchbar = DEFAULT_MCHBAR,
-		.dmibar = DEFAULT_DMIBAR,
-		.epbar = DEFAULT_EPBAR,
-		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
-		.smbusbar = SMBUS_IO_BASE,
-		.wdbbar = 0x4000000,
-		.wdbsize = 0x1000,
-		.hpet_address = CONFIG_HPET_ADDRESS,
-		.rcba = DEFAULT_RCBABASE,
-		.pmbase = DEFAULT_PMBASE,
-		.gpiobase = DEFAULT_GPIOBASE,
-		.thermalbase = 0xfed08000,
-		.system_type = 0, // 0 Mobile, 1 Desktop/Server
-		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xA0, 0x00,0xA2,0x00 },
-		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
-		.ec_present = 1,
-		.gbe_enable = 1,
-		.ddr3lv_support = 0,
-		// 0 = leave channel enabled
-		// 1 = disable dimm 0 on channel
-		// 2 = disable dimm 1 on channel
-		// 3 = disable dimm 0+1 on channel
-		.dimm_channel0_disabled = 2,
-		.dimm_channel1_disabled = 2,
-		.max_ddr3_freq = 1600,
-		.usb_port_config = {
-			 /* enabled   usb oc pin    length */
-			{ 1, 0, 0x0080 }, /* P0 left dual conn, OC 0 */
-			{ 1, 1, 0x0080 }, /* P1 System onboard USB port (eSATA) (EHCI debug), OC 1 */
-			{ 1, 0, 0x0040 }, /* P2: wimax / wlan */
-			{ 1, 0, 0x0040 }, /* P3: wwan, no OC */
-			{ 1, 0, 0x0040 }, /* P4: smartcard, otherwise empty */
-			{ 1, 0, 0x0080 }, /* P5: Expresscard, no OC */
-			{ 0, 0, 0x0000 }, /* P6: empty */
-			{ 1, 0, 0x0080 }, /* P7: to touch panel, no OC */
-			{ 1, 4, 0x0080 }, /* P8: left dual conn, OC4 */
-			{ 1, 5, 0x0080 }, /* P9: to system subcard back right (EHCI debug), OC 5 */
-			{ 1, 0, 0x0040 }, /* P10: fingerprint reader, no OC */
-			{ 1, 0, 0x0040 }, /* P11: bluetooth, no OC. */
-			{ 1, 0, 0x0080 }, /* P12: dock, no OC */
-			{ 1, 0, 0x0080 }, /* P13: webcam, no OC */
-		},
-		.ddr_refresh_rate_config = 2, /* Force double refresh rate */
-	};
 
 	timestamp_init(get_initial_timestamp());
 	timestamp_add_now(TS_START_ROMSTAGE);
@@ -182,6 +134,23 @@ void main(unsigned long bist)
 
 	setup_pch_gpios(&t520_gpio_map);
 
+	early_usb_init((struct southbridge_usb_port []) {
+			{ 1, 1, 0 }, /* P0 left dual conn, OC 0 */
+			{ 1, 1, 1 }, /* P1 system onboard USB port (eSATA), (EHCI debug), OC 1 */
+			{ 1, 2, -1 }, /* P2: wimax / WLAN */
+			{ 1, 1, -1 }, /* P3: WWAN, no OC */
+			{ 1, 1, -1 }, /* P4: smartcard, no OC */
+			{ 1, 1, -1 }, /* P5: ExpressCard, no OC */
+			{ 0, 2, -1 }, /* P6: empty */
+			{ 0, 2, -1 }, /* P7: to touch panel, no OC */
+			{ 1, 1, 4 }, /* P8: left dual conn, OC4 */
+			{ 1, 4, 5 }, /* P9: to system subcard back right, (EHCI debug), OC 5 */
+			{ 1, 1, -1 }, /* P10: fingerprint reader, no OC */
+			{ 1, 2, -1 }, /* P11: bluetooth, no OC. */
+			{ 1, 1, -1 }, /* P12: docking, no OC */
+			{ 1, 1, -1 }, /* P13: CAMERA (LCD), no OC */
+		  });
+
 	/* Initialize console device(s) */
 	console_init();
 
@@ -194,35 +163,22 @@ void main(unsigned long bist)
 	sandybridge_early_initialization(SANDYBRIDGE_MOBILE);
 	printk(BIOS_DEBUG, "Back from sandybridge_early_initialization()\n");
 
-	boot_mode = southbridge_detect_s3_resume() ? 2 : 0;
+	s3resume = southbridge_detect_s3_resume();
 
 	post_code(0x38);
 	/* Enable SPD ROMs and DDR-III DRAM */
 	enable_smbus();
 
-	/* Prepare USB controller early in S3 resume */
-	if (boot_mode == 2)
-		enable_usb_bar();
-
 	post_code(0x39);
-	post_code(0x3a);
 
-	pei_data.boot_mode = boot_mode;
+	post_code(0x3a);
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	/* MRC.bin has a bug and sometimes halts (instead of reboot?).
-	 */
-	if (boot_mode != 2) {
-		RCBA32(GCS) = RCBA32(GCS) & ~(1 << 5);	/* reset */
-		outw((0 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* let timer go */
-	}
+	memset(spd, 0, sizeof(spd));
+	read_spd(&spd[0], 0x50);
+	read_spd(&spd[2], 0x51);
 
-	sdram_initialize(&pei_data);
-
-	if (boot_mode != 2) {
-		RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
-		outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
-	}
+	init_dram_ddr3(spd, 1, TCK_800MHZ, s3resume);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 	post_code(0x3c);
@@ -230,20 +186,7 @@ void main(unsigned long bist)
 	rcba_config();
 	post_code(0x3d);
 
-	quick_ram_check();
-	post_code(0x3e);
-
-	cbmem_was_initted = !cbmem_recovery(boot_mode == 2);
-	if (boot_mode != 2) {
-		save_mrc_data(&pei_data);
-	}
-
-	if (boot_mode==2 && !cbmem_was_initted) {
-		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		hlt();
-	}
-	northbridge_romstage_finalize(boot_mode==2);
+	northbridge_romstage_finalize(s3resume);
 
 	post_code(0x3f);
 	timestamp_add_now(TS_END_ROMSTAGE);

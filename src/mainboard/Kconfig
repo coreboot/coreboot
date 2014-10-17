@@ -359,32 +359,4 @@ config ENABLE_POWER_BUTTON
 	def_bool y if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_ENABLE
 	def_bool n if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_DISABLE
 
-config MAINBOARD_SERIAL_NUMBER
-	string "SMBIOS Serial Number"
-	depends on GENERATE_SMBIOS_TABLES
-	default "123456789"
-        help
-	  The Serial Number to store in SMBIOS structures.
-
-config MAINBOARD_VERSION
-	string "SMBIOS Version Number"
-	depends on GENERATE_SMBIOS_TABLES
-	default "1.0"
-	help
-	  The Version Number to store in SMBIOS structures.
-
-config MAINBOARD_SMBIOS_MANUFACTURER
-	string "SMBIOS Manufacturer"
-	depends on GENERATE_SMBIOS_TABLES
-	default MAINBOARD_VENDOR
-	help
-	  Override the default Manufacturer stored in SMBIOS structures.
-
-config MAINBOARD_SMBIOS_PRODUCT_NAME
-	string "SMBIOS Product name"
-	depends on GENERATE_SMBIOS_TABLES
-	default MAINBOARD_PART_NUMBER
-	help
-	  Override the default Product name stored in SMBIOS structures.
-
 endmenu

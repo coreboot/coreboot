@@ -19,18 +19,9 @@
 
 #include "agesawrapper.h"
 #include "amdlib.h"
-#include "dimmSpd.h"
 #include "BiosCallOuts.h"
 #include "Ids.h"
 #include "OptionsIds.h"
 #include "heapManager.h"
 #include "Hudson-2.h"
 
-
-AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status;
-	Status = AmdMemoryReadSPD (Func, Data, (AGESA_READ_SPD_PARAMS *)ConfigPtr);
-
-	return Status;
-}

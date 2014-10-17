@@ -24,9 +24,10 @@
 #include "OptionsIds.h"
 #include "heapManager.h"
 #include "SB700.h"
-#include <northbridge/amd/agesa/family15/dimmSpd.h>
 #include "OEM.h"		/* SMBUS0_BASE_ADDRESS */
 #include <stdlib.h>
+
+#include <southbridge/amd/cimx/sb700/smbus_spd.h>
 
 #ifndef SB_GPIO_REG01
 #define SB_GPIO_REG01   1
@@ -117,7 +118,7 @@ static AGESA_STATUS board_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	select_socket(((AGESA_READ_SPD_PARAMS *)ConfigPtr)->SocketId);
 
-	Status = agesa_ReadSPD (Func, Data, ConfigPtr);
+	Status = agesa_ReadSpd (Func, Data, ConfigPtr);
 
 	restore_socket();
 #else

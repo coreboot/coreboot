@@ -23,10 +23,7 @@
 #include "Ids.h"
 #include "OptionsIds.h"
 #include "heapManager.h"
-#include <northbridge/amd/agesa/family15/dimmSpd.h>
 #include <stdlib.h>
-
-static AGESA_STATUS board_ReadSpd (UINT32 Func,UINT32 Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -34,7 +31,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_DEALLOCATE_BUFFER,		agesa_DeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,			agesa_LocateBuffer },
 	{AGESA_DO_RESET,			agesa_Reset },
-	{AGESA_READ_SPD,			board_ReadSpd },
+	{AGESA_READ_SPD,			agesa_ReadSpd },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
 	{AGESA_GET_IDS_INIT_DATA,		agesa_EmptyIdsInitData },
@@ -43,17 +40,3 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
 };
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
-
-
-
-static AGESA_STATUS board_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status;
-#ifdef __PRE_RAM__
-	Status = agesa_ReadSPD (Func, Data, ConfigPtr);
-#else
-	Status = AGESA_UNSUPPORTED;
-#endif
-
-	return Status;
-}

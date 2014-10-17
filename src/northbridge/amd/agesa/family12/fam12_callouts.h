@@ -24,7 +24,5 @@
 #include "AGESA.h"
 
 
-/* AGESA ADVANCED CALLOUTS - MEMORY */
-AGESA_STATUS BiosReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
 
 #endif /* CALLOUTS_AMD_AGESA_FAM12_H */

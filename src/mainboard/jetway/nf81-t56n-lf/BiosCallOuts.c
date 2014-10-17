@@ -21,7 +21,6 @@
 #include "BiosCallOuts.h"
 
 #include <Lib/amdlib.h>
-#include <northbridge/amd/agesa/family14/dimmSpd.h>
 #include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
 #include <vendorcode/amd/cimx/sb800/SB800.h>
 #include <stdint.h>
@@ -36,7 +35,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_DEALLOCATE_BUFFER,		agesa_DeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,			agesa_LocateBuffer },
 	{AGESA_DO_RESET,			agesa_Reset },
-	{AGESA_READ_SPD,			BiosReadSpd },
+	{AGESA_READ_SPD,			agesa_ReadSpd },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
 	{AGESA_GNB_PCIE_SLOT_RESET,		board_GnbPcieSlotReset },

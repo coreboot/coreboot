@@ -22,7 +22,7 @@
 
 romstage-y += cfg.c
 romstage-y += early.c
-romstage-y += smbus.c
+romstage-y += smbus.c smbus_spd.c
 romstage-y += reset.c
 
 ramstage-y += cfg.c

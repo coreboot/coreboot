@@ -22,18 +22,4 @@
 #include "fam14_callouts.h"
 #include "heapManager.h"
 #include "SB800.h"
-#include "dimmSpd.h"
 
-
-
-AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status;
-#ifdef __PRE_RAM__
-	Status = agesa_ReadSPD (Func, Data, ConfigPtr);
-#else
-	Status = AGESA_UNSUPPORTED;
-#endif
-
-	return Status;
-}

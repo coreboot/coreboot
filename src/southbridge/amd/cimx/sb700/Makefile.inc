@@ -21,7 +21,7 @@
 # SB700 Platform Files
 
 romstage-y += early.c
-romstage-y += smbus.c
+romstage-y += smbus.c smbus_spd.c
 romstage-y += reset.c
 
 ramstage-y += late.c

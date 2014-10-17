@@ -23,7 +23,6 @@
 #include "Ids.h"
 #include "OptionsIds.h"
 #include "heapManager.h"
-#include <northbridge/amd/agesa/family15/dimmSpd.h>
 #include <arch/io.h>
 
 #ifdef __PRE_RAM__
@@ -101,7 +100,7 @@ static AGESA_STATUS board_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	original_value = select_socket(((AGESA_READ_SPD_PARAMS *)ConfigPtr)->SocketId);
 
-	Status = agesa_ReadSPD (Func, Data, ConfigPtr);
+	Status = agesa_ReadSpd (Func, Data, ConfigPtr);
 
 	restore_socket(original_value);
 #else

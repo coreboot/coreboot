@@ -115,6 +115,7 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt
 	/* printk(BIOS_DEBUG, "IMGptr=%x\n", pVbiosImageInfo->ImagePtr); */
 	return pVbiosImageInfo->ImagePtr == NULL ? AGESA_WARNING : AGESA_SUCCESS;
 }
+#endif
 
 AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -124,7 +125,6 @@ AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 #endif
 	return Status;
 }
-#endif
 
 AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {

@@ -212,7 +212,6 @@ static int parse_cbtable(u64 address)
 		debug("Found!\n");
 
 		for (j = 0; j < lbh->table_bytes; j += lbr_p->size) {
-			/* look for the timestamp table */
 			lbr_p = (struct lb_record*) ((char *)lbtable + j);
 			debug("  coreboot table entry 0x%02x\n", lbr_p->tag);
 			switch (lbr_p->tag) {

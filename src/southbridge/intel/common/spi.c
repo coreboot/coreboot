@@ -517,7 +517,7 @@ static int spi_setup_offset(spi_transaction *trans)
 }
 
 /*
- * Wait for up to 60ms til status register bit(s) turn 1 (in case wait_til_set
+ * Wait for up to 6s til status register bit(s) turn 1 (in case wait_til_set
  * below is True) or 0. In case the wait was for the bit(s) to set - write
  * those bits back, which would cause resetting them.
  *
@@ -525,7 +525,7 @@ static int spi_setup_offset(spi_transaction *trans)
  */
 static int ich_status_poll(u16 bitmask, int wait_til_set)
 {
-	int timeout = 6000; /* This will result in 60 ms */
+	int timeout = 600000; /* This will result in 6 seconds */
 	u16 status = 0;
 
 	while (timeout--) {
@@ -538,7 +538,7 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 		udelay(10);
 	}
 
-	printk(BIOS_DEBUG, "ICH SPI: SCIP timeout, read %x, expected %x\n",
+	printk(BIOS_DEBUG, "ICH SPI: SCIP timeout, read %x, bitmask %x\n",
 		status, bitmask);
 	return -1;
 }

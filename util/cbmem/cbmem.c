@@ -220,7 +220,7 @@ static int parse_cbtable(u64 address)
 				debug("    Found memory map.\n");
 				struct lb_memory *memory =
 						(struct lb_memory *)lbr_p;
-				while ((char *)&memory->map[i] < ((char *)lbtable
+				while ((char *)&memory->map[i] < ((char *)lbr_p
 							    + lbr_p->size)) {
 					if (memory->map[i].type == LB_MEM_TABLE) {
 						debug("      LB_MEM_TABLE found.\n");

@@ -26,6 +26,7 @@
 #include "Ids.h"
 #include "agesawrapper.h"
 #include "def_callouts.h"
+#include "dimmSpd.h"
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -113,6 +114,15 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt
 			CBFS_TYPE_OPTIONROM, NULL);
 	/* printk(BIOS_DEBUG, "IMGptr=%x\n", pVbiosImageInfo->ImagePtr); */
 	return pVbiosImageInfo->ImagePtr == NULL ? AGESA_WARNING : AGESA_SUCCESS;
+}
+
+AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+#ifdef __PRE_RAM__
+	Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
+#endif
+	return Status;
 }
 #endif
 

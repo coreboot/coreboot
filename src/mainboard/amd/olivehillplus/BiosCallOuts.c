@@ -37,7 +37,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
-	{AGESA_READ_SPD,                 ReadSpd_00730F01 },
+	{AGESA_READ_SPD,                 agesa_ReadSpd },
 	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },

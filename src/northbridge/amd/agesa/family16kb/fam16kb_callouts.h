@@ -24,6 +24,4 @@
 #include "AGESA.h"
 
 
-AGESA_STATUS fam16kb_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-
 #endif /* CALLOUTS_AMD_AGESA_FAM16KB_H */

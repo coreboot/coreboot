@@ -22,4 +22,3 @@ romstage-y += dimmSpd.c
 
 ramstage-y += northbridge.c
 ramstage-y += fam16kb_callouts.c
-ramstage-y += dimmSpd.c

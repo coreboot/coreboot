@@ -24,14 +24,5 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
-#include "dimmSpd.h"
 #include "fam15tn_callouts.h"
 
-
-AGESA_STATUS fam15tn_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status;
-	Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
-
-	return Status;
-}

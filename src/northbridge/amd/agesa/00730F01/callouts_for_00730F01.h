@@ -23,6 +23,5 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-AGESA_STATUS ReadSpd_00730F01 (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 #endif /* CALLOUTS_AMD_AGESA_FAM16_0X30_H */

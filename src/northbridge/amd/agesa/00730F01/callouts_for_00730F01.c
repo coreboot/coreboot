@@ -24,14 +24,6 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
-#include "dimmSpd.h"
 #include "callouts_for_00730F01.h"
 #include "northbridge/amd/agesa/def_callouts.h"
 
-AGESA_STATUS ReadSpd_00730F01 (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status;
-	Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
-
-	return Status;
-}

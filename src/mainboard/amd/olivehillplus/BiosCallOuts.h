@@ -23,7 +23,5 @@
 #include <northbridge/amd/agesa/def_callouts.h>
 #include <northbridge/amd/agesa/00730F01/callouts_for_00730F01.h>
 
-/* FCH OEM Config*/
-AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
 
 #endif //_BIOS_CALLOUT_H_

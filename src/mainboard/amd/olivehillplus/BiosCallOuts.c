@@ -30,6 +30,8 @@
 #endif
 #include <stdlib.h>
 
+static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
+
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
@@ -258,7 +260,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
  *  Configure platform specific Hudson device,
  *   such Azalia, SATA, IMC etc.
  */
-AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
+static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = (AMD_CONFIG_PARAMS *)ConfigPtr;
 	if (StdHeader->Func == AMD_INIT_RESET) {

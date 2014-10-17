@@ -24,7 +24,5 @@
 #include <northbridge/amd/agesa/family15tn/fam15tn_callouts.h>
 
 
-/* FCH OEM Config*/
-AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
 
 #endif //_BIOS_CALLOUT_H_

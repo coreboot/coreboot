@@ -77,7 +77,7 @@ struct lb_header
 /* Every entry in the boot environment list will correspond to a boot
  * info record.  Encoding both type and size.  The type is obviously
  * so you can tell what it is.  The size allows you to skip that
- * boot environment record if you don't know what it easy.  This allows
+ * boot environment record if you don't know what it is.  This allows
  * forward compatibility with records not yet defined.
  */
 struct lb_record {

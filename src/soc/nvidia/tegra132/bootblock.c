@@ -58,9 +58,6 @@ void __attribute__((weak)) bootblock_mainboard_early_init(void)
 
 void main(void)
 {
-	// enable pinmux clamp inputs
-	clamp_tristate_inputs();
-
 	// enable JTAG at the earliest stage
 	enable_jtag();
 

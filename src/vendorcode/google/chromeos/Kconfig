@@ -119,6 +119,21 @@ config EC_SOFTWARE_SYNC
 	  firmware similar to how vboot verifies the main system firmware. This
 	  option selects whether depthcharge should support EC software sync.
 
+config VBOOT_EC_SLOW_UPDATE
+	bool "EC is slow to update"
+	default n
+	depends on EC_SOFTWARE_SYNC
+	help
+	  Whether the EC (or PD) is slow to update and needs to display a
+	  screen that informs the user the update is happening.
+
+config VBOOT_OPROM_MATTERS
+	bool "Video option ROM matters"
+	default n
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  Whether the video option ROM has run matters on this platform.
+
 config VIRTUAL_DEV_SWITCH
 	bool "Virtual developer switch support"
 	default n

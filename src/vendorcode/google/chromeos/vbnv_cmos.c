@@ -19,10 +19,14 @@
 
 #include <types.h>
 #include <string.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/early_variables.h>
 #include "chromeos.h"
+#if IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE)
+#include "vboot_handoff.h"
+#endif
 
 #define VBNV_BLOCK_SIZE 16	/* Size of NV storage block in bytes */
 
@@ -140,6 +144,15 @@ int get_recovery_mode_from_vbnv(void)
 
 int vboot_wants_oprom(void)
 {
+#if IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE)
+	struct vboot_handoff *vbho;
+
+	/* First check if handoff structure flag exists and is set. */
+	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+	if (vbho && vbho->init_params.flags & VB_INIT_FLAG_OPROM_LOADED)
+		return 1;
+#endif
+
 	if (!is_vbnv_initialized())
 		vbnv_setup();
 

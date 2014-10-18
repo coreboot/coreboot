@@ -76,6 +76,7 @@ unsigned long get_top_of_ram(void)
  */
 void sb800_cimx_config(AMDSBCFG *sb_config)
 {
+	uint16_t bios_size = BIOS_SIZE;
 	if (!sb_config)
 		return;
 
@@ -88,7 +89,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->StdHeader.PcieBasePtr = PCIEX_BASE_ADDRESS;
 
 	/* static Build Parameters */
-	sb_config->BuildParameters.BiosSize = BIOS_SIZE;
+	sb_config->BuildParameters.BiosSize = bios_size;
 	sb_config->BuildParameters.LegacyFree = LEGACY_FREE;
 	sb_config->BuildParameters.WatchDogTimerBase = WATCHDOG_TIMER_BASE_ADDRESS;
 	sb_config->BuildParameters.AcpiGpe0BlkAddr = GPE0_BLK_ADDRESS;

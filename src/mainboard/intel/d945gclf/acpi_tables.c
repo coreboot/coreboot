@@ -33,9 +33,6 @@
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	memset((void *)gnvs, 0, sizeof(*gnvs));
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

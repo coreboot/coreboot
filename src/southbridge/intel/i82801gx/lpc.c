@@ -618,6 +618,10 @@ static void southbridge_inject_dsdt(void)
 
 	if (gnvs) {
 		memset(gnvs, 0, sizeof(*gnvs));
+
+		gnvs->apic = 1;
+		gnvs->mpen = 1; /* Enable Multi Processing */
+
 		acpi_create_gnvs(gnvs);
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);

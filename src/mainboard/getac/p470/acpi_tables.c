@@ -35,10 +35,6 @@
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	memset((void *)gnvs, 0, sizeof(*gnvs));
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
-
 	/* Enable COM port(s) */
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x00;

@@ -127,15 +127,6 @@ function mainboards
 	ls -1 $ROOT/src/mainboard/$VENDOR/*/Kconfig 2>/dev/null | sed "s:^$ROOT/src/mainboard/$VENDOR/\(.*\)/Kconfig$:\1:"
 }
 
-function architecture
-{
-	VENDOR=$1
-	MAINBOARD=$2
-	ARCH=`cat $ROOT/src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
-		grep "select ARCH_"|cut -f2- -d_`
-	echo $ARCH | sed s/X86/i386/
-}
-
 function create_config
 {
 	VENDOR=$1
@@ -247,7 +238,7 @@ function compile_target
 
 	etime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	duration=$(( $etime - $stime ))
-	junit " <testcase classname='board' name='$TARCH/$VENDOR/$MAINBOARD' time='$duration' >"
+	junit " <testcase classname='board' name='$VENDOR/$MAINBOARD' time='$duration' >"
 
 	if [ $ret -eq 0 ]; then
 		junit "<system-out>"
@@ -276,7 +267,6 @@ function build_target
 	VENDOR=$1
 	MAINBOARD=$2
 	CONFIG=$3
-	TARCH=$( architecture $VENDOR $MAINBOARD )
 
 	if [ "`cat $TARGET/${VENDOR}_${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
 		"$buildall" = "false" ]; then

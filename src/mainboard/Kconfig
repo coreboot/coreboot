@@ -120,8 +120,6 @@ config VENDOR_SUPERMICRO
 	bool "Supermicro"
 config VENDOR_TECHNEXION
 	bool "Technexion"
-config VENDOR_TECHNOLOGIC
-	bool "Technologic"
 config VENDOR_TI
 	bool "TI"
 config VENDOR_THOMSON
@@ -197,7 +195,6 @@ source "src/mainboard/soyo/Kconfig"
 source "src/mainboard/sunw/Kconfig"
 source "src/mainboard/supermicro/Kconfig"
 source "src/mainboard/technexion/Kconfig"
-source "src/mainboard/technologic/Kconfig"
 source "src/mainboard/thomson/Kconfig"
 source "src/mainboard/ti/Kconfig"
 source "src/mainboard/traverse/Kconfig"

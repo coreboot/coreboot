@@ -15,7 +15,5 @@ source src/cpu/amd/model_10xxx/Kconfig
 source src/cpu/amd/geode_gx2/Kconfig
 source src/cpu/amd/geode_lx/Kconfig
 
-source src/cpu/amd/sc520/Kconfig
-
 source src/cpu/amd/agesa/Kconfig
 source src/cpu/amd/pi/Kconfig

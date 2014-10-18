@@ -5,15 +5,12 @@ choice
 
 config BOARD_DIGITALLOGIC_ADL855PC
 	bool "smartModule855"
-config BOARD_DIGITALLOGIC_MSM586SEG
-	bool "MSM586SEG"
 config BOARD_DIGITALLOGIC_MSM800SEV
 	bool "MSM800SEV"
 
 endchoice
 
 source "src/mainboard/digitallogic/adl855pc/Kconfig"
-source "src/mainboard/digitallogic/msm586seg/Kconfig"
 source "src/mainboard/digitallogic/msm800sev/Kconfig"
 
 config MAINBOARD_VENDOR

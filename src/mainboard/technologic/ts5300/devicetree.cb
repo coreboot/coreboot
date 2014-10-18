@@ -1,6 +1,0 @@
-chip cpu/amd/sc520
-	device domain 0 on
-		device pci 0.0 on end
-	end
-
-end

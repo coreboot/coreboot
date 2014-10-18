@@ -1,5 +1,0 @@
-config CPU_AMD_SC520
-	bool
-	select ARCH_BOOTBLOCK_X86_32
-	select ARCH_ROMSTAGE_X86_32
-	select ARCH_RAMSTAGE_X86_32

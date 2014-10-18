@@ -284,6 +284,15 @@ function build_target
 
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	create_buildenv $VENDOR $MAINBOARD $CONFIG
+
+	required_arches=`egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE)" $TARGET/${VENDOR}_${MAINBOARD}/config.build | \
+			sed "s,^CONFIG_ARCH_[^_]*_\([^=]*\)=.*$,\1," |sort -u |tr 'A-Z' 'a-z'`
+	missing_arches=`printf 'include .xcompile\nall: ; @echo $(foreach arch,'$required_arches',$(if $(filter $(arch),$(ARCH_SUPPORTED)),,$(arch)))' | make -f -`
+	if [ -n "$missing_arches" ]; then
+		printf "skipping $VENDOR/$MAINBOARD because we're missing compilers for ($missing_arches)\n"
+		return
+	fi
+
 	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
 		BUILDPREFIX=
 		if [ "$scanbuild" = "true" ]; then

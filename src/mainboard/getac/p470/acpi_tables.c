@@ -81,30 +81,6 @@ static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 	return header->length;
 }
 
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	/* Local APICs */
-	current = acpi_create_madt_lapics(current);
-
-	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				2, IO_APIC_ADDR, 0);
-
-	/* INT_SRC_OVR */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		 current, 0, 0, 2, 0);
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		 current, 0, 9, 9, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH);
-
-	/* LAPIC_NMI */
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-				current, 0, 0x0005, 0x01);
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-				current, 1, 0x0005, 0x01);
-
-	return current;
-}
-
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long mainboard_write_acpi_tables(device_t device,
 					  unsigned long start,

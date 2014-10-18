@@ -22,6 +22,7 @@
 #include "BiosCallOuts.h"
 #include "heapManager.h"
 #include "SB800.h"
+#include <southbridge/amd/cimx/sb800/gpio_oem.h>
 #include <stdlib.h>
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);

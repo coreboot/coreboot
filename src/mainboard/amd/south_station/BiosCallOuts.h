@@ -24,13 +24,4 @@
 #include <northbridge/amd/agesa/family14/fam14_callouts.h>
 
 
-#define SB_GPIO_REG02   2
-#define SB_GPIO_REG09   9
-#define SB_GPIO_REG10   10
-#define SB_GPIO_REG15   15
-#define SB_GPIO_REG17   17
-#define SB_GPIO_REG21   21
-#define SB_GPIO_REG25   25
-#define SB_GPIO_REG28   28
-
 #endif //_BIOS_CALLOUT_H_

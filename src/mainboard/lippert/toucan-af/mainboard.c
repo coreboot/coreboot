@@ -31,6 +31,7 @@
 #include <cpu/amd/mtrr.h>
 #include "SBPLATFORM.h"
 #include "OEM.h" /* SMBUS0_BASE_ADDRESS */
+#include <southbridge/amd/cimx/sb800/gpio_oem.h>
 
 /* Write data block to slave on SMBUS0. */
 #define SMB0_STATUS	((SMBUS0_BASE_ADDRESS) + 0)

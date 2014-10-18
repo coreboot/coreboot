@@ -25,18 +25,7 @@
 #include "heapManager.h"
 #include "Hudson-2.h"
 #include <stdlib.h>
-
-#ifndef SB_GPIO_REG01
-#define SB_GPIO_REG01   1
-#endif
-
-#ifndef SB_GPIO_REG24
-#define SB_GPIO_REG24   24
-#endif
-
-#ifndef SB_GPIO_REG27
-#define SB_GPIO_REG27   27
-#endif
+#include <southbridge/amd/cimx/sb700/gpio_oem.h>
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);

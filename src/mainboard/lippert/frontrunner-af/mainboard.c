@@ -31,6 +31,7 @@
 #include <cpu/amd/mtrr.h>
 #include "SBPLATFORM.h"
 #include "OEM.h" /* SMBUS0_BASE_ADDRESS */
+#include <southbridge/amd/cimx/sb800/gpio_oem.h>
 
 /* Init SIO GPIOs. */
 #define SIO_RUNTIME_BASE 0x0E00

@@ -22,15 +22,5 @@
 
 #include <northbridge/amd/agesa/def_callouts.h>
 #include <northbridge/amd/agesa/family14/fam14_callouts.h>
-#include "SB800.h"
-
-
-/* FCH GPIO access helpers */
-#define FCH_IOMUX(gpio_nr) (*(u8*)(ACPI_MMIO_BASE+IOMUX_BASE+(gpio_nr)))
-#define FCH_GPIO(gpio_nr) (*(volatile u8*)(ACPI_MMIO_BASE+GPIO_BASE+(gpio_nr)))
-static inline u8 fch_gpio_state(unsigned int gpio_nr)
-{
-	return FCH_GPIO(gpio_nr) >> 7;
-}
 
 #endif //_BIOS_CALLOUT_H_

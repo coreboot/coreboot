@@ -24,9 +24,4 @@
 #include <northbridge/amd/agesa/family12/fam12_callouts.h>
 
 
-// These registers are not defined in cimx/SB900/Hudson-2.h
-#define SB_GPIO_REG02   2
-#define SB_GPIO_REG15   15
-#define SB_GPIO_REG25   25
-
 #endif //_BIOS_CALLOUT_H_

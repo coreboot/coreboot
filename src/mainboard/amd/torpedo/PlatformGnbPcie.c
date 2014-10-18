@@ -18,7 +18,6 @@
  */
 
 #include "PlatformGnbPcieComplex.h"
-#include "BiosCallOuts.h"
 
 #include <string.h>
 #include <vendorcode/amd/agesa/f12/Proc/CPU/heapManager.h>

@@ -24,7 +24,6 @@
 #include "heapManager.h"
 #include "PlatformGnbPcieComplex.h"
 #include "Filecode.h"
-#include "BiosCallOuts.h"
 
 #include <string.h>
 

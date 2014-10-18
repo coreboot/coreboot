@@ -20,6 +20,8 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include "BiosCallOuts.h"
+#include "SB800.h"
+#include <southbridge/amd/cimx/sb800/gpio_oem.h>
 #include "heapManager.h"
 #include <stdlib.h>
 

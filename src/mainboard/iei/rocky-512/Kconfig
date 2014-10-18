@@ -1,9 +1,0 @@
-if BOARD_IEI_ROCKY_512
-
-# Dummy for abuild
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "ROCKY-512"
-
-endif

@@ -1,2 +1,0 @@
-Board name: MB-5BLGP (Neoware Eon 4000s)
-Category: settop

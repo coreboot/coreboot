@@ -12,8 +12,6 @@ config VENDOR_ADLINK
 	bool "ADLINK"
 config VENDOR_ADVANSUS
 	bool "Advansus"
-config VENDOR_ADVANTECH
-	bool "Advantech"
 config VENDOR_AMD
 	bool "AMD"
 config VENDOR_AOPEN
@@ -24,8 +22,6 @@ config VENDOR_ARIMA
 	bool "Arima"
 config VENDOR_ARTECGROUP
 	bool "Artec Group"
-config VENDOR_ASI
-	bool "ASI"
 config VENDOR_ASROCK
 	bool "ASROCK"
 config VENDOR_ASUS
@@ -34,8 +30,6 @@ config VENDOR_A_TREND
 	bool "A-Trend"
 config VENDOR_AVALUE
 	bool "AVALUE"
-config VENDOR_AXUS
-	bool "AXUS"
 config VENDOR_AZZA
 	bool "AZZA"
 config VENDOR_BACHMANN
@@ -56,8 +50,6 @@ config VENDOR_DIGITALLOGIC
 	bool "DIGITAL-LOGIC"
 config VENDOR_DMP
 	bool "DMP"
-config VENDOR_EAGLELION
-	bool "EagleLion"
 config VENDOR_ECS
 	bool "ECS"
 config VENDOR_EMULATION
@@ -130,8 +122,6 @@ config VENDOR_TECHNEXION
 	bool "Technexion"
 config VENDOR_TECHNOLOGIC
 	bool "Technologic"
-config VENDOR_TELEVIDEO
-	bool "TeleVideo"
 config VENDOR_TI
 	bool "TI"
 config VENDOR_THOMSON
@@ -154,17 +144,14 @@ source "src/mainboard/aaeon/Kconfig"
 source "src/mainboard/abit/Kconfig"
 source "src/mainboard/adlink/Kconfig"
 source "src/mainboard/advansus/Kconfig"
-source "src/mainboard/advantech/Kconfig"
 source "src/mainboard/amd/Kconfig"
 source "src/mainboard/aopen/Kconfig"
 source "src/mainboard/apple/Kconfig"
 source "src/mainboard/arima/Kconfig"
 source "src/mainboard/artecgroup/Kconfig"
-source "src/mainboard/asi/Kconfig"
 source "src/mainboard/asrock/Kconfig"
 source "src/mainboard/asus/Kconfig"
 source "src/mainboard/avalue/Kconfig"
-source "src/mainboard/axus/Kconfig"
 source "src/mainboard/azza/Kconfig"
 source "src/mainboard/bachmann/Kconfig"
 source "src/mainboard/bcom/Kconfig"
@@ -175,7 +162,6 @@ source "src/mainboard/compaq/Kconfig"
 source "src/mainboard/cubietech/Kconfig"
 source "src/mainboard/digitallogic/Kconfig"
 source "src/mainboard/dmp/Kconfig"
-source "src/mainboard/eaglelion/Kconfig"
 source "src/mainboard/ecs/Kconfig"
 source "src/mainboard/emulation/Kconfig"
 source "src/mainboard/getac/Kconfig"
@@ -212,7 +198,6 @@ source "src/mainboard/sunw/Kconfig"
 source "src/mainboard/supermicro/Kconfig"
 source "src/mainboard/technexion/Kconfig"
 source "src/mainboard/technologic/Kconfig"
-source "src/mainboard/televideo/Kconfig"
 source "src/mainboard/thomson/Kconfig"
 source "src/mainboard/ti/Kconfig"
 source "src/mainboard/traverse/Kconfig"

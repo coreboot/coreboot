@@ -22,8 +22,6 @@ config SUPERIO_NSC_PC8374
 	bool
 config SUPERIO_NSC_PC87309
 	bool
-config SUPERIO_NSC_PC87351
-	bool
 config SUPERIO_NSC_PC87360
 	bool
 config SUPERIO_NSC_PC87366

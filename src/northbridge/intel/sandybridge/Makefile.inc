@@ -55,7 +55,7 @@ $(obj)/mrc.cache: $(obj)/config.h
 	bs=$(shell printf "%d" $(CONFIG_MRC_CACHE_SIZE) ) | \
 	tr '\000' '\377' > $@
 
-cbfs-files-$(CONFIG_HAVE_MRC_CACHE) += mrc.cache
+cbfs-files-y += mrc.cache
 mrc.cache-file := $(obj)/mrc.cache
 mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) := 0xfffd0000
 mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) := 0xfffd0000

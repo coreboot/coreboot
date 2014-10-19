@@ -25,10 +25,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	# Workaround for EC/KBC IRQ1.
 	select SERIRQ_CONTINUOUS_MODE
 
-config HAVE_MRC_CACHE
-	bool
-	default y
-
 config HAVE_IFD_BIN
 	bool
 	default n

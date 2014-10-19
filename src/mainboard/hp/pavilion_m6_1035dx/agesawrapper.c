@@ -40,8 +40,6 @@
 #include <vendorcode/amd/agesa/f15tn/Proc/Fch/FchPlatform.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
 
-VOID FchInitS3LateRestore (IN FCH_DATA_BLOCK *FchDataPtr);
-VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 

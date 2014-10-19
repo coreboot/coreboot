@@ -47,15 +47,6 @@
 extern FCH_TASK_ENTRY   *FchInitS3EarlyTaskTable[];
 extern FCH_TASK_ENTRY   *FchInitS3LateTaskTable[];
 
-VOID
-FchInitS3EarlyRestore (
-  IN      FCH_DATA_BLOCK     *FchDataPtr
-  );
-
-VOID
-FchInitS3LateRestore (
-  IN      FCH_DATA_BLOCK     *FchDataPtr
-  );
 /*----------------------------------------------------------------------------------------*/
 /**
  * FchInitS3EarlyRestore - Config Fch before ACPI S3 resume PCI config device restore

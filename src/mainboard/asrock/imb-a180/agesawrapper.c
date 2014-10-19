@@ -45,8 +45,6 @@
 #include <device/device.h>
 #include "hudson.h"
 
-VOID FchInitS3LateRestore (IN FCH_DATA_BLOCK *FchDataPtr);
-VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 

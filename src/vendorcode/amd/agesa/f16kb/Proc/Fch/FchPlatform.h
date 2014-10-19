@@ -114,4 +114,14 @@
 
 extern BUILD_OPT_CFG    UserOptions;
 
+VOID
+FchInitS3EarlyRestore (
+  IN      FCH_DATA_BLOCK     *FchDataPtr
+  );
+
+VOID
+FchInitS3LateRestore (
+  IN      FCH_DATA_BLOCK     *FchDataPtr
+  );
+
 #endif // _FCH_PLATFORM_H_

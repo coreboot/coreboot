@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <cpu/x86/mtrr.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "cpuRegisters.h"
 #include "cpuCacheInit.h"

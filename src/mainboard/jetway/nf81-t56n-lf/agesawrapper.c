@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "PlatformGnbPcieComplex.h"
 
@@ -517,11 +517,7 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 }
 #endif	/* #ifndef __PRE_RAM__ */
 
-AGESA_STATUS agesawrapper_amdlaterunaptask (
-	uint32_t Func,
-	uint32_t Data,
-	void *ConfigPtr
-	)
+AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS status;
 	AP_EXE_PARAMS ApExeParams;

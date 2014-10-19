@@ -31,7 +31,7 @@
 #include <console/loglevel.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/car.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include <superio/smsc/kbc1100/kbc1100.h>

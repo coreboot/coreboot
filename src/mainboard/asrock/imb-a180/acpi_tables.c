@@ -28,7 +28,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam16.h>
 
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

@@ -27,7 +27,7 @@
 #include <arch/acpi.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <cpu/amd/agesa/s3_resume.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 
 /**********************************************
  * enable the dedicated function in mainboard.

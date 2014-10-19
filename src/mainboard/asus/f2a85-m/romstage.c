@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 
 #include <arch/acpi.h>

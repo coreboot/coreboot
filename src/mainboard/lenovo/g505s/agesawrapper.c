@@ -22,7 +22,7 @@
  *----------------------------------------------------------------------------------------
  */
 
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "PlatformGnbPcieComplex.h"
 

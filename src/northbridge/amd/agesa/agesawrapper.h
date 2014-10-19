@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,13 @@
 #define _AGESAWRAPPER_H_
 
 #include <stdint.h>
-#include <vendorcode/amd/agesa/f15tn/AGESA.h>
+#include "Porting.h"
+#include "AGESA.h"
 
 /* Define AMD Ontario APPU SSID/SVID */
-#define AMD_APU_SVID    0x1022
-#define AMD_APU_SSID    0x1234
-#define PCIE_BASE_ADDRESS   CONFIG_MMCONF_BASE_ADDRESS
+#define AMD_APU_SVID		0x1022
+#define AMD_APU_SSID		0x1234
+#define PCIE_BASE_ADDRESS	 CONFIG_MMCONF_BASE_ADDRESS
 
 enum {
 	PICK_DMI,       /* DMI Interface */
@@ -45,16 +46,22 @@ AGESA_STATUS agesawrapper_amdinitenv(void);
 AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
-AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus);
+
+#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY12 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14 || CONFIG_BOARD_AMD_DINAR
+AGESA_STATUS agesawrapper_amdreadeventlog(void);
+#else
+AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
+#endif
+
+AGESA_STATUS agesawrapper_amdinitcpuio(void);
 AGESA_STATUS agesawrapper_amdinitmmio(void);
-uint32_t agesawrapper_amdinitcpuio(void);
-void *agesawrapper_getlateinitptr (int pick);
-AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, void *ConfigPtr);
-AGESA_STATUS agesawrapper_amdS3Save(void);
 AGESA_STATUS agesawrapper_amdinitresume(void);
+AGESA_STATUS agesawrapper_amdS3Save(void);
 AGESA_STATUS agesawrapper_amds3laterestore(void);
+AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+void *agesawrapper_getlateinitptr (int pick);
 
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
-#endif
+#endif /* _AGESAWRAPPER_H_ */

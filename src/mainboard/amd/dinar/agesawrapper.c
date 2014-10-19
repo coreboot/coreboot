@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <cpu/x86/mtrr.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "cpuRegisters.h"
 #include "cpuCacheInit.h"
@@ -48,8 +48,7 @@ VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
 VOID *AcpiAlib    = NULL;
 
-extern VOID OemCustomizeInitEarly(IN  OUT AMD_EARLY_PARAMS *InitEarly);
-extern VOID OemCustomizeInitPost(IN  AMD_POST_PARAMS *InitPost);
+VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly);
 
 /*Get the Bus Number from CONFIG_MMCONF_BUS_NUMBER, Please reference AMD BIOS BKDG docuemt about it*/
 /*
@@ -80,7 +79,7 @@ GetEndBusNum (
 	return Index;
 }
 
-static UINT32 amdinitcpuio(void)
+AGESA_STATUS agesawrapper_amdinitcpuio(void)
 {
 	AGESA_STATUS                  Status;
 	UINT64                        MsrReg;
@@ -337,7 +336,7 @@ VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 	//InitEarly->PlatformConfig.CoreLevelingMode = CORE_LEVEL_TWO;
 }
 
-VOID
+static VOID
 OemCustomizeInitPost (
 		IN  AMD_POST_PARAMS     *InitPost
 		)
@@ -438,7 +437,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 
 	printk(BIOS_DEBUG, "file '%s',line %d, %s()\n", __FILE__, __LINE__, __func__);
 	/* Enable MMIO on AMD CPU Address Map Controller */
-	amdinitcpuio ();
+	agesawrapper_amdinitcpuio ();
 
 	LibAmdMemFill (&AmdParamStruct,
 			0,

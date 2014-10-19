@@ -36,7 +36,7 @@
 #include <cpu/amd/mtrr.h>
 
 #include "sb_cimx.h"
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 
 //#define FX_DEVS NODE_NUMS

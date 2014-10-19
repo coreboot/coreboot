@@ -42,7 +42,7 @@
 #include <Topology.h>
 #include <cpu/amd/amdfam15.h>
 #include <cpuRegisters.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)

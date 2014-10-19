@@ -24,7 +24,7 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include "Ids.h"
-#include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include "BiosCallOuts.h"
 #include "dimmSpd.h"
 

@@ -24,7 +24,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 
-#include <agesawrapper.h>
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 
 #if CONFIG_AMD_SB_CIMX

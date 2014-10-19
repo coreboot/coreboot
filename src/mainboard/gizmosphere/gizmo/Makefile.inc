@@ -26,12 +26,10 @@ pci$(stripped_ahcibios_id).rom-type := optionrom
 endif
 
 romstage-y += buildOpts.c
-romstage-y += agesawrapper.c
 romstage-y += BiosCallOuts.c
 romstage-y += PlatformGnbPcie.c
 
 ramstage-y += buildOpts.c
-ramstage-y += agesawrapper.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
 

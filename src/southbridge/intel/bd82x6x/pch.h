@@ -75,6 +75,7 @@ void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
 int early_spi_read(u32 offset, u32 size, u8 *buffer);
 void early_thermal_init(void);
+void southbridge_configure_default_intmap(void);
 void early_pch_init_native(void);
 int southbridge_detect_s3_resume(void);
 

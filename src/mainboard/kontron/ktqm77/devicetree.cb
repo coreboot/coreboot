@@ -27,15 +27,6 @@ chip northbridge/intel/sandybridge
 		device pci 02.0 on end # vga controller
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "pirqa_routing" = "0x8b"
-			register "pirqb_routing" = "0x8b"
-			register "pirqc_routing" = "0x8b"
-			register "pirqd_routing" = "0x8b"
-			register "pirqe_routing" = "0x8b"
-			register "pirqf_routing" = "0x8b"
-			register "pirqg_routing" = "0x8b"
-			register "pirqh_routing" = "0x8b"
-
 			# Enable all SATA ports 0-5
 			register "sata_port_map" = "0x3f"
 			# Set max SATA speed to 6.0 Gb/s (should be the default, anyway)

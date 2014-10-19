@@ -43,6 +43,7 @@ ramstage-y += ../bd82x6x/watchdog.c
 
 ramstage-$(CONFIG_ELOG) += ../bd82x6x/elog.c
 ramstage-y += ../common/spi.c
+ramstage-y += madt.c
 smm-$(CONFIG_SPI_FLASH_SMM) += ../common/spi.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
@@ -50,6 +51,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c ../bd82x6x/me_8.x.c ../bd82x
 
 romstage-y += ../bd82x6x/early_usb.c early_smbus.c ../bd82x6x/early_me.c ../bd82x6x/me_status.c ../bd82x6x/gpio.c early_thermal.c
 romstage-y += ../bd82x6x/reset.c
+romstage-y += ../bd82x6x/early_rcba.c
 romstage-$(CONFIG_SOUTHBRIDGE_INTEL_BD82X6X) += ../bd82x6x/early_spi.c
 romstage-$(CONFIG_SOUTHBRIDGE_INTEL_C216) += ../bd82x6x/early_spi.c
 

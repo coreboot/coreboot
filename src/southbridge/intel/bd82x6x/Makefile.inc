@@ -51,11 +51,14 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c pch.c
 romstage-y += early_smbus.c me_status.c gpio.c
 romstage-y += reset.c
 romstage-y += early_spi.c early_pch.c
+romstage-y += early_rcba.c
 
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += early_me.c early_usb.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += early_me.c early_usb.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += early_thermal.c early_pch_native.c early_me_native.c early_usb_native.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) += early_thermal.c early_pch_native.c early_me_native.c early_usb_native.c
+
+ramstage-y += madt.c
 
 ifeq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 IFD_BIN_PATH := $(objgenerated)/ifdfake.bin

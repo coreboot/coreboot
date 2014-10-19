@@ -59,63 +59,7 @@ static void rcba_config(void)
 {
 	u32 reg32;
 
-	/*
-	 * D31IP_TTIP   THRT   INTC -> PIRQC
-	 * D31IP_SIP2   SATA2  NOINT
-	 * D31IP_SMIP   SMBUS  INTC -> PIRQC
-	 * D31IP_SIP    SATA   INTB -> PIRQD (MSI)
-	 * D29IP_E1P    EHCI1  INTA -> PIRQH
-	 * D28IP_P8IP   Slot?  INTD -> PIRQD
-	 * D28IP_P7IP   PCIEx1 INTC -> PIRQC
-	 * D28IP_P6IP   1394   INTB -> PIRQB (MSI)
-	 * D28IP_P5IP   GbEPHY INTA -> PIRQA
-	 * D28IP_P4IP   ETH2   INTD -> PIRQD (MSI)
-	 * D28IP_P3IP   ETH1   INTC -> PIRQC (MSI)
-	 * D28IP_P2IP   Slot?  INTB -> PIRQB
-	 * D28IP_P1IP   Slot?  INTA -> PIRQA
-	 * D27IP_ZIP    HDA    INTA -> PIRQG (MSI)
-	 * D26IP_E2P    EHCI2  INTA -> PIRQA
-	 * D25IP_LIP    ETH0   INTA -> PIRQE (MSI)
-	 * D22IP_KTIP   MEI    NOINT
-	 * D22IP_IDERIP MEI    NOINT
-	 * D22IP_MEI2IP MEI    NOINT
-	 * D22IP_MEI1IP MEI    NOINT
-	 * D20IP_XHCIIP XHCI   INTA -> PIRQA (MSI)
-	 *              GFX    INTA -> PIRQA (MSI)
-	 *              PEGx16 INTA -> PIRQA
-	 *                     INTB -> PIRQB
-	 *                     INTC -> PIRQC
-	 *                     INTD -> PIRQD
-	 */
-
-	/* Device interrupt pin register (board specific) */
-	RCBA32(D31IP) = (INTC << D31IP_TTIP) | (NOINT << D31IP_SIP2) |
-			(INTC << D31IP_SMIP) | (INTB << D31IP_SIP);
-	RCBA32(D29IP) = (INTA << D29IP_E1P);
-	RCBA32(D28IP) = (INTA << D28IP_P1IP) | (INTB << D28IP_P2IP) |
-			(INTC << D28IP_P3IP) | (INTD << D28IP_P4IP) |
-			(INTA << D28IP_P5IP) | (INTB << D28IP_P6IP) |
-			(INTC << D28IP_P7IP) | (INTD << D28IP_P8IP);
-	RCBA32(D27IP) = (INTA << D27IP_ZIP);
-	RCBA32(D26IP) = (INTA << D26IP_E2P);
-	RCBA32(D25IP) = (INTA << D25IP_LIP);
-	RCBA32(D22IP) = (NOINT << D22IP_MEI1IP);
-	RCBA32(D20IP) = (INTA << D20IP_XHCIIP);
-
-	/* Device interrupt route registers */
-	DIR_ROUTE(D31IR, PIRQA, PIRQD, PIRQC, PIRQA);
-	DIR_ROUTE(D29IR, PIRQH, PIRQD, PIRQA, PIRQC);
-	DIR_ROUTE(D28IR, PIRQA, PIRQB, PIRQC, PIRQD);
-	DIR_ROUTE(D27IR, PIRQG, PIRQB, PIRQC, PIRQD);
-	DIR_ROUTE(D26IR, PIRQA, PIRQF, PIRQC, PIRQD);
-	DIR_ROUTE(D25IR, PIRQE, PIRQF, PIRQG, PIRQH);
-	DIR_ROUTE(D22IR, PIRQA, PIRQD, PIRQC, PIRQB);
-	DIR_ROUTE(D20IR, PIRQA, PIRQB, PIRQC, PIRQD);
-
-	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
-	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
+	southbridge_configure_default_intmap();
 
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);

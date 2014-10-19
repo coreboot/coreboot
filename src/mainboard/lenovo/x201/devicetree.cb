@@ -93,15 +93,6 @@ chip northbridge/intel/nehalem
 			subsystemid 0x17aa 0x215a
 		end
 		chip southbridge/intel/ibexpeak
-			register "pirqa_routing" = "0x0b"
-			register "pirqb_routing" = "0x0b"
-			register "pirqc_routing" = "0x0b"
-			register "pirqd_routing" = "0x0b"
-			register "pirqe_routing" = "0x0b"
-			register "pirqf_routing" = "0x0b"
-			register "pirqg_routing" = "0x0b"
-			register "pirqh_routing" = "0x0b"
-
 			# GPI routing
 			#  0 No effect (default)
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)

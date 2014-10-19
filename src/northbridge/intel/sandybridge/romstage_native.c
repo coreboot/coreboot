@@ -91,6 +91,7 @@ void main(unsigned long bist)
 	timestamp_add_now(TS_AFTER_INITRAM);
 	post_code(0x3c);
 
+	southbridge_configure_default_intmap();
 	rcba_config();
 	post_code(0x3d);
 

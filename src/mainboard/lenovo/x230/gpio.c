@@ -284,7 +284,7 @@ const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio75 = GPIO_LEVEL_HIGH,
 };
 
-const struct pch_gpio_map x230_gpio_map = {
+const struct pch_gpio_map mainboard_gpio_map = {
 	.set1 = {
 		.mode		= &pch_gpio_set1_mode,
 		.direction	= &pch_gpio_set1_direction,

@@ -18,3 +18,4 @@
 ##
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+romstage-y += gpio.c

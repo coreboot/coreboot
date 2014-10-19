@@ -20,6 +20,8 @@
 #ifndef INTEL_BD82X6X_GPIO_H
 #define INTEL_BD82X6X_GPIO_H
 
+#include <stdint.h>
+
 #define GPIO_MODE_NATIVE	0
 #define GPIO_MODE_GPIO		1
 #define GPIO_MODE_NONE		1
@@ -146,6 +148,8 @@ struct pch_gpio_map {
 		const struct pch_gpio_set3 *reset;
 	} set3;
 };
+
+extern const struct pch_gpio_map mainboard_gpio_map;
 
 /* Configure GPIOs with mainboard provided settings */
 void setup_pch_gpios(const struct pch_gpio_map *gpio);

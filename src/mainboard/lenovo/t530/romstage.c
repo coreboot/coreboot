@@ -132,18 +132,7 @@ void main(unsigned long bist)
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
 
-//	setup_pch_gpios(&t530_gpio_map);
-	outl(0x3962a5ff, DEFAULT_GPIOBASE + GPIO_USE_SEL);
-	outl(0x8ebf6aff, DEFAULT_GPIOBASE + GP_IO_SEL);
-	outl(0x66917ebb, DEFAULT_GPIOBASE + GP_LVL);
-	outl(0x00000000, DEFAULT_GPIOBASE + GPO_BLINK);
-	outl(0x00002002, DEFAULT_GPIOBASE + GPI_INV);
-	outl(0x02ff08fe, DEFAULT_GPIOBASE + GPIO_USE_SEL2);
-	outl(0x1f47f7fd, DEFAULT_GPIOBASE + GP_IO_SEL2);
-	outl(0xffbeff43, DEFAULT_GPIOBASE + GP_LVL2);
-	outl(0x000000ff, DEFAULT_GPIOBASE + GPIO_USE_SEL3);
-	outl(0x00000fff, DEFAULT_GPIOBASE + GP_IO_SEL3);
-	outl(0x00000f4f, DEFAULT_GPIOBASE + GP_LVL3);
+	setup_pch_gpios(&t530_gpio_map);
 
 	early_usb_init((struct southbridge_usb_port []) {
 			{ 1, 1, 0 },

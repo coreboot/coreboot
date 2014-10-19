@@ -1,39 +1,15 @@
-/*
- * This file is part of the coreboot project.
- *
- * Copyright (C) 2011 The Chromium OS Authors. All rights reserved.
- * Copyright (C) 2014 Vladimir Serbinenko
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-#ifndef T530_GPIO_H
-#define T530_GPIO_H
-
 #include "southbridge/intel/bd82x6x/gpio.h"
-
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
-	.gpio0  = GPIO_MODE_GPIO,
-	.gpio1  = GPIO_MODE_GPIO,
-	.gpio2  = GPIO_MODE_GPIO,
-	.gpio3  = GPIO_MODE_GPIO,
-	.gpio4  = GPIO_MODE_GPIO,
-	.gpio5  = GPIO_MODE_GPIO,
-	.gpio6  = GPIO_MODE_GPIO,
-	.gpio7  = GPIO_MODE_GPIO,
-	.gpio8  = GPIO_MODE_GPIO,
-	.gpio9  = GPIO_MODE_NATIVE,
+	.gpio0 = GPIO_MODE_GPIO,
+	.gpio1 = GPIO_MODE_GPIO,
+	.gpio2 = GPIO_MODE_GPIO,
+	.gpio3 = GPIO_MODE_GPIO,
+	.gpio4 = GPIO_MODE_GPIO,
+	.gpio5 = GPIO_MODE_GPIO,
+	.gpio6 = GPIO_MODE_GPIO,
+	.gpio7 = GPIO_MODE_GPIO,
+	.gpio8 = GPIO_MODE_GPIO,
+	.gpio9 = GPIO_MODE_NATIVE,
 	.gpio10 = GPIO_MODE_GPIO,
 	.gpio11 = GPIO_MODE_NATIVE,
 	.gpio12 = GPIO_MODE_NATIVE,
@@ -59,16 +35,16 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 };
 
 const struct pch_gpio_set1 pch_gpio_set1_direction = {
-	.gpio0  = GPIO_DIR_INPUT,
-	.gpio1  = GPIO_DIR_INPUT,
-	.gpio2  = GPIO_DIR_INPUT,
-	.gpio3  = GPIO_DIR_INPUT,
-	.gpio4  = GPIO_DIR_INPUT,
-	.gpio5  = GPIO_DIR_INPUT,
-	.gpio6  = GPIO_DIR_INPUT,
-	.gpio7  = GPIO_DIR_INPUT,
-	.gpio8  = GPIO_DIR_OUTPUT,
-	.gpio9  = GPIO_DIR_INPUT,
+	.gpio0 = GPIO_DIR_INPUT,
+	.gpio1 = GPIO_DIR_INPUT,
+	.gpio2 = GPIO_DIR_INPUT,
+	.gpio3 = GPIO_DIR_INPUT,
+	.gpio4 = GPIO_DIR_INPUT,
+	.gpio5 = GPIO_DIR_INPUT,
+	.gpio6 = GPIO_DIR_INPUT,
+	.gpio7 = GPIO_DIR_INPUT,
+	.gpio8 = GPIO_DIR_OUTPUT,
+	.gpio9 = GPIO_DIR_INPUT,
 	.gpio10 = GPIO_DIR_OUTPUT,
 	.gpio11 = GPIO_DIR_INPUT,
 	.gpio12 = GPIO_DIR_OUTPUT,
@@ -90,20 +66,20 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio28 = GPIO_DIR_OUTPUT,
 	.gpio29 = GPIO_DIR_OUTPUT,
 	.gpio30 = GPIO_DIR_OUTPUT,
-	.gpio31 = GPIO_DIR_INPUT
+	.gpio31 = GPIO_DIR_INPUT,
 };
 
 const struct pch_gpio_set1 pch_gpio_set1_level = {
-	.gpio0  = GPIO_LEVEL_HIGH,
-	.gpio1  = GPIO_LEVEL_HIGH,
-	.gpio2  = GPIO_LEVEL_LOW,
-	.gpio3  = GPIO_LEVEL_HIGH,
-	.gpio4  = GPIO_LEVEL_HIGH,
-	.gpio5  = GPIO_LEVEL_HIGH,
-	.gpio6  = GPIO_LEVEL_HIGH,
-	.gpio7  = GPIO_LEVEL_HIGH,
-	.gpio8  = GPIO_LEVEL_LOW,
-	.gpio9  = GPIO_LEVEL_HIGH,
+	.gpio0 = GPIO_LEVEL_HIGH,
+	.gpio1 = GPIO_LEVEL_HIGH,
+	.gpio2 = GPIO_LEVEL_LOW,
+	.gpio3 = GPIO_LEVEL_HIGH,
+	.gpio4 = GPIO_LEVEL_HIGH,
+	.gpio5 = GPIO_LEVEL_HIGH,
+	.gpio6 = GPIO_LEVEL_LOW,
+	.gpio7 = GPIO_LEVEL_HIGH,
+	.gpio8 = GPIO_LEVEL_LOW,
+	.gpio9 = GPIO_LEVEL_HIGH,
 	.gpio10 = GPIO_LEVEL_HIGH,
 	.gpio11 = GPIO_LEVEL_HIGH,
 	.gpio12 = GPIO_LEVEL_HIGH,
@@ -111,12 +87,12 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio14 = GPIO_LEVEL_HIGH,
 	.gpio15 = GPIO_LEVEL_LOW,
 	.gpio16 = GPIO_LEVEL_HIGH,
-	.gpio17 = GPIO_LEVEL_HIGH,
-	.gpio18 = GPIO_LEVEL_HIGH,
-	.gpio19 = GPIO_LEVEL_HIGH,
+	.gpio17 = GPIO_LEVEL_LOW,
+	.gpio18 = GPIO_LEVEL_LOW,
+	.gpio19 = GPIO_LEVEL_LOW,
 	.gpio20 = GPIO_LEVEL_HIGH,
-	.gpio21 = GPIO_LEVEL_HIGH,
-	.gpio22 = GPIO_LEVEL_HIGH,
+	.gpio21 = GPIO_LEVEL_LOW,
+	.gpio22 = GPIO_LEVEL_LOW,
 	.gpio23 = GPIO_LEVEL_HIGH,
 	.gpio24 = GPIO_LEVEL_LOW,
 	.gpio25 = GPIO_LEVEL_HIGH,
@@ -129,9 +105,73 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 };
 
 const struct pch_gpio_set1 pch_gpio_set1_invert = {
+	.gpio0 = GPIO_NO_INVERT,
 	.gpio1 = GPIO_INVERT,
-	.gpio6 = GPIO_INVERT,
+	.gpio2 = GPIO_NO_INVERT,
+	.gpio3 = GPIO_NO_INVERT,
+	.gpio4 = GPIO_NO_INVERT,
+	.gpio5 = GPIO_NO_INVERT,
+	.gpio6 = GPIO_NO_INVERT,
+	.gpio7 = GPIO_NO_INVERT,
+	.gpio8 = GPIO_NO_INVERT,
+	.gpio9 = GPIO_NO_INVERT,
+	.gpio10 = GPIO_NO_INVERT,
+	.gpio11 = GPIO_NO_INVERT,
+	.gpio12 = GPIO_NO_INVERT,
 	.gpio13 = GPIO_INVERT,
+	.gpio14 = GPIO_NO_INVERT,
+	.gpio15 = GPIO_NO_INVERT,
+	.gpio16 = GPIO_NO_INVERT,
+	.gpio17 = GPIO_NO_INVERT,
+	.gpio18 = GPIO_NO_INVERT,
+	.gpio19 = GPIO_NO_INVERT,
+	.gpio20 = GPIO_NO_INVERT,
+	.gpio21 = GPIO_NO_INVERT,
+	.gpio22 = GPIO_NO_INVERT,
+	.gpio23 = GPIO_NO_INVERT,
+	.gpio24 = GPIO_NO_INVERT,
+	.gpio25 = GPIO_NO_INVERT,
+	.gpio26 = GPIO_NO_INVERT,
+	.gpio27 = GPIO_NO_INVERT,
+	.gpio28 = GPIO_NO_INVERT,
+	.gpio29 = GPIO_NO_INVERT,
+	.gpio30 = GPIO_NO_INVERT,
+	.gpio31 = GPIO_NO_INVERT,
+};
+
+const struct pch_gpio_set1 pch_gpio_set1_blink = {
+	.gpio0 = GPIO_NO_BLINK,
+	.gpio1 = GPIO_NO_BLINK,
+	.gpio2 = GPIO_NO_BLINK,
+	.gpio3 = GPIO_NO_BLINK,
+	.gpio4 = GPIO_NO_BLINK,
+	.gpio5 = GPIO_NO_BLINK,
+	.gpio6 = GPIO_NO_BLINK,
+	.gpio7 = GPIO_NO_BLINK,
+	.gpio8 = GPIO_NO_BLINK,
+	.gpio9 = GPIO_NO_BLINK,
+	.gpio10 = GPIO_NO_BLINK,
+	.gpio11 = GPIO_NO_BLINK,
+	.gpio12 = GPIO_NO_BLINK,
+	.gpio13 = GPIO_NO_BLINK,
+	.gpio14 = GPIO_NO_BLINK,
+	.gpio15 = GPIO_NO_BLINK,
+	.gpio16 = GPIO_NO_BLINK,
+	.gpio17 = GPIO_NO_BLINK,
+	.gpio18 = GPIO_NO_BLINK,
+	.gpio19 = GPIO_NO_BLINK,
+	.gpio20 = GPIO_NO_BLINK,
+	.gpio21 = GPIO_NO_BLINK,
+	.gpio22 = GPIO_NO_BLINK,
+	.gpio23 = GPIO_NO_BLINK,
+	.gpio24 = GPIO_NO_BLINK,
+	.gpio25 = GPIO_NO_BLINK,
+	.gpio26 = GPIO_NO_BLINK,
+	.gpio27 = GPIO_NO_BLINK,
+	.gpio28 = GPIO_NO_BLINK,
+	.gpio29 = GPIO_NO_BLINK,
+	.gpio30 = GPIO_NO_BLINK,
+	.gpio31 = GPIO_NO_BLINK,
 };
 
 const struct pch_gpio_set2 pch_gpio_set2_mode = {
@@ -171,8 +211,8 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 
 const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio32 = GPIO_DIR_INPUT,
-	.gpio33 = GPIO_DIR_INPUT,
-	.gpio34 = GPIO_DIR_OUTPUT,
+	.gpio33 = GPIO_DIR_OUTPUT,
+	.gpio34 = GPIO_DIR_INPUT,
 	.gpio35 = GPIO_DIR_INPUT,
 	.gpio36 = GPIO_DIR_INPUT,
 	.gpio37 = GPIO_DIR_INPUT,
@@ -221,13 +261,13 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio45 = GPIO_LEVEL_HIGH,
 	.gpio46 = GPIO_LEVEL_HIGH,
 	.gpio47 = GPIO_LEVEL_HIGH,
-	.gpio48 = GPIO_LEVEL_HIGH,
+	.gpio48 = GPIO_LEVEL_LOW,
 	.gpio49 = GPIO_LEVEL_HIGH,
 	.gpio50 = GPIO_LEVEL_HIGH,
 	.gpio51 = GPIO_LEVEL_HIGH,
 	.gpio52 = GPIO_LEVEL_HIGH,
 	.gpio53 = GPIO_LEVEL_HIGH,
-	.gpio54 = GPIO_LEVEL_HIGH,
+	.gpio54 = GPIO_LEVEL_LOW,
 	.gpio55 = GPIO_LEVEL_HIGH,
 	.gpio56 = GPIO_LEVEL_HIGH,
 	.gpio57 = GPIO_LEVEL_HIGH,
@@ -235,7 +275,7 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio59 = GPIO_LEVEL_HIGH,
 	.gpio60 = GPIO_LEVEL_HIGH,
 	.gpio61 = GPIO_LEVEL_HIGH,
-	.gpio62 = GPIO_LEVEL_LOW,
+	.gpio62 = GPIO_LEVEL_HIGH,
 	.gpio63 = GPIO_LEVEL_HIGH,
 };
 
@@ -277,7 +317,7 @@ const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio68 = GPIO_LEVEL_LOW,
 	.gpio69 = GPIO_LEVEL_LOW,
 	.gpio70 = GPIO_LEVEL_HIGH,
-	.gpio71 = GPIO_LEVEL_HIGH,
+	.gpio71 = GPIO_LEVEL_LOW,
 	.gpio72 = GPIO_LEVEL_HIGH,
 	.gpio73 = GPIO_LEVEL_HIGH,
 	.gpio74 = GPIO_LEVEL_HIGH,
@@ -289,8 +329,8 @@ const struct pch_gpio_map t530_gpio_map = {
 		.mode		= &pch_gpio_set1_mode,
 		.direction	= &pch_gpio_set1_direction,
 		.level		= &pch_gpio_set1_level,
+		.blink		= &pch_gpio_set1_blink,
 		.invert		= &pch_gpio_set1_invert,
-
 	},
 	.set2 = {
 		.mode		= &pch_gpio_set2_mode,
@@ -303,4 +343,3 @@ const struct pch_gpio_map t530_gpio_map = {
 		.level		= &pch_gpio_set3_level,
 	},
 };
-#endif /* T530_GPIO_H */

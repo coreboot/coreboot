@@ -19,16 +19,16 @@
 
 /* Samsung DP (Display port) register interface driver. */
 
-#include <console/console.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <delay.h>
-#include "timer.h"
-#include "clk.h"
-#include "cpu.h"
-#include "periph.h"
-#include "dp.h"
-#include "fimd.h"
-#include "dp-core.h"
+#include <soc/clk.h>
+#include <soc/cpu.h>
+#include <soc/dp.h>
+#include <soc/dp-core.h>
+#include <soc/fimd.h>
+#include <soc/periph.h>
+#include <timer.h>
 
 void s5p_dp_reset(struct s5p_dp_device *dp)
 {

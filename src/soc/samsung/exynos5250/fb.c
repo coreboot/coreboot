@@ -20,19 +20,18 @@
 
 /* LCD driver for Exynos */
 
+#include <arch/io.h>
+#include <console/console.h>
 #include <delay.h>
+#include <soc/dp.h>
+#include <soc/dp-core.h>
+#include <soc/fimd.h>
+#include <soc/i2c.h>
+#include <soc/power.h>
+#include <soc/sysreg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <timer.h>
-#include <arch/io.h>
-#include <console/console.h>
-#include "power.h"
-#include "sysreg.h"
-
-#include "dp.h"
-#include "dp-core.h"
-#include "fimd.h"
-#include "i2c.h"
 
 /*
  * Here is the rough outline of how we bring up the display:

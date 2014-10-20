@@ -20,7 +20,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_GPIO_H
 #define CPU_SAMSUNG_EXYNOS5250_GPIO_H
 
-#include "cpu.h"
+#include <soc/cpu.h>
 
 struct gpio_bank {
 	unsigned int	con;

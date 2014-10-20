@@ -18,9 +18,8 @@
  */
 
 #include <bootblock_common.h>
-
-#include "clk.h"
-#include "wakeup.h"
+#include <soc/clk.h>
+#include <soc/wakeup.h>
 
 void bootblock_soc_init(void)
 {

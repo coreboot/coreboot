@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <assert.h>
-#include "gpio.h"
-#include "pinmux.h"
+#include <console/console.h>
+#include <soc/gpio.h>
+#include <soc/pinmux.h>
 
 static void exynos_pinmux_uart(int start, int count)
 {

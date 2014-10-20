@@ -18,14 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <assert.h>
 #include <console/console.h>
 #include <delay.h>
-#include <arch/io.h>
 #include <device/i2c.h>
-#include "clk.h"
-#include "i2c.h"
-#include "periph.h"
+#include <soc/clk.h>
+#include <soc/i2c.h>
+#include <soc/periph.h>
 
 struct __attribute__ ((packed)) i2c_regs
 {

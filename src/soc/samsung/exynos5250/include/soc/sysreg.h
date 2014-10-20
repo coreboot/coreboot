@@ -22,7 +22,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_SYSREG_H
 #define CPU_SAMSUNG_EXYNOS5250_SYSREG_H
 
-#include "cpu.h"
+#include <soc/cpu.h>
 
 /* sysreg map */
 struct exynos5_sysreg {

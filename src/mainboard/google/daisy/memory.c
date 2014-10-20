@@ -18,14 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <console/console.h>
+#include <soc/gpio.h>
+#include <soc/setup.h>
+#include <soc/dmc.h>
+#include <soc/clk.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <console/console.h>
-
-#include <soc/samsung/exynos5250/gpio.h>
-#include <soc/samsung/exynos5250/setup.h>
-#include <soc/samsung/exynos5250/dmc.h>
-#include <soc/samsung/exynos5250/clk.h>
 
 const struct mem_timings mem_timings[] = {
 	{

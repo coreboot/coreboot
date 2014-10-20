@@ -17,26 +17,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cache.h>
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
+#include <cbmem.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/i2c.h>
 #include <drivers/ti/tps65090/tps65090.h>
-#include <cbmem.h>
-#include <delay.h>
 #include <edid.h>
-#include <vbe.h>
-#include <boot/coreboot_tables.h>
-#include <arch/cache.h>
-#include <soc/samsung/exynos5250/tmu.h>
-#include <soc/samsung/exynos5250/clk.h>
-#include <soc/samsung/exynos5250/gpio.h>
-#include <soc/samsung/exynos5250/power.h>
-#include <soc/samsung/exynos5250/i2c.h>
-#include <soc/samsung/exynos5250/dp-core.h>
-#include <soc/samsung/exynos5250/dp.h>
-#include <soc/samsung/exynos5250/periph.h>
-#include <soc/samsung/exynos5250/usb.h>
+#include <soc/clk.h>
+#include <soc/dp.h>
+#include <soc/dp-core.h>
+#include <soc/gpio.h>
+#include <soc/i2c.h>
+#include <soc/periph.h>
+#include <soc/power.h>
+#include <soc/tmu.h>
+#include <soc/usb.h>
 #include <symbols.h>
+#include <vbe.h>
 
 #include "exynos5250.h"
 

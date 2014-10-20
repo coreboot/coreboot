@@ -17,10 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <soc/clk.h>
 #include <stdint.h>
 #include <timer.h>
-
-#include "clk.h"
 
 static const uint32_t clocks_per_usec = MCT_HZ/1000000;
 

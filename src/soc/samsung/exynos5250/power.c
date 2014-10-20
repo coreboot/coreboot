@@ -22,9 +22,9 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <halt.h>
-#include "dmc.h"
-#include "power.h"
-#include "setup.h"
+#include <soc/dmc.h>
+#include <soc/power.h>
+#include <soc/setup.h>
 
 /* Set the PS-Hold drive value */
 static void ps_hold_setup(void)

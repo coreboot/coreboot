@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <string.h>
-#include <delay.h>
 #include <assert.h>
-#include "gpio.h"
-#include "cpu.h"
+#include <console/console.h>
+#include <delay.h>
+#include <soc/cpu.h>
+#include <soc/gpio.h>
+#include <string.h>
 
 #define CON_MASK(x)		(0xf << ((x) << 2))
 #define CON_SFR(x, v)		((v) << ((x) << 2))

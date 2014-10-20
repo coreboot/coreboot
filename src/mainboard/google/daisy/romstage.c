@@ -17,30 +17,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
-
+#include <arch/cache.h>
+#include <arch/exception.h>
+#include <arch/stages.h>
 #include <armv7.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <timestamp.h>
-
-#include <arch/cache.h>
-#include <arch/exception.h>
-#include <soc/samsung/exynos5250/i2c.h>
-#include <soc/samsung/exynos5250/clk.h>
-#include <soc/samsung/exynos5250/cpu.h>
-#include <soc/samsung/exynos5250/dmc.h>
-#include <soc/samsung/exynos5250/gpio.h>
-#include <soc/samsung/exynos5250/setup.h>
-#include <soc/samsung/exynos5250/periph.h>
-#include <soc/samsung/exynos5250/power.h>
-#include <soc/samsung/exynos5250/trustzone.h>
-#include <soc/samsung/exynos5250/wakeup.h>
 #include <console/console.h>
 #include <program_loading.h>
-
-#include <drivers/maxim/max77686/max77686.h>
 #include <device/i2c.h>
+#include <drivers/maxim/max77686/max77686.h>
+#include <soc/clk.h>
+#include <soc/cpu.h>
+#include <soc/dmc.h>
+#include <soc/gpio.h>
+#include <soc/i2c.h>
+#include <soc/setup.h>
+#include <soc/periph.h>
+#include <soc/power.h>
+#include <soc/trustzone.h>
+#include <soc/wakeup.h>
+#include <timestamp.h>
+#include <types.h>
 
 #include "exynos5250.h"
 

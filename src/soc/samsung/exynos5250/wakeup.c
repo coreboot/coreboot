@@ -18,8 +18,8 @@
  */
 
 #include <console/console.h>
-#include "power.h"
-#include "wakeup.h"
+#include <soc/power.h>
+#include <soc/wakeup.h>
 
 void wakeup(void)
 {

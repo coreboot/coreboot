@@ -20,7 +20,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_H
 #define CPU_SAMSUNG_EXYNOS5250_H
 
-#include "gpio.h"
+#include <soc/gpio.h>
 
 struct soc_samsung_exynos5250_config {
 	/* special magic numbers! */

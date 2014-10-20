@@ -22,7 +22,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_FIMD_H
 #define CPU_SAMSUNG_EXYNOS5250_FIMD_H
 
-#include "cpu.h"
+#include <soc/cpu.h>
 
 /* FIMD register map */
 struct exynos5_fimd {

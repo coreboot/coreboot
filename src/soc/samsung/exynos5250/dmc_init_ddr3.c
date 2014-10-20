@@ -19,13 +19,13 @@
 
 /* DDR3 mem setup file for SMDK5250 board based on EXYNOS5 */
 
-#include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include "clk.h"
-#include "cpu.h"
-#include "dmc.h"
-#include "setup.h"
+#include <delay.h>
+#include <soc/clk.h>
+#include <soc/cpu.h>
+#include <soc/dmc.h>
+#include <soc/setup.h>
 
 #define RDLVL_COMPLETE_TIMEOUT	10000
 

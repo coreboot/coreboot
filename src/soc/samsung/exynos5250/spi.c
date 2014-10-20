@@ -18,13 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <assert.h>
-#include <stdlib.h>
 #include <arch/io.h>
+#include <assert.h>
 #include <console/console.h>
-#include "clk.h"
-#include "gpio.h"
-#include "spi.h"
+#include <soc/clk.h>
+#include <soc/gpio.h>
+#include <soc/spi.h>
+#include <stdlib.h>
 
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI
 # define DEBUG_SPI(x,...)	printk(BIOS_DEBUG, "EXYNOS_SPI: " x)

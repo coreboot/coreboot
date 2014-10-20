@@ -20,10 +20,10 @@
 
 /* EXYNOS - Thermal Management Unit */
 
-#include <console/console.h>
 #include <arch/io.h>
-#include "power.h"
-#include "tmu.h"
+#include <console/console.h>
+#include <soc/power.h>
+#include <soc/tmu.h>
 
 #define TRIMINFO_RELOAD		1
 #define CORE_EN			1

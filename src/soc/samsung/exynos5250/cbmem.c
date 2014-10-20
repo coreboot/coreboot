@@ -19,7 +19,7 @@
 
 #include <stddef.h>
 #include <cbmem.h>
-#include "cpu.h"
+#include <soc/cpu.h>
 
 void *cbmem_top(void)
 {

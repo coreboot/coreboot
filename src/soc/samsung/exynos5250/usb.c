@@ -18,14 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
-#include "gpio.h"
-#include "power.h"
-#include "sysreg.h"
-#include "usb.h"
+#include <soc/gpio.h>
+#include <soc/power.h>
+#include <soc/sysreg.h>
+#include <soc/usb.h>
 
 static void reset_dwc3(struct exynos5_usb_drd_dwc3 *dwc3)
 {

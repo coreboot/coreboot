@@ -23,6 +23,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_DP_H
 #define CPU_SAMSUNG_EXYNOS5250_DP_H
 
+#include <soc/cpu.h>
+
 /* DSIM register map */
 struct exynos5_dp {
 	u8	res1[0x10];

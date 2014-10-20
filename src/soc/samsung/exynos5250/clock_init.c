@@ -21,9 +21,9 @@
 
 #include <delay.h>
 #include <console/console.h>
-#include "clk.h"
-#include "dp.h"
-#include "setup.h"
+#include <soc/clk.h>
+#include <soc/dp.h>
+#include <soc/setup.h>
 
 void system_clock_init(struct mem_timings *mem,
 		struct arm_clk_ratios *arm_clk_ratio)

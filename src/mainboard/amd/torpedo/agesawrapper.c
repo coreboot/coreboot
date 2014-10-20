@@ -34,6 +34,8 @@
 #include "Filecode.h"
 #include <arch/io.h>
 
+#include <southbridge/amd/cimx/sb900/gpio_oem.h>
+
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
 /* ACPI table pointers returned by AmdInitLate */

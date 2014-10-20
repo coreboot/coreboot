@@ -1,1 +1,1 @@
-#include <soc/imgtec/pistachio/memlayout.ld>
+#include <soc/memlayout.ld>

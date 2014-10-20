@@ -42,6 +42,8 @@ romstage-y += romstage.c
 romstage-y += monotonic_timer.c
 romstage-y += timestamp.c
 
+CPPFLAGS_common += -Isrc/soc/imgtec/pistachio/include/
+
 # Generate the actual coreboot bootblock code
 $(objcbfs)/bootblock.raw: $(objcbfs)/bootblock.elf
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"

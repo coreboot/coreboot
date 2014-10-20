@@ -21,7 +21,7 @@
 #include <arch/io.h>
 #include <halt.h>
 #include <reset.h>
-#include <broadwell/reset.h>
+#include <soc/reset.h>
 
 /*
  * Soft reset (INIT# to cpu) - write 0x1 to I/O 0x92

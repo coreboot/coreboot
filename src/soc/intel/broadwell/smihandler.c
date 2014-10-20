@@ -29,13 +29,13 @@
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
-#include <broadwell/lpc.h>
-#include <broadwell/nvs.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/pm.h>
-#include <broadwell/rcba.h>
-#include <broadwell/smm.h>
-#include <broadwell/xhci.h>
+#include <soc/lpc.h>
+#include <soc/nvs.h>
+#include <soc/pci_devs.h>
+#include <soc/pm.h>
+#include <soc/rcba.h>
+#include <soc/smm.h>
+#include <soc/xhci.h>
 
 static u8 smm_initialized = 0;
 

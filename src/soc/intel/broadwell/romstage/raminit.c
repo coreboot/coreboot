@@ -31,14 +31,14 @@
 #endif
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/intel/common/mrc_cache.h>
-#include <broadwell/iomap.h>
-#include <broadwell/pei_data.h>
-#include <broadwell/pei_wrapper.h>
-#include <broadwell/pm.h>
-#include <broadwell/reset.h>
-#include <broadwell/romstage.h>
-#include <broadwell/smm.h>
-#include <broadwell/systemagent.h>
+#include <soc/iomap.h>
+#include <soc/pei_data.h>
+#include <soc/pei_wrapper.h>
+#include <soc/pm.h>
+#include <soc/reset.h>
+#include <soc/romstage.h>
+#include <soc/smm.h>
+#include <soc/systemagent.h>
 
 /*
  * Find PEI executable in coreboot filesystem and execute it.

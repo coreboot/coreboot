@@ -20,7 +20,7 @@
 #ifndef _BROADWELL_PEI_WRAPPER_H_
 #define _BROADWELL_PEI_WRAPPER_H_
 
-#include <broadwell/pei_data.h>
+#include <soc/pei_data.h>
 
 typedef int ABI_X86 (*pei_wrapper_entry_t)(struct pei_data *pei_data);
 

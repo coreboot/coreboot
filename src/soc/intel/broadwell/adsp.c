@@ -25,14 +25,14 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <broadwell/adsp.h>
-#include <broadwell/device_nvs.h>
-#include <broadwell/iobp.h>
-#include <broadwell/nvs.h>
-#include <broadwell/pch.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/rcba.h>
-#include <chip.h>
+#include <soc/adsp.h>
+#include <soc/device_nvs.h>
+#include <soc/iobp.h>
+#include <soc/nvs.h>
+#include <soc/pch.h>
+#include <soc/ramstage.h>
+#include <soc/rcba.h>
+#include <soc/intel/broadwell/chip.h>
 
 static void adsp_init(struct device *dev)
 {

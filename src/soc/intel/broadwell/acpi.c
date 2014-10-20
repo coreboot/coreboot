@@ -34,14 +34,14 @@
 #include <cpu/intel/turbo.h>
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/gnvs.h>
-#include <broadwell/acpi.h>
-#include <broadwell/cpu.h>
-#include <broadwell/iomap.h>
-#include <broadwell/lpc.h>
-#include <broadwell/msr.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/pm.h>
-#include <chip.h>
+#include <soc/acpi.h>
+#include <soc/cpu.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/msr.h>
+#include <soc/pci_devs.h>
+#include <soc/pm.h>
+#include <soc/intel/broadwell/chip.h>
 
 /*
  * List of supported C-states in this processor. Only the ULT parts support C8,

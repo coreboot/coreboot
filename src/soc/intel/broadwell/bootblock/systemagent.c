@@ -18,8 +18,8 @@
  */
 
 #include <arch/io.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/systemagent.h>
+#include <soc/pci_devs.h>
+#include <soc/systemagent.h>
 
 static void bootblock_northbridge_init(void)
 {

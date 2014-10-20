@@ -35,13 +35,13 @@
 #include <string.h>
 #include <delay.h>
 #include <elog.h>
-#include <broadwell/me.h>
-#include <broadwell/lpc.h>
-#include <broadwell/pch.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/rcba.h>
-#include <chip.h>
+#include <soc/me.h>
+#include <soc/lpc.h>
+#include <soc/pch.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
+#include <soc/rcba.h>
+#include <soc/intel/broadwell/chip.h>
 
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>

@@ -23,10 +23,10 @@
 #include <device/device.h>
 #include <stdlib.h>
 #include <string.h>
-#include <broadwell/nvs.h>
-#include <broadwell/pm.h>
-#include <broadwell/ramstage.h>
-#include <chip.h>
+#include <soc/nvs.h>
+#include <soc/pm.h>
+#include <soc/ramstage.h>
+#include <soc/intel/broadwell/chip.h>
 
 /* Save bit index for first enabled event in PM1_STS for \_SB._SWS */
 static void s3_save_acpi_wake_source(global_nvs_t *gnvs)

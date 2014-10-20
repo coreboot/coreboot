@@ -26,8 +26,8 @@
 #include <device/smbus_def.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/smbus.h>
+#include <soc/ramstage.h>
+#include <soc/smbus.h>
 
 static void smbus_delay(void)
 {

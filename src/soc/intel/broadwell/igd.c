@@ -28,10 +28,10 @@
 #include <string.h>
 #include <reg_script.h>
 #include <drivers/intel/gma/i915_reg.h>
-#include <broadwell/cpu.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/systemagent.h>
-#include <chip.h>
+#include <soc/cpu.h>
+#include <soc/ramstage.h>
+#include <soc/systemagent.h>
+#include <soc/intel/broadwell/chip.h>
 
 #define GT_RETRY 		1000
 #define GT_CDCLK_337		0

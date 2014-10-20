@@ -21,7 +21,7 @@
 #define _BROADWELL_ACPI_H_
 
 #include <arch/acpi.h>
-#include <broadwell/nvs.h>
+#include <soc/nvs.h>
 
 /* P-state configuration */
 #define PSS_MAX_ENTRIES			8

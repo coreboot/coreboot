@@ -21,7 +21,7 @@
 #define _BROADWELL_RAMSTAGE_H_
 
 #include <device/device.h>
-#include <chip.h>
+#include <soc/intel/broadwell/chip.h>
 
 void broadwell_init_pre_device(void *chip_info);
 void broadwell_init_cpus(device_t dev);

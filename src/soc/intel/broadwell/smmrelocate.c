@@ -29,11 +29,11 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
-#include <broadwell/cpu.h>
-#include <broadwell/msr.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/smm.h>
-#include <broadwell/systemagent.h>
+#include <soc/cpu.h>
+#include <soc/msr.h>
+#include <soc/pci_devs.h>
+#include <soc/smm.h>
+#include <soc/systemagent.h>
 
 /* This gets filled in and used during relocation. */
 static struct smm_relocation_params smm_reloc_params;

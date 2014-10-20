@@ -20,7 +20,7 @@
 #ifndef INTEL_WTM2_GPIO_H
 #define INTEL_WTM2_GPIO_H
 
-#include <broadwell/gpio.h>
+#include <soc/gpio.h>
 
 static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 0: LPSS_UART1_RXD */

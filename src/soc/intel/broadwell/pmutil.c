@@ -27,11 +27,11 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
-#include <broadwell/iomap.h>
-#include <broadwell/lpc.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/pm.h>
-#include <broadwell/gpio.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <soc/pm.h>
+#include <soc/gpio.h>
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])

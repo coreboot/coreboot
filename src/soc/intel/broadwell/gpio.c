@@ -22,9 +22,9 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <broadwell/gpio.h>
-#include <broadwell/iomap.h>
-#include <broadwell/pm.h>
+#include <soc/gpio.h>
+#include <soc/iomap.h>
+#include <soc/pm.h>
 
 /*
  * This function will return a number that indicates which PIRQ

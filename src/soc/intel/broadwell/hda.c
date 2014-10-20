@@ -27,9 +27,9 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <soc/intel/common/hda_verb.h>
-#include <broadwell/pch.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/rcba.h>
+#include <soc/pch.h>
+#include <soc/ramstage.h>
+#include <soc/rcba.h>
 
 const u32 * cim_verb_data = NULL;
 u32 cim_verb_data_size = 0;

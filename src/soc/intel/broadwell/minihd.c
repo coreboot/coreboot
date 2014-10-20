@@ -28,7 +28,7 @@
 #include <delay.h>
 #include <stdlib.h>
 #include <soc/intel/common/hda_verb.h>
-#include <broadwell/ramstage.h>
+#include <soc/ramstage.h>
 
 static const u32 minihd_verb_table[] = {
 	/* coreboot specific header */

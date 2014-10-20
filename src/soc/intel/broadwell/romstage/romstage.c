@@ -31,12 +31,12 @@
 #include <ramstage_cache.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
-#include <broadwell/me.h>
-#include <broadwell/pei_data.h>
-#include <broadwell/pm.h>
-#include <broadwell/reset.h>
-#include <broadwell/romstage.h>
-#include <broadwell/spi.h>
+#include <soc/me.h>
+#include <soc/pei_data.h>
+#include <soc/pm.h>
+#include <soc/reset.h>
+#include <soc/romstage.h>
+#include <soc/spi.h>
 
 /* Entry from cache-as-ram.inc. */
 void * asmlinkage romstage_main(unsigned long bist,

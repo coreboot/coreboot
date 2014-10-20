@@ -27,9 +27,9 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <broadwell/iomap.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/smbus.h>
+#include <soc/iomap.h>
+#include <soc/ramstage.h>
+#include <soc/smbus.h>
 
 static void pch_smbus_init(device_t dev)
 {

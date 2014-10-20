@@ -20,8 +20,8 @@
 #include <console/console.h>
 #include <delay.h>
 #include <arch/io.h>
-#include <broadwell/iobp.h>
-#include <broadwell/rcba.h>
+#include <soc/iobp.h>
+#include <soc/rcba.h>
 
 #define IOBP_RETRY 1000
 

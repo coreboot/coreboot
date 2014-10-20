@@ -23,9 +23,9 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/xhci.h>
-#include <broadwell/cpu.h>
+#include <soc/ramstage.h>
+#include <soc/xhci.h>
+#include <soc/cpu.h>
 
 #ifdef __SMM__
 static u8 *usb_xhci_mem_base(device_t dev)

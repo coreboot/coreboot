@@ -23,7 +23,7 @@
 #include <usbdebug.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <broadwell/pci_devs.h>
+#include <soc/pci_devs.h>
 
 void set_debug_port(unsigned int port)
 {

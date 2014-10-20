@@ -29,8 +29,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
-#include <broadwell/acpi.h>
-#include <broadwell/nvs.h>
+#include <soc/acpi.h>
+#include <soc/nvs.h>
 #include "thermal.h"
 
 void acpi_create_gnvs(global_nvs_t *gnvs)

@@ -22,10 +22,10 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
-#include <broadwell/iomap.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/romstage.h>
-#include <broadwell/systemagent.h>
+#include <soc/iomap.h>
+#include <soc/pci_devs.h>
+#include <soc/romstage.h>
+#include <soc/systemagent.h>
 
 static const struct reg_script systemagent_early_init_script[] = {
 	REG_PCI_WRITE32(MCHBAR, MCH_BASE_ADDRESS | 1),

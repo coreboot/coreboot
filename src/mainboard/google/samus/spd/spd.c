@@ -21,9 +21,9 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
-#include <broadwell/gpio.h>
-#include <broadwell/pei_data.h>
-#include <broadwell/romstage.h>
+#include <soc/gpio.h>
+#include <soc/pei_data.h>
+#include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <mainboard/google/samus/ec.h>
 #include <mainboard/google/samus/gpio.h>

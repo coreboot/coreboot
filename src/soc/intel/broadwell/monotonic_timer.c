@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <cpu/x86/msr.h>
 #include <timer.h>
-#include <broadwell/msr.h>
+#include <soc/msr.h>
 
 static struct monotonic_counter {
 	int initialized;

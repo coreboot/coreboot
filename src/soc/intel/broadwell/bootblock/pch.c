@@ -19,11 +19,11 @@
 
 #include <arch/io.h>
 #include <cpu/x86/tsc.h>
-#include <broadwell/iomap.h>
-#include <broadwell/lpc.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/rcba.h>
-#include <broadwell/spi.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <soc/rcba.h>
+#include <soc/spi.h>
 
 static void store_initial_timestamp(void)
 {

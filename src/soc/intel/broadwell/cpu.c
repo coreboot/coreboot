@@ -36,14 +36,14 @@
 #include <cpu/x86/smm.h>
 #include <delay.h>
 #include <pc80/mc146818rtc.h>
-#include <broadwell/cpu.h>
-#include <broadwell/msr.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/rcba.h>
-#include <broadwell/smm.h>
-#include <broadwell/systemagent.h>
-#include <chip.h>
+#include <soc/cpu.h>
+#include <soc/msr.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
+#include <soc/rcba.h>
+#include <soc/smm.h>
+#include <soc/systemagent.h>
+#include <soc/intel/broadwell/chip.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {

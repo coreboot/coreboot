@@ -23,10 +23,10 @@
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
-#include <broadwell/iomap.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/smbus.h>
-#include <broadwell/romstage.h>
+#include <soc/iomap.h>
+#include <soc/pci_devs.h>
+#include <soc/smbus.h>
+#include <soc/romstage.h>
 
 static const struct reg_script smbus_init_script[] = {
 	/* Set SMBUS I/O base address */

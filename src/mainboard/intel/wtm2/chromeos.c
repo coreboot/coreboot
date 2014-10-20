@@ -22,7 +22,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <broadwell/gpio.h>
+#include <soc/gpio.h>
 
 /* Compile-time settings for developer and recovery mode. */
 #define DEV_MODE_SETTING 1

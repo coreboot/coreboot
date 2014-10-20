@@ -21,7 +21,7 @@
 #ifndef _BROADWELL_SYSTEMAGENT_H_
 #define _BROADWELL_SYSTEMAGENT_H_
 
-#include <broadwell/iomap.h>
+#include <soc/iomap.h>
 
 #define SA_IGD_OPROM_VENDEV	0x80860406
 

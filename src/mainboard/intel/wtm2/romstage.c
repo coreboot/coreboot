@@ -21,10 +21,10 @@
 #include <console/console.h>
 #include <stdint.h>
 #include <string.h>
-#include <broadwell/gpio.h>
-#include <broadwell/pei_data.h>
-#include <broadwell/pei_wrapper.h>
-#include <broadwell/romstage.h>
+#include <soc/gpio.h>
+#include <soc/pei_data.h>
+#include <soc/pei_wrapper.h>
+#include <soc/romstage.h>
 #include "gpio.h"
 
 void mainboard_romstage_entry(struct romstage_params *rp)

@@ -24,13 +24,13 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <broadwell/iobp.h>
-#include <broadwell/pch.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/rcba.h>
-#include <broadwell/serialio.h>
-#include <broadwell/spi.h>
+#include <soc/iobp.h>
+#include <soc/pch.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
+#include <soc/rcba.h>
+#include <soc/serialio.h>
+#include <soc/spi.h>
 
 u8 pch_revision(void)
 {

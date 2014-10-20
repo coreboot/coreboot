@@ -25,12 +25,12 @@
 #include <reg_script.h>
 #include <spi-generic.h>
 #include <stdlib.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/lpc.h>
-#include <broadwell/me.h>
-#include <broadwell/rcba.h>
-#include <broadwell/spi.h>
-#include <broadwell/systemagent.h>
+#include <soc/pci_devs.h>
+#include <soc/lpc.h>
+#include <soc/me.h>
+#include <soc/rcba.h>
+#include <soc/spi.h>
+#include <soc/systemagent.h>
 
 const struct reg_script system_agent_finalize_script[] = {
 	REG_PCI_OR16(0x50, 1 << 0),				/* GGC */

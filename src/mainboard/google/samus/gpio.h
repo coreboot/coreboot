@@ -20,7 +20,7 @@
 #ifndef SAMUS_GPIO_H
 #define SAMUS_GPIO_H
 
-#include <broadwell/gpio.h>
+#include <soc/gpio.h>
 
 #define SAMUS_GPIO_PP3300_AUTOBAHN_EN	23
 #define SAMUS_GPIO_SSD_RESET_L		47

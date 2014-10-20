@@ -24,7 +24,7 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
-#include <broadwell/romstage.h>
+#include <soc/romstage.h>
 
 static inline uint32_t *stack_push(u32 *stack, u32 value)
 {

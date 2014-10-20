@@ -30,9 +30,9 @@
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/vboot_handoff.h>
 #endif
-#include <broadwell/pei_data.h>
-#include <broadwell/pei_wrapper.h>
-#include <broadwell/ramstage.h>
+#include <soc/pei_data.h>
+#include <soc/pei_wrapper.h>
+#include <soc/ramstage.h>
 
 static inline struct ramstage_cache *next_cache(struct ramstage_cache *c)
 {

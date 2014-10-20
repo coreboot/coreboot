@@ -26,10 +26,10 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
-#include <broadwell/iomap.h>
-#include <broadwell/pch.h>
-#include <broadwell/pm.h>
-#include <broadwell/smm.h>
+#include <soc/iomap.h>
+#include <soc/pch.h>
+#include <soc/pm.h>
+#include <soc/smm.h>
 
 void southbridge_smm_clear_state(void)
 {

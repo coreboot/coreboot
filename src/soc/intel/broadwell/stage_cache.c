@@ -19,7 +19,7 @@
 
 #include <cbmem.h>
 #include <ramstage_cache.h>
-#include <broadwell/smm.h>
+#include <soc/smm.h>
 #include <stdint.h>
 
 struct ramstage_cache *ramstage_cache_location(long *size)

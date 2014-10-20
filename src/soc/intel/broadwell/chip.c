@@ -20,9 +20,9 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/ramstage.h>
-#include <chip.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
+#include <soc/intel/broadwell/chip.h>
 
 static void pci_domain_set_resources(device_t dev)
 {

@@ -20,8 +20,8 @@
 #include <arch/io.h>
 #include <cbmem.h>
 #include <device/pci.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/systemagent.h>
+#include <soc/pci_devs.h>
+#include <soc/systemagent.h>
 
 static uintptr_t dpr_region_start(void)
 {

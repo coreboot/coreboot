@@ -24,14 +24,14 @@
 #include <device/pciexp.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#include <broadwell/gpio.h>
-#include <broadwell/lpc.h>
-#include <broadwell/iobp.h>
-#include <broadwell/pch.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/rcba.h>
-#include <chip.h>
-#include <broadwell/cpu.h>
+#include <soc/gpio.h>
+#include <soc/lpc.h>
+#include <soc/iobp.h>
+#include <soc/pch.h>
+#include <soc/pci_devs.h>
+#include <soc/rcba.h>
+#include <soc/intel/broadwell/chip.h>
+#include <soc/cpu.h>
 
 static void pcie_update_cfg8(device_t dev, int reg, u8 mask, u8 or);
 static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or);

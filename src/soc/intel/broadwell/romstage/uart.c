@@ -24,8 +24,8 @@
 #include <reg_script.h>
 #include <stdint.h>
 #include <uart8250.h>
-#include <broadwell/iobp.h>
-#include <broadwell/serialio.h>
+#include <soc/iobp.h>
+#include <soc/serialio.h>
 
 const struct reg_script uart_init[] = {
 	/* Set MMIO BAR */

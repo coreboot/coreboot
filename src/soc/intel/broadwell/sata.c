@@ -24,11 +24,11 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <delay.h>
-#include <broadwell/iobp.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/rcba.h>
-#include <broadwell/sata.h>
-#include <chip.h>
+#include <soc/iobp.h>
+#include <soc/ramstage.h>
+#include <soc/rcba.h>
+#include <soc/sata.h>
+#include <soc/intel/broadwell/chip.h>
 
 static inline u32 sir_read(struct device *dev, int idx)
 {

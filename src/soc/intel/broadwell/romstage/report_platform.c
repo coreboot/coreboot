@@ -23,11 +23,11 @@
 #include <device/pci.h>
 #include <string.h>
 #include <cpu/x86/msr.h>
-#include <broadwell/cpu.h>
-#include <broadwell/pch.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/romstage.h>
-#include <broadwell/systemagent.h>
+#include <soc/cpu.h>
+#include <soc/pch.h>
+#include <soc/pci_devs.h>
+#include <soc/romstage.h>
+#include <soc/systemagent.h>
 
 static struct {
 	u32 cpuid;

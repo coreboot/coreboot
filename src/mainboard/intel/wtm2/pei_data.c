@@ -20,9 +20,9 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <broadwell/gpio.h>
-#include <broadwell/pei_data.h>
-#include <broadwell/pei_wrapper.h>
+#include <soc/gpio.h>
+#include <soc/pei_data.h>
+#include <soc/pei_wrapper.h>
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {

@@ -25,14 +25,14 @@
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
 #include <stdlib.h>
-#include <broadwell/iobp.h>
-#include <broadwell/nvs.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/pch.h>
-#include <broadwell/ramstage.h>
-#include <broadwell/rcba.h>
-#include <broadwell/serialio.h>
-#include <chip.h>
+#include <soc/iobp.h>
+#include <soc/nvs.h>
+#include <soc/pci_devs.h>
+#include <soc/pch.h>
+#include <soc/ramstage.h>
+#include <soc/rcba.h>
+#include <soc/serialio.h>
+#include <soc/intel/broadwell/chip.h>
 
 /* Set D3Hot Power State in ACPI mode */
 static void serialio_enable_d3hot(struct resource *res)

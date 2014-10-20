@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <soc/intel/broadwell/broadwell/iomap.h>
+#include <soc/iomap.h>
 
 Name (_HID, EISAID ("PNP0A08"))	// PCIe
 Name (_CID, EISAID ("PNP0A03"))	// PCI

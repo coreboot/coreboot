@@ -21,9 +21,9 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
-#include <broadwell/cpu.h>
-#include <broadwell/msr.h>
-#include <broadwell/romstage.h>
+#include <soc/cpu.h>
+#include <soc/msr.h>
+#include <soc/romstage.h>
 
 u32 cpu_family_model(void)
 {

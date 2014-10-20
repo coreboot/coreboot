@@ -22,9 +22,9 @@
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <delay.h>
-#include <broadwell/spi.h>
-#include <broadwell/rcba.h>
-#include <broadwell/romstage.h>
+#include <soc/spi.h>
+#include <soc/rcba.h>
+#include <soc/romstage.h>
 
 #define SPI_DELAY 10     /* 10us */
 #define SPI_RETRY 200000 /* 2s */

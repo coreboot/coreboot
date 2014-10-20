@@ -20,8 +20,8 @@
 #include <stdint.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
-#include <broadwell/cpu.h>
-#include <broadwell/msr.h>
+#include <soc/cpu.h>
+#include <soc/msr.h>
 
 unsigned long tsc_freq_mhz(void)
 {

@@ -20,10 +20,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <console/streams.h>
-#include <broadwell/iomap.h>
-#include <broadwell/pei_data.h>
-#include <broadwell/pei_wrapper.h>
-#include <broadwell/smm.h>
+#include <soc/iomap.h>
+#include <soc/pei_data.h>
+#include <soc/pei_wrapper.h>
+#include <soc/smm.h>
 
 static void ABI_X86 send_to_console(unsigned char b)
 {

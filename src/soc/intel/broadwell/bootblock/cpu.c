@@ -25,8 +25,8 @@
 #include <arch/io.h>
 #include <halt.h>
 #include <cpu/intel/microcode/microcode.c>
-#include <broadwell/rcba.h>
-#include <broadwell/msr.h>
+#include <soc/rcba.h>
+#include <soc/msr.h>
 
 static void set_var_mtrr(
 	unsigned reg, unsigned base, unsigned size, unsigned type)

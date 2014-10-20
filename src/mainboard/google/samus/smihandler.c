@@ -21,15 +21,15 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <broadwell/pm.h>
-#include <broadwell/smm.h>
+#include <soc/pm.h>
+#include <soc/smm.h>
 #include <elog.h>
 #include <ec/google/chromeec/ec.h>
-#include <broadwell/gpio.h>
-#include <broadwell/iomap.h>
-#include <broadwell/nvs.h>
-#include <broadwell/pm.h>
-#include <broadwell/smm.h>
+#include <soc/gpio.h>
+#include <soc/iomap.h>
+#include <soc/nvs.h>
+#include <soc/pm.h>
+#include <soc/smm.h>
 #include "ec.h"
 #include "gpio.h"
 

@@ -22,7 +22,7 @@
 #define _BROADWELL_NVS_H_
 
 #include <vendorcode/google/chromeos/gnvs.h>
-#include <broadwell/device_nvs.h>
+#include <soc/device_nvs.h>
 
 typedef struct {
 	/* Miscellaneous */

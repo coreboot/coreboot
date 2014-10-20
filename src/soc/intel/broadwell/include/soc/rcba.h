@@ -20,7 +20,7 @@
 #ifndef _BROADWELL_RCBA_H_
 #define _BROADWELL_RCBA_H_
 
-#include <broadwell/iomap.h>
+#include <soc/iomap.h>
 
 #define RCBA8(x)	*((volatile u8 *)(RCBA_BASE_ADDRESS + x))
 #define RCBA16(x)	*((volatile u16 *)(RCBA_BASE_ADDRESS + x))

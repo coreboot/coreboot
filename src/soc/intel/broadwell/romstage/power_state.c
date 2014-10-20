@@ -28,11 +28,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <broadwell/iomap.h>
-#include <broadwell/lpc.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/pm.h>
-#include <broadwell/romstage.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <soc/pm.h>
+#include <soc/romstage.h>
 
 static struct chipset_power_state power_state CAR_GLOBAL;
 

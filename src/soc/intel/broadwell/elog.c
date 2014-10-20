@@ -22,8 +22,8 @@
 #include <console/console.h>
 #include <stdint.h>
 #include <elog.h>
-#include <broadwell/lpc.h>
-#include <broadwell/pm.h>
+#include <soc/lpc.h>
+#include <soc/pm.h>
 
 static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 {

@@ -22,12 +22,12 @@
 #include <console/console.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
-#include <broadwell/cpu.h>
-#include <broadwell/gpio.h>
-#include <broadwell/pei_data.h>
-#include <broadwell/pei_wrapper.h>
-#include <broadwell/pm.h>
-#include <broadwell/romstage.h>
+#include <soc/cpu.h>
+#include <soc/gpio.h>
+#include <soc/pei_data.h>
+#include <soc/pei_wrapper.h>
+#include <soc/pm.h>
+#include <soc/romstage.h>
 #include <mainboard/google/samus/spd/spd.h>
 #include <mainboard/google/samus/gpio.h>
 

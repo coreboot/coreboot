@@ -23,8 +23,8 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/me.h>
+#include <soc/pci_devs.h>
+#include <soc/me.h>
 #include <delay.h>
 
 static inline void me_read_dword_ptr(void *ptr, int offset)

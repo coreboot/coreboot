@@ -22,15 +22,15 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
-#include <broadwell/iomap.h>
-#include <broadwell/lpc.h>
-#include <broadwell/pch.h>
-#include <broadwell/pci_devs.h>
-#include <broadwell/pm.h>
-#include <broadwell/rcba.h>
-#include <broadwell/romstage.h>
-#include <broadwell/smbus.h>
-#include <chip.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/pch.h>
+#include <soc/pci_devs.h>
+#include <soc/pm.h>
+#include <soc/rcba.h>
+#include <soc/romstage.h>
+#include <soc/smbus.h>
+#include <soc/intel/broadwell/chip.h>
 
 const struct reg_script pch_early_init_script[] = {
 	/* Setup southbridge BARs */

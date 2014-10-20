@@ -42,7 +42,8 @@
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-	AGESAWRAPPER(amdinitmmio);
+
+	AGESAWRAPPER_PRE_CONSOLE(amdinitmmio);
 
 	hudson_lpc_port80();
 

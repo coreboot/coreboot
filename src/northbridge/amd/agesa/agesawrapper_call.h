@@ -57,4 +57,6 @@ static inline u32 do_agesawrapper(AGESA_STATUS (*func)(void), const char *name)
 
 #define AGESAWRAPPER(func) do_agesawrapper(agesawrapper_ ## func, #func)
 
+#define AGESAWRAPPER_PRE_CONSOLE(func) agesawrapper_ ## func()
+
 #endif

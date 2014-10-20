@@ -41,7 +41,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 	volatile int halt = 0;
-	AGESA_STATUS status = AGESA_UNSUPPORTED;
 
 	/*
 	 *  In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
@@ -54,14 +53,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	outb(0xD2, 0xcd6);
 	outb(0x00, 0xcd7);
 
-	/*
-	 * The following should be a call to AGESAWRAPPER() macro, but
-	 * that would use console output before it is initialized.
-	 */
-	status = agesawrapper_amdinitmmio();
-	if (AGESA_SUCCESS != status) {
-		printk(BIOS_WARNING, "AmdInitMmio reported %s\n", decodeAGESA_STATUS(status));
-	}
+	AGESAWRAPPER_PRE_CONSOLE(amdinitmmio);
 
 	hudson_lpc_port80();
 

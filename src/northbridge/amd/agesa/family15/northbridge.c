@@ -707,6 +707,9 @@ static void domain_enable_resources(device_t dev)
 #if CONFIG_AMD_SB_CIMX
 	sb_After_Pci_Init();
 #endif
+	/* Enable MMIO on AMD CPU Address Map Controller */
+	agesawrapper_amdinitcpuio();
+
 	AGESAWRAPPER(amdinitmid);
 	printk(BIOS_DEBUG, "  Fam15 - leaving %s.\n", __func__);
 }

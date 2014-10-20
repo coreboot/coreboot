@@ -740,9 +740,12 @@ static void domain_enable_resources(device_t dev)
 		AGESAWRAPPER(fchs3laterestore);
 
 	/* Must be called after PCI enumeration and resource allocation */
-	if (!acpi_is_wakeup_s3())
-		AGESAWRAPPER(amdinitmid);
+	if (!acpi_is_wakeup_s3()) {
+		/* Enable MMIO on AMD CPU Address Map Controller */
+		agesawrapper_amdinitcpuio();
 
+		AGESAWRAPPER(amdinitmid);
+	}
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }
 

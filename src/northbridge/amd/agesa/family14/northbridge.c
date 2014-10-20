@@ -771,8 +771,12 @@ static void domain_enable_resources(device_t dev)
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 
-	if (!acpi_is_wakeup_s3())
+	if (!acpi_is_wakeup_s3()) {
+		/* Enable MMIO on AMD CPU Address Map Controller */
+		agesawrapper_amdinitcpuio();
+
 		AGESAWRAPPER(amdinitmid);
+	}
 
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }

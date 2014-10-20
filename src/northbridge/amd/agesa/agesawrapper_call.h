@@ -63,9 +63,11 @@ static inline u32 do_agesawrapper(AGESA_STATUS (*func)(void), const char *name)
 	/* TODO: These families do not pass valid HeapStatus. */
 #define AGESA_EVENTLOG(status) \
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(0)
+#define AGESA_EVENTLOG_(x,y) AGESA_EVENTLOG(x)
 #else
 #define AGESA_EVENTLOG(status, heapstatus) \
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(heapstatus)
+#define AGESA_EVENTLOG_(x,y) AGESA_EVENTLOG(x,y)
 #endif
 
 #endif

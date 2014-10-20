@@ -355,9 +355,6 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 
-	/* Enable MMIO on AMD CPU Address Map Controller */
-	agesawrapper_amdinitcpuio();
-
 	LibAmdMemFill(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS), &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;

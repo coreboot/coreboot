@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 #include <arch/io.h>
+#include <console/console.h>
+#include <soc/sdram.h>
+#include <soc/gpio.h>
 #include <string.h>
 #include <types.h>
-#include <console/console.h>
-#include <soc/rockchip/rk3288/sdram.h>
-#include <soc/rockchip/rk3288/gpio.h>
 
 static struct rk3288_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-lpddr3-samsung-2GB.inc"	/* ram_code = 0000 */

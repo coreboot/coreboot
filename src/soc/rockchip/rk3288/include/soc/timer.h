@@ -21,9 +21,9 @@
 #define __SOC_ROCKCHIP_RK3288_TIMER_H__
 
 #include <inttypes.h>
+#include <soc/addressmap.h>
+#include <soc/clock.h>
 #include <timer.h>
-#include "addressmap.h"
-#include "clock.h"
 
 static const u32 clocks_per_usec = OSC_HZ/USECS_PER_SEC;
 

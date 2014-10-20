@@ -17,16 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <assert.h>
 #include <console/console.h>
+#include <delay.h>
+#include <soc/clock.h>
+#include <soc/grf.h>
+#include <soc/pmu.h>
+#include <soc/tsadc.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <arch/io.h>
-#include <delay.h>
-#include "tsadc.h"
-#include "clock.h"
-#include "pmu.h"
-#include "grf.h"
 
 struct rk3288_tsadc_regs {
 	u32	user_con;

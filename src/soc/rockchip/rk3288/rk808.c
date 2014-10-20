@@ -19,11 +19,11 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/i2c.h>
+#include <soc/rk808.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <delay.h>
-#include "rk808.h"
 
 #define RK808_ADDR	0x1b
 

@@ -1,1 +1,1 @@
-#include <soc/rockchip/rk3288/memlayout.ld>
+#include <soc/memlayout.ld>

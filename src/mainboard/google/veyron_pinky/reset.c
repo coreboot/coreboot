@@ -18,7 +18,7 @@
  */
 
 #include <arch/io.h>
-#include <soc/rockchip/rk3288/gpio.h>
+#include <soc/gpio.h>
 #include <reset.h>
 
 #include "board.h"

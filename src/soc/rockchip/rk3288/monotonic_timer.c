@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
+#include <soc/addressmap.h>
+#include <soc/timer.h>
 #include <stdint.h>
 #include <timer.h>
-#include <arch/io.h>
-#include "addressmap.h"
-#include "timer.h"
 
 static uint64_t timer_raw_value(void)
 {

@@ -21,11 +21,11 @@
 #include <arch/io.h>
 #include <bootblock_common.h>
 #include <console/console.h>
-#include <soc/rockchip/rk3288/grf.h>
+#include <soc/addressmap.h>
+#include <soc/clock.h>
+#include <soc/grf.h>
+#include <soc/timer.h>
 #include <symbols.h>
-#include "addressmap.h"
-#include "timer.h"
-#include "clock.h"
 
 static void bootblock_cpu_init(void)
 {

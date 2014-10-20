@@ -20,8 +20,7 @@
 #ifndef __SOC_ROCKCHIP_RK3288_GPIO_H__
 #define __SOC_ROCKCHIP_RK3288_GPIO_H__
 
-#include "addressmap.h"
-#include "grf.h"
+#include <types.h>
 
 #define GPIO(p, b, i) ((gpio_t){.port = p, .bank = GPIO_##b, .idx = i})
 

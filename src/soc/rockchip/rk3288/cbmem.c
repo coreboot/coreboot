@@ -17,9 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stddef.h>
 #include <cbmem.h>
-#include "soc.h"
+#include <soc/soc.h>
+#include <stddef.h>
+
 void *cbmem_top(void)
 {
 	return (void *)(get_fb_base_kb()*KiB);

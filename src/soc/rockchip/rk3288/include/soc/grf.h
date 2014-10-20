@@ -20,9 +20,9 @@
 #ifndef __SOC_ROCKCHIP_RK3288_GRF_H__
 #define __SOC_ROCKCHIP_RK3288_GRF_H__
 
+#include <soc/addressmap.h>
+#include <soc/soc.h>
 #include <types.h>
-#include "addressmap.h"
-#include "soc.h"
 
 struct rk3288_grf_gpio_lh {
 	u32 l;

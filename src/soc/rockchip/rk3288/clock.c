@@ -17,17 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <assert.h>
-#include <stdlib.h>
 #include <arch/io.h>
-#include <stdint.h>
-#include <string.h>
+#include <assert.h>
 #include <console/console.h>
 #include <delay.h>
-#include "clock.h"
-#include "grf.h"
-#include "addressmap.h"
-#include "soc.h"
+#include <soc/addressmap.h>
+#include <soc/clock.h>
+#include <soc/grf.h>
+#include <soc/soc.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 struct pll_div {
 	u32	nr;

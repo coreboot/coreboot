@@ -17,18 +17,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <arch/io.h>
-#include <stdlib.h>
 #include <assert.h>
+#include <console/console.h>
+#include <delay.h>
+#include <endian.h>
+#include <soc/addressmap.h>
+#include <soc/spi.h>
+#include <soc/clock.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include <delay.h>
+#include <stdlib.h>
 #include <timer.h>
-#include <endian.h>
-#include "addressmap.h"
-#include "spi.h"
-#include "clock.h"
 
 struct rockchip_spi_slave {
 	struct spi_slave slave;

@@ -20,7 +20,7 @@
 #ifndef __SOC_ROCKCHIP_RK3288_CLOCK_H__
 #define __SOC_ROCKCHIP_RK3288_CLOCK_H__
 
-#include "addressmap.h"
+#include <soc/addressmap.h>
 
 #define OSC_HZ		(24*MHz)
 

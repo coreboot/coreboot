@@ -17,26 +17,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
-#include <arch/stages.h>
-#include <armv7.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <cbmem.h>
-#include <delay.h>
-#include <program_loading.h>
-#include <timestamp.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
-#include <stdlib.h>
+#include <arch/stages.h>
+#include <armv7.h>
 #include <assert.h>
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <soc/rockchip/rk3288/sdram.h>
-#include <soc/rockchip/rk3288/clock.h>
-#include <soc/rockchip/rk3288/pwm.h>
-#include <soc/rockchip/rk3288/grf.h>
-#include <soc/rockchip/rk3288/tsadc.h>
+#include <cbfs.h>
+#include <cbmem.h>
+#include <console/console.h>
+#include <delay.h>
+#include <program_loading.h>
+#include <soc/sdram.h>
+#include <soc/clock.h>
+#include <soc/pwm.h>
+#include <soc/grf.h>
+#include <soc/tsadc.h>
+#include <stdlib.h>
 #include <symbols.h>
+#include <timestamp.h>
+#include <types.h>
+#include <vendorcode/google/chromeos/chromeos.h>
+
 #include "timer.h"
 
 static void regulate_vdd_log(unsigned int mv)

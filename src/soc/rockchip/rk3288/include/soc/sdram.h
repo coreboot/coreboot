@@ -20,8 +20,6 @@
 #ifndef __SOC_ROCKCHIP_RK3288_SDRAM_H__
 #define __SOC_ROCKCHIP_RK3288_SDRAM_H__
 
-#include <arch/io.h>
-
 enum {
 	DDR3 = 3,
 	LPDDR3 = 6,

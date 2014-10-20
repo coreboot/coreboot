@@ -17,16 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 #include <arch/io.h>
-#include <string.h>
-#include <types.h>
 #include <console/console.h>
 #include <delay.h>
-#include "addressmap.h"
-#include "clock.h"
-#include "sdram.h"
-#include "grf.h"
-#include "soc.h"
-#include "pmu.h"
+#include <soc/addressmap.h>
+#include <soc/clock.h>
+#include <soc/sdram.h>
+#include <soc/grf.h>
+#include <soc/soc.h>
+#include <soc/pmu.h>
+#include <string.h>
+#include <types.h>
 
 struct rk3288_ddr_pctl_regs {
 	u32 scfg;

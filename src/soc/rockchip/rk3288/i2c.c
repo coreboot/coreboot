@@ -17,21 +17,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <arch/io.h>
-#include <stdlib.h>
 #include <assert.h>
-
-#include <delay.h>
 #include <cbfs.h>
-#include <string.h>
+#include <console/console.h>
+#include <delay.h>
 #include <device/i2c.h>
-
-#include "addressmap.h"
-#include "grf.h"
-#include "soc.h"
-#include "i2c.h"
-#include "clock.h"
+#include <soc/addressmap.h>
+#include <soc/grf.h>
+#include <soc/soc.h>
+#include <soc/i2c.h>
+#include <soc/clock.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define RETRY_COUNT	3
 /* 100000us = 100ms */

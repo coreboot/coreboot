@@ -17,10 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
-#include <arch/io.h>
-#include "timer.h"
+#include <soc/timer.h>
+#include <timer.h>
 
 void init_timer(void)
 {

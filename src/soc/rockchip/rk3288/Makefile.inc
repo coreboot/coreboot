@@ -68,6 +68,8 @@ ramstage-y += rk808.c
 ramstage-y += pwm.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
+CPPFLAGS_common += -Isrc/soc/rockchip/rk3288/include/
+
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	cp $< $@
 

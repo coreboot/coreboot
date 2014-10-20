@@ -17,12 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <arch/io.h>
+#include <console/console.h>
+#include <soc/soc.h>
+#include <soc/gpio.h>
+#include <soc/grf.h>
+#include <soc/pmu.h>
 #include <stdlib.h>
-#include "soc.h"
-#include "gpio.h"
-#include "pmu.h"
 
 struct rk3288_gpio_regs *gpio_port[] = {
 	(struct rk3288_gpio_regs *)0xff750000,

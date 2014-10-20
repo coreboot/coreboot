@@ -17,22 +17,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <device/device.h>
 #include <arch/cache.h>
+#include <arch/io.h>
+#include <console/console.h>
 #include <delay.h>
+#include <device/device.h>
 #include <edid.h>
-#include <symbols.h>
-#include <vbe.h>
 #include <boot/coreboot_tables.h>
 #include <device/i2c.h>
-#include <soc/rockchip/rk3288/gpio.h>
-#include <soc/rockchip/rk3288/soc.h>
-#include <soc/rockchip/rk3288/pmu.h>
-#include <soc/rockchip/rk3288/clock.h>
-#include <soc/rockchip/rk3288/rk808.h>
-#include <soc/rockchip/rk3288/spi.h>
-#include <soc/rockchip/rk3288/i2c.h>
+#include <soc/gpio.h>
+#include <soc/grf.h>
+#include <soc/soc.h>
+#include <soc/pmu.h>
+#include <soc/clock.h>
+#include <soc/rk808.h>
+#include <soc/spi.h>
+#include <soc/i2c.h>
+#include <symbols.h>
+#include <vbe.h>
 
 #include "board.h"
 

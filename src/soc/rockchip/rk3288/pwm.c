@@ -17,18 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <arch/io.h>
-#include <stdlib.h>
 #include <assert.h>
-#include <timer.h>
+#include <console/console.h>
 #include <delay.h>
-
-#include "addressmap.h"
-#include "grf.h"
-#include "soc.h"
-#include "pwm.h"
-#include "clock.h"
+#include <soc/addressmap.h>
+#include <soc/grf.h>
+#include <soc/soc.h>
+#include <soc/pwm.h>
+#include <soc/clock.h>
+#include <stdlib.h>
+#include <timer.h>
 
 struct pwm_ctl {
 	u32	pwm_cnt;

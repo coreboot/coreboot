@@ -20,12 +20,12 @@
 
 #include <arch/io.h>
 #include <bootblock_common.h>
-#include <soc/rockchip/rk3288/grf.h>
-#include <soc/rockchip/rk3288/spi.h>
-#include <soc/rockchip/rk3288/rk808.h>
-#include <soc/rockchip/rk3288/clock.h>
-#include <soc/rockchip/rk3288/pmu.h>
-#include <soc/rockchip/rk3288/i2c.h>
+#include <soc/clock.h>
+#include <soc/i2c.h>
+#include <soc/grf.h>
+#include <soc/pmu.h>
+#include <soc/rk808.h>
+#include <soc/spi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include "board.h"

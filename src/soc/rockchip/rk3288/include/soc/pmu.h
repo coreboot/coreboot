@@ -19,7 +19,8 @@
 
 #ifndef __SOC_ROCKCHIP_RK3288_PMU_H__
 #define __SOC_ROCKCHIP_RK3288_PMU_H__
-#include "addressmap.h"
+
+#include <soc/addressmap.h>
 
 struct rk3288_pmu_regs {
 	u32 wakeup_cfg[2];

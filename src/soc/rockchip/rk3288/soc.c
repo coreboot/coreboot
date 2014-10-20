@@ -17,16 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cache.h>
+#include <cbmem.h>
+#include <console/console.h>
+#include <delay.h>
+#include <device/device.h>
+#include <soc/gpio.h>
+#include <soc/soc.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stddef.h>
-#include <delay.h>
-#include <console/console.h>
-#include <device/device.h>
-#include <cbmem.h>
-#include <arch/cache.h>
-#include <soc/rockchip/rk3288/gpio.h>
-#include "soc.h"
+
 #include "chip.h"
 
 static void soc_enable(device_t dev)

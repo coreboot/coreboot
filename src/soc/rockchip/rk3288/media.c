@@ -18,9 +18,8 @@
  */
 
 #include <cbfs.h>
+#include <soc/spi.h>
 #include <symbols.h>
-
-#include "spi.h"
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {

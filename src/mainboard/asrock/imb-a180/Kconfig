@@ -57,10 +57,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config ACPI_SSDTX_NUM
-	int
-	default 0
-
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y

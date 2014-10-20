@@ -136,8 +136,6 @@ unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp
 	start = ALIGN(start, 16);
 	current = start;
 
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-
 	//same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table
 
 	for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
@@ -173,7 +171,6 @@ unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp
 		ssdtx->checksum = acpi_checksum((u8 *)ssdtx, ssdtx->length);
 		acpi_add_table(rsdp, ssdtx);
 	}
-#endif
 
 	return current;
 }

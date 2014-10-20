@@ -30,12 +30,10 @@
 #include "mb_sysconf.h"
 #include "mainboard.h"
 
-#if CONFIG_ACPI_SSDTX_NUM >= 1
 extern const unsigned char AmlCode_ssdt2[];
 extern const unsigned char AmlCode_ssdt3[];
 extern const unsigned char AmlCode_ssdt4[];
 extern const unsigned char AmlCode_ssdt5[];
-#endif
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -143,8 +141,6 @@ unsigned long mainboard_write_acpi_tables(unsigned long current,
 
 	get_bus_conf(); //it will get sblk, pci1234, hcdn, and sbdn
 
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-
 	/* same htio, but different possition? We may have to copy,
 	change HCIN, and recalculate the checknum and add_table */
 
@@ -182,7 +178,6 @@ unsigned long mainboard_write_acpi_tables(unsigned long current,
 		ssdtx->checksum = acpi_checksum((u8 *)ssdtx, ssdtx->length);
 		acpi_add_table(rsdp, ssdtx);
 	}
-#endif
 
 	return current;
 }

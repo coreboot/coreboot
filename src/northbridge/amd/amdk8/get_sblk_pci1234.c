@@ -176,9 +176,6 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
  * Just put all the possible HT Node/link to the list tp pci1234[] in
  * src/mainboard/<vendor>/<mainboard>get_bus_conf.c
  *
- * Also don't forget to increase the CONFIG_ACPI_SSDTX_NUM etc (FIXME what else) if
- * you have too many SSDTs
- *
  * What about co-processor in socket 1 on a 2 way system? Or socket 2 and
  * socket 3 on a 4 way system? Treat that as an HC, too!
  *

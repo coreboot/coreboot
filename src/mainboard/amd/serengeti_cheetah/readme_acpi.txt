@@ -12,7 +12,7 @@ Change dsdt.asl, according to MB layout
 
 Change acpi_tables.c
 	sbdn: Real SB device Num. for 8111 =3 or 1 depend if 8131 presents.  ---- Actually you don't need to change it, it is coreboot run-time configurable now.
-	if there is HT-IO board, need to adjust SSDTX_NUM...., and preset pci1234 array. acpi_tables.c will decide to put the SSDT on the RSDT or not according if the HT-IO board is installed
+	if there is HT-IO board, need to preset pci1234 array. acpi_tables.c will decide to put the SSDT on the RSDT or not according if the HT-IO board is installed
 
 Regarding pci bridge apic and pic
 	need to modify entries amd8111.asl and amd8131.asl and amd8151.asl.... acording to your MB laybout, it is like that in mptable.c

@@ -674,6 +674,11 @@ static void southbridge_inject_dsdt(void)
 		memset(gnvs, 0, sizeof (*gnvs));
 
 		acpi_create_gnvs(gnvs);
+
+		gnvs->apic = 1;
+		gnvs->mpen = 1;		/* Enable Multi Processing */
+		gnvs->pcnt = dev_count_cpu();
+
 		/* IGD OpRegion Base Address */
 		gnvs->aslb = (u32)opregion;
 		/* And tell SMI about it */

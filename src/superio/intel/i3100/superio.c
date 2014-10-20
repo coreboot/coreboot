@@ -24,19 +24,19 @@
 #include "i3100.h"
 #include <arch/io.h>
 
-static void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(struct device *dev)
 {
 	outb(0x80, dev->path.pnp.port);
 	outb(0x86, dev->path.pnp.port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+static void pnp_exit_ext_func_mode(struct device *dev)
 {
 	outb(0x68, dev->path.pnp.port);
 	outb(0x08, dev->path.pnp.port);
 }
 
-static void i3100_init(device_t dev)
+static void i3100_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;

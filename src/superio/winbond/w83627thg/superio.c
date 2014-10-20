@@ -29,7 +29,7 @@
 #include <pc80/keyboard.h>
 #include "w83627thg.h"
 
-static void w83627thg_init(device_t dev)
+static void w83627thg_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -64,7 +64,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83627THG_HWM,   PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

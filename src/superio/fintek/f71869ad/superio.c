@@ -30,7 +30,7 @@
 #include "chip.h"
 #include "f71869ad.h"
 
-static void f71869ad_init(device_t dev)
+static void f71869ad_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
@@ -122,7 +122,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71869AD_PME, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

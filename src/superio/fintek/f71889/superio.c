@@ -27,7 +27,7 @@
 #include <pc80/keyboard.h>
 #include "f71889.h"
 
-static void f71889_init(device_t dev)
+static void f71889_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -65,7 +65,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71889_VREF, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

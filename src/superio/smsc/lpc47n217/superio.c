@@ -34,18 +34,18 @@
 #include "lpc47n217.h"
 
 /* Forward declarations */
-static void enable_dev(device_t dev);
-static void lpc47n217_pnp_set_resources(device_t dev);
-static void lpc47n217_pnp_enable_resources(device_t dev);
-static void lpc47n217_pnp_enable(device_t dev);
-static void lpc47n217_init(device_t dev);
-static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource);
-static void lpc47n217_pnp_set_iobase(device_t dev, u16 iobase);
-static void lpc47n217_pnp_set_drq(device_t dev, u8 drq);
-static void lpc47n217_pnp_set_irq(device_t dev, u8 irq);
-static void lpc47n217_pnp_set_enable(device_t dev, int enable);
-static void pnp_enter_conf_state(device_t dev);
-static void pnp_exit_conf_state(device_t dev);
+static void enable_dev(struct device *dev);
+static void lpc47n217_pnp_set_resources(struct device *dev);
+static void lpc47n217_pnp_enable_resources(struct device *dev);
+static void lpc47n217_pnp_enable(struct device *dev);
+static void lpc47n217_init(struct device *dev);
+static void lpc47n217_pnp_set_resource(struct device *dev, struct resource *resource);
+static void lpc47n217_pnp_set_iobase(struct device *dev, u16 iobase);
+static void lpc47n217_pnp_set_drq(struct device *dev, u8 drq);
+static void lpc47n217_pnp_set_irq(struct device *dev, u8 irq);
+static void lpc47n217_pnp_set_enable(struct device *dev, int enable);
+static void pnp_enter_conf_state(struct device *dev);
+static void pnp_exit_conf_state(struct device *dev);
 
 struct chip_operations superio_smsc_lpc47n217_ops = {
 	CHIP_NAME("SMSC LPC47N217 Super I/O")
@@ -72,7 +72,7 @@ static struct pnp_info pnp_dev_info[] = {
  *
  * @param dev Pointer to structure describing a Super I/O device.
  */
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
 			   pnp_dev_info);
@@ -87,7 +87,7 @@ static void enable_dev(device_t dev)
  *
  * @param dev Pointer to structure describing a Super I/O device.
  */
-static void lpc47n217_pnp_set_resources(device_t dev)
+static void lpc47n217_pnp_set_resources(struct device *dev)
 {
 	struct resource *res;
 
@@ -102,7 +102,7 @@ static void lpc47n217_pnp_set_resources(device_t dev)
  * NOTE: Cannot use pnp_enable_resources() here because it assumes chip
  * support for logical devices, which the LPC47N217 doesn't have.
  */
-static void lpc47n217_pnp_enable_resources(device_t dev)
+static void lpc47n217_pnp_enable_resources(struct device *dev)
 {
 	pnp_enter_conf_state(dev);
 	lpc47n217_pnp_set_enable(dev, 1);
@@ -113,7 +113,7 @@ static void lpc47n217_pnp_enable_resources(device_t dev)
  * NOTE: Cannot use pnp_set_enable() here because it assumes chip
  * support for logical devices, which the LPC47N217 doesn't have.
  */
-static void lpc47n217_pnp_enable(device_t dev)
+static void lpc47n217_pnp_enable(struct device *dev)
 {
 	pnp_enter_conf_state(dev);
 	lpc47n217_pnp_set_enable(dev, !!dev->enabled);
@@ -128,13 +128,13 @@ static void lpc47n217_pnp_enable(device_t dev)
  *
  * @param dev Pointer to structure describing a Super I/O device.
  */
-static void lpc47n217_init(device_t dev)
+static void lpc47n217_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
 }
 
-static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
+static void lpc47n217_pnp_set_resource(struct device *dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR, "ERROR: %s %02lx not allocated\n",
@@ -164,7 +164,7 @@ static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 	report_resource_stored(dev, resource, "");
 }
 
-static void lpc47n217_pnp_set_iobase(device_t dev, u16 iobase)
+static void lpc47n217_pnp_set_iobase(struct device *dev, u16 iobase)
 {
 	ASSERT(!(iobase & 0x3));
 
@@ -184,7 +184,7 @@ static void lpc47n217_pnp_set_iobase(device_t dev, u16 iobase)
 	}
 }
 
-static void lpc47n217_pnp_set_drq(device_t dev, u8 drq)
+static void lpc47n217_pnp_set_drq(struct device *dev, u8 drq)
 {
 	const u8 PP_DMA_MASK = 0x0F;
 	const u8 PP_DMA_SELECTION_REGISTER = 0x26;
@@ -201,7 +201,7 @@ static void lpc47n217_pnp_set_drq(device_t dev, u8 drq)
 	}
 }
 
-static void lpc47n217_pnp_set_irq(device_t dev, u8 irq)
+static void lpc47n217_pnp_set_irq(struct device *dev, u8 irq)
 {
 	u8 irq_config_register = 0, irq_config_mask = 0;
 	u8 current_config, new_config;
@@ -232,7 +232,7 @@ static void lpc47n217_pnp_set_irq(device_t dev, u8 irq)
 	pnp_write_config(dev, irq_config_register, new_config);
 }
 
-static void lpc47n217_pnp_set_enable(device_t dev, int enable)
+static void lpc47n217_pnp_set_enable(struct device *dev, int enable)
 {
 	u8 power_register = 0, power_mask = 0, current_power, new_power;
 
@@ -267,12 +267,12 @@ static void lpc47n217_pnp_set_enable(device_t dev, int enable)
 	pnp_write_config(dev, power_register, new_power);
 }
 
-static void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(struct device *dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
 
-static void pnp_exit_conf_state(device_t dev)
+static void pnp_exit_conf_state(struct device *dev)
 {
 	outb(0xaa, dev->path.pnp.port);
 }
@@ -285,7 +285,7 @@ static void pnp_exit_conf_state(device_t dev)
  *
  * @param dev Pointer to structure describing a Super I/O device.
  */
-static void dump_pnp_device(device_t dev)
+static void dump_pnp_device(struct device *dev)
 {
 	int i;
 	print_debug("\n");

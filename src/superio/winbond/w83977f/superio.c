@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include "w83977f.h"
 
-static void w83977f_init(device_t dev)
+static void w83977f_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -62,7 +62,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83977F_GPIO2, PNP_IO0, {0x07f8, 0}, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

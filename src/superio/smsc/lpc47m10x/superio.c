@@ -34,9 +34,9 @@
 #include "lpc47m10x.h"
 
 /* Forward declarations */
-static void enable_dev(device_t dev);
-static void lpc47m10x_init(device_t dev);
-// static void dump_pnp_device(device_t dev);
+static void enable_dev(struct device *dev);
+static void lpc47m10x_init(struct device *dev);
+// static void dump_pnp_device(struct device *dev);
 
 struct chip_operations superio_smsc_lpc47m10x_ops = {
 	CHIP_NAME("SMSC LPC47M10x Super I/O")
@@ -67,7 +67,7 @@ static struct pnp_info pnp_dev_info[] = {
  *
  * @param dev Pointer to structure describing a Super I/O device.
  */
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
 			   pnp_dev_info);
@@ -81,7 +81,7 @@ static void enable_dev(device_t dev)
  *
  * @param dev Pointer to structure describing a Super I/O device.
  */
-static void lpc47m10x_init(device_t dev)
+static void lpc47m10x_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -102,7 +102,7 @@ static void lpc47m10x_init(device_t dev)
  *
  * @param dev Pointer to structure describing a Super I/O device.
  */
-static void dump_pnp_device(device_t dev)
+static void dump_pnp_device(struct device *dev)
 {
 	int i;
 	print_debug("\n");

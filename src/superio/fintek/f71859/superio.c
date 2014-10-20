@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include "f71859.h"
 
-static void f71859_init(device_t dev)
+static void f71859_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
@@ -49,7 +49,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71859_SP1, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

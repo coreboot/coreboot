@@ -27,7 +27,7 @@
 #include <pc80/keyboard.h>
 #include "f81865f.h"
 
-static void f81865f_init(device_t dev)
+static void f81865f_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -62,7 +62,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F81865F_PME, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

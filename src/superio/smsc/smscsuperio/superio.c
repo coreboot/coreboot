@@ -147,7 +147,7 @@ static const struct logical_devices {
  *
  * @param dev The device to use.
  */
-static void smsc_init(device_t dev)
+static void smsc_init(struct device *dev)
 {
 	int i, ld;
 
@@ -224,7 +224,7 @@ static struct pnp_info pnp_dev_info[] = {
  *
  * @param dev The device to use.
  */
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	int i, j, fn;
 	int tmp[MAX_LOGICAL_DEVICES];

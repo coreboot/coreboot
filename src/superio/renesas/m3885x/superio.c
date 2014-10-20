@@ -29,7 +29,7 @@
 
 void m3885_configure_multikey(void);
 
-static void m3885x_init(device_t dev)
+static void m3885x_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -41,12 +41,12 @@ static void m3885x_init(device_t dev)
 	m3885_configure_multikey();
 }
 
-static void m3885x_read_resources(device_t dev)
+static void m3885x_read_resources(struct device *dev)
 {
 	/* Nothing, but this function avoids an error on serial console. */
 }
 
-static void m3885x_enable_resources(device_t dev)
+static void m3885x_enable_resources(struct device *dev)
 {
 	/* Nothing, but this function avoids an error on serial console. */
 }
@@ -61,7 +61,7 @@ static struct pnp_info pnp_dev_info[] = {
         { &ops, 0, 0, { 0, 0 }, }
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

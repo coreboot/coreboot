@@ -27,7 +27,7 @@
 #include <pc80/keyboard.h>
 #include "f71863fg.h"
 
-static void f71863fg_init(device_t dev)
+static void f71863fg_init(struct device *dev)
 {
 	struct resource *res0;
 
@@ -66,7 +66,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71863FG_PME, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

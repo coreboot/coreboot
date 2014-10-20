@@ -50,7 +50,7 @@ static void hwmon_set_fan_divisor(unsigned int base, int num, unsigned int divis
 	}
 }
 
-static void w83697hf_init(device_t dev)
+static void w83697hf_init(struct device *dev)
 {
 	struct resource *res0;
 	struct superio_winbond_w83697hf_config *cfg;

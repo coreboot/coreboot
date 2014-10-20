@@ -25,7 +25,7 @@
 #include "nct5104d.h"
 #include "chip.h"
 
-static void nct5104d_init(device_t dev)
+static void nct5104d_init(struct device *dev)
 {
 	struct superio_nuvoton_nct5104d_config *conf = dev->chip_info;
 	u8 reg10, reg11, reg26;

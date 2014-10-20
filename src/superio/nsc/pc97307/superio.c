@@ -26,7 +26,7 @@
 #include <pc80/keyboard.h>
 #include "pc97307.h"
 
-static void init(device_t dev)
+static void init(struct device *dev)
 {
 	u8 reg8;
 

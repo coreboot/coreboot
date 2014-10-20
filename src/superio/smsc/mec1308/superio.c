@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include "mec1308.h"
 
-static void mec1308_init(device_t dev)
+static void mec1308_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -62,7 +62,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, MEC1308_MBX,  PNP_IO0, { 0x7ff, 0 } },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &pnp_ops,
 			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);

@@ -30,7 +30,7 @@
 #include "it8728f.h"
 #include "it8728f_internal.h"
 
-static void it8728f_init(device_t dev)
+static void it8728f_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
@@ -68,7 +68,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, IT8728F_IR, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

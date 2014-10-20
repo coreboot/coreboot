@@ -25,7 +25,7 @@
 
 /* TODO: Add pnp_enter_ext_func_mode() etc. and wrap functions. */
 
-static void init(device_t dev)
+static void init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;

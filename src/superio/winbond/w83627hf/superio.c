@@ -44,7 +44,7 @@ static u8 pnp_read_index(u16 port, u8 reg)
 	return inb(port + 1);
 }
 
-static void enable_hwm_smbus(device_t dev)
+static void enable_hwm_smbus(struct device *dev)
 {
 	u8 reg8;
 
@@ -54,7 +54,7 @@ static void enable_hwm_smbus(device_t dev)
 	pnp_write_config(dev, 0x2b, reg8);
 }
 
-static void init_acpi(device_t dev)
+static void init_acpi(struct device *dev)
 {
 	u8 value = 0x20; /* FIXME: The 0x20 value here is never used? */
 	int power_on = 1;
@@ -99,7 +99,7 @@ static void init_hwm(u16 base)
 	}
 }
 
-static void w83627hf_init(device_t dev)
+static void w83627hf_init(struct device *dev)
 {
 	struct resource *res0;
 
@@ -121,7 +121,7 @@ static void w83627hf_init(device_t dev)
 	}
 }
 
-static void w83627hf_pnp_enable_resources(device_t dev)
+static void w83627hf_pnp_enable_resources(struct device *dev)
 {
 	pnp_enable_resources(dev);
 

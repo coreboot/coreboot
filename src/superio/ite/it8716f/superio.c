@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include "it8716f.h"
 
-static void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(struct device *dev)
 {
 	u16 port = dev->path.pnp.port;
 
@@ -39,7 +39,7 @@ static void pnp_enter_ext_func_mode(device_t dev)
 	outb((port == 0x4e) ? 0xaa : 0x55, port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+static void pnp_exit_ext_func_mode(struct device *dev)
 {
 	pnp_write_config(dev, 0x02, 0x02);
 }
@@ -73,7 +73,7 @@ static void init_ec(u16 base)
 }
 #endif
 
-static void it8716f_init(device_t dev)
+static void it8716f_init(struct device *dev)
 {
 	struct resource *res0;
 

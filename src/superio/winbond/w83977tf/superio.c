@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include "w83977tf.h"
 
-static void w83977tf_init(device_t dev)
+static void w83977tf_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -63,7 +63,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83977TF_ACPI, PNP_IRQ0, },
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include "w83627dhg.h"
 
-static void w83627dhg_enable_UR2(device_t dev)
+static void w83627dhg_enable_UR2(struct device *dev)
 {
 	u8 reg8;
 
@@ -36,7 +36,7 @@ static void w83627dhg_enable_UR2(device_t dev)
 	pnp_exit_conf_mode(dev);
 }
 
-static void w83627dhg_init(device_t dev)
+static void w83627dhg_init(struct device *dev)
 {
 
 	if (!dev->enabled)

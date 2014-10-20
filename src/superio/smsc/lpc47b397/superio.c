@@ -43,7 +43,7 @@ static u8 pnp_read_index(u16 port, u8 reg)
 	return inb(port + 1);
 }
 
-static void enable_hwm_smbus(device_t dev)
+static void enable_hwm_smbus(struct device *dev)
 {
 	/* Enable SensorBus register access. */
 	u8 reg8;
@@ -53,7 +53,7 @@ static void enable_hwm_smbus(device_t dev)
 	pnp_write_config(dev, 0xf0, reg8);
 }
 
-static void lpc47b397_init(device_t dev)
+static void lpc47b397_init(struct device *dev)
 {
 
 	if (!dev->enabled)
@@ -66,7 +66,7 @@ static void lpc47b397_init(device_t dev)
 	}
 }
 
-static void lpc47b397_pnp_enable_resources(device_t dev)
+static void lpc47b397_pnp_enable_resources(struct device *dev)
 {
 	pnp_enable_resources(dev);
 
@@ -99,7 +99,7 @@ static struct device_operations ops = {
 #define SB_DATA2  0x0e
 #define SB_DATA3  0x0f
 
-static int lsmbus_read_byte(device_t dev, u8 address)
+static int lsmbus_read_byte(struct device *dev, u8 address)
 {
 	unsigned int device;
 	struct resource *res;
@@ -117,7 +117,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return result;
 }
 
-static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 {
 	unsigned int device;
 	struct resource *res;

@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include "pc8374.h"
 
-static void init(device_t dev)
+static void init(struct device *dev)
 {
 
 	if (!dev->enabled)

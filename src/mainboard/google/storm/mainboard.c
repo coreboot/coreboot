@@ -24,12 +24,11 @@
 #include <delay.h>
 #include <device/device.h>
 #include <gpiolib.h>
+#include <soc/clock.h>
+#include <soc/gpio.h>
+#include <soc/usb.h>
 #include <string.h>
 #include <symbols.h>
-
-#include <soc/qualcomm/ipq806x/include/clock.h>
-#include <soc/qualcomm/ipq806x/include/gpio.h>
-#include <soc/qualcomm/ipq806x/include/usb.h>
 
 /* convenient shorthand (in MB) */
 #define DRAM_START           ((uintptr_t)_dram / MiB)

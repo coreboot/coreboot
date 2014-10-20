@@ -40,6 +40,8 @@ ramstage-y += timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += usb.c
 
+INCLUDES += -Isrc/soc/qualcomm/ipq806x/include/
+
 ifeq ($(CONFIG_USE_BLOBS),y)
 
 # Generate the actual coreboot bootblock code

@@ -34,12 +34,12 @@
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
-#include <delay.h>
-#include <clock.h>
-#include <gpio.h>
-#include <gsbi.h>
 #include <console/uart.h>
-#include <ipq_uart.h>
+#include <delay.h>
+#include <soc/clock.h>
+#include <soc/gpio.h>
+#include <soc/gsbi.h>
+#include <soc/ipq_uart.h>
 #include <stdint.h>
 #include <stdlib.h>
 

@@ -4,11 +4,11 @@
 
 #include <arch/io.h>
 #include <delay.h>
+#include <soc/gpio.h>
+#include <soc/iomap.h>
+#include <soc/spi.h>
 #include <stdlib.h>
 #include <string.h>
-#include <spi.h>
-#include <gpio.h>
-#include <iomap.h>
 
 #define SUCCESS		0
 

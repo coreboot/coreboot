@@ -1,1 +1,1 @@
-#include <soc/qualcomm/ipq806x/memlayout.ld>
+#include <soc/memlayout.ld>

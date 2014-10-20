@@ -37,7 +37,7 @@
 #define __SOC_QUALCOMM_IPQ806X_IOMAP_H_
 
 #include <arch/io.h>
-#include <cdp.h>
+#include <soc/cdp.h>
 
 /* Typecast to allow integers being passed as address
    This needs to be included because vendor code is not compliant with our

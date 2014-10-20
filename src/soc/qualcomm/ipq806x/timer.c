@@ -29,8 +29,8 @@
  */
 
 #include <delay.h>
-#include <iomap.h>
-#include <ipq_timer.h>
+#include <soc/iomap.h>
+#include <soc/ipq_timer.h>
 #include <timer.h>
 
 /*

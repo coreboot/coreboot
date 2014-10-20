@@ -17,13 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
-
-#include "clock.h"
-#include "iomap.h"
-#include "usb.h"
+#include <delay.h>
+#include <soc/clock.h>
+#include <soc/iomap.h>
+#include <soc/usb.h>
 
 #define CRPORT_TX_OVRD_DRV_LO	0x1002
 #define CRPORT_RX_OVRD_IN_HI	0x1006

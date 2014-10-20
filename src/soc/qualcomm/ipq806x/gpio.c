@@ -28,9 +28,9 @@
  * SUCH DAMAGE.
  */
 
-#include <iomap.h>
-#include <gpio.h>
 #include <arch/io.h>
+#include <soc/gpio.h>
+#include <soc/iomap.h>
 
 /*******************************************************
 Function description: check for invalid GPIO #

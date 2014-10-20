@@ -18,7 +18,7 @@
  */
 
 #include <arch/io.h>
-#include <soc/nvidia/tegra124/gpio.h>
+#include <soc/gpio.h>
 #include <reset.h>
 
 void hard_reset(void)

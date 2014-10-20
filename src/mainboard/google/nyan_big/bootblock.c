@@ -22,12 +22,12 @@
 #include <console/console.h>
 #include <device/i2c.h>
 #include <soc/addressmap.h>
+#include <soc/clk_rst.h>
 #include <soc/clock.h>
+#include <soc/gpio.h>
 #include <soc/nvidia/tegra/i2c.h>
-#include <soc/nvidia/tegra124/clk_rst.h>
-#include <soc/nvidia/tegra124/gpio.h>
-#include <soc/nvidia/tegra124/pinmux.h>
-#include <soc/nvidia/tegra124/spi.h>	/* FIXME: move back to soc code? */
+#include <soc/pinmux.h>
+#include <soc/spi.h>	/* FIXME: move back to soc code? */
 
 #include "pmic.h"
 

@@ -16,15 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <arch/io.h>
+#include <console/console.h>
 #include <inttypes.h>
+#include <soc/addressmap.h>
+#include <soc/dma.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <console/console.h>
-
-#include <arch/io.h>
-#include <soc/addressmap.h>
-
-#include "dma.h"
 
 struct apb_dma * const apb_dma = (struct apb_dma *)TEGRA_APB_DMA_BASE;
 

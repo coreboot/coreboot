@@ -18,8 +18,8 @@
  */
 
 #include <device/i2c.h>
-#include <soc/nvidia/tegra124/gpio.h>
-#include <soc/nvidia/tegra124/pinmux.h>
+#include <soc/gpio.h>
+#include <soc/pinmux.h>
 
 #include "i2c.h"
 

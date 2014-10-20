@@ -20,7 +20,7 @@
 #ifndef __SOC_NVIDIA_TEGRA124_SDRAM_H__
 #define __SOC_NVIDIA_TEGRA124_SDRAM_H__
 
-#include "sdram_param.h"
+#include <soc/sdram_param.h>
 
 uint32_t sdram_get_ram_code(void);
 void sdram_init(const struct sdram_params *param);

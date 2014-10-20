@@ -25,9 +25,9 @@
 #include <program_loading.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
+#include <soc/pinmux.h>
+#include <soc/power.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include "pinmux.h"
-#include "power.h"
 
 static void run_next_stage(void *entry)
 {

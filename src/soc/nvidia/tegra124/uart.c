@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/uart.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>	/* for __console definition */
+#include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 
 

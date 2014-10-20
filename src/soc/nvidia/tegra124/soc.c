@@ -19,15 +19,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <arch/io.h>
 #include <soc/nvidia/tegra/dc.h>
-#include <soc/nvidia/tegra124/sdram.h>
-#include "chip.h"
 #include <soc/display.h>
+#include <soc/sdram.h>
 #include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#include "chip.h"
 
 /* this sucks, but for now, fb size/location are hardcoded.
  * Will break if we get 2. Sigh.

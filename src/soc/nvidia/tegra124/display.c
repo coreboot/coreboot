@@ -17,26 +17,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <arch/io.h>
-#include <stdint.h>
-#include <lib.h>
-#include <stdlib.h>
-#include <delay.h>
-#include <soc/addressmap.h>
-#include <device/device.h>
-#include <stdlib.h>
-#include <string.h>
-#include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <cbmem.h>
+#include <console/console.h>
+#include <cpu/cpu.h>
+#include <delay.h>
+#include <device/device.h>
 #include <edid.h>
+#include <lib.h>
+#include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <soc/display.h>
+#include <soc/sdram.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/nvidia/tegra/pwm.h>
-#include <soc/nvidia/tegra124/sdram.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "chip.h"
-#include <soc/display.h>
 
 struct tegra_dc dc_data;
 

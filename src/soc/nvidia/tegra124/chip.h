@@ -21,7 +21,7 @@
 #define __SOC_NVIDIA_TEGRA124_CHIP_H__
 #include <arch/cache.h>
 #include <soc/addressmap.h>
-#include "gpio.h"
+#include <soc/gpio.h>
 
 #define EFAULT  1
 #define EINVAL  2

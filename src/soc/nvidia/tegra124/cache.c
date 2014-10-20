@@ -18,8 +18,8 @@
  */
 
 #include <arch/cache.h>
+#include <soc/cache.h>
 #include <stdint.h>
-#include "cache.h"
 
 enum {
 	L2CTLR_ECC_PARITY = 0x1 << 21,

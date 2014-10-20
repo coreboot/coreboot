@@ -18,13 +18,13 @@
  */
 
 #include <boot/coreboot_tables.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
+#include <soc/gpio.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <bootmode.h>
-#include <soc/nvidia/tegra124/gpio.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

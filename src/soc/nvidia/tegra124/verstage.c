@@ -20,8 +20,8 @@
 #include <arch/cache.h>
 #include <arch/exception.h>
 #include <console/console.h>
-#include <soc/nvidia/tegra124/cache.h>
-#include <soc/nvidia/tegra124/early_configs.h>
+#include <soc/cache.h>
+#include <soc/early_configs.h>
 #include <stdlib.h>
 #include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>

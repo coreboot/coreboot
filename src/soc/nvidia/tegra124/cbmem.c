@@ -19,7 +19,7 @@
 
 #include <cbmem.h>
 #include <soc/display.h>
-#include <soc/nvidia/tegra124/sdram.h>
+#include <soc/sdram.h>
 
 void *cbmem_top(void)
 {

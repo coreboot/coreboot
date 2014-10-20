@@ -22,10 +22,9 @@
 #include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
-
-#include "pmc.h"
-#include "power.h"
-#include "flow.h"
+#include <soc/flow.h>
+#include <soc/pmc.h>
+#include <soc/power.h>
 
 static struct tegra_pmc_regs * const pmc = (void *)TEGRA_PMC_BASE;
 static struct flow_ctlr * const flow = (void *)TEGRA_FLOW_BASE;

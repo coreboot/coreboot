@@ -17,18 +17,19 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/i2c.h>
 #include <edid.h>
-#include <stdlib.h>
-#include <string.h>
-#include <delay.h>
 #include <soc/addressmap.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra/dc.h>
-#include "chip.h"
-#include "sor.h"
 #include <soc/nvidia/tegra/displayport.h>
+#include <soc/sor.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "chip.h"
 
 enum {
 	DP_LT_SUCCESS = 0,

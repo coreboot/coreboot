@@ -18,23 +18,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cache.h>
+#include <arch/io.h>
 #include <assert.h>
+#include <console/console.h>
 #include <cbfs.h>
+#include <delay.h>
 #include <inttypes.h>
+#include <soc/addressmap.h>
+#include <soc/dma.h>
+#include <soc/spi.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <timer.h>
-#include <arch/cache.h>
-#include <arch/io.h>
-#include <console/console.h>
-#include <soc/addressmap.h>
-#include <delay.h>
 
-#include "dma.h"
-#include "spi.h"
 
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI
 # define DEBUG_SPI(x,...)	printk(BIOS_DEBUG, "TEGRA_SPI: " x)

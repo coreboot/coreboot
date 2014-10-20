@@ -17,11 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <soc/nvidia/tegra124/gpio.h>
-#include <stdlib.h>
-
 #include <boardid.h>
+#include <console/console.h>
+#include <soc/gpio.h>
+#include <stdlib.h>
 
 uint8_t board_id(void)
 {

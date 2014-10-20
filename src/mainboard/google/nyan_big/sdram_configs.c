@@ -18,7 +18,8 @@
  */
 
 #include <console/console.h>
-#include <soc/nvidia/tegra124/sdram.h>
+#include <soc/sdram.h>
+
 #include "sdram_configs.h"
 
 static struct sdram_params sdram_configs[] = {

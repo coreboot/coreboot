@@ -18,17 +18,17 @@
  */
 
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <elog.h>
-#include <boot/coreboot_tables.h>
 #include <soc/addressmap.h>
+#include <soc/clk_rst.h>
 #include <soc/clock.h>
+#include <soc/gpio.h>
+#include <soc/mc.h>
 #include <soc/nvidia/tegra/i2c.h>
-#include <soc/nvidia/tegra124/clk_rst.h>
-#include <soc/nvidia/tegra124/gpio.h>
-#include <soc/nvidia/tegra124/mc.h>
-#include <soc/nvidia/tegra124/pmc.h>
-#include <soc/nvidia/tegra124/spi.h>
+#include <soc/pmc.h>
+#include <soc/spi.h>
 #include <soc/nvidia/tegra/usb.h>
 #include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>

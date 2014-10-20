@@ -19,9 +19,9 @@
 
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <soc/early_configs.h>
+#include <soc/gpio.h>
 #include <soc/nvidia/tegra/i2c.h>
-#include <soc/nvidia/tegra124/gpio.h>
-#include <soc/nvidia/tegra124/early_configs.h>
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 

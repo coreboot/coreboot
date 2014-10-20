@@ -18,9 +18,8 @@
 #define __NVIDIA_TEGRA124_SPI_H__
 
 #include <spi-generic.h>
+#include <soc/dma.h>
 #include <stddef.h>
-
-#include "dma.h"
 
 struct tegra_spi_regs {
 	u32 command1;		/* 0x000: SPI_COMMAND1 */

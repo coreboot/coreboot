@@ -14,26 +14,26 @@
  *
  */
 
-#include <console/console.h>
 #include <arch/io.h>
-#include <stdint.h>
-#include <lib.h>
-#include <stdlib.h>
-#include <delay.h>
-#include <soc/addressmap.h>
-#include <device/device.h>
-#include <stdlib.h>
-#include <string.h>
-#include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <cbmem.h>
-#include <soc/nvidia/tegra/dc.h>
-#include "sor.h"
-#include <soc/nvidia/tegra/displayport.h>
-#include "clk_rst.h"
+#include <console/console.h>
+#include <cpu/cpu.h>
+#include <delay.h>
+#include <lib.h>
+#include <device/device.h>
+#include <soc/addressmap.h>
+#include <soc/clk_rst.h>
 #include <soc/clock.h>
-#include "chip.h"
 #include <soc/display.h>
+#include <soc/nvidia/tegra/dc.h>
+#include <soc/nvidia/tegra/displayport.h>
+#include <soc/sor.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "chip.h"
 
 #define DEBUG_SOR 0
 

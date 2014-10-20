@@ -17,6 +17,8 @@
 #ifndef __SOC_NVIDIA_TEGRA_DISPLAYPORT_H__
 #define __SOC_NVIDIA_TEGRA_DISPLAYPORT_H__
 
+#include <soc/sor.h>
+
 /* things we can't get rid of just yet. */
 #define DPAUX_INTR_EN_AUX				(0x1)
 #define DPAUX_INTR_AUX					(0x5)

@@ -37,6 +37,8 @@ ramstage-y += i2c.c
 ramstage-y += monotonic_timer.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 
+CPPFLAGS_common += -Isrc/soc/marvell/bg4cd/include/
+
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	cp $< $@
 

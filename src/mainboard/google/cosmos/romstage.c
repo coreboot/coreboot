@@ -17,21 +17,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
-#include <armv7.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <arch/stages.h>
-#include <cbmem.h>
-#include <delay.h>
-#include <timestamp.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
-#include <stdlib.h>
+#include <arch/stages.h>
+#include <armv7.h>
+#include <cbfs.h>
+#include <cbmem.h>
+#include <console/console.h>
+#include <delay.h>
 #include <program_loading.h>
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <soc/marvell/bg4cd/sdram.h>
+#include <soc/sdram.h>
+#include <stdlib.h>
 #include <symbols.h>
+#include <timestamp.h>
+#include <types.h>
+#include <vendorcode/google/chromeos/chromeos.h>
+
 #include "timer.h"
 
 void main(void)

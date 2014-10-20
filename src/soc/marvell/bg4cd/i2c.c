@@ -18,7 +18,7 @@
  */
 
 #include <device/i2c.h>
-#include "i2c.h"
+#include <soc/i2c.h>
 
 int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
 {

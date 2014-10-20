@@ -1,1 +1,1 @@
-#include <soc/marvell/bg4cd/memlayout.ld>
+#include <soc/memlayout.ld>

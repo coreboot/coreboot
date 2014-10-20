@@ -23,23 +23,23 @@
 
 /* Common enter/exit implementations */
 
-void pnp_enter_conf_mode_55(device_t dev)
+void pnp_enter_conf_mode_55(struct device *dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
 
-void pnp_enter_conf_mode_8787(device_t dev)
+void pnp_enter_conf_mode_8787(struct device *dev)
 {
 	outb(0x87, dev->path.pnp.port);
 	outb(0x87, dev->path.pnp.port);
 }
 
-void pnp_exit_conf_mode_aa(device_t dev)
+void pnp_exit_conf_mode_aa(struct device *dev)
 {
 	outb(0xaa, dev->path.pnp.port);
 }
 
-void pnp_enter_conf_mode_870155aa(device_t dev)
+void pnp_enter_conf_mode_870155aa(struct device *dev)
 {
 	outb(0x87, dev->path.pnp.port);
 	outb(0x01, dev->path.pnp.port);
@@ -51,7 +51,7 @@ void pnp_enter_conf_mode_870155aa(device_t dev)
 		outb(0x55, dev->path.pnp.port);
 }
 
-void pnp_exit_conf_mode_0202(device_t dev)
+void pnp_exit_conf_mode_0202(struct device *dev)
 {
 	outb(0x02, dev->path.pnp.port);
 	outb(0x02, dev->path.pnp.port + 1);

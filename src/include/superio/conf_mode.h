@@ -24,11 +24,11 @@
 #include <device/pnp.h>
 
 /* Common enter/exit implementations */
-void pnp_enter_conf_mode_55(device_t dev);
-void pnp_enter_conf_mode_8787(device_t dev);
-void pnp_exit_conf_mode_aa(device_t dev);
-void pnp_enter_conf_mode_870155aa(device_t dev);
-void pnp_exit_conf_mode_0202(device_t dev);
+void pnp_enter_conf_mode_55(struct device *dev);
+void pnp_enter_conf_mode_8787(struct device *dev);
+void pnp_exit_conf_mode_aa(struct device *dev);
+void pnp_enter_conf_mode_870155aa(struct device *dev);
+void pnp_exit_conf_mode_0202(struct device *dev);
 
 extern const struct pnp_mode_ops pnp_conf_mode_55_aa;
 extern const struct pnp_mode_ops pnp_conf_mode_8787_aa;

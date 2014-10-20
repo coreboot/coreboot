@@ -20,12 +20,12 @@
 /* Mem setup common file for different types of DDR present on SMDK5420 boards.
  */
 
-#include <console/console.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <delay.h>
-#include "dmc.h"
-#include "setup.h"
-#include "clk.h"
+#include <soc/clk.h>
+#include <soc/dmc.h>
+#include <soc/setup.h>
 
 #define ZQ_INIT_TIMEOUT	10000
 

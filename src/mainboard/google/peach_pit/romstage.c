@@ -17,31 +17,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
-#include <stdlib.h>
-
+#include <arch/cache.h>
+#include <arch/exception.h>
+#include <arch/stages.h>
 #include <armv7.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <timestamp.h>
-
-#include <arch/cache.h>
-#include <arch/exception.h>
-#include <soc/samsung/exynos5420/i2c.h>
-#include <soc/samsung/exynos5420/clk.h>
-#include <soc/samsung/exynos5420/cpu.h>
-#include <soc/samsung/exynos5420/dmc.h>
-#include <soc/samsung/exynos5420/gpio.h>
-#include <soc/samsung/exynos5420/setup.h>
-#include <soc/samsung/exynos5420/periph.h>
-#include <soc/samsung/exynos5420/power.h>
-#include <soc/samsung/exynos5420/trustzone.h>
-#include <soc/samsung/exynos5420/wakeup.h>
 #include <console/console.h>
-#include <program_loading.h>
-
-#include <drivers/maxim/max77802/max77802.h>
 #include <device/i2c.h>
+#include <drivers/maxim/max77802/max77802.h>
+#include <program_loading.h>
+#include <soc/clk.h>
+#include <soc/cpu.h>
+#include <soc/dmc.h>
+#include <soc/gpio.h>
+#include <soc/i2c.h>
+#include <soc/periph.h>
+#include <soc/power.h>
+#include <soc/setup.h>
+#include <soc/trustzone.h>
+#include <soc/wakeup.h>
+#include <stdlib.h>
+#include <timestamp.h>
+#include <types.h>
 
 #define PMIC_I2C_BUS	4
 

@@ -17,13 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <assert.h>
+#include <console/console.h>
+#include <soc/clk.h>
+#include <soc/periph.h>
 #include <stdlib.h>
 #include <timer.h>
-#include <arch/io.h>
-#include <console/console.h>
-#include "clk.h"
-#include "periph.h"
 
 /* input clock of PLL: SMDK5420 has 24MHz input clock */
 #define CONFIG_SYS_CLK_FREQ            24000000

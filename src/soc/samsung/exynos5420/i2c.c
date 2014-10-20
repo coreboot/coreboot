@@ -23,12 +23,12 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c.h>
-#include <timer.h>
+#include <soc/clk.h>
+#include <soc/i2c.h>
+#include <soc/periph.h>
+#include <soc/pinmux.h>
 #include <stddef.h>
-#include "clk.h"
-#include "i2c.h"
-#include "periph.h"
-#include "pinmux.h"
+#include <timer.h>
 
 struct __attribute__ ((packed)) i2c_regs
 {

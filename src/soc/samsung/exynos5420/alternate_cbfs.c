@@ -18,16 +18,16 @@
  */
 
 
+#include <arch/cache.h>
 #include <assert.h>
 #include <cbfs.h>  /* This driver serves as a CBFS media source. */
+#include <console/console.h>
+#include <soc/alternate_cbfs.h>
+#include <soc/power.h>
+#include <soc/spi.h>
 #include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
-#include <arch/cache.h>
-#include <console/console.h>
-#include "alternate_cbfs.h"
-#include "power.h"
-#include "spi.h"
 
 /* This allows USB A-A firmware upload from a compatible host in four parts:
  * The first two are the bare BL1 and the Coreboot boot block, which are just

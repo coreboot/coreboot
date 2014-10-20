@@ -17,30 +17,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <string.h>
+#include <arch/cache.h>
+#include <boot/coreboot_tables.h>
+#include <cbmem.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/i2c.h>
-#include <cbmem.h>
-#include <delay.h>
-#include <edid.h>
-#include <vbe.h>
-#include <boot/coreboot_tables.h>
-#include <arch/cache.h>
-#include <soc/samsung/exynos5420/tmu.h>
-#include <soc/samsung/exynos5420/clk.h>
-#include <soc/samsung/exynos5420/cpu.h>
-#include <soc/samsung/exynos5420/gpio.h>
-#include <soc/samsung/exynos5420/power.h>
-#include <soc/samsung/exynos5420/periph.h>
-#include <soc/samsung/exynos5420/i2c.h>
-#include <soc/samsung/exynos5420/dp.h>
-#include <soc/samsung/exynos5420/fimd.h>
-#include <soc/samsung/exynos5420/usb.h>
 #include <drivers/parade/ps8625/ps8625.h>
 #include <ec/google/chromeec/ec.h>
+#include <edid.h>
+#include <soc/tmu.h>
+#include <soc/clk.h>
+#include <soc/cpu.h>
+#include <soc/gpio.h>
+#include <soc/power.h>
+#include <soc/periph.h>
+#include <soc/i2c.h>
+#include <soc/dp.h>
+#include <soc/fimd.h>
+#include <soc/usb.h>
 #include <stdlib.h>
+#include <string.h>
 #include <symbols.h>
+#include <vbe.h>
 
 /* convenient shorthand (in MB) */
 #define DRAM_START	((uintptr_t)_dram/MiB)

@@ -19,7 +19,7 @@
  */
 
 #include <arch/io.h>
-#include "trustzone.h"
+#include <soc/trustzone.h>
 
 /* Setting TZPC[TrustZone Protection Controller]
  * We pretty much disable it all, as the kernel

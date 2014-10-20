@@ -51,6 +51,8 @@ ramstage-y += cbmem.c
 rmodules_$(ARCH-romstage-y)-y += monotonic_timer.c
 rmodules_$(ARCH-romstage-y)-y += mct.c
 
+CPPFLAGS_common += -Isrc/soc/samsung/exynos5420/include/
+
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	cp $< $@
 

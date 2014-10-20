@@ -23,7 +23,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_DP_H
 #define CPU_SAMSUNG_EXYNOS5420_DP_H
 
-#include "cpu.h"
+#include <soc/cpu.h>
 
 /* DSIM register map */
 struct exynos_dp {

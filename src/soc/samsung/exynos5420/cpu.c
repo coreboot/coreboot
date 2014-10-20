@@ -18,21 +18,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cache.h>
+#include <cbmem.h>
+#include <console/console.h>
+#include <delay.h>
+#include <device/device.h>
+#include <ec/google/chromeec/ec.h>
+#include <soc/dp.h>
+#include <soc/fimd.h>
+#include <soc/cpu.h>
+#include <soc/clk.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stddef.h>
-#include <delay.h>
-#include <console/console.h>
-#include <device/device.h>
-#include <cbmem.h>
-#include <arch/cache.h>
-#include "dp.h"
-#include "fimd.h"
-#include "cpu.h"
-#include "clk.h"
-#include "chip.h"
 
-#include <ec/google/chromeec/ec.h>
+#include "chip.h"
 
 static unsigned int cpu_id;
 static unsigned int cpu_rev;

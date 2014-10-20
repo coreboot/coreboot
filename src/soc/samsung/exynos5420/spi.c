@@ -18,15 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <arch/io.h>
-#include <stdlib.h>
 #include <assert.h>
+#include <console/console.h>
+#include <soc/cpu.h>
+#include <soc/spi.h>
 #include <spi_flash.h>
+#include <stdlib.h>
 #include <string.h>
-
-#include "cpu.h"
-#include "spi.h"
 
 #define EXYNOS_SPI_MAX_TRANSFER_BYTES (65535)
 

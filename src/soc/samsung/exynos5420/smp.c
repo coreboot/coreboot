@@ -18,14 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cpu.h>
+#include <arch/io.h>
+#include <soc/cpu.h>
+#include <soc/power.h>
 #include <stdlib.h>
 #include <string.h>
 #include <types.h>
-#include <arch/cpu.h>
-#include <arch/io.h>
-
-#include "cpu.h"
-#include "power.h"
 
 /* ACTLR, L2CTLR L2ACTLR constants used in SMP core power up. */
 

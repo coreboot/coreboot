@@ -24,13 +24,13 @@
  * MA 02111-1307 USA
  */
 
-#include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include "clk.h"
-#include "dmc.h"
-#include "power.h"
-#include "setup.h"
+#include <delay.h>
+#include <soc/clk.h>
+#include <soc/dmc.h>
+#include <soc/power.h>
+#include <soc/setup.h>
 
 #define TIMEOUT	10000
 

@@ -1,1 +1,1 @@
-#include <soc/samsung/exynos5420/memlayout.ld>
+#include <soc/memlayout.ld>

@@ -19,13 +19,13 @@
 
 /* Clock setup for SMDK5420 board based on EXYNOS5 */
 
-#include <delay.h>
 #include <console/console.h>
-#include "clk.h"
-#include "cpu.h"
-#include "dp.h"
-#include "dmc.h"
-#include "setup.h"
+#include <delay.h>
+#include <soc/clk.h>
+#include <soc/cpu.h>
+#include <soc/dp.h>
+#include <soc/dmc.h>
+#include <soc/setup.h>
 
 void system_clock_init(void)
 {

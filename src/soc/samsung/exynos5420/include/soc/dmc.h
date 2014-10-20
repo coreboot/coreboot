@@ -72,7 +72,7 @@
 
 #ifndef __ASSEMBLER__
 
-#include "cpu.h"
+#include <soc/cpu.h>
 
 struct exynos5_dmc {
 	uint32_t concontrol;

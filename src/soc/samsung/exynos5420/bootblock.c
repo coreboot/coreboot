@@ -17,12 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <bootblock_common.h>
 #include <arch/cache.h>
-
-#include "clk.h"
-#include "wakeup.h"
-#include "cpu.h"
+#include <bootblock_common.h>
+#include <soc/clk.h>
+#include <soc/wakeup.h>
+#include <soc/cpu.h>
 
 /* convenient shorthand (in MB) */
 #define SRAM_START	(EXYNOS5_SRAM_BASE >> 20)

@@ -18,10 +18,10 @@
  */
 
 #include <console/console.h>
-#include <timer.h>
 #include <delay.h>
+#include <soc/clk.h>
 #include <thread.h>
-#include "clk.h"
+#include <timer.h>
 
 void init_timer(void)
 {

@@ -20,15 +20,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include "clk.h"
-#include "dp.h"
-#include "fimd.h"
-#include "periph.h"
-#include "sysreg.h"
-#include "timer.h"
+#include <delay.h>
+#include <soc/clk.h>
+#include <soc/dp.h>
+#include <soc/fimd.h>
+#include <soc/periph.h>
+#include <soc/sysreg.h>
+#include <timer.h>
 
 /* fairly useful debugging stuff. */
 #if 0

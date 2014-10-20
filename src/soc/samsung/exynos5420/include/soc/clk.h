@@ -21,9 +21,10 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_CLK_H
 #define CPU_SAMSUNG_EXYNOS5420_CLK_H
 
+#include <soc/cpu.h>
+#include <soc/dmc.h>
+#include <soc/pinmux.h>
 #include <stdint.h>
-
-#include "cpu.h"
 
 enum periph_id;
 
@@ -54,9 +55,6 @@ void set_mmc_clk(int dev_index, unsigned int div);
  * @return frequency of the peripheral clk
  */
 unsigned long clock_get_periph_rate(enum periph_id peripheral);
-
-#include "pinmux.h"
-
 
 #define MCT_HZ 24000000
 
@@ -729,8 +727,6 @@ void clock_gate(void);
 
 void mct_start(void);
 uint64_t mct_raw_value(void);
-
-#include "dmc.h"
 
 /* These are the ratio's for configuring ARM clock */
 struct arm_clk_ratios {

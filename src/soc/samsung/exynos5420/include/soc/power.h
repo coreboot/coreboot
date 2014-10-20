@@ -22,7 +22,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_POWER_H
 #define CPU_SAMSUNG_EXYNOS5420_POWER_H
 
-#include "cpu.h"
+#include <soc/cpu.h>
 
 /* Enable HW thermal trip with PS_HOLD_CONTROL register ENABLE_HW_TRIP bit */
 void power_enable_hw_thermal_trip(void);

@@ -20,7 +20,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_USB_H
 #define CPU_SAMSUNG_EXYNOS5420_USB_H
 
-#include "cpu.h"
+#include <soc/cpu.h>
 
 #define CLK_24MHZ               5
 

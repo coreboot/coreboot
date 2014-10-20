@@ -22,12 +22,11 @@
 #include <delay.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <soc/emc.h>
+#include <soc/mc.h>
+#include <soc/pmc.h>
+#include <soc/sdram.h>
 #include <stdlib.h>
-
-#include "emc.h"
-#include "mc.h"
-#include "pmc.h"
-#include "sdram.h"
 
 static void sdram_patch(uintptr_t addr, uint32_t value)
 {

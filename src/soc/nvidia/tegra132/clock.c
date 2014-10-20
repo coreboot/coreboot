@@ -14,19 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <arch/clock.h>
+#include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
-#include <arch/io.h>
-#include <soc/addressmap.h>
-#include <soc/clock.h>
 #include <stdlib.h>
-#include <arch/clock.h>
-#include "clk_rst.h"
-#include "clst_clk.h"
-#include "flow.h"
-#include "maincpu.h"
-#include "pmc.h"
-#include "sysctr.h"
+#include <soc/addressmap.h>
+#include <soc/clk_rst.h>
+#include <soc/clock.h>
+#include <soc/clst_clk.h>
+#include <soc/flow.h>
+#include <soc/maincpu.h>
+#include <soc/pmc.h>
+#include <soc/sysctr.h>
 
 static struct clst_clk_ctlr *clst_clk = (void *)TEGRA_CLUSTER_CLOCK_BASE;
 static struct flow_ctlr *flow = (void *)TEGRA_FLOW_BASE;

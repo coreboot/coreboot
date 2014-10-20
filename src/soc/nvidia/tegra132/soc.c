@@ -18,20 +18,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <string.h>
-#include <console/console.h>
-#include <device/device.h>
 #include <arch/io.h>
 #include <arch/cache.h>
 #include <arch/spintable.h>
 #include <cpu/cpu.h>
 #include <cbmem.h>
-#include <timer.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <console/console.h>
+#include <device/device.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/cpu.h>
 #include <soc/nvidia/tegra/apbmisc.h>
+#include <string.h>
+#include <timer.h>
+#include <vendorcode/google/chromeos/chromeos.h>
+
 #include "chip.h"
 
 static void soc_read_resources(device_t dev)

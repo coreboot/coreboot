@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <soc/addressmap.h>
+#include <soc/clk_rst.h>
 #include <soc/cpu.h>
-#include "clk_rst.h"
-#include "pmc.h"
+#include <soc/pmc.h>
 
 #define EVP_CPU_RESET_VECTOR (void *)(uintptr_t)(TEGRA_EVP_BASE + 0x100)
 #define PMC_REGS (void *)(uintptr_t)(TEGRA_PMC_BASE)

@@ -17,13 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/mmu.h>
+#include <memrange.h>
+#include <soc/addressmap.h>
+#include <soc/mmu_operations.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <memrange.h>
-
-#include <arch/mmu.h>
-#include "mmu_operations.h"
-#include <soc/addressmap.h>
 
 /* This structure keeps track of all the mmap memory ranges for t132 */
 static struct memranges t132_mmap_ranges;

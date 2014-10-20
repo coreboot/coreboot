@@ -17,21 +17,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <string.h>
-#include <console/console.h>
 #include <arch/io.h>
 #include <cbfs.h>
-#include <timer.h>
+#include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <soc/clk_rst.h>
+#include <soc/ccplex.h>
 #include <soc/cpu.h>
+#include <soc/flow.h>
+#include <soc/mc.h>
+#include <soc/pmc.h>
+#include <soc/power.h>
 #include <soc/romstage.h>
-#include "clk_rst.h"
-#include "ccplex.h"
-#include "flow.h"
-#include "mc.h"
-#include "pmc.h"
-#include "power.h"
+#include <string.h>
+#include <timer.h>
 
 #define PMC_REGS (void *)(uintptr_t)(TEGRA_PMC_BASE)
 #define MTS_FILE_NAME "mts"

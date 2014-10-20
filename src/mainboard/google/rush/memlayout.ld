@@ -1,1 +1,1 @@
-#include <soc/nvidia/tegra132/memlayout.ld>
+#include <soc/memlayout.ld>

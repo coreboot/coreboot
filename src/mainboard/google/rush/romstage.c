@@ -17,13 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <soc/romstage.h>
-
 #include <soc/addressmap.h>
 #include <soc/clock.h>
-#include <soc/padconfig.h>
-#include <soc/nvidia/tegra/i2c.h>
 #include <soc/funitcfg.h>
+#include <soc/nvidia/tegra/i2c.h>
+#include <soc/padconfig.h>
+#include <soc/romstage.h>
 
 static const struct pad_config padcfgs[] = {
 	/* SOC_WARM_RESET_L */

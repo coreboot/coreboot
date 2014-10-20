@@ -19,11 +19,11 @@
 
 #include <arch/io.h>
 #include <soc/addressmap.h>
-#include <soc/funitcfg.h>
 #include <soc/clock.h>
+#include <soc/funitcfg.h>
+#include <soc/nvidia/tegra/usb.h>
 #include <soc/padconfig.h>
 #include <string.h>
-#include <soc/nvidia/tegra/usb.h>
 
 struct clk_dev_control {
 	uint32_t *clk_enb_set;

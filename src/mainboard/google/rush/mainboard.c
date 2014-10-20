@@ -18,17 +18,16 @@
  */
 
 #include <arch/mmu.h>
-#include <device/device.h>
 #include <boot/coreboot_tables.h>
-
+#include <device/device.h>
 #include <memrange.h>
-#include <soc/clock.h>
-#include <soc/nvidia/tegra132/clk_rst.h>
-#include <soc/nvidia/tegra132/spi.h>
 #include <soc/addressmap.h>
-#include <soc/padconfig.h>
+#include <soc/clk_rst.h>
+#include <soc/clock.h>
 #include <soc/funitcfg.h>
 #include <soc/nvidia/tegra/usb.h>
+#include <soc/padconfig.h>
+#include <soc/spi.h>
 
 static const struct pad_config sdmmc3_pad[] = {
 	/* MMC3(SDCARD) */

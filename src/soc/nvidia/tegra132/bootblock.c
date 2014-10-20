@@ -26,8 +26,7 @@
 #include <soc/bootblock.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
-
-#include "power.h"
+#include <soc/power.h>
 
 #define BCT_OFFSET_IN_BIT	0x50
 #define ODMDATA_OFFSET_IN_BCT	0x6A8

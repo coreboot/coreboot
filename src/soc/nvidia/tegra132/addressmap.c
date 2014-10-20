@@ -19,13 +19,13 @@
 
 
 #include <arch/io.h>
-#include <stdlib.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/id.h>
+#include <soc/mc.h>
+#include <soc/sdram.h>
+#include <stdlib.h>
 #include <symbols.h>
-#include "mc.h"
-#include "sdram.h"
 
 static uintptr_t tz_base_mib;
 static const size_t tz_size_mib = CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB;

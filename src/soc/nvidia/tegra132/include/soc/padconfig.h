@@ -21,7 +21,7 @@
 #define __SOC_NVIDIA_TEGRA132_PAD_CFG_H
 
 #include <stdint.h>
-#include <soc/nvidia/tegra132/pinmux.h>
+#include <soc/pinmux.h>
 
 struct pad_config {
 	uint8_t pinmux_flags;	/* PU/PU, OD, INPUT, SFIO, etc */

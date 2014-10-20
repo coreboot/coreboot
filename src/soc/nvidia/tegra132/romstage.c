@@ -17,22 +17,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/exception.h>
 #include <arch/stages.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
-#include <timer.h>
-#include <arch/exception.h>
 #include <program_loading.h>
-
 #include <soc/addressmap.h>
-#include <soc/sdram_configs.h>
-#include "sdram.h"
-#include "ccplex.h"
-
+#include <soc/ccplex.h>
 #include <soc/clock.h>
+#include <soc/sdram.h>
+#include <soc/sdram_configs.h>
 #include <soc/romstage.h>
+#include <timer.h>
 
 void __attribute__((weak)) romstage_mainboard_init(void)
 {

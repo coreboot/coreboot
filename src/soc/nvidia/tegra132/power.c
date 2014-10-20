@@ -22,9 +22,8 @@
 #include <assert.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
-
-#include "pmc.h"
-#include "power.h"
+#include <soc/pmc.h>
+#include <soc/power.h>
 
 static struct tegra_pmc_regs * const pmc = (void *)TEGRA_PMC_BASE;
 

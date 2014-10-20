@@ -18,8 +18,8 @@
  */
 
 #include <arch/io.h>
+#include <soc/gpio.h>
 #include <reset.h>
-#include <soc/nvidia/tegra132/gpio.h>
 
 void hard_reset(void)
 {

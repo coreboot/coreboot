@@ -23,6 +23,7 @@
 #include <device/i2c.h>
 #include <stdint.h>
 #include <stdlib.h>
+
 #include "pmic.h"
 #include "reset.h"
 

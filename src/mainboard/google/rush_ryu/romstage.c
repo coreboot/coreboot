@@ -21,9 +21,10 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>
-#include <soc/padconfig.h>
 #include <soc/nvidia/tegra/i2c.h>
+#include <soc/padconfig.h>
 #include <soc/romstage.h>
+
 #include "gpio.h"
 #include "pmic.h"
 

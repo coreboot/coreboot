@@ -20,10 +20,10 @@
 #ifndef __SOC_NVIDIA_TEGRA132_FUNIT_CFG_H
 #define __SOC_NVIDIA_TEGRA132_FUNIT_CFG_H
 
-#include <stdint.h>
-#include <soc/nvidia/tegra132/pinmux.h>
-#include <soc/padconfig.h>
 #include <soc/clock.h>
+#include <soc/padconfig.h>
+#include <soc/pinmux.h>
+#include <stdint.h>
 
 #define FUNIT_INDEX(_name)  FUNIT_##_name
 

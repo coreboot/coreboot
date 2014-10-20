@@ -20,6 +20,6 @@
 #ifndef __SOC_NVIDIA_TEGRA132_GPIO_H__
 #define __SOC_NVIDIA_TEGRA132_GPIO_H__
 
-#include <soc/nvidia/tegra132/pinmux.h>
+#include <soc/pinmux.h>
 
 #endif	/* __SOC_NVIDIA_TEGRA132_GPIO_H__ */

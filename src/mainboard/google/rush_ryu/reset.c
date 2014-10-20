@@ -19,6 +19,7 @@
 
 #include <arch/io.h>
 #include <reset.h>
+
 #include "gpio.h"
 
 void hard_reset(void)

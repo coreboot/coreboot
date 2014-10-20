@@ -20,7 +20,7 @@
 #ifndef __MAINBOARD_GOOGLE_RUSH_RYU_GPIO_H__
 #define __MAINBOARD_GOOGLE_RUSH_RYU_GPIO_H__
 
-#include <soc/nvidia/tegra132/gpio.h>
+#include <soc/gpio.h>
 
 /* Board ID definitions. */
 enum {

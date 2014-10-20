@@ -17,12 +17,11 @@
 
 #include <arch/cache.h>
 #include <console/console.h>
-#include <stdlib.h>
 #include <soc/addressmap.h>
-
-#include "clk_rst.h"
-#include "pmc.h"
-#include "sdram.h"
+#include <soc/clk_rst.h>
+#include <soc/pmc.h>
+#include <soc/sdram.h>
+#include <stdlib.h>
 
 /*
  * This function reads SDRAM parameters (and a few CLK_RST regsiter values) from

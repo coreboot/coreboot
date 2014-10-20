@@ -19,8 +19,8 @@
 
 #include <arch/secmon.h>
 #include <console/console.h>
-#include "mmu_operations.h"
 #include <soc/addressmap.h>
+#include <soc/mmu_operations.h>
 
 static void soc_get_secure_mem(uint64_t *base, size_t *size)
 {

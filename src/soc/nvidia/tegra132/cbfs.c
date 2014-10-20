@@ -17,11 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-
 #include <cbfs.h>  /* This driver serves as a CBFS media source. */
+#include <soc/spi.h>
 #include <symbols.h>
-
-#include "spi.h"
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {

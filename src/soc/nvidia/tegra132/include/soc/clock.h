@@ -21,7 +21,7 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <soc/nvidia/tegra132/clk_rst.h>
+#include <soc/clk_rst.h>
 #include <stdint.h>
 #include <stdlib.h>
 

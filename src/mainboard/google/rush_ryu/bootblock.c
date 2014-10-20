@@ -22,11 +22,11 @@
 #include <device/i2c.h>
 #include <soc/addressmap.h>
 #include <soc/bootblock.h>
+#include <soc/clk_rst.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>
-#include <soc/padconfig.h>
 #include <soc/nvidia/tegra/i2c.h>
-#include <soc/nvidia/tegra132/clk_rst.h>
+#include <soc/padconfig.h>
 
 #include "pmic.h"
 

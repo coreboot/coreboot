@@ -19,8 +19,8 @@
 
 #include <arch/stages.h>
 #include <soc/addressmap.h>
-#include "mmu_operations.h"
 #include <soc/clock.h>
+#include <soc/mmu_operations.h>
 
 void arm64_soc_init(void)
 {

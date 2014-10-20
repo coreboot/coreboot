@@ -18,13 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <delay.h>
 #include <soc/addressmap.h>
+#include <soc/clk_rst.h>
 #include <soc/clock.h>
-#include <soc/padconfig.h>
 #include <soc/nvidia/tegra/i2c.h>
-#include <soc/nvidia/tegra132/power.h>
-#include <soc/nvidia/tegra132/clk_rst.h>
-#include "delay.h"
+#include <soc/padconfig.h>
+#include <soc/power.h>
 
 #define I2C6_BUS		5
 #define I2C6_PADCTL		0xC001

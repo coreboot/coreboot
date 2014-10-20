@@ -17,15 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __SOC_NVIDIA_TEGRA132_SDRAM_H__
-#define __SOC_NVIDIA_TEGRA132_SDRAM_H__
+#ifndef __SOC_NVIDIA_TEGRA132_POWER_H__
+#define __SOC_NVIDIA_TEGRA132_POWER_H__
 
-#include "sdram_param.h"
+#include <soc/pmc.h>
 
-uint32_t sdram_get_ram_code(void);
-void sdram_init(const struct sdram_params *param);
+void power_ungate_partition(uint32_t id);
 
-/* Save params to PMC scratch registers for use by BootROM on LP0 resume. */
-void sdram_lp0_save_params(const struct sdram_params *sdram);
+uint8_t pmc_rst_status(void);
+void pmc_print_rst_status(void);
 
-#endif /* __SOC_NVIDIA_TEGRA132_SDRAM_H__ */
+#endif	/* __SOC_NVIDIA_TEGRA132_POWER_H__ */

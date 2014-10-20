@@ -20,7 +20,7 @@
 #ifndef __SOC_NVIDIA_TEGRA132_SDRAM_CONFIGS_H__
 #define __SOC_NVIDIA_TEGRA132_SDRAM_CONFIGS_H__
 
-#include <soc/nvidia/tegra132/sdram.h>
+#include <soc/sdram.h>
 
 /* Loads SDRAM configurations for current system. */
 const struct sdram_params *get_sdram_config(void);

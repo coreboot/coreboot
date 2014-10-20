@@ -18,13 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <boardid.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <boardid.h>
 #include "pmic.h"
 #include "reset.h"
 

@@ -29,7 +29,8 @@
 #define CPLL_HZ		(384*MHz)
 #define NPLL_HZ		(384*MHz)
 
-#define PD_BUS_ACLK_HZ	(148500*KHz)
+/* The SRAM is clocked off aclk_bus, so we want to max it out for boot speed. */
+#define PD_BUS_ACLK_HZ	(297000*KHz)
 #define PD_BUS_HCLK_HZ	(148500*KHz)
 #define PD_BUS_PCLK_HZ	(74250*KHz)
 

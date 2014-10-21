@@ -147,7 +147,7 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AmdResetParams.HtConfig.Depth = 0;
 
 	status = AmdInitReset((AMD_RESET_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status, AmdParamStruct.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 	return status;
 }
@@ -172,7 +172,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	OemCustomizeInitEarly(AmdEarlyParamsPtr);
 
 	status = AmdInitEarly((AMD_EARLY_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status, AmdParamStruct.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
@@ -196,7 +196,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AmdCreateStruct(&AmdParamStruct);
 	PostParams = (AMD_POST_PARAMS *) AmdParamStruct.NewStructPtr;
 	status = AmdInitPost(PostParams);
-	AGESA_EVENTLOG(status, PostParams->StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &PostParams->StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 	/* Initialize heap space */
 	EmptyHeap();
@@ -222,7 +222,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	EnvParam = (AMD_ENV_PARAMS *) AmdParamStruct.NewStructPtr;
 
 	status = AmdInitEnv(EnvParam);
-	AGESA_EVENTLOG(status, EnvParam->StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &EnvParam->StdHeader);
 	/* Initialize Subordinate Bus Number and Secondary Bus Number
 	 * In platform BIOS this address is allocated by PCI enumeration code
 	 Modify D1F0x18
@@ -273,7 +273,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 
 	((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr)->GnbMidConfiguration.iGpuVgaMode = 0;	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
 	status = AmdInitMid((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status, AmdParamStruct.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
@@ -299,7 +299,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AmdCreateStruct(&AmdParamStruct);
 	AmdLateParams = (AMD_LATE_PARAMS *) AmdParamStruct.NewStructPtr;
 	status = AmdInitLate(AmdLateParams);
-	AGESA_EVENTLOG(status, AmdLateParams->StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdLateParams->StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
 	DmiTable = AmdLateParams->DmiTable;

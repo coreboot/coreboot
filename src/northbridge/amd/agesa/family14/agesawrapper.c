@@ -157,7 +157,7 @@ AGESA_STATUS agesawrapper_amdinitreset(VOID)
 	AmdResetParams.HtConfig.Depth = 0;
 
 	status = AmdInitReset((AMD_RESET_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 	return status;
 }
@@ -182,7 +182,7 @@ AGESA_STATUS agesawrapper_amdinitearly(VOID)
 	OemCustomizeInitEarly(AmdEarlyParamsPtr);
 
 	status = AmdInitEarly((AMD_EARLY_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
@@ -204,7 +204,7 @@ AGESA_STATUS agesawrapper_amdinitpost(VOID)
 
 	AmdCreateStruct(&AmdParamStruct);
 	status = AmdInitPost((AMD_POST_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 
 	/* Initialize heap space */
@@ -229,8 +229,10 @@ AGESA_STATUS agesawrapper_amdinitenv(VOID)
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct(&AmdParamStruct);
+
 	status = AmdInitEnv((AMD_ENV_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
+
 	/* Initialize Subordinate Bus Number and Secondary Bus Number
 	 * In platform BIOS this address is allocated by PCI enumeration code
 	 Modify D1F0x18
@@ -347,7 +349,7 @@ AGESA_STATUS agesawrapper_amdinitmid(VOID)
 	AmdCreateStruct(&AmdParamStruct);
 
 	status = AmdInitMid((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
@@ -375,7 +377,7 @@ AGESA_STATUS agesawrapper_amdinitlate(VOID)
 	       (u32) AmdLateParamsPtr);
 
 	status = AmdInitLate(AmdLateParamsPtr);
-	AGESA_EVENTLOG(status);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
 	DmiTable = AmdLateParamsPtr->DmiTable;
@@ -414,7 +416,7 @@ AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, VOID * Conf
 	ApExeParams.RelatedDataBlock = ConfigPtr;
 
 	status = AmdLateRunApTask(&ApExeParams);
-	AGESA_EVENTLOG(status);
+	AGESA_EVENTLOG(status, &ApExeParams.StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
 	return status;

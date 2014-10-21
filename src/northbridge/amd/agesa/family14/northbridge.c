@@ -36,7 +36,6 @@
 #include <cpu/amd/mtrr.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
 #endif
@@ -775,7 +774,7 @@ static void domain_enable_resources(device_t dev)
 		/* Enable MMIO on AMD CPU Address Map Controller */
 		agesawrapper_amdinitcpuio();
 
-		AGESAWRAPPER(amdinitmid);
+		agesawrapper_amdinitmid();
 	}
 
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");

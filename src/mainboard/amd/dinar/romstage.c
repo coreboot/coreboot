@@ -30,7 +30,6 @@
 #include <console/loglevel.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include <superio/smsc/sch4037/sch4037.h>
 #include <superio/smsc/sio1036/sio1036.h>
@@ -64,7 +63,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x32);
-	AGESAWRAPPER(amdinitmmio);
+	agesawrapper_amdinitmmio();
 
 	/* Halt if there was a built in self test failure */
 	post_code(0x33);
@@ -81,10 +80,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x35);
-	AGESAWRAPPER(amdinitreset);
+	agesawrapper_amdinitreset();
 
 	post_code(0x36);
-	AGESAWRAPPER(amdinitearly);
+	agesawrapper_amdinitearly();
 
 	post_code(0x37);
 	nb_Poweron_Init();
@@ -93,10 +92,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 
 	post_code(0x39);
-	AGESAWRAPPER(amdinitpost);
+	agesawrapper_amdinitpost();
 
 	post_code(0x40);
-	AGESAWRAPPER(amdinitenv);
+	agesawrapper_amdinitenv();
 
 
 	post_code(0x43);

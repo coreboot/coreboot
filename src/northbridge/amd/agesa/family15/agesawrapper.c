@@ -210,7 +210,7 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 #if (defined AGESA_ENTRY_INIT_RESET) && (AGESA_ENTRY_INIT_RESET == TRUE)
 	status = AmdInitReset((AMD_RESET_PARAMS *) AmdParamStruct.NewStructPtr);
 #endif
-	AGESA_EVENTLOG(status, AmdParamStruct.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
@@ -243,7 +243,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	OemCustomizeInitEarly(AmdEarlyParamsPtr);
 
 	status = AmdInitEarly(AmdEarlyParamsPtr);
-	AGESA_EVENTLOG(status, AmdParamStruct.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 
 	GetCpuServicesOfCurrentCore((CONST CPU_SPECIFIC_SERVICES **) & FamilySpecificServices,
 				    &AmdParamStruct.StdHeader);
@@ -281,7 +281,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	OemCustomizeInitPost(PostParams);
 
 	status = AmdInitPost(PostParams);
-	AGESA_EVENTLOG(status, PostParams->StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &PostParams->StdHeader);
 
 	AmdReleaseStruct(&AmdParamStruct);
 
@@ -317,7 +317,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	}
 	EnvParams = (AMD_ENV_PARAMS *) AmdParamStruct.NewStructPtr;
 	status = AmdInitEnv(EnvParams);
-	AGESA_EVENTLOG(status, EnvParams->StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &EnvParams->StdHeader);
 
 	AmdReleaseStruct(&AmdParamStruct);
 	return status;
@@ -369,7 +369,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 		return status;
 	}
 	status = AmdInitMid((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr);
-	AGESA_EVENTLOG(status, AmdParamStruct.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
@@ -396,7 +396,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	printk(BIOS_DEBUG, "agesawrapper_amdinitlate: AmdLateParamsPtr = %X\n", (u32) AmdLateParamsPtr);
 
 	status = AmdInitLate(AmdLateParamsPtr);
-	AGESA_EVENTLOG(status, AmdLateParamsPtr->StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdLateParamsPtr->StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
 	DmiTable = AmdLateParamsPtr->DmiTable;
@@ -438,7 +438,7 @@ AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, VOID * Conf
 
 	printk(BIOS_DEBUG, "AmdLateRunApTask on Core: %x\n", (uint32_t) Data);
 	status = AmdLateRunApTask((AP_EXE_PARAMS *) ConfigPtr);
-	AGESA_EVENTLOG(status, AmdLateParams.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdLateParams.StdHeader);
 	ASSERT((status == AGESA_SUCCESS) || (status == AGESA_UNSUPPORTED));
 
 	return status;

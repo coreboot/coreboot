@@ -42,7 +42,6 @@
 #include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
 
@@ -737,14 +736,14 @@ static void domain_read_resources(device_t dev)
 static void domain_enable_resources(device_t dev)
 {
 	if (acpi_is_wakeup_s3())
-		AGESAWRAPPER(fchs3laterestore);
+		agesawrapper_fchs3laterestore();
 
 	/* Must be called after PCI enumeration and resource allocation */
 	if (!acpi_is_wakeup_s3()) {
 		/* Enable MMIO on AMD CPU Address Map Controller */
 		agesawrapper_amdinitcpuio();
 
-		AGESAWRAPPER(amdinitmid);
+		agesawrapper_amdinitmid();
 	}
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }

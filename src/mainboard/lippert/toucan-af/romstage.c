@@ -32,7 +32,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
@@ -80,33 +79,33 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
 
 	post_code(0x35);
-	AGESAWRAPPER(amdinitmmio);
+	agesawrapper_amdinitmmio();
 
 	post_code(0x37);
-	AGESAWRAPPER(amdinitreset);
+	agesawrapper_amdinitreset();
 
 	post_code(0x39);
-	AGESAWRAPPER(amdinitearly);
+	agesawrapper_amdinitearly();
 
 	int s3resume = acpi_is_wakeup_early() && acpi_s3_resume_allowed();
 	if (!s3resume) {
 		post_code(0x40);
 		/* Reboots with outb(3,0x92), outb(4,0xcf9) or triple-fault all
 		 * hang, looks like DRAM re-init goes wrong, don't know why. */
-		val = AGESAWRAPPER(amdinitpost);
+		val = agesawrapper_amdinitpost();
 		if (val == 7) /* fatal, amdinitenv below is going to hang */
 			outb(0x06, 0x0cf9); /* reset system harder instead */
 
 		post_code(0x42);
-		AGESAWRAPPER(amdinitenv);
+		agesawrapper_amdinitenv();
 
 	} else { 			/* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");
 
 		post_code(0x60);
-		AGESAWRAPPER(amdinitresume);
+		agesawrapper_amdinitresume();
 
-		AGESAWRAPPER(amds3laterestore);
+		agesawrapper_amds3laterestore();
 
 		post_code(0x61);
 		prepare_for_resume();

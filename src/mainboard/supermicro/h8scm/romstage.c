@@ -28,7 +28,6 @@
 #include "cpu/x86/lapic.h"
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "northbridge/amd/agesa/family10/reset_test.h"
 #include <nb_cimx.h>
 #include <sb_cimx.h>
@@ -45,7 +44,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 val;
 
 	post_code(0x30);
-	AGESAWRAPPER_PRE_CONSOLE(amdinitmmio);
+	agesawrapper_amdinitmmio();
 	post_code(0x31);
 
 	/* Halt if there was a built in self test failure */
@@ -65,7 +64,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
 
 	post_code(0x37);
-	AGESAWRAPPER(amdinitreset);
+	agesawrapper_amdinitreset();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x38);
@@ -80,7 +79,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb_Poweron_Init();
 	}
 	post_code(0x3B);
-	AGESAWRAPPER(amdinitearly);
+	agesawrapper_amdinitearly();
 
 	post_code(0x3C);
 	nb_Ht_Init();
@@ -95,10 +94,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x40);
-	AGESAWRAPPER(amdinitpost);
+	agesawrapper_amdinitpost();
 
 	post_code(0x41);
-	AGESAWRAPPER(amdinitenv);
+	agesawrapper_amdinitenv();
 	post_code(0x42);
 
 	post_code(0x50);

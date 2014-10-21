@@ -31,7 +31,6 @@
 #include <console/loglevel.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include "cpu/x86/lapic.h"
 #include "southbridge/amd/agesa/hudson/hudson.h"
@@ -51,7 +50,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	outb(0xD2, 0xcd6);
 	outb(0x00, 0xcd7);
 
-	AGESAWRAPPER_PRE_CONSOLE(amdinitmmio);
+	agesawrapper_amdinitmmio();
 
 	/* Set LPC decode enables. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
@@ -81,29 +80,29 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		val = inb(0xcd6);
 
 	post_code(0x37);
-	AGESAWRAPPER(amdinitreset);
+	agesawrapper_amdinitreset();
 	post_code(0x38);
 	printk(BIOS_DEBUG, "Got past yangtze_early_setup\n");
 
 	post_code(0x39);
 
-	AGESAWRAPPER(amdinitearly);
+	agesawrapper_amdinitearly();
 	int s3resume = acpi_is_wakeup_early() && acpi_s3_resume_allowed();
 	if (!s3resume) {
 		post_code(0x40);
-		AGESAWRAPPER(amdinitpost);
+		agesawrapper_amdinitpost();
 		post_code(0x41);
-		AGESAWRAPPER(amdinitenv);
+		agesawrapper_amdinitenv();
 		/* TODO: Disable cache is not ok. */
 		disable_cache_as_ram();
 	} else { /* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");
 
 		post_code(0x60);
-		AGESAWRAPPER(amdinitresume);
+		agesawrapper_amdinitresume();
 
 		agesawrapper_amdinitcpuio();
-		AGESAWRAPPER(amds3laterestore);
+		agesawrapper_amds3laterestore();
 
 		post_code(0x61);
 		prepare_for_resume();

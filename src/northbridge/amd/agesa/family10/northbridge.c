@@ -832,7 +832,7 @@ static void amdfam10_domain_enable_resources(device_t dev)
 {
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam10 - %s: AmdInitMid.\n", __func__);
-	AGESAWRAPPER(amdinitmid);
+	agesawrapper_amdinitmid();
 	printk(BIOS_DEBUG, "  ader - leaving %s.\n", __func__);
 }
 

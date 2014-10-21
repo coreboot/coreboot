@@ -23,7 +23,6 @@
 #include <stdint.h>
 #include "Porting.h"
 #include "AGESA.h"
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 
 /* Define AMD Ontario APPU SSID/SVID */
 #define AMD_APU_SVID		0x1022
@@ -48,7 +47,9 @@ AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
 
-AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
+void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader, const char *func);
+#define AGESA_EVENTLOG(status, stdheader) \
+	agesawrapper_trace(status, stdheader, __func__)
 
 AGESA_STATUS agesawrapper_amdinitcpuio(void);
 AGESA_STATUS agesawrapper_amdinitmmio(void);

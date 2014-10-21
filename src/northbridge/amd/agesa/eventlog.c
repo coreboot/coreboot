@@ -1,9 +1,53 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 
 #include <console/console.h>
+#include <stdint.h>
+#include <string.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "amdlib.h"
+#include "AGESA.h"
+#include "AMD.h"
+
+
+/*
+ * Possible AGESA_STATUS values:
+ *
+ * 0x0 = AGESA_SUCCESS
+ * 0x1 = AGESA_UNSUPPORTED
+ * 0x2 = AGESA_BOUNDS_CHK
+ * 0x3 = AGESA_ALERT
+ * 0x4 = AGESA_WARNING
+ * 0x5 = AGESA_ERROR
+ * 0x6 = AGESA_CRITICAL
+ * 0x7 = AGESA_FATAL
+ */
+static const char * decodeAGESA_STATUS(AGESA_STATUS sret)
+{
+	const char* statusStrings[] = { "AGESA_SUCCESS", "AGESA_UNSUPPORTED",
+					"AGESA_BOUNDS_CHK", "AGESA_ALERT",
+					"AGESA_WARNING", "AGESA_ERROR",
+					"AGESA_CRITICAL", "AGESA_FATAL"
+					};
+	if (sret > 7) return "unknown"; /* Non-AGESA error code */
+	return statusStrings[sret];
+}
 
 #if 0
 
@@ -42,6 +86,7 @@ static void agesa_alert(EVENT_PARAMS *event)
 	switch (event->EventInfo) {
 		case MEM_ALERT_USER_TMG_MODE_OVERRULED:
 			printk(BIOS_DEBUG, "Socket %x Dct %x Channel %x "
+
 					"TIMING_MODE_SPECIFIC is requested but can not be applied to current configurations.\n",
 					(unsigned int)event->DataParam1,
 					(unsigned int)event->DataParam2,
@@ -664,25 +709,19 @@ static void interpret_agesa_eventlog(EVENT_PARAMS *event)
 }
 #endif
 
-/**
- * @param  HeapStatus -the current HeapStatus
- */
-AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus)
+static void amd_readeventlog(AMD_CONFIG_PARAMS *StdHeader)
 {
-	AGESA_STATUS Status;
 	EVENT_PARAMS AmdEventParams;
 
-	LibAmdMemFill(&AmdEventParams,
-			0,
-			sizeof(EVENT_PARAMS),
-			&(AmdEventParams.StdHeader));
+	memset(&AmdEventParams, 0, sizeof(EVENT_PARAMS));
 
 	AmdEventParams.StdHeader.AltImageBasePtr = 0;
 	AmdEventParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	AmdEventParams.StdHeader.Func = 0;
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
-	AmdEventParams.StdHeader.HeapStatus = HeapStatus;
-	Status = AmdReadEventLog(&AmdEventParams);
+	AmdEventParams.StdHeader.HeapStatus = StdHeader->HeapStatus;
+
+	AmdReadEventLog(&AmdEventParams);
 	while (AmdEventParams.EventClass != 0) {
 		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n",
 				(unsigned int)AmdEventParams.EventClass,
@@ -693,8 +732,14 @@ AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 		printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",
 				(unsigned int)AmdEventParams.DataParam3,
 				(unsigned int)AmdEventParams.DataParam4);
-		Status = AmdReadEventLog(&AmdEventParams);
+		AmdReadEventLog(&AmdEventParams);
 	}
+}
 
-	return Status;
+
+void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader, const char *func)
+{
+	printk(BIOS_DEBUG, "%s() returned %s\n", func, decodeAGESA_STATUS(ret));
+	if (ret != AGESA_SUCCESS)
+		amd_readeventlog(StdHeader);
 }

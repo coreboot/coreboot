@@ -59,7 +59,7 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 
 	status = AmdInitResume((AMD_RESUME_PARAMS *) AmdParamStruct.NewStructPtr);
 
-	AGESA_EVENTLOG_(status, AmdParamStruct.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
 
 	return status;
@@ -93,7 +93,7 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 			  (void **)&AmdS3LateParamsPtr->S3DataBlock.VolatileStorage);
 
 	status = AmdS3LateRestore(AmdS3LateParamsPtr);
-	AGESA_EVENTLOG_(status, AmdInterfaceParams.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdInterfaceParams.StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
 	return status;
@@ -122,7 +122,7 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 	AmdS3SaveParamsPtr->StdHeader = AmdInterfaceParams.StdHeader;
 
 	status = AmdS3Save(AmdS3SaveParamsPtr);
-	AGESA_EVENTLOG_(status, AmdInterfaceParams.StdHeader.HeapStatus);
+	AGESA_EVENTLOG(status, &AmdInterfaceParams.StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
 	S3DataType = S3DataTypeNonVolatile;

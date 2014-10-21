@@ -42,7 +42,6 @@
 #include <cpu/amd/amdfam15.h>
 #include <cpuRegisters.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "sb_cimx.h"
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
@@ -710,7 +709,7 @@ static void domain_enable_resources(device_t dev)
 	/* Enable MMIO on AMD CPU Address Map Controller */
 	agesawrapper_amdinitcpuio();
 
-	AGESAWRAPPER(amdinitmid);
+	agesawrapper_amdinitmid();
 	printk(BIOS_DEBUG, "  Fam15 - leaving %s.\n", __func__);
 }
 

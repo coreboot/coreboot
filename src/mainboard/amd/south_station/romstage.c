@@ -32,7 +32,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f81865f/f81865f.h>
@@ -75,19 +74,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
 
 	post_code(0x35);
-	AGESAWRAPPER(amdinitmmio);
+	agesawrapper_amdinitmmio();
 
 	post_code(0x37);
-	AGESAWRAPPER(amdinitreset);
+	agesawrapper_amdinitreset();
 
 	post_code(0x39);
-	AGESAWRAPPER(amdinitearly);
+	agesawrapper_amdinitearly();
 
 	post_code(0x40);
-	AGESAWRAPPER(amdinitpost);
+	agesawrapper_amdinitpost();
 
 	post_code(0x41);
-	AGESAWRAPPER(amdinitenv);
+	agesawrapper_amdinitenv();
 
 	post_code(0x50);
 	copy_and_run();

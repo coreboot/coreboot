@@ -37,7 +37,6 @@
 
 #include "sb_cimx.h"
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 
 //#define FX_DEVS NODE_NUMS
 #define FX_DEVS 1
@@ -777,7 +776,7 @@ static void domain_enable_resources(device_t dev)
 	/* Enable MMIO on AMD CPU Address Map Controller */
 	agesawrapper_amdinitcpuio();
 
-	AGESAWRAPPER(amdinitmid);
+	agesawrapper_amdinitmid();
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 

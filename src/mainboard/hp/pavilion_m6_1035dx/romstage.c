@@ -18,7 +18,6 @@
  */
 
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 
 #include <arch/acpi.h>
 #include <arch/cpu.h>
@@ -39,7 +38,7 @@
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-	AGESAWRAPPER_PRE_CONSOLE(amdinitmmio);
+	agesawrapper_amdinitmmio();
 
 	/* Set LPC decode enables. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
@@ -64,25 +63,25 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
 
 	post_code(0x37);
-	AGESAWRAPPER(amdinitreset);
+	agesawrapper_amdinitreset();
 	post_code(0x39);
 
-	AGESAWRAPPER(amdinitearly);
+	agesawrapper_amdinitearly();
 	int s3resume = acpi_is_wakeup_early() && acpi_s3_resume_allowed();
 	if (!s3resume) {
 		post_code(0x40);
-		AGESAWRAPPER(amdinitpost);
+		agesawrapper_amdinitpost();
 		post_code(0x41);
-		AGESAWRAPPER(amdinitenv);
+		agesawrapper_amdinitenv();
 		disable_cache_as_ram();
 	} else {		/* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");
 
 		post_code(0x60);
-		AGESAWRAPPER(amdinitresume);
+		agesawrapper_amdinitresume();
 
 		agesawrapper_amdinitcpuio();
-		AGESAWRAPPER(amds3laterestore);
+		agesawrapper_amds3laterestore();
 
 		post_code(0x61);
 		prepare_for_resume();

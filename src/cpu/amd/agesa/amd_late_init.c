@@ -21,7 +21,6 @@
 #include <bootstate.h>
 
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
 
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
@@ -32,7 +31,7 @@ static void agesawrapper_post_device(void *unused)
 	if (acpi_is_wakeup_s3())
 		return;
 
-	AGESAWRAPPER(amdinitlate);
+	agesawrapper_amdinitlate();
 
 #if CONFIG_AMD_SB_CIMX
 	sb_Late_Post();
@@ -40,7 +39,7 @@ static void agesawrapper_post_device(void *unused)
 	if (!acpi_s3_resume_allowed())
 		return;
 
-	AGESAWRAPPER(amdS3Save);
+	agesawrapper_amdS3Save();
 }
 
 BOOT_STATE_INIT_ENTRIES(agesa_bscb) = {

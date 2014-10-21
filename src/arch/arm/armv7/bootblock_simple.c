@@ -19,7 +19,6 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/cache.h>
 #include <arch/exception.h>
 #include <arch/stages.h>
 #include <bootblock_common.h>

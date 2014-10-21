@@ -179,7 +179,7 @@ arch_config_arm() {
 	TBFDARCHS="littlearm"
 	TCLIST="armv7a armv7-a"
 	TWIDTH="32"
-	TSUPP="arm armv4 armv7"
+	TSUPP="arm armv4 armv7 armv7_m"
 	TABI="eabi"
 }
 

@@ -1,0 +1,219 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2010 Advanced Micro Devices, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+config SOUTHBRIDGE_AMD_PI_AVALON
+	bool
+	select IOAPIC
+	select HAVE_USBDEBUG_OPTIONS
+	select HAVE_HARD_RESET
+
+if SOUTHBRIDGE_AMD_PI_AVALON
+
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string
+	default "southbridge/amd/pi/avalon/bootblock.c"
+
+config SOUTHBRIDGE_AMD_HUDSON_SKIP_ISA_DMA_INIT
+	bool
+	default n
+
+config EHCI_BAR
+	hex
+	default 0xfef00000
+
+config HUDSON_XHCI_ENABLE
+	bool "Enable Hudson XHCI Controller"
+	default y
+	help
+	  The XHCI controller must be enabled and the XHCI firmware
+	  must be added in order to have USB 3.0 support configured
+	  by coreboot. The OS will be responsible for enabling the XHCI
+	  controller if the the XHCI firmware is available but the
+	  XHCI controller is not enabled by coreboot.
+
+config HUDSON_XHCI_FWM
+	bool "Add xhci firmware"
+	default y
+	help
+	  Add Hudson 2/3/4 XHCI Firmware to support the onboard USB 3.0
+
+config HUDSON_DISABLE_IMC
+	bool
+	default n
+
+config HUDSON_IMC_FWM
+	bool "Add IMC firmware"
+	depends on !HUDSON_DISABLE_IMC
+	default y
+        help
+	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
+
+config HUDSON_GEC_FWM
+	bool
+	default n
+        help
+	  Add Hudson 2/3/4 GEC Firmware to support the onboard gigabit Ethernet MAC.
+	  Must be connected to a Broadcom B50610 or B50610M PHY on the motherboard.
+
+config HUDSON_PSP
+	bool
+	default y if CPU_AMD_PI_00730F01
+
+config HUDSON_XHCI_FWM_FILE
+        string "XHCI firmware path and filename"
+        default "3rdparty/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_PI_AVALON
+	depends on HUDSON_XHCI_FWM
+
+config HUDSON_IMC_FWM_FILE
+        string "IMC firmware path and filename"
+        default "3rdparty/southbridge/amd/avalon/imc.bin" if SOUTHBRIDGE_AMD_PI_AVALON
+	depends on HUDSON_IMC_FWM
+
+config HUDSON_GEC_FWM_FILE
+        string "GEC firmware path and filename"
+	depends on HUDSON_GEC_FWM
+
+config HUDSON_FWM
+	bool
+	default y if HUDSON_XHCI_FWM || HUDSON_IMC_FWM || HUDSON_GEC_FWM || HUDSON_PSP
+	default n
+
+if HUDSON_FWM
+
+config HUDSON_FWM_POSITION
+        hex "Hudson Firmware ROM Position"
+        default 0xFFF20000 if BOARD_ROMSIZE_KB_1024
+        default 0xFFE20000 if BOARD_ROMSIZE_KB_2048
+        default 0xFFC20000 if BOARD_ROMSIZE_KB_4096
+        default 0xFF820000 if BOARD_ROMSIZE_KB_8192
+        default 0xFF020000 if BOARD_ROMSIZE_KB_16384
+	help
+	  Hudson requires the firmware MUST be located at
+	  a specific address (ROM start address + 0x20000), otherwise
+	  xhci host Controller can not find or load the xhci firmware.
+
+	  The firmware start address is dependent on the ROM chip size.
+	  The default offset is 0x20000 from the ROM start address, namely
+	  0xFFF20000 if flash chip size is 1M
+	  0xFFE20000 if flash chip size is 2M
+	  0xFFC20000 if flash chip size is 4M
+	  0xFF820000 if flash chip size is 8M
+	  0xFF020000 if flash chip size is 16M
+endif # HUDSON_FWM
+
+config AMD_PUBKEY_FILE
+        depends on HUDSON_PSP
+        string "AMD public Key"
+        default "3rdparty/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
+
+config HUDSON_SATA_MODE
+        int "SATA Mode"
+        default 0
+        range 0 6
+	help
+	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.
+	  The default is NATIVE.
+	  0: NATIVE mode does not require a ROM.
+	  1: RAID mode must have the two ROM files.
+	  2: AHCI may work with or without AHCI ROM. It depends on the payload support.
+	     For example, seabios does not require the AHCI ROM.
+	  3: LEGACY IDE
+	  4: IDE to AHCI
+	  5: AHCI7804: ROM Required, and AMD driver required in the OS.
+	  6: IDE to AHCI7804: ROM Required, and AMD driver required in the OS.
+
+comment "NATIVE"
+	depends on HUDSON_SATA_MODE = 0
+
+comment "RAID"
+	depends on HUDSON_SATA_MODE = 1
+
+comment "AHCI"
+	depends on HUDSON_SATA_MODE = 2
+
+comment "LEGACY IDE"
+	depends on HUDSON_SATA_MODE = 3
+
+comment "IDE to AHCI"
+	depends on HUDSON_SATA_MODE = 4
+
+comment "AHCI7804"
+	depends on HUDSON_SATA_MODE = 5
+
+comment "IDE to AHCI7804"
+	depends on HUDSON_SATA_MODE = 6
+
+if HUDSON_SATA_MODE = 2 || HUDSON_SATA_MODE = 5
+
+config AHCI_ROM_ID
+	string  "AHCI device PCI IDs"
+	default "1022,7801" if HUDSON_SATA_MODE = 2
+	default "1022,7804" if HUDSON_SATA_MODE = 5
+
+config HUDSON_AHCI_ROM
+	bool "Add a AHCI ROM"
+
+config AHCI_ROM_FILE
+	string "AHCI ROM path and filename"
+	depends on HUDSON_AHCI_ROM
+	default "src/southbridge/amd/agesa/hudson/ahci.bin"
+
+endif
+
+if HUDSON_SATA_MODE = 1
+
+config RAID_ROM_ID
+	string "RAID device PCI IDs"
+	default "1022,7802"
+        help
+          1022,7802 for SATA NON-RAID5 module, 1022,7803 for SATA RAID5 mode
+
+config RAID_ROM_FILE
+	string "RAID ROM path and filename"
+	default "src/southbridge/amd/agesa/hudson/raid.bin"
+
+config RAID_MISC_ROM_FILE
+	string "RAID Misc ROM path and filename"
+	default "src/southbridge/amd/agesa/hudson/misc.bin"
+
+config RAID_MISC_ROM_POSITION
+	hex "RAID Misc ROM Position"
+	default 0xFFF00000
+	help
+	  The RAID ROM requires that the MISC ROM is located between the range
+	  0xFFF0_0000 to 0xFFF0_FFFF. Also, it must 1K bytes aligned.
+	  The CONFIG_ROM_SIZE must be larger than 0x100000.
+
+endif
+
+config HUDSON_LEGACY_FREE
+	bool "System is legacy free"
+	help
+	  Select y if there is no keyboard controller in the system.
+	  This sets variables in AGESA and ACPI.
+
+config AZ_PIN
+	hex
+	default 0xaa
+	help
+	  bit 1,0 - pin 0
+	  bit 3,2 - pin 1
+	  bit 5,4 - pin 2
+	  bit 7,6 - pin 3
+endif

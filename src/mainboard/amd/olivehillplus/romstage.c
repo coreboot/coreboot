@@ -34,7 +34,7 @@
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include "cpu/x86/lapic.h"
-#include "southbridge/amd/agesa/hudson/hudson.h"
+#include "southbridge/amd/pi/avalon/hudson.h"
 #include "cpu/amd/pi/s3_resume.h"
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)

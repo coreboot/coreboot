@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include "Porting.h"
 #include "AGESA.h"
+#include <northbridge/amd/agesa/agesawrapper_call.h>
 
 /* Define AMD Ontario APPU SSID/SVID */
 #define AMD_APU_SVID		0x1022

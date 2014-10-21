@@ -185,7 +185,7 @@ AGESA_STATUS agesawrapper_amdinitreset (
 	AmdResetParams.HtConfig.Depth = 0;
 
 	status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+	AGESA_EVENTLOG(status);
 	AmdReleaseStruct (&AmdParamStruct);
 	return status;
 }
@@ -212,7 +212,7 @@ AGESA_STATUS agesawrapper_amdinitearly (
 	OemCustomizeInitEarly (AmdEarlyParamsPtr);
 
 	status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+	AGESA_EVENTLOG(status);
 	AmdReleaseStruct (&AmdParamStruct);
 
 	return status;
@@ -236,7 +236,7 @@ AGESA_STATUS agesawrapper_amdinitpost (
 
 	AmdCreateStruct (&AmdParamStruct);
 	status = AmdInitPost ((AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr);
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+	AGESA_EVENTLOG(status);
 	AmdReleaseStruct (&AmdParamStruct);
 
 	/* Initialize heap space */
@@ -264,7 +264,7 @@ AGESA_STATUS agesawrapper_amdinitenv (
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct (&AmdParamStruct);
 	status = AmdInitEnv ((AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr);
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+	AGESA_EVENTLOG(status);
 	/* Initialize Subordinate Bus Number and Secondary Bus Number
 	 * In platform BIOS this address is allocated by PCI enumeration code
 		 Modify D1F0x18
@@ -389,7 +389,7 @@ AGESA_STATUS agesawrapper_amdinitmid (
 	AmdCreateStruct (&AmdParamStruct);
 
 	status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+	AGESA_EVENTLOG(status);
 	AmdReleaseStruct (&AmdParamStruct);
 
 	return status;
@@ -418,10 +418,8 @@ AGESA_STATUS agesawrapper_amdinitlate (
 	printk (BIOS_DEBUG, "agesawrapper_amdinitlate: AmdLateParamsPtr = %X\n", (u32)AmdLateParamsPtr);
 
 	Status = AmdInitLate (AmdLateParamsPtr);
-	if (Status != AGESA_SUCCESS) {
-		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
-	}
+	AGESA_EVENTLOG(Status);
+	ASSERT(Status == AGESA_SUCCESS);
 
 	DmiTable    = AmdLateParamsPtr->DmiTable;
 	AcpiPstate  = AmdLateParamsPtr->AcpiPState;
@@ -475,7 +473,7 @@ AGESA_STATUS agesawrapper_amdinitresume (
 
 	status = AmdInitResume ((AMD_RESUME_PARAMS *)AmdParamStruct.NewStructPtr);
 
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+	AGESA_EVENTLOG(status);
 	AmdReleaseStruct (&AmdParamStruct);
 
 	return status;
@@ -511,10 +509,8 @@ AGESA_STATUS agesawrapper_amds3laterestore (
 			   (void **) &AmdS3LateParamsPtr->S3DataBlock.VolatileStorage);
 
 	Status = AmdS3LateRestore (AmdS3LateParamsPtr);
-	if (Status != AGESA_SUCCESS) {
-		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
-	}
+	AGESA_EVENTLOG(Status);
+	ASSERT(Status == AGESA_SUCCESS);
 
 	return Status;
 }
@@ -544,10 +540,8 @@ AGESA_STATUS agesawrapper_amdS3Save (
 	AmdS3SaveParamsPtr->StdHeader = AmdInterfaceParams.StdHeader;
 
 	Status = AmdS3Save (AmdS3SaveParamsPtr);
-	if (Status != AGESA_SUCCESS) {
-		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
-	}
+	AGESA_EVENTLOG(Status);
+	ASSERT(Status == AGESA_SUCCESS);
 
 	S3DataType = S3DataTypeNonVolatile;
 
@@ -592,10 +586,8 @@ AGESA_STATUS agesawrapper_amdlaterunaptask (
 	ApExeParams.RelatedDataBlock = ConfigPtr;
 
 	Status = AmdLateRunApTask (&ApExeParams);
-	if (Status != AGESA_SUCCESS) {
-		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
-	}
+	AGESA_EVENTLOG(Status);
+	ASSERT(Status == AGESA_SUCCESS);
 
 	return Status;
 }

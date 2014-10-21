@@ -293,7 +293,7 @@ AGESA_STATUS agesawrapper_amdinitreset (
   AmdResetParams.HtConfig.Depth = 0;
 
   status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
-  if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+  AGESA_EVENTLOG(status);
   AmdReleaseStruct (&AmdParamStruct);
   return status;
  }
@@ -323,7 +323,7 @@ AGESA_STATUS agesawrapper_amdinitearly (
   OemCustomizeInitEarly (AmdEarlyParamsPtr);
 
   status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
-  if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+  AGESA_EVENTLOG(status);
   AmdReleaseStruct (&AmdParamStruct);
 
   return status;
@@ -350,7 +350,7 @@ AGESA_STATUS agesawrapper_amdinitpost (
 
   AmdCreateStruct (&AmdParamStruct);
   status = AmdInitPost ((AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr);
-  if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+  AGESA_EVENTLOG(status);
   AmdReleaseStruct (&AmdParamStruct);
 
   /* Initialize heap space */
@@ -379,7 +379,7 @@ AGESA_STATUS agesawrapper_amdinitenv (
   AmdParamStruct.StdHeader.ImageBasePtr = 0;
   AmdCreateStruct (&AmdParamStruct);
   status = AmdInitEnv ((AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr);
-  if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+  AGESA_EVENTLOG(status);
   AmdReleaseStruct (&AmdParamStruct);
 
   return status;
@@ -438,7 +438,7 @@ AGESA_STATUS agesawrapper_amdinitmid (
   AmdCreateStruct (&AmdParamStruct);
 
   status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
-  if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+  AGESA_EVENTLOG(status);
   AmdReleaseStruct (&AmdParamStruct);
 
   return status;
@@ -462,10 +462,8 @@ AGESA_STATUS agesawrapper_amdinitlate (
   AmdLateParams.StdHeader.ImageBasePtr = 0;
 
   Status = AmdInitLate (&AmdLateParams);
-  if (Status != AGESA_SUCCESS) {
-    agesawrapper_amdreadeventlog();
+	AGESA_EVENTLOG(Status);
     ASSERT(Status == AGESA_SUCCESS);
-  }
 
   DmiTable       = AmdLateParams.DmiTable;
   AcpiPstate     = AmdLateParams.AcpiPState;
@@ -495,10 +493,8 @@ AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *Conf
   ApExeParams.StdHeader.ImageBasePtr = 0;
 
   Status = AmdLateRunApTask (&ApExeParams);
-  if (Status != AGESA_SUCCESS) {
-    agesawrapper_amdreadeventlog();
+	AGESA_EVENTLOG(Status);
     ASSERT(Status == AGESA_SUCCESS);
-  }
 
   return Status;
 }

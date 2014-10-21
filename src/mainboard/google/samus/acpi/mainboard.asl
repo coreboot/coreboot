@@ -178,6 +178,9 @@ Scope (\_SB.PCI0.I2C0)
 		Name (OUT2, 1)  /* LOUT2 differential */
 		Name (OUT3, 0)  /* LOUT3 differential */
 		Name (ASRC, 1)  /* Enable I2S1 ASRC */
+		Name (JD1, 0)   /* JackDetect1 is not used */
+		Name (JD2, 2)   /* Use GPIO5 as JackDetect2 */
+		Name (JD3, 3)   /* Use GPIO6 as JackDetect3 */
 
 		Name (_CRS, ResourceTemplate()
 		{

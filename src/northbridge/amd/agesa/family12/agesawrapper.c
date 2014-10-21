@@ -425,29 +425,3 @@ AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, VOID * Conf
 
 	return status;
 }
-
-AGESA_STATUS agesawrapper_amdreadeventlog(VOID)
-{
-	AGESA_STATUS Status;
-	EVENT_PARAMS AmdEventParams;
-
-	LibAmdMemFill(&AmdEventParams, 0, sizeof(EVENT_PARAMS), &(AmdEventParams.StdHeader));
-
-	AmdEventParams.StdHeader.AltImageBasePtr = 0;
-	AmdEventParams.StdHeader.CalloutPtr = NULL;
-	AmdEventParams.StdHeader.Func = 0;
-	AmdEventParams.StdHeader.ImageBasePtr = 0;
-	Status = AmdReadEventLog(&AmdEventParams);
-	while (AmdEventParams.EventClass != 0) {
-		printk(BIOS_DEBUG,
-		       "\nEventLog:  EventClass = %lx, EventInfo = %lx.\n",
-		       AmdEventParams.EventClass, AmdEventParams.EventInfo);
-		printk(BIOS_DEBUG, "  Param1 = %lx, Param2 = %lx.\n",
-		       AmdEventParams.DataParam1, AmdEventParams.DataParam2);
-		printk(BIOS_DEBUG, "  Param3 = %lx, Param4 = %lx.\n",
-		       AmdEventParams.DataParam3, AmdEventParams.DataParam4);
-		Status = AmdReadEventLog(&AmdEventParams);
-	}
-
-	return Status;
-}

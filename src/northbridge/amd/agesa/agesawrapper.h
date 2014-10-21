@@ -48,11 +48,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
 
-#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY12 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14
-AGESA_STATUS agesawrapper_amdreadeventlog(void);
-#else
 AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
-#endif
 
 AGESA_STATUS agesawrapper_amdinitcpuio(void);
 AGESA_STATUS agesawrapper_amdinitmmio(void);

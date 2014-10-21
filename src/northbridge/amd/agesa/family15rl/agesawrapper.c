@@ -469,29 +469,3 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 }
 
 #endif				/* #ifndef __PRE_RAM__ */
-
-AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus)
-{
-	AGESA_STATUS Status;
-	EVENT_PARAMS AmdEventParams;
-
-	LibAmdMemFill(&AmdEventParams, 0, sizeof(EVENT_PARAMS), &(AmdEventParams.StdHeader));
-
-	AmdEventParams.StdHeader.AltImageBasePtr = 0;
-	AmdEventParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
-	AmdEventParams.StdHeader.Func = 0;
-	AmdEventParams.StdHeader.ImageBasePtr = 0;
-	AmdEventParams.StdHeader.HeapStatus = HeapStatus;
-	Status = AmdReadEventLog(&AmdEventParams);
-	while (AmdEventParams.EventClass != 0) {
-		printk(BIOS_DEBUG, "\nEventLog:  EventClass = %x, EventInfo = %x.\n",
-		       (unsigned int)AmdEventParams.EventClass, (unsigned int)AmdEventParams.EventInfo);
-		printk(BIOS_DEBUG, "  Param1 = %x, Param2 = %x.\n",
-		       (unsigned int)AmdEventParams.DataParam1, (unsigned int)AmdEventParams.DataParam2);
-		printk(BIOS_DEBUG, "  Param3 = %x, Param4 = %x.\n",
-		       (unsigned int)AmdEventParams.DataParam3, (unsigned int)AmdEventParams.DataParam4);
-		Status = AmdReadEventLog(&AmdEventParams);
-	}
-
-	return Status;
-}

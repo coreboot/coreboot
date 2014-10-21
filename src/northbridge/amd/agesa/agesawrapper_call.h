@@ -62,7 +62,7 @@ static inline u32 do_agesawrapper(AGESA_STATUS (*func)(void), const char *name)
 #if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY12 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14
 	/* TODO: These families do not pass valid HeapStatus. */
 #define AGESA_EVENTLOG(status) \
-	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog()
+	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(0)
 #else
 #define AGESA_EVENTLOG(status, heapstatus) \
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(heapstatus)

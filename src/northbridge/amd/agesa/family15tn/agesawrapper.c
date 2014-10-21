@@ -52,8 +52,6 @@ VOID *AcpiWheaCmc = NULL;
 VOID *AcpiAlib = NULL;
 VOID *AcpiIvrs = NULL;
 
-VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS * InitEarly);
-
 AGESA_STATUS agesawrapper_amdinitcpuio(void)
 {
 	UINT64 MsrReg;

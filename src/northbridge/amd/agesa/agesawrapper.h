@@ -65,4 +65,7 @@ void *agesawrapper_getlateinitptr (int pick);
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
+void OemCustomizeInitEarly(AMD_EARLY_PARAMS *InitEarly);
+void OemCustomizeInitPost(AMD_POST_PARAMS *InitPost);
+
 #endif /* _AGESAWRAPPER_H_ */

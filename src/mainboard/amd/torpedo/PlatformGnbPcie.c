@@ -20,6 +20,7 @@
 #include "PlatformGnbPcieComplex.h"
 
 #include <string.h>
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <vendorcode/amd/agesa/f12/Proc/CPU/heapManager.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X12_F12PCIECOMPLEXCONFIG_FILECODE

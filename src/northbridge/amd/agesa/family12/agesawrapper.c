@@ -47,8 +47,6 @@ VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
 VOID *AcpiAlib = NULL;
 
-VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS * InitEarly);
-
 UINT32 ReadAmdSbPmr(IN UINT8 IndexValue, OUT UINT8 * DataValue);
 UINT32 WriteAmdSbPmr(IN UINT8 IndexValue, IN UINT8 DataValue);
 

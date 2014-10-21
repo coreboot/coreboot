@@ -47,11 +47,11 @@ VOID *AcpiWheaCmc = NULL;
 VOID *AcpiAlib = NULL;
 
 /* TODO: Function body should be in mainboard directory. */
-static VOID OemCustomizeInitEarly(AMD_EARLY_PARAMS * InitEarly)
+void OemCustomizeInitEarly(AMD_EARLY_PARAMS *InitEarly)
 {
 }
 
-static VOID OemCustomizeInitPost(AMD_POST_PARAMS *InitPost)
+void OemCustomizeInitPost(AMD_POST_PARAMS *InitPost)
 {
 #if IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
 	InitPost->MemConfig.UmaMode = UMA_AUTO;

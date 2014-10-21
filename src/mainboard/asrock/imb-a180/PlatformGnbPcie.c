@@ -21,8 +21,9 @@
 #include "amdlib.h"
 #include "Ids.h"
 #include "heapManager.h"
-#include "PlatformGnbPcieComplex.h"
 #include "Filecode.h"
+
+#include <northbridge/amd/agesa/agesawrapper.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 

@@ -26,6 +26,7 @@
 #include "Filecode.h"
 
 #include <string.h>
+#include <northbridge/amd/agesa/agesawrapper.h>
 
 /*---------------------------------------------------------------------------------------*/
 /**

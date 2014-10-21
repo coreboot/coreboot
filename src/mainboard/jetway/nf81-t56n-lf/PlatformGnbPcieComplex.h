@@ -79,6 +79,4 @@
 #define GNB_GPP_PORT8_CHANNEL_TYPE		4
 #define GNB_GPP_PORT8_HOTPLUG_SUPPORT	0
 
-void OemCustomizeInitEarly (IN OUT AMD_EARLY_PARAMS *InitEarly);
-
 #endif /* _PLATFORM_GNB_PCIE_COMPLEX_H */

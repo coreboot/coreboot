@@ -25,6 +25,7 @@
 #include "Filecode.h"
 
 #include <string.h>
+#include <northbridge/amd/agesa/agesawrapper.h>
 
 #define FILECODE PROC_RECOVERY_MEM_NB_ON_MRNON_FILECODE
 

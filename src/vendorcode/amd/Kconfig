@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-if 	CPU_AMD_AGESA_00730F01
+if CPU_AMD_PI
 
 menu "AMD Platform Initialization"
 
@@ -25,8 +25,7 @@ source src/vendorcode/amd/pi/Kconfig
 
 choice
 	prompt "AGESA source"
-	depends on CPU_AMD_AGESA
-	default CPU_AMD_AGESA_BINARY_PI if CPU_AMD_AGESA_00730F01
+	default CPU_AMD_AGESA_BINARY_PI if CPU_AMD_PI
 	default CPU_AMD_AGESA_OPENSOURCE
 	help
 	  Select the method for including the AMD Platform Initialization
@@ -50,14 +49,14 @@ config CPU_AMD_AGESA_OPENSOURCE
 
 endchoice
 
+if CPU_AMD_AGESA_BINARY_PI
+
 config AGESA_BINARY_PI_PATH_DEFAULT_SELECTED
 	bool
-	depends on CPU_AMD_AGESA_BINARY_PI
 	default n
 
 config AGESA_BINARY_PI_PATH
 	string "AGESA PI directory path"
-	depends on CPU_AMD_AGESA_BINARY_PI
 	default AGESA_BINARY_PI_PATH_DEFAULT if AGESA_BINARY_PI_PATH_DEFAULT_SELECTED
 	help
 	  Specify where to find the AGESA headers and binary file
@@ -65,28 +64,26 @@ config AGESA_BINARY_PI_PATH
 
 config AGESA_BINARY_PI_FILE_DEFAULT_SELECTED
 	bool
-	depends on CPU_AMD_AGESA_BINARY_PI
 	default n
 
 config AGESA_BINARY_PI_FILE
 	string "AGESA PI binary file name"
-	depends on CPU_AMD_AGESA_BINARY_PI
 	default AGESA_BINARY_PI_FILE_DEFAULT if AGESA_BINARY_PI_FILE_DEFAULT_SELECTED
 	help
 	  Specify the binary file to use for AMD platform initialization.
 
 config AGESA_BINARY_PI_LOCATION_DEFAULT_SELECTED
 	bool
-	depends on CPU_AMD_AGESA_BINARY_PI
 	default n
 
 config AGESA_BINARY_PI_LOCATION
 	string "AGESA PI binary address in ROM"
-	depends on CPU_AMD_AGESA_BINARY_PI
 	default AGESA_BINARY_PI_LOCATION_DEFAULT if AGESA_BINARY_PI_FILE_DEFAULT_SELECTED
 	help
 	  Specify the ROM address at which to store the binary Platform
 	  Initialization code.
+
+endif
 
 endmenu
 

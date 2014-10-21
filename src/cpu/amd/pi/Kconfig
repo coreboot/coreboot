@@ -17,14 +17,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-config CPU_AMD_AGESA
+config CPU_AMD_PI
 	bool
-	default y if CPU_AMD_AGESA_FAMILY10
-	default y if CPU_AMD_AGESA_FAMILY12
-	default y if CPU_AMD_AGESA_FAMILY14
-	default y if CPU_AMD_AGESA_FAMILY15
-	default y if CPU_AMD_AGESA_FAMILY15_TN
-	default y if CPU_AMD_AGESA_FAMILY16_KB
+	default y if CPU_AMD_PI_00730F01
 	default n
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_ROMSTAGE_X86_32
@@ -35,7 +30,7 @@ config CPU_AMD_AGESA
 	select BROKEN_CAR_MIGRATE
 	select SPI_FLASH if HAVE_ACPI_RESUME
 
-if CPU_AMD_AGESA
+if CPU_AMD_PI
 
 config UDELAY_IO
 	bool
@@ -56,7 +51,7 @@ config UDELAY_LAPIC_FIXED_FSB
 	int
 	default 200
 
-# TODO: Sync these with definitions in AGESA vendorcode.
+# TODO: Sync these with definitions in PI vendorcode.
 # DCACHE_RAM_BASE must equal BSP_STACK_BASE_ADDR.
 # DCACHE_RAM_SIZE must equal BSP_STACK_SIZE.
 
@@ -76,12 +71,6 @@ config S3_DATA_SIZE
 	int
 	default 32768
 
-endif # CPU_AMD_AGESA
+endif # CPU_AMD_PI
 
-source src/cpu/amd/agesa/family10/Kconfig
-source src/cpu/amd/agesa/family12/Kconfig
-source src/cpu/amd/agesa/family14/Kconfig
-source src/cpu/amd/agesa/family15/Kconfig
-source src/cpu/amd/agesa/family15tn/Kconfig
-source src/cpu/amd/agesa/family16kb/Kconfig
-
+source src/cpu/amd/pi/00730F01/Kconfig

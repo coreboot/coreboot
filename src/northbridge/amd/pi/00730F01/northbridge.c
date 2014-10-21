@@ -39,7 +39,7 @@
 #include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
 #include "agesawrapper.h"
-#include <northbridge/amd/agesa/agesawrapper_call.h>
+#include <northbridge/amd/pi/agesawrapper_call.h>
 #include "northbridge.h"
 
 #include <cpu/x86/lapic.h>
@@ -494,7 +494,7 @@ static const struct pci_driver family10_northbridge __pci_driver = {
 	.device = PCI_DEVICE_ID_AMD_10H_NB_HT,
 };
 
-struct chip_operations northbridge_amd_agesa_00730F01_ops = {
+struct chip_operations northbridge_amd_pi_00730F01_ops = {
 	CHIP_NAME("AMD FAM16 Northbridge")
 	.enable_dev = 0,
 };
@@ -1129,7 +1129,7 @@ static void root_complex_enable_dev(struct device *dev)
 	}
 }
 
-struct chip_operations northbridge_amd_agesa_00730F01_root_complex_ops = {
+struct chip_operations northbridge_amd_pi_00730F01_root_complex_ops = {
 	CHIP_NAME("AMD FAM16 Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };

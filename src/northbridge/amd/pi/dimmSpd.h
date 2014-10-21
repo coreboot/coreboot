@@ -17,29 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <device/pci_def.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
-#include <cpu/amd/pi/s3_resume.h>
-#include "agesawrapper.h"
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
+#ifndef _DIMMSPD_H_
+#define _DIMMSPD_H_
 
-/**********************************************
- * enable the dedicated function in mainboard.
- **********************************************/
-static void mainboard_enable(device_t dev)
-{
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
+AGESA_STATUS
+AmdMemoryReadSPD (IN UINT32 Func, IN UINT32 Data, IN OUT AGESA_READ_SPD_PARAMS *SpdData);
 
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
-}
+int hudson_readSpd(int spdAddress, char *buf, size_t len);
 
-struct chip_operations mainboard_ops = {
-	.enable_dev = mainboard_enable,
-};
+int smbus_readSpd(int spdAddress, char *buf, size_t len);
+
+#endif

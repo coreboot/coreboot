@@ -22,7 +22,7 @@
 #include <config.h>
 #include <cpu/x86/mtrr.h>
 #include "agesawrapper.h"
-#include <northbridge/amd/agesa/BiosCallOuts.h>
+#include <northbridge/amd/pi/BiosCallOuts.h>
 #include "cpuRegisters.h"
 #include "cpuCacheInit.h"
 #include "cpuApicUtilities.h"
@@ -36,7 +36,7 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "Fch.h"
-#include <cpu/amd/agesa/s3_resume.h>
+#include <cpu/amd/pi/s3_resume.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include "hudson.h"

@@ -17,29 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <device/pci_def.h>
-#include <arch/acpi.h>
-#include <northbridge/amd/pi/BiosCallOuts.h>
-#include <cpu/amd/pi/s3_resume.h>
-#include "agesawrapper.h"
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 
-/**********************************************
- * enable the dedicated function in mainboard.
- **********************************************/
-static void mainboard_enable(device_t dev)
-{
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
-	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3earlyrestore();
-}
-
-struct chip_operations mainboard_ops = {
-	.enable_dev = mainboard_enable,
+struct chip_operations cpu_amd_pi_00730F01_ops = {
+	CHIP_NAME("AMD CPU Family 16h")
 };

@@ -14,11 +14,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,  MA 02110-1301 USA
  */
 
-#include <device/device.h>
+#include <console/console.h>
+#include <spi-generic.h>
+#include <spi_flash.h>
 
-struct chip_operations cpu_amd_agesa_00730F01_ops = {
-	CHIP_NAME("AMD CPU Family 16h")
-};
+#include "s3_resume.h"
+
+void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
+{
+	struct spi_flash *flash;
+
+	spi_init();
+	flash = spi_flash_probe(0, 0);
+	if (!flash) {
+		printk(BIOS_DEBUG, "Could not find SPI device\n");
+		/* Dont make flow stop. */
+		return;
+	}
+
+	flash->spi->rw = SPI_WRITE_FLAG;
+	spi_claim_bus(flash->spi);
+
+	flash->erase(flash, pos, size);
+	flash->write(flash, pos, sizeof(len), &len);
+	flash->write(flash, pos + sizeof(len), len, buf);
+
+	flash->spi->rw = SPI_WRITE_FLAG;
+	spi_release_bus(flash->spi);
+
+	return;
+}

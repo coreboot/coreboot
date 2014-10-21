@@ -85,7 +85,7 @@ config HUDSON_GEC_FWM
 
 config HUDSON_PSP
 	bool
-	default y if CPU_AMD_AGESA_00730F01
+	default y if CPU_AMD_PI_00730F01
 
 config HUDSON_XHCI_FWM_FILE
         string "XHCI firmware path and filename"
@@ -138,7 +138,7 @@ endif # HUDSON_FWM
 config AMD_PUBKEY_FILE
         depends on HUDSON_PSP
         string "AMD public Key"
-        default "3rdparty/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_AGESA_00730F01
+        default "3rdparty/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
 
 config HUDSON_SATA_MODE
         int "SATA Mode"

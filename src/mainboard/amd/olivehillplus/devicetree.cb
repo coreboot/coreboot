@@ -16,18 +16,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
-chip northbridge/amd/agesa/00730F01/root_complex
+chip northbridge/amd/pi/00730F01/root_complex
 	device cpu_cluster 0 on
-		chip cpu/amd/agesa/00730F01
+		chip cpu/amd/pi/00730F01
 			device lapic 0 on  end
 		end
 	end
 
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
-		chip northbridge/amd/agesa/00730F01 # CPU side of HT root complex
+		chip northbridge/amd/pi/00730F01 # CPU side of HT root complex
 
-			chip northbridge/amd/agesa/00730F01 # PCI side of HT root complex
+			chip northbridge/amd/pi/00730F01 # PCI side of HT root complex
 				device pci 0.0 on  end # Root Complex
 				device pci 1.0 on  end # Internal Graphics P2P bridge 0x9804
 				device pci 1.1 on  end # Internal Multimedia
@@ -37,7 +37,7 @@ chip northbridge/amd/agesa/00730F01/root_complex
 				device pci 2.3 on  end # Realtek NIC
 				device pci 2.4 on  end # Edge Connector
 				device pci 2.5 on  end # Edge Connector
-			end	#chip northbridge/amd/agesa/00730F01
+			end	#chip northbridge/amd/pi/00730F01
 
 			chip southbridge/amd/agesa/hudson # it is under NB/SB Link, but on the same pci bus
 				device pci 10.0 on  end # XHCI HC0
@@ -70,6 +70,6 @@ chip northbridge/amd/agesa/00730F01/root_complex
 				{ {0xA0, 0xA2} }, // socket 0, channel 0, slots 0 & 1 - 8-bit SPD addresses
 			}"
 
-		end #chip northbridge/amd/agesa/00730F01 # CPU side of HT root complex
+		end #chip northbridge/amd/pi/00730F01 # CPU side of HT root complex
 	end #domain
-end #northbridge/amd/agesa/00730F01/root_complex
+end #northbridge/amd/pi/00730F01/root_complex

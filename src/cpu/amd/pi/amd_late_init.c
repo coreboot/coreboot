@@ -25,11 +25,7 @@
 #include <device/pci_ops.h>
 
 #include <agesawrapper.h>
-#include <northbridge/amd/agesa/agesawrapper_call.h>
-
-#if CONFIG_AMD_SB_CIMX
-#include <sb_cimx.h>
-#endif
+#include <northbridge/amd/pi/agesawrapper_call.h>
 
 static void agesawrapper_post_device(void *unused)
 {
@@ -38,7 +34,7 @@ static void agesawrapper_post_device(void *unused)
 
 	AGESAWRAPPER(amdinitlate);
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY_16KB)
+#if (1) /* NORTHBRIDGE_00730F01 */
 	device_t dev;
 	u32 value;
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0)); /* clear IoapicSbFeatureEn */
@@ -52,9 +48,6 @@ static void agesawrapper_post_device(void *unused)
 	pci_write_config32(dev, 0x60, value);
 #endif
 
-#if CONFIG_AMD_SB_CIMX
-	sb_Late_Post();
-#endif
 	if (!acpi_s3_resume_allowed())
 		return;
 

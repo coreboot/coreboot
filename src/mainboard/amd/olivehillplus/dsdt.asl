@@ -40,7 +40,7 @@ DefinitionBlock (
 	#include <southbridge/amd/agesa/hudson/acpi/pcie.asl>
 
 	/* Describe the processor tree (\_PR) */
-	#include <cpu/amd/agesa/00730F01/acpi/cpu.asl>
+	#include <cpu/amd/pi/00730F01/acpi/cpu.asl>
 
 	/* Contains the supported sleep states for this chipset */
 	#include <southbridge/amd/agesa/hudson/acpi/sleepstates.asl>
@@ -65,7 +65,7 @@ DefinitionBlock (
 
 		Device(PCI0) {
 			/* Describe the AMD Northbridge */
-			#include <northbridge/amd/agesa/00730F01/acpi/northbridge.asl>
+			#include <northbridge/amd/pi/00730F01/acpi/northbridge.asl>
 
 			/* Describe the AMD Fusion Controller Hub Southbridge */
 			#include <southbridge/amd/agesa/hudson/acpi/fch.asl>

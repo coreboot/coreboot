@@ -4,5 +4,6 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_GX1) += gx1
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_GX2) += gx2
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_LX) += lx
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA) += agesa
+subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI) += pi
 
 subdirs-$(CONFIG_AMD_NB_CIMX) += cimx

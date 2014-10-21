@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,53 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-config CPU_AMD_AGESA_00730F01
-	bool
-	select PCI_IO_CFG_EXT
-	select X86_AMD_FIXED_MTRRS
+subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00730F01) += 00730F01
 
-if CPU_AMD_AGESA_00730F01
-
-config CPU_ADDR_BITS
-	int
-	default 40
-
-config CPU_SOCKET_TYPE
-	hex
-	default 0x10
-
-# DDR2 and REG
-config DIMM_SUPPORT
-	hex
-	default 0x0104
-
-config EXT_RT_TBL_SUPPORT
-	bool
-	default n
-
-config EXT_CONF_SUPPORT
-	bool
-	default n
-
-config CBB
-	hex
-	default 0x0
-
-config CDB
-	hex
-	default 0x18
-
-config XIP_ROM_BASE
-	hex
-	default 0xfff80000
-
-config XIP_ROM_SIZE
-	hex
-	default 0x100000
-
-config HIGH_SCRATCH_MEMORY_SIZE
-	hex
-	# Assume the maximum size of stack as (0xA0000 - 0x30000 + 0x1000)
-	default 0xA1000
-
-endif
+romstage-y += def_callouts.c
+ramstage-y += def_callouts.c

@@ -25,32 +25,28 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-if CPU_AMD_AGESA_00730F01
+if CPU_AMD_PI_00730F01
 
 config AGESA_BINARY_PI_DEFAULTS # dummy
 	def_bool y
-	depends on CPU_AMD_AGESA_00730F01
 	select AGESA_BINARY_PI_LOCATION_DEFAULT_SELECTED
 	select AGESA_BINARY_PI_PATH_DEFAULT_SELECTED
 	select AGESA_BINARY_PI_FILE_DEFAULT_SELECTED
 
 config AGESA_BINARY_PI_PATH_DEFAULT
 	string
-	depends on CPU_AMD_AGESA_00730F01
 	default "3rdparty/pi/amd/00730F01"
 	help
 	  The default binary file name to use for AMD platform initialization.
 
 config AGESA_BINARY_PI_FILE_DEFAULT
 	string
-	depends on CPU_AMD_AGESA_00730F01
 	default "FT3b/AGESA.bin"
 	help
 	  The default binary file name to use for AMD platform initialization.
 
 config AGESA_BINARY_PI_LOCATION_DEFAULT
 	hex
-	depends on CPU_AMD_AGESA_00730F01
 	default 0xFFE00000
 	help
 	  The default ROM address at which to store the binary Platform

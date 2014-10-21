@@ -17,11 +17,11 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
-config NORTHBRIDGE_AMD_AGESA_00730F01
+config NORTHBRIDGE_AMD_PI_00730F01
 	bool
 	select MMCONF_SUPPORT
 
-if NORTHBRIDGE_AMD_AGESA_00730F01
+if NORTHBRIDGE_AMD_PI_00730F01
 
 config HW_MEM_HOLE_SIZEK
 	hex

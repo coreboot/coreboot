@@ -17,11 +17,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-config NORTHBRIDGE_AMD_AGESA
+config NORTHBRIDGE_AMD_PI
         bool
-        default CPU_AMD_AGESA
+        default CPU_AMD_PI
 
-if NORTHBRIDGE_AMD_AGESA
+if NORTHBRIDGE_AMD_PI
 
 config CONSOLE_VGA_MULTI
 	bool
@@ -31,20 +31,6 @@ config S3_VGA_ROM_RUN
 	bool
 	default n
 
-source src/northbridge/amd/agesa/family10/Kconfig
-source src/northbridge/amd/agesa/family12/Kconfig
-source src/northbridge/amd/agesa/family14/Kconfig
-source src/northbridge/amd/agesa/family15/Kconfig
-source src/northbridge/amd/agesa/family15tn/Kconfig
-source src/northbridge/amd/agesa/family16kb/Kconfig
+source src/northbridge/amd/pi/00730F01/Kconfig
 
-# TODO: Reservation for heap seems excessive
-config HEAP_SIZE
-	hex
-	default 0xc0000
-
-config RAMTOP
-	hex
-	default 0x400000
-
-endif # NORTHBRIDGE_AMD_AGESA
+endif # NORTHBRIDGE_AMD_PI

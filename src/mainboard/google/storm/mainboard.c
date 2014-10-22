@@ -93,28 +93,27 @@ static void setup_tpm(void)
 }
 
 #define SW_RESET_GPIO 26
-static void deassert_sw_reset(void)
+static void assert_sw_reset(void)
 {
 	if (board_id() == BOARD_ID_PROTO_0)
 		return;
 
 	/*
-	 * only proto0.2 and later care about this. This signal is eventually
-	 * driving the ehernet switch reset input, which is active low. But
-	 * since this signal gets inverted along the way, the GPIO needs to be
-	 * driven low to take the switch out of reset.
+	 * only proto0.2 and later care about this. We want to keep the
+	 * ethernet switch in reset, otherwise it comes up in default
+	 * (bridging) mode.
 	 */
 	gpio_tlmm_config_set(SW_RESET_GPIO, FUNC_SEL_GPIO,
 			     GPIO_PULL_UP, GPIO_4MA, GPIO_ENABLE);
 
-	gpio_set(SW_RESET_GPIO, 0);
+	gpio_set(SW_RESET_GPIO, 1);
 }
 
 static void mainboard_init(device_t dev)
 {
 	 setup_mmu();
 	 setup_usb();
-	 deassert_sw_reset();
+	 assert_sw_reset();
 	 setup_tpm();
 	 /* Functionally a 0-cost no-op if NAND is not present */
 	 board_nand_init();

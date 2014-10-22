@@ -46,16 +46,18 @@ VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
+#ifndef __PRE_RAM__
 /* ACPI table pointers returned by AmdInitLate */
-VOID *DmiTable    = NULL;
-VOID *AcpiPstate  = NULL;
-VOID *AcpiSrat    = NULL;
-VOID *AcpiSlit    = NULL;
+static void *DmiTable    = NULL;
+static void *AcpiPstate  = NULL;
+static void *AcpiSrat    = NULL;
+static void *AcpiSlit    = NULL;
 
-VOID *AcpiWheaMce = NULL;
-VOID *AcpiWheaCmc = NULL;
-VOID *AcpiAlib    = NULL;
-VOID *AcpiIvrs    = NULL;
+static void *AcpiWheaMce = NULL;
+static void *AcpiWheaCmc = NULL;
+static void *AcpiAlib    = NULL;
+static void *AcpiIvrs    = NULL;
+#endif
 
 AGESA_STATUS agesawrapper_amdinitcpuio(void)
 {
@@ -287,6 +289,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	return status;
 }
 
+#ifndef __PRE_RAM__
 VOID* agesawrapper_getlateinitptr (int pick)
 {
 	switch (pick) {
@@ -310,6 +313,7 @@ VOID* agesawrapper_getlateinitptr (int pick)
 		return NULL;
 	}
 }
+#endif
 
 AGESA_STATUS agesawrapper_amdinitmid(void)
 {
@@ -341,6 +345,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	return status;
 }
 
+#ifndef __PRE_RAM__
 AGESA_STATUS agesawrapper_amdinitlate(void)
 {
 	AGESA_STATUS Status;
@@ -389,6 +394,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	/* AmdReleaseStruct (&AmdParamStruct); */
 	return Status;
 }
+#endif
 
 AGESA_STATUS agesawrapper_amdlaterunaptask (
 	UINT32 Func,

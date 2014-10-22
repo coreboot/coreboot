@@ -30,7 +30,7 @@
 #include <console/console.h>
 #include <console/loglevel.h>
 #include <cpu/amd/car.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include "cpu/x86/lapic.h"

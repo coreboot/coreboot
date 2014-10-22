@@ -24,7 +24,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 
-#include <agesawrapper.h>
+#include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 
 static void agesawrapper_post_device(void *unused)

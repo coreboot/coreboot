@@ -25,7 +25,7 @@
 #include <arch/acpi.h>
 #include <northbridge/amd/pi/BiosCallOuts.h>
 #include <cpu/amd/pi/s3_resume.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/pi/agesawrapper.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 

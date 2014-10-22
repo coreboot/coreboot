@@ -21,7 +21,7 @@
 #include <string.h>
 #include <config.h>
 #include <cpu/x86/mtrr.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/BiosCallOuts.h>
 #include "cpuRegisters.h"
 #include "cpuCacheInit.h"
@@ -31,7 +31,6 @@
 #include "Dispatcher.h"
 #include "cpuCacheInit.h"
 #include "amdlib.h"
-#include "PlatformGnbPcieComplex.h"
 #include "Filecode.h"
 #include "heapManager.h"
 #include "FchPlatform.h"

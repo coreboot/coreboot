@@ -58,4 +58,6 @@ AGESA_STATUS agesawrapper_amds3laterestore(void);
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
+VOID OemCustomizeInitEarly (IN	OUT AMD_EARLY_PARAMS *InitEarly);
+
 #endif /* _AGESAWRAPPER_H_ */

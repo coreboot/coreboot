@@ -38,7 +38,7 @@
 #include <Topology.h>
 #include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
-#include "agesawrapper.h"
+#include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #include "northbridge.h"
 

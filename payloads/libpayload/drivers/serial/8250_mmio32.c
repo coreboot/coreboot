@@ -28,7 +28,7 @@
 #include <libpayload.h>
 #include <stdint.h>
 
-struct tegra_uart {
+struct mmio32_uart {
 	union {
 		uint32_t thr; // Transmit holding register.
 		uint32_t rbr; // Receive buffer register.
@@ -49,47 +49,47 @@ struct tegra_uart {
 } __attribute__ ((packed));
 
 enum {
-	TEGRA_UART_LSR_DR = 0x1 << 0, // Data ready.
-	TEGRA_UART_LSR_OE = 0x1 << 1, // Overrun.
-	TEGRA_UART_LSR_PE = 0x1 << 2, // Parity error.
-	TEGRA_UART_LSR_FE = 0x1 << 3, // Framing error.
-	TEGRA_UART_LSR_BI = 0x1 << 4, // Break.
-	TEGRA_UART_LSR_THRE = 0x1 << 5, // Xmit holding register empty.
-	TEGRA_UART_LSR_TEMT = 0x1 << 6, // Xmitter empty.
-	TEGRA_UART_LSR_ERR = 0x1 << 7 // Error.
+	LSR_DR = 0x1 << 0, // Data ready.
+	LSR_OE = 0x1 << 1, // Overrun.
+	LSR_PE = 0x1 << 2, // Parity error.
+	LSR_FE = 0x1 << 3, // Framing error.
+	LSR_BI = 0x1 << 4, // Break.
+	LSR_THRE = 0x1 << 5, // Xmit holding register empty.
+	LSR_TEMT = 0x1 << 6, // Xmitter empty.
+	LSR_ERR = 0x1 << 7 // Error.
 };
 
-static struct tegra_uart *uart_regs;
+static struct mmio32_uart *uart = NULL;
 
 void serial_putchar(unsigned int c)
 {
-	while (!(readb(&uart_regs->lsr) & TEGRA_UART_LSR_THRE));
-	writeb(c, &uart_regs->thr);
+	while (!(readl(&uart->lsr) & LSR_THRE))
+		/* wait for transmit register to clear */;
+
+	writel((char)c, &uart->thr);
 	if (c == '\n')
 		serial_putchar('\r');
 }
 
 int serial_havechar(void)
 {
-	uint8_t lsr = readb(&uart_regs->lsr);
-	return (lsr & TEGRA_UART_LSR_DR) == TEGRA_UART_LSR_DR;
+	uint8_t lsr = readl(&uart->lsr);
+	return (lsr & LSR_DR) == LSR_DR;
 }
 
 int serial_getchar(void)
 {
 	while (!serial_havechar())
-	{;}
+		/* wait for character */;
 
-	return readb(&uart_regs->rbr);
+	return readl(&uart->rbr);
 }
 
-static struct console_output_driver tegra_serial_output =
-{
+static struct console_output_driver mmio32_serial_output = {
 	.putchar = &serial_putchar
 };
 
-static struct console_input_driver tegra_serial_input =
-{
+static struct console_input_driver mmio32_serial_input = {
 	.havekey = &serial_havechar,
 	.getchar = &serial_getchar
 };
@@ -99,15 +99,15 @@ void serial_init(void)
 	if (!lib_sysinfo.serial || !lib_sysinfo.serial->baseaddr)
 		return;
 
-	uart_regs = (struct tegra_uart *)(uintptr_t)lib_sysinfo.serial->baseaddr;
+	uart = (struct mmio32_uart *)(uintptr_t)lib_sysinfo.serial->baseaddr;
 }
 
 void serial_console_init(void)
 {
 	serial_init();
 
-	if (uart_regs) {
-		console_add_output_driver(&tegra_serial_output);
-		console_add_input_driver(&tegra_serial_input);
+	if (uart) {
+		console_add_output_driver(&mmio32_serial_output);
+		console_add_input_driver(&mmio32_serial_input);
 	}
 }

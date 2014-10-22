@@ -199,13 +199,8 @@ config S5P_SERIAL_CONSOLE
 	depends on SERIAL_CONSOLE
 	default n
 
-config TEGRA_SERIAL_CONSOLE
-	bool "Tegra SOC compatible serial port driver"
-	depends on SERIAL_CONSOLE
-	default n
-
-config RK_SERIAL_CONSOLE
-	bool "Rockchip SOC serial port driver"
+config 8250_MMIO32_SERIAL_CONSOLE
+	bool "Memory-mapped 8250-compatible serial port driver with 32-bit regs"
 	depends on SERIAL_CONSOLE
 	default n
 

@@ -110,8 +110,8 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt
 	pVbiosImageInfo->ImagePtr = cbfs_get_file_content(
 			CBFS_DEFAULT_MEDIA, "pci"CONFIG_VGA_BIOS_ID".rom",
 			CBFS_TYPE_OPTIONROM, NULL);
-	/* printk(BIOS_DEBUG, "IMGptr=%x\n", pVbiosImageInfo->ImagePtr); */
-	return pVbiosImageInfo->ImagePtr == NULL ? AGESA_WARNING : AGESA_SUCCESS;
+	printk(BIOS_DEBUG, "agesa_GfxGetVbiosImage: IMGptr=%p\n", pVbiosImageInfo->ImagePtr);
+	return (pVbiosImageInfo->ImagePtr ? AGESA_SUCCESS : AGESA_WARNING);
 }
 
 AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)

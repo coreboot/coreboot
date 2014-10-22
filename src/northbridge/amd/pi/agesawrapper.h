@@ -33,6 +33,7 @@ enum {
 	PICK_WHEA_CMC,  /* WHEA CMV table */
 	PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
 	PICK_IVRS,      /* IOMMU ACPI IVRS(I/O Virtualization Reporting Structure) table */
+	PICK_CRAT,
 };
 
 AGESA_STATUS agesawrapper_amdinitreset(void);
@@ -54,5 +55,6 @@ AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
 VOID OemCustomizeInitEarly (IN	OUT AMD_EARLY_PARAMS *InitEarly);
+VOID amd_initcpuio(void);
 
 #endif /* _AGESAWRAPPER_H_ */

@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,8 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00630F01) += 00630F01
-subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00730F01) += 00730F01
+romstage-y += dimmSpd.c
 
-romstage-y += def_callouts.c
-ramstage-y += def_callouts.c
+ramstage-y += iommu.c
+ramstage-y += northbridge.c

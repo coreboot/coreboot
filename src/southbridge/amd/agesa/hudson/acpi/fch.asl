@@ -179,9 +179,12 @@ Method(_INI, 0) {
 	/* Determine the OS we're running on */
 	OSFL()
 
-	/* TODO: It is unstable. */
-	//#include "acpi/AmdImc.asl" /* Hudson IMC function */
-	//ITZE() /* enable IMC Fan Control*/
+#ifdef CONFIG_HUDSON_IMC_FWM
+#if CONFIG_HUDSON_IMC_FWM
+	#include "acpi/AmdImc.asl" /* Hudson IMC function */
+	ITZE() /* enable IMC Fan Control*/
+#endif
+#endif
 } /* End Method(_SB._INI) */
 
 Method(OSFL, 0){

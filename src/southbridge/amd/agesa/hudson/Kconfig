@@ -244,6 +244,10 @@ config HUDSON_LEGACY_FREE
 	  Select y if there is no keyboard controller in the system.
 	  This sets variables in AGESA and ACPI.
 
+config ACPI_ENABLE_THERMAL_ZONE
+	bool
+	default y
+
 endif # SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE || SOUTHBRIDGE_AMD_AGESA_AVALON
 
 if SOUTHBRIDGE_AMD_AGESA_YANGTZE || SOUTHBRIDGE_AMD_AGESA_AVALON

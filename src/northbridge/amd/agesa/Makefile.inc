@@ -26,3 +26,6 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB) += family16kb
 
 romstage-y += def_callouts.c
 ramstage-y += def_callouts.c
+
+romstage-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15) += eventlog.c
+ramstage-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15) += eventlog.c

@@ -19,6 +19,7 @@
 
 config CPU_AMD_PI
 	bool
+	default y if CPU_AMD_PI_00630F01
 	default y if CPU_AMD_PI_00730F01
 	default n
 	select ARCH_BOOTBLOCK_X86_32
@@ -74,4 +75,5 @@ config S3_DATA_SIZE
 
 endif # CPU_AMD_PI
 
+source src/cpu/amd/pi/00630F01/Kconfig
 source src/cpu/amd/pi/00730F01/Kconfig

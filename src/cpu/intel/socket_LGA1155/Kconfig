@@ -1,0 +1,11 @@
+config CPU_INTEL_SOCKET_LGA1155
+	bool
+
+if CPU_INTEL_SOCKET_LGA1155
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select MMX
+	select SSE
+
+endif # CPU_INTEL_SOCKET_LGA1155

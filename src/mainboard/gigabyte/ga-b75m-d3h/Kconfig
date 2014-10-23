@@ -1,0 +1,75 @@
+if BOARD_GIGABYTE_GA_B75M_D3H
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA1155
+	select NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE
+	select SOUTHBRIDGE_INTEL_C216
+	select SUPERIO_ITE_IT8728F
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+	select HAVE_SMI_HANDLER
+	select INTEL_INT15
+	select VGA
+	select INTEL_EDID
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
+	select IVYBRIDGE_LVDS
+	select UDELAY_TSC
+	select EARLY_CBMEM_INIT
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config USBDEBUG_HCD_INDEX
+       int
+       default 2
+
+config MAINBOARD_DIR
+        string
+        default gigabyte/ga-b75m-d3h
+
+config MAINBOARD_PART_NUMBER
+        string
+        default "GA-B75M-D3H"
+
+config IRQ_SLOT_COUNT
+        int
+        default 18
+
+config MAX_CPUS
+        int
+        default 8
+
+# No need to override the chipset VGA_BIOS_ID.
+config VGA_BIOS_FILE
+        string
+        default "pci8086,0162.rom"
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config IFD_BIOS_SECTION
+        string
+        default "0x00600000:0x007fffff"
+
+config IFD_ME_SECTION
+        string
+        default "0x00001000:0x004fffff"
+
+# UNCOMMENT BELOW WHEN YOU BUILD WITH REAL ME IMAGE
+#config IFD_GBE_SECTION
+#        string
+#        default "0x00fff000:0x00000fff"
+
+endif # BOARD_GIGABYTE_GA_B75M_D3H

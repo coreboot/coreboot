@@ -1,0 +1,283 @@
+#include "southbridge/intel/bd82x6x/gpio.h"
+static const struct pch_gpio_set1 pch_gpio_set1_mode = {
+	.gpio0  = GPIO_MODE_GPIO,	/*1GPIO0 */
+	.gpio1  = GPIO_MODE_GPIO,	/*0SIO_EXT_SMI# */
+	.gpio2  = GPIO_MODE_GPIO,	/*1NOT USED */
+	.gpio3  = GPIO_MODE_GPIO,	/*1NOT USED */
+	.gpio4  = GPIO_MODE_GPIO,	/*1NOT USED */
+	.gpio5  = GPIO_MODE_GPIO,	/*0INTH# */
+	.gpio6  = GPIO_MODE_GPIO,	/*0SIO_EXT_SCI# */
+	.gpio7  = GPIO_MODE_GPIO,	/*1GE_SCR_WP# */
+	.gpio8  = GPIO_MODE_GPIO,	/*0NOT USED */
+	.gpio9  = GPIO_MODE_NATIVE,	/*1USB_OC5# */
+	.gpio10 = GPIO_MODE_NATIVE,	/*1USB_OC6# */
+	.gpio11 = GPIO_MODE_NATIVE,	/*0SMBALERT# */
+	.gpio12 = GPIO_MODE_GPIO,	/*1GPIO12 */
+	.gpio13 = GPIO_MODE_GPIO,	/*0GPIO13 */
+	.gpio14 = GPIO_MODE_NATIVE,	/*1USB_OC7# */
+	.gpio15 = GPIO_MODE_GPIO,	/*1GPIO15 */
+	.gpio16 = GPIO_MODE_GPIO,	/*1WWAN_LED_ON */
+	.gpio17 = GPIO_MODE_GPIO,	/*0WLAN_LED_ON */
+	.gpio18 = GPIO_MODE_NATIVE,	/*1PCIE_CLKREQ_WLAN# */
+	.gpio19 = GPIO_MODE_GPIO,	/*1BBS_BIT0 */
+	.gpio20 = GPIO_MODE_NATIVE,  	/*0PCIE_CLKREQ_CARD# */
+	.gpio21 = GPIO_MODE_GPIO,	/*0BT_DET# / TP29 */
+	.gpio22 = GPIO_MODE_GPIO,	/*0MODEL_ID0 */
+	.gpio23 = GPIO_MODE_NATIVE,	/*1LCD_BK_OFF */
+	.gpio24 = GPIO_MODE_GPIO,	/*1GPIO24 */
+	.gpio25 = GPIO_MODE_NATIVE,	/*1PCIE_REQ_WWAN# / TP89 */
+	.gpio26 = GPIO_MODE_NATIVE,	/*1CLK_PCIE_REQ4# / TP59 */
+	.gpio27 = GPIO_MODE_GPIO,	/*1MSATA_DTCT# */
+	.gpio28 = GPIO_MODE_GPIO,	/*1PLL_ODVR_EN */
+	.gpio29 = GPIO_MODE_GPIO,	/*1WLAN_AOAC_ON */
+	.gpio30 = GPIO_MODE_NATIVE,	/*1SUS_PWR_ACK */
+	.gpio31 = GPIO_MODE_GPIO,	/*1AC_PRESENT */
+};
+
+static const struct pch_gpio_set1 pch_gpio_set1_direction = {
+	.gpio0  = GPIO_DIR_INPUT,
+	.gpio1  = GPIO_DIR_INPUT,
+	.gpio2  = GPIO_DIR_INPUT,
+	.gpio3  = GPIO_DIR_INPUT,
+	.gpio4  = GPIO_DIR_INPUT,
+	.gpio5  = GPIO_DIR_INPUT,
+	.gpio6  = GPIO_DIR_INPUT,
+	.gpio7  = GPIO_DIR_INPUT,
+	.gpio8  = GPIO_DIR_OUTPUT,
+	.gpio9  = GPIO_DIR_INPUT,
+	.gpio10 = GPIO_DIR_INPUT,
+	.gpio11 = GPIO_DIR_INPUT,
+	.gpio12 = GPIO_DIR_OUTPUT,
+	.gpio13 = GPIO_DIR_INPUT,
+	.gpio14 = GPIO_DIR_INPUT,
+	.gpio15 = GPIO_DIR_OUTPUT,
+	.gpio16 = GPIO_DIR_INPUT,
+	.gpio17 = GPIO_DIR_INPUT,
+	.gpio18 = GPIO_DIR_INPUT,
+	.gpio19 = GPIO_DIR_INPUT,
+	.gpio20 = GPIO_DIR_INPUT,
+	.gpio21 = GPIO_DIR_INPUT,
+	.gpio22 = GPIO_DIR_INPUT,
+	.gpio23 = GPIO_DIR_INPUT,
+	.gpio24 = GPIO_DIR_OUTPUT,
+	.gpio25 = GPIO_DIR_INPUT,
+	.gpio26 = GPIO_DIR_INPUT,
+	.gpio27 = GPIO_DIR_INPUT,
+	.gpio28 = GPIO_DIR_OUTPUT,
+	.gpio29 = GPIO_DIR_INPUT,
+	.gpio30 = GPIO_DIR_OUTPUT,
+	.gpio31 = GPIO_DIR_INPUT,
+};
+
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
+	.gpio0  = GPIO_LEVEL_HIGH,
+	.gpio1  = GPIO_LEVEL_HIGH,
+	.gpio2  = GPIO_LEVEL_HIGH,
+	.gpio3  = GPIO_LEVEL_HIGH,
+	.gpio4  = GPIO_LEVEL_HIGH,
+	.gpio5  = GPIO_LEVEL_HIGH,
+	.gpio6  = GPIO_LEVEL_HIGH,
+	.gpio7  = GPIO_LEVEL_HIGH,
+	.gpio8  = GPIO_LEVEL_HIGH,
+	.gpio9  = GPIO_LEVEL_HIGH,
+	.gpio10 = GPIO_LEVEL_HIGH,
+	.gpio11 = GPIO_LEVEL_HIGH,
+	.gpio12 = GPIO_LEVEL_HIGH,
+	.gpio13 = GPIO_LEVEL_HIGH,
+	.gpio14 = GPIO_LEVEL_HIGH,
+	.gpio15 = GPIO_LEVEL_LOW,
+	.gpio16 = GPIO_LEVEL_HIGH,
+	.gpio17 = GPIO_LEVEL_LOW,
+	.gpio18 = GPIO_LEVEL_LOW,
+	.gpio19 = GPIO_LEVEL_HIGH,
+	.gpio20 = GPIO_LEVEL_HIGH,
+	.gpio21 = GPIO_LEVEL_HIGH,
+	.gpio22 = GPIO_LEVEL_HIGH,
+	.gpio23 = GPIO_LEVEL_HIGH,
+	.gpio24 = GPIO_LEVEL_LOW,
+	.gpio25 = GPIO_LEVEL_LOW,
+	.gpio26 = GPIO_LEVEL_LOW,
+	.gpio27 = GPIO_LEVEL_HIGH,
+	.gpio28 = GPIO_LEVEL_LOW,
+	.gpio29 = GPIO_LEVEL_HIGH,
+	.gpio30 = GPIO_LEVEL_HIGH,
+	.gpio31 = GPIO_LEVEL_HIGH,
+};
+
+static const struct pch_gpio_set1 pch_gpio_set1_invert = {
+	.gpio13 = GPIO_INVERT,
+};
+
+static const struct pch_gpio_set1 pch_gpio_set1_blink = {
+	.gpio18 = GPIO_BLINK,
+};
+
+static const struct pch_gpio_set2 pch_gpio_set2_mode = {
+	.gpio32 = GPIO_MODE_GPIO,	/* PCI_CLKRUN# */
+	.gpio33 = GPIO_MODE_GPIO,	/* GPIO33 */
+	.gpio34 = GPIO_MODE_GPIO,	/* CCD_ON */
+	.gpio35 = GPIO_MODE_GPIO,	/* BT_ON */
+	.gpio36 = GPIO_MODE_GPIO,	/* NOT USED */
+	.gpio37 = GPIO_MODE_GPIO,	/* NOT USED */
+	.gpio38 = GPIO_MODE_GPIO,	/* NOT USED */
+	.gpio39 = GPIO_MODE_GPIO,	/* NOT USED */
+	.gpio40 = GPIO_MODE_NATIVE,	/* USB_OC1# */
+	.gpio41 = GPIO_MODE_NATIVE,	/* USB_OC2# */
+	.gpio42 = GPIO_MODE_NATIVE,	/* USB_OC3# */
+	.gpio43 = GPIO_MODE_NATIVE,	/* USB_OC4_AUO4# */
+	.gpio44 = GPIO_MODE_NATIVE,	/* PCIE_CLKREQ_LAN# */
+	.gpio45 = GPIO_MODE_NATIVE,	/* PCIECLKRQ6# / TP48 */
+	.gpio46 = GPIO_MODE_NATIVE,	/* PCIECLKRQ7# / TP57 */
+	.gpio47 = GPIO_MODE_NATIVE,	/* CLK_PEGA_REQ# */
+	.gpio48 = GPIO_MODE_GPIO,	/* DIS_BT_ON# */
+	.gpio49 = GPIO_MODE_GPIO,	/* GPIO49 */
+	.gpio50 = GPIO_MODE_NATIVE,	/* PCI_REQ1# */
+	.gpio51 = GPIO_MODE_NATIVE,	/* BBS_BIT1 */
+	.gpio52 = GPIO_MODE_NATIVE,	/* PCI_REQ2# */
+	.gpio53 = GPIO_MODE_NATIVE,	/* PWM_SELECT# / TP44 */
+	.gpio54 = GPIO_MODE_NATIVE,	/* PCI_REQ3# */
+	.gpio55 = GPIO_MODE_NATIVE,	/* PCI_GNT3# */
+	.gpio56 = GPIO_MODE_NATIVE,	/* CLK_PEGB_REQ# / TP60 */
+	.gpio57 = GPIO_MODE_GPIO,	/* PCH_GPIO57 */
+	.gpio58 = GPIO_MODE_NATIVE,	/* SMB_ME1_CLK */
+	.gpio59 = GPIO_MODE_NATIVE,	/* USB_OC0_1# */
+	.gpio60 = GPIO_MODE_NATIVE,	/* DRAMRST_CNTRL_PCH */
+	.gpio61 = GPIO_MODE_NATIVE,	/* LPCPD# */
+	.gpio62 = GPIO_MODE_NATIVE,	/* PCH_SUSCLK_L / TP54 */
+	.gpio63 = GPIO_MODE_NATIVE,	/* TP51 */
+};
+
+static const struct pch_gpio_set2 pch_gpio_set2_direction = {
+	.gpio32 = GPIO_DIR_OUTPUT,
+	.gpio33 = GPIO_DIR_OUTPUT,
+	.gpio34 = GPIO_DIR_INPUT,
+	.gpio35 = GPIO_DIR_OUTPUT,
+	.gpio36 = GPIO_DIR_INPUT,
+	.gpio37 = GPIO_DIR_INPUT,
+	.gpio38 = GPIO_DIR_INPUT,
+	.gpio39 = GPIO_DIR_INPUT,
+	.gpio40 = GPIO_DIR_INPUT,
+	.gpio41 = GPIO_DIR_INPUT,
+	.gpio42 = GPIO_DIR_INPUT,
+	.gpio43 = GPIO_DIR_INPUT,
+	.gpio44 = GPIO_DIR_INPUT,
+	.gpio45 = GPIO_DIR_INPUT,
+	.gpio46 = GPIO_DIR_INPUT,
+	.gpio47 = GPIO_DIR_INPUT,
+	.gpio48 = GPIO_DIR_INPUT,
+	.gpio49 = GPIO_DIR_INPUT,
+	.gpio50 = GPIO_DIR_INPUT,
+	.gpio51 = GPIO_DIR_OUTPUT,
+	.gpio52 = GPIO_DIR_INPUT,
+	.gpio53 = GPIO_DIR_OUTPUT,
+	.gpio54 = GPIO_DIR_INPUT,
+	.gpio55 = GPIO_DIR_OUTPUT,
+	.gpio56 = GPIO_DIR_INPUT,
+	.gpio57 = GPIO_DIR_INPUT,
+	.gpio58 = GPIO_DIR_INPUT,
+	.gpio59 = GPIO_DIR_INPUT,
+	.gpio59 = GPIO_DIR_INPUT,
+	.gpio61 = GPIO_DIR_OUTPUT,
+	.gpio62 = GPIO_DIR_OUTPUT,
+	.gpio63 = GPIO_DIR_OUTPUT,
+};
+
+static const struct pch_gpio_set2 pch_gpio_set2_level = {
+	.gpio32 = GPIO_LEVEL_HIGH,
+	.gpio33 = GPIO_LEVEL_HIGH,
+	.gpio34 = GPIO_LEVEL_HIGH,
+	.gpio35 = GPIO_LEVEL_LOW,
+	.gpio36 = GPIO_LEVEL_LOW,
+	.gpio37 = GPIO_LEVEL_LOW,
+	.gpio38 = GPIO_LEVEL_HIGH,
+	.gpio39 = GPIO_LEVEL_HIGH,
+	.gpio40 = GPIO_LEVEL_HIGH,
+	.gpio41 = GPIO_LEVEL_HIGH,
+	.gpio42 = GPIO_LEVEL_HIGH,
+	.gpio43 = GPIO_LEVEL_HIGH,
+	.gpio44 = GPIO_LEVEL_HIGH,
+	.gpio45 = GPIO_LEVEL_HIGH,
+	.gpio46 = GPIO_LEVEL_HIGH,
+	.gpio47 = GPIO_LEVEL_LOW,
+	.gpio48 = GPIO_LEVEL_HIGH,
+	.gpio49 = GPIO_LEVEL_HIGH,
+	.gpio50 = GPIO_LEVEL_HIGH,
+	.gpio51 = GPIO_LEVEL_HIGH,
+	.gpio52 = GPIO_LEVEL_HIGH,
+	.gpio53 = GPIO_LEVEL_HIGH,
+	.gpio54 = GPIO_LEVEL_HIGH,
+	.gpio55 = GPIO_LEVEL_HIGH,
+	.gpio56 = GPIO_LEVEL_LOW,
+	.gpio57 = GPIO_LEVEL_HIGH,
+	.gpio58 = GPIO_LEVEL_HIGH,
+	.gpio59 = GPIO_LEVEL_HIGH,
+	.gpio60 = GPIO_LEVEL_HIGH,
+	.gpio61 = GPIO_LEVEL_HIGH,
+	.gpio62 = GPIO_LEVEL_LOW,
+	.gpio63 = GPIO_LEVEL_HIGH,
+};
+
+static const struct pch_gpio_set3 pch_gpio_set3_mode = {
+	.gpio64 = GPIO_MODE_NATIVE,	/* CLK_FLEX0 / TP38 */
+	.gpio65 = GPIO_MODE_NATIVE,	/* CLK_FLEX1 / TP45 */
+	.gpio66 = GPIO_MODE_NATIVE,	/* CLK_FLEX2 / TP83 */
+	.gpio67 = GPIO_MODE_NATIVE,	/* CLK_FLEX3 / TP82 */
+	.gpio68 = GPIO_MODE_GPIO,	/* WWAN_DTCT# */
+	.gpio69 = GPIO_MODE_GPIO,	/* GPIO69 */
+	.gpio70 = GPIO_MODE_GPIO,	/* WLAN_OFF# */
+	.gpio71 = GPIO_MODE_NATIVE,	/* WWAN_OFF# */
+	.gpio72 = GPIO_MODE_NATIVE,	/* PM_BATLOW# */
+	.gpio73 = GPIO_MODE_GPIO,	/* PCIECLKRQ0# / TP39 */
+	.gpio74 = GPIO_MODE_NATIVE,	/* SML1ALERT#_R / TP56 */
+	.gpio75 = GPIO_MODE_NATIVE,	/* SMB_ME1_DAT */
+};
+
+static const struct pch_gpio_set3 pch_gpio_set3_direction = {
+	.gpio64 = GPIO_DIR_OUTPUT,
+	.gpio65 = GPIO_DIR_OUTPUT,
+	.gpio66 = GPIO_DIR_OUTPUT,
+	.gpio67 = GPIO_DIR_OUTPUT,
+	.gpio68 = GPIO_DIR_INPUT,
+	.gpio69 = GPIO_DIR_INPUT,
+	.gpio70 = GPIO_DIR_INPUT,
+	.gpio71 = GPIO_DIR_INPUT,
+	.gpio72 = GPIO_DIR_INPUT,
+	.gpio73 = GPIO_DIR_INPUT,
+	.gpio74 = GPIO_DIR_INPUT,
+	.gpio75 = GPIO_DIR_INPUT,
+};
+
+static const struct pch_gpio_set3 pch_gpio_set3_level = {
+	.gpio64 = GPIO_LEVEL_HIGH,
+	.gpio65 = GPIO_LEVEL_HIGH,
+	.gpio66 = GPIO_LEVEL_HIGH,
+	.gpio67 = GPIO_LEVEL_HIGH,
+	.gpio68 = GPIO_LEVEL_HIGH,
+	.gpio69 = GPIO_LEVEL_LOW,
+	.gpio70 = GPIO_LEVEL_HIGH,
+	.gpio71 = GPIO_LEVEL_HIGH,
+	.gpio72 = GPIO_LEVEL_HIGH,
+	.gpio73 = GPIO_LEVEL_LOW,
+	.gpio74 = GPIO_LEVEL_HIGH,
+	.gpio75 = GPIO_LEVEL_HIGH,
+};
+
+const struct pch_gpio_map mainboard_gpio_map = {
+	.set1 = {
+		.mode      = &pch_gpio_set1_mode,
+		.direction = &pch_gpio_set1_direction,
+		.level     = &pch_gpio_set1_level,
+		.blink     = &pch_gpio_set1_blink,
+		.invert    = &pch_gpio_set1_invert,
+	},
+	.set2 = {
+		.mode      = &pch_gpio_set2_mode,
+		.direction = &pch_gpio_set2_direction,
+		.level     = &pch_gpio_set2_level,
+	},
+	.set3 = {
+		.mode      = &pch_gpio_set3_mode,
+		.direction = &pch_gpio_set3_direction,
+		.level     = &pch_gpio_set3_level,
+	},
+};

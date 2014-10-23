@@ -52,8 +52,9 @@ bootblock-S-ccopts += $(armv7-m_asm_flags)
 
 ifneq ($(CONFIG_ARM_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock_simple.c
-bootblock-y += exception_m.c
 endif
+bootblock-y += exception_m.c
+bootblock-y += cache_m.c
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 

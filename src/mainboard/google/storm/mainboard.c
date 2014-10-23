@@ -29,6 +29,8 @@
 #include <string.h>
 #include <symbols.h>
 
+#include <vendorcode/google/chromeos/chromeos.h>
+
 /* convenient shorthand (in MB) */
 #define DRAM_START           ((uintptr_t)_dram / MiB)
 #define DRAM_SIZE            (CONFIG_DRAM_SIZE_MB)
@@ -116,6 +118,11 @@ static void mainboard_init(device_t dev)
 	 setup_tpm();
 	 /* Functionally a 0-cost no-op if NAND is not present */
 	 board_nand_init();
+
+#if IS_ENABLED(CONFIG_CHROMEOS)
+	/* Copy WIFI calibration data into CBMEM. */
+	cbmem_add_vpd_calibration_data();
+#endif
 }
 
 static void mainboard_enable(device_t dev)

@@ -614,6 +614,7 @@ static const struct cbmem_id_to_name {
 	{ CBMEM_ID_ROOT,		"CBMEM ROOT " },
 	{ CBMEM_ID_VBOOT_HANDOFF,	"VBOOT      " },
 	{ CBMEM_ID_CAR_GLOBALS,		"CAR GLOBALS" },
+	{ CBMEM_ID_SMM_SAVE_SPACE,	"SMM BACKUP " },
 };
 
 void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)

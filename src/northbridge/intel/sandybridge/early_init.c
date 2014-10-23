@@ -97,6 +97,7 @@ static void sandybridge_setup_graphics(void)
 	case 0x0122: /* GT2 Desktop >=1.3GHz */
 	case 0x0126: /* GT2 Mobile >=1.3GHz */
 	case 0x0156: /* IvyBridge */
+	case 0x0162: /* IvyBridge */
 	case 0x0166: /* IvyBridge */
 		break;
 	default:

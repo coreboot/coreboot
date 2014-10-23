@@ -99,7 +99,7 @@ static int vpd_gets_callback(const uint8_t *key, int32_t key_len,
 	return VPD_FAIL;
 }
 
-char *cros_vpd_gets(const char *key, char *buffer, int size)
+const void *cros_vpd_find(const char *key, int *size)
 {
 	uint8_t *vpd_address = NULL;
 	int32_t vpd_size = 0;
@@ -121,10 +121,26 @@ char *cros_vpd_gets(const char *key, char *buffer, int size)
 	if (!arg.matched)
 		return NULL;
 
-	if (size < arg.value_len + 1)
-		size = arg.value_len + 1;
-	memcpy(buffer, arg.value, size - 1);
-	buffer[size - 1] = '\0';
+	*size = arg.value_len;
+	return arg.value;
+}
+
+char *cros_vpd_gets(const char *key, char *buffer, int size)
+{
+	const void *string_address;
+	int string_size;
+
+	string_address = cros_vpd_find(key, &string_size);
+
+	if (!string_address)
+		return NULL;
+
+	if (size > (string_size + 1)) {
+		strcpy(buffer, string_address);
+	} else {
+		memcpy(buffer, string_address, size - 1);
+		buffer[size - 1] = '\0';
+	}
 	return buffer;
 }
 

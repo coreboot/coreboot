@@ -83,4 +83,6 @@ static inline void chromeos_ram_oops_init(chromeos_acpi_t *chromeos) {}
 static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
 
+void cbmem_add_vpd_calibration_data(void);
+
 #endif /* __CHROMEOS_H__ */

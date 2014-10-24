@@ -142,12 +142,6 @@ static void cb_parse_cbmem_cons(unsigned char *ptr, struct sysinfo_t *info)
 	info->cbmem_cons = phys_to_virt(cbmem->cbmem_tab);
 }
 
-static void cb_parse_mrc_cache(unsigned char *ptr, struct sysinfo_t *info)
-{
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	info->mrc_cache = phys_to_virt(cbmem->cbmem_tab);
-}
-
 static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
@@ -314,9 +308,6 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_CBMEM_CONSOLE:
 			cb_parse_cbmem_cons(ptr, info);
-			break;
-		case CB_TAG_MRC_CACHE:
-			cb_parse_mrc_cache(ptr, info);
 			break;
 		case CB_TAG_ACPI_GNVS:
 			cb_parse_acpi_gnvs(ptr, info);

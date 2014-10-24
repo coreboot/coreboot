@@ -183,6 +183,12 @@ static void cb_parse_string(unsigned char *ptr, char **info)
 	*info = (char *)((struct cb_string *)ptr)->string;
 }
 
+static void cb_parse_wifi_calibration(void *ptr, struct sysinfo_t *info)
+{
+	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
+	info->wifi_calibration = phys_to_virt(cbmem->cbmem_tab);
+}
+
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -314,6 +320,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_BOARD_ID:
 			cb_parse_board_id(ptr, info);
+			break;
+		case CB_TAG_WIFI_CALIBRATION:
+			cb_parse_wifi_calibration(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

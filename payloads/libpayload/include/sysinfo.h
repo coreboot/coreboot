@@ -114,6 +114,7 @@ struct sysinfo_t {
 	void	*mrc_cache;
 	void	*acpi_gnvs;
 	u32	board_id;
+	void	*wifi_calibration;
 };
 
 extern struct sysinfo_t lib_sysinfo;

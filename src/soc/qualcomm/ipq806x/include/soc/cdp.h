@@ -106,6 +106,12 @@ typedef struct {
 
 #define IPQ_GMAC_NMACS		4
 
+enum storm_board_id {
+	BOARD_ID_PROTO_0 = 0,
+	BOARD_ID_PROTO_0_2 = 1,
+	BOARD_ID_PROTO_0_2_NAND = 26,
+};
+
 /* Board specific parameters */
 typedef struct {
 #if 0
@@ -136,4 +142,7 @@ static inline int gmac_cfg_is_valid(ipq_gmac_board_cfg_t *cfg)
 
 unsigned int get_board_index(unsigned machid);
 void ipq_configure_gpio(const gpio_func_data_t *gpio, unsigned count);
-#endif
+
+void board_nand_init(void);
+
+#endif	/* _IPQ806X_CDP_H_ */

@@ -114,6 +114,8 @@ static void mainboard_init(device_t dev)
 	 setup_usb();
 	 deassert_sw_reset();
 	 setup_tpm();
+	 /* Functionally a 0-cost no-op if NAND is not present */
+	 board_nand_init();
 }
 
 static void mainboard_enable(device_t dev)

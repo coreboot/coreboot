@@ -75,7 +75,7 @@ static void setup_mmu(void)
 #define TPM_RESET_GPIO 22
 static void setup_tpm(void)
 {
-	if (board_id() != 0)
+	if (board_id() != BOARD_ID_PROTO_0)
 		return; /* Only proto0 have TPM reset connected to GPIO22 */
 
 	gpio_tlmm_config_set(TPM_RESET_GPIO, FUNC_SEL_GPIO, GPIO_PULL_UP,
@@ -93,7 +93,7 @@ static void setup_tpm(void)
 #define SW_RESET_GPIO 26
 static void deassert_sw_reset(void)
 {
-	if (board_id() == 0)
+	if (board_id() == BOARD_ID_PROTO_0)
 		return;
 
 	/*

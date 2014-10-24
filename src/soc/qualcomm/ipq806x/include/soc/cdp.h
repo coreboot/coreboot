@@ -109,6 +109,7 @@ typedef struct {
 enum storm_board_id {
 	BOARD_ID_PROTO_0 = 0,
 	BOARD_ID_PROTO_0_2 = 1,
+	BOARD_ID_WHIRLWIND = 2,
 	BOARD_ID_PROTO_0_2_NAND = 26,
 };
 

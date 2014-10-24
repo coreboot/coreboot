@@ -7,6 +7,7 @@
  */
 
 #include <arch/io.h>
+#include <bootblock_common.h>
 #include <console/uart.h>
 #include <console/console.h>
 #include <delay.h>
@@ -126,7 +127,6 @@ static void cubieboard_raminit(void)
 	////ram_check((u32)test_base, (u32)test_base + 0x1000);
 }
 
-void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
 	/* A10 Timer init uses the 24MHz clock, not PLLs, so we can init it very

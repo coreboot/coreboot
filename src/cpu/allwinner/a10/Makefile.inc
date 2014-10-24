@@ -1,3 +1,4 @@
+bootblock-y	+= bootblock.c
 bootblock-y	+= bootblock_media.c
 bootblock-y	+= clock.c
 bootblock-y	+= gpio.c

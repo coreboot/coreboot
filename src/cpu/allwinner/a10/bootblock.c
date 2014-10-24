@@ -8,8 +8,8 @@
 
 #include <types.h>
 #include <arch/cache.h>
+#include <bootblock_common.h>
 
-void bootblock_cpu_init(void);
 void bootblock_cpu_init(void)
 {
 	uint32_t sctlr;

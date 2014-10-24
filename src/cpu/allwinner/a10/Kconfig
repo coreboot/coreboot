@@ -12,14 +12,7 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_SPECIAL
 	select BOOTBLOCK_CONSOLE
-
-config BOOTBLOCK_CPU_INIT
-	string
-	default "cpu/allwinner/a10/bootblock.c"
-	help
-	  CPU/SoC-specific bootblock code. This is useful if the
-	  bootblock must load microcode or copy data from ROM before
-	  searching for the bootblock.
+	select CPU_HAS_BOOTBLOCK_INIT
 
 # The "eGON.BT0" header takes 32 bytes
 config BOOTBLOCK_BASE

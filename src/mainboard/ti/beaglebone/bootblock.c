@@ -19,11 +19,11 @@
 
 #include <arch/io.h>
 #include <types.h>
+#include <bootblock_common.h>
 #include <console/uart.h>
 #include <console/console.h>
 #include <cpu/ti/am335x/pinmux.h>
 
-void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
 	void *uart_clock_ctrl = NULL;

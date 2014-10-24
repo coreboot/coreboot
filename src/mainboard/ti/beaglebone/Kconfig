@@ -23,6 +23,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select CPU_TI_AM335X
 	select BOARD_ROMSIZE_KB_4096
+	select MAINBOARD_HAS_BOOTBLOCK_INIT
 
 config MAINBOARD_DIR
 	string
@@ -39,10 +40,6 @@ config MAX_CPUS
 config MAINBOARD_VENDOR
 	string
 	default "TI"
-
-config BOOTBLOCK_MAINBOARD_INIT
-	string
-	default "mainboard/ti/beaglebone/bootblock.c"
 
 config DRAM_SIZE_MB
 	int

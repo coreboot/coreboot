@@ -26,7 +26,7 @@
 static void i82371eb_enable_rom(void)
 {
 	u16 reg16;
-	device_t dev;
+	pci_devfn_t dev;
 
 	/*
 	 * Note: The Intel 82371AB/EB/MB ISA device can be on different

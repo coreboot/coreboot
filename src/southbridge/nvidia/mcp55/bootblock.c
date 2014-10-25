@@ -29,7 +29,7 @@ static void mcp55_enable_rom(void)
 {
 	u8 byte;
 	u16 word;
-	device_t addr;
+	pci_devfn_t addr;
 
 	/* Enable 4MB ROM access at 0xFFC00000 - 0xFFFFFFFF. */
 #if 0

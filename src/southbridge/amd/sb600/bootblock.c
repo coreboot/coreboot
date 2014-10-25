@@ -34,7 +34,7 @@
 static void sb600_enable_rom(void)
 {
 	u8 reg8;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_io_locate_device(PCI_ID(PCI_VENDOR_ID_ATI,
 			PCI_DEVICE_ID_ATI_SB600_LPC), 0);

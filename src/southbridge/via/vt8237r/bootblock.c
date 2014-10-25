@@ -22,7 +22,7 @@
 
 static void bootblock_southbridge_init(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	/* don't walk other busses, HT is not enabled */
 
 	/* ROM decode last 8MB FF800000 - FFFFFFFF on VT8237S/VT8237A */

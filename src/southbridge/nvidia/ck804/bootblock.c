@@ -29,7 +29,7 @@
 static void ck804_enable_rom(void)
 {
 	unsigned char byte;
-	device_t addr;
+	pci_devfn_t addr;
 
 	/* Enable 4MB ROM access at 0xFFC00000 - 0xFFFFFFFF. */
 	/* Locate the ck804 LPC. */

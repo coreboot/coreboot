@@ -38,7 +38,7 @@ static void store_initial_timestamp(void)
 static void enable_spi_prefetch(void)
 {
 	u8 reg8;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = PCI_DEV(0, 0x1f, 0);
 
@@ -51,7 +51,7 @@ static void enable_spi_prefetch(void)
 
 static void map_rcba(void)
 {
-	device_t dev = PCI_DEV(0, 0x1f, 0);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 
 	pci_write_config32(dev, RCBA, DEFAULT_RCBA | 1);
 }

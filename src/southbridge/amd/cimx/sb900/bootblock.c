@@ -23,7 +23,7 @@ static void sb900_enable_rom(void)
 {
   u32 word;
   u32 dword;
-  device_t dev;
+  pci_devfn_t dev;
 
   dev = PCI_DEV(0, 0x14, 0x03);
   /* SB900 LPC Bridge 0:20:3:44h.

@@ -35,7 +35,7 @@
 static void sb700_enable_rom(void)
 {
 	u8 reg8;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = PCI_DEV(0, 0x14, 3);
 

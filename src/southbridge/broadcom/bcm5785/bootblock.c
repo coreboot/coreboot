@@ -26,7 +26,7 @@
 static void bcm5785_enable_rom(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SERVERWORKS,
 			PCI_DEVICE_ID_SERVERWORKS_BCM5785_SB_PCI_MAIN), 0);

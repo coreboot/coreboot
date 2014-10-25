@@ -26,7 +26,7 @@
 static void amd8111_enable_rom(void)
 {
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = pci_io_locate_device(PCI_ID(PCI_VENDOR_ID_AMD,
 					  PCI_DEVICE_ID_AMD_8111_ISA), 0);

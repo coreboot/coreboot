@@ -38,7 +38,7 @@ static void store_initial_timestamp(void)
 static void enable_spi_prefetch(void)
 {
 	u8 reg8;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = PCI_DEV(0, 0x1f, 0);
 
@@ -50,7 +50,7 @@ static void enable_spi_prefetch(void)
 
 static void enable_port80_on_lpc(void)
 {
-	device_t dev = PCI_DEV(0, 0x1f, 0);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 
 	/* Enable port 80 POST on LPC */
 	pci_write_config32(dev, RCBA, DEFAULT_RCBA | 1);

@@ -34,7 +34,7 @@ static void store_initial_timestamp(void)
 static void enable_spi_prefetch(void)
 {
         u8 reg8;
-        device_t dev;
+        pci_devfn_t dev;
 
         dev = PCI_DEV(0, 0x1f, 0);
 

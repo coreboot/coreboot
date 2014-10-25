@@ -76,6 +76,8 @@ chip northbridge/intel/sandybridge
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "1"
+			register "c2_latency" = "101"  # c2 not supported
+			register "p_cnt_throttling_supported" = "1"
 
 			device pci 14.0 on
 				subsystemid 0x17aa 0x21fa

@@ -87,6 +87,9 @@ struct southbridge_intel_fsp_bd82x6x_config {
 	uint8_t pcie_aspm_f5;
 	uint8_t pcie_aspm_f6;
 	uint8_t pcie_aspm_f7;
+
+	int p_cnt_throttling_supported;
+	int c2_latency;
 };
 
 #endif				/* SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H */

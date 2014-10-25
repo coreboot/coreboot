@@ -60,6 +60,10 @@ chip northbridge/intel/i945
                         register "ide_enable_secondary" = "0x0"
                         register "sata_ahci" = "0x0"
 
+			register "c3_latency" = "85"
+			register "docking_supported" = "1"
+			register "p_cnt_throttling_supported" = "1"
+
                 	device pci 1b.0 on end # High Definition Audio
                 	device pci 1c.0 on end # PCIe port 1
                 	device pci 1c.1 on end # PCIe port 2

@@ -70,6 +70,9 @@ chip northbridge/intel/i945
 			register "alt_gp_smi_en" = "0x1000"
 
 			register "c4onc3_enable" = "1"
+			register "c3_latency" = "0x23"
+			register "docking_supported" = "1"
+			register "p_cnt_throttling_supported" = "1"
 
 			device pci 1b.0 on # Audio Controller
 				subsystemid 0x17aa 0x2010

@@ -495,8 +495,7 @@ unsigned long acpi_fill_ssdt_generator(unsigned long current,
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt);
 #if IS_ENABLED(CONFIG_COMMON_FADT)
-void southbridge_fill_fadt(acpi_fadt_t * fadt);
-void mainboard_fill_fadt(acpi_fadt_t * fadt);
+void acpi_fill_fadt(acpi_fadt_t * fadt);
 #endif
 
 void update_ssdt(void *ssdt);

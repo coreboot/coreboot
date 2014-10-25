@@ -71,6 +71,9 @@ struct southbridge_intel_i82801gx_config {
 	uint32_t sata_ports_implemented;
 
 	int c4onc3_enable:1;
+	int docking_supported:1;
+	int p_cnt_throttling_supported:1;
+	int c3_latency;
 };
 
 #endif				/* SOUTHBRIDGE_INTEL_I82801GX_CHIP_H */

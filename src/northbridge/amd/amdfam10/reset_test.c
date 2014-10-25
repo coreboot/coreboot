@@ -32,7 +32,7 @@
 u32 cpu_init_detected(u8 nodeid)
 {
 	u32 htic;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = NODE_PCI(nodeid, 0);
 	htic = pci_io_read_config32(dev, HT_INIT_CONTROL);
@@ -67,7 +67,7 @@ u32 other_reset_detected(void)	// other warm reset not started by BIOS
 static void distinguish_cpu_resets(u8 nodeid)
 {
 	u32 htic;
-	device_t device;
+	pci_devfn_t device;
 	device = NODE_PCI(nodeid, 0);
 	htic = pci_io_read_config32(device, HT_INIT_CONTROL);
 	htic |= HTIC_ColdR_Detect | HTIC_BIOSR_Detect | HTIC_INIT_Detect;
@@ -77,7 +77,7 @@ static void distinguish_cpu_resets(u8 nodeid)
 static u32 warm_reset_detect(u8 nodeid)
 {
 	u32 htic;
-	device_t device;
+	pci_devfn_t device;
 	device = NODE_PCI(nodeid, 0);
 	htic = pci_io_read_config32(device, HT_INIT_CONTROL);
 	return (htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect);
@@ -89,7 +89,7 @@ void __attribute__ ((weak)) set_bios_reset(void)
 
 	u32 nodes;
 	u32 htic;
-	device_t dev;
+	pci_devfn_t dev;
 	int i;
 
 	nodes = ((pci_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), 0x60) >> 4) & 7) + 1;
@@ -134,7 +134,7 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 	int i;
 	int j;
 	u32 cfg_map_dest;
-	device_t dev;
+	pci_devfn_t dev;
 
 	cfg_map_dest = (1<<7)|(1<<6)|link;
 

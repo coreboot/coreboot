@@ -29,9 +29,7 @@
 	(((DEV) & 0x1F) << 15) | \
 	(((FN)  & 0x7) << 12))
 
-typedef unsigned device_t;
-
-static void pci_write_config32(device_t dev, unsigned where, unsigned value)
+static void pci_write_config32(pci_devfn_t dev, unsigned where, unsigned value)
 {
 	unsigned addr;
 	addr = (dev>>4) | where;
@@ -39,7 +37,7 @@ static void pci_write_config32(device_t dev, unsigned where, unsigned value)
 	outl(value, 0xCFC);
 }
 
-static unsigned pci_read_config32(device_t dev, unsigned where)
+static unsigned pci_read_config32(pci_devfn_t dev, unsigned where)
 {
 	unsigned addr;
 	addr = (dev>>4) | where;

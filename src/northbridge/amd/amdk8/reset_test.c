@@ -10,7 +10,7 @@
 static inline int cpu_init_detected(unsigned nodeid)
 {
 	u32 htic;
-	device_t dev;
+	pci_devfn_t dev;
 
 	dev = PCI_DEV(0, 0x18 + nodeid, 0);
 	htic = pci_read_config32(dev, HT_INIT_CONTROL);
@@ -37,7 +37,7 @@ static inline int cold_reset_detected(void)
 static inline void distinguish_cpu_resets(unsigned nodeid)
 {
 	u32 htic;
-	device_t device;
+	pci_devfn_t device;
 	device = PCI_DEV(0, 0x18 + nodeid, 0);
 	htic = pci_read_config32(device, HT_INIT_CONTROL);
 	htic |= HTIC_ColdR_Detect | HTIC_BIOSR_Detect | HTIC_INIT_Detect;

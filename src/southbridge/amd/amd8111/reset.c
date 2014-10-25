@@ -10,9 +10,7 @@
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
 
-typedef unsigned device_t;
-
-static void pci_write_config8(device_t dev, unsigned where, unsigned char value)
+static void pci_write_config8(pci_devfn_t dev, unsigned where, unsigned char value)
 {
         unsigned addr;
         addr = (dev>>4) | where;
@@ -20,7 +18,7 @@ static void pci_write_config8(device_t dev, unsigned where, unsigned char value)
         outb(value, 0xCFC + (addr & 3));
 }
 
-static void pci_write_config32(device_t dev, unsigned where, unsigned value)
+static void pci_write_config32(pci_devfn_t dev, unsigned where, unsigned value)
 {
 	unsigned addr;
         addr = (dev>>4) | where;
@@ -28,7 +26,7 @@ static void pci_write_config32(device_t dev, unsigned where, unsigned value)
         outl(value, 0xCFC);
 }
 
-static unsigned pci_read_config32(device_t dev, unsigned where)
+static unsigned pci_read_config32(pci_devfn_t dev, unsigned where)
 {
 	unsigned addr;
         addr = (dev>>4) | where;
@@ -37,9 +35,9 @@ static unsigned pci_read_config32(device_t dev, unsigned where)
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
-static device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
+static pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 {
-	device_t dev, last;
+	pci_devfn_t dev, last;
 	dev = PCI_DEV(bus, 0, 0);
 	last = PCI_DEV(bus, 31, 7);
 	for(; dev <= last; dev += PCI_DEV(0,0,1)) {
@@ -57,7 +55,7 @@ static device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 
 void hard_reset(void)
 {
-	device_t dev;
+	pci_devfn_t dev;
 	unsigned bus;
 	unsigned node = 0;
 	unsigned link = get_sblk();

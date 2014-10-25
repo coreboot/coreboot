@@ -145,6 +145,9 @@ static void southbridge_smi_sleep(void)
 		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ-2);
 #endif
 
+	/* Clear pending GPE events */
+	clear_gpe_status();
+
 	/* Next, do the deed.
 	 */
 

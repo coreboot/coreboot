@@ -547,14 +547,6 @@ void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
 unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 segment,
 					   u8 dev, u8 fn);
 
-#if CONFIG_HAVE_ACPI_SLIC
-unsigned long acpi_create_slic(unsigned long current);
-#endif
-
-void acpi_write_rsdt(acpi_rsdt_t *rsdt);
-void acpi_write_xsdt(acpi_xsdt_t *xsdt);
-void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt);
-
 void acpi_write_hest(acpi_hest_t *hest);
 unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
 unsigned long acpi_fill_hest(acpi_hest_t *hest);

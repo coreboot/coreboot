@@ -17,4 +17,3 @@
 ## Foundation, Inc.
 ##
 
-ramstage-$(CONFIG_HAVE_ACPI_SLIC) += acpi_slic.c

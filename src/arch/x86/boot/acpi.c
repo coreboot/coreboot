@@ -33,6 +33,7 @@
 #include <cbmem.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/cpu.h>
+#include <cbfs.h>
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
@@ -485,14 +486,14 @@ void acpi_create_facs(acpi_facs_t *facs)
 	facs->version = 1; /* ACPI 1.0: 0, ACPI 2.0/3.0: 1, ACPI 4.0: 2 */
 }
 
-void acpi_write_rsdt(acpi_rsdt_t *rsdt)
+static void acpi_write_rsdt(acpi_rsdt_t *rsdt, char *oem_id, char *oem_table_id)
 {
 	acpi_header_t *header = &(rsdt->header);
 
 	/* Fill out header fields. */
 	memcpy(header->signature, "RSDT", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->oem_id, oem_id, 6);
+	memcpy(header->oem_table_id, oem_table_id, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
 	header->length = sizeof(acpi_rsdt_t);
@@ -504,14 +505,14 @@ void acpi_write_rsdt(acpi_rsdt_t *rsdt)
 	header->checksum = acpi_checksum((void *)rsdt, sizeof(acpi_rsdt_t));
 }
 
-void acpi_write_xsdt(acpi_xsdt_t *xsdt)
+static void acpi_write_xsdt(acpi_xsdt_t *xsdt, char *oem_id, char *oem_table_id)
 {
 	acpi_header_t *header = &(xsdt->header);
 
 	/* Fill out header fields. */
 	memcpy(header->signature, "XSDT", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->oem_id, oem_id, 6);
+	memcpy(header->oem_table_id, oem_table_id, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
 	header->length = sizeof(acpi_xsdt_t);
@@ -523,12 +524,13 @@ void acpi_write_xsdt(acpi_xsdt_t *xsdt)
 	header->checksum = acpi_checksum((void *)xsdt, sizeof(acpi_xsdt_t));
 }
 
-void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt)
+static void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt,
+			    acpi_xsdt_t *xsdt, char *oem_id)
 {
 	memset(rsdp, 0, sizeof(acpi_rsdp_t));
 
 	memcpy(rsdp->signature, RSDP_SIG, 8);
-	memcpy(rsdp->oem_id, OEM_ID, 6);
+	memcpy(rsdp->oem_id, oem_id, 6);
 
 	rsdp->length = sizeof(acpi_rsdp_t);
 	rsdp->rsdt_address = (u32)rsdt;
@@ -686,15 +688,15 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_xsdt_t *xsdt;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
-#if CONFIG_HAVE_ACPI_SLIC
-	acpi_header_t *slic;
-#endif
+	acpi_header_t *slic_file, *slic;
 	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
 	acpi_mcfg_t *mcfg;
 	acpi_madt_t *madt;
 	struct device *dev;
 	unsigned long fw;
+	size_t slic_size;
+	char oem_id[6], oem_table_id[8];
 
 	current = start;
 
@@ -704,6 +706,22 @@ unsigned long write_acpi_tables(unsigned long start)
 	fw = fw_cfg_acpi_tables(current);
 	if (fw)
 		return fw;
+
+	slic_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+				     CONFIG_CBFS_PREFIX "/slic",
+				     CBFS_TYPE_RAW, &slic_size);
+	if (slic_file && (slic_file->length > slic_size
+			  || slic_file->length < sizeof (acpi_header_t))) {
+		slic_file = 0;
+	}
+
+	if (slic_file) {
+		memcpy(oem_id, slic_file->oem_id, 6);
+		memcpy(oem_table_id, slic_file->oem_table_id, 8);
+	} else {
+		memcpy(oem_id, OEM_ID, 6);
+		memcpy(oem_table_id, ACPI_TABLE_CREATOR, 8);
+	}
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx.\n", start);
 
@@ -721,9 +739,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* clear all table memory */
 	memset((void *) start, 0, current - start);
 
-	acpi_write_rsdp(rsdp, rsdt, xsdt);
-	acpi_write_rsdt(rsdt);
-	acpi_write_xsdt(xsdt);
+	acpi_write_rsdp(rsdp, rsdt, xsdt, oem_id);
+	acpi_write_rsdt(rsdt, oem_id, oem_table_id);
+	acpi_write_xsdt(xsdt, oem_id, oem_table_id);
 
 	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
 	facs = (acpi_facs_t *) current;
@@ -764,13 +782,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_fadt(fadt, facs, dsdt);
 	acpi_add_table(rsdp, fadt);
 
-#if CONFIG_HAVE_ACPI_SLIC
-	printk(BIOS_DEBUG, "ACPI:     * SLIC\n");
-	slic = (acpi_header_t *)current;
-	current += acpi_create_slic(current);
-	ALIGN_CURRENT;
-	acpi_add_table(rsdp, slic);
-#endif
+	if (slic_file) {
+		printk(BIOS_DEBUG, "ACPI:     * SLIC\n");
+		slic = (acpi_header_t *)current;
+		memcpy(slic, slic_file, slic_file->length);
+		current += slic_file->length;
+		ALIGN_CURRENT;
+		acpi_add_table(rsdp, slic);
+	}
 
 	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
 	ssdt = (acpi_header_t *)current;

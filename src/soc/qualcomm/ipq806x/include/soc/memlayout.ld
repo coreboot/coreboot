@@ -18,23 +18,32 @@
  */
 
 #include <memlayout.h>
+#include <vendorcode/google/chromeos/vboot2/memlayout.h>
 
 #include <arch/header.ld>
 
-/* TODO: This should be revised by someone who understands the SoC better. */
-
 SECTIONS
 {
-	/* TODO: add SRAM_START(), SRAM_END() and REGION(reserved_sbl) */
-	TTB(0x2A05C000, 48K)
+	SRAM_START(0x2A000000)
+	/* This includes bootblock image, can be reused after bootblock starts */
+/*	UBER_SBL(0x2A000000, 48K) */
+/*	DDR(0x2A000000, 48K) */
+	BOOTBLOCK(0x2A00C000, 24K)
+	OVERLAP_VERSTAGE_ROMSTAGE(0x2A012000, 64K)
+	VBOOT2_WORK(0x2A022000, 16K)
+	PRERAM_CBMEM_CONSOLE(0x2A026000, 32K)
+/*	0x2e000..0x3F000  68 KB free */
+
+/* Keep the below area reserved at all times, it is used by various QCA
+   components as shared data
+	QCA_SHARED_RAM(2A03F000, 4K)
+*/
+	STACK(0x2A040000, 16K)
+	CBFS_CACHE(0x2A044000, 96K)
+	TTB(0x2A05C000, 16K)
+	SRAM_END(0x2A060000)
 
 	DRAM_START(0x40000000)
-	CBFS_CACHE(0x405C0000, 240K)
-	STACK(0x405FC000, 16K)
-	/* TODO: "256K bytes left for TZBSP"... what does that mean? */
-	BOOTBLOCK(0x40600000, 32K)
-	PRERAM_CBMEM_CONSOLE(0x40618000, 8K)
-	ROMSTAGE(0x40620000, 128K)
 	RAMSTAGE(0x40640000, 128K)
 	DMA_COHERENT(0x5A000000, 2M)
 }

@@ -96,10 +96,14 @@ static int dbgp_enabled(void);
 #define DBGP_MAX_PACKET		8
 
 static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
+static struct ehci_debug_info * glob_dbg_info_p CAR_GLOBAL;
 
 static inline struct ehci_debug_info *dbgp_ehci_info(void)
 {
-	return car_get_var_ptr(&glob_dbg_info);
+	if (car_get_var(glob_dbg_info_p) == NULL)
+		car_set_var(glob_dbg_info_p, &glob_dbg_info);
+
+	return car_get_var(glob_dbg_info_p);
 }
 
 static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
@@ -905,6 +909,7 @@ static void migrate_ehci_debug(void)
 		return;
 
 	memcpy(dbg_info_cbmem, dbg_info, sizeof(*dbg_info));
+	car_set_var(glob_dbg_info_p, dbg_info_cbmem);
 }
 CAR_MIGRATE(migrate_ehci_debug);
 #endif

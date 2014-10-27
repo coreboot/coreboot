@@ -37,8 +37,7 @@
 #define DBGP_CONSOLE_EPIN	2
 
 struct ehci_debug_info {
-	void *ehci_caps;
-	void *ehci_regs;
+	void *ehci_base;
 	void *ehci_debug;
 
 	struct dbgp_pipe ep_pipe[DBGP_MAX_ENDPOINTS];
@@ -562,7 +561,6 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 {
 	struct ehci_caps *ehci_caps;
 	struct ehci_regs *ehci_regs;
-	struct ehci_dbg_port *ehci_debug;
 
 	struct usb_debug_descriptor dbgp_desc;
 	u32 cmd, ctrl, status, portsc, hcs_params;
@@ -573,14 +571,18 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 	int port_map_tried;
 	int playtimes = 3;
 
+	/* Keep all endpoints disabled before any printk() call. */
+	memset(info, 0, sizeof (*info));
+	info->ehci_base = (void *)ehci_bar;
+	info->ehci_debug = (void *)(ehci_bar + offset);
+
 	dprintk(BIOS_INFO, "ehci_bar: 0x%x debug_offset 0x%x\n", ehci_bar, offset);
 
 	ehci_caps  = (struct ehci_caps *)ehci_bar;
 	ehci_regs  = (struct ehci_regs *)(ehci_bar +
 			HC_LENGTH(read32((unsigned long)&ehci_caps->hc_capbase)));
-	ehci_debug = (struct ehci_dbg_port *)(ehci_bar + offset);
-	info->ehci_debug = (void *)0;
-	memset(&info->ep_pipe, 0, sizeof (info->ep_pipe));
+
+	struct ehci_dbg_port *ehci_debug = info->ehci_debug;
 
 	if (CONFIG_USBDEBUG_DEFAULT_PORT > 0)
 		ehci_debug_select_port(CONFIG_USBDEBUG_DEFAULT_PORT);
@@ -681,6 +683,7 @@ try_next_port:
 		goto next_debug_port;
 	}
 	dprintk(BIOS_INFO, "EHCI done waiting for port.\n");
+
 
 	/* Enable the debug port */
 	ctrl = read32((unsigned long)&ehci_debug->control);
@@ -792,10 +795,6 @@ small_write:
 	}
 	dprintk(BIOS_INFO, "Test write done\n");
 
-	info->ehci_caps = ehci_caps;
-	info->ehci_regs = ehci_regs;
-	info->ehci_debug = ehci_debug;
-
 	info->ep_pipe[DBGP_SETUP_EP0].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	info->ep_pipe[DBGP_CONSOLE_EPOUT].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	info->ep_pipe[DBGP_CONSOLE_EPIN].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
@@ -861,16 +860,13 @@ void usbdebug_re_enable(unsigned ehci_base)
 	unsigned diff;
 	int i;
 
-	if (!dbg_info->ehci_debug)
-		return;
-
-	diff = (unsigned)dbg_info->ehci_caps - ehci_base;
-	dbg_info->ehci_regs -= diff;
+	diff = (unsigned)dbg_info->ehci_base - ehci_base;
 	dbg_info->ehci_debug -= diff;
-	dbg_info->ehci_caps = (void*)ehci_base;
+	dbg_info->ehci_base = (void*)ehci_base;
 
 	for (i=0; i<DBGP_MAX_ENDPOINTS; i++)
-		dbg_info->ep_pipe[i].status |= DBGP_EP_ENABLED;
+		if (dbg_info->ep_pipe[i].status & DBGP_EP_VALID)
+			dbg_info->ep_pipe[i].status |= DBGP_EP_ENABLED;
 }
 
 void usbdebug_disable(void)

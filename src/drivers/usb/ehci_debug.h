@@ -37,6 +37,11 @@ void ehci_debug_select_port(unsigned int port);
 #define DBGP_EP_BUSY		(1<<2)
 #define DBGP_EP_STATMASK	(DBGP_EP_VALID | DBGP_EP_ENABLED)
 
+#define DBGP_MAX_ENDPOINTS	4
+#define DBGP_SETUP_EP0		0	/* Compulsory endpoint 0. */
+#define DBGP_CONSOLE_EPOUT	1
+#define DBGP_CONSOLE_EPIN	2
+
 struct ehci_dbg_port;
 
 struct dbgp_pipe

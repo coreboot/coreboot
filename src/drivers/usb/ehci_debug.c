@@ -31,11 +31,6 @@
 #include "usb_ch9.h"
 #include "ehci.h"
 
-#define DBGP_MAX_ENDPOINTS	4
-#define DBGP_SETUP_EP0		0	/* Compulsory endpoint 0. */
-#define DBGP_CONSOLE_EPOUT	1
-#define DBGP_CONSOLE_EPIN	2
-
 struct ehci_debug_info {
 	void *ehci_base;
 	void *ehci_debug;
@@ -54,33 +49,7 @@ static int dbgp_enabled(void);
 #endif
 
 #define DBGP_LEN_UPDATE(x, len) (((x) & ~0x0f) | ((len) & 0x0f))
-/*
- * USB Packet IDs (PIDs)
- */
 
-/* token */
-#define USB_PID_OUT		0xe1
-#define USB_PID_IN		0x69
-#define USB_PID_SOF		0xa5
-#define USB_PID_SETUP		0x2d
-/* handshake */
-#define USB_PID_ACK		0xd2
-#define USB_PID_NAK		0x5a
-#define USB_PID_STALL		0x1e
-#define USB_PID_NYET		0x96
-/* data */
-#define USB_PID_DATA0		0xc3
-#define USB_PID_DATA1		0x4b
-#define USB_PID_DATA2		0x87
-#define USB_PID_MDATA		0x0f
-/* Special */
-#define USB_PID_PREAMBLE	0x3c
-#define USB_PID_ERR		0x3c
-#define USB_PID_SPLIT		0x78
-#define USB_PID_PING		0xb4
-#define USB_PID_UNDEF_0		0xf0
-
-#define USB_PID_DATA_TOGGLE	0x88
 #define DBGP_CLAIM (DBGP_OWNER | DBGP_ENABLED | DBGP_INUSE)
 
 #define HUB_ROOT_RESET_TIME	50	/* times are in msec */
@@ -465,11 +434,9 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 	struct ehci_caps *ehci_caps;
 	struct ehci_regs *ehci_regs;
 
-	struct usb_debug_descriptor dbgp_desc;
 	u32 cmd, ctrl, status, portsc, hcs_params;
 	u32 debug_port, new_debug_port = 0, n_ports;
-	u32 devnum;
-	int ret, i, configured;
+	int ret, i;
 	int loop;
 	int port_map_tried;
 	int playtimes = 3;
@@ -615,90 +582,6 @@ try_next_port:
 		goto err;
 	}
 
-	/* Find the debug device and make it device number 127 */
-	devnum = 0;
-debug_dev_retry:
-	memset(&dbgp_desc, 0, sizeof(dbgp_desc));
-	ret = dbgp_control_msg(ehci_debug, devnum,
-		USB_DIR_IN | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
-		USB_REQ_GET_DESCRIPTOR, (USB_DT_DEBUG << 8), 0,
-		&dbgp_desc, sizeof(dbgp_desc));
-	if (ret == sizeof(dbgp_desc)) {
-		if (dbgp_desc.bLength == sizeof(dbgp_desc) && dbgp_desc.bDescriptorType==USB_DT_DEBUG)
-			goto debug_dev_found;
-		else
-			dprintk(BIOS_INFO, "Invalid debug device descriptor.\n");
-	}
-	if (devnum == 0) {
-		devnum = USB_DEBUG_DEVNUM;
-		goto debug_dev_retry;
-	} else {
-		dprintk(BIOS_INFO, "Could not find attached debug device.\n");
-		ret = -5;
-		goto err;
-	}
-debug_dev_found:
-
-	/* Move the device to 127 if it isn't already there */
-	if (devnum != USB_DEBUG_DEVNUM) {
-		ret = dbgp_control_msg(ehci_debug, devnum,
-			USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
-			USB_REQ_SET_ADDRESS, USB_DEBUG_DEVNUM, 0, NULL, 0);
-		if (ret < 0) {
-			dprintk(BIOS_INFO, "Could not move attached device to %d.\n",
-				USB_DEBUG_DEVNUM);
-			ret = -7;
-			goto err;
-		}
-		devnum = USB_DEBUG_DEVNUM;
-		dprintk(BIOS_INFO, "EHCI debug device renamed to 127.\n");
-	}
-
-	/* Enable the debug interface */
-	ret = dbgp_control_msg(ehci_debug, USB_DEBUG_DEVNUM,
-		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
-		USB_REQ_SET_FEATURE, USB_DEVICE_DEBUG_MODE, 0, NULL, 0);
-	if (ret < 0) {
-		dprintk(BIOS_INFO, "Could not enable EHCI debug device.\n");
-		ret = -8;
-		goto err;
-	}
-	dprintk(BIOS_INFO, "EHCI debug interface enabled.\n");
-
-	/* Prepare endpoint pipes. */
-	for (i=1; i<DBGP_MAX_ENDPOINTS; i++) {
-		info->ep_pipe[i].devnum = USB_DEBUG_DEVNUM;
-		info->ep_pipe[i].pid = USB_PID_DATA0;
-		info->ep_pipe[i].timeout = 1000;
-	}
-	info->ep_pipe[DBGP_CONSOLE_EPOUT].endpoint = dbgp_desc.bDebugOutEndpoint;
-	info->ep_pipe[DBGP_CONSOLE_EPIN].endpoint = dbgp_desc.bDebugInEndpoint;
-
-	/* Perform a small write. */
-	configured = 0;
-small_write:
-	ret = dbgp_bulk_write(ehci_debug, &info->ep_pipe[DBGP_CONSOLE_EPOUT], "USB\r\n",5);
-	if (ret < 0) {
-		dprintk(BIOS_INFO, "dbgp_bulk_write failed: %d\n", ret);
-		if (!configured) {
-			/* Send Set Configure request to device. This is required for FX2
-			   (CY7C68013) to transfer from USB state Addressed to Configured,
-			   only then endpoints other than 0 are enabled. */
-			if (dbgp_control_msg(ehci_debug, USB_DEBUG_DEVNUM,
-				USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
-				USB_REQ_SET_CONFIGURATION, 1, 0, NULL, 0) >= 0) {
-				configured = 1;
-				goto small_write;
-			}
-		}
-		ret = -9;
-		goto err;
-	}
-	dprintk(BIOS_INFO, "Test write done\n");
-
-	info->ep_pipe[DBGP_SETUP_EP0].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
-	info->ep_pipe[DBGP_CONSOLE_EPOUT].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
-	info->ep_pipe[DBGP_CONSOLE_EPIN].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	return 0;
 err:
 	/* Things didn't work so remove my claim */

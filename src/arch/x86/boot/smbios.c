@@ -303,7 +303,7 @@ static int smbios_write_type11(unsigned long *current, int *handle)
 {
 	struct smbios_type11 *t = (struct smbios_type11 *)*current;
 	int len;
-	device_t dev;
+	struct device *dev;
 
 	memset(t, 0, sizeof *t);
 	t->type = SMBIOS_OEM_STRINGS;
@@ -379,9 +379,9 @@ static int smbios_write_type127(unsigned long *current, int handle)
 	return len;
 }
 
-static int smbios_walk_device_tree(device_t tree, int *handle, unsigned long *current)
+static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned long *current)
 {
-	device_t dev;
+	struct device *dev;
 	int len = 0;
 
 	for(dev = tree; dev; dev = dev->next) {

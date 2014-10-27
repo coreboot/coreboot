@@ -86,7 +86,7 @@ struct mp_flight_plan {
 static struct mp_flight_plan mp_info;
 
 struct cpu_map {
-	device_t dev;
+	struct device *dev;
 	int apic_id;
 };
 
@@ -328,7 +328,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 	info = cpu_info();
 	for (i = 1; i < max_cpus; i++) {
 		struct device_path cpu_path;
-		device_t new;
+		struct device *new;
 		int apic_id;
 
 		/* Build the cpu device path */

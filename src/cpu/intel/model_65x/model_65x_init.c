@@ -28,7 +28,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/intel/l2_cache.h>
 
-static void model_65x_init(device_t dev)
+static void model_65x_init(struct device *dev)
 {
 	/* Update the microcode */
 	intel_update_microcode_from_cbfs();

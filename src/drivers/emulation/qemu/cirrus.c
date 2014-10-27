@@ -212,7 +212,7 @@ write_hidden_dac (uint8_t data)
 }
 #endif
 
-static void cirrus_init(device_t dev)
+static void cirrus_init(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	uint8_t cr_ext, cr_overlay;

@@ -38,7 +38,7 @@ int intel_ht_sibling(void)
 	return !!(lapicid() & (threads-1));
 }
 
-void intel_sibling_init(device_t cpu)
+void intel_sibling_init(struct device *cpu)
 {
 	unsigned i, siblings;
 	struct cpuid_result result;
@@ -74,7 +74,7 @@ void intel_sibling_init(device_t cpu)
 	/* I am the primary cpu start up my siblings */
 	for(i = 1; i < siblings; i++) {
 		struct device_path cpu_path;
-		device_t new;
+		struct device *new;
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id = cpu->path.apic.apic_id + i;

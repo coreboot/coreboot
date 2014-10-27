@@ -121,7 +121,7 @@ void ec_set_ports(u16 cmd_reg, u16 data_reg)
 }
 
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
-static void mec1308_enable(device_t dev)
+static void mec1308_enable(struct device *dev)
 {
 	struct ec_smsc_mec1308_config *conf = dev->chip_info;
 

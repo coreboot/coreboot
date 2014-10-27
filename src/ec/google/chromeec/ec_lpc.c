@@ -137,7 +137,7 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 #ifndef __PRE_RAM__
 
 #ifndef __SMM__
-static void lpc_ec_init(device_t dev)
+static void lpc_ec_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
@@ -146,12 +146,12 @@ static void lpc_ec_init(device_t dev)
 	google_chromeec_init();
 }
 
-static void lpc_ec_read_resources(device_t dev)
+static void lpc_ec_read_resources(struct device *dev)
 {
 	/* Nothing, but this function avoids an error on serial console. */
 }
 
-static void lpc_ec_enable_resources(device_t dev)
+static void lpc_ec_enable_resources(struct device *dev)
 {
 	/* Nothing, but this function avoids an error on serial console. */
 }
@@ -166,7 +166,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, 0, 0, { 0, 0 }, }
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
 			   pnp_dev_info);

@@ -26,7 +26,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
 
-static void c3_init(device_t dev)
+static void c3_init(struct device *dev)
 {
 	x86_enable_cache();
 	x86_setup_mtrrs();

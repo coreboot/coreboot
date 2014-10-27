@@ -31,7 +31,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 
-static void model_6bx_init(device_t cpu)
+static void model_6bx_init(struct device *cpu)
 {
 	char processor_name[49];
 

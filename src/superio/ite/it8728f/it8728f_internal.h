@@ -23,6 +23,6 @@
 
 #include <device/device.h>
 
-void it8728f_hwm_ec_init(device_t dev);
+void it8728f_hwm_ec_init(struct device *dev);
 
 #endif /* SUPERIO_ITE_IT8728F_INTERNAL_H */

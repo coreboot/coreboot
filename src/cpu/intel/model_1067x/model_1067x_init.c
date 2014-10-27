@@ -86,7 +86,7 @@ static void configure_c_states(const int quad)
 	msr_t msr;
 
 	/* Find pointer to CPU configuration. */
-	const device_t lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
+	const struct device *lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
 	const struct cpu_intel_model_1067x_config *const conf =
 		(lapic && lapic->chip_info) ? lapic->chip_info : NULL;
 
@@ -144,7 +144,7 @@ static void configure_p_states(const char stepping, const char cores)
 	msr_t msr;
 
 	/* Find pointer to CPU configuration. */
-	const device_t lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
+	const struct device *lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
 	struct cpu_intel_model_1067x_config *const conf =
 		(lapic && lapic->chip_info) ? lapic->chip_info : NULL;
 
@@ -285,7 +285,7 @@ static void configure_pic_thermal_sensors(const int tm2, const int quad)
 	wrmsr(PIC_SENS_CFG, msr);
 }
 
-static void model_1067x_init(device_t cpu)
+static void model_1067x_init(struct device *cpu)
 {
 	char processor_name[49];
 

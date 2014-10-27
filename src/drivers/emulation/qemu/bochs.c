@@ -58,7 +58,7 @@ static int bochs_read(int index)
 }
 #endif
 
-static void bochs_init(device_t dev)
+static void bochs_init(struct device *dev)
 {
 #if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	struct edid edid;

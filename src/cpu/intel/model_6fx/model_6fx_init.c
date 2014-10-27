@@ -161,7 +161,7 @@ static void configure_pic_thermal_sensors(void)
 	wrmsr(PIC_SENS_CFG, msr);
 }
 
-static void model_6fx_init(device_t cpu)
+static void model_6fx_init(struct device *cpu)
 {
 	char processor_name[49];
 

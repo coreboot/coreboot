@@ -28,7 +28,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 
-static void ep80579_init(device_t dev)
+static void ep80579_init(struct device *dev)
 {
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();

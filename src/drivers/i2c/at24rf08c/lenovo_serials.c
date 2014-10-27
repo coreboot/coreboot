@@ -28,16 +28,16 @@
 
 #define ERROR_STRING "*INVALID*"
 
-static device_t at24rf08c_find_bank(u8 bank)
+static struct device *at24rf08c_find_bank(u8 bank)
 {
-	device_t dev;
+	struct device *dev;
 	dev = dev_find_slot_on_smbus(1, 0x54 | bank);
 	if (!dev)
 		printk(BIOS_WARNING, "EEPROM not found\n");
 	return dev;
 }
 
-static int at24rf08c_read_byte(device_t dev, u8 addr)
+static int at24rf08c_read_byte(struct device *dev, u8 addr)
 {
 	int t = -1;
 	int j;
@@ -54,7 +54,7 @@ static int at24rf08c_read_byte(device_t dev, u8 addr)
 	return t;
 }
 
-static void at24rf08c_read_string_dev(device_t dev, u8 start,
+static void at24rf08c_read_string_dev(struct device *dev, u8 start,
 				      u8 len, char *result)
 {
 	int i;
@@ -72,7 +72,7 @@ static void at24rf08c_read_string_dev(device_t dev, u8 start,
 
 static void at24rf08c_read_string(u8 bank, u8 start, u8 len, char *result)
 {
-	device_t dev;
+	struct device *dev;
 
 	dev = at24rf08c_find_bank(bank);
 	if (dev == 0) {
@@ -124,7 +124,7 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 	static char result[16];
 	unsigned i;
 	static int already_read;
-	device_t dev;
+	struct device *dev;
 	const int remap[16] = {
 		/* UUID byteswap.  */
 		3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15
@@ -173,7 +173,7 @@ const char *smbios_mainboard_version(void)
 {
 	static char result[100];
 	static int already_read;
-	device_t dev;
+	struct device *dev;
 	int len;
 
 	if (already_read)

@@ -489,7 +489,7 @@ static void aty_calc_mem_refresh(struct fb_info_aty *info, u16 id, int xclk)
         info->mem_refresh_rate = i;
 }
 #endif /*CONFIG_CONSOLE_BTEXT */
-static void ati_ragexl_init(device_t dev)
+static void ati_ragexl_init(struct device *dev)
 {
         u32 chip_id;
     	int j;

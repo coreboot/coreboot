@@ -41,7 +41,7 @@ static void pnp_write_index(u16 port, u8 reg, u8 value)
 	outb(value, port + 1);
 }
 
-void it8728f_hwm_ec_init(device_t dev)
+void it8728f_hwm_ec_init(struct device *dev)
 {
 	struct superio_ite_it8728f_config *conf = dev->chip_info;
 	struct resource *res = find_resource(dev, PNP_IDX_IO0);

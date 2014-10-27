@@ -89,7 +89,7 @@ static int generate_C_state_entries(void)
 	struct cpu_info *info;
 	struct cpu_driver *cpu;
 	int len, lenif;
-	device_t lapic;
+	struct device *lapic;
 	struct cpu_intel_model_2065x_config *conf = NULL;
 
 	/* Find the SpeedStep CPU in the device tree using magic APIC ID */

@@ -211,7 +211,7 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 	}
 }
 
-static void it8516e_pm2_init(const device_t dev)
+static void it8516e_pm2_init(struct device *dev)
 {
 	const config_t *const config = dev->chip_info;
 
@@ -251,7 +251,7 @@ static struct pnp_info it8516e_dev_infos[] = {
 	{ NULL,             IT8516E_LDN_PM3,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
 };
 
-static void it8516e_enable(const device_t dev)
+static void it8516e_enable(struct device *dev)
 {
 	pnp_enable_devices(dev, &pnp_ops,
 			   ARRAY_SIZE(it8516e_dev_infos), it8516e_dev_infos);

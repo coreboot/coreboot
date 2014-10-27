@@ -141,7 +141,7 @@ int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 
 unsigned long acpi_create_madt_lapics(unsigned long current)
 {
-	device_t cpu;
+	struct device *cpu;
 	int index = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
@@ -278,7 +278,7 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 	acpigen_set_current((char *) current);
 	{
 #if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
-		device_t dev;
+		struct device *dev;
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->ops && dev->ops->acpi_fill_ssdt_generator) {
 				dev->ops->acpi_fill_ssdt_generator();
@@ -708,7 +708,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *dsdt;
 	acpi_mcfg_t *mcfg;
 	acpi_madt_t *madt;
-	device_t dev;
+	struct device *dev;
 
 	current = start;
 

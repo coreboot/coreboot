@@ -30,7 +30,7 @@
 #define MULTI_FUNC_SEL_REG4 0x2B
 #define MULTI_FUNC_SEL_REG5 0x2C
 
-void f71869ad_multifunc_init(device_t dev)
+void f71869ad_multifunc_init(struct device *dev)
 {
 	const struct superio_fintek_f71869ad_config *conf = dev->chip_info;
 

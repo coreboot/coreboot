@@ -253,7 +253,7 @@ static void *stacks[CONFIG_MAX_CPUS];
 volatile unsigned long secondary_stack;
 volatile unsigned int secondary_cpu_index;
 
-int start_cpu(device_t cpu)
+int start_cpu(struct device *cpu)
 {
 	struct cpu_info *info;
 	unsigned long stack_end;
@@ -430,9 +430,9 @@ void asmlinkage secondary_cpu_init(unsigned int index)
 	stop_this_cpu();
 }
 
-static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
+static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 {
-	device_t cpu;
+	struct device *cpu;
 	/* Loop through the cpus once getting them started */
 
 	for(cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
@@ -465,7 +465,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 
 static void wait_other_cpus_stop(struct bus *cpu_bus)
 {
-	device_t cpu;
+	struct device *cpu;
 	int old_active_count, active_count;
 	long loopcount = 0;
 	int i;

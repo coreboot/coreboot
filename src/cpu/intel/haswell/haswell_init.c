@@ -597,7 +597,7 @@ static void configure_c_states(void)
 static void configure_thermal_target(void)
 {
 	struct cpu_intel_haswell_config *conf;
-	device_t lapic;
+	struct device *lapic;
 	msr_t msr;
 
 	/* Find pointer to CPU configuration */
@@ -735,7 +735,7 @@ static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 }
 
 /* All CPUs including BSP will run the following function. */
-static void haswell_init(device_t cpu)
+static void haswell_init(struct device *cpu)
 {
 	/* Clear out pending MCEs */
 	configure_mca();

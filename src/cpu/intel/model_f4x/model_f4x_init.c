@@ -9,7 +9,7 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 
-static void model_f4x_init(device_t cpu)
+static void model_f4x_init(struct device *cpu)
 {
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();

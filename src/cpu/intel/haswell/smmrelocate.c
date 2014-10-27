@@ -227,7 +227,7 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 	}
 }
 
-static u32 northbridge_get_base_reg(device_t dev, int reg)
+static u32 northbridge_get_base_reg(struct device *dev, int reg)
 {
 	u32 value;
 
@@ -237,7 +237,7 @@ static u32 northbridge_get_base_reg(device_t dev, int reg)
 	return value;
 }
 
-static void fill_in_relocation_params(device_t dev,
+static void fill_in_relocation_params(struct device *dev,
                                       struct smm_relocation_params *params)
 {
 	u32 tseg_size;
@@ -387,7 +387,7 @@ static int install_permanent_handler(int num_cpus,
 
 static int cpu_smm_setup(void)
 {
-	device_t dev;
+	struct device *dev;
 	int num_cpus;
 	msr_t msr;
 

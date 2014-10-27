@@ -166,7 +166,7 @@ void smp_write_processors(struct mp_config_table *mc)
 	unsigned cpu_features;
 	unsigned cpu_feature_flags;
 	struct cpuid_result result;
-	device_t cpu;
+	struct device *cpu;
 
 	boot_apic_id = lapicid();
 	apic_version = lapic_read(LAPIC_LVR) & 0xff;
@@ -493,7 +493,9 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 	struct drivers_generic_ioapic_config *ioapic_config;
 	struct mp_config_table *mc;
 	int isa_bus, pin, parentpin;
-	device_t dev, parent, oldparent;
+	struct device *dev;
+	struct device *parent;
+	struct device *oldparent;
 	void *tmp, *v;
 	int isaioapic = -1, have_fixed_entries;
 

@@ -75,7 +75,7 @@
 
 #define RTD2132_DEBUG_REG 0
 
-static void rtd2132_write_reg(device_t dev, u8 reg, u8 value)
+static void rtd2132_write_reg(struct device *dev, u8 reg, u8 value)
 {
 	if (RTD2132_DEBUG_REG)
 		printk(BIOS_DEBUG, "RTD2132 0x%02x <- 0x%02x\n", reg, value);
@@ -83,18 +83,18 @@ static void rtd2132_write_reg(device_t dev, u8 reg, u8 value)
 	smbus_write_byte(dev, RTD2132_DATA, value);
 }
 
-static void rtd2132_firmware_stop(device_t dev)
+static void rtd2132_firmware_stop(struct device *dev)
 {
 	smbus_write_byte(dev, RTD2132_FIRMWARE, RTD2132_FIRMWARE_STOP);
 	mdelay(60);
 }
 
-static void rtd2132_firmware_start(device_t dev)
+static void rtd2132_firmware_start(struct device *dev)
 {
 	smbus_write_byte(dev, RTD2132_FIRMWARE, RTD2132_FIRMWARE_START);
 }
 
-static void rtd2132_pps(device_t dev, struct drivers_i2c_rtd2132_config *cfg)
+static void rtd2132_pps(struct device *dev, struct drivers_i2c_rtd2132_config *cfg)
 {
 	/* T2, T5, and T7 register values are in units of 4ms. */
 	rtd2132_write_reg(dev, RTD2132_COMMAND_PWR_SEQ_T1, cfg->t1);
@@ -106,7 +106,7 @@ static void rtd2132_pps(device_t dev, struct drivers_i2c_rtd2132_config *cfg)
 	rtd2132_write_reg(dev, RTD2132_COMMAND_PWR_SEQ_T7, cfg->t7 / 4);
 }
 
-static void rtd2132_sscg_enable(device_t dev, u8 sscg_percent)
+static void rtd2132_sscg_enable(struct device *dev, u8 sscg_percent)
 {
 	/* SSCG_Config_0 */
 	rtd2132_write_reg(dev, RTD2132_COMMAND_SSCG_CONFIG_0,
@@ -116,7 +116,7 @@ static void rtd2132_sscg_enable(device_t dev, u8 sscg_percent)
 	rtd2132_write_reg(dev, RTD2132_COMMAND_SSCG_CONFIG_1, sscg_percent);
 }
 
-static void rtd2132_sscg_disable(device_t dev)
+static void rtd2132_sscg_disable(struct device *dev)
 {
 	/* SSCG_Config_0 */
 	rtd2132_write_reg(dev, RTD2132_COMMAND_SSCG_CONFIG_0,
@@ -127,7 +127,7 @@ static void rtd2132_sscg_disable(device_t dev)
 	                  RTD2132_SSCG_CONFIG_DISABLED);
 }
 
-static void rtd2132_sscg(device_t dev, struct drivers_i2c_rtd2132_config *cfg)
+static void rtd2132_sscg(struct device *dev, struct drivers_i2c_rtd2132_config *cfg)
 {
 	switch (cfg->sscg_percent) {
 	case RTD2132_SSCG_PERCENT_0_0:
@@ -152,7 +152,7 @@ static void rtd2132_sscg(device_t dev, struct drivers_i2c_rtd2132_config *cfg)
 	}
 }
 
-static void rtd2132_lvds_swap(device_t dev,
+static void rtd2132_lvds_swap(struct device *dev,
                               struct drivers_i2c_rtd2132_config *cfg)
 {
 	u8 swap_value = RTD2132_LVDS_SWAP_NORMAL;
@@ -186,7 +186,7 @@ static void rtd2132_lvds_swap(device_t dev,
 	rtd2132_write_reg(dev, RTD2132_COMMAND_LVDS_SWAP, swap_value);
 }
 
-static void rtd2132_defaults(device_t dev)
+static void rtd2132_defaults(struct device *dev)
 {
 	static const struct def_setting {
 		u8 reg;
@@ -207,7 +207,7 @@ static void rtd2132_defaults(device_t dev)
 		                  def_settings[i].value);
 }
 
-static void rtd2132_setup(device_t dev)
+static void rtd2132_setup(struct device *dev)
 {
 	struct drivers_i2c_rtd2132_config *config = dev->chip_info;
 
@@ -233,7 +233,7 @@ static void rtd2132_setup(device_t dev)
 	rtd2132_firmware_start(dev);
 }
 
-static void rtd2132_init(device_t dev)
+static void rtd2132_init(struct device *dev)
 {
 	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C &&
 	    ops_smbus_bus(get_pbus_smbus(dev))) {
@@ -241,7 +241,7 @@ static void rtd2132_init(device_t dev)
 	}
 }
 
-static void rtd2132_noop(device_t dummy)
+static void rtd2132_noop(struct device *dummy)
 {
 }
 

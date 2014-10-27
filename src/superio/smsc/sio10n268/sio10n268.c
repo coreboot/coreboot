@@ -23,7 +23,7 @@
 #include <pc80/keyboard.h>
 #include "sio10n268.h"
 
-static void init(device_t dev)
+static void init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;

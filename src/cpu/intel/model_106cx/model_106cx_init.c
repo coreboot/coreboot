@@ -110,7 +110,7 @@ static void configure_misc(void)
 	wrmsr(IA32_MISC_ENABLE, msr);
 }
 
-static void model_106cx_init(device_t cpu)
+static void model_106cx_init(struct device *cpu)
 {
 	char processor_name[49];
 

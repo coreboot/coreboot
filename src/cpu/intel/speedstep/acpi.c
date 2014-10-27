@@ -44,7 +44,7 @@ int __attribute__((weak)) get_cst_entries(acpi_cstate_t **entries
 
 static int determine_total_number_of_cores(void)
 {
-	device_t cpu;
+	struct device *cpu;
 	int count = 0;
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||

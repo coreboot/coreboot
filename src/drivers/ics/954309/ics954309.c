@@ -29,7 +29,7 @@
 #include "chip.h"
 #include <string.h>
 
-static void ics954309_init(device_t dev)
+static void ics954309_init(struct device *dev)
 {
 	struct drivers_ics_954309_config *config;
 	u8 initdata[12];
@@ -55,7 +55,7 @@ static void ics954309_init(device_t dev)
 	smbus_block_write(dev, 0, 12, initdata);
 }
 
-static void ics954309_noop(device_t dummy)
+static void ics954309_noop(struct device *dummy)
 {
 }
 

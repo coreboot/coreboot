@@ -12,7 +12,7 @@
 #include <arch/io.h>
 #include <cpu/x86/lapic.h>
 
-static void ioapic_init(device_t dev)
+static void ioapic_init(struct device *dev)
 {
 	struct drivers_generic_ioapic_config *config = dev->chip_info;
 	u32 bsp_lapicid = lapicid();
@@ -86,15 +86,15 @@ static void ioapic_init(device_t dev)
 	}
 }
 
-static void ioapic_enable_resources(device_t dev)
+static void ioapic_enable_resources(struct device *dev)
 {
 }
 
-static void ioapic_nop(device_t dummy)
+static void ioapic_nop(struct device *dummy)
 {
 }
 
-static void ioapic_read_resources(device_t dev)
+static void ioapic_read_resources(struct device *dev)
 {
 	struct drivers_generic_ioapic_config *config = (struct drivers_generic_ioapic_config *)dev->chip_info;
 	struct resource *res;

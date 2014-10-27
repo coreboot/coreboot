@@ -156,7 +156,7 @@ void ec_it8518_enable_wake_events(void)
 }
 
 #ifndef __SMM__
-static void it8518_init(device_t dev)
+static void it8518_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
@@ -166,13 +166,13 @@ static void it8518_init(device_t dev)
 }
 
 
-static void it8518_read_resources(device_t dev)
+static void it8518_read_resources(struct device *dev)
 {
 	/* This function avoids an error on serial console. */
 }
 
 
-static void it8518_enable_resources(device_t dev)
+static void it8518_enable_resources(struct device *dev)
 {
 	/* This function avoids an error on serial console. */
 }
@@ -187,7 +187,7 @@ static struct pnp_info pnp_dev_info[] = {
         { &ops, 0, 0, { 0, 0 }, }
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
 			   pnp_dev_info);

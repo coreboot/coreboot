@@ -29,7 +29,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/l2_cache.h>
 
-static void model_67x_init(device_t cpu)
+static void model_67x_init(struct device *cpu)
 {
 	/* Update the microcode */
 	intel_update_microcode_from_cbfs();

@@ -139,7 +139,7 @@ static void nano_power(void)
 	wrmsr(MSR_IA32_MISC_ENABLE, msr);
 }
 
-static void nano_init(device_t dev)
+static void nano_init(struct device *dev)
 {
 	struct cpuinfo_x86 c;
 

@@ -25,7 +25,7 @@
 #include <smbios.h>
 #include <console/console.h>
 
-static void at24rf08c_init(device_t dev)
+static void at24rf08c_init(struct device *dev)
 {
 	int i, j;
 
@@ -52,7 +52,7 @@ static void at24rf08c_init(device_t dev)
 	printk (BIOS_DEBUG, "init EEPROM done\n");
 }
 
-static void at24rf08c_noop(device_t dummy)
+static void at24rf08c_noop(struct device *dummy)
 {
 }
 
@@ -63,7 +63,7 @@ static struct device_operations at24rf08c_operations = {
 	.init = at24rf08c_init,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	dev->ops = &at24rf08c_operations;
 }

@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 
-static void dec_21143_enable(device_t dev)
+static void dec_21143_enable(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Initializing DECchip 21143\n");
 

@@ -6,7 +6,7 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 
-static void lm63_init(device_t dev)
+static void lm63_init(struct device *dev)
 {
 	int result;
 	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C) {
@@ -21,7 +21,7 @@ static void lm63_init(device_t dev)
 	}
 }
 
-static void lm63_noop(device_t dummy)
+static void lm63_noop(struct device *dummy)
 {
 }
 

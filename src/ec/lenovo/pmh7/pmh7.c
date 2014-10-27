@@ -102,7 +102,7 @@ void pmh7_register_write(int reg, int val)
 
 #ifndef __PRE_RAM__
 #ifndef __SMM__
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	struct ec_lenovo_pmh7_config *conf = dev->chip_info;
 	struct resource *resource;

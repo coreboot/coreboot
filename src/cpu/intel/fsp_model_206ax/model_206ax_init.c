@@ -290,7 +290,7 @@ static void configure_mca(void)
 /*
  * Initialize any extra cores/threads in this package.
  */
-static void intel_cores_init(device_t cpu)
+static void intel_cores_init(struct device *cpu)
 {
 	struct cpuid_result result;
 	unsigned threads_per_package, threads_per_core, i;
@@ -313,7 +313,7 @@ static void intel_cores_init(device_t cpu)
 
 	for (i = 1; i < threads_per_package; ++i) {
 		struct device_path cpu_path;
-		device_t new;
+		struct device *new;
 
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
@@ -344,7 +344,7 @@ static void intel_cores_init(device_t cpu)
 	}
 }
 
-static void model_206ax_init(device_t cpu)
+static void model_206ax_init(struct device *cpu)
 {
 	char processor_name[49];
 	struct cpuid_result cpuid_regs;

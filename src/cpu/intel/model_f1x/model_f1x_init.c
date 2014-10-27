@@ -8,7 +8,7 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 
-static void model_f1x_init(device_t dev)
+static void model_f1x_init(struct device *dev)
 {
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();

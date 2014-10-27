@@ -221,7 +221,7 @@ static void w83795_init(w83795_fan_mode_t mode, u8 dts_src)
 	}
 }
 
-static void w83795_hwm_init(device_t dev)
+static void w83795_hwm_init(struct device *dev)
 {
 	struct device *cpu;
 	struct cpu_info *info;
@@ -239,7 +239,7 @@ static void w83795_hwm_init(device_t dev)
 		printk(BIOS_ERR, "Neither AMD nor INTEL CPU detected\n");
 }
 
-static void w83795_noop(device_t dummy)
+static void w83795_noop(struct device *dummy)
 {
 }
 
@@ -250,7 +250,7 @@ static struct device_operations w83795_operations = {
 	.init = w83795_hwm_init,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	dev->ops = &w83795_operations;
 }

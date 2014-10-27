@@ -6,7 +6,7 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 
-static void i2cmux_set_link(device_t dev, unsigned int link)
+static void i2cmux_set_link(struct device *dev, unsigned int link)
 {
 	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C) {
 		if (ops_smbus_bus(get_pbus_smbus(dev))) {
@@ -16,7 +16,7 @@ static void i2cmux_set_link(device_t dev, unsigned int link)
 	}
 }
 
-static void i2cmux_noop(device_t dummy)
+static void i2cmux_noop(struct device *dummy)
 {
 }
 

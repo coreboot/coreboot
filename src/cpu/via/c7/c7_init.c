@@ -147,7 +147,7 @@ static void set_c7_speed(int model) {
 	printk(BIOS_INFO, "Current CPU multiplier: %dx\n", (int)((msr.lo >> 8) & 0xff));
 }
 
-static void c7_init(device_t dev)
+static void c7_init(struct device *dev)
 {
 	u8 brand;
 	struct cpuinfo_x86 c;

@@ -25,18 +25,18 @@
 #include <device/smbus.h>
 #include "chip.h"
 
-static int w83793_fan_limit(device_t dev, int fan, uint16_t limit)
+static int w83793_fan_limit(struct device *dev, int fan, uint16_t limit)
 {
 	return smbus_write_byte(dev, 0x90 + fan * 2, limit >> 8) ||
 		smbus_write_byte(dev, 0x91 + fan * 2, limit & 0xff);
 }
 
-static int w83793_bank(device_t dev, int bank)
+static int w83793_bank(struct device *dev, int bank)
 {
 	return smbus_write_byte(dev, 0, bank);
 }
 
-static int w83793_td_level(device_t dev, int fan, const char *level)
+static int w83793_td_level(struct device *dev, int fan, const char *level)
 {
 	fan *= 0x10;
 
@@ -50,7 +50,7 @@ static int w83793_td_level(device_t dev, int fan, const char *level)
 	return 0;
 }
 
-static int w83793_tr_level(device_t dev, int fan, const char *level)
+static int w83793_tr_level(struct device *dev, int fan, const char *level)
 {
 	fan *= 0x10;
 
@@ -65,7 +65,7 @@ static int w83793_tr_level(device_t dev, int fan, const char *level)
 }
 
 
-static int w83793_td_fan_level(device_t dev, int fan, const char *level)
+static int w83793_td_fan_level(struct device *dev, int fan, const char *level)
 {
 	fan *= 0x10;
 
@@ -79,7 +79,7 @@ static int w83793_td_fan_level(device_t dev, int fan, const char *level)
 	return 0;
 }
 
-static int w83793_tr_fan_level(device_t dev, int fan, const char *level)
+static int w83793_tr_fan_level(struct device *dev, int fan, const char *level)
 {
 	fan *= 0x10;
 
@@ -94,7 +94,7 @@ static int w83793_tr_fan_level(device_t dev, int fan, const char *level)
 }
 
 
-static void w83793_init(device_t dev)
+static void w83793_init(struct device *dev)
 {
 	struct drivers_i2c_w83793_config *config = dev->chip_info;
 	uint16_t id;
@@ -220,7 +220,7 @@ static void w83793_init(device_t dev)
 
 }
 
-static void w83793_noop(device_t dummy)
+static void w83793_noop(struct device *dummy)
 {
 }
 
@@ -231,7 +231,7 @@ static struct device_operations w83793_operations = {
 	.init = w83793_init,
 };
 
-static void enable_dev(device_t dev)
+static void enable_dev(struct device *dev)
 {
 	dev->ops = &w83793_operations;
 }

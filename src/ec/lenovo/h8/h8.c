@@ -167,7 +167,7 @@ u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
 	return i;
 }
 
-static void h8_smbios_strings(device_t dev, struct smbios_type11 *t)
+static void h8_smbios_strings(struct device *dev, struct smbios_type11 *t)
 {
 	char tpec[] = "IBM ThinkPad Embedded Controller -[                 ]-";
 
@@ -180,7 +180,7 @@ struct device_operations h8_dev_ops = {
 	.get_smbios_strings = h8_smbios_strings
 };
 
-static void h8_enable(device_t dev)
+static void h8_enable(struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 	u8 val, tmp;

@@ -32,7 +32,7 @@
  * See Analog Devices ADT7463 datasheet, Rev C (2004):
  * http://www.analog.com/en/prod/0,,766_825_ADT7463,00.html
  */
-static void adt7463_init(device_t adt7463)
+static void adt7463_init(struct device *adt7463)
 {
 	int result;
 
@@ -85,7 +85,7 @@ static void adt7463_init(device_t adt7463)
 	printk(BIOS_DEBUG, "ADT7463 properly initialized\n");
 }
 
-static void adt7463_noop(device_t dummy)
+static void adt7463_noop(struct device *dummy)
 {
 }
 

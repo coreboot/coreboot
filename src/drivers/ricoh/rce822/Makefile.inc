@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_RICOH_RCE822) += rce822.c

@@ -38,3 +38,4 @@ subdirs-y += ipmi
 subdirs-y += elog
 subdirs-y += xpowers
 subdirs-$(CONFIG_ARCH_X86) += pc80
+subdirs-y += ricoh/rce822

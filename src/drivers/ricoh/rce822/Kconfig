@@ -1,0 +1,3 @@
+config DRIVERS_RICOH_RCE822
+       bool
+       default n

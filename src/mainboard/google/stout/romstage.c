@@ -161,32 +161,32 @@ void main(unsigned long bist)
 	int cbmem_was_initted;
 
 	struct pei_data pei_data = {
-		pei_version: PEI_VERSION,
-		mchbar: DEFAULT_MCHBAR,
-		dmibar: DEFAULT_DMIBAR,
-		epbar: DEFAULT_EPBAR,
-		pciexbar: CONFIG_MMCONF_BASE_ADDRESS,
-		smbusbar: SMBUS_IO_BASE,
-		wdbbar: 0x4000000,
-		wdbsize: 0x1000,
-		hpet_address: CONFIG_HPET_ADDRESS,
-		rcba: DEFAULT_RCBABASE,
-		pmbase: DEFAULT_PMBASE,
-		gpiobase: DEFAULT_GPIOBASE,
-		thermalbase: 0xfed08000,
-		system_type: 0, // 0 Mobile, 1 Desktop/Server
-		tseg_size: CONFIG_SMM_TSEG_SIZE,
-		spd_addresses: { 0xA0, 0x00,0xA4,0x00 },
-		ts_addresses: { 0x00, 0x00, 0x00, 0x00 },
-		ec_present: 1,
+		.pei_version = PEI_VERSION,
+		.mchbar = DEFAULT_MCHBAR,
+		.dmibar = DEFAULT_DMIBAR,
+		.epbar = DEFAULT_EPBAR,
+		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
+		.smbusbar = SMBUS_IO_BASE,
+		.wdbbar = 0x4000000,
+		.wdbsize = 0x1000,
+		.hpet_address = CONFIG_HPET_ADDRESS,
+		.rcba = DEFAULT_RCBABASE,
+		.pmbase = DEFAULT_PMBASE,
+		.gpiobase = DEFAULT_GPIOBASE,
+		.thermalbase = 0xfed08000,
+		.system_type = 0, // 0 Mobile, 1 Desktop/Server
+		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.spd_addresses = { 0xA0, 0x00,0xA4,0x00 },
+		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
+		.ec_present = 1,
 		// 0 = leave channel enabled
 		// 1 = disable dimm 0 on channel
 		// 2 = disable dimm 1 on channel
 		// 3 = disable dimm 0+1 on channel
-		dimm_channel0_disabled: 2,
-		dimm_channel1_disabled: 2,
-		max_ddr3_freq: 1600,
-		usb_port_config: {
+		.dimm_channel0_disabled = 2,
+		.dimm_channel1_disabled = 2,
+		.max_ddr3_freq = 1600,
+		.usb_port_config = {
 			/* enabled   usb oc pin    length */
 			{ 1, 0, 0x0040 }, /* P0: USB 3.0 1  (OC0) */
 			{ 1, 0, 0x0040 }, /* P1: USB 3.0 2  (OC0) */
@@ -203,11 +203,11 @@ void main(unsigned long bist)
 			{ 0, 5, 0x0000 }, /* P12: Empty */
 			{ 1, 5, 0x0040 }, /* P13: Bluetooth (no OC) */
 		},
-		usb3: {
-			mode: XHCI_MODE,
-			hs_port_switch_mask: XHCI_PORTS,
-			preboot_support: XHCI_PREBOOT,
-			xhci_streams: XHCI_STREAMS,
+		.usb3 = {
+			.mode = XHCI_MODE,
+			.hs_port_switch_mask = XHCI_PORTS,
+			.preboot_support = XHCI_PREBOOT,
+			.xhci_streams = XHCI_STREAMS,
 		},
 	};
 

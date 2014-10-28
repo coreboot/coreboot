@@ -459,6 +459,12 @@ static const struct pci_driver mc_driver __pci_driver = {
 	.device = 0x0104, /* Sandy bridge */
 };
 
+static const struct pci_driver mc_driver_150 __pci_driver = {
+	.ops    = &mc_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x0150, /* Ivy bridge */
+};
+
 static const struct pci_driver mc_driver_1 __pci_driver = {
 	.ops    = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
@@ -493,6 +499,6 @@ static void enable_dev(device_t dev)
 }
 
 struct chip_operations northbridge_intel_sandybridge_ops = {
-	CHIP_NAME("Intel i7 (SandyBridge/IvyBridge) integrated Northbridge")
+	CHIP_NAME("Intel SandyBridge/IvyBridge integrated Northbridge")
 	.enable_dev = enable_dev,
 };

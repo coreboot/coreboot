@@ -105,6 +105,8 @@ static void init_this_cpu(void *arg)
 
 	cpu_set_device_operations(dev);
 
+	printk(BIOS_DEBUG, "CPU%x: MPIDR: %llx\n", ci->id, ci->mpidr);
+
 	el3_init();
 
 	/* Initialize the GIC. */

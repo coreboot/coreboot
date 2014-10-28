@@ -24,6 +24,7 @@
 
 #if !defined(__PRE_RAM__)
 #include <arch/barrier.h>
+#include <arch/mpidr.h>
 #include <device/device.h>
 
 enum {
@@ -62,6 +63,7 @@ struct cpu_info {
 	unsigned int online;
 	/* Current assumption is that id matches smp_processor_id(). */
 	unsigned int id;
+	uint64_t mpidr;
 };
 
 /* Obtain cpu_info for current executing CPU. */
@@ -93,6 +95,7 @@ static inline int cpu_online(struct cpu_info *ci)
 
 static inline void cpu_mark_online(struct cpu_info *ci)
 {
+	ci->mpidr = read_affinity_mpidr();
 	store_release(&ci->online, 1);
 }
 

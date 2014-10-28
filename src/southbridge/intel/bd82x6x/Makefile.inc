@@ -33,6 +33,7 @@ ramstage-y += usb_xhci.c
 ramstage-y += me.c
 ramstage-y += me_8.x.c
 ramstage-y += smbus.c
+ramstage-y += ../common/pciehp.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 

@@ -23,7 +23,6 @@
 #define BRIGHTNESS_UP \_SB.PCI0.GFX0.LCD0.INCB
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.LCD0.DECB
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
-#define RP03_IS_EXPRESSCARD 1
 #define EC_LENOVO_H8_ME_WORKAROUND 1
 #define HAVE_LCD_SCREEN 1
 
@@ -41,9 +40,6 @@ DefinitionBlock(
 
 	// global NVS and variables
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
-
-	// General Purpose Events
-	//#include "acpi/gpe.asl"
 
 	#include <cpu/intel/model_206ax/acpi/cpu.asl>
 

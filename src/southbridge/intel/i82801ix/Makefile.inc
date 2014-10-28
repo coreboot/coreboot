@@ -27,6 +27,7 @@ ramstage-y += sata.c
 ramstage-y += hdaudio.c
 ramstage-y += thermal.c
 ramstage-y += smbus.c
+ramstage-y += ../common/pciehp.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 

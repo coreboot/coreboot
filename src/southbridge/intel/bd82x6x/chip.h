@@ -100,6 +100,8 @@ struct southbridge_intel_bd82x6x_config {
 	int p_cnt_throttling_supported;
 	int c2_latency;
 	int docking_supported;
+
+	uint8_t pcie_hotplug_map[8];
 };
 
 #endif				/* SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H */

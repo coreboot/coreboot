@@ -71,6 +71,7 @@ chip northbridge/intel/gm45
 			# Set power limits to 10 * 10^0 watts.
 			# Maybe we should set less for Mini PCIe.
 			register "pcie_power_limits" = "{ { 10, 0 }, { 10, 0 }, { 0, 0 }, { 10, 0 }, { 0, 0 }, { 0, 0 } }"
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
 
 			chip drivers/generic/ioapic
 				register "have_isa_interrupts" = "1"

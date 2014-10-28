@@ -60,14 +60,6 @@ static void mainboard_init(device_t dev)
 	   connected to anything and hence we don't init it.
 	 */
 	pc_keyboard_init();
-
-	/* Enable expresscard hotplug events.  */
-	pci_write_config32(dev_find_slot(0, PCI_DEVFN(0x1c, 2)),
-			   0xd8,
-			   pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1c, 2)), 0xd8)
-			   | (1 << 30));
-	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x1c, 2)),
-			   0x42, 0x142);
 }
 
 // mainboard_enable is executed as first thing after

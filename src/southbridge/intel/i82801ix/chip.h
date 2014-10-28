@@ -88,6 +88,8 @@ struct southbridge_intel_i82801ix_config {
 		uint8_t value : 8;
 		uint8_t scale : 2;
 	} pcie_power_limits[6];
+
+	uint8_t pcie_hotplug_map[8];
 };
 
 #endif				/* SOUTHBRIDGE_INTEL_I82801IX_CHIP_H */

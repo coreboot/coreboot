@@ -74,6 +74,8 @@ chip northbridge/intel/sandybridge
 			register "gen2_dec" = "0x0c15e1"
 			register "gen4_dec" = "0x0c06a1"
 
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
+
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "1"
 

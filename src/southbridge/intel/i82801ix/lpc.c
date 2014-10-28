@@ -36,6 +36,7 @@
 #include <string.h>
 #include "i82801ix.h"
 #include "nvs.h"
+#include <southbridge/intel/common/pciehp.h>
 
 #define NMI_OFF	0
 
@@ -555,6 +556,14 @@ static void southbridge_inject_dsdt(void)
 		acpigen_pop_len();
 	}
 }
+
+static void southbridge_fill_ssdt(void)
+{
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
+	config_t *chip = dev->chip_info;
+
+	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);
+}
 #endif
 
 static struct pci_operations pci_ops = {
@@ -568,6 +577,7 @@ static struct device_operations device_ops = {
 #if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.write_acpi_tables      = acpi_write_hpet,
+	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
 #endif
 	.init			= lpc_init,
 	.scan_bus		= scan_static_bus,

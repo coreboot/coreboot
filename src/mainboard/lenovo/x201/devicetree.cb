@@ -122,6 +122,8 @@ chip northbridge/intel/nehalem
 			register "c2_latency" = "1"
 			register "docking_supported" = "1"
 
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
+
 			device pci 16.2 on # IDE/SATA
 				subsystemid 0x17aa 0x2161
 			end

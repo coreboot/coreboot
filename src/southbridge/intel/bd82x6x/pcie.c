@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
+#include <southbridge/intel/common/pciehp.h>
 #include "pch.h"
 
 static void pch_pcie_pm_early(struct device *dev)
@@ -218,6 +219,7 @@ static void pci_init(struct device *dev)
 {
 	u16 reg16;
 	u32 reg32;
+	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "Initializing PCH PCIe bridge.\n");
 
@@ -255,6 +257,14 @@ static void pci_init(struct device *dev)
 	reg16 = pci_read_config16(dev, 0x1e);
 	//reg16 |= 0xf900;
 	pci_write_config16(dev, 0x1e, reg16);
+
+	/* Enable expresscard hotplug events.  */
+	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
+		pci_write_config32(dev, 0xd8,
+				   pci_read_config32(dev, 0xd8)
+				   | (1 << 30));
+		pci_write_config16(dev, 0x42, 0x142);
+	}
 }
 
 static void pch_pcie_enable(device_t dev)
@@ -266,9 +276,14 @@ static void pch_pcie_enable(device_t dev)
 static unsigned int pch_pciexp_scan_bridge(device_t dev, unsigned int max)
 {
 	unsigned int ret;
+	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 
 	/* Normal PCIe Scan */
 	ret = pciexp_scan_bridge(dev, max);
+
+	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
+		intel_acpi_pcie_hotplug_scan_slot(dev->link_list);
+	}
 
 	/* Late Power Management init after bridge device enumeration */
 	pch_pcie_pm_late(dev);

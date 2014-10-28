@@ -77,14 +77,6 @@ void main(unsigned long bist)
 	int cbmem_initted;
 	u16 reg16;
 
-	/* Enable expresscard hotplug events.  */
-	pci_write_config32(PCI_DEV (0, 0x1c, 3),
-			   0xd8,
-			   pci_read_config32(PCI_DEV (0, 0x1c, 3), 0xd8)
-			   | (1 << 30));
-	pci_write_config16(PCI_DEV (0, 0x1c, 3),
-			   0x42, 0x141);
-
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();
 

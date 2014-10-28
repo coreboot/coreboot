@@ -33,6 +33,7 @@ ramstage-y += me.c
 ramstage-y += ../bd82x6x/me_8.x.c
 ramstage-y += smbus.c
 ramstage-y += thermal.c
+ramstage-y += ../common/pciehp.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 

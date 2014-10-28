@@ -26,7 +26,7 @@
 #include <arch/stages.h>
 #include "cpu/x86/bist.h"
 #include "cpu/x86/lapic.h"
-#include "cpu/amd/car.h"
+#include <cpu/amd/car.h>
 #include "agesawrapper.h"
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "northbridge/amd/agesa/family10/reset_test.h"

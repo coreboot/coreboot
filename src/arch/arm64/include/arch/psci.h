@@ -20,6 +20,8 @@
 #ifndef __ARCH_PSCI_H__
 #define __ARCH_PSCI_H__
 
+#include <stdint.h>
+#include <arch/cpu.h>
 #include <arch/smc.h>
 
 /* Return Values */
@@ -34,6 +36,85 @@ enum {
 	PSCI_RET_NOT_PRESENT = -7,
 	PSCI_RET_DISABLED = -8,
 };
+
+/* Generic PSCI state. */
+enum {
+	PSCI_STATE_OFF = 0,
+	PSCI_STATE_ON_PENDING,
+	PSCI_STATE_ON,
+};
+
+/* Affinity level support. */
+enum {
+	PSCI_AFFINITY_LEVEL_0,
+	PSCI_AFFINITY_LEVEL_1,
+	PSCI_AFFINITY_LEVEL_2,
+	PSCI_AFFINITY_LEVEL_3,
+	PSCI_AFFINITY_ROOT,
+	PSCI_AFFINITY_LEVEL_HIGHEST = PSCI_AFFINITY_ROOT,
+};
+
+static inline int psci_level_below(int level)
+{
+	return level - 1;
+}
+
+struct psci_node;
+
+struct psci_cpu_state {
+	struct cpu_info *ci;
+	void *entry;
+	void *arg;
+	/* Ancestor of target to update state in CPU_ON case. */
+	struct psci_node *ancestor;
+};
+
+struct psci_node_group {
+	size_t num;
+	struct psci_node *nodes;
+};
+
+struct psci_node {
+	uint64_t mpidr;
+	/* Affinity level of node. */
+	int level;
+	/* Generic power state of this entity. */
+	int state;
+	/* The SoC can stash its own state accounting in here. */
+	int soc_state;
+	/* Parent of curernt entity. */
+	struct psci_node *parent;
+	/*
+	 * CPUs are leaves in the tree. They don't have children. The
+	 * CPU-specific bits of storage can be shared with the children
+	 * storage.
+	 */
+	union {
+		struct psci_node_group children;
+		struct psci_cpu_state cpu_state;
+	};
+};
+
+static inline struct psci_node *psci_node_parent(const struct psci_node *n)
+{
+	return n->parent;
+}
+
+static inline int psci_root_node(const struct psci_node *n)
+{
+	return psci_node_parent(n) == NULL;
+}
+
+struct psci_soc_ops {
+	/*
+	 * Return number of entities one level below given parent affinitly
+	 * level and mpidr.
+	 */
+	size_t (*children_at_level)(int parent_level, uint64_t mpidr);
+};
+
+/* Each SoC needs to provide the functions in the psci_soc_ops structure. */
+extern struct psci_soc_ops soc_psci_ops;
 
 /* PSCI Functions. */
 enum {
@@ -111,5 +192,6 @@ void psci_init(void);
 
 /* Turn on the current CPU within the PSCI subsystem. */
 void psci_turn_on_self(void *entry, void *arg);
+int psci_turn_off_self(void);
 
 #endif /* __ARCH_PSCI_H__ */

@@ -140,7 +140,7 @@ static struct exception_handler smc_handler32 = {
 	.handler = &smc_handler,
 };
 
-void smc_init(void)
+static void enable_smc(void *arg)
 {
 	uint32_t scr;
 
@@ -149,9 +149,15 @@ void smc_init(void)
 	scr &= ~(SCR_SMC_MASK);
 	scr |= SCR_SMC_ENABLE;
 	raw_write_scr_el3(scr);
+}
 
-	if (!cpu_is_bsp())
-		return;
+void smc_init(void)
+{
+	struct cpu_action action = {
+		.run = enable_smc,
+	};
+
+	arch_run_on_all_cpus_async(&action);
 
 	/* Register SMC handlers. */
 	exception_handler_register(EXC_VID_LOW64_SYNC, &smc_handler64);

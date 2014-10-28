@@ -30,6 +30,18 @@
 #include <stddef.h>
 #include "secmon.h"
 
+/* Save initial secmon params per CPU to handle turn up. */
+static struct secmon_params *init_params[CONFIG_MAX_CPUS];
+
+static void start_up_cpu(void *arg)
+{
+	struct secmon_params *params = init_params[cpu_info()->id];
+
+	if (params == NULL)
+		psci_turn_off_self();
+	psci_turn_on_self(params->entry, params->arg);
+}
+
 static void cpu_init(int bsp)
 {
 	struct cpu_info *ci = cpu_info();
@@ -43,17 +55,26 @@ static void cpu_init(int bsp)
 
 static void secmon_init(struct secmon_params *params, int bsp)
 {
+	struct cpu_action action = {
+		.run = start_up_cpu,
+	};
+
 	exception_hwinit();
 	cpu_init(bsp);
+
+	init_params[cpu_info()->id] = params;
+
+	if (!cpu_is_bsp())
+		secmon_wait_for_action();
 
 	smc_init();
 	psci_init();
 
-	/* Turn on CPU if params are not NULL. */
-	if (params != NULL)
-		psci_turn_on_self(params->entry, params->arg);
+	arch_run_on_all_cpus_async(&action);
 
-	secmon_wait_for_action();
+	printk(BIOS_ERR, "CPU turn on failed for BSP.\n");
+	while (1)
+		;
 }
 
 void secmon_wait_for_action(void)

@@ -28,23 +28,14 @@
 #include <console/console.h>
 #include "secmon.h"
 
-enum {
-	PSCI_CPU_STATE_OFF = 0,
-	PSCI_CPU_STATE_ON_PENDING,
-	PSCI_CPU_STATE_ON,
-};
-
-struct psci_cpu_state {
-	uint64_t mpidr;
-	void *entry;
-	void *arg;
-	int state;
-};
-
 DECLARE_SPIN_LOCK(psci_spinlock);
 
-static struct psci_cpu_state psci_state[CONFIG_MAX_CPUS];
+/* Root of PSCI node tree. */
+static struct psci_node psci_root;
 
+/* Array of all the psci_nodes in system.  */
+static size_t psci_num_nodes;
+static struct psci_node **psci_nodes;
 
 static inline void psci_lock(void)
 {
@@ -56,33 +47,173 @@ static inline void psci_unlock(void)
 	spin_unlock(&psci_spinlock);
 }
 
-static inline int psci_cpu_state_locked(int i)
+static inline int psci_state_locked(const struct psci_node *e)
 {
-	return psci_state[i].state;
+	return e->state;
 }
 
-static inline void psci_cpu_set_state_locked(int i, int s)
+static inline void psci_set_state_locked(struct psci_node *e, int s)
 {
-	psci_state[i].state = s;
+	e->state = s;
 }
 
-static struct cpu_info *mpidr_to_cpu_info(uint64_t mpidr)
+static struct psci_node *psci_node_lookup(uint64_t mpidr, int level)
 {
-	int i;
+	size_t i;
 
-	for (i = 0; i < ARRAY_SIZE(psci_state); i++) {
-		if (mpidr == psci_state[i].mpidr)
-			return cpu_info_for_cpu(i);
+	/* The array of node pointers are in depth-first order of the tree. */
+	for (i = 0; i < psci_num_nodes; i++) {
+		struct psci_node *current = psci_nodes[i];
+
+		if (current->mpidr > mpidr)
+			break;
+		if (current->mpidr < mpidr)
+			continue;
+		if (current->level == level)
+			return current;
+	}
+	return NULL;
+}
+
+static inline struct psci_node *node_self(void)
+{
+	return psci_node_lookup(cpu_info()->mpidr, PSCI_AFFINITY_LEVEL_0);
+}
+
+/* Find the ancestor of node affected by a state transition limited by level. */
+static struct psci_node *psci_find_ancestor(struct psci_node *e, int level,
+						int state)
+{
+	struct psci_node *p;
+
+	/* If all siblings of the node are already off then parent can be
+	 * set to off as well. */
+	if (state == PSCI_STATE_OFF) {
+		while (1) {
+			size_t i;
+			struct psci_node *s;
+
+			if (psci_root_node(e))
+				return e;
+
+			p = psci_node_parent(e);
+
+			if (p->level > level)
+				return e;
+
+			for (i = 0; i < p->children.num; i++) {
+				s = &p->children.nodes[i];
+				/* Don't check target. */
+				if (s == e)
+					continue;
+				if (psci_state_locked(s) != PSCI_STATE_OFF)
+					return e;
+			}
+
+			e = p;
+		}
 	}
 
-	return NULL;
+	/* All ancestors in state OFF are affected. */
+	if (state == PSCI_STATE_ON_PENDING) {
+		while (1) {
+			/* At the root. Return last affected node. */
+			if (psci_root_node(e))
+				return e;
+
+			p = psci_node_parent(e);
+
+			if (p->level > level)
+				return e;
+
+			/* This parent is already ON. */
+			if (psci_state_locked(p) != PSCI_STATE_OFF)
+				return e;
+
+			e = p;
+		}
+	}
+
+	/* Default to returning node passed in. */
+	return e;
+}
+
+static void psci_set_hierarchy_state(struct psci_node *from,
+					struct psci_node *to,
+					int state)
+{
+	struct psci_node *end;
+
+	end = psci_node_parent(to);
+
+	while (from != end) {
+		/* Raced with another CPU as state is already set. */
+		if (psci_state_locked(from) == state)
+			break;
+		psci_set_state_locked(from, state);
+		from = psci_node_parent(from);
+	}
 }
 
 static void psci_cpu_on_callback(void *arg)
 {
-	struct psci_cpu_state *s = arg;
+	struct exc_state state;
+	int target_el;
+	struct psci_node *e = arg;
 
-	psci_turn_on_self(s->entry, s->arg);
+	psci_lock();
+	psci_set_hierarchy_state(e, e->cpu_state.ancestor, PSCI_STATE_ON);
+	psci_unlock();
+
+	/* Target EL is determined if HVC is enabled or not. */
+	target_el = (raw_read_scr_el3() & SCR_HVC_ENABLE) ? EL2 : EL1;
+
+	memset(&state, 0, sizeof(state));
+	state.elx.spsr = get_eret_el(target_el, SPSR_USE_H);
+	transition_with_entry(e->cpu_state.entry, e->cpu_state.arg, &state);
+}
+
+static void psci_cpu_on_prepare(struct psci_node *e,
+				void *entry, void *arg)
+{
+	struct psci_node *ancestor;
+	int state = PSCI_STATE_ON_PENDING;
+
+	e->cpu_state.entry = entry;
+	e->cpu_state.arg = arg;
+	ancestor = psci_find_ancestor(e, PSCI_AFFINITY_LEVEL_HIGHEST, state);
+	e->cpu_state.ancestor = ancestor;
+	psci_set_hierarchy_state(e, ancestor, state);
+}
+
+static int psci_schedule_cpu_on(struct psci_node *e)
+{
+	struct cpu_action action = {
+		.run = &psci_cpu_on_callback,
+		.arg = e,
+	};
+
+	if (arch_run_on_cpu_async(e->cpu_state.ci->id, &action))
+		return PSCI_RET_INTERNAL_FAILURE;
+
+	return PSCI_RET_SUCCESS;
+}
+
+void psci_turn_on_self(void *entry, void *arg)
+{
+	struct psci_node *e = node_self();
+
+	if (e == NULL) {
+		printk(BIOS_ERR, "Couldn't turn on self: mpidr %llx\n",
+			cpu_info()->mpidr);
+		return;
+	}
+
+	psci_lock();
+	psci_cpu_on_prepare(e, entry, arg);
+	psci_unlock();
+
+	psci_schedule_cpu_on(e);
 }
 
 static void psci_cpu_on(struct psci_func *pf)
@@ -90,60 +221,68 @@ static void psci_cpu_on(struct psci_func *pf)
 	uint64_t entry;
 	uint64_t target_mpidr;
 	uint64_t context_id;
-	struct cpu_info *ci;
 	int cpu_state;
-	struct cpu_action action;
+	struct psci_node *e;
 
 	target_mpidr = psci64_arg(pf, PSCI_PARAM_0);
 	entry = psci64_arg(pf, PSCI_PARAM_1);
 	context_id = psci64_arg(pf, PSCI_PARAM_2);
 
-	ci = mpidr_to_cpu_info(target_mpidr);
+	e = psci_node_lookup(target_mpidr, PSCI_AFFINITY_LEVEL_0);
 
-	if (ci == NULL) {
+	if (e == NULL) {
 		psci32_return(pf, PSCI_RET_INVALID_PARAMETERS);
 		return;
 	}
 
 	psci_lock();
-	cpu_state = psci_cpu_state_locked(ci->id);
+	cpu_state = psci_state_locked(e);
 
-	if (cpu_state == PSCI_CPU_STATE_ON_PENDING) {
+	if (cpu_state == PSCI_STATE_ON_PENDING) {
 		psci32_return(pf, PSCI_RET_ON_PENDING);
 		psci_unlock();
 		return;
-	} else if (cpu_state == PSCI_CPU_STATE_ON) {
+	} else if (cpu_state == PSCI_STATE_ON) {
 		psci32_return(pf, PSCI_RET_ALREADY_ON);
 		psci_unlock();
 		return;
 	}
 
-	psci_cpu_set_state_locked(ci->id, PSCI_CPU_STATE_ON_PENDING);
-	/* Set the parameters and initialize the action. */
-	psci_state[ci->id].entry = (void *)(uintptr_t)entry;
-	psci_state[ci->id].arg = (void *)(uintptr_t)context_id;
-	action.run = &psci_cpu_on_callback;
-	action.arg = &psci_state[ci->id];
-
-	if (arch_run_on_cpu_async(ci->id, &action)) {
-		psci32_return(pf, PSCI_RET_INTERNAL_FAILURE);
-		psci_unlock();
-		return;
-	}
-
+	psci_cpu_on_prepare(e, (void *)entry, (void *)context_id);
 	psci_unlock();
 
-	psci32_return(pf, PSCI_RET_SUCCESS);
+	psci32_return(pf, psci_schedule_cpu_on(e));
 }
 
-static void psci_cpu_off(struct psci_func *pf)
+static int psci_turn_off_node(struct psci_node *e, int level,
+					int state_id)
 {
+	struct psci_node *ancestor;
+
 	psci_lock();
-	psci_cpu_set_state_locked(cpu_info()->id, PSCI_CPU_STATE_OFF);
+	ancestor = psci_find_ancestor(e, level, PSCI_STATE_OFF);
+	psci_set_hierarchy_state(e, ancestor, PSCI_STATE_OFF);
 	psci_unlock();
 
 	/* TODO(adurbin): writeback cache and actually turn off CPU. */
 	secmon_trampoline(&secmon_wait_for_action, NULL);
+
+	return PSCI_RET_SUCCESS;
+}
+
+int psci_turn_off_self(void)
+{
+	struct psci_node *e = node_self();
+
+	if (e == NULL) {
+		printk(BIOS_ERR, "No PSCI node for MPIDR %llx.\n",
+			cpu_info()->mpidr);
+		return PSCI_RET_INTERNAL_FAILURE;
+	}
+
+	/* -1 state id indicates to SoC to make its own decision for
+	 * internal state when powering off the node. */
+	return psci_turn_off_node(e, PSCI_AFFINITY_LEVEL_HIGHEST, -1);
 }
 
 static int psci_handler(struct smc_call *smc)
@@ -158,7 +297,7 @@ static int psci_handler(struct smc_call *smc)
 		psci_cpu_on(pf);
 		break;
 	case PSCI_CPU_OFF64:
-		psci_cpu_off(pf);
+		psci32_return(pf, psci_turn_off_self());
 		break;
 	default:
 		psci32_return(pf, PSCI_RET_NOT_SUPPORTED);
@@ -168,41 +307,190 @@ static int psci_handler(struct smc_call *smc)
 	return 0;
 }
 
+static void psci_link_cpu_info(void *arg)
+{
+	struct psci_node *e = node_self();
+
+	if (e == NULL) {
+		printk(BIOS_ERR, "No PSCI node for MPIDR %llx.\n",
+			cpu_info()->mpidr);
+		return;
+	}
+
+	e->cpu_state.ci = cpu_info();
+}
+
+static int psci_init_node(struct psci_node *e,
+				struct psci_node *parent,
+				int level, uint64_t mpidr)
+{
+	size_t i;
+	uint64_t mpidr_inc;
+	struct psci_node_group *ng;
+	size_t num_children;
+
+	memset(e, 0, sizeof(*e));
+	e->mpidr = mpidr;
+	psci_set_state_locked(e, PSCI_STATE_OFF);
+	e->parent = parent;
+	e->level = level;
+
+	if (level == PSCI_AFFINITY_LEVEL_0)
+		return 0;
+
+	num_children = soc_psci_ops.children_at_level(level, mpidr);
+
+	if (num_children == 0)
+		return 0;
+
+	ng = &e->children;
+	ng->num = num_children;
+	ng->nodes = malloc(ng->num * sizeof(struct psci_node));
+	if (ng->nodes == NULL) {
+		printk(BIOS_DEBUG, "PSCI: Allocation failure at level %d\n",
+			level);
+		return -1;
+	}
+
+	/* Switch to next level below. */
+	level = psci_level_below(level);
+	mpidr_inc = mpidr_mask(!!(level == PSCI_AFFINITY_LEVEL_3),
+				!!(level == PSCI_AFFINITY_LEVEL_2),
+				!!(level == PSCI_AFFINITY_LEVEL_1),
+				!!(level == PSCI_AFFINITY_LEVEL_0));
+
+	for (i = 0; i < ng->num; i++) {
+		struct psci_node *c = &ng->nodes[i];
+
+		/* Recursively initialize the nodes. */
+		if (psci_init_node(c, e, level, mpidr))
+			return -1;
+		mpidr += mpidr_inc;
+	}
+
+	return 0;
+}
+
+static size_t psci_count_children(struct psci_node *e)
+{
+	size_t i;
+	size_t count;
+
+	if (e->level == PSCI_AFFINITY_LEVEL_0)
+		return 0;
+
+	count = e->children.num;
+	for (i = 0; i < e->children.num; i++)
+		count +=  psci_count_children(&e->children.nodes[i]);
+
+	return count;
+}
+
+static size_t psci_write_nodes(struct psci_node *e, size_t index)
+{
+	size_t i;
+
+	/*
+	 * Recursively save node pointers in array. Node pointers are
+	 * ordered in ascending mpidr and descending level within same mpidr.
+	 * i.e. each node is saved in depth-first order of the tree.
+	 */
+	if (e->level != PSCI_AFFINITY_ROOT) {
+		psci_nodes[index] = e;
+		index++;
+	}
+
+	if (e->level == PSCI_AFFINITY_LEVEL_0)
+		return index;
+
+	for (i = 0; i < e->children.num; i++)
+		index = psci_write_nodes(&e->children.nodes[i], index);
+
+	return index;
+}
+
+static int psci_allocate_nodes(void)
+{
+	int level;
+	size_t num_children;
+	uint64_t mpidr;
+	struct psci_node *e;
+
+	mpidr = 0;
+	level = PSCI_AFFINITY_ROOT;
+
+	/* Find where the root should start. */
+	while (psci_level_below(level) >= PSCI_AFFINITY_LEVEL_0) {
+		num_children = soc_psci_ops.children_at_level(level, mpidr);
+
+		if (num_children == 0) {
+			printk(BIOS_ERR, "PSCI: No children at level %d!\n",
+				level);
+			return -1;
+		}
+
+		/* The root starts where the affinity levels branch. */
+		if (num_children > 1)
+			break;
+
+		level = psci_level_below(level);
+	}
+
+	if (psci_init_node(&psci_root, NULL, level, mpidr)) {
+		printk(BIOS_ERR, "PSCI init node failure.\n");
+		return -1;
+	}
+
+	num_children = psci_count_children(&psci_root);
+	/* Count the root node if isn't a fake node. */
+	if (psci_root.level != PSCI_AFFINITY_ROOT)
+		num_children++;
+
+	psci_nodes = malloc(num_children * sizeof(void *));
+	psci_num_nodes = num_children;
+
+	if (psci_nodes == NULL) {
+		printk(BIOS_ERR, "PSCI node pointer array failure.\n");
+		return -1;
+	}
+
+	num_children = psci_write_nodes(&psci_root, 0);
+	if (num_children != psci_num_nodes) {
+		printk(BIOS_ERR, "Wrong nodes written: %zd vs %zd.\n",
+			num_children, psci_num_nodes);
+		return -1;
+	}
+
+	/*
+	 * By default all nodes are set to PSCI_STATE_OFF. In order not
+	 * to race with other CPUs turning themselves off set the BSPs
+	 * affinity node to ON.
+	 */
+	e = node_self();
+	if (e == NULL) {
+		printk(BIOS_ERR, "No PSCI node for BSP.\n");
+		return -1;
+	}
+	psci_set_state_locked(e, PSCI_STATE_ON);
+
+	return 0;
+}
+
 void psci_init(void)
 {
-	struct cpu_info *ci;
-	uint64_t mpidr;
+	struct cpu_action action = {
+		.run = &psci_link_cpu_info,
+	};
 
-	/* Set this CPUs MPIDR clearing the bits that are not per-cpu. */
-	ci = cpu_info();
-	mpidr = raw_read_mpidr_el1();
-	mpidr &= ~(1ULL << 31); /* RES1 */
-	mpidr &= ~(1ULL << 30); /* U */
-	mpidr &= ~(1ULL << 24); /* MT */
-	psci_state[ci->id].mpidr = mpidr;
-
-	if (!cpu_is_bsp())
+	if (psci_allocate_nodes()) {
+		printk(BIOS_ERR, "PSCI support not enabled.\n");
 		return;
+	}
+
+	if (arch_run_on_all_cpus_async(&action))
+		printk(BIOS_ERR, "Error linking cpu_info to PSCI nodes.\n");
 
 	/* Register PSCI handlers. */
 	if (smc_register_range(PSCI_CPU_OFF64, PSCI_CPU_ON64, &psci_handler))
 		printk(BIOS_ERR, "Couldn't register PSCI handler.\n");
-}
-
-void psci_turn_on_self(void *entry, void *arg)
-{
-	struct exc_state state;
-	int target_el;
-	struct cpu_info *ci = cpu_info();
-
-	psci_lock();
-	psci_cpu_set_state_locked(ci->id, PSCI_CPU_STATE_ON);
-	psci_unlock();
-
-	/* Target EL is determined if HVC is enabled or not. */
-	target_el = (raw_read_scr_el3() & SCR_HVC_ENABLE) ? EL2 : EL1;
-
-	memset(&state, 0, sizeof(state));
-	state.elx.spsr = get_eret_el(target_el, SPSR_USE_H);
-	transition_with_entry(entry, arg, &state);
 }

@@ -88,6 +88,7 @@ ramstage-y += ../tegra/usb.c
 ramstage-$(CONFIG_ARCH_USE_SECURE_MONITOR) += secmon.c
 
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += cpu_lib.S
+secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += psci.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += uart.c
 
 modules_arm-y += monotonic_timer.c

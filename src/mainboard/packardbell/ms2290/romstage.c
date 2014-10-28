@@ -38,6 +38,7 @@
 #include <timestamp.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <cpu/intel/romstage.h>
 
 #include "arch/early_variables.h"
 #include "southbridge/intel/ibexpeak/pch.h"

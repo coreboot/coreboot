@@ -1116,9 +1116,13 @@ config ENABLE_APIC_EXT_ID
 	bool
 	default n
 
+# XXX Currently clang/llvm builds are not fully supported,
+# Let us tone down warns treated as errors until we actually build
+# the whole treee.
 config WARNINGS_ARE_ERRORS
 	bool
-	default y
+	default y if !COMPILER_LLVM_CLANG
+	default n if COMPILER_LLVM_CLANG
 
 # The four POWER_BUTTON_DEFAULT_ENABLE, POWER_BUTTON_DEFAULT_DISABLE,
 # POWER_BUTTON_FORCE_ENABLE and POWER_BUTTON_FORCE_DISABLE options are

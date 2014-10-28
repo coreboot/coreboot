@@ -79,7 +79,12 @@ static void configure_emmc(void)
 	writel(IOMUX_EMMCPWREN, &rk3288_grf->iomux_emmcpwren);
 	writel(IOMUX_EMMCCMD, &rk3288_grf->iomux_emmccmd);
 
-	gpio_output(GPIO(7, B, 4), 1);			/* EMMC_RST_L */
+	/*
+	 * Use a pullup instead of a drive since the output is 3.3V and
+	 * really should be 1.8V (oops).  The external pulldown will help
+	 * bring the voltage down if we only drive with a pullup here.
+	 */
+	gpio_input_pullup(GPIO(7, B, 4));		/* EMMC_RST_L */
 }
 
 static void configure_codec(void)

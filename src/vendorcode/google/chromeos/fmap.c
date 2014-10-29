@@ -41,7 +41,7 @@ const struct fmap *fmap_find(void)
 	/* wrapping around 0x100000000 */
 	const struct fmap *fmap = (void *)
 		(CONFIG_FLASHMAP_OFFSET - CONFIG_ROM_SIZE);
-#elif CONFIG_ARCH_ARM
+#else
 	struct cbfs_media default_media, *media;
 	media = &default_media;
 	init_default_cbfs_media(media);

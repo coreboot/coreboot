@@ -42,7 +42,7 @@ struct reg_script haswell_early_init_script[] = {
 	/* Enable Force Wake */
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa180, 0x00000020),
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa188, 0x00010001),
-	REG_RES_POLL32(PCI_BASE_ADDRESS_0, 0x130044, 1, 1, GT_RETRY),
+	REG_RES_POLL32(PCI_BASE_ADDRESS_0, FORCEWAKE_ACK_HSW, 1, 1, GT_RETRY),
 
 	/* Enable Counters */
 	REG_RES_OR32(PCI_BASE_ADDRESS_0, 0xa248, 0x00000016),
@@ -126,7 +126,7 @@ static const struct reg_script haswell_late_init_script[] = {
 
 	/* Disable Force Wake */
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa188, 0x00010000),
-	REG_RES_POLL32(PCI_BASE_ADDRESS_0, 0x130044, 1, 0, GT_RETRY),
+	REG_RES_POLL32(PCI_BASE_ADDRESS_0, FORCEWAKE_ACK_HSW, 1, 0, GT_RETRY),
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa188, 0x00000001),
 
 	/* Enable power well for DP and Audio */
@@ -140,7 +140,7 @@ static const struct reg_script haswell_late_init_script[] = {
 static const struct reg_script broadwell_early_init_script[] = {
 	/* Enable Force Wake */
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa188, 0x00010001),
-	REG_RES_POLL32(PCI_BASE_ADDRESS_0, 0x130044, 1, 1, GT_RETRY),
+	REG_RES_POLL32(PCI_BASE_ADDRESS_0, FORCEWAKE_ACK_HSW, 1, 1, GT_RETRY),
 
 	/* Enable push bus metric control and shift */
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa248, 0x00000004),
@@ -225,7 +225,7 @@ static const struct reg_script broadwell_late_init_script[] = {
 
 	/* Disable Force Wake */
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa188, 0x00010000),
-	REG_RES_POLL32(PCI_BASE_ADDRESS_0, 0x130044, 1, 0, GT_RETRY),
+	REG_RES_POLL32(PCI_BASE_ADDRESS_0, FORCEWAKE_ACK_HSW, 1, 0, GT_RETRY),
 
 	/* Enable power well for DP and Audio */
 	REG_RES_OR32(PCI_BASE_ADDRESS_0, 0x45400, (1 << 31)),

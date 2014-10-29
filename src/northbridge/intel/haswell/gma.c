@@ -246,7 +246,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	/* Enable Force Wake */
 	gtt_write(0x0a180, 1 << 5);
 	gtt_write(0x0a188, 0x00010001);
-	gtt_poll(0x130044, 1 << 0, 1 << 0);
+	gtt_poll(FORCEWAKE_ACK_HSW, 1 << 0, 1 << 0);
 
 	/* GT Settings */
 	gtt_write_regs(haswell_gt_setup);
@@ -420,7 +420,7 @@ static void gma_pm_init_post_vbios(struct device *dev)
 
 	/* Disable Force Wake */
 	gtt_write(0x0a188, 0x00010000);
-	gtt_poll(0x130044, 1 << 0, 0 << 0);
+	gtt_poll(FORCEWAKE_ACK_HSW, 1 << 0, 0 << 0);
 	gtt_write(0x0a188, 0x00000001);
 }
 

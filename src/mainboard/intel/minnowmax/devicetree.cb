@@ -27,7 +27,7 @@ chip soc/intel/fsp_baytrail
 	register "SataMode"             = "SATA_MODE_AHCI"
 	register "MrcInitSPDAddr1"      = "SPD_ADDR_DEFAULT"
 	register "MrcInitSPDAddr2"      = "SPD_ADDR_DEFAULT"
-	register "MrcInitTsegSize"      = "TSEG_SIZE_DEFAULT"
+	register "MrcInitTsegSize"      = "TSEG_SIZE_8_MB"
 	register "MrcInitMmioSize"      = "MMIO_SIZE_DEFAULT"
 	register "eMMCBootMode"         = "EMMC_FOLLOWS_DEVICETREE"
 	register "IgdDvmt50PreAlloc"    = "IGD_MEMSIZE_DEFAULT"

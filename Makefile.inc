@@ -123,7 +123,11 @@ ifeq ($(CONFIG_COVERAGE),y)
 CFLAGS_ramstage += -fprofile-arcs -ftest-coverage
 endif
 
+# try to fetch non-optional submodules
+forgetthis:=$(shell git submodule update --init)
 ifeq ($(CONFIG_USE_BLOBS),y)
+# this is necessary because 3rdparty is update=none, and so is ignored
+# unless explicitly requested and enabled through --checkout
 forgetthis:=$(shell git submodule update --init --checkout 3rdparty)
 endif
 

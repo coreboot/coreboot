@@ -86,13 +86,14 @@ static const char * const chip_name[] = {
 
 /* Structure to store I2C TPM specific stuff */
 struct tpm_inf_dev {
-	unsigned bus;
+	int bus;
 	unsigned int addr;
 	uint8_t buf[TPM_BUFSIZE + sizeof(uint8_t)]; // max. buffer size + addr
 	enum i2c_chip_type chip_type;
 };
 
 static struct tpm_inf_dev tpm_dev = {
+	.bus = -1,
 	.addr = TPM_I2C_ADDR
 };
 
@@ -115,7 +116,7 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 	int rc;
 	int count;
 
-	if (!tpm_dev.bus)
+	if (tpm_dev.bus < 0)
 		return -1;
 	if ((tpm_dev.chip_type == SLB9635) || (tpm_dev.chip_type == UNKNOWN)) {
 		/* slb9635 protocol should work in both cases */
@@ -186,7 +187,7 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 	tpm_dev.buf[0] = addr;
 	memcpy(&(tpm_dev.buf[1]), buffer, len);
 
-	if (!tpm_dev.bus)
+	if (tpm_dev.bus < 0)
 		return -1;
 	for (count = 0; count < max_count; count++) {
 		rc = i2c_write_raw(tpm_dev.bus, tpm_dev.addr,

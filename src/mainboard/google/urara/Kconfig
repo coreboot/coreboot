@@ -46,4 +46,8 @@ config DRAM_SIZE_MB
 	int
 	default 256
 
+config TTYS0_LCS
+	int
+	default 3
+
 endif

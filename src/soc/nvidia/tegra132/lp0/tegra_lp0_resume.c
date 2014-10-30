@@ -311,6 +311,27 @@ static uint32_t *uart_clk_source_regs[4] = {
 	(uint32_t *)0x600061c0,
 };
 
+static uint32_t *uart_base_regs[4] = {
+	(uint32_t *)0x70006000,
+	(uint32_t *)0x70006040,
+	(uint32_t *)0x70006200,
+	(uint32_t *)0x70006300,
+};
+enum {
+	UART_THR_DLAB = 0x0,
+	UART_IER_DLAB = 0x1,
+	UART_IIR_FCR = 0x2,
+	UART_LCR = 0x3
+};
+enum {
+	UART_RATE_115200 = (408000000/115200/16), /* based on 408000000 PLLP */
+	FCR_TX_CLR = 0x4,	/* bit 2 of FCR : clear TX FIFO */
+	FCR_RX_CLR = 0x2,	/* bit 1 of FCR : clear RX FIFO */
+	FCR_EN_FIFO = 0x1,	/* bit 0 of FCR : enable TX & RX FIFO */
+	LCR_DLAB = 0x80,	/* bit 7 of LCR : Divisor Latch Access Bit */
+	LCR_WD_SIZE_8 = 0x3,	/* bit 1:0 of LCR : word length of 8 */
+};
+
 static void enable_uart(void)
 {
 	uint32_t *uart_clk_enb_reg;
@@ -318,6 +339,7 @@ static void enable_uart(void)
 	uint32_t *uart_clk_source;
 	uint32_t uart_port;
 	uint32_t uart_mask;
+	uint32_t *uart_base;
 
 	/*
 	 * Read odmdata (stored in pmc->odmdata) to determine debug uart port.
@@ -330,14 +352,15 @@ static void enable_uart(void)
 	 */
 	uart_port = (read32(pmc_odmdata_ptr) >> 15) & 0x7;
 
-	/* Default to UARTA, since pmc_odmdata is not programmed yet. */
-	/* TODO: if (uart_port >= 4) */
+	/* Default to UARTA if uart_port is out of range */
+	if (uart_port >= 4)
 		uart_port = 0;
 
 	uart_clk_enb_reg = uart_clk_out_enb_regs[uart_port];
 	uart_rst_reg = uart_rst_devices_regs[uart_port];
 	uart_mask = uart_enable_mask[uart_port];
 	uart_clk_source = uart_clk_source_regs[uart_port];
+	uart_base = uart_base_regs[uart_port];
 
 	/* Enable UART clock */
 	setbits32(uart_mask, uart_clk_enb_reg);
@@ -348,6 +371,17 @@ static void enable_uart(void)
 
 	/* Program UART clock source: PLLP (408000000) */
 	write32(0, uart_clk_source);
+
+	/* Program 115200n8 to the uart port */
+	/* baud-rate of 115200 */
+	write32(LCR_DLAB, (uart_base + UART_LCR));
+	write32((UART_RATE_115200 & 0xff), (uart_base + UART_THR_DLAB));
+	write32((UART_RATE_115200 >> 8), (uart_base + UART_IER_DLAB));
+	/* 8-bit and no parity */
+	write32(LCR_WD_SIZE_8, (uart_base + UART_LCR));
+	/* enable and clear RX/TX FIFO */
+	write32((FCR_TX_CLR + FCR_RX_CLR + FCR_EN_FIFO),
+		(uart_base + UART_IIR_FCR));
 }
 
 /* Accessors. */

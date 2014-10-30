@@ -1,0 +1,7 @@
+config LPC_TPM
+	bool
+	default n
+	help
+	  Enable this option to enable LPC TPM support in coreboot.
+
+	  If unsure, say N.

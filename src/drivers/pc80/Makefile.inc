@@ -9,10 +9,9 @@ ramstage-$(CONFIG_SPKMODEM) += spkmodem.c
 
 romstage-$(CONFIG_DRIVERS_MC146818) += mc146818rtc_early.c
 
-romstage-$(CONFIG_LPC_TPM) += tpm.c
 romstage-$(CONFIG_SPKMODEM) += spkmodem.c
 
-subdirs-y += vga
+subdirs-y += tpm vga
 
 cbfs-files-$(CONFIG_HAVE_CMOS_DEFAULT) += cmos.default
 cmos.default-file = $(CONFIG_CMOS_DEFAULT_FILE):nvramtool

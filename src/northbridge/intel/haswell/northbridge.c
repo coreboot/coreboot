@@ -485,14 +485,10 @@ static void cpu_bus_init(device_t dev)
 	bsp_init_and_start_aps(dev->link_list);
 }
 
-static void cpu_bus_noop(device_t dev)
-{
-}
-
 static struct device_operations cpu_bus_ops = {
-	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
-	.enable_resources = cpu_bus_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init             = cpu_bus_init,
 	.scan_bus         = 0,
 };

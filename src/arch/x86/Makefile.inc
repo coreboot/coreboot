@@ -53,7 +53,8 @@ mbi.bin-type := mbi
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 CBFSTOOL_PRE1_OPTS = -m x86 -o $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
-CBFSTOOL_PRE_OPTS  = -b $(shell cat $(objcbfs)/base_xip.txt)
+# Make sure that segment for .car.data is ignored while adding romstage.
+CBFSTOOL_PRE_OPTS  = -b $(shell cat $(objcbfs)/base_xip.txt) -S ".car.data"
 endif
 
 ################################################################################

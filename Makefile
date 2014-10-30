@@ -74,10 +74,7 @@ ifneq ($(Q),)
 endif
 endif
 
-HOSTCC = gcc
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-HOSTCC := clang
-endif
+HOSTCC := gcc
 HOSTCXX = g++
 HOSTCFLAGS := -g
 HOSTCXXFLAGS := -g
@@ -122,6 +119,7 @@ ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 # this means the triple is i386-linux-elf instead of i386-none-elf
 CFLAGS_x86_32 = -no-integrated-as -Qunused-arguments -target i386-linux-elf -m32
 CC_x86_32:=clang
+HOSTCC := clang
 
 ifneq ($(CONFIG_MMX),y)
 CFLAGS_x86_32 += -mno-mmx

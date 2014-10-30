@@ -35,6 +35,8 @@
 #include <console/console.h>
 #include <tpm.h>
 #include <arch/early_variables.h>
+#include <device/pnp.h>
+#include "chip.h"
 
 #define PREFIX "lpc_tpm: "
 
@@ -209,6 +211,20 @@ static inline u32 tpm_read_did_vid(int locality)
 	u32 value = readl(TIS_REG(locality, TIS_REG_DID_VID));
 	TPM_DEBUG_IO_READ(TIS_REG_DID_VID, value);
 	return value;
+}
+
+static inline void tpm_write_int_vector(int vector, int locality)
+{
+	TPM_DEBUG_IO_WRITE(TIS_REG_INT_VECTOR, vector);
+	writeb(vector & 0xf, TIS_REG(locality, TIS_REG_INT_VECTOR));
+}
+
+static inline void tpm_write_int_polarity(int polarity, int locality)
+{
+	/* Set polarity and leave all other bits at 0 */
+	u32 value = (polarity & 0x3) << 3;
+	TPM_DEBUG_IO_WRITE(TIS_REG_INT_ENABLE, value);
+	writel(value, TIS_REG(locality, TIS_REG_INT_ENABLE));
 }
 
 /*
@@ -673,3 +689,95 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
 
 	return tis_readresponse(recvbuf, recv_len);
 }
+
+#ifdef __RAMSTAGE__
+
+/*
+ * tis_setup_interrupt()
+ *
+ * Set up the interrupt vector and polarity for locality 0 and
+ * disable all interrupts so they are unused in firmware but can
+ * be enabled by the OS.
+ *
+ * The values used here must match what is passed in the TPM ACPI
+ * device if ACPI is used on the platform.
+ *
+ * @vector - TPM interrupt vector
+ * @polarity - TPM interrupt polarity
+ *
+ * Returns 0 on success, TPM_DRIVER_ERR on failure.
+ */
+static int tis_setup_interrupt(int vector, int polarity)
+{
+	u8 locality = 0;
+	int has_access = tis_has_access(locality);
+
+	/* Open connection and request access if not already granted */
+	if (!has_access && tis_open() < 0)
+		return TPM_DRIVER_ERR;
+
+	/* Set TPM interrupt vector */
+	tpm_write_int_vector(vector, locality);
+
+	/* Set TPM interupt polarity and disable interrupts */
+	tpm_write_int_polarity(polarity, locality);
+
+	/* Close connection if it was opened */
+	if (!has_access && tis_close() < 0)
+		return TPM_DRIVER_ERR;
+
+	return 0;
+}
+
+static void lpc_tpm_read_resources(struct device *dev)
+{
+	/* Static 5K memory region specified in Kconfig */
+	mmio_resource(dev, 0, CONFIG_TPM_TIS_BASE_ADDRESS >> 10, 0x5000 >> 10);
+}
+
+static void lpc_tpm_set_resources(struct device *dev)
+{
+	tpm_config_t *config = (tpm_config_t *)dev->chip_info;
+	struct resource *res;
+
+	for (res = dev->resource_list; res; res = res->next) {
+		if (!(res->flags & IORESOURCE_ASSIGNED))
+			continue;
+
+		if (res->flags & IORESOURCE_IRQ) {
+			/* Set interrupt vector */
+			tis_setup_interrupt((int)res->base,
+					    config->irq_polarity);
+		} else {
+			printk(BIOS_ERR,
+			       "ERROR: %s %02lx unknown resource type\n",
+			       dev_path(dev), res->index);
+			continue;
+		}
+
+		res->flags |= IORESOURCE_STORED;
+		report_resource_stored(dev, res, " <tpm>");
+	}
+}
+
+static struct device_operations lpc_tpm_ops = {
+	.read_resources   = &lpc_tpm_read_resources,
+	.set_resources    = &lpc_tpm_set_resources,
+};
+
+static struct pnp_info pnp_dev_info[] = {
+	{ .flags = PNP_IRQ0 }
+};
+
+static void enable_dev(struct device *dev)
+{
+	pnp_enable_devices(dev, &lpc_tpm_ops,
+			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+}
+
+struct chip_operations drivers_pc80_tpm_ops = {
+	CHIP_NAME("LPC TPM")
+	.enable_dev = enable_dev
+};
+
+#endif /* __RAMSTAGE__ */

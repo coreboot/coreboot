@@ -21,14 +21,10 @@ static void lm63_init(struct device *dev)
 	}
 }
 
-static void lm63_noop(struct device *dummy)
-{
-}
-
 static struct device_operations lm63_operations = {
-	.read_resources = lm63_noop,
-	.set_resources = lm63_noop,
-	.enable_resources = lm63_noop,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init = lm63_init,
 };
 

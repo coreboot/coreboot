@@ -220,14 +220,10 @@ static void w83793_init(struct device *dev)
 
 }
 
-static void w83793_noop(struct device *dummy)
-{
-}
-
 static struct device_operations w83793_operations = {
-	.read_resources = w83793_noop,
-	.set_resources = w83793_noop,
-	.enable_resources = w83793_noop,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init = w83793_init,
 };
 

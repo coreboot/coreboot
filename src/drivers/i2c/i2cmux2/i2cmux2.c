@@ -15,15 +15,11 @@ static void i2cmux2_set_link(struct device *dev, unsigned int link)
 	}
 }
 
-static void i2cmux2_noop(struct device *dummy)
-{
-}
-
 static struct device_operations i2cmux2_operations = {
-	.read_resources = i2cmux2_noop,
-	.set_resources = i2cmux2_noop,
-	.enable_resources = i2cmux2_noop,
-	.init = i2cmux2_noop,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init = DEVICE_NOOP,
 	.scan_bus = scan_static_bus,
 	.set_link = i2cmux2_set_link,
 };

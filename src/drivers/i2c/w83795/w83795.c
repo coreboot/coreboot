@@ -239,14 +239,10 @@ static void w83795_hwm_init(struct device *dev)
 		printk(BIOS_ERR, "Neither AMD nor INTEL CPU detected\n");
 }
 
-static void w83795_noop(struct device *dummy)
-{
-}
-
 static struct device_operations w83795_operations = {
-	.read_resources = w83795_noop,
-	.set_resources = w83795_noop,
-	.enable_resources = w83795_noop,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init = w83795_hwm_init,
 };
 

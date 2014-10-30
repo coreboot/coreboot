@@ -85,14 +85,10 @@ static void adt7463_init(struct device *adt7463)
 	printk(BIOS_DEBUG, "ADT7463 properly initialized\n");
 }
 
-static void adt7463_noop(struct device *dummy)
-{
-}
-
 static struct device_operations adt7463_operations = {
-	.read_resources = adt7463_noop,
-	.set_resources = adt7463_noop,
-	.enable_resources = adt7463_noop,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init = adt7463_init,
 };
 

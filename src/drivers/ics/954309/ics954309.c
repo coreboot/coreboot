@@ -55,14 +55,10 @@ static void ics954309_init(struct device *dev)
 	smbus_block_write(dev, 0, 12, initdata);
 }
 
-static void ics954309_noop(struct device *dummy)
-{
-}
-
 static struct device_operations ics954309_operations = {
-        .read_resources   = ics954309_noop,
-        .set_resources    = ics954309_noop,
-        .enable_resources = ics954309_noop,
+        .read_resources   = DEVICE_NOOP,
+        .set_resources    = DEVICE_NOOP,
+        .enable_resources = DEVICE_NOOP,
         .init             = ics954309_init,
 };
 

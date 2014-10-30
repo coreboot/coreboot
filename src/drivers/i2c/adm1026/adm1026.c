@@ -44,14 +44,10 @@ static void adm1026_init(struct device *dev)
 	}
 }
 
-static void adm1026_noop(struct device *dummy)
-{
-}
-
 static struct device_operations adm1026_operations = {
-	.read_resources = adm1026_noop,
-	.set_resources = adm1026_noop,
-	.enable_resources = adm1026_noop,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init = adm1026_init,
 };
 

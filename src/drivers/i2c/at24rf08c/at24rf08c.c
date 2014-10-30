@@ -52,14 +52,10 @@ static void at24rf08c_init(struct device *dev)
 	printk (BIOS_DEBUG, "init EEPROM done\n");
 }
 
-static void at24rf08c_noop(struct device *dummy)
-{
-}
-
 static struct device_operations at24rf08c_operations = {
-	.read_resources = at24rf08c_noop,
-	.set_resources = at24rf08c_noop,
-	.enable_resources = at24rf08c_noop,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init = at24rf08c_init,
 };
 

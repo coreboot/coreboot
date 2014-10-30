@@ -41,6 +41,7 @@ static struct param {
 	char *name;
 	char *filename;
 	char *bootblock;
+	char *ignore_section;
 	uint64_t u64val;
 	uint32_t type;
 	uint32_t baseaddress;
@@ -184,7 +185,7 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset)
 	struct buffer output;
 	int ret;
 	ret = parse_elf_to_stage(buffer, &output, param.arch, param.algo,
-				 offset);
+				 offset, param.ignore_section);
 	if (ret != 0)
 		return -1;
 	buffer_delete(buffer);
@@ -516,7 +517,7 @@ static int cbfs_update_fit(void)
 static const struct command commands[] = {
 	{"add", "f:n:t:b:vh?", cbfs_add},
 	{"add-payload", "f:n:t:c:b:vh?C:I:", cbfs_add_payload},
-	{"add-stage", "f:n:t:c:b:vh?", cbfs_add_stage},
+	{"add-stage", "f:n:t:c:b:S:vh?", cbfs_add_stage},
 	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"add-int", "i:n:b:vh?", cbfs_add_integer},
 	{"remove", "n:vh?", cbfs_remove},
@@ -546,6 +547,7 @@ static struct option long_options[] = {
 	{"empty-fits",   required_argument, 0, 'x' },
 	{"initrd",       required_argument, 0, 'I' },
 	{"cmdline",      required_argument, 0, 'C' },
+	{"ignore-sec",   required_argument, 0, 'S' },
 	{"verbose",      no_argument,       0, 'v' },
 	{"help",         no_argument,       0, 'h' },
 	{NULL,           0,                 0,  0  }
@@ -566,7 +568,8 @@ static void usage(char *name)
 	     " add-payload -f FILE -n NAME [-c compression] [-b base]      "
 			"Add a payload to the ROM\n"
 	     "        (linux specific: [-C cmdline] [-I initrd])\n"
-	     " add-stage -f FILE -n NAME [-c compression] [-b base]        "
+	     " add-stage -f FILE -n NAME [-c compression] [-b base] \\\n"
+	     "        [-S section-to-ignore]                               "
 			"Add a stage to the ROM\n"
 	     " add-flat-binary -f FILE -n NAME -l load-address \\\n"
 	     "        -e entry-point [-c compression] [-b base]            "
@@ -713,6 +716,9 @@ int main(int argc, char **argv)
 				break;
 			case 'C':
 				param.cmdline = optarg;
+				break;
+			case 'S':
+				param.ignore_section = optarg;
 				break;
 			case 'h':
 			case '?':

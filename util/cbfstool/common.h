@@ -139,7 +139,8 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 				 comp_algo algo);
 /* cbfs-mkstage.c */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       uint32_t arch, comp_algo algo, uint32_t *location);
+		       uint32_t arch, comp_algo algo, uint32_t *location,
+		       const char *ignore_section);
 
 void print_supported_filetypes(void);
 

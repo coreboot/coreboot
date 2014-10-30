@@ -28,16 +28,79 @@
 #include "common.h"
 #include "cbfs.h"
 
+/* Checks if program segment contains the ignored section */
+static int is_phdr_ignored(Elf64_Phdr *phdr, Elf64_Shdr *shdr)
+{
+	/* If no ignored section, return false. */
+	if (shdr == NULL)
+		return 0;
+
+	Elf64_Addr sh_start = shdr->sh_addr;
+	Elf64_Addr sh_end = shdr->sh_addr + shdr->sh_size;
+	Elf64_Addr ph_start = phdr->p_vaddr;
+	Elf64_Addr ph_end = phdr->p_vaddr + phdr->p_memsz;
+
+	/* Return true only if section occupies whole of segment. */
+	if ((sh_start == ph_start) && (sh_end == ph_end)) {
+		DEBUG("Ignoring program segment at %p\n", (void *)ph_start);
+		return 1;
+	}
+
+	/* If shdr intersects phdr at all, its a conflict */
+	if (((sh_start >= ph_start) && (sh_start <= ph_end)) ||
+	    ((sh_end >= ph_start) && (sh_end <= ph_end))) {
+		ERROR("Conflicting sections in segment\n");
+		exit(1);
+	}
+
+	/* Program header doesn't need to be ignored. */
+	return 0;
+}
+
+/* Find section header based on ignored section name */
+static Elf64_Shdr *find_ignored_section_header(struct parsed_elf *pelf,
+					       const char *ignore_section)
+{
+	int i;
+	const char *shstrtab;
+
+	/* No section needs to be ignored */
+	if (ignore_section == NULL)
+		return NULL;
+
+	DEBUG("Section to be ignored: %s\n", ignore_section);
+
+	/* Get pointer to string table */
+	shstrtab = buffer_get(pelf->strtabs[pelf->ehdr.e_shstrndx]);
+
+	for (i = 0; i < pelf->ehdr.e_shnum; i++) {
+		Elf64_Shdr *shdr;
+		const char *section_name;
+
+		shdr = &pelf->shdr[i];
+		section_name = &shstrtab[shdr->sh_name];
+
+		/* If section name matches ignored string, return shdr */
+		if (strcmp(section_name, ignore_section) == 0)
+			return shdr;
+	}
+
+	/* No section matches ignore string */
+	return NULL;
+}
+
 /* returns size of result, or -1 if error.
  * Note that, with the new code, this function
  * works for all elf files, not just the restricted set.
  */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       uint32_t arch, comp_algo algo, uint32_t *location)
+		       uint32_t arch, comp_algo algo, uint32_t *location,
+		       const char *ignore_section)
 {
 	struct parsed_elf pelf;
 	Elf64_Phdr *phdr;
 	Elf64_Ehdr *ehdr;
+	Elf64_Shdr *shdr_ignored;
 	char *buffer;
 	struct buffer outheader;
 	int ret = -1;
@@ -62,7 +125,19 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	ehdr = &pelf.ehdr;
 	phdr = &pelf.phdr[0];
 
+	/* Find the section header corresponding to ignored-section */
+	shdr_ignored = find_ignored_section_header(&pelf, ignore_section);
+
+	if (ignore_section && (shdr_ignored == NULL))
+		WARN("Ignore section not found\n");
+
 	headers = ehdr->e_phnum;
+
+	/* Ignore the program header containing ignored section */
+	for (i = 0; i < headers; i++) {
+		if (is_phdr_ignored(&phdr[i], shdr_ignored))
+			phdr[i].p_type = PT_NULL;
+	}
 
 	data_start = ~0;
 	data_end = 0;

@@ -433,12 +433,12 @@ static void systemagent_enable(device_t dev)
 }
 
 static struct device_operations systemagent_ops = {
-	.read_resources   = &systemagent_read_resources,
-	.set_resources    = &pci_dev_set_resources,
-	.enable_resources = &pci_dev_enable_resources,
-	.init             = &systemagent_init,
-	.enable           = &systemagent_enable,
-	.ops_pci          = &broadwell_pci_ops,
+	.read_resources   = systemagent_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = systemagent_init,
+	.enable           = systemagent_enable,
+	.ops_pci          = broadwell_pci_ops,
 };
 
 static const unsigned short systemagent_ids[] = {

@@ -296,12 +296,12 @@ static struct device_operations cx700_lpc_ops = {
 	.read_resources = cx700_read_resources,
 	.set_resources = cx700_set_resources,
 	.enable_resources = cx700_enable_resources,
-	.init = &cx700_lpc_init,
+	.init = cx700_lpc_init,
 	.scan_bus = scan_static_bus,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops = &cx700_lpc_ops,
+	.ops    = &cx700_lpc_ops,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = 0x8324,
 };

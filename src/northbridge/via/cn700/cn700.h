@@ -18,13 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#if !defined (__PRE_RAM__)
-// HACK
-static inline void cn700_noop(device_t dev)
-{
-}
-#endif
-
 /* VGA stuff */
 #define SR_INDEX		0x3c4
 #define SR_DATA			0x3c5

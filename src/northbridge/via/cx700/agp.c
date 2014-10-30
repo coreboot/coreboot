@@ -72,12 +72,8 @@ static void agp_bridge_init(device_t dev)
 	pci_write_config8(dev, 0x44, 0x34);
 }
 
-static void cx700_noop(device_t dev)
-{
-}
-
 static struct device_operations agp_bridge_operations = {
-	.read_resources = cx700_noop,
+	.read_resources = DEVICE_NOOP,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
 	.init = agp_bridge_init,

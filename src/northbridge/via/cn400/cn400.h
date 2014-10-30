@@ -18,13 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __PRE_RAM__
-// HACK
-static inline void cn400_noop(device_t dev)
-{
-}
-#endif
-
 #define DEBUG_CN400
 
 /* VGA stuff */

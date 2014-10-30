@@ -158,9 +158,9 @@ static void c3_host_init(device_t dev)
 }
 
 static const struct device_operations c3_host_operations = {
-	.read_resources   = cn400_noop,
-	.set_resources    = cn400_noop,
-	.enable_resources = cn400_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init             = c3_host_init,
 	.ops_pci          = 0,
 };
@@ -195,9 +195,9 @@ static void c3_err_init(device_t dev)
 }
 
 static const struct device_operations c3_err_operations = {
-	.read_resources   = cn400_noop,
-	.set_resources    = cn400_noop,
-	.enable_resources = cn400_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init             = c3_err_init,
 	.ops_pci          = 0,
 };
@@ -231,9 +231,9 @@ static void cn400_pm_init(device_t dev)
 }
 
 static const struct device_operations cn400_pm_operations = {
-	.read_resources   = cn400_noop,
-	.set_resources    = cn400_noop,
-	.enable_resources = cn400_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init             = cn400_pm_init,
 	.ops_pci          = 0,
 };

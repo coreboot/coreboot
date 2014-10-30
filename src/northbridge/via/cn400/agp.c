@@ -128,7 +128,7 @@ static void agp_init(device_t dev)
 }
 
 static const struct device_operations agp_operations = {
-	.read_resources   = cn400_noop,
+	.read_resources   = DEVICE_NOOP,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = agp_init,

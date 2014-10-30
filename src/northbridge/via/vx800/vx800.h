@@ -20,13 +20,6 @@
 #ifndef VX800_H
 #define VX800_H 1
 
-#ifndef __PRE_RAM__
-#include <device/device.h>
-static inline void vx800_noop(device_t dev)
-{
-}
-#endif
-
 #ifdef __PRE_RAM__
 /* vx800_early_smbus.c */
 struct mem_controller;

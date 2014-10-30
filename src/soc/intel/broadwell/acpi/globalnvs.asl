@@ -53,7 +53,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TCRT,	8,	// 0x10 - Critical Threshold
 	TPSV,	8,	// 0x11 - Passive Threshold
 	TMAX,	8,	// 0x12 - CPU Tj_max
-	TPMP,	8,	// 0x13 - TPM Present
+	,	8,	// 0x13 - Unused
 	S5U0,	8,	// 0x14 - Enable USB in S5
 	S3U0,	8,	// 0x15 - Enable USB in S3
 	S33G,	8,	// 0x16 - Enable 3G in S3

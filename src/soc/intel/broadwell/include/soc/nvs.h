@@ -44,7 +44,7 @@ typedef struct {
 	u8	tcrt; /* 0x10 - Critical Threshold */
 	u8	tpsv; /* 0x11 - Passive Threshold */
 	u8	tmax; /* 0x12 - CPU Tj_max */
-	u8	tpmp; /* 0x13 - TPM Present */
+	u8	unused1; /* 0x13 - Unused */
 	u8	s5u0; /* 0x14 - Enable USB in S5 */
 	u8	s3u0; /* 0x15 - Enable USB in S3 */
 	u8	s33g; /* 0x16 - Enable 3G in S3 */
@@ -54,7 +54,7 @@ typedef struct {
 	u32	cbmc; /* 0x1d - 0x20 - Coreboot Memory Console */
 	u32	pm1i; /* 0x21 - 0x24 - PM1 wake status bit */
 	u32	gpei; /* 0x25 - 0x28 - GPE wake status bit */
-	u8	rsvd3[215];
+	u8	unused[215];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

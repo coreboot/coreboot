@@ -65,5 +65,20 @@ SECTIONS
 		preram_cbmem_console = .;
 	}
 
+	/* Global variables are not allowed in romstage
+	 * This section is checked during stage creation to ensure
+	 * that there are no global variables present
+	 */
+
+	. = 0xffffff00;
+	.illegal_globals . : {
+		*(EXCLUDE_FILE (*/libagesa.*.a: */buildOpts.romstage.o */agesawrapper.romstage.o */cpu/amd/agesa/*.romstage.o */vendorcode/amd/agesa/* */vendorcode/amd/cimx/*) .data)
+		*(.data.*)
+		*(.bss)
+		*(.bss.*)
+		*(.sbss)
+		*(.sbss.*)
+	}
+
 	_bogus = ASSERT((SIZEOF(.car.data) + CONFIG_CONSOLE_PRERAM_BUFFER_SIZE <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
 }

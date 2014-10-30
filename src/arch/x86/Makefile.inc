@@ -206,9 +206,10 @@ romstage-libs ?=
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld
-	$(NM_romstage) $@ | grep -q " [DdBb] "; if [ $$? -eq 0 ]; then \
+	$(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders && \
+	$(NM_romstage) $(objcbfs)/romstage_null.offenders | grep -q ""; if [ $$? -eq 0 ]; then \
 		echo "Forbidden global variables in romstage:"; \
-		$(NM_romstage) $@ | grep " [DdBb] "; test "$(CONFIG_CPU_AMD_AGESA)" = y; \
+		$(NM_romstage) $(objcbfs)/romstage_null.offenders; false; \
 		else true; fi
 
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(romstage-libs)

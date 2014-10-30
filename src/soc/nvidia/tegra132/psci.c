@@ -45,6 +45,18 @@ static size_t children_at_level(int parent_level, uint64_t mpidr)
 	}
 }
 
+static int cmd_prepare(struct psci_cmd *cmd)
+{
+	return PSCI_RET_NOT_SUPPORTED;
+}
+
+static int cmd_commit(struct psci_cmd *cmd)
+{
+	return PSCI_RET_NOT_SUPPORTED;
+}
+
 struct psci_soc_ops soc_psci_ops = {
 	.children_at_level = &children_at_level,
+	.cmd_prepare = &cmd_prepare,
+	.cmd_commit = &cmd_commit,
 };

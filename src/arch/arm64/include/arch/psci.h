@@ -104,12 +104,47 @@ static inline int psci_root_node(const struct psci_node *n)
 	return psci_node_parent(n) == NULL;
 }
 
+enum {
+	PSCI_CMD_ON,
+	PSCI_CMD_OFF,
+	PSCI_CMD_STANDBY,
+};
+
+/*
+ * PSCI actions are serialized into a command for the SoC to process. There are
+ * 2 phases of a command being processed: prepare and commit. The prepare() is
+ * called with the PSCI locks held for the state of the PSCI nodes. If
+ * successful, the appropriate locks will be dropped and commit() will be
+ * called with the same structure. It is permissible for the SoC support code
+ * to modify the struture passed in (e.g. to update the requested state_id to
+ * reflect dynamic constraints on how deep of a state to enter).
+ */
+struct psci_cmd {
+	/* Command type. */
+	int type;
+	/*
+	 * PSCI state id for PSCI_CMD_OFF and PSCI_CMD_STANDBY commands.
+	 * A value of -1 indicates a CPU_OFF request.
+	 */
+	int state_id;
+	/*
+	 * target is the command's target, but it can affect up to the
+	 * ancestor entity. If target == ancestor then it only affects
+	 * target, otherwise all entites up the hierarchy including ancestor.
+	 */
+	struct psci_node *target;
+	struct psci_node *ancestor;
+};
+
 struct psci_soc_ops {
 	/*
 	 * Return number of entities one level below given parent affinitly
 	 * level and mpidr.
 	 */
 	size_t (*children_at_level)(int parent_level, uint64_t mpidr);
+
+	int (*cmd_prepare)(struct psci_cmd *cmd);
+	int (*cmd_commit)(struct psci_cmd *cmd);
 };
 
 /* Each SoC needs to provide the functions in the psci_soc_ops structure. */

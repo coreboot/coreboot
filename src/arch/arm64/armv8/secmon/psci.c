@@ -174,15 +174,18 @@ static void psci_cpu_on_callback(void *arg)
 				e->cpu_state.startup.arg, &state);
 }
 
-static void psci_cpu_on_prepare(struct psci_node *e, const struct cpu_action *a)
+static void psci_cpu_on_prepare(struct psci_cmd *cmd,
+				const struct cpu_action *a)
 {
 	struct psci_node *ancestor;
+	struct psci_node *e;
 	int state = PSCI_STATE_ON_PENDING;
 
+	e = cmd->target;
 	e->cpu_state.startup = *a;
 	ancestor = psci_find_ancestor(e, PSCI_AFFINITY_LEVEL_HIGHEST, state);
 	e->cpu_state.ancestor = ancestor;
-	psci_set_hierarchy_state(e, ancestor, state);
+	cmd->ancestor = ancestor;
 }
 
 static int psci_schedule_cpu_on(struct psci_node *e)
@@ -206,6 +209,9 @@ static int psci_schedule_cpu_on(struct psci_node *e)
 void psci_turn_on_self(const struct cpu_action *action)
 {
 	struct psci_node *e = node_self();
+	struct psci_cmd cmd = {
+		.type = PSCI_CMD_ON,
+	};
 
 	if (e == NULL) {
 		printk(BIOS_ERR, "Couldn't turn on self: mpidr %llx\n",
@@ -213,8 +219,11 @@ void psci_turn_on_self(const struct cpu_action *action)
 		return;
 	}
 
+	cmd.target = e;
+
 	psci_lock();
-	psci_cpu_on_prepare(e, action);
+	psci_cpu_on_prepare(&cmd, action);
+	psci_set_hierarchy_state(e, cmd.ancestor, PSCI_STATE_ON_PENDING);
 	psci_unlock();
 
 	psci_schedule_cpu_on(e);
@@ -235,8 +244,12 @@ static void psci_cpu_on(struct psci_func *pf)
 	uint64_t target_mpidr;
 	uint64_t context_id;
 	int cpu_state;
+	int ret;
 	struct psci_node *e;
 	struct cpu_action action;
+	struct psci_cmd cmd = {
+		.type = PSCI_CMD_ON,
+	};
 
 	target_mpidr = psci64_arg(pf, PSCI_PARAM_0);
 	entry = psci64_arg(pf, PSCI_PARAM_1);
@@ -262,10 +275,30 @@ static void psci_cpu_on(struct psci_func *pf)
 		return;
 	}
 
+	cmd.target = e;
 	action.run = (void *)entry;
 	action.arg = (void *)context_id;
-	psci_cpu_on_prepare(e, &action);
+	psci_cpu_on_prepare(&cmd, &action);
+
+	ret = soc_psci_ops.cmd_prepare(&cmd);
+
+	if (ret == PSCI_RET_SUCCESS)
+		psci_set_hierarchy_state(e, cmd.ancestor,
+					PSCI_STATE_ON_PENDING);
+
 	psci_unlock();
+
+	if (ret != PSCI_RET_SUCCESS)
+		return psci32_return(pf, ret);
+
+	ret = soc_psci_ops.cmd_commit(&cmd);
+
+	if (ret != PSCI_RET_SUCCESS) {
+		psci_lock();
+		psci_set_hierarchy_state(e, cmd.ancestor, PSCI_STATE_OFF);
+		psci_unlock();
+		return psci32_return(pf, ret);
+	}
 
 	psci32_return(pf, psci_schedule_cpu_on(e));
 }
@@ -273,17 +306,40 @@ static void psci_cpu_on(struct psci_func *pf)
 static int psci_turn_off_node(struct psci_node *e, int level,
 					int state_id)
 {
-	struct psci_node *ancestor;
+	int ret;
+	struct psci_cmd cmd = {
+		.type = PSCI_CMD_OFF,
+		.state_id = state_id,
+		.target = e,
+	};
 
 	psci_lock();
-	ancestor = psci_find_ancestor(e, level, PSCI_STATE_OFF);
-	psci_set_hierarchy_state(e, ancestor, PSCI_STATE_OFF);
+
+	cmd.ancestor = psci_find_ancestor(e, level, PSCI_STATE_OFF);
+
+	ret = soc_psci_ops.cmd_prepare(&cmd);
+
+	if (ret == PSCI_RET_SUCCESS)
+		psci_set_hierarchy_state(e, cmd.ancestor, PSCI_STATE_OFF);
+
 	psci_unlock();
 
-	/* TODO(adurbin): writeback cache and actually turn off CPU. */
-	secmon_trampoline(&secmon_wait_for_action, NULL);
+	if (ret != PSCI_RET_SUCCESS)
+		return ret;
 
-	return PSCI_RET_SUCCESS;
+	/* Should never return. */
+	ret = soc_psci_ops.cmd_commit(&cmd);
+
+	/* Adjust ret to be an error. */
+	if (ret == PSCI_RET_SUCCESS)
+		ret = PSCI_RET_INTERNAL_FAILURE;
+
+	/* Turn things back on. */
+	psci_lock();
+	psci_set_hierarchy_state(e, cmd.ancestor, PSCI_STATE_ON);
+	psci_unlock();
+
+	return ret;
 }
 
 int psci_turn_off_self(void)

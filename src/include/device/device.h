@@ -66,6 +66,12 @@ struct device_operations {
 	const struct pnp_mode_ops *ops_pnp_mode;
 };
 
+/**
+ * Standard device operations function pointers shims.
+ */
+static inline void device_noop(struct device *dev) {}
+#define DEVICE_NOOP device_noop
+
 #endif /* ! __SIMPLE_DEVICE__ */
 
 

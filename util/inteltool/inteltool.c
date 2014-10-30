@@ -79,6 +79,7 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_C, "3rd generation (Ivy Bridge family) Core Processor" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D, "3rd generation (Ivy Bridge family) Core Processor" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_4TH_GEN, "4th generation (Haswell family) Core Processor" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U, "4th generation (Haswell family) Core Processor ULT" },
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10R, "ICH10R" },
@@ -153,6 +154,9 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HM75, "HM75" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HM70, "HM70" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_NM70, "NM70" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL, "Lynx Point Low Power Full Featured Engineering Sample" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM, "Lynx Point Low Power Premium SKU" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE, "Lynx Point Low Power Base SKU" },
 	{ PCI_VENDOR_ID_INTEL, 0x2310, "DH89xxCC" },
 };
 

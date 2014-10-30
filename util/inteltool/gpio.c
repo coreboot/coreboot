@@ -296,6 +296,58 @@ static const gpio_default_t ip_pch_mobile_defaults[] = {
 	{ 0x64, 0x00000000 }, /* GP_RST_SEL2 */
 	{ 0x68, 0x00000000 }, /* GP_RST_SEL3 */
 };
+
+static const io_register_t lynxpoint_lp_gpio_registers[] = {
+	{ 0x00, 4, "GPIO_OWN1" }, // GPIO Ownership
+	{ 0x04, 4, "GPIO_OWN2" }, // GPIO Ownership
+	{ 0x08, 4, "GPIO_OWN3" }, // GPIO Ownership
+	{ 0x0c, 4, "RESERVED" },  // Reserved
+	{ 0x10, 2, "GPIPRIOQ2IOXAPIC" }, // GPI PIRQ[X:I] to IOxAPIC[39:24] Enable
+	{ 0x12, 2, "RESERVED" }, // Reserved
+	{ 0x14, 4, "RESERVED" }, // Reserved
+	{ 0x18, 4, "GPO_BLINK" }, // GPIO Blink Enable
+	{ 0x1c, 4, "GP_SER_BLINK" }, // GP Serial Blink
+	{ 0x20, 4, "GP_SB_CMDSTS" }, // GP Serial Blink Command Status
+	{ 0x24, 4, "GP_SB_DATA" }, // GP Serial Blink Data
+	{ 0x28, 2, "GPI_NMI_EN" }, // GPI NMI Enable
+	{ 0x2a, 2, "GPI_NMI_STS" }, // GPI NMI Status
+	{ 0x2c, 4, "RESERVED" }, // Reserved
+	{ 0x30, 4, "GPI_ROUT" }, // GPI Interrupt Input Route
+	{ 0x34, 4, "RESERVED" }, // Reserved
+	{ 0x38, 4, "RESERVED" }, // Reserved
+	{ 0x3C, 4, "RESERVED" }, // Reserved
+	{ 0x40, 4, "RESERVED" }, // Reserved
+	{ 0x44, 4, "RESERVED" }, // Reserved
+	{ 0x48, 4, "RESERVED" }, // Reserved
+	{ 0x4C, 4, "RESERVED" }, // Reserved
+	{ 0x50, 4, "ALT_GPI_SMI_STS" }, // Alternate GPI SMI Status
+	{ 0x54, 4, "ALT_GPI_SMI_EN" }, // Alternate GPI SMI Enable
+	{ 0x58, 4, "RESERVED" }, // Reserved
+	{ 0x5C, 4, "RESERVED" }, // Reserved
+	{ 0x60, 4, "GP_RST_SEL1" }, // GPIO Reset Select 1
+	{ 0x64, 4, "GP_RST_SEL2" }, // GPIO Reset Select 2
+	{ 0x68, 4, "GP_RST_SEL3" }, // GPIO Reset Select 3
+	{ 0x6c, 4, "RESERVED" }, // Reserved
+	{ 0x70, 4, "RESERVED" }, // Reserved
+	{ 0x74, 4, "RESERVED" }, // Reserved
+	{ 0x78, 4, "RESERVED" }, // Reserved
+	{ 0x7c, 4, "GPIO_GC" }, // GPIO Global Configuration
+	{ 0x80, 4, "GPI_IS[31:0]" }, // GPI Interrupt Status [31:0]
+	{ 0x84, 4, "GPI_IS[63:32]" }, // GPI Interrupt Status [63:32]
+	{ 0x88, 4, "GPI_IS[94:64]" }, // GPI Interrupt Status [94:64]
+	{ 0x8C, 4, "RESERVED" }, // Reserved
+	{ 0x90, 4, "GPI_IE[31:0]" }, // GPI Interrupt Enable [31:0]
+	{ 0x94, 4, "GPI_IE[63:32]" }, // GPI Interrupt Enable [63:32]
+	{ 0x98, 4, "GPI_IE[94:64]" }, // GPI Interrupt Enable [94:64]
+	{ 0x9C, 4, "RESERVED" }, // Reserved
+/*	{ 0x100, 4, "GPnCONFIGA" }, // GPIO Configuration A Register (n = 0) */
+/*	{ 0x104, 4, "GPnCONFIGB" }, // GPIO Configuration B Register (n = 0) */
+/*	{ ... } GPIO size = 95 */
+/*	{ 0x3f0, 4, "GPnCONFIGA" }, // GPIO Configuration A Register (n = 94) */
+/*	{ 0x3f4, 4, "GPnCONFIGB" }, // GPIO Configuration B Register (n = 94) */
+
+};
+
 /* Default values for Cougar Point desktop chipsets */
 static const gpio_default_t cp_pch_desktop_defaults[] = {
 	{ 0x00, 0xb96ba1ff },
@@ -444,6 +496,13 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		printf("\n============= GPIOS =============\n\n");
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = lynxpoint_lp_gpio_registers;
+		size = ARRAY_SIZE(lynxpoint_lp_gpio_registers);
+	    break;
 	case PCI_DEVICE_ID_INTEL_3400:
 	case PCI_DEVICE_ID_INTEL_3420:
 	case PCI_DEVICE_ID_INTEL_3450:
@@ -622,6 +681,36 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 			}
 			j++;
 		}
+	}
+
+	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
+		for (i = 0; i < 95; i++) {
+			io_register_t tmp_gpio;
+			char gpio_name[32];
+			uint16_t tmp_addr = 0x100 + (4 * i * 2);
+
+			snprintf(gpio_name, sizeof(gpio_name), "GP%dCONFIGA", i);
+			tmp_gpio.addr = tmp_addr;
+			tmp_gpio.name = gpio_name;
+			tmp_gpio.size = 4;
+
+			if (show_all)
+				print_reg(&tmp_gpio);
+
+			snprintf(gpio_name, 32, "GP%dCONFIGB", i);
+			tmp_gpio.addr = tmp_addr + 4;
+			tmp_gpio.name = gpio_name;
+			tmp_gpio.size = 4;
+
+			if (show_all)
+				print_reg(&tmp_gpio);
+		}
+		break;
+	default:
+		break;
 	}
 
 	return 0;

@@ -50,12 +50,10 @@ static struct device_operations pci_domain_ops = {
 	.ops_pci_bus      = pci_bus_default_ops,
 };
 
-static void cpu_bus_noop(device_t dev) { }
-
 static struct device_operations cpu_bus_ops = {
-	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
-	.enable_resources = cpu_bus_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init             = baytrail_init_cpus,
 	.scan_bus         = NULL,
 };

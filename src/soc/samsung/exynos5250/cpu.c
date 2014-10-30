@@ -129,13 +129,9 @@ static void cpu_init(device_t dev)
 			cpu_id, get_arm_clk() / (1024*1024));
 }
 
-static void cpu_noop(device_t dev)
-{
-}
-
 static struct device_operations cpu_ops = {
-	.read_resources   = cpu_noop,
-	.set_resources    = cpu_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
 	.enable_resources = cpu_enable,
 	.init             = cpu_init,
 	.scan_bus         = 0,

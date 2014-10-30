@@ -45,13 +45,9 @@ static void soc_init(device_t dev)
 	printk(BIOS_INFO, "CPU: Tegra124\n");
 }
 
-static void soc_noop(device_t dev)
-{
-}
-
 static struct device_operations soc_ops = {
-	.read_resources   = soc_noop,
-	.set_resources    = soc_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
 	.enable_resources = soc_enable,
 	.init             = soc_init,
 	.scan_bus         = 0,

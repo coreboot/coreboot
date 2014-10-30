@@ -25,13 +25,9 @@ static void cpu_init(struct device *dev)
 	/* TODO: Check if anything else needs to be explicitly initialized */
 }
 
-static void cpu_noop(struct device *dev)
-{
-}
-
 static struct device_operations cpu_ops = {
-	.read_resources   = cpu_noop,
-	.set_resources    = cpu_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
 	.enable_resources = cpu_enable_resources,
 	.init             = cpu_init,
 	.scan_bus         = NULL,

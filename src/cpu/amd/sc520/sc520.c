@@ -44,9 +44,6 @@ static void sc520_enable_resources(struct device *dev) {
         pci_write_config8(dev, PCI_COMMAND, command);
         command = pci_read_config8(dev, PCI_COMMAND);
         printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
-/*
- */
-
 }
 
 static void sc520_read_resources(device_t dev)
@@ -170,14 +167,10 @@ static void cpu_bus_init(device_t dev)
   printk(BIOS_SPEW, "cpu_bus_init\n");
 }
 
-static void cpu_bus_noop(device_t dev)
-{
-}
-
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = cpu_bus_noop,
-        .set_resources    = cpu_bus_noop,
-        .enable_resources = cpu_bus_noop,
+        .read_resources   = DEVICE_NOOP,
+        .set_resources    = DEVICE_NOOP,
+        .enable_resources = DEVICE_NOOP,
         .init             = cpu_bus_init,
         .scan_bus         = 0,
 };

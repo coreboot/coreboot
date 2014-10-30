@@ -58,6 +58,14 @@ Scope (\_SB)
 }
 
 /*
+ * LPC Trusted Platform Module
+ */
+Scope (\_SB.PCI0.LPCB)
+{
+	#include <drivers/pc80/tpm/acpi/tpm.asl>
+}
+
+/*
  * WLAN connected to Root Port 3, becomes Root Port 1 after coalesce
  */
 Scope (\_SB.PCI0.RP01)

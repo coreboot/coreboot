@@ -303,7 +303,6 @@ static void enable_l2_cache(void)
 #include <cpu/intel/romstage.h>
 static void main(unsigned long bist)
 {
-	device_t dev;
 	u32 dmp_id;
 
 	dmp_id = get_dmp_id();

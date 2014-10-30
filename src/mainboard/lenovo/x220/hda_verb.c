@@ -29,9 +29,9 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-  	0x14f1506e,	// Codec Vendor / Device ID: Conexant CX20590
-  	0x17aa21db,	// Subsystem ID
-	0x0000000d    ,	// Number of 4 dword sets
+	0x14f1506e,	// Codec Vendor / Device ID: Conexant CX20590
+	0x17aa21db,	// Subsystem ID
+	0x0000000d,	// Number of 4 dword sets
 
 /* Bits 31:28 - Codec Address */
 /* Bits 27:20 - NID */

@@ -29,8 +29,8 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-  	0x10ec0269,	// Codec Vendor / Device ID: Realtek ALC269VC
-  	0x17aa21fa,	// Subsystem ID
+	0x10ec0269,	// Codec Vendor / Device ID: Realtek ALC269VC
+	0x17aa21fa,	// Subsystem ID
 	0x00000012,	// Number of 4 dword sets
 
 /* Bits 31:28 - Codec Address */

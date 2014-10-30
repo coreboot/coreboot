@@ -1081,10 +1081,6 @@ static void cpu_bus_init(device_t dev)
 	initialize_cpus(dev->link_list);
 }
 
-static void cpu_bus_noop(device_t dev)
-{
-}
-
 static void cpu_bus_read_resources(device_t dev)
 {
 #if CONFIG_MMCONF_SUPPORT
@@ -1108,7 +1104,7 @@ static void cpu_bus_set_resources(device_t dev)
 static struct device_operations cpu_bus_ops = {
 	.read_resources	  = cpu_bus_read_resources,
 	.set_resources	  = cpu_bus_set_resources,
-	.enable_resources = cpu_bus_noop,
+	.enable_resources = DEVICE_NOOP,
 	.init		  = cpu_bus_init,
 	.scan_bus	  = cpu_bus_scan,
 };

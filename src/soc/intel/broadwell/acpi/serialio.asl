@@ -205,8 +205,8 @@ Device (I2C0)
 	Name (_UID, 1)
 	Name (_ADR, 0x00150001)
 
-	Name (SSCN, Package () { 432, 507, 9 })
-	Name (FMCN, Package () { 72, 160, 9 })
+	Name (SSCN, Package () { 432, 507, 30 })
+	Name (FMCN, Package () { 72, 160, 30 })
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()
@@ -276,8 +276,8 @@ Device (I2C1)
 	Name (_UID, 1)
 	Name (_ADR, 0x00150002)
 
-	Name (SSCN, Package () { 432, 507, 9 })
-	Name (FMCN, Package () { 72, 160, 9 })
+	Name (SSCN, Package () { 432, 507, 30 })
+	Name (FMCN, Package () { 72, 160, 30 })
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()

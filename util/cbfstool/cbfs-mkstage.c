@@ -35,10 +35,12 @@
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 		       uint32_t arch, comp_algo algo, uint32_t *location)
 {
+	struct parsed_elf pelf;
 	Elf64_Phdr *phdr;
-	Elf64_Ehdr ehdr;
+	Elf64_Ehdr *ehdr;
 	char *buffer;
 	struct buffer outheader;
+	int ret = -1;
 
 	int headers;
 	int i, outlen;
@@ -50,10 +52,17 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 
 	DEBUG("start: parse_elf_to_stage(location=0x%x)\n", *location);
 
-	if (elf_headers(input, arch, &ehdr, &phdr, NULL) < 0)
-		return -1;
+	int flags = ELF_PARSE_PHDR | ELF_PARSE_SHDR | ELF_PARSE_STRTAB;
 
-	headers = ehdr.e_phnum;
+	if (parse_elf(input, &pelf, flags)) {
+		ERROR("Couldn't parse ELF\n");
+		return -1;
+	}
+
+	ehdr = &pelf.ehdr;
+	phdr = &pelf.phdr[0];
+
+	headers = ehdr->e_phnum;
 
 	data_start = ~0;
 	data_end = 0;
@@ -102,7 +111,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 
 	if (buffer == NULL) {
 		ERROR("Unable to allocate memory: %m\n");
-		return -1;
+		goto err;
 	}
 
 	/* Copy the file data into the buffer */
@@ -135,7 +144,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 			      "File has %zu bytes left, segment end is %zu\n",
 			      input->size, (size_t)(phdr[i].p_offset + phdr[i].p_filesz));
 			free(buffer);
-			return -1;
+			goto err;
 		}
 		memcpy(buffer + (l_start - data_start),
 		       &input->data[phdr[i].p_offset + l_offset],
@@ -147,7 +156,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 			  input->name) != 0) {
 		ERROR("Unable to allocate memory: %m\n");
 		free(buffer);
-		return -1;
+		goto err;
 	}
 	memset(output->data, 0, output->size);
 
@@ -177,7 +186,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	 * Maybe we should just change the spec.
 	 */
 	xdr_le.put32(&outheader, algo);
-	xdr_le.put64(&outheader, ehdr.e_entry);
+	xdr_le.put64(&outheader, ehdr->e_entry);
 	xdr_le.put64(&outheader, data_start);
 	xdr_le.put32(&outheader, outlen);
 	xdr_le.put32(&outheader, mem_end - data_start);
@@ -185,5 +194,9 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	if (*location)
 		*location -= sizeof(struct cbfs_stage);
 	output->size = sizeof(struct cbfs_stage) + outlen;
-	return 0;
+	ret = 0;
+
+err:
+	parsed_elf_destroy(&pelf);
+	return ret;
 }

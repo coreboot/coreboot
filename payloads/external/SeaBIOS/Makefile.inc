@@ -32,7 +32,7 @@ else
 	echo "# CONFIG_DEBUG_SERIAL is not set" >> seabios/.config
 endif
 ifneq ($(CONFIG_SEABIOS_MALLOC_UPPERMEMORY),y)
-	echo "# CONFIG_MALLOC_UPPERMEMORY is not set" >> $(OUT)/seabios/.config
+	echo "# CONFIG_MALLOC_UPPERMEMORY is not set" >> seabios/.config
 endif
 ifneq ($(CONFIG_SEABIOS_THREAD_OPTIONROMS),y)
 	echo "# CONFIG_THREAD_OPTIONROMS is not set" >> seabios/.config

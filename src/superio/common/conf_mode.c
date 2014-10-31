@@ -28,10 +28,28 @@ void pnp_enter_conf_mode_55(struct device *dev)
 	outb(0x55, dev->path.pnp.port);
 }
 
+void pnp_enter_conf_mode_6767(struct device *dev)
+{
+	outb(0x67, dev->path.pnp.port);
+	outb(0x67, dev->path.pnp.port);
+}
+
+void pnp_enter_conf_mode_7777(struct device *dev)
+{
+	outb(0x77, dev->path.pnp.port);
+	outb(0x77, dev->path.pnp.port);
+}
+
 void pnp_enter_conf_mode_8787(struct device *dev)
 {
 	outb(0x87, dev->path.pnp.port);
 	outb(0x87, dev->path.pnp.port);
+}
+
+void pnp_enter_conf_mode_a0a0(struct device *dev)
+{
+	outb(0xa0, dev->path.pnp.port);
+	outb(0xa0, dev->path.pnp.port);
 }
 
 void pnp_exit_conf_mode_aa(struct device *dev)
@@ -63,8 +81,23 @@ const struct pnp_mode_ops pnp_conf_mode_55_aa = {
 	.exit_conf_mode  = pnp_exit_conf_mode_aa,
 };
 
+const struct pnp_mode_ops pnp_conf_mode_6767_aa = {
+	.enter_conf_mode = pnp_enter_conf_mode_6767,
+	.exit_conf_mode  = pnp_exit_conf_mode_aa,
+};
+
+const struct pnp_mode_ops pnp_conf_mode_7777_aa = {
+	.enter_conf_mode = pnp_enter_conf_mode_7777,
+	.exit_conf_mode  = pnp_exit_conf_mode_aa,
+};
+
 const struct pnp_mode_ops pnp_conf_mode_8787_aa = {
 	.enter_conf_mode = pnp_enter_conf_mode_8787,
+	.exit_conf_mode  = pnp_exit_conf_mode_aa,
+};
+
+const struct pnp_mode_ops pnp_conf_mode_a0a0_aa = {
+	.enter_conf_mode = pnp_enter_conf_mode_a0a0,
 	.exit_conf_mode  = pnp_exit_conf_mode_aa,
 };
 

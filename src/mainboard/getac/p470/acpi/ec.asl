@@ -192,7 +192,7 @@ Device(EC0)
 	{
 		Store(0x3f, HOTK)
 		If(IGDS) {
-			HKDS(10)
+			Notify (\_SB.PCI0.GFX0, 0x82)
 		} Else {
 			TRAP(0xE1)
 		}

@@ -17,6 +17,8 @@
  * Foundation, Inc.
  */
 
+#include <drivers/intel/gma/i915.h>
+
 /*
  * Digital Port Hotplug Enable:
  *  0x04 = Enabled, 2ms short pulse
@@ -38,4 +40,6 @@ struct northbridge_intel_fsp_sandybridge_config {
 
 	u32 gpu_cpu_backlight;	/* CPU Backlight PWM value */
 	u32 gpu_pch_backlight;	/* PCH Backlight PWM value */
+
+	struct i915_gpu_controller_info gfx;
 };

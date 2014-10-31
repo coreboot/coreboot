@@ -19,8 +19,8 @@
  */
 
 #define THINKPAD_EC_GPE 28
-#define BRIGHTNESS_UP \DSPC.BRTU
-#define BRIGHTNESS_DOWN \DSPC.BRTD
+#define BRIGHTNESS_UP \BRTU
+#define BRIGHTNESS_DOWN \BRTD
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 
 DefinitionBlock(
@@ -44,6 +44,12 @@ DefinitionBlock(
 
 	// mainboard specific devices
 	#include "acpi/mainboard.asl"
+
+	Scope (\)
+	{
+		// backlight control, display switching, lid
+		#include "acpi/video.asl"
+	}
 
 	#include <cpu/intel/model_6dx/acpi/cpu.asl>
 

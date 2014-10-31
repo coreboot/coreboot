@@ -36,3 +36,7 @@ config INTEL_EDID
 config INTEL_INT15
 	bool
 	default n
+
+config INTEL_GMA_ACPI
+	bool
+	default n

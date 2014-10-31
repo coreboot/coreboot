@@ -640,11 +640,17 @@ static void southbridge_inject_dsdt(void)
 	opregion = igd_make_opregion();
 
 	if (gnvs) {
+		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
+
 		memset(gnvs, 0, sizeof (*gnvs));
 
 		acpi_create_gnvs(gnvs);
 		/* IGD OpRegion Base Address */
 		gnvs->aslb = (u32)opregion;
+
+		gnvs->ndid = gfx->ndid;
+		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
+
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 

@@ -33,11 +33,4 @@
 
 void acpi_create_gnvs(global_nvs_t * gnvs)
 {
-	/* IGD Displays */
-	gnvs->ndid = 3;
-	gnvs->did[0] = 0x80000100;
-	gnvs->did[1] = 0x80000240;
-	gnvs->did[2] = 0x80000410;
-	gnvs->did[3] = 0x80000410;
-	gnvs->did[4] = 0x00000005;
 }

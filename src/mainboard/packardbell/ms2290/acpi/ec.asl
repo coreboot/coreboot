@@ -121,12 +121,12 @@ Device(EC)
 	/* Decrease brightness.  */
 	Method(_Q1D, 0, NotSerialized)
 	{
-		\_SB.PCI0.GFX0.LCD0.DECB()
+		\_SB.PCI0.GFX0.DECB()
 	}
 	/* Increase brightness.  */
 	Method(_Q1C, 0, NotSerialized)
 	{
-		\_SB.PCI0.GFX0.LCD0.INCB()
+		\_SB.PCI0.GFX0.INCB()
 	}
 
 #include "battery.asl"

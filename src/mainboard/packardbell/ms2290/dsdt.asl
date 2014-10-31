@@ -18,8 +18,6 @@
  * Foundation, Inc.
  */
 
-#define HAVE_LCD_SCREEN 1
-
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

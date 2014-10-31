@@ -488,6 +488,27 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+const struct i915_gpu_controller_info *
+intel_gma_get_controller_info(void)
+{
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
+	if (!dev) {
+		return NULL;
+	}
+	struct northbridge_intel_i945_config *chip = dev->chip_info;
+	return &chip->gfx;
+}
+
+static void gma_ssdt(void)
+{
+	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
+	if (!gfx) {
+		return;
+	}
+
+	drivers_intel_gma_displays_ssdt_generate(gfx);
+}
+
 static struct pci_operations gma_pci_ops = {
 	.set_subsystem    = gma_set_subsystem,
 };
@@ -497,6 +518,7 @@ static struct device_operations gma_func0_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_func0_init,
+	.acpi_fill_ssdt_generator = gma_ssdt,
 	.scan_bus		= 0,
 	.enable			= 0,
 	.disable		= gma_func0_disable,

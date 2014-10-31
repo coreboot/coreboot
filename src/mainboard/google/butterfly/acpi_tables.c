@@ -54,13 +54,6 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-	/* IGD Displays */
-	gnvs->ndid = 3;
-	gnvs->did[0] = 0x80000100;
-	gnvs->did[1] = 0x80000240;
-	gnvs->did[2] = 0x80000410;
-	gnvs->did[3] = 0x80000410;
-	gnvs->did[4] = 0x00000005;
 
 	// TODO: MLR
 	// The firmware read/write status is a "virtual" switch and

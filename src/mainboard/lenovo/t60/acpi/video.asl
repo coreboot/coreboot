@@ -20,35 +20,17 @@
 
 #include "smi.h"
 
-Device (DSPC)
+Scope (\)
 {
-	Name (_ADR, 0x00020001)
-	OperationRegion (DSPC, PCI_Config, 0x00, 0x100)
-	Field (DSPC, ByteAcc, NoLock, Preserve)
-	{
-		Offset (0xf4),
-		       BRTC, 8
-	}
-
 	Method(BRTD, 0, NotSerialized)
 	{
 		Trap(SMI_BRIGHTNESS_DOWN)
-		Store(BRTC, Local0)
-		if (LGreater (Local0, 15))
-		{
-			Subtract(Local0, 16, Local0)
-			Store(Local0, BRTC)
-		}
+		\_SB.PCI0.GFX0.DECB()
 	}
 
 	Method(BRTU, 0, NotSerialized)
 	{
 		Trap(SMI_BRIGHTNESS_UP)
-		Store (BRTC, Local0)
-		if (LLess(Local0, 0xff))
-		{
-			Add (Local0, 16, Local0)
-			Store(Local0, BRTC)
-		}
+		\_SB.PCI0.GFX0.INCB()
 	}
 }

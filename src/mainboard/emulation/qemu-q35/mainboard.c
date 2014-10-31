@@ -25,6 +25,7 @@
 #include <pc80/keyboard.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <drivers/intel/gma/i915.h>
 
 #define Q35_PAM0            0x90
 
@@ -32,6 +33,19 @@ static const unsigned char qemu_q35_irqs[] = {
 	10, 10, 11, 11,
 	10, 10, 11, 11,
 };
+
+struct i915_gpu_controller_info gfx_controller_info = {
+	.ndid = 3,
+	.did = {
+		0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005
+	}
+};
+
+const struct i915_gpu_controller_info *
+intel_gma_get_controller_info(void)
+{	
+	return &gfx_controller_info;
+}
 
 static void qemu_nb_init(device_t dev)
 {

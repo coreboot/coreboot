@@ -292,7 +292,14 @@ struct i915_gpu_controller_info
 	int link_frequency_270_mhz;
 	int lvds_num_lanes;
 	u32 backlight;
+	int ndid;
+	u32 did[5];
 };
+
+void
+drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *conf);
+const struct i915_gpu_controller_info *
+intel_gma_get_controller_info(void);
 
 int i915lightup(unsigned int physbase, unsigned int mmio,
 		unsigned int gfx, unsigned int init_fb);

@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2009 coresystems GmbH
+ * Copyright (C) 2007-2008 coresystems GmbH
+ *               2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +18,13 @@
  * Foundation, Inc.
  */
 
-// Brightness write
-Method (BRTW, 1, Serialized)
-{
-	// TODO
-}
+#ifndef NORTHBRIDGE_INTEL_SCH_CHIP_H
+#define NORTHBRIDGE_INTEL_SCH_CHIP_H
 
-// Hot Key Display Switch
-Method (HKDS, 1, Serialized)
-{
-	// TODO
-}
+#include <drivers/intel/gma/i915.h>
 
-// Lid Switch Display Switch
-Method (LSDS, 1, Serialized)
-{
-	// TODO
-}
+struct northbridge_intel_sch_config {
+	struct i915_gpu_controller_info gfx;
+};
 
-// Brightness Notification
-Method(BRTN,1,Serialized)
-{
-	// TODO (no displays defined yet)
-}
+#endif				/* NORTHBRIDGE_INTEL_SCH_CHIP_H */

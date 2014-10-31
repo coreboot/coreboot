@@ -37,14 +37,6 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* Enable COM port(s) */
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x00;
-
-	/* IGD Displays  */
-	gnvs->ndid = 2;
-	gnvs->did[0] = 0x80000100;
-	gnvs->did[1] = 0x80000410;
-	gnvs->did[2] = 0x80000320;
-	gnvs->did[3] = 0x80000410;
-	gnvs->did[4] = 0x00000005;
 }
 
 static long acpi_create_ecdt(acpi_ecdt_t * ecdt)

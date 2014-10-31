@@ -18,9 +18,11 @@
  * Foundation, Inc.
  */
 
+#include "smi.h"
+
 #define THINKPAD_EC_GPE 28
-#define BRIGHTNESS_UP \DSPC.BRTU
-#define BRIGHTNESS_DOWN \DSPC.BRTD
+#define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
+#define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 
 DefinitionBlock(

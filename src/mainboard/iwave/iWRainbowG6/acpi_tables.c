@@ -40,14 +40,6 @@ void acpi_create_gnvs(global_nvs_t * gnvs)
 	/* Enable both COM ports. */
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x01;
-
-	/* IGD Displays. */
-	gnvs->ndid = 3;
-	gnvs->did[0] = 0x80000100;
-	gnvs->did[1] = 0x80000240;
-	gnvs->did[2] = 0x80000410;
-	gnvs->did[3] = 0x80000410;
-	gnvs->did[4] = 0x00000005;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

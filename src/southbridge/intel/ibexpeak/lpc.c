@@ -671,6 +671,7 @@ static void southbridge_inject_dsdt(void)
 	opregion = igd_make_opregion();
 
 	if (gnvs) {
+		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
 		memset(gnvs, 0, sizeof (*gnvs));
 
 		acpi_create_gnvs(gnvs);
@@ -678,6 +679,8 @@ static void southbridge_inject_dsdt(void)
 		gnvs->apic = 1;
 		gnvs->mpen = 1;		/* Enable Multi Processing */
 		gnvs->pcnt = dev_count_cpu();
+		gnvs->ndid = gfx->ndid;
+		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
 
 		/* IGD OpRegion Base Address */
 		gnvs->aslb = (u32)opregion;

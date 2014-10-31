@@ -64,14 +64,6 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-	/* IGD Displays */
-	gnvs->ndid = 1;
-	gnvs->did[0] = 0x80000000;
-	gnvs->did[1] = 0x80000000;
-	gnvs->did[2] = 0x00000000;
-	gnvs->did[3] = 0x00000000;
-	gnvs->did[4] = 0x00000000;
-
 #if CONFIG_CHROMEOS
 	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;

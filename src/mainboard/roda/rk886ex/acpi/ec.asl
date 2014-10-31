@@ -97,8 +97,8 @@ Device(EC0)
 	Method (_Q12, 0)
 	{
 		Store("_Q12: Fn-F9 (Display Switch) pressed", Debug)
+		Notify (\_SB.PCI0.GFX0, 0x82)
 		// Store(1, TLST)
-		// HKDS(10)
 	}
 
 	Method (_Q30, 0)

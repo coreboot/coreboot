@@ -38,6 +38,7 @@
 #include "pch.h"
 #include <arch/acpigen.h>
 #include <cbmem.h>
+#include <drivers/intel/gma/i915.h>
 
 #define NMI_OFF	0
 
@@ -755,6 +756,8 @@ static void southbridge_inject_dsdt(void)
 	}
 
 	if (gnvs) {
+		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
+
 		acpi_create_gnvs(gnvs);
 
 		gnvs->apic = 1;
@@ -767,6 +770,9 @@ static void southbridge_inject_dsdt(void)
 
 		/* Update the mem console pointer. */
 		gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
+
+		gnvs->ndid = gfx->ndid;
+		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
 
 		acpi_save_gnvs((unsigned long)gnvs);
 		/* And tell SMI about it */

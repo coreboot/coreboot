@@ -1,4 +1,7 @@
 chip northbridge/intel/gm45
+	# IGD Displays
+	register "gfx.ndid" = "3"
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
 
 	register "gfx.use_spread_spectrum_clock" = "1"
 	register "gfx.lvds_dual_channel" = "0"

@@ -198,6 +198,7 @@ static void check_device_present(device_t dev)
 				dev->enabled = 0;
 			}
 		} else {
+			reg_script_run_on_dev(dev, no_dev_behind_port);
 			dev->enabled = 0;
 		}
 	} else if(!dev->enabled) {

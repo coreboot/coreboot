@@ -151,6 +151,7 @@ report_arch_toolchain() {
 	cat <<EOF
 # elf${TWIDTH}-${TBFDARCH} toolchain (${GCCPREFIX}gcc)
 ARCH_SUPPORTED+=${TARCH}
+SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
 CC_${TARCH}:=${GCCPREFIX}gcc
 CFLAGS_${TARCH}:=${CFLAGS}
 CPP_${TARCH}:=${GCCPREFIX}cpp
@@ -174,6 +175,7 @@ arch_config_arm() {
 	TBFDARCH="littlearm"
 	TCLIST="armv7a armv7-a"
 	TWIDTH="32"
+	TSUPP="arm armv4 armv7"
 	TABI="eabi"
 }
 

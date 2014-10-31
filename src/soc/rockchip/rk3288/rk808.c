@@ -98,5 +98,4 @@ void rk808_configure_buck(uint8_t bus, int buck, int millivolts)
 	}
 	rk808_clrsetbits(bus, buck_reg, 0x3f, vsel);
 	rk808_clrsetbits(bus, DCDC_EN, 0, 1 << (buck - 1));
-	udelay(225);/* Must wait for voltage to stabilize */
 }

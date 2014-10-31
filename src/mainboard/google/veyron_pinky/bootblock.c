@@ -27,16 +27,25 @@
 #include <soc/rk808.h>
 #include <soc/spi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <delay.h>
 
 #include "board.h"
 
 void bootblock_mainboard_init(void)
 {
-	/* cpu frequency will up to 1.8GHz, so the buck1 must up to 1.3v */
+	/* cpu frequency will up to 1.8GHz,
+	 * in our experience the buck1
+	 * must up to 1.4v
+	 */
 	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
 	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 	i2c_init(PMIC_BUS, 400*KHz);
-	rk808_configure_buck(PMIC_BUS, 1, 1300);
+
+	/* Slowly raise to max CPU voltage to prevent overshoot */
+	rk808_configure_buck(PMIC_BUS, 1, 1200);
+	udelay(175);/* Must wait for voltage to stabilize,2mV/us */
+	rk808_configure_buck(PMIC_BUS, 1, 1400);
+	udelay(100);/* Must wait for voltage to stabilize,2mV/us */
 	rkclk_configure_cpu();
 
 	/* i2c1 for tpm */

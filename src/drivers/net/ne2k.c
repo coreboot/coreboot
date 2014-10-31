@@ -27,6 +27,21 @@ SMC8416 PIO support added by Andrew Bettison (andrewb@zip.com.au) on 4/3/02
 
 */
 
+#include <arch/io.h>
+#include <console/console.h>
+#include <console/ne2k.h>
+#include <delay.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ip_checksum.h>
+
+#include "ns8390.h"
+
+
 #define ETH_ALEN		6	/* Size of Ethernet address */
 #define ETH_HLEN		14	/* Size of ethernet header */
 #define	ETH_ZLEN		60	/* Minimum packet */
@@ -34,14 +49,10 @@ SMC8416 PIO support added by Andrew Bettison (andrewb@zip.com.au) on 4/3/02
 #define ETH_DATA_ALIGN		2	/* Amount needed to align the data after an ethernet header */
 #define	ETH_MAX_MTU		(ETH_FRAME_LEN-ETH_HLEN)
 
-#include "ns8390.h"
-#include <ip_checksum.h>
-#include <console/ne2k.h>
-#include <arch/io.h>
-
 #define MEM_SIZE MEM_32768
 #define TX_START 64
 #define RX_START (64 + D8390_TXBUF_SIZE)
+
 
 static unsigned int get_count(unsigned int eth_nic_base)
 {
@@ -415,17 +426,6 @@ int ne2k_init(unsigned int eth_nic_base) {
 
 #else
 
-#include <delay.h>
-#include <stdlib.h>
-#include <string.h>
-#include <arch/io.h>
-
-#include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
-
 static void read_resources(struct device *dev)
 {
 	struct resource *res;
@@ -455,4 +455,4 @@ static const struct pci_driver ne2k_driver __pci_driver = {
         .device = 0x8029,
 };
 
-#endif
+#endif /* __PRE_RAM__ */

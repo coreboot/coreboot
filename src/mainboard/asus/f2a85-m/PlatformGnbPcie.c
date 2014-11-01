@@ -68,7 +68,7 @@
  * 38 DP2_TX[P,N]6
  */
 
-PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* PCIe port, Lanes 8:23, PCI Device Number 2, blue x16 slot */
 	{
 		0, /* Descriptor flags */
@@ -95,7 +95,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
  * Tested and works: VGA/DVI
  * Untested: HDMI
  */
-PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 	// DP0 to HDMI0/DP
 	{
 		0,
@@ -116,7 +116,7 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 	},
 };
 
-PCIe_COMPLEX_DESCRIPTOR Trinity = {
+static const PCIe_COMPLEX_DESCRIPTOR Trinity = {
         DESCRIPTOR_TERMINATE_LIST,
         0,
         &PortList[0],

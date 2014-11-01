@@ -24,7 +24,7 @@
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X12_F12PCIECOMPLEXCONFIG_FILECODE
 
-PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList [] = {
 			// Initialize Port descriptor (PCIe port, Lanes 8:15, PCI Device Number 2, ...)
 			{
 			  0,   //Descriptor flags
@@ -69,7 +69,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 //			}
 };
 
-PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 			// Initialize Ddi descriptor (DDI interface Lanes 24:27, DdA, ...)
 			{
 			  0,   //Descriptor flags
@@ -84,7 +84,7 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 			}
 };
 
-PCIe_COMPLEX_DESCRIPTOR Llano = {
+static const PCIe_COMPLEX_DESCRIPTOR Llano = {
         DESCRIPTOR_TERMINATE_LIST,
         0,
         &PortList[0],

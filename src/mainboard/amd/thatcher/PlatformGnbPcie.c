@@ -71,7 +71,7 @@
  * 38 DP2_TX[P,N]6
  */
 
-PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* PCIe port, Lanes 15:8, PCI Device Number 2, PCIE SLOT x8 */
 	{
 		0, /* Descriptor flags */
@@ -121,7 +121,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 	},
 };
 
-PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 	// DP0 to HDMI0/DP0
 	{
 		0,
@@ -142,7 +142,7 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 	},
 };
 
-PCIe_COMPLEX_DESCRIPTOR Trinity = {
+static const PCIe_COMPLEX_DESCRIPTOR Trinity = {
         DESCRIPTOR_TERMINATE_LIST,
         0,
         &PortList[0],

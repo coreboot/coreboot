@@ -258,6 +258,44 @@ static const io_register_t pch_gpio_registers[] = {
 	{ 0x78, 4, "RESERVED" },
 	{ 0x7c, 4, "RESERVED" },
 };
+/* Default values for Ibex Peak desktop chipsets */
+static const gpio_default_t ip_pch_desktop_defaults[] = {
+	{ 0x00, 0xf96ba1ff }, /* GPIO_USE_SEL  */
+	{ 0x04, 0xf6ff6eff }, /* GP_IO_SEL */
+	{ 0x0c, 0x02fe0100 }, /* GP_LVL */
+	{ 0x18, 0x00040000 }, /* GPO_BLINK */
+	{ 0x1c, 0x00000000 }, /* GP_SER_BLINK */
+	{ 0x28, 0x00000000 }, /* GP_NMI_EN + GPI_NMI_STS */
+	{ 0x2c, 0x00000000 }, /* GP_INV */
+	{ 0x30, 0x020300ff }, /* GPIO_USE_SEL2 */
+	{ 0x34, 0x1f57fff4 }, /* GP_IO_SEL2 */
+	{ 0x38, 0xa4aa0003 }, /* GP_LVL2 */
+	{ 0x40, 0x00000100 }, /* GPIO_USE_SEL3 */
+	{ 0x44, 0x00000f00 }, /* GP_IO_SEL3 */
+	{ 0x48, 0x00000000 }, /* GP_LVL3 */
+	{ 0x60, 0x01000000 }, /* GP_RST_SEL1 */
+	{ 0x64, 0x00000000 }, /* GP_RST_SEL2 */
+	{ 0x68, 0x00000000 }, /* GP_RST_SEL3 */
+};
+/* Default values for Ibex Peak mobile chipsets */
+static const gpio_default_t ip_pch_mobile_defaults[] = {
+	{ 0x00, 0xf96ba1ff }, /* GPIO_USE_SEL  */
+	{ 0x04, 0xf6ff6eff }, /* GP_IO_SEL */
+	{ 0x0c, 0x02fe0100 }, /* GP_LVL */
+	{ 0x18, 0x00040000 }, /* GPO_BLINK */
+	{ 0x1c, 0x00000000 }, /* GP_SER_BLINK */
+	{ 0x28, 0x00000000 }, /* GP_NMI_EN + GPI_NMI_STS */
+	{ 0x2c, 0x00000000 }, /* GP_INV */
+	{ 0x30, 0x020300fe }, /* GPIO_USE_SEL2 */
+	{ 0x34, 0x1f57fff4 }, /* GP_IO_SEL2 */
+	{ 0x38, 0xa4aa0003 }, /* GP_LVL2 */
+	{ 0x40, 0x00000000 }, /* GPIO_USE_SEL3 */
+	{ 0x44, 0x00000f00 }, /* GP_IO_SEL3 */
+	{ 0x48, 0x00000000 }, /* GP_LVL3 */
+	{ 0x60, 0x01000000 }, /* GP_RST_SEL1 */
+	{ 0x64, 0x00000000 }, /* GP_RST_SEL2 */
+	{ 0x68, 0x00000000 }, /* GP_RST_SEL3 */
+};
 /* Default values for Cougar Point desktop chipsets */
 static const gpio_default_t cp_pch_desktop_defaults[] = {
 	{ 0x00, 0xb96ba1ff },
@@ -406,6 +444,35 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		printf("\n============= GPIOS =============\n\n");
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_3400:
+	case PCI_DEVICE_ID_INTEL_3420:
+	case PCI_DEVICE_ID_INTEL_3450:
+	case PCI_DEVICE_ID_INTEL_3400_DESKTOP:
+	case PCI_DEVICE_ID_INTEL_B55_A:
+	case PCI_DEVICE_ID_INTEL_B55_B:
+	case PCI_DEVICE_ID_INTEL_H55:
+	case PCI_DEVICE_ID_INTEL_H57:
+	case PCI_DEVICE_ID_INTEL_P55:
+	case PCI_DEVICE_ID_INTEL_Q57:
+		gpiobase = pci_read_word(sb, 0x48) & 0xff80;
+		gpio_registers = pch_gpio_registers;
+		size = ARRAY_SIZE(pch_gpio_registers);
+		gpio_defaults = ip_pch_desktop_defaults;
+		defaults_size = ARRAY_SIZE(ip_pch_desktop_defaults);
+		break;
+	case PCI_DEVICE_ID_INTEL_3400_MOBILE:
+	case PCI_DEVICE_ID_INTEL_3400_MOBILE_SFF:
+	case PCI_DEVICE_ID_INTEL_HM55:
+	case PCI_DEVICE_ID_INTEL_HM57:
+	case PCI_DEVICE_ID_INTEL_PM55:
+	case PCI_DEVICE_ID_INTEL_QM57:
+	case PCI_DEVICE_ID_INTEL_QS57:
+		gpiobase = pci_read_word(sb, 0x48) & 0xff80;
+		gpio_registers = pch_gpio_registers;
+		size = ARRAY_SIZE(pch_gpio_registers);
+		gpio_defaults = ip_pch_mobile_defaults;
+		defaults_size = ARRAY_SIZE(ip_pch_mobile_defaults);
+		break;
 	case PCI_DEVICE_ID_INTEL_Z68:
 	case PCI_DEVICE_ID_INTEL_P67:
 	case PCI_DEVICE_ID_INTEL_H67:
@@ -522,29 +589,6 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		gpio_registers = i631x_gpio_registers;
 		size = ARRAY_SIZE(i631x_gpio_registers);
 		break;
-
-	case PCI_DEVICE_ID_INTEL_3400_DESKTOP:
-	case PCI_DEVICE_ID_INTEL_3400_MOBILE:
-	case PCI_DEVICE_ID_INTEL_P55:
-	case PCI_DEVICE_ID_INTEL_PM55:
-	case PCI_DEVICE_ID_INTEL_H55:
-	case PCI_DEVICE_ID_INTEL_QM57:
-	case PCI_DEVICE_ID_INTEL_H57:
-	case PCI_DEVICE_ID_INTEL_HM55:
-	case PCI_DEVICE_ID_INTEL_Q57:
-	case PCI_DEVICE_ID_INTEL_HM57:
-	case PCI_DEVICE_ID_INTEL_3400_MOBILE_SFF:
-	case PCI_DEVICE_ID_INTEL_B55_A:
-	case PCI_DEVICE_ID_INTEL_QS57:
-	case PCI_DEVICE_ID_INTEL_3400:
-	case PCI_DEVICE_ID_INTEL_3420:
-	case PCI_DEVICE_ID_INTEL_3450:
-	case PCI_DEVICE_ID_INTEL_B55_B:
-		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
-		gpio_registers = i631x_gpio_registers;
-		size = ARRAY_SIZE(i631x_gpio_registers);
-		break;
-
 	case PCI_DEVICE_ID_INTEL_82371XX:
 		printf("This southbridge has GPIOs in the PM unit.\n");
 		return 1;

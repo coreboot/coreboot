@@ -19,6 +19,7 @@
 
 #include <delay.h>
 #include <soc/addressmap.h>
+#include <device/i2c.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>
 #include <soc/nvidia/tegra/i2c.h>
@@ -67,6 +68,7 @@ static const struct funit_cfg funits[] = {
 static void lte_modem_init(void)
 {
 	int mdm_det;
+	uint8_t data;
 
 	/* A LTE modem is present if MDM_DET is pulled down by the modem */
 	mdm_det = gpio_get(MDM_DET);
@@ -76,8 +78,11 @@ static void lte_modem_init(void)
 	printk(BIOS_DEBUG, "Found LTE modem\n");
 
 	/* Enable PMIC CLK32KGAUDIO to drive CLK_MDM_32K */
-	pmic_write_reg(I2CPWR_BUS, TI65913_PRIMARY_SECONDARY_PAD2, 0x02, 0);
-	pmic_write_reg(I2CPWR_BUS, TI65913_CLK32KGAUDIO_CTRL, 0x01, 0);
+	pmic_read_reg(I2CPWR_BUS, TI65913_PAD2, &data);
+	pmic_write_reg(I2CPWR_BUS, TI65913_PAD2,
+			PAD2_GPIO_5_SEC_CLK32KGAUDIO(data), 0);
+	pmic_write_reg(I2CPWR_BUS, TI65913_CLK32KGAUDIO_CTRL,
+			TI65913_MODE_ACTIVE_ON, 0);
 
 	/* FULL_CARD_POWER_OFF# (A44: MODEM_PWR_ON) and RESET#
 	 * (A44: MODEM_RESET) of the LTE modem are actively low and initially

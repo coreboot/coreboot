@@ -27,30 +27,38 @@
 #include "pmic.h"
 #include "reset.h"
 
-/* A44/Ryu has a TI 65913 PMIC on bus 4 (PWR_I2C) */
-
-enum {
-	TI65913_I2C_ADDR = 0x58
-};
+#define PAGE_ADDR(reg)		((reg >> 8) & 0xff)
+#define PAGE_OFFSET(reg)	(reg & 0xff)
 
 struct ti65913_init_reg {
-	u8 reg;
+	u16 reg;
 	u8 val;
 	u8 delay;
 };
 
 static struct ti65913_init_reg init_list[] = {
 //TODO(twarren@nvidia.com): Add slams back to defaults
-//	{TI65913_SMPS12_CTRL, 0x01, 0},
 //	{TI65913_SMPS12_VOLTAGE, 0x38, 0},
+//	{TI65913_SMPS12_CTRL, 0x01, 1},
 //etc.
 };
 
-void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int delay)
+int pmic_read_reg(unsigned bus, uint16_t reg, uint8_t *data)
 {
-	if (i2c_writeb(bus, TI65913_I2C_ADDR, reg, val)) {
-		printk(BIOS_ERR, "%s: reg = 0x%02X, value = 0x%02X failed!\n",
-			__func__, reg, val);
+	if (i2c_readb(bus, PAGE_ADDR(reg), PAGE_OFFSET(reg), data)) {
+		printk(BIOS_ERR, "%s: page = 0x%02X, reg = 0x%02X failed!\n",
+			 __func__, PAGE_ADDR(reg), PAGE_OFFSET(reg));
+		return -1;
+	}
+	return 0;
+}
+
+void pmic_write_reg(unsigned bus, uint16_t reg, uint8_t val, int delay)
+{
+	if (i2c_writeb(bus, PAGE_ADDR(reg), PAGE_OFFSET(reg), val)) {
+		printk(BIOS_ERR, "%s: page = 0x%02X, reg = 0x%02X, "
+			"value = 0x%02X failed!\n",
+			__func__, PAGE_ADDR(reg), PAGE_OFFSET(reg), val);
 		/* Reset the SoC on any PMIC write error */
 		cpu_reset();
 	} else {
@@ -71,14 +79,12 @@ static void pmic_slam_defaults(unsigned bus)
 
 void pmic_init(unsigned bus)
 {
-	/* Don't need to set up VDD_CORE - already done - by EC ?? */
-
 	/* Restore PMIC POR defaults, in case kernel changed 'em */
 	pmic_slam_defaults(bus);
 
 	/* A44: Set VDD_CPU to 1.0V. */
-	pmic_write_reg(bus, TI65913_SMPS12_CTRL, 0x01, 1);
 	pmic_write_reg(bus, TI65913_SMPS12_VOLTAGE, 0x38, 0);
+	pmic_write_reg(bus, TI65913_SMPS12_CTRL, 0x01, 1);
 
 	printk(BIOS_DEBUG, "PMIC init done\n");
 }

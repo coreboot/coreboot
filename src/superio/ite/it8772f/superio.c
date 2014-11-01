@@ -23,23 +23,10 @@
 #include <pc80/keyboard.h>
 #include <arch/io.h>
 #include <stdlib.h>
+#include <superio/conf_mode.h>
+
 #include "chip.h" /* FIXME */
 #include "it8772f.h"
-
-static void pnp_enter_ext_func_mode(struct device *dev)
-{
-	u16 port = dev->path.pnp.port;
-
-	outb(0x87, port);
-	outb(0x01, port);
-	outb(0x55, port);
-	outb((port == 0x4e) ? 0xaa : 0x55, port);
-}
-
-static void pnp_exit_ext_func_mode(struct device *dev)
-{
-	pnp_write_config(dev, 0x02, 0x02);
-}
 
 static inline u8 it8772f_envc_read(struct resource *res, u8 addr)
 {
@@ -187,18 +174,13 @@ static void it8772f_init(struct device *dev)
 	}
 }
 
-static const struct pnp_mode_ops pnp_conf_mode_ops = {
-	.enter_conf_mode  = pnp_enter_ext_func_mode,
-	.exit_conf_mode   = pnp_exit_ext_func_mode,
-};
-
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
 	.enable           = pnp_alt_enable,
 	.init             = it8772f_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.ops_pnp_mode     = &pnp_conf_mode_870155_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {

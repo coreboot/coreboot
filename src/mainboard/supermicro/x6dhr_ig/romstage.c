@@ -9,7 +9,7 @@
 #include "northbridge/intel/e7520/raminit.h"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
-#include "debug.c"
+#include "lib/debug.c" // XXX
 #include "watchdog.c"
 #include "southbridge/intel/i82801ex/reset.c"
 #include "superio/winbond/w83627hf/early_serial.c"

@@ -37,6 +37,7 @@
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 #include "northbridge/intel/i3100/i3100.h"
 #include "southbridge/intel/i3100/i3100.h"
+#include "lib/debug.c" // XXX
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0)
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
@@ -71,7 +72,6 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "northbridge/intel/i3100/raminit.c"
 #include "lib/generic_sdram.c"
 #include "northbridge/intel/i3100/reset_test.c"
-#include "debug.c"
 #include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)

@@ -34,6 +34,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "superio/intel/i3100/early_serial.c"
+#include "lib/debug.c" // XXX
 #include "cpu/x86/bist.h"
 #include <spd.h>
 

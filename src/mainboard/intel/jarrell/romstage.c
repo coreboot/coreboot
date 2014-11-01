@@ -18,6 +18,7 @@
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>
+#include "lib/debug.c" // XXX
 
 #define SIO_GPIO_BASE 0x680
 #define SIO_XBUS_BASE 0x4880
@@ -35,7 +36,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/e7520/raminit.c"
 #include "lib/generic_sdram.c"
-#include "debug.c"
 #include "arch/x86/lib/stages.c"
 
 #include <cpu/intel/romstage.h>

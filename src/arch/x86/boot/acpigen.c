@@ -57,6 +57,19 @@ void acpigen_patch_len(int len)
 
 }
 
+void acpigen_pop_len(void)
+{
+	int len;
+	ASSERT(ltop > 0)
+	char *p = len_stack[--ltop];
+	len = gencurrent - p;
+	ASSERT(len <= ACPIGEN_MAXLEN)
+	/* generate store length for 0xfff max */
+	p[0] = (0x40 | (len & 0xf));
+	p[1] = (len >> 4 & 0xff);
+
+}
+
 void acpigen_set_current(char *curr)
 {
 	gencurrent = curr;

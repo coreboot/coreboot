@@ -37,7 +37,7 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 6: NATIVE: I2C1_SDA_GPIO6 */
 	PCH_GPIO_NATIVE,        /* 7: NATIVE: I2C1_SCL_GPIO7 */
 	PCH_GPIO_ACPI_SCI,      /* 8: PCH_LTE_WAKE_L */
-	PCH_GPIO_UNUSED,        /* 9: UNUSED */
+	PCH_GPIO_INPUT_INVERT,  /* 9: TRACKPAD_INT_L (WAKE) */
 	PCH_GPIO_ACPI_SCI,      /* 10: PCH_WLAN_WAKE_L */
 	PCH_GPIO_UNUSED,        /* 11: UNUSED */
 	PCH_GPIO_UNUSED,        /* 12: UNUSED */

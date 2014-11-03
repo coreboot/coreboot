@@ -25,6 +25,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <soc/nvidia/tegra/dc.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/cpu.h>
@@ -75,6 +76,11 @@ static struct cpu_control_ops cntrl_ops = {
 	.start_cpu = cntrl_start_cpu,
 };
 
+void display_startup(device_t dev)
+{
+	printk(BIOS_INFO, "Entering %s()\n", __func__);
+}
+
 static void soc_init(device_t dev)
 {
 	struct soc_nvidia_tegra132_config *cfg;
@@ -84,6 +90,11 @@ static void soc_init(device_t dev)
 	cfg = dev->chip_info;
 	spintable_init((void *)cfg->spintable_addr);
 	arch_initialize_cpus(dev, &cntrl_ops);
+
+	if (vboot_skip_display_init())
+		printk(BIOS_INFO, "Skipping display init.\n");
+	else
+		display_startup(dev);
 }
 
 static struct device_operations soc_ops = {

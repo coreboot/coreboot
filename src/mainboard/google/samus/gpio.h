@@ -111,10 +111,10 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 80: UNUSED */
 	PCH_GPIO_UNUSED,        /* 81: UNUSED */
 	PCH_GPIO_NATIVE,        /* 82: NATIVE: EC_RCIN_L */
-	PCH_GPIO_UNUSED,        /* 83: UNUSED */
-	PCH_GPIO_UNUSED,        /* 84: UNUSED */
-	PCH_GPIO_UNUSED,        /* 85: UNUSED */
-	PCH_GPIO_UNUSED,        /* 86: UNUSED (STRAP) */
+	PCH_GPIO_NATIVE,        /* 83: GSPI0_CS */
+	PCH_GPIO_NATIVE,        /* 84: GSPI0_CLK */
+	PCH_GPIO_NATIVE,        /* 85: GSPI0_MISO */
+	PCH_GPIO_NATIVE,        /* 86: GSPI0_MOSI (STRAP) */
 	PCH_GPIO_UNUSED,        /* 87: UNUSED */
 	PCH_GPIO_UNUSED,        /* 88: UNUSED */
 	PCH_GPIO_OUT_HIGH,      /* 89: PP3300_SD_EN */

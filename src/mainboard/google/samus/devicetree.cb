@@ -70,7 +70,7 @@ chip soc/intel/broadwell
 		device pci 15.0 on  end # Serial I/O DMA
 		device pci 15.1 on  end # I2C0
 		device pci 15.2 on  end # I2C1
-		device pci 15.3 off end # GSPI0
+		device pci 15.3 on  end # GSPI0
 		device pci 15.4 off end # GSPI1
 		device pci 15.5 off end # UART0
 		device pci 15.6 off end # UART1

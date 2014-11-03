@@ -21,6 +21,7 @@
 #include <boardid.h>
 #include <boot/coreboot_tables.h>
 #include <cbmem.h>
+#include <delay.h>
 #include <device/device.h>
 #include <elog.h>
 #include <memrange.h>
@@ -38,6 +39,7 @@
 #endif
 
 #include "gpio.h"
+#include "pmic.h"
 
 static const struct pad_config mmcpads[] = {
 	/* MMC4 (eMMC) */
@@ -88,18 +90,105 @@ static void fix_ec_sw_sync(void)
 #endif
 }
 
+static const struct pad_config lcd_gpio_padcfgs[] = {
+	/* LCD_EN */
+	PAD_CFG_GPIO_OUT0(GPIO_PH5, PINMUX_PULL_UP),
+	/* LCD_RST_L */
+	PAD_CFG_GPIO_OUT0(GPIO_PH3, PINMUX_PULL_UP),
+	/* EN_VDD_LCD */
+	PAD_CFG_GPIO_OUT0(GPIO_PBB6, PINMUX_PULL_NONE),
+	/* EN_VDD18_LCD */
+	PAD_CFG_GPIO_OUT0(DVFS_PWM, PINMUX_PULL_DOWN),
+};
+
+static void configure_display_clocks(void)
+{
+	u32 lclks = CLK_L_HOST1X | CLK_L_DISP1;	/* dc */
+	u32 hclks = CLK_H_MIPI_CAL | CLK_H_DSI; /* mipi phy, mipi-dsi a */
+	u32 uclks = CLK_U_DSIB;			/* mipi-dsi b */
+	u32 xclks = CLK_X_CLK72MHZ;		/* clk src of mipi_cal */
+
+	clock_enable_clear_reset(lclks, hclks, uclks, 0, 0, xclks);
+
+	/* Give clocks time to stabilize. */
+	udelay(IO_STABILIZATION_DELAY);
+}
+
+static int enable_lcd_vdd(void)
+{
+	uint8_t data;
+
+	/* Set 1.20V to power AVDD_DSI_CSI */
+	pmic_write_reg(I2CPWR_BUS, TI65913_LDO5_VOLTAGE,
+			VSEL_1200, 1);
+	pmic_write_reg(I2CPWR_BUS, TI65913_LDO5_CTRL,
+			TI65913_MODE_ACTIVE_ON, 1);
+	/* wait for 100ms */
+	mdelay(100);
+
+	/*
+	 * Enable VDD_LCD
+	 *
+	 * Use different GPIO based on board id
+	 */
+	switch (board_id()) {
+	case BOARD_ID_PROTO_0:
+		/* Select PMIC GPIO_6's primary function */
+		pmic_read_reg(I2CPWR_BUS, TI65913_PAD2, &data);
+		pmic_write_reg(I2CPWR_BUS, TI65913_PAD2,
+				 PAD2_GPIO_6_PRIMARY(data), 0);
+
+		/* Set PMIC_GPIO_6 as output */
+		pmic_read_reg(I2CPWR_BUS, TI65913_GPIO_DATA_DIR, &data);
+		pmic_write_reg(I2CPWR_BUS, TI65913_GPIO_DATA_DIR,
+				TI65913_GPIO_6_OUTPUT, 0);
+
+		/* Set PMIC_GPIO_6 output high */
+		pmic_read_reg(I2CPWR_BUS, TI65913_GPIO_DATA_OUT, &data);
+		pmic_write_reg(I2CPWR_BUS, TI65913_GPIO_DATA_OUT,
+				TI65913_GPIO_6_HIGH, 1);
+		break;
+	case BOARD_ID_PROTO_1:
+	case BOARD_ID_PROTO_3:
+		gpio_set(EN_VDD_LCD, 1);
+		break;
+	default: /* unknown board */
+		return -1;
+	}
+	/* wait for 2ms */
+	mdelay(2);
+
+	/* Enable PP1800_LCDIO to panel */
+	gpio_set(EN_VDD18_LCD, 1);
+	/* wait for 1ms */
+	mdelay(1);
+
+	/* Set panel EN and RST signals */
+	gpio_set(LCD_EN, 1);		/* enable */
+	/* wait for min 10ms */
+	mdelay(10);
+	gpio_set(LCD_RST_L, 1);		/* clear reset */
+	/* wait for min 3ms */
+	mdelay(3);
+
+	return 0;
+}
+
+static int configure_display_blocks(void)
+{
+	/* set and enable panel related vdd */
+	if (enable_lcd_vdd())
+		return -1;
+
+	/* enable display related clocks */
+	configure_display_clocks();
+
+	return 0;
+}
+
 static void mainboard_init(device_t dev)
 {
-	/* PLLD should be 2 * pixel clock (301620khz). */
-	const uint32_t req_disp_clk =  301620 * 1000 * 2;
-	uint32_t disp_clk;
-
 	soc_configure_funits(funits, ARRAY_SIZE(funits));
-	disp_clk = clock_display(req_disp_clk);
-
-	if (disp_clk != req_disp_clk)
-		printk(BIOS_DEBUG, "display clock: %u vs %u (r)\n", disp_clk,
-			req_disp_clk);
 
 	/* I2C6 bus (audio, etc.) */
 	soc_configure_i2c6pad();
@@ -108,6 +197,13 @@ static void mainboard_init(device_t dev)
 	elog_add_boot_reason();
 
 	fix_ec_sw_sync();
+
+	/* configure panel gpio pads */
+	soc_configure_pads(lcd_gpio_padcfgs, ARRAY_SIZE(lcd_gpio_padcfgs));
+
+	/* if panel needs to bringup */
+	if (!vboot_skip_display_init())
+		configure_display_blocks();
 }
 
 static void mainboard_enable(device_t dev)

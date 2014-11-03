@@ -62,6 +62,12 @@ enum {
 	BTN_AP_PWR	= GPIO(Q0),
 	POWER_BUTTON	= BTN_AP_PWR,
 	POWER_BUTTON_INDEX = GPIO_Q0_INDEX,
+
+	/* Panel related GPIOs */
+	LCD_EN		= GPIO(H5),
+	LCD_RST_L	= GPIO(H3),
+	EN_VDD18_LCD	= GPIO(X0),
+	EN_VDD_LCD	= GPIO(BB6),	/* P1/P3 board */
 };
 
 #endif /* __MAINBOARD_GOOGLE_RUSH_RYU_GPIO_H__ */

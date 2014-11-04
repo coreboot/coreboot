@@ -20,6 +20,6 @@
 #ifndef POWERNOW_H
 #define POWERNOW_H
 
-int amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP);
+void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP);
 
 #endif

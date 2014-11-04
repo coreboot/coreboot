@@ -25,7 +25,7 @@
 #include <cpu/amd/powernow.h>
 
 /* FIXME: this should be implemented but right now all boards hardcode it.  */
-int amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
-	return 0;
+	return;
 }

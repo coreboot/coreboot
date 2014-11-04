@@ -204,71 +204,65 @@ unsigned long acpi_fill_slit(unsigned long current)
 	return current;
 }
 
-static int k8acpi_write_HT(void) {
-	int len, lenp, i;
+static void k8acpi_write_HT(void) {
+	int i;
 
-	len = acpigen_write_name("HCLK");
-	lenp = acpigen_write_package(HC_POSSIBLE_NUM);
-
-	for(i=0;i<sysconf.hc_possible_num;i++) {
-		lenp += acpigen_write_dword(sysconf.pci1234[i]);
-	}
-	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
-		lenp += acpigen_write_dword(0x0);
-	}
-
-	acpigen_patch_len(lenp - 1);
-	len += lenp;
-
-	len += acpigen_write_name("HCDN");
-	lenp = acpigen_write_package(HC_POSSIBLE_NUM);
+	acpigen_write_name("HCLK");
+	acpigen_write_package(HC_POSSIBLE_NUM);
 
 	for(i=0;i<sysconf.hc_possible_num;i++) {
-		lenp += acpigen_write_dword(sysconf.hcdn[i]);
+		acpigen_write_dword(sysconf.pci1234[i]);
 	}
 	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
-		lenp += acpigen_write_dword(0x20202020);
+		acpigen_write_dword(0x0);
 	}
-	acpigen_patch_len(lenp - 1);
-	len += lenp;
 
-	return len;
+	acpigen_pop_len();
+
+	acpigen_write_name("HCDN");
+	acpigen_write_package(HC_POSSIBLE_NUM);
+
+	for(i=0;i<sysconf.hc_possible_num;i++) {
+		acpigen_write_dword(sysconf.hcdn[i]);
+	}
+	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+		acpigen_write_dword(0x20202020);
+	}
+	acpigen_pop_len();
 }
 
-static int k8acpi_write_pci_data(int dlen, const char *name, int offset) {
+static void k8acpi_write_pci_data(int dlen, const char *name, int offset) {
 	device_t dev;
 	uint32_t dword;
-	int len, lenp, i;
+	int i;
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 
-	len = acpigen_write_name(name);
-	lenp = acpigen_write_package(dlen);
+	acpigen_write_name(name);
+	acpigen_write_package(dlen);
 	for(i=0; i<dlen; i++) {
 		dword = pci_read_config32(dev, offset+i*4);
-		lenp += acpigen_write_dword(dword);
+		acpigen_write_dword(dword);
 	}
 	// minus the opcode
-	acpigen_patch_len(lenp - 1);
-	return len + lenp;
+	acpigen_pop_len();
 }
 
 void k8acpi_write_vars(void)
 {
-	int lens;
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
 
-	lens = acpigen_write_scope(pscope);
-	lens += k8acpi_write_pci_data(4, "BUSN", 0xe0);
-	lens += k8acpi_write_pci_data(8, "PCIO", 0xc0);
-	lens += k8acpi_write_pci_data(16, "MMIO", 0x80);
-	lens += acpigen_write_name_byte("SBLK", sysconf.sblk);
-	lens += acpigen_write_name_byte("CBST",
+	acpigen_write_scope(pscope);
+	k8acpi_write_pci_data(4, "BUSN", 0xe0);
+	k8acpi_write_pci_data(8, "PCIO", 0xc0);
+	k8acpi_write_pci_data(16, "MMIO", 0x80);
+	acpigen_write_name_byte("SBLK", sysconf.sblk);
+	acpigen_write_name_byte("CBST",
 	    ((sysconf.pci1234[0] >> 12) & 0xff) ? 0xf : 0x0);
-	lens += acpigen_write_name_dword("SBDN", sysconf.sbdn);
+	acpigen_write_name_dword("SBDN", sysconf.sbdn);
 	msr = rdmsr(TOP_MEM);
-	lens += acpigen_write_name_dword("TOM1", msr.lo);
+	acpigen_write_name_dword("TOM1", msr.lo);
 	msr = rdmsr(TOP_MEM2);
 	/*
 	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
@@ -278,11 +272,11 @@ void k8acpi_write_vars(void)
 	 * Shift value right by 20 bit to make it fit into 32bit,
 	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
 	 */
-	lens += acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+	acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
 
-	lens += k8acpi_write_HT();
+	k8acpi_write_HT();
 	//minus opcode
-	acpigen_patch_len(lens - 1);
+	acpigen_pop_len();
 }
 
 void update_ssdtx(void *ssdtx, int i)

@@ -30,23 +30,23 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include <arch/cpu.h>
 
-static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid,
-				u8 *pstate_fid, u32 *pstate_power, int coreID,
-				u32 pcontrol_blk, u8 plen, u8 onlyBSP, u32 control)
+static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid,
+				   u8 *pstate_fid, u32 *pstate_power, int coreID,
+				   u32 pcontrol_blk, u8 plen, u8 onlyBSP, u32 control)
 {
-	int lenp, lenpr, i;
+	int i;
 
 	if ((onlyBSP) && (coreID != 0)) {
 	    plen = 0;
 	    pcontrol_blk = 0;
 	}
 
-	lenpr = acpigen_write_processor(coreID, pcontrol_blk, plen);
-	lenpr += acpigen_write_empty_PCT();
-	lenpr += acpigen_write_name("_PSS");
+	acpigen_write_processor(coreID, pcontrol_blk, plen);
+	acpigen_write_empty_PCT();
+	acpigen_write_name("_PSS");
 
 	/* add later to total sum */
-	lenp = acpigen_write_package(pstate_num);
+	acpigen_write_package(pstate_num);
 
 	for (i = 0;i < pstate_num;i++) {
 		u32 status, c2;
@@ -56,21 +56,19 @@ static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid
 			    (pstate_vid[i] << 6) |
 			    pstate_fid[i];
 
-		lenp += acpigen_write_PSS_package(pstate_feq[i],
-						pstate_power[i],
-						0x64,
-						0x7,
-						c2,
-						status);
+		acpigen_write_PSS_package(pstate_feq[i],
+					  pstate_power[i],
+					  0x64,
+					  0x7,
+					  c2,
+					  status);
 	}
 	/* update the package  size */
-	acpigen_patch_len(lenp - 1);
+	acpigen_pop_len();
 
-	lenpr += lenp;
-	lenpr += acpigen_write_PPC(pstate_num);
+	acpigen_write_PPC(pstate_num);
 	/* patch the whole Processor token length */
-	acpigen_patch_len(lenpr - 2);
-	return lenpr;
+	acpigen_pop_len();
 }
 
 #if CONFIG_K8_REV_F_SUPPORT
@@ -79,9 +77,8 @@ static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid
 * Two parts are included, the another is the DSDT reconstruction process
 */
 
-static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
-	int len;
 	u8 processor_brand[49];
 	u32 *v, control;
 	struct cpuid_result cpuid1;
@@ -358,8 +355,6 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 write_pstates:
 
-	len = 0;
-
 	control = (0x3 << 30) | /* IRT */
 		  (0x2 << 28) | /* RVO */
 		  (0x1 << 27) | /* ExtType */
@@ -368,12 +363,10 @@ write_pstates:
 		  (0x5 << 11); /* VST */
 
 	for (index = 0; index < (cmp_cap + 1); index++) {
-		len += write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
+		write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
 				Pstate_fid, Pstate_power, index,
 				pcontrol_blk, plen, onlyBSP, control);
 	}
-
-	return len;
 }
 
 #else
@@ -754,13 +747,13 @@ struct cpuentry entr[] = {
 	 {{2200, 1300, 1056}, {2000, 1250, 891}, {1800, 1200, 748}, {1000, 1100, 466}}},
 };
 
-static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
 
 	u8 cmp_cap;
 	struct cpuentry *data = NULL;
 	uint32_t control;
-	int i = 0, index = 0, len = 0, Pstate_num = 0, dev = 0;
+	int i = 0, index = 0, Pstate_num = 0, dev = 0;
 	msr_t msr;
 	u8 Pstate_fid[MAXP+1];
 	u16 Pstate_feq[MAXP+1];
@@ -773,7 +766,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	cpuid1 = cpuid(0x80000007);
 	if((cpuid1.edx & 0x6)!=0x6) {
 		printk(BIOS_INFO, "Processor not capable of performing P-state transitions\n");
-		return 0;
+		return;
 	}
 
 	cpuid1 = cpuid(0x80000001);
@@ -803,7 +796,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	if (data == NULL) {
 		printk(BIOS_WARNING, "Unknown CPU, please update the powernow_acpi.c\n");
-		return 0;
+		return;
 	}
 
 #if CONFIG_MAX_PHYSICAL_CPUS
@@ -836,8 +829,6 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	 *   time = value*1uS (often seen value: 2uS)
 	 */
 
-	len = 0;
-
 	Pstate_fid[0] = Max_fid;
 	Pstate_feq[0] = fid_to_freq(Max_fid);
 	Pstate_vid[0] = Max_vid;
@@ -864,28 +855,23 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			continue;
 
 		for (i = 0; i < (cmp_cap + 1); i++) {
-			len += write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
+			write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
 					Pstate_fid, Pstate_power, index+i,
 					pcontrol_blk, plen, onlyBSP, control);
 		}
 		index += i;
 	}
 	printk(BIOS_DEBUG,"%d Processor objects emitted to SSDT\n",index);
-
-	return len;
 }
 
 #endif
 
 
-int amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
-	int lens;
 	char pscope[] = "\\_PR";
 
-	lens = acpigen_write_scope(pscope);
-	lens += pstates_algorithm(pcontrol_blk, plen, onlyBSP);
-	//minus opcode
-	acpigen_patch_len(lens - 1);
-	return lens;
+	acpigen_write_scope(pscope);
+	pstates_algorithm(pcontrol_blk, plen, onlyBSP);
+	acpigen_pop_len();
 }

@@ -96,14 +96,13 @@ void mainboard_inject_dsdt(void)
 	global_vars_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, GLOBAL_VARS_SIZE);
 
 	if (gnvs) {
-		int scopelen;
 		memset(gnvs, 0, sizeof(*gnvs));
 		acpi_write_gvars(gnvs);
 
 		/* Add it to SSDT.  */
-		scopelen = acpigen_write_scope("\\");
-		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
-		acpigen_patch_len(scopelen - 1);
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_pop_len();
 	}
 }
 

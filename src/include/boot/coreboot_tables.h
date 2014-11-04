@@ -276,6 +276,13 @@ struct lb_macs {
 	struct mac_address mac_addrs[0];
 };
 
+#define LB_TAG_RAM_CODE		0x0028
+struct lb_ram_code {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t ram_code;
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

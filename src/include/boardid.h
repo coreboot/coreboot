@@ -23,5 +23,6 @@
 #include <stdint.h>
 
 uint8_t board_id(void);
+uint32_t ram_code(void);
 
 #endif /* __INCLUDE_BOARDID_H__ */

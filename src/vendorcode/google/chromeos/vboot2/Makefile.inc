@@ -19,19 +19,16 @@
 
 verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
-ramstage-y += ../vboot_common.c
+bootblock-y += ../vboot_common.c
+verstage-y += ../vboot_common.c
 romstage-y += ../vboot_common.c
+ramstage-y += ../vboot_common.c
 
-ifeq ($(CONFIG_RETURN_FROM_VERSTAGE),y)
-bootblock-y += common.c verstub.c ../chromeos.c ../vboot_common.c
-else
+bootblock-y += verstub.c
 verstage-y += verstub.c
-endif
-verstage-y += verstage.c ../fmap.c ../chromeos.c ../vboot_common.c
+bootblock-y += common.c
+verstage-y += verstage.c
 verstage-y += antirollback.c common.c
-verstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += ../vbnv_cmos.c
-verstage-$(CONFIG_CHROMEOS_VBNV_EC) += ../vbnv_ec.c
-verstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += ../vbnv_flash.c
 romstage-y += vboot_handoff.c common.c
 
 verstage-y += verstage.ld

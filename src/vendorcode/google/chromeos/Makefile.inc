@@ -17,13 +17,25 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+bootblock-y += chromeos.c
+verstage-y += chromeos.c
+romstage-y += chromeos.c
+ramstage-y += chromeos.c
+
+verstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 romstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 ramstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
+verstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
 romstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
 ramstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
+verstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
+romstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
+ramstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
+
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vboot.c
 ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-y += gnvs.c
+verstage-y += fmap.c
 romstage-y += fmap.c
 ramstage-y += fmap.c
 ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c

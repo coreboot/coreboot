@@ -86,10 +86,12 @@ static void soc_init(device_t dev)
 	spintable_init((void *)cfg->spintable_addr);
 	arch_initialize_cpus(dev, &cntrl_ops);
 
+#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 	if (vboot_skip_display_init())
 		printk(BIOS_INFO, "Skipping display init.\n");
 	else
 		display_startup(dev);
+#endif
 }
 
 static struct device_operations soc_ops = {

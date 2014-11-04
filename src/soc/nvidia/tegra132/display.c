@@ -29,6 +29,7 @@
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <cbmem.h>
+#include <edid.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/funitcfg.h>
@@ -289,9 +290,36 @@ void display_startup(device_t dev)
 		return;
 	}
 
-	/* set up window */
+	/* Set up window */
 	update_window(config);
-
 	printk(BIOS_INFO, "%s: display init done.\n", __func__);
+
+	/*
+	 * Pass panel information to cb tables
+	 */
+	struct edid edid;
+	/* Align bytes_per_line to 64 bytes as required by dc */
+	edid.bytes_per_line = ALIGN_UP((config->xres *
+				config->framebuffer_bits_per_pixel / 8), 64);
+	edid.x_resolution = edid.bytes_per_line /
+				(config->framebuffer_bits_per_pixel / 8);
+	edid.y_resolution = config->yres;
+	edid.framebuffer_bits_per_pixel = config->framebuffer_bits_per_pixel;
+
+	printk(BIOS_INFO, "%s: bytes_per_line: %d, bits_per_pixel: %d\n "
+			"               x_res x y_res: %d x %d, size: %d\n",
+			 __func__, edid.bytes_per_line,
+			edid.framebuffer_bits_per_pixel,
+			edid.x_resolution, edid.y_resolution,
+			(edid.bytes_per_line * edid.y_resolution));
+
+	set_vbe_mode_info_valid(&edid, 0);
+
+	/*
+	 * After this point, it is payload's responsibility to allocate
+	 * framebuffer and sets the base address to dc's
+	 * WINBUF_START_ADDR register and enables window by setting dc's
+	 * DISP_DISP_WIN_OPTIONS register.
+	 */
 }
 

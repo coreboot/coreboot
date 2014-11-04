@@ -93,84 +93,76 @@ void
 drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 					  int have_dock_serial)
 {
-	int scopelen, devicelen, reslen, methodlen;
+	int reslen;
 
-	scopelen = acpigen_write_scope(scope);
+	acpigen_write_scope(scope);
 
 	if (drivers_lenovo_is_wacom_present()) {
 		/* Device op.  */
-		scopelen += acpigen_emit_byte(0x5b);
-		scopelen += acpigen_emit_byte(0x82);
-		devicelen = acpigen_write_len_f();
-		devicelen += acpigen_emit_namestring("DTR");
+		acpigen_emit_byte(0x5b);
+		acpigen_emit_byte(0x82);
+		acpigen_write_len_f();
+		acpigen_emit_namestring("DTR");
 
-		devicelen += acpigen_write_name("_HID");
-		devicelen += acpigen_emit_eisaid("WACF004");
+		acpigen_write_name("_HID");
+		acpigen_emit_eisaid("WACF004");
 
-		devicelen += acpigen_write_name("_CRS");
+		acpigen_write_name("_CRS");
 
 		reslen = acpigen_write_resourcetemplate_header();
 		reslen += acpigen_write_io16(0x200, 0x200, 1, 8, 1);
 		reslen += acpigen_write_irq((1 << 5));
 
-		devicelen += reslen;
-		devicelen += acpigen_write_resourcetemplate_footer(reslen);
+		acpigen_write_resourcetemplate_footer(reslen);
 
 		/* method op */
-		devicelen += acpigen_emit_byte(0x14);
-		methodlen = acpigen_write_len_f();
-		methodlen += acpigen_emit_namestring("_STA");
+		acpigen_emit_byte(0x14);
+		acpigen_write_len_f();
+		acpigen_emit_namestring("_STA");
 		/* no fnarg */
-		methodlen += acpigen_emit_byte(0x00);
+		acpigen_emit_byte(0x00);
 		/* return */
-		methodlen += acpigen_emit_byte(0xa4);
-		methodlen += acpigen_write_byte(0xf);
+		acpigen_emit_byte(0xa4);
+		acpigen_write_byte(0xf);
+		acpigen_pop_len();
 
-		acpigen_patch_len(methodlen);
-		devicelen += methodlen;
-
-		acpigen_patch_len(devicelen - 1);
-		scopelen += devicelen;
+		acpigen_pop_len();
 	}
 
 	if (have_dock_serial) {
 		/* Device op.  */
-		scopelen += acpigen_emit_byte(0x5b);
-		scopelen += acpigen_emit_byte(0x82);
-		devicelen = acpigen_write_len_f();
-		devicelen += acpigen_emit_namestring("COMA");
+		acpigen_emit_byte(0x5b);
+		acpigen_emit_byte(0x82);
+		acpigen_write_len_f();
+		acpigen_emit_namestring("COMA");
 
-		devicelen += acpigen_write_name("_HID");
-		devicelen += acpigen_emit_eisaid("PNP0501");
-		devicelen += acpigen_write_name("_UID");
+		acpigen_write_name("_HID");
+		acpigen_emit_eisaid("PNP0501");
+		acpigen_write_name("_UID");
 		/* Byte */
-		devicelen += acpigen_write_byte(0x2);
+		acpigen_write_byte(0x2);
 
-		devicelen += acpigen_write_name("_CRS");
+		acpigen_write_name("_CRS");
 
 		reslen = acpigen_write_resourcetemplate_header();
 		reslen += acpigen_write_io16(0x3f8, 0x3f8, 1, 8, 1);
 		reslen += acpigen_write_irq(1 << 4);
 
-		devicelen += reslen;
-		devicelen += acpigen_write_resourcetemplate_footer(reslen);
+		acpigen_write_resourcetemplate_footer(reslen);
 
 		/* method op */
-		devicelen += acpigen_emit_byte(0x14);
-		methodlen = acpigen_write_len_f();
-		methodlen += acpigen_emit_namestring("_STA");
+		acpigen_emit_byte(0x14);
+		acpigen_write_len_f();
+		acpigen_emit_namestring("_STA");
 		/* no fnarg */
-		methodlen += acpigen_emit_byte(0x00);
+		acpigen_emit_byte(0x00);
 		/* return */
-		methodlen += acpigen_emit_byte(0xa4);
-		methodlen += acpigen_write_byte(0xf);
-		acpigen_patch_len(methodlen);
+		acpigen_emit_byte(0xa4);
+		acpigen_write_byte(0xf);
+		acpigen_pop_len();
 
-		devicelen += methodlen;
-
-		acpigen_patch_len(devicelen - 1);
-		scopelen += devicelen;
+		acpigen_pop_len();
 	}
 
-	acpigen_patch_len(scopelen - 1);
+	acpigen_pop_len();
 }

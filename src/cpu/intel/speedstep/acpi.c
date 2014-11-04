@@ -82,18 +82,17 @@ static int get_fsb(void)
 	return 600;
 }
 
-static int gen_pstate_entries(const sst_table_t *const pstates,
+static void gen_pstate_entries(const sst_table_t *const pstates,
 			      const int cpuID, const int cores_per_package,
 			      const uint8_t coordination)
 {
 	int i;
-	int len, len_ps;
 	int frequency;
 
-	len = acpigen_write_empty_PCT();
-	len += acpigen_write_PSD_package(
+	acpigen_write_empty_PCT();
+	acpigen_write_PSD_package(
 			cpuID, cores_per_package, coordination);
-	len += acpigen_write_name("_PSS");
+	acpigen_write_name("_PSS");
 
 	const int fsb3 = get_fsb();
 	const int min_ratio2 = SPEEDSTEP_DOUBLE_RATIO(
@@ -107,7 +106,7 @@ static int gen_pstate_entries(const sst_table_t *const pstates,
 	printk(BIOS_DEBUG, "adding %x P-States between "
 			   "busratio %x and %x, ""incl. P0\n",
 	       pstates->num_states, min_ratio2 / 2, max_ratio2 / 2);
-	len_ps = acpigen_write_package(pstates->num_states);
+	acpigen_write_package(pstates->num_states);
 	for (i = 0; i < pstates->num_states; ++i) {
 		const sst_state_t *const pstate = &pstates->states[i];
 		/* Report frequency of turbo mode as that of HFM + 1. */
@@ -119,19 +118,14 @@ static int gen_pstate_entries(const sst_table_t *const pstates,
 			frequency = (SPEEDSTEP_DOUBLE_RATIO(*pstate)*fsb3)/12;
 		else
 			frequency = (SPEEDSTEP_DOUBLE_RATIO(*pstate)*fsb3)/6;
-		len_ps += acpigen_write_PSS_package(
+		acpigen_write_PSS_package(
 			frequency, pstate->power, 0, 0,
 			SPEEDSTEP_ENCODE_STATE(*pstate),
 			SPEEDSTEP_ENCODE_STATE(*pstate));
 	}
-	len_ps--;
-	acpigen_patch_len(len_ps);
+	acpigen_pop_len();
 
-	len += acpigen_write_PPC(0);
-
-	len += len_ps;
-
-	return len;
+	acpigen_write_PPC(0);
 }
 
 /**
@@ -139,7 +133,6 @@ static int gen_pstate_entries(const sst_table_t *const pstates,
  */
 void generate_cpu_entries(void)
 {
-	int len_pr;
 	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
 	int totalcores = determine_total_number_of_cores();
 	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;
@@ -171,21 +164,20 @@ void generate_cpu_entries(void)
 			}
 
 			/* Generate processor \_PR.CPUx. */
-			len_pr = acpigen_write_processor(
+			acpigen_write_processor(
 					cpuID * cores_per_package + coreID - 1,
 					pcontrol_blk, plen);
 
 			/* Generate p-state entries. */
-			len_pr += gen_pstate_entries(&pstates, cpuID,
+			gen_pstate_entries(&pstates, cpuID,
 					cores_per_package, coordination);
 
 			/* Generate c-state entries. */
 			if (num_cstates > 0)
-				len_pr += acpigen_write_CST_package(
+				acpigen_write_CST_package(
 							cstates, num_cstates);
 
-			len_pr--;
-			acpigen_patch_len(len_pr);
+			acpigen_pop_len();
 		}
 	}
 }

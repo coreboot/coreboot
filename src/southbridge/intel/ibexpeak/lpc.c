@@ -675,8 +675,6 @@ static void southbridge_inject_dsdt(void)
 	opregion = igd_make_opregion();
 
 	if (gnvs) {
-		int scopelen;
-
 		memset(gnvs, 0, sizeof (*gnvs));
 
 		acpi_create_gnvs(gnvs);
@@ -686,9 +684,9 @@ static void southbridge_inject_dsdt(void)
 		smm_setup_structures(gnvs, NULL, NULL);
 
 		/* Add it to SSDT.  */
-		scopelen = acpigen_write_scope("\\");
-		scopelen += acpigen_write_name_dword("NVSA", (u32) gnvs);
-		acpigen_patch_len(scopelen - 1);
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_pop_len();
 	}
 }
 

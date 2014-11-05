@@ -294,7 +294,8 @@ int print_dmibar(struct pci_dev *nb)
 		dmi_registers = westmere_dmi_registers;
 		size = ARRAY_SIZE(westmere_dmi_registers);
 		break;
-	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M:
 		dmi_registers = sandybridge_dmi_registers;
 		size = ARRAY_SIZE(sandybridge_dmi_registers);
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_A: /* pretty printing not implemented yet */

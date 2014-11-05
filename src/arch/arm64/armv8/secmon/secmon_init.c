@@ -53,6 +53,24 @@ static void cpu_init(int bsp)
 		cpu_set_bsp();
 }
 
+static void wait_for_all_cpus(void)
+{
+	int all_online;
+
+	while (1) {
+		int i;
+
+		all_online = 1;
+		for (i = 0; i < CONFIG_MAX_CPUS; i++) {
+			if (!cpu_online(cpu_info_for_cpu(i)))
+				all_online = 0;
+		}
+
+		if (all_online)
+			break;
+	}
+}
+
 static void secmon_init(struct secmon_params *params, int bsp)
 {
 	struct cpu_action action = {
@@ -66,6 +84,9 @@ static void secmon_init(struct secmon_params *params, int bsp)
 
 	if (!cpu_is_bsp())
 		secmon_wait_for_action();
+
+	/* Wait for all CPUs to enter secmon. */
+	wait_for_all_cpus();
 
 	smc_init();
 	psci_init();

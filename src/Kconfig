@@ -1114,21 +1114,22 @@ config DEBUG_COVERAGE
 	  If enabled, the code coverage hooks in coreboot will output some
 	  information about the coverage data that is dumped.
 
+config GENERIC_GPIO_LIB
+	bool "Build generic GPIO library"
+	default n
+	help
+	  If enabled, compile the generic GPIO library. A "generic" GPIO
+	  implies configurability usually found on SoCs, particularly the
+	  ability to control internal pull resistors.
+
 config BOARD_ID_SUPPORT
 	bool "Discover board ID and store it in coreboot table"
 	default n
+	select GENERIC_GPIO_LIB
 	help
 	  If enabled, coreboot discovers the board id of the hardware it is
 	  running on and reports it through the coreboot table to the rest of
 	  the system.
-
-config TERTIARY_BOARD_ID
-	bool "Interpret board ID GPIOs as tertiary inputs"
-	default n
-	depends on BOARD_ID_SUPPORT
-	help
-	  Consider each GPIO as being in one of three states: pulled down (0),
-	  pulled up (1), or not connected (2)
 
 endmenu
 

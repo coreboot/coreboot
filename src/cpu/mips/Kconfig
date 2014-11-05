@@ -30,8 +30,3 @@ config BOOTBLOCK_ROM_OFFSET
 	hex
 	depends on CPU_MIPS
 	default 0x00
-
-config CBFS_HEADER_ROM_OFFSET
-	hex
-	depends on CPU_MIPS
-	default 0x10

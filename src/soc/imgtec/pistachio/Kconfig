@@ -40,6 +40,10 @@ config BOOTBLOCK_BASE
 	default 0x9b000000
 
 config CBFS_ROM_OFFSET
+	hex
+	default 0x4100
+
+config CBFS_HEADER_ROM_OFFSET
 	# Effectively the maximum size of the bootblock
 	hex
 	default 0x4000

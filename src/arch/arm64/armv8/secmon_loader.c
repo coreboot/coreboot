@@ -79,26 +79,22 @@ static secmon_entry_t secmon_load_rmodule(void)
 
 struct secmon_runit {
 	secmon_entry_t entry;
-	struct secmon_params bsp_params;
-	struct secmon_params secondary_params;
+	struct secmon_params params;
 };
 
 static void secmon_start(void *arg)
 {
 	uint32_t scr;
 	secmon_entry_t entry;
-	struct secmon_params *p = NULL;
+	struct secmon_params *p;
 	struct secmon_runit *r = arg;
 
 	entry = r->entry;
+	p = &r->params;
 
-	if (cpu_is_bsp())
-		p = &r->bsp_params;
-	else {
+	/* Obtain secondary entry point for non-BSP CPUs. */
+	if (!cpu_is_bsp())
 		entry = secondary_entry_point(entry);
-		if (r->secondary_params.entry != NULL)
-			p = &r->secondary_params;
-	}
 
 	printk(BIOS_DEBUG, "CPU%x entering secure monitor %p.\n",
 		cpu_info()->id, entry);
@@ -113,9 +109,26 @@ static void secmon_start(void *arg)
 	entry(p);
 }
 
-void secmon_run(void (*entry)(void *), void *cb_tables)
+static void fill_secmon_params(struct secmon_params *p,
+				void (*bsp_entry)(void *), void *bsp_arg)
 {
 	const struct spintable_attributes *spin_attrs;
+
+	memset(p, 0, sizeof(*p));
+
+	spin_attrs = spintable_get_attributes();
+
+	if (spin_attrs != NULL) {
+		p->secondary.run = spin_attrs->entry;
+		p->secondary.arg = spin_attrs->addr;
+	}
+
+	p->bsp.run = bsp_entry;
+	p->bsp.arg = bsp_arg;
+}
+
+void secmon_run(void (*entry)(void *), void *cb_tables)
+{
 	static struct secmon_runit runit;
 	struct cpu_action action = {
 		.run = secmon_start,
@@ -137,15 +150,7 @@ void secmon_run(void (*entry)(void *), void *cb_tables)
 	printk(BIOS_DEBUG, "ARM64: Loaded the el3 monitor...jumping to %p\n",
 	       runit.entry);
 
-	runit.bsp_params.entry = entry;
-	runit.bsp_params.arg = cb_tables;
-
-	spin_attrs = spintable_get_attributes();
-
-	if (spin_attrs != NULL) {
-		runit.secondary_params.entry = spin_attrs->entry;
-		runit.secondary_params.arg = spin_attrs->addr;
-	}
+	fill_secmon_params(&runit.params, entry, cb_tables);
 
 	arch_run_on_all_cpus_but_self_async(&action);
 	secmon_start(&runit);

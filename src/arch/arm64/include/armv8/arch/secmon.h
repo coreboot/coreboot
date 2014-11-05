@@ -25,8 +25,8 @@
 #if IS_ENABLED(CONFIG_ARCH_USE_SECURE_MONITOR)
 
 struct secmon_params {
-	void (*entry)(void *);
-	void *arg;
+	struct cpu_action bsp;
+	struct cpu_action secondary;
 };
 
 void secmon_run(void (*entry)(void *), void *arg);

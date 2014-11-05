@@ -25,6 +25,7 @@
 #if IS_ENABLED(CONFIG_ARCH_USE_SECURE_MONITOR)
 
 struct secmon_params {
+	size_t online_cpus;
 	struct cpu_action bsp;
 	struct cpu_action secondary;
 };

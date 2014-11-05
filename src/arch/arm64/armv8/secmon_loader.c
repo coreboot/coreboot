@@ -116,6 +116,8 @@ static void fill_secmon_params(struct secmon_params *p,
 
 	memset(p, 0, sizeof(*p));
 
+	p->online_cpus = cpus_online();
+
 	spin_attrs = spintable_get_attributes();
 
 	if (spin_attrs != NULL) {

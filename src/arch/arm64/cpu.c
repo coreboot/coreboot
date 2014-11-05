@@ -32,6 +32,19 @@ struct cpu_info *cpu_info(void)
 	return cpu_info_for_cpu(smp_processor_id());
 }
 
+size_t cpus_online(void)
+{
+	int i;
+	size_t num = 0;
+
+	for (i = 0; i < ARRAY_SIZE(cpu_infos); i++) {
+		if (cpu_online(cpu_info_for_cpu(i)))
+			num++;
+	}
+
+	return num;
+}
+
 static inline int action_queue_empty(struct cpu_action_queue *q)
 {
 	return load_acquire_exclusive(&q->todo) == NULL;

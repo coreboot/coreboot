@@ -99,6 +99,9 @@ static inline void cpu_mark_online(struct cpu_info *ci)
 	store_release(&ci->online, 1);
 }
 
+/* Provide number of CPUs online. */
+size_t cpus_online(void);
+
 /* Control routines for starting CPUs. */
 struct cpu_control_ops {
 	/* Return the maximum number of CPUs supported. */

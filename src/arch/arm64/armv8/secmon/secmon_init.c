@@ -70,7 +70,10 @@ static void secmon_init(struct secmon_params *params, int bsp)
 	smc_init();
 	psci_init();
 
-	arch_run_on_all_cpus_async(&action);
+	/* Make sure all non-BSP CPUs take action before the BSP. */
+	arch_run_on_all_cpus_but_self_async(&action);
+	/* Turn on BSP. */
+	start_up_cpu(NULL);
 
 	printk(BIOS_ERR, "CPU turn on failed for BSP.\n");
 	while (1)

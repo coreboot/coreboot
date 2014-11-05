@@ -1411,11 +1411,7 @@ static void cpu_bus_init(device_t dev)
 #endif
 }
 
-static void cpu_bus_read_resources(device_t dev)
-{
-}
-
-static void cpu_bus_set_resources(device_t dev)
+static void cpu_bus_set_resources(struct device *dev)
 {
 	struct resource *resource = find_resource(dev, 0xc0010058);
 	if (resource) {
@@ -1425,7 +1421,7 @@ static void cpu_bus_set_resources(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-	.read_resources	  = cpu_bus_read_resources,
+	.read_resources	  = DEVICE_NOOP,
 	.set_resources	  = cpu_bus_set_resources,
 	.enable_resources = DEVICE_NOOP,
 	.init		  = cpu_bus_init,

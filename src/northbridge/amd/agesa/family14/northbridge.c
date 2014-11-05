@@ -779,15 +779,7 @@ static void domain_enable_resources(device_t dev)
 
 /* Bus related code */
 
-static void cpu_bus_read_resources(device_t dev)
-{
-}
-
-static void cpu_bus_set_resources(device_t dev)
-{
-}
-
-static u32 cpu_bus_scan(device_t dev, u32 max)
+static u32 cpu_bus_scan(struct device *dev, u32 max)
 {
 	struct bus *cpu_bus = dev->link_list;
 	device_t cpu;
@@ -846,8 +838,8 @@ static struct device_operations pci_domain_ops = {
 };
 
 static struct device_operations cpu_bus_ops = {
-	.read_resources = cpu_bus_read_resources,
-	.set_resources = cpu_bus_set_resources,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
 	.enable_resources = NULL,
 	.init = cpu_bus_init,
 	.scan_bus = cpu_bus_scan,

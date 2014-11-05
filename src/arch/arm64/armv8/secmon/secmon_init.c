@@ -44,7 +44,7 @@ static void start_up_cpu(void *arg)
 	if (action->run == NULL)
 		psci_turn_off_self();
 
-	psci_turn_on_self(action->run, action->arg);
+	psci_turn_on_self(action);
 }
 
 static void cpu_init(int bsp)

@@ -63,8 +63,7 @@ struct psci_node;
 
 struct psci_cpu_state {
 	struct cpu_info *ci;
-	void *entry;
-	void *arg;
+	struct cpu_action startup;
 	/* Ancestor of target to update state in CPU_ON case. */
 	struct psci_node *ancestor;
 };
@@ -191,7 +190,7 @@ static inline void psci64_return(struct psci_func *pf, int64_t val)
 void psci_init(void);
 
 /* Turn on the current CPU within the PSCI subsystem. */
-void psci_turn_on_self(void *entry, void *arg);
+void psci_turn_on_self(const struct cpu_action *action);
 int psci_turn_off_self(void);
 
 #endif /* __ARCH_PSCI_H__ */

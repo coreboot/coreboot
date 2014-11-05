@@ -170,17 +170,16 @@ static void psci_cpu_on_callback(void *arg)
 
 	memset(&state, 0, sizeof(state));
 	state.elx.spsr = get_eret_el(target_el, SPSR_USE_H);
-	transition_with_entry(e->cpu_state.entry, e->cpu_state.arg, &state);
+	transition_with_entry(e->cpu_state.startup.run,
+				e->cpu_state.startup.arg, &state);
 }
 
-static void psci_cpu_on_prepare(struct psci_node *e,
-				void *entry, void *arg)
+static void psci_cpu_on_prepare(struct psci_node *e, const struct cpu_action *a)
 {
 	struct psci_node *ancestor;
 	int state = PSCI_STATE_ON_PENDING;
 
-	e->cpu_state.entry = entry;
-	e->cpu_state.arg = arg;
+	e->cpu_state.startup = *a;
 	ancestor = psci_find_ancestor(e, PSCI_AFFINITY_LEVEL_HIGHEST, state);
 	e->cpu_state.ancestor = ancestor;
 	psci_set_hierarchy_state(e, ancestor, state);
@@ -188,18 +187,23 @@ static void psci_cpu_on_prepare(struct psci_node *e,
 
 static int psci_schedule_cpu_on(struct psci_node *e)
 {
+	struct cpu_info *ci;
 	struct cpu_action action = {
 		.run = &psci_cpu_on_callback,
 		.arg = e,
 	};
 
-	if (arch_run_on_cpu_async(e->cpu_state.ci->id, &action))
+	ci = e->cpu_state.ci;
+	if (ci == NULL || arch_run_on_cpu_async(ci->id, &action)) {
+		psci_set_hierarchy_state(e, e->cpu_state.ancestor,
+						PSCI_STATE_OFF);
 		return PSCI_RET_INTERNAL_FAILURE;
+	}
 
 	return PSCI_RET_SUCCESS;
 }
 
-void psci_turn_on_self(void *entry, void *arg)
+void psci_turn_on_self(const struct cpu_action *action)
 {
 	struct psci_node *e = node_self();
 
@@ -210,7 +214,7 @@ void psci_turn_on_self(void *entry, void *arg)
 	}
 
 	psci_lock();
-	psci_cpu_on_prepare(e, entry, arg);
+	psci_cpu_on_prepare(e, action);
 	psci_unlock();
 
 	psci_schedule_cpu_on(e);
@@ -223,6 +227,7 @@ static void psci_cpu_on(struct psci_func *pf)
 	uint64_t context_id;
 	int cpu_state;
 	struct psci_node *e;
+	struct cpu_action action;
 
 	target_mpidr = psci64_arg(pf, PSCI_PARAM_0);
 	entry = psci64_arg(pf, PSCI_PARAM_1);
@@ -248,7 +253,9 @@ static void psci_cpu_on(struct psci_func *pf)
 		return;
 	}
 
-	psci_cpu_on_prepare(e, (void *)entry, (void *)context_id);
+	action.run = (void *)entry;
+	action.arg = (void *)context_id;
+	psci_cpu_on_prepare(e, &action);
 	psci_unlock();
 
 	psci32_return(pf, psci_schedule_cpu_on(e));

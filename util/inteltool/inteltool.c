@@ -339,13 +339,14 @@ int main(int argc, char *argv[])
 		pci_fill_info(dev, PCI_FILL_CLASS);
 		/* The ISA/LPC bridge can be 0x1f, 0x07, or 0x04 so we probe. */
 		if (dev->device_class == 0x0601) { /* ISA/LPC bridge */
-			if (sb == NULL)
+			if (sb == NULL) {
 				sb = dev;
-			else
+			} else {
 				fprintf(stderr, "Multiple devices with class ID"
 					" 0x0601, using %02x%02x:%02x.%02x\n",
-					dev->domain, dev->bus, dev->dev,
-					dev->func);
+					sb->domain, sb->bus, sb->dev, sb->func);
+				break;
+			}
 		}
 	}
 

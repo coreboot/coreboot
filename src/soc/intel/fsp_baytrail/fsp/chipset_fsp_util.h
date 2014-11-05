@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2014 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,5 +46,8 @@
  */
 #define FSP_IMAGE_ID_DWORD0 0x56594C56	/* 'VLYV' */
 #define FSP_IMAGE_ID_DWORD1 0x30574549	/* 'IEW0' */
+
+/* Revision of the FSP binary */
+#define FSP_GOLD3_REV_ID    0x00000303
 
 #endif /* CHIPSET_FSP_UTIL_H */

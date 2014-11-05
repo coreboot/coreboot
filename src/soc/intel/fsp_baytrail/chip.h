@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2014 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -171,6 +172,109 @@ struct soc_intel_fsp_baytrail_config {
 	uint8_t  LpeAcpiModeEnable;
 	#define LPE_ACPI_MODE_DISABLED	1
 	#define LPE_ACPI_MODE_ENABLED	2
+
+	uint32_t SerialDebugPortAddress;
+	#define  SerialDebugPortAddress_DEFAULT 0
+
+	uint8_t  SerialDebugPortType;
+	#define  SERIAL_DEBUG_PORT_DEFAULT      0
+	#define  SERIAL_DEBUG_PORT_TYPE_NONE    1
+	#define  SERIAL_DEBUG_PORT_TYPE_IO      2
+	#define  SERIAL_DEBUG_PORT_TYPE_MMIO    3
+
+	uint8_t  PcdMrcDebugMsg;
+	#define  MRC_DEBUG_MSG_DEFAULT          0
+	#define  MRC_DEBUG_MSG_DISABLE          1
+	#define  MRC_DEBUG_MSG_ENABLE           2
+
+	uint8_t  PcdSccEnablePciMode;
+	#define  SCC_PCI_MODE_DEFAULT           0
+	#define  SCC_PCI_MODE_DISABLE           1
+	#define  SCC_PCI_MODE_ENABLE            2
+
+	uint8_t  IgdRenderStandby;
+	#define  IGD_RENDER_STANDBY_DEFAULT     0
+	#define  IGD_RENDER_STANDBY_DISABLE     1
+	#define  IGD_RENDER_STANDBY_ENABLE      2
+
+	uint8_t  TxeUmaEnable;
+	#define  TXE_UMA_DEFAULT                0
+	#define  TXE_UMA_DISABLE                1
+	#define  TXE_UMA_ENABLE                 2
+
+	/* Memory down data */
+	uint8_t  EnableMemoryDown;
+	#define  MEMORY_DOWN_DEFAULT            0
+	#define  MEMORY_DOWN_DISABLE            1
+	#define  MEMORY_DOWN_ENABLE             2
+
+	uint8_t  DRAMSpeed;
+	#define  DRAM_SPEED_DEFAULT             0
+	#define  DRAM_SPEED_800MHZ              1
+	#define  DRAM_SPEED_1066MHZ             2
+	#define  DRAM_SPEED_1333MHZ             3
+	#define  DRAM_SPEED_1600MHZ             4
+
+	uint8_t  DRAMType;
+	#define  DRAM_TYPE_DEFAULT              0
+	#define  DRAM_TYPE_DDR3                 1
+	#define  DRAM_TYPE_DDR3L                2
+
+	uint8_t  DIMM0Enable;
+	#define  DIMM0_ENABLE_DEFAULT           0
+	#define  DIMM0_DISABLE                  1
+	#define  DIMM0_ENABLE                   2
+
+	uint8_t  DIMM1Enable;
+	#define  DIMM1_ENABLE_DEFAULT           0
+	#define  DIMM1_DISABLE                  1
+	#define  DIMM1_ENABLE                   2
+
+	uint8_t  DIMMDWidth;
+	#define  DIMM_DWIDTH_DEFAULT            0
+	#define  DIMM_DWIDTH_X8                 1
+	#define  DIMM_DWIDTH_X16                2
+	#define  DIMM_DWIDTH_X32                3
+
+	uint8_t  DIMMDensity;
+	#define  DIMM_DENSITY_DEFAULT           0
+	#define  DIMM_DENSITY_1G_BIT            1
+	#define  DIMM_DENSITY_2G_BIT            2
+	#define  DIMM_DENSITY_4G_BIT            3
+	#define  DIMM_DENSITY_8G_BIT            4
+
+	uint8_t  DIMMBusWidth;
+	#define  DIMM_BUS_WIDTH_DEFAULT         0
+	#define  DIMM_BUS_WIDTH_8BIT            1
+	#define  DIMM_BUS_WIDTH_16BIT           2
+	#define  DIMM_BUS_WIDTH_32BIT           3
+	#define  DIMM_BUS_WIDTH_64BIT           4
+
+	uint8_t  DIMMSides;
+	#define  DIMM_SIDES_DEFAULT             0
+	#define  DIMM_SIDES_1RANK               1
+	#define  DIMM_SIDES_2RANK               2
+
+	uint8_t  DIMMtCL;
+	#define  DIMM_TCL_DEFAULT               0
+
+	uint8_t  DIMMtRPtRCD;
+	#define  DIMM_TRP_TRCD_DEFAULT          0
+
+	uint8_t  DIMMtWR;
+	#define  DIMM_TWR_DEFAULT               0
+
+	uint8_t  DIMMtWTR;
+	#define  DIMM_TWTR_DEFAULT              0
+
+	uint8_t  DIMMtRRD;
+	#define  DIMM_TRRD_DEFAULT              0
+
+	uint8_t  DIMMtRTP;
+	#define  DIMM_TRTP_DEFAULT              0
+
+	uint8_t  DIMMtFAW;
+	#define  DIMM_TFAW_DEFAULT              0
 
 /* ***** ACPI configuration ***** */
 	/* Options for these are in src/arch/x86/include/arch/acpi.h */

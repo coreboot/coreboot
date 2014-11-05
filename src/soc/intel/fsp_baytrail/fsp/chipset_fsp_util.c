@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2014 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +70,7 @@ typedef struct soc_intel_fsp_baytrail_config config_t;
  *
  * @param UpdData Pointer to the UPD Data structure
  */
-static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
+static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *UpdData)
 {
 	ROMSTAGE_CONST struct device *dev;
 	ROMSTAGE_CONST config_t *config;
@@ -146,7 +147,15 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 
 		switch (dev->path.pci.devfn) {
 			case MIPI_DEV_FUNC:	/* Camera / Image Signal Processing */
-				UpdData->ISPEnable = dev->enabled;
+				if (FspInfo->ImageRevision >= FSP_GOLD3_REV_ID) {
+					UpdData->ISPEnable = dev->enabled;
+				} else {
+					/* Gold2 and earlier FSP: ISPEnable is the filed	*/
+					/* next to PcdGttSize in UPD_DATA_REGION struct		*/
+					*(&(UpdData->PcdGttSize)+sizeof(UINT8)) = dev->enabled;
+					printk (BIOS_DEBUG,
+						"Baytrail Gold2 or earlier FSP, adjust ISPEnable offset.\n");
+				}
 				printk(BIOS_DEBUG, "MIPI/ISP:\t\t%s\n",
 						UpdData->PcdEnableSdio?"Enabled":"Disabled");
 				break;
@@ -303,6 +312,120 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	printk(BIOS_DEBUG, "Xhci:\t\t\t%s\n",
 		UpdData->PcdEnableXhci?"Enabled":"Disabled");
 
+	if (config->SerialDebugPortAddress != SerialDebugPortAddress_DEFAULT) {
+		UpdData->SerialDebugPortAddress = config->SerialDebugPortAddress;
+	}
+	if (config->SerialDebugPortType != SERIAL_DEBUG_PORT_DEFAULT) {
+		UpdData->SerialDebugPortType
+			= config->SerialDebugPortType - SERIAL_DEBUG_PORT_TYPE_NONE;
+	}
+	if (config->PcdMrcDebugMsg != MRC_DEBUG_MSG_DEFAULT) {
+		UpdData->PcdMrcDebugMsg
+			= config->PcdMrcDebugMsg - MRC_DEBUG_MSG_DISABLE;
+		printk (BIOS_DEBUG, "MRC Debug Message:\t%s\n",
+			(UpdData->PcdMrcDebugMsg) ? "Enabled" : "Disabled");
+	}
+	if (config->PcdSccEnablePciMode != SCC_PCI_MODE_DEFAULT) {
+		UpdData->PcdSccEnablePciMode
+			= config->PcdSccEnablePciMode - SCC_PCI_MODE_DISABLE;
+	}
+	if (config->IgdRenderStandby != IGD_RENDER_STANDBY_DEFAULT) {
+		UpdData->IgdRenderStandby
+			= config->IgdRenderStandby - IGD_RENDER_STANDBY_DISABLE;
+		printk (BIOS_DEBUG, "IGD Render Standby:\t%s\n",
+			(UpdData->IgdRenderStandby) ? "Enabled" : "Disabled");
+	}
+	if (config->TxeUmaEnable != TXE_UMA_DEFAULT) {
+		UpdData->TxeUmaEnable = config->TxeUmaEnable - TXE_UMA_DISABLE;
+	}
+
+	/* set memory down parameters */
+	if (config->EnableMemoryDown != MEMORY_DOWN_DEFAULT) {
+		UpdData->PcdMemoryParameters.EnableMemoryDown
+			= config->EnableMemoryDown - MEMORY_DOWN_DISABLE;
+
+		if (config->DRAMSpeed != DRAM_SPEED_DEFAULT) {
+			UpdData->PcdMemoryParameters.DRAMSpeed
+			= config->DRAMSpeed - DRAM_SPEED_800MHZ;
+		}
+		if (config->DRAMType != DRAM_TYPE_DEFAULT) {
+			UpdData->PcdMemoryParameters.DRAMType
+			= config->DRAMType - DRAM_TYPE_DDR3;
+		}
+		if (config->DIMM0Enable != DIMM0_ENABLE_DEFAULT) {
+			UpdData->PcdMemoryParameters.DIMM0Enable
+			= config->DIMM0Enable - DIMM0_DISABLE;
+		}
+		if (config->DIMM1Enable != DIMM1_ENABLE_DEFAULT) {
+			UpdData->PcdMemoryParameters.DIMM1Enable
+			= config->DIMM1Enable - DIMM1_DISABLE;
+		}
+		if (config->DIMMDWidth != DIMM_DWIDTH_DEFAULT) {
+			UpdData->PcdMemoryParameters.DIMMDWidth
+			= config->DIMMDWidth - DIMM_DWIDTH_X8;
+		}
+		if (config->DIMMDensity != DIMM_DENSITY_DEFAULT) {
+			UpdData->PcdMemoryParameters.DIMMDensity
+			= config->DIMMDensity - DIMM_DENSITY_1G_BIT;
+		}
+		if (config->DIMMBusWidth != DIMM_BUS_WIDTH_DEFAULT) {
+			UpdData->PcdMemoryParameters.DIMMBusWidth
+			= config->DIMMBusWidth - DIMM_BUS_WIDTH_8BIT;
+		}
+		if (config->DIMMSides != DIMM_SIDES_DEFAULT) {
+			UpdData->PcdMemoryParameters.DIMMSides
+			= config->DIMMSides - DIMM_SIDES_1RANK;
+		}
+		if (config->DIMMtCL != DIMM_TCL_DEFAULT)
+			UpdData->PcdMemoryParameters.DIMMtCL		= config->DIMMtCL;
+		if (config->DIMMtRPtRCD != DIMM_TRP_TRCD_DEFAULT)
+			UpdData->PcdMemoryParameters.DIMMtRPtRCD	= config->DIMMtRPtRCD;
+		if (config->DIMMtWR != DIMM_TWR_DEFAULT)
+			UpdData->PcdMemoryParameters.DIMMtWR		= config->DIMMtWR;
+		if (config->DIMMtWTR != DIMM_TWTR_DEFAULT)
+			UpdData->PcdMemoryParameters.DIMMtWTR		= config->DIMMtWTR;
+		if (config->DIMMtRRD != DIMM_TRRD_DEFAULT)
+			UpdData->PcdMemoryParameters.DIMMtRRD		= config->DIMMtRRD;
+		if (config->DIMMtRTP != DIMM_TRTP_DEFAULT)
+			UpdData->PcdMemoryParameters.DIMMtRTP		= config->DIMMtRTP;
+		if (config->DIMMtFAW != DIMM_TFAW_DEFAULT)
+			UpdData->PcdMemoryParameters.DIMMtFAW		= config->DIMMtFAW;
+
+		printk (BIOS_DEBUG,
+			"Memory Down Data Existed : %s\n"\
+			"- Speed (0: 800, 1: 1066, 2: 1333, 3: 1600): %d\n"\
+			"- Type  (0: DDR3, 1: DDR3L) : %d\n"\
+			"- DIMM0        : %s\n"\
+			"- DIMM1        : %s\n"\
+			"- Width        : x%d\n"\
+			"- Density      : %dGbit\n"
+			"- BudWidth     : %dbit\n"\
+			"- Rank #       : %d\n"\
+			"- tCL          : %02X\n"\
+			"- tRPtRCD      : %02X\n"\
+			"- tWR          : %02X\n"\
+			"- tWTR         : %02X\n"\
+			"- tRRD         : %02X\n"\
+			"- tRTP         : %02X\n"\
+			"- tFAW         : %02X\n"
+			, (UpdData->PcdMemoryParameters.EnableMemoryDown) ? "Enabled" : "Disabled"
+			, UpdData->PcdMemoryParameters.DRAMSpeed
+			, UpdData->PcdMemoryParameters.DRAMType
+			, (UpdData->PcdMemoryParameters.DIMM0Enable) ? "Enabled" : "Disabled"
+			, (UpdData->PcdMemoryParameters.DIMM1Enable) ? "Enabled" : "Disabled"
+			, 8 << (UpdData->PcdMemoryParameters.DIMMDWidth)
+			, 1 << (UpdData->PcdMemoryParameters.DIMMDensity)
+			, 8 << (UpdData->PcdMemoryParameters.DIMMBusWidth)
+			, (UpdData->PcdMemoryParameters.DIMMSides) + 1
+			, UpdData->PcdMemoryParameters.DIMMtCL
+			, UpdData->PcdMemoryParameters.DIMMtRPtRCD
+			, UpdData->PcdMemoryParameters.DIMMtWR
+			, UpdData->PcdMemoryParameters.DIMMtWTR
+			, UpdData->PcdMemoryParameters.DIMMtRRD
+			, UpdData->PcdMemoryParameters.DIMMtRTP
+			, UpdData->PcdMemoryParameters.DIMMtFAW
+			);
+	}
 }
 
 /* Set up the Baytrail specific structures for the call into the FSP */
@@ -318,7 +441,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 
 	/* Initialize the UPD Data */
 	GetUpdDefaultFromFsp (fsp_ptr, pFspRtBuffer->Common.UpdDataRgnPtr);
-	ConfigureDefaultUpdData(pFspRtBuffer->Common.UpdDataRgnPtr);
+	ConfigureDefaultUpdData(fsp_ptr, pFspRtBuffer->Common.UpdDataRgnPtr);
 	pFspInitParams->NvsBufferPtr = NULL;
 
 #if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)

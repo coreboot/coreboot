@@ -1,6 +1,6 @@
 /**
 
-Copyright (C) 2013, Intel Corporation
+Copyright (C) 2013-2014 Intel Corporation
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -28,56 +28,78 @@ are permitted provided that the following conditions are met:
 
 **/
 
-/**
-
-This file is auto-generated, please DO NOT modify.
-
-**/
-
-#ifndef __VPDHEADER_H__
-#define __VPDHEADER_H__
+#ifndef __FSPVPD_H__
+#define __FSPVPD_H__
 
 #pragma pack(1)
 
+typedef struct {
+  UINT8    EnableMemoryDown;
+  UINT8    DRAMSpeed;      /* DRAM Speed  */
+  UINT8    DRAMType;       /* DRAM Type */
+  UINT8    DIMM0Enable;    /* DIMM 0 Enable */
+  UINT8    DIMM1Enable;    /* DIMM 1 Enable */
+  UINT8    DIMMDWidth;     /* DRAM device data width */
+  UINT8    DIMMDensity;    /* DRAM device data density */
+  UINT8    DIMMBusWidth;   /* DIMM Bus Width */
+  UINT8    DIMMSides;      /* Ranks Per DIMM */
+  UINT8    DIMMtCL;        /* tCL */
+  UINT8    DIMMtRPtRCD;    /* tRP and tRCD in DRAM clk - 5:12.5ns, 6:15ns, etc. */
+  UINT8    DIMMtWR;        /* tWR in DRAM clk  */
+  UINT8    DIMMtWTR;       /* tWTR in DRAM clk */
+  UINT8    DIMMtRRD;       /* tRRD in DRAM clk */
+  UINT8    DIMMtRTP;       /* tRTP in DRAM clk */
+  UINT8    DIMMtFAW;       /* tFAW in DRAM clk */
+} MEMORY_DOWN_DATA;
+
+
 typedef struct _UPD_DATA_REGION {
-  UINT64   Signature;                             /* Offset 0x0000 */
-  UINT32   RESERVED1;                             /* Offset 0x0008 */
-  UINT8    Padding0[20];                          /* Offset 0x000C */
-  UINT16   PcdMrcInitTsegSize;                    /* Offset 0x0014 */
-  UINT16   PcdMrcInitMmioSize;                    /* Offset 0x0016 */
-  UINT8    PcdMrcInitSPDAddr1;                    /* Offset 0x0018 */
-  UINT8    PcdMrcInitSPDAddr2;                    /* Offset 0x0019 */
-  UINT8    PcdeMMCBootMode;                       /* Offset 0x001B */
-  UINT8    PcdEnableSdio;                         /* Offset 0x001C */
-  UINT8    PcdEnableSdcard;                       /* Offset 0x001D */
-  UINT8    PcdEnableHsuart0;                      /* Offset 0x001E */
-  UINT8    PcdEnableHsuart1;                      /* Offset 0x001F */
-  UINT8    PcdEnableSpi;                          /* Offset 0x0020 */
-  UINT8    PcdEnableLan;                          /* Offset 0x0021 */
-  UINT8    PcdEnableSata;                         /* Offset 0x0023 */
-  UINT8    PcdSataMode;                           /* Offset 0x002E */
-  UINT8    PcdEnableAzalia;                       /* Offset 0x002F */
-  UINT32   AzaliaConfigPtr;                       /* Offset 0x0030 */
-  UINT8    PcdEnableXhci;                         /* Offset 0x0034 */
-  UINT8    PcdEnableLpe;                          /* Offset 0x0029 */
-  UINT8    PcdLpssSioEnablePciMode;               /* Offset 0x002A */
-  UINT8    PcdEnableDma0;                         /* Offset 0x002B */
-  UINT8    PcdEnableDma1;                         /* Offset 0x002C */
-  UINT8    PcdEnableI2C0;                         /* Offset 0x002D */
-  UINT8    PcdEnableI2C1;                         /* Offset 0x002E */
-  UINT8    PcdEnableI2C2;                         /* Offset 0x002F */
-  UINT8    PcdEnableI2C3;                         /* Offset 0x0030 */
-  UINT8    PcdEnableI2C4;                         /* Offset 0x0031 */
-  UINT8    PcdEnableI2C5;                         /* Offset 0x0032 */
-  UINT8    PcdEnableI2C6;                         /* Offset 0x0033 */
-  UINT8    PcdEnablePwm0;                         /* Offset 0x0034 */
-  UINT8    PcdEnablePwm1;                         /* Offset 0x0035 */
-  UINT8    PcdEnableHsi;                          /* Offset 0x0036 */
-  UINT8    PcdIgdDvmt50PreAlloc;                  /* Offset 0x0043 */
-  UINT8    PcdApertureSize;                       /* Offset 0x0044 */
-  UINT8    PcdGttSize;                            /* Offset 0x0045 */
-  UINT8    ISPEnable;                             /* Offset 0x0046 */
-  UINT16   PcdRegionTerminator;                   /* Offset 0x0047 */
+  UINT64                      Signature;                     /* Offset 0x0000 */
+  UINT32                      RESERVED1;                     /* Offset 0x0008 */
+  UINT8                       Padding0[20];                  /* Offset 0x000C */
+  UINT16                      PcdMrcInitTsegSize;            /* Offset 0x0020 */
+  UINT16                      PcdMrcInitMmioSize;            /* Offset 0x0022 */
+  UINT8                       PcdMrcInitSPDAddr1;            /* Offset 0x0024 */
+  UINT8                       PcdMrcInitSPDAddr2;            /* Offset 0x0025 */
+  UINT8                       PcdeMMCBootMode;               /* Offset 0x0026 */
+  UINT8                       PcdEnableSdio;                 /* Offset 0x0027 */
+  UINT8                       PcdEnableSdcard;               /* Offset 0x0028 */
+  UINT8                       PcdEnableHsuart0;              /* Offset 0x0029 */
+  UINT8                       PcdEnableHsuart1;              /* Offset 0x002A */
+  UINT8                       PcdEnableSpi;                  /* Offset 0x002B */
+  UINT8                       PcdEnableLan;                  /* Offset 0x002C */
+  UINT8                       PcdEnableSata;                 /* Offset 0x002D */
+  UINT8                       PcdSataMode;                   /* Offset 0x002E */
+  UINT8                       PcdEnableAzalia;               /* Offset 0x002F */
+  UINT32                      AzaliaConfigPtr;               /* Offset 0x0030 */
+  UINT8                       PcdEnableXhci;                 /* Offset 0x0034 */
+  UINT8                       PcdEnableLpe;                  /* Offset 0x0035 */
+  UINT8                       PcdLpssSioEnablePciMode;       /* Offset 0x0036 */
+  UINT8                       PcdEnableDma0;                 /* Offset 0x0037 */
+  UINT8                       PcdEnableDma1;                 /* Offset 0x0038 */
+  UINT8                       PcdEnableI2C0;                 /* Offset 0x0039 */
+  UINT8                       PcdEnableI2C1;                 /* Offset 0x003A */
+  UINT8                       PcdEnableI2C2;                 /* Offset 0x003B */
+  UINT8                       PcdEnableI2C3;                 /* Offset 0x003C */
+  UINT8                       PcdEnableI2C4;                 /* Offset 0x003D */
+  UINT8                       PcdEnableI2C5;                 /* Offset 0x003E */
+  UINT8                       PcdEnableI2C6;                 /* Offset 0x003F */
+  UINT8                       PcdEnablePwm0;                 /* Offset 0x0040 */
+  UINT8                       PcdEnablePwm1;                 /* Offset 0x0041 */
+  UINT8                       PcdEnableHsi;                  /* Offset 0x0042 */
+  UINT8                       PcdIgdDvmt50PreAlloc;          /* Offset 0x0043 */
+  UINT8                       PcdApertureSize;               /* Offset 0x0044 */
+  UINT8                       PcdGttSize;                    /* Offset 0x0045 */
+  UINT32                      SerialDebugPortAddress;        /* Offset 0x0046 */
+  UINT8                       SerialDebugPortType;           /* Offset 0x004A */
+  UINT8                       PcdMrcDebugMsg;                /* Offset 0x004B */
+  UINT8                       ISPEnable;                     /* Offset 0x004C */
+  UINT8                       PcdSccEnablePciMode;           /* Offset 0x004D */
+  UINT8                       IgdRenderStandby;              /* Offset 0x004E */
+  UINT8                       TxeUmaEnable;                  /* Offset 0x004F */
+  UINT8                       UnusedUpdSpace1[160];          /* Offset 0x0050 */
+  MEMORY_DOWN_DATA            PcdMemoryParameters;           /* Offset 0x00F0 */
+  UINT16                      PcdRegionTerminator;           /* Offset 0x0100 */
 } UPD_DATA_REGION;
 
 
@@ -86,7 +108,7 @@ typedef struct _VPD_DATA_REGION {
   UINT32   PcdImageRevision;                      /* Offset 0x0008 */
   UINT32   PcdUpdRegionOffset;                    /* Offset 0x000C */
   UINT8    Padding0[16];                          /* Offset 0x0010 */
-  UINT32   RESERVED1;                             /* Offset 0x0020 */
+  UINT32   PcdFspReservedMemoryLength;            /* Offset 0x0020 */
   UINT8    PcdPlatformType;                       /* Offset 0x0024 */
   UINT8    PcdEnableSecureBoot;                   /* Offset 0x0025 */
   UINT8    PcdMemoryParameters[16];               /* Offset 0x0026 */

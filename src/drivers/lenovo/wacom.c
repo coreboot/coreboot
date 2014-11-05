@@ -98,11 +98,7 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 	acpigen_write_scope(scope);
 
 	if (drivers_lenovo_is_wacom_present()) {
-		/* Device op.  */
-		acpigen_emit_byte(0x5b);
-		acpigen_emit_byte(0x82);
-		acpigen_write_len_f();
-		acpigen_emit_namestring("DTR");
+		acpigen_write_device("DTR");
 
 		acpigen_write_name("_HID");
 		acpigen_emit_eisaid("WACF004");
@@ -125,11 +121,7 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 	}
 
 	if (have_dock_serial) {
-		/* Device op.  */
-		acpigen_emit_byte(0x5b);
-		acpigen_emit_byte(0x82);
-		acpigen_write_len_f();
-		acpigen_emit_namestring("COMA");
+		acpigen_write_device("COMA");
 
 		acpigen_write_name("_HID");
 		acpigen_emit_eisaid("PNP0501");

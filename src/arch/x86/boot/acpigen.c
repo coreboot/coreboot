@@ -408,6 +408,19 @@ int acpigen_write_method(const char *name, int nargs)
 	return len;
 }
 
+int acpigen_write_device(const char *name)
+{
+	int len;
+
+	/* method op */
+	len = acpigen_emit_byte(0x5b);
+	len += acpigen_emit_byte(0x82);
+	len += acpigen_write_len_f();
+	len += acpigen_emit_namestring(name);
+
+	return len;
+}
+
 /*
  * Generates a func with max supported P-states.
  */

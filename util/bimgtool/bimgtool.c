@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -58,6 +59,9 @@ struct crc_t {
 #define BIMG_OP_EXEC_RETURN	(0x1 << 0)
 #define BIMG_OP_EXEC_NO_RETURN	(0x2 << 0)
 #define BIMG_DATA_CHECKSUM	(0x1 << 4)
+
+/* Typical use case for this utility. */
+#define BIMG_FLAGS (BIMG_OP_EXEC_NO_RETURN | BIMG_DATA_CHECKSUM)
 
 #define MAX_RECORD_BYTES	0x8000
 
@@ -140,8 +144,7 @@ static uint16_t crc_16(uint16_t crc, void *void_buf, size_t size)
 
 }
 
-
-static struct crc_t crc_type = {
+static const struct crc_t crc_type = {
 #if defined(CRC_16)
 	.crc_f = crc_16,
 	.crc_init = 0,
@@ -211,20 +214,141 @@ static int write_final(FILE *out, struct bimg_header *hdr)
 	return 0;
 }
 
+static const char *help_message =
+	"Usage: bimgtool <input> [<output> <base-address>]\n"
+	"\n"
+	"This is a simple tool which generates and verifies boot images in\n"
+	"the BIMG format, used in systems designed by Imagination\n"
+	"Technologies, for example the Pistachio SoC. This version of the\n"
+	"tool works with BIMG images version %d.\n"
+	"\n"
+	"  input:          The binary file to be converted to a BIMG\n"
+	"                  or verified\n"
+	"  output:         The name of the output BIMG file\n"
+	"  base-address:   The address in memory at which you wish the "
+	"                  input binary to be loaded.\n";
+
 static void usage(FILE *f)
 {
-	fprintf(f,
-		"Usage: bimgtool <input> <output> <base-address>\n"
-		"\n"
-		"bimgtool is a simple tool which generates boot images in the "
-		"BIMG format used in systems designed by Imagination "
-		"Technologies, for example the Pistachio SoC. This version of the "
-		"tool generates BIMG version 1.0 images.\n"
-		"\n"
-		"  input:          The binary file to be converted to a BIMG\n"
-		"  output:         The name of the output BIMG file\n"
-		"  base-address:   The address in memory at which you wish the "
-		"input binary to be loaded.\n");
+	fprintf(f, help_message, crc_type.ver_major);
+}
+
+static int verify_file(FILE *f)
+{
+	struct bimg_header file_header;
+	struct bimg_data_header data_header;
+	char *file_pointer;
+	char *file_data;
+	struct stat buf;
+	int data_size;
+	int fd = fileno(f);
+	uint32_t data_crc = crc_type.crc_init;
+	uint32_t crc_result;
+
+	if (fread(&file_header, 1, sizeof(struct bimg_header), f) !=
+	    sizeof(struct bimg_header)) {
+		perror("Problems trying to read input file header\n");
+		return -1;
+	}
+
+	if (fstat(fd, &buf)) {
+		perror("Problems trying to stat input file\n");
+		return -1;
+	}
+
+	if (file_header.magic != BIMG_MAGIC) {
+		fprintf(stderr, "Wrong magic value %#x\n", file_header.magic);
+		return -1;
+	}
+
+	crc_result = crc_type.crc_f(crc_type.crc_init, &file_header,
+				    sizeof(file_header) -
+				    sizeof(file_header.crc));
+	if (file_header.crc != crc_result) {
+		fprintf(stderr, "File header CRC mismatch\n");
+		return -1;
+	}
+
+	if ((file_header.data_size + sizeof(struct bimg_header)) >
+	    buf.st_size) {
+		fprintf(stderr, "Data size too big: %d > %d\n",
+			file_header.data_size, buf.st_size);
+		return -1;
+	}
+
+	if (file_header.ver_major != crc_type.ver_major) {
+		fprintf(stderr, "Image version mismatch: %d\n",
+			file_header.ver_major);
+		return -1;
+	}
+
+	if ((file_header.flags & BIMG_FLAGS) != BIMG_FLAGS) {
+		fprintf(stderr, "Unexpected file header flags: %#x\n",
+			file_header.flags);
+		return -1;
+	}
+
+	if (file_header.ver_minor != crc_type.ver_minor) {
+		fprintf(stderr,
+			"Minor version mismatch: %d, will try anyways\n",
+			file_header.ver_minor);
+	}
+
+	data_size = file_header.data_size;
+	file_pointer = malloc(data_size);
+	if (!file_pointer) {
+		fprintf(stderr, "Failed to allocate %d bytes\n",
+			file_header.data_size);
+		return -1;
+	}
+
+	if (fread(file_pointer, 1, data_size, f) != data_size) {
+		fprintf(stderr, "Failed to read %d bytes\n", data_size);
+		free(file_pointer);
+		return -1;
+	}
+
+	file_data = file_pointer;
+	while (data_size > 0) {
+		memcpy(&data_header, file_data,  sizeof(data_header));
+
+		/* Check the data block header integrity. */
+		crc_result = crc_type.crc_f(crc_type.crc_init, &data_header,
+					    sizeof(data_header) -
+					    sizeof(data_header.crc));
+		if (data_header.crc != crc_result) {
+			fprintf(stderr, "Data header CRC mismatch at %d\n",
+				file_header.data_size - data_size);
+			free(file_pointer);
+			return -1;
+		}
+
+		/*
+		 * Add the block data to the CRC stream, the last block size
+		 * will be zero.
+		 */
+		file_data += sizeof(data_header);
+		data_crc = crc_type.crc_f(data_crc,
+					  file_data, data_header.size);
+
+		data_size -= data_header.size + sizeof(data_header);
+		file_data += data_header.size;
+	}
+
+	if (data_size) {
+		fprintf(stderr, "File size mismatch\n");
+		free(file_pointer);
+		return -1;
+	}
+
+	if (data_crc != file_header.data_crc) {
+		fprintf(stderr, "File data CRC mismatch\n");
+		free(file_pointer);
+		return -1;
+	}
+
+	free(file_pointer);
+	return 0;
 }
 
 int main(int argc, char *argv[])
@@ -236,24 +360,28 @@ int main(int argc, char *argv[])
 		.magic = BIMG_MAGIC,
 		.ver_major = crc_type.ver_major,
 		.ver_minor = crc_type.ver_minor,
-		.flags = BIMG_OP_EXEC_NO_RETURN | BIMG_DATA_CHECKSUM,
+		.flags = BIMG_FLAGS,
 		.data_crc = crc_type.crc_init,
 	};
 
-	if (argc != 4) {
+	if ((argc != 4) && (argc != 2)) {
 		usage(stderr);
 		goto out_err;
 	}
 
 	in_filename = argv[1];
-	out_filename = argv[2];
-	hdr.entry_addr = strtoul(argv[3], NULL, 16);
 
 	in_file = fopen(in_filename, "r");
 	if (!in_file) {
 		error("Failed to open input file '%s'\n", in_filename);
 		goto out_err;
 	}
+
+	if (argc == 2)
+		return verify_file(in_file);
+
+	out_filename = argv[2];
+	hdr.entry_addr = strtoul(argv[3], NULL, 16);
 
 	out_file = fopen(out_filename, "w");
 	if (!out_file) {

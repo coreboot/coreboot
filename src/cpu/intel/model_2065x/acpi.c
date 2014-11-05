@@ -106,10 +106,7 @@ static void generate_C_state_entries(void)
 	if (!cpu || !cpu->cstates)
 		return;
 
-	acpigen_emit_byte(0x14);		/* MethodOp */
-	acpigen_write_len_f();		/* PkgLength */
-	acpigen_emit_namestring("_CST");
-	acpigen_emit_byte(0x00);		/* No Arguments */
+	acpigen_write_method("_CST", 0);
 
 	/* If running on AC power */
 	acpigen_emit_byte(0xa0);		/* IfOp */

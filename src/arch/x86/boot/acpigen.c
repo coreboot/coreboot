@@ -395,6 +395,19 @@ int acpigen_write_empty_PTC(void)
 	return len + nlen;
 }
 
+int acpigen_write_method(const char *name, int nargs)
+{
+	int len;
+
+	/* method op */
+	len = acpigen_emit_byte(0x14);
+	len += acpigen_write_len_f();
+	len += acpigen_emit_namestring(name);
+	len += acpigen_emit_byte(nargs & 7);
+
+	return len;
+}
+
 /*
  * Generates a func with max supported P-states.
  */
@@ -407,18 +420,13 @@ int acpigen_write_PPC(u8 nr)
     }
 */
 	int len;
-	/* method op */
-	acpigen_emit_byte(0x14);
-	len = acpigen_write_len_f();
-	len += acpigen_emit_namestring("_PPC");
-	/* no fnarg */
-	acpigen_emit_byte(0x00);
+	len = acpigen_write_method("_PPC", 0);
 	/* return */
 	acpigen_emit_byte(0xa4);
 	/* arg */
 	len += acpigen_write_byte(nr);
 	/* add all single bytes */
-	len += 3;
+	len += 1;
 	acpigen_patch_len(len - 1);
 	return len;
 }
@@ -436,18 +444,14 @@ int acpigen_write_PPC_NVS(void)
     }
 */
 	int len;
-	/* method op */
-	acpigen_emit_byte(0x14);
-	len = acpigen_write_len_f();
-	len += acpigen_emit_namestring("_PPC");
-	/* no fnarg */
-	acpigen_emit_byte(0x00);
+
+	len = acpigen_write_method("_PPC", 0);
 	/* return */
 	acpigen_emit_byte(0xa4);
 	/* arg */
 	len += acpigen_emit_namestring("PPCM");
 	/* add all single bytes */
-	len += 3;
+	len += 1;
 	acpigen_patch_len(len - 1);
 	return len;
 }
@@ -463,10 +467,7 @@ int acpigen_write_TPC(const char *gnvs_tpc_limit)
  */
 	int len;
 
-	len = acpigen_emit_byte(0x14);		/* MethodOp */
-	len += acpigen_write_len_f();		/* PkgLength */
-	len += acpigen_emit_namestring("_TPC");
-	len += acpigen_emit_byte(0x00);		/* No Arguments */
+	len = acpigen_write_method("_TPC", 0);
 	len += acpigen_emit_byte(0xa4);		/* ReturnOp */
 	len += acpigen_emit_namestring(gnvs_tpc_limit);
 	acpigen_patch_len(len - 1);

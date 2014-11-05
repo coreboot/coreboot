@@ -115,12 +115,7 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 
 		acpigen_write_resourcetemplate_footer(reslen);
 
-		/* method op */
-		acpigen_emit_byte(0x14);
-		acpigen_write_len_f();
-		acpigen_emit_namestring("_STA");
-		/* no fnarg */
-		acpigen_emit_byte(0x00);
+		acpigen_write_method("_STA", 0);
 		/* return */
 		acpigen_emit_byte(0xa4);
 		acpigen_write_byte(0xf);
@@ -151,11 +146,7 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 		acpigen_write_resourcetemplate_footer(reslen);
 
 		/* method op */
-		acpigen_emit_byte(0x14);
-		acpigen_write_len_f();
-		acpigen_emit_namestring("_STA");
-		/* no fnarg */
-		acpigen_emit_byte(0x00);
+		acpigen_write_method("_STA", 0);
 		/* return */
 		acpigen_emit_byte(0xa4);
 		acpigen_write_byte(0xf);

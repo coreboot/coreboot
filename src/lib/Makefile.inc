@@ -21,6 +21,7 @@ subdirs-y += loaders
 bootblock-y += prog_ops.c
 bootblock-y += cbfs.c cbfs_core.c
 bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
+bootblock-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 
 bootblock-$(CONFIG_GENERIC_UDELAY) += timer.c
 
@@ -36,6 +37,7 @@ verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 verstage-y += tlcl.c
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
+verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 
 romstage-y += prog_ops.c
 romstage-y += memchr.c
@@ -51,6 +53,7 @@ romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
 romstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
 ramstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
+romstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 
 ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c

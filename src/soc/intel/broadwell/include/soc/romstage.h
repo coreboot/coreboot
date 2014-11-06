@@ -57,4 +57,5 @@ int smbus_read_byte(unsigned device, unsigned address);
 int early_spi_read(u32 offset, u32 size, u8 *buffer);
 int early_spi_read_wpsr(u8 *sr);
 
+void mainboard_pre_console_init(void);
 #endif

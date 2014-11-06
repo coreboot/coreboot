@@ -61,6 +61,10 @@ void * asmlinkage romstage_main(unsigned long bist,
 	/* PCH Early Initialization */
 	pch_early_init();
 
+	/* Call into mainboard pre console init. Needed to enable serial port
+	   on IT8772 */
+	mainboard_pre_console_init();
+
 	/* Start console drivers */
 	console_init();
 
@@ -149,4 +153,6 @@ int vboot_get_sw_write_protect(void)
 	/* Return unprotected status if status read fails. */
 	return (early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80));
 }
+
 #endif
+void __attribute__((weak)) mainboard_pre_console_init(void) {}

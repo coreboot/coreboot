@@ -22,7 +22,7 @@
 #include <delay.h>
 #include <gpio.h>
 
-int gpio_get_tristates(gpio_t gpio[], int num_gpio)
+int gpio_base3_value(gpio_t gpio[], int num_gpio)
 {
 	/*
 	 * GPIOs which are tied to stronger external pull up or pull down
@@ -36,7 +36,7 @@ int gpio_get_tristates(gpio_t gpio[], int num_gpio)
 	static const char tristate_char[] = {[0] = '0', [1] = '1', [Z] = 'Z'};
 	int temp;
 	int index;
-	int id = 0;
+	int result = 0;
 	char value[num_gpio];
 
 	/* Enable internal pull up */
@@ -70,13 +70,13 @@ int gpio_get_tristates(gpio_t gpio[], int num_gpio)
 		temp = gpio_get(gpio[index]);
 		temp |= ((value[index] ^ temp) << 1);
 		printk(BIOS_DEBUG, "%c ", tristate_char[temp]);
-		id = (id * 3) + temp;
+		result = (result * 3) + temp;
 	}
-	printk(BIOS_DEBUG, "= %d\n", id);
+	printk(BIOS_DEBUG, "= %d\n", result);
 
 	/* Disable pull up / pull down to conserve power */
 	for (index = 0; index < num_gpio; ++index)
 		gpio_input(gpio[index]);
 
-	return id;
+	return result;
 }

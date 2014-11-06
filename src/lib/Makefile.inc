@@ -92,7 +92,7 @@ ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += edid.c
 ramstage-y += memrange.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
-ramstage-$(CONFIG_TERTIARY_BOARD_ID) += tristate_gpios.c
+ramstage-$(CONFIG_TERTIARY_BOARD_ID) += gpio.c
 ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 romstage-y += cbmem_common.c dynamic_cbmem.c

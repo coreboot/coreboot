@@ -29,7 +29,7 @@ uint8_t board_id(void)
 			 [1] = GPIO(T1), [0] = GPIO(Q3),};	/* Q3 is LSB */
 
 	if (id < 0) {
-		id = gpio_get_tristates(gpio, ARRAY_SIZE(gpio));
+		id = gpio_base3_value(gpio, ARRAY_SIZE(gpio));
 
 		printk(BIOS_SPEW, "Board TRISTATE ID: %d.\n", id);
 	}

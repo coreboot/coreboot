@@ -30,7 +30,7 @@ uint8_t board_id(void)
 	if (id < 0) {
 		gpio_t gpio[] = {[1] = BD_ID1, [0] = BD_ID0};	/* ID0 is LSB */
 
-		id = gpio_get_tristates(gpio, ARRAY_SIZE(gpio));
+		id = gpio_base3_value(gpio, ARRAY_SIZE(gpio));
 	}
 
 	return id;

@@ -91,7 +91,7 @@ static void configure_lcd(void)
 	writel(IOMUX_LCDC, &rk3288_grf->iomux_lcdc);
 
 	rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD */
-	rk808_configure_ldo(PMIC_BUS, 7, 3300); /* VCC10_LCD_PWREN_H */
+	rk808_configure_ldo(PMIC_BUS, 7, 2500); /* VCC10_LCD_PWREN_H */
 	rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
 
 	gpio_output(GPIO(7, A, 0), 0);			/* LCDC_BL */

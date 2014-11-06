@@ -60,16 +60,17 @@ void rk808_configure_ldo(uint8_t bus, int ldo, int millivolts)
 	case 5:
 	case 8:
 		vsel = div_round_up(millivolts, 100) - 18;
+		assert(vsel <= 0x10);
 		break;
 	case 3:
 	case 6:
 	case 7:
 		vsel = div_round_up(millivolts, 100) - 8;
+		assert(vsel <= 0x11);
 		break;
 	default:
 		die("Unknown LDO index!");
 	}
-	assert(vsel <= 0x10);
 
 	rk808_clrsetbits(bus, LDO_ONSEL(ldo), 0x1f, vsel);
 	rk808_clrsetbits(bus, LDO_EN, 0, 1 << (ldo - 1));

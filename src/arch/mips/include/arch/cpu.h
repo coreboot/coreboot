@@ -40,4 +40,52 @@ struct cpu_info {
 
 #endif /* !__PRE_RAM__ */
 
+/***************************************************************************
+ * The following section was copied from arch/mips/include/asm/mipsregs.h in
+ * the 3.14 kernel tree.
+ */
+
+/*
+ * Macros to access the system control coprocessor
+ */
+
+#define __read_32bit_c0_register(source, sel)				\
+({ int __res;								\
+	if (sel == 0)							\
+		__asm__ __volatile__(					\
+			"mfc0\t%0, " #source "\n\t"			\
+			: "=r" (__res));				\
+	else								\
+		__asm__ __volatile__(					\
+			".set\tmips32\n\t"				\
+			"mfc0\t%0, " #source ", " #sel "\n\t"		\
+			".set\tmips0\n\t"				\
+			: "=r" (__res));				\
+	__res;								\
+})
+
+#define __write_32bit_c0_register(register, sel, value)			\
+do {									\
+	if (sel == 0)							\
+		__asm__ __volatile__(					\
+			"mtc0\t%z0, " #register "\n\t"			\
+			: : "Jr" ((unsigned int)(value)));		\
+	else								\
+		__asm__ __volatile__(					\
+			".set\tmips32\n\t"				\
+			"mtc0\t%z0, " #register ", " #sel "\n\t"	\
+			".set\tmips0"					\
+			: : "Jr" ((unsigned int)(value)));		\
+} while (0)
+
+/* Shortcuts to access various internal registers, keep adding as needed. */
+#define read_c0_count()		__read_32bit_c0_register($9, 0)
+#define write_c0_count(val)	__write_32bit_c0_register($9, 0, (val))
+
+#define read_c0_cause()		__read_32bit_c0_register($13, 0)
+#define write_c0_cause(val)	__write_32bit_c0_register($13, 0, (val))
+
+#define C0_CAUSE_DC (1 << 27)
+/**************************************************************************/
+
 #endif /* __MIPS_ARCH_CPU_H */

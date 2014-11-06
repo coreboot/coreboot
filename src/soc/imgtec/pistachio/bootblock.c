@@ -19,6 +19,21 @@
  * MA 02110-1301 USA
  */
 
+#include <stdint.h>
+#include <arch/cpu.h>
+
 static void bootblock_cpu_init(void)
 {
+	uint32_t cause;
+
+	/*
+	 * Make sure the count register is counting by clearing the "Disable
+	 * Counter" bit, in case it is set.
+	 */
+	cause = read_c0_cause();
+	if (cause & C0_CAUSE_DC)
+		write_c0_cause(cause & ~(C0_CAUSE_DC));
+
+	/* And make sure that it starts from zero. */
+	write_c0_count(0);
 }

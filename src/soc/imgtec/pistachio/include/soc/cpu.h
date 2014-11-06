@@ -21,4 +21,11 @@
 #define IMG_SPIM0_BASE_ADDRESS	0xB8100F00
 #define IMG_SPIM1_BASE_ADDRESS	0xB8101000
 
+/*
+ * Reading at this address allows to identify the platform the code is running
+ * on.
+ */
+#define IMG_PLATFORM_ID()	(*((unsigned *)0xB8149060))
+#define IMG_PLATFORM_ID_SILICON 0xF00D0006
+
 #endif

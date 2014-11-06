@@ -31,16 +31,13 @@ ramstage-y += uart.c
 endif
 
 bootblock-y += monotonic_timer.c
-bootblock-y += timestamp.c
 
 ramstage-y += cbmem.c
 ramstage-y += monotonic_timer.c
-ramstage-y += timestamp.c
 
 romstage-y += cbmem.c
 romstage-y += romstage.c
 romstage-y += monotonic_timer.c
-romstage-y += timestamp.c
 
 CPPFLAGS_common += -Isrc/soc/imgtec/pistachio/include/
 

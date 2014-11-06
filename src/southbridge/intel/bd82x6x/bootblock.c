@@ -86,9 +86,8 @@ static void set_spi_speed(void)
 
 static void bootblock_southbridge_init(void)
 {
-#if CONFIG_COLLECT_TIMESTAMPS
 	store_initial_timestamp();
-#endif
+
 	enable_spi_prefetch();
 	enable_port80_on_lpc();
 	set_spi_speed();

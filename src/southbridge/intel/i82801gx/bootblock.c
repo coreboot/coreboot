@@ -47,9 +47,8 @@ static void enable_spi_prefetch(void)
 
 static void bootblock_southbridge_init(void)
 {
-#if CONFIG_COLLECT_TIMESTAMPS
 	store_initial_timestamp();
-#endif
+
         enable_spi_prefetch();
 
 	/* Enable RCBA */

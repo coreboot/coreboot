@@ -34,9 +34,7 @@
 #include <cpu/x86/lapic_def.h>
 #include <cpu/cpu.h>
 #include <cbfs.h>
-#if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
-#endif
 #include <romstage_handoff.h>
 
 /* FIXME: Kconfig doesn't support overridable defaults :-( */
@@ -1124,9 +1122,7 @@ void acpi_jump_to_wakeup(void *vector)
 	/* Copy wakeup trampoline in place. */
 	memcpy((void *)WAKEUP_BASE, &__wakeup, __wakeup_size);
 
-#if CONFIG_COLLECT_TIMESTAMPS
 	timestamp_add_now(TS_ACPI_WAKE_JUMP);
-#endif
 
 	acpi_do_wakeup((u32)vector, acpi_backup_memory, CONFIG_RAMBASE,
 		       HIGH_MEMORY_SAVE);

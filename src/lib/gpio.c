@@ -22,6 +22,18 @@
 #include <delay.h>
 #include <gpio.h>
 
+int gpio_base2_value(gpio_t gpio[], int num_gpio)
+{
+	int i, result = 0;
+
+	for (i = 0; i < num_gpio; i++) {
+		gpio_input(gpio[i]);
+		result |= gpio_get(gpio[i]) << i;
+	}
+
+	return result;
+}
+
 int gpio_base3_value(gpio_t gpio[], int num_gpio)
 {
 	/*

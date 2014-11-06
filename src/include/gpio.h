@@ -36,6 +36,15 @@ void gpio_output(gpio_t gpio, int value);
 
 /*
  * Read the value presented by the set of GPIOs, when each pin is interpreted
+ * as a base-2 digit (LOW = 0, HIGH = 1).
+ *
+ * gpio[]: pin positions to read. gpio[0] is less significant than gpio[1].
+ * num_gpio: number of pins to read.
+ */
+int gpio_base2_value(gpio_t gpio[], int num_gpio);
+
+/*
+ * Read the value presented by the set of GPIOs, when each pin is interpreted
  * as a base-3 digit (LOW = 0, HIGH = 1, Z/floating = 2).
  * Example: X1 = Z, X2 = 1 -> gpio_base3_value({GPIO(X1), GPIO(X2)}) = 5
  * BASE3() from <base3.h> can generate numbers to compare the result to.

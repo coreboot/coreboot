@@ -148,4 +148,26 @@ void arch_cpu_wait_for_action(void);
  */
 unsigned int smp_processor_id(void);
 
+/*
+ * Stages and rmodules have 2 entry points: BSP and non-BSP. Provided
+ * a pointer the correct non-BSP entry point will be returned. The
+ * first instruction is for BSP and the 2nd is for non-BSP. Instructions
+ * are all 32-bit on arm64.
+ */
+static inline void *secondary_entry_point(void *e)
+{
+	uintptr_t nonbsp = (uintptr_t)e;
+
+	return (void *)(nonbsp + sizeof(uint32_t));
+}
+
+/*
+ * The arm64_cpu_startup() initializes a CPU's exception stack and regular
+ * stack as well initializing the C environment for the processor. It
+ * calls into the array of function pointers at symbol c_entry depending
+ * on BSP state. Note that arm64_cpu_startup contains secondary entry
+ * point which can be obtained by secondary_entry_point().
+ */
+void arm64_cpu_startup(void);
+
 #endif /* __ARCH_CPU_H__ */

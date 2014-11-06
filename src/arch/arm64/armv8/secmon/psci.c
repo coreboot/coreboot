@@ -220,6 +220,15 @@ void psci_turn_on_self(const struct cpu_action *action)
 	psci_schedule_cpu_on(e);
 }
 
+void psci_cpu_entry(void)
+{
+	/*
+	 * Just wait for an action to be performed. Only CPU_ON is supported
+	 * initially. i.e. no power down then wake.
+	 */
+	secmon_wait_for_action();
+}
+
 static void psci_cpu_on(struct psci_func *pf)
 {
 	uint64_t entry;
@@ -483,7 +492,7 @@ static int psci_allocate_nodes(void)
 	return 0;
 }
 
-void psci_init(void)
+void psci_init(uintptr_t cpu_on_entry)
 {
 	struct cpu_action action = {
 		.run = &psci_link_cpu_info,

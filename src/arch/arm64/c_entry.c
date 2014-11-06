@@ -70,8 +70,6 @@ static void secondary_cpu_start(void)
  */
 void (*c_entry[2])(void) = { &arm64_init, &secondary_cpu_start };
 
-extern void arm64_cpu_startup(void);
-
 void *prepare_secondary_cpu_startup(void)
 {
 	return secondary_entry_point(&arm64_cpu_startup);

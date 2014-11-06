@@ -19,6 +19,10 @@
 
 #include <arch/psci.h>
 
+void psci_soc_init(uintptr_t cpu_on_entry)
+{
+}
+
 static size_t children_at_level(int parent_level, uint64_t mpidr)
 {
 	if (mpidr != 0)

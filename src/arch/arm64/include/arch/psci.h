@@ -187,10 +187,13 @@ static inline void psci64_return(struct psci_func *pf, int64_t val)
 	psci64_result(pf, 0, val);
 }
 
-void psci_init(void);
+void psci_init(uintptr_t cpu_on_entry);
+void psci_soc_init(uintptr_t cpu_on_entry);
 
 /* Turn on the current CPU within the PSCI subsystem. */
 void psci_turn_on_self(const struct cpu_action *action);
 int psci_turn_off_self(void);
+/* Entry point for CPUs just turning on or waking up. */
+void psci_cpu_entry(void);
 
 #endif /* __ARCH_PSCI_H__ */

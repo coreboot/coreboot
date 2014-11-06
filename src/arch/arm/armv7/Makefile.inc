@@ -39,8 +39,8 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception_asm.S
 bootblock-y += mmu.c
 
-CFLAGS_bootblock += $(armv7_flags)
-CPPFLAGS_bootblock += $(armv7_flags)
+bootblock-c-ccopts += $(armv7_flags)
+bootblock-S-ccopts += $(armv7_flags)
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 
@@ -56,8 +56,8 @@ romstage-y += exception.c
 romstage-y += exception_asm.S
 romstage-y += mmu.c
 
-CFLAGS_romstage += $(armv7_flags)
-CPPFLAGS_romstage += $(armv7_flags)
+romstage-c-ccopts += $(armv7_flags)
+romstage-S-ccopts += $(armv7_flags)
 
 endif # CONFIG_ARCH_ROMSTAGE_ARMV7
 
@@ -73,7 +73,7 @@ ramstage-y += exception.c
 ramstage-y += exception_asm.S
 ramstage-y += mmu.c
 
-CFLAGS_ramstage += $(armv7_flags)
-CPPFLAGS_ramstage += $(armv7_flags)
+ramstage-c-ccopts += $(armv7_flags)
+ramstage-S-ccopts += $(armv7_flags)
 
 endif # CONFIG_ARCH_RAMSTAGE_ARMV7

@@ -115,12 +115,13 @@ ramstage-postprocess=$(foreach d,$(sort $(dir $(1))), \
 	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(1)); $$(LD_ramstage) -o $$@ -r $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(call files-in-dir,$(d),$(1)),$(ramstage-objs))))
 
-CPPFLAGS_romstage += -D__PRE_RAM__
+romstage-c-ccopts:=-D__PRE_RAM__
+romstage-S-ccopts:=-D__PRE_RAM__
 ifeq ($(CONFIG_TRACE),y)
-CFLAGS_ramstage += -finstrument-functions
+ramstage-c-ccopts:= -finstrument-functions
 endif
 ifeq ($(CONFIG_COVERAGE),y)
-CFLAGS_ramstage += -fprofile-arcs -ftest-coverage
+ramstage-c-ccopts+=-fprofile-arcs -ftest-coverage
 endif
 
 # try to fetch non-optional submodules
@@ -131,15 +132,18 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 forgetthis:=$(shell git submodule update --init --checkout 3rdparty)
 endif
 
-CPPFLAGS_bootblock += -D__BOOT_BLOCK__ -D__PRE_RAM__
+bootblock-c-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
+bootblock-S-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
 
-CPPFLAGS_smmstub += -D__SMM__
-CPPFLAGS_smm += -D__SMM__
+smmstub-c-ccopts:=-D__SMM__
+smmstub-S-ccopts:=-D__SMM__
+smm-c-ccopts:=-D__SMM__
+smm-S-ccopts:=-D__SMM__
 
 # SMM TSEG base is dynamic
 ifneq ($(CONFIG_SMM_MODULES),y)
 ifeq ($(CONFIG_SMM_TSEG),y)
-CFLAGS_smm += -fpic
+smm-c-ccopts += -fpic
 endif
 endif
 
@@ -337,15 +341,15 @@ $(objutil)/%.o: $(objutil)/%.c
 
 $(obj)/%.ramstage.o $(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_ramstage) -MMD $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) -c -o $@ $<
+	$(CC_ramstage) -MMD $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) $(ramstage-c-ccopts) -c -o $@ $<
 
 $(obj)/%.romstage.o $(abspath $(obj))/%.romstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) -MMD -D__PRE_RAM__ $(CFLAGS_romstage) $(CPPFLAGS_romstage) -c -o $@ $<
+	$(CC_romstage) -MMD $(CFLAGS_romstage) $(CPPFLAGS_romstage) $(romstage-c-ccopts) -c -o $@ $<
 
 $(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) -MMD $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -c -o $@ $<
+	$(CC_bootblock) -MMD $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) $(bootblock-c-ccopts) -c -o $@ $<
 
 #######################################################################
 # Clean up rules

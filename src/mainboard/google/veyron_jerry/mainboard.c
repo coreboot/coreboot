@@ -42,14 +42,6 @@ static void configure_usb(void)
 {
 	gpio_output(GPIO(0, B, 3), 1);			/* HOST1_PWR_EN */
 	gpio_output(GPIO(0, B, 4), 1);			/* USBOTG_PWREN_H */
-
-	switch (board_id()) {
-	case 0:
-		gpio_output(GPIO(7, B, 3), 1);		/* 5V_DRV */
-		break;
-	default:
-		break;	/* 5V_DRV moved to EC after rev1 */
-	}
 }
 
 static void configure_sdmmc(void)
@@ -59,16 +51,8 @@ static void configure_sdmmc(void)
 	/* use sdmmc0 io, disable JTAG function */
 	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
 
-	switch (board_id()) {
-	case 0:
-		rk808_configure_ldo(PMIC_BUS, 8, 3300);	/* VCCIO_SD */
-		gpio_output(GPIO(7, C, 5), 1);		/* SD_EN */
-		break;
-	default:
-		rk808_configure_ldo(PMIC_BUS, 4, 3300); /* VCCIO_SD */
-		rk808_configure_ldo(PMIC_BUS, 5, 3300); /* VCC33_SD */
-		break;
-	}
+	rk808_configure_ldo(PMIC_BUS, 4, 3300); /* VCCIO_SD */
+	rk808_configure_ldo(PMIC_BUS, 5, 3300); /* VCC33_SD */
 
 	gpio_input(GPIO(7, A, 5));		/* SD_DET */
 }
@@ -95,14 +79,7 @@ static void configure_codec(void)
 	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
 	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
 
-	switch (board_id()) {
-	case 0:
-		rk808_configure_ldo(PMIC_BUS, 5, 1800);	/* VCC18_CODEC */
-		break;
-	default:
-		rk808_configure_ldo(PMIC_BUS, 6, 1800);	/* VCC18_CODEC */
-		break;
-	}
+	rk808_configure_ldo(PMIC_BUS, 6, 1800);	/* VCC18_CODEC */
 
 	/* AUDIO IO domain 1.8V voltage selection */
 	writel(RK_SETBITS(1 << 6), &rk3288_grf->io_vsel);
@@ -113,18 +90,9 @@ static void configure_lcd(void)
 {
 	writel(IOMUX_LCDC, &rk3288_grf->iomux_lcdc);
 
-	switch (board_id()) {
-	case 0:
-		rk808_configure_ldo(PMIC_BUS, 4, 1800);	/* VCC18_LCD */
-		rk808_configure_ldo(PMIC_BUS, 6, 1000);	/* VCC10_LCD */
-		gpio_output(GPIO(7, B, 7), 1);		/* LCD_EN */
-		break;
-	default:
-		rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD */
-		rk808_configure_ldo(PMIC_BUS, 7, 3300); /* VCC10_LCD_PWREN_H */
-		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
-		break;
-	}
+	rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD */
+	rk808_configure_ldo(PMIC_BUS, 7, 3300); /* VCC10_LCD_PWREN_H */
+	rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
 
 	gpio_output(GPIO(7, A, 0), 0);			/* LCDC_BL */
 	gpio_output(GPIO(7, A, 2), 1);			/* BL_EN */

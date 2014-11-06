@@ -25,10 +25,8 @@
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#include "board.h"
-
 #define GPIO_WP		GPIO(7, A, 6)
-#define GPIO_LID	(board_id() > 0 ? GPIO(0, A, 6) : GPIO(7, B, 5))
+#define GPIO_LID	GPIO(0, A, 6)
 #define GPIO_POWER	GPIO(0, A, 5)
 #define GPIO_RECOVERY	GPIO(0, B, 1)
 

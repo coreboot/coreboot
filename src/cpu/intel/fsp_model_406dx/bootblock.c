@@ -25,7 +25,7 @@
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
 #include <reset.h>
-#include <src/southbridge/intel/fsp_rangeley/soc.h>
+#include <southbridge/intel/fsp_rangeley/soc.h>
 
 #include "model_406dx.h"
 

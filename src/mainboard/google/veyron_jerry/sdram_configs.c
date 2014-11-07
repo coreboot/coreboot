@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 #include <arch/io.h>
+#include <boardid.h>
 #include <console/console.h>
 #include <gpio.h>
 #include <soc/sdram.h>
@@ -42,31 +43,9 @@ static struct rk3288_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 1111 */
 };
 
-#define GPIO_RAMCODE0	GPIO(8, A, 0)
-#define GPIO_RAMCODE1	GPIO(8, A, 1)
-#define GPIO_RAMCODE2	GPIO(8, A, 2)
-#define GPIO_RAMCODE3	GPIO(8, A, 3)
-
-u32 sdram_get_ram_code(void)
-{
-	u32 code = 0;
-
-	gpio_input(GPIO_RAMCODE0);
-	gpio_input(GPIO_RAMCODE1);
-	gpio_input(GPIO_RAMCODE2);
-	gpio_input(GPIO_RAMCODE3);
-
-	code = gpio_get(GPIO_RAMCODE3) << 3
-			| gpio_get(GPIO_RAMCODE2) << 2
-			| gpio_get(GPIO_RAMCODE1) << 1
-			| gpio_get(GPIO_RAMCODE0) << 0;
-
-	return code;
-}
-
 const struct rk3288_sdram_params *get_sdram_config()
 {
-	u32 ramcode = sdram_get_ram_code();
+	u32 ramcode = ram_code();
 
 	if (ramcode >= ARRAY_SIZE(sdram_configs)
 			|| sdram_configs[ramcode].dramtype == UNUSED)

@@ -25,17 +25,11 @@
 uint8_t board_id(void)
 {
 	static int id = -1;
-	static const gpio_t pins[] = {[3] = GPIO(2, A, 7), [2] = GPIO(2, A, 2),
+	static gpio_t pins[] = {[3] = GPIO(2, A, 7), [2] = GPIO(2, A, 2),
 		[1] = GPIO(2, A, 1), [0] = GPIO(2, A, 0)}; /* GPIO2_A0 is LSB */
 
 	if (id < 0) {
-		int i;
-
-		id = 0;
-		for (i = 0; i < ARRAY_SIZE(pins); i++) {
-			gpio_input(pins[i]);
-			id |= gpio_get(pins[i]) << i;
-		}
+		id = gpio_base2_value(pins, ARRAY_SIZE(pins));
 		printk(BIOS_SPEW, "Board ID: %d.\n", id);
 	}
 

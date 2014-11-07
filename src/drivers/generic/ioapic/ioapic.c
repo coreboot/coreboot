@@ -20,6 +20,7 @@ static void ioapic_init(struct device *dev)
 	u32 i, ioapic_interrupts;
 	u32 ioapic_base;
 	u8 ioapic_id;
+
 	if (!dev->enabled || !config)
 		return;
 
@@ -86,14 +87,6 @@ static void ioapic_init(struct device *dev)
 	}
 }
 
-static void ioapic_enable_resources(struct device *dev)
-{
-}
-
-static void ioapic_nop(struct device *dummy)
-{
-}
-
 static void ioapic_read_resources(struct device *dev)
 {
 	struct drivers_generic_ioapic_config *config = (struct drivers_generic_ioapic_config *)dev->chip_info;
@@ -106,10 +99,10 @@ static void ioapic_read_resources(struct device *dev)
 }
 
 static struct device_operations ioapic_operations = {
-        .read_resources   = ioapic_read_resources,
-        .set_resources    = ioapic_nop,
-        .enable_resources = ioapic_enable_resources,
-        .init             = ioapic_init,
+	.read_resources   = ioapic_read_resources,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = ioapic_init,
 };
 
 static void enable_dev(struct device *dev)

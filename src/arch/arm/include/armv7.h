@@ -66,11 +66,4 @@
 #define CP15DSB	asm volatile ("mcr     p15, 0, %0, c7, c10, 4" : : "r" (0))
 #define CP15DMB	asm volatile ("mcr     p15, 0, %0, c7, c10, 5" : : "r" (0))
 
-void v7_outer_cache_enable(void);
-void v7_outer_cache_disable(void);
-void v7_outer_cache_flush_all(void);
-void v7_outer_cache_inval_all(void);
-void v7_outer_cache_flush_range(u32 start, u32 end);
-void v7_outer_cache_inval_range(u32 start, u32 end);
-
-#endif
+#endif /* ARMV7_H */

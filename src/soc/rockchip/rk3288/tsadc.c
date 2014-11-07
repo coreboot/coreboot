@@ -88,11 +88,7 @@ void tsadc_init(void)
 {
 	rkclk_configure_tsadc(TSADC_CLOCK_HZ);
 
-	if (readl(&rk3288_tsadc->auto_con) & LAST_TSHUT) {
-		printk(BIOS_WARNING, "last shutdown/rebot was caused "
-				"by over-temperature hardware trigger!\n");
-		setbits_le32(&rk3288_tsadc->auto_con, LAST_TSHUT);
-	}
+	setbits_le32(&rk3288_tsadc->auto_con, LAST_TSHUT);
 
 	setbits_le32(&rk3288_tsadc->int_en,
 			TSHUT_CRU_EN_SRC2 | TSHUT_CRU_EN_SRC1 |

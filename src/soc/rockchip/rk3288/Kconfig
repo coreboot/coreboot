@@ -49,10 +49,10 @@ config BOOTBLOCK_ROM_OFFSET
 
 config CBFS_HEADER_ROM_OFFSET
 	hex
-	default 0x0008000
+	default 0x0010000
 
 config CBFS_ROM_OFFSET
 	hex
-	default 0x0018000
+	default 0x0010100
 
 endif

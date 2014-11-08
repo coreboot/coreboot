@@ -23,7 +23,7 @@
 #ifdef __PRE_RAM__
 asm(".section .car.global_data,\"w\",@nobits");
 asm(".previous");
-#define CAR_GLOBAL __attribute__((section(".car.global_data")))
+#define CAR_GLOBAL __attribute__((used,section(".car.global_data")))
 #else
 #define CAR_GLOBAL
 #endif

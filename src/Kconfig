@@ -167,7 +167,7 @@ config BROKEN_CAR_MIGRATE
 	  CAR_GLOBAL and never do CAR migration.
 
 config DYNAMIC_CBMEM
-	bool "The CBMEM space is dynamically grown."
+	bool
 	default n
 	select EARLY_CBMEM_INIT
 	help

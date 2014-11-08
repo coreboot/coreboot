@@ -205,6 +205,16 @@ int print_epbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82X4X:
 	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
 	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_015c:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_E3:
 	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U:
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
 		epbar_phys |= ((uint64_t)pci_read_long(nb, 0x44)) << 32;
@@ -296,12 +306,16 @@ int print_dmibar(struct pci_dev *nb)
 		break;
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D:
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_E3:
 		dmi_registers = sandybridge_dmi_registers;
 		size = ARRAY_SIZE(sandybridge_dmi_registers);
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_A: /* pretty printing not implemented yet */
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_B:
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_C:
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D: /* pretty printing not implemented yet */
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_015c:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_E3:
 		dmibar_phys = pci_read_long(nb, 0x68);
 		dmibar_phys |= ((uint64_t)pci_read_long(nb, 0x6c)) << 32;
 		dmibar_phys &= 0x0000007ffffff000UL; /* 38:12 */
@@ -393,6 +407,16 @@ int print_pciexbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82X4X:
 	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
 	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_015c:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_E3:
 	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U:
 		pciexbar_reg = pci_read_long(nb, 0x60);
 		pciexbar_reg |= ((uint64_t)pci_read_long(nb, 0x64)) << 32;

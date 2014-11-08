@@ -157,11 +157,14 @@
 #define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN	0x0044 /* Westmere */
 #define PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D	0x0100 /* Sandy Bridge (Desktop) */
 #define PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M	0x0104 /* Sandy Bridge (Mobile) */
-#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_A	0x0150 /* Ivy Bridge */
-#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_B	0x0154 /* Ivy Bridge */
-#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_C	0x0158 /* Ivy Bridge */
-#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D	0x015c /* Ivy Bridge */
-#define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN	0x0c04 /* Haswell */
+#define PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_E3	0x0108 /* Sandy Bridge (Xeon E3) */
+#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D	0x0150 /* Ivy Bridge (Desktop) */
+#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_M	0x0154 /* Ivy Bridge (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_E3	0x0158 /* Ivy Bridge (Xeon E3 v2) */
+#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_015c	0x015c /* Ivy Bridge (?) */
+#define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_D	0x0c00 /* Haswell (Desktop) */
+#define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_M	0x0c04 /* Haswell (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_E3	0x0c08 /* Haswell (Xeon E3 v3) */
 #define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U	0x0a04 /* Haswell-ULT */
 
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))

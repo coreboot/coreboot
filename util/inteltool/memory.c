@@ -207,10 +207,14 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		break;
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D:
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M:
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_A: /* pretty printing not implemented yet */
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_B:
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_C:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_E3:
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_015c:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_E3:
 	case PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U:
 		mchbar_phys = pci_read_long(nb, 0x48);
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
@@ -248,12 +252,13 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		printf ("clock_speed_index = %x\n", read_500 (0,0x609, 6) >> 1);
 		dump_timings ();
 		break;
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_A:
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_B:
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_C:
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D:
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D:
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_015c:
 		ivybridge_dump_timings();
 		break;
 	}

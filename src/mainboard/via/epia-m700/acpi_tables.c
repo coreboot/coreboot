@@ -35,9 +35,6 @@
 #include <device/pci_ids.h>
 #include "northbridge/via/vx800/vx800.h"
 
-extern const unsigned char AmlCode_dsdt[];
-extern const unsigned char AmlCode_ssdt[];
-
 extern u32 wake_vec;
 
 /*

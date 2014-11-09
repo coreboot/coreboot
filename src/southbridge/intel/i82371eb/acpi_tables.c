@@ -78,13 +78,7 @@ unsigned long __attribute__((weak)) acpi_fill_srat(unsigned long current)
 	return current;
 }
 
-unsigned long __attribute__((weak)) acpi_fill_madt(unsigned long current)
-{
-	/* mainboard has no ioapic */
-	return current;
-}
-
-unsigned long __attribute__((weak)) acpi_fill_mcfg(unsigned long current)
+unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	/* chipset doesn't have mmconfig */
 	return current;

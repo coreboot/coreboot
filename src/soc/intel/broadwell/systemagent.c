@@ -432,8 +432,22 @@ static void systemagent_enable(device_t dev)
 #endif
 }
 
+
+unsigned long acpi_fill_slit(unsigned long current)
+{
+	// Not implemented
+	return current;
+}
+
+unsigned long acpi_fill_srat(unsigned long current)
+{
+	/* No NUMA, no SRAT */
+	return current;
+}
+
 static struct device_operations systemagent_ops = {
 	.read_resources   = systemagent_read_resources,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = systemagent_init,

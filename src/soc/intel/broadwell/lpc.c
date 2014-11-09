@@ -45,6 +45,9 @@
 #include <broadwell/ramstage.h>
 #include <broadwell/rcba.h>
 #include <chip.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
+#include <cpu/cpu.h>
 
 static void pch_enable_ioapic(struct device *dev)
 {
@@ -552,10 +555,37 @@ static void pch_lpc_read_resources(device_t dev)
 		memset(gnvs, 0, sizeof(global_nvs_t));
 }
 
+static void southcluster_inject_dsdt(void)
+{
+	global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+		if (gnvs)
+			memset(gnvs, 0, sizeof(*gnvs));
+	}
+
+	if (gnvs) {
+		memset(gnvs, 0, sizeof(*gnvs));
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((unsigned long)gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to DSDT.  */
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_pop_len();
+	}
+}
+
 static struct device_operations device_ops = {
 	.read_resources		= &pch_lpc_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
+	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
+	.write_acpi_tables      = acpi_write_hpet,
 	.init			= &lpc_init,
 	.scan_bus		= &scan_static_bus,
 	.ops_pci		= &broadwell_pci_ops,

@@ -435,9 +435,8 @@ static int calculate_power(int tdp, int p1_ratio, int ratio)
 	return (int)power;
 }
 
-static int generate_P_state_entries(int core, int cores_per_package)
+static void generate_P_state_entries(int core, int cores_per_package)
 {
-	int len, len_pss;
 	int ratio_min, ratio_max, ratio_turbo, ratio_step;
 	int coord_type, power_max, power_unit, num_entries;
 	int ratio, power, clock, clock_max;
@@ -472,16 +471,16 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
 
 	/* Write _PCT indicating use of FFixedHW */
-	len = acpigen_write_empty_PCT();
+	acpigen_write_empty_PCT();
 
 	/* Write _PPC with no limit on supported P-state */
-	len += acpigen_write_PPC_NVS();
+	acpigen_write_PPC_NVS();
 
 	/* Write PSD indicating configured coordination type */
-	len += acpigen_write_PSD_package(core, 1, coord_type);
+	acpigen_write_PSD_package(core, 1, coord_type);
 
 	/* Add P-state entries in _PSS table */
-	len += acpigen_write_name("_PSS");
+	acpigen_write_name("_PSS");
 
 	/* Determine ratio points */
 	ratio_step = PSS_RATIO_STEP;
@@ -494,13 +493,13 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	/* P[T] is Turbo state if enabled */
 	if (get_turbo_state() == TURBO_ENABLED) {
 		/* _PSS package count including Turbo */
-		len_pss = acpigen_write_package(num_entries + 2);
+		acpigen_write_package(num_entries + 2);
 
 		msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
 		ratio_turbo = msr.lo & 0xff;
 
 		/* Add entry for Turbo ratio */
-		len_pss += acpigen_write_PSS_package(
+		acpigen_write_PSS_package(
 			clock_max + 1,		/*MHz*/
 			power_max,		/*mW*/
 			PSS_LATENCY_TRANSITION,	/*lat1*/
@@ -509,11 +508,11 @@ static int generate_P_state_entries(int core, int cores_per_package)
 			ratio_turbo << 8);	/*status*/
 	} else {
 		/* _PSS package count without Turbo */
-		len_pss = acpigen_write_package(num_entries + 1);
+		acpigen_write_package(num_entries + 1);
 	}
 
 	/* First regular entry is max non-turbo ratio */
-	len_pss += acpigen_write_PSS_package(
+	acpigen_write_PSS_package(
 		clock_max,		/*MHz*/
 		power_max,		/*mW*/
 		PSS_LATENCY_TRANSITION,	/*lat1*/
@@ -529,7 +528,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		power = calculate_power(power_max, ratio_max, ratio);
 		clock = ratio * CPU_BCLK;
 
-		len_pss += acpigen_write_PSS_package(
+		acpigen_write_PSS_package(
 			clock,			/*MHz*/
 			power,			/*mW*/
 			PSS_LATENCY_TRANSITION,	/*lat1*/
@@ -539,15 +538,11 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	}
 
 	/* Fix package length */
-	len_pss--;
-	acpigen_patch_len(len_pss);
-
-	return len + len_pss;
+	acpigen_pop_len();
 }
 
 void generate_cpu_entries(void)
 {
-	int len_pr;
 	int coreID, cpuID, pcontrol_blk = ACPI_BASE_ADDRESS, plen = 6;
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_cores_per_package();
@@ -564,23 +559,22 @@ void generate_cpu_entries(void)
 			}
 
 			/* Generate processor \_PR.CPUx */
-			len_pr = acpigen_write_processor(
+			acpigen_write_processor(
 				(cpuID-1)*cores_per_package+coreID-1,
 				pcontrol_blk, plen);
 
 			/* Generate P-state tables */
-			len_pr += generate_P_state_entries(
+			generate_P_state_entries(
 				coreID-1, cores_per_package);
 
 			/* Generate C-state tables */
-			len_pr += generate_C_state_entries();
+			generate_C_state_entries();
 
 			/* Generate T-state tables */
-			len_pr += generate_T_state_entries(
+			generate_T_state_entries(
 				cpuID-1, cores_per_package);
 
-			len_pr--;
-			acpigen_patch_len(len_pr);
+			acpigen_pop_len();
 		}
 	}
 }

@@ -573,7 +573,7 @@ build_all_targets()
 		rm -rf ${scanbuild_out}
 		BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
 	fi
-	$BUILDPREFIX $MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils tools || exit 1
+	$BUILDPREFIX $MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils `printf $configoptions` tools || exit 1
 	if [ "$scanbuild" = "true" ]; then
 		mv ${scanbuild_out}tmp/* ${scanbuild_out}
 		rmdir ${scanbuild_out}tmp

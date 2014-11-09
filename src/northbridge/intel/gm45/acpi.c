@@ -75,7 +75,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_dmar(unsigned long current)
+static unsigned long acpi_fill_dmar(unsigned long current)
 {
 	int me_active = (dev_find_slot(0, PCI_DEVFN(3, 0)) != NULL);
 	int stepping = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), PCI_CLASS_REVISION);
@@ -122,7 +122,7 @@ unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsd
 #if CONFIG_IOMMU
 	printk(BIOS_DEBUG, "ACPI:     * DMAR\n");
 	dmar = (acpi_dmar_t *) current;
-	acpi_create_dmar(dmar);
+	acpi_create_dmar(dmar, acpi_fill_dmar);
 	current += dmar->header.length;
 	ALIGN_CURRENT;
 	acpi_add_table(rsdp, dmar);

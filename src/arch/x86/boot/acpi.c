@@ -349,12 +349,8 @@ void acpi_create_srat(acpi_srat_t *srat)
 	header->checksum = acpi_checksum((void *)srat, header->length);
 }
 
-unsigned long __attribute__((weak)) acpi_fill_dmar(unsigned long current)
-{
-	return current;
-}
-
-void acpi_create_dmar(acpi_dmar_t *dmar)
+void acpi_create_dmar(acpi_dmar_t *dmar,
+		      unsigned long (*acpi_fill_dmar) (unsigned long))
 {
 	acpi_header_t *header = &(dmar->header);
 	unsigned long current = (unsigned long)dmar + sizeof(acpi_dmar_t);

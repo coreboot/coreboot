@@ -34,7 +34,7 @@ ramstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vboot.c
 ramstage-$(CONFIG_ELOG) += elog.c
-ramstage-y += gnvs.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += gnvs.c
 verstage-y += fmap.c
 romstage-y += fmap.c
 ramstage-y += fmap.c

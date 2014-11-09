@@ -26,6 +26,8 @@
 #include <device/device.h>
 #include "chromeos.h"
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+
 static void set_ramoops(chromeos_acpi_t *chromeos, void *ram_oops, size_t size)
 {
 	if (chromeos == NULL) {
@@ -96,3 +98,5 @@ void chromeos_ram_oops_init(chromeos_acpi_t *chromeos)
 	set_global_chromeos_pointer(chromeos);
 	reserve_ram_oops_dynamic(chromeos);
 }
+
+#endif /* CONFIG_HAVE_ACPI_TABLES */

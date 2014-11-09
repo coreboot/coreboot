@@ -74,7 +74,7 @@ config CHROMEOS_RAMOOPS
 config CHROMEOS_RAMOOPS_DYNAMIC
 	bool "Allocate RAM oops buffer in cbmem"
 	default n
-	depends on CHROMEOS_RAMOOPS
+	depends on CHROMEOS_RAMOOPS && HAVE_ACPI_TABLES
 
 config CHROMEOS_RAMOOPS_RAM_START
 	hex "Physical address of preserved RAM"

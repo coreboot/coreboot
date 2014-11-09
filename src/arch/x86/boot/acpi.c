@@ -249,18 +249,6 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 	header->checksum = acpi_checksum((void *)mcfg, header->length);
 }
 
-#if !IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
-/*
- * This can be overridden by platform ACPI setup code, if it calls
- * acpi_create_ssdt_generator().
- */
-unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(
-	unsigned long current, const char *oem_table_id)
-{
-	return current;
-}
-#endif
-
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 {
 	unsigned long current = (unsigned long)ssdt + sizeof(acpi_header_t);
@@ -278,16 +266,12 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 
 	acpigen_set_current((char *) current);
 	{
-#if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
 		struct device *dev;
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->ops && dev->ops->acpi_fill_ssdt_generator) {
 				dev->ops->acpi_fill_ssdt_generator();
 			}
 		current = (unsigned long) acpigen_get_current();
-#else
-		current = acpi_fill_ssdt_generator(current, oem_table_id);
-#endif
 	}
 
 	/* (Re)calculate length and checksum. */
@@ -686,8 +670,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt)
 }
 #endif
 
-#if IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
-
 extern const unsigned char AmlCode[];
 
 unsigned long __attribute__ ((weak)) fw_cfg_acpi_tables(unsigned long start)
@@ -830,7 +812,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }
-#endif
 
 #if CONFIG_HAVE_ACPI_RESUME
 void __attribute__((weak)) mainboard_suspend_resume(void)

@@ -219,7 +219,7 @@ static void sb600_lpc_enable_resources(device_t dev)
 	sb600_lpc_enable_childrens_resources(dev);
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
 extern u16 pm_base;
 

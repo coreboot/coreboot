@@ -311,7 +311,7 @@ static void ck804_lpc_enable_resources(device_t dev)
 	ck804_lpc_enable_childrens_resources(dev);
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
 static void southbridge_acpi_fill_ssdt_generator(void)
 {

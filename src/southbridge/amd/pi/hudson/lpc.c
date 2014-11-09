@@ -336,7 +336,7 @@ static struct device_operations lpc_ops = {
 	.read_resources = hudson_lpc_read_resources,
 	.set_resources = hudson_lpc_set_resources,
 	.enable_resources = hudson_lpc_enable_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.write_acpi_tables = acpi_write_hpet,
 #endif
 	.init = lpc_init,

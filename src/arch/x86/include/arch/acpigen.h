@@ -63,7 +63,7 @@ int acpigen_write_mem32fixed(int readwrite, u32 base, u32 size);
 int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16);
 int acpigen_write_register(acpi_addr_t *addr);
 int acpigen_write_resourcetemplate_header(void);
-int acpigen_write_resourcetemplate_footer(int len);
+int acpigen_write_resourcetemplate_footer(void);
 int acpigen_write_mainboard_resource_template(void);
 int acpigen_write_mainboard_resources(const char *scope, const char *name);
 int acpigen_write_irq(u16 mask);

@@ -93,8 +93,6 @@ void
 drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 					  int have_dock_serial)
 {
-	int reslen;
-
 	acpigen_write_scope(scope);
 
 	if (drivers_lenovo_is_wacom_present()) {
@@ -105,11 +103,11 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 
 		acpigen_write_name("_CRS");
 
-		reslen = acpigen_write_resourcetemplate_header();
-		reslen += acpigen_write_io16(0x200, 0x200, 1, 8, 1);
-		reslen += acpigen_write_irq((1 << 5));
+		acpigen_write_resourcetemplate_header();
+		acpigen_write_io16(0x200, 0x200, 1, 8, 1);
+		acpigen_write_irq((1 << 5));
 
-		acpigen_write_resourcetemplate_footer(reslen);
+		acpigen_write_resourcetemplate_footer();
 
 		acpigen_write_method("_STA", 0);
 		/* return */
@@ -131,11 +129,11 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 
 		acpigen_write_name("_CRS");
 
-		reslen = acpigen_write_resourcetemplate_header();
-		reslen += acpigen_write_io16(0x3f8, 0x3f8, 1, 8, 1);
-		reslen += acpigen_write_irq(1 << 4);
+		acpigen_write_resourcetemplate_header();
+		acpigen_write_io16(0x3f8, 0x3f8, 1, 8, 1);
+		acpigen_write_irq(1 << 4);
 
-		acpigen_write_resourcetemplate_footer(reslen);
+		acpigen_write_resourcetemplate_footer();
 
 		/* method op */
 		acpigen_write_method("_STA", 0);

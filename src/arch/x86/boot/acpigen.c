@@ -382,13 +382,13 @@ int acpigen_write_empty_PTC(void)
 	/* ControlRegister */
 	rlen = acpigen_write_resourcetemplate_header();
 	rlen += acpigen_write_register(&addr);
-	len += acpigen_write_resourcetemplate_footer(rlen);
+	len += acpigen_write_resourcetemplate_footer();
 	len += rlen;
 
 	/* StatusRegister */
 	rlen = acpigen_write_resourcetemplate_header();
 	rlen += acpigen_write_register(&addr);
-	len += acpigen_write_resourcetemplate_footer(rlen);
+	len += acpigen_write_resourcetemplate_footer();
 	len += rlen;
 
 	acpigen_patch_len(len - 1);
@@ -535,7 +535,7 @@ int acpigen_write_CST_package_entry(acpi_cstate_t *cstate)
 	acpigen_write_register(&cstate->resource);
 	end = acpigen_get_current();
 	len += end - start;
-	len += acpigen_write_resourcetemplate_footer(len);
+	len += acpigen_write_resourcetemplate_footer();
 	len += len0;
 	len += acpigen_write_dword(cstate->ctype);
 	len += acpigen_write_dword(cstate->latency);
@@ -713,20 +713,24 @@ int acpigen_write_resourcetemplate_header(void)
 	return len;
 }
 
-int acpigen_write_resourcetemplate_footer(int len)
+int acpigen_write_resourcetemplate_footer(void)
 {
 	char *p = len_stack[--ltop];
+	int len;
 	/*
 	 * end tag (acpi 4.0 Section 6.4.2.8)
 	 * 0x79 <checksum>
 	 * 0x00 is treated as a good checksum according to the spec
 	 * and is what iasl generates.
 	 */
-	len += acpigen_emit_byte(0x79);
-	len += acpigen_emit_byte(0x00);
+	acpigen_emit_byte(0x79);
+	acpigen_emit_byte(0x00);
+
+     	len = gencurrent - p;
+
 	/* patch len word */
-	p[0] = (len-6) & 0xff;
-	p[1] = ((len-6) >> 8) & 0xff;
+	p[0] = len & 0xff;
+	p[1] = (len >> 8) & 0xff;
 	/* patch len field */
 	acpigen_patch_len(len-1);
 	return 2;
@@ -773,7 +777,7 @@ int acpigen_write_mainboard_resource_template(void)
 
 	end = acpigen_get_current();
 	len += end-start;
-	len += acpigen_write_resourcetemplate_footer(len);
+	len += acpigen_write_resourcetemplate_footer();
 	return len;
 }
 

@@ -17,3 +17,4 @@
 ## Foundation, Inc.
 ##
 
+ramstage-y += cstates.c

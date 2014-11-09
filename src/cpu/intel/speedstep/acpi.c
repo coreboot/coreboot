@@ -28,19 +28,6 @@
 #include <cpu/intel/speedstep.h>
 #include <device/device.h>
 
-/**
- * @brief Returns c-state entries for this system
- *
- * This function is usually overwritten in mainboard code.
- *
- * @return Number of c-states *entries will point to.
- */
-int __attribute__((weak)) get_cst_entries(acpi_cstate_t **entries
-					  __attribute__((unused)))
-{
-	return 0;
-}
-
 static int determine_total_number_of_cores(void)
 {
 	struct device *cpu;

@@ -227,6 +227,7 @@ struct lb_gpios {
 #define LB_TAG_VBNV		0x0019
 #define LB_TAB_VBOOT_HANDOFF	0x0020
 #define LB_TAB_DMA		0x0022
+#define LB_TAG_RAM_OOPS		0x0023
 struct lb_range {
 	uint32_t tag;
 	uint32_t size;
@@ -234,6 +235,8 @@ struct lb_range {
 	uint64_t range_start;
 	uint32_t range_size;
 };
+
+void lb_ramoops(struct lb_header *header);
 
 #define LB_TAG_TIMESTAMPS	0x0016
 #define LB_TAG_CBMEM_CONSOLE	0x0017

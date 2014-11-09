@@ -473,6 +473,10 @@ unsigned long write_coreboot_table(
 	/* Add board-specific table entries, if any. */
 	lb_board(head);
 
+#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
+	lb_ramoops(head);
+#endif
+
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head);
 }

@@ -391,7 +391,7 @@ int acpigen_write_empty_PTC(void)
 	len += acpigen_write_resourcetemplate_footer();
 	len += rlen;
 
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len + nlen;
 }
 
@@ -440,7 +440,7 @@ int acpigen_write_PPC(u8 nr)
 	len += acpigen_write_byte(nr);
 	/* add all single bytes */
 	len += 1;
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len;
 }
 
@@ -465,7 +465,7 @@ int acpigen_write_PPC_NVS(void)
 	len += acpigen_emit_namestring("PPCM");
 	/* add all single bytes */
 	len += 1;
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len;
 }
 
@@ -483,7 +483,7 @@ int acpigen_write_TPC(const char *gnvs_tpc_limit)
 	len = acpigen_write_method("_TPC", 0);
 	len += acpigen_emit_byte(0xa4);		/* ReturnOp */
 	len += acpigen_emit_namestring(gnvs_tpc_limit);
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len;
 }
 
@@ -499,7 +499,7 @@ int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
 	len += acpigen_write_dword(control);
 	len += acpigen_write_dword(status);
 	// pkglen without the len opcode
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 
 	printk(BIOS_DEBUG, "PSS: %uMHz power %u control 0x%x status 0x%x\n",
 	       coreFreq, power, control, status);
@@ -518,9 +518,9 @@ int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 	len += acpigen_write_dword(domain);
 	len += acpigen_write_dword(coordtype);
 	len += acpigen_write_dword(numprocs);
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	len += lenp;
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len + lenh;
 }
 
@@ -540,7 +540,7 @@ int acpigen_write_CST_package_entry(acpi_cstate_t *cstate)
 	len += acpigen_write_dword(cstate->ctype);
 	len += acpigen_write_dword(cstate->latency);
 	len += acpigen_write_dword(cstate->power);
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len;
 }
 
@@ -555,7 +555,7 @@ int acpigen_write_CST_package(acpi_cstate_t *cstate, int nentries)
 		len += acpigen_write_CST_package_entry(cstate + i);
 
 	len += lenp;
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len + lenh;
 }
 
@@ -582,12 +582,12 @@ int acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list)
 		len += acpigen_write_dword(tstate->latency);
 		len += acpigen_write_dword(tstate->control);
 		len += acpigen_write_dword(tstate->status);
-		acpigen_patch_len(len - 1);
+		acpigen_pop_len();
 		tstate++;
 		plen += len;
 	}
 
-	acpigen_patch_len(plen - 1);
+	acpigen_pop_len();
 	return plen + nlen;
 }
 
@@ -602,9 +602,9 @@ int acpigen_write_TSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 	len += acpigen_write_dword(domain);
 	len += acpigen_write_dword(coordtype);
 	len += acpigen_write_dword(numprocs);
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	len += lenp;
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len + lenh;
 }
 
@@ -732,7 +732,7 @@ int acpigen_write_resourcetemplate_footer(void)
 	p[0] = len & 0xff;
 	p[1] = (len >> 8) & 0xff;
 	/* patch len field */
-	acpigen_patch_len(len-1);
+	acpigen_pop_len();
 	return 2;
 }
 
@@ -787,7 +787,7 @@ int acpigen_write_mainboard_resources(const char *scope, const char *name)
 	len = acpigen_write_scope(scope);
 	len += acpigen_write_name(name);
 	len += acpigen_write_mainboard_resource_template();
-	acpigen_patch_len(len - 1);
+	acpigen_pop_len();
 	return len;
 }
 

@@ -110,8 +110,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 14.4 on  end # PCI 0x4384
 				device pci 14.5 on  end # USB 2
 				device pci 14.6 off end # Gec
-				# SD, make it on so the BAR is assigned (if proper hudson on/off handling is implemented this may go away)
-				device pci 14.7 on end
+				device pci 14.7 off end # SD
 				device pci 15.0 on end # PCIe 0 - onboard PCIe 1x
 				device pci 15.1 on end # PCIe 1 onboard gigabit
 				device pci 15.2 off end # unused

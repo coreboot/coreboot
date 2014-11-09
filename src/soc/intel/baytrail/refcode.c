@@ -90,7 +90,7 @@ static void cache_refcode(const struct rmod_stage_load *rsl)
 	c->magic = RAMSTAGE_CACHE_MAGIC;
 	c->entry_point = (uint32_t)rsl->entry;
 	c->load_address = (uint32_t)cbmem_entry_start(rsl->cbmem_entry);
-	c->size = cbmem_entry_size(rsl->cbmem_entry);;
+	c->size = cbmem_entry_size(rsl->cbmem_entry);
 
 	printk(BIOS_DEBUG, "Caching refcode at 0x%p(%x)\n",
 	       &c->program[0], c->size);

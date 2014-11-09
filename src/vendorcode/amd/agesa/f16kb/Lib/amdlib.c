@@ -842,7 +842,7 @@ LibAmdPciWrite (
       LibAmdMsrWrite (NB_CFG, &RMWritePrevious, StdHeader);
     }
     //IDS_HDT_CONSOLE (LIB_PCI_WR, "~PCI WR %08x = %08x\n", LegacyPciAccess, *(UINT32 *)Value);
-    //printk(BIOS_DEBUG, "~PCI WR %08x = %08x\n", LegacyPciAccess, *(UINT32 *)Value);;
+    //printk(BIOS_DEBUG, "~PCI WR %08x = %08x\n", LegacyPciAccess, *(UINT32 *)Value);
     //printk(BIOS_DEBUG, "LibAmdPciWrite\n");
   } else {
     // Setup the MMIO address

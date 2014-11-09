@@ -159,7 +159,7 @@ AmdSbDispatcher (
   }
 
   if ( ((AMD_CONFIG_PARAMS*)pConfig)->Func == SB_EC_FANCONTROL ) {
-    sbECfancontrolservice((AMDSBCFG*)pConfig);;
+    sbECfancontrolservice((AMDSBCFG*)pConfig);
   }
 #endif
   return Status;

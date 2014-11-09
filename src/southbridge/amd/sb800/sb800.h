@@ -60,7 +60,6 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
 #else
 void sb800_enable(device_t dev);
-void __attribute__((weak)) sb800_setup_sata_phys(struct device *dev);
 #endif
 
 #endif /* SB800_H */

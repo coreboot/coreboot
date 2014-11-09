@@ -53,7 +53,7 @@ static int sata_drive_detect(int portnum, u16 iobar)
 	return 0;
 }
 
-void __attribute__((weak)) sb800_setup_sata_phys(struct device *dev)
+static void sb800_setup_sata_phys(struct device *dev)
 {
 	int i;
 	static const u32 sata_phy[][3] = {

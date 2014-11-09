@@ -22,7 +22,7 @@
 
 /*
  * If you need to change this, change acpigen_write_f and
- * acpigen_patch_len
+ * acpigen_pop_len
  */
 
 #define ACPIGEN_MAXLEN 0xfff
@@ -44,17 +44,6 @@ int acpigen_write_len_f(void)
 	acpigen_emit_byte(0);
 	acpigen_emit_byte(0);
 	return 2;
-}
-
-void acpigen_patch_len(int len)
-{
-	ASSERT(len <= ACPIGEN_MAXLEN)
-	ASSERT(ltop > 0)
-	char *p = len_stack[--ltop];
-	/* generate store length for 0xfff max */
-	p[0] = (0x40 | (len & 0xf));
-	p[1] = (len >> 4 & 0xff);
-
 }
 
 void acpigen_pop_len(void)

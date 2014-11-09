@@ -554,11 +554,6 @@ static void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt,
 	rsdp->ext_checksum = acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
 }
 
-unsigned long __attribute__((weak)) acpi_fill_hest(acpi_hest_t *hest)
-{
-	return (unsigned long)hest;
-}
-
 unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type, void *data, u16 data_len)
 {
 	acpi_header_t *header = &(hest->header);
@@ -618,7 +613,8 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *
 }
 
 /* ACPI 4.0 */
-void acpi_write_hest(acpi_hest_t *hest)
+void acpi_write_hest(acpi_hest_t *hest,
+		     unsigned long (*acpi_fill_hest)(acpi_hest_t *hest))
 {
 	acpi_header_t *header = &(hest->header);
 

@@ -815,7 +815,7 @@ static void northbridge_fill_ssdt_generator(void)
 	acpigen_pop_len();
 }
 
-unsigned long acpi_fill_hest(acpi_hest_t *hest)
+static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 {
 	void *addr, *current;
 
@@ -845,7 +845,7 @@ static unsigned long agesa_write_acpi_tables(unsigned long current,
 	/* HEST */
 	current = ALIGN(current, 8);
 	hest = (acpi_hest_t *)current;
-	acpi_write_hest((void *)current);
+	acpi_write_hest((void *)current, acpi_fill_hest);
 	acpi_add_table(rsdp, (void *)current);
 	current += ((acpi_header_t *)current)->length;
 

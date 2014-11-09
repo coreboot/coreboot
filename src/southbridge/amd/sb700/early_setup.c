@@ -219,7 +219,7 @@ void sb7xx_51xx_disable_wideio(u8 wio_index)
 }
 
 /* what is its usage? */
-u32 __attribute__ ((weak)) get_sbdn(u32 bus)
+u32 get_sbdn(u32 bus)
 {
 	device_t dev;
 

@@ -29,8 +29,6 @@
 #define FCH_INT_TABLE_SIZE 0x54
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 #define FCH_INT_TABLE_SIZE 0x42
-#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_AVALON)
-#define FCH_INT_TABLE_SIZE 0x63
 #endif
 
 #define PIRQ_NC		0x1F	/* Not Used */
@@ -75,10 +73,6 @@
 #define PIRQ_OHCI4	0x36	/* USB OHCI	14h.5 */
 #define PIRQ_IDE	0x40	/* IDE		14h.1 */
 #define PIRQ_SATA	0x41	/* SATA		11h.0 */
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_AVALON)
-#define PIRQ_SD     0x17	/* SD */
-#define PIRQ_GPIO   0x62	/* GPIO Controller Interrupt */
-#endif
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON)
 #define PIRQ_SD     0x42	/* SD		14h.7 */
 #define PIRQ_GPP0	0x50	/* GPP INT 0 */

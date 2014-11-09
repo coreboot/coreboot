@@ -29,13 +29,7 @@ config SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	select HAVE_USBDEBUG_OPTIONS
 	select HAVE_HARD_RESET
 
-config SOUTHBRIDGE_AMD_AGESA_AVALON
-	bool
-	select IOAPIC
-	select HAVE_USBDEBUG_OPTIONS
-	select HAVE_HARD_RESET
-
-if SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE || SOUTHBRIDGE_AMD_AGESA_AVALON
+if SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
@@ -65,13 +59,8 @@ config HUDSON_XHCI_FWM
 	help
 	  Add Hudson 2/3/4 XHCI Firmware to support the onboard USB 3.0
 
-config HUDSON_DISABLE_IMC
-	bool
-	default n
-
 config HUDSON_IMC_FWM
-	bool "Add IMC firmware"
-	depends on !HUDSON_DISABLE_IMC
+	bool "Add imc firmware"
 	default y
         help
 	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
@@ -83,22 +72,16 @@ config HUDSON_GEC_FWM
 	  Add Hudson 2/3/4 GEC Firmware to support the onboard gigabit Ethernet MAC.
 	  Must be connected to a Broadcom B50610 or B50610M PHY on the motherboard.
 
-config HUDSON_PSP
-	bool
-	default y if CPU_AMD_PI_00730F01
-
 config HUDSON_XHCI_FWM_FILE
         string "XHCI firmware path and filename"
         default "3rdparty/southbridge/amd/hudson/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
         default "3rdparty/southbridge/amd/yangtze/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
-        default "3rdparty/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_AVALON
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
         string "IMC firmware path and filename"
         default "3rdparty/southbridge/amd/hudson/imc.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
         default "3rdparty/southbridge/amd/yangtze/imc.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
-        default "3rdparty/southbridge/amd/avalon/imc.bin" if SOUTHBRIDGE_AMD_AGESA_AVALON
 	depends on HUDSON_IMC_FWM
 
 config HUDSON_GEC_FWM_FILE
@@ -109,7 +92,7 @@ config HUDSON_GEC_FWM_FILE
 
 config HUDSON_FWM
 	bool
-	default y if HUDSON_XHCI_FWM || HUDSON_IMC_FWM || HUDSON_GEC_FWM || HUDSON_PSP
+	default y if HUDSON_XHCI_FWM || HUDSON_IMC_FWM || HUDSON_GEC_FWM
 	default n
 
 if HUDSON_FWM
@@ -134,11 +117,6 @@ config HUDSON_FWM_POSITION
 	  0xFF820000 if flash chip size is 8M
 	  0xFF020000 if flash chip size is 16M
 endif # HUDSON_FWM
-
-config AMD_PUBKEY_FILE
-        depends on HUDSON_PSP
-        string "AMD public Key"
-        default "3rdparty/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
 
 config HUDSON_SATA_MODE
         int "SATA Mode"
@@ -230,9 +208,9 @@ config ACPI_ENABLE_THERMAL_ZONE
 	bool
 	default y
 
-endif # SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE || SOUTHBRIDGE_AMD_AGESA_AVALON
+endif # SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
 
-if SOUTHBRIDGE_AMD_AGESA_YANGTZE || SOUTHBRIDGE_AMD_AGESA_AVALON
+if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	config AZ_PIN
 		hex
 		default 0xaa

@@ -138,11 +138,11 @@
 		/* Bus 0, Dev 17 - SATA controller */
 		Package(){0x0011FFFF, 0, 0, 19 },
 
-		/* Bus0, Dev 21 PCIE Bridge */
-		Package(){0x0015FFFF, 0, 0, 16 },
-		Package(){0x0015FFFF, 1, 0, 17 },
-		Package(){0x0015FFFF, 2, 0, 18 },
-		Package(){0x0015FFFF, 3, 0, 19 },
+		/* Bus 0, Dev 21 PCIE Bridge */
+		Package(){0x0015FFFF, 0, 0, 17 },
+		Package(){0x0015FFFF, 1, 0, 18 },
+		Package(){0x0015FFFF, 2, 0, 19 },
+		Package(){0x0015FFFF, 3, 0, 16 },
 	})
 
 	Name(PS2, Package(){

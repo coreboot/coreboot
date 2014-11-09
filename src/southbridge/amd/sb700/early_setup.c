@@ -236,7 +236,7 @@ static u8 dual_core(void)
 /*
  * RPR 2.4 C-state and VID/FID change for the K8 platform.
  */
-void __attribute__((weak)) enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
+void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 {
 	u8 byte;
 	byte = pmio_read(0x9a);

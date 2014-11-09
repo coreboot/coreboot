@@ -79,5 +79,5 @@ int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
 u32 get_sbdn(u32 bus);
-void __attribute__((weak)) enable_fid_change_on_sb(u32 sbbusn, u32 sbdn);
+void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn);
 #endif /* SB700_H */

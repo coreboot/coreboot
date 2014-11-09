@@ -37,13 +37,12 @@ static char *gencurrent;
 char *len_stack[ACPIGEN_LENSTACK_SIZE];
 int ltop = 0;
 
-int acpigen_write_len_f(void)
+void acpigen_write_len_f(void)
 {
 	ASSERT(ltop < (ACPIGEN_LENSTACK_SIZE - 1))
 	len_stack[ltop++] = gencurrent;
 	acpigen_emit_byte(0);
 	acpigen_emit_byte(0);
-	return 2;
 }
 
 void acpigen_pop_len(void)
@@ -69,31 +68,27 @@ char *acpigen_get_current(void)
 	return gencurrent;
 }
 
-int acpigen_emit_byte(unsigned char b)
+void acpigen_emit_byte(unsigned char b)
 {
 	(*gencurrent++) = b;
-	return 1;
 }
 
-int acpigen_write_package(int nr_el)
+void acpigen_write_package(int nr_el)
 {
-	int len;
 	/* package op */
 	acpigen_emit_byte(0x12);
-	len = acpigen_write_len_f();
+	acpigen_write_len_f();
 	acpigen_emit_byte(nr_el);
-	return len + 2;
 }
 
-int acpigen_write_byte(unsigned int data)
+void acpigen_write_byte(unsigned int data)
 {
 	/* byte op */
 	acpigen_emit_byte(0xa);
 	acpigen_emit_byte(data & 0xff);
-	return 2;
 }
 
-int acpigen_write_dword(unsigned int data)
+void acpigen_write_dword(unsigned int data)
 {
 	/* dword op */
 	acpigen_emit_byte(0xc);
@@ -101,10 +96,9 @@ int acpigen_write_dword(unsigned int data)
 	acpigen_emit_byte((data >> 8) & 0xff);
 	acpigen_emit_byte((data >> 16) & 0xff);
 	acpigen_emit_byte((data >> 24) & 0xff);
-	return 5;
 }
 
-int acpigen_write_qword(uint64_t data)
+void acpigen_write_qword(uint64_t data)
 {
 	/* qword op */
 	acpigen_emit_byte(0xe);
@@ -116,40 +110,32 @@ int acpigen_write_qword(uint64_t data)
 	acpigen_emit_byte((data >> 40) & 0xff);
 	acpigen_emit_byte((data >> 48) & 0xff);
 	acpigen_emit_byte((data >> 56) & 0xff);
-	return 9;
 }
 
-int acpigen_write_name_byte(const char *name, uint8_t val)
+void acpigen_write_name_byte(const char *name, uint8_t val)
 {
-	int len;
-	len = acpigen_write_name(name);
-	len += acpigen_write_byte(val);
-	return len;
+	acpigen_write_name(name);
+	acpigen_write_byte(val);
 }
 
-int acpigen_write_name_dword(const char *name, uint32_t val)
+void acpigen_write_name_dword(const char *name, uint32_t val)
 {
-	int len;
-	len = acpigen_write_name(name);
-	len += acpigen_write_dword(val);
-	return len;
+	acpigen_write_name(name);
+	acpigen_write_dword(val);
 }
 
-int acpigen_write_name_qword(const char *name, uint64_t val)
+void acpigen_write_name_qword(const char *name, uint64_t val)
 {
-	int len;
-	len = acpigen_write_name(name);
-	len += acpigen_write_qword(val);
-	return len;
+	acpigen_write_name(name);
+	acpigen_write_qword(val);
 }
 
-int acpigen_emit_stream(const char *data, int size)
+void acpigen_emit_stream(const char *data, int size)
 {
 	int i;
 	for (i = 0; i < size; i++) {
 		acpigen_emit_byte(data[i]);
 	}
-	return size;
 }
 
 /*
@@ -161,39 +147,36 @@ int acpigen_emit_stream(const char *data, int size)
  * Check sections 5.3, 18.2.2 and 18.4 of ACPI spec 3.0 for details.
  */
 
-static int acpigen_emit_simple_namestring(const char *name) {
-	int i, len = 0;
+static void acpigen_emit_simple_namestring(const char *name) {
+	int i;
 	char ud[] = "____";
 	for (i = 0; i < 4; i++) {
 		if ((name[i] == '\0') || (name[i] == '.')) {
-			len += acpigen_emit_stream(ud, 4 - i);
+			acpigen_emit_stream(ud, 4 - i);
 			break;
 		} else {
-			len += acpigen_emit_byte(name[i]);
+			acpigen_emit_byte(name[i]);
 		}
 	}
-	return len;
 }
 
-static int acpigen_emit_double_namestring(const char *name, int dotpos) {
-	int len = 0;
+static void acpigen_emit_double_namestring(const char *name, int dotpos) {
 	/* mark dual name prefix */
-	len += acpigen_emit_byte(0x2e);
-	len += acpigen_emit_simple_namestring(name);
-	len += acpigen_emit_simple_namestring(&name[dotpos + 1]);
-	return len;
+	acpigen_emit_byte(0x2e);
+	acpigen_emit_simple_namestring(name);
+	acpigen_emit_simple_namestring(&name[dotpos + 1]);
 }
 
-static int acpigen_emit_multi_namestring(const char *name) {
-	int len = 0, count = 0;
+static void acpigen_emit_multi_namestring(const char *name) {
+	int count = 0;
 	unsigned char *pathlen;
 	/* mark multi name prefix */
-	len += acpigen_emit_byte(0x2f);
-	len += acpigen_emit_byte(0x0);
+	acpigen_emit_byte(0x2f);
+	acpigen_emit_byte(0x0);
 	pathlen = ((unsigned char *) acpigen_get_current()) - 1;
 
 	while (name[0] != '\0') {
-		len += acpigen_emit_simple_namestring(name);
+		acpigen_emit_simple_namestring(name);
 		/* find end or next entity */
 		while ((name[0] != '.') && (name[0] != '\0'))
 			name++;
@@ -204,32 +187,30 @@ static int acpigen_emit_multi_namestring(const char *name) {
 	}
 
 	pathlen[0] = count;
-	return len;
 }
 
 
-int acpigen_emit_namestring(const char *namepath) {
+void acpigen_emit_namestring(const char *namepath) {
 	int dotcount = 0, i;
 	int dotpos = 0;
-	int len = 0;
 
 	/* We can start with a '\'. */
 	if (namepath[0] == '\\') {
-		len += acpigen_emit_byte('\\');
+		acpigen_emit_byte('\\');
 		namepath++;
 	}
 
 	/* And there can be any number of '^' */
 	while (namepath[0] == '^') {
-		len += acpigen_emit_byte('^');
+		acpigen_emit_byte('^');
 		namepath++;
 	}
 
 	/* If we have only \\ or only ^...^. Then we need to put a null
 	   name (0x00). */
 	if(namepath[0] == '\0') {
-		len += acpigen_emit_byte(0x00);
-		return len;
+		acpigen_emit_byte(0x00);
+		return;
 	}
 
 	i = 0;
@@ -242,58 +223,53 @@ int acpigen_emit_namestring(const char *namepath) {
 	}
 
 	if (dotcount == 0) {
-		len += acpigen_emit_simple_namestring(namepath);
+		acpigen_emit_simple_namestring(namepath);
 	} else if (dotcount == 1) {
-		len += acpigen_emit_double_namestring(namepath, dotpos);
+		acpigen_emit_double_namestring(namepath, dotpos);
 	} else {
-		len += acpigen_emit_multi_namestring(namepath);
+		acpigen_emit_multi_namestring(namepath);
 	}
-	return len;
 }
 
-int acpigen_write_name(const char *name)
+void acpigen_write_name(const char *name)
 {
-	int len;
 	/* name op */
-	len = acpigen_emit_byte(0x8);
-	return len + acpigen_emit_namestring(name);
+	acpigen_emit_byte(0x8);
+	acpigen_emit_namestring(name);
 }
 
-int acpigen_write_scope(const char *name)
+void acpigen_write_scope(const char *name)
 {
-	int len;
 	/* scope op */
-	len = acpigen_emit_byte(0x10);
-	len += acpigen_write_len_f();
-	return len + acpigen_emit_namestring(name);
+	acpigen_emit_byte(0x10);
+	acpigen_write_len_f();
+	acpigen_emit_namestring(name);
 }
 
-int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
+void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*
         Processor (\_PR.CPUcpuindex, cpuindex, pblock_addr, pblock_len)
         {
 */
 	char pscope[16];
-	int len;
 	/* processor op */
 	acpigen_emit_byte(0x5b);
 	acpigen_emit_byte(0x83);
-	len = acpigen_write_len_f();
+	acpigen_write_len_f();
 
 	snprintf(pscope, sizeof (pscope),
 		 "\\_PR.CP%02d", (unsigned int) cpuindex);
-	len += acpigen_emit_namestring(pscope);
+	acpigen_emit_namestring(pscope);
 	acpigen_emit_byte(cpuindex);
 	acpigen_emit_byte(pblock_addr & 0xff);
 	acpigen_emit_byte((pblock_addr >> 8) & 0xff);
 	acpigen_emit_byte((pblock_addr >> 16) & 0xff);
 	acpigen_emit_byte((pblock_addr >> 24) & 0xff);
 	acpigen_emit_byte(pblock_len);
-	return 6 + 2 + len;
 }
 
-int acpigen_write_empty_PCT(void)
+void acpigen_write_empty_PCT(void)
 {
 /*
     Name (_PCT, Package (0x02)
@@ -326,10 +302,10 @@ int acpigen_write_empty_PCT(void)
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	/* 00000058    "........" */
 		0x00, 0x79, 0x00
 	};
-	return acpigen_emit_stream(stream, ARRAY_SIZE(stream));
+	acpigen_emit_stream(stream, ARRAY_SIZE(stream));
 }
 
-int acpigen_write_empty_PTC(void)
+void acpigen_write_empty_PTC(void)
 {
 /*
     Name (_PTC, Package (0x02)
@@ -353,7 +329,6 @@ int acpigen_write_empty_PTC(void)
         }
     })
 */
-	int len, nlen, rlen;
 	acpi_addr_t addr = {
 		.space_id   = ACPI_ADDRESS_SPACE_FIXED,
 		.bit_width  = 0,
@@ -365,55 +340,44 @@ int acpigen_write_empty_PTC(void)
 		.addrh      = 0,
 	};
 
-	nlen = acpigen_write_name("_PTC");
-	len = acpigen_write_package(2);
+	acpigen_write_name("_PTC");
+	acpigen_write_package(2);
 
 	/* ControlRegister */
-	rlen = acpigen_write_resourcetemplate_header();
-	rlen += acpigen_write_register(&addr);
-	len += acpigen_write_resourcetemplate_footer();
-	len += rlen;
+	acpigen_write_resourcetemplate_header();
+	acpigen_write_register(&addr);
+	acpigen_write_resourcetemplate_footer();
 
 	/* StatusRegister */
-	rlen = acpigen_write_resourcetemplate_header();
-	rlen += acpigen_write_register(&addr);
-	len += acpigen_write_resourcetemplate_footer();
-	len += rlen;
+	acpigen_write_resourcetemplate_header();
+	acpigen_write_register(&addr);
+	acpigen_write_resourcetemplate_footer();
 
 	acpigen_pop_len();
-	return len + nlen;
 }
 
-int acpigen_write_method(const char *name, int nargs)
+void acpigen_write_method(const char *name, int nargs)
 {
-	int len;
-
 	/* method op */
-	len = acpigen_emit_byte(0x14);
-	len += acpigen_write_len_f();
-	len += acpigen_emit_namestring(name);
-	len += acpigen_emit_byte(nargs & 7);
-
-	return len;
+	acpigen_emit_byte(0x14);
+	acpigen_write_len_f();
+	acpigen_emit_namestring(name);
+	acpigen_emit_byte(nargs & 7);
 }
 
-int acpigen_write_device(const char *name)
+void acpigen_write_device(const char *name)
 {
-	int len;
-
 	/* method op */
-	len = acpigen_emit_byte(0x5b);
-	len += acpigen_emit_byte(0x82);
-	len += acpigen_write_len_f();
-	len += acpigen_emit_namestring(name);
-
-	return len;
+	acpigen_emit_byte(0x5b);
+	acpigen_emit_byte(0x82);
+	acpigen_write_len_f();
+	acpigen_emit_namestring(name);
 }
 
 /*
  * Generates a func with max supported P-states.
  */
-int acpigen_write_PPC(u8 nr)
+void acpigen_write_PPC(u8 nr)
 {
 /*
     Method (_PPC, 0, NotSerialized)
@@ -421,23 +385,19 @@ int acpigen_write_PPC(u8 nr)
         Return (nr)
     }
 */
-	int len;
-	len = acpigen_write_method("_PPC", 0);
+	acpigen_write_method("_PPC", 0);
 	/* return */
 	acpigen_emit_byte(0xa4);
 	/* arg */
-	len += acpigen_write_byte(nr);
-	/* add all single bytes */
-	len += 1;
+	acpigen_write_byte(nr);
 	acpigen_pop_len();
-	return len;
 }
 
 /*
  * Generates a func with max supported P-states saved
  * in the variable PPCM.
  */
-int acpigen_write_PPC_NVS(void)
+void acpigen_write_PPC_NVS(void)
 {
 /*
     Method (_PPC, 0, NotSerialized)
@@ -445,20 +405,15 @@ int acpigen_write_PPC_NVS(void)
         Return (PPCM)
     }
 */
-	int len;
-
-	len = acpigen_write_method("_PPC", 0);
+	acpigen_write_method("_PPC", 0);
 	/* return */
 	acpigen_emit_byte(0xa4);
 	/* arg */
-	len += acpigen_emit_namestring("PPCM");
-	/* add all single bytes */
-	len += 1;
+	acpigen_emit_namestring("PPCM");
 	acpigen_pop_len();
-	return len;
 }
 
-int acpigen_write_TPC(const char *gnvs_tpc_limit)
+void acpigen_write_TPC(const char *gnvs_tpc_limit)
 {
 /*
     // Sample _TPC method
@@ -467,88 +422,68 @@ int acpigen_write_TPC(const char *gnvs_tpc_limit)
         Return (\TLVL)
     }
  */
-	int len;
-
-	len = acpigen_write_method("_TPC", 0);
-	len += acpigen_emit_byte(0xa4);		/* ReturnOp */
-	len += acpigen_emit_namestring(gnvs_tpc_limit);
+	acpigen_write_method("_TPC", 0);
+	acpigen_emit_byte(0xa4);		/* ReturnOp */
+	acpigen_emit_namestring(gnvs_tpc_limit);
 	acpigen_pop_len();
-	return len;
 }
 
-int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
+void acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
 			      u32 busmLat, u32 control, u32 status)
 {
-	int len;
-	len = acpigen_write_package(6);
-	len += acpigen_write_dword(coreFreq);
-	len += acpigen_write_dword(power);
-	len += acpigen_write_dword(transLat);
-	len += acpigen_write_dword(busmLat);
-	len += acpigen_write_dword(control);
-	len += acpigen_write_dword(status);
-	// pkglen without the len opcode
+	acpigen_write_package(6);
+	acpigen_write_dword(coreFreq);
+	acpigen_write_dword(power);
+	acpigen_write_dword(transLat);
+	acpigen_write_dword(busmLat);
+	acpigen_write_dword(control);
+	acpigen_write_dword(status);
 	acpigen_pop_len();
 
 	printk(BIOS_DEBUG, "PSS: %uMHz power %u control 0x%x status 0x%x\n",
 	       coreFreq, power, control, status);
-
-	return len;
 }
 
-int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
+void acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 {
-	int len, lenh, lenp;
-	lenh = acpigen_write_name("_PSD");
-	lenp = acpigen_write_package(1);
-	len = acpigen_write_package(5);
-	len += acpigen_write_byte(5);	// 5 values
-	len += acpigen_write_byte(0);	// revision 0
-	len += acpigen_write_dword(domain);
-	len += acpigen_write_dword(coordtype);
-	len += acpigen_write_dword(numprocs);
+	acpigen_write_name("_PSD");
+	acpigen_write_package(1);
+	acpigen_write_package(5);
+	acpigen_write_byte(5);	// 5 values
+	acpigen_write_byte(0);	// revision 0
+	acpigen_write_dword(domain);
+	acpigen_write_dword(coordtype);
+	acpigen_write_dword(numprocs);
 	acpigen_pop_len();
-	len += lenp;
 	acpigen_pop_len();
-	return len + lenh;
 }
 
-int acpigen_write_CST_package_entry(acpi_cstate_t *cstate)
+void acpigen_write_CST_package_entry(acpi_cstate_t *cstate)
 {
-	int len, len0;
-	char *start, *end;
-
-	len0 = acpigen_write_package(4);
-	len = acpigen_write_resourcetemplate_header();
-	start = acpigen_get_current();
+	acpigen_write_package(4);
+	acpigen_write_resourcetemplate_header();
 	acpigen_write_register(&cstate->resource);
-	end = acpigen_get_current();
-	len += end - start;
-	len += acpigen_write_resourcetemplate_footer();
-	len += len0;
-	len += acpigen_write_dword(cstate->ctype);
-	len += acpigen_write_dword(cstate->latency);
-	len += acpigen_write_dword(cstate->power);
+	acpigen_write_resourcetemplate_footer();
+	acpigen_write_dword(cstate->ctype);
+	acpigen_write_dword(cstate->latency);
+	acpigen_write_dword(cstate->power);
 	acpigen_pop_len();
-	return len;
 }
 
-int acpigen_write_CST_package(acpi_cstate_t *cstate, int nentries)
+void acpigen_write_CST_package(acpi_cstate_t *cstate, int nentries)
 {
-	int len, lenh, lenp, i;
-	lenh = acpigen_write_name("_CST");
-	lenp = acpigen_write_package(nentries+1);
-	len = acpigen_write_dword(nentries);
+	int i;
+	acpigen_write_name("_CST");
+	acpigen_write_package(nentries+1);
+	acpigen_write_dword(nentries);
 
 	for (i = 0; i < nentries; i++)
-		len += acpigen_write_CST_package_entry(cstate + i);
+		acpigen_write_CST_package_entry(cstate + i);
 
-	len += lenp;
 	acpigen_pop_len();
-	return len + lenh;
 }
 
-int acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list)
+void acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list)
 {
 /*
     Sample _TSS package with 100% and 50% duty cycles
@@ -558,48 +493,43 @@ int acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list)
         Package(){50, 520, 0, 0x18, 0)
     })
  */
-	int i, len, plen, nlen;
+	int i;
 	acpi_tstate_t *tstate = tstate_list;
 
-	nlen = acpigen_write_name("_TSS");
-	plen = acpigen_write_package(entries);
+	acpigen_write_name("_TSS");
+	acpigen_write_package(entries);
 
 	for (i = 0; i < entries; i++) {
-		len = acpigen_write_package(5);
-		len += acpigen_write_dword(tstate->percent);
-		len += acpigen_write_dword(tstate->power);
-		len += acpigen_write_dword(tstate->latency);
-		len += acpigen_write_dword(tstate->control);
-		len += acpigen_write_dword(tstate->status);
+		acpigen_write_package(5);
+		acpigen_write_dword(tstate->percent);
+		acpigen_write_dword(tstate->power);
+		acpigen_write_dword(tstate->latency);
+		acpigen_write_dword(tstate->control);
+		acpigen_write_dword(tstate->status);
 		acpigen_pop_len();
 		tstate++;
-		plen += len;
 	}
 
 	acpigen_pop_len();
-	return plen + nlen;
 }
 
-int acpigen_write_TSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
+void acpigen_write_TSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 {
-	int len, lenh, lenp;
-	lenh = acpigen_write_name("_TSD");
-	lenp = acpigen_write_package(1);
-	len = acpigen_write_package(5);
-	len += acpigen_write_byte(5);	// 5 values
-	len += acpigen_write_byte(0);	// revision 0
-	len += acpigen_write_dword(domain);
-	len += acpigen_write_dword(coordtype);
-	len += acpigen_write_dword(numprocs);
+	acpigen_write_name("_TSD");
+	acpigen_write_package(1);
+	acpigen_write_package(5);
+	acpigen_write_byte(5);	// 5 values
+	acpigen_write_byte(0);	// revision 0
+	acpigen_write_dword(domain);
+	acpigen_write_dword(coordtype);
+	acpigen_write_dword(numprocs);
 	acpigen_pop_len();
-	len += lenp;
 	acpigen_pop_len();
-	return len + lenh;
 }
 
 
 
-int acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
+void acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
 {
 	/*
 	 * acpi 4.0 section 6.4.3.4: 32-Bit Fixed Memory Range Descriptor
@@ -621,10 +551,9 @@ int acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
 	acpigen_emit_byte((size >> 8) & 0xff);
 	acpigen_emit_byte((size >> 16) & 0xff);
 	acpigen_emit_byte((size >> 24) & 0xff);
-	return 12;
 }
 
-int acpigen_write_register(acpi_addr_t *addr)
+void acpigen_write_register(acpi_addr_t *addr)
 {
 	acpigen_emit_byte(0x82);		/* Register Descriptor */
 	acpigen_emit_byte(0x0c);		/* Register Length 7:0 */
@@ -641,10 +570,9 @@ int acpigen_write_register(acpi_addr_t *addr)
 	acpigen_emit_byte((addr->addrh >> 8) & 0xff);
 	acpigen_emit_byte((addr->addrh >> 16) & 0xff);
 	acpigen_emit_byte((addr->addrh >> 24) & 0xff);
-	return 15;
 }
 
-int acpigen_write_irq(u16 mask)
+void acpigen_write_irq(u16 mask)
 {
 	/*
 	 * acpi 3.0b section 6.4.2.1: IRQ Descriptor
@@ -656,10 +584,9 @@ int acpigen_write_irq(u16 mask)
 	acpigen_emit_byte(0x22);
 	acpigen_emit_byte(mask & 0xff);
 	acpigen_emit_byte((mask >> 8) & 0xff);
-	return 3;
 }
 
-int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)
+void acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)
 {
 	/*
 	 * acpi 4.0 section 6.4.2.6: I/O Port Descriptor
@@ -681,28 +608,25 @@ int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)
 	/* alignment for min base */
 	acpigen_emit_byte(align & 0xff);
 	acpigen_emit_byte(len & 0xff);
-	return 8;
 }
 
-int acpigen_write_resourcetemplate_header(void)
+void acpigen_write_resourcetemplate_header(void)
 {
-	int len;
 	/*
 	 * A ResourceTemplate() is a Buffer() with a
 	 * (Byte|Word|DWord) containing the length, followed by one or more
 	 * resource items, terminated by the end tag.
 	 * (small item 0xf, len 1)
 	 */
-	len = acpigen_emit_byte(0x11);	/* Buffer opcode */
-	len += acpigen_write_len_f();
-	len += acpigen_emit_byte(0x0b);	/* Word opcode */
+	acpigen_emit_byte(0x11);	/* Buffer opcode */
+	acpigen_write_len_f();
+	acpigen_emit_byte(0x0b);	/* Word opcode */
 	len_stack[ltop++] = acpigen_get_current();
-	len += acpigen_emit_byte(0x00);
-	len += acpigen_emit_byte(0x00);
-	return len;
+	acpigen_emit_byte(0x00);
+	acpigen_emit_byte(0x00);
 }
 
-int acpigen_write_resourcetemplate_footer(void)
+void acpigen_write_resourcetemplate_footer(void)
 {
 	char *p = len_stack[--ltop];
 	int len;
@@ -722,7 +646,6 @@ int acpigen_write_resourcetemplate_footer(void)
 	p[1] = (len >> 8) & 0xff;
 	/* patch len field */
 	acpigen_pop_len();
-	return 2;
 }
 
 static void acpigen_add_mainboard_rsvd_mem32(void *gp, struct device *dev,
@@ -744,13 +667,9 @@ static void acpigen_add_mainboard_rsvd_io(void *gp, struct device *dev,
 	}
 }
 
-int acpigen_write_mainboard_resource_template(void)
+void acpigen_write_mainboard_resource_template(void)
 {
-	int len;
-	char *start;
-	char *end;
-	len = acpigen_write_resourcetemplate_header();
-	start = acpigen_get_current();
+	acpigen_write_resourcetemplate_header();
 
 	/* Add reserved memory ranges. */
 	search_global_resources(
@@ -764,20 +683,15 @@ int acpigen_write_mainboard_resource_template(void)
 		 IORESOURCE_IO | IORESOURCE_RESERVE,
 		acpigen_add_mainboard_rsvd_io, 0);
 
-	end = acpigen_get_current();
-	len += end-start;
-	len += acpigen_write_resourcetemplate_footer();
-	return len;
+	acpigen_write_resourcetemplate_footer();
 }
 
-int acpigen_write_mainboard_resources(const char *scope, const char *name)
+void acpigen_write_mainboard_resources(const char *scope, const char *name)
 {
-	int len;
-	len = acpigen_write_scope(scope);
-	len += acpigen_write_name(name);
-	len += acpigen_write_mainboard_resource_template();
+	acpigen_write_scope(scope);
+	acpigen_write_name(name);
+	acpigen_write_mainboard_resource_template();
 	acpigen_pop_len();
-	return len;
 }
 
 static int hex2bin(const char c)
@@ -789,7 +703,7 @@ static int hex2bin(const char c)
 	return c - '0';
 }
 
-int acpigen_emit_eisaid(const char *eisaid)
+void acpigen_emit_eisaid(const char *eisaid)
 {
 	u32 compact = 0;
 
@@ -811,5 +725,4 @@ int acpigen_emit_eisaid(const char *eisaid)
 	acpigen_emit_byte((compact >> 16) & 0xff);
 	acpigen_emit_byte((compact >> 8) & 0xff);
 	acpigen_emit_byte(compact & 0xff);
-	return 5;
 }

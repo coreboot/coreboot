@@ -365,34 +365,30 @@ static acpi_tstate_t tss_table_coarse[] = {
 	{ 13, 125, 0, 0x19, 0 },
 };
 
-static int generate_T_state_entries(int core, int cores_per_package)
+static void generate_T_state_entries(int core, int cores_per_package)
 {
-	int len;
-
 	/* Indicate SW_ALL coordination for T-states */
-	len = acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
+	acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
 
 	/* Indicate FFixedHW so OS will use MSR */
-	len += acpigen_write_empty_PTC();
+	acpigen_write_empty_PTC();
 
 	/* Set a T-state limit that can be modified in NVS */
-	len += acpigen_write_TPC("\\TLVL");
+	acpigen_write_TPC("\\TLVL");
 
 	/*
 	 * CPUID.(EAX=6):EAX[5] indicates support
 	 * for extended throttle levels.
 	 */
 	if (cpuid_eax(6) & (1 << 5))
-		len += acpigen_write_TSS_package(
+		acpigen_write_TSS_package(
 			ARRAY_SIZE(tss_table_fine), tss_table_fine);
 	else
-		len += acpigen_write_TSS_package(
+		acpigen_write_TSS_package(
 			ARRAY_SIZE(tss_table_coarse), tss_table_coarse);
-
-	return len;
 }
 
-static int generate_C_state_entries(void)
+static void generate_C_state_entries(void)
 {
 	device_t dev = SA_DEV_ROOT;
 	config_t *config = dev->chip_info;
@@ -411,7 +407,7 @@ static int generate_C_state_entries(void)
 	}
 
 	/* Generate C-state tables */
-	return acpigen_write_CST_package(map, ARRAY_SIZE(map));
+	acpigen_write_CST_package(map, ARRAY_SIZE(map));
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)

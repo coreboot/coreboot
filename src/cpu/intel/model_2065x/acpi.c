@@ -152,31 +152,27 @@ static acpi_tstate_t tss_table_coarse[] = {
 	{ 13, 125, 0, 0x19, 0 },
 };
 
-static int generate_T_state_entries(int core, int cores_per_package)
+static void generate_T_state_entries(int core, int cores_per_package)
 {
-	int len;
-
 	/* Indicate SW_ALL coordination for T-states */
-	len = acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
+	acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
 
 	/* Indicate FFixedHW so OS will use MSR */
-	len += acpigen_write_empty_PTC();
+	acpigen_write_empty_PTC();
 
 	/* Set a T-state limit that can be modified in NVS */
-	len += acpigen_write_TPC("\\TLVL");
+	acpigen_write_TPC("\\TLVL");
 
 	/*
 	 * CPUID.(EAX=6):EAX[5] indicates support
 	 * for extended throttle levels.
 	 */
 	if (cpuid_eax(6) & (1 << 5))
-		len += acpigen_write_TSS_package(
+		acpigen_write_TSS_package(
 			ARRAY_SIZE(tss_table_fine), tss_table_fine);
 	else
-		len += acpigen_write_TSS_package(
+		acpigen_write_TSS_package(
 			ARRAY_SIZE(tss_table_coarse), tss_table_coarse);
-
-	return len;
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)

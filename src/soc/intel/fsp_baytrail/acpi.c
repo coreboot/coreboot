@@ -361,24 +361,20 @@ static acpi_tstate_t baytrail_tss_table[] = {
 	{ 13, 125, 0, 0x12, 0 },
 };
 
-static int generate_T_state_entries(int core, int cores_per_package)
+static void generate_T_state_entries(int core, int cores_per_package)
 {
-	int len;
-
 	/* Indicate SW_ALL coordination for T-states */
-	len = acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
+	acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
 
 	/* Indicate FFixedHW so OS will use MSR */
-	len += acpigen_write_empty_PTC();
+	acpigen_write_empty_PTC();
 
 	/* Set NVS controlled T-state limit */
-	len += acpigen_write_TPC("\\TLVL");
+	acpigen_write_TPC("\\TLVL");
 
 	/* Write TSS table for MSR access */
-	len += acpigen_write_TSS_package(
+	acpigen_write_TSS_package(
 		ARRAY_SIZE(baytrail_tss_table), baytrail_tss_table);
-
-	return len;
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)

@@ -188,6 +188,7 @@ struct cb_gpios {
 #define CB_TAG_VBNV		0x0019
 #define CB_TAG_VBOOT_HANDOFF	0x0020
 #define CB_TAG_DMA		0x0022
+#define CB_TAG_RAM_OOPS		0x0023
 struct lb_range {
 	uint32_t tag;
 	uint32_t size;

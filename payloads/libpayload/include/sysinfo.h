@@ -115,6 +115,8 @@ struct sysinfo_t {
 	void	*acpi_gnvs;
 	u32	board_id;
 	void	*wifi_calibration;
+	uint64_t ramoops_buffer;
+	uint32_t ramoops_buffer_size;
 };
 
 extern struct sysinfo_t lib_sysinfo;

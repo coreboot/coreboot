@@ -189,6 +189,14 @@ static void cb_parse_wifi_calibration(void *ptr, struct sysinfo_t *info)
 	info->wifi_calibration = phys_to_virt(cbmem->cbmem_tab);
 }
 
+static void cb_parse_ramoops(void *ptr, struct sysinfo_t *info)
+{
+	struct lb_range *ramoops = (struct lb_range *)ptr;
+
+	info->ramoops_buffer = ramoops->range_start;
+	info->ramoops_buffer_size = ramoops->range_size;
+}
+
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -323,6 +331,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_WIFI_CALIBRATION:
 			cb_parse_wifi_calibration(ptr, info);
+			break;
+		case CB_TAG_RAM_OOPS:
+			cb_parse_ramoops(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

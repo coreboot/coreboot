@@ -18,3 +18,4 @@
 ##
 
 ramstage-y += dock.c
+ramstage-y += cstates.c

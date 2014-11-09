@@ -26,9 +26,6 @@
 #include <pc80/keyboard.h>
 #include <ec/acpi/ec.h>
 
-#include "cstates.c" /* Include it, as the linker won't find
-			the overloaded weak function in there. */
-
 static void ec_setup(void)
 {
 	/* Thermal limits?  Values are from ectool's ram dump. */

@@ -42,11 +42,17 @@ static const struct pad_config mmcpads[] = {
 	PAD_CFG_SFIO(SDMMC4_DAT7, PINMUX_INPUT_ENABLE|PINMUX_PULL_UP, SDMMC4),
 };
 
+static const struct pad_config audio_codec_pads[] = {
+	/* H1 is CODEC_RST_L and R2(ROW2) is AUDIO_ENABLE */
+        PAD_CFG_GPIO_OUT1(GPIO_PH1, PINMUX_PULL_DOWN),
+        PAD_CFG_GPIO_OUT1(KB_ROW2, PINMUX_PULL_DOWN),
+};
+
 static const struct funit_cfg funits[] = {
 	/* MMC on SDMMC4 controller at 48MHz. */
 	FUNIT_CFG(SDMMC4, PLLP, 48000, mmcpads, ARRAY_SIZE(mmcpads)),
-	/* I2C6 for audio, temp sensor, etc. */
-	FUNIT_CFG(I2C6, PLLP, 400, NULL, 0),
+	/* I2C6 for audio, temp sensor, etc. Enable codec via GPIOs/muxes */
+	FUNIT_CFG(I2C6, PLLP, 400, audio_codec_pads, ARRAY_SIZE(audio_codec_pads)),
 	FUNIT_CFG_USB(USBD),
 };
 

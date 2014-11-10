@@ -393,6 +393,9 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		usb_detach_device (controller, dev->address);
 		return -1;
 	}
+	/* workaround for some USB devices: wait until they're ready, or
+	 * they send a NAK when they're not allowed to do. 1ms is enough */
+	mdelay(1);
 	dev->configuration = malloc(buf[1]);
 	if (!dev->configuration) {
 		usb_debug ("could not allocate %d bytes for DT_CFG\n", buf[1]);

@@ -8,11 +8,7 @@
 #include "ram_segs.h"
 #include <cbmem.h>
 
-#if IS_ENABLED(CONFIG_DYNAMIC_CBMEM)
-
 void *cbmem_top(void)
 {
 	return a1x_get_cbmem_top();
 }
-
-#endif

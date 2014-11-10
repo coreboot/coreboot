@@ -13,6 +13,7 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_UART_SPECIAL
 	select BOOTBLOCK_CONSOLE
 	select CPU_HAS_BOOTBLOCK_INIT
+	select DYNAMIC_CBMEM
 
 # The "eGON.BT0" header takes 32 bytes
 config BOOTBLOCK_BASE

@@ -33,6 +33,7 @@
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #define GT_RETRY 		1000
 #define GT_CDCLK_337		0
@@ -487,7 +488,13 @@ static void igd_init(struct device *dev)
 		return;
 
 	/* Wait for any configured pre-graphics delay */
+#if IS_ENABLED(CONFIG_CHROMEOS)
+	if (developer_mode_enabled() || recovery_mode_enabled() ||
+	    vboot_wants_oprom())
+		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
+#else
 	mdelay(CONFIG_PRE_GRAPHICS_DELAY);
+#endif
 
 	/* Early init steps */
 	if (is_broadwell) {

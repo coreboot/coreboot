@@ -36,6 +36,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_MFENCE
 	select LAPIC_MONOTONIC_TIMER
 	select BROKEN_CAR_MIGRATE
+	select DYNAMIC_CBMEM
 
 choice
 	prompt "Rangeley CPU Stepping"

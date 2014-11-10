@@ -23,7 +23,7 @@
 #include <broadwell/pci_devs.h>
 #include <broadwell/systemagent.h>
 
-static unsigned long get_top_of_ram(void)
+unsigned long get_top_of_ram(void)
 {
 	/*
 	 * Base of DPR is top of usable DRAM below 4GiB. The register has
@@ -38,9 +38,4 @@ static unsigned long get_top_of_ram(void)
 		tom -= (dpr & DPR_SIZE_MASK) << 16;
 
 	return (unsigned long)tom;
-}
-
-void *cbmem_top(void)
-{
-	return (void *)get_top_of_ram();
 }

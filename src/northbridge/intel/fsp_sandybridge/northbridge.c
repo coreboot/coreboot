@@ -243,9 +243,16 @@ static void pci_domain_set_resources(device_t dev)
 	add_fixed_resources(dev, 6);
 
 	assign_resources(dev->link_list);
+}
 
-	/* Leave some space for the HOB data above CBMem */
-	set_top_of_ram((tomk - 2048) * 1024);
+unsigned long get_top_of_ram(void)
+{
+	struct device *dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+	/* Base of TSEG is top of usable DRAM */
+	u32 tom = pci_read_config32(dev, TSEG) & ~(1UL << 0);
+	tom -= 0x200000;	/* 2MB for FSP HOB */
+	return (unsigned long) tom;
 }
 
 	/* TODO We could determine how many PCIe busses we need in

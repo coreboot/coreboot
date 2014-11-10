@@ -64,7 +64,8 @@ AGESA_STATUS common_ReadCbfsSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	if (((info->Buffer[SPD_CRC_LO] == 0) && (info->Buffer[SPD_CRC_HI] == 0))
 	  || (info->Buffer[SPD_CRC_LO] != (crc & 0xff))
 	  || (info->Buffer[SPD_CRC_HI] != (crc >> 8))) {
-		printk(BIOS_WARNING, "SPD has a invalid or zero-valued CRC\n");
+		printk(BIOS_WARNING, "SPD CRC %02x%02x is invalid, should be %04x\n",
+			info->Buffer[SPD_CRC_HI], info->Buffer[SPD_CRC_LO], crc);
 		info->Buffer[SPD_CRC_LO] = crc & 0xff;
 		info->Buffer[SPD_CRC_HI] = crc >> 8;
 		u16 i;

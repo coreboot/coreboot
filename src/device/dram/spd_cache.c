@@ -52,7 +52,8 @@ int read_spd_from_cbfs(u8 *buf, int idx)
 	if (((buf[SPD_CRC_LO] == 0) && (buf[SPD_CRC_HI] == 0))
 	 || (buf[SPD_CRC_LO] != (crc & 0xff))
 	 || (buf[SPD_CRC_HI] != (crc >> 8))) {
-		printk(BIOS_WARNING, "SPD has a invalid or zero-valued CRC\n");
+		printk(BIOS_WARNING, "SPD CRC %02x%02x is invalid, should be %04x\n",
+			buf[SPD_CRC_HI], buf[SPD_CRC_LO], crc);
 		buf[SPD_CRC_LO] = crc & 0xff;
 		buf[SPD_CRC_HI] = crc >> 8;
 		u16 i;

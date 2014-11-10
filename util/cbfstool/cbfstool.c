@@ -666,7 +666,6 @@ int main(int argc, char **argv)
 				break;
 			case 'l':
 				param.loadaddress = strtoul(optarg, NULL, 0);
-
 				break;
 			case 'e':
 				param.entrypoint = strtoul(optarg, NULL, 0);

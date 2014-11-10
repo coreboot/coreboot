@@ -53,7 +53,8 @@ static struct param {
 	uint32_t size;
 	uint32_t alignment;
 	uint32_t pagesize;
-	uint32_t offset;
+	uint32_t cbfsoffset;
+	uint32_t cbfsoffset_assigned;
 	uint32_t top_aligned;
 	uint32_t arch;
 	int fit_empty_entries;
@@ -339,40 +340,58 @@ static int cbfs_create(void)
 		return 1;
 	}
 
-	if (!param.bootblock) {
-		ERROR("You need to specify -B/--bootblock.\n");
-		return 1;
-	}
-
 	if (param.arch == CBFS_ARCHITECTURE_UNKNOWN) {
 		ERROR("You need to specify -m/--machine arch.\n");
 		return 1;
 	}
 
-	if (buffer_from_file(&bootblock, param.bootblock) != 0) {
+	if (!param.bootblock) {
+		DEBUG("-B not given, creating image without bootblock.\n");
+		buffer_create(&bootblock, 0, "(dummy)");
+	} else if (buffer_from_file(&bootblock, param.bootblock)) {
 		return 1;
 	}
 
-	// Setup default boot offset and header offset.
+	if (!param.alignment)
+		param.alignment = 64;	// default CBFS entry alignment
+
+	// Set default offsets. x86, as usual, needs to be a special snowflake.
 	if (!param.baseaddress_assigned) {
-		// put boot block before end of ROM.
-		param.baseaddress = param.size - bootblock.size;
-		DEBUG("bootblock in end of ROM.\n");
+		if (param.arch == CBFS_ARCHITECTURE_X86) {
+			// Make sure there's at least enough room for rel_offset
+			param.baseaddress = param.size - (
+				bootblock.size > sizeof(int32_t) ?
+				bootblock.size : sizeof(int32_t));
+			DEBUG("x86 -> bootblock lies at end of ROM (%#x).\n",
+			      param.baseaddress);
+		} else {
+			param.baseaddress = 0;
+			DEBUG("bootblock starts at address 0x0.\n");
+		}
 	}
 	if (!param.headeroffset_assigned) {
-		// Put header before bootblock, and make a reference in end of
-		// bootblock.
-		param.headeroffset = (
-				param.baseaddress -
-				sizeof(struct cbfs_header));
-		if (bootblock.size >= sizeof(uint32_t)) {
-			// TODO this only works for 32b top-aligned system now...
-			uint32_t ptr = param.headeroffset - param.size;
-			uint32_t *sig = (uint32_t *)(bootblock.data +
-						     bootblock.size -
-						     sizeof(ptr));
-			*sig = ptr;
-			DEBUG("CBFS header reference in end of bootblock.\n");
+		if (param.arch == CBFS_ARCHITECTURE_X86) {
+			param.headeroffset = param.baseaddress -
+					     sizeof(struct cbfs_header);
+			DEBUG("x86 -> CBFS header before bootblock (%#x).\n",
+				param.headeroffset);
+		} else {
+			param.headeroffset = align_up(param.baseaddress +
+				bootblock.size, sizeof(uint32_t));
+			DEBUG("CBFS header placed behind bootblock (%#x).\n",
+				param.headeroffset);
+		}
+	}
+	if (!param.cbfsoffset_assigned) {
+		if (param.arch == CBFS_ARCHITECTURE_X86) {
+			param.cbfsoffset = 0;
+			DEBUG("x86 -> CBFS entries start at address 0x0.\n");
+		} else {
+			param.cbfsoffset = align_up(param.headeroffset +
+						    sizeof(struct cbfs_header),
+						    param.alignment);
+			DEBUG("CBFS entries start beind master header (%#x).\n",
+			      param.cbfsoffset);
 		}
 	}
 
@@ -383,7 +402,7 @@ static int cbfs_create(void)
 			      &bootblock,
 			      param.baseaddress,
 			      param.headeroffset,
-			      param.offset) != 0) {
+			      param.cbfsoffset) != 0) {
 		ERROR("Failed to create %s.\n", param.cbfs_name);
 		return 1;
 	}
@@ -533,28 +552,29 @@ static const struct command commands[] = {
 };
 
 static struct option long_options[] = {
-	{"name",         required_argument, 0, 'n' },
-	{"type",         required_argument, 0, 't' },
-	{"compression",  required_argument, 0, 'c' },
-	{"base-address", required_argument, 0, 'b' },
-	{"load-address", required_argument, 0, 'l' },
-	{"top-aligned",  required_argument, 0, 'T' },
-	{"entry-point",  required_argument, 0, 'e' },
-	{"size",         required_argument, 0, 's' },
-	{"bootblock",    required_argument, 0, 'B' },
-	{"alignment",    required_argument, 0, 'a' },
-	{"page-size",    required_argument, 0, 'P' },
-	{"offset",       required_argument, 0, 'o' },
-	{"file",         required_argument, 0, 'f' },
-	{"int",          required_argument, 0, 'i' },
-	{"machine",      required_argument, 0, 'm' },
-	{"empty-fits",   required_argument, 0, 'x' },
-	{"initrd",       required_argument, 0, 'I' },
-	{"cmdline",      required_argument, 0, 'C' },
-	{"ignore-sec",   required_argument, 0, 'S' },
-	{"verbose",      no_argument,       0, 'v' },
-	{"help",         no_argument,       0, 'h' },
-	{NULL,           0,                 0,  0  }
+	{"name",          required_argument, 0, 'n' },
+	{"type",          required_argument, 0, 't' },
+	{"compression",   required_argument, 0, 'c' },
+	{"base-address",  required_argument, 0, 'b' },
+	{"load-address",  required_argument, 0, 'l' },
+	{"top-aligned",   required_argument, 0, 'T' },
+	{"entry-point",   required_argument, 0, 'e' },
+	{"size",          required_argument, 0, 's' },
+	{"bootblock",     required_argument, 0, 'B' },
+	{"header-offset", required_argument, 0, 'H' },
+	{"alignment",     required_argument, 0, 'a' },
+	{"page-size",     required_argument, 0, 'P' },
+	{"offset",        required_argument, 0, 'o' },
+	{"file",          required_argument, 0, 'f' },
+	{"int",           required_argument, 0, 'i' },
+	{"machine",       required_argument, 0, 'm' },
+	{"empty-fits",    required_argument, 0, 'x' },
+	{"initrd",        required_argument, 0, 'I' },
+	{"cmdline",       required_argument, 0, 'C' },
+	{"ignore-sec",    required_argument, 0, 'S' },
+	{"verbose",       no_argument,       0, 'v' },
+	{"help",          no_argument,       0, 'h' },
+	{NULL,            0,                 0,  0  }
 };
 
 static void usage(char *name)
@@ -582,7 +602,8 @@ static void usage(char *name)
 			"Add a raw 64-bit integer value\n"
 	     " remove -n NAME                                              "
 			"Remove a component\n"
-	     " create -s size -B bootblock -m ARCH [-a align] [-o offset]  "
+	     " create -s size -m ARCH [-B bootblock] [-b bootblock offset] \\\n"
+	     "        [-o CBFS offset] [-H header offset] [-a align]       "
 			"Create a ROM file\n"
 	     " locate -f FILE -n NAME [-P page-size] [-a align] [-T]       "
 			"Find a place for a file of that size\n"
@@ -694,7 +715,8 @@ int main(int argc, char **argv)
 				param.pagesize = strtoul(optarg, NULL, 0);
 				break;
 			case 'o':
-				param.offset = strtoul(optarg, NULL, 0);
+				param.cbfsoffset = strtoul(optarg, NULL, 0);
+				param.cbfsoffset_assigned = 1;
 				break;
 			case 'f':
 				param.filename = optarg;

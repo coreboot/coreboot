@@ -66,13 +66,6 @@ static const struct typedesc_t types_cbfs_compression[] = {
 	{0, NULL},
 };
 
-static uint32_t align_up(uint32_t value, uint32_t align)
-{
-	if (value % align)
-		value += align - (value % align);
-	return value;
-}
-
 static const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t type,
 				const char *default_value)
 {
@@ -180,6 +173,7 @@ int cbfs_image_create(struct cbfs_image *image,
 {
 	struct cbfs_header header;
 	struct cbfs_file *entry;
+	int32_t *rel_offset;
 	uint32_t cbfs_len;
 	size_t entry_header_len;
 	void *header_loc;
@@ -207,9 +201,6 @@ int cbfs_image_create(struct cbfs_image *image,
 	      "header=0x%x, entries_offset=0x%x\n",
 	      bootblock_offset, header_offset, entries_offset);
 
-	if (align == 0)
-		align = 64;  // default align size.
-
 	// Prepare bootblock
 	if (bootblock_offset + bootblock->size > size) {
 		ERROR("Bootblock (0x%x+0x%zx) exceed ROM size (0x%zx)\n",
@@ -226,7 +217,7 @@ int cbfs_image_create(struct cbfs_image *image,
 	       bootblock->size);
 
 	// Prepare header
-	if (header_offset + sizeof(header) > size) {
+	if (header_offset + sizeof(header) > size - sizeof(int32_t)) {
 		ERROR("Header (0x%x+0x%zx) exceed ROM size (0x%zx)\n",
 		      header_offset, sizeof(header), size);
 		return -1;
@@ -242,6 +233,14 @@ int cbfs_image_create(struct cbfs_image *image,
 	header_loc = (image->buffer.data + header_offset);
 	cbfs_put_header(header_loc, image->header);
 
+	// The last 4 byte of the image contain the relative offset from the end
+	// of the image to the master header as a 32-bit signed integer. x86
+	// relies on this also being its (memory-mapped, top-aligned) absolute
+	// 32-bit address by virtue of how two's complement numbers work.
+	assert(size % sizeof(int32_t) == 0);
+	rel_offset = (int32_t *)(image->buffer.data + size - sizeof(int32_t));
+	*rel_offset = header_offset - size;
+
 	// Prepare entries
 	if (align_up(entries_offset, align) != entries_offset) {
 		ERROR("Offset (0x%x) must be aligned to 0x%x.\n",
@@ -256,8 +255,8 @@ int cbfs_image_create(struct cbfs_image *image,
 	}
 	entry = (struct cbfs_file *)(image->buffer.data + entries_offset);
 	// To calculate available length, find
-	//   e = min(bootblock, header, size) where e > entries_offset.
-	cbfs_len = size;
+	//   e = min(bootblock, header, rel_offset) where e > entries_offset.
+	cbfs_len = size - sizeof(int32_t);
 	if (bootblock_offset > entries_offset && bootblock_offset < cbfs_len)
 		cbfs_len = bootblock_offset;
 	if (header_offset > entries_offset && header_offset < cbfs_len)
@@ -772,17 +771,21 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size)
 {
 	size_t offset;
 	int found = 0;
-	uint32_t x86sig;
+	int32_t rel_offset;
 	struct cbfs_header *header, *result = NULL;
 
-	// Try x86 style (check signature in bottom) header first.
-	x86sig = *(uint32_t *)(data + size - sizeof(uint32_t));
-	offset = (x86sig + (uint32_t)size);
-	DEBUG("x86sig: 0x%x, offset: 0x%zx\n", x86sig, offset);
+	// Try finding relative offset of master header at end of file first.
+	rel_offset = *(int32_t *)(data + size - sizeof(int32_t));
+	offset = size + rel_offset;
+	DEBUG("relative offset: %#zx(-%#zx), offset: %#zx\n",
+	      (size_t)rel_offset, (size_t)-rel_offset, offset);
 	if (offset >= size - sizeof(*header) ||
 	    ntohl(((struct cbfs_header *)(data + offset))->magic) !=
-	    CBFS_HEADER_MAGIC)
+	    CBFS_HEADER_MAGIC) {
+		// Some use cases append non-CBFS data to the end of the ROM.
+		DEBUG("relative offset seems wrong, scanning whole image...\n");
 		offset = 0;
+	}
 
 	for (; offset + sizeof(*header) < size; offset++) {
 		header = (struct cbfs_header *)(data + offset);
@@ -793,14 +796,15 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size)
 			// Probably not a real CBFS header?
 			continue;
 		}
-		found++;
-		result = header;
+		if (!found++)
+			result = header;
 	}
-	if (found > 1) {
-		ERROR("multiple (%d) CBFS headers found!\n",
+	if (found > 1)
+		// Top-aligned images usually have a working relative offset
+		// field, so this is more likely to happen on bottom-aligned
+		// ones (where the first header is the "outermost" one)
+		WARN("Multiple (%d) CBFS headers found, using the first one.\n",
 		       found);
-		result = NULL;
-	}
 	return result;
 }
 

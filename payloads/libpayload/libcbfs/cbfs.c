@@ -62,19 +62,6 @@
 # endif
 #endif
 
-#if defined(CONFIG_LP_CBFS_HEADER_ROM_OFFSET) && (CONFIG_LP_CBFS_HEADER_ROM_OFFSET)
-# define CBFS_HEADER_ROM_ADDRESS (CONFIG_LP_CBFS_HEADER_ROM_OFFSET)
-#else
-/* ugly hack: this assumes that "media" exists
-              in the scope where the macro is used. */
-static uint32_t fetch_x86_header(struct cbfs_media *media)
-{
-	uint32_t *header_ptr = media->map(media, 0xfffffffc, 4);
-	return *header_ptr;
-}
-# define CBFS_HEADER_ROM_ADDRESS fetch_x86_header(media)
-#endif
-
 #include "cbfs_core.c"
 
 #ifndef __SMM__

@@ -24,18 +24,6 @@ config BOOTBLOCK_CPU_INIT
 	  bootblock must load microcode or copy data from ROM before
 	  searching for the bootblock.
 
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0x0
-
-config CBFS_HEADER_ROM_OFFSET
-	hex "offset of master CBFS header in ROM"
-	default 0x18000
-
-config CBFS_ROM_OFFSET
-	hex "offset of CBFS data in ROM"
-	default 0x18080
-
 config TEGRA124_MODEL_TD570D
 	bool "TD570D"
 

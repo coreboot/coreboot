@@ -53,16 +53,4 @@ config DRAM_SIZE_MB
 	int
 	default 1024
 
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0x0
-
-config CBFS_HEADER_ROM_OFFSET
-	hex
-	default 0x0100000
-
-config CBFS_ROM_OFFSET
-	hex
-	default 0x0110000
-
 endif #  BOARD_EMULATION_QEMU_ARMV7

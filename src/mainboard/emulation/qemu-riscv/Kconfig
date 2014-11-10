@@ -54,18 +54,6 @@ config DRAM_SIZE_MB
 # 0x0011_0000: CBFS data
 # 0x0100_0000: reserved for ramstage
 
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0x0
-
-config CBFS_HEADER_ROM_OFFSET
-	hex
-	default 0x10000
-
-config CBFS_ROM_OFFSET
-	hex
-	default 0x10040
-
 config RAMTOP
 	hex
 	default 0x1000000

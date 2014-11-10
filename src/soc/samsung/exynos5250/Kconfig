@@ -9,28 +9,3 @@ config CPU_SAMSUNG_EXYNOS5250
 	select HAVE_UART_SPECIAL
 	bool
 	default n
-
-if CPU_SAMSUNG_EXYNOS5250
-
-# ROM image layout.
-#
-# 0x0000: vendor-provided BL1 (8k).
-# 0x2000: bootblock
-# 0x9FFC-0xA000: BL2 checksum
-# 0xA000-0xA080: reserved for CBFS master header.
-# 0xA080: Free for CBFS data.
-
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0
-
-config CBFS_HEADER_ROM_OFFSET
-	hex "offset of master CBFS header in ROM"
-	default 0x9F80
-
-config CBFS_ROM_OFFSET
-	# Calculated by BOOTBLOCK_ROM_OFFSET + max bootblock size.
-	hex "offset of CBFS data in ROM"
-	default 0x0A080
-
-endif

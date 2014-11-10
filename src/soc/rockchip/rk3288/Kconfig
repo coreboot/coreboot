@@ -37,22 +37,4 @@ config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/rockchip/rk3288/bootblock.c"
 
-# ROM image layout.
-#
-# 0x00000 Combined bootblock and ID Block
-# 0x08000 Master CBFS header.
-# 0x18000 Free for CBFS data.
-
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0x0
-
-config CBFS_HEADER_ROM_OFFSET
-	hex
-	default 0x0010000
-
-config CBFS_ROM_OFFSET
-	hex
-	default 0x0010100
-
 endif

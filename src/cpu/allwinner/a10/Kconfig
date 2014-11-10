@@ -15,22 +15,6 @@ config CPU_SPECIFIC_OPTIONS
 	select BOOTBLOCK_CONSOLE
 	select CPU_HAS_BOOTBLOCK_INIT
 
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0x00
-
-config CBFS_HEADER_ROM_OFFSET
-	hex
-	default 0x10
-
-# This is the maximum size bootblock that the BROM will load. If the bootblock
-# gets larger, this will generate a build failure, rather than a silent
-# "coreboot won't run" failure.
-# Normally, we would place romstage at 0x5fe0, but we place it a little lower to
-# satisfy the 64 byte alignment.
-config CBFS_ROM_OFFSET
-	default 0x5fc0
-
 ## TODO Change this to some better address not overlapping bootblock when
 ## cbfstool supports creating header in arbitrary location.
 config CBFS_HEADER_ROM_OFFSET

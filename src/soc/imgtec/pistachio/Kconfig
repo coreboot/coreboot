@@ -35,13 +35,4 @@ config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/imgtec/pistachio/bootblock.c"
 
-config CBFS_ROM_OFFSET
-	hex
-	default 0x8100
-
-config CBFS_HEADER_ROM_OFFSET
-	# Effectively the maximum size of the bootblock
-	hex
-	default 0x8000
-
 endif

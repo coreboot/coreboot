@@ -37,16 +37,4 @@ config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/marvell/bg4cd/bootblock.c"
 
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0x0
-
-config CBFS_HEADER_ROM_OFFSET
-	hex
-	default 0x0008000
-
-config CBFS_ROM_OFFSET
-	hex
-	default 0x0018000
-
 endif

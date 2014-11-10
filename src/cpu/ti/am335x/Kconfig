@@ -10,17 +10,3 @@ config CPU_TI_AM335X
 	select GENERIC_UDELAY
 	bool
 	default n
-
-if CPU_TI_AM335X
-
-config CBFS_ROM_OFFSET
-	# Calculated by BL1 + max bootblock size.
-	default 0x4c00
-
-## TODO Change this to some better address not overlapping bootblock when
-## cbfstool supports creating header in arbitrary location.
-config CBFS_HEADER_ROM_OFFSET
-	hex "offset of master CBFS header in ROM"
-	default 0x40
-
-endif

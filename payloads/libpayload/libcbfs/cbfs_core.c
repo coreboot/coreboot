@@ -34,10 +34,6 @@
  * CBFS_CORE_WITH_LZMA (must be #define)
  *      if defined, ulzma() must exist for decompression of data streams
  *
- * CBFS_HEADER_ROM_ADDRESS
- *	ROM address (offset) of CBFS header. Underlying CBFS media may interpret
- *	it in other way so we call this "address".
- *
  * ERROR(x...)
  *      print an error message x (in printf format)
  *
@@ -56,6 +52,7 @@
  *  on failure */
 const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 {
+	int32_t rel_offset;
 	const struct cbfs_header *header;
 	struct cbfs_media default_media;
 
@@ -66,22 +63,28 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 			return CBFS_HEADER_INVALID_ADDRESS;
 		}
 	}
-
 	media->open(media);
-	DEBUG("CBFS_HEADER_ROM_ADDRESS: 0x%x/0x%x\n", CBFS_HEADER_ROM_ADDRESS,
-	      CONFIG_LP_ROM_SIZE);
-	header = media->map(media, CBFS_HEADER_ROM_ADDRESS, sizeof(*header));
+
+	if (!media->read(media, &rel_offset, (size_t)(0 - sizeof(int32_t)),
+			 sizeof(int32_t))) {
+		ERROR("Could not read CBFS master header offset!\n");
+		return CBFS_HEADER_INVALID_ADDRESS;
+	}
+	header = media->map(media, (size_t)rel_offset, sizeof(*header));
+	DEBUG("CBFS header at %#zx (-%#zx from end of image).\n",
+		(size_t)rel_offset, (size_t)-rel_offset);
 	media->close(media);
 
 	if (header == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
-		ERROR("Failed to load CBFS header from 0x%x\n",
-		      CBFS_HEADER_ROM_ADDRESS);
+		ERROR("Failed to load CBFS header from %#zx(-%#zx)\n",
+			(size_t)rel_offset, (size_t)-rel_offset);
 		return CBFS_HEADER_INVALID_ADDRESS;
 	}
 
 	if (CBFS_HEADER_MAGIC != ntohl(header->magic)) {
-		ERROR("Could not find valid CBFS master header at %x: "
-		      "%x vs %x.\n", CBFS_HEADER_ROM_ADDRESS, CBFS_HEADER_MAGIC,
+		ERROR("Could not find valid CBFS master header at %#zx(-%#zx): "
+		      "magic %#.8x vs %#.8x.\n", (size_t)rel_offset,
+		      (size_t)-rel_offset, CBFS_HEADER_MAGIC,
 		      ntohl(header->magic));
 		if (header->magic == 0xffffffff) {
 			ERROR("Maybe ROM is not mapped properly?\n");

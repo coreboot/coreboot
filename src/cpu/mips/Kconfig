@@ -25,8 +25,3 @@ config CPU_MIPS
 	select ARCH_VERSTAGE_MIPS
 	select ARCH_ROMSTAGE_MIPS
 	select ARCH_RAMSTAGE_MIPS
-
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	depends on CPU_MIPS
-	default 0x00

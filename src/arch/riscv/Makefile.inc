@@ -72,7 +72,7 @@ $(objcbfs)/romstage.debug: $$(romstage-objs)
 romstage-c-ccopts += $(riscv_flags)
 romstage-S-ccopts += $(riscv_asm_flags)
 
-CBFSTOOL_PRE1_OPTS = -v -m riscv -b $(CONFIG_BOOTBLOCK_ROM_OFFSET) -H $(CONFIG_CBFS_HEADER_ROM_OFFSET) -o $(CONFIG_CBFS_ROM_OFFSET) -s $(CONFIG_CBFS_SIZE)
+CBFSTOOL_PRE1_OPTS = -v -m riscv -s $(CONFIG_CBFS_SIZE)
 CBFSTOOL_PRE_OPTS = -v
 
 endif

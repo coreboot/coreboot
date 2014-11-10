@@ -47,6 +47,13 @@ extern int verbose;
 
 #define unused __attribute__((unused))
 
+static inline uint32_t align_up(uint32_t value, uint32_t align)
+{
+	if (value % align)
+		value += align - (value % align);
+	return value;
+}
+
 /* Buffer and file I/O */
 struct buffer {
 	char *name;

@@ -85,10 +85,9 @@
 
 #define CBFS_HEADER_INVALID_ADDRESS	((void*)(0xffffffff))
 
-/** this is the master cbfs header - it needs to be located somewhere available
-    to bootblock (to load romstage).  Where it actually lives is up to coreboot.
-    On x86, a pointer to this header will live at 0xFFFFFFFC.
-    For other platforms, you need to define CONFIG_LP_CBFS_HEADER_ROM_OFFSET */
+/* this is the master cbfs header - it must be located somewhere available
+ * to bootblock (to load romstage). The last 4 bytes in the image contain its
+ * relative offset from the end of the image (as a 32-bit signed integer). */
 
 struct cbfs_header {
 	uint32_t magic;

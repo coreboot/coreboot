@@ -42,21 +42,9 @@ config BOOTBLOCK_CPU_INIT
 	  bootblock must load microcode or copy data from ROM before
 	  searching for the bootblock.
 
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0x0
-
 config MAX_CPUS
 	int
 	default 2
-
-config CBFS_HEADER_ROM_OFFSET
-	hex "offset of master CBFS header in ROM"
-	default 0x40000
-
-config CBFS_ROM_OFFSET
-	hex "offset of CBFS data in ROM"
-	default 0x40080
 
 config MTS_DIRECTORY
 	string "Directory where MTS microcode files are located"

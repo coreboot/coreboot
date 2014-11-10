@@ -29,15 +29,6 @@
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 
-#if ! CONFIG_DYNAMIC_CBMEM
-/*
- * TODO: "High" tables are a convention used on x86. Maybe we can
- * clean up that naming at some point.
- */
-uint64_t high_tables_base = 0;
-uint64_t high_tables_size;
-#endif
-
 void cbmem_arch_init(void)
 {
 }
@@ -45,14 +36,6 @@ void cbmem_arch_init(void)
 struct lb_memory *write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;
-
-#if ! CONFIG_DYNAMIC_CBMEM
-	if (!high_tables_base) {
-		printk(BIOS_ERR, "ERROR: high_tables_base is not set.\n");
-	}
-
-	printk(BIOS_DEBUG, "high_tables_base: %llx.\n", high_tables_base);
-#endif
 
 	post_code(0x9d);
 

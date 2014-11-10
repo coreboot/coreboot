@@ -95,6 +95,7 @@ config FLASHMAP_OFFSET
 	hex "Flash Map Offset"
 	default 0x00670000 if NORTHBRIDGE_INTEL_SANDYBRIDGE
 	default 0x00610000 if NORTHBRIDGE_INTEL_IVYBRIDGE
+	default CBFS_SIZE if !ARCH_X86
 	default 0
 	help
 	  Offset of flash map in firmware image

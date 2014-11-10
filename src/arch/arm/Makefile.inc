@@ -31,7 +31,9 @@ subdirs-y += armv4/ armv7/
 ###############################################################################
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
-CBFSTOOL_PRE1_OPTS = -m arm -b $(CONFIG_BOOTBLOCK_ROM_OFFSET) -H $(CONFIG_CBFS_HEADER_ROM_OFFSET) -o $(CONFIG_CBFS_ROM_OFFSET)
+CBFSTOOL_PRE1_OPTS = -m arm -b $(CONFIG_BOOTBLOCK_ROM_OFFSET) \
+		     -H $(CONFIG_CBFS_HEADER_ROM_OFFSET) \
+		     -o $(CONFIG_CBFS_ROM_OFFSET) -s $(CONFIG_CBFS_SIZE)
 CBFSTOOL_PRE_OPTS = -b 0
 endif
 

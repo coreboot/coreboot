@@ -24,8 +24,9 @@
 ###############################################################################
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_MIPS),y)
-CBFSTOOL_PRE1_OPTS = -m mips -b $(CONFIG_BOOTBLOCK_ROM_OFFSET) -H $(CONFIG_CBFS_HEADER_ROM_OFFSET) -o $(CONFIG_CBFS_ROM_OFFSET)
-CBFSTOOL_PRE_OPTS = -b 0
+CBFSTOOL_PRE1_OPTS = -m mips -b $(CONFIG_BOOTBLOCK_ROM_OFFSET) \
+		     -H $(CONFIG_CBFS_HEADER_ROM_OFFSET) \
+		     -o $(CONFIG_CBFS_ROM_OFFSET) -s $(CONFIG_CBFS_SIZE)
 endif
 
 ###############################################################################

@@ -413,8 +413,14 @@ config IOAPIC
 	default n
 
 config CBFS_SIZE
-	hex
+	hex "Size of CBFS filesystem in ROM"
 	default ROM_SIZE
+	help
+	  This is the part of the ROM actually managed by CBFS, located at the
+	  end of the ROM (passed through cbfstool -o) on x86 and at at the start
+	  of the ROM (passed through cbfstool -s) everywhere else. Defaults to
+	  span the whole ROM but can be overwritten to make coreboot live
+	  alongside other components (like ChromeOS's vboot/FMAP).
 
 config CACHE_ROM_SIZE_OVERRIDE
 	hex

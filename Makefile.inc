@@ -528,7 +528,7 @@ prebuild-files = \
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)
-	$(CBFSTOOL) $@.tmp create -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
+	$(CBFSTOOL) $@.tmp create \
 	-B $(objcbfs)/bootblock.bin -a 64 \
 	$(CBFSTOOL_PRE1_OPTS)
 	$(prebuild-files) true
@@ -557,7 +557,10 @@ endif
 
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $$(VBOOT_STUB) $(REFCODE_BLOB)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
-	cp $(obj)/coreboot.pre $@.tmp
+# The full ROM may be larger than the CBFS part, so create an empty
+# file (filled with \377 = 0xff) and copy the CBFS image over it.
+	tr '\000' '\377' < /dev/zero 2> /dev/null | dd of=$@.tmp bs=8192 iflag=fullblock count=$$(($(CONFIG_ROM_SIZE) / 8192)) 2> /dev/null
+	dd if=$(obj)/coreboot.pre of=$@.tmp bs=8192 conv=notrunc 2> /dev/null
 	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/ramstage.elf -n $(CONFIG_CBFS_PREFIX)/ramstage -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    none (as specified by user)\n"

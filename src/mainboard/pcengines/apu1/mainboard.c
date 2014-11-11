@@ -33,6 +33,7 @@
 #include "SBPLATFORM.h"
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <northbridge/amd/agesa/family14/pci_devs.h>
+#include "gpio_ftns.h"
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
@@ -161,6 +162,24 @@ static void mainboard_enable(device_t dev)
 	pirq_setup();
 }
 
+static void mainboard_final(void *chip_info)
+{
+	u32 mmio_base;
+
+	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Final.\n");
+
+	/*
+	 * LED1/D7/GPIO_189 should be 0
+	 * LED2/D6/GPIO_190 should be 1
+	 * LED3/D5/GPIO_191 should be 1
+	 */
+	mmio_base = find_gpio_base();
+	configure_gpio(mmio_base, GPIO_189, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
+	configure_gpio(mmio_base, GPIO_190, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
+	configure_gpio(mmio_base, GPIO_191, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
+}
+
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
+	.final = mainboard_final,
 };

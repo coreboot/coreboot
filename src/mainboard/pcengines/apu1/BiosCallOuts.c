@@ -24,6 +24,7 @@
 #include "heapManager.h"
 #include "SB800.h"
 #include <stdlib.h>
+#include "gpio_ftns.h"
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
@@ -59,7 +60,7 @@ static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *Conf
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 #ifdef __PRE_RAM__
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
-	u8 index = 0;
+	u8 index = get_spd_offset();
 
 	if (info->MemChannelId > 0)
 		return AGESA_UNSUPPORTED;

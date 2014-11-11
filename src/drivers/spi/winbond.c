@@ -194,11 +194,12 @@ static int winbond_erase(struct spi_flash *flash, u32 offset, size_t len)
 	return spi_flash_cmd_erase(flash, CMD_W25_SE, offset, len);
 }
 
+static struct winbond_spi_flash stm;
+
 struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 {
 	const struct winbond_spi_flash_params *params;
 	unsigned page_size;
-	struct winbond_spi_flash *stm;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(winbond_spi_flash_table); i++) {
@@ -213,31 +214,25 @@ struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 		return NULL;
 	}
 
-	stm = malloc(sizeof(struct winbond_spi_flash));
-	if (!stm) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
-	}
-
-	stm->params = params;
-	stm->flash.spi = spi;
-	stm->flash.name = params->name;
+	stm.params = params;
+	stm.flash.spi = spi;
+	stm.flash.name = params->name;
 
 	/* Assuming power-of-two page size initially. */
 	page_size = 1 << params->l2_page_size;
 
-	stm->flash.write = winbond_write;
-	stm->flash.erase = winbond_erase;
+	stm.flash.write = winbond_write;
+	stm.flash.erase = winbond_erase;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
-	stm->flash.read = spi_flash_cmd_read_slow;
+	stm.flash.read = spi_flash_cmd_read_slow;
 #else
-	stm->flash.read = spi_flash_cmd_read_fast;
+	stm.flash.read = spi_flash_cmd_read_fast;
 #endif
-	stm->flash.sector_size = (1 << stm->params->l2_page_size) *
-		stm->params->pages_per_sector;
-	stm->flash.size = page_size * params->pages_per_sector
+	stm.flash.sector_size = (1 << stm.params->l2_page_size) *
+		stm.params->pages_per_sector;
+	stm.flash.size = page_size * params->pages_per_sector
 				* params->sectors_per_block
 				* params->nr_blocks;
 
-	return &stm->flash;
+	return &stm.flash;
 }

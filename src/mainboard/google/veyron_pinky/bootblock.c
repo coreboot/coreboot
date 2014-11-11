@@ -20,6 +20,7 @@
 
 #include <arch/io.h>
 #include <bootblock_common.h>
+#include <delay.h>
 #include <soc/clock.h>
 #include <soc/i2c.h>
 #include <soc/grf.h>
@@ -27,16 +28,12 @@
 #include <soc/rk808.h>
 #include <soc/spi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <delay.h>
 
 #include "board.h"
 
 void bootblock_mainboard_init(void)
 {
-	/* cpu frequency will up to 1.8GHz,
-	 * in our experience the buck1
-	 * must up to 1.4v
-	 */
+	/* Up VDD_CPU (BUCK1) to 1.4V to support max CPU frequency (1.8GHz). */
 	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
 	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 	i2c_init(PMIC_BUS, 400*KHz);

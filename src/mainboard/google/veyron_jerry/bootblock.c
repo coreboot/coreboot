@@ -20,6 +20,7 @@
 
 #include <arch/io.h>
 #include <bootblock_common.h>
+#include <delay.h>
 #include <soc/clock.h>
 #include <soc/i2c.h>
 #include <soc/grf.h>
@@ -32,11 +33,16 @@
 
 void bootblock_mainboard_init(void)
 {
-	/* cpu frequency will up to 1.8GHz, so the buck1 must up to 1.3v */
+	/* Up VDD_CPU (BUCK1) to 1.4V to support max CPU frequency (1.8GHz). */
 	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
 	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 	i2c_init(PMIC_BUS, 400*KHz);
-	rk808_configure_buck(PMIC_BUS, 1, 1300);
+
+	/* Slowly raise to max CPU voltage to prevent overshoot */
+	rk808_configure_buck(PMIC_BUS, 1, 1200);
+	udelay(175);/* Must wait for voltage to stabilize,2mV/us */
+	rk808_configure_buck(PMIC_BUS, 1, 1400);
+	udelay(100);/* Must wait for voltage to stabilize,2mV/us */
 	rkclk_configure_cpu();
 
 	/* i2c1 for tpm */

@@ -1533,7 +1533,7 @@ intel_dp_get_dpcd(struct intel_dp *intel_dp)
 		return 0;
 	}
 
-	printk(BIOS_SPEW, "DPCD: %02hx%02hx%02hx%02hx%02hx%02hx%02hx%02hx\n",
+	printk(BIOS_SPEW, "DPCD: %02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n",
 	       intel_dp->dpcd[0], intel_dp->dpcd[1], intel_dp->dpcd[2],
 	       intel_dp->dpcd[3], intel_dp->dpcd[4], intel_dp->dpcd[5],
 	       intel_dp->dpcd[6], intel_dp->dpcd[7]);

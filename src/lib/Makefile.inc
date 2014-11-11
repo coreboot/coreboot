@@ -18,7 +18,7 @@
 #
 subdirs-y += loaders
 
-bootblock-y += cbfs.c
+bootblock-y += cbfs.c cbfs_core.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
 
@@ -28,7 +28,7 @@ $(foreach arch,$(ARCH_SUPPORTED),\
 	    $(eval rmodules_$(arch)-y += memcmp.c))
 
 romstage-$(CONFIG_I2C_TPM) += delay.c
-romstage-y += cbfs.c
+romstage-y += cbfs.c cbfs_core.c
 romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c
 #romstage-y += lzmadecode.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
@@ -56,7 +56,7 @@ ramstage-y += delay.c
 ramstage-y += fallback_boot.c
 ramstage-y += compute_ip_checksum.c
 ramstage-y += version.c
-ramstage-y += cbfs.c
+ramstage-y += cbfs.c cbfs_core.c
 ramstage-y += lzma.c
 #ramstage-y += lzmadecode.c
 ramstage-y += stack.c
@@ -91,7 +91,7 @@ ramstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 
 romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += ramstage_cache.c
 
-smm-y += cbfs.c memcmp.c
+smm-y += cbfs.c cbfs_core.c memcmp.c
 smm-$(CONFIG_COMPILER_GCC) += gcc.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h

@@ -128,6 +128,14 @@ static const struct macronix_spi_flash_params macronix_spi_flash_table[] = {
 		.name = "MX25U6435F",
 	},
 	{
+		.idcode = 0x2538,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_blocks = 256,
+		.name = "MX25U12835F",
+	},
+	{
 		.idcode = 0x9517,
 		.page_size = 256,
 		.pages_per_sector = 16,

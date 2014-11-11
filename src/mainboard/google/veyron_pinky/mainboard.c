@@ -47,8 +47,11 @@ static void configure_usb(void)
 	case 0:
 		gpio_output(GPIO(7, B, 3), 1);		/* 5V_DRV */
 		break;
+	case 1:
+		break;	/* 5V_DRV moved to EC in rev2 */
 	default:
-		break;	/* 5V_DRV moved to EC after rev1 */
+		gpio_output(GPIO(7, C, 5), 1);		/* 5V_DRV, again */
+		break;
 	}
 }
 
@@ -79,12 +82,20 @@ static void configure_emmc(void)
 	writel(IOMUX_EMMCPWREN, &rk3288_grf->iomux_emmcpwren);
 	writel(IOMUX_EMMCCMD, &rk3288_grf->iomux_emmccmd);
 
+	switch (board_id()) {
+	case 0:
+	case 1:
 	/*
 	 * Use a pullup instead of a drive since the output is 3.3V and
 	 * really should be 1.8V (oops).  The external pulldown will help
 	 * bring the voltage down if we only drive with a pullup here.
 	 */
-	gpio_input_pullup(GPIO(7, B, 4));		/* EMMC_RST_L */
+		gpio_input_pullup(GPIO(7, B, 4));	/* EMMC_RST_L */
+		break;
+	default:
+		gpio_output(GPIO(2, B, 1), 1);		/* EMMC_RST_L */
+		break;
+	}
 }
 
 static void configure_codec(void)

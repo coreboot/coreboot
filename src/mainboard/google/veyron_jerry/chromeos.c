@@ -67,7 +67,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 	/* Power:GPIO active high */
 	gpios->gpios[count].port = GPIO_POWER.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].polarity = ACTIVE_LOW;
 	gpios->gpios[count].value = gpio_get(GPIO_POWER);
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);

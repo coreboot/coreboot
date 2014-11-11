@@ -28,3 +28,6 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 romstage-y += pei_data.c
 ramstage-y += pei_data.c
+
+romstage-y += board_version.c
+ramstage-y += board_version.c

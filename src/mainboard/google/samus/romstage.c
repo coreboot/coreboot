@@ -30,6 +30,8 @@
 #include <soc/romstage.h>
 #include <mainboard/google/samus/spd/spd.h>
 #include <mainboard/google/samus/gpio.h>
+#include <ec/google/chromeec/ec.h>
+#include "board_version.h"
 
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
@@ -40,8 +42,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	if (rp->power_state->prev_sleep_state != SLEEP_STATE_S3)
 		google_chromeec_kbbacklight(100);
 
-	printk(BIOS_INFO, "MLB: board version %d\n",
-	       google_chromeec_get_board_version());
+	printk(BIOS_INFO, "MLB: board version %s\n", samus_board_version());
 
 	/* Ensure the EC and PD are in the right mode for recovery */
 	google_chromeec_early_pd_init();

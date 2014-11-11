@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <console/console.h>
-#ifdef __SMM__
 #include <cpu/x86/smm.h>
-#endif
 
 #if CONFIG_DEBUG_MALLOC
 #define MALLOCDBG(x...) printk(BIOS_SPEW, x)

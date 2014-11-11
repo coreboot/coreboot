@@ -9,10 +9,11 @@
  *
  */
 
-#include "lzmadecode.c"
 #include <console/console.h>
 #include <string.h>
 #include <lib.h>
+
+#include "lzmadecode.h"
 
 unsigned long ulzma(unsigned char * src, unsigned char * dst)
 {

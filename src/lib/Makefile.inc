@@ -29,8 +29,7 @@ $(foreach arch,$(ARCH_SUPPORTED),\
 
 romstage-$(CONFIG_I2C_TPM) += delay.c
 romstage-y += cbfs.c cbfs_core.c
-romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c
-#romstage-y += lzmadecode.c
+romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 
 ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
@@ -57,8 +56,7 @@ ramstage-y += fallback_boot.c
 ramstage-y += compute_ip_checksum.c
 ramstage-y += version.c
 ramstage-y += cbfs.c cbfs_core.c
-ramstage-y += lzma.c
-#ramstage-y += lzmadecode.c
+ramstage-y += lzma.c lzmadecode.c
 ramstage-y += stack.c
 ramstage-y += clog2.c
 romstage-y += clog2.c

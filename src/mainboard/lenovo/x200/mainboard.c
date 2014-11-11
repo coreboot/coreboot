@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <arch/io.h>
-//#include <pc80/mc146818rtc.h>
 #include <device/device.h>
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>

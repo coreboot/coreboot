@@ -218,6 +218,9 @@ static struct {
 #if CONFIG_SPI_FLASH_AMIC
 	{ 0, 0x37, spi_flash_probe_amic, },
 #endif
+#if CONFIG_SPI_FLASH_ATMEL
+	{ 0, 0x1f, spi_flash_probe_atmel, },
+#endif
 #if CONFIG_SPI_FLASH_EON
 	{ 0, 0x1c, spi_flash_probe_eon, },
 #endif

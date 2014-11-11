@@ -401,7 +401,7 @@ static void sb800_enable(device_t dev)
 		 * 'PCIDisable' set to 1 to disable P2P bridge and enable PCI interface pins
 		 *              to function as GPIO {GPIO 35:0}.
 		 */
-		if (dev->enabled)
+		if (!sb_chip->disconnect_pcib && dev->enabled)
 			RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 0);
 		else
 			RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, BIT0);

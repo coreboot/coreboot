@@ -35,6 +35,7 @@
 struct southbridge_amd_cimx_sb800_config
 {
 	u32 boot_switch_sata_ide : 1;
+	u32 disconnect_pcib : 1;
 	u8  gpp_configuration;
 
 	/*

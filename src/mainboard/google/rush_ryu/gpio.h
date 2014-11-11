@@ -58,9 +58,9 @@ enum {
 	SPI_1V8_WP_L	= GPIO(R1),
 	WRITE_PROTECT_L	= SPI_1V8_WP_L,
 	WRITE_PROTECT_L_INDEX = GPIO_R1_INDEX,
-	/* Power Button -- actually active high, but the net names are off. */
-	BTN_AP_PWR_L	= GPIO(Q0),
-	POWER_BUTTON	= BTN_AP_PWR_L,
+	/* Power button - Depending on board id, maybe active high / low */
+	BTN_AP_PWR	= GPIO(Q0),
+	POWER_BUTTON	= BTN_AP_PWR,
 	POWER_BUTTON_INDEX = GPIO_Q0_INDEX,
 };
 

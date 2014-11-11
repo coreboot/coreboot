@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <boardid.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
@@ -25,6 +26,14 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include "gpio.h"
+
+static inline uint32_t get_pwr_btn_polarity(void)
+{
+	if (board_id() < BOARD_ID_PROTO_3)
+		return ACTIVE_HIGH;
+
+	return ACTIVE_LOW;
+}
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -48,9 +57,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 	/* TODO(adurbin): add lid switch */
 
-	/* Power: active low */
-	gpios->gpios[count].port = POWER_BUTTON_INDEX,
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	/* Power: active low / high depending on board id */
+	gpios->gpios[count].port = POWER_BUTTON_INDEX;
+	gpios->gpios[count].polarity = get_pwr_btn_polarity();
 	gpios->gpios[count].value = gpio_get(POWER_BUTTON);
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);

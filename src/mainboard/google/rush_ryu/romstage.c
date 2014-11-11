@@ -39,7 +39,7 @@ static const struct pad_config padcfgs[] = {
 	PAD_CFG_GPIO_OUT0(KB_ROW12, PINMUX_PULL_DOWN),
 	/* MDM_DET - expected to be pulled down by LTE modem */
 	PAD_CFG_GPIO_INPUT(GPIO_PV1, PINMUX_PULL_UP),
-	/* Power Button - active high */
+	/* Power Button - active high / low depending on board id */
 	PAD_CFG_GPIO_INPUT(KB_COL0, PINMUX_PULL_UP),
 	/* BTN_AP_VOLD_L - active low */
 	PAD_CFG_GPIO_INPUT(KB_COL6, PINMUX_PULL_UP),

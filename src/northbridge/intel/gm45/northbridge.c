@@ -177,7 +177,7 @@ static void mch_domain_set_resources(device_t dev)
 
 	for (i = 3; i < 8; ++i) {
 		/* Report read resources. */
-		resource = find_resource(dev, i);
+		resource = probe_resource(dev, i);
 		if (resource)
 			report_resource_stored(dev, resource, "");
 	}

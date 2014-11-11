@@ -449,7 +449,6 @@ CONST AP_MTRR_SETTINGS ROMDATA s8226_ap_mtrr_list[] =
 #endif
 */
 
-//#include "GnbInterface.h"     /*prototype for GnbInterfaceStub*/
 #include "SanMarinoInstall.h"
 
 /*----------------------------------------------------------------------------------------

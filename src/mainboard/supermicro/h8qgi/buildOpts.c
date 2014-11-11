@@ -449,7 +449,6 @@ CONST AP_MTRR_SETTINGS ROMDATA h8qgi_ap_mtrr_list[] =
 #endif
 */
 
-//#include "GnbInterface.h"     /*prototype for GnbInterfaceStub*/
 #include "MaranelloInstall.h"
 
 /*----------------------------------------------------------------------------------------

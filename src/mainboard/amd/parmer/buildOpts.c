@@ -35,7 +35,6 @@
 
 #include <stdlib.h>
 #include "AGESA.h"
-//#include "CommonReturns.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
@@ -251,7 +250,6 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &TrinityApMtrrSettingsList
 
-//#include "VirgoInstall.h"
 
 /*  Include the files that instantiate the configuration definitions.  */
 #include "cpuRegisters.h"

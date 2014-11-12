@@ -21,18 +21,19 @@
 
 #include <arch/header.ld>
 
-/* TODO: This should be revised by someone who understands the SoC better. */
-
 SECTIONS
 {
-	CBFS_CACHE(0x0, 0) /* TODO: fix this, it was already broken before!!! */
-
 	DRAM_START(0x80000000)
 	RAMSTAGE(0x80000000, 128K)
 
-	/* TODO: Does this SoC use SRAM? Add SRAM_START() and SRAM_END(). */
-	BOOTBLOCK(0x9B000000, 16K)
-	ROMSTAGE(0x9B004000, 40K)
-	STACK(0x9B00E000, 6K)
-	PRERAM_CBMEM_CONSOLE(0x9B00F800, 3K)
+	/* GRAM becomes the SRAM. */
+	SRAM_START(0x9a000000)
+	BOOTBLOCK(0x9a000000, 16K)
+	ROMSTAGE(0x9a004000, 32K)
+	STACK(0x9a01c000, 8K)
+	PRERAM_CBMEM_CONSOLE(0x9a01e000, 8K)
+	SRAM_END(0x9a020000)
+
+	/* Let's use SRAM for CBFS cache. */
+	CBFS_CACHE(0x9b000000, 64K)
 }

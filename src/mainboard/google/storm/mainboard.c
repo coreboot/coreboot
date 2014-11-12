@@ -20,13 +20,11 @@
 #include <arch/cache.h>
 #include <boardid.h>
 #include <boot/coreboot_tables.h>
-#include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
 #include <gpio.h>
 #include <soc/clock.h>
 #include <soc/usb.h>
-#include <string.h>
 #include <symbols.h>
 
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -148,28 +146,4 @@ void lb_board(struct lb_header *header)
 	/* Retrieve the switch interface MAC addressses. */
 	lb_table_add_macs_from_vpd(header);
 #endif
-}
-
-static int read_gpio(gpio_t gpio_num)
-{
-	gpio_tlmm_config_set(gpio_num, GPIO_FUNC_DISABLE,
-			     GPIO_NO_PULL, GPIO_2MA, GPIO_DISABLE);
-	udelay(10); /* Should be enough to settle. */
-	return gpio_get(gpio_num);
-}
-
-void fill_lb_gpios(struct lb_gpios *gpios)
-{
-	struct lb_gpio *gpio;
-	const int GPIO_COUNT = 5;
-
-	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
-	gpios->count = GPIO_COUNT;
-
-	gpio = gpios->gpios;
-	fill_lb_gpio(gpio++, 15, ACTIVE_LOW, "developer", read_gpio(15));
-	fill_lb_gpio(gpio++, 16, ACTIVE_LOW, "recovery", read_gpio(16));
-	fill_lb_gpio(gpio++, 17, ACTIVE_LOW, "write protect", read_gpio(17));
-	fill_lb_gpio(gpio++, -1, ACTIVE_LOW, "power", 1);
-	fill_lb_gpio(gpio++, -1, ACTIVE_LOW, "lid", 0);
 }

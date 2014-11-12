@@ -175,8 +175,7 @@ void save_vbnv(const uint8_t *vbnv_copy)
 	if (vbnv_flash_probe())
 		return;  /* error */
 
-	if (spi_flash->write(spi_flash, new_offset,
-			     BLOB_SIZE, vbnv_copy) != BLOB_SIZE) {
+	if (spi_flash->write(spi_flash, new_offset, BLOB_SIZE, vbnv_copy)) {
 		printk(BIOS_ERR, "failed to write nvdata\n");
 		return;  /* error */
 	}

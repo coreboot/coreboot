@@ -97,5 +97,7 @@ SECTIONS
 	/DISCARD/ : {
 		/* Drop unnecessary sections. */
 		*(.eh_frame);
+		*(.note);
+		*(.note.*);
 	}
 }

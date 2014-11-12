@@ -74,37 +74,35 @@ HUDSON_FWM_POSITION=$(shell printf %u $(CONFIG_HUDSON_FWM_POSITION))
 #assume the cbfs header is less than 128 bytes.
 ROMSIG_SIZE=16
 ifeq ($(CONFIG_HUDSON_XHCI_FWM), y)
-HUDSON_XHCI_POSITION=$(shell echo $(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 \
-	| awk '{printf("%.0f", $$1 + $$2 + $$3)}')
-XHCI_FWM_SIZE=$(word 5,$(shell ls -l $(CONFIG_HUDSON_XHCI_FWM_FILE)))
+HUDSON_XHCI_POSITION=$(call int-add,$(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128)
+XHCI_FWM_SIZE=$(call file-size,$(CONFIG_HUDSON_XHCI_FWM_FILE))
 else
 HUDSON_XHCI_POSITION=0
 XHCI_FWM_SIZE=0
 endif
 
 ifeq ($(CONFIG_HUDSON_GEC_FWM), y)
-HUDSON_GEC_POSITION=$(shell echo $(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 \
-	$(XHCI_FWM_SIZE) 128 \
-	| awk '{printf("%.0f", $$1 + $$2 + $$3 + $$4 + $$5)}')
-GEC_FWM_SIZE=$(word 5,$(shell ls -l $(CONFIG_HUDSON_GEC_FWM_FILE)))
+HUDSON_GEC_POSITION=$(call int-add,$(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 \
+	$(XHCI_FWM_SIZE) 128)
+GEC_FWM_SIZE=$(call file-size,$(CONFIG_HUDSON_GEC_FWM_FILE))
 else
 HUDSON_GEC_POSITION=0
 GEC_FWM_SIZE=0
 endif
 
 ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
-HUDSON_IMC_POSITION_UNALIGN=$(shell echo $(HUDSON_FWM_POSITION) \
-	$(ROMSIG_SIZE) 128 $(XHCI_FWM_SIZE) 128 $(GEC_FWM_SIZE) 128 65535 \
-	| awk '{printf("%.0f", $$1 + $$2 + $$3 + $$4 + $$5 + $$6 + $$7 + $$8)}')
-HUDSON_IMC_POSITION=$(shell echo $(HUDSON_IMC_POSITION_UNALIGN) \
-	| awk '{printf("%.0f", $$1 - $$1 % 65536)}')
+HUDSON_IMC_POSITION=$(call int-align,\
+	$(call int-add,\
+		$(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 $(XHCI_FWM_SIZE)\
+		128 $(GEC_FWM_SIZE) 128),\
+	65536)
 else
 HUDSON_IMC_POSITION=0
 endif
 
 HUDSON_PSP_DIRECTORY_POSITION=0
 ifeq ($(CONFIG_CPU_AMD_AGESA_00730F01), y)
-HUDSON_PSP_DIRECTORY_POSITION=$(shell echo $(HUDSON_FWM_POSITION) 262144 |  awk '{printf("%.0f", $$1 + $$2)}')
+HUDSON_PSP_DIRECTORY_POSITION=$(call int-add,$(HUDSON_FWM_POSITION) 262144)
 endif
 
 $(obj)/coreboot_hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
@@ -165,8 +163,8 @@ ifeq ($(CONFIG_HUDSON_PSP), y)
 
 # 0
 # catenate the pubkey and pspdir together to save some space.
-AMDPUBKEY_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0x100)}')   #$(shell printf %u 0xFFb00100)
-AMDPUBKEY_SIZE=$(word 5,$(shell ls -l $(CONFIG_AMD_PUBKEY_FILE)))
+AMDPUBKEY_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0x100)   #$(shell printf %u 0xFFb00100)
+AMDPUBKEY_SIZE=$(call file-size,$(CONFIG_AMD_PUBKEY_FILE))
 
 ifeq ($(CONFIG_CPU_AMD_AGESA_00730F01), y)
 FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
@@ -174,8 +172,8 @@ FIRMWARE_TYPE=
 endif
 # 1
 CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader$(FIRMWARE_TYPE).$(CONFIG_HVB).sbin
-PSPBTLDR_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0x1000)}') #$(shell printf %u 0xFFb10000)
-PSPBTLDR_SIZE=$(word 5,$(shell ls -l $(CONFIG_PSPBTLDR_FILE)))
+PSPBTLDR_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0x1000) #$(shell printf %u 0xFFb10000)
+PSPBTLDR_SIZE=$(call file-size,$(CONFIG_PSPBTLDR_FILE))
 cbfs-files-y += hudson/pspbtldr
 hudson/pspbtldr-file := $(CONFIG_PSPBTLDR_FILE)
 hudson/pspbtldr-position := $(PSPBTLDR_POS)
@@ -183,8 +181,8 @@ hudson/pspbtldr-type := raw
 
 #8
 CONFIG_SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE).sbin
-SMUFWM_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0xb000)}') #$(shell printf %u 0xFFb20000)
-SMUFWM_SIZE=$(word 5,$(shell ls -l $(CONFIG_SMUFWM_FILE)))
+SMUFWM_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0xb000) #$(shell printf %u 0xFFb20000)
+SMUFWM_SIZE=$(call file-size,$(CONFIG_SMUFWM_FILE))
 cbfs-files-y += hudson/smufwm
 hudson/smufwm-file := $(CONFIG_SMUFWM_FILE)
 hudson/smufwm-position := $(SMUFWM_POS)
@@ -192,8 +190,8 @@ hudson/smufwm-type := raw
 
 #3
 CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecovery$(FIRMWARE_TYPE).sbin
-PSPRCVR_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0x30000)}') #$(shell printf %u 0xFFBb0000)
-PSPRCVR_SIZE=$(word 5,$(shell ls -l $(CONFIG_PSPRCVR_FILE)))
+PSPRCVR_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0x30000) #$(shell printf %u 0xFFBb0000)
+PSPRCVR_SIZE=$(call file-size,$(CONFIG_PSPRCVR_FILE))
 cbfs-files-y += hudson/psprcvr
 hudson/psprcvr-file := $(CONFIG_PSPRCVR_FILE)
 hudson/psprcvr-position := $(PSPRCVR_POS)
@@ -201,8 +199,8 @@ hudson/psprcvr-type := raw
 
 # 5
 CONFIG_PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSigned$(FIRMWARE_TYPE).key
-PUBSIGNEDKEY_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0x400)}') #$(shell printf %u 0xFFb00400)
-PUBSIGNEDKEY_SIZE=$(word 5,$(shell ls -l $(CONFIG_PUBSIGNEDKEY_FILE)))
+PUBSIGNEDKEY_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0x400) #$(shell printf %u 0xFFb00400)
+PUBSIGNEDKEY_SIZE=$(call file-size,$(CONFIG_PUBSIGNEDKEY_FILE))
 cbfs-files-y += hudson/pubsignedkey
 hudson/pubsignedkey-file := $(CONFIG_PUBSIGNEDKEY_FILE)
 hudson/pubsignedkey-position := $(PUBSIGNEDKEY_POS)
@@ -210,8 +208,8 @@ hudson/pubsignedkey-type := raw
 
 # 2
 CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs$(FIRMWARE_TYPE).sbin
-PSPSECUREOS_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0x3A000)}') #$(shell printf %u 0xFFbc0000)
-PSPSECUREOS_SIZE=$(word 5,$(shell ls -l $(CONFIG_PSPSCUREOS_FILE)))
+PSPSECUREOS_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0x3A000) #$(shell printf %u 0xFFbc0000)
+PSPSECUREOS_SIZE=$(call file-size,$(CONFIG_PSPSCUREOS_FILE))
 cbfs-files-y += hudson/pspsecureos
 hudson/pspsecureos-file := $(CONFIG_PSPSCUREOS_FILE)
 hudson/pspsecureos-position := $(PSPSECUREOS_POS)
@@ -219,8 +217,8 @@ hudson/pspsecureos-type := raw
 
 # 4
 CONFIG_PSPNVRAM_FILE=$(top)/$(FIRMWARE_LOCATE)/PspNvram$(FIRMWARE_TYPE).bin
-PSPNVRAM_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0x64000)}') #$(shell printf %u 0xFFbf0000)
-PSPNVRAM_SIZE=$(word 5,$(shell ls -l $(CONFIG_PSPNVRAM_FILE)))
+PSPNVRAM_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0x64000) #$(shell printf %u 0xFFbf0000)
+PSPNVRAM_SIZE=$(call file-size,$(CONFIG_PSPNVRAM_FILE))
 cbfs-files-y += hudson/pspnvram
 hudson/pspnvram-file := $(CONFIG_PSPNVRAM_FILE)
 hudson/pspnvram-position := $(PSPNVRAM_POS)
@@ -229,13 +227,13 @@ hudson/pspnvram-type := raw
 ifeq ($(CONFIG_HVB), HVB)
 # 6
 RTM_FILE=$(objcbfs)/bootblock.bin     #The file size need to be 256 bytes aligned.
-RTM_SIZE=$(word 5,$(shell ls -l $(RTM_FILE)))
-RTM_POS=$(shell echo 4294967296 $(RTM_SIZE) | awk '{print $$1 - $$2}')
+RTM_SIZE=$(call file-size,$(RTM_FILE))
+RTM_POS=$(call int-add,4294967296 -$(RTM_SIZE))
 
 # 7
 RTMSIGN_FILE=$(obj)/bootblock_sig.bin
-RTMSIGN_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0x800)}') #$(shell printf %u 0xFFb00800)
-RTMSIGN_SIZE=256 #it should be hardcoded to 256, otherwise circular dependency comes up.$(word 5,$(shell ls -l $(RTMSIGN_FILE)))
+RTMSIGN_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0x800) #$(shell printf %u 0xFFb00800)
+RTMSIGN_SIZE=256 #it should be hardcoded to 256, otherwise circular dependency comes up.$(call file-size,$(RTMSIGN_FILE))
 cbfs-files-y += hudson/rtmsign
 hudson/rtmsign-file := $(RTMSIGN_FILE)
 hudson/rtmsign-position := $(RTMSIGN_POS)
@@ -243,8 +241,8 @@ hudson/rtmsign-type := raw
 endif
 
 CONFIG_SMUSCS_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuScs$(FIRMWARE_TYPE).bin
-SMUSCS_POS=$(shell echo $(HUDSON_PSP_DIRECTORY_POSITION) | awk '{printf("%.0f", $$1 + 0x6d000)}') #$(shell printf %u 0xFFC00000)
-SMUSCS_SIZE=$(word 5,$(shell ls -l $(CONFIG_SMUSCS_FILE)))
+SMUSCS_POS=$(call int-add,$(HUDSON_PSP_DIRECTORY_POSITION) 0x6d000) #$(shell printf %u 0xFFC00000)
+SMUSCS_SIZE=$(call file-size,$(CONFIG_SMUSCS_FILE))
 cbfs-files-y += hudson/smuscs
 hudson/smuscs-file := $(CONFIG_SMUSCS_FILE)
 hudson/smuscs-position := $(SMUSCS_POS)

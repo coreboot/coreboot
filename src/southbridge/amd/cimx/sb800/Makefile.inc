@@ -72,10 +72,7 @@ SB800_FWM_POSITION=$(shell printf %u $(CONFIG_SB800_FWM_POSITION))
 #assume the cbfs header is less than 128 bytes.
 ROMSIG_SIZE=16
 
-SB800_IMC_POSITION_UNALIGN=$(shell echo $(SB800_FWM_POSITION) $(ROMSIG_SIZE) \
-	128 65535 | awk '{printf("%.0f", $$1 + $$2 + $$3 + $$4)}')
-SB800_IMC_POSITION=$(shell echo $(SB800_IMC_POSITION_UNALIGN) \
-	| awk '{printf("%.0f", $$1 - $$1 % 65536)}')
+SB800_IMC_POSITION=$(call int-align,$(call add-int,$(SB800_FWM_POSITION) $(ROMSIG_SIZE) 128),65536)
 
 $(obj)/coreboot_SB800_romsig.bin: \
 			$(call strip_quotes, $(CONFIG_SB800_IMC_FWM_FILE)) \

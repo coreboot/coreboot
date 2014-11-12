@@ -82,6 +82,19 @@ $(foreach supported_arch,$(ARCH_SUPPORTED), \
 	    $(eval $(call define_class,rmodules_$(supported_arch),$(supported_arch))))
 
 #######################################################################
+# Helper functions for various file placement matters
+#
+# int-add: adds an arbitrary number of space-separated integers in
+#          all formats understood by printf(1)
+# int-align: align $1 to $2 units
+# file-size: returns the filesize of the given file
+_toint=$(shell printf "%d" $1)
+_int-add2=$(shell expr $(call _toint,$1) + $(call _toint,$2))
+int-add=$(if $(filter 1,$(words $1)),$(strip $1),$(call int-add,$(call _int-add2,$(word 1,$1),$(word 2,$1)) $(wordlist 3,$(words $1),$1)))
+int-align=$(shell expr $(call _toint,$1) + $(call _toint,$2) - 1 - $(call _toint,$1) % $(call _toint,$2))
+file-size=$(shell cat $1 | wc -c)
+
+#######################################################################
 # Helper functions for ramstage postprocess
 spc :=
 spc +=

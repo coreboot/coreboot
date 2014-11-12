@@ -45,7 +45,7 @@
 */
 
 #ifndef _HT_FEAT_TRAFFIC_DISTRIBUTION_H_
-#define _H_TFEAT_TRAFFIC_DISTRIBUTION_H_
+#define _HT_FEAT_TRAFFIC_DISTRIBUTION_H_
 
 /*----------------------------------------------------------------------------
  *   Mixed (DEFINITIONS AND MACROS / TYPEDEFS, STRUCTURES, ENUMS)
@@ -75,5 +75,3 @@ TrafficDistribution (
   );
 
 #endif  /* _HT_FEAT_TRAFFIC_DISTRIBUTION_H_ */
-
-

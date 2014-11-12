@@ -18,13 +18,18 @@
 ##
 
 bootblock-y += cdp.c
+bootblock-y += reset.c
+
+verstage-y += reset.c
 
 romstage-y += romstage.c
 romstage-y += cdp.c
+romstage-y += reset.c
 
 ramstage-y += boardid.c
 ramstage-y += cdp.c
 ramstage-y += mainboard.c
+ramstage-y += reset.c
 
 bootblock-y += memlayout.ld
 romstage-y += memlayout.ld

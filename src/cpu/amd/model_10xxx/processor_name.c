@@ -173,10 +173,10 @@ static const struct str_s String2_socket_C32[] = {
 	{0, 0, 0, NULL}
 };
 
-const char const *unknown = "AMD Processor model unknown";
-const char const *unknown2 = " type unknown";
-const char const *sample = "AMD Engineering Sample";
-const char const *thermal = "AMD Thermal Test Kit";
+const char *unknown = "AMD Processor model unknown";
+const char *unknown2 = " type unknown";
+const char *sample = "AMD Engineering Sample";
+const char *thermal = "AMD Thermal Test Kit";
 
 
 static int strcpymax(char *dst, const char *src, int buflen)

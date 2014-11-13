@@ -108,7 +108,7 @@ static inline u32 elog_flash_address_to_offset(u8 *address)
 
 	return (u32)address - ((u32)~0UL - rom_size + 1);
 #else
-	return (u32)address;
+	return (u32)(uintptr_t)address;
 #endif
 }
 

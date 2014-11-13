@@ -1,7 +1,6 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2012 The Chromium OS Authors.
 ## Copyright 2014 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -18,5 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-subdirs-$(CONFIG_DRIVER_TI_TPS65090) += tps65090/
-subdirs-$(CONFIG_DRIVERS_TI_TPS65913) += tps65913/
+ramstage-$(CONFIG_DRIVERS_TI_TPS65913_RTC) += tps65913rtc.c

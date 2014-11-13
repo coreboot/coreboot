@@ -18,3 +18,4 @@
 ##
 
 source src/drivers/ti/tps65090/Kconfig
+source src/drivers/ti/tps65913/Kconfig

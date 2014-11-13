@@ -20,6 +20,7 @@
 #include <arch/mmu.h>
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
+#include <elog.h>
 #include <memrange.h>
 #include <soc/addressmap.h>
 #include <soc/clk_rst.h>
@@ -27,6 +28,7 @@
 #include <soc/funitcfg.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/padconfig.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 static const struct pad_config mmcpads[] = {
 	/* MMC4 (eMMC) */
@@ -72,6 +74,8 @@ static void mainboard_init(device_t dev)
 	/* I2C6 bus (audio, etc.) */
 	soc_configure_i2c6pad();
 	i2c_init(I2C6_BUS);
+	elog_init();
+	elog_add_boot_reason();
 }
 
 static void mainboard_enable(device_t dev)

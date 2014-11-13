@@ -167,13 +167,16 @@ static pei_wrapper_entry_t load_reference_code(void)
 
 void broadwell_run_reference_code(void)
 {
-	int ret;
+	int ret, dummy;
 	struct pei_data pei_data;
 	pei_wrapper_entry_t entry;
 
 	memset(&pei_data, 0, sizeof(pei_data));
 	mainboard_fill_pei_data(&pei_data);
 	broadwell_fill_pei_data(&pei_data);
+
+	pei_data.boot_mode = acpi_slp_type;
+	pei_data.saved_data = (void *) &dummy;
 
 	entry = load_reference_code();
 	if (entry == NULL) {

@@ -25,6 +25,7 @@
 #include <soc/clk_rst.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>
+#include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra/usb.h>
 #include <soc/padconfig.h>
 #include <soc/spi.h>
@@ -67,9 +68,16 @@ static const struct pad_config padcfgs[] = {
 	PAD_CFG_GPIO_INPUT(USB_VBUS_EN1, PINMUX_PULL_UP),
 };
 
+static const struct pad_config i2c1_pad[] = {
+	/* GEN1 I2C */
+	PAD_CFG_SFIO(GEN1_I2C_SCL, PINMUX_INPUT_ENABLE, I2C1),
+	PAD_CFG_SFIO(GEN1_I2C_SDA, PINMUX_INPUT_ENABLE, I2C1),
+};
+
 static const struct funit_cfg funitcfgs[] = {
 	FUNIT_CFG(SDMMC3, PLLP, 48000, sdmmc3_pad, ARRAY_SIZE(sdmmc3_pad)),
 	FUNIT_CFG(SDMMC4, PLLP, 48000, sdmmc4_pad, ARRAY_SIZE(sdmmc4_pad)),
+	FUNIT_CFG(I2C1, PLLP, 100, i2c1_pad, ARRAY_SIZE(i2c1_pad)),
 };
 
 static void setup_ec_spi(void)
@@ -87,6 +95,30 @@ static void setup_usb(void)
 	usb_setup_utmip((void *)TEGRA_USB3_BASE);
 }
 
+/* Audio init: clocks and enables/resets */
+static void setup_audio(void)
+{
+	/* External peripheral 1: audio codec (max98090) using 12MHz CLK1 */
+	clock_configure_source(extperiph1, CLK_M, 12000);
+
+	/*
+	 * We need 1.5MHz for I2S1. So, we use CLK_M. CLK_DIVIDER macro
+	 * returns a divisor (0xe) a little bit off from the ideal value (0xd),
+	 * but it's good enough for beeps.
+	 */
+	clock_configure_source(i2s1, CLK_M, 1500);
+
+	clock_external_output(1);	/* For external MAX98090 audio codec. */
+
+	/*
+	 * Confirmed by NVIDIA hardware team, we need to take ALL audio devices
+	 * connected to AHUB (AUDIO, APBIF, I2S, DAM, AMX, ADX, SPDIF, AFC) out
+	 * of reset and clock-enabled, otherwise reading AHUB devices (in our
+	 * case, I2S/APBIF/AUDIO<XBAR>) will hang.
+	 */
+	clock_enable_audio();
+}
+
 static void mainboard_init(device_t dev)
 {
 	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
@@ -94,14 +126,17 @@ static void mainboard_init(device_t dev)
 
 	setup_ec_spi();
 	setup_usb();
+
+	setup_audio();
+	i2c_init(I2C1_BUS);		/* for max98090 codec */
 }
 
 static void mainboard_enable(device_t dev)
 {
-        dev->ops->init = &mainboard_init;
+	dev->ops->init = &mainboard_init;
 }
 
 struct chip_operations mainboard_ops = {
-        .name   = "rush",
-        .enable_dev = mainboard_enable,
+	.name   = "rush",
+	.enable_dev = mainboard_enable,
 };

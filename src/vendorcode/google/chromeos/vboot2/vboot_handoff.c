@@ -104,10 +104,11 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 	/* TODO: Set these in depthcharge */
 	if (CONFIG_VIRTUAL_DEV_SWITCH)
 		vb_sd->flags |= VBSD_HONOR_VIRT_DEV_SWITCH;
-	if (CONFIG_EC_SOFTWARE_SYNC) {
+	if (CONFIG_EC_SOFTWARE_SYNC)
 		vb_sd->flags |= VBSD_EC_SOFTWARE_SYNC;
+	if (!CONFIG_PHYSICAL_REC_SWITCH)
 		vb_sd->flags |= VBSD_BOOT_REC_SWITCH_VIRTUAL;
-	}
+
 	/* In vboot1, VBSD_FWB_TRIED is
 	 * set only if B is booted as explicitly requested. Therefore, if B is
 	 * booted because A was found bad, the flag should not be set. It's

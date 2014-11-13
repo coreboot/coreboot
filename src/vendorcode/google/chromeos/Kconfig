@@ -159,6 +159,12 @@ config NO_TPM_RESUME
 	  boards, booting Windows will break if the TPM resume command
 	  is sent during an S3 resume.
 
+config PHYSICAL_REC_SWITCH
+	bool "Physical recovery switch is present"
+	default n
+	help
+	  Whether this platform has a physical recovery switch
+
 source src/vendorcode/google/chromeos/vboot1/Kconfig
 source src/vendorcode/google/chromeos/vboot2/Kconfig
 

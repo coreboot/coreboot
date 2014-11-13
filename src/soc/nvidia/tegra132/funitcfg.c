@@ -82,6 +82,7 @@ static const struct clk_dev_control clk_data_arr[] = {
 static const struct funit_cfg_data funit_data[] =  {
 	FUNIT_DATA(SBC1, sbc1, H),
 	FUNIT_DATA(SBC4, sbc4, U),
+	FUNIT_DATA(I2C1, i2c1, L),
 	FUNIT_DATA(I2C2, i2c2, H),
 	FUNIT_DATA(I2C3, i2c3, U),
 	FUNIT_DATA(I2C5, i2c5, H),

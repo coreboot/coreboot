@@ -23,7 +23,7 @@
 
 struct tegra_i2c_bus_info tegra_i2c_info[] = {
 	{
-		.base = (void *)TEGRA_I2C_BASE,
+		.base = (void *)TEGRA_I2C1_BASE,
 		.reset_bit = CLK_L_I2C1,
 		.reset_func = &clock_reset_l
 	},

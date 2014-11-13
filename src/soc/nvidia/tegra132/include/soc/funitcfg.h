@@ -30,6 +30,7 @@
 enum {
 	FUNIT_INDEX(SBC1),
 	FUNIT_INDEX(SBC4),
+	FUNIT_INDEX(I2C1),
 	FUNIT_INDEX(I2C2),
 	FUNIT_INDEX(I2C3),
 	FUNIT_INDEX(I2C5),
@@ -48,6 +49,7 @@ enum {
  */
 enum {
 
+	I2C1_BUS = 0,
 	I2C2_BUS = 1,
 	I2C3_BUS = 2,
 	I2C5_BUS = 4,

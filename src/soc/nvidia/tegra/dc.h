@@ -488,6 +488,8 @@ enum {
 };
 
 /* DC_WIN_DDA_INCREMENT 0x709 */
+#define DDA_INC(prescaled_size, post_scaled_size)	\
+		(((prescaled_size) - 1) * 0x1000 / ((post_scaled_size) - 1))
 #define	H_DDA_INC(x)		(((x) & 0xffff) << 0)
 #define	V_DDA_INC(x)		(((x) & 0xffff) << 16)
 

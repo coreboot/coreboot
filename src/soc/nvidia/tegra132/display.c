@@ -82,7 +82,7 @@ static void print_mode(const struct soc_nvidia_tegra132_config *config)
 	if (config) {
 		int refresh = tegra_calc_refresh(config);
 		printk(BIOS_ERR,
-			"MODE:%dx%d@%d.%03uHz pclk=%d\n",
+			"Panel Mode: %dx%d@%d.%03uHz pclk=%d\n",
 			config->xres, config->yres,
 			refresh / 1000, refresh % 1000,
 			config->pixel_clock);
@@ -164,17 +164,21 @@ static void update_window(const struct soc_nvidia_tegra132_config *config)
 	WRITEL(WINDOW_A_SELECT, &disp_ctrl->cmd.disp_win_header);
 
 	WRITEL(((config->yres << 16) | config->xres), &disp_ctrl->win.size);
-	WRITEL(((config->yres << 16) |
-		(config->xres * config->framebuffer_bits_per_pixel / 8)),
+
+	WRITEL(((config->display_yres << 16) |
+		(config->display_xres *
+		config->framebuffer_bits_per_pixel / 8)),
 		&disp_ctrl->win.prescaled_size);
 
-	val = ALIGN_UP((config->xres * config->framebuffer_bits_per_pixel / 8),
-			64);
+	val = ALIGN_UP((config->display_xres *
+		config->framebuffer_bits_per_pixel / 8), 64);
 	WRITEL(val, &disp_ctrl->win.line_stride);
 
 	WRITEL(config->color_depth, &disp_ctrl->win.color_depth);
 	WRITEL(COLOR_BLACK, &disp_ctrl->disp.blend_background_color);
-	WRITEL((V_DDA_INC(0x1000) | H_DDA_INC(0x1000)),
+
+	WRITEL(((DDA_INC(config->display_yres, config->yres) << 16) |
+		DDA_INC(config->display_xres, config->xres)),
 		&disp_ctrl->win.dda_increment);
 
 	WRITEL(DISP_CTRL_MODE_C_DISPLAY, &disp_ctrl->cmd.disp_cmd);
@@ -247,7 +251,8 @@ void display_startup(device_t dev)
 	}
 
 	if (framebuffer_size_mb == 0){
-		framebuffer_size_mb = ALIGN_UP(config->xres * config->yres *
+		framebuffer_size_mb = ALIGN_UP(config->display_xres *
+			config->display_yres *
 			(config->framebuffer_bits_per_pixel / 8), MiB)/MiB;
 	}
 
@@ -299,11 +304,11 @@ void display_startup(device_t dev)
 	 */
 	struct edid edid;
 	/* Align bytes_per_line to 64 bytes as required by dc */
-	edid.bytes_per_line = ALIGN_UP((config->xres *
+	edid.bytes_per_line = ALIGN_UP((config->display_xres *
 				config->framebuffer_bits_per_pixel / 8), 64);
 	edid.x_resolution = edid.bytes_per_line /
 				(config->framebuffer_bits_per_pixel / 8);
-	edid.y_resolution = config->yres;
+	edid.y_resolution = config->display_yres;
 	edid.framebuffer_bits_per_pixel = config->framebuffer_bits_per_pixel;
 
 	printk(BIOS_INFO, "%s: bytes_per_line: %d, bits_per_pixel: %d\n "

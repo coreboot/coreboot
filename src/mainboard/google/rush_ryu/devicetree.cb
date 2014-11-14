@@ -33,6 +33,10 @@ chip soc/nvidia/tegra132
 	register "framebuffer_bits_per_pixel" = "32"
 	register "color_depth" = "12"
 
+	# framebuffer resolution
+	register "display_xres" = "1280"
+	register "display_yres" = "800"
+
 	register "href_to_sync" = "1"
 	register "hfront_porch" = "80"
 	register "hsync_width" = "80"

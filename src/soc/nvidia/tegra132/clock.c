@@ -709,3 +709,21 @@ void clock_reset_x(u32 bit)
 	clock_reset_dev(CLK_RST_REG(rst_dev_x_set), CLK_RST_REG(rst_dev_x_clr),
 			bit);
 }
+
+/* Enable/unreset all audio toys under AHUB */
+void clock_enable_audio(void)
+{
+	/*
+	 * Confirmed by NVIDIA hardware team, we need to take ALL audio devices
+	 * connected to AHUB (AUDIO, APBIF, I2S, DAM, AMX, ADX, SPDIF, AFC) out
+	 * of reset and clock-enabled, otherwise reading AHUB devices (in our
+	 * case, I2S/APBIF/AUDIO<XBAR>) will hang.
+	 */
+	clock_enable_clear_reset(CLK_L_I2S0 | CLK_L_I2S1 | CLK_L_I2S2 | CLK_L_SPDIF,
+				 0, 0,
+				 CLK_V_I2S3 | CLK_V_I2S4 | CLK_V_AUDIO | CLK_V_APBIF |
+				 CLK_V_DAM0 | CLK_V_DAM1 | CLK_V_DAM2 | CLK_V_EXTPERIPH1,
+				 CLK_W_AMX0 | CLK_W_ADX0,
+				 CLK_X_ADX1 | CLK_X_AFC0 | CLK_X_AFC1 | CLK_X_AFC2 |
+				 CLK_X_AFC3 | CLK_X_AFC4 | CLK_X_AFC5 | CLK_X_AMX1);
+}

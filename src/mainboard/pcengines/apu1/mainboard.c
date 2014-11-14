@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
- * Copyright (C) 2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ void set_pcie_dereset(void);
  * These values are used by the PCI configuration space,
  * MP Tables.  TODO: Make ACPI use these values too.
  *
- * The Persimmon PCI INTA/B/C/D pins are connected to
+ * The PCI INTA/B/C/D pins are connected to
  * FCH pins INTE/F/G/H on the schematic so these need
  * to be routed as well.
  */
@@ -56,13 +56,13 @@ static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
 	/* INTA# - INTH# */
 	[0x00] = 0x0A,0x0B,0x0A,0x0B,0x0A,0x0B,0x0A,0x0B,
 	/* Misc-nil,0,1,2, INT from Serial irq */
-	[0x08] = 0x00,0xF0,0x00,0x00,0x1F,0x1F,0x1F,0x1F,
+	[0x08] = 0x00,0xF1,0x00,0x00,0x1F,0x1F,0x1F,0x1F,
 	/* SCI, SMBUS0, ASF, HDA, FC, GEC, PerfMon */
 	[0x10] = 0x1F,0x1F,0x1F,0x0A,0x1F,0x1F,0x1F,
 	/* IMC INT0 - 5 */
 	[0x20] = 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,
 	/* USB Devs 18/19/20/22 INTA-C */
-	[0x30] = 0x0A,0x0B,0x0A,0x0B,0x0A,0x0B,0x0A,
+	[0x30] = 0x0A,0x0B,0x0A,0x0B,0x1F,0x1F,0x0A,
 	/* IDE, SATA */
 	[0x40] = 0x0B,0x0B,
 	/* GPPInt0 - 3 */
@@ -97,8 +97,8 @@ static const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
  * use PIC IRQ 10 if it uses PIN A for its hardware INT.
  */
 /*
- * Persimmon has PCI slot INTA/B/C/D connected to PIRQE/F/G/H
- * but because PCI INT_PIN swizzling isnt implemented to match
+ * The PCI slot INTA/B/C/D connected to PIRQE/F/G/H
+ * but because of PCI INT_PIN swizzle isnt implemented to match
  * the IDSEL (dev 3) of the slot, the table is adjusted for the
  * swizzle and INTA is connected to PIRQH so PINA/B/C/D on
  * off-chip devices should get mapped to PIRQH/E/F/G.
@@ -107,7 +107,9 @@ static const struct pirq_struct mainboard_pirq_data[] = {
 	/* {PCI_devfn,        {PIN A, PIN B, PIN C, PIN D}}, */
 	{GFX_DEVFN,           {PIRQ_A, PIRQ_B, PIRQ_NC, PIRQ_NC}},      /* VGA:       01.0 */
 	{NB_PCIE_PORT1_DEVFN, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},        /* NIC:       04.0 */
-	{NB_PCIE_PORT3_DEVFN, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},        /* PCIe bdg:  06.0 */
+	{NB_PCIE_PORT2_DEVFN, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},        /* NIC:       05.0 */
+	{NB_PCIE_PORT3_DEVFN, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},        /* NIC:       06.0 */
+	{NB_PCIE_PORT4_DEVFN, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},        /* miniPCIe:  07.0 */
 	{SATA_DEVFN,          {PIRQ_SATA, PIRQ_NC, PIRQ_NC, PIRQ_NC}},  /* SATA:      11.0 */
 	{OHCI1_DEVFN,         {PIRQ_OHCI1, PIRQ_NC, PIRQ_NC, PIRQ_NC}}, /* OHCI1:     12.0 */
 	{EHCI1_DEVFN,         {PIRQ_NC, PIRQ_EHCI1, PIRQ_NC, PIRQ_NC}}, /* EHCI1:     12.2 */
@@ -118,6 +120,7 @@ static const struct pirq_struct mainboard_pirq_data[] = {
 	{HDA_DEVFN,           {PIRQ_HDA, PIRQ_NC, PIRQ_NC, PIRQ_NC}},   /* HDA:       14.2 */
 	{SB_PCI_PORT_DEVFN,   {PIRQ_H, PIRQ_E, PIRQ_F, PIRQ_G}},        /* PCI bdg:   14.4 */
 	{OHCI4_DEVFN,         {PIRQ_NC, PIRQ_NC, PIRQ_OHCI4, PIRQ_NC}}, /* OHCI4:     14.5 */
+	{SB_PCIE_PORT1_DEVFN, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D}},        /* miniPCIe:  15.0 */
 	{OHCI3_DEVFN,         {PIRQ_OHCI3, PIRQ_NC, PIRQ_NC, PIRQ_NC}}, /* OHCI3:     16.0 */
 	{EHCI3_DEVFN,         {PIRQ_NC, PIRQ_EHCI3, PIRQ_NC, PIRQ_NC}}, /* EHCI3:     16.2 */
 };
@@ -146,7 +149,6 @@ void set_pcie_reset(void)
 void set_pcie_dereset(void)
 {
 }
-
 
 /**********************************************
  * Enable the dedicated functions of the board.

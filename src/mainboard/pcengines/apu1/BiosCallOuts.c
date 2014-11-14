@@ -19,12 +19,14 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
+#include <spd_cache.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "heapManager.h"
 #include "SB800.h"
 #include <stdlib.h>
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -32,7 +34,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_DEALLOCATE_BUFFER,		agesa_DeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,			agesa_LocateBuffer },
 	{AGESA_DO_RESET,			agesa_Reset },
-	{AGESA_READ_SPD,			agesa_ReadSpd },
+	{AGESA_READ_SPD,			board_ReadSpd_from_cbfs },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
 	{AGESA_GNB_PCIE_SLOT_RESET,		agesa_NoopSuccess },
@@ -50,4 +52,27 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *Config
 	// Make sure the right speed settings are selected.
 	((MEM_DATA_STRUCT*)ConfigPtr)->ParameterListPtr->DDR3Voltage = VOLT1_5;
 	return AGESA_SUCCESS;
+}
+
+static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+#ifdef __PRE_RAM__
+	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
+	u8 index = 0;
+
+	if (info->MemChannelId > 0)
+		return AGESA_UNSUPPORTED;
+	if (info->SocketId != 0)
+		return AGESA_UNSUPPORTED;
+	if (info->DimmId != 0)
+		return AGESA_UNSUPPORTED;
+
+	/* Read index 0, first SPD_SIZE bytes of spd.bin file. */
+	if (read_spd_from_cbfs((u8*)info->Buffer, index) < 0)
+		die("No SPD data\n");
+
+	Status = AGESA_SUCCESS;
+#endif
+	return Status;
 }

@@ -111,6 +111,8 @@ static void *smp_write_config_table(void *v)
 	/* on board NIC & Slot PCIE */
 	PCI_INT(0x1, 0x0, 0x0, intr_data_ptr[PIRQ_E]);	/* Use INTE */
 	PCI_INT(0x2, 0x0, 0x0, intr_data_ptr[PIRQ_E]);	/* Use INTE */
+	PCI_INT(0x3, 0x0, 0x0, intr_data_ptr[PIRQ_E]);	/* Use INTE */
+	PCI_INT(0x4, 0x0, 0x0, intr_data_ptr[PIRQ_E]);	/* Use INTE */
 
 	/* PCI slots */
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));

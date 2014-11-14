@@ -21,6 +21,9 @@
 #ifndef _PLATFORM_CFG_H_
 #define _PLATFORM_CFG_H_
 
+/* APU has no legacy P/S2 controller */
+#define LEGACY_FREE		0 /* setting legacy free disables I/O access to 0x3F8 */
+
 /**
  * @def BIOS_SIZE
  *      BIOS_SIZE_{1,2,4,8,16}M
@@ -75,7 +78,7 @@
  *  PCI SLOT 3 define at BIT3
  *  PCI SLOT 4 define at BIT4
  */
-#define PCI_CLOCK_CTRL			0x07
+#define PCI_CLOCK_CTRL			0x1F
 
 /**
  * @def SATA_CONTROLLER
@@ -182,7 +185,7 @@
  *  GPP_CFGMODE_X2110
  *  GPP_CFGMODE_X1111
  */
-#define GPP_CFGMODE			GPP_CFGMODE_X1111
+#define GPP_CFGMODE			GPP_CFGMODE_X4000
 
 /**
  * @def NB_SB_GEN2
@@ -203,7 +206,7 @@
  *    TRUE   - ports visible always, even port empty
  *    FALSE  - ports invisible if port empty
  */
-#define SB_GPP_UNHIDE_PORTS		FALSE
+#define SB_GPP_UNHIDE_PORTS		TRUE
 
 /**
  * @def   GEC_CONFIG

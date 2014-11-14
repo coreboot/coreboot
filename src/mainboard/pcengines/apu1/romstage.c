@@ -39,7 +39,11 @@
 #include "cbmem.h"
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/agesa/s3_resume.h>
+#include <superio/nuvoton/common/nuvoton.h>
+#include <superio/nuvoton/nct5104d/nct5104d.h>
 
+#define SIO_PORT 0x2e
+#define SERIAL_DEV PNP_DEV(SIO_PORT, NCT5104D_SP1)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -62,6 +66,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb_Poweron_Init();
 
 		post_code(0x31);
+		nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 	}
 

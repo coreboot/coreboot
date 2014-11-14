@@ -2,6 +2,7 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2011 Advanced Micro Devices, Inc.
+# Copyright (C) 2013 Sage Electronic Engineering, LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,3 +32,23 @@ romstage-y += PlatformGnbPcie.c
 ramstage-y += buildOpts.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
+
+## DIMM SPD for on-board memory
+SPD_BIN = $(obj)/spd.bin
+
+# Order of names in SPD_SOURCES is important!
+SPD_SOURCES  = HYNIX-H5TQ2G83CFR HYNIX-H5TQ4G83MFR
+
+SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
+
+# Include spd rom data
+$(SPD_BIN): $(SPD_DEPS)
+	for f in $+; \
+	  do for c in $$(cat $$f | grep -v ^#); \
+	    do echo -e -n "\\x$$c"; \
+	  done; \
+	done > $@
+
+cbfs-files-y += spd.bin
+spd.bin-file := $(SPD_BIN)
+spd.bin-type := 0xab

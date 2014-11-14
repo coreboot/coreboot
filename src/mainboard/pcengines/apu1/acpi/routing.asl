@@ -73,7 +73,7 @@ Scope(\_SB) {
 
 		/* OHCI, dev 18, 19, 22 func 0
 		 * EHCI, dev 18, 19, 22 func 2 */
-		Package(){0x0012FFFF, 0, INTC, 0 },	/* Dev 12, INTA, handled by INTC device, Global */
+		Package(){0x0012FFFF, 0, INTC, 0 }, /* Dev 12, INTA, handled by INTC device, Global */
 		Package(){0x0012FFFF, 1, INTB, 0 }, /* Dev 12, INTB, handled by INTB device, Global */
 
 		Package(){0x0013FFFF, 0, INTC, 0 },

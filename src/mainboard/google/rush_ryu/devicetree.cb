@@ -24,4 +24,26 @@ chip soc/nvidia/tegra132
 		device cpu 0 on end
 		device cpu 1 on end
 	end
+
+	register "display_controller" = "TEGRA_ARM_DISPLAYA"
+	register "xres" = "2560"
+	register "yres" = "1800"
+
+	# bits per pixel and color depth
+	register "framebuffer_bits_per_pixel" = "32"
+	register "color_depth" = "12"
+
+	register "href_to_sync" = "1"
+	register "hfront_porch" = "80"
+	register "hsync_width" = "80"
+	register "hback_porch" = "80"
+
+	register "vref_to_sync" = "1"
+	register "vfront_porch" = "4"
+	register "vsync_width" = "4"
+	register "vback_porch" = "4"
+	register "refresh" = "60"
+
+	# kernel driver
+	register "pixel_clock" = "301620000"
 end

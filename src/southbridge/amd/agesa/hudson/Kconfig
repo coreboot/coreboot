@@ -140,67 +140,49 @@ config AMD_PUBKEY_FILE
         string "AMD public Key"
         default "3rdparty/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_AGESA_00730F01
 
-choice
-	prompt "SATA Mode"
-	default HUDSON_SATA_IDE
+config HUDSON_SATA_MODE
+        int "SATA Mode"
+        default 0
+        range 0 6
 	help
 	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.
 	  The default is NATIVE.
+	  0: NATIVE mode does not require a ROM.
+	  1: RAID mode must have the two ROM files.
+	  2: AHCI may work with or without AHCI ROM. It depends on the payload support.
+	     For example, seabios does not require the AHCI ROM.
+	  3: LEGACY IDE
+	  4: IDE to AHCI
+	  5: AHCI7804: ROM Required, and AMD driver required in the OS.
+	  6: IDE to AHCI7804: ROM Required, and AMD driver required in the OS.
 
-config HUDSON_SATA_IDE
-	bool "NATIVE"
-	help
-	  NATIVE is the default mode and does not require a ROM.
+comment "NATIVE"
+	depends on HUDSON_SATA_MODE = 0
 
-config HUDSON_SATA_RAID
-	bool "RAID"
-	help
-	  HUDSON RAID mode must have the two required ROM files.
+comment "RAID"
+	depends on HUDSON_SATA_MODE = 1
 
-config HUDSON_SATA_AHCI
-	bool "AHCI"
-	help
-	  AHCI may work with or without AHCI ROM. It depends on the payload support.
-	  For example, seabios does not require the AHCI ROM.
+comment "AHCI"
+	depends on HUDSON_SATA_MODE = 2
 
-config HUDSON_SATA_LEGACY_IDE
-	bool "LEGACY IDE"
-	help
-	  TODO
+comment "LEGACY IDE"
+	depends on HUDSON_SATA_MODE = 3
 
-config HUDSON_SATA_IDE2AHCI
-	bool "IDE to AHCI"
-	help
-	  TODO
+comment "IDE to AHCI"
+	depends on HUDSON_SATA_MODE = 4
 
-config HUDSON_SATA_AHCI7804
-	bool "AHCI7804"
-	help
-	  AHCI ROM Required, and AMD driver required in the OS.
+comment "AHCI7804"
+	depends on HUDSON_SATA_MODE = 5
 
-config HUDSON_SATA_IDE2AHCI7804
-	bool "IDE to AHCI7804"
-	help
-	  AHCI ROM Required, and AMD driver required in the OS.
+comment "IDE to AHCI7804"
+	depends on HUDSON_SATA_MODE = 6
 
-endchoice
+if HUDSON_SATA_MODE = 2 || HUDSON_SATA_MODE = 5
 
-config HUDSON_SATA_MODE
-        hex
-	depends on (HUDSON_SATA_IDE || HUDSON_SATA_RAID || HUDSON_SATA_AHCI)
-	default "0x0" if HUDSON_SATA_IDE
-	default "0x1" if HUDSON_SATA_RAID
-	default "0x2" if HUDSON_SATA_AHCI
-	default "0x3" if HUDSON_SATA_LEGACY_IDE
-	default "0x4" if HUDSON_SATA_IDE2AHCI
-	default "0x5" if HUDSON_SATA_AHCI7804
-	default "0x6" if HUDSON_SATA_IDE2AHCI7804
-
-if HUDSON_SATA_AHCI || HUDSON_SATA_AHCI7804
 config AHCI_ROM_ID
-	string "AHCI device PCI IDs"
-	default "1022,7801" if HUDSON_SATA_AHCI
-	default "1022,7804" if HUDSON_SATA_AHCI7804
+	string  "AHCI device PCI IDs"
+	default "1022,7801" if HUDSON_SATA_MODE = 2
+	default "1022,7804" if HUDSON_SATA_MODE = 5
 
 config HUDSON_AHCI_ROM
 	bool "Add a AHCI ROM"
@@ -209,9 +191,11 @@ config AHCI_ROM_FILE
 	string "AHCI ROM path and filename"
 	depends on HUDSON_AHCI_ROM
 	default "src/southbridge/amd/agesa/hudson/ahci.bin"
-endif # HUDSON_SATA_AHCI || HUDSON_SATA_AHCI7804
 
-if HUDSON_SATA_RAID
+endif
+
+if HUDSON_SATA_MODE = 1
+
 config RAID_ROM_ID
 	string "RAID device PCI IDs"
 	default "1022,7802"
@@ -220,23 +204,21 @@ config RAID_ROM_ID
 
 config RAID_ROM_FILE
 	string "RAID ROM path and filename"
-	depends on HUDSON_SATA_RAID
 	default "src/southbridge/amd/agesa/hudson/raid.bin"
 
 config RAID_MISC_ROM_FILE
-        string "RAID Misc ROM path and filename"
-        default "src/southbridge/amd/agesa/hudson/misc.bin"
-	depends on HUDSON_SATA_RAID
+	string "RAID Misc ROM path and filename"
+	default "src/southbridge/amd/agesa/hudson/misc.bin"
 
 config RAID_MISC_ROM_POSITION
 	hex "RAID Misc ROM Position"
 	default 0xFFF00000
-	depends on HUDSON_SATA_RAID
 	help
 	  The RAID ROM requires that the MISC ROM is located between the range
 	  0xFFF0_0000 to 0xFFF0_FFFF. Also, it must 1K bytes aligned.
 	  The CONFIG_ROM_SIZE must be larger than 0x100000.
-endif # HUDSON_SATA_RAID
+
+endif
 
 config HUDSON_LEGACY_FREE
 	bool "System is legacy free"

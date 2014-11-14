@@ -55,6 +55,18 @@
 #define SPI_ROM_ENABLE                0x02
 #define SPI_BASE_ADDRESS              0xFEC10000
 
+static inline int hudson_sata_enable(void)
+{
+	/* True if IDE or AHCI. */
+	return (CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 2);
+}
+
+static inline int hudson_ide_enable(void)
+{
+	/* True if IDE or LEGACY IDE. */
+	return (CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3);
+}
+
 #ifndef __SMM__
 
 void pm_write8(u8 reg, u8 value);

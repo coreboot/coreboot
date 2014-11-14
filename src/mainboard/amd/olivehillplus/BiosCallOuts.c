@@ -28,6 +28,7 @@
 #if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 #include "imc.h"
 #endif
+#include "hudson.h"
 #include <stdlib.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
@@ -268,8 +269,8 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		printk(BIOS_DEBUG, "\nFch OEM config in INIT RESET\n");
 		//FchParams_reset->EcChannel0 = TRUE; /* logical devicd 3 */
 		FchParams->LegacyFree = CONFIG_HUDSON_LEGACY_FREE;
-		FchParams->FchReset.SataEnable = CONFIG_HUDSON_SATA_IDE || CONFIG_HUDSON_SATA_AHCI;
-		FchParams->FchReset.IdeEnable = CONFIG_HUDSON_SATA_IDE || CONFIG_HUDSON_SATA_LEGACY_IDE;
+		FchParams->FchReset.SataEnable = hudson_sata_enable();
+		FchParams->FchReset.IdeEnable = hudson_ide_enable();
 		FchParams->FchReset.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
 		FchParams->FchReset.Xhci1Enable = FALSE;
 	} else if (StdHeader->Func == AMD_INIT_ENV) {

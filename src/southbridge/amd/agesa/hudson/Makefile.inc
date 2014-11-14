@@ -149,14 +149,12 @@ hudson/gec-type := raw
 hudson/gec-required := Hudson Gigabit Ethernet Controller Firmware (Contact your AMD representative)
 endif
 
-#ifeq ($(CONFIG_HUDSON_SATA_AHCI), y)
 ifdef CONFIG_HUDSON_AHCI_ROM
 stripped_ahci_rom_id = $(call strip_quotes,$(CONFIG_AHCI_ROM_ID))
 cbfs-files-y += pci$(stripped_ahci_rom_id).rom
 pci$(stripped_ahci_rom_id).rom-file := $(call strip_quotes,$(CONFIG_AHCI_ROM_FILE))
 pci$(stripped_ahci_rom_id).rom-type := optionrom
 pci$(stripped_ahci_rom_id).rom-required := Hudson AHCI Option ROM (Contact your AMD representative)
-#endif
 endif
 
 ifeq ($(CONFIG_HUDSON_PSP), y)

@@ -13,14 +13,14 @@ chip northbridge/intel/i945
 		device pci 02.1 on end # display controller
 
                 chip southbridge/intel/i82801gx
-			register "pirqa_routing" = "0x05"
-			register "pirqb_routing" = "0x07"
-			register "pirqc_routing" = "0x05"
-			register "pirqd_routing" = "0x07"
-			register "pirqe_routing" = "0x80"
-			register "pirqf_routing" = "0x80"
-			register "pirqg_routing" = "0x80"
-			register "pirqh_routing" = "0x06"
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x0b"
+			register "pirqf_routing" = "0x0b"
+			register "pirqg_routing" = "0x0b"
+			register "pirqh_routing" = "0x0b"
 
 			# GPI routing
 			#  0 No effect (default)
@@ -101,11 +101,11 @@ chip northbridge/intel/i945
 					end
                                         device pnp 4e.2 on		# COM3
                                                  io 0x60 = 0x3e8
-                                                irq 0x70 = 11
+                                                irq 0x70 = 6
                                         end
                                         device pnp 4e.3 on		# COM4
                                                  io 0x60 = 0x2e8
-                                                irq 0x70 = 10
+                                                irq 0x70 = 6
 						irq 0xf1 = 4 # set IRMODE 0 # XXX not an irq
                                         end
 					device pnp 4e.5 off		# Keyboard

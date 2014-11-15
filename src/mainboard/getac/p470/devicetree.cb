@@ -119,11 +119,11 @@ chip northbridge/intel/i945
 					end
 					#device pnp 4e.2 on		# COM3
 					#         io 0x60 = 0x3e8
-					#        irq 0x70 = 11
+					#        irq 0x70 = 6
 					#end
 					#device pnp 4e.3 on		# COM4
 					#         io 0x60 = 0x2e8
-					#        irq 0x70 = 10
+					#        irq 0x70 = 6
 					#end
 					device pnp 4e.5 on		# Keyboard
 						io 0x60 = 0x60

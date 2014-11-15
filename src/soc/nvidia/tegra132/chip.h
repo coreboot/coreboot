@@ -27,7 +27,8 @@ struct soc_nvidia_tegra132_config {
 	uintptr_t spintable_addr;
 
 	/*
-	 * panel default specification
+	 * panel resolution
+	 *  The two parameters below provides dc about panel spec.
 	 */
 	u32 xres;		/* the width of H display active area */
 	u32 yres;		/* the height of V display active area */
@@ -44,6 +45,15 @@ struct soc_nvidia_tegra132_config {
 	 * xres*yres*framebuffer_bits_per_pixel/8
 	 */
 	u32 framebuffer_size;
+
+	/*
+	 * Framebuffer resolution
+	 *  The two parameters below provides dc about framebuffer's sdram size.
+	 *  When they are not the same as panel resolution, we need to program
+	 *  dc's DDA_INCREMENT and some other registers to resize dc output.
+	 */
+	u32 display_xres;
+	u32 display_yres;
 
 	int href_to_sync;	/* HSYNC position with respect to line start */
 	int hsync_width;	/* the width of HSYNC pulses */

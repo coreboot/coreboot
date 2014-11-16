@@ -521,10 +521,12 @@ static struct device_operations gma_func1_ops = {
 	.ops_pci		= &gma_pci_ops,
 };
 
+static const unsigned short pci_device_ids[] = { 0x27a2, 0x27ae, 0 };
+
 static const struct pci_driver i945_gma_func0_driver __pci_driver = {
 	.ops	= &gma_func0_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27a2,
+	.devices	= pci_device_ids,
 };
 
 static const struct pci_driver i945_gma_func1_driver __pci_driver = {

@@ -34,7 +34,7 @@ Device (LNKA)
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ(Level, ActiveLow, Shared)
-			{ 1, 3, 4, 5, 6, 7, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 7, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -93,7 +93,7 @@ Device (LNKB)
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ(Level, ActiveLow, Shared)
-			{ 1, 3, 4, 5, 6, 7, 11, 12, 14, 15 }
+			{ 3, 4, 5, 6, 7, 11, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -152,7 +152,7 @@ Device (LNKC)
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ(Level, ActiveLow, Shared)
-			{ 1, 3, 4, 5, 6, 7, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 7, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -211,7 +211,7 @@ Device (LNKD)
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ(Level, ActiveLow, Shared)
-			{ 1, 3, 4, 5, 6, 7, 11, 12, 14, 15 }
+			{ 3, 4, 5, 6, 7, 11, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -270,7 +270,7 @@ Device (LNKE)
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ(Level, ActiveLow, Shared)
-			{ 1, 3, 4, 5, 6, 7, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 7, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -329,7 +329,7 @@ Device (LNKF)
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ(Level, ActiveLow, Shared)
-			{ 1, 3, 4, 5, 6, 7, 11, 12, 14, 15 }
+			{ 3, 4, 5, 6, 7, 11, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -388,7 +388,7 @@ Device (LNKG)
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ(Level, ActiveLow, Shared)
-			{ 1, 3, 4, 5, 6, 7, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 7, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -447,7 +447,7 @@ Device (LNKH)
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ(Level, ActiveLow, Shared)
-			{ 1, 3, 4, 5, 6, 7, 11, 12, 14, 15 }
+			{ 3, 4, 5, 6, 7, 11, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link

@@ -57,8 +57,8 @@ static const struct pad_config mmcpads[] = {
 
 static const struct pad_config audio_codec_pads[] = {
 	/* H1 is CODEC_RST_L and R2(ROW2) is AUDIO_ENABLE */
-        PAD_CFG_GPIO_OUT1(GPIO_PH1, PINMUX_PULL_DOWN),
-        PAD_CFG_GPIO_OUT1(KB_ROW2, PINMUX_PULL_DOWN),
+	PAD_CFG_GPIO_OUT1(GPIO_PH1, PINMUX_PULL_DOWN),
+	PAD_CFG_GPIO_OUT1(KB_ROW2, PINMUX_PULL_DOWN),
 };
 
 static const struct funit_cfg funits[] = {
@@ -186,6 +186,30 @@ static int configure_display_blocks(void)
 	return 0;
 }
 
+/* Audio init: clocks and enables/resets */
+static void setup_audio(void)
+{
+	/* External peripheral 1: audio codec (RT5677) using 12MHz CLK1 */
+	clock_configure_source(extperiph1, CLK_M, 12000);
+
+	/*
+	* We need 1.5MHz for I2S1. So, we use CLK_M. CLK_DIVIDER macro
+	* returns a divisor (0xe) a little bit off from the ideal value (0xd),
+	* but it's good enough for beeps.
+	*/
+	clock_configure_source(i2s1, CLK_M, 1500);
+
+	clock_external_output(1);	/* For external RT5677 audio codec. */
+
+	/*
+	* Confirmed by NVIDIA hardware team, we need to take ALL audio devices
+	* connected to AHUB (AUDIO, APBIF, I2S, DAM, AMX, ADX, SPDIF, AFC) out
+	* of reset and clock-enabled, otherwise reading AHUB devices (in our
+	* case, I2S/APBIF/AUDIO<XBAR>) will hang.
+	*/
+	clock_enable_audio();
+}
+
 static void mainboard_init(device_t dev)
 {
 	soc_configure_funits(funits, ARRAY_SIZE(funits));
@@ -193,6 +217,9 @@ static void mainboard_init(device_t dev)
 	/* I2C6 bus (audio, etc.) */
 	soc_configure_i2c6pad();
 	i2c_init(I2C6_BUS);
+
+	setup_audio();
+
 	elog_init();
 	elog_add_boot_reason();
 

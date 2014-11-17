@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <reg_script.h>
+#include <stdlib.h>
 
 #include <baytrail/gfx.h>
 #include <baytrail/iosf.h>
@@ -49,7 +50,7 @@ static void gfx_lock_pcbase(device_t dev)
 
 	gms = pci_read_config32(dev, GGC) & GGC_GSM_SIZE_MASK;
 	gms >>= 3;
-	if (gms > sizeof(gms_size_map))
+	if (gms > ARRAY_SIZE(gms_size_map))
 		return;
 	gmsize = gms_size_map[gms];
 

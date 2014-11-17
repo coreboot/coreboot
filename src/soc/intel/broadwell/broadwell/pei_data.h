@@ -32,7 +32,7 @@
 #include <types.h>
 #include <memory_info.h>
 
-#define PEI_VERSION 21
+#define PEI_VERSION 22
 
 #define ABI_X86 __attribute__((regparm(0)))
 
@@ -131,6 +131,19 @@ struct pei_data
 	/* USB port configuration */
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS];
 	struct usb3_port_setting usb3_ports[MAX_USB3_PORTS];
+
+	/*
+	 * USB3 board specific PHY tuning
+	 */
+
+	/* Valid range: 0x69 - 0x80 */
+	uint8_t usb3_txout_volt_dn_amp_adj[MAX_USB3_PORTS];
+	/* Valid range: 0x80 - 0x9c */
+	uint8_t usb3_txout_imp_sc_bolt_amp_adj[MAX_USB3_PORTS];
+	/* Valid range: 0x39 - 0x80 */
+	uint8_t usb3_txout_de_emp_adj[MAX_USB3_PORTS];
+	/* Valid range: 0x3d - 0x4a */
+	uint8_t usb3_txout_imp_adj_volt_amp[MAX_USB3_PORTS];
 
 	/* Console output function */
 	tx_byte_func tx_byte;

@@ -765,6 +765,7 @@ void tegra_dc_sor_power_down_unused_lanes(struct tegra_dc_sor_data *sor)
 	case SOR_LINK_SPEED_G5_4:
 		drive_current = 0x19191919;
 		pre_emphasis = 0x09090909;
+		break;
 	default:
 		printk(BIOS_ERR, "Invalid sor link bandwidth: %d\n",
 			sor->link_cfg->link_bw);

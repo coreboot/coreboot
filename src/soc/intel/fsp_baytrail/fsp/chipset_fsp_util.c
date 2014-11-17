@@ -65,6 +65,19 @@ const PCH_AZALIA_CONFIG mAzaliaConfig = {
 
 typedef struct soc_intel_fsp_baytrail_config config_t;
 
+static const char *acpi_pci_mode_strings[] = {
+	"Disabled",
+	"Enabled in PCI Mode",
+	"Enabled in ACPI Mode"
+};
+
+static const char *emmc_mode_strings[] = {
+	"Disabled",
+	"Auto",
+	"eMMC 4.1",
+	"eMMC 4.5"
+};
+
 /**
  * Update the UPD data based on values from devicetree.cb
  *
@@ -132,6 +145,25 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 			continue;
 
 		switch (dev->path.pci.devfn) {
+			UPD_DEVICE_CHECK(SDIO_DEV_FUNC, PcdEnableSdio, "Sdio:\t\t\t");
+			UPD_DEVICE_CHECK(SD_DEV_FUNC, PcdEnableSdcard, "Sdcard:\t\t\t");
+			UPD_DEVICE_CHECK(SIO_DMA1_DEV_FUNC, PcdEnableDma0, "SIO Dma 0:\t\t");
+			UPD_DEVICE_CHECK(I2C1_DEV_FUNC, PcdEnableI2C0, "SIO I2C0:\t\t");
+			UPD_DEVICE_CHECK(I2C2_DEV_FUNC, PcdEnableI2C1, "SIO I2C1:\t\t");
+			UPD_DEVICE_CHECK(I2C3_DEV_FUNC, PcdEnableI2C2, "SIO I2C2:\t\t");
+			UPD_DEVICE_CHECK(I2C4_DEV_FUNC, PcdEnableI2C3, "SIO I2C3:\t\t");
+			UPD_DEVICE_CHECK(I2C5_DEV_FUNC, PcdEnableI2C4, "SIO I2C4:\t\t");
+			UPD_DEVICE_CHECK(I2C6_DEV_FUNC, PcdEnableI2C5, "SIO I2C5:\t\t");
+			UPD_DEVICE_CHECK(I2C7_DEV_FUNC, PcdEnableI2C6, "SIO I2C6:\t\t");
+			UPD_DEVICE_CHECK(SIO_DMA2_DEV_FUNC, PcdEnableDma1, "SIO Dma1:\t\t");
+			UPD_DEVICE_CHECK(PWM1_DEV_FUNC, PcdEnablePwm0, "Pwm0:\t\t\t");
+			UPD_DEVICE_CHECK(PWM2_DEV_FUNC, PcdEnablePwm1, "Pwm1:\t\t\t");
+			UPD_DEVICE_CHECK(HSUART1_DEV_FUNC, PcdEnableHsuart0, "Hsuart0:\t\t");
+			UPD_DEVICE_CHECK(HSUART2_DEV_FUNC, PcdEnableHsuart1, "Hsuart1:\t\t");
+			UPD_DEVICE_CHECK(SPI_DEV_FUNC, PcdEnableSpi, "Spi:\t\t\t");
+			UPD_DEVICE_CHECK(SATA_DEV_FUNC, PcdEnableSata, "SATA:\t\t\t");
+			UPD_DEVICE_CHECK(HDA_DEV_FUNC, PcdEnableAzalia, "Azalia:\t\t\t");
+
 			case MIPI_DEV_FUNC:	/* Camera / Image Signal Processing */
 				if (FspInfo->ImageRevision >= FSP_GOLD3_REV_ID) {
 					UpdData->ISPEnable = dev->enabled;
@@ -150,151 +182,39 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 						(config->PcdeMMCBootMode == EMMC_FOLLOWS_DEVICETREE))
 					UpdData->PcdeMMCBootMode = EMMC_4_1 - EMMC_DISABLED;
 				break;
-			case SDIO_DEV_FUNC:
-				UpdData->PcdEnableSdio = dev->enabled;
-				printk(BIOS_DEBUG, "Sdio:\t\t\t%s\n",
-						UpdData->PcdEnableSdio?"Enabled":"Disabled");
-				break;
-			case SD_DEV_FUNC:
-				UpdData->PcdEnableSdcard = dev->enabled;
-				printk(BIOS_DEBUG, "Sdcard:\t\t\t%s\n",
-						UpdData->PcdEnableSdcard?"Enabled":"Disabled");
-				break;
-			case SATA_DEV_FUNC:
-				UpdData->PcdEnableSata = dev->enabled;
-				printk(BIOS_DEBUG, "Sata:\t\t\t%s\n",
-						UpdData->PcdEnableSata?"Enabled":"Disabled");
-				if (UpdData->PcdEnableSata)
-					printk(BIOS_DEBUG, "SATA Mode:\t\t%s\n",
-						UpdData->PcdSataMode?"AHCI":"IDE");
-				break;
-			case XHCI_DEV_FUNC:
-				UpdData->PcdEnableXhci = dev->enabled;
-				break;
-			case LPE_DEV_FUNC:
-				if (dev->enabled && config->LpeAcpiModeEnable ==
-						LPE_ACPI_MODE_ENABLED)
-					UpdData->PcdEnableLpe = LPE_ACPI_MODE_ENABLED;
-				else
-				UpdData->PcdEnableLpe = dev->enabled;
-				printk(BIOS_DEBUG, "Lpe:\t\t\t%s\n",
-						UpdData->PcdEnableLpe?"Enabled":"Disabled");
-				printk(BIOS_DEBUG, "Lpe mode:\t\t%s\n",
-						UpdData->PcdEnableLpe == LPE_ACPI_MODE_ENABLED?
-						"ACPI":"PCI");
-				break;
 			case MMC45_DEV_FUNC: /* MMC 4.5*/
 				if ((dev->enabled) &&
 						(config->PcdeMMCBootMode == EMMC_FOLLOWS_DEVICETREE))
 					UpdData->PcdeMMCBootMode = EMMC_4_5 - EMMC_DISABLED;
 				break;
-			case SIO_DMA1_DEV_FUNC:
-				UpdData->PcdEnableDma0 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO Dma 0:\t\t%s\n",
-						UpdData->PcdEnableDma0?"Enabled":"Disabled");
-				break;
-			case I2C1_DEV_FUNC:
-				UpdData->PcdEnableI2C0 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO I2C0:\t\t%s\n",
-						UpdData->PcdEnableI2C0?"Enabled":"Disabled");
-				break;
-			case I2C2_DEV_FUNC:
-				UpdData->PcdEnableI2C1 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO I2C1:\t\t%s\n",
-						UpdData->PcdEnableI2C1?"Enabled":"Disabled");
-				break;
-			case I2C3_DEV_FUNC:
-				UpdData->PcdEnableI2C2 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO I2C2:\t\t%s\n",
-						UpdData->PcdEnableI2C2?"Enabled":"Disabled");
-				break;
-			case I2C4_DEV_FUNC:
-				UpdData->PcdEnableI2C3 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO I2C3:\t\t%s\n",
-						UpdData->PcdEnableI2C3?"Enabled":"Disabled");
-				break;
-			case I2C5_DEV_FUNC:
-				UpdData->PcdEnableI2C4 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO I2C4:\t\t%s\n",
-						UpdData->PcdEnableI2C4?"Enabled":"Disabled");
-				break;
-			case I2C6_DEV_FUNC:
-				UpdData->PcdEnableI2C5 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO I2C5:\t\t%s\n",
-						UpdData->PcdEnableI2C5?"Enabled":"Disabled");
-				break;
-			case I2C7_DEV_FUNC:
-				UpdData->PcdEnableI2C6 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO I2C6:\t\t%s\n",
-						UpdData->PcdEnableI2C6?"Enabled":"Disabled");
-				break;
-			case TXE_DEV_FUNC: /* TXE */
-				break;
-			case HDA_DEV_FUNC:
-				if (config->AzaliaAutoEnable) {
-					UpdData->PcdEnableAzalia = 2;
-					printk(BIOS_DEBUG, "Azalia:\t\t\tAuto\n");
-				} else {
-					UpdData->PcdEnableAzalia = dev->enabled;
-					printk(BIOS_DEBUG, "Azalia:\t\t\t%s\n",
-						UpdData->PcdEnableAzalia?"Enabled":"Disabled");
-				}
-				break;
-			case PCIE_PORT1_DEV_FUNC:
-			case PCIE_PORT2_DEV_FUNC:
-			case PCIE_PORT3_DEV_FUNC:
-			case PCIE_PORT4_DEV_FUNC:
+			case XHCI_DEV_FUNC:
+				UpdData->PcdEnableXhci = dev->enabled;
 				break;
 			case EHCI_DEV_FUNC:
 				UpdData->PcdEnableXhci = !(dev->enabled);
 				break;
-			case SIO_DMA2_DEV_FUNC:
-				UpdData->PcdEnableDma1 = dev->enabled;
-				printk(BIOS_DEBUG, "SIO Dma1:\t\t%s\n",
-						UpdData->PcdEnableDma1?"Enabled":"Disabled");
-				break;
-			case PWM1_DEV_FUNC:
-				UpdData->PcdEnablePwm0 = dev->enabled;
-				printk(BIOS_DEBUG, "Pwm0\t\t\t%s\n",
-						UpdData->PcdEnablePwm0?"Enabled":"Disabled");
-				break;
-			case PWM2_DEV_FUNC:
-				UpdData->PcdEnablePwm1 = dev->enabled;
-				printk(BIOS_DEBUG, "Pwm1:\t\t\t%s\n",
-						UpdData->PcdEnablePwm1?"Enabled":"Disabled");
-				break;
-			case HSUART1_DEV_FUNC:
-				UpdData->PcdEnableHsuart0 = dev->enabled;
-				printk(BIOS_DEBUG, "Hsuart0:\t\t%s\n",
-						UpdData->PcdEnableHsuart0?"Enabled":"Disabled");
-				break;
-			case HSUART2_DEV_FUNC:
-				UpdData->PcdEnableHsuart1 = dev->enabled;
-				printk(BIOS_DEBUG, "Hsuart1:\t\t%s\n",
-						UpdData->PcdEnableHsuart1?"Enabled":"Disabled");
-				break;
-			case SPI_DEV_FUNC:
-				UpdData->PcdEnableSpi = dev->enabled;
-				printk(BIOS_DEBUG, "Spi:\t\t\t%s\n",
-						UpdData->PcdEnableSpi?"Enabled":"Disabled");
-				break;
-			case LPC_DEV_FUNC: /* LPC */
-				break;
-			case SMBUS_DEV_FUNC:
+
+			case LPE_DEV_FUNC:
+				if (dev->enabled)
+					UpdData->PcdEnableLpe = config->LpeAcpiModeEnable;
+				else
+					UpdData->PcdEnableLpe = 0;
 				break;
 		}
 	}
 
-	if(UpdData->PcdeMMCBootMode == EMMC_AUTO - EMMC_DISABLED) {
-		printk(BIOS_DEBUG, "eMMC Mode:\t\tAuto");
-	} else {
-		printk(BIOS_DEBUG, "eMMC 4.1:\t\t%s\n",
-			UpdData->PcdeMMCBootMode == EMMC_4_1 - EMMC_DISABLED?
-			"Enabled":"Disabled");
-		printk(BIOS_DEBUG, "eMMC 4.5:\t\t%s\n",
-			UpdData->PcdeMMCBootMode == EMMC_4_5 - EMMC_DISABLED?
-			"Enabled":"Disabled");
-	}
+	if (UpdData->PcdEnableLpe < sizeof(acpi_pci_mode_strings) / sizeof (char *))
+		printk(BIOS_DEBUG, "Lpe:\t\t\t%s\n",
+			acpi_pci_mode_strings[UpdData->PcdEnableLpe]);
+
+	if (UpdData->PcdeMMCBootMode < sizeof(emmc_mode_strings) / sizeof (char *))
+		printk(BIOS_DEBUG, "eMMC Mode:\t\t%s",
+			emmc_mode_strings[UpdData->PcdeMMCBootMode]);
+
+	if (UpdData->PcdEnableSata)
+		printk(BIOS_DEBUG, "SATA Mode:\t\t%s\n",
+			UpdData->PcdSataMode?"AHCI":"IDE");
+
 	printk(BIOS_DEBUG, "Xhci:\t\t\t%s\n",
 		UpdData->PcdEnableXhci?"Enabled":"Disabled");
 

@@ -556,8 +556,8 @@ static void tegra_dc_sor_config_panel(struct tegra_dc_sor_data *sor,
 		NV_SOR_CSTM_ROTCLK_DEFAULT_MASK |
 		NV_SOR_CSTM_LVDS_EN_ENABLE,
 		2 << NV_SOR_CSTM_ROTCLK_SHIFT |
-		is_lvds ? NV_SOR_CSTM_LVDS_EN_ENABLE :
-		NV_SOR_CSTM_LVDS_EN_DISABLE);
+		(is_lvds ? NV_SOR_CSTM_LVDS_EN_ENABLE :
+		NV_SOR_CSTM_LVDS_EN_DISABLE));
 }
 
 static void tegra_dc_sor_enable_dc(struct tegra_dc_sor_data *sor)

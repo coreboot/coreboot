@@ -9,13 +9,13 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU/Feature
- * @e \$Revision: 52150 $   @e \$Date: 2011-05-03 01:01:08 -0600 (Tue, 03 May 2011) $
+ * @e \$Revision: 63425 $   @e \$Date: 2011-12-22 11:24:10 -0600 (Thu, 22 Dec 2011) $
  *
  */
 /*
  ******************************************************************************
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  ******************************************************************************
  */
 

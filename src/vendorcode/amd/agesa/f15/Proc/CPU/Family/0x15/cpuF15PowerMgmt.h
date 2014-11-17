@@ -7,13 +7,13 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU/Family/0x15
- * @e \$Revision: 52710 $   @e \$Date: 2011-05-10 15:58:53 -0600 (Tue, 10 May 2011) $
+ * @e \$Revision: 64491 $   @e \$Date: 2012-01-23 12:37:30 -0600 (Mon, 23 Jan 2012) $
  *
  */
 /*
  ******************************************************************************
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  ******************************************************************************
  */
 
@@ -51,10 +50,10 @@
 
 
 /* Last Branch From IP Register 0x000001DB */
-#define MSR_BR_FROM                 0x000001DB
+#define MSR_BR_FROM                 0x000001DBul
 
 /* P-state Current Limit Register 0xC0010061 */
-#define MSR_PSTATE_CURRENT_LIMIT 0xC0010061  // F15 Shared
+#define MSR_PSTATE_CURRENT_LIMIT 0xC0010061ul // F15 Shared
 
 /// Pstate Current Limit MSR Register
 typedef struct {
@@ -66,7 +65,7 @@ typedef struct {
 
 
 /* P-state Control Register 0xC0010062 */
-#define MSR_PSTATE_CTL 0xC0010062    // F15 Shared
+#define MSR_PSTATE_CTL 0xC0010062ul    // F15 Shared
 
 /// Pstate Control MSR Register
 typedef struct {
@@ -76,7 +75,7 @@ typedef struct {
 
 
 /* P-state Status Register 0xC0010063 */
-#define MSR_PSTATE_STS 0xC0010063
+#define MSR_PSTATE_STS 0xC0010063ul
 
 /// Pstate Status MSR Register
 typedef struct {
@@ -86,14 +85,14 @@ typedef struct {
 
 
 /* P-state Registers 0xC001006[B:4] */
-#define MSR_PSTATE_0 0xC0010064
-#define MSR_PSTATE_1 0xC0010065
-#define MSR_PSTATE_2 0xC0010066
-#define MSR_PSTATE_3 0xC0010067
-#define MSR_PSTATE_4 0xC0010068
-#define MSR_PSTATE_5 0xC0010069
-#define MSR_PSTATE_6 0xC001006A
-#define MSR_PSTATE_7 0xC001006B
+#define MSR_PSTATE_0 0xC0010064ul
+#define MSR_PSTATE_1 0xC0010065ul
+#define MSR_PSTATE_2 0xC0010066ul
+#define MSR_PSTATE_3 0xC0010067ul
+#define MSR_PSTATE_4 0xC0010068ul
+#define MSR_PSTATE_5 0xC0010069ul
+#define MSR_PSTATE_6 0xC001006Aul
+#define MSR_PSTATE_7 0xC001006Bul
 
 #define PS_REG_BASE MSR_PSTATE_0     /* P-state Register base */
 #define PS_MAX_REG  MSR_PSTATE_7     /* Maximum P-State Register */
@@ -108,7 +107,7 @@ typedef struct {
 
 
 /* C-state Address Register 0xC0010073 */
-#define MSR_CSTATE_ADDRESS 0xC0010073
+#define MSR_CSTATE_ADDRESS 0xC0010073ul
 
 /// C-state Address MSR Register
 typedef struct {
@@ -146,6 +145,7 @@ typedef struct {
 
 /* Hardware thermal control register F3x64 */
 #define HTC_REG 0x64
+#define HTC_PCI_ADDR (MAKE_SBDFO (0, 0, 0x18, FUNC_3, HTC_REG))
 
 /// Hardware Thermal Control PCI Register
 typedef struct {
@@ -153,8 +153,8 @@ typedef struct {
   UINT32 :3;                         ///< Reserved
   UINT32 HtcAct:1;                   ///< HTC Active State
   UINT32 HtcActSts:1;                ///< HTC Active Status
-  UINT32 PslApicHiEn:1;              ///< P-state limit higher APIC int enable
-  UINT32 PslApicLoEn:1;              ///< P-state limit lower APIC int enable
+  UINT32 PslApicHiEn:1;              ///< P-state limit higher APIC interrupt enable
+  UINT32 PslApicLoEn:1;              ///< P-state limit lower APIC interrupt enable
   UINT32 :8;                         ///< Reserved
   UINT32 HtcTmpLmt:7;                ///< HTC temperature limit
   UINT32 HtcSlewSel:1;               ///< HTC slew-controlled temp select

@@ -9,12 +9,12 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/Feat/Intlvrgn)
- * @e \$Revision: 49831 $ @e \$Date: 2011-03-29 10:26:15 -0600 (Tue, 29 Mar 2011) $
+ * @e \$Revision: 63425 $ @e \$Date: 2011-12-22 11:24:10 -0600 (Thu, 22 Dec 2011) $
  *
  **/
 /*****************************************************************************
   *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
   * ***************************************************************************
   *
  */

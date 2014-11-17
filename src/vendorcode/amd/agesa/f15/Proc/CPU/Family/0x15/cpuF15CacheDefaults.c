@@ -9,13 +9,13 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU/Family/0x15
- * @e \$Revision: 55600 $   @e \$Date: 2011-06-23 12:39:18 -0600 (Thu, 23 Jun 2011) $
+ * @e \$Revision: 63425 $   @e \$Date: 2011-12-22 11:24:10 -0600 (Thu, 22 Dec 2011) $
  *
  */
 /*
  ******************************************************************************
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  ******************************************************************************
  */
 
@@ -86,11 +85,11 @@ GetF15CacheInfo (
  *----------------------------------------------------------------------------------------
  */
 #define MEM_TRAINING_BUFFER_SIZE  16384
-#define VAR_MTRR_MASK             0x0000FFFFFFFFFFFF
-#define VAR_MTRR_MASK_CP          0x0000FFFFFFFEFFFF
+#define VAR_MTRR_MASK             0x0000FFFFFFFFFFFFul
+#define VAR_MTRR_MASK_CP          0x0000FFFFFFFEFFFFul
 
-#define HEAP_BASE_MASK_CP         0x0000FFFFFFFEFF00
-#define HEAP_BASE_MASK            0x0000FFFFFFFFFFFF
+#define HEAP_BASE_MASK_CP         0x0000FFFFFFFEFF00ul
+#define HEAP_BASE_MASK            0x0000FFFFFFFFFFFFul
 
 #define SHARED_MEM_SIZE       0
 

@@ -10,13 +10,13 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Common
- * @e \$Revision: 54493 $   @e \$Date: 2011-06-08 15:21:06 -0600 (Wed, 08 Jun 2011) $
+ * @e \$Revision: 63692 $   @e \$Date: 2012-01-03 22:13:28 -0600 (Tue, 03 Jan 2012) $
  *
  */
 /*
  ******************************************************************************
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  ******************************************************************************
  */
 
@@ -181,6 +180,8 @@ typedef enum {
   LowPwrPstate,              ///< 500 MHz Low Power P-state
   PstateHpcMode,             ///< High performance computing mode
   CpuApm,                    ///< Application Power Management
+  CpuPsi,                    ///< Power Status Indicator
+  CpuHtc,                    ///< Hardware Thermal Control
   MaxCpuFeature              ///< Not a valid value, used for verifying input
 } DISPATCHABLE_CPU_FEATURES;
 

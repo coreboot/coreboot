@@ -13,7 +13,7 @@
  */
 /*****************************************************************************
  *
- * Copyright (c) 2008 - 2013, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

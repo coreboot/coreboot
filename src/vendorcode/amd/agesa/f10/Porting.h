@@ -1,3 +1,4 @@
+/* $NoKeywords:$ */
 /**
  * @file
  *
@@ -8,11 +9,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Includes
- * @e \$Revision: 44323 $   @e \$Date: 2010-12-22 01:24:58 -0700 (Wed, 22 Dec 2010) $
+ * @e \$Revision: 44324 $   @e \$Date: 2010-12-22 03:16:51 -0600 (Wed, 22 Dec 2010) $
  */
 /*****************************************************************************
  *
- * Copyright (c) 2011, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,15 +38,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * ***************************************************************************
- */
+ ***************************************************************************/
 
 #ifndef _PORTING_H_
 #define _PORTING_H_
 
 #if defined (_MSC_VER)
-  #pragma warning(disable: 4103 4001)
+  #include <intrin.h>
+  void _disable (void);
+  void _enable (void);
+  #pragma warning(disable: 4103 4001 4733)
+  #pragma intrinsic (_disable, _enable)
   #pragma warning(push)
+  // -----------------------------------------------------------------------
+  //   Define a code_seg MACRO
+  //
+  #define MAKE_AS_A_STRING(arg) #arg
+
+  #define CODE_GROUP(arg) __pragma (code_seg (MAKE_AS_A_STRING (.t##arg)))
+
+  #define RDATA_GROUP(arg) __pragma (const_seg (MAKE_AS_A_STRING (.d##arg)))
+  #define FUNC_ATTRIBUTE(arg) __declspec(arg)
+  //#include <intrin.h>  // MS has built-in functions
+
   #if _MSC_VER < 900
     // -----------------------------------------------------------------------
     //    Assume MSVC 1.52C (16-bit)
@@ -197,7 +212,7 @@
     #endif
   #endif
   // -----------------------------------------------------------------------
-  // End of Microsoft compiler versions
+  // End of MS compiler versions
 
 #elif defined __GNUC__
 
@@ -207,6 +222,7 @@
   #define VOLATILE volatile
   #define TRUE 1
   #define FALSE 0
+//  #undef CONST
   #define CONST const
   #define ROMDATA
   #define CALLCONV
@@ -216,17 +232,17 @@
   typedef   signed char  INT8;
   typedef   signed short INT16;
   typedef   signed long  INT32;
-  typedef unsigned char  CHAR8;
+  typedef          char  CHAR8;
   typedef unsigned char  UINT8;
   typedef unsigned short UINT16;
   typedef unsigned long  UINT32;
   typedef unsigned long  UINTN;
   typedef unsigned long  long UINT64;
+  typedef long  long INT64;
   typedef void VOID;
   //typedef unsigned long  size_t;
-//typedef unsigned int   uintptr_t;
-// Force tight packing of structures
-// Note: Entire AGESA (Project / Solution) will be using pragma pack 1
+
+  //#include <intrin.h>                   // MingW-w64 library header
 #pragma pack(1)
 
 #define CODE_GROUP(arg)
@@ -234,10 +250,6 @@
 
 #define FUNC_ATTRIBUTE(arg) __attribute__((arg))
 #define MAKE_AS_A_STRING(arg) #arg
-
-// -----------------------------------------------------------------------
-// Common definitions for all compilers
-//
 #include <stddef.h>
 #include "gcc-intrin.h"
 
@@ -248,10 +260,6 @@
 #ifndef NULL
   #define NULL              (void *)0
 #endif
-#ifdef ROMDATA
-//#undef ROMDATA
-#endif
-//#define ROMDATA __attribute__ ((section("rom.data"))
 
 #else
   // -----------------------------------------------------------------------
@@ -260,15 +268,12 @@
   #error "Unknown compiler in use"
 #endif
 
-
-
-  // -----------------------------------------------------------------------
-  // Common definitions for all compilers
-  //
+// -----------------------------------------------------------------------
+// Common definitions for all compilers
+//
 
 //Support forward reference construct
 #define AGESA_FORWARD_DECLARATION(x) typedef struct _##x x
-
 
 // The following are use in conformance to the UEFI style guide
 #define IN

@@ -202,7 +202,7 @@ AGESA_STATUS agesawrapper_amdinitmmio(void)
 	return Status;
 }
 
-UINT32 agesawrapper_amdinitreset(void)
+AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status = AGESA_SUCCESS;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -725,7 +725,7 @@ static void agesa_warning(EVENT_PARAMS *event)
 */
 
 		case HT_EVENT_OPT_REQUIRED_CAP_RETRY:
-			printk(BIOS_DEBUG, "HT_EVENT_OPT_REQUIRED_CAP_RETRY, Socket %x Link %x Depth %x\n",
+			printk(BIOS_DEBUG, "HT_EVENT_OPT_REQUIRED_CAP_RETRY, Socket %lx Link %lx Depth %lx\n",
 				event->DataParam1,
 				event->DataParam2,
 				event->DataParam3);

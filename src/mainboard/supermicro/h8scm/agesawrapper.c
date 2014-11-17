@@ -202,7 +202,7 @@ AGESA_STATUS agesawrapper_amdinitmmio(void)
 	return Status;
 }
 
-UINT32 agesawrapper_amdinitreset(void)
+AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status = AGESA_SUCCESS;
 	AMD_INTERFACE_PARAMS AmdParamStruct;

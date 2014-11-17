@@ -552,9 +552,9 @@ AGESA_STATUS agesawrapper_amdreadeventlog(void)
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
 	Status = AmdReadEventLog (&AmdEventParams);
 	while (AmdEventParams.EventClass != 0) {
-		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n",AmdEventParams.EventClass,AmdEventParams.EventInfo);
-		printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",AmdEventParams.DataParam1,AmdEventParams.DataParam2);
-		printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",AmdEventParams.DataParam3,AmdEventParams.DataParam4);
+		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %lx, EventInfo = %lx.\n",AmdEventParams.EventClass, AmdEventParams.EventInfo);
+		printk(BIOS_DEBUG,"  Param1 = %lx, Param2 = %lx.\n",AmdEventParams.DataParam1, AmdEventParams.DataParam2);
+		printk(BIOS_DEBUG,"  Param3 = %lx, Param4 = %lx.\n",AmdEventParams.DataParam3, AmdEventParams.DataParam4);
 		Status = AmdReadEventLog (&AmdEventParams);
 	}
 

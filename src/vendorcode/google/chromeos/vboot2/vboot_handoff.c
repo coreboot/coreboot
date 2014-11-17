@@ -79,6 +79,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 	vb_sd->struct_size = sizeof(VbSharedDataHeader);
 	vb_sd->data_size = VB_SHARED_DATA_MIN_SIZE;
 	vb_sd->data_used = sizeof(VbSharedDataHeader);
+	vb_sd->fw_version_tpm = vb2_sd->fw_version;
 
 	if (get_write_protect_state())
 		vb_sd->flags |= VBSD_BOOT_FIRMWARE_WP_ENABLED;

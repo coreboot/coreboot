@@ -83,17 +83,8 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	UpdData->AzaliaConfigPtr = (UINT32)&mAzaliaConfig;
 
 	/* Set SPD addresses */
-	if (config->PcdMrcInitSPDAddr1 == SPD_ADDR_DISABLED)
-		UpdData->PcdMrcInitSPDAddr1 = 0x00;
-	else if (config->PcdMrcInitSPDAddr1 != SPD_ADDR_DEFAULT)
-		UpdData->PcdMrcInitSPDAddr1 = config->PcdMrcInitSPDAddr1;
-	printk(BIOS_DEBUG, "SPD Addr1:\t\t0x%02x\n", UpdData->PcdMrcInitSPDAddr1);
-
-	if (config->PcdMrcInitSPDAddr2 == SPD_ADDR_DISABLED)
-		UpdData->PcdMrcInitSPDAddr2 = 0x00;
-	else if (config->PcdMrcInitSPDAddr2 != SPD_ADDR_DEFAULT)
-		UpdData->PcdMrcInitSPDAddr2 = config->PcdMrcInitSPDAddr2;
-	printk(BIOS_DEBUG, "SPD Addr2:\t\t0x%02x\n", UpdData->PcdMrcInitSPDAddr2);
+	UPD_SPD_CHECK(PcdMrcInitSPDAddr1);
+	UPD_SPD_CHECK(PcdMrcInitSPDAddr2);
 
 	UPD_DEFAULT_CHECK(PcdSataMode);
 	UPD_DEFAULT_CHECK(PcdLpssSioEnablePciMode);

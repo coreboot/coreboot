@@ -95,38 +95,33 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 		UpdData->PcdMrcInitSPDAddr2 = config->PcdMrcInitSPDAddr2;
 	printk(BIOS_DEBUG, "SPD Addr2:\t\t0x%02x\n", UpdData->PcdMrcInitSPDAddr2);
 
-	if (config->PcdSataMode != SATA_MODE_DEFAULT)
-		UpdData->PcdSataMode = config->PcdSataMode - SATA_MODE_IDE;
+	UPD_DEFAULT_CHECK(PcdSataMode);
+	UPD_DEFAULT_CHECK(PcdLpssSioEnablePciMode);
+	UPD_DEFAULT_CHECK(PcdMrcInitMmioSize);
+	UPD_DEFAULT_CHECK(PcdIgdDvmt50PreAlloc);
+	UPD_DEFAULT_CHECK(PcdApertureSize);
+	UPD_DEFAULT_CHECK(PcdGttSize);
+	UPD_DEFAULT_CHECK(SerialDebugPortAddress);
+	UPD_DEFAULT_CHECK(SerialDebugPortType);
+	UPD_DEFAULT_CHECK(PcdMrcDebugMsg);
+	UPD_DEFAULT_CHECK(PcdSccEnablePciMode);
+	UPD_DEFAULT_CHECK(IgdRenderStandby);
+	UPD_DEFAULT_CHECK(TxeUmaEnable);
 
 	if ((config->PcdeMMCBootMode != EMMC_USE_DEFAULT) ||
 			(config->PcdeMMCBootMode != EMMC_FOLLOWS_DEVICETREE))
 		UpdData->PcdeMMCBootMode = config->PcdeMMCBootMode;
 
-	if (config->PcdLpssSioEnablePciMode != LPSS_PCI_MODE_DEFAULT)
-		UpdData->PcdLpssSioEnablePciMode = config->PcdLpssSioEnablePciMode -
-		LPSS_PCI_MODE_DISABLE;
-
 	if (config->PcdMrcInitTsegSize != TSEG_SIZE_DEFAULT)
-		UpdData->PcdMrcInitTsegSize = config->PcdMrcInitTsegSize;
+		UpdData->PcdMrcInitTsegSize = config->PcdMrcInitTsegSize - 1;
+
+	printk(BIOS_DEBUG, "GTT Size:\t\t%d MB\n", UpdData->PcdGttSize);
 	printk(BIOS_DEBUG, "Tseg Size:\t\t%d MB\n", UpdData->PcdMrcInitTsegSize);
-
-	if (config->PcdMrcInitMmioSize != MMIO_SIZE_DEFAULT)
-		UpdData->PcdMrcInitMmioSize = config->PcdMrcInitMmioSize;
-	printk(BIOS_DEBUG, "MMIO Size:\t\t%d MB\n", UpdData->PcdMrcInitMmioSize);
-
-	if (config->PcdIgdDvmt50PreAlloc != IGD_MEMSIZE_DEFAULT)
-		UpdData->PcdIgdDvmt50PreAlloc = config->PcdIgdDvmt50PreAlloc;
-	printk(BIOS_DEBUG, "IGD Memory Size:\t%d MB\n",
-		UpdData->PcdIgdDvmt50PreAlloc * IGD_MEMSIZE_MULTIPLIER);
-
-	if (config->PcdApertureSize != APERTURE_SIZE_DEFAULT)
-		UpdData->PcdApertureSize = config->PcdApertureSize;
 	printk(BIOS_DEBUG, "Aperture Size:\t\t%d MB\n",
 		APERTURE_SIZE_BASE << UpdData->PcdApertureSize);
-
-	if (config->PcdGttSize != GTT_SIZE_DEFAULT)
-		UpdData->PcdGttSize = config->PcdGttSize;
-	printk(BIOS_DEBUG, "GTT Size:\t\t%d MB\n", UpdData->PcdGttSize);
+	printk(BIOS_DEBUG, "IGD Memory Size:\t%d MB\n",
+		UpdData->PcdIgdDvmt50PreAlloc * IGD_MEMSIZE_MULTIPLIER);
+	printk(BIOS_DEBUG, "MMIO Size:\t\t%d MB\n", UpdData->PcdMrcInitMmioSize);
 
 	/* Advance dev to PCI device 0.0 */
 	for (dev = &dev_root; dev; dev = dev_find_next_pci_device(dev)){
@@ -311,33 +306,6 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	}
 	printk(BIOS_DEBUG, "Xhci:\t\t\t%s\n",
 		UpdData->PcdEnableXhci?"Enabled":"Disabled");
-
-	if (config->SerialDebugPortAddress != SerialDebugPortAddress_DEFAULT) {
-		UpdData->SerialDebugPortAddress = config->SerialDebugPortAddress;
-	}
-	if (config->SerialDebugPortType != SERIAL_DEBUG_PORT_DEFAULT) {
-		UpdData->SerialDebugPortType
-			= config->SerialDebugPortType - SERIAL_DEBUG_PORT_TYPE_NONE;
-	}
-	if (config->PcdMrcDebugMsg != MRC_DEBUG_MSG_DEFAULT) {
-		UpdData->PcdMrcDebugMsg
-			= config->PcdMrcDebugMsg - MRC_DEBUG_MSG_DISABLE;
-		printk (BIOS_DEBUG, "MRC Debug Message:\t%s\n",
-			(UpdData->PcdMrcDebugMsg) ? "Enabled" : "Disabled");
-	}
-	if (config->PcdSccEnablePciMode != SCC_PCI_MODE_DEFAULT) {
-		UpdData->PcdSccEnablePciMode
-			= config->PcdSccEnablePciMode - SCC_PCI_MODE_DISABLE;
-	}
-	if (config->IgdRenderStandby != IGD_RENDER_STANDBY_DEFAULT) {
-		UpdData->IgdRenderStandby
-			= config->IgdRenderStandby - IGD_RENDER_STANDBY_DISABLE;
-		printk (BIOS_DEBUG, "IGD Render Standby:\t%s\n",
-			(UpdData->IgdRenderStandby) ? "Enabled" : "Disabled");
-	}
-	if (config->TxeUmaEnable != TXE_UMA_DEFAULT) {
-		UpdData->TxeUmaEnable = config->TxeUmaEnable - TXE_UMA_DISABLE;
-	}
 
 	/* set memory down parameters */
 	if (config->EnableMemoryDown != MEMORY_DOWN_DEFAULT) {

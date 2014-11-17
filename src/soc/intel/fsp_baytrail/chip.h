@@ -52,20 +52,6 @@ struct soc_intel_fsp_baytrail_config {
 	#define SATA_MODE_AHCI		INCREMENT_FOR_DEFAULT(1)
 
 	/*
-	 * MrcInitTsegSize
-	 *  0x01, "1 MB"
-	 *  0x02, "2 MB"
-	 *  0x04, "4 MB"
-	 *  0x08, "8 MB"
-	 */
-	uint16_t PcdMrcInitTsegSize;
-	#define TSEG_SIZE_DEFAULT	UPD_DEFAULT
-	#define TSEG_SIZE_1_MB		INCREMENT_FOR_DEFAULT(1)
-	#define TSEG_SIZE_2_MB		INCREMENT_FOR_DEFAULT(2)
-	#define TSEG_SIZE_4_MB		INCREMENT_FOR_DEFAULT(4)
-	#define TSEG_SIZE_8_MB		INCREMENT_FOR_DEFAULT(8)
-
-	/*
 	 * MrcInitMmioSize
 	 *  0x400, "1.0 GB"s
 	 *  0x600, "1.5 GB"

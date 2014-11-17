@@ -33,6 +33,7 @@
 #include <baytrail/pmc.h>
 #include <baytrail/acpi.h>
 #include <baytrail/iomap.h>
+#include <baytrail/smm.h>
 
 #ifdef __PRE_RAM__
 #include <baytrail/romstage.h>
@@ -116,8 +117,7 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 			(config->PcdeMMCBootMode != EMMC_FOLLOWS_DEVICETREE))
 		UpdData->PcdeMMCBootMode = config->PcdeMMCBootMode;
 
-	if (config->PcdMrcInitTsegSize != TSEG_SIZE_DEFAULT)
-		UpdData->PcdMrcInitTsegSize = config->PcdMrcInitTsegSize - 1;
+	UpdData->PcdMrcInitTsegSize = smm_region_size() >> 20;
 
 	printk(FSP_INFO_LEVEL, "GTT Size:\t\t%d MB\n", UpdData->PcdGttSize);
 	printk(FSP_INFO_LEVEL, "Tseg Size:\t\t%d MB\n", UpdData->PcdMrcInitTsegSize);

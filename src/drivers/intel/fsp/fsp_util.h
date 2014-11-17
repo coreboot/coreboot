@@ -21,6 +21,7 @@
 #define FSP_UTIL_H
 
 #include <chipset_fsp_util.h>
+#include "fsp_values.h"
 
 #if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
 int save_mrc_data(void *hob_start);
@@ -91,5 +92,28 @@ void update_mrc_cache(void *unused);
 #ifndef __PRE_RAM__
 extern void *FspHobListPtr;
 #endif
+
+#define UPD_DEFAULT_CHECK(member) \
+	if (config->member != UPD_DEFAULT) { \
+		UpdData->member = config->member - 1; \
+	} \
+	printk(FSP_INFO_LEVEL, #member ":\t\t0x%02x %s\n", UpdData->member, \
+		config->member ? "(set)" : "(default)");
+
+#define UPD_SPD_CHECK(member) \
+	if (config->member == UPD_SPD_ADDR_DISABLED) { \
+		UpdData->member = 0x00; \
+	} else if (config->member != UPD_SPD_ADDR_DEFAULT) { \
+		UpdData->member = config->member; \
+	} \
+	printk(FSP_INFO_LEVEL, #member ":\t\t0x%02x %s\n", UpdData->member, \
+		config->member ? "(set)" : "(default)");
+
+#define UPD_DEVICE_CHECK(devicename, member, statement) \
+	case devicename: \
+		UpdData->member = dev->enabled; \
+		printk(FSP_INFO_LEVEL, statement "%s\n", \
+			UpdData->member?"Enabled":"Disabled"); \
+	break;
 
 #endif	/* FSP_UTIL_H */

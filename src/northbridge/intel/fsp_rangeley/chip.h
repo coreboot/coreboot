@@ -21,6 +21,7 @@
 #define _FSP_RANGELEY_CHIP_H_
 
 #include <arch/acpi.h>
+#include <drivers/intel/fsp/fsp_values.h>
 
 struct northbridge_intel_fsp_rangeley_config {
 
@@ -36,8 +37,6 @@ struct northbridge_intel_fsp_rangeley_config {
 	uint8_t SpdBaseAddress_1_0;
 	uint8_t SpdBaseAddress_1_1;
 
-#define UPD_ENABLE 1
-#define UPD_DISABLE 0
 	uint8_t EnableLan;
 	uint8_t EnableSata2;
 	uint8_t EnableSata3;

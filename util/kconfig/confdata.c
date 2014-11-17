@@ -980,14 +980,26 @@ int conf_write_autoconf(void)
 	if (conf_split_config())
 		return 1;
 
-	char *tmpconfig_name = strdup(".tmpconfig.XXXXXX");
+	char *tmpconfig_name = malloc(PATH_MAX);
+	if (getenv("COREBOOT_BUILD_DIR")) {
+		sprintf(tmpconfig_name, "%s/.tmpconfig.XXXXXX",
+			getenv("COREBOOT_BUILD_DIR"));
+	} else {
+		tmpconfig_name = strdup(".tmpconfig.XXXXXX");
+	}
 	if ((i = mkstemp(tmpconfig_name)) == -1)
 		return 1;
 	out = fdopen(i, "w");
 	if (!out)
 		return 1;
 
-	char *tmpconfig_triname = strdup(".tmpconfig_tristate.XXXXXX");
+	char *tmpconfig_triname = malloc(PATH_MAX);
+	if (getenv("COREBOOT_BUILD_DIR")) {
+		sprintf(tmpconfig_triname, "%s/.tmpconfig_tristate.XXXXXX",
+			getenv("COREBOOT_BUILD_DIR"));
+	} else {
+		tmpconfig_triname = strdup(".tmpconfig_tristate.XXXXXX");
+	}
 	if ((i = mkstemp(tmpconfig_triname)) == -1)
 		return 1;
 	tristate = fdopen(i, "w");
@@ -996,7 +1008,13 @@ int conf_write_autoconf(void)
 		return 1;
 	}
 
-	char *tmpconfig_h = strdup(".tmpconfig_tristate.XXXXXX");
+	char *tmpconfig_h = malloc(PATH_MAX);
+	if (getenv("COREBOOT_BUILD_DIR")) {
+		sprintf(tmpconfig_h, "%s/.tmpconfig_tristate.XXXXXX",
+			getenv("COREBOOT_BUILD_DIR"));
+	} else {
+		tmpconfig_h = strdup(".tmpconfig_tristate.XXXXXX");
+	}
 	if ((i = mkstemp(tmpconfig_h)) == -1)
 		return 1;
 	out_h = fdopen(i, "w");

@@ -82,49 +82,49 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	UpdData->AzaliaConfigPtr = (UINT32)&mAzaliaConfig;
 
 	/* Set SPD addresses */
-	if (config->MrcInitSPDAddr1 == SPD_ADDR_DISABLED)
+	if (config->PcdMrcInitSPDAddr1 == SPD_ADDR_DISABLED)
 		UpdData->PcdMrcInitSPDAddr1 = 0x00;
-	else if (config->MrcInitSPDAddr1 != SPD_ADDR_DEFAULT)
-		UpdData->PcdMrcInitSPDAddr1 = config->MrcInitSPDAddr1;
+	else if (config->PcdMrcInitSPDAddr1 != SPD_ADDR_DEFAULT)
+		UpdData->PcdMrcInitSPDAddr1 = config->PcdMrcInitSPDAddr1;
 	printk(BIOS_DEBUG, "SPD Addr1:\t\t0x%02x\n", UpdData->PcdMrcInitSPDAddr1);
 
-	if (config->MrcInitSPDAddr2 == SPD_ADDR_DISABLED)
+	if (config->PcdMrcInitSPDAddr2 == SPD_ADDR_DISABLED)
 		UpdData->PcdMrcInitSPDAddr2 = 0x00;
-	else if (config->MrcInitSPDAddr2 != SPD_ADDR_DEFAULT)
-		UpdData->PcdMrcInitSPDAddr2 = config->MrcInitSPDAddr2;
+	else if (config->PcdMrcInitSPDAddr2 != SPD_ADDR_DEFAULT)
+		UpdData->PcdMrcInitSPDAddr2 = config->PcdMrcInitSPDAddr2;
 	printk(BIOS_DEBUG, "SPD Addr2:\t\t0x%02x\n", UpdData->PcdMrcInitSPDAddr2);
 
-	if (config->SataMode != SATA_MODE_DEFAULT)
-		UpdData->PcdSataMode = config->SataMode - SATA_MODE_IDE;
+	if (config->PcdSataMode != SATA_MODE_DEFAULT)
+		UpdData->PcdSataMode = config->PcdSataMode - SATA_MODE_IDE;
 
-	if ((config->eMMCBootMode != EMMC_USE_DEFAULT) ||
-			(config->eMMCBootMode != EMMC_FOLLOWS_DEVICETREE))
-		UpdData->PcdeMMCBootMode = config->eMMCBootMode;
+	if ((config->PcdeMMCBootMode != EMMC_USE_DEFAULT) ||
+			(config->PcdeMMCBootMode != EMMC_FOLLOWS_DEVICETREE))
+		UpdData->PcdeMMCBootMode = config->PcdeMMCBootMode;
 
-	if (config->LpssSioEnablePciMode != LPSS_PCI_MODE_DEFAULT)
-		UpdData->PcdLpssSioEnablePciMode = config->LpssSioEnablePciMode -
+	if (config->PcdLpssSioEnablePciMode != LPSS_PCI_MODE_DEFAULT)
+		UpdData->PcdLpssSioEnablePciMode = config->PcdLpssSioEnablePciMode -
 		LPSS_PCI_MODE_DISABLE;
 
-	if (config->MrcInitTsegSize != TSEG_SIZE_DEFAULT)
-		UpdData->PcdMrcInitTsegSize = config->MrcInitTsegSize;
+	if (config->PcdMrcInitTsegSize != TSEG_SIZE_DEFAULT)
+		UpdData->PcdMrcInitTsegSize = config->PcdMrcInitTsegSize;
 	printk(BIOS_DEBUG, "Tseg Size:\t\t%d MB\n", UpdData->PcdMrcInitTsegSize);
 
-	if (config->MrcInitMmioSize != MMIO_SIZE_DEFAULT)
-		UpdData->PcdMrcInitMmioSize = config->MrcInitMmioSize;
+	if (config->PcdMrcInitMmioSize != MMIO_SIZE_DEFAULT)
+		UpdData->PcdMrcInitMmioSize = config->PcdMrcInitMmioSize;
 	printk(BIOS_DEBUG, "MMIO Size:\t\t%d MB\n", UpdData->PcdMrcInitMmioSize);
 
-	if (config->IgdDvmt50PreAlloc != IGD_MEMSIZE_DEFAULT)
-		UpdData->PcdIgdDvmt50PreAlloc = config->IgdDvmt50PreAlloc;
+	if (config->PcdIgdDvmt50PreAlloc != IGD_MEMSIZE_DEFAULT)
+		UpdData->PcdIgdDvmt50PreAlloc = config->PcdIgdDvmt50PreAlloc;
 	printk(BIOS_DEBUG, "IGD Memory Size:\t%d MB\n",
 		UpdData->PcdIgdDvmt50PreAlloc * IGD_MEMSIZE_MULTIPLIER);
 
-	if (config->ApertureSize != APERTURE_SIZE_DEFAULT)
-		UpdData->PcdApertureSize = config->ApertureSize;
+	if (config->PcdApertureSize != APERTURE_SIZE_DEFAULT)
+		UpdData->PcdApertureSize = config->PcdApertureSize;
 	printk(BIOS_DEBUG, "Aperture Size:\t\t%d MB\n",
 		APERTURE_SIZE_BASE << UpdData->PcdApertureSize);
 
-	if (config->GttSize != GTT_SIZE_DEFAULT)
-		UpdData->PcdGttSize = config->GttSize;
+	if (config->PcdGttSize != GTT_SIZE_DEFAULT)
+		UpdData->PcdGttSize = config->PcdGttSize;
 	printk(BIOS_DEBUG, "GTT Size:\t\t%d MB\n", UpdData->PcdGttSize);
 
 	/* Advance dev to PCI device 0.0 */
@@ -152,7 +152,7 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 				break;
 			case EMMC_DEV_FUNC: /* EMMC 4.1*/
 				if ((dev->enabled) &&
-						(config->eMMCBootMode == EMMC_FOLLOWS_DEVICETREE))
+						(config->PcdeMMCBootMode == EMMC_FOLLOWS_DEVICETREE))
 					UpdData->PcdeMMCBootMode = EMMC_4_1 - EMMC_DISABLED;
 				break;
 			case SDIO_DEV_FUNC:
@@ -190,7 +190,7 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 				break;
 			case MMC45_DEV_FUNC: /* MMC 4.5*/
 				if ((dev->enabled) &&
-						(config->eMMCBootMode == EMMC_FOLLOWS_DEVICETREE))
+						(config->PcdeMMCBootMode == EMMC_FOLLOWS_DEVICETREE))
 					UpdData->PcdeMMCBootMode = EMMC_4_5 - EMMC_DISABLED;
 				break;
 			case SIO_DMA1_DEV_FUNC:

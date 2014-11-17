@@ -31,8 +31,8 @@ struct soc_intel_fsp_baytrail_config {
 /* ***** UPD Configuration ***** */
 
 	/* Spd addresses */
-	uint8_t  MrcInitSPDAddr1;
-	uint8_t  MrcInitSPDAddr2;
+	uint8_t  PcdMrcInitSPDAddr1;
+	uint8_t  PcdMrcInitSPDAddr2;
 	#define SPD_ADDR_DEFAULT	0x00
 	#define SPD_ADDR_DISABLED	0xFF
 
@@ -44,7 +44,7 @@ struct soc_intel_fsp_baytrail_config {
 	 *  0x0 "IDE"
 	 *  0x1 "AHCI"
 	 */
-	uint8_t  SataMode;
+	uint8_t  PcdSataMode;
 	#define SATA_MODE_DEFAULT	0x00
 	#define SATA_MODE_IDE		0x01
 	#define SATA_MODE_AHCI		0x02
@@ -56,7 +56,7 @@ struct soc_intel_fsp_baytrail_config {
 	 *  0x04, "4 MB"
 	 *  0x08, "8 MB"
 	 */
-	uint16_t MrcInitTsegSize;
+	uint16_t PcdMrcInitTsegSize;
 	#define TSEG_SIZE_DEFAULT	0
 	#define TSEG_SIZE_1_MB		1
 	#define TSEG_SIZE_2_MB		2
@@ -69,7 +69,7 @@ struct soc_intel_fsp_baytrail_config {
 	 *  0x600, "1.5 GB"
 	 *  0x800, "2.0 GB"
 	 */
-	uint16_t MrcInitMmioSize;
+	uint16_t PcdMrcInitMmioSize;
 	#define MMIO_SIZE_DEFAULT	0x00
 	#define MMIO_SIZE_1_0_GB	0x400
 	#define MMIO_SIZE_1_5_GB	0x600
@@ -86,7 +86,7 @@ struct soc_intel_fsp_baytrail_config {
 	 *   0x2 "eMMC 4.1"
 	 *   0x3 "eMMC 4.5"
 	 */
-	uint8_t  eMMCBootMode;
+	uint8_t PcdeMMCBootMode;
 	#define EMMC_USE_DEFAULT		0
 	#define EMMC_DISABLED			1
 	#define EMMC_AUTO				2
@@ -113,7 +113,7 @@ struct soc_intel_fsp_baytrail_config {
 	 *  0x0F, "480 MB"
 	 *  0x10, "512 MB"
 	 */
-	uint8_t  IgdDvmt50PreAlloc;
+	uint8_t PcdIgdDvmt50PreAlloc;
 	#define IGD_MEMSIZE_DEFAULT	0x00
 	#define IGD_MEMSIZE_32MB	0x01
 	#define IGD_MEMSIZE_64MB	0x02
@@ -138,7 +138,7 @@ struct soc_intel_fsp_baytrail_config {
 	 * Selection 0x2 , "256 MB"
 	 * Selection 0x3 , "512 MB"
 	 */
-	uint8_t  ApertureSize;
+	uint8_t PcdApertureSize;
 	#define APERTURE_SIZE_DEFAULT	0
 	#define APERTURE_SIZE_128MB		1
 	#define APERTURE_SIZE_256MB		2
@@ -149,7 +149,7 @@ struct soc_intel_fsp_baytrail_config {
 	 * Selection 0x1 , "1 MB"
 	 * Selection 0x2 , "2 MB"
 	 */
-	uint8_t  GttSize;
+	uint8_t PcdGttSize;
 	#define GTT_SIZE_DEFAULT	0
 	#define GTT_SIZE_1MB		1
 	#define GTT_SIZE_2MB		2
@@ -158,7 +158,7 @@ struct soc_intel_fsp_baytrail_config {
 	 *  Enable PCI Mode for LPSS SIO devices.
 	 *  If disabled, LPSS SIO devices will run in ACPI mode.
 	 */
-	uint8_t  LpssSioEnablePciMode;
+	uint8_t PcdLpssSioEnablePciMode;
 	#define LPSS_PCI_MODE_DEFAULT	0x00
 	#define LPSS_PCI_MODE_DISABLE	0x01
 	#define LPSS_PCI_MODE_ENABLE	0x02

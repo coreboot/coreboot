@@ -258,7 +258,7 @@ Scope (\_SB.PCI0.I2C1)
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (
-				0x25,                     // SlaveAddress
+				0x27,                     // SlaveAddress
 				ControllerInitiated,      // SlaveMode
 				400000,                   // ConnectionSpeed
 				AddressingMode7Bit,       // AddressingMode

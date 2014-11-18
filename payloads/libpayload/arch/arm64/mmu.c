@@ -675,6 +675,7 @@ static void mmu_extract_ranges(struct memrange *cb_ranges,
 static void mmu_add_fb_range(struct mmu_ranges *mmu_ranges)
 {
 	struct mmu_memrange *fb_range;
+	static struct cb_framebuffer modified_fb;
 	struct cb_framebuffer *framebuffer = lib_sysinfo.framebuffer;
 	uint32_t fb_size;
 
@@ -695,8 +696,16 @@ static void mmu_add_fb_range(struct mmu_ranges *mmu_ranges)
 	if (fb_range == NULL)
 		mmu_error();
 
-	/* Set framebuffer address */
-	framebuffer->physical_address = fb_range->base;
+	/*
+	 * Set framebuffer address. However, one needs to use a freshly
+	 * allocated framebuffer structure because the one in the coreboot
+	 * table is part of a checksum calculation. Therefore, one cannot
+	 * modify a field without recomputing the necessary checksum
+	 * calcuation.
+	 */
+	modified_fb = *framebuffer;
+	modified_fb.physical_address = fb_range->base;
+	lib_sysinfo.framebuffer = &modified_fb;
 }
 
 /*

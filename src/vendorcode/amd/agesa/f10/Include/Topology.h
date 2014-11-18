@@ -1,3 +1,4 @@
+/* $NoKeywords:$ */
 /**
  * @file
  *
@@ -10,11 +11,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Core
- * @e \$Revision: 44323 $   @e \$Date: 2010-12-22 01:24:58 -0700 (Wed, 22 Dec 2010) $
+ * @e \$Revision: 63425 $   @e \$Date: 2011-12-22 11:24:10 -0600 (Thu, 22 Dec 2011) $
  */
 /*****************************************************************************
  *
- * Copyright (c) 2011, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +39,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  *
  ***************************************************************************/
 
@@ -73,6 +73,8 @@ typedef struct {
   UINT8 Node;                 ///< The module's Node id.
   UINT8 LowCore;              ///< The lowest processor core id for this module.
   UINT8 HighCore;             ///< The highest processor core id for this module.
+  UINT8 EnabledComputeUnits;  ///< The value of Enabled for this processor module.
+  UINT8 DualCoreComputeUnits; ///< The value of DualCore for this processor module.
 } SOCKET_DIE_TO_NODE_ITEM;
 
 /**

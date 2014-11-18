@@ -10,11 +10,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Include
- * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
+ * @e \$Revision: 63425 $   @e \$Date: 2011-12-22 11:24:10 -0600 (Thu, 22 Dec 2011) $
  */
 /*****************************************************************************
  *
- * Copyright (c) 2011, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,9 +39,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * ***************************************************************************
- *
- */
+ ***************************************************************************/
 
 
 #ifndef _ADVANCED_API_H_
@@ -151,24 +149,18 @@ AmdMemInitDataStructDef (
   );
 
 VOID
-memDefRet (
-  VOID
-  );
+memDefRet ( VOID );
 
 BOOLEAN
-memDefTrue (
-  VOID
-  );
+memDefTrue ( VOID );
 
 BOOLEAN
-memDefFalse (
-  VOID
-  );
+memDefFalse ( VOID );
 
 VOID
-MemRecDefRet (VOID);
+MemRecDefRet ( VOID );
 
 BOOLEAN
-MemRecDefTrue (VOID);
+MemRecDefTrue ( VOID );
 
 #endif // _ADVANCED_API_H_

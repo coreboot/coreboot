@@ -1,3 +1,4 @@
+/* $NoKeywords:$ */
 /**
  * @file
  *
@@ -9,11 +10,11 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Options
- * @e \$Revision: 6049 $   @e \$Date: 2008-05-14 01:58:02 -0500 (Wed, 14 May 2008) $
+ * @e \$Revision: 63425 $   @e \$Date: 2011-12-22 11:24:10 -0600 (Thu, 22 Dec 2011) $
  */
 /*****************************************************************************
  *
- * Copyright (c) 2011, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +38,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  *
  ***************************************************************************/
 
@@ -71,6 +71,11 @@
 
 #ifndef P_S3_SCRIPT_RESTORE
   #define P_S3_SCRIPT_RESTORE     S3ScriptInitStateStub
+  #undef  GNB_S3_DISPATCH_FUNCTION_TABLE
+#endif
+
+#ifndef GNB_S3_DISPATCH_FUNCTION_TABLE
+  #define GNB_S3_DISPATCH_FUNCTION_TABLE
 #endif
 
 /*  Declare the instance of the S3SCRIPT option configuration structure  */
@@ -79,4 +84,8 @@ S3_SCRIPT_CONFIGURATION OptionS3ScriptConfiguration = {
   P_S3_SCRIPT_RESTORE
 };
 
+S3_DISPATCH_FUNCTION_ENTRY S3DispatchFunctionTable [] = {
+  GNB_S3_DISPATCH_FUNCTION_TABLE
+  {0, NULL}
+};
 #endif  // _OPTION_S3SCRIPT_INSTALL_H_

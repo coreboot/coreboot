@@ -10,13 +10,13 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Common
- * @e \$Revision: 44324 $   @e \$Date: 2010-12-22 17:16:51 +0800 (Wed, 22 Dec 2010) $
+ * @e \$Revision: 63425 $   @e \$Date: 2011-12-22 11:24:10 -0600 (Thu, 22 Dec 2011) $
  *
  */
 /*
 *****************************************************************************
 *
-* Copyright (c) 2011, Advanced Micro Devices, Inc.
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@
 * @retval True    Default case, no special action
 */
 BOOLEAN
-CommonReturnTrue (void);
+CommonReturnTrue ( VOID );
 
 /**
 * Return False.
@@ -62,7 +62,7 @@ CommonReturnTrue (void);
 * @retval FALSE    Default case, no special action
 */
 BOOLEAN
-CommonReturnFalse (void);
+CommonReturnFalse ( VOID );
 
 /**
  * Return (UINT8)zero.
@@ -71,7 +71,7 @@ CommonReturnFalse (void);
  * @retval zero    None, or only case zero.
  */
 UINT8
-CommonReturnZero8 (void);
+CommonReturnZero8 ( VOID );
 
 /**
  * Return (UINT32)zero.
@@ -80,7 +80,7 @@ CommonReturnZero8 (void);
  * @retval zero    None, or only case zero.
  */
 UINT32
-CommonReturnZero32 (void);
+CommonReturnZero32 ( VOID );
 
 /**
  * Return (UINT64)zero.
@@ -89,7 +89,7 @@ CommonReturnZero32 (void);
  * @retval zero    None, or only case zero.
  */
 UINT64
-CommonReturnZero64 (void);
+CommonReturnZero64 ( VOID );
 
 /**
  * Return NULL
@@ -97,7 +97,7 @@ CommonReturnZero64 (void);
  * @retval NULL    pointer to nothing
  */
 VOID *
-CommonReturnNULL (void);
+CommonReturnNULL ( VOID );
 
 /**
 * Return AGESA_SUCCESS.
@@ -105,20 +105,20 @@ CommonReturnNULL (void);
 * @retval AGESA_SUCCESS Success.
 */
 AGESA_STATUS
-CommonReturnAgesaSuccess (void);
+CommonReturnAgesaSuccess ( VOID );
 
 /**
  * Do Nothing.
  *
  */
 VOID
-CommonVoid (void);
+CommonVoid ( VOID );
 
 /**
  * ASSERT if this routine is called.
  *
  */
 VOID
-CommonAssert (void);
+CommonAssert ( VOID );
 
 #endif // _COMMON_RETURNS_H_

@@ -4633,9 +4633,9 @@ BOOLEAN MemFS3DefConstructorRet (
   *---------------------------------------------------------------------------------------------------
   */
   #if (OPTION_LRDIMMS == TRUE)
-    #if ((OPTION_MEMCTLR_OR == TRUE)
+    #if (OPTION_MEMCTLR_OR == TRUE)
       #define MEM_TECH_FEATURE_LRDIMM_INIT  &MemTLrdimmConstructor3
-    #else //#if ((OPTION_MEMCTLR_OR == FALSE)
+    #else //#if (OPTION_MEMCTLR_OR == FALSE)
       #define MEM_TECH_FEATURE_LRDIMM_INIT    MemTFeatDef
     #endif
   #else //#if (OPTION_LRDIMMS == FALSE)

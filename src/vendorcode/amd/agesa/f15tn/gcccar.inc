@@ -416,7 +416,7 @@ fam10_enable_stack_hook_exit:
 .macro  AMD_DISABLE_STACK_FAMILY_HOOK_F10
     LOCAL   fam10_disable_stack_hook_exit
 
-    AMD_CPUID   CPUID_MODEL
+    AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x01, %al                     # Is this family 10h?
     jnz     fam10_disable_stack_hook_exit # Br if no

@@ -54,7 +54,6 @@ smm-$(CONFIG_SMM_TSEG) += malloc.c
 ramstage-y += delay.c
 ramstage-y += fallback_boot.c
 ramstage-y += compute_ip_checksum.c
-ramstage-y += version.c
 ramstage-y += cbfs.c cbfs_core.c
 ramstage-y += lzma.c lzmadecode.c
 ramstage-y += stack.c
@@ -92,7 +91,15 @@ romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += ramstage_cache.c
 smm-y += cbfs.c cbfs_core.c memcmp.c
 smm-$(CONFIG_COMPILER_GCC) += gcc.c
 
+bootblock-y += version.c
+romstage-y += version.c
+ramstage-y += version.c
+smm-y += version.c
+
+$(obj)/lib/version.bootblock.o : $(obj)/build.h
+$(obj)/lib/version.romstage.o : $(obj)/build.h
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
+$(obj)/lib/version.smm.o : $(obj)/build.h
 
 romstage-y += bootmode.c
 ramstage-y += bootmode.c

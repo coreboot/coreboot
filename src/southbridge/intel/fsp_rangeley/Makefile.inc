@@ -37,7 +37,6 @@ romstage-y += romstage.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 
-$(obj)/southbridge/intel/fsp_rangeley/early_init.romstage.o : $(obj)/build.h
 
 ifeq ($(CONFIG_INCLUDE_ME),y)
 INTERMEDIATE+=rangeley_add_descriptor

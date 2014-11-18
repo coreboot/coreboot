@@ -42,4 +42,3 @@ mrc.cache-file := $(obj)/mrc.cache
 mrc.cache-position := 0xfffe0000
 mrc.cache-type := 0xac
 
-$(obj)/northbridge/intel/nehalem/acpi.ramstage.o : $(obj)/build.h

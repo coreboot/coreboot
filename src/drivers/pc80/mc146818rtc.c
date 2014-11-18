@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <build.h>
+#include <version.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <boot/coreboot_tables.h>
@@ -17,11 +17,12 @@ static void cmos_update_date(u8 has_century)
 	cmos_write(0, RTC_CLK_SECOND);
 	cmos_write(0, RTC_CLK_MINUTE);
 	cmos_write(1, RTC_CLK_HOUR);
-	cmos_write(COREBOOT_BUILD_WEEKDAY_BCD + 1, RTC_CLK_DAYOFWEEK);
-	cmos_write(COREBOOT_BUILD_DAY_BCD, RTC_CLK_DAYOFMONTH);
-	cmos_write(COREBOOT_BUILD_MONTH_BCD, RTC_CLK_MONTH);
-	cmos_write(COREBOOT_BUILD_YEAR_BCD, RTC_CLK_YEAR);
-	if (has_century) cmos_write(0x20, RTC_CLK_ALTCENTURY);
+	cmos_write(coreboot_build_date.weekday + 1, RTC_CLK_DAYOFWEEK);
+	cmos_write(coreboot_build_date.day, RTC_CLK_DAYOFMONTH);
+	cmos_write(coreboot_build_date.month, RTC_CLK_MONTH);
+	cmos_write(coreboot_build_date.year, RTC_CLK_YEAR);
+	if (has_century)
+		cmos_write(coreboot_build_date.century, RTC_CLK_ALTCENTURY);
 }
 
 #if CONFIG_USE_OPTION_TABLE

@@ -23,7 +23,7 @@
 #include <string.h>
 #include <smbios.h>
 #include <console/console.h>
-#include <build.h>
+#include <version.h>
 #include <device/device.h>
 #include <arch/cpu.h>
 #include <cpu/x86/name.h>
@@ -123,7 +123,7 @@ const char *__attribute__((weak)) smbios_mainboard_bios_version(void)
 	if (strlen(CONFIG_LOCALVERSION))
 		return CONFIG_LOCALVERSION;
 	else
-		return COREBOOT_VERSION;
+		return coreboot_version;
 }
 
 static int smbios_write_type0(unsigned long *current, int handle)
@@ -138,13 +138,13 @@ static int smbios_write_type0(unsigned long *current, int handle)
 
 	t->vendor = smbios_add_string(t->eos, "coreboot");
 #if !CONFIG_CHROMEOS
-	t->bios_release_date = smbios_add_string(t->eos, COREBOOT_DMI_DATE);
+	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
 
 	t->bios_version = smbios_add_string(t->eos, smbios_mainboard_bios_version());
 #else
 #define SPACES \
 	"                                                                  "
-	t->bios_release_date = smbios_add_string(t->eos, COREBOOT_DMI_DATE);
+	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
 	u32 version_offset = (u32)smbios_string_table_len(t->eos);
 	t->bios_version = smbios_add_string(t->eos, SPACES);
 	/* SMBIOS offsets start at 1 rather than 0 */

@@ -34,4 +34,3 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_sandybridge/fsp
 
-$(obj)/northbridge/intel/fsp_sandybridge/acpi.ramstage.o : $(obj)/build.h

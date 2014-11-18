@@ -15,5 +15,16 @@ extern const char coreboot_compile_time[];
 extern const char coreboot_compile_by[];
 extern const char coreboot_compile_host[];
 extern const char coreboot_compile_domain[];
+extern const char coreboot_dmi_date[];
+
+struct bcd_date {
+	unsigned char century;
+	unsigned char year;
+	unsigned char month;
+	unsigned char day;
+	unsigned char weekday;
+};
+
+extern const struct bcd_date coreboot_build_date;
 
 #endif /* VERSION_H */

@@ -19,6 +19,4 @@ ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
 
-$(obj)/arch/x86/boot/smbios.ramstage.o: $(obj)/build.h
-
 endif # CONFIG_ARCH_RAMSTAGE_X86_32

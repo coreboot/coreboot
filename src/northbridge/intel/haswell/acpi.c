@@ -28,7 +28,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <build.h>
 #include "haswell.h"
 #include <cbmem.h>
 #include <arch/acpigen.h>

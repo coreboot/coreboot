@@ -28,7 +28,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <build.h>
 #include <drivers/intel/gma/i915.h>
 #include <arch/acpigen.h>
 #include "northbridge.h"

@@ -65,4 +65,3 @@ mrc.cache-position := $(mrc-cache-position-y)
 mrc.cache-type := 0xac
 endif
 
-$(obj)/northbridge/intel/sandybridge/acpi.ramstage.o : $(obj)/build.h

@@ -25,7 +25,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
-#include <build.h>
+#include <version.h>
 #include <device/pci_def.h>
 #include "pci_devs.h"
 #include "soc.h"
@@ -59,11 +59,8 @@ static void reset_rtc(void)
 
 	if (rtc_failed) {
 		printk(BIOS_DEBUG,
-			"RTC Failure detected.  Resetting Date to %x/%x/%x%x\n",
-			COREBOOT_BUILD_MONTH_BCD,
-			COREBOOT_BUILD_DAY_BCD,
-			0x20,
-			COREBOOT_BUILD_YEAR_BCD);
+			"RTC Failure detected.  Resetting Date to %s\n",
+			coreboot_dmi_date);
 
 		/* Clear the power failure flag */
 		write32(DEFAULT_PBASE + GEN_PMCON1, gen_pmcon1 & ~RPS);

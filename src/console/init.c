@@ -19,12 +19,12 @@
  * MA 02110-1301 USA
  */
 
-#include <build.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <console/streams.h>
 #include <device/pci.h>
 #include <option.h>
+#include <version.h>
 
 /* While in romstage, console loglevel is built-time constant. */
 static ROMSTAGE_CONST int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
@@ -48,14 +48,7 @@ void console_init(void)
 	console_hw_init();
 
 #if defined(__PRE_RAM__)
-	static const char console_test[] =
-		"\n\ncoreboot-"
-		COREBOOT_VERSION
-		COREBOOT_EXTRA_VERSION
-		" "
-		COREBOOT_BUILD
-		" starting...\n";
-
-	print_info(console_test);
+	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s starting...\n",
+		      coreboot_version, coreboot_extra_version, coreboot_build);
 #endif
 }

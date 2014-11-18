@@ -40,7 +40,7 @@
 #include <drivers/intel/fsp/fsp_util.h>
 #include <baytrail/pmc.h>
 #include <baytrail/spi.h>
-#include <build.h>
+#include <version.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
 #include <console/cbmem_console.h>
@@ -142,11 +142,8 @@ static void baytrail_rtc_init(void)
 
 	if (rtc_failed) {
 		printk(BIOS_DEBUG,
-			"RTC Failure detected.  Resetting Date to %x/%x/%x%x\n",
-			COREBOOT_BUILD_MONTH_BCD,
-			COREBOOT_BUILD_DAY_BCD,
-			0x20,
-			COREBOOT_BUILD_YEAR_BCD);
+			"RTC Failure detected.  Resetting Date to %s\n",
+			coreboot_dmi_date);
 
 		write32(DEFAULT_PBASE + GEN_PMCON1, gen_pmcon1 & ~RPS);
 	}

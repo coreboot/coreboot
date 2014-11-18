@@ -26,7 +26,6 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
-#include <build.h>
 
 #include <device/device.h>
 

@@ -36,4 +36,3 @@ CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)
 CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_rangeley/
 CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_rangeley/fsp
 
-$(obj)/northbridge/intel/fsp_rangeley/acpi.ramstage.o : $(obj)/build.h

@@ -18,6 +18,3 @@ cmos.default-file = $(CONFIG_CMOS_DEFAULT_FILE):nvramtool
 cmos.default-type = 0xaa
 
 smm-y += mc146818rtc.c
-
-$(obj)/drivers/pc80/mc146818rtc.ramstage.o : $(obj)/build.h
-$(obj)/drivers/pc80/mc146818rtc.smm.o : $(obj)/build.h

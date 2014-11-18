@@ -22,5 +22,3 @@ romstage-y += romstage.c
 romstage-y += pmc.c
 romstage-y += report_platform.c
 romstage-$(CONFIG_ENABLE_BUILTIN_COM1) += uart.c
-
-$(obj)/soc/intel/fsp_baytrail/romstage/romstage.romstage.o : $(obj)/build.h

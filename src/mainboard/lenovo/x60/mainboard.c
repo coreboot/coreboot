@@ -38,7 +38,7 @@
 #include "dock.h"
 #include <arch/x86/include/arch/acpigen.h>
 #include <smbios.h>
-#include <build.h>
+#include <version.h>
 #include <drivers/intel/gma/int15.h>
 #include "drivers/lenovo/lenovo.h"
 
@@ -103,11 +103,16 @@ static void mainboard_init(device_t dev)
 
 const char *smbios_mainboard_bios_version(void)
 {
+	static char *s = NULL;
+
 	/* Satisfy thinkpad_acpi.  */
 	if (strlen(CONFIG_LOCALVERSION))
 		return "CBET4000 " CONFIG_LOCALVERSION;
-	else
-		return "CBET4000 " COREBOOT_VERSION;
+
+	if (s != NULL)
+		return s;
+	s = strconcat("CBET4000 ", coreboot_version);
+	return s;
 }
 
 static void fill_ssdt(void)

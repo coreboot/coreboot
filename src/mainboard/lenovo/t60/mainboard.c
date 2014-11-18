@@ -36,7 +36,7 @@
 #include <arch/x86/include/arch/acpigen.h>
 #include <arch/interrupt.h>
 #include <smbios.h>
-#include <build.h>
+#include <version.h>
 #include <drivers/intel/gma/int15.h>
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
@@ -54,11 +54,16 @@ int get_cst_entries(acpi_cstate_t **entries)
 
 const char *smbios_mainboard_bios_version(void)
 {
+	static char *s = NULL;
+
 	/* Satisfy thinkpad_acpi.  */
 	if (strlen(CONFIG_LOCALVERSION))
 		return "CBET4000 " CONFIG_LOCALVERSION;
-	else
-		return "CBET4000 " COREBOOT_VERSION;
+
+	if (s != NULL)
+		return s;
+	s = strconcat("CBET4000 ", coreboot_version);
+	return s;
 }
 
 static void mainboard_init(device_t dev)

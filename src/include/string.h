@@ -56,6 +56,16 @@ static inline char *strdup(const char *s)
 	memcpy(d, s, sz);
 	return d;
 }
+
+static inline char *strconcat(const char *s1, const char *s2)
+{
+	size_t sz_1 = strlen(s1);
+	size_t sz_2 = strlen(s2);
+	char *d = malloc(sz_1 + sz_2 + 1);
+	memcpy(d, s1, sz_1);
+	memcpy(d + sz_1, s2, sz_2 + 1);
+	return d;
+}
 #endif
 
 static inline char *strncpy(char *to, const char *from, int count)

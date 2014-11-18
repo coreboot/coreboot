@@ -40,3 +40,13 @@ const char coreboot_compile_time[]   = COREBOOT_COMPILE_TIME;
 const char coreboot_compile_by[]     = COREBOOT_COMPILE_BY;
 const char coreboot_compile_host[]   = COREBOOT_COMPILE_HOST;
 const char coreboot_compile_domain[] = COREBOOT_COMPILE_DOMAIN;
+
+const char coreboot_dmi_date[]       = COREBOOT_DMI_DATE;
+
+const struct bcd_date coreboot_build_date = {
+	.century = 0x20,
+	.year = COREBOOT_BUILD_YEAR_BCD,
+	.month = COREBOOT_BUILD_MONTH_BCD,
+	.day = COREBOOT_BUILD_DAY_BCD,
+	.weekday = COREBOOT_BUILD_WEEKDAY_BCD,
+};

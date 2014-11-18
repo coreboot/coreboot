@@ -6,7 +6,6 @@
 ; * @xrefitem bom "File Content Label" "Release Content"
 ; * @e project:      AGESA
 ; * @e sub-project:  CPU
-; * @e \$Revision: 10071 $   @e \$Date: 2008-12-16 18:03:04 -0600 (Tue, 16 Dec 2008) $
 ; */
 ;*****************************************************************************
 ;

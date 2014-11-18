@@ -1,7 +1,6 @@
 ;*****************************************************************************
 ; AMD Generic Encapsulated Software Architecture
 ;
-;  Workfile: cpcarmac.inc    $Revision:: 50472   $    $Date:: 2011-04-11 01:57:56 -0600 (Mon, 11 Apr 2011) $
 ;
 ; Description: Code to setup and break down cache-as-stack
 ;

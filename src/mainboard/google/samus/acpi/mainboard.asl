@@ -170,6 +170,7 @@ Scope (\_SB.PCI0.I2C0)
 		Name (WAKE, 45) /* DSP_INT (use as codec wake) */
 
 		Name (DCLK, 0)  /* RT5677_DMIC_CLK1 */
+		Name (PCLK, 1)  /* RT5677_PDM_CLK_DIV2 (~3MHz) */
 		Name (IN1, 1)   /* IN1 differential */
 		Name (IN2, 0)   /* IN2 not differential */
 		Name (OUT1, 1)  /* LOUT1 differential */

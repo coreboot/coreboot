@@ -23,14 +23,9 @@
 #include <console/console.h>
 #include <console/uart.h>
 #include <console/streams.h>
+#include <device/pci.h>
 #include <option.h>
 
-#if CONFIG_EARLY_PCI_BRIDGE
-/* FIXME: ROMCC chokes on PCI headers. */
-#include <device/pci.h>
-#endif
-
-#if !defined(__ROMCC__)
 /* While in romstage, console loglevel is built-time constant. */
 static ROMSTAGE_CONST int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
@@ -38,7 +33,6 @@ int console_log_level(int msg_level)
 {
 	return (console_loglevel >= msg_level);
 }
-#endif
 
 void console_init(void)
 {

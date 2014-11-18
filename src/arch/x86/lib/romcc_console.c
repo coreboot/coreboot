@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <build.h>
 #include <console/streams.h>
 #include <console/early_print.h>
 
@@ -60,6 +61,20 @@ void console_tx_flush(void)
 }
 
 #include <console/early_print.c>
-#include <console/init.c>
 #include <console/post.c>
 #include <console/die.c>
+
+void console_init(void)
+{
+	static const char console_test[] =
+		"\n\ncoreboot-"
+		COREBOOT_VERSION
+		COREBOOT_EXTRA_VERSION
+		" "
+		COREBOOT_BUILD
+		" starting...\n";
+
+	console_hw_init();
+
+	print_info(console_test);
+}

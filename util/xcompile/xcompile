@@ -184,7 +184,7 @@ arch_config_aarch64() {
 	TBFDARCH="littleaarch64"
 	TCLIST="aarch64"
 	TWIDTH="64"
-	TABI="eabi"
+	TABI="elf"
 }
 
 arch_config_riscv() {

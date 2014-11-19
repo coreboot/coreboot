@@ -234,6 +234,7 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 		*iflags |= VB_INIT_FLAG_EC_SLOW_UPDATE;
 	if (CONFIG_VBOOT_OPROM_MATTERS) {
 		*iflags |= VB_INIT_FLAG_OPROM_MATTERS;
+		*iflags |= VB_INIT_FLAG_BEFORE_OPROM_LOAD;
 		/* Will load VGA option rom during this boot */
 		if (developer_mode_enabled() || recovery_mode_enabled() ||
 		    vboot_wants_oprom()) {

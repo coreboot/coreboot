@@ -118,6 +118,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x30672 },
 	{ X86_VENDOR_INTEL, 0x30673 },
 	{ X86_VENDOR_INTEL, 0x30678 },
+	{ X86_VENDOR_INTEL, 0x30679 },
 	{ 0, 0 },
 };
 

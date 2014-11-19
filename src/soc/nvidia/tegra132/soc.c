@@ -22,6 +22,7 @@
 #include <arch/cache.h>
 #include <arch/spintable.h>
 #include <cpu/cpu.h>
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -143,3 +144,20 @@ static const struct cpu_driver driver __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = ids,
 };
+
+static void enable_plld(void *unused)
+{
+	/*
+	 * Configure a conservative 300MHz clock for PLLD. The kernel cannot
+	 * handle PLLD not being configured so enable PLLD unconditionally
+	 * with a default clock rate.
+	 */
+	clock_configure_plld(300 * MHz);
+}
+
+/*
+ * The PLLD being enabled is done at BS_DEV_INIT  time because mainboard_init()
+ * is the first thing called. This ensures PLLD is up and functional before
+ * anything that mainboard can do that implicitly relies on PLLD.
+ */
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, enable_plld, NULL);

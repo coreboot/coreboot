@@ -139,7 +139,7 @@ struct pei_data
 	/* Valid range: 0x69 - 0x80 */
 	uint8_t usb3_txout_volt_dn_amp_adj[MAX_USB3_PORTS];
 	/* Valid range: 0x80 - 0x9c */
-	uint8_t usb3_txout_imp_sc_bolt_amp_adj[MAX_USB3_PORTS];
+	uint8_t usb3_txout_imp_sc_volt_amp_adj[MAX_USB3_PORTS];
 	/* Valid range: 0x39 - 0x80 */
 	uint8_t usb3_txout_de_emp_adj[MAX_USB3_PORTS];
 	/* Valid range: 0x3d - 0x4a */

@@ -291,10 +291,6 @@ static void graphics_pll(void)
 	/* leave dither and undoc bits set, release clamp */
 	scfg = (1<<28) | (1<<24);
 	writel(scfg, cfg);
-
-	/* disp1 will be set when panel information (pixel clock) is
-	 * retrieved (clock_display).
-	 */
 }
 
 /*
@@ -304,8 +300,7 @@ static void graphics_pll(void)
  *
  * Return the plld frequency if success, otherwise return 0.
  */
-u32
-clock_display(u32 frequency)
+u32 clock_configure_plld(u32 frequency)
 {
 	/**
 	 * plld (fo) = vco >> p, where 500MHz < vco < 1000MHz
@@ -387,6 +382,10 @@ clock_display(u32 frequency)
 
 	init_pll(CLK_RST_REG(plld_base), CLK_RST_REG(plld_misc), plld,
 		 (PLLUD_MISC_LOCK_ENABLE | PLLD_MISC_CLK_ENABLE));
+
+	if (rounded_rate != frequency)
+		printk(BIOS_DEBUG, "PLLD rate: %u vs %u\n", rounded_rate,
+			frequency);
 
 	return rounded_rate;
 }

@@ -135,7 +135,8 @@ static int update_display_mode(struct display_controller *disp_ctrl,
 	 * has some requirements to have VCO in range 500MHz~1000MHz (see
 	 * clock.c for more detail). To simplify calculation, we set
 	 * PixelClockDiv to 1 and ShiftClockDiv to 1. In future these values
-	 * may be calculated by clock_display, to allow wider frequency range.
+	 * may be calculated by clock_configure_plld(), to allow wider
+	 * frequency range.
 	 *
 	 * Note ShiftClockDiv is a 7.1 format value.
 	 */
@@ -265,12 +266,10 @@ void display_startup(device_t dev)
 	 * update_display_mode() for detail.
 	 */
 	/* set default plld */
-	plld_rate = clock_display(config->pixel_clock * 2);
+	plld_rate = clock_configure_plld(config->pixel_clock * 2);
 	if (plld_rate == 0) {
 		printk(BIOS_ERR, "dc: clock init failed\n");
 		return;
-	} else if (plld_rate != config->pixel_clock * 2) {
-		printk(BIOS_WARNING, "dc: plld rounded to %u\n", plld_rate);
 	}
 
 	/* set disp1's clock source to PLLD_OUT0 */

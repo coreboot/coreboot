@@ -378,7 +378,11 @@ static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
 
 int clock_get_osc_khz(void);
 int clock_get_pll_input_khz(void);
-u32 clock_display(u32 frequency);
+/*
+ * Configure PLLD to requested frequency. Returned value is closest match
+ * within the PLLD's constraints or 0 if an error.
+ */
+u32 clock_configure_plld(u32 frequency);
 void clock_early_uart(void);
 void clock_external_output(int clk_id);
 void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,

@@ -463,7 +463,7 @@ static int tegra_output_dsi_setup_clock(struct tegra_dsi *dsi,
 		dsi->slave->clk_rate = dsi->clk_rate;
 
 	/* set up plld */
-	plld = clock_display(plld);
+	plld = clock_configure_plld(plld);
 	if (plld == 0) {
                 printk(BIOS_ERR, "%s: clock init failed\n", __func__);
                 return -1;

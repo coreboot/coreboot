@@ -444,9 +444,6 @@ static void set_resources(device_t dev)
 	}
 }
 
-static void northbridge_init(struct device *dev)
-{
-}
 #if 0				/* TODO: Check if needed. */
 static unsigned scan_chains(device_t dev, unsigned max)
 {
@@ -475,7 +472,7 @@ static struct device_operations northbridge_operations = {
 	.read_resources	  = read_resources,
 	.set_resources	  = set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init		  = northbridge_init,
+	.init		  = DEVICE_NOOP,
 	//.scan_bus	  = scan_chains, /* TODO: */
 	.enable		  = 0,
 	.ops_pci	  = 0,

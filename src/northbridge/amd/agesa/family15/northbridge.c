@@ -472,10 +472,6 @@ static void nb_set_resources(device_t dev)
 	}
 }
 
-static void northbridge_init(struct device *dev)
-{
-}
-
 static unsigned scan_chains(device_t dev, unsigned max)
 {
 	unsigned nodeid;
@@ -503,7 +499,7 @@ static struct device_operations northbridge_operations = {
 	.read_resources	  = nb_read_resources,
 	.set_resources	  = nb_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init		  = northbridge_init,
+	.init		  = DEVICE_NOOP,
 	.scan_bus	  = scan_chains,
 	.enable		  = 0,
 	.ops_pci	  = 0,

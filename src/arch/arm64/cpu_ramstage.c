@@ -23,6 +23,7 @@
 #include <cpu/cpu.h>
 #include <console/console.h>
 #include <gic.h>
+#include <timer.h>
 #include "cpu-internal.h"
 
 static inline void cpu_disable_dev(device_t dev)
@@ -191,6 +192,7 @@ void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops)
 	for (i = 0; i < max_cpus; i++) {
 		device_t dev;
 		struct cpu_action action;
+		struct stopwatch sw;
 
 		ci = cpu_info_for_cpu(i);
 		dev = ci->cpu;
@@ -211,9 +213,23 @@ void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops)
 					"Failed to start CPU%x\n", ci->id);
 				continue;
 			}
+			stopwatch_init_msecs_expire(&sw, 1000);
 			/* Wait for CPU to come online. */
-			while (!cpu_online(ci));
-			printk(BIOS_DEBUG, "CPU%x online.\n", ci->id);
+			while (!stopwatch_expired(&sw)) {
+				if (!cpu_online(ci))
+					continue;
+				printk(BIOS_DEBUG,
+					"CPU%x online in %ld usecs.\n",
+					ci->id, stopwatch_duration_usecs(&sw));
+				break;
+			}
+		}
+
+		if (!cpu_online(ci)) {
+			printk(BIOS_DEBUG,
+				"CPU%x failed to come online in %ld usecs.\n",
+				ci->id, stopwatch_duration_usecs(&sw));
+			continue;
 		}
 
 		/* Send it the init action. */

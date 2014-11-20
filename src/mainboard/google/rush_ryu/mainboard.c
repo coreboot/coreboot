@@ -123,8 +123,6 @@ static int enable_lcd_vdd(void)
 			VSEL_1200, 1);
 	pmic_write_reg(I2CPWR_BUS, TI65913_LDO5_CTRL,
 			TI65913_MODE_ACTIVE_ON, 1);
-	/* wait for 100ms */
-	mdelay(100);
 
 	/*
 	 * Enable VDD_LCD

@@ -65,6 +65,8 @@ config BOARD_GOOGLE_URARA
 	bool "Urara"
 config BOARD_GOOGLE_VEYRON_JERRY
 	bool "Veyron_Jerry"
+config BOARD_GOOGLE_VEYRON_MIGHTY
+	bool "Veyron_Mighty"
 config BOARD_GOOGLE_VEYRON_PINKY
 	bool "Veyron_Pinky"
 
@@ -92,6 +94,7 @@ source "src/mainboard/google/storm/Kconfig"
 source "src/mainboard/google/stout/Kconfig"
 source "src/mainboard/google/urara/Kconfig"
 source "src/mainboard/google/veyron_jerry/Kconfig"
+source "src/mainboard/google/veyron_mighty/Kconfig"
 source "src/mainboard/google/veyron_pinky/Kconfig"
 
 config MAINBOARD_VENDOR

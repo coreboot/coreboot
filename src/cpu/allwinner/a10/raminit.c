@@ -225,7 +225,7 @@ static int dramc_scan_dll_para(void)
 			for (cr_i = 1; cr_i < 5; cr_i++) {
 				clrsetbits_le32(&dram->dllcr[cr_i],
 						0x4f << 14,
-						(dqs_dly[clk_i] & 0x4f) << 14);
+						(dqs_dly[dqs_i] & 0x4f) << 14);
 			}
 			udelay(2);
 			if (dramc_scan_readpipe() == 0)

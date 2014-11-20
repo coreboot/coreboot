@@ -24,6 +24,7 @@ config CPU_AMD_AGESA
 	default y if CPU_AMD_AGESA_FAMILY14
 	default y if CPU_AMD_AGESA_FAMILY15
 	default y if CPU_AMD_AGESA_FAMILY15_TN
+	default y if CPU_AMD_AGESA_FAMILY15_RL
 	default y if CPU_AMD_AGESA_FAMILY16_KB
 	default n
 	select ARCH_BOOTBLOCK_X86_32
@@ -83,5 +84,5 @@ source src/cpu/amd/agesa/family12/Kconfig
 source src/cpu/amd/agesa/family14/Kconfig
 source src/cpu/amd/agesa/family15/Kconfig
 source src/cpu/amd/agesa/family15tn/Kconfig
+source src/cpu/amd/agesa/family15rl/Kconfig
 source src/cpu/amd/agesa/family16kb/Kconfig
-

@@ -28,7 +28,7 @@ void EmptyHeap(void)
 	memset(BiosManagerPtr, 0, BIOS_HEAP_SIZE);
 }
 
-#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL)
 
 #define AGESA_RUNTIME_SIZE 4096
 
@@ -74,7 +74,7 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	AllocParams = ((AGESA_BUFFER_PARAMS *) ConfigPtr);
 	AllocParams->BufferPointer = NULL;
 
-#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL)
 	/* if the allocation is for runtime use simple CBMEM data */
 	if (Data == HEAP_CALLOUT_RUNTIME)
 		return alloc_cbmem(AllocParams);

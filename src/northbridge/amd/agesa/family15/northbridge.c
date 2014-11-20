@@ -41,7 +41,6 @@
 #include <cpuRegisters.h>
 #include "agesawrapper.h"
 #include <northbridge/amd/agesa/agesawrapper_call.h>
-#include "northbridge.h"
 #include "sb_cimx.h"
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)

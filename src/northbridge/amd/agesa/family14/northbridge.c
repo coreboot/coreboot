@@ -36,7 +36,6 @@
 
 #include "agesawrapper.h"
 #include <northbridge/amd/agesa/agesawrapper_call.h>
-#include "northbridge.h"
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
 #endif

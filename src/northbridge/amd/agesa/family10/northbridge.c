@@ -39,7 +39,6 @@
 #include <Porting.h>
 #include <AGESA.h>
 #include <Options.h>
-#include "northbridge.h"
 #include "amdfam10.h"
 
 extern uint32_t agesawrapper_amdinitmid(void);

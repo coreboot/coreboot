@@ -33,7 +33,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/mtrr.h>
 
-#include "northbridge.h"
 #include "sb_cimx.h"
 #include "agesawrapper.h"
 #include <northbridge/amd/agesa/agesawrapper_call.h>

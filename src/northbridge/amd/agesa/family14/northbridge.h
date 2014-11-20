@@ -23,6 +23,4 @@
 static struct device_operations pci_domain_ops;
 static struct device_operations cpu_bus_ops;
 
-device_t get_node_pci(u32 nodeid, u32 fn);
-
 #endif /* NORTHBRIDGE_AMD_AGESA_FAM14_H */

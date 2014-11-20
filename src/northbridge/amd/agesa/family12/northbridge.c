@@ -47,8 +47,7 @@ static device_t __f2_dev[FX_DEVS];
 static device_t __f4_dev[FX_DEVS];
 static unsigned fx_devs=0;
 
-
-device_t get_node_pci(u32 nodeid, u32 fn)
+static device_t get_node_pci(u32 nodeid, u32 fn)
 {
 	if ((CONFIG_CDB + nodeid) < 32) {
 		return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
@@ -56,7 +55,6 @@ device_t get_node_pci(u32 nodeid, u32 fn)
 		return dev_find_slot(CONFIG_CBB-1, PCI_DEVFN(CONFIG_CDB + nodeid - 32, fn));
 	}
 }
-
 
 static void get_fx_devs(void)
 {

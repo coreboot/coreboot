@@ -114,6 +114,7 @@ struct sysinfo_t {
 	void	*mrc_cache;
 	void	*acpi_gnvs;
 	u32	board_id;
+	u32	ram_code;
 	void	*wifi_calibration;
 	uint64_t ramoops_buffer;
 	uint32_t ramoops_buffer_size;

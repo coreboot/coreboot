@@ -154,6 +154,12 @@ static void cb_parse_board_id(unsigned char *ptr, struct sysinfo_t *info)
 	info->board_id = cbbid->board_id;
 }
 
+static void cb_parse_ram_code(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_ram_code *const ram_code = (struct cb_ram_code *)ptr;
+	info->ram_code = ram_code->ram_code;
+}
+
 #ifdef CONFIG_LP_NVRAM
 static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
@@ -228,10 +234,12 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 	info->header = header;
 
 	/*
-	 * Valid board IDs are small numbers, preset this to an invalid value
-	 * for the case when firmware does not supply the board ID.
+	 * Board straps represented by numerical values are small numbers.
+	 * Preset them to an invalid value in case the firmware does not
+	 * supply the info.
 	 */
 	info->board_id = ~0;
+	info->ram_code = ~0;
 
 	/* Now, walk the tables. */
 	ptr += header->header_bytes;
@@ -328,6 +336,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_BOARD_ID:
 			cb_parse_board_id(ptr, info);
+			break;
+		case CB_TAG_RAM_CODE:
+			cb_parse_ram_code(ptr, info);
 			break;
 		case CB_TAG_WIFI_CALIBRATION:
 			cb_parse_wifi_calibration(ptr, info);

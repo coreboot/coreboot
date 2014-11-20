@@ -239,6 +239,13 @@ struct cb_macs {
 	struct mac_address mac_addrs[0];
 };
 
+#define CB_TAG_RAM_CODE		0x0028
+struct cb_ram_code {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t ram_code;
+};
+
 #define CB_TAG_CMOS_OPTION_TABLE 0x00c8
 struct cb_cmos_option_table {
 	u32 tag;

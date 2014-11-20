@@ -833,6 +833,13 @@ static void domain_set_resources(device_t dev)
 	}
 }
 
+/* all family15's pci devices are under 0x18.0, so we search from dev 0x18 fun 0 */
+static unsigned int f15_pci_domain_scan_bus(device_t dev, unsigned int max)
+{
+	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0x18, 0), 0xff, max);
+	return max;
+}
+
 static struct device_operations pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = domain_set_resources,
@@ -1102,15 +1109,7 @@ static void root_complex_enable_dev(struct device *dev)
 	}
 }
 
-
 struct chip_operations northbridge_amd_agesa_family15_root_complex_ops = {
 	CHIP_NAME("AMD FAM15 Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
-
-/* all family15's pci devices are under 0x18.0, so we search from dev 0x18 fun 0 */
-static unsigned int f15_pci_domain_scan_bus(device_t dev, unsigned int max)
-{
-	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0x18, 0), 0xff, max);
-	return max;
-}

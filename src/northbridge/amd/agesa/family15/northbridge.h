@@ -22,6 +22,5 @@
 
 static struct device_operations pci_domain_ops;
 static struct device_operations cpu_bus_ops;
-static unsigned int f15_pci_domain_scan_bus(device_t dev, unsigned int max);
 
 #endif /* NORTHBRIDGE_AMD_AGESA_FAM15_H */

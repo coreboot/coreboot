@@ -63,7 +63,6 @@ static device_t __f2_dev[MAX_NODE_NUMS];
 static device_t __f4_dev[MAX_NODE_NUMS];
 static unsigned fx_devs = 0;
 
-
 static dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
 	device_t dev;
@@ -202,8 +201,8 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 /**
  * @return
- *  @retval 2  resoure not exist, usable
- *  @retval 0  resource exist, not usable
+ *  @retval 2  resoure does not exist, usable
+ *  @retval 0  resource exists, not usable
  *  @retval 1  resource exist, resource has been allocated before
  */
 static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
@@ -287,7 +286,6 @@ static struct resource *amdfam15_find_mempair(device_t dev, u32 nodeid, u32 link
 	return resource;
 }
 
-
 static void amdfam15_link_read_bases(device_t dev, u32 nodeid, u32 link)
 {
 	struct resource *resource;
@@ -317,7 +315,6 @@ static void amdfam15_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->flags |= IORESOURCE_BRIDGE;
 	}
 
-
 	/* Initialize the memory constraints on the current bus */
 	resource = amdfam15_find_mempair(dev, nodeid, link);
 	if (resource) {
@@ -330,7 +327,6 @@ static void amdfam15_link_read_bases(device_t dev, u32 nodeid, u32 link)
 	}
 
 }
-
 
 static void nb_read_resources(device_t dev)
 {
@@ -356,16 +352,13 @@ static void nb_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 #endif
-
 }
-
 
 static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 {
 	resource_t rbase, rend;
 	unsigned reg, link_num;
 	char buf[50];
-
 
 	/* Make certain the resource has actually been set */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
@@ -399,7 +392,7 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 		set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
 	}
 	else if (resource->flags & IORESOURCE_MEM) {
-		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, node_nums) ;// [39:8]
+		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, node_nums);// [39:8]
 	}
 	resource->flags |= IORESOURCE_STORED;
 	snprintf(buf, sizeof (buf), " <node %x link %x>",
@@ -415,7 +408,6 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 static void create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct bus *link;
-
 
 	/* find out which link the VGA card is connected,
 	 * we only deal with the 'first' vga card */
@@ -441,7 +433,6 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, sblink);
 	set_vga_enable_reg(nodeid, sblink);
 }
-
 
 static void nb_set_resources(device_t dev)
 {
@@ -526,7 +517,6 @@ static void domain_read_resources(device_t dev)
 {
 	unsigned reg;
 
-
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
 	for (reg = 0x80; reg <= 0xd8; reg+= 0x08) {
@@ -559,7 +549,6 @@ static void domain_read_resources(device_t dev)
 
 #if !CONFIG_PCI_64BIT_PREF_MEM
 	pci_domain_read_resources(dev);
-
 
 #else
 	struct bus *link;
@@ -595,7 +584,6 @@ static void domain_enable_resources(device_t dev)
 	AGESAWRAPPER(amdinitmid);
 	printk(BIOS_DEBUG, "  Fam15 - leaving %s.\n", __func__);
 }
-
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 struct hw_mem_hole_info {
@@ -676,6 +664,7 @@ static void setup_uma_memory(void)
 			__func__, uma_memory_size, uma_memory_base);
 #endif
 }
+
 
 static void domain_set_resources(device_t dev)
 {
@@ -788,7 +777,6 @@ static void domain_set_resources(device_t dev)
 
 		sizek = limitk - basek;
 
-
 		/* see if we need a hole from 0xa0000 to 0xbffff */
 		if ((basek < ((8*64)+(8*16))) && (sizek > ((8*64)+(16*16)))) {
 			ram_resource(dev, (idx | i), basek, ((8*64)+(8*16)) - basek);
@@ -845,7 +833,6 @@ static void domain_set_resources(device_t dev)
 	}
 }
 
-
 static struct device_operations pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = domain_set_resources,
@@ -854,7 +841,6 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus	  = f15_pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
 };
-
 
 static void sysconf_init(device_t dev) // first node
 {
@@ -1095,7 +1081,6 @@ static struct device_operations cpu_bus_ops = {
 	.init		  = cpu_bus_init,
 	.scan_bus	  = cpu_bus_scan,
 };
-
 
 static void root_complex_enable_dev(struct device *dev)
 {

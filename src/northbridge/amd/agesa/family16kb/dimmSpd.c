@@ -19,6 +19,7 @@
 
 #include <device/pci_def.h>
 #include <device/device.h>
+#include <stdlib.h>
 
 /* warning: Porting.h includes an open #pragma pack(1) */
 #include "Porting.h"
@@ -26,28 +27,33 @@
 #include "amdlib.h"
 #include "chip.h"
 
-#include "northbridge/amd/agesa/dimmSpd.h"
+#include <northbridge/amd/agesa/dimmSpd.h>
 
-#define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
-
+/**
+ * Gets the SMBus address for an SPD from the array in devicetree.cb
+ * then read the SPD into the supplied buffer.
+ */
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
 {
-	int spdAddress;
+	UINT8 spdAddress;
+
 	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	if (dev == NULL)
+		return AGESA_ERROR;
+
 	ROMSTAGE_CONST struct northbridge_amd_agesa_family16kb_config *config = dev->chip_info;
-
-	if ((dev == 0) || (config == 0))
+	if (config == NULL)
 		return AGESA_ERROR;
 
-	if (info->SocketId     >= DIMENSION(config->spdAddrLookup      ))
+	if (info->SocketId >= ARRAY_SIZE(config->spdAddrLookup))
 		return AGESA_ERROR;
-	if (info->MemChannelId >= DIMENSION(config->spdAddrLookup[0]   ))
+	if (info->MemChannelId >= ARRAY_SIZE(config->spdAddrLookup[0]))
 		return AGESA_ERROR;
-	if (info->DimmId       >= DIMENSION(config->spdAddrLookup[0][0]))
+	if (info->DimmId >= ARRAY_SIZE(config->spdAddrLookup[0][0]))
 		return AGESA_ERROR;
 
 	spdAddress = config->spdAddrLookup
-		[info->SocketId] [info->MemChannelId] [info->DimmId];
+		[info->SocketId][info->MemChannelId][info->DimmId];
 
 	if (spdAddress == 0)
 		return AGESA_ERROR;

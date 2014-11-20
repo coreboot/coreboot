@@ -46,4 +46,4 @@ config VGA_BIOS_ID
 	  The default VGA BIOS PCI vendor/device ID should be set to the
 	  result of the map_oprom_vendev() function in northbridge.c.
 
-endif
+endif # NORTHBRIDGE_AMD_AGESA_FAMILY16_KB

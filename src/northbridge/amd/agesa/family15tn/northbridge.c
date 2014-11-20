@@ -201,8 +201,8 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 /**
  * @return
- *  @retval 2  resoure not exist, usable
- *  @retval 0  resource exist, not usable
+ *  @retval 2  resoure does not exist, usable
+ *  @retval 0  resource exists, not usable
  *  @retval 1  resource exist, resource has been allocated before
  */
 static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
@@ -392,7 +392,7 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 		set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
 	}
 	else if (resource->flags & IORESOURCE_MEM) {
-		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, node_nums) ;// [39:8]
+		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, node_nums);// [39:8]
 	}
 	resource->flags |= IORESOURCE_STORED;
 	snprintf(buf, sizeof (buf), " <node %x link %x>",
@@ -749,7 +749,7 @@ static void domain_set_resources(device_t dev)
 
 		if (!(d.mask & 1)) continue;
 		basek = ((resource_t)(d.base & 0x1fffff00)) << 9; // could overflow, we may lost 6 bit here
-		limitk = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9 ;
+		limitk = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9;
 
 		sizek = limitk - basek;
 
@@ -1078,16 +1078,16 @@ static void root_complex_enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_amd_agesa_family15tn_root_complex_ops = {
-	CHIP_NAME("AMD FAM15 Root Complex")
+	CHIP_NAME("AMD FAM15tn Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
 
-/********************************************************************
-* Change the vendor / device IDs to match the generic VBIOS header.
-********************************************************************/
+/*********************************************************************
+ * Change the vendor / device IDs to match the generic VBIOS header. *
+ *********************************************************************/
 u32 map_oprom_vendev(u32 vendev)
 {
-	u32 new_vendev=vendev;
+	u32 new_vendev = vendev;
 
 	switch(vendev) {
 	case 0x10029900:	/* AMD Radeon HD 7660G (Trinity)  */
@@ -1124,7 +1124,7 @@ u32 map_oprom_vendev(u32 vendev)
 	case 0x100299A0:	/* AMD Radeon HD 7520G (Trinity)  */
 	case 0x100299A2:	/* AMD Radeon HD 7420G (Trinity)  */
 	case 0x100299A4:	/* AMD Radeon HD 7400G (Trinity)  */
-		new_vendev=0x10029901;
+		new_vendev = 0x10029901;
 		break;
 	}
 

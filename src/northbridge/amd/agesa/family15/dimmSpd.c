@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <stdlib.h>
@@ -39,13 +40,15 @@
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	UINT8 spdAddress;
-	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
-	ROMSTAGE_CONST struct northbridge_amd_agesa_family15_config *config = NULL;
 
-	if ((dev == 0) || (dev->chip_info == 0))
+	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	if (dev == NULL)
 		return AGESA_ERROR;
 
-	config = dev->chip_info;
+	ROMSTAGE_CONST struct northbridge_amd_agesa_family15_config *config = dev->chip_info;
+	if (config == NULL)
+		return AGESA_ERROR;
+
 	if (info->SocketId >= ARRAY_SIZE(config->spdAddrLookup))
 		return AGESA_ERROR;
 	if (info->MemChannelId >= ARRAY_SIZE(config->spdAddrLookup[0]))

@@ -34,19 +34,21 @@
 //#pragma optimize ("", off)
 
 /**
- * Gets the SMBUS address for an SPD from the array in devicetree.cb
+ * Gets the SMBus address for an SPD from the array in devicetree.cb
  * then read the SPD into the supplied buffer.
  */
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	UINT8 spdAddress;
-	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
-	ROMSTAGE_CONST struct northbridge_amd_agesa_family14_config *config = NULL;
 
-	if ((dev == 0) || (dev->chip_info == 0))
+	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	if (dev == NULL)
 		return AGESA_ERROR;
 
-	config = dev->chip_info;
+	ROMSTAGE_CONST struct northbridge_amd_agesa_family14_config *config = dev->chip_info;
+	if (config == NULL)
+		return AGESA_ERROR;
+
 	if (info->SocketId >= ARRAY_SIZE(config->spdAddrLookup))
 		return AGESA_ERROR;
 	if (info->MemChannelId >= ARRAY_SIZE(config->spdAddrLookup[0]))

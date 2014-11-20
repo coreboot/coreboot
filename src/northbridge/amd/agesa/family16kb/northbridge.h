@@ -14,13 +14,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef NORTHBRIDGE_AMD_AGESA_FAM16H_H
-#define NORTHBRIDGE_AMD_AGESA_FAM16H_H
+#ifndef NORTHBRIDGE_AMD_AGESA_FAM16_H
+#define NORTHBRIDGE_AMD_AGESA_FAM16_H
 
 static struct device_operations pci_domain_ops;
 static struct device_operations cpu_bus_ops;
 
-#endif /* NORTHBRIDGE_AMD_AGESA_FAM16H_H */
+#endif /* NORTHBRIDGE_AMD_AGESA_FAM16_H */

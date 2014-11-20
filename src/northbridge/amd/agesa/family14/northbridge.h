@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef NORTHBRIDGE_AMD_AGESA_FAM14H_H
-#define NORTHBRIDGE_AMD_AGESA_FAM14H_H
+#ifndef NORTHBRIDGE_AMD_AGESA_FAM14_H
+#define NORTHBRIDGE_AMD_AGESA_FAM14_H
 
 static struct device_operations pci_domain_ops;
 static struct device_operations cpu_bus_ops;
 
 device_t get_node_pci(u32 nodeid, u32 fn);
 
-#endif /* NORTHBRIDGE_AMD_AGESA_FAM14H_H */
+#endif /* NORTHBRIDGE_AMD_AGESA_FAM14_H */

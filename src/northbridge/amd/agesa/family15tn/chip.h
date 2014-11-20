@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _AGESA_FAM15TN_CHIP_H_
-#define _AGESA_FAM15TN_CHIP_H_
+#ifndef _NB_AGESA_CHIP_H_
+#define _NB_AGESA_CHIP_H_
 
 struct northbridge_amd_agesa_family15tn_config
 {

@@ -47,6 +47,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	AGESAWRAPPER_PRE_CONSOLE(amdinitmmio);
 	post_code(0x31);
 
+	/* For serial port. */
+	device_t dev = PCI_DEV(0, 0x14, 3);
+	pci_write_config32(dev, 0x44, 0xff03ffd5);
+
 	/* Halt if there was a built in self test failure */
 	post_code(0x33);
 	report_bist_failure(bist);

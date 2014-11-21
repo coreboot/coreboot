@@ -20,6 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +43,7 @@ static int is_phdr_ignored(Elf64_Phdr *phdr, Elf64_Shdr *shdr)
 
 	/* Return true only if section occupies whole of segment. */
 	if ((sh_start == ph_start) && (sh_end == ph_end)) {
-		DEBUG("Ignoring program segment at %p\n", (void *)ph_start);
+		DEBUG("Ignoring program segment at 0x%" PRIx64 "\n", ph_start);
 		return 1;
 	}
 

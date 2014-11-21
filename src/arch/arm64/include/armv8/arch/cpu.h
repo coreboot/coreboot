@@ -170,4 +170,15 @@ static inline void *secondary_entry_point(void *e)
  */
 void arm64_cpu_startup(void);
 
+/*
+ * The arm64_cpu_startup_resume() initializes a CPU's exception stack and
+ * regular stack as well initializing the C environment for the processor. It
+ * calls into the array of function pointers at symbol c_entry depending
+ * on BSP state. Note that arm64_cpu_startup contains secondary entry
+ * point which can be obtained by secondary_entry_point().
+ * Additionally, it also restores saved register data and enables MMU, caches
+ * and exceptions before jumping to C environment for both BSP and non-BSP CPUs.
+ */
+void arm64_cpu_startup_resume(void);
+
 #endif /* __ARCH_CPU_H__ */

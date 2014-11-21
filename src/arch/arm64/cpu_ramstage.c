@@ -109,8 +109,6 @@ static void init_this_cpu(void *arg)
 
 	printk(BIOS_DEBUG, "CPU%x: MPIDR: %llx\n", ci->id, ci->mpidr);
 
-	el3_init();
-
 	/* Initialize the GIC. */
 	gic_init();
 
@@ -151,9 +149,6 @@ static void init_cpu_info(struct bus *bus)
 		ci->cpu = cur;
 		ci->id = cur->path.cpu.id;
 	}
-
-	/* Mark current cpu online. */
-	cpu_mark_online(cpu_info());
 }
 
 static void invalidate_cpu_stack_top(unsigned int id)
@@ -184,6 +179,15 @@ void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops)
 	if (bus == NULL)
 		return;
 
+	/*
+	 * el3_init must be performed prior to prepare_secondary_cpu_startup.
+	 * This is important since el3_init initializes SCR values on BSP CPU
+	 * and then prepare_secondary_cpu_startup reads the initialized SCR
+	 * value and saves it for use by non-BSP CPUs.
+	 */
+	el3_init();
+	/* Mark current cpu online. */
+	cpu_mark_online(cpu_info());
 	entry = prepare_secondary_cpu_startup();
 
 	/* Initialize the cpu_info structures. */

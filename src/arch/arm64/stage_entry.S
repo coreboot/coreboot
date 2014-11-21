@@ -29,6 +29,7 @@
 #include <arch/asm.h>
 #define __ASSEMBLY__
 #include <arch/lib_helpers.h>
+#include <arch/startup.h>
 
 #define STACK_SZ CONFIG_STACK_SIZE
 #define EXCEPTION_STACK_SZ CONFIG_STACK_SIZE
@@ -38,6 +39,12 @@
  * according to MAX_CPUS. Additionally provide exception stacks for each CPU.
  */
 .section .bss, "aw", @nobits
+
+.global _arm64_startup_data
+.balign 8
+_arm64_startup_data:
+.space NUM_ELEMENTS*PER_ELEMENT_SIZE_BYTES
+
 .global _stack
 .global _estack
 .balign STACK_SZ
@@ -136,23 +143,80 @@ ENTRY(__rmodule_entry)
 	b	arm64_c_environment
 ENDPROC(__rmodule_entry)
 
-ENTRY(_arm64_cpu_startup)
+/*
+ * Setup SCTLR so that:
+ * Little endian mode is setup, XN is not enforced, MMU and caches are disabled.
+ * Alignment and stack alignment checks are disabled.
+ */
+.macro setup_sctlr
 	read_current x0, sctlr
 	bic	x0, x0, #(1 << 25)	/* Little Endian */
 	bic	x0, x0, #(1 << 19)	/* XN not enforced */
 	bic	x0, x0, #(1 << 12)	/* Disable Instruction Cache */
-	bic	x0, x0, #0xf		/* Clear SA, C, A, and M */
+	bic	x0, x0, #0xf		/* Clear SA, C, A and M */
 	write_current sctlr, x0, x1
+.endm
+
+/*
+ * This macro assumes x2 has base address and returns value read in x0
+ * x1 is used as temporary register.
+ */
+.macro get_element_addr index
+	add x1, x2, #(\index * PER_ELEMENT_SIZE_BYTES)
+	ldr x0, [x1]
+.endm
+
+/*
+ * Uses following registers:
+ * x0 = reading stored value
+ * x1 = temp reg
+ * x2 = base address of saved data region
+ */
+.macro startup_restore
+	adr x2, _arm64_startup_data
+
+	get_element_addr MAIR_INDEX
+	write_current mair, x0, x1
+
+	get_element_addr TCR_INDEX
+	write_current tcr, x0, x1
+
+	get_element_addr TTBR0_INDEX
+	write_current ttbr0, x0, x1
+
+	get_element_addr SCR_INDEX
+	write_el3 scr, x0, x1
+
+	get_element_addr VBAR_INDEX
+	write_current vbar, x0, x1
+
+	dsb sy
 	isb
-	b	arm64_c_environment
-ENDPROC(_arm64_cpu_startup)
+
+	tlbiall_current x1
+	read_current x0, sctlr
+	orr	x0, x0, #(1 << 12)	/* Enable Instruction Cache */
+	orr	x0, x0, #(1 << 2)	/* Enable Data/Unified Cache */
+	orr	x0, x0, #(1 << 0)	/* Enable MMU */
+	write_current sctlr, x0, x1
+
+	dsb sy
+	isb
+.endm
 
 CPU_RESET_ENTRY(arm64_cpu_startup)
 	split_bsp_path
-	b	_arm64_cpu_startup
+	setup_sctlr
+	b	arm64_c_environment
 ENDPROC(arm64_cpu_startup)
 
-ENTRY(stage_entry)
+CPU_RESET_ENTRY(arm64_cpu_startup_resume)
 	split_bsp_path
-	b	_arm64_cpu_startup
+	setup_sctlr
+	startup_restore
+	b	arm64_c_environment
+ENDPROC(arm64_cpu_startup_resume)
+
+ENTRY(stage_entry)
+	b	arm64_cpu_startup
 ENDPROC(stage_entry)

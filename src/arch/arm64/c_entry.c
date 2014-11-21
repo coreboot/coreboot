@@ -19,9 +19,9 @@
 
 #include <arch/cache.h>
 #include <arch/cpu.h>
-#include <arch/exception.h>
 #include <arch/mmu.h>
 #include <arch/stages.h>
+#include <arch/startup.h>
 #include "cpu-internal.h"
 
 void __attribute__((weak)) arm64_soc_init(void)
@@ -55,22 +55,15 @@ static void arm64_init(void)
 	main();
 }
 
-static void secondary_cpu_start(void)
-{
-	mmu_enable();
-	exception_hwinit();
-
-	/* This will never return. */
-	arch_secondary_cpu_init();
-}
-
 /*
  * This variable holds entry point for CPUs starting up. The first
  * element is the BSP path, and the second is the non-BSP path.
  */
-void (*c_entry[2])(void) = { &arm64_init, &secondary_cpu_start };
+void (*c_entry[2])(void) = { &arm64_init, &arch_secondary_cpu_init };
 
 void *prepare_secondary_cpu_startup(void)
 {
-	return secondary_entry_point(&arm64_cpu_startup);
+	startup_save_cpu_data();
+
+	return secondary_entry_point(&arm64_cpu_startup_resume);
 }

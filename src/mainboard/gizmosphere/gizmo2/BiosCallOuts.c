@@ -38,7 +38,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
 	{AGESA_DO_RESET,                 agesa_Reset },
-	{AGESA_READ_SPD,                 agesa_ReadSpd },
+	{AGESA_READ_SPD,                 agesa_ReadSpd_from_cbfs },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
 	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
@@ -50,29 +50,29 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 /**
- * AMD Olivehill Platform ALC272 Verb Table
+ * ALC272 Verb Table
  */
-static const CODEC_ENTRY Olivehill_Alc272_VerbTbl[] = {
+const CODEC_ENTRY Alc272_VerbTbl[] = {
 	{0x11, 0x411111F0}, //        - SPDIF_OUT2
 	{0x12, 0x411111F0}, //        - DMIC_1/2
 	{0x13, 0x411111F0}, //        - DMIC_3/4
 	{0x14, 0x411111F0}, // Port D - LOUT1
-	{0x15, 0x411111F0}, // Port A - LOUT2
+	{0x15, 0x01011050}, // Port A - LOUT2 Explorer 2x DAC
 	{0x16, 0x411111F0}, //
 	{0x17, 0x411111F0}, // Port H - MONO
-	{0x18, 0x01a19840}, // Port B - MIC1
+	{0x18, 0x01a11840}, // Port B - MIC1
 	{0x19, 0x411111F0}, // Port F - MIC2
-	{0x1a, 0x01813030}, // Port C - LINE1
-	{0x1b, 0x411111F0}, // Port E - LINE2
+	{0x1a, 0x01811030}, // Port C - LINE1
+	{0x1b, 0x01811020}, // Port E - LINE2 Explorer 2x ADC
 	{0x1d, 0x40130605}, //        - PCBEEP
-	{0x1e, 0x01441120}, //        - SPDIF_OUT1
-	{0x21, 0x01214010}, // Port I - HPOUT
+	{0x1e, 0x411111F0}, //        - SPDIF_OUT1
+	{0x21, 0x01211010}, // Port I - HPOUT
 	{0xff, 0xffffffff}
 };
 
-static const CODEC_TBL_LIST OlivehillCodecTableList[] =
+static const CODEC_TBL_LIST CodecTableList[] =
 {
-	{0x10ec0272, (CODEC_ENTRY*)&Olivehill_Alc272_VerbTbl[0]},
+	{0x10ec0272, (CODEC_ENTRY*)&Alc272_VerbTbl[0]},
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
 };
 
@@ -108,7 +108,7 @@ static const CODEC_TBL_LIST OlivehillCodecTableList[] =
 #define FREQ_14HZ			0xFE
 #define FREQ_11HZ			0xFF
 
-/* Olivehill Hardware Monitor Fan Control
+/*  Hardware Monitor Fan Control
  * Hardware limitation:
  *  HWM failed to read the input temperture vi I2C,
  *  if other software switch the I2C switch by mistake or intention.
@@ -146,9 +146,9 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	/* IMC Fan Policy temperature thresholds */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg1 = 0x00;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0x46;///80;	/*AC0 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0x3c;	/*AC1 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0x32;	/*AC2 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 =   50;	/*AC0 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 =   45;	/*AC1 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 =   40;	/*AC2 threshold in Celsius */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0xff;	/*AC3 threshold in Celsius, 0xFF is not define */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0xff;	/*AC4 threshold in Celsius, 0xFF is not define */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0xff;	/*AC5 threshold in Celsius, 0xFF is not define */
@@ -160,9 +160,9 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	/* IMC Fan Policy PWM Settings */
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg1 = 0x00;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg2 = 0x5a;	/* AL0 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg3 = 0x46;	/* AL1 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg4 = 0x28;	/* AL2 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg2 =  100;	/* AL0 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg3 =   99;	/* AL1 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg4 =   98;	/* AL2 percentage */
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg5 = 0xff;	/* AL3 percentage */
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg6 = 0xff;	/* AL4 percentage */
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg7 = 0xff;	/* AL5 percentage */
@@ -206,7 +206,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
 		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&OlivehillCodecTableList[0]);
+		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&CodecTableList[0]);
 		/* Azalia Controller Front Panel OEM Table Pointer */
 
 		/* Fan Control */

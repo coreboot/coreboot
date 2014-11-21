@@ -346,11 +346,11 @@ CONST AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
 #define DFLT_FCH_GPP_PORT3_HOTPLUG          FALSE
 //#define BLDCFG_IR_PIN_CONTROL	0x33
 
-GPIO_CONTROL   olivehill_gpio[] = {
+GPIO_CONTROL   gizmo2_gpio[] = {
 	{183, Function1, GpioIn | GpioOutEnB | PullUpB},
 	{-1}
 };
-//#define BLDCFG_FCH_GPIO_CONTROL_LIST           (&olivehill_gpio[0])
+//#define BLDCFG_FCH_GPIO_CONTROL_LIST           (&gizmo2_gpio[0])
 
 // The following definitions specify the default values for various parameters in which there are
 // no clearly defined defaults to be used in the common file.  The values below are based on product
@@ -437,17 +437,24 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
   //      Byte6Seed, Byte7Seed, ByteEccSeed)
   //      Speicifes the HW RXEN training seed for a channel of a socket
   //
+
+	#define SEED_WL 0x0E
+	WRITE_LEVELING_SEED(
+		ANY_SOCKET, CHANNEL_A, ALL_DIMMS,
+		SEED_WL,SEED_WL,SEED_WL,SEED_WL,SEED_WL,SEED_WL,SEED_WL,SEED_WL,
+		SEED_WL),
+
 	#define SEED_A 0x12
 	HW_RXEN_SEED(
 		ANY_SOCKET, CHANNEL_A, ALL_DIMMS,
 		SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A,
 		SEED_A),
 
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
+  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 1),
   NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 1),
-  MOTHER_BOARD_LAYERS (LAYERS_4),
+  MOTHER_BOARD_LAYERS (LAYERS_6),
 
-  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00),
+  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
   CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08), /* TODO: bit2map, bit3map */
   ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08),
   CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00),

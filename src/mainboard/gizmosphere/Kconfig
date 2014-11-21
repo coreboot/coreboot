@@ -25,9 +25,13 @@ choice
 config BOARD_GIZMOSPHERE_GIZMO
 	bool "Gizmo"
 
+config BOARD_GIZMOSPHERE_GIZMO2
+	bool "Gizmo2"
+
 endchoice
 
 source "src/mainboard/gizmosphere/gizmo/Kconfig"
+source "src/mainboard/gizmosphere/gizmo2/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -17,8 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <arch/cpu.h>
+#include <arch/io.h>
 #include <arch/psci.h>
+#include <soc/addressmap.h>
+#include <soc/clk_rst.h>
 #include <soc/cpu.h>
+#include <soc/flow_ctrl.h>
+#include <soc/power.h>
+
+#include <console/console.h>
 
 static void *cpu_on_entry_point;
 
@@ -57,14 +65,77 @@ static size_t children_at_level(int parent_level, uint64_t mpidr)
 	}
 }
 
+#define TEGRA132_PM_CORE_C7	0x3
+
+static inline void tegra132_enter_sleep(unsigned long pmstate)
+{
+	asm volatile(
+	"       isb\n"
+	"       msr actlr_el1, %0\n"
+	"       wfi\n"
+	:
+	: "r" (pmstate));
+}
+
+static void prepare_cpu_on(int cpu)
+{
+	uint32_t partid;
+
+	partid = cpu ? POWER_PARTID_CE1 : POWER_PARTID_CE0;
+
+	power_ungate_partition(partid);
+	flowctrl_write_cpu_halt(cpu, 0);
+}
+
 static int cmd_prepare(struct psci_cmd *cmd)
 {
-	return PSCI_RET_NOT_SUPPORTED;
+	int ret;
+
+	switch (cmd->type) {
+	case PSCI_CMD_ON:
+		prepare_cpu_on(cmd->target->cpu_state.ci->id);
+		ret = PSCI_RET_SUCCESS;
+		break;
+	case PSCI_CMD_OFF:
+		if (cmd->state_id != -1) {
+			ret = PSCI_RET_INVALID_PARAMETERS;
+			break;
+		}
+		cmd->state_id = TEGRA132_PM_CORE_C7;
+		ret = PSCI_RET_SUCCESS;
+		break;
+	default:
+		ret = PSCI_RET_NOT_SUPPORTED;
+		break;
+	}
+	return ret;
 }
 
 static int cmd_commit(struct psci_cmd *cmd)
 {
-	return PSCI_RET_NOT_SUPPORTED;
+	int ret;
+	struct cpu_info *ci;
+
+	ci = cmd->target->cpu_state.ci;
+
+	switch (cmd->type) {
+	case PSCI_CMD_ON:
+		/* Take CPU out of reset */
+		start_cpu_silent(ci->id, cpu_on_entry_point);
+		ret = PSCI_RET_SUCCESS;
+		break;
+	case PSCI_CMD_OFF:
+		flowctrl_cpu_off(ci->id);
+		tegra132_enter_sleep(cmd->state_id);
+		/* Never reach here */
+		ret = PSCI_RET_NOT_SUPPORTED;
+		printk(BIOS_ERR, "t132 CPU%d PSCI_CMD_OFF fail\n", ci->id);
+		break;
+	default:
+		ret = PSCI_RET_NOT_SUPPORTED;
+		break;
+	}
+	return ret;
 }
 
 struct psci_soc_ops soc_psci_ops = {

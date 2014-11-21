@@ -97,6 +97,8 @@ ramstage-$(CONFIG_ARCH_USE_SECURE_MONITOR) += secmon.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += 32bit_reset.S
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += cpu.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += cpu_lib.S
+secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += flow_ctrl.c
+secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += power.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += psci.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += uart.c
 

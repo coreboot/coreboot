@@ -40,7 +40,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	int count = 0;
 
 	/* Write Protect: active low */
-	gpios->gpios[count].port = WRITE_PROTECT_L_INDEX;
+	gpios->gpios[count].port = WRITE_PROTECT_L;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
 	gpios->gpios[count].value = gpio_get(WRITE_PROTECT_L);
 	strncpy((char *)gpios->gpios[count].name, "write protect",
@@ -58,9 +58,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* TODO(adurbin): add lid switch */
 
 	/* Power: active low / high depending on board id */
-	gpios->gpios[count].port = POWER_BUTTON_INDEX;
+	gpios->gpios[count].port = POWER_BUTTON;
 	gpios->gpios[count].polarity = get_pwr_btn_polarity();
-	gpios->gpios[count].value = gpio_get(POWER_BUTTON);
+	gpios->gpios[count].value = -1;
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -70,6 +70,22 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
 	gpios->gpios[count].value = get_developer_mode_switch();
 	strncpy((char *)gpios->gpios[count].name, "developer",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
+
+	/* EC in RW: active high */
+	gpios->gpios[count].port = EC_IN_RW;
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = -1;
+	strncpy((char *)gpios->gpios[count].name, "EC in RW",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
+
+	/* Reset: active low (output) */
+	gpios->gpios[count].port = AP_SYS_RESET_L;
+	gpios->gpios[count].polarity = ACTIVE_LOW;
+	gpios->gpios[count].value = -1;
+	strncpy((char *)gpios->gpios[count].name, "reset",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 

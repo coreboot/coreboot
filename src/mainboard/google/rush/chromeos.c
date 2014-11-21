@@ -30,7 +30,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	int count = 0;
 
 	/* Write Protect: active low */
-	gpios->gpios[count].port = GPIO_R1_INDEX;
+	gpios->gpios[count].port = GPIO(R1);
 	gpios->gpios[count].polarity = ACTIVE_LOW;
 	gpios->gpios[count].value = gpio_get(GPIO(R1));
 	strncpy((char *)gpios->gpios[count].name, "write protect",
@@ -46,16 +46,16 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	count++;
 
 	/* Lid: active high */
-	gpios->gpios[count].port = GPIO_R4_INDEX;
+	gpios->gpios[count].port = GPIO(R4);
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = 1;
+	gpios->gpios[count].value = -1;
 	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
 	count++;
 
 	/* Power: active low */
-	gpios->gpios[count].port = GPIO_Q0_INDEX;
+	gpios->gpios[count].port = GPIO(Q0);
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = 1;
+	gpios->gpios[count].value = -1;
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -65,6 +65,14 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
 	gpios->gpios[count].value = get_developer_mode_switch();
 	strncpy((char *)gpios->gpios[count].name, "developer",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
+
+	/* Reset: active low (output) */
+	gpios->gpios[count].port = GPIO(I5);
+	gpios->gpios[count].polarity = ACTIVE_LOW;
+	gpios->gpios[count].value = -1;
+	strncpy((char *)gpios->gpios[count].name, "reset",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 

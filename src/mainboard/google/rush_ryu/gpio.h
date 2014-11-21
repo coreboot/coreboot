@@ -57,11 +57,11 @@ enum {
 	/* Write Protect */
 	SPI_1V8_WP_L	= GPIO(R1),
 	WRITE_PROTECT_L	= SPI_1V8_WP_L,
-	WRITE_PROTECT_L_INDEX = GPIO_R1_INDEX,
 	/* Power button - Depending on board id, maybe active high / low */
 	BTN_AP_PWR	= GPIO(Q0),
 	POWER_BUTTON	= BTN_AP_PWR,
-	POWER_BUTTON_INDEX = GPIO_Q0_INDEX,
+	/* EC in RW signal */
+	EC_IN_RW	= GPIO(U4),
 
 	/* Panel related GPIOs */
 	LCD_EN		= GPIO(H5),

@@ -25,10 +25,13 @@
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
+#include "board.h"
+
 #define GPIO_WP		GPIO(7, A, 6)
 #define GPIO_LID	GPIO(0, A, 6)
 #define GPIO_POWER	GPIO(0, A, 5)
 #define GPIO_RECOVERY	GPIO(0, B, 1)
+#define GPIO_ECINRW	GPIO(0, A, 7)
 
 void setup_chromeos_gpios(void)
 {
@@ -61,14 +64,14 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Lid: active high */
 	gpios->gpios[count].port = GPIO_LID.raw;
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = gpio_get(GPIO_LID);
+	gpios->gpios[count].value = -1;
 	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
 	count++;
 
 	/* Power:GPIO active high */
 	gpios->gpios[count].port = GPIO_POWER.raw;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get(GPIO_POWER);
+	gpios->gpios[count].value = -1;
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -78,6 +81,22 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
 	gpios->gpios[count].value = get_developer_mode_switch();
 	strncpy((char *)gpios->gpios[count].name, "developer",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
+
+	/* EC in RW: GPIO active high */
+	gpios->gpios[count].port = GPIO_ECINRW.raw;
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = -1;
+	strncpy((char *)gpios->gpios[count].name, "EC in RW",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
+
+	/* Reset: GPIO active high (output) */
+	gpios->gpios[count].port = GPIO_RESET.raw;
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = -1;
+	strncpy((char *)gpios->gpios[count].name, "reset",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 

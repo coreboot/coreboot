@@ -653,3 +653,22 @@ char *strerror(int errnum)
 	snprintf(errstr, sizeof(errstr), "Unknown error %d", errnum);
 	return errstr;
 }
+
+/*
+ * Simple routine to convert UTF-16 to ASCII, giving up with ? if too high.
+ * A single code point may convert to ?? if not in the BMP.
+ * @param utf16_string A string encoded in UTF-16LE
+ * @param maxlen Maximum possible length of the string in code points
+ * @return Newly allocated ASCII string
+ */
+char *utf16le_to_ascii(uint16_t *utf16_string, int maxlen)
+{
+	char *ascii_string = xmalloc(maxlen + 1);  /* +1 for trailing \0 */
+	ascii_string[maxlen] = '\0';
+	int i;
+	for (i = 0; i < maxlen; i++) {
+		uint16_t wchar = utf16_string[i];
+		ascii_string[i] = wchar > 0x7f ? '?' : (char)wchar;
+	}
+	return ascii_string;
+}

@@ -69,6 +69,13 @@ char *strerror(int errnum);
 /** @} */
 
 /**
+ * @defgroup string Unicode functions
+ * @{
+ */
+char *utf16le_to_ascii(uint16_t *utf16_string, int maxlen);
+/** @} */
+
+/**
  * @defgroup string OpenBSD based safe string functions
  * @{
  */

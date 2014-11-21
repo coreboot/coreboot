@@ -36,7 +36,7 @@
 
 static void model_10_init(device_t dev)
 {
-	printk(BIOS_DEBUG, "Model 10 Init - a no-op.\n");
+	printk(BIOS_DEBUG, "Model 10 Init.\n");
 
 	u8 i;
 	msr_t msr;

@@ -169,6 +169,7 @@ Scope (\_SB.PCI0.I2C0)
 		Name (_UID, 1)
 		Name (WAKE, 45) /* DSP_INT (use as codec wake) */
 
+		Name (MB1, 1)   /* MICBIAS1 = 2.970V */
 		Name (DCLK, 0)  /* RT5677_DMIC_CLK1 */
 		Name (PCLK, 1)  /* RT5677_PDM_CLK_DIV2 (~3MHz) */
 		Name (IN1, 1)   /* IN1 differential */
@@ -185,6 +186,7 @@ Scope (\_SB.PCI0.I2C0)
 		Name (_DSD, Package () {
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 			Package () {
+				Package () { "realtek,micbias1", 1 },
 				Package () { "realtek,in1-differential", 1 },
 				Package () { "realtek,in2-differential", 0 },
 				Package () { "realtek,lout1-differential", 1 },

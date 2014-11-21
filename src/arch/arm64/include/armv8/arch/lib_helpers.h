@@ -214,6 +214,31 @@
 104:
 .endm
 
+/* Macro to read from a register at EL3 only if we are currently at that
+   level. This is required to ensure that we do not attempt to read registers
+   from a level lower than el3. e.g. SCR is available for read only at EL3.
+   IMPORTANT: if EL != EL3, macro silently doesn't perform the read.
+*/
+.macro read_el3 xreg sysreg
+	switch_el \xreg, 402f, 402f, 401f
+401:
+	mrs	\xreg, \sysreg\()_el3
+402:
+.endm
+
+/* Macro to write to a register at EL3 only if we are currently at that
+   level. This is required to ensure that we do not attempt to write to
+   registers from a level lower than el3. e.g. SCR is available to write only at
+   EL3.
+   IMPORTANT: if EL != EL3, macro silently doesn't perform the write.
+*/
+.macro write_el3 sysreg xreg temp
+	switch_el \temp, 402f, 402f, 401f
+401:
+	msr	\sysreg\()_el3, \xreg
+402:
+.endm
+
 #else
 
 #include <stdint.h>

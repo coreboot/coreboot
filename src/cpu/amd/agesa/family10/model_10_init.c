@@ -40,7 +40,7 @@ static void model_10_init(device_t dev)
 
 	u8 i;
 	msr_t msr;
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings;
 #endif
 
@@ -66,8 +66,7 @@ static void model_10_init(device_t dev)
 	/* Set the processor name string */
 	//  init_processor_name();
 
-
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {

@@ -40,7 +40,7 @@ static void model_14_init(device_t dev)
 {
 	u32 i;
 	msr_t msr;
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings;
 #endif
 	printk(BIOS_DEBUG, "Model 14 Init.\n");
@@ -89,7 +89,7 @@ static void model_14_init(device_t dev)
 	/* Enable the local cpu apics */
 	setup_lapic();
 
-#if CONFIG_LOGICAL_CPUS
+#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {

@@ -879,6 +879,34 @@ void raw_write_tcr_el3(uint32_t tcr_el3)
 	__asm__ __volatile__("msr TCR_EL3, %0\n\t" : : "r" (tcr_el3) : "memory");
 }
 
+
+/*
+ * IMPORTANT: TCR_EL1 is 64-bit whereas TCR_EL2 and TCR_EL3 are 32-bit. Thus,
+ * 64-bit is used to read/write for tcr_current. tcr_el2 and tcr_el3 handle them
+ * with appropriate 32-bit types.
+ */
+uint64_t raw_read_tcr_current(void)
+{
+	uint32_t el = get_current_el();
+	return raw_read_tcr(el);
+}
+
+void raw_write_tcr_current(uint64_t tcr)
+{
+	uint32_t el = get_current_el();
+	raw_write_tcr(tcr, el);
+}
+
+uint64_t raw_read_tcr(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_tcr, tcr, uint64_t, el);
+}
+
+void raw_write_tcr(uint64_t tcr, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_tcr, tcr, el);
+}
+
 /* TTBR0 */
 uint64_t raw_read_ttbr0_el1(void)
 {

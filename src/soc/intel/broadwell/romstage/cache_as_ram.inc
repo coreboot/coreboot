@@ -180,7 +180,13 @@ clear_mtrrs:
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
+
+	/* Build the call frame. */
 	movl	%esp, %ebp
+	movd	%mm1, %ebx
+	pushl	%ebx
+	movd	%mm0, %ebx
+	pushl	%ebx
 	pushl	%eax
 
 before_romstage:

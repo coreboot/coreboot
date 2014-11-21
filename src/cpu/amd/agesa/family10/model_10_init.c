@@ -40,6 +40,7 @@ static void model_10_init(device_t dev)
 
 	u8 i;
 	msr_t msr;
+
 #if IS_ENABLED(CONFIG_LOGICAL_CPUS)
 	u32 siblings;
 #endif

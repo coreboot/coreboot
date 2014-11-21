@@ -115,7 +115,6 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 15.1 on end # PCIe 1 onboard gigabit
 				device pci 15.2 off end # unused
 				device pci 15.3 off end # unused
-				register "gpp_configuration" = "4"
 			end	#chip southbridge/amd/hudson
 
 			device pci 18.0 on end

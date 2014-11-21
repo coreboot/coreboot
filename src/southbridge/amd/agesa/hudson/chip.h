@@ -22,7 +22,6 @@
 
 struct southbridge_amd_agesa_hudson_config
 {
-	u8  gpp_configuration;
 	u8  sd_mode;
 };
 

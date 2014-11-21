@@ -151,13 +151,6 @@ static void init_cpu_info(struct bus *bus)
 	}
 }
 
-static void invalidate_cpu_stack_top(unsigned int id)
-{
-	const size_t size = 128;
-	char *stack = cpu_get_stack(id);
-	dcache_invalidate_by_mva(stack - size, size);
-}
-
 void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops)
 {
 	size_t max_cpus;
@@ -220,9 +213,6 @@ void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops)
 		if (!cpu_online(ci)) {
 			/* Start the CPU. */
 			printk(BIOS_DEBUG, "Starting CPU%x\n", ci->id);
-
-			/* Ensure CPU's top of stack is not in the cache. */
-			invalidate_cpu_stack_top(ci->id);
 
 			if (cntrl_ops->start_cpu(ci->id, entry)) {
 				printk(BIOS_ERR,

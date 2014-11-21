@@ -46,13 +46,15 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 	u8 byte;
-	device_t dev;
+	pci_devfn_t dev;
+
 	AGESAWRAPPER_PRE_CONSOLE(amdinitmmio);
 
+	/* Set LPC decode enables. */
+	dev = PCI_DEV(0, 0x14, 3);
+	pci_write_config32(dev, 0x44, 0xff03ffd5);
+
 	hudson_lpc_port80();
-	//__asm__ volatile ("1: jmp 1b");
-	/* TODO: */
-	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
 	byte = pci_read_config8(dev, 0x48);
 	byte |= 3;		/* 2e, 2f */
 	pci_write_config8(dev, 0x48, byte);

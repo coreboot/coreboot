@@ -58,6 +58,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	AGESAWRAPPER_PRE_CONSOLE(amdinitmmio);
 
+	/* Set LPC decode enables. */
+	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
+	pci_write_config32(dev, 0x44, 0xff03ffd5);
+
 	hudson_lpc_port80();
 
 	/* Enable the AcpiMmio space */

@@ -83,7 +83,6 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 15.1 off end # PCIe 1
 				device pci 15.2 off end # PCIe 2
 				device pci 15.3 off end # PCIe 3
-				register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
 				register "gpp_configuration" = "4"
 			end	#chip southbridge/amd/hudson
 

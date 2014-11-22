@@ -211,16 +211,6 @@ static int sdram_capabilities_enhanced_addressing_xor(void)
 	return (!reg8);
 }
 
-static int sdram_capabilities_two_dimms_per_channel(void)
-{
-	u8 reg8;
-
-	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe8); /* CAPID0 + 8 */
-	reg8 &= (1 << 0);
-
-	return (reg8 != 0);
-}
-
 // TODO check if we ever need this function
 #if 0
 static int sdram_capabilities_MEM4G_disable(void)
@@ -381,10 +371,6 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 
 		/* Dual Channel not supported, but Channel 1? Bail out */
 		if (!sdram_capabilities_dual_channel() && (i >> 1))
-			continue;
-
-		/* Two DIMMs per channel not supported, but odd DIMM number? */
-		if (!sdram_capabilities_two_dimms_per_channel() && (i& 1))
 			continue;
 
 		printk(BIOS_DEBUG, "DDR II Channel %d Socket %d: ", (i >> 1), (i & 1));

@@ -137,9 +137,6 @@ static void rcba_config(void)
 	/* Enable IOAPIC */
 	RCBA8(0x31ff) = 0x03;
 
-	/* Enable upper 128bytes of CMOS */
-	RCBA32(0x3400) = (1 << 2);
-
 	/* Disable unused devices */
 	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_INTLAN | FD_ACMOD | FD_ACAUD;
 	RCBA32(0x3418) |= (1 << 0); // Required.

@@ -222,9 +222,6 @@ static void rcba_config(void)
 	/* Enable IOAPIC */
 	RCBA8(0x31ff) = 0x03;
 
-	/* Enable upper 128bytes of CMOS */
-	RCBA32(0x3400) = (1 << 2);
-
 	/* Now, this is a bit ugly. As per PCI specification, function 0 of a
 	 * device always has to be implemented. So disabling ethernet port 1
 	 * would essentially disable all three ethernet ports of the mainboard.

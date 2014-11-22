@@ -171,6 +171,9 @@ static void i945_setup_bars(void)
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
 	printk(BIOS_DEBUG, " done.\n");
 
+	/* Enable upper 128bytes of CMOS */
+	RCBA32(0x3400) = (1 << 2);
+
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);

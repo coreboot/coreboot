@@ -163,9 +163,6 @@ static void rcba_config(void)
 	/* Enable IOAPIC */
 	RCBA8(0x31ff) = 0x03;
 
-	/* Enable upper 128bytes of CMOS */
-	RCBA32(0x3400) = (1 << 2);
-
 	/* Enable PCIe Root Port Clock Gate */
 	// RCBA32(0x341c) = 0x00000001;
 }

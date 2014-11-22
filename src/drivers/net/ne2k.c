@@ -392,7 +392,6 @@ static void ns8390_reset(unsigned int eth_nic_base)
 	set_count(eth_nic_base, 0);
 }
 
-
 int ne2k_init(unsigned int eth_nic_base) {
 
 	device_t dev;
@@ -425,6 +424,7 @@ int ne2k_init(unsigned int eth_nic_base) {
 }
 
 #else
+int ne2k_init(unsigned int eth_nic_base) { return 0; } // dummy symbol for ramstage
 
 static void read_resources(struct device *dev)
 {

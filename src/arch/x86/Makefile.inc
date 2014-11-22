@@ -209,11 +209,7 @@ romstage-libs ?=
 
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld
-else
-	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) -Wl,--end-group
-endif
+	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld
 	$(NM_romstage) $@ | grep -q " [DdBb] "; if [ $$? -eq 0 ]; then \
 		echo "Forbidden global variables in romstage:"; \
 		$(NM_romstage) $@ | grep " [DdBb] "; test "$(CONFIG_CPU_AMD_AGESA)" = y; \
@@ -221,11 +217,7 @@ endif
 
 $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_xip.ld
-else
-	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) -Wl,--end-group
-endif
+	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_xip.ld
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
@@ -331,11 +323,7 @@ endif
 
 $(objgenerated)/ramstage.o: $$(ramstage-objs) $(COMPILER_RT_ramstage) $$(ramstage-libs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_ramstage) -m elf_i386 -r -o $@ --start-group $(ramstage-objs) $(ramstage-libs) $(COMPILER_RT_ramstage) --end-group
-else
-	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(ramstage-objs) $(ramstage-libs) $(COMPILER_RT_ramstage) -Wl,--end-group
-endif
+	$(LD_ramstage) -m elf_i386 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --start-group $(ramstage-objs) $(ramstage-libs) $(COMPILER_RT_ramstage) --end-group
 
 endif # CONFIG_ARCH_RAMSTAGE_X86_32
 

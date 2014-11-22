@@ -92,10 +92,14 @@ STRIP_$(1) := $(STRIP_$(2))
 READELF_$(1) := $(READELF_$(2))
 CFLAGS_$(1) = $$(CFLAGS_common) $$(CFLAGS_$(2))
 CPPFLAGS_$(1) = $$(CPPFLAGS_common) $$(CPPFLAGS_$(2))
+COMPILER_RT_FLAGS_$(1) :=
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 COMPILER_RT_$(1) = $(shell $(CC_$(2)) $(CFLAGS_$(2)) -print-librt-file-name 2>/dev/null)
 else
 COMPILER_RT_$(1) = $(wildcard $(shell $(CC_$(2)) $(CFLAGS_$(2)) -print-libgcc-file-name))
+ifeq ($(2),x86_32)
+COMPILER_RT_FLAGS_$(1) := --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3
+endif
 endif
 endef
 

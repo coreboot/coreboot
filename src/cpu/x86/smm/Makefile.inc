@@ -24,11 +24,11 @@ $(eval $(call create_class_compiler,smmstub,x86_32))
 
 
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBCLANG_RT_FILE_NAME_smm)
-	$(LD_smm) -nostdlib -r -o $@ --start-group $(smm-objs) $(LIBCLANG_RT_FILE_NAME_smm) --end-group
+$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
+	$(LD_smm) -nostdlib -r -o $@ --start-group $(smm-objs) $(COMPILER_RT_smm) --end-group
 else
-$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME_smm)
-	$(CC_smm) $(CFLAGS_smm) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME_smm) -Wl,--end-group
+$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
+	$(CC_smm) $(CFLAGS_smm) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(COMPILER_RT_smm) -Wl,--end-group
 endif
 
 $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/ldoptions

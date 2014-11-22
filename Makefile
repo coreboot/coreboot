@@ -246,7 +246,6 @@ printall:
 	@echo alldirs:=$(alldirs)
 	@echo allsrcs=$(allsrcs)
 	@echo DEPENDENCIES=$(DEPENDENCIES)
-	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME_$(class))
 	@$(foreach class,$(special-classes),echo $(class):='$($(class))'; )
 
 endif

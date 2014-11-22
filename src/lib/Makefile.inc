@@ -122,9 +122,9 @@ RMODULE_LDFLAGS_CLANG  := -nostartfiles --emit-relocs -z defs -Bsymbolic -T$(RMO
 define rmodule_link
 $(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(obj)/ldoptions $$(RMODTOOL)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$$(LD_rmodules_$(4)) $$(RMODULE_LDFLAGS_CLANG) --defsym=__heap_size=$(strip $(3)) -o $$@ --start-group $(strip $(2)) $$(LIBCLANG_RT_FILE_NAME_rmodules_$(4)) --end-group
+	$$(LD_rmodules_$(4)) $$(RMODULE_LDFLAGS_CLANG) --defsym=__heap_size=$(strip $(3)) -o $$@ --start-group $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) --end-group
 else
-	$$(CC_rmodules_$(4)) $$(CFLAGS_rmodules_$(4)) $$(RMODULE_LDFLAGS) -Wl,--defsym=__heap_size=$(strip $(3)) -o $$@ -Wl,--start-group $(strip $(2)) $$(LIBGCC_FILE_NAME_rmodules_$(4)) -Wl,--end-group
+	$$(CC_rmodules_$(4)) $$(CFLAGS_rmodules_$(4)) $$(RMODULE_LDFLAGS) -Wl,--defsym=__heap_size=$(strip $(3)) -o $$@ -Wl,--start-group $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) -Wl,--end-group
 endif
 	$$(NM_rmodules_$(4)) -n $$@ > $$(basename $$@).map
 

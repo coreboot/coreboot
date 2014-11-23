@@ -50,6 +50,11 @@ config BOARD_LENOVO_T60
 
 	    Thinkpad T60p (Model 2007)
 
+config BOARD_LENOVO_G505S
+	bool "AMD G505s"
+	help
+	  Lenovo G505s
+
 endchoice
 
 source "src/mainboard/lenovo/x60/Kconfig"
@@ -60,6 +65,7 @@ source "src/mainboard/lenovo/x230/Kconfig"
 source "src/mainboard/lenovo/t520/Kconfig"
 source "src/mainboard/lenovo/t530/Kconfig"
 source "src/mainboard/lenovo/t60/Kconfig"
+source "src/mainboard/lenovo/g505s/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

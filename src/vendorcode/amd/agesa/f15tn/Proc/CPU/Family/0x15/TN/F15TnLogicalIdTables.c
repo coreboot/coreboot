@@ -83,6 +83,10 @@ GetF15TnLogicalIdAndRev (
 STATIC CONST CPU_LOGICAL_ID_XLAT ROMDATA CpuF15TnLogicalIdAndRevArray[] =
 {
   {
+    0x6131,
+    AMD_F15_TN_A1 // RL_A1 (Richland)
+  },
+  {
     0x6101,
     AMD_F15_TN_A1
   },

@@ -58,10 +58,6 @@ config MINNOWMAX_2GB_SKU
 	bool "2GB"
 endchoice
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAX_CPUS
 	int
 	default 16

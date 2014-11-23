@@ -31,10 +31,6 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config USBDEBUG_HCD_INDEX
 	int
 	default 2

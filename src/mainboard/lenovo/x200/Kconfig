@@ -37,10 +37,6 @@ config USBDEBUG_HCD_INDEX
 	int
 	default 2
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAX_CPUS
 	int
 	default 2

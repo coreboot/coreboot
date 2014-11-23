@@ -48,10 +48,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Mohon Peak CRB"
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAX_CPUS
 	int
 	default 16

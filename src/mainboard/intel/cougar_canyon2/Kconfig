@@ -28,10 +28,6 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf8000000	# set to match FSP
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAX_CPUS
 	int
 	default 16

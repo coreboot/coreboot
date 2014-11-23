@@ -46,8 +46,8 @@ ramstage-y += ../common/spi.c
 ramstage-y += madt.c
 smm-$(CONFIG_SPI_FLASH_SMM) += ../common/spi.c
 
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c ../bd82x6x/me_8.x.c ../bd82x6x/finalize.c ../bd82x6x/pch.c
+ramstage-y += smi.c
+smm-y += smihandler.c me.c ../bd82x6x/me_8.x.c ../bd82x6x/finalize.c ../bd82x6x/pch.c
 
 romstage-y += ../bd82x6x/early_usb.c early_smbus.c ../bd82x6x/early_me.c ../bd82x6x/me_status.c ../bd82x6x/gpio.c early_thermal.c
 romstage-y += ../bd82x6x/reset.c

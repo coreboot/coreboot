@@ -92,7 +92,7 @@ STATIC CONST CPU_LOGICAL_ID_XLAT ROMDATA CpuF15TnLogicalIdAndRevArray[] =
   },
   {
     0x6100,
-    0x0000000000000100ull
+    AMD_F15_TN_A0
   }
 };
 

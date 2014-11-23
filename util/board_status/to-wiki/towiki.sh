@@ -209,11 +209,14 @@ EOF
 			board_nice="$(echo "$board" |sed -e "s,_, ,g;s/\(.\)/\u\1/g")";
 		fi
 
-		lastgood="$(echo "$have"| sed -n "/^$vendor\/$board:/ s,^[^:]*:,,gp")"
-
-		if ! [ -z "$clone_of" ]; then
-		    vendor_board_dir="$COREBOOT_DIR"/src/mainboard/"$clone_of";
+		venboard="$vendor/$board"
+		if [ -n "$clone_of" ]; then
+		    venboard="$clone_of"
 		fi
+
+		lastgood="$(echo "$have"| sed -n "/^$(echo "$venboard"|sed 's,/,\\/,g'):/ s,^[^:]*:,,gp")"
+
+		vendor_board_dir="$COREBOOT_DIR"/src/mainboard/"$venboard";
 
 		northbridge="$(sed -n "/^[[:space:]]*select NORTHBRIDGE_/ s,^[[:space:]]*select NORTHBRIDGE_,,p" "$vendor_board_dir/Kconfig")"
 		northbridge_nice="$(echo "$northbridge"|sed 's,AMD_AGESA_FAMILY\([0-9a-fA-F]*\)\(.*\),AMD Family \1h\2 (AGESA),g;s,AMD_FAMILY\([0-9a-fA-F]*\),AMD Family \1h,g;s,AMD_AMDFAM\([0-9a-fA-F]*\),AMD Family \1h,g;s,_, ,g;s,INTEL,Intel®,g;')"

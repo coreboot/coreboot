@@ -196,7 +196,7 @@ static u8 setPStateMaxVal( device_t dev ) {
 	   msr.hi |= PS_EN_MASK ;
 	     wrmsr(PS_REG_BASE + i, msr);
 	 }
-         if (msr.hi | PS_EN_MASK) {
+         if (msr.hi & PS_EN_MASK) {
 	   maxpstate = i;
 	 }
       }

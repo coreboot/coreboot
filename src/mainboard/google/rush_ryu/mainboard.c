@@ -23,6 +23,7 @@
 #include <cbmem.h>
 #include <delay.h>
 #include <device/device.h>
+#include <device/i2c.h>
 #include <elog.h>
 #include <memrange.h>
 #include <soc/addressmap.h>
@@ -208,6 +209,37 @@ static void setup_audio(void)
 	clock_enable_audio();
 }
 
+#define AD4567_DEV	0x34
+#define PWR_CTL		0
+#define DAC_CTL		2
+#define SPWDN		(1 << 0)
+#define DAC_MUTE	(1 << 6)
+#define DAC_FS		(0x7 << 0)
+#define SR_32K_48KHZ	0x2
+
+static void enable_ad4567_spkr_amp(void)
+{
+	uint8_t reg_byte;
+
+	if (board_id() >= BOARD_ID_PROTO_3)
+		return;
+	/*
+	 * I2C6, device 0x34 is an AD4567 speaker amp on P0/P1.
+	 * It needs to have a couple of regs tweaked to turn it on
+	 * so it can provide audio output to the mono speaker on P0/P1.
+	 */
+	i2c_readb(I2C6_BUS, AD4567_DEV, PWR_CTL, &reg_byte);
+	reg_byte &= ~SPWDN;		// power up amp
+	i2c_writeb(I2C6_BUS, AD4567_DEV, PWR_CTL, reg_byte);
+
+	/* The next 2 settings are defaults, but set them anyway */
+	i2c_readb(I2C6_BUS, AD4567_DEV, DAC_CTL, &reg_byte);
+	reg_byte &= ~DAC_MUTE;		// unmute DAC (default)
+	reg_byte &= ~DAC_FS;		// mask sample rate bits
+	reg_byte |= SR_32K_48KHZ;	// set 32K-48KHz sample rate (default)
+	i2c_writeb(I2C6_BUS, AD4567_DEV, DAC_CTL, reg_byte);
+}
+
 static void mainboard_init(device_t dev)
 {
 	soc_configure_funits(funits, ARRAY_SIZE(funits));
@@ -217,6 +249,8 @@ static void mainboard_init(device_t dev)
 	i2c_init(I2C6_BUS);
 
 	setup_audio();
+	/* Temp hack for P1 board: Enable speaker amp (powerup, etc.) */
+	enable_ad4567_spkr_amp();
 
 	elog_init();
 	elog_add_boot_reason();

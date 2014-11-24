@@ -3751,7 +3751,9 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		if (!mrc_cache || mrc_cache->mrc_data_size < sizeof (ctrl)) {
 			/* Failed S3 resume, reset to come up cleanly */
 			outb(0x6, 0xcf9);
-			hlt();
+			while (1) {
+				hlt();
+			}
 		}
 		memcpy(&ctrl, mrc_cache->mrc_data, sizeof (ctrl));
 	}

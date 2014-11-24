@@ -579,18 +579,20 @@ void acpi_fill_fadt(acpi_fadt_t * fadt)
 static void i82801gx_lpc_read_resources(device_t dev)
 {
 	struct resource *res;
+	u8 io_index = 0;
+	int i;
 
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
 	res->base = 0;
 	res->size = 0x1000;
 	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
 	res->base = 0xff800000;
 	res->size = 0x00800000; /* 8 MB for flash */
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
@@ -600,6 +602,20 @@ static void i82801gx_lpc_read_resources(device_t dev)
 	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* Set IO decode ranges if required.*/
+	for (i = 0; i < 4; i++) {
+		u32 gen_dec;
+		gen_dec = pci_read_config32(dev, 0x84 + 4 * i);
+
+		if ((gen_dec & 0xFFFC) > 0x1000) {
+			res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
+			res->base = gen_dec & 0xFFFC;
+			res->size = (gen_dec >> 16) & 0xFC;
+			res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+				IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+		}
+	}
 }
 
 static void set_subsystem(device_t dev, unsigned vendor, unsigned device)

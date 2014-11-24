@@ -27,13 +27,12 @@
  *
  ***************************************************************************/
 
+#include <stdlib.h>
 #include "Porting.h"
 #include "AGESA.h"
 #include "amdlib.h"
 
 #include <northbridge/amd/agesa/dimmSpd.h>
-
-#define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
 
 typedef struct _DIMM_INFO_SMBUS{
   UINT8   SocketId;
@@ -60,7 +59,7 @@ AmdMemoryReadSPD (
 {
    UINT8  SmBusAddress = 0;
    UINTN  Index;
-   UINTN  MaxSocket = DIMENSION (SpdAddrLookup);
+   UINTN  MaxSocket = ARRAY_SIZE(SpdAddrLookup);
    for (Index = 0; Index < MaxSocket; Index ++){
      if ((SpdData->SocketId     == SpdAddrLookup[Index].SocketId)     &&
          (SpdData->MemChannelId == SpdAddrLookup[Index].MemChannelId) &&

@@ -640,3 +640,9 @@ int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz)
 	}
 	return 0;
 }
+
+int rkclk_was_watchdog_reset(void)
+{
+	/* Bits 5 and 4 are "second" and "first" global watchdog reset. */
+	return readl(&cru_ptr->cru_glb_rst_st) & 0x30;
+}

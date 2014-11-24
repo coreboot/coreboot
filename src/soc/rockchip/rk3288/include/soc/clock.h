@@ -49,4 +49,5 @@ void rkclk_configure_tsadc(unsigned int hz);
 void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz);
 int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz);
 void rkclk_configure_edp(void);
+int rkclk_was_watchdog_reset(void);
 #endif	/* __SOC_ROCKCHIP_RK3288_CLOCK_H__ */

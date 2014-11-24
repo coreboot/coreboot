@@ -749,9 +749,6 @@ static void lpc_tpm_set_resources(struct device *dev)
 			tis_setup_interrupt((int)res->base,
 					    config->irq_polarity);
 		} else {
-			printk(BIOS_ERR,
-			       "ERROR: %s %02lx unknown resource type\n",
-			       dev_path(dev), res->index);
 			continue;
 		}
 

@@ -9,37 +9,36 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 55552 $   @e \$Date: 2011-06-22 09:31:58 -0600 (Wed, 22 Jun 2011) $
+ * @e \$Revision: 63425 $   @e \$Date: 2011-12-22 11:24:10 -0600 (Thu, 22 Dec 2011) $
  *
  */
 /*
 *****************************************************************************
 *
-* Copyright (C) 2012 Advanced Micro Devices, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*     * Redistributions of source code must retain the above copyright
-*       notice, this list of conditions and the following disclaimer.
-*     * Redistributions in binary form must reproduce the above copyright
-*       notice, this list of conditions and the following disclaimer in the
-*       documentation and/or other materials provided with the distribution.
-*     * Neither the name of Advanced Micro Devices, Inc. nor the names of
-*       its contributors may be used to endorse or promote products derived
-*       from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
-* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
+ * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * ***************************************************************************
 *
 */
@@ -269,7 +268,7 @@ S3SaveStateSaveWriteOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), (intptr_t) Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
     S3SaveDebugPrintHexArray (StdHeader, Buffer, Count, Width);
     IDS_HDT_CONSOLE (S3_TRACE, "\n");
     );
@@ -334,7 +333,7 @@ S3SaveStateSaveReadWriteOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), (intptr_t) Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
     S3SaveDebugPrintHexArray (StdHeader, Data, 1, Width);
     IDS_HDT_CONSOLE (S3_TRACE, " Mask: ");
     S3SaveDebugPrintHexArray (StdHeader, DataMask, 1, Width);
@@ -410,7 +409,7 @@ S3SaveStateSavePollOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), (intptr_t) Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
     S3SaveDebugPrintHexArray (StdHeader, Data, 1, Width);
     IDS_HDT_CONSOLE (S3_TRACE, " Mask: ");
     S3SaveDebugPrintHexArray (StdHeader, DataMask, 1, Width);
@@ -482,7 +481,7 @@ S3SaveStateSaveInfoOp (
   SaveOffsetPtr->OpCode = OpCode;
   SaveOffsetPtr->Length = InformationLength;
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: Info: %s \n", (CHAR8 *)Information);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: Info: %s \n", Information);
     );
   LibAmdMemCopy (
     (UINT8 *) SaveOffsetPtr + sizeof (S3_INFO_OP_HEADER),
@@ -575,32 +574,31 @@ S3SaveDebugOpcodeString (
 {
   switch (Op) {
   case SAVE_STATE_IO_WRITE_OPCODE:
-    return (CHAR8*)"IO WR";
+    return (CHAR8 *)"IO WR";
   case SAVE_STATE_IO_READ_WRITE_OPCODE:
-    return (CHAR8*)"IO RD/WR";
+    return (CHAR8 *)"IO RD/WR";
   case SAVE_STATE_IO_POLL_OPCODE:
-    return (CHAR8*)"IO POLL";
+    return (CHAR8 *)"IO POLL";
   case SAVE_STATE_MEM_WRITE_OPCODE:
-    return (CHAR8*)"MEM WR";
+    return (CHAR8 *)"MEM WR";
   case SAVE_STATE_MEM_READ_WRITE_OPCODE:
-    return (CHAR8*)"MEM RD/WR";
+    return (CHAR8 *)"MEM RD/WR";
   case SAVE_STATE_MEM_POLL_OPCODE:
-    return (CHAR8*)"MEM POLL";
+    return (CHAR8 *)"MEM POLL";
   case SAVE_STATE_PCI_CONFIG_WRITE_OPCODE:
-    return (CHAR8*)"PCI WR";
+    return (CHAR8 *)"PCI WR";
   case SAVE_STATE_PCI_CONFIG_READ_WRITE_OPCODE:
-    return (CHAR8*)"PCI RD/WR";
+    return (CHAR8 *)"PCI RD/WR";
   case SAVE_STATE_PCI_CONFIG_POLL_OPCODE:
-    return (CHAR8*)"PCI POLL";
+    return (CHAR8 *)"PCI POLL";
   case SAVE_STATE_STALL_OPCODE:
-    return (CHAR8*)"STALL";
+    return (CHAR8 *)"STALL";
   case SAVE_STATE_DISPATCH_OPCODE:
-    return (CHAR8*)"DISPATCH";
+    return (CHAR8 *)"DISPATCH";
   default:
     IDS_ERROR_TRAP;
-    break;
   }
-  return (CHAR8*)"!!! Unrecognize opcode !!!";
+  return (CHAR8 *)"!!! Unrecognize opcode !!!";
 }
 
 
@@ -641,7 +639,7 @@ S3SaveDebugPrintHexArray (
       break;
     case AccessWidth64:
     case AccessS3SaveWidth64:
-      IDS_HDT_CONSOLE (S3_TRACE, "0x%08x%08x", ((UINT32*) ((UINT64*)Array + Index))[1], ((UINT32*)((UINT64*)Array + Index))[0]);
+      IDS_HDT_CONSOLE (S3_TRACE, "0x%08x%08x", ((UINT32*) ((UINT64*)Array + Index)[1], ((UINT32*) ((UINT64*)Array + Index))[0]));
       break;
     default:
       IDS_ERROR_TRAP;

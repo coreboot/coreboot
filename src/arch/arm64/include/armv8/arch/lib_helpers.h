@@ -239,6 +239,21 @@
 402:
 .endm
 
+/* Macro to invalidate all stage 1 TLB entries for current EL */
+.macro tlbiall_current temp
+	switch_el \temp, 401f, 402f, 403f
+401:
+	tlbi	alle1
+	b	404f
+402:
+	tlbi	alle2
+	b	404f
+403:
+	tlbi	alle3
+	b	404f
+404:
+.endm
+
 #else
 
 #include <stdint.h>

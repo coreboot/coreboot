@@ -24,6 +24,21 @@
 #include <cbfs.h>
 #include "fmap.h"
 
+static int is_fmap_signature_valid(const struct fmap *fmap)
+{
+	if (memcmp(fmap, FMAP_SIGNATURE, sizeof(FMAP_SIGNATURE) - 1)) {
+		printk(BIOS_ERR, "No FMAP found at %p.\n", fmap);
+		return 1;
+	}
+
+	printk(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %p.\n",
+	       fmap->name, fmap->ver_major, fmap->ver_minor, fmap);
+	printk(BIOS_DEBUG, "FMAP: base = %llx size = %x #areas = %d\n",
+	       (unsigned long long)fmap->base, fmap->size, fmap->nareas);
+
+	return 0;
+}
+
 /* Find FMAP data structure in ROM.
  * See http://code.google.com/p/flashmap/ for more information on FMAP.
  */
@@ -36,32 +51,42 @@ const struct fmap *fmap_find(void)
 	 * master header; that would require some more changes to cbfstool
 	 * and possibly cros_bundle_firmware.
 	 */
+	const struct fmap *fmap;
+	struct cbfs_media media;
+	size_t size;
 
-#if CONFIG_ARCH_X86
-	/* wrapping around 0x100000000 */
-	const struct fmap *fmap = (void *)
-		(CONFIG_FLASHMAP_OFFSET - CONFIG_ROM_SIZE);
-#else
-	struct cbfs_media default_media, *media;
-	media = &default_media;
-	init_default_cbfs_media(media);
-	media->open(media);
-	const struct fmap *fmap = (void *)
-		media->map(media, CONFIG_FLASHMAP_OFFSET, 4096); // FIXME size
-	media->close(media);
-#endif
-
-	if (fmap == CBFS_MEDIA_INVALID_MAP_ADDRESS ||
-	    memcmp(fmap, FMAP_SIGNATURE, sizeof(FMAP_SIGNATURE) - 1)) {
-		printk(BIOS_DEBUG, "No FMAP found at %p.\n", fmap);
+	if (init_default_cbfs_media(&media)) {
+		printk(BIOS_ERR, "failed to init default cbfs media\n");
 		return NULL;
 	}
 
-	printk(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %p.\n",
-	       fmap->name, fmap->ver_major, fmap->ver_minor, fmap);
-	printk(BIOS_DEBUG, "FMAP: base = %llx size = %x #areas = %d\n",
-	       (unsigned long long)fmap->base, fmap->size, fmap->nareas);
+	media.open(&media);
+	fmap = media.map(&media, CONFIG_FLASHMAP_OFFSET, sizeof(*fmap));
 
+	if (fmap == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
+		printk(BIOS_ERR, "failed to map FMAP header\n");
+		media.close(&media);
+		return NULL;
+	}
+
+	if (is_fmap_signature_valid(fmap)) {
+		media.unmap(&media, fmap);
+		media.close(&media);
+		return NULL;
+	}
+
+	size = sizeof(*fmap) + sizeof(struct fmap_area) * fmap->nareas;
+	media.unmap(&media, fmap);
+	fmap = media.map(&media, CONFIG_FLASHMAP_OFFSET, size);
+
+	if (fmap == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
+		printk(BIOS_ERR, "failed to map FMAP (size=%zu)\n", size);
+		media.unmap(&media, fmap);
+		media.close(&media);
+		return NULL;
+	}
+
+	media.close(&media);
 	return fmap;
 }
 

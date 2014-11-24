@@ -112,10 +112,10 @@ int get_pch_gpio(unsigned char gpio_num)
 	if (!gpio_base)
 		return(0);
 
-	if (gpio_num > 64){
+	if (gpio_num >= 64){
 		u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
 		retval = ((gp_lvl3 >> (gpio_num - 64)) & 1);
-	} else if (gpio_num > 32){
+	} else if (gpio_num >= 32){
 		u32 gp_lvl2 = inl(gpio_base + GP_LVL2);
 		retval = ((gp_lvl2 >> (gpio_num - 32)) & 1);
 	} else {

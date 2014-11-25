@@ -568,13 +568,13 @@ static int pll_para_config(u32 freq_hz, struct pll_div *div)
 
 void rkclk_configure_edp(void)
 {
+	/* clk_edp_24M source: 24M */
+	writel(RK_SETBITS(1 << 15), &cru_ptr->cru_clksel_con[28]);
+
 	/* rst edp */
 	writel(RK_SETBITS(1 << 15), &cru_ptr->cru_softrst_con[6]);
 	udelay(1);
 	writel(RK_CLRBITS(1 << 15), &cru_ptr->cru_softrst_con[6]);
-
-	/* clk_edp_24M source: 24M */
-	writel(RK_SETBITS(1 << 15), &cru_ptr->cru_clksel_con[28]);
 }
 
 void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz)
@@ -599,7 +599,6 @@ void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz)
 		break;
 	}
 }
-
 
 int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz)
 {

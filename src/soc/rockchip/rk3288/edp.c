@@ -51,30 +51,6 @@ static const char *pre_emph_names[] = {
 #define DP_VOLTAGE_MAX         DP_TRAIN_VOLTAGE_SWING_1200
 #define DP_PRE_EMPHASIS_MAX    DP_TRAIN_PRE_EMPHASIS_9_5
 
-static void rk_edp_reset(struct rk_edp *edp)
-{
-	u32 reg;
-
-	/* Stop Video */
-	clrbits_le32(&edp->regs->video_ctl_1, VIDEO_EN);
-	setbits_le32(&edp->regs->video_ctl_1, VIDEO_MUTE);
-
-	reg = VID_CAP_FUNC_EN_N | AUD_FIFO_FUNC_EN_N |
-		AUD_FUNC_EN_N | HDCP_FUNC_EN_N | SW_FUNC_EN_N;
-	writel(reg, &edp->regs->func_en_1);
-
-	reg = SSC_FUNC_EN_N | AUX_FUNC_EN_N |
-		SERDES_FIFO_FUNC_EN_N |
-		LS_CLK_DOMAIN_FUNC_EN_N;
-	writel(reg, &edp->regs->func_en_2);
-
-	udelay(20);
-
-	reg = LANE3_MAP_LOGIC_LANE_3 | LANE2_MAP_LOGIC_LANE_2 |
-		LANE1_MAP_LOGIC_LANE_1 | LANE0_MAP_LOGIC_LANE_0;
-	writel(reg, &edp->regs->lane_map);
-}
-
 static void rk_edp_init_refclk(struct rk_edp *edp)
 {
 	writel(SEL_24M, &edp->regs->analog_ctl_2);
@@ -1005,7 +981,6 @@ void rk_edp_init(u32 vop_id)
 	val = (vop_id == 1) ? RK_SETBITS(1 << 5) : RK_CLRBITS(1 << 5);
 	writel(val, &rk3288_grf->soc_con6);
 
-	rk_edp_reset(&rk_edp);
 	rk_edp_init_refclk(&rk_edp);
 	rk_edp_init_interrupt(&rk_edp);
 	rk_edp_enable_sw_function(&rk_edp);

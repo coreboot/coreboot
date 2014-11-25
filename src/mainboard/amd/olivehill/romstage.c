@@ -50,7 +50,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	outb(0xD2, 0xcd6);
 	outb(0x00, 0xcd7);
 
-	agesawrapper_amdinitmmio();
+	amd_initmmio();
 
 	/* Set LPC decode enables. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
@@ -101,7 +101,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		post_code(0x60);
 		agesawrapper_amdinitresume();
 
-		agesawrapper_amdinitcpuio();
+		amd_initcpuio();
 		agesawrapper_amds3laterestore();
 
 		post_code(0x61);

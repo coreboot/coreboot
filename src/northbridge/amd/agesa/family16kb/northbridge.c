@@ -737,7 +737,7 @@ static void domain_enable_resources(device_t dev)
 	/* Must be called after PCI enumeration and resource allocation */
 	if (!acpi_is_wakeup_s3()) {
 		/* Enable MMIO on AMD CPU Address Map Controller */
-		agesawrapper_amdinitcpuio();
+		amd_initcpuio();
 
 		agesawrapper_amdinitmid();
 	}

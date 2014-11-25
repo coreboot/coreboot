@@ -27,6 +27,9 @@
 #
 #*****************************************************************************
 
+romstage-y += fixme.c
+
+ramstage-y += fixme.c
 ramstage-y += chip_name.c
 ramstage-y += model_12_init.c
 

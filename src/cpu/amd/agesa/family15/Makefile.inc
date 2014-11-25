@@ -25,5 +25,8 @@ subdirs-y += ../../../x86/mtrr
 subdirs-y += ../../../x86/pae
 subdirs-y += ../../../x86/smm
 
+romstage-y += fixme.c
+
+ramstage-y += fixme.c
 ramstage-y += chip_name.c
 ramstage-y += model_15_init.c

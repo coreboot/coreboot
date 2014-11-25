@@ -1,8 +1,6 @@
 #ifndef _CIMX_SB_GPIO_OEM_H_
 #define _CIMX_SB_GPIO_OEM_H_
 
-#define MMIO_NP_BIT		BIT7
-
 /* Hudson-2 ACPI PmIO Space Define */
 #define SB_ACPI_BASE_ADDRESS	0x0400
 #define ACPI_MMIO_BASE	0xFED80000

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,55 +17,106 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <string.h>
 #include <cpu/x86/mtrr.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
-#include "cpuRegisters.h"
-#include "cpuCacheInit.h"
-#include "cpuApicUtilities.h"
-#include "cpuEarlyInit.h"
-#include "cpuLateInit.h"
-#include "Dispatcher.h"
-#include "cpuCacheInit.h"
 #include "amdlib.h"
-#include "heapManager.h"
-#include "Filecode.h"
-#include <arch/io.h>
 
-#include <southbridge/amd/cimx/sb700/gpio_oem.h>
-
-#define FILECODE UNASSIGNED_FILE_FILECODE
-
-/*Get the Bus Number from CONFIG_MMCONF_BUS_NUMBER, Please reference AMD BIOS BKDG docuemt about it*/
-/*
-BusRange: bus range identifier. Read-write. Reset: X. This specifies the number of buses in the
-MMIO configuration space range. The size of the MMIO configuration space range varies with this
-field as follows: the size is 1 Mbyte times the number of buses. This field is encoded as follows:
-Bits    Buses  Bits    Buses
-0h      1       5h      32
-1h      2       6h      64
-2h      4       7h      128
-3h      8       8h      256
-4h      16      Fh-9h   Reserved
-*/
-STATIC UINT8 GetEndBusNum(VOID)
+#if !IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
+void amd_initcpuio(void)
 {
-	UINT64 BusNum;
-	UINT8 Index;
-	for (Index = 1; Index <= 8; Index++) {
-		BusNum = CONFIG_MMCONF_BUS_NUMBER >> Index;
-		if (BusNum == 1) {
-			break;
+	UINT32			PciData;
+	PCI_ADDR		PciAddress;
+	AMD_CONFIG_PARAMS	StdHeader;
+	UINT32			nodes;
+	UINT32			node;
+	UINT32			sblink;
+	UINT32			i;
+	UINT32			TOM;
+
+	/* get the number of coherent nodes in the system */
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB, FUNC_0, 0x60);
+	LibAmdPciRead(AccessWidth32, PciAddress, &PciData, &StdHeader);
+	nodes = ((PciData >> 4) & 7) + 1; //NodeCnt[2:0]
+
+	/* Find out the Link ID of Node0 that connects to the
+	 * Southbridge (system IO hub). e.g. family10 MCM Processor,
+	 * sbLink is Processor0 Link2, internal Node0 Link3
+	 */
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB, FUNC_0, 0x64);
+	LibAmdPciRead(AccessWidth32, PciAddress, &PciData, &StdHeader);
+	sblink = (PciData >> 8) & 3; //assume ganged
+
+	/* Enable MMIO on AMD CPU Address Map Controller for all nodes */
+	for (node = 0; node < nodes; node++) {
+		/* clear all MMIO Mapped Base/Limit Registers */
+		for (i = 0; i < 8; i++) {
+			PciData = 0x00000000;
+			PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x80 + i*8);
+			LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+			PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x84 + i*8);
+			LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 		}
-	}
-	return Index;
-}
 
-AGESA_STATUS agesawrapper_amdinitcpuio(void)
+		/* clear all IO Space Base/Limit Registers */
+		for (i = 0; i < 4; i++) {
+			PciData = 0x00000000;
+			PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC4 + i*8);
+			LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+			PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC0 + i*8);
+			LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+		}
+
+		/* Set VGA Ram MMIO 0000A0000-0000BFFFF to Node0 sbLink */
+		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x84);
+		PciData = 0x00000B00;
+		PciData |= sblink << 4;
+		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x80);
+		PciData = 0x00000A03;
+		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+
+		/* Set TOM1-FFFFFFFF to Node0 sbLink. */
+		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x8C);
+		PciData = 0x00FFFF00;
+		PciData |= sblink << 4;
+		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+		TOM = (UINT32)MsrRead(TOP_MEM);
+		PciData = (TOM >> 8) | 0x03;
+		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x88);
+		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+
+		/* Set MMCONF space to Node0 sbLink with NP set.
+		 * default E0000000-EFFFFFFF
+		 * Just have all mmio set to non-posted,
+		 * coreboot not implemente the range by range setting yet.
+		 */
+		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xBC);
+		PciData = CONFIG_MMCONF_BASE_ADDRESS + (CONFIG_MMCONF_BUS_NUMBER * 0x100000) - 1;//1MB each bus
+		PciData = (PciData >> 8) & 0xFFFFFF00;
+		PciData |= 0x80; //NP
+		PciData |= sblink << 4;
+		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xB8);
+		PciData = (CONFIG_MMCONF_BASE_ADDRESS >> 8) | 0x03;
+		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+
+
+		/* Set PCIO: 0x0 - 0xFFF000 to Node0 sbLink  and enabled VGA IO*/
+		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC4);
+		PciData = 0x00FFF000;
+		PciData |= sblink << 4;
+		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC0);
+		PciData = 0x00000033;
+		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+	}
+}
+#else
+
+#define MMIO_NP_BIT		BIT7
+
+void amd_initcpuio(void)
 {
-	AGESA_STATUS Status;
 	UINT64 MsrReg;
 	UINT32 PciData;
 	PCI_ADDR PciAddress;
@@ -178,39 +229,40 @@ AGESA_STATUS agesawrapper_amdinitcpuio(void)
 		PciData |= SbLink << 4;
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	}
-	Status = AGESA_SUCCESS;
-	return Status;
 }
+#endif
 
-AGESA_STATUS agesawrapper_amdinitmmio(void)
+void amd_initmmio(void)
 {
-	AGESA_STATUS Status;
-	UINT64 MsrReg;
-	UINT32 PciData;
-	PCI_ADDR PciAddress;
-	AMD_CONFIG_PARAMS StdHeader;
+	UINT64                        MsrReg;
+	AMD_CONFIG_PARAMS             StdHeader;
 
 	/*
-	   Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
-	   Address MSR register.
+	 * Set the MMIO Configuration Base Address and Bus Range onto
+	 * MMIO configuration base Address MSR register.
 	 */
-	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (GetEndBusNum() << 2) | 1;
+	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
 	LibAmdMsrWrite(0xC0010058, &MsrReg, &StdHeader);
 
 	/*
-	   Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
+	 * Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
 	 */
 	LibAmdMsrRead(0xC001001F, &MsrReg, &StdHeader);
-	MsrReg = MsrReg | BIT46;
+	MsrReg = MsrReg | (1ULL << 46);
 	LibAmdMsrWrite(0xC001001F, &MsrReg, &StdHeader);
 
+#if IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
+	UINT32 PciData;
+	PCI_ADDR PciAddress;
+
 	/* Set PCIE MMIO. */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x90);
-	PciData = (CONFIG_MMCONF_BASE_ADDRESS >> 8) | 3;
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x94);
+	/* FIXME: LSB bits are not cleared for PciData. */
+	PciData = ((CONFIG_MMCONF_BASE_ADDRESS + CONFIG_MMCONF_BUS_NUMBER * 4096 * 256 - 1) >> 8) | MMIO_NP_BIT;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x94);
-	PciData = ((CONFIG_MMCONF_BASE_ADDRESS + CONFIG_MMCONF_BUS_NUMBER * 4096 * 256 - 1) >> 8) | MMIO_NP_BIT;
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x90);
+	PciData = (CONFIG_MMCONF_BASE_ADDRESS >> 8) | 3;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Enable memory access */
@@ -219,13 +271,11 @@ AGESA_STATUS agesawrapper_amdinitmmio(void)
 	PciData |= BIT1;
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0x04);
 	LibAmdPciWrite(AccessWidth8, PciAddress, &PciData, &StdHeader);
+#endif
 
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000 - CACHE_ROM_SIZE) | 5;
-	LibAmdMsrWrite(0x20E, &MsrReg, &StdHeader);
+	LibAmdMsrWrite (0x20C, &MsrReg, &StdHeader);
 	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | 0x800ull;
-	LibAmdMsrWrite(0x20F, &MsrReg, &StdHeader);
-
-	Status = AGESA_SUCCESS;
-	return Status;
+	LibAmdMsrWrite(0x20D, &MsrReg, &StdHeader);
 }

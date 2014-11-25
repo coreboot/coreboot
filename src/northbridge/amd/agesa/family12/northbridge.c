@@ -756,7 +756,7 @@ static void domain_enable_resources(device_t dev)
 #endif
 
 	/* Enable MMIO on AMD CPU Address Map Controller */
-	agesawrapper_amdinitcpuio();
+	amd_initcpuio();
 
 	agesawrapper_amdinitmid();
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);

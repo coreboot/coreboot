@@ -18,13 +18,11 @@
 #
 
 romstage-y += buildOpts.c
-romstage-y += agesawrapper.c
 romstage-y += BiosCallOuts.c
 romstage-y += sb700_cfg.c
 romstage-y += rd890_cfg.c
 
 ramstage-y += buildOpts.c
-ramstage-y += agesawrapper.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += sb700_cfg.c
 ramstage-y += rd890_cfg.c

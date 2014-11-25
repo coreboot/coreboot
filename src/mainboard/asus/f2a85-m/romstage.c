@@ -75,7 +75,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	hudson_lpc_port80();
 #endif
 
-	agesawrapper_amdinitmmio();
+	amd_initmmio();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 
@@ -143,7 +143,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		post_code(0x60);
 		agesawrapper_amdinitresume();
-		agesawrapper_amdinitcpuio();
+		amd_initcpuio();
 		agesawrapper_amds3laterestore();
 
 		post_code(0x61);

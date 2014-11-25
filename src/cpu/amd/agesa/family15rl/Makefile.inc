@@ -17,6 +17,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+romstage-y += fixme.c
+
+ramstage-y += fixme.c
 ramstage-y += chip_name.c
 ramstage-y += model_15_init.c
 

@@ -50,7 +50,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	__writemsr (0x20c, (0x0100000000ull - CACHE_ROM_SIZE) | 5);
 	__writemsr (0x20d, (0x1000000000ull - CACHE_ROM_SIZE) | 0x800);
 
-	agesawrapper_amdinitmmio();
+	amd_initmmio();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);

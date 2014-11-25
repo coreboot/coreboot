@@ -25,8 +25,11 @@
  * should be a 32-bit address.
  */
 void start_cpu(int cpu, void *entry_64);
+/* Start CPU wthout any log messages. */
+void start_cpu_silent(int cpu, void *entry_64);
+/* Prepare SoC for starting a CPU. Initialize the global state of the SoC. */
+void cpu_prepare_startup(void *entry_64);
 
 void reset_entry_32bit(void);
 
 #endif /* __SOC_NVIDIA_TEGRA132_CPU_H__ */
-

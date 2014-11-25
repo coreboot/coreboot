@@ -23,7 +23,6 @@
 #include <console/console.h>
 #include <program_loading.h>
 #include <soc/addressmap.h>
-#include <soc/bootblock.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <soc/power.h>

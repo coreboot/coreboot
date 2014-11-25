@@ -27,18 +27,21 @@
 #include <program_loading.h>
 #include <smp/node.h>
 
+__attribute__((weak)) void bootblock_mainboard_early_init(void) { /* no-op */ }
 __attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }
 __attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
 
 void main(void)
 {
-	bootblock_soc_init();
-	bootblock_mainboard_init();
+	bootblock_mainboard_early_init();
 
 #if CONFIG_BOOTBLOCK_CONSOLE
 	console_init();
 	exception_init();
 #endif
+
+	bootblock_soc_init();
+	bootblock_mainboard_init();
 
 	run_romstage();
 }

@@ -18,11 +18,11 @@
  */
 
 #include <arch/io.h>
+#include <bootblock_common.h>
 #include <console/console.h>
 #include <device/i2c.h>
 #include <soc/addressmap.h>
 #include <soc/clk_rst.h>
-#include <soc/bootblock.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>
 #include <soc/nvidia/tegra/i2c.h>

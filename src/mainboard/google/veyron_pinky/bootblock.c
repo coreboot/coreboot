@@ -19,6 +19,7 @@
  */
 
 #include <arch/io.h>
+#include <assert.h>
 #include <bootblock_common.h>
 #include <delay.h>
 #include <soc/clock.h>
@@ -30,6 +31,15 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include "board.h"
+
+void bootblock_mainboard_early_init()
+{
+	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_UART)) {
+		assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE);
+		writel(IOMUX_UART2, &rk3288_grf->iomux_uart2);
+	}
+
+}
 
 void bootblock_mainboard_init(void)
 {

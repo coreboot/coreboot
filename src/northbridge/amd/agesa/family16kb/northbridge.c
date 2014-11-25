@@ -653,9 +653,25 @@ static const struct pci_driver family10_northbridge __pci_driver = {
 	.device = PCI_DEVICE_ID_AMD_10H_NB_HT,
 };
 
+static void fam16_finalize(void *chip_info)
+{
+	device_t dev;
+	u32 value;
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0)); /* clear IoapicSbFeatureEn */
+	pci_write_config32(dev, 0xF8, 0);
+	pci_write_config32(dev, 0xFC, 5); /* TODO: move it to dsdt.asl */
+
+	/* disable No Snoop */
+	dev = dev_find_slot(0, PCI_DEVFN(1, 1));
+	value = pci_read_config32(dev, 0x60);
+	value &= ~(1 << 11);
+	pci_write_config32(dev, 0x60, value);
+}
+
 struct chip_operations northbridge_amd_agesa_family16kb_ops = {
 	CHIP_NAME("AMD FAM16 Northbridge")
 	.enable_dev = 0,
+	.final = fam16_finalize,
 };
 
 static void domain_read_resources(device_t dev)

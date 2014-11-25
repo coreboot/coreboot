@@ -565,4 +565,7 @@ void psci_init(uintptr_t cpu_on_entry)
 	/* Register PSCI handlers. */
 	if (smc_register_range(PSCI_CPU_OFF64, PSCI_CPU_ON64, &psci_handler))
 		printk(BIOS_ERR, "Couldn't register PSCI handler.\n");
+
+	/* Inform SoC layer of CPU_ON entry point. */
+	psci_soc_init(cpu_on_entry);
 }

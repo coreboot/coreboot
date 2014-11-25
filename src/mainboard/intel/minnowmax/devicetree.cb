@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+## Copyright (C) 2014 Intel Corporation
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -36,6 +37,23 @@ chip soc/intel/fsp_baytrail
 	register "PcdLpssSioEnablePciMode" = "LPSS_PCI_MODE_DEFAULT"
 	register "AzaliaAutoEnable"     = "AZALIA_FOLLOWS_DEVICETREE"
 	register "LpeAcpiModeEnable"    = "LPE_ACPI_MODE_DISABLED"
+	register "IgdRenderStandby"     = "IGD_RENDER_STANDBY_ENABLE"
+	register "EnableMemoryDown"     = "MEMORY_DOWN_ENABLE"
+	register "DRAMSpeed"            = "DRAM_SPEED_1066MHZ"
+	register "DRAMType"             = "DRAM_TYPE_DDR3L"
+	register "DIMM0Enable"          = "DIMM0_ENABLE"
+	register "DIMM1Enable"          = "DIMM1_DISABLE"
+	register "DIMMDWidth"           = "DIMM_DWIDTH_X16"
+	register "DIMMDensity"          = "DIMM_DENSITY_2G_BIT"
+	register "DIMMBusWidth"         = "DIMM_BUS_WIDTH_64BIT"
+	register "DIMMSides"            = "DIMM_SIDES_1RANK"
+	register "DIMMtCL"              = "11"
+	register "DIMMtRPtRCD"          = "11"
+	register "DIMMtWR"              = "12"
+	register "DIMMtWTR"             = "6"
+	register "DIMMtRRD"             = "6"
+	register "DIMMtRTP"             = "6"
+	register "DIMMtFAW"             = "20"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

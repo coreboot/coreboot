@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2013 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2014 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +21,7 @@
 
 #include <baytrail/romstage.h>
 #include <drivers/intel/fsp/fsp_util.h>
+#include "chip.h"
 
 /**
  * /brief mainboard call for setup that needs to be done before fsp init
@@ -53,8 +55,15 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 {
 	UPD_DATA_REGION *UpdData = FspRtBuffer->Common.UpdDataRgnPtr;
 
-	/* Disable 2nd DIMM */
-	UpdData->PcdMrcInitSPDAddr2 = 0x00;
+	/*
+	 * Minnow Max Board	: 1GB SKU uses 2Gb density memory
+	 *			  2GB SKU uses 4Gb densiry memory
+	 *
+	 * devicetree.cb assume 1GB SKU board
+	*/
+	if (CONFIG_MINNOWMAX_2GB_SKU)
+		UpdData->PcdMemoryParameters.DIMMDensity
+		+= (DIMM_DENSITY_4G_BIT - DIMM_DENSITY_2G_BIT);
 
 	return;
 }

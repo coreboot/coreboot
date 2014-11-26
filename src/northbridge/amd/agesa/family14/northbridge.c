@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -39,8 +40,6 @@
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
 #endif
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
 
 //#define FX_DEVS NODE_NUMS
 #define FX_DEVS 1

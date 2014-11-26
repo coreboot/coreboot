@@ -12,6 +12,9 @@ config BOARD_EMULATION_QEMU_X86_Q35
 config BOARD_EMULATION_QEMU_ARMV7
 	bool "QEMU armv7 (vexpress-a9)"
 
+config BOARD_EMULATION_QEMU_UCB_RISCV
+	bool "QEMU ucb riscv"
+
 endchoice
 
 config BOARD_EMULATION_QEMU_X86
@@ -22,6 +25,7 @@ config BOARD_EMULATION_QEMU_X86
 source "src/mainboard/emulation/qemu-i440fx/Kconfig"
 source "src/mainboard/emulation/qemu-q35/Kconfig"
 source "src/mainboard/emulation/qemu-armv7/Kconfig"
+source "src/mainboard/emulation/qemu-riscv/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

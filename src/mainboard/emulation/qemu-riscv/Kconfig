@@ -1,0 +1,97 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2014 Google Inc.
+##
+## This software is licensed under the terms of the GNU General Public
+## License version 2, as published by the Free Software Foundation, and
+## may be copied, distributed, and modified under those terms.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+# To execute, do:
+# qemu-system-arm -M vexpress-a9 -m 1024M -nographic -kernel build/coreboot.rom
+
+if BOARD_EMULATION_QEMU_UCB_RISCV
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SOC_UCB_RISCV
+	select BOARD_ROMSIZE_KB_4096
+	select ARCH_BOOTBLOCK_RISCV
+	select HAVE_UART_SPECIAL
+
+config MAINBOARD_DIR
+	string
+	default emulation/qemu-riscv
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "QEMU RISCV"
+
+config MAX_CPUS
+	int
+	default 1
+
+config MAINBOARD_VENDOR
+	string
+	default "UCB"
+
+config DRAM_SIZE_MB
+	int
+	default 32768
+
+# Memory map for qemu riscv
+#
+# 0x0000_0000: jump instruction (by qemu)
+# 0x0002_0000: bootblock (entry of kernel / firmware)
+# 0x0003_0000: romstage, assume up to 128KB in size.
+# 0x0007_ff00: stack pointer
+# 0x0010_0000: CBFS header
+# 0x0011_0000: CBFS data
+# 0x0100_0000: reserved for ramstage
+
+config BOOTBLOCK_BASE
+	hex
+	default 0x00000000
+
+config ROMSTAGE_BASE
+	hex
+	default 0x00020000
+
+config RAMSTAGE_BASE
+	hex
+	default 0x100000
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x0
+
+config CBFS_HEADER_ROM_OFFSET
+	hex
+	default 0x10000
+
+config CBFS_ROM_OFFSET
+	hex
+	default 0x10040
+
+config RAMTOP
+	hex
+	default 0x1000000
+
+config STACK_TOP
+	hex
+	default 0x0007ff00
+
+config STACK_BOTTOM
+	hex
+	default 0x00040000
+
+config STACK_SIZE
+	hex
+	default 0x0003ff00
+
+endif #  BOARD_EMULATION_QEMU_UCB_RISCV

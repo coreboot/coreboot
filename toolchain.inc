@@ -57,6 +57,7 @@ ARCHDIR-i386    := x86
 ARCHDIR-x86_32  := x86
 ARCHDIR-arm     := arm
 ARCHDIR-arm64   := arm64
+ARCHDIR-riscv   := riscv
 
 CFLAGS_arm      := -mno-unaligned-access -ffunction-sections -fdata-sections
 

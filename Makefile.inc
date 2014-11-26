@@ -68,7 +68,7 @@ PHONY+= clean-abuild coreboot lint lint-stable build-dirs
 subdirs-y := src/lib src/console src/device src/ec src/southbridge src/soc
 subdirs-y += src/northbridge src/superio src/drivers src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool
-subdirs-y += src/arch/arm src/arch/arm64 src/arch/x86
+subdirs-y += src/arch/arm src/arch/arm64 src/arch/x86 src/arch/riscv
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
 
 subdirs-y += site-local
@@ -606,6 +606,9 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
 ROMSTAGE_ELF := romstage.elf
 endif
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
+ROMSTAGE_ELF := romstage.elf
+endif
+ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 ROMSTAGE_ELF := romstage.elf
 endif
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)

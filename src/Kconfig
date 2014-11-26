@@ -271,9 +271,14 @@ config ARCH_ARM64
 	bool
 	default n
 
+config ARCH_RISCV
+	bool
+	default n
+
 source src/arch/x86/Kconfig
 source src/arch/arm/Kconfig
 source src/arch/arm64/Kconfig
+source src/arch/riscv/Kconfig
 
 source src/vendorcode/Kconfig
 

@@ -1,0 +1,11 @@
+config SOC_UCB_RISCV
+	select ARCH_RISCV
+	select ARCH_BOOTBLOCK_RISCV
+	select ARCH_ROMSTAGE_RISCV
+	select ARCH_RAMSTAGE_RISCV
+	bool
+	default n
+
+if SOC_UCB_RISCV
+
+endif

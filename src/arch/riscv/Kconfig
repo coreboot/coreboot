@@ -1,0 +1,26 @@
+config ARCH_BOOTBLOCK_RISCV
+	bool
+	default n
+	select ARCH_RISCV
+
+config ARCH_ROMSTAGE_RISCV
+	bool
+	default n
+
+config ARCH_RAMSTAGE_RISCV
+	bool
+	default n
+
+# If a custom bootblock is necessary, this option should be "select"-ed by
+# the thing that needs it, probably the CPU.
+config RISCV_BOOTBLOCK_CUSTOM
+	bool
+	default n
+
+config CPU_HAS_BOOTBLOCK_INIT
+	bool
+	default n
+
+config MAINBOARD_HAS_BOOTBLOCK_INIT
+	bool
+	default n

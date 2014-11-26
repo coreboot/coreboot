@@ -44,6 +44,8 @@
 
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/mtrr.h>
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
 
@@ -468,11 +470,154 @@ static unsigned scan_chains(device_t dev, unsigned max)
 	return max;
 }
 #endif
+
+
+unsigned long acpi_fill_hest(acpi_hest_t *hest)
+{
+	void *addr, *current;
+
+	/* Skip the HEST header. */
+	current = (void *)(hest + 1);
+
+	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
+	if (addr != NULL)
+		current += acpi_create_hest_error_source(hest, current, 0, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+
+	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
+	if (addr != NULL)
+		current += acpi_create_hest_error_source(hest, current, 1, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+
+	return (unsigned long)current;
+}
+
+/* Implemented with AGESA-specific code. Dummy to keep linker happy.  */
+unsigned long acpi_fill_slit(unsigned long current)
+{
+	return current;
+}
+
+/* Implemented with AGESA-specific code. Dummy to keep linker happy.  */
+unsigned long acpi_fill_srat(unsigned long current)
+{
+	return current;
+}
+
+static void northbridge_fill_ssdt_generator(void)
+{
+	msr_t msr;
+	char pscope[] = "\\_SB.PCI0";
+
+	acpigen_write_scope(pscope);
+	msr = rdmsr(TOP_MEM);
+	acpigen_write_name_dword("TOM1", msr.lo);
+	msr = rdmsr(TOP_MEM2);
+	/*
+	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
+	 * here.
+	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
+	 * slide 22ff.
+	 * Shift value right by 20 bit to make it fit into 32bit,
+	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
+	 */
+	acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+	acpigen_pop_len();
+}
+
+static unsigned long agesa_write_acpi_tables(unsigned long current,
+					     acpi_rsdp_t *rsdp)
+{
+	acpi_srat_t *srat;
+	acpi_slit_t *slit;
+	acpi_header_t *ssdt;
+	acpi_header_t *alib;
+	acpi_header_t *ivrs;
+	acpi_hest_t *hest;
+
+	/* HEST */
+	current = ALIGN(current, 8);
+	hest = (acpi_hest_t *)current;
+	acpi_write_hest((void *)current);
+	acpi_add_table(rsdp, (void *)current);
+	current += ((acpi_header_t *)current)->length;
+
+	current   = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:    * IVRS at %lx\n", current);
+	ivrs = agesawrapper_getlateinitptr(PICK_IVRS);
+	if (ivrs != NULL) {
+		memcpy((void *)current, ivrs, ivrs->length);
+		ivrs = (acpi_header_t *) current;
+		current += ivrs->length;
+		acpi_add_table(rsdp, ivrs);
+	} else {
+		printk(BIOS_DEBUG, "  AGESA IVRS table NULL. Skipping.\n");
+	}
+
+	/* SRAT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
+	srat = (acpi_srat_t *) agesawrapper_getlateinitptr (PICK_SRAT);
+	if (srat != NULL) {
+		memcpy((void *)current, srat, srat->header.length);
+		srat = (acpi_srat_t *) current;
+		current += srat->header.length;
+		acpi_add_table(rsdp, srat);
+	} else {
+		printk(BIOS_DEBUG, "  AGESA SRAT table NULL. Skipping.\n");
+	}
+
+	/* SLIT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
+	slit = (acpi_slit_t *) agesawrapper_getlateinitptr (PICK_SLIT);
+	if (slit != NULL) {
+		memcpy((void *)current, slit, slit->header.length);
+		slit = (acpi_slit_t *) current;
+		current += slit->header.length;
+		acpi_add_table(rsdp, slit);
+	} else {
+		printk(BIOS_DEBUG, "  AGESA SLIT table NULL. Skipping.\n");
+	}
+
+	/* ALIB */
+	current = ALIGN(current, 16);
+	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
+	alib = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_ALIB);
+	if (alib != NULL) {
+		memcpy((void *)current, alib, alib->length);
+		alib = (acpi_header_t *) current;
+		current += alib->length;
+		acpi_add_table(rsdp, (void *)alib);
+	}
+	else {
+		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL. Skipping.\n");
+	}
+
+	/* this pstate ssdt may cause Blue Screen: Fixed: Keep this comment for a while. */
+	/* SSDT */
+	current   = ALIGN(current, 16);
+	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
+	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
+	if (ssdt != NULL) {
+		memcpy((void *)current, ssdt, ssdt->length);
+		ssdt = (acpi_header_t *) current;
+		current += ssdt->length;
+	}
+	else {
+		printk(BIOS_DEBUG, "  AGESA PState table NULL. Skipping.\n");
+	}
+	acpi_add_table(rsdp,ssdt);
+
+	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
+	return current;
+}
+
 static struct device_operations northbridge_operations = {
 	.read_resources	  = read_resources,
 	.set_resources	  = set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = northbridge_init,
+	.acpi_fill_ssdt_generator = northbridge_fill_ssdt_generator,
+	.write_acpi_tables = agesa_write_acpi_tables,
 	//.scan_bus	  = scan_chains, /* TODO: */
 	.enable		  = 0,
 	.ops_pci	  = 0,

@@ -140,7 +140,7 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 
 	dev = dev_find_slot_on_smbus(1, 0x56);
 	if (dev == 0) {
-		printk(BIOS_WARNING, "eeprom not found\n");
+		printk(BIOS_WARNING, "EEPROM not found\n");
 		already_read = 1;
 		memset (uuid, 0, 16);
 		return;

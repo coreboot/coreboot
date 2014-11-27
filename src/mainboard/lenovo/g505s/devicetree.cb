@@ -57,15 +57,13 @@ chip northbridge/amd/agesa/family15rl/root_complex
 						device i2c 51 on end # 7-bit SPD address
 					end
 				end # SM
-				device pci 14.2 on  end # HDA	0x4383
-				device pci 14.3 on  # LPC	0x439d
+				device pci 14.2 on  end # FCH Azalia Controller
+				device pci 14.3 on      # FCH LPC Bridge [1022:780e]
 					chip ec/compal/ene932
 						# 60/64 KBC
 						device pnp ff.1 on end # dummy address
 					end
 				end
-				device pci 14.2 on  end # FCH Azalia Controller
-				device pci 14.3 on  end # FCH LPC Bridge [1022:780e]
 				device pci 14.4 on  end # FCH PCI Bridge [1022:780f]
 				device pci 14.5 off end # USB 2
 				device pci 14.6 off end # Gec

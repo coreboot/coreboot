@@ -43,9 +43,6 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* Disable USB ports in S5 */
 	gnvs->s5u0 = 0;
 
-	/* TPM Present */
-	gnvs->tpmp = 1;
-
 	gnvs->tmps = TEMPERATURE_SENSOR_ID;
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;

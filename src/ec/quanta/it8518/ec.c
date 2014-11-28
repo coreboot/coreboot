@@ -165,22 +165,10 @@ static void it8518_init(struct device *dev)
 	pc_keyboard_init();
 }
 
-
-static void it8518_read_resources(struct device *dev)
-{
-	/* This function avoids an error on serial console. */
-}
-
-
-static void it8518_enable_resources(struct device *dev)
-{
-	/* This function avoids an error on serial console. */
-}
-
 static struct device_operations ops = {
 	.init             = it8518_init,
-	.read_resources   = it8518_read_resources,
-	.enable_resources = it8518_enable_resources
+	.read_resources   = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 };
 
 static struct pnp_info pnp_dev_info[] = {

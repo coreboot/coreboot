@@ -152,22 +152,10 @@ static void ene_kb3940q_init(struct device *dev)
 	ene_kb3940q_log_events();
 }
 
-
-static void ene_kb3940q_read_resources(struct device *dev)
-{
-	/* This function avoids an error on serial console. */
-}
-
-
-static void ene_kb3940q_enable_resources(struct device *dev)
-{
-	/* This function avoids an error on serial console. */
-}
-
 static struct device_operations ops = {
 	.init             = ene_kb3940q_init,
-	.read_resources   = ene_kb3940q_read_resources,
-	.enable_resources = ene_kb3940q_enable_resources
+	.read_resources   = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 };
 
 static struct pnp_info pnp_dev_info[] = {

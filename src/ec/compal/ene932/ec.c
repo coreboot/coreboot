@@ -142,22 +142,10 @@ static void ene932_init(struct device *dev)
 
 }
 
-
-static void ene932_read_resources(struct device *dev)
-{
-	/* This function avoids an error on serial console. */
-}
-
-
-static void ene932_enable_resources(struct device *dev)
-{
-	/* This function avoids an error on serial console. */
-}
-
 static struct device_operations ops = {
 	.init             = ene932_init,
-	.read_resources   = ene932_read_resources,
-	.enable_resources = ene932_enable_resources
+	.read_resources   = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 };
 
 static struct pnp_info pnp_dev_info[] = {

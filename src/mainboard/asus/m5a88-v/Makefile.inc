@@ -6,6 +6,7 @@ ifneq ($(CONFIG_CPU_AMD_AGESA),y)
  ramstage-y += ../../../../$(AGESA_ROOT)/Lib/amdlib.c
 
  AGESA_INC := -I$(AGESA_ROOT)/ \
+	      -I$(AGESA_ROOT)/../common \
 	      -I$(AGESA_ROOT)/Include \
 	      -I$(AGESA_ROOT)/Proc/IDS/ \
 	      -I$(AGESA_ROOT)/Proc/CPU/ \

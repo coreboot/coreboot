@@ -23,7 +23,7 @@
 #include "OEM.h"		/* SMBUS0_BASE_ADDRESS */
 
 /* warning: Porting.h includes an open #pragma pack(1) */
-#include "Porting.h"
+#include <vendorcode/amd/agesa/common/Porting.h>
 #include "AGESA.h"
 #include "chip.h"
 #include "smbus_spd.h"

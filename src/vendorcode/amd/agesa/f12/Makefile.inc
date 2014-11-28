@@ -32,6 +32,7 @@ AGESA_ROOT = src/vendorcode/amd/agesa/f12
 
 AGESA_INC = -Isrc/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)
+AGESA_INC += -I$(AGESA_ROOT)/../common
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
 AGESA_INC += -I$(AGESA_ROOT)/Include

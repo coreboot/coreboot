@@ -225,4 +225,9 @@ void exit(int status) __attribute__ ((noreturn));
 
 void qsort(void *aa, size_t n, size_t es, int (*cmp)(const void *, const void *));
 char *getenv(const char*);
+uint64_t __umoddi3(uint64_t num, uint64_t den);
+uint64_t  __udivdi3(uint64_t num, uint64_t den);
+uint64_t __ashldi3(uint64_t num, unsigned shift);
+uint64_t __lshrdi3(uint64_t num, unsigned shift);
+
 #endif

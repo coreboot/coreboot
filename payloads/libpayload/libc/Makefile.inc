@@ -41,3 +41,7 @@ libc-$(CONFIG_LP_LIBC) += coreboot.c
 
 # should be moved to coreboot directory
 libc-$(CONFIG_LP_LAR) += lar.c
+
+ifeq ($(CONFIG_LP_ARCH_MIPS),y)
+libc-$(CONFIG_LP_LIBC) += 64bit_div.c
+endif

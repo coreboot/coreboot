@@ -104,6 +104,11 @@ $(obj)/lib/version.smm.o : $(obj)/build.h
 romstage-y += bootmode.c
 ramstage-y += bootmode.c
 
+bootblock-y += halt.c
+romstage-y += halt.c
+ramstage-y += halt.c
+smm-y += halt.c
+
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c

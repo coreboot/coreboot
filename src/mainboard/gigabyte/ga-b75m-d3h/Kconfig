@@ -1,0 +1,76 @@
+if BOARD_GIGABYTE_GA_B75M_D3H
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA1155
+	select NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE
+	select SOUTHBRIDGE_INTEL_C216
+	select SUPERIO_ITE_IT8728F
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+	select HAVE_SMI_HANDLER
+	select DYNAMIC_CBMEM
+	select INTEL_INT15
+	select VGA
+	select INTEL_EDID
+	select UDELAY_TSC
+	select EARLY_CBMEM_INIT
+        select SERIRQ_CONTINUOUS_MODE
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config DRAM_RESET_GATE_GPIO
+        int
+	default 25
+
+config USBDEBUG_HCD_INDEX
+       int
+       default 2
+
+config MAINBOARD_DIR
+        string
+        default gigabyte/ga-b75m-d3h
+
+config MAINBOARD_PART_NUMBER
+        string
+        default "GA-B75M-D3H"
+
+config IRQ_SLOT_COUNT
+        int
+        default 18
+
+config MAX_CPUS
+        int
+        default 8
+
+config VGA_BIOS_ID
+	string
+	default "8086,0162"
+
+config VGA_BIOS_FILE
+        string
+        default "pci8086,0162.rom"
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config IFD_BIOS_SECTION
+        string
+        default "0x00600000:0x007fffff"
+
+config IFD_ME_SECTION
+        string
+        default "0x00001000:0x004fffff"
+
+endif # BOARD_GIGABYTE_GA_B75M_D3H

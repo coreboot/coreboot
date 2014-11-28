@@ -164,7 +164,9 @@ if [ $DOLINK -eq 0 ]; then
 
     $DEFAULT_CC $_CFLAGS $CMDLINE
 else
-    _LIBGCC=`$DEFAULT_CC $_ARCHEXTRA -print-libgcc-file-name`
+    if [ -z "${CONFIG_LP_ARCH_MIPS}" ]; then
+        _LIBGCC=`$DEFAULT_CC $_ARCHEXTRA -print-libgcc-file-name`
+    fi
     if [ -f $_ARCHLIBDIR/head.o ]; then
 	    HEAD_O=$_ARCHLIBDIR/head.o
     elif [ -f $BASE/../build/head.o ]; then

@@ -25,6 +25,7 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <halt.h>
 #include <lib.h>
 #include <timestamp.h>
 #include <arch/io.h>
@@ -49,9 +50,7 @@
 static inline void reset_system(void)
 {
 	hard_reset();
-	while (1) {
-		hlt();
-	}
+	halt();
 }
 
 /* The cache-as-ram assembly file calls romstage_main() after setting up

@@ -34,6 +34,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
+#include <halt.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/reset_test.c"
@@ -99,10 +100,7 @@ void soft_reset(void)
 	/* FIXME from S3 set bit1 to disable USB reset VT8237A/S */
 	pci_write_config8(PCI_DEV(0, 0x11, 0), 0x4f, tmp);
 
-	while (1) {
-		/* daisy daisy ... */
-		hlt();
-	}
+	halt();
 }
 
 unsigned int get_sbdn(unsigned bus)

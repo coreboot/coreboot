@@ -33,6 +33,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
+#include <halt.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "lib/delay.c"
 #include "cpu/x86/lapic.h"
@@ -69,10 +70,7 @@ void soft_reset(void)
 	tmp |= 0x01;
 	pci_write_config8(PCI_DEV(0, 0x11, 0), 0x4f, tmp);
 
-	while (1) {
-		/* daisy daisy ... */
-		hlt();
-	}
+	halt();
 }
 
 #include "southbridge/via/k8t890/early_car.c"

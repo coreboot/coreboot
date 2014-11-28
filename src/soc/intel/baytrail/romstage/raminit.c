@@ -18,13 +18,13 @@
  */
 
 #include <stddef.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/pci_def.h>
+#include <halt.h>
 #include <baytrail/gpio.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <baytrail/iomap.h>
@@ -38,7 +38,7 @@
 static void reset_system(void)
 {
 	warm_reset();
-	while(1) { hlt(); }
+	halt();
 }
 
 static void enable_smbus(void)

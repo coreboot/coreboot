@@ -3,7 +3,7 @@
 
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
-#include <arch/hlt.h>
+#include <halt.h>
 #include <smp/node.h>
 
 /* See if I need to initialize the local apic */
@@ -59,9 +59,7 @@ static inline __attribute__((always_inline)) unsigned long lapicid(void)
 static inline __attribute__((always_inline)) void stop_this_cpu(void)
 {
 	/* Called by an AP when it is ready to halt and wait for a new task */
-	for(;;) {
-		hlt();
-	}
+	halt();
 }
 #else
 void stop_this_cpu(void);

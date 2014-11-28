@@ -29,6 +29,7 @@
 #include "sandybridge.h"
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
+#include <halt.h>
 #include "raminit_native.h"
 #include "southbridge/intel/bd82x6x/pch.h"
 #include "southbridge/intel/bd82x6x/gpio.h"
@@ -40,7 +41,7 @@ void main(unsigned long bist)
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		outb(0x6, 0xcf9);
-		hlt ();
+		halt ();
 	}
 
 	timestamp_init(get_initial_timestamp());

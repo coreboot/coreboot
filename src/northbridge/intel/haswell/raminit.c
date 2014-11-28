@@ -20,11 +20,11 @@
 #include <console/console.h>
 #include <bootmode.h>
 #include <string.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <arch/cbfs.h>
 #include <cbfs.h>
+#include <halt.h>
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
@@ -155,9 +155,7 @@ void sdram_initialize(struct pei_data *pei_data)
 		printk(BIOS_DEBUG, "Giving up in sdram_initialize: "
 		       "No MRC data\n");
 		outb(0x6, 0xcf9);
-		while(1) {
-			hlt();
-		}
+		halt();
 	}
 
 	/* Pass console handler in pei_data */

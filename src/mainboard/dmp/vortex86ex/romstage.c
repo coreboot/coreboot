@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
+#include <halt.h>
 #include "drivers/pc80/i8254.c"
 #include "northbridge/dmp/vortex86ex/northbridge.h"
 #include "southbridge/dmp/vortex86ex/southbridge.h"
@@ -309,8 +310,7 @@ static void main(unsigned long bist)
 	if (dmp_id != DMP_CPUID_EX) {
 		/* Not DMP Vortex86EX CPU. */
 		post_code(POST_DMP_ID_ERR);
-		while (1)
-			hlt();
+		halt();
 	}
 	disable_watchdog();
 	set_ex_powerdown_control();

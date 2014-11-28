@@ -31,6 +31,7 @@
 #include <pc80/mc146818rtc.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <halt.h>
 #include <reset.h>
 #include "superio/smsc/sio1007/chip.h"
 #include <fsp_util.h>
@@ -49,9 +50,7 @@
 static inline void reset_system(void)
 {
 	hard_reset();
-	while (1) {
-		hlt();
-	}
+	halt();
 }
 
 static void pch_enable_lpc(void)

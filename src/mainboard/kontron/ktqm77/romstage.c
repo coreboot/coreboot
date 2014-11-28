@@ -37,6 +37,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
+#include <halt.h>
 #include "gpio.h"
 
 static void pch_enable_lpc(void)
@@ -190,7 +191,7 @@ void main(unsigned long bist)
 		/* System is not happy after keyboard reset... */
 		printk(BIOS_DEBUG, "Issuing CF9 warm reset\n");
 		outb(0x6, 0xcf9);
-		hlt();
+		halt();
 	}
 
 	/* Perform some early chipset initialization required
@@ -237,7 +238,7 @@ void main(unsigned long bist)
 	if (boot_mode==2 && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
 		outb(0x6, 0xcf9);
-		hlt();
+		halt();
 	}
 	northbridge_romstage_finalize(boot_mode==2);
 

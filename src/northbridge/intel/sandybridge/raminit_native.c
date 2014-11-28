@@ -22,11 +22,11 @@
 #include <console/usb.h>
 #include <bootmode.h>
 #include <string.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <arch/cbfs.h>
 #include <cbfs.h>
+#include <halt.h>
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
@@ -3728,7 +3728,7 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		/* Need reset.  */
 		outb(0x6, 0xcf9);
 
-		hlt();
+		halt();
 	}
 
 	ramctr_timing ctrl;
@@ -3751,9 +3751,7 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		if (!mrc_cache || mrc_cache->mrc_data_size < sizeof (ctrl)) {
 			/* Failed S3 resume, reset to come up cleanly */
 			outb(0x6, 0xcf9);
-			while (1) {
-				hlt();
-			}
+			halt();
 		}
 		memcpy(&ctrl, mrc_cache->mrc_data, sizeof (ctrl));
 	}
@@ -3887,6 +3885,6 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 	if (s3resume && !cbmem_was_inited) {
 		/* Failed S3 resume, reset to come up cleanly */
 		outb(0x6, 0xcf9);
-		hlt();
+		halt();
 	}
 }

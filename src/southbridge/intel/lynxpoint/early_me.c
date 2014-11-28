@@ -19,11 +19,11 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_ids.h>
+#include <halt.h>
 #include <string.h>
 #include "me.h"
 #include "pch.h"
@@ -199,9 +199,7 @@ int intel_early_me_init_done(u8 status)
 	/* Perform the requested reset */
 	if (reset) {
 		outb(reset, 0xcf9);
-		while (1) {
-			hlt();
-		}
+		halt();
 	}
 	return -1;
 }

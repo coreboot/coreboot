@@ -23,10 +23,10 @@
 #include <cpu/x86/cr.h>
 #include <cpu/x86/lapic.h>
 #include <delay.h>
+#include <halt.h>
 #include <lib.h>
 #include <string.h>
 #include <console/console.h>
-#include <arch/hlt.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <smp/atomic.h>
@@ -396,9 +396,7 @@ void stop_this_cpu(void)
 #endif
 	}
 
-	while(1) {
-		hlt();
-	}
+	halt();
 }
 #endif
 

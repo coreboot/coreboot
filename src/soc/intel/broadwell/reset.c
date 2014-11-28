@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/hlt.h>
 #include <arch/io.h>
+#include <halt.h>
 #include <reset.h>
 #include <broadwell/reset.h>
 
@@ -45,7 +45,5 @@ void hard_reset(void)
 void reset_system(void)
 {
 	hard_reset();
-	while (1) {
-		hlt();
-	}
+	halt();
 }

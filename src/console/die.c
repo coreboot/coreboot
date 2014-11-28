@@ -20,8 +20,8 @@
  */
 
 #include <arch/io.h>
-#include <arch/hlt.h>
 #include <console/console.h>
+#include <halt.h>
 
 #ifndef __ROMCC__
 #define NORETURN __attribute__((noreturn))
@@ -33,7 +33,5 @@
 void NORETURN die(const char *msg)
 {
 	print_emerg(msg);
-	do {
-		hlt();
-	} while(1);
+	halt();
 }

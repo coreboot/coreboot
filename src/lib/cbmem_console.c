@@ -188,6 +188,11 @@ void cbmemc_reinit(void)
 {
 	struct cbmem_console *cbm_cons_p = NULL;
 
+#ifdef __PRE_RAM__
+	if (IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE))
+		return;
+#endif
+
 #ifndef __PRE_RAM__
 	cbm_cons_p = cbmem_find(CBMEM_ID_CONSOLE);
 #endif

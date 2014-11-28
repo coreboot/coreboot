@@ -256,9 +256,7 @@ static void init_cbmem_post_device(void *unused)
 #else
 	cbmem_recovery(0);
 #endif
-#if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
-#endif
 }
 
 BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {

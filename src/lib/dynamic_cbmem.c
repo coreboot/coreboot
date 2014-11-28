@@ -426,9 +426,7 @@ void *cbmem_entry_start(const struct cbmem_entry *entry)
 static void init_cbmem_pre_device(void *unused)
 {
 	cbmem_initialize();
-#if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
-#endif /* CONFIG_CONSOLE_CBMEM */
 }
 
 BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {

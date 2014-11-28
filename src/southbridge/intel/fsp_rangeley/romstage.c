@@ -136,10 +136,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	timestamp_add_now(TS_END_ROMSTAGE);
 #endif
 
-#if IS_ENABLED(CONFIG_CONSOLE_CBMEM)
-	printk(BIOS_DEBUG, "cbmemc_reinit\n");
-	cbmemc_reinit();
-#endif
 	post_code(0x4f);
 
 	/* Load the ramstage. */

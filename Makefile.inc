@@ -26,14 +26,14 @@ export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "`which git`" ]; \
 #######################################################################
 # Test for coreboot toolchain (except when explicitely not requested)
 ifneq ($(NOCOMPILE),1)
-# only run if we're doing a build (not for tests, kconfig, ...)
+# only run if we're doing a build (not for tests, kconfig, ...), using gcc
+# rationale: gcc versions by Linux distributions tend to be quite messed up
+ifeq ($(CONFIG_COMPILER_GCC),y)
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
 _toolchain=$(shell $(CC_x86_32) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" && echo coreboot)
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-_toolchain=$(shell $(CC_x86_32) -v 2>&1 |grep -q "clang version" && echo coreboot)
-endif
 ifneq ($(_toolchain),coreboot)
 $(error Please use the coreboot toolchain (or prove that your toolchain works))
+endif
 endif
 endif
 endif

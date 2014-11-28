@@ -506,7 +506,7 @@ while true ; do
 			;;
 		-L|--clang)	shift
 			customizing="${customizing}, clang"
-			configoptions="${configoptions}CONFIG_COMPILER_LLVM_CLANG=y\n"
+			configoptions="${configoptions}CONFIG_COMPILER_LLVM_CLANG=y\n# CONFIG_COMPILER_GCC is not set\n"
 			;;
 		-z|--clean)	shift
 			customizing="${customizing}, clean"
@@ -563,17 +563,17 @@ build_all_targets()
 {
 	# seed shared utils
 	TMPCFG=`mktemp`
-	if [ "$enable_blobs" = "true" ]; then
-		echo "CONFIG_USE_BLOBS=y" > $TMPCFG
-	fi
+	printf "$configoptions" > $TMPCFG
 	$MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils allnoconfig
+	printf "$configoptions" >> $TMPCFG
+	$MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils oldconfig 2>/dev/null |head > /dev/null
 	BUILDPREFIX=
 	if [ "$scanbuild" = "true" ]; then
 		scanbuild_out=$TARGET/sharedutils-scanbuild
 		rm -rf ${scanbuild_out}
 		BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
 	fi
-	$BUILDPREFIX $MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils `printf $configoptions` tools || exit 1
+	$BUILDPREFIX $MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils tools || exit 1
 	if [ "$scanbuild" = "true" ]; then
 		mv ${scanbuild_out}tmp/* ${scanbuild_out}
 		rmdir ${scanbuild_out}tmp

@@ -26,21 +26,6 @@
 #include <console/cbmem_console.h>
 #include <timestamp.h>
 
-#if !CONFIG_DYNAMIC_CBMEM
-void get_cbmem_table(uint64_t *base, uint64_t *size)
-{
-	uint64_t top_of_ram = get_top_of_ram();
-
-	if (top_of_ram >= HIGH_MEMORY_SIZE) {
-		*base = top_of_ram - HIGH_MEMORY_SIZE;
-		*size = HIGH_MEMORY_SIZE;
-	} else {
-		*base = 0;
-		*size = 0;
-	}
-}
-#endif /* !DYNAMIC_CBMEM */
-
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 
 #if !defined(__PRE_RAM__)
@@ -52,11 +37,7 @@ void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 void set_top_of_ram(uint64_t ramtop)
 {
 	backup_top_of_ram(ramtop);
-#if !CONFIG_DYNAMIC_CBMEM
-	cbmem_late_set_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);
-#else
 	cbmem_set_top((void*)(uintptr_t)ramtop);
-#endif
 }
 #endif /* !__PRE_RAM__ */
 
@@ -66,13 +47,11 @@ unsigned long __attribute__((weak)) get_top_of_ram(void)
 	return 0;
 }
 
-#if IS_ENABLED(CONFIG_DYNAMIC_CBMEM)
 void *cbmem_top(void)
 {
 	/* Top of cbmem is at lowest usable DRAM address below 4GiB. */
 	return (void *)get_top_of_ram();
 }
-#endif
 
 #endif /* LATE_CBMEM_INIT */
 

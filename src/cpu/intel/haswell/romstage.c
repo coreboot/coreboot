@@ -75,14 +75,11 @@ static inline u32 *stack_push(u32 *stack, u32 value)
 static unsigned long choose_top_of_stack(void)
 {
 	unsigned long stack_top;
-#if CONFIG_DYNAMIC_CBMEM
+
 	/* cbmem_add() does a find() before add(). */
 	stack_top = (unsigned long)cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK,
 	                                     ROMSTAGE_RAM_STACK_SIZE);
 	stack_top += ROMSTAGE_RAM_STACK_SIZE;
-#else
-	stack_top = CONFIG_RAMTOP;
-#endif
 	return stack_top;
 }
 

@@ -101,11 +101,8 @@ void write_tables(void)
 #endif /* CONFIG_GENERATE_MP_TABLE */
 
 #if CONFIG_HAVE_ACPI_TABLES
-#if CONFIG_DYNAMIC_CBMEM
 #define MAX_ACPI_SIZE (144 * 1024)
-#else
-#define MAX_ACPI_SIZE (45 * 1024)
-#endif
+
 	post_code(0x9c);
 
 	/* Write ACPI tables to F segment and high tables area */
@@ -199,11 +196,7 @@ void write_tables(void)
 		/* FIXME: The high_table_base parameter is not reference when tables are high,
 		 * or high_table_pointer >1 MB.
 		 */
-#if CONFIG_DYNAMIC_CBMEM
 		u64 fixme_high_tables_base = 0;
-#else
-		u64 fixme_high_tables_base = (u32)get_cbmem_toc();
-#endif
 
 		/* Also put a forwarder entry into 0-4K */
 		new_high_table_pointer = write_coreboot_table(low_table_start, low_table_end,

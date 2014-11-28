@@ -7,7 +7,6 @@ config CPU_SAMSUNG_EXYNOS5420
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_SPECIAL
 	select RELOCATABLE_MODULES
-	select DYNAMIC_CBMEM
 	bool
 	default n
 

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 #include <assert.h>
+#include <cbmem.h>
+#include <cbfs_core.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -249,10 +251,6 @@ int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
 	return region_alignment - sizeof(struct rmodule_header);
 }
 
-#if CONFIG_DYNAMIC_CBMEM
-#include <cbmem.h>
-#include <cbfs_core.h>
-
 int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
 {
 	struct rmodule rmod_stage;
@@ -307,5 +305,3 @@ int rmodule_stage_load_from_cbfs(struct rmod_stage_load *rsl)
 
 	return rmodule_stage_load(rsl, stage);
 }
-
-#endif /* DYNAMIC_CBMEM */

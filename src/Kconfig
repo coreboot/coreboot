@@ -159,14 +159,6 @@ config INCLUDE_CONFIG_FILE
 config EARLY_CBMEM_INIT
 	def_bool !LATE_CBMEM_INIT
 
-config DYNAMIC_CBMEM
-	bool
-	default n
-	help
-	  Instead of reserving a static amount of CBMEM space the CBMEM
-	  area grows dynamically.  CBMEM can be used both in romstage (after
-	  memory initialization) and ramstage.
-
 config COLLECT_TIMESTAMPS
 	bool "Create a table of timestamps collected during boot"
 	default n
@@ -200,7 +192,7 @@ config RELOCATABLE_MODULES
 	 loaded anywhere and all the relocations are handled automatically.
 
 config RELOCATABLE_RAMSTAGE
-	depends on (RELOCATABLE_MODULES && DYNAMIC_CBMEM && EARLY_CBMEM_INIT)
+	depends on (RELOCATABLE_MODULES && EARLY_CBMEM_INIT)
 	bool "Build the ramstage to be relocatable in 32-bit address space."
 	default n
 	help

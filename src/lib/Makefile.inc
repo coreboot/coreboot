@@ -82,17 +82,8 @@ ramstage-y += memrange.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 
-# The CBMEM implementations are chosen based on CONFIG_DYNAMIC_CBMEM.
-ifeq ($(CONFIG_DYNAMIC_CBMEM),y)
-ramstage-y += dynamic_cbmem.c
-romstage-y += dynamic_cbmem.c
-else
-ramstage-y += cbmem.c
-romstage-y += cbmem.c
-endif # CONFIG_DYNAMIC_CBMEM
-
-romstage-y += cbmem_common.c
-ramstage-y += cbmem_common.c
+romstage-y += cbmem_common.c dynamic_cbmem.c
+ramstage-y += cbmem_common.c dynamic_cbmem.c
 
 ramstage-y += hexdump.c
 romstage-y += hexdump.c

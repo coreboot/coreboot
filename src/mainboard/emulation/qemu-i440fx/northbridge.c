@@ -130,10 +130,6 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 				   "debugcon");
 	}
 
-#if !CONFIG_DYNAMIC_CBMEM
-	set_top_of_ram(tomk * 1024);
-#endif
-
 	if (q35 && ((tomk * 1024) < 0xb0000000)) {
 		/*
 		 * Reserve the region between top-of-ram and the

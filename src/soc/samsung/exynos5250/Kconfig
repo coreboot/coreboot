@@ -6,7 +6,6 @@ config CPU_SAMSUNG_EXYNOS5250
 	select CPU_HAS_BOOTBLOCK_INIT
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_SPECIAL
-	select DYNAMIC_CBMEM
 	bool
 	default n
 

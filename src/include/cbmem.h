@@ -118,8 +118,6 @@ struct cbmem_id_to_name {
 
 struct cbmem_entry;
 
-#if CONFIG_DYNAMIC_CBMEM
-
 /*
  * The dynamic cbmem infrastructure allows for growing cbmem dynamically as
  * things are added. It requires an external function, cbmem_top(), to be
@@ -170,35 +168,6 @@ int cbmem_entry_remove(const struct cbmem_entry *entry);
 /* cbmem_entry accessors to get pointer and size of a cbmem_entry. */
 void *cbmem_entry_start(const struct cbmem_entry *entry);
 u64 cbmem_entry_size(const struct cbmem_entry *entry);
-
-#else /* !CONFIG_DYNAMIC_CBMEM */
-
-/* Allocation with static CBMEM is resolved at build time. We start
- * with 128kB and conditionally add some of the most greedy CBMEM
- * table entries.
- */
-#define _CBMEM_SZ_MINIMAL	( 128 * 1024 )
-
-#define _CBMEM_SZ_TOTAL	\
-	(_CBMEM_SZ_MINIMAL + CONFIG_CONSOLE_CBMEM_BUFFER_SIZE + \
-	HIGH_MEMORY_SAVE + HIGH_MEMORY_SCRATCH)
-
-#define HIGH_MEMORY_SIZE	ALIGN_UP(_CBMEM_SZ_TOTAL, 0x10000)
-
-#ifndef __PRE_RAM__
-void cbmem_late_set_table(uint64_t base, uint64_t size);
-#endif
-
-void get_cbmem_table(uint64_t *base, uint64_t *size);
-struct cbmem_entry *get_cbmem_toc(void);
-
-static inline const struct cbmem_entry *cbmem_entry_find(uint32_t id)
-{
-	return NULL;
-}
-#endif /* CONFIG_DYNAMIC_CBMEM */
-
-/* Common API between cbmem and dynamic cbmem. */
 
 /* Returns 0 if old cbmem was recovered. Recovery is only attempted if
  * s3resume is non-zero. */

@@ -25,6 +25,5 @@
 
 void *cbmem_top(void)
 {
-	uintptr_t top = MIN(CONFIG_DRAM_SIZE_MB, 256) << 20;
-	return _dram + top;
+	return _dram + (CONFIG_DRAM_SIZE_MB << 20);
 }

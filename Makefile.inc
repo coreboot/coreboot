@@ -602,24 +602,11 @@ cbfs-files-$(CONFIG_BOOTSPLASH) += bootsplash.jpg
 bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash.jpg-type := bootsplash
 
-ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
-ROMSTAGE_ELF := romstage.elf
-endif
-ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
-ROMSTAGE_ELF := romstage.elf
-endif
-ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
-ROMSTAGE_ELF := romstage.elf
-endif
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
-ROMSTAGE_ELF := romstage_xip.elf
-endif
-
-$(obj)/coreboot.pre: $(objcbfs)/$(ROMSTAGE_ELF) $(obj)/coreboot.pre1 $(CBFSTOOL)
+$(obj)/coreboot.pre: $(objcbfs)/romstage.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
 	$(CBFSTOOL) $@.tmp add-stage \
-		-f $(objcbfs)/$(ROMSTAGE_ELF) \
+		-f $(objcbfs)/romstage.elf \
 		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
 		$(CBFSTOOL_PRE_OPTS)
 	mv $@.tmp $@

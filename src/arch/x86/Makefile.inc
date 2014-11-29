@@ -172,11 +172,11 @@ else
 	ROMCCFLAGS := -mcpu=i386 -O2 # !MMX, !SSE
 endif
 
-$(objcbfs)/romstage_%.bin: $(objcbfs)/romstage_%.elf
+$(objcbfs)/romstage%.bin: $(objcbfs)/romstage%.elf
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY_romstage) -O binary $< $@
 
-$(objcbfs)/romstage_%.elf: $(objcbfs)/romstage_%.debug
+$(objcbfs)/romstage%.elf: $(objcbfs)/romstage%.debug
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cp $< $@.tmp
 	$(OBJCOPY_romstage) --strip-debug $@.tmp
@@ -211,9 +211,9 @@ $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.
 		$(NM_romstage) $@ | grep " [DdBb] "; test "$(CONFIG_CPU_AMD_AGESA)" = y; \
 		else true; fi
 
-$(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld $$(romstage-libs)
+$(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_xip.ld
+	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
@@ -222,7 +222,7 @@ $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
 	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
 	mv $@.tmp $@
 
-$(objgenerated)/romstage_xip.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
+$(objgenerated)/romstage.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	sed -e 's/^/ROMSTAGE_BASE = /g' -e 's/$$/;/g' $(objcbfs)/base_xip.txt > $@.tmp

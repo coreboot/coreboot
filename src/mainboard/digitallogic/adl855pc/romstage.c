@@ -2,7 +2,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/hlt.h>
 #include <stdlib.h>
 #include <lib.h>
 #include "drivers/pc80/udelay_io.c"

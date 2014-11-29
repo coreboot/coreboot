@@ -23,7 +23,6 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/hlt.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <lib.h>

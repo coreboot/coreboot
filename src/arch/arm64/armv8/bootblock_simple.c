@@ -21,11 +21,11 @@
 
 #include <bootblock_common.h>
 #include <arch/cache.h>
-#include <arch/hlt.h>
 #include <arch/stages.h>
 #include <arch/exception.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <halt.h>
 
 static int boot_cpu(void)
 {
@@ -69,5 +69,5 @@ void main(void)
 	printk(BIOS_SPEW, "stage_name %s, entry %p\n", stage_name, entry);
 
 	if (entry) stage_exit(entry);
-	hlt();
+	halt();
 }

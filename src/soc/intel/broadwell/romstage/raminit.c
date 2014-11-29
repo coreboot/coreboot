@@ -18,7 +18,6 @@
  */
 
 #include <arch/cbfs.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <cbfs.h>
 #include <cbmem.h>

@@ -19,11 +19,11 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_ids.h>
+#include <halt.h>
 #include <string.h>
 #include "me.h"
 #include "pch.h"
@@ -184,7 +184,7 @@ int intel_early_me_init_done(u8 status)
 			pcie_write_config16(PCI_DEV(0, 31, 0), 0xa2, reg16);
 			set_global_reset(0);
 			outb(0x6, 0xcf9);
-			hlt();
+			halt();
 		}
 
 		if (((me_fws2 & 0x10) == 0x10) && (me_fws2 & 0x80) == 0x00) {
@@ -266,7 +266,7 @@ int intel_early_me_init_done(u8 status)
 	/* Perform the requested reset */
 	if (reset) {
 		outb(reset, 0xcf9);
-		hlt();
+		halt();
 	}
 	return -1;
 }

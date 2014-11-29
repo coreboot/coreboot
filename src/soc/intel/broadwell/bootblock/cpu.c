@@ -23,6 +23,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
+#include <halt.h>
 #include <cpu/intel/microcode/microcode.c>
 #include <broadwell/rcba.h>
 #include <broadwell/msr.h>
@@ -99,9 +100,7 @@ static void set_flex_ratio_to_tdp_nominal(void)
 	/* Issue warm reset, will be "CPU only" due to soft reset data */
 	outb(0x0, 0xcf9);
 	outb(0x6, 0xcf9);
-	while (1) {
-		asm("hlt");
-	}
+	halt();
 }
 
 static void check_for_clean_reset(void)
@@ -115,9 +114,7 @@ static void check_for_clean_reset(void)
 	if (msr.lo & (MTRRdefTypeEn | MTRRdefTypeFixEn)) {
 		outb(0x0, 0xcf9);
 		outb(0x6, 0xcf9);
-		while (1) {
-			asm("hlt");
-		}
+		halt();
 	}
 }
 

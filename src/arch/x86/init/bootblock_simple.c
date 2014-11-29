@@ -1,5 +1,6 @@
 #include <smp/node.h>
 #include <bootblock_common.h>
+#include <halt.h>
 
 static void main(unsigned long bist)
 {
@@ -18,5 +19,5 @@ static void main(unsigned long bist)
 	unsigned long entry;
 	entry = findstage(target1);
 	if (entry) call(entry, bist);
-	asm volatile ("1:\n\thlt\n\tjmp 1b\n\t");
+	halt();
 }

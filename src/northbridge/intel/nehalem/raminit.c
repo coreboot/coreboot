@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <string.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include <cbmem.h>
@@ -38,6 +37,7 @@
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
 #include <arch/cpu.h>
+#include <halt.h>
 #include <spd.h>
 #include "raminit.h"
 #include <timestamp.h>
@@ -3805,9 +3805,7 @@ void chipset_init(const int s3resume)
 		write_mchbar8(0x2ca8, 0);
 		outb(0x6, 0xcf9);
 #if REAL
-		while (1) {
-			asm volatile ("hlt");
-		}
+		halt();
 #else
 		printf("CP5\n");
 		exit(0);
@@ -4041,9 +4039,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			       "Interrupted RAM init, reset required.\n");
 			outb(0x6, 0xcf9);
 #if REAL
-			while (1) {
-				asm volatile ("hlt");
-			}
+			halt();
 #endif
 		}
 	}
@@ -4407,9 +4403,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		write_mchbar8(0x2ca8, read_mchbar8(0x2ca8) + 4);
 		write_mchbar32(0x1af0, read_mchbar32(0x1af0) | 0x10);
 #if REAL
-		while (1) {
-			asm volatile ("hlt");
-		}
+		halt();
 #else
 		printf("CP5\n");
 		exit(0);
@@ -4510,9 +4504,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			outb(0xe, 0xcf9);
 
 #if REAL
-			while (1) {
-				asm volatile ("hlt");
-			}
+			halt();
 #else
 			printf("CP5\n");
 			exit(0);
@@ -4990,7 +4982,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 		/* Failed S3 resume, reset to come up cleanly */
 		outb(0xe, 0xcf9);
-		hlt();
+		halt();
 	}
 #endif
 }

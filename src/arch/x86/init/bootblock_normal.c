@@ -1,6 +1,7 @@
 #include <smp/node.h>
 #include <bootblock_common.h>
 #include <pc80/mc146818rtc.h>
+#include <halt.h>
 
 static const char *get_fallback(const char *stagelist) {
 	while (*stagelist) stagelist++;
@@ -47,5 +48,5 @@ static void main(unsigned long bist)
 	if (entry) call(entry, bist);
 
 	/* duh. we're stuck */
-	asm volatile ("1:\n\thlt\n\tjmp 1b\n\t");
+	halt();
 }

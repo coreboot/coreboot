@@ -32,6 +32,7 @@
 #include "option_table.h"
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <halt.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
@@ -354,7 +355,7 @@ void main(unsigned long bist)
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
 		outb(0x6, 0xcf9);
-		while (1) asm("hlt");
+		halt();
 	}
 
 	/* Perform some early chipset initialization required

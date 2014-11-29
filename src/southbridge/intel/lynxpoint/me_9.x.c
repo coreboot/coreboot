@@ -28,7 +28,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -38,6 +37,7 @@
 #include <string.h>
 #include <delay.h>
 #include <elog.h>
+#include <halt.h>
 
 #include "me.h"
 #include "pch.h"
@@ -563,7 +563,7 @@ static int mkhi_global_reset(void)
 	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
 	if (mei_sendrecv_mkhi(&mkhi, &reset, sizeof(reset), NULL, 0) < 0) {
 		/* No response means reset will happen shortly... */
-		hlt();
+		halt();
 	}
 
 	/* If the ME responded it rejected the reset request */

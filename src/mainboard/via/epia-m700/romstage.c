@@ -30,7 +30,6 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/hlt.h>
 #include <console/console.h>
 #include <lib.h>
 #include "northbridge/via/vx800/vx800.h"

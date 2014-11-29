@@ -18,7 +18,6 @@
  */
 
 #include <arch/exception.h>
-#include <arch/hlt.h>
 #include <bootblock_common.h>
 #include <cbfs.h>
 #include <console/console.h>

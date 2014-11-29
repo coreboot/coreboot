@@ -21,11 +21,11 @@
 
 #include <arch/cache.h>
 #include <arch/exception.h>
-#include <arch/hlt.h>
 #include <arch/stages.h>
 #include <bootblock_common.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <halt.h>
 #include <smp/node.h>
 
 void main(void)
@@ -44,5 +44,5 @@ void main(void)
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, stage_name);
 
 	if (entry) stage_exit(entry);
-	hlt();
+	halt();
 }

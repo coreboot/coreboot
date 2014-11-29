@@ -23,6 +23,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
+#include <halt.h>
 
 #include <cpu/intel/microcode/microcode.c>
 
@@ -109,7 +110,7 @@ static void set_flex_ratio_to_tdp_nominal(void)
 	/* Issue warm reset, will be "CPU only" due to soft reset data */
 	outb(0x0, 0xcf9);
 	outb(0x6, 0xcf9);
-	asm("hlt");
+	halt();
 }
 
 static void bootblock_cpu_init(void)

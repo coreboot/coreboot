@@ -23,7 +23,7 @@
 #include <bootmode.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <arch/hlt.h>
+#include <halt.h>
 #include <reset.h>
 #include <elog.h>
 #include <stdlib.h>
@@ -125,7 +125,7 @@ void google_chromeec_check_ec_image(int expected_type)
 		google_chromeec_command(&cec_cmd);
 		udelay(1000);
 		hard_reset();
-		hlt();
+		halt();
 	}
 }
 
@@ -447,7 +447,7 @@ void google_chromeec_init(void)
 		google_chromeec_command(&cec_cmd);
 		udelay(1000);
 		hard_reset();
-		hlt();
+		halt();
 	}
 
 }

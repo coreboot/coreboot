@@ -24,7 +24,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/hlt.h>
 #include <console/console.h>
 #include "southbridge/intel/i82801ax/i82801ax.h"
 #include "northbridge/intel/i82810/raminit.h"

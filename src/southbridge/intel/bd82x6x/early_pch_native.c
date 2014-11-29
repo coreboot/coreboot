@@ -19,7 +19,6 @@
 
 #include <console/console.h>
 #include <string.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <arch/cbfs.h>

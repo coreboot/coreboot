@@ -35,6 +35,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <halt.h>
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
@@ -253,8 +254,7 @@ void main(unsigned long bist)
 		printk(BIOS_DEBUG,
 		       "Soft reset detected, rebooting properly.\n");
 		outb(0x6, 0xcf9);
-		while (1)
-			asm("hlt");
+		halt();
 	}
 
 	/* Perform some early chipset initialization required

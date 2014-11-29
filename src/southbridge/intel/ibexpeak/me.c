@@ -28,7 +28,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/pci_ids.h>

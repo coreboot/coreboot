@@ -20,13 +20,13 @@
  */
 
 #include <types.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
+#include <halt.h>
 #include <pc80/mc146818rtc.h>
 #include "pch.h"
 
@@ -408,7 +408,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
 	if (slp_typ > 1)
-		hlt();
+		halt();
 
 	/* In most sleep states, the code flow of this function ends at
 	 * the line above. However, if we entered sleep state S1 and wake

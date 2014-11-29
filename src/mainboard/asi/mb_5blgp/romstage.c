@@ -21,7 +21,6 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/hlt.h>
 #include <console/console.h>
 #include "northbridge/amd/gx1/raminit.c"
 #include "cpu/x86/bist.h"

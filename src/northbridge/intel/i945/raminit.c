@@ -24,6 +24,7 @@
 #include <spd.h>
 #include <string.h>
 #include <arch/io.h>
+#include <halt.h>
 #include <lib.h>
 #include "raminit.h"
 #include "i945.h"
@@ -281,7 +282,7 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 			printk(BIOS_DEBUG, "Reset required.\n");
 			outb(0x00, 0xcf9);
 			outb(0x0e, 0xcf9);
-			for (;;) asm("hlt"); /* Wait for reset! */
+			halt(); /* Wait for reset! */
 		}
 	}
 
@@ -311,7 +312,7 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 		printk(BIOS_DEBUG, "Reset required.\n");
 		outb(0x00, 0xcf9);
 		outb(0x0e, 0xcf9);
-		for (;;) asm("hlt"); /* Wait for reset! */
+		halt(); /* Wait for reset! */
 	}
 }
 

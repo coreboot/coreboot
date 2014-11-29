@@ -20,7 +20,6 @@
 
 #include <delay.h>
 #include <types.h>
-#include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
@@ -28,6 +27,7 @@
 #include <cpu/x86/smm.h>
 #include <spi-generic.h>
 #include <elog.h>
+#include <halt.h>
 #include <pc80/mc146818rtc.h>
 #include <broadwell/lpc.h>
 #include <broadwell/nvs.h>
@@ -197,7 +197,7 @@ static void southbridge_smi_sleep(void)
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
 	if (slp_typ > 1)
-		hlt();
+		halt();
 
 	/*
 	 * In most sleep states, the code flow of this function ends at

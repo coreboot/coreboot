@@ -24,7 +24,6 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/hlt.h>
 #include "console/console.c"
 #include "lib/ramtest.c"
 #include "northbridge/via/vx800/vx800.h"

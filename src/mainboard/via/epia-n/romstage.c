@@ -24,7 +24,6 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/hlt.h>
 #include <console/console.h>
 #include "northbridge/via/cn400/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"

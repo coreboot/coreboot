@@ -2,7 +2,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
 #include "superio/nsc/pc97317/early_serial.c"

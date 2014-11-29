@@ -20,8 +20,8 @@
 /* Power setup code for EXYNOS5 */
 
 #include <arch/io.h>
-#include <arch/hlt.h>
 #include <console/console.h>
+#include <halt.h>
 #include "dmc.h"
 #include "power.h"
 #include "setup.h"
@@ -47,7 +47,7 @@ void power_shutdown(void)
 	clrbits_le32(&exynos_power->ps_hold_ctrl,
 		     POWER_PS_HOLD_CONTROL_DATA_HIGH);
 
-	hlt();
+	halt();
 }
 
 void power_enable_dp_phy(void)

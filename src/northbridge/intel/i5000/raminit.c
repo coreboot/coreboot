@@ -26,6 +26,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/speedstep.h>
 #include <console/console.h>
+#include <halt.h>
 #include <spd.h>
 #include <types.h>
 #include <string.h>
@@ -1522,7 +1523,7 @@ static void i5000_try_restart(const char *msg)
 	printk(BIOS_INFO, "%s", msg);
 	i5000_dump_error_registers();
 	outb(0x06, 0xcf9);
-	for(;;) asm volatile("hlt");
+	halt();
 }
 
 static void i5000_pam_setup(void)
@@ -1624,7 +1625,7 @@ static int i5000_setup_clocking(struct i5000_fbd_setup *setup)
 		pci_write_config8(PCI_ADDR(0, 16, 1, 0), 0x56, ddrfrq);
 		/* FSB:FBD mapping changed, needs hard reset */
 		outb(0x06, 0xcf9);
-		for(;;) asm volatile("hlt");
+		halt();
 	}
 	return 0;
 }

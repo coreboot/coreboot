@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <cbmem.h>
+#include <halt.h>
 #include <string.h>
 #include "i945.h"
 
@@ -512,7 +513,7 @@ static void i945_setup_dmi_rcrb(void)
 			reg32 |= (3 << 0);
 			DMIBAR32(0x224) = reg32;
 			outb(0x06, 0xcf9);
-			for (;;) asm("hlt");	/* wait for reset */
+			halt(); /* wait for reset */
 		}
 	}
 }

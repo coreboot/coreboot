@@ -38,7 +38,7 @@ romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 endif
 
 romstage-y += compute_ip_checksum.c
-ifneq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+ifeq ($(CONFIG_COMPILER_GCC),y)
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += gcc.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
 endif

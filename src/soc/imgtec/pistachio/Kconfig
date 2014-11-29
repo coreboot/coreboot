@@ -37,11 +37,11 @@ config BOOTBLOCK_CPU_INIT
 
 config CBFS_ROM_OFFSET
 	hex
-	default 0x4100
+	default 0x8100
 
 config CBFS_HEADER_ROM_OFFSET
 	# Effectively the maximum size of the bootblock
 	hex
-	default 0x4000
+	default 0x8000
 
 endif

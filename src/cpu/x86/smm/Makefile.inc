@@ -27,11 +27,7 @@ $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
 	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --start-group $(smm-objs) $(COMPILER_RT_smm) --end-group
 
 $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/ldoptions
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_smm) $(SMM_LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
-else
-	$(CC_smm) $(CFLAGS_smm) $(SMM_LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
-endif
 	$(NM_smm) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
 	$(OBJCOPY_smm) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
 

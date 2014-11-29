@@ -130,11 +130,7 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOC
 
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_bootblock) -m elf_i386 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
-else
-	$(CC_bootblock) $(CFLAGS_bootblock) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld $<
-endif
 
 
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32
@@ -313,11 +309,7 @@ else
 
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(src)/arch/x86/ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_ramstage) -m elf_i386 -o $@ -L$(obj) $< -T $(src)/arch/x86/ramstage.ld
-else
-	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/ramstage.ld $<
-endif
+	$(LD_ramstage) -o $@ -L$(obj) $< -T $(src)/arch/x86/ramstage.ld
 
 endif
 

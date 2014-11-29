@@ -60,11 +60,7 @@ bootblock-y += memmove.S
 
 $(objcbfs)/bootblock.debug: $(src)/arch/arm64/bootblock.ld $(obj)/ldoptions $$(bootblock-objs) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_bootblock) -nostdlib -m armelf_linux_eabi --gc-sections -static -o $@ -L$(obj) $< -T $(src)/arch/arm64/bootblock.ld
-else
-	$(CC_bootblock) $(CFLAGS_bootblock) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/arm64/bootblock.ld -Wl,--start-group $(bootblock-objs) -Wl,--end-group
-endif
+	$(LD_bootblock) -nostdlib --gc-sections -static -o $@ -L$(obj) --start-group $(bootblock-objs) --end-group -T $(src)/arch/arm64/bootblock.ld
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
@@ -87,11 +83,7 @@ romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(src)/arch/arm64/romstage.ld $(obj)/ldoptions
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_romstage) -nostdlib --gc-sections -static -o $@ -L$(obj) $(romstage-objs) -T $(src)/arch/arm64/romstage.ld
-else
-	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/arm64/romstage.ld -Wl,--start-group $(romstage-objs) -Wl,--end-group
-endif
+	$(LD_romstage) -nostdlib --gc-sections -static -o $@ -L$(obj) --start-group $(romstage-objs) --end-group -T $(src)/arch/arm64/romstage.ld
 
 endif # CONFIG_ARCH_ROMSTAGE_ARM64
 
@@ -128,10 +120,6 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 
 $(objcbfs)/ramstage.debug: $$(ramstage-objs) $(src)/arch/arm64/ramstage.ld $(obj)/ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_ramstage) -nostdlib -m armelf_linux_eabi --gc-sections -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) --end-group -T $(src)/arch/arm64/ramstage.ld
-else
-	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -Wl,--start-group $(ramstage-objs) -Wl,--end-group -T $(src)/arch/arm64/ramstage.ld
-endif
+	$(LD_ramstage) -nostdlib --gc-sections -o $@ --start-group $(ramstage-objs) --end-group -T $(src)/arch/arm64/ramstage.ld
 
 endif # CONFIG_ARCH_RAMSTAGE_ARM64

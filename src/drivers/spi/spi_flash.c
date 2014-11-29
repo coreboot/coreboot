@@ -79,8 +79,8 @@ int spi_flash_cmd(struct spi_slave *spi, u8 cmd, void *response, size_t len)
 	return ret;
 }
 
-int spi_flash_cmd_read(struct spi_slave *spi, const u8 *cmd,
-		size_t cmd_len, void *data, size_t data_len)
+static int spi_flash_cmd_read(struct spi_slave *spi, const u8 *cmd,
+			      size_t cmd_len, void *data, size_t data_len)
 {
 	int ret = do_spi_flash_cmd(spi, cmd, cmd_len, data, data_len);
 	if (ret) {
@@ -108,41 +108,51 @@ int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 	return ret;
 }
 
-int spi_flash_read_common(struct spi_flash *flash, const u8 *cmd,
-		size_t cmd_len, void *data, size_t data_len)
+static int spi_flash_cmd_read_array(struct spi_slave *spi, u8 *cmd,
+				    size_t cmd_len, u32 offset,
+				    size_t len, void *data)
 {
-	struct spi_slave *spi = flash->spi;
-	int ret;
+	while (len) {
+		size_t transfer_size;
 
-	spi->rw = SPI_READ_FLAG;
-	ret = spi_flash_cmd_read(spi, cmd, cmd_len, data, data_len);
+		if (spi->max_transfer_size)
+			transfer_size = min(len, spi->max_transfer_size);
+		else
+			transfer_size = len;
 
-	return ret;
+		spi_flash_addr(offset, cmd);
+
+		if (spi_flash_cmd_read(spi, cmd, cmd_len, data, transfer_size))
+			break;
+
+		offset += transfer_size;
+		data = (void *)((uintptr_t)data + transfer_size);
+		len -= transfer_size;
+	}
+
+	return len != 0;
 }
 
 int spi_flash_cmd_read_fast(struct spi_flash *flash, u32 offset,
 		size_t len, void *data)
 {
-	struct spi_slave *spi = flash->spi;
 	u8 cmd[5];
 
 	cmd[0] = CMD_READ_ARRAY_FAST;
-	spi_flash_addr(offset, cmd);
 	cmd[4] = 0x00;
 
-	return spi_flash_cmd_read(spi, cmd, sizeof(cmd), data, len);
+	return spi_flash_cmd_read_array(flash->spi, cmd, sizeof(cmd),
+					offset, len, data);
 }
 
 int spi_flash_cmd_read_slow(struct spi_flash *flash, u32 offset,
-		size_t len, void *data)
+			    size_t len, void *data)
 {
-	struct spi_slave *spi = flash->spi;
 	u8 cmd[4];
 
 	cmd[0] = CMD_READ_ARRAY_SLOW;
-	spi_flash_addr(offset, cmd);
-
-	return spi_flash_cmd_read(spi, cmd, sizeof(cmd), data, len);
+	return spi_flash_cmd_read_array(flash->spi, cmd, sizeof(cmd),
+					offset, len, data);
 }
 
 int spi_flash_cmd_poll_bit(struct spi_flash *flash, unsigned long timeout,

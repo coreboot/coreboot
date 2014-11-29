@@ -25,6 +25,9 @@
 #error "Unsupported SPI driver API"
 #endif
 
+/* Imgtec controller uses 16 bit packet length. */
+#define IMGTEC_SPI_MAX_TRANSFER_SIZE   ((1 << 16) - 1)
+
 struct img_spi_slave {
 	struct spi_slave slave;
 	/* SPIM instance device parameters */
@@ -441,6 +444,8 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	slave->bus = bus;
 	slave->cs = cs;
 	slave->rw = SPI_READ_FLAG | SPI_WRITE_FLAG;
+	slave->max_transfer_size = IMGTEC_SPI_MAX_TRANSFER_SIZE;
+
 	device_parameters->bitrate = 64;
 	device_parameters->cs_setup = 0;
 	device_parameters->cs_hold = 0;

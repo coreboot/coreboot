@@ -10,6 +10,10 @@
 
 #define call_tx(x) tx_byte(x, data)
 
+#if !CONFIG_ARCH_MIPS
+#define SUPPORT_64BIT_INTS
+#endif
+
 /* haha, don't need ctype.c */
 #define isdigit(c)	((c) >= '0' && (c) <= '9')
 #define is_digit isdigit
@@ -33,13 +37,25 @@ static int skip_atoi(const char **s)
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 
 static int number(void (*tx_byte)(unsigned char byte, void *data),
-	unsigned long long num, int base, int size, int precision, int type,
+	unsigned long long inum, int base, int size, int precision, int type,
 	void *data)
 {
 	char c,sign,tmp[66];
 	const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
 	int i;
 	int count = 0;
+#ifdef SUPPORT_64BIT_INTS
+	unsigned long long num = inum;
+#else
+	unsigned long num = (long)inum;
+
+	if (num != inum) {
+		/* Alert user to an incorrect result by printing #^!. */
+		call_tx('#');
+		call_tx('^');
+		call_tx('!');
+	}
+#endif
 
 	if (type & LARGE)
 		digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";

@@ -22,9 +22,12 @@
 #ifndef __CHROMEOS_VBOOT2_MEMLAYOUT_H
 #define __CHROMEOS_VBOOT2_MEMLAYOUT_H
 
+/* Careful: required work buffer size depends on RW properties such as key size
+ * and algorithm -- what works for you might stop working after an update. Do
+ * NOT lower the asserted minimum without consulting vboot devs (rspangler)! */
 #define VBOOT2_WORK(addr, size) \
-	REGION(vboot2_work, addr, size, 4) \
-	_ = ASSERT(size >= 16K, "vboot2 work buffer must be at least 16K!");
+	REGION(vboot2_work, addr, size, 8) \
+	_ = ASSERT(size >= 12K, "vboot2 work buffer must be at least 12K!");
 
 #ifdef __VERSTAGE__
 	#define VERSTAGE(addr, sz) \

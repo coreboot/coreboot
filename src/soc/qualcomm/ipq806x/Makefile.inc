@@ -56,8 +56,8 @@ $(objcbfs)/bootblock.mbn: $(objcbfs)/bootblock.raw
 # Create a complete bootblock which will start up the system
 $(objcbfs)/bootblock.bin: $(call strip_quotes,$(CONFIG_SBL_BLOB)) \
 			   $(objcbfs)/bootblock.mbn
-	@printf "    CAT    $(subst $(obj)/,,$(@))\n"
-	@cat $^  >  $@.tmp
+	@printf "    MBNCAT     $(subst $(obj)/,,$(@))\n"
+	@util/ipqheader/mbncat.py -o $@.tmp $^
 	@mv $@.tmp $@
 
 endif

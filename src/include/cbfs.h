@@ -76,7 +76,12 @@ void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
 void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
 			       const void *address);
 
-/* Defined in individual arch / board implementation. */
+
+/*
+ * Defined in individual arch / board implementation.
+ *
+ * it returns 0 on success and non-zero on error.
+ */
 int init_default_cbfs_media(struct cbfs_media *media);
 
 #endif

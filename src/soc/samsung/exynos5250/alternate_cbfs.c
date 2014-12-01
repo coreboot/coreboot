@@ -171,6 +171,6 @@ int init_default_cbfs_media(struct cbfs_media *media)
 	default:
 		printk(BIOS_EMERG, "Exynos OM_STAT value 0x%x not supported!\n",
 			exynos_power->om_stat);
-		return 0;
+		return 1;
 	}
 }

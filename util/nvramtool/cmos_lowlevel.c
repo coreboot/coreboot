@@ -128,7 +128,7 @@ unsigned long long cmos_read(const cmos_entry_t * e)
 	result = 0;
 
 	if (e->config == CMOS_ENTRY_STRING) {
-		int strsz = (length + 7) / 8;
+		int strsz = (length + 7) / 8 + 1;
 		char *newstring = malloc(strsz);
 		unsigned usize = (8 * sizeof(unsigned long long));
 

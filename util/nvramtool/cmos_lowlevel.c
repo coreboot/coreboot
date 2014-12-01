@@ -112,6 +112,9 @@ static inline void put_bits(unsigned char value, unsigned bit,
  * Read value from nonvolatile RAM at position given by 'bit' and 'length'
  * and return this value.  The I/O privilege level of the currently executing
  * process must be set appropriately.
+ *
+ * Returned value is either (unsigned long long), or malloc()'d (char *)
+ * cast to (unsigned long long)
  ****************************************************************************/
 unsigned long long cmos_read(const cmos_entry_t * e)
 {
@@ -126,7 +129,7 @@ unsigned long long cmos_read(const cmos_entry_t * e)
 
 	if (e->config == CMOS_ENTRY_STRING) {
 		int strsz = (length + 7) / 8;
-		char *newstring = alloca(strsz);
+		char *newstring = malloc(strsz);
 		unsigned usize = (8 * sizeof(unsigned long long));
 
 		if (!newstring) {

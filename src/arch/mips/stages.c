@@ -28,8 +28,5 @@ void stage_entry(void)
 void stage_exit(void *addr)
 {
 	void (*doit)(void) = addr;
-
-	/* TODO: synci */
-
 	doit();
 }

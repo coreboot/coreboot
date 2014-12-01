@@ -20,4 +20,33 @@
 #ifndef __MIPS_ARCH_CACHE_H
 #define __MIPS_ARCH_CACHE_H
 
+#include <stddef.h>
+#include <stdint.h>
+
+#define get_icache_line()	__get_line_size($16, 1, 19, 3)
+#define get_dcache_line()	__get_line_size($16, 1, 10, 3)
+#define get_L2cache_line()	__get_line_size($16, 2, 20, 4)
+
+#define CACHE_TYPE_SHIFT	(0)
+#define CACHE_OP_SHIFT		(2)
+#define CACHE_TYPE_MASK		(0x3)
+#define CACHE_OP_MASK		(0x7)
+
+/* Cache type */
+#define ICACHE			0x00
+#define DCACHE			0x01
+#define L2CACHE			0x03
+
+/* Cache operation*/
+#define WB_INVD			0x05
+
+#define CACHE_CODE(type, op)	((((type) & (CACHE_TYPE_MASK)) <<	\
+				(CACHE_TYPE_SHIFT)) |			\
+				(((op) & (CACHE_OP_MASK)) << (CACHE_OP_SHIFT)))
+
+/* Perform cache operation on cache lines for target addresses */
+void perform_cache_operation(uintptr_t start, size_t size, uint8_t operation);
+/* Invalidate all caches: instruction, data, L2 data */
+void cache_invalidate_all(uintptr_t start, size_t size);
+
 #endif /* __MIPS_ARCH_CACHE_H */

@@ -36,16 +36,6 @@ _start:
 	bne	$t0, $t1, 1b
 	addi	$t0, $t0, 4
 
-	/*
-	 * Disable caches for now, proper cache management is coming soon.
-	 * http://crosbug.com/p/34127
-	 */
-	mfc0	$t0, $16
-	li	$t1, -8
-	and	$t0, $t0, $t1
-	ori	$t0, $t0, 2
-	mtc0	$t0, $16
-
 	/* Run main */
 	b	main
 

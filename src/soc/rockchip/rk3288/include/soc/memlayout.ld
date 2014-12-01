@@ -35,15 +35,16 @@ SECTIONS
 	SRAM_START(0xFF700000)
 	TTB(0xFF700000, 16K)
 	BOOTBLOCK(0xFF704004, 15K - 4)
-	TTB_SUBTABLES(0xFF707c00, 1K)
-	VBOOT2_WORK(0xFF708000, 16K)
+	TTB_SUBTABLES(0xFF707C00, 1K)
+	PRERAM_CBMEM_CONSOLE(0xFF708000, 4K)
+	VBOOT2_WORK(0xFF709000, 12K)
 	OVERLAP_VERSTAGE_ROMSTAGE(0xFF70C000, 40K)
 	PRERAM_CBFS_CACHE(0xFF716000, 4K)
 	STACK(0xFF717000, 4K)
 	SRAM_END(0xFF718000)
 
-	/* 4K of special SRAM in PMU power domain. Careful: only supports 32-bit
-	 * wide write accesses! Only use with MMU and writeback mapping. */
+	/* 4K of special SRAM in PMU power domain.
+	 * Careful: only supports 32-bit wide write accesses! */
 	SYMBOL(pmu_sram, 0xFF720000)
 	SYMBOL(epmu_sram, 0xFF721000)
 }

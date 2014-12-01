@@ -30,6 +30,6 @@
 #ifndef _ARCH_EXCEPTION_H
 #define _ARCH_EXCEPTION_H
 
-static void exception_init(void) { /* not implemented */ }
+static inline void exception_init(void) { /* not implemented */ }
 
 #endif

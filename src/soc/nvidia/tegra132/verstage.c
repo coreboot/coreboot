@@ -19,6 +19,8 @@
 
 #include <arch/cache.h>
 #include <arch/exception.h>
+#include <arch/hlt.h>
+#include <arch/stages.h>
 #include <console/console.h>
 #include <soc/verstage.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -28,12 +30,21 @@ void __attribute__((weak)) verstage_mainboard_init(void)
 	/* Default empty implementation. */
 }
 
-void main(void)
+static void verstage(void)
 {
+	void *entry;
+
 	console_init();
 	exception_init();
-
 	verstage_mainboard_init();
 
-	vboot2_verify_firmware();
+	entry = vboot2_verify_firmware();
+	if (entry != (void *)-1)
+		stage_exit(entry);
+}
+
+void main(void)
+{
+	verstage();
+	hlt();
 }

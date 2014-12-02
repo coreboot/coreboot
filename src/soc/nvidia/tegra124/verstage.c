@@ -19,6 +19,8 @@
 
 #include <arch/cache.h>
 #include <arch/exception.h>
+#include <arch/hlt.h>
+#include <arch/stages.h>
 #include <console/console.h>
 #include <soc/cache.h>
 #include <soc/early_configs.h>
@@ -47,12 +49,23 @@ static void soc_init(void)
 	enable_cache();
 }
 
+static void verstage(void)
+{
+	void *entry;
+
+	soc_init();
+	early_mainboard_init();
+
+	entry = vboot2_verify_firmware();
+	if (entry != (void *)-1)
+		stage_exit(entry);
+}
+
 void main(void)
 {
 	asm volatile ("bl arm_init_caches"
 		      : : : "r0", "r1", "r2", "r3", "r4", "r5", "ip");
 
-	soc_init();
-	early_mainboard_init();
-	vboot2_verify_firmware();
+	verstage();
+	hlt();
 }

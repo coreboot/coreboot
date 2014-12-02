@@ -22,7 +22,7 @@
 
 #include "../vboot_common.h"
 
-void vboot2_verify_firmware(void);
+void *vboot2_verify_firmware(void);
 void *vboot2_load_ramstage(void);
 void verstage_main(void);
 void *vboot_load_stage(int stage_index,

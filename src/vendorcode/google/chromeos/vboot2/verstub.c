@@ -52,7 +52,7 @@ static struct vb2_working_data *init_vb2_working_data(void)
  * 2) We're already in the verstage. Verify firmware, then load the romstage and
  * exits to it.
  */
-void vboot2_verify_firmware(void)
+void *vboot2_verify_firmware(void)
 {
 	void *entry;
 	struct vb2_working_data *wd;
@@ -66,7 +66,6 @@ void vboot2_verify_firmware(void)
 		if (entry == (void *)-1)
 			die("failed to load verstage");
 
-		timestamp_add_now(TS_END_COPYVER);
 		/* verify and select a slot */
 		stage_exit(entry);
 	} else {
@@ -75,7 +74,7 @@ void vboot2_verify_firmware(void)
 
 	/* jump to the selected slot */
 	timestamp_add_now(TS_START_COPYROM);
-	entry = NULL;
+	entry = (void *)-1;
 	if (vboot_is_slot_selected(wd)) {
 		/* RW A or B */
 		struct vboot_region fw_main;
@@ -93,8 +92,5 @@ void vboot2_verify_firmware(void)
 	}
 	timestamp_add_now(TS_END_COPYROM);
 
-	if (entry != NULL && entry != (void *)-1)
-		stage_exit(entry);
-
-	die("failed to exit from stage\n");
+	return entry;
 }

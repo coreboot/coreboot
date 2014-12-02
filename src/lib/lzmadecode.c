@@ -20,6 +20,7 @@
 */
 
 #include "lzmadecode.h"
+#include <stdint.h>
 
 #define kNumTopBits 24
 #define kTopValue ((UInt32)1 << kNumTopBits)
@@ -30,7 +31,7 @@
 
 /* Use 32-bit reads whenever possible to avoid bad flash performance.  */
 #define RC_READ_BYTE (look_ahead_ptr < 4 ? look_ahead.raw[look_ahead_ptr++] \
-		      : ((((UInt32) Buffer & 3) || ((SizeT) (BufferLim - Buffer) < 4)) ? (*Buffer++) \
+		      : ((((uintptr_t) Buffer & 3) || ((SizeT) (BufferLim - Buffer) < 4)) ? (*Buffer++) \
 	   : ((look_ahead.dw = *(UInt32 *)Buffer), (Buffer += 4), (look_ahead_ptr = 1), look_ahead.raw[0])))
 
 #define RC_INIT2 Code = 0; Range = 0xFFFFFFFF; \

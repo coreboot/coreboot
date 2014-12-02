@@ -90,11 +90,3 @@ static int init_rom_media_cbfs(struct cbfs_media *media) {
 int init_default_cbfs_media(struct cbfs_media *media) {
 	return init_rom_media_cbfs(media);
 }
-// bug in coreboot. Fix me.
-// even if you have no use for lzma cbfs demands it.
-// and the ulzma code is terrible -- full of bad 32/64 bad things.
-unsigned long ulzma(unsigned char *src, unsigned char *dst);
-unsigned long ulzma(unsigned char *src, unsigned char *dst)
-{
-	return 0;
-}

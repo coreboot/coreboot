@@ -41,7 +41,7 @@ bootblock-y += \
 
 $(objcbfs)/bootblock.debug: $(src)/arch/riscv/bootblock.ld $(obj)/ldoptions $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) -m elf64-littleriscv --gc-sections -static -o $@ -L$(obj) $< -T $(src)/arch/riscv/bootblock.ld
+	$(LD_bootblock) -m elf64lriscv --gc-sections -static -o $@ -L$(obj) $< -T $(src)/arch/riscv/bootblock.ld
 
 endif
 
@@ -58,7 +58,6 @@ romstage-y += \
 	$(top)/src/lib/memcpy.c \
 	$(top)/src/lib/memmove.c \
 	$(top)/src/lib/memset.c
-romstage-y += cbmem.c
 
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
@@ -86,7 +85,6 @@ ramstage-y += rom_media.c
 ramstage-y += stages.c
 ramstage-y += misc.c
 ramstage-y += boot.c
-ramstage-y += cbmem.c
 ramstage-y += tables.c
 ramstage-y += \
 	$(top)/src/lib/memchr.c \

@@ -21,7 +21,6 @@
 #include <console/uart.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
-#include "frontend.h"
 
 static uint8_t *buf = (void *)0x3f8;
 uintptr_t uart_platform_base(int idx)

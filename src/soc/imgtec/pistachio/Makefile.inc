@@ -34,6 +34,7 @@ bootblock-y += monotonic_timer.c
 
 ramstage-y += cbmem.c
 ramstage-y += monotonic_timer.c
+ramstage-y += soc.c
 
 romstage-y += cbmem.c
 romstage-y += romstage.c

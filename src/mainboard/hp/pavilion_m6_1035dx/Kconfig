@@ -69,8 +69,4 @@ config VGA_BIOS_ID
 	string
 	default "1002,9900"
 
-config HUDSON_LEGACY_FREE
-	bool
-	default y
-
 endif # BOARD_HP_PAVILION_M6_1035DX

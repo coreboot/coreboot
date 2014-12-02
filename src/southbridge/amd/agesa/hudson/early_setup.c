@@ -123,7 +123,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(ACPI_PM1_CNT_BLK);
@@ -131,14 +131,12 @@ int acpi_get_sleep_type(void)
 	/* printk(BIOS_DEBUG, "SLP_TYP type was %x\n", tmp); */
 	return (int)tmp;
 }
-#endif
 
-#if CONFIG_HAVE_ACPI_RESUME
 int acpi_is_wakeup_early(void)
 {
 	return (acpi_get_sleep_type() == 3);
 }
-#endif
+#endif /* CONFIG_HAVE_ACPI_RESUME */
 
 unsigned long get_top_of_ram(void)
 {
@@ -153,4 +151,4 @@ unsigned long get_top_of_ram(void)
 	return (unsigned long) xdata;
 }
 
-#endif
+#endif /* _HUDSON_EARLY_SETUP_C_ */

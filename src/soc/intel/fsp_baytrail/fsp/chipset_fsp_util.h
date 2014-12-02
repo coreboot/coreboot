@@ -50,4 +50,12 @@
 /* Revision of the FSP binary */
 #define FSP_GOLD3_REV_ID    0x00000303
 
+#define NO_DECREMENT_FOR_DEFAULT	0
+#define DECREMENT_FOR_DEFAULT		1
+
+#define UPD_MEMDOWN_CHECK(member, adjust) \
+	if (config->member != UPD_DEFAULT) { \
+		UpdData->PcdMemoryParameters.member = config->member - adjust; \
+	}
+
 #endif /* CHIPSET_FSP_UTIL_H */

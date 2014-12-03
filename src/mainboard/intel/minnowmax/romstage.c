@@ -21,6 +21,8 @@
 
 #include <baytrail/romstage.h>
 #include <drivers/intel/fsp/fsp_util.h>
+#include <pc80/mc146818rtc.h>
+#include <console/console.h>
 #include "chip.h"
 
 /**
@@ -54,6 +56,7 @@ void late_mainboard_romstage_entry()
 void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 {
 	UPD_DATA_REGION *UpdData = FspRtBuffer->Common.UpdDataRgnPtr;
+	u8 use_xhci = UpdData->PcdEnableXhci;
 
 	/*
 	 * Minnow Max Board	: 1GB SKU uses 2Gb density memory
@@ -64,6 +67,14 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 	if (CONFIG_MINNOWMAX_2GB_SKU)
 		UpdData->PcdMemoryParameters.DIMMDensity
 		+= (DIMM_DENSITY_4G_BIT - DIMM_DENSITY_2G_BIT);
+
+	/* Update XHCI UPD value if required */
+	get_option(&use_xhci, "use_xhci_over_ehci");
+	if ((use_xhci < 2) && (use_xhci != UpdData->PcdEnableXhci)) {
+		UpdData->PcdEnableXhci = use_xhci;
+		printk(FSP_INFO_LEVEL, "Xhci updated from CMOS:\t\t\t%s\n",
+			UpdData->PcdEnableXhci?"Enabled":"Disabled");
+	}
 
 	return;
 }

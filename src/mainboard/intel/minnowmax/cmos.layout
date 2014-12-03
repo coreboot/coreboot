@@ -85,7 +85,8 @@ entries
 # coreboot config options: southbridge
 408          1       e       1        nmi
 409          2       e       7        power_on_after_fail
-#411          5       r       0        unused
+411          2       e       8        use_xhci_over_ehci
+#413          3       r       0        unused
 
 # MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed
@@ -133,6 +134,9 @@ enumerations
 7     0     Disable
 7     1     Enable
 7     2     Keep
+8     0     EHCI
+8     1     XHCI
+8     2     Default
 # -----------------------------------------------------------------
 checksums
 

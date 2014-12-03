@@ -17,29 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <memlayout.h>
-#include <vendorcode/google/chromeos/memlayout.h>
+#include <console/console.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
-#include <arch/header.ld>
-
-SECTIONS
+void main(void)
 {
-	SRAM_START(0x20000)
-
-	BOOTBLOCK(0x20000, 40K)
-	/* there is no VERSTAGE because it's built into bootblock */
-
-	PRERAM_CBFS_CACHE(0x2A000, 8K)
-	STACK(0x2C000, 8K)
-	VBOOT2_WORK(0x2E000, 16K)
-
-	SRAM_END(0x40000)
-
-	DRAM_START(0x40000)
-
-	RAMSTAGE(0x40000, 128K)
-	POSTRAM_CBFS_CACHE(0x60000, 1M)
-
-	ROMSTAGE(0xF7A40000, 32K)
-	TTB(0xF7A48000, 16K)
+	console_init();
+	vboot2_verify_firmware();
 }

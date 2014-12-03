@@ -55,13 +55,13 @@ config HUDSON_XHCI_ENABLE
 
 config HUDSON_XHCI_FWM
 	bool "Add xhci firmware"
-	default y
+	default y if USE_BLOBS
 	help
 	  Add Hudson 2/3/4 XHCI Firmware to support the onboard USB 3.0
 
 config HUDSON_IMC_FWM
 	bool "Add imc firmware"
-	default y
+	default y if USE_BLOBS
 	help
 	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
 

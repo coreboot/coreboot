@@ -40,6 +40,7 @@ static void *load_ramstage(struct vboot_handoff *vboot_handoff,
 			   struct vboot_region *fw_main)
 {
 	struct vboot_components *fw_info;
+	void *ret;
 	int i;
 
 	fw_info = vboot_locate_components(fw_main);
@@ -53,7 +54,10 @@ static void *load_ramstage(struct vboot_handoff *vboot_handoff,
 		vboot_handoff->components[i].size = fw_info->entries[i].size;
 	}
 
-	return vboot_load_stage(CONFIG_VBOOT_RAMSTAGE_INDEX, fw_main, fw_info);
+	timestamp_add_now(TS_START_COPYRAM);
+	ret = vboot_load_stage(CONFIG_VBOOT_RAMSTAGE_INDEX, fw_main, fw_info);
+	timestamp_add_now(TS_END_COPYRAM);
+	return ret;
 }
 
 /**

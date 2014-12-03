@@ -24,6 +24,7 @@
 #include <cbfs.h>
 #include <halt.h>
 #include <program_loading.h>
+#include <timestamp.h>
 
 void run_romstage(void)
 {
@@ -32,11 +33,13 @@ void run_romstage(void)
 		.type = PROG_ROMSTAGE,
 	};
 
+	timestamp_add_now(TS_START_COPYROM);
 	if (cbfs_load_prog_stage(CBFS_DEFAULT_MEDIA, &romstage) < 0) {
 		if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
 			die("Couldn't load romstage.\n");
 		halt();
 	}
+	timestamp_add_now(TS_END_COPYROM);
 
 	prog_run(&romstage);
 }

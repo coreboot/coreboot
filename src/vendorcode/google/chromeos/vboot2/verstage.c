@@ -21,7 +21,9 @@
 #include <arch/exception.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
+#include <delay.h>
 #include <string.h>
+#include <timestamp.h>
 #include <vb2_api.h>
 
 #include "../chromeos.h"
@@ -91,11 +93,21 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 
 static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 {
+	uint64_t load_ts;
 	uint32_t expected_size;
 	MAYBE_STATIC uint8_t block[TODO_BLOCK_SIZE];
 	size_t block_size = sizeof(block);
 	uintptr_t offset;
 	int rv;
+
+	/*
+	 * Since loading the firmware and calculating its hash is intertwined,
+	 * we use this little trick to measure them separately and pretend it
+	 * was first loaded and then hashed in one piece with the timestamps.
+	 * (This split won't make sense with memory-mapped media like on x86.)
+	 */
+	load_ts = timestamp_get();
+	timestamp_add(TS_START_HASH_BODY, load_ts);
 
 	expected_size = fw_main->size;
 	offset = fw_main->offset_addr;
@@ -107,13 +119,17 @@ static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 
 	/* Extend over the body */
 	while (expected_size) {
+		uint64_t temp_ts;
 		void *b;
 		if (block_size > expected_size)
 			block_size = expected_size;
 
+		temp_ts = timestamp_get();
 		b = vboot_get_region(offset, block_size, block);
 		if (b == NULL)
 			return VB2_ERROR_UNKNOWN;
+		load_ts += timestamp_get() - temp_ts;
+
 		rv = vb2api_extend_hash(ctx, b, block_size);
 		if (rv)
 			return rv;
@@ -122,10 +138,15 @@ static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 		offset += block_size;
 	}
 
-	/* Check the result */
+	timestamp_add(TS_DONE_LOADING, load_ts);
+	timestamp_add_now(TS_DONE_HASHING);
+
+	/* Check the result (with RSA signature verification) */
 	rv = vb2api_check_hash(ctx);
 	if (rv)
 		return rv;
+
+	timestamp_add_now(TS_END_HASH_BODY);
 
 	return VB2_SUCCESS;
 }
@@ -173,6 +194,7 @@ void verstage_main(void)
 	struct vboot_region fw_main;
 	struct vb2_working_data *wd = vboot_get_working_data();
 	int rv;
+	timestamp_add_now(TS_START_VBOOT);
 
 	/* Set up context and work buffer */
 	memset(&ctx, 0, sizeof(ctx));
@@ -185,7 +207,9 @@ void verstage_main(void)
 	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
+	timestamp_add_now(TS_START_TPMINIT);
 	antirollback_read_space_firmware(&ctx);
+	timestamp_add_now(TS_END_TPMINIT);
 
 	if (get_developer_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
@@ -194,17 +218,18 @@ void verstage_main(void)
 		ctx.flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
 	}
 
-	/* Do early init */
+	/* Do early init (set up secdata and NVRAM, load GBB) */
 	printk(BIOS_INFO, "Phase 1\n");
 	rv = vb2api_fw_phase1(&ctx);
 	if (rv) {
 		printk(BIOS_INFO, "Recovery requested (%x)\n", rv);
 		/* If we need recovery mode, leave firmware selection now */
 		save_if_needed(&ctx);
+		timestamp_add_now(TS_END_VBOOT);
 		return;
 	}
 
-	/* Determine which firmware slot to boot */
+	/* Determine which firmware slot to boot (based on NVRAM) */
 	printk(BIOS_INFO, "Phase 2\n");
 	rv = vb2api_fw_phase2(&ctx);
 	if (rv) {
@@ -213,9 +238,11 @@ void verstage_main(void)
 		vboot_reboot();
 	}
 
-	/* Try that slot */
+	/* Try that slot (verify its keyblock and preamble) */
 	printk(BIOS_INFO, "Phase 3\n");
+	timestamp_add_now(TS_START_VERIFY_SLOT);
 	rv = vb2api_fw_phase3(&ctx);
+	timestamp_add_now(TS_END_VERIFY_SLOT);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
 		save_if_needed(&ctx);
@@ -245,6 +272,7 @@ void verstage_main(void)
 
 	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
 	vb2_set_selected_region(wd, &fw_main);
+	timestamp_add_now(TS_END_VBOOT);
 }
 
 #if IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE)

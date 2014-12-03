@@ -25,7 +25,7 @@
 #include <arch/early_variables.h>
 #include <smp/node.h>
 
-#define MAX_TIMESTAMPS 30
+#define MAX_TIMESTAMPS 60
 
 static struct timestamp_table* ts_table_p CAR_GLOBAL = NULL;
 static uint64_t ts_basetime CAR_GLOBAL = 0;

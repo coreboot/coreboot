@@ -12,6 +12,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <lib.h>
+#include <timestamp.h>
 
 #include "lzmadecode.h"
 
@@ -27,6 +28,8 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 	MAYBE_STATIC unsigned char scratchpad[15980];
 	unsigned char *cp;
 
+	/* Note: these timestamps aren't useful for memory-mapped media (x86) */
+	timestamp_add_now(TS_START_ULZMA);
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
 	/* The outSize in LZMA stream is a 64bit integer stored in little-endian
 	 * (ref: lzma.cc@LZMACompress: put_64). To prevent accessing by
@@ -50,5 +53,6 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 		printk(BIOS_WARNING, "lzma: Decoding error = %d\n", res);
 		return 0;
 	}
+	timestamp_add_now(TS_END_ULZMA);
 	return outSize;
 }

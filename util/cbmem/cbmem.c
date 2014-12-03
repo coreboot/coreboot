@@ -334,24 +334,17 @@ u64 arch_convert_raw_ts_entry(u64 ts)
 
 /*
  * Print an integer in 'normalized' form - with commas separating every three
- * decimal orders. The 'comma' parameter indicates if a comma is needed after
- * the value is printed.
+ * decimal orders.
  */
-static void print_norm(u64 v, int comma)
+static void print_norm(u64 v)
 {
-	int first_triple = 1;
-
-	if (v > 1000) {
+	if (v >= 1000) {
 		/* print the higher order sections first */
-		print_norm(v / 1000, 1);
-		first_triple = 0;
+		print_norm(v / 1000);
+		printf(",%3.3u", (u32)(v % 1000));
+	} else {
+		printf("%u", (u32)(v % 1000));
 	}
-	if (first_triple)
-		printf("%d", (u32)(v % 1000));
-	else
-		printf("%3.3d", (u32)(v % 1000));
-	if (comma)
-		printf(",");
 }
 
 enum additional_timestamp_id {
@@ -381,11 +374,15 @@ static const struct timestamp_id_to_name {
 	{ TS_END_ROMSTAGE,	"end of romstage" },
 	{ TS_START_VBOOT,	"start of verified boot" },
 	{ TS_END_VBOOT,		"end of verified boot" },
-	{ TS_START_COPYRAM,	"start of copying ram stage" },
-	{ TS_END_COPYRAM,	"end of copying ram stage" },
+	{ TS_START_COPYRAM,	"starting to load ramstage" },
+	{ TS_END_COPYRAM,	"finished loading ramstage" },
 	{ TS_START_RAMSTAGE,	"start of ramstage" },
-	{ TS_START_BOOTBLOCK,   "start of bootblock" },
-	{ TS_END_BOOTBLOCK,     "end of bootblock" },
+	{ TS_START_BOOTBLOCK,	"start of bootblock" },
+	{ TS_END_BOOTBLOCK,	"end of bootblock" },
+	{ TS_START_COPYROM,	"starting to load romstage" },
+	{ TS_END_COPYROM,	"finished loading romstage" },
+	{ TS_START_ULZMA,	"starting LZMA decompress (ignore for x86)" },
+	{ TS_END_ULZMA,		"finished LZMA decompress (ignore for x86)" },
 	{ TS_DEVICE_ENUMERATE,	"device enumeration" },
 	{ TS_DEVICE_CONFIGURE,	"device configuration" },
 	{ TS_DEVICE_ENABLE,	"device enable" },
@@ -396,6 +393,18 @@ static const struct timestamp_id_to_name {
 	{ TS_LOAD_PAYLOAD,	"load payload" },
 	{ TS_ACPI_WAKE_JUMP,	"ACPI wake jump" },
 	{ TS_SELFBOOT_JUMP,	"selfboot jump" },
+
+	{ TS_START_COPYVER,	"starting to load verstage" },
+	{ TS_END_COPYVER,	"finished loading verstage" },
+	{ TS_START_TPMINIT,	"starting to initialize TPM" },
+	{ TS_END_TPMINIT,	"finished TPM initialization" },
+	{ TS_START_VERIFY_SLOT,	"starting to verify keyblock/preamble (RSA)" },
+	{ TS_END_VERIFY_SLOT,	"finished verifying keyblock/preamble (RSA)" },
+	{ TS_START_HASH_BODY,	"starting to verify body (load+SHA2+RSA) " },
+	{ TS_DONE_LOADING,	"finished loading body (ignore for x86)" },
+	{ TS_DONE_HASHING,	"finished calculating body hash (SHA2)" },
+	{ TS_END_HASH_BODY,	"finished verifying body signature (RSA)" },
+
 	{ TS_DC_START,		"depthcharge start" },
 	{ TS_RO_PARAMS_INIT,	"RO parameter init" },
 	{ TS_RO_VB_INIT,	"RO vboot init" },
@@ -421,12 +430,11 @@ void timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
 	}
 
 	printf("%4d:", id);
-	printf("%-30s", name);
-	print_norm(arch_convert_raw_ts_entry(stamp), 0);
+	printf("%-50s", name);
+	print_norm(arch_convert_raw_ts_entry(stamp));
 	if (prev_stamp) {
 		printf(" (");
-		print_norm(arch_convert_raw_ts_entry(stamp
-				- prev_stamp), 0);
+		print_norm(arch_convert_raw_ts_entry(stamp - prev_stamp));
 		printf(")");
 	}
 	printf("\n");

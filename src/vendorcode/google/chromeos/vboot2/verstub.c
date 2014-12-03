@@ -21,6 +21,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
+#include <timestamp.h>
 #include "../chromeos.h"
 #include "misc.h"
 #include "symbols.h"
@@ -58,20 +59,22 @@ void vboot2_verify_firmware(void)
 
 	wd = init_vb2_working_data();
 
-#if CONFIG_RETURN_FROM_VERSTAGE
-	/* load verstage from RO */
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				CONFIG_CBFS_PREFIX "/verstage");
-	if (entry == (void *)-1)
-		die("failed to load verstage");
+	if (IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE)) {
+		/* load verstage from RO */
+		entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
+					CONFIG_CBFS_PREFIX "/verstage");
+		if (entry == (void *)-1)
+			die("failed to load verstage");
 
-	/* verify and select a slot */
-	stage_exit(entry);
-#else
-	verstage_main();
-#endif /* CONFIG_RETURN_FROM_VERSTAGE */
+		timestamp_add_now(TS_END_COPYVER);
+		/* verify and select a slot */
+		stage_exit(entry);
+	} else {
+		verstage_main();
+	}
 
 	/* jump to the selected slot */
+	timestamp_add_now(TS_START_COPYROM);
 	entry = NULL;
 	if (vboot_is_slot_selected(wd)) {
 		/* RW A or B */
@@ -88,6 +91,7 @@ void vboot2_verify_firmware(void)
 		entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
 					CONFIG_CBFS_PREFIX "/romstage");
 	}
+	timestamp_add_now(TS_END_COPYROM);
 
 	if (entry != NULL && entry != (void *)-1)
 		stage_exit(entry);

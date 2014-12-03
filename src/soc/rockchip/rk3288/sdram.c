@@ -531,7 +531,7 @@ static void phy_pctrl_reset(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 	rkclk_ddr_reset(channel, 1, 0);
 	udelay(10);
 	rkclk_ddr_reset(channel, 0, 0);
-	udelay(1);
+	udelay(10);
 }
 
 static void phy_dll_bypass_set(struct rk3288_ddr_publ_regs *ddr_publ_regs,

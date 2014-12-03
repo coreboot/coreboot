@@ -1,0 +1,76 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2013 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+chip northbridge/amd/agesa/family16kb/root_complex
+	device cpu_cluster 0 on
+		chip cpu/amd/agesa/family16kb
+			device lapic 0 on  end
+		end
+	end
+
+	device domain 0 on
+		subsystemid 0x1022 0x1410 inherit
+		chip northbridge/amd/agesa/family16kb # CPU side of HT root complex
+
+			chip northbridge/amd/agesa/family16kb # PCI side of HT root complex
+				device pci 0.0 on  end # Root Complex
+				device pci 1.0 on  end # Internal Graphics P2P bridge 0x9804
+				device pci 1.1 on  end # Internal Multimedia
+				device pci 2.0 on  end # PCIe Host Bridge
+				device pci 2.1 on  end # x4 PCIe slot
+				device pci 2.2 on  end # mPCIe slot
+				device pci 2.3 on  end # Realtek NIC
+				device pci 2.4 on  end # Edge Connector
+				device pci 2.5 on  end # Edge Connector
+			end	#chip northbridge/amd/agesa/family16kb
+
+			chip southbridge/amd/agesa/hudson # it is under NB/SB Link, but on the same pci bus
+				device pci 10.0 on  end # XHCI HC0
+				device pci 11.0 on  end # SATA
+				device pci 12.0 on  end # USB
+				device pci 12.2 on  end # USB
+				device pci 13.0 on  end # USB
+				device pci 13.2 on  end # USB
+				device pci 14.0 on      # SM
+					chip drivers/generic/generic #dimm 0-0-0
+						device i2c 50 on end
+					end
+					chip drivers/generic/generic #dimm 0-0-1
+						device i2c 51 on end
+					end
+				end # SM
+				device pci 14.2 on  end # HDA	0x4383
+				device pci 14.3 on  end # LPC	0x439d
+				device pci 14.7 on  end # SD
+			end	#chip southbridge/amd/hudson
+
+			device pci 18.0 on  end
+			device pci 18.1 on  end
+			device pci 18.2 on  end
+			device pci 18.3 on  end
+			device pci 18.4 on  end
+			device pci 18.5 on  end
+			register "spdAddrLookup" = "
+			{
+				{ {0xA0, 0xA2}, {0x00, 0x00}, }, // socket 0 - Channel 0 & 1 - 8-bit SPD addresses
+				{ {0x00, 0x00}, {0x00, 0x00}, }, // socket 1 - Channel 0 & 1 - 8-bit SPD addresses
+			}"
+
+		end	#chip northbridge/amd/agesa/family16kb # CPU side of HT root complex
+	end	#domain
+end	#northbridge/amd/agesa/family16kb/root_complex

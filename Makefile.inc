@@ -91,7 +91,7 @@ $(foreach supported_arch,$(ARCH_SUPPORTED), \
 _toint=$(shell printf "%d" $1)
 _int-add2=$(shell expr $(call _toint,$1) + $(call _toint,$2))
 int-add=$(if $(filter 1,$(words $1)),$(strip $1),$(call int-add,$(call _int-add2,$(word 1,$1),$(word 2,$1)) $(wordlist 3,$(words $1),$1)))
-int-align=$(shell expr $(call _toint,$1) + $(call _toint,$2) - 1 - $(call _toint,$1) % $(call _toint,$2))
+int-align=$(shell A=$(call _toint,$1) B=$(call _toint,$2); expr $$A + \( \( $$B - \( $$A % $$B \) \) % $$B \) )
 file-size=$(shell cat $1 | wc -c)
 
 #######################################################################

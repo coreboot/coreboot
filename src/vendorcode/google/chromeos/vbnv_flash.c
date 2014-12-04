@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <2api.h>
 #include <cbfs.h>
 #include <cbfs_core.h>
 #include <console/console.h>
 #include <spi_flash.h>
 #include <string.h>
+#include <vb2_api.h>
 #include <vboot_nvstorage.h>
 #include "chromeos.h"
 

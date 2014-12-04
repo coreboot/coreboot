@@ -14,11 +14,11 @@
  * time.
  */
 
-#include <2api.h>
-#include <2sysincludes.h>
 #include <assert.h>
+#include <string.h>
 #include <tpm_lite/tlcl.h>
 #include <tpm.h>
+#include <vb2_api.h>
 #include "tlcl_internal.h"
 #include "tlcl_structures.h"
 

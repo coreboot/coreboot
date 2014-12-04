@@ -6,11 +6,12 @@
  * stored in the TPM NVRAM.
  */
 
-#include <2api.h>
-#include <2sysincludes.h>
 #include <antirollback.h>
+#include <stdlib.h>
+#include <string.h>
 #include <tpm_lite/tlcl.h>
 #include <tpm_lite/tss_constants.h>
+#include <vb2_api.h>
 
 #ifndef offsetof
 #define offsetof(A,B) __builtin_offsetof(A,B)

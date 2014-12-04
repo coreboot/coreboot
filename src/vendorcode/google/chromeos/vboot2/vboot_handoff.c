@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <2recovery_reasons.h>
-#include <2struct.h>
 #include <arch/stages.h>
 #include <assert.h>
 #include <stdint.h>
@@ -30,6 +28,8 @@
 #include <console/vtxprintf.h>
 #include <stdlib.h>
 #include <timestamp.h>
+#define NEED_VB20_INTERNALS  /* TODO: remove me! */
+#include <vb2_api.h>
 #include <vboot_struct.h>
 #include "../chromeos.h"
 #include "../fmap.h"

@@ -9,9 +9,9 @@
 #ifndef ANTIROLLBACK_H_
 #define ANTIROLLBACK_H_
 
-#include "2sysincludes.h"
-#include <2api.h>
 #include "tpm_lite/tss_constants.h"
+
+struct vb2_context;
 
 /* TPM NVRAM location indices. */
 #define FIRMWARE_NV_INDEX               0x1007

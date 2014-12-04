@@ -27,7 +27,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SOUTHBRIDGE_AMD_AGESA_HUDSON
 	select EC_COMPAL_ENE932
 	select HAVE_OPTION_TABLE
-	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select HAVE_ACPI_RESUME
 	select HAVE_SMI_HANDLER
@@ -55,10 +54,6 @@ config MAX_CPUS
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-
-config IRQ_SLOT_COUNT
-	int
-	default 11
 
 config ONBOARD_VGA_IS_PRIMARY
 	bool

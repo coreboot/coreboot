@@ -35,11 +35,12 @@ static void dwc2_reinit(hci_t *controller)
 	gintsts_t gintsts = { .d32 = 0 };
 	gahbcfg_t gahbcfg = { .d32 = 0 };
 	grxfsiz_t grxfsiz = { .d32 = 0 };
+	ghwcfg3_t hwcfg3 = { .d32 = 0 };
 	hcintmsk_t hcintmsk = { .d32 = 0 };
 	gnptxfsiz_t gnptxfsiz = { .d32 = 0 };
 
 	const int timeout = 10000;
-	int i;
+	int i, fifo_blocks, tx_blocks;
 
 	/* Wait for AHB idle */
 	for (i = 0; i < timeout; i++) {
@@ -86,10 +87,24 @@ static void dwc2_reinit(hci_t *controller)
 	 * The non-periodic tx fifo and rx fifo share one continuous
 	 * piece of IP-internal SRAM.
 	 */
-	grxfsiz.rxfdep = DWC2_RXFIFO_DEPTH;
+
+	/*
+	 * Read total data FIFO depth from HWCFG3
+	 * this value is in terms of 32-bit words
+	 */
+	hwcfg3.d32 = readl(&reg->core.ghwcfg3);
+	/*
+	 * Reserve 2 spaces for the status entries of received packets
+	 * and 2 spaces for bulk and control OUT endpoints. Calculate how
+	 * many blocks can be alloted, assume largest packet size is 512.
+	 */
+	fifo_blocks = (hwcfg3.dfifodepth - 4) / (512 / 4);
+	tx_blocks = fifo_blocks / 2;
+
+	grxfsiz.rxfdep = (fifo_blocks - tx_blocks) * (512 / 4) + 4;
 	writel(grxfsiz.d32, &reg->core.grxfsiz);
-	gnptxfsiz.nptxfstaddr = DWC2_RXFIFO_DEPTH;
-	gnptxfsiz.nptxfdep = DWC2_NPTXFIFO_DEPTH;
+	gnptxfsiz.nptxfstaddr = grxfsiz.rxfdep;
+	gnptxfsiz.nptxfdep = tx_blocks * (512 / 4);
 	writel(gnptxfsiz.d32, &reg->core.gnptxfsiz);
 
 	/* Init host channels */

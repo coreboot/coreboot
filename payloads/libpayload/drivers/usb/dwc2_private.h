@@ -374,7 +374,6 @@ typedef union {
 	struct {
 		unsigned nptxfstaddr:16;
 		unsigned nptxfdep:16;
-#define DWC2_NPTXFIFO_DEPTH 0x80
 	};
 } gnptxfsiz_t;
 
@@ -390,7 +389,6 @@ typedef union {
 	 */
 	struct {
 		unsigned rxfdep:16;
-#define DWC2_RXFIFO_DEPTH 0x200
 		unsigned reserved:16;
 	};
 } grxfsiz_t;
@@ -436,6 +434,20 @@ typedef union {
 		unsigned wkupint:1;
 	};
 } gintsts_t;
+
+/**
+ * This union represents the bit fields of the User HW Config3 Register
+ * (GHWCFG3).
+ */
+typedef union {
+	/* raw register data */
+	uint32_t d32;
+	/* register bits */
+	struct {
+		unsigned reserved:16;
+		unsigned dfifodepth:16;
+	};
+} ghwcfg3_t;
 
 /**
  * This union represents the bit fields in the Host Configuration Register.

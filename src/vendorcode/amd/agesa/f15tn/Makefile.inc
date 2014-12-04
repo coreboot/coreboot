@@ -230,6 +230,7 @@ libagesa-y += Proc/GNB/Modules/GnbInitTN/PcieMidInitTN.c
 libagesa-y += Proc/GNB/Modules/GnbInitTN/PciePostInitTN.c
 libagesa-y += Proc/GNB/Modules/GnbInitTN/PciePowerGateTN.c
 libagesa-y += Proc/GNB/Modules/GnbInitTN/PcieTablesTN.c
+libagesa-y += Proc/GNB/Modules/GnbIommuScratch/GnbIommuScratch.c
 libagesa-y += Proc/GNB/Modules/GnbIommuIvrs/GnbIommuIvrs.c
 libagesa-y += Proc/GNB/Modules/GnbIvrsLib/GnbIvrsLib.c
 libagesa-y += Proc/GNB/Modules/GnbMSocketLib/GnbMSocketLib.c

@@ -36,6 +36,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "GnbIommuScratch.h"
+
 #include  "AGESA.h"
 #include  "Ids.h"
 #include  "S3SaveState.h"
@@ -83,8 +85,14 @@ GnbIommuScratchMemoryRangeInterface (
     return AGESA_FATAL;
   }
 
-  AddressLow = (((UINT32) ((UINT64) AllocHeapParams.BufferPtr)) + 0x3F) & D0F0x98_x27_IOMMUUrAddr_31_6__MASK;
+/*Align the address to 64 bytes boundary */
+#ifdef __x86_64__
+  AddressLow  = (((UINT32) ((UINT64) AllocHeapParams.BufferPtr)) + 0x3F) & D0F0x98_x27_IOMMUUrAddr_31_6__MASK;
   AddressHigh = ((UINT32) (((UINT64) AllocHeapParams.BufferPtr) >> 32)) & D0F0x98_x26_IOMMUUrAddr_39_32__MASK;
+#else
+  AddressLow  = ((((UINT32) AllocHeapParams.BufferPtr)) + 0x3F) & D0F0x98_x27_IOMMUUrAddr_31_6__MASK;
+  AddressHigh = 0;
+#endif
 
   GnbHandle = GnbGetHandle (StdHeader);
   while (GnbHandle != NULL) {

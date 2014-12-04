@@ -20,7 +20,7 @@
 #include <bootblock_common.h>
 #include <delay.h>
 
-void bootblock_soc_init(void)
+void bootblock_mainboard_early_init(void)
 {
 	init_timer();
 }

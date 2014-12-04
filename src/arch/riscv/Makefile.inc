@@ -41,7 +41,9 @@ bootblock-y += \
 
 $(objcbfs)/bootblock.debug: $(src)/arch/riscv/bootblock.ld $(obj)/ldoptions $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) -m elf64lriscv --gc-sections -static -o $@ -L$(obj) $< -T $(src)/arch/riscv/bootblock.ld
+	$(CC_bootblock) $(CFLAGS_bootblock) -nostartfiles -Wl,--gc-sections -static -o $@ -L$(obj) \
+		-T $(src)/arch/riscv/bootblock.ld -Wl,--start-group $(bootblock-objs) \
+		$(LIBGCC_FILE_NAME_bootblock) -Wl,--end-group
 
 endif
 

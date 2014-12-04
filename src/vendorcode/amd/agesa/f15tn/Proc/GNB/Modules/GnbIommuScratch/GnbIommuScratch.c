@@ -1,10 +1,7 @@
-/* $NoKeywords:$ */
 /**
  * @file
  *
  * NB services
- *
- *
  *
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
@@ -13,8 +10,6 @@
  *
  */
 /*
-*****************************************************************************
-*
  * Copyright (c) 2008 - 2012, Advanced Micro Devices, Inc.
  * All rights reserved.
  *
@@ -39,14 +34,8 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-* ***************************************************************************
-*
-*/
-
-/*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
- *----------------------------------------------------------------------------------------
  */
+
 #include  "AGESA.h"
 #include  "Ids.h"
 #include  "S3SaveState.h"
@@ -57,26 +46,9 @@
 #include  "GnbRegistersTN.h"
 #include  "heapManager.h"
 #include  "Filecode.h"
+
 #define FILECODE PROC_GNB_MODULES_GNBIOMMUSCRATCH_GNBIOMMUSCRATCH_FILECODE
-/*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
- *----------------------------------------------------------------------------------------
- */
 
-
-/*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
- *----------------------------------------------------------------------------------------
- */
-
-
-/*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-
-/*----------------------------------------------------------------------------------------*/
 /**
  * Set Iommu Scratch Memory Range
  * 1) code needs to be executed at Late Init

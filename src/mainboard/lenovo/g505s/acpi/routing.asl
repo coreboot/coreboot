@@ -22,6 +22,11 @@
 	Name(PR0, Package(){
 		/* NB devices */
 		/* Bus 0, Dev 0 - F15 Host Controller */
+		Package(){0x0000FFFF, 0, INTA, 0 },
+		Package(){0x0000FFFF, 1, INTB, 0 },
+		Package(){0x0000FFFF, 2, INTC, 0 },
+		Package(){0x0000FFFF, 3, INTD, 0 },
+
 		/* Bus 0, Dev 1 - PCI Bridge for Internal Graphics(IGP) */
 		Package(){0x0001FFFF, 0, INTB, 0 },
 		Package(){0x0001FFFF, 1, INTC, 0 },

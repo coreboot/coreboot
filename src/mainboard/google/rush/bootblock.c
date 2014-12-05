@@ -50,6 +50,12 @@ static const struct pad_config padcfgs[] = {
 	PAD_CFG_GPIO_INPUT(GPIO_X1_AUD, PINMUX_PULL_NONE),
 	PAD_CFG_GPIO_INPUT(KB_ROW17, PINMUX_PULL_NONE),
 	PAD_CFG_GPIO_INPUT(KB_COL3, PINMUX_PULL_NONE),
+
+	/* Power Button */
+	PAD_CFG_GPIO_INPUT(KB_COL0, PINMUX_PULL_NONE),
+
+	/* Lid Open Switch */
+	PAD_CFG_GPIO_INPUT(KB_ROW4, PINMUX_PULL_UP),
 };
 
 static const struct pad_config i2cpad[] = {

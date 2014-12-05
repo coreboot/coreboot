@@ -22,6 +22,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
+#include <microcode_size.h>
 #include <cbmem.h>
 
 #ifndef CONFIG_FSP_LOC
@@ -158,7 +159,7 @@ fake_fsp_stack:
 
 CAR_init_params:
 	.long  CONFIG_CPU_MICROCODE_CBFS_LOC
-	.long  CONFIG_CPU_MICROCODE_CBFS_LEN
+	.long  MICROCODE_REGION_LENGTH
 	.long  0xFFFFFFFF - CACHE_ROM_SIZE + 1	/* Firmware Location */
 	.long  CACHE_ROM_SIZE	/* Total Firmware Length */
 

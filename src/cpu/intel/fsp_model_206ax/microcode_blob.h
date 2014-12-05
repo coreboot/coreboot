@@ -19,12 +19,12 @@
  */
 
 #if IS_ENABLED(CONFIG_CPU_INTEL_FSP_MODEL_206AX)
-	/* Size is 0x2800 - Update in Kconfigs when any included file changes*/
+	/* Size is 0x2800 - Update in microcode_size.h when any included file changes*/
 	#include <microcode-m12206a7_00000029.h>
 #endif
 
 #if IS_ENABLED(CONFIG_CPU_INTEL_FSP_MODEL_306AX)
-	/* Size is 0xC000 - Update in Kconfigs when any included file changes*/
+	/* Size is 0xC000 - Update in microcode_size.h when any included file changes*/
 	#include <microcode-m12306a2_00000008.h>
 	#include <microcode-m12306a4_00000007.h>
 	#include <microcode-m12306a5_00000007.h>

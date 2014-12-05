@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += microcode_blob.c
+CPPFLAGS_romstage += -I$(src)/soc/intel/fsp_baytrail/microcode
 
 ifneq ($(CONFIG_MICROCODE_INCLUDE_PATH),)
 ifneq ($(wildcard $(shell readlink -f "$(top)/$(CONFIG_MICROCODE_INCLUDE_PATH)")),)

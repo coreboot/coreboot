@@ -62,12 +62,6 @@ config CPU_MICROCODE_CBFS_LOC
 	depends on SUPPORT_CPU_UCODE_IN_CBFS
 	default 0xfff60040
 
-config CPU_MICROCODE_CBFS_LEN
-	hex
-	depends on SUPPORT_CPU_UCODE_IN_CBFS
-	default 0x14400 if FSP_MODEL_406DX_A1
-	default 0x14800 if FSP_MODEL_406DX_B0
-
 config MICROCODE_INCLUDE_PATH
 	string "Location of the intel microcode patches"
 	default "../intel/cpu/rangeley/microcode"

@@ -20,10 +20,10 @@
 
 unsigned microcode[] = {
 #if IS_ENABLED(CONFIG_FSP_MODEL_406DX_A1)
-		/* Size is 0x14400 */
+		/* Size is 0x14400 - update in microcode_size.h when the file changes */
 		#include <microcode-m01406d000e.h>
 #elif IS_ENABLED(CONFIG_FSP_MODEL_406DX_B0)
-		/* Size is 0x14800 */
+		/* Size is 0x14800 - update in microcode_size.h when the file changes */
 		#include <microcode-m01406d811d.h>
 #endif
 };

@@ -65,7 +65,7 @@ static void sata_init(struct device *dev)
 
 	/* for AHCI, Port Enable is managed in memory mapped space */
 	reg16 = pci_read_config16(dev, 0x92);
-	reg16 &= ~0x3f;
+	reg16 &= ~0xf;
 	reg16 |= 0x8000 | config->sata_port_map;
 	pci_write_config16(dev, 0x92, reg16);
 	udelay(2);
@@ -84,7 +84,7 @@ static void sata_init(struct device *dev)
 
 	/* SATA Initialization register */
 	reg32 = 0x183;
-	reg32 |= (config->sata_port_map ^ 0x3f) << 24;
+	reg32 |= (config->sata_port_map ^ 0xf) << 24;
 	reg32 |= (config->sata_devslp_mux & 1) << 15;
 	pci_write_config32(dev, 0x94, reg32);
 
@@ -237,7 +237,7 @@ static void sata_enable(device_t dev)
 	config_t *config = dev->chip_info;
 	u16 map = 0x0060;
 
-	map |= (config->sata_port_map ^ 0x3f) << 8;
+	map |= (config->sata_port_map ^ 0xf) << 8;
 
 	pci_write_config16(dev, 0x90, map);
 }

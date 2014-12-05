@@ -385,7 +385,7 @@ GPIO_CONTROL lenovo_g505s_gpio[] = {
 #define SCI_MAP_XHCI_10_0	0x78
 #define SCI_MAP_PWRBTN		0x73
 
-SCI_MAP_CONTROL m6_1035dx_sci_map[] = {
+SCI_MAP_CONTROL lenovo_g505s_sci_map[] = {
 	{GEVENT_PIN( EC_SCI_GEVENT ), EC_SCI_GPE},
 	{GEVENT_PIN( EC_LID_GEVENT ), EC_LID_GPE},
 	{GEVENT_PIN( PCIE_GEVENT ), PCIE_GPE},
@@ -394,7 +394,7 @@ SCI_MAP_CONTROL m6_1035dx_sci_map[] = {
 	{SCI_MAP_XHCI_10_0, PME_GPE},
 	{SCI_MAP_PWRBTN, PME_GPE},
 };
-#define BLDCFG_FCH_SCI_MAP_LIST			(&m6_1035dx_sci_map[0])
+#define BLDCFG_FCH_SCI_MAP_LIST			(&lenovo_g505s_sci_map[0])
 
 // The following definitions specify the default values for various parameters in which there are
 // no clearly defined defaults to be used in the common file.  The values below are based on product

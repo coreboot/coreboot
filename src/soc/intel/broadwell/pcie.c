@@ -32,6 +32,7 @@
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/chip.h>
 #include <soc/cpu.h>
+#include <delay.h>
 
 static void pcie_update_cfg8(device_t dev, int reg, u8 mask, u8 or);
 static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or);
@@ -300,6 +301,7 @@ static void root_port_commit_config(void)
 	for (i = 0; i < rpc.num_ports; i++) {
 		device_t dev;
 		u32 reg32;
+		int n = 0;
 
 		dev = rpc.ports[i];
 
@@ -313,11 +315,22 @@ static void root_port_commit_config(void)
 
 		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
 
-		/* Ensure memory, io, and bus master are all disabled */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER |
-			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		/* 8.2 Configuration of PCI Express Root Ports */
+		pcie_update_cfg(dev, 0x338, ~(1 << 26), 1 << 26);
+
+		do {
+			reg32 = pci_read_config32(dev, 0x328);
+			n++;
+			if (((reg32 & 0xff000000) == 0x01000000) || (n > 500))
+				break;
+			udelay(100);
+		} while (1);
+
+		if (n > 500)
+			printk(BIOS_DEBUG, "%s: Timeout waiting for 328h\n",
+				dev_path(dev));
+
+		pcie_update_cfg(dev, 0x408, ~(1 << 27), 1 << 27);
 
 		/* Disable this device if possible */
 		pch_disable_devfn(dev);

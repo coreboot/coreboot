@@ -19,8 +19,14 @@
 
 unsigned microcode[] = {
 
-/* Size is 0x19800 - update in microcode_size.h when a patch gets changed. */
+/* Region size is 0x30000 - update in microcode_size.h if it gets larger. */
 #include "M0230672228.h"  // M0230672: Baytrail "Super SKU" B0/B1
-#include "M013067331E.h"  // M0130673: Baytrail I B2 / B3
+#include "M0130673322.h"  // M0130673: Baytrail I B2 / B3
+#include "M0130679901.h"  // M0130679: Baytrail I D0
 
+	/*  Dummy terminator  */
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
 };

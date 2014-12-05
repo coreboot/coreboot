@@ -95,18 +95,33 @@ static void setup_usb(void)
 	usb_setup_utmip((void *)TEGRA_USB3_BASE);
 }
 
+static const struct pad_config i2s1_pad[] = {
+	/* I2S1 */
+	PAD_CFG_SFIO(DAP2_SCLK, PINMUX_INPUT_ENABLE, I2S1),
+	PAD_CFG_SFIO(DAP2_FS, PINMUX_INPUT_ENABLE, I2S1),
+	PAD_CFG_SFIO(DAP2_DOUT, PINMUX_INPUT_ENABLE, I2S1),
+	PAD_CFG_SFIO(DAP2_DIN, PINMUX_INPUT_ENABLE | PINMUX_TRISTATE, I2S1),
+	/* codec MCLK via EXTPERIPH1 */
+	PAD_CFG_SFIO(DAP_MCLK1, PINMUX_PULL_NONE, EXTPERIPH1),
+};
+
+static const struct funit_cfg audio_funit[] = {
+	/* We need 1.5MHz for I2S1. So we use CLK_M */
+	FUNIT_CFG(I2S1, CLK_M, 1500, i2s1_pad, ARRAY_SIZE(i2s1_pad)),
+};
+
 /* Audio init: clocks and enables/resets */
 static void setup_audio(void)
 {
-	/* External peripheral 1: audio codec (max98090) using 12MHz CLK1 */
+	/*
+	 * External peripheral 1: audio codec (max98090) uses 12MHz CLK1
+	 * NOTE: We can't use a funits struct/call here because EXTPERIPH1/2/3
+	 * don't have BASE regs or CAR RST/ENA bits. Also, the mux setting for
+	 * EXTPERIPH1/DAP_MCLK1 is rolled into the I2S1 padcfg.
+	 */
 	clock_configure_source(extperiph1, CLK_M, 12000);
 
-	/*
-	 * We need 1.5MHz for I2S1. So, we use CLK_M. CLK_DIVIDER macro
-	 * returns a divisor (0xe) a little bit off from the ideal value (0xd),
-	 * but it's good enough for beeps.
-	 */
-	clock_configure_source(i2s1, CLK_M, 1500);
+	soc_configure_funits(audio_funit, ARRAY_SIZE(audio_funit));
 
 	clock_external_output(1);	/* For external MAX98090 audio codec. */
 

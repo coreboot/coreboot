@@ -112,7 +112,8 @@ files-in-dir=$(filter-out $(call dir-wildcards,$(call filter-out-dirs,$(1),$(sor
 #######################################################################
 # reduce command line length by linking the objects of each
 # directory into an intermediate file
-ramstage-postprocess=$(foreach d,$(sort $(dir $(filter-out %.ld,$(1)))), \
+ramstage-postprocess=$$(eval DEPENDENCIES+=$$(addsuffix .d,$$(basename $(1)))) \
+	$(foreach d,$(sort $(dir $(filter-out %.ld,$(1)))), \
 	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); $$(LD_ramstage) -o $$@ -r $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(filter-out %.ld, $(call files-in-dir,$(d),$(1))),$(ramstage-objs))))
 

@@ -249,7 +249,7 @@ $(foreach class,$(classes), \
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(basename $(file)))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))
 
-DEPENDENCIES = $(addsuffix .d,$(basename $(allobjs)))
+DEPENDENCIES += $(addsuffix .d,$(basename $(allobjs)))
 -include $(DEPENDENCIES)
 
 printall:

@@ -25,7 +25,7 @@ config BAYTRAIL_FSP_SPECIFIC_OPTIONS
 
 config FSP_FILE
 	string
-	default "../intel/fsp/baytrail/FvFsp.bin"
+	default "../intel/fsp/baytrail/BAYTRAIL_FSP.fd"
 	help
 	  The path and filename of the Intel FSP binary for this platform.
 

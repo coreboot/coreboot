@@ -23,35 +23,8 @@ Device (SIO) {
 	Name (_UID, 0)
 	Name (_ADR, 0)
 
-
+// Keyboard or AUX port (a.k.a Mouse)
 #ifdef SIO_EC_ENABLE_PS2K
-	Device (PS2K)		// Keyboard
-	{
-		Name (_UID, 0)
-		Name (_ADR, 0)
-		Name (_HID, EISAID("PNP0303"))
-		Name (_CID, EISAID("PNP030B"))
-
-		Method (_STA, 0, NotSerialized) {
-			Return (0x0F)
-		}
-
-		Name (_CRS, ResourceTemplate()
-		{
-			FixedIO (0x60, 0x01)
-			FixedIO (0x64, 0x01)
-			IRQNoFlags () {1}
-		})
-
-		Name (_PRS, ResourceTemplate()
-		{
-			StartDependentFn (0, 0) {
-				FixedIO (0x60, 0x01)
-				FixedIO (0x64, 0x01)
-				IRQNoFlags () {1}
-			}
-			EndDependentFn ()
-		})
-	}
+	#include <drivers/pc80/ps2_controller.asl>
 #endif
 }

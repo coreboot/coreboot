@@ -424,43 +424,9 @@ static void sc_disable_devfn(device_t dev)
 		fd2_mask |= name_ ## _DIS
 
 	switch (dev->path.pci.devfn) {
-	SET_DIS_MASK(MIPI);
-		break;
-	SET_DIS_MASK(EMMC);
-		break;
-	SET_DIS_MASK(SDIO);
-		break;
-	SET_DIS_MASK(SD);
-		break;
-	SET_DIS_MASK(SATA);
-		break;
-	SET_DIS_MASK(XHCI);
-		/* Disable super speed PHY when XHCI is not available. */
-		fd2_mask |= USH_SS_PHY_DIS;
-		break;
 	SET_DIS_MASK(LPE);
 		break;
-	SET_DIS_MASK(MMC45);
-		break;
-	SET_DIS_MASK(SIO_DMA1);
-		break;
-	SET_DIS_MASK(I2C1);
-		break;
-	SET_DIS_MASK(I2C2);
-		break;
-	SET_DIS_MASK(I2C3);
-		break;
-	SET_DIS_MASK(I2C4);
-		break;
-	SET_DIS_MASK(I2C5);
-		break;
-	SET_DIS_MASK(I2C6);
-		break;
-	SET_DIS_MASK(I2C7);
-		break;
 	SET_DIS_MASK(TXE);
-		break;
-	SET_DIS_MASK(HDA);
 		break;
 	SET_DIS_MASK(PCIE_PORT1);
 		break;
@@ -469,20 +435,6 @@ static void sc_disable_devfn(device_t dev)
 	SET_DIS_MASK(PCIE_PORT3);
 		break;
 	SET_DIS_MASK(PCIE_PORT4);
-		break;
-	SET_DIS_MASK(EHCI);
-		break;
-	SET_DIS_MASK(SIO_DMA2);
-		break;
-	SET_DIS_MASK(PWM1);
-		break;
-	SET_DIS_MASK(PWM2);
-		break;
-	SET_DIS_MASK(HSUART1);
-		break;
-	SET_DIS_MASK(HSUART2);
-		break;
-	SET_DIS_MASK(SPI);
 		break;
 	SET_DIS_MASK2(SMBUS);
 		break;

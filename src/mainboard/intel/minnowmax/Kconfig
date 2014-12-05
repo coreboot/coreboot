@@ -23,7 +23,7 @@ if BOARD_INTEL_MINNOWMAX
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select SOC_INTEL_FSP_BAYTRAIL
-	select BOARD_ROMSIZE_KB_4096
+	select BOARD_ROMSIZE_KB_8192
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
 	select OVERRIDE_MRC_CACHE_LOC
@@ -49,7 +49,7 @@ config MAINBOARD_PART_NUMBER
 
 choice
 	prompt "Memory SKU to build"
-	default MINNOWMAX_1GB_SKU
+	default MINNOWMAX_2GB_SKU
 
 config MINNOWMAX_1GB_SKU
 	bool "1GB"
@@ -81,7 +81,7 @@ config MRC_CACHE_LOC_OVERRIDE
 
 config CBFS_SIZE
 	hex
-	default 0x00200000
+	default 0x00300000
 
 config DRIVERS_PS2_KEYBOARD
 	bool

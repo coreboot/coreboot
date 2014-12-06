@@ -34,6 +34,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_4096
 	select GFXUMA
 	select UDELAY_LAPIC
+	select NO_UART_ON_SUPERIO
 
 config MAINBOARD_DIR
 	string

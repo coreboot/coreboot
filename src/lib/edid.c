@@ -1446,10 +1446,14 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 	 * I'm not sure with grahpics you ever can.
 	 */
 	edid_fb.bits_per_pixel = edid->framebuffer_bits_per_pixel;
+	edid_fb.reserved_mask_pos = 0;
+	edid_fb.reserved_mask_size = 0;
 	switch(edid->framebuffer_bits_per_pixel){
 	case 32:
 	case 24:
 		/* packed into 4-byte words */
+		edid_fb.reserved_mask_pos = 24;
+		edid_fb.reserved_mask_size = 8;
 		edid_fb.red_mask_pos = 16;
 		edid_fb.red_mask_size = 8;
 		edid_fb.green_mask_pos = 8;
@@ -1472,8 +1476,6 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 		return;
 	}
 
-	edid_fb.reserved_mask_pos = 0;
-	edid_fb.reserved_mask_size = 0;
 	vbe_valid = 1;
 }
 

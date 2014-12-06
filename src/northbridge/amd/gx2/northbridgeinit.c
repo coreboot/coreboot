@@ -548,7 +548,7 @@ static void rom_shadow_settings(void)
  * SYSRC(7:0) = 00h 		 ; writeback, can set to 08h to make writethrough
  */
 #define SYSMEM_RCONF_WRITETHROUGH 8
-#define DEVRC_RCONF_DEFAULT 0x21
+#define DEVRC_RCONF_DEFAULT 0x21ul
 #define ROMBASE_RCONF_DEFAULT 0xFFFC0000
 #define ROMRC_RCONF_DEFAULT 0x25
 

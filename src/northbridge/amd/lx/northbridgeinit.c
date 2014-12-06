@@ -602,7 +602,7 @@ static void rom_shadow_settings(void)
  *
  ***************************************************************************/
 #define SYSMEM_RCONF_WRITETHROUGH 8
-#define DEVRC_RCONF_DEFAULT 0x21
+#define DEVRC_RCONF_DEFAULT 0x21ul
 #define ROMBASE_RCONF_DEFAULT 0xFFFC0000
 #define ROMRC_RCONF_DEFAULT 0x25
 

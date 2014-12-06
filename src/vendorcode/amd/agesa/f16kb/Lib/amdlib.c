@@ -355,17 +355,25 @@ LibAmdBitScanForward (
   }
   return (UINT8) Index;
 }
+
 UINT8
 LibAmdBitScanReverse (
   IN       UINT32 value
 )
 {
-  UINTN Index;
-  for (Index = 31; Index >= 0; Index--){
-      if (value & (1 << Index)) break;
-  }
-  return (UINT8) Index;
+  uint8_t bit = 31;
+  do {
+    if (value & (1 << 31))
+      return bit;
+
+    value <<= 1;
+    bit--;
+
+  } while (value != 0);
+
+  return 0xFF; /* Error code indicating no bit found */
 }
+
 VOID
 LibAmdMsrRead (
   IN       UINT32 MsrAddress,

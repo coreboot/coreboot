@@ -27,8 +27,8 @@ Device (GFX0)
 	Field (GFXC, DWordAcc, NoLock, Preserve)
 	{
 		Offset (0x10),
-		BAR0, 64
-        }
+			BAR0, 64
+	}
 
 	OperationRegion (GFRG, SystemMemory, And (BAR0, 0xfffffffffffffff0), 0x400000)
 	Field (GFRG, DWordAcc, NoLock, Preserve)

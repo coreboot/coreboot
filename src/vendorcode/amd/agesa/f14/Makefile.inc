@@ -230,7 +230,6 @@ libagesa-y += Proc/CPU/Feature/cpuHwC1e.c
 libagesa-y += Proc/CPU/cpuLateInit.c
 libagesa-y += Proc/Common/CreateStruct.c
 libagesa-y += Proc/CPU/Feature/cpuWhea.c
-libagesa-y += Lib/helper.c
 libagesa-y += Proc/Mem/Feat/CSINTLV/mfcsi.c
 libagesa-y += Proc/Mem/Feat/ECC/mfecc.c
 libagesa-y += Proc/Mem/Feat/DMI/mfDMI.c

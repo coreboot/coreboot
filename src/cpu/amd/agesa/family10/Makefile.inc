@@ -146,7 +146,6 @@ agesa_lib_src += $(AGESA_ROOT)/Proc/CPU/cpuApicUtilities.c
 #agesa_lib_src += $(AGESA_ROOT)/Proc/Recovery/Mem/NB/mrndct.c
 #agesa_lib_src += $(AGESA_ROOT)/Proc/Recovery/Mem/Tech/mrttsrc.c
 #agesa_lib_src += $(AGESA_ROOT)/Proc/Mem/NB/ON/mnS3on.c
-#agesa_lib_src += $(AGESA_ROOT)/Lib/helper.c
 
 agesa_lib_src += $(AGESA_ROOT)/Proc/CPU/cpuEventLog.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/HT/htInterfaceCoherent.c

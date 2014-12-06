@@ -27,7 +27,6 @@ agesa_lib_src += $(AGESA_ROOT)/Legacy/Proc/agesaCallouts.c
 agesa_lib_src += $(AGESA_ROOT)/Legacy/Proc/Dispatcher.c
 agesa_lib_src += $(AGESA_ROOT)/Legacy/Proc/hobTransfer.c
 agesa_lib_src += $(AGESA_ROOT)/Lib/amdlib.c
-agesa_lib_src += $(AGESA_ROOT)/Lib/helper.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/Common/AmdInitEarly.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/Common/AmdInitEnv.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/Common/AmdInitLate.c

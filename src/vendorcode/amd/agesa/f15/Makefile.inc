@@ -60,7 +60,6 @@ agesa_lib_src  += ./Legacy/Proc/agesaCallouts.c
 agesa_lib_src  += ./Legacy/Proc/Dispatcher.c
 agesa_lib_src  += ./Legacy/Proc/hobTransfer.c
 agesa_lib_src  += ./Lib/amdlib.c
-agesa_lib_src  += ./Lib/helper.c
 agesa_lib_src  += ./Proc/Common/AmdInitEarly.c
 agesa_lib_src  += ./Proc/Common/AmdInitEnv.c
 agesa_lib_src  += ./Proc/Common/AmdInitLate.c

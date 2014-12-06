@@ -27,34 +27,32 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __GSBI_TYPES_H__
-#define __GSBI_TYPES_H__
+#include <soc/gpio.h>
+#include <soc/gsbi.h>
+#include <soc/qup.h>
 
-typedef enum {
-	GSBI_ID_1 = 1,
-	GSBI_ID_2,
-	GSBI_ID_3,
-	GSBI_ID_4,
-	GSBI_ID_5,
-	GSBI_ID_6,
-	GSBI_ID_7,
-} gsbi_id_t;
+#define GPIO_FUNC_I2C		0x1
 
-typedef enum {
-	GSBI_SUCCESS = 0,
-	GSBI_ID_ERROR,
-	GSBI_ERROR,
-	GSBI_UNSUPPORTED
-} gsbi_return_t;
+int gsbi_init_board(gsbi_id_t gsbi_id)
+{
+	switch (gsbi_id) {
+	case GSBI_ID_4:
+			/* Configure GPIOs 13 - SCL, 12 - SDA, 2mA gpio_en */
+			gpio_tlmm_config_set(12, GPIO_FUNC_I2C,
+					     GPIO_NO_PULL, GPIO_2MA, 1);
+			gpio_tlmm_config_set(13, GPIO_FUNC_I2C,
+					     GPIO_NO_PULL, GPIO_2MA, 1);
+		break;
+	case GSBI_ID_1:
+			/* Configure GPIOs 54 - SCL, 53 - SDA, 2mA gpio_en */
+			gpio_tlmm_config_set(54, GPIO_FUNC_I2C,
+					     GPIO_NO_PULL, GPIO_2MA, 1);
+			gpio_tlmm_config_set(53, GPIO_FUNC_I2C,
+					     GPIO_NO_PULL, GPIO_2MA, 1);
+		break;
+	default:
+		return 1;
+	}
 
-typedef enum {
-	GSBI_PROTO_I2C_UIM = 1,
-	GSBI_PROTO_I2C_ONLY,
-	GSBI_PROTO_SPI_ONLY,
-	GSBI_PROTO_UART_FLOW_CTL,
-	GSBI_PROTO_UIM,
-	GSBI_PROTO_I2C_UART,
-} gsbi_protocol_t;
-
-gsbi_return_t gsbi_init(gsbi_id_t gsbi_id, gsbi_protocol_t protocol);
-#endif
+	return 0;
+}

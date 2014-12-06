@@ -1,5 +1,5 @@
 /*
- * This file is part of the depthcharge project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 The Linux Foundation. All rights reserved.
  *
@@ -28,8 +28,8 @@
  */
 
 #include <arch/io.h>
-#include "drivers/gpio/ipq806x.h"
-#include "ipq806x_gsbi.h"
+#include <soc/gsbi.h>
+#include <soc/gpio.h>
 
 //TODO: To be implemented as part of the iomap.
 static int gsbi_base[] = {
@@ -50,8 +50,6 @@ static int gsbi_base[] = {
 #define GSBI_APPS_MD_OFFSET	0x0
 #define GSBI_APPS_NS_OFFSET	0x4
 #define GSBI_APPS_MAX_OFFSET	0xff
-
-#define GPIO_FUNC_I2C		0x1
 
 gsbi_return_t gsbi_init(gsbi_id_t gsbi_id, gsbi_protocol_t protocol)
 {
@@ -76,27 +74,9 @@ gsbi_return_t gsbi_init(gsbi_id_t gsbi_id, gsbi_protocol_t protocol)
 
 	writel(0, GSBI_RESET(gsbi_id));
 
-	switch (gsbi_id) {
-	case GSBI_ID_4: {
-			/* Configure GPIOs 13 - SCL, 12 - SDA, 2mA gpio_en */
-			gpio_tlmm_config_set(12, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-			gpio_tlmm_config_set(13, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-		}
-		break;
-	case GSBI_ID_1: {
-			/* Configure GPIOs 54 - SCL, 53 - SDA, 2mA gpio_en */
-			gpio_tlmm_config_set(54, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-			gpio_tlmm_config_set(53, GPIO_FUNC_I2C,
-					     GPIO_NO_PULL, GPIO_2MA, 1);
-		}
-		break;
-	default: {
+	if (gsbi_init_board(gsbi_id)) {
 		ret = GSBI_UNSUPPORTED;
 		goto bail_out;
-		}
 	}
 
 	/*Select i2c protocol*/

@@ -22,6 +22,7 @@ bootblock-y += reset.c
 
 verstage-y += cdp.c
 verstage-y += chromeos.c
+verstage-y += gsbi.c
 verstage-y += memlayout.ld
 verstage-y += reset.c
 

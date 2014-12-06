@@ -1,5 +1,5 @@
 /*
- * This file is part of the depthcharge project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 The Linux Foundation. All rights reserved.
  *
@@ -27,43 +27,25 @@
  * SUCH DAMAGE.
  */
 
+#include <arch/io.h>
 #include <assert.h>
-#include <libpayload.h>
+#include <console/console.h>
+#include <delay.h>
+#include <device/i2c.h>
+#include <stdlib.h>
+#include <string.h>
+#include <soc/gsbi.h>
+#include <soc/qup.h>
 
-#include "base/container_of.h"
-#include "drivers/bus/i2c/i2c.h"
-#include "drivers/bus/i2c/ipq806x_qup.h"
-#include "drivers/bus/i2c/ipq806x_gsbi.h"
-#include "drivers/bus/i2c/ipq806x.h"
-
-static int i2c_init(unsigned gsbi_id)
-{
-	gsbi_return_t gsbi_ret = 0;
-	qup_return_t qup_ret = 0;
-	qup_config_t gsbi4_qup_config = {
-		QUP_MINICORE_I2C_MASTER,
-		100000,
-		24000000,
-		QUP_MODE_FIFO
-	};
-
-	gsbi_ret = gsbi_init(gsbi_id, GSBI_PROTO_I2C_ONLY);
-	if (GSBI_SUCCESS != gsbi_ret)
-		return 1;
-
-	qup_ret = qup_init(gsbi_id, &gsbi4_qup_config);
-	if (QUP_SUCCESS != qup_ret)
-		return 1;
-
-	qup_ret = qup_reset_i2c_master_status(gsbi_id);
-	if (QUP_SUCCESS != qup_ret)
-		return 1;
-
-	return 0;
-}
+static const qup_config_t gsbi4_qup_config = {
+	QUP_MINICORE_I2C_MASTER,
+	100000,
+	24000000,
+	QUP_MODE_FIFO
+};
 
 static int i2c_read(uint32_t gsbi_id, uint8_t slave,
-			uint8_t *data, int data_len)
+		    uint8_t *data, int data_len)
 {
 	qup_data_t obj;
 	qup_return_t qup_ret = 0;
@@ -100,44 +82,54 @@ static int i2c_write(uint32_t gsbi_id, uint8_t slave,
 		return 0;
 }
 
-static int i2c_transfer(struct I2cOps *me, I2cSeg *segments, int seg_count)
+static int i2c_init(unsigned bus)
 {
-	Ipq806xI2c *bus = container_of(me, Ipq806xI2c, ops);
-	I2cSeg *seg = segments;
+	static uint8_t initialized = 0;
+	unsigned gsbi_id = bus;
+
+	if (initialized)
+		return 0;
+
+	if (gsbi_init(gsbi_id, GSBI_PROTO_I2C_ONLY)) {
+		printk(BIOS_ERR, "failed to initialize gsbi\n");
+		return 1;
+	}
+
+	if (qup_init(gsbi_id, &gsbi4_qup_config)) {
+		printk(BIOS_ERR, "failed to initialize qup\n");
+		return 1;
+	}
+
+	if (qup_reset_i2c_master_status(gsbi_id)) {
+		printk(BIOS_ERR, "failed to reset i2c master status\n");
+		return 1;
+	}
+
+	initialized = 1;
+	return 0;
+}
+
+int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
+{
+	struct i2c_seg *seg = segments;
 	int ret = 0;
 
-	if (!bus->initialized)
-		if (0 != i2c_init(bus->gsbi_id))
-			return 1;
+	if (i2c_init(bus))
+		return 1;
 
 	while (seg_count--) {
 		if (seg->read)
-			ret = i2c_read(bus->gsbi_id, seg->chip,
-				       seg->buf, seg->len);
+			ret = i2c_read(bus, seg->chip, seg->buf, seg->len);
 		else
-			ret  = i2c_write(bus->gsbi_id, seg->chip,
-					 seg->buf, seg->len,
-					 (seg_count ? 0 : 1));
+			ret = i2c_write(bus, seg->chip, seg->buf, seg->len,
+					(seg_count ? 0 : 1));
 		seg++;
 	}
 
-	if (QUP_SUCCESS != ret) {
-		qup_set_state(bus->gsbi_id, QUP_STATE_RESET);
+	if (ret) {
+		qup_set_state(bus, QUP_STATE_RESET);
 		return 1;
 	}
 
 	return 0;
-}
-
-Ipq806xI2c *new_ipq806x_i2c(unsigned gsbi_id)
-{
-	Ipq806xI2c *bus = 0;
-
-	if (!i2c_init(gsbi_id)) {
-		bus = xzalloc(sizeof(*bus));
-		bus->gsbi_id = gsbi_id;
-		bus->initialized = 1;
-		bus->ops.transfer = &i2c_transfer;
-	}
-	return bus;
 }

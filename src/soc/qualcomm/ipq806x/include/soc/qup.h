@@ -1,5 +1,5 @@
 /*
- * This file is part of the depthcharge project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 The Linux Foundation. All rights reserved.
  *
@@ -29,7 +29,8 @@
 
 #ifndef __QUP_H__
 #define __QUP_H__
-#include "ipq806x_gsbi.h"
+
+#include <soc/gsbi.h>
 
 /* QUP block registers */
 #define QUP_CONFIG			0x0
@@ -117,6 +118,9 @@ typedef enum {
 	QUP_ERR_STATE_SET,
 	QUP_ERR_TIMEOUT,
 	QUP_ERR_UNSUPPORTED,
+	QUP_ERR_I2C_FAILED,
+	QUP_ERR_I2C_ARB_LOST,
+	QUP_ERR_I2C_BUS_ERROR,
 	QUP_ERR_I2C_INVALID_SLAVE_ADDR,
 	QUP_ERR_XFER_FAIL,
 	QUP_ERR_UNDEFINED,
@@ -164,7 +168,7 @@ typedef struct {
  *
  * return: QUP_SUCCESS, if initialization succeeds.
  */
-qup_return_t qup_init(gsbi_id_t gsbi_id, qup_config_t *config_ptr);
+qup_return_t qup_init(gsbi_id_t gsbi_id, const qup_config_t *config_ptr);
 
 /*
  * Set QUP state to run, pause, reset.

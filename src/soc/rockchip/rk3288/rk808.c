@@ -53,6 +53,11 @@ void rk808_configure_ldo(uint8_t bus, int ldo, int millivolts)
 {
 	uint8_t vsel;
 
+	if (!millivolts) {
+		rk808_clrsetbits(bus, LDO_EN, 1 << (ldo - 1), 0);
+		return;
+	}
+
 	switch (ldo) {
 	case 1:
 	case 2:

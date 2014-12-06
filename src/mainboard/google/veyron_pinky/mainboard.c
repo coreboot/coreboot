@@ -62,6 +62,7 @@ static void configure_sdmmc(void)
 	/* use sdmmc0 io, disable JTAG function */
 	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
 
+	/* Note: these power rail definitions are copied in romstage.c */
 	switch (board_id()) {
 	case 0:
 		rk808_configure_ldo(PMIC_BUS, 8, 3300);	/* VCCIO_SD */

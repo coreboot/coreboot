@@ -49,6 +49,7 @@ romstage-y += gpio.c
 romstage-y += spi.c
 romstage-y += media.c
 romstage-y += sdram.c
+romstage-y += rk808.c
 romstage-y += pwm.c
 romstage-y += tsadc.c
 

@@ -257,7 +257,7 @@ SetTopologyExtensions (
   PkgType = LibAmdGetPackageType (StdHeader);
   LibAmdMsrRead (MSR_CPUID_EXT_FEATS, &CpuMsrData, StdHeader);
   CpuMsrData &= ~(BIT54);
-  if (PkgType == PACKAGE_TYPE_FM2) {
+  if ((PkgType == PACKAGE_TYPE_FM2) || (PkgType == PACKAGE_TYPE_FS1r2)) {
     CpuMsrData |= BIT54;
   }
   LibAmdMsrWrite (MSR_CPUID_EXT_FEATS, &CpuMsrData, StdHeader);

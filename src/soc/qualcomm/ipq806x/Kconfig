@@ -38,11 +38,11 @@ config BOOTBLOCK_BASE
 	default 0x40600000
 
 config STACK_TOP
-        hex
-        default 0x40600000
+	hex
+	default 0x40600000
 
 config STACK_BOTTOM
-       hex
-       default 0x405fc000
+	hex
+	default 0x405fc000
 
 endif

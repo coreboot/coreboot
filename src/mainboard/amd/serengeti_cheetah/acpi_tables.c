@@ -126,7 +126,7 @@ unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp
 {
 	unsigned long current;
 	acpi_header_t *ssdtx;
-	void *p;
+	const void *p;
 
 	int i;
 

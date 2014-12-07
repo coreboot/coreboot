@@ -369,9 +369,11 @@ static void dram_find_common_params(const dimm_info * dimms,
 		if (valid_dimms == 1) {
 			/* First DIMM defines the type of DIMM */
 			ctrl->dram_type = dimm->dram_type;
+			ctrl->dimm_type = dimm->dimm_type;
 		} else {
 			/* Check if we have mismatched DIMMs */
-			if (ctrl->dram_type != dimm->dram_type)
+			if (ctrl->dram_type != dimm->dram_type
+				|| ctrl->dimm_type != dimm->dimm_type)
 				die("Mismatched DIMM Types");
 		}
 		/* Find all possible CAS combinations */
@@ -705,7 +707,7 @@ static void vx900_dram_freq(ramctr_timing * ctrl)
 	pci_mod_config8(MCU, 0x6b, 0x80, 0x00);
 
 	/* Step 8 - If we have registered DIMMs, we need to set bit[0] */
-	if (dimm_is_registered(ctrl->dram_type)) {
+	if (dimm_is_registered(ctrl->dimm_type)) {
 		printram("Enabling RDIMM support in memory controller\n");
 		pci_mod_config8(MCU, 0x6c, 0x00, 0x01);
 	}

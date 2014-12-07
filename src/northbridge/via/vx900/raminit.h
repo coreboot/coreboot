@@ -71,6 +71,7 @@ typedef struct vx900_delay_calib_st {
 
 typedef struct ramctr_timing_st {
 	enum spd_memory_type dram_type;
+	enum spd_dimm_type dimm_type;
 	u16 cas_supported;
 	/* tLatencies are in units of ns, scaled by x256 */
 	u32 tCK;

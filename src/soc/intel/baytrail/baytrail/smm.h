@@ -22,7 +22,7 @@
 
 /* There is a bug in the order of Kconfig includes in that arch/x86/Kconfig
  * is included after chipset code. This causes the chipset's Kconfig to be
- * cloberred by the arch/x86/Kconfig if they have the same name. */
+ * clobbered by the arch/x86/Kconfig if they have the same name. */
 static inline int smm_region_size(void)
 {
 	/* Make it 8MiB by default. */

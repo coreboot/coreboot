@@ -50,7 +50,7 @@
  * +--------------------------+ 0
  *
  * Note that there are really only a few regions that need to enumerated w.r.t.
- * coreboot's resrouce model:
+ * coreboot's resource model:
  *
  * +--------------------------+ BMBOUND_HI
  * |     Cacheable/Usable     |

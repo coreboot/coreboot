@@ -65,7 +65,7 @@ struct mrc_mainboard_params {
 	int dram_is_slotted; /* mobo has DRAM slots. */
 	/*
 	 * The below ODT settings are only honored when !dram_is_slotted.
-	 * Aditionally, weaker_odt_settings being non-zero causes
+	 * Additionally, weaker_odt_settings being non-zero causes
 	 * cpu_odt_value to not be honored as weaker_odt_settings have a
 	 * special training path.
 	 */

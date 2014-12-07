@@ -80,7 +80,7 @@ static const struct reg_script init_static_after_exit_latency[] = {
 	REG_PCI_RMW16(DSTS2, ~CTD, 0x6),
 	/* Enable AER */
 	REG_PCI_OR16(DCTL_DSTS, URE | FEE | NFE | CEE),
-	/* Read and write back capabaility registers. */
+	/* Read and write back capability registers. */
 	REG_PCI_OR32(0x34, 0),
 	REG_PCI_OR32(0x80, 0),
 	/* Retrain the link. */

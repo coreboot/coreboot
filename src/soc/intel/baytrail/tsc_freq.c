@@ -68,11 +68,11 @@ void set_max_freq(void)
 	msr.lo |= (1 << 16);
 	wrmsr(MSR_IA32_MISC_ENABLES, msr);
 
-	/* Set guranteed ratio [21:16] from IACORE_RATIOS to bits [15:8] of
+	/* Set guaranteed ratio [21:16] from IACORE_RATIOS to bits [15:8] of
 	* the PERF_CTL. */
 	msr = rdmsr(MSR_IACORE_RATIOS);
 	perf_ctl.lo = (msr.lo & 0x3f0000) >> 8;
-	/* Set guranteed vid [21:16] from IACORE_VIDS to bits [7:0] of
+	/* Set guaranteed vid [21:16] from IACORE_VIDS to bits [7:0] of
 	* the PERF_CTL. */
 	msr = rdmsr(MSR_IACORE_VIDS);
 	perf_ctl.lo |= (msr.lo & 0x7f0000) >> 16;

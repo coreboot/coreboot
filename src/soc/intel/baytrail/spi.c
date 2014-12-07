@@ -565,7 +565,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 
 		/*
 		 * This is a 'no data' command (like Write Enable), its
-		 * bitesout size was 1, decremented to zero while executing
+		 * bytesout size was 1, decremented to zero while executing
 		 * spi_setup_opcode() above. Tell the chip to send the
 		 * command.
 		 */
@@ -585,7 +585,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	}
 
 	/*
-	 * Check if this is a write command atempting to transfer more bytes
+	 * Check if this is a write command attempting to transfer more bytes
 	 * than the controller can handle. Iterations for writes are not
 	 * supported here because each SPI write command needs to be preceded
 	 * and followed by other SPI commands, and this sequence is controlled

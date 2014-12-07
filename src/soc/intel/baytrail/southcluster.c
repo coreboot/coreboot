@@ -158,7 +158,7 @@ static void com1_configure_resume(device_t dev)
 {
 	const uint16_t port = 0x3f8;
 
-	/* Is the UART I/O port eanbled? */
+	/* Is the UART I/O port enabled? */
 	if (!(pci_read_config32(dev, UART_CONT) & 1))
 		return;
 
@@ -223,7 +223,7 @@ static void sc_init(device_t dev)
  * Common code for the south cluster devices.
  */
 
-/* Set bit in function disble register to hide this device. */
+/* Set bit in function disable register to hide this device. */
 static void sc_disable_devfn(device_t dev)
 {
 	const unsigned long func_dis = PMC_BASE_ADDRESS + FUNC_DIS;

@@ -417,21 +417,21 @@ static void pch_pcie_early(struct device *dev)
 	case 3:
 	case 4:
 		/*
-		 * Bits 31:28 of b0d28f0 0x32c register correspnd to
+		 * Bits 31:28 of b0d28f0 0x32c register correspond to
 		 * Root Ports 4:1.
 		 */
 		do_aspm = !!(rpc.b0d28f0_32c & (1 << (28 + rp - 1)));
 		break;
 	case 5:
 		/*
-		 * Bit 28 of b0d28f4 0x32c register correspnd to
+		 * Bit 28 of b0d28f4 0x32c register correspond to
 		 * Root Ports 4:1.
 		 */
 		do_aspm = !!(rpc.b0d28f4_32c & (1 << 28));
 		break;
 	case 6:
 		/*
-		 * Bit 28 of b0d28f5 0x32c register correspnd to
+		 * Bit 28 of b0d28f5 0x32c register correspond to
 		 * Root Ports 4:1.
 		 */
 		do_aspm = !!(rpc.b0d28f5_32c & (1 << 28));
@@ -509,7 +509,7 @@ static void pch_pcie_early(struct device *dev)
 
 	pcie_update_cfg(dev, 0x33c, ~0x00ffffff, 0x854c74);
 
-	/* Set Invalid Recieve Range Check Enable in MPC register. */
+	/* Set Invalid Receive Range Check Enable in MPC register. */
 	pcie_update_cfg(dev, 0xd8, ~0, (1 << 25));
 
 	pcie_update_cfg8(dev, 0xf5, 0x3f, 0);

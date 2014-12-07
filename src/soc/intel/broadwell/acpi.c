@@ -44,7 +44,7 @@
 #include <chip.h>
 
 /*
- * List of suported C-states in this processor. Only the ULT parts support C8,
+ * List of supported C-states in this processor. Only the ULT parts support C8,
  * C9, and C10.
  */
 enum {

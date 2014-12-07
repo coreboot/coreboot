@@ -448,7 +448,7 @@ static void configure_thermal_target(void)
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
-	/* Set TCC activaiton offset if supported */
+	/* Set TCC activation offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);
 	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
 		msr = rdmsr(MSR_TEMPERATURE_TARGET);
@@ -688,8 +688,8 @@ void broadwell_init_cpus(device_t dev)
 
 	ht_disabled = num_threads == num_cores;
 
-	/* Perform any necesarry BSP initialization before APs are brought up.
-	 * This call alos allows the BSP to prepare for any secondary effects
+	/* Perform any necessary BSP initialization before APs are brought up.
+	 * This call also allows the BSP to prepare for any secondary effects
 	 * from calling cpu_initialize() such as smm_init(). */
 	bsp_init_before_ap_bringup(cpu_bus);
 
@@ -708,9 +708,9 @@ void broadwell_init_cpus(device_t dev)
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
 	mp_params.microcode_pointer = microcode_patch;
 
-	/* Load relocation and permeanent handlers. Then initiate relocation. */
+	/* Load relocation and permanent handlers. Then initiate relocation. */
 	if (smm_initialize())
-		printk(BIOS_CRIT, "SMM Initialiazation failed...\n");
+		printk(BIOS_CRIT, "SMM initialization failed...\n");
 
 	if (mp_init(cpu_bus, &mp_params)) {
 		printk(BIOS_ERR, "MP initialization failure.\n");

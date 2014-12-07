@@ -55,7 +55,7 @@ static void map_rcba(void)
 
 static void enable_port80_on_lpc(void)
 {
-	/* Enable port 80 POST on LPC. The chipset does this by deafult,
+	/* Enable port 80 POST on LPC. The chipset does this by default,
 	 * but it doesn't appear to hurt anything. */
 	u32 gcs = RCBA32(GCS);
 	gcs = gcs & ~0x4;

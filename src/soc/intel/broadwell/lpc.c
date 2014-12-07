@@ -502,7 +502,7 @@ static void pch_lpc_add_gen_io_resources(device_t dev, int reg_value, int index)
 {
 	/*
 	 * Check if the register is enabled. If so and the base exceeds the
-	 * device's deafult claim range add the resoure.
+	 * device's default claim range add the resource.
 	 */
 	if (reg_value & 1) {
 		u16 base = reg_value & 0xfffc;

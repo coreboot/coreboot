@@ -88,7 +88,7 @@ static void pch_enable_d3hot(device_t dev)
 	pci_write_config32(dev, PCH_PCS, reg32);
 }
 
-/* Set bit in Function Disble register to hide this device */
+/* Set bit in Function Disable register to hide this device */
 void pch_disable_devfn(device_t dev)
 {
 	switch (dev->path.pci.devfn) {

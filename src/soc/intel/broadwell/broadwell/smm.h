@@ -48,7 +48,7 @@ struct smm_relocation_params {
 
 /* There is a bug in the order of Kconfig includes in that arch/x86/Kconfig
  * is included after chipset code. This causes the chipset's Kconfig to be
- * cloberred by the arch/x86/Kconfig if they have the same name. */
+ * clobbered by the arch/x86/Kconfig if they have the same name. */
 static inline int smm_region_size(void)
 {
         /* Make it 8MiB by default. */
@@ -64,7 +64,7 @@ void smm_relocate(void);
 void southbridge_trigger_smi(void);
 void southbridge_clear_smi_status(void);
 
-/* The initialization of the southbridge is split into 2 compoments. One is
+/* The initialization of the southbridge is split into 2 components. One is
  * for clearing the state in the SMM registers. The other is for enabling
  * SMIs. They are split so that other work between the 2 actions. */
 void southbridge_smm_clear_state(void);

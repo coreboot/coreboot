@@ -45,13 +45,6 @@ static inline void pci_read_dword_ptr(void *ptr, int offset)
 	memcpy(ptr, &dword, sizeof(dword));
 }
 
-static inline void pci_write_dword_ptr(void *ptr, int offset)
-{
-	u32 dword = 0;
-	memcpy(&dword, ptr, sizeof(dword));
-	pci_write_config32(PCH_ME_DEV, offset, dword);
-}
-
 void intel_early_me_status(void)
 {
 	struct me_hfs hfs;

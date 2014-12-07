@@ -135,6 +135,7 @@ typedef union dimm_flags_st {
  */
 typedef struct dimm_attr_st {
 	enum spd_memory_type dram_type;
+	enum spd_dimm_type dimm_type;
 	u16 cas_supported;
 	/* Flags extracted from SPD */
 	dimm_flags_t flags;

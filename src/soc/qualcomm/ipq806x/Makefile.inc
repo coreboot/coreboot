@@ -63,3 +63,15 @@ $(objcbfs)/bootblock.bin: $(call strip_quotes,$(CONFIG_SBL_BLOB)) \
 endif
 
 CPPFLAGS_common += -Isrc/soc/qualcomm/ipq806x/include
+
+# List of binary blobs coreboot needs in CBFS to be able to boot up this SOC
+mbn-files := cdt.mbn  ddr.mbn  rpm.mbn tz.mbn
+
+# Location of the binary blobs
+mbn-root := 3rdparty/cpu/qualcomm/ipq806x
+
+# Create make variables to aid cbfs-files-handler in processing the blobs (add
+# them all as raw binaries at the root level).
+$(foreach f,$(mbn-files),$(eval cbfs-files-y += $(f))\
+	  $(eval $(f)-file := $(mbn-root)/$(f))\
+	  $(eval $(f)-type := raw))

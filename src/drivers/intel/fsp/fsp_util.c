@@ -103,7 +103,7 @@ void __attribute__ ((noreturn)) fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
 }
 #endif	/* __PRE_RAM__ */
 
-volatile u8 * __attribute__((optimize("O0"))) find_fsp ()
+volatile u8 * find_fsp ()
 {
 
 #ifdef __PRE_RAM__

@@ -20,6 +20,14 @@
 #include <spd.h>
 #include <delay.h>
 
+#ifdef __clang__
+/* Silence clang warnings via pragmas to avoid the problems in this file
+   blocking analyzes for the rest of the tree.  */
+#pragma clang diagnostic ignored "-Wsometimes-uninitialized"
+#pragma clang diagnostic ignored "-Wconstant-logical-operand"
+#pragma clang diagnostic ignored "-Warray-bounds"
+#endif
+
 #if CONFIG_DEBUG_RAM_SETUP
 #define PRINT_DEBUG_MEM(x)		print_debug(x)
 #define PRINT_DEBUG_MEM_HEX8(x)		print_debug_hex8(x)

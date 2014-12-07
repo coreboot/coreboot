@@ -39,7 +39,6 @@ chip northbridge/intel/sandybridge
 			register "pcie_port_coalesce" = "0"
 			register "p_cnt_throttling_supported" = "0"
 			register "docking_supported" = "0"
-			register "sata_port_map" = "0x3f"
 			register "c2_latency" = "0x0065"
 
 			device pci 14.0 on # USB 3.0 Controller

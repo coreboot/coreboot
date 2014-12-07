@@ -507,7 +507,10 @@ MemFGetPCI (
   UINT8 Die;
 
   // Find NBBlock that associates with node NodeID
-  for (Die = 0; (Die < MAX_NODES_SUPPORTED) && (NBPtr[Die].Node != NodeID); Die ++);
+  for (Die = 0; Die < MAX_NODES_SUPPORTED; Die ++)
+    if (NBPtr[Die].Node == NodeID)
+      break;
+
   ASSERT (Die < MAX_NODES_SUPPORTED);
 
   // Get the northbridge pointer for the targeted node.

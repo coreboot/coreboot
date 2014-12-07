@@ -238,13 +238,12 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 			if (reg & VC_NEGOTIATION_PENDING) {	/* bit1=1 means the link needs to be re-trained. */
 				/* set bit8=1, bit0-2=bit4-6 */
 				u32 tmp;
-				reg =
-				    nbpcie_p_read_index(dev,
-							PCIE_LC_LINK_WIDTH);
-				tmp = (reg >> 4) && 0x3;	/* get bit4-6 */
+				reg = nbpcie_p_read_index(dev, PCIE_LC_LINK_WIDTH);
+				tmp = (reg >> 4) & 0x7;	/* get bit4-6 */
 				reg &= 0xfff8;	/* clear bit0-2 */
 				reg += tmp;	/* merge */
 				reg |= 1 << 8;
+				nbpcie_p_write_index(dev, PCIE_LC_LINK_WIDTH, reg);
 				count++;	/* CIM said "keep in loop"?  */
 			} else {
 				res = 1;

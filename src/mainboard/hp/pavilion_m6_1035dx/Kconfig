@@ -36,6 +36,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select GFXUMA
 	select UDELAY_LAPIC
 	select USBDEBUG_IN_ROMSTAGE
+	select NO_UART_ON_SUPERIO
 
 config MAINBOARD_DIR
 	string

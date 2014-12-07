@@ -186,7 +186,7 @@ static void vga_init(device_t dev)
 	printk(BIOS_DEBUG, "Enable VGA console\n");
 	vga_enable_console();
 
-	if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/) {
+	if (acpi_sleep_type == 3/* || (PAYLOAD_IS_SEABIOS == 0)*/) {
 		/* It's not clear if these need to be programmed before or after
 		 * the VGA bios runs. Try both, clean up later */
 		/* Set memory rate to 200MHz */

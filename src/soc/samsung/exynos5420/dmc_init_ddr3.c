@@ -143,7 +143,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		writel(mem->membaseconfig1, &exynos_tzasc1->membaseconfig1);
 	}
 
-	/* Memory Channel Inteleaving Size
+	/* Memory Channel Interleaving Size
 	 * Exynos5420 Channel interleaving = 128 bytes
 	 */
 	/* MEMCONFIG0/1 */
@@ -158,7 +158,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	writel(mem->prechconfig_tp_cnt << PRECHCONFIG_TP_CNT_SHIFT,
 		&exynos_drex1->prechconfig0);
 
-	/* TimingRow, TimingData, TimingPower and Timingaref
+	/* TimingRow, TimingData, TimingPower and Timingref
 	 * values as per Memory AC parameters
 	 */
 	writel(mem->timing_ref, &exynos_drex0->timingref);
@@ -184,7 +184,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		/*
 		 * During Suspend-Resume & S/W-Reset, as soon as PMU releases
 		 * pad retention, CKE goes high. This causes memory contents
-		 * not to be retained during DRAM initialization. Therfore,
+		 * not to be retained during DRAM initialization. Therefore,
 		 * there is a new control register(0x100431e8[28]) which lets us
 		 * release pad retention and retain the memory content until the
 		 * initialization is complete.

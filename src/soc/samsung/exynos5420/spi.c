@@ -168,7 +168,7 @@ static int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
 	if (espi->half_duplex) {
 		step = 1;
 	} else if ((rx_bytes | tx_bytes | (uintptr_t)rxp |(uintptr_t)txp) & 3) {
-		printk(BIOS_CRIT, "%s: WARNING: tranfer mode decreased to 1B\n",
+		printk(BIOS_CRIT, "%s: WARNING: transfer mode decreased to 1B\n",
 		       __func__);
 		step = 1;
 	} else {

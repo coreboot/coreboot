@@ -93,7 +93,7 @@ struct exynos5_fimd_panel {
 	unsigned int right_margin;	/* Horizontal Frontporch */
 	unsigned int hsync;		/* Horizontal Sync Pulse Width */
 	unsigned int xres;		/* X Resolution */
-	unsigned int yres;		/* Y Resopultion */
+	unsigned int yres;		/* Y Resolution */
 };
 
 /* LCDIF Register Map */

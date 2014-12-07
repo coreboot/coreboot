@@ -105,7 +105,7 @@ static void exynos_dp_init_analog_param(void)
 
 	/*
 	 * Set termination
-	 * Normal bandgap, Normal swing, Tx terminal registor 61 ohm
+	 * Normal bandgap, Normal swing, Tx terminal resistor 61 ohm
 	 * 24M Phy clock, TX digital logic power is 100:1.0625V
 	 */
 	reg = SEL_BG_NEW_BANDGAP | TX_TERMINAL_CTRL_61_OHM |
@@ -160,7 +160,7 @@ static void exynos_dp_init_interrupt(void)
 	 */
 	lwrite32(INT_POL, &dp_regs->int_ctl);
 
-	/* Clear pending regisers */
+	/* Clear pending registers */
 	lwrite32(0xff, &dp_regs->common_int_sta1);
 	lwrite32(0xff, &dp_regs->common_int_sta2);
 	lwrite32(0xff, &dp_regs->common_int_sta3);
@@ -350,7 +350,7 @@ void exynos_dp_init_hpd(void)
 {
 	u32 reg;
 
-	/* Clear interrupts releated to Hot Plug Dectect */
+	/* Clear interrupts related to Hot Plug Detect */
 	reg = HOTPLUG_CHG | HPD_LOST | PLUG;
 	lwrite32(reg, &dp_regs->common_int_sta4);
 
@@ -380,7 +380,7 @@ void exynos_dp_init_aux(void)
 {
 	u32 reg;
 
-	/* Clear inerrupts related to AUX channel */
+	/* Clear interrupts related to AUX channel */
 	reg = RPLY_RECEIV | AUX_ERR;
 	lwrite32(reg, &dp_regs->int_sta);
 
@@ -804,7 +804,7 @@ int exynos_dp_read_bytes_from_i2c(u32 device_addr,
 
 			/*
 			 * If Rx sends defer, Tx sends only reads
-			 * request without sending addres
+			 * request without sending address
 			 */
 			if (!defer)
 				retval =

@@ -267,7 +267,7 @@ static void power_down_core(void)
 	wfi();
 }
 
-/* Configures the CPU states shard memory page and then shutdown all cores. */
+/* Configures the CPU states shared memory page and then shutdown all cores. */
 static void configure_secondary_cores(void)
 {
 	if (get_bits(read_midr(), 4, 12) == PART_NUMBER_CORTEX_A15) {

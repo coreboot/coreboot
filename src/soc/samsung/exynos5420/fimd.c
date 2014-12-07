@@ -93,7 +93,7 @@ static void exynos_fimd_set_dualrgb(vidinfo_t *vid, unsigned int enabled)
 		cfg = EXYNOS_DUALRGB_BYPASS_DUAL | EXYNOS_DUALRGB_LINESPLIT |
 			EXYNOS_DUALRGB_VDEN_EN_ENABLE;
 
-		/* in case of Line Split mode, MAIN_CNT doesn't neet to set. */
+		/* in case of Line Split mode, MAIN_CNT doesn't need to be set. */
 		cfg |= EXYNOS_DUALRGB_SUB_CNT(vid->vl_col / 2) |
 			EXYNOS_DUALRGB_MAIN_CNT(0);
 	}

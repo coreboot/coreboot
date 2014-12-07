@@ -47,11 +47,11 @@ unsigned long get_uart_clk(int dev_index);
 void set_mmc_clk(int dev_index, unsigned int div);
 
 /**
- * get the clk frequency of the required peripherial
+ * get the clk frequency of the required peripheral
  *
- * @param peripherial	Peripherial id
+ * @param peripheral	Peripheral id
  *
- * @return frequency of the peripherial clk
+ * @return frequency of the peripheral clk
  */
 unsigned long clock_get_periph_rate(enum periph_id peripheral);
 
@@ -61,7 +61,7 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral);
 #define MCT_HZ 24000000
 
 /*
- * Set mshci controller instances clock drivder
+ * Set mshci controller instances clock divider
  *
  * @param enum periph_id instance of the mshci controller
  *
@@ -70,7 +70,7 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral);
 int clock_set_mshci(enum periph_id peripheral);
 
 /*
- * Set dwmci controller instances clock drivder
+ * Set dwmci controller instances clock divider
  *
  * @param enum periph_id instance of the dwmci controller
  *
@@ -81,7 +81,7 @@ int clock_set_dwmci(enum periph_id peripheral);
 /*
  * Sets the epll clockrate
  *
- * @param rate	Required clock rate to the presacaler in Hz
+ * @param rate	Required clock rate to the prescaler in Hz
  *
  * Return	0 if ok else -1
  */
@@ -664,7 +664,7 @@ static struct exynos5_mct * const exynos_mct =
 		(void *)EXYNOS5_MULTI_CORE_TIMER_BASE;
 
 #define EXYNOS5_EPLLCON0_LOCKED_SHIFT	29  /* EPLL Locked bit position*/
-#define EPLL_SRC_CLOCK			24000000  /*24 MHz Cristal Input */
+#define EPLL_SRC_CLOCK			24000000  /*24 MHz Crystal Input */
 #define TIMEOUT_EPLL_LOCK		1000
 
 #define AUDIO_0_RATIO_MASK		0x0f

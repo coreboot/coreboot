@@ -218,7 +218,7 @@ static unsigned int exynos_dp_handle_edid(struct edp_device_info *edp_info)
 		printk(BIOS_ERR, "DP Wrong MAX LINK RATE : %x\n", temp);
 		return -1;
 	}
-	/*Refer VESA Display Port Stnadard Ver1.1a Page 120 */
+	/*Refer VESA Display Port Standard Ver1.1a Page 120 */
 	if (edp_info->dpcd_rev == DP_DPCD_REV_11) {
 		temp = buf[DPCD_MAX_LANE_COUNT] & 0x1f;
 		if (buf[DPCD_MAX_LANE_COUNT] & 0x80)
@@ -420,7 +420,7 @@ static unsigned int exynos_dp_read_dpcd_adj_req(unsigned char lane_num,
 	unsigned char buf;
 	unsigned int dpcd_addr;
 
-	/*lane_num value is used as arry index, so this range 0 ~ 3 */
+	/*lane_num value is used as array index, so this range 0 ~ 3 */
 	dpcd_addr = DPCD_ADJUST_REQUEST_LANE0_1 + (lane_num / 2);
 
 	ret = exynos_dp_read_byte_from_dpcd(dpcd_addr, &buf);

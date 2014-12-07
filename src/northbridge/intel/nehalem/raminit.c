@@ -4571,7 +4571,9 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar32(0x140, read_mchbar32(0x140) & ~0x07000000);
 	write_mchbar32(0x138, read_mchbar32(0x138) & ~0x07000000);
 	write_mchbar32(0x130, 0x31111301);
-	while (read_mchbar32(0x130) & 1) ;
+	/* Wait until REG130b0 is 1.  */
+	while (read_mchbar32(0x130) & 1)
+		;
 
 	{
 		u32 t;

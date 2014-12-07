@@ -227,11 +227,11 @@ static void pci_routing_fixup(struct device *dev)
 		unsigned char irqs[4] = { MAC_IRQ, 0, 0, 0 };
 		pci_assign_irqs(0, 0x8, irqs);
 	}
-	if (OHCII_IRQ && EHCII_IRQ) {
+	if ((OHCII_IRQ != 0) && (EHCII_IRQ != 0)) {
 		unsigned char irqs[4] = { OHCII_IRQ, EHCII_IRQ, 0, 0 };
 		pci_assign_irqs(0, 0xa, irqs);
 	}
-	if (CONFIG_IDE_NATIVE_MODE && PIDE_IRQ) {
+	if ((CONFIG_IDE_NATIVE_MODE != 0) && (PIDE_IRQ != 0)) {
 		/* IDE in native mode, setup PCI IRQ. */
 		unsigned char irqs[4] = { PIDE_IRQ, 0, 0, 0 };
 		pci_assign_irqs(0, 0xc, irqs);
@@ -572,7 +572,7 @@ static void southbridge_init_func1(struct device *dev)
 	pci_write_config32(dev, SB1_REG_EXT_PIRQ_ROUTE2, ext_int_routing2);
 
 	/* Assign in-chip PCI device IRQs. */
-	if (SPI1_IRQ || MOTOR_IRQ) {
+	if ((SPI1_IRQ != 0) || (MOTOR_IRQ != 0)) {
 		unsigned char irqs[4] = { MOTOR_IRQ, SPI1_IRQ, 0, 0 };
 		pci_assign_irqs(0, 0x10, irqs);
 	}

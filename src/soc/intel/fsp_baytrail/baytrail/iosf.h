@@ -59,7 +59,7 @@ uint32_t iosf_bunit_read(int reg);
 void iosf_bunit_write(int reg, uint32_t val);
 uint32_t iosf_dunit_read(int reg);
 void iosf_dunit_write(int reg, uint32_t val);
-/* Some registers are per channel while the gloals live in dunit 0 */
+/* Some registers are per channel while the globals live in dunit 0 */
 uint32_t iosf_dunit_ch0_read(int reg);
 uint32_t iosf_dunit_ch1_read(int reg);
 uint32_t iosf_punit_read(int reg);
@@ -69,7 +69,7 @@ void iosf_lpss_write(int reg, uint32_t val);
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
 #define IOSF_PORT_SYSMEMC	0x01 /* System Memory Controller */
-#define IOSF_PORT_BUNIT		0x03 /* System Memroy Arbiter/Bunit */
+#define IOSF_PORT_BUNIT		0x03 /* System Memory Arbiter/Bunit */
 #define IOSF_PORT_DUNIT_CH1	0x07 /* DUNIT Channel 1 */
 #define IOSF_PORT_USBPHY	0x43 /* USB PHY */
 #define IOSF_PORT_USHPHY	0x61 /* USB XHCI PHY */

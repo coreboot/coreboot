@@ -146,7 +146,7 @@ void mainboard_romstage_entry(unsigned long bist)
 			{ 0x0040, 1, USB_OC_PIN_SKIP,	/* P7: BT */
 			  USB_PORT_INTERNAL },
 		},
-		usb3_ports: {
+		.usb3_ports = {
 			/* Enable, OCn# */
 			{ 1, 0               }, /* P1: HOST PORT */
 			{ 1, 1               }, /* P2: HOST PORT  */

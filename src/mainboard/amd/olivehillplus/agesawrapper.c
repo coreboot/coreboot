@@ -278,6 +278,8 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	status = AmdCreateStruct (&AmdParamStruct);
 	EnvParam = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
 
+	EnvParam->GnbEnvConfiguration.IommuSupport = FALSE;
+
 	status = AmdInitEnv (EnvParam);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(EnvParam->StdHeader.HeapStatus);
 	/* Initialize Subordinate Bus Number and Secondary Bus Number

@@ -18,13 +18,14 @@
  */
 
 #include <arch/io.h>
+#include <delay.h>
 #include <soc/clk.h>
 #include <stdint.h>
 #include <timer.h>
 
 static const uint32_t clocks_per_usec = MCT_HZ/1000000;
 
-uint64_t mct_raw_value(void)
+static uint64_t mct_raw_value(void)
 {
 	uint64_t upper = readl(&exynos_mct->g_cnt_u);
 	uint64_t lower = readl(&exynos_mct->g_cnt_l);
@@ -32,7 +33,7 @@ uint64_t mct_raw_value(void)
 	return (upper << 32) | lower;
 }
 
-void mct_start(void)
+void init_timer(void)
 {
 	writel(readl(&exynos_mct->g_tcon) | (0x1 << 8),
 		&exynos_mct->g_tcon);

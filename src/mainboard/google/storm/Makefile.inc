@@ -17,7 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-bootblock-y += bootblock.c
 bootblock-y += cdp.c
 bootblock-y += reset.c
 

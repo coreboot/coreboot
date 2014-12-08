@@ -39,7 +39,7 @@ void timer_monotonic_get(struct mono_time *mt)
 	mono_time_set_usecs(mt, timer_raw_value() / clocks_per_usec);
 }
 
-void rk3288_init_timer(void)
+void init_timer(void)
 {
 	write32(TIMER_LOAD_VAL, &timer7_ptr->timer_load_count0);
 	write32(TIMER_LOAD_VAL, &timer7_ptr->timer_load_count1);

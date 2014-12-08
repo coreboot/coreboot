@@ -725,9 +725,6 @@ int clock_set_rate(enum periph_id periph_id, unsigned int rate);
 /* Clock gate unused IP */
 void clock_gate(void);
 
-void mct_start(void);
-uint64_t mct_raw_value(void);
-
 /* These are the ratio's for configuring ARM clock */
 struct arm_clk_ratios {
 	unsigned int arm_freq_mhz;	/* Frequency of ARM core in MHz */

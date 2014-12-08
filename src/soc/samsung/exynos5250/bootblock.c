@@ -23,11 +23,6 @@
 
 void bootblock_soc_init(void)
 {
-	/* kick off the multi-core timer.
-	 * We want to do this as early as we can.
-	 */
-	mct_start();
-
 	if (get_wakeup_state() == WAKEUP_DIRECT) {
 		wakeup();
 		/* Never returns. */

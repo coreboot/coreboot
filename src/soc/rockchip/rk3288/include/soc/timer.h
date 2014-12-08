@@ -40,6 +40,4 @@ static struct rk3288_timer * const timer7_ptr = (void *)TIMER7_BASE;
 
 #define TIMER_LOAD_VAL	0xffffffff
 
-void rk3288_init_timer(void);
-
 #endif	/* __SOC_ROCKCHIP_RK3288_TIMER_H__ */

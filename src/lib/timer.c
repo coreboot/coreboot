@@ -22,6 +22,8 @@
 #include <delay.h>
 #include <thread.h>
 
+__attribute__((weak)) void init_timer() { /* do nothing */ }
+
 void udelay(unsigned usec)
 {
 	struct stopwatch sw;

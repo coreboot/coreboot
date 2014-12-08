@@ -29,8 +29,6 @@
 
 static void bootblock_soc_init(void)
 {
-	rk3288_init_timer();
-
 	rkclk_init();
 
 	mmu_init();

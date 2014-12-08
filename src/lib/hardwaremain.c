@@ -464,8 +464,9 @@ void main(void)
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();
 
-	/* FIXME: Is there a better way to handle this? */
-	init_timer();
+	/* TODO: Understand why this is here and move to arch/platform code. */
+	if (IS_ENABLED(CONFIG_ARCH_X86))
+		init_timer();
 
 	bs_walk_state_machine();
 

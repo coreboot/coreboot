@@ -674,7 +674,7 @@ static void *ehci_create_intr_queue(
 
 	/* create spare qTD */
 	intrq->spare = (intr_qtd_t *)dma_memalign(64, sizeof(intr_qtd_t));
-	fill_intr_queue_td(intrq, intrq->spare, data);
+	intrq->spare->data = data;
 
 	/* initialize QH */
 	const int endp = ep->endpoint & 0xf;

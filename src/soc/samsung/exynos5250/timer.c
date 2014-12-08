@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Rockchip Inc.
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,23 +18,31 @@
  */
 
 #include <arch/io.h>
-#include <soc/addressmap.h>
-#include <soc/timer.h>
+#include <soc/clk.h>
 #include <stdint.h>
 #include <timer.h>
 
-static uint64_t timer_raw_value(void)
-{
-	uint64_t value0;
-	uint64_t value1;
+static const uint32_t clocks_per_usec = MCT_HZ/1000000;
 
-	value0 = (uint64_t)read32(&timer7_ptr->timer_curr_value0);
-	value1 = (uint64_t)read32(&timer7_ptr->timer_curr_value1);
-	value0 = value0 | value1<<32;
-	return value0;
+uint64_t mct_raw_value(void)
+{
+	uint64_t upper = readl(&exynos_mct->g_cnt_u);
+	uint64_t lower = readl(&exynos_mct->g_cnt_l);
+
+	return (upper << 32) | lower;
+}
+
+void mct_start(void)
+{
+	writel(readl(&exynos_mct->g_tcon) | (0x1 << 8),
+		&exynos_mct->g_tcon);
 }
 
 void timer_monotonic_get(struct mono_time *mt)
 {
-	mono_time_set_usecs(mt, timer_raw_value() / clocks_per_usec);
+	/* We don't have to call mct_start() here
+	 * because it was already called in the bootblock
+	 */
+
+	mono_time_set_usecs(mt, mct_raw_value() / clocks_per_usec);
 }

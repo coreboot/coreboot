@@ -25,7 +25,6 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 bootblock-y += timer.c
-bootblock-y += monotonic_timer.c
 bootblock-y += clock.c
 bootblock-y += spi.c
 bootblock-y += media.c
@@ -33,7 +32,6 @@ bootblock-y += gpio.c
 bootblock-y += i2c.c
 bootblock-y += rk808.c
 
-verstage-y += monotonic_timer.c
 verstage-y += spi.c
 verstage-y += timer.c
 verstage-$(CONFIG_DRIVERS_UART) += uart.c
@@ -44,7 +42,6 @@ verstage-y += media.c
 
 romstage-y += cbmem.c
 romstage-y += timer.c
-romstage-y += monotonic_timer.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += i2c.c
 romstage-y += clock.c
@@ -58,7 +55,6 @@ romstage-y += tsadc.c
 ramstage-y += soc.c
 ramstage-y += cbmem.c
 ramstage-y += timer.c
-ramstage-y += monotonic_timer.c
 ramstage-y += i2c.c
 ramstage-y += clock.c
 ramstage-y += spi.c

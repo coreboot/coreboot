@@ -82,7 +82,7 @@ static void nb_platform_config(device_t nb_dev, AMD_NB_CONFIG *NbConfigPtr)
 			}
 			if ((platform_config.PortHotplugMap & (1 << i)) != 0) {
 				u16 j;
-				pPcieConfig->PortConfiguration[j].PortHotplug = ON; /* Enable Hotplug */
+				pPcieConfig->PortConfiguration[i].PortHotplug = ON; /* Enable Hotplug */
 				/* Set Hotplug descriptor info */
 				for (j = 0; j < 8; j++) {
 					u32 PortDescriptor;

@@ -421,6 +421,363 @@ static const gpio_default_t pp_pch_mobile_defaults[] = {
 	{ 0x68, 0x00000000 },
 };
 
+/* Baytrail */
+static const io_register_t baytrail_score_ssus_gpio_registers[] = {
+	{ 0x00, 4, "SC_USE_SEL_31_0_" },
+	{ 0x04, 4, "SC_IO_SEL_31_0_" },
+	{ 0x08, 4, "SC_GP_LVL_31_0_)" },
+	{ 0x0C, 4, "SC_TPE_31_0_" },
+	{ 0x10, 4, "SC_TNE_31_0_" },
+	{ 0x14, 4, "SC_TS_31_0_" },
+	{ 0x20, 4, "SC_USE_SEL_63_32_" },
+	{ 0x24, 4, "SC_IO_SEL_63_32_" },
+	{ 0x28, 4, "SC_GP_LVL_63_32_" },
+	{ 0x2C, 4, "SC_TPE_63_32_" },
+	{ 0x30, 4, "SC_TNE_63_32_" },
+	{ 0x34, 4, "SC_TS_63_32_" },
+	{ 0x40, 4, "SC_USE_SEL_95_64_" },
+	{ 0x44, 4, "SC_IO_SEL_95_64_" },
+	{ 0x48, 4, "SC_GP_LVL_95_64_" },
+	{ 0x4C, 4, "SC_TPE_95_64_" },
+	{ 0x50, 4, "SC_TNE_95_64_" },
+	{ 0x54, 4, "SC_TS_95_64_" },
+	{ 0x58, 4, "SC_USE_SEL_127_96_" },
+	{ 0x64, 4, "SC_IO_SEL_127_96_" },
+	{ 0x68, 4, "SC_GP_LVL_127_96_" },
+	{ 0x6C, 4, "SC_TPE_127_96_" },
+	{ 0x70, 4, "SC_TNE_127_96_" },
+	{ 0x74, 4, "SC_TS_127_96_" },
+
+	{ 0x80 + 0x00, 4, "SUS_USE_SEL_31_0_" },
+	{ 0x80 + 0x04, 4, "SUS_IO_SEL_31_0_" },
+	{ 0x80 + 0x08, 4, "SUS_GP_LVL_31_0_" },
+	{ 0x80 + 0x0c, 4, "SUS_TPE_31_0_" },
+	{ 0x80 + 0x10, 4, "SUS_TNE_31_0_" },
+	{ 0x80 + 0x14, 4, "SUS_TS_31_0_" },
+	{ 0x80 + 0x18, 4, "SUS_WAKE_EN_31_0_" },
+	{ 0x80 + 0x20, 4, "SUS_USE_SEL_43_32_" },
+	{ 0x80 + 0x24, 4, "SUS_IO_SEL_43_32_" },
+	{ 0x80 + 0x28, 4, "SUS_GP_LVL_43_32_" },
+	{ 0x80 + 0x2c, 4, "SUS_TPE_43_32_" },
+	{ 0x80 + 0x30, 4, "SUS_TNE_43_32_" },
+	{ 0x80 + 0x34, 4, "SUS_TS_43_32_" },
+	{ 0x80 + 0x38, 4, "SUS_WAKE_EN_43_32_" }
+};
+
+/* Description of GPIO 'bank' ex. {ncore, score. ssus} */
+struct gpio_bank {
+	const uint32_t gpio_count;
+	const u8* gpio_to_pad;
+	const unsigned long pad_base_offset;
+	const char* gpio_name;
+	const char ** func_names;
+};
+
+/* Number of GPIOs in each bank */
+#define BANK_COUNT		3
+#define GPNCORE_COUNT		27
+#define GPSCORE_COUNT		102
+#define GPSSUS_COUNT		44
+
+/* IO Memory offsets */
+#define  IO_BASE_OFFSET_GPNCORE		0x1000
+#define  IO_BASE_OFFSET_GPSCORE		0x0000
+#define  IO_BASE_OFFSET_GPSSUS		0x2000
+
+static const char *ncore_func_names[GPNCORE_COUNT * 8] = {
+"GPIO_S0_NC[00]",	"RESERVED",	"DDI0_HPD",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[01]",	"-",		"DDI0_DDCDATA",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[02]",	"-",		"DDI0_DDCCLK",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[03]",	"-",		"DDI0_VDDEN",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[04]",	"-",		"DDI0_BKLTEN",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[05]",	"-",		"DDI0_BKLTCTL",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[06]",	"RESERVED",	"DDI1_HPD",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[07]",	"-",		"DDI1_DDCDATA",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[08]",	"-",		"DDI1_DDCCLK",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[09]",	"RESERVED",	"DDI1_VDDEN",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[10]",	"RESERVED",	"DDI1_BKLTEN",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[11]",	"RESERVED",	"DDI1_BKLTCTL",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[12]",	"RESERVED",	"-",		"-", "-", "-", "-", "-",
+"GPIO_S0_NC[13]",	"RESERVED",	"-",		"-", "-", "-", "-", "-",
+"GPIO_S0_NC[14]",	"RESERVED",	"-",		"-", "-", "-", "-", "-",
+"GPIO_S0_NC[15]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[16]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[17]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[18]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[19]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[20]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[21]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[22]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[23]",	"RESERVED",	"RESERVED",	"-", "-", "-", "-", "-",
+"GPIO_S0_NC[24]",	"RESERVED",	"-",		"-", "-", "-", "-", "-",
+"GPIO_S0_NC[25]",	"RESERVED",	"-",		"-", "-", "-", "-", "-",
+"GPIO_S0_NC[26]",	"RESERVED",	"-",		"-", "-", "-", "-", "-",
+};
+
+static const char *score_func_names[GPSCORE_COUNT * 8] = {
+"GPIO_S0_SC[000]",	"SATA_GP[0]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[001]",	"SATA_GP[1]",		"SATA_DEVSLP[0]",	"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[002]",	"SATA_LED#",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[003]",	"PCIE_CLKREQ[0]#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[004]",	"PCIE_CLKREQ[1]#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[005]",	"PCIE_CLKREQ[2]#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[006]",	"PCIE_CLKREQ[3]#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[007]",	"RESERVED",		"SD3_WP",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[008]",	"I2S0_CLK",		"HDA_RST#",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[009]",	"I2S0_FRM",		"HDA_SYNC",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[010]",	"I2S0_DATAOUT",		"HDA_CLK",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[011]",	"I2S0_DATAIN",		"HDA_SDO",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[012]",	"I2S1_CLK",		"HDA_SDI[0]",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[013]",	"I2S1_FRM",		"HDA_SDI[1]",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[014]",	"I2S1_DATAOUT",		"RESERVED",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[015]",	"I2S1_DATAIN",		"RESERVED",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[016]",	"MMC1_CLK",		"-",			"MMC1_45_CLK",	"-", "-", "-", "-",
+"GPIO_S0_SC[017]",	"MMC1_D[0]",		"-",			"MMC1_45_D[0]",	"-", "-", "-", "-",
+"GPIO_S0_SC[018]",	"MMC1_D[1]",		"-",			"MMC1_45_D[1]",	"-", "-", "-", "-",
+"GPIO_S0_SC[019]",	"MMC1_D[2]",		"-",			"MMC1_45_D[2]",	"-", "-", "-", "-",
+"GPIO_S0_SC[020]",	"MMC1_D[3]",		"-",			"MMC1_45_D[3]",	"-", "-", "-", "-",
+"GPIO_S0_SC[021]",	"MMC1_D[4]",		"-",			"MMC1_45_D[4]",	"-", "-", "-", "-",
+"GPIO_S0_SC[022]",	"MMC1_D[5]",		"-",			"MMC1_45_D[5]",	"-", "-", "-", "-",
+"GPIO_S0_SC[023]",	"MMC1_D[6]",		"-",			"MMC1_45_D[6]",	"-", "-", "-", "-",
+"GPIO_S0_SC[024]",	"MMC1_D[7]",		"-",			"MMC1_45_D[7]",	"-", "-", "-", "-",
+"GPIO_S0_SC[025]",	"MMC1_CMD",		"-",			"MMC1_45_CMD",	"-", "-", "-", "-",
+"GPIO_S0_SC[026]",	"MMC1_RST#",		"SATA_DEVSLP[0]",	"MMC1_45_RST#",	"-", "-", "-", "-",
+"GPIO_S0_SC[027]",	"SD2_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[028]",	"SD2_D[0]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[029]",	"SD2_D[1]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[030]",	"SD2_D[2]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[031]",	"SD2_D[3]_CD#",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[032]",	"SD2_CMD",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[033]",	"SD3_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[034]",	"SD3_D[0]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[035]",	"SD3_D[1]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[036]",	"SD3_D[2]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[037]",	"SD3_D[3]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[038]",	"SD3_CD#",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[039]",	"SD3_CMD",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[040]",	"SD3_1P8EN",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[041]",	"SD3_PWREN#",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[042]",	"ILB_LPC_AD[0]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[043]",	"ILB_LPC_AD[1]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[044]",	"ILB_LPC_AD[2]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[045]",	"ILB_LPC_AD[3]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[046]",	"ILB_LPC_FRAME#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[047]",	"ILB_LPC_CLK[0]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[048]",	"ILB_LPC_CLK[1]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[049]",	"ILB_LPC_CLKRUN#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[050]",	"ILB_LPC_SERIRQ",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[051]",	"PCU_SMB_DATA",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[052]",	"PCU_SMB_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[053]",	"PCU_SMB_ALERT#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[054]",	"ILB_8254_SPKR",	"RESERVED",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[055]",	"RESERVED",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[056]",	"RESERVED",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[057]",	"PCU_UART_TXD",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[058]",	"RESERVED",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[059]",	"RESERVED",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[060]",	"RESERVED",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[061]",	"PCU_UART_RXD",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[062]",	"LPE_I2S2_CLK",		"SATA_DEVSLP[1]",	"RESERVED",	"-", "-", "-", "-",
+"GPIO_S0_SC[063]",	"LPE_I2S2_FRM",		"RESERVED",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[064]",	"LPE_I2S2_DATAIN",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[065]",	"LPE_I2S2_DATAOUT",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[066]",	"SIO_SPI_CS#",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[067]",	"SIO_SPI_MISO",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[068]",	"SIO_SPI_MOSI",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[069]",	"SIO_SPI_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[070]",	"SIO_UART1_RXD",	"RESERVED",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[071]",	"SIO_UART1_TXD",	"RESERVED",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[072]",	"SIO_UART1_RTS#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[073]",	"SIO_UART1_CTS#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[074]",	"SIO_UART2_RXD",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[075]",	"SIO_UART2_TXD",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[076]",	"SIO_UART2_RTS#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[077]",	"SIO_UART2_CTS#",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[078]",	"SIO_I2C0_DATA",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[079]",	"SIO_I2C0_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[080]",	"SIO_I2C1_DATA",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[081]",	"SIO_I2C1_CLK",		"RESERVED",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[082]",	"SIO_I2C2_DATA",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[083]",	"SIO_I2C2_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[084]",	"SIO_I2C3_DATA",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[085]",	"SIO_I2C3_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[086]",	"SIO_I2C4_DATA",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[087]",	"SIO_I2C4_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[088]",	"SIO_I2C5_DATA",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[089]",	"SIO_I2C5_CLK",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[090]",	"SIO_I2C6_DATA",	"ILB_NMI",		"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[091]",	"SIO_I2C6_CLK",		"SD3_WP",		"-",		"-", "-", "-", "-",
+"RESERVED",		"GPIO_S0_SC[092]",	"-",			"-",		"-", "-", "-", "-",
+"RESERVED",		"GPIO_S0_SC[093]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[094]",	"SIO_PWM[0]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[095]",	"SIO_PWM[1]",		"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[096]",	"PMC_PLT_CLK[0]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[097]",	"PMC_PLT_CLK[1]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[098]",	"PMC_PLT_CLK[2]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[099]",	"PMC_PLT_CLK[3]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[100]",	"PMC_PLT_CLK[4]",	"-",			"-",		"-", "-", "-", "-",
+"GPIO_S0_SC[101]",	"PMC_PLT_CLK[5]",	"-",			"-",		"-", "-", "-", "-",
+};
+
+static const char *ssus_func_names[GPSSUS_COUNT * 8] = {
+"GPIO_S5[00]",		"RESERVED",		"-",		"-",		"-", "-", "-",			"-",
+"GPIO_S5[01]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "PMC_WAKE_PCIE[1]#",	"-",
+"GPIO_S5[02]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "PMC_WAKE_PCIE[2]#",	"-",
+"GPIO_S5[03]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "PMC_WAKE_PCIE[3]#",	"-",
+"GPIO_S5[04]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[05]",		"PMC_SUSCLK[1]",	"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[06]",		"PMC_SUSCLK[2]",	"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[07]",		"PMC_SUSCLK[3]",	"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[08]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[09]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[10]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"PMC_SUSPWRDNACK",	"GPIO_S5[11]",		"-",		"-",		"-", "-", "-",			"-",
+"PMC_SUSCLK[0]",	"GPIO_S5[12]",		"-",		"-",		"-", "-", "-",			"-",
+"RESERVED",		"GPIO_S5[13]",		"-",		"-",		"-", "-", "-",			"-",
+"RESERVED",		"GPIO_S5[14]",		"USB_ULPI_RST#","-",		"-", "-", "-",			"-",
+"PMC_WAKE_PCIE[0]#",	"GPIO_S5[15]",		"-",		"-",		"-", "-", "-",			"-",
+"PMC_PWRBTN#",		"GPIO_S5[16]",		"-",		"-",		"-", "-", "-",			"-",
+"RESERVED",		"GPIO_S5[17]",		"-",		"-",		"-", "-", "-",			"-",
+"PMC_SUS_STAT#",	"GPIO_S5[18]",		"-",		"-",		"-", "-", "-",			"-",
+"USB_OC[0]#",		"GPIO_S5[19]",		"-",		"-",		"-", "-", "-",			"-",
+"USB_OC[1]#",		"GPIO_S5[20]",		"-",		"-",		"-", "-", "-",			"-",
+"PCU_SPI_CS[1]#",	"GPIO_S5[21]",		"-",		"-",		"-", "-", "-",			"-",
+"GPIO_S5[22]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[23]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[24]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[25]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[26]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[27]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[28]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[29]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[30]",		"RESERVED",		"RESERVED",	"RESERVED",	"-", "-", "RESERVED",		"-",
+"GPIO_S5[31]",		"USB_ULPI_CLK",		"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[32]",		"USB_ULPI_DATA[0]",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[33]",		"USB_ULPI_DATA[1]",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[34]",		"USB_ULPI_DATA[2]",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[35]",		"USB_ULPI_DATA[3]",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[36]",		"USB_ULPI_DATA[4]",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[37]",		"USB_ULPI_DATA[5]",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[38]",		"USB_ULPI_DATA[6]",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[39]",		"USB_ULPI_DATA[7]",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[40]",		"USB_ULPI_DIR",		"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[41]",		"USB_ULPI_NXT",		"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[42]",		"USB_ULPI_STP",		"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+"GPIO_S5[43]",		"USB_ULPI_REFCLK",	"RESERVED",	"RESERVED",	"-", "-", "-",			"-",
+};
+
+/* GPIO-to-Pad LUTs - Translate the GPIO number to the pad register */
+static const u8 gpncore_gpio_to_pad[GPNCORE_COUNT] =
+	{ 19, 18, 17, 20, 21, 22, 24, 25,	/* [ 0: 7] */
+	  23, 16, 14, 15, 12, 26, 27,  1,	/* [ 8:15] */
+	   4,  8, 11,  0,  3,  6, 10, 13,	/* [16:23] */
+	   2,  5,  9 };				/* [24:26] */
+
+static const u8 gpscore_gpio_to_pad[GPSCORE_COUNT] =
+	{  85,  89, 93,  96, 99, 102,  98, 101,	/* [ 0:  7] */
+	   34,  37, 36,  38, 39,  35,  40,  84,	/* [ 8: 15] */
+	   62,  61, 64,  59, 54,  56,  60,  55,	/* [16: 23] */
+	   63,  57, 51,  50, 53,  47,  52,  49,	/* [24: 31] */
+	   48,  43, 46,  41, 45,  42,  58,  44,	/* [32: 39] */
+	   95, 105, 70,  68, 67,  66,  69,  71,	/* [40: 47] */
+	   65,  72, 86,  90, 88,  92, 103,  77,	/* [48: 55] */
+	   79,  83, 78,  81, 80,  82,  13,  12,	/* [56: 63] */
+	   15,  14, 17,  18, 19,  16,   2,   1,	/* [64: 71] */
+	    0,   4,  6,   7,  9,   8,  33,  32,	/* [72: 79] */
+	   31,  30, 29,  27, 25,  28,  26,  23,	/* [80: 87] */
+	   21,  20, 24,  22,  5,   3,  10,  11,	/* [88: 95] */
+	  106,  87, 91, 104, 97, 100 };		/* [96:101] */
+
+static const u8 gpssus_gpio_to_pad[GPSSUS_COUNT] =
+	{ 29, 33, 30, 31, 32, 34, 36, 35,	/* [ 0: 7] */
+	  38, 37, 18,  7, 11, 20, 17,  1,	/* [ 8:15] */
+	   8, 10, 19, 12,  0,  2, 23, 39,	/* [16:23] */
+	  28, 27, 22, 21, 24, 25, 26, 51,	/* [24:31] */
+	  56, 54, 49, 55, 48, 57, 50, 58,	/* [32:39] */
+	  52, 53, 59, 40 };			/* [40:43] */
+
+static const struct gpio_bank gpio_banks[] = {
+	{
+		.gpio_count = GPNCORE_COUNT,
+		.gpio_to_pad = gpncore_gpio_to_pad,
+		.pad_base_offset = IO_BASE_OFFSET_GPNCORE,
+		.gpio_name = "NCORE GPIOs",
+		.func_names = ncore_func_names,
+	},
+	{
+		.gpio_count = GPSCORE_COUNT,
+		.gpio_to_pad = gpscore_gpio_to_pad,
+		.pad_base_offset = IO_BASE_OFFSET_GPSCORE,
+		.gpio_name = "SCORE GPIOs (GPIO_S0_SC_XX)",
+		.func_names = score_func_names,
+	},
+	{
+		.gpio_count = GPSSUS_COUNT,
+		.gpio_to_pad = gpssus_gpio_to_pad,
+		.pad_base_offset = IO_BASE_OFFSET_GPSSUS,
+		.gpio_name = "SSUS GPIOs (GPIO_S5)",
+		.func_names = ssus_func_names,
+	},
+};
+
+const char *pull_assignment[] = {"None","Up  ","Down","Res "};
+const char *pull_strength[] = {"2k", "10k", "20k", "40k"};
+
+static int show_baytrail_pad_reg(struct pci_dev *sb){
+
+	uint64_t iobase = (uint64_t)pci_read_long(sb, 0x4c) & 0xffffc000;
+	uint32_t val, bank, gpio, offset, size = 0x3000;
+	volatile uint32_t *reg;
+
+	reg = map_physical(iobase, size);
+
+	if (reg == NULL) {
+		perror("Error mapping IOBASE");
+		return 1;
+	}
+
+	printf("\nIOBASE: 0x%08lx\n",(long int)iobase);
+
+	/* Display function values */
+	for (bank = 0; bank < BANK_COUNT; bank++) {
+		printf("\n========== Bay Trail %s ===========\n\n",
+				gpio_banks[bank].gpio_name);
+
+		printf("Address         | GPIO #   | reg value  | "
+			"Pull Dir & Str | Func #: Func Name            |"
+			" I/O            | Current Val\n");
+
+		for (gpio=0; gpio < gpio_banks[bank].gpio_count; gpio++) {
+			offset = gpio_banks[bank].pad_base_offset +
+					(16 * gpio_banks[bank].gpio_to_pad[gpio]);
+
+			/* Read Pad Configuration 0 Register */
+			val = *(reg + offset / 4);
+			printf("iobase + 0x%04x | GPIO %3d | ",offset, gpio);
+			printf("0x%08x | ", val);
+			printf("Pull: %4s %3s | ",pull_assignment[(val >> 7) & 3],
+					((val >> 7) & 3) ?
+					pull_strength[(val >> 9) & 3] :
+					"");
+			printf("Func %d",val & 0x07);
+			if (gpio_banks[bank].func_names != NULL)
+				printf(": %-20s | ", gpio_banks[bank].func_names[(gpio * 8) + (val & 0x07)] );
+
+			/* Read the Pad Value Register */
+			val = *(reg + offset / 4 + 2);
+			printf("%6s%3s%5s | %-4s",
+					(val & 0x02) ? "" : "Output",
+					(val & 0x06) ? "" : " / ",
+					(val & 0x04) ? "" : "Input",
+					(val & 0x01) ? "High" : "Low");
+			printf("\n");
+		}
+	}
+
+	unmap_physical((void *)reg, size);
+	return 0;
+}
+
 static uint16_t gpiobase;
 
 static void print_reg(const io_register_t *const reg)
@@ -648,6 +1005,11 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		gpio_registers = i631x_gpio_registers;
 		size = ARRAY_SIZE(i631x_gpio_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = baytrail_score_ssus_gpio_registers;
+		size = ARRAY_SIZE(baytrail_score_ssus_gpio_registers);
+		break;
 	case PCI_DEVICE_ID_INTEL_82371XX:
 		printf("This southbridge has GPIOs in the PM unit.\n");
 		return 1;
@@ -708,6 +1070,9 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 			if (show_all)
 				print_reg(&tmp_gpio);
 		}
+		break;
+	case PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC:
+		show_baytrail_pad_reg(sb);
 		break;
 	default:
 		break;

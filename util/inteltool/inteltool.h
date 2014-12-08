@@ -152,6 +152,12 @@
 /* 82371AB/EB/MB use the same device ID value. */
 #define PCI_DEVICE_ID_INTEL_82371XX		0x7110
 
+/* Bay Trail */
+#define PCI_DEVICE_ID_INTEL_BAYTRAIL		0x0f00 /* SOC Transaction Router */
+#define PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC	0x0f1c
+#define PCI_DEVICE_ID_INTEL_BAYTRAIL_GFX	0x0f31
+#define CPUID_BAYTRAIL						0x30670
+
 /* Intel starts counting these generations with the integration of the DRAM controller */
 #define PCI_DEVICE_ID_INTEL_CORE_0TH_GEN	0xd132 /* Nehalem */
 #define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN	0x0044 /* Westmere */

@@ -145,8 +145,8 @@ KB_COMPLEX_CONFIG ComplexDataKB = {
     0,
     DDI_START_PHY_LANE,
     DDI_END_PHY_LANE,
-    -1,
-    0,
+    0x0F, // Start PCIe Core ID (4 bits) - Should be 'UINT8_MAX' however clang complains of truncation
+    0,    // End PCIe Core ID   (4 bits)
     0,
     {
       1,

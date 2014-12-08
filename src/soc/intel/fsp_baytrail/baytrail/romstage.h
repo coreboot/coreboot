@@ -29,9 +29,9 @@ void report_platform_info(void);
 
 #include <stdint.h>
 #include <arch/cpu.h>
+#include <drivers/intel/fsp/fsp_util.h>
 
-#include <fsptypes.h>
-
+void main(FSP_INFO_HEADER *fsp_info_header);
 void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr);
 uint32_t chipset_prev_sleep_state(uint32_t clear);
 

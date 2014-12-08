@@ -172,7 +172,6 @@ static void rcba_config(void)
 	RCBA32(FD) = reg32;
 }
 
-void main(FSP_INFO_HEADER *fsp_info_header); // XXX find a better place dorothy
 void main(FSP_INFO_HEADER *fsp_info_header)
 {
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)

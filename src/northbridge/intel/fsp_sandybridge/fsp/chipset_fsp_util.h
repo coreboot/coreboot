@@ -60,6 +60,9 @@
 #define FSP_IMAGE_ID_DWORD1 0x00505346
 #endif
 
+#ifdef __PRE_RAM__
+void main(FSP_INFO_HEADER *fsp_info_header);
 void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr);
+#endif
 
 #endif /* CHIPSET_FSP_UTIL_H */

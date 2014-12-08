@@ -27,9 +27,9 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
+#include <drivers/intel/fsp/fsp_util.h>
 
-#include <fsptypes.h>
-
+void main(FSP_INFO_HEADER *fsp_info_header);
 void early_mainboard_romstage_entry(void);
 void late_mainboard_romstage_entry(void);
 void get_func_disables(uint32_t *mask);

@@ -152,7 +152,7 @@ static void baytrail_rtc_init(void)
 }
 
 /* Entry from cache-as-ram.inc. */
-void * asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
+void main(FSP_INFO_HEADER *fsp_info_header)
 {
 	const unsigned long func_dis = PMC_BASE_ADDRESS + FUNC_DIS;
 	const unsigned long func_dis2 = PMC_BASE_ADDRESS + FUNC_DIS2;

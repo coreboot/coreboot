@@ -6,7 +6,7 @@
 #
 #  (C) 2004 by Stefan Reinauer <stepan@openbios.org>
 #  (C) 2006-2010 by coresystems GmbH <info@coresystems.de>
-#  (C) 2013 Sage Electronic Engineering, LLC
+#  (C) 2013-2014 Sage Electronic Engineering, LLC
 #  (C) 2014 Patrick Georgi <patrick@georgi-clan.de>
 #
 #  This file is subject to the terms and conditions of the GNU General
@@ -69,6 +69,9 @@ mode=text
 # silent mode.. no compiler calls, only warnings in the log files.
 # this is disabled per default but can be enabled with -s
 silent=
+
+# quiet mode: only print pass, failure, and 'skipped' messages
+quiet=false
 
 # clang mode enabled by -sb option.
 scanbuild=false
@@ -159,7 +162,7 @@ function create_config
 		printf "  Using existing configuration $CONFIG ... "
 		cp src/mainboard/$VENDOR/$MAINBOARD/$CONFIG ${build_dir}/config.build
 	else
-		printf "  Creating config file... "
+		if [ "$quiet" == "false" ]; then printf "  Creating config file for $VENDOR/$MAINBOARD... \n"; fi
 		grep "if[\t ]*VENDOR" src/mainboard/$VENDOR/$MAINBOARD/../Kconfig | \
 			sed "s,^.*\(VENDOR_.*\)[^A-Z0-9_]*,CONFIG_\1=y," > ${build_dir}/config.build
 		grep "if[\t ]*BOARD" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
@@ -176,18 +179,18 @@ function create_config
 			echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"" >> ${build_dir}/config.build
 		fi
 
-		printf "($customizing) "
+		if [ "$quiet" == "false" ]; then printf "    $VENDOR/$MAINBOARD ($customizing)\n"; fi
 		printf "$configoptions" >> ${build_dir}/config.build
 	fi
 
 	yes "" 2>/dev/null | $MAKE oldconfig $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	ret=$?
 	if [ $ret -eq 0 ]; then
-		printf "ok; "
+		if [ "$quiet" == "false" ]; then printf "  $VENDOR/$MAINBOARD config created.\n"; fi
 		return 0
 	else
 		# Does this ever happen?
-		printf "FAILED!\nLog excerpt:\n"
+		if [ "$quiet" == "false" ]; then printf "$VENDOR/$MAINBOARD config creation FAILED!\nLog excerpt:\n"; fi
 		tail -n $CONTEXT $build_dir/config.log 2> /dev/null || tail -$CONTEXT $build_dir/config.log
 		return 1
 	fi
@@ -225,7 +228,7 @@ function compile_target
 	VENDOR=$1
 	MAINBOARD=$2
 
-	printf " Compiling image $cpuconfig .. "
+	if [ "$quiet" == "false" ]; then printf "  Compiling $VENDOR/$MAINBOARD image$cpuconfig...\n"; fi
 
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
@@ -245,13 +248,13 @@ function compile_target
 		junitfile make.log
 		junit "</system-out>"
 		printf "ok\n" > compile.status
-		printf "ok. (took ${duration}s)\n"
+		printf "$VENDOR/$MAINBOARD built successfully. (took ${duration}s)\n"
 	else
 		ret=1
 		junit "<failure type='BuildFailed'>"
 		junitfile make.log
 		junit "</failure>"
-		printf "FAILED after ${duration}s!\nLog excerpt:\n"
+		printf "$VENDOR/$MAINBOARD build FAILED after ${duration}s!\nLog excerpt:\n"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
 		failed=1
 	fi
@@ -276,7 +279,7 @@ function build_target
 
  	HOSTCC='gcc'
 
-	printf "Building $VENDOR/$MAINBOARD; "
+	if [ "$quiet" == "false" ]; then printf "Building $VENDOR/$MAINBOARD\n"; fi
 	mkdir -p $TARGET/${VENDOR}_${MAINBOARD} $TARGET/abuild
 	ABSPATH=`cd $TARGET/abuild; pwd`
 	XMLFILE=$ABSPATH/${VENDOR}_${MAINBOARD}.xml
@@ -311,8 +314,6 @@ function build_target
 	#duration=$(( $etime - $stime ))
 
 	junit "</testcase>"
-
-	printf "\n"
 }
 
 function test_target
@@ -381,6 +382,7 @@ function myhelp
 
 	printf "Options:\n"
 	printf "    [-v|--verbose]		  print more messages\n"
+	printf "    [-q|--quiet]		  print fewer messages\n"
 	printf "    [-a|--all]			  build previously succeeded ports as well\n"
 	printf "    [-r|--remove]                 remove output dir after build\n"
 	printf "    [-t|--target <vendor/board>]  attempt to build target vendor/board only\n"
@@ -443,11 +445,11 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir: -o Vvhat:p:Tc:sJCl:rP:uyBLzo: -- "$@"` || exit 1
+	args=`getopt -l version,verbose,quiet,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir: -o Vvqhat:p:Tc:sJCl:rP:uyBLzo: -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvhat:bp:Tc:sJxCl:rP:uy $*`
+	args=`getopt Vvqhat:bp:Tc:sJxCl:rP:uy $*`
 	set -- $args
 fi
 
@@ -466,6 +468,7 @@ while true ; do
 		-a|--all)	shift; buildall=true;;
 		-r|--remove)	shift; remove=true;;
 		-v|--verbose)	shift; verbose=true; silent='V=1';;
+		-q|--quiet)	shift; quiet=true;;
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;
 		-p|--payloads)  shift; payloads="$1"; shift;;
@@ -473,9 +476,9 @@ while true ; do
 		-c|--cpus)	shift
 			export MAKEFLAGS="-j $1"
 			cpus=$1
-			test "$MAKEFLAGS" == "-j max" && export MAKEFLAGS="-j" && cpuconfig="in parallel"
-			test "$1" == "1" && cpuconfig="on 1 cpu"
-			expr "$1" : '-\?[0-9]\+$' > /dev/null && test 0$1 -gt 1 && cpuconfig="on $1 cpus in parallel"
+			test "$MAKEFLAGS" == "-j max" && export MAKEFLAGS="-j" && cpuconfig=" in parallel"
+			test "$1" == "1" && cpuconfig=" on 1 cpu"
+			expr "$1" : '-\?[0-9]\+$' > /dev/null && test 0$1 -gt 1 && cpuconfig=" on $1 cpus in parallel"
 			shift;;
 		-s|--silent)    shift; silent="-s";;
 		--scan-build)   shift

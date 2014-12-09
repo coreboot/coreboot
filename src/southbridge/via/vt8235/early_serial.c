@@ -1,5 +1,5 @@
 /*
- * Enable the serial evices on the VIA
+ * Enable the serial devices on the VIA
  */
 
 

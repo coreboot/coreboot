@@ -136,7 +136,7 @@ static void smbus_print_error(unsigned char host_status_register)
 	print_err_hex8(host_status_register);
 	print_err("\n");
 	if (host_status_register & (1 << 4)) {
-		print_err("Interrup/SMI# was Failed Bus Transaction\n");
+		print_err("Interrupt/SMI# was Failed Bus Transaction\n");
 	}
 	if (host_status_register & (1 << 3)) {
 		print_err("Bus Error\n");

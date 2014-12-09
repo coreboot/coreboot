@@ -23,7 +23,7 @@ static void pci_routing_fixup(struct device *dev)
 
 	printk(BIOS_INFO, "%s: dev is %p\n", __func__, dev);
 	if (dev) {
-		/* initialize PCI interupts - these assignments depend
+		/* initialize PCI interrupts - these assignments depend
 		   on the PCB routing of PINTA-D
 
 		   PINTA = IRQ11

@@ -165,10 +165,10 @@ static void setup_pm(device_t dev)
 	pci_write_config8(dev, 0x82, 0x40 | VT8237R_ACPI_IRQ);
 
 #if CONFIG_EPIA_VT8237R_INIT
-	/* Primary interupt channel, define wake events 0=IRQ0 15=IRQ15 1=en. */
+	/* Primary interrupt channel, define wake events 0=IRQ0 15=IRQ15 1=en. */
 	pci_write_config16(dev, 0x84, 0x3052);
 #else
-	/* Primary interupt channel, define wake events 0=IRQ0 15=IRQ15 1=en. */
+	/* Primary interrupt channel, define wake events 0=IRQ0 15=IRQ15 1=en. */
 	pci_write_config16(dev, 0x84, 0x30b2);
 
 #endif
@@ -358,7 +358,7 @@ static void vt8237a_init(struct device *dev)
 {
 	/*
 	 * FIXME: This is based on vt8237s_init() and the values the AMI
-	 *        BIOS on my M2V wrote to these registers (by loking
+	 *        BIOS on my M2V wrote to these registers (by looking
 	 *        at lspci -nxxx output).
 	 *        Works for me.
 	 */

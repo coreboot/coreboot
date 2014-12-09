@@ -24,7 +24,7 @@
  *
  * Functions defined in device/early/smbus.h are each implemented in a separate
  * early_smbus_[func_name].c file. This makes it possible to override any of
- * these functions by not including them in yout build, via Makefile.c. This is
+ * these functions by not including them in your build, via Makefile.c. This is
  * useful when there is a need to work around chipset bugs.
  *
  * These implementations work with most via chipsets. Any VIA port should try

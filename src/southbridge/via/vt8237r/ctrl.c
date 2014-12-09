@@ -136,7 +136,7 @@ static void vt8237s_vlink_init(struct device *dev)
 
 	/*
 	 * This init code is valid only for the VT8237S! For different
-	 * sounthbridges (e.g. VT8237A, VT8237S, VT8237R (without plus R)
+	 * southbridges (e.g. VT8237A, VT8237S, VT8237R (without plus R)
 	 * and VT8251) a different init code is required.
 	 */
 
@@ -211,7 +211,7 @@ static void vt8237a_vlink_init(struct device *dev)
 
 	/*
 	 * This init code is valid only for the VT8237A! For different
-	 * sounthbridges (e.g. VT8237S, VT8237R and VT8251) a different
+	 * southbridges (e.g. VT8237S, VT8237R and VT8251) a different
 	 * init code is required.
 	 *
 	 * FIXME: This is based on vt8237r_vlink_init() in

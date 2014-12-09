@@ -40,7 +40,7 @@ struct southbridge_via_vt8237r_config {
 	 * 7 USB Device Mode 1=dis
 	 * 6 Reserved
 	 * 5 Internal LAN Controller Clock Gating 1=gated
-	 * 4 Internal LAN Controller 1=di
+	 * 4 Internal LAN Controller 1=dis
 	 * 3 Internal RTC 1=en
 	 * 2 Internal PS2 Mouse 1=en
 	 * 1 Internal KBC Configuration 0=dis ports 0x2e/0x2f off 0xe0-0xef

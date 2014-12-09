@@ -8,7 +8,7 @@
 #include <arch/ioapic.h>
 #include "chip.h"
 
-/* The epia-m is really short on interrupts available, so PCI interupts A & D are ganged togther and so are B & C.
+/* The epia-m is really short on interrupts available, so PCI interrupts A & D are ganged together and so are B & C.
    This is how the Award bios sets it up too.
    epia can be more generous as it does not need to reserve interrupts for cardbus devices, but if changed then
    make sure that ACPI dsdt is changed to suit.
@@ -19,7 +19,7 @@
 	IRQ 3 = COM 2
 	IRQ 4 = COM 1
 	IRQ 5 = available for PCI interrupts
-	IRQ 6 = floppy or availbale for PCI if floppy controller disabled
+	IRQ 6 = floppy or available for PCI if floppy controller disabled
         IRQ 7 = LPT or available if LPT port disabled
 	IRQ 8 = rtc
 	IRQ 9 = available for PCI interrupts
@@ -115,7 +115,7 @@ static void setup_pm(device_t dev)
 	// set ACPI irq to 5
 	pci_write_config8(dev, 0x82, 0x45);
 
-	// primary interupt channel
+	// primary interrupt channel
 	pci_write_config16(dev, 0x84, 0x30f2);
 
 	// throttle / stop clock control
@@ -212,7 +212,7 @@ static void vt8235_init(struct device *dev)
 	cmos_init(0);
 }
 
-/* total kludge to get lxb to call our childrens set/enable functions - these are not called unless this
+/* total kludge to get lxb to call our children's set/enable functions - these are not called unless this
    device has a resource to set - so set a dummy one */
 static void vt8235_read_resources(device_t dev)
 {

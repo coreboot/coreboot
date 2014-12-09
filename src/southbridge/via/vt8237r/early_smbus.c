@@ -282,7 +282,7 @@ void vt8237_sb_enable_fid_vid(void)
 
 	/* chipset-specific parts */
 
-	/* VLINK: FIXME: can we drop the devid check and just look for the VLINK device? */
+	/* VLINK: FIXME: can we drop the device check and just look for the VLINK device? */
 	if (devid == PCI_DEVICE_ID_VIA_VT8237S_LPC ||
 	    devid == PCI_DEVICE_ID_VIA_VT8237A_LPC) {
 		devctl = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,

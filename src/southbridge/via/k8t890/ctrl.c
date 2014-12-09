@@ -122,7 +122,7 @@ static void vt8237r_vlink_init(struct device *dev)
 
 	/*
 	 * This init code is valid only for the VT8237R! For different
-	 * sounthbridges (e.g. VT8237A, VT8237S, VT8237 (without plus R)
+	 * southbridges (e.g. VT8237A, VT8237S, VT8237 (without plus R)
 	 * and VT8251) a different init code is required.
 	 */
 
@@ -153,7 +153,7 @@ static void ctrl_init(struct device *dev)
 {
 
 	print_debug("K8x8xx: Initializing V-Link to VT8237R sb: ");
-	/* TODO: Fix some ordering issue fo V-link set Rx77[6] and PCI1_Rx4F[0]
+	/* TODO: Fix some ordering issue for V-link set Rx77[6] and PCI1_Rx4F[0]
 	   should to 1 */
 
 	/* C2P Read ACK Return Priority */

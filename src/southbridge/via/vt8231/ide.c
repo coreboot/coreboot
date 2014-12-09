@@ -11,7 +11,7 @@ static void ide_init(struct device *dev)
 	unsigned char enables;
 
 	if (!conf->enable_native_ide) {
-		// Run the IDE controller in 'compatiblity mode - i.e. don't use PCI
+		// Run the IDE controller in 'compatibility mode - i.e. don't use PCI
 		// interrupts.  Using PCI ints confuses linux for some reason.
 		/* Setting reg 0x42 here does not work. It is set in mainboard/romstage.c
 		* It probably can only be changed while the IDE is disabled
@@ -22,7 +22,7 @@ static void ide_init(struct device *dev)
 		printk(BIOS_INFO, "%s: enabling compatibility IDE addresses\n", __func__);
 		enables = pci_read_config8(dev, 0x42);
 		printk(BIOS_DEBUG, "enables in reg 0x42 0x%x\n", enables);
-		enables &= ~0xc0;		// compatability mode
+		enables &= ~0xc0;		// compatibility mode
 		pci_write_config8(dev, 0x42, enables);
 		enables = pci_read_config8(dev, 0x42);
 		printk(BIOS_DEBUG, "enables in reg 0x42 read back as 0x%x\n", enables);
@@ -85,7 +85,7 @@ static void ide_init(struct device *dev)
 	printk(BIOS_DEBUG, "command in reg 0x4 reads back as 0x%x\n", enables);
 
 	if (!conf->enable_native_ide) {
-		// Use compatability mode - per award bios
+		// Use compatibility mode - per award bios
 		pci_write_config32(dev, 0x10, 0x0);
 		pci_write_config32(dev, 0x14, 0x0);
 		pci_write_config32(dev, 0x18, 0x0);

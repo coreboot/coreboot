@@ -64,7 +64,7 @@ static void vt8235_enable(struct device *dev)
 
 	printk(BIOS_DEBUG, "Initialising Devices\n");
 
-	/* make sure interupt controller is configured before keyboard init */
+	/* make sure interrupt controller is configured before keyboard init */
 	setup_i8259();
 
 	/* enable RTC and ethernet */

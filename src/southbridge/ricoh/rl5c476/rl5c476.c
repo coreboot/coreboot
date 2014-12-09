@@ -83,7 +83,7 @@ static void rl5c476_init(device_t dev)
 	 * 16 bytes, 0x1e0 to 0x1ef.
 	 * Be warned that this is not a standard IDE address as
 	 * automatically detected by the likes of FILO, and would need
-	 * patching to recognise these addresses as an IDE drive.
+	 * patching to recognize these addresses as an IDE drive.
 	 *
 	 * An earlier version of this driver set up 2 I/O windows to
 	 * emulate the expected addresses for IDE2, however the PCMCIA

@@ -38,6 +38,8 @@
 struct soc_nvidia_tegra132_config;
 struct display_controller;
 
+void dsi_display_startup(device_t dev);
+
 int tegra_dc_init(struct display_controller *disp_ctrl);
 int update_display_mode(struct display_controller *disp_ctrl,
 			struct soc_nvidia_tegra132_config *config);

@@ -875,7 +875,7 @@ static int dsi_enable(struct soc_nvidia_tegra132_config *config)
 	return 0;
 }
 
-void display_startup(device_t dev)
+void dsi_display_startup(device_t dev)
 {
 	struct soc_nvidia_tegra132_config *config = dev->chip_info;
 	struct display_controller *disp_ctrl =

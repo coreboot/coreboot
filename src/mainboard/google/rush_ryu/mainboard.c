@@ -32,6 +32,8 @@
 #include <soc/funitcfg.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/padconfig.h>
+#include <soc/nvidia/tegra/dc.h>
+#include <soc/display.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vboot_struct.h>
@@ -278,6 +280,11 @@ static void mainboard_init(device_t dev)
 	/* if panel needs to bringup */
 	if (!vboot_skip_display_init())
 		configure_display_blocks();
+}
+
+void display_startup(device_t dev)
+{
+	dsi_display_startup(dev);
 }
 
 static void mainboard_enable(device_t dev)

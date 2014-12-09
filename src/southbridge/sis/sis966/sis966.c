@@ -180,7 +180,12 @@ void sis966_enable(device_t dev)
 
 	if (!dev->enabled) {
 		final_reg |= (1 << index);// disable it
-		//The reason for using final_reg, if diable func 1, the func 2 will be func 1 so We need disable them one time.
+		/*
+		 * The reason for using final_reg is that if func 1 is disabled,
+		 * then func 2 will become func 1.
+		 * Because of this, we need loop through disabling them all at
+		 * the same time.
+		 */
 	}
 
 	if(index == 9 ) { //NIC1 is the final, We need update final reg to 0xe8

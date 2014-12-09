@@ -22,7 +22,7 @@
 /*
  * Turn off machine check triggers when reading
  * pci space where there are no devices.
- * This is necessary when scaning the bus for
+ * This is necessary when scanning the bus for
  * devices which is done by the kernel
  *
  * written in 2003 by Eric Biederman
@@ -57,13 +57,13 @@ static inline msr_t rdmsr(unsigned index)
 /**
  * Read resources for AGP aperture.
  *
- * There is only one AGP aperture resource needed. The resoruce is added to
+ * There is only one AGP aperture resource needed. The resource is added to
  * the northbridge of BSP.
  *
  * The same trick can be used to augment legacy VGA resources which can
  * be detect by generic PCI resource allocator for VGA devices.
  * BAD: it is more tricky than I think, the resource allocation code is
- * implemented in a way to NOT DOING legacy VGA resource allcation on
+ * implemented in a way to NOT DOING legacy VGA resource allocation on
  * purpose :-(.
  *
  * @param dev TODO
@@ -74,7 +74,7 @@ static void sis761_read_resources(device_t dev)
 	printk(BIOS_DEBUG, "sis761_read_resources ------->\n");
 	pci_dev_read_resources(dev);
 
-	/* If we are not the first processor don't allocate the gart apeture */
+	/* If we are not the first processor don't allocate the gart aperture */
 	if (dev->path.pci.devfn != PCI_DEVFN(0x0, 0)) {
 		printk(BIOS_DEBUG, "sis761_not_the_first_processor !!!\n");
 		return;

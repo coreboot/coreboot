@@ -218,8 +218,10 @@ void mcp55_enable(device_t dev)
 	if (!dev->enabled) {
 		final_reg |= (1 << index); /* Disable it. */
 		/*
-		 * The reason for using final_reg, if diable func 1,
-		 * the func 2 will be func 1, so we need disable them one time.
+		 * The reason for using final_reg is that if func 1 is disabled,
+		 * then func 2 will become func 1.
+		 * Because of this, we need loop through disabling them all at
+		 * the same time.
 		 */
 	}
 

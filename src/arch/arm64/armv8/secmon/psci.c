@@ -207,6 +207,34 @@ static int psci_schedule_cpu_on(struct psci_node *e)
 	return PSCI_RET_SUCCESS;
 }
 
+static void psci_cpu_resume_prepare(struct psci_cmd *cmd,
+				const struct cpu_action *a)
+{
+	struct psci_node *ancestor;
+	struct psci_node *e;
+	int state = PSCI_STATE_ON_PENDING;
+
+	e = cmd->target;
+	e->cpu_state.resume = *a;
+	ancestor = psci_find_ancestor(e, PSCI_AFFINITY_LEVEL_HIGHEST, state);
+	e->cpu_state.ancestor = ancestor;
+	cmd->ancestor = ancestor;
+}
+
+static void psci_schedule_cpu_resume(struct psci_node *e)
+{
+	struct cpu_info *ci;
+	struct cpu_action *action;
+
+	if (e->cpu_state.resume.run == NULL)
+		return;
+
+	ci = e->cpu_state.ci;
+	action = &e->cpu_state.resume;
+
+	arch_run_on_cpu(ci->id, action);
+}
+
 void psci_turn_on_self(const struct cpu_action *action)
 {
 	struct psci_node *e = node_self();
@@ -233,11 +261,109 @@ void psci_turn_on_self(const struct cpu_action *action)
 void psci_cpu_entry(void)
 {
 	gic_enable();
+
 	/*
-	 * Just wait for an action to be performed. Only CPU_ON is supported
-	 * initially. i.e. no power down then wake.
+	 * Just wait for an action to be performed.
 	 */
+	psci_schedule_cpu_resume(node_self());
 	secmon_wait_for_action();
+}
+
+static void psci_cpu_resume(void *arg)
+{
+	uint64_t power_state = (uint64_t)arg;
+	struct psci_node *e;
+	struct psci_power_state state;
+	struct psci_cmd cmd = {
+		.type = PSCI_CMD_RESUME,
+	};
+
+	psci_power_state_unpack(power_state, &state);
+
+	psci_lock();
+
+	e = node_self();
+	/* clear the resume action after resume */
+	e->cpu_state.resume.run = NULL;
+	e->cpu_state.resume.arg = NULL;
+
+	cmd.target = e;
+	cmd.state = &state;
+	soc_psci_ops.cmd_prepare(&cmd);
+
+	psci_unlock();
+
+	soc_psci_ops.cmd_commit(&cmd);
+
+	psci_lock();
+	psci_set_hierarchy_state(e, e->cpu_state.ancestor, PSCI_STATE_ON);
+	psci_unlock();
+
+	psci_schedule_cpu_on(node_self());
+}
+
+static void psci_cpu_suspend(struct psci_func *pf)
+{
+	uint64_t power_state;
+	uint64_t entry;
+	uint64_t context_id;
+	struct psci_node *e;
+	struct psci_power_state state;
+	struct cpu_action action;
+	struct cpu_action resume_action;
+	struct psci_cmd cmd = {
+		.type = PSCI_CMD_SUSPEND,
+	};
+	int ret;
+
+	power_state = psci64_arg(pf, PSCI_PARAM_0);
+	entry = psci64_arg(pf, PSCI_PARAM_1);
+	context_id = psci64_arg(pf, PSCI_PARAM_2);
+	psci_power_state_unpack(power_state, &state);
+
+	psci_lock();
+
+	e = node_self();
+	cmd.target = e;
+	cmd.state = &state;
+	action.run = (void *)entry;
+	action.arg = (void *)context_id;
+	resume_action.run = &psci_cpu_resume;
+	resume_action.arg = (void*)power_state;
+
+	psci_cpu_on_prepare(&cmd, &action);
+	psci_cpu_resume_prepare(&cmd, &resume_action);
+
+	ret = soc_psci_ops.cmd_prepare(&cmd);
+
+	if (ret == PSCI_RET_SUCCESS)
+		psci_set_hierarchy_state(e, cmd.ancestor, PSCI_STATE_OFF);
+
+	psci_unlock();
+
+	if (ret != PSCI_RET_SUCCESS)
+		return psci32_return(pf, ret);
+
+	gic_disable();
+
+	ret = soc_psci_ops.cmd_commit(&cmd);
+
+	/* PSCI_POWER_STATE_TYPE_STANDBY mode only */
+
+	psci_lock();
+	resume_action.run = NULL;
+	resume_action.arg = NULL;
+	psci_cpu_resume_prepare(&cmd, &resume_action);
+	psci_unlock();
+
+	if (ret != PSCI_RET_SUCCESS)
+		return psci32_return(pf, ret);
+
+	psci_lock();
+	psci_set_hierarchy_state(e, e->cpu_state.ancestor, PSCI_STATE_ON);
+	psci_unlock();
+
+	psci32_return(pf, PSCI_RET_SUCCESS);
 }
 
 static void psci_cpu_on(struct psci_func *pf)
@@ -369,6 +495,9 @@ static int psci_handler(struct smc_call *smc)
 	psci_func_init(pf, smc);
 
 	switch (pf->id) {
+	case PSCI_CPU_SUSPEND64:
+		psci_cpu_suspend(pf);
+		break;
 	case PSCI_CPU_ON64:
 		psci_cpu_on(pf);
 		break;

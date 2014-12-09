@@ -24,6 +24,25 @@
 #include <arch/cpu.h>
 #include <arch/smc.h>
 
+/* PSCI v0.2 power state encoding for CPU_SUSPEND function */
+#define PSCI_0_2_POWER_STATE_ID_MASK	0xffff
+#define PSCI_0_2_POWER_STATE_ID_SHIFT	0
+#define PSCI_0_2_POWER_STATE_TYPE_SHIFT	16
+#define PSCI_0_2_POWER_STATE_TYPE_MASK	\
+		(0x1 << PSCI_0_2_POWER_STATE_TYPE_SHIFT)
+#define PSCI_0_2_POWER_STATE_AFFL_SHIFT	24
+#define PSCI_0_2_POWER_STATE_AFFL_MASK	\
+		(0x3 << PSCI_0_2_POWER_STATE_AFFL_SHIFT)
+
+#define PSCI_POWER_STATE_TYPE_STANDBY		0
+#define PSCI_POWER_STATE_TYPE_POWER_DOWN	1
+
+struct psci_power_state {
+	u16	id;
+	u8	type;
+	u8	affinity_level;
+};
+
 /* Return Values */
 enum {
 	PSCI_RET_SUCCESS = 0,
@@ -64,6 +83,7 @@ struct psci_node;
 struct psci_cpu_state {
 	struct cpu_info *ci;
 	struct cpu_action startup;
+	struct cpu_action resume;
 	/* Ancestor of target to update state in CPU_ON case. */
 	struct psci_node *ancestor;
 };
@@ -107,7 +127,8 @@ static inline int psci_root_node(const struct psci_node *n)
 enum {
 	PSCI_CMD_ON,
 	PSCI_CMD_OFF,
-	PSCI_CMD_STANDBY,
+	PSCI_CMD_SUSPEND,
+	PSCI_CMD_RESUME,
 };
 
 /*
@@ -127,6 +148,7 @@ struct psci_cmd {
 	 * A value of -1 indicates a CPU_OFF request.
 	 */
 	int state_id;
+	struct psci_power_state *state;
 	/*
 	 * target is the command's target, but it can affect up to the
 	 * ancestor entity. If target == ancestor then it only affects
@@ -183,6 +205,18 @@ struct psci_func {
 	uint32_t id;
 	struct smc_call *smc;
 };
+
+static inline void psci_power_state_unpack(uint32_t power_state,
+				    struct psci_power_state *state)
+{
+	state->id = (power_state & PSCI_0_2_POWER_STATE_ID_MASK) >>
+			PSCI_0_2_POWER_STATE_ID_SHIFT;
+	state->type = (power_state & PSCI_0_2_POWER_STATE_TYPE_MASK) >>
+			PSCI_0_2_POWER_STATE_TYPE_SHIFT;
+	state->affinity_level =
+			(power_state & PSCI_0_2_POWER_STATE_AFFL_MASK) >>
+			PSCI_0_2_POWER_STATE_AFFL_SHIFT;
+}
 
 static inline void psci_func_init(struct psci_func *pf, struct smc_call *smc)
 {

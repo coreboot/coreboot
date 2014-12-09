@@ -208,16 +208,22 @@ cbfs-files-handler= \
 				$(info This build configuration requires $($(2)-required)) \
 				$(eval FAILBUILD:=1) \
 			)) \
+		$(if $(strip $($(2)-align)), \
+			$(if $(strip $($(2)-position)), \
+				$(info ERROR: It is not allowed to specify both alignment and position for $($(2)-file)) \
+				$(eval FAILBUILD:=1) \
+			)) \
 		$(if $(tmp-cbfs-method), \
 			$(eval tmp-old-cbfs-file:=$(tmp-cbfs-file)) \
 			$(eval tmp-cbfs-file:=$(shell mkdir -p $(obj)/mainboard/$(MAINBOARDDIR); mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
 			$(call cbfs-files-processor-$(tmp-cbfs-method),$(tmp-old-cbfs-file),$(tmp-cbfs-file))) \
-		$(eval cbfs-files += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$($(2)-position)) \
+		$(eval cbfs-files += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(split $($(2)-position))|$($(2)-align))\
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \
 		$(eval $(2)-compression:=) \
 		$(eval $(2)-position:=) \
-		$(eval $(2)-required:=)
+		$(eval $(2)-required:=) \
+		$(eval $(2)-align:=)
 
 #######################################################################
 # a variety of flags for our build
@@ -509,16 +515,20 @@ ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
 COREBOOT_ROM_DEPENDENCIES+=grub2
 endif
 
-extract_nth=$(word $(1), $(subst |, ,$(2)))
+extract_nth=$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-)))
+
+cbfs-add-cmd = \
+	       $(CBFSTOOL) $@.tmp \
+	       add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage)$(if $(filter payload,$(call extract_nth,3,$(file))),-payload) \
+	       -f $(call extract_nth,1,$(file)) \
+	       -n $(call extract_nth,2,$(file)) $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file)))
 
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuild-files = \
 	       $(foreach file,$(cbfs-files), \
-	       $(CBFSTOOL) $@.tmp \
-	       add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage)$(if $(filter payload,$(call extract_nth,3,$(file))),-payload) \
-	       -f $(call extract_nth,1,$(file)) \
-	       -n $(call extract_nth,2,$(file)) $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
-	       $(if $(call extract_nth,4,$(file)),-b $(call extract_nth,4,$(file))) &&)
+	       $(if $(call extract_nth,6,$(file)),$(CBFSTOOL) $@.tmp locate -f $(call extract_nth,1,$(file)) -n $(call extract_nth,2,$(file)) -a $(call extract_nth,6,$(file))|xargs -i \
+	       $(cbfs-add-cmd) -b {} &&,\
+	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)

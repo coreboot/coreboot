@@ -201,7 +201,9 @@ struct __table__ temperatures[] = {
 	{"80C", 80}
 };
 #endif
-int trange[] = {2.0,2.5,3.33,4.0,5.0,6.67,8.0,10.0,13.33,16.0,20.0,26.67,32.0,40.0,53.33,80.0};
+// FIXME: implicit conversion from 'double' to 'int'
+// int trange[] = {2.0,2.5,3.33,4.0,5.0,6.67,8.0,10.0,13.33,16.0,20.0,26.67,32.0,40.0,53.33,80.0};
+int trange[] = {2,2,3,4,5,6,8,10,13,16,20,26,32,40,53,80};
 
 #define SIZEOF_TEMPERATURES sizeof(temperatures)/sizeof(struct __table__)
 #define TEMPERATURE(i,d) (i < SIZEOF_TEMPERATURES) ? temperatures[i].val : temperatures[d].val // hopefully d is a correct value !!! fix

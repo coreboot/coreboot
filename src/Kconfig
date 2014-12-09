@@ -135,9 +135,14 @@ config STATIC_OPTION_TABLE
 	  every boot.  Use this if you want the NVRAM configuration to
 	  never be modified from its default values.
 
+config UNCOMPRESSED_RAMSTAGE
+	bool
+	default n
+
 config COMPRESS_RAMSTAGE
 	bool "Compress ramstage with LZMA"
-	default y
+	default y if !UNCOMPRESSED_RAMSTAGE
+	default n
 	help
 	  Compress ramstage to save memory in the flash image. Note
 	  that decompression might slow down booting if the boot flash

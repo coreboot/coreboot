@@ -21,6 +21,7 @@
 #define __SOC_NVIDIA_TEGRA132_CHIP_H__
 #include <soc/addressmap.h>
 #include <stdint.h>
+#include <soc/nvidia/tegra/dc.h>
 
 struct soc_nvidia_tegra132_config {
 	/* Address to monitor if spintable employed. */
@@ -68,6 +69,7 @@ struct soc_nvidia_tegra132_config {
 	int refresh;		/* display refresh rate */
 
 	int pixel_clock;	/* dc pixel clock source rate */
+	int win_opt;
 };
 
 #endif /* __SOC_NVIDIA_TEGRA132_CHIP_H__ */

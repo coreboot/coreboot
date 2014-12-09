@@ -50,4 +50,6 @@ chip soc/nvidia/tegra132
 
 	# kernel driver
 	register "pixel_clock" = "301620000"
+
+	register "win_opt" = "DSI_ENABLE"
 end

@@ -26,7 +26,9 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <device/device.h>
+#include <edid.h>
 #include <soc/nvidia/tegra/types.h>
+#include <soc/nvidia/tegra/dc.h>
 #include "chip.h"
 #include <soc/display.h>
 #include <soc/mipi_dsi.h>
@@ -845,7 +847,7 @@ static int dsi_probe(struct soc_nvidia_tegra132_config *config)
 	return 0;
 }
 
-int dsi_enable(struct soc_nvidia_tegra132_config *config)
+static int dsi_enable(struct soc_nvidia_tegra132_config *config)
 {
 	struct tegra_dsi *dsi_a = &dsi_data[DSI_A];
 
@@ -871,4 +873,98 @@ int dsi_enable(struct soc_nvidia_tegra132_config *config)
 	}
 
 	return 0;
+}
+
+void display_startup(device_t dev)
+{
+	struct soc_nvidia_tegra132_config *config = dev->chip_info;
+	struct display_controller *disp_ctrl =
+			(void *)config->display_controller;
+	u32 plld_rate;
+
+	u32 framebuffer_size_mb = config->framebuffer_size / MiB;
+	u32 framebuffer_base_mb= config->framebuffer_base / MiB;
+
+	printk(BIOS_INFO, "%s: entry: disp_ctrl: %p.\n",
+		 __func__, disp_ctrl);
+
+	if (disp_ctrl == NULL) {
+		printk(BIOS_ERR, "Error: No dc is assigned by dt.\n");
+		return;
+	}
+
+	if (framebuffer_size_mb == 0){
+		framebuffer_size_mb = ALIGN_UP(config->display_xres *
+			config->display_yres *
+			(config->framebuffer_bits_per_pixel / 8), MiB)/MiB;
+	}
+
+	config->framebuffer_size = framebuffer_size_mb * MiB;
+	config->framebuffer_base = framebuffer_base_mb * MiB;
+
+	/*
+	 * The plld is programmed with the assumption of the SHIFT_CLK_DIVIDER
+	 * and PIXEL_CLK_DIVIDER are zero (divide by 1). See the
+	 * update_display_mode() for detail.
+	 */
+	/* set default plld */
+	plld_rate = clock_configure_plld(config->pixel_clock * 2);
+	if (plld_rate == 0) {
+		printk(BIOS_ERR, "dc: clock init failed\n");
+		return;
+	}
+
+	/* set disp1's clock source to PLLD_OUT0 */
+	clock_configure_source(disp1, PLLD, (plld_rate/KHz)/2);
+
+	/* Init dc */
+	if (tegra_dc_init(disp_ctrl)) {
+		printk(BIOS_ERR, "dc: init failed\n");
+		return;
+	}
+
+	/* Configure dc mode */
+	if (update_display_mode(disp_ctrl, config)) {
+		printk(BIOS_ERR, "dc: failed to configure display mode.\n");
+		return;
+	}
+
+	/* Configure and enable dsi controller and panel */
+	if (dsi_enable(config)) {
+		printk(BIOS_ERR, "%s: failed to enable dsi controllers.\n",
+			__func__);
+		return;
+	}
+
+	/* Set up window */
+	update_window(config);
+	printk(BIOS_INFO, "%s: display init done.\n", __func__);
+
+	/*
+	 * Pass panel information to cb tables
+	 */
+	struct edid edid;
+	/* Align bytes_per_line to 64 bytes as required by dc */
+	edid.bytes_per_line = ALIGN_UP((config->display_xres *
+				config->framebuffer_bits_per_pixel / 8), 64);
+	edid.x_resolution = edid.bytes_per_line /
+				(config->framebuffer_bits_per_pixel / 8);
+	edid.y_resolution = config->display_yres;
+	edid.framebuffer_bits_per_pixel = config->framebuffer_bits_per_pixel;
+
+	printk(BIOS_INFO, "%s: bytes_per_line: %d, bits_per_pixel: %d\n "
+			"               x_res x y_res: %d x %d, size: %d\n",
+			 __func__, edid.bytes_per_line,
+			edid.framebuffer_bits_per_pixel,
+			edid.x_resolution, edid.y_resolution,
+			(edid.bytes_per_line * edid.y_resolution));
+
+	set_vbe_mode_info_valid(&edid, 0);
+
+	/*
+	 * After this point, it is payload's responsibility to allocate
+	 * framebuffer and sets the base address to dc's
+	 * WINBUF_START_ADDR register and enables window by setting dc's
+	 * DISP_DISP_WIN_OPTIONS register.
+	 */
 }

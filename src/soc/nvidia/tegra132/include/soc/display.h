@@ -34,8 +34,12 @@
 	(mode->yres + mode->vfront_porch + \
 	mode->vsync_width + mode->vback_porch)
 
-struct soc_nvidia_tegra132_config;	/* forward declaration */
+/* forward declaration */
+struct soc_nvidia_tegra132_config;
+struct display_controller;
 
-int dsi_enable(struct soc_nvidia_tegra132_config *config);
-
+int tegra_dc_init(struct display_controller *disp_ctrl);
+int update_display_mode(struct display_controller *disp_ctrl,
+			struct soc_nvidia_tegra132_config *config);
+void update_window(const struct soc_nvidia_tegra132_config *config);
 #endif /* __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_DISPLAY_H__ */

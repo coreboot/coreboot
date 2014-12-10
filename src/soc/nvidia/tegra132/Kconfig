@@ -20,6 +20,13 @@ config SOC_NVIDIA_TEGRA132
 
 if SOC_NVIDIA_TEGRA132
 
+config MAINBOARD_DO_DSI_INIT
+	bool "Use dsi graphics interface"
+	depends on MAINBOARD_DO_NATIVE_VGA_INIT
+	default n
+	help
+	  Initialize dsi display
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/nvidia/tegra132/bootblock.c"

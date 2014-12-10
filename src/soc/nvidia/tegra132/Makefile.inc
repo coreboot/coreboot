@@ -67,11 +67,11 @@ ramstage-y += cpu.c
 ramstage-y += cpu_lib.S
 ramstage-y += clock.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += dc.c
-ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += dsi.c
-ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += mipi_dsi.c
-ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += mipi.c
-ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += mipi-phy.c
-ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += ./jdi_25x18_display/panel-jdi-lpm102a188a.c
+ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += dsi.c
+ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += mipi_dsi.c
+ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += mipi.c
+ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += mipi-phy.c
+ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += ./jdi_25x18_display/panel-jdi-lpm102a188a.c
 
 ramstage-y += soc.c
 ramstage-y += spi.c

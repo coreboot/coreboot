@@ -18,23 +18,11 @@
  */
 
 #include <arch/io.h>
-#include <cpu/x86/tsc.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
 #include <soc/spi.h>
-
-static void store_initial_timestamp(void)
-{
-	/* Two 32bit scratchpad registers available:
-	 * D0:F0  0xdc (SKPAD)
-	 * D31:F2 0xd0 (SATA SP)
-	 */
-	tsc_t tsc = rdtsc();
-	pci_write_config32(SA_DEV_ROOT, 0xdc, tsc.lo);
-	pci_write_config32(PCH_DEV_SATA, 0xd0, tsc.hi);
-}
 
 /*
  * Enable Prefetching and Caching.
@@ -84,9 +72,6 @@ static void set_spi_speed(void)
 
 static void bootblock_southbridge_init(void)
 {
-#if CONFIG_COLLECT_TIMESTAMPS
-	store_initial_timestamp();
-#endif
 	map_rcba();
 	enable_spi_prefetch();
 	enable_port80_on_lpc();

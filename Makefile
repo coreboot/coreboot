@@ -118,6 +118,8 @@ ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 # NOTE: clang puts compiler-rt under lib/linux/libclang_rt.builtins-i386.a
 # this means the triple is i386-linux-elf instead of i386-none-elf
 CFLAGS_x86_32 = -no-integrated-as -Qunused-arguments -target i386-linux-elf -m32
+# Tone down some clang warnings
+CFLAGS_x86_32 += -Wno-unused-variable -Wno-unused-function -Wno-tautological-compare -Wno-shift-overflow
 CC_x86_32:=clang
 HOSTCC := clang
 

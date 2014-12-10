@@ -60,9 +60,9 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	/* P4: RAIDEN */
 	pei_data_usb2_port(pei_data, 4, 0x0080, 1, USB_OC_PIN_SKIP,
 			   USB_PORT_BACK_PANEL);
-	/* P5: WWAN */
-	pei_data_usb2_port(pei_data, 5, 0x0040, 1, USB_OC_PIN_SKIP,
-			   USB_PORT_INTERNAL);
+	/* P5: WWAN (Disabled) */
+	pei_data_usb2_port(pei_data, 5, 0x0000, 0, USB_OC_PIN_SKIP,
+			   USB_PORT_SKIP);
 	/* P6: CAMERA */
 	pei_data_usb2_port(pei_data, 6, 0x0040, 1, USB_OC_PIN_SKIP,
 			   USB_PORT_INTERNAL);

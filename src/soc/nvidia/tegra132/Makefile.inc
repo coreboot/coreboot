@@ -72,6 +72,7 @@ ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += mipi_dsi.c
 ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += mipi.c
 ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += mipi-phy.c
 ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += ./jdi_25x18_display/panel-jdi-lpm102a188a.c
+ramstage-$(CONFIG_MAINBOARD_DO_SOR_INIT) += dp.c
 
 ramstage-y += soc.c
 ramstage-y += spi.c

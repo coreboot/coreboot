@@ -27,6 +27,13 @@ config MAINBOARD_DO_DSI_INIT
 	help
 	  Initialize dsi display
 
+config MAINBOARD_DO_SOR_INIT
+	bool "Use dp graphics interface"
+	depends on MAINBOARD_DO_NATIVE_VGA_INIT
+	default n
+	help
+	  Initialize dp display
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/nvidia/tegra132/bootblock.c"

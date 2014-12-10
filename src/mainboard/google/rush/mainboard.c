@@ -29,6 +29,8 @@
 #include <soc/nvidia/tegra/usb.h>
 #include <soc/padconfig.h>
 #include <soc/spi.h>
+#include <soc/nvidia/tegra/dc.h>
+#include <soc/display.h>
 
 static const struct pad_config sdmmc3_pad[] = {
 	/* MMC3(SDCARD) */
@@ -144,6 +146,11 @@ static void mainboard_init(device_t dev)
 
 	setup_audio();
 	i2c_init(I2C1_BUS);		/* for max98090 codec */
+}
+
+void display_startup(device_t dev)
+{
+	dp_display_startup(dev);
 }
 
 static void mainboard_enable(device_t dev)

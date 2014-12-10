@@ -49,9 +49,9 @@
 #define clrsetbits_le32_i(addr, clear, set)  \
 	clrsetbits_le32(((void *)(addr)), (clear), (set))
 
-#define MSM_CLK_CTL_BASE    0x00900000
+#define MSM_CLK_CTL_BASE    ((unsigned char *)0x00900000)
 
-#define MSM_TMR_BASE        0x0200A000
+#define MSM_TMR_BASE        ((unsigned char *)0x0200A000)
 #define MSM_GPT_BASE        (MSM_TMR_BASE + 0x04)
 #define MSM_DGT_BASE        (MSM_TMR_BASE + 0x24)
 

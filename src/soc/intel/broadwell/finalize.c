@@ -115,9 +115,6 @@ static void broadwell_finalize(void *unused)
 	/* Re-init SPI after lockdown */
 	spi_init();
 
-	/* Lock down management engine */
-	intel_me_finalize();
-
 	printk(BIOS_DEBUG, "Finalizing SMM.\n");
 	outb(APM_CNT_FINALIZE, APM_CNT);
 

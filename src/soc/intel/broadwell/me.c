@@ -57,11 +57,9 @@ static const char *me_bios_path_values[] = {
 	[ME_DISABLE_BIOS_PATH]		= "Disable",
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
-static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev);
 
 /* MMIO base address for MEI interface */
 static u8 *mei_base_address;
-void intel_me_mbp_clear(device_t dev);
 
 #if CONFIG_DEBUG_INTEL_ME
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
@@ -455,7 +453,7 @@ static void intel_me_mbp_give_up(device_t dev)
  * mbp clear routine. This will wait for the ME to indicate that
  * the MBP has been read and cleared.
  */
-void intel_me_mbp_clear(device_t dev)
+static void intel_me_mbp_clear(device_t dev)
 {
 	int count;
 	struct me_hfs2 hfs2;
@@ -476,7 +474,6 @@ void intel_me_mbp_clear(device_t dev)
 	}
 }
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 static void me_print_fw_version(mbp_fw_version_name *vers_name)
 {
 	if (!vers_name) {
@@ -543,7 +540,6 @@ static void me_print_fwcaps(mbp_mefwcaps *cap)
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
 #endif
-#endif
 
 /* Send END OF POST message to the ME */
 static int mkhi_end_of_post(void)
@@ -555,7 +551,6 @@ static int mkhi_end_of_post(void)
 	u32 eop_ack;
 
 	/* Send request and wait for response */
-	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
 	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, &eop_ack, sizeof(eop_ack)) < 0) {
 		printk(BIOS_ERR, "ME: END OF POST message failed\n");
 		return -1;
@@ -565,33 +560,68 @@ static int mkhi_end_of_post(void)
 	return 0;
 }
 
-void intel_me_finalize(void)
+/* Send END OF POST message to the ME */
+static int mkhi_end_of_post_noack(void)
 {
-	device_t dev = PCH_DEV_ME;
-	struct me_hfs hfs;
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_GEN,
+		.command	= MKHI_END_OF_POST_NOACK,
+	};
+
+	/* Send request, do not wait for response */
+	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, NULL, 0) < 0) {
+		printk(BIOS_ERR, "ME: END OF POST NOACK message failed\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "ME: END OF POST NOACK message successful\n");
+	return 0;
+}
+
+/* Send HMRFPO LOCK message to the ME */
+static int mkhi_hmrfpo_lock(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_HMRFPO,
+		.command	= MKHI_HMRFPO_LOCK,
+	};
+	u32 ack;
+
+	/* Send request and wait for response */
+	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, &ack, sizeof(ack)) < 0) {
+		printk(BIOS_ERR, "ME: HMRFPO LOCK message failed\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "ME: HMRPFO LOCK message successful (%d)\n", ack);
+	return 0;
+}
+
+/* Send HMRFPO LOCK message to the ME, do not wait for response */
+static int mkhi_hmrfpo_lock_noack(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_HMRFPO,
+		.command	= MKHI_HMRFPO_LOCK_NOACK,
+	};
+
+	/* Send request, do not wait for response */
+	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, NULL, 0) < 0) {
+		printk(BIOS_ERR, "ME: HMRFPO LOCK NOACK message failed\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "ME: HMRPFO LOCK NOACK message successful\n");
+	return 0;
+}
+
+static void intel_me_finalize(device_t dev)
+{
 	u32 reg32;
 
 	/* S3 path will have hidden this device already */
-	if (!mei_base_address || mei_base_address == (u8 *)0xfffffff0)
+	if (!mei_base_address || mei_base_address == (u8*) 0xfffffff0)
 		return;
-
-#if CONFIG_ME_MBP_CLEAR_LATE
-	/* Wait for ME MBP Cleared indicator */
-	intel_me_mbp_clear(dev);
-#endif
-
-	/* Make sure ME is in a mode that expects EOP */
-	reg32 = pci_read_config32(dev, PCI_ME_HFS);
-	memcpy(&hfs, &reg32, sizeof(u32));
-
-	/* Abort and leave device alone if not normal mode */
-	if (hfs.fpt_bad ||
-	    hfs.working_state != ME_HFS_CWS_NORMAL ||
-	    hfs.operation_mode != ME_HFS_MODE_NORMAL)
-		return;
-
-	/* Try to send EOP command so ME stops accepting other commands */
-	mkhi_end_of_post();
 
 	/* Make sure IO is disabled */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
@@ -601,6 +631,7 @@ void intel_me_finalize(void)
 
 	/* Hide the PCI device */
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
+	RCBA32(FD2);
 }
 
 static int me_icc_set_clock_enables(u32 mask)
@@ -774,92 +805,24 @@ static int intel_me_extend_valid(device_t dev)
 	return 0;
 }
 
-/* Check whether ME is present and do basic init */
-static void intel_me_init(device_t dev)
+static void intel_me_print_mbp(me_bios_payload *mbp_data)
 {
-	config_t *config = dev->chip_info;
-	me_bios_path path = intel_me_path(dev);
-	me_bios_payload mbp_data;
+	me_print_fw_version(mbp_data->fw_version_name);
 
-	/* Do initial setup and determine the BIOS path */
-	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_bios_path_values[path]);
-
-	if (path == ME_NORMAL_BIOS_PATH) {
-		/* Validate the extend register */
-		intel_me_extend_valid(dev);
-	}
-
-	memset(&mbp_data, 0, sizeof(mbp_data));
-
-	/*
-	 * According to the ME9 BWG, BIOS is required to fetch MBP data in
-	 * all boot flows except S3 Resume.
-	 */
-
-	/* Prepare MEI MMIO interface */
-	if (intel_mei_setup(dev) < 0)
-		return;
-
-	if (intel_me_read_mbp(&mbp_data, dev))
-		return;
-
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
-	me_print_fw_version(mbp_data.fw_version_name);
 #if CONFIG_DEBUG_INTEL_ME
-	me_print_fwcaps(mbp_data.fw_capabilities);
+	me_print_fwcaps(mbp_data->fw_capabilities);
 #endif
 
-	if (mbp_data.plat_time) {
+	if (mbp_data->plat_time) {
 		printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
-		       mbp_data.plat_time->wake_event_mrst_time_ms);
+		       mbp_data->plat_time->wake_event_mrst_time_ms);
 		printk(BIOS_DEBUG, "ME: ME Reset to Platform Reset:  %u ms\n",
-		       mbp_data.plat_time->mrst_pltrst_time_ms);
+		       mbp_data->plat_time->mrst_pltrst_time_ms);
 		printk(BIOS_DEBUG, "ME: Platform Reset to CPU Reset: %u ms\n",
-		       mbp_data.plat_time->pltrst_cpurst_time_ms);
-	}
-#endif
-
-	/* Set clock enables according to devicetree */
-	if (config && config->icc_clock_disable)
-		me_icc_set_clock_enables(config->icc_clock_disable);
-
-	/*
-	 * Leave the ME unlocked. It will be locked via SMI command later.
-	 */
-}
-
-static void intel_me_enable(device_t dev)
-{
-	/* Avoid talking to the device in S3 path */
-	if (acpi_is_wakeup_s3()) {
-		dev->enabled = 0;
-		pch_disable_devfn(dev);
+		       mbp_data->plat_time->pltrst_cpurst_time_ms);
 	}
 }
 
-static struct device_operations device_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
-	.enable			= &intel_me_enable,
-	.init			= &intel_me_init,
-	.ops_pci		= &broadwell_pci_ops,
-};
-
-static const unsigned short pci_device_ids[] = {
-	0x9c3a, /* Low Power */
-	0x9cba, /* WildcatPoint */
-	0
-};
-
-static const struct pci_driver intel_me __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.devices= pci_device_ids,
-};
-
-/******************************************************************************
- *									     */
 static u32 me_to_host_words_pending(void)
 {
 	struct mei_csr me;
@@ -876,8 +839,11 @@ struct mbp_payload {
 };
 
 /*
- * mbp seems to be following its own flow, let's retrieve it in a dedicated
- * function.
+ * Read and print ME MBP data
+ *
+ * Return -1 to indicate a problem (give up)
+ * Return 0 to indicate success (send LOCK+EOP)
+ * Return 1 to indicate success (send LOCK+EOP with NOACK)
  */
 static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 {
@@ -887,18 +853,21 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	struct me_hfs2 hfs2;
 	struct mbp_payload *mbp;
 	int i;
+	int ret = 0;
 
 	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
 
 	if (!hfs2.mbp_rdy) {
 		printk(BIOS_ERR, "ME: MBP not ready\n");
-		goto mbp_failure;
+		intel_me_mbp_give_up(dev);
+		return -1;
 	}
 
 	me2host_pending = me_to_host_words_pending();
 	if (!me2host_pending) {
 		printk(BIOS_ERR, "ME: no mbp data!\n");
-		goto mbp_failure;
+		intel_me_mbp_give_up(dev);
+		return -1;
 	}
 
 	/* we know for sure that at least the header is there */
@@ -910,11 +879,14 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 		       " buffer contains %d words\n",
 		       mbp_hdr.num_entries, mbp_hdr.mbp_size,
 		       me2host_pending);
-		goto mbp_failure;
+		intel_me_mbp_give_up(dev);
+		return -1;
 	}
 	mbp = malloc(mbp_hdr.mbp_size * sizeof(u32));
-	if (!mbp)
-		goto mbp_failure;
+	if (!mbp) {
+		intel_me_mbp_give_up(dev);
+		return -1;
+	}
 
 	mbp->header = mbp_hdr;
 	me2host_pending--;
@@ -925,25 +897,32 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 		i++;
 	}
 
-	/* Signal to the ME that the host has finished reading the MBP. */
 	read_host_csr(&host);
+
+	/* Check that read and write pointers are equal. */
+	if (host.buffer_read_ptr != host.buffer_write_ptr) {
+		printk(BIOS_INFO, "ME: MBP Read/Write pointer mismatch\n");
+		printk(BIOS_INFO, "ME: MBP Waiting for MBP cleared flag\n");
+
+		/* Tell ME that the host has finished reading the MBP. */
 	host.interrupt_generate = 1;
+		host.reset = 0;
 	write_host_csr(&host);
 
-#if !CONFIG_ME_MBP_CLEAR_LATE
 	/* Wait for the mbp_cleared indicator. */
 	intel_me_mbp_clear(dev);
-#endif
+	} else {
+		/* Indicate NOACK messages should be used. */
+		ret = 1;
+	}
 
 	/* Dump out the MBP contents. */
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
+#if CONFIG_DEBUG_INTEL_ME
 	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
 	       mbp->header.num_entries, mbp->header.mbp_size);
-#if CONFIG_DEBUG_INTEL_ME
 	for (i = 0; i < mbp->header.mbp_size - 1; i++) {
 		printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
 	}
-#endif
 #endif
 
 #define ASSIGN_FIELD_PTR(field_,val_) \
@@ -986,20 +965,121 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 
 		case MBP_IDENT(NFC, SUPPORT_DATA):
 			ASSIGN_FIELD_PTR(nfc_data, &mbp->data[i+1]);
-
-		default:
-			printk(BIOS_ERR, "ME MBP: unknown item 0x%x @ "
-			       "dw offset 0x%x\n", mbp->data[i], i);
-			break;
 		}
 		i += item->length;
 	}
 	#undef ASSIGN_FIELD_PTR
 
-	free(mbp);
-	return 0;
-
-mbp_failure:
-	intel_me_mbp_give_up(dev);
-	return -1;
+	return ret;
 }
+
+/* Check whether ME is present and do basic init */
+static void intel_me_init(device_t dev)
+{
+	config_t *config = dev->chip_info;
+	me_bios_path path = intel_me_path(dev);
+	me_bios_payload mbp_data;
+	int mbp_ret;
+	struct me_hfs hfs;
+	struct mei_csr csr;
+
+	/* Do initial setup and determine the BIOS path */
+	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_bios_path_values[path]);
+
+	if (path == ME_NORMAL_BIOS_PATH) {
+		/* Validate the extend register */
+		intel_me_extend_valid(dev);
+}
+
+	memset(&mbp_data, 0, sizeof(mbp_data));
+
+	/*
+	 * According to the ME9 BWG, BIOS is required to fetch MBP data in
+	 * all boot flows except S3 Resume.
+	 */
+
+	/* Prepare MEI MMIO interface */
+	if (intel_mei_setup(dev) < 0)
+		return;
+
+	/* Read ME MBP data */
+	mbp_ret = intel_me_read_mbp(&mbp_data, dev);
+	if (mbp_ret < 0)
+		return;
+	intel_me_print_mbp(&mbp_data);
+
+	/* Set clock enables according to devicetree */
+	if (config && config->icc_clock_disable)
+		me_icc_set_clock_enables(config->icc_clock_disable);
+
+	/* Make sure ME is in a mode that expects EOP */
+	pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
+
+	/* Abort and leave device alone if not normal mode */
+	if (hfs.fpt_bad ||
+	    hfs.working_state != ME_HFS_CWS_NORMAL ||
+	    hfs.operation_mode != ME_HFS_MODE_NORMAL)
+		return;
+
+	if (mbp_ret) {
+		/*
+		 * MBP Cleared wait is skipped,
+		 * Do not expect ACK and reset when complete.
+		 */
+
+		/* Send HMRFPO Lock command, no response */
+		mkhi_hmrfpo_lock_noack();
+
+		/* Send END OF POST command, no response */
+		mkhi_end_of_post_noack();
+
+		/* Assert reset and interrupt */
+		read_host_csr(&csr);
+		csr.interrupt_generate = 1;
+		csr.reset = 1;
+		write_host_csr(&csr);
+	} else {
+		/*
+		 * MBP Cleared wait was not skipped
+		 */
+
+		/* Send HMRFPO LOCK command */
+		mkhi_hmrfpo_lock();
+
+		/* Send EOP command so ME stops accepting other commands */
+		mkhi_end_of_post();
+	}
+}
+
+static void intel_me_enable(device_t dev)
+{
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Avoid talking to the device in S3 path */
+	if (acpi_slp_type == 3) {
+		dev->enabled = 0;
+		pch_disable_devfn(dev);
+	}
+#endif
+}
+
+static struct device_operations device_ops = {
+	.read_resources		= &pci_dev_read_resources,
+	.set_resources		= &pci_dev_set_resources,
+	.enable_resources	= &pci_dev_enable_resources,
+	.enable			= &intel_me_enable,
+	.init			= &intel_me_init,
+	.final			= &intel_me_finalize,
+	.ops_pci		= &broadwell_pci_ops,
+};
+
+static const unsigned short pci_device_ids[] = {
+	0x9c3a, /* Low Power */
+	0x9cba, /* WildcatPoint */
+	0
+};
+
+static const struct pci_driver intel_me __pci_driver = {
+	.ops	 = &device_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
+};

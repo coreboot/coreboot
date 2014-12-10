@@ -267,15 +267,6 @@ config IFD_BIN_PATH
 	depends on !BUILD_WITH_FAKE_IFD
 	default "3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin"
 
-config ME_MBP_CLEAR_LATE
-	bool "Defer wait for ME MBP Cleared"
-	default y
-	help
-	  If you set this option to y, the Management Engine driver
-	  will defer waiting for the MBP Cleared indicator until the
-	  finalize step.  This can speed up boot time if the ME takes
-	  a long time to indicate this status.
-
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock Management Engine section"
 	default n

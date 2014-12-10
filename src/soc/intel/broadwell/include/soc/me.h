@@ -258,19 +258,19 @@ struct mei_header {
 } __attribute__ ((packed));
 
 #define MKHI_GROUP_ID_CBM	0x00
+#define  MKHI_GLOBAL_RESET	0x0b
 #define MKHI_GROUP_ID_FWCAPS	0x03
+#define  MKHI_FWCAPS_GET_RULE	0x02
+#define MKHI_GROUP_ID_HMRFPO	0x05
+#define  MKHI_HMRFPO_LOCK	0x02
+#define  MKHI_HMRFPO_LOCK_NOACK	0x05
 #define MKHI_GROUP_ID_MDES	0x08
+#define  MKHI_MDES_ENABLE	0x09
 #define MKHI_GROUP_ID_GEN	0xff
-
-#define MKHI_GLOBAL_RESET	0x0b
-
-#define MKHI_FWCAPS_GET_RULE	0x02
-
-#define MKHI_MDES_ENABLE	0x09
-
-#define MKHI_GET_FW_VERSION	0x02
-#define MKHI_END_OF_POST	0x0c
-#define MKHI_FEATURE_OVERRIDE	0x14
+#define  MKHI_GET_FW_VERSION	0x02
+#define  MKHI_END_OF_POST	0x0c
+#define  MKHI_FEATURE_OVERRIDE	0x14
+#define  MKHI_END_OF_POST_NOACK	0x1a
 
 struct mkhi_header {
 	u32 group_id: 8;
@@ -495,7 +495,6 @@ struct me_fwcaps {
 	u8 reserved[3];
 } __attribute__ ((packed));
 
-void intel_me_finalize(void);
 void intel_me_hsio_version(uint16_t *version, uint16_t *checksum);
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)

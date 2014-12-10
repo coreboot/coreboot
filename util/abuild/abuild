@@ -150,7 +150,7 @@ function create_config
 			echo "problem with payload"
 			exit 1
 		fi
-		printf "Using payload $PAYLOAD\n"
+		if [ "$quiet" == "false" ]; then printf "Using payload $PAYLOAD\n"; fi
 	elif [ "$payloads" = "none" ]; then
 		PAYLOAD=none
 	fi

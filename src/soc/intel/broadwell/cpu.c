@@ -485,7 +485,10 @@ static void set_max_ratio(void)
 	perf_ctl.hi = 0;
 
 	/* Check for configurable TDP option */
-	if (cpu_config_tdp_levels()) {
+	if (get_turbo_state() == TURBO_ENABLED) {
+		msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
+		perf_ctl.lo = (msr.lo & 0xff) << 8;
+	} else if (cpu_config_tdp_levels()) {
 		/* Set to nominal TDP ratio */
 		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
 		perf_ctl.lo = (msr.lo & 0xff) << 8;
@@ -586,9 +589,6 @@ static void cpu_core_init(device_t cpu)
 
 	/* Set energy policy */
 	set_energy_perf_bias(ENERGY_POLICY_NORMAL);
-
-	/* Set Max Ratio */
-	set_max_ratio();
 
 	/* Enable Turbo */
 	enable_turbo();
@@ -691,6 +691,9 @@ void broadwell_init_cpus(device_t dev)
 	if (mp_init(cpu_bus, &mp_params)) {
 		printk(BIOS_ERR, "MP initialization failure.\n");
 	}
+
+	/* Set Max Ratio */
+	set_max_ratio();
 
 	/* Restore the default SMM region. */
 	restore_default_smm_area(smm_save_area);

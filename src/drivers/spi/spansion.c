@@ -44,20 +44,25 @@
 #define CMD_S25FLXX_DP		0xb9	/* Deep Power-down */
 #define CMD_S25FLXX_RES		0xab	/* Release from DP, and Read Signature */
 
+#define SPSN_MANUFACTURER_ID_S25FL116K	0x01
 #define SPSN_ID_S25FL008A	0x0213
 #define SPSN_ID_S25FL016A	0x0214
 #define SPSN_ID_S25FL032A	0x0215
 #define SPSN_ID_S25FL064A	0x0216
 #define SPSN_ID_S25FL128S	0x0219
 #define SPSN_ID_S25FL128P	0x2018
+#define SPSN_ID_S25FL116K	0x4015
 #define SPSN_EXT_ID_S25FL128P_256KB	0x0300
 #define SPSN_EXT_ID_S25FL128P_64KB	0x0301
 #define SPSN_EXT_ID_S25FL032P		0x4d00
 #define SPSN_EXT_ID_S25FLXXS_64KB	0x4d01
 
 struct spansion_spi_flash_params {
+	u8  idcode0;
 	u16 idcode1;
 	u16 idcode2;
+	int (*identify) (const struct spansion_spi_flash_params *params,
+			u8 *idcode);
 	u16 page_size;
 	u16 pages_per_sector;
 	u16 nr_sectors;
@@ -75,78 +80,129 @@ static inline struct spansion_spi_flash *to_spansion_spi_flash(struct spi_flash
 	return container_of(flash, struct spansion_spi_flash, flash);
 }
 
+/*
+ * returns non-zero if the given idcode matches the ID of the chip. this is for
+ * chips which use 2nd, 3rd, 4th, and 5th byte.
+ */
+static int identify_2345(const struct spansion_spi_flash_params *params,
+			 u8 *idcode)
+{
+	u16 jedec = idcode[1] << 8 | idcode[2];
+	u16 ext_jedec = idcode[3] << 8 | idcode[4];
+	return (params->idcode1 == jedec) && (params->idcode2 == ext_jedec);
+}
+
+/*
+ * returns non-zero if the given idcode matches the ID of the chip. this is for
+ * chips which use 1st, 2nd, and 3rd byte.
+ */
+static int identify_123(const struct spansion_spi_flash_params *params,
+			u8 *idcode)
+{
+	u16 jedec = idcode[1] << 8 | idcode[2];
+	return (params->idcode0 == idcode[0]) && (params->idcode1 == jedec);
+}
+
 static const struct spansion_spi_flash_params spansion_spi_flash_table[] = {
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL008A,
 		.idcode2 = 0,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 16,
 		.name = "S25FL008A",
 	},
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL016A,
 		.idcode2 = 0,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 32,
 		.name = "S25FL016A",
 	},
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL032A,
 		.idcode2 = 0,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 64,
 		.name = "S25FL032A",
 	},
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL064A,
 		.idcode2 = 0,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 128,
 		.name = "S25FL064A",
 	},
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL128P,
 		.idcode2 = SPSN_EXT_ID_S25FL128P_64KB,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 256,
 		.name = "S25FL128P_64K",
 	},
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL128P,
 		.idcode2 = SPSN_EXT_ID_S25FL128P_256KB,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 1024,
 		.nr_sectors = 64,
 		.name = "S25FL128P_256K",
 	},
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL128S,
 		.idcode2 = SPSN_EXT_ID_S25FLXXS_64KB,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 512,
 		.name = "S25FL128S_256K",
 	},
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL032A,
 		.idcode2 = SPSN_EXT_ID_S25FL032P,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 64,
 		.name = "S25FL032P",
 	},
 	{
+		.idcode0 = 0,
 		.idcode1 = SPSN_ID_S25FL128P,
 		.idcode2 = SPSN_EXT_ID_S25FLXXS_64KB,
+		.identify = identify_2345,
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 256,
 		.name = "25FS128S",
+	},
+	{
+		.idcode0 = SPSN_MANUFACTURER_ID_S25FL116K,
+		.idcode1 = SPSN_ID_S25FL116K,
+		.idcode2 = 0,
+		.identify = identify_123,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 32,
+		.name = "S25FL116K_16M",
 	},
 };
 
@@ -223,21 +279,17 @@ struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 	const struct spansion_spi_flash_params *params;
 	struct spansion_spi_flash *spsn;
 	unsigned int i;
-	unsigned short jedec, ext_jedec;
-
-	jedec = idcode[1] << 8 | idcode[2];
-	ext_jedec = idcode[3] << 8 | idcode[4];
 
 	for (i = 0; i < ARRAY_SIZE(spansion_spi_flash_table); i++) {
 		params = &spansion_spi_flash_table[i];
-		if (params->idcode1 == jedec) {
-			if (params->idcode2 == ext_jedec)
-				break;
-		}
+		if (params->identify(params, idcode))
+			break;
 	}
 
 	if (i == ARRAY_SIZE(spansion_spi_flash_table)) {
-		printk(BIOS_WARNING, "SF: Unsupported SPANSION ID %04x %04x\n", jedec, ext_jedec);
+		printk(BIOS_WARNING,
+		       "SF: Unsupported SPANSION ID %02x %02x %02x %02x %02x\n",
+		       idcode[0], idcode[1], idcode[2], idcode[3], idcode[4]);
 		return NULL;
 	}
 

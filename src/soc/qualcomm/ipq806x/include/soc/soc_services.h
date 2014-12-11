@@ -17,15 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <cbmem.h>
-#include <console/console.h>
-#include <program_loading.h>
-#include <soc/soc_services.h>
+#ifndef __SOC_QUALCOMM_IPQ806X_INCLUDE_SOC_SOC_SERVICES_H__
+#define __SOC_QUALCOMM_IPQ806X_INCLUDE_SOC_SOC_SERVICES_H__
 
-void main(void)
-{
-	console_init();
-	cbmem_initialize_empty();
-	initialize_dram();
-	run_ramstage();
-}
+/* Returns zero on success, nonzero on failure. */
+int initialize_dram(void);
+
+#endif

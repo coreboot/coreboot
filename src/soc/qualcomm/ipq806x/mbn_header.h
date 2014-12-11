@@ -17,15 +17,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <cbmem.h>
-#include <console/console.h>
-#include <program_loading.h>
-#include <soc/soc_services.h>
+#ifndef __SOC_QUALCOMM_IPQ806X_MBN_HEADER_H__
+#define __SOC_QUALCOMM_IPQ806X_MBN_HEADER_H__
 
-void main(void)
-{
-	console_init();
-	cbmem_initialize_empty();
-	initialize_dram();
-	run_ramstage();
-}
+#include <types.h>
+
+/* Qualcomm firmware blob header gleaned from util/ipqheader/ipqheader.py */
+
+struct mbn_header {
+	u32	mbn_type;
+	u32	mbn_version;
+	u32	mbn_source;
+	u32	mbn_destination;
+	u32	mbn_total_size;
+	u32	mbn_padding[5];
+};
+
+#endif
+

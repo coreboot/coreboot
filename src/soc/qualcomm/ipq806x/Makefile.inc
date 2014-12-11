@@ -33,6 +33,7 @@ verstage-y += timer.c
 verstage-$(CONFIG_CONSOLE_SERIAL_IPQ806X) += uart.c
 
 romstage-y += clock.c
+romstage-y += blobs_init.c
 romstage-y += gpio.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-y += timer.c

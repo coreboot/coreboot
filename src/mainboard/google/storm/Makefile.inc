@@ -20,6 +20,9 @@
 bootblock-y += cdp.c
 bootblock-y += reset.c
 
+verstage-y += cdp.c
+verstage-y += chromeos.c
+verstage-y += memlayout.ld
 verstage-y += reset.c
 
 romstage-y += romstage.c

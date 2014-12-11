@@ -23,6 +23,12 @@ bootblock-$(CONFIG_SPI_FLASH) += spi.c
 bootblock-y += timer.c
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 
+verstage-y += clock.c
+verstage-y += gpio.c
+verstage-y += spi.c
+verstage-y += timer.c
+verstage-$(CONFIG_CONSOLE_SERIAL_IPQ806X) += uart.c
+
 romstage-y += clock.c
 romstage-y += gpio.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c

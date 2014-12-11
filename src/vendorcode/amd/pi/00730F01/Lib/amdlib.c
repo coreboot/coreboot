@@ -52,6 +52,10 @@
 CODE_GROUP (G1_PEICC)
 RDATA_GROUP (G1_PEICC)
 
+#if !defined(AMDLIB_OPTIMIZE)
+	#define AMDLIB_OPTIMIZE
+#endif
+
 #define FILECODE LIB_AMDLIB_FILECODE
 
 BOOLEAN
@@ -89,7 +93,7 @@ ReadNumberOfCpuCores(
   void
   );
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT8
 ReadIo8 (
   IN       UINT16 Address
@@ -98,7 +102,7 @@ ReadIo8 (
   return __inbyte (Address);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT16
 ReadIo16 (
   IN       UINT16 Address
@@ -107,7 +111,7 @@ ReadIo16 (
   return __inword (Address);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT32
 ReadIo32 (
   IN       UINT16 Address
@@ -116,7 +120,7 @@ ReadIo32 (
   return __indword (Address);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 WriteIo8 (
   IN       UINT16 Address,
@@ -126,7 +130,7 @@ WriteIo8 (
   __outbyte (Address, Data);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 WriteIo16 (
   IN       UINT16 Address,
@@ -136,7 +140,7 @@ WriteIo16 (
   __outword (Address, Data);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 WriteIo32 (
   IN       UINT16 Address,
@@ -146,7 +150,7 @@ WriteIo32 (
    __outdword (Address, Data);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 STATIC
 UINT64 SetFsBase (
   UINT64 address
@@ -159,7 +163,7 @@ UINT64 SetFsBase (
   return hwcr;
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 STATIC
 VOID
 RestoreHwcr (
@@ -170,7 +174,7 @@ RestoreHwcr (
   __writemsr (0xC0010015, value);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT8
 Read64Mem8 (
   IN       UINT64 Address
@@ -187,7 +191,7 @@ Read64Mem8 (
   return dataRead;
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT16
 Read64Mem16 (
   IN       UINT64 Address
@@ -204,7 +208,7 @@ Read64Mem16 (
   return dataRead;
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT32
 Read64Mem32 (
   IN       UINT64 Address
@@ -221,7 +225,7 @@ Read64Mem32 (
   return dataRead;
   }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 Write64Mem8 (
   IN       UINT64 Address,
@@ -239,7 +243,7 @@ Write64Mem8 (
   }
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 Write64Mem16 (
   IN       UINT64 Address,
@@ -257,7 +261,7 @@ Write64Mem16 (
  }
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 Write64Mem32 (
   IN       UINT64 Address,
@@ -275,7 +279,7 @@ Write64Mem32 (
   }
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdReadCpuReg (
   IN       UINT8 RegNum,
@@ -308,7 +312,7 @@ LibAmdReadCpuReg (
   }
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdWriteCpuReg (
   IN       UINT8 RegNum,
@@ -339,7 +343,7 @@ LibAmdWriteCpuReg (
   }
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdWriteBackInvalidateCache (
   void
@@ -348,7 +352,7 @@ LibAmdWriteBackInvalidateCache (
   __wbinvd ();
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdHDTBreakPoint (
   void
@@ -358,7 +362,7 @@ LibAmdHDTBreakPoint (
   __debugbreak (); // do you really need icebp? If so, go back to asm code
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT8
 LibAmdBitScanForward (
   IN       UINT32 value
@@ -371,7 +375,7 @@ LibAmdBitScanForward (
   return (UINT8) Index;
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT8
 LibAmdBitScanReverse (
   IN       UINT32 value
@@ -384,7 +388,7 @@ LibAmdBitScanReverse (
   return (UINT8) Index;
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdMsrRead (
   IN       UINT32 MsrAddress,
@@ -398,7 +402,7 @@ LibAmdMsrRead (
   *Value = __readmsr (MsrAddress);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdMsrWrite (
   IN       UINT32 MsrAddress,
@@ -409,7 +413,7 @@ LibAmdMsrWrite (
   __writemsr (MsrAddress, *Value);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 void LibAmdCpuidRead (
   IN       UINT32 CpuidFcnAddress,
      OUT   CPUID_DATA* Value,
@@ -419,7 +423,7 @@ void LibAmdCpuidRead (
   __cpuid ((int *)Value, CpuidFcnAddress);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT64
 ReadTSC (
   void
@@ -428,7 +432,7 @@ ReadTSC (
   return __rdtsc ();
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdSimNowEnterDebugger (
   void
@@ -444,7 +448,7 @@ LibAmdSimNowEnterDebugger (
   ((VOID (*)(VOID)) (size_t) opcode) (); // call the function
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 IdsOutPort (
   IN       UINT32 Addr,
@@ -455,7 +459,7 @@ IdsOutPort (
   __outdword ((UINT16) Addr, Value);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 StopHere (
   void
@@ -465,7 +469,7 @@ StopHere (
   while (x);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdCLFlush (
   IN       UINT64 Address,
@@ -485,7 +489,7 @@ LibAmdCLFlush (
 }
 
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 LibAmdFinit(
   void
@@ -1367,7 +1371,7 @@ LibAmdAccessWidth (
   return Width;
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 VOID
 CpuidRead (
   IN        UINT32      CpuidFcnAddress,
@@ -1377,7 +1381,7 @@ CpuidRead (
   __cpuid ((int *)Value, CpuidFcnAddress);
 }
 
-__attribute__((optimize("Os")))
+AMDLIB_OPTIMIZE
 UINT8
 ReadNumberOfCpuCores(
   void

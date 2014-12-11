@@ -25,7 +25,7 @@
 void main(void)
 {
 	console_init();
-	cbmem_initialize_empty();
 	initialize_dram();
+	cbmem_initialize_empty();
 	run_ramstage();
 }

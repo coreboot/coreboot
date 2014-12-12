@@ -39,11 +39,24 @@ SECTIONS
 	QCA_SHARED_RAM(2A03F000, 4K)
 */
 	STACK(0x2A040000, 16K)
+#ifdef __PRE_RAM__
+       /*
+        * ipq8064 is different from most other ARM platforms: it loads the
+	* proprietary DRAM initialization code from CBFS (as opposed to compiling
+	* it in into rombase). As a result CBFS needs to be used before DRAM is
+	* availale, which means CBFS cache must be in SRAM, which in turn means
+	* that PRERAM_CBFS_CACHE description can not be used here.
+	*/
 	CBFS_CACHE(0x2A044000, 96K)
+#endif
 	TTB(0x2A05C000, 16K)
 	SRAM_END(0x2A060000)
 
 	DRAM_START(0x40000000)
 	RAMSTAGE(0x40640000, 128K)
+	SYMBOL(memlayout_cbmem_top, 0x59FA0000)
+#ifndef __PRE_RAM__
+	CBFS_CACHE(0x59FA0000, 256K)
+#endif
 	DMA_COHERENT(0x5A000000, 2M)
 }

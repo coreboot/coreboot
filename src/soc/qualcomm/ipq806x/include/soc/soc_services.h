@@ -20,6 +20,10 @@
 #ifndef __SOC_QUALCOMM_IPQ806X_INCLUDE_SOC_SOC_SERVICES_H__
 #define __SOC_QUALCOMM_IPQ806X_INCLUDE_SOC_SOC_SERVICES_H__
 
+#include <types.h>
+
+extern u8 _memlayout_cbmem_top[];
+
 /* Returns zero on success, nonzero on failure. */
 int initialize_dram(void);
 

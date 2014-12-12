@@ -18,10 +18,9 @@
  */
 
 #include <cbmem.h>
-#include <stddef.h>
-#include <symbols.h>
+#include <soc/soc_services.h>
 
 void *cbmem_top(void)
 {
-	return (void *)((uintptr_t)_dram + CONFIG_DRAM_SIZE_MB*MiB);
+	return _memlayout_cbmem_top;
 }

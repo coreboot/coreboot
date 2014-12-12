@@ -324,6 +324,10 @@ struct gpio_bank {
 void setup_soc_gpios(struct soc_gpio_config *config);
 /* This function is weak and can be overridden by a mainboard function. */
 struct soc_gpio_config* mainboard_get_gpios(void);
+uint8_t read_score_gpio(uint8_t gpio_num);
+uint8_t read_ssus_gpio(uint8_t gpio_num);
+void configure_ssus_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val);
+void configure_score_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val);
 
 /* Functions / defines for changing GPIOs in romstage */
 /* SCORE Pad definitions. */

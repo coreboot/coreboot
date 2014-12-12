@@ -42,6 +42,7 @@ romstage-y += iosf.c
 ramstage-y += northcluster.c
 ramstage-y += ramstage.c
 ramstage-y += gpio.c
+romstage-y += gpio.c
 ramstage-y += pmutil.c
 romstage-y += raminit.c
 ramstage-y += raminit.c

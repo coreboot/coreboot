@@ -23,7 +23,15 @@
 #include <baytrail/pmc.h>
 #include <baytrail/smm.h>
 
-/* GPIO-to-Pad LUTs */
+/*
+ * GPIO-to-Pad LUTs
+ *
+ * These tables translate the GPIO number to the pad configuration register
+ * for that GPIO in the memory-mapped pad configuration registers.
+ * See the tables:
+ *   PCU iLB GPIO CFIO_SCORE Address Map
+ *   PCU iLB GPIO CFIO_SSUS Address Map
+ */
 static const u8 gpncore_gpio_to_pad[GPNCORE_COUNT] =
 	{ 19, 18, 17, 20, 21, 22, 24, 25,	/* [ 0: 7] */
 	  23, 16, 14, 15, 12, 26, 27,  1,	/* [ 8:15] */
@@ -83,6 +91,8 @@ static const struct gpio_bank gpssus_bank = {
 	.gpio_f1_range_start = GPSSUS_GPIO_F1_RANGE_START,
 	.gpio_f1_range_end = GPSSUS_GPIO_F1_RANGE_END,
 };
+
+#ifndef __PRE_RAM__
 
 static void setup_gpios(const struct soc_gpio_map *gpios,
 			const struct gpio_bank *bank)
@@ -238,3 +248,102 @@ struct soc_gpio_config* __attribute__((weak)) mainboard_get_gpios(void)
 	printk(BIOS_DEBUG, "Default/empty GPIO config\n");
 	return NULL;
 }
+#endif /* #ifndef __PRE_RAM__ */
+
+/** \brief returns the input / output value from an SCORE GPIO
+ *
+ * @param gpio_num The GPIO number being read
+ * @return The current input or output value of the GPIO
+ */
+uint8_t read_score_gpio(uint8_t gpio_num)
+{
+	uint8_t retval = 0;
+	if (gpio_num < GPSCORE_COUNT)
+		retval = score_get_gpio(gpscore_gpio_to_pad[gpio_num]);
+
+	return retval;
+}
+
+/** \brief returns the input / output value from an SSUS GPIO
+ *
+ * @param gpio_num The GPIO number being read
+ * @return The current input or output value of the GPIO
+ */
+uint8_t read_ssus_gpio(uint8_t gpio_num)
+{
+	uint8_t retval = 0;
+	if (gpio_num < GPSSUS_COUNT)
+		retval = ssus_get_gpio(gpssus_gpio_to_pad[gpio_num]);
+
+	return retval;
+}
+
+/** \brief Sets up the function, pulls, and Input/Output of a Baytrail
+ *         SSUS (S5) or SCORE (S0) GPIO
+ *
+ * @param ssus_gpio 1 if SSUS GPIO is being configured 0 if SCORE GPIO
+ * @param gpio_num The GPIO number being configured
+ * @param pconf0 function, pull direction, and pull value
+ *        function: PAD_FUNC0 - PAD_FUNC7
+ *        pull assign: PAD_PULL_DISABLE / PAD_PULL_UP / PAD_PULL_DOWN
+ *        pull_value: PAD_PU_2K / PAD_PU_10K / PAD_PU_20K / PAD_PU_40K
+ * @param pad_val input / output state and pad value
+ *        io state:  PAD_VAL_INPUT / PAD_VAL_OUTPUT
+ *        pad value: PAD_VAL_HIGH / PAD_VAL_LOW
+ */
+static void configure_ssus_score_gpio(uint8_t ssus_gpio, uint8_t gpio_num,
+                           uint32_t pconf0, uint32_t pad_val)
+{
+	uint32_t reg;
+	uint32_t pad_addr;
+	if (ssus_gpio)
+		pad_addr = ssus_pconf0(gpssus_gpio_to_pad[gpio_num]);
+	else
+		pad_addr = score_pconf0(gpscore_gpio_to_pad[gpio_num]);
+
+	if ((ssus_gpio && gpio_num >= GPSSUS_COUNT) ||
+			(gpio_num >= GPSCORE_COUNT)){
+		printk(BIOS_WARNING,"Warning: Invalid %s GPIO specified (%d)\n",
+				ssus_gpio ? "SSUS" : "SCORE", gpio_num);
+		return;
+	}
+
+	/*
+	 * Pad Configuration 0 Register
+	 *  2:0 - func_pin_mux
+	 *  8:7 - Pull assignment: 00 - Non pull 01 - Pull Up 10 - Pull down
+	 *                         11 - reserved
+	 * 10:9 - Pull strength: 00 - 2K 01 - 10K 10 - 20K 11 - 40K
+	 */
+	reg = PAD_CONFIG0_DEFAULT;
+	reg |= pconf0 & 0x787;
+	write32(pad_addr + PAD_CONF0_REG, reg);
+
+	/*
+	 * Pad Value Register
+	 * 0: Pad value
+	 * 1: output enable (0 is enabled)
+	 * 2: input enable  (0 is enabled)
+	 */
+	reg = read32(pad_addr + PAD_VAL_REG);
+	reg &= ~0x7;
+	reg |= pad_val & 0x7;
+	write32(pad_addr + PAD_VAL_REG, reg);
+}
+
+/** \brief Sets up the function, pulls, and Input/Output of a Baytrail S5 GPIO
+ *
+ */
+void configure_ssus_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val)
+{
+	configure_ssus_score_gpio(1, gpio_num, pconf0, pad_val);
+}
+
+/** \brief Sets up the function, pulls, and Input/Output of a Baytrail S5 GPIO
+ *
+ */
+void configure_score_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val)
+{
+	configure_ssus_score_gpio(0, gpio_num, pconf0, pad_val);
+}
+

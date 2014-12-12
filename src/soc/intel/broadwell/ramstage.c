@@ -52,13 +52,15 @@ static void save_acpi_wake_source(global_nvs_t *gnvs)
 		gnvs->pm1i = -1;
 
 	/* Scan for first set bit in GPE registers */
+	gnvs->gpei = -1;
 	for (gpe_reg = 0; gpe_reg < GPE0_REG_MAX; gpe_reg++) {
 		u32 gpe = ps->gpe0_sts[gpe_reg] & ps->gpe0_en[gpe_reg];
 		int start = gpe_reg * GPE0_REG_SIZE;
 		int end = start + GPE0_REG_SIZE;
 
 		if (gpe == 0) {
-			gnvs->gpei = end;
+			if (!gnvs->gpei)
+				gnvs->gpei = end;
 			continue;
 		}
 
@@ -73,7 +75,7 @@ static void save_acpi_wake_source(global_nvs_t *gnvs)
 	if (gnvs->gpei >= (GPE0_REG_MAX * GPE0_REG_SIZE))
 		gnvs->gpei = -1;
 
-	printk(BIOS_DEBUG, "ACPI _SWS is PM1 Index %d GPE Index %d\n",
+	printk(BIOS_DEBUG, "ACPI _SWS is PM1 Index %lld GPE Index %lld\n",
 	       gnvs->pm1i, gnvs->gpei);
 }
 

@@ -44,17 +44,16 @@ typedef struct {
 	u8	tcrt; /* 0x10 - Critical Threshold */
 	u8	tpsv; /* 0x11 - Passive Threshold */
 	u8	tmax; /* 0x12 - CPU Tj_max */
-	u8	unused1; /* 0x13 - Unused */
-	u8	s5u0; /* 0x14 - Enable USB in S5 */
-	u8	s3u0; /* 0x15 - Enable USB in S3 */
-	u8	s33g; /* 0x16 - Enable 3G in S3 */
-	u8	lids; /* 0x17 - LID State */
-	u8	pwrs; /* 0x18 - AC Power State */
-	u32	obsolete_cmem; /* 0x19 - 0x1c - CBMEM TOC */
-	u32	cbmc; /* 0x1d - 0x20 - Coreboot Memory Console */
-	u32	pm1i; /* 0x21 - 0x24 - PM1 wake status bit */
-	u32	gpei; /* 0x25 - 0x28 - GPE wake status bit */
-	u8	unused[215];
+	u8	s5u0; /* 0x13 - Enable USB in S5 */
+	u8	s3u0; /* 0x14 - Enable USB in S3 */
+	u8	s33g; /* 0x15 - Enable 3G in S3 */
+	u8	lids; /* 0x16 - LID State */
+	u8	pwrs; /* 0x17 - AC Power State */
+	u32	cmem; /* 0x18 - 0x1b - CBMEM TOC */
+	u32	cbmc; /* 0x1c - 0x1f - Coreboot Memory Console */
+	u64	pm1i; /* 0x20 - 0x27 - PM1 wake status bit */
+	u64	gpei; /* 0x28 - 0x2f - GPE wake status bit */
+	u8	unused[208];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

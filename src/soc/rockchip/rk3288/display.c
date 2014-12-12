@@ -82,8 +82,5 @@ void rk_display_init(device_t dev, u32 lcdbase,
 	}
 
 	set_vbe_mode_info_valid(&edid, (uintptr_t)lcdbase);
-	gpio_output(conf->lcd_bl_pwm_gpio, 0);
-	gpio_output(conf->lcd_bl_en_gpio, 1); /* LCD_BL */
-	udelay(conf->bl_power_on_udelay);
-	gpio_output(conf->lcd_bl_pwm_gpio, 1); /* BL_EN */
+	mainboard_power_on_backlight();
 }

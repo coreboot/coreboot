@@ -26,6 +26,7 @@
 #include <device/i2c.h>
 #include <edid.h>
 #include <gpio.h>
+#include <soc/display.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
 #include <soc/pmu.h>
@@ -175,4 +176,12 @@ void lb_board(struct lb_header *header)
 	dma->size = sizeof(*dma);
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = _dma_coherent_size;
+}
+
+void mainboard_power_on_backlight(void)
+{
+	gpio_output(GPIO(7, A, 0), 0);	/* BL_EN */
+	gpio_output(GPIO(7, A, 2), 1);	/* LCD_BL */
+	mdelay(10);
+	gpio_output(GPIO(7, A, 0), 1);	/* BL_EN */
 }

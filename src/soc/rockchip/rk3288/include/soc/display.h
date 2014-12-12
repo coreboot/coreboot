@@ -23,8 +23,6 @@
 void rk_display_init(device_t dev, u32 lcdbase,
 		unsigned long fb_size);
 
+void mainboard_power_on_backlight(void);
+
 #endif
-
-
-
-

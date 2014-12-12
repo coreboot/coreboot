@@ -28,7 +28,7 @@
 #include <vendorcode/google/chromeos/fmap.h>
 #include "onboard.h"
 
-static unsigned int search(char *p, char *a, unsigned int lengthp,
+static unsigned int search(char *p, u8 *a, unsigned int lengthp,
 			   unsigned int lengtha)
 {
 	int i, j;
@@ -42,7 +42,7 @@ static unsigned int search(char *p, char *a, unsigned int lengthp,
 	return lengtha;
 }
 
-static unsigned char get_hex_digit(char *offset)
+static unsigned char get_hex_digit(u8 *offset)
 {
 	unsigned char retval = 0;
 
@@ -54,7 +54,7 @@ static unsigned char get_hex_digit(char *offset)
 	}
 	if (retval > 0x0F) {
 		printk(BIOS_DEBUG, "Error: Invalid Hex digit found: %c - 0x%02x\n",
-			*offset, (unsigned char)*offset);
+			*offset, *offset);
 		retval = 0;
 	}
 
@@ -62,14 +62,13 @@ static unsigned char get_hex_digit(char *offset)
 }
 
 static int get_mac_address(u32 *high_dword, u32 *low_dword,
-			   u32 search_address, u32 search_length)
+			   u8 *search_address, u32 search_length)
 {
 	char key[] = "ethernet_mac";
 	unsigned int offset;
 	int i;
 
-	offset = search(key, (char *)search_address,
-			sizeof(key) - 1, search_length);
+	offset = search(key, search_address, sizeof(key) - 1, search_length);
 	if (offset == search_length) {
 		printk(BIOS_DEBUG,
 		       "Error: Could not locate '%s' in VPD\n", key);
@@ -90,18 +89,18 @@ static int get_mac_address(u32 *high_dword, u32 *low_dword,
 	 */
 
 	for (i = 0; i < 4; i++) {
-		*high_dword |= (get_hex_digit((char *)(search_address + offset))
+		*high_dword |= (get_hex_digit(search_address + offset)
 				<< (4 + (i * 8)));
-		*high_dword |= (get_hex_digit((char *)(search_address + offset + 1))
+		*high_dword |= (get_hex_digit(search_address + offset + 1)
 				<< (i * 8));
 		offset += 3;
 	}
 
 	*low_dword = 0;
 	for (i = 0; i < 2; i++) {
-		*low_dword |= (get_hex_digit((char *)(search_address + offset))
+		*low_dword |= (get_hex_digit(search_address + offset)
 			       << (4 + (i * 8)));
-		*low_dword |= (get_hex_digit((char *)(search_address + offset + 1))
+		*low_dword |= (get_hex_digit(search_address + offset + 1)
 			       << (i * 8));
 		offset += 3;
 	}
@@ -109,14 +108,25 @@ static int get_mac_address(u32 *high_dword, u32 *low_dword,
 	return *high_dword | *low_dword;
 }
 
-static void program_mac_address(u16 io_base, u32 search_address,
-				u32 search_length)
+static void program_mac_address(u16 io_base)
 {
+	void *search_address = NULL;
+	size_t search_length = -1;
+
 	/* Default MAC Address of A0:00:BA:D0:0B:AD */
 	u32 high_dword = 0xD0BA00A0;	/* high dword of mac address */
 	u32 low_dword = 0x0000AD0B;	/* low word of mac address as a dword */
 
-	if (search_length != -1)
+#if CONFIG_CHROMEOS
+	search_length = find_fmap_entry("RO_VPD", &search_address);
+#else
+	search_address = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "vpd.bin",
+					       CBFS_TYPE_RAW, &search_length);
+#endif
+
+	if (search_length <= 0)
+		printk(BIOS_ERR, "LAN: find_fmap_entry returned -1.\n");
+	else
 		get_mac_address(&high_dword, &low_dword, search_address,
 				search_length);
 
@@ -124,35 +134,20 @@ static void program_mac_address(u16 io_base, u32 search_address,
 		printk(BIOS_DEBUG, "Realtek NIC io_base = 0x%04x\n", io_base);
 		printk(BIOS_DEBUG, "Programming MAC Address\n");
 
-		outb(0xc0, io_base + 0x50);	/* Disable register protection */
+		/* Disable register protection */
+		outb(0xc0, io_base + 0x50);
 		outl(high_dword, io_base);
 		outl(low_dword, io_base + 0x04);
 		outb(0x60, io_base + 54);
-		outb(0x00, io_base + 0x50);	/* Enable register protection again */
+		/* Enable register protection again */
+		outb(0x00, io_base + 0x50);
 	}
 }
 
 void lan_init(void)
 {
-	u32 search_address = 0;
-	size_t search_length = -1;
 	u16 io_base = 0;
 	struct device *ethernet_dev = NULL;
-
-#if CONFIG_CHROMEOS
-	char **vpd_region_ptr = NULL;
-	search_length = find_fmap_entry("RO_VPD", (void **)vpd_region_ptr);
-	search_address = (unsigned long)(*vpd_region_ptr);
-#else
-	void *vpd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "vpd.bin",
-					       CBFS_TYPE_RAW, &search_length);
-	if (vpd_file) {
-		search_address = (unsigned long)vpd_file;
-	} else {
-		search_length = -1;
-		search_address = 0;
-	}
-#endif
 
 	/* Get NIC's IO base address */
 	ethernet_dev = dev_find_device(PANTHER_NIC_VENDOR_ID,
@@ -170,7 +165,7 @@ void lan_init(void)
 
 	if (io_base) {
 		/* Program MAC address based on VPD data */
-		program_mac_address(io_base, search_address, search_length);
+		program_mac_address(io_base);
 
 		/*
 		 * Program NIC LEDS

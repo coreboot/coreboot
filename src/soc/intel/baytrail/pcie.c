@@ -95,7 +95,7 @@ static void byt_pcie_init(device_t dev)
 		/* Exit latency configuration based on
 		 * PHYCTL2_IOSFBCTL[PLL_OFF_EN] set in root port 1*/
 		REG_PCI_RMW32(LCAP, ~L1EXIT_MASK,
-			2 << (L1EXIT_MASK + pll_en_off)),
+			2 << (L1EXIT_SHIFT + pll_en_off)),
 		REG_SCRIPT_NEXT(init_static_after_exit_latency),
 		/* Disable hot plug, set power to 10W, set slot number. */
 		REG_PCI_RMW32(SLCAP, ~(HPC | HPS),

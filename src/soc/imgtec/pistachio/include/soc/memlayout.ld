@@ -36,4 +36,6 @@ SECTIONS
 
 	/* Let's use SRAM for CBFS cache. */
 	CBFS_CACHE(0x9b000000, 64K)
+	/* DMA coherent area: end of available DRAM, uncached */
+	DMA_COHERENT(0xAFF00000, 1M)
 }

@@ -26,6 +26,6 @@
 /* TODO: Double-check that that's the correct alignment for our ABI. */
 #define STACK(addr, size) REGION(stack, addr, size, 8)
 
-/* TODO: Need to add DMA_COHERENT region like on ARM? */
+#define DMA_COHERENT(addr, size) REGION(dma_coherent, addr, size, 4K)
 
 #endif /* __ARCH_MEMLAYOUT_H */

@@ -22,6 +22,7 @@
 #include <console/uart.h>
 #include <device/device.h>
 #include <delay.h>
+#include <stdint.h>
 #include "uart8250reg.h"
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
@@ -33,65 +34,75 @@
 #define SINGLE_CHAR_TIMEOUT	(50 * 1000)
 #define FIFO_TIMEOUT		(16 * SINGLE_CHAR_TIMEOUT)
 
-static int uart8250_mem_can_tx_byte(unsigned base_port)
+static uint8_t uart8250_read(void *base, uint8_t reg)
 {
-	return read8(base_port + UART8250_LSR) & UART8250_LSR_THRE;
+	return read8((uintptr_t) (base + reg));
 }
 
-static void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
+static void uart8250_write(void *base, uint8_t reg, uint8_t data)
+{
+	write8((uintptr_t) (base + reg), data);
+}
+
+static int uart8250_mem_can_tx_byte(void *base)
+{
+	return uart8250_read(base, UART8250_LSR) & UART8250_LSR_THRE;
+}
+
+static void uart8250_mem_tx_byte(void *base, unsigned char data)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while(i-- && !uart8250_mem_can_tx_byte(base_port))
+	while(i-- && !uart8250_mem_can_tx_byte(base))
 		udelay(1);
-	write8(base_port + UART8250_TBR, data);
+	uart8250_write(base, UART8250_TBR, data);
 }
 
-static void uart8250_mem_tx_flush(unsigned base_port)
+static void uart8250_mem_tx_flush(void *base)
 {
 	unsigned long int i = FIFO_TIMEOUT;
-	while(i-- && !(read8(base_port + UART8250_LSR) & UART8250_LSR_TEMT))
+	while(i-- && !(uart8250_read(base, UART8250_LSR) & UART8250_LSR_TEMT))
 		udelay(1);
 }
 
-static int uart8250_mem_can_rx_byte(unsigned base_port)
+static int uart8250_mem_can_rx_byte(void *base)
 {
-	return read8(base_port + UART8250_LSR) & UART8250_LSR_DR;
+	return uart8250_read(base, UART8250_LSR) & UART8250_LSR_DR;
 }
 
-static unsigned char uart8250_mem_rx_byte(unsigned base_port)
+static unsigned char uart8250_mem_rx_byte(void *base)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
-	while(i-- && !uart8250_mem_can_rx_byte(base_port))
+	while(i-- && !uart8250_mem_can_rx_byte(base))
 		udelay(1);
 	if (i)
-		return read8(base_port + UART8250_RBR);
+		return uart8250_read(base, UART8250_RBR);
 	else
 		return 0x0;
 }
 
-static void uart8250_mem_init(unsigned base_port, unsigned divisor)
+static void uart8250_mem_init(void *base, unsigned divisor)
 {
 	/* Disable interrupts */
-	write8(base_port + UART8250_IER, 0x0);
+	uart8250_write(base, UART8250_IER, 0x0);
 	/* Enable FIFOs */
-	write8(base_port + UART8250_FCR, UART8250_FCR_FIFO_EN);
+	uart8250_write(base, UART8250_FCR, UART8250_FCR_FIFO_EN);
 
 	/* Assert DTR and RTS so the other end is happy */
-	write8(base_port + UART8250_MCR, UART8250_MCR_DTR | UART8250_MCR_RTS);
+	uart8250_write(base, UART8250_MCR, UART8250_MCR_DTR | UART8250_MCR_RTS);
 
 	/* DLAB on */
-	write8(base_port + UART8250_LCR, UART8250_LCR_DLAB | CONFIG_TTYS0_LCS);
+	uart8250_write(base, UART8250_LCR, UART8250_LCR_DLAB | CONFIG_TTYS0_LCS);
 
-	write8(base_port + UART8250_DLL, divisor & 0xFF);
-	write8(base_port + UART8250_DLM, (divisor >> 8) & 0xFF);
+	uart8250_write(base, UART8250_DLL, divisor & 0xFF);
+	uart8250_write(base, UART8250_DLM, (divisor >> 8) & 0xFF);
 
 	/* Set to 3 for 8N1 */
-	write8(base_port + UART8250_LCR, CONFIG_TTYS0_LCS);
+	uart8250_write(base, UART8250_LCR, CONFIG_TTYS0_LCS);
 }
 
 void uart_init(int idx)
 {
-	u32 base = uart_platform_base(idx);
+	void *base = uart_platform_baseptr(idx);
 	if (!base)
 		return;
 
@@ -102,7 +113,7 @@ void uart_init(int idx)
 
 void uart_tx_byte(int idx, unsigned char data)
 {
-	u32 base = uart_platform_base(idx);
+	void *base = uart_platform_baseptr(idx);
 	if (!base)
 		return;
 	uart8250_mem_tx_byte(base, data);
@@ -110,7 +121,7 @@ void uart_tx_byte(int idx, unsigned char data)
 
 unsigned char uart_rx_byte(int idx)
 {
-	u32 base = uart_platform_base(idx);
+	void *base = uart_platform_baseptr(idx);
 	if (!base)
 		return 0xff;
 	return uart8250_mem_rx_byte(base);
@@ -118,7 +129,7 @@ unsigned char uart_rx_byte(int idx)
 
 void uart_tx_flush(int idx)
 {
-	u32 base = uart_platform_base(idx);
+	void *base = uart_platform_baseptr(idx);
 	if (!base)
 		return;
 	uart8250_mem_tx_flush(base);

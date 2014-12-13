@@ -437,7 +437,7 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 	../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
-	$MAKE install prefix=$DESTDIR/$TARGETDIR || touch .failed
+	$MAKE install prefix=$DESTDIR$TARGETDIR || touch .failed
 
 	normalize_dirs
 

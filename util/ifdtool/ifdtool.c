@@ -27,6 +27,10 @@
 #include <sys/stat.h>
 #include "ifdtool.h"
 
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
 #define NUM_REGIONS 5
 
 static const struct region_name region_names[NUM_REGIONS] = {
@@ -538,7 +542,7 @@ static void write_regions(char *image, int size)
 		if (region.size > 0) {
 			int region_fd;
 			region_fd = open(region_filename(i),
-					 O_WRONLY | O_CREAT | O_TRUNC,
+					 O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
 					 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 			if (region_fd < 0) {
 				perror("Error while trying to open file");
@@ -564,7 +568,7 @@ static void write_image(char *filename, char *image, int size)
 
 	// Now write out new image
 	new_fd = open(new_filename,
-			 O_WRONLY | O_CREAT | O_TRUNC,
+			 O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
 			 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (new_fd < 0) {
 		perror("Error while trying to open file");
@@ -643,7 +647,7 @@ void inject_region(char *filename, char *image, int size, int region_type,
 		exit(EXIT_FAILURE);
 	}
 
-	int region_fd = open(region_fname, O_RDONLY);
+	int region_fd = open(region_fname, O_RDONLY | O_BINARY);
 	if (region_fd == -1) {
 		perror("Could not open file");
 		exit(EXIT_FAILURE);
@@ -1060,7 +1064,7 @@ int main(int argc, char *argv[])
 	}
 
 	char *filename = argv[optind];
-	int bios_fd = open(filename, O_RDONLY);
+	int bios_fd = open(filename, O_RDONLY | O_BINARY);
 	if (bios_fd == -1) {
 		perror("Could not open file");
 		exit(EXIT_FAILURE);

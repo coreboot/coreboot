@@ -135,10 +135,17 @@ static void configure_vop(void)
 		rk808_configure_ldo(PMIC_BUS, 6, 1000); /* VCC10_LCD */
 		gpio_output(GPIO(7, B, 7), 1); /* LCD_EN */
 		break;
+	case 1:
+	case 2:
+		rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD */
+		rk808_configure_ldo(PMIC_BUS, 7, 2500);	/* VCC10_LCD_PWREN_H */
+		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
+		break;
 	default:
-		rk808_configure_switch(PMIC_BUS, 2, 1); /* VCC18_LCD */
-		rk808_configure_ldo(PMIC_BUS, 7, 2500); /* VCC10_LCD_PWREN_H */
-		rk808_configure_switch(PMIC_BUS, 1, 1); /* VCC33_LCD */
+		gpio_output(GPIO(2, B, 5), 1);	/* AVDD_1V8_DISP_EN */
+		rk808_configure_ldo(PMIC_BUS, 7, 2500);	/* VCC10_LCD_PWREN_H */
+		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
+		gpio_output(GPIO(7, B, 6), 1);	/* LCD_EN */
 		break;
 	}
 }
@@ -180,8 +187,21 @@ void lb_board(struct lb_header *header)
 
 void mainboard_power_on_backlight(void)
 {
-	gpio_output(GPIO(7, A, 0), 0);	/* BL_EN */
-	gpio_output(GPIO(7, A, 2), 1);	/* LCD_BL */
-	mdelay(10);
-	gpio_output(GPIO(7, A, 0), 1);	/* BL_EN */
+	switch (board_id()) {
+	case 0:
+	case 1:
+	case 2:
+		gpio_output(GPIO(7, A, 0), 0);	/* BL_EN */
+		gpio_output(GPIO(7, A, 2), 1);	/* LCD_BL */
+		mdelay(10);
+		gpio_output(GPIO(7, A, 0), 1);	/* BL_EN */
+		break;
+	default:
+		gpio_output(GPIO(2, B, 4), 1);	/* BL_PWR_EN */
+		mdelay(10);
+		gpio_output(GPIO(7, A, 2), 1);	/* LCD_BL */
+		mdelay(10);
+		gpio_output(GPIO(7, A, 0), 1);	/* BL_EN */
+		break;
+	}
 }

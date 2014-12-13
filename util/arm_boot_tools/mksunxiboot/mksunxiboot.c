@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	fd_in = fopen(argv[1], "r");
+	fd_in = fopen(argv[1], "rb");
 	if (!fd_in) {
 		fprintf(stderr, "Cannot open input %s", argv[1]);
 		return EXIT_FAILURE;

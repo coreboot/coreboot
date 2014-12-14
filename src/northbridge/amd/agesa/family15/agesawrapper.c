@@ -32,7 +32,6 @@
 #include "amdlib.h"
 #include "Filecode.h"
 #include "heapManager.h"
-#include <cpuFamilyTranslation.h>	/* CPU_SPECIFIC_SERVICES */
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
@@ -87,8 +86,6 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_EARLY_PARAMS *AmdEarlyParamsPtr;
-	UINT32 TscRateInMhz;
-	CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
 	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -109,11 +106,6 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	status = AmdInitEarly(AmdEarlyParamsPtr);
 	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 
-	GetCpuServicesOfCurrentCore((CONST CPU_SPECIFIC_SERVICES **) & FamilySpecificServices,
-				    &AmdParamStruct.StdHeader);
-	FamilySpecificServices->GetTscRate(FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);
-	printk(BIOS_DEBUG, "BSP Frequency: %uMHz\n", (unsigned int)TscRateInMhz);
-
 	AmdReleaseStruct(&AmdParamStruct);
 	return status;
 }
@@ -123,8 +115,6 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_POST_PARAMS *PostParams;
-	UINT32 TscRateInMhz;
-	CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
 	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -149,11 +139,6 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	/* Initialize heap space */
 	EmptyHeap();
-
-	GetCpuServicesOfCurrentCore((CONST CPU_SPECIFIC_SERVICES **) & FamilySpecificServices,
-				    &AmdParamStruct.StdHeader);
-	FamilySpecificServices->GetTscRate(FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);
-	printk(BIOS_DEBUG, "BSP Frequency: %uMHz\n", (unsigned int)TscRateInMhz);
 
 	return status;
 }

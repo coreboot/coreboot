@@ -279,3 +279,18 @@ void amd_initmmio(void)
 	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | 0x800ull;
 	LibAmdMsrWrite(0x20D, &MsrReg, &StdHeader);
 }
+
+#if 0
+#include <cpuFamilyTranslation.h>
+
+void cpu_show_tsc(void)
+{
+	UINT32 TscRateInMhz;
+	CPU_SPECIFIC_SERVICES *FamilySpecificServices;
+
+	GetCpuServicesOfCurrentCore((CONST CPU_SPECIFIC_SERVICES **) & FamilySpecificServices,
+				    &AmdParamStruct.StdHeader);
+	FamilySpecificServices->GetTscRate(FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);
+	printk(BIOS_DEBUG, "BSP Frequency: %uMHz\n", (unsigned int)TscRateInMhz);
+}
+#endif

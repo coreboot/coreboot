@@ -44,19 +44,7 @@ config LOCK_MANAGEMENT_ENGINE
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Minnow Max 2GB" if MINNOWMAX_2GB_SKU
-	default "Minnow Max 1GB"
-
-choice
-	prompt "Memory SKU to build"
-	default MINNOWMAX_2GB_SKU
-
-config MINNOWMAX_1GB_SKU
-	bool "1GB"
-
-config MINNOWMAX_2GB_SKU
-	bool "2GB"
-endchoice
+	default "Minnow Max"
 
 config MAX_CPUS
 	int

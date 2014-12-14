@@ -179,7 +179,7 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_FUNC(0, PULL_UP, 20K),		/* GPIO_S5[02] - SOC_GPIO_S5_2 */
 	GPIO_FUNC6,				/* GPIO_S5[03] - mPCIE_WAKEB */
 	GPIO_NC,				/* GPIO_S5[04] - No Connect */
-	GPIO_INPUT,				/* GPIO_S5[05] - BOM_OP1 */
+	GPIO_INPUT,				/* GPIO_S5[05] - BOM_OP1 - Memory: 0=1GB 1=2GB or 4GB*/
 	GPIO_INPUT,				/* GPIO_S5[06] - BOM_OP2 */
 	GPIO_INPUT,				/* GPIO_S5[07] - BOM_OP3 */
 	GPIO_OUT_HIGH,				/* GPIO_S5[08] - SOC_USB_HOST_EN0 */

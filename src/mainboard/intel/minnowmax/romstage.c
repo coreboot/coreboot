@@ -23,6 +23,7 @@
 #include <drivers/intel/fsp/fsp_util.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
+#include <baytrail/gpio.h>
 #include "chip.h"
 
 /**
@@ -57,17 +58,23 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 {
 	UPD_DATA_REGION *UpdData = FspRtBuffer->Common.UpdDataRgnPtr;
 	u8 use_xhci = UpdData->PcdEnableXhci;
+	u8 gpio5 = 0;
 
 	/*
-	 * Minnow Max Board	: 1GB SKU uses 2Gb density memory
-	 *			  2GB SKU uses 4Gb densiry memory
+	 * Minnow Max Board
+	 * Read SSUS gpio 5 to determine memory type
+	 *                    0 : 1GB SKU uses 2Gb density memory
+	 *                    1 : 2GB SKU uses 4Gb density memory
 	 *
-	 * devicetree.cb assume 1GB SKU board
-	*/
-	if (CONFIG_MINNOWMAX_2GB_SKU)
+	 * devicetree.cb assumes 1GB SKU board
+	 */
+	configure_ssus_gpio(5, PAD_FUNC0 | PAD_PULL_DISABLE, PAD_VAL_INPUT);
+	gpio5 = read_ssus_gpio(5);
+	if (gpio5)
 		UpdData->PcdMemoryParameters.DIMMDensity
 		+= (DIMM_DENSITY_4G_BIT - DIMM_DENSITY_2G_BIT);
-
+	printk(BIOS_NOTICE, "%s GB Minnowboard Max detected.\n",
+			gpio5 ? "2 / 4" : "1" );
 	/* Update XHCI UPD value if required */
 	get_option(&use_xhci, "use_xhci_over_ehci");
 	if ((use_xhci < 2) && (use_xhci != UpdData->PcdEnableXhci)) {

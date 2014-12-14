@@ -33,8 +33,6 @@
 #include "Filecode.h"
 #include <arch/io.h>
 
-#include <southbridge/amd/cimx/sb900/gpio_oem.h>
-
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
 /* ACPI table pointers returned by AmdInitLate */
@@ -46,79 +44,6 @@ VOID *AcpiSlit = NULL;
 VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
 VOID *AcpiAlib = NULL;
-
-UINT32 ReadAmdSbPmr(IN UINT8 IndexValue, OUT UINT8 * DataValue);
-UINT32 WriteAmdSbPmr(IN UINT8 IndexValue, IN UINT8 DataValue);
-
-VOID ClearSBSmiAndWake(IN UINT16 PmBase);
-
-VOID ClearAllSmiEnableInPmio(VOID);
-
-/* Read SB Power Management Area */
-UINT32 ReadAmdSbPmr(IN UINT8 IndexValue, OUT UINT8 * DataValue)
-{
-	WriteIo8(SB_PM_INDEX_PORT, IndexValue);
-	*DataValue = ReadIo8(SB_PM_DATA_PORT);
-	return 0;
-}
-
-/* Write ATI SB Power Management Area */
-UINT32 WriteAmdSbPmr(IN UINT8 IndexValue, IN UINT8 DataValue)
-{
-	WriteIo8(SB_PM_INDEX_PORT, IndexValue);
-	WriteIo8(SB_PM_DATA_PORT, DataValue);
-	return 0;
-}
-
-/* Clear any SMI status or wake status left over from boot. */
-VOID ClearSBSmiAndWake(IN UINT16 PmBase)
-{
-	UINT16 Pm1Sts;
-	UINT32 Pm1Cnt;
-	UINT32 Gpe0Sts;
-
-	/*  Read the ACPI registers */
-	Pm1Sts = ReadIo16(PmBase + R_SB_ACPI_PM1_STATUS);
-	Pm1Cnt = ReadIo32(PmBase + R_SB_ACPI_PM1_STATUS);
-	Gpe0Sts = ReadIo32(PmBase + R_SB_ACPI_EVENT_STATUS);
-
-	/* Clear any SMI or wake state from the boot */
-	Pm1Sts &= B_PWR_BTN_STATUS + B_WAKEUP_STATUS;
-	Pm1Cnt &= ~(B_SCI_EN);
-
-	/* Write back */
-	WriteIo16(PmBase + R_SB_ACPI_PM1_STATUS, Pm1Sts);
-	WriteIo32(PmBase + R_SB_ACPI_PM_CONTROL, Pm1Cnt);
-	WriteIo32(PmBase + R_SB_ACPI_EVENT_STATUS, Gpe0Sts);
-}
-
-/* Clear all SMI enable bit in PMIO register */
-VOID ClearAllSmiEnableInPmio(VOID)
-{
-	UINT32 AcpiMmioAddr;
-	UINT32 SmiMmioAddr;
-	UINT8 Data8 = 0;
-	UINT16 Data16 = 0;
-
-	/* Get SB900 MMIO Base (AcpiMmioAddr) */
-	ReadAmdSbPmr(SB_PMIOA_REG24 + 3, &Data8);
-	Data16 = Data8 << 8;
-	ReadAmdSbPmr(SB_PMIOA_REG24 + 2, &Data8);
-	Data16 |= Data8;
-	AcpiMmioAddr = (UINT32) Data16 << 16;
-	SmiMmioAddr = AcpiMmioAddr + SMI_BASE;
-
-	Mmio32(SmiMmioAddr, 0xA0) = 0x0;
-	Mmio32(SmiMmioAddr, 0xA4) = 0x0;
-	Mmio32(SmiMmioAddr, 0xA8) = 0x0;
-	Mmio32(SmiMmioAddr, 0xAC) = 0x0;
-	Mmio32(SmiMmioAddr, 0xB0) = 0x0;
-	Mmio32(SmiMmioAddr, 0xB4) = 0x0;
-	Mmio32(SmiMmioAddr, 0xB8) = 0x0;
-	Mmio32(SmiMmioAddr, 0xBC) = 0x0;
-	Mmio32(SmiMmioAddr, 0xC0) = 0x0;
-	Mmio32(SmiMmioAddr, 0xC4) = 0x0;
-}
 
 AGESA_STATUS agesawrapper_amdinitcpuio(VOID)
 {
@@ -209,10 +134,6 @@ AGESA_STATUS agesawrapper_amdinitmmio(VOID)
 	LibAmdMsrWrite(0x20C, &MsrReg, &StdHeader);
 	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | 0x800ull;
 	LibAmdMsrWrite(0x20D, &MsrReg, &StdHeader);
-
-	/* Clear all pending SMI. On S3 clear power button enable so it wll not generate an SMI */
-//-  ClearSBSmiAndWake (SB_ACPI_BASE_ADDRESS);
-//-  ClearAllSmiEnableInPmio ();
 
 	return AGESA_SUCCESS;
 }

@@ -176,7 +176,7 @@ AGESA_STATUS agesawrapper_amdinitmmio(VOID)
 	   Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
 	   Address MSR register.
 	 */
-	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (8 << 2) | 1;
+	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
 	LibAmdMsrWrite(0xC0010058, &MsrReg, &StdHeader);
 
 	/*
@@ -187,7 +187,9 @@ AGESA_STATUS agesawrapper_amdinitmmio(VOID)
 	LibAmdMsrWrite(0xC001001F, &MsrReg, &StdHeader);
 
 	/* Enable Non-Post Memory in CPU */
-	PciData = ((CONFIG_MMCONF_BASE_ADDRESS >> 8) | 0x3FF80);
+	PciData = CONFIG_MMCONF_BASE_ADDRESS + (CONFIG_MMCONF_BUS_NUMBER * 0x100000) - 1;
+	PciData = (PciData >> 8) & ~0xff;
+	PciData |= 0x80;
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x018, 0x01, 0xA4);
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
@@ -198,7 +200,6 @@ AGESA_STATUS agesawrapper_amdinitmmio(VOID)
 	/* Enable memory access */
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0x04);
 	LibAmdPciRead(AccessWidth8, PciAddress, &PciData, &StdHeader);
-
 	PciData |= BIT1;
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0x04);
 	LibAmdPciWrite(AccessWidth8, PciAddress, &PciData, &StdHeader);

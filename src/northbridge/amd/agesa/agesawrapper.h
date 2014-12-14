@@ -48,6 +48,7 @@ void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader, const ch
 
 void amd_initcpuio(void);
 void amd_initmmio(void);
+void amd_initenv(void);
 
 AGESA_STATUS agesawrapper_amdinitresume(void);
 AGESA_STATUS agesawrapper_amdS3Save(void);

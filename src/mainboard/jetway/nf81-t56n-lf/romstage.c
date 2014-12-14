@@ -109,6 +109,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		post_code(0x42);
 		agesawrapper_amdinitenv();
+		amd_initenv();
 
 	} else { 			/* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");

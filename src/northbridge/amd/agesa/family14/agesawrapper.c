@@ -125,8 +125,6 @@ AGESA_STATUS agesawrapper_amdinitenv(VOID)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
-	PCI_ADDR PciAddress;
-	UINT32 PciValue;
 
 	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -141,80 +139,7 @@ AGESA_STATUS agesawrapper_amdinitenv(VOID)
 	status = AmdInitEnv((AMD_ENV_PARAMS *) AmdParamStruct.NewStructPtr);
 	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 
-	/* Initialize Subordinate Bus Number and Secondary Bus Number
-	 * In platform BIOS this address is allocated by PCI enumeration code
-	 Modify D1F0x18
-	 */
-	PciAddress.Address.Bus = 0;
-	PciAddress.Address.Device = 1;
-	PciAddress.Address.Function = 0;
-	PciAddress.Address.Register = 0x18;
-	/* Write to D1F0x18 */
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-	PciValue |= 0x00010100;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-
-	/* Initialize GMM Base Address for Legacy Bridge Mode
-	 *      Modify B1D5F0x18
-	 */
-	PciAddress.Address.Bus = 1;
-	PciAddress.Address.Device = 5;
-	PciAddress.Address.Function = 0;
-	PciAddress.Address.Register = 0x18;
-
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-	PciValue |= 0x96000000;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-
-	/* Initialize FB Base Address for Legacy Bridge Mode
-	 * Modify B1D5F0x10
-	 */
-	PciAddress.Address.Register = 0x10;
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-	PciValue |= 0x80000000;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-
-	/* Initialize GMM Base Address for Pcie Mode
-	 *      Modify B0D1F0x18
-	 */
-	PciAddress.Address.Bus = 0;
-	PciAddress.Address.Device = 1;
-	PciAddress.Address.Function = 0;
-	PciAddress.Address.Register = 0x18;
-
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-	PciValue |= 0x96000000;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-
-	/* Initialize FB Base Address for Pcie Mode
-	 *      Modify B0D1F0x10
-	 */
-	PciAddress.Address.Register = 0x10;
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-	PciValue |= 0x80000000;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-
-	/* Initialize MMIO Base and Limit Address
-	 *      Modify B0D1F0x20
-	 */
-	PciAddress.Address.Bus = 0;
-	PciAddress.Address.Device = 1;
-	PciAddress.Address.Function = 0;
-	PciAddress.Address.Register = 0x20;
-
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-	PciValue |= 0x96009600;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-
-	/* Initialize MMIO Prefetchable Memory Limit and Base
-	 *      Modify B0D1F0x24
-	 */
-	PciAddress.Address.Register = 0x24;
-	LibAmdPciRead(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
-	PciValue |= 0x8FF18001;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
-
 	return status;
 }
 

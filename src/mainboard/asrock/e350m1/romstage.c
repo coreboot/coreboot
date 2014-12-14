@@ -86,6 +86,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x41);
 	agesawrapper_amdinitenv();
+	amd_initenv();
 
 	post_code(0x50);
 	copy_and_run();

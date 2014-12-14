@@ -150,10 +150,6 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 
 	status = AmdInitEnv(EnvParam);
 	AGESA_EVENTLOG(status, &EnvParam->StdHeader);
-	/* Initialize Subordinate Bus Number and Secondary Bus Number
-	 * In platform BIOS this address is allocated by PCI enumeration code
-	 Modify D1F0x18
-	 */
 
 	return status;
 }

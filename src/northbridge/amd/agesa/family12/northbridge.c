@@ -225,13 +225,7 @@ static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
     resource = amdfam12_find_iopair(dev, nodeid, link);
     if (resource) {
         u32 align;
-#if CONFIG_EXT_CONF_SUPPORT
-        if((resource->index & 0x1fff) == 0x1110) { // ext
-            align = 8;
-        }
-        else
-#endif
-            align = log2(HT_IO_HOST_ALIGN);
+        align = log2(HT_IO_HOST_ALIGN);
         resource->base  = 0;
         resource->size  = 0;
         resource->align = align;
@@ -250,13 +244,6 @@ static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
         resource->limit = 0xffffffffffULL;
         resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
         resource->flags |= IORESOURCE_BRIDGE;
-
-#if CONFIG_EXT_CONF_SUPPORT
-        if((resource->index & 0x1fff) == 0x1110) { // ext
-            normalize_resource(resource);
-        }
-#endif
-
     }
 
     /* Initialize the memory constraints on the current bus */
@@ -268,11 +255,6 @@ static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
         resource->gran = log2(HT_MEM_HOST_ALIGN);
         resource->limit = 0xffffffffffULL;
         resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
-#if CONFIG_EXT_CONF_SUPPORT
-        if((resource->index & 0x1fff) == 0x1110) { // ext
-            normalize_resource(resource);
-        }
-#endif
     }
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }

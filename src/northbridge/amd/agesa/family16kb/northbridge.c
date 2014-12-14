@@ -45,10 +45,6 @@
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
 
-#if (defined CONFIG_EXT_CONF_SUPPORT) && CONFIG_EXT_CONF_SUPPORT == 1
-#error CONFIG_EXT_CONF_SUPPORT == 1 not support anymore!
-#endif
-
 typedef struct dram_base_mask {
 	u32 base; //[47:27] at [28:8]
 	u32 mask; //[47:27] at [28:8] and enable at bit 0

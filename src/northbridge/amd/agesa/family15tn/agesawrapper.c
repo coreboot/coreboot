@@ -144,7 +144,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	status = AmdCreateStruct(&AmdParamStruct);
+	AmdCreateStruct(&AmdParamStruct);
 	EnvParam = (AMD_ENV_PARAMS *) AmdParamStruct.NewStructPtr;
 
 	status = AmdInitEnv(EnvParam);

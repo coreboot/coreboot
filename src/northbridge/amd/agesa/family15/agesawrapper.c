@@ -77,10 +77,8 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AmdParamStruct.StdHeader.CalloutPtr = NULL;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	status = AmdCreateStruct(&AmdParamStruct);
-	if (status != AGESA_SUCCESS) {
-		return status;
-	}
+
+	AmdCreateStruct(&AmdParamStruct);
 	AmdResetParams.HtConfig.Depth = 0;
 
 	//MARG34PI disabled AGESA_ENTRY_INIT_RESET by default
@@ -110,10 +108,8 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	status = AmdCreateStruct(&AmdParamStruct);
-	if (status != AGESA_SUCCESS) {
-		return status;
-	}
+
+	AmdCreateStruct(&AmdParamStruct);
 
 	AmdEarlyParamsPtr = (AMD_EARLY_PARAMS *) AmdParamStruct.NewStructPtr;
 
@@ -149,10 +145,8 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
-	status = AmdCreateStruct(&AmdParamStruct);
-	if (status != AGESA_SUCCESS) {
-		return status;
-	}
+	AmdCreateStruct(&AmdParamStruct);
+
 	PostParams = (AMD_POST_PARAMS *) AmdParamStruct.NewStructPtr;
 
 	/* OEM Should Customize the defaults through this hook */
@@ -188,11 +182,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-
-	status = AmdCreateStruct(&AmdParamStruct);
-	if (status != AGESA_SUCCESS) {
-		return status;
-	}
+	AmdCreateStruct(&AmdParamStruct);
 	EnvParams = (AMD_ENV_PARAMS *) AmdParamStruct.NewStructPtr;
 	status = AmdInitEnv(EnvParams);
 	AGESA_EVENTLOG(status, &EnvParams->StdHeader);
@@ -242,10 +232,8 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
-	status = AmdCreateStruct(&AmdParamStruct);
-	if (status != AGESA_SUCCESS) {
-		return status;
-	}
+	AmdCreateStruct(&AmdParamStruct);
+
 	status = AmdInitMid((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr);
 	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
@@ -267,7 +255,6 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-
 	AmdCreateStruct(&AmdParamStruct);
 	AmdLateParamsPtr = (AMD_LATE_PARAMS *) AmdParamStruct.NewStructPtr;
 

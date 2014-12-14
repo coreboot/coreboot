@@ -15,10 +15,6 @@ config EXT_RT_TBL_SUPPORT
 	bool
 	default n
 
-config EXT_CONF_SUPPORT
-	bool
-	default n
-
 config CBB
 	hex
 	default 0x0

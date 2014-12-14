@@ -38,13 +38,6 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	dev = __f1_dev[0];
 #endif
 
-#if CONFIG_EXT_CONF_SUPPORT
-	// I will use ext space only for simple
-	pci_write_config32(dev, 0x110, nodeid | (1<<28)); // [47:27] at [28:8]
-	d.mask = pci_read_config32(dev, 0x114);  // enable is bit 0
-	pci_write_config32(dev, 0x110, nodeid | (0<<28));
-	d.base = pci_read_config32(dev, 0x114) & 0x1fffff00; //[47:27] at [28:8];
-#else
 	u32 temp;
 	temp = pci_read_config32(dev, 0x44 + (nodeid << 3)); //[39:24] at [31:16]
 	d.mask = ((temp & 0xfff80000)>>(8+3)); // mask out  DramMask [26:24] too
@@ -57,7 +50,6 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	d.base = ((temp & 0xfff80000)>>(8+3)); // mask out DramBase [26:24) too
 	temp = pci_read_config32(dev, 0x140 + (nodeid <<3)) & 0xff; //[47:40] at [7:0]
 	d.base |= temp<<21;
-#endif
 	return d;
 }
 
@@ -66,15 +58,6 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 {
 	u32 i;
 	device_t dev;
-#if CONFIG_EXT_CONF_SUPPORT
-	// I will use ext space only for simple
-	u32 d_base_i, d_base_d, d_mask_i, d_mask_d;
-	d_base_i = nodeid | (0<<28);
-	d_base_d = d.base | nodeid; //[47:27] at [28:8];
-	d_mask_i = nodeid | (1<<28); // [47:27] at [28:8]
-	d_mask_d = d.mask;  // enable is bit 0
-
-#else
 	u32 d_base_lo, d_base_hi, d_mask_lo, d_mask_hi;
 	u32 d_base_lo_reg, d_base_hi_reg, d_mask_lo_reg, d_mask_hi_reg;
 	d_mask_lo =  (((d.mask<<(8+3))|(0x07<<16)) & 0xffff0000)|nodeid; // need to fill DramMask[26:24] with ones
@@ -86,7 +69,6 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 	d_mask_hi_reg = 0x144+(nodeid<<3);
 	d_base_lo_reg = 0x40+(nodeid<<3);
 	d_base_hi_reg = 0x140+(nodeid<<3);
-#endif
 
 	for (i=0;i<nodes;i++) {
 #if defined(__PRE_RAM__)
@@ -94,19 +76,10 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 #else
 		dev = __f1_dev[i];
 #endif
-
-#if CONFIG_EXT_CONF_SUPPORT
-		// I will use ext space only for simple
-		pci_write_config32(dev, 0x110, d_base_i);
-		pci_write_config32(dev, 0x114, d_base_d); //[47:27] at [28:8];
-		pci_write_config32(dev, 0x110, d_mask_i); // [47:27] at [28:8]
-		pci_write_config32(dev, 0x114, d_mask_d);  // enable is bit 0
-#else
 		pci_write_config32(dev, d_mask_lo_reg, d_mask_lo); // need to fill DramMask[26:24] with ones
 		pci_write_config32(dev, d_mask_hi_reg, d_mask_hi);
 		pci_write_config32(dev, d_base_lo_reg, d_base_lo);
 		pci_write_config32(dev, d_base_hi_reg, d_base_hi);
-#endif
 	}
 
 #if defined(__PRE_RAM__)
@@ -321,67 +294,6 @@ static u32 hoist_memory(u32 hole_startk, u32 i, u32 one_DCT, u32 nodes)
 #endif // CONFIG_AMDMCT
 
 
-#if CONFIG_EXT_CONF_SUPPORT
-static void set_addr_map_reg_4_6_in_one_node(u32 nodeid, u32 cfg_map_dest,
-						u32 busn_min, u32 busn_max,
-						u32 type)
-{
-	device_t dev;
-	u32 i;
-	u32 tempreg;
-	u32 index_min, index_max;
-	u32 dest_min, dest_max;
-	index_min = busn_min>>2; dest_min = busn_min - (index_min<<2);
-	index_max = busn_max>>2; dest_max = busn_max - (index_max<<2);
-
-	// three case: index_min==index_max, index_min+1=index_max; index_min+1<index_max
-#if defined(__PRE_RAM__)
-	dev = NODE_PCI(nodeid, 1);
-#else
-	dev = __f1_dev[nodeid];
-#endif
-	if (index_min== index_max) {
-		pci_write_config32(dev, 0x110, index_min | (type<<28));
-		tempreg = pci_read_config32(dev, 0x114);
-		for (i=dest_min; i<=dest_max; i++) {
-			tempreg &= ~(0xff<<(i*8));
-			tempreg |= (cfg_map_dest<<(i*8));
-		}
-		pci_write_config32(dev, 0x110, index_min | (type<<28)); // do i need to write it again
-		pci_write_config32(dev, 0x114, tempreg);
-	} else if (index_min<index_max) {
-		pci_write_config32(dev, 0x110, index_min | (type<<28));
-		tempreg = pci_read_config32(dev, 0x114);
-		for (i=dest_min; i<=3; i++) {
-			tempreg &= ~(0xff<<(i*8));
-			tempreg |= (cfg_map_dest<<(i*8));
-		}
-		pci_write_config32(dev, 0x110, index_min | (type<<28)); // do i need to write it again
-		pci_write_config32(dev, 0x114, tempreg);
-
-		pci_write_config32(dev, 0x110, index_max | (type<<28));
-		tempreg = pci_read_config32(dev, 0x114);
-		for (i=0; i<=dest_max; i++) {
-			tempreg &= ~(0xff<<(i*8));
-			tempreg |= (cfg_map_dest<<(i*8));
-		}
-		pci_write_config32(dev, 0x110, index_max | (type<<28)); // do i need to write it again
-		pci_write_config32(dev, 0x114, tempreg);
-		if ((index_max-index_min)>1) {
-			tempreg = 0;
-			for (i=0; i<=3; i++) {
-				tempreg &= ~(0xff<<(i*8));
-				tempreg |= (cfg_map_dest<<(i*8));
-			}
-			for (i=index_min+1; i<index_max;i++) {
-				pci_write_config32(dev, 0x110, i | (type<<28));
-				pci_write_config32(dev, 0x114, tempreg);
-			}
-		}
-	}
-}
-#endif
-
 static void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 				u32 busn_min, u32 busn_max, u32 segbit,
 				u32 nodes)
@@ -393,39 +305,15 @@ static void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	busn_min>>=segbit;
 	busn_max>>=segbit;
 
-#if CONFIG_EXT_CONF_SUPPORT
-	if (ht_c_index < 4) {
-#endif
-		tempreg = 3 | ((nodeid&0xf)<<4) | ((nodeid & 0x30)<<(12-4))|(linkn<<8)|((busn_min & 0xff)<<16)|((busn_max&0xff)<<24);
-		for (i=0; i<nodes; i++) {
-		#if defined(__PRE_RAM__)
-			dev = NODE_PCI(i, 1);
-		#else
-			dev = __f1_dev[i];
-		#endif
-			pci_write_config32(dev, 0xe0 + ht_c_index * 4, tempreg);
-		}
-#if CONFIG_EXT_CONF_SUPPORT
-
-		return;
+	tempreg = 3 | ((nodeid&0xf)<<4) | ((nodeid & 0x30)<<(12-4))|(linkn<<8)|((busn_min & 0xff)<<16)|((busn_max&0xff)<<24);
+	for (i=0; i<nodes; i++) {
+	#if defined(__PRE_RAM__)
+		dev = NODE_PCI(i, 1);
+	#else
+		dev = __f1_dev[i];
+	#endif
+		pci_write_config32(dev, 0xe0 + ht_c_index * 4, tempreg);
 	}
-
-	// if ht_c_index > 3, We should use extend space x114_x6
-	u32 cfg_map_dest;
-	u32 j;
-
-	// for nodeid at first
-	cfg_map_dest = (1<<7) | (1<<6) | (linkn<<0);
-
-	set_addr_map_reg_4_6_in_one_node(nodeid, cfg_map_dest, busn_min, busn_max, 6);
-
-	// all other nodes
-	cfg_map_dest = (1<<7) | (0<<6) | (nodeid<<0);
-	for (j = 0; j< nodes; j++) {
-		if (j== nodeid) continue;
-		set_addr_map_reg_4_6_in_one_node(j,cfg_map_dest, busn_min, busn_max, 6);
-	}
-#endif
 }
 
 static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
@@ -434,33 +322,14 @@ static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	u32 i;
 	device_t dev;
 
-#if CONFIG_EXT_CONF_SUPPORT
-	if (ht_c_index<4) {
-#endif
-		for (i=0; i<nodes; i++) {
-		#if defined(__PRE_RAM__)
-			dev = NODE_PCI(i, 1);
-		#else
-			dev = __f1_dev[i];
-		#endif
-			pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
-		}
-#if CONFIG_EXT_CONF_SUPPORT
-		return;
+	for (i=0; i<nodes; i++) {
+	#if defined(__PRE_RAM__)
+		dev = NODE_PCI(i, 1);
+	#else
+		dev = __f1_dev[i];
+	#endif
+		pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
 	}
-
-	// if hc_c_index >3, We should use busn_min and busn_max to clear extend space
-	u32 cfg_map_dest;
-	u32 j;
-
-
-	// all nodes
-	cfg_map_dest = 0;
-	for (j = 0; j< nodes; j++) {
-		set_addr_map_reg_4_6_in_one_node(j,cfg_map_dest, busn_min, busn_max, 6);
-	}
-#endif
-
 }
 
 #if CONFIG_PCI_BUS_SEGN_BITS
@@ -493,51 +362,25 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	u32 tempreg;
 	device_t dev;
 
-#if CONFIG_EXT_CONF_SUPPORT
-	if (ht_c_index<4) {
-#endif
-		/* io range allocation */
-		tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
-		for (i=0; i<nodes; i++) {
-		#if defined(__PRE_RAM__)
-			dev = NODE_PCI(i, 1);
-		#else
-			dev = __f1_dev[i];
-		#endif
-			pci_write_config32(dev, 0xC4 + ht_c_index * 8, tempreg);
-		}
-		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
-		for (i=0; i<nodes; i++) {
-		#if defined(__PRE_RAM__)
-			dev = NODE_PCI(i, 1);
-		#else
-			dev = __f1_dev[i];
-		#endif
-			pci_write_config32(dev, 0xC0 + ht_c_index * 8, tempreg);
-		}
-#if CONFIG_EXT_CONF_SUPPORT
-		return;
+	/* io range allocation */
+	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
+	for (i=0; i<nodes; i++) {
+	#if defined(__PRE_RAM__)
+		dev = NODE_PCI(i, 1);
+	#else
+		dev = __f1_dev[i];
+	#endif
+		pci_write_config32(dev, 0xC4 + ht_c_index * 8, tempreg);
 	}
-
-	u32 cfg_map_dest;
-	u32 j;
-
-	// if ht_c_index > 3, We should use extend space
-
-	if (io_min>io_max) return;
-
-	// for nodeid at first
-	cfg_map_dest = (1<<7) | (1<<6) | (linkn<<0);
-
-	set_addr_map_reg_4_6_in_one_node(nodeid, cfg_map_dest, io_min, io_max, 4);
-
-	// all other nodes
-	cfg_map_dest = (1<<7) | (0<<6) | (nodeid<<0);
-	for (j = 0; j< nodes; j++) {
-		if (j== nodeid) continue;
-		set_addr_map_reg_4_6_in_one_node(j,cfg_map_dest, io_min, io_max, 4);
+	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
+	for (i=0; i<nodes; i++) {
+	#if defined(__PRE_RAM__)
+		dev = NODE_PCI(i, 1);
+	#else
+		dev = __f1_dev[i];
+	#endif
+		pci_write_config32(dev, 0xC0 + ht_c_index * 8, tempreg);
 	}
-#endif
 }
 
 
@@ -546,33 +389,16 @@ static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 {
 	u32 i;
 	device_t dev;
-#if CONFIG_EXT_CONF_SUPPORT
-	if (ht_c_index<4) {
-#endif
-		 /* io range allocation */
-		for (i=0; i<nodes; i++) {
-		#if defined(__PRE_RAM__)
-			dev = NODE_PCI(i, 1);
-		#else
-			dev = __f1_dev[i];
-		#endif
-			pci_write_config32(dev, 0xC4 + ht_c_index * 8, 0);
-			pci_write_config32(dev, 0xC0 + ht_c_index * 8, 0);
-		}
-#if CONFIG_EXT_CONF_SUPPORT
-		return;
+	 /* io range allocation */
+	for (i=0; i<nodes; i++) {
+	#if defined(__PRE_RAM__)
+		dev = NODE_PCI(i, 1);
+	#else
+		dev = __f1_dev[i];
+	#endif
+		pci_write_config32(dev, 0xC4 + ht_c_index * 8, 0);
+		pci_write_config32(dev, 0xC0 + ht_c_index * 8, 0);
 	}
-	// : if hc_c_index > 3, We should use io_min, io_max to clear extend space
-	u32 cfg_map_dest;
-	u32 j;
-
-
-	// all nodes
-	cfg_map_dest = 0;
-	for (j = 0; j< nodes; j++) {
-		set_addr_map_reg_4_6_in_one_node(j,cfg_map_dest, io_min, io_max, 4);
-	}
-#endif
 }
 #endif
 
@@ -597,13 +423,6 @@ static void re_set_all_config_map_reg(u32 nodes, u32 segbit,
 			pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
 		}
 	}
-#if CONFIG_EXT_CONF_SUPPORT
-	u32 j;
-	// clear the extend space
-	for (j = 0; j< nodes; j++) {
-		set_addr_map_reg_4_6_in_one_node(j,0, 0, 0xff, 6);
-	}
-#endif
 
 	for (ht_c_index = 1; ht_c_index<sysinfo->ht_c_num; ht_c_index++) {
 		u32 nodeid, linkn;
@@ -717,16 +536,9 @@ static void store_conf_io_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 				u32 io_min, u32 io_max)
 {
 	u32 val;
-#if CONFIG_EXT_CONF_SUPPORT
-	if (reg!=0x110) {
-#endif
-		/* io range allocation */
-		index = (reg-0xc0)>>3;
-#if CONFIG_EXT_CONF_SUPPORT
-	} else {
-		index+=4;
-	}
-#endif
+
+	/* io range allocation */
+	index = (reg-0xc0)>>3;
 
 	val = (nodeid & 0x3f); // 6 bits used
 	sysconf.conf_io_addr[index] = val | ((io_max<<8) & 0xfffff000); //limit : with nodeid
@@ -742,16 +554,9 @@ static void store_conf_mmio_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 					u32 mmio_min, u32 mmio_max)
 {
 	u32 val;
-#if CONFIG_EXT_CONF_SUPPORT
-	if (reg!=0x110) {
-#endif
-		/* io range allocation */
-		index = (reg-0x80)>>3;
-#if CONFIG_EXT_CONF_SUPPORT
-	} else {
-		index+=8;
-	}
-#endif
+
+	/* io range allocation */
+	index = (reg-0x80)>>3;
 
 	val = (nodeid & 0x3f) ; // 6 bits used
 	sysconf.conf_mmio_addr[index] = val | (mmio_max & 0xffffff00); //limit : with nodeid and linkn
@@ -768,107 +573,40 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 {
 	u32 i;
 	u32 tempreg;
-#if CONFIG_EXT_CONF_SUPPORT
-	if (reg!=0x110) {
-#endif
-		/* io range allocation */
-		tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
-		for (i=0; i<sysconf.nodes; i++)
-			pci_write_config32(__f1_dev[i], reg+4, tempreg);
 
-		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+	/* io range allocation */
+	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
+	for (i=0; i<sysconf.nodes; i++)
+		pci_write_config32(__f1_dev[i], reg+4, tempreg);
+
+	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
 #if 0
-		// FIXME: can we use VGA reg instead?
-		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-			printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link %s\n",
-				__func__, dev_path(dev), link);
-			tempreg |= PCI_IO_BASE_VGA_EN;
-		}
-		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
-			tempreg |= PCI_IO_BASE_NO_ISA;
-		}
-#endif
-		for (i=0; i<sysconf.nodes; i++)
-			pci_write_config32(__f1_dev[i], reg, tempreg);
-#if CONFIG_EXT_CONF_SUPPORT
-		return;
+	// FIXME: can we use VGA reg instead?
+	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+		printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link %s\n",
+			__func__, dev_path(dev), link);
+		tempreg |= PCI_IO_BASE_VGA_EN;
 	}
-
-	u32 cfg_map_dest;
-	u32 j;
-	// if ht_c_index > 3, We should use extend space
-	if (io_min>io_max) return;
-	// for nodeid at first
-	cfg_map_dest = (1<<7) | (1<<6) | (linkn<<0);
-
-	set_addr_map_reg_4_6_in_one_node(nodeid, cfg_map_dest, io_min, io_max, 4);
-
-	// all other nodes
-	cfg_map_dest = (1<<7) | (0<<6) | (nodeid<<0);
-	for (j = 0; j< sysconf.nodes; j++) {
-		if (j== nodeid) continue;
-		set_addr_map_reg_4_6_in_one_node(j,cfg_map_dest, io_min, io_max, 4);
+	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
+		tempreg |= PCI_IO_BASE_NO_ISA;
 	}
 #endif
+	for (i=0; i<sysconf.nodes; i++)
+		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
 
 static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmio_min, u32 mmio_max, u32 nodes)
 {
 	u32 i;
 	u32 tempreg;
-#if CONFIG_EXT_CONF_SUPPORT
-	if (reg!=0x110) {
-#endif
-		/* io range allocation */
-		tempreg = (nodeid&0xf) | (linkn<<4) |	 (mmio_max&0xffffff00); //limit
-		for (i=0; i<nodes; i++)
-			pci_write_config32(__f1_dev[i], reg+4, tempreg);
-		tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
-		for (i=0; i<sysconf.nodes; i++)
-			pci_write_config32(__f1_dev[i], reg, tempreg);
-#if CONFIG_EXT_CONF_SUPPORT
-		return;
-	}
 
-	device_t dev;
-	u32 j;
-	// if ht_c_index > 3, We should use extend space
-	// for nodeid at first
-	u32 enable;
-
-	if (mmio_min>mmio_max) {
-		return;
-	}
-
-	enable = 1;
-
-	dev = __f1_dev[nodeid];
-	tempreg = ((mmio_min>>3) & 0x1fffff00)| (1<<6) | (linkn<<0);
-	pci_write_config32(dev, 0x110, index | (2<<28));
-	pci_write_config32(dev, 0x114, tempreg);
-
-	tempreg = ((mmio_max>>3) & 0x1fffff00) | enable;
-	pci_write_config32(dev, 0x110, index | (3<<28));
-	pci_write_config32(dev, 0x114, tempreg);
-
-
-	// all other nodes
-	tempreg = ((mmio_min>>3) & 0x1fffff00) | (0<<6) | (nodeid<<0);
-	for (j = 0; j< sysconf.nodes; j++) {
-		if (j== nodeid) continue;
-		dev = __f1_dev[j];
-		pci_write_config32(dev, 0x110, index | (2<<28));
-		pci_write_config32(dev, 0x114, tempreg);
-	}
-
-	tempreg = ((mmio_max>>3) & 0x1fffff00) | enable;
-	for (j = 0; j< sysconf.nodes; j++) {
-		if (j==nodeid) continue;
-		dev = __f1_dev[j];
-		pci_write_config32(dev, 0x110, index | (3<<28));
-		pci_write_config32(dev, 0x114, tempreg);
-	 }
-#endif
+	/* io range allocation */
+	tempreg = (nodeid&0xf) | (linkn<<4) |	 (mmio_max&0xffffff00); //limit
+	for (i=0; i<nodes; i++)
+		pci_write_config32(__f1_dev[i], reg+4, tempreg);
+	tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
+	for (i=0; i<sysconf.nodes; i++)
+		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
 
 #endif

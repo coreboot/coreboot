@@ -127,31 +127,6 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 		}
 	}
 
-#if CONFIG_EXT_CONF_SUPPORT
-	// let's check that in extend space
-	// use the nodeid extend space to find out the bus for the linkn
-	u32 tempreg;
-	int i;
-	int j;
-	u32 cfg_map_dest;
-	pci_devfn_t dev;
-
-	cfg_map_dest = (1<<7)|(1<<6)|link;
-
-	// three case: index_min==index_max, index_min+1=index_max; index_min+1<index_max
-	dev = NODE_PCI(node, 1);
-	for(j=0; j<64; j++) {
-		pci_io_write_config32(dev, 0x110, j | (6<<28));
-		tempreg = pci_io_read_config32(dev, 0x114);
-		for(i=0; i<=3; i++) {
-			tempreg >>= (i*8);
-			if((tempreg & ((1<<7)|(1<<6)|0x3f)) == cfg_map_dest) {
-				return (i+(j<<2)); //busn_min
-			}
-		}
-	}
-#endif
-
 	return 0;
 }
 

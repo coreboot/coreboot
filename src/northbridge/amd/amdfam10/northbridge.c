@@ -191,9 +191,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 		 */
 		ht_c_index = get_ht_c_index(nodeid, link_num, &sysconf);
 
-#if !CONFIG_EXT_CONF_SUPPORT
 		if(ht_c_index>=4) return max;
-#endif
 
 		/* Set up the primary, secondary and subordinate bus numbers.
 		 * We have no idea how many busses are behind this bridge yet,
@@ -433,13 +431,7 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 	resource = amdfam10_find_iopair(dev, nodeid, link);
 	if (resource) {
 		u32 align;
-#if CONFIG_EXT_CONF_SUPPORT
-		if((resource->index & 0x1fff) == 0x1110) { // ext
-			align = 8;
-		}
-		else
-#endif
-			align = log2(HT_IO_HOST_ALIGN);
+		align = log2(HT_IO_HOST_ALIGN);
 		resource->base	= 0;
 		resource->size	= 0;
 		resource->align = align;
@@ -458,13 +450,6 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
 		resource->flags |= IORESOURCE_BRIDGE;
-
-#if CONFIG_EXT_CONF_SUPPORT
-		if((resource->index & 0x1fff) == 0x1110) { // ext
-			normalize_resource(resource);
-		}
-#endif
-
 	}
 
 	/* Initialize the memory constraints on the current bus */
@@ -476,11 +461,6 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->gran = log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
-#if CONFIG_EXT_CONF_SUPPORT
-		if((resource->index & 0x1fff) == 0x1110) { // ext
-			normalize_resource(resource);
-		}
-#endif
 	}
 }
 
@@ -1100,18 +1080,6 @@ static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
-#if CONFIG_EXT_CONF_SUPPORT
-	// all nodes
-	for(i = 0; i< sysconf.nodes; i++) {
-		int index;
-		for(index = 0; index < 64; index++) {
-			pci_write_config32(__f1_dev[i], 0x110, index | (6<<28));
-			pci_write_config32(__f1_dev[i], 0x114, 0);
-		}
-
-	}
-#endif
-
 
 	for(link = dev->link_list; link; link = link->next) {
 		max = pci_scan_bus(link, PCI_DEVFN(CONFIG_CDB, 0), 0xff, max);

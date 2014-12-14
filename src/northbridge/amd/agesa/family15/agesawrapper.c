@@ -136,7 +136,7 @@ AGESA_STATUS agesawrapper_amdinitcpuio(void)
 		PciData |= sblink << 4;
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xB8);
-		PciData = (PCIE_BASE_ADDRESS >> 8) | 0x03;
+		PciData = (CONFIG_MMCONF_BASE_ADDRESS >> 8) | 0x03;
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 		/* Set PCIO: 0x0 - 0xFFF000 to Node0 sbLink  and enabled VGA IO */

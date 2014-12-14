@@ -24,8 +24,6 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-#define PCIE_BASE_ADDRESS   CONFIG_MMCONF_BASE_ADDRESS
-
 enum {
 	PICK_DMI,       /* DMI Interface */
 	PICK_PSTATE,    /* Acpi Pstate SSDT Table */

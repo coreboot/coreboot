@@ -151,7 +151,7 @@ AGESA_STATUS agesawrapper_amdinitcpuio(VOID)
 	PciData = 0x00FFFF00 | 0x80;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xB8);
-	PciData = (PCIE_BASE_ADDRESS >> 8) | 03;
+	PciData = (CONFIG_MMCONF_BASE_ADDRESS >> 8) | 03;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	/* Start to set PCIIO 0000-FFFF to Node0 Link0 with ISA&VGA set. */
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xC4);

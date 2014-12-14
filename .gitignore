@@ -98,3 +98,5 @@ documentation/cpukconfig.tex
 documentation/mainboardkconfig.tex
 documentation/skconfig.tex
 documentation/socketfkconfig.tex
+
+doxygen/*

@@ -18,8 +18,6 @@
 #
 
 romstage-y += dimmSpd.c
-romstage-y += agesawrapper.c
 
 ramstage-y += iommu.c
 ramstage-y += northbridge.c
-ramstage-y += agesawrapper.c

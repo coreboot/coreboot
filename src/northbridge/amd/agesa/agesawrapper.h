@@ -71,22 +71,4 @@ struct OEM_HOOK
 
 extern const struct OEM_HOOK OemCustomize;
 
-static inline void OemCustomizeInitEarly(AMD_EARLY_PARAMS *EarlyParams)
-{
-	if (OemCustomize.InitEarly)
-		OemCustomize.InitEarly(EarlyParams);
-}
-
-static inline void OemCustomizeInitPost(AMD_POST_PARAMS *PostParams)
-{
-	if (OemCustomize.InitPost)
-		OemCustomize.InitPost(PostParams);
-}
-
-static inline void OemCustomizeInitMid(AMD_MID_PARAMS *MidParams)
-{
-	if (OemCustomize.InitMid)
-		OemCustomize.InitMid(MidParams);
-}
-
 #endif /* _AGESAWRAPPER_H_ */

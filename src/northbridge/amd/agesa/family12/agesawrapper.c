@@ -45,7 +45,7 @@ VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
 VOID *AcpiAlib = NULL;
 
-AGESA_STATUS agesawrapper_amdinitreset(VOID)
+AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -73,7 +73,7 @@ AGESA_STATUS agesawrapper_amdinitreset(VOID)
 	return status;
 }
 
-AGESA_STATUS agesawrapper_amdinitearly(VOID)
+AGESA_STATUS agesawrapper_amdinitearly(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -100,7 +100,7 @@ AGESA_STATUS agesawrapper_amdinitearly(VOID)
 	return status;
 }
 
-AGESA_STATUS agesawrapper_amdinitpost(VOID)
+AGESA_STATUS agesawrapper_amdinitpost(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -126,7 +126,7 @@ AGESA_STATUS agesawrapper_amdinitpost(VOID)
 	return status;
 }
 
-AGESA_STATUS agesawrapper_amdinitenv(VOID)
+AGESA_STATUS agesawrapper_amdinitenv(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -173,7 +173,7 @@ VOID *agesawrapper_getlateinitptr(int pick)
 	}
 }
 
-AGESA_STATUS agesawrapper_amdinitmid(VOID)
+AGESA_STATUS agesawrapper_amdinitmid(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -197,7 +197,7 @@ AGESA_STATUS agesawrapper_amdinitmid(VOID)
 	return status;
 }
 
-AGESA_STATUS agesawrapper_amdinitlate(VOID)
+AGESA_STATUS agesawrapper_amdinitlate(void)
 {
 	AGESA_STATUS status;
 	AMD_LATE_PARAMS AmdLateParams;

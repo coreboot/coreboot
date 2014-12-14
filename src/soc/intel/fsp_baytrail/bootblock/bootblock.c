@@ -27,6 +27,7 @@
 #include <baytrail/spi.h>
 #include <baytrail/iomap.h>
 #include <baytrail/lpc.h>
+#include <baytrail/gpio.h>
 #include <reset.h>
 
 /*
@@ -100,6 +101,19 @@ static void setup_mmconfig(void)
 	pci_io_write_config32(IOSF_PCI_DEV, MCR_REG, reg);
 }
 
+static const uint8_t lpc_pads[12] = {
+	70, 68, 67, 66, 69, 71, 65, 72, 86, 90, 88, 92,
+};
+
+static void set_up_lpc_pads(void)
+{
+	uint32_t reg = IO_BASE_ADDRESS | SET_BAR_ENABLE;
+	pci_write_config32(LPC_BDF, IOBASE, reg);
+
+	for (reg = 0; reg < 12; reg++)
+		score_select_func(lpc_pads[reg], 1);
+}
+
 static void bootblock_cpu_init(void)
 {
 
@@ -109,4 +123,5 @@ static void bootblock_cpu_init(void)
 	setup_mmconfig();
 	enable_rom_caching();
 	enable_spi_prefetch();
+	set_up_lpc_pads();
 }

@@ -36,6 +36,10 @@
 
 #define MMCONF_ENABLE 1
 
+/* Define AMD Ontario APPU SSID/SVID */
+#define AMD_APU_SVID		0x1022
+#define AMD_APU_SSID		0x1234
+
 /* ACPI table pointers returned by AmdInitLate */
 VOID *DmiTable = NULL;
 VOID *AcpiPstate = NULL;

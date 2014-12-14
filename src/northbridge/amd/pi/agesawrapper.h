@@ -24,9 +24,6 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-/* Define AMD APU and SoC SSID/SVID */
-#define AMD_APU_SVID    0x1022
-#define AMD_APU_SSID    0x1234
 #define PCIE_BASE_ADDRESS   CONFIG_MMCONF_BASE_ADDRESS
 
 enum {

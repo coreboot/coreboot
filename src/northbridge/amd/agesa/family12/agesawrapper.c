@@ -186,14 +186,6 @@ AGESA_STATUS agesawrapper_amdinitmmio(VOID)
 	MsrReg = MsrReg | 0x0000400000000000ull;
 	LibAmdMsrWrite(0xC001001F, &MsrReg, &StdHeader);
 
-	/* Set Ontario Link Data */
-//-  PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0, 0, 0xE0);
-//-  PciData = 0x01308002;
-//-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-//-  PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0, 0, 0xE4);
-//-  PciData = (AMD_APU_SSID<<0x10)|AMD_APU_SVID;
-//-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-
 	/* Enable Non-Post Memory in CPU */
 	PciData = ((CONFIG_MMCONF_BASE_ADDRESS >> 8) | 0x3FF80);
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x018, 0x01, 0xA4);

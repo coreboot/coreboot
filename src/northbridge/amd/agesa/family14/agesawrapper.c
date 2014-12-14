@@ -34,8 +34,6 @@
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
-#define MMCONF_ENABLE 1
-
 /* Define AMD Ontario APPU SSID/SVID */
 #define AMD_APU_SVID		0x1022
 #define AMD_APU_SSID		0x1234
@@ -102,24 +100,11 @@ AGESA_STATUS agesawrapper_amdinitmmio(VOID)
 	PCI_ADDR PciAddress;
 	AMD_CONFIG_PARAMS StdHeader;
 
-	UINT8 BusRangeVal = 0;
-	UINT8 BusNum;
-	UINT8 Index;
-
 	/*
 	   Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
 	   Address MSR register.
 	 */
-
-	for (Index = 0; Index < 8; Index++) {
-		BusNum = CONFIG_MMCONF_BUS_NUMBER >> Index;
-		if (BusNum == 1) {
-			BusRangeVal = Index;
-			break;
-		}
-	}
-
-	MsrReg = (CONFIG_MMCONF_BASE_ADDRESS | (UINT64) (BusRangeVal << 2) | MMCONF_ENABLE);
+	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
 	LibAmdMsrWrite(0xC0010058, &MsrReg, &StdHeader);
 
 	/*

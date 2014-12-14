@@ -37,6 +37,6 @@ config MMCONF_BASE_ADDRESS
 
 config MMCONF_BUS_NUMBER
 	int
-	default 16
+	default 64
 
 endif # NORTHBRIDGE_AMD_AGESA_FAMILY14

@@ -66,9 +66,8 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_RESET_PARAMS AmdResetParams;
 
-	LibAmdMemFill(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS), &(AmdParamStruct.StdHeader));
-
-	LibAmdMemFill(&AmdResetParams, 0, sizeof(AMD_RESET_PARAMS), &(AmdResetParams.StdHeader));
+	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
+	memset(&AmdResetParams, 0, sizeof(AMD_RESET_PARAMS));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESET;
 	AmdParamStruct.AllocationMethod = ByHost;
@@ -103,7 +102,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	UINT32 TscRateInMhz;
 	CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-	LibAmdMemFill(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS), &(AmdParamStruct.StdHeader));
+	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -141,7 +140,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	UINT32 TscRateInMhz;
 	CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-	LibAmdMemFill(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS), &(AmdParamStruct.StdHeader));
+	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -181,7 +180,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_ENV_PARAMS *EnvParams;
 
-	LibAmdMemFill(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS), &(AmdParamStruct.StdHeader));
+	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -234,7 +233,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 
-	LibAmdMemFill(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS), &(AmdParamStruct.StdHeader));
+	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -260,7 +259,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_LATE_PARAMS *AmdLateParamsPtr;
 
-	LibAmdMemFill(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS), &(AmdParamStruct.StdHeader));
+	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -307,7 +306,7 @@ AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, VOID * Conf
 	AGESA_STATUS status;
 	AMD_LATE_PARAMS AmdLateParams;
 
-	LibAmdMemFill(&AmdLateParams, 0, sizeof(AMD_LATE_PARAMS), &(AmdLateParams.StdHeader));
+	memset(&AmdLateParams, 0, sizeof(AMD_LATE_PARAMS));
 
 	AmdLateParams.StdHeader.AltImageBasePtr = 0;
 	AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;

@@ -34,16 +34,6 @@
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
-/* ACPI table pointers returned by AmdInitLate */
-VOID *DmiTable = NULL;
-VOID *AcpiPstate = NULL;
-VOID *AcpiSrat = NULL;
-VOID *AcpiSlit = NULL;
-
-VOID *AcpiWheaMce = NULL;
-VOID *AcpiWheaCmc = NULL;
-VOID *AcpiAlib = NULL;
-
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
@@ -143,28 +133,6 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	return status;
 }
 
-VOID *agesawrapper_getlateinitptr(int pick)
-{
-	switch (pick) {
-	case PICK_DMI:
-		return DmiTable;
-	case PICK_PSTATE:
-		return AcpiPstate;
-	case PICK_SRAT:
-		return AcpiSrat;
-	case PICK_SLIT:
-		return AcpiSlit;
-	case PICK_WHEA_MCE:
-		return AcpiWheaMce;
-	case PICK_WHEA_CMC:
-		return AcpiWheaCmc;
-	case PICK_ALIB:
-		return AcpiAlib;
-	default:
-		return NULL;
-	}
-}
-
 AGESA_STATUS agesawrapper_amdinitmid(void)
 {
 	AGESA_STATUS status;
@@ -184,52 +152,6 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	status = AmdInitMid((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr);
 	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
-
-	return status;
-}
-
-AGESA_STATUS agesawrapper_amdinitlate(void)
-{
-	AGESA_STATUS status;
-	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_LATE_PARAMS *AmdLateParamsPtr;
-
-	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
-
-	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
-	AmdParamStruct.AllocationMethod = PostMemDram;
-	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
-	AmdParamStruct.StdHeader.Func = 0;
-	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-
-	AmdCreateStruct(&AmdParamStruct);
-	AmdLateParamsPtr = (AMD_LATE_PARAMS *) AmdParamStruct.NewStructPtr;
-
-	printk(BIOS_DEBUG, "agesawrapper_amdinitlate: AmdLateParamsPtr = %X\n",
-	       (u32) AmdLateParamsPtr);
-
-	status = AmdInitLate(AmdLateParamsPtr);
-	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
-	ASSERT(status == AGESA_SUCCESS);
-
-	DmiTable = AmdLateParamsPtr->DmiTable;
-	AcpiPstate = AmdLateParamsPtr->AcpiPState;
-	AcpiSrat = AmdLateParamsPtr->AcpiSrat;
-	AcpiSlit = AmdLateParamsPtr->AcpiSlit;
-	AcpiWheaMce = AmdLateParamsPtr->AcpiWheaMce;
-	AcpiWheaCmc = AmdLateParamsPtr->AcpiWheaCmc;
-	AcpiAlib = AmdLateParamsPtr->AcpiAlib;
-
-	printk(BIOS_DEBUG, "In %s, AGESA generated ACPI tables:\n"
-	       "   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
-	       "   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
-	       __func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit, AcpiWheaMce, AcpiWheaCmc,
-	       AcpiAlib);
-
-	/* Don't release the structure until coreboot has copied the ACPI tables.
-	 * AmdReleaseStruct (&AmdLateParams);
-	 */
 
 	return status;
 }

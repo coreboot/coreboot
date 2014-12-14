@@ -35,16 +35,6 @@
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
-/* ACPI table pointers returned by AmdInitLate */
-VOID *DmiTable = NULL;
-VOID *AcpiPstate = NULL;
-VOID *AcpiSrat = NULL;
-VOID *AcpiSlit = NULL;
-
-VOID *AcpiWheaMce = NULL;
-VOID *AcpiWheaCmc = NULL;
-VOID *AcpiAlib = NULL;
-
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
@@ -143,31 +133,6 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	return status;
 }
 
-VOID *agesawrapper_getlateinitptr(int pick)
-{
-	switch (pick) {
-	case PICK_DMI:
-		return DmiTable;
-
-	case PICK_PSTATE:
-		return AcpiPstate;
-
-	case PICK_SRAT:
-		return AcpiSrat;
-
-	case PICK_SLIT:
-		return AcpiSlit;
-	case PICK_WHEA_MCE:
-		return AcpiWheaMce;
-	case PICK_WHEA_CMC:
-		return AcpiWheaCmc;
-	case PICK_ALIB:
-		return AcpiAlib;
-	default:
-		return NULL;
-	}
-}
-
 AGESA_STATUS agesawrapper_amdinitmid(void)
 {
 	AGESA_STATUS status;
@@ -187,34 +152,6 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	status = AmdInitMid((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr);
 	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
-
-	return status;
-}
-
-AGESA_STATUS agesawrapper_amdinitlate(void)
-{
-	AGESA_STATUS status;
-	AMD_LATE_PARAMS AmdLateParams;
-
-	memset(&AmdLateParams, 0, sizeof(AMD_LATE_PARAMS));
-
-	AmdLateParams.StdHeader.AltImageBasePtr = 0;
-	AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
-	AmdLateParams.StdHeader.Func = 0;
-	AmdLateParams.StdHeader.ImageBasePtr = 0;
-
-	status = AmdInitLate(&AmdLateParams);
-	AGESA_EVENTLOG(status, &AmdLateParams.StdHeader);
-	ASSERT(status == AGESA_SUCCESS);
-
-	DmiTable = AmdLateParams.DmiTable;
-	AcpiPstate = AmdLateParams.AcpiPState;
-	AcpiSrat = AmdLateParams.AcpiSrat;
-	AcpiSlit = AmdLateParams.AcpiSlit;
-
-	AcpiWheaMce = AmdLateParams.AcpiWheaMce;
-	AcpiWheaCmc = AmdLateParams.AcpiWheaCmc;
-	AcpiAlib = AmdLateParams.AcpiAlib;
 
 	return status;
 }

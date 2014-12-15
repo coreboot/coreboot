@@ -56,7 +56,7 @@
 #define EHCI1_FUNC 2
 #define EHCI2_DEV 0x13
 #define EHCI2_FUNC 2
-#define EHCI3_DEV 0x22
+#define EHCI3_DEV 0x16
 #define EHCI3_FUNC 2
 #define EHCI_DEVID 0x7808
 #define EHCI1_DEVFN PCI_DEVFN(EHCI1_DEV,EHCI1_FUNC)

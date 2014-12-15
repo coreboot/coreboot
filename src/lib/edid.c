@@ -330,8 +330,8 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 
 				if (x[12] & 0xfc) {
 					int raw_offset = (x[12] & 0xfc) >> 2;
-					printk(BIOS_SPEW, "Real max dotclock: %.2fMHz\n",
-					       (x[9] * 10) - (raw_offset * 0.25));
+					printk(BIOS_SPEW, "Real max dotclock: %dKHz\n",
+					       (x[9] * 10000) - (raw_offset * 250));
 					if (raw_offset >= 40)
 						warning_excessive_dotclock_correction = 1;
 				}
@@ -1109,15 +1109,16 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		out->xsize_cm = edid[0x15];
 		out->ysize_cm = edid[0x16];
 	} else if (claims_one_point_four && (edid[0x15] || edid[0x16])) {
-		if (edid[0x15]) {
-			printk(BIOS_SPEW, "Aspect ratio is %f (landscape)\n",
-			       100.0/(edid[0x16] + 99));
-			/* truncated to integer %. We try to avoid floating point */
-			out->aspect_landscape = 10000 /(edid[0x16] + 99);
-		} else {
-			printk(BIOS_SPEW, "Aspect ratio is %f (portrait)\n",
-			       100.0/(edid[0x15] + 99));
-			out->aspect_portrait = 10000 /(edid[0x16] + 99);
+		if (edid[0x15]) { /* edid[0x15] != 0 && edid[0x16] == 0 */
+			unsigned int ratio = 100000/(edid[0x15] + 99);
+			printk(BIOS_SPEW, "Aspect ratio is %u.%03u (landscape)\n",
+			       ratio / 1000, ratio % 1000);
+			out->aspect_landscape = ratio / 100;
+		} else { /* edid[0x15] == 0 && edid[0x16] != 0 */
+			unsigned int ratio = 100000/(edid[0x16] + 99);
+			printk(BIOS_SPEW, "Aspect ratio is %u.%03u (portrait)\n",
+			       ratio / 1000, ratio % 1000);
+			out->aspect_portrait = ratio / 100;
 		}
 	} else {
 		/* Either or both can be zero for 1.3 and before */

@@ -89,6 +89,7 @@ struct edid {
 	u32 bytes_per_line;
 	/* it is unlikely we need these things. */
 	/* if one of these is non-zero, use that one. */
+	/* they're aspect * 10 to provide some additional resolution */
 	unsigned int aspect_landscape;
 	unsigned int aspect_portrait;
 	const char *range_class;

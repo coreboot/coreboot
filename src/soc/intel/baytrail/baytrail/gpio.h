@@ -208,7 +208,7 @@
 
 
 #define GPIO_OUT_LOW \
-	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_LOW, \
 	  .use_sel   = GPIO_USE_LEGACY, \

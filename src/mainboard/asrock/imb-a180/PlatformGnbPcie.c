@@ -143,11 +143,7 @@ OemCustomizeInitEarly (
 	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
 	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
 	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
-	if ( Status!= AGESA_SUCCESS) {
-		/* Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR */
-		ASSERT(FALSE);
-		return;
-	}
+	ASSERT(Status == AGESA_SUCCESS);
 
 	PcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 	LibAmdMemCopy  (PcieComplexListPtr, &PcieComplex, sizeof(PcieComplex), &InitEarly->StdHeader);

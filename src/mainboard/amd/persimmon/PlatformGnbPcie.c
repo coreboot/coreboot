@@ -118,11 +118,7 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
 	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
 	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
 	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
-	if ( Status!= AGESA_SUCCESS) {
-	// Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
-	ASSERT(FALSE);
-	return;
-	}
+	ASSERT(Status == AGESA_SUCCESS);
 
 	BrazosPcieComplexListPtr	=	(PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 

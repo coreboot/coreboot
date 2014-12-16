@@ -196,6 +196,14 @@ static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
 	return AGESA_SUCCESS;
 }
 
+static AGESA_STATUS OemInitMid(AMD_MID_PARAMS * InitMid)
+{
+	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
+	InitMid->GnbMidConfiguration.iGpuVgaMode = 0;
+	return AGESA_SUCCESS;
+}
+
 const struct OEM_HOOK OemCustomize = {
 	.InitEarly = OemInitEarly,
+	.InitMid = OemInitMid,
 };

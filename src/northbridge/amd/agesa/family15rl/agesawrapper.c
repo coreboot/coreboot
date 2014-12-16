@@ -157,8 +157,8 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
 	AmdCreateStruct(&AmdParamStruct);
+	OemCustomizeInitMid((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr);
 
-	((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr)->GnbMidConfiguration.iGpuVgaMode = 0;	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
 	status = AmdInitMid((AMD_MID_PARAMS *) AmdParamStruct.NewStructPtr);
 	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);

@@ -64,6 +64,9 @@ struct OEM_HOOK
 	/* romstage */
 	AGESA_STATUS (*InitEarly)(AMD_EARLY_PARAMS *);
 	AGESA_STATUS (*InitPost)(AMD_POST_PARAMS *);
+
+	/* ramstage */
+	AGESA_STATUS (*InitMid)(AMD_MID_PARAMS *);
 };
 
 extern const struct OEM_HOOK OemCustomize;
@@ -78,6 +81,12 @@ static inline void OemCustomizeInitPost(AMD_POST_PARAMS *PostParams)
 {
 	if (OemCustomize.InitPost)
 		OemCustomize.InitPost(PostParams);
+}
+
+static inline void OemCustomizeInitMid(AMD_MID_PARAMS *MidParams)
+{
+	if (OemCustomize.InitMid)
+		OemCustomize.InitMid(MidParams);
 }
 
 #endif /* _AGESAWRAPPER_H_ */

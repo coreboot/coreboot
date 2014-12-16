@@ -111,6 +111,7 @@ static void assert_sw_reset(void)
 static void mainboard_init(device_t dev)
 {
 	 start_tzbsp();
+	 start_rpm();
 	 setup_mmu();
 	 setup_usb();
 	 assert_sw_reset();

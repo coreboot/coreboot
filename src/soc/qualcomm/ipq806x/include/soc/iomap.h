@@ -81,6 +81,13 @@
 #define DGT_CLEAR            DGT_REG(0x000C)
 #define DGT_CLK_CTL          DGT_REG(0x0010)
 
+/* RPM interface constants */
+#define RPM_INT           ((void *)0x63020)
+#define RPM_INT_ACK       ((void *)0x63060)
+#define RPM_SIGNAL_COOKIE ((void *)0x47C20)
+#define RPM_SIGNAL_ENTRY  ((void *)0x47C24)
+#define RPM_FW_MAGIC_NUM 0x4D505242
+
 #define TLMM_BASE_ADDR      ((char *)0x00800000)
 #define GPIO_CONFIG_ADDR(x) (TLMM_BASE_ADDR + 0x1000 + (x)*0x10)
 #define GPIO_IN_OUT_ADDR(x) (GPIO_CONFIG_ADDR(x) + 4)
@@ -114,4 +121,5 @@
 #define GSBI_QUP5_BASE		0x1A280000
 #define GSBI_QUP6_BASE		0x16580000
 #define GSBI_QUP7_BASE		0x16680000
+
 #endif // __SOC_QUALCOMM_IPQ806X_IOMAP_H_

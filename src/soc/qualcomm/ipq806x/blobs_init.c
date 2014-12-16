@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2014 Google Inc.
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +18,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <cbfs.h>
-#include <string.h>
 #include <arch/cache.h>
-
-#include <soc/soc_services.h>
-
+#include <arch/io.h>
+#include <cbfs.h>
 #include <console/console.h>
+#include <string.h>
+#include <timer.h>
+
+#include <soc/iomap.h>
+#include <soc/soc_services.h>
 
 #include "mbn_header.h"
 
@@ -93,7 +96,43 @@ void start_tzbsp(void)
 	if (!tzbsp)
 		die("could not find or map TZBSP\n");
 
+	printk(BIOS_INFO, "Starting TZBSP\n");
+
 	tz_init_wrapper(0, 0, tzbsp);
 }
 
+void start_rpm(void)
+{
+	u32 load_addr;
+	u32 ready_mask = 1 << 10;
+	struct stopwatch sw;
+
+	if (readl(RPM_SIGNAL_COOKIE) == RPM_FW_MAGIC_NUM) {
+		printk(BIOS_INFO, "RPM appears to have already started\n");
+		return;
+	}
+
+	load_addr = (u32) load_ipq_blob("rpm.mbn");
+	if (!load_addr)
+		die("could not find or map RPM code\n");
+
+	printk(BIOS_INFO, "Starting RPM\n");
+
+	/* Clear 'ready' indication. */
+	writel(readl(RPM_INT_ACK) & ~ready_mask, RPM_INT_ACK);
+
+	/* Set RPM entry address */
+	writel(load_addr, RPM_SIGNAL_ENTRY);
+	/* Set cookie */
+	writel(RPM_FW_MAGIC_NUM, RPM_SIGNAL_COOKIE);
+
+	/* Wait for RPM start indication, up to 100ms. */
+	stopwatch_init_usecs_expire(&sw, 100000);
+	while (!(readl(RPM_INT) & ready_mask))
+		if (stopwatch_expired(&sw))
+			die("RPM Initialization failed\n");
+
+	/* Acknowledge RPM initialization */
+	writel(ready_mask, RPM_INT_ACK);
+}
 #endif  /* !__PRE_RAM__ */

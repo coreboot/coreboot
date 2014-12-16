@@ -30,6 +30,10 @@ int initialize_dram(void);
 /* Loads and runs TZBSP, switches into user mode. */
 void start_tzbsp(void);
 
+/* A helper function needed to start TZBSP properly. */
 int tz_init_wrapper(int, int, void *);
+
+/* Load RPM code into memory and trigger its execution. */
+void start_rpm(void);
 
 #endif

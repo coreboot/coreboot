@@ -111,9 +111,3 @@ void lb_board(struct lb_header *header)
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = _dma_coherent_size;
 }
-
-/* called from rk3288 display.c, but there is no backlight for this platform */
-void mainboard_power_on_backlight(void)
-{
-	return;
-}

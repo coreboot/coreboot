@@ -42,8 +42,10 @@ static void soc_init(device_t dev)
 
 	if (vboot_skip_display_init())
 		printk(BIOS_INFO, "Skipping display init.\n");
+#if !IS_ENABLED(CONFIG_SKIP_DISPLAY_INIT_HACK)
 	else
 		rk_display_init(dev, lcdbase, fb_size);
+#endif
 }
 
 static struct device_operations soc_ops = {

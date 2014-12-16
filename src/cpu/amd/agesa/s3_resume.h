@@ -20,20 +20,10 @@
 #ifndef S3_RESUME_H
 #define S3_RESUME_H
 
-typedef enum {
-	S3DataTypeNonVolatile=0,	///< NonVolatile Data Type
-	S3DataTypeVolatile,		///< Volatile Data Type
-	S3DataTypeMTRR			///< MTRR storage
-} S3_DATA_TYPE;
-
 void restore_mtrr(void);
 void prepare_for_resume(void);
 
-u32 OemAgesaSaveS3Info (S3_DATA_TYPE S3DataType, u32 DataSize, void *Data);
-void OemAgesaGetS3Info (S3_DATA_TYPE S3DataType, u32 *DataSize, void **Data);
-void OemAgesaSaveMtrr (void);
-
-void get_s3nv_data(S3_DATA_TYPE S3DataType, u32 *pos, u32 *len);
-int spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len);
+void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size);
+const void *OemS3Saved_MTRR_Storage(void);
 
 #endif

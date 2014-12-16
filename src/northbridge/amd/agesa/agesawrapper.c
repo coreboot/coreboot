@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <cpu/amd/agesa/s3_resume.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "amdlib.h"
@@ -125,7 +124,6 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_RESUME_PARAMS *AmdResumeParamsPtr;
-	S3_DATA_TYPE S3DataType;
 
 	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -141,13 +139,9 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 
 	AmdResumeParamsPtr->S3DataBlock.NvStorageSize = 0;
 	AmdResumeParamsPtr->S3DataBlock.VolatileStorageSize = 0;
-	S3DataType = S3DataTypeNonVolatile;
+	OemInitResume(AmdResumeParamsPtr);
 
-	OemAgesaGetS3Info(S3DataType,
-			  (u32 *) & AmdResumeParamsPtr->S3DataBlock.NvStorageSize,
-			  (void **)&AmdResumeParamsPtr->S3DataBlock.NvStorage);
-
-	status = AmdInitResume((AMD_RESUME_PARAMS *) AmdParamStruct.NewStructPtr);
+	status = AmdInitResume(AmdResumeParamsPtr);
 
 	AGESA_EVENTLOG(status, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct(&AmdParamStruct);
@@ -185,7 +179,6 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 	AMD_INTERFACE_PARAMS AmdInterfaceParams;
 	AMD_S3LATE_PARAMS AmdS3LateParams;
 	AMD_S3LATE_PARAMS *AmdS3LateParamsPtr;
-	S3_DATA_TYPE S3DataType;
 
 	memset(&AmdS3LateParams, 0, sizeof(AMD_S3LATE_PARAMS));
 
@@ -199,12 +192,12 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 
 	AmdCreateStruct(&AmdInterfaceParams);
 
+#if 0
+	/* TODO: What to do with NvStorage here? */
+	AmdS3LateParamsPtr->S3DataBlock.NvStorageSize = 0;
+#endif
 	AmdS3LateParamsPtr->S3DataBlock.VolatileStorageSize = 0;
-	S3DataType = S3DataTypeVolatile;
-
-	OemAgesaGetS3Info(S3DataType,
-			  (u32 *) & AmdS3LateParamsPtr->S3DataBlock.VolatileStorageSize,
-			  (void **)&AmdS3LateParamsPtr->S3DataBlock.VolatileStorage);
+	OemS3LateRestore(AmdS3LateParamsPtr);
 
 	status = AmdS3LateRestore(AmdS3LateParamsPtr);
 	AGESA_EVENTLOG(status, &AmdInterfaceParams.StdHeader);
@@ -249,7 +242,6 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 	AGESA_STATUS status;
 	AMD_S3SAVE_PARAMS *AmdS3SaveParamsPtr;
 	AMD_INTERFACE_PARAMS AmdInterfaceParams;
-	S3_DATA_TYPE S3DataType;
 
 	memset(&AmdInterfaceParams, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -269,21 +261,8 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 	AGESA_EVENTLOG(status, &AmdInterfaceParams.StdHeader);
 	ASSERT(status == AGESA_SUCCESS);
 
-	S3DataType = S3DataTypeNonVolatile;
+	OemS3Save(AmdS3SaveParamsPtr);
 
-	status = OemAgesaSaveS3Info(S3DataType,
-				    AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
-				    AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
-
-	if (AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize != 0) {
-		S3DataType = S3DataTypeVolatile;
-
-		status = OemAgesaSaveS3Info(S3DataType,
-					    AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize,
-					    AmdS3SaveParamsPtr->S3DataBlock.VolatileStorage);
-	}
-
-	OemAgesaSaveMtrr();
 	AmdReleaseStruct(&AmdInterfaceParams);
 
 	return status;

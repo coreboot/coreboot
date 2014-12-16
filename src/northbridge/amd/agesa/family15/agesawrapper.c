@@ -203,28 +203,3 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 
 	return status;
 }
-
-/**
- * @param[in] UINTN ApicIdOfCore,
- * @param[in] AP_EXE_PARAMS *LaunchApParams
- */
-AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, VOID * ConfigPtr)
-{
-	AGESA_STATUS status;
-	AMD_LATE_PARAMS AmdLateParams;
-
-	memset(&AmdLateParams, 0, sizeof(AMD_LATE_PARAMS));
-
-	AmdLateParams.StdHeader.AltImageBasePtr = 0;
-	AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
-	AmdLateParams.StdHeader.Func = 0;
-	AmdLateParams.StdHeader.ImageBasePtr = 0;
-	AmdLateParams.StdHeader.HeapStatus = HEAP_TEMP_MEM;
-
-	printk(BIOS_DEBUG, "AmdLateRunApTask on Core: %x\n", (uint32_t) Data);
-	status = AmdLateRunApTask((AP_EXE_PARAMS *) ConfigPtr);
-	AGESA_EVENTLOG(status, &AmdLateParams.StdHeader);
-	ASSERT((status == AGESA_SUCCESS) || (status == AGESA_UNSUPPORTED));
-
-	return status;
-}

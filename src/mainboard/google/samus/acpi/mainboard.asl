@@ -345,3 +345,29 @@ Scope (\_SB.PCI0.I2C1)
 		}
 	}
 }
+
+Scope (\_SB.PCI0.SPI0)
+{
+	Device (CODC)
+	{
+		// TODO: Need official HID.
+		Name (_HID, "RT5677AA")
+		Name (_UID, 1)
+		Name (_CRS, ResourceTemplate ()
+		{
+			SpiSerialBus (
+				0,                   // DeviceSelection (CS0?)
+				PolarityLow,         // DeviceSelectionPolarity
+				FourWireMode,        // WireMode
+				8,                   // DataBitLength
+				ControllerInitiated, // SlaveMode
+				1000000,             // ConnectionSpeed (1MHz)
+				ClockPolarityLow,    // ClockPolarity
+				ClockPhaseFirst,     // ClockPhase
+				"\\_SB.PCI0.SPI0",   // ResourceSource
+				0,                   // ResourceSourceIndex
+				ResourceConsumer,    // ResourceUsage
+			)
+		})
+	}
+}

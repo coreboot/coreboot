@@ -20,31 +20,35 @@ it with the version available from LANL.
  * rminnich@lanl.gov
  */
 
+#include <assert.h>
 #include <lib.h>
 #include <console/console.h>
+#include <symbols.h>
 
 int checkstack(void *top_of_stack, int core)
 {
+	/* Not all archs use CONFIG_STACK_SIZE, those who don't set it to 0. */
+	size_t stack_size = CONFIG_STACK_SIZE ? CONFIG_STACK_SIZE : _stack_size;
 	int i;
-	u32 *stack = (u32 *) (top_of_stack - CONFIG_STACK_SIZE);
+	u32 *stack = (u32 *) (top_of_stack - stack_size);
 
 	if (stack[0] != 0xDEADBEEF){
 		printk(BIOS_ERR, "Stack overrun on CPU%d. "
-			"Increase stack from current %d bytes\n",
-			core, CONFIG_STACK_SIZE);
+			"Increase stack from current %zu bytes\n",
+			core, stack_size);
+		BUG();
 		return -1;
 	}
 
-	for(i = 1; i < CONFIG_STACK_SIZE/sizeof(stack[0]); i++){
+	for(i = 1; i < stack_size/sizeof(stack[0]); i++){
 		if (stack[i] == 0xDEADBEEF)
 			continue;
 		printk(BIOS_SPEW, "CPU%d: stack: %p - %p, ",
-			core, stack,
-			&stack[CONFIG_STACK_SIZE/sizeof(stack[0])]);
+			core, stack, &stack[stack_size/sizeof(stack[0])]);
 		printk(BIOS_SPEW, "lowest used address %p, ", &stack[i]);
 		printk(BIOS_SPEW, "stack used: %ld bytes\n",
-			(unsigned long)&stack[CONFIG_STACK_SIZE /
-			sizeof(stack[0])] - (unsigned long)&stack[i]);
+			(unsigned long)&stack[stack_size / sizeof(stack[0])]
+			- (unsigned long)&stack[i]);
 		return 0;
 	}
 

@@ -166,10 +166,8 @@ static const PCIe_COMPLEX_DESCRIPTOR Trinity = {
  *
  **/
 /*---------------------------------------------------------------------------------------*/
-VOID
-OemCustomizeInitEarly (
-	IN  OUT AMD_EARLY_PARAMS    *InitEarly
-	)
+
+static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
 {
 	AGESA_STATUS         Status;
 	VOID                 *TrinityPcieComplexListPtr;
@@ -221,4 +219,9 @@ OemCustomizeInitEarly (
 	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->DdiLinkList  =  (PCIe_DDI_DESCRIPTOR*)TrinityPcieDdiPtr;
 
 	InitEarly->GnbConfig.PcieComplexList = TrinityPcieComplexListPtr;
+	return AGESA_SUCCESS;
 }
+
+const struct OEM_HOOK OemCustomize = {
+	.InitEarly = OemInitEarly,
+};

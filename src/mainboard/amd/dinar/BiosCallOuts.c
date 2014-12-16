@@ -19,6 +19,7 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "Ids.h"
 #include "OptionsIds.h"
@@ -115,3 +116,15 @@ static AGESA_STATUS board_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	return Status;
 }
+
+static AGESA_STATUS OemInitPost(AMD_POST_PARAMS *InitPost)
+{
+	InitPost->MemConfig.UmaMode = UMA_AUTO;
+	InitPost->MemConfig.BottomIo = 0xE0;
+	InitPost->MemConfig.UmaSize = 0xE0-0xC0;
+	return AGESA_SUCCESS;
+}
+
+const struct OEM_HOOK OemCustomize = {
+	.InitPost = OemInitPost,
+};

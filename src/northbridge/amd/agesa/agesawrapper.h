@@ -59,7 +59,25 @@ void *agesawrapper_getlateinitptr (int pick);
 AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
 AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
-void OemCustomizeInitEarly(AMD_EARLY_PARAMS *InitEarly);
-void OemCustomizeInitPost(AMD_POST_PARAMS *InitPost);
+struct OEM_HOOK
+{
+	/* romstage */
+	AGESA_STATUS (*InitEarly)(AMD_EARLY_PARAMS *);
+	AGESA_STATUS (*InitPost)(AMD_POST_PARAMS *);
+};
+
+extern const struct OEM_HOOK OemCustomize;
+
+static inline void OemCustomizeInitEarly(AMD_EARLY_PARAMS *EarlyParams)
+{
+	if (OemCustomize.InitEarly)
+		OemCustomize.InitEarly(EarlyParams);
+}
+
+static inline void OemCustomizeInitPost(AMD_POST_PARAMS *PostParams)
+{
+	if (OemCustomize.InitPost)
+		OemCustomize.InitPost(PostParams);
+}
 
 #endif /* _AGESAWRAPPER_H_ */

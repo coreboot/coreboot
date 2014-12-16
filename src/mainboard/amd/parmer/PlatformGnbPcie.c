@@ -160,10 +160,8 @@ static const PCIe_DDI_DESCRIPTOR DdiList [] = {
  *
  **/
 /*---------------------------------------------------------------------------------------*/
-VOID
-OemCustomizeInitEarly (
-	IN  OUT AMD_EARLY_PARAMS    *InitEarly
-	)
+
+static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
 {
 	AGESA_STATUS            Status;
 	PCIe_COMPLEX_DESCRIPTOR *PcieComplexListPtr;
@@ -195,4 +193,9 @@ OemCustomizeInitEarly (
 	PcieComplexListPtr->DdiLinkList  = DdiList;
 
 	InitEarly->GnbConfig.PcieComplexList = PcieComplexListPtr;
+	return AGESA_SUCCESS;
 }
+
+const struct OEM_HOOK OemCustomize = {
+	.InitEarly = OemInitEarly,
+};

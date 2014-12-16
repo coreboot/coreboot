@@ -123,10 +123,8 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
  *
  **/
 /*---------------------------------------------------------------------------------------*/
-VOID
-OemCustomizeInitEarly (
-	IN  OUT AMD_EARLY_PARAMS    *InitEarly
-	)
+
+static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
 {
 	AGESA_STATUS            Status;
 	PCIe_COMPLEX_DESCRIPTOR *PcieComplexListPtr;
@@ -148,4 +146,9 @@ OemCustomizeInitEarly (
 	PcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 	LibAmdMemCopy  (PcieComplexListPtr, &PcieComplex, sizeof(PcieComplex), &InitEarly->StdHeader);
 	InitEarly->GnbConfig.PcieComplexList = PcieComplexListPtr;
+	return AGESA_SUCCESS;
 }
+
+const struct OEM_HOOK OemCustomize = {
+	.InitEarly = OemInitEarly,
+};

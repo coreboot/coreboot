@@ -35,20 +35,6 @@
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
-/* TODO: Function body should be in mainboard directory. */
-void OemCustomizeInitEarly(AMD_EARLY_PARAMS *InitEarly)
-{
-}
-
-void OemCustomizeInitPost(AMD_POST_PARAMS *InitPost)
-{
-#if IS_ENABLED(CONFIG_BOARD_AMD_DINAR)
-	InitPost->MemConfig.UmaMode = UMA_AUTO;
-	InitPost->MemConfig.BottomIo = 0xE0;
-	InitPost->MemConfig.UmaSize = 0xE0-0xC0;
-#endif
-}
-
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status = AGESA_SUCCESS;

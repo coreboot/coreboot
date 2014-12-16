@@ -41,10 +41,8 @@
  *
  **/
 /*---------------------------------------------------------------------------------------*/
-VOID
-OemCustomizeInitEarly (
-		IN	OUT AMD_EARLY_PARAMS	*InitEarly
-		)
+
+static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
 {
 	AGESA_STATUS		 Status;
 	VOID				 *BrazosPcieComplexListPtr;
@@ -132,4 +130,9 @@ OemCustomizeInitEarly (
 
 	InitEarly->GnbConfig.PcieComplexList = BrazosPcieComplexListPtr;
 	InitEarly->GnbConfig.PsppPolicy      = 0;
+	return AGESA_SUCCESS;
 }
+
+const struct OEM_HOOK OemCustomize = {
+	.InitEarly = OemInitEarly,
+};

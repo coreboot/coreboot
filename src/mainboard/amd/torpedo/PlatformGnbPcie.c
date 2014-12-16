@@ -108,10 +108,8 @@ static const PCIe_COMPLEX_DESCRIPTOR Llano = {
  *
  **/
 /*---------------------------------------------------------------------------------------*/
-VOID
-OemCustomizeInitEarly (
-  IN  OUT AMD_EARLY_PARAMS    *InitEarly
-  )
+
+static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
 {
   AGESA_STATUS         Status;
   VOID                 *LlanoPcieComplexListPtr;
@@ -165,4 +163,9 @@ OemCustomizeInitEarly (
 
   InitEarly->GnbConfig.PcieComplexList = LlanoPcieComplexListPtr;
   InitEarly->GnbConfig.PsppPolicy      = 0;
+	return AGESA_SUCCESS;
 }
+
+const struct OEM_HOOK OemCustomize = {
+	.InitEarly = OemInitEarly,
+};

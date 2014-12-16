@@ -19,6 +19,7 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
+#include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "Ids.h"
 #include "OptionsIds.h"
@@ -40,3 +41,6 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
 };
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
+
+const struct OEM_HOOK OemCustomize = {
+};

@@ -33,7 +33,6 @@
 #include <elog.h>
 #include "elog_internal.h"
 
-#if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/fmap.h>
 
 #if CONFIG_ELOG_FLASH_BASE == 0

@@ -31,7 +31,6 @@
 #include "southbridge/intel/i3100/early_lpc.c"
 #include "northbridge/intel/i3100/raminit_ep80579.h"
 #include "superio/intel/i3100/i3100.h"
-#include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "superio/intel/i3100/early_serial.c"
 #include "lib/debug.c" // XXX
@@ -47,16 +46,12 @@ static inline int spd_read_byte(u16 device, u8 address)
 
 #include "northbridge/intel/i3100/raminit_ep80579.c"
 #include "lib/generic_sdram.c"
-#include "../../intel/jarrell/debug.c"
-#include "arch/x86/lib/stages.c"
 
 #define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
 
 #include <cpu/intel/romstage.h>
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
-	msr_t msr;
-	u16 perf;
 	static const struct mem_controller mch[] = {
 		{
 			.node_id = 0,
@@ -67,9 +62,8 @@ static void main(unsigned long bist)
 
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
-		early_mtrr_init();
 		if (memory_initialized())
-			skip_romstage();
+			return;
 	}
 
 	/* Set up the console */
@@ -89,7 +83,6 @@ static void main(unsigned long bist)
 	print_pci_devices();
 #endif
 	enable_smbus();
-	dump_spd_registers();
 
 	sdram_initialize(ARRAY_SIZE(mch), mch);
 	dump_pci_devices();

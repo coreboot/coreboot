@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <lib.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/intel/speedstep.h>
@@ -37,7 +38,6 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		PCI_ADDR(0, 0x00, 0, SMRBASE), 0x00000fff, BAR | 0,
 	};
 	int i;
-	int max;
 
 	for (i = 0; i < ARRAY_SIZE(register_values); i += 3) {
 		device_t dev;
@@ -61,7 +61,7 @@ static struct dimm_size spd_get_dimm_size(u16 device)
 {
 	/* Calculate the log base 2 size of a DIMM in bits */
 	struct dimm_size sz;
-	int value, low, ddr2;
+	int value, low;
 	sz.side1 = 0;
 	sz.side2 = 0;
 
@@ -489,7 +489,6 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	u8 dimm_mask;
-	int i;
 
 	/* Test if we can read the SPD */
 	dimm_mask = spd_detect_dimms(ctrl);
@@ -503,9 +502,8 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 {
 	u8 c1,c2;
-	u32 dimm, i;
+	u32 i;
 	u32 data32 = 0;
-	u32 t4;
 
 	/* Set up northbridge values */
 	/* ODT enable */
@@ -565,8 +563,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	u32 drc;
 	u32 data32;
 	u32 mode_reg;
-	msr_t msr;
-	u16 data16;
 
 	mask = spd_detect_dimms(ctrl);
 	print_debug("Starting SDRAM Enable\n");
@@ -771,9 +767,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* Set the ECC mode */
 	pci_write_config32(ctrl->f0, DRC, drc);
-
-	/* The memory is now set up--use it */
-	cache_ramstage();
 }
 
 static inline int memory_initialized(void)

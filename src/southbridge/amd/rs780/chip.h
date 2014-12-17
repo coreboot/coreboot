@@ -31,7 +31,7 @@ struct southbridge_amd_rs780_config
 	u8 gfx_lane_reversal;		/* Single/Dual slot lan reversal */
 	u8 gfx_tmds;			/* whether support TMDS? */
 	u8 gfx_compliance;		/* whether support compliance? */
-	u8 gfx_reconfiguration;		/* Dynamic Lind Width Control */
+	u8 gfx_reconfiguration;		/* Dynamic Link Width Control */
 	u8 gfx_link_width;		/* Desired width of lane 2 */
 	u8 gfx_pcie_config;		/* GFX PCIE Modes */
 	u8 gfx_ddi_config;		/* GFX DDI Modes */

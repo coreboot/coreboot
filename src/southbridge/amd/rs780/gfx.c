@@ -19,7 +19,7 @@
 
 /*
  *  for rs780 internal graphics device
- *  device id of internal grphics:
+ *  device id of internal graphics:
  *	RS780:	0x9610
  *	RS780C:	0x9611
  *	RS780M:	0x9612
@@ -355,7 +355,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	static const u16 memclk_lookup_fam0F [] = {100, 0, 133, 0, 0, 166, 0, 200};
 	static const u16 memclk_lookup_fam10 [] = {200, 266, 333, 400, 533, 667, 800, 800};
 
-	/* We definetely will use this in future. Just leave it here. */
+	/* We definitely will use this in future. Just leave it here. */
 	/*struct southbridge_amd_rs780_config *cfg =
 	   (struct southbridge_amd_rs780_config *)dev->chip_info;*/
 
@@ -961,7 +961,7 @@ static void rs780_internal_gfx_enable(device_t dev)
 	set_nbmc_enable_bits(nb_dev, 0xa1, 0x0ff, 0x044);
 	set_nbmc_enable_bits(nb_dev, 0xb4, 0xf00, 0xb00);
 #if 0
-	/* Controller Termation. */
+	/* Controller Termination. */
 	set_nbmc_enable_bits(nb_dev, 0xb1, 0x77770000, 0x77770000);
 #endif
 
@@ -1124,8 +1124,8 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 	if (!result) {
 		/* Powers down all lanes for port A */
 		/* nbpcie_ind_write_index(nb_dev, 0x65, 0x0f0f); */
-		/* Note: I have to disable the slot where there isnt a device,
-		 * otherwise the system will hang. I dont know why. */
+		/* Note: I have to disable the slot where there isn't a device,
+		 * otherwise the system will hang. I don't know why. */
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind, 1 << dev_ind);
 
 	} else {		/* step 16.b Link Training was successful */
@@ -1423,7 +1423,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* done by enable_pci_bar3() before */
 
 	/* step 7 compliance state, (only need if CMOS option is enabled) */
-	/* the compliance stete is just for test. refer to 4.2.5.2 of PCIe specification */
+	/* the compliance state is just for test. refer to 4.2.5.2 of PCIe specification */
 	if (cfg->gfx_compliance) {
 		/* force compliance */
 		set_nbmisc_enable_bits(nb_dev, 0x32, 1 << 6, 1 << 6);
@@ -1452,7 +1452,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* 5.9.12.6. Disables RC ordering logic */
 	set_pcie_enable_bits(nb_dev, 0x20, 1 << 9, 1 << 9);
 
-	/* Enabels TLP flushing. */
+	/* Enables TLP flushing. */
 	/* Note: It is got from RS690. The system will hang without this action. */
 	set_pcie_enable_bits(dev, 0x20, 1 << 19, 0 << 19);
 
@@ -1530,7 +1530,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 			     1 << 0 | 0x1F << 1 | 0x1F << 6,
 			     1 << 0 | 0x04 << 1 | 0x04 << 6);
 
-	/* Single-port/Dual-port configureation. */
+	/* Single-port/Dual-port configuration. */
 	switch (cfg->gfx_dual_slot) {
 	case 0:
 		/* step 1, lane reversal (only need if build config option is enabled) */

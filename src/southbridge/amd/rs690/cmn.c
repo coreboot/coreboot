@@ -273,7 +273,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 			res = 0;
 			count = 0;
 			break;
-		case 0x07:	/* device is in compliance state (training sequence is doen). Move to train the next device */
+		case 0x07:	/* device is in compliance state (training sequence is done). Move to train the next device */
 			res = 1;	/* TODO: CIM sets it to 0 */
 			count = 0;
 			break;

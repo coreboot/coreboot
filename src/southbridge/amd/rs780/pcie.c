@@ -149,12 +149,12 @@ static void switching_gppsb_configurations(device_t nb_dev, device_t sb_dev)
 	reg &= ~(1 << 31);
 	nbmisc_write_index(nb_dev, 0x66, reg);
 
-	/* 5.5.7.5-6. read bit14 and write back its inverst value */
+	/* 5.5.7.5-6. read bit14 and write back its inverted value */
 	reg = nbmisc_read_index(nb_dev, PCIE_NBCFG_REG7);
 	reg ^= RECONFIG_GPPSB_GPPSB;
 	nbmisc_write_index(nb_dev, PCIE_NBCFG_REG7, reg);
 #else
-	/* 5.5.7.5-6. read bit14 and write back its inverst value */
+	/* 5.5.7.5-6. read bit14 and write back its inverted value */
 	reg = nbmisc_read_index(nb_dev, PCIE_NBCFG_REG7);
 	reg ^= RECONFIG_GPPSB_GPPSB;
 	nbmisc_write_index(nb_dev, PCIE_NBCFG_REG7, reg);
@@ -300,7 +300,7 @@ void rs780_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 		set_nbmisc_enable_bits(nb_dev, 0x24, 3 << 16, 2 << 16);
 
 	/* 5.10.8.22. Disable GEN2 */
-	/* TODO: should be 2 seperated cases. */
+	/* TODO: should be 2 separated cases. */
 	set_nbmisc_enable_bits(nb_dev, 0x39, 1 << 31, 0 << 31);
 	set_nbmisc_enable_bits(nb_dev, 0x22, 1 << 5, 0 << 5);
 	set_nbmisc_enable_bits(nb_dev, 0x34, 1 << 31, 0 << 31);
@@ -351,7 +351,7 @@ void rs780_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	case 10:
 		/* 5.10.8.5. Blocks DMA traffic during C3 state */
 		set_pcie_enable_bits(dev, 0x10, 1 << 0, 0 << 0);
-		/* Enabels TLP flushing */
+		/* Enables TLP flushing */
 		set_pcie_enable_bits(dev, 0x20, 1 << 19, 0 << 19);
 
 		/* check port enable */

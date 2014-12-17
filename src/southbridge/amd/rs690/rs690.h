@@ -104,7 +104,7 @@ typedef enum _NB_REVISION_ {
 * ------------------------------------------------- */
 extern PCIE_CFG AtiPcieCfg;
 
-/* ----------------- export funtions ----------------- */
+/* ----------------- export functions ----------------- */
 u32 nbmisc_read_index(device_t nb_dev, u32 index);
 void nbmisc_write_index(device_t nb_dev, u32 index, u32 data);
 u32 nbpcie_p_read_index(device_t dev, u32 index);

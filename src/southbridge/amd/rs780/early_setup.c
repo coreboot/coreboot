@@ -256,17 +256,17 @@ static void rs780_htinit(void)
 		set_htiu_enable_bits(rs780_f0, 0x2A, 0x3, 0x1);
 		/* Enables error-retry mode */
 		set_nbcfg_enable_bits(rs780_f0, 0x44, 0x1, 0x1);
-		/* Enables scrambling and Disalbes command throttling */
+		/* Enables scrambling and Disables command throttling */
 		set_nbcfg_enable_bits(rs780_f0, 0xac, (1 << 3) | (1 << 14), (1 << 3) | (1 << 14));
 		/* Enables transmitter de-emphasis */
 		set_nbcfg_enable_bits(rs780_f0, 0xa4, 1 << 31, 1 << 31);
-		/* Enabels transmitter de-emphasis level */
+		/* Enables transmitter de-emphasis level */
 		/* Sets training 0 time */
 		set_nbcfg_enable_bits(rs780_f0, 0xa0, 0x3F, 0x14);
 
 		/* Enables strict TM4 detection */
 		set_htiu_enable_bits(rs780_f0, 0x15, 0x1 << 22, 0x1 << 22);
-		/* Enables proprer DLL reset sequence */
+		/* Enables proper DLL reset sequence */
 		set_htiu_enable_bits(rs780_f0, 0x16, 0x1 << 10, 0x1 << 10);
 
 		/* HyperTransport 3 Processor register settings to be done in northbridge */

@@ -19,7 +19,7 @@
 
 /*
  *  for rs690 internal graphics device
- *  device id of internal grphics:
+ *  device id of internal graphics:
  *	RS690M/T: 0x791f
  *    RS690:	   0x791e
  */
@@ -509,7 +509,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
         printk(BIOS_INFO, "rs690_gfx_init step6.\n");
 
 	/* step 7 compliance state, (only need if CMOS option is enabled) */
-	/* the compliance stete is just for test. refer to 4.2.5.2 of PCIe specification */
+	/* the compliance state is just for test. refer to 4.2.5.2 of PCIe specification */
 	if (cfg->gfx_compliance) {
 		/* force compliance */
 		set_nbmisc_enable_bits(nb_dev, 0x32, 1 << 6, 1 << 6);
@@ -558,7 +558,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	pci_write_config16(dev, 0x5a, reg16);
 	printk(BIOS_INFO, "rs690_gfx_init step8.9.\n");
 
-	/* step 8.10 Setting this register to 0x1 will hide the Advanced Error Rporting Capabilities in the PCIE Brider.
+	/* step 8.10 Setting this register to 0x1 will hide the Advanced Error Reporting Capabilities in the PCIE Bridge.
 	 * This will workaround several failures reported by the PCI Compliance test under Vista DTM. */
 	set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 31, 0 << 31);
 	printk(BIOS_INFO, "rs690_gfx_init step8.10.\n");

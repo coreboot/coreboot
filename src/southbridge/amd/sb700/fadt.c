@@ -62,7 +62,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->pm2_cnt_blk = ACPI_PMA_CNT_BLK;
 	fadt->pm_tmr_blk = ACPI_PM_TMR_BLK;
 	fadt->gpe0_blk = ACPI_GPE0_BLK;
-	fadt->gpe1_blk = 0x0000;	/* we dont have gpe1 block, do we? */
+	fadt->gpe1_blk = 0x0000;	/* we don't have gpe1 block, do we? */
 
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
@@ -81,7 +81,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->duty_width = 3;
 	fadt->day_alrm = 0;	/* 0x7d these have to be */
 	fadt->mon_alrm = 0;	/* 0x7e added to cmos.layout */
-	fadt->century = 0;	/* 0x7f to make rtc alrm work */
+	fadt->century = 0;	/* 0x7f to make rtc alarm work */
 	fadt->iapc_boot_arch = 0x3;	/* See table 5-11 */
 	fadt->flags = 0x0001c1a5;/* 0x25; */
 

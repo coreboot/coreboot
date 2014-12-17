@@ -277,7 +277,7 @@ static void sb600_devices_por_init(void)
 
 	/* sbPorAtStartOfTblCfg */
 	/* Set A-Link bridge access address. This address is set at device 14h, function 0, register 0xf0.
-	 * This is an I/O address. The I/O address must be on 16-byte boundry.  */
+	 * This is an I/O address. The I/O address must be on 16-byte boundary.  */
 	pci_write_config32(dev, 0xf0, AB_INDX);
 
 	/* To enable AB/BIF DMA access, a specific register inside the BIF register space needs to be configured first. */
@@ -301,7 +301,7 @@ static void sb600_devices_por_init(void)
 	/* set smbus 1, ASF 2.0 (Alert Standard Format), iobase */
 	pci_write_config16(dev, 0x58, SMBUS_IO_BASE | 0x11);
 
-	/* TODO: I don't know the useage of followed two lines. I copied them from CIM. */
+	/* TODO: I don't know the usage of followed two lines. I copied them from CIM. */
 	pci_write_config8(dev, 0x0a, 0x1);
 	pci_write_config8(dev, 0x0b, 0x6);
 
@@ -379,7 +379,7 @@ static void sb600_devices_por_init(void)
 	/* Arbiter enable. */
 	pci_write_config8(dev, 0x43, 0xff);
 
-	/* Set PCDMA request into hight priority list. */
+	/* Set PCDMA request into height priority list. */
 	/* pci_write_config8(dev, 0x49, 0x1) */ ;
 
 	pci_write_config8(dev, 0x40, 0x26);
@@ -483,7 +483,7 @@ static void sb600_pmio_por_init(void)
 	byte |= 1 << 1;
 	pmio_write(0x55, byte);
 
-	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridage */
+	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridge */
 	byte = pmio_read(0x52);
 	byte |= 1 << 6;
 	pmio_write(0x52, byte);
@@ -525,7 +525,7 @@ static void sb600_pci_cfg(void)
 
 	/* SMBus Device, BDF:0-20-0 */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
-	/* Eable the hidden revision ID, available after A13. */
+	/* Enable the hidden revision ID, available after A13. */
 	byte = pci_read_config8(dev, 0x70);
 	byte |= (1 << 8);
 	pci_write_config8(dev, 0x70, byte);

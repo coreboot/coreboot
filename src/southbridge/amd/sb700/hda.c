@@ -53,7 +53,7 @@ static int set_bits(u32 port, u32 mask, u32 val)
 		dword &= mask;
 	} while ((dword != val) && --count);
 
-	/* Timeout occured */
+	/* Timeout occurred */
 	if (!count)
 		return -1;
 	return 0;

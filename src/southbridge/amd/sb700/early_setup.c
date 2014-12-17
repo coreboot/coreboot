@@ -252,7 +252,7 @@ void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	byte |= 0x20;
 	pmio_write(0x8f, byte);
 
-	pmio_write(0x8b, 0x01);	/* TODO: if the HT Link is 200 MHz, it is 0x0A. It doesnt often happen. */
+	pmio_write(0x8b, 0x01);	/* TODO: if the HT Link is 200 MHz, it is 0x0A. It doesn't often happen. */
 	pmio_write(0x8a, 0x90);
 
 	pmio_write(0x88, 0x10);
@@ -374,7 +374,7 @@ static void sb700_devices_por_init(void)
 
 	/* sbPorAtStartOfTblCfg */
 	/* Set A-Link bridge access address. This address is set at device 14h, function 0, register 0xf0.
-	 * This is an I/O address. The I/O address must be on 16-byte boundry.  */
+	 * This is an I/O address. The I/O address must be on 16-byte boundary.  */
 	pci_write_config32(dev, 0xf0, AB_INDX);
 
 	/* To enable AB/BIF DMA access, a specific register inside the BIF register space needs to be configured first. */
@@ -476,7 +476,7 @@ static void sb700_devices_por_init(void)
 	pci_write_config8(dev, 0x49, 0xFF);
 	/* Enable 0x480-0x4bf, 0x4700-0x470B */
 	byte = pci_read_config8(dev, 0x4A);
-	byte |= ((1 << 1) + (1 << 6));	/*0x42, save the configuraion for port 0x80. */
+	byte |= ((1 << 1) + (1 << 6));	/*0x42, save the configuration for port 0x80. */
 	pci_write_config8(dev, 0x4A, byte);
 
 	/* Enable Tpm12_en and Tpm_legacy. I don't know what is its usage and copied from CIM. */
@@ -490,7 +490,7 @@ static void sb700_devices_por_init(void)
 	/* Arbiter enable. */
 	pci_write_config8(dev, 0x43, 0xff);
 
-	/* Set PCDMA request into hight priority list. */
+	/* Set PCDMA request into height priority list. */
 	/* pci_write_config8(dev, 0x49, 0x1) */ ;
 
 	pci_write_config8(dev, 0x40, 0x26);

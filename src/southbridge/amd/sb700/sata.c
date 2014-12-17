@@ -38,7 +38,7 @@ static int sata_drive_detect(int portnum, u16 iobar)
 		if (byte != (0xA0 + 0x10 * (portnum % 2))) {
 			/* This will happen at the first iteration of this loop
 			 * if the first SATA port is unpopulated and the
-			 * second SATA port is poulated.
+			 * second SATA port is populated.
 			 */
 			printk(BIOS_DEBUG, "drive no longer selected after %i ms, "
 				"retrying init\n", i * 10);

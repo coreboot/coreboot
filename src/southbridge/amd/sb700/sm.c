@@ -181,7 +181,7 @@ static void sm_init(device_t dev)
 	if ((REV_SB700_A11 == rev) || REV_SB700_A12 == rev) {
 		byte |= 1 << 0;
 	}
-	/*Set bit2 to 1, enable Io port 60h read/wrire SMi trapping and
+	/*Set bit2 to 1, enable Io port 60h read/write SMi trapping and
 	 *Io port 64h write Smi trapping. conflict with ps2 keyboard
 	 */
 	//byte |= 1 << 2 | 1 << 3 | 1 << 4;

@@ -113,7 +113,7 @@ static void sb800_lpc_set_resources(struct device *dev)
 
 	pci_dev_set_resources(dev);
 
-	/* Specical case. SPI Base Address. The SpiRomEnable should be set. */
+	/* Special case. SPI Base Address. The SpiRomEnable should be set. */
 	res = find_resource(dev, 0xA0);
 	pci_write_config32(dev, 0xA0, res->base | 1 << 1);
 
@@ -122,7 +122,7 @@ static void sb800_lpc_set_resources(struct device *dev)
 /**
  * @brief Enable resources for children devices
  *
- * @param dev the device whos children's resources are to be enabled
+ * @param dev the device whose children's resources are to be enabled
  *
  */
 static void sb800_lpc_enable_childrens_resources(device_t dev)

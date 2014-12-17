@@ -382,7 +382,7 @@ static void sb800_devices_por_init(void)
 
 	/* sbPorAtStartOfTblCfg */
 	/* rpr 4.1.Set A-Link bridge access address.
-	 * This is an I/O address. The I/O address must be on 16-byte boundry.  */
+	 * This is an I/O address. The I/O address must be on 16-byte boundary.  */
 	//pci_write_config32(dev, 0xf0, AB_INDX);
 	pmio_write(0xE0, AB_INDX & 0xFF);
 	pmio_write(0xE1, (AB_INDX >> 8) & 0xFF);
@@ -471,7 +471,7 @@ static void sb800_devices_por_init(void)
 	/* Arbiter enable. */
 	pci_write_config8(dev, 0x43, 0xff);
 
-	/* Set PCDMA request into hight priority list. */
+	/* Set PCDMA request into height priority list. */
 	/* pci_write_config8(dev, 0x49, 0x1) */ ;
 
 	pci_write_config8(dev, 0x40, 0x26);
@@ -572,7 +572,7 @@ static void sb800_pci_cfg(void)
 
 	/* LPC Device, BDF:0-20-3 */
 	/* The code below is ported from old chipset. It is not
-	 * metioned in RPR. But I keep them. The registers and the
+	 * Mentioned in RPR. But I keep them. The registers and the
 	 * comments are compatible. */
 	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
 	/* Enabling LPC DMA function. */

@@ -71,7 +71,7 @@ static void usb_init2(struct device *dev)
 	usb2_bar0 = pci_read_config32(dev, 0x10) & ~0xFF;
 	printk(BIOS_INFO, "usb2_bar0=0x%x\n", usb2_bar0);
 
-	/* RPR7.3 Enables the USB PHY auto calibration resister to match 45ohm resistence */
+	/* RPR7.3 Enables the USB PHY auto calibration resister to match 45ohm resistance */
 	dword = 0x00020F00;
 	write32(usb2_bar0 + 0xC0, dword);
 

@@ -140,7 +140,7 @@ static void sb700_lpc_set_resources(struct device *dev)
 
 	pci_dev_set_resources(dev);
 
-	/* Specical case. SPI Base Address. The SpiRomEnable should be set. */
+	/* Special case. SPI Base Address. The SpiRomEnable should be set. */
 	res = find_resource(dev, 0xA0);
 	pci_write_config32(dev, 0xA0, res->base | 1 << 1);
 }

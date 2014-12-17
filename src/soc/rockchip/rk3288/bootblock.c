@@ -39,4 +39,6 @@ static void bootblock_soc_init(void)
 	mmu_config_range_kb((uintptr_t)_sram/KiB,
 			    _sram_size/KiB, DCACHE_WRITETHROUGH);
 	dcache_mmu_enable();
+
+	rkclk_configure_crypto(148500*KHz);
 }

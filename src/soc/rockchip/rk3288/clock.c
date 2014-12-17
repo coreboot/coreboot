@@ -493,6 +493,16 @@ void rkclk_configure_i2s(unsigned int hz)
 	writel(d << 16 | n, &cru_ptr->cru_clksel_con[8]);
 }
 
+void rkclk_configure_crypto(unsigned int hz)
+{
+	u32 div = PD_BUS_ACLK_HZ / hz;
+
+	assert((div - 1 < 4) && (div * hz == PD_BUS_ACLK_HZ));
+	assert(hz <= 150*MHz);	/* Suggested max in TRM. */
+	writel(RK_CLRSETBITS(0x3 << 6, (div - 1) << 6),
+	       &cru_ptr->cru_clksel_con[26]);
+}
+
 void rkclk_configure_tsadc(unsigned int hz)
 {
 	u32 div;

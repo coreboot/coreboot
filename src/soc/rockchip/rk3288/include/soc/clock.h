@@ -45,6 +45,7 @@ void rkclk_ddr_phy_ctl_reset(u32 ch, u32 n);
 void rkclk_configure_ddr(unsigned int hz);
 void rkclk_configure_i2s(unsigned int hz);
 void rkclk_configure_cpu(void);
+void rkclk_configure_crypto(unsigned int hz);
 void rkclk_configure_tsadc(unsigned int hz);
 void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz);
 int rkclk_configure_vop_dclk(u32 vop_id, u32 dclk_hz);

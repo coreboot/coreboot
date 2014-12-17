@@ -1,0 +1,134 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2014 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+#include <arch/io.h>
+#include <assert.h>
+#include <delay.h>
+#include <soc/addressmap.h>
+#include <soc/soc.h>
+#include <types.h>
+#include <vb2_api.h>
+
+enum rk3288_crypto_interrupt_bits {
+	PKA_DONE	= 1 << 5,
+	HASH_DONE	= 1 << 4,
+	HRDMA_ERR	= 1 << 3,
+	HRDMA_DONE	= 1 << 2,
+	BCDMA_ERR	= 1 << 1,
+	BCDMA_DONE	= 1 << 0,
+};
+
+struct rk3288_crypto {
+	u32 intsts;
+	u32 intena;
+	u32 ctrl;
+	u32 conf;
+	u32 brdmas;
+	u32 btdmas;
+	u32 btdmal;
+	u32 hrdmas;
+	u32 hrdmal;
+	u8 _res0[0x80 - 0x24];
+	u32 aes_ctrl;
+	u32 aes_sts;
+	u32 aes_din[4];
+	u32 aes_dout[4];
+	u32 aes_iv[4];
+	u32 aes_key[8];
+	u32 aes_cnt[4];
+	u8 _res1[0x100 - 0xe8];
+	u32 tdes_ctrl;
+	u32 tdes_sts;
+	u32 tdes_din[2];
+	u32 tdes_dout[2];
+	u32 tdes_iv[2];
+	u32 tdes_key[3][2];
+	u8 _res2[0x180 - 0x138];
+	u32 hash_ctrl;
+	u32 hash_sts;
+	u32 hash_msg_len;
+	u32 hash_dout[8];
+	u32 hash_seed[5];
+	u8 _res3[0x200 - 0x1c0];
+	u32 trng_ctrl;
+	u32 trng_dout[8];
+} *crypto = (void *)CRYPTO_BASE;
+check_member(rk3288_crypto, trng_dout[7], 0x220);
+
+int vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
+			       uint32_t data_size)
+{
+	if (hash_alg != VB2_HASH_SHA256) {
+		printk(BIOS_INFO, "RK3288 doesn't support hash_alg %d!\n",
+		       hash_alg);
+		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
+	}
+
+	write32(RK_SETBITS(1 << 6), &crypto->ctrl);	/* Assert HASH_FLUSH */
+	udelay(1);					/* for 10+ cycles to */
+	write32(RK_CLRBITS(1 << 6), &crypto->ctrl);	/* clear out old hash */
+
+	/* Enable DMA byte swapping for little-endian bus (Byteswap_??FIFO) */
+	write32(1 << 5 | 1 << 4 | 1 << 3, &crypto->conf);
+
+	write32(HRDMA_ERR | HRDMA_DONE, &crypto->intena); /* enable interrupt */
+
+	write32(data_size, &crypto->hash_msg_len);	/* program total size */
+	write32(1 << 3 | 0x2, &crypto->hash_ctrl);	/* swap DOUT, SHA256 */
+
+	printk(BIOS_DEBUG, "Initialized RK3288 HW crypto for %u byte SHA256\n",
+	       data_size);
+	return VB2_SUCCESS;
+}
+
+int vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
+{
+	uint32_t intsts;
+
+	write32(HRDMA_ERR | HRDMA_DONE, &crypto->intsts); /* clear interrupts */
+
+	/* NOTE: This assumes that the DMA is reading from uncached SRAM. */
+	write32((uint32_t)buf, &crypto->hrdmas);
+	write32(size / sizeof(uint32_t), &crypto->hrdmal);
+	write32(RK_SETBITS(1 << 3), &crypto->ctrl);	/* Set HASH_START */
+	do {
+		intsts = read32(&crypto->intsts);
+		if (intsts & HRDMA_ERR) {
+			printk(BIOS_ERR, "ERROR: DMA error during HW crypto\n");
+			return VB2_ERROR_UNKNOWN;
+		}
+	} while (!(intsts & HRDMA_DONE));	/* wait for DMA to finish */
+
+	return VB2_SUCCESS;
+}
+
+int vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
+{
+	uint32_t *dest = (uint32_t *)digest;
+	uint32_t *src = crypto->hash_dout;
+	assert(digest_size == sizeof(crypto->hash_dout));
+
+	while (!(read32(&crypto->hash_sts) & 0x1))
+		/* wait for crypto engine to set HASH_DONE bit */;
+
+	while ((uint8_t *)dest < digest + digest_size)
+		*dest++ = read32(src++);
+
+	return VB2_SUCCESS;
+}

@@ -36,6 +36,7 @@ verstage-y += timer.c
 verstage-$(CONFIG_DRIVERS_UART) += uart.c
 verstage-y += gpio.c
 verstage-y += clock.c
+verstage-y += crypto.c
 verstage-y += i2c.c
 
 romstage-y += cbmem.c

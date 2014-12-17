@@ -1,9 +1,0 @@
-if BOARD_VIA_EPIA_ML
-
-# Dummy for abuild
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "EPIA-ML"
-
-endif

@@ -191,7 +191,7 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_FUNC1,				/* GPIO_S5[14] - GPIO_S514_J20 */
 	GPIO_FUNC0,				/* GPIO_S5[15] - PMC_PCIE_WAKE_R */
 	GPIO_FUNC0,				/* GPIO_S5[16] - PMC_PWRBTN */
-	GPIO_NC1,				/* GPIO_S5[17] - No Connect */
+	GPIO_NC,				/* GPIO_S5[17] - No Connect */
 	GPIO_FUNC1,				/* GPIO_S5[18] - LPCPD_L (TP7) */
 	GPIO_FUNC0,				/* GPIO_S5[19] - SOC_USB_HOST_OC0 */
 	GPIO_FUNC0,				/* GPIO_S5[20] - SOC_USB_HOST_OC1 */

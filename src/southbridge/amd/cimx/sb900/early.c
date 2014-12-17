@@ -74,7 +74,7 @@ void sb_poweron_init(void)
 	//AmdSbDispatcher(&sb_early_cfg);
 	//TODO
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
-	// VerifyImage() will fail, LocateImage() take minutes to find the image.
+	// VerifyImage() will fail, LocateImage() takes minutes to find the image.
 	sbPowerOnInit(&sb_early_cfg);
 	printk(BIOS_SPEW, "SB900 - Early.c - sb_poweron_init - End.\n");
 }
@@ -93,7 +93,7 @@ void sb_before_pci_init(void)
 	//AmdSbDispatcher(&sb_early_cfg);
 	//TODO
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
-	// VerifyImage() will fail, LocateImage() take minutes to find the image.
+	// VerifyImage() will fail, LocateImage() takes minutes to find the image.
 	sbBeforePciInit(&sb_early_cfg);
 	printk(BIOS_SPEW, "SB900 - Early.c - sb_before_pci_init - End.\n");
 }
@@ -109,7 +109,7 @@ void sb_After_Pci_Init(void)
 	//AmdSbDispatcher(&sb_early_cfg);
 	//TODO
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
-	// VerifyImage() will fail, LocateImage() take minutes to find the image.
+	// VerifyImage() will fail, LocateImage() takes minutes to find the image.
 	sbAfterPciInit(&sb_early_cfg);
 	printk(BIOS_SPEW, "SB900 - Early.c - sb_After_Pci_Init - End.\n");
 #endif
@@ -125,7 +125,7 @@ void sb_Mid_Post_Init(void)
 	//AmdSbDispatcher(&sb_early_cfg);
 	//TODO
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
-	// VerifyImage() will fail, LocateImage() take minutes to find the image.
+	// VerifyImage() will fail, LocateImage() takes minutes to find the image.
 	sbMidPostInit(&sb_early_cfg);
 	printk(BIOS_SPEW, "SB900 - Early.c - sb_Mid_Post_Init - End.\n");
 }
@@ -142,7 +142,7 @@ void sb_Late_Post(void)
 	//AmdSbDispatcher(&sb_early_cfg);
 	//TODO
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
-	// VerifyImage() will fail, LocateImage() take minutes to find the image.
+	// VerifyImage() will fail, LocateImage() takes minutes to find the image.
 	sbLatePost(&sb_early_cfg);
 
 	//Set ACPI SCI IRQ to 0x9.

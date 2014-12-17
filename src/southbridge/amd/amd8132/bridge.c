@@ -263,7 +263,7 @@ static void amd8132_pcix_init(device_t dev)
         pci_write_config32(dev, 0x48, dword);
 
         dword = pci_read_config32(dev, 0x4c);
-        dword |= (1<<6); //intial prefetch for memory read line request
+        dword |= (1<<6); //Initial prefetch for memory read line request
 	dword |= (1<<9); //continuous prefetch Enable for memory read line request
         pci_write_config32(dev, 0x4c, dword);
 

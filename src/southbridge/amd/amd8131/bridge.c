@@ -143,7 +143,7 @@ static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
 		if (max_read > limit_read) {
 			max_read = limit_read;
 		}
-		/* Look at the read size and the nubmer of siblings
+		/* Look at the read size and the number of siblings
 		 * and compute how many outstanding transactions I can have.
 		 */
 		if (max_read == 2) {

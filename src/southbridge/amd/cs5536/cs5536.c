@@ -447,7 +447,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 
 		bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
-		/* Make HCCPARAMS writeable */
+		/* Make HCCPARAMS writable */
 		write32(bar + IPREG04, read32(bar + IPREG04) | USB_HCCPW_SET);
 
 		/* ; EECP=50h, IST=01h, ASPC=1 */

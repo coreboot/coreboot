@@ -90,7 +90,7 @@ typedef struct __PCIE_CFG__ {
 * ------------------------------------------------- */
 extern PCIE_CFG AtiPcieCfg;
 
-/* ----------------- export funtions ----------------- */
+/* ----------------- export functions ----------------- */
 u32 nbpcie_p_read_index(device_t dev, u32 index);
 void nbpcie_p_write_index(device_t dev, u32 index, u32 data);
 u32 nbpcie_ind_read_index(device_t nb_dev, u32 index);

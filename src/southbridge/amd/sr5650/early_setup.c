@@ -229,11 +229,11 @@ void sr5650_htinit(void)
 		set_htiu_enable_bits(sr5650_f0, 0x2A, 0x3, 0x1);
 		/* Enables error-retry mode */
 		set_nbcfg_enable_bits(sr5650_f0, 0x44, 0x1, 0x1);
-		/* Enables scrambling and Disalbes command throttling */
+		/* Enables scrambling and Disables command throttling */
 		set_nbcfg_enable_bits(sr5650_f0, 0xac, (1 << 3) | (1 << 14), (1 << 3) | (1 << 14));
 		/* Enables transmitter de-emphasis */
 		set_nbcfg_enable_bits(sr5650_f0, 0xa4, 1 << 31, 1 << 31);
-		/* Enabels transmitter de-emphasis level */
+		/* Enables transmitter de-emphasis level */
 		/* Sets training 0 time */
 		set_nbcfg_enable_bits(sr5650_f0, 0xa0, 0x3F, 0x14);
 
@@ -258,7 +258,7 @@ void sr5650_htinit(void)
 		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x168, 1 << 10, 1 << 10);
 
 		/* Sets Training 0 Time. See T0Time table for encodings */
-		/* AGESA have set it to recommanded value already
+		/* AGESA have set it to recommended value already
 		 * The recommended values are 14h(2us) if F0x[18C:170][LS2En]=0
 		 * and 26h(12us) if F0x[18C:170][LS2En]=1
 		 */

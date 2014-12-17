@@ -410,7 +410,7 @@ void sr5650_enable(device_t dev)
 				       (dev->enabled ? 0 : 1) << (7 + dev_ind));
 		if (dev->enabled)
 			sr5650_gpp_sb_init(nb_dev, dev, dev_ind);
-		/* Dont call disable_pcie_bar3(nb_dev) here, otherwise the screen will crash. */
+		/* Don't call disable_pcie_bar3(nb_dev) here, otherwise the screen will crash. */
 		break;
 	case 11:
 	case 12:	/* bus 0, dev 11,12, GPP2 */

@@ -589,8 +589,8 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	   For Hot-Plug Slots: Advertise TX L0s and L1 exit latency.
 	   TX L0s exit latency to be 110b: 2us to 4us.
 	   L1 exit latency to be 111b: more than 64us.*/
-	//set_pcie_enable_bits(dev, 0xC1, 0xF << 0, 0xC << 0); /* 0xF for htplg. */
-	set_pcie_enable_bits(dev, 0xC1, 0xF << 0, 0xF << 0); /* 0xF for htplg. */
+	//set_pcie_enable_bits(dev, 0xC1, 0xF << 0, 0xC << 0); /* 0xF for hotplug. */
+	set_pcie_enable_bits(dev, 0xC1, 0xF << 0, 0xF << 0); /* 0xF for hotplug. */
 	/* 4.4.2.step13.17. Always ACK an ASPM L1 entry DLLP to
 	   workaround credit control issue on PM_NAK
 	   message of SB700 and SB800. */
@@ -690,7 +690,7 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	case 13:
 		/* 4.4.2.step13.5. Blocks DMA traffic during C3 state */
 		set_pcie_enable_bits(dev, 0x10, 1 << 0, 0 << 0);
-		/* Enabels TLP flushing */
+		/* Enables TLP flushing */
 		set_pcie_enable_bits(dev, 0x20, 1 << 19, 0 << 19);
 
 		/* check port enable */
@@ -724,7 +724,7 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	/* Set Slot present 0x5A*/
 	pci_ext_write_config32(nb_dev, dev, 0x58, 1 << 24, 1 << 24);
 
-	//PCIE-GPP1 TXCLK Clock Gating In L1  Late Core sttting - Maybe move somewhere else? */
+	//PCIE-GPP1 TXCLK Clock Gating In L1  Late Core setting - Maybe move somewhere else? */
 	set_pcie_enable_bits(nb_dev, 0x11 | gpp_sb_sel, 0xF << 0, 0x0C << 0);
 	/* Enable powering down PLLs in L1 or L23 Ready states.
 	 * Turns off PHY`s RX FRONTEND during L1 when PLL power down is enabled */
@@ -800,7 +800,7 @@ void config_gpp_core(device_t nb_dev, device_t sb_dev)
 	reg = nbmisc_read_index(nb_dev, 0x8);
 	reg |= (1 << 31) | (1 << 15) | (1 << 13);	//asserts
 	nbmisc_write_index(nb_dev, 0x8, reg);
-	reg &= ~((1 << 31) | (1 << 15) | (1 << 13));	//De-aserts
+	reg &= ~((1 << 31) | (1 << 15) | (1 << 13));	//De-asserts
 	nbmisc_write_index(nb_dev, 0x8, reg);
 
 	reg = nbmisc_read_index(nb_dev, 0x67); /* get STRAP_BIF_LINK_CONFIG at bit 0-4 */

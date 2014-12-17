@@ -116,7 +116,7 @@ static void pmChipsetInit(void)
 	/* GPIO24 is setup in preChipsetInit for two reasons
 	 * 1. GPIO24 at reset defaults to disabled, since this signal is
 	 *    vsb_work_aux on Hawk it controls the FET's for all voltage
-	 *    rails except Vstanby & Vmem.  BIOS needs to enable GPIO24 as
+	 *    rails except Vstandby & Vmem.  BIOS needs to enable GPIO24 as
 	 *    OUT_AUX1 & OUTPUT_EN early so it is driven by 5535.
 	 * 2. Non-PM builds will require GPIO24 enabled for instant-off power
 	 *    button
@@ -127,7 +127,7 @@ static void pmChipsetInit(void)
 	 * On Hawk, GPIO11 is connected to control input of external clock
 	 * generator for 14MHz, PCI, USB & LPC clocks.
 	 * Programming of GPIO11 will be done by VSA PM code.  During VSA
-	 * Init. BIOS writes PM Core Virual Register indicating if S1 Clocks
+	 * Init. BIOS writes PM Core Virtual Register indicating if S1 Clocks
 	 * should be On or Off. This is based on a Setup item.  We do not want
 	 * to leave GPIO11 enabled because of a Hawk board problem.  With
 	 * GPIO11 enabled in S3, something is back-driving GPIO11 causing it

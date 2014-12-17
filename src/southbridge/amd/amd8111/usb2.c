@@ -1,4 +1,4 @@
-//2003 Copywright Tyan
+//2003 Copyright Tyan
 
 #include <console/console.h>
 #include <device/device.h>

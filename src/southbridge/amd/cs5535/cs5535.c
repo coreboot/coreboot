@@ -20,7 +20,7 @@ static void nvram_on(struct device *dev)
 	pci_write_config8(dev, 0x52, 0xee);
 
 	/* Set positive decode on ROM */
-	/* Also, there is no apparent reason to turn off the devoce on the */
+	/* Also, there is no apparent reason to turn off the device on the */
 	/* IDE devices */
 
 	reg = pci_read_config8(dev, 0x5b);

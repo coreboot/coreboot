@@ -146,9 +146,13 @@ static void usb_scan_pci_bus(int bus)
 			header_type = pci_read_config8(pci_device, REG_HEADER_TYPE);
 			/* If this is a bridge, scan the other side. */
 			if ((header_type & ~HEADER_TYPE_MULTIFUNCTION) ==
-					HEADER_TYPE_BRIDGE)
-				usb_scan_pci_bus(pci_read_config8(pci_device,
-							REG_SECONDARY_BUS));
+					HEADER_TYPE_BRIDGE) {
+				/* Verify that the bridge is enabled */
+				if ((pci_read_config16(pci_device, REG_COMMAND)
+						& 3) != 0)
+					usb_scan_pci_bus(pci_read_config8(
+						pci_device, REG_SECONDARY_BUS));
+			}
 			else
 				usb_controller_initialize(bus, dev, func);
 		}

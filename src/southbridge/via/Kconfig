@@ -1,4 +1,3 @@
 source src/southbridge/via/k8t890/Kconfig
-source src/southbridge/via/vt8231/Kconfig
 source src/southbridge/via/vt8235/Kconfig
 source src/southbridge/via/vt8237r/Kconfig

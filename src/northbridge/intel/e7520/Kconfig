@@ -1,9 +1,0 @@
-config NORTHBRIDGE_INTEL_E7520
-	bool
-
-if NORTHBRIDGE_INTEL_E7520
-config DIMM_MAP_LOGICAL
-	hex
-	default 0x1248
-
-endif

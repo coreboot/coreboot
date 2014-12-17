@@ -17,16 +17,6 @@ config BOARD_SUPERMICRO_H8SCM
         bool "H8SCM"
 config BOARD_SUPERMICRO_H8QGI
 	bool "H8QGI"
-config BOARD_SUPERMICRO_X6DAI_G
-	bool "X6DAi-G"
-config BOARD_SUPERMICRO_X6DHE_G2
-	bool "X6DHE-G2"
-config BOARD_SUPERMICRO_X6DHE_G
-	bool "X6DHE-G"
-config BOARD_SUPERMICRO_X6DHR_IG2
-	bool "X6DHR-iG2"
-config BOARD_SUPERMICRO_X6DHR_IG
-	bool "X6DHR-iG"
 config BOARD_SUPERMICRO_X7DB8
 	bool "X7DB8 / X7DB8+"
 
@@ -39,11 +29,6 @@ source "src/mainboard/supermicro/h8qme_fam10/Kconfig"
 source "src/mainboard/supermicro/h8scm_fam10/Kconfig"
 source "src/mainboard/supermicro/h8scm/Kconfig"
 source "src/mainboard/supermicro/h8qgi/Kconfig"
-source "src/mainboard/supermicro/x6dai_g/Kconfig"
-source "src/mainboard/supermicro/x6dhe_g2/Kconfig"
-source "src/mainboard/supermicro/x6dhe_g/Kconfig"
-source "src/mainboard/supermicro/x6dhr_ig2/Kconfig"
-source "src/mainboard/supermicro/x6dhr_ig/Kconfig"
 source "src/mainboard/supermicro/x7db8/Kconfig"
 
 config MAINBOARD_VENDOR

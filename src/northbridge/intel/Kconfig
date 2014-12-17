@@ -1,7 +1,5 @@
 source src/northbridge/intel/e7501/Kconfig
 source src/northbridge/intel/e7505/Kconfig
-source src/northbridge/intel/e7520/Kconfig
-source src/northbridge/intel/e7525/Kconfig
 source src/northbridge/intel/i3100/Kconfig
 source src/northbridge/intel/i440bx/Kconfig
 source src/northbridge/intel/i440lx/Kconfig

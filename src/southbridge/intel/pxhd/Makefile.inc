@@ -1,1 +1,0 @@
-ramstage-y += bridge.c

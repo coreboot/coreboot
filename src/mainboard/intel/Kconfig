@@ -17,8 +17,6 @@ config BOARD_INTEL_EAGLEHEIGHTS
 	bool "EagleHeights"
 config BOARD_INTEL_EMERALDLAKE2
 	bool "Emerald Lake 2 CRB"
-config BOARD_INTEL_JARRELL
-	bool "Jarrell (SE7520JR2)"
 config BOARD_INTEL_MINNOWMAX
 	bool "Minnow Max"
 config BOARD_INTEL_MOHONPEAK
@@ -27,8 +25,6 @@ config BOARD_INTEL_MTARVON
 	bool "3100 devkit (Mt. Arvon)"
 config BOARD_INTEL_TRUXTON
 	bool "EP80579 devkit (Truxton)"
-config BOARD_INTEL_XE7501DEVKIT
-	bool "XE7501devkit"
 config BOARD_INTEL_BASKING_RIDGE
 	bool "Basking Ridge CRB"
 config BOARD_INTEL_WTM2
@@ -44,12 +40,10 @@ source "src/mainboard/intel/d945gclf/Kconfig"
 source "src/mainboard/intel/eagleheights/Kconfig"
 source "src/mainboard/intel/emeraldlake2/Kconfig"
 source "src/mainboard/intel/baskingridge/Kconfig"
-source "src/mainboard/intel/jarrell/Kconfig"
 source "src/mainboard/intel/minnowmax/Kconfig"
 source "src/mainboard/intel/mohonpeak/Kconfig"
 source "src/mainboard/intel/mtarvon/Kconfig"
 source "src/mainboard/intel/truxton/Kconfig"
-source "src/mainboard/intel/xe7501devkit/Kconfig"
 source "src/mainboard/intel/wtm2/Kconfig"
 
 config MAINBOARD_VENDOR

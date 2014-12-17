@@ -1,3 +1,0 @@
-Board name: Jarrell (SE7520JR2)
-Category: server
-Board URL: http://www.intel.com/support/motherboards/server/se7520jr2/

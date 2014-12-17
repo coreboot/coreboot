@@ -30,7 +30,7 @@
 #include <device/pci_ehci.h>
 #include <arch/acpi.h>
 #include "lpc.h"                /* lpc_read_resources */
-#include "Platform.h"   /* Platfrom Specific Definitions */
+#include "Platform.h"   /* Platform Specific Definitions */
 #include "sb_cimx.h"
 #include "sb700_cfg.h"                /* sb700 Cimx configuration */
 #include "chip.h"               /* struct southbridge_amd_cimx_sb700_config */

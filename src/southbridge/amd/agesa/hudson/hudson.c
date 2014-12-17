@@ -34,7 +34,7 @@
 
 /* Offsets from ACPI_MMIO_BASE
  * This is defined by AGESA, but we don't include AGESA headers to avoid
- * polluting the namesace.
+ * polluting the namespace.
  */
 #define PM_MMIO_BASE 0xfed80300
 

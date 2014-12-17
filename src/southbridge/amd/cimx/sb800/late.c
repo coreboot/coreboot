@@ -32,7 +32,7 @@
 #include <arch/acpi.h>
 #include <device/pci_ehci.h>
 #include "lpc.h"		/* lpc_read_resources */
-#include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
+#include "SBPLATFORM.h" 	/* Platform Specific Definitions */
 #include "cfg.h"		/* sb800 Cimx configuration */
 #include "chip.h"		/* struct southbridge_amd_cimx_sb800_config */
 #include "sb_cimx.h"		/* AMD CIMX wrapper entries */

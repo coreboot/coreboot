@@ -222,7 +222,7 @@ if (sb_chip->imc_fan_zone3_enabled) {
 }
 
 	/*
-	 * EC LDN9 funtion 89 - Set HWM TEMPIN Temperature Calculation Parameters
+	 * EC LDN9 function 89 - Set HWM TEMPIN Temperature Calculation Parameters
 	 * This function provides the critical parameters of the HWM TempIn
 	 * sensors, IMC would not perform temperature measurement using those
 	 * sensors until the parameters are provided.
@@ -232,7 +232,7 @@ if (sb_chip->imc_tempin0_enabled) {
 
 	sb_config.Pecstruct.IMCFUNSupportBitMap |= IMC_ENABLE_TEMPIN0;
 
-	/* EC LDN9 funtion 89 TEMPIN channel 0 */
+	/* EC LDN9 function 89 TEMPIN channel 0 */
 	sb_config.Pecstruct.MSGFun89zone0MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun89zone0MSGREG1 = 0x00;
 	sb_config.Pecstruct.MSGFun89zone0MSGREG2 = ( sb_chip->imc_tempin0_at & 0xff);
@@ -250,7 +250,7 @@ if (sb_chip->imc_tempin1_enabled) {
 
 	sb_config.Pecstruct.IMCFUNSupportBitMap |= IMC_ENABLE_TEMPIN1;
 
-	/* EC LDN9 funtion 89 TEMPIN channel 1 */
+	/* EC LDN9 function 89 TEMPIN channel 1 */
 	sb_config.Pecstruct.MSGFun89zone1MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun89zone1MSGREG1 = 0x01;
 	sb_config.Pecstruct.MSGFun89zone1MSGREG2 = ( sb_chip->imc_tempin1_at & 0xff);
@@ -268,7 +268,7 @@ if (sb_chip->imc_tempin2_enabled) {
 
 	sb_config.Pecstruct.IMCFUNSupportBitMap |= IMC_ENABLE_TEMPIN2;
 
-	/* EC LDN9 funtion 89 TEMPIN channel 2 */
+	/* EC LDN9 function 89 TEMPIN channel 2 */
 	sb_config.Pecstruct.MSGFun89zone2MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun89zone2MSGREG1 = 0x02;
 	sb_config.Pecstruct.MSGFun89zone2MSGREG2 = ( sb_chip->imc_tempin2_at & 0xff);
@@ -286,7 +286,7 @@ if (sb_chip->imc_tempin3_enabled) {
 
 	sb_config.Pecstruct.IMCFUNSupportBitMap |= IMC_ENABLE_TEMPIN3;
 
-	/* EC LDN9 funtion 89 TEMPIN channel 3 */
+	/* EC LDN9 function 89 TEMPIN channel 3 */
 	sb_config.Pecstruct.MSGFun89zone3MSGREG0 = 0x00;
 	sb_config.Pecstruct.MSGFun89zone3MSGREG1 = 0x03;
 	sb_config.Pecstruct.MSGFun89zone3MSGREG2 = ( sb_chip->imc_tempin3_at & 0xff);

@@ -71,7 +71,7 @@ unsigned long get_top_of_ram(void)
 /**
  * @brief South Bridge CIMx configuration
  *
- * should be called before exeucte CIMx function.
+ * should be called before executing CIMx functions.
  * this function will be called in romstage and ramstage.
  */
 void sb800_cimx_config(AMDSBCFG *sb_config)

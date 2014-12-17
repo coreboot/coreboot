@@ -26,7 +26,7 @@
 /**
  * @brief South Bridge CIMx configuration
  *
- * should be called before exeucte CIMx function.
+ * should be called before execute CIMx function.
  * this function will be called in romstage and ramstage.
  */
 void sb900_cimx_config(AMDSBCFG *sb_config)
@@ -274,7 +274,7 @@ void SbPowerOnInit_Config(AMDSBCFG *sb_config)
 	sb_config->BuildParameters.SpiFastSpeed			= SBCIMX_SPI_FASTSPEED;			// Internal Option
 	// sb_config->BuildParameters.SpiWriteSpeed			=  0;							// Field Retired
 	sb_config->BuildParameters.SpiMode				= SBCIMX_SPI_MODE;				// Internal Option
-	sb_config->BuildParameters.SpiBurstWrite		= SBCIMX_SPI_BURST_WRITE;		// Internla Option
+	sb_config->BuildParameters.SpiBurstWrite		= SBCIMX_SPI_BURST_WRITE;		// Internal Option
 	sb_config->BuildParameters.EcKbd				= INCHIP_EC_KBD;				// Board Level
 	sb_config->BuildParameters.Smbus0BaseAddress	= SMBUS0_BASE_ADDRESS;			// Board Level
 	sb_config->BuildParameters.Smbus1BaseAddress	= SMBUS1_BASE_ADDRESS;			// Board Level

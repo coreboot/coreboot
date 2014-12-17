@@ -65,7 +65,7 @@ static void process_gpe_smi(void)
 
 	/* Only Bits [23:0] indicate GEVENT SMIs. */
 	if (status & gevent_mask) {
-		/* A GEVENT SMI occured */
+		/* A GEVENT SMI occurred */
 		if (mainboard_smi_gpi)
 			mainboard_smi_gpi(status & gevent_mask);
 	}

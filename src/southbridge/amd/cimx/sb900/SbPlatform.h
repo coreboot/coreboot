@@ -70,7 +70,7 @@ typedef union _PCI_ADDR {
 
 //------------------------------------------------------------------------------------------------------------------------//
 /**
- * SB_CIMx_PARAMETER                0                1                   2            Defult Value When CIMx Take over
+ * SB_CIMx_PARAMETER                0                1                   2            Default Value When CIMx Take over
  *  SpreadSpectrum         CIMx take over   User (Setup Option) User (Setup Option)               Enable
  * SpreadSpectrumType      CIMx take over   User (Setup Option) User (Setup Option)               Normal
  *     HpetTimer           CIMx take over   User (Setup Option) User (Setup Option)               Enable
@@ -88,7 +88,7 @@ typedef union _PCI_ADDR {
  *  GppPhyPllPowerDown     CIMx take over   User (Setup Option) User (Setup Option)               Enable
  *  UsbPhyPowerDown        CIMx take over   User (Setup Option) User (Setup Option)               Disable
  *  SBGecDebugBus          CIMx take over   User (Setup Option) User (Setup Option)               Disable
- *     SBGecPwr            CIMx take over   User (Setup Option) User (Setup Option)               Nerver Power down (0x11)
+ *     SBGecPwr            CIMx take over   User (Setup Option) User (Setup Option)               Never Power down (0x11)
  *   SataSetMaxGen2        CIMx take over   User (Setup Option) User (Setup Option)               Max Gen3 (0x00)
  *   SataClkMode           CIMx take over   User (Setup Option) User (Setup Option)               0x90   int. 100Mhz
  *  SataAggrLinkPmCap      CIMx take over   User (Setup Option) User (Setup Option)               Enable

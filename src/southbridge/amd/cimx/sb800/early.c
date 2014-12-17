@@ -58,7 +58,7 @@ void sb_Poweron_Init(void)
 	//AmdSbDispatcher(&sb_early_cfg);
 	//TODO
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
-	// VerifyImage() will fail, LocateImage() take minitues to find the image.
+	// VerifyImage() will fail, LocateImage() take minutes to find the image.
 	sbPowerOnInit(&sb_early_cfg);
 }
 

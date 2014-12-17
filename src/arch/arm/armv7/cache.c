@@ -142,7 +142,15 @@ void dcache_mmu_enable(void)
 
 void cache_sync_instructions(void)
 {
-	dcache_clean_all();	/* includes trailing DSB (in assembly) */
+	uint32_t sctlr;
+
+	sctlr = read_sctlr();
+
+	if (sctlr & SCTLR_C)
+		dcache_clean_all();
+	else if (sctlr & SCTLR_I)
+		dcache_clean_invalidate_all();
+
 	iciallu();		/* includes BPIALLU (architecturally) */
 	dsb();
 	isb();

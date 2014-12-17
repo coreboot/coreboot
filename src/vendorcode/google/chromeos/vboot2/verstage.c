@@ -19,6 +19,7 @@
 
 #include <antirollback.h>
 #include <arch/exception.h>
+#include <assert.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
 #include <delay.h>
@@ -89,6 +90,28 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 		return VB2_ERROR_UNKNOWN;
 
 	return VB2_SUCCESS;
+}
+
+/* No-op stubs that can be overridden by SoCs with hardware crypto support. */
+__attribute__((weak))
+int vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
+			       uint32_t data_size)
+{
+	return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
+}
+
+__attribute__((weak))
+int vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
+{
+	BUG();	/* Should never get called if init() returned an error. */
+	return VB2_ERROR_UNKNOWN;
+}
+
+__attribute__((weak))
+int vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
+{
+	BUG();	/* Should never get called if init() returned an error. */
+	return VB2_ERROR_UNKNOWN;
 }
 
 static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)

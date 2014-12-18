@@ -20,12 +20,8 @@
 #include <types.h>
 #include <string.h>
 #include <cbmem.h>
-#include <lib.h>
 #include <console/console.h>
-
-// Global Descriptor Table, defined in c_start.S
-extern char gdt;
-extern char gdt_end;
+#include <cpu/x86/gdt.h>
 
 /* i386 lgdt argument */
 struct gdtarg {
@@ -33,11 +29,13 @@ struct gdtarg {
 	u32 base;
 } __attribute__((packed));
 
-// Copy GDT to new location and reload it
+/* Copy GDT to new location and reload it.
+ * FIXME: We only do this for BSP CPU.
+ */
 void move_gdt(void)
 {
 	void *newgdt;
-	u16 num_gdt_bytes = &gdt_end - &gdt;
+	u16 num_gdt_bytes = (u32)&gdt_end - (u32)&gdt;
 	struct gdtarg gdtarg;
 
 	newgdt = cbmem_find(CBMEM_ID_GDT);

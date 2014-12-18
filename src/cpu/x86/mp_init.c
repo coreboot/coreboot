@@ -26,6 +26,7 @@
 #include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/name.h>
 #include <cpu/x86/msr.h>
@@ -67,10 +68,6 @@ struct saved_msr {
 
 /* The sipi vector rmodule is included in the ramstage using 'objdump -B'. */
 extern char _binary_sipi_vector_start[];
-/* These symbols are defined in c_start.S. */
-extern char gdt[];
-extern char gdt_end[];
-extern char idtarg[];
 
 /* The SIPI vector is loaded at the SMM_DEFAULT_BASE. The reason is at the
  * memory range is already reserved so the OS cannot use it. That region is

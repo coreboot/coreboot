@@ -33,9 +33,6 @@ unsigned long log2_ceil(unsigned long x);
 /* Defined in src/lib/lzma.c */
 unsigned long ulzma(unsigned char *src, unsigned char *dst);
 
-/* Defined in src/arch/x86/boot/gdt.c */
-void move_gdt(void);
-
 /* Defined in src/lib/ramtest.c */
 void ram_check(unsigned long start, unsigned long stop);
 int ram_check_nodie(unsigned long start, unsigned long stop);

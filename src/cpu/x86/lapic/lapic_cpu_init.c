@@ -21,6 +21,7 @@
  */
 
 #include <cpu/x86/cr.h>
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/lapic.h>
 #include <delay.h>
 #include <halt.h>
@@ -53,11 +54,6 @@ char *lowmem_backup_ptr;
 int  lowmem_backup_size;
 #endif
 
-extern char _secondary_start[];
-extern char _secondary_gdt_addr[];
-extern char gdt[];
-extern char gdt_end[];
-
 static inline void setup_secondary_gdt(void)
 {
 	u16 *gdt_limit;
@@ -72,7 +68,6 @@ static inline void setup_secondary_gdt(void)
 
 static void copy_secondary_start_to_lowest_1M(void)
 {
-	extern char _secondary_start_end[];
 	unsigned long code_size;
 
 	/* Fill in secondary_start's local gdt. */

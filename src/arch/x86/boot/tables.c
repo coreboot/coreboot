@@ -21,6 +21,7 @@
 
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/gdt.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
 #include <arch/pirq_routing.h>
@@ -28,7 +29,6 @@
 #include <arch/acpi.h>
 #include <string.h>
 #include <cbmem.h>
-#include <lib.h>
 #include <smbios.h>
 
 

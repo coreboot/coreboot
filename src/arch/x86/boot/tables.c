@@ -21,7 +21,6 @@
 
 #include <console/console.h>
 #include <cpu/cpu.h>
-#include <cpu/x86/gdt.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
 #include <arch/pirq_routing.h>
@@ -30,13 +29,6 @@
 #include <string.h>
 #include <cbmem.h>
 #include <smbios.h>
-
-
-void cbmem_arch_init(void)
-{
-	/* defined in gdt.c */
-	move_gdt();
-}
 
 void write_tables(void)
 {

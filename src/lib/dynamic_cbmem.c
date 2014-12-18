@@ -171,7 +171,7 @@ void cbmem_initialize_empty(void)
 	printk(BIOS_DEBUG, "CBMEM: root @ %p %d entries.\n",
 	       root, root->max_entries);
 
-	cbmem_arch_init();
+	cbmem_run_init_hooks();
 
 	/* Migrate cache-as-ram variables. */
 	car_migrate_variables();
@@ -249,7 +249,7 @@ int cbmem_initialize(void)
 	root->locked = 1;
 #endif
 
-	cbmem_arch_init();
+	cbmem_run_init_hooks();
 
 	/* Migrate cache-as-ram variables. */
 	car_migrate_variables();

@@ -243,7 +243,7 @@ int cbmem_recovery(int is_wakeup)
 		cbmem_fail_resume();
 	}
 
-	cbmem_arch_init();
+	cbmem_run_init_hooks();
 	car_migrate_variables();
 	return !found;
 }

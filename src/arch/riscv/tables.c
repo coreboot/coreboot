@@ -29,10 +29,6 @@
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 
-void cbmem_arch_init(void)
-{
-}
-
 // WTF. this does not agre with the prototype!
 static struct lb_memory *wtf_write_tables(void)
 {
@@ -69,8 +65,4 @@ static struct lb_memory *wtf_write_tables(void)
 void write_tables(void)
 {
 	wtf_write_tables();
-}
-
-void cbmem_fail_resume(void)
-{
 }

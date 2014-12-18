@@ -47,3 +47,14 @@ void cbmem_print_entry(int n, u32 id, u64 base, u64 size)
 }
 
 #endif /* !__PRE_RAM__ */
+
+/* FIXME: Replace with CBMEM_INIT_HOOKS API. */
+#if !IS_ENABLED(CONFIG_ARCH_X86)
+void cbmem_run_init_hooks(void)
+{
+}
+
+void __attribute__((weak)) cbmem_fail_resume(void)
+{
+}
+#endif

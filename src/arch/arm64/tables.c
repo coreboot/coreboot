@@ -29,14 +29,6 @@
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 
-void cbmem_arch_init(void)
-{
-}
-
-void cbmem_fail_resume(void)
-{
-}
-
 void write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;

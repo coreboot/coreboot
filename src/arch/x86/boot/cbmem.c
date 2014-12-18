@@ -20,6 +20,9 @@
 #include <cbmem.h>
 #include <arch/acpi.h>
 
+/* FIXME: Remove after CBMEM_INIT_HOOKS. */
+#include <cpu/x86/gdt.h>
+
 #if !CONFIG_DYNAMIC_CBMEM
 void get_cbmem_table(uint64_t *base, uint64_t *size)
 {
@@ -69,16 +72,19 @@ void *cbmem_top(void)
 
 #endif /* DYNAMIC_CBMEM */
 
-#if !defined(__PRE_RAM__)
-
-/* ACPI resume needs to be cleared in the fail-to-recover case, but that
- * condition is only handled during ramstage. */
-void cbmem_fail_resume(void)
+void cbmem_run_init_hooks(void)
 {
-#if CONFIG_HAVE_ACPI_RESUME
-	/* Something went wrong, our high memory area got wiped */
-	acpi_fail_wakeup();
+#if !defined(__PRE_RAM__)
+	move_gdt();
 #endif
 }
 
-#endif /* !__PRE_RAM__ */
+/* Something went wrong, our high memory area got wiped */
+void cbmem_fail_resume(void)
+{
+#if !defined(__PRE_RAM__) && IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+	/* ACPI resume needs to be cleared in the fail-to-recover case, but that
+	 * condition is only handled during ramstage. */
+	acpi_fail_wakeup();
+#endif
+}

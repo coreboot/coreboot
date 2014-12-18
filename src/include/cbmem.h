@@ -213,17 +213,15 @@ void *cbmem_add(u32 id, u64 size);
 /* Find a cbmem entry of a given id. These return NULL on failure. */
 void *cbmem_find(u32 id);
 
+void cbmem_run_init_hooks(void);
+void cbmem_fail_resume(void);
+
 #ifndef __PRE_RAM__
 /* Ramstage only functions. */
 /* Add the cbmem memory used to the memory map at boot. */
 void cbmem_add_bootmem(void);
 void cbmem_list(void);
-void cbmem_arch_init(void);
 void cbmem_print_entry(int n, u32 id, u64 start, u64 size);
-void cbmem_fail_resume(void);
-#else
-static inline void cbmem_arch_init(void) {}
-static inline void cbmem_fail_resume(void) {}
 #endif /* __PRE_RAM__ */
 
 #endif /* __ASSEMBLER__ */

@@ -18,7 +18,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select VGA
 	select INTEL_EDID
 	select UDELAY_TSC
-	select EARLY_CBMEM_INIT
         select SERIRQ_CONTINUOUS_MODE
 
 config MMCONF_BASE_ADDRESS

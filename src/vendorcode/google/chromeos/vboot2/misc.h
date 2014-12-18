@@ -39,11 +39,13 @@ void vboot_reboot(void);
 struct vb2_working_data {
 	uint32_t selected_region_offset;
 	uint32_t selected_region_size;
-	uint64_t buffer_size;
-	uint64_t buffer;
+	/* offset of the buffer from the start of this struct */
+	uint32_t buffer_offset;
+	uint32_t buffer_size;
 };
 
 struct vb2_working_data * const vboot_get_working_data(void);
+void *vboot_get_work_buffer(struct vb2_working_data *wd);
 
 static inline void vb2_get_selected_region(struct vb2_working_data *wd,
 					   struct vboot_region *region)

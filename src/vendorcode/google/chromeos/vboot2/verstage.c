@@ -179,7 +179,7 @@ void verstage_main(void)
 
 	/* Set up context and work buffer */
 	memset(&ctx, 0, sizeof(ctx));
-	ctx.workbuf = (uint8_t *)(uintptr_t)wd->buffer;
+	ctx.workbuf = vboot_get_work_buffer(wd);
 	ctx.workbuf_size = wd->buffer_size;
 
 	/* Read nvdata from a non-volatile storage */

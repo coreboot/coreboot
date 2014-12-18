@@ -152,7 +152,7 @@ void *vboot2_load_ramstage(void)
 	struct vboot_region fw_main;
 	struct vb2_working_data *wd = vboot_get_working_data();
 
-	sd = (struct vb2_shared_data *)(uintptr_t)wd->buffer;
+	sd = vboot_get_work_buffer(wd);
 	sd->workbuf_hash_offset = 0;
 	sd->workbuf_hash_size = 0;
 

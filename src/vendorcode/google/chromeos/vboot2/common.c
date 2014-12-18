@@ -63,6 +63,11 @@ struct vb2_working_data * const vboot_get_working_data(void)
 	return (struct vb2_working_data *)_vboot2_work;
 }
 
+void *vboot_get_work_buffer(struct vb2_working_data *wd)
+{
+	return (void *)((uintptr_t)wd + wd->buffer_offset);
+}
+
 void vboot_reboot(void)
 {
 	hard_reset();

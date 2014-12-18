@@ -5,6 +5,7 @@ config NORTHBRIDGE_VIA_CX700
 	select HAVE_HARD_RESET
 	select IOAPIC
 	select SMP
+	select LATE_CBMEM_INIT
 
 # TODO: What should be the per-chipset default value here?
 choice

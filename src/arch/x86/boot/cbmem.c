@@ -56,7 +56,7 @@ void set_top_of_ram(uint64_t ramtop)
 }
 #endif /* !__PRE_RAM__ */
 
-#if CONFIG_BROKEN_CAR_MIGRATE || !defined(__PRE_RAM__)
+#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 unsigned long __attribute__((weak)) get_top_of_ram(void)
 {
 	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");

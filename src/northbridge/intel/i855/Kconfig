@@ -1,6 +1,7 @@
 config NORTHBRIDGE_INTEL_I855
 	bool
         select HAVE_DEBUG_RAM_SETUP
+	select LATE_CBMEM_INIT
 
 choice
         prompt "Onboard graphics"

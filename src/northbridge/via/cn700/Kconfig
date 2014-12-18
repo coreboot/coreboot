@@ -1,6 +1,7 @@
 config NORTHBRIDGE_VIA_CN700
 	bool
 	select HAVE_DEBUG_RAM_SETUP
+	select LATE_CBMEM_INIT
 
 # TODO: Values are from the CX700 datasheet, not sure if this matches CN700.
 # TODO: What should be the per-chipset default value here?

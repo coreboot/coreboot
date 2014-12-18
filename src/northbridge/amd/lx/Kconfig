@@ -1,6 +1,7 @@
 config NORTHBRIDGE_AMD_LX
 	bool
 	select GEODE_VSA
+	select LATE_CBMEM_INIT
 
 if NORTHBRIDGE_AMD_LX
 

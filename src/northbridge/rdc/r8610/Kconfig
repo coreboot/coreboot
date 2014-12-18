@@ -1,2 +1,3 @@
 config NORTHBRIDGE_RDC_R8610
 	bool
+	select LATE_CBMEM_INIT

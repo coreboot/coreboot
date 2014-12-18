@@ -32,6 +32,7 @@
 #include <soc/clock.h>
 #include <soc/pwm.h>
 #include <soc/grf.h>
+#include <soc/rk808.h>
 #include <soc/tsadc.h>
 #include <stdlib.h>
 #include <symbols.h>
@@ -39,7 +40,7 @@
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#include "timer.h"
+#include "board.h"
 
 static void regulate_vdd_log(unsigned int mv)
 {
@@ -77,6 +78,12 @@ static void configure_l2ctlr(void)
 	write_l2ctlr(l2ctlr);
 }
 
+static void sdmmc_power_off(void)
+{
+	rk808_configure_ldo(PMIC_BUS, 4, 0); /* VCCIO_SD */
+	rk808_configure_ldo(PMIC_BUS, 5, 0); /* VCC33_SD */
+}
+
 void main(void)
 {
 #if CONFIG_COLLECT_TIMESTAMPS
@@ -90,6 +97,9 @@ void main(void)
 	console_init();
 	configure_l2ctlr();
 	tsadc_init();
+
+	/* Need to power cycle SD card to ensure it is properly reset. */
+	sdmmc_power_off();
 
 	/* vdd_log 1200mv is enough for ddr run 666Mhz */
 	regulate_vdd_log(1200);

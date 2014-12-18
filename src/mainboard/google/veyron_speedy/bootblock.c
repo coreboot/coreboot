@@ -64,6 +64,7 @@ void bootblock_mainboard_init(void)
 
 	/* i2c1 for tpm */
 	writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);
+	i2c_init(1, 400*KHz);
 
 	/* spi2 for firmware ROM */
 	writel(IOMUX_SPI2_CSCLK, &rk3288_grf->iomux_spi2csclk);

@@ -53,6 +53,7 @@ static void configure_sdmmc(void)
 	/* use sdmmc0 io, disable JTAG function */
 	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
 
+	/* Note: these power rail definitions are copied in romstage.c */
 	rk808_configure_ldo(PMIC_BUS, 4, 3300); /* VCCIO_SD */
 	rk808_configure_ldo(PMIC_BUS, 5, 3300); /* VCC33_SD */
 
@@ -71,7 +72,7 @@ static void configure_emmc(void)
 static void configure_codec(void)
 {
 	writel(IOMUX_I2C2, &rk3288_grf->iomux_i2c2);	/* CODEC I2C */
-	i2c_init(2, 400000);	/* CODEC I2C */
+	i2c_init(2, 400*KHz);				/* CODEC I2C */
 
 	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
 	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
@@ -97,10 +98,6 @@ static void configure_vop(void)
 
 static void mainboard_init(device_t dev)
 {
-	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL); /* PMIC I2C */
-	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA); /* PMIC I2C */
-	i2c_init(0, 400000);	/* PMIC I2C */
-
 	gpio_output(GPIO_RESET, 0);
 
 	configure_usb();

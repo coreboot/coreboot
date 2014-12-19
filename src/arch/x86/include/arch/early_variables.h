@@ -45,16 +45,18 @@ void *car_get_var_ptr(void *var);
 #define car_set_var(var, val) \
 	do { car_get_var(var) = (val); } while(0)
 
-/* Migrate the CAR variables to memory. */
-void car_migrate_variables(void);
-
 #else
 #define CAR_MIGRATE(migrate_fn_)
 static inline void *car_get_var_ptr(void *var) { return var; }
 #define car_get_var(var) (var)
 #define car_set_var(var, val) do { (var) = (val); } while (0)
-static inline void car_migrate_variables(void) { }
 #endif
 
+#if defined(__PRE_RAM__) && IS_ENABLED(CONFIG_CACHE_AS_RAM)
+/* Migrate the CAR variables to memory. */
+void car_migrate_variables(void);
+#else
+static inline void car_migrate_variables(void) { }
+#endif
 
 #endif

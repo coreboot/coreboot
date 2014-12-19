@@ -1,6 +1,5 @@
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
-romstage-$(CONFIG_EARLY_CBMEM_INIT) += car.c
-romstage-$(CONFIG_BROKEN_CAR_MIGRATE) += car.c
+romstage-$(CONFIG_CACHE_AS_RAM) += car.c
 endif
 
 subdirs-$(CONFIG_PARALLEL_MP) += name

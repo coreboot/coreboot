@@ -75,8 +75,7 @@ ramstage-y += dynamic_cbmem.c
 romstage-y += dynamic_cbmem.c
 else
 ramstage-y += cbmem.c
-romstage-$(CONFIG_EARLY_CBMEM_INIT) += cbmem.c
-romstage-$(CONFIG_BROKEN_CAR_MIGRATE) += cbmem.c
+romstage-y += cbmem.c
 endif # CONFIG_DYNAMIC_CBMEM
 ramstage-y += cbmem_info.c
 

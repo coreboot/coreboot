@@ -73,7 +73,7 @@ void *car_get_var_ptr(void *var)
 	return &migrated_base[offset];
 }
 
-void car_migrate_variables(void)
+static void do_car_migrate_variables(void)
 {
 	void *migrated_base;
 	car_migration_func_t *migrate_func;
@@ -101,4 +101,10 @@ void car_migrate_variables(void)
 		(*migrate_func)();
 		migrate_func++;
 	}
+}
+
+void car_migrate_variables(void)
+{
+	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE))
+		do_car_migrate_variables();
 }

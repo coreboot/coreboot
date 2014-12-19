@@ -31,7 +31,7 @@
 #include "drivers/pc80/udelay_io.c"
 #include <delay.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
-#include "southbridge/via/vt8235/early_serial.c"
+#include "southbridge/via/vt8237r/early_serial.c"
 #include <spd.h>
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -84,7 +84,7 @@ void main(unsigned long bist)
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
-	enable_vt8235_serial();
+	enable_vt8237r_serial();
 	console_init();
 	enable_smbus();
 	smbus_fixup(&ctrl);

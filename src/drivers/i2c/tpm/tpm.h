@@ -42,8 +42,8 @@ enum tpm_timeout {
 	TPM_TIMEOUT = 1,	/* msecs */
 };
 
-/* Size of external transmit buffer (used in tpm_transmit)*/
-#define TPM_BUFSIZE 4096
+/* Size of external transmit buffer (used for stack buffer in tpm_sendrecv) */
+#define TPM_BUFSIZE 1260
 
 /* Index of fields in TPM command buffer */
 #define TPM_CMD_SIZE_BYTE 2

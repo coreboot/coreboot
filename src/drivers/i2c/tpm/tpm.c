@@ -45,12 +45,6 @@
 #include <device/i2c.h>
 #include "tpm.h"
 
-/* max. buffer size supported by our TPM */
-#ifdef TPM_BUFSIZE
-#undef TPM_BUFSIZE
-#endif
-#define TPM_BUFSIZE 1260
-
 /* Address of the TPM on the I2C bus */
 #define TPM_I2C_ADDR 0x20
 

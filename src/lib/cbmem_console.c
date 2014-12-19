@@ -58,7 +58,7 @@ extern struct cbmem_console preram_cbmem_console;
  * during the ROM stage, once CBMEM becomes available at RAM stage.
  */
 
-#if CONFIG_DYNAMIC_CBMEM
+#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 #define STATIC_CONSOLE_SIZE 1024
 #else
 #define STATIC_CONSOLE_SIZE CONFIG_CONSOLE_CBMEM_BUFFER_SIZE

@@ -162,7 +162,6 @@ config EARLY_CBMEM_INIT
 config DYNAMIC_CBMEM
 	bool
 	default n
-	select EARLY_CBMEM_INIT
 	help
 	  Instead of reserving a static amount of CBMEM space the CBMEM
 	  area grows dynamically.  CBMEM can be used both in romstage (after
@@ -201,7 +200,7 @@ config RELOCATABLE_MODULES
 	 loaded anywhere and all the relocations are handled automatically.
 
 config RELOCATABLE_RAMSTAGE
-	depends on (RELOCATABLE_MODULES && DYNAMIC_CBMEM)
+	depends on (RELOCATABLE_MODULES && DYNAMIC_CBMEM && EARLY_CBMEM_INIT)
 	bool "Build the ramstage to be relocatable in 32-bit address space."
 	default n
 	help

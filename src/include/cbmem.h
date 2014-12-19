@@ -151,6 +151,9 @@ void cbmem_initialize_empty(void);
  * below 4GiB. */
 void *cbmem_top(void);
 
+/* Set the top address for dynamic cbmem. Not for new designs. */
+void cbmem_set_top(void *ramtop);
+
 /* Add a cbmem entry of a given size and id. These return NULL on failure. The
  * add function performs a find first and do not check against the original
  * size. */
@@ -168,7 +171,6 @@ int cbmem_entry_remove(const struct cbmem_entry *entry);
 void *cbmem_entry_start(const struct cbmem_entry *entry);
 u64 cbmem_entry_size(const struct cbmem_entry *entry);
 
-
 #else /* !CONFIG_DYNAMIC_CBMEM */
 
 /* Allocation with static CBMEM is resolved at build time. We start
@@ -183,14 +185,9 @@ u64 cbmem_entry_size(const struct cbmem_entry *entry);
 
 #define HIGH_MEMORY_SIZE	ALIGN_UP(_CBMEM_SZ_TOTAL, 0x10000)
 
-
 #ifndef __PRE_RAM__
-void set_top_of_ram(uint64_t ramtop);
-void backup_top_of_ram(uint64_t ramtop);
 void cbmem_late_set_table(uint64_t base, uint64_t size);
 #endif
-
-unsigned long get_top_of_ram(void);
 
 void get_cbmem_table(uint64_t *base, uint64_t *size);
 struct cbmem_entry *get_cbmem_toc(void);
@@ -223,6 +220,16 @@ void cbmem_add_bootmem(void);
 void cbmem_list(void);
 void cbmem_print_entry(int n, u32 id, u64 start, u64 size);
 #endif /* __PRE_RAM__ */
+
+/* These are for compatibility with old boards only. Any new chipset and board
+ * must implement cbmem_top() for both romstage and ramstage to support
+ * early features like COLLECT_TIMESTAMPS and CBMEM_CONSOLE.
+ */
+#if IS_ENABLED(CONFIG_ARCH_X86) && IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
+unsigned long get_top_of_ram(void);
+void set_top_of_ram(uint64_t ramtop);
+void backup_top_of_ram(uint64_t ramtop);
+#endif
 
 #endif /* __ASSEMBLER__ */
 

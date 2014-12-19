@@ -39,6 +39,9 @@ void get_cbmem_table(uint64_t *base, uint64_t *size)
 		*size = 0;
 	}
 }
+#endif /* !DYNAMIC_CBMEM */
+
+#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 
 #if !defined(__PRE_RAM__)
 void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
@@ -46,14 +49,14 @@ void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM. */
 }
 
-/* This is for compatibility with old boards only. Any new chipset and board
- * must implement get_top_of_ram() for both romstage and ramstage to support
- * early features like COLLECT_TIMESTAMPS and CBMEM_CONSOLE.
- */
 void set_top_of_ram(uint64_t ramtop)
 {
 	backup_top_of_ram(ramtop);
+#if !CONFIG_DYNAMIC_CBMEM
 	cbmem_late_set_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);
+#else
+	cbmem_set_top((void*)(uintptr_t)ramtop);
+#endif
 }
 #endif /* !__PRE_RAM__ */
 
@@ -70,7 +73,8 @@ void *cbmem_top(void)
 	return (void *)get_top_of_ram();
 }
 #endif
-#endif /* !DYNAMIC_CBMEM */
+
+#endif /* LATE_CBMEM_INIT */
 
 void cbmem_run_init_hooks(void)
 {

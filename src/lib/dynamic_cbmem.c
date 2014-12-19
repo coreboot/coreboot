@@ -24,10 +24,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <arch/early_variables.h>
-#if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
+#if IS_ENABLED(CONFIG_ARCH_X86) && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 #include <arch/acpi.h>
 #endif
-
 #ifndef UINT_MAX
 #define UINT_MAX 4294967295U
 #endif
@@ -69,11 +68,18 @@ struct cbmem_root {
 } __attribute__((packed));
 
 
+#if !defined(__PRE_RAM__)
+static void *cached_cbmem_top;
+
+void cbmem_set_top(void * ramtop)
+{
+	cached_cbmem_top = ramtop;
+}
+#endif
+
 static inline void *cbmem_top_cached(void)
 {
 #if !defined(__PRE_RAM__)
-	static void *cached_cbmem_top;
-
 	if (cached_cbmem_top == NULL)
 		cached_cbmem_top = cbmem_top();
 
@@ -100,6 +106,9 @@ static inline void *get_root(void)
 	struct cbmem_root_pointer *pointer;
 
 	pointer_addr = get_top_aligned();
+	if (pointer_addr == 0)
+		return NULL;
+
 	pointer_addr -= sizeof(struct cbmem_root_pointer);
 
 	pointer = (void *)pointer_addr;
@@ -146,6 +155,9 @@ void cbmem_initialize_empty(void)
 	 * DYN_CBMEM_ALIGN_SIZE. The pointer falls just below the
 	 * address returned by get_top_aligned(). */
 	pointer_addr = get_top_aligned();
+	if (pointer_addr == 0)
+		return;
+
 	root_addr = pointer_addr - ROOT_MIN_SIZE;
 	root_addr &= ~(DYN_CBMEM_ALIGN_SIZE - 1);
 	pointer_addr -= sizeof(struct cbmem_root_pointer);
@@ -413,6 +425,8 @@ void *cbmem_entry_start(const struct cbmem_entry *entry)
 
 
 #if !defined(__PRE_RAM__)
+
+#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 /* selected cbmem can be initialized early in ramstage. Additionally, that
  * means cbmem console can be reinitialized early as well. The post_device
  * function is empty since cbmem was initialized early in ramstage. */
@@ -425,6 +439,22 @@ BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 	BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY,
 	                      init_cbmem_pre_device, NULL),
 };
+
+#else
+
+static void init_cbmem_post_device(void *unused)
+{
+	if (acpi_is_wakeup())
+		cbmem_initialize();
+	else
+		cbmem_initialize_empty();
+}
+
+BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
+	BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
+	                      init_cbmem_post_device, NULL),
+};
+#endif
 
 void cbmem_add_bootmem(void)
 {

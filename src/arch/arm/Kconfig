@@ -31,8 +31,3 @@ config ARM_BOOTBLOCK_CUSTOM
 config ARM_LPAE
 	bool
 	default n
-
-# Mark SMP stack size as 0 since we keep using SRAM stack throughout ramstage.
-config STACK_SIZE
-	hex
-	default 0x0

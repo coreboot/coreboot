@@ -22,6 +22,7 @@
 
 /* FIXME: Remove after CBMEM_INIT_HOOKS. */
 #include <console/cbmem_console.h>
+#include <timestamp.h>
 
 #ifndef __PRE_RAM__
 
@@ -57,6 +58,9 @@ void cbmem_run_init_hooks(void)
 {
 	/* Relocate CBMEM console. */
 	cbmemc_reinit();
+
+	/* Relocate timestamps stash. */
+	timestamp_reinit();
 }
 
 void __attribute__((weak)) cbmem_fail_resume(void)

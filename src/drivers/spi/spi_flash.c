@@ -95,6 +95,9 @@ static int spi_flash_cmd_read(struct spi_slave *spi, const u8 *cmd,
 	return ret;
 }
 
+/* TODO: This code is quite possibly broken and overflowing stacks. Fix ASAP! */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstack-usage="
 int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 		const void *data, size_t data_len)
 {
@@ -111,6 +114,7 @@ int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 
 	return ret;
 }
+#pragma GCC diagnostic pop
 
 static int spi_flash_cmd_read_array(struct spi_slave *spi, u8 *cmd,
 				    size_t cmd_len, u32 offset,

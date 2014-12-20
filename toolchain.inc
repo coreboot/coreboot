@@ -74,6 +74,24 @@ CFLAGS_riscv	+= -ffunction-sections -fdata-sections
 
 CFLAGS_x86_64   += -mcmodel=large -mno-red-zone
 
+# Some boards only provide 2K stacks, so storing lots of data there leads to
+# problems. Since C rules don't allow us to statically determine the maximum
+# stack use, we use 1.5K as heuristic, assuming that we typically have lots
+# of tiny stack frames and the odd large one.
+#
+# Store larger buffers in BSS, use MAYBE_STATIC to share code with __PRE_RAM__
+# on x86.
+# Since GCCs detection of dynamic array bounds unfortunately seems to be
+# very basic, you'll sometimes have to use a static upper bound for the
+# size and an assert() to make sure it's honored (see gpio_base3_value()
+# for an example).
+# (If you absolutely need a larger stack frame and are 100% sure it cannot
+# cause problems, you can whitelist it with #pragma diagnostic.)
+CFLAGS_arm	+= -Wstack-usage=1536
+CFLAGS_arm64	+= -Wstack-usage=1536
+CFLAGS_mips	+= -Wstack-usage=1536
+CFLAGS_riscv	+= -Wstack-usage=1536
+
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\
 	$(eval CPPFLAGS_$(arch) += \

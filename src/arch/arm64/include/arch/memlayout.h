@@ -27,7 +27,9 @@
 /* ARM64 stacks need 16-byte alignment. The ramstage will set up its own stacks
  * in BSS, so this is only used for the SRAM stages. */
 #ifdef __PRE_RAM__
-#define STACK(addr, size) REGION(stack, addr, size, 16)
+#define STACK(addr, size) \
+	REGION(stack, addr, size, 16) \
+	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.inc");
 #else
 #define STACK(addr, size) REGION(preram_stack, addr, size, 16)
 #endif

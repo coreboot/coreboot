@@ -119,7 +119,7 @@ static int hash_body(struct vb2_context *ctx, struct region_device *fw_main)
 {
 	uint64_t load_ts;
 	uint32_t expected_size;
-	MAYBE_STATIC uint8_t block[TODO_BLOCK_SIZE];
+	uint8_t block[TODO_BLOCK_SIZE];
 	size_t block_size = sizeof(block);
 	size_t offset;
 	int rv;

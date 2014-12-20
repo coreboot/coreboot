@@ -45,6 +45,8 @@ void bootblock_mainboard_early_init()
 
 void bootblock_mainboard_init(void)
 {
+	gpio_output(GPIO(7, A, 0), 1);	/* Power LED */
+
 	/* Up VDD_CPU (BUCK1) to 1.4V to support max CPU frequency (1.8GHz). */
 	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
 	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
@@ -70,10 +72,6 @@ void bootblock_mainboard_init(void)
 	writel(IOMUX_SPI2_CSCLK, &rk3288_grf->iomux_spi2csclk);
 	writel(IOMUX_SPI2_TXRX, &rk3288_grf->iomux_spi2txrx);
 	rockchip_spi_init(CONFIG_BOOT_MEDIA_SPI_BUS, 11*MHz);
-
-	/* spi0 for chrome ec */
-	writel(IOMUX_SPI0, &rk3288_grf->iomux_spi0);
-	rockchip_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, 9*MHz);
 
 	setup_chromeos_gpios();
 }

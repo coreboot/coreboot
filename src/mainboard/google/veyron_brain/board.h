@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __MAINBOARD_GOOGLE_VEYRON_JERRY_BOARD_H
-#define __MAINBOARD_GOOGLE_VEYRON_JERRY_BOARD_H
+#ifndef __MAINBOARD_GOOGLE_VEYRON_BRAIN_BOARD_H
+#define __MAINBOARD_GOOGLE_VEYRON_BRAIN_BOARD_H
 
 #include <boardid.h>
 #include <gpio.h>
@@ -29,4 +29,4 @@
 
 /* TODO: move setup_chromeos_gpios() here once bootblock code is in mainboard */
 
-#endif	/* __MAINBOARD_GOOGLE_VEYRON_JERRY_BOARD_H */
+#endif	/* __MAINBOARD_GOOGLE_VEYRON_BRAIN_BOARD_H */

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the coreboot project.
  *
  * Copyright 2014 Rockchip Inc.
@@ -19,8 +19,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
-#include <ec/google/chromeec/ec.h>
-#include <ec/google/chromeec/ec_commands.h>
 #include <gpio.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -28,15 +26,12 @@
 #include "board.h"
 
 #define GPIO_WP		GPIO(7, A, 6)
-#define GPIO_LID	GPIO(0, A, 6)
 #define GPIO_POWER	GPIO(0, A, 5)
 #define GPIO_RECOVERY	GPIO(0, B, 1)
-#define GPIO_ECINRW	GPIO(0, A, 7)
 
 void setup_chromeos_gpios(void)
 {
 	gpio_input(GPIO_WP);
-	gpio_input_pullup(GPIO_LID);
 	gpio_input(GPIO_POWER);
 	gpio_input_pullup(GPIO_RECOVERY);
 }
@@ -55,20 +50,13 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 	/* Recovery: active low */
 	gpios->gpios[count].port = GPIO_RECOVERY.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_recovery_mode_switch();
+	gpios->gpios[count].polarity = ACTIVE_LOW;
+	gpios->gpios[count].value = gpio_get(GPIO_RECOVERY);
 	strncpy((char *)gpios->gpios[count].name, "recovery",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 
-	/* Lid: active high */
-	gpios->gpios[count].port = GPIO_LID.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Power:GPIO active high */
+	/* Power Button: GPIO active low */
 	gpios->gpios[count].port = GPIO_POWER.raw;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
 	gpios->gpios[count].value = -1;
@@ -81,14 +69,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
 	gpios->gpios[count].value = get_developer_mode_switch();
 	strncpy((char *)gpios->gpios[count].name, "developer",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* EC in RW: GPIO active high */
-	gpios->gpios[count].port = GPIO_ECINRW.raw;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = -1;
-	strncpy((char *)gpios->gpios[count].name, "EC in RW",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 
@@ -113,15 +93,7 @@ int get_developer_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	uint32_t ec_events;
-
-	/* The GPIO is active low. */
-	if (!gpio_get(GPIO_RECOVERY))
-		return 1;
-
-	ec_events = google_chromeec_get_events_b();
-	return !!(ec_events &
-		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+	return !gpio_get(GPIO_RECOVERY);
 }
 
 int get_write_protect_state(void)

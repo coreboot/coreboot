@@ -46,20 +46,6 @@ static void configure_usb(void)
 	gpio_output(GPIO(7, C, 5), 1);			/* 5V_DRV */
 }
 
-static void configure_sdmmc(void)
-{
-	writel(IOMUX_SDMMC0, &rk3288_grf->iomux_sdmmc0);
-
-	/* use sdmmc0 io, disable JTAG function */
-	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
-
-	/* Note: these power rail definitions are copied in romstage.c */
-	rk808_configure_ldo(PMIC_BUS, 4, 3300); /* VCCIO_SD */
-	rk808_configure_ldo(PMIC_BUS, 5, 3300); /* VCC33_SD */
-
-	gpio_input(GPIO(7, A, 5));		/* SD_DET */
-}
-
 static void configure_emmc(void)
 {
 	writel(IOMUX_EMMCDATA, &rk3288_grf->iomux_emmcdata);
@@ -91,19 +77,9 @@ static void configure_vop(void)
 	/* lcdc(vop) iodomain select 1.8V */
 	writel(RK_SETBITS(1 << 0), &rk3288_grf->io_vsel);
 
-	switch (board_id()) {
-	case 2:
-		rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD */
-		rk808_configure_ldo(PMIC_BUS, 7, 2500);	/* VCC10_LCD_PWREN_H */
-		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
-		break;
-	default:
-		gpio_output(GPIO(2, B, 5), 1);	/* AVDD_1V8_DISP_EN */
-		rk808_configure_ldo(PMIC_BUS, 7, 2500);	/* VCC10_LCD_PWREN_H */
-		gpio_output(GPIO(7, B, 6), 1);	/* LCD_EN */
-		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
-		break;
-	}
+	rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD (HDMI_AVDD_1V8) */
+	rk808_configure_ldo(PMIC_BUS, 7, 1000);	/* VDD10_LCD (HDMI_AVDD_1V0) */
+	rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
 }
 
 static void mainboard_init(device_t dev)
@@ -111,7 +87,6 @@ static void mainboard_init(device_t dev)
 	gpio_output(GPIO_RESET, 0);
 
 	configure_usb();
-	configure_sdmmc();
 	configure_emmc();
 	configure_codec();
 	configure_vop();
@@ -137,21 +112,8 @@ void lb_board(struct lb_header *header)
 	dma->range_size = _dma_coherent_size;
 }
 
+/* called from rk3288 display.c, but there is no backlight for this platform */
 void mainboard_power_on_backlight(void)
 {
-	switch (board_id()) {
-	case 2:
-		gpio_output(GPIO(7, A, 0), 0);	/* BL_EN */
-		gpio_output(GPIO(7, A, 2), 1);	/* LCD_BL */
-		mdelay(10);
-		gpio_output(GPIO(7, A, 0), 1);	/* BL_EN */
-		break;
-	default:
-		gpio_output(GPIO(2, B, 4), 1);	/* BL_PWR_EN */
-		mdelay(10);
-		gpio_output(GPIO(7, A, 2), 1);	/* LCD_BL */
-		mdelay(10);
-		gpio_output(GPIO(7, A, 0), 1);	/* BL_EN */
-		break;
-	}
+	return;
 }

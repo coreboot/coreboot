@@ -69,7 +69,7 @@ SECTIONS
 
 	_end = .;
 
-	preram_cbmem_console = CONFIG_CBMEM_CONSOLE_PRERAM_BASE;
+	preram_cbmem_console = CONFIG_CONSOLE_PRERAM_BUFFER_BASE;
 
 	/* Discard the sections we don't need/want */
 	/DISCARD/ : {

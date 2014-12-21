@@ -175,8 +175,9 @@ config CONSOLE_CBMEM
 	  Enable this to save the console output in a CBMEM buffer. This would
 	  allow to see coreboot console output from Linux space.
 
+if CONSOLE_CBMEM
+
 config CONSOLE_CBMEM_BUFFER_SIZE
-	depends on CONSOLE_CBMEM
 	hex "Room allocated for console output in CBMEM"
 	default 0x20000
 	help
@@ -184,15 +185,22 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 	  value (128K or 0x20000 bytes) is large enough to accommodate
 	  even the BIOS_SPEW level.
 
+config CONSOLE_PRERAM_BUFFER_BASE
+	hex
+	default 0xabadbeef if !CACHE_AS_RAM || BROKEN_CAR_MIGRATE
+	default 0x0
+
 config CONSOLE_PRERAM_BUFFER_SIZE
-	depends on CONSOLE_CBMEM
-	hex "Room allocated for console output before RAM is initialized"
+	hex
+	default 0x0 if CONSOLE_PRERAM_BUFFER_BASE = 0xabadbeef
 	default 0xc00
 	help
 	  Console is used before RAM is initialized. This is the room reserved
 	  in the DCACHE based RAM, SRAM, etc. to keep console output before it
 	  can be saved in a CBMEM buffer. 3K bytes should be enough even for
 	  the BIOS_SPEW level.
+
+endif
 
 config CONSOLE_QEMU_DEBUGCON
 	bool "QEMU debug console output"

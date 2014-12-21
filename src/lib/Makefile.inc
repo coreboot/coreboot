@@ -21,6 +21,7 @@ subdirs-y += loaders
 bootblock-y += cbfs.c cbfs_core.c
 bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 
+bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
 

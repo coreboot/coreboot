@@ -37,6 +37,9 @@ struct cbmem_console {
 
 static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
 
+static void copy_console_buffer(struct cbmem_console *old_cons_p,
+	struct cbmem_console *new_cons_p);
+
 #ifdef __PRE_RAM__
 /*
  * While running from ROM, before DRAM is initialized, some area in cache as
@@ -63,6 +66,10 @@ extern struct cbmem_console preram_cbmem_console;
 static u8 static_console[STATIC_CONSOLE_SIZE];
 #endif
 
+/* flags for init */
+#define CBMEMC_RESET	(1<<0)
+#define CBMEMC_APPEND	(1<<1)
+
 static inline struct cbmem_console *current_console(void)
 {
 	return car_sync_var(cbmem_console_p);
@@ -73,27 +80,46 @@ static inline void current_console_set(struct cbmem_console *new_console_p)
 	car_set_var(cbmem_console_p, new_console_p);
 }
 
-static inline void init_console_ptr(void *storage, u32 total_space)
+static inline void init_console_ptr(void *storage, u32 total_space, int flags)
 {
 	struct cbmem_console *cbm_cons_p = storage;
 
-	/* Initialize the cache-as-ram pointer and underlying structure. */
-	car_set_var(cbmem_console_p, cbm_cons_p);
-	cbm_cons_p->buffer_size = total_space - sizeof(struct cbmem_console);
-	cbm_cons_p->buffer_cursor = 0;
+	if (!cbm_cons_p) {
+		current_console_set(NULL);
+		return;
+	}
+
+	if (flags & CBMEMC_RESET) {
+		cbm_cons_p->buffer_size = total_space - sizeof(struct cbmem_console);
+		cbm_cons_p->buffer_cursor = 0;
+	}
+	if (flags & CBMEMC_APPEND) {
+		struct cbmem_console *tmp_cons_p = current_console();
+		if (tmp_cons_p)
+			copy_console_buffer(tmp_cons_p, cbm_cons_p);
+	}
+
+	current_console_set(cbm_cons_p);
 }
 
 void cbmemc_init(void)
 {
 #ifdef __PRE_RAM__
+	int flags = CBMEMC_RESET;
+
+	/* Do not clear output from bootblock. */
+	if (ENV_ROMSTAGE && !IS_ENABLED(CONFIG_CACHE_AS_RAM))
+		if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+			flags = 0;
+
 	init_console_ptr(&preram_cbmem_console,
-			 CONFIG_CONSOLE_PRERAM_BUFFER_SIZE);
+			 CONFIG_CONSOLE_PRERAM_BUFFER_SIZE, flags);
 #else
 	/*
 	 * Initializing before CBMEM is available, use static buffer to store
 	 * the log.
 	 */
-	init_console_ptr(static_console, sizeof(static_console));
+	init_console_ptr(static_console, sizeof(static_console), CBMEMC_RESET);
 #endif
 }
 
@@ -119,13 +145,11 @@ void cbmemc_tx_byte(unsigned char data)
  * If there is overflow - add to the destination area a string, reporting the
  * overflow and the number of dropped characters.
  */
-static void copy_console_buffer(struct cbmem_console *new_cons_p)
+static void copy_console_buffer(struct cbmem_console *old_cons_p,
+	struct cbmem_console *new_cons_p)
 {
 	u32 copy_size, dropped_chars;
 	u32 cursor = new_cons_p->buffer_cursor;
-	struct cbmem_console *old_cons_p;
-
-	old_cons_p = current_console();
 
 	if (old_cons_p->buffer_cursor < old_cons_p->buffer_size)
 		copy_size = old_cons_p->buffer_cursor;
@@ -187,35 +211,21 @@ static void copy_console_buffer(struct cbmem_console *new_cons_p)
 void cbmemc_reinit(void)
 {
 	struct cbmem_console *cbm_cons_p = NULL;
+	int flags = CBMEMC_APPEND;
 
-#ifdef __PRE_RAM__
-	if (IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE))
+	if (ENV_ROMSTAGE && (CONFIG_CONSOLE_PRERAM_BUFFER_SIZE == 0))
 		return;
-#endif
 
-#ifndef __PRE_RAM__
-	cbm_cons_p = cbmem_find(CBMEM_ID_CONSOLE);
-#endif
+	/* If CBMEM entry already existed, old contents is not altered. */
+	cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE,
+		CONFIG_CONSOLE_CBMEM_BUFFER_SIZE);
 
-	if (!cbm_cons_p) {
-		cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE,
-							CONFIG_CONSOLE_CBMEM_BUFFER_SIZE);
+	/* Clear old contents of CBMEM buffer. */
+	if (ENV_ROMSTAGE || (CONFIG_CONSOLE_PRERAM_BUFFER_SIZE == 0))
+		flags |= CBMEMC_RESET;
 
-		if (!cbm_cons_p) {
-			current_console_set(NULL);
-			return;
-		}
-
-		cbm_cons_p->buffer_size = CONFIG_CONSOLE_CBMEM_BUFFER_SIZE -
-			sizeof(struct cbmem_console);
-
-		cbm_cons_p->buffer_cursor = 0;
-	}
-
-	copy_console_buffer(cbm_cons_p);
-
-	current_console_set(cbm_cons_p);
+	init_console_ptr(cbm_cons_p,
+		CONFIG_CONSOLE_CBMEM_BUFFER_SIZE, flags);
 }
-
 /* Call cbmemc_reinit() at CAR migration time. */
 CAR_MIGRATE(cbmemc_reinit)

@@ -32,7 +32,8 @@ static inline void cbmemc_reinit(void) {}
 #endif
 
 #define __CBMEM_CONSOLE_ENABLE__	CONFIG_CONSOLE_CBMEM && \
-	((ENV_ROMSTAGE && !CONFIG_BROKEN_CAR_MIGRATE) || ENV_RAMSTAGE)
+	(ENV_RAMSTAGE || (CONFIG_CONSOLE_PRERAM_BUFFER_SIZE && \
+	((ENV_BOOTBLOCK && CONFIG_BOOTBLOCK_CONSOLE) || ENV_ROMSTAGE)))
 
 #if __CBMEM_CONSOLE_ENABLE__
 static inline void __cbmemc_init(void)	{ cbmemc_init(); }

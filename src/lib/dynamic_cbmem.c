@@ -83,15 +83,15 @@ static inline void *cbmem_top_cached(void)
 #endif
 }
 
-static inline void *get_top_aligned(void)
+static inline uintptr_t get_top_aligned(void)
 {
-	unsigned long top;
+	uintptr_t top;
 
 	/* Align down what is returned from cbmem_top(). */
-	top = (unsigned long)cbmem_top_cached();
+	top = (uintptr_t)cbmem_top_cached();
 	top &= ~(DYN_CBMEM_ALIGN_SIZE - 1);
 
-	return (void *)top;
+	return top;
 }
 
 static inline void *get_root(void)
@@ -99,7 +99,7 @@ static inline void *get_root(void)
 	uintptr_t pointer_addr;
 	struct cbmem_root_pointer *pointer;
 
-	pointer_addr = (uintptr_t)get_top_aligned();
+	pointer_addr = get_top_aligned();
 	pointer_addr -= sizeof(struct cbmem_root_pointer);
 
 	pointer = (void *)pointer_addr;
@@ -134,8 +134,8 @@ cbmem_entry_append(struct cbmem_root *root, u32 id, u32 start, u32 size)
 
 void cbmem_initialize_empty(void)
 {
-	unsigned long pointer_addr;
-	unsigned long root_addr;
+	uintptr_t pointer_addr;
+	uintptr_t root_addr;
 	unsigned long max_entries;
 	struct cbmem_root *root;
 	struct cbmem_root_pointer *pointer;
@@ -145,7 +145,7 @@ void cbmem_initialize_empty(void)
 	 * where the root address is aligned down to
 	 * DYN_CBMEM_ALIGN_SIZE. The pointer falls just below the
 	 * address returned by get_top_aligned(). */
-	pointer_addr = (unsigned long)get_top_aligned();
+	pointer_addr = get_top_aligned();
 	root_addr = pointer_addr - ROOT_MIN_SIZE;
 	root_addr &= ~(DYN_CBMEM_ALIGN_SIZE - 1);
 	pointer_addr -= sizeof(struct cbmem_root_pointer);
@@ -186,7 +186,7 @@ static int validate_entries(struct cbmem_root *root)
 	unsigned int i;
 	uintptr_t current_end;
 
-	current_end = (uintptr_t)get_top_aligned();
+	current_end = get_top_aligned();
 
 	printk(BIOS_DEBUG, "CBMEM: recovering %d/%d entries from root @ %p\n",
 	       root->num_entries, root->max_entries, root);
@@ -214,7 +214,7 @@ static int validate_entries(struct cbmem_root *root)
 int cbmem_initialize(void)
 {
 	struct cbmem_root *root;
-	void *top_according_to_root;
+	uintptr_t top_according_to_root;
 
 	root = get_root();
 
@@ -223,7 +223,7 @@ int cbmem_initialize(void)
 		return cbmem_fail_recovery();
 
 	/* Sanity check the root. */
-	top_according_to_root = (void *)(root->size + (unsigned long)root);
+	top_according_to_root = (root->size + (uintptr_t)root);
 	if (get_top_aligned() != top_according_to_root)
 		return cbmem_fail_recovery();
 
@@ -261,7 +261,7 @@ int cbmem_recovery(int is_wakeup)
 	return rv;
 }
 
-static void *cbmem_base(void)
+static uintptr_t cbmem_base(void)
 {
 	struct cbmem_root *root;
 	uintptr_t low_addr;
@@ -269,7 +269,7 @@ static void *cbmem_base(void)
 	root = get_root();
 
 	if (root == NULL)
-		return NULL;
+		return 0;
 
 	low_addr = (uintptr_t)root;
 	/* a low address is low. */
@@ -280,7 +280,7 @@ static void *cbmem_base(void)
 		low_addr = root->entries[root->num_entries - 1].start;
 	}
 
-	return (void *)low_addr;
+	return low_addr;
 }
 
 
@@ -288,7 +288,7 @@ const struct cbmem_entry *cbmem_entry_add(u32 id, u64 size64)
 {
 	struct cbmem_root *root;
 	const struct cbmem_entry *entry;
-	unsigned long base;
+	uintptr_t base;
 	u32 size;
 	u32 aligned_size;
 
@@ -316,7 +316,7 @@ const struct cbmem_entry *cbmem_entry_add(u32 id, u64 size64)
 		return NULL;
 
 	aligned_size = ALIGN(size, DYN_CBMEM_ALIGN_SIZE);
-	base = (unsigned long)cbmem_base();
+	base = cbmem_base();
 	base -= aligned_size;
 
 	return cbmem_entry_append(root, id, base, aligned_size);
@@ -428,11 +428,11 @@ BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 
 void cbmem_add_bootmem(void)
 {
-	unsigned long base;
-	unsigned long top;
+	uintptr_t base;
+	uintptr_t top;
 
-	base = (unsigned long)cbmem_base();
-	top = (unsigned long)get_top_aligned();
+	base = cbmem_base();
+	top = get_top_aligned();
 	bootmem_add_range(base, top - base, LB_MEM_TABLE);
 }
 

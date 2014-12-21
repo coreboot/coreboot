@@ -1011,7 +1011,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				/* we know it's at least 2013, when this code was written */
 				if (edid[0x11] + 90 <= 2013) {
 					c.has_valid_year = 1;
-					printk(BIOS_SPEW, "Made week %hhd of %hhd\n",
+					printk(BIOS_SPEW, "Made week %hhd of %d\n",
 					       edid[0x10], edid[0x11] + 1990);
 					out->week = edid[0x10];
 					out->year = edid[0x11] + 1990;

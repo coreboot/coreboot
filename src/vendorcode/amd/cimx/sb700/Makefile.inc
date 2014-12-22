@@ -44,7 +44,7 @@ romstage-y += SATA.c
 romstage-y += SBCMN.c
 romstage-y += SBCMNLIB.c
 romstage-y += SBMAIN.c
-romstage-y += SBPOR.c
+romstage-y += SBPort.c
 romstage-y += SMM.c
 romstage-y += USB.c
 
@@ -60,7 +60,7 @@ ramstage-y += SATA.c
 ramstage-y += SBCMN.c
 ramstage-y += SBCMNLIB.c
 ramstage-y += SBMAIN.c
-ramstage-y += SBPOR.c
+ramstage-y += SBPort.c
 ramstage-y += SMM.c
 ramstage-y += USB.c
 ramstage-y += LEGACY.c

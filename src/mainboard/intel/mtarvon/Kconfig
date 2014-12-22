@@ -23,14 +23,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 1
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xffdf8000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
-
 config MAX_CPUS
 	int
 	default 4

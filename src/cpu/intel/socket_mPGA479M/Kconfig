@@ -6,3 +6,15 @@ config CPU_INTEL_SOCKET_MPGA479M
 	select CPU_INTEL_MODEL_F2X
 	select MMX
 	select SSE
+
+if CPU_INTEL_SOCKET_MPGA479M
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+
+endif

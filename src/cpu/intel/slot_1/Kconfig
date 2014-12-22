@@ -30,6 +30,10 @@ config SLOT_SPECIFIC_OPTIONS # dummy
 	select CPU_INTEL_MODEL_6BX
 	select CPU_INTEL_MODEL_6XX
 
+config DCACHE_RAM_BASE
+	hex
+	default 0xcf000
+
 config DCACHE_RAM_SIZE
 	hex
 	default 0x01000

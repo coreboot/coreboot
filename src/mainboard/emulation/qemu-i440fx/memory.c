@@ -40,7 +40,7 @@ static unsigned long qemu_get_memory_size(void)
 	return tomk;
 }
 
-unsigned long get_top_of_ram(void)
+void *cbmem_top(void)
 {
-	return qemu_get_memory_size() * 1024;
+	return (void *) (qemu_get_memory_size() * 1024);
 }

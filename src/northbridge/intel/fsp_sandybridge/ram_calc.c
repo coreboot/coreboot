@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Google Inc.
+ * Copyright (C) 2013 Sage Electronic Engineering, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,24 +18,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-// Use simple device model for this file even in ramstage
 #define __SIMPLE_DEVICE__
 
 #include <arch/io.h>
 #include <cbmem.h>
-#include "haswell.h"
+#include <fsp_util.h>
+#include "northbridge.h"
 
 static uintptr_t smm_region_start(void)
 {
-	/*
-	 * Base of TSEG is top of usable DRAM below 4GiB. The register has
-	 * 1 MiB alignement.
-	 */
-	uintptr_t tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
-	return tom & ~((1 << 20) - 1);
+	/* Base of TSEG is top of usable DRAM */
+	uintptr_t tom = pci_read_config32(PCI_DEV(0,0,0), TSEG) & ~(1UL << 0);
+	return tom;
 }
 
 void *cbmem_top(void)
 {
-	return (void *)smm_region_start();
+	return (void *) (smm_region_start() - FSP_RESERVE_MEMORY_SIZE);
 }

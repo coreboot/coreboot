@@ -23,9 +23,14 @@
 #include <cbmem.h>
 #include "sandybridge.h"
 
-unsigned long get_top_of_ram(void)
+static uintptr_t smm_region_start(void)
 {
 	/* Base of TSEG is top of usable DRAM */
-	u32 tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
-	return (unsigned long) tom;
+	uintptr_t tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
+	return tom;
+}
+
+void *cbmem_top(void)
+{
+	return (void *) smm_region_start();
 }

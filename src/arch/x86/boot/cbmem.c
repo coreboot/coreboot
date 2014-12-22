@@ -57,23 +57,20 @@ void set_top_of_ram(uint64_t ramtop)
 }
 #endif /* !__PRE_RAM__ */
 
-#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 unsigned long __attribute__((weak)) get_top_of_ram(void)
 {
 	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");
 	return 0;
 }
-#endif
 
-#else
-
+#if IS_ENABLED(CONFIG_DYNAMIC_CBMEM)
 void *cbmem_top(void)
 {
 	/* Top of cbmem is at lowest usable DRAM address below 4GiB. */
 	return (void *)get_top_of_ram();
 }
-
-#endif /* DYNAMIC_CBMEM */
+#endif
+#endif /* !DYNAMIC_CBMEM */
 
 void cbmem_run_init_hooks(void)
 {

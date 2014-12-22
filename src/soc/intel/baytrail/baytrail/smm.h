@@ -31,7 +31,7 @@ static inline int smm_region_size(void)
 	return CONFIG_SMM_TSEG_SIZE;
 }
 
-void *smm_region_start(void);
+uintptr_t smm_region_start(void);
 
 #if !defined(__PRE_RAM__) && !defined(__SMM___)
 #include <stdint.h>

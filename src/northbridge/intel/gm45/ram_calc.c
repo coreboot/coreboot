@@ -86,7 +86,7 @@ u32 decode_igd_gtt_size(const u32 gsm)
 	}
 }
 
-unsigned long get_top_of_ram(void)
+static uintptr_t smm_region_start(void)
 {
 	const pci_devfn_t dev = PCI_DEV(0, 0, 0);
 
@@ -104,4 +104,9 @@ unsigned long get_top_of_ram(void)
 		tor -= decode_igd_gtt_size((ggc >> 8) & 0xf) << 10;
 	}
 	return tor;
+}
+
+void *cbmem_top(void)
+{
+	return (void *) smm_region_start();
 }

@@ -74,11 +74,3 @@ void report_memory_config(void)
 		       ((ch_conf >> 16) & 1) ? ", selected" : "");
 	}
 }
-
-unsigned long get_top_of_ram(void)
-{
-	/* Base of TSEG is top of usable DRAM */
-	u32 tom = pci_read_config32(PCI_DEV(0,0,0), TSEG) & ~(1UL << 0);
-	tom -= 0x200000;	/* 2MB for FSP HOB */
-	return (unsigned long) tom;
-}

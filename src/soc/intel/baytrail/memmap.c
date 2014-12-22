@@ -22,12 +22,12 @@
 #include <baytrail/iosf.h>
 #include <baytrail/smm.h>
 
-void *smm_region_start(void)
+uintptr_t smm_region_start(void)
 {
-	return (void *)(iosf_bunit_read(BUNIT_SMRRL) << 20);
+	return (iosf_bunit_read(BUNIT_SMRRL) << 20);
 }
 
-unsigned long get_top_of_ram(void)
+void *cbmem_top(void)
 {
-	return (unsigned long)smm_region_start();
+	return (void *) smm_region_start();
 }

@@ -20,11 +20,13 @@
 
 subdirs-y += fsp
 ramstage-y += northbridge.c
+ramstage-y += ram_calc.c
 ramstage-y += gma.c
 
 ramstage-y += acpi.c
 
 romstage-y += raminit.c
+romstage-y += ram_calc.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
 romstage-y += ../../../arch/x86/lib/walkcbfs.S

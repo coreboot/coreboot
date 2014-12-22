@@ -190,6 +190,8 @@ void backup_top_of_ram(uint64_t ramtop);
 void cbmem_late_set_table(uint64_t base, uint64_t size);
 #endif
 
+unsigned long get_top_of_ram(void);
+
 void get_cbmem_table(uint64_t *base, uint64_t *size);
 struct cbmem_entry *get_cbmem_toc(void);
 
@@ -200,8 +202,6 @@ static inline const struct cbmem_entry *cbmem_entry_find(uint32_t id)
 #endif /* CONFIG_DYNAMIC_CBMEM */
 
 /* Common API between cbmem and dynamic cbmem. */
-
-unsigned long get_top_of_ram(void);
 
 /* Returns 0 if old cbmem was recovered. Recovery is only attempted if
  * s3resume is non-zero. */

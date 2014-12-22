@@ -26,19 +26,23 @@
 #include "northbridge.h"
 #include <drivers/intel/fsp/fsp_util.h>
 
-unsigned long get_top_of_ram(void)
+static uintptr_t smm_region_start(void)
 {
 	/*
 	 * Calculate the top of usable (low) DRAM.
 	 * The FSP's reserved memory sits just below the SMM region,
 	 * allowing calculation of the top of usable memory.
 	 */
-	u32 tom = sideband_read(B_UNIT, BMBOUND);
-	u32 bsmmrrl = sideband_read(B_UNIT, BSMMRRL) << 20;
+	uintptr_t tom = sideband_read(B_UNIT, BMBOUND);
+	uintptr_t bsmmrrl = sideband_read(B_UNIT, BSMMRRL) << 20;
 	if (bsmmrrl) {
 		tom = bsmmrrl;
 	}
-	tom -= FSP_RESERVE_MEMORY_SIZE;
 
-	return (unsigned long) tom;
+	return tom;
+}
+
+void *cbmem_top(void)
+{
+	return (void *) (smm_region_start() - FSP_RESERVE_MEMORY_SIZE);
 }

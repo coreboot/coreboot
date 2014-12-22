@@ -133,7 +133,7 @@ static void *setup_romstage_stack_after_car(void)
 	slot = stack_push(slot, 0 | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
 
-	top_of_ram = get_top_of_ram();
+	top_of_ram = (uint32_t)cbmem_top();
 	/* Cache 8MiB below the top of ram. On haswell systems the top of
 	 * ram under 4GiB is the start of the TSEG region. It is required to
 	 * be 8MiB aligned. Set this area as cacheable so it can be used later
@@ -318,7 +318,7 @@ struct ramstage_cache *ramstage_cache_location(long *size)
 	/* The ramstage cache lives in the TSEG region at RESERVED_SMM_OFFSET.
 	 * The top of ram is defined to be the TSEG base address. */
 	*size = RESERVED_SMM_SIZE;
-	return (void *)(get_top_of_ram() + RESERVED_SMM_OFFSET);
+	return (void *)((uint32_t)cbmem_top() + RESERVED_SMM_OFFSET);
 }
 
 void ramstage_cache_invalid(struct ramstage_cache *cache)

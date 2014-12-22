@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google, Inc.
+ * Copyright (C) 2014 Sage Electronic Engineering, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +22,25 @@
 #include <cbmem.h>
 #include <baytrail/iosf.h>
 #include <baytrail/smm.h>
+#include <drivers/intel/fsp/fsp_util.h>
 
-void *smm_region_start(void)
+uintptr_t smm_region_start(void)
 {
-	return (void *)(iosf_bunit_read(BUNIT_SMRRL) << 20);
+	return (iosf_bunit_read(BUNIT_SMRRL) << 20);
+}
+
+/*
+ * Calculate the top of usable (low) DRAM.
+ * The FSP's reserved memory sits just below the SMM region,
+ * allowing calculation of the top of usable memory.
+ *
+ * The entire memory map is shown in northcluster.c
+ */
+
+void *cbmem_top(void)
+{
+	uintptr_t tom = smm_region_start();
+	if (!tom)
+		tom = iosf_bunit_read(BUNIT_BMBOUND);
+	return (void *) tom - FSP_RESERVE_MEMORY_SIZE;
 }

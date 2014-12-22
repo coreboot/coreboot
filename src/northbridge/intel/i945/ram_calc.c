@@ -24,9 +24,9 @@
 #include <cbmem.h>
 #include "i945.h"
 
-unsigned long get_top_of_ram(void)
+static uintptr_t smm_region_start(void)
 {
-	u32 tom;
+	uintptr_t tom;
 
 	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)) {
 		/* IGD enabled, get top of Memory from BSM register */
@@ -53,5 +53,10 @@ unsigned long get_top_of_ram(void)
 		/* TSEG either disabled or invalid */
 		break;
 	}
-	return (unsigned long) tom;
+	return tom;
+}
+
+void *cbmem_top(void)
+{
+	return (void *) smm_region_start();
 }

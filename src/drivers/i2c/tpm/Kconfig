@@ -1,6 +1,6 @@
 config I2C_TPM
 	bool "I2C TPM"
-	depends on !PC80 # for now
+	depends on !PC80_SYSTEM # for now
 
 config DRIVER_TPM_I2C_BUS
 	hex "I2C TPM chip bus"

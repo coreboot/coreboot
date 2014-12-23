@@ -237,7 +237,8 @@ config COREBOOT_VIDEO_CONSOLE
 
 config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
-	default y
+	default y if ARCH_X86 # uses IO
+	default n
 
 config PC_KEYBOARD_LAYOUT_US
 	bool "English (US) keyboard layout"

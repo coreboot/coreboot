@@ -22,7 +22,9 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <halt.h>
+#include "dmc.h"
 #include "power.h"
+#include "setup.h"
 
 /* Set the PS-Hold drive value */
 static void ps_hold_setup(void)
@@ -51,7 +53,7 @@ void power_shutdown(void)
 
 void power_enable_dp_phy(void)
 {
-	setbits_le32(&exynos_power->dptx_phy_control, DPTX_PHY_ENABLE);
+	setbits_le32(&exynos_power->dptx_phy_control, EXYNOS_DP_PHY_ENABLE);
 }
 
 void power_enable_hw_thermal_trip(void)
@@ -82,7 +84,7 @@ void power_enable_xclkout(void)
 {
 	/* use xxti for xclk out */
 	clrsetbits_le32(&exynos_power->pmu_debug, PMU_DEBUG_CLKOUT_SEL_MASK,
-				PMU_DEBUG_XXTI);
+			PMU_DEBUG_XXTI);
 }
 
 void power_release_uart_retention(void)

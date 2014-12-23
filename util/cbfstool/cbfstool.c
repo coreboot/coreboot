@@ -144,10 +144,8 @@ static int cbfs_add_component(const char *cbfs_name,
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, cbfs_name, headeroffset) != 0) {
-		ERROR("Could not load ROM image '%s'.\n", cbfs_name);
+	if (cbfs_image_from_file(&image, cbfs_name, headeroffset))
 		return 1;
-	}
 
 	if (buffer_from_file(&buffer, filename) != 0) {
 		ERROR("Could not load file '%s'.\n", filename);
@@ -319,12 +317,8 @@ static int cbfs_remove(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name,
-		param.headeroffset) != 0) {
-		ERROR("Could not load ROM image '%s'.\n",
-			param.cbfs_name);
+	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
 		return 1;
-	}
 
 	if (cbfs_remove_entry(&image, param.name) != 0) {
 		ERROR("Removing file '%s' failed.\n",
@@ -444,11 +438,8 @@ static int cbfs_locate(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name,
-		param.headeroffset) != 0) {
-		ERROR("Failed to load %s.\n", param.cbfs_name);
+	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
 		return 1;
-	}
 
 	if (cbfs_get_entry(&image, param.name))
 		WARN("'%s' already in CBFS.\n", param.name);
@@ -481,12 +472,9 @@ static int cbfs_locate(void)
 static int cbfs_print(void)
 {
 	struct cbfs_image image;
-	if (cbfs_image_from_file(&image, param.cbfs_name,
-		param.headeroffset) != 0) {
-		ERROR("Could not load ROM image '%s'.\n",
-			param.cbfs_name);
+	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
 		return 1;
-	}
+
 	cbfs_print_directory(&image);
 	cbfs_image_delete(&image);
 	return 0;
@@ -507,15 +495,11 @@ static int cbfs_extract(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name,
-		param.headeroffset) != 0) {
-		ERROR("Could not load ROM image '%s'.\n",
-			param.cbfs_name);
+	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
 		result = 1;
-	} else if (cbfs_export_entry(&image, param.name,
-				     param.filename) != 0) {
+	else if (cbfs_export_entry(&image, param.name,
+				   param.filename))
 		result = 1;
-	}
 
 	cbfs_image_delete(&image);
 	return result;
@@ -537,12 +521,8 @@ static int cbfs_update_fit(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name,
-		param.headeroffset) != 0) {
-		ERROR("Could not load ROM image '%s'.\n",
-			param.cbfs_name);
+	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
 		return 1;
-	}
 
 	ret = fit_update_table(&image, param.fit_empty_entries, param.name);
 	if (!ret)
@@ -580,43 +560,43 @@ static int cbfs_copy(void)
 
 static const struct command commands[] = {
 	{"add", "H;f:n:t:b:vh?", cbfs_add},
+	{"add-flat-binary", "H:f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"add-payload", "H:f:n:t:c:b:vh?C:I:", cbfs_add_payload},
 	{"add-stage", "H:f:n:t:c:b:S:vh?", cbfs_add_stage},
-	{"add-flat-binary", "H:f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"add-int", "H:i:n:b:vh?", cbfs_add_integer},
-	{"remove", "H:n:vh?", cbfs_remove},
-	{"copy", "H:D:s:", cbfs_copy},
 	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create},
+	{"copy", "H:D:s:", cbfs_copy},
+	{"extract", "H:n:f:vh?", cbfs_extract},
 	{"locate", "H:f:n:P:a:Tvh?", cbfs_locate},
 	{"print", "H:vh?", cbfs_print},
-	{"extract", "H:n:f:vh?", cbfs_extract},
+	{"remove", "H:n:vh?", cbfs_remove},
 	{"update-fit", "H:n:x:vh?", cbfs_update_fit},
 };
 
 static struct option long_options[] = {
-	{"name",          required_argument, 0, 'n' },
-	{"type",          required_argument, 0, 't' },
-	{"compression",   required_argument, 0, 'c' },
-	{"base-address",  required_argument, 0, 'b' },
-	{"load-address",  required_argument, 0, 'l' },
-	{"top-aligned",   required_argument, 0, 'T' },
-	{"copy-offset",   required_argument, 0, 'D' },
-	{"entry-point",   required_argument, 0, 'e' },
-	{"size",          required_argument, 0, 's' },
-	{"bootblock",     required_argument, 0, 'B' },
-	{"header-offset", required_argument, 0, 'H' },
 	{"alignment",     required_argument, 0, 'a' },
-	{"page-size",     required_argument, 0, 'P' },
-	{"offset",        required_argument, 0, 'o' },
-	{"file",          required_argument, 0, 'f' },
-	{"int",           required_argument, 0, 'i' },
-	{"machine",       required_argument, 0, 'm' },
-	{"empty-fits",    required_argument, 0, 'x' },
-	{"initrd",        required_argument, 0, 'I' },
+	{"base-address",  required_argument, 0, 'b' },
+	{"bootblock",     required_argument, 0, 'B' },
 	{"cmdline",       required_argument, 0, 'C' },
-	{"ignore-sec",    required_argument, 0, 'S' },
-	{"verbose",       no_argument,       0, 'v' },
+	{"compression",   required_argument, 0, 'c' },
+	{"copy-offset",   required_argument, 0, 'D' },
+	{"empty-fits",    required_argument, 0, 'x' },
+	{"entry-point",   required_argument, 0, 'e' },
+	{"file",          required_argument, 0, 'f' },
+	{"header-offset", required_argument, 0, 'H' },
 	{"help",          no_argument,       0, 'h' },
+	{"ignore-sec",    required_argument, 0, 'S' },
+	{"initrd",        required_argument, 0, 'I' },
+	{"int",           required_argument, 0, 'i' },
+	{"load-address",  required_argument, 0, 'l' },
+	{"machine",       required_argument, 0, 'm' },
+	{"name",          required_argument, 0, 'n' },
+	{"offset",        required_argument, 0, 'o' },
+	{"page-size",     required_argument, 0, 'P' },
+	{"size",          required_argument, 0, 's' },
+	{"top-aligned",   required_argument, 0, 'T' },
+	{"type",          required_argument, 0, 't' },
+	{"verbose",       no_argument,       0, 'v' },
 	{NULL,            0,                 0,  0  }
 };
 

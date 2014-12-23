@@ -52,7 +52,8 @@ int cbfs_image_create(struct cbfs_image *image,
 		      int32_t entries_offset);
 
 /* Loads a CBFS image from file. Returns 0 on success, otherwise non-zero. */
-int cbfs_image_from_file(struct cbfs_image *image, const char *filename);
+int cbfs_image_from_file(struct cbfs_image *image,
+			 const char *filename, uint32_t offset);
 
 /* Writes a CBFS image into file. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_write_file(struct cbfs_image *image, const char *filename);
@@ -106,7 +107,8 @@ int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback, void *arg)
  * NULL (including when multiple headers were found). If there is a X86 ROM
  * style signature (pointer at 0xfffffffc) found in ROM, it will be selected as
  * the only header.*/
-struct cbfs_header *cbfs_find_header(char *data, size_t size);
+struct cbfs_header *cbfs_find_header(char *data, size_t size,
+				     uint32_t forced_offset);
 
 /* Returns the first cbfs_file entry in CBFS image by CBFS header (no matter if
  * the entry has valid content or not), otherwise NULL. */

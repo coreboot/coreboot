@@ -267,7 +267,8 @@ int cbfs_image_create(struct cbfs_image *image,
 	return 0;
 }
 
-int cbfs_image_from_file(struct cbfs_image *image, const char *filename)
+int cbfs_image_from_file(struct cbfs_image *image,
+			 const char *filename, uint32_t offset)
 {
 	void *header_loc;
 
@@ -275,7 +276,9 @@ int cbfs_image_from_file(struct cbfs_image *image, const char *filename)
 		return -1;
 	DEBUG("read_cbfs_image: %s (%zd bytes)\n", image->buffer.name,
 	      image->buffer.size);
-	header_loc = cbfs_find_header(image->buffer.data, image->buffer.size);
+	header_loc = cbfs_find_header(image->buffer.data,
+					 image->buffer.size,
+					 offset);
 	if (!header_loc) {
 		ERROR("%s does not have CBFS master header.\n", filename);
 		cbfs_image_delete(image);
@@ -767,21 +770,41 @@ int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback,
 	return count;
 }
 
-struct cbfs_header *cbfs_find_header(char *data, size_t size)
+static int cbfs_header_valid(struct cbfs_header *header, size_t size)
+{
+	if ((ntohl(header->magic) == CBFS_HEADER_MAGIC) &&
+	    ((ntohl(header->version) == CBFS_HEADER_VERSION1) ||
+	     (ntohl(header->version) == CBFS_HEADER_VERSION2)) &&
+	    (ntohl(header->romsize) <= size) &&
+	    (ntohl(header->offset) < ntohl(header->romsize)))
+		return 1;
+	return 0;
+}
+
+struct cbfs_header *cbfs_find_header(char *data, size_t size,
+				     uint32_t forced_offset)
 {
 	size_t offset;
 	int found = 0;
 	int32_t rel_offset;
 	struct cbfs_header *header, *result = NULL;
 
+	if (forced_offset < (size - sizeof(struct cbfs_header))) {
+		/* Check if the forced header is valid. */
+		header = (struct cbfs_header *)(data + forced_offset);
+		if (cbfs_header_valid(header, size))
+			return header;
+		return NULL;
+	}
+
 	// Try finding relative offset of master header at end of file first.
 	rel_offset = *(int32_t *)(data + size - sizeof(int32_t));
 	offset = size + rel_offset;
 	DEBUG("relative offset: %#zx(-%#zx), offset: %#zx\n",
 	      (size_t)rel_offset, (size_t)-rel_offset, offset);
+
 	if (offset >= size - sizeof(*header) ||
-	    ntohl(((struct cbfs_header *)(data + offset))->magic) !=
-	    CBFS_HEADER_MAGIC) {
+	    !cbfs_header_valid((struct cbfs_header *)(data + offset), size)) {
 		// Some use cases append non-CBFS data to the end of the ROM.
 		DEBUG("relative offset seems wrong, scanning whole image...\n");
 		offset = 0;
@@ -789,13 +812,8 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size)
 
 	for (; offset + sizeof(*header) < size; offset++) {
 		header = (struct cbfs_header *)(data + offset);
-		if (ntohl(header->magic) !=(CBFS_HEADER_MAGIC))
-		    continue;
-		if (ntohl(header->version) != CBFS_HEADER_VERSION1 &&
-		    ntohl(header->version) != CBFS_HEADER_VERSION2) {
-			// Probably not a real CBFS header?
+		if (!cbfs_header_valid(header, size))
 			continue;
-		}
 		if (!found++)
 			result = header;
 	}

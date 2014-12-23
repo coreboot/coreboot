@@ -66,6 +66,7 @@ static struct param {
 	/* All variables not listed are initialized as zero. */
 	.arch = CBFS_ARCHITECTURE_UNKNOWN,
 	.algo = CBFS_COMPRESS_NONE,
+	.headeroffset = ~0,
 };
 
 typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset);
@@ -73,7 +74,8 @@ typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset);
 static int cbfs_add_integer_component(const char *cbfs_name,
 			      const char *name,
 			      uint64_t u64val,
-			      uint32_t offset) {
+			      uint32_t offset,
+			      uint32_t headeroffset) {
 	struct cbfs_image image;
 	struct buffer buffer;
 	int i, ret = 1;
@@ -89,7 +91,7 @@ static int cbfs_add_integer_component(const char *cbfs_name,
 	for (i = 0; i < 8; i++)
 		buffer.data[i] = (u64val >> i*8) & 0xff;
 
-	if (cbfs_image_from_file(&image, cbfs_name) != 0) {
+	if (cbfs_image_from_file(&image, cbfs_name, headeroffset) != 0) {
 		ERROR("Could not load ROM image '%s'.\n", cbfs_name);
 		buffer_delete(&buffer);
 		return 1;
@@ -119,6 +121,7 @@ static int cbfs_add_component(const char *cbfs_name,
 			      const char *name,
 			      uint32_t type,
 			      uint32_t offset,
+			      uint32_t headeroffset,
 			      convert_buffer_t convert)
 {
 	struct cbfs_image image;
@@ -139,7 +142,7 @@ static int cbfs_add_component(const char *cbfs_name,
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, cbfs_name) != 0) {
+	if (cbfs_image_from_file(&image, cbfs_name, headeroffset) != 0) {
 		ERROR("Could not load ROM image '%s'.\n", cbfs_name);
 		return 1;
 	}
@@ -249,6 +252,7 @@ static int cbfs_add(void)
 				  param.name,
 				  param.type,
 				  param.baseaddress,
+				  param.headeroffset,
 				  NULL);
 }
 
@@ -259,6 +263,7 @@ static int cbfs_add_stage(void)
 				  param.name,
 				  CBFS_COMPONENT_STAGE,
 				  param.baseaddress,
+				  param.headeroffset,
 				  cbfstool_convert_mkstage);
 }
 
@@ -269,6 +274,7 @@ static int cbfs_add_payload(void)
 				  param.name,
 				  CBFS_COMPONENT_PAYLOAD,
 				  param.baseaddress,
+				  param.headeroffset,
 				  cbfstool_convert_mkpayload);
 }
 
@@ -289,6 +295,7 @@ static int cbfs_add_flat_binary(void)
 				  param.name,
 				  CBFS_COMPONENT_PAYLOAD,
 				  param.baseaddress,
+				  param.headeroffset,
 				  cbfstool_convert_mkflatpayload);
 }
 
@@ -297,7 +304,8 @@ static int cbfs_add_integer(void)
 	return cbfs_add_integer_component(param.cbfs_name,
 				  param.name,
 				  param.u64val,
-				  param.baseaddress);
+				  param.baseaddress,
+				  param.headeroffset);
 }
 
 static int cbfs_remove(void)
@@ -309,7 +317,8 @@ static int cbfs_remove(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
+	if (cbfs_image_from_file(&image, param.cbfs_name,
+		param.headeroffset) != 0) {
 		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
@@ -433,7 +442,8 @@ static int cbfs_locate(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
+	if (cbfs_image_from_file(&image, param.cbfs_name,
+		param.headeroffset) != 0) {
 		ERROR("Failed to load %s.\n", param.cbfs_name);
 		return 1;
 	}
@@ -469,7 +479,8 @@ static int cbfs_locate(void)
 static int cbfs_print(void)
 {
 	struct cbfs_image image;
-	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
+	if (cbfs_image_from_file(&image, param.cbfs_name,
+		param.headeroffset) != 0) {
 		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
@@ -494,7 +505,8 @@ static int cbfs_extract(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
+	if (cbfs_image_from_file(&image, param.cbfs_name,
+		param.headeroffset) != 0) {
 		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		result = 1;
@@ -523,7 +535,8 @@ static int cbfs_update_fit(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
+	if (cbfs_image_from_file(&image, param.cbfs_name,
+		param.headeroffset) != 0) {
 		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
@@ -538,17 +551,17 @@ static int cbfs_update_fit(void)
 }
 
 static const struct command commands[] = {
-	{"add", "f:n:t:b:vh?", cbfs_add},
-	{"add-payload", "f:n:t:c:b:vh?C:I:", cbfs_add_payload},
-	{"add-stage", "f:n:t:c:b:S:vh?", cbfs_add_stage},
-	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
-	{"add-int", "i:n:b:vh?", cbfs_add_integer},
-	{"remove", "n:vh?", cbfs_remove},
+	{"add", "H;f:n:t:b:vh?", cbfs_add},
+	{"add-payload", "H:f:n:t:c:b:vh?C:I:", cbfs_add_payload},
+	{"add-stage", "H:f:n:t:c:b:S:vh?", cbfs_add_stage},
+	{"add-flat-binary", "H:f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
+	{"add-int", "H:i:n:b:vh?", cbfs_add_integer},
+	{"remove", "H:n:vh?", cbfs_remove},
 	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create},
-	{"locate", "f:n:P:a:Tvh?", cbfs_locate},
-	{"print", "vh?", cbfs_print},
-	{"extract", "n:f:vh?", cbfs_extract},
-	{"update-fit", "n:x:vh?", cbfs_update_fit},
+	{"locate", "H:f:n:P:a:Tvh?", cbfs_locate},
+	{"print", "H:vh?", cbfs_print},
+	{"extract", "H:n:f:vh?", cbfs_extract},
+	{"update-fit", "H:n:x:vh?", cbfs_update_fit},
 };
 
 static struct option long_options[] = {
@@ -583,9 +596,10 @@ static void usage(char *name)
 	    ("cbfstool: Management utility for CBFS formatted ROM images\n\n"
 	     "USAGE:\n" " %s [-h]\n"
 	     " %s FILE COMMAND [-v] [PARAMETERS]...\n\n" "OPTIONs:\n"
-	     "  -T              Output top-aligned memory address\n"
-	     "  -v              Provide verbose output\n"
-	     "  -h              Display this help message\n\n"
+	     "  -H header_offset  Do not search for header, use this offset\n"
+	     "  -T                Output top-aligned memory address\n"
+	     "  -v                Provide verbose output\n"
+	     "  -h                Display this help message\n\n"
 	     "COMMANDs:\n"
 	     " add -f FILE -n NAME -t TYPE [-b base-address]               "
 			"Add a component\n"

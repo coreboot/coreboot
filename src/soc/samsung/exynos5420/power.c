@@ -26,7 +26,8 @@
 #include "power.h"
 #include "setup.h"
 
-void ps_hold_setup(void)
+/* Set the PS-Hold drive value */
+static void ps_hold_setup(void)
 {
 	/* Set PS-Hold high */
 	setbits_le32(&exynos_power->ps_hold_ctrl,

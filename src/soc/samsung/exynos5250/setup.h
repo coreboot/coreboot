@@ -741,8 +741,6 @@ void dmc_config_prech(struct mem_timings *mem, struct exynos5_dmc *dmc);
  */
 void dmc_config_memory(struct mem_timings *mem, struct exynos5_dmc *dmc);
 
-/* Set the PS-Hold drive value */
-void ps_hold_setup(void);
 /*
  * Reset the DLL. This function is common between DDR3 and LPDDR2.
  * However, the reset value is different. So we are passing a flag

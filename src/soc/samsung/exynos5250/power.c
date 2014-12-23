@@ -24,6 +24,7 @@
 #include <halt.h>
 #include "power.h"
 
+/* Set the PS-Hold drive value */
 static void ps_hold_setup(void)
 {
 	/* Set PS-Hold high */

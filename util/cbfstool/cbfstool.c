@@ -47,6 +47,8 @@ static struct param {
 	uint32_t baseaddress;
 	uint32_t baseaddress_assigned;
 	uint32_t loadaddress;
+	uint32_t copyoffset;
+	uint32_t copyoffset_assigned;
 	uint32_t headeroffset;
 	uint32_t headeroffset_assigned;
 	uint32_t entrypoint;
@@ -550,6 +552,32 @@ static int cbfs_update_fit(void)
 	return ret;
 }
 
+static int cbfs_copy(void)
+{
+	struct cbfs_image image;
+
+	if (!param.copyoffset_assigned) {
+		ERROR("You need to specify -D/--copy_offset.\n");
+		return 1;
+	}
+
+	if (!param.size) {
+		ERROR("You need to specify -s/--size.\n");
+		return 1;
+	}
+
+	if (cbfs_image_from_file(&image, param.cbfs_name,
+				 param.headeroffset) != 0)
+		return 1;
+
+	if (cbfs_copy_instance(&image, param.copyoffset, param.size))
+		return 1;
+
+	/* Save the new image. */
+	return buffer_write_file(&image.buffer, param.cbfs_name);
+
+}
+
 static const struct command commands[] = {
 	{"add", "H;f:n:t:b:vh?", cbfs_add},
 	{"add-payload", "H:f:n:t:c:b:vh?C:I:", cbfs_add_payload},
@@ -557,6 +585,7 @@ static const struct command commands[] = {
 	{"add-flat-binary", "H:f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"add-int", "H:i:n:b:vh?", cbfs_add_integer},
 	{"remove", "H:n:vh?", cbfs_remove},
+	{"copy", "H:D:s:", cbfs_copy},
 	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create},
 	{"locate", "H:f:n:P:a:Tvh?", cbfs_locate},
 	{"print", "H:vh?", cbfs_print},
@@ -571,6 +600,7 @@ static struct option long_options[] = {
 	{"base-address",  required_argument, 0, 'b' },
 	{"load-address",  required_argument, 0, 'l' },
 	{"top-aligned",   required_argument, 0, 'T' },
+	{"copy-offset",   required_argument, 0, 'D' },
 	{"entry-point",   required_argument, 0, 'e' },
 	{"size",          required_argument, 0, 's' },
 	{"bootblock",     required_argument, 0, 'B' },
@@ -616,6 +646,9 @@ static void usage(char *name)
 			"Add a raw 64-bit integer value\n"
 	     " remove -n NAME                                              "
 			"Remove a component\n"
+	     " copy -D new_header_offset -s region size \\\n"
+	     "        [-H source header offset]         "
+			"Create a copy (duplicate) cbfs instance\n"
 	     " create -s size -m ARCH [-B bootblock] [-b bootblock offset] \\\n"
 	     "        [-o CBFS offset] [-H header offset] [-a align]       "
 			"Create a ROM file\n"
@@ -722,6 +755,9 @@ int main(int argc, char **argv)
 						optarg, NULL, 0);
 				param.headeroffset_assigned = 1;
 				break;
+			case 'D':
+				param.copyoffset = strtoul(optarg, NULL, 0);
+				param.copyoffset_assigned = 1;
 			case 'a':
 				param.alignment = strtoul(optarg, NULL, 0);
 				break;

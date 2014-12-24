@@ -55,6 +55,10 @@ int cbfs_image_create(struct cbfs_image *image,
 int cbfs_image_from_file(struct cbfs_image *image,
 			 const char *filename, uint32_t offset);
 
+/* Create a duplicate CBFS image. Returns 0 on success, otherwise non-zero. */
+int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
+			size_t copy_size);
+
 /* Writes a CBFS image into file. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_write_file(struct cbfs_image *image, const char *filename);
 

@@ -233,7 +233,7 @@ static u8 vbe_get_mode_info(vbe_mode_info_t * mi)
 	u16 buffer_adr = ((unsigned long)buffer) & 0xffff;
 	realmode_interrupt(0x10, VESA_GET_MODE_INFO, 0x0000,
 			mi->video_mode, 0x0000, buffer_seg, buffer_adr);
-	memcpy(mi->mode_info_block, buffer, sizeof(vbe_mode_info_t));
+	memcpy(mi->mode_info_block, buffer, sizeof(mi->mode_info_block));
 	mode_info_valid = 1;
 	return 0;
 }

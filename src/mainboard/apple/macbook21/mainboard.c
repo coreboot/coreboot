@@ -36,9 +36,43 @@
 #include <drivers/intel/gma/int15.h>
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
+static acpi_cstate_t cst_entries[] = {
+	{
+		.ctype = 1,
+		.latency = 1,
+		.power = 1000,
+		.resource = {
+			.space_id = ACPI_ADDRESS_SPACE_FIXED,
+			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
+			{
+				.resv = 0,
+			},
+			.addrl = 0,
+			.addrh = 0,
+		}
+	},
+	{
+		.ctype = 2,
+		.latency = 1,
+		.power = 500,
+		.resource = {
+			.space_id = ACPI_ADDRESS_SPACE_FIXED,
+			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
+			{
+				.resv = 0,
+			},
+			.addrl = 0x10,
+			.addrh = 0,
+		}
+	},
+};
+
 int get_cst_entries(acpi_cstate_t **entries)
 {
-	return 0;
+	*entries = cst_entries;
+	return ARRAY_SIZE(cst_entries);
 }
 
 static void mainboard_init(device_t dev)

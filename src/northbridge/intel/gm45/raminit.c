@@ -1579,15 +1579,15 @@ static void jedec_init(const timings_t *const timings,
 		const u32 rankaddr = raminit_get_rank_addr(ch, r);
 		printk(BIOS_DEBUG, "Performing Jedec initialization at address 0x%08x.\n", rankaddr);
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_SET_EREG_MASK) | DCC_SET_EREGx(2);
-		read32(rankaddr | WL);
+		read32((u32 *)(rankaddr | WL));
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_SET_EREG_MASK) | DCC_SET_EREGx(3);
-		read32(rankaddr);
+		read32((u32 *)rankaddr);
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_SET_EREG_MASK) | DCC_SET_EREGx(1);
-		read32(rankaddr | ODT_120OHMS | ODS_34OHMS);
+		read32((u32 *)(rankaddr | ODT_120OHMS | ODS_34OHMS));
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_CMD_MASK) | DCC_SET_MREG;
-		read32(rankaddr | WR | DLL1 | CAS | INTERLEAVED);
+		read32((u32 *)(rankaddr | WR | DLL1 | CAS | INTERLEAVED));
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_CMD_MASK) | DCC_SET_MREG;
-		read32(rankaddr | WR        | CAS | INTERLEAVED);
+		read32((u32 *)(rankaddr | WR | CAS | INTERLEAVED));
 	}
 }
 
@@ -1701,7 +1701,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 
 	/* Wait for some bit, maybe TXT clear. */
 	if (sysinfo->txt_enabled) {
-		while (!(read8(0xfed40000) & (1 << 7))) {}
+		while (!(read8((u8 *)0xfed40000) & (1 << 7))) {}
 	}
 
 	/* Enable SMBUS. */

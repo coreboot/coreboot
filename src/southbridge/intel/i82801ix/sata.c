@@ -36,8 +36,8 @@ static void sata_enable_ahci_mmap(struct device *const dev, const u8 port_map,
 	u32 reg32;
 
 	/* Initialize AHCI memory-mapped space */
-	const u32 abar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
-	printk(BIOS_DEBUG, "ABAR: %08X\n", abar);
+	u8 *abar = (u8 *)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+	printk(BIOS_DEBUG, "ABAR: %p\n", abar);
 
 	/* Set AHCI access mode.
 	   No other ABAR registers should be accessed before this. */
@@ -67,7 +67,7 @@ static void sata_enable_ahci_mmap(struct device *const dev, const u8 port_map,
 	for (i = 0; i < 6; ++i) {
 		if (((i == 2) || (i == 3)) && is_mobile)
 			continue;
-		const u32 addr = abar + 0x118 + (i * 0x80);
+		u8 *addr = abar + 0x118 + (i * 0x80);
 		write32(addr, read32(addr));
 	}
 }

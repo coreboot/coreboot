@@ -52,7 +52,7 @@ static void soc_enable_apic(struct device *dev)
 	u32 reg32;
 	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
 	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
-	u32 ilb_base = pci_read_config32(dev, IBASE) & ~0x0f;
+	u32 *ilb_base = (u32 *)(pci_read_config32(dev, IBASE) & ~0x0f);
 
 	/*
 	 * Enable ACPI I/O and power management.
@@ -91,9 +91,9 @@ static void soc_enable_apic(struct device *dev)
 
 static void soc_enable_serial_irqs(struct device *dev)
 {
-	u32 ibase;
+	u8 *ibase;
 
-	ibase = pci_read_config32(dev, IBASE) & ~0xF;
+	ibase = (u8 *)(pci_read_config32(dev, IBASE) & ~0xF);
 
 	/* Set packet length and toggle silent mode bit for one frame. */
 	write8(ibase + ILB_SERIRQ_CNTL, (1 << 7));
@@ -206,10 +206,10 @@ static void soc_pirq_init(device_t dev)
 {
 	int i, j;
 	int pirq;
-	const u32 ibase = pci_read_config32(dev, IBASE) & ~0xF;
-	const unsigned long pr_base = ibase + 0x08;
-	const unsigned long ir_base = ibase + 0x20;
-	const unsigned long actl = ibase;
+	u8 *ibase = (u8 *)(pci_read_config32(dev, IBASE) & ~0xF);
+	u8 *pr_base = ibase + 0x08;
+	u16 *ir_base = (u16 *)(ibase + 0x20);
+	u32 *actl = (u32 *)ibase;
 	const struct rangeley_irq_route *ir = &global_rangeley_irq_route;
 
 	/* Set up the PIRQ PIC routing based on static config. */
@@ -226,7 +226,7 @@ static void soc_pirq_init(device_t dev)
 	printk(BIOS_SPEW, "\t\t\tPIRQ[A-H] routed to each INT_PIN[A-D]\n"
 			"Dev\tINTA (IRQ)\tINTB (IRQ)\tINTC (IRQ)\tINTD (IRQ)\n");
 	for (i = 0; i < NUM_OF_PCI_DEVS; i++) {
-		write16(ir_base + i*sizeof(ir->pcidev[i]), ir->pcidev[i]);
+		write16(ir_base + i, ir->pcidev[i]);
 
 		/* If the entry is more than just 0, print it out */
 		if(ir->pcidev[i]) {
@@ -293,10 +293,10 @@ static void soc_power_options(device_t dev)
 /* Disable the HPET, Clear the counter, and re-enable it. */
 static void enable_hpet(void)
 {
-	write8(HPET_GCFG, 0x00);
-	write32(HPET_MCV, 0x00000000);
-	write32(HPET_MCV + 0x04, 0x00000000);
-	write8(HPET_GCFG, 0x01);
+	write8((u8 *)HPET_GCFG, 0x00);
+	write32((u32 *)HPET_MCV, 0x00000000);
+	write32((u32 *)(HPET_MCV + 0x04), 0x00000000);
+	write8((u8 *)HPET_GCFG, 0x01);
 }
 
 static void soc_disable_smm_only_flashing(struct device *dev)

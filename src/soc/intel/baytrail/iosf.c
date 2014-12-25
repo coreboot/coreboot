@@ -25,11 +25,11 @@
 
 static inline void write_iosf_reg(int reg, uint32_t value)
 {
-	write32(IOSF_PCI_BASE + reg, value);
+	write32((u32 *)(IOSF_PCI_BASE + reg), value);
 }
 static inline uint32_t read_iosf_reg(int reg)
 {
-	return read32(IOSF_PCI_BASE + reg);
+	return read32((u32 *)(IOSF_PCI_BASE + reg));
 }
 #else
 static inline void write_iosf_reg(int reg, uint32_t value)

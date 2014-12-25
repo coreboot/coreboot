@@ -246,14 +246,14 @@ static struct resource *gtt_res = NULL;
 static unsigned long gtt_read(unsigned long reg)
 {
 	u32 val;
-	val = read32(gtt_res->base + reg);
+	val = read32(res2mmio(gtt_res, reg, 0));
 	return val;
 
 }
 
 static void gtt_write(unsigned long reg, unsigned long data)
 {
-	write32(gtt_res->base + reg, data);
+	write32(res2mmio(gtt_res, reg, 0), data);
 }
 
 static inline void gtt_rmw(u32 reg, u32 andmask, u32 ormask)

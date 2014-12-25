@@ -112,7 +112,7 @@ chip northbridge/intel/sandybridge
 				     register "have_isa_interrupts" = "1"
 				     register "irq_on_fsb" = "1"
 				     register "enable_virtual_wire" = "1"
-				     register "base" = "0xfec00000"
+				     register "base" = "(void *)0xfec00000"
 				     device ioapic 4 on end
 				end
 			end

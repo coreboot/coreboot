@@ -636,7 +636,7 @@ static void southbridge_init_common(struct device *dev)
 {
 	vt8237_common_init(dev);
 	pci_routing_fixup(dev);
-	setup_ioapic(IO_APIC_ADDR, VT8237R_APIC_ID);
+	setup_ioapic(VIO_APIC_VADDR, VT8237R_APIC_ID);
 	setup_i8259();
 	init_keyboard(dev);
 }

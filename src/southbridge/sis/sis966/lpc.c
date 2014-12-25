@@ -59,13 +59,13 @@
 static void lpc_common_init(device_t dev)
 {
 	uint8_t byte;
-	uint32_t ioapic_base;
+	void *ioapic_base;
 
 	/* IO APIC initialization */
 	byte = pci_read_config8(dev, 0x74);
 	byte |= (1<<0); // enable APIC
 	pci_write_config8(dev, 0x74, byte);
-	ioapic_base = pci_read_config32(dev, PCI_BASE_ADDRESS_1); // 0x14
+	ioapic_base = (void *)pci_read_config32(dev, PCI_BASE_ADDRESS_1); // 0x14
 
 	setup_ioapic(ioapic_base, 0); // Don't rename IO APIC ID
 }

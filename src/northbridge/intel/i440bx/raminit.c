@@ -387,7 +387,8 @@ static void do_ram_command(u32 command)
 	int i, caslatency;
 	u8 dimm_start, dimm_end;
 	u16 reg16;
-	u32 addr, addr_offset;
+	void *addr;
+	u32 addr_offset;
 
 	/* Configure the RAM command. */
 	reg16 = pci_read_config16(NB, SDRAMC);
@@ -424,7 +425,7 @@ static void do_ram_command(u32 command)
 
 		dimm_end = pci_read_config8(NB, DRB + i);
 
-		addr = (dimm_start * 8 * 1024 * 1024) + addr_offset;
+		addr = (void *)((dimm_start * 8 * 1024 * 1024) + addr_offset);
 		if (dimm_end > dimm_start) {
 #if 0
 			PRINT_DEBUG("    Sending RAM command 0x%04x to 0x%08x\n",

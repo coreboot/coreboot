@@ -87,7 +87,7 @@ void i82801ix_dmi_setup(void)
 	RCBA8(RCBA_ULD + 3) = 1;
 	RCBA8(RCBA_ULD + 2) = 1;
 	/* Set target rcrb base address, i.e. DMIBAR. */
-	RCBA32(RCBA_ULBA) = DEFAULT_DMIBAR;
+	RCBA32(RCBA_ULBA) = (uintptr_t)DEFAULT_DMIBAR;
 
 	/* Enable ASPM. */
 	if (LPC_IS_MOBILE(PCI_DEV(0, 0x1f, 0))) {

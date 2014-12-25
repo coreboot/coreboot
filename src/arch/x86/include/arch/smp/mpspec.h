@@ -123,7 +123,7 @@ struct mpc_config_ioapic
 	u8 mpc_apicver;
 	u8 mpc_flags;
 #define MPC_APIC_USABLE		0x01
-	u32 mpc_apicaddr;
+	void *mpc_apicaddr;
 } __attribute__((packed));
 
 struct mpc_config_intsrc
@@ -260,7 +260,7 @@ void smp_write_processor(struct mp_config_table *mc,
 	u32 featureflag);
 void smp_write_processors(struct mp_config_table *mc);
 void smp_write_ioapic(struct mp_config_table *mc,
-	u8 id, u8 ver, u32 apicaddr);
+	u8 id, u8 ver, void *apicaddr);
 void smp_write_intsrc(struct mp_config_table *mc,
 	u8 irqtype, u16 irqflag, u8 srcbus, u8 srcbusirq,
 	u8 dstapic, u8 dstirq);

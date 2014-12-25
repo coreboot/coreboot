@@ -62,7 +62,7 @@ static void *smp_write_config_table(void *v)
 	/* I/O APICs:   APIC ID Version State   Address */
 	ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
 	dword &= 0xFFFFFFF0;
-	smp_write_ioapic(mc, apicid_sb800, 0x11, dword);
+	smp_write_ioapic(mc, apicid_sb800, 0x11,(void *) dword);
 
 	for (byte = 0x0; byte < sizeof(intr_data); byte ++) {
 		outb(byte | 0x80, 0xC00);

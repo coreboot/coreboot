@@ -29,7 +29,7 @@
 static void usb_ehci_init(struct device *dev)
 {
 	struct resource *res;
-	u32 base;
+	u8 *base;
 	u32 reg32;
 	u8 reg8;
 
@@ -50,7 +50,7 @@ static void usb_ehci_init(struct device *dev)
 
 	/* Clear any pending port changes */
 	res = find_resource(dev, 0x10);
-	base = res->base;
+	base = res2mmio(res, 0, 0);
 	reg32 = read32(base + 0x24) | (1 << 2);
 	write32(base + 0x24, reg32);
 

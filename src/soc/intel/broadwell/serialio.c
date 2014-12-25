@@ -37,9 +37,9 @@
 /* Set D3Hot Power State in ACPI mode */
 static void serialio_enable_d3hot(struct resource *res)
 {
-	u32 reg32 = read32(res->base + PCH_PCS);
+	u32 reg32 = read32(res2mmio(res, PCH_PCS, 0));
 	reg32 |= PCH_PCS_PS_D3HOT;
-	write32(res->base + PCH_PCS, reg32);
+	write32(res2mmio(res, PCH_PCS, 0), reg32);
 }
 
 static int serialio_uart_is_debug(struct device *dev)
@@ -58,9 +58,9 @@ static int serialio_uart_is_debug(struct device *dev)
 /* Enable clock in PCI mode */
 static void serialio_enable_clock(struct resource *bar0)
 {
-	u32 reg32 = read32(bar0->base + SIO_REG_PPR_CLOCK);
+	u32 reg32 = read32(res2mmio(bar0, SIO_REG_PPR_CLOCK, 0));
 	reg32 |= SIO_REG_PPR_CLOCK_EN;
-	write32(bar0->base + SIO_REG_PPR_CLOCK, reg32);
+	write32(res2mmio(bar0, SIO_REG_PPR_CLOCK, 0), reg32);
 }
 
 /* Put Serial IO D21:F0-F6 device into desired mode. */
@@ -111,22 +111,22 @@ static void serialio_d21_ltr(struct resource *bar0)
 	u32 reg;
 
 	/* 1. Program BAR0 + 808h[2] = 0b */
-	reg = read32(bar0->base + SIO_REG_PPR_GEN);
+	reg = read32(res2mmio(bar0, SIO_REG_PPR_GEN, 0));
 	reg &= ~SIO_REG_PPR_GEN_LTR_MODE_MASK;
-	write32(bar0->base + SIO_REG_PPR_GEN, reg);
+	write32(res2mmio(bar0, SIO_REG_PPR_GEN, 0), reg);
 
 	/* 2. Program BAR0 + 804h[1:0] = 00b */
-	reg = read32(bar0->base + SIO_REG_PPR_RST);
+	reg = read32(res2mmio(bar0, SIO_REG_PPR_RST, 0));
 	reg &= ~SIO_REG_PPR_RST_ASSERT;
-	write32(bar0->base + SIO_REG_PPR_RST, reg);
+	write32(res2mmio(bar0, SIO_REG_PPR_RST, 0), reg);
 
 	/* 3. Program BAR0 + 804h[1:0] = 11b */
-	reg = read32(bar0->base + SIO_REG_PPR_RST);
+	reg = read32(res2mmio(bar0, SIO_REG_PPR_RST, 0));
 	reg |= SIO_REG_PPR_RST_ASSERT;
-	write32(bar0->base + SIO_REG_PPR_RST, reg);
+	write32(res2mmio(bar0, SIO_REG_PPR_RST, 0), reg);
 
 	/* 4. Program BAR0 + 814h[31:0] = 00000000h */
-	write32(bar0->base + SIO_REG_AUTO_LTR, 0);
+	write32(res2mmio(bar0, SIO_REG_AUTO_LTR, 0), 0);
 }
 
 /* Enable LTR Auto Mode for D23:F0. */
@@ -135,26 +135,26 @@ static void serialio_d23_ltr(struct resource *bar0)
 	u32 reg;
 
 	/* Program BAR0 + 1008h[2] = 1b */
-	reg = read32(bar0->base + SIO_REG_SDIO_PPR_GEN);
+	reg = read32(res2mmio(bar0, SIO_REG_SDIO_PPR_GEN, 0));
 	reg |= SIO_REG_PPR_GEN_LTR_MODE_MASK;
-	write32(bar0->base + SIO_REG_SDIO_PPR_GEN, reg);
+	write32(res2mmio(bar0, SIO_REG_SDIO_PPR_GEN, 0), reg);
 
 	/* Program BAR0 + 1010h = 0x00000000 */
-	write32(bar0->base + SIO_REG_SDIO_PPR_SW_LTR, 0);
+	write32(res2mmio(bar0, SIO_REG_SDIO_PPR_SW_LTR, 0), 0);
 
 	/* Program BAR0 + 3Ch[30] = 1b */
-	reg = read32(bar0->base + SIO_REG_SDIO_PPR_CMD12);
+	reg = read32(res2mmio(bar0, SIO_REG_SDIO_PPR_CMD12, 0));
 	reg |= SIO_REG_SDIO_PPR_CMD12_B30;
-	write32(bar0->base + SIO_REG_SDIO_PPR_CMD12, reg);
+	write32(res2mmio(bar0, SIO_REG_SDIO_PPR_CMD12, 0), reg);
 }
 
 /* Select I2C voltage of 1.8V or 3.3V. */
 static void serialio_i2c_voltage_sel(struct resource *bar0, u8 voltage)
 {
-	u32 reg32 = read32(bar0->base + SIO_REG_PPR_GEN);
+	u32 reg32 = read32(res2mmio(bar0, SIO_REG_PPR_GEN, 0));
 	reg32 &= ~SIO_REG_PPR_GEN_VOLTAGE_MASK;
 	reg32 |= SIO_REG_PPR_GEN_VOLTAGE(voltage);
-	write32(bar0->base + SIO_REG_PPR_GEN, reg32);
+	write32(res2mmio(bar0, SIO_REG_PPR_GEN, 0), reg32);
 }
 
 /* Init sequence to be run once, done as part of D21:F0 (SDMA) init. */

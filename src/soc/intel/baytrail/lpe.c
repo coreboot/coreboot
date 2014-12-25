@@ -90,7 +90,7 @@ static void lpe_enable_acpi_mode(device_t dev)
 static void setup_codec_clock(device_t dev)
 {
 	uint32_t reg;
-	int clk_reg;
+	u32 *clk_reg;
 	struct soc_intel_baytrail_config *config;
 	const char *freq_str;
 
@@ -119,8 +119,8 @@ static void setup_codec_clock(device_t dev)
 
 	printk(BIOS_DEBUG, "LPE Audio codec clock set to %sMHz.\n", freq_str);
 
-	clk_reg = PMC_BASE_ADDRESS + PLT_CLK_CTL_0;
-	clk_reg += 4 * config->lpe_codec_clk_num;
+	clk_reg = (u32 *)(PMC_BASE_ADDRESS + PLT_CLK_CTL_0);
+	clk_reg += config->lpe_codec_clk_num;
 
 	write32(clk_reg, (read32(clk_reg) & ~0x7) | reg);
 }
@@ -144,8 +144,10 @@ static void lpe_stash_firmware_info(device_t dev)
 	/* C0 and later steppings use an offset in the MMIO space. */
 	if (pattrs->stepping >= STEP_C0) {
 		mmio = find_resource(dev, PCI_BASE_ADDRESS_0);
-		write32(mmio->base + FIRMWARE_REG_BASE_C0, res->base);
-		write32(mmio->base + FIRMWARE_REG_LENGTH_C0, res->size);
+		write32((u32 *)(uintptr_t)(mmio->base + FIRMWARE_REG_BASE_C0),
+			res->base);
+		write32((u32 *)(uintptr_t)(mmio->base + FIRMWARE_REG_LENGTH_C0),
+			res->size);
 	}
 }
 

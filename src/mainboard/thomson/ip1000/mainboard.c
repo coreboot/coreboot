@@ -65,14 +65,14 @@ static void parport_gpios(void)
 
 static void flash_gpios(void)
 {
-	u8 manufacturer_id = read8(0xffbc0000);
-	u8 device_id = read8(0xffbc0001);
+	u8 manufacturer_id = read8((u8 *)0xffbc0000);
+	u8 device_id = read8((u8 *)0xffbc0001);
 
 	if ((manufacturer_id == 0x20) &&
 		((device_id == 0x2c) || (device_id == 0x2d))) {
 		printk(BIOS_DEBUG, "Detected ST M50FW0%c0 flash:\n",
 				(device_id==0x2c)?'4':'8');
-		u8 fgpi = read8(0xffbc0100);
+		u8 fgpi = read8((u8 *)0xffbc0100);
 		printk(BIOS_DEBUG, "  FGPI0 [%c] FGPI1 [%c] FGPI2 [%c] FGPI3 [%c] FGPI4 [%c]\n",
 			(fgpi & (1 << 0)) ? 'X' : ' ',
 			(fgpi & (1 << 1)) ? 'X' : ' ',

@@ -151,7 +151,7 @@
 #define I5000_DMIR3 0x9c
 #define I5000_DMIR4 0xa0
 
-#define DEFAULT_AMBASE 0xfe000000
+#define DEFAULT_AMBASE ((u8 *)0xfe000000)
 
 /* AMB function 1 registers */
 #define AMB_FBDSBCFGNXT 0x54

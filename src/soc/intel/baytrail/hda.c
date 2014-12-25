@@ -83,6 +83,7 @@ static void hda_init(device_t dev)
 	struct resource *res;
 	int codec_mask;
 	int i;
+	u8 *base;
 
 	reg_script_run_on_dev(dev, init_ops);
 
@@ -90,7 +91,8 @@ static void hda_init(device_t dev)
 	if (res == NULL)
 		return;
 
-	codec_mask = hda_codec_detect(res->base);
+	base = res2mmio(res, 0, 0);
+	codec_mask = hda_codec_detect(base);
 
 	printk(BIOS_DEBUG, "codec mask = %x\n", codec_mask);
 	if (!codec_mask)
@@ -99,7 +101,7 @@ static void hda_init(device_t dev)
 	for (i = 3; i >= 0; i--) {
 		if (!((1 << i) & codec_mask))
 			continue;
-		hda_codec_init(res->base, i, sizeof(hdmi_codec_verb_table),
+		hda_codec_init(base, i, sizeof(hdmi_codec_verb_table),
 				hdmi_codec_verb_table);
 	}
 }

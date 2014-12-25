@@ -114,7 +114,7 @@ static int read_training_test(const int channel, const int lane,
 	for (i = 0; i < addresses->count; ++i) {
 		unsigned int offset;
 		for (offset = lane_offset; offset < 320; offset += 8) {
-			const u32 read = read32(addresses->addr[i] + offset);
+			const u32 read = read32((u32 *)(addresses->addr[i] + offset));
 			const u32 good = read_training_schedule[offset >> 3];
 			if ((read & lane_mask) != (good & lane_mask))
 				return 0;
@@ -228,7 +228,7 @@ static void perform_read_training(const dimminfo_t *const dimms)
 			/* Write test pattern. */
 			unsigned int offset;
 			for (offset = 0; offset < 320; offset += 4)
-				write32(addresses.addr[i] + offset,
+				write32((u32 *)(addresses.addr[i] + offset),
 					read_training_schedule[offset >> 3]);
 		}
 
@@ -436,18 +436,18 @@ static int write_training_test(const address_bunch_t *const addresses,
 		unsigned int off;
 		for (off = 0; off < 640; off += 8) {
 			const u32 pattern = write_training_schedule[off >> 3];
-			write32(addr + off, pattern);
-			write32(addr + off + 4, pattern);
+			write32((u32 *)(addr + off), pattern);
+			write32((u32 *)(addr + off + 4), pattern);
 		}
 
 		MCHBAR8(0x78) |= 1;
 
 		for (off = 0; off < 640; off += 8) {
 			const u32 good = write_training_schedule[off >> 3];
-			const u32 read1 = read32(addr + off);
+			const u32 read1 = read32((u32 *)(addr + off));
 			if ((read1 & masks[0]) != (good & masks[0]))
 				goto _bad_timing_out;
-			const u32 read2 = read32(addr + off + 4);
+			const u32 read2 = read32((u32 *)(addr + off + 4));
 			if ((read2 & masks[1]) != (good & masks[1]))
 				goto _bad_timing_out;
 		}

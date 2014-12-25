@@ -67,7 +67,7 @@ static void sata_init(struct device *dev)
 
 	if (sata_mode == 0) {
 		/* AHCI */
-		u32 abar;
+		u32 *abar;
 
 		printk(BIOS_DEBUG, "SATA: Controller in AHCI mode.\n");
 
@@ -103,8 +103,8 @@ static void sata_init(struct device *dev)
 		pci_write_config32(dev, 0x98, 0x00590200);
 
 		/* Initialize AHCI memory-mapped space */
-		abar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
-		printk(BIOS_DEBUG, "ABAR: %08X\n", abar);
+		abar = (u32 *)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+		printk(BIOS_DEBUG, "ABAR: %p\n", abar);
 		/* CAP (HBA Capabilities) : enable power management */
 		reg32 = read32(abar + 0x00);
 		reg32 |= 0x0c006000;	// set PSC+SSC+SALP+SSS
@@ -118,16 +118,16 @@ static void sata_init(struct device *dev)
 		write32(abar + 0x00, reg32);
 		/* PI (Ports implemented) */
 		write32(abar + 0x0c, config->sata_port_map);
-		(void)read32(abar + 0x0c);	/* Read back 1 */
-		(void)read32(abar + 0x0c);	/* Read back 2 */
+		(void)read32(abar + 0x03);	/* Read back 1 */
+		(void)read32(abar + 0x03);	/* Read back 2 */
 		/* CAP2 (HBA Capabilities Extended) */
-		reg32 = read32(abar + 0x24);
+		reg32 = read32(abar + 0x09);
 		reg32 &= ~0x00000002;
-		write32(abar + 0x24, reg32);
+		write32(abar + 0x09, reg32);
 		/* VSP (Vendor Specific Register */
-		reg32 = read32(abar + 0xa0);
+		reg32 = read32(abar + 0x28);
 		reg32 &= ~0x00000005;
-		write32(abar + 0xa0, reg32);
+		write32(abar + 0x28, reg32);
 	} else {
                 /* IDE */
 		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");

@@ -27,8 +27,13 @@
 #endif
 #endif
 
-#define DEFAULT_TBAR		0xfed1b000
+#define DEFAULT_TBAR		((u8 *)0xfed1b000)
+#ifndef __ACPI__
+#define DEFAULT_RCBA		((u8 *)0xfed1c000)
+#else
 #define DEFAULT_RCBA		0xfed1c000
+#endif
+
 #ifdef CONFIG_BOARD_EMULATION_QEMU_X86_Q35
 /*
  * Qemu has the fw_cfg interface at 0x510.  Move the pmbase to a

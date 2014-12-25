@@ -3,7 +3,7 @@
 
 /* Hudson-2 ACPI PmIO Space Define */
 #define SB_ACPI_BASE_ADDRESS              0x0400
-#define ACPI_MMIO_BASE  0xFED80000
+#define ACPI_MMIO_BASE  ((u8 *)0xFED80000)
 #define SB_CFG_BASE     0x000   // DWORD
 #define GPIO_BASE       0x100   // BYTE
 #define SMI_BASE        0x200   // DWORD

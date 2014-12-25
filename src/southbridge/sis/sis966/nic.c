@@ -133,7 +133,7 @@ static void set_apc(struct device *dev)
  * @return Contents of EEPROM word (Reg).
  */
 #define LoopNum 200
-static  unsigned long ReadEEprom( struct device *dev,  u32 base,  u32 Reg)
+static  unsigned long ReadEEprom( struct device *dev,  u8 *base,  u32 Reg)
 {
     u32 	data;
     u32 	i;
@@ -142,13 +142,13 @@ static  unsigned long ReadEEprom( struct device *dev,  u32 base,  u32 Reg)
 
     ulValue = (0x80 | (0x2 << 8) | (Reg << 10));  //BIT_7
 
-    write32(base+0x3c, ulValue);
+    write32(base + 0x3c, ulValue);
 
     mdelay(10);
 
     for(i=0 ; i <= LoopNum; i++)
     {
-        ulValue=read32(base+0x3c);
+	ulValue=read32(base + 0x3c);
 
         if(!(ulValue & 0x0080)) //BIT_7
             break;
@@ -160,14 +160,14 @@ static  unsigned long ReadEEprom( struct device *dev,  u32 base,  u32 Reg)
 
     if(i==LoopNum)   data=0x10000;
     else{
-    	ulValue=read32(base+0x3c);
+	ulValue=read32(base + 0x3c);
     	data = ((ulValue & 0xffff0000) >> 16);
     }
 
     return data;
 }
 
-static int phy_read(u32  base, unsigned phy_addr, unsigned phy_reg)
+static int phy_read(u8 *base, unsigned phy_addr, unsigned phy_reg)
 {
     u32   ulValue;
     u32   Read_Cmd;
@@ -181,14 +181,14 @@ static int phy_read(u32  base, unsigned phy_addr, unsigned phy_reg)
      		       SMI_REQUEST);
 
            // SmiMgtInterface Reg is the SMI management interface register(offset 44h) of MAC
-          write32(base+0x44, Read_Cmd);
+	   write32(base + 0x44, Read_Cmd);
 
            // Polling SMI_REQ bit to be deasserted indicated read command completed
            do
            {
 	       // Wait 20 usec before checking status
 		   mdelay(20);
-    	       ulValue = read32(base+0x44);
+		   ulValue = read32(base + 0x44);
            } while((ulValue & SMI_REQUEST) != 0);
             //printk(BIOS_DEBUG, "base %x cmd %lx ret val %lx\n", tmp,Read_Cmd,ulValue);
            usData=(ulValue>>16);
@@ -201,7 +201,7 @@ static int phy_read(u32  base, unsigned phy_addr, unsigned phy_reg)
 
 // Detect a valid PHY
 // If there exist a valid PHY then return TRUE, else return FALSE
-static int phy_detect(u32 base,u16 *PhyAddr) //BOOL PHY_Detect()
+static int phy_detect(u8 *base,u16 *PhyAddr) //BOOL PHY_Detect()
 {
     int	              bFoundPhy = FALSE;
     u16		usData;
@@ -238,7 +238,7 @@ static void nic_init(struct device *dev)
 {
         int val;
         u16 PhyAddr;
-        u32 base;
+        u8 *base;
         struct resource *res;
 
         printk(BIOS_DEBUG, "NIC_INIT:---------->\n");
@@ -269,8 +269,8 @@ static void nic_init(struct device *dev)
 		printk(BIOS_DEBUG, "NIC Cannot find resource..\n");
 		return;
 	}
-	base = res->base;
-        printk(BIOS_DEBUG, "NIC base address %x\n",base);
+	base = res2mmio(res, 0, 0);
+        printk(BIOS_DEBUG, "NIC base address %p\n",base);
 
 	if(!(val=phy_detect(base,&PhyAddr)))
 	{
@@ -299,9 +299,9 @@ static void nic_init(struct device *dev)
         }else{
                  // read MAC address from firmware
 		 printk(BIOS_DEBUG, "EEPROM invalid!!\nReg 0x38h=%.8lx \n",ulValue);
-		 MacAddr[0]=read16(0xffffffc0); // mac address store at here
-		 MacAddr[1]=read16(0xffffffc2);
-		 MacAddr[2]=read16(0xffffffc4);
+		 MacAddr[0]=read16((u16 *)0xffffffc0); // mac address store at here
+		 MacAddr[1]=read16((u16 *)0xffffffc2);
+		 MacAddr[2]=read16((u16 *)0xffffffc4);
         }
 
         set_apc(dev);

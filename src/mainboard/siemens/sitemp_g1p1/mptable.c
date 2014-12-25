@@ -55,7 +55,8 @@ static void *smp_write_config_table(void *v)
 		if (dev) {
 			struct resource *res;
 			res = find_resource(dev, 0x74);
-			smp_write_ioapic(mc, apicid_sb600, 0x20, res->base);
+			smp_write_ioapic(mc, apicid_sb600, 0x20,
+					 res2mmio(res, 0, 0));
 		}
 	}
 	mptable_add_isa_interrupts(mc, isa_bus, apicid_sb600, 0);

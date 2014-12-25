@@ -34,8 +34,11 @@
 /* Southbridge internal device MEM BARs (Set to match FSP settings) */
 #define DEFAULT_IBASE		0xfed08000
 #define DEFAULT_PBASE		0xfed03000
+#ifndef __ACPI__
+#define DEFAULT_RCBA		((u8 *)0xfed1c000)
+#else
 #define DEFAULT_RCBA		0xfed1c000
-
+#endif
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 

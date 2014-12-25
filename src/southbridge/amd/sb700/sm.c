@@ -50,14 +50,14 @@ static void sm_init(device_t dev)
 	u8 byte_old;
 	u8 rev;
 	u32 dword;
-	u32 ioapic_base;
+	void *ioapic_base;
 	u32 on;
 	u32 nmi_option;
 
 	printk(BIOS_INFO, "sm_init().\n");
 
 	rev = get_sb700_revision(dev);
-	ioapic_base = pci_read_config32(dev, 0x74) & (0xffffffe0);	/* some like mem resource, but does not have  enable bit */
+	ioapic_base = (void *)(pci_read_config32(dev, 0x74) & (0xffffffe0));	/* some like mem resource, but does not have  enable bit */
 	/* Don't rename APIC ID */
 	/* TODO: We should call setup_ioapic() here. But kernel hangs if cpu is K8.
 	 * We need to check out why and change back. */

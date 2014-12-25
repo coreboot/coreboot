@@ -28,7 +28,7 @@
 #include "i3100.h"
 
 /* DDR2 memory controller register space */
-#define MCBAR 0x90000000
+#define MCBAR ((u8 *)(0x90000000))
 
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
@@ -61,7 +61,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	PCI_ADDR(0, 0x00, 0, DEVPRES1), 0xffbffff, (1<<22)|(6<<2) | DEVPRES1_CONFIG,
 
 		/* 0x14 */
-	PCI_ADDR(0, 0x00, 0, IURBASE), 0x00000fff, MCBAR |0,
+	PCI_ADDR(0, 0x00, 0, IURBASE), 0x00000fff, (uintptr_t)(MCBAR + 0),
 	};
 	int i;
 	int max;
@@ -936,6 +936,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	int i;
 	int cs;
 	int cnt;
+	u8 *cntptr;
 	int cas_latency;
 	long mask;
 	u32 drc;
@@ -1139,8 +1140,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* DQS */
 	pci_write_config32(ctrl->f0, 0x94, 0x3904aa00);
-	for(i = 0, cnt = (MCBAR+0x200); i < 24; i++, cnt+=4) {
-		write32(cnt, dqs_data[i]);
+	for(i = 0, cntptr = (MCBAR+0x200); i < 24; i++, cnt+=4) {
+		write32(cntptr, dqs_data[i]);
 	}
 	pci_write_config32(ctrl->f0, 0x94, 0x3900aa00);
 

@@ -83,7 +83,7 @@ static void early_config(void)
 	u32 gcs, rpc, fd;
 
 	/* Enable RCBA */
-	pci_write_config32(PCI_DEV(0, 0x1F, 0), RCBA, DEFAULT_RCBA | 1);
+	pci_write_config32(PCI_DEV(0, 0x1F, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
 	/* Disable watchdog */
 	gcs = read32(DEFAULT_RCBA + RCBA_GCS);

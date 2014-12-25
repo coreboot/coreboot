@@ -67,7 +67,8 @@ static const u32 minihd_verb_table[] = {
 static void minihd_init(struct device *dev)
 {
 	struct resource *res;
-	u32 base, reg32;
+	u32 reg32;
+	u8 *base;
 	int codec_mask, i;
 
 	/* Find base address */
@@ -75,8 +76,8 @@ static void minihd_init(struct device *dev)
 	if (!res)
 		return;
 
-	base = (u32)res->base;
-	printk(BIOS_DEBUG, "Mini-HD: base = %08x\n", (u32)base);
+	base = res2mmio(res, 0, 0);
+	printk(BIOS_DEBUG, "Mini-HD: base = %p\n", base);
 
 	/* Set Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);

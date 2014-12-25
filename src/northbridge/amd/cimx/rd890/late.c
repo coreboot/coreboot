@@ -119,10 +119,10 @@ struct chip_operations northbridge_amd_cimx_rd890_ops = {
 
 static void ioapic_init(struct device *dev)
 {
-	u32 ioapic_base;
+	void *ioapic_base;
 
 	pci_write_config32(dev, 0xF8, 0x1);
-	ioapic_base = pci_read_config32(dev, 0xFC) & 0xfffffff0;
+	ioapic_base = (void *)(pci_read_config32(dev, 0xFC) & 0xfffffff0);
 	clear_ioapic(ioapic_base);
 	setup_ioapic(ioapic_base, 1);
 }

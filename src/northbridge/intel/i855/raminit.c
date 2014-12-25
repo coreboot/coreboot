@@ -393,7 +393,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 
                                 uint32_t dimm_start_address = dimm_start_32M_multiple << 25;
 				PRINTK_DEBUG("  Sending RAM command to 0x%08x\n", dimm_start_address + i855_mode_bits);
-                                read32(dimm_start_address + i855_mode_bits);
+                                read32((void *)(dimm_start_address + i855_mode_bits));
 
                                 // Set the start of the next DIMM
                                 dimm_start_32M_multiple = dimm_end_32M_multiple;

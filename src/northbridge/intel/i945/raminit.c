@@ -90,7 +90,7 @@ static void ram_read32(u32 offset)
 {
 	PRINTK_DEBUG("   ram read: %08x\n", offset);
 
-	read32(offset);
+	read32((void *)offset);
 }
 
 #if CONFIG_DEBUG_RAM_SETUP

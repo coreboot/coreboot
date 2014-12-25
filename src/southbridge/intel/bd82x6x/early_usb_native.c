@@ -43,32 +43,32 @@ early_usb_init (const struct southbridge_usb_port *portmap)
 	/* Unlock registers.  */
 	outw (inw (DEFAULT_PMBASE | 0x003c) | 2, DEFAULT_PMBASE | 0x003c);
 	for (i = 0; i < 14; i++)
-		write32 (DEFAULT_RCBABASE | (0x3500 + 4 * i),
+		write32 (DEFAULT_RCBABASE + (0x3500 + 4 * i),
 			 currents[portmap[i].current]);
 	for (i = 0; i < 10; i++)
-		write32 (DEFAULT_RCBABASE | (0x3538 + 4 * i), 0);
+		write32 (DEFAULT_RCBABASE + (0x3538 + 4 * i), 0);
 
 	for (i = 0; i < 8; i++)
-		write32 (DEFAULT_RCBABASE | (0x3560 + 4 * i), rcba_dump[i]);
+		write32 (DEFAULT_RCBABASE + (0x3560 + 4 * i), rcba_dump[i]);
 	for (i = 0; i < 8; i++)
-		write32 (DEFAULT_RCBABASE | (0x3580 + 4 * i), 0);
+		write32 (DEFAULT_RCBABASE + (0x3580 + 4 * i), 0);
 	reg32 = 0;
 	for (i = 0; i < 14; i++)
 		if (!portmap[i].enabled)
 			reg32 |= (1 << i);
-	write32 (DEFAULT_RCBABASE | USBPDO, reg32);
+	write32 (DEFAULT_RCBABASE + USBPDO, reg32);
 	reg32 = 0;
 	for (i = 0; i < 8; i++)
 		if (portmap[i].enabled && portmap[i].oc_pin >= 0)
 			reg32 |= (1 << (i + 8 * portmap[i].oc_pin));
-	write32 (DEFAULT_RCBABASE | USBOCM1, reg32);
+	write32 (DEFAULT_RCBABASE + USBOCM1, reg32);
 	reg32 = 0;
 	for (i = 8; i < 14; i++)
 		if (portmap[i].enabled && portmap[i].oc_pin >= 4)
 			reg32 |= (1 << (i - 8 + 8 * (portmap[i].oc_pin - 4)));
-	write32 (DEFAULT_RCBABASE | USBOCM2, reg32);
+	write32 (DEFAULT_RCBABASE + USBOCM2, reg32);
 	for (i = 0; i < 22; i++)
-		write32 (DEFAULT_RCBABASE | (0x35a8 + 4 * i), 0);
+		write32 (DEFAULT_RCBABASE + (0x35a8 + 4 * i), 0);
 
 	pcie_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
 

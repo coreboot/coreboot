@@ -65,7 +65,7 @@
 #define DRC_72BIT_ECC         (1 << 20)
 
 #define RCBA 0xF0
-#define DEFAULT_RCBA 0xFEA00000
+#define DEFAULT_RCBA ((u8 *)0xFEA00000)
 
 int bios_reset_detected(void);
 

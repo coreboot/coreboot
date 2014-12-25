@@ -57,7 +57,8 @@ static void *smp_write_config_table(void *v)
 		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
 			if (res) {
-				smp_write_ioapic(mc, m->apicid_mcp55, 0x11, res->base);
+				smp_write_ioapic(mc, m->apicid_mcp55, 0x11,
+						 res2mmio(res, 0, 0));
 			}
 
 			dword = 0x43c6c643;

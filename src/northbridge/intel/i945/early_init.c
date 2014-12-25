@@ -156,7 +156,7 @@ static void i945_setup_bars(void)
 
 	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, DEFAULT_RCBA | 1);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
@@ -177,8 +177,8 @@ static void i945_setup_bars(void)
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, DEFAULT_MCHBAR | 1);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, DEFAULT_DMIBAR | 1);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, (uintptr_t)DEFAULT_MCHBAR | 1);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), X60BAR, DEFAULT_X60BAR | 1);
 
 	/* Hardware default is 8MB UMA. If someone wants to make this a
@@ -342,7 +342,7 @@ static void ich7_setup_dmi_rcrb(void)
 
 	RCBA32(ULD) |= (1 << 24) | (1 << 16);
 
-	RCBA32(ULBA) = DEFAULT_DMIBAR;
+	RCBA32(ULBA) = (uintptr_t)DEFAULT_DMIBAR;
 
 	RCBA32(RP1D) |= (2 << 16);
 	RCBA32(RP2D) |= (2 << 16);
@@ -818,7 +818,7 @@ static void i945_setup_root_complex_topology(void)
 
 	EPBAR32(EPLE1D) |= (1 << 16) | (1 << 0);
 
-	EPBAR32(EPLE1A) = DEFAULT_DMIBAR;
+	EPBAR32(EPLE1A) = (uintptr_t)DEFAULT_DMIBAR;
 
 	EPBAR32(EPLE2D) |= (1 << 16) | (1 << 0);
 
@@ -833,7 +833,7 @@ static void i945_setup_root_complex_topology(void)
 	reg32 |= (1 << 0);
 	DMIBAR32(DMILE1D) = reg32;
 
-	DMIBAR32(DMILE1A) = DEFAULT_RCBA;
+	DMIBAR32(DMILE1A) = (uintptr_t)DEFAULT_RCBA;
 
 	DMIBAR32(DMILE2D) |= (1 << 16) | (1 << 0);
 

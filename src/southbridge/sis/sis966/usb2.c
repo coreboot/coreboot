@@ -66,7 +66,7 @@ static const u8 SiS_SiS7002_init[22][3]={
 
 static void usb2_init(struct device *dev)
 {
-        u32 base;
+        u8 *base;
         struct resource *res;
         int i;
         u8  temp8;
@@ -89,9 +89,9 @@ static void usb2_init(struct device *dev)
         if(!res)
                 return;
 
-        base = res->base;
-        printk(BIOS_DEBUG, "base = 0x%08x\n", base);
-        write32(base+0x20, 0x2);
+        base = res2mmio(res, 0, 0);
+        printk(BIOS_DEBUG, "base = 0x%p\n", base);
+        write32(base + 0x20, 0x2);
 	//-------------------------------------------------------------
 
 #if DEBUG_USB2

@@ -168,7 +168,7 @@ enum {
 
 static u8 readb_(const void *addr)
 {
-	u8 v = read8((unsigned long)addr);
+	u8 v = read8(addr);
 	printk(BIOS_DEBUG, "read %2.2x from %4.4x\n",
 	       v, ((unsigned) addr & 0xffff) - 0xf020);
 	return v;
@@ -176,7 +176,7 @@ static u8 readb_(const void *addr)
 
 static u16 readw_(const void *addr)
 {
-	u16 v = read16((unsigned long)addr);
+	u16 v = read16(addr);
 	printk(BIOS_DEBUG, "read %4.4x from %4.4x\n",
 	       v, ((unsigned) addr & 0xffff) - 0xf020);
 	return v;
@@ -184,7 +184,7 @@ static u16 readw_(const void *addr)
 
 static u32 readl_(const void *addr)
 {
-	u32 v = read32((unsigned long)addr);
+	u32 v = read32(addr);
 	printk(BIOS_DEBUG, "read %8.8x from %4.4x\n",
 	       v, ((unsigned) addr & 0xffff) - 0xf020);
 	return v;
@@ -192,33 +192,33 @@ static u32 readl_(const void *addr)
 
 static void writeb_(u8 b, const void *addr)
 {
-	write8((unsigned long)addr, b);
+	write8(addr, b);
 	printk(BIOS_DEBUG, "wrote %2.2x to %4.4x\n",
 	       b, ((unsigned) addr & 0xffff) - 0xf020);
 }
 
 static void writew_(u16 b, const void *addr)
 {
-	write16((unsigned long)addr, b);
+	write16(addr, b);
 	printk(BIOS_DEBUG, "wrote %4.4x to %4.4x\n",
 	       b, ((unsigned) addr & 0xffff) - 0xf020);
 }
 
 static void writel_(u32 b, const void *addr)
 {
-	write32((unsigned long)addr, b);
+	write32(addr, b);
 	printk(BIOS_DEBUG, "wrote %8.8x to %4.4x\n",
 	       b, ((unsigned) addr & 0xffff) - 0xf020);
 }
 
 #else /* CONFIG_DEBUG_SPI_FLASH ^^^ enabled  vvv NOT enabled */
 
-#define readb_(a) read8((uint32_t)a)
-#define readw_(a) read16((uint32_t)a)
-#define readl_(a) read32((uint32_t)a)
-#define writeb_(val, addr) write8((uint32_t)addr, val)
-#define writew_(val, addr) write16((uint32_t)addr, val)
-#define writel_(val, addr) write32((uint32_t)addr, val)
+#define readb_(a) read8(a)
+#define readw_(a) read16(a)
+#define readl_(a) read32(a)
+#define writeb_(val, addr) write8(addr, val)
+#define writew_(val, addr) write16(addr, val)
+#define writel_(val, addr) write32(addr, val)
 
 #endif  /* CONFIG_DEBUG_SPI_FLASH ^^^ NOT enabled */
 

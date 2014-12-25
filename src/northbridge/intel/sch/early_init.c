@@ -205,7 +205,8 @@ static void sch_setup_non_standard_bars(void)
 	sch_port_access_write(2, 9, 4, DEFAULT_PCIEXBAR | 1); /* b1+ */
 
 	/* RCBA */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xF0, (DEFAULT_RCBABASE | 1));
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xF0,
+			   ((uintptr_t)DEFAULT_RCBABASE | 1));
 
 	printk(BIOS_DEBUG, " done.\n");
 }

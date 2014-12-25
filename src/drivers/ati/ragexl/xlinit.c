@@ -537,13 +537,13 @@ static void ati_ragexl_init(struct device *dev)
 #endif /* CONFIG_CONSOLE_BTEXT */
 
 #if USE_AUX_REG==0
-        info->ati_regbase = res->base+0x7ff000+0xc00;
+        info->ati_regbase = res2mmio(res, 0x7ff000+0xc00, 0);
 #else
 	/* Fix this to look for the correct index. */
 	//if (dev->resource_list && dev->resource_list->next)
         res = dev->resource_list->next->next;
         if(res->flags & IORESOURCE_MEM) {
-                info->ati_regbase = res->base+0x400; //using auxiliary register
+		info->ati_regbase = res2mmio(res, 0x400, 0); //using auxiliary register
         }
 
 #endif
@@ -553,7 +553,7 @@ static void ati_ragexl_init(struct device *dev)
 #endif
 
 #if 0
-	printk(BIOS_DEBUG, "ati_regbase = 0x%08x, frame_buffer = 0x%08x\n", info->ati_regbase, info->frame_buffer);
+	printk(BIOS_DEBUG, "ati_regbase = 0x%p, frame_buffer = 0x%08x\n", info->ati_regbase, info->frame_buffer);
 #endif
 
     	chip_id = aty_ld_le32(CONFIG_CHIP_ID, info);

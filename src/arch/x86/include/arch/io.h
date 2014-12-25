@@ -142,32 +142,32 @@ static inline void insl(uint16_t port, void *addr, unsigned long count)
 		);
 }
 
-static inline __attribute__((always_inline)) uint8_t read8(unsigned long addr)
+static inline __attribute__((always_inline)) uint8_t read8(const volatile void *addr)
 {
 	return *((volatile uint8_t *)(addr));
 }
 
-static inline __attribute__((always_inline)) uint16_t read16(unsigned long addr)
+static inline __attribute__((always_inline)) uint16_t read16(const volatile void *addr)
 {
 	return *((volatile uint16_t *)(addr));
 }
 
-static inline __attribute__((always_inline)) uint32_t read32(unsigned long addr)
+static inline __attribute__((always_inline)) uint32_t read32(const volatile void *addr)
 {
 	return *((volatile uint32_t *)(addr));
 }
 
-static inline __attribute__((always_inline)) void write8(unsigned long addr, uint8_t value)
+static inline __attribute__((always_inline)) void write8(volatile void *addr, uint8_t value)
 {
 	*((volatile uint8_t *)(addr)) = value;
 }
 
-static inline __attribute__((always_inline)) void write16(unsigned long addr, uint16_t value)
+static inline __attribute__((always_inline)) void write16(volatile void *addr, uint16_t value)
 {
 	*((volatile uint16_t *)(addr)) = value;
 }
 
-static inline __attribute__((always_inline)) void write32(unsigned long addr, uint32_t value)
+static inline __attribute__((always_inline)) void write32(volatile void *addr, uint32_t value)
 {
 	*((volatile uint32_t *)(addr)) = value;
 }

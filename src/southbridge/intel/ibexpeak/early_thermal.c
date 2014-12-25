@@ -43,11 +43,12 @@ void early_thermal_init(void)
 	/* Perform init.  */
 	/* Configure TJmax.  */
 	msr = rdmsr(MSR_TEMPERATURE_TARGET);
-	write16(0x40000012, ((msr.lo >> 16) & 0xff) << 6);
+	write16((u16 *)0x40000012, ((msr.lo >> 16) & 0xff) << 6);
 	/* Northbridge temperature slope and offset.  */
-	write16(0x40000016, 0x7746);
+	write16((u16 *)0x40000016, 0x7746);
 	/* Enable thermal data reporting, processor, PCH and northbridge.  */
-	write16(0x4000001a, (read16(0x4000001a) & ~0xf) | 0x10f0);
+	write16((u16 *)0x4000001a,
+		(read16((u16 *)0x4000001a) & ~0xf) | 0x10f0);
 
 	/* Disable temporary BAR.  */
 	pci_write_config32(dev, 0x40,

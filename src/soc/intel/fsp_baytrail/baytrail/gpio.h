@@ -353,20 +353,20 @@ void configure_score_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val);
 #define PCU_SMB_CLK_PAD			88
 #define PCU_SMB_DATA_PAD		90
 
-static inline unsigned int score_pconf0(int pad_num)
+static inline uint32_t *score_pconf0(int pad_num)
 {
-	return GPSCORE_PAD_BASE + pad_num * 16;
+	return (uint32_t *)(GPSCORE_PAD_BASE + pad_num * 16);
 }
 
-static inline unsigned int ssus_pconf0(int pad_num)
+static inline uint32_t *ssus_pconf0(int pad_num)
 {
-	return GPSSUS_PAD_BASE + pad_num * 16;
+	return (uint32_t *)(GPSSUS_PAD_BASE + pad_num * 16);
 }
 
 static inline void score_select_func(int pad, int func)
 {
 	uint32_t reg;
-	uint32_t pconf0_addr = score_pconf0(pad);
+	uint32_t *pconf0_addr = score_pconf0(pad);
 
 	reg = read32(pconf0_addr);
 	reg &= ~0x7;
@@ -377,7 +377,7 @@ static inline void score_select_func(int pad, int func)
 static inline void ssus_select_func(int pad, int func)
 {
 	uint32_t reg;
-	uint32_t pconf0_addr = ssus_pconf0(pad);
+	uint32_t *pconf0_addr = ssus_pconf0(pad);
 
 	reg = read32(pconf0_addr);
 	reg &= ~0x7;
@@ -390,14 +390,14 @@ static inline void ssus_select_func(int pad, int func)
 /* These functions require that the input pad be configured as an input GPIO */
 static inline int score_get_gpio(int pad)
 {
-	uint32_t val_addr = score_pconf0(pad) + PAD_VAL_REG;
+	uint32_t *val_addr = score_pconf0(pad) + (PAD_VAL_REG/sizeof(uint32_t));
 
 	return read32(val_addr) & PAD_VAL_HIGH;
 }
 
 static inline int ssus_get_gpio(int pad)
 {
-	uint32_t val_addr = ssus_pconf0(pad) + PAD_VAL_REG;
+	uint32_t *val_addr = ssus_pconf0(pad) + (PAD_VAL_REG/sizeof(uint32_t));
 
 	return read32(val_addr) & PAD_VAL_HIGH;
 }

@@ -80,7 +80,7 @@ static void setup_rombios(void)
 	memcpy((void *)0xfffd9, &ident, 7);
 
 	/* system model: IBM-AT */
-	write8(0xffffe, 0xfc);
+	write8((void *)0xffffe, 0xfc);
 }
 
 static int (*intXX_handler[256])(void) = { NULL };

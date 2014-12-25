@@ -181,10 +181,10 @@ static void wait_txt_clear(void)
 	if (!(cp.ecx & 0x40))
 		return;
 	/* Some TXT public bit.  */
-	if (!(read32(0xfed30010) & 1))
+	if (!(read32((void *)0xfed30010) & 1))
 		return;
 	/* Wait for TXT clear.  */
-	while (!(read8(0xfed40000) & (1 << 7))) ;
+	while (!(read8((void *)0xfed40000) & (1 << 7))) ;
 }
 
 static void sfence(void)
@@ -1105,7 +1105,7 @@ static void dram_ioregs(ramctr_timing * ctrl)
 static void wait_428c(int channel)
 {
 	while (1) {
-		if (read32(DEFAULT_MCHBAR | 0x428c | (channel << 10)) & 0x50)
+		if (read32(DEFAULT_MCHBAR + 0x428c + (channel << 10)) & 0x50)
 			return;
 	}
 }
@@ -2081,7 +2081,7 @@ static void fill_pattern0(ramctr_timing * ctrl, int channel, u32 a, u32 b)
 	    get_precedening_channels(ctrl, channel) * 0x40;
 	printram("channel_offset=%x\n", channel_offset);
 	for (j = 0; j < 16; j++)
-		write32(0x04000000 + channel_offset + 4 * j, j & 2 ? b : a);
+		write32((void *)(0x04000000 + channel_offset + 4 * j), j & 2 ? b : a);
 	sfence();
 }
 
@@ -2100,9 +2100,9 @@ static void fill_pattern1(ramctr_timing * ctrl, int channel)
 	    get_precedening_channels(ctrl, channel) * 0x40;
 	unsigned channel_step = 0x40 * num_of_channels(ctrl);
 	for (j = 0; j < 16; j++)
-		write32(0x04000000 + channel_offset + j * 4, 0xffffffff);
+		write32((void *)(0x04000000 + channel_offset + j * 4), 0xffffffff);
 	for (j = 0; j < 16; j++)
-		write32(0x04000000 + channel_offset + channel_step + j * 4, 0);
+		write32((void *)(0x04000000 + channel_offset + channel_step + j * 4), 0);
 	sfence();
 }
 
@@ -2298,7 +2298,7 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 	write32(DEFAULT_MCHBAR + 0x3400, 0x200);
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern1(ctrl, channel);
-		write32(DEFAULT_MCHBAR | 0x4288 | (channel << 10), 1);
+		write32(DEFAULT_MCHBAR + 0x4288 + (channel << 10), 1);
 	}
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_POPULATED_RANKS {
 
@@ -2489,7 +2489,7 @@ static void write_training(ramctr_timing * ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0xaaaaaaaa, 0x55555555);
-		write32(DEFAULT_MCHBAR | 0x4288 | (channel << 10), 0);
+		write32(DEFAULT_MCHBAR + 0x4288 + (channel << 10), 0);
 	}
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS
@@ -2602,16 +2602,16 @@ static void fill_pattern5(ramctr_timing * ctrl, int channel, int patno)
 				u32 val = use_base[patno - 1][i] & (1 << (j / 2)) ? base : 0;
 				if (invert[patno - 1][i] & (1 << (j / 2)))
 					val = ~val;
-				write32(0x04000000 + channel_offset + i * channel_step +
-					j * 4, val);
+				write32((void *)(0x04000000 + channel_offset + i * channel_step +
+						 j * 4), val);
 			}
 		}
 
 	} else {
 		for (i = 0; i < sizeof(pattern) / sizeof(pattern[0]); i++) {
 			for (j = 0; j < 16; j++)
-				write32(0x04000000 + channel_offset + i * channel_step +
-					j * 4, pattern[i][j]);
+				write32((void *)(0x04000000 + channel_offset + i * channel_step +
+						 j * 4), pattern[i][j]);
 		}
 		sfence();
 	}
@@ -2866,7 +2866,7 @@ static void discover_edges(ramctr_timing * ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0, 0);
-		write32(DEFAULT_MCHBAR | 0x4288 | (channel << 10), 0);
+		write32(DEFAULT_MCHBAR + 0x4288 + (channel << 10), 0);
 		FOR_ALL_LANES {
 			read32(DEFAULT_MCHBAR + 0x400 * channel +
 			       lane * 4 + 0x4140);
@@ -2978,7 +2978,7 @@ static void discover_edges(ramctr_timing * ctrl)
 		}
 
 		fill_pattern0(ctrl, channel, 0, 0xffffffff);
-		write32(DEFAULT_MCHBAR | 0x4288 | (channel << 10), 0);
+		write32(DEFAULT_MCHBAR + 0x4288 + (channel << 10), 0);
 	}
 
 	/* FIXME: under some conditions (older chipsets?) vendor BIOS sets both edges to the same value.  */
@@ -3335,9 +3335,9 @@ static void write_controller_mr(ramctr_timing * ctrl)
 	int channel, slotrank;
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		write32(DEFAULT_MCHBAR | 0x0004 | (channel << 8) |
+		write32(DEFAULT_MCHBAR + 0x0004 + (channel << 8) +
 			lane_registers[slotrank], make_mr0(ctrl, slotrank));
-		write32(DEFAULT_MCHBAR | 0x0008 | (channel << 8) |
+		write32(DEFAULT_MCHBAR + 0x0008 + (channel << 8) +
 			lane_registers[slotrank], make_mr1(ctrl, slotrank));
 	}
 }
@@ -3347,46 +3347,46 @@ static void channel_test(ramctr_timing * ctrl)
 	int channel, slotrank, lane;
 
 	FOR_ALL_POPULATED_CHANNELS
-	    if (read32(DEFAULT_MCHBAR | 0x42a0 | (channel << 10)) & 0xa000)
+	    if (read32(DEFAULT_MCHBAR + 0x42a0 + (channel << 10)) & 0xa000)
 		 die("Mini channel test failed (1)\n");
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0x12345678, 0x98765432);
 
-		write32(DEFAULT_MCHBAR | 0x4288 | (channel << 10), 0);
+		write32(DEFAULT_MCHBAR + 0x4288 + (channel << 10), 0);
 	}
 
 	for (slotrank = 0; slotrank < 4; slotrank++)
 		FOR_ALL_CHANNELS
 			if (ctrl->rankmap[channel] & (1 << slotrank)) {
 		FOR_ALL_LANES {
-			write32(DEFAULT_MCHBAR | (0x4f40 + 4 * lane), 0);
-			write32(DEFAULT_MCHBAR | (0x4d40 + 4 * lane), 0);
+			write32(DEFAULT_MCHBAR + (0x4f40 + 4 * lane), 0);
+			write32(DEFAULT_MCHBAR + (0x4d40 + 4 * lane), 0);
 		}
 		wait_428c(channel);
-		write32(DEFAULT_MCHBAR | 0x4220 | (channel << 10), 0x0001f006);
-		write32(DEFAULT_MCHBAR | 0x4230 | (channel << 10), 0x0028a004);
-		write32(DEFAULT_MCHBAR | 0x4200 | (channel << 10),
+		write32(DEFAULT_MCHBAR + 0x4220 + (channel << 10), 0x0001f006);
+		write32(DEFAULT_MCHBAR + 0x4230 + (channel << 10), 0x0028a004);
+		write32(DEFAULT_MCHBAR + 0x4200 + (channel << 10),
 			0x00060000 | (slotrank << 24));
-		write32(DEFAULT_MCHBAR | 0x4210 | (channel << 10), 0x00000244);
-		write32(DEFAULT_MCHBAR | 0x4224 | (channel << 10), 0x0001f201);
-		write32(DEFAULT_MCHBAR | 0x4234 | (channel << 10), 0x08281064);
-		write32(DEFAULT_MCHBAR | 0x4204 | (channel << 10),
+		write32(DEFAULT_MCHBAR + 0x4210 + (channel << 10), 0x00000244);
+		write32(DEFAULT_MCHBAR + 0x4224 + (channel << 10), 0x0001f201);
+		write32(DEFAULT_MCHBAR + 0x4234 + (channel << 10), 0x08281064);
+		write32(DEFAULT_MCHBAR + 0x4204 + (channel << 10),
 			0x00000000 | (slotrank << 24));
-		write32(DEFAULT_MCHBAR | 0x4214 | (channel << 10), 0x00000242);
-		write32(DEFAULT_MCHBAR | 0x4228 | (channel << 10), 0x0001f105);
-		write32(DEFAULT_MCHBAR | 0x4238 | (channel << 10), 0x04281064);
-		write32(DEFAULT_MCHBAR | 0x4208 | (channel << 10),
+		write32(DEFAULT_MCHBAR + 0x4214 + (channel << 10), 0x00000242);
+		write32(DEFAULT_MCHBAR + 0x4228 + (channel << 10), 0x0001f105);
+		write32(DEFAULT_MCHBAR + 0x4238 + (channel << 10), 0x04281064);
+		write32(DEFAULT_MCHBAR + 0x4208 + (channel << 10),
 			0x00000000 | (slotrank << 24));
-		write32(DEFAULT_MCHBAR | 0x4218 | (channel << 10), 0x00000242);
-		write32(DEFAULT_MCHBAR | 0x422c | (channel << 10), 0x0001f002);
-		write32(DEFAULT_MCHBAR | 0x423c | (channel << 10), 0x00280c01);
-		write32(DEFAULT_MCHBAR | 0x420c | (channel << 10),
+		write32(DEFAULT_MCHBAR + 0x4218 + (channel << 10), 0x00000242);
+		write32(DEFAULT_MCHBAR + 0x422c + (channel << 10), 0x0001f002);
+		write32(DEFAULT_MCHBAR + 0x423c + (channel << 10), 0x00280c01);
+		write32(DEFAULT_MCHBAR + 0x420c + (channel << 10),
 			0x00060400 | (slotrank << 24));
-		write32(DEFAULT_MCHBAR | 0x421c | (channel << 10), 0x00000240);
-		write32(DEFAULT_MCHBAR | 0x4284 | (channel << 10), 0x000c0001);
+		write32(DEFAULT_MCHBAR + 0x421c + (channel << 10), 0x00000240);
+		write32(DEFAULT_MCHBAR + 0x4284 + (channel << 10), 0x000c0001);
 		wait_428c(channel);
 		FOR_ALL_LANES
-		    if (read32(DEFAULT_MCHBAR | 0x4340 | (channel << 10)))
+		    if (read32(DEFAULT_MCHBAR + 0x4340 + (channel << 10)))
 			 die("Mini channel test failed (2)\n");
 	}
 }
@@ -3403,9 +3403,9 @@ static void set_scrambling_seed(ramctr_timing * ctrl)
 	};
 	FOR_ALL_POPULATED_CHANNELS {
 		MCHBAR32(0x4020 + 0x400 * channel) &= ~0x10000000;
-		write32(DEFAULT_MCHBAR | 0x4034, seeds[channel][0]);
-		write32(DEFAULT_MCHBAR | 0x403c, seeds[channel][1]);
-		write32(DEFAULT_MCHBAR | 0x4038, seeds[channel][2]);
+		write32(DEFAULT_MCHBAR + 0x4034, seeds[channel][0]);
+		write32(DEFAULT_MCHBAR + 0x403c, seeds[channel][1]);
+		write32(DEFAULT_MCHBAR + 0x4038, seeds[channel][2]);
 	}
 }
 
@@ -3463,12 +3463,12 @@ static void set_4008c(ramctr_timing * ctrl)
 		else
 			b4_8_12 = 0x2220;
 
-		reg = read32(DEFAULT_MCHBAR | 0x400c | (channel << 10));
-		write32(DEFAULT_MCHBAR | 0x400c | (channel << 10),
+		reg = read32(DEFAULT_MCHBAR + 0x400c + (channel << 10));
+		write32(DEFAULT_MCHBAR + 0x400c + (channel << 10),
 			(reg & 0xFFF0FFFF)
 			| (ctrl->ref_card_offset[channel] << 16)
 			| (ctrl->ref_card_offset[channel] << 18));
-		write32(DEFAULT_MCHBAR | 0x4008 | (channel << 10),
+		write32(DEFAULT_MCHBAR + 0x4008 + (channel << 10),
 			0x0a000000
 			| (b20 << 20)
 			| ((ctrl->ref_card_offset[channel] + 2) << 16)
@@ -3480,7 +3480,7 @@ static void set_42a0(ramctr_timing * ctrl)
 {
 	int channel;
 	FOR_ALL_POPULATED_CHANNELS {
-		write32(DEFAULT_MCHBAR | (0x42a0 + 0x400 * channel),
+		write32(DEFAULT_MCHBAR + (0x42a0 + 0x400 * channel),
 			0x00001000 | ctrl->rankmap[channel]);
 		MCHBAR32(0x4004 + 0x400 * channel) &= ~0x20000000;	// OK
 	}
@@ -3499,15 +3499,15 @@ static void final_registers(ramctr_timing * ctrl)
 	int t3_ns;
 	u32 r32;
 
-	write32(DEFAULT_MCHBAR | 0x4cd4, 0x00000046);
+	write32(DEFAULT_MCHBAR + 0x4cd4, 0x00000046);
 
-	write32(DEFAULT_MCHBAR | 0x400c, (read32(DEFAULT_MCHBAR | 0x400c) & 0xFFFFCFFF) | 0x1000);	// OK
-	write32(DEFAULT_MCHBAR | 0x440c, (read32(DEFAULT_MCHBAR | 0x440c) & 0xFFFFCFFF) | 0x1000);	// OK
-	write32(DEFAULT_MCHBAR | 0x4cb0, 0x00000740);
-	write32(DEFAULT_MCHBAR | 0x4380, 0x00000aaa);	// OK
-	write32(DEFAULT_MCHBAR | 0x4780, 0x00000aaa);	// OK
-	write32(DEFAULT_MCHBAR | 0x4f88, 0x5f7003ff);	// OK
-	write32(DEFAULT_MCHBAR | 0x5064, 0x00073000 | ctrl->reg_5064b0); // OK
+	write32(DEFAULT_MCHBAR + 0x400c, (read32(DEFAULT_MCHBAR + 0x400c) & 0xFFFFCFFF) | 0x1000);	// OK
+	write32(DEFAULT_MCHBAR + 0x440c, (read32(DEFAULT_MCHBAR + 0x440c) & 0xFFFFCFFF) | 0x1000);	// OK
+	write32(DEFAULT_MCHBAR + 0x4cb0, 0x00000740);
+	write32(DEFAULT_MCHBAR + 0x4380, 0x00000aaa);	// OK
+	write32(DEFAULT_MCHBAR + 0x4780, 0x00000aaa);	// OK
+	write32(DEFAULT_MCHBAR + 0x4f88, 0x5f7003ff);	// OK
+	write32(DEFAULT_MCHBAR + 0x5064, 0x00073000 | ctrl->reg_5064b0); // OK
 
 	FOR_ALL_CHANNELS {
 		switch (ctrl->rankmap[channel]) {
@@ -3528,15 +3528,15 @@ static void final_registers(ramctr_timing * ctrl)
 		}
 	}
 
-	write32 (DEFAULT_MCHBAR | 0x5880, 0xca9171e5);
-	write32 (DEFAULT_MCHBAR | 0x5888,
-		 (read32 (DEFAULT_MCHBAR | 0x5888) & ~0xffffff) | 0xe4d5d0);
-	write32 (DEFAULT_MCHBAR | 0x58a8, read32 (DEFAULT_MCHBAR | 0x58a8) & ~0x1f);
-	write32 (DEFAULT_MCHBAR | 0x4294,
-		 (read32 (DEFAULT_MCHBAR | 0x4294) & ~0x30000)
+	write32 (DEFAULT_MCHBAR + 0x5880, 0xca9171e5);
+	write32 (DEFAULT_MCHBAR + 0x5888,
+		 (read32 (DEFAULT_MCHBAR + 0x5888) & ~0xffffff) | 0xe4d5d0);
+	write32 (DEFAULT_MCHBAR + 0x58a8, read32 (DEFAULT_MCHBAR + 0x58a8) & ~0x1f);
+	write32 (DEFAULT_MCHBAR + 0x4294,
+		 (read32 (DEFAULT_MCHBAR + 0x4294) & ~0x30000)
 		 | (1 << 16));
-	write32 (DEFAULT_MCHBAR | 0x4694,
-		 (read32 (DEFAULT_MCHBAR | 0x4694) & ~0x30000)
+	write32 (DEFAULT_MCHBAR + 0x4694,
+		 (read32 (DEFAULT_MCHBAR + 0x4694) & ~0x30000)
 		 | (1 << 16));
 
 	MCHBAR32(0x5030) |= 1;	// OK
@@ -3721,10 +3721,10 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 
 	wrmsr(0x000002e6, (msr_t) { .lo = 0, .hi = 0 });
 
-	reg_5d10 = read32(DEFAULT_MCHBAR | 0x5d10);	// !!! = 0x00000000
+	reg_5d10 = read32(DEFAULT_MCHBAR + 0x5d10);	// !!! = 0x00000000
 	if ((pcie_read_config16(SOUTHBRIDGE, 0xa2) & 0xa0) == 0x20	/* 0x0004 */
 	    && reg_5d10 && !s3resume) {
-		write32(DEFAULT_MCHBAR | 0x5d10, 0);
+		write32(DEFAULT_MCHBAR + 0x5d10, 0);
 		/* Need reset.  */
 		outb(0x6, 0xcf9);
 
@@ -3858,7 +3858,7 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 	}
 
 	/* FIXME: should be hardware revision-dependent.  */
-	write32(DEFAULT_MCHBAR | 0x5024, 0x00a030ce);
+	write32(DEFAULT_MCHBAR + 0x5024, 0x00a030ce);
 
 	set_scrambling_seed(&ctrl);
 

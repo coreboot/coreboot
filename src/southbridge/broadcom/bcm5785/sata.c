@@ -31,9 +31,9 @@ static void sata_init(struct device *dev)
 {
 	uint8_t byte;
 
-	u32 mmio;
+	u8 *mmio;
         struct resource *res;
-        u32 mmio_base;
+        u8 *mmio_base;
 	int i;
 
 	if(!(dev->path.pci.devfn & 7)) { // only set it in Func0
@@ -42,8 +42,7 @@ static void sata_init(struct device *dev)
         	pci_write_config8(dev, 0x78, byte);
 
 	        res = find_resource(dev, 0x24);
-                mmio_base = res->base;
-                mmio_base &= 0xfffffffc;
+                mmio_base = res2mmio(res, 0, 3);
 
 		write32(mmio_base + 0x10f0, 0x40000001);
 		write32(mmio_base + 0x8c, 0x00ff2007);
@@ -59,7 +58,7 @@ static void sata_init(struct device *dev)
 
 		printk(BIOS_DEBUG, "init PHY...\n");
 		for(i=0; i<4; i++) {
-			mmio = res->base + 0x100 * i;
+			mmio = (u8 *)(uintptr_t)(res->base + 0x100 * i);
 			byte = read8(mmio + 0x40);
 			printk(BIOS_DEBUG, "port %d PHY status = %02x\n", i, byte);
 			if(byte & 0x4) {// bit 2 is set

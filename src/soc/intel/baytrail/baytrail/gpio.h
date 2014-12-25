@@ -387,15 +387,15 @@ struct soc_gpio_config* mainboard_get_gpios(void);
 #define PCU_SMB_DATA_PAD		90
 #define SOC_DDI1_VDDEN_PAD		16
 
-static inline unsigned int ncore_pconf0(int pad_num)
+static inline u32 *ncore_pconf0(int pad_num)
 {
-	return GPNCORE_PAD_BASE + pad_num * 16;
+	return (u32 *)(GPNCORE_PAD_BASE + pad_num * 16);
 }
 
 static inline void ncore_select_func(int pad, int func)
 {
 	uint32_t reg;
-	uint32_t pconf0_addr = ncore_pconf0(pad);
+	u32 *pconf0_addr = ncore_pconf0(pad);
 
 	reg = read32(pconf0_addr);
 	reg &= ~0x7;
@@ -403,20 +403,20 @@ static inline void ncore_select_func(int pad, int func)
 	write32(pconf0_addr, reg);
 }
 
-static inline unsigned int score_pconf0(int pad_num)
+static inline u32 *score_pconf0(int pad_num)
 {
-	return GPSCORE_PAD_BASE + pad_num * 16;
+	return (u32 *)(GPSCORE_PAD_BASE + pad_num * 16);
 }
 
-static inline unsigned int ssus_pconf0(int pad_num)
+static inline u32 *ssus_pconf0(int pad_num)
 {
-	return GPSSUS_PAD_BASE + pad_num * 16;
+	return (u32 *)(GPSSUS_PAD_BASE + pad_num * 16);
 }
 
 static inline void score_select_func(int pad, int func)
 {
 	uint32_t reg;
-	uint32_t pconf0_addr = score_pconf0(pad);
+	uint32_t *pconf0_addr = score_pconf0(pad);
 
 	reg = read32(pconf0_addr);
 	reg &= ~0x7;
@@ -427,7 +427,7 @@ static inline void score_select_func(int pad, int func)
 static inline void ssus_select_func(int pad, int func)
 {
 	uint32_t reg;
-	uint32_t pconf0_addr = ssus_pconf0(pad);
+	uint32_t *pconf0_addr = ssus_pconf0(pad);
 
 	reg = read32(pconf0_addr);
 	reg &= ~0x7;
@@ -438,14 +438,14 @@ static inline void ssus_select_func(int pad, int func)
 /* These functions require that the input pad be configured as an input GPIO */
 static inline int score_get_gpio(int pad)
 {
-	uint32_t val_addr = score_pconf0(pad) + PAD_VAL_REG;
+	uint32_t *val_addr = score_pconf0(pad) + (PAD_VAL_REG/sizeof(uint32_t));
 
 	return read32(val_addr) & PAD_VAL_HIGH;
 }
 
 static inline int ssus_get_gpio(int pad)
 {
-	uint32_t val_addr = ssus_pconf0(pad) + PAD_VAL_REG;
+	uint32_t *val_addr = ssus_pconf0(pad) + (PAD_VAL_REG/sizeof(uint32_t));
 
 	return read32(val_addr) & PAD_VAL_HIGH;
 }

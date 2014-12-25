@@ -34,15 +34,15 @@ static void rangeley_setup_bars(void)
 {
 	/* Setting up Southbridge. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(LPC_BDF, RCBA, DEFAULT_RCBA | RCBA_ENABLE);
+	pci_write_config32(LPC_BDF, RCBA, (uintptr_t)DEFAULT_RCBA | RCBA_ENABLE);
 	pci_write_config32(LPC_BDF, ABASE, DEFAULT_ABASE | SET_BAR_ENABLE);
 	pci_write_config32(LPC_BDF, PBASE, DEFAULT_PBASE | SET_BAR_ENABLE);
 	printk(BIOS_DEBUG, " done.\n");
 
 	printk(BIOS_DEBUG, "Disabling Watchdog timer...");
 	/* Disable the watchdog reboot and turn off the watchdog timer */
-	write8(DEFAULT_PBASE + PMC_CFG, read8(DEFAULT_PBASE + PMC_CFG) |
-		 NO_REBOOT);	// disable reboot on timer trigger
+	write8((void *)(DEFAULT_PBASE + PMC_CFG),
+	       read8((void *)(DEFAULT_PBASE + PMC_CFG)) | NO_REBOOT);	// disable reboot on timer trigger
 	outw(DEFAULT_ABASE + TCO1_CNT, inw(DEFAULT_ABASE + TCO1_CNT) |
 		TCO_TMR_HALT);	// disable watchdog timer
 
@@ -54,7 +54,7 @@ static void reset_rtc(void)
 {
 	uint32_t pbase = pci_read_config32(LPC_BDF, PBASE) &
 		0xfffffff0;
-	uint32_t gen_pmcon1 = read32(pbase + GEN_PMCON1);
+	uint32_t gen_pmcon1 = read32((void *)(pbase + GEN_PMCON1));
 	int rtc_failed = !!(gen_pmcon1 & RPS);
 
 	if (rtc_failed) {
@@ -63,7 +63,8 @@ static void reset_rtc(void)
 			coreboot_dmi_date);
 
 		/* Clear the power failure flag */
-		write32(DEFAULT_PBASE + GEN_PMCON1, gen_pmcon1 & ~RPS);
+		write32((void *)(DEFAULT_PBASE + GEN_PMCON1),
+			gen_pmcon1 & ~RPS);
 	}
 
 	cmos_init(rtc_failed);

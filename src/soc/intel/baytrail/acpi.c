@@ -106,7 +106,7 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 
 static int acpi_sci_irq(void)
 {
-	const unsigned long actl = ILB_BASE_ADDRESS + ACTL;
+	u32 *actl = (u32 *)(ILB_BASE_ADDRESS + ACTL);
 	int scis;
 	static int sci_irq;
 

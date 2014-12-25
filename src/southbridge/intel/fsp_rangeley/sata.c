@@ -32,7 +32,7 @@ static void sata_init(struct device *dev)
 {
 	u32 reg32;
 	u16 reg16;
-	u32 abar;
+	u32 *abar;
 
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
@@ -74,13 +74,13 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, SATA_MAP, reg16);
 
 		/* Initialize AHCI memory-mapped space */
-		abar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
-		printk(BIOS_DEBUG, "ABAR: %08X\n", abar);
+		abar = (u32 *)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+		printk(BIOS_DEBUG, "ABAR: %p\n", abar);
 
 		/* Enable AHCI Mode */
-		reg32 = read32(abar + 0x04);
+		reg32 = read32(abar + 0x01);
 		reg32 |= (1 << 31);
-		write32(abar + 0x04, reg32);
+		write32(abar + 0x01, reg32);
 	} else {
 		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");
 	}

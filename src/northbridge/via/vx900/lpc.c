@@ -139,10 +139,10 @@ static void vx900_lpc_ioapic_setup(device_t dev)
 	/* The base address of this IOAPIC _must_ be at 0xfec00000.
 	 * Don't move this value to a #define, as people might think it's
 	 * configurable. It is not. */
-	const u32 base = config->base;
-	if (base != 0xfec00000) {
+	const void *base = config->base;
+	if (base != (void *)0xfec00000) {
 		printk(BIOS_ERR, "ERROR: South module IOAPIC base should be at "
-		       "0xfec00000\n but we found it at 0x%.8x\n", base);
+		       "0xfec00000\n but we found it at %p\n", base);
 		return;
 	}
 

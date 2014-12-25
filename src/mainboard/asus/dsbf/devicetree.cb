@@ -91,13 +91,13 @@ chip northbridge/intel/i5000
 		     register "have_isa_interrupts" = "1"
 		     register "irq_on_fsb" = "1"
 		     register "enable_virtual_wire" = "1"
-		     register "base" = "0xfec00000"
+		     register "base" = "(void *)0xfec00000"
 		     device ioapic 8 on end
 		end
 
 		chip drivers/generic/ioapic
 		     register "irq_on_fsb" = "1"
-		     register "base" = "0xfec80000"
+		     register "base" = "(void *)0xfec80000"
 		     device ioapic 9 on end
 		end
 

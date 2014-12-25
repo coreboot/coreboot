@@ -23,7 +23,7 @@ static void pic_init(struct device *dev)
 	pci_write_config8(dev, 0x3c, 0xff);
 
 	/* Setup the ioapic */
-	clear_ioapic(IO_APIC_ADDR + 0x10000);
+	clear_ioapic((void *)(IO_APIC_ADDR + 0x10000));
 }
 
 static void pic_read_resources(device_t dev)

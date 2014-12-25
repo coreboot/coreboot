@@ -65,7 +65,7 @@ static void lpc_common_init(device_t dev)
 	/* I/O APIC initialization. */
 	res = find_resource(dev, PCI_BASE_ADDRESS_1);  /* IOAPIC */
 	ASSERT(res != NULL);
-	setup_ioapic(res->base, 0); /* Don't rename IOAPIC ID. */
+	setup_ioapic(res2mmio(res, 0, 0), 0); /* Don't rename IOAPIC ID. */
 
 #if 1
 	dword = pci_read_config32(dev, 0xe4);

@@ -32,12 +32,12 @@ static void sandybridge_setup_bars(void)
 	/* Set up all hardcoded northbridge BARs */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR + 4, (0LL+DEFAULT_EPBAR) >> 32);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, DEFAULT_MCHBAR | 1);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR + 4, (0LL+DEFAULT_MCHBAR) >> 32);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, (uintptr_t)DEFAULT_MCHBAR | 1);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR + 4, (0LL+(uintptr_t)DEFAULT_MCHBAR) >> 32);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), PCIEXBAR, DEFAULT_PCIEXBAR | 5); /* 64MB - busses 0-63 */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), PCIEXBAR + 4, (0LL+DEFAULT_PCIEXBAR) >> 32);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, DEFAULT_DMIBAR | 1);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR + 4, (0LL+DEFAULT_DMIBAR) >> 32);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR + 4, (0LL+(uintptr_t)DEFAULT_DMIBAR) >> 32);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM0, 0x30);

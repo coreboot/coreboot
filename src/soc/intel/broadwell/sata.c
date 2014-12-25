@@ -45,7 +45,8 @@ static inline void sir_write(struct device *dev, int idx, u32 value)
 static void sata_init(struct device *dev)
 {
 	config_t *config = dev->chip_info;
-	u32 reg32, abar;
+	u32 reg32;
+	u8 *abar;
 	u16 reg16;
 
 	printk(BIOS_DEBUG, "SATA: Initializing controller in AHCI mode.\n");
@@ -107,8 +108,8 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, 0x94, reg32);
 
 	/* Initialize AHCI memory-mapped space */
-	abar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
-	printk(BIOS_DEBUG, "ABAR: %08X\n", abar);
+	abar = (u8 *)(pci_read_config32(dev, PCI_BASE_ADDRESS_5));
+	printk(BIOS_DEBUG, "ABAR: %p\n", abar);
 
 	/* CAP (HBA Capabilities) : enable power management */
 	reg32 = read32(abar + 0x00);

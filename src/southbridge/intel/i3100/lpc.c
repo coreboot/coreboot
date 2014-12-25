@@ -358,7 +358,7 @@ static void lpc_init(struct device *dev)
 	// TODO this code sets int 0 of the IOAPIC in Virtual Wire Mode
 	// (register 0x10/0x11) while the old code used int 1 (register 0x12)
 	// ... Why?
-	setup_ioapic(IO_APIC_ADDR, 0); // Don't rename IOAPIC ID
+	setup_ioapic(VIO_APIC_VADDR, 0); // Don't rename IOAPIC ID
 
 	/* Decode 0xffc00000 - 0xffffffff to fwh idsel 0 */
 	pci_write_config32(dev, 0xd0, 0x00000000);

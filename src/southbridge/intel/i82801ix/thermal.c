@@ -34,7 +34,7 @@ static void thermal_init(struct device *dev)
 	u8 reg8;
 	u32 reg32;
 
-	pci_write_config32(dev, 0x10, DEFAULT_TBAR);
+	pci_write_config32(dev, 0x10, (uintptr_t)DEFAULT_TBAR);
 	reg32 = pci_read_config32(dev, 0x04);
 	pci_write_config32(dev, 0x04, reg32 | (1 << 1));
 

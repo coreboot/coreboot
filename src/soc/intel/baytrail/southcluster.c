@@ -134,7 +134,7 @@ static void sc_rtc_init(void)
 	if (ps != NULL) {
 		gen_pmcon1 = ps->gen_pmcon1;
 	} else {
-		gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
+		gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
 	}
 
 	rtc_fail = !!(gen_pmcon1 & RPS);
@@ -185,20 +185,20 @@ static void com1_configure_resume(device_t dev)
 static void sc_init(device_t dev)
 {
 	int i;
-	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
-	const unsigned long ir_base = ILB_BASE_ADDRESS + 0x20;
-	const unsigned long gen_pmcon1 = PMC_BASE_ADDRESS + GEN_PMCON1;
-	const unsigned long actl = ILB_BASE_ADDRESS + ACTL;
+	u8 *pr_base = (u8 *)(ILB_BASE_ADDRESS + 0x08);
+	u16 *ir_base = (u16 *)ILB_BASE_ADDRESS + 0x20;
+	u32 *gen_pmcon1 = (u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1);
+	u32 *actl = (u32 *)(ILB_BASE_ADDRESS + ACTL);
 	const struct baytrail_irq_route *ir = &global_baytrail_irq_route;
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 
 	/* Set up the PIRQ PIC routing based on static config. */
 	for (i = 0; i < NUM_PIRQS; i++) {
-		write8(pr_base + i*sizeof(ir->pic[i]), ir->pic[i]);
+		write8(pr_base + i, ir->pic[i]);
 	}
 	/* Set up the per device PIRQ routing base on static config. */
 	for (i = 0; i < NUM_IR_DEVS; i++) {
-		write16(ir_base + i*sizeof(ir->pcidev[i]), ir->pcidev[i]);
+		write16(ir_base + i, ir->pcidev[i]);
 	}
 
 	/* Route SCI to IRQ9 */
@@ -226,8 +226,8 @@ static void sc_init(device_t dev)
 /* Set bit in function disable register to hide this device. */
 static void sc_disable_devfn(device_t dev)
 {
-	const unsigned long func_dis = PMC_BASE_ADDRESS + FUNC_DIS;
-	const unsigned long func_dis2 = PMC_BASE_ADDRESS + FUNC_DIS2;
+	u32 *func_dis = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS);
+	u32 *func_dis2 = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS2);
 	uint32_t mask = 0;
 	uint32_t mask2 = 0;
 
@@ -347,7 +347,7 @@ static inline void set_d3hot_bits(device_t dev, int offset)
  * the audio paths work for LPE audio. */
 static void hda_work_around(device_t dev)
 {
-	unsigned long gctl = TEMP_BASE_ADDRESS + 0x8;
+	u32 *gctl = (u32 *)(TEMP_BASE_ADDRESS + 0x8);
 
 	/* Need to set magic register 0x43 to 0xd7 in config space. */
 	pci_write_config8(dev, 0x43, 0xd7);
@@ -534,11 +534,11 @@ int __attribute__((weak)) mainboard_get_spi_config(struct spi_config *cfg)
 
 static void finalize_chipset(void *unused)
 {
-	const unsigned long bcr = SPI_BASE_ADDRESS + BCR;
-	const unsigned long gcs = RCBA_BASE_ADDRESS + GCS;
-	const unsigned long gen_pmcon2 = PMC_BASE_ADDRESS + GEN_PMCON2;
-	const unsigned long etr = PMC_BASE_ADDRESS + ETR;
-	const unsigned long spi = SPI_BASE_ADDRESS;
+	u32 *bcr = (u32 *)(SPI_BASE_ADDRESS + BCR);
+	u32 *gcs = (u32 *)(RCBA_BASE_ADDRESS + GCS);
+	u32 *gen_pmcon2 = (u32 *)(PMC_BASE_ADDRESS + GEN_PMCON2);
+	u32 *etr = (u32 *)(PMC_BASE_ADDRESS + ETR);
+	u8 *spi = (u8 *)SPI_BASE_ADDRESS;
 	struct spi_config cfg;
 
 	/* Set the lock enable on the BIOS control register. */

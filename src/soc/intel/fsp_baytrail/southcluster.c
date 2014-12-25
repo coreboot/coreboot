@@ -82,17 +82,17 @@ static void sc_enable_ioapic(struct device *dev)
 {
 	int i;
 	u32 reg32;
-	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
-	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
-	u32 ilb_base = pci_read_config32(dev, IBASE) & ~0x0f;
+	volatile u32 *ioapic_index = (u32 *)(IO_APIC_ADDR);
+	volatile u32 *ioapic_data = (u32 *)(IO_APIC_ADDR + 0x10);
+	u8 *ilb_base = (u8 *)(pci_read_config32(dev, IBASE) & ~0x0f);
 
 	/*
 	 * Enable ACPI I/O and power management.
 	 * Set SCI IRQ to IRQ9
 	 */
 	write32(ilb_base + ILB_OIC, 0x100);  /* AEN */
-	reg32 = read32(ilb_base + ILB_OIC);  /* Read back per BWG */
-	write32(ilb_base + ILB_ACTL, 0);  /* ACTL bit 2:0 SCIS IRQ9 */
+	reg32 = read32(ilb_base + (ILB_OIC/sizeof(u32))); /* Read back per BWG */
+	write32(ilb_base + (ILB_ACTL/sizeof(u32)), 0);  /* ACTL bit 2:0 SCIS IRQ9 */
 
 	*ioapic_index = 0;
 	*ioapic_data = (1 << 25);
@@ -131,7 +131,7 @@ static void sc_enable_serial_irqs(struct device *dev)
 	 * until we understand how it needs to be configured.
 	 */
 	u8 reg8;
-	u32 ibase = pci_read_config32(dev, IBASE) & ~0xF;
+	u8 *ibase = (u8 *)(pci_read_config32(dev, IBASE) & ~0xF);
 
 	/*
 	 * Disable the IOCHK# NMI. Let the NMI handler enable it if it needs.
@@ -259,9 +259,9 @@ static void sc_pirq_init(device_t dev)
 {
 	int i, j;
 	int pirq;
-	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
-	const unsigned long ir_base = ILB_BASE_ADDRESS + 0x20;
-	const unsigned long actl = ILB_BASE_ADDRESS + ACTL;
+	u8 *pr_base = (u8 *)(ILB_BASE_ADDRESS + 0x08);
+	u16 *ir_base = (u16 *)(ILB_BASE_ADDRESS + 0x20);
+	u32 *actl = (u32 *)(ILB_BASE_ADDRESS + ACTL);
 	const struct baytrail_irq_route *ir = &global_baytrail_irq_route;
 
 	/* Set up the PIRQ PIC routing based on static config. */
@@ -269,7 +269,7 @@ static void sc_pirq_init(device_t dev)
 			"PIRQ\tA \tB \tC \tD \tE \tF \tG \tH\n"
 			"IRQ ");
 	for (i = 0; i < NUM_PIRQS; i++) {
-		write8(pr_base + i*sizeof(ir->pic[i]), ir->pic[i]);
+		write8(pr_base + i, ir->pic[i]);
 		printk(BIOS_SPEW, "\t%d", ir->pic[i]);
 	}
 	printk(BIOS_SPEW, "\n\n");
@@ -278,7 +278,7 @@ static void sc_pirq_init(device_t dev)
 	printk(BIOS_SPEW, "\t\t\tPIRQ[A-H] routed to each INT_PIN[A-D]\n"
 			"Dev\tINTA (IRQ)\tINTB (IRQ)\tINTC (IRQ)\tINTD (IRQ)\n");
 	for (i = 0; i < NUM_OF_PCI_DEVS; i++) {
-		write16(ir_base + i*sizeof(ir->pcidev[i]), ir->pcidev[i]);
+		write16(ir_base + i, ir->pcidev[i]);
 
 		/* If the entry is more than just 0, print it out */
 		if(ir->pcidev[i]) {
@@ -372,11 +372,11 @@ static void enable_hpet(void)
 
 static void sc_init(struct device *dev)
 {
-	u32 ibase;
+	u8 *ibase;
 
 	printk(BIOS_DEBUG, "soc: southcluster_init\n");
 
-	ibase = pci_read_config32(dev, IBASE) & ~0xF;
+	ibase = (u8 *)(pci_read_config32(dev, IBASE) & ~0xF);
 
 	write8(ibase + ILB_MC, 0);
 
@@ -411,8 +411,8 @@ static void sc_init(struct device *dev)
 /* Set bit in function disable register to hide this device. */
 static void sc_disable_devfn(device_t dev)
 {
-	const unsigned long func_dis = PMC_BASE_ADDRESS + FUNC_DIS;
-	const unsigned long func_dis2 = PMC_BASE_ADDRESS + FUNC_DIS2;
+	u32 *func_dis = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS);
+	u32 *func_dis2 = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS2);
 	uint32_t fd_mask = 0;
 	uint32_t fd2_mask = 0;
 
@@ -471,7 +471,7 @@ static inline void set_d3hot_bits(device_t dev, int offset)
  * the audio paths work for LPE audio. */
 static void hda_work_around(device_t dev)
 {
-	unsigned long gctl = TEMP_BASE_ADDRESS + 0x8;
+	u32 *gctl = (u32 *)(TEMP_BASE_ADDRESS + 0x8);
 
 	/* Need to set magic register 0x43 to 0xd7 in config space. */
 	pci_write_config8(dev, 0x43, 0xd7);

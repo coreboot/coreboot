@@ -22,19 +22,19 @@
 #include <console/console.h>
 #include <cpu/x86/lapic.h>
 
-u32 io_apic_read(u32 ioapic_base, u32 reg)
+u32 io_apic_read(void *ioapic_base, u32 reg)
 {
 	write32(ioapic_base, reg);
 	return read32(ioapic_base + 0x10);
 }
 
-void io_apic_write(u32 ioapic_base, u32 reg, u32 value)
+void io_apic_write(void *ioapic_base, u32 reg, u32 value)
 {
 	write32(ioapic_base, reg);
 	write32(ioapic_base + 0x10, value);
 }
 
-static int ioapic_interrupt_count(int ioapic_base)
+static int ioapic_interrupt_count(void *ioapic_base)
 {
 	/* Read the available number of interrupts. */
 	int ioapic_interrupts = (io_apic_read(ioapic_base, 0x01) >> 16) & 0xff;
@@ -48,12 +48,12 @@ static int ioapic_interrupt_count(int ioapic_base)
 	return ioapic_interrupts;
 }
 
-void clear_ioapic(u32 ioapic_base)
+void clear_ioapic(void *ioapic_base)
 {
 	u32 low, high;
 	u32 i, ioapic_interrupts;
 
-	printk(BIOS_DEBUG, "IOAPIC: Clearing IOAPIC at 0x%08x\n", ioapic_base);
+	printk(BIOS_DEBUG, "IOAPIC: Clearing IOAPIC at %p\n", ioapic_base);
 
 	ioapic_interrupts = ioapic_interrupt_count(ioapic_base);
 
@@ -74,12 +74,12 @@ void clear_ioapic(u32 ioapic_base)
 	}
 }
 
-void set_ioapic_id(u32 ioapic_base, u8 ioapic_id)
+void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 {
 	u32 bsp_lapicid = lapicid();
 	int i;
 
-	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n",
+	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%p\n",
 	       ioapic_base);
 	printk(BIOS_DEBUG, "IOAPIC: Bootstrap Processor Local APIC = 0x%02x\n",
 	       bsp_lapicid);
@@ -99,7 +99,7 @@ void set_ioapic_id(u32 ioapic_base, u8 ioapic_id)
 
 }
 
-static void load_vectors(u32 ioapic_base)
+static void load_vectors(void *ioapic_base)
 {
 	u32 bsp_lapicid = lapicid();
 	u32 low, high;
@@ -146,7 +146,7 @@ static void load_vectors(u32 ioapic_base)
 	}
 }
 
-void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
+void setup_ioapic(void *ioapic_base, u8 ioapic_id)
 {
 	set_ioapic_id(ioapic_base, ioapic_id);
 	load_vectors(ioapic_base);

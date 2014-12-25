@@ -57,7 +57,8 @@ static void *smp_write_config_table(void *v)
 		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
 			if (res)
-				smp_write_ioapic(mc, m->apicid_mcp55, 0x11, res->base);
+				smp_write_ioapic(mc, m->apicid_mcp55, 0x11,
+						 res2mmio(res, 0, 0));
 
 		/* Initialize interrupt mapping*/
 			dword = pci_read_config32(dev, 0x74);
@@ -81,7 +82,8 @@ static void *smp_write_config_table(void *v)
 		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
 			if (res)
-				smp_write_ioapic(mc, m->apicid_mcp55b, 0x11, res->base);
+				smp_write_ioapic(mc, m->apicid_mcp55b, 0x11,
+						 res2mmio(res, 0, 0));
 
 			dword = 0x43c60000;
 			pci_write_config32(dev, 0x7c, dword);

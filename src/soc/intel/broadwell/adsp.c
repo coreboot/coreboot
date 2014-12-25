@@ -58,7 +58,8 @@ static void adsp_init(struct device *dev)
 	 * SNOOP_REQ[13]=1b SNOOP_SCALE[12:10]=100b (1ms) SNOOP_VAL[9:0]=3h
 	 */
 	tmp32 = pch_is_wpt() ? ADSP_SHIM_BASE_WPT : ADSP_SHIM_BASE_LPT;
-	write32(bar0->base + tmp32 + ADSP_SHIM_LTRC, ADSP_SHIM_LTRC_VALUE);
+	write32(res2mmio(bar0, tmp32 + ADSP_SHIM_LTRC, 0),
+		ADSP_SHIM_LTRC_VALUE);
 
 	/* Program VDRTCTL2 D19:F0:A8[31:0] = 0x00000fff */
 	pci_write_config32(dev, ADSP_PCI_VDRTCTL2, ADSP_VDRTCTL2_VALUE);
@@ -115,9 +116,9 @@ static void adsp_init(struct device *dev)
 				ADSP_PCICFGCTL_ACPIIE);
 
 		/* Put ADSP in D3hot */
-		tmp32 = read32(bar1->base + PCH_PCS);
+		tmp32 = read32(res2mmio(bar1, PCH_PCS, 0));
 		tmp32 |= PCH_PCS_PS_D3HOT;
-		write32(bar1->base + PCH_PCS, tmp32);
+		write32(res2mmio(bar1, PCH_PCS, 0), tmp32);
 	} else {
 		printk(BIOS_INFO, "ADSP: Enable PCI Mode IRQ23\n");
 

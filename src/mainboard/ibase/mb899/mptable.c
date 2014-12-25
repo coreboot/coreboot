@@ -59,7 +59,7 @@ static void *smp_write_config_table(void *v)
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
 	ioapic_id = 2;
-	smp_write_ioapic(mc, ioapic_id, 0x20, IO_APIC_ADDR);
+	smp_write_ioapic(mc, ioapic_id, 0x20, VIO_APIC_VADDR);
 
 	/* Legacy Interrupts */
 

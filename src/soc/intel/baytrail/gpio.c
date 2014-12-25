@@ -142,9 +142,9 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 		       reg, pad_conf0, config->pad_conf1, config->pad_val);
 #endif
 
-		write32(reg + PAD_CONF0_REG, pad_conf0);
-		write32(reg + PAD_CONF1_REG, config->pad_conf1);
-		write32(reg + PAD_VAL_REG, config->pad_val);
+		write32((u32 *)(reg + PAD_CONF0_REG), pad_conf0);
+		write32((u32 *)(reg + PAD_CONF1_REG), config->pad_conf1);
+		write32((u32 *)(reg + PAD_VAL_REG), config->pad_val);
 	}
 
 	if (bank->legacy_base != GP_LEGACY_BASE_NONE)
@@ -198,7 +198,7 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
 			const struct gpio_bank *bank)
 {
-	u32 reg = bank->pad_base + PAD_BASE_DIRQ_OFFSET;
+	u32 *reg = (u32 *)(bank->pad_base + PAD_BASE_DIRQ_OFFSET);
 	u32 val;
 	int i;
 
@@ -206,10 +206,10 @@ static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
 	for (i=0; i<4; ++i) {
 		val = dirq[i * 4 + 3] << 24 | dirq[i * 4 + 2] << 16 |
 		      dirq[i * 4 + 1] << 8  | dirq[i * 4];
-		write32(reg + i * 4, val);
+		write32(reg + i, val);
 #ifdef GPIO_DEBUG
 		printk(BIOS_DEBUG, "Write DIRQ reg(%x) - %x\n",
-			reg + i * 4, val);
+			reg + i, val);
 #endif
 	}
 }
@@ -233,8 +233,8 @@ void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
 	 */
 	if (!enable_xdp_tap) {
 		printk(BIOS_DEBUG, "Tri-state TDO and TMS\n");
-		write32(GPSSUS_PAD_BASE + 0x2fc, 0xc);
-		write32(GPSSUS_PAD_BASE + 0x2cc, 0xc);
+		write32((u32 *)(GPSSUS_PAD_BASE + 0x2fc), 0xc);
+		write32((u32 *)(GPSSUS_PAD_BASE + 0x2cc), 0xc);
 	}
 }
 

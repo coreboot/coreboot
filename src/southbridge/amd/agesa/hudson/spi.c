@@ -53,12 +53,12 @@ static u32 spibar;
 
 static inline uint8_t spi_read(uint8_t reg)
 {
-	return read8(spibar + reg);
+	return read8((void *)(spibar + reg));
 }
 
 static inline void spi_write(uint8_t reg, uint8_t val)
 {
-	write8(spibar + reg, val);
+	write8((void *)(spibar + reg), val);
 }
 
 static void reset_internal_fifo_pointer(void)

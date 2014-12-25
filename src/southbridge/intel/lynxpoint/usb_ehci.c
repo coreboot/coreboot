@@ -64,13 +64,13 @@ void usb_ehci_disable(device_t dev)
 void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ)
 {
 	u32 reg32;
-	u32 bar0_base;
+	u8 *bar0_base;
 	u16 pwr_state;
 	u16 pci_cmd;
 
 	/* Check if the controller is disabled or not present */
-	bar0_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	if (bar0_base == 0 || bar0_base == 0xffffffff)
+	bar0_base = (u8 *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	if (bar0_base == 0 || bar0_base == (u8 *)0xffffffff)
 		return;
 	pci_cmd = pci_read_config32(dev, PCI_COMMAND);
 
@@ -86,7 +86,7 @@ void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ)
 			pci_write_config16(dev, EHCI_PWR_CTL_STS, new_state);
 
 			/* Make sure memory bar is set */
-			pci_write_config32(dev, PCI_BASE_ADDRESS_0, bar0_base);
+			pci_write_config32(dev, PCI_BASE_ADDRESS_0, (u32)bar0_base);
 
 			/* Make sure memory space is enabled */
 			pci_write_config16(dev, PCI_COMMAND, pci_cmd |

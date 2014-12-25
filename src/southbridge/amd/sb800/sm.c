@@ -89,7 +89,7 @@ static void sm_init(device_t dev)
 	/* Don't rename APIC ID */
 	/* TODO: We should call setup_ioapic() here. But kernel hangs if cpu is K8.
 	 * We need to check out why and change back. */
-	clear_ioapic(IO_APIC_ADDR);
+	clear_ioapic(VIO_APIC_VADDR);
 	//setup_ioapic(IO_APIC_ADDR, 0);
 
 	/* enable serial irq */

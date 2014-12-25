@@ -53,7 +53,7 @@ static void enable_port80_on_lpc(void)
 	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 
 	/* Enable port 80 POST on LPC */
-	pci_write_config32(dev, RCBA, DEFAULT_RCBA | 1);
+	pci_write_config32(dev, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 #if 0
 	RCBA32(GCS) &= (~0x04);
 #else

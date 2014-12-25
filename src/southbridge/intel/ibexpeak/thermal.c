@@ -28,21 +28,22 @@
 static void thermal_init(struct device *dev)
 {
 	struct resource *res;
-
+	u8 *base;
 	printk(BIOS_DEBUG, "Thermal init start.\n");
 
 	res = find_resource(dev, 0x10);
 	if (!res)
 		return;
 
-	write32(res->base + 4, 0x3a2b);
-	write8(res->base + 0xe, 0x40);
-	write16(res->base + 0x56, 0xffff);
-	write16(res->base + 0x64, 0xffff);
-	write16(res->base + 0x66, 0xffff);
-	write16(res->base + 0x68, 0xfa);
+	base = res2mmio(res, 0, 0);
+	write32(base + 4, 0x3a2b);
+	write8(base + 0xe, 0x40);
+	write16(base + 0x56, 0xffff);
+	write16(base + 0x64, 0xffff);
+	write16(base + 0x66, 0xffff);
+	write16(base + 0x68, 0xfa);
 
-	write8(res->base + 1, 0xb8);
+	write8(base + 1, 0xb8);
 
 	printk(BIOS_DEBUG, "Thermal init done.\n");
 }

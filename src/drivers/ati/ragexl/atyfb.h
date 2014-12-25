@@ -104,7 +104,7 @@ struct fb_info_aty {
     struct fb_info_aty *next;
     unsigned long ati_regbase_phys;
 #endif
-    unsigned long ati_regbase;
+    u8 *ati_regbase;
 #if 0
     unsigned long frame_buffer_phys;
 #endif

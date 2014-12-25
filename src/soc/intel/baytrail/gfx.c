@@ -59,7 +59,7 @@ static void gfx_lock_pcbase(device_t dev)
 	pcbase += (gmsize-1) * wopcmsz - pcsize;
 	pcbase |= 1; /* Lock */
 
-	write32(res->base + 0x182120, pcbase);
+	write32((u32 *)(uintptr_t)(res->base + 0x182120), pcbase);
 }
 
 static const struct reg_script gfx_init_script[] = {
@@ -308,7 +308,7 @@ static void set_backlight_pwm(device_t dev, uint32_t bklt_reg, int req_hz)
 	divider = 25 * 1000 * 1000 / (16 * req_hz);
 
 	/* Do not set duty cycle (lower 16 bits). Just set the divider. */
-	write32(res->base + bklt_reg, divider << 16);
+	write32((u32 *)(uintptr_t)(res->base + bklt_reg), divider << 16);
 }
 
 static void gfx_panel_setup(device_t dev)

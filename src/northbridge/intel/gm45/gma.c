@@ -43,12 +43,12 @@ static struct resource *gtt_res = NULL;
 
 void gtt_write(u32 reg, u32 data)
 {
-	write32(gtt_res->base + reg, data);
+	write32(res2mmio(gtt_res, reg, 0), data);
 }
 
 #if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 
-static void power_port(u32 mmio)
+static void power_port(u8 *mmio)
 {
 	read32(mmio + 0x00061100); // = 0x00000000
 	write32(mmio + 0x00061100, 0x00000000);
@@ -103,7 +103,7 @@ static void power_port(u32 mmio)
 }
 
 static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
-			   u32 mmio, u32 physbase, u16 piobase, u32 lfb)
+			   u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
 {
 
 	int i;
@@ -464,8 +464,8 @@ static void gma_func0_init(struct device *dev)
 	    && lfb_res && lfb_res->base) {
 		printk(BIOS_SPEW, "Initializing VGA without OPROM. MMIO 0x%llx\n",
 		       gtt_res->base);
-		intel_gma_init(conf, gtt_res->base, physbase, pio_res->base,
-			       lfb_res->base);
+		intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
+			       pio_res->base, lfb_res->base);
 	}
 
 	/* Linux relies on VBT for panel info.  */

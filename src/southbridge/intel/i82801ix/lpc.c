@@ -62,7 +62,7 @@ static void i82801ix_enable_apic(struct device *dev)
 	*ioapic_index	= 0x01;
 	*ioapic_data	= reg32;
 
-	setup_ioapic(IO_APIC_ADDR, 2); /* ICH7 code uses id 2. */
+	setup_ioapic(VIO_APIC_VADDR, 2); /* ICH7 code uses id 2. */
 }
 
 static void i82801ix_enable_serial_irqs(struct device *dev)

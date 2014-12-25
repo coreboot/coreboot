@@ -30,8 +30,8 @@
 #define   HDA_ICII_BUSY		(1 << 0)
 #define   HDA_ICII_VALID	(1 << 1)
 
-int hda_codec_detect(u32 base);
-int hda_codec_write(u32 base, u32 size, const u32 *data);
-int hda_codec_init(u32 base, int addr, int verb_size, const u32 *verb_data);
+int hda_codec_detect(u8 *base);
+int hda_codec_write(u8 *base, u32 size, const u32 *data);
+int hda_codec_init(u8 *base, int addr, int verb_size, const u32 *verb_data);
 
 #endif

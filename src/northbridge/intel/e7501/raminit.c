@@ -44,7 +44,7 @@ Definitions:
 // NOTE: This used to be 0x100000.
 //       That doesn't work on systems where A20M# is asserted, because
 //       attempts to access 0x1000NN end up accessing 0x0000NN.
-#define RCOMP_MMIO 0x200000
+#define RCOMP_MMIO ((u8 *)0x200000)
 
 struct dimm_size {
 	unsigned long side1;
@@ -893,8 +893,8 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 
 				// NOTE: 2^26 == 64 MB
 
-				uint32_t dimm_start_address =
-				    dimm_start_64M_multiple << 26;
+				u8 *dimm_start_address = (u8 *)
+				  (dimm_start_64M_multiple << 26);
 
 				RAM_DEBUG_MESSAGE("    Sending RAM command to 0x");
 				RAM_DEBUG_HEX32(dimm_start_address + e7501_mode_bits);
@@ -1704,7 +1704,7 @@ static void ram_set_d0f0_regs(void)
  * @param src_addr TODO
  * @param dst_addr TODO
  */
-static void write_8dwords(const uint32_t *src_addr, uint32_t dst_addr)
+static void write_8dwords(const uint32_t *src_addr, u8 *dst_addr)
 {
 	int i;
 	for (i = 0; i < 8; i++) {
@@ -1737,7 +1737,8 @@ static void ram_set_rcomp_regs(void)
 	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST, dword);
 
 	// Set the RCOMP MMIO base address
-	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_SMRBASE, RCOMP_MMIO);
+	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_SMRBASE,
+			   (uintptr_t)RCOMP_MMIO);
 
 	// Block RCOMP updates while we configure the registers
 	dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);

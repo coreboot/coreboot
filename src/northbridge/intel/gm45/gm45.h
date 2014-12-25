@@ -187,10 +187,15 @@ enum {
 					(could be reduced to 10 bytes) */
 
 
+#ifndef __ACPI__
+#define DEFAULT_MCHBAR		((u8 *)0xfed14000)
+#define DEFAULT_DMIBAR		((u8 *)0xfed18000)
+#else
 #define DEFAULT_MCHBAR		0xfed14000
 #define DEFAULT_DMIBAR		0xfed18000
+#endif
 #define DEFAULT_EPBAR		0xfed19000
-#define DEFAULT_HECIBAR		0xfed1a000
+#define DEFAULT_HECIBAR		((u8 *)0xfed1a000)
 
 				/* 4 KB per PCIe device */
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS

@@ -36,7 +36,7 @@ u32 cim_verb_data_size = 0;
 const u32 * pc_beep_verbs = NULL;
 u32 pc_beep_verbs_size = 0;
 
-static void codecs_init(u32 base, u32 codec_mask)
+static void codecs_init(u8 *base, u32 codec_mask)
 {
 	int i;
 
@@ -52,7 +52,7 @@ static void codecs_init(u32 base, u32 codec_mask)
 		hda_codec_write(base, pc_beep_verbs_size, pc_beep_verbs);
 }
 
-static void hda_pch_init(struct device *dev, u32 base)
+static void hda_pch_init(struct device *dev, u8 *base)
 {
 	u8 reg8;
 	u16 reg16;
@@ -108,7 +108,7 @@ static void hda_pch_init(struct device *dev, u32 base)
 
 static void hda_init(struct device *dev)
 {
-	u32 base;
+	u8 *base;
 	struct resource *res;
 	u32 codec_mask;
 	u32 reg32;
@@ -118,8 +118,8 @@ static void hda_init(struct device *dev)
 	if (!res)
 		return;
 
-	base = (u32)res->base;
-	printk(BIOS_DEBUG, "HDA: base = %08x\n", (u32)base);
+	base = res2mmio(res, 0, 0);
+	printk(BIOS_DEBUG, "HDA: base = %p\n", base);
 
 	/* Set Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);

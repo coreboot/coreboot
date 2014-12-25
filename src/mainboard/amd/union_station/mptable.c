@@ -49,8 +49,8 @@ static void *smp_write_config_table(void *v)
 	 * have been written so they can be read to get the correct
 	 * APIC ID and Version
 	 */
-	u8 ioapic_id = (io_apic_read(IO_APIC_ADDR, 0x00) >> 24);
-	u8 ioapic_ver = (io_apic_read(IO_APIC_ADDR, 0x01) & 0xFF);
+  u8 ioapic_id = (io_apic_read(VIO_APIC_VADDR, 0x00) >> 24);
+  u8 ioapic_ver = (io_apic_read(VIO_APIC_VADDR, 0x01) & 0xFF);
 
   mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -62,7 +62,7 @@ static void *smp_write_config_table(void *v)
   mptable_write_buses(mc, NULL, &bus_isa);
 
   /* I/O APICs:   APIC ID Version State   Address */
-	smp_write_ioapic(mc, ioapic_id, ioapic_ver, IO_APIC_ADDR);
+  smp_write_ioapic(mc, ioapic_id, ioapic_ver, VIO_APIC_VADDR);
 
   u8 byte;
 

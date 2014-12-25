@@ -200,6 +200,16 @@ static u16 read_1d0(u16 addr, int split)
 	return val;
 }
 
+static void write32p(uintptr_t addr, uint32_t val)
+{
+	write32((void *)addr, val);
+}
+
+static uint32_t read32p(uintptr_t addr)
+{
+	return read32((void *)addr);
+}
+
 static void sfence(void)
 {
 #if REAL
@@ -314,36 +324,36 @@ static int rw_test(int rank)
 	int ok = 0xff;
 	int i;
 	for (i = 0; i < 64; i++)
-		write32((rank << 28) | (i << 2), 0);
+		write32p((rank << 28) | (i << 2), 0);
 	sfence();
 	for (i = 0; i < 64; i++)
-		gav(read32((rank << 28) | (i << 2)));
+		gav(read32p((rank << 28) | (i << 2)));
 	sfence();
 	for (i = 0; i < 32; i++) {
 		u32 pat = (((mask >> i) & 1) ? 0xffffffff : 0);
-		write32((rank << 28) | (i << 3), pat);
-		write32((rank << 28) | (i << 3) | 4, pat);
+		write32p((rank << 28) | (i << 3), pat);
+		write32p((rank << 28) | (i << 3) | 4, pat);
 	}
 	sfence();
 	for (i = 0; i < 32; i++) {
 		u8 pat = (((mask >> i) & 1) ? 0xff : 0);
 		int j;
 		u32 val;
-		gav(val = read32((rank << 28) | (i << 3)));
+		gav(val = read32p((rank << 28) | (i << 3)));
 		for (j = 0; j < 4; j++)
 			if (((val >> (j * 8)) & 0xff) != pat)
 				ok &= ~(1 << j);
-		gav(val = read32((rank << 28) | (i << 3) | 4));
+		gav(val = read32p((rank << 28) | (i << 3) | 4));
 		for (j = 0; j < 4; j++)
 			if (((val >> (j * 8)) & 0xff) != pat)
 				ok &= ~(16 << j);
 	}
 	sfence();
 	for (i = 0; i < 64; i++)
-		write32((rank << 28) | (i << 2), 0);
+		write32p((rank << 28) | (i << 2), 0);
 	sfence();
 	for (i = 0; i < 64; i++)
-		gav(read32((rank << 28) | (i << 2)));
+		gav(read32p((rank << 28) | (i << 2)));
 
 	return ok;
 }
@@ -1072,12 +1082,12 @@ static void jedec_read(struct raminfo *info,
 		    (value & ~0x1f8) | ((value >> 1) & 0xa8) | ((value & 0xa8)
 								<< 1);
 
-	read32((value << 3) | (total_rank << 28));
+	read32p((value << 3) | (total_rank << 28));
 
 	write_mchbar8(0x271, (read_mchbar8(0x271) & 0xC3) | 2);
 	write_mchbar8(0x671, (read_mchbar8(0x671) & 0xC3) | 2);
 
-	read32(total_rank << 28);
+	read32p(total_rank << 28);
 }
 
 enum {
@@ -1562,7 +1572,7 @@ static void collect_system_info(struct raminfo *info)
 	unsigned channel;
 
 	/* Wait for some bit, maybe TXT clear. */
-	while (!(read8(0xfed40000) & (1 << 7))) ;
+	while (!(read8((u8 *)0xfed40000) & (1 << 7))) ;
 
 	if (!info->heci_bar)
 		gav(info->heci_bar =
@@ -1746,9 +1756,9 @@ static const struct ram_training *get_cached_training(void)
 /* FIXME: add timeout.  */
 static void wait_heci_ready(void)
 {
-	while (!(read32(DEFAULT_HECIBAR | 0xc) & 8)) ;	// = 0x8000000c
-	write32((DEFAULT_HECIBAR | 0x4),
-		(read32(DEFAULT_HECIBAR | 0x4) & ~0x10) | 0xc);
+	while (!(read32(DEFAULT_HECIBAR + 0xc) & 8)) ;	// = 0x8000000c
+	write32((DEFAULT_HECIBAR + 0x4),
+		(read32(DEFAULT_HECIBAR + 0x4) & ~0x10) | 0xc);
 }
 
 /* FIXME: add timeout.  */
@@ -1759,10 +1769,10 @@ static void wait_heci_cb_avail(int len)
 		u32 raw;
 	} csr;
 
-	while (!(read32(DEFAULT_HECIBAR | 0xc) & 8)) ;
+	while (!(read32(DEFAULT_HECIBAR + 0xc) & 8)) ;
 
 	do
-		csr.raw = read32(DEFAULT_HECIBAR | 0x4);
+		csr.raw = read32(DEFAULT_HECIBAR + 0x4);
 	while (len >
 	       csr.csr.buffer_depth - (csr.csr.buffer_write_ptr -
 				       csr.csr.buffer_read_ptr));
@@ -1776,12 +1786,12 @@ static void send_heci_packet(struct mei_header *head, u32 * payload)
 	wait_heci_cb_avail(len + 1);
 
 	/* FIXME: handle leftovers correctly.  */
-	write32(DEFAULT_HECIBAR | 0, *(u32 *) head);
+	write32(DEFAULT_HECIBAR + 0, *(u32 *) head);
 	for (i = 0; i < len - 1; i++)
-		write32(DEFAULT_HECIBAR | 0, payload[i]);
+		write32(DEFAULT_HECIBAR + 0, payload[i]);
 
-	write32(DEFAULT_HECIBAR | 0, payload[i] & ((1 << (8 * len)) - 1));
-	write32(DEFAULT_HECIBAR | 0x4, read32(DEFAULT_HECIBAR | 0x4) | 0x4);
+	write32(DEFAULT_HECIBAR + 0, payload[i] & ((1 << (8 * len)) - 1));
+	write32(DEFAULT_HECIBAR + 0x4, read32(DEFAULT_HECIBAR + 0x4) | 0x4);
 }
 
 static void
@@ -1791,7 +1801,7 @@ send_heci_message(u8 * msg, int len, u8 hostaddress, u8 clientaddress)
 	int maxlen;
 
 	wait_heci_ready();
-	maxlen = (read32(DEFAULT_HECIBAR | 0x4) >> 24) * 4 - 4;
+	maxlen = (read32(DEFAULT_HECIBAR + 0x4) >> 24) * 4 - 4;
 
 	while (len) {
 		int cur = len;
@@ -1821,19 +1831,19 @@ recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 * packet,
 	} csr;
 	int i = 0;
 
-	write32(DEFAULT_HECIBAR | 0x4, read32(DEFAULT_HECIBAR | 0x4) | 2);
+	write32(DEFAULT_HECIBAR + 0x4, read32(DEFAULT_HECIBAR + 0x4) | 2);
 	do {
-		csr.raw = read32(DEFAULT_HECIBAR | 0xc);
+		csr.raw = read32(DEFAULT_HECIBAR + 0xc);
 #if !REAL
 		if (i++ > 346)
 			return -1;
 #endif
 	}
 	while (csr.csr.buffer_write_ptr == csr.csr.buffer_read_ptr);
-	*(u32 *) head = read32(DEFAULT_HECIBAR | 0x8);
+	*(u32 *) head = read32(DEFAULT_HECIBAR + 0x8);
 	if (!head->length) {
-		write32(DEFAULT_HECIBAR | 0x4,
-			read32(DEFAULT_HECIBAR | 0x4) | 2);
+		write32(DEFAULT_HECIBAR + 0x4,
+			read32(DEFAULT_HECIBAR + 0x4) | 2);
 		*packet_size = 0;
 		return 0;
 	}
@@ -1844,16 +1854,16 @@ recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 * packet,
 	}
 
 	do
-		csr.raw = read32(DEFAULT_HECIBAR | 0xc);
+		csr.raw = read32(DEFAULT_HECIBAR + 0xc);
 	while ((head->length + 3) >> 2 >
 	       csr.csr.buffer_write_ptr - csr.csr.buffer_read_ptr);
 
 	for (i = 0; i < (head->length + 3) >> 2; i++)
-		packet[i++] = read32(DEFAULT_HECIBAR | 0x8);
+		packet[i++] = read32(DEFAULT_HECIBAR + 0x8);
 	*packet_size = head->length;
 	if (!csr.csr.ready)
 		*packet_size = 0;
-	write32(DEFAULT_HECIBAR | 0x4, read32(DEFAULT_HECIBAR | 0x4) | 4);
+	write32(DEFAULT_HECIBAR + 0x4, read32(DEFAULT_HECIBAR + 0x4) | 4);
 	return 0;
 }
 
@@ -1941,27 +1951,27 @@ static void setup_heci_uma(struct raminfo *info)
 
 	pcie_read_config32(NORTHBRIDGE, DMIBAR);
 	if (info->memory_reserved_for_heci_mb) {
-		write32(DEFAULT_DMIBAR | 0x14,
-			read32(DEFAULT_DMIBAR | 0x14) & ~0x80);
-		write32(DEFAULT_RCBA | 0x14,
-			read32(DEFAULT_RCBA | 0x14) & ~0x80);
-		write32(DEFAULT_DMIBAR | 0x20,
-			read32(DEFAULT_DMIBAR | 0x20) & ~0x80);
-		write32(DEFAULT_RCBA | 0x20,
-			read32(DEFAULT_RCBA | 0x20) & ~0x80);
-		write32(DEFAULT_DMIBAR | 0x2c,
-			read32(DEFAULT_DMIBAR | 0x2c) & ~0x80);
-		write32(DEFAULT_RCBA | 0x30,
-			read32(DEFAULT_RCBA | 0x30) & ~0x80);
-		write32(DEFAULT_DMIBAR | 0x38,
-			read32(DEFAULT_DMIBAR | 0x38) & ~0x80);
-		write32(DEFAULT_RCBA | 0x40,
-			read32(DEFAULT_RCBA | 0x40) & ~0x80);
+		write32(DEFAULT_DMIBAR + 0x14,
+			read32(DEFAULT_DMIBAR + 0x14) & ~0x80);
+		write32(DEFAULT_RCBA + 0x14,
+			read32(DEFAULT_RCBA + 0x14) & ~0x80);
+		write32(DEFAULT_DMIBAR + 0x20,
+			read32(DEFAULT_DMIBAR + 0x20) & ~0x80);
+		write32(DEFAULT_RCBA + 0x20,
+			read32(DEFAULT_RCBA + 0x20) & ~0x80);
+		write32(DEFAULT_DMIBAR + 0x2c,
+			read32(DEFAULT_DMIBAR + 0x2c) & ~0x80);
+		write32(DEFAULT_RCBA + 0x30,
+			read32(DEFAULT_RCBA + 0x30) & ~0x80);
+		write32(DEFAULT_DMIBAR + 0x38,
+			read32(DEFAULT_DMIBAR + 0x38) & ~0x80);
+		write32(DEFAULT_RCBA + 0x40,
+			read32(DEFAULT_RCBA + 0x40) & ~0x80);
 
-		write32(DEFAULT_RCBA | 0x40, 0x87000080);	// OK
-		write32(DEFAULT_DMIBAR | 0x38, 0x87000080);	// OK
-		while (read16(DEFAULT_RCBA | 0x46) & 2
-		       && read16(DEFAULT_DMIBAR | 0x3e) & 2) ;
+		write32(DEFAULT_RCBA + 0x40, 0x87000080);	// OK
+		write32(DEFAULT_DMIBAR + 0x38, 0x87000080);	// OK
+		while (read16(DEFAULT_RCBA + 0x46) & 2
+		       && read16(DEFAULT_DMIBAR + 0x3e) & 2) ;
 	}
 
 	write_mchbar32(0x24, 0x10000 + info->memory_reserved_for_heci_mb);
@@ -2092,9 +2102,9 @@ static void write_testing(struct raminfo *info, int totalrank, int flip)
 	int nwrites = 0;
 	/* in 8-byte units.  */
 	u32 offset;
-	u32 base;
+	u8 *base;
 
-	base = totalrank << 28;
+	base = (u8 *)(totalrank << 28);
 	for (offset = 0; offset < 9 * 480; offset += 2) {
 		write32(base + offset * 8, get_etalon2(flip, offset));
 		write32(base + offset * 8 + 4, get_etalon2(flip, offset));
@@ -2212,8 +2222,8 @@ write_testing_type2(struct raminfo *info, u8 totalrank, u8 region, u8 block,
 {
 	int i;
 	for (i = 0; i < 2048; i++)
-		write32((totalrank << 28) | (region << 25) | (block << 16) |
-			(i << 2), get_etalon(flip, (block << 16) | (i << 2)));
+		write32p((totalrank << 28) | (region << 25) | (block << 16) |
+			 (i << 2), get_etalon(flip, (block << 16) | (i << 2)));
 }
 
 static u8
@@ -2238,7 +2248,7 @@ check_testing_type2(struct raminfo *info, u8 totalrank, u8 region, u8 block,
 				    | (comp3 << 12) | (comp2 << 6) | (comp1 <<
 								      2);
 				failxor[comp1 & 1] |=
-				    read32(addr) ^ get_etalon(flip, addr);
+				    read32p(addr) ^ get_etalon(flip, addr);
 			}
 		for (i = 0; i < 8; i++)
 			if ((0xff << (8 * (i % 4))) & failxor[i / 4])
@@ -3774,13 +3784,13 @@ static void restore_274265(struct raminfo *info)
 #if REAL
 static void dmi_setup(void)
 {
-	gav(read8(DEFAULT_DMIBAR | 0x254));
-	write8(DEFAULT_DMIBAR | 0x254, 0x1);
-	write16(DEFAULT_DMIBAR | 0x1b8, 0x18f2);
+	gav(read8(DEFAULT_DMIBAR + 0x254));
+	write8(DEFAULT_DMIBAR + 0x254, 0x1);
+	write16(DEFAULT_DMIBAR + 0x1b8, 0x18f2);
 	read_mchbar16(0x48);
 	write_mchbar16(0x48, 0x2);
 
-	write32(DEFAULT_DMIBAR | 0xd68, read32(DEFAULT_DMIBAR | 0xd68) | 0x08000000);
+	write32(DEFAULT_DMIBAR + 0xd68, read32(DEFAULT_DMIBAR + 0xd68) | 0x08000000);
 
 	outl((gav(inl(DEFAULT_GPIOBASE | 0x38)) & ~0x140000) | 0x400000,
 	     DEFAULT_GPIOBASE | 0x38);
@@ -3842,18 +3852,18 @@ void chipset_init(const int s3resume)
 		write_mchbar32(0x2c44, 0x1053687);
 		pcie_read_config8(GMA, 0x62);	// = 0x2
 		pcie_write_config8(GMA, 0x62, 0x2);
-		read8(DEFAULT_RCBA | 0x2318);
-		write8(DEFAULT_RCBA | 0x2318, 0x47);
-		read8(DEFAULT_RCBA | 0x2320);
-		write8(DEFAULT_RCBA | 0x2320, 0xfc);
+		read8(DEFAULT_RCBA + 0x2318);
+		write8(DEFAULT_RCBA + 0x2318, 0x47);
+		read8(DEFAULT_RCBA + 0x2320);
+		write8(DEFAULT_RCBA + 0x2320, 0xfc);
 	}
 
 	read_mchbar32(0x30);
 	write_mchbar32(0x30, 0x40);
 
 	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, ggc);
-	gav(read32(DEFAULT_RCBA | 0x3428));
-	write32(DEFAULT_RCBA | 0x3428, 0x1d);
+	gav(read32(DEFAULT_RCBA + 0x3428));
+	write32(DEFAULT_RCBA + 0x3428, 0x1d);
 }
 
 void raminit(const int s3resume, const u8 *spd_addrmap)
@@ -4813,17 +4823,17 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar32(0xd40, IOMMU_BASE1 | 1);
 	write_mchbar32(0xdc0, IOMMU_BASE4 | 1);
 
-	write32(IOMMU_BASE1 | 0xffc, 0x80000000);
-	write32(IOMMU_BASE2 | 0xffc, 0xc0000000);
-	write32(IOMMU_BASE4 | 0xffc, 0x80000000);
+	write32p(IOMMU_BASE1 | 0xffc, 0x80000000);
+	write32p(IOMMU_BASE2 | 0xffc, 0xc0000000);
+	write32p(IOMMU_BASE4 | 0xffc, 0x80000000);
 
 #else
 	{
 		u32 eax;
-		eax = read32(0xffc + (read_mchbar32(0xd00) & ~1)) | 0x08000000;	// = 0xe911714b// OK
-		write32(0xffc + (read_mchbar32(0xd00) & ~1), eax);	// OK
-		eax = read32(0xffc + (read_mchbar32(0xdc0) & ~1)) | 0x40000000;	// = 0xe911714b// OK
-		write32(0xffc + (read_mchbar32(0xdc0) & ~1), eax);	// OK
+		eax = read32p(0xffc + (read_mchbar32(0xd00) & ~1)) | 0x08000000;	// = 0xe911714b// OK
+		write32p(0xffc + (read_mchbar32(0xd00) & ~1), eax);	// OK
+		eax = read32p(0xffc + (read_mchbar32(0xdc0) & ~1)) | 0x40000000;	// = 0xe911714b// OK
+		write32p(0xffc + (read_mchbar32(0xdc0) & ~1), eax);	// OK
 	}
 #endif
 
@@ -4870,9 +4880,9 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	}
 	u32 reg1c;
 	pcie_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
-	reg1c = read32(DEFAULT_EPBAR | 0x01c);	// = 0x8001 // OK
+	reg1c = read32p(DEFAULT_EPBAR | 0x01c);	// = 0x8001 // OK
 	pcie_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
-	write32(DEFAULT_EPBAR | 0x01c, reg1c);	// OK
+	write32p(DEFAULT_EPBAR | 0x01c, reg1c);	// OK
 	read_mchbar8(0xe08);	// = 0x0
 	pcie_read_config32(NORTHBRIDGE, 0xe4);	// = 0x316126
 	write_mchbar8(0x1210, read_mchbar8(0x1210) | 2);	// OK

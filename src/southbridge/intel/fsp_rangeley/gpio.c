@@ -30,7 +30,7 @@
 void setup_soc_gpios(const struct soc_gpio_map *gpio)
 {
 	u16 gpiobase = pci_read_config16(SOC_LPC_DEV, GBASE) & ~0xf;
-	u32 cfiobase = pci_read_config32(SOC_LPC_DEV, IOBASE) & ~0xf;
+	u32 *cfiobase = (u32 *)(pci_read_config32(SOC_LPC_DEV, IOBASE) & ~0xf);
 	u32 cfio_cnt = 0;
 
 
@@ -67,30 +67,30 @@ void setup_soc_gpios(const struct soc_gpio_map *gpio)
 	/* GPIO PAD settings */
 	/* CFIO Core Well Set 1 */
 	if ((gpio->core.cfio_init != NULL) || (gpio->core.cfio_entrynum != 0)) {
-		write32(cfiobase + 0x0700, (u32)0x01001002);
+		write32(cfiobase + (0x0700 / sizeof(u32)), (u32)0x01001002);
 		for(cfio_cnt = 0; cfio_cnt < gpio->core.cfio_entrynum; cfio_cnt++) {
 			if (!((u32)gpio->core.cfio_init[cfio_cnt].pad_conf_0))
 				continue;
-			write32(cfiobase + CFIO_PAD_CONF0 + (16*cfio_cnt), (u32)gpio->core.cfio_init[cfio_cnt].pad_conf_0);
-			write32(cfiobase + CFIO_PAD_CONF1 + (16*cfio_cnt), (u32)gpio->core.cfio_init[cfio_cnt].pad_conf_1);
-			write32(cfiobase + CFIO_PAD_VAL + (16*cfio_cnt), (u32)gpio->core.cfio_init[cfio_cnt].pad_val);
-			write32(cfiobase + CFIO_PAD_DFT + (16*cfio_cnt), (u32)gpio->core.cfio_init[cfio_cnt].pad_dft);
+			write32(cfiobase + ((CFIO_PAD_CONF0 + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->core.cfio_init[cfio_cnt].pad_conf_0);
+			write32(cfiobase + ((CFIO_PAD_CONF1 + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->core.cfio_init[cfio_cnt].pad_conf_1);
+			write32(cfiobase + ((CFIO_PAD_VAL + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->core.cfio_init[cfio_cnt].pad_val);
+			write32(cfiobase + ((CFIO_PAD_DFT + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->core.cfio_init[cfio_cnt].pad_dft);
 		}
-		write32(cfiobase + 0x0700, (u32)0x01041002);
+		write32(cfiobase + (0x0700 / sizeof(u32)), (u32)0x01041002);
 	}
 
 	/* CFIO SUS Well Set 1 */
 	if ((gpio->sus.cfio_init != NULL) || (gpio->sus.cfio_entrynum != 0)) {
-		write32(cfiobase + 0x1700, (u32)0x01001002);
+		write32(cfiobase + (0x1700 / sizeof(u32)), (u32)0x01001002);
 		for(cfio_cnt = 0; cfio_cnt < gpio->sus.cfio_entrynum; cfio_cnt++) {
 			if (!((u32)gpio->sus.cfio_init[cfio_cnt].pad_conf_0))
 				continue;
-			write32(cfiobase + CFIO_PAD_CONF0 + 0x1000 + (16*cfio_cnt), (u32)gpio->sus.cfio_init[cfio_cnt].pad_conf_0);
-			write32(cfiobase + CFIO_PAD_CONF1 + 0x1000 + (16*cfio_cnt), (u32)gpio->sus.cfio_init[cfio_cnt].pad_conf_1);
-			write32(cfiobase + CFIO_PAD_VAL + 0x1000 + (16*cfio_cnt), (u32)gpio->sus.cfio_init[cfio_cnt].pad_val);
-			write32(cfiobase + CFIO_PAD_DFT + 0x1000 + (16*cfio_cnt), (u32)gpio->sus.cfio_init[cfio_cnt].pad_dft);
+			write32(cfiobase + ((CFIO_PAD_CONF0 + 0x1000 + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->sus.cfio_init[cfio_cnt].pad_conf_0);
+			write32(cfiobase + ((CFIO_PAD_CONF1 + 0x1000 + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->sus.cfio_init[cfio_cnt].pad_conf_1);
+			write32(cfiobase + ((CFIO_PAD_VAL + 0x1000 + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->sus.cfio_init[cfio_cnt].pad_val);
+			write32(cfiobase + ((CFIO_PAD_DFT + 0x1000 + (16*cfio_cnt))/sizeof(u32)), (u32)gpio->sus.cfio_init[cfio_cnt].pad_dft);
 		}
-		write32(cfiobase + 0x1700, (u32)0x01041002);
+		write32(cfiobase + (0x1700 / sizeof(u32)), (u32)0x01041002);
 	}
 }
 

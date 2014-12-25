@@ -27,7 +27,7 @@ typedef struct drivers_generic_ioapic_config {
 	u8 irq_on_fsb;
 	u8 enable_virtual_wire;
 	u8 have_isa_interrupts;
-	u32 base;
+	void *base;
 } ioapic_config_t;
 
 #endif

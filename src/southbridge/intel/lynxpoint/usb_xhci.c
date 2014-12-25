@@ -28,7 +28,7 @@
 
 typedef struct southbridge_intel_lynxpoint_config config_t;
 
-static u32 usb_xhci_mem_base(device_t dev)
+static u8 *usb_xhci_mem_base(device_t dev)
 {
 	u32 mem_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
@@ -36,7 +36,7 @@ static u32 usb_xhci_mem_base(device_t dev)
 	if (mem_base == 0 || mem_base == 0xffffffff)
 		return 0;
 
-	return mem_base & ~0xf;
+	return (u8 *)(mem_base & ~0xf);
 }
 
 static int usb_xhci_port_count_usb3(device_t dev)
@@ -46,7 +46,7 @@ static int usb_xhci_port_count_usb3(device_t dev)
 		return 4;
 	} else {
 		/* LynxPoint-H can have 0, 2, 4, or 6 SS ports */
-		u32 mem_base = usb_xhci_mem_base(dev);
+		u8 *mem_base = usb_xhci_mem_base(dev);
 		u32 fus = read32(mem_base + XHCI_USB3FUS);
 		fus >>= XHCI_USB3FUS_SS_SHIFT;
 		fus &= XHCI_USB3FUS_SS_MASK;
@@ -60,9 +60,9 @@ static int usb_xhci_port_count_usb3(device_t dev)
 	return 0;
 }
 
-static void usb_xhci_reset_status_usb3(u32 mem_base, int port)
+static void usb_xhci_reset_status_usb3(u8 *mem_base, int port)
 {
-	u32 portsc = mem_base + XHCI_USB3_PORTSC(port);
+	u8 *portsc = mem_base + XHCI_USB3_PORTSC(port);
 	u32 status = read32(portsc);
 	/* Do not set Port Enabled/Disabled field */
 	status &= ~XHCI_USB3_PORTSC_PED;
@@ -71,9 +71,9 @@ static void usb_xhci_reset_status_usb3(u32 mem_base, int port)
 	write32(portsc, status);
 }
 
-static void usb_xhci_reset_port_usb3(u32 mem_base, int port)
+static void usb_xhci_reset_port_usb3(u8 *mem_base, int port)
 {
-	u32 portsc = mem_base + XHCI_USB3_PORTSC(port);
+	u8 *portsc = mem_base + XHCI_USB3_PORTSC(port);
 	write32(portsc, read32(portsc) | XHCI_USB3_PORTSC_WPR);
 }
 
@@ -92,7 +92,7 @@ static void usb_xhci_reset_usb3(device_t dev, int all)
 	u32 status, port_disabled;
 	int timeout, port;
 	int port_count = usb_xhci_port_count_usb3(dev);
-	u32 mem_base = usb_xhci_mem_base(dev);
+	u8 *mem_base = usb_xhci_mem_base(dev);
 
 	if (!mem_base || !port_count)
 		return;
@@ -121,7 +121,7 @@ static void usb_xhci_reset_usb3(device_t dev, int all)
 
 	/* Reset all requested ports */
 	for (port = 0; port < port_count; port++) {
-		u32 portsc = mem_base + XHCI_USB3_PORTSC(port);
+		u8 *portsc = mem_base + XHCI_USB3_PORTSC(port);
 		/* Skip disabled ports */
 		if (port_disabled & (1 << port))
 			continue;
@@ -164,7 +164,7 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 {
 	u16 reg16;
 	u32 reg32;
-	u32 mem_base = usb_xhci_mem_base(dev);
+	u8 *mem_base = usb_xhci_mem_base(dev);
 
 	if (!mem_base || slp_typ < 3)
 		return;
@@ -295,7 +295,7 @@ static void usb_xhci_init(device_t dev)
 {
 	u32 reg32;
 	u16 reg16;
-	u32 mem_base = usb_xhci_mem_base(dev);
+	u8 *mem_base = usb_xhci_mem_base(dev);
 	config_t *config = dev->chip_info;
 
 	/* D20:F0:74h[1:0] = 00b (set D0 state) */

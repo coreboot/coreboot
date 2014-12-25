@@ -42,7 +42,7 @@ static void lpc_init(struct device *dev)
 	byte |= 1;
 	pci_write_config8(dev, 0x4B, byte);
 	/* Don't rename IO APIC */
-	setup_ioapic(IO_APIC_ADDR, 0);
+	setup_ioapic(VIO_APIC_VADDR, 0);
 
 	/* posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);

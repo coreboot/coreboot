@@ -297,7 +297,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 
 static void smi_interface_call(void)
 {
-	u32 mmio = pci_read_config32(PCI_DEV(0, 0x02, 0), 0x14);
+  u8 *mmio = (u8 *)pci_read_config32(PCI_DEV(0, 0x02, 0), 0x14);
 	// mmio &= 0xfff80000;
 	// printk(BIOS_DEBUG, "mmio=%x\n", mmio);
 	u16 swsmi = pci_read_config16(PCI_DEV(0, 0x02, 0), 0xe0);

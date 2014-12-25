@@ -84,8 +84,8 @@ static void program_base_addresses(void)
 
 static void spi_init(void)
 {
-	const unsigned long scs = SPI_BASE_ADDRESS + SCS;
-	const unsigned long bcr = SPI_BASE_ADDRESS + BCR;
+	u32 *scs = (u32 *)(SPI_BASE_ADDRESS + SCS);
+	u32 *bcr = (u32 *)(SPI_BASE_ADDRESS + BCR);
 	uint32_t reg;
 
 	/* Disable generating SMI when setting WPD bit. */
@@ -169,9 +169,9 @@ static struct chipset_power_state *fill_power_state(void)
 	ps->gpe0_sts = inl(ACPI_BASE_ADDRESS + GPE0_STS);
 	ps->gpe0_en = inl(ACPI_BASE_ADDRESS + GPE0_EN);
 	ps->tco_sts = inl(ACPI_BASE_ADDRESS + TCO_STS);
-	ps->prsts = read32(PMC_BASE_ADDRESS + PRSTS);
-	ps->gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
-	ps->gen_pmcon2 = read32(PMC_BASE_ADDRESS + GEN_PMCON2);
+	ps->prsts = read32((u32 *)(PMC_BASE_ADDRESS + PRSTS));
+	ps->gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
+	ps->gen_pmcon2 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON2));
 
 	printk(BIOS_DEBUG, "pm1_sts: %04x pm1_en: %04x pm1_cnt: %08x\n",
 		ps->pm1_sts, ps->pm1_en, ps->pm1_cnt);

@@ -63,7 +63,7 @@ static void set_var_mtrr(int reg, uint32_t base, uint32_t size, int type)
  */
 static void enable_spi_prefetch(void)
 {
-	uint32_t bcr = SPI_BASE_ADDRESS + BCR;
+	u32 *bcr = (u32 *)(SPI_BASE_ADDRESS + BCR);
 	/* Enable caching and prefetching in the SPI controller. */
 	write32(bcr, (read32(bcr) & ~SRC_MASK) | SRC_CACHE_PREFETCH);
 }

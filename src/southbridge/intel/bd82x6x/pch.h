@@ -47,7 +47,11 @@
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
 
+#ifndef __ACPI__
+#define DEFAULT_RCBA		((u8 *)0xfed1c000)
+#else
 #define DEFAULT_RCBA		0xfed1c000
+#endif
 
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0

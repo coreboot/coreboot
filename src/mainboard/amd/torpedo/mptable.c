@@ -107,11 +107,11 @@ static void *smp_write_config_table(void *v)
 
   /* I/O APICs:   APIC ID Version State   Address */
 
-  u32 dword;
+  u8 *dword;
   u8 byte;
 
-	ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
-	dword &= 0xFFFFFFF0;
+  ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
+  dword = (u8 *)(((uintptr_t) dword) & 0xFFFFFFF0);
   /* Set IO APIC ID onto IO_APIC_ID */
   write32 (dword, 0x00);
   write32 (dword + 0x10, IO_APIC_ID << 24);

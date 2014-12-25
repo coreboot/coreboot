@@ -32,7 +32,7 @@
 
 static void interrupt_routing_config(void)
 {
-	u32 ilb_base = pci_read_config32(SOC_LPC_DEV, IBASE) & ~0xf;
+	u8 *ilb_base = (u8 *)(pci_read_config32(SOC_LPC_DEV, IBASE) & ~0xf);
 
 	/*
 	* Initialize Interrupt Routings for each device in ilb_base_address.

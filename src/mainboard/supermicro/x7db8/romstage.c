@@ -51,7 +51,7 @@ static void early_config(void)
 	u32 gcs, rpc, fd;
 
 	/* Enable RCBA */
-	pci_write_config32(PCI_DEV(0, 0x1F, 0), RCBA, DEFAULT_RCBA | 1);
+	pci_write_config32(PCI_DEV(0, 0x1F, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
 	/* Disable watchdog */
 	gcs = read32(DEFAULT_RCBA + RCBA_GCS);
@@ -144,7 +144,7 @@ void main(unsigned long bist)
 	outb(0x03, 0x11b8);
 	outb(0x01, 0x11b8);
 
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xf0, DEFAULT_RCBA | 1);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xf0, (uintptr_t)DEFAULT_RCBA | 1);
 	i5000_fbdimm_init();
 	smbus_write_byte(0x69, 0x01, 0x01);
 }

@@ -92,7 +92,7 @@ static void sata_init(struct device *dev)
 	pci_write_config16(dev, 0x92, reg16);
 
 	if (config->sata_ahci) {
-		u32 abar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+	  u8 *abar = (u8 *)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
 
 		/* Enable CR memory space decoding */
 		reg16 = pci_read_config16(dev, 0x04);

@@ -124,7 +124,7 @@ struct fb_fix_screeninfo {
 	u16 ypanstep;			/* zero if no hardware panning  */
 	u16 ywrapstep;		/* zero if no hardware ywrap    */
 	u32 line_length;		/* length of a line in bytes    */
-	unsigned long mmio_start;	/* Start of Memory Mapped I/O   */
+	u8 *mmio_start;			/* Start of Memory Mapped I/O   */
 					/* (physical address) */
 	u32 mmio_len;			/* Length of Memory Mapped I/O  */
 	u32 accel;			/* Type of acceleration available */

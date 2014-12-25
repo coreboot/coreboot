@@ -25,7 +25,7 @@
 #include "raminit_ep80579.h"
 #include "ep80579.h"
 
-#define BAR 0x90000000
+#define BAR ((u8 *)0x90000000)
 
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
@@ -35,7 +35,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		PCI_ADDR(0, 0x00, 0, PAM-1), 0xcccccc7f, 0x33333000,
 		PCI_ADDR(0, 0x00, 0, PAM+3), 0xcccccccc, 0x33333333,
 		PCI_ADDR(0, 0x00, 0, DEVPRES1), 0xffffffff, 0x0040003a,
-		PCI_ADDR(0, 0x00, 0, SMRBASE), 0x00000fff, BAR | 0,
+		PCI_ADDR(0, 0x00, 0, SMRBASE), 0x00000fff, (uintptr_t)BAR | 0,
 	};
 	int i;
 

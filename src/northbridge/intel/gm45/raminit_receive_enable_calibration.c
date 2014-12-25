@@ -147,7 +147,7 @@ static int read_dqs_level(const int channel, const int lane)
 	MCHBAR32(mchbar) |=  (1 << 9);
 
 	/* Read from this channel. */
-	read32(raminit_get_rank_addr(channel, 0));
+	read32((u32 *)raminit_get_rank_addr(channel, 0));
 
 	mchbar = 0x14b0 + (channel * 0x0100) + ((7 - lane) * 4);
 	return MCHBAR32(mchbar) & (1 << 30);

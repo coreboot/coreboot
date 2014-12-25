@@ -56,13 +56,13 @@ static void *smp_write_config_table(void *v)
 	/* I/O APICs:   APIC ID Version State   Address */
 	{
 		device_t dev;
-		u32 dword;
+		u32 *dword;
 		u8 byte;
 
 		dev = dev_find_slot(0, //bus_sp5100[0], TODO: why bus_sp5100[0] use same value of bus_sr5650[0] assigned by get_pci1234(), instead of 0.
 				  PCI_DEVFN(sbdn_sp5100 + 0x14, 0));
 		if (dev) {
-			dword = pci_read_config32(dev, 0x74) & 0xfffffff0;
+			dword = (u32 *)(pci_read_config32(dev, 0x74) & 0xfffffff0);
 			smp_write_ioapic(mc, apicid_sp5100, 0x11, dword);
 
 			/* Initialize interrupt mapping */
@@ -73,11 +73,11 @@ static void *smp_write_config_table(void *v)
 			pci_write_config8(dev, 0x63, byte);
 
 			/* SATA */
-			dword = pci_read_config32(dev, 0xac);
-			dword &= ~(7 << 26);
-			dword |= 6 << 26;	/* 0: INTA, ...., 7: INTH */
+			dword = (u32 *)((pci_read_config32(dev, 0xac) &
+					 ~(7 << 26)) | (6 << 26));
+
 			/* dword |= 1<<22; PIC and APIC co exists */
-			pci_write_config32(dev, 0xac, dword);
+			pci_write_config32(dev, 0xac, (u32)dword);
 
 			/*
 			 * 00:12.0: PROG SATA : INT F
@@ -96,7 +96,7 @@ static void *smp_write_config_table(void *v)
 		dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 		if (dev) {
 			pci_write_config32(dev, 0xF8, 0x1);
-			dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
+			dword = (u32 *)(pci_read_config32(dev, 0xFC) & 0xfffffff0);
 			smp_write_ioapic(mc, apicid_sp5100+1, 0x11, dword);
 		}
 	}

@@ -35,7 +35,7 @@ static void *smp_write_config_table(void *v)
 	u32 apicid_sp5100;
 	u32 apicid_sr5650;
 	device_t dev;
-	u32 dword;
+	u32 *dword;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	mptable_init(mc, LOCAL_APIC_ADDR);
@@ -59,7 +59,7 @@ static void *smp_write_config_table(void *v)
 	dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	if (dev) {
 		/* Set SP5100 IOAPIC ID */
-		dword = pci_read_config32(dev, 0x74) & 0xfffffff0;
+		dword = (u32 *)(pci_read_config32(dev, 0x74) & 0xfffffff0);
 		smp_write_ioapic(mc, apicid_sp5100, 0x20, dword);
 
 #ifdef UNUSED_CODE
@@ -71,9 +71,9 @@ static void *smp_write_config_table(void *v)
 		byte |= 0; /* 0: INTA, ...., 7: INTH */
 		pci_write_config8(dev, 0x63, byte);
 		/* SATA */
-		dword = pci_read_config32(dev, 0xAC);
-		dword &= ~(7 << 26);
-		dword |= 6 << 26; /* 0: INTA, ...., 7: INTH */
+		dword = (u32 *)pci_read_config32(dev, 0xAC);
+		dword = dword & ~(7 << 26);
+		dword = dword | (6 << 26); /* 0: INTA, ...., 7: INTH */
 		/* dword |= 1<<22; PIC and APIC co exists */
 		pci_write_config32(dev, 0xAC, dword);
 #endif
@@ -96,7 +96,7 @@ static void *smp_write_config_table(void *v)
 		dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 		if (dev) {
 			pci_write_config32(dev, 0xF8, 0x1);
-			dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
+			dword = (u32 *)(pci_read_config32(dev, 0xFC) & 0xfffffff0);
 			smp_write_ioapic(mc, apicid_sr5650, 0x20, dword);
 		}
 

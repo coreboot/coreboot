@@ -42,7 +42,7 @@ u8	SiS_SiS7502_init[7][3]={
 {0x00, 0x00, 0x00}					//End of table
 };
 
-static int set_bits(u32 port, u32 mask, u32 val)
+static int set_bits(void *port, u32 mask, u32 val)
 {
 	u32 dword;
 	int count;
@@ -67,7 +67,7 @@ static int set_bits(u32 port, u32 mask, u32 val)
 
 }
 
-static u32 send_verb(u32 base, u32 verb)
+static u32 send_verb(u8 *base, u32 verb)
 {
      u32 dword;
 
@@ -75,7 +75,7 @@ static u32 send_verb(u32 base, u32 verb)
      dword=dword|(unsigned long)0x0002;
      write32(base + 0x68, dword);
      do {
-	 	dword = read32(base + 0x68);
+	     dword = read32(base + 0x68);
      }  while ((dword & 1)!=0);
      write32(base + 0x60, verb);
      udelay(500);
@@ -92,7 +92,7 @@ static u32 send_verb(u32 base, u32 verb)
 }
 
 
-static int codec_detect(u32 base)
+static int codec_detect(u8 *base)
 {
 	u32 dword;
 	int idx=0;
@@ -194,7 +194,7 @@ static unsigned find_verb(u32 viddid, u32 **verb)
 }
 
 
-static void codec_init(u32 base, int addr)
+static void codec_init(u8 *base, int addr)
 {
 	u32 dword;
 	u32 *verb;
@@ -232,7 +232,7 @@ static void codec_init(u32 base, int addr)
 	printk(BIOS_DEBUG, "verb loaded!\n");
 }
 
-static void codecs_init(u32 base, u32 codec_mask)
+static void codecs_init(u8 *base, u32 codec_mask)
 {
 	codec_init(base, 0);
 	return;
@@ -240,7 +240,7 @@ static void codecs_init(u32 base, u32 codec_mask)
 
 static void aza_init(struct device *dev)
 {
-        u32 base;
+        u8 *base;
         struct resource *res;
         u32 codec_mask;
 
@@ -286,8 +286,8 @@ static void aza_init(struct device *dev)
 	if(!res)
 		return;
 
-	base = res->base;
-	printk(BIOS_DEBUG, "base = 0x%08x\n", base);
+	base = res2mmio(res, 0, 0);
+	printk(BIOS_DEBUG, "base = 0x%p\n", base);
 
 	codec_mask = codec_detect(base);
 

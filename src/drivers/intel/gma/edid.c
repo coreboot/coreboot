@@ -26,7 +26,7 @@
 #include "i915_reg.h"
 #include "edid.h"
 
-static void wait_rdy(u32 mmio)
+static void wait_rdy(u8 *mmio)
 {
 	unsigned try = 100;
 
@@ -37,7 +37,7 @@ static void wait_rdy(u32 mmio)
 	}
 }
 
-void intel_gmbus_read_edid(u32 mmio, u8 bus, u8 slave, u8 *edid, u32 edid_size)
+void intel_gmbus_read_edid(u8 *mmio, u8 bus, u8 slave, u8 *edid, u32 edid_size)
 {
 	int i;
 

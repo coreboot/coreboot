@@ -11,7 +11,7 @@
 #include "amd8111.h"
 
 
-#define CMD3		0x54
+#define CMD3		(0x54/(sizeof(u32)))
 
 typedef enum {
 	VAL3			= (1 << 31),   /* VAL bit for byte 3 */
@@ -45,11 +45,11 @@ static void nic_init(struct device *dev)
 {
 	struct southbridge_amd_amd8111_config *conf;
 	struct resource *resource;
-	unsigned long mmio;
+	u8 *mmio;
 
 	conf = dev->chip_info;
 	resource = find_resource(dev, PCI_BASE_ADDRESS_0);
-	mmio = resource->base;
+	mmio = res2mmio(resource, 0, 0);
 
 	/* Hard Reset PHY */
 	printk(BIOS_DEBUG, "Resetting PHY... ");

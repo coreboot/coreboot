@@ -274,12 +274,12 @@ static struct resource *gtt_res = NULL;
 
 u32 gtt_read(u32 reg)
 {
-	return read32(gtt_res->base + reg);
+	return read32(res2mmio(gtt_res, reg, 0));
 }
 
 void gtt_write(u32 reg, u32 data)
 {
-	write32(gtt_res->base + reg, data);
+	write32(res2mmio(gtt_res, reg, 0), data);
 }
 
 static inline void gtt_write_powermeter(const struct gt_powermeter *pm)
@@ -561,7 +561,7 @@ static void gma_pm_init_post_vbios(struct device *dev)
 
 #if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 
-static void train_link(u32 mmio)
+static void train_link(u8 *mmio)
 {
 	/* Clear interrupts. */
 	write32(mmio + DEIIR, 0xffffffff);
@@ -584,7 +584,7 @@ static void train_link(u32 mmio)
 	read32(mmio + 0x000f0014); // = 0x00000600
 }
 
-static void power_port(u32 mmio)
+static void power_port(u8 *mmio)
 {
 	read32(mmio + 0x000e1100); // = 0x00000000
 	write32(mmio + 0x000e1100, 0x00000000);
@@ -639,7 +639,7 @@ static void power_port(u32 mmio)
 }
 
 static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
-			   u32 mmio, u32 physbase, u16 piobase, u32 lfb)
+			   u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
 {
 	int i;
 	u8 edid_data[128];
@@ -1020,8 +1020,8 @@ static void gma_func0_init(struct device *dev)
 	    && lfb_res && lfb_res->base) {
 		printk(BIOS_SPEW, "Initializing VGA without OPROM. MMIO 0x%llx\n",
 		       gtt_res->base);
-		intel_gma_init(conf, gtt_res->base, physbase, pio_res->base,
-			       lfb_res->base);
+		intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
+			       pio_res->base, lfb_res->base);
 	}
 
 	/* Linux relies on VBT for panel info.  */

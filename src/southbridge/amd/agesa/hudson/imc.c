@@ -27,22 +27,24 @@
 #include <Proc/Fch/Common/FchCommonCfg.h>
 #include <Proc/Fch/FchPlatform.h>
 
+#define VACPI_MMIO_VBASE ((u8 *)ACPI_MMIO_BASE)
+
 void imc_reg_init(void)
 {
 	/* Init Power Management Block 2 (PM2) Registers.
 	 * Check BKDG for AMD Family 16h for details. */
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x00, 0x06);
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x01, 0x06);
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x02, 0xf7);
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x03, 0xff);
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x04, 0xff);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x00, 0x06);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x01, 0x06);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x02, 0xf7);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x03, 0xff);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x04, 0xff);
 
 #if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x10, 0x06);
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x11, 0x06);
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x12, 0xf7);
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x13, 0xff);
-	write8(ACPI_MMIO_BASE + PMIO2_BASE + 0x14, 0xff);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x10, 0x06);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x11, 0x06);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x12, 0xf7);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x13, 0xff);
+	write8(VACPI_MMIO_VBASE + PMIO2_BASE + 0x14, 0xff);
 #endif
 
 #if CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE

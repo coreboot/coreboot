@@ -237,12 +237,12 @@ static void sb700_enable(device_t dev)
 				u32 ioapic_base;
 				printk(BIOS_DEBUG, "sm_init().\n");
 				ioapic_base = IO_APIC_ADDR;
-				clear_ioapic(ioapic_base);
+				clear_ioapic((void *)ioapic_base);
 				/* I/O APIC IDs are normally limited to 4-bits. Enforce this limit. */
 				if (CONFIG_MAX_CPUS >= 16)
-					setup_ioapic(ioapic_base, 0);
+					setup_ioapic((void *)ioapic_base, 0);
 				else
-					setup_ioapic(ioapic_base, CONFIG_MAX_CPUS + 1);
+					setup_ioapic((void *)ioapic_base, CONFIG_MAX_CPUS + 1);
 			}
 			break;
 

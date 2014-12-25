@@ -118,7 +118,7 @@ static int init_opregion_vbt(igd_opregion_t *opregion)
 	optionrom_vbt_t *vbt = (optionrom_vbt_t *)(vbios +
 						oprom->vbt_offset);
 
-	if (read32((unsigned long)vbt->hdr_signature) != VBT_SIGNATURE) {
+	if (read32(vbt->hdr_signature) != VBT_SIGNATURE) {
 		printk(BIOS_DEBUG, "VBT not found!\n");
 		return 1;
 	}

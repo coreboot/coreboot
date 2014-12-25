@@ -28,7 +28,7 @@
 /**
  * Set bits in a register and wait for status
  */
-static int set_bits(u32 port, u32 mask, u32 val)
+static int set_bits(void *port, u32 mask, u32 val)
 {
 	u32 reg32;
 	int count;
@@ -60,7 +60,7 @@ static int set_bits(u32 port, u32 mask, u32 val)
 /**
  * Probe for supported codecs
  */
-int hda_codec_detect(u32 base)
+int hda_codec_detect(u8 *base)
 {
 	u8 reg8;
 
@@ -91,7 +91,7 @@ no_codec:
  * Wait 50usec for the codec to indicate it is ready
  * no response would imply that the codec is non-operative
  */
-static int hda_wait_for_ready(u32 base)
+static int hda_wait_for_ready(u8 *base)
 {
 	/* Use a 50 usec timeout - the Linux kernel uses the
 	 * same duration */
@@ -113,7 +113,7 @@ static int hda_wait_for_ready(u32 base)
  * the previous command.  No response would imply that the code
  * is non-operative
  */
-static int hda_wait_for_valid(u32 base)
+static int hda_wait_for_valid(u8 *base)
 {
 	u32 reg32;
 
@@ -185,7 +185,7 @@ static u32 hda_find_verb(u32 verb_table_bytes,
 /**
  * Write a supplied verb table
  */
-int hda_codec_write(u32 base, u32 size, const u32 *data)
+int hda_codec_write(u8 *base, u32 size, const u32 *data)
 {
 	int i;
 
@@ -205,7 +205,7 @@ int hda_codec_write(u32 base, u32 size, const u32 *data)
 /**
  * Initialize codec, then find the verb table and write it
  */
-int hda_codec_init(u32 base, int addr, int verb_size, const u32 *verb_data)
+int hda_codec_init(u8 *base, int addr, int verb_size, const u32 *verb_data)
 {
 	const u32 *verb;
 	u32 reg32, size;

@@ -23,8 +23,13 @@
 /* Northbridge BARs */
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
 #define DEFAULT_X60BAR		0xfed13000
+#ifndef __ACPI__
+#define DEFAULT_MCHBAR		((u8 *)0xfed14000)	/* 16 KB */
+#define DEFAULT_DMIBAR		((u8 *)0xfed18000)	/* 4 KB */
+#else
 #define DEFAULT_MCHBAR		0xfed14000	/* 16 KB */
 #define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
+#endif
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 
 #include "../../../southbridge/intel/i82801gx/i82801gx.h"

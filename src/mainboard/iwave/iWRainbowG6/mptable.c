@@ -34,7 +34,7 @@ void *smp_write_config_table(void *v)
 	smp_write_processors(mc);
 	mptable_write_buses(mc, NULL, &isa_bus);
 
-	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);
+	smp_write_ioapic(mc, 2, 0x20, VIO_APIC_VADDR);
 	{
 		device_t dev;
 		struct resource *res;

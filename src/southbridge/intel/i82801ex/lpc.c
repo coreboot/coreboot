@@ -281,7 +281,7 @@ static void lpc_init(struct device *dev)
 	i82801ex_general_cntl(dev);
 
 	/* IO APIC initialization. */
-	setup_ioapic(IO_APIC_ADDR, 0); // Don't rename IO APIC ID.
+	setup_ioapic(VIO_APIC_VADDR, 0); // Don't rename IO APIC ID.
 
 	i82801ex_enable_serial_irqs(dev);
 

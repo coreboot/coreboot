@@ -83,7 +83,11 @@
 #endif
 
 #define HPET_ADDR		0xfed00000
+#ifndef __ACPI__
+#define DEFAULT_RCBA		((u8 *)0xfed1c000)
+#else
 #define DEFAULT_RCBA		0xfed1c000
+#endif
 
 #ifndef __ACPI__
 

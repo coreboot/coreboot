@@ -274,7 +274,7 @@ static void cx700_lpc_init(struct device *dev)
 
 #if CONFIG_IOAPIC
 #define IO_APIC_ID 2
-	setup_ioapic(IO_APIC_ADDR, IO_APIC_ID);
+	setup_ioapic(VIO_APIC_VADDR, IO_APIC_ID);
 #endif
 
 	/* Initialize interrupts */

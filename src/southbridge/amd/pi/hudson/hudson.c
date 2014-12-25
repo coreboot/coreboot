@@ -47,22 +47,22 @@ int acpi_get_sleep_type(void)
 
 void pm_write8(u8 reg, u8 value)
 {
-	write8(PM_MMIO_BASE + reg, value);
+	write8((void *)(PM_MMIO_BASE + reg), value);
 }
 
 u8 pm_read8(u8 reg)
 {
-	return read8(PM_MMIO_BASE + reg);
+	return read8((void *)(PM_MMIO_BASE + reg));
 }
 
 void pm_write16(u8 reg, u16 value)
 {
-	write16(PM_MMIO_BASE + reg, value);
+	write16((void *)(PM_MMIO_BASE + reg), value);
 }
 
 u16 pm_read16(u16 reg)
 {
-	return read16(PM_MMIO_BASE + reg);
+	return read16((void *)(PM_MMIO_BASE + reg));
 }
 
 void hudson_enable(device_t dev)

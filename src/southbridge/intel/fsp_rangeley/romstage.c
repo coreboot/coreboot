@@ -42,7 +42,7 @@
 void main(FSP_INFO_HEADER *fsp_info_header)
 {
 	uint32_t fd_mask = 0;
-	uint32_t func_dis = DEFAULT_PBASE + PBASE_FUNC_DIS;
+	uint32_t *func_dis = (uint32_t *)(DEFAULT_PBASE + PBASE_FUNC_DIS);
 
 	/*
 	 * Do not use the Serial Console before it is setup.

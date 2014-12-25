@@ -967,9 +967,9 @@ static void step_20_21(const struct mem_controller *ctrl)
 
 	val = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_DRAM_NB_ODT);
 	if (val & DDR2_ODT_150ohm)
-		read32(0x102200);
+		read32((void *)0x102200);
 	else
-		read32(0x102020);
+		read32((void *)0x102020);
 
 	/* Step 21. Normal operation */
 	printk(BIOS_SPEW, "RAM Enable 5: Normal operation\n");
@@ -995,7 +995,7 @@ static void step_2_19(const struct mem_controller *ctrl)
 
 	// Step 4
 	printk(BIOS_SPEW, "SEND: ");
-	read32(0);
+	read32((void *)0);
 	printk(BIOS_SPEW, "OK\n");
 
 	// Step 5
@@ -1007,7 +1007,7 @@ static void step_2_19(const struct mem_controller *ctrl)
 
 	// Step 7
 	printk(BIOS_SPEW, "SEND: ");
-	read32(0);
+	read32((void *)0);
 	printk(BIOS_SPEW, "OK\n");
 
 	/* Step 8. Mode register set. */
@@ -1019,14 +1019,14 @@ static void step_2_19(const struct mem_controller *ctrl)
 
 	val = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_DRAM_NB_ODT);
 	if (val & DDR2_ODT_150ohm)
-		read32(0x102200);	//DDR2_ODT_150ohm
+		read32((void *)0x102200);	//DDR2_ODT_150ohm
 	else
-		read32(0x102020);
+		read32((void *)0x102020);
 	printk(BIOS_SPEW, "OK\n");
 
 	// Step 10
 	printk(BIOS_SPEW, "SEND: ");
-	read32(0x800);
+	read32((void *)0x800);
 	printk(BIOS_SPEW, "OK\n");
 
 	/* Step 11. Precharge all. Wait tRP. */
@@ -1035,7 +1035,7 @@ static void step_2_19(const struct mem_controller *ctrl)
 
 	// Step 12
 	printk(BIOS_SPEW, "SEND: ");
-	read32(0x0);
+	read32((u32 *)0x0);
 	printk(BIOS_SPEW, "OK\n");
 
 	/* Step 13. Perform 8 refresh cycles. Wait tRC each time. */
@@ -1046,7 +1046,7 @@ static void step_2_19(const struct mem_controller *ctrl)
 	// Step 16: Repeat Step 14 and 15 another 7 times
 	for (i = 0; i < 8; i++) {
 		// Step 14
-		read32(0);
+		read32((u32 *)0);
 		printk(BIOS_SPEW, ".");
 
 		// Step 15
@@ -1076,7 +1076,7 @@ static void step_2_19(const struct mem_controller *ctrl)
 	val = pci_read_config8(MEMCTRL, 0x61);
 	val = val >> 6;
 	i |= DDR2_Twr_table[val];
-	read32(i);
+	read32((void *)i);
 
 	printk(BIOS_DEBUG, "MRS = %08x\n", i);
 
@@ -1085,9 +1085,9 @@ static void step_2_19(const struct mem_controller *ctrl)
 	// Step 19
 	val = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_DRAM_NB_ODT);
 	if (val & DDR2_ODT_150ohm)
-		read32(0x103e00);	//EMRS OCD Default
+		read32((void *)0x103e00);	//EMRS OCD Default
 	else
-		read32(0x103c20);
+		read32((void *)0x103c20);
 }
 
 static void sdram_set_vr(const struct mem_controller *ctrl, u8 num)
@@ -1133,45 +1133,45 @@ static void sdram_calc_size(const struct mem_controller *ctrl, u8 num)
 	u8 ca, ra, ba, reg;
 	ba = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_FLAGS);
 	if (ba == 8) {
-		write8(0, 0x0d);
-		ra = read8(0);
-		write8((1 << SDRAM1X_RA_12_8bk), 0x0c);
-		ra = read8(0);
+		write8((void *)0, 0x0d);
+		ra = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_RA_12_8bk), 0x0c);
+		ra = read8((void *)0);
 
-		write8(0, 0x0a);
-		ca = read8(0);
-		write8((1 << SDRAM1X_CA_09_8bk), 0x0c);
-		ca = read8(0);
+		write8((void *)0, 0x0a);
+		ca = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_CA_09_8bk), 0x0c);
+		ca = read8((void *)0);
 
-		write8(0, 0x03);
-		ba = read8(0);
-		write8((1 << SDRAM1X_BA2_8bk), 0x02);
-		ba = read8(0);
-		write8((1 << SDRAM1X_BA1_8bk), 0x01);
-		ba = read8(0);
+		write8((void *)0, 0x03);
+		ba = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_BA2_8bk), 0x02);
+		ba = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_BA1_8bk), 0x01);
+		ba = read8((void *)0);
 	} else {
-		write8(0, 0x0f);
-		ra = read8(0);
-		write8((1 << SDRAM1X_RA_14), 0x0e);
-		ra = read8(0);
-		write8((1 << SDRAM1X_RA_13), 0x0d);
-		ra = read8(0);
-		write8((1 << SDRAM1X_RA_12), 0x0c);
-		ra = read8(0);
+		write8((void *)0, 0x0f);
+		ra = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_RA_14), 0x0e);
+		ra = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_RA_13), 0x0d);
+		ra = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_RA_12), 0x0c);
+		ra = read8((void *)0);
 
-		write8(0, 0x0c);
-		ca = read8(0);
-		write8((1 << SDRAM1X_CA_12), 0x0b);
-		ca = read8(0);
-		write8((1 << SDRAM1X_CA_11), 0x0a);
-		ca = read8(0);
-		write8((1 << SDRAM1X_CA_09), 0x09);
-		ca = read8(0);
+		write8((void *)0, 0x0c);
+		ca = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_CA_12), 0x0b);
+		ca = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_CA_11), 0x0a);
+		ca = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_CA_09), 0x09);
+		ca = read8((void *)0);
 
-		write8(0, 0x02);
-		ba = read8(0);
-		write8((1 << SDRAM1X_BA1), 0x01);
-		ba = read8(0);
+		write8((void *)0, 0x02);
+		ba = read8((void *)0);
+		write8((void *)(1 << SDRAM1X_BA1), 0x01);
+		ba = read8((void *)0);
 	}
 
 	if (ra < 10 || ra > 15)
@@ -1277,19 +1277,19 @@ static void sdram_enable(const struct mem_controller *ctrl)
 			if (reg8) {
 				sdram_set_vr(ctrl, i);
 				sdram_ending_addr(ctrl, i);
-				write32(0, 0x55555555);
-				write32(4, 0x55555555);
+				write32((void *)0, 0x55555555);
+				write32((void *)4, 0x55555555);
 				udelay(15);
-				if (read32(0) != 0x55555555)
+				if (read32((void *)0) != 0x55555555)
 					break;
-				if (read32(4) != 0x55555555)
+				if (read32((void *)4) != 0x55555555)
 					break;
-				write32(0, 0xaaaaaaaa);
-				write32(4, 0xaaaaaaaa);
+				write32((void *)0, 0xaaaaaaaa);
+				write32((void *)4, 0xaaaaaaaa);
 				udelay(15);
-				if (read32(0) != 0xaaaaaaaa)
+				if (read32((void *)0) != 0xaaaaaaaa)
 					break;
-				if (read32(4) != 0xaaaaaaaa)
+				if (read32((void *)4) != 0xaaaaaaaa)
 					break;
 				sdram_clear_vr_addr(ctrl, i);
 			}
@@ -1310,19 +1310,19 @@ static void sdram_enable(const struct mem_controller *ctrl)
 				sdram_set_vr(ctrl, i);
 				sdram_ending_addr(ctrl, i);
 
-				write32(0, 0x55555555);
-				write32(4, 0x55555555);
+				write32((void *)0, 0x55555555);
+				write32((void *)4, 0x55555555);
 				udelay(15);
-				if (read32(0) != 0x55555555)
+				if (read32((void *)0) != 0x55555555)
 					break;
-				if (read32(4) != 0x55555555)
+				if (read32((void *)4) != 0x55555555)
 					break;
-				write32(0, 0xaaaaaaaa);
-				write32(4, 0xaaaaaaaa);
+				write32((void *)0, 0xaaaaaaaa);
+				write32((void *)4, 0xaaaaaaaa);
 				udelay(15);
-				if (read32(0) != 0xaaaaaaaa)
+				if (read32((void *)0) != 0xaaaaaaaa)
 					break;
-				if (read32(4) != 0xaaaaaaaa)
+				if (read32((void *)4) != 0xaaaaaaaa)
 					break;
 				sdram_clear_vr_addr(ctrl, i);
 			}
@@ -1364,17 +1364,17 @@ static void sdram_enable(const struct mem_controller *ctrl)
 			sdram_set_vr(ctrl, i);
 			sdram_ending_addr(ctrl, i);
 			if (reg8 == 4) {
-				write8(0, 0x02);
-				val = read8(0);
-				write8((1 << SDRAM1X_BA1), 0x01);
-				val = read8(0);
+				write8((void *)0, 0x02);
+				val = read8((void *)0);
+				write8((void *)(1 << SDRAM1X_BA1), 0x01);
+				val = read8((void *)0);
 			} else {
-				write8(0, 0x03);
-				val = read8(0);
-				write8((1 << SDRAM1X_BA2_8bk), 0x02);
-				val = read8(0);
-				write8((1 << SDRAM1X_BA1_8bk), 0x01);
-				val = read8(0);
+				write8((void *)0, 0x03);
+				val = read8((void *)0);
+				write8((void *)(1 << SDRAM1X_BA2_8bk), 0x02);
+				val = read8((void *)0);
+				write8((void *)(1 << SDRAM1X_BA1_8bk), 0x01);
+				val = read8((void *)0);
 			}
 			if (val < dl)
 				dl = val;

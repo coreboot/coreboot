@@ -63,7 +63,7 @@ Definitions:
 // NOTE: This used to be 0x100000.
 //       That doesn't work on systems where A20M# is asserted, because
 //       attempts to access 0x1000NN end up accessing 0x0000NN.
-#define RCOMP_MMIO 0x200000
+#define RCOMP_MMIO ((u8 *)0x200000)
 
 struct dimm_size {
 	unsigned long side1;
@@ -665,7 +665,7 @@ SDRAM configuration functions:
 static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 {
 	uint8_t dimm_start_64M_multiple;
-	uint32_t dimm_start_address;
+	uintptr_t dimm_start_address;
 	uint32_t dram_controller_mode;
 	uint8_t i;
 
@@ -713,7 +713,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 		if (dimm_end_64M_multiple > dimm_start_64M_multiple) {
 			dimm_start_address &= 0x3ffffff;
 			dimm_start_address |= dimm_start_64M_multiple << 26;
-			read32(dimm_start_address);
+			read32((void *)dimm_start_address);
 			// Set the start of the next DIMM
 			dimm_start_64M_multiple = dimm_end_64M_multiple;
 		}
@@ -1521,7 +1521,7 @@ static void RAM_RESET_DDR_PTR(void)
  * @param src_addr TODO
  * @param dst_addr TODO
  */
-static void write_8dwords(const uint32_t *src_addr, uint32_t dst_addr)
+static void write_8dwords(const uint32_t *src_addr, u8 *dst_addr)
 {
 	int i;
 	for (i = 0; i < 8; i++) {
@@ -1627,7 +1627,7 @@ static void ram_set_rcomp_regs(void)
 {
 	/* Set the RCOMP MMIO base address */
 	mchtest_control(RCOMP_BAR_ENABLE);
-	pci_write_config32(MCHDEV, SMRBASE, RCOMP_MMIO);
+	pci_write_config32(MCHDEV, SMRBASE, (uintptr_t)RCOMP_MMIO);
 
 	/* Block RCOMP updates while we configure the registers */
 	rcomp_smr_control(RCOMP_HOLD);

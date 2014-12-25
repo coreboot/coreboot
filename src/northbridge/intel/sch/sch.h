@@ -36,7 +36,7 @@ void sch_port_access_write_ram_cmd(int cmd, int port, int reg, int data);
 #define DEFAULT_GPE0BASE	              0x5C0
 #define DEFAULT_SMMCNTRLBASE	              0x3F703F76
 
-#define DEFAULT_RCBABASE                      0xfed1c000
+#define DEFAULT_RCBABASE                      ((u8 *)0xfed1c000)
 
 #define DEFAULT_PCIEXBAR		CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
 

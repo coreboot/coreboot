@@ -103,7 +103,7 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 {
 	const struct soc_gpio_map *config;
 	int gpio = 0;
-	u32 reg, pad_conf0;
+	u32 reg, pad_conf0, *regmmio;
 	u8 set, bit;
 
 	u32 use_sel[4] = {0};
@@ -138,7 +138,8 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 		}
 
 		/* Pad configuration registers */
-		reg = bank->pad_base + 16 * bank->gpio_to_pad[gpio];
+		regmmio = (u32 *)(bank->pad_base + 16 *
+				  bank->gpio_to_pad[gpio]);
 
 		/* Add correct func to GPIO pad config */
 		pad_conf0 = config->pad_conf0;
@@ -152,13 +153,14 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 		}
 
 #ifdef GPIO_DEBUG
-		printk(BIOS_DEBUG, "Write Pad: Base(%x) - %x %x %x\n",
-		       reg, pad_conf0, config->pad_conf1, config->pad_val);
+		printk(BIOS_DEBUG, "Write Pad: Base(%p) - %x %x %x\n",
+		       regmmio, pad_conf0, config->pad_conf1, config->pad_val);
 #endif
 
-		write32(reg + PAD_CONF0_REG, pad_conf0);
-		write32(reg + PAD_CONF1_REG, config->pad_conf1);
-		write32(reg + PAD_VAL_REG, config->pad_val);
+		write32(regmmio + (PAD_CONF0_REG/sizeof(u32)), pad_conf0);
+		write32(regmmio + (PAD_CONF1_REG/sizeof(u32)),
+			config->pad_conf1);
+		write32(regmmio + (PAD_VAL_REG/sizeof(u32)), config->pad_val);
 	}
 
 	if (bank->legacy_base != GP_LEGACY_BASE_NONE)
@@ -215,7 +217,7 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
 			const struct gpio_bank *bank)
 {
-	u32 reg = bank->pad_base + PAD_BASE_DIRQ_OFFSET;
+	u32 *reg = (u32 *)(bank->pad_base + PAD_BASE_DIRQ_OFFSET);
 	u32 val;
 	int i;
 
@@ -223,10 +225,10 @@ static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
 	for (i=0; i<4; ++i) {
 		val = dirq[i * 4 + 3] << 24 | dirq[i * 4 + 2] << 16 |
 		      dirq[i * 4 + 1] << 8  | dirq[i * 4];
-		write32(reg + i * 4, val);
+		write32(reg + i, val);
 #ifdef GPIO_DEBUG
 		printk(BIOS_DEBUG, "Write DIRQ reg(%x) - %x\n",
-			reg + i * 4, val);
+		       reg + i, val);
 #endif
 	}
 }
@@ -299,7 +301,7 @@ static void configure_ssus_score_gpio(uint8_t ssus_gpio, uint8_t gpio_num,
                            uint32_t pconf0, uint32_t pad_val)
 {
 	uint32_t reg;
-	uint32_t pad_addr;
+	uint32_t *pad_addr;
 	if (ssus_gpio)
 		pad_addr = ssus_pconf0(gpssus_gpio_to_pad[gpio_num]);
 	else
@@ -321,7 +323,7 @@ static void configure_ssus_score_gpio(uint8_t ssus_gpio, uint8_t gpio_num,
 	 */
 	reg = PAD_CONFIG0_DEFAULT;
 	reg |= pconf0 & 0x787;
-	write32(pad_addr + PAD_CONF0_REG, reg);
+	write32(pad_addr + (PAD_CONF0_REG/sizeof(u32)), reg);
 
 	/*
 	 * Pad Value Register
@@ -329,10 +331,10 @@ static void configure_ssus_score_gpio(uint8_t ssus_gpio, uint8_t gpio_num,
 	 * 1: output enable (0 is enabled)
 	 * 2: input enable  (0 is enabled)
 	 */
-	reg = read32(pad_addr + PAD_VAL_REG);
+	reg = read32(pad_addr + (PAD_VAL_REG/sizeof(u32)));
 	reg &= ~0x7;
 	reg |= pad_val & 0x7;
-	write32(pad_addr + PAD_VAL_REG, reg);
+	write32(pad_addr + (PAD_VAL_REG/sizeof(u32)), reg);
 }
 
 /** \brief Sets up the function, pulls, and Input/Output of a Baytrail S5 GPIO

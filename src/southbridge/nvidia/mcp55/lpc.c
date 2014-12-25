@@ -60,13 +60,13 @@
 static void lpc_common_init(device_t dev, int master)
 {
 	u8 byte;
-	u32 ioapic_base;
+	void *ioapic_base;
 
 	/* IOAPIC initialization. */
 	byte = pci_read_config8(dev, 0x74);
 	byte |= (1 << 0); /* Enable IOAPIC. */
 	pci_write_config8(dev, 0x74, byte);
-	ioapic_base = pci_read_config32(dev, PCI_BASE_ADDRESS_1); /* 0x14 */
+	ioapic_base = (void *)pci_read_config32(dev, PCI_BASE_ADDRESS_1); /* 0x14 */
 
 	if (master)
 		setup_ioapic(ioapic_base, 0);

@@ -59,7 +59,8 @@ static void *smp_write_config_table(void *v)
 				  PCI_DEVFN(sbdn_sb600 + 0x14, 0));
 		if (dev) {
 			dword = pci_read_config32(dev, 0x74) & 0xfffffff0;
-			smp_write_ioapic(mc, apicid_sb600, 0x11, dword);
+			smp_write_ioapic(mc, apicid_sb600,
+					 0x11,(void *) dword);
 
 			/* Initialize interrupt mapping */
 			/* aza */

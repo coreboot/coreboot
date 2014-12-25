@@ -40,7 +40,7 @@ pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 
 void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 {
-	u32 base_regs = pci_ehci_base_regs(dev);
+	u8 *base_regs = pci_ehci_base_regs(dev);
 	u32 reg32;
 
 	/* Write the port number to DEBUGPORT_MISC_CONTROL[31:28]. */

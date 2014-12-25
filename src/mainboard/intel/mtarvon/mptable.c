@@ -42,7 +42,7 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/* IOAPIC handling */
-	smp_write_ioapic(mc, 0x01, 0x20, IO_APIC_ADDR);
+	smp_write_ioapic(mc, 0x01, 0x20, VIO_APIC_VADDR);
 
 	mptable_add_isa_interrupts(mc, bus_isa, 0x1, 0);
 

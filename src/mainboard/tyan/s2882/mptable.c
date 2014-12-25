@@ -116,7 +116,7 @@ static void *smp_write_config_table(void *v)
         apicid_8131_1 = apicid_base+1;
         apicid_8131_2 = apicid_base+2;
 
-	smp_write_ioapic(mc, apicid_8111, 0x11, IO_APIC_ADDR);
+	smp_write_ioapic(mc, apicid_8111, 0x11, VIO_APIC_VADDR);
         {
                 device_t dev;
                 struct resource *res;
@@ -124,14 +124,16 @@ static void *smp_write_config_table(void *v)
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
-                                smp_write_ioapic(mc, apicid_8131_1, 0x11, res->base);
+                                smp_write_ioapic(mc, apicid_8131_1, 0x11,
+						 res2mmio(res, 0, 0));
                         }
                 }
                 dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x2,1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
-                                smp_write_ioapic(mc, apicid_8131_2, 0x11, res->base);
+                                smp_write_ioapic(mc, apicid_8131_2, 0x11,
+						 res2mmio(res, 0, 0));
                         }
                 }
 

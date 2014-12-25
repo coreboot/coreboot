@@ -71,15 +71,15 @@ void mainboard_romstage_entry(unsigned long bist)
 {
 	struct pei_data pei_data = {
 		.pei_version = PEI_VERSION,
-		.mchbar = DEFAULT_MCHBAR,
-		.dmibar = DEFAULT_DMIBAR,
+		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
+		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
 		.epbar = DEFAULT_EPBAR,
 		.pciexbar = DEFAULT_PCIEXBAR,
 		.smbusbar = SMBUS_IO_BASE,
 		.wdbbar = 0x4000000,
 		.wdbsize = 0x1000,
 		.hpet_address = HPET_ADDR,
-		.rcba = DEFAULT_RCBA,
+		.rcba = (uintptr_t)DEFAULT_RCBA,
 		.pmbase = DEFAULT_PMBASE,
 		.gpiobase = DEFAULT_GPIOBASE,
 		.temp_mmio_base = 0xfed08000,

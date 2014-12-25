@@ -56,7 +56,7 @@ uint32_t chipset_prev_sleep_state(uint32_t clear)
 	/* Read Power State */
 	pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 	pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
-	gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
+	gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
 
 	printk(BIOS_DEBUG, "PM1_STS = 0x%x PM1_CNT = 0x%x GEN_PMCON1 = 0x%x\n",
 		pm1_sts, pm1_cnt, gen_pmcon1);
@@ -118,8 +118,8 @@ static void program_base_addresses(void)
 
 static void spi_init(void)
 {
-	const uint32_t scs = SPI_BASE_ADDRESS + SCS;
-	const uint32_t bcr = SPI_BASE_ADDRESS + BCR;
+	uint32_t *scs = (uint32_t *)(SPI_BASE_ADDRESS + SCS);
+	uint32_t *bcr = (uint32_t *)(SPI_BASE_ADDRESS + BCR);
 	uint32_t reg;
 
 	/* Disable generating SMI when setting WPD bit. */
@@ -135,8 +135,8 @@ static void spi_init(void)
 
 static void baytrail_rtc_init(void)
 {
-	uint32_t pbase = pci_read_config32(LPC_BDF, PBASE) & 0xfffffff0;
-	uint32_t gen_pmcon1 = read32(pbase + GEN_PMCON1);
+	uint32_t *pbase = (uint32_t *)(pci_read_config32(LPC_BDF, PBASE) & 0xfffffff0);
+	uint32_t gen_pmcon1 = read32(pbase + (GEN_PMCON1/sizeof(u32)));
 	int rtc_failed = !!(gen_pmcon1 & RPS);
 
 	if (rtc_failed) {
@@ -144,7 +144,7 @@ static void baytrail_rtc_init(void)
 			"RTC Failure detected.  Resetting Date to %s\n",
 			coreboot_dmi_date);
 
-		write32(DEFAULT_PBASE + GEN_PMCON1, gen_pmcon1 & ~RPS);
+		write32((uint32_t *)(DEFAULT_PBASE + GEN_PMCON1), gen_pmcon1 & ~RPS);
 	}
 
 	cmos_init(rtc_failed);
@@ -153,8 +153,8 @@ static void baytrail_rtc_init(void)
 /* Entry from cache-as-ram.inc. */
 void main(FSP_INFO_HEADER *fsp_info_header)
 {
-	const unsigned long func_dis = PMC_BASE_ADDRESS + FUNC_DIS;
-	const unsigned long func_dis2 = PMC_BASE_ADDRESS + FUNC_DIS2;
+	uint32_t *func_dis = (uint32_t *)(PMC_BASE_ADDRESS + FUNC_DIS);
+	uint32_t *func_dis2 = (uint32_t *)(PMC_BASE_ADDRESS + FUNC_DIS2);
 	uint32_t fd_mask = 0;
 	uint32_t fd2_mask = 0;
 

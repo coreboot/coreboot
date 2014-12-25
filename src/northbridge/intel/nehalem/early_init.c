@@ -36,7 +36,7 @@ static void nehalem_setup_bars(void)
 {
 	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, DEFAULT_RCBA | 1);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
 	/* Enable ACPI BAR */
@@ -59,13 +59,13 @@ static void nehalem_setup_bars(void)
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR + 4,
 			   (0LL + DEFAULT_EPBAR) >> 32);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, DEFAULT_MCHBAR | 1);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, (uintptr_t)DEFAULT_MCHBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR + 4,
-			   (0LL + DEFAULT_MCHBAR) >> 32);
+			   (0LL + (uintptr_t)DEFAULT_MCHBAR) >> 32);
 
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, DEFAULT_DMIBAR | 1);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR + 4,
-			   (0LL + DEFAULT_DMIBAR) >> 32);
+			   (0LL + (uintptr_t)DEFAULT_DMIBAR) >> 32);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(0), 0x30);
@@ -163,7 +163,7 @@ void nehalem_early_initialization(int chipset_type)
 
 	early_cpu_init();
 
-	pci_write_config32(PCI_DEV(0, 0x16, 0), 0x10, DEFAULT_HECIBAR);
+	pci_write_config32(PCI_DEV(0, 0x16, 0), 0x10, (uintptr_t)DEFAULT_HECIBAR);
 	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_COMMAND,
 			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 

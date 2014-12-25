@@ -53,22 +53,22 @@ static void pch_enable_ioapic(struct device *dev)
 {
 	u32 reg32;
 
-	set_ioapic_id(IO_APIC_ADDR, 0x02);
+	set_ioapic_id(VIO_APIC_VADDR, 0x02);
 
 	/* affirm full set of redirection table entries ("write once") */
-	reg32 = io_apic_read(IO_APIC_ADDR, 0x01);
+	reg32 = io_apic_read(VIO_APIC_VADDR, 0x01);
 
 	/* PCH-LP has 39 redirection entries */
 	reg32 &= ~0x00ff0000;
 	reg32 |= 0x00270000;
 
-	io_apic_write(IO_APIC_ADDR, 0x01, reg32);
+	io_apic_write(VIO_APIC_VADDR, 0x01, reg32);
 
 	/*
 	 * Select Boot Configuration register (0x03) and
 	 * use Processor System Bus (0x01) to deliver interrupts.
 	 */
-	io_apic_write(IO_APIC_ADDR, 0x03, 0x01);
+	io_apic_write(VIO_APIC_VADDR, 0x03, 0x01);
 }
 
 /* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control

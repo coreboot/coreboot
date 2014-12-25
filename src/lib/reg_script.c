@@ -155,11 +155,11 @@ static uint32_t reg_script_read_mmio(struct reg_script_context *ctx)
 
 	switch (step->size) {
 	case REG_SCRIPT_SIZE_8:
-		return read8(step->reg);
+		return read8((u8 *)step->reg);
 	case REG_SCRIPT_SIZE_16:
-		return read16(step->reg);
+		return read16((u16 *)step->reg);
 	case REG_SCRIPT_SIZE_32:
-		return read32(step->reg);
+		return read32((u32 *)step->reg);
 	}
 	return 0;
 }
@@ -170,13 +170,13 @@ static void reg_script_write_mmio(struct reg_script_context *ctx)
 
 	switch (step->size) {
 	case REG_SCRIPT_SIZE_8:
-		write8(step->reg, step->value);
+		write8((u8 *)step->reg, step->value);
 		break;
 	case REG_SCRIPT_SIZE_16:
-		write16(step->reg, step->value);
+		write16((u16 *)step->reg, step->value);
 		break;
 	case REG_SCRIPT_SIZE_32:
-		write32(step->reg, step->value);
+		write32((u32 *)step->reg, step->value);
 		break;
 	}
 }

@@ -61,7 +61,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev);
 #endif
 
 /* MMIO base address for MEI interface */
-static u32 mei_base_address;
+static u32 *mei_base_address;
 void intel_me_mbp_clear(device_t dev);
 
 #if CONFIG_DEBUG_INTEL_ME
@@ -104,7 +104,7 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 
 static inline void mei_read_dword_ptr(void *ptr, int offset)
 {
-	u32 dword = read32(mei_base_address + offset);
+	u32 dword = read32(mei_base_address + (offset/sizeof(u32)));
 	memcpy(ptr, &dword, sizeof(dword));
 	mei_dump(ptr, dword, offset, "READ");
 }
@@ -113,7 +113,7 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 {
 	u32 dword = 0;
 	memcpy(&dword, ptr, sizeof(dword));
-	write32(mei_base_address + offset, dword);
+	write32(mei_base_address + (offset/sizeof(u32)), dword);
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
@@ -141,13 +141,13 @@ static inline void read_me_csr(struct mei_csr *csr)
 
 static inline void write_cb(u32 dword)
 {
-	write32(mei_base_address + MEI_H_CB_WW, dword);
+	write32(mei_base_address + (MEI_H_CB_WW/sizeof(u32)), dword);
 	mei_dump(NULL, dword, MEI_H_CB_WW, "WRITE");
 }
 
 static inline u32 read_cb(void)
 {
-	u32 dword = read32(mei_base_address + MEI_ME_CB_RW);
+	u32 dword = read32(mei_base_address + (MEI_ME_CB_RW/sizeof(u32)));
 	mei_dump(NULL, dword, MEI_ME_CB_RW, "READ");
 	return dword;
 }
@@ -577,11 +577,11 @@ void intel_me_finalize_smm(void)
 	struct me_hfs hfs;
 	u32 reg32;
 
-	mei_base_address =
-		pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf;
+	mei_base_address = (u32 *)
+		(pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf);
 
 	/* S3 path will have hidden this device already */
-	if (!mei_base_address || mei_base_address == 0xfffffff0)
+	if (!mei_base_address || mei_base_address == (u32 *)0xfffffff0)
 		return;
 
 #if CONFIG_ME_MBP_CLEAR_LATE
@@ -745,7 +745,7 @@ static int intel_mei_setup(device_t dev)
 		printk(BIOS_DEBUG, "ME: MEI resource not present!\n");
 		return -1;
 	}
-	mei_base_address = res->base;
+	mei_base_address = (u32 *)(uintptr_t)res->base;
 
 	/* Ensure Memory and Bus Master bits are set */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);

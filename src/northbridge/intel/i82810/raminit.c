@@ -138,7 +138,7 @@ SDRAM configuration functions.
  */
 static void do_ram_command(u8 command)
 {
-	u32 addr, addr_offset;
+	u32 *addr, addr_offset;
 	u16 dimm_size, dimm_start, dimm_bank;
 	u8 reg8, drp;
 	int i, caslatency;
@@ -191,15 +191,15 @@ static void do_ram_command(u8 command)
 
 		dimm_size = translate_i82810_to_mb[drp];
 		if (dimm_size) {
-			addr = (dimm_start * 1024 * 1024) + addr_offset;
-			PRINT_DEBUG("    Sending RAM command 0x%02x to 0x%08x\n", reg8, addr);
+		  addr = (u32 *)((dimm_start * 1024 * 1024) + addr_offset);
+			PRINT_DEBUG("    Sending RAM command 0x%02x to 0x%p\n", reg8, addr);
 			read32(addr);
 		}
 
 		dimm_bank = translate_i82810_to_bank[drp];
 		if (dimm_bank) {
-			addr = ((dimm_start + dimm_bank) * 1024 * 1024) + addr_offset;
-			PRINT_DEBUG("    Sending RAM command 0x%02x to 0x%08x\n", reg8, addr);
+		  addr = (u32 *)(((dimm_start + dimm_bank) * 1024 * 1024) + addr_offset);
+			PRINT_DEBUG("    Sending RAM command 0x%02x to 0x%p\n", reg8, addr);
 			read32(addr);
 		}
 

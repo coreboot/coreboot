@@ -59,17 +59,17 @@ static void pch_enable_ioapic(struct device *dev)
 	/* Enable ACPI I/O range decode */
 	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
-	set_ioapic_id(IO_APIC_ADDR, 0x02);
+	set_ioapic_id(VIO_APIC_VADDR, 0x02);
 
 	/* affirm full set of redirection table entries ("write once") */
-	reg32 = io_apic_read(IO_APIC_ADDR, 0x01);
-	io_apic_write(IO_APIC_ADDR, 0x01, reg32);
+	reg32 = io_apic_read(VIO_APIC_VADDR, 0x01);
+	io_apic_write(VIO_APIC_VADDR, 0x01, reg32);
 
 	/*
 	 * Select Boot Configuration register (0x03) and
 	 * use Processor System Bus (0x01) to deliver interrupts.
 	 */
-	io_apic_write(IO_APIC_ADDR, 0x03, 0x01);
+	io_apic_write(VIO_APIC_VADDR, 0x03, 0x01);
 }
 
 static void pch_enable_serial_irqs(struct device *dev)

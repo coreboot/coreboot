@@ -74,4 +74,10 @@ extern void search_global_resources(
 #define RESOURCE_TYPE_MAX 20
 extern const char *resource_type(struct resource *resource);
 
+static inline void *res2mmio(struct resource *res, unsigned long offset,
+			     unsigned long mask)
+{
+	return (void *)(uintptr_t)((res->base + offset) & ~mask);
+}
+
 #endif /* DEVICE_RESOURCE_H */

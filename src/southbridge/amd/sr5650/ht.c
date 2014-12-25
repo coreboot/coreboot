@@ -128,7 +128,7 @@ static void sr5690_apic_init(struct device *dev)
 	dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
 	/* TODO: On SR56x0/SP5100 board, the IOAPIC on SR56x0 is the
 	 * 2nd one. We need to check if it also is on your board. */
-	setup_ioapic(dword, 1);
+	setup_ioapic((void *)dword, 1);
 }
 
 static void pcie_init(struct device *dev)

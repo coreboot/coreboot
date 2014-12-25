@@ -66,7 +66,7 @@ void southcluster_smm_clear_state(void)
 
 static void southcluster_smm_route_gpios(void)
 {
-	const unsigned long gpio_rout = PMC_BASE_ADDRESS + GPIO_ROUT;
+	u32 *gpio_rout = (u32 *)(PMC_BASE_ADDRESS + GPIO_ROUT);
 	const unsigned short alt_gpio_smi = ACPI_BASE_ADDRESS + ALT_GPIO_SMI;
 	uint32_t alt_gpio_reg = 0;
 	uint32_t route_reg = smm_save_params[SMM_SAVE_PARAM_GPIO_ROUTE];

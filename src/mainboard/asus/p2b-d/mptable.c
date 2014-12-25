@@ -40,7 +40,7 @@ static void *smp_write_config_table(void *v)
 
 	ioapic_id = 2;
 	ioapic_ver = 0x11; /* External Intel 82093AA IOAPIC. */
-	smp_write_ioapic(mc, ioapic_id, ioapic_ver, IO_APIC_ADDR);
+	smp_write_ioapic(mc, ioapic_id, ioapic_ver, VIO_APIC_VADDR);
 
 	/* Legacy Interrupts */
 	mptable_add_isa_interrupts(mc, isa_bus, ioapic_id, 0);

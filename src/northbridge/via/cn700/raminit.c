@@ -393,7 +393,7 @@ static void sdram_set_post(const struct mem_controller *ctrl)
 	pci_write_config16(dev, 0xa4, 0x0010);
 }
 
-static void sdram_enable(device_t dev, unsigned long rank_address)
+static void sdram_enable(device_t dev, u8 *rank_address)
 {
 	u8 i;
 
@@ -413,7 +413,7 @@ static void sdram_enable(device_t dev, unsigned long rank_address)
 	PRINT_DEBUG_MEM("RAM Enable 3: Mode register set\n");
 	do_ram_command(dev, RAM_COMMAND_MRS);
 	read32(rank_address + 0x120000);	/* EMRS DLL Enable */
-	read32(rank_address + 0x800);		/* MRS DLL Reset */
+	read32(rank_address + 0x800);	/* MRS DLL Reset */
 
 	/* 4. Precharge all again. */
 	PRINT_DEBUG_MEM("RAM Enable 4: Precharge all\n");
@@ -457,10 +457,10 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	c7_cpu_setup(ctrl->d0f2);
 	sdram_set_registers(ctrl);
 	sdram_set_size(ctrl);
-	sdram_enable(ctrl->d0f3, 0);
+	sdram_enable(ctrl->d0f3, (u8 *)0);
 	reg = pci_read_config8(ctrl->d0f3, 0x41);
 	if (reg != 0)
 		sdram_enable(ctrl->d0f3,
-			     pci_read_config8(ctrl->d0f3, 0x40) << 26);
+			     (u8 *)(pci_read_config8(ctrl->d0f3, 0x40) << 26));
 	sdram_set_post(ctrl);
 }

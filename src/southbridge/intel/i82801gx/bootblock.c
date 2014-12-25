@@ -53,7 +53,7 @@ static void bootblock_southbridge_init(void)
         enable_spi_prefetch();
 
 	/* Enable RCBA */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, DEFAULT_RCBA | 1);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
 	/* Enable upper 128bytes of CMOS */
 	RCBA32(0x3400) = (1 << 2);

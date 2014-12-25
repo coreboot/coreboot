@@ -28,48 +28,48 @@
 static inline __attribute__ ((always_inline))
 u8 pcie_read_config8(pci_devfn_t dev, unsigned int where)
 {
-	unsigned long addr;
-	addr = DEFAULT_PCIEXBAR | dev | where;
+	void *addr;
+	addr = (void *)(DEFAULT_PCIEXBAR | dev | where);
 	return read8(addr);
 }
 
 static inline __attribute__ ((always_inline))
 u16 pcie_read_config16(pci_devfn_t dev, unsigned int where)
 {
-	unsigned long addr;
-	addr = DEFAULT_PCIEXBAR | dev | (where & ~1);
+	void *addr;
+	addr = (void *)(DEFAULT_PCIEXBAR | dev | (where & ~1));
 	return read16(addr);
 }
 
 static inline __attribute__ ((always_inline))
 u32 pcie_read_config32(pci_devfn_t dev, unsigned int where)
 {
-	unsigned long addr;
-	addr = DEFAULT_PCIEXBAR | dev | (where & ~3);
+	void *addr;
+	addr = (void *)(DEFAULT_PCIEXBAR | dev | (where & ~3));
 	return read32(addr);
 }
 
 static inline __attribute__ ((always_inline))
 void pcie_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
 {
-	unsigned long addr;
-	addr = DEFAULT_PCIEXBAR | dev | where;
+	void *addr;
+	addr = (void *)(DEFAULT_PCIEXBAR | dev | where);
 	write8(addr, value);
 }
 
 static inline __attribute__ ((always_inline))
 void pcie_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
 {
-	unsigned long addr;
-	addr = DEFAULT_PCIEXBAR | dev | (where & ~1);
+	void *addr;
+	addr = (void *)(DEFAULT_PCIEXBAR | dev | (where & ~1));
 	write16(addr, value);
 }
 
 static inline __attribute__ ((always_inline))
 void pcie_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
 {
-	unsigned long addr;
-	addr = DEFAULT_PCIEXBAR | dev | (where & ~3);
+	void *addr;
+	addr = (void *)(DEFAULT_PCIEXBAR | dev | (where & ~3));
 	write32(addr, value);
 }
 

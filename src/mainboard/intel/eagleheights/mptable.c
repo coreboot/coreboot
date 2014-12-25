@@ -67,14 +67,14 @@ static void *smp_write_config_table(void *v)
 	uint32_t pin, route;
 	device_t dev;
 	struct resource *res;
-	unsigned long rcba;
+	u8 *rcba;
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x1F,0));
 	res = find_resource(dev, RCBA);
 	if (!res) {
 	  return NULL;
 	}
-	rcba = res->base;
+	rcba = res2mmio(res, 0, 0);
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -121,7 +121,7 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/*I/O APICs: APIC ID Version State Address*/
-	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);
+	smp_write_ioapic(mc, 2, 0x20, VIO_APIC_VADDR);
 
 	mptable_add_isa_interrupts(mc, bus_isa, IO_APIC0, 0);
 

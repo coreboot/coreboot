@@ -81,7 +81,7 @@ static void usb_init(struct device *dev)
 static void usb_init2(struct device *dev)
 {
 	u32 dword;
-	u32 usb2_bar0;
+	void *usb2_bar0;
 	device_t sm_dev;
 	u8 rev;
 
@@ -92,8 +92,8 @@ static void usb_init2(struct device *dev)
 	/* dword |= 40; */
 	/* pci_write_config32(dev, 0xf8, dword); */
 
-	usb2_bar0 = pci_read_config32(dev, 0x10) & ~0xFF;
-	printk(BIOS_INFO, "usb2_bar0=0x%x\n", usb2_bar0);
+	usb2_bar0 = (void *)(pci_read_config32(dev, 0x10) & ~0xFF);
+	printk(BIOS_INFO, "usb2_bar0=0x%p\n", usb2_bar0);
 
 	/* RPR6.4 Enables the USB PHY auto calibration resister to match 45ohm resistance */
 	dword = 0x00020F00;

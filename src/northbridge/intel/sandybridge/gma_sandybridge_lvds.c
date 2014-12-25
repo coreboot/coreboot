@@ -35,7 +35,7 @@
 
 #if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 
-static void train_link(u32 mmio)
+static void train_link(u8 *mmio)
 {
 	/* Clear interrupts. */
 	write32(mmio + DEIIR, 0xffffffff);
@@ -68,7 +68,7 @@ static void train_link(u32 mmio)
 	read32(mmio + 0x000f0014); // = 0x00000600
 }
 
-static void power_port(u32 mmio)
+static void power_port(u8 *mmio)
 {
 	read32(mmio + 0x000e1100); // = 0x00000000
 	write32(mmio + 0x000e1100, 0x00000000);
@@ -123,7 +123,7 @@ static void power_port(u32 mmio)
 }
 
 int i915lightup_sandy(const struct i915_gpu_controller_info *info,
-		u32 physbase, u16 piobase, u32 mmio, u32 lfb)
+		u32 physbase, u16 piobase, u8 *mmio, u32 lfb)
 {
 	int i;
 	u8 edid_data[128];

@@ -78,13 +78,21 @@ void *vboot2_verify_firmware(void)
 	if (vboot_is_slot_selected(wd)) {
 		/* RW A or B */
 		struct vboot_region fw_main;
-		struct vboot_components *fw_info;
+
 		vb2_get_selected_region(wd, &fw_main);
-		fw_info = vboot_locate_components(&fw_main);
-		if (fw_info == NULL)
-			die("failed to locate firmware components\n");
-		entry = vboot_load_stage(CONFIG_VBOOT_ROMSTAGE_INDEX,
-					 &fw_main, fw_info);
+
+		if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES)) {
+			cbfs_set_header_offset(fw_main.offset_addr);
+			entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
+						CONFIG_CBFS_PREFIX "/romstage");
+		} else {
+			struct vboot_components *fw_info;
+			fw_info = vboot_locate_components(&fw_main);
+			if (fw_info == NULL)
+				die("failed to locate firmware components\n");
+			entry = vboot_load_stage(CONFIG_VBOOT_ROMSTAGE_INDEX,
+						 &fw_main, fw_info);
+		}
 	} else if (vboot_is_readonly_path(wd)) {
 		/* RO */
 		entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,

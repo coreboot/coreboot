@@ -95,6 +95,9 @@ void *vboot_get_payload(int *len)
 	struct vboot_handoff *vboot_handoff;
 	struct firmware_component *fwc;
 
+	if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES))
+		return NULL; /* Let CBFS figure it out. */
+
 	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
 
 	if (vboot_handoff == NULL)

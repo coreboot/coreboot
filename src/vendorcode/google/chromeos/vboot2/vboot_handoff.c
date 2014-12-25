@@ -176,9 +176,13 @@ void *vboot2_load_ramstage(void)
 		/* we're on recovery path. continue to ro-ramstage. */
 		return NULL;
 
-	printk(BIOS_INFO,
-	       "loading ramstage from Slot %c\n", sd->fw_slot ? 'B' : 'A');
-	vb2_get_selected_region(wd, &fw_main);
-
-	return load_ramstage(vh, &fw_main);
+	if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES)) {
+		return cbfs_load_stage(CBFS_DEFAULT_MEDIA,
+				       CONFIG_CBFS_PREFIX "/ramstage");
+	} else {
+		printk(BIOS_INFO, "loading ramstage from Slot %c\n",
+		       sd->fw_slot ? 'B' : 'A');
+		vb2_get_selected_region(wd, &fw_main);
+		return load_ramstage(vh, &fw_main);
+	}
 }

@@ -55,6 +55,16 @@ config COMMON_CBFS_SPI_WRAPPER
 	help
 	 Use common wrapper to interface CBFS to SPI bootrom.
 
+config MULTIPLE_CBFS_INSTANCES
+       bool "Multiple CBFS instances in the bootrom"
+       default n
+       depends on !ARCH_X86
+       help
+         Account for the firmware image containing more than one CBFS
+         instance. Locations of instances are known at build time and are
+         communicated between coreboot stages to make sure the next stage is
+         loaded from the appropriate instance.
+
 choice
 	prompt "Compiler to use"
 	default COMPILER_GCC

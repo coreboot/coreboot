@@ -84,5 +84,10 @@ void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
  */
 int init_default_cbfs_media(struct cbfs_media *media);
 
+#if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES))
+void cbfs_set_header_offset(size_t offset);
+#else
+static inline void cbfs_set_header_offset(size_t offset) {}
+#endif
 #endif
 

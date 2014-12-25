@@ -47,6 +47,25 @@
 
 #include <cbfs.h>
 #include <string.h>
+#include <symbols.h>
+
+#if IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES)
+void cbfs_set_header_offset(size_t offset)
+{
+	_cbfs_header_offset[0] = offset;
+	LOG("header set to: %#zx\n", offset);
+}
+
+static size_t get_header_offset(void)
+{
+	return _cbfs_header_offset[0];
+}
+#else
+static size_t get_header_offset(void)
+{
+	return 0;
+}
+#endif
 
 #include "cbfs_core.h"
 
@@ -73,13 +92,22 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 		offset = *(int32_t *)(uintptr_t)0xfffffffc;
 		header = media->map(media, offset, sizeof(*header));
 	} else {
-		int32_t rel_offset;
-		if (!media->read(media, &rel_offset, CONFIG_CBFS_SIZE -
-				 sizeof(int32_t), sizeof(int32_t))) {
-			ERROR("Could not read CBFS master header offset!\n");
-			return CBFS_HEADER_INVALID_ADDRESS;
+
+		offset = get_header_offset();
+
+		if (!offset) {
+			int32_t rel_offset;
+			size_t cbfs_top = CONFIG_CBFS_SIZE;
+			DEBUG("CBFS top at offset: 0x%zx\n", cbfs_top);
+			if (!media->read(media, &rel_offset, cbfs_top -
+					 sizeof(int32_t),
+					 sizeof(int32_t))) {
+				ERROR("Could not read master header offset!\n");
+				media->close(media);
+				return CBFS_HEADER_INVALID_ADDRESS;
+			}
+			offset = cbfs_top + rel_offset;
 		}
-		offset = CONFIG_CBFS_SIZE + rel_offset;
 		header = media->map(media, offset, sizeof(*header));
 	}
 	DEBUG("CBFS header offset: 0x%zx/0x%x\n", offset, CONFIG_ROM_SIZE);

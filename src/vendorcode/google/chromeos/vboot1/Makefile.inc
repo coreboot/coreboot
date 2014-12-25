@@ -48,8 +48,8 @@ VBOOT_STUB_DEPS += $(obj)/arch/arm/memset.rmodules_$(ARCH-ROMSTAGE-y).o
 VBOOT_STUB_DEPS += $(obj)/arch/arm/memcpy.rmodules_$(ARCH-ROMSTAGE-y).o
 endif
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
-VBOOT_STUB_DEPS += $(obj)/lib/memset.rmodules.o
-VBOOT_STUB_DEPS += $(obj)/lib/memcpy.rmodules.o
+VBOOT_STUB_DEPS += $(obj)/lib/memset.rmodules_$(ARCH-ROMSTAGE-y).o
+VBOOT_STUB_DEPS += $(obj)/lib/memcpy.rmodules_$(ARCH-ROMSTAGE-y).o
 endif
 VBOOT_STUB_DEPS += $(VB_LIB)
 # Remove the '-include' option since that will break vboot's build and ensure

@@ -830,6 +830,10 @@ unsigned long write_acpi_tables(unsigned long start)
 #endif
 
 #if CONFIG_HAVE_ACPI_RESUME
+void __attribute__((weak)) mainboard_suspend_resume(void)
+{
+}
+
 void acpi_resume(void *wake_vec)
 {
 #if CONFIG_HAVE_SMI_HANDLER
@@ -844,8 +848,7 @@ void acpi_resume(void *wake_vec)
 #endif
 
 	/* Call mainboard resume handler first, if defined. */
-	if (mainboard_suspend_resume)
-		mainboard_suspend_resume();
+	mainboard_suspend_resume();
 
 	post_code(POST_OS_RESUME);
 	acpi_jump_to_wakeup(wake_vec);
@@ -854,13 +857,18 @@ void acpi_resume(void *wake_vec)
 /* This is to be filled by SB code - startup value what was found. */
 u8 acpi_slp_type = 0;
 
+int __attribute__((weak)) acpi_get_sleep_type(void)
+{
+	return 0;
+}
+
 static void acpi_handoff_wakeup(void)
 {
 	static int once = 0;
 	if (once)
 		return;
-	if (acpi_get_sleep_type)
-		acpi_slp_type = acpi_get_sleep_type();
+
+	acpi_slp_type = acpi_get_sleep_type();
 	once = 1;
 }
 

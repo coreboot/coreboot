@@ -570,12 +570,12 @@ int acpi_is_wakeup_early(void);
 void acpi_fail_wakeup(void);
 void acpi_resume(void *wake_vec);
 void acpi_prepare_resume_backup(void);
-void __attribute__((weak)) mainboard_suspend_resume(void);
+void mainboard_suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
-int __attribute__((weak)) acpi_get_sleep_type(void);
+int acpi_get_sleep_type(void);
 #endif	/* IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) */
 
 /* cpu/intel/speedstep/acpi.c */

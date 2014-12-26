@@ -19,11 +19,11 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <timer.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include "clk.h"
 #include "periph.h"
-#include "timer.h"
 
 /* input clock of PLL: SMDK5250 has 24MHz input clock */
 #define CONFIG_SYS_CLK_FREQ            24000000
@@ -635,12 +635,10 @@ int clock_epll_set_rate(unsigned long rate)
 	end = current;
 	mono_time_add_msecs(&end, TIMEOUT_EPLL_LOCK);
 
-	 while (!(readl(&exynos_clock->epll_con0) &
+	while (!(readl(&exynos_clock->epll_con0) &
 			(0x1 << EXYNOS5_EPLLCON0_LOCKED_SHIFT))) {
 		if (mono_time_after(&current, &end)) {
-			printk(BIOS_DEBUG,
-				"%s: Timeout waiting for EPLL lock\n",
-				__func__);
+			printk(BIOS_DEBUG, "%s: Timeout waiting for EPLL lock\n", __func__);
 			return -1;
 		}
 		timer_monotonic_get(&current);

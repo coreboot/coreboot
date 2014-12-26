@@ -21,9 +21,7 @@ romstage-y += dmc_init_ddr3.c
 romstage-y += power.c
 romstage-y += mct.c
 romstage-y += monotonic_timer.c
-ifeq ($(CONFIG_DRIVERS_UART),y)
-romstage-y += uart.c
-endif
+romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += wakeup.c
 romstage-y += gpio.c
 romstage-y += timer.c

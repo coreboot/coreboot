@@ -29,6 +29,9 @@
 #include <string.h>
 #include <cbfs.h>
 
+/* Rmodules don't like weak symbols. */
+u32 __attribute__((weak)) map_oprom_vendev(u32 vendev) { return vendev; }
+
 struct rom_header *pci_rom_probe(struct device *dev)
 {
 	struct rom_header *rom_header;
@@ -41,8 +44,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	u32 vendev = (dev->vendor << 16) | dev->device;
 	u32 mapped_vendev = vendev;
 
-	if (map_oprom_vendev)
-		mapped_vendev = map_oprom_vendev(vendev);
+	mapped_vendev = map_oprom_vendev(vendev);
 
 	if (!rom_header) {
 		if (vendev != mapped_vendev) {

@@ -92,13 +92,11 @@ struct cbmem_entry;
  * structure to store information, but note that the handoff variable can be
  * NULL. The ramstage cbmem_entry represents the region occupied by the loaded
  * ramstage. */
-void __attribute__((weak))
-cache_loaded_ramstage(struct romstage_handoff *handoff,
+void cache_loaded_ramstage(struct romstage_handoff *handoff,
                       const struct cbmem_entry *ramstage, void *entry_point);
 /* Return NULL on error or entry point on success. The ramstage cbmem_entry is
  * the region where to load the cached contents to. */
-void * __attribute__((weak))
-load_cached_ramstage(struct romstage_handoff *handoff,
+void * load_cached_ramstage(struct romstage_handoff *handoff,
                      const struct cbmem_entry *ramstage);
 #else  /* CONFIG_RELOCATABLE_RAMSTAGE */
 

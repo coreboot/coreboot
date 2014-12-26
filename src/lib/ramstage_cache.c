@@ -96,8 +96,7 @@ void *load_cached_ramstage(struct romstage_handoff *handoff,
 
 /* Cache relocated ramstage in CBMEM. */
 
-void __attribute__((weak))
-cache_loaded_ramstage(struct romstage_handoff *handoff,
+void cache_loaded_ramstage(struct romstage_handoff *handoff,
                       const struct cbmem_entry *ramstage, void *entry_point)
 {
 	uint32_t ramstage_size;
@@ -120,8 +119,7 @@ cache_loaded_ramstage(struct romstage_handoff *handoff,
 	       ramstage_size);
 }
 
-void * __attribute__((weak))
-load_cached_ramstage(struct romstage_handoff *handoff,
+void *load_cached_ramstage(struct romstage_handoff *handoff,
                      const struct cbmem_entry *ramstage)
 {
 	const struct cbmem_entry *entry_cache;

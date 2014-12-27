@@ -207,8 +207,8 @@ static int parse_microcode_blob(struct cbfs_image *image,
 	uint32_t current_offset;
 	uint32_t file_length;
 
-	current_offset = (int)((char *)mcode_file - image->buffer.data);
 	fit_header(mcode_file, &current_offset, &file_length);
+	current_offset += (int)((char *)mcode_file - image->buffer.data);
 
 	num_mcus = 0;
 	while (file_length > sizeof(struct microcode_header))

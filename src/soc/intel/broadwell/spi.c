@@ -30,8 +30,6 @@
 #include <spi-generic.h>
 #include <broadwell/pci_devs.h>
 
-#define min(a, b) ((a)<(b)?(a):(b))
-
 #ifdef __SMM__
 #define pci_read_config_byte(dev, reg, targ)\
 	*(targ) = pci_read_config8(dev, reg)
@@ -488,6 +486,11 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 	return -1;
 }
 
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return min(cntlr.databytes, buf_len);
+}
+
 int spi_xfer(struct spi_slave *slave, const void *dout,
 		unsigned int bytesout, void *din, unsigned int bytesin)
 {
@@ -588,7 +591,8 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	while (trans.bytesout || trans.bytesin) {
 		uint32_t data_length;
 
-		/* SPI addresses are 24 bit only */http://www.intel.com/content/dam/www/public/us/en/documents/datasheets/pentium-n3520-j2850-celeron-n2920-n2820-n2815-n2806-j1850-j1750-datasheet.pdf
+		/* SPI addresses are 24 bit only */
+		/* http://www.intel.com/content/dam/www/public/us/en/documents/datasheets/pentium-n3520-j2850-celeron-n2920-n2820-n2815-n2806-j1850-j1750-datasheet.pdf */
 		writel_(trans.offset & 0x00FFFFFF, cntlr.addr);
 
 		if (trans.bytesout)

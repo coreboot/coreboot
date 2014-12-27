@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <usbdebug.h>
 #include <arch/io.h>
 #include <broadwell/ehci.h>
 #include <broadwell/pch.h>

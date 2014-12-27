@@ -18,6 +18,7 @@
  */
 
 #include <arch/io.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
@@ -472,7 +473,6 @@ static void igd_init(struct device *dev)
 {
 	int is_broadwell = !!(cpu_family_model() == BROADWELL_FAMILY_ULT);
 	u32 rp1_gfx_freq;
-	extern int oprom_is_loaded;
 
 	/* IGD needs to be Bus Master */
 	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
@@ -512,7 +512,7 @@ static void igd_init(struct device *dev)
 		reg_script_run_on_dev(dev, haswell_late_init_script);
 	}
 
-	if (!oprom_is_loaded) {
+	if (!gfx_get_init_done()) {
 		/*
 		 * Enable DDI-A if the Option ROM did not execute:
 		 *
@@ -525,25 +525,8 @@ static void igd_init(struct device *dev)
 	}
 }
 
-static void igd_read_resources(struct device *dev)
-{
-	pci_dev_read_resources(dev);
-
-#if CONFIG_MARK_GRAPHICS_MEM_WRCOMB
-	struct resource *res;
-
-	/* Set the graphics memory to write combining. */
-	res = find_resource(dev, PCI_BASE_ADDRESS_2);
-	if (res == NULL) {
-		printk(BIOS_DEBUG, "gma: memory resource not found.\n");
-		return;
-	}
-	res->flags |= IORESOURCE_WRCOMB;
-#endif
-}
-
 static struct device_operations igd_ops = {
-	.read_resources		= &igd_read_resources,
+	.read_resources		= &pci_dev_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.init			= &igd_init,

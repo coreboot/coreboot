@@ -65,29 +65,3 @@ static inline void *spi_mirror(void *file_start, int file_len)
 	/* Provide pointer into mirrored space. */
 	return &dest[alignment_diff];
 }
-
-void *cbfs_load_payload(struct cbfs_media *media, const char *name)
-{
-	int file_len;
-	void *file_start;
-	struct cbfs_file *file;
-
-	file_start = vboot_get_payload(&file_len);
-
-	if (file_start != NULL)
-		return spi_mirror(file_start, file_len);
-
-	file = cbfs_get_file(media, name);
-
-	if (file == NULL)
-		return NULL;
-
-	if (ntohl(file->type) != CBFS_TYPE_PAYLOAD)
-		return NULL;
-
-	file_len = ntohl(file->len);
-
-	file_start = CBFS_SUBHEADER(file);
-
-	return spi_mirror(file_start, file_len);
-}

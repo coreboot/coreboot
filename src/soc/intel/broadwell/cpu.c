@@ -36,7 +36,6 @@
 #include <cpu/x86/smm.h>
 #include <delay.h>
 #include <pc80/mc146818rtc.h>
-#include <usbdebug.h>
 #include <broadwell/cpu.h>
 #include <broadwell/msr.h>
 #include <broadwell/pci_devs.h>
@@ -718,7 +717,4 @@ void broadwell_init_cpus(device_t dev)
 
 	/* Restore the default SMM region. */
 	restore_default_smm_area(smm_save_area);
-
-	/* Enable ROM caching if option was selected. */
-	x86_mtrr_enable_rom_caching();
 }

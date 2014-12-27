@@ -42,16 +42,6 @@ config CACHE_MRC_SIZE_KB
 	int
 	default 512
 
-# FIXME: build from rom size
-config MRC_CACHE_BASE
-	hex
-	default 0xff800000
-
-config MRC_CACHE_LOCATION
-	hex
-	depends on !CHROMEOS
-	default 0x370000
-
 config MRC_CACHE_SIZE
 	hex
 	depends on !CHROMEOS

@@ -32,6 +32,11 @@ config BOARD_LENOVO_X230
 	help
 	  Lenovo X230 laptop. Consult wiki for details.
 
+config BOARD_LENOVO_T420S
+	bool "ThinkPad T420s"
+	help
+	  Lenovo T420s laptop. Consult wiki for details.
+
 config BOARD_LENOVO_T520
 	bool "ThinkPad T520"
 	help
@@ -62,6 +67,7 @@ source "src/mainboard/lenovo/x200/Kconfig"
 source "src/mainboard/lenovo/x201/Kconfig"
 source "src/mainboard/lenovo/x220/Kconfig"
 source "src/mainboard/lenovo/x230/Kconfig"
+source "src/mainboard/lenovo/t420s/Kconfig"
 source "src/mainboard/lenovo/t520/Kconfig"
 source "src/mainboard/lenovo/t530/Kconfig"
 source "src/mainboard/lenovo/t60/Kconfig"

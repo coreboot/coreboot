@@ -200,6 +200,11 @@ wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 {
 	memset (cbw, 0, sizeof (cbw_t));
 
+	/* commands are typically shorter, but we don't want overflows */
+	if (cmdlen > sizeof(cbw->CBWCB)) {
+		cmdlen = sizeof(cbw->CBWCB);
+	}
+
 	cbw->dCBWSignature = cbw_signature;
 	cbw->dCBWTag = ++tag;
 	cbw->bCBWLUN = lun;

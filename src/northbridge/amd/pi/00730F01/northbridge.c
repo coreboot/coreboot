@@ -901,7 +901,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	printk(BIOS_SPEW, "MullinsPI Debug: Grabbing the AMD Topology Information.\n");
 	AmdGetValue(AMD_GLOBAL_USER_OPTIONS, (VOID**)&options, sizeof(options));
 	AmdGetValue(AMD_GLOBAL_NUM_MODULES, &modules_ptr, sizeof(modules));
-	modules = (*(u32*)modules_ptr) && ((1ull << (sizeof(modules) * 8)) - 1);
+	modules = *(u32*)modules_ptr;
 	ASSERT(modules > 0);
 	ASSERT(options);
 	ioapic_count = (int)options->CfgPlatNumIoApics;

@@ -21,10 +21,12 @@ bootblock-y += bootblock.c
 bootblock-y += cbfs.c
 bootblock-y += clock.c
 bootblock-y += gpio.c
+bootblock-y += timer.c
 
 romstage-y += cbfs.c
 romstage-y += clock.c
 romstage-y += gpio.c
+romstage-y += timer.c
 
 ramstage-y += cbfs.c
 ramstage-y += clock.c

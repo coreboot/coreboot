@@ -40,7 +40,7 @@
 #define GPT_FREQ	(GPT_FREQ_KHZ * 1000)	/* 32 KHz */
 
 /**
- * timer_init - initialize timer
+ * init_timer - initialize timer
  */
 void init_timer(void)
 {

@@ -197,7 +197,7 @@ static void corebootfb_update_cursor(void)
 		paint = CHARS[cursor_y * coreboot_video_console.columns + cursor_x];
 	}
 
-	if (cursor_y >= 0 && cursor_y < coreboot_video_console.rows)
+	if (cursor_y < coreboot_video_console.rows)
 		corebootfb_putchar(cursor_y, cursor_x, paint);
 }
 

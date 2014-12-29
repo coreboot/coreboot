@@ -441,12 +441,10 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 
 	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
 
-	if (mainboard_smi_gpi) {
-		mainboard_smi_gpi(reg16);
-	} else {
-		if (reg16)
-			printk(BIOS_DEBUG, "GPI (mask %04x)\n",reg16);
-	}
+	mainboard_smi_gpi(reg16);
+
+	if (reg16)
+		printk(BIOS_DEBUG, "GPI (mask %04x)\n",reg16);
 }
 
 static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_save)

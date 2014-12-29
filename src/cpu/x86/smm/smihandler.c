@@ -199,12 +199,9 @@ void smi_handler(u32 smm_revision)
 	}
 
 	/* Call chipset specific SMI handlers. */
-	if (cpu_smi_handler)
-		cpu_smi_handler(node, &state_save);
-	if (northbridge_smi_handler)
-		northbridge_smi_handler(node, &state_save);
-	if (southbridge_smi_handler)
-		southbridge_smi_handler(node, &state_save);
+	cpu_smi_handler(node, &state_save);
+	northbridge_smi_handler(node, &state_save);
+	southbridge_smi_handler(node, &state_save);
 
 	smi_restore_pci_address();
 
@@ -215,3 +212,15 @@ void smi_handler(u32 smm_revision)
 	/* De-assert SMI# signal to allow another SMI */
 	smi_set_eos();
 }
+
+/* Provide a default implementation for all weak handlers so that relocation
+ * entries in the modules make sense. Without default implementations the
+ * weak relocations w/o a symbol have a 0 address which is where the modules
+ * are linked at. */
+int __attribute__((weak)) mainboard_io_trap_handler(int smif) { return 0; }
+void __attribute__((weak)) cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save) {}
+void __attribute__((weak)) northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save) {}
+void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save) {}
+void __attribute__((weak)) mainboard_smi_gpi(u32 gpi_sts) {}
+int __attribute__((weak)) mainboard_smi_apmc(u8 data) { return 0; }
+void __attribute__((weak)) mainboard_smi_sleep(u8 slp_typ) {}

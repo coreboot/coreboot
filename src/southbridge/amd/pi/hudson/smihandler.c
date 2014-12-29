@@ -41,8 +41,7 @@ static void hudson_apmc_smi_handler(void)
 		break;
 	}
 
-	if (mainboard_smi_apmc)
-		mainboard_smi_apmc(cmd);
+	mainboard_smi_apmc(cmd);
 }
 
 int southbridge_io_trap_handler(int smif)
@@ -66,8 +65,7 @@ static void process_gpe_smi(void)
 	/* Only Bits [23:0] indicate GEVENT SMIs. */
 	if (status & gevent_mask) {
 		/* A GEVENT SMI occured */
-		if (mainboard_smi_gpi)
-			mainboard_smi_gpi(status & gevent_mask);
+		mainboard_smi_gpi(status & gevent_mask);
 	}
 
 	/* Clear events to prevent re-entering SMI if event isn't handled */

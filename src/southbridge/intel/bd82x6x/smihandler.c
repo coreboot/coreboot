@@ -419,8 +419,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 
 	/* Do any mainboard sleep handling */
 	tseg_relocate((void **)&mainboard_sleep);
-	if (mainboard_sleep)
-		mainboard_sleep(slp_typ-2);
+	mainboard_sleep(slp_typ-2);
 
 #if CONFIG_ELOG_GSMI
 	/* Log S3, S4, and S5 entry */
@@ -607,8 +606,7 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 	}
 
 	tseg_relocate((void **)&mainboard_apmc);
-	if (mainboard_apmc)
-		mainboard_apmc(reg8);
+	mainboard_apmc(reg8);
 }
 
 static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_save)
@@ -650,12 +648,10 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
 
 	tseg_relocate((void **)&mainboard_gpi);
-	if (mainboard_gpi) {
-		mainboard_gpi(reg16);
-	} else {
-		if (reg16)
-			printk(BIOS_DEBUG, "GPI (mask %04x)\n", reg16);
-	}
+	mainboard_gpi(reg16);
+
+	if (reg16)
+		printk(BIOS_DEBUG, "GPI (mask %04x)\n", reg16);
 
 	outw(reg16, pmbase + ALT_GP_SMI_STS);
 }

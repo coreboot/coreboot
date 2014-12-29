@@ -136,7 +136,7 @@ u32 chrome9hd_fb_size(void)
 }
 
 /**
- * @defgroup vx900_int15
+ * vx900_int15
  *
  * \brief INT15 helpers for Chrome9HD IGP
  *

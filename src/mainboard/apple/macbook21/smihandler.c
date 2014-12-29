@@ -60,30 +60,14 @@ int mainboard_io_trap_handler(int smif)
 
 int mainboard_smi_apmc(u8 data)
 {
-	u16 pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
-	u8 tmp;
-
-	printk(BIOS_DEBUG, "%s: pmbase %04X, data %02X\n", __func__, pmbase, data);
-
-	if (!pmbase)
-		return 0;
-
 	switch(data) {
 		case APM_CNT_ACPI_ENABLE:
 			/* route H8SCI to SCI */
-			outw(inw(pmbase + ALT_GP_SMI_EN) & ~(1<<GPE_EC_SCI), pmbase + ALT_GP_SMI_EN);
-			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
-			tmp &= ~0x03;
-			tmp |= 0x02;
-			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xbb, tmp);
+			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SCI);
 			break;
 		case APM_CNT_ACPI_DISABLE:
 			/* route H8SCI# to SMI */
-			outw(inw(pmbase + ALT_GP_SMI_EN) | (1<<GPE_EC_SCI), pmbase + ALT_GP_SMI_EN);
-			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
-			tmp &= ~0x03;
-			tmp |= 0x01;
-			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xbb, tmp);
+			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SMI);
 			break;
 		default:
 			break;

@@ -45,6 +45,7 @@
 #if !defined(__PRE_RAM__)
 #include "chip.h"
 extern void i82801gx_enable(device_t dev);
+void gpi_route_interrupt(u8 gpi, u8 mode);
 #else
 void enable_smbus(void);
 int smbus_read_byte(unsigned device, unsigned address);
@@ -77,6 +78,12 @@ int southbridge_detect_s3_resume(void);
 #define GEN_PMCON_1		0xa0
 #define GEN_PMCON_2		0xa2
 #define GEN_PMCON_3		0xa4
+
+#define GPIO_ROUT		0xb8
+#define   GPI_DISABLE		0x00
+#define   GPI_IS_SMI		0x01
+#define   GPI_IS_SCI		0x02
+#define   GPI_IS_NMI		0x03
 
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)

@@ -70,6 +70,7 @@ int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
+void gpi_route_interrupt(u8 gpi, u8 mode);
 #if CONFIG_ELOG
 void pch_log_state(void);
 #endif
@@ -146,7 +147,12 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define BIOS_CNTL		0xDC
 #define GPIO_BASE		0x48 /* LPC GPIO Base Address Register */
 #define GPIO_CNTL		0x4C /* LPC GPIO Control Register */
+
 #define GPIO_ROUT		0xb8
+#define   GPI_DISABLE		0x00
+#define   GPI_IS_SMI		0x01
+#define   GPI_IS_SCI		0x02
+#define   GPI_IS_NMI		0x03
 
 #define PIRQA_ROUT		0x60
 #define PIRQB_ROUT		0x61

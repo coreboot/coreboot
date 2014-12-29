@@ -69,15 +69,7 @@ static int mainboard_finalized = 0;
 
 int mainboard_smi_apmc(u8 data)
 {
-	u16 pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
 	u8 tmp;
-
-	printk(BIOS_DEBUG, "%s: pmbase %04X, data %02X\n", __func__, pmbase,
-	       data);
-
-	if (!pmbase)
-		return 0;
-
 	switch (data) {
 	case APM_CNT_FINALIZE:
 		printk(BIOS_DEBUG, "APMC: FINALIZE\n");

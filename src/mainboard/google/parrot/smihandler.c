@@ -29,44 +29,6 @@
 #include <ec/compal/ene932/ec.h>
 #include "ec.h"
 
-/* Power Management PCI Configuration Registers
- * Bus 0, Device 31, Function 0, Offset 0xB8
- * 00 = No Effect
- * 01 = SMI#
- * 10 = SCI
- * 11 = NMI
- */
-#define GPI_ROUT	0x8000F8B8
-#define GPI_IS_SMI	0x01
-#define GPI_IS_SCI	0x02
-
-static void set_lid_gpi_mode(u32 mode)
-{
-	u32 reg32 = 0;
-	u16 reg16 = 0;
-
-	/* read the GPI register, clear the lid GPI's mode, write the new mode
-	 * and write out the register.
-	 */
-	outl(GPI_ROUT, 0xcf8);
-	reg32 = inl(0xcfc);
-	reg32 &= ~(0x03 << (EC_LID_GPI * 2));
-	reg32 |= (mode << (EC_LID_GPI * 2));
-	outl(GPI_ROUT, 0xcf8);
-	outl(reg32, 0xcfc);
-
-	/* Set or Disable Lid GPE as SMI source in the ALT_GPI_SMI_EN register. */
-	reg16 = inw(smm_get_pmbase() + ALT_GP_SMI_EN);
-	if (mode == GPI_IS_SCI) {
-		reg16 &= ~(1 << EC_LID_GPI);
-	} else {
-		reg16 |= (1 << EC_LID_GPI);
-	}
-	outw(reg16, smm_get_pmbase() + ALT_GP_SMI_EN);
-
-	return;
-}
-
 int mainboard_io_trap_handler(int smif)
 {
 	printk(BIOS_DEBUG, "mainboard_io_trap_handler: %x\n", smif);
@@ -200,8 +162,7 @@ int mainboard_smi_apmc(u8 apmc)
 		ec_kbc_write_ib(0xE8);
 
 		/* Set LID GPI to generate SCIs */
-		set_lid_gpi_mode(GPI_IS_SCI);
-
+		gpi_route_interrupt(EC_LID_GPI, GPI_IS_SCI);
 		break;
 	case APMC_ACPI_DIS:
 		printk(BIOS_DEBUG, "APMC: ACPI_DIS\n");
@@ -211,7 +172,7 @@ int mainboard_smi_apmc(u8 apmc)
 		ec_kbc_write_ib(0xE9);
 
 		/* Set LID GPI to generate SMIs */
-		set_lid_gpi_mode(GPI_IS_SMI);
+		gpi_route_interrupt(EC_LID_GPI, GPI_IS_SMI);
 		break;
 	}
 	return 0;

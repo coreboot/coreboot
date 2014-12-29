@@ -158,7 +158,7 @@ static void i82801gx_gpi_routing(device_t dev)
 	reg32 |= (config->gpi14_routing & 0x03) << 28;
 	reg32 |= (config->gpi15_routing & 0x03) << 30;
 
-	pci_write_config32(dev, 0xb8, reg32);
+	pci_write_config32(dev, GPIO_ROUT, reg32);
 }
 
 static void i82801gx_power_options(device_t dev)

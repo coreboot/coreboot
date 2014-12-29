@@ -50,6 +50,42 @@ u8 smm_initialized = 0;
  */
 global_nvs_t *gnvs = (global_nvs_t *)0x0;
 
+static void alt_gpi_mask(u16 clr, u16 set)
+{
+	u16 alt_gp = inw(pmbase + ALT_GP_SMI_EN);
+	alt_gp &= ~clr;
+	alt_gp |= set;
+	outw(alt_gp, pmbase + ALT_GP_SMI_EN);
+}
+
+static void gpe0_mask(u32 clr, u32 set)
+{
+	u32 gpe0 = inl(pmbase + GPE0_EN);
+	gpe0 &= ~clr;
+	gpe0 |= set;
+	outl(gpe0, pmbase + GPE0_EN);
+}
+
+void gpi_route_interrupt(u8 gpi, u8 mode)
+{
+	u32 gpi_rout;
+	if (gpi >= 16)
+		return;
+
+	alt_gpi_mask(1 << gpi, 0);
+	gpe0_mask(1 << (gpi+16), 0);
+
+	gpi_rout = pci_read_config32(PCI_DEV(0, 0x1f, 0), GPIO_ROUT);
+	gpi_rout &= ~(3 << (2 * gpi));
+	gpi_rout |= ((mode & 3) << (2 * gpi));
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIO_ROUT, gpi_rout);
+
+	if (mode == GPI_IS_SCI)
+		gpe0_mask(0, 1 << (gpi+16));
+	else if (mode == GPI_IS_SMI)
+		alt_gpi_mask(0, 1 << gpi);
+}
+
 /**
  * @brief read and clear PM1_STS
  * @return PM1_STS register

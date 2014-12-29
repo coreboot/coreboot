@@ -162,35 +162,19 @@ void mainboard_smi_gpi(u32 gpi)
 
 int mainboard_smi_apmc(u8 data)
 {
-	u16 pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
-	u8 tmp;
-
-	printk(BIOS_DEBUG, "%s: pmbase %04X, data %02X\n", __func__, pmbase, data);
-
-	if (!pmbase)
-		return 0;
-
 	switch(data) {
 		case APM_CNT_ACPI_ENABLE:
 			/* use 0x1600/0x1604 to prevent races with userspace */
 			ec_set_ports(0x1604, 0x1600);
 			/* route H8SCI to SCI */
-			outw(inw(pmbase + ALT_GP_SMI_EN) & ~(1<<GPE_EC_SCI), pmbase + ALT_GP_SMI_EN);
-			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
-			tmp &= ~0x03;
-			tmp |= 0x02;
-			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xbb, tmp);
+			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SCI);
 			break;
 		case APM_CNT_ACPI_DISABLE:
 			/* we have to use port 0x62/0x66, as 0x1600/0x1604 doesn't
 			   provide a EC query function */
 			ec_set_ports(0x66, 0x62);
 			/* route H8SCI# to SMI */
-			outw(inw(pmbase + ALT_GP_SMI_EN) | (1<<GPE_EC_SCI), pmbase + ALT_GP_SMI_EN);
-			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
-			tmp &= ~0x03;
-			tmp |= 0x01;
-			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xbb, tmp);
+			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SMI);
 			break;
 		default:
 			break;

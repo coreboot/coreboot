@@ -28,6 +28,8 @@
 #include "dock.h"
 #include "smi.h"
 
+#define GPE_EC_SCI	12
+
 #define LVTMA_BL_MOD_LEVEL 0x7af9 /* ATI Radeon backlight level */
 /* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler
@@ -154,7 +156,7 @@ static void mainboard_smi_handle_ec_sci(void)
 
 void mainboard_smi_gpi(u32 gpi)
 {
-	if (gpi & (1 << 12))
+	if (gpi & (1 << GPE_EC_SCI))
 		mainboard_smi_handle_ec_sci();
 }
 
@@ -173,7 +175,7 @@ int mainboard_smi_apmc(u8 data)
 			/* use 0x1600/0x1604 to prevent races with userspace */
 			ec_set_ports(0x1604, 0x1600);
 			/* route H8SCI to SCI */
-			outw(inw(pmbase + ALT_GP_SMI_EN) & ~0x1000, pmbase + ALT_GP_SMI_EN);
+			outw(inw(pmbase + ALT_GP_SMI_EN) & ~(1<<GPE_EC_SCI), pmbase + ALT_GP_SMI_EN);
 			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
 			tmp &= ~0x03;
 			tmp |= 0x02;
@@ -184,7 +186,7 @@ int mainboard_smi_apmc(u8 data)
 			   provide a EC query function */
 			ec_set_ports(0x66, 0x62);
 			/* route H8SCI# to SMI */
-			outw(inw(pmbase + ALT_GP_SMI_EN) | 0x1000, pmbase + ALT_GP_SMI_EN);
+			outw(inw(pmbase + ALT_GP_SMI_EN) | (1<<GPE_EC_SCI), pmbase + ALT_GP_SMI_EN);
 			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
 			tmp &= ~0x03;
 			tmp |= 0x01;

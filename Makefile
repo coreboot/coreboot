@@ -263,6 +263,9 @@ doxy: doxygen
 doxygen:
 	$(DOXYGEN) documentation/Doxyfile.coreboot
 
+doxygen_simple:
+	$(DOXYGEN) documentation/Doxyfile.coreboot_simple
+
 doxyclean: doxygen-clean
 doxygen-clean:
 	rm -rf $(DOXYGEN_OUTPUT_DIR)
@@ -279,4 +282,4 @@ clean-cscope:
 distclean: clean
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 
-.PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy
+.PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy doxygen_simple

@@ -28,10 +28,6 @@
  *
  * For Information about this file, see @ref platforminstall.
  *
- * @xrefitem bom "File Content Label" "Release Content"
- * @e project:			AGESA
- * @e sub-project:	Core
- * @e \$Revision: 23714 $	 @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
 #include <stdlib.h>

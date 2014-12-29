@@ -27,10 +27,6 @@
  *
  * For Information about this file, see @ref platforminstall.
  *
- * @xrefitem bom "File Content Label" "Release Content"
- * @e project:      AGESA
- * @e sub-project:  Core
- * @e \$Revision: 6049 $   @e \$Date: 2008-05-14 01:58:02 -0500 (Wed, 14 May 2008) $
  */
 
 #include <stdlib.h>

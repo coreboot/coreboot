@@ -7,10 +7,6 @@
  *
  * Contains AMD AGESA/CIMx core interface
  *
- * @xrefitem bom "File Content Label" "Release Content"
- * @e project:      AGESA
- * @e sub-project:  Include
- * @e \$Revision:$   @e \$Date:$
  */
 /*
  *****************************************************************************

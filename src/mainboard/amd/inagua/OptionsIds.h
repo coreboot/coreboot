@@ -24,10 +24,6 @@
  *
  * This file is used to switch on/off IDS features.
  *
- * @xrefitem bom "File Content Label" "Release Content"
- * @e project:      AGESA
- * @e sub-project:  Core
- * @e \$Revision: 12067 $   @e \$Date: 2009-04-11 04:34:13 +0800 (Sat, 11 Apr 2009) $
  */
 #ifndef _OPTION_IDS_H_
 #define _OPTION_IDS_H_

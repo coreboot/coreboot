@@ -141,14 +141,16 @@ static void dump_stack(uintptr_t addr, size_t bytes)
 static void dump_exception_state(struct exception_handler_state *state,
 				 struct exception_handler_info *info)
 {
-	if (info)
+	if (info) {
 		printf("Exception %d (%s)\n", state->vector, info->name);
-	else
+
+		if (info->error_code_printer) {
+			printf("Error code: ");
+			info->error_code_printer(state->error_code);
+			printf("\n");
+		}
+	} else {
 		printf("Unrecognized exception %d\n", state->vector);
-	if (info->error_code_printer) {
-		printf("Error code: ");
-		info->error_code_printer(state->error_code);
-		printf("\n");
 	}
 	printf("EIP:    0x%08x\n", state->regs.eip);
 	printf("CS:     0x%04x\n", state->regs.cs);

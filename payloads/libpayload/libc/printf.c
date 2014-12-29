@@ -647,7 +647,7 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 			}
 
 			if (flags & __PRINTF_FLAG_SIGNED) {
-				if (number & (0x1 << (size * 8 - 1))) {
+				if (number & (0x1ULL << (size * 8 - 1))) {
 					flags |= __PRINTF_FLAG_NEGATIVE;
 
 					if (size == sizeof(uint64_t)) {

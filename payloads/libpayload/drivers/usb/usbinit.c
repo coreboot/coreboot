@@ -172,15 +172,15 @@ hci_t *usb_add_mmio_hc(hc_type type, void *bar)
 	switch (type) {
 #ifdef CONFIG_LP_USB_OHCI
 	case OHCI:
-		return ohci_init(bar);
+		return ohci_init((unsigned long)bar);
 #endif
 #ifdef CONFIG_LP_USB_EHCI
 	case EHCI:
-		return ehci_init(bar);
+		return ehci_init((unsigned long)bar);
 #endif
 #ifdef CONFIG_LP_USB_XHCI
 	case XHCI:
-		return xhci_init(bar);
+		return xhci_init((unsigned long)bar);
 #endif
 	default:
 		usb_debug("HC type %d (at %p) is not supported!\n", type, bar);

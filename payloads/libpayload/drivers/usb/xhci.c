@@ -88,6 +88,7 @@ xhci_init_cycle_ring(transfer_ring_t *const tr, const size_t ring_size)
 }
 
 /* On Panther Point: switch ports shared with EHCI to xHCI */
+#ifdef CONFIG_LP_USB_PCI
 static void
 xhci_switch_ppt_ports(pcidev_t addr)
 {
@@ -109,6 +110,7 @@ xhci_switch_ppt_ports(pcidev_t addr)
 		xhci_debug("Actually switched over:      0x%"PRIx32"\n", reg32);
 	}
 }
+#endif
 
 /* On Panther Point: switch all ports back to EHCI */
 static void
@@ -286,7 +288,7 @@ _free_xhci:
 	free(xhci->roothub);
 	free(xhci->dev);
 	free(xhci);
-_free_controller:
+/* _free_controller: */
 	detach_controller(controller);
 	free(controller);
 	return NULL;

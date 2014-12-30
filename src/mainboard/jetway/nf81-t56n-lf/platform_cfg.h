@@ -23,7 +23,8 @@
 #define _PLATFORM_CFG_H_
 
 /**
- * @def BIOS_SIZE -> BIOS_SIZE_{1,2,4,8,16}M
+ * @def BIOS_SIZE
+ *      BIOS_SIZE_{1,2,4,8,16}M
  *
  * In SB800, default ROM size is 1M Bytes, if your platform ROM
  * bigger than 1M you have to set the ROM size outside CIMx module and
@@ -192,7 +193,7 @@
 #define NB_SB_GEN2			TRUE
 
 /**
- * @def SB_GEN2
+ * @def SB_GPP_GEN2
  *    0  - Disable
  *    1  - Enable
  */

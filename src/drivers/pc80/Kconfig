@@ -22,3 +22,7 @@ config LPC_TPM
 	  Enable this option to enable TPM support in coreboot.
 
 	  If unsure, say N.
+
+config DRIVERS_MC146818
+	bool
+	default y if ARCH_X86

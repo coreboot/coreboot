@@ -1,28 +1,51 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2014 The Chromium OS Authors. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+#include <arch/acpi.h>
+#include <bcd.h>
 #include <stdint.h>
 #include <version.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <boot/coreboot_tables.h>
+#include <rtc.h>
 #include <string.h>
 #if CONFIG_USE_OPTION_TABLE
 #include "option_table.h"
 #include <cbfs.h>
 #endif
-#include <arch/acpi.h>
 
 
-static void cmos_update_date(u8 has_century)
+static void cmos_reset_date(u8 has_century)
 {
 	/* Now setup a default date equals to the build date */
-	cmos_write(0, RTC_CLK_SECOND);
-	cmos_write(0, RTC_CLK_MINUTE);
-	cmos_write(1, RTC_CLK_HOUR);
-	cmos_write(coreboot_build_date.weekday + 1, RTC_CLK_DAYOFWEEK);
-	cmos_write(coreboot_build_date.day, RTC_CLK_DAYOFMONTH);
-	cmos_write(coreboot_build_date.month, RTC_CLK_MONTH);
-	cmos_write(coreboot_build_date.year, RTC_CLK_YEAR);
-	if (has_century)
-		cmos_write(coreboot_build_date.century, RTC_CLK_ALTCENTURY);
+	struct rtc_time time = {
+		.sec = 0,
+		.min = 0,
+		.hour = 1,
+		.mday = bcd2bin(coreboot_build_date.day),
+		.mon = bcd2bin(coreboot_build_date.month),
+		.year = (bcd2bin(coreboot_build_date.century) * 100) +
+			bcd2bin(coreboot_build_date.year),
+		.wday = bcd2bin(coreboot_build_date.weekday)
+	};
+	rtc_set(&time, has_century);
 }
 
 #if CONFIG_USE_OPTION_TABLE
@@ -50,15 +73,8 @@ static void cmos_set_checksum(int range_start, int range_end, int cks_loc)
 }
 #endif
 
-#if CONFIG_ARCH_X86
 #define RTC_CONTROL_DEFAULT (RTC_24H)
 #define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
-#else
-#if CONFIG_ARCH_ALPHA
-#define RTC_CONTROL_DEFAULT (RTC_SQWE | RTC_24H)
-#define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
-#endif
-#endif
 
 #ifndef __SMM__
 void cmos_init(int invalid)
@@ -107,7 +123,7 @@ void cmos_init(int invalid)
 			cmos_write(0, i);
 #endif
 		if (cmos_invalid)
-			cmos_update_date(RTC_HAS_NO_ALTCENTURY);
+			cmos_reset_date(RTC_HAS_NO_ALTCENTURY);
 
 		printk(BIOS_WARNING, "RTC:%s%s%s%s\n",
 			invalid?" Clear requested":"",
@@ -323,5 +339,36 @@ void cmos_check_update_date(u8 has_century)
 	 * if the date is valid.
 	 */
 	if (century > 0x99 || year > 0x99) /* Invalid date */
-		cmos_update_date(has_century);
+		cmos_reset_date(has_century);
+}
+
+int rtc_set(const struct rtc_time *time, u8 has_century)
+{
+	cmos_write(bin2bcd(time->sec), RTC_CLK_SECOND);
+	cmos_write(bin2bcd(time->min), RTC_CLK_MINUTE);
+	cmos_write(bin2bcd(time->hour), RTC_CLK_HOUR);
+	cmos_write(bin2bcd(time->mday), RTC_CLK_DAYOFMONTH);
+	cmos_write(bin2bcd(time->mon), RTC_CLK_MONTH);
+	cmos_write(bin2bcd(time->year % 100), RTC_CLK_YEAR);
+	if (has_century)
+		cmos_write(bin2bcd(time->year / 100),
+			   RTC_CLK_ALTCENTURY);
+	cmos_write(bin2bcd(time->wday + 1), RTC_CLK_DAYOFWEEK);
+	return 0;
+}
+
+int rtc_get(struct rtc_time *time, u8 has_century)
+{
+	time->sec = bcd2bin(cmos_read(RTC_CLK_SECOND));
+	time->min = bcd2bin(cmos_read(RTC_CLK_MINUTE));
+	time->hour = bcd2bin(cmos_read(RTC_CLK_HOUR));
+	time->mday = bcd2bin(cmos_read(RTC_CLK_DAYOFMONTH));
+	time->mon = bcd2bin(cmos_read(RTC_CLK_MONTH));
+	time->year = bcd2bin(cmos_read(RTC_CLK_YEAR));
+	if (has_century)
+		time->year += bcd2bin(cmos_read(RTC_CLK_ALTCENTURY)) * 100;
+	else
+		time->year += 2000;
+	time->wday = bcd2bin(cmos_read(RTC_CLK_DAYOFWEEK)) - 1;
+	return 0;
 }

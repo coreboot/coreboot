@@ -233,11 +233,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  *	based on each device's unit count.
  *
  * Parameters:
- *	@param[in]  u8  node    = The node on which this chain is located
- *	@param[in]  u8  link    = The link on the host for this chain
- *	@param[out] u8** list   = supply a pointer to a list
- *	@param[out] BOOL result = true to use a manual list
- *				  false to initialize the link automatically
+ *	@param[in]  node   = The node on which this chain is located
+ *	@param[in]  link   = The link on the host for this chain
+ *	@param[out] List   = supply a pointer to a list
  */
 BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 {

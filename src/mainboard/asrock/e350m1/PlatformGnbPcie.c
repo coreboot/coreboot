@@ -38,7 +38,6 @@
  *    interface (call-out port) to provide a user hook opportunity
  *
  *  Parameters:
- *    @param[in]      **PeiServices
  *    @param[in]      *InitEarly
  *
  *    @retval         VOID

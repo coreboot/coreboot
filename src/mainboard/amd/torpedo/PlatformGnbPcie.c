@@ -101,7 +101,6 @@ static const PCIe_COMPLEX_DESCRIPTOR Llano = {
  *    interface (call-out port) to provide a user hook opportunity
  *
  *  Parameters:
- *    @param[in]      **PeiServices
  *    @param[in]      *InitEarly
  *
  *    @retval         VOID

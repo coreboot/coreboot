@@ -26,6 +26,7 @@ verstage-y += i2c.c
 verstage-y += monotonic_timer.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
 
+romstage-y += romstage.S
 romstage-y += cbmem.c
 romstage-y += i2c.c
 romstage-y += monotonic_timer.c

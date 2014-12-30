@@ -31,7 +31,10 @@
 #include <arch/stages.h>
 #include <arch/cache.h>
 
-void stage_entry(void)
+/**
+ * generic stage entry point. override this if board specific code is needed.
+ */
+__attribute__((weak)) void stage_entry(void)
 {
 	main();
 }

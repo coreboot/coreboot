@@ -493,7 +493,8 @@ static u32 southbrigde_smi_mask_events(u32 smi_sts)
 /**
  * @brief Interrupt handler for SMI#
  *
- * @param smm_revision revision of the smm state save map
+ * @param node
+ * @param *state_save
  */
 void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save)
 {

@@ -267,10 +267,9 @@ void southbridge_smi_set_eos(void)
 
 /**
  * @brief Interrupt handler for SMI#
- *
- * @param smm_revision revision of the smm state save map
+ * @param node
+ * @param state_save
  */
-
 void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save)
 {
 // FIXME: the necessary magic isn't available yet. the code

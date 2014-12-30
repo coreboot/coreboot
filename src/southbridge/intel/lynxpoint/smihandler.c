@@ -517,10 +517,7 @@ static smi_handler_t southbridge_smi[32] = {
 
 /**
  * @brief Interrupt handler for SMI#
- *
- * @param smm_revision revision of the smm state save map
  */
-
 void southbridge_smi_handler(void)
 {
 	int i;

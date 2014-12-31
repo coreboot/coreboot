@@ -21,6 +21,7 @@
 #include <arch/acpi.h>
 
 /* FIXME: Remove after CBMEM_INIT_HOOKS. */
+#include <arch/early_variables.h>
 #include <cpu/x86/gdt.h>
 #include <console/cbmem_console.h>
 #include <timestamp.h>
@@ -76,6 +77,9 @@ void *cbmem_top(void)
 
 void cbmem_run_init_hooks(void)
 {
+	/* Migrate car.global_data. */
+	car_migrate_variables();
+
 #if !defined(__PRE_RAM__)
 	/* Relocate CBMEM console. */
 	cbmemc_reinit();

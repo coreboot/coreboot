@@ -242,8 +242,9 @@ int cbmem_recovery(int is_wakeup)
 		cbmem_fail_resume();
 	}
 
+	/* Complete migration to CBMEM. */
 	cbmem_run_init_hooks();
-	car_migrate_variables();
+
 	return !found;
 }
 

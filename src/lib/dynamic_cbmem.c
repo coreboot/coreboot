@@ -170,18 +170,14 @@ void cbmem_initialize_empty(void)
 	printk(BIOS_DEBUG, "CBMEM: root @ %p %d entries.\n",
 	       root, root->max_entries);
 
+	/* Complete migration to CBMEM. */
 	cbmem_run_init_hooks();
-
-	/* Migrate cache-as-ram variables. */
-	car_migrate_variables();
 }
 
 static inline int cbmem_fail_recovery(void)
 {
 	cbmem_initialize_empty();
 	cbmem_fail_resume();
-	/* Migrate cache-as-ram variables. */
-	car_migrate_variables();
 	return 1;
 }
 
@@ -248,10 +244,8 @@ int cbmem_initialize(void)
 	root->locked = 1;
 #endif
 
+	/* Complete migration to CBMEM. */
 	cbmem_run_init_hooks();
-
-	/* Migrate cache-as-ram variables. */
-	car_migrate_variables();
 
 	/* Recovery successful. */
 	return 0;

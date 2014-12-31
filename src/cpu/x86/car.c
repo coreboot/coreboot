@@ -108,7 +108,6 @@ void *car_sync_var_ptr(void *var)
 static void do_car_migrate_variables(void)
 {
 	void *migrated_base;
-	car_migration_func_t *migrate_func;
 	size_t car_data_size = &_car_data_end[0] - &_car_data_start[0];
 
 	/* Check if already migrated. */
@@ -126,7 +125,11 @@ static void do_car_migrate_variables(void)
 
 	/* Mark that the data has been moved. */
 	car_migrated = ~0;
+}
 
+static void do_car_migrate_hooks(void)
+{
+	car_migration_func_t *migrate_func;
 	/* Call all the migration functions. */
 	migrate_func = &_car_migrate_start;
 	while (*migrate_func != NULL) {
@@ -139,4 +142,7 @@ void car_migrate_variables(void)
 {
 	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE))
 		do_car_migrate_variables();
+
+	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE))
+		do_car_migrate_hooks();
 }

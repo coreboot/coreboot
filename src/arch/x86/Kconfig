@@ -51,6 +51,21 @@ config ROMCC
 	bool
 	default n
 
+config BROKEN_CAR_MIGRATE
+	def_bool n
+	help
+	  Many boards use CAR_GLOBAL but have no EARLY_CBMEM_INIT and
+	  manage CAR migration on S3 resume path only. Couple boards use
+	  CAR_GLOBAL and never do CAR migration.
+
+config LATE_CBMEM_INIT
+	def_bool n
+	select BROKEN_CAR_MIGRATE
+	help
+	  Enable this in chipset's Kconfig if northbridge does not implement
+	  early get_top_of_ram() call for romstage. CBMEM tables will be
+	  allocated late in ramstage, after PCI devices resources are known.
+
 config PC80_SYSTEM
 	bool
 	default y if ARCH_X86

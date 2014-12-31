@@ -39,9 +39,14 @@ asm(".previous");
 /* Get the correct pointer for the CAR global variable. */
 void *car_get_var_ptr(void *var);
 
+/* Get and update a CAR_GLOBAL pointing elsewhere in car.global_data*/
+void *car_sync_var_ptr(void *var);
+
 /* Get and set a primitive type global variable. */
 #define car_get_var(var) \
 	*(typeof(var) *)car_get_var_ptr(&(var))
+#define car_sync_var(var) \
+	*(typeof (var) *)car_sync_var_ptr(&(var))
 #define car_set_var(var, val) \
 	do { car_get_var(var) = (val); } while(0)
 
@@ -49,6 +54,7 @@ void *car_get_var_ptr(void *var);
 #define CAR_MIGRATE(migrate_fn_)
 static inline void *car_get_var_ptr(void *var) { return var; }
 #define car_get_var(var) (var)
+#define car_sync_var(var) (var)
 #define car_set_var(var, val) do { (var) = (val); } while (0)
 #endif
 

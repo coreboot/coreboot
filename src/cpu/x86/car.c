@@ -73,6 +73,38 @@ void *car_get_var_ptr(void *var)
 	return &migrated_base[offset];
 }
 
+/*
+ * Update a CAR_GLOBAL variable var, originally pointing to CAR region,
+ * with the address in migrated CAR region in DRAM.
+ */
+void *car_sync_var_ptr(void *var)
+{
+	void ** mig_var = car_get_var_ptr(var);
+	void * _car_start = &_car_data_start;
+	void * _car_end = &_car_data_end;
+
+	/* Not moved or migrated yet. */
+	if (mig_var == var)
+		return mig_var;
+
+	/* It's already pointing outside car.global_data. */
+	if (*mig_var < _car_start || *mig_var > _car_end)
+		return mig_var;
+
+#if !IS_ENABLED(CONFIG_PLATFORM_USES_FSP)
+	/* Keep console buffer in CAR until cbmemc_reinit() moves it. */
+	if (*mig_var == _car_end)
+		return mig_var;
+#endif
+
+	/* Move the pointer by the same amount the variable storing it was
+	 * moved by.
+	 */
+	*mig_var += (char *)mig_var - (char *)var;
+
+	return mig_var;
+}
+
 static void do_car_migrate_variables(void)
 {
 	void *migrated_base;

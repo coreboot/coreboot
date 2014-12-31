@@ -65,7 +65,7 @@ static u8 static_console[STATIC_CONSOLE_SIZE];
 
 static inline struct cbmem_console *current_console(void)
 {
-	return car_get_var(cbmem_console_p);
+	return car_sync_var(cbmem_console_p);
 }
 
 static inline void current_console_set(struct cbmem_console *new_console_p)

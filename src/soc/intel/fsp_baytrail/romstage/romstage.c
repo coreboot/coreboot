@@ -43,7 +43,6 @@
 #include <version.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
-#include <console/cbmem_console.h>
 
 /* Return 0, 3, 4 or 5 to indicate the previous sleep state. */
 uint32_t chipset_prev_sleep_state(uint32_t clear)

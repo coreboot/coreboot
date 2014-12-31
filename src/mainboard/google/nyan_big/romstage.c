@@ -25,7 +25,6 @@
 #include <device/device.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <mainboard/google/nyan/reset.h>
 #include <romstage_handoff.h>
@@ -223,10 +222,6 @@ static void __attribute__((noinline)) romstage(void)
 
 	configure_ec_spi_bus();
 	configure_tpm_i2c_bus();
-
-#if CONFIG_CONSOLE_CBMEM
-	cbmemc_reinit();
-#endif
 
 	vboot_verify_firmware(romstage_handoff_find_or_add());
 

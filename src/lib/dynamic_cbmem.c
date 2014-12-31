@@ -21,7 +21,6 @@
 #include <bootmem.h>
 #include <console/console.h>
 #include <cbmem.h>
-#include <console/cbmem_console.h>
 #include <string.h>
 #include <stdlib.h>
 #include <arch/early_variables.h>
@@ -426,7 +425,6 @@ void *cbmem_entry_start(const struct cbmem_entry *entry)
 static void init_cbmem_pre_device(void *unused)
 {
 	cbmem_initialize();
-	cbmemc_reinit();
 }
 
 BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {

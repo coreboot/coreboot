@@ -31,7 +31,6 @@
 #include <cpu/x86/bist.h>
 #include <string.h>
 #include <timestamp.h>
-#include <console/cbmem_console.h>
 
 #include <northbridge/via/vx900/early_vx900.h>
 #include <northbridge/via/vx900/raminit.h>

@@ -22,6 +22,7 @@
 
 /* FIXME: Remove after CBMEM_INIT_HOOKS. */
 #include <cpu/x86/gdt.h>
+#include <console/cbmem_console.h>
 
 #if !CONFIG_DYNAMIC_CBMEM
 void get_cbmem_table(uint64_t *base, uint64_t *size)
@@ -75,6 +76,9 @@ void *cbmem_top(void)
 void cbmem_run_init_hooks(void)
 {
 #if !defined(__PRE_RAM__)
+	/* Relocate CBMEM console. */
+	cbmemc_reinit();
+
 	move_gdt();
 #endif
 }

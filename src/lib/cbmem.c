@@ -23,7 +23,6 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <console/cbmem_console.h>
 #include <arch/early_variables.h>
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 #include <arch/acpi.h>
@@ -256,7 +255,6 @@ static void init_cbmem_post_device(void *unused)
 #else
 	cbmem_recovery(0);
 #endif
-	cbmemc_reinit();
 }
 
 BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {

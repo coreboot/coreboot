@@ -160,6 +160,9 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 
 	post_code(0x40);
 
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	program_base_addresses();
 
 	post_code(0x41);
@@ -198,6 +201,8 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 
 	post_code(0x47);
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
   /*
    * Call early init to initialize memory and chipset. This function returns
    * to the romstage_main_continue function with a pointer to the HOB
@@ -219,9 +224,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	uint32_t prev_sleep_state;
 	struct romstage_handoff *handoff;
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	uint64_t after_initram_time = timestamp_get();
-#endif
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	post_code(0x4a);
 	printk(BIOS_DEBUG, "%s status: %x  hob_list_ptr: %x\n",
@@ -264,8 +267,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
-	timestamp_init(get_initial_timestamp());
-	timestamp_add(TS_AFTER_INITRAM, after_initram_time);
 	timestamp_add_now(TS_END_ROMSTAGE);
 
 	post_code(0x4f);

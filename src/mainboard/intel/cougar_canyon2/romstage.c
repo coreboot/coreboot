@@ -182,11 +182,8 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 
 	post_code(0x40);
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	uint32_t start_romstage_time = (uint32_t) (timestamp_get() >> 4);
-	/* since this mainboard doesn't use audio, we can stuff the TSC values in there */
-	pci_write_config32(PCI_DEV(0, 27, 0), 0x2c,  start_romstage_time);
-#endif
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	pch_enable_lpc();
 
@@ -234,11 +231,7 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 
 	post_code(0x48);
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	uint32_t before_initram_time = (uint32_t) (timestamp_get() >> 4);
-	/* since this mainboard doesn't use audio, we can stuff the TSC values in there */
-	pci_write_config32(PCI_DEV(0, 27, 0), 0x14, before_initram_time);
-#endif
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
   /*
    * Call early init to initialize memory and chipset. This function returns
@@ -259,11 +252,7 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	u32 reg32;
 	void *cbmem_hob_ptr;
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	uint64_t after_initram_time = timestamp_get();
-	uint64_t start_romstage_time = (uint64_t) pci_read_config32(PCI_DEV(0, 27, 0), 0x2c) << 4;
-	uint64_t before_initram_time = (uint64_t) pci_read_config32(PCI_DEV(0, 27, 0), 0x14) << 4;
-#endif
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/*
 	 * HD AUDIO is not used on this system, so we're using some registers
@@ -317,10 +306,6 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	*(u32*)cbmem_hob_ptr = (u32)HobListPtr;
 	post_code(0x4f);
 
-	timestamp_init(get_initial_timestamp());
-	timestamp_add(TS_START_ROMSTAGE, start_romstage_time );
-	timestamp_add(TS_BEFORE_INITRAM, before_initram_time );
-	timestamp_add(TS_AFTER_INITRAM, after_initram_time);
 	timestamp_add_now(TS_END_ROMSTAGE);
 
 	/* Load the ramstage. */

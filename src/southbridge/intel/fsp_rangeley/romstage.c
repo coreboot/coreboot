@@ -53,6 +53,9 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 	 */
 	outb(0x40, 0x80);
 
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	/* Rangeley UART POR state is enabled */
 	console_init();
 	post_code(0x41);
@@ -75,6 +78,8 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 		read32(func_dis);
 	}
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
   /*
    * Call early init to initialize memory and chipset. This function returns
    * to the romstage_main_continue function with a pointer to the HOB
@@ -94,9 +99,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	int cbmem_was_initted;
 	void *cbmem_hob_ptr;
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	uint64_t after_initram_time = timestamp_get();
-#endif
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	post_code(0x48);
 	printk(BIOS_DEBUG, "%s status: %x  hob_list_ptr: %x\n",
@@ -127,8 +130,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	*(u32*)cbmem_hob_ptr = (u32)hob_list_ptr;
 	post_code(0x4e);
 
-	timestamp_init(get_initial_timestamp());
-	timestamp_add(TS_AFTER_INITRAM, after_initram_time);
 	timestamp_add_now(TS_END_ROMSTAGE);
 
 	post_code(0x4f);

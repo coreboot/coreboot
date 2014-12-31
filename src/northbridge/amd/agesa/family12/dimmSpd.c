@@ -1,4 +1,4 @@
-/*****************************************************************************
+/*
  *
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- ***************************************************************************/
+ */
 
 #include <stdlib.h>
 #include "Porting.h"
@@ -34,20 +34,21 @@
 
 #include <northbridge/amd/agesa/dimmSpd.h>
 
-typedef struct _DIMM_INFO_SMBUS{
-  UINT8   SocketId;
-  UINT8   MemChannelId;
-  UINT8   DimmId;
-  UINT8   SmbusAddress;
+typedef struct _DIMM_INFO_SMBUS {
+	UINT8   SocketId;
+	UINT8   MemChannelId;
+	UINT8   DimmId;
+	UINT8   SmbusAddress;
 } DIMM_INFO_SMBUS;
+
 /*
 * SPD address table - porting required
 */
 STATIC CONST DIMM_INFO_SMBUS SpdAddrLookup [] =
 {
-  /* Socket, Channel, Dimm, Smbus */
-  {0, 0, 0, 0xA0},
-  {0, 1, 0, 0xA2}
+	/* Socket, Channel, Dimm, Smbus */
+	{0, 0, 0, 0xA0},
+	{0, 1, 0, 0xA2}
 };
 
 AGESA_STATUS
@@ -57,17 +58,18 @@ AmdMemoryReadSPD (
   IN OUT AGESA_READ_SPD_PARAMS *SpdData
   )
 {
-   UINT8  SmBusAddress = 0;
-   UINTN  Index;
-   UINTN  MaxSocket = ARRAY_SIZE(SpdAddrLookup);
-   for (Index = 0; Index < MaxSocket; Index ++){
-     if ((SpdData->SocketId     == SpdAddrLookup[Index].SocketId)     &&
-         (SpdData->MemChannelId == SpdAddrLookup[Index].MemChannelId) &&
-         (SpdData->DimmId       == SpdAddrLookup[Index].DimmId)) {
-        SmBusAddress = SpdAddrLookup[Index].SmbusAddress;
-        break;
-      }
-   }
+	UINT8  SmBusAddress = 0;
+	UINTN  Index;
+	UINTN  MaxSocket = ARRAY_SIZE(SpdAddrLookup);
+
+	for (Index = 0; Index < MaxSocket; Index ++) {
+		if ((SpdData->SocketId     == SpdAddrLookup[Index].SocketId)     &&
+				(SpdData->MemChannelId == SpdAddrLookup[Index].MemChannelId) &&
+				(SpdData->DimmId       == SpdAddrLookup[Index].DimmId)) {
+			SmBusAddress = SpdAddrLookup[Index].SmbusAddress;
+			break;
+		}
+	}
 
 	if (SmBusAddress == 0)
 		return AGESA_ERROR;

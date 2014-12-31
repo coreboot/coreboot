@@ -385,7 +385,7 @@ config SOFTWARE_I2C
 	  be useful for debugging or on platforms where a driver for the real
 	  I2C controller is not (yet) available. The platform code needs to
 	  provide bindings to manually toggle I2C lines.
-	  
+
 endmenu
 
 menu "Display"

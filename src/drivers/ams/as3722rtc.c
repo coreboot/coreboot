@@ -72,7 +72,7 @@ int rtc_set(const struct rtc_time *time)
 	as3722_write(AS3722_RTC_MINUTE, bin2bcd(time->min));
 	as3722_write(AS3722_RTC_HOUR, bin2bcd(time->hour));
 	as3722_write(AS3722_RTC_DAY, bin2bcd(time->mday));
-	as3722_write(AS3722_RTC_MONTH, bin2bcd(time->mon + 1));
+	as3722_write(AS3722_RTC_MONTH, bin2bcd(time->mon));
 	as3722_write(AS3722_RTC_YEAR, bin2bcd(time->year));
 	return 0;
 }
@@ -85,7 +85,7 @@ int rtc_get(struct rtc_time *time)
 	time->min = bcd2bin(as3722_read(AS3722_RTC_MINUTE) & 0x7f);
 	time->hour = bcd2bin(as3722_read(AS3722_RTC_HOUR) & 0x3f);
 	time->mday = bcd2bin(as3722_read(AS3722_RTC_DAY) & 0x3f);
-	time->mon = bcd2bin(as3722_read(AS3722_RTC_MONTH) & 0x1f) - 1;
+	time->mon = bcd2bin(as3722_read(AS3722_RTC_MONTH) & 0x1f);
 	time->year = bcd2bin(as3722_read(AS3722_RTC_YEAR) & 0x7f);
 	return 0;
 }

@@ -58,223 +58,217 @@ static device_t get_node_pci(u32 nodeid, u32 fn)
 
 static void get_fx_devs(void)
 {
-    int i;
-    for(i = 0; i < FX_DEVS; i++) {
-        __f0_dev[i] = get_node_pci(i, 0);
-        __f1_dev[i] = get_node_pci(i, 1);
-        __f2_dev[i] = get_node_pci(i, 2);
-        __f4_dev[i] = get_node_pci(i, 4);
-        if (__f0_dev[i] != NULL && __f1_dev[i] != NULL)
-            fx_devs = i+1;
-    }
-    if (__f1_dev[0] == NULL || __f0_dev[0] == NULL || fx_devs == 0) {
-        die("Cannot find 0:0x18.[0|1]\n");
-    }
-}
+	int i;
+	for(i = 0; i < FX_DEVS; i++) {
+		__f0_dev[i] = get_node_pci(i, 0);
+		__f1_dev[i] = get_node_pci(i, 1);
+		__f2_dev[i] = get_node_pci(i, 2);
+		__f4_dev[i] = get_node_pci(i, 4);
+		if (__f0_dev[i] != NULL && __f1_dev[i] != NULL)
+			fx_devs = i+1;
+	}
 
+	if (__f1_dev[0] == NULL || __f0_dev[0] == NULL || fx_devs == 0)
+		die("Cannot find 0:0x18.[0|1]\n");
+}
 
 static u32 f1_read_config32(unsigned reg)
 {
-    if (fx_devs == 0)
-        get_fx_devs();
-    return pci_read_config32(__f1_dev[0], reg);
-}
+	if (fx_devs == 0)
+		get_fx_devs();
 
+	return pci_read_config32(__f1_dev[0], reg);
+}
 
 static void f1_write_config32(unsigned reg, u32 value)
 {
-    int i;
-    if (fx_devs == 0)
-        get_fx_devs();
-    for(i = 0; i < fx_devs; i++) {
-        device_t dev;
-        dev = __f1_dev[i];
-        if (dev && dev->enabled) {
-            pci_write_config32(dev, reg, value);
-        }
-    }
+	int i;
+	if (fx_devs == 0)
+		get_fx_devs();
+	for(i = 0; i < fx_devs; i++) {
+		device_t dev = __f1_dev[i];
+		if (dev && dev->enabled) {
+			pci_write_config32(dev, reg, value);
+		}
+	}
 }
-
 
 static u32 amdfam12_nodeid(device_t dev)
 {
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s\n",__func__);
-    return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s\n",__func__);
+	return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
 }
-
 
 #include "amdfam12_conf.c"
 
-
 static void northbridge_init(device_t dev)
 {
-  printk(BIOS_DEBUG, "Northbridge init\n");
+	printk(BIOS_DEBUG, "Northbridge init\n");
 }
 
 
 static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 {
-    u32 val;
+	u32 val;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-    val =  1 | (nodeid<<4) | (linkn<<12);
-    /* it will routing (1)mmio  0xa0000:0xbffff (2) io 0x3b0:0x3bb,
-     0x3c0:0x3df */
-    f1_write_config32(0xf4, val);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	val =  1 | (nodeid<<4) | (linkn<<12);
+	/* it will routing (1)mmio  0xa0000:0xbffff (2) io 0x3b0:0x3bb,
+	   0x3c0:0x3df */
+	f1_write_config32(0xf4, val);
 
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
 static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
             unsigned goal_link)
 {
-    struct resource *res;
-    unsigned nodeid, link = 0;
-    int result;
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-    res = 0;
-    for(nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
-        device_t dev;
-        dev = __f0_dev[nodeid];
-        if (!dev)
-            continue;
-        for(link = 0; !res && (link < 8); link++) {
-            res = probe_resource(dev, IOINDEX(0x1000 + reg, link));
-        }
-    }
-    result = 2;
-    if (res) {
-        result = 0;
-        if (    (goal_link == (link - 1)) &&
-            (goal_nodeid == (nodeid - 1)) &&
-            (res->flags <= 1)) {
-            result = 1;
-        }
-    }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
-    return result;
+	struct resource *res;
+	unsigned nodeid, link = 0;
+	int result;
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	res = 0;
+	for(nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
+		device_t dev = __f0_dev[nodeid];
+		if (!dev)
+			continue;
+		for(link = 0; !res && (link < 8); link++) {
+			res = probe_resource(dev, IOINDEX(0x1000 + reg, link));
+		}
+	}
+	result = 2;
+	if (res) {
+		result = 0;
+		if (    (goal_link == (link - 1)) &&
+			 (goal_nodeid == (nodeid - 1)) &&
+			 (res->flags <= 1)) {
+				result = 1;
+		}
+	}
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	return result;
 }
 
 static struct resource *amdfam12_find_iopair(device_t dev, unsigned nodeid, unsigned link)
 {
-    struct resource *resource;
-    u32 result, reg;
-    resource = 0;
-    reg = 0;
-        result = reg_useable(0xc0, dev, nodeid, link);
-        if (result >= 1) {
-            /* I have been allocated this one */
-            reg = 0xc0;
-    }
+	struct resource *resource;
+	u32 result, reg;
+	resource = 0;
+	reg = 0;
+	result = reg_useable(0xc0, dev, nodeid, link);
+	if (result >= 1) {
+		/* I have been allocated this one */
+		reg = 0xc0;
+	}
 
-    //Ext conf space
-    if(!reg) {
-        //because of Extend conf space, we will never run out of reg, but we need one index to differ them. so same node and same link can have multi range
-        u32 index = get_io_addr_index(nodeid, link);
-        reg = 0x110+ (index<<24) + (4<<20); // index could be 0, 255
-    }
+	//Ext conf space
+	if(!reg) {
+		//because of Extend conf space, we will never run out of reg, but we need one index to differ them. so same node and same link can have multi range
+		u32 index = get_io_addr_index(nodeid, link);
+		reg = 0x110+ (index<<24) + (4<<20); // index could be 0, 255
+	}
 
-        resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
+	resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
 
-    return resource;
+	return resource;
 }
 
 static struct resource *amdfam12_find_mempair(device_t dev, u32 nodeid, u32 link)
 {
-    struct resource *resource;
-    u32 free_reg, reg;
-    resource = 0;
-    free_reg = 0;
-    for(reg = 0x80; reg <= 0xb8; reg += 0x8) {
-        int result;
-        result = reg_useable(reg, dev, nodeid, link);
-        if (result == 1) {
-            /* I have been allocated this one */
-            break;
-        }
-        else if (result > 1) {
-            /* I have a free register pair */
-            free_reg = reg;
-        }
-    }
-    if (reg > 0xb8) {
-        reg = free_reg;
-    }
+	struct resource *resource;
+	u32 free_reg, reg;
+	resource = 0;
+	free_reg = 0;
+	for(reg = 0x80; reg <= 0xb8; reg += 0x8) {
+		int result;
+		result = reg_useable(reg, dev, nodeid, link);
+		if (result == 1) {
+			/* I have been allocated this one */
+			break;
+		}
+		else if (result > 1) {
+			/* I have a free register pair */
+			free_reg = reg;
+		}
+	}
+	if (reg > 0xb8) {
+		reg = free_reg;
+	}
 
-    //Ext conf space
-    if(!reg) {
-        //because of Extend conf space, we will never run out of reg,
-        // but we need one index to differ them. so same node and
-        // same link can have multi range
-        u32 index = get_mmio_addr_index(nodeid, link);
-        reg = 0x110+ (index<<24) + (6<<20); // index could be 0, 63
+	//Ext conf space
+	if(!reg) {
+		//because of Extend conf space, we will never run out of reg,
+		// but we need one index to differ them. so same node and
+		// same link can have multi range
+		u32 index = get_mmio_addr_index(nodeid, link);
+		reg = 0x110+ (index<<24) + (6<<20); // index could be 0, 63
+	}
 
-    }
-    resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
-    return resource;
+	resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
+	return resource;
 }
 
 
 static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
 {
-    struct resource *resource;
+	struct resource *resource;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-    /* Initialize the io space constraints on the current bus */
-    resource = amdfam12_find_iopair(dev, nodeid, link);
-    if (resource) {
-        u32 align;
-        align = log2(HT_IO_HOST_ALIGN);
-        resource->base  = 0;
-        resource->size  = 0;
-        resource->align = align;
-        resource->gran  = align;
-        resource->limit = 0xffffUL;
-        resource->flags = IORESOURCE_IO | IORESOURCE_BRIDGE;
-    }
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	/* Initialize the io space constraints on the current bus */
+	resource = amdfam12_find_iopair(dev, nodeid, link);
+	if (resource) {
+		u32 align;
+		align = log2(HT_IO_HOST_ALIGN);
+		resource->base  = 0;
+		resource->size  = 0;
+		resource->align = align;
+		resource->gran  = align;
+		resource->limit = 0xffffUL;
+		resource->flags = IORESOURCE_IO | IORESOURCE_BRIDGE;
+	}
 
-    /* Initialize the prefetchable memory constraints on the current bus */
-    resource = amdfam12_find_mempair(dev, nodeid, link);
-    if (resource) {
-        resource->base = 0;
-        resource->size = 0;
-        resource->align = log2(HT_MEM_HOST_ALIGN);
-        resource->gran = log2(HT_MEM_HOST_ALIGN);
-        resource->limit = 0xffffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-        resource->flags |= IORESOURCE_BRIDGE;
-    }
+	/* Initialize the prefetchable memory constraints on the current bus */
+	resource = amdfam12_find_mempair(dev, nodeid, link);
+	if (resource) {
+		resource->base = 0;
+		resource->size = 0;
+		resource->align = log2(HT_MEM_HOST_ALIGN);
+		resource->gran = log2(HT_MEM_HOST_ALIGN);
+		resource->limit = 0xffffffffffULL;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
+		resource->flags |= IORESOURCE_BRIDGE;
+	}
 
-    /* Initialize the memory constraints on the current bus */
-    resource = amdfam12_find_mempair(dev, nodeid, link);
-    if (resource) {
-        resource->base = 0;
-        resource->size = 0;
-        resource->align = log2(HT_MEM_HOST_ALIGN);
-        resource->gran = log2(HT_MEM_HOST_ALIGN);
-        resource->limit = 0xffffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
-    }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	/* Initialize the memory constraints on the current bus */
+	resource = amdfam12_find_mempair(dev, nodeid, link);
+	if (resource) {
+		resource->base = 0;
+		resource->size = 0;
+		resource->align = log2(HT_MEM_HOST_ALIGN);
+		resource->gran = log2(HT_MEM_HOST_ALIGN);
+		resource->limit = 0xffffffffffULL;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
+	}
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
 {
-    struct resource *min;
-    min = 0;
-    search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
-    if (min && tolm > min->base) {
-        tolm = min->base;
-    }
-    return tolm;
+	struct resource *min;
+	min = 0;
+	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
+	if (min && tolm > min->base) {
+		tolm = min->base;
+	}
+	return tolm;
 }
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 
 struct hw_mem_hole_info {
-    unsigned hole_startk;
-    int node_id;
+	unsigned hole_startk;
+	int node_id;
 };
 
 static struct hw_mem_hole_info get_hw_mem_hole_info(void)
@@ -325,69 +319,67 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 static void read_resources(device_t dev)
 {
-    u32 nodeid;
-    struct bus *link;
+	u32 nodeid;
+	struct bus *link;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
-    nodeid = amdfam12_nodeid(dev);
-    for(link = dev->link_list; link; link = link->next) {
-        if (link->children) {
-            amdfam12_link_read_bases(dev, nodeid, link->link_num);
-        }
-    }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	nodeid = amdfam12_nodeid(dev);
+	for(link = dev->link_list; link; link = link->next) {
+		if (link->children) {
+			amdfam12_link_read_bases(dev, nodeid, link->link_num);
+		}
+	}
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
-static void set_resource(device_t dev, struct resource *resource,
-                u32 nodeid)
+static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 {
-    resource_t rbase, rend;
-    unsigned reg, link_num;
-    char buf[50];
+	resource_t rbase, rend;
+	unsigned reg, link_num;
+	char buf[50];
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
-    /* Make certain the resource has actually been set */
-    if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-        return;
-    }
+	/* Make certain the resource has actually been set */
+	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
+		return;
+	}
 
-    /* If I have already stored this resource don't worry about it */
-    if (resource->flags & IORESOURCE_STORED) {
-        return;
-    }
+	/* If I have already stored this resource don't worry about it */
+	if (resource->flags & IORESOURCE_STORED) {
+		return;
+	}
 
-    /* Only handle PCI memory and IO resources */
-    if (!(resource->flags & (IORESOURCE_MEM | IORESOURCE_IO)))
-        return;
+	/* Only handle PCI memory and IO resources */
+	if (!(resource->flags & (IORESOURCE_MEM | IORESOURCE_IO)))
+		return;
 
-    /* Ensure I am actually looking at a resource of function 1 */
-    if ((resource->index & 0xffff) < 0x1000) {
-        return;
-    }
-    /* Get the base address */
-    rbase = resource->base;
+	/* Ensure I am actually looking at a resource of function 1 */
+	if ((resource->index & 0xffff) < 0x1000) {
+		return;
+	}
+	/* Get the base address */
+	rbase = resource->base;
 
-    /* Get the limit (rounded up) */
-    rend  = resource_end(resource);
+	/* Get the limit (rounded up) */
+	rend  = resource_end(resource);
 
-    /* Get the register and link */
-    reg  = resource->index & 0xfff; // 4k
-    link_num = IOINDEX_LINK(resource->index);
+	/* Get the register and link */
+	reg  = resource->index & 0xfff; // 4k
+	link_num = IOINDEX_LINK(resource->index);
 
-    if (resource->flags & IORESOURCE_IO) {
-        set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
-    }
-    else if (resource->flags & IORESOURCE_MEM) {
-        set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, 1) ;// [39:8]
-    }
-    resource->flags |= IORESOURCE_STORED;
-    snprintf(buf, sizeof (buf), " <node %x link %x>",
-        nodeid, link_num);
-    report_resource_stored(dev, resource, buf);
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	if (resource->flags & IORESOURCE_IO) {
+		set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
+	}
+	else if (resource->flags & IORESOURCE_MEM) {
+		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, 1); // [39:8]
+	}
+	resource->flags |= IORESOURCE_STORED;
+	snprintf(buf, sizeof (buf), " <node %x link %x>", nodeid, link_num);
+	report_resource_stored(dev, resource, buf);
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -397,87 +389,85 @@ extern device_t vga_pri;    // the primary vga device, defined in device.c
 
 static void create_vga_resource(device_t dev, unsigned nodeid)
 {
-    struct bus *link;
+struct bus *link;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
-    /* find out which link the VGA card is connected,
-     * we only deal with the 'first' vga card */
-    for (link = dev->link_list; link; link = link->next) {
-        if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+	/* find out which link the VGA card is connected,
+	 * we only deal with the 'first' vga card */
+	for (link = dev->link_list; link; link = link->next) {
+		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 #if CONFIG_CONSOLE_VGA_MULTI
-            printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
-                link->secondary,link->subordinate);
-            /* We need to make sure the vga_pri is under the link */
-            if((vga_pri->bus->secondary >= link->secondary ) &&
-                (vga_pri->bus->secondary <= link->subordinate )
-            )
+			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
+					link->secondary,link->subordinate);
+			/* We need to make sure the vga_pri is under the link */
+			if((vga_pri->bus->secondary >= link->secondary ) &&
+				(vga_pri->bus->secondary <= link->subordinate ))
 #endif
-            break;
-        }
-    }
+					break; // XXX this break looks questionable
+		}
+	}
 
-    /* no VGA card installed */
-    if (link == NULL)
-        return;
+	/* no VGA card installed */
+	if (link == NULL)
+		return;
 
-    printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link->link_num);
-    set_vga_enable_reg(nodeid, link->link_num);
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link->link_num);
+	set_vga_enable_reg(nodeid, link->link_num);
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
 static void set_resources(device_t dev)
 {
-    unsigned nodeid;
-    struct bus *bus;
-    struct resource *res;
+	unsigned nodeid;
+	struct bus *bus;
+	struct resource *res;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
-    /* Find the nodeid */
-    nodeid = amdfam12_nodeid(dev);
+	/* Find the nodeid */
+	nodeid = amdfam12_nodeid(dev);
 
-    create_vga_resource(dev, nodeid);
+	create_vga_resource(dev, nodeid);
 
-    /* Set each resource we have found */
-    for(res = dev->resource_list; res; res = res->next) {
-        set_resource(dev, res, nodeid);
-    }
+	/* Set each resource we have found */
+	for(res = dev->resource_list; res; res = res->next) {
+		    set_resource(dev, res, nodeid);
+	}
 
-    for(bus = dev->link_list; bus; bus = bus->next) {
-        if (bus->children) {
-            assign_resources(bus);
-        }
-    }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	for(bus = dev->link_list; bus; bus = bus->next) {
+		if (bus->children)
+			assign_resources(bus);
+	}
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 static void setup_uma_memory(void)
 {
 #if CONFIG_GFXUMA
-  uint32_t topmem = (uint32_t) bsp_topmem();
-  uint32_t sys_mem;
+	uint32_t topmem = (uint32_t) bsp_topmem();
+	uint32_t sys_mem;
 
-  /* refer to UMA Size Consideration in Family12h BKDG. */
-  /* Please reference MemNGetUmaSizeLN () */
-  /*
-   *     Total system memory   UMASize
-   *     >= 2G                 512M
-   *     >=1G                  256M
-   *     <1G                    64M
-   */
-  sys_mem = topmem + 0x1000000; // Ignore 16MB allocated for C6 when finding UMA size
-  if ((bsp_topmem2()>>32) || (sys_mem >= 0x80000000)) {
-    uma_memory_size = 0x20000000;	/* >= 2G memory, 512M recommended UMA */
-  } else if (sys_mem >= 0x40000000) {
-    uma_memory_size = 0x10000000;	/* >= 1G memory, 256M recommended UMA */
-  } else {
-    uma_memory_size = 0x4000000; 	/* <1G memory, 64M recommended UMA */
-  }
-  uma_memory_base = topmem - uma_memory_size; /* TOP_MEM1 */
-  printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
-        __func__, uma_memory_size, uma_memory_base);
+	/* refer to UMA Size Consideration in Family12h BKDG. */
+	/* Please reference MemNGetUmaSizeLN () */
+	/*
+	 *     Total system memory   UMASize
+	 *     >= 2G                 512M
+	 *     >=1G                  256M
+	 *     <1G                    64M
+	 */
+	sys_mem = topmem + 0x1000000; // Ignore 16MB allocated for C6 when finding UMA size
+	if ((bsp_topmem2()>>32) || (sys_mem >= 0x80000000)) {
+		uma_memory_size = 0x20000000;	/* >= 2G memory, 512M recommended UMA */
+	} else if (sys_mem >= 0x40000000) {
+		uma_memory_size = 0x10000000;	/* >= 1G memory, 256M recommended UMA */
+	} else {
+		uma_memory_size = 0x4000000; 	/* <1G memory, 64M recommended UMA */
+	}
+	uma_memory_base = topmem - uma_memory_size; /* TOP_MEM1 */
+	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
+			__func__, uma_memory_size, uma_memory_base);
 #endif
 }
 
@@ -768,35 +758,35 @@ static void domain_enable_resources(device_t dev)
 
 static void cpu_bus_read_resources(device_t dev)
 {
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
 #if CONFIG_MMCONF_SUPPORT
-    struct resource *resource = new_resource(dev, 0xc0010058);
-    resource->base = CONFIG_MMCONF_BASE_ADDRESS;
-    resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
-    resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-        IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
+	struct resource *resource = new_resource(dev, 0xc0010058);
+	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
+	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
 #endif
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 static void cpu_bus_set_resources(device_t dev)
 {
-    struct resource *resource = find_resource(dev, 0xc0010058);
+	struct resource *resource = find_resource(dev, 0xc0010058);
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-    if (resource) {
-        report_resource_stored(dev, resource, " <mmconfig>");
-    }
-    pci_dev_set_resources(dev);
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	if (resource) {
+		report_resource_stored(dev, resource, " <mmconfig>");
+	}
+	pci_dev_set_resources(dev);
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 static void cpu_bus_init(device_t dev)
 {
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-    initialize_cpus(dev->link_list);
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	initialize_cpus(dev->link_list);
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -911,27 +901,27 @@ static unsigned long agesa_write_acpi_tables(unsigned long current,
 
 
 static struct device_operations northbridge_operations = {
-    .read_resources   = read_resources,
-    .set_resources    = set_resources,
-    .acpi_fill_ssdt_generator = northbridge_fill_ssdt_generator,
-    .write_acpi_tables = agesa_write_acpi_tables,
-  .enable_resources = pci_dev_enable_resources,
-  .init             = northbridge_init,
-  .enable           = 0,
-  .ops_pci          = 0,
+	.read_resources   = read_resources,
+	.set_resources    = set_resources,
+	.acpi_fill_ssdt_generator = northbridge_fill_ssdt_generator,
+	.write_acpi_tables = agesa_write_acpi_tables,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = northbridge_init,
+	.enable           = 0,
+	.ops_pci          = 0,
 };
 
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-    .ops = &northbridge_operations,
-    .vendor = PCI_VENDOR_ID_AMD,
-    .device = 0x1705,
+	.ops = &northbridge_operations,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x1705,
 };
 
 
 struct chip_operations northbridge_amd_agesa_family12_ops = {
-    CHIP_NAME("AMD Family 12h Northbridge")
-    .enable_dev = 0,
+	CHIP_NAME("AMD Family 12h Northbridge")
+	.enable_dev = 0,
 };
 
 
@@ -939,48 +929,48 @@ struct chip_operations northbridge_amd_agesa_family12_ops = {
 
 
 static struct device_operations pci_domain_ops = {
-    .read_resources   = domain_read_resources,
-    .set_resources    = domain_set_resources,
-    .enable_resources = domain_enable_resources,
-    .init             = NULL,
-    .scan_bus         = pci_domain_scan_bus,
+	.read_resources   = domain_read_resources,
+	.set_resources    = domain_set_resources,
+	.enable_resources = domain_enable_resources,
+	.init             = NULL,
+	.scan_bus         = pci_domain_scan_bus,
 };
 
 
 static struct device_operations cpu_bus_ops = {
-    .read_resources   = cpu_bus_read_resources,
-    .set_resources    = cpu_bus_set_resources,
-    .enable_resources = NULL,
-    .init             = cpu_bus_init,
-    .scan_bus         = 0,
+	.read_resources   = cpu_bus_read_resources,
+	.set_resources    = cpu_bus_set_resources,
+	.enable_resources = NULL,
+	.init             = cpu_bus_init,
+	.scan_bus         = 0,
 };
 
 
 static void root_complex_enable_dev(struct device *dev)
 {
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-    static int done = 0;
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+	static int done = 0;
 
 	/* Do not delay UMA setup, as a device on the PCI bus may evaluate
 	   the global uma_memory variables already in its enable function. */
-    if (!done) {
-       setup_bsp_ramtop();
-       setup_uma_memory();
-       done = 1;
-    }
+	if (!done) {
+		setup_bsp_ramtop();
+		setup_uma_memory();
+		done = 1;
+	}
 
-    /* Set the operations if it is a special bus type */
-    if (dev->path.type == DEVICE_PATH_DOMAIN) {
-        dev->ops = &pci_domain_ops;
-    }
-    else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-        dev->ops = &cpu_bus_ops;
-    }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		dev->ops = &pci_domain_ops;
+	}
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+		dev->ops = &cpu_bus_ops;
+	}
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
 struct chip_operations northbridge_amd_agesa_family12_root_complex_ops = {
-    CHIP_NAME("AMD Family 12h Root Complex")
-    .enable_dev = root_complex_enable_dev,
+	CHIP_NAME("AMD Family 12h Root Complex")
+	.enable_dev = root_complex_enable_dev,
 };

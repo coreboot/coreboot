@@ -99,14 +99,6 @@ static void spi_init(void)
 	write32(bcr, reg);
 }
 
-static inline void mark_ts(struct romstage_params *rp, uint64_t ts)
-{
-	struct romstage_timestamps *rt = &rp->ts;
-
-	rt->times[rt->count] = ts;
-	rt->count++;
-}
-
 /* Entry from cache-as-ram.inc. */
 void * asmlinkage romstage_main(unsigned long bist,
                                 uint32_t tsc_low, uint32_t tsc_hi)
@@ -117,9 +109,10 @@ void * asmlinkage romstage_main(unsigned long bist,
 	};
 
 	/* Save initial timestamp from bootblock. */
-	mark_ts(&rp, (((uint64_t)tsc_hi) << 32) | (uint64_t)tsc_low);
+	timestamp_init((((uint64_t)tsc_hi) << 32) | (uint64_t)tsc_low);
+
 	/* Save romstage begin */
-	mark_ts(&rp, timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	program_base_addresses();
 
@@ -233,7 +226,7 @@ void romstage_common(struct romstage_params *params)
 	struct chipset_power_state *ps;
 	int prev_sleep_state;
 
-	mark_ts(params, timestamp_get());
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	ps = fill_power_state();
 	prev_sleep_state = chipset_prev_sleep_state(ps);
@@ -249,7 +242,7 @@ void romstage_common(struct romstage_params *params)
 	/* Initialize RAM */
 	raminit(params->mrc_params, prev_sleep_state);
 
-	mark_ts(params, timestamp_get());
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
@@ -258,12 +251,6 @@ void romstage_common(struct romstage_params *params)
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
 	chromeos_init(prev_sleep_state);
-
-	/* Save timestamp information. */
-	timestamp_init(params->ts.times[0]);
-	timestamp_add(TS_START_ROMSTAGE, params->ts.times[1]);
-	timestamp_add(TS_BEFORE_INITRAM, params->ts.times[2]);
-	timestamp_add(TS_AFTER_INITRAM, params->ts.times[3]);
 }
 
 void asmlinkage romstage_after_car(void)

@@ -23,16 +23,9 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 
-#define NUM_ROMSTAGE_TS 4
-struct romstage_timestamps {
-	uint64_t times[NUM_ROMSTAGE_TS];
-	int count;
-};
-
 struct chipset_power_state;
 struct pei_data;
 struct romstage_params {
-	struct romstage_timestamps ts;
 	unsigned long bist;
 	struct chipset_power_state *power_state;
 	struct pei_data *pei_data;

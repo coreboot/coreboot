@@ -149,9 +149,8 @@ static void configure_tpm_i2c_bus(void)
 
 static void __attribute__((noinline)) romstage(void)
 {
-#if CONFIG_COLLECT_TIMESTAMPS
-	uint64_t romstage_start_time = timestamp_get();
-#endif
+	timestamp_init(0);
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	configure_l2ctlr();
 	configure_l2actlr();
@@ -212,9 +211,6 @@ static void __attribute__((noinline)) romstage(void)
 
 	cbmem_initialize_empty();
 
-	timestamp_init(0);
-	timestamp_add(TS_START_ROMSTAGE, romstage_start_time);
-
 	// Enable additional peripherals we need for ROM stage.
 	clock_enable_clear_reset(0, CLK_H_SBC1, CLK_U_I2C3, 0, 0, 0);
 
@@ -229,10 +225,10 @@ static void __attribute__((noinline)) romstage(void)
 	vboot_verify_firmware(romstage_handoff_find_or_add());
 #endif
 
-	timestamp_add(TS_START_COPYRAM, timestamp_get());
+	timestamp_add_now(TS_START_COPYRAM);
 	void *entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
 				      "fallback/coreboot_ram");
-	timestamp_add(TS_END_COPYRAM, timestamp_get());
+	timestamp_add_now(TS_END_COPYRAM);
 
 	stage_exit(entry);
 }

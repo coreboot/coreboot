@@ -22,6 +22,7 @@
 #include <armv7.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <timestamp.h>
 
 #include <arch/cache.h>
 #include <arch/exception.h>
@@ -147,6 +148,9 @@ void main(void)
 	void *entry;
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
 	mem = setup_clock();
@@ -155,7 +159,12 @@ void main(void)
 	exception_init();
 
 	setup_power(is_resume);
+
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
 	setup_memory(mem, is_resume);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/* This needs to happen on normal boots and on resume. */
 	trustzone_init();
@@ -174,5 +183,8 @@ void main(void)
 	cbmem_initialize_empty();
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
+
+	timestamp_add_now(TS_END_ROMSTAGE);
+
 	stage_exit(entry);
 }

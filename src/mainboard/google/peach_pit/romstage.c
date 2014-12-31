@@ -23,6 +23,7 @@
 #include <armv7.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <timestamp.h>
 
 #include <arch/cache.h>
 #include <arch/exception.h>
@@ -234,6 +235,9 @@ void main(void)
 	exynos5420_config_smp();
 	power_init_failed = setup_power(is_resume);
 
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
 	system_clock_init();
@@ -248,7 +252,11 @@ void main(void)
 	/* re-initialize PMIC I2C channel after (re-)setting system clocks */
 	i2c_init(PMIC_I2C_BUS, 1000000, 0x00); /* 1MHz */
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
 	setup_memory(&mem_timings, is_resume);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	primitive_mem_test();
 
@@ -272,5 +280,8 @@ void main(void)
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
 	simple_spi_test();
+
+	timestamp_add_now(TS_END_ROMSTAGE);
+
 	stage_exit(entry);
 }

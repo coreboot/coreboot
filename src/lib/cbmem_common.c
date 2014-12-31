@@ -20,6 +20,8 @@
 #include <cbmem.h>
 #include <stdlib.h>
 
+#ifndef __PRE_RAM__
+
 static const struct cbmem_id_to_name cbmem_ids[] = { CBMEM_ID_TO_NAME_TABLE };
 
 void cbmem_print_entry(int n, u32 id, u64 base, u64 size)
@@ -43,3 +45,5 @@ void cbmem_print_entry(int n, u32 id, u64 base, u64 size)
 	printk(BIOS_DEBUG, "%08llx ", base);
 	printk(BIOS_DEBUG, "%08llx\n", size);
 }
+
+#endif /* !__PRE_RAM__ */

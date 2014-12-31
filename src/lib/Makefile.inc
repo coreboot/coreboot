@@ -81,7 +81,9 @@ else
 ramstage-y += cbmem.c
 romstage-y += cbmem.c
 endif # CONFIG_DYNAMIC_CBMEM
-ramstage-y += cbmem_info.c
+
+romstage-y += cbmem_common.c
+ramstage-y += cbmem_common.c
 
 ramstage-y += hexdump.c
 romstage-y += hexdump.c

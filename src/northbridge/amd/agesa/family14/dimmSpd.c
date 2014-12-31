@@ -30,9 +30,6 @@
 
 #include <northbridge/amd/agesa/dimmSpd.h>
 
-/* uncomment for source level debug - GDB gets really confused otherwise. */
-//#pragma optimize ("", off)
-
 /**
  * Gets the SMBus address for an SPD from the array in devicetree.cb
  * then read the SPD into the supplied buffer.

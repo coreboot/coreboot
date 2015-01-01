@@ -17,8 +17,6 @@
  * Foundation, Inc.
  */
 
-#include <AGESA.h>
-#include <Lib/amdlib.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
@@ -26,84 +24,10 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cbmem.h>
-#include <device/device.h>
-#include <arch/io.h>
-#include <arch/acpi.h>
 #include <string.h>
-#include "Porting.h"
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "s3_resume.h"
 
-#ifndef __PRE_RAM__
-
-void restore_mtrr(void)
-{
-	volatile u32 *msrPtr = (u32 *) OemS3Saved_MTRR_Storage();
-	u32 msr;
-	msr_t msr_data;
-
-	if (!msrPtr)
-		return;
-
-	disable_cache();
-
-	/* Enable access to AMD RdDram and WrDram extension bits */
-	msr_data = rdmsr(SYS_CFG);
-	msr_data.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYS_CFG, msr_data);
-
-	/* Now restore the Fixed MTRRs */
-	msr_data.lo = *msrPtr;
-	msrPtr ++;
-	msr_data.hi = *msrPtr;
-	msrPtr ++;
-	wrmsr(0x250, msr_data);
-
-	msr_data.lo = *msrPtr;
-	msrPtr ++;
-	msr_data.hi = *msrPtr;
-	msrPtr ++;
-	wrmsr(0x258, msr_data);
-
-	msr_data.lo = *msrPtr;
-	msrPtr ++;
-	msr_data.hi = *msrPtr;
-	msrPtr ++;
-	wrmsr(0x259, msr_data);
-
-	for (msr = 0x268; msr <= 0x26F; msr++) {
-		msr_data.lo = *msrPtr;
-		msrPtr ++;
-		msr_data.hi = *msrPtr;
-		msrPtr ++;
-		wrmsr(msr, msr_data);
-	}
-
-	/* Disable access to AMD RdDram and WrDram extension bits */
-	msr_data = rdmsr(SYS_CFG);
-	msr_data.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYS_CFG, msr_data);
-
-	/* Restore the Variable MTRRs */
-	for (msr = 0x200; msr <= 0x20F; msr++) {
-		msr_data.lo = *msrPtr;
-		msrPtr ++;
-		msr_data.hi = *msrPtr;
-		msrPtr ++;
-		wrmsr(msr, msr_data);
-	}
-
-	/* Restore SYSCFG MTRR */
-	msr_data.lo = *msrPtr;
-	msrPtr ++;
-	msr_data.hi = *msrPtr;
-	msrPtr ++;
-	wrmsr(SYS_CFG, msr_data);
-}
-
-#endif
-
-#ifdef __PRE_RAM__
 static void *backup_resume(void)
 {
 	void *resume_backup_memory;
@@ -135,58 +59,7 @@ static void move_stack_high_mem(void)
 		      (high_stack - BSP_STACK_BASE_ADDR)
 		      :);
 }
-#endif
 
-#ifndef __PRE_RAM__
-static void write_mtrr(u8 **p_nvram_pos, unsigned idx)
-{
-	msr_t  msr_data;
-	msr_data = rdmsr(idx);
-
-	memcpy(*p_nvram_pos, &msr_data, sizeof(msr_data));
-	*p_nvram_pos += sizeof(msr_data);
-}
-
-void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size)
-{
-	u8 *nvram_pos = mtrr_store;
-	msr_t  msr_data;
-	u32 i;
-
-	/* Enable access to AMD RdDram and WrDram extension bits */
-	msr_data = rdmsr(SYS_CFG);
-	msr_data.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYS_CFG, msr_data);
-
-	/* Fixed MTRRs */
-	write_mtrr(&nvram_pos, 0x250);
-	write_mtrr(&nvram_pos, 0x258);
-	write_mtrr(&nvram_pos, 0x259);
-
-	for (i = 0x268; i < 0x270; i++)
-		write_mtrr(&nvram_pos, i);
-
-	/* Disable access to AMD RdDram and WrDram extension bits */
-	msr_data = rdmsr(SYS_CFG);
-	msr_data.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYS_CFG, msr_data);
-
-	/* Variable MTRRs */
-	for (i = 0x200; i < 0x210; i++)
-		write_mtrr(&nvram_pos, i);
-
-	/* SYS_CFG */
-	write_mtrr(&nvram_pos, 0xC0010010);
-	/* TOM */
-	write_mtrr(&nvram_pos, 0xC001001A);
-	/* TOM2 */
-	write_mtrr(&nvram_pos, 0xC001001D);
-
-	*mtrr_store_size = nvram_pos - (u8*) mtrr_store;
-}
-#endif
-
-#ifdef __PRE_RAM__
 static void set_resume_cache(void)
 {
 	msr_t msr;
@@ -236,4 +109,3 @@ void prepare_for_resume(void)
 
 	printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
 }
-#endif

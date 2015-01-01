@@ -280,6 +280,7 @@ config ARCH_ARM64
 config ARCH_RISCV
 	bool
 	default n
+	select ANY_TOOLCHAIN
 
 source src/arch/x86/Kconfig
 source src/arch/arm/Kconfig

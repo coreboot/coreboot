@@ -33,5 +33,5 @@ config MAINBOARD_HAS_BOOTBLOCK_INIT
 	default n
 
 config ARM_LPAE
-	bool "Enable LPAE"
+	bool
 	default n

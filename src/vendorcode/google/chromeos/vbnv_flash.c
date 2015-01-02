@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ *
+ * TODO: Make this CAR-friendly in case we use it on x86 some day.
  */
 
 #include <cbfs.h>
@@ -25,6 +27,7 @@
 #include <vb2_api.h>
 #include <vboot_nvstorage.h>
 #include "chromeos.h"
+#include "vbnv_layout.h"
 
 #if IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE)
 #define BLOB_SIZE VBNV_BLOCK_SIZE
@@ -188,4 +191,11 @@ void save_vbnv(const uint8_t *vbnv_copy)
 	} else {
 		printk(BIOS_ERR, "failed to save nvdata\n");
 	}
+}
+
+int get_recovery_mode_from_vbnv(void)
+{
+	if (!is_initialized())
+		init_vbnv();
+	return cache[RECOVERY_OFFSET];
 }

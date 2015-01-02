@@ -40,24 +40,9 @@
 
 #endif
 
-typedef struct _BIOS_HEAP_MANAGER {
-	UINT32 StartOfAllocatedNodes;
-	UINT32 StartOfFreedNodes;
-} BIOS_HEAP_MANAGER;
-
-typedef struct _BIOS_BUFFER_NODE {
-	UINT32 BufferHandle;
-	UINT32 BufferSize;
-	UINT32 NextNodeOffset;
-} BIOS_BUFFER_NODE;
 
 UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
 void EmptyHeap(void);
-
-
-AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_LocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
@@ -69,6 +54,7 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt
 AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
+AGESA_STATUS HeapManagerCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 typedef struct {

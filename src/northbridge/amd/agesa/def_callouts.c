@@ -30,7 +30,13 @@
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
+	AGESA_STATUS status;
 	UINTN i;
+
+	/* One HeapManager serves them all. */
+	status = HeapManagerCallout(Func, Data, ConfigPtr);
+	if (status != AGESA_UNSUPPORTED)
+		return status;
 
 	for (i = 0; i < BiosCalloutsLen; i++) {
 		if (BiosCallouts[i].CalloutName == Func)

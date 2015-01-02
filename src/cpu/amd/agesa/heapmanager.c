@@ -52,7 +52,18 @@ static AGESA_STATUS alloc_cbmem(AGESA_BUFFER_PARAMS *AllocParams) {
 }
 #endif
 
-AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+typedef struct _BIOS_HEAP_MANAGER {
+	UINT32 StartOfAllocatedNodes;
+	UINT32 StartOfFreedNodes;
+} BIOS_HEAP_MANAGER;
+
+typedef struct _BIOS_BUFFER_NODE {
+	UINT32 BufferHandle;
+	UINT32 BufferSize;
+	UINT32 NextNodeOffset;
+} BIOS_BUFFER_NODE;
+
+static AGESA_STATUS agesa_AllocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	UINT32              AvailableHeapSize;
 	UINT8               *BiosHeapBaseAddr;
@@ -188,7 +199,7 @@ AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS agesa_DeallocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 
 	UINT8               *BiosHeapBaseAddr;
@@ -307,7 +318,7 @@ AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_LocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS agesa_LocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	UINT32              AllocNodeOffset;
 	UINT8               *BiosHeapBaseAddr;
@@ -339,4 +350,16 @@ AGESA_STATUS agesa_LocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	return AGESA_SUCCESS;
 
+}
+
+AGESA_STATUS HeapManagerCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	if (Func == AGESA_LOCATE_BUFFER)
+		return agesa_LocateBuffer(Func, Data, ConfigPtr);
+	else if (Func == AGESA_ALLOCATE_BUFFER)
+		return agesa_AllocateBuffer(Func, Data, ConfigPtr);
+	else if (Func == AGESA_DEALLOCATE_BUFFER)
+		return agesa_DeallocateBuffer(Func, Data, ConfigPtr);
+	else
+		return AGESA_UNSUPPORTED;
 }

@@ -83,7 +83,7 @@ files_added:: build_complete
 
 #######################################################################
 # our phony targets
-PHONY+= clean-abuild coreboot build-dirs build_complete
+PHONY+= clean-abuild coreboot check-style build-dirs build_complete
 
 #######################################################################
 # root source directories of coreboot
@@ -605,6 +605,12 @@ printcrt0s:
 
 update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
+
+check-style:
+	grep "^# DESCR:" util/lint/check-style | sed "s,.*DESCR: *,,"
+	echo "========"
+	util/lint/check-style
+	echo "========"
 
 gitconfig:
 	util/gitconfig/gitconfig.sh "$(MAKE)"

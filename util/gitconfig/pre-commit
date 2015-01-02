@@ -18,7 +18,7 @@
 set -e # -o errexit
 set -u # -o nounset
 
-%MAKE% lint-stable
+%MAKE% check-style lint-stable
 
 PATCHDIFF=$(git diff --cached --src-prefix=a/ --dst-prefix=b/)
 if printf "%s\n" "$PATCHDIFF" | grep -q "@@"; then

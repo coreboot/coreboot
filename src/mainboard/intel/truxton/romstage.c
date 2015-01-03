@@ -32,7 +32,6 @@
 #include "northbridge/intel/i3100/raminit_ep80579.h"
 #include <superio/intel/i3100/i3100.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
-#include "superio/intel/i3100/early_serial.c"
 #include "lib/debug.c" // XXX
 #include "cpu/x86/bist.h"
 #include <spd.h>

@@ -46,7 +46,7 @@
 #include "southbridge/amd/sb700/sb700.h"
 #include "southbridge/amd/sb700/smbus.h"
 #include "southbridge/amd/sr5650/sr5650.h"
-#include "superio/nuvoton/wpcm450/wpcm450.h"
+#include <superio/nuvoton/wpcm450/wpcm450.h>
 #include "northbridge/amd/amdfam10/debug.c"
 
 static void activate_spd_rom(const struct mem_controller *ctrl)

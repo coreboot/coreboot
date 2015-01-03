@@ -24,7 +24,7 @@
 #include <arch/io.h>
 #include <delay.h>
 #include "dock.h"
-#include "superio/nsc/pc87384/pc87384.h"
+#include <superio/nsc/pc87384/pc87384.h>
 #include "ec/acpi/ec.h"
 #include "ec/lenovo/pmh7/pmh7.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"

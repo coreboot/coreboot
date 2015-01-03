@@ -33,7 +33,7 @@
 #include <console/console.h>
 #include <halt.h>
 #include <reset.h>
-#include "superio/smsc/sio1007/chip.h"
+#include <superio/smsc/sio1007/chip.h>
 #include <fsp_util.h>
 #include "northbridge/intel/fsp_sandybridge/northbridge.h"
 #include "northbridge/intel/fsp_sandybridge/raminit.h"

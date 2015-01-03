@@ -30,7 +30,7 @@
 #include "southbridge/intel/i3100/early_smbus.c"
 #include "southbridge/intel/i3100/early_lpc.c"
 #include "northbridge/intel/i3100/raminit_ep80579.h"
-#include "superio/intel/i3100/i3100.h"
+#include <superio/intel/i3100/i3100.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "superio/intel/i3100/early_serial.c"
 #include "lib/debug.c" // XXX

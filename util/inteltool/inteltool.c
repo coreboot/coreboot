@@ -209,10 +209,11 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?gGrpmedPMa]\n", name);
+	printf("usage: %s [-vh?gGrpmedPMas]\n", name);
 	printf("\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
+	     "   -s | --spi:                       dump southbridge spi and bios_cntrl registers\n"
 	     "   -g | --gpio:                      dump southbridge GPIO registers\n"
 	     "   -G | --gpio-diffs:                show GPIO differences from defaults\n"
 	     "   -r | --rcba:                      dump southbridge RCBA registers\n"
@@ -240,6 +241,7 @@ int main(int argc, char *argv[])
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
+	int dump_spi = 0;
 	int show_gpio_diffs = 0;
 
 	static struct option long_options[] = {
@@ -255,11 +257,12 @@ int main(int argc, char *argv[])
 		{"pciexpress", 0, 0, 'P'},
 		{"msrs", 0, 0, 'M'},
 		{"ambs", 0, 0, 'A'},
+		{"spi", 0, 0, 's'},
 		{"all", 0, 0, 'a'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaA",
+	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAs",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -304,9 +307,13 @@ int main(int argc, char *argv[])
 			dump_pciexbar = 1;
 			dump_coremsrs = 1;
 			dump_ambs = 1;
+			dump_spi = 1;
 			break;
 		case 'A':
 			dump_ambs = 1;
+			break;
+		case 's':
+			dump_spi = 1;
 			break;
 		case 'h':
 		case '?':
@@ -453,6 +460,10 @@ int main(int argc, char *argv[])
 
 	if (dump_ambs) {
 		print_ambs(nb, pacc);
+	}
+
+	if (dump_spi) {
+		print_spi(sb);
 	}
 	/* Clean up */
 	pci_free_dev(nb);

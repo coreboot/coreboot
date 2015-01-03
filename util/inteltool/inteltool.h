@@ -203,4 +203,5 @@ int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);
 int print_pciexbar(struct pci_dev *nb);
 int print_ambs(struct pci_dev *nb, struct pci_access *pacc);
+int print_spi(struct pci_dev *sb);
 void ivybridge_dump_timings(void);

@@ -32,13 +32,17 @@ volatile u8 * find_fsp (void);
 void fsp_early_init(FSP_INFO_HEADER *fsp_info);
 void FspNotify(u32 Phase);
 void FspNotifyReturnPoint(EFI_STATUS Status, VOID *HobListPtr);
-void print_hob_type_structure(u16 Hobtype, void *Hoblistptr);
 void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer);
 void print_fsp_info(void);
-
 void chipset_fsp_early_init(FSP_INIT_PARAMS *FspInitParams,
 	FSP_INFO_HEADER *fsp_ptr);
 void ChipsetFspReturnPoint(EFI_STATUS Status, VOID *HobListPtr);
+
+/* functions in hob.c */
+void print_hob_mem_attributes(void *Hobptr);
+void print_hob_type_structure(u16 Hobtype, void *Hoblistptr);
+void print_hob_resource_attributes(void *Hobptr);
+const char * get_hob_type_string(void *Hobptr);
 
 /* Additional HOB types not included in the FSP:
  * #define EFI_HOB_TYPE_HANDOFF 0x0001

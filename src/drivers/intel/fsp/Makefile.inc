@@ -17,8 +17,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-ramstage-y += fsp_util.c
-romstage-y += fsp_util.c
+ramstage-y += fsp_util.c hob.c
+romstage-y += fsp_util.c hob.c
+
 ramstage-$(CONFIG_ENABLE_MRC_CACHE) += fastboot_cache.c
 romstage-$(CONFIG_ENABLE_MRC_CACHE) += fastboot_cache.c
 

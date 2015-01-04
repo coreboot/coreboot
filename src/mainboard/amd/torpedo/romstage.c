@@ -29,9 +29,9 @@
 #include <console/loglevel.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <superio/smsc/kbc1100/kbc1100.h>
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include "sb_cimx.h"
 #include "SbPlatform.h"
 #include <arch/cpu.h>

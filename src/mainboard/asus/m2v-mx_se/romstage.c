@@ -35,14 +35,14 @@ unsigned int get_sbdn(unsigned bus);
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include <halt.h>
-#include "northbridge/amd/amdk8/raminit.h"
+#include <northbridge/amd/amdk8/raminit.h>
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>
 
@@ -58,7 +58,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "southbridge/via/k8t890/early_car.c"
-#include "northbridge/amd/amdk8/amdk8.h"
+#include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"

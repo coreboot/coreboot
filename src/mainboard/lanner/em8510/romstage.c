@@ -30,12 +30,12 @@
 #include "drivers/pc80/udelay_io.c"
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include "southbridge/intel/i82801dx/i82801dx.h"
-#include "northbridge/intel/i855/raminit.h"
+#include <southbridge/intel/i82801dx/i82801dx.h>
+#include <northbridge/intel/i855/raminit.h>
 #include "northbridge/intel/i855/debug.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 

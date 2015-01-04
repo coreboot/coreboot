@@ -24,11 +24,11 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <console/console.h>
-#include "southbridge/intel/i82371eb/i82371eb.h"
-#include "northbridge/intel/i440bx/raminit.h"
+#include <southbridge/intel/i82371eb/i82371eb.h>
+#include <northbridge/intel/i440bx/raminit.h>
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83977tf/w83977tf.h>
 #include <lib.h>

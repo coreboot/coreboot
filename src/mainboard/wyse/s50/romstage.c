@@ -25,8 +25,8 @@
 #include <device/pnp_def.h>
 #include <console/console.h>
 #include <lib.h>
-#include "cpu/x86/bist.h"
-#include "cpu/x86/msr.h"
+#include <cpu/x86/bist.h>
+#include <cpu/x86/msr.h>
 #include <cpu/amd/gx2def.h>
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
@@ -40,7 +40,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/gx2/raminit.h"
+#include <northbridge/amd/gx2/raminit.h>
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "northbridge/amd/gx2/raminit.c"
 #include "lib/generic_sdram.c"

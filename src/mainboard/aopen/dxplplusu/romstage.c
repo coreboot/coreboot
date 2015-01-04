@@ -25,8 +25,8 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 
-#include "southbridge/intel/i82801dx/i82801dx.h"
-#include "northbridge/intel/e7505/raminit.h"
+#include <southbridge/intel/i82801dx/i82801dx.h>
+#include <northbridge/intel/e7505/raminit.h>
 
 #include <device/pnp_def.h>
 #include <superio/smsc/lpc47m10x/lpc47m10x.h>

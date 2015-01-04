@@ -36,9 +36,9 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <halt.h>
-#include "northbridge/intel/i945/i945.h"
-#include "northbridge/intel/i945/raminit.h"
-#include "southbridge/intel/i82801gx/i82801gx.h"
+#include <northbridge/intel/i945/i945.h>
+#include <northbridge/intel/i945/raminit.h>
+#include <southbridge/intel/i82801gx/i82801gx.h>
 #include "dock.h"
 
 void setup_ich7_gpios(void)

@@ -30,15 +30,15 @@
 #include <spd.h>
 
 #include <cpu/amd/model_fxx_rev.h>
-#include "northbridge/amd/amdk8/raminit.h"
+#include <northbridge/amd/amdk8/raminit.h>
 #include "lib/delay.c"
 
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
@@ -65,7 +65,7 @@ static inline int spd_read_byte(u32 device, u32 address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/amdk8.h"
+#include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"

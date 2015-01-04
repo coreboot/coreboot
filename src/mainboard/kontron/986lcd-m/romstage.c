@@ -34,9 +34,9 @@
 #include <cpu/x86/bist.h>
 #include <halt.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
-#include "northbridge/intel/i945/i945.h"
-#include "northbridge/intel/i945/raminit.h"
-#include "southbridge/intel/i82801gx/i82801gx.h"
+#include <northbridge/intel/i945/i945.h>
+#include <northbridge/intel/i945/raminit.h>
+#include <southbridge/intel/i82801gx/i82801gx.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 

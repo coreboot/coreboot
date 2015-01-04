@@ -8,9 +8,9 @@
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/amd/amd8111/early_smbus.c"
-#include "northbridge/amd/amdk8/raminit.h"
+#include <northbridge/amd/amdk8/raminit.h>
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include <superio/winbond/common/winbond.h>
@@ -54,7 +54,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
         return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/amdk8.h"
+#include <northbridge/amd/amdk8/amdk8.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit.c"

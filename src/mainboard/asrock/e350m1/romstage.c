@@ -31,10 +31,10 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct5572d/nct5572d.h>
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
 

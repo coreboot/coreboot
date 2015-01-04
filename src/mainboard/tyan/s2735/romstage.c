@@ -9,11 +9,11 @@
 #include <lib.h>
 #include <spd.h>
 #include "southbridge/intel/i82801ex/early_smbus.c"
-#include "northbridge/intel/e7501/raminit.h"
+#include <northbridge/intel/e7501/raminit.h>
 #include "northbridge/intel/e7501/debug.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

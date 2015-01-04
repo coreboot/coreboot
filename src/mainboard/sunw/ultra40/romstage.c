@@ -10,14 +10,14 @@
 #include <spd.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "southbridge/nvidia/ck804/early_smbus.h"
-#include "northbridge/amd/amdk8/raminit.h"
+#include <southbridge/nvidia/ck804/early_smbus.h>
+#include <northbridge/amd/amdk8/raminit.h>
 #include "lib/delay.c"
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include <superio/smsc/lpc47b397/lpc47b397.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "superio/smsc/lpc47b397/early_gpio.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
@@ -51,7 +51,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
-#include "southbridge/nvidia/ck804/early_setup_ss.h"
+#include <southbridge/nvidia/ck804/early_setup_ss.h>
 
 //set GPIO to input mode
 #define CK804_MB_SETUP \

@@ -25,9 +25,9 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <superio/smsc/lpc47b272/lpc47b272.h>
-#include "northbridge/intel/i82810/raminit.h"
-#include "cpu/x86/bist.h"
-#include "southbridge/intel/i82801ax/i82801ax.h"
+#include <northbridge/intel/i82810/raminit.h>
+#include <cpu/x86/bist.h>
+#include <southbridge/intel/i82801ax/i82801ax.h>
 #include "drivers/pc80/udelay_io.c"
 #include <lib.h>
 

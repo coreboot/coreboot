@@ -34,14 +34,14 @@
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
-#include "northbridge/amd/amdk8/raminit.h"
+#include <northbridge/amd/amdk8/raminit.h>
 #include "lib/delay.c"
 #include <reset.h>
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include <superio/nsc/pc87417/pc87417.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/broadcom/bcm5785/early_setup.c"
 
@@ -64,7 +64,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
         return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/f.h"
+#include <northbridge/amd/amdk8/f.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"

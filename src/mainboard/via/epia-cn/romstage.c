@@ -26,8 +26,8 @@
 #include <device/pnp_def.h>
 #include <console/console.h>
 #include <lib.h>
-#include "northbridge/via/cn700/raminit.h"
-#include "cpu/x86/bist.h"
+#include <northbridge/via/cn700/raminit.h>
+#include <cpu/x86/bist.h>
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "southbridge/via/vt8237r/early_smbus.c"

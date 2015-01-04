@@ -30,10 +30,10 @@
 #include <cpu/x86/lapic.h>
 #include <arch/acpi.h>
 #include <console/console.h>
-#include "northbridge/intel/sandybridge/sandybridge.h"
-#include "northbridge/intel/sandybridge/raminit_native.h"
-#include "southbridge/intel/bd82x6x/pch.h"
-#include "southbridge/intel/bd82x6x/gpio.h"
+#include <northbridge/intel/sandybridge/sandybridge.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/bd82x6x/gpio.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 

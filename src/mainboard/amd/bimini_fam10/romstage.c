@@ -34,13 +34,13 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include "northbridge/amd/amdfam10/raminit.h"
-#include "northbridge/amd/amdfam10/amdfam10.h"
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <lib.h>
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"
@@ -57,12 +57,12 @@ static int spd_read_byte(u32 device, u32 address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdfam10/amdfam10.h"
+#include <northbridge/amd/amdfam10/amdfam10.h>
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
 #include "northbridge/amd/amdfam10/pci.c"
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
-#include "cpu/amd/microcode.h"
+#include <cpu/amd/microcode.h>
 
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"

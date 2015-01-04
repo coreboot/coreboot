@@ -24,16 +24,16 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <console/console.h>
-#include "cpu/x86/bist.h"
-#include "cpu/x86/msr.h"
+#include <cpu/x86/bist.h>
+#include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
-#include "southbridge/amd/cs5536/cs5536.h"
+#include <southbridge/amd/cs5536/cs5536.h>
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
-#include "northbridge/amd/lx/raminit.h"
+#include <northbridge/amd/lx/raminit.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

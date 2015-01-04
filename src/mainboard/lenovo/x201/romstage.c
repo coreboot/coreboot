@@ -42,11 +42,11 @@
 #include "gpio.h"
 #include "dock.h"
 #include "arch/early_variables.h"
-#include "southbridge/intel/ibexpeak/pch.h"
-#include "northbridge/intel/nehalem/nehalem.h"
+#include <southbridge/intel/ibexpeak/pch.h>
+#include <northbridge/intel/nehalem/nehalem.h>
 
-#include "northbridge/intel/nehalem/raminit.h"
-#include "southbridge/intel/ibexpeak/me.h"
+#include <northbridge/intel/nehalem/raminit.h>
+#include <southbridge/intel/ibexpeak/me.h>
 
 static void pch_enable_lpc(void)
 {

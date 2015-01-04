@@ -31,15 +31,15 @@
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/early_smbus.c"
-#include "northbridge/amd/amdk8/raminit.h"
+#include <northbridge/amd/amdk8/raminit.h>
 #include "lib/delay.c"
 #include <lib.h>
 #include <spd.h>
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8716f/it8716f.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
@@ -55,14 +55,14 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/f.h"
+#include <northbridge/amd/amdk8/f.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
-#include "southbridge/nvidia/mcp55/early_setup_ss.h"
+#include <southbridge/nvidia/mcp55/early_setup_ss.h>
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"

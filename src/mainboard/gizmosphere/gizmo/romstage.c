@@ -33,13 +33,13 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <cpu/x86/cache.h>
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
 #include "cbmem.h"
-#include "cpu/amd/mtrr.h"
-#include "cpu/amd/agesa/s3_resume.h"
+#include <cpu/amd/mtrr.h>
+#include <cpu/amd/agesa/s3_resume.h>
 
 #define MSR_MTRR_VARIABLE_BASE6   0x020C
 #define MSR_MTRR_VARIABLE_MASK6   0x020D

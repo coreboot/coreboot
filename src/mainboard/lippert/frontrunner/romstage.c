@@ -6,10 +6,10 @@
 #include <console/console.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
-#include "cpu/x86/bist.h"
-#include "cpu/x86/msr.h"
+#include <cpu/x86/bist.h>
+#include <cpu/x86/msr.h>
 #include <cpu/amd/gx2def.h>
-#include "southbridge/amd/cs5535/cs5535.h"
+#include <southbridge/amd/cs5535/cs5535.h>
 #include "southbridge/amd/cs5535/early_smbus.c"
 #include "southbridge/amd/cs5535/early_setup.c"
 
@@ -62,7 +62,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	return (address < sizeof(spdbytes)) ? spdbytes[address] : 0xFF;
 }
 
-#include "northbridge/amd/gx2/raminit.h"
+#include <northbridge/amd/gx2/raminit.h>
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "northbridge/amd/gx2/raminit.c"
 #include "lib/generic_sdram.c"

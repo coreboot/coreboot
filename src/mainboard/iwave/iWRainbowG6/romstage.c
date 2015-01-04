@@ -273,7 +273,7 @@ int selectcard(void)
 #endif
 
 #include "northbridge/intel/sch/early_init.c"
-#include "northbridge/intel/sch/raminit.h"
+#include <northbridge/intel/sch/raminit.h>
 #include "northbridge/intel/sch/raminit.c"
 
 static void sch_enable_lpc(void)

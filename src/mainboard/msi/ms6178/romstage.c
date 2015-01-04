@@ -26,9 +26,9 @@
 #include <console/console.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
-#include "northbridge/intel/i82810/raminit.h"
-#include "cpu/x86/bist.h"
-#include "southbridge/intel/i82801ax/i82801ax.h"
+#include <northbridge/intel/i82810/raminit.h>
+#include <cpu/x86/bist.h>
+#include <southbridge/intel/i82801ax/i82801ax.h>
 #include "drivers/pc80/udelay_io.c"
 #include <lib.h>
 

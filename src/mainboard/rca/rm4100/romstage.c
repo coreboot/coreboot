@@ -27,11 +27,11 @@
 #include <console/console.h>
 #include <lib.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
-#include "northbridge/intel/i82830/raminit.h"
+#include <northbridge/intel/i82830/raminit.h>
 #include "northbridge/intel/i82830/memory_initialized.c"
-#include "southbridge/intel/i82801dx/i82801dx.h"
+#include <southbridge/intel/i82801dx/i82801dx.h>
 #include "southbridge/intel/i82801dx/reset.c"
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "spd_table.h"
 #include "gpio.c"
 #include "southbridge/intel/i82801dx/tco_timer.c"

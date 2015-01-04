@@ -29,11 +29,11 @@
 #include <console/console.h>
 #include "southbridge/intel/i3100/early_smbus.c"
 #include "southbridge/intel/i3100/early_lpc.c"
-#include "northbridge/intel/i3100/raminit_ep80579.h"
+#include <northbridge/intel/i3100/raminit_ep80579.h>
 #include <superio/intel/i3100/i3100.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "lib/debug.c" // XXX
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <spd.h>
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0 | DEVPRES_D4F0)

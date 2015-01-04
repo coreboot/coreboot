@@ -32,14 +32,14 @@
 #include <device/pnp_def.h>
 #include <console/console.h>
 #include <lib.h>
-#include "northbridge/via/vx800/vx800.h"
-#include "cpu/x86/bist.h"
+#include <northbridge/via/vx800/vx800.h>
+#include <cpu/x86/bist.h>
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include <string.h>
 /* This file contains the board-special SI value for raminit.c. */
 #include "driving_clk_phase_data.c"
-#include "northbridge/via/vx800/raminit.h"
+#include <northbridge/via/vx800/raminit.h>
 #include "northbridge/via/vx800/raminit.c"
 #include "wakeup.h"
 #include <superio/winbond/common/winbond.h>

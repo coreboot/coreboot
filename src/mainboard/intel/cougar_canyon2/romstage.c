@@ -35,11 +35,11 @@
 #include <reset.h>
 #include <superio/smsc/sio1007/chip.h>
 #include <fsp_util.h>
-#include "northbridge/intel/fsp_sandybridge/northbridge.h"
-#include "northbridge/intel/fsp_sandybridge/raminit.h"
-#include "southbridge/intel/fsp_bd82x6x/pch.h"
-#include "southbridge/intel/fsp_bd82x6x/gpio.h"
-#include "southbridge/intel/fsp_bd82x6x/me.h"
+#include <northbridge/intel/fsp_sandybridge/northbridge.h>
+#include <northbridge/intel/fsp_sandybridge/raminit.h>
+#include <southbridge/intel/fsp_bd82x6x/pch.h>
+#include <southbridge/intel/fsp_bd82x6x/gpio.h>
+#include <southbridge/intel/fsp_bd82x6x/me.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include "gpio.h"

@@ -32,16 +32,16 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
 #include "cbmem.h"
-#include "cpu/amd/mtrr.h"
-#include "cpu/amd/agesa/s3_resume.h"
+#include <cpu/amd/mtrr.h>
+#include <cpu/amd/agesa/s3_resume.h>
 
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627DHG_SP1)

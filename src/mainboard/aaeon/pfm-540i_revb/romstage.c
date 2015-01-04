@@ -27,15 +27,15 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <console/console.h>
-#include "cpu/x86/bist.h"
-#include "cpu/x86/msr.h"
+#include <cpu/x86/bist.h>
+#include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
-#include "southbridge/amd/cs5536/cs5536.h"
+#include <southbridge/amd/cs5536/cs5536.h>
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
 #include <superio/smsc/smscsuperio/smscsuperio.h>
-#include "northbridge/amd/lx/raminit.h"
+#include <northbridge/amd/lx/raminit.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 

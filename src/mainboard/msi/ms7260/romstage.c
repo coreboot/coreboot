@@ -31,15 +31,15 @@
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/early_smbus.c"
-#include "northbridge/amd/amdk8/raminit.h"
+#include <northbridge/amd/amdk8/raminit.h>
 #include "lib/delay.c"
 #include <lib.h>
 #include <spd.h>
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
@@ -54,7 +54,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/f.h"
+#include <northbridge/amd/amdk8/f.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
@@ -70,7 +70,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
         RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+59, 0x00, 0x60,/* GPIP60 FANCTL0 */ \
         RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+60, 0x00, 0x60,/* GPIO61 FANCTL1 */
 
-#include "southbridge/nvidia/mcp55/early_setup_ss.h"
+#include <southbridge/nvidia/mcp55/early_setup_ss.h>
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"

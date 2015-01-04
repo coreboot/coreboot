@@ -35,12 +35,12 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include "northbridge/amd/amdfam10/raminit.h"
-#include "northbridge/amd/amdfam10/amdfam10.h"
-#include "cpu/x86/lapic.h"
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
+#include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <cpu/amd/mtrr.h>
@@ -66,7 +66,7 @@ static int spd_read_byte(u32 device, u32 address)
 #include "northbridge/amd/amdfam10/pci.c"
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
-#include "cpu/amd/microcode.h"
+#include <cpu/amd/microcode.h>
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include "spd.h"

@@ -12,14 +12,14 @@
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include <delay.h>
-#include "northbridge/amd/amdk8/amdk8.h"
+#include <northbridge/amd/amdk8/amdk8.h>
 #include "southbridge/amd/amd8111/early_smbus.c"
-#include "northbridge/amd/amdk8/raminit.h"
+#include <northbridge/amd/amdk8/raminit.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "southbridge/amd/amd8111/early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)

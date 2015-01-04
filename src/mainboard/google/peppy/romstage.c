@@ -24,12 +24,12 @@
 #include <string.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include "cpu/intel/haswell/haswell.h"
+#include <cpu/intel/haswell/haswell.h>
 #include "ec/google/chromeec/ec.h"
-#include "northbridge/intel/haswell/haswell.h"
-#include "northbridge/intel/haswell/raminit.h"
-#include "southbridge/intel/lynxpoint/pch.h"
-#include "southbridge/intel/lynxpoint/lp_gpio.h"
+#include <northbridge/intel/haswell/haswell.h>
+#include <northbridge/intel/haswell/raminit.h>
+#include <southbridge/intel/lynxpoint/pch.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include "gpio.h"
 #include "onboard.h"
 

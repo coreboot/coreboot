@@ -35,8 +35,8 @@
 #include "southbridge/intel/i3100/reset.c"
 #include <superio/intel/i3100/i3100.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
-#include "northbridge/intel/i3100/i3100.h"
-#include "southbridge/intel/i3100/i3100.h"
+#include <northbridge/intel/i3100/i3100.h>
+#include <southbridge/intel/i3100/i3100.h>
 #include "lib/debug.c" // XXX
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0)
@@ -67,7 +67,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/intel/i3100/raminit.h"
+#include <northbridge/intel/i3100/raminit.h>
 #include "northbridge/intel/i3100/memory_initialized.c"
 #include "northbridge/intel/i3100/raminit.c"
 #include "lib/generic_sdram.c"

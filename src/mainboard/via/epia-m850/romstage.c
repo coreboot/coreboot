@@ -33,8 +33,8 @@
 #include <timestamp.h>
 #include <console/cbmem_console.h>
 
-#include "northbridge/via/vx900/early_vx900.h"
-#include "northbridge/via/vx900/raminit.h"
+#include <northbridge/via/vx900/early_vx900.h>
+#include <northbridge/via/vx900/raminit.h>
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f81865f/f81865f.h>
 

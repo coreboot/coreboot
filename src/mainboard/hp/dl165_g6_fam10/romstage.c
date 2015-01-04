@@ -39,16 +39,16 @@
 #include <console/console.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
-#include "northbridge/amd/amdfam10/raminit.h"
-#include "northbridge/amd/amdfam10/amdfam10.h"
+#include <northbridge/amd/amdfam10/raminit.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
 #include <lib.h>
 #include <spd.h>
 #include "lib/delay.c"
-#include "cpu/x86/lapic.h"
+#include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <superio/serverengines/pilot/pilot.h>
 #include <superio/nsc/pc87417/pc87417.h>
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include "northbridge/amd/amdfam10/debug.c"
 #include "southbridge/broadcom/bcm5785/early_setup.c"
 
@@ -71,11 +71,11 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdfam10/amdfam10.h"
+#include <northbridge/amd/amdfam10/amdfam10.h>
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
 #include "northbridge/amd/amdfam10/pci.c"
 #include "cpu/amd/quadcore/quadcore.c"
-#include "cpu/amd/microcode.h"
+#include <cpu/amd/microcode.h>
 
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"

@@ -27,9 +27,9 @@
 /* TODO: It's a PC87364 actually! */
 #include <superio/nsc/pc87360/pc87360.h>
 /* TODO: It's i810E actually! */
-#include "northbridge/intel/i82810/raminit.h"
-#include "cpu/x86/bist.h"
-#include "southbridge/intel/i82801ax/i82801ax.h"
+#include <northbridge/intel/i82810/raminit.h>
+#include <cpu/x86/bist.h>
+#include <southbridge/intel/i82801ax/i82801ax.h>
 #include "drivers/pc80/udelay_io.c"
 #include <lib.h>
 

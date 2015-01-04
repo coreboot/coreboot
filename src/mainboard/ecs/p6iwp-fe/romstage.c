@@ -25,10 +25,10 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <console/console.h>
-#include "southbridge/intel/i82801ax/i82801ax.h"
-#include "northbridge/intel/i82810/raminit.h"
+#include <southbridge/intel/i82801ax/i82801ax.h>
+#include <northbridge/intel/i82810/raminit.h>
 #include "drivers/pc80/udelay_io.c"
-#include "cpu/x86/bist.h"
+#include <cpu/x86/bist.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
 #include <lib.h>

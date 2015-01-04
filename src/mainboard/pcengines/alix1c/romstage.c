@@ -25,12 +25,12 @@
 #include <device/pnp_def.h>
 #include <console/console.h>
 #include <lib.h>
-#include "cpu/x86/bist.h"
-#include "cpu/x86/msr.h"
+#include <cpu/x86/bist.h>
+#include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/car.h>
-#include "southbridge/amd/cs5536/cs5536.h"
-#include "northbridge/amd/lx/raminit.h"
+#include <southbridge/amd/cs5536/cs5536.h>
+#include <northbridge/amd/lx/raminit.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

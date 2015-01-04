@@ -32,8 +32,8 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include <northbridge/intel/i5000/raminit.h>
-#include "northbridge/intel/i3100/i3100.h"
-#include "southbridge/intel/i3100/i3100.h"
+#include <northbridge/intel/i3100/i3100.h>
+#include <southbridge/intel/i3100/i3100.h>
 #include <southbridge/intel/i3100/early_smbus.c>
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0)

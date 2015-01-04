@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_NSC_PC97317_PC97317_H
-#define SUPERIO_NSC_PC97317_PC97317_H
+#ifndef SUPERIO_NSC_PC97317_H
+#define SUPERIO_NSC_PC97317_H
 
 #define PC97317_KBCK 0x00 /* Keyboard */
 #define PC97317_KBCM 0x01 /* Mouse */
@@ -31,4 +31,9 @@
 #define PC97317_GPIO 0x07
 #define PC97317_PM   0x08 /* Power Management */
 
-#endif
+#include <arch/io.h>
+#include <stdint.h>
+
+void pc97317_enable_serial(pnp_devfn_t dev, u16 iobase);
+
+#endif /* SUPERIO_NSC_PC97317_H */

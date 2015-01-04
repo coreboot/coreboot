@@ -30,7 +30,7 @@
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
 /* FIXME: This should be PC97307 (but it's buggy at the moment)! */
-#include "superio/nsc/pc97317/early_serial.c"
+#include <superio/nsc/pc97317/pc97317.h>
 #include <lib.h>
 
 /* FIXME: This should be PC97307 (but it's buggy at the moment)! */

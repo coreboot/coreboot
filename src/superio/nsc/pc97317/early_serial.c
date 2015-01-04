@@ -19,13 +19,15 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp.h>
+#include <stdint.h>
 #include "pc97317.h"
 
 #define PM_DEV PNP_DEV(0x2e, PC97317_PM)
 #define PM_BASE 0xe8
 
 /* The PC97317 needs clocks to be set up before the serial port will operate. */
-static void pc97317_enable_serial(pnp_devfn_t dev, u16 iobase)
+void pc97317_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	/* Set base address of power management unit. */
 	pnp_set_logical_device(PM_DEV);

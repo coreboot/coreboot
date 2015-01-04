@@ -17,9 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_SMSC_LPC47N207_LPC47N207_H
-#define SUPERIO_SMSC_LPC47N207_LPC47N207_H
+#ifndef SUPERIO_SMSC_LPC47N207_H
+#define SUPERIO_SMSC_LPC47N207_H
 
-extern void try_enabling_LPC47N207_uart(void);
+#include <arch/io.h>
+#include <stdint.h>
 
-#endif
+void try_enabling_LPC47N207_uart(void);
+
+#endif /* SUPERIO_SMSC_LPC47N207_H */

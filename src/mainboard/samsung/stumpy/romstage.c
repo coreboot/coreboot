@@ -45,7 +45,6 @@
 #include "gpio.h"
 #if CONFIG_DRIVERS_UART_8250IO
 #include <superio/smsc/lpc47n207/lpc47n207.h>
-#include "superio/smsc/lpc47n207/early_serial.c"
 #endif
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>

@@ -17,6 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
+#include <device/pnp.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include "lpc47n207.h"
+
 /*
  * This code tries to discover the SMSC LPC47N207 superio chip which can be
  * connected over an LPC dongle. The chip could be bootstrap mapped to one of

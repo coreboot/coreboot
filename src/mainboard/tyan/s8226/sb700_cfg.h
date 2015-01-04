@@ -228,9 +228,9 @@ void sb700_cimx_config(AMDSBCFG *sb_cfg);
  *
  * @param[in] func    Southbridge CIMx Function ID.
  * @param[in] data    Southbridge Input Data.
- * @param[in] sb_cfg  Southbridge configuration structure pointer.
+ * @param[in] config  Southbridge configuration structure pointer.
  *
  */
-u32 sb700_callout_entry(u32 func, u32 data, void* sb_cfg);
+u32 sb700_callout_entry(u32 func, u32 data, void* config);
 
 #endif //_SB700_CFG_H_

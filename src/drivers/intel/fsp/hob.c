@@ -20,7 +20,25 @@
 #include <types.h>
 #include <string.h>
 #include <console/console.h>
+#include <lib.h> // hexdump
 #include "fsp_util.h"
+
+
+/** Displays a GUID's address and value
+ *
+ * @param guid pointer to the GUID to display
+ */
+void printguid(EFI_GUID *guid)
+{
+	printk(BIOS_SPEW,"Address: %p Guid: %08lx-%04x-%04x-",
+			guid, (unsigned long)guid->Data1,
+			guid->Data2, guid->Data3);
+	printk(BIOS_SPEW,"%02x%02x%02x%02x%02x%02x%02x%02x\n",
+			guid->Data4[0], guid->Data4[1],
+			guid->Data4[2], guid->Data4[3],
+			guid->Data4[4], guid->Data4[5],
+			guid->Data4[6], guid->Data4[7] );
+}
 
 void print_hob_mem_attributes(void *Hobptr)
 {
@@ -118,6 +136,27 @@ const char * get_hob_type_string(void *Hobptr)
 	return Hobtypestring;
 }
 
+/** Displays the length, location, and GUID value of a GUID extension
+ *
+ * The EFI_HOB_GUID_TYPE is very basic - it just contains the standard
+ * HOB header containing the HOB type and length, and a GUID for
+ * identification.  The rest of the data is undefined and must be known
+ * based on the GUID.
+ *
+ * This displays the entire HOB length, and the location of the start
+ * of the HOB, *NOT* the length of or the start of the data inside the HOB.
+ *
+ * @param Hobptr
+ */
+void print_guid_type_attributes(void *Hobptr)
+{
+	printk(BIOS_SPEW, "  at location %p with length0x%0lx\n  ",
+		Hobptr, (unsigned long)(((EFI_PEI_HOB_POINTERS *) \
+		Hobptr)->Guid->Header.HobLength));
+	printguid(&(((EFI_HOB_GUID_TYPE *)Hobptr)->Name));
+
+}
+
 /* Print out a structure of all the HOBs
  * that match a certain type:
  * Print all types			(0x0000)
@@ -159,6 +198,8 @@ void print_hob_type_structure(u16 Hobtype, void *Hoblistptr)
 				print_hob_mem_attributes(Currenthob); break;
 			case EFI_HOB_TYPE_RESOURCE_DESCRIPTOR:
 				print_hob_resource_attributes(Currenthob); break;
+			case EFI_HOB_TYPE_GUID_EXTENSION:
+				print_guid_type_attributes(Currenthob);	break;
 			}
 		}
 
@@ -169,4 +210,60 @@ void print_hob_type_structure(u16 Hobtype, void *Hoblistptr)
 		}
 	} while (!Lasthob);
 	printk(BIOS_DEBUG, "=== End of FSP HOB Data Structure ===\n\n");
+}
+
+
+/** Finds a HOB entry based on type and guid
+ *
+ * @param current_hob pointer to the start of the HOB list
+ * @param guid the GUID of the HOB entry to find
+ * @return pointer to the start of the requested HOB or NULL if not found.
+ */
+void * find_hob_by_guid(void *current_hob, EFI_GUID *guid)
+{
+	do {
+		switch (((EFI_HOB_GENERIC_HEADER *)current_hob)->HobType) {
+
+		case EFI_HOB_TYPE_MEMORY_ALLOCATION:
+			if (guids_are_equal(guid, &(((EFI_HOB_MEMORY_ALLOCATION *) \
+				current_hob)->AllocDescriptor.Name)))
+				return current_hob;
+			break;
+		case EFI_HOB_TYPE_RESOURCE_DESCRIPTOR:
+			if (guids_are_equal(guid,
+				&(((EFI_HOB_RESOURCE_DESCRIPTOR *) \
+				current_hob)->Owner)))
+				return current_hob;
+			break;
+		case EFI_HOB_TYPE_GUID_EXTENSION:
+			if (guids_are_equal(guid, &(((EFI_HOB_GUID_TYPE *) \
+					current_hob)->Name)))
+				return current_hob;
+			break;
+		}
+
+		if (!END_OF_HOB_LIST(current_hob))
+			current_hob = GET_NEXT_HOB(current_hob); /* Get next HOB pointer */
+	} while (!END_OF_HOB_LIST(current_hob));
+
+	return NULL;
+}
+
+/** Compares a pair of GUIDs to see if they are equal
+ *
+ * GUIDs are 128 bits long, so compare them as pairs of quadwords.
+ *
+ * @param guid1 pointer to the first of the GUIDs to compare
+ * @param guid2 pointer to the second of the GUIDs to compare
+ * @return 1 if the GUIDs were equal, 0 if GUIDs were not equal
+ */
+uint8_t guids_are_equal(EFI_GUID *guid1, EFI_GUID *guid2)
+{
+	uint64_t* guid_1 = (void *) guid1;
+	uint64_t* guid_2 = (void *) guid2;
+
+	if ((*(guid_1) != *(guid_2)) || (*(guid_1 + 1) != *(guid_2 + 1)))
+		return 0;
+
+	return 1;
 }

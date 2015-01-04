@@ -42,7 +42,11 @@ void ChipsetFspReturnPoint(EFI_STATUS Status, VOID *HobListPtr);
 void print_hob_mem_attributes(void *Hobptr);
 void print_hob_type_structure(u16 Hobtype, void *Hoblistptr);
 void print_hob_resource_attributes(void *Hobptr);
+void print_guid_type_attributes(void *Hobptr);
 const char * get_hob_type_string(void *Hobptr);
+void * find_hob_by_guid(void *Hoblistptr, EFI_GUID *guid1);
+uint8_t guids_are_equal(EFI_GUID *guid1, EFI_GUID *guid2);
+void printguid(EFI_GUID *guid);
 
 /* Additional HOB types not included in the FSP:
  * #define EFI_HOB_TYPE_HANDOFF 0x0001

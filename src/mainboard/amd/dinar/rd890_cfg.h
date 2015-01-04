@@ -67,7 +67,7 @@
 /**
  * Bitmap of ports that have slot or onboard device connected.
  * Example force PCIe Gen1 supporton port 2 and 4  (DEFAULT_PORT_ENABLE_MAP = BIT2 | BIT4)
- * #define DEFAULT_PORT_FORCE_GEN1        0x604
+ * define DEFAULT_PORT_FORCE_GEN1        0x604
  */
 #ifndef DEFAULT_PORT_FORCE_GEN1
 #define DEFAULT_PORT_FORCE_GEN1		0x0

@@ -27,7 +27,7 @@
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
 #include "drivers/pc80/udelay_io.c"
-#include "lib/delay.c"
+#include <delay.h>
 #include <cpu/x86/bist.h>
 /* FIXME: This should be PC97307 (but it's buggy at the moment)! */
 #include <superio/nsc/pc97317/pc97317.h>

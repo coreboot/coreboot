@@ -27,7 +27,7 @@
 #include <cpu/x86/bist.h>
 #include <timestamp.h>
 #include "drivers/pc80/udelay_io.c"
-#include "lib/delay.c"
+#include <delay.h>
 #include <cpu/x86/lapic.h>
 
 #include "memory.c"

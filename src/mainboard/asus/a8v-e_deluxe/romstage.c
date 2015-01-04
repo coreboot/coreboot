@@ -35,7 +35,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <cpu/amd/model_fxx_rev.h>
 #include <halt.h>
 #include <northbridge/amd/amdk8/raminit.h>
-#include "lib/delay.c"
+#include <delay.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/early_ht.c"

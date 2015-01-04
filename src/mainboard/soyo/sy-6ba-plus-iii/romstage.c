@@ -27,7 +27,7 @@
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
 #include "drivers/pc80/udelay_io.c"
-#include "lib/delay.c"
+#include <delay.h>
 #include <cpu/x86/bist.h>
 #include <superio/ite/it8671f/it8671f.h>
 #include <lib.h>

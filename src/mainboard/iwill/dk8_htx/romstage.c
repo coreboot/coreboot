@@ -11,7 +11,7 @@
 #include <northbridge/amd/amdk8/raminit.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include <cpu/x86/bist.h>
-#include "lib/delay.c"
+#include <delay.h>
 #include "northbridge/amd/amdk8/debug.c"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>

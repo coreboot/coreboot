@@ -43,7 +43,7 @@
 #include <northbridge/amd/amdfam10/amdfam10.h>
 #include <lib.h>
 #include <spd.h>
-#include "lib/delay.c"
+#include <delay.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <superio/serverengines/pilot/pilot.h>

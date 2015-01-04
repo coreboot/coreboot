@@ -27,7 +27,7 @@
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
 #include "drivers/pc80/udelay_io.c"
-#include "lib/delay.c"
+#include <delay.h>
 #include <cpu/x86/bist.h>
 #include <superio/winbond/common/winbond.h>
 /* FIXME: It's a Winbond W83977EF, actually. */

@@ -10,7 +10,7 @@
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
 #include <northbridge/amd/amdk8/raminit.h>
-#include "lib/delay.c"
+#include <delay.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"

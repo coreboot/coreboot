@@ -31,7 +31,7 @@
 
 #include <cpu/amd/model_fxx_rev.h>
 #include <northbridge/amd/amdk8/raminit.h>
-#include "lib/delay.c"
+#include <delay.h>
 
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"

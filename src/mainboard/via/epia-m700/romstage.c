@@ -35,7 +35,7 @@
 #include <northbridge/via/vx800/vx800.h>
 #include <cpu/x86/bist.h>
 #include "drivers/pc80/udelay_io.c"
-#include "lib/delay.c"
+#include <delay.h>
 #include <string.h>
 /* This file contains the board-special SI value for raminit.c. */
 #include "driving_clk_phase_data.c"

@@ -41,7 +41,7 @@
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include <southbridge/nvidia/ck804/early_smbus.h>
 #include <northbridge/amd/amdk8/raminit.h>
-#include "lib/delay.c"
+#include <delay.h>
 #include "northbridge/amd/amdk8/debug.c"
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"

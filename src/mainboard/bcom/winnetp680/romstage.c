@@ -28,7 +28,7 @@
 #include <northbridge/via/cn700/raminit.h>
 #include <cpu/x86/bist.h>
 #include "drivers/pc80/udelay_io.c"
-#include "lib/delay.c"
+#include <delay.h>
 #include <lib.h>
 #include <spd.h>
 #include "southbridge/via/vt8237r/early_smbus.c"

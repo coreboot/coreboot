@@ -14,7 +14,7 @@
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/nsc/pc87417/early_serial.c"
+#include <superio/nsc/pc87417/pc87417.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/broadcom/bcm5785/early_setup.c"

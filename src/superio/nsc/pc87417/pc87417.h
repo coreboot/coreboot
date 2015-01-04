@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_NSC_PC87417_PC87417_H
-#define SUPERIO_NSC_PC87417_PC87417_H
+#ifndef SUPERIO_NSC_PC87417_H
+#define SUPERIO_NSC_PC87417_H
 
 #define PC87417_FDC  0x00 /* Floppy */
 #define PC87417_PP   0x01 /* Parallel Port */
@@ -114,9 +114,13 @@
 #define PC87417_XSCNF		0x15
 #define PC87417_XWBCNF		0x16
 
-#if defined(__PRE_RAM__)
-void pc87417_enable_serial(pnp_devfn_t dev, u16 iobase);
-void pc87417_enable_dev(pnp_devfn_t dev);
-#endif
+#include <arch/io.h>
+#include <stdint.h>
 
-#endif
+void pc87417_enable_serial(pnp_devfn_t dev, u16 iobase);
+void pc87417_disable_dev(pnp_devfn_t dev);
+void pc87417_enable_dev(pnp_devfn_t dev);
+
+void xbus_cfg(pnp_devfn_t dev);
+
+#endif /* SUPERIO_NSC_PC87417_H */

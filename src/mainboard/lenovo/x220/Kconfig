@@ -49,8 +49,8 @@ config MAX_CPUS
 	default 8
 
 config USBDEBUG_HCD_INDEX
-       int
-       default 2
+	int
+	default 2
 
 config DRAM_RESET_GATE_GPIO
 	int

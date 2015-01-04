@@ -1321,7 +1321,7 @@ const char *pin_to_str(int pin)
  * device.  In this case, this function will return 4 (PIN D).
  *
  * @param dev A PCI device structure to swizzle interrupt pins for
- * @param *parent_bdg The PCI device structure for the bridge
+ * @param *parent_bridge The PCI device structure for the bridge
  *        device 'dev' is attached to
  * @return The interrupt pin number (1 - 4) that 'dev' will
  *         trigger when generating an interrupt

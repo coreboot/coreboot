@@ -475,8 +475,8 @@ void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor)
  *
  * @param main_scalar_bits	Number of main scalar bits, must be > 0 and < 32
  * @param fine_scalar_bits	Number of fine scalar bits, must be > 0 and < 32
- * @param input_freq		Clock frequency to be scaled in Hz
- * @param target_freq		Desired clock frequency in Hz
+ * @param input_rate		Clock frequency to be scaled in Hz
+ * @param target_rate		Desired clock frequency in Hz
  * @param best_fine_scalar	Pointer to store the fine stage divisor
  *
  * @return best_main_scalar	Main scalar for desired frequency or -1 if none

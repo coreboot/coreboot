@@ -179,7 +179,7 @@ device_t alloc_find_dev(struct bus *parent, struct device_path *path)
  * Round a number up to an alignment.
  *
  * @param val The starting value.
- * @param roundup Alignment as a power of two.
+ * @param pow Alignment as a power of two.
  * @return Rounded up number.
  */
 static resource_t round(resource_t val, unsigned long pow)

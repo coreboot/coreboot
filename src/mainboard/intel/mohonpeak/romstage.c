@@ -72,7 +72,7 @@ void late_mainboard_romstage_entry(void)
 
 /**
  * Get function disables - most of these will be done automatically
- * @param fd_mask
+ * @param mask pointer to the function-disable bitfield
  */
 void get_func_disables(uint32_t *mask)
 {

@@ -68,7 +68,7 @@ int gpio_get(u8 port, u8 pin)
  * configured as output pins.
  *
  * @param[in] port GPIO port of the pin (GPA -> GPS)
- * @param[in] value 32-bit mask indicating which pins to set. For a set bit, the
+ * @param[in] val 32-bit mask indicating which pins to set. For a set bit, the
  *                  corresponding pin will be set. Otherwise, it will be cleared
  */
 void gpio_write(u8 port, u32 val)

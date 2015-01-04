@@ -67,8 +67,8 @@ enum {
 /**
  * Enable FET
  *
- * @bus		I2C bus number the TPS65090 is on
- * @fet_id	FET ID, value between 1 and 7
+ * @param bus		I2C bus number the TPS65090 is on
+ * @param fet_id	FET ID, value between 1 and 7
  * return	0 on success, non-0 on failure
  */
 int tps65090_fet_enable(unsigned int bus, enum fet_id fet_id);
@@ -76,8 +76,8 @@ int tps65090_fet_enable(unsigned int bus, enum fet_id fet_id);
 /**
  * Disable FET
  *
- * @bus		I2C bus number the TPS65090 is on
- * @fet_id	FET ID, value between 1 and 7
+ * @param bus		I2C bus number the TPS65090 is on
+ * @param fet_id	FET ID, value between 1 and 7
  * @return	0 on success, non-0 on failure
  */
 int tps65090_fet_disable(unsigned int bus, enum fet_id fet_id);
@@ -85,8 +85,8 @@ int tps65090_fet_disable(unsigned int bus, enum fet_id fet_id);
 /**
  * Is FET enabled?
  *
- * @bus		I2C bus number the TPS65090 is on
- * @fet_id	FET ID, value between 1 and 7
+ * @param bus		I2C bus number the TPS65090 is on
+ * @param fet_id	FET ID, value between 1 and 7
  * @return	1 enabled, 0 disabled, negative value on failure
  */
 int tps65090_fet_is_enabled(unsigned int bus, enum fet_id fet_id);
@@ -94,15 +94,15 @@ int tps65090_fet_is_enabled(unsigned int bus, enum fet_id fet_id);
 /**
  * Enable / disable the battery charger
  *
- * @bus		I2C bus number the TPS65090 is on
- * @enable	0 to disable charging, non-zero to enable
+ * @param bus		I2C bus number the TPS65090 is on
+ * @param enable	0 to disable charging, non-zero to enable
  */
 int tps65090_set_charge_enable(unsigned int bus, int enable);
 
 /**
  * Check whether we have enabled battery charging
  *
- * @bus		I2C bus number the TPS65090 is on
+ * @param bus		I2C bus number the TPS65090 is on
  * @return 1 if enabled, 0 if disabled
  */
 int tps65090_is_charging(unsigned int bus);
@@ -110,7 +110,7 @@ int tps65090_is_charging(unsigned int bus);
 /**
  * Return the value of the status register
  *
- * @bus		I2C bus number the TPS65090 is on
+ * @param bus		I2C bus number the TPS65090 is on
  * @return status register value, or -1 on error
  */
 int tps65090_get_status(unsigned int bus);

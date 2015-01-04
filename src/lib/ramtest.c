@@ -52,9 +52,9 @@ static void phys_memory_barrier(void)
  * memory bus. To test most address lines, addresses are scattered
  * using 256B, 4kB and 64kB increments.
  *
- * @idx		Index to test pattern (0=<idx<0x400)
- * @addr	Memory to access on @idx
- * @value	Value to write or read at @addr
+ * @param idx	Index to test pattern (0=<idx<0x400)
+ * @param addr	Memory to access on idx
+ * @param value	Value to write or read at addr
  */
 static inline void test_pattern(unsigned short int idx,
 	unsigned long *addr, unsigned long *value)
@@ -74,7 +74,7 @@ static inline void test_pattern(unsigned short int idx,
  * Simple write-read-verify memory test. See console debug output for
  * any dislocated bytes.
  *
- * @start   System memory offset, aligned to 128bytes
+ * @param start   System memory offset, aligned to 128bytes
  */
 static int ram_bitset_nodie(unsigned long start)
 {

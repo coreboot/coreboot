@@ -38,7 +38,7 @@
 
 /**
  * is_edp - is the given port attached to an eDP panel (either CPU or PCH)
- * @intel_dp: DP struct
+ * @param intel_dp: DP struct
  *
  * If a CPU or PCH DP output is attached to an eDP panel, this function
  * will return 1, and 0 otherwise.
@@ -50,7 +50,7 @@ static int is_edp(struct intel_dp *intel_dp)
 
 /**
  * is_pch_edp - is the port on the PCH and attached to an eDP panel?
- * @intel_dp: DP struct
+ * @param intel_dp: DP struct
  *
  * Returns 1 if the given DP struct corresponds to a PCH DP port attached
  * to an eDP panel, 0 otherwise.  Helpful for determining whether we
@@ -63,7 +63,7 @@ static int is_pch_edp(struct intel_dp *intel_dp)
 
 /**
  * is_cpu_edp - is the port on the CPU and attached to an eDP panel?
- * @intel_dp: DP struct
+ * @param intel_dp: DP struct
  *
  * Returns 1 if the given DP struct corresponds to a CPU eDP port.
  */

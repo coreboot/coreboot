@@ -50,7 +50,7 @@ void init_timer(void)
 
 /**
  * udelay -  generates micro second delay.
- * @usec: delay duration in microseconds
+ * @param usec: delay duration in microseconds
  *
  * With 32KHz clock, minimum possible delay is 31.25 Micro seconds and
  * its multiples. In Rumi GPT clock is 32 KHz

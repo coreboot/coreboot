@@ -139,10 +139,10 @@ static int hda_wait_for_valid(u32 base)
 /**
  * Find a specific entry within a verb table
  *
- * @verb_table_bytes:	verb table size in bytes
- * @verb_table_data:	verb table data
- * @viddid:		vendor/device to search for
- * @verb_out:		pointer to entry within table
+ * @param verb_table_bytes:	verb table size in bytes
+ * @param verb_table_data:	verb table data
+ * @param viddid:		vendor/device to search for
+ * @param verb:			pointer to entry within table
  *
  * Returns size of the entry within the verb table,
  * Returns 0 if the entry is not found

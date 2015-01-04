@@ -87,8 +87,9 @@ static int tps65090_i2c_read(unsigned int bus,
 /**
  * Set the power state for a FET
  *
- * @fet_id		Fet number to set (1..MAX_FET_NUM)
- * @set			1 to power on FET, 0 to power off
+ * @param bus
+ * @param fet_id		Fet number to set (1..MAX_FET_NUM)
+ * @param set			1 to power on FET, 0 to power off
  * @return FET_ERR_COMMS if we got a comms error, FET_ERR_NOT_READY if the
  * FET failed to change state. If all is ok, returns 0.
  */

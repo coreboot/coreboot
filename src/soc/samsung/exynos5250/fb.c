@@ -114,7 +114,7 @@ static void fimd_bypass(void)
  * Initialize display controller.
  *
  * @param lcdbase	pointer to the base address of framebuffer.
- * @pd			pointer to the main panel_data structure
+ * @param pd		pointer to the main panel_data structure
  */
 void fb_init(unsigned long int fb_size, void *lcdbase,
 	     struct exynos5_fimd_panel *pd)

@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_SMSC_LPC47B272_LPC47B272_H
-#define SUPERIO_SMSC_LPC47B272_LPC47B272_H
+#ifndef SUPERIO_SMSC_LPC47B272_H
+#define SUPERIO_SMSC_LPC47B272_H
 
 #define LPC47B272_FDC              0   /* Floppy */
 #define LPC47B272_PP               3   /* Parallel Port */
@@ -30,4 +30,9 @@
 
 #define LPC47B272_MAX_CONFIG_REGISTER	0x5F
 
-#endif
+#include <arch/io.h>
+#include <stdint.h>
+
+void lpc47b272_enable_serial(pnp_devfn_t dev, u16 iobase);
+
+#endif /* SUPERIO_SMSC_LPC47B272_H */

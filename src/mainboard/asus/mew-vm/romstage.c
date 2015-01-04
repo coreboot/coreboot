@@ -24,7 +24,7 @@
 #include <device/pnp_def.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "superio/smsc/lpc47b272/early_serial.c"
+#include <superio/smsc/lpc47b272/lpc47b272.h>
 #include "northbridge/intel/i82810/raminit.h"
 #include "cpu/x86/bist.h"
 #include "southbridge/intel/i82801ax/i82801ax.h"

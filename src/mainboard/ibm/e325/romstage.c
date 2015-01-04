@@ -13,7 +13,7 @@
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/nsc/pc87366/early_serial.c"
+#include <superio/nsc/pc87366/pc87366.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>

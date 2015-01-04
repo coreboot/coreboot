@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_NSC_PC87366_PC87366_H
-#define SUPERIO_NSC_PC87366_PC87366_H
+#ifndef SUPERIO_NSC_PC87366_H
+#define SUPERIO_NSC_PC87366_H
 
 #define PC87366_FDC  0x00 /* Floppy */
 #define PC87366_PP   0x01 /* Parallel port */
@@ -38,4 +38,9 @@
 #define PC87366_VLM  0x0D
 #define PC87366_TMS  0x0E
 
-#endif
+#include <arch/io.h>
+#include <stdint.h>
+
+void pc87366_enable_serial(pnp_devfn_t dev, u16 iobase);
+
+#endif /* SUPERIO_NSC_PC87366_H */

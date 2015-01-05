@@ -17,7 +17,7 @@
 #define PRINTK_IN_CAR	1
 
 #if PRINTK_IN_CAR
-#define print_car_debug(x) print_debug(x)
+#define print_car_debug(x) printk(BIOS_DEBUG, x)
 #else
 #define print_car_debug(x)
 #endif

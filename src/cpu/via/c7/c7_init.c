@@ -122,7 +122,7 @@ static void set_c7_speed(int model) {
 		}
 		break;
 	default:
-		print_info("CPU type not known, multiplier unchanged.\n");
+		printk(BIOS_INFO, "CPU type not known, multiplier unchanged.\n");
 	}
 
 	msr.lo = new;

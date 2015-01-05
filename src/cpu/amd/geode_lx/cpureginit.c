@@ -170,7 +170,7 @@ void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 
 	/* Castle 2.0 BTM periodic sync period. */
 	/*      [40:37] 1 sync record per 256 bytes */
-	print_debug("Castle 2.0 BTM periodic sync period.\n");
+	printk(BIOS_DEBUG, "Castle 2.0 BTM periodic sync period.\n");
 	msrnum = CPU_PF_CONF;
 	msr = rdmsr(msrnum);
 	msr.hi |= (0x8 << 5);
@@ -180,7 +180,7 @@ void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 	 * LX performance setting.
 	 * Enable Quack for fewer re-RAS on the MC
 	 */
-	print_debug("Enable Quack for fewer re-RAS on the MC\n");
+	printk(BIOS_DEBUG, "Enable Quack for fewer re-RAS on the MC\n");
 	msrnum = GLIU0_ARB;
 	msr = rdmsr(msrnum);
 	msr.hi &= ~ARB_UPPER_DACK_EN_SET;
@@ -196,25 +196,25 @@ void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 	/* GLIU port active enable, limit south pole masters
 	 * (AES and PCI) to one outstanding transaction.
 	 */
-	print_debug(" GLIU port active enable\n");
+	printk(BIOS_DEBUG, " GLIU port active enable\n");
 	msrnum = GLIU1_PORT_ACTIVE;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~0x880;
 	wrmsr(msrnum, msr);
 
 	/* Set the Delay Control in GLCP */
-	print_debug("Set the Delay Control in GLCP\n");
+	printk(BIOS_DEBUG, "Set the Delay Control in GLCP\n");
 	SetDelayControl(dimm0, dimm1, terminated);
 
 	/*  Enable RSDC */
-	print_debug("Enable RSDC\n");
+	printk(BIOS_DEBUG, "Enable RSDC\n");
 	msrnum = CPU_AC_SMM_CTL;
 	msr = rdmsr(msrnum);
 	msr.lo |= SMM_INST_EN_SET;
 	wrmsr(msrnum, msr);
 
 	/* FPU imprecise exceptions bit */
-	print_debug("FPU imprecise exceptions bit\n");
+	printk(BIOS_DEBUG, "FPU imprecise exceptions bit\n");
 	msrnum = CPU_FPU_MSR_MODE;
 	msr = rdmsr(msrnum);
 	msr.lo |= FPU_IE_SET;
@@ -222,14 +222,14 @@ void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 
 	/* Power Savers (Do after BIST) */
 	/* Enable Suspend on HLT & PAUSE instructions */
-	print_debug("Enable Suspend on HLT & PAUSE instructions\n");
+	printk(BIOS_DEBUG, "Enable Suspend on HLT & PAUSE instructions\n");
 	msrnum = CPU_XC_CONFIG;
 	msr = rdmsr(msrnum);
 	msr.lo |= XC_CONFIG_SUSP_ON_HLT | XC_CONFIG_SUSP_ON_PAUSE;
 	wrmsr(msrnum, msr);
 
 	/* Enable SUSP and allow TSC to run in Suspend (keep speed detection happy) */
-	print_debug("Enable SUSP and allow TSC to run in Suspend\n");
+	printk(BIOS_DEBUG, "Enable SUSP and allow TSC to run in Suspend\n");
 	msrnum = CPU_BC_CONF_0;
 	msr = rdmsr(msrnum);
 	msr.lo |= TSC_SUSP_SET | SUSP_EN_SET;
@@ -247,10 +247,10 @@ void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 	}
 
 	/* Setup throttling delays to proper mode if it is ever enabled. */
-	print_debug("Setup throttling delays to proper mode\n");
+	printk(BIOS_DEBUG, "Setup throttling delays to proper mode\n");
 	msrnum = GLCP_TH_OD;
 	msr.hi = 0;
 	msr.lo = 0x00000603C;
 	wrmsr(msrnum, msr);
-	print_debug("Done cpuRegInit\n");
+	printk(BIOS_DEBUG, "Done cpuRegInit\n");
 }

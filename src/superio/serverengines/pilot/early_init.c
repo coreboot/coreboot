@@ -36,11 +36,9 @@ void pilot_early_init(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 
-	print_debug("Using port: ");
-	print_debug_hex16(port);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "Using port: %04x\n", port);
 	pilot_disable_serial(PNP_DEV(port, 0x1));
-	print_debug("disable serial 1\n");
+	printk(BIOS_DEBUG, "disable serial 1\n");
 
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(PNP_DEV(port, 0x3));

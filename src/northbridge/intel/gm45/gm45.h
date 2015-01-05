@@ -19,7 +19,7 @@
  */
 
 #ifndef __NORTHBRIDGE_INTEL_GM45_GM45_H__
-#define __NORTHBRIDGE_INTEL_GM45_GM45_H__ 1
+#define __NORTHBRIDGE_INTEL_GM45_GM45_H__
 
 #include "southbridge/intel/i82801ix/i82801ix.h"
 
@@ -434,4 +434,4 @@ struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp);
 #endif
 
-#endif
+#endif /* __NORTHBRIDGE_INTEL_GM45_GM45_H__ */

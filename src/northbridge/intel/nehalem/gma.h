@@ -19,7 +19,7 @@
  */
 
 #ifndef __NORTHBRIDGE_INTEL_NEHALEM_GMA_H__
-#define __NORTHBRIDGE_INTEL_NEHALEM_GMA_H__ 1
+#define __NORTHBRIDGE_INTEL_NEHALEM_GMA_H__
 
 /* mailbox 0: header */
 typedef struct {
@@ -118,4 +118,4 @@ typedef struct {
 	opregion_vbt_t vbt;
 } __attribute__((packed)) igd_opregion_t;
 
-#endif
+#endif /* __NORTHBRIDGE_INTEL_NEHALEM_GMA_H__ */

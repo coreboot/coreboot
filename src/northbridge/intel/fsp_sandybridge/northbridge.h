@@ -20,7 +20,7 @@
  */
 
 #ifndef __NORTHBRIDGE_INTEL_SANDYBRIDGE_SANDYBRIDGE_H__
-#define __NORTHBRIDGE_INTEL_SANDYBRIDGE_SANDYBRIDGE_H__ 1
+#define __NORTHBRIDGE_INTEL_SANDYBRIDGE_SANDYBRIDGE_H__
 
 /* Chipset types */
 #define SANDYBRIDGE_MOBILE	0
@@ -233,4 +233,4 @@ int init_igd_opregion(igd_opregion_t *igd_opregion);
 
 #endif
 #endif
-#endif
+#endif /* __NORTHBRIDGE_INTEL_SANDYBRIDGE_SANDYBRIDGE_H__ */

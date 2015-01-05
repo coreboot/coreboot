@@ -18,11 +18,11 @@
  */
 
 #ifndef __NORTHBRIDGE_INTEL_GM45_DELAY_H__
-#define __NORTHBRIDGE_INTEL_GM45_DELAY_H__ 1
+#define __NORTHBRIDGE_INTEL_GM45_DELAY_H__
 
 #include <delay.h>
 
 void ns100delay(u32);
 void udelay_from_reset(u32);
 
-#endif
+#endif /* __NORTHBRIDGE_INTEL_GM45_DELAY_H__ */

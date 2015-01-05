@@ -20,7 +20,7 @@
  */
 
 #ifndef __SCH_PULSBO_H__
-#define __SCH_PULSBO_H__ 1
+#define __SCH_PULSBO_H__
 
 int sch_port_access_read(int port, int reg, int bytes);
 void sch_port_access_write(int port, int reg, int bytes, long data);
@@ -51,4 +51,4 @@ void sch_port_access_write_ram_cmd(int cmd, int port, int reg, int data);
 /* FIXME: should probably be in southbridge, but is setup in romstage, too */
 #define CMC_SHADOW 0x3faf0000
 
-#endif
+#endif /* __SCH_PULSBO_H__ */

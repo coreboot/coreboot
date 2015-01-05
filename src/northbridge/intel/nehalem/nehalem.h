@@ -20,7 +20,7 @@
  */
 
 #ifndef __NORTHBRIDGE_INTEL_NEHALEM_NEHALEM_H__
-#define __NORTHBRIDGE_INTEL_NEHALEM_NEHALEM_H__ 1
+#define __NORTHBRIDGE_INTEL_NEHALEM_NEHALEM_H__
 
 #ifndef __ASSEMBLER__
 
@@ -623,4 +623,4 @@ int init_igd_opregion(igd_opregion_t *igd_opregion);
 
 #endif
 #endif
-#endif
+#endif /* __NORTHBRIDGE_INTEL_NEHALEM_NEHALEM_H__ */

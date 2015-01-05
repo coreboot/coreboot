@@ -58,22 +58,4 @@ struct spi_flash {
 
 struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs);
 
-static inline int spi_flash_read(struct spi_flash *flash, u32 offset,
-		size_t len, void *buf)
-{
-	return flash->read(flash, offset, len, buf);
-}
-
-static inline int spi_flash_write(struct spi_flash *flash, u32 offset,
-		size_t len, const void *buf)
-{
-	return flash->write(flash, offset, len, buf);
-}
-
-static inline int spi_flash_erase(struct spi_flash *flash, u32 offset,
-		size_t len)
-{
-	return flash->erase(flash, offset, len);
-}
-
 #endif /* _SPI_FLASH_H_ */

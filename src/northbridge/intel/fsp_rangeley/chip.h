@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2015 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +58,15 @@ struct northbridge_intel_fsp_rangeley_config {
 #define BIFURCATION_8_8     3
 #define BIFURCATION_16      4
 	uint8_t Bifurcation;
+
+	/* PCIe port de-emphasis control */
+	#define  DE_EMPHASIS_DEFAULT            0
+	#define  DE_EMPHASIS_MINUS_6_0_DB       1
+	#define  DE_EMPHASIS_MINUS_3_5_DB       2
+	uint8_t  PcdPcieRootPort1DeEmphasis;
+	uint8_t  PcdPcieRootPort2DeEmphasis;
+	uint8_t  PcdPcieRootPort3DeEmphasis;
+	uint8_t  PcdPcieRootPort4DeEmphasis;
 };
 
 #endif

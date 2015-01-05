@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2015 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,6 +144,12 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 				break;
 		}
 	}
+
+	/* Set PCIe de-emphasis */
+	UPD_DEFAULT_CHECK(PcdPcieRootPort1DeEmphasis);
+	UPD_DEFAULT_CHECK(PcdPcieRootPort2DeEmphasis);
+	UPD_DEFAULT_CHECK(PcdPcieRootPort3DeEmphasis);
+	UPD_DEFAULT_CHECK(PcdPcieRootPort4DeEmphasis);
 }
 
 /* Set up the Rangeley specific structures for the call into the FSP */

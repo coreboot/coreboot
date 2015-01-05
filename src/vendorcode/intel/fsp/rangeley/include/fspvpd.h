@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (C) 2013, Intel Corporation
+Copyright (C) 2013-2014 Intel Corporation
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -57,16 +57,21 @@ typedef struct _UPD_DATA_REGION {
   UINT8                       PcdEnableIQAT;                 /* Offset 0x0033 */
   UINT8                       PcdEnableUsb20;                /* Offset 0x0034 */
   UINT8                       PcdBifurcation;                /* Offset 0x0035 */
-  UINT8                       UnusedUpdSpace2[10];           /* Offset 0x0036 */
+  UINT8                       PcdPcieRootPort1DeEmphasis;    /* Offset 0x0036 */
+  UINT8                       PcdPcieRootPort2DeEmphasis;    /* Offset 0x0037 */
+  UINT8                       PcdPcieRootPort3DeEmphasis;    /* Offset 0x0038 */
+  UINT8                       PcdPcieRootPort4DeEmphasis;    /* Offset 0x0039 */
+  UINT8                       UnusedUpdSpace2[6];            /* Offset 0x003A */
   UINT8                       PcdPrintDebugMessages;         /* Offset 0x0040 */
   UINT8                       PcdFastboot;                   /* Offset 0x0041 */
   UINT8                       PcdEccSupport;                 /* Offset 0x0042 */
-  UINT8                       UnusedUpdSpace3[13];           /* Offset 0x0043 */
-  UINT16                      PcdRegionTerminator;           /* Offset 0x0050 */
+  UINT8                       PcdCustomerRevision[32];       /* Offset 0x0043 */
+  UINT8                       UnusedUpdSpace3[13];           /* Offset 0x0063 */
+  UINT16                      PcdRegionTerminator;           /* Offset 0x0070 */
 } UPD_DATA_REGION;
 
 #define VPD_IMAGE_ID    0x562D474E524E5641        /* 'AVNRNG-V' */
-#define VPD_IMAGE_REV   0x00000101
+#define VPD_IMAGE_REV   0x00000102
 
 typedef struct _VPD_DATA_REGION {
   UINT64                      PcdVpdRegionSign;              /* Offset 0x0000 */

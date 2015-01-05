@@ -50,7 +50,7 @@ void main(unsigned long bist)
 	pll_reset();
 
 	cpuRegInit();
-	print_err("done cpuRegInit\n");
+	printk(BIOS_ERR, "done cpuRegInit\n");
 
 	sdram_initialize(1, memctrl);
 

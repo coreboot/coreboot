@@ -55,7 +55,7 @@ void main(unsigned long bist)
 	/* Serial console is easy to take care of */
 	fintek_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
-	print_debug("Console initialized.\n");
+	printk(BIOS_DEBUG, "Console initialized.\n");
 
 	vx900_cpu_bus_interface_setup();
 
@@ -91,7 +91,7 @@ void main(unsigned long bist)
 	if (tolm > (2 * (u32) GiB))
 		ram_check(2048 << 20, 0x80);
 
-	print_debug("We passed RAM verify\n");
+	printk(BIOS_DEBUG, "We passed RAM verify\n");
 
 	/* We got RAM working, now we can write the timestamps to RAM */
 #if CONFIG_EARLY_CBMEM_INIT

@@ -73,7 +73,7 @@ void main(unsigned long bist)
 	*/
 	post_code(0x02);
 	__asm__("wbinvd\n");
-	print_err("Past wbinvd\n");
+	printk(BIOS_ERR, "Past wbinvd\n");
 	/* we are finding the return does not work on this board. Explicitly call the label that is
 	 * after the call to us. This is gross, but sometimes at this level it is the only way out
 	 */

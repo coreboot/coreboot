@@ -95,31 +95,12 @@ void main(unsigned long bist)
 	/* Dump memory configuration. */
 #if 0
 	msr = rdmsr(MC_CF07_DATA);
-	print_debug("MC_CF07_DATA: ");
-	print_debug_hex32(MC_CF07_DATA);
-	print_debug(" value is: ");
-	print_debug_hex32(msr.hi);
-	print_debug(":");
-	print_debug_hex32(msr.lo);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "MC_CF07_DATA: %08x value is: %08x:%08x\n", MC_CF07_DATA, msr.hi, msr.lo);
 
 	msr = rdmsr(MC_CF1017_DATA);
-	print_debug("MC_CF1017_DATA: ");
-	print_debug_hex32(MC_CF1017_DATA);
-	print_debug(" value is: ");
-	print_debug_hex32(msr.hi);
-	print_debug(":");
-	print_debug_hex32(msr.lo);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "MC_CF1017_DATA: %08x value is: %08x:%08x\n", MC_CF07_DATA, msr.hi, msr.lo);
 
 	msr = rdmsr(MC_CF8F_DATA);
-	print_debug("MC_CF8F_DATA: ");
-	print_debug_hex32(MC_CF8F_DATA);
-	print_debug(" value is: ");
-	print_debug_hex32(msr.hi);
-	print_debug(":");
-	print_debug_hex32(msr.lo);
-	msr = rdmsr(MC_CF8F_DATA);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "MC_CF8F_DATA: %08x value is: %08x:%08x\n", MC_CF07_DATA, msr.hi, msr.lo);
 #endif
 }

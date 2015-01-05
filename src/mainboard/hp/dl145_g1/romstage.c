@@ -64,14 +64,14 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 static inline void change_i2c_mux(unsigned device)
 {
 	int ret, i;
-	print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
+	printk(BIOS_DEBUG, "change_i2c_mux i=%02x\n", device);
 	i=2;
 	do {
 		ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-		print_debug("change_i2c_mux 1 ret="); print_debug_hex32(ret); print_debug("\n");
+		printk(BIOS_DEBUG, "change_i2c_mux 1 ret=%08x\n", ret);
 	} while ((ret!=0) && (i-->0));
 	ret = smbus_write_byte(SMBUS_HUB, 0x03, 0);
-	print_debug("change_i2c_mux 2 ret="); print_debug_hex32(ret); print_debug("\n");
+	printk(BIOS_DEBUG, "change_i2c_mux 2 ret=%08x\n", ret);
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -143,7 +143,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Read FIDVID_STATUS */
 			msr_t msr;
 			msr=rdmsr(0xc0010042);
-			print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
+			printk(BIOS_DEBUG, "begin msr fid, vid %08x%08x\n", msr.hi, msr.lo);
 		}
 
 		enable_fid_change();
@@ -154,11 +154,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		{
 			msr_t msr;
 			msr=rdmsr(0xc0010042);
-			print_debug("end msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
+			printk(BIOS_DEBUG, "end msr fid, vid %08x%08x\n", msr.hi, msr.lo);
 		}
 
 	} else {
-		print_debug("Changing FIDVID not supported\n");
+		printk(BIOS_DEBUG, "Changing FIDVID not supported\n");
 	}
 #endif
 
@@ -166,7 +166,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 
 	if (needs_reset) {
-		print_info("ht reset -\n");
+		printk(BIOS_INFO, "ht reset -\n");
 		soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
 	}
 

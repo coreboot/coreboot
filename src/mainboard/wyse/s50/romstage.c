@@ -70,10 +70,10 @@ void main(unsigned long bist)
 	pll_reset();
 
 	cpuRegInit();
-	print_err("done cpuRegInit\n");
+	printk(BIOS_ERR, "done cpuRegInit\n");
 
 	sdram_initialize(1, memctrl);
-	print_err("ram setup done\n");
+	printk(BIOS_ERR, "ram setup done\n");
 
 	msr_init();
 }

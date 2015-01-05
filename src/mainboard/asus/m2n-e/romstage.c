@@ -149,7 +149,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 * effective too.
 	 */
 	if (needs_reset) {
-		print_info("ht reset -\n");
+		printk(BIOS_INFO, "ht reset -\n");
 		soft_reset();
 	}
 	allow_all_aps_stop(bsp_apicid);

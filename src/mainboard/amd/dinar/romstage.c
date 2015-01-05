@@ -98,9 +98,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 
 	post_code(0x43);
-	print_debug("Disabling cache as ram ");
+	printk(BIOS_DEBUG, "Disabling cache as ram ");
 	disable_cache_as_ram();
-	print_debug("done\n");
+	printk(BIOS_DEBUG, "done\n");
 
 	post_code(0x44);
 	copy_and_run();

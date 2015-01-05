@@ -76,7 +76,7 @@ void soft_reset(void)
 	uint8_t tmp;
 
 	set_bios_reset();
-	print_debug("soft reset\n");
+	printk(BIOS_DEBUG, "soft reset\n");
 
 	/* PCI reset */
 	tmp = pci_read_config8(PCI_DEV(0, 0x11, 0), 0x4f);
@@ -254,11 +254,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	ht_setup_chains_x(sysinfo); /* Init sblnk and sbbusn, nodes, sbdn. */
 
 	needs_reset = optimize_link_coherent_ht();
-	print_debug_hex8(needs_reset);
+	printk(BIOS_DEBUG, "%02x", needs_reset);
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
-	print_debug_hex8(needs_reset);
+	printk(BIOS_DEBUG, "%02x", needs_reset);
 	needs_reset |= k8t890_early_setup_ht();
-	print_debug_hex8(needs_reset);
+	printk(BIOS_DEBUG, "%02x", needs_reset);
 
 	if (needs_reset) {
 		printk(BIOS_DEBUG, "ht reset -\n");
@@ -271,7 +271,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	vt8237_sb_enable_fid_vid();
 
 	enable_fid_change();
-	print_debug("after enable_fid_change\n");
+	printk(BIOS_DEBUG, "after enable_fid_change\n");
 
 	init_fidvid_bsp(bsp_apicid);
 

@@ -57,7 +57,7 @@ static int acpi_is_wakeup_early_via_vx800(void)
 	device_t dev;
 	u16 tmp, result;
 
-	print_debug("In acpi_is_wakeup_early_via_vx800\n");
+	printk(BIOS_DEBUG, "In acpi_is_wakeup_early_via_vx800\n");
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				       PCI_DEVICE_ID_VIA_VX855_LPC), 0);
@@ -73,9 +73,7 @@ static int acpi_is_wakeup_early_via_vx800(void)
 
 	tmp = inw(VX800_ACPI_IO_BASE + 0x04);
 	result = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0;
-	print_debug("         boot_mode=");
-	print_debug_hex16(result);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "         boot_mode=%04x\n", result);
 	return result;
 }
 
@@ -116,7 +114,7 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x5b, 0x01);
 #endif
 
-	print_debug("In enable_mainboard_devices\n");
+	printk(BIOS_DEBUG, "In enable_mainboard_devices\n");
 
 	/* Enable P2P Bridge Header for external PCI bus. */
 	dev = pci_locate_device(PCI_ID(0x1106, 0xa353), 0);
@@ -451,7 +449,7 @@ void main(unsigned long bist)
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
 
-	print_debug("Enabling mainboard devices\n");
+	printk(BIOS_DEBUG, "Enabling mainboard devices\n");
 	enable_mainboard_devices();
 
 	/*
@@ -460,9 +458,7 @@ void main(unsigned long bist)
 	 */
 	device = PCI_DEV(0, 0, 4);
 	Data = pci_read_config8(device, 0xf6);
-	print_debug("NB chip revision =");
-	print_debug_hex8(Data);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "NB chip revision = %02x\n", Data);
 
 	/* Make NB ready before DRAM init. */
 	via_pci_inittable(Data, mNbStage1InitTbl);
@@ -479,7 +475,7 @@ void main(unsigned long bist)
 		u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
 		DRAM_SYS_ATTR DramAttr;
 
-		print_debug("This is an S3 wakeup\n");
+		printk(BIOS_DEBUG, "This is an S3 wakeup\n");
 
 		memset(&DramAttr, 0, sizeof(DRAM_SYS_ATTR));
 		/*
@@ -514,7 +510,7 @@ void main(unsigned long bist)
 		/* Just copy this function from draminit to here! */
 		SetUMARam();
 
-		print_debug("Resume from S3, RAM init was ignored\n");
+		printk(BIOS_DEBUG, "Resume from S3, RAM init was ignored\n");
 	} else {
 		ddr2_ram_setup();
 		ram_check(0, 640 * 1024);
@@ -634,7 +630,7 @@ void main(unsigned long bist)
 		);
 #endif
 		/* This can have function call, because no variable used before this. */
-		print_debug("Copy memory to high memory to protect s3 wakeup vector code\n");
+		printk(BIOS_DEBUG, "Copy memory to high memory to protect s3 wakeup vector code\n");
 		memcpy((unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 -
 				 0x100000), (unsigned char *)0, 0xa0000);
 		memcpy((unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 -

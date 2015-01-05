@@ -209,7 +209,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Reset for HT, FIDVID, PLL and errata changes to take affect. */
 	if (!warm_reset_detect(0)) {
-		print_info("...WARM RESET...\n\n\n");
+		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		soft_reset();
 		die("After soft_reset_x - shouldn't see this message!!!\n");
 	}

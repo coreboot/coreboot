@@ -20,14 +20,16 @@
  * MA 02110-1301 USA
  */
 
-#include <delay.h>
 #include <stdint.h>
-#include <arch/io.h>
+#include <stdlib.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <arch/io.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
+#include <delay.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/speedstep.h>
 #include "southbridge/intel/i3100/early_smbus.c"

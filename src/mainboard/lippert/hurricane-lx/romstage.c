@@ -141,9 +141,7 @@ void main(unsigned long bist)
 	int err;
 	/* bit0 = Spread Spectrum */
 	if ((err = smc_send_config(SMC_CONFIG))) {
-		print_err("ERROR ");
-		print_err_char('0'+err);
-		print_err(" sending config data to SMC\n");
+		printk(BIOS_ERR, "ERROR %d sending config data to SMC\n", err);
 	}
 #endif
 

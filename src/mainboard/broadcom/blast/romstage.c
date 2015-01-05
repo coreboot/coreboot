@@ -79,7 +79,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\n");
+	printk(BIOS_DEBUG, "bsp_apicid=%02x\n", bsp_apicid);
 
         setup_blast_resource_map();
 
@@ -101,10 +101,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	bcm5785_early_setup();
 
-       	if (needs_reset) {
-               	print_info("ht reset -\n");
-               	soft_reset();
-       	}
+	if (needs_reset) {
+		printk(BIOS_INFO, "ht reset -\n");
+		soft_reset();
+	}
 
 	allow_all_aps_stop(bsp_apicid);
 

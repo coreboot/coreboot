@@ -87,7 +87,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x3D);
 	/* Reset for HT, FIDVID, PLL and ucode patch(errata) changes to take affect. */
 	if (!warm_reset_detect(0)) {
-		print_info("...WARM RESET...\n\n\n");
+		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		distinguish_cpu_resets(0);
 		soft_reset();
 		die("After soft_reset_x - shouldn't see this message!!!\n");
@@ -101,14 +101,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x42);
 
 	post_code(0x50);
-	print_debug("Disabling cache as ram ");
+	printk(BIOS_DEBUG, "Disabling cache as ram ");
 	disable_cache_as_ram();
-	print_debug("done\n");
+	printk(BIOS_DEBUG, "done\n");
 
 	post_code(0x51);
 	copy_and_run();
 
 	/* We will not return,  Should never see this message and post code. */
-	print_debug("should not be here -\n");
+	printk(BIOS_DEBUG, "should not be here -\n");
 	post_code(0x54);
 }

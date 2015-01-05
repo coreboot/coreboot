@@ -84,11 +84,9 @@ int spd_read_byte(unsigned int device, unsigned int address)
 		return 0xFF;	/* No DIMM1, don't even try. */
 
 #if CONFIG_DEBUG_SMBUS
-	if (address >= sizeof(spdbytes) || spdbytes[address] == 0xFF) {
-		print_err("ERROR: spd_read_byte(DIMM0, 0x");
-		print_err_hex8(address);
-		print_err(") returns 0xff\n");
-	}
+	if (address >= sizeof(spdbytes) || spdbytes[address] == 0xFF)
+		printk(BIOS_ERR, "ERROR: spd_read_byte(DIMM0, 0x%02x) "
+			"returns 0xff\n", address);
 #endif
 
 	/* Fake SPD ROM value */
@@ -182,9 +180,7 @@ void main(unsigned long bist)
 
 	/* bit1 = on-board IDE is slave, bit0 = Spread Spectrum */
 	if ((err = smc_send_config(SMC_CONFIG))) {
-		print_err("ERROR ");
-		print_err_char('0'+err);
-		print_err(" sending config data to SMC\n");
+		printk(BIOS_ERR, "ERROR %d sending config data to SMC\n", err);
 	}
 
 	sdram_initialize(1, memctrl);

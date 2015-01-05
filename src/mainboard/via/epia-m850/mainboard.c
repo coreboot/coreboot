@@ -100,7 +100,7 @@ static void mainboard_enable(device_t dev)
 	(void)dev;
 
 #if CONFIG_VGA_ROM_RUN
-	print_debug("Installing INT15 handler...\n");
+	printk(BIOS_DEBUG, "Installing INT15 handler...\n");
 	mainboard_interrupt_handlers(0x15, &vx900_int15_handler);
 #endif
 }

@@ -81,19 +81,15 @@ static const u8 spdbytes[] = {
 
 int spd_read_byte(unsigned int device, unsigned int address)
 {
-	print_debug("spd_read_byte dev ");
-	print_debug_hex8(device);
+	printk(BIOS_DEBUG, "spd_read_byte dev %02x", device);
 
 	if (device != DIMM0) {
-		print_debug(" returns 0xff\n");
+		printk(BIOS_DEBUG, " returns 0xff\n");
 		return 0xff;
 	}
 
-	print_debug(" addr ");
-	print_debug_hex8(address);
-	print_debug(" returns ");
-	print_debug_hex8(spdbytes[address]);
-	print_debug("\n");
+	printk(BIOS_DEBUG, " addr %02x returns %02x\n",
+		address, spdbytes[address]);
 
 	return spdbytes[address];
 }
@@ -179,9 +175,9 @@ void main(unsigned long bist)
 	 * We use method 1 on Norwich and on this board too.
 	 */
 	post_code(0x02);
-	print_err("POST 02\n");
+	printk(BIOS_ERR, "POST 02\n");
 	__asm__("wbinvd\n");
-	print_err("Past wbinvd\n");
+	printk(BIOS_ERR, "Past wbinvd\n");
 
 	/* We are finding the return does not work on this board. Explicitly
 	 * call the label that is after the call to us. This is gross, but

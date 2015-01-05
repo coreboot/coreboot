@@ -116,7 +116,7 @@ static void sata_init(struct device *dev)
 
 
 	conf = dev->chip_info;
-        print_debug("SATA_INIT:---------->\n");
+        printk(BIOS_DEBUG, "SATA_INIT:---------->\n");
 
 //-------------- enable IDE (SiS1183) -------------------------
 {
@@ -151,23 +151,19 @@ for (i=0;i<10;i++){
 {
         int i;
 
-        print_debug("****** SATA PCI config ******");
-        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+        printk(BIOS_DEBUG, "****** SATA PCI config ******");
+        printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
         for(i=0;i<0xff;i+=4){
-                if((i%16)==0){
-                        print_debug("\n");
-                        print_debug_hex8(i);
-                        print_debug(": ");
-                }
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");
+                if((i%16)==0)
+                        printk(BIOS_DEBUG, "\n%02x: ", i);
+                printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
         }
-        print_debug("\n");
+        printk(BIOS_DEBUG, "\n");
 }
 #endif
 
-        print_debug("SATA_INIT:<----------\n");
+        printk(BIOS_DEBUG, "SATA_INIT:<----------\n");
 
 }
 

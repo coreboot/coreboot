@@ -97,7 +97,7 @@ void enable_smbus(void)
 
 	/* Clear any lingering errors, so transactions can run. */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-	print_debug("SMBus controller enabled.\n");
+	printk(BIOS_DEBUG, "SMBus controller enabled.\n");
 }
 
 /** \brief generic smbus helper function to read & write to the smbus

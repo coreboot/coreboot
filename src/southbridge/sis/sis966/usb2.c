@@ -71,7 +71,7 @@ static void usb2_init(struct device *dev)
         int i;
         u8  temp8;
 
-        print_debug("USB 2.0 INIT:---------->\n");
+        printk(BIOS_DEBUG, "USB 2.0 INIT:---------->\n");
 
 	//-------------- enable USB2.0 (SiS7002) ----------------------
 
@@ -95,21 +95,17 @@ static void usb2_init(struct device *dev)
 	//-------------------------------------------------------------
 
 #if DEBUG_USB2
-        print_debug("****** USB 2.0 PCI config ******");
-        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+        printk(BIOS_DEBUG, "****** USB 2.0 PCI config ******");
+        printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
         for(i=0;i<0xff;i+=4){
-                if((i%16)==0){
-                        print_debug("\n");
-                        print_debug_hex8(i);
-                        print_debug(": ");
-                }
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");
+                if((i%16)==0)
+                        printk(BIOS_DEBUG, "\n%02x: ", i);
+                printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
         }
-        print_debug("\n");
+        printk(BIOS_DEBUG, "\n");
 #endif
-        print_debug("USB 2.0 INIT:<----------\n");
+        printk(BIOS_DEBUG, "USB 2.0 INIT:<----------\n");
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

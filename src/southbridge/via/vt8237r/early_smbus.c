@@ -42,17 +42,17 @@ static void smbus_print_error(u8 host_status, int loops)
 		return;
 
 	if (loops >= SMBUS_TIMEOUT)
-		print_err("SMBus timeout\n");
+		printk(BIOS_ERR, "SMBus timeout\n");
 	if (host_status & (1 << 4))
-		print_err("Interrupt/SMI# was Failed Bus Transaction\n");
+		printk(BIOS_ERR, "Interrupt/SMI# was Failed Bus Transaction\n");
 	if (host_status & (1 << 3))
-		print_err("Bus error\n");
+		printk(BIOS_ERR, "Bus error\n");
 	if (host_status & (1 << 2))
-		print_err("Device error\n");
+		printk(BIOS_ERR, "Device error\n");
 	if (host_status & (1 << 1))
-		print_debug("Interrupt/SMI# completed successfully\n");
+		printk(BIOS_DEBUG, "Interrupt/SMI# completed successfully\n");
 	if (host_status & (1 << 0))
-		print_err("Host busy\n");
+		printk(BIOS_ERR, "Host busy\n");
 }
 
 /**
@@ -229,7 +229,7 @@ void smbus_fixup(const struct mem_controller *ctrl)
 
 	ram_slots = ARRAY_SIZE(ctrl->channel0);
 	if (!ram_slots) {
-		print_err("smbus_fixup() thinks there are no RAM slots!\n");
+		printk(BIOS_ERR, "smbus_fixup() thinks there are no RAM slots!\n");
 		return;
 	}
 
@@ -253,7 +253,7 @@ void smbus_fixup(const struct mem_controller *ctrl)
 	}
 
 	if (i >= SMBUS_TIMEOUT)
-		print_err("SMBus timed out while warming up\n");
+		printk(BIOS_ERR, "SMBus timed out while warming up\n");
 	else
 		PRINT_DEBUG("Done\n");
 }
@@ -336,7 +336,7 @@ int acpi_is_wakeup_early(void)
 	device_t dev;
 	u16 tmp;
 
-	print_debug("IN TEST WAKEUP\n");
+	printk(BIOS_DEBUG, "IN TEST WAKEUP\n");
 
 	/* Power management controller */
 	dev = get_vt8237_lpc();
@@ -351,7 +351,7 @@ int acpi_is_wakeup_early(void)
 
 	tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
 
-	print_debug_hex8(tmp);
+	printk(BIOS_DEBUG, "%02x", tmp);
 	return ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
 }
 #endif
@@ -426,7 +426,7 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom)
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				       PCI_DEVICE_ID_VIA_8233_7), 0);
 	if (dev == PCI_DEV_INVALID) {
-		print_err("Network is disabled, please enable\n");
+		printk(BIOS_ERR, "Network is disabled, please enable\n");
 		return 0;
 	}
 
@@ -441,7 +441,7 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom)
 		return 0;
 
 	if (rom == NULL) {
-		print_err("No config data specified, using default MAC!\n");
+		printk(BIOS_ERR, "No config data specified, using default MAC!\n");
 		n.mac_address[0] = 0x0;
 		n.mac_address[1] = 0x0;
 		n.mac_address[2] = 0xde;
@@ -503,7 +503,7 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom)
 	}
 
 	if (loops >= LAN_TIMEOUT) {
-		print_err("Timeout - LAN controller didn't accept config\n");
+		printk(BIOS_ERR, "Timeout - LAN controller didn't accept config\n");
 		return 0;
 	}
 

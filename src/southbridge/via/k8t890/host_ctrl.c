@@ -84,7 +84,7 @@ static void host_ctrl_enable_k8t8xx(struct device *dev)
 	writeback(dev, 0xc4, 0x50);
 	writeback(dev, 0xc5, 0x50);
 
-	print_debug(" VIA_X_2 device dump:\n");
+	printk(BIOS_DEBUG, " VIA_X_2 device dump:\n");
 	dump_south(dev);
 }
 

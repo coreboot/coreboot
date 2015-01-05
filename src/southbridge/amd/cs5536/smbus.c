@@ -182,11 +182,7 @@ unsigned char do_smbus_read_byte(unsigned smbus_io_base,
 	return smbus_get_result(smbus_io_base);
 
 err:
-	print_debug("SMBUS READ ERROR:");
-	print_debug_hex8(error);
-	print_debug(" device:");
-	print_debug_hex8(device);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "SMBUS READ ERROR: %02x device: %02x\n", error, device);
 	/* stop, clean up the error, and leave */
 	smbus_stop_condition(smbus_io_base);
 	outb(inb(smbus_io_base + SMB_STS), smbus_io_base + SMB_STS);

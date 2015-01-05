@@ -31,7 +31,7 @@ static void enable_smbus(void)
 		die("SMBUS controller not found\n");
 	}
 
-	print_debug("SMBus controller enabled\n");
+	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 	/* set smbus iobase */
 	pci_write_config32(dev, 0x90, SMBUS_IO_BASE | 1);
 	/* Set smbus iospace enable */

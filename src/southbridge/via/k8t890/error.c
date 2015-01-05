@@ -26,7 +26,7 @@
 
 static void error_enable(struct device *dev)
 {
-	print_debug(" K8x8xx: Enabling NB error reporting: ");
+	printk(BIOS_DEBUG, " K8x8xx: Enabling NB error reporting: ");
 	/*
 	 * bit0 - Enable V-link parity error reporting in 0x50 bit0 (RWC)
 	 * bit6 - Parity Error/SERR# Report Through V-Link to SB
@@ -34,10 +34,10 @@ static void error_enable(struct device *dev)
 	 */
 	pci_write_config8(dev, 0x58, 0x81);
 
-	print_debug("Done\n");
+	printk(BIOS_DEBUG, "Done\n");
 	/* TODO: enable AGP errors reporting on K8M890 */
 
-	print_debug(" VIA_X_1 device dump:\n");
+	printk(BIOS_DEBUG, " VIA_X_1 device dump:\n");
 	dump_south(dev);
 }
 

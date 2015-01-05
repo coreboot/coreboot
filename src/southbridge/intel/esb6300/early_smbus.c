@@ -6,7 +6,7 @@ static void enable_smbus(void)
 {
 	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
-	print_spew("SMBus controller enabled\n");
+	printk(BIOS_SPEW, "SMBus controller enabled\n");
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
 	pci_write_config8(dev, 0x40, 1);
 	pci_write_config8(dev, 0x4, 1);
@@ -91,7 +91,7 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 				SMBUS_IO_BASE + SMBHSTSTAT);
 	}
 
-	print_debug("SMBUS Block complete\n");
+	printk(BIOS_DEBUG, "SMBUS Block complete\n");
 	return 0;
 }
 #endif

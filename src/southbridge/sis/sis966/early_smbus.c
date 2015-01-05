@@ -138,23 +138,23 @@ static inline int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, un
 	outb(0x12, smbus_io_base + 0x03);
 	smbus_delay();
 
-int	i,j;
-for(i=0;i<0x1000;i++)
-{
-	if (inb(smbus_io_base + 0x00) != 0x08)
-	{	smbus_delay();
-		for(j=0;j<0xFFFF;j++);
+	int i, j;
+	for(i = 0;i < 0x1000; i++)
+	{
+		if (inb(smbus_io_base + 0x00) != 0x08)
+		{	smbus_delay();
+			for(j=0;j<0xFFFF;j++);
+		}
 	}
-};
 
 	global_status_register = inb(smbus_io_base + 0x00);
 	byte = inb(smbus_io_base + 0x08);
 
 	if (global_status_register != 0x08) { // lose check, otherwise it should be 0
-		print_debug("Fail");print_debug("\r\t");
-			return -1;
+		printk(BIOS_DEBUG, "Fail\r\t");
+		return -1;
 	}
-		print_debug("Success");print_debug("\r\t");
+	printk(BIOS_DEBUG, "Success\r\t");
 	return byte;
 }
 
@@ -706,7 +706,7 @@ static void sis_init_stage2(void)
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_SATA), 0);
 
 	if (!dev)
-		print_debug("SiS 1183 does not exist !!");
+		printk(BIOS_DEBUG, "SiS 1183 does not exist !!");
 	// SATA Set Mode
 	pci_write_config8(dev, 0x90, (pci_read_config8(dev, 0x90)&0x3F) | 0x40);
 

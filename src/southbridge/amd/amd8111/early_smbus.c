@@ -23,7 +23,7 @@ static void enable_smbus(void)
 
 	/* clear any lingering errors, so the transaction will run */
 	outw(inw(SMBUS_IO_BASE + SMBGSTATUS), SMBUS_IO_BASE + SMBGSTATUS);
-	print_spew("SMBus controller enabled\n");
+	printk(BIOS_SPEW, "SMBus controller enabled\n");
 }
 
 static inline int smbus_recv_byte(unsigned device)

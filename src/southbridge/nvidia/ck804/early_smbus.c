@@ -54,7 +54,7 @@ void enable_smbus(void)
 	outb(inb(SMBUS_BASE(0) + SMBHSTSTAT), SMBUS_BASE(0) + SMBHSTSTAT);
 	outb(inb(SMBUS_BASE(1) + SMBHSTSTAT), SMBUS_BASE(1) + SMBHSTSTAT);
 
-	print_debug("SMBus controller enabled\n");
+	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 }
 
 int ck804_smbus_read_byte(unsigned bus, unsigned device, unsigned address)

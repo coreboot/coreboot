@@ -37,13 +37,9 @@ void writeback(struct device *dev, u16 where, u8 what)
 	pci_write_config8(dev, where, what);
 	regval = pci_read_config8(dev, where);
 
-	if (regval != what) {
-		print_debug("Writeback to ");
-		print_debug_hex8(where);
-		print_debug(" failed ");
-		print_debug_hex8(regval);
-		print_debug("\n");
-	}
+	if (regval != what)
+		printk(BIOS_DEBUG, "Writeback to %02x failed %02x\n",
+			where, regval);
 }
 #else
 void writeback(struct device *dev, u16 where, u8 what)

@@ -152,7 +152,7 @@ static void vt8237r_vlink_init(struct device *dev)
 static void ctrl_init(struct device *dev)
 {
 
-	print_debug("K8x8xx: Initializing V-Link to VT8237R sb: ");
+	printk(BIOS_DEBUG, "K8x8xx: Initializing V-Link to VT8237R sb: ");
 	/* TODO: Fix some ordering issue for V-link set Rx77[6] and PCI1_Rx4F[0]
 	   should to 1 */
 
@@ -172,11 +172,11 @@ static void ctrl_init(struct device *dev)
 		vt8237r_vlink_init(dev);
 		k8x8xx_vt8237r_cfg(dev, devsb);
 	} else {
-		print_debug("VT8237R LPC not found !\n");
+		printk(BIOS_DEBUG, "VT8237R LPC not found !\n");
 		return;
 	}
-	print_debug(" Done\n");
-	print_debug(" VIA_X_7 device dump:\n");
+	printk(BIOS_DEBUG, " Done\n");
+	printk(BIOS_DEBUG, " VIA_X_7 device dump:\n");
 	dump_south(dev);
 
 }

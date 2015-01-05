@@ -104,9 +104,7 @@ int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address
 
 	if (status_register & 0x04) {
 #if 0
- 		print_debug("Read fail ");
-		print_debug_hex16(status_register);
-		print_debug("\n");
+ 		printk(BIOS_DEBUG, "Read fail %04x\n", status_register);
 #endif
 		return SMBUS_ERROR;
 	}

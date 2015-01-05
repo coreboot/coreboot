@@ -26,7 +26,7 @@
 static void bridge_enable(struct device *dev)
 {
 	u8 tmp;
-	print_debug("B188 device dump\n");
+	printk(BIOS_DEBUG, "B188 device dump\n");
 
 	/* VIA recommends this, sorry no known info. */
 

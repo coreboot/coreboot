@@ -244,7 +244,7 @@ static void aza_init(struct device *dev)
         struct resource *res;
         u32 codec_mask;
 
-        print_debug("AZALIA_INIT:---------->\n");
+        printk(BIOS_DEBUG, "AZALIA_INIT:---------->\n");
 
 //-------------- enable AZA (SiS7502) -------------------------
 {
@@ -269,19 +269,16 @@ static void aza_init(struct device *dev)
 {
         int i;
 
-        print_debug("****** Azalia PCI config ******");
-        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+        printk(BIOS_DEBUG, "****** Azalia PCI config ******");
+        printk(BIOS_DEBUG, "\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
         for(i=0;i<0xff;i+=4){
                 if((i%16)==0){
-                        print_debug("\n");
-                        print_debug_hex8(i);
-                        print_debug(": ");
+                        printk(BIOS_DEBUG, "\n%02x: ", i);
                 }
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");
+                printk(BIOS_DEBUG, "%08x  ", pci_read_config32(dev,i));
         }
-        print_debug("\n");
+        printk(BIOS_DEBUG, "\n");
 }
 #endif
 
@@ -299,7 +296,7 @@ static void aza_init(struct device *dev)
 		codecs_init(base, codec_mask);
 	}
 
-        print_debug("AZALIA_INIT:<----------\n");
+        printk(BIOS_DEBUG, "AZALIA_INIT:<----------\n");
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

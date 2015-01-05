@@ -130,7 +130,7 @@ static void vt8237s_vlink_init(struct device *dev)
 	/* No pairing NB was found. */
 	if (!devfun7)
 	{
-		print_debug("vt8237s_vlink_init: No pairing NB was found.\n");
+		printk(BIOS_DEBUG, "vt8237s_vlink_init: No pairing NB was found.\n");
 		return;
 	}
 
@@ -205,7 +205,7 @@ static void vt8237a_vlink_init(struct device *dev)
 	/* No pairing NB was found. */
 	if (!devfun7)
 	{
-		print_debug("vt8237a_vlink_init: No pairing NB was found.\n");
+		printk(BIOS_DEBUG, "vt8237a_vlink_init: No pairing NB was found.\n");
 		return;
 	}
 

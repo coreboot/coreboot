@@ -50,7 +50,7 @@ void enable_smbus(void)
 	/* Clear any lingering errors, so transactions can run. */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
 
-	print_debug("SMBus controller enabled\n");
+	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 }
 
 int smbus_read_byte(u8 device, u8 address)

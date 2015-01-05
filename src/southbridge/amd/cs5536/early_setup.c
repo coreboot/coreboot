@@ -258,18 +258,18 @@ static void cs5536_early_setup(void)
 	msr = rdmsr(GLCP_SYS_RSTPLL);
 	if (msr.lo & (0x3f << 26)) {
 		/* PLL is already set and we are reboot from PLL reset */
-		//print_debug("reboot from BIOS reset\n");
+		//printk(BIOS_DEBUG, "reboot from BIOS reset\n");
 		return;
 	}
-	//print_debug("Setup idsel\n");
+	//printk(BIOS_DEBUG, "Setup idsel\n");
 	cs5536_setup_idsel();
-	//print_debug("Setup iobase\n");
+	//printk(BIOS_DEBUG, "Setup iobase\n");
 	cs5536_usb_swapsif();
 	cs5536_setup_iobase();
-	//print_debug("Setup gpio\n");
+	//printk(BIOS_DEBUG, "Setup gpio\n");
 	cs5536_setup_gpio();
-	//print_debug("Setup smbus\n");
+	//printk(BIOS_DEBUG, "Setup smbus\n");
 	cs5536_enable_smbus();
-	//print_debug("Setup power button\n");
+	//printk(BIOS_DEBUG, "Setup power button\n");
 	cs5536_setup_power_button();
 }

@@ -66,7 +66,7 @@ static void dram_enable(struct device *dev)
 	/* The Address Next to the Last Valid DRAM Address */
 	pci_write_config16(dev, 0x88, reg | mregs.shadow_mem_ctrl);
 
-	print_debug(" VIA_X_3 device dump:\n");
+	printk(BIOS_DEBUG, " VIA_X_3 device dump:\n");
 	dump_south(dev);
 
 }

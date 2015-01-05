@@ -94,8 +94,8 @@
 #define CLOCK_SLAVE_ADDRESS		0x69
 
 #if CONFIG_DEBUG_SMBUS
-#define PRINT_DEBUG(x)		print_debug(x)
-#define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
+#define PRINT_DEBUG(x)		printk(BIOS_DEBUG, x)
+#define PRINT_DEBUG_HEX16(x)	printk(BIOS_DEBUG, "%04x", x)
 #else
 #define PRINT_DEBUG(x)
 #define PRINT_DEBUG_HEX16(x)

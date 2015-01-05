@@ -60,7 +60,7 @@ static void host_enable(struct device *dev)
 	/* Multiple function control */
 	pci_write_config8(dev, K8T890_MULTIPLE_FN_EN, 0x01);
 
-	print_debug(" VIA_X_0 device dump:\n");
+	printk(BIOS_DEBUG, " VIA_X_0 device dump:\n");
 	dump_south(dev);
 }
 

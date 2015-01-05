@@ -1147,11 +1147,7 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 	}
 
 	for(i=0; i<sysinfo->nodes; i++) {
-#ifdef __PRE_RAM__
-		print_debug("mem_trained["); print_debug_hex8(i); print_debug("]="); print_debug_hex8(sysinfo->mem_trained[i]); print_debug("\n");
-#else
 		printk(BIOS_DEBUG, "mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]);
-#endif
 		switch(sysinfo->mem_trained[i]) {
 		case 0: //don't need train
 		case 1: //trained
@@ -1164,11 +1160,10 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 		}
 	}
 	if(needs_reset) {
+		printk(BIOS_DEBUG, "mem trained failed\n");
 #ifdef __PRE_RAM__
-		print_debug("mem trained failed\n");
 		soft_reset();
 #else
-		printk(BIOS_DEBUG, "mem trained failed\n");
 		hard_reset();
 #endif
 	}

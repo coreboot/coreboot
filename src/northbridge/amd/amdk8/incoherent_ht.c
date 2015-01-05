@@ -342,7 +342,7 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 				pci_write_config16(udev, upos + LINK_CTRL(uoffs), ctrl);
 				ctrl = pci_read_config16(udev, upos + LINK_CTRL(uoffs));
 				if (ctrl & ((1 << 4) | (1 << 8))) {
-					print_err("Detected error on Hypertransport Link\n");
+					printk(BIOS_ERR, "Detected error on Hypertransport Link\n");
 					break;
 				}
 			}
@@ -362,10 +362,10 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 		pos = ht_lookup_slave_capability(dev);
 		if (!pos) {
-			print_err("udev="); print_err_hex32(udev);
-			print_err("\tupos="); print_err_hex32(upos);
-			print_err("\tuoffs="); print_err_hex32(uoffs);
-			print_err("\tHT link capability not found\n");
+			printk(BIOS_ERR, "udev=%08x", udev);
+			printk(BIOS_ERR, "\tupos=%08x", upos);
+			printk(BIOS_ERR, "\tuoffs=%08x", uoffs);
+			printk(BIOS_ERR, "\tHT link capability not found\n");
 			break;
 		}
 

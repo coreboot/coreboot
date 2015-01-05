@@ -23,7 +23,7 @@
 static void setup_resource_map(const u32 *register_values, u32 max)
 {
 	u32 i;
-//	print_debug("setting up resource map....");
+//	printk(BIOS_DEBUG, "setting up resource map....");
 
 	for(i = 0; i < max; i += 3) {
 		device_t dev;
@@ -37,14 +37,14 @@ static void setup_resource_map(const u32 *register_values, u32 max)
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-//	print_debug("done.\n");
+//	printk(BIOS_DEBUG, "done.\n");
 }
 
 
 void setup_resource_map_offset(const u32 *register_values, u32 max, u32 offset_pci_dev, u32 offset_io_base)
 {
 	u32 i;
-//	print_debug("setting up resource map offset....");
+//	printk(BIOS_DEBUG, "setting up resource map offset....");
 	for(i = 0; i < max; i += 3) {
 		device_t dev;
 		u32 where;
@@ -56,7 +56,7 @@ void setup_resource_map_offset(const u32 *register_values, u32 max, u32 offset_p
 		reg |= register_values[i+2] + offset_io_base;
 		pci_write_config32(dev, where, reg);
 	}
-//	print_debug("done.\n");
+//	printk(BIOS_DEBUG, "done.\n");
 }
 
 #define RES_PCI_IO 0x10
@@ -69,12 +69,12 @@ void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32 offset
 	u32 i;
 
 #if RES_DEBUG
-	print_debug("setting up resource map ex offset....");
+	printk(BIOS_DEBUG, "setting up resource map ex offset....");
 
 #endif
 
 #if RES_DEBUG
-	print_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
@@ -127,7 +127,7 @@ void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32 offset
 	}
 
 #if RES_DEBUG
-	print_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 #endif
 }
 
@@ -136,11 +136,11 @@ void setup_resource_map_x(const u32 *register_values, u32 max)
 	u32 i;
 
 #if RES_DEBUG
-	print_debug("setting up resource map ex offset....");
+	printk(BIOS_DEBUG, "setting up resource map ex offset....");
 #endif
 
 #if RES_DEBUG
-	print_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
@@ -189,7 +189,7 @@ void setup_resource_map_x(const u32 *register_values, u32 max)
 	}
 
 #if RES_DEBUG
-	print_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 #endif
 }
 

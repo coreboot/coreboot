@@ -27,9 +27,9 @@ Definitions:
 //#define VALIDATE_DIMM_COMPATIBILITY
 
 #if CONFIG_DEBUG_RAM_SETUP
-#define RAM_DEBUG_MESSAGE(x)	print_debug(x)
-#define RAM_DEBUG_HEX32(x)	print_debug_hex32(x)
-#define RAM_DEBUG_HEX8(x)	print_debug_hex8(x)
+#define RAM_DEBUG_MESSAGE(x)	printk(BIOS_DEBUG, x)
+#define RAM_DEBUG_HEX32(x)	printk(BIOS_DEBUG, "%08x", x)
+#define RAM_DEBUG_HEX8(x)	printk(BIOS_DEBUG, "%02x", x)
 #define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
 #else
 #define RAM_DEBUG_MESSAGE(x)
@@ -784,7 +784,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		    spd_read_byte(channel1_dimm, SPD_MODULE_ATTRIBUTES);
 		if (!(spd_value & MODULE_REGISTERED) || (spd_value < 0)) {
 
-			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\n");
+			printk(BIOS_DEBUG, "Skipping un-matched DIMMs - only dual-channel operation supported\n");
 			continue;
 		}
 #ifdef VALIDATE_DIMM_COMPATIBILITY
@@ -812,11 +812,11 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 			// Made it through all the checks, this DIMM pair is usable
 			dimm_mask |= ((1 << i) | (1 << (MAX_DIMM_SOCKETS_PER_CHANNEL + i)));
 		} else
-			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\n");
+			printk(BIOS_DEBUG, "Skipping un-matched DIMMs - only dual-channel operation supported\n");
 #else
 		switch (bDualChannel) {
 		case 0:
-			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\n");
+			printk(BIOS_DEBUG, "Skipping un-matched DIMMs - only dual-channel operation supported\n");
 			break;
 
 		default:
@@ -1523,13 +1523,13 @@ static void configure_e7501_dram_controller_mode(const struct
 		die_on_spd_error(value);
 		value &= 0x7f;	// Mask off self-refresh bit
 		if (value > MAX_SPD_REFRESH_RATE) {
-			print_err("unsupported refresh rate\n");
+			printk(BIOS_ERR, "unsupported refresh rate\n");
 			continue;
 		}
 		// Get the appropriate E7501 refresh mode for this DIMM
 		dimm_refresh_mode = refresh_rate_map[value];
 		if (dimm_refresh_mode > 7) {
-			print_err("unsupported refresh rate\n");
+			printk(BIOS_ERR, "unsupported refresh rate\n");
 			continue;
 		}
 		// If this DIMM requires more frequent refresh than others,
@@ -1961,7 +1961,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	dimm_mask = spd_get_supported_dimms(ctrl);
 
 	if (dimm_mask == 0) {
-		print_debug("No usable memory for this controller\n");
+		printk(BIOS_DEBUG, "No usable memory for this controller\n");
 	} else {
 		enable_e7501_clocks(dimm_mask);
 

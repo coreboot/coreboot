@@ -182,13 +182,13 @@ void dump_spd_data(spd_raw_data spd)
 	 * I originally saw this way to present SPD data in code from VIA. I
 	 * really liked the idea, so here it goes.
 	 */
-	print_debug("     00 01 02 03 04 05 06 07 07 09 0A 0B 0C 0D 0E 0F\n");
-	print_debug("---+------------------------------------------------");
+	printk(BIOS_DEBUG, "     00 01 02 03 04 05 06 07 07 09 0A 0B 0C 0D 0E 0F\n");
+	printk(BIOS_DEBUG, "---+------------------------------------------------");
 	for (i = 0; i < len; i++) {
 		reg = spd[i];
 		if ((i & 0x0f) == 0)
 			printk(BIOS_DEBUG, "\n%.2x |", i);
 		printk(BIOS_DEBUG, " %.2x", reg);
 	}
-	print_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 }

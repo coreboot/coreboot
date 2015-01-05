@@ -415,7 +415,7 @@ static void sdram_enable(void)
 {
 	int i;
 
-	print_debug("Ram enable 1\n");
+	printk(BIOS_DEBUG, "Ram enable 1\n");
 	delay();
 	delay();
 
@@ -433,16 +433,16 @@ static void sdram_enable(void)
 	delay();
 	delay();
 
-	print_debug("Ram enable 4\n");
+	printk(BIOS_DEBUG, "Ram enable 4\n");
 	do_ram_command(RAM_COMMAND_EMRS, SDRAM_EXTMODE_DLL_ENABLE);
 	delay();
 	delay();
 	delay();
 
-	print_debug("Ram enable 5\n");
+	printk(BIOS_DEBUG, "Ram enable 5\n");
 	do_ram_command(RAM_COMMAND_MRS, VG85X_MODE | SDRAM_MODE_DLL_RESET);
 
-	print_debug("Ram enable 6\n");
+	printk(BIOS_DEBUG, "Ram enable 6\n");
 	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
 	delay();
 	delay();
@@ -457,7 +457,7 @@ static void sdram_enable(void)
 		delay();
 	}
 
-	print_debug("Ram enable 8\n");
+	printk(BIOS_DEBUG, "Ram enable 8\n");
 	do_ram_command(RAM_COMMAND_MRS, VG85X_MODE | SDRAM_MODE_NORMAL);
 
 	/* Set GME-M Mode Select bits back to NORMAL operation mode */
@@ -467,7 +467,7 @@ static void sdram_enable(void)
 	delay();
 	delay();
 
-	print_debug("Ram enable 9\n");
+	printk(BIOS_DEBUG, "Ram enable 9\n");
 	set_initialize_complete();
 
 	delay();
@@ -476,11 +476,11 @@ static void sdram_enable(void)
 	delay();
 	delay();
 
-	print_debug("After configuration:\n");
+	printk(BIOS_DEBUG, "After configuration:\n");
 	/* dump_pci_devices(); */
 
 	/*
-	print_debug("\n\n***** RAM TEST *****\n");
+	printk(BIOS_DEBUG, "\n\n***** RAM TEST *****\n");
 	ram_check(0, 0xa0000);
 	ram_check(0x100000, 0x40000000);
 	*/
@@ -497,7 +497,7 @@ DIMM-independant configuration functions:
 static void sdram_set_registers(void)
 {
 	/*
-	print_debug("Before configuration:\n");
+	printk(BIOS_DEBUG, "Before configuration:\n");
 	dump_pci_devices();
 	*/
 }
@@ -572,13 +572,13 @@ static void spd_set_dram_controller_mode(uint8_t dimm_mask)
 		die_on_spd_error(value);
 		value &= 0x7f;	// Mask off self-refresh bit
 		if (value > MAX_SPD_REFRESH_RATE) {
-			print_err("unsupported refresh rate\n");
+			printk(BIOS_ERR, "unsupported refresh rate\n");
 			continue;
 		}
 		// Get the appropriate i855 refresh mode for this DIMM
 		dimm_refresh_mode = refresh_rate_map[value];
 		if (dimm_refresh_mode > 7) {
-			print_err("unsupported refresh rate\n");
+			printk(BIOS_ERR, "unsupported refresh rate\n");
 			continue;
 		}
 		// If this DIMM requires more frequent refresh than others,
@@ -965,7 +965,7 @@ static void sdram_set_spd_registers(void)
 	dimm_mask = spd_get_supported_dimms();
 
 	if (dimm_mask == 0) {
-		print_debug("No usable memory for this controller\n");
+		printk(BIOS_DEBUG, "No usable memory for this controller\n");
 	} else {
 		PRINTK_DEBUG("DIMM MASK: %02x\n", dimm_mask);
 

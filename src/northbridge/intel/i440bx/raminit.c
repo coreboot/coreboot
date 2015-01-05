@@ -752,7 +752,7 @@ static void set_dram_row_attributes(void)
 			PRINT_DEBUG("Found DIMM in slot %d\n", i);
 
 			if (edo && sd) {
-				print_err("Mixing EDO/SDRAM unsupported!\n");
+				printk(BIOS_ERR, "Mixing EDO/SDRAM unsupported!\n");
 				die("HALT\n");
 			}
 
@@ -857,11 +857,11 @@ static void set_dram_row_attributes(void)
 				if (col == 4)
 					bpr |= 0xc0;
 			} else {
-				print_err("# of banks of DIMM unsupported!\n");
+				printk(BIOS_ERR, "# of banks of DIMM unsupported!\n");
 				die("HALT\n");
 			}
 			if (dra == -1) {
-				print_err("Page size not supported\n");
+				printk(BIOS_ERR, "Page size not supported\n");
 				die("HALT\n");
 			}
 
@@ -872,7 +872,7 @@ static void set_dram_row_attributes(void)
 			 */
 			struct dimm_size sz = spd_get_dimm_size(device);
 			if ((sz.side1 < 8)) {
-				print_err("DIMMs smaller than 8MB per side\n"
+				printk(BIOS_ERR, "DIMMs smaller than 8MB per side\n"
 					  "are not supported on this NB.\n");
 				die("HALT\n");
 			}

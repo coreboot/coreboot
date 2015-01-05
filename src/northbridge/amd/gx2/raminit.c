@@ -606,6 +606,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		*ptr = (unsigned long)i;
 	}
 
-	print_info("RAM DLL lock\n");
+	printk(BIOS_INFO, "RAM DLL lock\n");
 
 }

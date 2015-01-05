@@ -69,7 +69,7 @@ void vx900_print_strapping_info(void)
 {
 	u8 strap = pci_read_config8(SNMIC, 0x56);
 
-	print_debug("VX900 strapping pins indicate that:\n");
+	printk(BIOS_DEBUG, "VX900 strapping pins indicate that:\n");
 	printk(BIOS_DEBUG, " ROM is on %s bus\n",
 	       (strap & (1 << 0)) ? "SPI" : "LPC");
 	printk(BIOS_DEBUG, " Auto reset is %s\n",
@@ -92,13 +92,13 @@ void vx900_print_strapping_info(void)
 void vx900_disable_auto_reboot(void)
 {
 	if (pci_read_config8(SNMIC, 0x56) & (1 << 1)) {
-		print_debug("Auto-reboot is disabled in hardware\n");
+		printk(BIOS_DEBUG, "Auto-reboot is disabled in hardware\n");
 		return;
 	}
 	/* Disable the GP3 timer, which is the root of all evil */
 	pci_write_config8(LPC, 0x98, 0);
 	/* Yep, that's all it takes */
-	print_debug("GP3 timer disabled."
+	printk(BIOS_DEBUG, "GP3 timer disabled."
 		    " Auto-reboot should not give you any more trouble.\n");
 }
 

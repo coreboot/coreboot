@@ -262,7 +262,7 @@ restartinit:
 		node_sys_base += (pDCTstat->NodeSysLimit + 2) & ~0x0F;
 	}
 	if (NodesWmem == 0) {
-		print_debug("No Nodes?!\n");
+		printk(BIOS_DEBUG, "No Nodes?!\n");
 		goto fatalexit;
 	}
 

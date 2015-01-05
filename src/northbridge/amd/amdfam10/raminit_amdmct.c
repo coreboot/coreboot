@@ -219,7 +219,7 @@ u32 mctGetLogicalCPUID(u32 Node)
 		break;
 	default:
 		/* FIXME: mabe we should die() here. */
-		print_err("FIXME! CPU Version unknown or not supported! \n");
+		printk(BIOS_ERR, "FIXME! CPU Version unknown or not supported! \n");
 		ret = 0;
 	}
 
@@ -237,9 +237,9 @@ static void raminit_amdmct(struct sys_info *sysinfo)
 	struct MCTStatStruc *pMCTstat = &(sysinfo->MCTstat);
 	struct DCTStatStruc *pDCTstatA = sysinfo->DCTstatA;
 
-	print_debug("raminit_amdmct begin:\n");
+	printk(BIOS_DEBUG, "raminit_amdmct begin:\n");
 
 	mctAutoInitMCT_D(pMCTstat, pDCTstatA);
 
-	print_debug("raminit_amdmct end:\n");
+	printk(BIOS_DEBUG, "raminit_amdmct end:\n");
 }

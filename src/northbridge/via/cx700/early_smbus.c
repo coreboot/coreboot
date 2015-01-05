@@ -46,15 +46,6 @@
 
 #define SMBUS_DELAY()		outb(0x80, 0x80)
 
-/* Debugging macros. */
-#if CONFIG_DEBUG_SMBUS
-#define PRINT_DEBUG(x)		print_debug(x)
-#define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
-#else
-#define PRINT_DEBUG(x)
-#define PRINT_DEBUG_HEX16(x)
-#endif
-
 /* Internal functions */
 #if CONFIG_DEBUG_SMBUS
 static void smbus_print_error(unsigned char host_status_register, int loops)
@@ -63,28 +54,26 @@ static void smbus_print_error(unsigned char host_status_register, int loops)
 	if (host_status_register == 0x00 || host_status_register == 0x40 ||
 	    host_status_register == 0x42)
 		return;
-	print_err("SMBus Error: ");
-	print_err_hex8(host_status_register);
+	printk(BIOS_ERR, "SMBus Error: %02x\n", host_status_register);
 
-	print_err("\n");
 	if (loops >= SMBUS_TIMEOUT) {
-		print_err("SMBus Timout\n");
+		printk(BIOS_ERR, "SMBus Timout\n");
 	}
 	if (host_status_register & (1 << 4)) {
-		print_err("Interrup/SMI# was Failed Bus Transaction\n");
+		printk(BIOS_ERR, "Interrup/SMI# was Failed Bus Transaction\n");
 	}
 	if (host_status_register & (1 << 3)) {
-		print_err("Bus Error\n");
+		printk(BIOS_ERR, "Bus Error\n");
 	}
 	if (host_status_register & (1 << 2)) {
-		print_err("Device Error\n");
+		printk(BIOS_ERR, "Device Error\n");
 	}
 	if (host_status_register & (1 << 1)) {
 		/* This isn't a real error... */
-		print_debug("Interrupt/SMI# was Successful Completion\n");
+		printk(BIOS_DEBUG, "Interrupt/SMI# was Successful Completion\n");
 	}
 	if (host_status_register & (1 << 0)) {
-		print_err("Host Busy\n");
+		printk(BIOS_ERR, "Host Busy\n");
 	}
 }
 #endif
@@ -239,9 +228,7 @@ static void dump_spd_data(const struct mem_controller *ctrl)
 	unsigned int val;
 
 	for (dimm = 0; dimm < DIMM_SOCKETS; dimm++) {
-		print_debug("SPD Data for DIMM ");
-		print_debug_hex8(dimm);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "SPD Data for DIMM %02x\n", dimm);
 
 		val = get_spd_data(ctrl, dimm, 0);
 		if (val == 0xff) {
@@ -249,15 +236,12 @@ static void dump_spd_data(const struct mem_controller *ctrl)
 		} else if (val == 0x80) {
 			regs = 128;
 		} else {
-			print_debug("No DIMM present\n");
+			printk(BIOS_DEBUG, "No DIMM present\n");
 			regs = 0;
 		}
 		for (offset = 0; offset < regs; offset++) {
-			print_debug("  Offset ");
-			print_debug_hex8(offset);
-			print_debug(" = 0x");
-			print_debug_hex8(get_spd_data(ctrl, dimm, offset));
-			print_debug("\n");
+			printk(BIOS_DEBUG, "  Offset %02x = 0x%02x\n",
+				offset, get_spd_data(ctrl, dimm, offset));
 		}
 	}
 }

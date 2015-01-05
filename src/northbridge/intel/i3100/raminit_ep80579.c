@@ -128,13 +128,7 @@ static struct dimm_size spd_get_dimm_size(u16 device)
 	sz.side1 = 0;
 	sz.side2 = 0;
 out:
-	print_debug("dimm ");
-	print_debug_hex8(device);
-	print_debug(" size = ");
-	print_debug_hex8(sz.side1);
-	print_debug(".");
-	print_debug_hex8(sz.side2);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "dimm %02x size = %02x.%02x\n", device, sz.side1, sz.side2);
 	return sz;
 
 }
@@ -165,25 +159,19 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, u8 dimm_mask)
 			pci_write_config8(ctrl->f0, DRB+1 + (i*2), cum);
 		}
 	}
-	print_debug("DRB = ");
-	print_debug_hex32(pci_read_config32(ctrl->f0, DRB));
-	print_debug("\n");
+	printk(BIOS_DEBUG, "DRB = %08x\n", pci_read_config32(ctrl->f0, DRB));
 
 	cum >>= 1;
 	/* set TOM top of memory */
 	pci_write_config16(ctrl->f0, TOM, cum);
-	print_debug("TOM = ");
-	print_debug_hex16(cum);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "TOM = %04x\n", cum);
 	/* set TOLM top of low memory */
 	if (cum > 0x18) {
 		cum = 0x18;
 	}
 	cum <<= 11;
 	pci_write_config16(ctrl->f0, TOLM, cum);
-	print_debug("TOLM = ");
-	print_debug_hex16(cum);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "TOLM = %04x\n", cum);
 	return 0;
 }
 
@@ -198,11 +186,7 @@ static u8 spd_detect_dimms(const struct mem_controller *ctrl)
 		device = ctrl->channel0[i];
 		if (device) {
 			byte = spd_read_byte(device, SPD_MEMORY_TYPE);
-			print_debug("spd ");
-			print_debug_hex8(device);
-			print_debug(" = ");
-			print_debug_hex8(byte);
-			print_debug("\n");
+			printk(BIOS_DEBUG, "spd %02x = %02x\n", device, byte);
 			if (byte == 8) {
 				dimm_mask |= (1 << i);
 			}
@@ -245,11 +229,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 		if ((value & 0xff) == 0) die("Invalid # of banks\n");
 		reg += log2(value & 0xff);
 
-		print_debug("dimm ");
-		print_debug_hex8(i);
-		print_debug(" reg = ");
-		print_debug_hex8(reg);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "dimm %02x reg = %02x\n", i, reg);
 
 		/* set device density */
 		dra |= ((31-reg));
@@ -266,11 +246,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 		value = spd_read_byte(ctrl->channel0[i], SPD_NUM_DIMM_BANKS);
 		dra |= ((value & 0x1) << 17);
 
-		print_debug("DRA");
-		print_debug_hex8(i);
-		print_debug(" = ");
-		print_debug_hex32(dra);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "DRA%02x = %08x\n", i, dra);
 
 		pci_write_config32(ctrl->f0, DRA + (i*4), dra);
 	}
@@ -321,9 +297,7 @@ static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 		cl = 6;
 	else
 		die("CAS latency mismatch\n");
-	print_debug("cl = ");
-	print_debug_hex8(cl);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "cl = %02x\n", cl);
 
 	ci = cycle[index];
 
@@ -347,12 +321,8 @@ static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 		if (trfc < val)
 			trfc = val;
 	}
-	print_debug("trc = ");
-	print_debug_hex8(trc);
-	print_debug("\n");
-	print_debug("trfc = ");
-	print_debug_hex8(trfc);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "trc = %02x\n", trc);
+	printk(BIOS_DEBUG, "trfc = %02x\n", trfc);
 
 	/* Tras, Trtp, Twtr in cycles */
 	for (i = 0; i < DIMM_SOCKETS; i++) {
@@ -372,40 +342,26 @@ static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 		if (twtr < val)
 			twtr = val;
 	}
-	print_debug("tras = ");
-	print_debug_hex8(tras);
-	print_debug("\n");
-	print_debug("trtp = ");
-	print_debug_hex8(trtp);
-	print_debug("\n");
-	print_debug("twtr = ");
-	print_debug_hex8(twtr);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "tras = %02x\n", tras);
+	printk(BIOS_DEBUG, "trtp = %02x\n", trtp);
+	printk(BIOS_DEBUG, "twtr = %02x\n", twtr);
 
 	val = (drt0[index] | ((trc - 11) << 12) | ((cl - 3) << 9)
 	       | ((cl - 3) << 6) | ((cl - 3) << 3));
-	print_debug("drt0 = ");
-	print_debug_hex32(val);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "drt0 = %08x\n", val);
 	pci_write_config32(ctrl->f0, DRT0, val);
 
 	val = (drt1[index] | ((tras - 8) << 28) | ((trtp - 2) << 25)
 	       | (twtr << 15));
-	print_debug("drt1 = ");
-	print_debug_hex32(val);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "drt1 = %08x\n", val);
 	pci_write_config32(ctrl->f0, DRT1, val);
 
 	val = (magic[index]);
-	print_debug("magic = ");
-	print_debug_hex32(val);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "magic = %08x\n", val);
 	pci_write_config32(PCI_DEV(0, 0x08, 0), 0xcc, val);
 
 	val = (mrs[index] | (cl << 20));
-	print_debug("mrs = ");
-	print_debug_hex32(val);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "mrs = %08x\n", val);
 	return val;
 }
 
@@ -432,9 +388,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 		if (value > cycle)
 			cycle = value;
 	}
-	print_debug("cycle = ");
-	print_debug_hex8(cycle);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "cycle = %02x\n", cycle);
 
 	drc |= (1 << 20); /* enable ECC */
 	drc |= (3 << 30); /* enable CKE on each DIMM */
@@ -443,45 +397,40 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	/* TODO check: */
 	/* set front side bus speed */
 	msr = rdmsr(MSR_FSB_FREQ); /* returns 0 on Pentium M 90nm */
-	print_debug("MSR FSB_FREQ(0xcd) = ");
-	print_debug_hex32(msr.hi);
-	print_debug_hex32(msr.lo);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "MSR FSB_FREQ(0xcd) = %08x%08x\n", msr.hi, msr.lo);
 
 	/* TODO check that this msr really indicates fsb speed! */
 	if (msr.lo & 0x07) {
-		print_info("533 MHz FSB\n");
+		printk(BIOS_INFO, "533 MHz FSB\n");
 		if (cycle <= 0x25) {
 			drc |= 0x5;
-			print_info("400 MHz DDR\n");
+			printk(BIOS_INFO, "400 MHz DDR\n");
 		} else if (cycle <= 0x30) {
 			drc |= 0x7;
-			print_info("333 MHz DDR\n");
+			printk(BIOS_INFO, "333 MHz DDR\n");
 		} else if (cycle <= 0x3d) {
 			drc |= 0x4;
-			print_info("266 MHz DDR\n");
+			printk(BIOS_INFO, "266 MHz DDR\n");
 		} else {
 			drc |= 0x2;
-			print_info("200 MHz DDR\n");
+			printk(BIOS_INFO, "200 MHz DDR\n");
 		}
 	}
 	else {
-		print_info("400 MHz FSB\n");
+		printk(BIOS_INFO, "400 MHz FSB\n");
 		if (cycle <= 0x30) {
 			drc |= 0x7;
-			print_info("333 MHz DDR\n");
+			printk(BIOS_INFO, "333 MHz DDR\n");
 		} else if (cycle <= 0x3d) {
 			drc |= 0x0;
-			print_info("266 MHz DDR\n");
+			printk(BIOS_INFO, "266 MHz DDR\n");
 		} else {
 			drc |= 0x2;
-			print_info("200 MHz DDR\n");
+			printk(BIOS_INFO, "200 MHz DDR\n");
 		}
 	}
 
-	print_debug("DRC = ");
-	print_debug_hex32(drc);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "DRC = %08x\n", drc);
 
 	return drc;
 }
@@ -493,7 +442,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	/* Test if we can read the SPD */
 	dimm_mask = spd_detect_dimms(ctrl);
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
-		print_err("No memory for this cpu\n");
+		printk(BIOS_ERR, "No memory for this cpu\n");
 		return;
 	}
 	return;
@@ -520,16 +469,12 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 		data32 = 0x00002010;
 	}
 
-	print_debug("ODT Value = ");
-	print_debug_hex32(data32);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "ODT Value = %08x\n", data32);
 
   	pci_write_config32(ctrl->f0, DDR2ODTC, data32);
 
 	for (i = 0; i < 2; i++) {
-		print_debug("ODT CS");
-		print_debug_hex8(i);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "ODT CS%d\n", i);
 
 		write32(BAR+DCALADDR, 0x0b840001);
 		write32(BAR+DCALCSR, 0x80000003 | ((i+1)<<21));
@@ -544,14 +489,11 @@ static void dump_dcal_regs(void)
 	int i;
 	for (i = 0x0; i < 0x2a0; i += 4) {
 		if ((i % 16) == 0) {
-			print_debug("\n");
-			print_debug_hex16(i);
-			print_debug(": ");
+			printk(BIOS_DEBUG, "\n%04x: ", i);
 		}
-		print_debug_hex32(read32(BAR+i));
-		print_debug(" ");
+		printk(BIOS_DEBUG, "%08x ", read32(BAR+i));
 	}
-	print_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 }
 
 
@@ -565,7 +507,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	u32 mode_reg;
 
 	mask = spd_detect_dimms(ctrl);
-	print_debug("Starting SDRAM Enable\n");
+	printk(BIOS_DEBUG, "Starting SDRAM Enable\n");
 
 	/* Set DRAM type and Front Side Bus frequency */
 	drc = spd_set_dram_controller_mode(ctrl, mask);
@@ -593,9 +535,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* Apply NOP */
 	for (cs = 0; cs < 2; cs++) {
-		print_debug("NOP CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "NOP CS%d\n", cs);
 		udelay(16);
 		write32(BAR+DCALCSR, (0x00000000 | ((cs+1)<<21)));
 		write32(BAR+DCALCSR, (0x80000000 | ((cs+1)<<21)));
@@ -606,9 +546,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Apply NOP */
 	udelay(16);
 	for (cs = 0; cs < 2; cs++) {
-		print_debug("NOP CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "NOP CS%d\n", cs);
 		write32(BAR + DCALCSR, (0x80000000 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
 		while (data32 & 0x80000000);
@@ -617,9 +555,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Precharge all banks */
 	udelay(16);
 	for (cs = 0; cs < 2; cs++) {
-		print_debug("Precharge CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "Precharge CS%d\n", cs);
 		write32(BAR+DCALADDR, 0x04000000);
 		write32(BAR+DCALCSR, (0x80000002 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
@@ -629,9 +565,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* EMRS: Enable DLLs, set OCD calibration mode to default */
 	udelay(16);
 	for (cs = 0; cs < 2; cs++) {
-		print_debug("EMRS CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "EMRS CS%d\n", cs);
 		write32(BAR+DCALADDR, 0x0b840001);
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
@@ -640,9 +574,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* MRS: Reset DLLs */
 	udelay(16);
 	for (cs = 0; cs < 2; cs++) {
-		print_debug("MRS CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "MRS CS%d\n", cs);
 		write32(BAR+DCALADDR, mode_reg);
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
@@ -652,9 +584,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Precharge all banks */
 	udelay(48);
 	for (cs = 0; cs < 2; cs++) {
-		print_debug("Precharge CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "Precharge CS%d\n", cs);
 		write32(BAR+DCALADDR, 0x04000000);
 		write32(BAR+DCALCSR, (0x80000002 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
@@ -665,9 +595,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	for (i = 0; i < 2; i++) {
 		udelay(16);
 		for (cs = 0; cs < 2; cs++) {
-			print_debug("Refresh CS");
-			print_debug_hex8(cs);
-			print_debug("\n");
+			printk(BIOS_DEBUG, "Refresh CS%d\n", cs);
 			write32(BAR+DCALCSR, (0x80000001 | ((cs+1)<<21)));
 			do data32 = read32(BAR+DCALCSR);
 			while (data32 & 0x80000000);
@@ -677,9 +605,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* MRS: Set DLLs to normal */
 	udelay(16);
 	for (cs = 0; cs < 2; cs++) {
-		print_debug("MRS CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "MRS CS%d\n", cs);
 		write32(BAR+DCALADDR, (mode_reg & ~(1<<24)));
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
@@ -689,9 +615,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* EMRS: Enable DLLs */
 	udelay(16);
 	for (cs = 0; cs < 2; cs++) {
-		print_debug("EMRS CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "EMRS CS%d\n", cs);
 		write32(BAR+DCALADDR, 0x0b840001);
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
@@ -712,9 +636,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Receive enable calibration */
 	udelay(16);
 	for (cs = 0; cs < 1; cs++) {
-		print_debug("receive enable calibration CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "receive enable calibration CS%d\n", cs);
 		write32(BAR+DCALCSR, (0x8000000c | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
 		while (data32 & 0x80000000);
@@ -738,18 +660,16 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	for (cs = 0; cs < 2; cs++) {
 		if (!(mask & (1<<cs)))
 			continue;
-		print_debug("clear memory CS");
-		print_debug_hex8(cs);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "clear memory CS%d\n", cs);
 		write32(BAR+MBCSR, 0xa00000f0 | ((cs+1)<<20) | (0<<16));
 		do data32 = read32(BAR+MBCSR);
 		while (data32 & 0x80000000);
 		if (data32 & 0x40000000)
-			print_debug("failed!\n");
+			printk(BIOS_DEBUG, "failed!\n");
 	}
 
 	/* Clear read/write FIFO pointers */
-	print_debug("clear read/write fifo pointers\n");
+	printk(BIOS_DEBUG, "clear read/write fifo pointers\n");
 	write32(BAR+DDRIOMC2, read32(BAR+DDRIOMC2) | (1<<15));
 	udelay(16);
 	write32(BAR+DDRIOMC2, read32(BAR+DDRIOMC2) & ~(1<<15));
@@ -757,7 +677,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	dump_dcal_regs();
 
-	print_debug("Done\n");
+	printk(BIOS_DEBUG, "Done\n");
 
 	/* Set initialization complete */
 	drc |= (1 << 29);

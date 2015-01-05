@@ -78,7 +78,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-	print_spew("done.\n");
+	printk(BIOS_SPEW, "done.\n");
 }
 
 struct dimm_size {
@@ -610,7 +610,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	/* Test if we can read the spd and if ram is ddr or ddr2 */
 	dimm_mask = spd_detect_dimms(ctrl);
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
-		print_err("No memory for this cpu\n");
+		printk(BIOS_ERR, "No memory for this cpu\n");
 		return;
 	}
 	return;
@@ -686,9 +686,7 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 	    die("Error - First dimm slot empty\n");
 	}
 
-	print_debug("ODT Value = ");
-	print_debug_hex32(data32);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "ODT Value = %08x\n", data32);
 
   	pci_write_config32(ctrl->f0, DDR2ODTC, data32);
 
@@ -916,11 +914,8 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 		}
 	}
 
-	print_debug("Receive enable A = ");
-	print_debug_hex32(recena);
-	print_debug(",  Receive enable B = ");
-	print_debug_hex32(recenb);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "Receive enable A = %08x, Receive enable B = %08x\n",
+		recena, recenb);
 
 	/* clear out the calibration area */
 	write32(MCBAR+DCALDATA+(16*4), 0x00000000);
@@ -972,7 +967,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		0xffffffff, 0xffffffff, 0x000000ff};
 
 	mask = spd_detect_dimms(ctrl);
-	print_debug("Starting SDRAM Enable\n");
+	printk(BIOS_DEBUG, "Starting SDRAM Enable\n");
 
 	/* 0x80 */
 	pci_write_config32(ctrl->f0, DRM,
@@ -1013,9 +1008,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	cas_latency = spd_set_drt_attributes(ctrl, mask, drc);
 
 	for(i=0;i<8;i+=2) { /* loop through each dimm to test */
-		print_debug("DIMM ");
-		print_debug_hex8(i);
-		print_debug("\n");
+		printk(BIOS_DEBUG, "DIMM %08x\n", i);
 		/* Apply NOP */
 		do_delay();
 
@@ -1158,7 +1151,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	write32(MCBAR+DCALCSR, 0x0008000f);
 
 	/* clear memory and init ECC */
-	print_debug("Clearing memory\n");
+	printk(BIOS_DEBUG, "Clearing memory\n");
 	for(i=0;i<64;i+=4) {
 		write32(MCBAR+DCALDATA+i, 0x00000000);
 	}
@@ -1174,13 +1167,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	data32 |= (1 << 31);
 	pci_write_config32(ctrl->f0, 0x98, data32);
 	/* wait for completion */
-	print_debug("Waiting for mem complete\n");
+	printk(BIOS_DEBUG, "Waiting for mem complete\n");
 	while(1) {
 		data32 = pci_read_config32(ctrl->f0, 0x98);
 		if( (data32 & (1<<31)) == 0)
 			break;
 	}
-	print_debug("Done\n");
+	printk(BIOS_DEBUG, "Done\n");
 
 	/* Set initialization complete */
 	/* 0x7c DRC */

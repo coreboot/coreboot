@@ -258,17 +258,17 @@ static u8 detect_ddr3_dram_size(void)
 static void print_ddr3_memory_setup(void)
 {
 #if CONFIG_DEBUG_RAM_SETUP
-	print_debug("DDR3 Timing Reg 0-3:\n");
-	print_debug("NB 6e : ");
+	printk(BIOS_DEBUG, "DDR3 Timing Reg 0-3:\n");
+	printk(BIOS_DEBUG, "NB 6e : ");
 	print_debug_hex16(pci_read_config16(NB, 0x6e));
-	print_debug("\nNB 74 : ");
+	printk(BIOS_DEBUG, "\nNB 74 : ");
 	print_debug_hex32(pci_read_config32(NB, 0x74));
-	print_debug("\nNB 78 : ");
+	printk(BIOS_DEBUG, "\nNB 78 : ");
 	print_debug_hex32(pci_read_config32(NB, 0x78));
-	print_debug("\nNB 7c : ");
+	printk(BIOS_DEBUG, "\nNB 7c : ");
 	print_debug_hex32(pci_read_config32(NB, 0x7c));
 	u16 mbr = pci_read_config16(NB, 0x6c);
-	print_debug("\nNB 6c(MBR) : ");
+	printk(BIOS_DEBUG, "\nNB 6c(MBR) : ");
 	print_debug_hex16(mbr);
 	const char *s;
 	u8 col = get_ddr3_mem_reg_col(mbr);

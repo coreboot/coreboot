@@ -35,34 +35,18 @@ void dump_spd_registers(void)
 	}
 }
 
-static void print_debug_pci_dev(unsigned dev)
-{
-	print_debug("PCI: ");
-	print_debug_hex8((dev >> 16) & 0xff);
-	print_debug_char(':');
-	print_debug_hex8((dev >> 11) & 0x1f);
-	print_debug_char('.');
-	print_debug_hex8((dev >> 8) & 7);
-}
-
 void dump_pci_device(unsigned dev)
 {
 	int i;
-	print_debug_pci_dev(dev);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x\n", (dev >> 20) & 0xff, (dev >> 15) & 0x1f, (dev >> 12) & 7);
 
 	for (i = 0; i <= 255; i++) {
 		unsigned char val;
-		if ((i & 0x0f) == 0) {
-			print_debug_hex8(i);
-			print_debug_char(':');
-		}
 		val = pci_read_config8(dev, i);
-		print_debug_char(' ');
-		print_debug_hex8(val);
-		if ((i & 0x0f) == 0x0f) {
-			print_debug("\n");
-		}
+		if ((i & 0x0f) == 0)
+			printk(BIOS_DEBUG, "%02x: %02x", i, val);
+		if ((i & 0x0f) == 0x0f)
+			printk(BIOS_DEBUG, "\n");
 	}
 }
 #endif

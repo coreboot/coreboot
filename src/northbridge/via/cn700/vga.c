@@ -84,7 +84,7 @@ static void vga_init(device_t dev)
 
 #undef OLD_BOCHS_METHOD
 #ifdef OLD_BOCHS_METHOD
-	print_debug("Copying BOCHS BIOS to 0xf000\n");
+	printk(BIOS_DEBUG, "Copying BOCHS BIOS to 0xf000\n");
 	/*
 	 * Copy BOCHS BIOS from 4G-CONFIG_ROM_SIZE-64k (in flash) to 0xf0000 (in RAM)
 	 * This is for compatibility with the VGA ROM's BIOS callbacks.

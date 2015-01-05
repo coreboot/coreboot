@@ -57,11 +57,7 @@ static uint32_t pci_read_config32(device_t dev, unsigned where)
 		(pci_register[addr + 3]  << 24);
 
 #if 0
-	print_debug("pcir32(");
-	print_debug_hex32(addr);
-	print_debug("):");
-	print_debug_hex32(value);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "pcir32(%08x): %08x\n", addr, value);
 #endif
 	return value;
 
@@ -92,11 +88,7 @@ static void pci_write_config32(device_t dev, unsigned where, uint32_t value)
 	pci_register[addr + 3] = (value >> 24) & 0xff;
 
 #if 0
-	print_debug("pciw32(");
-	print_debug_hex32(addr);
-	print_debug(", ");
-	print_debug_hex32(value);
-	print_debug(")\n");
+	printk(BIOS_DEBUG, "pciw32(%08x, %08x)\n", addr, value);
 #endif
 }
 
@@ -285,13 +277,8 @@ static int spd_read_byte(unsigned device, unsigned address)
 		}
 	}
 #if 0
-	print_debug("spd_read_byte(");
-	print_debug_hex32(device);
-	print_debug(", ");
-	print_debug_hex32(address);
-	print_debug(") -> ");
-	print_debug_hex32(result);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "spd_read_byte(%08x, %08x) -> %08x\n",
+		device, address, result);
 #endif
 	if (spd_count >= spd_fail_count) {
 		result = -1;
@@ -392,9 +379,7 @@ static void test1(void)
 	raminit_main();
 
 #if 0
-	print_debug("spd_count: ");
-	print_debug_hex32(spd_count);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "spd_count: %d\n", spd_count);
 #endif
 
 }
@@ -410,9 +395,7 @@ static void do_test2(int i)
 	reset_tests();
 	spd_fail_count = i;
 
-	print_debug("\nSPD will fail after: ");
-	print_debug_hex32(spd_fail_count);
-	print_debug(" accesses.\n");
+	printk(BIOS_DEBUG, "\nSPD will fail after: %d accesses.\n", %d);
 
 	memcpy(&spd_data[0*256], spd_micron_512MB_DDR333, 256);
 	memcpy(&spd_data[1*256], spd_micron_512MB_DDR333, 256);

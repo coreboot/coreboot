@@ -459,12 +459,9 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 #if DQS_TRAIN_DEBUG > 0
 	{
 		u8 Channel;
-		print_debug("TrainRcvrEn: CH_MaxRdLat:\n");
+		printk(BIOS_DEBUG, "TrainRcvrEn: CH_MaxRdLat:\n");
 		for(Channel = 0; Channel<2; Channel++) {
-			print_debug("Channel:"); print_debug_hex8(Channel);
-			print_debug(": ");
-			print_debug_hex8( pDCTstat->CH_MaxRdLat[Channel] );
-			print_debug("\n");
+			printk(BIOS_DEBUG, "Channel: %02x: %02x\n", Channel, pDCTstat->CH_MaxRdLat[Channel]);
 		}
 	}
 #endif
@@ -476,20 +473,17 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 		u8 i;
 		u8 *p;
 
-		print_debug("TrainRcvrEn: CH_D_B_RCVRDLY:\n");
+		printk(BIOS_DEBUG, "TrainRcvrEn: CH_D_B_RCVRDLY:\n");
 		for(Channel = 0; Channel < 2; Channel++) {
-			print_debug("Channel:"); print_debug_hex8(Channel); print_debug("\n");
+			printk(BIOS_DEBUG, "Channel: %02x\n", Channel);
 			for(Receiver = 0; Receiver<8; Receiver+=2) {
-				print_debug("\t\tReceiver:");
-				print_debug_hex8(Receiver);
+				printk(BIOS_DEBUG, "\t\tReceiver: %02x: ", Receiver);
 				p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver>>1];
-				print_debug(": ");
 				for (i=0;i<8; i++) {
 					val  = p[i];
-					print_debug_hex8(val);
-					print_debug(" ");
+					printk(BIOS_DEBUG, "%02x ", val);
 				}
-			print_debug("\n");
+			printk(BIOS_DEBUG, "\n");
 			}
 		}
 	}

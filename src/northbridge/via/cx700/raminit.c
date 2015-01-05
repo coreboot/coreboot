@@ -972,7 +972,7 @@ static void step_20_21(const struct mem_controller *ctrl)
 		read32(0x102020);
 
 	/* Step 21. Normal operation */
-	print_spew("RAM Enable 5: Normal operation\n");
+	printk(BIOS_SPEW, "RAM Enable 5: Normal operation\n");
 	do_ram_command(ctrl, RAM_COMMAND_NORMAL);
 	udelay(3);
 }
@@ -988,58 +988,58 @@ static void step_2_19(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0x69, val);
 
 	/* Step 3 Apply NOP. */
-	print_spew("RAM Enable 1: Apply NOP\n");
+	printk(BIOS_SPEW, "RAM Enable 1: Apply NOP\n");
 	do_ram_command(ctrl, RAM_COMMAND_NOP);
 
 	udelay(15);
 
 	// Step 4
-	print_spew("SEND: ");
+	printk(BIOS_SPEW, "SEND: ");
 	read32(0);
-	print_spew("OK\n");
+	printk(BIOS_SPEW, "OK\n");
 
 	// Step 5
 	udelay(400);
 
 	/* 6. Precharge all. Wait tRP. */
-	print_spew("RAM Enable 2: Precharge all\n");
+	printk(BIOS_SPEW, "RAM Enable 2: Precharge all\n");
 	do_ram_command(ctrl, RAM_COMMAND_PRECHARGE);
 
 	// Step 7
-	print_spew("SEND: ");
+	printk(BIOS_SPEW, "SEND: ");
 	read32(0);
-	print_spew("OK\n");
+	printk(BIOS_SPEW, "OK\n");
 
 	/* Step 8. Mode register set. */
-	print_spew("RAM Enable 4: Mode register set\n");
+	printk(BIOS_SPEW, "RAM Enable 4: Mode register set\n");
 	do_ram_command(ctrl, RAM_COMMAND_MRS);	//enable dll
 
 	// Step 9
-	print_spew("SEND: ");
+	printk(BIOS_SPEW, "SEND: ");
 
 	val = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_DRAM_NB_ODT);
 	if (val & DDR2_ODT_150ohm)
 		read32(0x102200);	//DDR2_ODT_150ohm
 	else
 		read32(0x102020);
-	print_spew("OK\n");
+	printk(BIOS_SPEW, "OK\n");
 
 	// Step 10
-	print_spew("SEND: ");
+	printk(BIOS_SPEW, "SEND: ");
 	read32(0x800);
-	print_spew("OK\n");
+	printk(BIOS_SPEW, "OK\n");
 
 	/* Step 11. Precharge all. Wait tRP. */
-	print_spew("RAM Enable 2: Precharge all\n");
+	printk(BIOS_SPEW, "RAM Enable 2: Precharge all\n");
 	do_ram_command(ctrl, RAM_COMMAND_PRECHARGE);
 
 	// Step 12
-	print_spew("SEND: ");
+	printk(BIOS_SPEW, "SEND: ");
 	read32(0x0);
-	print_spew("OK\n");
+	printk(BIOS_SPEW, "OK\n");
 
 	/* Step 13. Perform 8 refresh cycles. Wait tRC each time. */
-	print_spew("RAM Enable 3: CBR\n");
+	printk(BIOS_SPEW, "RAM Enable 3: CBR\n");
 	do_ram_command(ctrl, RAM_COMMAND_CBR);
 
 	/* JEDEC says only twice, do 8 times for posterity */
@@ -1047,14 +1047,14 @@ static void step_2_19(const struct mem_controller *ctrl)
 	for (i = 0; i < 8; i++) {
 		// Step 14
 		read32(0);
-		print_spew(".");
+		printk(BIOS_SPEW, ".");
 
 		// Step 15
 		udelay(100);
 	}
 
 	/* Step 17. Mode register set. Wait 200us. */
-	print_spew("\nRAM Enable 4: Mode register set\n");
+	printk(BIOS_SPEW, "\nRAM Enable 4: Mode register set\n");
 
 	//safe value for now, BL=8, WR=4, CAS=4
 	do_ram_command(ctrl, RAM_COMMAND_MRS);

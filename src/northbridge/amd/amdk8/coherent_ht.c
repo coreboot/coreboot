@@ -145,7 +145,7 @@ static void disable_probes(void)
 
 	u32 val;
 
-	print_spew("Disabling read/write/fill probes for UP... ");
+	printk(BIOS_SPEW, "Disabling read/write/fill probes for UP... ");
 
 	val=pci_read_config32(NODE_HT(0), HT_TRANSACTION_CONTROL);
 	val |= HTTC_DIS_FILL_P | HTTC_DIS_RMT_MEM_C | HTTC_DIS_P_MEM_C |
@@ -153,7 +153,7 @@ static void disable_probes(void)
 		HTTC_DIS_RD_DW_P | HTTC_DIS_RD_B_P;
 	pci_write_config32(NODE_HT(0), HT_TRANSACTION_CONTROL, val);
 
-	print_spew("done.\n");
+	printk(BIOS_SPEW, "done.\n");
 
 }
 
@@ -199,14 +199,13 @@ static void enable_routing(u8 node)
 	 */
 
 	/* Enable routing table */
-	print_spew("Enabling routing table for node ");
-	print_spew_hex8(node);
+	printk(BIOS_SPEW, "Enabling routing table for node %d", node);
 
 	val=pci_read_config32(NODE_HT(node), 0x6c);
 	val &= ~((1<<1)|(1<<0));
 	pci_write_config32(NODE_HT(node), 0x6c, val);
 
-	print_spew(" done.\n");
+	printk(BIOS_SPEW, " done.\n");
 }
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
@@ -230,7 +229,7 @@ static u8 link_to_register(int ldt)
 	if (ldt&0x02) return 0x00;
 
 	/* we should never get here */
-	print_spew("Unknown Link\n");
+	printk(BIOS_SPEW, "Unknown Link\n");
 	return 0;
 }
 
@@ -248,15 +247,14 @@ static void rename_temp_node(u8 node)
 {
 	uint32_t val;
 
-	print_spew("Renaming current temporary node to ");
-	print_spew_hex8(node);
+	printk(BIOS_SPEW, "Renaming current temporary node to %d", node);
 
 	val=pci_read_config32(NODE_HT(7), 0x60);
 	val &= (~7);  /* clear low bits. */
 	val |= node;  /* new node        */
 	pci_write_config32(NODE_HT(7), 0x60, val);
 
-	print_spew(" done.\n");
+	printk(BIOS_SPEW, " done.\n");
 }
 
 static int verify_connection(u8 dest)
@@ -514,7 +512,7 @@ static void setup_remote_node(u8 node)
 	};
 	int i;
 
-	print_spew("setup_remote_node: ");
+	printk(BIOS_SPEW, "setup_remote_node: ");
 
 	/* copy the default resource map from node 0 */
 	for(i = 0; i < ARRAY_SIZE(pci_reg); i++) {
@@ -525,7 +523,7 @@ static void setup_remote_node(u8 node)
 		pci_write_config32(NODE_MP(7), reg, value);
 
 	}
-	print_spew("done\n");
+	printk(BIOS_SPEW, "done\n");
 }
 
 #endif /* CONFIG_MAX_PHYSICAL_CPUS > 1*/
@@ -664,7 +662,7 @@ static void setup_remote_row_indirect_group(const u8 *conn, int num)
 
 static void setup_uniprocessor(void)
 {
-	print_spew("Enabling UP settings\n");
+	printk(BIOS_SPEW, "Enabling UP settings\n");
 #if CONFIG_LOGICAL_CPUS
 	unsigned tmp = (pci_read_config32(NODE_MC(0), 0xe8) >> 12) & 3;
 	if (tmp>0) return;
@@ -1491,7 +1489,7 @@ static unsigned setup_smp(void)
 {
 	unsigned nodes;
 
-	print_spew("Enabling SMP settings\n");
+	printk(BIOS_SPEW, "Enabling SMP settings\n");
 
 	nodes = setup_smp2();
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
@@ -1528,14 +1526,14 @@ static unsigned verify_mp_capabilities(unsigned nodes)
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
 	case 0x02: /* MPCap    */
 		if(nodes > 2) {
-			print_err("Going back to DP\n");
+			printk(BIOS_ERR, "Going back to DP\n");
 			return 2;
 		}
 		break;
 #endif
 	case 0x00: /* Non SMP */
 		if(nodes >1 ) {
-			print_err("Going back to UP\n");
+			printk(BIOS_ERR, "Going back to UP\n");
 			return 1;
 		}
 		break;
@@ -1613,7 +1611,7 @@ static void coherent_ht_finalize(unsigned nodes)
 	 * registers on Hammer A0 revision.
 	 */
 
-	print_spew("coherent_ht_finalize\n");
+	printk(BIOS_SPEW, "coherent_ht_finalize\n");
 #if !CONFIG_K8_REV_F_SUPPORT
 	rev_a0 = is_cpu_rev_a0();
 #endif
@@ -1654,7 +1652,7 @@ static void coherent_ht_finalize(unsigned nodes)
 #endif
 	}
 
-	print_spew("done\n");
+	printk(BIOS_SPEW, "done\n");
 }
 
 static int apply_cpu_errata_fixes(unsigned nodes)

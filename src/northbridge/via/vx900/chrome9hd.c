@@ -296,9 +296,9 @@ static void chrome9hd_biosguide_init_seq(device_t dev)
 
 static void chrome9hd_init(device_t dev)
 {
-	print_debug("======================================================\n");
-	print_debug("== Chrome9 HD INIT\n");
-	print_debug("======================================================\n");
+	printk(BIOS_DEBUG, "======================================================\n");
+	printk(BIOS_DEBUG, "== Chrome9 HD INIT\n");
+	printk(BIOS_DEBUG, "======================================================\n");
 
 	chrome9hd_biosguide_init_seq(dev);
 

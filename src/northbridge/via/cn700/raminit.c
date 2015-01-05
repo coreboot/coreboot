@@ -25,10 +25,10 @@
 #include "cn700.h"
 
 #if CONFIG_DEBUG_RAM_SETUP
-#define PRINT_DEBUG_MEM(x)		print_debug(x)
-#define PRINT_DEBUG_MEM_HEX8(x)		print_debug_hex8(x)
-#define PRINT_DEBUG_MEM_HEX16(x)	print_debug_hex16(x)
-#define PRINT_DEBUG_MEM_HEX32(x)	print_debug_hex32(x)
+#define PRINT_DEBUG_MEM(x)		printk(BIOS_DEBUG, x)
+#define PRINT_DEBUG_MEM_HEX8(x)		printk(BIOS_DEBUG, "%02x", x)
+#define PRINT_DEBUG_MEM_HEX16(x)	printk(BIOS_DEBUG, "%04x", x)
+#define PRINT_DEBUG_MEM_HEX32(x)	printk(BIOS_DEBUG, "%08x", x)
 #define DUMPNORTH()			dump_pci_device(PCI_DEV(0, 0, 0))
 #else
 #define PRINT_DEBUG_MEM(x)

@@ -357,22 +357,20 @@ static void TrainDQSRdWrPos_D(struct MCTStatStruc *pMCTstat,
 
 		for (Dir = 0; Dir < 2; Dir++) {
 			if (Dir == 0) {
-				print_debug("TrainDQSRdWrPos: CH_D_DIR_B_DQS WR:\n");
+				printk(BIOS_DEBUG, "TrainDQSRdWrPos: CH_D_DIR_B_DQS WR:\n");
 			} else {
-				print_debug("TrainDQSRdWrPos: CH_D_DIR_B_DQS RD:\n");
+				printk(BIOS_DEBUG, "TrainDQSRdWrPos: CH_D_DIR_B_DQS RD:\n");
 			}
 			for (Channel = 0; Channel < 2; Channel++) {
-				print_debug("Channel:"); print_debug_hex8(Channel); print_debug("\n");
+				printk(BIOS_DEBUG, "Channel: %02x\n", Channel);
 				for (Receiver = cs_start; Receiver < (cs_start + 2); Receiver += 2) {
-					print_debug("\t\tReceiver:"); print_debug_hex8(Receiver);
+					printk(BIOS_DEBUG, "\t\tReceiver: %02x: ", Receiver);
 					p = pDCTstat->CH_D_DIR_B_DQS[Channel][Receiver >> 1][Dir];
-					print_debug(": ");
 					for (i=0;i<8; i++) {
 						val  = p[i];
-						print_debug_hex8(val);
-						print_debug(" ");
+						printk(BIOS_DEBUG, "%02x ", val);
 					}
-					print_debug("\n");
+					printk(BIOS_DEBUG, "\n");
 				}
 			}
 		}

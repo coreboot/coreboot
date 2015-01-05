@@ -44,47 +44,47 @@ static void vx900_print_sata_errors(u32 flags)
 	       (flags & (1 << 27)) ? "detected" : "not detected");
 	/* Errors */
 	if (flags & (1 << 0))
-		print_debug("\tRecovered data integrity ERROR\n");
+		printk(BIOS_DEBUG, "\tRecovered data integrity ERROR\n");
 	if (flags & (1 << 1))
-		print_debug("\tRecovered data communication ERROR\n");
+		printk(BIOS_DEBUG, "\tRecovered data communication ERROR\n");
 	if (flags & (1 << 8))
-		print_debug("\tNon-recovered Transient Data Integrity ERROR\n");
+		printk(BIOS_DEBUG, "\tNon-recovered Transient Data Integrity ERROR\n");
 	if (flags & (1 << 9))
-		print_debug("\tNon-recovered Persistent Communication or"
+		printk(BIOS_DEBUG, "\tNon-recovered Persistent Communication or"
 			    "\tData Integrity ERROR\n");
 	if (flags & (1 << 10))
-		print_debug("\tProtocol ERROR\n");
+		printk(BIOS_DEBUG, "\tProtocol ERROR\n");
 	if (flags & (1 << 11))
-		print_debug("\tInternal ERROR\n");
+		printk(BIOS_DEBUG, "\tInternal ERROR\n");
 	if (flags & (1 << 17))
-		print_debug("\tPHY Internal ERROR\n");
+		printk(BIOS_DEBUG, "\tPHY Internal ERROR\n");
 	if (flags & (1 << 19))
-		print_debug("\t10B to 8B Decode ERROR\n");
+		printk(BIOS_DEBUG, "\t10B to 8B Decode ERROR\n");
 	if (flags & (1 << 20))
-		print_debug("\tDisparity ERROR\n");
+		printk(BIOS_DEBUG, "\tDisparity ERROR\n");
 	if (flags & (1 << 21))
-		print_debug("\tCRC ERROR\n");
+		printk(BIOS_DEBUG, "\tCRC ERROR\n");
 	if (flags & (1 << 22))
-		print_debug("\tHandshake ERROR\n");
+		printk(BIOS_DEBUG, "\tHandshake ERROR\n");
 	if (flags & (1 << 23))
-		print_debug("\tLink Sequence ERROR\n");
+		printk(BIOS_DEBUG, "\tLink Sequence ERROR\n");
 	if (flags & (1 << 24))
-		print_debug("\tTransport State Transition ERROR\n");
+		printk(BIOS_DEBUG, "\tTransport State Transition ERROR\n");
 	if (flags & (1 << 25))
-		print_debug("\tUNRECOGNIZED FIS type\n");
+		printk(BIOS_DEBUG, "\tUNRECOGNIZED FIS type\n");
 }
 
 static void vx900_dbg_sata_errors(device_t dev)
 {
 	/* Port 0 */
 	if (pci_read_config8(dev, 0xa0) & (1 << 0)) {
-		print_debug("Device detected in SATA port 0.\n");
+		printk(BIOS_DEBUG, "Device detected in SATA port 0.\n");
 		u32 flags = pci_read_config32(dev, 0xa8);
 		vx900_print_sata_errors(flags);
 	};
 	/* Port 1 */
 	if (pci_read_config8(dev, 0xa1) & (1 << 0)) {
-		print_debug("Device detected in SATA port 1.\n");
+		printk(BIOS_DEBUG, "Device detected in SATA port 1.\n");
 		u32 flags = pci_read_config32(dev, 0xac);
 		vx900_print_sata_errors(flags);
 	};
@@ -147,21 +147,18 @@ static void vx900_sata_write_phy_config(device_t dev, sata_phy_config cfg)
 
 static void vx900_sata_dump_phy_config(sata_phy_config cfg)
 {
-	print_debug("SATA PHY config:\n");
+	printk(BIOS_DEBUG, "SATA PHY config:\n");
 	int i;
 	for (i = 0; i < sizeof(sata_phy_config); i++) {
 		unsigned char val;
-		if ((i & 0x0f) == 0) {
-			print_debug_hex8(i);
-			print_debug_char(':');
-		}
+		if ((i & 0x0f) == 0)
+			printk(BIOS_DEBUG, "%02x:", i);
 		val = cfg[i];
 		if ((i & 7) == 0)
-			print_debug(" |");
-		print_debug_char(' ');
-		print_debug_hex8(val);
+			printk(BIOS_DEBUG, " |");
+		printk(BIOS_DEBUG, " %02x", val);
 		if ((i & 0x0f) == 0x0f) {
-			print_debug("\n");
+			printk(BIOS_DEBUG, "\n");
 		}
 	}
 }

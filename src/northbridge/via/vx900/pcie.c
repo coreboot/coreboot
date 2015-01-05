@@ -72,11 +72,11 @@ static void vx900_pcie_link_init(device_t dev)
 
 	pci_write_config8(dev, 0xa4, 0xff);
 	if (pci_read_config8(dev, 0x4a) & (1 << 3))
-		print_debug("Unsupported request detected.\n");
+		printk(BIOS_DEBUG, "Unsupported request detected.\n");
 
 	pci_write_config8(dev, 0x15a, 0xff);
 	if (pci_read_config8(dev, 0x15a) & (1 << 1))
-		print_debug("Negotiation pending.\n");
+		printk(BIOS_DEBUG, "Negotiation pending.\n");
 
 	/* Step 4: Read vendor ID */
 	/* FIXME: Do we want to run through the whole sequence and delay boot

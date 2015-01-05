@@ -146,7 +146,7 @@ static void vx900_lpc_ioapic_setup(device_t dev)
 		return;
 	}
 
-	print_debug("VX900 LPC: Setting up the south module IOAPIC.\n");
+	printk(BIOS_DEBUG, "VX900 LPC: Setting up the south module IOAPIC.\n");
 	/* Enable IOAPIC
 	 * So much work for one line of code. Talk about bloat :)
 	 * The 8259 PIC should still work even if the IOAPIC is enabled, so

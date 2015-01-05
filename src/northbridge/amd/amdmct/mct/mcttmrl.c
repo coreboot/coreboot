@@ -198,12 +198,9 @@ static void maxRdLatencyTrain_D(struct MCTStatStruc *pMCTstat,
 #if DQS_TRAIN_DEBUG > 0
 	{
 		u8 Channel;
-		print_debug("maxRdLatencyTrain: CH_MaxRdLat:\n");
+		printk(BIOS_DEBUG, "maxRdLatencyTrain: CH_MaxRdLat:\n");
 		for(Channel = 0; Channel<2; Channel++) {
-			print_debug("Channel:"); print_debug_hex8(Channel);
-			print_debug(": ");
-			print_debug_hex8( pDCTstat->CH_MaxRdLat[Channel] );
-			print_debug("\n");
+			printk(BIOS_DEBUG, "Channel: %02x: %02x\n", Channel, pDCTstat->CH_MaxRdLat[Channel]);
 		}
 	}
 #endif

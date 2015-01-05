@@ -80,7 +80,7 @@ static u64 vx900_get_top_of_ram(device_t mcu)
 static void killme_debug_4g_remap_reg(u32 reg32)
 {
 	if (reg32 & (1 << 0))
-		print_debug("Mem remapping enabled\n");
+		printk(BIOS_DEBUG, "Mem remapping enabled\n");
 	u64 remapstart = (reg32 >> 2) & 0x3ff;
 	u64 remapend = (reg32 >> 14) & 0x3ff;
 	remapstart <<= 26;
@@ -122,7 +122,7 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 	 * becomes accessible at "to" to "until"
 	 */
 	if (tolm >= vx900_get_top_of_ram(mcu)) {
-		print_debug("Nothing to remap\n");
+		printk(BIOS_DEBUG, "Nothing to remap\n");
 	}
 
 	/* This is how the Vendor BIOS. Keep it for comparison for now */
@@ -220,11 +220,11 @@ static void vx900_set_resources(device_t dev)
 {
 	u32 pci_tolm, tomk, vx900_tolm, full_tolmk, fbufk, tolmk;
 
-	print_debug("========================================"
+	printk(BIOS_DEBUG, "========================================"
 		    "========================================\n");
-	print_debug("============= VX900 memory sizing & Co. "
+	printk(BIOS_DEBUG, "============= VX900 memory sizing & Co. "
 		    "========================================\n");
-	print_debug("========================================"
+	printk(BIOS_DEBUG, "========================================"
 		    "========================================\n");
 
 	int idx = 10;
@@ -282,7 +282,7 @@ static void vx900_set_resources(device_t dev)
 
 	set_top_of_ram(tolmk << 10);
 
-	print_debug("======================================================\n");
+	printk(BIOS_DEBUG, "======================================================\n");
 	assign_resources(dev->link_list);
 }
 

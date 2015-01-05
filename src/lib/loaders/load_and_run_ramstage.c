@@ -74,7 +74,7 @@ static void run_ramstage_from_resume(struct romstage_handoff *handoff)
 		entry = load_cached_ramstage(handoff, cbmem_entry);
 
 		if (entry != NULL) {
-			print_debug("Jumping to image.\n");
+			printk(BIOS_DEBUG, "Jumping to image.\n");
 			stage_exit(entry);
 		}
 	}

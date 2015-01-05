@@ -83,13 +83,7 @@ static int ram_bitset_nodie(unsigned long start)
 	unsigned char failed, failures;
 	uint8_t verbose = 0;
 
-#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "DRAM bitset write: 0x%08lx\n", start);
-#else
-	print_debug("DRAM bitset write: 0x");
-	print_debug_hex32(start);
-	print_debug("\n");
-#endif
 	for (idx=0; idx<0x400; idx+=4) {
 		test_pattern(idx, &addr, &value);
 		write_phys(start + addr, value);
@@ -98,13 +92,7 @@ static int ram_bitset_nodie(unsigned long start)
 	/* Make sure we don't read before we wrote */
 	phys_memory_barrier();
 
-#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "DRAM bitset verify: 0x%08lx\n", start);
-#else
-	print_debug("DRAM bitset verify: 0x");
-	print_debug_hex32(start);
-	print_debug("\n");
-#endif
 	failures = 0;
 	for (idx=0; idx<0x400; idx+=4) {
 		test_pattern(idx, &addr, &value);
@@ -113,20 +101,10 @@ static int ram_bitset_nodie(unsigned long start)
 		failed = (value2 != value);
 		failures |= failed;
 		if  (failed && !verbose) {
-#if !defined(__ROMCC__)
 			printk(BIOS_ERR, "0x%08lx wr: 0x%08lx rd: 0x%08lx FAIL\n",
 				 start + addr, value, value2);
-#else
-			print_err_hex32(start + addr);
-			print_err(" wr: 0x");
-			print_err_hex32(value);
-			print_err(" rd: 0x");
-			print_err_hex32(value2);
-			print_err(" FAIL\n");
-#endif
 		}
 		if (verbose) {
-#if !defined(__ROMCC__)
 			if ((addr & 0x0f) == 0)
 				printk(BIOS_DEBUG, "%08lx wr: %08lx rd:",
 					start + addr, value);
@@ -136,39 +114,14 @@ static int ram_bitset_nodie(unsigned long start)
 				printk(BIOS_DEBUG, " %08lx ", value2);
 			if ((addr & 0x0f) == 0xc)
 				printk(BIOS_DEBUG, "\n");
-#else
-			if ((addr & 0x0f) == 0) {
-				print_dbg_hex32(start + addr);
-				print_dbg(" wr: ");
-				print_dbg_hex32(value);
-				print_dbg(" rd: ");
-			}
-			print_dbg_hex32(value2);
-			if (failed)
-				print_dbg("! ");
-			else
-				print_dbg("  ");
-			if ((addr & 0x0f) == 0xc)
-				print_dbg("\n");
-#endif
 		}
 	}
 	if (failures) {
 		post_code(0xea);
-#if !defined(__ROMCC__)
 		printk(BIOS_DEBUG, "\nDRAM did _NOT_ verify!\n");
-#else
-		print_debug("\nDRAM did _NOT_ verify!\n");
-#endif
 		return 1;
-	}
-	else {
-#if !defined(__ROMCC__)
+	} else {
 		printk(BIOS_DEBUG, "\nDRAM range verified.\n");
-#else
-		print_debug("\nDRAM range verified.\n");
-		return 0;
-#endif
 	}
 	return 0;
 }
@@ -181,20 +134,10 @@ void ram_check(unsigned long start, unsigned long stop)
 	 * test than a "Is my DRAM faulty?" test.  Not all bits
 	 * are tested.   -Tyson
 	 */
-#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Testing DRAM at: %08lx\n", start);
-#else
-	print_debug("Testing DRAM at: ");
-	print_debug_hex32(start);
-	print_debug("\n");
-#endif
 	if (ram_bitset_nodie(start))
 		die("DRAM ERROR");
-#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Done.\n");
-#else
-	print_debug("Done.\n");
-#endif
 }
 
 
@@ -206,20 +149,10 @@ int ram_check_nodie(unsigned long start, unsigned long stop)
 	 * test than a "Is my DRAM faulty?" test.  Not all bits
 	 * are tested.   -Tyson
 	 */
-#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Testing DRAM at : %08lx\n", start);
-#else
-	print_debug("Testing DRAM at : ");
-	print_debug_hex32(start);
-	print_debug("\n");
-#endif
 
 	ret = ram_bitset_nodie(start);
-#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Done.\n");
-#else
-	print_debug("Done.\n");
-#endif
 	return ret;
 }
 

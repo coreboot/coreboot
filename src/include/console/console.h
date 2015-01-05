@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <rules.h>
 #include <console/post_codes.h>
+#include <console/loglevel.h>
 
 #ifndef __ROMCC__
 void post_code(u8 value);
@@ -70,15 +71,6 @@ static inline void do_vtxprintf(const char *fmt, va_list args) {};
 #endif
 #endif
 
-/* A lot of code still uses print_debug() et al. while use of printk()
- * would be preferred.
- */
-#include <console/early_print.h>
-
-#else /* __ROMCC__ */
-
-#include "arch/x86/lib/romcc_console.c"
-
-#endif /* __ROMCC__ */
+#endif /* !__ROMCC__ */
 
 #endif /* CONSOLE_CONSOLE_H_ */

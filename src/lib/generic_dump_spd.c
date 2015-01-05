@@ -6,60 +6,46 @@
 static void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
-	print_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 	for(i = 0; i < 4; i++) {
 		unsigned device;
 		device = ctrl->channel0[i];
 		if (device) {
 			int j;
-			print_debug("dimm: ");
-			print_debug_hex8(i);
-			print_debug(".0: ");
-			print_debug_hex8(device);
+			printk(BIOS_DEBUG, "dimm: %02x.0: %02x", i, device);
 			for(j = 0; j < 256; j++) {
 				int status;
 				unsigned char byte;
-				if ((j & 0xf) == 0) {
-					print_debug("\n");
-					print_debug_hex8(j);
-					print_debug(": ");
-				}
+				if ((j & 0xf) == 0)
+					printk(BIOS_DEBUG, "\n%02x: ", j);
 				status = spd_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\n");
+					printk(BIOS_DEBUG, "bad device\n");
 					break;
 				}
 				byte = status & 0xff;
-				print_debug_hex8(byte);
-				print_debug_char(' ');
+				printk(BIOS_DEBUG, "%02x ", byte);
 			}
-			print_debug("\n");
+			printk(BIOS_DEBUG, "\n");
 		}
 		device = ctrl->channel1[i];
 		if (device) {
 			int j;
-			print_debug("dimm: ");
-			print_debug_hex8(i);
-			print_debug(".1: ");
-			print_debug_hex8(device);
+			printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
 			for(j = 0; j < 256; j++) {
 				int status;
 				unsigned char byte;
-				if ((j & 0xf) == 0) {
-					print_debug("\n");
-					print_debug_hex8(j);
-					print_debug(": ");
-				}
+				if ((j & 0xf) == 0)
+					printk(BIOS_DEBUG, "\n%02x: ");
 				status = spd_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\n");
+					printk(BIOS_DEBUG, "bad device\n");
 					break;
 				}
 				byte = status & 0xff;
-				print_debug_hex8(byte);
-				print_debug_char(' ');
+				printk(BIOS_DEBUG, "%02x ", byte);
 			}
-			print_debug("\n");
+			printk(BIOS_DEBUG, "\n");
 		}
 	}
 }

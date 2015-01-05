@@ -20,6 +20,7 @@
 #include <build.h>
 #include <console/streams.h>
 #include <console/early_print.h>
+#include <console/loglevel.h>
 
 /* Include the sources. */
 #if CONFIG_CONSOLE_SERIAL && CONFIG_DRIVERS_UART_8250IO
@@ -77,4 +78,10 @@ void console_init(void)
 	console_hw_init();
 
 	print_info(console_test);
+}
+
+void die(const char *msg)
+{
+	print_emerg(msg);
+	halt();
 }

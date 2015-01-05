@@ -22,31 +22,6 @@
 
 #include <console/console.h>
 
-#if defined(__PRE_RAM__) && !CONFIG_CACHE_AS_RAM
-
-/* ROMCC versions */
-#define ASSERT(x) {						\
-	if(!(x)) {						\
-		print_emerg("ASSERTION FAILED: file '");	\
-		print_emerg(__FILE__);				\
-		print_emerg("', line 0x");			\
-		print_debug_hex32(__LINE__);			\
-		print_emerg("\n");				\
-		/* die(""); */					\
-	}							\
-}
-
-#define BUG() {							\
-	print_emerg("BUG ENCOUNTERED: SYSTEM HALTED at file '");\
-	print_emerg(__FILE__);					\
-	print_emerg("', line 0x");				\
-	print_debug_hex32(__LINE__);				\
-	print_emerg("\n");					\
-	/* die(""); */						\
-}
-
-#else
-
 /* GCC and CAR versions */
 #define ASSERT(x) {						\
 	if (!(x)) {						\
@@ -60,8 +35,6 @@
 		" line %d\n", __FILE__, __LINE__);		\
 	/* die(""); */						\
 }
-
-#endif /* defined(__PRE_RAM__) && !CONFIG_CACHE_AS_RAM */
 
 #define assert(statement)	ASSERT(statement)
 

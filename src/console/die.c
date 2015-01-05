@@ -25,13 +25,11 @@
 
 #ifndef __ROMCC__
 #define NORETURN __attribute__((noreturn))
-#else
-#define NORETURN
-#endif
 
 /* Report a fatal error */
 void NORETURN die(const char *msg)
 {
-	print_emerg(msg);
+	printk(BIOS_EMERG, "%s", msg);
 	halt();
 }
+#endif

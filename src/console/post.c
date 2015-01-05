@@ -150,9 +150,7 @@ void post_code(uint8_t value)
 {
 #if !CONFIG_NO_POST
 #if CONFIG_CONSOLE_POST
-	print_emerg("POST: 0x");
-	print_emerg_hex8(value);
-	print_emerg("\n");
+	printk(BIOS_EMERG, "POST: 0x%02x\n", value);
 #endif
 #if CONFIG_CMOS_POST
 	cmos_post_code(value);

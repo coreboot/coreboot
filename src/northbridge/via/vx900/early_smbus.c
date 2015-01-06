@@ -48,7 +48,8 @@ static void smbus_delays(int delays)
 /**
  * Read a byte from the SMBus.
  *
- * @param dimm The address location of the DIMM on the SMBus.
+ * @param smbus_dev The PCI address of the SMBus device .
+ * @param addr The address location of the DIMM on the SMBus.
  * @param offset The offset the data is located at.
  */
 u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset)

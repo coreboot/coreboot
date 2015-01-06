@@ -24,7 +24,7 @@
 #include "vx900.h"
 
 /**
- * @file sata.c
+ * @file vx900/sata.c
  *
  * STATUS: Pretty good
  * The only issue is the SATA EPHY configuration. We do not know if it is board

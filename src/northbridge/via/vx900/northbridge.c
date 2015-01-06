@@ -36,7 +36,7 @@ static uint64_t uma_memory_base = 0;
 static uint64_t uma_memory_size = 0;
 
 /**
- * @file northbridge.c
+ * @file vx900/northbridge.c
  *
  * STATUS: Pretty good
  * One thing that needs to be thoroughly tested is the remap above 4G logic.

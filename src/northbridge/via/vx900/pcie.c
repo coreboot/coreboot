@@ -26,7 +26,7 @@
 #include "vx900.h"
 
 /**
- * @file pcie.c
+ * @file vx900/pcie.c
  *
  * STATUS:
  * We do part of the sequence to initialize the PCIE link. The problem is that

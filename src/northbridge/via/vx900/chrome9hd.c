@@ -53,7 +53,7 @@
  * the IGP is able to use it. GRUB2 and linux are capable of getting a usable
  * text console, which uses the monitor's native resolution (even 1920x1080).
  * The graphical console (linux) does not work properly.
- * @TODO
+ * @todo
  * 1. Figure out what sequence we need to do to get the VGA BIOS running
  *    properly. Use the code provided by VIA and compare their sequence to ours,
  *    fill in any missing steps, etc.

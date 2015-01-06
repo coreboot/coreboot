@@ -28,7 +28,7 @@
 #include "chip.h"
 
 /**
- * @file traf_ctrl.c
+ * @file vx900/traf_ctrl.c
  *
  * STATUS:
  * The same issues with the IOAPIC pointe in lpc.c also apply here.

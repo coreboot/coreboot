@@ -30,7 +30,7 @@
 #include "chip.h"
 
 /**
- * @file lpc.c
+ * @file vx900/lpc.c
  *
  * STATUS:
  * We do a fair bit of setup, and most of it seems to work fairly well. There

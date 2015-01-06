@@ -138,12 +138,20 @@ static void sata_init(struct device *dev)
 
 	/* Set Gen3 Transmitter settings if needed */
 	if (config->sata_port0_gen3_tx)
-		pch_iobp_update(SATA_IOBP_SP0G3IR, 0,
-				config->sata_port0_gen3_tx);
+		pch_iobp_update(SATA_IOBP_SP0_SECRT88,
+				~(SATA_SECRT88_VADJ_MASK <<
+				  SATA_SECRT88_VADJ_SHIFT),
+				(config->sata_port0_gen3_tx &
+				 SATA_SECRT88_VADJ_MASK)
+				<< SATA_SECRT88_VADJ_SHIFT);
 
 	if (config->sata_port1_gen3_tx)
-		pch_iobp_update(SATA_IOBP_SP1G3IR, 0,
-				config->sata_port1_gen3_tx);
+		pch_iobp_update(SATA_IOBP_SP1_SECRT88,
+				~(SATA_SECRT88_VADJ_MASK <<
+				  SATA_SECRT88_VADJ_SHIFT),
+				(config->sata_port1_gen3_tx &
+				 SATA_SECRT88_VADJ_MASK)
+				<< SATA_SECRT88_VADJ_SHIFT);
 
 	/* Set Gen3 DTLE DATA / EDGE registers if needed */
 	if (config->sata_port0_gen3_dtle) {

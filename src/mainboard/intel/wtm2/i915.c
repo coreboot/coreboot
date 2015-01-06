@@ -41,7 +41,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <edid.h>
-#include <device/i915.h>
+#include <drivers/intel/gma/i915.h>
 
 /* how many bytes do we need for the framebuffer?
  * Well, this gets messy. To get an exact answer, we have

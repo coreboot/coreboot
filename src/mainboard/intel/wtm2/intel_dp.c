@@ -30,7 +30,7 @@
 #include <console/console.h>
 #include <stdint.h>
 #include <delay.h>
-#include <device/i915.h>
+#include <drivers/intel/gma/i915.h>
 
 u32
 pack_aux(u32 *src32, int src_bytes)

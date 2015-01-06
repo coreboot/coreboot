@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Google Inc.
+ * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,31 @@ struct soc_nvidia_tegra132_config {
 	int refresh;		/* display refresh rate */
 
 	int pixel_clock;	/* dc pixel clock source rate */
+
+	u32 panel_bits_per_pixel;
+
+	/* dp specific fields */
+	struct {
+		/* pwm to use to set display contrast */
+		int pwm;
+
+		/* HPD related timing */
+		int vdd_to_hpd_delay_ms;
+		int hpd_unplug_min_us;
+		int hpd_plug_min_us;
+		int hpd_irq_min_us;
+
+		/* The minimum link configuraton settings */
+		u32 lane_count;
+		u32 enhanced_framing;
+		u32 link_bw;
+		u32 drive_current;
+		u32 preemphasis;
+		u32 postcursor;
+	} dp;
+
 	int win_opt;
+	void *dc_data;
 };
 
 #endif /* __SOC_NVIDIA_TEGRA132_CHIP_H__ */

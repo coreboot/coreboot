@@ -20,6 +20,7 @@
 #include <arch/io.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <edid.h>
 #include <device/device.h>
 #include <soc/nvidia/tegra/dc.h>
 #include "chip.h"
@@ -220,4 +221,29 @@ int tegra_dc_init(struct display_controller *disp_ctrl)
 	WRITEL(0x00000000, &disp_ctrl->disp.disp_signal_opt0);
 
 	return 0;
+}
+
+/*
+ * Save mode to cb tables
+ */
+void pass_mode_info_to_payload(
+			struct soc_nvidia_tegra132_config *config)
+{
+	struct edid edid;
+	/* Align bytes_per_line to 64 bytes as required by dc */
+	edid.bytes_per_line = ALIGN_UP((config->display_xres *
+				config->framebuffer_bits_per_pixel / 8), 64);
+	edid.x_resolution = edid.bytes_per_line /
+				(config->framebuffer_bits_per_pixel / 8);
+	edid.y_resolution = config->display_yres;
+	edid.framebuffer_bits_per_pixel = config->framebuffer_bits_per_pixel;
+
+	printk(BIOS_INFO, "%s: bytes_per_line: %d, bits_per_pixel: %d\n "
+			"               x_res x y_res: %d x %d, size: %d\n",
+			 __func__, edid.bytes_per_line,
+			edid.framebuffer_bits_per_pixel,
+			edid.x_resolution, edid.y_resolution,
+			(edid.bytes_per_line * edid.y_resolution));
+
+	set_vbe_mode_info_valid(&edid, 0);
 }

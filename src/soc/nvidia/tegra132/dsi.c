@@ -952,26 +952,8 @@ void dsi_display_startup(device_t dev)
 	update_window(config);
 	printk(BIOS_INFO, "%s: display init done.\n", __func__);
 
-	/*
-	 * Pass panel information to cb tables
-	 */
-	struct edid edid;
-	/* Align bytes_per_line to 64 bytes as required by dc */
-	edid.bytes_per_line = ALIGN_UP((config->display_xres *
-				config->framebuffer_bits_per_pixel / 8), 64);
-	edid.x_resolution = edid.bytes_per_line /
-				(config->framebuffer_bits_per_pixel / 8);
-	edid.y_resolution = config->display_yres;
-	edid.framebuffer_bits_per_pixel = config->framebuffer_bits_per_pixel;
-
-	printk(BIOS_INFO, "%s: bytes_per_line: %d, bits_per_pixel: %d\n "
-			"               x_res x y_res: %d x %d, size: %d\n",
-			 __func__, edid.bytes_per_line,
-			edid.framebuffer_bits_per_pixel,
-			edid.x_resolution, edid.y_resolution,
-			(edid.bytes_per_line * edid.y_resolution));
-
-	set_vbe_mode_info_valid(&edid, 0);
+	/* Save panel information to cb tables */
+	pass_mode_info_to_payload(config);
 
 	/*
 	 * After this point, it is payload's responsibility to allocate

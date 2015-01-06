@@ -134,7 +134,7 @@ SDRAM configuration functions.
 /**
  * Send the specified RAM command to all DIMMs.
  *
- * @param The RAM command to send to the DIMM(s).
+ * @param command The RAM command to send to the DIMM(s).
  */
 static void do_ram_command(u8 command)
 {

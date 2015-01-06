@@ -43,12 +43,14 @@
  *
  *   This function set Rtt_Nom for registered DDR3 dimms on targeted dimm.
  *
+ *     @param      *pMCTData
  *     @param[in]  *pDCTData - Pointer to buffer with information about each DCT
- *                 dimm - targeted dimm
- *                 wl - current mode, either write levelization mode or normal mode
- *                 MemClkFreq - current frequency
+ *     @param      dimm - targeted dimm
+ *     @param      wl - current mode, either write levelization mode or normal mode
+ *     @param      MemClkFreq - current frequency
+ *     @param      rank
  *
- *      @return    tempW1 - Rtt_Nom
+ *     @return     tempW1 - Rtt_Nom
  */
 static u32 RttNomTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank)
 {
@@ -154,10 +156,12 @@ static u32 RttNomTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 d
  *
  *   This function set Rtt_Nom for registered DDR3 dimms on non-targeted dimm.
  *
+ *     @param      *pMCTData
  *     @param[in]  *pDCTData - Pointer to buffer with information about each DCT
- *                 dimm - non-targeted dimm
- *                 wl - current mode, either write levelization mode or normal mode
- *                 MemClkFreq - current frequency
+ *     @param      dimm - non-targeted dimm
+ *     @param      wl - current mode, either write levelization mode or normal mode
+ *     @param      MemClkFreq - current frequency
+ *     @param      rank
  *
  *      @return    tempW1 - Rtt_Nom
  */
@@ -176,13 +180,16 @@ static u32 RttNomNonTargetRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u
  *
  *   This function set Rtt_Wr for registered DDR3 dimms.
  *
+ *     @param      pMCTData
  *     @param[in]  *pDCTData - Pointer to buffer with information about each DCT
- *                 dimm - targeted dimm
- *                 wl - current mode, either write levelization mode or normal mode
- *                 MemClkFreq - current frequency
+ *     @param      dimm - targeted dimm
+ *     @param      wl - current mode, either write levelization mode or normal mode
+ *     @param      MemClkFreq - current frequency
+ *     @param      rank
  *
  *      @return    tempW1 - Rtt_Wr
  */
+
 static u32 RttWrRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl, u8 MemClkFreq, u8 rank)
 {
 	u32 tempW1;
@@ -238,8 +245,9 @@ static u32 RttWrRegDimm (sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BO
  *
  *   This function set WrLvOdt for registered DDR3 dimms.
  *
+ *     @param      *pMCTData
  *     @param[in]  *pDCTData - Pointer to buffer with information about each DCT
- *                 dimm - targeted dimm
+ *     @param      dimm - targeted dimm
  *
  *      @return    WrLvOdt
  */

@@ -69,7 +69,7 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
 #endif
 
 
-/**
+/*
  * Why we need the pci1234[] array
  *
  * It will keep the sequence of HT devices in the HT link registers even when a

@@ -119,8 +119,8 @@
  *	 Returns the number of nodes in the compressed graph
  *
  *  Parameters:
- *	@param[in] u8 graph = a compressed graph
- *	@param[out] u8 results = the number of nodes in the graph
+ *	@param[in] graph = a compressed graph
+ *	@param[out] results = the number of nodes in the graph
  * ---------------------------------------------------------------------------------------
  */
 static u8 graphHowManyNodes(u8 *graph)
@@ -138,10 +138,10 @@ static u8 graphHowManyNodes(u8 *graph)
  * Relies on rule that directly connected nodes always route requests directly.
  *
  *  Parameters:
- *	@param[in]    u8    graph   = the graph to examine
- *	@param[in]    u8    nodeA   = the node number of the first node
- *	@param[in]    u8    nodeB   = the node number of the second node
- *	@param[out]   BOOL    results  = true if nodeA connects to nodeB false if not
+ *	@param[in]   graph   = the graph to examine
+ *	@param[in]   nodeA   = the node number of the first node
+ *	@param[in]   nodeB   = the node number of the second node
+ *	@param[out]    results  = true if nodeA connects to nodeB false if not
  * ---------------------------------------------------------------------------------------
  */
 static BOOL graphIsAdjacent(u8 *graph, u8 nodeA, u8 nodeB)
@@ -190,10 +190,10 @@ static u8 graphGetRsp(u8 *graph, u8 nodeA, u8 nodeB)
  *	it is the responsibility of the caller to apply any permutation needed.
  *
  *  Parameters:
- *	@param[in]    u8    graph   = the graph to examine
- *	@param[in]    u8    nodeA   = the node number of the first node
- *	@param[in]    u8    nodeB   = the node number of the second node
- *	@param[out]   u8    results = The request route node
+ *	@param[in]   graph   = the graph to examine
+ *	@param[in]   nodeA   = the node number of the first node
+ *	@param[in]   nodeB   = the node number of the second node
+ *	@param[out]  results = The request route node
  * ---------------------------------------------------------------------------------------
  */
 static u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
@@ -213,10 +213,10 @@ static u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
  *	 nodeB towards
  *
  *  Parameters:
- *	@param[in]    u8    graph   = the graph to examine
- *	@param[in]    u8    nodeA   = the node number of the first node
- *	@param[in]    u8    nodeB   = the node number of the second node
- *	OU    u8    results = the broadcast routes for nodeA from nodeB
+ *	@param[in]    graph   = the graph to examine
+ *	@param[in]    nodeA   = the node number of the first node
+ *	@param[in]    nodeB   = the node number of the second node
+ *	OU    results = the broadcast routes for nodeA from nodeB
  * ---------------------------------------------------------------------------------------
  */
 static u8 graphGetBc(u8 *graph, u8 nodeA, u8 nodeB)
@@ -273,19 +273,21 @@ static void routeFromBSP(u8 targetNode, u8 actualTarget, sMainData *pDat)
 	pDat->nb->writeRoutingTable(predecessorNode, actualTarget, predecessorLink, pDat->nb);
 }
 
-/*----------------------------------------------------------------------------------------
- * u8
+/*---------------------------------------------------------------------------*/
+
+/**
+ *  u8
  * convertNodeToLink(u8 srcNode, u8 targetNode, sMainData *pDat)
  *
  *  Description:
  *	 Return the link on source node which connects to target node
  *
  *  Parameters:
- *	@param[in]    u8    srcNode    = the source node
- *	@param[in]    u8    targetNode = the target node to find the link to
- *	@param[in]    sMainData*  pDat = our global state
- *	@param[out]   u8    results    = the link on source which connects to target
- * ---------------------------------------------------------------------------------------
+ *	@param[in]    srcNode    = the source node
+ *	@param[in]    targetNode = the target node to find the link to
+ *	@param[in]    pDat = our global state
+ *	@return       the link on source which connects to target
+ *
  */
 static u8 convertNodeToLink(u8 srcNode, u8 targetNode, sMainData *pDat)
 {

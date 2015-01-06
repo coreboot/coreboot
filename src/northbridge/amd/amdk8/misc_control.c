@@ -24,7 +24,7 @@
 /**
  * @brief Read resources for AGP aperture
  *
- * @param
+ * @param dev
  *
  * There is only one AGP aperture resource needed. The resource is added to
  * the northbridge of BSP.

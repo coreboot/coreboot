@@ -80,10 +80,8 @@
 
 // CIMX configuration parameters
 //#define CIMX_B2_IMAGE_BASE_ADDRESS      0xFFF40000
-/**
- * PCIEX_BASE_ADDRESS - Define PCIE base address
- *
- * @param[Option]     MOVE_PCIEBAR_TO_F0000000 Set PCIe base address to 0xF7000000
+/*
+ * PCIEX_BASE_ADDRESS  - Define PCIE base address
  */
 #ifdef  MOVE_PCIEBAR_TO_F0000000
 #define PCIEX_BASE_ADDRESS           0xF7000000

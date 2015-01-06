@@ -3049,6 +3049,7 @@ static void sdram_setup_processor_side(void)
 
 /**
  * @param boot_path: 0 = normal, 1 = reset, 2 = resume from s3
+ * @param spd_addresses pointer to a list of SPD addresses
  */
 void sdram_initialize(int boot_path, const u8 *spd_addresses)
 {

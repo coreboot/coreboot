@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Google Inc.
+ * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,9 @@
 #include <soc/spi.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/display.h>
+
+#include <vendorcode/google/chromeos/chromeos.h>
+#include <delay.h>
 
 static const struct pad_config sdmmc3_pad[] = {
 	/* MMC3(SDCARD) */
@@ -68,6 +71,18 @@ static const struct pad_config padcfgs[] = {
 	 * voltage source likes to drive them low on overcurrent conditions */
 	PAD_CFG_GPIO_INPUT(USB_VBUS_EN0, PINMUX_PULL_UP),
 	PAD_CFG_GPIO_INPUT(USB_VBUS_EN1, PINMUX_PULL_UP),
+
+	/* backlight_vdd_gpio: P2 */
+	PAD_CFG_GPIO_OUT0(DAP3_DOUT, PINMUX_PULL_NONE),
+
+	/* backlight_en_gpio: H2 */
+	PAD_CFG_GPIO_OUT0(GPIO_PH2, PINMUX_PULL_NONE),
+
+	/* backlight_pwm: H1 */
+	PAD_CFG_SFIO(GPIO_PH1, PINMUX_PULL_NONE, PWM1),
+
+	/* DP HPD */
+	PAD_CFG_SFIO(DP_HPD, PINMUX_INPUT_ENABLE, DP),
 };
 
 static const struct pad_config i2c1_pad[] = {
@@ -112,6 +127,27 @@ static const struct funit_cfg audio_funit[] = {
 	FUNIT_CFG(I2S1, CLK_M, 1500, i2s1_pad, ARRAY_SIZE(i2s1_pad)),
 };
 
+static void configure_display_clocks(void)
+{
+	u32 lclks = CLK_L_DISP1 | CLK_L_HOST1X | CLK_L_PWM;
+	u32 xclks = CLK_X_DPAUX | CLK_X_SOR0;
+
+	clock_enable_clear_reset(lclks, 0, 0, 0, 0, xclks);
+
+	/* Give clocks time to stabilize. */
+	udelay(IO_STABILIZATION_DELAY);
+}
+
+static int configure_display_blocks(void)
+{
+	soc_configure_host1x();
+
+	/* enable display related clocks */
+	configure_display_clocks();
+
+	return 0;
+}
+
 /* Audio init: clocks and enables/resets */
 static void setup_audio(void)
 {
@@ -146,6 +182,10 @@ static void mainboard_init(device_t dev)
 
 	setup_audio();
 	i2c_init(I2C1_BUS);		/* for max98090 codec */
+
+	/* if panel needs to bringup */
+	if (!vboot_skip_display_init())
+		configure_display_blocks();
 }
 
 void display_startup(device_t dev)

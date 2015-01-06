@@ -83,14 +83,7 @@ void soc_configure_i2c6pad(void)
 	 * and put Host1X back in reset. DPAUX must remain out of
 	 * reset and the SOR partition must remained unpowergated.
 	 */
-	power_ungate_partition(POWER_PARTID_SOR);
-
-	/* Host1X needs a valid clock source so DPAUX can be accessed */
-	clock_configure_source(host1x, PLLP, 204000);
-
-	enable_sor_periph_clocks();
-	remove_clamps(POWER_PARTID_SOR);
-	unreset_sor_periphs();
+	soc_configure_host1x();
 
 	/* Now we can write the I2C6 mux in DPAUX */
 	write32(I2C6_PADCTL, (void *)DPAUX_HYBRID_PADCTL);
@@ -105,4 +98,16 @@ void soc_configure_i2c6pad(void)
 	/* Stop Host1X/DPAUX clocks and reset Host1X */
 	disable_sor_periph_clocks();
 	clock_set_reset_l(CLK_L_HOST1X);
+}
+
+void soc_configure_host1x(void)
+{
+	power_ungate_partition(POWER_PARTID_SOR);
+
+	/* Host1X needs a valid clock source so DPAUX can be accessed. */
+	clock_configure_source(host1x, PLLP, 204000);
+
+	enable_sor_periph_clocks();
+	remove_clamps(POWER_PARTID_SOR);
+	unreset_sor_periphs();
 }

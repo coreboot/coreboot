@@ -33,6 +33,11 @@
 #include <vendorcode/google/chromeos/fmap.h>
 #endif
 
+/* convert a pointer to flash area into the offset inside the flash */
+static inline u32 to_flash_offset(struct spi_flash *flash, void *p) {
+	return ((u32)p + flash->size);
+}
+
 static struct mrc_data_container *next_mrc_block(
 	struct mrc_data_container *mrc_cache)
 {
@@ -223,7 +228,7 @@ BOOT_STATE_INIT_ENTRIES(mrc_cache_update) = {
 	BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
 	                      update_mrc_cache, NULL),
 };
-#endif /* !defined(__PRE_RAM__) */
+#endif
 
 struct mrc_data_container *find_current_mrc_cache(void)
 {

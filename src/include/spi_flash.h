@@ -76,15 +76,4 @@ static inline int spi_flash_erase(struct spi_flash *flash, u32 offset,
 	return flash->erase(flash, offset, len);
 }
 
-#if !defined(__PRE_RAM__)
-/* convert a pointer to flash area into the offset inside the flash */
-static inline u32 to_flash_offset(struct spi_flash *flash, void *p) {
-#if defined(CONFIG_VIRTUAL_ROM_SIZE)
-	return ((u32)p + CONFIG_VIRTUAL_ROM_SIZE);
-#else
-	return ((u32)p + flash->size);
-#endif /* defined(CONFIG_VIRTUAL_ROM_SIZE) */
-}
-#endif /* !defined(__PRE_RAM__) */
-
 #endif /* _SPI_FLASH_H_ */

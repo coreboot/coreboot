@@ -34,6 +34,14 @@
 	(mode->yres + mode->vfront_porch + \
 	mode->vsync_width + mode->vback_porch)
 
+enum {
+	/* norrin64 */
+	TEGRA_EDID_I2C_ADDRESS = 0x50,
+};
+
+/* refresh rate = 60/s */
+#define FRAME_IN_MS 17
+
 /* forward declaration */
 struct soc_nvidia_tegra132_config;
 struct display_controller;

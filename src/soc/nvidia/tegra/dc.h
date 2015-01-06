@@ -450,7 +450,7 @@ enum {
 	PIXEL_CLK_DIVIDER_PCD24,
 	PIXEL_CLK_DIVIDER_PCD13,
 };
-#define  SHIFT_CLK_DIVIDER(x)		((x) & 0xff)
+#define  SHIFT_CLK_DIVIDER(x)		(((x) - 1) * 2)
 
 /* DC_WIN_WIN_OPTIONS 0x700 */
 #define  H_DIRECTION_DECREMENT(x)	((x) << 0)

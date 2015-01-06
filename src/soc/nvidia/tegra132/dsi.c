@@ -430,11 +430,14 @@ static void tegra_dsi_set_timeout(struct tegra_dsi *dsi, unsigned long bclk,
 static int tegra_output_dsi_setup_clock(struct tegra_dsi *dsi,
 			const struct soc_nvidia_tegra132_config *config)
 {
-	unsigned int mul, div, num_lanes; // , vrefresh, num_lanes;
+	unsigned int mul, div, num_lanes;
 	unsigned long bclk;
 	unsigned long pclk = config->pixel_clock;
 	int plld;
 	int err;
+	struct display_controller *disp_ctrl =
+			(void *)config->display_controller;
+	unsigned int shift_clk_div;
 
 	err = tegra_dsi_get_muldiv(dsi->format, &mul, &div);
 	if (err < 0)
@@ -470,6 +473,15 @@ static int tegra_output_dsi_setup_clock(struct tegra_dsi *dsi,
                 printk(BIOS_ERR, "%s: clock init failed\n", __func__);
                 return -1;
         }
+
+	/*
+	 * Derive pixel clock from bit clock using the shift clock divider.
+	 * Note that this is only half of what we would expect, but we need
+	 * that to make up for the fact that we divided the bit clock by a
+	 * factor of two above.
+	 */
+	shift_clk_div = ((8 * mul) / (div * num_lanes)) - 2;
+	update_display_shift_clock_divider(disp_ctrl, shift_clk_div);
 
 	tegra_dsi_set_timeout(dsi, bclk, config->refresh);
 	return plld/1000000;

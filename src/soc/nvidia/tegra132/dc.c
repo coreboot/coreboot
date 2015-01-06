@@ -116,26 +116,24 @@ int update_display_mode(struct display_controller *disp_ctrl,
 	WRITEL(config->xres | (config->yres << 16),
 		&disp_ctrl->disp.disp_active);
 
-	/**
-	 * We want to use PLLD_out0, which is PLLD / 2:
+	/*
 	 *   PixelClock = (PLLD / 2) / ShiftClockDiv / PixelClockDiv.
 	 *
-	 * Currently most panels work inside clock range 50MHz~100MHz, and PLLD
-	 * has some requirements to have VCO in range 500MHz~1000MHz (see
-	 * clock.c for more detail). To simplify calculation, we set
-	 * PixelClockDiv to 1 and ShiftClockDiv to 1. In future these values
-	 * may be calculated by clock_configure_plld(), to allow wider
-	 * frequency range.
-	 *
-	 * Note ShiftClockDiv is a 7.1 format value.
+	 *   default: Set both shift_clk_div and pixel_clock_div to 1
 	 */
-	const u32 shift_clock_div = 1;
-	WRITEL((PIXEL_CLK_DIVIDER_PCD1 << PIXEL_CLK_DIVIDER_SHIFT) |
-	       ((shift_clock_div - 1) * 2 + 1) << SHIFT_CLK_DIVIDER_SHIFT,
-	       &disp_ctrl->disp.disp_clk_ctrl);
-	printk(BIOS_DEBUG, "%s: PixelClock=%u, ShiftClockDiv=%u\n",
-	       __func__, config->pixel_clock, shift_clock_div);
+	update_display_shift_clock_divider(disp_ctrl, SHIFT_CLK_DIVIDER(1));
+
 	return 0;
+}
+
+void update_display_shift_clock_divider(struct display_controller *disp_ctrl,
+			       u32 shift_clock_div)
+{
+	WRITEL((PIXEL_CLK_DIVIDER_PCD1 << PIXEL_CLK_DIVIDER_SHIFT) |
+	       (shift_clock_div & 0xff) << SHIFT_CLK_DIVIDER_SHIFT,
+	       &disp_ctrl->disp.disp_clk_ctrl);
+	printk(BIOS_DEBUG, "%s: ShiftClockDiv=%u\n",
+	       __func__, shift_clock_div);
 }
 
 /*
@@ -182,7 +180,9 @@ void update_window(const struct soc_nvidia_tegra132_config *config)
 	WRITEL(val, &disp_ctrl->cmd.disp_pow_ctrl);
 
 	val = GENERAL_UPDATE | WIN_A_UPDATE;
-	val |= GENERAL_ACT_REQ | WIN_A_ACT_REQ;
+	WRITEL(val, &disp_ctrl->cmd.state_ctrl);
+
+	val = GENERAL_ACT_REQ | WIN_A_ACT_REQ;
 	WRITEL(val, &disp_ctrl->cmd.state_ctrl);
 }
 

@@ -45,4 +45,6 @@ int tegra_dc_init(struct display_controller *disp_ctrl);
 int update_display_mode(struct display_controller *disp_ctrl,
 			struct soc_nvidia_tegra132_config *config);
 void update_window(const struct soc_nvidia_tegra132_config *config);
+void update_display_shift_clock_divider(struct display_controller *disp_ctrl,
+			u32 shift_clock_div);
 #endif /* __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_DISPLAY_H__ */

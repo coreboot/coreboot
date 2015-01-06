@@ -181,6 +181,26 @@ Scope (\_SB.PCI0.I2C0)
 		Name (JD2, 2)   /* Use GPIO5 as JackDetect2 */
 		Name (JD3, 3)   /* Use GPIO6 as JackDetect3 */
 
+		/* Add DT style bindings with _DSD */
+		Name (_DSD, Package () {
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () { "realtek,in1-differential", 1 },
+				Package () { "realtek,in2-differential", 0 },
+				Package () { "realtek,lout1-differential", 1 },
+				Package () { "realtek,lout2-differential", 1 },
+				Package () { "realtek,lout3-differential", 0 },
+				Package () { "realtek,pdm_clk_div", 1 },
+				Package () { "realtek,dmic2_clk_pin", 0 },
+				Package () { "realtek,asrc-en", 1 },
+				Package () { "realtek,jd1-gpio", 0 },
+				Package () { "realtek,jd2-gpio", 2 },
+				Package () { "realtek,jd3-gpio", 3 },
+				Package () { "realtek,gpio-config",
+					Package () { 0, 0, 0, 0, 0, 2 } },
+			}
+		})
+
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (

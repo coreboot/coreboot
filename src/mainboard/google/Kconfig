@@ -73,6 +73,8 @@ config BOARD_GOOGLE_VEYRON_MIGHTY
 	bool "Veyron_Mighty"
 config BOARD_GOOGLE_VEYRON_PINKY
 	bool "Veyron_Pinky"
+config BOARD_GOOGLE_VEYRON_RIALTO
+        bool "Veyron_Rialto"
 config BOARD_GOOGLE_VEYRON_SPEEDY
 	bool "Veyron_Speedy"
 endchoice
@@ -103,6 +105,7 @@ source "src/mainboard/google/veyron_danger/Kconfig"
 source "src/mainboard/google/veyron_jerry/Kconfig"
 source "src/mainboard/google/veyron_mighty/Kconfig"
 source "src/mainboard/google/veyron_pinky/Kconfig"
+source "src/mainboard/google/veyron_rialto/Kconfig"
 source "src/mainboard/google/veyron_speedy/Kconfig"
 
 config MAINBOARD_VENDOR

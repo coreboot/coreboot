@@ -32,7 +32,7 @@ struct gdtarg {
 /* Copy GDT to new location and reload it.
  * FIXME: We only do this for BSP CPU.
  */
-void move_gdt(void)
+static void move_gdt(void)
 {
 	void *newgdt;
 	u16 num_gdt_bytes = (u32)&gdt_end - (u32)&gdt;
@@ -55,3 +55,4 @@ void move_gdt(void)
 	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
 	printk(BIOS_DEBUG, "ok\n");
 }
+RAMSTAGE_CBMEM_INIT_HOOK(move_gdt)

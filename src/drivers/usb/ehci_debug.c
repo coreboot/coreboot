@@ -682,7 +682,7 @@ static void migrate_ehci_debug(void)
 	memcpy(dbg_info_cbmem, dbg_info, sizeof(*dbg_info));
 	car_set_var(glob_dbg_info_p, dbg_info_cbmem);
 }
-CAR_MIGRATE(migrate_ehci_debug);
+ROMSTAGE_CBMEM_INIT_HOOK(migrate_ehci_debug);
 #endif
 
 int dbgp_ep_is_active(struct dbgp_pipe *pipe)

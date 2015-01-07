@@ -157,7 +157,7 @@ void timestamp_init(uint64_t base)
 #endif
 }
 
-void timestamp_reinit(void)
+static void timestamp_reinit(void)
 {
 	if (!timestamp_should_run())
 		return;
@@ -172,8 +172,9 @@ void timestamp_reinit(void)
 		timestamp_do_sync();
 }
 
-/* Call timestamp_reinit at CAR migration time. */
-CAR_MIGRATE(timestamp_reinit)
+/* Call timestamp_reinit CBMEM init hooks. */
+ROMSTAGE_CBMEM_INIT_HOOK(timestamp_reinit)
+RAMSTAGE_CBMEM_INIT_HOOK(timestamp_reinit)
 
 /* Provide default timestamp implementation using monotonic timer. */
 uint64_t  __attribute__((weak)) timestamp_get(void)

@@ -208,7 +208,7 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 	new_cons_p->buffer_cursor = cursor;
 }
 
-void cbmemc_reinit(void)
+static void cbmemc_reinit(void)
 {
 	struct cbmem_console *cbm_cons_p;
 	const size_t size = CONFIG_CONSOLE_CBMEM_BUFFER_SIZE;
@@ -233,6 +233,8 @@ void cbmemc_reinit(void)
 
 	init_console_ptr(cbm_cons_p, size, flags);
 }
+ROMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
+RAMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
 
 #if IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART)
 void cbmem_dump_console(void)
@@ -249,6 +251,3 @@ void cbmem_dump_console(void)
 		uart_tx_byte(0, cbm_cons_p->buffer_body[cursor]);
 }
 #endif
-
-/* Call cbmemc_reinit() at CAR migration time. */
-CAR_MIGRATE(cbmemc_reinit)

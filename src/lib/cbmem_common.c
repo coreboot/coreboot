@@ -20,30 +20,28 @@
 #include <cbmem.h>
 #include <bootstate.h>
 #include <rules.h>
+#include <symbols.h>
 #if IS_ENABLED(CONFIG_ARCH_X86) && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 #include <arch/acpi.h>
 #endif
 
-/* FIXME: Remove after CBMEM_INIT_HOOKS. */
-#include <console/cbmem_console.h>
-#include <timestamp.h>
-
-
-/* FIXME: Replace with CBMEM_INIT_HOOKS API. */
-#if !IS_ENABLED(CONFIG_ARCH_X86)
 void cbmem_run_init_hooks(void)
 {
-	/* Relocate CBMEM console. */
-	cbmemc_reinit();
+	cbmem_init_hook_t *init_hook_ptr = (cbmem_init_hook_t*) &_cbmem_init_hooks;
+	cbmem_init_hook_t *einit_hook_ptr =  (cbmem_init_hook_t*) &_ecbmem_init_hooks;
 
-	/* Relocate timestamps stash. */
-	timestamp_reinit();
+	if (_cbmem_init_hooks_size == 0)
+		return;
+
+	while (init_hook_ptr !=  einit_hook_ptr) {
+		(*init_hook_ptr)();
+		init_hook_ptr++;
+	}
 }
 
 void __attribute__((weak)) cbmem_fail_resume(void)
 {
 }
-#endif
 
 #if ENV_RAMSTAGE && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 static void init_cbmem_post_device(void *unused)

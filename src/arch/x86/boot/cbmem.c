@@ -20,12 +20,6 @@
 #include <cbmem.h>
 #include <arch/acpi.h>
 
-/* FIXME: Remove after CBMEM_INIT_HOOKS. */
-#include <arch/early_variables.h>
-#include <cpu/x86/gdt.h>
-#include <console/cbmem_console.h>
-#include <timestamp.h>
-
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 
 #if !defined(__PRE_RAM__)
@@ -70,22 +64,6 @@ void *cbmem_top(void)
 }
 
 #endif /* LATE_CBMEM_INIT */
-
-void cbmem_run_init_hooks(void)
-{
-	/* Migrate car.global_data. */
-	car_migrate_variables();
-
-#if !defined(__PRE_RAM__)
-	/* Relocate CBMEM console. */
-	cbmemc_reinit();
-
-	/* Relocate timestamps stash. */
-	timestamp_reinit();
-
-	move_gdt();
-#endif
-}
 
 /* Something went wrong, our high memory area got wiped */
 void cbmem_fail_resume(void)

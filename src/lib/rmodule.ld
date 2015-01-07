@@ -55,6 +55,9 @@ SECTIONS
 		LONG(0);
 		LONG(0);
 		_bs_init_end = .;
+		_cbmem_init_hooks = .;
+		KEEP(*(.rodata.cbmem_init_hooks));
+		_ecbmem_init_hooks = .;
 
 		. = ALIGN(8);
 

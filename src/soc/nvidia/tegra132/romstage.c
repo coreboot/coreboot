@@ -76,8 +76,6 @@ void romstage(void)
 
 	romstage_mainboard_init();
 
-	cbmemc_reinit();
-
 	run_ramstage();
 }
 

@@ -22,6 +22,7 @@
 #define _CBMEM_H_
 
 #include <cbmem_id.h>
+#include <rules.h>
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
 	! IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)
@@ -112,6 +113,7 @@ void *cbmem_add(u32 id, u64 size);
 /* Find a cbmem entry of a given id. These return NULL on failure. */
 void *cbmem_find(u32 id);
 
+typedef void (* const cbmem_init_hook_t)(void);
 void cbmem_run_init_hooks(void);
 void cbmem_fail_resume(void);
 
@@ -121,6 +123,26 @@ void cbmem_fail_resume(void);
 void cbmem_add_bootmem(void);
 void cbmem_list(void);
 #endif /* __PRE_RAM__ */
+
+#if ENV_RAMSTAGE
+#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
+	init_fn_ ## _unused_ __attribute__((unused)) = init_fn_;
+#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) \
+	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
+	section(".rodata.cbmem_init_hooks"))) = init_fn_;
+#elif ENV_ROMSTAGE
+#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) \
+	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
+	section(".rodata.cbmem_init_hooks"))) = init_fn_;
+#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
+	init_fn_ ## _unused_ __attribute__((unused)) = init_fn_;
+#else
+#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
+	init_fn_ ## _unused_ __attribute__((unused)) = init_fn_;
+#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \
+	init_fn_ ## _unused2_ __attribute__((unused)) = init_fn_;
+#endif /* ENV_RAMSTAGE */
+
 
 /* These are for compatibility with old boards only. Any new chipset and board
  * must implement cbmem_top() for both romstage and ramstage to support

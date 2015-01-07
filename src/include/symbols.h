@@ -33,6 +33,10 @@ extern u8 _epreram_cbmem_console[];
 #define _preram_cbmem_console_size \
 		(_epreram_cbmem_console - _preram_cbmem_console)
 
+extern u8 _cbmem_init_hooks[];
+extern u8 _ecbmem_init_hooks[];
+#define _cbmem_init_hooks_size (_ecbmem_init_hooks - _cbmem_init_hooks)
+
 extern u8 _stack[];
 extern u8 _estack[];
 #define _stack_size (_estack - _stack)

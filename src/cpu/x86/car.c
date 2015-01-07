@@ -136,21 +136,9 @@ static void do_car_migrate_variables(void)
 	car_migrated = ~0;
 }
 
-static void do_car_migrate_hooks(void)
+static void car_migrate_variables(void)
 {
-	car_migration_func_t *migrate_func;
-	/* Call all the migration functions. */
-	migrate_func = &_car_migrate_start;
-	while (*migrate_func != NULL) {
-		(*migrate_func)();
-		migrate_func++;
-	}
-}
-
-void car_migrate_variables(void)
-{
-	if (!IS_ENABLED(PLATFORM_USES_FSP1_0))
+	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE) && !IS_ENABLED(PLATFORM_USES_FSP1_0))
 		do_car_migrate_variables();
-
-	do_car_migrate_hooks();
 }
+ROMSTAGE_CBMEM_INIT_HOOK(car_migrate_variables)

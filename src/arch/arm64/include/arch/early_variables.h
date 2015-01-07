@@ -22,7 +22,6 @@
 
 #define CAR_GLOBAL
 
-#define CAR_MIGRATE(migrate_fn_)
 static inline void *car_get_var_ptr(void *var) { return var; }
 #define car_get_var(var) (var)
 #define car_sync_var(var) (var)

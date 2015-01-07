@@ -28,7 +28,4 @@ extern char _secondary_gdt_addr[];
 extern char _secondary_start[];
 extern char _secondary_start_end[];
 
-/* Defined in src/arch/x86/boot/gdt.c */
-void move_gdt(void);
-
 #endif /* CPU_X86_GDT */

@@ -92,12 +92,10 @@ enum timestamp_id {
 void timestamp_init(uint64_t base);
 void timestamp_add(enum timestamp_id id, uint64_t ts_time);
 void timestamp_add_now(enum timestamp_id id);
-void timestamp_reinit(void);
 #else
 #define timestamp_init(base)
 #define timestamp_add(id, time)
 #define timestamp_add_now(id)
-#define timestamp_reinit()
 #endif
 
 /* Implemented by the architecture code */

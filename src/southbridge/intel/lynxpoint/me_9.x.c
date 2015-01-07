@@ -374,6 +374,7 @@ static int mei_recv_msg(void *header, int header_bytes,
 	return mei_wait_for_me_ready();
 }
 
+#if IS_ENABLED (CONFIG_DEBUG_INTEL_ME) || defined(__SMM__)
 static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
 				    void *req_data, int req_bytes,
 				    void *rsp_data, int rsp_bytes)
@@ -411,30 +412,7 @@ static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
 
 	return 0;
 }
-
-static inline int mei_sendrecv_icc(struct icc_header *icc,
-				   void *req_data, int req_bytes,
-				   void *rsp_data, int rsp_bytes)
-{
-	struct icc_header icc_rsp;
-
-	/* Send header */
-	if (mei_send_header(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
-			    icc, sizeof(*icc), req_bytes ? 0 : 1) < 0)
-		return -1;
-
-	/* Send data if available */
-	if (req_bytes && mei_send_data(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
-				       req_data, req_bytes) < 0)
-		return -1;
-
-	/* Read header and data, if needed */
-	if (rsp_bytes && mei_recv_msg(&icc_rsp, sizeof(icc_rsp),
-				      rsp_data, rsp_bytes) < 0)
-		return -1;
-
-	return 0;
-}
+#endif /* CONFIG_DEBUG_INTEL_ME || __SMM__ */
 
 /*
  * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
@@ -635,6 +613,30 @@ void intel_me_finalize_smm(void)
 }
 
 #else /* !__SMM__ */
+
+static inline int mei_sendrecv_icc(struct icc_header *icc,
+				   void *req_data, int req_bytes,
+				   void *rsp_data, int rsp_bytes)
+{
+	struct icc_header icc_rsp;
+
+	/* Send header */
+	if (mei_send_header(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
+			    icc, sizeof(*icc), req_bytes ? 0 : 1) < 0)
+		return -1;
+
+	/* Send data if available */
+	if (req_bytes && mei_send_data(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
+				       req_data, req_bytes) < 0)
+		return -1;
+
+	/* Read header and data, if needed */
+	if (rsp_bytes && mei_recv_msg(&icc_rsp, sizeof(icc_rsp),
+				      rsp_data, rsp_bytes) < 0)
+		return -1;
+
+	return 0;
+}
 
 static int me_icc_set_clock_enables(u32 mask)
 {

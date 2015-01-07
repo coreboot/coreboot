@@ -277,12 +277,6 @@ static int int15_handler(void)
 #endif
 /* ############################################################################################# */
 
- /**
- * @brief
- *
- * @param
- */
-
 static u8 calc_trange(u8 t_min, u8 t_max) {
 
 	u8 prev;
@@ -341,7 +335,6 @@ static void cable_detect(void)
 /**
  * @brief Detect the ADT7475 device
  *
- * @param
  */
 
 static const char * adt7475_detect( void ) {
@@ -427,7 +420,6 @@ static void pm_init( void )
  /**
  * @brief Setup thermal config on SINA Mainboard
  *
- * @param
  */
 
 static void set_thermal_config(void)
@@ -604,12 +596,6 @@ static void set_thermal_config(void)
 
 }
 
- /**
- * @brief
- *
- * @param
- */
-
 static void patch_mmio_nonposted( void )
 {
 	unsigned reg, index;
@@ -649,12 +635,6 @@ static void patch_mmio_nonposted( void )
 	}
 }
 
- /**
- * @brief
- *
- * @param
- */
-
 struct {
 	unsigned int bus;
 	unsigned int devfn;
@@ -690,12 +670,6 @@ static void update_subsystemid( device_t dev )
 		}
 	}
 }
-
- /**
- * @brief
- *
- * @param
- */
 
 static void detect_hw_variant( device_t dev )
 {
@@ -806,7 +780,7 @@ static void smm_lock( void )
  /**
  * @brief Init
  *
- * @param the root device
+ * @param dev - the root device
  */
 
 static void mainboard_init(device_t dev)

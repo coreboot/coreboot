@@ -34,8 +34,6 @@
 
 /**
  * PCIEX_BASE_ADDRESS - Define PCIE base address
- *
- * @param[Option]     MOVE_PCIEBAR_TO_F0000000 Set PCIe base address to 0xF7000000
  */
 #ifdef  MOVE_PCIEBAR_TO_F0000000
   #define PCIEX_BASE_ADDRESS           0xF7000000

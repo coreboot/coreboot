@@ -20,7 +20,9 @@
 
 /**
  * @file post_codes.h
- *
+ */
+
+/*
  * This aims to be a central point for POST codes used throughout coreboot.
  * All POST codes should be declared here as macros, and post_code() should
  * be used with the macros instead of hardcoded values. This allows us to
@@ -40,6 +42,7 @@
  * without any explanation or effort on part of the maintainers.
  *
  */
+
 #ifndef POST_CODES_H
 #define POST_CODES_H
 

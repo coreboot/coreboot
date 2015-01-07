@@ -18,7 +18,7 @@
  */
 
 /**
- * @file early_smbus.h
+ * @file device/early_smbus.h
  *
  * This file defines a common API for accessing the SMBus during early
  * initialization. It defines the prototypes for common SMBus functions. The

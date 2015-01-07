@@ -52,7 +52,6 @@ smm-y      += smihandler.c
 ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
-ramstage-y += spi_loading.c
 ramstage-y += stage_cache.c
 romstage-y += stage_cache.c
 ramstage-y += systemagent.c

@@ -51,7 +51,7 @@ static void *ram_map(struct cbfs_media *media, size_t offset, size_t count) {
 	if (offset + count > m->size) {
 		printf("ERROR: ram_map: request out of range (0x%zx+0x%zx)\n",
 		       offset, count);
-		return NULL;
+		return CBFS_MEDIA_INVALID_MAP_ADDRESS;
 	}
 	return (void*)(m->start + offset);
 }
@@ -63,6 +63,8 @@ static void *ram_unmap(struct cbfs_media *media, const void *address) {
 static size_t ram_read(struct cbfs_media *media, void *dest, size_t offset,
 			   size_t count) {
 	void *ptr = ram_map(media, offset, count);
+	if (ptr == CBFS_MEDIA_INVALID_MAP_ADDRESS)
+		return 0;
 	memcpy(dest, ptr, count);
 	ram_unmap(media, ptr);
 	return count;

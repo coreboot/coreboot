@@ -163,10 +163,13 @@ static inline u32 read_acpi32(u32 addr)
 	return inl(DEFAULT_PMBASE | addr);
 }
 
+// unused func - used for RE
+#if 0
 static inline u16 read_acpi16(u32 addr)
 {
 	return inw(DEFAULT_PMBASE | addr);
 }
+#endif
 
 #include <cpu/intel/romstage.h>
 void main(unsigned long bist)

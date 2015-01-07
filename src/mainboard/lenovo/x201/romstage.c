@@ -167,11 +167,6 @@ static inline u32 read_acpi32(u32 addr)
 	return inl(DEFAULT_PMBASE | addr);
 }
 
-static inline u16 read_acpi16(u32 addr)
-{
-	return inw(DEFAULT_PMBASE | addr);
-}
-
 static void set_fsb_frequency(void)
 {
 	u8 block[5];

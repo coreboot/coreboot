@@ -146,11 +146,6 @@ static inline u8 read_mchbar8(u32 addr)
 	return MCHBAR8(addr);
 }
 
-static inline u8 read_mchbar8_bypass(u32 addr)
-{
-	return MCHBAR8(addr);
-}
-
 static void clflush(u32 addr)
 {
 	asm volatile ("clflush (%0)"::"r" (addr));

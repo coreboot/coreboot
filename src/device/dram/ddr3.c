@@ -18,7 +18,7 @@
  */
 
 /**
- * @file ddr3_util.h
+ * @file ddr3.c
  *
  * \brief Utilities for decoding DDR3 SPDs
  */
@@ -452,8 +452,13 @@ static u16 ddr3_cas_to_mr0_map(u8 cas)
  * write_recovery and cas are given in clock cycles. For example, a CAS of 7T
  * should be given as 7.
  *
+ * @param precharge_pd
  * @param write_recovery Write recovery latency, tWR in clock cycles.
+ * @param dll_reset
+ * @param mode
  * @param cas CAS latency in clock cycles.
+ * @param burst_type
+ * @param burst_length
  */
 mrs_cmd_t ddr3_get_mr0(enum ddr3_mr0_precharge precharge_pd,
 		       u8 write_recovery,
@@ -555,8 +560,12 @@ mrs_cmd_t ddr3_get_mr1(enum ddr3_mr1_qoff qoff,
  * cas_cwl is given in clock cycles. For example, a cas_cwl of 7T should be
  * given as 7.
  *
+ * @param rtt_wr
+ * @param extended_temp
+ * @param self_refresh
  * @param cas_cwl CAS write latency in clock cycles.
  */
+
 mrs_cmd_t ddr3_get_mr2(enum ddr3_mr2_rttwr rtt_wr,
 		       enum ddr3_mr2_srt_range extended_temp,
 		       enum ddr3_mr2_asr self_refresh, u8 cas_cwl)

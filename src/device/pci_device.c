@@ -818,8 +818,8 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
  * The driver entry can either point at a zero terminated array of acceptable
  * device IDs, or include a single device ID.
  *
- * @driver pointer to the PCI driver entry being checked
- * @device_id PCI device ID of the device being matched
+ * @param driver pointer to the PCI driver entry being checked
+ * @param device_id PCI device ID of the device being matched
  */
 static int device_id_match(struct pci_driver *driver, unsigned short device_id)
 {

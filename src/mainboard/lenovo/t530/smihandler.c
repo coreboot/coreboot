@@ -130,7 +130,7 @@ int mainboard_smi_apmc(u8 data)
 		/* use 0x1600/0x1604 to prevent races with userspace */
 		ec_set_ports(0x1604, 0x1600);
 		/* route H8SCI to SCI */
-		outw(inw(ALT_GP_SMI_EN) & ~0x1000, pmbase + ALT_GP_SMI_EN);
+		outw(inw(pmbase + ALT_GP_SMI_EN) & ~0x1000, pmbase + ALT_GP_SMI_EN);
 		tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
 		tmp &= ~0x03;
 		tmp |= 0x02;

@@ -189,11 +189,6 @@ out:
 	return ret;
 }
 
-static int winbond_erase(struct spi_flash *flash, u32 offset, size_t len)
-{
-	return spi_flash_cmd_erase(flash, CMD_W25_SE, offset, len);
-}
-
 static struct winbond_spi_flash stm;
 
 struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
@@ -222,7 +217,7 @@ struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 	page_size = 1 << params->l2_page_size;
 
 	stm.flash.write = winbond_write;
-	stm.flash.erase = winbond_erase;
+	stm.flash.erase = spi_flash_cmd_erase;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
 	stm.flash.read = spi_flash_cmd_read_slow;
 #else
@@ -233,6 +228,7 @@ struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 	stm.flash.size = page_size * params->pages_per_sector
 				* params->sectors_per_block
 				* params->nr_blocks;
+	stm.flash.erase_cmd = CMD_W25_SE;
 
 	return &stm.flash;
 }

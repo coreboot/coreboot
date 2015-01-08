@@ -207,10 +207,6 @@ done:
 	return ret;
 }
 
-static int sst_erase(struct spi_flash *flash, u32 offset, size_t len)
-{
-	return spi_flash_cmd_erase(flash, CMD_SST_SE, offset, len);
-}
 
 static int
 sst_unlock(struct spi_flash *flash)
@@ -262,10 +258,11 @@ spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 	stm->flash.name = params->name;
 
 	stm->flash.write = sst_write;
-	stm->flash.erase = sst_erase;
+	stm->flash.erase = spi_flash_cmd_erase;
 	stm->flash.read = spi_flash_cmd_read_fast;
 	stm->flash.sector_size = SST_SECTOR_SIZE;
 	stm->flash.size = stm->flash.sector_size * params->nr_sectors;
+	stm->flash.erase_cmd = CMD_SST_SE;
 
 	/* Flash powers up read-only, so clear BP# bits */
 	sst_unlock(&stm->flash);

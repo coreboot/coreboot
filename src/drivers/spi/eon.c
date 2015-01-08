@@ -138,11 +138,6 @@ out:
 	return ret;
 }
 
-static int eon_erase(struct spi_flash *flash, u32 offset, size_t len)
-{
-	return spi_flash_cmd_erase(flash, CMD_EN25_SE, offset, len);
-}
-
 struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
 {
 	const struct eon_spi_flash_params *params;
@@ -172,11 +167,12 @@ struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
 	eon->flash.name = params->name;
 
 	eon->flash.write = eon_write;
-	eon->flash.erase = eon_erase;
+	eon->flash.erase = spi_flash_cmd_erase;
 	eon->flash.read = spi_flash_cmd_read_fast;
 	eon->flash.sector_size = params->page_size * params->pages_per_sector;
 	eon->flash.size = params->page_size * params->pages_per_sector
 	    * params->nr_sectors;
+	eon->flash.erase_cmd = CMD_EN25_SE;
 
 	return &eon->flash;
 }

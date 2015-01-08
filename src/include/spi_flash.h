@@ -27,6 +27,7 @@
 #include <stddef.h>
 #include <console/console.h>
 #include <spi-generic.h>
+#include <boot/coreboot_tables.h>
 
 struct spi_flash {
 	struct spi_slave *spi;
@@ -37,6 +38,8 @@ struct spi_flash {
 
 	u32		sector_size;
 
+	u8		erase_cmd;
+
 	int		(*read)(struct spi_flash *flash, u32 offset,
 				size_t len, void *buf);
 	int		(*write)(struct spi_flash *flash, u32 offset,
@@ -46,5 +49,7 @@ struct spi_flash {
 };
 
 struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs);
+
+void lb_spi_flash(struct lb_header *header);
 
 #endif /* _SPI_FLASH_H_ */

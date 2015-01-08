@@ -172,11 +172,6 @@ out:
 	return ret;
 }
 
-static int atmel_erase(struct spi_flash *flash, u32 offset, size_t len)
-{
-	return spi_flash_cmd_erase(flash, CMD_AT25_SE, offset, len);
-}
-
 struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode)
 {
 	const struct atmel_spi_flash_params *params;
@@ -210,7 +205,7 @@ struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode)
 	page_size = 1 << params->l2_page_size;
 
 	stm->flash.write = atmel_write;
-	stm->flash.erase = atmel_erase;
+	stm->flash.erase = spi_flash_cmd_erase;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
 	stm->flash.read = spi_flash_cmd_read_slow;
 #else
@@ -221,6 +216,7 @@ struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode)
 	stm->flash.size = page_size * params->pages_per_sector
 				* params->sectors_per_block
 				* params->nr_blocks;
+	stm->flash.erase_cmd = CMD_AT25_SE;
 
 	return &stm->flash;
 }

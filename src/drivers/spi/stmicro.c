@@ -221,13 +221,6 @@ out:
 	return ret;
 }
 
-static int stmicro_erase(struct spi_flash *flash, u32 offset, size_t len)
-{
-	struct stmicro_spi_flash *stm = to_stmicro_spi_flash(flash);
-
-	return spi_flash_cmd_erase(flash, stm->params->op_erase, offset, len);
-}
-
 struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 {
 	const struct stmicro_spi_flash_params *params;
@@ -275,10 +268,11 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 	stm->flash.name = params->name;
 
 	stm->flash.write = stmicro_write;
-	stm->flash.erase = stmicro_erase;
+	stm->flash.erase = spi_flash_cmd_erase;
 	stm->flash.read = spi_flash_cmd_read_fast;
 	stm->flash.sector_size = params->page_size * params->pages_per_sector;
 	stm->flash.size = stm->flash.sector_size * params->nr_sectors;
+	stm->flash.erase_cmd = params->op_erase;
 
 	return &stm->flash;
 }

@@ -286,6 +286,15 @@ struct lb_ram_code {
 	uint32_t ram_code;
 };
 
+#define LB_TAG_SPI_FLASH	0x0029
+struct lb_spi_flash {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t flash_size;
+	uint32_t sector_size;
+	uint32_t erase_cmd;
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

@@ -7,6 +7,7 @@
  * Licensed under the GPL-2 or later.
  */
 
+#include <cbfs.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
 #include <stdlib.h>
@@ -16,6 +17,8 @@
 
 #include "spi_flash_internal.h"
 #include <timer.h>
+
+static struct spi_flash *spi_flash_dev = NULL;
 
 static void spi_flash_addr(u32 addr, u8 *cmd)
 {
@@ -186,8 +189,7 @@ int spi_flash_cmd_wait_ready(struct spi_flash *flash, unsigned long timeout)
 		CMD_READ_STATUS, STATUS_WIP);
 }
 
-int spi_flash_cmd_erase(struct spi_flash *flash, u8 erase_cmd,
-			u32 offset, size_t len)
+int spi_flash_cmd_erase(struct spi_flash *flash, u32 offset, size_t len)
 {
 	u32 start, end, erase_size;
 	int ret;
@@ -201,7 +203,7 @@ int spi_flash_cmd_erase(struct spi_flash *flash, u8 erase_cmd,
 
 	flash->spi->rw = SPI_WRITE_FLAG;
 
-	cmd[0] = erase_cmd;
+	cmd[0] = flash->erase_cmd;
 	start = offset;
 	end = start + len;
 
@@ -376,9 +378,45 @@ flash_detected:
 	printk(BIOS_INFO, "SF: Detected %s with page size %x, total %x\n",
 			flash->name, flash->sector_size, flash->size);
 
+	spi_flash_dev = flash;
+
 	return flash;
 
 err_manufacturer_probe:
 err_read_id:
 	return NULL;
 }
+
+/* Only the RAM stage will build in the lb_new_record symbol
+ * so only define this function if we are after that stage */
+#ifdef __RAMSTAGE__
+
+void lb_spi_flash(struct lb_header *header)
+{
+	struct lb_spi_flash *flash;
+
+	flash = (struct lb_spi_flash *)lb_new_record(header);
+
+	flash->tag = LB_TAG_SPI_FLASH;
+	flash->size = sizeof(*flash);
+
+	/* Try to get the flash device if not loaded yet */
+	if (!spi_flash_dev) {
+		struct cbfs_media media;
+		init_default_cbfs_media(&media);
+	}
+
+	if (spi_flash_dev) {
+		flash->flash_size = spi_flash_dev->size;
+		flash->sector_size = spi_flash_dev->sector_size;
+		flash->erase_cmd = spi_flash_dev->erase_cmd;
+	} else {
+		flash->flash_size = CONFIG_ROM_SIZE;
+		/* Default 64k erase command should work on most flash.
+		 * Uniform 4k erase only works on certain devices. */
+		flash->sector_size = 64 * KiB;
+		flash->erase_cmd = CMD_BLOCK_ERASE;
+	}
+}
+
+#endif

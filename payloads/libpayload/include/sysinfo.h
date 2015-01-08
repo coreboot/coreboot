@@ -118,6 +118,11 @@ struct sysinfo_t {
 	void		*wifi_calibration;
 	uint64_t	ramoops_buffer;
 	uint32_t	ramoops_buffer_size;
+	struct spi_flash {
+		uint32_t size;
+		uint32_t sector_size;
+		uint32_t erase_cmd;
+	} spi_flash;
 };
 
 extern struct sysinfo_t lib_sysinfo;

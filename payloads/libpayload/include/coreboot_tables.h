@@ -246,6 +246,15 @@ struct cb_ram_code {
 	uint32_t ram_code;
 };
 
+#define CB_TAG_SPI_FLASH	0x0029
+struct cb_spi_flash {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t flash_size;
+	uint32_t sector_size;
+	uint32_t erase_cmd;
+};
+
 #define CB_TAG_CMOS_OPTION_TABLE 0x00c8
 struct cb_cmos_option_table {
 	u32 tag;

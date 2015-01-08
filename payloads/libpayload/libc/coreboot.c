@@ -203,6 +203,15 @@ static void cb_parse_ramoops(void *ptr, struct sysinfo_t *info)
 	info->ramoops_buffer_size = ramoops->range_size;
 }
 
+static void cb_parse_spi_flash(void *ptr, struct sysinfo_t *info)
+{
+	struct cb_spi_flash *flash = (struct cb_spi_flash *)ptr;
+
+	info->spi_flash.size = flash->flash_size;
+	info->spi_flash.sector_size = flash->sector_size;
+	info->spi_flash.erase_cmd = flash->erase_cmd;
+}
+
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -345,6 +354,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_RAM_OOPS:
 			cb_parse_ramoops(ptr, info);
+			break;
+		case CB_TAG_SPI_FLASH:
+			cb_parse_spi_flash(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

@@ -27,8 +27,8 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <romstage_handoff.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <baytrail/gpio.h>
 #include <baytrail/lpc.h>
@@ -130,13 +130,6 @@ static void fill_in_pattrs(void)
 	attrs->bclk_khz = bus_freq_khz();
 }
 
-static inline void set_acpi_sleep_type(int val)
-{
-#if CONFIG_HAVE_ACPI_RESUME
-	acpi_slp_type = val;
-#endif
-}
-
 /* Save bit index for first enabled event in PM1_STS for \_SB._SWS */
 static void s3_save_acpi_wake_source(global_nvs_t *gnvs)
 {
@@ -166,22 +159,15 @@ static void s3_save_acpi_wake_source(global_nvs_t *gnvs)
 static void s3_resume_prepare(void)
 {
 	global_nvs_t *gnvs;
-	struct romstage_handoff *romstage_handoff;
 
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
-
-	romstage_handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
-	if (romstage_handoff == NULL || romstage_handoff->s3_resume == 0) {
-		if (gnvs != NULL) {
-			memset(gnvs, 0, sizeof(global_nvs_t));
-		}
-		set_acpi_sleep_type(0);
+	if (gnvs == NULL)
 		return;
-	}
 
-	set_acpi_sleep_type(3);
-
-	s3_save_acpi_wake_source(gnvs);
+	if (!acpi_is_wakeup_s3())
+		memset(gnvs, 0, sizeof(global_nvs_t));
+	else
+		s3_save_acpi_wake_source(gnvs);
 }
 
 void baytrail_init_pre_device(struct soc_intel_baytrail_config *config)

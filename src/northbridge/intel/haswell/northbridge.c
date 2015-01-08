@@ -35,7 +35,6 @@
 #include <cpu/x86/smm.h>
 #include <boot/tables.h>
 #include <cbmem.h>
-#include <romstage_handoff.h>
 #include "chip.h"
 #include "haswell.h"
 
@@ -433,26 +432,6 @@ static void northbridge_init(struct device *dev)
 	MCHBAR32(0x5500) = 0x00100001;
 }
 
-static void northbridge_enable(device_t dev)
-{
-#if CONFIG_HAVE_ACPI_RESUME
-	struct romstage_handoff *handoff;
-
-	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
-
-	if (handoff == NULL) {
-		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		acpi_slp_type = 0;
-	} else if (handoff->s3_resume) {
-		printk(BIOS_DEBUG, "S3 Resume.\n");
-		acpi_slp_type = 3;
-	} else {
-		printk(BIOS_DEBUG, "Normal boot.\n");
-		acpi_slp_type = 0;
-	}
-#endif
-}
-
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem    = intel_set_subsystem,
 };
@@ -462,7 +441,6 @@ static struct device_operations mc_ops = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = northbridge_init,
-	.enable           = northbridge_enable,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,

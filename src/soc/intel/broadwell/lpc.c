@@ -394,7 +394,7 @@ static void pch_cg_init(device_t dev)
 static void pch_set_acpi_mode(void)
 {
 #if CONFIG_HAVE_SMI_HANDLER
-	if (acpi_slp_type != 3) {
+	if (!acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
 		printk(BIOS_DEBUG, "done.\n");
@@ -551,7 +551,7 @@ static void pch_lpc_read_resources(device_t dev)
 
 	/* Allocate ACPI NVS in CBMEM */
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
-	if (acpi_slp_type != 3 && gnvs)
+	if (!acpi_is_wakeup_s3() && gnvs)
 		memset(gnvs, 0, sizeof(global_nvs_t));
 }
 

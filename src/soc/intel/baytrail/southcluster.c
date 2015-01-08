@@ -29,7 +29,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
-#include <romstage_handoff.h>
 #include <drivers/uart/uart8250reg.h>
 
 #include <baytrail/iomap.h>
@@ -215,7 +214,7 @@ static void sc_init(device_t dev)
 			read32(gen_pmcon1) & ~DIS_SLP_X_STRCH_SUS_UP);
 	}
 
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		com1_configure_resume(dev);
 }
 

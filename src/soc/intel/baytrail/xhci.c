@@ -184,7 +184,7 @@ static void xhci_route_all(device_t dev)
 	/* Route ports to XHCI controller */
 	reg_script_run_on_dev(dev, xhci_route_all_script);
 
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		return;
 
 	/* Reset enabled USB3 ports */
@@ -222,7 +222,7 @@ static void xhci_init(device_t dev)
 	};
 
 	/* Initialize XHCI controller for boot or resume path */
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		reg_script_run_on_dev(dev, xhci_init_resume_script);
 	else
 		reg_script_run_on_dev(dev, xhci_init_boot_script);

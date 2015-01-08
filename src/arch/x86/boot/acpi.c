@@ -36,6 +36,7 @@
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
+#include <romstage_handoff.h>
 
 /* FIXME: Kconfig doesn't support overridable defaults :-( */
 #ifndef CONFIG_HPET_MIN_TICKS
@@ -857,10 +858,25 @@ void acpi_resume(void *wake_vec)
 /* This is filled with acpi_is_wakeup() call early in ramstage. */
 int acpi_slp_type = -1;
 
-int __attribute__((weak)) acpi_get_sleep_type(void)
+#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
+int acpi_get_sleep_type(void)
 {
-	return 0;
+	struct romstage_handoff *handoff;
+
+	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+
+	if (handoff == NULL) {
+		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
+		return 0;
+	} else if (handoff->s3_resume) {
+		printk(BIOS_DEBUG, "S3 Resume.\n");
+		return 3;
+	} else {
+		printk(BIOS_DEBUG, "Normal boot.\n");
+		return 0;
+	}
 }
+#endif
 
 static void acpi_handoff_wakeup(void)
 {

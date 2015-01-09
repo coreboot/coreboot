@@ -854,8 +854,8 @@ void acpi_resume(void *wake_vec)
 	acpi_jump_to_wakeup(wake_vec);
 }
 
-/* This is to be filled by SB code - startup value what was found. */
-u8 acpi_slp_type = 0;
+/* This is filled with acpi_is_wakeup() call early in ramstage. */
+int acpi_slp_type = -1;
 
 int __attribute__((weak)) acpi_get_sleep_type(void)
 {
@@ -864,12 +864,8 @@ int __attribute__((weak)) acpi_get_sleep_type(void)
 
 static void acpi_handoff_wakeup(void)
 {
-	static int once = 0;
-	if (once)
-		return;
-
-	acpi_slp_type = acpi_get_sleep_type();
-	once = 1;
+	if (acpi_slp_type < 0)
+		acpi_slp_type = acpi_get_sleep_type();
 }
 
 int acpi_is_wakeup(void)

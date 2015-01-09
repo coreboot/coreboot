@@ -559,14 +559,10 @@ unsigned long acpi_fill_hest(acpi_hest_t *hest);
 
 void acpi_save_gnvs(u32 gnvs_address);
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
-/* 0 = S0, 1 = S1 ...*/
-extern u8 acpi_slp_type;
+/* cpu/intel/speedstep/acpi.c */
+void generate_cpu_entries(void);
 
-int acpi_is_wakeup(void);
-int acpi_is_wakeup_s3(void);
-int acpi_is_wakeup_early(void);
-
+/* For ACPI S3 support. */
 void acpi_fail_wakeup(void);
 void acpi_resume(void *wake_vec);
 void acpi_prepare_resume_backup(void);
@@ -575,18 +571,20 @@ void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
+/* Returns 0 = S0, 1 = S1 ... */
 int acpi_get_sleep_type(void);
-#endif	/* IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) */
-
-/* cpu/intel/speedstep/acpi.c */
-void generate_cpu_entries(void);
 
 static inline int acpi_s3_resume_allowed(void)
 {
 	return IS_ENABLED(CONFIG_HAVE_ACPI_RESUME);
 }
 
-#if !IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+extern int acpi_slp_type;
+int acpi_is_wakeup(void);
+int acpi_is_wakeup_s3(void);
+int acpi_is_wakeup_early(void);
+#else
 #define acpi_slp_type 0
 static inline int acpi_is_wakeup(void) { return 0; }
 static inline int acpi_is_wakeup_s3(void) { return 0; }

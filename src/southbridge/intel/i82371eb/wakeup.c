@@ -19,11 +19,10 @@
  */
 
 #include <stdint.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include "i82371eb.h"
-
-int acpi_get_sleep_type(void);
 
 /*
  * Intel 82371EB (PIIX4E) datasheet, section 7.2.3, page 142

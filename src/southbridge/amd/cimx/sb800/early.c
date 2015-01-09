@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>		/* inl, outl */
-#include <arch/acpi.h>
 #include "SBPLATFORM.h"
 #include "sb_cimx.h"
 #include "cfg.h"		/*sb800_cimx_config*/
@@ -74,10 +73,3 @@ void sb800_clk_output_48Mhz(void)
         *(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) &= ~((1 << 0) | (1 << 2)); /* 48Mhz */
         *(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) |= 1 << 1; /* 48Mhz */
 }
-
-#if CONFIG_HAVE_ACPI_RESUME
-int acpi_is_wakeup_early(void)
-{
-	return (acpi_get_sleep_type() == 3);
-}
-#endif

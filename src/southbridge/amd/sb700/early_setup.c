@@ -721,20 +721,18 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-#if CONFIG_HAVE_ACPI_RESUME
-int acpi_is_wakeup_early(void)
+int acpi_get_sleep_type(void)
 {
 	u16 tmp;
 	tmp = inw(ACPI_PM1_CNT_BLK);
-	printk(BIOS_DEBUG, "IN TEST WAKEUP %x\n", tmp);
-	return (((tmp & (7 << 10)) >> 10) == 3);
+	return ((tmp & (7 << 10)) >> 10);
 }
 
 unsigned long get_top_of_ram(void)
 {
 	uint32_t xdata = 0;
 	int xnvram_pos = 0xfc, xi;
-	if (!acpi_is_wakeup_early())
+	if (acpi_get_sleep_type() != 3)
 		return 0;
 	for (xi = 0; xi<4; xi++) {
 		outb(xnvram_pos, BIOSRAM_INDEX);
@@ -744,6 +742,5 @@ unsigned long get_top_of_ram(void)
 	}
 	return (unsigned long) xdata;
 }
-#endif
 
 #endif

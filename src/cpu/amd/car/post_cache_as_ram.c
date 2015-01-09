@@ -101,12 +101,10 @@ void post_cache_as_ram(void)
 {
 	void *resume_backup_memory = NULL;
 
-	int s3resume = acpi_s3_resume_allowed() && acpi_is_wakeup_early();
+	int s3resume = acpi_is_wakeup_s3();
 	if (s3resume) {
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		cbmem_recovery(s3resume);
 		resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-#endif
 	}
 	prepare_romstage_ramstack(resume_backup_memory);
 
@@ -141,10 +139,8 @@ void cache_as_ram_new_stack (void)
 	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 	enable_cache();
 
-	if (acpi_s3_resume_allowed() && acpi_is_wakeup_early()) {
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+	if (acpi_is_wakeup_s3()) {
 		resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-#endif
 	}
 	prepare_ramstage_region(resume_backup_memory);
 

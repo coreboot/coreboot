@@ -29,7 +29,6 @@
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
 #include <cbmem.h>
 #include <cpu/amd/powernow.h>
 #include "sb700.h"
@@ -80,17 +79,13 @@ static void lpc_init(device_t dev)
 #endif
 	pci_write_config8(dev, 0x78, byte);
 
-	/* hack, but the whole sb700 startup lacks any device which
-	   is doing the acpi init */
-#if CONFIG_HAVE_ACPI_RESUME
-	{
-	u16 tmp = inw(ACPI_PM1_CNT_BLK);
-	acpi_slp_type = ((tmp & (7 << 10)) >> 10);
-	printk(BIOS_DEBUG, "SLP_TYP type was %x\n", acpi_slp_type);
-	}
-#endif
-
 	cmos_check_update_date();
+}
+
+int acpi_get_sleep_type(void)
+{
+	u16 tmp = inw(ACPI_PM1_CNT_BLK);
+	return ((tmp & (7 << 10)) >> 10);
 }
 
 void backup_top_of_ram(uint64_t ramtop)

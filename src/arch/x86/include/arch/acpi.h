@@ -581,14 +581,21 @@ static inline int acpi_s3_resume_allowed(void)
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 extern int acpi_slp_type;
+
+#ifdef __PRE_RAM__
+static inline int acpi_is_wakeup_s3(void)
+{
+	return (acpi_get_sleep_type() == 3);
+}
+#else
 int acpi_is_wakeup(void);
 int acpi_is_wakeup_s3(void);
-int acpi_is_wakeup_early(void);
+#endif
+
 #else
 #define acpi_slp_type 0
 static inline int acpi_is_wakeup(void) { return 0; }
 static inline int acpi_is_wakeup_s3(void) { return 0; }
-static inline int acpi_is_wakeup_early(void) { return 0; }
 #endif
 
 #endif  /* __ASM_ACPI_H */

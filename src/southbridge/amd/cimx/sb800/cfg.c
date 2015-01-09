@@ -26,48 +26,6 @@
 #include <arch/io.h>
 #include <arch/acpi.h>
 
-#if CONFIG_HAVE_ACPI_RESUME
-int acpi_get_sleep_type(void)
-{
-	u16 tmp = inw(PM1_CNT_BLK_ADDRESS);
-	tmp = ((tmp & (7 << 10)) >> 10);
-	/* printk(BIOS_DEBUG, "SLP_TYP type was %x\n", tmp); */
-	return (int)tmp;
-}
-#endif
-
-#ifndef __PRE_RAM__
-void backup_top_of_ram(uint64_t ramtop)
-{
-	u32 dword = (u32) ramtop;
-	int nvram_pos = 0xf8, i; /* temp */
-	printk(BIOS_DEBUG, "dword=%x\n", dword);
-	for (i = 0; i<4; i++) {
-		printk(BIOS_DEBUG, "nvram_pos=%x, dword>>(8*i)=%x\n", nvram_pos, (dword >>(8 * i)) & 0xff);
-		outb(nvram_pos, BIOSRAM_INDEX);
-		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
-		nvram_pos++;
-	}
-}
-#endif
-
-#if CONFIG_HAVE_ACPI_RESUME
-unsigned long get_top_of_ram(void)
-{
-	u32 xdata = 0;
-	int xnvram_pos = 0xf8, xi;
-	if (acpi_get_sleep_type() != 3)
-		return 0;
-	for (xi = 0; xi<4; xi++) {
-		outb(xnvram_pos, BIOSRAM_INDEX);
-		xdata &= ~(0xff << (xi * 8));
-		xdata |= inb(BIOSRAM_DATA) << (xi *8);
-		xnvram_pos++;
-	}
-	return (unsigned long) xdata;
-}
-#endif
-
 /**
  * @brief South Bridge CIMx configuration
  *
@@ -80,10 +38,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	if (!sb_config)
 		return;
 
-#if CONFIG_HAVE_ACPI_RESUME
-	if (acpi_get_sleep_type() == 3)
-		sb_config->S3Resume = 1;
-#endif
+	sb_config->S3Resume = acpi_is_wakeup_s3();
 
 	/* header */
 	sb_config->StdHeader.PcieBasePtr = PCIEX_BASE_ADDRESS;

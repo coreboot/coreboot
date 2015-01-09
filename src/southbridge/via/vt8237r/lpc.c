@@ -244,10 +244,6 @@ static void setup_pm(device_t dev)
 
 	/* SCI is generated for RTC/pwrBtn/slpBtn. */
 	tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
-#if CONFIG_HAVE_ACPI_RESUME
-	acpi_slp_type = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
-	printk(BIOS_DEBUG, "SLP_TYP type was %x %x\n", tmp, acpi_slp_type);
-#endif
 
 	/* All SMI on, both IDE buses ON, PSON rising edge. */
 	outw(0x1, VT8237R_ACPI_IO_BASE + 0x2c);
@@ -256,6 +252,12 @@ static void setup_pm(device_t dev)
 	tmp &= ~(7 << 10);
 	tmp |= 1;
 	outw(tmp, VT8237R_ACPI_IO_BASE + 0x04);
+}
+
+int acpi_get_sleep_type(void)
+{
+	u16 tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
+	return ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
 }
 
 static void vt8237r_init(struct device *dev)

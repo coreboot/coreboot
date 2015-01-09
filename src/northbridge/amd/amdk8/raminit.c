@@ -2349,11 +2349,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
 	u32 whatWait = 0;
-#if CONFIG_HAVE_ACPI_RESUME
-	int suspend = acpi_is_wakeup_early();
-#else
-	int suspend = 0;
-#endif
+	int suspend = acpi_is_wakeup_s3();
 
 	/* Error if I don't have memory */
 	if (memory_end_k(ctrl, controllers) == 0) {

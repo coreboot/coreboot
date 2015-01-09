@@ -26,6 +26,7 @@
 #include <cpu/amd/mtrr.h>
 
 #include <stdlib.h>
+#include <arch/acpi.h>
 #include "raminit.h"
 #include "f.h"
 #include <spd_ddr2.h>
@@ -3017,11 +3018,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 			  struct sys_info *sysinfo)
 {
 	int i;
-#if CONFIG_HAVE_ACPI_RESUME
-	int suspend = acpi_is_wakeup_early();
-#else
-	int suspend = 0;
-#endif
+	int suspend = acpi_is_wakeup_s3();
 
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 	 unsigned cpu_f0_f1[8];

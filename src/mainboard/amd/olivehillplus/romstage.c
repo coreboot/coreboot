@@ -90,7 +90,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x39);
 	AGESAWRAPPER(amdinitearly);
-	int s3resume = acpi_is_wakeup_early() && acpi_s3_resume_allowed();
+	int s3resume = acpi_is_wakeup_s3();
 	if (!s3resume) {
 		post_code(0x40);
 		AGESAWRAPPER(amdinitpost);

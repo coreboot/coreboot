@@ -330,8 +330,7 @@ void enable_rom_decode(void)
 	pci_write_config8(dev, 0x41, 0x7f);
 }
 
-#if CONFIG_HAVE_ACPI_RESUME
-int acpi_is_wakeup_early(void)
+int acpi_get_sleep_type(void)
 {
 	device_t dev;
 	u16 tmp;
@@ -354,7 +353,6 @@ int acpi_is_wakeup_early(void)
 	printk(BIOS_DEBUG, "%02x", tmp);
 	return ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
 }
-#endif
 
 #if defined(__GNUC__)
 void vt8237_early_spi_init(void)

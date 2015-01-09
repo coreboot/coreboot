@@ -22,8 +22,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <arch/cache.h>
 #include <console/console.h>
+#include <program_loading.h>
 #include <rmodule.h>
 
 /* Change this define to get more verbose debugging for module loading. */
@@ -200,7 +200,9 @@ int rmodule_load(void *base, struct rmodule *module)
 		return -1;
 	rmodule_clear_bss(module);
 
-	cache_sync_instructions();
+	arch_program_segment_loaded((uintptr_t)module->location,
+					rmodule_memory_size(module));
+	arch_program_loaded();
 
 	return 0;
 }

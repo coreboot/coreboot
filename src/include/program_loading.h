@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2015 Google Inc.
+ * Copyright (C) 2014 Imagination Technologies
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,12 @@
 
 #include <stdint.h>
 #include <stddef.h>
+
+/* For each segment of a program loaded this function is called*/
+void arch_program_segment_loaded(uintptr_t start, size_t size);
+
+/* Upon completion of loading a program this function is called */
+void arch_program_loaded(void);
 
 /************************
  *   ROMSTAGE LOADING   *

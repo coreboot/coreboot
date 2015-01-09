@@ -437,8 +437,22 @@ static int load_self_segments(
 					memcpy((char*)to, (char*)from, amount);
 				}
 			}
+
+			/*
+			 * Each architecture can perform additonal operations
+			 * on the loaded segment
+			 */
+			arch_program_segment_loaded((uintptr_t)dest,
+							ptr->s_memsz);
 		}
 	}
+
+	/*
+	 * Each architecture can perform additonal operations once the entire
+	 * program is loaded
+	 */
+	arch_program_loaded();
+
 	return 1;
 }
 

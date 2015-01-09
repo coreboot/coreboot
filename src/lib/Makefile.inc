@@ -18,6 +18,7 @@
 #
 subdirs-y += loaders
 
+bootblock-y += arch_ops.c
 bootblock-y += cbfs.c cbfs_core.c
 bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 
@@ -25,6 +26,7 @@ bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
 
+verstage-y += arch_ops.c
 verstage-y += delay.c
 verstage-y += cbfs.c
 verstage-y += memcmp.c
@@ -33,6 +35,7 @@ verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 verstage-y += tlcl.c
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 
+romstage-y += arch_ops.c
 romstage-y += memchr.c
 romstage-y += memcmp.c
 $(foreach arch,$(ARCH_SUPPORTED),\
@@ -57,6 +60,7 @@ romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += gcc.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
 endif
 
+ramstage-y += arch_ops.c
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c
 ramstage-y += coreboot_table.c

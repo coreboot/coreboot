@@ -348,8 +348,8 @@ static void mainboard_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.name	= "Samsung/Google ARM Chromebook",
-	.enable_dev = mainboard_enable,
+	.name		= "daisy",
+	.enable_dev	= mainboard_enable,
 };
 
 void lb_board(struct lb_header *header)

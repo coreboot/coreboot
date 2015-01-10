@@ -120,6 +120,7 @@ struct cb_serial {
 	u32 type;
 	u32 baseaddr;
 	u32 baud;
+	u32 regwidth;
 };
 
 #define CB_TAG_CONSOLE       0x00010

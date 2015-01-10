@@ -39,6 +39,8 @@ static int serial_is_mem_mapped = 0;
 
 static uint8_t serial_read_reg(int offset)
 {
+	offset *= lib_sysinfo.serial->regwidth;
+
 #ifdef CONFIG_LP_IO_ADDRESS_SPACE
 	if (!serial_is_mem_mapped)
 		return inb(IOBASE + offset);
@@ -49,6 +51,8 @@ static uint8_t serial_read_reg(int offset)
 
 static void serial_write_reg(uint8_t val, int offset)
 {
+	offset *= lib_sysinfo.serial->regwidth;
+
 #ifdef CONFIG_LP_IO_ADDRESS_SPACE
 	if (!serial_is_mem_mapped)
 		outb(val, IOBASE + offset);

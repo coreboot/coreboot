@@ -53,6 +53,7 @@ void uart_fill_lb(void *data)
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = 0x3f8;
 	serial.baud = 115200;
+	serial.regwidth = 1;
 	lb_add_serial(&serial, data);
         lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
 }

@@ -115,6 +115,7 @@ void lb_add_serial(struct lb_serial *new_serial, void *data)
 	serial->type = new_serial->type;
 	serial->baseaddr = new_serial->baseaddr;
 	serial->baud = new_serial->baud;
+	serial->regwidth = new_serial->regwidth;
 }
 
 void lb_add_console(uint16_t consoletype, void *data)

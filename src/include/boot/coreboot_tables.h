@@ -159,6 +159,7 @@ struct lb_serial {
 	uint32_t type;
 	uint32_t baseaddr;
 	uint32_t baud;
+	uint32_t regwidth;
 };
 
 #define LB_TAG_CONSOLE		0x0010

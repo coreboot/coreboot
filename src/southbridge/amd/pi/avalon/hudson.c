@@ -38,27 +38,11 @@
 #define PM_MMIO_BASE 0xfed80300
 
 
-#if CONFIG_HAVE_ACPI_RESUME
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(ACPI_PM1_CNT_BLK);
 	tmp = ((tmp & (7 << 10)) >> 10);
-	/* printk(BIOS_DEBUG, "SLP_TYP type was %x\n", tmp); */
 	return (int)tmp;
-}
-#endif
-
-void backup_top_of_ram(uint64_t ramtop)
-{
-	u32 dword = (u32) ramtop;
-	int nvram_pos = 0xf8, i; /* temp */
-	/* printk(BIOS_DEBUG, "dword=%x\n", dword); */
-	for (i = 0; i<4; i++) {
-		/* printk(BIOS_DEBUG, "nvram_pos=%x, dword>>(8*i)=%x\n", nvram_pos, (dword >>(8 * i)) & 0xff); */
-		outb(nvram_pos, BIOSRAM_INDEX);
-		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
-		nvram_pos++;
-	}
 }
 
 void pm_write8(u8 reg, u8 value)
@@ -112,23 +96,6 @@ void hudson_enable(device_t dev)
 		break;
 	}
 }
-
-#if CONFIG_HAVE_ACPI_RESUME
-unsigned long get_top_of_ram(void)
-{
-	uint32_t xdata = 0;
-	int xnvram_pos = 0xf8, xi;
-	if (acpi_get_sleep_type() != 3)
-		return 0;
-	for (xi = 0; xi<4; xi++) {
-		outb(xnvram_pos, BIOSRAM_INDEX);
-		xdata &= ~(0xff << (xi * 8));
-		xdata |= inb(BIOSRAM_DATA) << (xi *8);
-		xnvram_pos++;
-	}
-	return (unsigned long) xdata;
-}
-#endif
 
 static void hudson_init_acpi_ports(void)
 {

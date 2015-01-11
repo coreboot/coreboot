@@ -23,6 +23,9 @@
 #include <cbmem.h>
 #include <arch/early_variables.h>
 
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP)
+#include <drivers/intel/fsp/fsp_util.h>
+#endif
 typedef void (* const car_migration_func_t)(void);
 
 extern car_migration_func_t _car_migrate_start;
@@ -41,10 +44,13 @@ extern char _car_data_end[];
  */
 static int car_migrated CAR_GLOBAL;
 
-
+/** @brief returns pointer to a CAR variable, before or after migration.
+ *
+ * @param var pointer to the CAR variable
+ */
 void *car_get_var_ptr(void *var)
 {
-	char *migrated_base;
+	char *migrated_base = NULL;
 	int offset;
 	void * _car_start = &_car_data_start;
 	void * _car_end = &_car_data_end;
@@ -61,12 +67,15 @@ void *car_get_var_ptr(void *var)
 		return var;
 	}
 
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP)
+	migrated_base=(char *)find_saved_temp_mem(
+			*(void **)CBMEM_FSP_HOB_PTR);
+#else
 	migrated_base = cbmem_find(CBMEM_ID_CAR_GLOBALS);
+#endif
 
-	if (migrated_base == NULL) {
-		printk(BIOS_ERR, "CAR: Could not find migration base!\n");
-		return var;
-	}
+	if (migrated_base == NULL)
+		die( "CAR: Could not find migration base!\n");
 
 	offset = (char *)var - (char *)_car_start;
 
@@ -140,7 +149,7 @@ static void do_car_migrate_hooks(void)
 
 void car_migrate_variables(void)
 {
-	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE))
+	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE) && !IS_ENABLED(PLATFORM_USES_FSP))
 		do_car_migrate_variables();
 
 	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE))

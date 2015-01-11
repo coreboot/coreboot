@@ -36,7 +36,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_CPU_INIT
 	select TSC_SYNC_MFENCE
 	select LAPIC_MONOTONIC_TIMER
-	select BROKEN_CAR_MIGRATE
 
 choice
 	prompt "Rangeley CPU Stepping"

@@ -37,6 +37,7 @@ void print_fsp_info(void);
 void chipset_fsp_early_init(FSP_INIT_PARAMS *FspInitParams,
 	FSP_INFO_HEADER *fsp_ptr);
 void ChipsetFspReturnPoint(EFI_STATUS Status, VOID *HobListPtr);
+void * find_saved_temp_mem(void *hob_list_ptr);
 
 /* functions in hob.c */
 void print_hob_mem_attributes(void *Hobptr);
@@ -123,5 +124,11 @@ extern void *FspHobListPtr;
 		printk(FSP_INFO_LEVEL, statement "%s\n", \
 			UpdData->member?"Enabled":"Disabled"); \
 	break;
+
+
+#ifndef FSP_BOOTLOADER_TEMPORARY_MEMORY_HOB_GUID
+#define FSP_BOOTLOADER_TEMPORARY_MEMORY_HOB_GUID \
+	{ 0xbbcff46c, 0xc8d3, 0x4113, { 0x89, 0x85, 0xb9, 0xd4, 0xf3, 0xb3, 0xf6, 0x4e } };
+#endif
 
 #endif	/* FSP_UTIL_H */

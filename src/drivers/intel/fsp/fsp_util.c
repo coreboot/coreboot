@@ -177,6 +177,24 @@ volatile u8 * find_fsp ()
 	return (fsp_ptr);
 }
 
+/** finds the saved temporary memory information in the FSP HOB list
+ *
+ * @param hob_list_ptr pointer to the start of the hob list
+ * @return pointer to saved CAR MEM or NULL if not found.
+ */
+void * find_saved_temp_mem(void *hob_list_ptr)
+{
+	EFI_GUID temp_hob_guid = FSP_BOOTLOADER_TEMPORARY_MEMORY_HOB_GUID;
+	EFI_HOB_GUID_TYPE *saved_mem_hob =
+			(EFI_HOB_GUID_TYPE *) find_hob_by_guid(
+			hob_list_ptr, &temp_hob_guid);
+
+	if (saved_mem_hob == NULL)
+		return NULL;
+
+	return (void *) ((char *) saved_mem_hob + sizeof(EFI_HOB_GUID_TYPE));
+}
+
 #ifndef __PRE_RAM__ /* Only parse HOB data in ramstage */
 
 void print_fsp_info(void) {

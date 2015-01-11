@@ -100,18 +100,13 @@ typedef struct {
 #define TRUE  ((BOOLEAN)(1==1))
 #define FALSE ((BOOLEAN)(0==1))
 
-static inline void DebugDeadLoop(void) {
-  for (;;);
-}
-
 #define FSPAPI __attribute__((cdecl))
 #define EFIAPI __attribute__((cdecl))
 
-#define _ASSERT(Expression)  DebugDeadLoop()
 #define ASSERT(Expression)      \
   do {                          \
     if (!(Expression)) {        \
-      _ASSERT (Expression);     \
+      for (;;);                 \
     }                           \
   } while (FALSE)
 

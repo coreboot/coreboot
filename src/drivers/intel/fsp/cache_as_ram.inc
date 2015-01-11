@@ -91,14 +91,22 @@ CAR_init_done:
 	 * ecx:  stack base
 	 * edx:  stack top
 	 */
-	lea   -4(%edx), %esp
+	mov   %edx, %esp
 	movl  %esp, %ebp
-	pushl %ebx
+
+	/* Clear the cbmem CAR memory region. */
+	movl  %ecx, %edi
+	movl  %edx, %ecx
+	sub   %edi, %ecx
+	shr   $2, %ecx
+	xorl  %eax, %eax
+	rep   stosl
 
 before_romstage:
 	post_code(0x23)
 
 	/* Call romstage.c main function. */
+	pushl %ebx /* main takes FSP_INFO_HEADER as its argument */
 	call  main /* does not return */
 	movb  $0xB8, %ah
 	jmp   .Lhlt

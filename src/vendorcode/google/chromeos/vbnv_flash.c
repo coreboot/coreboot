@@ -37,8 +37,11 @@
 /* FMAP descriptor of the NVRAM area */
 static struct vboot_region nvram_region;
 
-/* offset of the current nvdata in nvram */
+/* offset of the current nvdata in SPI flash */
 static int blob_offset = -1;
+
+/* Offset of the topmost nvdata blob in SPI flash */
+static int top_offset;
 
 /* cache of the current nvdata */
 static uint8_t cache[BLOB_SIZE];
@@ -83,13 +86,16 @@ static int init_vbnv(void)
 	for (i = 0; i < BLOB_SIZE; i++)
 		empty_blob[i] = erase_value();
 
+	offset = nvram_region.offset_addr;
+	top_offset = nvram_region.offset_addr + nvram_region.size - BLOB_SIZE;
+
 	/*
-	 * after the loop, offset is supposed to point the blob right before the
-	 * first empty blob, the last blob in the nvram if there is no empty
-	 * blob, or 0 if the nvram has never been used.
+	 * after the loop, offset is supposed to point the blob right before
+	 * the first empty blob, the last blob in the nvram if there is no
+	 * empty blob, or the base of the region if the nvram has never been
+	 * used.
 	 */
-	for (i = 0, offset = 0; i <= nvram_region.size - BLOB_SIZE;
-			i += BLOB_SIZE) {
+	for (i = offset; i <= top_offset; i += BLOB_SIZE) {
 		if (vboot_get_region(i, BLOB_SIZE, buf) == NULL) {
 			printk(BIOS_ERR, "failed to read nvdata\n");
 			return 1;
@@ -147,7 +153,7 @@ void read_vbnv(uint8_t *vbnv_copy)
 
 void save_vbnv(const uint8_t *vbnv_copy)
 {
-	int new_offset = blob_offset;
+	int new_offset;
 	int i;
 
 	if (!is_initialized())
@@ -158,31 +164,28 @@ void save_vbnv(const uint8_t *vbnv_copy)
 	if (!memcmp(vbnv_copy, cache, BLOB_SIZE))
 		return;
 
+	new_offset = blob_offset;
+
 	/* See if we can overwrite the current blob with the new one */
 	for (i = 0; i < BLOB_SIZE; i++) {
 		if (!can_overwrite(cache[i], vbnv_copy[i])) {
 			/* unable to overwrite. need to use the next blob */
 			new_offset += BLOB_SIZE;
-			if (new_offset > nvram_region.size - BLOB_SIZE) {
+			if (new_offset > top_offset) {
 				if (erase_nvram())
 					return;  /* error */
-				new_offset = 0;
+				new_offset = nvram_region.offset_addr;
 			}
 			break;
 		}
 	}
 
-	if (vbnv_flash_probe())
-		return;  /* error */
-
-	if (spi_flash->write(spi_flash, new_offset, BLOB_SIZE, vbnv_copy)) {
-		printk(BIOS_ERR, "failed to write nvdata\n");
-		return;  /* error */
+	if (!vbnv_flash_probe() &&
+	    !spi_flash->write(spi_flash, new_offset, BLOB_SIZE, vbnv_copy)) {
+		/* write was successful. safely move pointer forward */
+		blob_offset = new_offset;
+		memcpy(cache, vbnv_copy, BLOB_SIZE);
+	} else {
+		printk(BIOS_ERR, "failed to save nvdata\n");
 	}
-
-	/* write was successful. safely move pointer forward */
-	blob_offset = new_offset;
-	memcpy(cache, vbnv_copy, BLOB_SIZE);
-
-	return;
 }

@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
  * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,7 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/cache.h>
 #include <boardid.h>
 #include <boot/coreboot_tables.h>
 #include <delay.h>
@@ -29,15 +29,7 @@
 #include <symbols.h>
 
 #include <vendorcode/google/chromeos/chromeos.h>
-
-/* convenient shorthand (in MB) */
-#define DRAM_START           ((uintptr_t)_dram / MiB)
-#define DRAM_SIZE            (CONFIG_DRAM_SIZE_MB)
-#define DRAM_END             (DRAM_START + DRAM_SIZE)
-
-/* DMA memory for drivers */
-#define DMA_START            ((uintptr_t)_dma_coherent / MiB)
-#define DMA_SIZE             (_dma_coherent_size / MiB)
+#include "mmu.h"
 
 #define USB_ENABLE_GPIO		51
 
@@ -51,26 +43,6 @@ static void setup_usb(void)
 	usb_clock_config();
 
 	setup_usb_host1();
-}
-
-static void setup_mmu(void)
-{
-	dcache_mmu_disable();
-
-	/* Map Device memory. */
-	mmu_config_range(0, DRAM_START, DCACHE_OFF);
-	/* Disable Page 0 for trapping NULL pointer references. */
-	mmu_disable_range(0, 1);
-	/* Map DRAM memory */
-	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
-	/* Map DMA memory */
-	mmu_config_range(DMA_START, DMA_SIZE, DCACHE_OFF);
-
-	mmu_disable_range(DRAM_END, 4096 - DRAM_END);
-
-	mmu_init();
-
-	dcache_mmu_enable();
 }
 
 #define TPM_RESET_GPIO 22
@@ -110,9 +82,12 @@ static void assert_sw_reset(void)
 
 static void mainboard_init(device_t dev)
 {
+	 /* disable mmu and d-cache before setting up secure world.*/
+	 dcache_mmu_disable();
 	 start_tzbsp();
+	 /* Setup mmu and d-cache again as non secure entries. */
+	 setup_mmu(DRAM_INITIALIZED);
 	 start_rpm();
-	 setup_mmu();
 	 setup_usb();
 	 assert_sw_reset();
 	 setup_tpm();

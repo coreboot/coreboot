@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
  * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,6 +25,7 @@
 
 SECTIONS
 {
+	REGION(rpm, 0x00020000,  160K, 8K)
 	SRAM_START(0x2A000000)
 	/* This includes bootblock image, can be reused after bootblock starts */
 /*	UBER_SBL(0x2A000000, 48K) */
@@ -49,8 +51,9 @@ SECTIONS
 	* availale, which means CBFS cache must be in SRAM, which in turn means
 	* that PRERAM_CBFS_CACHE description can not be used here.
 	*/
-	CBFS_CACHE(0x2A044000, 96K)
+	CBFS_CACHE(0x2A044000, 93K)
 #endif
+	TTB_SUBTABLES(0x2A05B800, 2K)
 	TTB(0x2A05C000, 16K)
 	SRAM_END(0x2A060000)
 

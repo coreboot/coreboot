@@ -17,7 +17,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+bootblock-y += bootblock.c
 bootblock-y += cdp.c
+bootblock-y += mmu.c
 bootblock-y += reset.c
 
 verstage-y += cdp.c
@@ -28,12 +30,14 @@ verstage-y += reset.c
 
 romstage-y += romstage.c
 romstage-y += cdp.c
+romstage-y += mmu.c
 romstage-y += reset.c
 
 ramstage-y += boardid.c
 ramstage-y += cdp.c
 ramstage-y += chromeos.c
 ramstage-y += mainboard.c
+ramstage-y += mmu.c
 ramstage-y += reset.c
 
 bootblock-y += memlayout.ld

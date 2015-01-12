@@ -332,9 +332,10 @@ static uint32_t is_mmu_enabled(void)
  */
 void mmu_disable(void)
 {
+	uint32_t el = get_current_el();
 	uint32_t sctlr;
 
-	sctlr = raw_read_sctlr_current();
+	sctlr = raw_read_sctlr(el);
 	sctlr &= ~(SCTLR_C | SCTLR_M | SCTLR_I);
 
 	tlbiall_current();
@@ -343,7 +344,7 @@ void mmu_disable(void)
 	dsb();
 	isb();
 
-	raw_write_sctlr_current(sctlr);
+	raw_write_sctlr(sctlr, el);
 
 	dcache_clean_invalidate_all();
 	dsb();

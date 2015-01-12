@@ -81,12 +81,12 @@ static void sdmmc_power_off(void)
 {
 	switch (board_id()) {
 	case 0:
-		rk808_configure_ldo(PMIC_BUS, 8, 0);	/* VCCIO_SD */
+		rk808_configure_ldo(8, 0);	/* VCCIO_SD */
 		gpio_output(GPIO(7, C, 5), 0);		/* SD_EN */
 		break;
 	default:
-		rk808_configure_ldo(PMIC_BUS, 4, 0); /* VCCIO_SD */
-		rk808_configure_ldo(PMIC_BUS, 5, 0); /* VCC33_SD */
+		rk808_configure_ldo(4, 0); /* VCCIO_SD */
+		rk808_configure_ldo(5, 0); /* VCC33_SD */
 		break;
 	}
 }

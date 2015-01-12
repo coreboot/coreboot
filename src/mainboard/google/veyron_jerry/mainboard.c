@@ -54,8 +54,8 @@ static void configure_sdmmc(void)
 	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
 
 	/* Note: these power rail definitions are copied in romstage.c */
-	rk808_configure_ldo(PMIC_BUS, 4, 3300); /* VCCIO_SD */
-	rk808_configure_ldo(PMIC_BUS, 5, 3300); /* VCC33_SD */
+	rk808_configure_ldo(4, 3300); /* VCCIO_SD */
+	rk808_configure_ldo(5, 3300); /* VCC33_SD */
 
 	gpio_input(GPIO(7, A, 5));		/* SD_DET */
 }
@@ -77,7 +77,7 @@ static void configure_codec(void)
 	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
 	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
 
-	rk808_configure_ldo(PMIC_BUS, 6, 1800);	/* VCC18_CODEC */
+	rk808_configure_ldo(6, 1800);	/* VCC18_CODEC */
 
 	/* AUDIO IO domain 1.8V voltage selection */
 	writel(RK_SETBITS(1 << 6), &rk3288_grf->io_vsel);
@@ -93,15 +93,15 @@ static void configure_vop(void)
 
 	switch (board_id()) {
 	case 2:
-		rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD */
-		rk808_configure_ldo(PMIC_BUS, 7, 2500);	/* VCC10_LCD_PWREN_H */
-		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
+		rk808_configure_switch(2, 1);	/* VCC18_LCD */
+		rk808_configure_ldo(7, 2500);	/* VCC10_LCD_PWREN_H */
+		rk808_configure_switch(1, 1);	/* VCC33_LCD */
 		break;
 	default:
 		gpio_output(GPIO(2, B, 5), 1);	/* AVDD_1V8_DISP_EN */
-		rk808_configure_ldo(PMIC_BUS, 7, 2500);	/* VCC10_LCD_PWREN_H */
+		rk808_configure_ldo(7, 2500);	/* VCC10_LCD_PWREN_H */
 		gpio_output(GPIO(7, B, 6), 1);	/* LCD_EN */
-		rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
+		rk808_configure_switch(1, 1);	/* VCC33_LCD */
 		break;
 	}
 }

@@ -79,8 +79,8 @@ static void configure_l2ctlr(void)
 
 static void sdmmc_power_off(void)
 {
-	rk808_configure_ldo(PMIC_BUS, 4, 0); /* VCCIO_SD */
-	rk808_configure_ldo(PMIC_BUS, 5, 0); /* VCC33_SD */
+	rk808_configure_ldo(4, 0); /* VCCIO_SD */
+	rk808_configure_ldo(5, 0); /* VCC33_SD */
 }
 
 void main(void)

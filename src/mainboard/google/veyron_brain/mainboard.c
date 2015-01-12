@@ -63,7 +63,7 @@ static void configure_codec(void)
 	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
 	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
 
-	rk808_configure_ldo(PMIC_BUS, 6, 1800);	/* VCC18_CODEC */
+	rk808_configure_ldo(6, 1800);	/* VCC18_CODEC */
 
 	/* AUDIO IO domain 1.8V voltage selection */
 	writel(RK_SETBITS(1 << 6), &rk3288_grf->io_vsel);
@@ -77,9 +77,9 @@ static void configure_vop(void)
 	/* lcdc(vop) iodomain select 1.8V */
 	writel(RK_SETBITS(1 << 0), &rk3288_grf->io_vsel);
 
-	rk808_configure_switch(PMIC_BUS, 2, 1);	/* VCC18_LCD (HDMI_AVDD_1V8) */
-	rk808_configure_ldo(PMIC_BUS, 7, 1000);	/* VDD10_LCD (HDMI_AVDD_1V0) */
-	rk808_configure_switch(PMIC_BUS, 1, 1);	/* VCC33_LCD */
+	rk808_configure_switch(2, 1);	/* VCC18_LCD (HDMI_AVDD_1V8) */
+	rk808_configure_ldo(7, 1000);	/* VDD10_LCD (HDMI_AVDD_1V0) */
+	rk808_configure_switch(1, 1);	/* VCC33_LCD */
 }
 
 static void mainboard_init(device_t dev)

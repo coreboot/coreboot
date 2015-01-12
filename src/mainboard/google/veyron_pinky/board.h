@@ -23,8 +23,6 @@
 #include <boardid.h>
 #include <gpio.h>
 
-#define PMIC_BUS 0
-
 #define GPIO_RESET	(board_id() > 0 ? GPIO(0, B, 5) : GPIO(0, B, 2))
 
 /* TODO: move setup_chromeos_gpios() here once bootblock code is in mainboard */

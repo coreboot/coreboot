@@ -39,9 +39,6 @@ static const unsigned char usbdevicePins[4] = { 'A', 'B', 'C', 'D' };	//only INT
 static const unsigned char sdioPins[4] = { 'A', 'B', 'C', 'D' };	//only INTA
 static const unsigned char sd_ms_ctrl_Pins[4] = { 'B', 'C', 'D', 'A' };	//only INTA
 static const unsigned char ce_ata_nf_ctrl_Pins[4] = { 'C', 'C', 'D', 'A' };	//only INTA
-static const unsigned char idePins[4] = { 'B', 'C', 'D', 'A' };	//only INTA
-
-static const unsigned char usbPins[4] = { 'A', 'B', 'C', 'D' };	//all 4
 
 static const unsigned char hdacaudioPins[4] = { 'B', 'C', 'D', 'A' };	//only INTA
 
@@ -218,7 +215,6 @@ static void S3_ps2_kb_ms_wakeup(struct device *dev)
 
 	outb(inb(VX800_ACPI_IO_BASE + 0x02) | 0x20, VX800_ACPI_IO_BASE + 0x02);	//ACPI golabe enable for sci smi trigger
 	outw(inw(VX800_ACPI_IO_BASE + 0x22) | 0x204, VX800_ACPI_IO_BASE + 0x22);	//ACPI SCI on Internal KBC PME and mouse PME
-
 }
 
 static void S3_usb_wakeup(struct device *dev)

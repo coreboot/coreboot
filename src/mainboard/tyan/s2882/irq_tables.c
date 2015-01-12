@@ -10,38 +10,6 @@
 #include <stdint.h>
 #include <arch/pirq_routing.h>
 
-static const struct irq_routing_table intel_irq_routing_table = {
-        PIRQ_SIGNATURE, /* u32 signature */
-        PIRQ_VERSION,   /* u16 version   */
-        32+16*CONFIG_IRQ_SLOT_COUNT,        /* there can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
-        1,           /* Where the interrupt router lies (bus) */
-        (4<<3)|3,           /* Where the interrupt router lies (dev) */
-        0,         /* IRQs devoted exclusively to PCI usage */
-        0x1022,         /* Vendor */
-        0x746b,         /* Device */
-        0,         /* Miniport data */
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-        0xff,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structu
-re (including checksum) */
-        {
-                {1,(4<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0, 0},
-                {0x4,0, {{0, 0}, {0, 0}, {0, 0}, {0x4, 0xdef8}}, 0, 0},
-                {0x4,(6<<3)|0, {{0x3, 0xdef8}, {0, 0}, {0, 0}, {0, 0}}, 0, 0},
-                {0x3,(3<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0x1, 0},
-                {0x3,(1<<3)|0, {{0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}, {0x1, 0xdef8}}, 0x2, 0},
-                {0x2,(3<<3)|0, {{0x4, 0xdef8}, {0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}}, 0x3, 0},
-                {0x2,(2<<3)|0, {{0x3, 0xdef8}, {0x4, 0xdef8}, {0x1, 0xdef8}, {0x2, 0xdef8}}, 0x4, 0},
-                {0x4,(4<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0x5, 0},
-                {0x4,(5<<3)|0, {{0x4, 0xdef8}, {0, 0}, {0, 0}, {0, 0}}, 0, 0},
-                {0x4,(8<<3)|0, {{0x3, 0xdef8}, {0, 0}, {0, 0}, {0, 0}}, 0, 0},
-                {0x2,(6<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0, 0}, {0, 0}}, 0, 0},
-                {0x2,(5<<3)|0, {{0x3, 0xdef8}, {0x1, 0xdef8}, {0x2, 0xdef8}, {0, 0}}, 0, 0},
-                {0x2,(9<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0, 0}, {0, 0}}, 0, 0},
-                {0x3,(4<<3)|0, {{0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}, {0x1, 0xdef8}}, 0x6, 0},
-                {0x3,(5<<3)|0, {{0x3, 0xdef8}, {0x4, 0xdef8}, {0x1, 0xdef8}, {0x2, 0xdef8}}, 0x7, 0},
-        }
-};
-
 static unsigned node_link_to_bus(unsigned node, unsigned link)
 {
         device_t dev;
@@ -63,11 +31,6 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
                 dst_node = (config_map >> 4) & 7;
                 dst_link = (config_map >> 8) & 3;
                 bus_base = (config_map >> 16) & 0xff;
-#if 0
-                printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
-                        dst_node, dst_link, bus_base,
-                        reg, config_map);
-#endif
                 if ((dst_node == node) && (dst_link == link))
                 {
                         return bus_base;
@@ -262,28 +225,12 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         pci_assign_irqs(bus_8131_1, 6, slotIrqs_8131_1_6);
         write_pirq_info(pirq_info, bus_8131_1,(6<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0, 0, 0, 0, 0, 0);
 	pirq_info++; slot_num++;
-#if 0
-	//??
-        write_pirq_info(pirq_info, bus_8131_1,(5<<3)|0, 0x3, 0xdef8, 0x1, 0xdef8, 0x2, 0xdef8, 0, 0, 0, 0);
-	pirq_info++; slot_num++;
-#endif
 
         printk(BIOS_DEBUG, "setting Onboard Broadcom NIC\n");
         static const unsigned char slotIrqs_8131_1_9[4] = { 5, 9, 0, 0 };
         pci_assign_irqs(bus_8131_1, 9, slotIrqs_8131_1_9);
         write_pirq_info(pirq_info, bus_8131_1,(9<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0, 0, 0, 0, 0, 0);
 	pirq_info++; slot_num++;
-#if 0
-	//?? what's this?
-        write_pirq_info(pirq_info, bus_8131_2,(4<<3)|0, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0x1, 0xdef8, 0x6, 0);
-	pirq_info++; slot_num++;
-#endif
-
-#if 0
-	//?? what's this?
-        write_pirq_info(pirq_info, bus_8131_2,(5<<3)|0, 0x3, 0xdef8, 0x4, 0xdef8, 0x1, 0xdef8, 0x2, 0xdef8, 0x7, 0);
-	pirq_info++; slot_num++;
-#endif
 
 	pirq->size = 32 + 16 * slot_num;
 
@@ -299,5 +246,4 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "done.\n");
 
 	return	(unsigned long) pirq_info;
-
 }

@@ -63,7 +63,6 @@ RDATA_GROUP (G3_DXE)
  *----------------------------------------------------------------------------------------
  */
 
-UCODE_VS_FLAG (0700010B)
 
 // Encrypt Patch code 0700010B for 7001 and equivalent
 

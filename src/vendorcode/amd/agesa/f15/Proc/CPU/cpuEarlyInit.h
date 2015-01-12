@@ -92,9 +92,6 @@ typedef struct {
   IN       UINT8   MicrocodePatchesFlag[8];  ///< a flag followed by microcode
 } MICROCODE_PATCHES_FLAG;
 
-#define UCODE_2K_FLAG(x) STATIC CONST MICROCODE_PATCHES_FLAG ROMDATA UcodeFlag##x = {{'$', 'U', 'C', 'O', 'D', 'E', '2', 'K'}};
-#define UCODE_4K_FLAG(x) STATIC CONST MICROCODE_PATCHES_FLAG ROMDATA UcodeFlag##x = {{'$', 'U', 'C', 'O', 'D', 'E', '4', 'K'}};
-#define UCODE_VS_FLAG(x) STATIC CONST MICROCODE_PATCHES_FLAG ROMDATA UcodeFlag##x = {{'$', 'U', 'C', 'O', 'D', 'E', 'V', 'S'}};
 
 /* Offsets in UCODE PATCH Header */
 /* Note: Header is 64 bytes      */

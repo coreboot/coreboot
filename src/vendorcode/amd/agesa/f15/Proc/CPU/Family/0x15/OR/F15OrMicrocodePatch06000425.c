@@ -64,7 +64,6 @@ RDATA_GROUP (G3_DXE)
  *----------------------------------------------------------------------------------------
  */
 
-UCODE_VS_FLAG (06000425)
 
 // Encrypted Patch code 06000425 for 6010 and equivalent
 CONST UINT8 ROMDATA CpuF15OrMicrocodePatch06000425 [IDS_PAD_4K] =

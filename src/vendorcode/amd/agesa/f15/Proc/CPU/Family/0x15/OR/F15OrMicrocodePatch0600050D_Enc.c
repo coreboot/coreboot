@@ -64,7 +64,6 @@ RDATA_GROUP (G3_DXE)
  *----------------------------------------------------------------------------------------
  */
 
-UCODE_VS_FLAG (0600050D_Enc)
 
 // Encrypt Patch code 0600050D for 6011 and equivalent
 

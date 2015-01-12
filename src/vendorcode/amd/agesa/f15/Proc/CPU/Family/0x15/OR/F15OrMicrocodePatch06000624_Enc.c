@@ -63,7 +63,6 @@ RDATA_GROUP (G3_DXE)
  *----------------------------------------------------------------------------------------
  */
 
-UCODE_VS_FLAG (06000624_Enc)
 
 // Encrypt Patch code 06000624 for 6012 and equivalent
 

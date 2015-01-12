@@ -63,7 +63,6 @@ RDATA_GROUP (G3_DXE)
  *----------------------------------------------------------------------------------------
  */
 
-UCODE_VS_FLAG (0600110F_Enc)
 
 // Encrypt Patch code 0600110F for 6101 and equivalent
 

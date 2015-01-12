@@ -32,11 +32,13 @@
  *   PCU iLB GPIO CFIO_SCORE Address Map
  *   PCU iLB GPIO CFIO_SSUS Address Map
  */
+#ifndef __PRE_RAM__
 static const u8 gpncore_gpio_to_pad[GPNCORE_COUNT] =
 	{ 19, 18, 17, 20, 21, 22, 24, 25,	/* [ 0: 7] */
 	  23, 16, 14, 15, 12, 26, 27,  1,	/* [ 8:15] */
 	   4,  8, 11,  0,  3,  6, 10, 13,	/* [16:23] */
 	   2,  5,  9 };				/* [24:26] */
+#endif
 
 static const u8 gpscore_gpio_to_pad[GPSCORE_COUNT] =
 	{  85,  89, 93,  96, 99, 102,  98, 101,	/* [ 0:  7] */
@@ -60,6 +62,9 @@ static const u8 gpssus_gpio_to_pad[GPSSUS_COUNT] =
 	  28, 27, 22, 21, 24, 25, 26, 51,	/* [24:31] */
 	  56, 54, 49, 55, 48, 57, 50, 58,	/* [32:39] */
 	  52, 53, 59, 40 };			/* [40:43] */
+
+
+#ifndef __PRE_RAM__
 
 /* GPIO bank descriptions */
 static const struct gpio_bank gpncore_bank = {
@@ -92,7 +97,6 @@ static const struct gpio_bank gpssus_bank = {
 	.gpio_f1_range_end = GPSSUS_GPIO_F1_RANGE_END,
 };
 
-#ifndef __PRE_RAM__
 
 static void setup_gpios(const struct soc_gpio_map *gpios,
 			const struct gpio_bank *bank)
@@ -346,4 +350,3 @@ void configure_score_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val)
 {
 	configure_ssus_score_gpio(0, gpio_num, pconf0, pad_val);
 }
-

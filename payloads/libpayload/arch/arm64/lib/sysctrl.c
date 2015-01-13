@@ -80,12 +80,24 @@ void raw_write_actlr_el3(uint32_t actlr_el3)
 
 uint32_t raw_read_actlr_current(void)
 {
-	SWITCH_CASE_READ(raw_read_actlr,actlr,uint32_t);
+	uint32_t el = get_current_el();
+	return raw_read_actlr(el);
 }
 
 void raw_write_actlr_current(uint32_t actlr)
 {
-	SWITCH_CASE_WRITE(raw_write_actlr,actlr);
+	uint32_t el = get_current_el();
+	raw_write_actlr(actlr, el);
+}
+
+uint32_t raw_read_actlr(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_actlr, actlr, uint32_t, el);
+}
+
+void raw_write_actlr(uint32_t actlr, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_actlr, actlr, el);
 }
 
 /* AFSR0 */
@@ -133,12 +145,24 @@ void raw_write_afsr0_el3(uint32_t afsr0_el3)
 
 uint32_t raw_read_afsr0_current(void)
 {
-	SWITCH_CASE_READ(raw_read_afsr0,afsr0,uint32_t);
+	uint32_t el = get_current_el();
+	return raw_read_afsr0(el);
 }
 
 void raw_write_afsr0_current(uint32_t afsr0)
 {
-	SWITCH_CASE_WRITE(raw_write_afsr0,afsr0);
+	uint32_t el = get_current_el();
+	raw_write_afsr0(afsr0, el);
+}
+
+uint32_t raw_read_afsr0(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_afsr0, afsr0, uint32_t, el);
+}
+
+void raw_write_afsr0(uint32_t afsr0, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_afsr0, afsr0, el);
 }
 
 /* AFSR1 */
@@ -186,12 +210,24 @@ void raw_write_afsr1_el3(uint32_t afsr1_el3)
 
 uint32_t raw_read_afsr1_current(void)
 {
-	SWITCH_CASE_READ(raw_read_afsr1,afsr1,uint32_t);
+	uint32_t el = get_current_el();
+	return raw_read_afsr1(el);
 }
 
 void raw_write_afsr1_current(uint32_t afsr1)
 {
-	SWITCH_CASE_WRITE(raw_write_afsr1,afsr1);
+	uint32_t el = get_current_el();
+	raw_write_afsr1(afsr1, el);
+}
+
+uint32_t raw_read_afsr1(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_afsr1, afsr1, uint32_t, el);
+}
+
+void raw_write_afsr1(uint32_t afsr1, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_afsr1, afsr1, el);
 }
 
 /* AIDR */
@@ -249,12 +285,24 @@ void raw_write_amair_el3(uint64_t amair_el3)
 
 uint64_t raw_read_amair_current(void)
 {
-	SWITCH_CASE_READ(raw_read_amair,amair,uint64_t);
+	uint32_t el = get_current_el();
+	return raw_read_amair(el);
 }
 
 void raw_write_amair_current(uint64_t amair)
 {
-	SWITCH_CASE_WRITE(raw_write_amair,amair);
+	uint32_t el = get_current_el();
+	raw_write_amair(amair, el);
+}
+
+uint64_t raw_read_amair(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_amair, amair, uint64_t, el);
+}
+
+void raw_write_amair(uint64_t amair, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_amair, amair, el);
 }
 
 /* CCSIDR */
@@ -391,12 +439,24 @@ void raw_write_esr_el3(uint32_t esr_el3)
 
 uint32_t raw_read_esr_current(void)
 {
-	SWITCH_CASE_READ(raw_read_esr,esr,uint32_t);
+	uint32_t el = get_current_el();
+	return raw_read_esr(el);
 }
 
 void raw_write_esr_current(uint32_t esr)
 {
-	SWITCH_CASE_WRITE(raw_write_esr,esr);
+	uint32_t el = get_current_el();
+	raw_write_esr(esr, el);
+}
+
+uint32_t raw_read_esr(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_esr, esr, uint32_t, el);
+}
+
+void raw_write_esr(uint32_t esr, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_esr, esr, el);
 }
 
 /* FAR */
@@ -444,12 +504,24 @@ void raw_write_far_el3(uint64_t far_el3)
 
 uint64_t raw_read_far_current(void)
 {
-	SWITCH_CASE_READ(raw_read_far,far,uint64_t);
+	uint32_t el = get_current_el();
+	return raw_read_far(el);
 }
 
 void raw_write_far_current(uint64_t far)
 {
-	SWITCH_CASE_WRITE(raw_write_far,far);
+	uint32_t el = get_current_el();
+	raw_write_far(far, el);
+}
+
+uint64_t raw_read_far(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_far, far, uint64_t, el);
+}
+
+void raw_write_far(uint64_t far, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_far, far, el);
 }
 
 /* HCR */
@@ -522,12 +594,24 @@ void raw_write_mair_el3(uint64_t mair_el3)
 
 uint64_t raw_read_mair_current(void)
 {
-	SWITCH_CASE_READ(raw_read_mair,mair,uint64_t);
+	uint32_t el = get_current_el();
+	return raw_read_mair(el);
 }
 
 void raw_write_mair_current(uint64_t mair)
 {
-	SWITCH_CASE_WRITE(raw_write_mair,mair);
+	uint32_t el = get_current_el();
+	raw_write_mair(mair, el);
+}
+
+uint64_t raw_read_mair(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_mair, mair, uint64_t, el);
+}
+
+void raw_write_mair(uint64_t mair, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_mair, mair, el);
 }
 
 /* MPIDR */
@@ -585,12 +669,24 @@ void raw_write_rmr_el3(uint32_t rmr_el3)
 
 uint32_t raw_read_rmr_current(void)
 {
-	SWITCH_CASE_READ(raw_read_rmr,rmr,uint32_t);
+	uint32_t el = get_current_el();
+	return raw_read_rmr(el);
 }
 
 void raw_write_rmr_current(uint32_t rmr)
 {
-	SWITCH_CASE_WRITE(raw_write_rmr,rmr);
+	uint32_t el = get_current_el();
+	raw_write_rmr(rmr, el);
+}
+
+uint32_t raw_read_rmr(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_rmr, rmr, uint32_t, el);
+}
+
+void raw_write_rmr(uint32_t rmr, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_rmr, rmr, el);
 }
 
 /* RVBAR */
@@ -638,12 +734,24 @@ void raw_write_rvbar_el3(uint64_t rvbar_el3)
 
 uint64_t raw_read_rvbar_current(void)
 {
-	SWITCH_CASE_READ(raw_read_rvbar,rvbar,uint64_t);
+	uint32_t el = get_current_el();
+	return raw_read_rvbar(el);
 }
 
 void raw_write_rvbar_current(uint64_t rvbar)
 {
-	SWITCH_CASE_WRITE(raw_write_rvbar,rvbar);
+	uint32_t el = get_current_el();
+	raw_write_rvbar(rvbar, el);
+}
+
+uint64_t raw_read_rvbar(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_rvbar, rvbar, uint64_t, el);
+}
+
+void raw_write_rvbar(uint64_t rvbar, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_rvbar, rvbar, el);
 }
 
 /* SCR */
@@ -706,12 +814,24 @@ void raw_write_sctlr_el3(uint32_t sctlr_el3)
 
 uint32_t raw_read_sctlr_current(void)
 {
-	SWITCH_CASE_READ(raw_read_sctlr,sctlr,uint32_t);
+	uint32_t el = get_current_el();
+	return raw_read_sctlr(el);
 }
 
 void raw_write_sctlr_current(uint32_t sctlr)
 {
-	SWITCH_CASE_WRITE(raw_write_sctlr,sctlr);
+	uint32_t el = get_current_el();
+	raw_write_sctlr(sctlr, el);
+}
+
+uint32_t raw_read_sctlr(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_sctlr, sctlr, uint32_t, el);
+}
+
+void raw_write_sctlr(uint32_t sctlr, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_sctlr, sctlr, el);
 }
 
 /* TCR */
@@ -759,12 +879,24 @@ void raw_write_tcr_el3(uint32_t tcr_el3)
 
 uint64_t raw_read_tcr_current(void)
 {
-	SWITCH_CASE_READ(raw_read_tcr, tcr, uint64_t);
+	uint32_t el = get_current_el();
+	return raw_read_tcr(el);
 }
 
 void raw_write_tcr_current(uint64_t tcr)
 {
-	SWITCH_CASE_WRITE(raw_write_tcr, tcr);
+	uint32_t el = get_current_el();
+	raw_write_tcr(tcr, el);
+}
+
+uint64_t raw_read_tcr(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_tcr, tcr, uint64_t, el);
+}
+
+void raw_write_tcr(uint64_t tcr, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_tcr, tcr, el);
 }
 
 /* TTBR0 */
@@ -812,12 +944,24 @@ void raw_write_ttbr0_el3(uint64_t ttbr0_el3)
 
 uint64_t raw_read_ttbr0_current(void)
 {
-	SWITCH_CASE_READ(raw_read_ttbr0,ttbr0,uint64_t);
+	uint32_t el = get_current_el();
+	return raw_read_ttbr0(el);
 }
 
 void raw_write_ttbr0_current(uint64_t ttbr0)
 {
-	SWITCH_CASE_WRITE(raw_write_ttbr0,ttbr0);
+	uint32_t el = get_current_el();
+	raw_write_ttbr0(ttbr0, el);
+}
+
+uint64_t raw_read_ttbr0(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_ttbr0, ttbr0, uint64_t, el);
+}
+
+void raw_write_ttbr0(uint64_t ttbr0, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_ttbr0, ttbr0, el);
 }
 
 /* TTBR1 */
@@ -880,10 +1024,22 @@ void raw_write_vbar_el3(uint64_t vbar_el3)
 
 uint64_t raw_read_vbar_current(void)
 {
-	SWITCH_CASE_READ(raw_read_vbar,vbar,uint64_t);
+	uint32_t el = get_current_el();
+	return raw_read_vbar(el);
 }
 
 void raw_write_vbar_current(uint64_t vbar)
 {
-	SWITCH_CASE_WRITE(raw_write_vbar,vbar);
+	uint32_t el = get_current_el();
+	raw_write_vbar(vbar, el);
+}
+
+uint64_t raw_read_vbar(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_vbar, vbar, uint64_t, el);
+}
+
+void raw_write_vbar(uint64_t vbar, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_vbar, vbar, el);
 }

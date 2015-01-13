@@ -179,12 +179,24 @@ void raw_write_elr_el3(uint64_t elr_el3)
 
 uint64_t raw_read_elr_current(void)
 {
-	SWITCH_CASE_READ(raw_read_elr,elr,uint64_t);
+	uint32_t el = get_current_el();
+	return raw_read_elr(el);
 }
 
 void raw_write_elr_current(uint64_t elr)
 {
-	SWITCH_CASE_WRITE(raw_write_elr,elr);
+	uint32_t el = get_current_el();
+	raw_write_elr(elr, el);
+}
+
+uint64_t raw_read_elr(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_elr, elr, uint64_t, el);
+}
+
+void raw_write_elr(uint64_t elr, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_elr, elr, el);
 }
 
 /* FPCR */
@@ -380,12 +392,24 @@ void raw_write_spsr_el3(uint32_t spsr_el3)
 
 uint32_t raw_read_spsr_current(void)
 {
-	SWITCH_CASE_READ(raw_read_spsr,spsr,uint32_t);
+	uint32_t el = get_current_el();
+	return raw_read_spsr(el);
 }
 
 void raw_write_spsr_current(uint32_t spsr)
 {
-	SWITCH_CASE_WRITE(raw_write_spsr,spsr);
+	uint32_t el = get_current_el();
+	raw_write_spsr(spsr, el);
+}
+
+uint32_t raw_read_spsr(uint32_t el)
+{
+	SWITCH_CASE_READ(raw_read_spsr, spsr, uint32_t, el);
+}
+
+void raw_write_spsr(uint32_t spsr, uint32_t el)
+{
+	SWITCH_CASE_WRITE(raw_write_spsr, spsr, el);
 }
 
 uint32_t raw_read_spsr_fiq(void)

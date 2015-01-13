@@ -52,7 +52,13 @@ void tlbiall_el3(void)
 
 void tlbiall_current(void)
 {
-	SWITCH_CASE_TLBI(tlbiall);
+	uint32_t el = get_current_el();
+	tlbiall(el);
+}
+
+void tlbiall(uint32_t el)
+{
+	SWITCH_CASE_TLBI(tlbiall, el);
 }
 
 /* TLBIALLIS */
@@ -73,7 +79,13 @@ void tlbiallis_el3(void)
 
 void tlbiallis_current(void)
 {
-	SWITCH_CASE_TLBI(tlbiallis);
+	uint32_t el = get_current_el();
+	tlbiallis(el);
+}
+
+void tlbiallis(uint32_t el)
+{
+	SWITCH_CASE_TLBI(tlbiallis, el);
 }
 
 /* TLBIVAA */

@@ -170,7 +170,7 @@ MemNCmnGetSetFieldTN (
   if (FieldName == BFDctAccessDone) {
     // No need to poll DctAccessDone for TN due to enhancement in phy
     Value = 1;
-  } else if ((FieldName < BFEndOfList) && (FieldName >= 0)) {
+  } else if (FieldName < BFEndOfList) {
     Address = NBPtr->NBRegTable[FieldName];
     if (Address) {
       Lowbit = TSEFO_END (Address);

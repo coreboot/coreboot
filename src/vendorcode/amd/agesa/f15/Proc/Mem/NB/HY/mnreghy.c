@@ -174,7 +174,7 @@ MemNCmnGetSetFieldHy (
   UINT32 Mask;
 
   Value = 0;
-  if ((FieldName < BFEndOfList) && (FieldName >= 0)) {
+  if (FieldName < BFEndOfList) {
     Address = NBPtr->NBRegTable[FieldName];
     if (Address) {
       Lowbit = TSEFO_END (Address);

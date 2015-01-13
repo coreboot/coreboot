@@ -159,7 +159,7 @@ MemNCmnGetSetFieldLN (
   if (FieldName == BFDctAccessDone) {
     // Llano does not support DctAccessDone. Assume DctAccessDone=1 always.
     Value = 1;
-  } else if ((FieldName < BFEndOfList) && (FieldName >= 0)) {
+  } else if (FieldName < BFEndOfList) {
     Address = NBPtr->NBRegTable[FieldName];
     if (Address) {
       Lowbit = TSEFO_END (Address);

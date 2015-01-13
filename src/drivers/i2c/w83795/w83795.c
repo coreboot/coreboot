@@ -24,14 +24,14 @@
 #include "southbridge/amd/cimx/sb700/smbus.h" /*SMBUS_IO_BASE*/
 #include "w83795.h"
 
-static u32 w83795_set_bank(u8 bank)
+static int w83795_set_bank(u8 bank)
 {
 	return do_smbus_write_byte(SMBUS_IO_BASE, W83795_DEV, W83795_REG_BANKSEL, bank);
 }
 
 static u8 w83795_read(u16 reg)
 {
-	u32 ret;
+	int ret;
 
 	ret = w83795_set_bank(reg >> 8);
 	if (ret < 0) {
@@ -45,7 +45,7 @@ static u8 w83795_read(u16 reg)
 
 static u8 w83795_write(u16 reg, u8 value)
 {
-	u32 err;
+	int err;
 
 	err = w83795_set_bank(reg >> 8);
 	if (err < 0) {

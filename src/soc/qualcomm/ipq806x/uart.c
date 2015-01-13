@@ -82,14 +82,6 @@ static const uart_params_t uart_board_param = {
 		}
 };
 
-static unsigned int msm_boot_uart_dm_init(void  *uart_dm_base);
-
-/* Received data is valid or not */
-static int valid_data = 0;
-
-/* Received data */
-static unsigned int word = 0;
-
 /**
  * msm_boot_uart_dm_init_rx_transfer - Init Rx transfer
  * @uart_dm_base: UART controller base address
@@ -116,6 +108,15 @@ static unsigned int msm_boot_uart_dm_init_rx_transfer(void *uart_dm_base)
 
 	return MSM_BOOT_UART_DM_E_SUCCESS;
 }
+
+#if IS_ENABLED(CONFIG_DRIVERS_UART)
+static unsigned int msm_boot_uart_dm_init(void  *uart_dm_base);
+
+/* Received data is valid or not */
+static int valid_data = 0;
+
+/* Received data */
+static unsigned int word = 0;
 
 /**
  * msm_boot_uart_dm_read - reads a word from the RX FIFO.
@@ -211,6 +212,7 @@ void uart_tx_byte(int idx, unsigned char data)
 	/* And now write the character(s) */
 	writel(tx_data, MSM_BOOT_UART_DM_TF(base, 0));
 }
+#endif /* CONFIG_SERIAL_UART */
 
 /*
  * msm_boot_uart_dm_reset - resets UART controller
@@ -297,7 +299,7 @@ static unsigned int msm_boot_uart_dm_init(void  *uart_dm_base)
 }
 
 /**
- * uart_init - initializes UART
+ * ipq806x_uart_init - initializes UART
  *
  * Initializes clocks, GPIO and UART controller.
  */
@@ -308,6 +310,10 @@ void uart_init(int idx)
 	void *gsbi_base;
 
 	dm_base = uart_board_param.uart_dm_base;
+
+	if (readl(MSM_BOOT_UART_DM_CSR(dm_base)) == UART_DM_CLK_RX_TX_BIT_RATE)
+		return; /* UART must have been already initialized. */
+
 	gsbi_base = uart_board_param.uart_gsbi_base;
 	ipq_configure_gpio(uart_board_param.dbg_uart_gpio,
 			   NO_OF_DBG_UART_GPIOS);
@@ -326,6 +332,12 @@ void uart_init(int idx)
 
 	/* Intialize UART_DM */
 	msm_boot_uart_dm_init(dm_base);
+}
+
+/* for the benefit of non-console uart init */
+void ipq806x_uart_init(void)
+{
+	uart_init(0);
 }
 
 #if 0 /* Not used yet */
@@ -369,6 +381,7 @@ int uart_can_rx_byte(void)
 }
 #endif
 
+#if IS_ENABLED(CONFIG_DRIVERS_UART)
 /**
  * ipq806x_serial_getc - reads a character
  *
@@ -389,6 +402,8 @@ uint8_t uart_rx_byte(int idx)
 
 	return byte;
 }
+#endif
+
 #ifndef __PRE_RAM__
 /* TODO: Implement fuction */
 void uart_fill_lb(void *data)

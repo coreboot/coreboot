@@ -267,5 +267,7 @@ enum MSM_BOOT_UART_DM_BITS_PER_CHAR {
 #define MSM_BOOT_UART_DM_E_MALLOC_FAIL       4
 #define MSM_BOOT_UART_DM_E_RX_NOT_READY      5
 
+void ipq806x_uart_init(void);
+
 #endif				/* __UART_DM_H__ */
 

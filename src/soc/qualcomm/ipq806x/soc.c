@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <symbols.h>
+#include <soc/ipq_uart.h>
 
 #define RESERVED_SIZE_KB	(0x01500000 / KiB)
 
@@ -35,6 +36,12 @@ static void soc_read_resources(device_t dev)
 
 static void soc_init(device_t dev)
 {
+	/*
+	 * Do this in case console is not enabled: kernel's earlyprintk()
+	 * should work no matter what the firmware console configuration is.
+	 */
+	ipq806x_uart_init();
+
 	printk(BIOS_INFO, "CPU: Qualcomm 8064\n");
 }
 

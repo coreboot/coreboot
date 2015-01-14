@@ -93,12 +93,3 @@ $(VB_LIB):
 		fwlib
 
 endif
-
-ifeq ($(CONFIG_VBOOT2_VERIFY_FIRMWARE),y)
-VERSTAGE_LIB = $(obj)/vendorcode/google/chromeos/verstage.a
-$(VERSTAGE_LIB): $$(verstage-objs)
-	@printf "    AR         $(subst $(obj)/,,$(@))\n"
-	$(AR_verstage) rc $@.tmp $(verstage-objs)
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY_verstage) --prefix-symbols=verstage_ $@.tmp $@
-endif

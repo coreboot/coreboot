@@ -38,7 +38,7 @@
 
 #include <stdint.h>
 
-#define FMAP_SIGNATURE		"__FMAP__"
+#define FMAP_REVERSED_SIGNATURE	"__PAMF__" /* avoid magic number in .rodata */
 #define FMAP_VER_MAJOR		1	/* this header's FMAP minor version */
 #define FMAP_VER_MINOR		1	/* this header's FMAP minor version */
 #define FMAP_STRLEN		32	/* maximum length for strings, */

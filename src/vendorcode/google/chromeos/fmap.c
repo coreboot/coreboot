@@ -26,10 +26,15 @@
 
 static int is_fmap_signature_valid(const struct fmap *fmap)
 {
-	if (memcmp(fmap, FMAP_SIGNATURE, sizeof(FMAP_SIGNATURE) - 1)) {
-		printk(BIOS_ERR, "No FMAP found at %p.\n", fmap);
-		return 1;
-	}
+	const char reversed_sig[] = FMAP_REVERSED_SIGNATURE;
+	const char *p2 = reversed_sig + sizeof(FMAP_REVERSED_SIGNATURE) - 2;
+	const char *p1 = (char *)fmap;
+
+	while (p2 >= reversed_sig)
+		if (*p1++ != *p2--) {
+			printk(BIOS_ERR, "No FMAP found at %p.\n", fmap);
+			return 1;
+		}
 
 	printk(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %p.\n",
 	       fmap->name, fmap->ver_major, fmap->ver_minor, fmap);

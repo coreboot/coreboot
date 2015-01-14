@@ -765,6 +765,7 @@ static int rk_edp_read_bytes_from_i2c(struct rk_edp *edp,
 static int rk_edp_read_edid(struct rk_edp *edp, struct edid *edid)
 {
 	u8 buf[EDID_LENGTH * 2];
+	u32 edid_size = EDID_LENGTH;
 	int retval;
 
 	/* Read EDID data */
@@ -778,6 +779,7 @@ static int rk_edp_read_edid(struct rk_edp *edp, struct edid *edid)
 
 	/* check if edid have extension flag, and read additional EDID data */
 	if (buf[EDID_EXTENSION_FLAG]) {
+		edid_size += EDID_LENGTH;
 		retval = rk_edp_read_bytes_from_i2c(edp, EDID_ADDR,
 					EDID_LENGTH, EDID_LENGTH,
 					&buf[EDID_LENGTH]);
@@ -787,7 +789,7 @@ static int rk_edp_read_edid(struct rk_edp *edp, struct edid *edid)
 		}
 	}
 
-	if (decode_edid(buf, sizeof(buf), edid)) {
+	if (decode_edid(buf, edid_size, edid)) {
 		printk(BIOS_ERR, "%s: Failed to decode EDID.\n",
 		       __func__);
 		return -1;

@@ -3,6 +3,10 @@ config ARCH_BOOTBLOCK_ARM64
 	default n
 	select ARCH_ARM64
 
+config ARCH_VERSTAGE_ARM64
+	bool
+	default n
+
 config ARCH_ROMSTAGE_ARM64
 	bool
 	default n

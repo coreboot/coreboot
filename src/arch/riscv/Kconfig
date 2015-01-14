@@ -3,6 +3,10 @@ config ARCH_BOOTBLOCK_RISCV
 	default n
 	select ARCH_RISCV
 
+config ARCH_VERSTAGE_RISCV
+	bool
+	default n
+
 config ARCH_ROMSTAGE_RISCV
 	bool
 	default n

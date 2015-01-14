@@ -23,9 +23,9 @@
 #include <console/console.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
-
 #include "pinmux.h"
 #include "power.h"
+#include "verstage.h"
 
 void main(void)
 {
@@ -72,7 +72,10 @@ void main(void)
 	power_enable_cpu_rail();
 	power_ungate_cpu();
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/romstage");
+	if (IS_ENABLED(CONFIG_VBOOT2_VERIFY_FIRMWARE))
+		entry = (void *)verstage_vboot_main;
+	else
+		entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/romstage");
 
 	if (entry)
 		clock_cpu0_config_and_reset(entry);

@@ -3,6 +3,10 @@ config ARCH_BOOTBLOCK_X86_32
 	default n
 	select ARCH_X86
 
+config ARCH_VERSTAGE_X86_32
+	bool
+	default n
+
 config ARCH_ROMSTAGE_X86_32
 	bool
 	default n

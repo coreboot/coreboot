@@ -22,6 +22,8 @@
 #ifndef __ARCH_MEMLAYOUT_H
 #define __ARCH_MEMLAYOUT_H
 
+#define SUPERPAGE_SIZE ((1 + IS_ENABLED(CONFIG_ARM_LPAE)) * 1M)
+
 #define TTB(addr, size) \
 	REGION(ttb, addr, size, 16K) \
 	_ = ASSERT(size >= 16K + IS_ENABLED(CONFIG_ARM_LPAE) * 32, \
@@ -36,8 +38,13 @@
 #define STACK(addr, size) REGION(stack, addr, size, 8)
 
 #define DMA_COHERENT(addr, size) \
-	REGION(dma_coherent, addr, size, (1 + IS_ENABLED(CONFIG_ARM_LPAE)) * 1M) \
-	_ = ASSERT(size % ((1 + IS_ENABLED(CONFIG_ARM_LPAE)) * 1M) == 0, \
+	REGION(dma_coherent, addr, size, SUPERPAGE_SIZE) \
+	_ = ASSERT(size % SUPERPAGE_SIZE == 0, \
 		"DMA coherency buffer must fit exactly in full superpages!");
+
+#define FRAMEBUFFER(addr, size) \
+	REGION(framebuffer, addr, size, SUPERPAGE_SIZE) \
+	_ = ASSERT(size % SUPERPAGE_SIZE == 0, \
+		"Framebuffer must fit exactly in full superpages!");
 
 #endif /* __ARCH_MEMLAYOUT_H */

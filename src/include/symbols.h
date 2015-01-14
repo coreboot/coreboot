@@ -77,4 +77,8 @@ extern u8 _dma_coherent[];
 extern u8 _edma_coherent[];
 #define _dma_coherent_size (_edma_coherent - _dma_coherent)
 
+extern u8 _framebuffer[];
+extern u8 _eframebuffer[];
+#define _framebuffer_size (_eframebuffer - _framebuffer)
+
 #endif /* __SYMBOLS_H */

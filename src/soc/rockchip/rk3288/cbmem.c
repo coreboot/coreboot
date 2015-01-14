@@ -18,11 +18,11 @@
  */
 
 #include <cbmem.h>
-#include <soc/soc.h>
 #include <stddef.h>
+#include <symbols.h>
 
 void *cbmem_top(void)
 {
-	return (void *)(get_fb_base_kb()*KiB);
+	return _dram + (size_t)CONFIG_DRAM_SIZE_MB*MiB;
 }
 

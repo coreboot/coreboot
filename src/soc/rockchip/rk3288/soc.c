@@ -28,30 +28,28 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include "chip.h"
 
 static void soc_init(device_t dev)
 {
-	unsigned long fb_size = FB_SIZE_KB * KiB;
-	u32 lcdbase = get_fb_base_kb() * KiB;
-
-	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB);
-	mmio_resource(dev, 1, lcdbase / KiB, fb_size / KiB);
+	ram_resource(dev, 0, (uintptr_t)_dram/KiB,
+		     CONFIG_DRAM_SIZE_MB*(MiB/KiB));
 
 	if (vboot_skip_display_init())
 		printk(BIOS_INFO, "Skipping display init.\n");
 #if !IS_ENABLED(CONFIG_SKIP_DISPLAY_INIT_HACK)
 	else
-		rk_display_init(dev, lcdbase, fb_size);
+		rk_display_init(dev, (uintptr_t)_framebuffer,
+				_framebuffer_size);
 #endif
 }
 
 static struct device_operations soc_ops = {
 	.read_resources   = DEVICE_NOOP,
 	.set_resources    = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.init             = soc_init,
 	.scan_bus         = 0,
 };

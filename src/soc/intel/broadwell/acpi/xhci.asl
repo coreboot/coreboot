@@ -35,6 +35,14 @@ Device (XHCI)
 		Offset (0x10),
 		, 16,
 		XMEM, 16, // MEM_BASE
+		Offset (0x40),
+		, 11,
+		SWAI, 1,
+		, 20,
+		Offset (0x44),
+		, 12,
+		SAIP, 2,
+		, 18,
 		Offset (0x74),
 		D0D3, 2,
 		, 6,
@@ -242,22 +250,30 @@ Device (XHCI)
 			Store (0, ^D0D3)
 		}
 
-		// Clear PCI 0xB0[14:13]
-		Store (0, ^MB13)
-		Store (0, ^MB14)
+		if (LNot (\ISWP())) {
+			// Clear PCI 0xB0[14:13]
+			Store (0, ^MB13)
+			Store (0, ^MB14)
 
-		// Clear MMIO 0x816C[14,2]
-		Store (0, CLK0)
-		Store (0, CLK1)
+			// Clear MMIO 0x816C[14,2]
+			Store (0, CLK0)
+			Store (0, CLK1)
 
-		// Set MMIO 0x8154[31]
-		Store (1, CLK2)
+			// Set MMIO 0x8154[31]
+			Store (1, CLK2)
 
-		// Handle per-port reset if needed
-		LPS0 ()
+			// Handle per-port reset if needed
+			LPS0 ()
 
-		// Set MMIO 0x80e0[15]
-		Store (1, AX15)
+			// Set MMIO 0x80e0[15]
+			Store (1, AX15)
+
+			// Clear PCI CFG offset 0x40[11]
+			Store (0, ^SWAI)
+
+			// Clear PCI CFG offset 0x44[13:12]
+			Store (0, ^SAIP)
+		}
 
 		Return ()
 	}
@@ -297,19 +313,27 @@ Device (XHCI)
 			Store (0, ^D0D3)
 		}
 
-		// Set PCI 0xB0[14:13]
-		Store (1, ^MB13)
-		Store (1, ^MB14)
+		if (LNot (\ISWP())) {
+			// Set PCI 0xB0[14:13]
+			Store (1, ^MB13)
+			Store (1, ^MB14)
 
-		// Set MMIO 0x816C[14,2]
-		Store (1, CLK0)
-		Store (1, CLK1)
+			// Set MMIO 0x816C[14,2]
+			Store (1, CLK0)
+			Store (1, CLK1)
 
-		// Clear MMIO 0x8154[31]
-		Store (0, CLK2)
+			// Clear MMIO 0x8154[31]
+			Store (0, CLK2)
 
-		// Clear MMIO 0x80e0[15]
-		Store (0, AX15)
+			// Clear MMIO 0x80e0[15]
+			Store (0, AX15)
+
+			// Set PCI CFG offset 0x40[11]
+			Store (1, ^SWAI)
+
+			// Set PCI CFG offset 0x44[13:12]
+			Store (1, ^SAIP)
+		}
 
 		// Put device in D3
 		Store (3, ^D0D3)

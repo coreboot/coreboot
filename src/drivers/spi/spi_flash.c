@@ -234,6 +234,11 @@ out:
 	return ret;
 }
 
+int spi_flash_cmd_status(struct spi_flash *flash, u8 *reg)
+{
+	return spi_flash_cmd(flash->spi, flash->status_cmd, reg, sizeof(*reg));
+}
+
 /*
  * The following table holds all device probe functions
  *
@@ -372,6 +377,7 @@ flash_detected:
 	tseg_relocate((void **)&flash->read);
 	tseg_relocate((void **)&flash->write);
 	tseg_relocate((void **)&flash->erase);
+	tseg_relocate((void **)&flash->status);
 	tseg_relocate((void **)&flash->name);
 #endif
 

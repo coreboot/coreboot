@@ -60,6 +60,9 @@ int spi_flash_cmd_wait_ready(struct spi_flash *flash, unsigned long timeout);
 /* Erase sectors. */
 int spi_flash_cmd_erase(struct spi_flash *flash, u32 offset, size_t len);
 
+/* Read status register. */
+int spi_flash_cmd_status(struct spi_flash *flash, u8 *reg);
+
 /* Manufacturer-specific probe functions */
 struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode);
 struct spi_flash *spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode);

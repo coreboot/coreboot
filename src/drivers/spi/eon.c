@@ -168,11 +168,13 @@ struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)
 
 	eon->flash.write = eon_write;
 	eon->flash.erase = spi_flash_cmd_erase;
+	eon->flash.status = spi_flash_cmd_status;
 	eon->flash.read = spi_flash_cmd_read_fast;
 	eon->flash.sector_size = params->page_size * params->pages_per_sector;
 	eon->flash.size = params->page_size * params->pages_per_sector
 	    * params->nr_sectors;
 	eon->flash.erase_cmd = CMD_EN25_SE;
+	eon->flash.status_cmd = CMD_EN25_RDSR;
 
 	return &eon->flash;
 }

@@ -40,12 +40,15 @@ struct spi_flash {
 
 	u8		erase_cmd;
 
+	u8		status_cmd;
+
 	int		(*read)(struct spi_flash *flash, u32 offset,
 				size_t len, void *buf);
 	int		(*write)(struct spi_flash *flash, u32 offset,
 				size_t len, const void *buf);
 	int		(*erase)(struct spi_flash *flash, u32 offset,
 				size_t len);
+	int		(*status)(struct spi_flash *flash, u8 *reg);
 };
 
 struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs);

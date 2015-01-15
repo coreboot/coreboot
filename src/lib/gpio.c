@@ -26,10 +26,14 @@ int gpio_base2_value(gpio_t gpio[], int num_gpio)
 {
 	int i, result = 0;
 
-	for (i = 0; i < num_gpio; i++) {
+	for (i = 0; i < num_gpio; i++)
 		gpio_input(gpio[i]);
+
+	/* Wait until signals become stable */
+	udelay(10);
+
+	for (i = 0; i < num_gpio; i++)
 		result |= gpio_get(gpio[i]) << i;
-	}
 
 	return result;
 }

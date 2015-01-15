@@ -35,6 +35,14 @@
 #define SPIBAR_FDOC		0xb0
 #define SPIBAR_FDOD		0xb4
 
+#define SPI_PRR_MAX		5
+#define SPI_PRR(x)		(0x74 + ((x) * 4))
+#define SPI_PRR_SHIFT		12
+#define SPI_PRR_MASK		0x1fff
+#define SPI_PRR_BASE_SHIFT	0
+#define SPI_PRR_LIMIT_SHIFT	16
+#define SPI_PRR_WPE		(1 << 31)
+
 #define SPIBAR_PREOP		0x94
 #define SPIBAR_OPTYPE		0x96
 #define SPIBAR_OPMENU_LOWER	0x98
@@ -96,5 +104,7 @@
 #define SPIBAR_SSFC                 0x91
 #define  SPIBAR_SSFC_DATA           (1 << 14)
 #define  SPIBAR_SSFC_GO             (1 << 1)
+
+int spi_flash_protect(u32 start, u32 size);
 
 #endif

@@ -11,7 +11,7 @@ chip soc/intel/broadwell
 
 	# Set backlight PWM values for eDP
 	register "gpu_cpu_backlight" = "0x00000200"
-	register "gpu_pch_backlight" = "0x04000000"
+	register "gpu_pch_backlight" = "0x04000200"
 
 	# Enable Panel and configure power delays
 	register "gpu_panel_port_select" = "1"			# eDP

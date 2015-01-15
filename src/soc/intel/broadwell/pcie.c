@@ -321,12 +321,12 @@ static void root_port_commit_config(void)
 		do {
 			reg32 = pci_read_config32(dev, 0x328);
 			n++;
-			if (((reg32 & 0xff000000) == 0x01000000) || (n > 500))
+			if (((reg32 & 0xff000000) == 0x01000000) || (n > 50))
 				break;
 			udelay(100);
 		} while (1);
 
-		if (n > 500)
+		if (n > 50)
 			printk(BIOS_DEBUG, "%s: Timeout waiting for 328h\n",
 				dev_path(dev));
 

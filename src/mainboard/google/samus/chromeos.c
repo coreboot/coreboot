@@ -92,6 +92,15 @@ int get_recovery_mode_switch(void)
 #endif
 }
 
+int clear_recovery_mode_switch(void)
+{
+	const uint32_t kb_rec_mask =
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY);
+
+	/* Unconditionally clear the EC recovery request. */
+	return google_chromeec_clear_events_b(kb_rec_mask);
+}
+
 int get_write_protect_state(void)
 {
 	return get_gpio(CROS_WP_GPIO);

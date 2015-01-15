@@ -247,6 +247,25 @@ mrc_cache_next_slot(const struct mrc_data_region *region,
 	return next_slot;
 }
 
+/* Protect RW_MRC_CACHE region with a Protected Range Register */
+static int protect_mrc_cache(const struct mrc_data_region *region)
+{
+#if IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT)
+	if (nvm_is_write_protected() <= 0) {
+		printk(BIOS_INFO, "NOT enabling PRR for RW_MRC_CACHE region\n");
+		return 1;
+	}
+
+	if (nvm_protect(region->base, region->size) < 0) {
+		printk(BIOS_ERR, "ERROR setting PRR for RW_MRC_CACHE region\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "Enabled Protected Range on RW_MRC_CACHE region\n");
+#endif
+	return 0;
+}
+
 static void update_mrc_cache(void *unused)
 {
 	const struct mrc_saved_data *current_boot;
@@ -279,6 +298,7 @@ static void update_mrc_cache(void *unused)
 		    !memcmp(&current_saved->data[0], &current_boot->data[0],
 		            current_saved->size)) {
 			printk(BIOS_DEBUG, "MRC cache up to date.\n");
+			protect_mrc_cache(&region);
 			return;
 		}
 	}
@@ -301,6 +321,7 @@ static void update_mrc_cache(void *unused)
 		printk(BIOS_DEBUG, "Failure writing MRC cache to %p.\n",
 		       next_slot);
 	}
+	protect_mrc_cache(&region);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, update_mrc_cache, NULL);

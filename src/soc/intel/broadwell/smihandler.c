@@ -36,6 +36,7 @@
 #include <soc/rcba.h>
 #include <soc/smm.h>
 #include <soc/xhci.h>
+#include <drivers/intel/gma/i915_reg.h>
 
 static u8 smm_initialized = 0;
 
@@ -109,6 +110,45 @@ static void busmaster_disable_on_bus(int bus)
         }
 }
 
+/*
+ * Turn off the backlight if it is on, and wait for the specified
+ * backlight off delay.  This will allow panel power timings to meet
+ * spec and prevent brief garbage on the screen when turned off
+ * during firmware with power button triggered SMI.
+ */
+static void backlight_off(void)
+{
+	void *reg_base;
+	uint32_t pp_ctrl;
+	uint32_t bl_off_delay;
+
+	reg_base = (void *)((uintptr_t)pci_read_config32(SA_DEV_IGD, PCI_BASE_ADDRESS_0) & ~0xf);
+
+	/* Check if backlight is enabled */
+	pp_ctrl = read32(reg_base + PCH_PP_CONTROL);
+	if (!(pp_ctrl & EDP_BLC_ENABLE))
+		return;
+
+	/* Enable writes to this register */
+	pp_ctrl &= ~PANEL_UNLOCK_MASK;
+	pp_ctrl |= PANEL_UNLOCK_REGS;
+
+	/* Turn off backlight */
+	pp_ctrl &= ~EDP_BLC_ENABLE;
+
+	write32(reg_base + PCH_PP_CONTROL, pp_ctrl);
+	read32(reg_base + PCH_PP_CONTROL);
+
+	/* Read backlight off delay in 100us units */
+	bl_off_delay = read32(reg_base + PCH_PP_OFF_DELAYS);
+	bl_off_delay &= PANEL_LIGHT_OFF_DELAY_MASK;
+	bl_off_delay *= 100;
+
+	/* Wait for backlight to turn off */
+	udelay(bl_off_delay);
+
+	printk(BIOS_INFO, "Backlight turned off\n");
+}
 
 static void southbridge_smi_sleep(void)
 {
@@ -169,6 +209,9 @@ static void southbridge_smi_sleep(void)
 		break;
 	case SLP_TYP_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
+
+		/* Turn off backlight if needed */
+		backlight_off();
 
 		/* Disable all GPE */
 		disable_all_gpe();

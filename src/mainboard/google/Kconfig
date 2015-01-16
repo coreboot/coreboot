@@ -65,6 +65,8 @@ config BOARD_GOOGLE_URARA
 	bool "Urara"
 config BOARD_GOOGLE_VEYRON_BRAIN
 	bool "Veyron_Brain"
+config BOARD_GOOGLE_VEYRON_DANGER
+	bool "Veyron_Danger"
 config BOARD_GOOGLE_VEYRON_JERRY
 	bool "Veyron_Jerry"
 config BOARD_GOOGLE_VEYRON_MIGHTY
@@ -97,6 +99,7 @@ source "src/mainboard/google/storm/Kconfig"
 source "src/mainboard/google/stout/Kconfig"
 source "src/mainboard/google/urara/Kconfig"
 source "src/mainboard/google/veyron_brain/Kconfig"
+source "src/mainboard/google/veyron_danger/Kconfig"
 source "src/mainboard/google/veyron_jerry/Kconfig"
 source "src/mainboard/google/veyron_mighty/Kconfig"
 source "src/mainboard/google/veyron_pinky/Kconfig"

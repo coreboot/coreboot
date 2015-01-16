@@ -45,8 +45,13 @@ static struct rk3288_sdram_params sdram_configs[] = {
 
 const struct rk3288_sdram_params *get_sdram_config()
 {
-	u32 ramcode = ram_code();
+	u32 ramcode;
 
+	/* early boards had incorrect config */
+	if (board_id() == 0)
+		return &sdram_configs[0];
+
+	ramcode = ram_code();
 	if (ramcode >= ARRAY_SIZE(sdram_configs)
 			|| sdram_configs[ramcode].dramtype == UNUSED)
 		die("Invalid RAMCODE.");

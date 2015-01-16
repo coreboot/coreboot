@@ -46,6 +46,20 @@ static void configure_usb(void)
 	gpio_output(GPIO(7, C, 5), 1);			/* 5V_DRV */
 }
 
+static void configure_sdmmc(void)
+{
+	writel(IOMUX_SDMMC0, &rk3288_grf->iomux_sdmmc0);
+
+	/* use sdmmc0 io, disable JTAG function */
+	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
+
+	/* Note: these power rail definitions are copied in romstage.c */
+	rk808_configure_ldo(4, 3300);	/* VCCIO_SD */
+	rk808_configure_ldo(5, 3300);	/* VCC33_SD */
+
+	gpio_input(GPIO(7, A, 5));	/* SDMMC_DET_L */
+}
+
 static void configure_emmc(void)
 {
 	writel(IOMUX_EMMCDATA, &rk3288_grf->iomux_emmcdata);
@@ -87,6 +101,7 @@ static void mainboard_init(device_t dev)
 	gpio_output(GPIO_RESET, 0);
 
 	configure_usb();
+	configure_sdmmc();
 	configure_emmc();
 	configure_codec();
 	configure_vop();

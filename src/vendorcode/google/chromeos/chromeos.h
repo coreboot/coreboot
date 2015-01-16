@@ -26,9 +26,6 @@
 #include "vboot_common.h"
 #include "vboot2/misc.h"
 
-/*for mainboard use only*/
-void setup_chromeos_gpios(void);
-
 /* functions implemented in vbnv.c: */
 int get_recovery_mode_from_vbnv(void);
 int vboot_wants_oprom(void);

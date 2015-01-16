@@ -26,6 +26,6 @@
 #define GPIO_BACKLIGHT	GPIO(7, A, 0)
 #define GPIO_RESET	GPIO(0, B, 5)
 
-/* TODO: move setup_chromeos_gpios() here once bootblock code is in mainboard */
+void setup_chromeos_gpios(void);
 
 #endif	/* __MAINBOARD_GOOGLE_VEYRON_SPEEDY_BOARD_H */

@@ -168,7 +168,7 @@ EOF
 }
 
 # Architecture definition
-SUPPORTED_ARCHITECTURE="x86 arm aarch64 riscv"
+SUPPORTED_ARCHITECTURE="x86 arm arm64 riscv"
 
 arch_config_arm() {
 	TARCH="arm"
@@ -179,8 +179,8 @@ arch_config_arm() {
 	TABI="eabi"
 }
 
-arch_config_aarch64() {
-	TARCH="aarch64"
+arch_config_arm64() {
+	TARCH="arm64"
 	TBFDARCH="littleaarch64"
 	TCLIST="aarch64"
 	TWIDTH="64"

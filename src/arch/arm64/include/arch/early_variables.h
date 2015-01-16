@@ -20,10 +20,6 @@
 #ifndef ARCH_EARLY_VARIABLES_H
 #define ARCH_EARLY_VARIABLES_H
 
-#if CONFIG_CAR_MIGRATION
-	#error "This is ARM, silly... we don't have CAR here."
-#endif
-
 #define CAR_GLOBAL
 
 #define CAR_MIGRATE(migrate_fn_)

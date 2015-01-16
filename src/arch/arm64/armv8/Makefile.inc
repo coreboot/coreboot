@@ -26,7 +26,7 @@ armv8_asm_flags = $(armv8_flags)
 ################################################################################
 ## bootblock
 ################################################################################
-ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARM_V8_64),y)
+ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV8_64),y)
 
 ifneq ($(CONFIG_ARM_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.S
@@ -46,7 +46,7 @@ endif
 ################################################################################
 ## romstage
 ################################################################################
-ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM_V8_64),y)
+ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV8_64),y)
 
 romstage-y += cache.c
 romstage-y += cpu.S
@@ -61,7 +61,7 @@ endif
 ################################################################################
 ## ramstage
 ################################################################################
-ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM_V8_64),y)
+ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV8_64),y)
 
 ramstage-y += cache.c
 ramstage-y += cpu.S
@@ -70,5 +70,8 @@ ramstage-y += exception_asm.S
 
 ramstage-c-ccopts += $(armv8_flags)
 ramstage-S-ccopts += $(armv8_asm_flags)
+
+rmodules_arm64-c-ccopts += $(armv8_flags)
+rmodules_arm64-S-ccopts += $(armv8_asm_flags)
 
 endif

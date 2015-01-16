@@ -21,13 +21,14 @@
 #include <arch/stages.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <payload_loader.h>
 
-void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
+void arch_payload_run(const struct payload *payload)
 {
-	void (*doit)(void *) = entry;
+	void (*doit)(void *) = payload->entry;
 	void *cb_tables = cbmem_find(CBMEM_ID_CBTABLE);
 
-	printk(BIOS_SPEW, "entry    = %p\n", entry);
+	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
 	cache_sync_instructions();
 	doit(cb_tables);
 }

@@ -37,6 +37,16 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 CBFSTOOL_PRE1_OPTS = -m arm64 -b $(CONFIG_BOOTBLOCK_ROM_OFFSET) -H $(CONFIG_CBFS_HEADER_ROM_OFFSET) -o $(CONFIG_CBFS_ROM_OFFSET)
 endif
 
+ifeq ($(CONFIG_ARCH_ARM64),y)
+stages_c = $(src)/arch/arm64/stages.c
+stages_o = $(obj)/arch/arm64/stages.o
+
+$(stages_o): $(stages_c) $(obj)/config.h
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC_arm) -I. $(CPPFLAGS_arm) -c -o $@ $< -marm
+
+endif
+
 ################################################################################
 # bootblock
 ################################################################################
@@ -44,14 +54,11 @@ endif
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARM64),y)
 
 bootblock-y += div0.c
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += early_console.c
-
 bootblock-y += id.S
 $(obj)/arch/arm64/id.bootblock.o: $(obj)/build.h
 
 bootblock-y += stages.c
 bootblock-y += eabi_compat.c
-
 bootblock-y += memset.S
 bootblock-y += memcpy.S
 bootblock-y += memmove.S
@@ -60,7 +67,7 @@ bootblock-y += memmove.S
 
 $(objcbfs)/bootblock.debug: $(src)/arch/arm64/bootblock.ld $(obj)/ldoptions $$(bootblock-objs) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) -nostdlib --gc-sections -static -o $@ -L$(obj) --start-group $(bootblock-objs) --end-group -T $(src)/arch/arm64/bootblock.ld
+	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) --start-group $(bootblock-objs) --end-group -T $(src)/arch/arm64/bootblock.ld
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
@@ -72,7 +79,6 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 
 romstage-y += stages.c
 romstage-y += div0.c
-romstage-y += early_console.c
 romstage-y += eabi_compat.c
 romstage-y += memset.S
 romstage-y += memcpy.S
@@ -80,6 +86,7 @@ romstage-y += memmove.S
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 # Build the romstage
+VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm64.o
 
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(src)/arch/arm64/romstage.ld $(obj)/ldoptions
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -102,24 +109,18 @@ ramstage-y += tables.c
 ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
-
-rmodules_$(ARCH-ramstage-y) += memset.S
-rmodules_$(ARCH-ramstage-y) += memcpy.S
-rmodules_$(ARCH-ramstage-y) += memmove.S
-rmodules_$(ARCH-ramstage-y) += eabi_compat.c
-
-VBOOT_STUB_DEPS += $(obj)/arch/arm64/eabi_compat.rmodules.o
-
-$(eval $(call create_class_compiler,rmodules,arm64))
-
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
+ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
 # Build the ramstage
 
 $(objcbfs)/ramstage.debug: $$(ramstage-objs) $(src)/arch/arm64/ramstage.ld $(obj)/ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) -nostdlib --gc-sections -o $@ --start-group $(ramstage-objs) --end-group -T $(src)/arch/arm64/ramstage.ld
+	$(LD_ramstage) -nostdlib --gc-sections -o $@ -L$(obj) --start-group $(ramstage-objs) --end-group -T $(src)/arch/arm64/ramstage.ld
+
+$(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs)
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(LD_ramstage) -nostdlib --gc-sections -r -o $@ --start-group $(ramstage-objs) --end-group
 
 endif # CONFIG_ARCH_RAMSTAGE_ARM64

@@ -185,7 +185,7 @@
  *  GPP_CFGMODE_X2110
  *  GPP_CFGMODE_X1111
  */
-#define GPP_CFGMODE			GPP_CFGMODE_X4000
+#define GPP_CFGMODE			GPP_CFGMODE_X1111
 
 /**
  * @def NB_SB_GEN2
@@ -206,7 +206,7 @@
  *    TRUE   - ports visible always, even port empty
  *    FALSE  - ports invisible if port empty
  */
-#define SB_GPP_UNHIDE_PORTS		TRUE
+#define SB_GPP_UNHIDE_PORTS		FALSE
 
 /**
  * @def   GEC_CONFIG

@@ -77,12 +77,6 @@ static void configure_l2ctlr(void)
 	write_l2ctlr(l2ctlr);
 }
 
-static void sdmmc_power_off(void)
-{
-	rk808_configure_ldo(4, 0); /* VCCIO_SD */
-	rk808_configure_ldo(5, 0); /* VCC33_SD */
-}
-
 void main(void)
 {
 #if CONFIG_COLLECT_TIMESTAMPS
@@ -96,9 +90,6 @@ void main(void)
 	console_init();
 	configure_l2ctlr();
 	tsadc_init();
-
-	/* Need to power cycle SD card to ensure it is properly reset. */
-	sdmmc_power_off();
 
 	/* vdd_log 1200mv is enough for ddr run 666Mhz */
 	regulate_vdd_log(1200);

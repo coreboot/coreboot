@@ -260,51 +260,6 @@ static const struct pci_driver gec_driver __pci_driver = {
 };
 
 /**
- * @brief Enable PCI Bridge
- *
- * PcibConfig [PM_Reg: EAh], PCIDisable [Bit0]
- * 'PCIDisable' set to 0 to enable P2P bridge.
- * 'PCIDisable' set to 1 to disable P2P bridge and enable PCI interface pins
- *              to function as GPIO {GPIO 35:0}.
- */
-static void pci_init(device_t dev)
-{
-	/* PCI Bridge SHOULD be enabled by default according to SB800 rrg,
-	 * but actually was disabled in some platform, so I have to enabled it.
-	 */
-	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 0);
-}
-
-
-static struct device_operations pci_ops = {
-        .read_resources = pci_bus_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .enable_resources = pci_bus_enable_resources,
-        .init = pci_init,
-        .scan_bus = pci_scan_bridge,
-        .reset_bus = pci_bus_reset,
-        .ops_pci = &lops_pci,
-};
-
-static const struct pci_driver pci_driver __pci_driver = {
-        .ops = &pci_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_PCI,
-};
-
-
-struct device_operations bridge_ops = {
-	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = pci_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &lops_pci,
-};
-
-/**
  * South Bridge CIMx ramstage entry point wrapper.
  */
 void sb_Before_Pci_Init(void)
@@ -447,6 +402,15 @@ static void sb800_enable(device_t dev)
 		break;
 
 	case (0x14 << 3) | 4: /* 0:14:4 PCI */
+		/* PcibConfig [PM_Reg: EAh], PCIDisable [Bit0]
+		 * 'PCIDisable' set to 0 to enable P2P bridge.
+		 * 'PCIDisable' set to 1 to disable P2P bridge and enable PCI interface pins
+		 *              to function as GPIO {GPIO 35:0}.
+		 */
+		if (dev->enabled)
+			RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 0);
+		else
+			RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, BIT0);
 		break;
 
 	case (0x14 << 3) | 6: /* 0:14:6 GEC */

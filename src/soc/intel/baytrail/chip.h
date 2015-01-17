@@ -88,6 +88,7 @@ struct soc_intel_baytrail_config {
 	uint16_t gpu_pipeb_light_off_delay;
 	uint16_t gpu_pipeb_power_cycle_delay;
 	int gpu_pipeb_pwm_freq_hz;
+	int disable_ddr_2x_refresh_rate;
 };
 
 extern struct chip_operations soc_intel_baytrail_ops;

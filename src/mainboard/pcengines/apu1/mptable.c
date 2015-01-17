@@ -114,17 +114,6 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(0x3, 0x0, 0x0, intr_data_ptr[PIRQ_E]);	/* Use INTE */
 	PCI_INT(0x4, 0x0, 0x0, intr_data_ptr[PIRQ_E]);	/* Use INTE */
 
-	/* PCI slots */
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
-	if (dev && dev->enabled) {
-		u8 bus_pci = dev->link_list->secondary;
-		/* PCI_SLOT 0 */
-		PCI_INT(bus_pci, 0x5, 0x0, intr_data_ptr[PIRQ_E]);	/* INTA -> INTE */
-		PCI_INT(bus_pci, 0x5, 0x1, intr_data_ptr[PIRQ_F]);	/* INTB -> INTF */
-		PCI_INT(bus_pci, 0x5, 0x2, intr_data_ptr[PIRQ_G]);	/* INTC -> INTG */
-		PCI_INT(bus_pci, 0x5, 0x3, intr_data_ptr[PIRQ_H]);	/* INTD -> INTH */
-	}
-
 	/* PCIe PortA */
 	PCI_INT(0x0, 0x15, 0x0, intr_data_ptr[PIRQ_E]);	/* INTA -> INTE */
 	/* PCIe PortB */

@@ -26,29 +26,26 @@ chip northbridge/amd/agesa/family14/root_complex
 	device domain 0 on
 		subsystemid 0x1022 0x1510 inherit
 			chip northbridge/amd/agesa/family14 # CPU side of HT root complex
-#					device pci 18.0 on #  northbridge
-					chip northbridge/amd/agesa/family14 # PCI side of HT root complex
-						device pci 0.0 on end # Root Complex
-						device pci 1.0 off end # Internal Graphics P2P bridge 0x980[2456]
-						device pci 4.0 on end # PCIE P2P bridge on-board NIC
-						device pci 5.0 on end # PCIE P2P bridge
-						device pci 6.0 on end # PCIE P2P bridge PCIe slot
-						device pci 7.0 on end # PCIE P2P bridge
-						device pci 8.0 on end # NB/SB Link P2P bridge
-					end # agesa northbridge
+#				device pci 18.0 on #  northbridge
+				chip northbridge/amd/agesa/family14 # PCI side of HT root complex
+					device pci 0.0 on end # Root Complex
+					device pci 1.0 off end # Internal Graphics P2P bridge 0x980[2456]
+					device pci 4.0 on end # PCIE P2P bridge on-board NIC
+					device pci 5.0 on end # PCIE P2P bridge
+					device pci 6.0 on end # PCIE P2P bridge PCIe slot
+					device pci 7.0 on end # PCIE P2P bridge
+					device pci 8.0 on end # NB/SB Link P2P bridge
+				end # agesa northbridge
 
-					chip southbridge/amd/cimx/sb800 # it is under NB/SB Link, but on the same pri bus
-						device pci 11.0 on end # SATA
-						device pci 12.0 on end # OHCI USB 0-4
-						device pci 12.1 on end # OHCI USB 0-4
-						device pci 12.2 on end # EHCI USB 0-4
-						device pci 13.0 on end # OHCI USB 5-9
-						device pci 13.1 on end # OHCI USB 5-9
-						device pci 13.2 on end # EHCI USB 5-9
-						device pci 14.0 on # SM
-					end # SM
-					device pci 14.1 on end # IDE	0x439c
-					device pci 14.2 on end # HDA	0x4383
+				chip southbridge/amd/cimx/sb800 # it is under NB/SB Link, but on the same pri bus
+					device pci 11.0 on end # SATA
+					device pci 12.0 on end # OHCI USB 0-4
+					device pci 12.2 on end # EHCI USB 0-4
+					device pci 13.0 on end # OHCI USB 5-9
+					device pci 13.2 on end # EHCI USB 5-9
+					device pci 14.0 on end # SMBus
+					device pci 14.1 off end # IDE	0x439c
+					device pci 14.2 off end # HDA	0x4383
 					device pci 14.3 on # LPC		0x439d
 					chip superio/nuvoton/nct5104d
 						register "irq_trigger_type" = "0"
@@ -76,20 +73,20 @@ chip northbridge/amd/agesa/family14/root_complex
 						device pnp 2e.607 off end
 						device pnp 2e.e off end
 					end
-				end #LPC
-				device pci 14.4 on  end # PCIB 0x4384, NOTE: PCI interface pins shared with GPIO {GPIO 35:0}
-				device pci 14.5 on end # OHCI FS/LS USB
-				#device pci 14.6 off end # Hudson-E1 GbE MAC: Broadcom BCM5785 (14E4:1699)
-				device pci 15.0 on end # PCIe PortA
-				device pci 15.1 off end # PCIe PortB
-				device pci 15.2 off end # PCIe PortC
-				device pci 15.3 off end # PCIe PortD
-				device pci 16.0 on end # OHCI USB 10-13
-				device pci 16.2 on end # EHCI USB 10-13
-				register "gpp_configuration" = "0"
-				register "disconnect_pcib" = "1"
-				register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
-			end	#southbridge/amd/cimx/sb800
+					end #LPC
+					device pci 14.4 on end # PCIB 0x4384
+					device pci 14.5 off end # OHCI FS/LS USB
+					#device pci 14.6 off end # Hudson-E1 GbE MAC: Broadcom BCM5785 (14E4:1699)
+					device pci 15.0 on end # PCIe PortA
+					device pci 15.1 off end # PCIe PortB
+					device pci 15.2 off end # PCIe PortC
+					device pci 15.3 off end # PCIe PortD
+					device pci 16.0 on end # OHCI USB 10-13
+					device pci 16.2 on end # EHCI USB 10-13
+					register "gpp_configuration" = "0"
+					register "disconnect_pcib" = "1"
+					register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
+				end	#southbridge/amd/cimx/sb800
 #			end #  device pci 18.0
 # These seem unnecessary
 			device pci 18.0 on end

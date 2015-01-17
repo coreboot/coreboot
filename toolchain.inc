@@ -60,7 +60,7 @@ ARCHDIR-arm64	:= arm64
 ARCHDIR-riscv	:= riscv
 ARCHDIR-mips	:= mips
 
-CFLAGS_arm      := -mno-unaligned-access -ffunction-sections -fdata-sections
+CFLAGS_arm      := -ffunction-sections -fdata-sections
 
 CFLAGS_arm64 := -ffunction-sections -fdata-sections
 

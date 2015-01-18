@@ -20,6 +20,7 @@
 #
 
 # We enable CBFS_SPI_WRAPPER for Pistachio targets.
+bootblock-y += clocks.c
 bootblock-y += spi.c
 romstage-y += spi.c
 ramstage-y += spi.c

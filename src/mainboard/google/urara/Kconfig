@@ -40,6 +40,10 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "ImgTec Pistachio Virtual Platform"
 
+config BOOTBLOCK_MAINBOARD_INIT
+	string
+	default "mainboard/google/urara/bootblock.c"
+
 config DRAM_SIZE_MB
 	int
 	default 256

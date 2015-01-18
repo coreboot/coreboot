@@ -43,6 +43,7 @@ chip soc/intel/broadwell
 	register "gpe0_en_4" = "0x00000000"
 
 	register "sata_port_map" = "0x1"
+	register "sata_port0_gen3_tx" = "0x72"
 	register "sio_acpi_mode" = "1"
 
 	# Set I2C0 to 1.8V

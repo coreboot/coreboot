@@ -80,6 +80,10 @@ void * asmlinkage romstage_main(unsigned long bist,
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);
 
+#if CONFIG_CHROMEOS
+	save_chromeos_gpios();
+#endif
+
 	return setup_stack_and_mttrs();
 }
 

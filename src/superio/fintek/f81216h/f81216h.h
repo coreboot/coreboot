@@ -34,13 +34,13 @@
  * the default key.
  * See page 17 of data sheet for details.
  */
-enum {
+typedef enum {
 	MODE_6767,
 	MODE_7777,
 	MODE_8787,
 	MODE_A0A0,
 } mode_key;
 
-void f81216h_enable_serial(pnp_devfn_t dev, u16 iobase, enum mode_key k);
+void f81216h_enable_serial(pnp_devfn_t dev, u16 iobase, mode_key k);
 
 #endif /* SUPERIO_FINTEK_F81216H_H */

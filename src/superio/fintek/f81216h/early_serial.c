@@ -21,12 +21,11 @@
 #include <arch/io.h>
 #include <device/pnp.h>
 #include <stdint.h>
-#include "fintek.h"
+#include "f81216h.h"
 
-static u8 f81216h_entry_key;
 #define FINTEK_EXIT_KEY 0xAA
 
-static void pnp_enter_conf_state(pnp_devfn_t dev)
+static void pnp_enter_conf_state(pnp_devfn_t dev, u8 f81216h_entry_key)
 {
 	u16 port = dev >> 8;
 	outb(f81216h_entry_key, port);
@@ -40,26 +39,27 @@ static void pnp_exit_conf_state(pnp_devfn_t dev)
 }
 
 /* Bring up early serial debugging output before the RAM is initialized. */
-void f81216h_enable_serial(pnp_devfn_t dev, u16 iobase, enum mode_key k)
+void f81216h_enable_serial(pnp_devfn_t dev, u16 iobase, mode_key k)
 {
+	u8 key;
 	switch(k) {
-	MODE_6767:
-		f81216h_entry_key = 0x67;
+	case MODE_6767:
+		key = 0x67;
 		break;
-	MODE_7777:
-		f81216h_entry_key = 0x77;
+	case MODE_7777:
+		key = 0x77;
 		break;
-	MODE_8787:
-		f81216h_entry_key = 0x87;
+	case MODE_8787:
+		key = 0x87;
 		break;
-	MODE_A0A0:
-		f81216h_entry_key = 0xa0;
+	case MODE_A0A0:
+		key = 0xA0;
 		break;
 	default:
-		f81216h_entry_key = 0x77; /* (safe to be hw default) */
+		key = 0x77; /* try the hw default */
+		break;
 	}
-
-	pnp_enter_conf_state(dev);
+	pnp_enter_conf_state(dev, key);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);

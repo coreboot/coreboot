@@ -45,20 +45,17 @@ static void pnp_enter_ext_func_mode(struct device *dev)
 	 *  See page 17 of data sheet.
 	 */
 	switch(conf->conf_key_mode) {
-	case 0:
-		key = 0x77; /* (default) */
-		break;
-	case 1:
-		key = 0xa0;
-		break;
-	case 2:
-		key = 0x87;
-		break;
-	case 3:
-		key = 0x67;
+	case MODE_6767:
+	case MODE_7777:
+	case MODE_8787:
+	case MODE_A0A0:
+		key = conf->conf_key_mode;
 		break;
 	default:
-		key = 0x77; /* safe to be hw default */
+		printk(BIOS_WARNING, "Warning: Undefined F81216 unlock key assignment!\n");
+		printk(BIOS_WARNING, "Setting conf_key_mode to default\n");
+		key = MODE_7777; /* try the hw default */
+		break;
 	}
 
 	outb(key, dev->path.pnp.port);

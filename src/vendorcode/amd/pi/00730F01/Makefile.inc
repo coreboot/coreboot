@@ -47,7 +47,7 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
 
-AGESA_INC += -I$(src)/southbridge/amd/pi/avalon
+AGESA_INC += -I$(src)/southbridge/amd/pi/hudson
 
 AGESA_INC += -I$(src)/arch/x86/include
 AGESA_INC += -I$(src)/include

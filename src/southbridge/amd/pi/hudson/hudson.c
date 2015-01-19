@@ -33,7 +33,7 @@
 
 /* Offsets from ACPI_MMIO_BASE
  * This is defined by AGESA, but we don't include AGESA headers to avoid
- * polluting the namesace.
+ * polluting the namespace.
  */
 #define PM_MMIO_BASE 0xfed80300
 
@@ -132,7 +132,7 @@ static void hudson_final(void *chip_info)
 {
 }
 
-struct chip_operations southbridge_amd_pi_avalon_ops = {
+struct chip_operations southbridge_amd_pi_hudson_ops = {
 	CHIP_NAME("ATI HUDSON")
 	.enable_dev = hudson_enable,
 	.init = hudson_init,

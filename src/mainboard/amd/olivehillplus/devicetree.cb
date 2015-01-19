@@ -41,7 +41,7 @@ chip northbridge/amd/pi/00730F01/root_complex
 				device pci 8.0 on  end # Platform Security Processor
 			end	#chip northbridge/amd/pi/00730F01
 
-			chip southbridge/amd/pi/avalon # it is under NB/SB Link, but on the same pci bus
+			chip southbridge/amd/pi/hudson # it is under NB/SB Link, but on the same pci bus
 				device pci 10.0 on  end # XHCI HC0
 				device pci 11.0 on  end # SATA
 				device pci 12.0 on  end # USB
@@ -60,7 +60,7 @@ chip northbridge/amd/pi/00730F01/root_complex
 				device pci 14.3 on  end # LPC	0x439d
 				device pci 14.7 on  end # SD
 				device pci 16.0 on  end # USB
-			end	#chip southbridge/amd/pi/avalon
+			end	#chip southbridge/amd/pi/hudson
 
 			device pci 18.0 on  end
 			device pci 18.1 on  end

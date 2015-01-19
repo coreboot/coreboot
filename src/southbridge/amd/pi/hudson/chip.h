@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef AVALON_CHIP_H
-#define AVALON_CHIP_H
+#ifndef HUDSON_CHIP_H
+#define HUDSON_CHIP_H
 
-struct southbridge_amd_pi_avalon_config
+struct southbridge_amd_pi_hudson_config
 {
 	#if 1
 	u32 ide0_enable : 1;
@@ -32,4 +32,4 @@ struct southbridge_amd_pi_avalon_config
 	#endif
 };
 
-#endif /* AVALON_CHIP_H */
+#endif /* HUDSON_CHIP_H */

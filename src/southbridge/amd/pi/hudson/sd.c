@@ -31,8 +31,8 @@ static void sd_init(struct device *dev)
 
 	stepping = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xFC);
 
-	struct southbridge_amd_pi_avalon_config *sd_chip =
-		(struct southbridge_amd_pi_avalon_config *)(dev->chip_info);
+	struct southbridge_amd_pi_hudson_config *sd_chip =
+		(struct southbridge_amd_pi_hudson_config *)(dev->chip_info);
 
 	if (sd_chip->sd_mode == 3) {	/* SD 3.0 mode */
 		pci_write_config32(dev, 0xA4, 0x31FEC8B2);

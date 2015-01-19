@@ -28,7 +28,7 @@
 #
 #*****************************************************************************
 
-INCLUDES += -Isrc/southbridge/amd/pi/avalon
+INCLUDES += -Isrc/southbridge/amd/pi/hudson
 
 romstage-y += smbus.c smbus_spd.c
 ramstage-y += hudson.c

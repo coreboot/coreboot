@@ -152,7 +152,7 @@ Scope (\_SB.PCI0.I2C0)
 				ControllerInitiated,      // SlaveMode
 				400000,                   // ConnectionSpeed
 				AddressingMode7Bit,       // AddressingMode
-				"\\_SB.PCI0.I2C0",             // ResourceSource
+				"\\_SB.PCI0.I2C0",        // ResourceSource
 			)
 			Interrupt (ResourceConsumer, Edge, ActiveLow){ 30 }
 		})

@@ -22,8 +22,15 @@
  * Reading at this address allows to identify the platform the code is running
  * on
  */
-#define IMG_PLATFORM_ID()		(*((unsigned *)0xB8149060))
-#define IMG_PLATFORM_ID_SILICON		0xF00D0006
+
+/*
+ * This register holds the FPGA image version
+ * If we're not working on the FPGA this will be 0
+ */
+#define PRIMARY_FPGA_VERSION		0xB8149060
+#define IMG_PLATFORM_ID()		read32(PRIMARY_FPGA_VERSION)
+#define IMG_PLATFORM_ID_FPGA		0xD1400003 /* Last FPGA image */
+#define IMG_PLATFORM_ID_SILICON		0
 
 #define CP0_COUNT	9
 #define CP0_COMPARE	11

@@ -13,25 +13,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- * MA 02110-1301 USA
  */
 
-#include <program_loading.h>
-#include <console/console.h>
-#include <halt.h>
-#include <soc/ddr_init.h>
+#ifndef __SOC_IMGTEC_PISTACHIO_DDR_INIT_H__
+#define __SOC_IMGTEC_PISTACHIO_DDR_INIT_H__
 
-void main(void)
-{
-	int error;
-	console_init();
-	error = init_ddr2();
+#define DDR_TIMEOUT			-1
 
-	if (!error) {
-		run_ramstage();
-	}
-	halt();
-}
+int init_ddr2(void);
+
+#endif

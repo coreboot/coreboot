@@ -38,6 +38,7 @@ ramstage-y += monotonic_timer.c
 ramstage-y += soc.c
 
 romstage-y += cbmem.c
+romstage-y += ddr2_init.c
 romstage-y += romstage.c
 romstage-y += monotonic_timer.c
 

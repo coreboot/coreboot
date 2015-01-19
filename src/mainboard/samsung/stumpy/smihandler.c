@@ -22,44 +22,32 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 
-/* FIXME: Include romstage serial for SIO helper functions */
-#include <superio/ite/it8772f/early_init.c>
-//#include <superio/ite/it8772f/it8772f.h>
+/* Include for SIO helper functions */
+#include <superio/ite/it8772f/it8772f.h>
 #define DUMMY_DEV PNP_DEV(0x2e, 0)
 
 /*
  * Change LED_POWER# (SIO GPIO 45) state based on sleep type.
- * The IO address is hardcoded as we don't have device path in SMM.
- */
-#define SIO_GPIO_BASE_SET4	(0x730 + 3)
-#define SIO_GPIO_BLINK_GPIO45	0x25
+*/
 void mainboard_smi_sleep(u8 slp_typ)
 {
-	u8 reg8;
-
+	printk(BIOS_DEBUG, "SMI: sleep S%d\n", slp_typ);
 	switch (slp_typ) {
 	case 3:
 	case 4:
-		/* Blink LED */
-		it8772f_enter_conf(DUMMY_DEV);
-		it8772f_sio_write(DUMMY_DEV, IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
-		/* Enable blink pin map */
-		it8772f_sio_write(DUMMY_DEV, IT8772F_GPIO_LED_BLINK1_PINMAP,
-				  SIO_GPIO_BLINK_GPIO45);
-		/* Enable 4HZ blink */
-		it8772f_sio_write(DUMMY_DEV, IT8772F_GPIO_LED_BLINK1_CONTROL, 0x02);
-		/* Set GPIO to alternate function */
-		reg8 = it8772f_sio_read(DUMMY_DEV, GPIO_REG_ENABLE(3));
-		reg8 &= ~(1 << 5);
-		it8772f_sio_write(DUMMY_DEV, GPIO_REG_ENABLE(3), reg8);
-		it8772f_exit_conf(DUMMY_DEV);
+		it8772f_gpio_led(DUMMY_DEV, 4 /* set */, (0x1<<5) /* select */,
+			(0x1<<5) /* polarity */, (0x1<<5) /* 1=pullup */,
+			(0x1<<5) /* output */, 0x00, /* 0=Alternate function */
+			SIO_GPIO_BLINK_GPIO45, IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
 		break;
 
 	case 5:
-		/* Turn off LED */
-		reg8 = inb(SIO_GPIO_BASE_SET4);
-		reg8 |= (1 << 5);
-		outb(reg8, SIO_GPIO_BASE_SET4);
+		it8772f_gpio_led(DUMMY_DEV, 4 /* set */, (0x1<<5) /* select */,
+			0x00 /* polarity: non-inverting */, 0x00 /* 0=pulldown */,
+			(0x1<<5) /* output */, (0x1<<5) /* 1=Simple IO function */,
+			SIO_GPIO_BLINK_GPIO45, IT8772F_GPIO_BLINK_FREQUENCY_1_HZ);
+		break;
+	default:
 		break;
 	}
 }

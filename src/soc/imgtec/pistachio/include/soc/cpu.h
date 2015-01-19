@@ -18,14 +18,18 @@
 #ifndef __SOC_IMGTEC_DANUBE_CPU_H__
 #define __SOC_IMGTEC_DANUBE_CPU_H__
 
+#include <arch/io.h>
+
 #define IMG_SPIM0_BASE_ADDRESS	0xB8100F00
 #define IMG_SPIM1_BASE_ADDRESS	0xB8101000
 
 /*
- * Reading at this address allows to identify the platform the code is running
- * on.
+ * This register holds the FPGA image version
+ * If we're not working on the FPGA this will be 0
  */
-#define IMG_PLATFORM_ID()	(*((unsigned *)0xB8149060))
-#define IMG_PLATFORM_ID_SILICON 0xF00D0006
+#define PRIMARY_FPGA_VERSION		0xB8149060
+#define IMG_PLATFORM_ID()		read32(PRIMARY_FPGA_VERSION)
+#define IMG_PLATFORM_ID_FPGA		0xD1400003 /* Last FPGA image */
+#define IMG_PLATFORM_ID_SILICON		0
 
 #endif

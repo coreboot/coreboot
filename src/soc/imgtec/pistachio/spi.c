@@ -222,6 +222,7 @@ static u32 control_reg_setup(struct spim_buffer *first,
 	/* Set up the transfer mode */
 	reg = spi_write_reg_field(reg, SPFI_TRNSFR_MODE_DQ, SPIM_CMD_MODE_0);
 	reg = spi_write_reg_field(reg, SPFI_TRNSFR_MODE, SPIM_DMODE_SINGLE);
+	reg = spi_write_reg_field(reg, SPIM_EDGE_TX_RX, 1);
 
 	if (second) {
 		/* Set TX bit if the 2nd transaction is 'send' */

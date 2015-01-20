@@ -130,6 +130,28 @@ struct soc_intel_broadwell_config {
 	/* Enable S0iX support */
 	int s0ix_enable;
 
+	/*
+	 * Minimum voltage for C6/C7 state:
+	 * 0x67 = 1.6V (full swing)
+	 *  ...
+	 * 0x79 = 1.7V
+	 *  ...
+	 * 0x83 = 1.8V (no swing)
+	 */
+	int vr_cpu_min_vid;
+
+	/*
+	 * Set slow VR ramp rate on C-state exit:
+	 * 0 = Fast VR ramp rate / 2
+	 * 1 = Fast VR ramp rate / 4
+	 * 2 = Fast VR ramp rate / 8
+	 * 3 = Fast VR ramp rate / 16
+	 */
+	int vr_slow_ramp_rate_set;
+
+	/* Enable slow VR ramp rate */
+	int vr_slow_ramp_rate_enable;
+
 	/* Deep SX enable */
 	int deep_sx_enable_ac;
 	int deep_sx_enable_dc;

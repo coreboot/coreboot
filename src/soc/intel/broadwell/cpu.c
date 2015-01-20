@@ -180,6 +180,8 @@ static u32 pcode_mailbox_read(u32 command)
 
 static void initialize_vr_config(void)
 {
+	device_t dev = SA_DEV_ROOT;
+	config_t *conf = dev->chip_info;
 	msr_t msr;
 
 	printk(BIOS_DEBUG, "Initializing VR config.\n");
@@ -203,17 +205,27 @@ static void initialize_vr_config(void)
 	msr.hi |= (0x200 << (40 - 32)); /* 1.0 */
 	/* Set IOUT_OFFSET to 0. */
 	msr.hi &= ~0xff;
-	/* Set exit ramp rate to fast. */
-	msr.hi |= (1 << (50 - 32));
 	/* Set entry ramp rate to slow. */
 	msr.hi &= ~(1 << (51 - 32));
 	/* Enable decay mode on C-state entry. */
 	msr.hi |= (1 << (52 - 32));
-	/* Set the slow ramp rate to be fast ramp rate / 4 */
+	/* Set the slow ramp rate */
 	msr.hi &= ~(0x3 << (53 - 32));
-	msr.hi |= (0x01 << (53 - 32));
+	/* Configure the C-state exit ramp rate. */
+	if (conf->vr_slow_ramp_rate_enable) {
+		/* Configured slow ramp rate. */
+		msr.hi |= ((conf->vr_slow_ramp_rate_set & 0x3) << (53 - 32));
+		/* Set exit ramp rate to slow. */
+		msr.hi &= ~(1 << (50 - 32));
+	} else {
+		/* Fast ramp rate / 4. */
+		msr.hi |= (0x01 << (53 - 32));
+		/* Set exit ramp rate to fast. */
+		msr.hi |= (1 << (50 - 32));
+	}
 	/* Set MIN_VID (31:24) to allow CPU to have full control. */
 	msr.lo &= ~0xff000000;
+	msr.lo |= (conf->vr_cpu_min_vid & 0xff) << 24;
 	wrmsr(MSR_VR_MISC_CONFIG, msr);
 
 	/*  Configure VR_MISC_CONFIG2 MSR. */

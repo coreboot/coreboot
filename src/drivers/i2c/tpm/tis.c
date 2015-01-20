@@ -29,6 +29,7 @@
 #include <device/i2c.h>
 #include <tpm.h>
 #include "tpm.h"
+#include <timer.h>
 
 #include <console/console.h>
 
@@ -37,6 +38,7 @@ struct tpm_chip g_chip;
 
 #define TPM_CMD_COUNT_BYTE 2
 #define TPM_CMD_ORDINAL_BYTE 6
+#define TPM_VALID_STATUS (1 << 7)
 
 int tis_open(void)
 {
@@ -74,12 +76,33 @@ int tis_init(void)
 {
 	int bus = CONFIG_DRIVER_TPM_I2C_BUS;
 	int chip = CONFIG_DRIVER_TPM_I2C_ADDR;
+	struct stopwatch sw;
+	uint8_t buf = 0;
+	int ret;
+	long sw_run_duration = 750;
 
 	/*
-	 * Probe TPM twice; the first probing might fail because TPM is asleep,
-	 * and the probing can wake up TPM.
+	 * Probe TPM. Check if the TPM_ACCESS register's ValidSts bit is set(1)
+	 * If the bit remains clear(0) then claim that init has failed.
 	 */
-	if (i2c_writeb(bus, chip, 0, 0) && i2c_writeb(bus, chip, 0, 0))
+	stopwatch_init_msecs_expire(&sw, sw_run_duration);
+	do {
+		ret = i2c_readb(bus, chip, 0, &buf);
+		if (!ret && (buf & TPM_VALID_STATUS)) {
+			sw_run_duration = stopwatch_duration_msecs(&sw);
+			break;
+		}
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_INFO,
+	       "%s: ValidSts bit %s(%d) in TPM_ACCESS register after %ld ms\n",
+	       __func__, (buf & TPM_VALID_STATUS) ? "set" : "clear",
+	       (buf & TPM_VALID_STATUS) >> 7, sw_run_duration);
+
+	/*
+	 * Claim failure if the ValidSts (bit 7) is clear.
+	 */
+	if (!(buf & TPM_VALID_STATUS))
 		return -1;
 
 	return 0;

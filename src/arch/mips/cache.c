@@ -1,4 +1,3 @@
-
 /*
  * This file is part of the coreboot project.
  *
@@ -20,6 +19,7 @@
 
 #include <arch/cache.h>
 #include <symbols.h>
+#include <console/console.h>
 
 /* Cache operations */
 
@@ -73,12 +73,29 @@
 		: "i" (op), "R" (*(unsigned char *)(addr)));		\
 })
 
+static int get_cache_line(uint8_t type)
+{
+	switch (type) {
+	case ICACHE: return get_icache_line();
+	case DCACHE: return get_dcache_line();
+	case L2CACHE: return get_L2cache_line();
+	default:
+		printk(BIOS_ERR, "%s: Error: unsupported cache type.\n",
+				__func__);
+		return 0;
+	}
+	return 0;
+}
+
 void perform_cache_operation(uintptr_t start, size_t size, uint8_t operation)
 {
 	u32 line_size, line_mask;
 	uintptr_t end;
 
-	line_size = get_icache_line();
+	line_size = get_cache_line((operation >> CACHE_TYPE_SHIFT) &
+					CACHE_TYPE_MASK);
+	if (!line_size)
+		return;
 	line_mask = ~(line_size-1);
 	end = (start + (line_size - 1) + size) & line_mask;
 	start &= line_mask;
@@ -108,5 +125,4 @@ void cache_invalidate_all(uintptr_t start, size_t size)
 	perform_cache_operation(start, size, CACHE_CODE(ICACHE, WB_INVD));
 	perform_cache_operation(start, size, CACHE_CODE(DCACHE, WB_INVD));
 	perform_cache_operation(start, size, CACHE_CODE(L2CACHE, WB_INVD));
-
 }

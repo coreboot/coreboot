@@ -25,7 +25,7 @@
 
 #define get_icache_line()	__get_line_size($16, 1, 19, 3)
 #define get_dcache_line()	__get_line_size($16, 1, 10, 3)
-#define get_L2cache_line()	__get_line_size($16, 2, 20, 4)
+#define get_L2cache_line()	__get_line_size($16, 2, 4, 4)
 
 #define CACHE_TYPE_SHIFT	(0)
 #define CACHE_OP_SHIFT		(2)

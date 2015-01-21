@@ -61,13 +61,13 @@ config HUDSON_IMC_FWM
 	bool "Add IMC firmware"
 	depends on !HUDSON_DISABLE_IMC
 	default y
-        help
+	help
 	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
 
 config HUDSON_GEC_FWM
 	bool
 	default n
-        help
+	help
 	  Add Hudson 2/3/4 GEC Firmware to support the onboard gigabit Ethernet MAC.
 	  Must be connected to a Broadcom B50610 or B50610M PHY on the motherboard.
 
@@ -76,17 +76,17 @@ config HUDSON_PSP
 	default y if CPU_AMD_PI_00730F01
 
 config HUDSON_XHCI_FWM_FILE
-        string "XHCI firmware path and filename"
-        default "3rdparty/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_PI_AVALON
+	string "XHCI firmware path and filename"
+	default "3rdparty/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_PI_AVALON
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
-        string "IMC firmware path and filename"
-        default "3rdparty/southbridge/amd/avalon/imc.bin" if SOUTHBRIDGE_AMD_PI_AVALON
+	string "IMC firmware path and filename"
+	default "3rdparty/southbridge/amd/avalon/imc.bin" if SOUTHBRIDGE_AMD_PI_AVALON
 	depends on HUDSON_IMC_FWM
 
 config HUDSON_GEC_FWM_FILE
-        string "GEC firmware path and filename"
+	string "GEC firmware path and filename"
 	depends on HUDSON_GEC_FWM
 
 config HUDSON_FWM
@@ -97,12 +97,12 @@ config HUDSON_FWM
 if HUDSON_FWM
 
 config HUDSON_FWM_POSITION
-        hex "Hudson Firmware ROM Position"
-        default 0xFFF20000 if BOARD_ROMSIZE_KB_1024
-        default 0xFFE20000 if BOARD_ROMSIZE_KB_2048
-        default 0xFFC20000 if BOARD_ROMSIZE_KB_4096
-        default 0xFF820000 if BOARD_ROMSIZE_KB_8192
-        default 0xFF020000 if BOARD_ROMSIZE_KB_16384
+	hex "Hudson Firmware ROM Position"
+	default 0xFFF20000 if BOARD_ROMSIZE_KB_1024
+	default 0xFFE20000 if BOARD_ROMSIZE_KB_2048
+	default 0xFFC20000 if BOARD_ROMSIZE_KB_4096
+	default 0xFF820000 if BOARD_ROMSIZE_KB_8192
+	default 0xFF020000 if BOARD_ROMSIZE_KB_16384
 	help
 	  Hudson requires the firmware MUST be located at
 	  a specific address (ROM start address + 0x20000), otherwise
@@ -118,14 +118,14 @@ config HUDSON_FWM_POSITION
 endif # HUDSON_FWM
 
 config AMD_PUBKEY_FILE
-        depends on HUDSON_PSP
-        string "AMD public Key"
-        default "3rdparty/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
+	depends on HUDSON_PSP
+	string "AMD public Key"
+	default "3rdparty/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
 
 config HUDSON_SATA_MODE
-        int "SATA Mode"
-        default 0
-        range 0 6
+	int "SATA Mode"
+	default 0
+	range 0 6
 	help
 	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.
 	  The default is NATIVE.
@@ -181,8 +181,8 @@ if HUDSON_SATA_MODE = 1
 config RAID_ROM_ID
 	string "RAID device PCI IDs"
 	default "1022,7802"
-        help
-          1022,7802 for SATA NON-RAID5 module, 1022,7803 for SATA RAID5 mode
+	help
+	  1022,7802 for SATA NON-RAID5 module, 1022,7803 for SATA RAID5 mode
 
 config RAID_ROM_FILE
 	string "RAID ROM path and filename"

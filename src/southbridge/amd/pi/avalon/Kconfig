@@ -172,7 +172,7 @@ config HUDSON_AHCI_ROM
 config AHCI_ROM_FILE
 	string "AHCI ROM path and filename"
 	depends on HUDSON_AHCI_ROM
-	default "src/southbridge/amd/agesa/hudson/ahci.bin"
+	default "src/southbridge/amd/pi/avalon/ahci.bin"
 
 endif
 
@@ -186,11 +186,11 @@ config RAID_ROM_ID
 
 config RAID_ROM_FILE
 	string "RAID ROM path and filename"
-	default "src/southbridge/amd/agesa/hudson/raid.bin"
+	default "src/southbridge/amd/pi/avalon/raid.bin"
 
 config RAID_MISC_ROM_FILE
 	string "RAID Misc ROM path and filename"
-	default "src/southbridge/amd/agesa/hudson/misc.bin"
+	default "src/southbridge/amd/pi/avalon/misc.bin"
 
 config RAID_MISC_ROM_POSITION
 	hex "RAID Misc ROM Position"

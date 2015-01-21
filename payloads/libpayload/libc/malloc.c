@@ -130,7 +130,7 @@ static void *alloc(int len, struct memory_type *type)
 	hdrtype_t volatile *ptr = (hdrtype_t volatile *)type->start;
 
 	/* Align the size. */
-	len = (len + HDRSIZE - 1) & ~(HDRSIZE - 1);
+	len = ALIGN_UP(len, HDRSIZE);
 
 	if (!len || len > MAX_SIZE)
 		return (void *)NULL;

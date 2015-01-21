@@ -101,6 +101,14 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 
+	/* Backlight: GPIO active high (output) */
+	gpios->gpios[count].port = GPIO_BACKLIGHT.raw;
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = -1;
+	strncpy((char *)gpios->gpios[count].name, "backlight",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
+
 	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
 	gpios->count = count;
 

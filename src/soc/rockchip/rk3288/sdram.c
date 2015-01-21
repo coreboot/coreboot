@@ -998,12 +998,29 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 		writel(POWER_UP_START, &ddr_pctl_regs->powctl);
 		while (!(readl(&ddr_pctl_regs->powstat) & POWER_UP_DONE))
 			;
-		send_command(ddr_pctl_regs, 3, DESELECT_CMD, 0);
-		udelay(1);
-		send_command(ddr_pctl_regs, 3, PREA_CMD, 0);
 
 		memory_init(ddr_publ_regs, sdram_params->dramtype);
 		move_to_config_state(ddr_publ_regs, ddr_pctl_regs);
+
+		if (sdram_params->dramtype == LPDDR3) {
+			send_command(ddr_pctl_regs, 3, DESELECT_CMD, 0);
+			udelay(1);
+			send_command(ddr_pctl_regs, 3, PREA_CMD, 0);
+			udelay(1);
+			send_command(ddr_pctl_regs, 3, MRS_CMD, LPDDR2_MA(63) |
+				LPDDR2_OP(0xFC));
+			udelay(1);
+			send_command(ddr_pctl_regs, 3, MRS_CMD, LPDDR2_MA(1) |
+				LPDDR2_OP(sdram_params->phy_timing.mr[1]));
+			udelay(1);
+			send_command(ddr_pctl_regs, 3, MRS_CMD, LPDDR2_MA(2) |
+				LPDDR2_OP(sdram_params->phy_timing.mr[2]));
+			udelay(1);
+			send_command(ddr_pctl_regs, 3, MRS_CMD, LPDDR2_MA(3) |
+				LPDDR2_OP(sdram_params->phy_timing.mr[3]));
+			udelay(1);
+		}
+
 		set_bandwidth_ratio(channel, sdram_params->ch[channel].bw);
 		/*
 		 * set cs

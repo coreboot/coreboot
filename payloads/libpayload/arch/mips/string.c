@@ -70,3 +70,13 @@ void *memset(void *s, int c, size_t n)
 
 	return s;
 }
+
+int memcmp(const void *s1, const void *s2, size_t n)
+{
+	size_t i;
+
+	for (i = 0; i < n; i++)
+		if (((u8 *)s1)[i] != ((u8 *)s2)[i])
+			return ((u8 *)s1)[i] - ((u8 *)s2)[i];
+	return 0;
+}

@@ -639,6 +639,7 @@ static void pctl_cfg(u32 channel,
 static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 {
 	u32 i;
+	u32 dinit2 = div_round_up(sdram_params->ddr_freq/MHz * 200000, 1000);
 	struct rk3288_ddr_publ_regs *ddr_publ_regs = rk3288_ddr_publ[channel];
 	struct rk3288_msch_regs *msch_regs = rk3288_msch[channel];
 
@@ -660,8 +661,7 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 			  * 500000, 1000))
 		| PRT_DINIT1(div_round_up(sdram_params->ddr_freq/MHz
 			     * 400, 1000)), &ddr_publ_regs->ptr[1]);
-	writel(PRT_DINIT2(div_round_up(sdram_params->ddr_freq/MHz
-			  * 200000, 1000))
+	writel(PRT_DINIT2(MIN(dinit2, 0x1ffff))
 		| PRT_DINIT3(div_round_up(sdram_params->ddr_freq/MHz
 			     * 1000, 1000)), &ddr_publ_regs->ptr[2]);
 

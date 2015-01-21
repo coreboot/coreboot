@@ -26,7 +26,7 @@
 #include "amdlib.h"
 #include "chip.h"
 
-#include "northbridge/amd/agesa/dimmSpd.h"
+#include "northbridge/amd/pi/dimmSpd.h"
 
 #define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
 

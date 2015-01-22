@@ -121,7 +121,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 
 	int headers;
 	int i, outlen;
-	uint32_t data_start, data_end, mem_end;
+	uint64_t data_start, data_end, mem_end;
 
 	comp_func_ptr compress = compression_function(algo);
 	if (!compress)
@@ -159,7 +159,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	virt_to_phys = 0;
 
 	for (i = 0; i < headers; i++) {
-		unsigned int start, mend, rend;
+		uint64_t start, mend, rend;
 
 		if (phdr[i].p_type != PT_LOAD)
 			continue;
@@ -210,7 +210,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	/* Copy the file data into the buffer */
 
 	for (i = 0; i < headers; i++) {
-		unsigned int l_start, l_offset = 0;
+		uint64_t l_start, l_offset = 0;
 
 		if (phdr[i].p_type != PT_LOAD)
 			continue;

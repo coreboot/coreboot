@@ -318,6 +318,8 @@ void *realloc(void *ptr, size_t size)
 
 struct align_region_t
 {
+	/* If alignment is 0 then the region reqpresents a large region which
+	 * has no metadata for tracking subelements. */
 	int alignment;
 	/* start in memory, and size in bytes */
 	void* start;
@@ -336,58 +338,126 @@ struct align_region_t
 	struct align_region_t *next;
 };
 
-static struct align_region_t *allocate_region(int alignment, int num_elements, struct memory_type *type)
+static inline int region_is_large(const struct align_region_t *r)
 {
-	struct align_region_t *new_region;
-#ifdef CONFIG_LP_DEBUG_MALLOC
-	printf("%s(old align_regions=%p, alignment=%u, num_elements=%u)\n",
-			__func__, type->align_regions, alignment, num_elements);
-#endif
-
-	new_region = malloc(sizeof(struct align_region_t));
-
-	if (!new_region)
-		return NULL;
-	new_region->alignment = alignment;
-	new_region->start = alloc((num_elements+1) * alignment + num_elements, type);
-	if (!new_region->start) {
-		free(new_region);
-		return NULL;
-	}
-	new_region->start_data = (void*)((uintptr_t)(new_region->start + num_elements + alignment - 1) & (~(alignment-1)));
-	new_region->size = num_elements * alignment;
-	new_region->free = num_elements;
-	new_region->next = type->align_regions;
-	memset(new_region->start, 0, num_elements);
-	type->align_regions = new_region;
-	return new_region;
+	return r->alignment == 0;
 }
 
+static inline int addr_in_region(const struct align_region_t *r, void *addr)
+{
+	return ((addr >= r->start_data) && (addr < r->start_data + r->size));
+}
+
+/* num_elements == 0 indicates a large aligned region instead of a smaller
+ * region comprised of alignment-sized chunks. */
+static struct align_region_t *allocate_region(int alignment, int num_elements,
+					size_t size, struct memory_type *type)
+{
+	struct align_region_t *r;
+	size_t extra_space;
+
+#ifdef CONFIG_LP_DEBUG_MALLOC
+	printf("%s(old align_regions=%p, alignment=%u, num_elements=%u, size=%zu)\n",
+		__func__, type->align_regions, alignment, num_elements, size);
+#endif
+
+	r = malloc(sizeof(*r));
+
+	if (r == NULL)
+		return NULL;
+
+	memset(r, 0, sizeof(r));
+
+	if (num_elements != 0) {
+		r->alignment = alignment;
+		r->size = num_elements * alignment;
+		r->free = num_elements;
+		/* Allocate enough memory for alignment requirements and
+		 * metadata for each chunk. */
+		extra_space = num_elements;
+	} else {
+		/* Large aligned allocation. Set alignment = 0. */
+		r->alignment = 0;
+		r->size = size;
+		extra_space = 0;
+	}
+
+	r->start = alloc(r->size + alignment + extra_space, type);
+
+	if (r->start == NULL) {
+		free(r);
+		return NULL;
+	}
+
+	r->start_data = (void *)ALIGN_UP((uintptr_t)r->start + extra_space,
+					alignment);
+
+	/* Clear any (if requested) metadata. */
+	memset(r->start, 0, extra_space);
+
+	/* Link the region with the rest. */
+	r->next = type->align_regions;
+	type->align_regions = r;
+
+	return r;
+}
+
+static void try_free_region(struct align_region_t **prev_link)
+{
+	struct align_region_t *r = *prev_link;
+
+	/* All large regions are immediately free-able. Non-large regions
+	 * need to be checked for the fully freed state. */
+	if (!region_is_large(r)) {
+		if (r->free != r->size / r->alignment)
+			return;
+	}
+
+	/* Unlink region from link list. */
+	*prev_link = r->next;
+
+	/* Free the data and metadata. */
+	free(r->start);
+	free(r);
+}
 
 static int free_aligned(void* addr, struct memory_type *type)
 {
-	struct align_region_t *reg = type->align_regions;
-	while (reg != 0)
+	struct align_region_t **prev_link = &type->align_regions;
+
+	while (*prev_link != NULL)
 	{
-		if ((addr >= reg->start_data) && (addr < reg->start_data + reg->size))
-		{
-			int i = (addr-reg->start_data)/reg->alignment;
-			while (((u8*)reg->start)[i]==2)
-			{
-				((u8*)reg->start)[i++]=0;
-				reg->free++;
-			}
-			((u8*)reg->start)[i]=0;
-			reg->free++;
+		if (!addr_in_region(*prev_link, addr)) {
+			prev_link = &((*prev_link)->next);
+			continue;
+		}
+
+		if (region_is_large(*prev_link)) {
+			try_free_region(prev_link);
 			return 1;
 		}
-		reg = reg->next;
+
+		int i = (addr-(*prev_link)->start_data)/(*prev_link)->alignment;
+		u8 *meta = (*prev_link)->start;
+		while (meta[i] == 2)
+		{
+			meta[i++] = 0;
+			(*prev_link)->free++;
+		}
+		meta[i] = 0;
+		(*prev_link)->free++;
+		try_free_region(prev_link);
+		return 1;
 	}
 	return 0;
 }
 
 static void *alloc_aligned(size_t align, size_t size, struct memory_type *type)
 {
+	/* Define a large request to be 1024 bytes for either alignment or
+	 * size of allocation. */
+	const size_t large_request = 1024;
+
 	if (size == 0) return 0;
 	if (type->align_regions == 0) {
 		type->align_regions = malloc(sizeof(struct align_region_t));
@@ -396,6 +466,14 @@ static void *alloc_aligned(size_t align, size_t size, struct memory_type *type)
 		memset(type->align_regions, 0, sizeof(struct align_region_t));
 	}
 	struct align_region_t *reg = type->align_regions;
+
+	if (size >= large_request || align >= large_request) {
+		reg = allocate_region(align, 0, size, type);
+		if (reg == NULL)
+			return NULL;
+		return reg->start_data;
+	}
+
 look_further:
 	while (reg != 0)
 	{
@@ -414,7 +492,7 @@ look_further:
 		printf("  need to allocate a new memalign region\n");
 #endif
 		/* get align regions */
-		reg = allocate_region(align, (size<1024)?(1024/align):(((size-1)/align)+1), type);
+		reg = allocate_region(align, large_request/align, size, type);
 #ifdef CONFIG_LP_DEBUG_MALLOC
 		printf("  ... returned %p\n", reg);
 #endif

@@ -21,9 +21,9 @@
 #include <console/console.h>
 #include <reset.h>
 #include "../chromeos.h"
+#include "../symbols.h"
 #include "../vboot_handoff.h"
 #include "misc.h"
-#include "symbols.h"
 
 void *vboot_load_stage(int stage_index,
 		       struct vboot_region *fw_main,

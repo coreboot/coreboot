@@ -23,8 +23,8 @@
 #include <string.h>
 #include <timestamp.h>
 #include "../chromeos.h"
+#include "../symbols.h"
 #include "misc.h"
-#include "symbols.h"
 
 static struct vb2_working_data *init_vb2_working_data(void)
 {

@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#ifndef __CHROMEOS_VBOOT2_SYMBOLS_H
-#define __CHROMEOS_VBOOT2_SYMBOLS_H
+#ifndef __CHROMEOS_SYMBOLS_H
+#define __CHROMEOS_SYMBOLS_H
 
 extern u8 _vboot2_work[];
 extern u8 _evboot2_work[];
@@ -29,4 +29,4 @@ extern u8 _verstage[];
 extern u8 _everstage[];
 #define _verstage_size (_everstage - _verstage)
 
-#endif /* __CHROMEOS_VBOOT2_SYMBOLS_H */
+#endif /* __CHROMEOS_SYMBOLS_H */

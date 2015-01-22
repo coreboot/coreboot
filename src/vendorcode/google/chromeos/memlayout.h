@@ -19,8 +19,8 @@
 
 /* This file contains macro definitions for memlayout.ld linker scripts. */
 
-#ifndef __CHROMEOS_VBOOT2_MEMLAYOUT_H
-#define __CHROMEOS_VBOOT2_MEMLAYOUT_H
+#ifndef __CHROMEOS_MEMLAYOUT_H
+#define __CHROMEOS_MEMLAYOUT_H
 
 /* Careful: required work buffer size depends on RW properties such as key size
  * and algorithm -- what works for you might stop working after an update. Do
@@ -47,4 +47,4 @@
 	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) ROMSTAGE(addr, size)
 #endif
 
-#endif /* __CHROMEOS_VBOOT2_MEMLAYOUT_H */
+#endif /* __CHROMEOS_MEMLAYOUT_H */

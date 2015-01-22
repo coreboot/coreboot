@@ -174,6 +174,20 @@ static inline void *xzalloc_work(size_t size, const char *file,
 	return ret;
 }
 #define xzalloc(size) xzalloc_work((size), __FILE__, __FUNCTION__, __LINE__)
+
+static inline void *xmemalign_work(size_t align, size_t size, const char *file,
+				  const char *func, int line)
+{
+	void *ret = memalign(align, size);
+	if (!ret && size) {
+		die_work(file, func, line,
+			 "Failed to memalign %zu bytes with %zu alignment.\n",
+			 size, align);
+	}
+	return ret;
+}
+#define xmemalign(align, size) \
+	xmemalign_work((align), (size), __FILE__, __func__, __LINE__)
 /** @} */
 
 /**

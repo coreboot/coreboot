@@ -20,11 +20,6 @@
 #include <libpayload.h>
 #include <arch/cpu.h>
 
-static int get_timer_speed_khz(void)
-{
-	return get_cpu_speed()/2;
-}
-
 uint64_t timer_hz(void)
 {
 	return lib_sysinfo.cpu_khz * 1000;
@@ -32,5 +27,5 @@ uint64_t timer_hz(void)
 
 uint64_t timer_raw_value(void)
 {
-	return read_c0_count()/(get_timer_speed_khz()/1000);
+	return read_c0_count() * 2;
 }

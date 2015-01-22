@@ -167,6 +167,7 @@ static void mainboard_init(device_t dev)
 	configure_vop();
 
 	elog_init();
+	elog_add_watchdog_reset();
 	elog_add_boot_reason();
 }
 

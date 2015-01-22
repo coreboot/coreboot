@@ -58,10 +58,8 @@ void bootblock_mainboard_init(void)
 	udelay(100);/* Must wait for voltage to stabilize,2mV/us */
 	rkclk_configure_cpu();
 
-	if (rkclk_was_watchdog_reset()) {
-		printk(BIOS_INFO, "Last reset was watchdog... rebooting via GPIO!\n");
-		hard_reset();
-	}
+	if (rkclk_was_watchdog_reset())
+		reboot_from_watchdog();
 
 	/* i2c1 for tpm */
 	writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);

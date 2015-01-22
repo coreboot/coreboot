@@ -47,4 +47,8 @@
 	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) ROMSTAGE(addr, size)
 #endif
 
+#define WATCHDOG_TOMBSTONE(addr, size) \
+	REGION(watchdog_tombstone, addr, size, 4) \
+	_ = ASSERT(size == 4, "watchdog tombstones should be exactly 4 byte!");
+
 #endif /* __CHROMEOS_MEMLAYOUT_H */

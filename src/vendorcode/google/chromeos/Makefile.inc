@@ -42,6 +42,10 @@ ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c
 smm-y += fmap.c
 romstage-y += vpd_decode.c cros_vpd.c
 ramstage-y += vpd_decode.c cros_vpd.c vpd_mac.c vpd_calibration.c
+ifeq ($(CONFIG_ARCH_X86)$(CONFIG_ARCH_MIPS),)
+bootblock-y += watchdog.c
+ramstage-y += watchdog.c
+endif
 
 ifeq ($(MOCK_TPM),1)
 CFLAGS_common += -DMOCK_TPM=1

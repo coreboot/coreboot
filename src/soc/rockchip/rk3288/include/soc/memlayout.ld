@@ -47,5 +47,6 @@ SECTIONS
 	/* 4K of special SRAM in PMU power domain.
 	 * Careful: only supports 32-bit wide write accesses! */
 	SYMBOL(pmu_sram, 0xFF720000)
+	WATCHDOG_TOMBSTONE(0xFF720FFC, 4)
 	SYMBOL(epmu_sram, 0xFF721000)
 }

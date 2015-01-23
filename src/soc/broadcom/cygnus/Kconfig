@@ -39,4 +39,9 @@ config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/broadcom/cygnus/bootblock.c"
 
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on CONSOLE_SERIAL_UART
+	default 0x18023000
+
 endif

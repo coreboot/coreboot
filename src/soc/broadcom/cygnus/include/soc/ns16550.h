@@ -1,80 +1,60 @@
 /*
- * NS16550 Serial Port
- * originally from linux source (arch/powerpc/boot/ns16550.h)
+ * This file is part of the coreboot project.
  *
- * Cleanup and unification
- * (C) 2009 by Detlev Zundel, DENX Software Engineering GmbH
+ * Copyright (C) 2000 Flying Pig Systems
+ * Copyright (C) 2005 Wind River Systems
+ * Copyright (C) 2009 DENX Software Engineering GmbH
+ * Copyright (C) 2015 Google Inc.
  *
- * modified slightly to
- * have addresses as offsets from CONFIG_SYS_ISA_BASE
- * added a few more definitions
- * added prototypes for ns16550.c
- * reduced no of com ports to 2
- * modifications (c) Rob Taylor, Flying Pig Systems. 2000.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * added support for port on 64-bit bus
- * by Richard Danter (richard.danter@windriver.com), (C) 2005 Wind River Systems
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/*
- * Note that the following macro magic uses the fact that the compiler
- * will not allocate storage for arrays of size 0
- */
+#include <stdint.h>
 
-#include <linux/types.h>
-
-#if !defined(CONFIG_SYS_NS16550_REG_SIZE) || (CONFIG_SYS_NS16550_REG_SIZE == 0)
-#error "Please define NS16550 registers size."
-#elif defined(CONFIG_SYS_NS16550_MEM32)
-#define UART_REG(x) u32 x
-#elif (CONFIG_SYS_NS16550_REG_SIZE > 0)
-#define UART_REG(x)						   \
-	unsigned char prepad_##x[CONFIG_SYS_NS16550_REG_SIZE - 1]; \
-	unsigned char x;
-#elif (CONFIG_SYS_NS16550_REG_SIZE < 0)
-#define UART_REG(x)							\
-	unsigned char x;						\
-	unsigned char postpad_##x[-CONFIG_SYS_NS16550_REG_SIZE - 1];
-#endif
-
-struct NS16550 {
-	UART_REG(rbr);		/* 0 */
-	UART_REG(ier);		/* 1 */
-	UART_REG(fcr);		/* 2 */
-	UART_REG(lcr);		/* 3 */
-	UART_REG(mcr);		/* 4 */
-	UART_REG(lsr);		/* 5 */
-	UART_REG(msr);		/* 6 */
-	UART_REG(spr);		/* 7 */
-#ifdef CONFIG_SOC_DA8XX
-	UART_REG(reg8);		/* 8 */
-	UART_REG(reg9);		/* 9 */
-	UART_REG(revid1);	/* A */
-	UART_REG(revid2);	/* B */
-	UART_REG(pwr_mgmt);	/* C */
-	UART_REG(mdr1);		/* D */
-#else
-	UART_REG(mdr1);		/* 8 */
-	UART_REG(reg9);		/* 9 */
-	UART_REG(regA);		/* A */
-	UART_REG(regB);		/* B */
-	UART_REG(regC);		/* C */
-	UART_REG(regD);		/* D */
-	UART_REG(regE);		/* E */
-	UART_REG(uasr);		/* F */
-	UART_REG(scr);		/* 10*/
-	UART_REG(ssr);		/* 11*/
-	UART_REG(reg12);	/* 12*/
-	UART_REG(osc_12m_sel);	/* 13*/
-#endif
+struct ns16550 {
+	union {
+		uint32_t thr;	/* Transmit holding register. */
+		uint32_t rbr;	/* Receive buffer register. */
+		uint32_t dll;	/* Divisor latch lsb. */
+	};
+	union {
+		uint32_t ier;	/* Interrupt enable register. */
+		uint32_t dlm;	/* Divisor latch msb. */
+	};
+	union {
+		uint32_t iir;	/* Interrupt identification register. */
+		uint32_t fcr;	/* FIFO control register. */
+	};
+	uint32_t lcr;		/* 3 */
+	uint32_t mcr;		/* 4 */
+	uint32_t lsr;		/* 5 */
+	uint32_t msr;		/* 6 */
+	uint32_t spr;		/* 7 */
+	uint32_t mdr1;		/* 8 */
+	uint32_t reg9;		/* 9 */
+	uint32_t regA;		/* A */
+	uint32_t regB;		/* B */
+	uint32_t regC;		/* C */
+	uint32_t regD;		/* D */
+	uint32_t regE;		/* E */
+	uint32_t uasr;		/* F */
+	uint32_t scr;		/* 10*/
+	uint32_t ssr;		/* 11*/
+	uint32_t reg12;		/* 12*/
+	uint32_t osc_12m_sel;	/* 13*/
 };
-
-#define thr rbr
-#define iir fcr
-#define dll rbr
-#define dlm ier
-
-typedef struct NS16550 *NS16550_t;
 
 /*
  * These are the definitions for the FIFO Control Register
@@ -163,16 +143,5 @@ typedef struct NS16550 *NS16550_t;
 #define UART_IER_THRI	0x02	/* Enable Transmitter holding register int. */
 #define UART_IER_RDI	0x01	/* Enable receiver data interrupt */
 
-
-#ifdef CONFIG_OMAP1510
-#define OSC_12M_SEL	0x01	/* selects 6.5 * current clk div */
-#endif
-
-/* useful defaults for LCR */
+/* useful defaults for LCR: 8 data, 1 stop, no parity */
 #define UART_LCR_8N1	0x03
-
-void NS16550_init(NS16550_t com_port, int baud_divisor);
-void NS16550_putc(NS16550_t com_port, char c);
-char NS16550_getc(NS16550_t com_port);
-int NS16550_tstc(NS16550_t com_port);
-void NS16550_reinit(NS16550_t com_port, int baud_divisor);

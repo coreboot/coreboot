@@ -89,7 +89,10 @@ struct rk3288_grf_regs {
 		u32 iomux_pwm0;
 		u32 iomux_pwm1;
 	};
-	u32 gpio7b_iomux;
+	union {
+		u32 gpio7b_iomux;
+		u32 iomux_edp_hotplug;
+	};
 	union {
 		u32 gpio7cl_iomux;
 		u32 iomux_i2c5sda;
@@ -217,4 +220,5 @@ static struct rk3288_sgrf_regs * const rk3288_sgrf = (void *)GRF_SECURE_BASE;
 #define IOMUX_EMMCPWREN  RK_CLRSETBITS(0x3 << 2, 0x2 << 2)
 #define IOMUX_EMMCCMD	 RK_CLRSETBITS(0x3f, 2 << 4 | 2 << 2 | 2 << 0)
 #define IOMUX_PWM1	RK_SETBITS(1 << 2)
+#define IOMUX_EDP_HOTPLUG	RK_CLRSETBITS(0x3 << 6, 0x2 << 6)
 #endif

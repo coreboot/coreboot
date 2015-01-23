@@ -26,7 +26,6 @@ struct soc_rockchip_rk3288_config {
 	u32 vop_id;
 	gpio_t lcd_bl_pwm_gpio;
 	gpio_t lcd_bl_en_gpio;
-	u32 lcd_power_on_udelay;
 	u32 bl_power_on_udelay;
 	u32 bl_pwm_to_enable_udelay;
 	u32 framebuffer_bits_per_pixel;

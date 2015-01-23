@@ -56,7 +56,6 @@ void rk_display_init(device_t dev, u32 lcdbase,
 	rkclk_configure_vop_aclk(conf->vop_id, 192 * MHz);
 
 	rk_edp_init(conf->vop_id);
-	udelay(conf->lcd_power_on_udelay);
 
 	if (rk_edp_get_edid(&edid)) {
 		printk(BIOS_WARNING, "can not get edid\n");

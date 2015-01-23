@@ -22,5 +22,4 @@ chip soc/rockchip/rk3288
 	device cpu_cluster 0 on end
 	register "vop_id" = "1"
 	register "framebuffer_bits_per_pixel" = "16"
-	register "lcd_power_on_udelay" = "200000"
 end

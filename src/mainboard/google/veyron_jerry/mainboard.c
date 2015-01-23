@@ -102,6 +102,10 @@ static void configure_vop(void)
 		rk808_configure_ldo(7, 2500);	/* VCC10_LCD_PWREN_H */
 		gpio_output(GPIO(7, B, 6), 1);	/* LCD_EN */
 		rk808_configure_switch(1, 1);	/* VCC33_LCD */
+
+		/* enable edp HPD */
+		gpio_input_pulldown(GPIO(7, B, 3));
+		writel(IOMUX_EDP_HOTPLUG, &rk3288_grf->iomux_edp_hotplug);
 		break;
 	}
 }

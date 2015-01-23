@@ -938,6 +938,49 @@ static int rk_edp_config_video(struct rk_edp *edp)
 	return rk_edp_is_video_stream_on(edp);
 }
 
+static void rockchip_edp_force_hpd(struct rk_edp *edp)
+{
+	u32 val;
+
+	val = readl(&edp->regs->sys_ctl_3);
+	val |= (F_HPD | HPD_CTRL);
+	writel(val, &edp->regs->sys_ctl_3);
+}
+
+static int rockchip_edp_get_plug_in_status(struct rk_edp *edp)
+{
+	u32 val;
+
+	val = readl(&edp->regs->sys_ctl_3);
+	if (val & HPD_STATUS)
+		return 1;
+
+	return 0;
+}
+
+/*
+ * support edp HPD function
+ * some hardware version do not support edp hdp,
+ * we use 200ms to try to get the hpd single now,
+ * if we can not get edp hpd single, it will delay 200ms,
+ * also meet the edp power timing request, to compatible
+ * all of the hardware version
+ */
+static void rockchip_edp_wait_hpd(struct rk_edp *edp)
+{
+	struct stopwatch hpd;
+
+	stopwatch_init_msecs_expire(&hpd, 200);
+	do {
+		if (rockchip_edp_get_plug_in_status(edp))
+			return;
+		udelay(100);
+	} while (!stopwatch_expired(&hpd));
+
+	printk(BIOS_DEBUG, "do not get hpd single, force hpd\n");
+	rockchip_edp_force_hpd(edp);
+}
+
 int rk_edp_get_edid(struct edid *edid)
 {
 	int i;
@@ -982,6 +1025,8 @@ void rk_edp_init(u32 vop_id)
 	/* select epd signal from vop0 or vop1 */
 	val = (vop_id == 1) ? RK_SETBITS(1 << 5) : RK_CLRBITS(1 << 5);
 	writel(val, &rk3288_grf->soc_con6);
+
+	rockchip_edp_wait_hpd(&rk_edp);
 
 	rk_edp_init_refclk(&rk_edp);
 	rk_edp_init_interrupt(&rk_edp);

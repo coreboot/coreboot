@@ -30,6 +30,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/cpu.h>
+#include <soc/mc.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <string.h>
 #include <timer.h>
@@ -77,6 +78,16 @@ static struct cpu_control_ops cntrl_ops = {
 	.start_cpu = cntrl_start_cpu,
 };
 
+
+static void lock_down_vpr(void)
+{
+	struct tegra_mc_regs *regs = (void *)(uintptr_t)TEGRA_MC_BASE;
+
+	write32(0, &regs->video_protect_bom);
+	write32(0, &regs->video_protect_size_mb);
+	write32(1, &regs->video_protect_reg_ctrl);
+}
+
 static void soc_init(device_t dev)
 {
 	struct soc_nvidia_tegra132_config *cfg;
@@ -86,6 +97,9 @@ static void soc_init(device_t dev)
 	cfg = dev->chip_info;
 	spintable_init((void *)cfg->spintable_addr);
 	arch_initialize_cpus(dev, &cntrl_ops);
+
+	/* Lock down VPR */
+	lock_down_vpr();
 
 #if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 	if (vboot_skip_display_init())

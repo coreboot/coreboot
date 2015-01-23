@@ -54,6 +54,8 @@
 #define RTC_CTRL_GET_TIME	(1 << 6)
 #define RTC_CTRL_RTC_READSEL	(1 << 7)
 
+#define DCDC_ILMAX		0x90
+
 static int rk808_read(uint8_t reg, uint8_t *value)
 {
 	return i2c_readb(CONFIG_PMIC_BUS, RK808_ADDR, reg, value);
@@ -118,7 +120,7 @@ void rk808_configure_buck(int buck, int millivolts)
 	switch (buck) {
 	case 1:
 	case 2:
-		/*base on 725mv, use 25mv step */
+		/* 25mV steps. base = 29 * 25mV = 725 */
 		vsel = (div_round_up(millivolts, 25) - 29) * 2 + 1;
 		assert(vsel <= 0x3f);
 		buck_reg = BUCK1SEL + 4 * (buck - 1);
@@ -129,8 +131,9 @@ void rk808_configure_buck(int buck, int millivolts)
 		buck_reg = BUCK4SEL;
 		break;
 	default:
-		die("fault buck index!");
+		die("Unknown buck index!");
 	}
+	rk808_clrsetbits(DCDC_ILMAX, 0, 3 << ((buck - 1) * 2));
 	rk808_clrsetbits(buck_reg, 0x3f, vsel);
 	rk808_clrsetbits(DCDC_EN, 0, 1 << (buck - 1));
 }

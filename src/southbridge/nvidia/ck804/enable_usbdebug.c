@@ -5,6 +5,7 @@
  * Written by Yinghai Lu <yhlu@tyan.com> for Tyan Computer.
  * Copyright (C) 2006,2007 AMD
  * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,10 +31,12 @@
 #include <device/pci_def.h>
 #include "ck804.h"
 
+#ifndef CK804_DEVN_BASE
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
 #else
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
+#endif
 #endif
 
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)

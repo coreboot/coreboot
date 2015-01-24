@@ -512,7 +512,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 
 		/*
-		 * If the devices has a unitid set and is at devfn 0 we are
+		 * If the device has a unitid set and is at devfn 0 we are
 		 * done. This can happen with shadow hypertransport devices,
 		 * or if we have reached the bottom of a HT device chain.
 		 */

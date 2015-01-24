@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -963,6 +964,7 @@ static void processLink(u8 node, u8 link, sMainData *pDat)
 	 && pDat->HtBlock->AMD_CB_ManualBUIDSwapList(node, link, &pSwapPtr))
 	{
 		/* Manual non-coherent BUID assignment */
+		currentBUID = 1;
 
 		/* Assign BUID's per manual override */
 		while (*pSwapPtr != 0xFF)

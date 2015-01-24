@@ -171,29 +171,32 @@ static u16 mctGet_NVbits(u8 index)
 		//val = 1;	/* Enable */
 		break;
 	case NV_DramBKScrub:
-		val = 0x00;	/* Disabled */
-		//val = 0x01;	/* 40ns */
-		//val = 0x02;	/* 80ns */
-		//val = 0x03;	/* 160ns */
-		//val = 0x04;	/* 320ns */
-		//val = 0x05;	/* 640ns */
-		//val = 0x06;	/* 1.28us */
-		//val = 0x07;	/* 2.56us */
-		//val = 0x08;	/* 5.12us */
-		//val = 0x09;	/* 10.2us */
-		//val = 0x0a;	/* 20.5us */
-		//val = 0x0b;	/* 41us */
-		//val = 0x0c;	/* 81.9us */
-		//val = 0x0d;	/* 163.8us */
-		//val = 0x0e;	/* 327.7us */
-		//val = 0x0f;	/* 655.4us */
-		//val = 0x10;	/* 1.31ms */
-		//val = 0x11;	/* 2.62ms */
-		//val = 0x12;	/* 5.24ms */
-		//val = 0x13;	/* 10.49ms */
-		//val = 0x14;	/* 20.97sms */
-		//val = 0x15;	/* 42ms */
-		//val = 0x16;	/* 84ms */
+		/*
+		 * 0x00: Disabled
+		 * 0x01: 40ns
+		 * 0x02: 80ns
+		 * 0x03: 160ns
+		 * 0x04: 320ns
+		 * 0x05: 640ns
+		 * 0x06: 1.28us
+		 * 0x07: 2.56us
+		 * 0x08: 5.12us
+		 * 0x09: 10.2us
+		 * 0x0a: 20.5us
+		 * 0x0b: 41us
+		 * 0x0c: 81.9us
+		 * 0x0d: 163.8us
+		 * 0x0e: 327.7us
+		 * 0x0f: 655.4us
+		 * 0x10: 1.31ms
+		 * 0x11: 2.62ms
+		 * 0x12: 5.24ms
+		 * 0x13: 10.49ms
+		 * 0x14: 20.97sms
+		 * 0x15: 42ms
+		 * 0x16: 84ms
+		 */
+		val = CONFIG_AMDMCT_BACKGROUND_SCRUB_RATE;
 		break;
 	case NV_L2BKScrub:
 		val = 0;	/* Disabled - See L2Scrub in BKDG */

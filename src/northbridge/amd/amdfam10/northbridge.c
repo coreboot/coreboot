@@ -677,6 +677,9 @@ static void amdfam10_domain_read_resources(device_t dev)
 	res->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
 	res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
+
+	/* Reserve lower DRAM region to force PCI MMIO region to correct location above 0xefffffff */
+	ram_resource(dev, 7, 0, rdmsr(TOP_MEM).lo >> 10);
 #endif
 }
 

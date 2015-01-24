@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,7 +29,11 @@
  */
 
 /* Single CPU system? */
-#if CONFIG_MAX_PHYSICAL_CPUS
+#if (CONFIG_MAX_PHYSICAL_CPUS == 1)
+	/* FIXME
+         * This #define is used by other #included .c files
+	 * When set, multiprocessor support is completely disabled
+         */
 	#define HT_BUILD_NC_ONLY 1
 #endif
 

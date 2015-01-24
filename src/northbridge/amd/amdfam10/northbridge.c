@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -858,7 +859,7 @@ static void setup_uma_memory(void)
 static void amdfam10_domain_set_resources(device_t dev)
 {
 #if CONFIG_PCI_64BIT_PREF_MEM
-	struct resource *io, *mem1, *mem2;
+	struct resource *mem1, *mem2;
 	struct resource *res;
 #endif
 	unsigned long mmio_basek;
@@ -914,7 +915,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 			mem2->base, mem2->limit, mem2->size, mem2->align);
 	}
 
-	for(res = &dev->resource_list; res; res = res->next)
+	for(res = dev->resource_list; res; res = res->next)
 	{
 		res->flags |= IORESOURCE_ASSIGNED;
 		res->flags |= IORESOURCE_STORED;

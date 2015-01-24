@@ -60,6 +60,7 @@ int intel_vga_int15_handler(void)
 		X86_AX = 0x005f; // Success
 		X86_CL = panel_type;
 		printk(BIOS_DEBUG, "DISPLAY=%x\n", X86_CL);
+		res = 1;
 		break;
 	case 0x5f51:
 		/*

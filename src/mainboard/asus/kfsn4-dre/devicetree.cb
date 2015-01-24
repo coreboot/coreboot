@@ -1,0 +1,121 @@
+chip northbridge/amd/amdfam10/root_complex	# Root complex
+	device cpu_cluster 0 on			# (L)APIC cluster
+		chip cpu/amd/socket_F_1207			# CPU socket
+			device lapic 0 on end			# Local APIC of the CPU
+		end
+	end
+	device domain 0 on			# PCI domain
+		subsystemid 0x1043 0x8162 inherit
+		chip northbridge/amd/amdfam10		# Northbridge / RAM controller
+			device pci 18.0 on end		# Link 0 == LDT 0
+			device pci 18.0 on		# Link 1 == LDT 1 [SB on link 1]
+				chip southbridge/nvidia/ck804		# Southbridge
+					device pci 0.0 on end			# HT
+					device pci 1.0 on			# LPC
+						chip superio/winbond/w83627thg	# Super I/O
+							device pnp 2e.0 on		# Floppy
+								# Set up interface resources
+								io 0x60 = 0x3f0
+								irq 0x70 = 6
+								drq 0x74 = 2
+							end
+							device pnp 2e.1 off end		# Parallel port
+							device pnp 2e.2 on		# Com1
+								# Set up interface resources
+								io 0x60 = 0x3f8
+								irq 0x70 = 4
+							end
+							device pnp 2e.3 on		# Com2
+								# Set up interface resources
+								io 0x60 = 0x2f8
+								irq 0x70 = 3
+								# Select correct package I/O pins
+								io 0xf1 = 0x04
+							end
+							device pnp 2e.5 on		# PS/2 keyboard & mouse
+								# Set up interface resources
+								io 0x60 = 0x60
+								io 0x62 = 0x64
+								irq 0x70 = 1
+								irq 0x72 = 12
+							end
+							device pnp 2e.7 off end		# Game port, MIDI, GPIO 1 & 5
+							device pnp 2e.8 off end		# GPIO 2
+							device pnp 2e.9 on end		# GPIO 3, GPIO 4
+							device pnp 2e.a off end		# ACPI
+							device pnp 2e.b on		# Hardware monitor
+								# Set up interface resources
+								io 0x60 = 0x290
+								irq 0x70 = 5
+							end
+						end
+					end
+					device pci 1.1 on			# SM 0
+						chip drivers/generic/generic	# DIMM n-0-0-0
+							device i2c 50 on end
+						end
+						chip drivers/generic/generic	# DIMM n-0-0-1
+							device i2c 51 on end
+						end
+						chip drivers/generic/generic	# DIMM n-0-1-0
+							device i2c 52 on end
+						end
+						chip drivers/generic/generic	# DIMM n-0-1-1
+							device i2c 53 on end
+						end
+						chip drivers/generic/generic	# DIMM n-1-0-0
+							device i2c 54 on end
+						end
+						chip drivers/generic/generic	# DIMM n-1-0-1
+							device i2c 55 on end
+						end
+						chip drivers/generic/generic	# DIMM n-1-1-0
+							device i2c 56 on end
+						end
+						chip drivers/generic/generic	# DIMM n-1-1-1
+							device i2c 57 on end
+						end
+					end
+					device pci 1.1 on end			# SM 1
+					device pci 2.0 on end			# USB 1.1
+					device pci 2.1 on end			# USB 2
+					device pci 4.0 off end			# AC'97 Audio (N/A)
+					device pci 4.1 off end			# AC'97 Modem (N/A)
+					device pci 6.0 on end			# IDE
+					device pci 7.0 on end			# SATA 0
+					device pci 8.0 on end			# SATA 1
+					device pci 9.0 on			# Bridge
+						device pci 4.0 on end		# VGA
+					end
+					device pci a.0 off end
+					device pci b.0 on			# Bridge
+						device pci 0.0 on end		# NIC A
+					end
+					device pci c.0 on			# Bridge
+						device pci 0.0 on end		# LSI SAS
+					end
+					device pci d.0 on			# Bridge
+						device pci 0.0 on end		# NIC B
+					end
+					device pci e.0 on			# Bridge
+						# Slot				# PCI E 0
+					end
+					device pci f.0 off end
+					register "ide0_enable" = "1"
+					register "ide1_enable" = "1"
+					register "sata0_enable" = "1"
+					register "sata1_enable" = "1"
+				end
+			end
+			device pci 18.1 on end
+			device pci 18.2 on end
+			device pci 18.3 on end
+			device pci 18.4 on end
+			device pci 19.0 on end
+			device pci 19.1 on end
+			device pci 19.2 on end
+			device pci 19.3 on end
+			device pci 19.4 on end
+		end
+	end
+end

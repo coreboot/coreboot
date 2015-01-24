@@ -33,6 +33,8 @@ config BOARD_ASUS_F2A85_M
 	bool "F2A85-M"
 config BOARD_ASUS_F2A85_M_LE
 	bool "F2A85-M LE"
+config BOARD_ASUS_KFSN4_DRE
+	bool "KFSN4-DRE"
 config BOARD_ASUS_K8V_X
 	bool "K8V-X"
 config BOARD_ASUS_M2N_E
@@ -76,6 +78,7 @@ source "src/mainboard/asus/a8v-e_deluxe/Kconfig"
 source "src/mainboard/asus/f2a85-m/Kconfig"
 source "src/mainboard/asus/f2a85-m_le/Kconfig"
 source "src/mainboard/asus/k8v-x/Kconfig"
+source "src/mainboard/asus/kfsn4-dre/Kconfig"
 source "src/mainboard/asus/m2n-e/Kconfig"
 source "src/mainboard/asus/m2v/Kconfig"
 source "src/mainboard/asus/m2v-mx_se/Kconfig"

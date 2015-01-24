@@ -1,6 +1,7 @@
 //
 // This file is part of the coreboot project.
 //
+// Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
 // Copyright (C) 2007 Advanced Micro Devices, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -122,7 +123,7 @@ Scope (\_SB)
 		Return (0x00)
 	}
 
-	Method (GWBN, 2, NotSerialized)
+	Method (GWBN, 2, Serialized)
 	{
 		Name (BUF0, ResourceTemplate ()
 		{
@@ -161,7 +162,7 @@ Scope (\_SB)
 		Return (RTAG (BUF0))
 	}
 
-	Method (GMEM, 2, NotSerialized)
+	Method (GMEM, 2, Serialized)
 	{
 		Name (BUF0, ResourceTemplate ()
 		{
@@ -222,7 +223,7 @@ Scope (\_SB)
 		Return (Local3)
 	}
 
-	Method (GIOR, 2, NotSerialized)
+	Method (GIOR, 2, Serialized)
 	{
 		Name (BUF0, ResourceTemplate ()
 		{

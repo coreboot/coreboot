@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -187,6 +188,22 @@ void update_ssdtx(void *ssdtx, int i)
 
 void northbridge_acpi_write_vars(void)
 {
+	/*
+	 * If more than one physical CPU is installed, northbridge_acpi_write_vars()
+	 * is called more than once and the resultant SSDT table is corrupted
+	 * (duplicated entries).
+	 * This prevents Linux from booting, with log messages like these:
+	 * ACPI Error: [BUSN] Namespace lookup failure, AE_ALREADY_EXISTS (/dswload-353)
+	 * ACPI Exception: AE_ALREADY_EXISTS, During name lookup/catalog (/psobject-222)
+	 * followed by a slew of ACPI method failures and a hang when the invalid PCI
+	 * resource entries are used.
+	 * This routine prevents the SSDT table from being corrupted.
+	 */
+	static uint8_t ssdt_generated = 0;
+	if (ssdt_generated)
+		return;
+	ssdt_generated = 1;
+
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
 	int i;

@@ -147,7 +147,9 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		CK804_MB_SETUP
 #endif
 
+#ifndef CK804_SKIP_PCI_REG_78_INIT
 		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xc0ffffff, 0x19000000,
+#endif
 		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe0), 0xfffffeff, 0x00000100,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x20, 0xe00fffff, 0x11000000,

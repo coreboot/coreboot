@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2003 Linux Networx
  * Copyright (C) 2003 SuSE Linux AG
  * Copyright (C) 2004 Tyan Computer
@@ -40,8 +41,11 @@
 
 #define NMI_OFF 0
 
-// 0x7a or e3
+// Power restoration control register is at 0x7a
 #define PREVIOUS_POWER_STATE 0x7A
+
+ // Auxiliary power control register possibly located at 0xe3
+#define PREVIOUS_POWER_STATE_AUX 0xe3
 
 #define MAINBOARD_POWER_OFF 0
 #define MAINBOARD_POWER_ON 1
@@ -123,9 +127,9 @@ static void lpc_init(device_t dev)
 	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
-	byte &= ~0x40;
+	byte &= ~0x45;
 	if (!on)
-		byte |= 0x40;
+		byte |= 0x45;
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
 	printk(BIOS_INFO, "set power %s after power fail\n", on ? "on" : "off");
 

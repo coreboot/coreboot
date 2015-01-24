@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ *
  * Copyright (C) 2004 Tyan Computer
  * Written by Yinghai Lu <yhlu@tyan.com> for Tyan Computer.
  *
@@ -17,6 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
+#if !IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8)
+/* Someone messed up and snuck in some K8-specific code */
+static int  set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, unsigned val) { return 0; /* stub */};
+#endif
 
 static int set_ht_link_ck804(u8 ht_c_num)
 {

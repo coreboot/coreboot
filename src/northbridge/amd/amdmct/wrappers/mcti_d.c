@@ -167,8 +167,11 @@ static u16 mctGet_NVbits(u8 index)
 #endif
 		break;
 	case NV_ECCRedir:
-		val = 0;	/* Disable */
-		//val = 1;	/* Enable */
+		/*
+		 * 0: Disable
+		 * 1: Enable
+		 */
+		val = CONFIG_AMDMCT_ENABLE_ECC_REDIR;
 		break;
 	case NV_DramBKScrub:
 		/*

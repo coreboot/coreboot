@@ -98,6 +98,11 @@ config LIMIT_HT_UP_WIDTH_16
 	bool "16 bits"
 endchoice
 
+config AMDMCT_ENABLE_ECC_REDIR
+	bool
+	depends on CPU_AMD_MODEL_10XXX
+	default n
+
 config AMDMCT_BACKGROUND_SCRUB_RATE
 	hex
 	depends on CPU_AMD_MODEL_10XXX

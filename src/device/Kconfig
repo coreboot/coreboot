@@ -556,15 +556,8 @@ config BOOTSPLASH
 	  This option shows a graphical bootsplash screen. The graphics are
 	  loaded from the CBFS file bootsplash.jpg.
 
-	  You will be able to specify the location and file name of the
-	  image later.
-
-config BOOTSPLASH_FILE
-	string "Bootsplash path and filename"
-	depends on BOOTSPLASH
-	default "bootsplash.jpg"
-	help
-	  The path and filename of the file to use as graphical bootsplash
-	  screen. The file format has to be jpg.
+	  You can either specify the location and file name of the
+	  image in the 'General' section or add it manually to CBFS, using,
+	  for example, cbfstool.
 
 endmenu

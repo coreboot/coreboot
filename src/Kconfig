@@ -325,6 +325,23 @@ config RAM_CODE_SUPPORT
 	  If enabled, coreboot discovers RAM configuration (value obtained by
 	  reading board straps) and stores it in coreboot table.
 
+config BOOTSPLASH_IMAGE
+	bool "Add a bootsplash image"
+	help
+	  Select this option if you have a bootsplash image that you would
+	  like to add to your ROM.
+
+	  This will only add the image to the ROM. To actually run it check
+	  options under 'Display' section.
+
+config BOOTSPLASH_FILE
+	string "Bootsplash path and filename"
+	depends on BOOTSPLASH_IMAGE
+	default "bootsplash.jpg"
+	help
+	  The path and filename of the file to use as graphical bootsplash
+	  screen. The file format has to be jpg.
+
 endmenu
 
 source "src/acpi/Kconfig"

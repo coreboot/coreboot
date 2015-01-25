@@ -52,11 +52,21 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 #endif
 
+static void ht_init(struct device *dev)
+{
+	u32 htmsi;
+
+	/* Enable HT MSI Mapping in capability register */
+	htmsi = pci_read_config32(dev, 0xe0);
+	htmsi |= (1 << 16);
+	pci_write_config32(dev, 0xe0, htmsi);
+}
+
 static struct device_operations ht_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
+	.init             = ht_init,
 	.scan_bus         = 0,
 	.ops_pci          = &ck804_pci_ops,
 };

@@ -22,6 +22,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/*
+ * This may mean something else on architectures where the bits are numbered
+ * from the MSB (e.g. PowerPC), but until we cross that bridge, this macro is
+ * perfectly fine.
+ */
+#define BIT(x)				(1ul << (x))
+
 /**
  * Coreboot error codes
  *

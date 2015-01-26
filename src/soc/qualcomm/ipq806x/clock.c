@@ -3,6 +3,7 @@
  */
 
 #include <delay.h>
+#include <types.h>
 #include <clock.h>
 
 /**

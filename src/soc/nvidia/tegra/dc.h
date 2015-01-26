@@ -367,7 +367,6 @@ struct display_controller {
 };
 check_member(display_controller, winbuf, 0x800 * 4);
 
-#define	BIT(pos)	(1U << pos)
 
 /* DC_CMD_DISPLAY_COMMAND 0x032 */
 #define  DISP_COMMAND_RAISE			(1 << 0)

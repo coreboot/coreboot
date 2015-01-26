@@ -40,7 +40,6 @@
 
 /* UART specific definitions */
 
-#define BIT(s) (1<<s)
 #define Uart_ns_val  NS(BIT_POS_31,BIT_POS_16,N_VALUE,M_VALUE, 5, 4, 3, 1, 2, 0,3)
 #define Uart_clk_ns_mask  (BM(BIT_POS_31, BIT_POS_16) | BM(BIT_POS_6, BIT_POS_0))
 #define Uart_mnd_en_mask  BIT(8) * !!(625)

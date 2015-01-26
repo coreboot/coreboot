@@ -179,8 +179,10 @@ static int pll_setup(struct pll_parameters *param, u8 divider1, u8 divider2)
 	struct stopwatch sw;
 
 	/* Check input parameters */
-	assert(!(divider1 & ~(param->postdiv1_mask)));
-	assert(!(divider2 & ~(param->postdiv2_mask)));
+	assert(!((divider1 << param->postdiv1_shift) &
+		~(param->postdiv1_mask)));
+	assert(!((divider2 << param->postdiv2_shift) &
+		~(param->postdiv2_mask)));
 
 	/* Temporary bypass PLL (select XTAL as clock input) */
 	reg = read32(PISTACHIO_CLOCK_SWITCH);
@@ -198,7 +200,8 @@ static int pll_setup(struct pll_parameters *param, u8 divider1, u8 divider2)
 	write32(param->power_down_ctrl_addr, reg);
 
 	if (param->feedback_addr) {
-		assert(!(param->feedback & ~(param->feedback_mask)));
+		assert(!((param->feedback << param->feedback_shift) &
+			~(param->feedback_mask)));
 		reg = read32(param->feedback_addr);
 		reg &= ~(param->feedback_mask);
 		reg |= (param->feedback << param->feedback_shift) &
@@ -207,7 +210,8 @@ static int pll_setup(struct pll_parameters *param, u8 divider1, u8 divider2)
 	}
 
 	if (param->refdiv_addr) {
-		assert(!(param->refdivider & ~(param->refdiv_mask)));
+		assert(!((param->refdivider << param->refdiv_shift) &
+			~(param->refdiv_mask)));
 		reg = read32(param->refdiv_addr);
 		reg &= ~(param->refdiv_mask);
 		reg |= (param->refdivider << param->refdiv_shift) &
@@ -307,8 +311,10 @@ int usb_clk_setup(u8 divider, u8 refclksel, u8 fsel)
 
 	/* Check input parameters */
 	assert(!(divider & ~(USBPHYCLKOUT_MASK)));
-	assert(!(refclksel & ~(USBPHYSTRAPCTRL_REFCLKSEL_MASK)));
-	assert(!(fsel & ~(USBPHYCONTROL1_FSEL_MASK)));
+	assert(!((refclksel << USBPHYSTRAPCTRL_REFCLKSEL_SHIFT) &
+		~(USBPHYSTRAPCTRL_REFCLKSEL_MASK)));
+	assert(!((fsel << USBPHYCONTROL1_FSEL_SHIFT) &
+		~(USBPHYCONTROL1_FSEL_MASK)));
 
 	/* Set USB divider */
 	reg = read32(USBPHYCLKOUT_CTRL_ADDR);
@@ -338,6 +344,10 @@ int usb_clk_setup(u8 divider, u8 refclksel, u8 fsel)
 			return USB_VBUS_FAULT;
 		if (stopwatch_expired(&sw))
 			return USB_TIMEOUT;
+		/* Check if USB is set up properly */
+		if ((reg & USBPHYSTATUS_RX_PHY_CLK_MASK) &&
+			(reg & USBPHYSTATUS_RX_UTMI_CLK_MASK))
+			break;
 	}
 
 	return CLOCKS_OK;

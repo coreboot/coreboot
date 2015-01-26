@@ -30,6 +30,10 @@ config CK804B_PCI_E_X
 	int
 	default 4
 
+config CK804_PCIE_PME_WAKE
+	bool "Enable system wake on PCIe PME# signal"
+	default n
+
 config CK804_NUM
 	int
 	default 1

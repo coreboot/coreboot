@@ -211,6 +211,12 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 0x0d, ~(0xff), ((0 << 4) | (2 << 2) | (0 << 0)),
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 0x1a, ~(0xff), ((0 << 4) | (2 << 2) | (0 << 0)),
 #endif
+
+#if IS_ENABLED(CONFIG_CK804_PCIE_PME_WAKE)
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe4), 0xffffffff, 0x00400000,
+#else
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe4), 0xffbfffff, 0x00000000,
+#endif
 	};
 
 	static const unsigned int ctrl_conf_multiple[] = {

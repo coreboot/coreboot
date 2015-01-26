@@ -288,6 +288,12 @@ static void ck804_early_setup(void)
 #endif
 #endif
 
+#if IS_ENABLED(CONFIG_CK804_PCIE_PME_WAKE)
+	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe4), 0xffffffff, 0x00400000,
+#else
+	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe4), 0xffbfffff, 0x00000000,
+#endif
+
 #ifdef CK804_MB_SETUP
 	CK804_MB_SETUP
 #endif

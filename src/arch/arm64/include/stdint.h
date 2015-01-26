@@ -52,6 +52,9 @@ typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
 
+typedef uint8_t bool;
+#define true	1
+#define false	0
 
 /* Types for `void *' pointers.  */
 typedef s64             intptr_t;

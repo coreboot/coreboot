@@ -122,23 +122,9 @@ unsigned int uart_platform_refclk(void)
 	return 1843318;
 }
 
-uintptr_t uart_platform_base(int idx)
-{
-	switch (idx) {
-	case 0:
-		return 0xb8101400;
-
-	case 1:
-		return 0xb8101500;
-
-	default:
-		return 0x0;
-	}
-}
-
 void uart_init(int idx)
 {
-	u32 base = uart_platform_base(idx);
+	u32 base = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 	if (!base)
 		return;
 
@@ -150,26 +136,17 @@ void uart_init(int idx)
 
 void uart_tx_byte(int idx, unsigned char data)
 {
-	u32 base = uart_platform_base(idx);
-	if (!base)
-		return;
-	uart8250_mem_tx_byte(base, data);
+	uart8250_mem_tx_byte(CONFIG_CONSOLE_SERIAL_UART_ADDRESS, data);
 }
 
 unsigned char uart_rx_byte(int idx)
 {
-	u32 base = uart_platform_base(idx);
-	if (!base)
-		return 0xff;
-	return uart8250_mem_rx_byte(base);
+	return uart8250_mem_rx_byte(CONFIG_CONSOLE_SERIAL_UART_ADDRESS);
 }
 
 void uart_tx_flush(int idx)
 {
-	u32 base = uart_platform_base(idx);
-	if (!base)
-		return;
-	uart8250_mem_tx_flush(base);
+	uart8250_mem_tx_flush(CONFIG_CONSOLE_SERIAL_UART_ADDRESS);
 }
 
 #ifndef __PRE_RAM__
@@ -177,7 +154,7 @@ void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	serial.baseaddr = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 	serial.baud = default_baudrate();
 	serial.regwidth = 1 << UART_SHIFT;
 	lb_add_serial(&serial, data);

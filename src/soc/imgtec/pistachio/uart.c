@@ -118,8 +118,8 @@ static void uart8250_mem_init(unsigned base_port, unsigned divisor)
 
 unsigned int uart_platform_refclk(void)
 {
-	/* TODO: this is entirely arbitrary */
-	return 1000000;
+	/* 1.8433179 MHz */
+	return 1843318;
 }
 
 uintptr_t uart_platform_base(int idx)

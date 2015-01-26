@@ -53,4 +53,9 @@ config TTYS0_LCS
 	int
 	default 3
 
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on DRIVERS_UART
+	default 0xB8101500
+
 endif

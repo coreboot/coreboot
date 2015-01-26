@@ -68,6 +68,12 @@
 #define SYSCLKINTERNAL_CTRL_ADDR	0xB8144244
 #define SYSCLKINTERNAL_MASK		0X00000007
 
+/* Definitions for MIPS clock setup */
+#define MIPSCLKINTERNAL_CTRL_ADDR	0xB8144204
+#define MIPSCLKINTERNAL_MASK		0x00000003
+#define MIPSCLKOUT_CTRL_ADDR		0xB8144208
+#define MIPSCLKOUT_MASK			0x000000FF
+
 /* Definitions for USB clock setup */
 #define USBPHYCLKOUT_CTRL_ADDR		0xB814422C
 #define USBPHYCLKOUT_MASK		0X0000003F
@@ -91,6 +97,15 @@
 #define UART1CLKINTERNAL_MASK		0x00000007
 #define UART1CLKOUT_CTRL_ADDR		0xB8144240
 #define UART1CLKOUT_MASK		0x000003FF
+
+/* Definitions for ROM clock setup */
+#define ROMCLKOUT_CTRL_ADDR		0xB814410C
+#define ROMCLKOUT_MASK			0x0000007F
+
+/* Definitions for ETH clock setup */
+#define ENETCLKMUX_MASK			0x00004000
+#define ENETCLKDIV_CTRL_ADDR		0xB8144230
+#define ENETCLKDIV_MASK			0x0000003F
 
 /* Definitions for timeout values */
 #define PLL_TIMEOUT_VALUE_US		20000
@@ -303,6 +318,27 @@ void system_clk_setup(u8 divider)
 	udelay(SYS_CLK_LOCK_DELAY);
 }
 
+void mips_clk_setup(u8 divider1, u8 divider2)
+{
+	u32 reg;
+
+	/* Check input parameters */
+	assert(!(divider1 & ~(MIPSCLKINTERNAL_MASK)));
+	assert(!(divider2 & ~(MIPSCLKOUT_MASK)));
+
+	/* Set divider 1 */
+	reg = read32(MIPSCLKINTERNAL_CTRL_ADDR);
+	reg &= ~MIPSCLKINTERNAL_MASK;
+	reg |= divider1 & MIPSCLKINTERNAL_MASK;
+	write32(MIPSCLKINTERNAL_CTRL_ADDR, reg);
+
+	/* Set divider 2 */
+	reg = read32(MIPSCLKOUT_CTRL_ADDR);
+	reg &= ~MIPSCLKOUT_MASK;
+	reg |= divider2 & MIPSCLKOUT_MASK;
+	write32(MIPSCLKOUT_CTRL_ADDR, reg);
+}
+
 /* usb_clk_setup: sets up USB clock */
 int usb_clk_setup(u8 divider, u8 refclksel, u8 fsel)
 {
@@ -351,4 +387,43 @@ int usb_clk_setup(u8 divider, u8 refclksel, u8 fsel)
 	}
 
 	return CLOCKS_OK;
+}
+
+void rom_clk_setup(u8 divider)
+{
+	u32 reg;
+
+	/* Check input parameter */
+	assert(!(divider & ~(ROMCLKOUT_MASK)));
+
+	/* Set ROM divider */
+	reg = read32(ROMCLKOUT_CTRL_ADDR);
+	reg &= ~ROMCLKOUT_MASK;
+	reg |= divider & ROMCLKOUT_MASK;
+	write32(ROMCLKOUT_CTRL_ADDR, reg);
+}
+
+void eth_clk_setup(u8 mux, u8 divider)
+{
+
+	u32 reg;
+
+	/* Check input parameters */
+	assert(!(divider & ~(ENETCLKDIV_MASK)));
+	/* This can be either 0 or 1, selecting between
+	 * ENET and system clock as clocksource */
+	assert(!(mux & ~(0x1)));
+
+	/* Set ETH divider */
+	reg = read32(ENETCLKDIV_CTRL_ADDR);
+	reg &= ~ENETCLKDIV_MASK;
+	reg |= divider & ENETCLKDIV_MASK;
+	write32(ENETCLKDIV_CTRL_ADDR, reg);
+
+	/* Select source */
+	if (mux) {
+		reg = read32(PISTACHIO_CLOCK_SWITCH);
+		reg |= ENETCLKMUX_MASK;
+		write32(PISTACHIO_CLOCK_SWITCH, reg);
+	}
 }

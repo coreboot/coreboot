@@ -110,12 +110,26 @@ static int init_clocks(void)
 	/* System PLL divided by 2 -> 400 MHz */
 	/* The same frequency will be the input frequency for the SPFI block */
 	system_clk_setup(1);
+
+	/* MIPS CPU dividers: division by 1 -> 550 MHz
+	 * This is set up as we cannot make any assumption about
+	 * the values set or not by the boot ROM code */
+	mips_clk_setup(0, 0);
+
 	/* System clock divided by 8 -> 50 MHz */
 	ret = usb_clk_setup(7, 2, 7);
 	if (ret != CLOCKS_OK)
 		return ret;
+
 	/* System PLL divided by 7 divided by 62 -> 1.8433 Mhz */
 	uart1_clk_setup(6, 61);
+
+	/* Ethernet clocks setup: ENET as clock source */
+	eth_clk_setup(0, 7);
+
+	/* ROM clock setup: system clock divided by 2 -> 200 MHz */
+	/* Hash accelerator is driven from the ROM clock */
+	rom_clk_setup(1);
 
 	/* Setup system PLL at 800 MHz */
 	ret = sys_pll_setup(2, 1);

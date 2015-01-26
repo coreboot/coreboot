@@ -20,9 +20,9 @@
 #include <cbmem.h>
 #include <stddef.h>
 #include <symbols.h>
+#include <soc/sdram.h>
 
 void *cbmem_top(void)
 {
-	return _dram + (size_t)CONFIG_DRAM_SIZE_MB*MiB;
+	return _dram + sdram_size_mb()*MiB;
 }
-

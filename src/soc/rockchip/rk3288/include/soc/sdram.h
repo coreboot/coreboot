@@ -98,5 +98,6 @@ struct rk3288_sdram_params {
 
 void sdram_init(const struct rk3288_sdram_params *sdram_params);
 u32 sdram_get_ram_code(void);
+size_t sdram_size_mb(void);
 const struct rk3288_sdram_params *get_sdram_config(void);
 #endif

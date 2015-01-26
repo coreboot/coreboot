@@ -57,6 +57,7 @@ ramstage-y += timer.c
 ramstage-y += i2c.c
 ramstage-y += clock.c
 ramstage-y += spi.c
+ramstage-y += sdram.c
 ramstage-y += gpio.c
 ramstage-y += rk808.c
 ramstage-y += pwm.c

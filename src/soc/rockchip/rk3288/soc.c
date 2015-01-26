@@ -25,6 +25,7 @@
 #include <gpio.h>
 #include <soc/display.h>
 #include <soc/soc.h>
+#include <soc/sdram.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,9 +36,7 @@
 
 static void soc_init(device_t dev)
 {
-	ram_resource(dev, 0, (uintptr_t)_dram/KiB,
-		     CONFIG_DRAM_SIZE_MB*(MiB/KiB));
-
+	ram_resource(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*(MiB/KiB));
 	if (vboot_skip_display_init())
 		printk(BIOS_INFO, "Skipping display init.\n");
 #if !IS_ENABLED(CONFIG_SKIP_DISPLAY_INIT_HACK)

@@ -112,7 +112,7 @@ void main(void)
 
 	/* Now that DRAM is up, add mappings for it and DMA coherency buffer. */
 	mmu_config_range((uintptr_t)_dram/MiB,
-			 CONFIG_DRAM_SIZE_MB, DCACHE_WRITEBACK);
+			 sdram_size_mb(), DCACHE_WRITEBACK);
 	mmu_config_range((uintptr_t)_dma_coherent/MiB,
 			 _dma_coherent_size/MiB, DCACHE_OFF);
 

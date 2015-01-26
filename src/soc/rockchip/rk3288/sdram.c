@@ -489,18 +489,27 @@ static struct rk3288_msch_regs * const rk3288_msch[2] = {
  * [3:2] bw_ch0
  * [1:0] dbw_ch0
 */
-#define SYS_REG_DDRTYPE(n)		((n) << 13)
-#define SYS_REG_NUM_CH(n)		(((n) - 1) << 12)
-#define SYS_REG_ROW_3_4(n, ch)		((n) << (30 + (ch)))
-#define SYS_REG_CHINFO(ch)		(1 << (28 + (ch)))
-#define SYS_REG_RANK(n, ch)		(((n) - 1) << (11 + ((ch) * 16)))
-#define SYS_REG_COL(n, ch)		(((n) - 9) << (9 + ((ch) * 16)))
-#define SYS_REG_BK(n, ch)		(((n) == 3 ? 0 : 1) \
+#define SYS_REG_ENC_ROW_3_4(n, ch)	((n) << (30 + (ch)))
+#define SYS_REG_DEC_ROW_3_4(n, ch)	((n >> (30 + ch)) & 0x1)
+#define SYS_REG_ENC_CHINFO(ch)		(1 << (28 + (ch)))
+#define SYS_REG_ENC_DDRTYPE(n)		((n) << 13)
+#define SYS_REG_ENC_NUM_CH(n)		(((n) - 1) << 12)
+#define SYS_REG_DEC_NUM_CH(n)		(1 + ((n >> 12) & 0x1))
+#define SYS_REG_ENC_RANK(n, ch)		(((n) - 1) << (11 + ((ch) * 16)))
+#define SYS_REG_DEC_RANK(n, ch)		(1 + ((n >> (11 + 16 * ch)) & 0x1))
+#define SYS_REG_ENC_COL(n, ch)		(((n) - 9) << (9 + ((ch) * 16)))
+#define SYS_REG_DEC_COL(n, ch)		(9 + ((n >> (9 + 16 * ch)) & 0x3))
+#define SYS_REG_ENC_BK(n, ch)		(((n) == 3 ? 0 : 1) \
 					<< (8 + ((ch) * 16)))
-#define SYS_REG_CS0_ROW(n, ch)		(((n) - 13) << (6 + ((ch) * 16)))
-#define SYS_REG_CS1_ROW(n, ch)		(((n) - 13) << (4 + ((ch) * 16)))
-#define SYS_REG_BW(n, ch)		((2 >> (n)) << (2 + ((ch) * 16)))
-#define SYS_REG_DBW(n, ch)		((2 >> (n)) << (0 + ((ch) * 16)))
+#define SYS_REG_DEC_BK(n, ch)		(3 - ((n >> (8 + 16 * ch)) & 0x1))
+#define SYS_REG_ENC_CS0_ROW(n, ch)	(((n) - 13) << (6 + ((ch) * 16)))
+#define SYS_REG_DEC_CS0_ROW(n, ch)	(13 + ((n >> (6 + 16 * ch)) & 0x3))
+#define SYS_REG_ENC_CS1_ROW(n, ch)	(((n) - 13) << (4 + ((ch) * 16)))
+#define SYS_REG_DEC_CS1_ROW(n, ch)	(13 + ((n >> (4 + 16 * ch)) & 0x3))
+#define SYS_REG_ENC_BW(n, ch)		((2 >> (n)) << (2 + ((ch) * 16)))
+#define SYS_REG_DEC_BW(n, ch)		(2 >> ((n >> (2 + 16 * ch)) & 0x3))
+#define SYS_REG_ENC_DBW(n, ch)		((2 >> (n)) << (0 + ((ch) * 16)))
+#define SYS_REG_DEC_DBW(n, ch)		(2 >> ((n >> (0 + 16 * ch)) & 0x3))
 
 static void copy_to_reg(u32 *dest, const u32 *src, u32 n)
 {
@@ -942,20 +951,20 @@ static void dram_all_config(const struct rk3288_sdram_params *sdram_params)
 	u32 sys_reg = 0;
 	unsigned int channel;
 
-	sys_reg |= SYS_REG_DDRTYPE(sdram_params->dramtype);
-	sys_reg |= SYS_REG_NUM_CH(sdram_params->num_channels);
+	sys_reg |= SYS_REG_ENC_DDRTYPE(sdram_params->dramtype);
+	sys_reg |= SYS_REG_ENC_NUM_CH(sdram_params->num_channels);
 	for (channel = 0; channel < sdram_params->num_channels; channel++) {
 		const struct rk3288_sdram_channel *info =
 			&(sdram_params->ch[channel]);
-		sys_reg |= SYS_REG_ROW_3_4(info->row_3_4, channel);
-		sys_reg |= SYS_REG_CHINFO(channel);
-		sys_reg |= SYS_REG_RANK(info->rank, channel);
-		sys_reg |= SYS_REG_COL(info->col, channel);
-		sys_reg |= SYS_REG_BK(info->bk, channel);
-		sys_reg |= SYS_REG_CS0_ROW(info->cs0_row, channel);
-		sys_reg |= SYS_REG_CS1_ROW(info->cs1_row, channel);
-		sys_reg |= SYS_REG_BW(info->bw, channel);
-		sys_reg |= SYS_REG_DBW(info->dbw, channel);
+		sys_reg |= SYS_REG_ENC_ROW_3_4(info->row_3_4, channel);
+		sys_reg |= SYS_REG_ENC_CHINFO(channel);
+		sys_reg |= SYS_REG_ENC_RANK(info->rank, channel);
+		sys_reg |= SYS_REG_ENC_COL(info->col, channel);
+		sys_reg |= SYS_REG_ENC_BK(info->bk, channel);
+		sys_reg |= SYS_REG_ENC_CS0_ROW(info->cs0_row, channel);
+		sys_reg |= SYS_REG_ENC_CS1_ROW(info->cs1_row, channel);
+		sys_reg |= SYS_REG_ENC_BW(info->bw, channel);
+		sys_reg |= SYS_REG_ENC_DBW(info->dbw, channel);
 
 		dram_cfg_rbc(channel, sdram_params);
 	}
@@ -1075,4 +1084,46 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 	}
 	dram_all_config(sdram_params);
 	printk(BIOS_INFO, "Finish SDRAM initialization...\n");
+}
+
+size_t sdram_size_mb(void)
+{
+	u32 rank, col, bk, cs0_row, cs1_row, bw, row_3_4;
+	size_t chipsize_mb = 0;
+	static size_t size_mb = 0;
+	u32 ch;
+
+	if (!size_mb) {
+
+		u32 sys_reg = readl(&rk3288_pmu->sys_reg[2]);
+		u32 ch_num = SYS_REG_DEC_NUM_CH(sys_reg);
+
+		for (ch = 0; ch < ch_num; ch++) {
+			rank = SYS_REG_DEC_RANK(sys_reg, ch);
+			col = SYS_REG_DEC_COL(sys_reg, ch);
+			bk = SYS_REG_DEC_BK(sys_reg, ch);
+			cs0_row = SYS_REG_DEC_CS0_ROW(sys_reg, ch);
+			cs1_row = SYS_REG_DEC_CS1_ROW(sys_reg, ch);
+			bw = SYS_REG_DEC_BW(sys_reg, ch);
+			row_3_4 = SYS_REG_DEC_ROW_3_4(sys_reg, ch);
+
+			chipsize_mb = (1 << (cs0_row + col + bk + bw - 20));
+
+			if (rank > 1)
+				chipsize_mb += chipsize_mb >>
+					(cs0_row - cs1_row);
+			if (row_3_4)
+				chipsize_mb = chipsize_mb * 3 / 4;
+			size_mb += chipsize_mb;
+		}
+
+		/*
+		 * we use the 0x00000000~0xfeffffff space
+		 * since 0xff000000~0xffffffff is soc register space
+		 * so we reserve it
+		 */
+		size_mb = MIN(size_mb, 0xff000000/MiB);
+	}
+
+	return size_mb;
 }

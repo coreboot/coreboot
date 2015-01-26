@@ -56,10 +56,6 @@ config BOOT_MEDIA_SPI_BUS
         int
         default 2
 
-config DRAM_SIZE_MB
-	int
-	default 2048
-
 config DRIVER_TPM_I2C_BUS
 	hex
 	default 0x1

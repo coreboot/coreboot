@@ -329,8 +329,8 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
     #if GET_PATCHES == TRUE
       #define F14_ON_UCODE_0B
       #define F14_ON_UCODE_1A
-      #define F14_ON_UCODE_28
-      #define F14_ON_UCODE_101
+      #define F14_ON_UCODE_29
+      #define F14_ON_UCODE_119
 
       // If a patch is required for recovery mode to function properly, add a
       // conditional for AGESA_ENTRY_INIT_RECOVERY, and pull it in.
@@ -344,19 +344,19 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
           #undef F14_ON_UCODE_1A
           #define F14_ON_UCODE_1A &CpuF14MicrocodePatch0500001A,
         #endif
-        extern  CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch05000028;
-        #undef F14_ON_UCODE_28
-        #define F14_ON_UCODE_28 &CpuF14MicrocodePatch05000028,
+        extern  CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch05000029;
+        #undef F14_ON_UCODE_29
+        #define F14_ON_UCODE_29 &CpuF14MicrocodePatch05000029,
 
-	extern  CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch05000101;
-        #undef F14_ON_UCODE_101
-        #define F14_ON_UCODE_101 &CpuF14MicrocodePatch05000101,
+	extern  CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch05000119;
+        #undef F14_ON_UCODE_119
+        #define F14_ON_UCODE_119 &CpuF14MicrocodePatch05000119,
       #endif
 
       CONST MICROCODE_PATCHES ROMDATA *CpuF14OnMicroCodePatchArray[] =
       {
-        F14_ON_UCODE_101
-        F14_ON_UCODE_28
+        F14_ON_UCODE_119
+        F14_ON_UCODE_29
         F14_ON_UCODE_0B
         F14_ON_UCODE_1A
         NULL

@@ -32,8 +32,11 @@ static struct vb2_working_data *init_vb2_working_data(void)
 
 	wd = vboot_get_working_data();
 	memset(wd, 0, _vboot2_work_size);
-	/* 8-byte alignment for ARMv7 */
-	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 8);
+	/*
+	 * vboot prefers 16-byte alignment. This takes away 16 bytes
+	 * from the VBOOT2_WORK region, but the vboot devs said that's okay.
+	 */
+	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 16);
 	wd->buffer_size = _vboot2_work_size - wd->buffer_offset;
 
 	return wd;

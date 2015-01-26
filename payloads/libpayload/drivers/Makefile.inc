@@ -105,5 +105,9 @@ libc-$(CONFIG_LP_USB_MSC) += usb/usbmsc.c
 libc-$(CONFIG_LP_USB_DWC2) += usb/dwc2.c
 libc-$(CONFIG_LP_USB_DWC2) += usb/dwc2_rh.c
 
+# USB device stack
+libc-$(CONFIG_LP_UDC) += udc/udc.c
+libc-$(CONFIG_LP_UDC_CI) += udc/chipidea.c
+
 # used by both USB HID and keyboard
 libc-y += hid.c

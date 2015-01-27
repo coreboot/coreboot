@@ -24,7 +24,10 @@ int intel_nehalem_probe(const struct targetdef *target, const struct cpuid_t *id
 		(0x1a == id->model) ||
 		(0x1e == id->model) ||
 		(0x1f == id->model) ||
-		(0x2e == id->model)
+		(0x2e == id->model) ||
+		(0x25 == id->model) ||	/* westmere */
+		(0x2c == id->model) ||	/* westmere */
+		(0x2f == id->model)	/* westmere */
 		));
 }
 

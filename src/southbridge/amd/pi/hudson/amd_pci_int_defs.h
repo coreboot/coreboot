@@ -25,7 +25,6 @@
  * into the FCH PCI_INTR 0xC00/0xC01 interrupt
  * routing table
  */
-#define FCH_INT_TABLE_SIZE 0x63
 
 #define PIRQ_NC		0x1F	/* Not Used */
 #define PIRQ_A		0x00	/* INT A */
@@ -41,9 +40,9 @@
 #define PIRQ_MISC1	0x0A	/* Miscellaneous1 IRQ Settings */
 #define PIRQ_MISC2	0x0B	/* Miscellaneous2 IRQ Settings */
 #define PIRQ_SIRQA	0x0C	/* Serial IRQ INTA */
-#define PIRQ_SIRQB	0x0D	/* Serial IRQ INTA */
-#define PIRQ_SIRQC	0x0E	/* Serial IRQ INTA */
-#define PIRQ_SIRQD	0x0F	/* Serial IRQ INTA */
+#define PIRQ_SIRQB	0x0D	/* Serial IRQ INTB */
+#define PIRQ_SIRQC	0x0E	/* Serial IRQ INTC */
+#define PIRQ_SIRQD	0x0F	/* Serial IRQ INTD */
 #define PIRQ_SCI	0x10	/* SCI IRQ */
 #define PIRQ_SMBUS	0x11	/* SMBUS	14h.0 */
 #define PIRQ_ASF	0x12	/* ASF */
@@ -67,6 +66,18 @@
 #define PIRQ_OHCI4	0x36	/* USB OHCI	14h.5 */
 #define PIRQ_IDE	0x40	/* IDE		14h.1 */
 #define PIRQ_SATA	0x41	/* SATA		11h.0 */
+
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_AVALON)
+#define FCH_INT_TABLE_SIZE 0x63
 #define PIRQ_GPIO	0x62	/* GPIO Controller Interrupt */
+#endif
+
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON)
+#define FCH_INT_TABLE_SIZE 0x54
+#define PIRQ_GPP0	0x50	/* GPP INT 0 */
+#define PIRQ_GPP1	0x51	/* GPP INT 1 */
+#define PIRQ_GPP2	0x52	/* GPP INT 2 */
+#define PIRQ_GPP3	0x53	/* GPP INT 3 */
+#endif
 
 #endif /* AMD_PCI_INT_DEFS_H */

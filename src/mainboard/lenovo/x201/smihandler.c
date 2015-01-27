@@ -25,7 +25,7 @@
 #include "southbridge/intel/ibexpeak/nvs.h"
 #include "southbridge/intel/ibexpeak/pch.h"
 #include "southbridge/intel/ibexpeak/me.h"
-#include <northbridge/intel/sandybridge/sandybridge.h>
+#include <northbridge/intel/nehalem/nehalem.h>
 #include <cpu/intel/model_2065x/model_2065x.h>
 #include <ec/acpi/ec.h>
 #include <pc80/mc146818rtc.h>
@@ -164,7 +164,7 @@ int mainboard_smi_apmc(u8 data)
 
 		intel_me_finalize_smm();
 		intel_pch_finalize_smm();
-		intel_sandybridge_finalize_smm();
+		intel_nehalem_finalize_smm();
 		intel_model_2065x_finalize_smm();
 
 		mainboard_finalized = 1;

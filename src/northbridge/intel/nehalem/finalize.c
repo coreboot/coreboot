@@ -24,7 +24,7 @@
 
 #define PCI_DEV_SNB PCI_DEV(0, 0, 0)
 
-void intel_sandybridge_finalize_smm(void)
+void intel_nehalem_finalize_smm(void)
 {
 	pcie_or_config16(PCI_DEV_SNB, 0x50, 1 << 0);	/* GGC */
 	pcie_or_config32(PCI_DEV_SNB, 0x5c, 1 << 0);	/* DPR */

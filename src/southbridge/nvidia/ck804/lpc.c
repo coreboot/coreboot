@@ -35,6 +35,7 @@
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <cpu/amd/powernow.h>
 #include "ck804.h"
 
 #define CK804_CHIP_REV 2
@@ -317,11 +318,21 @@ static void ck804_lpc_enable_resources(device_t dev)
 	ck804_lpc_enable_childrens_resources(dev);
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES) && IS_ENABLED(CONFIG_PER_DEVICE_ACPI_TABLES)
+
+static void southbridge_acpi_fill_ssdt_generator(void)
+{
+	amd_generate_powernow(0, 0, 0);
+}
+
+#endif
+
 static struct device_operations lpc_ops = {
 	.read_resources   = ck804_lpc_read_resources,
 	.set_resources    = ck804_lpc_set_resources,
 	.enable_resources = ck804_lpc_enable_resources,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 	.write_acpi_tables      = acpi_write_hpet,
 #endif
 	.init             = lpc_init,

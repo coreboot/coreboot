@@ -22,7 +22,6 @@
 #include <arch/io.h>
 #include <stdint.h>
 #include <soc/clocks.h>
-#include <console/console.h>
 
 #define GPIO_BIT_EN_ADDR(bank)		(0xB8101C00 + 0x200 + (0x24 * (bank)))
 
@@ -134,8 +133,6 @@ static void bootblock_mainboard_init(void)
 	if (!init_clocks()) {
 		/* Disable GPIO on the peripheral lines */
 		uart1_mfio_setup();
-		printk(BIOS_INFO, "Urara board: UART initialized!\n");
-
 		spim1_mfio_setup();
 	}
 

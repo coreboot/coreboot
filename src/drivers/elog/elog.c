@@ -75,9 +75,13 @@ static elog_event_buffer_state event_buffer_state;
 static u16 next_event_offset;
 static u16 event_count;
 
-static int elog_initialized;
 static struct spi_flash *elog_spi;
 
+static enum {
+	ELOG_UNINITIALIZED = 0,
+	ELOG_INITIALIZED,
+	ELOG_BROKEN,
+} elog_initialized = ELOG_UNINITIALIZED;
 
 static inline u32 get_rom_size(void)
 {
@@ -522,25 +526,18 @@ int elog_clear(void)
 
 static void elog_find_flash(void)
 {
-#if CONFIG_CHROMEOS
-	u8 *flash_base_ptr;
-#endif
-
 	elog_debug("elog_find_flash()\n");
 
 #if CONFIG_CHROMEOS
 	/* Find the ELOG base and size in FMAP */
-	total_size = find_fmap_entry("RW_ELOG", (void **)&flash_base_ptr);
-	if (total_size < 0) {
-		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP, "
-		       "using CONFIG_ELOG_FLASH_BASE instead\n");
-		total_size = CONFIG_ELOG_AREA_SIZE;
+	u8 *flash_base_ptr;
+	int fmap_size = find_fmap_entry("RW_ELOG", (void **)&flash_base_ptr);
+	if (fmap_size < 0) {
+		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP\n");
+		flash_base = total_size = 0;
 	} else {
 		flash_base = elog_flash_address_to_offset(flash_base_ptr);
-
-		/* Use configured size if smaller than FMAP size */
-		if (total_size > CONFIG_ELOG_AREA_SIZE)
-			total_size = CONFIG_ELOG_AREA_SIZE;
+		total_size = MIN(fmap_size, CONFIG_ELOG_AREA_SIZE);
 	}
 #else
 	flash_base = CONFIG_ELOG_FLASH_BASE;
@@ -554,8 +551,15 @@ static void elog_find_flash(void)
  */
 int elog_init(void)
 {
-	if (elog_initialized)
+	switch (elog_initialized) {
+	case ELOG_UNINITIALIZED:
+		break;
+	case ELOG_INITIALIZED:
 		return 0;
+	case ELOG_BROKEN:
+		return -1;
+	}
+	elog_initialized = ELOG_BROKEN;
 
 	elog_debug("elog_init()\n");
 
@@ -600,8 +604,6 @@ int elog_init(void)
 		return -1;
 	}
 
-	elog_initialized = 1;
-
 	printk(BIOS_INFO, "ELOG: FLASH @0x%p [SPI 0x%08x]\n",
 	       elog_area, flash_base);
 
@@ -636,6 +638,8 @@ int elog_init(void)
 		cmos_post_log();
 #endif
 #endif
+
+	elog_initialized = ELOG_INITIALIZED;
 
 	return 0;
 }

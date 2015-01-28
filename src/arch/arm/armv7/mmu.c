@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
  * Copyright 2013 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -185,7 +186,7 @@ static pte_t *mmu_create_subtable(pte_t *pgd_entry)
 	return table;
 }
 
-void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy)
+static pte_t *mmu_validate_create_sub_table(u32 start_kb, u32 size_kb)
 {
 	pte_t *pgd_entry = &ttb_buff[start_kb / (BLOCK_SIZE/KiB)];
 	pte_t *table = (void *)(uintptr_t)(*pgd_entry & NEXTLEVEL_MASK);
@@ -196,6 +197,13 @@ void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy)
 
 	if ((*pgd_entry & ~NEXTLEVEL_MASK) != ATTR_NEXTLEVEL)
 		table = mmu_create_subtable(pgd_entry);
+
+	return table;
+}
+
+void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy)
+{
+	pte_t *table = mmu_validate_create_sub_table(start_kb, size_kb);
 
 	/* Always _one_ _damn_ bit that won't fit... (XN moves from 4 to 0) */
 	pte_t attr = attrs[policy].value;
@@ -209,6 +217,19 @@ void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy)
 	mmu_fill_table(table, (start_kb & mask) / (PAGE_SIZE/KiB),
 		       div_round_up((start_kb + size_kb) & mask, PAGE_SIZE/KiB),
 		       (start_kb & ~mask) * KiB, PAGE_SHIFT, ATTR_PAGE | attr);
+}
+
+void mmu_disable_range_kb(u32 start_kb, u32 size_kb)
+{
+	pte_t *table = mmu_validate_create_sub_table(start_kb, size_kb);
+
+	/* Mask away high address bits that are handled by upper level table. */
+	u32 mask = BLOCK_SIZE/KiB - 1;
+	printk(BIOS_DEBUG, "Setting address range [%#.8x:%#.8x) as unmapped\n",
+	       start_kb * KiB, (start_kb + size_kb) * KiB);
+	mmu_fill_table(table, (start_kb & mask) / (PAGE_SIZE/KiB),
+		       div_round_up((start_kb + size_kb) & mask, PAGE_SIZE/KiB),
+		       (start_kb & ~mask) * KiB, PAGE_SHIFT, 0);
 }
 
 void mmu_disable_range(u32 start_mb, u32 size_mb)

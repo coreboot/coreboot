@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
  * Copyright 2013 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -402,5 +403,6 @@ void mmu_config_range(u32 start_mb, u32 size_mb, enum dcache_policy policy);
  * Careful: Do NOT map over this address range with mmu_config_range() again
  * later, or you will leak resources and may desync your TLB! */
 void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy);
+void mmu_disable_range_kb(u32 start_kb, u32 size_kb);
 
 #endif /* ARM_CACHE_H */

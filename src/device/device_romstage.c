@@ -101,3 +101,24 @@ ROMSTAGE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
 	}
 	return result;
 }
+
+/**
+ * Given a PnP port and a device number, find the device structure.
+ *
+ * @param port The I/O port.
+ * @param device Logical device number.
+ * @return Pointer to the device structure (if found), 0 otherwise.
+ */
+ROMSTAGE_CONST struct device *dev_find_slot_pnp(u16 port, u16 device)
+{
+	ROMSTAGE_CONST struct device *dev;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		if ((dev->path.type == DEVICE_PATH_PNP) &&
+		    (dev->path.pnp.port == port) &&
+		    (dev->path.pnp.device == device)) {
+			return dev;
+		}
+	}
+	return 0;
+}

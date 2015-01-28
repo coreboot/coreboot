@@ -261,6 +261,7 @@ ROMSTAGE_CONST struct device *dev_find_next_pci_device(
 						ROMSTAGE_CONST struct device *previous_dev);
 ROMSTAGE_CONST struct device * dev_find_slot_on_smbus (unsigned int bus,
 							unsigned int addr);
+ROMSTAGE_CONST struct device * dev_find_slot_pnp(u16 port, u16 device);
 
 #endif
 

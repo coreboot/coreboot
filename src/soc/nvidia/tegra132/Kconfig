@@ -2,6 +2,7 @@ config SOC_NVIDIA_TEGRA132
 	bool
 	default n
 	select ARCH_BOOTBLOCK_ARMV4
+	select ARCH_VERSTAGE_ARMV4
 	select ARCH_ROMSTAGE_ARMV8_64
 	select ARCH_RAMSTAGE_ARMV8_64
 	select ARM_LPAE

@@ -105,4 +105,8 @@ config AMDMCT_BACKGROUND_SCRUB_RATE
 	hex
 	default 0x06
 
+config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+	bool
+	default y
+
 endif # BOARD_ASUS_KFSN4_DRE

@@ -34,7 +34,7 @@ romstage-y += vboot_handoff.c common.c
 verstage-y += verstage.ld
 
 VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-VERSTAGE-y))
-VB2_LIB = $(obj)/external/vboot_reference/vboot_fw2.a
+VB2_LIB = $(obj)/external/vboot_reference/vboot_fw20.a
 VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_verstage)))
 VBOOT_CFLAGS += $(verstage-c-ccopts)
 VBOOT_CFLAGS += -include $(top)/src/include/kconfig.h -Wno-missing-prototypes
@@ -48,7 +48,7 @@ $(VB2_LIB): $(obj)/config.h
 	$(MAKE) -C $(VB_SOURCE) \
 		BUILD=$(top)/$(dir $(VB2_LIB)) \
 		V=$(V) \
-		fwlib2
+		fwlib20
 
 VERSTAGE_ELF = $(objcbfs)/verstage.elf
 cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage

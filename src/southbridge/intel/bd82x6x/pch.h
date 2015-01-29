@@ -438,6 +438,12 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define PCH_DISABLE_MEI1	(1 << 1)
 #define PCH_ENABLE_DBDF		(1 << 0)
 
+/* USB Port Disable Override */
+#define USBPDO		0x359c	/* 32bit */
+/* USB Overcurrent MAP Register */
+#define USBOCM1		0x35a0	/* 32bit */
+#define USBOCM2		0x35a4	/* 32bit */
+
 /* ICH7 GPIOBASE */
 #define GPIO_USE_SEL	0x00
 #define GP_IO_SEL	0x04

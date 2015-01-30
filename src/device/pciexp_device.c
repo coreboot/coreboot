@@ -241,20 +241,17 @@ static void pciexp_L1_substate_commit(device_t root, device_t dev,
 	pcie_update_cfg(root, root_cap + 0x08, ~0xe3ff0000,
 		(1 << 21) | (1 << 23) | (1 << 30));
 
-	pcie_update_cfg(root, root_cap + 0x08, ~0xf,
+	pcie_update_cfg(root, root_cap + 0x08, ~0x1f,
 		L1SubStateSupport);
 
 	for (dev_t = dev; dev_t; dev_t = dev_t->sibling) {
-		pcie_update_cfg(dev_t, end_cap + 0x08, ~0xff00,
-			(comm_mode_rst_time << 8));
-
 		pcie_update_cfg(dev_t, end_cap + 0x0c , 0xffffff04,
 			(endp_power_on_value << 3) | (power_on_scale));
 
 		pcie_update_cfg(dev_t, end_cap + 0x08, ~0xe3ff0000,
 			(1 << 21) | (1 << 23) | (1 << 30));
 
-		pcie_update_cfg(dev_t, end_cap + 0x08, ~0xf,
+		pcie_update_cfg(dev_t, end_cap + 0x08, ~0x1f,
 			L1SubStateSupport);
 
 		pciexp_enable_ltr(dev_t);

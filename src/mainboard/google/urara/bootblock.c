@@ -22,10 +22,22 @@
 #include <arch/io.h>
 #include <stdint.h>
 #include <soc/clocks.h>
+#include <assert.h>
 
 #define PADS_FUNCTION_SELECT0_ADDR	(0xB8101C00 + 0xC0)
 
 #define GPIO_BIT_EN_ADDR(bank)		(0xB8101C00 + 0x200 + (0x24 * (bank)))
+#define PAD_DRIVE_STRENGTH_ADDR(bank)	(0xB8101C00 + 0x120 + (0x4 * (bank)))
+#define MAX_NO_MFIOS				89
+#define PAD_DRIVE_STRENGTH_LENGTH		2
+#define PAD_DRIVE_STRENGTH_MASK			0x3
+
+typedef enum {
+	DRIVE_STRENGTH_2mA      = 0,
+	DRIVE_STRENGTH_4mA      = 1,
+	DRIVE_STRENGTH_8mA      = 2,
+	DRIVE_STRENGTH_12mA     = 3
+} drive_strength;
 
 /* MFIO definitions for UART1 */
 #define UART1_RXD_MFIO			59
@@ -46,6 +58,21 @@
 #define I2C0_CLK_FUNCTION_OFFSET	21
 #define I2C0_DATA_FUNCTION_MASK		0x1
 #define I2C0_CLK_FUNCTION_MASK		0x1
+
+static void pad_drive_strength(u32 pad, drive_strength strength)
+{
+	u32 reg, drive_strength_shift;
+
+	assert(pad <= MAX_NO_MFIOS);
+	assert(!(strength & ~(PAD_DRIVE_STRENGTH_MASK)));
+
+	/* Set drive strength value */
+	drive_strength_shift = (pad % 16) * PAD_DRIVE_STRENGTH_LENGTH;
+	reg = read32(PAD_DRIVE_STRENGTH_ADDR(pad / 16));
+	reg &= ~(PAD_DRIVE_STRENGTH_MASK << drive_strength_shift);
+	reg |= strength << drive_strength_shift;
+	write32(PAD_DRIVE_STRENGTH_ADDR(pad / 16), reg);
+}
 
 static void uart1_mfio_setup(void)
 {
@@ -99,6 +126,14 @@ static void spim1_mfio_setup(void)
 	 */
 	reg |= mfio_mask << 16;
 	write32(GPIO_BIT_EN_ADDR(0), reg);
+
+	/* Set drive strength to maximum for these MFIOs */
+	pad_drive_strength(SPIM1_CS0_MFIO, DRIVE_STRENGTH_12mA);
+	pad_drive_strength(SPIM1_D1_RXD_MFIO, DRIVE_STRENGTH_12mA);
+	pad_drive_strength(SPIM1_D0_TXD_MFIO, DRIVE_STRENGTH_12mA);
+	pad_drive_strength(SPIM1_D2_MFIO, DRIVE_STRENGTH_12mA);
+	pad_drive_strength(SPIM1_D3_MFIO, DRIVE_STRENGTH_12mA);
+	pad_drive_strength(SPIM1_MCLK_MFIO, DRIVE_STRENGTH_12mA);
 }
 
 static void i2c0_mfio_setup(void)

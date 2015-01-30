@@ -27,13 +27,15 @@
 
 #define GPIO_WP		GPIO(7, A, 6)
 #define GPIO_POWER	GPIO(0, A, 5)
-#define GPIO_RECOVERY	GPIO(0, B, 1)
+#define GPIO_RECOVERY_SERVO	GPIO(0, B, 1)
+#define GPIO_RECOVERY_PUSHKEY	GPIO(7, B, 1)
 
 void setup_chromeos_gpios(void)
 {
 	gpio_input(GPIO_WP);
 	gpio_input(GPIO_POWER);
-	gpio_input_pullup(GPIO_RECOVERY);
+	gpio_input_pullup(GPIO_RECOVERY_SERVO);
+	gpio_input_pullup(GPIO_RECOVERY_PUSHKEY);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
@@ -49,9 +51,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	count++;
 
 	/* Recovery: active low */
-	gpios->gpios[count].port = GPIO_RECOVERY.raw;
+	/* Note for early development, we want to support both servo and
+	 * pushkey recovery buttons in firmware boot stages.
+	 */
+	gpios->gpios[count].port = GPIO_RECOVERY_PUSHKEY.raw;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get(GPIO_RECOVERY);
+	gpios->gpios[count].value = !get_recovery_mode_switch();
 	strncpy((char *)gpios->gpios[count].name, "recovery",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -93,7 +98,9 @@ int get_developer_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	return !gpio_get(GPIO_RECOVERY);
+	// Both RECOVERY_SERVO and RECOVERY_PUSHKEY are low active.
+	return !(gpio_get(GPIO_RECOVERY_SERVO) &&
+		 gpio_get(GPIO_RECOVERY_PUSHKEY));
 }
 
 int get_write_protect_state(void)

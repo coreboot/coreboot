@@ -169,21 +169,13 @@ static inline void cmos_write32(u8 offset, u32 value)
 #endif
 
 #if !defined(__ROMCC__)
-void cmos_init(int invalid);
+void cmos_init(bool invalid);
 void cmos_check_update_date(void);
-#if CONFIG_USE_OPTION_TABLE
+
 enum cb_err set_option(const char *name, void *val);
 enum cb_err get_option(void *dest, const char *name);
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);
-#else
-static inline enum cb_err set_option(const char *name __attribute__((unused)),
-				     void *val __attribute__((unused)))
-				{ return CB_CMOS_OTABLE_DISABLED; };
-static inline enum cb_err get_option(void *dest __attribute__((unused)),
-				     const char *name __attribute__((unused)))
-				{ return CB_CMOS_OTABLE_DISABLED; }
-#define read_option_lowlevel(start, size, def) def
-#endif
+
 #else /* defined(__ROMCC__) */
 #include <drivers/pc80/mc146818rtc_early.c>
 #endif /* !defined(__ROMCC__) */

@@ -7,9 +7,7 @@ ramstage-$(CONFIG_UDELAY_IO) += udelay_io.c
 ramstage-y += keyboard.c
 ramstage-$(CONFIG_SPKMODEM) += spkmodem.c
 
-ifeq ($(CONFIG_DRIVERS_MC146818),y)
-romstage-$(CONFIG_USE_OPTION_TABLE) += mc146818rtc_early.c
-endif
+romstage-$(CONFIG_DRIVERS_MC146818) += mc146818rtc_early.c
 
 romstage-$(CONFIG_LPC_TPM) += tpm.c
 romstage-$(CONFIG_SPKMODEM) += spkmodem.c

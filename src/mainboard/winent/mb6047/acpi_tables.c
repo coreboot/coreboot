@@ -1,5 +1,5 @@
 /*
- * Island Aruma ACPI support
+ * ACPI support
  * written by Stefan Reinauer <stepan@openbios.org>
  *  (C) 2005 Stefan Reinauer
  *

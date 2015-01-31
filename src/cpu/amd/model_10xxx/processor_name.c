@@ -4,6 +4,7 @@
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  * Copyright (C) 2008 Peter Stuge
  * Copyright (C) 2010 Marc Jones <marcj303@gmail.com>
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +52,8 @@ static const struct str_s String1_socket_F[] = {
 	{0x00, 0x01, 0x01, "Dual-Core AMD Opteron(tm) Processor 23"},
 	{0x00, 0x03, 0x00, "Quad-Core AMD Opteron(tm) Processor 83"},
 	{0x00, 0x03, 0x01, "Quad-Core AMD Opteron(tm) Processor 23"},
+	{0x00, 0x05, 0x00, "Six-Core AMD Opteron(tm) Processor 84"},
+	{0x00, 0x05, 0x01, "Six-Core AMD Opteron(tm) Processor 24"},
 	{0x00, 0x03, 0x02, "Embedded AMD Opteron(tm) Processor 83"},
 	{0x00, 0x03, 0x03, "Embedded AMD Opteron(tm) Processor 23"},
 	{0x00, 0x03, 0x04, "Embedded AMD Opteron(tm) Processor 13"},
@@ -60,6 +63,7 @@ static const struct str_s String1_socket_F[] = {
 };
 
 static const struct str_s String2_socket_F[] = {
+	{0x00, 0xFF, 0x02, " EE"},
 	{0x00, 0xFF, 0x0A, " SE"},
 	{0x00, 0xFF, 0x0B, " HE"},
 	{0x00, 0xFF, 0x0C, " EE"},

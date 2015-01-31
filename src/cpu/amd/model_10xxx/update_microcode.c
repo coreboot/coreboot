@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -56,22 +57,30 @@ static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
 	0x0, 0x0, 0x0, 0x0,
 };
 
-static u32 get_equivalent_processor_rev_id(u32 orig_id) {
-	static unsigned id_mapping_table[] = {
-		0x100f00, 0x1000,
-		0x100f01, 0x1000,
-		0x100f02, 0x1000,
-		0x100f20, 0x1020,
-		0x100f21, 0x1020,
-		0x100f2A, 0x1020,
-		0x100f22, 0x1022,
-		0x100f23, 0x1022,
-		0x100f42, 0x1041,
-		0x100f43, 0x1043,
-		0x100f62, 0x1062,
-		0x100f63, 0x1043,
-		0x100f81, 0x1081,
-		0x100fa0, 0x10A0,
+struct id_mapping {
+        uint32_t orig_id;
+        uint16_t new_id;
+};
+
+static u16 get_equivalent_processor_rev_id(u32 orig_id) {
+	static const struct id_mapping id_mapping_table[] = {
+		{ 0x100f00, 0x1000 },
+		{ 0x100f01, 0x1000 },
+		{ 0x100f02, 0x1000 },
+		{ 0x100f20, 0x1020 },
+		{ 0x100f21, 0x1020 },
+		{ 0x100f2A, 0x1020 },
+		{ 0x100f22, 0x1022 },
+		{ 0x100f23, 0x1022 },
+		{ 0x100f42, 0x1041 },
+		{ 0x100f43, 0x1043 },
+		{ 0x100f62, 0x1062 },
+		{ 0x100f63, 0x1043 },
+		{ 0x100f81, 0x1081 },
+		{ 0x100fa0, 0x10A0 },
+
+		/* Array terminator */
+		{ 0xffffff, 0x0000 },
 	};
 
 	u32 new_id;
@@ -79,9 +88,9 @@ static u32 get_equivalent_processor_rev_id(u32 orig_id) {
 
 	new_id = 0;
 
-	for (i = 0; i < sizeof(id_mapping_table); i += 2 ) {
-		if(id_mapping_table[i]==orig_id) {
-			new_id = id_mapping_table[i + 1];
+	for (i = 0; id_mapping_table[i].orig_id != 0xffffff; i++ ) {
+		if (id_mapping_table[i].orig_id == orig_id) {
+			new_id = id_mapping_table[i].new_id;
 			break;
 		}
 	}

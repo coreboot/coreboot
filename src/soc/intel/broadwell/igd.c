@@ -30,6 +30,7 @@
 #include <reg_script.h>
 #include <drivers/intel/gma/i915_reg.h>
 #include <soc/cpu.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
@@ -488,13 +489,15 @@ static void igd_init(struct device *dev)
 		return;
 
 	/* Wait for any configured pre-graphics delay */
+	if (acpi_slp_type != SLEEP_STATE_S3) {
 #if IS_ENABLED(CONFIG_CHROMEOS)
-	if (developer_mode_enabled() || recovery_mode_enabled() ||
-	    vboot_wants_oprom())
-		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
+		if (developer_mode_enabled() || recovery_mode_enabled() ||
+		    vboot_wants_oprom())
+			mdelay(CONFIG_PRE_GRAPHICS_DELAY);
 #else
-	mdelay(CONFIG_PRE_GRAPHICS_DELAY);
+		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
 #endif
+	}
 
 	/* Early init steps */
 	if (is_broadwell) {

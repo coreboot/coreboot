@@ -23,6 +23,7 @@
 #include <boardid.h>
 #include <gpio.h>
 
+#define GPIO_BACKLIGHT  GPIO(7, A, 3)
 #define GPIO_RESET	GPIO(0, B, 5)
 
 /* TODO: move setup_chromeos_gpios() here once bootblock code is in mainboard */

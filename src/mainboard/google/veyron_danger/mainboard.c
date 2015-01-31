@@ -129,4 +129,5 @@ void lb_board(struct lb_header *header)
 
 void mainboard_power_on_backlight(void)
 {
+	gpio_output(GPIO_BACKLIGHT, 1);	/* BL_EN */
 }

@@ -54,7 +54,7 @@ config PCI_64BIT_PREF_MEM
 
 config MAX_CPUS
 	int
-	default 8
+	default 12
 
 config MAX_PHYSICAL_CPUS
 	int

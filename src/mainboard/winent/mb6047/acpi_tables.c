@@ -49,7 +49,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* IRQ9 */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		current, 0, 9, 9, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_LOW);
+		current, 0, 9, 9, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
 
 	/* 0: mean bus 0--->ISA */
 	/* 0: PIC 0 */

@@ -89,6 +89,11 @@ struct southbridge_intel_bd82x6x_config {
 	int docking_supported;
 
 	uint8_t pcie_hotplug_map[8];
+
+	/* Ports which can be routed to either EHCI or xHCI.  */
+	uint32_t xhci_switchable_ports;
+	/* Ports which support SuperSpeed (USB 3.0 additional lanes).  */
+	uint32_t superspeed_capable_ports;
 };
 
 #endif				/* SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H */

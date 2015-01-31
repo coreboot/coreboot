@@ -29,6 +29,7 @@
 static void usb_xhci_init(struct device *dev)
 {
 	u32 reg32;
+	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "XHCI: Setting up controller.. ");
 
@@ -36,6 +37,9 @@ static void usb_xhci_init(struct device *dev)
 	reg32 = pci_read_config32(dev, 0x44);
 	reg32 |= 1;
 	pci_write_config32(dev, 0x44, reg32);
+
+	pci_write_config32(dev, 0xd4, config->xhci_switchable_ports);
+	pci_write_config32(dev, 0xdc, config->superspeed_capable_ports);
 
 	/* Enable clock gating */
 	reg32 = pci_read_config32(dev, 0x40);

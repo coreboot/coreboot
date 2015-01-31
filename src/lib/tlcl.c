@@ -320,7 +320,8 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t* in_digest,
 	if (result != TPM_SUCCESS)
 		return result;
 
-	memcpy(out_digest, response + kTpmResponseHeaderLength,
-	       kPcrDigestLength);
+	if (out_digest)
+		memcpy(out_digest, response + kTpmResponseHeaderLength,
+		       kPcrDigestLength);
 	return result;
 }

@@ -35,6 +35,23 @@
 		}							\
 	} while (0)
 
+
+uint32_t tpm_extend_pcr(struct vb2_context *ctx, int pcr,
+			enum vb2_pcr_digest which_digest)
+{
+	uint8_t buffer[VB2_PCR_DIGEST_RECOMMENDED_SIZE];
+	uint32_t size = sizeof(buffer);
+	int rv;
+
+	rv = vb2api_get_pcr_digest(ctx, which_digest, buffer, &size);
+	if (rv != VB2_SUCCESS)
+		return rv;
+	if (size < TPM_PCR_DIGEST)
+		return VB2_ERROR_UNKNOWN;
+
+	return tlcl_extend(pcr, buffer, NULL);
+}
+
 uint32_t tpm_clear_and_reenable(void)
 {
 	VBDEBUG("TPM: Clear and re-enable\n");

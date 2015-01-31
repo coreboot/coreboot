@@ -205,6 +205,12 @@ static void save_if_needed(struct vb2_context *ctx)
 	}
 }
 
+static uint32_t extend_pcrs(struct vb2_context *ctx)
+{
+	return tpm_extend_pcr(ctx, 0, BOOT_MODE_PCR) ||
+	       tpm_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
+}
+
 /**
  * Verify and select the firmware in the RW image
  *
@@ -248,6 +254,7 @@ void verstage_main(void)
 		printk(BIOS_INFO, "Recovery requested (%x)\n", rv);
 		/* If we need recovery mode, leave firmware selection now */
 		save_if_needed(&ctx);
+		extend_pcrs(&ctx);	/* ignore failures */
 		timestamp_add_now(TS_END_VBOOT);
 		return;
 	}
@@ -281,6 +288,14 @@ void verstage_main(void)
 	save_if_needed(&ctx);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
+		vboot_reboot();
+	}
+
+	rv = extend_pcrs(&ctx);
+	if (rv) {
+		printk(BIOS_WARNING, "Failed to extend TPM PCRs (%#x)\n", rv);
+		vb2api_fail(&ctx, VB2_RECOVERY_RO_TPM_U_ERROR, rv);
+		save_if_needed(&ctx);
 		vboot_reboot();
 	}
 

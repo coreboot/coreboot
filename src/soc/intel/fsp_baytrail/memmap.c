@@ -29,18 +29,17 @@ uintptr_t smm_region_start(void)
 	return (iosf_bunit_read(BUNIT_SMRRL) << 20);
 }
 
-/*
- * Calculate the top of usable (low) DRAM.
- * The FSP's reserved memory sits just below the SMM region,
- * allowing calculation of the top of usable memory.
+/** @brief get the top of usable low memory from the FSP's HOB list
+ *
+ * The FSP's reserved memory sits just below the SMM region.  The memory
+ * region below it is usable memory.
  *
  * The entire memory map is shown in northcluster.c
+ *
+ * @return pointer to the first byte of reserved memory
  */
 
 void *cbmem_top(void)
 {
-	uintptr_t tom = smm_region_start();
-	if (!tom)
-		tom = iosf_bunit_read(BUNIT_BMBOUND);
-	return (void *) tom - FSP_RESERVE_MEMORY_SIZE;
+	return find_fsp_reserved_mem(*(void **)CBMEM_FSP_HOB_PTR);
 }

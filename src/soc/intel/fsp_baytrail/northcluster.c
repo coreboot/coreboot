@@ -149,8 +149,7 @@ static void mc_add_dram_resources(device_t dev)
 	uint32_t fsp_mem_base = 0;
 
 	GetHighMemorySize(&highmem_size);
-	GetLowMemorySize(&fsp_mem_base);
-
+	fsp_mem_base=(uint32_t)cbmem_top();
 
 	bmbound = iosf_bunit_read(BUNIT_BMBOUND);
 	bsmmrrl = iosf_bunit_read(BUNIT_SMRRL) << 20;
@@ -162,10 +161,6 @@ static void mc_add_dram_resources(device_t dev)
 
 		printk(BIOS_DEBUG, "FSP memory location: 0x%x\nFSP memory size: %dM\n",
 				fsp_mem_base, (bsmmrrl - fsp_mem_base) >> 20);
-
-		if ((bsmmrrl - fsp_mem_base ) != FSP_RESERVE_MEMORY_SIZE)
-			printk(BIOS_WARNING, "Warning: Fsp memory size does not match "
-					"expected memory size (%x).\n", FSP_RESERVE_MEMORY_SIZE);
 	}
 
 	printk(BIOS_INFO, "Available memory below 4GB: 0x%08x (%dM)\n",

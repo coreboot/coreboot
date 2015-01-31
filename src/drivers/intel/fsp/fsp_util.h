@@ -38,6 +38,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *FspInitParams,
 	FSP_INFO_HEADER *fsp_ptr);
 void ChipsetFspReturnPoint(EFI_STATUS Status, VOID *HobListPtr);
 void * find_saved_temp_mem(void *hob_list_ptr);
+void * find_fsp_reserved_mem(void *hob_list_ptr);
 
 /* functions in hob.c */
 void print_hob_mem_attributes(void *Hobptr);

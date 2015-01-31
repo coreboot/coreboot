@@ -195,6 +195,26 @@ void * find_saved_temp_mem(void *hob_list_ptr)
 	return (void *) ((char *) saved_mem_hob + sizeof(EFI_HOB_GUID_TYPE));
 }
 
+#ifndef FSP_RESERVE_MEMORY_SIZE
+/** @brief locates the HOB containing the location of the fsp reserved mem area
+ *
+ * @param hob_list_ptr pointer to the start of the hob list
+ * @return pointer to the start of the FSP reserved memory or NULL if not found.
+ */
+void * find_fsp_reserved_mem(void *hob_list_ptr)
+{
+	EFI_GUID fsp_reserved_guid = FSP_HOB_RESOURCE_OWNER_FSP_GUID;
+	EFI_HOB_RESOURCE_DESCRIPTOR *fsp_reserved_mem =
+			(EFI_HOB_RESOURCE_DESCRIPTOR *) find_hob_by_guid(
+			hob_list_ptr, &fsp_reserved_guid);
+
+	if (fsp_reserved_mem == NULL)
+		return NULL;
+
+	return  (void *)((uintptr_t)fsp_reserved_mem->PhysicalStart);
+}
+#endif /* FSP_RESERVE_MEMORY_SIZE */
+
 #ifndef __PRE_RAM__ /* Only parse HOB data in ramstage */
 
 void print_fsp_info(void) {

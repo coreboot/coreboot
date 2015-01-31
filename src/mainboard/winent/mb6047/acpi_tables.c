@@ -47,14 +47,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 		current, 0, 9, 9, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
 
-	/* 0: mean bus 0--->ISA */
-	/* 0: PIC 0 */
-	/* 2: APIC 2 */
-	/* 5 mean: 0101 --> Edge-triggered, Active high */
-
 	/* create all subtables for processors */
 	/* acpi_create_madt_lapic_nmis returns current, not size. */
-	current = acpi_create_madt_lapic_nmis(current, 5, 1);
+	current = acpi_create_madt_lapic_nmis(current,
+		MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, 1);
 
 	return current;
 }

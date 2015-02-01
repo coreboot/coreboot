@@ -81,6 +81,7 @@ int main()
 	keypad(stdscr, TRUE);
 	cbreak();
 	noecho();
+
 	start_color();
 	leaveok(stdscr, TRUE);
 	curs_set(1);
@@ -88,6 +89,7 @@ int main()
 	erase();
 	box(stdscr, 0, 0);
 	mvaddstr(0, 2, "coreboot configuration utility");
+	refresh();
 
 	/* prep CMOS layout into libcurses data structures */
 	
@@ -188,6 +190,7 @@ int main()
 
 	done = 0;
 	while(!done) {
+		render_form(form);
 		ch=getch();
 		if (ch == ERR) continue;
 		switch (ch) {
@@ -225,7 +228,6 @@ int main()
 			form_driver(form, ch);
 			break;
 		}
-		render_form(form);
 	}
 
 	for (i = 0; i < numopts; i++) {

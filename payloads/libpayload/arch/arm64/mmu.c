@@ -609,7 +609,7 @@ static struct mmu_memrange *mmu_add_dma_range(struct mmu_ranges *mmu_ranges)
 	/* DMA_DEFAULT_SIZE is multiple of GRANULE_SIZE */
 	assert((DMA_DEFAULT_SIZE % GRANULE_SIZE) == 0);
 	prop.size = DMA_DEFAULT_SIZE;
-	prop.lim_excl = MIN_64_BIT_ADDR;
+	prop.lim_excl = (uint64_t)CONFIG_LP_DMA_LIM_EXCL * MiB;
 	prop.align = GRANULE_SIZE;
 	prop.is_valid_range = NULL;
 	prop.src_type = TYPE_NORMAL_MEM;

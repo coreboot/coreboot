@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # libpayload version: 0.2.0
-# Wed Mar 18 16:11:01 2015
+# Sat Mar 21 13:53:09 2015
 #
 
 #
@@ -65,3 +65,4 @@ CONFIG_LP_USB_GEN_HUB=y
 CONFIG_LP_LITTLE_ENDIAN=y
 # CONFIG_LP_IO_ADDRESS_SPACE is not set
 CONFIG_LP_ARCH_SPECIFIC_OPTIONS=y
+CONFIG_LP_DMA_LIM_EXCL=0x1000

@@ -33,4 +33,8 @@ config ARCH_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select LITTLE_ENDIAN
 
+config DMA_LIM_EXCL
+	hex "DMA address limit(exclusive) in MiB units"
+	default 0x1000
+
 endif

@@ -149,7 +149,7 @@ int main()
 				cmos_enum = next_cmos_enum_of_id(cmos_enum, option->config_id);
 			}
 
-			char **values = malloc(sizeof(char*)*numvals + 1);
+			char **values = malloc(sizeof(char*)*(numvals + 1));
 			int cnt = 0;
 
 			cmos_enum = first_cmos_enum_of_id(opttbl, option->config_id);

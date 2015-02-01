@@ -65,7 +65,6 @@ void render_form(FORM *form)
 int main()
 {
 	int ch, done;
-	ITEM *cur;
 	
 	/* coreboot data structures */
 	lib_get_sysinfo();

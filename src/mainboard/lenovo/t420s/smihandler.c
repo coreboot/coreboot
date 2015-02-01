@@ -33,6 +33,9 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 
+#define GPE_EC_SCI	1
+#define GPE_EC_WAKE	13
+
 /* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler
  */
@@ -108,7 +111,7 @@ static void mainboard_smi_handle_ec_sci(void)
 
 void mainboard_smi_gpi(u32 gpi_sts)
 {
-	if (gpi_sts & (1 << 12))
+	if (gpi_sts & (1 << GPE_EC_SCI))
 		mainboard_smi_handle_ec_sci();
 }
 
@@ -129,8 +132,8 @@ int mainboard_smi_apmc(u8 data)
 		case APM_CNT_ACPI_ENABLE:
 			/* use 0x1600/0x1604 to prevent races with userspace */
 			ec_set_ports(0x1604, 0x1600);
-			/* route H8SCI to SCI */
-			outw(inw(pmbase + ALT_GP_SMI_EN) & ~0x1000, pmbase + ALT_GP_SMI_EN);
+			/* route EC_SCI to SCI */
+			outw(inw(pmbase + ALT_GP_SMI_EN) & ~(1 << GPE_EC_SCI), pmbase + ALT_GP_SMI_EN);
 			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
 			tmp &= ~0x03;
 			tmp |= 0x02;
@@ -142,8 +145,8 @@ int mainboard_smi_apmc(u8 data)
 			/* we have to use port 0x62/0x66, as 0x1600/0x1604 doesn't
 			   provide a EC query function */
 			ec_set_ports(0x66, 0x62);
-			/* route H8SCI# to SMI */
-			outw(inw(pmbase + ALT_GP_SMI_EN) | 0x1000,
+			/* route EC_SCI# to SMI */
+			outw(inw(pmbase + ALT_GP_SMI_EN) | (1 << GPE_EC_SCI),
 			     pmbase + ALT_GP_SMI_EN);
 			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
 			tmp &= ~0x03;
@@ -183,11 +186,11 @@ void mainboard_smi_sleep(u8 slp_typ)
 			u16 pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
 
 			/* Enable EC WAKE GPE.  */
-			outl(inl(pmbase + GPE0_EN) | (1 << 29), pmbase + GPE0_EN);
+			outl(inl(pmbase + GPE0_EN) | (1 << (GPE_EC_WAKE + 16)), pmbase + GPE0_EN);
 			gpe_rout = pci_read_config32(PCI_DEV(0, 0x1f, 0), GPIO_ROUT);
 			/* Redirect EC WAKE GPE to SCI.  */
-			gpe_rout &= ~(3 << 26);
-			gpe_rout |= (2 << 26);
+			gpe_rout &= ~(3 << (GPE_EC_WAKE * 2));
+			gpe_rout |= (2 << (GPE_EC_WAKE * 2));
 			pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIO_ROUT, gpe_rout);
 		}
 	}

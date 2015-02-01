@@ -54,7 +54,7 @@ chip northbridge/intel/sandybridge
 			#  2 SCI (if corresponding GPIO_EN bit is also set)
 			register "alt_gp_smi_en" = "0x0000"
 			register "gpi1_routing" = "2"
-			register "gpi8_routing" = "2"
+			register "gpi13_routing" = "2"
 
 			# Enable SATA ports 0 (HDD bay) & 1 (ODD bay) & 2 (mSATA) & 4 (dock)
 			register "sata_port_map" = "0x17"

@@ -225,11 +225,6 @@ config PCIEXP_PLUGIN_SUPPORT
 	depends on PCI
 	default y
 
-config AGP_PLUGIN_SUPPORT
-	bool
-	depends on PCI
-	default y
-
 config CARDBUS_PLUGIN_SUPPORT
 	bool
 	depends on PCI

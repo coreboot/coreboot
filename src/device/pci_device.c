@@ -32,7 +32,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <delay.h>
-#include <device/agp.h>
 #include <device/cardbus.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -770,9 +769,6 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		printk(BIOS_DEBUG, "%s subordinate bus PCI-X\n", dev_path(dev));
 		return &default_pcix_ops_bus;
 	}
-#endif
-#if CONFIG_AGP_PLUGIN_SUPPORT
-	/* How do I detect a PCI to AGP bridge? */
 #endif
 #if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
 	unsigned int htpos = 0;

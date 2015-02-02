@@ -38,6 +38,7 @@ libc-$(CONFIG_LP_S5P_SERIAL_CONSOLE) += serial/s5p.c
 libc-$(CONFIG_LP_8250_MMIO32_SERIAL_CONSOLE) += serial/8250_mmio32.c
 libc-$(CONFIG_LP_IPQ806X_SERIAL_CONSOLE) += serial/ipq806x.c
 libc-$(CONFIG_LP_BG4CD_SERIAL_CONSOLE) += serial/bg4cd.c
+libc-$(CONFIG_LP_CYGNUS_SERIAL_CONSOLE) += serial/cygnus.c
 libc-$(CONFIG_LP_PC_KEYBOARD) += keyboard.c
 
 libc-$(CONFIG_LP_CBMEM_CONSOLE) += cbmem_console.c
@@ -53,6 +54,7 @@ libc-$(CONFIG_LP_TIMER_IPQ806X) += timer/ipq806x.c
 libc-$(CONFIG_LP_TIMER_RK) += timer/rktimer.c
 libc-$(CONFIG_LP_TIMER_BG4CD) += timer/bg4cd.c
 libc-$(CONFIG_LP_TIMER_IMG_PISTACHIO) += timer/img_pistachio.c
+libc-$(CONFIG_LP_TIMER_CYGNUS) += timer/cygnus.c
 
 # Video console drivers
 libc-$(CONFIG_LP_VIDEO_CONSOLE) += video/video.c

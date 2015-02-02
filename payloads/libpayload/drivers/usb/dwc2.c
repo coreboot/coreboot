@@ -253,7 +253,8 @@ dwc2_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 		memcpy(aligned_buf, data_buf, size);
 
 	writel(hctsiz.d32, &reg->host.hchn[ch_num].hctsizn);
-	writel((uint32_t)aligned_buf, &reg->host.hchn[ch_num].hcdman);
+	writel((uint32_t)virt_to_bus(aligned_buf),
+		&reg->host.hchn[ch_num].hcdman);
 	writel(hcchar.d32, &reg->host.hchn[ch_num].hccharn);
 
 	ret = wait_for_complete(ep, ch_num);

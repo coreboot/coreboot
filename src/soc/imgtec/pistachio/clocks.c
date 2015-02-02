@@ -99,7 +99,7 @@
 #define UART1CLKOUT_MASK		0x000003FF
 
 /* Definitions for ROM clock setup */
-#define ROMCLKOUT_CTRL_ADDR		0xB814410C
+#define ROMCLKOUT_CTRL_ADDR		0xB814490C
 #define ROMCLKOUT_MASK			0x0000007F
 
 /* Definitions for ETH clock setup */

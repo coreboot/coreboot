@@ -24,6 +24,7 @@
 #include <getopt.h>
 #include <sys/io.h>
 #include <ec.h>
+#include <stdlib.h>
 
 #define ECTOOL_VERSION "0.1"
 
@@ -45,12 +46,14 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
- 	printf("usage: %s [-vh?Vi]\n", name);
+	printf("usage: %s [-vh?Vi] [-w 0x<addr> -z 0x<data>]\n", name);
 	printf("\n"
 	       "   -v | --version:                   print the version\n"
 	       "   -h | --help:                      print this help\n\n"
 	       "   -V | --verbose:                   print debug information\n"
 	       "   -i | --idx:                       print IDX RAM\n"
+	       "   -w <addr in hex>                  write to addr\n"
+	       "   -z <data in hex>                  write to data\n"
 	       "\n");
 	exit(1);
 }
@@ -60,6 +63,8 @@ int verbose = 0, dump_idx = 0;
 int main(int argc, char *argv[])
 {
 	int i, opt, option_index = 0;
+	long write_data = -1;
+	long write_addr = -1;
 
 	static struct option long_options[] = {
 		{"version", 0, 0, 'v'},
@@ -69,7 +74,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?Vi",
+	while ((opt = getopt_long(argc, argv, "vh?Viw:z:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -81,6 +86,12 @@ int main(int argc, char *argv[])
 			break;
 		case 'i':
 			dump_idx = 1;
+			break;
+		case 'w':
+			write_addr = strtol(optarg , NULL, 16);
+			break;
+		case 'z':
+			write_data = strtol(optarg , NULL, 16);
 			break;
 		case 'h':
 		case '?':
@@ -94,6 +105,12 @@ int main(int argc, char *argv[])
 	if (iopl(3)) {
 		printf("You need to be root.\n");
 		exit(1);
+	}
+	if (write_addr >= 0 && write_data >= 0) {
+		write_addr &= 0xff;
+		write_data &= 0xff;
+		printf("\nWriting ec %02lx = %02lx\n", write_addr & 0xff, write_data & 0xff);
+		ec_write(write_addr & 0xff, write_data & 0xff);
 	}
 
 	printf("EC RAM:\n");

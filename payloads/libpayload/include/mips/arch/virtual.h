@@ -20,12 +20,15 @@
 #ifndef __MIPS_ARCH_VIRTUAL_H
 #define __MIPS_ARCH_VIRTUAL_H
 
-extern unsigned long virtual_offset;
+extern unsigned long virt_to_phys_offset;
+extern unsigned long virt_to_bus_offset;
 
-#define virt_to_phys(virt) ((unsigned long) (virt) + virtual_offset)
-#define phys_to_virt(phys) ((void *) ((unsigned long) (phys) - virtual_offset))
+#define virt_to_phys(virt)	((unsigned long) (virt) + virt_to_phys_offset)
+#define phys_to_virt(phys)	((void *) ((unsigned long) (phys) -	\
+				virt_to_phys_offset))
 
-#define virt_to_bus(addr) virt_to_phys(addr)
-#define bus_to_virt(addr) phys_to_virt(addr)
+#define virt_to_bus(virt)	((unsigned long) (virt) + virt_to_bus_offset)
+#define bus_to_virt(phys)	((void *) ((unsigned long) (phys) -	\
+				virt_to_bus_offset))
 
 #endif

@@ -19,7 +19,8 @@
 
 #include <unistd.h>
 
-unsigned long virtual_offset = 0;
+unsigned long virt_to_phys_offset = 0;
+unsigned long virt_to_bus_offset = 0x60000000;
 
 int getpagesize(void)
 {

@@ -237,33 +237,26 @@ static unsigned amdk8_scan_chains(device_t dev, unsigned max)
 	unsigned nodeid;
 	struct bus *link;
 	unsigned sblink = 0;
-	unsigned offset_unitid = 0;
 
 	nodeid = amdk8_nodeid(dev);
-
-	if(nodeid==0) {
+	if (nodeid == 0)
 		sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
-#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
-	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-		offset_unitid = 1;
-	#endif
-		for (link = dev->link_list; link; link = link->next)
-			if (link->link_num == sblink)
-				max = amdk8_scan_chain(dev, nodeid, link, sblink, sblink, max, offset_unitid ); // do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0
-#endif
+
+	// do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0
+	for (link = dev->link_list; link; link = link->next) {
+		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
+
+		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && (nodeid == 0) && (link->link_num == sblink))
+			max = amdk8_scan_chain(dev, nodeid, link, link->link_num, sblink, max, offset_unitid);
 	}
 
 	for (link = dev->link_list; link; link = link->next) {
-#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
-		if( (nodeid == 0) && (sblink == link->link_num) ) continue; //already done
-#endif
-		offset_unitid = 0;
-		#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-			#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
-			if((nodeid == 0) && (sblink == link->link_num))
-			#endif
-				offset_unitid = 1;
-		#endif
+		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && (nodeid == 0) && (link->link_num == sblink))
+			continue;
+
+		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
+		offset_unitid = offset_unitid &&
+			(((nodeid == 0) && (sblink == link->link_num)) || !CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY);
 
 		max = amdk8_scan_chain(dev, nodeid, link, link->link_num, sblink, max, offset_unitid);
 	}

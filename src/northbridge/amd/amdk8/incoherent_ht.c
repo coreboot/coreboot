@@ -532,25 +532,24 @@ static int optimize_link_read_pointers_chain(uint8_t ht_c_num)
 
 	reset_needed = 0;
 
+	/* First one is SB HT chain. */
 	for (i = 0; i < ht_c_num; i++) {
 		uint32_t reg;
 		uint8_t nodeid, linkn;
 		uint8_t busn;
 		uint8_t val;
-		unsigned devn = 1;
-
-	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-		#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
-		if(i==0) // to check if it is sb ht chain
-		#endif
-			devn = CONFIG_HT_CHAIN_UNITID_BASE;
-	#endif
+		unsigned devn;
 
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
 
 		nodeid = ((reg & 0xf0)>>4); // nodeid
 		linkn = ((reg & 0xf00)>>8); // link n
 		busn = (reg & 0xff0000)>>16; //busn
+
+		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
+		offset_unitid = offset_unitid && (!CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY || (i == 0));
+
+		devn = offset_unitid ? CONFIG_HT_CHAIN_UNITID_BASE : 1;
 
 		reg = pci_read_config32( PCI_DEV(busn, devn, 0), PCI_VENDOR_ID); // ? the chain dev maybe offseted
 		if ( (reg & 0xffff) == PCI_VENDOR_ID_AMD) {
@@ -649,14 +648,13 @@ static int ht_setup_chains(uint8_t ht_c_num)
 	sysinfo->link_pair_num = 0;
 #endif
 
-	// first one is SB Chain
+	/* First one is SB HT chain. */
 	for (i = 0; i < ht_c_num; i++) {
 		uint32_t reg;
 		uint8_t devpos;
 		unsigned regpos;
 		uint32_t dword;
 		uint8_t busn;
-		unsigned offset_unitid = 0;
 
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
 
@@ -670,13 +668,8 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		dword |= (reg & 0xffff0000)>>8;
 		pci_write_config32( PCI_DEV(0, devpos,0), regpos , dword);
 
-
-	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-		#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
-		if(i==0) // to check if it is sb ht chain
-		#endif
-			offset_unitid = 1;
-	#endif
+		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
+		offset_unitid = offset_unitid && (!CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY || (i == 0));
 
 		/* Make certain the HT bus is not enumerated */
 		ht_collapse_previous_enumeration(busn, offset_unitid);

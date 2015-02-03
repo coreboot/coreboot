@@ -24,7 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "ck804.h"
+#include "chip.h"
 
 #ifndef CK804_SATA_RESET_FOR_ATAPI
 #define CK804_SATA_RESET_FOR_ATAPI 0

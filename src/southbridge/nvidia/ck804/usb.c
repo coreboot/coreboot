@@ -23,7 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "ck804.h"
+#include "chip.h"
 
 static void usb1_init(struct device *dev)
 {

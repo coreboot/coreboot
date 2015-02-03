@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <cpu/amd/powernow.h>
-#include "ck804.h"
+#include "chip.h"
 
 #define CK804_CHIP_REV 2
 

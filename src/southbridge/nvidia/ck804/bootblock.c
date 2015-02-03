@@ -19,12 +19,7 @@
  */
 
 #include <arch/io.h>
-
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-#define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
-#else
-#define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
+#include "ck804.h"
 
 static void ck804_enable_rom(void)
 {

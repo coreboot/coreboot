@@ -23,7 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "ck804.h"
+#include "chip.h"
 
 static struct device_operations ac97audio_ops = {
 	.read_resources   = pci_dev_read_resources,

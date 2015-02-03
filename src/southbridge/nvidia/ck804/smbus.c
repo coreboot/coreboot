@@ -25,7 +25,7 @@
 #include <device/pci_ops.h>
 #include <device/smbus.h>
 #include <arch/io.h>
-#include "ck804.h"
+#include "chip.h"
 #include "smbus.h"
 
 static int lsmbus_recv_byte(device_t dev)

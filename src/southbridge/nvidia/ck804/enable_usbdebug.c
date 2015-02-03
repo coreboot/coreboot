@@ -30,12 +30,6 @@
 #include <device/pci_def.h>
 #include "ck804.h"
 
-#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-#define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
-#else
-#define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
-
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
 	return PCI_DEV(0, CK804_DEVN_BASE + 2, 1); /* USB EHCI */

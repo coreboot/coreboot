@@ -20,6 +20,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "ck804.h"
+
 #if !IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8)
 /* Someone messed up and snuck in some K8-specific code */
 static int  set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, unsigned val) { return 0; /* stub */};
@@ -72,18 +74,6 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
  */
 
 #define CK804_CHIP_REV 3
-
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-#define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
-#else
-#define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
-
-#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
-#define CK804B_DEVN_BASE 1
-#else
-#define CK804B_DEVN_BASE CK804_DEVN_BASE
-#endif
 
 static void ck804_early_set_port(unsigned ck804_num, unsigned *busn,
 				 unsigned *io_base)

@@ -25,7 +25,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
-#include "ck804.h"
+#include "chip.h"
 
 static void nic_init(struct device *dev)
 {

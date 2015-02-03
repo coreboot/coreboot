@@ -23,8 +23,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "ck804.h"
 #include <arch/acpi.h>
+#include "chip.h"
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 

@@ -31,4 +31,6 @@ struct southbridge_nvidia_ck804_config {
 	unsigned int mac_eeprom_addr;
 };
 
+extern struct pci_operations ck804_pci_ops;
+
 #endif

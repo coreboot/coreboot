@@ -19,6 +19,7 @@
  */
 
 #include <reset.h>
+#include "ck804.h"
 
 static int set_ht_link_ck804(u8 ht_c_num)
 {
@@ -66,27 +67,7 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
  *	16 4     :4
  */
 
-#if CONFIG_CK804_NUM > 1
-#define CK804B_ANACTRL_IO_BASE (ANACTRL_IO_BASE + 0x8000)
-#define CK804B_SYSCTRL_IO_BASE (SYSCTRL_IO_BASE + 0x8000)
-#ifndef CK804B_BUSN
-#define CK804B_BUSN 0x80
-#endif
-#endif
-
 #define CK804_CHIP_REV 3
-
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-#define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
-#else
-#define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
-
-#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
-#define CK804B_DEVN_BASE 1
-#else
-#define CK804B_DEVN_BASE CK804_DEVN_BASE
-#endif
 
 static void ck804_early_set_port(void)
 {

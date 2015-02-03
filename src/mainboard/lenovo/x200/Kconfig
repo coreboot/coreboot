@@ -42,4 +42,8 @@ config MAX_CPUS
 	int
 	default 2
 
+config CBFS_SIZE
+	hex
+	default 0x200000
+
 endif # BOARD_LENOVO_X200

@@ -1,4 +1,4 @@
-if BOARD_LENOVO_T400
+if BOARD_LENOVO_T400 || BOARD_LENOVO_R400
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -27,9 +27,13 @@ config MAINBOARD_DIR
 	string
 	default lenovo/t400
 
+if BOARD_LENOVO_T400
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkPad T400"
+
+endif
 
 config MMCONF_BASE_ADDRESS
 	hex

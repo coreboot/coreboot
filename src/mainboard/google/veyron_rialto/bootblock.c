@@ -45,6 +45,9 @@ void bootblock_mainboard_early_init()
 
 void bootblock_mainboard_init(void)
 {
+	if (rkclk_was_watchdog_reset())
+		reboot_from_watchdog();
+
 	/* Up VDD_CPU (BUCK1) to 1.4V to support max CPU frequency (1.8GHz). */
 	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
 	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
@@ -57,11 +60,6 @@ void bootblock_mainboard_init(void)
 	rk808_configure_buck(1, 1400);
 	udelay(100);/* Must wait for voltage to stabilize,2mV/us */
 	rkclk_configure_cpu();
-
-	if (rkclk_was_watchdog_reset()) {
-		printk(BIOS_INFO, "Last reset was watchdog... rebooting via GPIO!\n");
-		hard_reset();
-	}
 
 	/* i2c1 for tpm */
 	writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);

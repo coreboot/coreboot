@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <vboot_api.h>
 #include "chromeos.h"
+#include "vboot_handoff.h"
 
 struct cbmem_entry;
 

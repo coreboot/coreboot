@@ -24,6 +24,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include "vboot_handoff.h"
 
 static int vboot_enable_developer(void)
 {

@@ -25,6 +25,7 @@
 #include <console/console.h>
 #include "chromeos.h"
 #include "vboot_common.h"
+#include "vboot_handoff.h"
 
 void vboot_locate_region(const char *name, struct vboot_region *region)
 {

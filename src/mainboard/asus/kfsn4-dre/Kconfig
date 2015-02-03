@@ -19,6 +19,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select ENABLE_APIC_EXT_ID
 	select AMDMCT
 	select MMCONF_SUPPORT_DEFAULT
+	select DRIVERS_XGI_Z9S
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
 
 config MAINBOARD_DIR
 	string
@@ -88,14 +90,9 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config VGA_BIOS
+config MAINBOARD_DO_NATIVE_VGA_INIT
 	bool
-	default n
-
-config VGA_BIOS_ID
-	string
-	depends on VGA_BIOS
-	default "18ca:0020"
+	default y
 
 config AMDMCT_BACKGROUND_SCRUB_RATE
 	hex

@@ -571,7 +571,7 @@ static void pch_pcie_early(struct device *dev)
 	/* Set Common Clock Exit Latency in MPC register. */
 	pcie_update_cfg(dev, 0xd8, ~(0x7 << 15), (0x3 << 15));
 
-	pcie_update_cfg(dev, 0x33c, ~0x00ffffff, 0x854c74);
+	pcie_update_cfg(dev, 0x33c, ~0x00ffffff, 0x854d74);
 
 	/* Set Invalid Receive Range Check Enable in MPC register. */
 	pcie_update_cfg(dev, 0xd8, ~0, (1 << 25));

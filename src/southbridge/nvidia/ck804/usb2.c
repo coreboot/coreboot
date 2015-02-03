@@ -39,7 +39,6 @@ static struct device_operations usb2_ops = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = usb2_init,
-	// .enable        = ck804_enable,
 	.scan_bus         = 0,
 	.ops_pci          = &ck804_pci_ops,
 };

@@ -84,7 +84,6 @@ static struct device_operations pci_ops = {
 	.enable_resources = pci_bus_enable_resources,
 	.init             = pci_init,
 	.scan_bus         = pci_scan_bridge,
-	// .enable        = ck804_enable,
 };
 
 static const struct pci_driver pci_driver __pci_driver = {

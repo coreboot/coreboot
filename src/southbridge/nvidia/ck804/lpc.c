@@ -38,8 +38,6 @@
 #include <cpu/amd/powernow.h>
 #include "chip.h"
 
-#define CK804_CHIP_REV 2
-
 #define NMI_OFF 0
 
 // Power restoration control register is at 0x7a
@@ -118,11 +116,6 @@ static void lpc_init(device_t dev)
 
 	pm_base = pci_read_config32(dev, 0x60) & 0xff00;
 	printk(BIOS_INFO, "%s: pm_base = %x \n", __func__, pm_base);
-
-#if CK804_CHIP_REV == 1
-	if (dev->bus->secondary != 1)
-		return;
-#endif
 
 	/* Power after power fail */
 	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
@@ -337,7 +330,6 @@ static struct device_operations lpc_ops = {
 #endif
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,
-	// .enable        = ck804_enable,
 	.ops_pci          = &ck804_pci_ops,
 };
 
@@ -353,13 +345,6 @@ static const struct pci_driver lpc_driver_pro __pci_driver = {
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_PRO,
 };
 
-#if CK804_CHIP_REV == 1
-static const struct pci_driver lpc_driver_slave __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_NVIDIA,
-	.device = PCI_DEVICE_ID_NVIDIA_CK804_SLAVE,
-};
-#else
 static struct device_operations lpc_slave_ops = {
 	.read_resources   = ck804_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -368,7 +353,6 @@ static struct device_operations lpc_slave_ops = {
 	.write_acpi_tables      = acpi_write_hpet,
 #endif
 	.init             = lpc_slave_init,
-	// .enable        = ck804_enable,
 	.ops_pci          = &ck804_pci_ops,
 };
 
@@ -377,4 +361,3 @@ static const struct pci_driver lpc_driver_slave __pci_driver = {
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_SLAVE,
 };
-#endif

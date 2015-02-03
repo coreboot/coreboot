@@ -67,8 +67,6 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
  *	16 4     :4
  */
 
-#define CK804_CHIP_REV 3
-
 static void ck804_early_set_port(void)
 {
 	static const unsigned int ctrl_devport_conf[] = {

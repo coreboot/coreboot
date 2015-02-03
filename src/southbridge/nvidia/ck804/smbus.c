@@ -97,7 +97,6 @@ static struct device_operations smbus_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = 0,
 	.scan_bus         = scan_static_bus,
-	// .enable        = ck804_enable,
 	.ops_pci          = &ck804_pci_ops,
 	.ops_smbus_bus    = &lops_smbus_bus,
 };

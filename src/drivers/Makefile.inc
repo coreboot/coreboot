@@ -30,6 +30,7 @@ subdirs-y += net
 subdirs-y += parade
 subdirs-y += sil
 subdirs-y += trident
+subdirs-y += xgi
 subdirs-$(CONFIG_DRIVERS_UART) += uart
 subdirs-y += usb
 subdirs-y += ics

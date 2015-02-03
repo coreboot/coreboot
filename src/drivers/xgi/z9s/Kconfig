@@ -1,0 +1,14 @@
+config DRIVERS_XGI_Z9S
+	bool
+
+if DRIVERS_XGI_Z9S
+
+config DEVICE_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select DRIVERS_XGI_Z79_COMMON
+
+config NATIVE_VGA_INIT_USE_EDID
+	bool
+	default n
+
+endif # DRIVERS_XGI_Z9S

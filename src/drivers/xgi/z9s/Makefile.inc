@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_XGI_Z9S) += z9s.c

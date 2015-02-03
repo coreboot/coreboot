@@ -25,6 +25,7 @@
 #include <device/device.h>
 #include <device/i2c.h>
 #include <edid.h>
+#include <elog.h>
 #include <gpio.h>
 #include <soc/display.h>
 #include <soc/grf.h>
@@ -36,6 +37,7 @@
 #include <soc/i2c.h>
 #include <symbols.h>
 #include <vbe.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "board.h"
 
@@ -105,6 +107,10 @@ static void mainboard_init(device_t dev)
 	configure_emmc();
 	configure_codec();
 	configure_vop();
+
+	elog_init();
+	elog_add_watchdog_reset();
+	elog_add_boot_reason();
 }
 
 static void mainboard_enable(device_t dev)

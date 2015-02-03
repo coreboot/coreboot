@@ -111,7 +111,7 @@ static int init_clocks(void)
 	/* The same frequency will be the input frequency for the SPFI block */
 	system_clk_setup(1);
 
-	/* MIPS CPU dividers: division by 1 -> 550 MHz
+	/* MIPS CPU dividers: division by 1 -> 546 MHz
 	 * This is set up as we cannot make any assumption about
 	 * the values set or not by the boot ROM code */
 	mips_clk_setup(0, 0);
@@ -135,8 +135,8 @@ static int init_clocks(void)
 	ret = sys_pll_setup(2, 1);
 	if (ret != CLOCKS_OK)
 		return ret;
-	/* Setup MIPS PLL at 550 MHz */
-	ret = mips_pll_setup(2, 1, 13, 275);
+	/* Setup MIPS PLL at 546 MHz */
+	ret = mips_pll_setup(2, 1, 1, 21);
 	if (ret != CLOCKS_OK)
 		return ret;
 	return CLOCKS_OK;

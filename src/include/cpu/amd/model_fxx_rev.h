@@ -2,7 +2,6 @@
 
 int init_processor_name(void);
 
-#if !CONFIG_K8_REV_F_SUPPORT
 static inline int is_cpu_rev_a0(void)
 {
 	return (cpuid_eax(1) & 0xfffef) == 0x0f00;
@@ -48,13 +47,32 @@ static inline int is_cpu_e0(void)
         return (cpuid_eax(1) & 0xfff00) == 0x20f00;
 }
 
+//AMD_F0_SUPPORT
+static inline int is_cpu_pre_f0(void)
+{
+        return (cpuid_eax(1) & 0xfff0f) < 0x40f00;
+}
+
+static inline int is_cpu_f0(void)
+{
+        return (cpuid_eax(1) & 0xfff00) ==  0x40f00;
+}
+
+static inline int is_cpu_pre_f2(void)
+{
+        return (cpuid_eax(1) & 0xfff0f) <  0x40f02;
+}
 
 #ifdef __PRE_RAM__
-static int is_e0_later_in_bsp(int nodeid)
+static inline int is_e0_later_in_bsp(int nodeid)
 {
         uint32_t val;
         uint32_t val_old;
         int e0_later;
+
+	if (IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
+		return 1;
+
         if(nodeid==0) { // we don't need to do that for node 0 in core0/node0
                 return !is_cpu_pre_e0();
         }
@@ -73,50 +91,32 @@ static int is_e0_later_in_bsp(int nodeid)
 
         return e0_later;
 }
-#else
-int is_e0_later_in_bsp(int nodeid); //defined model_fxx_init.c
-#endif
 
-#endif
-
-#if CONFIG_K8_REV_F_SUPPORT
-//AMD_F0_SUPPORT
-static inline int is_cpu_pre_f0(void)
-{
-        return (cpuid_eax(1) & 0xfff0f) < 0x40f00;
-}
-
-static inline int is_cpu_f0(void)
-{
-        return (cpuid_eax(1) & 0xfff00) ==  0x40f00;
-}
-
-static inline int is_cpu_pre_f2(void)
-{
-        return (cpuid_eax(1) & 0xfff0f) <  0x40f02;
-}
-
-#ifdef __PRE_RAM__
-//AMD_F0_SUPPORT
 static inline int is_cpu_f0_in_bsp(int nodeid)
 {
 	uint32_t dword;
 	device_t dev;
+	if (!IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
+		return 0;
 	dev = PCI_DEV(0, 0x18+nodeid, 3);
 	dword = pci_read_config32(dev, 0xfc);
         return (dword & 0xfff00) == 0x40f00;
 }
+
 static inline int is_cpu_pre_f2_in_bsp(int nodeid)
 {
         uint32_t dword;
 	device_t dev;
+	if (!IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
+		return 1;
         dev = PCI_DEV(0, 0x18+nodeid, 3);
         dword = pci_read_config32(dev, 0xfc);
         return (dword & 0xfff0f) < 0x40f02;
 }
+
 #else
-int is_cpu_f0_in_bsp(int nodeid); // defined in model_fxx_init.c
-#endif
+
+int is_e0_later_in_bsp(int nodeid);
+int is_cpu_f0_in_bsp(int nodeid);
 
 #endif
-

@@ -41,12 +41,15 @@ void cpus_ready_for_init(void)
 }
 #endif
 
-#if !CONFIG_K8_REV_F_SUPPORT
 int is_e0_later_in_bsp(int nodeid)
 {
 	uint32_t val;
 	uint32_t val_old;
 	int e0_later;
+
+	if (IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
+		return 1;
+
 	if (nodeid == 0) {	// we don't need to do that for node 0 in core0/node0
 		return !is_cpu_pre_e0();
 	}
@@ -67,18 +70,19 @@ int is_e0_later_in_bsp(int nodeid)
 
 	return e0_later;
 }
-#endif
 
-#if CONFIG_K8_REV_F_SUPPORT
 int is_cpu_f0_in_bsp(int nodeid)
 {
 	uint32_t dword;
 	device_t dev;
+
+	if (!IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
+		return 0;
+
 	dev = dev_find_slot(0, PCI_DEVFN(0x18 + nodeid, 3));
 	dword = pci_read_config32(dev, 0xfc);
 	return (dword & 0xfff00) == 0x40f00;
 }
-#endif
 
 #define MCI_STATUS 0x401
 
@@ -278,18 +282,13 @@ static void init_ecc_memory(unsigned node_id)
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	unsigned long hole_startk = 0;
 
-#if !CONFIG_K8_REV_F_SUPPORT
-	if (!is_cpu_pre_e0()) {
-#endif
-
+	if (IS_ENABLED(CONFIG_K8_REV_F_SUPPORT) || !is_cpu_pre_e0()) {
 		uint32_t val;
 		val = pci_read_config32(f1_dev, 0xf0);
 		if (val & 1) {
 			hole_startk = ((val & (0xff << 24)) >> 10);
 		}
-#if !CONFIG_K8_REV_F_SUPPORT
 	}
-#endif
 #endif
 
 	/* Don't start too early */
@@ -347,10 +346,10 @@ static void init_ecc_memory(unsigned node_id)
 	printk(BIOS_DEBUG, " done\n");
 }
 
-static inline void k8_errata(void)
+static void k8_pre_f_errata(void)
 {
 	msr_t msr;
-#if !CONFIG_K8_REV_F_SUPPORT
+
 	if (is_cpu_pre_c0()) {
 		/* Erratum 63... */
 		msr = rdmsr(HWCR_MSR);
@@ -414,18 +413,17 @@ static inline void k8_errata(void)
 		msr.hi |= 1;
 		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
-#endif
+}
 
+static void k8_errata(void)
+{
+	msr_t msr;
 
-#if !CONFIG_K8_REV_F_SUPPORT
 	/* I can't touch this msr on early buggy cpus */
-	if (!is_cpu_pre_b3())
-#endif
-	{
+	if (!is_cpu_pre_b3()) {
 		msr = rdmsr(NB_CFG_MSR);
 
-#if !CONFIG_K8_REV_F_SUPPORT
-		if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
+		if (is_cpu_pre_d0() && !is_cpu_pre_c0()) {
 			/* D0 later don't need it */
 			/* Erratum 86 Disable data masking on C0 and
 			 * later processor revs.
@@ -433,7 +431,7 @@ static inline void k8_errata(void)
 			 */
 			msr.hi |= 1 << (36 - 32);
 		}
-#endif
+
 		/* Erratum 89 ... */
 		/* Erratum 89 is mistakenly labeled as 88 in AMD pub #25759
 		 * It is correctly labeled as 89 on page 49 of the document
@@ -448,12 +446,11 @@ static inline void k8_errata(void)
 
 		wrmsr(NB_CFG_MSR, msr);
 	}
+
 	/* Erratum 122 */
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= 1 << 6;
 	wrmsr(HWCR_MSR, msr);
-
-
 }
 
 static void model_fxx_init(device_t dev)
@@ -478,6 +475,9 @@ static void model_fxx_init(device_t dev)
 	for (i = 0; i < 5; i++) {
 		wrmsr(MCI_STATUS + (i * 4), msr);
 	}
+
+	if (!IS_ENABLED(CONFIG_K8_REV_F_SUPPORT))
+		k8_pre_f_errata();
 
 	k8_errata();
 

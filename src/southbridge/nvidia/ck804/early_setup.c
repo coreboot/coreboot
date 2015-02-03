@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
- *
  * Copyright (C) 2004 Tyan Computer
  * Written by Yinghai Lu <yhlu@tyan.com> for Tyan Computer.
  *
@@ -78,12 +76,10 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
 
 #define CK804_CHIP_REV 3
 
-#ifndef CK804_DEVN_BASE
 #if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
 #else
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
 #endif
 
 #if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY

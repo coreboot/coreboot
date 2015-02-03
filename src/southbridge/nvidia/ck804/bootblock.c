@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
- *
  * Copyright (C) 2004 Tyan Computer
  * Written by Yinghai Lu <yhlu@tyan.com> for Tyan Computer.
  *
@@ -22,12 +20,10 @@
 
 #include <arch/io.h>
 
-#ifndef CK804_DEVN_BASE
 #if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
 #else
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
 #endif
 
 static void ck804_enable_rom(void)

@@ -55,10 +55,6 @@ config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x6
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 2
-
 config IRQ_SLOT_COUNT
 	int
 	default 11

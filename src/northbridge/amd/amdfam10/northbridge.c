@@ -140,13 +140,29 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 }
 
+static bool is_non_coherent_link(struct device *dev, struct bus *link)
+{
+	u32 link_type;
+	do {
+		link_type = pci_read_config32(dev, link->cap + 0x18);
+	} while (link_type & ConnectionPending);
+
+	if (!(link_type & LinkConnected))
+		return false;
+
+	do {
+		link_type = pci_read_config32(dev, link->cap + 0x18);
+	} while (!(link_type & InitComplete));
+
+	return !!(link_type & NonCoherent);
+}
+
 static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_sblink,
 				u32 max)
 {
 //	I want to put sb chain in bus 0 can I?
 
 
-		u32 link_type;
 		int i;
 		u32 ht_c_index;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
@@ -171,19 +187,11 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 			devx = dev;
 		}
 
+		/* Check for connected link. */
 		link->cap = 0x80 + ((link->link_num & 3) * 0x20);
-		do {
-			link_type = pci_read_config32(devx, link->cap + 0x18);
-		} while(link_type & ConnectionPending);
-		if (!(link_type & LinkConnected)) {
+		if (!is_non_coherent_link(devx, link))
 			return max;
-		}
-		do {
-			link_type = pci_read_config32(devx, link->cap + 0x18);
-		} while(!(link_type & InitComplete));
-		if (!(link_type & NonCoherent)) {
-			return max;
-		}
+
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
 		 */

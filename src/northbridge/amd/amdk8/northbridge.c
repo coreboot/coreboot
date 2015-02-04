@@ -79,6 +79,23 @@ static void f1_write_config32(unsigned reg, u32 value)
 	}
 }
 
+static bool is_non_coherent_link(struct device *dev, struct bus *link)
+{
+	u32 link_type;
+	do {
+		link_type = pci_read_config32(dev, link->cap + 0x18);
+	} while (link_type & ConnectionPending);
+
+	if (!(link_type & LinkConnected))
+		return false;
+
+	do {
+		link_type = pci_read_config32(dev, link->cap + 0x18);
+	} while (!(link_type & InitComplete));
+
+	return !!(link_type & NonCoherent);
+}
+
 static u32 amdk8_nodeid(device_t dev)
 {
 	return (dev->path.pci.devfn >> 3) - 0x18;
@@ -87,8 +104,6 @@ static u32 amdk8_nodeid(device_t dev)
 static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_sblink,
 				u32 max)
 {
-
-		u32 link_type;
 		int i;
 		u32 busses, config_busses;
 		u32 free_reg, config_reg;
@@ -98,18 +113,9 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		u32 max_devfn;
 
 		link->cap = 0x80 + (link->link_num * 0x20);
-		do {
-			link_type = pci_read_config32(dev, link->cap + 0x18);
-		} while(link_type & ConnectionPending);
-		if (!(link_type & LinkConnected)) {
+		if (!is_non_coherent_link(dev, link))
 			return max;
-		}
-		do {
-			link_type = pci_read_config32(dev, link->cap + 0x18);
-		} while(!(link_type & InitComplete));
-		if (!(link_type & NonCoherent)) {
-			return max;
-		}
+
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
 		 */

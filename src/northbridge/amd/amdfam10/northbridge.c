@@ -168,7 +168,6 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_bus;
 		u32 min_bus;
-		device_t devx;
 		u32 busses;
 		u32 segn = max>>8;
 #if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
@@ -182,14 +181,13 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 			regpos = 0x170 + 4 * (link->link_num & 3); // it is only on sublink0
 			reg = pci_read_config32(dev, regpos);
 			if(reg & 1) return max; // already ganged no sblink1
-			devx = get_node_pci(nodeid, 4);
-		} else {
-			devx = dev;
+
+			dev = get_node_pci(nodeid, 4);
 		}
 
 		/* Check for connected link. */
 		link->cap = 0x80 + ((link->link_num & 3) * 0x20);
-		if (!is_non_coherent_link(devx, link))
+		if (!is_non_coherent_link(dev, link))
 			return max;
 
 		/* See if there is an available configuration space mapping
@@ -233,7 +231,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		/* Read the existing primary/secondary/subordinate bus
 		 * number configuration.
 		 */
-		busses = pci_read_config32(devx, link->cap + 0x14);
+		busses = pci_read_config32(dev, link->cap + 0x14);
 
 		/* Configure the bus numbers for this bridge: the configuration
 		 * transactions will not be propagates by the bridge if it is
@@ -241,7 +239,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		 */
 		busses &= 0xffff00ff;
 		busses |= ((u32)(link->secondary) << 8);
-		pci_write_config32(devx, link->cap + 0x14, busses);
+		pci_write_config32(dev, link->cap + 0x14, busses);
 
 
 		/* set the config map space */

@@ -33,10 +33,6 @@ config AGP_APERTURE_SIZE
 	hex
 	default 0x4000000
 
-config HT3_SUPPORT
-	bool
-	default y
-
 config AMDMCT
 	bool
 	default y

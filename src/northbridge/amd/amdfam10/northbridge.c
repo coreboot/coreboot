@@ -152,7 +152,6 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 s
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_bus;
 		u32 min_bus;
-		u32 is_sublink1 = (link->link_num > 3);
 		device_t devx;
 		u32 busses;
 		u32 segn = max>>8;
@@ -161,18 +160,16 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 s
 #endif
 		u32 max_devfn;
 
-#if CONFIG_HT3_SUPPORT
-		if(is_sublink1) {
+		if (link->link_num > 3) {
 			u32 regpos;
 			u32 reg;
 			regpos = 0x170 + 4 * (link->link_num & 3); // it is only on sublink0
 			reg = pci_read_config32(dev, regpos);
 			if(reg & 1) return max; // already ganged no sblink1
 			devx = get_node_pci(nodeid, 4);
-		} else
-#endif
+		} else {
 			devx = dev;
-
+		}
 
 		link->cap = 0x80 + ((link->link_num & 3) * 0x20);
 		do {
@@ -1322,13 +1319,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			/* Ok, We need to set the links for that device.
 			 * otherwise the device under it will not be scanned
 			 */
-			int linknum;
-#if CONFIG_HT3_SUPPORT
-			linknum = 8;
-#else
-			linknum = 4;
-#endif
-			add_more_links(cdb_dev, linknum);
+			add_more_links(cdb_dev, 8);
 		}
 
 		cores_found = 0; // one core

@@ -89,10 +89,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0x00
 
-config HT3_SUPPORT
-	bool
-	default y
-
 config MCP55_PCI_E_X_0
 	int
 	default 1

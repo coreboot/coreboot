@@ -546,10 +546,7 @@ static int optimize_link_read_pointers_chain(uint8_t ht_c_num)
 		linkn = ((reg & 0xf00)>>8); // link n
 		busn = (reg & 0xff0000)>>16; //busn
 
-		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
-		offset_unitid = offset_unitid && (!CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY || (i == 0));
-
-		devn = offset_unitid ? CONFIG_HT_CHAIN_UNITID_BASE : 1;
+		devn = offset_unit_id(i == 0) ? CONFIG_HT_CHAIN_UNITID_BASE : 1;
 
 		reg = pci_read_config32( PCI_DEV(busn, devn, 0), PCI_VENDOR_ID); // ? the chain dev maybe offseted
 		if ( (reg & 0xffff) == PCI_VENDOR_ID_AMD) {
@@ -668,19 +665,16 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		dword |= (reg & 0xffff0000)>>8;
 		pci_write_config32( PCI_DEV(0, devpos,0), regpos , dword);
 
-		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
-		offset_unitid = offset_unitid && (!CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY || (i == 0));
-
 		/* Make certain the HT bus is not enumerated */
-		ht_collapse_previous_enumeration(busn, offset_unitid);
+		ht_collapse_previous_enumeration(busn, offset_unit_id(i == 0));
 
 		upos = ((reg & 0xf00)>>8) * 0x20 + 0x80;
 		udev =  PCI_DEV(0, devpos, 0);
 
 #if CONFIG_RAMINIT_SYSINFO
-		ht_setup_chainx(udev,upos,busn, offset_unitid, sysinfo); // all not
+		ht_setup_chainx(udev,upos,busn, offset_unit_id(i == 0), sysinfo); // all not
 #else
-		reset_needed |= ht_setup_chainx(udev,upos,busn, offset_unitid); //all not
+		reset_needed |= ht_setup_chainx(udev,upos,busn, offset_unit_id(i == 0)); //all not
 #endif
 
 	}

@@ -84,8 +84,8 @@ static u32 amdk8_nodeid(device_t dev)
 	return (dev->path.pci.devfn >> 3) - 0x18;
 }
 
-static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 sblink,
-				u32 max, u32 offset_unitid)
+static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_sblink,
+				u32 max)
 {
 
 		u32 link_type;
@@ -143,7 +143,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 sbli
 		 */
 #if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
 		// first chain will on bus 0
-		if((nodeid == 0) && (sblink==link->link_num)) { // actually max is 0 here
+		if(is_sblink) { // actually max is 0 here
 			min_bus = max;
 		}
 	#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
@@ -203,7 +203,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 sbli
 		else
 			max_devfn = (0x1f<<3) | 7;
 
-		max = hypertransport_scan_chain(link, 0, max_devfn, max, ht_unitid_base, offset_unitid);
+		max = hypertransport_scan_chain(link, 0, max_devfn, max, ht_unitid_base, offset_unit_id(is_sblink));
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
@@ -244,21 +244,17 @@ static unsigned amdk8_scan_chains(device_t dev, unsigned max)
 
 	// do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0
 	for (link = dev->link_list; link; link = link->next) {
-		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
-
-		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && (nodeid == 0) && (link->link_num == sblink))
-			max = amdk8_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
+		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
+		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && is_sblink)
+			max = amdk8_scan_chain(dev, nodeid, link, is_sblink, max);
 	}
 
 	for (link = dev->link_list; link; link = link->next) {
-		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && (nodeid == 0) && (link->link_num == sblink))
+		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
+		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && is_sblink)
 			continue;
 
-		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
-		offset_unitid = offset_unitid &&
-			(((nodeid == 0) && (sblink == link->link_num)) || !CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY);
-
-		max = amdk8_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
+		max = amdk8_scan_chain(dev, nodeid, link, is_sblink, max);
 	}
 	return max;
 }

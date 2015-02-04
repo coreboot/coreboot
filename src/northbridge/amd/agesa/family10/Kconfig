@@ -25,19 +25,21 @@ config NORTHBRIDGE_AMD_AGESA_FAMILY10
 	select MMCONF_SUPPORT
 
 if NORTHBRIDGE_AMD_AGESA_FAMILY10
-config HT3_SUPPORT
-	bool
-	default y
+
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
+
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
+
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xE0000000
+
 config MMCONF_BUS_NUMBER
 	int
 	default 256
+
 endif #NORTHBRIDGE_AMD_AGESA_FAMILY10

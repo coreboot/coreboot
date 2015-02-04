@@ -204,7 +204,9 @@ CONST MANUAL_BUID_SWAP_LIST ROMDATA s8226_manual_swaplist[2] =
 	}
 };
 
-#if CONFIG_HT3_SUPPORT
+#define HYPERTRANSPORT_V31_SUPPORT 1
+
+#if HYPERTRANSPORT_V31_SUPPORT
 /**
  * The socket and link match values are platform specific
  *
@@ -240,7 +242,7 @@ CONST IO_PCB_LIMITS ROMDATA s8226_io_limit_list[2] =
 		HT_LIST_TERMINAL,
 	}
 };
-#else //CONFIG_HT3_SUPPORT == 0
+#else /* HYPERTRANSPORT_V31_SUPPORT == 0 */
 CONST CPU_TO_CPU_PCB_LIMITS ROMDATA s8226_cpu2cpu_limit_list[2] =
 {
 	{
@@ -272,7 +274,7 @@ CONST IO_PCB_LIMITS ROMDATA s8226_io_limit_list[2] =
 		HT_LIST_TERMINAL
 	}
 };
-#endif //CONFIG_HT3_SUPPORT == 0
+#endif /* HYPERTRANSPORT_V31_SUPPORT == 0 */
 
 /**
  * HyperTransport links will typically require an equalization at high frequencies.

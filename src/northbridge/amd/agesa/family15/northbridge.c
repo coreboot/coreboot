@@ -1131,13 +1131,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			/* Ok, We need to set the links for that device.
 			 * otherwise the device under it will not be scanned
 			 */
-			int linknum;
-#if CONFIG_HT3_SUPPORT
-			linknum = 8;
-#else
-			linknum = 4;
-#endif
-			add_more_links(cdb_dev, linknum);
+			add_more_links(cdb_dev, 8);
 		}
 
 		family = cpuid_eax(1);

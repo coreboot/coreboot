@@ -140,7 +140,7 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 }
 
-static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 link_num, u32 sblink,
+static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 sblink,
 				u32 max, u32 offset_unitid)
 {
 //	I want to put sb chain in bus 0 can I?
@@ -152,7 +152,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_bus;
 		u32 min_bus;
-		u32 is_sublink1 = (link_num>3);
+		u32 is_sublink1 = (link->link_num > 3);
 		device_t devx;
 		u32 busses;
 		u32 segn = max>>8;
@@ -165,7 +165,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 		if(is_sublink1) {
 			u32 regpos;
 			u32 reg;
-			regpos = 0x170 + 4 * (link_num&3); // it is only on sublink0
+			regpos = 0x170 + 4 * (link->link_num & 3); // it is only on sublink0
 			reg = pci_read_config32(dev, regpos);
 			if(reg & 1) return max; // already ganged no sblink1
 			devx = get_node_pci(nodeid, 4);
@@ -174,7 +174,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 			devx = dev;
 
 
-		link->cap = 0x80 + ((link_num&3) *0x20);
+		link->cap = 0x80 + ((link->link_num & 3) * 0x20);
 		do {
 			link_type = pci_read_config32(devx, link->cap + 0x18);
 		} while(link_type & ConnectionPending);
@@ -190,7 +190,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
 		 */
-		ht_c_index = get_ht_c_index(nodeid, link_num, &sysconf);
+		ht_c_index = get_ht_c_index(nodeid, link->link_num, &sysconf);
 
 		if(ht_c_index>=4) return max;
 
@@ -200,7 +200,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 		 */
 #if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
 		// first chain will on bus 0
-		if((nodeid == 0) && (sblink==link_num)) { // actually max is 0 here
+		if((nodeid == 0) && (sblink==link->link_num)) { // actually max is 0 here
 			min_bus = max;
 		}
 	#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
@@ -241,7 +241,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 
 		/* set the config map space */
 
-		set_config_map_reg(nodeid, link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
+		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
 
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link
@@ -262,11 +262,11 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 		 * subordinate bus number to it's real value
 		 */
 		if(ht_c_index>3) { // clear the extend reg
-			clear_config_map_reg(nodeid, link_num, ht_c_index, (max+1)>>sysconf.segbit, (link->subordinate)>>sysconf.segbit, sysconf.nodes);
+			clear_config_map_reg(nodeid, link->link_num, ht_c_index, (max+1)>>sysconf.segbit, (link->subordinate)>>sysconf.segbit, sysconf.nodes);
 		}
 
 		link->subordinate = max;
-		set_config_map_reg(nodeid, link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
+		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
 		sysconf.ht_c_num++;
 
 		{
@@ -279,7 +279,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 			sysconf.hcdn_reg[ht_c_index] = temp;
 
 		}
-	store_ht_c_conf_bus(nodeid, link_num, ht_c_index, link->secondary, link->subordinate, &sysconf);
+	store_ht_c_conf_bus(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, &sysconf);
 	return max;
 }
 
@@ -295,7 +295,7 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
 	for (link = dev->link_list; link; link = link->next) {
 		unsigned offset_unitid = (CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
 		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && (nodeid == 0) && (link->link_num == sblink))
-			max = amdfam10_scan_chain(dev, nodeid, link, link->link_num, sblink, max, offset_unitid);
+			max = amdfam10_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
 	}
 
 #if CONFIG_PCI_BUS_SEGN_BITS
@@ -310,7 +310,7 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
 		offset_unitid = offset_unitid &&
 			(((nodeid == 0) && (sblink == link->link_num)) || !CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY);
 
-		max = amdfam10_scan_chain(dev, nodeid, link, link->link_num, sblink, max, offset_unitid);
+		max = amdfam10_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
 	}
 	return max;
 }

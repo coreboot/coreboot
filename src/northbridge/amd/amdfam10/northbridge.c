@@ -199,7 +199,6 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		unsigned int next_unitid;
 		u32 ht_c_index;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
-		u32 min_bus;
 		u32 max_devfn;
 
 		/* Check for connected link. */
@@ -220,25 +219,21 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		 */
 
 		if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 0) {
-			min_bus = ++max;
+			max++;
 		} else if (is_sblink) {
-			// first chain will on bus 0
-			min_bus = max;  /* actually max is 0 here */
+
 		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 1) {
-			min_bus = ++max;
+			max++;
 		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 > 1) {
-			// second chain will be on 0x40, third 0x80, forth 0xc0
-			// i would refined that to  2, 3, 4 ==> 0, 0x, 40, 0x80, 0xc0
-			//   >4 will use more segments,
 			// We can have 16 segmment and every segment have 256 bus,
 			// For that case need the kernel support mmio pci config.
 
 			/* One node can have 8 link and segn is the same. */
-			min_bus = (((max & 0xff) >> 3) + 1) << 3;
-			max = min_bus;
+			max++;
+			max = ALIGN_UP(max, 8);
 		}
 
-		link->secondary = min_bus;
+		link->secondary = max;
 		link->subordinate = link->secondary;
 
 		ht_route_link(link, HT_ROUTE_SCAN);
@@ -255,7 +250,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		}
 
 		//if ext conf is enabled, only need use 0x1f
-		if (min_bus == 0)
+		if (link->secondary == 0)
 			max_devfn = (0x17<<3) | 7;
 		else
 			max_devfn = (0x1f<<3) | 7;

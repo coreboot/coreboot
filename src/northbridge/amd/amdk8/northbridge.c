@@ -141,7 +141,6 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		u32 config_busses;
 		u32 free_reg, config_reg;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
-		u32 min_bus;
 		u32 max_devfn;
 
 		link->cap = 0x80 + (link->link_num * 0x20);
@@ -180,19 +179,18 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
 		if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 0) {
-			min_bus = ++max;
+			max++;
 		} else if (is_sblink) {
-			// first chain will on bus 0
-			min_bus = max;  /* actually max is 0 here */
+
 		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 1) {
-			min_bus = ++max;
+			max++;
 		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 > 1) {
 			/* Second chain will be on 0x40, third 0x80, forth 0xc0. */
-			min_bus = (max & ~0x3f) + 0x40;
-			max = min_bus;
+			max++;
+			max = ALIGN_UP(max, 0x40);
 		}
 
-		link->secondary = min_bus;
+		link->secondary = max;
 		link->subordinate = link->secondary;
 
 		ht_route_link(link, HT_ROUTE_SCAN);
@@ -214,7 +212,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 			ht_unitid_base[i] = 0x20;
 		}
 
-		if (min_bus == 0)
+		if (link->secondary == 0)
 			max_devfn = (0x17<<3) | 7;
 		else
 			max_devfn = (0x1f<<3) | 7;

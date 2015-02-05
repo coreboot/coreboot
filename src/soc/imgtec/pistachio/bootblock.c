@@ -21,6 +21,9 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
+#include <arch/mmu.h>
+#include <assert.h>
+#include <symbols.h>
 
 static void bootblock_cpu_init(void)
 {
@@ -36,4 +39,27 @@ static void bootblock_cpu_init(void)
 
 	/* And make sure that it starts from zero. */
 	write_c0_count(0);
+}
+
+static void bootblock_mmu_init(void)
+{
+	uint32_t null_guard_size =  1 * MiB;
+	uint32_t dram_base, dram_size;
+
+	write_c0_wired(0);
+
+	dram_base = (uint32_t)_dram;
+	dram_size = CONFIG_DRAM_SIZE_MB * MiB;
+
+	/*
+	 * To be able to catch NULL pointer dereference attempts, lets not map
+	 * memory close to zero.
+	 */
+	if (dram_base < null_guard_size) {
+		dram_base += null_guard_size;
+		dram_size -= null_guard_size;
+	}
+
+	assert(!identity_map(dram_base, dram_size));
+	assert(!identity_map((uint32_t)_sram, _sram_size));
 }

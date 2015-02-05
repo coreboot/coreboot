@@ -23,20 +23,32 @@
 
 SECTIONS
 {
-	DRAM_START(0x80000000)
-	RAMSTAGE(0x80000000, 128K)
+	/*
+	 * All of DRAM (other than the DMA coherent area) is accessed through
+	 * the identity mapping.
+	 */
+	DRAM_START(0x00000000)
+	/* DMA coherent area: accessed via KSEG1. */
+	DMA_COHERENT(0x00100000, 1M)
+	POSTRAM_CBFS_CACHE(0x00200000, 128K)
+	RAMSTAGE(0x00220000, 128K)
 
-	/* GRAM becomes the SRAM. */
-	SRAM_START(0x9a000000)
+	/*
+	 * GRAM becomes the SRAM.  Accessed through KSEG0 in the bootblock
+	 * and then through the identity mapping in ROM stage.
+	 */
+	SRAM_START(0x1a000000)
+	ROMSTAGE(0x1a004800, 36K)
+	PRERAM_CBFS_CACHE(0x1a00d800, 74K)
+	SRAM_END(0x1a020000)
+
+	/* Bootblock executes out of KSEG0 and sets up the identity mapping. */
 	BOOTBLOCK(0x9a000000, 18K)
-	ROMSTAGE(0x9a004800, 36K)
-	CBFS_CACHE(0x9a00d800, 74K)
-	SRAM_END(0x9a020000)
 
-	/* Let's use SRAM for stack and CBMEM console. */
+	/*
+	 * Let's use SRAM for stack and CBMEM console.  Always accessed
+	 * through KSEG0.
+	 */
 	STACK(0x9b000000, 8K)
 	PRERAM_CBMEM_CONSOLE(0x9b002000, 8K)
-
-	/* DMA coherent area: end of available DRAM, uncached */
-	DMA_COHERENT(0xAFF00000, 1M)
 }

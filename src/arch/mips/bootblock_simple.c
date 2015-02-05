@@ -32,5 +32,7 @@ void main(void)
 	console_init();
 #endif
 
+	bootblock_mmu_init();
+
 	run_romstage();
 }

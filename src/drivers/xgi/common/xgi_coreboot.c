@@ -123,12 +123,14 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 		xgifb_info->video_size = video_size_max;
 	}
 
-	/* Enable PCI_LINEAR_ADDRESSING and MMIO_ENABLE  */
-	xgifb_reg_or(XGISR,
-		     IND_SIS_PCI_ADDRESS_SET,
-		     (SIS_PCI_ADDR_ENABLE | SIS_MEM_MAP_IO_ENABLE));
-	/* Enable 2D accelerator engine */
-	xgifb_reg_or(XGISR, IND_SIS_MODULE_ENABLE, SIS_ENABLE_2D);
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		/* Enable PCI_LINEAR_ADDRESSING and MMIO_ENABLE  */
+		xgifb_reg_or(XGISR,
+			     IND_SIS_PCI_ADDRESS_SET,
+			     (SIS_PCI_ADDR_ENABLE | SIS_MEM_MAP_IO_ENABLE));
+		/* Enable 2D accelerator engine */
+		xgifb_reg_or(XGISR, IND_SIS_MODULE_ENABLE, SIS_ENABLE_2D);
+	}
 
 	hw_info->ulVideoMemorySize = xgifb_info->video_size;
 
@@ -265,7 +267,10 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 			xgifb_info->mode_idx =
 				XGIfb_GetXG21DefaultLVDSModeIdx(xgifb_info);
 		else
-			xgifb_info->mode_idx = DEFAULT_MODE;
+			if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+				xgifb_info->mode_idx = DEFAULT_MODE;
+			else
+				xgifb_info->mode_idx = DEFAULT_TEXT_MODE;
 	}
 
 	if (xgifb_info->mode_idx < 0) {
@@ -406,10 +411,16 @@ int xgifb_modeset(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 	}
 #else
 	/* FIXME
-	 * Text mode does not work
+	 * Text mode is slightly unstable/jittery (bad/incomplete DDR init?)
 	 */
+
+	/* Initialize standard VGA text mode */
 	vga_io_init();
 	vga_textmode_init();
+        printk(BIOS_INFO, "XGI VGA text mode initialized\n");
+
+	/* if we don't have console, at least print something... */
+	vga_line_write(0, "XGI VGA text mode initialized");
 #endif
 
 	return 0;

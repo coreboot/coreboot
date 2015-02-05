@@ -208,6 +208,8 @@ enum _SIS_LCD_TYPE {
 
 /* End code taken from Linux kernel 3.18.5 */
 
+#define DEFAULT_TEXT_MODE         16 /* index for 800x600x8 */
+
 /* coreboot <--> kernel code interface */
 #define __iomem
 #define SISIOMEMTYPE

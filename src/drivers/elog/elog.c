@@ -611,14 +611,16 @@ int elog_init(void)
 	       " shrink size %d\n", total_size,
 	       CONFIG_ELOG_FULL_THRESHOLD, CONFIG_ELOG_SHRINK_SIZE);
 
-	/* Log a clear event if necessary */
-	if (event_count == 0)
-		elog_add_event_word(ELOG_TYPE_LOG_CLEAR, total_size);
+	elog_initialized = ELOG_INITIALIZED;
 
 	/* Shrink the log if we are getting too full */
 	if (next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD)
 		if (elog_shrink() < 0)
 			return -1;
+
+	/* Log a clear event if necessary */
+	if (event_count == 0)
+		elog_add_event_word(ELOG_TYPE_LOG_CLEAR, total_size);
 
 #if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */

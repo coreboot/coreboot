@@ -216,7 +216,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
 
-		if (!CONFIG_SB_HT_CHAIN_ON_BUS0 || !is_sblink)
+		if (!is_sblink)
 			max++;
 
 		/* One node can have 8 link and segn is the same. */
@@ -279,9 +279,6 @@ static void relocate_sb_ht_chain(void)
 	struct device *dev;
 	struct bus *link, *prev = NULL;
 	u8 sblink;
-
-	if (!CONFIG_SB_HT_CHAIN_ON_BUS0)
-		return;
 
 	dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 0));
 	sblink = (pci_read_config32(dev, 0x64)>>8) & 7;

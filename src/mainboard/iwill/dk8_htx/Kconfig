@@ -6,6 +6,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select NORTHBRIDGE_AMD_AMDK8
 	select SOUTHBRIDGE_AMD_AMD8111
 	select SOUTHBRIDGE_AMD_AMD8131
+	select HT_CHAIN_DISTRIBUTE
 	select SUPERIO_WINBOND_W83627HF
 	select PARALLEL_CPU_INIT
 	select HAVE_OPTION_TABLE
@@ -35,10 +36,6 @@ config MAX_CPUS
 	default 4
 
 config MAX_PHYSICAL_CPUS
-	int
-	default 2
-
-config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
 

@@ -76,10 +76,6 @@ config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x00
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 1
-
 config VAR_MTRR_HOLE
 	bool
 	default n

@@ -216,11 +216,11 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
 
-		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 == 0) || !is_sblink)
+		if (!CONFIG_SB_HT_CHAIN_ON_BUS0 || !is_sblink)
 			max++;
 
 		/* One node can have 8 link and segn is the same. */
-		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 1) && !is_sblink)
+		if (CONFIG_HT_CHAIN_DISTRIBUTE && !is_sblink)
 			max = ALIGN_UP(max, 8);
 
 		link->secondary = max;

@@ -179,11 +179,11 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
 
-		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 == 0) || !is_sblink)
+		if (!CONFIG_SB_HT_CHAIN_ON_BUS0 || !is_sblink)
 			max++;
 
 		/* Second chain will be on 0x40, third 0x80, forth 0xc0. */
-		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 1) && !is_sblink)
+		if (CONFIG_HT_CHAIN_DISTRIBUTE && !is_sblink)
 			max = ALIGN_UP(max, 0x40);
 
 		link->secondary = max;

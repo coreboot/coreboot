@@ -7,6 +7,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select DIMM_REGISTERED
 	select NORTHBRIDGE_AMD_AMDFAM10
 	select SOUTHBRIDGE_NVIDIA_MCP55
+	select HT_CHAIN_DISTRIBUTE
 	select MCP55_USE_NIC
 	select SUPERIO_WINBOND_W83627HF
 	select PARALLEL_CPU_INIT
@@ -34,10 +35,6 @@ config DCACHE_RAM_SIZE
 config APIC_ID_OFFSET
 	hex
 	default 0
-
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 2
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -49,10 +49,6 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 1
-
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x1

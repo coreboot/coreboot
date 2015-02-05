@@ -64,6 +64,12 @@ config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	bool
 	default n
 
+config SB_HT_CHAIN_ON_BUS0
+	def_bool y
+
+config HT_CHAIN_DISTRIBUTE
+	def_bool n
+
 config DIMM_FBDIMM
 	bool
 	default n

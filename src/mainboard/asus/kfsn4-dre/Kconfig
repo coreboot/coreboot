@@ -44,10 +44,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 1
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "KFSN4-DRE"

@@ -6,6 +6,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select DIMM_DDR2
 	select NORTHBRIDGE_AMD_AMDK8
 	select SOUTHBRIDGE_SIS_SIS966
+	select HT_CHAIN_DISTRIBUTE
 	select SUPERIO_ITE_IT8716F
 	select PARALLEL_CPU_INIT
 	select HAVE_OPTION_TABLE
@@ -34,10 +35,6 @@ config APIC_ID_OFFSET
 	default 0x10
 
 config MEM_TRAIN_SEQ
-	int
-	default 2
-
-config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
 

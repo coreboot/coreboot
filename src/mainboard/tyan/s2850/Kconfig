@@ -40,10 +40,6 @@ config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 0
-
 config APIC_ID_OFFSET
 	hex
 	default 0x0

@@ -30,10 +30,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0x10
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 0
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "S4880"

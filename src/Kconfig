@@ -661,7 +661,7 @@ config SEABIOS_MALLOC_UPPERMEMORY
 config SEABIOS_VGA_COREBOOT
 	prompt "Include generated option rom that implements legacy VGA BIOS compatibility" if PAYLOAD_SEABIOS
 	default n
-	depends on !VGA_BIOS && MAINBOARD_DO_NATIVE_VGA_INIT
+	depends on !VGA_BIOS && (MAINBOARD_DO_NATIVE_VGA_INIT || MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG)
 	bool
 	help
 	  Coreboot can initialize the GPU of some mainboards.

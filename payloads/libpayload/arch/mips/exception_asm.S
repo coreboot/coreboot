@@ -20,7 +20,6 @@
 #define	STATUS_REGISTER		$12,0
 #define	BOOT_EXC_VECTOR_MASK	(1 << 22)
 #define	EBASE_REGISTER		$15,1
-#define	WRITE_GATE_MASK		(1 << 11)
 #define	EXCEPTION_BASE_MASK	(0xFFFFF000)
 
 	/* Don't reorder instructions */
@@ -192,9 +191,6 @@ exception_init_asm:
 	and	$t0, $t0, $t2
 	/* Filling base address */
 	or	$t0, $t0, $t1
-	/* Setting WG bit */
-	li	$t2, WRITE_GATE_MASK
-	or	$t0, $t0, $t2
 	mtc0	$t0, EBASE_REGISTER
 
 	/* Clear boot exception vector bit for EBASE value to take effect */

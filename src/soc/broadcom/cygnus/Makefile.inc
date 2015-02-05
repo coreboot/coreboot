@@ -20,18 +20,18 @@
 bootblock-y += bootblock.c
 bootblock-y += cbmem.c
 bootblock-y += i2c.c
-bootblock-y += monotonic_timer.c
+bootblock-y += timer.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
 bootblock-$(CONFIG_CONSOLE_SERIAL) += uart.c
 
 verstage-y += i2c.c
-verstage-y += monotonic_timer.c
+verstage-y += timer.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
 verstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
 
 romstage-y += cbmem.c
 romstage-y += i2c.c
-romstage-y += monotonic_timer.c
+romstage-y += timer.c
 romstage-y += romstage.c
 romstage-y += sdram.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
@@ -39,7 +39,7 @@ romstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
 
 ramstage-y += cbmem.c
 ramstage-y += i2c.c
-ramstage-y += monotonic_timer.c
+ramstage-y += timer.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
 

@@ -17,8 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <timer.h>
+#ifndef __SOC_BROADCOM_CYGNUS_ADDRESSMAP_H__
+#define __SOC_BROADCOM_CYGNUS_ADDRESSMAP_H__
 
-void timer_monotonic_get(struct mono_time *mt)
-{
-}
+#define IPROC_PERIPH_BASE		0x19020000
+#define IPROC_PERIPH_GLB_TIM_REG_BASE	(IPROC_PERIPH_BASE + 0x200)
+
+#endif	/* __SOC_BROADCOM_CYGNUS_ADDRESSMAP_H__ */

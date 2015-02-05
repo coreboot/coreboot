@@ -115,7 +115,7 @@ static int XGIfb_get_dram_size(struct xgifb_video_info *xgifb_info)
 
 	xgifb_info->video_size = xgifb_info->video_size * ChannelNum;
 
-	pr_info("SR14=%x DramSzie %x ChannelNum %x\n",
+	pr_info("SR14=%x DramSize %x ChannelNum %x\n",
 	       reg,
 	       xgifb_info->video_size, ChannelNum);
 	return 0;

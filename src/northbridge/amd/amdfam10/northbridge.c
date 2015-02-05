@@ -216,20 +216,12 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
 
-		if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 0) {
+		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 == 0) || !is_sblink)
 			max++;
-		} else if (is_sblink) {
 
-		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 1) {
-			max++;
-		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 > 1) {
-			// We can have 16 segmment and every segment have 256 bus,
-			// For that case need the kernel support mmio pci config.
-
-			/* One node can have 8 link and segn is the same. */
-			max++;
+		/* One node can have 8 link and segn is the same. */
+		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 1) && !is_sblink)
 			max = ALIGN_UP(max, 8);
-		}
 
 		link->secondary = max;
 		link->subordinate = link->secondary;

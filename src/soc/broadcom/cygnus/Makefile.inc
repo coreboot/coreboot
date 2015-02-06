@@ -24,6 +24,7 @@ bootblock-y += timer.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
 bootblock-$(CONFIG_CONSOLE_SERIAL) += uart.c
 
+verstage-y += verstage.c
 verstage-y += i2c.c
 verstage-y += timer.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c

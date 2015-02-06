@@ -35,10 +35,10 @@
  * See page 17 of data sheet for details.
  */
 typedef enum {
-	MODE_6767,
-	MODE_7777,
-	MODE_8787,
-	MODE_A0A0,
+	MODE_6767 = 0x67,
+	MODE_7777 = 0x77,
+	MODE_8787 = 0x87,
+	MODE_A0A0 = 0xA0,
 } mode_key;
 
 void f81216h_enable_serial(pnp_devfn_t dev, u16 iobase, mode_key k);

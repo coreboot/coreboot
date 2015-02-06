@@ -36,4 +36,3 @@ libc-y += sysinfo.c
 libc-y += string.c
 libc-y += timer.c
 libc-y += util.S
-libc-y += virtual.c

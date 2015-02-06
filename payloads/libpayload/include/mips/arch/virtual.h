@@ -20,15 +20,19 @@
 #ifndef __MIPS_ARCH_VIRTUAL_H
 #define __MIPS_ARCH_VIRTUAL_H
 
-extern unsigned long virt_to_phys_offset;
-extern unsigned long virt_to_bus_offset;
+#define KSEG0_BASE		0x80000000
+#define KSEG1_BASE		0xA0000000
 
-#define virt_to_phys(virt)	((unsigned long) (virt) + virt_to_phys_offset)
-#define phys_to_virt(phys)	((void *) ((unsigned long) (phys) -	\
-				virt_to_phys_offset))
+#define kseg0_to_phys(virt)	((unsigned long)(virt) - KSEG0_BASE)
+#define phys_to_kseg0(phys)	((void *)((unsigned long)(phys) + KSEG0_BASE))
 
-#define virt_to_bus(virt)	((unsigned long) (virt) + virt_to_bus_offset)
-#define bus_to_virt(phys)	((void *) ((unsigned long) (phys) -	\
-				virt_to_bus_offset))
+#define kseg1_to_phys(virt)	((unsigned long)(virt) - KSEG1_BASE)
+#define phys_to_kseg1(phys)	((void *)((unsigned long)(phys) + KSEG1_BASE))
+
+#define virt_to_phys(virt)	((unsigned long)(virt))
+#define phys_to_virt(phys)	((void *)(unsigned long)(phys))
+
+#define virt_to_bus(virt)	kseg1_to_phys(virt)
+#define bus_to_virt(phys)	phys_to_kseg1(phys)
 
 #endif

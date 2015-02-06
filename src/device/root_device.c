@@ -30,30 +30,6 @@
 const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER;
 
 /**
- * Read the resources for the root device, that encompass the resources for
- * the entire system.
- *
- * @param root Pointer to the device structure for the system root device.
- */
-static void root_dev_read_resources(device_t root)
-{
-	printk(BIOS_ERR, "%s should never be called.\n", __func__);
-}
-
-/**
- * Write the resources for every device.
- *
- * Write the resources for the root device, and every device under it which
- * are all of the devices.
- *
- * @param root Pointer to the device structure for the system root device.
- */
-static void root_dev_set_resources(device_t root)
-{
-	printk(BIOS_ERR, "%s should never be called.\n", __func__);
-}
-
-/**
  * Scan devices on static buses.
  *
  * The enumeration of certain buses is purely static. The existence of
@@ -121,10 +97,6 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 	return max;
 }
 
-static void root_dev_enable_resources(device_t dev)
-{
-}
-
 /**
  * Scan root bus for generic systems.
  *
@@ -137,10 +109,6 @@ static void root_dev_enable_resources(device_t dev)
 static unsigned int root_dev_scan_bus(device_t root, unsigned int max)
 {
 	return scan_static_bus(root, max);
-}
-
-static void root_dev_init(device_t root)
-{
 }
 
 static void root_dev_reset(struct bus *bus)
@@ -157,10 +125,10 @@ static void root_dev_reset(struct bus *bus)
  * of a motherboard can override this if you want non-default behavior.
  */
 struct device_operations default_dev_ops_root = {
-	.read_resources   = root_dev_read_resources,
-	.set_resources    = root_dev_set_resources,
-	.enable_resources = root_dev_enable_resources,
-	.init             = root_dev_init,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = DEVICE_NOOP,
 	.scan_bus         = root_dev_scan_bus,
 	.reset_bus        = root_dev_reset,
 };

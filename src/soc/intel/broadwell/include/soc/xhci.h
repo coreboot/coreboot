@@ -39,7 +39,7 @@
 #define XHCI_USB3PDO		0xe8
 
 /* XHCI Memory Registers */
-#define XHCI_USB3_PORTSC(port)	(0x510 + (port * 0x10))
+#define XHCI_USB3_PORTSC(port)	(0x530 + (port * 0x10))
 #define  XHCI_USB3_PORTSC_CHST	(0x7f << 17)
 #define  XHCI_USB3_PORTSC_WCE	(1 << 25)	/* Wake on Connect */
 #define  XHCI_USB3_PORTSC_WDE	(1 << 26)	/* Wake on Disconnect */

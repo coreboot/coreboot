@@ -212,7 +212,7 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		power_step_up = (dtemp & 0xf000000) >> 24;
 		power_step_down = (dtemp & 0xf00000) >> 20;
 		dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xA0);
-		pll_lock_time = (pll_lock_time & 0x3800) >> 11;
+		pll_lock_time = (dtemp & 0x3800) >> 11;
 		if (all_enabled_cores_have_same_cpufid)
 			core_latency = ((12 * power_step_down) + power_step_up) / 1000;
 		else

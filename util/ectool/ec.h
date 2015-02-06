@@ -50,4 +50,5 @@ int ec_write(uint8_t addr, uint8_t data);
 uint8_t ec_ext_read(uint16_t addr);
 int ec_ext_write(uint16_t addr, uint8_t data);
 uint8_t ec_idx_read(uint16_t addr);
+uint8_t ec_query(void);
 #endif

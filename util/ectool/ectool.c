@@ -46,20 +46,21 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?Vid] [-w 0x<addr> -z 0x<data>]\n", name);
+	printf("usage: %s [-vh?Vidq] [-w 0x<addr> -z 0x<data>]\n", name);
 	printf("\n"
 	       "   -v | --version:                   print the version\n"
 	       "   -h | --help:                      print this help\n\n"
 	       "   -V | --verbose:                   print debug information\n"
 	       "   -d | --dump:                      print RAM\n"
 	       "   -i | --idx:                       print IDX RAM & RAM\n"
+	       "   -q | --query:                     print query byte\n"
 	       "   -w <addr in hex>                  write to addr\n"
 	       "   -z <data in hex>                  write to data\n"
 	       "\n");
 	exit(1);
 }
 
-int verbose = 0, dump_idx = 0, dump_ram = 0;
+int verbose = 0, dump_idx = 0, dump_ram = 0, dump_query = 0;
 
 int main(int argc, char *argv[])
 {
@@ -72,10 +73,11 @@ int main(int argc, char *argv[])
 		{"help", 0, 0, 'h'},
 		{"verbose", 0, 0, 'V'},
 		{"idx", 0, 0, 'i'},
+		{"query", 0, 0, 'q'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?Vidw:z:",
+	while ((opt = getopt_long(argc, argv, "vh?Vidqw:z:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -98,6 +100,9 @@ int main(int argc, char *argv[])
 		case 'd':
 			dump_ram = 1;
 			break;
+		case 'q':
+			dump_query = 1;
+			break;
 		case 'h':
 		case '?':
 		default:
@@ -119,7 +124,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* preserve default - dump_ram if nothing selected */
-	if (!dump_ram && !dump_idx) {
+	if (!dump_ram && !dump_idx && !dump_query) {
 		dump_ram = 1;
 	}
 
@@ -131,6 +136,10 @@ int main(int argc, char *argv[])
 			printf("%02x ", ec_read(i));
 		}
 		printf("\n\n");
+	}
+
+	if (dump_query) {
+		printf("EC QUERY %02x\n", ec_query());
 	}
 
 	if (dump_idx) {

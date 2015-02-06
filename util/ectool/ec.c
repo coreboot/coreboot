@@ -147,3 +147,9 @@ uint8_t ec_idx_read(uint16_t addr)
 
 	return inb(lpc_idx + 3);
 }
+
+uint8_t ec_query(void)
+{
+	send_ec_command(QR_EC);
+	return recv_ec_data();
+}

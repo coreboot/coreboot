@@ -129,8 +129,6 @@ int main(int argc, char *argv[])
 			printf("%02x ", ec_idx_read(i));
 		}
 		printf("\n\n");
-	} else {
-		printf("Not dumping EC IDX RAM.\n");
 	}
 
 	return 0;

@@ -179,6 +179,15 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 		reg32 = read32(mem_base + 0x80e0);
 		reg32 |= (1 << 15);
 		write32(mem_base + 0x80e0, reg32);
+	} else {
+		/*
+		 * Clear port change status bits.  Clearing CSC alone seemed to
+		 * fix wakeup from S3 if entering USB compliance state even if
+		 * bit wasn't set on the port.
+		 */
+		int port;
+		for (port = 0; port < usb_xhci_port_count_usb3(dev); port++)
+			usb_xhci_reset_status_usb3(mem_base, port);
 	}
 
 	reg32 = read32(mem_base + 0x8154);

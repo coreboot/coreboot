@@ -373,8 +373,6 @@ static void sb800_enable(device_t dev)
 	struct southbridge_amd_cimx_sb800_config *sb_chip =
 		(struct southbridge_amd_cimx_sb800_config *)(dev->chip_info);
 
-	printk(BIOS_DEBUG, "sb800_enable() ");
-
 	switch (dev->path.pci.devfn) {
 	case (0x11 << 3) | 0: /* 0:11.0  SATA */
 		/* the first sb800 device */
@@ -407,7 +405,6 @@ static void sb800_enable(device_t dev)
 		break;
 
 	case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
-		printk(BIOS_INFO, "sm_init().\n");
 		clear_ioapic(IO_APIC_ADDR);
 #if CONFIG_CPU_AMD_AGESA
 		/* Assign the ioapic ID the next available number after the processor core local APIC IDs */
@@ -434,10 +431,8 @@ static void sb800_enable(device_t dev)
   			if (AZALIA_DISABLE == sb_config->AzaliaController) {
   				sb_config->AzaliaController = AZALIA_AUTO;
 			}
-			printk(BIOS_DEBUG, "hda enabled\n");
 		} else {
   			sb_config->AzaliaController = AZALIA_DISABLE;
-			printk(BIOS_DEBUG, "hda disabled\n");
 		}
 		break;
 
@@ -457,10 +452,8 @@ static void sb800_enable(device_t dev)
 	case (0x14 << 3) | 6: /* 0:14:6 GEC */
 		if (dev->enabled) {
 			sb_config->GecConfig = 0;
-			printk(BIOS_DEBUG, "gec enabled\n");
 		} else {
 			sb_config->GecConfig = 1;
-			printk(BIOS_DEBUG, "gec disabled\n");
 		}
 		break;
 

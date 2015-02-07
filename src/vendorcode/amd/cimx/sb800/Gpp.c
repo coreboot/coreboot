@@ -293,7 +293,10 @@ PreInitGppLink (
 
   // Mask out non-applicable ports according to the target link configuration mode
   for ( portId = 0; portId < MAX_GPP_PORTS; portId++ ) {
-    pConfig->PORTCONFIG[portId].PortCfg.PortPresent &= (reg32Value >> portId) & BIT0;
+    if (!(reg32Value & (1 << portId)))
+      pConfig->PORTCONFIG[portId].PortCfg.PortPresent = false;
+    else if (!pConfig->PORTCONFIG[portId].PortCfg.PortPresent)
+      reg32Value &= ~(1 << portId);
   }
 
   //

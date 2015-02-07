@@ -46,19 +46,20 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?Vi] [-w 0x<addr> -z 0x<data>]\n", name);
+	printf("usage: %s [-vh?Vid] [-w 0x<addr> -z 0x<data>]\n", name);
 	printf("\n"
 	       "   -v | --version:                   print the version\n"
 	       "   -h | --help:                      print this help\n\n"
 	       "   -V | --verbose:                   print debug information\n"
-	       "   -i | --idx:                       print IDX RAM\n"
+	       "   -d | --dump:                      print RAM\n"
+	       "   -i | --idx:                       print IDX RAM & RAM\n"
 	       "   -w <addr in hex>                  write to addr\n"
 	       "   -z <data in hex>                  write to data\n"
 	       "\n");
 	exit(1);
 }
 
-int verbose = 0, dump_idx = 0;
+int verbose = 0, dump_idx = 0, dump_ram = 0;
 
 int main(int argc, char *argv[])
 {
@@ -74,7 +75,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?Viw:z:",
+	while ((opt = getopt_long(argc, argv, "vh?Vidw:z:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -86,12 +87,16 @@ int main(int argc, char *argv[])
 			break;
 		case 'i':
 			dump_idx = 1;
+			dump_ram = 1;
 			break;
 		case 'w':
 			write_addr = strtol(optarg , NULL, 16);
 			break;
 		case 'z':
 			write_data = strtol(optarg , NULL, 16);
+			break;
+		case 'd':
+			dump_ram = 1;
 			break;
 		case 'h':
 		case '?':
@@ -113,13 +118,20 @@ int main(int argc, char *argv[])
 		ec_write(write_addr & 0xff, write_data & 0xff);
 	}
 
-	printf("EC RAM:\n");
-	for (i = 0; i < 0x100; i++) {
-		if ((i % 0x10) == 0)
-			printf("\n%02x: ", i);
-		printf("%02x ", ec_read(i));
+	/* preserve default - dump_ram if nothing selected */
+	if (!dump_ram && !dump_idx) {
+		dump_ram = 1;
 	}
-	printf("\n\n");
+
+	if (dump_ram) {
+		printf("EC RAM:\n");
+		for (i = 0; i < 0x100; i++) {
+			if ((i % 0x10) == 0)
+				printf("\n%02x: ", i);
+			printf("%02x ", ec_read(i));
+		}
+		printf("\n\n");
+	}
 
 	if (dump_idx) {
 		printf("EC IDX RAM:\n");

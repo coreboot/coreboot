@@ -266,6 +266,8 @@ static void sb800_init(void *chip_info)
 {
 	sb_config->StdHeader.CALLBACK.CalloutPtr = sb800_callout_entry;
 	sb800_cimx_config(sb_config);
+
+	abcfg_reg(0xc0, 0x01FF, 0x0F4);
 }
 
 /**
@@ -339,23 +341,6 @@ static void sb800_enable(device_t dev)
 
 	switch (dev->path.pci.devfn) {
 	case (0x11 << 3) | 0: /* 0:11.0  SATA */
-		/* the first sb800 device */
-		switch (GPP_CFGMODE) { /* config the GPP PCIe ports */
-		case GPP_CFGMODE_X2200:
-			abcfg_reg(0xc0, 0x01FF, 0x032); /* x2 Port_0, x2 Port_1 */
-			break;
-		case GPP_CFGMODE_X2110:
-			abcfg_reg(0xc0, 0x01FF, 0x073); /* x2 Port_0, x1 Port_1&2 */
-			break;
-		case GPP_CFGMODE_X1111:
-			abcfg_reg(0xc0, 0x01FF, 0x0F4); /* x1 Port_0&1&2&3 */
-			break;
-		case GPP_CFGMODE_X4000:
-		default:
-			abcfg_reg(0xc0, 0x01FF, 0x010); /* x4 Port_0 */
-			break;
-		}
-
 		if (dev->enabled) {
   			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_ENABLED;
 			if (1 == sb_chip->boot_switch_sata_ide)

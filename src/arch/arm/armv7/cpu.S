@@ -120,7 +120,7 @@ ENTRY(arm_init_caches)
 	mcr	p15, 0, r4, c1, c0, 0
 
 	/* Flush and invalidate dcache in ascending order */
-	bl	dcache_clean_invalidate_all
+	bl	dcache_invalidate_all
 
 	/* Deactivate MMU (0), Alignment Check (1) and DCache (2) */
 	and	r4, # ~(1 << 0) & ~(1 << 1) & ~(1 << 2)

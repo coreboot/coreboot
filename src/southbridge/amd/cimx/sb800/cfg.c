@@ -132,11 +132,4 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->GppPhyPllPowerDown = TRUE; //GPP power saving
 	sb_config->SBGecPwr = 0x03;//11b << 5, rpr BDF: 00:20:06
 	sb_config->GecConfig = GEC_CONFIG;
-
-#ifndef __PRE_RAM__
-	/* ramstage cimx config here */
-	if (!sb_config->StdHeader.CALLBACK.CalloutPtr) {
-		sb_config->StdHeader.CALLBACK.CalloutPtr = sb800_callout_entry;
-	}
-#endif //!__PRE_RAM__
 }

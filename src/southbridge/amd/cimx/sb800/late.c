@@ -59,7 +59,7 @@ static AMDSBCFG *sb_config = &sb_late_cfg;
  * @param[in] config    Southbridge configuration structure pointer.
  *
  */
-u32 sb800_callout_entry(u32 func, u32 data, void* config)
+static u32 sb800_callout_entry(u32 func, u32 data, void* config)
 {
 	u32 ret = 0;
 	printk(BIOS_DEBUG, "SB800 - Late.c - %s - Start.\n", __func__);
@@ -260,6 +260,15 @@ static const struct pci_driver gec_driver __pci_driver = {
 };
 
 /**
+ *  Fill build time defaults.
+ */
+static void sb800_init(void *chip_info)
+{
+	sb_config->StdHeader.CALLBACK.CalloutPtr = sb800_callout_entry;
+	sb800_cimx_config(sb_config);
+}
+
+/**
  * South Bridge CIMx ramstage entry point wrapper.
  */
 void sb_Before_Pci_Init(void)
@@ -346,7 +355,6 @@ static void sb800_enable(device_t dev)
 			abcfg_reg(0xc0, 0x01FF, 0x010); /* x4 Port_0 */
 			break;
 		}
-		sb800_cimx_config(sb_config);
 
 		if (dev->enabled) {
   			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_ENABLED;
@@ -477,5 +485,6 @@ static void sb800_enable(device_t dev)
 
 struct chip_operations southbridge_amd_cimx_sb800_ops = {
 	CHIP_NAME("ATI SB800")
+	.init = sb800_init,
 	.enable_dev = sb800_enable,
 };

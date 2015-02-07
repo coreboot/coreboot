@@ -29,16 +29,4 @@
  */
 void sb800_cimx_config(AMDSBCFG *sb_cfg);
 
-/**
- * @brief Entry point of Southbridge CIMx callout
- *
- * prototype UINT32 (*SBCIM_HOOK_ENTRY)(UINT32 Param1, UINT32 Param2, void* pConfig)
- *
- * @param[in] func    Southbridge CIMx Function ID.
- * @param[in] data    Southbridge Input Data.
- * @param[in] config  Southbridge configuration structure pointer.
- *
- */
-u32 sb800_callout_entry(u32 func, u32 data, void* config);
-
 #endif

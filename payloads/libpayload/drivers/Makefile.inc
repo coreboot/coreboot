@@ -46,6 +46,7 @@ libc-$(CONFIG_LP_NVRAM) += nvram.c
 libc-$(CONFIG_LP_NVRAM) += options.c
 
 # Timer drivers
+libc-$(CONFIG_LP_TIMER_MTK) += timer/mtk_timer.c
 libc-$(CONFIG_LP_TIMER_MCT) += timer/mct.c
 libc-$(CONFIG_LP_TIMER_RDTSC) += timer/rdtsc.c
 libc-$(CONFIG_LP_TIMER_TEGRA_1US) += timer/tegra_1us.c

@@ -405,6 +405,9 @@ config TIMER_CYGNUS
 config TIMER_IMG_PISTACHIO
 	bool "Timer for IMG Pistachio"
 
+config TIMER_MTK
+	bool "Timer for MediaTek MT8173"
+
 endchoice
 
 config TIMER_MCT_HZ
@@ -446,6 +449,20 @@ config IPROC_PERIPH_GLB_TIM_REG_BASE
 	hex "Cygnus timer base address"
 	depends on TIMER_CYGNUS
 	default 0x19020200
+
+config TIMER_MTK_HZ
+	int "MediaTek GPT frequency"
+	depends on TIMER_MTK
+	default 13000000
+	help
+	  Clock frequency of MediaTek General Purpose Timer.
+
+config TIMER_MTK_ADDRESS
+	hex "MTK GPT register address"
+	depends on TIMER_MTK
+	default 0x10008048
+	help
+	  Address of GPT4's counter register to read the FREERUN-mode timer value.
 
 config USB
 	bool "USB Support"

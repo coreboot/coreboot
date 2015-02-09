@@ -86,7 +86,7 @@ static void cmos_set_checksum(int range_start, int range_end, int cks_loc)
 #ifndef __SMM__
 void cmos_init(bool invalid)
 {
-	bool cmos_invalid = false;
+	bool cmos_invalid = invalid;
 	bool checksum_invalid = false;
 	bool clear_cmos;
 	size_t i;

@@ -1,0 +1,1 @@
+subdirs-$(CONFIG_SOC_BROADCOM_CYGNUS) += secimage

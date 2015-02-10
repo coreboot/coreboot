@@ -37,12 +37,15 @@ CBOOTIMAGE_RAW_SRCS:= \
 
 CBOOTIMAGE_SRCS:=$(addprefix util/nvidia/cbootimage/src/,$(filter %.c,$(CBOOTIMAGE_RAW_SRCS)))
 CBOOTIMAGE_OBJS:=$(addprefix $(objutil)/nvidia/cbootimage/,$(patsubst %.c,%.o,$(filter %.c,$(CBOOTIMAGE_RAW_SRCS))))
+CBOOTIMAGE_FLAGS:=-Wall -std=c99 -O2
 
 additional-dirs += $(sort $(dir $(CBOOTIMAGE_OBJS)))
 
 $(objutil)/nvidia/cbootimage/%.o: util/nvidia/cbootimage/src/%.c
-	gcc -c -o $@ $<
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(CBOOTIMAGE_FLAGS) -c -o $@ $<
 
 $(CBOOTIMAGE): $(CBOOTIMAGE_OBJS)
-	gcc -o $@.tmp $^ -lm
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
+	$(HOSTCC) $(CBOOTIMAGE_FLAGS) -o $@.tmp $^ -lm
 	mv $@.tmp $@

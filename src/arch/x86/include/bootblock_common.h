@@ -2,6 +2,10 @@
 #include <cpu/x86/lapic/boot_cpu.c>
 #include <pc80/mc146818rtc.h>
 
+#ifdef CONFIG_BOOTBLOCK_RESETS
+#include CONFIG_BOOTBLOCK_RESETS
+#endif
+
 #ifdef CONFIG_BOOTBLOCK_CPU_INIT
 #include CONFIG_BOOTBLOCK_CPU_INIT
 #endif

@@ -84,6 +84,9 @@ config BOOTBLOCK_MAINBOARD_INIT
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 
+config BOOTBLOCK_RESETS
+	string
+
 config HAVE_CMOS_DEFAULT
 	def_bool n
 

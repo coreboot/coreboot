@@ -21,6 +21,8 @@
 #define __SOC_ROCKCHIP_RK3288_I2C_H__
 
 void i2c_init(unsigned int bus, unsigned int hz);
+void software_i2c_attach(unsigned bus);
+void software_i2c_detach(unsigned bus);
 
 #endif
 

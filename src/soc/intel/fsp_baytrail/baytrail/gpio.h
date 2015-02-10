@@ -170,6 +170,20 @@
 	  .use_sel   = GPIO_USE_MMIO, \
 	  .is_gpio   = 1 }
 
+#define GPIO_INPUT_PU_20K \
+	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT, \
+	  .use_sel   = GPIO_USE_MMIO, \
+	  .is_gpio   = 1 }
+
+#define GPIO_INPUT_PD_20K \
+	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_DOWN | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT, \
+	  .use_sel   = GPIO_USE_MMIO, \
+	  .is_gpio   = 1 }
+
 #define GPIO_INPUT_NOPU \
 	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \

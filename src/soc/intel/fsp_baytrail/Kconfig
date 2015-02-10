@@ -122,7 +122,7 @@ config INCLUDE_ME
 	  to build it in here.
 
 config ME_PATH
-	string
+	string "Path to ME"
 	depends on INCLUDE_ME
 	help
 	  The path of the TXE and Descriptor files.

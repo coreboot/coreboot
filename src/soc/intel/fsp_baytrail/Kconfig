@@ -50,6 +50,10 @@ config CPU_SPECIFIC_OPTIONS
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select ROMSTAGE_RTC_INIT
 
+config SOC_INTEL_FSP_BAYTRAIL_MD
+	bool
+	default n
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "soc/intel/fsp_baytrail/bootblock/bootblock.c"

@@ -27,5 +27,16 @@ uint64_t timer_hz(void)
 
 uint64_t timer_raw_value(void)
 {
-	return read_c0_count() * 2;
+	static uint64_t total_ticks = 0;
+	uint8_t overflow = 0;
+	uint32_t current_ticks = read_c0_count() * 2;
+
+	/* It assumes only one overflow happened since the last call */
+	if (current_ticks <= (uint32_t)total_ticks)
+		overflow = 1;
+	/* The least significant part(32 bits) of total_ticks will always
+	 * become equal to current ticks */
+	total_ticks = (((total_ticks  >> 32) + overflow) << 32) +
+				current_ticks;
+	return total_ticks;
 }

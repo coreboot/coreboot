@@ -271,19 +271,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	wait_all_core0_started();
 
-	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
-		/* Core0 on each node is configured. Now setup any additional cores. */
-		printk(BIOS_DEBUG, "start_other_cores()\n");
-		start_other_cores();
-		post_code(0x37);
-		wait_all_other_cores_started(bsp_apicid);
-	}
-
-	printk(BIOS_DEBUG, "set_ck804_base_unit_id()\n");
-	ck804_control(ctrl_conf_fix_pci_numbering, ARRAY_SIZE(ctrl_conf_fix_pci_numbering), CK804_BOARD_BOOT_BASE_UNIT_UID);
-
-	post_code(0x38);
-
 	if (IS_ENABLED(CONFIG_SET_FIDVID)) {
 		msr = rdmsr(0xc0010071);
 		printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
@@ -302,6 +289,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		msr=rdmsr(0xc0010071);
 		printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	}
+
+	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
+		/* Core0 on each node is configured. Now setup any additional cores. */
+		printk(BIOS_DEBUG, "start_other_cores()\n");
+		start_other_cores();
+		post_code(0x37);
+		wait_all_other_cores_started(bsp_apicid);
+	}
+
+	printk(BIOS_DEBUG, "set_ck804_base_unit_id()\n");
+	ck804_control(ctrl_conf_fix_pci_numbering, ARRAY_SIZE(ctrl_conf_fix_pci_numbering), CK804_BOARD_BOOT_BASE_UNIT_UID);
+
+	post_code(0x38);
 
 	init_timer(); // Need to use TMICT to synconize FID/VID
 

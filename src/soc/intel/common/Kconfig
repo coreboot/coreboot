@@ -21,3 +21,7 @@ config MRC_SETTINGS_PROTECT
 endif # CACHE_MRC_SETTINGS
 
 endif # HAVE_MRC
+
+config SOC_INTEL_COMMON_RESET
+	bool
+	default n

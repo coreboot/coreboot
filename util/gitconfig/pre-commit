@@ -1,2 +1,3 @@
 #!/bin/sh
-exec %MAKE% lint-stable
+%MAKE% lint-stable
+git diff --cached | util/lint/checkpatch.pl --no-signoff -q -

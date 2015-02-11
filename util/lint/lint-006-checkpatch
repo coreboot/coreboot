@@ -1,0 +1,23 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright 2015 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# DESCR: Checkpatch on all .c and .h files in the tree
+
+LC_ALL=C export LC_ALL
+util/lint/checkpatch.pl --show-types --file $( git ls-files \*.[ch] | \
+	grep -v ^payloads/libpayload/util/kconfig | \
+	grep -v ^payloads/libpayload/curses/PDCurses-3.4 | \
+	grep -v ^payloads/coreinfo/util/kconfig | \
+	grep -v ^util/kconfig \
+	)

@@ -69,6 +69,13 @@ static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_p
 
 /*
 * For details of this algorithm, please refer to the BDKG 3.62 page 69
+*
+* WARNING: The core count algorithm below assumes that all processors
+* are identical, with the same number of active cores.  While the BKDG
+* states the BIOS must enforce this coreboot does not currently do so.
+* As a result it is possible that this code may break if an illegal
+* processor combination is installed.  If it does break please fix the
+* code in the proper locations!
 */
 static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
@@ -106,15 +113,31 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	processor_brand[48] = 0;
 	printk(BIOS_INFO, "processor_brand=%s\n", processor_brand);
 
+	uint32_t dtemp;
+	uint32_t cpuid_fms;
+	uint8_t model;
+	uint8_t node_count;
+
 	/*
 	 * Based on the CPU socket type,cmp_cap and pwr_lmt , get the power limit.
 	 * socket_type : 0x10 SocketF; 0x11 AM2/ASB1 ; 0x12 S1G1
-	 * cmp_cap : 0x0 SingleCore ; 0x1 DualCore ; 0x2 TripleCore ; 0x3 QuadCore ; 0x5 QuintupleCore ; 0x6 HexCore
+	 * cmp_cap : 0x0 SingleCore ; 0x1 DualCore ; 0x2 TripleCore ; 0x3 QuadCore ; 0x4 QuintupleCore ; 0x5 HexCore
 	 */
-	printk(BIOS_INFO, "Pstates Algorithm ...\n");
-	cmp_cap =
-	    (pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8) &
-	     0x7000) >> 12;
+	printk(BIOS_INFO, "Pstates algorithm ...\n");
+	/* Get CPU model */
+	cpuid_fms = cpuid_eax(0x80000001);
+	model = ((cpuid_fms & 0xf0000) >> 16) | ((cpuid_fms & 0xf0) >> 4);
+	/* Get number of cores */
+	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8);
+	cmp_cap = (dtemp & 0x3000) >> 12;
+	if ((model == 0x8) || (model == 0x9))	/* revision D */
+		cmp_cap |= (dtemp & 0x8000) >> 13;
+	/* Get number of nodes */
+	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 0)), 0x60);
+	node_count = ((dtemp & 0x70) >> 4) + 1;
+	/* Compute total number of cores installed in system */
+	cmp_cap++;
+	cmp_cap *= node_count;
 
 	Pstate_num = 0;
 
@@ -125,7 +148,6 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		goto write_pstates;
 	}
 
-	uint32_t dtemp;
 	uint8_t pviModeFlag;
 	uint8_t Pstate_max;
 	uint8_t cpufid;
@@ -237,7 +259,7 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	}
 
 write_pstates:
-	for (index = 0; index < (cmp_cap + 1); index++)
+	for (index = 0; index < cmp_cap; index++)
 		write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_power,
 				Pstate_latency, Pstate_control, Pstate_status,
 				index, pcontrol_blk, plen, onlyBSP);

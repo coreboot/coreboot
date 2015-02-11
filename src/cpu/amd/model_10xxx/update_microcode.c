@@ -21,27 +21,6 @@
 #include <stdint.h>
 #include <cpu/amd/microcode.h>
 
-/* From the Revision Guide :
- * Equivalent Processor Table for AMD Family 10h Processors
- *
- * Installed Processor   Equivalent Processor
- * Revision ID           Revision ID
- * 00100F00h             1000h
- * 00100F01h             1000h
- * 00100F02h             1000h
- * 00100F20h             1020h
- * 00100F21h (DR-B1)     1020h
- * 00100F2Ah (DR-BA)     1020h
- * 00100F22h (DR-B2)     1022h
- * 00100F23h (DR-B3)     1022h
- * 00100F42h (RB-C2)     1041h
- * 00100F43h (RB-C3)     1043h
- * 00100F62h (DA-C2)     1062h
- * 00100F63h (DA-C3)     1043h
- * 00100F81h (HY-D1)     1081h
- * 00100FA0h (PH-E0)     10A0h
- */
-
 struct id_mapping {
         uint32_t orig_id;
         uint16_t new_id;
@@ -53,16 +32,17 @@ static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 		{ 0x100f01, 0x1000 },
 		{ 0x100f02, 0x1000 },
 		{ 0x100f20, 0x1020 },
-		{ 0x100f21, 0x1020 },
-		{ 0x100f2A, 0x1020 },
-		{ 0x100f22, 0x1022 },
-		{ 0x100f23, 0x1022 },
-		{ 0x100f42, 0x1041 },
-		{ 0x100f43, 0x1043 },
-		{ 0x100f62, 0x1062 },
-		{ 0x100f63, 0x1043 },
-		{ 0x100f81, 0x1081 },
-		{ 0x100fa0, 0x10A0 },
+		{ 0x100f21, 0x1020 }, /* DR-B1 */
+		{ 0x100f2A, 0x1020 }, /* DR-BA */
+		{ 0x100f22, 0x1022 }, /* DR-B2 */
+		{ 0x100f23, 0x1022 }, /* DR-B3 */
+		{ 0x100f42, 0x1041 }, /* RB-C2 */
+		{ 0x100f43, 0x1043 }, /* RB-C3 */
+		{ 0x100f52, 0x1041 }, /* BL-C2 */
+		{ 0x100f62, 0x1062 }, /* DA-C2 */
+		{ 0x100f63, 0x1043 }, /* DA-C3 */
+		{ 0x100f81, 0x1081 }, /* HY-D1 */
+		{ 0x100fa0, 0x10A0 }, /* PH-E0 */
 
 		/* Array terminator */
 		{ 0xffffff, 0x0000 },
@@ -73,7 +53,7 @@ static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 
 	new_id = 0;
 
-	for (i = 0; id_mapping_table[i].orig_id != 0xffffff; i++ ) {
+	for (i = 0; id_mapping_table[i].orig_id != 0xffffff; i++) {
 		if (id_mapping_table[i].orig_id == orig_id) {
 			new_id = id_mapping_table[i].new_id;
 			break;

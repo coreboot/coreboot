@@ -818,7 +818,7 @@ void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
 void show_all_devs_tree(int debug_level, const char *msg)
 {
 	/* Bail if not printing to screen. */
-	if (!do_printk(debug_level, "Show all devs in tree form...%s\n", msg))
+	if (!do_printk(debug_level, "Show all devs in tree form... %s\n", msg))
 		return;
 	show_devs_tree(all_devices, debug_level, 0, -1);
 }
@@ -826,7 +826,7 @@ void show_all_devs_tree(int debug_level, const char *msg)
 void show_devs_subtree(struct device *root, int debug_level, const char *msg)
 {
 	/* Bail if not printing to screen. */
-	if (!do_printk(debug_level, "Show all devs in subtree %s...%s\n",
+	if (!do_printk(debug_level, "Show all devs in subtree %s... %s\n",
 		       dev_path(root), msg))
 		return;
 	do_printk(debug_level, "%s\n", msg);
@@ -838,7 +838,7 @@ void show_all_devs(int debug_level, const char *msg)
 	struct device *dev;
 
 	/* Bail if not printing to screen. */
-	if (!do_printk(debug_level, "Show all devs...%s\n", msg))
+	if (!do_printk(debug_level, "Show all devs... %s\n", msg))
 		return;
 	for (dev = all_devices; dev; dev = dev->next) {
 		do_printk(debug_level, "%s: enabled %d\n",
@@ -878,7 +878,7 @@ void show_all_devs_resources(int debug_level, const char* msg)
 {
 	struct device *dev;
 
-	if (!do_printk(debug_level, "Show all devs with resources...%s\n", msg))
+	if (!do_printk(debug_level, "Show all devs with resources... %s\n", msg))
 		return;
 
 	for (dev = all_devices; dev; dev = dev->next) {

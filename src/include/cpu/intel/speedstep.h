@@ -29,7 +29,7 @@
 #define SPEEDSTEP_APIC_MAGIC 0xACAC
 
 /* MWAIT coordination I/O base address. This must match
- * the \_PR_.CPU0 PM base address.
+ * the \_PR_.CP00 PM base address.
  */
 #define PMB0_BASE 0x510
 

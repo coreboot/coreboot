@@ -107,7 +107,7 @@ static void hudson_init_acpi_ports(void)
 	pm_write16(0x62, ACPI_PM1_CNT_BLK);
 	pm_write16(0x64, ACPI_PM_TMR_BLK);
 	pm_write16(0x68, ACPI_GPE0_BLK);
-	/* CpuControl is in \_PR.CPU0, 6 bytes */
+	/* CpuControl is in \_PR.CP00, 6 bytes */
 	pm_write16(0x66, ACPI_CPU_CONTROL);
 
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {

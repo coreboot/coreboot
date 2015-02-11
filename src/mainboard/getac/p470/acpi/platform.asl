@@ -95,15 +95,15 @@ Method(_WAK,1)
 
 	// Windows XP SP2 P-State restore
 	If (LAnd(LEqual(OSYS, 2002), And(CFGD, 1))) {
-		If (LGreater(\_PR.CPU0._PPC, 0)) {
-			Subtract(\_PR.CPU0._PPC, 1, \_PR.CPU0._PPC)
+		If (LGreater(\_PR.CP00._PPC, 0)) {
+			Subtract(\_PR.CP00._PPC, 1, \_PR.CP00._PPC)
 			PNOT()
-			Add(\_PR.CPU0._PPC, 1, \_PR.CPU0._PPC)
+			Add(\_PR.CP00._PPC, 1, \_PR.CP00._PPC)
 			PNOT()
 		} Else {
-			Add(\_PR.CPU0._PPC, 1, \_PR.CPU0._PPC)
+			Add(\_PR.CP00._PPC, 1, \_PR.CP00._PPC)
 			PNOT()
-			Subtract(\_PR.CPU0._PPC, 1, \_PR.CPU0._PPC)
+			Subtract(\_PR.CP00._PPC, 1, \_PR.CP00._PPC)
 			PNOT()
 		}
 	}

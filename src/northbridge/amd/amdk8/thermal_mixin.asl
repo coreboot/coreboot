@@ -139,7 +139,7 @@ ThermalZone (K8T1) {
 	Name(_UID, "k8-1")
 	Name(_STR, Unicode("K8 compatible CPU Core 1 Thermal Sensor 2"))
 
-	Name(_TZD, Package () {\_PR.CPU0})
+	Name(_TZD, Package () {\_PR.CP00})
 
 	Method(_STA) {
 		Store(CORE, Local0)
@@ -190,7 +190,7 @@ ThermalZone (K8T2) {
 	Name(_UID, "k8-2")
 	Name(_STR, Unicode("K8 compatible CPU Core 2 Thermal Sensor 1"))
 
-	Name(_TZD, Package () {\_PR.CPU0})
+	Name(_TZD, Package () {\_PR.CP00})
 
 	Method(_STA) {
 		Store(CORE, Local0)
@@ -241,7 +241,7 @@ ThermalZone (K8T3) {
 	Name(_UID, "k8-3")
 	Name(_STR, Unicode("K8 compatible CPU Core 2 Thermal Sensor 2"))
 
-	Name(_TZD, Package () {\_PR.CPU0})
+	Name(_TZD, Package () {\_PR.CP00})
 
 	Method(_STA) {
 		Store(CORE, Local0)

@@ -20,31 +20,31 @@
  */
 
 /* These devices are created at runtime */
-External (\_PR.CPU0, DeviceObj)
-External (\_PR.CPU1, DeviceObj)
-External (\_PR.CPU2, DeviceObj)
-External (\_PR.CPU3, DeviceObj)
-External (\_PR.CPU4, DeviceObj)
-External (\_PR.CPU5, DeviceObj)
-External (\_PR.CPU6, DeviceObj)
-External (\_PR.CPU7, DeviceObj)
+External (\_PR.CP00, DeviceObj)
+External (\_PR.CP01, DeviceObj)
+External (\_PR.CP02, DeviceObj)
+External (\_PR.CP03, DeviceObj)
+External (\_PR.CP04, DeviceObj)
+External (\_PR.CP05, DeviceObj)
+External (\_PR.CP06, DeviceObj)
+External (\_PR.CP07, DeviceObj)
 
 /* Notify OS to re-read CPU tables, assuming ^2 CPU count */
 Method (PNOT)
 {
 	If (LGreaterEqual (\PCNT, 2)) {
-		Notify (\_PR.CPU0, 0x81)  // _CST
-		Notify (\_PR.CPU1, 0x81)  // _CST
+		Notify (\_PR.CP00, 0x81)  // _CST
+		Notify (\_PR.CP01, 0x81)  // _CST
 	}
 	If (LGreaterEqual (\PCNT, 4)) {
-		Notify (\_PR.CPU2, 0x81)  // _CST
-		Notify (\_PR.CPU3, 0x81)  // _CST
+		Notify (\_PR.CP02, 0x81)  // _CST
+		Notify (\_PR.CP03, 0x81)  // _CST
 	}
 	If (LGreaterEqual (\PCNT, 8)) {
-		Notify (\_PR.CPU4, 0x81)  // _CST
-		Notify (\_PR.CPU5, 0x81)  // _CST
-		Notify (\_PR.CPU6, 0x81)  // _CST
-		Notify (\_PR.CPU7, 0x81)  // _CST
+		Notify (\_PR.CP04, 0x81)  // _CST
+		Notify (\_PR.CP05, 0x81)  // _CST
+		Notify (\_PR.CP06, 0x81)  // _CST
+		Notify (\_PR.CP07, 0x81)  // _CST
 	}
 }
 
@@ -52,18 +52,18 @@ Method (PNOT)
 Method (PPCN)
 {
 	If (LGreaterEqual (\PCNT, 2)) {
-		Notify (\_PR.CPU0, 0x80)  // _PPC
-		Notify (\_PR.CPU1, 0x80)  // _PPC
+		Notify (\_PR.CP00, 0x80)  // _PPC
+		Notify (\_PR.CP01, 0x80)  // _PPC
 	}
 	If (LGreaterEqual (\PCNT, 4)) {
-		Notify (\_PR.CPU2, 0x80)  // _PPC
-		Notify (\_PR.CPU3, 0x80)  // _PPC
+		Notify (\_PR.CP02, 0x80)  // _PPC
+		Notify (\_PR.CP03, 0x80)  // _PPC
 	}
 	If (LGreaterEqual (\PCNT, 8)) {
-		Notify (\_PR.CPU4, 0x80)  // _PPC
-		Notify (\_PR.CPU5, 0x80)  // _PPC
-		Notify (\_PR.CPU6, 0x80)  // _PPC
-		Notify (\_PR.CPU7, 0x80)  // _PPC
+		Notify (\_PR.CP04, 0x80)  // _PPC
+		Notify (\_PR.CP05, 0x80)  // _PPC
+		Notify (\_PR.CP06, 0x80)  // _PPC
+		Notify (\_PR.CP07, 0x80)  // _PPC
 	}
 }
 
@@ -71,18 +71,18 @@ Method (PPCN)
 Method (TNOT)
 {
 	If (LGreaterEqual (\PCNT, 2)) {
-		Notify (\_PR.CPU0, 0x82)  // _TPC
-		Notify (\_PR.CPU1, 0x82)  // _TPC
+		Notify (\_PR.CP00, 0x82)  // _TPC
+		Notify (\_PR.CP01, 0x82)  // _TPC
 	}
 	If (LGreaterEqual (\PCNT, 4)) {
-		Notify (\_PR.CPU2, 0x82)  // _TPC
-		Notify (\_PR.CPU3, 0x82)  // _TPC
+		Notify (\_PR.CP02, 0x82)  // _TPC
+		Notify (\_PR.CP03, 0x82)  // _TPC
 	}
 	If (LGreaterEqual (\PCNT, 8)) {
-		Notify (\_PR.CPU4, 0x82)  // _TPC
-		Notify (\_PR.CPU5, 0x82)  // _TPC
-		Notify (\_PR.CPU6, 0x82)  // _TPC
-		Notify (\_PR.CPU7, 0x82)  // _TPC
+		Notify (\_PR.CP04, 0x82)  // _TPC
+		Notify (\_PR.CP05, 0x82)  // _TPC
+		Notify (\_PR.CP06, 0x82)  // _TPC
+		Notify (\_PR.CP07, 0x82)  // _TPC
 	}
 }
 
@@ -90,13 +90,13 @@ Method (TNOT)
 Method (PPKG)
 {
 	If (LGreaterEqual (\PCNT, 8)) {
-		Return (Package() {\_PR.CPU0, \_PR.CPU1, \_PR.CPU2, \_PR.CPU3,
-				   \_PR.CPU4, \_PR.CPU5, \_PR.CPU6, \_PR.CPU7})
+		Return (Package() {\_PR.CP00, \_PR.CP01, \_PR.CP02, \_PR.CP03,
+				   \_PR.CP04, \_PR.CP05, \_PR.CP06, \_PR.CP07})
 	} ElseIf (LGreaterEqual (\PCNT, 4)) {
-		Return (Package() {\_PR.CPU0, \_PR.CPU1, \_PR.CPU2, \_PR.CPU3})
+		Return (Package() {\_PR.CP00, \_PR.CP01, \_PR.CP02, \_PR.CP03})
 	} ElseIf (LGreaterEqual (\PCNT, 2)) {
-		Return (Package() {\_PR.CPU0, \_PR.CPU1})
+		Return (Package() {\_PR.CP00, \_PR.CP01})
 	} Else {
-		Return (Package() {\_PR.CPU0})
+		Return (Package() {\_PR.CP00})
 	}
 }

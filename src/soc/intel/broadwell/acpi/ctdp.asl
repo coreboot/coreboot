@@ -76,16 +76,16 @@ Scope (\_SB.PCI0.MCHC)
 	 *     Package (6) { freq, power, tlat, blat, control, status }
 	 *   }
 	 */
-	External (\_PR.CPU0._PSS)
+	External (\_PR.CP00._PSS)
 	Method (PSSS, 1, NotSerialized)
 	{
 		Store (One, Local0) /* Start at P1 */
-		Store (SizeOf (\_PR.CPU0._PSS), Local1)
+		Store (SizeOf (\_PR.CP00._PSS), Local1)
 
 		While (LLess (Local0, Local1)) {
 			/* Store _PSS entry Control value to Local2 */
 			ShiftRight (DeRefOf (Index (DeRefOf (Index
-			      (\_PR.CPU0._PSS, Local0)), 4)), 8, Local2)
+			      (\_PR.CP00._PSS, Local0)), 4)), 8, Local2)
 			If (LEqual (Local2, Arg0)) {
 				Return (Subtract (Local0, 1))
 			}

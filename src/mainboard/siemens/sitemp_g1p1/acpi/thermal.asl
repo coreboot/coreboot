@@ -56,9 +56,9 @@ Scope(\_TZ) {
 		Method (_PSL, 0, Serialized)
 		{
 			If (MPEN) {
-				Return (Package() {\_PR.CPU0, \_PR.CPU1})
+				Return (Package() {\_PR.CP00, \_PR.CP01})
 			}
-			Return (Package() {\_PR.CPU0})
+			Return (Package() {\_PR.CP00})
 		}
 
 		Method(_HOT,0) {	/* return hot temp in tenths degree Kelvin */

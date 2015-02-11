@@ -105,7 +105,7 @@ Device(EC0)
 	// EC Query methods, called upon SCI interrupts.
 	Method (_Q01, 0)
 	{
-		Notify (\_PR.CPU0, 0x80)
+		Notify (\_PR.CP00, 0x80)
 		If(ADP) {
 			Store(1, \_SB.AC.ACST)
 			TRAP(0xe3)

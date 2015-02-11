@@ -81,7 +81,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	val = GPE0_BLK_ADDRESS;
 	WritePMIO(SB_PMIOA_REG68, AccWidthUint16, &val);
 
-	/* CpuControl is in \_PR.CPU0, 6 bytes */
+	/* CpuControl is in \_PR.CP00, 6 bytes */
 	val = CPU_CNT_BLK_ADDRESS;
 	WritePMIO(SB_PMIOA_REG66, AccWidthUint16, &val);
 	val = 0;

@@ -53,7 +53,7 @@ static void sb800_acpi_init(void)
 	pmio_write(0x68, ACPI_GPE0_BLK & 0xFF);
 	pmio_write(0x69, ACPI_GPE0_BLK >> 8);
 
-	/* CpuControl is in \_PR.CPU0, 6 bytes */
+	/* CpuControl is in \_PR.CP00, 6 bytes */
 	pmio_write(0x66, ACPI_CPU_CONTROL & 0xFF);
 	pmio_write(0x67, ACPI_CPU_CONTROL >> 8);
 

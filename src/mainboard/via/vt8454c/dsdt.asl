@@ -27,7 +27,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 	 */
 	Scope (\_PR)
 	{
-		Processor (\_PR.CPU0, 0x00, 0x00000410, 0x06) {}
+		Processor (\_PR.CP00, 0x00, 0x00000410, 0x06) {}
 	}
 
 	/* For now only define 2 power states:

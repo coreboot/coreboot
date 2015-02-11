@@ -65,9 +65,9 @@ Scope (\_TZ)
 		Method (_PSL, 0, Serialized)
 		{
 			If (MPEN) {
-				Return (Package() {\_PR.CPU1, \_PR.CPU2})
+				Return (Package() {\_PR.CP01, \_PR.CP02})
 			}
-			Return (Package() {\_PR.CPU1})
+			Return (Package() {\_PR.CP01})
 		}
 
 		// TC1 value for passive cooling

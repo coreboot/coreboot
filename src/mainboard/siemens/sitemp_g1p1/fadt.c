@@ -80,7 +80,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	pm_iowrite(0x28, ACPI_GPE0_BLK & 0xFF);
 	pm_iowrite(0x29, ACPI_GPE0_BLK >> 8);
 
-	/* CpuControl is in \_PR.CPU0, 6 bytes */
+	/* CpuControl is in \_PR.CP00, 6 bytes */
 	pm_iowrite(0x26, ACPI_CPU_CONTORL & 0xFF);
 	pm_iowrite(0x27, ACPI_CPU_CONTORL >> 8);
 

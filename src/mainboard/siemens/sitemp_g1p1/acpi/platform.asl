@@ -30,8 +30,8 @@ Method(_PIC, 1, NotSerialized)
 	}
 }
 
-External (\_PR.CPU0, DeviceObj)
-External (\_PR.CPU1, DeviceObj)
+External (\_PR.CP00, DeviceObj)
+External (\_PR.CP01, DeviceObj)
 
 Scope(\_SB)
 {

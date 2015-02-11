@@ -226,7 +226,7 @@ if ($tree) {
 	} else {
 		if (top_of_kernel_tree('.')) {
 			$root = '.';
-		} elsif ($0 =~ m@(.*)/scripts/[^/]*$@ &&
+		} elsif ($0 =~ m@(.*)/util/lint/[^/]*$@ &&
 						top_of_kernel_tree($1)) {
 			$root = $1;
 		}
@@ -699,9 +699,8 @@ sub top_of_kernel_tree {
 	my ($root) = @_;
 
 	my @tree_check = (
-		"COPYING", "CREDITS", "Kbuild", "MAINTAINERS", "Makefile",
-		"README", "Documentation", "arch", "include", "drivers",
-		"fs", "init", "ipc", "kernel", "lib", "scripts",
+		"COPYING", "README", "Makefile", "Makefile.inc",
+		"src", "documentation", "util", "payloads",
 	);
 
 	foreach my $check (@tree_check) {
@@ -2994,7 +2993,7 @@ sub process {
 
 # no C99 // comments
 		if ($line =~ m{//}) {
-			if (ERROR("C99_COMMENTS",
+			if (CHK("C99_COMMENTS",
 				  "do not use C99 // comments\n" . $herecurr) &&
 			    $fix) {
 				my $line = $fixed[$fixlinenr];

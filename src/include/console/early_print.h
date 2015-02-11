@@ -18,11 +18,14 @@
 #ifndef __CONSOLE_EARLY_PRINT_H_
 #define __CONSOLE_EARLY_PRINT_H_
 
+#if !defined(__ROMCC__)
+#error "Don't include early_print.h"
+#endif
+
 #include <console/console.h>
 #include <console/streams.h>
 #include <console/loglevel.h>
 
-#if defined(__ROMCC__)
 /* While in romstage, console loglevel is built-time constant.
  * With ROMCC we inline this test with help from preprocessor.
  */

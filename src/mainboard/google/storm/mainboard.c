@@ -98,6 +98,14 @@ static void mainboard_init(device_t dev)
 	/* Copy WIFI calibration data into CBMEM. */
 	cbmem_add_vpd_calibration_data();
 #endif
+
+	/*
+	 * Make sure bootloader can issue sounds The frequency is calculated
+	 * as "<frame_rate> * <bit_width> * <channels> * 4", i.e.
+	 *
+	 * 48000 * 2 * 16 * 4 = 6144000
+	 */
+	audio_clock_config(6144000);
 }
 
 static void mainboard_enable(device_t dev)

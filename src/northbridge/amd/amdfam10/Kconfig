@@ -124,4 +124,136 @@ config SVI_HIGH_FREQ
           Select this for boards with a Voltage Regulator able to operate
           at 3.4 MHz in SVI mode. Ignored unless the AMD CPU is rev C3.
 
+menu "HyperTransport setup"
+	#could be implemented for K8 (NORTHBRIDGE_AMD_AMDK8)
+	depends on (NORTHBRIDGE_AMD_AMDFAM10) && EXPERT
+
+choice
+	prompt "HyperTransport frequency"
+	default LIMIT_HT_SPEED_AUTO
+	help
+	  This option sets the maximum permissible HyperTransport link
+	  frequency.
+
+	  Use of this option will only limit the autodetected HT frequency.
+	  It will not (and cannot) increase the frequency beyond the
+	  autodetected limits.
+
+	  This is primarily used to work around poorly designed or laid out
+	  HT traces on certain motherboards.
+
+config LIMIT_HT_SPEED_200
+	bool "Limit HT frequency to 200MHz"
+config LIMIT_HT_SPEED_300
+	bool "Limit HT frequency to 300MHz"
+config LIMIT_HT_SPEED_400
+	bool "Limit HT frequency to 400MHz"
+config LIMIT_HT_SPEED_500
+	bool "Limit HT frequency to 500MHz"
+config LIMIT_HT_SPEED_600
+	bool "Limit HT frequency to 600MHz"
+config LIMIT_HT_SPEED_800
+	bool "Limit HT frequency to 800MHz"
+config LIMIT_HT_SPEED_1000
+	bool "Limit HT frequency to 1.0GHz"
+config LIMIT_HT_SPEED_1200
+	bool "Limit HT frequency to 1.2GHz"
+config LIMIT_HT_SPEED_1400
+	bool "Limit HT frequency to 1.4GHz"
+config LIMIT_HT_SPEED_1600
+	bool "Limit HT frequency to 1.6GHz"
+config LIMIT_HT_SPEED_1800
+	bool "Limit HT frequency to 1.8GHz"
+config LIMIT_HT_SPEED_2000
+	bool "Limit HT frequency to 2.0GHz"
+config LIMIT_HT_SPEED_2200
+	bool "Limit HT frequency to 2.2GHz"
+config LIMIT_HT_SPEED_2400
+	bool "Limit HT frequency to 2.4GHz"
+config LIMIT_HT_SPEED_2600
+	bool "Limit HT frequency to 2.6GHz"
+config LIMIT_HT_SPEED_AUTO
+	bool "Autodetect HT frequency"
+endchoice
+
+choice
+	prompt "HyperTransport downlink width"
+	default LIMIT_HT_DOWN_WIDTH_16
+	help
+	  This option sets the maximum permissible HyperTransport
+	  downlink width.
+
+	  Use of this option will only limit the autodetected HT width.
+	  It will not (and cannot) increase the width beyond the autodetected
+	  limits.
+
+	  This is primarily used to work around poorly designed or laid out HT
+	  traces on certain motherboards.
+
+config LIMIT_HT_DOWN_WIDTH_8
+	bool "8 bits"
+config LIMIT_HT_DOWN_WIDTH_16
+	bool "16 bits"
+endchoice
+
+choice
+	prompt "HyperTransport uplink width"
+	default LIMIT_HT_UP_WIDTH_16
+	help
+	  This option sets the maximum permissible HyperTransport
+	  uplink width.
+
+	  Use of this option will only limit the autodetected HT width.
+	  It will not (and cannot) increase the width beyond the autodetected
+	  limits.
+
+	  This is primarily used to work around poorly designed or laid out HT
+	  traces on certain motherboards.
+
+config LIMIT_HT_UP_WIDTH_8
+	bool "8 bits"
+config LIMIT_HT_UP_WIDTH_16
+	bool "16 bits"
+endchoice
+
+config AMDMCT_ENABLE_ECC_REDIR
+	bool
+	depends on CPU_AMD_MODEL_10XXX
+	default n
+
+config AMDMCT_BACKGROUND_SCRUB_RATE
+	hex
+	depends on CPU_AMD_MODEL_10XXX
+	default 0x00
+	help
+	  This option sets the background ECC memory scub rate
+
+	  Permissible values are:
+
+	  0x00;	Disabled
+	  0x01;	40ns
+	  0x02;	80ns
+	  0x03;	160ns
+	  0x04;	320ns
+	  0x05;	640ns
+	  0x06;	1.28us
+	  0x07;	2.56us
+	  0x08;	5.12us
+	  0x09;	10.2us
+	  0x0a;	20.5us
+	  0x0b;	41us
+	  0x0c;	81.9us
+	  0x0d;	163.8us
+	  0x0e;	327.7us
+	  0x0f;	655.4us
+	  0x10;	1.31ms
+	  0x11;	2.62ms
+	  0x12;	5.24ms
+	  0x13;	10.49ms
+	  0x14;	20.97sms
+	  0x15;	42ms
+	  0x16;	84ms
+
+endmenu
+
 endif # NORTHBRIDGE_AMD_AMDFAM10

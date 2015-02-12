@@ -1,0 +1,75 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+if BOARD_SIEMENS_MC_TCU3
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SOC_INTEL_FSP_BAYTRAIL
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select OVERRIDE_MRC_CACHE_LOC
+	select INCLUDE_MICROCODE_IN_BUILD
+	select ENABLE_BUILTIN_COM1
+	select HAVE_FSP_BIN if FSP_PACKAGE_DEFAULT
+	select ENABLE_FSP_FAST_BOOT
+	select TSC_MONOTONIC_TIMER
+	select DRIVER_INTEL_I210
+	select SOC_INTEL_FSP_BAYTRAIL_MD
+
+config MAINBOARD_DIR
+	string
+	default "siemens/mc_tcu3"
+
+config INCLUDE_ME
+	bool
+	default n
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MC_TCU3 (FSP)"
+
+
+config MAX_CPUS
+	int
+	default 16
+
+config CACHE_ROM_SIZE_OVERRIDE
+	hex
+	default 0x1000000
+
+config MRC_CACHE_LOC_OVERRIDE
+	hex
+	default 0xfff80000
+	depends on ENABLE_FSP_FAST_BOOT
+
+config CBFS_SIZE
+	hex
+	default 0x00e00000
+
+config FSP_PACKAGE_DEFAULT
+	bool "Configure defaults for the Intel FSP package"
+	default n
+
+config VGA_BIOS
+	bool
+	default y if FSP_PACKAGE_DEFAULT
+
+endif # BOARD_SIEMENS_MC_TCU3

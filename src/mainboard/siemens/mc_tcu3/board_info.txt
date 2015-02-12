@@ -1,0 +1,4 @@
+Board name: TCU3
+Category: misc
+ROM protocol: SPI
+ROM socketed: n

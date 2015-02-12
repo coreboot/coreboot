@@ -6,9 +6,13 @@ choice
 config BOARD_SIEMENS_SITEMP_G1P1
 	bool "MB SITEMP-G1 (U1P0/U1P1)"
 
+config BOARD_SIEMENS_MC_TCU3
+	bool "MB TCU3"
+
 endchoice
 
 source "src/mainboard/siemens/sitemp_g1p1/Kconfig"
+source "src/mainboard/siemens/mc_tcu3/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

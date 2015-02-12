@@ -212,10 +212,11 @@ static int macronix_write(struct spi_flash *flash,
 	return ret;
 }
 
+static struct macronix_spi_flash mcx;
+
 struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode)
 {
 	const struct macronix_spi_flash_params *params;
-	struct macronix_spi_flash *mcx;
 	unsigned int i;
 	u16 id = idcode[2] | idcode[1] << 8;
 
@@ -230,29 +231,23 @@ struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode)
 		return NULL;
 	}
 
-	mcx = malloc(sizeof(*mcx));
-	if (!mcx) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
-	}
+	mcx.params = params;
+	mcx.flash.spi = spi;
+	mcx.flash.name = params->name;
 
-	mcx->params = params;
-	mcx->flash.spi = spi;
-	mcx->flash.name = params->name;
-
-	mcx->flash.write = macronix_write;
-	mcx->flash.erase = spi_flash_cmd_erase;
-	mcx->flash.status = spi_flash_cmd_status;
+	mcx.flash.write = macronix_write;
+	mcx.flash.erase = spi_flash_cmd_erase;
+	mcx.flash.status = spi_flash_cmd_status;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
-	mcx->flash.read = spi_flash_cmd_read_slow;
+	mcx.flash.read = spi_flash_cmd_read_slow;
 #else
-	mcx->flash.read = spi_flash_cmd_read_fast;
+	mcx.flash.read = spi_flash_cmd_read_fast;
 #endif
-	mcx->flash.sector_size = params->page_size * params->pages_per_sector;
-	mcx->flash.size = mcx->flash.sector_size * params->sectors_per_block *
+	mcx.flash.sector_size = params->page_size * params->pages_per_sector;
+	mcx.flash.size = mcx.flash.sector_size * params->sectors_per_block *
 		params->nr_blocks;
-	mcx->flash.erase_cmd = CMD_MX25XX_SE;
-	mcx->flash.status_cmd = CMD_MX25XX_RDSR;
+	mcx.flash.erase_cmd = CMD_MX25XX_SE;
+	mcx.flash.status_cmd = CMD_MX25XX_RDSR;
 
-	return &mcx->flash;
+	return &mcx.flash;
 }

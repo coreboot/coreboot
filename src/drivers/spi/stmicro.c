@@ -221,10 +221,11 @@ out:
 	return ret;
 }
 
+static struct stmicro_spi_flash stm;
+
 struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 {
 	const struct stmicro_spi_flash_params *params;
-	struct stmicro_spi_flash *stm;
 	unsigned int i;
 
 	if (idcode[0] == 0xff) {
@@ -257,22 +258,16 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 		return NULL;
 	}
 
-	stm = malloc(sizeof(struct stmicro_spi_flash));
-	if (!stm) {
-		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
-		return NULL;
-	}
+	stm.params = params;
+	stm.flash.spi = spi;
+	stm.flash.name = params->name;
 
-	stm->params = params;
-	stm->flash.spi = spi;
-	stm->flash.name = params->name;
+	stm.flash.write = stmicro_write;
+	stm.flash.erase = spi_flash_cmd_erase;
+	stm.flash.read = spi_flash_cmd_read_fast;
+	stm.flash.sector_size = params->page_size * params->pages_per_sector;
+	stm.flash.size = stm.flash.sector_size * params->nr_sectors;
+	stm.flash.erase_cmd = params->op_erase;
 
-	stm->flash.write = stmicro_write;
-	stm->flash.erase = spi_flash_cmd_erase;
-	stm->flash.read = spi_flash_cmd_read_fast;
-	stm->flash.sector_size = params->page_size * params->pages_per_sector;
-	stm->flash.size = stm->flash.sector_size * params->nr_sectors;
-	stm->flash.erase_cmd = params->op_erase;
-
-	return &stm->flash;
+	return &stm.flash;
 }

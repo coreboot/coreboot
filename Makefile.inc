@@ -19,7 +19,7 @@
 
 #######################################################################
 # misleadingly named, this is the coreboot version
-export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "`which git`" ]; \
+export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "$(command -v git)" ]; \
        then git describe --dirty --always || git describe; \
        else echo 4.0$(KERNELREVISION); fi)
 
@@ -139,12 +139,14 @@ ifeq ($(CONFIG_COVERAGE),y)
 ramstage-c-ccopts+=-fprofile-arcs -ftest-coverage
 endif
 
-# try to fetch non-optional submodules
-forgetthis:=$(shell git submodule update --init)
+# try to fetch non-optional submodules if the source is under git
+forgetthis:=$(shell if [ -d "$(top)/.git" -a -f "$(command -v git)" ]; \
+	then git submodule update --init; fi)
 ifeq ($(CONFIG_USE_BLOBS),y)
 # this is necessary because 3rdparty is update=none, and so is ignored
 # unless explicitly requested and enabled through --checkout
-forgetthis:=$(shell git submodule update --init --checkout 3rdparty)
+forgetthis:=$(shell if [ -d "$(top)/.git" -a -f "$(command -v git)" ]; \
+	then git submodule update --init --checkout 3rdparty; fi)
 endif
 
 bootblock-c-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__

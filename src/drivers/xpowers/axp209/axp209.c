@@ -43,16 +43,22 @@ enum registers {
  * is no limitation on the AXP209 as to how many registers we may read or write
  * in one transaction.
  * These return the number of bytes read/written, or an error code. In this
- * case, they return 1 on success, or an error code otherwise.
+ * case, they return 1 on success, or an error code otherwise. This is done to
+ * work with I²C drivers that return either 0 on success or the number of bytes
+ * actually transferred.
  */
 static int axp209_read(u8 bus, u8 reg, u8 *val)
 {
-	return i2c_readb(bus, AXP209_I2C_ADDR, reg, val);
+	if (i2c_readb(bus, AXP209_I2C_ADDR, reg, val) < 0)
+		return CB_ERR;
+	return 1;
 }
 
 static int axp209_write(u8 bus, u8 reg, u8 val)
 {
-	return i2c_writeb(bus, AXP209_I2C_ADDR, reg, val);
+	if (i2c_writeb(bus, AXP209_I2C_ADDR, reg, val) < 0)
+		return CB_ERR;
+	return 1;
 }
 
 /**

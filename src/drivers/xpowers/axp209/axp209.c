@@ -69,8 +69,10 @@ enum cb_err axp209_init(u8 bus)
 		return CB_ERR;
 
 	/* From U-Boot code : Low 4 bits is chip version */
-	if ((id & 0x0f) != 0x1)
+	if ((id & 0x0f) != 0x1) {
+		printk(BIOS_ERR, "[axp209] ID 0x%x does not match\n", id);
 		return CB_ERR;
+	}
 
 	return CB_SUCCESS;
 }

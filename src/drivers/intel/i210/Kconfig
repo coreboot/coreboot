@@ -1,0 +1,3 @@
+config DRIVER_INTEL_I210
+       bool
+       default n

@@ -160,6 +160,9 @@ extern const struct baytrail_irq_route global_baytrail_irq_route;
 #define PIRQ_PIC(pirq_, pic_irq_) \
 	[PIRQ ## pirq_] = PIRQ_PIC_IRQ ## pic_irq_
 
+/* used for ACPI only */
+#define PCIE_BRIDGE_DEV(prefix_, dev_, a_, b_, c_, d_)
+
 #endif /* !defined(__ASSEMBLER__) && !defined(__ACPI__) */
 
 #endif /* _BAYTRAIL_IRQ_H_ */

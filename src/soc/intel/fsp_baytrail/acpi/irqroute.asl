@@ -40,4 +40,11 @@ Method(_PRT)
 			PCI_DEV_PIRQ_ROUTES
 		})
 	}
+
 }
+
+PCIE_BRIDGE_IRQ_ROUTES
+#undef PIC_MODE
+#include "irq_helper.h"
+PCIE_BRIDGE_IRQ_ROUTES
+

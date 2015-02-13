@@ -32,6 +32,8 @@ config SOC_BROADCOM_CYGNUS
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_MEMORY_MAPPED
 	select HAVE_UART_SPECIAL
+	select HAS_PRECBMEM_TIMESTAMP_REGION
+	select RETURN_FROM_VERSTAGE
 
 if SOC_BROADCOM_CYGNUS
 
@@ -44,4 +46,19 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	depends on DRIVERS_UART
 	default 0x18023000
 
+config CYGNUS_DDR800
+	bool "DDR Speed at 800MHz"
+	default y
+
+config CYGNUS_SHMOO_REUSE_DDR_32BIT
+	bool "Indicate if DDR width is 32-bit"
+	default n
+
+config CYGNUS_SDRAM_TEST_DDR
+	bool "Run a write-read test on DDR after initialization"
+	default n
+
+config CYGNUS_PRINT_SHMOO_DEBUG
+	bool "Print debug info for shmoo"
+	default n
 endif

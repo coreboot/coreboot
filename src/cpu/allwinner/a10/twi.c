@@ -109,29 +109,11 @@ static void i2c_send_stop(struct a1x_twi *twi)
 	write32(reg32, &twi->ctl);
 }
 
-static int i2c_read(unsigned bus, unsigned chip, unsigned addr,
-	     uint8_t *buf, unsigned len)
+static int i2c_read(struct a1x_twi *twi, uint8_t chip,
+			uint8_t *buf, size_t len)
 {
 	unsigned count = len;
 	enum twi_status expected_status;
-	struct a1x_twi *twi = (void *)TWI_BASE(bus);
-
-	if (wait_until_idle(twi) != CB_SUCCESS)
-		return CB_ERR;
-
-	i2c_send_start(twi);
-	if (wait_for_status(twi) != TWI_STAT_TX_START)
-		return CB_ERR;
-
-	/* Send chip address */
-	i2c_send_data(twi, chip << 1);
-	if (wait_for_status(twi) != TWI_STAT_TX_AW_ACK)
-		return CB_ERR;
-
-	/* Send data address */
-	i2c_send_data(twi, addr);
-	if (wait_for_status(twi) != TWI_STAT_TXD_ACK)
-		return CB_ERR;
 
 	/* Send restart for read */
 	i2c_send_start(twi);
@@ -164,19 +146,13 @@ static int i2c_read(unsigned bus, unsigned chip, unsigned addr,
 		count--;
 	}
 
-	i2c_send_stop(twi);
-
 	return len;
 }
 
-static int i2c_write(unsigned bus, unsigned chip, unsigned addr,
-	      const uint8_t *buf, unsigned len)
+static int i2c_write(struct a1x_twi *twi, uint8_t chip,
+		     const uint8_t *buf, size_t len)
 {
-	unsigned count = len;
-	struct a1x_twi *twi = (void *)TWI_BASE(bus);
-
-	if (wait_until_idle(twi) != CB_SUCCESS)
-		return CB_ERR;
+	size_t count = len;
 
 	i2c_send_start(twi);
 	if (wait_for_status(twi) != TWI_STAT_TX_START)
@@ -187,11 +163,6 @@ static int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 	if (wait_for_status(twi) != TWI_STAT_TX_AW_ACK)
 		return CB_ERR;
 
-	/* Send data address */
-	i2c_send_data(twi, addr);
-	if (wait_for_status(twi) != TWI_STAT_TXD_ACK)
-		return CB_ERR;
-
 	/* Send data */
 	while (count > 0) {
 		i2c_send_data(twi, *buf++);
@@ -200,39 +171,35 @@ static int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 		count--;
 	}
 
-	i2c_send_stop(twi);
-
 	return len;
 }
 
-
-/*
- * This transfer function is not complete or correct, but it provides
- * the basic support that the above read and write functions previously
- * provided directly. It is extremely limited and not useful for
- * advanced drivers like TPM.
- *
- * TODO: Rewite the i2c_transfer and supporting functions
- *
- */
 int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 {
+	int i, ret = CB_SUCCESS;
 	struct i2c_seg *seg = segments;
+	struct a1x_twi *twi = (void *)TWI_BASE(bus);
 
-	if (seg->read) {
-		/* Read has one buf for the addr and one for the data */
-		if (count !=  2)
-			return -1;
 
-		if(i2c_read(bus, seg->chip, *seg->buf, seg[1].buf, seg[1].len) < 0)
-			return -1;
-	} else {
-		/* Write buf has adder and data. */
-		if (count !=  1)
-			return -1;
+	if (wait_until_idle(twi) != CB_SUCCESS)
+		return CB_ERR;
 
-		if(i2c_write(bus, seg->chip, *seg->buf, seg->buf+1, seg->len-1) < 0)
-			return -1;
+	for (i = 0; i < count; i++) {
+		seg = segments + i;
+
+		if (seg->read) {
+			ret = i2c_read(twi, seg->chip, seg->buf, seg->len);
+			if (ret < 0)
+				break;
+		} else {
+			ret = i2c_write(twi, seg->chip, seg->buf, seg->len);
+			if (ret < 0)
+				break;
+		}
 	}
-	return 0;
+
+	/* Don't worry about the status. STOP is on a best-effort basis */
+	i2c_send_stop(twi);
+
+	return ret;
 }

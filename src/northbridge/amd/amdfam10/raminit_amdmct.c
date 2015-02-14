@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,6 +33,42 @@ static  void print_t(const char *strval)
 #if CONFIG_DEBUG_RAM_SETUP
 	printk(BIOS_DEBUG, "%s", strval);
 #endif
+}
+
+static  void print_tf(const char *func, const char *strval)
+{
+#if CONFIG_DEBUG_RAM_SETUP
+	printk(BIOS_DEBUG, "%s: %s", func, strval);
+#endif
+}
+
+static uint16_t mct_MaxLoadFreq(uint8_t count, uint16_t freq)
+{
+	/* Return limited maximum RAM frequency */
+	if (IS_ENABLED(CONFIG_DIMM_DDR2)) {
+		if (IS_ENABLED(CONFIG_DIMM_REGISTERED)) {
+			/* K10 BKDG Rev. 3.62 Table 53 */
+			if (count > 2) {
+				/* Limit to DDR2-533 */
+				if (freq > 266) {
+					freq = 266;
+					print_tf(__func__, ": More than 2 DIMMs on channel; limiting to DDR2-533\n");
+				}
+			}
+		}
+		else {
+			/* K10 BKDG Rev. 3.62 Table 52 */
+			if (count > 1) {
+				/* Limit to DDR2-800 */
+				if (freq > 400) {
+					freq = 400;
+					print_tf(__func__, ": More than 1 DIMM on channel; limiting to DDR2-800\n");
+				}
+			}
+		}
+	}
+
+	return freq;
 }
 
 #if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */

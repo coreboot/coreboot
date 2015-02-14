@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -281,7 +282,25 @@ static void mctHookAfterDIMMpre(void)
 
 static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 {
-	pDCTstat->PresetmaxFreq = MEM_MAX_LOAD_FREQ;
+	pDCTstat->PresetmaxFreq = mctGet_NVbits(NV_MAX_MEMCLK);
+
+	/* Determine the number of installed DIMMs */
+	int ch1_count = 0;
+	int ch2_count = 0;
+	int i;
+	for (i = 0; i < 15; i = i + 2) {
+		if (pDCTstat->DIMMValid & (1 << i))
+			ch1_count++;
+		if (pDCTstat->DIMMValid & (1 << (i + 1)))
+			ch2_count++;
+	}
+	if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)) {
+		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 1: %d DIMM(s) detected\n", ch1_count);
+		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 2: %d DIMM(s) detected\n", ch2_count);
+	}
+
+	/* Set limits if needed */
+	pDCTstat->PresetmaxFreq = mct_MaxLoadFreq(max(ch1_count, ch2_count), pDCTstat->PresetmaxFreq);
 }
 
 #ifdef UNUSED_CODE

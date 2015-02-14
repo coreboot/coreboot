@@ -51,10 +51,10 @@ entries
 386          1       e       1        ECC_memory
 388          4       r       0        reboot_bits
 392          3       e       5        baud_rate
-395          1       e       1        hw_scrubber
-396          1       e       1        interleave_chip_selects
-397          2       e       8        max_mem_clock
-399          1       e       2        multi_core
+395          5       e       10       ecc_scrub_rate
+400          1       e       1        interleave_chip_selects
+401          2       e       8        max_mem_clock
+403          1       e       2        multi_core
 412          4       e       6        debug_level
 416          4       e       7        boot_first
 420          4       e       7        boot_second
@@ -117,6 +117,29 @@ enumerations
 9     5     37.5%
 9     6     25.0%
 9     7     12.5%
+10    0     Disabled
+10    1     40ns
+10    2     80ns
+10    3     160ns
+10    4     320ns
+10    5     640ns
+10    6     1.28us
+10    7     2.56us
+10    8     5.12us
+10    9     10.2us
+10    10    20.5us
+10    11    41us
+10    12    81.9us
+10    13    163.8us
+10    14    327.7us
+10    15    655.4us
+10    16    1.31ms
+10    17    2.62ms
+10    18    5.24ms
+10    19    10.49ms
+10    20    20.97ms
+10    21    42ms
+10    22    84ms
 
 checksums
 

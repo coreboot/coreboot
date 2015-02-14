@@ -96,10 +96,6 @@ config MAINBOARD_DO_NATIVE_VGA_INIT
 	bool
 	default y
 
-config AMDMCT_BACKGROUND_SCRUB_RATE
-	hex
-	default 0x06
-
 config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 	bool
 	default y

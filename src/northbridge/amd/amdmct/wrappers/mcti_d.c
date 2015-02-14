@@ -201,7 +201,7 @@ static u16 mctGet_NVbits(u8 index)
 		 * 0: Disable
 		 * 1: Enable
 		 */
-		val = CONFIG_AMDMCT_ENABLE_ECC_REDIR;
+		val = 0;
 
 		if (get_option(&nvram, "ECC_redirection") == CB_SUCCESS)
 			val = !!nvram;
@@ -232,7 +232,7 @@ static u16 mctGet_NVbits(u8 index)
 		 * 0x15: 42ms
 		 * 0x16: 84ms
 		 */
-		val = CONFIG_AMDMCT_BACKGROUND_SCRUB_RATE;
+		val = 0;
 
 		if ((get_option(&nvram, "ecc_scrub_rate") == CB_SUCCESS) && (nvram <= 0x16))
 			val = nvram;

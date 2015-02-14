@@ -1,6 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
+## Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
 ## Copyright (C) 2007-2009 coresystems GmbH
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -215,44 +216,6 @@ config LIMIT_HT_UP_WIDTH_8
 config LIMIT_HT_UP_WIDTH_16
 	bool "16 bits"
 endchoice
-
-config AMDMCT_ENABLE_ECC_REDIR
-	bool
-	depends on CPU_AMD_MODEL_10XXX
-	default n
-
-config AMDMCT_BACKGROUND_SCRUB_RATE
-	hex
-	depends on CPU_AMD_MODEL_10XXX
-	default 0x00
-	help
-	  This option sets the background ECC memory scub rate
-
-	  Permissible values are:
-
-	  0x00;	Disabled
-	  0x01;	40ns
-	  0x02;	80ns
-	  0x03;	160ns
-	  0x04;	320ns
-	  0x05;	640ns
-	  0x06;	1.28us
-	  0x07;	2.56us
-	  0x08;	5.12us
-	  0x09;	10.2us
-	  0x0a;	20.5us
-	  0x0b;	41us
-	  0x0c;	81.9us
-	  0x0d;	163.8us
-	  0x0e;	327.7us
-	  0x0f;	655.4us
-	  0x10;	1.31ms
-	  0x11;	2.62ms
-	  0x12;	5.24ms
-	  0x13;	10.49ms
-	  0x14;	20.97sms
-	  0x15;	42ms
-	  0x16;	84ms
 
 endmenu
 

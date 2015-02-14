@@ -20,9 +20,23 @@
 /* Call-backs */
 #include <delay.h>
 
+#define NVRAM_DDR2_800 0
+#define NVRAM_DDR2_667 1
+#define NVRAM_DDR2_533 2
+#define NVRAM_DDR2_400 3
+
+#define NVRAM_DDR3_1600 0
+#define NVRAM_DDR3_1333 1
+#define NVRAM_DDR3_1066 2
+#define NVRAM_DDR3_800  3
+
+static const uint16_t ddr2_limits[4] = {400, 333, 266, 200};
+static const uint16_t ddr3_limits[4] = {800, 666, 533, 400};
+
 static u16 mctGet_NVbits(u8 index)
 {
 	u16 val = 0;
+	int nvram;
 
 	switch (index) {
 	case NV_PACK_TYPE:
@@ -45,10 +59,16 @@ static u16 mctGet_NVbits(u8 index)
 		break;
 	case NV_MAX_MEMCLK:
 		/* Maximum platform supported memclk */
-		//val =  200;	/* 200MHz(DDR400) */
-		//val =  266;	/* 266MHz(DDR533) */
-		//val =  333;	/* 333MHz(DDR667) */
-		val =  MEM_MAX_LOAD_FREQ;	/* 400MHz(DDR800) */
+		val =  MEM_MAX_LOAD_FREQ;
+
+		if (get_option(&nvram, "max_mem_clock") == CB_SUCCESS) {
+			int limit = val;
+			if (IS_ENABLED(CONFIG_DIMM_DDR3))
+				limit = ddr3_limits[nvram & 3];
+			else if (IS_ENABLED(CONFIG_DIMM_DDR2))
+				limit = ddr2_limits[nvram & 3];
+			val = min(limit, val);
+		}
 		break;
 	case NV_ECC_CAP:
 #if SYSTEM_TYPE == SERVER
@@ -91,6 +111,9 @@ static u16 mctGet_NVbits(u8 index)
 		/* Bank (chip select) interleaving */
 		//val = 0;	/* disabled */
 		val = 1;	/* enabled (recommended) */
+
+		if (get_option(&nvram, "interleave_chip_selects") == CB_SUCCESS)
+			val = !!nvram;
 		break;
 	case NV_MemHole:
 		//val = 0;	/* Disabled */
@@ -111,6 +134,9 @@ static u16 mctGet_NVbits(u8 index)
 	case NV_NodeIntlv:
 		val = 0;	/* Disabled (recommended) */
 		//val = 1;	/* Enable */
+
+		if (get_option(&nvram, "interleave_nodes") == CB_SUCCESS)
+			val = !!nvram;
 		break;
 	case NV_BurstLen32:
 #if !CONFIG_GFXUMA
@@ -151,6 +177,9 @@ static u16 mctGet_NVbits(u8 index)
 #else
 		val = 0;	/* Disable */
 #endif
+
+		if (get_option(&nvram, "ECC_memory") == CB_SUCCESS)
+			val = !!nvram;
 		break;
 	case NV_NBECC:
 #if (SYSTEM_TYPE == SERVER)
@@ -172,6 +201,9 @@ static u16 mctGet_NVbits(u8 index)
 		 * 1: Enable
 		 */
 		val = CONFIG_AMDMCT_ENABLE_ECC_REDIR;
+
+		if (get_option(&nvram, "ECC_redirection") == CB_SUCCESS)
+			val = !!nvram;
 		break;
 	case NV_DramBKScrub:
 		/*
@@ -200,6 +232,9 @@ static u16 mctGet_NVbits(u8 index)
 		 * 0x16: 84ms
 		 */
 		val = CONFIG_AMDMCT_BACKGROUND_SCRUB_RATE;
+
+		if ((get_option(&nvram, "ecc_scrub_rate") == CB_SUCCESS) && (nvram <= 0x16))
+			val = nvram;
 		break;
 	case NV_L2BKScrub:
 		val = 0;	/* Disabled - See L2Scrub in BKDG */
@@ -219,6 +254,9 @@ static u16 mctGet_NVbits(u8 index)
 		/* channel interleave is better performance than ganged mode at this time */
 		val = 1;		/* Enabled */
 		//val = 0;	/* Disabled */
+
+		if (get_option(&nvram, "interleave_memory_channels") == CB_SUCCESS)
+			val = !!nvram;
 		break;
 	case NV_ChannelIntlv:
 		val = 5;	/* Not currently checked in mctchi_d.c */

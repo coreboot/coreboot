@@ -36,6 +36,11 @@ config CBFS_HEADER_ROM_OFFSET
 config CBFS_ROM_OFFSET
 	default 0x5fc0
 
+# Arbitrarily chosen to be at the base of SDRAM
+config RAMSTAGE_BASE
+	hex
+	default SYS_SDRAM_BASE
+
 # 16 MiB above ramstage, so there is no overlap
 config ROMSTAGE_BASE
 	hex

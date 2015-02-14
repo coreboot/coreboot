@@ -116,6 +116,15 @@ config USE_OPTION_TABLE
 	  Enable this option if coreboot shall read options from the "CMOS"
 	  NVRAM instead of using hard-coded values.
 
+config STATIC_OPTION_TABLE
+	bool "Load default configuration values into CMOS on each boot"
+	default n
+	depends on USE_OPTION_TABLE
+	help
+	  Enable this option to reset "CMOS" NVRAM values to default on
+	  every boot.  Use this if you want the NVRAM configuration to
+	  never be modified from its default values.
+
 config COMPRESS_RAMSTAGE
 	bool "Compress ramstage with LZMA"
 	default y

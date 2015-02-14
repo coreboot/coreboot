@@ -56,6 +56,9 @@ static void cmos_reset_date(void)
 
 static int cmos_checksum_valid(int range_start, int range_end, int cks_loc)
 {
+	if (IS_ENABLED(CONFIG_STATIC_OPTION_TABLE))
+		return 1;
+
 	int i;
 	u16 sum, old_sum;
 	sum = 0;

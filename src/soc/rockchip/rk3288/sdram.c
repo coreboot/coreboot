@@ -987,7 +987,7 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 
 	rkclk_configure_ddr(sdram_params->ddr_freq);
 
-	for (channel = 0; channel < sdram_params->num_channels; channel++) {
+	for (channel = 0; channel < 2; channel++) {
 		struct rk3288_ddr_pctl_regs *ddr_pctl_regs =
 		    rk3288_ddr_pctl[channel];
 		struct rk3288_ddr_publ_regs *ddr_publ_regs =
@@ -995,6 +995,9 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 
 		phy_pctrl_reset(ddr_publ_regs, channel);
 		phy_dll_bypass_set(ddr_publ_regs, sdram_params->ddr_freq);
+
+		if (channel >= sdram_params->num_channels)
+			continue;
 
 		dfi_cfg(ddr_pctl_regs, sdram_params->dramtype);
 

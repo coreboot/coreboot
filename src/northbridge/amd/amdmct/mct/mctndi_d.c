@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +28,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 	u8 Node;
 	u32 Base;
 	u32 MemSize, MemSize0 = 0;
-	u32 Dct0MemSize, DctSelBase, DctSelBaseOffset = 0;
+	u32 Dct0MemSize = 0, DctSelBase, DctSelBaseOffset = 0;
 	u8 Nodes;
 	u8 NodesWmem;
 	u8 DoIntlv;

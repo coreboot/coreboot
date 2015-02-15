@@ -97,13 +97,6 @@ enumerations
 6     6     Info
 6     7     Debug
 6     8     Spew
-#7     0     Network
-#7     1     HDD
-#7     2     Floppy
-#7     8     Fallback_Network
-#7     9     Fallback_HDD
-#7     10    Fallback_Floppy
-#7     3     ROM
 8     0     DDR400
 8     1     DDR333
 8     2     DDR266

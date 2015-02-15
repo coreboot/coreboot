@@ -28,11 +28,6 @@ entries
 392          3       e       5        baud_rate
 400          1       e       1        power_on_after_fail
 412          4       e       6        debug_level
-416          4       e       7        boot_first
-420          4       e       7        boot_second
-424          4       e       7        boot_third
-428          4       h       0        boot_index
-432          8       h       0        boot_countdown
 456          1       e       1        ECC_memory
 1008         16      h       0        check_sum
 
@@ -55,12 +50,6 @@ enumerations
 6     7     Info
 6     8     Debug
 6     9     Spew
-7     0     Network
-7     1     HDD
-7     2     Floppy
-7     8     Fallback_Network
-7     9     Fallback_HDD
-7     10    Fallback_Floppy
 
 checksums
 

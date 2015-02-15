@@ -31,11 +31,6 @@ entries
 399          1       e       2        multi_core
 400          1       e       1        power_on_after_fail
 412          4       e       6        debug_level
-416          4       e       7        boot_first
-420          4       e       7        boot_second
-424          4       e       7        boot_third
-428          4       h       0        boot_index
-432          8       h       0        boot_countdown
 440          4       e       9        slow_cpu
 444          1       e       1        nmi
 445          1       e       1        iommu
@@ -68,13 +63,6 @@ enumerations
 6     7     Info
 6     8     Debug
 6     9     Spew
-7     0     Network
-7     1     HDD
-7     2     Floppy
-7     8     Fallback_Network
-7     9     Fallback_HDD
-7     10    Fallback_Floppy
-#7     3     ROM
 8     0     400Mhz
 8     1     333Mhz
 8     2     266Mhz

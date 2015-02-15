@@ -3,7 +3,6 @@ entries
 0          384       r       0        reserved_memory
 384          1       e       4        boot_option
 385          1       e       4        last_boot
-386          1       e       1        ECC_memory
 388          4       r       0        reboot_bits
 392          3       e       5        baud_rate
 400          1       e       1        power_on_after_fail
@@ -14,6 +13,7 @@ entries
 428          4       h       0        boot_index
 432          8       h       0        boot_countdown
 440          1       e       0        dcon_present
+456          1       e       1        ECC_memory
 1008         16      h       0        check_sum
 
 enumerations

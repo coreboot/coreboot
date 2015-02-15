@@ -54,11 +54,16 @@ entries
 424          4       e       14       cpu_t_max
 428          4       e       15       cpu_dutycycle_min
 432          4       e       15       cpu_dutycycle_max
+
 436          4       e       14       chassis_t_min
 440          4       e       14       chassis_t_max
+
 444          4       e       15       chassis_dutycycle_min
+
 448          4       e       15       chassis_dutycycle_max
+
 #452          4       r       9        unused
+
 456          4       e       10       boot_delay
 460		     4       e       11       lcd_panel_id
 #===========================================================

@@ -40,6 +40,7 @@ entries
 446          1       e       1        power_on_after_fail
 456          1       e       1        ECC_memory
 457          1       e       1        ECC_redirection
+458          4       e       11       hypertransport_speed_limit
 728        256       h       0        user_data
 984         16       h       0        check_sum
 # Reserve the extended AMD configuration registers
@@ -108,6 +109,22 @@ enumerations
 10    20    20.97ms
 10    21    42ms
 10    22    84ms
+11    0     Auto
+11    1     2.6GHz
+11    2     2.4GHz
+11    3     2.2GHz
+11    4     2.0GHz
+11    5     1.8GHz
+11    6     1.6GHz
+11    7     1.4GHz
+11    8     1.2GHz
+11    9     1.0GHz
+11    10    800MHz
+11    11    600MHz
+11    12    500MHz
+11    13    400MHz
+11    14    300MHz
+11    15    200MHz
 
 checksums
 

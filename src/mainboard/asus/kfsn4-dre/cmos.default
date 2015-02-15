@@ -2,6 +2,7 @@ baud_rate = 115200
 debug_level = Alert
 multi_core = Enable
 slow_cpu = off
+hypertransport_speed_limit = Auto
 max_mem_clock = DDR2-800
 ECC_memory = Enable
 ECC_redirection = Disable

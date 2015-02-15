@@ -17,9 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef BUTTERFLY_GPIO_H
-#define BUTTERFLY_GPIO_H
-
 #include "southbridge/intel/bd82x6x/gpio.h"
 
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
@@ -282,7 +279,7 @@ const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio75 = GPIO_LEVEL_LOW,   /* Input */
 };
 
-const struct pch_gpio_map butterfly_gpio_map = {
+const struct pch_gpio_map mainboard_gpio_map = {
 	.set1 = {
 		.mode		= &pch_gpio_set1_mode,
 		.direction	= &pch_gpio_set1_direction,
@@ -301,4 +298,3 @@ const struct pch_gpio_map butterfly_gpio_map = {
 		.level		= &pch_gpio_set3_level,
 	},
 };
-#endif

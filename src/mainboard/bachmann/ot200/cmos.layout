@@ -19,7 +19,6 @@
 
 entries
 
-#start-bit length  config config-ID    name
 # -----------------------------------------------------------------
 # RTC reserved
 0          384       r       0        reserved_memory

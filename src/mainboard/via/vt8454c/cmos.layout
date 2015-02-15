@@ -20,7 +20,6 @@
 
 entries
 
-#start-bit length  config config-ID    name
 0          384       r       0        reserved_memory
 384          1       e       4        boot_option
 385          1       e       4        last_boot

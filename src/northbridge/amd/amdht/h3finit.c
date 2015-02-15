@@ -1331,39 +1331,10 @@ static void selectOptimalWidthAndFrequency(sMainData *pDat)
 
 	for (i = 0; i < pDat->TotalLinks*2; i += 2)
 	{
-#if CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_200
-		cbPCBFreqLimit = 0x0001;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_300
-		cbPCBFreqLimit = 0x0003;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_400
-		cbPCBFreqLimit = 0x0007;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_500
-		cbPCBFreqLimit = 0x000F;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_600
-		cbPCBFreqLimit = 0x001F;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_800
-		cbPCBFreqLimit = 0x003F;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_1000
-		cbPCBFreqLimit = 0x007F;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_1200
-		cbPCBFreqLimit = 0x00FF;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_1400
-		cbPCBFreqLimit = 0x01FF;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_1600
-		cbPCBFreqLimit = 0x03FF;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_1800
-		cbPCBFreqLimit = 0x07FF;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_2000
-		cbPCBFreqLimit = 0x0FFF;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_2200
-		cbPCBFreqLimit = 0x1FFF;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_2400
-		cbPCBFreqLimit = 0x3FFF;
-#elif CONFIG_EXPERT && CONFIG_LIMIT_HT_SPEED_2600
-		cbPCBFreqLimit = 0x7FFF;
-#else
+		/* FIXME
+		 * Mainboards need to be able to set cbPCBFreqLimit
+		 */
 		cbPCBFreqLimit = 0xFFFF;		// Maximum allowed by autoconfiguration
-#endif
 
 #if CONFIG_EXPERT && CONFIG_LIMIT_HT_DOWN_WIDTH_8
 		cbPCBABDownstreamWidth = 8;

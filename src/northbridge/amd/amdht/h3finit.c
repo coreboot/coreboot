@@ -52,6 +52,29 @@
 #define APIC_Base_BSP	8
 #define APIC_Base	0x1b
 
+#define NVRAM_LIMIT_HT_SPEED_200  0xf
+#define NVRAM_LIMIT_HT_SPEED_300  0xe
+#define NVRAM_LIMIT_HT_SPEED_400  0xd
+#define NVRAM_LIMIT_HT_SPEED_500  0xc
+#define NVRAM_LIMIT_HT_SPEED_600  0xb
+#define NVRAM_LIMIT_HT_SPEED_800  0xa
+#define NVRAM_LIMIT_HT_SPEED_1000 0x9
+#define NVRAM_LIMIT_HT_SPEED_1200 0x8
+#define NVRAM_LIMIT_HT_SPEED_1400 0x7
+#define NVRAM_LIMIT_HT_SPEED_1600 0x6
+#define NVRAM_LIMIT_HT_SPEED_1800 0x5
+#define NVRAM_LIMIT_HT_SPEED_2000 0x4
+#define NVRAM_LIMIT_HT_SPEED_2200 0x3
+#define NVRAM_LIMIT_HT_SPEED_2400 0x2
+#define NVRAM_LIMIT_HT_SPEED_2600 0x1
+#define NVRAM_LIMIT_HT_SPEED_AUTO 0x0
+
+static const uint16_t ht_speed_limit[16] =
+	{0xFFFF, 0x7FFF, 0x3FFF, 0x1FFF,
+	 0x0FFF, 0x07FF, 0x03FF, 0x01FF,
+	 0x00FF, 0x007F, 0x003F, 0x001F,
+	 0x000F, 0x0007, 0x0003, 0x0001};
+
 /*----------------------------------------------------------------------------
  *			TYPEDEFS AND STRUCTURES
  *
@@ -1326,8 +1349,13 @@ static void selectOptimalWidthAndFrequency(sMainData *pDat)
 	u8 i, j;
 	u32 temp;
 	u16 cbPCBFreqLimit;
+	u16 cbPCBFreqLimit_NVRAM;
 	u8 cbPCBABDownstreamWidth;
 	u8 cbPCBBAUpstreamWidth;
+
+	cbPCBFreqLimit_NVRAM = 0xFFFF;
+	if (get_option(&temp, "hypertransport_speed_limit") == CB_SUCCESS)
+		cbPCBFreqLimit_NVRAM = ht_speed_limit[temp & 0xf];
 
 	for (i = 0; i < pDat->TotalLinks*2; i += 2)
 	{
@@ -1335,6 +1363,7 @@ static void selectOptimalWidthAndFrequency(sMainData *pDat)
 		 * Mainboards need to be able to set cbPCBFreqLimit
 		 */
 		cbPCBFreqLimit = 0xFFFF;		// Maximum allowed by autoconfiguration
+		cbPCBFreqLimit = min(cbPCBFreqLimit, cbPCBFreqLimit_NVRAM);
 
 #if CONFIG_EXPERT && CONFIG_LIMIT_HT_DOWN_WIDTH_8
 		cbPCBABDownstreamWidth = 8;

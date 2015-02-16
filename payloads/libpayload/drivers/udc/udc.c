@@ -81,12 +81,8 @@ static struct usbdev_configuration *fetch_config(struct usbdev_ctrl *this,
 	return NULL;
 }
 
-static void enable_interface(struct usbdev_ctrl *this, int iface_num)
+static void cease_operation(struct usbdev_ctrl *this)
 {
-	struct usbdev_configuration *config = this->current_config;
-	struct usbdev_interface *iface = &config->interfaces[iface_num];
-
-	/* first: shut down all endpoints except EP0 */
 	int i;
 	for (i = 1; i < 16; i++) {
 		/* disable endpoints */
@@ -94,8 +90,19 @@ static void enable_interface(struct usbdev_ctrl *this, int iface_num)
 		this->halt_ep(this, i, 1);
 	}
 
+}
+
+static void enable_interface(struct usbdev_ctrl *this, int iface_num)
+{
+	struct usbdev_configuration *config = this->current_config;
+	struct usbdev_interface *iface = &config->interfaces[iface_num];
+
+	/* first: shut down all endpoints except EP0 */
+	cease_operation(this);
+
 	/* now enable all configured endpoints */
 	int epcount = iface->descriptor.bNumEndpoints;
+	int i;
 	for (i = 0; i < epcount; i++) {
 		int ep = iface->eps[i].bEndpointAddress;
 		int mps = iface->eps[i].wMaxPacketSize;
@@ -139,8 +146,7 @@ static int setup_ep0(struct usbdev_ctrl *this, dev_req_t *dr)
 		this->current_config_id = dr->wValue;
 
 		if (dr->wValue == 0)
-			// TODO: reset device
-			return 1;
+			cease_operation(this);
 
 		if (config == NULL) {
 			this->stall(this, 0, 0, 1);

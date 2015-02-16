@@ -138,6 +138,14 @@ static void chipidea_halt_ep(struct usbdev_ctrl *this, int ep, int in_dir)
 	while (readl(&p->opreg->epflush))
 		;
 	clrbits_le32(&p->opreg->epctrl[ep], 1 << (7 + (in_dir ? 16 : 0)));
+
+	while (!SIMPLEQ_EMPTY(&p->job_queue[ep][in_dir])) {
+		struct job *job = SIMPLEQ_FIRST(&p->job_queue[ep][in_dir]);
+		if (job->autofree)
+			free(job->data);
+
+		SIMPLEQ_REMOVE_HEAD(&p->job_queue[ep][in_dir], queue);
+	}
 }
 
 static void chipidea_start_ep(struct usbdev_ctrl *this,

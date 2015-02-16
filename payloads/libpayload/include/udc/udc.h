@@ -80,6 +80,7 @@ struct usbdev_ctrl {
 	int remote_wakeup;
 
 	struct usbdev_configuration *current_config;
+	struct usbdev_interface *current_iface;
 	int current_config_id;
 
 	struct configuration_list configs;
@@ -87,6 +88,7 @@ struct usbdev_ctrl {
 	device_descriptor_t device_descriptor;
 
 	int ep_halted[16][2];
+	int ep_mps[16][2];
 
 	/** returns 0 if an error occurred */
 	int (*poll)(struct usbdev_ctrl *);

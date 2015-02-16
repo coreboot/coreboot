@@ -153,6 +153,7 @@ static void chipidea_start_ep(struct usbdev_ctrl *this,
 	setbits_le32(&p->opreg->epctrl[ep],
 		((1 << 7) | (1 << 6) | (ep_type << 2)) << (in_dir*16));
 	p->ep_busy[ep][in_dir] = 0;
+	this->ep_mps[ep][in_dir] = mps;
 }
 
 static void advance_endpoint(struct chipidea_pdata *p, int endpoint, int in_dir)
@@ -462,6 +463,14 @@ struct usbdev_ctrl *chipidea_init(device_descriptor_t *dd)
 	ctrl->alloc_data = chipidea_malloc;
 	ctrl->free_data = chipidea_free;
 	ctrl->initialized = 0;
+
+	int i;
+	ctrl->ep_mps[0][0] = 64;
+	ctrl->ep_mps[0][1] = 64;
+	for (i = 1; i < 16; i++) {
+		ctrl->ep_mps[i][0] = 512;
+		ctrl->ep_mps[i][1] = 512;
+	}
 
 	if (!chipidea_hw_init(ctrl, (void *)0x7d000000, dd)) {
 		free(ctrl->pdata);

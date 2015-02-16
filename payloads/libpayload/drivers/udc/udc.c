@@ -47,8 +47,26 @@
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 
-// TODO: make this right
-#define ZLP(len, explen) 0
+/* determine if an additional zero length packet is necessary for
+ * a transfer */
+static unsigned int zlp(struct usbdev_ctrl *this, const int epnum,
+	const int len, const int explen)
+{
+	const unsigned int mps = this->ep_mps[epnum][1];
+
+	/* zero length transfers are handled explicitly */
+	if (len == 0)
+		return 0;
+	/* host expects exactly the right amount, so no zlp necessary */
+	if (len == explen)
+		return 0;
+	/* last packet will be short -> host knows that transfer is over */
+	if ((len % mps) != 0)
+		return 0;
+
+	/* otherwise we need an extra zero length packet */
+	return 1;
+}
 
 static struct usbdev_configuration *fetch_config(struct usbdev_ctrl *this,
 	int id)
@@ -89,6 +107,8 @@ static void enable_interface(struct usbdev_ctrl *this, int iface_num)
 		int ep_type = iface->eps[i].bmAttributes & 0x3;
 		this->start_ep(this, ep, in_dir, ep_type, mps);
 	}
+
+	this->current_iface = iface;
 
 	// gadget specific configuration
 	if (iface->init)
@@ -268,7 +288,7 @@ static int setup_ep0(struct usbdev_ctrl *this, dev_req_t *dr)
 		/* data phase IN */
 		this->enqueue_packet(this, 0, 1, data,
 			min(size, dr->wLength),
-			ZLP(size, dr->wLength), 1);
+			zlp(this, 0, size, dr->wLength), 1);
 
 		/* status phase OUT */
 		this->enqueue_packet(this, 0, 0, NULL, 0, 0, 0);
@@ -284,7 +304,7 @@ static int setup_ep0(struct usbdev_ctrl *this, dev_req_t *dr)
 		/* data phase IN */
 		this->enqueue_packet(this, 0, 1, (void *)dd,
 			min(sizeof(*dd), dr->wLength),
-			ZLP(sizeof(*dd), dr->wLength), 1);
+			zlp(this, 0, sizeof(*dd), dr->wLength), 1);
 
 		/* status phase OUT */
 		this->enqueue_packet(this, 0, 0, NULL, 0, 0, 0);

@@ -139,7 +139,8 @@ static void amd_ht_init(struct sys_info *sysinfo)
 		NULL,	// BOOL (*AMD_CB_CustomizeBuffers)();
 		NULL,	// void (*AMD_CB_OverrideDevicePort)();
 		NULL,	// void (*AMD_CB_OverrideCpuPort)();
-		AMD_CB_EventNotify	// void (*AMD_CB_EventNotify) ();
+		AMD_CB_EventNotify,	// void (*AMD_CB_EventNotify) ();
+		&sysinfo->ht_link_cfg // struct ht_link_config*
 	};
 
 	printk(BIOS_DEBUG, "Enter amd_ht_init()\n");

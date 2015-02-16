@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1002,6 +1003,10 @@ struct nodes_info_t {
 	u32 up_planes; // down planes will be [up_planes, planes)
 } __attribute__((packed));
 
+struct ht_link_config {
+	uint8_t ht_speed_limit; // Speed in MHz; 0 for autodetect (default)
+};
+
 /* be careful with the alignment of sysinfo, bacause sysinfo may be shared by coreboot_car and ramstage stage. and ramstage may be running at 64bit later.*/
 
 struct sys_info {
@@ -1014,6 +1019,8 @@ struct sys_info {
 
 	u8 host_link_freq[NODE_NUMS*8]; // record freq for every link from cpu, 0x0f means don't need to touch it
 	u16 host_link_freq_cap[NODE_NUMS*8]; //cap
+
+	struct ht_link_config ht_link_cfg;
 
 	u32 segbit;
 	u32 sbdn;

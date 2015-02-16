@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -461,6 +462,8 @@ typedef struct {
 		u16 event,
 		const u8 *pEventData0
 	);
+
+	const struct ht_link_config *ht_link_configuration;
 
 } AMD_HTBLOCK;
 

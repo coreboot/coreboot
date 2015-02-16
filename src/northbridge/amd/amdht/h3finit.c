@@ -75,6 +75,41 @@ static const uint16_t ht_speed_limit[16] =
 	 0x00FF, 0x007F, 0x003F, 0x001F,
 	 0x000F, 0x0007, 0x0003, 0x0001};
 
+static const struct ht_speed_limit_map_t {
+	uint16_t mhz;
+	uint8_t config;
+} ht_speed_limit_map[] = {
+	{0, NVRAM_LIMIT_HT_SPEED_AUTO},
+	{200, NVRAM_LIMIT_HT_SPEED_200},
+	{300, NVRAM_LIMIT_HT_SPEED_300},
+	{400, NVRAM_LIMIT_HT_SPEED_400},
+	{500, NVRAM_LIMIT_HT_SPEED_500},
+	{600, NVRAM_LIMIT_HT_SPEED_600},
+	{800, NVRAM_LIMIT_HT_SPEED_800},
+	{1000, NVRAM_LIMIT_HT_SPEED_1000},
+	{1200, NVRAM_LIMIT_HT_SPEED_1200},
+	{1400, NVRAM_LIMIT_HT_SPEED_1400},
+	{1600, NVRAM_LIMIT_HT_SPEED_1600},
+	{1800, NVRAM_LIMIT_HT_SPEED_1800},
+	{2000, NVRAM_LIMIT_HT_SPEED_2000},
+	{2200, NVRAM_LIMIT_HT_SPEED_2200},
+	{2400, NVRAM_LIMIT_HT_SPEED_2400},
+	{2600, NVRAM_LIMIT_HT_SPEED_2600},
+};
+
+static const uint16_t ht_speed_mhz_to_hw(uint16_t mhz)
+{
+	size_t i;
+	for (i = 0; i < ARRAY_SIZE(ht_speed_limit_map); i++)
+		if (ht_speed_limit_map[i].mhz == mhz)
+			return ht_speed_limit_map[i].config;
+
+	printk(BIOS_WARNING,
+		"WARNING: Invalid HT link limit frequency %d specified, ignoring...\n",
+		 mhz);
+	return ht_speed_limit[NVRAM_LIMIT_HT_SPEED_AUTO];
+}
+
 /*----------------------------------------------------------------------------
  *			TYPEDEFS AND STRUCTURES
  *
@@ -1359,10 +1394,9 @@ static void selectOptimalWidthAndFrequency(sMainData *pDat)
 
 	for (i = 0; i < pDat->TotalLinks*2; i += 2)
 	{
-		/* FIXME
-		 * Mainboards need to be able to set cbPCBFreqLimit
-		 */
 		cbPCBFreqLimit = 0xFFFF;		// Maximum allowed by autoconfiguration
+		if (pDat->HtBlock->ht_link_configuration)
+			cbPCBFreqLimit = ht_speed_mhz_to_hw(pDat->HtBlock->ht_link_configuration->ht_speed_limit);
 		cbPCBFreqLimit = min(cbPCBFreqLimit, cbPCBFreqLimit_NVRAM);
 
 #if CONFIG_EXPERT && CONFIG_LIMIT_HT_DOWN_WIDTH_8

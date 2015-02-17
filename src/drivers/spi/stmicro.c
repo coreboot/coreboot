@@ -46,15 +46,19 @@
 #define CMD_M25PXX_DP		0xb9	/* Deep Power-down */
 #define CMD_M25PXX_RES		0xab	/* Release from DP, and Read Signature */
 
-#define STM_ID_M25P10		0x11
-#define STM_ID_M25P16		0x15
-#define STM_ID_M25P20		0x12
-#define STM_ID_M25P32		0x16
-#define STM_ID_M25P40		0x13
-#define STM_ID_M25P64		0x17
-#define STM_ID_M25P80		0x14
-#define STM_ID_M25P128		0x18
-#define STM_ID_USE_ALT_ID	0xFF
+/*
+ * Device ID = (memory_type << 8) + memory_capacity
+ */
+#define STM_ID_M25P10		0x2011
+#define STM_ID_M25P16		0x2015
+#define STM_ID_M25P20		0x2012
+#define STM_ID_M25P32		0x2016
+#define STM_ID_M25P40		0x2013
+#define STM_ID_M25P64		0x2017
+#define STM_ID_M25P80		0x2014
+#define STM_ID_M25P128		0x2018
+#define STM_ID_N25Q256A		0xba19
+#define STM_ID_N25Q128		0xbb18
 
 /* Some SPI flash share the same .idcode1 (idcode[2]). To handle this without
  * (possibly) breaking existing implementations, add the new device at the top
@@ -62,9 +66,8 @@
  * is then (idcode[1] << 8 | idcode[2]).
  */
 struct stmicro_spi_flash_params {
-	u8 idcode1;
+	u16 device_id;
 	u8 op_erase;
-	u16 id;
 	u16 page_size;
 	u16 pages_per_sector;
 	u16 nr_sectors;
@@ -85,8 +88,7 @@ static inline struct stmicro_spi_flash *to_stmicro_spi_flash(struct spi_flash
 
 static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	{
-		.idcode1 = STM_ID_USE_ALT_ID,
-		.id = 0xbb18,
+		.device_id = STM_ID_N25Q128,
 		.op_erase = CMD_M25PXX_SSE,
 		.page_size = 256,
 		.pages_per_sector = 16,
@@ -94,7 +96,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "N25Q128",
 	},
 	{
-		.idcode1 = STM_ID_M25P10,
+		.device_id = STM_ID_M25P10,
 		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 128,
@@ -102,7 +104,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "M25P10",
 	},
 	{
-		.idcode1 = STM_ID_M25P16,
+		.device_id = STM_ID_M25P16,
 		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
@@ -110,7 +112,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "M25P16",
 	},
 	{
-		.idcode1 = STM_ID_M25P20,
+		.device_id = STM_ID_M25P20,
 		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
@@ -118,7 +120,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "M25P20",
 	},
 	{
-		.idcode1 = STM_ID_M25P32,
+		.device_id = STM_ID_M25P32,
 		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
@@ -126,7 +128,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "M25P32",
 	},
 	{
-		.idcode1 = STM_ID_M25P40,
+		.device_id = STM_ID_M25P40,
 		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
@@ -134,7 +136,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "M25P40",
 	},
 	{
-		.idcode1 = STM_ID_M25P64,
+		.device_id = STM_ID_M25P64,
 		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
@@ -142,7 +144,7 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "M25P64",
 	},
 	{
-		.idcode1 = STM_ID_M25P80,
+		.device_id = STM_ID_M25P80,
 		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 256,
@@ -150,12 +152,19 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "M25P80",
 	},
 	{
-		.idcode1 = STM_ID_M25P128,
+		.device_id = STM_ID_M25P128,
 		.op_erase = CMD_M25PXX_SE,
 		.page_size = 256,
 		.pages_per_sector = 1024,
 		.nr_sectors = 64,
 		.name = "M25P128",
+	},
+	{
+		.device_id = STM_ID_N25Q256A,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 512,
+		.name = "N25Q256A",
 	},
 };
 
@@ -229,8 +238,7 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 	unsigned int i;
 
 	if (idcode[0] == 0xff) {
-		i = spi_flash_cmd(spi, CMD_M25PXX_RES,
-				  idcode, 4);
+		i = spi_flash_cmd(spi, CMD_M25PXX_RES, idcode, 4);
 		if (i)
 			return NULL;
 		if ((idcode[3] & 0xf0) == 0x10) {
@@ -243,18 +251,14 @@ struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 * idcode)
 
 	for (i = 0; i < ARRAY_SIZE(stmicro_spi_flash_table); i++) {
 		params = &stmicro_spi_flash_table[i];
-		if (params->idcode1 == STM_ID_USE_ALT_ID) {
-			if (params->id == ((idcode[1] << 8) | idcode[2])) {
-				break;
-			}
-		}
-		else if (params->idcode1 == idcode[2]) {
+		if (params->device_id == (idcode[1] << 8 | idcode[2])) {
 			break;
 		}
 	}
 
 	if (i == ARRAY_SIZE(stmicro_spi_flash_table)) {
-		printk(BIOS_WARNING, "SF: Unsupported STMicro ID %02x\n", idcode[1]);
+		printk(BIOS_WARNING, "SF: Unsupported STMicro ID %02x%02x\n",
+		       idcode[1], idcode[2]);
 		return NULL;
 	}
 

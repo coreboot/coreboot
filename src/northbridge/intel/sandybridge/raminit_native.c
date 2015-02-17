@@ -2060,7 +2060,7 @@ static void discover_timC(ramctr_timing * ctrl, int channel, int slotrank)
 		    get_longest_zero_run(statistics[lane], MAX_TIMC + 1);
 		ctrl->timings[channel][slotrank].lanes[lane].timC = rn.middle;
 		if (rn.all)
-			die("timC discovery failed");
+			printk(BIOS_CRIT, "timC discovery failed");
 		printram("Cval: %d, %d, %d, %x\n", channel, slotrank,
 		       lane, ctrl->timings[channel][slotrank].lanes[lane].timC);
 	}

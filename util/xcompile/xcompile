@@ -184,6 +184,7 @@ arch_config_arm64() {
 	TBFDARCH="littleaarch64"
 	TCLIST="aarch64"
 	TWIDTH="64"
+	TSUPP="arm64 armv8_64"
 	TABI="elf"
 }
 
@@ -207,6 +208,7 @@ test_architecture() {
 	architecture=$1
 
 	GCCPREFIX="invalid"
+	unset TARCH TBFDARCH TCLIST TWIDTH TSUPP TABI
 	if type arch_config_$architecture > /dev/null; then
 		arch_config_$architecture
 	else

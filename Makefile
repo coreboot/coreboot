@@ -97,7 +97,7 @@ ifeq ($(strip $(HAVE_DOTCONFIG)),)
 NOCOMPILE:=1
 endif
 ifneq ($(MAKECMDGOALS),)
-ifneq ($(filter %config %clean cross%,$(MAKECMDGOALS)),)
+ifneq ($(filter %config %clean cross% lint%,$(MAKECMDGOALS)),)
 NOCOMPILE:=1
 endif
 ifeq ($(MAKECMDGOALS), %clean)

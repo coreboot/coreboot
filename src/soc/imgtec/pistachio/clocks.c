@@ -98,6 +98,12 @@
 #define UART1CLKOUT_CTRL_ADDR		0xB8144240
 #define UART1CLKOUT_MASK		0x000003FF
 
+/* Definitions for I2C0 setup */
+#define I2C0CLKDIV1_CTRL_ADDR		0xB814413C
+#define I2C0CLKDIV1_MASK		0x0000007F
+#define I2C0CLKOUT_CTRL_ADDR		0xB8144140
+#define I2C0CLKOUT_MASK			0x0000007F
+
 /* Definitions for ROM clock setup */
 #define ROMCLKOUT_CTRL_ADDR		0xB814490C
 #define ROMCLKOUT_MASK			0x0000007F
@@ -298,6 +304,32 @@ void uart1_clk_setup(u8 divider1, u16 divider2)
 	reg &= ~UART1CLKOUT_MASK;
 	reg |= divider2 & UART1CLKOUT_MASK;
 	write32(UART1CLKOUT_CTRL_ADDR, reg);
+}
+
+/*
+ * i2c_clk_setup: sets up clocks for I2C0
+ * divider1: 7-bit divider value
+ * divider2: 7-bit divider value
+ */
+void i2c0_clk_setup(u8 divider1, u16 divider2)
+{
+	u32 reg;
+
+	/* Check input parameters */
+	assert(!(divider1 & ~(I2C0CLKDIV1_MASK)));
+	assert(!(divider2 & ~(I2C0CLKOUT_MASK)));
+
+	/* Set divider 1 */
+	reg = read32(I2C0CLKDIV1_CTRL_ADDR);
+	reg &= ~I2C0CLKDIV1_MASK;
+	reg |= divider1 & I2C0CLKDIV1_MASK;
+	write32(I2C0CLKDIV1_CTRL_ADDR, reg);
+
+	/* Set divider 2 */
+	reg = read32(I2C0CLKOUT_CTRL_ADDR);
+	reg &= ~I2C0CLKOUT_MASK;
+	reg |= divider2 & I2C0CLKOUT_MASK;
+	write32(I2C0CLKOUT_CTRL_ADDR, reg);
 }
 
 /* system_clk_setup: sets up the system (peripheral) clock */

@@ -609,47 +609,56 @@ static void dram_timing(ramctr_timing * ctrl)
 
 static void dram_freq(ramctr_timing * ctrl)
 {
-	u8 val2;
-	u32 reg1 = 0;
-
-	/* Step 1 - Set target PCU frequency */
-
-	if (ctrl->tCK <= TCK_1066MHZ) {
-		ctrl->tCK = TCK_1066MHZ;
-	} else if (ctrl->tCK <= TCK_933MHZ) {
-		ctrl->tCK = TCK_933MHZ;
-	} else if (ctrl->tCK <= TCK_800MHZ) {
-		ctrl->tCK = TCK_800MHZ;
-	} else if (ctrl->tCK <= TCK_666MHZ) {
-		ctrl->tCK = TCK_666MHZ;
-	} else if (ctrl->tCK <= TCK_533MHZ) {
-		ctrl->tCK = TCK_533MHZ;
-	} else {
+	if (ctrl->tCK > TCK_400MHZ) {
+		printk (BIOS_ERR, "DRAM frequency is under lowest supported frequency (400 MHz). Increasing to 400 MHz as last resort");
 		ctrl->tCK = TCK_400MHZ;
 	}
+	while (1) {
+		u8 val2;
+		u32 reg1 = 0;
 
-	/* Frequency mulitplier.  */
-	u32 FRQ = get_FRQ(ctrl->tCK);
+		/* Step 1 - Set target PCU frequency */
 
-	/* Step 2 - Select frequency in the MCU */
-	reg1 = FRQ;
-	reg1 |= 0x80000000;	// set running bit
-	MCHBAR32(0x5e00) = reg1;
-	while (reg1 & 0x80000000) {
-		printk(BIOS_DEBUG, " PLL busy...");
-		reg1 = MCHBAR32(0x5e00);
+		if (ctrl->tCK <= TCK_1066MHZ) {
+			ctrl->tCK = TCK_1066MHZ;
+		} else if (ctrl->tCK <= TCK_933MHZ) {
+			ctrl->tCK = TCK_933MHZ;
+		} else if (ctrl->tCK <= TCK_800MHZ) {
+			ctrl->tCK = TCK_800MHZ;
+		} else if (ctrl->tCK <= TCK_666MHZ) {
+			ctrl->tCK = TCK_666MHZ;
+		} else if (ctrl->tCK <= TCK_533MHZ) {
+			ctrl->tCK = TCK_533MHZ;
+		} else if (ctrl->tCK <= TCK_400MHZ) {
+			ctrl->tCK = TCK_400MHZ;
+		} else {
+			die ("No lock frequency found");
+		}
+
+		/* Frequency mulitplier.  */
+		u32 FRQ = get_FRQ(ctrl->tCK);
+
+		/* Step 2 - Select frequency in the MCU */
+		reg1 = FRQ;
+		reg1 |= 0x80000000;	// set running bit
+		MCHBAR32(0x5e00) = reg1;
+		while (reg1 & 0x80000000) {
+			printk(BIOS_DEBUG, " PLL busy...");
+			reg1 = MCHBAR32(0x5e00);
+		}
+		printk(BIOS_DEBUG, "done\n");
+
+		/* Step 3 - Verify lock frequency */
+		reg1 = MCHBAR32(0x5e04);
+		val2 = (u8) reg1;
+		if (val2 >= FRQ) {
+			printk(BIOS_DEBUG, "MCU frequency is set at : %d MHz\n",
+			       (1000 << 8) / ctrl->tCK);
+			return;
+		}
+		printk(BIOS_DEBUG, "PLL didn't lock. Retrying at lower frequency\n");
+		ctrl->tCK++;
 	}
-	printk(BIOS_DEBUG, "done\n");
-
-	/* Step 3 - Verify lock frequency */
-	reg1 = MCHBAR32(0x5e04);
-	val2 = (u8) reg1;
-	if (val2 < FRQ) {
-		printk(BIOS_DEBUG, "Lock frequency is lower, recalculating\n");
-		ctrl->tCK = 256000 / (val2 * BASEFREQ);
-	}
-	printk(BIOS_DEBUG, "MCU frequency is set at : %d MHz\n",
-	       (1000 << 8) / ctrl->tCK);
 }
 
 static void dram_xover(ramctr_timing * ctrl)

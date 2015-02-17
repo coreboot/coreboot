@@ -97,7 +97,7 @@ ifeq ($(strip $(HAVE_DOTCONFIG)),)
 NOCOMPILE:=1
 endif
 ifneq ($(MAKECMDGOALS),)
-ifneq ($(filter %config %clean cross% lint%,$(MAKECMDGOALS)),)
+ifneq ($(filter %config %clean cross% lint% what-jenkins-does,$(MAKECMDGOALS)),)
 NOCOMPILE:=1
 endif
 ifeq ($(MAKECMDGOALS), %clean)

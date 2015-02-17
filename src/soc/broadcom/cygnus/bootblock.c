@@ -17,13 +17,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cache.h>
 #include <bootblock_common.h>
-#include <console/console.h>
+#include <stddef.h>
+#include <symbols.h>
 
 void bootblock_soc_init(void)
 {
 	/*
-	 * typically, this is the place where mmu is initialized to enable
-	 * cache. it helps speed up vboot verification.
+	 * not only for speed but for preventing the cpu from crashing.
+	 * the cpu is not happy when cache is cleaned without mmu turned on.
 	 */
+	mmu_init();
+	mmu_config_range(0, 4096, DCACHE_OFF);
+	mmu_config_range_kb((uintptr_t)_sram/KiB, _sram_size/KiB,
+			    DCACHE_WRITETHROUGH);
+	dcache_mmu_enable();
 }

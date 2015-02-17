@@ -23,15 +23,13 @@
 #include <stdint.h>
 #include <soc/clocks.h>
 
+#define PADS_FUNCTION_SELECT0_ADDR	(0xB8101C00 + 0xC0)
+
 #define GPIO_BIT_EN_ADDR(bank)		(0xB8101C00 + 0x200 + (0x24 * (bank)))
 
-/* MFIO definitions for UART0/1 */
+/* MFIO definitions for UART1 */
 #define UART1_RXD_MFIO			59
 #define UART1_TXD_MFIO			60
-#define UART0_RXD_MFIO			55
-#define UART0_TXD_MFIO			56
-#define UART0_RTS_MFIO			57
-#define UART0_CTS_MFIO			58
 
 /* MFIO definitions for SPIM */
 #define SPIM1_D0_TXD_MFIO		5
@@ -41,6 +39,14 @@
 #define SPIM1_D3_MFIO			7
 #define SPIM1_CS0_MFIO			0
 
+/* MFIO definitions for I2C0 */
+#define I2C0_DATA_MFIO			28
+#define I2C0_CLK_MFIO			29
+#define I2C0_DATA_FUNCTION_OFFSET	20
+#define I2C0_CLK_FUNCTION_OFFSET	21
+#define I2C0_DATA_FUNCTION_MASK		0x1
+#define I2C0_CLK_FUNCTION_MASK		0x1
+
 static void uart1_mfio_setup(void)
 {
 	u32 reg, mfio_mask;
@@ -48,7 +54,7 @@ static void uart1_mfio_setup(void)
 	/*
 	 * Disable GPIO for UART1 MFIOs
 	 * All UART MFIOs have MFIO/16 = 3, therefore we use GPIO pad 3
-	 * This is the primary function (0) of these MFIOs and therfore there
+	 * This is the only function (0) of these MFIOs and therfore there
 	 * is no need to set up a function number in the corresponding
 	 * function select register.
 	 */
@@ -71,21 +77,18 @@ static void spim1_mfio_setup(void)
 	/*
 	 * Disable GPIO for SPIM1 MFIOs
 	 * All SPFI1 MFIOs have MFIO/16 = 0, therefore we use GPIO pad 0
-	 * This is the primary function (0) of these MFIOs and therfore there
+	 * This is the only function (0) of these MFIOs and therfore there
 	 * is no need to set up a function number in the corresponding
 	 * function select register.
 	 */
 	reg = read32(GPIO_BIT_EN_ADDR(0));
 
-	/* Disable GPIO for UART0 MFIOs */
+	/* Disable GPIO for SPIM1 MFIOs */
 	mfio_mask = 1 << (SPIM1_D0_TXD_MFIO % 16);
 	mfio_mask |= 1 << (SPIM1_D1_RXD_MFIO % 16);
 	mfio_mask |= 1 << (SPIM1_MCLK_MFIO % 16);
 	mfio_mask |= 1 << (SPIM1_D2_MFIO % 16);
 	mfio_mask |= 1 << (SPIM1_D3_MFIO % 16);
-
-	/* TODO: for the moment it only sets up CS0 (NOR) */
-	/* There is no need for other CS lines in Coreboot */
 	mfio_mask |= 1 << (SPIM1_CS0_MFIO % 16);
 
 	/* Clear relevant bits */
@@ -96,6 +99,36 @@ static void spim1_mfio_setup(void)
 	 */
 	reg |= mfio_mask << 16;
 	write32(GPIO_BIT_EN_ADDR(0), reg);
+}
+
+static void i2c0_mfio_setup(void)
+{
+	u32 reg, mfio_mask;
+
+	/*
+	 * Disable GPIO for I2C0 MFIOs
+	 * All UART MFIOs have MFIO/16 = 1, therefore we use GPIO pad 1
+	 */
+	reg = read32(GPIO_BIT_EN_ADDR(1));
+	mfio_mask =  1 << (I2C0_DATA_MFIO % 16);
+	mfio_mask |= 1 << (I2C0_CLK_MFIO % 16);
+	/* Clear relevant bits */
+	reg &= ~mfio_mask;
+	/*
+	 * Set corresponding bits in the upper half word
+	 * in order to be able to modify the chosen pins
+	 */
+	reg |= mfio_mask << 16;
+	write32(GPIO_BIT_EN_ADDR(1), reg);
+
+	/* Set bits to 0 (clear) which is the primary function
+	 * for these MFIOs; those bits will all be set to 1 by
+	 * default
+	 */
+	reg = read32(PADS_FUNCTION_SELECT0_ADDR);
+	reg &= ~(I2C0_DATA_FUNCTION_MASK << I2C0_DATA_FUNCTION_OFFSET);
+	reg &= ~(I2C0_CLK_FUNCTION_MASK << I2C0_CLK_FUNCTION_OFFSET);
+	write32(PADS_FUNCTION_SELECT0_ADDR, reg);
 }
 
 static int init_clocks(void)
@@ -124,6 +157,8 @@ static int init_clocks(void)
 	/* System PLL divided by 7 divided by 62 -> 1.8433 Mhz */
 	uart1_clk_setup(6, 61);
 
+	/* System PLL divided by 4 divided by 3 -> 33.33 MHz */
+	i2c0_clk_setup(3, 2);
 	/* Ethernet clocks setup: ENET as clock source */
 	eth_clk_setup(0, 7);
 
@@ -148,6 +183,6 @@ static void bootblock_mainboard_init(void)
 		/* Disable GPIO on the peripheral lines */
 		uart1_mfio_setup();
 		spim1_mfio_setup();
+		i2c0_mfio_setup();
 	}
-
 }

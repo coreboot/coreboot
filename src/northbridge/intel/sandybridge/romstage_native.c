@@ -29,10 +29,41 @@
 #include "sandybridge.h"
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
+#include <device/pci_def.h>
+#include <device/device.h>
 #include <halt.h>
 #include "raminit_native.h"
+#include <northbridge/intel/sandybridge/chip.h>
 #include "southbridge/intel/bd82x6x/pch.h"
 #include "southbridge/intel/bd82x6x/gpio.h"
+
+#define HOST_BRIDGE	PCI_DEVFN(0, 0)
+#define DEFAULT_TCK	TCK_800MHZ
+
+static unsigned int get_mem_min_tck(void)
+{
+	const struct device *dev;
+	const struct northbridge_intel_sandybridge_config *cfg;
+
+	dev = dev_find_slot(0, HOST_BRIDGE);
+	if (!(dev && dev->chip_info))
+		return DEFAULT_TCK;
+
+	cfg = dev->chip_info;
+
+	/* If this is zero, it just means devicetree.cb didn't set it */
+	if (cfg->max_mem_clock_mhz == 0)
+		return DEFAULT_TCK;
+
+	if (cfg->max_mem_clock_mhz >= 800)
+		return TCK_800MHZ;
+	else if (cfg->max_mem_clock_mhz >= 666)
+		return TCK_666MHZ;
+	else if (cfg->max_mem_clock_mhz >= 533)
+		return TCK_533MHZ;
+	else
+		return TCK_400MHZ;
+}
 
 void main(unsigned long bist)
 {
@@ -87,7 +118,7 @@ void main(unsigned long bist)
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	init_dram_ddr3(spd, 1, TCK_800MHZ, s3resume);
+	init_dram_ddr3(spd, 1, get_mem_min_tck(), s3resume);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 	post_code(0x3c);

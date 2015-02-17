@@ -41,5 +41,11 @@ struct northbridge_intel_sandybridge_config {
 	u32 gpu_cpu_backlight;	/* CPU Backlight PWM value */
 	u32 gpu_pch_backlight;	/* PCH Backlight PWM value */
 
+	/*
+	 * Maximum memory clock.
+	 * For example 666 for DDR3-1333, or 800 for DDR3-1600
+	 */
+	u16 max_mem_clock_mhz;
+
 	struct i915_gpu_controller_info gfx;
 };

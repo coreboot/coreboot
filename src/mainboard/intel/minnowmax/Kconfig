@@ -63,10 +63,6 @@ config VIRTUAL_ROM_SIZE
 	depends on ENABLE_FSP_FAST_BOOT
 	default 0x800000
 
-config POST_IO
-	bool
-	default n
-
 config POST_DEVICE
 	bool
 	default n

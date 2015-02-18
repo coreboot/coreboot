@@ -29,24 +29,14 @@
 # error "CONFIG_FSP_LOC must be set."
 #endif
 
-#ifndef CONFIG_POST_IO
-# error "CONFIG_POST_IO must be set."
-#endif
-
-#if CONFIG_POST_IO
-# ifndef CONFIG_POST_IO_PORT
-#  error "CONFIG_POST_IO_PORT must be set."
-# endif
-#endif
-
 #ifndef CONFIG_CPU_MICROCODE_CBFS_LOC
 # error "CONFIG_CPU_MICROCODE_CBFS_LOC must be set."
 #endif
 
-#define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
-
 	cmp   $0, %eax
-	jne   bisthalt
+	je    cache_as_ram
+	mov   $0xa0, %eax
+	jmp   .Lhlt
 
 cache_as_ram:
 	post_code(0x20)
@@ -61,8 +51,11 @@ find_fsp_ret:
 	/* Save the FSP location */
 	mov   %eax,   %ebp
 	cmp   $CONFIG_FSP_LOC, %eax
-	jb    halt1
+	je    find_fsp_ok
+	add   $0xb0, %eax
+	jmp   .Lhlt
 
+find_fsp_ok:
 	post_code(0x22)
 
 	/* Calculate entry into FSP */
@@ -81,7 +74,11 @@ find_fsp_ret:
 CAR_init_done:
 	addl  $4, %esp
 	cmp   $0, %eax
-	jne   halt2
+	je    car_init_ok
+	add   $0xc0, %eax
+	jmp   .Lhlt
+
+car_init_ok:
 
 	/* Save FSP_INFO_HEADER location in ebx */
 	mov    %ebp, %ebx
@@ -111,50 +108,11 @@ before_romstage:
 	movb  $0xB8, %ah
 	jmp   .Lhlt
 
-bisthalt:
-	movb  $0xB9, %ah
-	jmp   .Lhlt
-
-halt1:
-	/*
-	 * Failures for postcode 0xBA - failed in find_fsp()
-	 *
-	 * Values are:
-	 * 0x01 - FV signature, "_FVH" not present
-	 * 0x02 - FFS GUID not present
-	 * 0x03 - FSP INFO Header not found
-	 * 0x04 - ImageBase does not equal CONFIG_FSP_LOC - Is the FSP rebased to
-	 *        a different location, or does it need to be?
-	 * 0x05 - FSP INFO Header signature "FSPH" not found
-	 * 0x06 - FSP Image ID is not the expected ID.
-	 */
-	movb  $0xBA, %ah
-	jmp   .Lhlt
-
-halt2:
-	/*
-	 * Failures for postcode 0xBB - failed in the FSP:
-	 *
-	 * 0x00 - FSP_SUCCESS: Temp RAM was initialized successfully.
-	 * 0x02 - FSP_INVALID_PARAMETER: Input parameters are invalid.
-	 * 0x0E - FSP_NOT_FOUND: No valid microcode was found in the microcode region.
-	 * 0x03 - FSP_UNSUPPORTED: The FSP calling conditions were not met.
-	 * 0x07 - FSP_DEVICE_ERROR: Temp RAM initialization failed
-	 * 0x14 - FSP_ALREADY_STARTED: Temp RAM initialization has been invoked
-	 */
-	movb  $0xBB, %ah
-
 .Lhlt:
-	xchg  %al, %ah
-#if CONFIG_POST_IO
+#if IS_ENABLED(CONFIG_POST_IO)
 	outb  %al, $CONFIG_POST_IO_PORT
-#else
-	post_code(POST_DEAD_CODE)
 #endif
-	movl  $LHLT_DELAY, %ecx
-.Lhlt_Delay:
-	outb  %al, $0xED
-	loop  .Lhlt_Delay
+	hlt
 	jmp   .Lhlt
 
 /*

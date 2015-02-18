@@ -47,8 +47,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_CONSTANT_RATE
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
-	select SUPPORT_CPU_UCODE_IN_CBFS if INCLUDE_MICROCODE_IN_BUILD
-	select CPU_MICROCODE_ADDED_DURING_BUILD if INCLUDE_MICROCODE_IN_BUILD
+	select SUPPORT_CPU_UCODE_IN_CBFS
 	select ROMSTAGE_RTC_INIT
 
 config BOOTBLOCK_CPU_INIT
@@ -83,15 +82,6 @@ config VGA_BIOS_ID
 	help
 	  This is the default PCI ID for the Bay Trail graphics
 	  devices.  This string names the vbios ROM in cbfs.
-
-config INCLUDE_MICROCODE_IN_BUILD
-	bool "Build in microcode patch"
-	default n
-	help
-	  Enable if the microcode patch is available.  For the
-	  BayTrail - I processors, the filename should start with
-	  "M01".  Using a microcode patch for the incorrect BayTrail
-	  SKU will lead to unpredictable results.
 
 config MICROCODE_INCLUDE_PATH
 	string "Microcode Include path"

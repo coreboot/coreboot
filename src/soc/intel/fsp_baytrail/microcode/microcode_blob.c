@@ -19,11 +19,19 @@
 
 unsigned microcode[] = {
 
+/*
+ * The problem is that these microcode files are not in the tree. They come
+ * with FSP, so let the user deal with the include paths when HAVE_FSP_BIN
+ * is enabled.
+ */
+#if IS_ENABLED(CONFIG_HAVE_FSP_BIN)
+
 /* Region size is 0x30000 - update in microcode_size.h if it gets larger. */
 #include "M0230672228.h"  // M0230672: Baytrail "Super SKU" B0/B1
 #include "M0130673322.h"  // M0130673: Baytrail I B2 / B3
 #include "M0130679901.h"  // M0130679: Baytrail I D0
 
+#endif
 	/*  Dummy terminator  */
 	0x0, 0x0, 0x0, 0x0,
 	0x0, 0x0, 0x0, 0x0,

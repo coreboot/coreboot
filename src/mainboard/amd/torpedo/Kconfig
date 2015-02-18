@@ -117,11 +117,6 @@ config DRIVERS_PS2_KEYBOARD
 	bool
 	default y
 
-config CONSOLE_POST
-	bool
-	depends on !NO_POST
-	default y
-
 config SATA_CONTROLLER_MODE
 	hex
 	default 0x0

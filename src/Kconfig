@@ -808,6 +808,12 @@ config GDB_WAIT
 	help
 	  If enabled, coreboot will wait for a GDB connection.
 
+config FATAL_ASSERTS
+	bool "Halt when hitting a BUG() or assertion error"
+	default n
+	help
+	  If enabled, coreboot will call hlt() on a BUG() or failed ASSERT().
+
 config DEBUG_CBFS
 	bool "Output verbose CBFS debug messages"
 	default n

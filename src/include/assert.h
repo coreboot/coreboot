@@ -20,20 +20,21 @@
 #ifndef __ASSERT_H__
 #define __ASSERT_H__
 
+#include <arch/hlt.h>
 #include <console/console.h>
 
 /* GCC and CAR versions */
 #define ASSERT(x) {						\
 	if (!(x)) {						\
-		printk(BIOS_EMERG, "ASSERTION FAILED: file '%s', "	\
-			" line %d\n", __FILE__, __LINE__);	\
-		/* die(""); */					\
+		printk(BIOS_EMERG, "ASSERTION ERROR: file '%s'"	\
+			", line %d\n", __FILE__, __LINE__);	\
+		if (IS_ENABLED(CONFIG_FATAL_ASSERTS)) hlt();	\
 	}							\
 }
 #define BUG() {							\
-	printk(BIOS_EMERG, "BUG ENCOUNTERED: SYSTEM HALTED at file '%s', "	\
-		" line %d\n", __FILE__, __LINE__);		\
-	/* die(""); */						\
+	printk(BIOS_EMERG, "ERROR: BUG ENCOUNTERED at file '%s'"\
+		", line %d\n", __FILE__, __LINE__);		\
+	if (IS_ENABLED(CONFIG_FATAL_ASSERTS)) hlt();		\
 }
 
 #define assert(statement)	ASSERT(statement)

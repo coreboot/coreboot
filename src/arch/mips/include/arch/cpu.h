@@ -106,6 +106,13 @@ do {									\
 #define read_c0_config1()	__read_32bit_c0_register($16, 1)
 #define write_c0_config1(val)	__write_32bit_c0_register($16, 1, (val))
 
+#define read_c0_config2()	__read_32bit_c0_register($16, 2)
+#define write_c0_config2(val)	__write_32bit_c0_register($16, 2, (val))
+
+#define read_c0_l23taglo()	__read_32bit_c0_register($28, 4)
+#define write_c0_l23taglo(val)	__write_32bit_c0_register($28, 4, (val))
+
+
 #define C0_ENTRYLO_PFN_SHIFT 6
 #define C0_ENTRYLO_WB (0x3 << 3) /* Cacheable, write-back, non-coherent */
 #define C0_ENTRYLO_D (0x1 << 2) /* Writeable */

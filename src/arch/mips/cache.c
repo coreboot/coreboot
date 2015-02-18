@@ -18,46 +18,9 @@
  */
 
 #include <arch/cache.h>
-#include <symbols.h>
+#include <arch/cpu.h>
 #include <console/console.h>
-
-/* Cache operations */
-
-/*
- * __get_line_size:
- *	Read config register
- *	Isolate instruction cache line size
- *	Interpret value as per MIPS manual: 2 << value
- *	Return cache line size
- */
-#define __get_line_size(cfg_no, cfg_sel, lshift, nobits)		\
-({	int __res;							\
-	__asm__ __volatile__(						\
-		".set push\n\t"						\
-		".set noreorder\n\t"					\
-		".set mips32\n\t"					\
-		"mfc0 $t5, "#cfg_no"," #cfg_sel"\n\t"			\
-		".set mips0\n\t"					\
-		"ext $t6, $t5," #lshift"," #nobits"\n\t"		\
-		"li $t7, 2\n\t"						\
-		"sllv %0, $t7, $t6\n\t"					\
-		".set pop\n\t"						\
-		: "=r" (__res));					\
-	__res;								\
-})
-
-/* clear_L2tag: clear L23Tag register */
-#define clear_L2tag()							\
-({									\
-	__asm__ __volatile__(						\
-		".set push\n\t"						\
-		".set noreorder\n\t"					\
-		".set mips32\n\t"					\
-		"mtc0 $zero, $28, 4\n\t"				\
-		".set mips0\n\t"					\
-		".set pop\n\t"						\
-		);							\
-})
+#include <symbols.h>
 
 /* cache_op: issues cache operation for specified address */
 #define cache_op(op, addr)						\
@@ -73,12 +36,32 @@
 		: "i" (op), "R" (*(unsigned char *)(addr)));		\
 })
 
-static int get_cache_line(uint8_t type)
+#define MIPS_CONFIG1_DL_SHIFT	10
+#define MIPS_CONFIG1_DL_MASK	(0x00000007)
+#define MIPS_CONFIG1_IL_SHIFT	19
+#define MIPS_CONFIG1_IL_MASK	(0x00000007)
+#define MIPS_CONFIG2_SL_SHIFT	4
+#define MIPS_CONFIG2_SL_MASK	(0x0000000F)
+
+/*
+ * get_cache_line_size:
+ * Read config register
+ * Isolate instruction cache line size
+ * Interpret value as per MIPS manual: 2 << value
+ * Return cache line size
+ */
+static int get_cache_line_size(uint8_t type)
 {
 	switch (type) {
-	case ICACHE: return get_icache_line();
-	case DCACHE: return get_dcache_line();
-	case L2CACHE: return get_L2cache_line();
+	case ICACHE:
+		return 2 << ((read_c0_config1() >> MIPS_CONFIG1_IL_SHIFT) &
+				MIPS_CONFIG1_IL_MASK);
+	case DCACHE:
+		return 2 << ((read_c0_config1() >> MIPS_CONFIG1_DL_SHIFT) &
+				MIPS_CONFIG1_DL_MASK);
+	case L2CACHE:
+		return 2 << ((read_c0_config2() >> MIPS_CONFIG2_SL_SHIFT) &
+				MIPS_CONFIG2_SL_MASK);
 	default:
 		printk(BIOS_ERR, "%s: Error: unsupported cache type.\n",
 				__func__);
@@ -92,7 +75,7 @@ void perform_cache_operation(uintptr_t start, size_t size, uint8_t operation)
 	u32 line_size, line_mask;
 	uintptr_t end;
 
-	line_size = get_cache_line((operation >> CACHE_TYPE_SHIFT) &
+	line_size = get_cache_line_size((operation >> CACHE_TYPE_SHIFT) &
 					CACHE_TYPE_MASK);
 	if (!line_size)
 		return;
@@ -100,7 +83,7 @@ void perform_cache_operation(uintptr_t start, size_t size, uint8_t operation)
 	end = (start + (line_size - 1) + size) & line_mask;
 	start &= line_mask;
 	if ((operation & L2CACHE) == L2CACHE)
-		clear_L2tag();
+		write_c0_l23taglo(0);
 	while (start < end) {
 		switch (operation) {
 		case CACHE_CODE(ICACHE, WB_INVD):

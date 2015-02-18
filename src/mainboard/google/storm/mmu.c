@@ -51,8 +51,6 @@ void setup_mmu(enum dram_state dram)
 	/* Map Device memory. */
 	mmu_config_range_kb(RPM_START, RPM_SIZE, DCACHE_OFF);
 
-	/* TODO: disable Page 0 for trapping NULL pointer references. */
-
 	mmu_config_range_kb(SRAM_START, SRAM_END - SRAM_START,
 		DCACHE_WRITEBACK);
 
@@ -60,6 +58,9 @@ void setup_mmu(enum dram_state dram)
 	setup_dram_mappings(dram);
 
 	mmu_disable_range(DRAM_END, 4096 - DRAM_END);
+
+	/* disable Page 0 for trapping NULL pointer references. */
+	mmu_disable_range_kb(0, 1);
 
 	mmu_init();
 

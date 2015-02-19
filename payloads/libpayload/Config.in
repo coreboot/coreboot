@@ -442,6 +442,11 @@ config IPQ806X_TIMER_REG
 	help
 	  Address of the register to read a free running timer value.
 
+config IPROC_PERIPH_GLB_TIM_REG_BASE
+	hex "Cygnus timer base address"
+	depends on TIMER_CYGNUS
+	default 0x19020200
+
 config USB
 	bool "USB Support"
 	default n

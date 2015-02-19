@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 The Linux Foundation. All rights reserved.
+ * Copyright (C) 2014 - 2015 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,11 +37,28 @@
 #include <soc/gsbi.h>
 #include <soc/qup.h>
 
-static const qup_config_t gsbi4_qup_config = {
+static qup_config_t gsbi1_qup_config = {
 	QUP_MINICORE_I2C_MASTER,
 	100000,
 	24000000,
-	QUP_MODE_FIFO
+	QUP_MODE_FIFO,
+	0
+};
+
+static qup_config_t gsbi4_qup_config = {
+	QUP_MINICORE_I2C_MASTER,
+	100000,
+	24000000,
+	QUP_MODE_FIFO,
+	0
+};
+
+static qup_config_t gsbi7_qup_config = {
+	QUP_MINICORE_I2C_MASTER,
+	100000,
+	24000000,
+	QUP_MODE_FIFO,
+	0
 };
 
 static int i2c_read(uint32_t gsbi_id, uint8_t slave,
@@ -84,10 +101,26 @@ static int i2c_write(uint32_t gsbi_id, uint8_t slave,
 
 static int i2c_init(unsigned bus)
 {
-	static uint8_t initialized = 0;
 	unsigned gsbi_id = bus;
+	qup_config_t *qup_config;
 
-	if (initialized)
+	switch (gsbi_id) {
+	case GSBI_ID_1:
+		qup_config = &gsbi1_qup_config;
+		break;
+	case GSBI_ID_4:
+		qup_config = &gsbi4_qup_config;
+		break;
+	case GSBI_ID_7:
+		qup_config = &gsbi7_qup_config;
+		break;
+	default:
+		printk(BIOS_ERR, "QUP configuration not defind for GSBI%d.\n",
+		       gsbi_id);
+		return 1;
+	}
+
+	if (qup_config->initialized)
 		return 0;
 
 	if (gsbi_init(gsbi_id, GSBI_PROTO_I2C_ONLY)) {
@@ -95,7 +128,7 @@ static int i2c_init(unsigned bus)
 		return 1;
 	}
 
-	if (qup_init(gsbi_id, &gsbi4_qup_config)) {
+	if (qup_init(gsbi_id, qup_config)) {
 		printk(BIOS_ERR, "failed to initialize qup\n");
 		return 1;
 	}
@@ -105,7 +138,7 @@ static int i2c_init(unsigned bus)
 		return 1;
 	}
 
-	initialized = 1;
+	qup_config->initialized = 1;
 	return 0;
 }
 

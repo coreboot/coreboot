@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2013 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012 - 2013, 2015 The Linux Foundation. All rights reserved.
  *
  * Copyright (c) 2008, Google Inc.
  * All rights reserved.
@@ -49,13 +49,13 @@
 #define clrsetbits_le32_i(addr, clear, set)  \
 	clrsetbits_le32(((void *)(addr)), (clear), (set))
 
-#define MSM_CLK_CTL_BASE    ((unsigned char *)0x00900000)
+#define MSM_CLK_CTL_BASE    ((void *)0x00900000)
 
-#define MSM_TMR_BASE        ((unsigned char *)0x0200A000)
+#define MSM_TMR_BASE        ((void *)0x0200A000)
 #define MSM_GPT_BASE        (MSM_TMR_BASE + 0x04)
 #define MSM_DGT_BASE        (MSM_TMR_BASE + 0x24)
 
-#define GPT_REG(off)        ((void *)(MSM_GPT_BASE + (off)))
+#define GPT_REG(off)        (MSM_GPT_BASE + (off))
 #define DGT_REG(off)        (MSM_DGT_BASE + (off))
 
 #define APCS_WDT0_EN        (MSM_TMR_BASE + 0x0040)
@@ -88,7 +88,7 @@
 #define RPM_SIGNAL_ENTRY  ((void *)0x47C24)
 #define RPM_FW_MAGIC_NUM 0x4D505242
 
-#define TLMM_BASE_ADDR      ((char *)0x00800000)
+#define TLMM_BASE_ADDR      ((void *)0x00800000)
 #define GPIO_CONFIG_ADDR(x) (TLMM_BASE_ADDR + 0x1000 + (x)*0x10)
 #define GPIO_IN_OUT_ADDR(x) (GPIO_CONFIG_ADDR(x) + 4)
 
@@ -100,10 +100,7 @@
 #define USB_HOST1_DWC3_BASE	0x1100C100
 #define USB_HOST1_PHY_BASE	0x110F8800
 
-#define GSBI_1			1
-#define GSBI_2			2
 #define GSBI_4			4
-#define GSBI_2                  2
 #define UART1_DM_BASE         	0x12450000
 #define UART_GSBI1_BASE       	0x12440000
 #define UART2_DM_BASE		0x12490000
@@ -114,12 +111,55 @@
 #define UART2_DM_BASE           0x12490000
 #define UART_GSBI2_BASE         0x12480000
 
-#define GSBI_QUP1_BASE		0x12460000
-#define GSBI_QUP2_BASE		0x124A0000
-#define GSBI_QUP3_BASE		0x16280000
-#define GSBI_QUP4_BASE		0x16380000
-#define GSBI_QUP5_BASE		0x1A280000
-#define GSBI_QUP6_BASE		0x16580000
-#define GSBI_QUP7_BASE		0x16680000
+#define GSBI1_BASE		((void *)0x12440000)
+#define GSBI2_BASE		((void *)0x12480000)
+#define GSBI3_BASE		((void *)0x16200000)
+#define GSBI4_BASE		((void *)0x16300000)
+#define GSBI5_BASE		((void *)0x1A200000)
+#define GSBI6_BASE		((void *)0x16500000)
+#define GSBI7_BASE		((void *)0x16600000)
 
+#define GSBI1_CTL_REG		(GSBI1_BASE + (0x0))
+#define GSBI2_CTL_REG		(GSBI2_BASE + (0x0))
+#define GSBI3_CTL_REG		(GSBI3_BASE + (0x0))
+#define GSBI4_CTL_REG		(GSBI4_BASE + (0x0))
+#define GSBI5_CTL_REG		(GSBI5_BASE + (0x0))
+#define GSBI6_CTL_REG		(GSBI6_BASE + (0x0))
+#define GSBI7_CTL_REG		(GSBI7_BASE + (0x0))
+
+#define GSBI_QUP1_BASE		(GSBI1_BASE + 0x20000)
+#define GSBI_QUP2_BASE		(GSBI2_BASE + 0x20000)
+#define GSBI_QUP3_BASE		(GSBI3_BASE + 0x80000)
+#define GSBI_QUP4_BASE		(GSBI4_BASE + 0x80000)
+#define GSBI_QUP5_BASE		(GSBI5_BASE + 0x80000)
+#define GSBI_QUP6_BASE		(GSBI6_BASE + 0x80000)
+#define GSBI_QUP7_BASE		(GSBI7_BASE + 0x80000)
+
+#define GSBI_CTL_PROTO_I2C              2
+#define GSBI_CTL_PROTO_CODE_SFT         4
+#define GSBI_CTL_PROTO_CODE_MSK         0x7
+#define GSBI_HCLK_CTL_GATE_ENA          6
+#define GSBI_HCLK_CTL_BRANCH_ENA        4
+#define GSBI_QUP_APPS_M_SHFT            16
+#define GSBI_QUP_APPS_M_MASK            0xFF
+#define GSBI_QUP_APPS_D_SHFT            0
+#define GSBI_QUP_APPS_D_MASK            0xFF
+#define GSBI_QUP_APPS_N_SHFT            16
+#define GSBI_QUP_APPS_N_MASK            0xFF
+#define GSBI_QUP_APPS_ROOT_ENA_SFT      11
+#define GSBI_QUP_APPS_BRANCH_ENA_SFT    9
+#define GSBI_QUP_APPS_MNCTR_EN_SFT      8
+#define GSBI_QUP_APPS_MNCTR_MODE_MSK    0x3
+#define GSBI_QUP_APPS_MNCTR_MODE_SFT    5
+#define GSBI_QUP_APPS_PRE_DIV_MSK       0x3
+#define GSBI_QUP_APPS_PRE_DIV_SFT       3
+#define GSBI_QUP_APPS_SRC_SEL_MSK       0x7
+
+
+#define GSBI_QUP_APSS_MD_REG(gsbi_n)	((MSM_CLK_CTL_BASE + 0x29c8) + \
+							(32*(gsbi_n-1)))
+#define GSBI_QUP_APSS_NS_REG(gsbi_n)	((MSM_CLK_CTL_BASE + 0x29cc) + \
+							(32*(gsbi_n-1)))
+#define GSBI_HCLK_CTL(n)		((MSM_CLK_CTL_BASE + 0x29C0) + \
+							(32*(n-1)))
 #endif // __SOC_QUALCOMM_IPQ806X_IOMAP_H_

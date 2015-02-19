@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 The Linux Foundation. All rights reserved.
+ * Copyright (C) 2014 - 2015 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,13 +38,13 @@
 
 //TODO: refactor the following array to iomap driver.
 static unsigned gsbi_qup_base[] = {
-	GSBI_QUP1_BASE,
-	GSBI_QUP2_BASE,
-	GSBI_QUP3_BASE,
-	GSBI_QUP4_BASE,
-	GSBI_QUP5_BASE,
-	GSBI_QUP6_BASE,
-	GSBI_QUP7_BASE,
+	(unsigned)GSBI_QUP1_BASE,
+	(unsigned)GSBI_QUP2_BASE,
+	(unsigned)GSBI_QUP3_BASE,
+	(unsigned)GSBI_QUP4_BASE,
+	(unsigned)GSBI_QUP5_BASE,
+	(unsigned)GSBI_QUP6_BASE,
+	(unsigned)GSBI_QUP7_BASE,
 };
 
 #define QUP_ADDR(gsbi_num, reg)	((void *)((gsbi_qup_base[gsbi_num-1]) + (reg)))

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 The Linux Foundation. All rights reserved.
+ * Copyright (C) 2014 - 2015 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,68 +28,78 @@
  */
 
 #include <arch/io.h>
+#include <soc/iomap.h>
 #include <soc/gsbi.h>
-#include <soc/gpio.h>
+#include <console/console.h>
 
-//TODO: To be implemented as part of the iomap.
-static int gsbi_base[] = {
-	0x12440000, /*GSBI1*/
-	0x12480000, /*GSBI2*/
-	0x16200000, /*GSBI3*/
-	0x16300000, /*GSBI4*/
-	0x1A200000, /*GSBI5*/
-	0x16500000, /*GSBI6*/
-	0x16600000  /*GSBI7*/
-};
-
-#define QUP_APPS_ADDR(N, os)	((void *)((0x009029C8+os)+(32*(N-1))))
-#define GSBI_HCLK_CTL(N)	((void *)(0x009029C0 + (32*(N-1))))
-#define GSBI_RESET(N)		((void *)(0x009029DC + (32*(N-1))))
-#define GSBI_CTL(N)		((void *)(gsbi_base[N-1]))
-
-#define GSBI_APPS_MD_OFFSET	0x0
-#define GSBI_APPS_NS_OFFSET	0x4
-#define GSBI_APPS_MAX_OFFSET	0xff
+static inline void *gsbi_ctl_reg_addr(gsbi_id_t gsbi_id)
+{
+	switch (gsbi_id) {
+	case GSBI_ID_1:
+		return GSBI1_CTL_REG;
+	case GSBI_ID_2:
+		return GSBI2_CTL_REG;
+	case GSBI_ID_3:
+		return GSBI3_CTL_REG;
+	case GSBI_ID_4:
+		return GSBI4_CTL_REG;
+	case GSBI_ID_5:
+		return GSBI5_CTL_REG;
+	case GSBI_ID_6:
+		return GSBI6_CTL_REG;
+	case GSBI_ID_7:
+		return GSBI7_CTL_REG;
+	default:
+		printk(BIOS_ERR, "Unsupported GSBI%d\n", gsbi_id);
+		return 0;
+	}
+}
 
 gsbi_return_t gsbi_init(gsbi_id_t gsbi_id, gsbi_protocol_t protocol)
 {
-	unsigned i = 0;
-	unsigned qup_apps_ini[] = {
-		GSBI_APPS_NS_OFFSET,            0xf80b43,
-		GSBI_APPS_NS_OFFSET,            0xfc095b,
-		GSBI_APPS_NS_OFFSET,            0xfc015b,
-		GSBI_APPS_NS_OFFSET,            0xfc005b,
-		GSBI_APPS_NS_OFFSET,            0xA05,
-		GSBI_APPS_NS_OFFSET,            0x185,
-		GSBI_APPS_MD_OFFSET,            0x100fb,
-		GSBI_APPS_NS_OFFSET,            0xA05,
-		GSBI_APPS_NS_OFFSET,            0xfc015b,
-		GSBI_APPS_NS_OFFSET,            0xfc015b,
-		GSBI_APPS_NS_OFFSET,            0xfc095b,
-		GSBI_APPS_NS_OFFSET,            0xfc0b5b,
-		GSBI_APPS_MAX_OFFSET,           0x0
-	};
+	unsigned reg_val;
+	unsigned m = 1;
+	unsigned n = 4;
+	unsigned pre_div = 4;
+	unsigned src = 3;
+	unsigned mnctr_mode = 2;
+	void *gsbi_ctl = gsbi_ctl_reg_addr(gsbi_id);
 
-	gsbi_return_t ret = GSBI_SUCCESS;
+	if (!gsbi_ctl)
+		return GSBI_ID_ERROR;
 
-	writel(0, GSBI_RESET(gsbi_id));
+	writel((1 << GSBI_HCLK_CTL_GATE_ENA) | (1 << GSBI_HCLK_CTL_BRANCH_ENA),
+		GSBI_HCLK_CTL(gsbi_id));
 
-	if (gsbi_init_board(gsbi_id)) {
-		ret = GSBI_UNSUPPORTED;
-		goto bail_out;
-	}
+	if (gsbi_init_board(gsbi_id))
+		return GSBI_UNSUPPORTED;
+
+	writel(0, GSBI_QUP_APSS_NS_REG(gsbi_id));
+	writel(0, GSBI_QUP_APSS_MD_REG(gsbi_id));
+
+	reg_val = ((m & GSBI_QUP_APPS_M_MASK) << GSBI_QUP_APPS_M_SHFT) |
+		  ((~n & GSBI_QUP_APPS_D_MASK) << GSBI_QUP_APPS_D_SHFT);
+	writel(reg_val, GSBI_QUP_APSS_MD_REG(gsbi_id));
+
+	reg_val = (((~(n - m)) & GSBI_QUP_APPS_N_MASK) <<
+					GSBI_QUP_APPS_N_SHFT) |
+		  ((mnctr_mode & GSBI_QUP_APPS_MNCTR_MODE_MSK) <<
+				 GSBI_QUP_APPS_MNCTR_MODE_SFT) |
+		  (((pre_div - 1) & GSBI_QUP_APPS_PRE_DIV_MSK) <<
+				 GSBI_QUP_APPS_PRE_DIV_SFT) |
+		  (src & GSBI_QUP_APPS_SRC_SEL_MSK);
+	writel(reg_val, GSBI_QUP_APSS_NS_REG(gsbi_id));
+
+	reg_val |= (1 << GSBI_QUP_APPS_ROOT_ENA_SFT) |
+		   (1 << GSBI_QUP_APPS_MNCTR_EN_SFT);
+	writel(reg_val, GSBI_QUP_APSS_NS_REG(gsbi_id));
+
+	reg_val |= (1 << GSBI_QUP_APPS_BRANCH_ENA_SFT);
+	writel(reg_val, GSBI_QUP_APSS_NS_REG(gsbi_id));
 
 	/*Select i2c protocol*/
-	writel((2 << 4), GSBI_CTL(gsbi_id));
+	writel(((GSBI_CTL_PROTO_I2C & GSBI_CTL_PROTO_CODE_MSK) <<
+					GSBI_CTL_PROTO_CODE_SFT), gsbi_ctl);
 
-	//TODO: Make use of clock API when available instead of the hardcoding.
-	/* Clock set to 24Mhz */
-	for (i = 0; GSBI_APPS_MAX_OFFSET != qup_apps_ini[i]; i += 2)
-		writel(qup_apps_ini[i+1],
-		       QUP_APPS_ADDR(gsbi_id, qup_apps_ini[i]));
-
-	writel(((1 << 6)|(1 << 4)), GSBI_HCLK_CTL(gsbi_id));
-
-bail_out:
-	return ret;
+	return GSBI_SUCCESS;
 }

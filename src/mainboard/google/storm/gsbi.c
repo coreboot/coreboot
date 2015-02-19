@@ -1,7 +1,7 @@
 /*
  * This file is part of the depthcharge project.
  *
- * Copyright (C) 2014 The Linux Foundation. All rights reserved.
+ * Copyright (C) 2014 - 2015 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,6 +36,12 @@
 int gsbi_init_board(gsbi_id_t gsbi_id)
 {
 	switch (gsbi_id) {
+	case GSBI_ID_7:
+			gpio_tlmm_config_set(8, GPIO_FUNC_I2C,
+					     GPIO_NO_PULL, GPIO_2MA, 1);
+			gpio_tlmm_config_set(9, GPIO_FUNC_I2C,
+					     GPIO_NO_PULL, GPIO_2MA, 1);
+		break;
 	case GSBI_ID_4:
 			/* Configure GPIOs 13 - SCL, 12 - SDA, 2mA gpio_en */
 			gpio_tlmm_config_set(12, GPIO_FUNC_I2C,

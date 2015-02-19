@@ -270,7 +270,7 @@ static int hsi2c_get_clk_details(struct i2c_bus *i2c, int *div, int *cycle,
 	 * temp0 = (CLK_DIV + 1) * (TSCLK_L + TSCLK_H + 2)
 	 * temp1 = (TSCLK_L + TSCLK_H + 2)
 	 */
-	uint32_t flt_cycle = (readl(&regs->i2c_conf) >> 16) & 0x7;
+	uint32_t flt_cycle = (read32(&regs->i2c_conf) >> 16) & 0x7;
 	int temp = (clkin / op_clk) - 8 - 2 * flt_cycle;
 
 	// CLK_DIV max is 256.
@@ -310,18 +310,18 @@ static void hsi2c_ch_init(struct i2c_bus *i2c, unsigned int frequency)
 	uint32_t timing_sla = data_hd << 0;
 
 	// Currently operating in fast speed mode.
-	writel(timing_fs1, &regs->i2c_timing_fs1);
-	writel(timing_fs2, &regs->i2c_timing_fs2);
-	writel(timing_fs3, &regs->i2c_timing_fs3);
-	writel(timing_sla, &regs->i2c_timing_sla);
+	write32(&regs->i2c_timing_fs1, timing_fs1);
+	write32(&regs->i2c_timing_fs2, timing_fs2);
+	write32(&regs->i2c_timing_fs3, timing_fs3);
+	write32(&regs->i2c_timing_sla, timing_sla);
 
 	// Clear to enable timeout.
-	writel(readl(&regs->i2c_timeout) & ~Hsi2cTimeoutEn,
-	       &regs->i2c_timeout);
+	write32(&regs->i2c_timeout,
+		read32(&regs->i2c_timeout) & ~Hsi2cTimeoutEn);
 
-	writel(Hsi2cTrailingCount, &regs->usi_trailing_ctl);
-	writel(Hsi2cRxfifoEn | Hsi2cTxfifoEn, &regs->usi_fifo_ctl);
-	writel(readl(&regs->i2c_conf) | Hsi2cAutoMode, &regs->i2c_conf);
+	write32(&regs->usi_trailing_ctl, Hsi2cTrailingCount);
+	write32(&regs->usi_fifo_ctl, Hsi2cRxfifoEn | Hsi2cTxfifoEn);
+	write32(&regs->i2c_conf, read32(&regs->i2c_conf) | Hsi2cAutoMode);
 }
 
 static void hsi2c_reset(struct i2c_bus *i2c)
@@ -329,8 +329,8 @@ static void hsi2c_reset(struct i2c_bus *i2c)
 	struct hsi2c_regs *regs = i2c->hsregs;
 
 	// Set and clear the bit for reset.
-	writel(readl(&regs->usi_ctl) | Hsi2cSwRst, &regs->usi_ctl);
-	writel(readl(&regs->usi_ctl) & ~Hsi2cSwRst, &regs->usi_ctl);
+	write32(&regs->usi_ctl, read32(&regs->usi_ctl) | Hsi2cSwRst);
+	write32(&regs->usi_ctl, read32(&regs->usi_ctl) & ~Hsi2cSwRst);
 
 	/* FIXME: This just assumes 100KHz as a default bus freq */
 	hsi2c_ch_init(i2c, 100000);
@@ -356,13 +356,13 @@ static void i2c_ch_init(struct i2c_bus *i2c, int speed)
 
 	// Set prescaler, divisor according to freq, also set ACKGEN, IRQ.
 	val = (div & 0x0f) | 0xa0 | ((pres == 512) ? 0x40 : 0);
-	writel(val, &regs->con);
+	write32(&regs->con, val);
 
 	// Init to SLAVE RECEIVE mode and clear I2CADDn.
-	writel(0, &regs->stat);
-	writel(0, &regs->add);
+	write32(&regs->stat, 0);
+	write32(&regs->add, 0);
 	// program Master Transmit (and implicit STOP).
-	writel(I2cStatMasterXmit | I2cStatEnable, &regs->stat);
+	write32(&regs->stat, I2cStatMasterXmit | I2cStatEnable);
 }
 
 void i2c_init(unsigned bus, int speed, int slaveadd)
@@ -430,7 +430,7 @@ static int hsi2c_senddata(struct hsi2c_regs *regs, const uint8_t *data, int len)
 {
 	while (!hsi2c_check_transfer(regs) && len) {
 		if (!(read32(&regs->usi_fifo_stat) & Hsi2cTxFifoFull)) {
-			writel(*data++, &regs->usi_txdata);
+			write32(&regs->usi_txdata, *data++);
 			len--;
 		}
 	}
@@ -452,7 +452,7 @@ static int hsi2c_segment(struct i2c_seg *seg, struct hsi2c_regs *regs, int stop)
 {
 	const uint32_t usi_ctl = Hsi2cFuncModeI2c | Hsi2cMaster;
 
-	writel(HSI2C_SLV_ADDR_MAS(seg->chip), &regs->i2c_addr);
+	write32(&regs->i2c_addr, HSI2C_SLV_ADDR_MAS(seg->chip));
 
 	/*
 	 * We really only want to stop after this transaction (I think) if the
@@ -465,14 +465,14 @@ static int hsi2c_segment(struct i2c_seg *seg, struct hsi2c_regs *regs, int stop)
 		seg->len | Hsi2cMasterRun | Hsi2cStopAfterTrans;
 
 	if (seg->read) {
-		writel(usi_ctl | Hsi2cRxchon, &regs->usi_ctl);
-		writel(autoconf | Hsi2cReadWrite, &regs->i2c_auto_conf);
+		write32(&regs->usi_ctl, usi_ctl | Hsi2cRxchon);
+		write32(&regs->i2c_auto_conf, autoconf | Hsi2cReadWrite);
 
 		if (hsi2c_recvdata(regs, seg->buf, seg->len))
 			return -1;
 	} else {
-		writel(usi_ctl | Hsi2cTxchon, &regs->usi_ctl);
-		writel(autoconf, &regs->i2c_auto_conf);
+		write32(&regs->usi_ctl, usi_ctl | Hsi2cTxchon);
+		write32(&regs->i2c_auto_conf, autoconf);
 
 		if (hsi2c_senddata(regs, seg->buf, seg->len))
 			return -1;
@@ -481,7 +481,7 @@ static int hsi2c_segment(struct i2c_seg *seg, struct hsi2c_regs *regs, int stop)
 	if (hsi2c_wait_for_transfer(regs) != 1)
 		return -1;
 
-	writel(Hsi2cFuncModeI2c, &regs->usi_ctl);
+	write32(&regs->usi_ctl, Hsi2cFuncModeI2c);
 	return 0;
 }
 
@@ -510,34 +510,34 @@ static int hsi2c_transfer(struct i2c_bus *i2c, struct i2c_seg *segments,
 
 static int i2c_int_pending(struct i2c_regs *regs)
 {
-	return readb(&regs->con) & I2cConIntPending;
+	return read8(&regs->con) & I2cConIntPending;
 }
 
 static void i2c_clear_int(struct i2c_regs *regs)
 {
-	writeb(readb(&regs->con) & ~I2cConIntPending, &regs->con);
+	write8(&regs->con, read8(&regs->con) & ~I2cConIntPending);
 }
 
 static void i2c_ack_enable(struct i2c_regs *regs)
 {
-	writeb(readb(&regs->con) | I2cConAckGen, &regs->con);
+	write8(&regs->con, read8(&regs->con) | I2cConAckGen);
 }
 
 static void i2c_ack_disable(struct i2c_regs *regs)
 {
-	writeb(readb(&regs->con) & ~I2cConAckGen, &regs->con);
+	write8(&regs->con, read8(&regs->con) & ~I2cConAckGen);
 }
 
 static int i2c_got_ack(struct i2c_regs *regs)
 {
-	return !(readb(&regs->stat) & I2cStatAck);
+	return !(read8(&regs->stat) & I2cStatAck);
 }
 
 static int i2c_wait_for_idle(struct i2c_regs *regs)
 {
 	int timeout = 1000 * 100; // 1s.
 	while (timeout--) {
-		if (!(readb(&regs->stat) & I2cStatBusy))
+		if (!(read8(&regs->stat) & I2cStatBusy))
 			return 0;
 		udelay(10);
 	}
@@ -562,17 +562,17 @@ static int i2c_wait_for_int(struct i2c_regs *regs)
 
 static int i2c_send_stop(struct i2c_regs *regs)
 {
-	uint8_t mode = readb(&regs->stat) & (I2cStatModeMask);
-	writeb(mode | I2cStatEnable, &regs->stat);
+	uint8_t mode = read8(&regs->stat) & (I2cStatModeMask);
+	write8(&regs->stat, mode | I2cStatEnable);
 	i2c_clear_int(regs);
 	return i2c_wait_for_idle(regs);
 }
 
 static int i2c_send_start(struct i2c_regs *regs, int read, int chip)
 {
-	writeb(chip << 1, &regs->ds);
+	write8(&regs->ds, chip << 1);
 	uint8_t mode = read ? I2cStatMasterRecv : I2cStatMasterXmit;
-	writeb(mode | I2cStatStartStop | I2cStatEnable, &regs->stat);
+	write8(&regs->stat, mode | I2cStatStartStop | I2cStatEnable);
 	i2c_clear_int(regs);
 
 	if (i2c_wait_for_int(regs))
@@ -594,7 +594,7 @@ static int i2c_xmit_buf(struct i2c_regs *regs, uint8_t *data, int len)
 
 	int i;
 	for (i = 0; i < len; i++) {
-		writeb(data[i], &regs->ds);
+		write8(&regs->ds, data[i]);
 
 		i2c_clear_int(regs);
 		if (i2c_wait_for_int(regs))
@@ -624,7 +624,7 @@ static int i2c_recv_buf(struct i2c_regs *regs, uint8_t *data, int len)
 		if (i2c_wait_for_int(regs))
 			return 1;
 
-		data[i] = readb(&regs->ds);
+		data[i] = read8(&regs->ds);
 	}
 
 	return 0;
@@ -642,7 +642,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 	if (!regs || i2c_wait_for_idle(regs))
 		return 1;
 
-	writeb(I2cStatMasterXmit | I2cStatEnable, &regs->stat);
+	write8(&regs->stat, I2cStatMasterXmit | I2cStatEnable);
 
 	int i;
 	for (i = 0; i < count; i++) {

@@ -515,7 +515,7 @@ static void copy_to_reg(u32 *dest, const u32 *src, u32 n)
 {
 	int i;
 	for (i = 0; i < n / sizeof(u32); i++) {
-		writel(*src, dest);
+		write32(dest, *src);
 		src++;
 		dest++;
 	}
@@ -571,27 +571,27 @@ static void phy_dll_bypass_set(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 
 static void dfi_cfg(struct rk3288_ddr_pctl_regs *ddr_pctl_regs, u32 dramtype)
 {
-	writel(DFI_INIT_START, &ddr_pctl_regs->dfistcfg0);
-	writel(DFI_DRAM_CLK_SR_EN | DFI_DRAM_CLK_DPD_EN,
-			&ddr_pctl_regs->dfistcfg1);
-	writel(DFI_PARITY_INTR_EN | DFI_PARITY_EN, &ddr_pctl_regs->dfistcfg2);
-	writel(TLP_RESP_TIME(7) | LP_SR_EN | LP_PD_EN,
-		&ddr_pctl_regs->dfilpcfg0);
+	write32(&ddr_pctl_regs->dfistcfg0, DFI_INIT_START);
+	write32(&ddr_pctl_regs->dfistcfg1,
+		DFI_DRAM_CLK_SR_EN | DFI_DRAM_CLK_DPD_EN);
+	write32(&ddr_pctl_regs->dfistcfg2, DFI_PARITY_INTR_EN | DFI_PARITY_EN);
+	write32(&ddr_pctl_regs->dfilpcfg0,
+		TLP_RESP_TIME(7) | LP_SR_EN | LP_PD_EN);
 
-	writel(TCTRL_DELAY_TIME(2), &ddr_pctl_regs->dfitctrldelay);
-	writel(TPHY_WRDATA_TIME(1), &ddr_pctl_regs->dfitphywrdata);
-	writel(TPHY_RDLAT_TIME(0xf), &ddr_pctl_regs->dfitphyrdlat);
-	writel(TDRAM_CLK_DIS_TIME(2), &ddr_pctl_regs->dfitdramclkdis);
-	writel(TDRAM_CLK_EN_TIME(2), &ddr_pctl_regs->dfitdramclken);
-	writel(0x1, &ddr_pctl_regs->dfitphyupdtype0);
+	write32(&ddr_pctl_regs->dfitctrldelay, TCTRL_DELAY_TIME(2));
+	write32(&ddr_pctl_regs->dfitphywrdata, TPHY_WRDATA_TIME(1));
+	write32(&ddr_pctl_regs->dfitphyrdlat, TPHY_RDLAT_TIME(0xf));
+	write32(&ddr_pctl_regs->dfitdramclkdis, TDRAM_CLK_DIS_TIME(2));
+	write32(&ddr_pctl_regs->dfitdramclken, TDRAM_CLK_EN_TIME(2));
+	write32(&ddr_pctl_regs->dfitphyupdtype0, 0x1);
 
 	/* cs0 and cs1 write odt enable */
-	writel((RANK0_ODT_WRITE_SEL | RANK1_ODT_WRITE_SEL),
-		&ddr_pctl_regs->dfiodtcfg);
+	write32(&ddr_pctl_regs->dfiodtcfg,
+		(RANK0_ODT_WRITE_SEL | RANK1_ODT_WRITE_SEL));
 	/* odt write length */
-	writel(ODT_LEN_BL8_W(7), &ddr_pctl_regs->dfiodtcfg1);
+	write32(&ddr_pctl_regs->dfiodtcfg1, ODT_LEN_BL8_W(7));
 	/* phyupd and ctrlupd disabled */
-	writel(0, &ddr_pctl_regs->dfiupdcfg);
+	write32(&ddr_pctl_regs->dfiupdcfg, 0);
 }
 
 static void pctl_cfg(u32 channel,
@@ -605,39 +605,33 @@ static void pctl_cfg(u32 channel,
 			sizeof(sdram_params->pctl_timing));
 	switch (sdram_params->dramtype) {
 	case LPDDR3:
-		writel(sdram_params->pctl_timing.tcl - 1,
-		       &ddr_pctl_regs->dfitrddataen);
-		writel(sdram_params->pctl_timing.tcwl,
-		       &ddr_pctl_regs->dfitphywrlat);
-		writel(LPDDR2_S4 | MDDR_LPDDR2_CLK_STOP_IDLE(0) | LPDDR2_EN
-			| BURSTLENGTH_CFG(burstlen) | TFAW_CFG(6) | PD_EXIT_FAST
-			| PD_TYPE(1) | PD_IDLE(0), &ddr_pctl_regs->mcfg);
-		writel(MSCH_MAINDDR3(channel, 0), &rk3288_grf->soc_con0);
+		write32(&ddr_pctl_regs->dfitrddataen,
+			sdram_params->pctl_timing.tcl - 1);
+		write32(&ddr_pctl_regs->dfitphywrlat,
+			sdram_params->pctl_timing.tcwl);
+		write32(&ddr_pctl_regs->mcfg,
+			LPDDR2_S4 | MDDR_LPDDR2_CLK_STOP_IDLE(0) | LPDDR2_EN | BURSTLENGTH_CFG(burstlen) | TFAW_CFG(6) | PD_EXIT_FAST | PD_TYPE(1) | PD_IDLE(0));
+		write32(&rk3288_grf->soc_con0, MSCH_MAINDDR3(channel, 0));
 
-		writel(PUBL_LPDDR3_EN(channel, 1)
-		       | PCTL_BST_DISABLE(channel, 1)
-		       | PCTL_LPDDR3_ODT_EN(channel, sdram_params->odt),
-		       &rk3288_grf->soc_con2);
+		write32(&rk3288_grf->soc_con2,
+			PUBL_LPDDR3_EN(channel, 1) | PCTL_BST_DISABLE(channel, 1) | PCTL_LPDDR3_ODT_EN(channel, sdram_params->odt));
 
 		break;
 	case DDR3:
 		if (sdram_params->phy_timing.mr[1] & DDR3_DLL_DISABLE)
-			writel(sdram_params->pctl_timing.tcl - 3,
-			       &ddr_pctl_regs->dfitrddataen);
+			write32(&ddr_pctl_regs->dfitrddataen,
+				sdram_params->pctl_timing.tcl - 3);
 		else
-			writel(sdram_params->pctl_timing.tcl - 2,
-			       &ddr_pctl_regs->dfitrddataen);
-		writel(sdram_params->pctl_timing.tcwl - 1,
-		       &ddr_pctl_regs->dfitphywrlat);
-		writel(MDDR_LPDDR2_CLK_STOP_IDLE(0) | DDR3_EN
-		       | DDR2_DDR3_BL_8 | TFAW_CFG(6) | PD_EXIT_SLOW
-		       | PD_TYPE(1) | PD_IDLE(0), &ddr_pctl_regs->mcfg);
-		writel(MSCH_MAINDDR3(channel, 1), &rk3288_grf->soc_con0);
+			write32(&ddr_pctl_regs->dfitrddataen,
+				sdram_params->pctl_timing.tcl - 2);
+		write32(&ddr_pctl_regs->dfitphywrlat,
+			sdram_params->pctl_timing.tcwl - 1);
+		write32(&ddr_pctl_regs->mcfg,
+			MDDR_LPDDR2_CLK_STOP_IDLE(0) | DDR3_EN | DDR2_DDR3_BL_8 | TFAW_CFG(6) | PD_EXIT_SLOW | PD_TYPE(1) | PD_IDLE(0));
+		write32(&rk3288_grf->soc_con0, MSCH_MAINDDR3(channel, 1));
 
-		writel(PUBL_LPDDR3_EN(channel, 0)
-		       | PCTL_BST_DISABLE(channel, 0)
-		       | PCTL_LPDDR3_ODT_EN(channel, 0),
-		       &rk3288_grf->soc_con2);
+		write32(&rk3288_grf->soc_con2,
+			PUBL_LPDDR3_EN(channel, 0) | PCTL_BST_DISABLE(channel, 0) | PCTL_LPDDR3_ODT_EN(channel, 0));
 
 		break;
 	}
@@ -656,23 +650,17 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 	copy_to_reg(&ddr_publ_regs->dtpr[0],
 			&(sdram_params->phy_timing.dtpr0),
 			sizeof(sdram_params->phy_timing));
-	writel(sdram_params->noc_timing, &msch_regs->ddrtiming);
-	writel(0x3f, &msch_regs->readlatency);
-	writel(sdram_params->noc_activate, &msch_regs->activate);
-	writel(BUSWRTORD(2) | BUSRDTOWR(2) | BUSRDTORD(1),
-		&msch_regs->devtodev);
-	writel(PRT_DLLLOCK(div_round_up(sdram_params->ddr_freq/MHz
-			   * 5120, 1000))
-		| PRT_DLLSRST(div_round_up(sdram_params->ddr_freq/MHz
-			      * 50, 1000))
-		| PRT_ITMSRST(8), &ddr_publ_regs->ptr[0]);
-	writel(PRT_DINIT0(div_round_up(sdram_params->ddr_freq/MHz
-			  * 500000, 1000))
-		| PRT_DINIT1(div_round_up(sdram_params->ddr_freq/MHz
-			     * 400, 1000)), &ddr_publ_regs->ptr[1]);
-	writel(PRT_DINIT2(MIN(dinit2, 0x1ffff))
-		| PRT_DINIT3(div_round_up(sdram_params->ddr_freq/MHz
-			     * 1000, 1000)), &ddr_publ_regs->ptr[2]);
+	write32(&msch_regs->ddrtiming, sdram_params->noc_timing);
+	write32(&msch_regs->readlatency, 0x3f);
+	write32(&msch_regs->activate, sdram_params->noc_activate);
+	write32(&msch_regs->devtodev,
+		BUSWRTORD(2) | BUSRDTOWR(2) | BUSRDTORD(1));
+	write32(&ddr_publ_regs->ptr[0],
+		PRT_DLLLOCK(div_round_up(sdram_params->ddr_freq / MHz * 5120, 1000)) | PRT_DLLSRST(div_round_up(sdram_params->ddr_freq / MHz * 50, 1000)) | PRT_ITMSRST(8));
+	write32(&ddr_publ_regs->ptr[1],
+		PRT_DINIT0(div_round_up(sdram_params->ddr_freq / MHz * 500000, 1000)) | PRT_DINIT1(div_round_up(sdram_params->ddr_freq / MHz * 400, 1000)));
+	write32(&ddr_publ_regs->ptr[2],
+		PRT_DINIT2(MIN(dinit2, 0x1ffff)) | PRT_DINIT3(div_round_up(sdram_params->ddr_freq / MHz * 1000, 1000)));
 
 	switch (sdram_params->dramtype) {
 	case LPDDR3:
@@ -683,8 +671,8 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 			DDRMD_CFG(DDRMD_LPDDR2_LPDDR3));
 		clrsetbits_le32(&ddr_publ_regs->dxccr, DQSNRES_MSK | DQSRES_MSK,
 				DQSRES_CFG(4) | DQSNRES_CFG(0xc));
-		i = TDQSCKMAX_VAL(readl(&ddr_publ_regs->dtpr[1]))
-		    - TDQSCK_VAL(readl(&ddr_publ_regs->dtpr[1]));
+		i = TDQSCKMAX_VAL(read32(&ddr_publ_regs->dtpr[1]))
+		    - TDQSCK_VAL(read32(&ddr_publ_regs->dtpr[1]));
 		clrsetbits_le32(&ddr_publ_regs->dsgcr, DQSGE_MSK | DQSGX_MSK,
 				DQSGE_CFG(i) | DQSGX_CFG(i));
 		break;
@@ -713,7 +701,7 @@ static void phy_init(struct rk3288_ddr_publ_regs *ddr_publ_regs)
 	setbits_le32(&ddr_publ_regs->pir, PIR_INIT | PIR_DLLSRST
 		| PIR_DLLLOCK | PIR_ZCAL | PIR_ITMSRST | PIR_CLRSR);
 	udelay(1);
-	while ((readl(&ddr_publ_regs->pgsr) &
+	while ((read32(&ddr_publ_regs->pgsr) &
 		(PGSR_IDONE | PGSR_DLDONE | PGSR_ZCDONE)) !=
 		(PGSR_IDONE | PGSR_DLDONE | PGSR_ZCDONE))
 		;
@@ -722,9 +710,9 @@ static void phy_init(struct rk3288_ddr_publ_regs *ddr_publ_regs)
 static void send_command(struct rk3288_ddr_pctl_regs *ddr_pctl_regs, u32 rank,
 			 u32 cmd, u32 arg)
 {
-	writel((START_CMD | (rank << 20) | arg | cmd), &ddr_pctl_regs->mcmd);
+	write32(&ddr_pctl_regs->mcmd, (START_CMD | (rank << 20) | arg | cmd));
 	udelay(1);
-	while (readl(&ddr_pctl_regs->mcmd) & START_CMD)
+	while (read32(&ddr_pctl_regs->mcmd) & START_CMD)
 		;
 }
 
@@ -736,7 +724,7 @@ static void memory_init(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 		      | PIR_ZCALBYP | PIR_CLRSR | PIR_ICPC
 		      | (dramtype == DDR3 ? PIR_DRAMRST : 0)));
 	udelay(1);
-	while ((readl(&ddr_publ_regs->pgsr) & (PGSR_IDONE | PGSR_DLDONE))
+	while ((read32(&ddr_publ_regs->pgsr) & (PGSR_IDONE | PGSR_DLDONE))
 		!= (PGSR_IDONE | PGSR_DLDONE))
 		;
 }
@@ -747,16 +735,16 @@ static void move_to_config_state(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 	unsigned int state;
 
 	while (1) {
-		state = readl(&ddr_pctl_regs->stat) & PCTL_STAT_MSK;
+		state = read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK;
 
 		switch (state) {
 		case LOW_POWER:
-			writel(WAKEUP_STATE, &ddr_pctl_regs->sctl);
-			while ((readl(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
+			write32(&ddr_pctl_regs->sctl, WAKEUP_STATE);
+			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
 				!= ACCESS)
 				;
 			/* wait DLL lock */
-			while ((readl(&ddr_publ_regs->pgsr) & PGSR_DLDONE)
+			while ((read32(&ddr_publ_regs->pgsr) & PGSR_DLDONE)
 				!= PGSR_DLDONE)
 				;
 			/* if at low power state,need wakeup first,
@@ -765,8 +753,8 @@ static void move_to_config_state(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 			 */
 		case ACCESS:
 		case INIT_MEM:
-			writel(CFG_STATE, &ddr_pctl_regs->sctl);
-			while ((readl(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
+			write32(&ddr_pctl_regs->sctl, CFG_STATE);
+			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
 				!= CONFIG)
 				;
 			break;
@@ -786,8 +774,7 @@ static void set_bandwidth_ratio(u32 channel, u32 n)
 
 	if (n == 1) {
 		setbits_le32(&ddr_pctl_regs->ppcfg, 1);
-		writel(RK_SETBITS(1 << (8 + channel)),
-		       &rk3288_grf->soc_con0);
+		write32(&rk3288_grf->soc_con0, RK_SETBITS(1 << (8 + channel)));
 		setbits_le32(&msch_regs->ddrtiming, 1 << 31);
 		/* Data Byte disable*/
 		clrbits_le32(&ddr_publ_regs->datx8[2].dxgcr, 1);
@@ -799,8 +786,7 @@ static void set_bandwidth_ratio(u32 channel, u32 n)
 			DXDLLCR_DLLDIS);
 	} else {
 		clrbits_le32(&ddr_pctl_regs->ppcfg, 1);
-		writel(RK_CLRBITS(1 << (8 + channel)),
-		       &rk3288_grf->soc_con0);
+		write32(&rk3288_grf->soc_con0, RK_CLRBITS(1 << (8 + channel)));
 		clrbits_le32(&msch_regs->ddrtiming, 1 << 31);
 		/* Data Byte enable*/
 		setbits_le32(&ddr_publ_regs->datx8[2].dxgcr, 1);
@@ -838,7 +824,7 @@ static int data_training(u32 channel,
 	struct rk3288_ddr_pctl_regs *ddr_pctl_regs = rk3288_ddr_pctl[channel];
 
 	/* disable auto refresh */
-	writel(0, &ddr_pctl_regs->trefi);
+	write32(&ddr_pctl_regs->trefi, 0);
 
 	if (sdram_params->dramtype != LPDDR3)
 		setbits_le32(&ddr_publ_regs->pgcr, PGCR_DQSCFG(1));
@@ -856,21 +842,21 @@ static int data_training(u32 channel,
 			     PIR_CLRSR);
 		udelay(1);
 		/* wait echo byte DTDONE */
-		while ((readl(&ddr_publ_regs->datx8[0].dxgsr[0]) & rank)
+		while ((read32(&ddr_publ_regs->datx8[0].dxgsr[0]) & rank)
 			!= rank)
 			;
-		while ((readl(&ddr_publ_regs->datx8[1].dxgsr[0]) & rank)
+		while ((read32(&ddr_publ_regs->datx8[1].dxgsr[0]) & rank)
 			!= rank)
 			;
-		if (!(readl(&ddr_pctl_regs->ppcfg) & 1)) {
-			while ((readl(&ddr_publ_regs->datx8[2].dxgsr[0])
+		if (!(read32(&ddr_pctl_regs->ppcfg) & 1)) {
+			while ((read32(&ddr_publ_regs->datx8[2].dxgsr[0])
 				& rank) != rank)
 				;
-			while ((readl(&ddr_publ_regs->datx8[3].dxgsr[0])
+			while ((read32(&ddr_publ_regs->datx8[3].dxgsr[0])
 				& rank) != rank)
 				;
 		}
-		if (readl(&ddr_publ_regs->pgsr) &
+		if (read32(&ddr_publ_regs->pgsr) &
 		    (PGSR_DTERR | PGSR_RVERR | PGSR_RVEIRR)) {
 			ret = -1;
 			break;
@@ -884,7 +870,7 @@ static int data_training(u32 channel,
 		clrbits_le32(&ddr_publ_regs->pgcr, PGCR_DQSCFG(1));
 
 	/* resume auto refresh */
-	writel(sdram_params->pctl_timing.trefi, &ddr_pctl_regs->trefi);
+	write32(&ddr_pctl_regs->trefi, sdram_params->pctl_timing.trefi);
 
 	return ret;
 }
@@ -897,30 +883,30 @@ static void move_to_access_state(u32 chnum)
 	unsigned int state;
 
 	while (1) {
-		state = readl(&ddr_pctl_regs->stat) & PCTL_STAT_MSK;
+		state = read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK;
 
 		switch (state) {
 		case LOW_POWER:
-			if (LP_TRIG_VAL(readl(&ddr_pctl_regs->stat)) == 1)
+			if (LP_TRIG_VAL(read32(&ddr_pctl_regs->stat)) == 1)
 				return;
 
-			writel(WAKEUP_STATE, &ddr_pctl_regs->sctl);
-			while ((readl(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
+			write32(&ddr_pctl_regs->sctl, WAKEUP_STATE);
+			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
 				!= ACCESS)
 				;
 			/* wait DLL lock */
-			while ((readl(&ddr_publ_regs->pgsr) & PGSR_DLDONE)
+			while ((read32(&ddr_publ_regs->pgsr) & PGSR_DLDONE)
 				!= PGSR_DLDONE)
 				;
 			break;
 		case INIT_MEM:
-			writel(CFG_STATE, &ddr_pctl_regs->sctl);
-			while ((readl(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
+			write32(&ddr_pctl_regs->sctl, CFG_STATE);
+			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
 				!= CONFIG)
 				;
 		case CONFIG:
-			writel(GO_STATE, &ddr_pctl_regs->sctl);
-			while ((readl(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
+			write32(&ddr_pctl_regs->sctl, GO_STATE);
+			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
 				== CONFIG)
 				;
 			break;
@@ -943,7 +929,7 @@ static void dram_cfg_rbc(u32 chnum,
 	else
 		clrbits_le32(&ddr_publ_regs->dcr, PDQ_MSK);
 
-	writel(sdram_params->ddrconfig, &msch_regs->ddrconf);
+	write32(&msch_regs->ddrconf, sdram_params->ddrconfig);
 }
 
 static void dram_all_config(const struct rk3288_sdram_params *sdram_params)
@@ -968,9 +954,9 @@ static void dram_all_config(const struct rk3288_sdram_params *sdram_params)
 
 		dram_cfg_rbc(channel, sdram_params);
 	}
-	writel(sys_reg, &rk3288_pmu->sys_reg[2]);
-	writel(RK_CLRSETBITS(0x1F, sdram_params->stride),
-		&rk3288_sgrf->soc_con2);
+	write32(&rk3288_pmu->sys_reg[2], sys_reg);
+	write32(&rk3288_sgrf->soc_con2,
+		RK_CLRSETBITS(0x1F, sdram_params->stride));
 }
 
 void sdram_init(const struct rk3288_sdram_params *sdram_params)
@@ -1007,8 +993,8 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 
 		phy_init(ddr_publ_regs);
 
-		writel(POWER_UP_START, &ddr_pctl_regs->powctl);
-		while (!(readl(&ddr_pctl_regs->powstat) & POWER_UP_DONE))
+		write32(&ddr_pctl_regs->powctl, POWER_UP_START);
+		while (!(read32(&ddr_pctl_regs->powstat) & POWER_UP_DONE))
 			;
 
 		memory_init(ddr_publ_regs, sdram_params->dramtype);
@@ -1045,8 +1031,8 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 		/* DS=40ohm,ODT=155ohm */
 		zqcr = ZDEN(1) | PU_ONDIE(0x2) | PD_ONDIE(0x2)
 				| PU_OUTPUT(0x19) | PD_OUTPUT(0x19);
-		writel(zqcr, &ddr_publ_regs->zq1cr[0]);
-		writel(zqcr, &ddr_publ_regs->zq0cr[0]);
+		write32(&ddr_publ_regs->zq1cr[0], zqcr);
+		write32(&ddr_publ_regs->zq0cr[0], zqcr);
 
 		if (sdram_params->dramtype == LPDDR3) {
 			/* LPDDR2/LPDDR3 need to wait DAI complete, max 10us */
@@ -1056,11 +1042,11 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 				MRS_CMD, LPDDR2_MA(11) |
 				sdram_params->odt ? LPDDR2_OP(3) : 0);
 			if (channel == 0) {
-				writel(0, &ddr_pctl_regs->mrrcfg0);
+				write32(&ddr_pctl_regs->mrrcfg0, 0);
 				send_command(ddr_pctl_regs, 1, MRR_CMD,
 					LPDDR2_MA(0x8));
 				/* S8 */
-				if ((readl(&ddr_pctl_regs->mrrstat0) & 0x3)
+				if ((read32(&ddr_pctl_regs->mrrstat0) & 0x3)
 					!= 3)
 					die("SDRAM initialization failed!");
 			}
@@ -1078,7 +1064,7 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 
 		if (sdram_params->dramtype == LPDDR3) {
 			u32 i;
-			writel(0, &ddr_pctl_regs->mrrcfg0);
+			write32(&ddr_pctl_regs->mrrcfg0, 0);
 			for (i = 0; i < 17; i++)
 				send_command(ddr_pctl_regs, 1, MRR_CMD,
 					LPDDR2_MA(i));
@@ -1098,7 +1084,7 @@ size_t sdram_size_mb(void)
 
 	if (!size_mb) {
 
-		u32 sys_reg = readl(&rk3288_pmu->sys_reg[2]);
+		u32 sys_reg = read32(&rk3288_pmu->sys_reg[2]);
 		u32 ch_num = SYS_REG_DEC_NUM_CH(sys_reg);
 
 		for (ch = 0; ch < ch_num; ch++) {

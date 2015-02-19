@@ -43,7 +43,7 @@ static void remove_clamps(int id)
 		return;
 
 	/* Remove clamp */
-	writel((1 << id), &pmc->remove_clamping_cmd);
+	write32(&pmc->remove_clamping_cmd, (1 << id));
 
 	/* Wait for clamp off */
 	while (partition_clamp_on(id))
@@ -86,7 +86,7 @@ void soc_configure_i2c6pad(void)
 	soc_configure_host1x();
 
 	/* Now we can write the I2C6 mux in DPAUX */
-	writel(I2C6_PADCTL, (void *)DPAUX_HYBRID_PADCTL);
+	write32((void *)DPAUX_HYBRID_PADCTL, I2C6_PADCTL);
 
 	/*
 	 * Delay before turning off Host1X/DPAUX clocks.

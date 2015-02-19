@@ -869,7 +869,7 @@ static int dsi_enable(struct soc_nvidia_tegra132_config *config)
 	tegra_output_dsi_setup_clock(dsi_a, config);
 
 	/* configure APB_MISC_GP_MIPI_PAD_CTRL_0 */
-	writel(DSIB_MODE_DSI, (unsigned int *)APB_MISC_GP_MIPI_PAD_CTRL_0);
+	write32((unsigned int *)APB_MISC_GP_MIPI_PAD_CTRL_0, DSIB_MODE_DSI);
 
 	/* configure phy interface timing registers */
 	tegra_dsi_set_phy_timing(dsi_a);

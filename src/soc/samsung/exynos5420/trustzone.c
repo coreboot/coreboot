@@ -33,10 +33,10 @@ void trustzone_init(void)
 	for (addr = TZPC10_BASE; addr <= TZPC9_BASE; addr += TZPC_BASE_OFFSET) {
 		tzpc = (struct exynos_tzpc *)addr;
 		if (addr == TZPC0_BASE)
-			writel(R0SIZE, &tzpc->r0size);
-		writel(DECPROTXSET, &tzpc->decprot0set);
-		writel(DECPROTXSET, &tzpc->decprot1set);
-		writel(DECPROTXSET, &tzpc->decprot2set);
-		writel(DECPROTXSET, &tzpc->decprot3set);
+			write32(&tzpc->r0size, R0SIZE);
+		write32(&tzpc->decprot0set, DECPROTXSET);
+		write32(&tzpc->decprot1set, DECPROTXSET);
+		write32(&tzpc->decprot2set, DECPROTXSET);
+		write32(&tzpc->decprot3set, DECPROTXSET);
 	}
 }

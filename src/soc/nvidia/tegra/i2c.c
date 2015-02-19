@@ -40,9 +40,9 @@ static void do_bus_clear(int bus)
 	// 4. Set TERMINATE condition (1 = IMMEDIATE)
 	bc = read32(&regs->bus_clear_config);
 	bc |= I2C_BUS_CLEAR_CONFIG_BC_TERMINATE_IMMEDIATE;
-	writel(bc, &regs->bus_clear_config);
+	write32(&regs->bus_clear_config, bc);
 	// 4.1 Set MSTR_CONFIG_LOAD and wait for clear
-	writel(I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE, &regs->config_load);
+	write32(&regs->config_load, I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE);
 	for (i = 0; i < timeout_ms * 10 && (read32(&regs->config_load) &
 			I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE); i++) {
 		printk(BIOS_DEBUG, "%s: wait for MSTR_CONFIG_LOAD to clear\n",
@@ -50,7 +50,7 @@ static void do_bus_clear(int bus)
 		udelay(100);
 	}
 	// 5. Set ENABLE to start the bus clear op
-	writel(bc | I2C_BUS_CLEAR_CONFIG_BC_ENABLE, &regs->bus_clear_config);
+	write32(&regs->bus_clear_config, bc | I2C_BUS_CLEAR_CONFIG_BC_ENABLE);
 	for (i = 0; i < timeout_ms * 10 && (read32(&regs->bus_clear_config) &
 			I2C_BUS_CLEAR_CONFIG_BC_ENABLE); i++) {
 		printk(BIOS_DEBUG, "%s: wait for bus clear completion\n",
@@ -74,7 +74,7 @@ static int tegra_i2c_send_recv(int bus, int read,
 		rx_full >>= I2C_FIFO_STATUS_RX_FIFO_FULL_CNT_SHIFT;
 
 		while (header_words && tx_empty) {
-			writel(*headers++, &regs->tx_packet_fifo);
+			write32(&regs->tx_packet_fifo, *headers++);
 			header_words--;
 			tx_empty--;
 		}
@@ -96,7 +96,7 @@ static int tegra_i2c_send_recv(int bus, int read,
 					int todo = MIN(data_len, sizeof(word));
 
 					memcpy(&word, data, todo);
-					writel(word, &regs->tx_packet_fifo);
+					write32(&regs->tx_packet_fifo, word);
 					data_len -= todo;
 					data += sizeof(word);
 					tx_empty--;
@@ -208,5 +208,5 @@ void i2c_init(unsigned bus)
 {
 	struct tegra_i2c_regs * const regs = tegra_i2c_info[bus].base;
 
-	writel(I2C_CNFG_PACKET_MODE_EN, &regs->cnfg);
+	write32(&regs->cnfg, I2C_CNFG_PACKET_MODE_EN);
 }

@@ -46,12 +46,12 @@ static int ccplex_start(void)
 	struct tegra_pmc_regs * const pmc = PMC_REGS;
 
 	/* Set the handshake bit to be knocked down. */
-	writel(handshake_mask, &pmc->scratch118);
+	write32(&pmc->scratch118, handshake_mask);
 
 	/* Assert nCXRSET[1] */
 	reg = read32(CLK_RST_REG(rst_cpu_cmplx_set));
 	reg |= cxreset1_mask;
-	writel(reg, CLK_RST_REG(rst_cpu_cmplx_set));
+	write32(CLK_RST_REG(rst_cpu_cmplx_set), reg);
 
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 	while (1) {
@@ -140,14 +140,14 @@ static void request_ram_repair(void)
 	/* Perform cluster 0 ram repair */
 	reg = read32(&flow->ram_repair);
 	reg |= req;
-	writel(reg, &flow->ram_repair);
+	write32(&flow->ram_repair, reg);
 	while ((read32(&flow->ram_repair) & sts) != sts)
 		;
 
 	/* Perform cluster 1 ram repair */
 	reg = read32(&flow->ram_repair_cluster1);
 	reg |= req;
-	writel(reg, &flow->ram_repair_cluster1);
+	write32(&flow->ram_repair_cluster1, reg);
 	while ((read32(&flow->ram_repair_cluster1) & sts) != sts)
 		;
 
@@ -169,11 +169,11 @@ void ccplex_cpu_prepare(void)
 static void start_common_clocks(void)
 {
 	/* Clear fast CPU partition reset. */
-	writel(CRC_RST_CPUG_CLR_NONCPU, CLK_RST_REG(rst_cpug_cmplx_clr));
+	write32(CLK_RST_REG(rst_cpug_cmplx_clr), CRC_RST_CPUG_CLR_NONCPU);
 
 	/* Clear reset of L2 and CoreSight components. */
-	writel(CRC_RST_CPUG_CLR_L2 | CRC_RST_CPUG_CLR_PDBG,
-	       CLK_RST_REG(rst_cpug_cmplx_clr));
+	write32(CLK_RST_REG(rst_cpug_cmplx_clr),
+		CRC_RST_CPUG_CLR_L2 | CRC_RST_CPUG_CLR_PDBG);
 }
 
 void ccplex_cpu_start(void *entry_addr)

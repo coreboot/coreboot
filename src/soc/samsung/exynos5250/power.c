@@ -89,5 +89,5 @@ void power_enable_xclkout(void)
 
 void power_release_uart_retention(void)
 {
-	writel(1 << 28, &exynos_power->padret_uart_opt);
+	write32(&exynos_power->padret_uart_opt, 1 << 28);
 }

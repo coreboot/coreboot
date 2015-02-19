@@ -129,43 +129,43 @@ static int lcc_init_enable_pll0(Ipq806xLccClocks *bus)
 
 	regval = 0;
 	regval = 15 << LCC_PLL0_L_SHIFT & LCC_PLL0_L_MASK;
-	writel(regval, &pll0_regs->l_val);
+	write32(&pll0_regs->l_val, regval);
 
 	regval = 0;
 	regval = 145 << LCC_PLL0_M_SHIFT & LCC_PLL0_M_MASK;
-	writel(regval, &pll0_regs->m_val);
+	write32(&pll0_regs->m_val, regval);
 
 	regval = 0;
 	regval = 199 << LCC_PLL0_N_SHIFT & LCC_PLL0_N_MASK;
-	writel(regval, &pll0_regs->n_val);
+	write32(&pll0_regs->n_val, regval);
 
 	regval = 0;
 	regval |= LCC_PLL0_CFG_LV_MAIN_ENABLE;
 	regval |= LCC_PLL0_CFG_FRAC_ENABLE;
-	writel(regval, &pll0_regs->config);
+	write32(&pll0_regs->config, regval);
 
 	regval = 0;
 	regval |= LCC_PLL_PCLK_SRC_PRI;
-	writel(regval, &pll_regs->pri);
+	write32(&pll_regs->pri, regval);
 
 	regval = 0;
 	regval |= 1 << LCC_PLL0_MODE_BIAS_CNT_SHIFT &
 			LCC_PLL0_MODE_BIAS_CNT_MASK;
 	regval |= 8 << LCC_PLL0_MODE_LOCK_CNT_SHIFT &
 			LCC_PLL0_MODE_LOCK_CNT_MASK;
-	writel(regval, &pll0_regs->mode);
+	write32(&pll0_regs->mode, regval);
 
-	regval = readl(&gcc_regs->apcs);
+	regval = read32(&gcc_regs->apcs);
 	regval |= GCC_PLL_APCS_PLL4_ENABLE;
-	writel(regval, &gcc_regs->apcs);
+	write32(&gcc_regs->apcs, regval);
 
-	regval = readl(&pll0_regs->mode);
+	regval = read32(&pll0_regs->mode);
 	regval |= LCC_PLL0_MODE_FSM_VOTE_ENABLE;
-	writel(regval, &pll0_regs->mode);
+	write32(&pll0_regs->mode, regval);
 
 	mdelay(1);
 
-	regval = readl(&pll0_regs->status);
+	regval = read32(&pll0_regs->status);
 	if (regval & LCC_PLL0_STAT_ACTIVE_MASK)
 		return 0;
 
@@ -182,7 +182,7 @@ static int lcc_init_enable_ahbix(Ipq806xLccClocks *bus)
 	regval |= 1 << LCC_AHBIX_MD_M_VAL_SHIFT & LCC_AHBIX_MD_M_VAL_MASK;
 	regval |= 252 << LCC_AHBIX_MD_NOT_2D_VAL_SHIFT &
 			LCC_AHBIX_MD_NOT_2D_VAL_MASK;
-	writel(regval, &ahbix_regs->md);
+	write32(&ahbix_regs->md, regval);
 
 	regval = 0;
 	regval |= 253 << LCC_AHBIX_NS_N_VAL_SHIFT & LCC_AHBIX_NS_N_VAL_MASK;
@@ -193,11 +193,11 @@ static int lcc_init_enable_ahbix(Ipq806xLccClocks *bus)
 	regval |= LCC_AHBIX_NS_MNC_MODE_DUAL;
 	regval |= LCC_AHBIX_NS_PREDIV_BYPASS;
 	regval |= LCC_AHBIX_NS_MN_SRC_LPA;
-	writel(regval, &ahbix_regs->ns);
+	write32(&ahbix_regs->ns, regval);
 
 	mdelay(1);
 
-	regval = readl(&ahbix_regs->status);
+	regval = read32(&ahbix_regs->status);
 	if (regval & LCC_AHBIX_STAT_AIF_CLK_MASK)
 		return 0;
 
@@ -248,7 +248,7 @@ static int lcc_init_mi2s(Ipq806xLccClocks *bus, unsigned freq)
 	regval |= m << LCC_MI2S_MD_M_VAL_SHIFT & LCC_MI2S_MD_M_VAL_MASK;
 	regval |= d << LCC_MI2S_MD_NOT_2D_VAL_SHIFT &
 			LCC_MI2S_MD_NOT_2D_VAL_MASK;
-	writel(regval, &mi2s_regs->md);
+	write32(&mi2s_regs->md, regval);
 
 	regval = 0;
 	regval |= n << LCC_MI2S_NS_N_VAL_SHIFT & LCC_MI2S_NS_N_VAL_MASK;
@@ -258,7 +258,7 @@ static int lcc_init_mi2s(Ipq806xLccClocks *bus, unsigned freq)
 	regval |= LCC_MI2S_NS_MNC_MODE_DUAL;
 	regval |= pd;
 	regval |= LCC_MI2S_NS_MN_SRC_LPA;
-	writel(regval, &mi2s_regs->ns);
+	write32(&mi2s_regs->ns, regval);
 
 	return 0;
 }
@@ -268,14 +268,14 @@ static int lcc_enable_mi2s(Ipq806xLccClocks *bus)
 	Ipq806xLccMi2sRegs *mi2s_regs = bus->lcc_mi2s_regs;
 	uint32_t regval;
 
-	regval = readl(&mi2s_regs->ns);
+	regval = read32(&mi2s_regs->ns);
 	regval |= LCC_MI2S_NS_OSR_CXC_ENABLE;
 	regval |= LCC_MI2S_NS_BIT_CXC_ENABLE;
-	writel(regval, &mi2s_regs->ns);
+	write32(&mi2s_regs->ns, regval);
 
 	udelay(10);
 
-	regval = readl(&mi2s_regs->status);
+	regval = read32(&mi2s_regs->status);
 	if (regval & LCC_MI2S_STAT_OSR_CLK_MASK)
 		if (regval & LCC_MI2S_STAT_BIT_CLK_MASK)
 			return 0;

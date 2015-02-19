@@ -89,22 +89,22 @@ static const uart_params_t uart_board_param = {
 static unsigned int msm_boot_uart_dm_init_rx_transfer(void *uart_dm_base)
 {
 	/* Reset receiver */
-	writel(MSM_BOOT_UART_DM_CMD_RESET_RX,
-		MSM_BOOT_UART_DM_CR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_CR(uart_dm_base),
+		MSM_BOOT_UART_DM_CMD_RESET_RX);
 
 	/* Enable receiver */
-	writel(MSM_BOOT_UART_DM_CR_RX_ENABLE,
-		MSM_BOOT_UART_DM_CR(uart_dm_base));
-	writel(MSM_BOOT_UART_DM_DMRX_DEF_VALUE,
-		MSM_BOOT_UART_DM_DMRX(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_CR(uart_dm_base),
+		MSM_BOOT_UART_DM_CR_RX_ENABLE);
+	write32(MSM_BOOT_UART_DM_DMRX(uart_dm_base),
+		MSM_BOOT_UART_DM_DMRX_DEF_VALUE);
 
 	/* Clear stale event */
-	writel(MSM_BOOT_UART_DM_CMD_RES_STALE_INT,
-		MSM_BOOT_UART_DM_CR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_CR(uart_dm_base),
+		MSM_BOOT_UART_DM_CMD_RES_STALE_INT);
 
 	/* Enable stale event */
-	writel(MSM_BOOT_UART_DM_GCMD_ENA_STALE_EVT,
-		MSM_BOOT_UART_DM_CR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_CR(uart_dm_base),
+		MSM_BOOT_UART_DM_GCMD_ENA_STALE_EVT);
 
 	return MSM_BOOT_UART_DM_E_SUCCESS;
 }
@@ -200,17 +200,17 @@ void uart_tx_byte(int idx, unsigned char data)
 	void *base = uart_board_param.uart_dm_base;
 
 	/* Wait until transmit FIFO is empty. */
-	while (!(readl(MSM_BOOT_UART_DM_SR(base)) &
+	while (!(read32(MSM_BOOT_UART_DM_SR(base)) &
 		 MSM_BOOT_UART_DM_SR_TXEMT))
 		udelay(1);
 	/*
 	 * TX FIFO is ready to accept new character(s). First write number of
 	 * characters to be transmitted.
 	 */
-	writel(num_of_chars, MSM_BOOT_UART_DM_NO_CHARS_FOR_TX(base));
+	write32(MSM_BOOT_UART_DM_NO_CHARS_FOR_TX(base), num_of_chars);
 
 	/* And now write the character(s) */
-	writel(tx_data, MSM_BOOT_UART_DM_TF(base, 0));
+	write32(MSM_BOOT_UART_DM_TF(base, 0), tx_data);
 }
 #endif /* CONFIG_SERIAL_UART */
 
@@ -220,12 +220,12 @@ void uart_tx_byte(int idx, unsigned char data)
  */
 static unsigned int msm_boot_uart_dm_reset(void *base)
 {
-	writel(MSM_BOOT_UART_DM_CMD_RESET_RX, MSM_BOOT_UART_DM_CR(base));
-	writel(MSM_BOOT_UART_DM_CMD_RESET_TX, MSM_BOOT_UART_DM_CR(base));
-	writel(MSM_BOOT_UART_DM_CMD_RESET_ERR_STAT,
-		 MSM_BOOT_UART_DM_CR(base));
-	writel(MSM_BOOT_UART_DM_CMD_RES_TX_ERR, MSM_BOOT_UART_DM_CR(base));
-	writel(MSM_BOOT_UART_DM_CMD_RES_STALE_INT, MSM_BOOT_UART_DM_CR(base));
+	write32(MSM_BOOT_UART_DM_CR(base), MSM_BOOT_UART_DM_CMD_RESET_RX);
+	write32(MSM_BOOT_UART_DM_CR(base), MSM_BOOT_UART_DM_CMD_RESET_TX);
+	write32(MSM_BOOT_UART_DM_CR(base),
+		MSM_BOOT_UART_DM_CMD_RESET_ERR_STAT);
+	write32(MSM_BOOT_UART_DM_CR(base), MSM_BOOT_UART_DM_CMD_RES_TX_ERR);
+	write32(MSM_BOOT_UART_DM_CR(base), MSM_BOOT_UART_DM_CMD_RES_STALE_INT);
 
 	return MSM_BOOT_UART_DM_E_SUCCESS;
 }
@@ -238,40 +238,40 @@ static unsigned int msm_boot_uart_dm_init(void  *uart_dm_base)
 {
 	/* Configure UART mode registers MR1 and MR2 */
 	/* Hardware flow control isn't supported */
-	writel(0x0, MSM_BOOT_UART_DM_MR1(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_MR1(uart_dm_base), 0x0);
 
 	/* 8-N-1 configuration: 8 data bits - No parity - 1 stop bit */
-	writel(MSM_BOOT_UART_DM_8_N_1_MODE,
-		 MSM_BOOT_UART_DM_MR2(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_MR2(uart_dm_base),
+		MSM_BOOT_UART_DM_8_N_1_MODE);
 
 	/* Configure Interrupt Mask register IMR */
-	writel(MSM_BOOT_UART_DM_IMR_ENABLED,
-		 MSM_BOOT_UART_DM_IMR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_IMR(uart_dm_base),
+		MSM_BOOT_UART_DM_IMR_ENABLED);
 
 	/*
 	 * Configure Tx and Rx watermarks configuration registers
 	 * TX watermark value is set to 0 - interrupt is generated when
 	 * FIFO level is less than or equal to 0
 	 */
-	writel(MSM_BOOT_UART_DM_TFW_VALUE,
-		 MSM_BOOT_UART_DM_TFWR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_TFWR(uart_dm_base),
+		MSM_BOOT_UART_DM_TFW_VALUE);
 
 	/* RX watermark value */
-	writel(MSM_BOOT_UART_DM_RFW_VALUE,
-		 MSM_BOOT_UART_DM_RFWR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_RFWR(uart_dm_base),
+		MSM_BOOT_UART_DM_RFW_VALUE);
 
 	/* Configure Interrupt Programming Register */
 	/* Set initial Stale timeout value */
-	writel(MSM_BOOT_UART_DM_STALE_TIMEOUT_LSB,
-		MSM_BOOT_UART_DM_IPR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_IPR(uart_dm_base),
+		MSM_BOOT_UART_DM_STALE_TIMEOUT_LSB);
 
 	/* Configure IRDA if required */
 	/* Disabling IRDA mode */
-	writel(0x0, MSM_BOOT_UART_DM_IRDA(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_IRDA(uart_dm_base), 0x0);
 
 	/* Configure hunt character value in HCR register */
 	/* Keep it in reset state */
-	writel(0x0, MSM_BOOT_UART_DM_HCR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_HCR(uart_dm_base), 0x0);
 
 	/*
 	 * Configure Rx FIFO base address
@@ -286,11 +286,11 @@ static unsigned int msm_boot_uart_dm_init(void  *uart_dm_base)
 
 	/* Enable/Disable Rx/Tx DM interfaces */
 	/* Data Mover not currently utilized. */
-	writel(0x0, MSM_BOOT_UART_DM_DMEN(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_DMEN(uart_dm_base), 0x0);
 
 	/* Enable transmitter */
-	writel(MSM_BOOT_UART_DM_CR_TX_ENABLE,
-		MSM_BOOT_UART_DM_CR(uart_dm_base));
+	write32(MSM_BOOT_UART_DM_CR(uart_dm_base),
+		MSM_BOOT_UART_DM_CR_TX_ENABLE);
 
 	/* Initialize Receive Path */
 	msm_boot_uart_dm_init_rx_transfer(uart_dm_base);
@@ -311,7 +311,7 @@ void uart_init(int idx)
 
 	dm_base = uart_board_param.uart_dm_base;
 
-	if (readl(MSM_BOOT_UART_DM_CSR(dm_base)) == UART_DM_CLK_RX_TX_BIT_RATE)
+	if (read32(MSM_BOOT_UART_DM_CSR(dm_base)) == UART_DM_CLK_RX_TX_BIT_RATE)
 		return; /* UART must have been already initialized. */
 
 	gsbi_base = uart_board_param.uart_gsbi_base;
@@ -325,10 +325,9 @@ void uart_init(int idx)
 		uart_board_param.mnd_value.d_value,
 		0);
 
-	writel(GSBI_PROTOCOL_CODE_I2C_UART <<
-		GSBI_CTRL_REG_PROTOCOL_CODE_S,
-		GSBI_CTRL_REG(gsbi_base));
-	writel(UART_DM_CLK_RX_TX_BIT_RATE, MSM_BOOT_UART_DM_CSR(dm_base));
+	write32(GSBI_CTRL_REG(gsbi_base),
+		GSBI_PROTOCOL_CODE_I2C_UART << GSBI_CTRL_REG_PROTOCOL_CODE_S);
+	write32(MSM_BOOT_UART_DM_CSR(dm_base), UART_DM_CLK_RX_TX_BIT_RATE);
 
 	/* Intialize UART_DM */
 	msm_boot_uart_dm_init(dm_base);
@@ -355,7 +354,7 @@ void uart_tx_flush(int idx)
 {
 	void *base = uart_board_param.uart_dm_base;
 
-	while (!(readl(MSM_BOOT_UART_DM_SR(base)) &
+	while (!(read32(MSM_BOOT_UART_DM_SR(base)) &
 		 MSM_BOOT_UART_DM_SR_TXEMT))
 		;
 }

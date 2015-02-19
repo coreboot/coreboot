@@ -46,25 +46,25 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 	out_bytes = in_bytes = todo;
 	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
 	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	writel(((todo * 8) / 32) | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
+	write32(&regs->pkt_cnt, ((todo * 8) / 32) | SPI_PACKET_CNT_EN);
 
 	while (in_bytes) {
 		uint32_t spi_sts;
 		int temp;
 
-		spi_sts = readl(&regs->spi_sts);
+		spi_sts = read32(&regs->spi_sts);
 		rx_lvl = ((spi_sts >> 15) & 0x7f);
 		tx_lvl = ((spi_sts >> 6) & 0x7f);
 		while (tx_lvl < 32 && out_bytes) {
 			// TODO The "writing" (tx) is not supported now; that's
 			// why we write garbage to keep driving FIFO clock.
 			temp = 0xffffffff;
-			writel(temp, &regs->tx_data);
+			write32(&regs->tx_data, temp);
 			out_bytes -= 4;
 			tx_lvl += 4;
 		}
 		while (rx_lvl >= 4 && in_bytes) {
-			temp = readl(&regs->rx_data);
+			temp = read32(&regs->rx_data);
 			if (rxp)
 				*rxp++ = temp;
 			in_bytes -= 4;
@@ -79,9 +79,9 @@ int exynos_spi_open(struct exynos_spi *regs)
 	/* set the spi1 GPIO */
 
 	/* set pktcnt and enable it */
-	writel(4 | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
+	write32(&regs->pkt_cnt, 4 | SPI_PACKET_CNT_EN);
 	/* set FB_CLK_SEL */
-	writel(SPI_FB_DELAY_180, &regs->fb_clk);
+	write32(&regs->fb_clk, SPI_FB_DELAY_180);
 	/* set CH_WIDTH and BUS_WIDTH as word */
 	setbits_le32(&regs->mode_cfg,
 		     SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
@@ -109,10 +109,10 @@ int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off)
 	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT); /* CS low */
 
 	/* Send read instruction (0x3h) followed by a 24 bit addr */
-	writel((SF_READ_DATA_CMD << 24) | off, &regs->tx_data);
+	write32(&regs->tx_data, (SF_READ_DATA_CMD << 24) | off);
 
 	/* waiting for TX done */
-	while (!(readl(&regs->spi_sts) & SPI_ST_TX_DONE));
+	while (!(read32(&regs->spi_sts) & SPI_ST_TX_DONE));
 
 	for (upto = 0, i = 0; upto < len; upto += todo, i++) {
 		todo = MIN(len - upto, (1 << 15));
@@ -132,7 +132,7 @@ int exynos_spi_close(struct exynos_spi *regs)
 	 */
 	clrbits_le32(&regs->mode_cfg,
 		     SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
-	writel(0, &regs->swap_cfg);
+	write32(&regs->swap_cfg, 0);
 
 	/*
 	 * Flush spi tx, rx fifos and reset the SPI controller

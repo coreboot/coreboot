@@ -33,7 +33,7 @@
 static void sdram_patch(uintptr_t addr, uint32_t value)
 {
 	if (addr)
-		writel(value, (uint32_t*)addr);
+		write32((uint32_t *)addr, value);
 }
 
 static void writebits(uint32_t value, uint32_t *addr, uint32_t mask)
@@ -46,7 +46,7 @@ static void sdram_configure_pmc(const struct sdram_params *param,
 				struct tegra_pmc_regs *regs)
 {
 	/* VDDP Select */
-	writel(param->PmcVddpSel, &regs->vddp_sel);
+	write32(&regs->vddp_sel, param->PmcVddpSel);
 	udelay(param->PmcVddpSelWait);
 
 	/* Set DDR pad voltage */
@@ -62,7 +62,7 @@ static void sdram_configure_pmc(const struct sdram_params *param,
 	writebits(param->PmcNoIoPower, &regs->no_iopower,
 		  (PMC_NO_IOPOWER_MEM_MASK | PMC_NO_IOPOWER_MEM_COMP_MASK));
 
-	writel(param->PmcRegShort, &regs->reg_short);
+	write32(&regs->reg_short, param->PmcRegShort);
 }
 
 static void sdram_start_clocks(const struct sdram_params *param)
@@ -102,148 +102,151 @@ static void sdram_deassert_sel_dpd(const struct sdram_params *param,
 static void sdram_set_swizzle(const struct sdram_params *param,
 			      struct tegra_emc_regs *regs)
 {
-	writel(param->EmcSwizzleRank0ByteCfg, &regs->swizzle_rank0_byte_cfg);
-	writel(param->EmcSwizzleRank0Byte0, &regs->swizzle_rank0_byte0);
-	writel(param->EmcSwizzleRank0Byte1, &regs->swizzle_rank0_byte1);
-	writel(param->EmcSwizzleRank0Byte2, &regs->swizzle_rank0_byte2);
-	writel(param->EmcSwizzleRank0Byte3, &regs->swizzle_rank0_byte3);
-	writel(param->EmcSwizzleRank1ByteCfg, &regs->swizzle_rank1_byte_cfg);
-	writel(param->EmcSwizzleRank1Byte0, &regs->swizzle_rank1_byte0);
-	writel(param->EmcSwizzleRank1Byte1, &regs->swizzle_rank1_byte1);
-	writel(param->EmcSwizzleRank1Byte2, &regs->swizzle_rank1_byte2);
-	writel(param->EmcSwizzleRank1Byte3, &regs->swizzle_rank1_byte3);
+	write32(&regs->swizzle_rank0_byte_cfg, param->EmcSwizzleRank0ByteCfg);
+	write32(&regs->swizzle_rank0_byte0, param->EmcSwizzleRank0Byte0);
+	write32(&regs->swizzle_rank0_byte1, param->EmcSwizzleRank0Byte1);
+	write32(&regs->swizzle_rank0_byte2, param->EmcSwizzleRank0Byte2);
+	write32(&regs->swizzle_rank0_byte3, param->EmcSwizzleRank0Byte3);
+	write32(&regs->swizzle_rank1_byte_cfg, param->EmcSwizzleRank1ByteCfg);
+	write32(&regs->swizzle_rank1_byte0, param->EmcSwizzleRank1Byte0);
+	write32(&regs->swizzle_rank1_byte1, param->EmcSwizzleRank1Byte1);
+	write32(&regs->swizzle_rank1_byte2, param->EmcSwizzleRank1Byte2);
+	write32(&regs->swizzle_rank1_byte3, param->EmcSwizzleRank1Byte3);
 }
 
 static void sdram_set_pad_controls(const struct sdram_params *param,
 				   struct tegra_emc_regs *regs)
 {
 	/* Program the pad controls */
-	writel(param->EmcXm2CmdPadCtrl, &regs->xm2cmdpadctrl);
-	writel(param->EmcXm2CmdPadCtrl2, &regs->xm2cmdpadctrl2);
-	writel(param->EmcXm2CmdPadCtrl3, &regs->xm2cmdpadctrl3);
-	writel(param->EmcXm2CmdPadCtrl4, &regs->xm2cmdpadctrl4);
-	writel(param->EmcXm2CmdPadCtrl5, &regs->xm2cmdpadctrl5);
+	write32(&regs->xm2cmdpadctrl, param->EmcXm2CmdPadCtrl);
+	write32(&regs->xm2cmdpadctrl2, param->EmcXm2CmdPadCtrl2);
+	write32(&regs->xm2cmdpadctrl3, param->EmcXm2CmdPadCtrl3);
+	write32(&regs->xm2cmdpadctrl4, param->EmcXm2CmdPadCtrl4);
+	write32(&regs->xm2cmdpadctrl5, param->EmcXm2CmdPadCtrl5);
 
-	writel(param->EmcXm2DqsPadCtrl, &regs->xm2dqspadctrl);
-	writel(param->EmcXm2DqsPadCtrl2, &regs->xm2dqspadctrl2);
-	writel(param->EmcXm2DqsPadCtrl3, &regs->xm2dqspadctrl3);
-	writel(param->EmcXm2DqsPadCtrl4, &regs->xm2dqspadctrl4);
-	writel(param->EmcXm2DqsPadCtrl5, &regs->xm2dqspadctrl5);
-	writel(param->EmcXm2DqsPadCtrl6, &regs->xm2dqspadctrl6);
+	write32(&regs->xm2dqspadctrl, param->EmcXm2DqsPadCtrl);
+	write32(&regs->xm2dqspadctrl2, param->EmcXm2DqsPadCtrl2);
+	write32(&regs->xm2dqspadctrl3, param->EmcXm2DqsPadCtrl3);
+	write32(&regs->xm2dqspadctrl4, param->EmcXm2DqsPadCtrl4);
+	write32(&regs->xm2dqspadctrl5, param->EmcXm2DqsPadCtrl5);
+	write32(&regs->xm2dqspadctrl6, param->EmcXm2DqsPadCtrl6);
 
-	writel(param->EmcXm2DqPadCtrl, &regs->xm2dqpadctrl);
-	writel(param->EmcXm2DqPadCtrl2, &regs->xm2dqpadctrl2);
-	writel(param->EmcXm2DqPadCtrl3, &regs->xm2dqpadctrl3);
+	write32(&regs->xm2dqpadctrl, param->EmcXm2DqPadCtrl);
+	write32(&regs->xm2dqpadctrl2, param->EmcXm2DqPadCtrl2);
+	write32(&regs->xm2dqpadctrl3, param->EmcXm2DqPadCtrl3);
 
-	writel(param->EmcXm2ClkPadCtrl, &regs->xm2clkpadctrl);
-	writel(param->EmcXm2ClkPadCtrl2, &regs->xm2clkpadctrl2);
+	write32(&regs->xm2clkpadctrl, param->EmcXm2ClkPadCtrl);
+	write32(&regs->xm2clkpadctrl2, param->EmcXm2ClkPadCtrl2);
 
-	writel(param->EmcXm2CompPadCtrl, &regs->xm2comppadctrl);
+	write32(&regs->xm2comppadctrl, param->EmcXm2CompPadCtrl);
 
-	writel(param->EmcXm2VttGenPadCtrl, &regs->xm2vttgenpadctrl);
-	writel(param->EmcXm2VttGenPadCtrl2, &regs->xm2vttgenpadctrl2);
-	writel(param->EmcXm2VttGenPadCtrl3, &regs->xm2vttgenpadctrl3);
+	write32(&regs->xm2vttgenpadctrl, param->EmcXm2VttGenPadCtrl);
+	write32(&regs->xm2vttgenpadctrl2, param->EmcXm2VttGenPadCtrl2);
+	write32(&regs->xm2vttgenpadctrl3, param->EmcXm2VttGenPadCtrl3);
 
-	writel(param->EmcCttTermCtrl, &regs->ctt_term_ctrl);
+	write32(&regs->ctt_term_ctrl, param->EmcCttTermCtrl);
 }
 
 static void sdram_trigger_emc_timing_update(struct tegra_emc_regs *regs)
 {
-	writel(EMC_TIMING_CONTROL_TIMING_UPDATE, &regs->timing_control);
+	write32(&regs->timing_control, EMC_TIMING_CONTROL_TIMING_UPDATE);
 }
 
 static void sdram_init_mc(const struct sdram_params *param,
 			  struct tegra_mc_regs *regs)
 {
 	/* Initialize MC VPR settings */
-	writel(param->McDisplaySnapRing, &regs->display_snap_ring);
-	writel(param->McVideoProtectBom, &regs->video_protect_bom);
-	writel(param->McVideoProtectBomAdrHi, &regs->video_protect_bom_adr_hi);
-	writel(param->McVideoProtectSizeMb, &regs->video_protect_size_mb);
-	writel(param->McVideoProtectVprOverride,
-	       &regs->video_protect_vpr_override);
-	writel(param->McVideoProtectVprOverride1,
-	       &regs->video_protect_vpr_override1);
-	writel(param->McVideoProtectGpuOverride0,
-	       &regs->video_protect_gpu_override_0);
-	writel(param->McVideoProtectGpuOverride1,
-	       &regs->video_protect_gpu_override_1);
+	write32(&regs->display_snap_ring, param->McDisplaySnapRing);
+	write32(&regs->video_protect_bom, param->McVideoProtectBom);
+	write32(&regs->video_protect_bom_adr_hi,
+		param->McVideoProtectBomAdrHi);
+	write32(&regs->video_protect_size_mb, param->McVideoProtectSizeMb);
+	write32(&regs->video_protect_vpr_override,
+		param->McVideoProtectVprOverride);
+	write32(&regs->video_protect_vpr_override1,
+		param->McVideoProtectVprOverride1);
+	write32(&regs->video_protect_gpu_override_0,
+		param->McVideoProtectGpuOverride0);
+	write32(&regs->video_protect_gpu_override_1,
+		param->McVideoProtectGpuOverride1);
 
 	/* Program SDRAM geometry paarameters */
-	writel(param->McEmemAdrCfg, &regs->emem_adr_cfg);
-	writel(param->McEmemAdrCfgDev0, &regs->emem_adr_cfg_dev0);
-	writel(param->McEmemAdrCfgDev1, &regs->emem_adr_cfg_dev1);
+	write32(&regs->emem_adr_cfg, param->McEmemAdrCfg);
+	write32(&regs->emem_adr_cfg_dev0, param->McEmemAdrCfgDev0);
+	write32(&regs->emem_adr_cfg_dev1, param->McEmemAdrCfgDev1);
 
 	/* Program bank swizzling */
-	writel(param->McEmemAdrCfgBankMask0, &regs->emem_bank_swizzle_cfg0);
-	writel(param->McEmemAdrCfgBankMask1, &regs->emem_bank_swizzle_cfg1);
-	writel(param->McEmemAdrCfgBankMask2, &regs->emem_bank_swizzle_cfg2);
-	writel(param->McEmemAdrCfgBankSwizzle3, &regs->emem_bank_swizzle_cfg3);
+	write32(&regs->emem_bank_swizzle_cfg0, param->McEmemAdrCfgBankMask0);
+	write32(&regs->emem_bank_swizzle_cfg1, param->McEmemAdrCfgBankMask1);
+	write32(&regs->emem_bank_swizzle_cfg2, param->McEmemAdrCfgBankMask2);
+	write32(&regs->emem_bank_swizzle_cfg3,
+		param->McEmemAdrCfgBankSwizzle3);
 
 	/* Program external memory aperature (base and size) */
-	writel(param->McEmemCfg, &regs->emem_cfg);
+	write32(&regs->emem_cfg, param->McEmemCfg);
 
 	/* Program SEC carveout (base and size) */
-	writel(param->McSecCarveoutBom, &regs->sec_carveout_bom);
-	writel(param->McSecCarveoutAdrHi, &regs->sec_carveout_adr_hi);
-	writel(param->McSecCarveoutSizeMb, &regs->sec_carveout_size_mb);
+	write32(&regs->sec_carveout_bom, param->McSecCarveoutBom);
+	write32(&regs->sec_carveout_adr_hi, param->McSecCarveoutAdrHi);
+	write32(&regs->sec_carveout_size_mb, param->McSecCarveoutSizeMb);
 
 	/* Program MTS carveout (base and size) */
-	writel(param->McMtsCarveoutBom, &regs->mts_carveout_bom);
-	writel(param->McMtsCarveoutAdrHi, &regs->mts_carveout_adr_hi);
-	writel(param->McMtsCarveoutSizeMb, &regs->mts_carveout_size_mb);
+	write32(&regs->mts_carveout_bom, param->McMtsCarveoutBom);
+	write32(&regs->mts_carveout_adr_hi, param->McMtsCarveoutAdrHi);
+	write32(&regs->mts_carveout_size_mb, param->McMtsCarveoutSizeMb);
 
 	/* Program the memory arbiter */
-	writel(param->McEmemArbCfg, &regs->emem_arb_cfg);
-	writel(param->McEmemArbOutstandingReq, &regs->emem_arb_outstanding_req);
-	writel(param->McEmemArbTimingRcd, &regs->emem_arb_timing_rcd);
-	writel(param->McEmemArbTimingRp, &regs->emem_arb_timing_rp);
-	writel(param->McEmemArbTimingRc, &regs->emem_arb_timing_rc);
-	writel(param->McEmemArbTimingRas, &regs->emem_arb_timing_ras);
-	writel(param->McEmemArbTimingFaw, &regs->emem_arb_timing_faw);
-	writel(param->McEmemArbTimingRrd, &regs->emem_arb_timing_rrd);
-	writel(param->McEmemArbTimingRap2Pre, &regs->emem_arb_timing_rap2pre);
-	writel(param->McEmemArbTimingWap2Pre, &regs->emem_arb_timing_wap2pre);
-	writel(param->McEmemArbTimingR2R, &regs->emem_arb_timing_r2r);
-	writel(param->McEmemArbTimingW2W, &regs->emem_arb_timing_w2w);
-	writel(param->McEmemArbTimingR2W, &regs->emem_arb_timing_r2w);
-	writel(param->McEmemArbTimingW2R, &regs->emem_arb_timing_w2r);
-	writel(param->McEmemArbDaTurns, &regs->emem_arb_da_turns);
-	writel(param->McEmemArbDaCovers, &regs->emem_arb_da_covers);
-	writel(param->McEmemArbMisc0, &regs->emem_arb_misc0);
-	writel(param->McEmemArbMisc1, &regs->emem_arb_misc1);
-	writel(param->McEmemArbRing1Throttle, &regs->emem_arb_ring1_throttle);
-	writel(param->McEmemArbOverride, &regs->emem_arb_override);
-	writel(param->McEmemArbOverride1, &regs->emem_arb_override_1);
-	writel(param->McEmemArbRsv, &regs->emem_arb_rsv);
+	write32(&regs->emem_arb_cfg, param->McEmemArbCfg);
+	write32(&regs->emem_arb_outstanding_req,
+		param->McEmemArbOutstandingReq);
+	write32(&regs->emem_arb_timing_rcd, param->McEmemArbTimingRcd);
+	write32(&regs->emem_arb_timing_rp, param->McEmemArbTimingRp);
+	write32(&regs->emem_arb_timing_rc, param->McEmemArbTimingRc);
+	write32(&regs->emem_arb_timing_ras, param->McEmemArbTimingRas);
+	write32(&regs->emem_arb_timing_faw, param->McEmemArbTimingFaw);
+	write32(&regs->emem_arb_timing_rrd, param->McEmemArbTimingRrd);
+	write32(&regs->emem_arb_timing_rap2pre, param->McEmemArbTimingRap2Pre);
+	write32(&regs->emem_arb_timing_wap2pre, param->McEmemArbTimingWap2Pre);
+	write32(&regs->emem_arb_timing_r2r, param->McEmemArbTimingR2R);
+	write32(&regs->emem_arb_timing_w2w, param->McEmemArbTimingW2W);
+	write32(&regs->emem_arb_timing_r2w, param->McEmemArbTimingR2W);
+	write32(&regs->emem_arb_timing_w2r, param->McEmemArbTimingW2R);
+	write32(&regs->emem_arb_da_turns, param->McEmemArbDaTurns);
+	write32(&regs->emem_arb_da_covers, param->McEmemArbDaCovers);
+	write32(&regs->emem_arb_misc0, param->McEmemArbMisc0);
+	write32(&regs->emem_arb_misc1, param->McEmemArbMisc1);
+	write32(&regs->emem_arb_ring1_throttle, param->McEmemArbRing1Throttle);
+	write32(&regs->emem_arb_override, param->McEmemArbOverride);
+	write32(&regs->emem_arb_override_1, param->McEmemArbOverride1);
+	write32(&regs->emem_arb_rsv, param->McEmemArbRsv);
 
 	/* Program extra snap levels for display client */
-	writel(param->McDisExtraSnapLevels, &regs->dis_extra_snap_levels);
+	write32(&regs->dis_extra_snap_levels, param->McDisExtraSnapLevels);
 
 	/* Trigger MC timing update */
-	writel(MC_TIMING_CONTROL_TIMING_UPDATE, &regs->timing_control);
+	write32(&regs->timing_control, MC_TIMING_CONTROL_TIMING_UPDATE);
 
 	/* Program second-level clock enable overrides */
-	writel(param->McClkenOverride, &regs->clken_override);
+	write32(&regs->clken_override, param->McClkenOverride);
 
 	/* Program statistics gathering */
-	writel(param->McStatControl, &regs->stat_control);
+	write32(&regs->stat_control, param->McStatControl);
 }
 
 static void sdram_init_emc(const struct sdram_params *param,
 			   struct tegra_emc_regs *regs)
 {
 	/* Program SDRAM geometry parameters */
-	writel(param->EmcAdrCfg, &regs->adr_cfg);
+	write32(&regs->adr_cfg, param->EmcAdrCfg);
 
 	/* Program second-level clock enable overrides */
-	writel(param->EmcClkenOverride, &regs->clken_override);
+	write32(&regs->clken_override, param->EmcClkenOverride);
 
 	/* Program EMC pad auto calibration */
-	writel(param->EmcAutoCalInterval, &regs->auto_cal_interval);
-	writel(param->EmcAutoCalConfig2, &regs->auto_cal_config2);
-	writel(param->EmcAutoCalConfig3, &regs->auto_cal_config3);
-	writel(param->EmcAutoCalConfig, &regs->auto_cal_config);
+	write32(&regs->auto_cal_interval, param->EmcAutoCalInterval);
+	write32(&regs->auto_cal_config2, param->EmcAutoCalConfig2);
+	write32(&regs->auto_cal_config3, param->EmcAutoCalConfig3);
+	write32(&regs->auto_cal_config, param->EmcAutoCalConfig);
 	udelay(param->EmcAutoCalWait);
 }
 
@@ -251,129 +254,129 @@ static void sdram_set_emc_timing(const struct sdram_params *param,
 				 struct tegra_emc_regs *regs)
 {
 	/* Program EMC timing configuration */
-	writel(param->EmcCfg2, &regs->cfg_2);
-	writel(param->EmcCfgPipe, &regs->cfg_pipe);
-	writel(param->EmcDbg, &regs->dbg);
-	writel(param->EmcCmdQ, &regs->cmdq);
-	writel(param->EmcMc2EmcQ, &regs->mc2emcq);
-	writel(param->EmcMrsWaitCnt, &regs->mrs_wait_cnt);
-	writel(param->EmcMrsWaitCnt2, &regs->mrs_wait_cnt2);
-	writel(param->EmcFbioCfg5, &regs->fbio_cfg5);
-	writel(param->EmcRc, &regs->rc);
-	writel(param->EmcRfc, &regs->rfc);
-	writel(param->EmcRfcSlr, &regs->rfc_slr);
-	writel(param->EmcRas, &regs->ras);
-	writel(param->EmcRp, &regs->rp);
-	writel(param->EmcR2r, &regs->r2r);
-	writel(param->EmcW2w, &regs->w2w);
-	writel(param->EmcR2w, &regs->r2w);
-	writel(param->EmcW2r, &regs->w2r);
-	writel(param->EmcR2p, &regs->r2p);
-	writel(param->EmcW2p, &regs->w2p);
-	writel(param->EmcRdRcd, &regs->rd_rcd);
-	writel(param->EmcWrRcd, &regs->wr_rcd);
-	writel(param->EmcRrd, &regs->rrd);
-	writel(param->EmcRext, &regs->rext);
-	writel(param->EmcWext, &regs->wext);
-	writel(param->EmcWdv, &regs->wdv);
-	writel(param->EmcWdvMask, &regs->wdv_mask);
-	writel(param->EmcQUse, &regs->quse);
-	writel(param->EmcQuseWidth, &regs->quse_width);
-	writel(param->EmcIbdly, &regs->ibdly);
-	writel(param->EmcEInput, &regs->einput);
-	writel(param->EmcEInputDuration, &regs->einput_duration);
-	writel(param->EmcPutermExtra, &regs->puterm_extra);
-	writel(param->EmcPutermWidth, &regs->puterm_width);
-	writel(param->EmcPutermAdj, &regs->puterm_adj);
-	writel(param->EmcCdbCntl1, &regs->cdb_cntl_1);
-	writel(param->EmcCdbCntl2, &regs->cdb_cntl_2);
-	writel(param->EmcCdbCntl3, &regs->cdb_cntl_3);
-	writel(param->EmcQRst, &regs->qrst);
-	writel(param->EmcQSafe, &regs->qsafe);
-	writel(param->EmcRdv, &regs->rdv);
-	writel(param->EmcRdvMask, &regs->rdv_mask);
-	writel(param->EmcQpop, &regs->qpop);
-	writel(param->EmcCtt, &regs->ctt);
-	writel(param->EmcCttDuration, &regs->ctt_duration);
-	writel(param->EmcRefresh, &regs->refresh);
-	writel(param->EmcBurstRefreshNum, &regs->burst_refresh_num);
-	writel(param->EmcPreRefreshReqCnt, &regs->pre_refresh_req_cnt);
-	writel(param->EmcPdEx2Wr, &regs->pdex2wr);
-	writel(param->EmcPdEx2Rd, &regs->pdex2rd);
-	writel(param->EmcPChg2Pden, &regs->pchg2pden);
-	writel(param->EmcAct2Pden, &regs->act2pden);
-	writel(param->EmcAr2Pden, &regs->ar2pden);
-	writel(param->EmcRw2Pden, &regs->rw2pden);
-	writel(param->EmcTxsr, &regs->txsr);
-	writel(param->EmcTxsrDll, &regs->txsrdll);
-	writel(param->EmcTcke, &regs->tcke);
-	writel(param->EmcTckesr, &regs->tckesr);
-	writel(param->EmcTpd, &regs->tpd);
-	writel(param->EmcTfaw, &regs->tfaw);
-	writel(param->EmcTrpab, &regs->trpab);
-	writel(param->EmcTClkStable, &regs->tclkstable);
-	writel(param->EmcTClkStop, &regs->tclkstop);
-	writel(param->EmcTRefBw, &regs->trefbw);
-	writel(param->EmcOdtWrite, &regs->odt_write);
-	writel(param->EmcOdtRead, &regs->odt_read);
-	writel(param->EmcFbioCfg6, &regs->fbio_cfg6);
-	writel(param->EmcCfgDigDll, &regs->cfg_dig_dll);
-	writel(param->EmcCfgDigDllPeriod, &regs->cfg_dig_dll_period);
+	write32(&regs->cfg_2, param->EmcCfg2);
+	write32(&regs->cfg_pipe, param->EmcCfgPipe);
+	write32(&regs->dbg, param->EmcDbg);
+	write32(&regs->cmdq, param->EmcCmdQ);
+	write32(&regs->mc2emcq, param->EmcMc2EmcQ);
+	write32(&regs->mrs_wait_cnt, param->EmcMrsWaitCnt);
+	write32(&regs->mrs_wait_cnt2, param->EmcMrsWaitCnt2);
+	write32(&regs->fbio_cfg5, param->EmcFbioCfg5);
+	write32(&regs->rc, param->EmcRc);
+	write32(&regs->rfc, param->EmcRfc);
+	write32(&regs->rfc_slr, param->EmcRfcSlr);
+	write32(&regs->ras, param->EmcRas);
+	write32(&regs->rp, param->EmcRp);
+	write32(&regs->r2r, param->EmcR2r);
+	write32(&regs->w2w, param->EmcW2w);
+	write32(&regs->r2w, param->EmcR2w);
+	write32(&regs->w2r, param->EmcW2r);
+	write32(&regs->r2p, param->EmcR2p);
+	write32(&regs->w2p, param->EmcW2p);
+	write32(&regs->rd_rcd, param->EmcRdRcd);
+	write32(&regs->wr_rcd, param->EmcWrRcd);
+	write32(&regs->rrd, param->EmcRrd);
+	write32(&regs->rext, param->EmcRext);
+	write32(&regs->wext, param->EmcWext);
+	write32(&regs->wdv, param->EmcWdv);
+	write32(&regs->wdv_mask, param->EmcWdvMask);
+	write32(&regs->quse, param->EmcQUse);
+	write32(&regs->quse_width, param->EmcQuseWidth);
+	write32(&regs->ibdly, param->EmcIbdly);
+	write32(&regs->einput, param->EmcEInput);
+	write32(&regs->einput_duration, param->EmcEInputDuration);
+	write32(&regs->puterm_extra, param->EmcPutermExtra);
+	write32(&regs->puterm_width, param->EmcPutermWidth);
+	write32(&regs->puterm_adj, param->EmcPutermAdj);
+	write32(&regs->cdb_cntl_1, param->EmcCdbCntl1);
+	write32(&regs->cdb_cntl_2, param->EmcCdbCntl2);
+	write32(&regs->cdb_cntl_3, param->EmcCdbCntl3);
+	write32(&regs->qrst, param->EmcQRst);
+	write32(&regs->qsafe, param->EmcQSafe);
+	write32(&regs->rdv, param->EmcRdv);
+	write32(&regs->rdv_mask, param->EmcRdvMask);
+	write32(&regs->qpop, param->EmcQpop);
+	write32(&regs->ctt, param->EmcCtt);
+	write32(&regs->ctt_duration, param->EmcCttDuration);
+	write32(&regs->refresh, param->EmcRefresh);
+	write32(&regs->burst_refresh_num, param->EmcBurstRefreshNum);
+	write32(&regs->pre_refresh_req_cnt, param->EmcPreRefreshReqCnt);
+	write32(&regs->pdex2wr, param->EmcPdEx2Wr);
+	write32(&regs->pdex2rd, param->EmcPdEx2Rd);
+	write32(&regs->pchg2pden, param->EmcPChg2Pden);
+	write32(&regs->act2pden, param->EmcAct2Pden);
+	write32(&regs->ar2pden, param->EmcAr2Pden);
+	write32(&regs->rw2pden, param->EmcRw2Pden);
+	write32(&regs->txsr, param->EmcTxsr);
+	write32(&regs->txsrdll, param->EmcTxsrDll);
+	write32(&regs->tcke, param->EmcTcke);
+	write32(&regs->tckesr, param->EmcTckesr);
+	write32(&regs->tpd, param->EmcTpd);
+	write32(&regs->tfaw, param->EmcTfaw);
+	write32(&regs->trpab, param->EmcTrpab);
+	write32(&regs->tclkstable, param->EmcTClkStable);
+	write32(&regs->tclkstop, param->EmcTClkStop);
+	write32(&regs->trefbw, param->EmcTRefBw);
+	write32(&regs->odt_write, param->EmcOdtWrite);
+	write32(&regs->odt_read, param->EmcOdtRead);
+	write32(&regs->fbio_cfg6, param->EmcFbioCfg6);
+	write32(&regs->cfg_dig_dll, param->EmcCfgDigDll);
+	write32(&regs->cfg_dig_dll_period, param->EmcCfgDigDllPeriod);
 
 	/* Don't write bit 1: addr swizzle lock bit. Written at end of sequence. */
-	writel(param->EmcFbioSpare & 0xfffffffd, &regs->fbio_spare);
+	write32(&regs->fbio_spare, param->EmcFbioSpare & 0xfffffffd);
 
-	writel(param->EmcCfgRsv, &regs->cfg_rsv);
-	writel(param->EmcDllXformDqs0, &regs->dll_xform_dqs0);
-	writel(param->EmcDllXformDqs1, &regs->dll_xform_dqs1);
-	writel(param->EmcDllXformDqs2, &regs->dll_xform_dqs2);
-	writel(param->EmcDllXformDqs3, &regs->dll_xform_dqs3);
-	writel(param->EmcDllXformDqs4, &regs->dll_xform_dqs4);
-	writel(param->EmcDllXformDqs5, &regs->dll_xform_dqs5);
-	writel(param->EmcDllXformDqs6, &regs->dll_xform_dqs6);
-	writel(param->EmcDllXformDqs7, &regs->dll_xform_dqs7);
-	writel(param->EmcDllXformDqs8, &regs->dll_xform_dqs8);
-	writel(param->EmcDllXformDqs9, &regs->dll_xform_dqs9);
-	writel(param->EmcDllXformDqs10, &regs->dll_xform_dqs10);
-	writel(param->EmcDllXformDqs11, &regs->dll_xform_dqs11);
-	writel(param->EmcDllXformDqs12, &regs->dll_xform_dqs12);
-	writel(param->EmcDllXformDqs13, &regs->dll_xform_dqs13);
-	writel(param->EmcDllXformDqs14, &regs->dll_xform_dqs14);
-	writel(param->EmcDllXformDqs15, &regs->dll_xform_dqs15);
-	writel(param->EmcDllXformQUse0, &regs->dll_xform_quse0);
-	writel(param->EmcDllXformQUse1, &regs->dll_xform_quse1);
-	writel(param->EmcDllXformQUse2, &regs->dll_xform_quse2);
-	writel(param->EmcDllXformQUse3, &regs->dll_xform_quse3);
-	writel(param->EmcDllXformQUse4, &regs->dll_xform_quse4);
-	writel(param->EmcDllXformQUse5, &regs->dll_xform_quse5);
-	writel(param->EmcDllXformQUse6, &regs->dll_xform_quse6);
-	writel(param->EmcDllXformQUse7, &regs->dll_xform_quse7);
-	writel(param->EmcDllXformQUse8, &regs->dll_xform_quse8);
-	writel(param->EmcDllXformQUse9, &regs->dll_xform_quse9);
-	writel(param->EmcDllXformQUse10, &regs->dll_xform_quse10);
-	writel(param->EmcDllXformQUse11, &regs->dll_xform_quse11);
-	writel(param->EmcDllXformQUse12, &regs->dll_xform_quse12);
-	writel(param->EmcDllXformQUse13, &regs->dll_xform_quse13);
-	writel(param->EmcDllXformQUse14, &regs->dll_xform_quse14);
-	writel(param->EmcDllXformQUse15, &regs->dll_xform_quse15);
-	writel(param->EmcDllXformDq0, &regs->dll_xform_dq0);
-	writel(param->EmcDllXformDq1, &regs->dll_xform_dq1);
-	writel(param->EmcDllXformDq2, &regs->dll_xform_dq2);
-	writel(param->EmcDllXformDq3, &regs->dll_xform_dq3);
-	writel(param->EmcDllXformDq4, &regs->dll_xform_dq4);
-	writel(param->EmcDllXformDq5, &regs->dll_xform_dq5);
-	writel(param->EmcDllXformDq6, &regs->dll_xform_dq6);
-	writel(param->EmcDllXformDq7, &regs->dll_xform_dq7);
-	writel(param->EmcDllXformAddr0, &regs->dll_xform_addr0);
-	writel(param->EmcDllXformAddr1, &regs->dll_xform_addr1);
-	writel(param->EmcDllXformAddr2, &regs->dll_xform_addr2);
-	writel(param->EmcDllXformAddr3, &regs->dll_xform_addr3);
-	writel(param->EmcDllXformAddr4, &regs->dll_xform_addr4);
-	writel(param->EmcDllXformAddr5, &regs->dll_xform_addr5);
-	writel(param->EmcAcpdControl, &regs->acpd_control);
-	writel(param->EmcDsrVttgenDrv, &regs->dsr_vttgen_drv);
-	writel(param->EmcTxdsrvttgen, &regs->txdsrvttgen);
-	writel(param->EmcBgbiasCtl0, &regs->bgbias_ctl0);
+	write32(&regs->cfg_rsv, param->EmcCfgRsv);
+	write32(&regs->dll_xform_dqs0, param->EmcDllXformDqs0);
+	write32(&regs->dll_xform_dqs1, param->EmcDllXformDqs1);
+	write32(&regs->dll_xform_dqs2, param->EmcDllXformDqs2);
+	write32(&regs->dll_xform_dqs3, param->EmcDllXformDqs3);
+	write32(&regs->dll_xform_dqs4, param->EmcDllXformDqs4);
+	write32(&regs->dll_xform_dqs5, param->EmcDllXformDqs5);
+	write32(&regs->dll_xform_dqs6, param->EmcDllXformDqs6);
+	write32(&regs->dll_xform_dqs7, param->EmcDllXformDqs7);
+	write32(&regs->dll_xform_dqs8, param->EmcDllXformDqs8);
+	write32(&regs->dll_xform_dqs9, param->EmcDllXformDqs9);
+	write32(&regs->dll_xform_dqs10, param->EmcDllXformDqs10);
+	write32(&regs->dll_xform_dqs11, param->EmcDllXformDqs11);
+	write32(&regs->dll_xform_dqs12, param->EmcDllXformDqs12);
+	write32(&regs->dll_xform_dqs13, param->EmcDllXformDqs13);
+	write32(&regs->dll_xform_dqs14, param->EmcDllXformDqs14);
+	write32(&regs->dll_xform_dqs15, param->EmcDllXformDqs15);
+	write32(&regs->dll_xform_quse0, param->EmcDllXformQUse0);
+	write32(&regs->dll_xform_quse1, param->EmcDllXformQUse1);
+	write32(&regs->dll_xform_quse2, param->EmcDllXformQUse2);
+	write32(&regs->dll_xform_quse3, param->EmcDllXformQUse3);
+	write32(&regs->dll_xform_quse4, param->EmcDllXformQUse4);
+	write32(&regs->dll_xform_quse5, param->EmcDllXformQUse5);
+	write32(&regs->dll_xform_quse6, param->EmcDllXformQUse6);
+	write32(&regs->dll_xform_quse7, param->EmcDllXformQUse7);
+	write32(&regs->dll_xform_quse8, param->EmcDllXformQUse8);
+	write32(&regs->dll_xform_quse9, param->EmcDllXformQUse9);
+	write32(&regs->dll_xform_quse10, param->EmcDllXformQUse10);
+	write32(&regs->dll_xform_quse11, param->EmcDllXformQUse11);
+	write32(&regs->dll_xform_quse12, param->EmcDllXformQUse12);
+	write32(&regs->dll_xform_quse13, param->EmcDllXformQUse13);
+	write32(&regs->dll_xform_quse14, param->EmcDllXformQUse14);
+	write32(&regs->dll_xform_quse15, param->EmcDllXformQUse15);
+	write32(&regs->dll_xform_dq0, param->EmcDllXformDq0);
+	write32(&regs->dll_xform_dq1, param->EmcDllXformDq1);
+	write32(&regs->dll_xform_dq2, param->EmcDllXformDq2);
+	write32(&regs->dll_xform_dq3, param->EmcDllXformDq3);
+	write32(&regs->dll_xform_dq4, param->EmcDllXformDq4);
+	write32(&regs->dll_xform_dq5, param->EmcDllXformDq5);
+	write32(&regs->dll_xform_dq6, param->EmcDllXformDq6);
+	write32(&regs->dll_xform_dq7, param->EmcDllXformDq7);
+	write32(&regs->dll_xform_addr0, param->EmcDllXformAddr0);
+	write32(&regs->dll_xform_addr1, param->EmcDllXformAddr1);
+	write32(&regs->dll_xform_addr2, param->EmcDllXformAddr2);
+	write32(&regs->dll_xform_addr3, param->EmcDllXformAddr3);
+	write32(&regs->dll_xform_addr4, param->EmcDllXformAddr4);
+	write32(&regs->dll_xform_addr5, param->EmcDllXformAddr5);
+	write32(&regs->acpd_control, param->EmcAcpdControl);
+	write32(&regs->dsr_vttgen_drv, param->EmcDsrVttgenDrv);
+	write32(&regs->txdsrvttgen, param->EmcTxdsrvttgen);
+	write32(&regs->bgbias_ctl0, param->EmcBgbiasCtl0);
 
 	/*
 	 * Set pipe bypass enable bits before sending any DRAM commands.
@@ -393,8 +396,8 @@ static void sdram_patch_bootrom(const struct sdram_params *param,
 				  BOOT_ROM_PATCH_CONTROL_OFFSET_MASK) >>
 				  BOOT_ROM_PATCH_CONTROL_OFFSET_SHIFT);
 		addr = BOOT_ROM_PATCH_CONTROL_BASE_ADDRESS + (addr << 2);
-		writel(param->BootRomPatchData, (uint32_t *)addr);
-		writel(1, &regs->timing_control);
+		write32((uint32_t *)addr, param->BootRomPatchData);
+		write32(&regs->timing_control, 1);
 	}
 }
 
@@ -402,7 +405,7 @@ static void sdram_set_dpd3(const struct sdram_params *param,
 			   struct tegra_pmc_regs *regs)
 {
 	/* Program DPD request */
-	writel(param->PmcIoDpd3Req, &regs->io_dpd3_req);
+	write32(&regs->io_dpd3_req, param->PmcIoDpd3Req);
 	udelay(param->PmcIoDpd3ReqWait);
 }
 
@@ -410,27 +413,27 @@ static void sdram_set_dli_trims(const struct sdram_params *param,
 				struct tegra_emc_regs *regs)
 {
 	/* Program DLI trims */
-	writel(param->EmcDliTrimTxDqs0, &regs->dli_trim_txdqs0);
-	writel(param->EmcDliTrimTxDqs1, &regs->dli_trim_txdqs1);
-	writel(param->EmcDliTrimTxDqs2, &regs->dli_trim_txdqs2);
-	writel(param->EmcDliTrimTxDqs3, &regs->dli_trim_txdqs3);
-	writel(param->EmcDliTrimTxDqs4, &regs->dli_trim_txdqs4);
-	writel(param->EmcDliTrimTxDqs5, &regs->dli_trim_txdqs5);
-	writel(param->EmcDliTrimTxDqs6, &regs->dli_trim_txdqs6);
-	writel(param->EmcDliTrimTxDqs7, &regs->dli_trim_txdqs7);
-	writel(param->EmcDliTrimTxDqs8, &regs->dli_trim_txdqs8);
-	writel(param->EmcDliTrimTxDqs9, &regs->dli_trim_txdqs9);
-	writel(param->EmcDliTrimTxDqs10, &regs->dli_trim_txdqs10);
-	writel(param->EmcDliTrimTxDqs11, &regs->dli_trim_txdqs11);
-	writel(param->EmcDliTrimTxDqs12, &regs->dli_trim_txdqs12);
-	writel(param->EmcDliTrimTxDqs13, &regs->dli_trim_txdqs13);
-	writel(param->EmcDliTrimTxDqs14, &regs->dli_trim_txdqs14);
-	writel(param->EmcDliTrimTxDqs15, &regs->dli_trim_txdqs15);
+	write32(&regs->dli_trim_txdqs0, param->EmcDliTrimTxDqs0);
+	write32(&regs->dli_trim_txdqs1, param->EmcDliTrimTxDqs1);
+	write32(&regs->dli_trim_txdqs2, param->EmcDliTrimTxDqs2);
+	write32(&regs->dli_trim_txdqs3, param->EmcDliTrimTxDqs3);
+	write32(&regs->dli_trim_txdqs4, param->EmcDliTrimTxDqs4);
+	write32(&regs->dli_trim_txdqs5, param->EmcDliTrimTxDqs5);
+	write32(&regs->dli_trim_txdqs6, param->EmcDliTrimTxDqs6);
+	write32(&regs->dli_trim_txdqs7, param->EmcDliTrimTxDqs7);
+	write32(&regs->dli_trim_txdqs8, param->EmcDliTrimTxDqs8);
+	write32(&regs->dli_trim_txdqs9, param->EmcDliTrimTxDqs9);
+	write32(&regs->dli_trim_txdqs10, param->EmcDliTrimTxDqs10);
+	write32(&regs->dli_trim_txdqs11, param->EmcDliTrimTxDqs11);
+	write32(&regs->dli_trim_txdqs12, param->EmcDliTrimTxDqs12);
+	write32(&regs->dli_trim_txdqs13, param->EmcDliTrimTxDqs13);
+	write32(&regs->dli_trim_txdqs14, param->EmcDliTrimTxDqs14);
+	write32(&regs->dli_trim_txdqs15, param->EmcDliTrimTxDqs15);
 
-	writel(param->EmcCaTrainingTimingCntl1,
-	       &regs->ca_training_timing_cntl1);
-	writel(param->EmcCaTrainingTimingCntl2,
-	       &regs->ca_training_timing_cntl2);
+	write32(&regs->ca_training_timing_cntl1,
+		param->EmcCaTrainingTimingCntl1);
+	write32(&regs->ca_training_timing_cntl2,
+		param->EmcCaTrainingTimingCntl2);
 
 	sdram_trigger_emc_timing_update(regs);
 	udelay(param->EmcTimingControlWait);
@@ -446,7 +449,7 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 	 * Assert dummy read of PIN register to ensure above write to PIN
 	 * register went through. 200 is the recommended value by NVIDIA.
 	 */
-	dummy |= readl(&regs->pin);
+	dummy |= read32(&regs->pin);
 	udelay(200 + param->EmcPinExtraWait);
 
 	/* Deassert reset */
@@ -455,7 +458,7 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 	 * Assert dummy read of PIN register to ensure above write to PIN
 	 * register went through. 200 is the recommended value by NVIDIA.
 	 */
-	dummy |= readl(&regs->pin);
+	dummy |= read32(&regs->pin);
 	udelay(500 + param->EmcPinExtraWait);
 
 	/* Enable clock enable signal */
@@ -464,7 +467,7 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 	 * Assert dummy read of PIN register to ensure above write to PIN
 	 * register went through. 200 is the recommended value by NVIDIA.
 	 */
-	dummy |= readl(&regs->pin);
+	dummy |= read32(&regs->pin);
 	udelay(param->EmcPinProgramWait);
 
 	if (!dummy) {
@@ -478,13 +481,13 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 		  EMC_NOP_NOP_CMD_MASK | EMC_NOP_NOP_DEV_SELECTN_MASK);
 
 	/* Write mode registers */
-	writel(param->EmcEmrs2, &regs->emrs2);
-	writel(param->EmcEmrs3, &regs->emrs3);
-	writel(param->EmcEmrs, &regs->emrs);
-	writel(param->EmcMrs, &regs->mrs);
+	write32(&regs->emrs2, param->EmcEmrs2);
+	write32(&regs->emrs3, param->EmcEmrs3);
+	write32(&regs->emrs, param->EmcEmrs);
+	write32(&regs->mrs, param->EmcMrs);
 
 	if (param->EmcExtraModeRegWriteEnable) {
-		writel(param->EmcMrwExtra, &regs->mrs);
+		write32(&regs->mrs, param->EmcMrwExtra);
 	}
 }
 
@@ -494,11 +497,11 @@ static void sdram_init_zq_calibration(const struct sdram_params *param,
 	if ((param->EmcZcalWarmColdBootEnables &
 	     EMC_ZCAL_WARM_COLD_BOOT_ENABLES_COLDBOOT_MASK) == 1) {
 		/* Need to initialize ZCAL on coldboot. */
-		writel(param->EmcZcalInitDev0, &regs->zq_cal);
+		write32(&regs->zq_cal, param->EmcZcalInitDev0);
 		udelay(param->EmcZcalInitWait);
 
 		if ((param->EmcDevSelect & 2) == 0) {
-			writel(param->EmcZcalInitDev1, &regs->zq_cal);
+			write32(&regs->zq_cal, param->EmcZcalInitDev1);
 			udelay(param->EmcZcalInitWait);
 		}
 	} else {
@@ -510,9 +513,9 @@ static void sdram_set_zq_calibration(const struct sdram_params *param,
 				     struct tegra_emc_regs *regs)
 {
 	/* Start periodic ZQ calibration */
-	writel(param->EmcZcalInterval, &regs->zcal_interval);
-	writel(param->EmcZcalWaitCnt, &regs->zcal_wait_cnt);
-	writel(param->EmcZcalMrwCmd, &regs->zcal_mrw_cmd);
+	write32(&regs->zcal_interval, param->EmcZcalInterval);
+	write32(&regs->zcal_wait_cnt, param->EmcZcalWaitCnt);
+	write32(&regs->zcal_mrw_cmd, param->EmcZcalMrwCmd);
 }
 
 static void sdram_set_refresh(const struct sdram_params *param,
@@ -530,15 +533,15 @@ static void sdram_set_refresh(const struct sdram_params *param,
 	}
 
 	/* Enable refresh */
-	writel((param->EmcDevSelect | EMC_REFCTRL_REF_VALID_ENABLED),
-	       &regs->refctrl);
+	write32(&regs->refctrl,
+		(param->EmcDevSelect | EMC_REFCTRL_REF_VALID_ENABLED));
 
-	writel(param->EmcDynSelfRefControl, &regs->dyn_self_ref_control);
-	writel(param->EmcCfg, &regs->cfg);
-	writel(param->EmcSelDpdCtrl, &regs->sel_dpd_ctrl);
+	write32(&regs->dyn_self_ref_control, param->EmcDynSelfRefControl);
+	write32(&regs->cfg, param->EmcCfg);
+	write32(&regs->sel_dpd_ctrl, param->EmcSelDpdCtrl);
 
 	/* Write addr swizzle lock bit */
-	writel(param->EmcFbioSpare, &regs->fbio_spare);
+	write32(&regs->fbio_spare, param->EmcFbioSpare);
 
 	/* Re-trigger timing to latch power saving functions */
 	sdram_trigger_emc_timing_update(regs);
@@ -556,12 +559,13 @@ static void sdram_lock_carveouts(const struct sdram_params *param,
 				 struct tegra_mc_regs *regs)
 {
 	/* Lock carveouts, and emem_cfg registers */
-	writel(param->McVideoProtectWriteAccess, &regs->video_protect_reg_ctrl);
-	writel(MC_EMEM_CFG_ACCESS_CTRL_WRITE_ACCESS_DISABLED,
-	       &regs->emem_cfg_access_ctrl);
-	writel(param->McSecCarveoutProtectWriteAccess,
-	       &regs->sec_carveout_reg_ctrl);
-	writel(param->McMtsCarveoutRegCtrl, &regs->mts_carveout_reg_ctrl);
+	write32(&regs->video_protect_reg_ctrl,
+		param->McVideoProtectWriteAccess);
+	write32(&regs->emem_cfg_access_ctrl,
+		MC_EMEM_CFG_ACCESS_CTRL_WRITE_ACCESS_DISABLED);
+	write32(&regs->sec_carveout_reg_ctrl,
+		param->McSecCarveoutProtectWriteAccess);
+	write32(&regs->mts_carveout_reg_ctrl, param->McMtsCarveoutRegCtrl);
 }
 
 void sdram_init(const struct sdram_params *param)
@@ -616,7 +620,7 @@ void sdram_init(const struct sdram_params *param)
 uint32_t sdram_get_ram_code(void)
 {
 	struct tegra_pmc_regs *pmc = (struct tegra_pmc_regs*)TEGRA_PMC_BASE;
-	return ((readl(&pmc->strapping_opt_a) &
+	return ((read32(&pmc->strapping_opt_a) &
 		 PMC_STRAPPING_OPT_A_RAM_CODE_MASK) >>
 		PMC_STRAPPING_OPT_A_RAM_CODE_SHIFT);
 }

@@ -43,13 +43,13 @@ static struct tegra_mipi mipi_data = {
 static inline unsigned long tegra_mipi_readl(struct tegra_mipi *mipi,
 					     unsigned long reg)
 {
-	return readl(mipi->regs + (reg << 2));
+	return read32(mipi->regs + (reg << 2));
 }
 
 static inline void tegra_mipi_writel(struct tegra_mipi *mipi,
 				     unsigned long value, unsigned long reg)
 {
-	writel(value, mipi->regs + (reg << 2));
+	write32(mipi->regs + (reg << 2), value);
 }
 
 static const struct calibration_regs tegra124_mipi_calibration_regs[] = {

@@ -38,7 +38,7 @@ void bootblock_mainboard_early_init()
 {
 	if (IS_ENABLED(CONFIG_DRIVERS_UART)) {
 		assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE);
-		writel(IOMUX_UART2, &rk3288_grf->iomux_uart2);
+		write32(&rk3288_grf->iomux_uart2, IOMUX_UART2);
 	}
 
 }
@@ -62,12 +62,12 @@ void bootblock_mainboard_init(void)
 	rkclk_configure_cpu();
 
 	/* i2c1 for tpm */
-	writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);
+	write32(&rk3288_grf->iomux_i2c1, IOMUX_I2C1);
 	i2c_init(1, 400*KHz);
 
 	/* spi2 for firmware ROM */
-	writel(IOMUX_SPI2_CSCLK, &rk3288_grf->iomux_spi2csclk);
-	writel(IOMUX_SPI2_TXRX, &rk3288_grf->iomux_spi2txrx);
+	write32(&rk3288_grf->iomux_spi2csclk, IOMUX_SPI2_CSCLK);
+	write32(&rk3288_grf->iomux_spi2txrx, IOMUX_SPI2_TXRX);
 	rockchip_spi_init(CONFIG_BOOT_MEDIA_SPI_BUS, 11*MHz);
 
 	setup_chromeos_gpios();

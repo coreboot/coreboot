@@ -36,7 +36,7 @@ static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 static void set_clock_sources(void)
 {
 	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
-	writel(PLLP << CLK_SOURCE_SHIFT, &clk_rst->clk_src_uarta);
+	write32(&clk_rst->clk_src_uarta, PLLP << CLK_SOURCE_SHIFT);
 
 	clock_configure_source(mselect, PLLP, 102000);
 

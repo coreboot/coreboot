@@ -117,34 +117,34 @@ static struct s3c24x0_i2c_bus i2c_busses[] = {
 
 static int i2c_int_pending(struct i2c_regs *regs)
 {
-	return readb(&regs->con) & I2cConIntPending;
+	return read8(&regs->con) & I2cConIntPending;
 }
 
 static void i2c_clear_int(struct i2c_regs *regs)
 {
-	writeb(readb(&regs->con) & ~I2cConIntPending, &regs->con);
+	write8(&regs->con, read8(&regs->con) & ~I2cConIntPending);
 }
 
 static void i2c_ack_enable(struct i2c_regs *regs)
 {
-	writeb(readb(&regs->con) | I2cConAckGen, &regs->con);
+	write8(&regs->con, read8(&regs->con) | I2cConAckGen);
 }
 
 static void i2c_ack_disable(struct i2c_regs *regs)
 {
-	writeb(readb(&regs->con) & ~I2cConAckGen, &regs->con);
+	write8(&regs->con, read8(&regs->con) & ~I2cConAckGen);
 }
 
 static int i2c_got_ack(struct i2c_regs *regs)
 {
-	return !(readb(&regs->stat) & I2cStatAck);
+	return !(read8(&regs->stat) & I2cStatAck);
 }
 
 static int i2c_wait_for_idle(struct i2c_regs *regs)
 {
 	int timeout = 1000 * 100; // 1s.
 	while (timeout--) {
-		if (!(readb(&regs->stat) & I2cStatBusy))
+		if (!(read8(&regs->stat) & I2cStatBusy))
 			return 0;
 		udelay(10);
 	}
@@ -169,17 +169,17 @@ static int i2c_wait_for_int(struct i2c_regs *regs)
 
 static int i2c_send_stop(struct i2c_regs *regs)
 {
-	uint8_t mode = readb(&regs->stat) & (I2cStatModeMask);
-	writeb(mode | I2cStatEnable, &regs->stat);
+	uint8_t mode = read8(&regs->stat) & (I2cStatModeMask);
+	write8(&regs->stat, mode | I2cStatEnable);
 	i2c_clear_int(regs);
 	return i2c_wait_for_idle(regs);
 }
 
 static int i2c_send_start(struct i2c_regs *regs, int read, int chip)
 {
-	writeb(chip << 1, &regs->ds);
+	write8(&regs->ds, chip << 1);
 	uint8_t mode = read ? I2cStatMasterRecv : I2cStatMasterXmit;
-	writeb(mode | I2cStatStartStop | I2cStatEnable, &regs->stat);
+	write8(&regs->stat, mode | I2cStatStartStop | I2cStatEnable);
 	i2c_clear_int(regs);
 
 	if (i2c_wait_for_int(regs))
@@ -201,7 +201,7 @@ static int i2c_xmit_buf(struct i2c_regs *regs, uint8_t *data, int len)
 
 	int i;
 	for (i = 0; i < len; i++) {
-		writeb(data[i], &regs->ds);
+		write8(&regs->ds, data[i]);
 
 		i2c_clear_int(regs);
 		if (i2c_wait_for_int(regs))
@@ -231,7 +231,7 @@ static int i2c_recv_buf(struct i2c_regs *regs, uint8_t *data, int len)
 		if (i2c_wait_for_int(regs))
 			return 1;
 
-		data[i] = readb(&regs->ds);
+		data[i] = read8(&regs->ds);
 	}
 
 	return 0;
@@ -246,7 +246,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
 	if (!regs || i2c_wait_for_idle(regs))
 		return 1;
 
-	writeb(I2cStatMasterXmit | I2cStatEnable, &regs->stat);
+	write8(&regs->stat, I2cStatMasterXmit | I2cStatEnable);
 
 	int i;
 	for (i = 0; i < seg_count; i++) {
@@ -286,11 +286,11 @@ void i2c_init(unsigned bus, int speed, int slaveadd)
 
 	// Set prescaler, divisor according to freq, also set ACKGEN, IRQ.
 	val = (div & 0x0f) | 0xa0 | ((pres == 512) ? 0x40 : 0);
-	writel(val, &i2c->regs->con);
+	write32(&i2c->regs->con, val);
 
 	// Init to SLAVE RECEIVE mode and clear I2CADDn.
-	writel(0, &i2c->regs->stat);
-	writel(slaveadd, &i2c->regs->add);
+	write32(&i2c->regs->stat, 0);
+	write32(&i2c->regs->add, slaveadd);
 	// program Master Transmit (and implicit STOP).
-	writel(I2cStatMasterXmit | I2cStatEnable, &i2c->regs->stat);
+	write32(&i2c->regs->stat, I2cStatMasterXmit | I2cStatEnable);
 }

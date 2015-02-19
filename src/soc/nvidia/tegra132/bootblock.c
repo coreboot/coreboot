@@ -46,7 +46,7 @@ static void save_odmdata(void)
 	bct_offset = read32((void *)(TEGRA_SRAM_BASE + BCT_OFFSET_IN_BIT));
 	if (bct_offset > TEGRA_SRAM_BASE && bct_offset < TEGRA_SRAM_MAX) {
 		odmdata = read32((void *)(bct_offset + ODMDATA_OFFSET_IN_BCT));
-		writel(odmdata, &pmc->odmdata);
+		write32(&pmc->odmdata, odmdata);
 	}
 }
 

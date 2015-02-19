@@ -187,9 +187,9 @@ void trustzone_region_init(void)
 		return;
 
 	/* Set the carveout region. */
-	writel(tz_base_mib << 20, &mc->security_cfg0);
-	writel(tz_size_mib, &mc->security_cfg1);
+	write32(&mc->security_cfg0, tz_base_mib << 20);
+	write32(&mc->security_cfg1, tz_size_mib);
 
 	/* Enable SMMU translations */
-	writel(MC_SMMU_CONFIG_ENABLE, &mc->smmu_config);
+	write32(&mc->smmu_config, MC_SMMU_CONFIG_ENABLE);
 }

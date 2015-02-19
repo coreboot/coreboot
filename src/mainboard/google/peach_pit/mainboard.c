@@ -429,8 +429,8 @@ static void mainboard_init(device_t dev)
 	 * been found to come up as 3. This means FIMD SYSMMU is on by
 	 * default on Exynos5420. For now we are disabling FIMD SYSMMU.
 	 */
-	writel(0x0, (void *)0x14640000);
-	writel(0x0, (void *)0x14680000);
+	write32((void *)0x14640000, 0x0);
+	write32((void *)0x14680000, 0x0);
 
 	lcd_vdd();
 

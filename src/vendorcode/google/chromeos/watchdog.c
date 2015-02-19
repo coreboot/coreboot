@@ -29,14 +29,14 @@
 
 void elog_add_watchdog_reset(void)
 {
-	if (readl(_watchdog_tombstone) == WATCHDOG_TOMBSTONE_MAGIC)
+	if (read32(_watchdog_tombstone) == WATCHDOG_TOMBSTONE_MAGIC)
 		elog_add_event(ELOG_TYPE_ASYNC_HW_TIMER_EXPIRED);
-	writel(0, _watchdog_tombstone);
+	write32(_watchdog_tombstone, 0);
 }
 
 void reboot_from_watchdog(void)
 {
 	printk(BIOS_INFO, "Last reset was watchdog, reboot again to reset TPM!\n");
-	writel(WATCHDOG_TOMBSTONE_MAGIC, _watchdog_tombstone);
+	write32(_watchdog_tombstone, WATCHDOG_TOMBSTONE_MAGIC);
 	hard_reset();
 }

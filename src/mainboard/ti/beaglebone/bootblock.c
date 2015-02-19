@@ -29,7 +29,7 @@ void bootblock_mainboard_init(void)
 	void *uart_clock_ctrl = NULL;
 
 	/* Enable the GPIO module */
-	writel((0x2 << 0) | (1 << 18), (uint32_t *)(0x44e00000 + 0xac));
+	write32((uint32_t *)(0x44e00000 + 0xac), (0x2 << 0) | (1 << 18));
 
 	/* Disable interrupts from these GPIOs */
 	setbits_le32((uint32_t *)(0x4804c000 + 0x3c), 0xf << 21);
@@ -62,7 +62,7 @@ void bootblock_mainboard_init(void)
 		uart_clock_ctrl = (void *)(uintptr_t)(0x44e00000 + 0x38);
 	}
 	if (uart_clock_ctrl)
-		writel(0x2, uart_clock_ctrl);
+		write32(uart_clock_ctrl, 0x2);
 
 	/* Start monotonic timer */
 	//rtc_start();

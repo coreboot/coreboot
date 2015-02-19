@@ -63,19 +63,19 @@ static void tegra132_uart_init(struct tegra132_uart *uart_ptr)
 	tegra132_uart_tx_flush(uart_ptr);
 
 	// Disable interrupts.
-	writeb(0, &uart_ptr->ier);
+	write8(&uart_ptr->ier, 0);
 	// Force DTR and RTS to high.
-	writeb(UART8250_MCR_DTR | UART8250_MCR_RTS, &uart_ptr->mcr);
+	write8(&uart_ptr->mcr, UART8250_MCR_DTR | UART8250_MCR_RTS);
 	// Set line configuration, access divisor latches.
-	writeb(UART8250_LCR_DLAB | line_config, &uart_ptr->lcr);
+	write8(&uart_ptr->lcr, UART8250_LCR_DLAB | line_config);
 	// Set the divisor.
-	writeb(divisor & 0xff, &uart_ptr->dll);
-	writeb((divisor >> 8) & 0xff, &uart_ptr->dlm);
+	write8(&uart_ptr->dll, divisor & 0xff);
+	write8(&uart_ptr->dlm, (divisor >> 8) & 0xff);
 	// Hide the divisor latches.
-	writeb(line_config, &uart_ptr->lcr);
+	write8(&uart_ptr->lcr, line_config);
 	// Enable FIFOs, and clear receive and transmit.
-	writeb(UART8250_FCR_FIFO_EN | UART8250_FCR_CLEAR_RCVR | UART8250_FCR_CLEAR_XMIT,
-	       &uart_ptr->fcr);
+	write8(&uart_ptr->fcr,
+	       UART8250_FCR_FIFO_EN | UART8250_FCR_CLEAR_RCVR | UART8250_FCR_CLEAR_XMIT);
 }
 
 static unsigned char tegra132_uart_rx_byte(struct tegra132_uart *uart_ptr)
@@ -88,7 +88,7 @@ static unsigned char tegra132_uart_rx_byte(struct tegra132_uart *uart_ptr)
 static void tegra132_uart_tx_byte(struct tegra132_uart *uart_ptr, unsigned char data)
 {
 	while (!(read8(&uart_ptr->lsr) & UART8250_LSR_THRE));
-	writeb(data, &uart_ptr->thr);
+	write8(&uart_ptr->thr, data);
 }
 
 static void tegra132_uart_tx_flush(struct tegra132_uart *uart_ptr)

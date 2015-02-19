@@ -68,18 +68,18 @@ gsbi_return_t gsbi_init(gsbi_id_t gsbi_id, gsbi_protocol_t protocol)
 	if (!gsbi_ctl)
 		return GSBI_ID_ERROR;
 
-	writel((1 << GSBI_HCLK_CTL_GATE_ENA) | (1 << GSBI_HCLK_CTL_BRANCH_ENA),
-		GSBI_HCLK_CTL(gsbi_id));
+	write32(GSBI_HCLK_CTL(gsbi_id),
+		(1 << GSBI_HCLK_CTL_GATE_ENA) | (1 << GSBI_HCLK_CTL_BRANCH_ENA));
 
 	if (gsbi_init_board(gsbi_id))
 		return GSBI_UNSUPPORTED;
 
-	writel(0, GSBI_QUP_APSS_NS_REG(gsbi_id));
-	writel(0, GSBI_QUP_APSS_MD_REG(gsbi_id));
+	write32(GSBI_QUP_APSS_NS_REG(gsbi_id), 0);
+	write32(GSBI_QUP_APSS_MD_REG(gsbi_id), 0);
 
 	reg_val = ((m & GSBI_QUP_APPS_M_MASK) << GSBI_QUP_APPS_M_SHFT) |
 		  ((~n & GSBI_QUP_APPS_D_MASK) << GSBI_QUP_APPS_D_SHFT);
-	writel(reg_val, GSBI_QUP_APSS_MD_REG(gsbi_id));
+	write32(GSBI_QUP_APSS_MD_REG(gsbi_id), reg_val);
 
 	reg_val = (((~(n - m)) & GSBI_QUP_APPS_N_MASK) <<
 					GSBI_QUP_APPS_N_SHFT) |
@@ -88,18 +88,18 @@ gsbi_return_t gsbi_init(gsbi_id_t gsbi_id, gsbi_protocol_t protocol)
 		  (((pre_div - 1) & GSBI_QUP_APPS_PRE_DIV_MSK) <<
 				 GSBI_QUP_APPS_PRE_DIV_SFT) |
 		  (src & GSBI_QUP_APPS_SRC_SEL_MSK);
-	writel(reg_val, GSBI_QUP_APSS_NS_REG(gsbi_id));
+	write32(GSBI_QUP_APSS_NS_REG(gsbi_id), reg_val);
 
 	reg_val |= (1 << GSBI_QUP_APPS_ROOT_ENA_SFT) |
 		   (1 << GSBI_QUP_APPS_MNCTR_EN_SFT);
-	writel(reg_val, GSBI_QUP_APSS_NS_REG(gsbi_id));
+	write32(GSBI_QUP_APSS_NS_REG(gsbi_id), reg_val);
 
 	reg_val |= (1 << GSBI_QUP_APPS_BRANCH_ENA_SFT);
-	writel(reg_val, GSBI_QUP_APSS_NS_REG(gsbi_id));
+	write32(GSBI_QUP_APSS_NS_REG(gsbi_id), reg_val);
 
 	/*Select i2c protocol*/
-	writel(((GSBI_CTL_PROTO_I2C & GSBI_CTL_PROTO_CODE_MSK) <<
-					GSBI_CTL_PROTO_CODE_SFT), gsbi_ctl);
+	write32(gsbi_ctl,
+		((GSBI_CTL_PROTO_I2C & GSBI_CTL_PROTO_CODE_MSK) << GSBI_CTL_PROTO_CODE_SFT));
 
 	return GSBI_SUCCESS;
 }

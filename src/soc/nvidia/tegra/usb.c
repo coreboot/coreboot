@@ -126,7 +126,7 @@ static void usb_ehci_reset_and_prepare(struct usb_ctlr *usb, enum usb_phy_type t
 {
 	int timeout = 1000;
 
-	writel(1 << 1, &usb->ehci_usbcmd);	/* Host Controller Reset */
+	write32(&usb->ehci_usbcmd, 1 << 1);	/* Host Controller Reset */
 	/* TODO: Resets are long, find way to parallelize... or just use XHCI */
 	while (--timeout && (read32(&usb->ehci_usbcmd) & 1 << 1))
 		/* wait for HC to reset */;
@@ -137,11 +137,11 @@ static void usb_ehci_reset_and_prepare(struct usb_ctlr *usb, enum usb_phy_type t
 	}
 
 	/* Controller mode: HOST */
-	writel(3 << 0, &usb->usb_mode);
+	write32(&usb->usb_mode, 3 << 0);
 	/* Parallel transceiver selct */
-	writel(type << 29, &usb->lpm_ctrl);
+	write32(&usb->lpm_ctrl, type << 29);
 	/* Tx FIFO Burst thresh */
-	writel(0x10 << 16, &usb->tx_fill_tuning);
+	write32(&usb->tx_fill_tuning, 0x10 << 16);
 }
 
 /* Assume USBx clocked, out of reset, UTMI+ PLL set up, SAMP_x out of pwrdn */
@@ -157,27 +157,27 @@ void usb_setup_utmip(void *usb_base)
 	udelay(1);
 
 	/* Take stuff out of pwrdn and add some magic numbers from U-Boot */
-	writel(0x8 << 25 | 0x3 << 22 | 0 << 21 | 0 << 18 | 0 << 16 | 0 << 14 | 1 << 13 | 0x1 << 10 | 0x1 << 8 | 0x4 << 0 | 0,
-	       &usb->utmip.xcvr0);
-	writel(0x7 << 18 | 0 << 4 | 0 << 2 | 0 << 0 | 0, &usb->utmip.xcvr1);
-	writel(1 << 19 | 1 << 16 | 1 << 9 | 0, &usb->utmip.tx);
-	writel(0x2 << 30 | 1 << 28 | 0x1 << 24 | 0x3 << 21 | 0x11 << 15 | 0x10 << 10 | 0,
-	       &usb->utmip.hsrx0);
+	write32(&usb->utmip.xcvr0,
+		0x8 << 25 | 0x3 << 22 | 0 << 21 | 0 << 18 | 0 << 16 | 0 << 14 | 1 << 13 | 0x1 << 10 | 0x1 << 8 | 0x4 << 0 | 0);
+	write32(&usb->utmip.xcvr1, 0x7 << 18 | 0 << 4 | 0 << 2 | 0 << 0 | 0);
+	write32(&usb->utmip.tx, 1 << 19 | 1 << 16 | 1 << 9 | 0);
+	write32(&usb->utmip.hsrx0,
+		0x2 << 30 | 1 << 28 | 0x1 << 24 | 0x3 << 21 | 0x11 << 15 | 0x10 << 10 | 0);
 
 	/* U-Boot claims the USBD values for these are used across all UTMI+
 	 * PHYs. That sounds so horribly wrong that I'm not going to implement
 	 * it, but keep it in mind if we're ever not using the USBD port. */
-	writel(0x1 << 24 | 1 << 23 | 1 << 22 | 1 << 11 | 0 << 10 | 0x1 << 2 | 0x2 << 0 | 0,
-	       &usb->utmip.bias0);
+	write32(&usb->utmip.bias0,
+		0x1 << 24 | 1 << 23 | 1 << 22 | 1 << 11 | 0 << 10 | 0x1 << 2 | 0x2 << 0 | 0);
 
-	writel(khz / 2200 << 3 | 1 << 2 | 0 << 0 | 0, &usb->utmip.bias1);
+	write32(&usb->utmip.bias1, khz / 2200 << 3 | 1 << 2 | 0 << 0 | 0);
 
-	writel(0xffff << 16 | 25 * khz / 10 << 0 | 0, &usb->utmip.debounce);
+	write32(&usb->utmip.debounce, 0xffff << 16 | 25 * khz / 10 << 0 | 0);
 
 	udelay(1);
 	setbits_le32(&usb->utmip.misc1, 1 << 30); /* PHY_XTAL_CLKEN */
 
-	writel(1 << 12 | 0 << 11 | 0, &usb->suspend_ctrl);
+	write32(&usb->suspend_ctrl, 1 << 12 | 0 << 11 | 0);
 
 	usb_ehci_reset_and_prepare(usb, USB_PHY_UTMIP);
 	printk(BIOS_DEBUG, "USB controller @ %p set up with UTMI+ PHY\n",usb_base);

@@ -35,12 +35,12 @@ void system_clock_init(struct mem_timings *mem,
 
 	clrbits_le32(&exynos_clock->src_cpu, MUX_APLL_SEL_MASK);
 	do {
-		val = readl(&exynos_clock->mux_stat_cpu);
+		val = read32(&exynos_clock->mux_stat_cpu);
 	} while ((val | MUX_APLL_SEL_MASK) != val);
 
 	clrbits_le32(&exynos_clock->src_core1, MUX_MPLL_SEL_MASK);
 	do {
-		val = readl(&exynos_clock->mux_stat_core1);
+		val = read32(&exynos_clock->mux_stat_core1);
 	} while ((val | MUX_MPLL_SEL_MASK) != val);
 
 	clrbits_le32(&exynos_clock->src_top2, MUX_CPLL_SEL_MASK);
@@ -50,34 +50,34 @@ void system_clock_init(struct mem_timings *mem,
 	tmp = MUX_CPLL_SEL_MASK | MUX_EPLL_SEL_MASK | MUX_VPLL_SEL_MASK
 		| MUX_GPLL_SEL_MASK;
 	do {
-		val = readl(&exynos_clock->mux_stat_top2);
+		val = read32(&exynos_clock->mux_stat_top2);
 	} while ((val | tmp) != val);
 
 	clrbits_le32(&exynos_clock->src_cdrex, MUX_BPLL_SEL_MASK);
 	do {
-		val = readl(&exynos_clock->mux_stat_cdrex);
+		val = read32(&exynos_clock->mux_stat_cdrex);
 	} while ((val | MUX_BPLL_SEL_MASK) != val);
 
 	/* PLL locktime */
-	writel(APLL_LOCK_VAL, &exynos_clock->apll_lock);
+	write32(&exynos_clock->apll_lock, APLL_LOCK_VAL);
 
-	writel(MPLL_LOCK_VAL, &exynos_clock->mpll_lock);
+	write32(&exynos_clock->mpll_lock, MPLL_LOCK_VAL);
 
-	writel(BPLL_LOCK_VAL, &exynos_clock->bpll_lock);
+	write32(&exynos_clock->bpll_lock, BPLL_LOCK_VAL);
 
-	writel(CPLL_LOCK_VAL, &exynos_clock->cpll_lock);
+	write32(&exynos_clock->cpll_lock, CPLL_LOCK_VAL);
 
-	writel(GPLL_LOCK_VAL, &exynos_clock->gpll_lock);
+	write32(&exynos_clock->gpll_lock, GPLL_LOCK_VAL);
 
-	writel(EPLL_LOCK_VAL, &exynos_clock->epll_lock);
+	write32(&exynos_clock->epll_lock, EPLL_LOCK_VAL);
 
-	writel(VPLL_LOCK_VAL, &exynos_clock->vpll_lock);
+	write32(&exynos_clock->vpll_lock, VPLL_LOCK_VAL);
 
-	writel(CLK_REG_DISABLE, &exynos_clock->pll_div2_sel);
+	write32(&exynos_clock->pll_div2_sel, CLK_REG_DISABLE);
 
-	writel(MUX_HPM_SEL_MASK, &exynos_clock->src_cpu);
+	write32(&exynos_clock->src_cpu, MUX_HPM_SEL_MASK);
 	do {
-		val = readl(&exynos_clock->mux_stat_cpu);
+		val = read32(&exynos_clock->mux_stat_cpu);
 	} while ((val | HPM_SEL_SCLK_MPLL) != val);
 
 	val = arm_clk_ratio->arm2_ratio << 28
@@ -88,35 +88,35 @@ void system_clock_init(struct mem_timings *mem,
 		| arm_clk_ratio->acp_ratio << 8
 		| arm_clk_ratio->cpud_ratio << 4
 		| arm_clk_ratio->arm_ratio;
-	writel(val, &exynos_clock->div_cpu0);
+	write32(&exynos_clock->div_cpu0, val);
 	do {
-		val = readl(&exynos_clock->div_stat_cpu0);
+		val = read32(&exynos_clock->div_stat_cpu0);
 	} while (0 != val);
 
-	writel(CLK_DIV_CPU1_VAL, &exynos_clock->div_cpu1);
+	write32(&exynos_clock->div_cpu1, CLK_DIV_CPU1_VAL);
 	do {
-		val = readl(&exynos_clock->div_stat_cpu1);
+		val = read32(&exynos_clock->div_stat_cpu1);
 	} while (0 != val);
 
 	/* switch A15 clock source to OSC clock before changing APLL */
 	clrbits_le32(&exynos_clock->src_cpu, APLL_FOUT);
 
 	/* Set APLL */
-	writel(APLL_CON1_VAL, &exynos_clock->apll_con1);
+	write32(&exynos_clock->apll_con1, APLL_CON1_VAL);
 	val = set_pll(arm_clk_ratio->apll_mdiv, arm_clk_ratio->apll_pdiv,
 			arm_clk_ratio->apll_sdiv);
-	writel(val, &exynos_clock->apll_con0);
-	while ((readl(&exynos_clock->apll_con0) & APLL_CON0_LOCKED) == 0)
+	write32(&exynos_clock->apll_con0, val);
+	while ((read32(&exynos_clock->apll_con0) & APLL_CON0_LOCKED) == 0)
 		;
 
 	/* now it is safe to switch to APLL */
 	setbits_le32(&exynos_clock->src_cpu, APLL_FOUT);
 
 	/* Set MPLL */
-	writel(MPLL_CON1_VAL, &exynos_clock->mpll_con1);
+	write32(&exynos_clock->mpll_con1, MPLL_CON1_VAL);
 	val = set_pll(mem->mpll_mdiv, mem->mpll_pdiv, mem->mpll_sdiv);
-	writel(val, &exynos_clock->mpll_con0);
-	while ((readl(&exynos_clock->mpll_con0) & MPLL_CON0_LOCKED) == 0)
+	write32(&exynos_clock->mpll_con0, val);
+	while ((read32(&exynos_clock->mpll_con0) & MPLL_CON0_LOCKED) == 0)
 		;
 
 	/*
@@ -127,159 +127,159 @@ void system_clock_init(struct mem_timings *mem,
 
 	/* Set BPLL */
 	if (mem->use_bpll) {
-		writel(BPLL_CON1_VAL, &exynos_clock->bpll_con1);
+		write32(&exynos_clock->bpll_con1, BPLL_CON1_VAL);
 		val = set_pll(mem->bpll_mdiv, mem->bpll_pdiv, mem->bpll_sdiv);
-		writel(val, &exynos_clock->bpll_con0);
-		while ((readl(&exynos_clock->bpll_con0) & BPLL_CON0_LOCKED) == 0)
+		write32(&exynos_clock->bpll_con0, val);
+		while ((read32(&exynos_clock->bpll_con0) & BPLL_CON0_LOCKED) == 0)
 			;
 
 		setbits_le32(&exynos_clock->pll_div2_sel, MUX_BPLL_FOUT_SEL);
 	}
 
 	/* Set CPLL */
-	writel(CPLL_CON1_VAL, &exynos_clock->cpll_con1);
+	write32(&exynos_clock->cpll_con1, CPLL_CON1_VAL);
 	val = set_pll(mem->cpll_mdiv, mem->cpll_pdiv, mem->cpll_sdiv);
-	writel(val, &exynos_clock->cpll_con0);
-	while ((readl(&exynos_clock->cpll_con0) & CPLL_CON0_LOCKED) == 0)
+	write32(&exynos_clock->cpll_con0, val);
+	while ((read32(&exynos_clock->cpll_con0) & CPLL_CON0_LOCKED) == 0)
 		;
 
 	/* Set GPLL */
-	writel(GPLL_CON1_VAL, &exynos_clock->gpll_con1);
+	write32(&exynos_clock->gpll_con1, GPLL_CON1_VAL);
 	val = set_pll(mem->gpll_mdiv, mem->gpll_pdiv, mem->gpll_sdiv);
-	writel(val, &exynos_clock->gpll_con0);
-	while ((readl(&exynos_clock->gpll_con0) & GPLL_CON0_LOCKED) == 0)
+	write32(&exynos_clock->gpll_con0, val);
+	while ((read32(&exynos_clock->gpll_con0) & GPLL_CON0_LOCKED) == 0)
 		;
 
 	/* Set EPLL */
-	writel(EPLL_CON2_VAL, &exynos_clock->epll_con2);
-	writel(EPLL_CON1_VAL, &exynos_clock->epll_con1);
+	write32(&exynos_clock->epll_con2, EPLL_CON2_VAL);
+	write32(&exynos_clock->epll_con1, EPLL_CON1_VAL);
 	val = set_pll(mem->epll_mdiv, mem->epll_pdiv, mem->epll_sdiv);
-	writel(val, &exynos_clock->epll_con0);
-	while ((readl(&exynos_clock->epll_con0) & EPLL_CON0_LOCKED) == 0)
+	write32(&exynos_clock->epll_con0, val);
+	while ((read32(&exynos_clock->epll_con0) & EPLL_CON0_LOCKED) == 0)
 		;
 
 	/* Set VPLL */
-	writel(VPLL_CON2_VAL, &exynos_clock->vpll_con2);
-	writel(VPLL_CON1_VAL, &exynos_clock->vpll_con1);
+	write32(&exynos_clock->vpll_con2, VPLL_CON2_VAL);
+	write32(&exynos_clock->vpll_con1, VPLL_CON1_VAL);
 	val = set_pll(mem->vpll_mdiv, mem->vpll_pdiv, mem->vpll_sdiv);
-	writel(val, &exynos_clock->vpll_con0);
-	while ((readl(&exynos_clock->vpll_con0) & VPLL_CON0_LOCKED) == 0)
+	write32(&exynos_clock->vpll_con0, val);
+	while ((read32(&exynos_clock->vpll_con0) & VPLL_CON0_LOCKED) == 0)
 		;
 
-	writel(CLK_SRC_CORE0_VAL, &exynos_clock->src_core0);
-	writel(CLK_DIV_CORE0_VAL, &exynos_clock->div_core0);
-	while (readl(&exynos_clock->div_stat_core0) != 0)
+	write32(&exynos_clock->src_core0, CLK_SRC_CORE0_VAL);
+	write32(&exynos_clock->div_core0, CLK_DIV_CORE0_VAL);
+	while (read32(&exynos_clock->div_stat_core0) != 0)
 		;
 
-	writel(CLK_DIV_CORE1_VAL, &exynos_clock->div_core1);
-	while (readl(&exynos_clock->div_stat_core1) != 0)
+	write32(&exynos_clock->div_core1, CLK_DIV_CORE1_VAL);
+	while (read32(&exynos_clock->div_stat_core1) != 0)
 		;
 
-	writel(CLK_DIV_SYSRGT_VAL, &exynos_clock->div_sysrgt);
-	while (readl(&exynos_clock->div_stat_sysrgt) != 0)
+	write32(&exynos_clock->div_sysrgt, CLK_DIV_SYSRGT_VAL);
+	while (read32(&exynos_clock->div_stat_sysrgt) != 0)
 		;
 
-	writel(CLK_DIV_ACP_VAL, &exynos_clock->div_acp);
-	while (readl(&exynos_clock->div_stat_acp) != 0)
+	write32(&exynos_clock->div_acp, CLK_DIV_ACP_VAL);
+	while (read32(&exynos_clock->div_stat_acp) != 0)
 		;
 
-	writel(CLK_DIV_SYSLFT_VAL, &exynos_clock->div_syslft);
-	while (readl(&exynos_clock->div_stat_syslft) != 0)
+	write32(&exynos_clock->div_syslft, CLK_DIV_SYSLFT_VAL);
+	while (read32(&exynos_clock->div_stat_syslft) != 0)
 		;
 
-	writel(CLK_SRC_TOP0_VAL, &exynos_clock->src_top0);
-	writel(CLK_SRC_TOP1_VAL, &exynos_clock->src_top1);
-	writel(TOP2_VAL, &exynos_clock->src_top2);
-	writel(CLK_SRC_TOP3_VAL, &exynos_clock->src_top3);
+	write32(&exynos_clock->src_top0, CLK_SRC_TOP0_VAL);
+	write32(&exynos_clock->src_top1, CLK_SRC_TOP1_VAL);
+	write32(&exynos_clock->src_top2, TOP2_VAL);
+	write32(&exynos_clock->src_top3, CLK_SRC_TOP3_VAL);
 
-	writel(CLK_DIV_TOP0_VAL, &exynos_clock->div_top0);
-	while (readl(&exynos_clock->div_stat_top0))
+	write32(&exynos_clock->div_top0, CLK_DIV_TOP0_VAL);
+	while (read32(&exynos_clock->div_stat_top0))
 		;
 
-	writel(CLK_DIV_TOP1_VAL, &exynos_clock->div_top1);
-	while (readl(&exynos_clock->div_stat_top1))
+	write32(&exynos_clock->div_top1, CLK_DIV_TOP1_VAL);
+	while (read32(&exynos_clock->div_stat_top1))
 		;
 
-	writel(CLK_SRC_LEX_VAL, &exynos_clock->src_lex);
+	write32(&exynos_clock->src_lex, CLK_SRC_LEX_VAL);
 	while (1) {
-		val = readl(&exynos_clock->mux_stat_lex);
+		val = read32(&exynos_clock->mux_stat_lex);
 		if (val == (val | 1))
 			break;
 	}
 
-	writel(CLK_DIV_LEX_VAL, &exynos_clock->div_lex);
-	while (readl(&exynos_clock->div_stat_lex))
+	write32(&exynos_clock->div_lex, CLK_DIV_LEX_VAL);
+	while (read32(&exynos_clock->div_stat_lex))
 		;
 
-	writel(CLK_DIV_R0X_VAL, &exynos_clock->div_r0x);
-	while (readl(&exynos_clock->div_stat_r0x))
+	write32(&exynos_clock->div_r0x, CLK_DIV_R0X_VAL);
+	while (read32(&exynos_clock->div_stat_r0x))
 		;
 
-	writel(CLK_DIV_R0X_VAL, &exynos_clock->div_r0x);
-	while (readl(&exynos_clock->div_stat_r0x))
+	write32(&exynos_clock->div_r0x, CLK_DIV_R0X_VAL);
+	while (read32(&exynos_clock->div_stat_r0x))
 		;
 
-	writel(CLK_DIV_R1X_VAL, &exynos_clock->div_r1x);
-	while (readl(&exynos_clock->div_stat_r1x))
+	write32(&exynos_clock->div_r1x, CLK_DIV_R1X_VAL);
+	while (read32(&exynos_clock->div_stat_r1x))
 		;
 
 	if (mem->use_bpll) {
-		writel(MUX_BPLL_SEL_MASK | MUX_MCLK_CDREX_SEL |
-			MUX_MCLK_DPHY_SEL, &exynos_clock->src_cdrex);
+		write32(&exynos_clock->src_cdrex,
+			MUX_BPLL_SEL_MASK | MUX_MCLK_CDREX_SEL | MUX_MCLK_DPHY_SEL);
 	} else {
-		writel(CLK_REG_DISABLE, &exynos_clock->src_cdrex);
+		write32(&exynos_clock->src_cdrex, CLK_REG_DISABLE);
 	}
 
-	writel(CLK_DIV_CDREX_VAL, &exynos_clock->div_cdrex);
-	while (readl(&exynos_clock->div_stat_cdrex))
+	write32(&exynos_clock->div_cdrex, CLK_DIV_CDREX_VAL);
+	while (read32(&exynos_clock->div_stat_cdrex))
 		;
 
-	val = readl(&exynos_clock->src_cpu);
+	val = read32(&exynos_clock->src_cpu);
 	val |= CLK_SRC_CPU_VAL;
-	writel(val, &exynos_clock->src_cpu);
+	write32(&exynos_clock->src_cpu, val);
 
-	val = readl(&exynos_clock->src_top2);
+	val = read32(&exynos_clock->src_top2);
 	val |= CLK_SRC_TOP2_VAL;
-	writel(val, &exynos_clock->src_top2);
+	write32(&exynos_clock->src_top2, val);
 
-	val = readl(&exynos_clock->src_core1);
+	val = read32(&exynos_clock->src_core1);
 	val |= CLK_SRC_CORE1_VAL;
-	writel(val, &exynos_clock->src_core1);
+	write32(&exynos_clock->src_core1, val);
 
-	writel(CLK_SRC_FSYS0_VAL, &exynos_clock->src_fsys);
-	writel(CLK_DIV_FSYS0_VAL, &exynos_clock->div_fsys0);
-	while (readl(&exynos_clock->div_stat_fsys0))
+	write32(&exynos_clock->src_fsys, CLK_SRC_FSYS0_VAL);
+	write32(&exynos_clock->div_fsys0, CLK_DIV_FSYS0_VAL);
+	while (read32(&exynos_clock->div_stat_fsys0))
 		;
 
-	writel(CLK_REG_DISABLE, &exynos_clock->clkout_cmu_cpu);
-	writel(CLK_REG_DISABLE, &exynos_clock->clkout_cmu_core);
-	writel(CLK_REG_DISABLE, &exynos_clock->clkout_cmu_acp);
-	writel(CLK_REG_DISABLE, &exynos_clock->clkout_cmu_top);
-	writel(CLK_REG_DISABLE, &exynos_clock->clkout_cmu_lex);
-	writel(CLK_REG_DISABLE, &exynos_clock->clkout_cmu_r0x);
-	writel(CLK_REG_DISABLE, &exynos_clock->clkout_cmu_r1x);
-	writel(CLK_REG_DISABLE, &exynos_clock->clkout_cmu_cdrex);
+	write32(&exynos_clock->clkout_cmu_cpu, CLK_REG_DISABLE);
+	write32(&exynos_clock->clkout_cmu_core, CLK_REG_DISABLE);
+	write32(&exynos_clock->clkout_cmu_acp, CLK_REG_DISABLE);
+	write32(&exynos_clock->clkout_cmu_top, CLK_REG_DISABLE);
+	write32(&exynos_clock->clkout_cmu_lex, CLK_REG_DISABLE);
+	write32(&exynos_clock->clkout_cmu_r0x, CLK_REG_DISABLE);
+	write32(&exynos_clock->clkout_cmu_r1x, CLK_REG_DISABLE);
+	write32(&exynos_clock->clkout_cmu_cdrex, CLK_REG_DISABLE);
 
-	writel(CLK_SRC_PERIC0_VAL, &exynos_clock->src_peric0);
-	writel(CLK_DIV_PERIC0_VAL, &exynos_clock->div_peric0);
+	write32(&exynos_clock->src_peric0, CLK_SRC_PERIC0_VAL);
+	write32(&exynos_clock->div_peric0, CLK_DIV_PERIC0_VAL);
 
-	writel(CLK_SRC_PERIC1_VAL, &exynos_clock->src_peric1);
-	writel(CLK_DIV_PERIC1_VAL, &exynos_clock->div_peric1);
-	writel(CLK_DIV_PERIC2_VAL, &exynos_clock->div_peric2);
-	writel(SCLK_SRC_ISP_VAL, &exynos_clock->sclk_src_isp);
-	writel(SCLK_DIV_ISP_VAL, &exynos_clock->sclk_div_isp);
-	writel(CLK_DIV_ISP0_VAL, &exynos_clock->div_isp0);
-	writel(CLK_DIV_ISP1_VAL, &exynos_clock->div_isp1);
-	writel(CLK_DIV_ISP2_VAL, &exynos_clock->div_isp2);
+	write32(&exynos_clock->src_peric1, CLK_SRC_PERIC1_VAL);
+	write32(&exynos_clock->div_peric1, CLK_DIV_PERIC1_VAL);
+	write32(&exynos_clock->div_peric2, CLK_DIV_PERIC2_VAL);
+	write32(&exynos_clock->sclk_src_isp, SCLK_SRC_ISP_VAL);
+	write32(&exynos_clock->sclk_div_isp, SCLK_DIV_ISP_VAL);
+	write32(&exynos_clock->div_isp0, CLK_DIV_ISP0_VAL);
+	write32(&exynos_clock->div_isp1, CLK_DIV_ISP1_VAL);
+	write32(&exynos_clock->div_isp2, CLK_DIV_ISP2_VAL);
 
 	/* FIMD1 SRC CLK SELECTION */
-	writel(CLK_SRC_DISP1_0_VAL, &exynos_clock->src_disp1_0);
+	write32(&exynos_clock->src_disp1_0, CLK_SRC_DISP1_0_VAL);
 
 	val = MMC2_PRE_RATIO_VAL << MMC2_PRE_RATIO_OFFSET
 		| MMC2_RATIO_VAL << MMC2_RATIO_OFFSET
 		| MMC3_PRE_RATIO_VAL << MMC3_PRE_RATIO_OFFSET
 		| MMC3_RATIO_VAL << MMC3_RATIO_OFFSET;
-	writel(val, &exynos_clock->div_fsys2);
+	write32(&exynos_clock->div_fsys2, val);
 }
 
 void clock_gate(void)

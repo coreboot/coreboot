@@ -45,19 +45,19 @@ int dmc_config_zq(struct mem_timings *mem,
 	val |= mem->zq_mode_dds << PHY_CON16_ZQ_MODE_DDS_SHIFT;
 	val |= mem->zq_mode_term << PHY_CON16_ZQ_MODE_TERM_SHIFT;
 	val |= ZQ_CLK_DIV_EN;
-	writel(val, &phy0_ctrl->phy_con16);
-	writel(val, &phy1_ctrl->phy_con16);
+	write32(&phy0_ctrl->phy_con16, val);
+	write32(&phy1_ctrl->phy_con16, val);
 
 	/* Disable termination */
 	if (mem->zq_mode_noterm)
 		val |= PHY_CON16_ZQ_MODE_NOTERM_MASK;
-	writel(val, &phy0_ctrl->phy_con16);
-	writel(val, &phy1_ctrl->phy_con16);
+	write32(&phy0_ctrl->phy_con16, val);
+	write32(&phy1_ctrl->phy_con16, val);
 
 	/* ZQ_MANUAL_START: Enable */
 	val |= ZQ_MANUAL_STR;
-	writel(val, &phy0_ctrl->phy_con16);
-	writel(val, &phy1_ctrl->phy_con16);
+	write32(&phy0_ctrl->phy_con16, val);
+	write32(&phy1_ctrl->phy_con16, val);
 
 	/* ZQ_MANUAL_START: Disable */
 	val &= ~ZQ_MANUAL_STR;
@@ -67,22 +67,22 @@ int dmc_config_zq(struct mem_timings *mem,
 	 * we are looping for the ZQ_init to complete.
 	 */
 	i = ZQ_INIT_TIMEOUT;
-	while ((readl(&phy0_ctrl->phy_con17) & ZQ_DONE) != ZQ_DONE && i > 0) {
+	while ((read32(&phy0_ctrl->phy_con17) & ZQ_DONE) != ZQ_DONE && i > 0) {
 		udelay(1);
 		i--;
 	}
 	if (!i)
 		return -1;
-	writel(val, &phy0_ctrl->phy_con16);
+	write32(&phy0_ctrl->phy_con16, val);
 
 	i = ZQ_INIT_TIMEOUT;
-	while ((readl(&phy1_ctrl->phy_con17) & ZQ_DONE) != ZQ_DONE && i > 0) {
+	while ((read32(&phy1_ctrl->phy_con17) & ZQ_DONE) != ZQ_DONE && i > 0) {
 		udelay(1);
 		i--;
 	}
 	if (!i)
 		return -1;
-	writel(val, &phy1_ctrl->phy_con16);
+	write32(&phy1_ctrl->phy_con16, val);
 
 	return 0;
 }
@@ -93,18 +93,18 @@ void update_reset_dll(struct exynos5_dmc *dmc, enum ddr_mode mode)
 
 	if (mode == DDR_MODE_DDR3) {
 		val = MEM_TERM_EN | PHY_TERM_EN | DMC_CTRL_SHGATE;
-		writel(val, &dmc->phycontrol0);
+		write32(&dmc->phycontrol0, val);
 	}
 
 	/* Update DLL Information: Force DLL Resynchronization */
-	val = readl(&dmc->phycontrol0);
+	val = read32(&dmc->phycontrol0);
 	val |= FP_RSYNC;
-	writel(val, &dmc->phycontrol0);
+	write32(&dmc->phycontrol0, val);
 
 	/* Reset Force DLL Resynchronization */
-	val = readl(&dmc->phycontrol0);
+	val = read32(&dmc->phycontrol0);
 	val &= ~FP_RSYNC;
-	writel(val, &dmc->phycontrol0);
+	write32(&dmc->phycontrol0, val);
 }
 
 void dmc_config_mrs(struct mem_timings *mem, struct exynos5_dmc *dmc)
@@ -121,7 +121,7 @@ void dmc_config_mrs(struct mem_timings *mem, struct exynos5_dmc *dmc)
 			mask |= chip << DIRECT_CMD_CHIP_SHIFT;
 
 			/* Sending NOP command */
-			writel(DIRECT_CMD_NOP | mask, &dmc->directcmd);
+			write32(&dmc->directcmd, DIRECT_CMD_NOP | mask);
 
 			/*
 			 * TODO(alim.akhtar@samsung.com): Do we need these
@@ -132,15 +132,15 @@ void dmc_config_mrs(struct mem_timings *mem, struct exynos5_dmc *dmc)
 
 			/* Sending EMRS/MRS commands */
 			for (i = 0; i < MEM_TIMINGS_MSR_COUNT; i++) {
-				writel(mem->direct_cmd_msr[i] | mask,
-				       &dmc->directcmd);
+				write32(&dmc->directcmd,
+					mem->direct_cmd_msr[i] | mask);
 				udelay(100);
 			}
 
 			if (mem->send_zq_init) {
 				/* Sending ZQINIT command */
-				writel(DIRECT_CMD_ZQINIT | mask,
-				       &dmc->directcmd);
+				write32(&dmc->directcmd,
+					DIRECT_CMD_ZQINIT | mask);
 				/*
 				 * FIXME: This was originally sdelay(10000)
 				 * in the imported u-boot code. That may have
@@ -166,7 +166,7 @@ void dmc_config_prech(struct mem_timings *mem, struct exynos5_dmc *dmc)
 			mask |= chip << DIRECT_CMD_CHIP_SHIFT;
 
 			/* PALL (all banks precharge) CMD */
-			writel(DIRECT_CMD_PALL | mask, &dmc->directcmd);
+			write32(&dmc->directcmd, DIRECT_CMD_PALL | mask);
 			udelay(100);
 		}
 	}
@@ -174,8 +174,8 @@ void dmc_config_prech(struct mem_timings *mem, struct exynos5_dmc *dmc)
 
 void dmc_config_memory(struct mem_timings *mem, struct exynos5_dmc *dmc)
 {
-	writel(mem->memconfig, &dmc->memconfig0);
-	writel(mem->memconfig, &dmc->memconfig1);
-	writel(DMC_MEMBASECONFIG0_VAL, &dmc->membaseconfig0);
-	writel(DMC_MEMBASECONFIG1_VAL, &dmc->membaseconfig1);
+	write32(&dmc->memconfig0, mem->memconfig);
+	write32(&dmc->memconfig1, mem->memconfig);
+	write32(&dmc->membaseconfig0, DMC_MEMBASECONFIG0_VAL);
+	write32(&dmc->membaseconfig1, DMC_MEMBASECONFIG1_VAL);
 }

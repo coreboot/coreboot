@@ -118,7 +118,7 @@ static void mctl_configure_hostport(void)
 	u32 i;
 
 	for (i = 0; i < 32; i++)
-		writel(hpcr_value[i], &dram->hpcr[i]);
+		write32(&dram->hpcr[i], hpcr_value[i]);
 }
 
 static void mctl_setup_dram_clock(u32 clk)
@@ -333,9 +333,9 @@ static void dramc_set_autorefresh_cycle(u32 clk)
 		tmp_val = tmp_val * 9 - 200;
 		reg32 |= tmp_val << 8;
 		reg32 |= 0x8 << 24;
-		writel(reg32, &dram->drr);
+		write32(&dram->drr, reg32);
 	} else {
-		writel(0x0, &dram->drr);
+		write32(&dram->drr, 0x0);
 	}
 }
 
@@ -360,7 +360,7 @@ unsigned long dramc_init(struct dram_para *para)
 	a1x_gate_dram_clock_output();
 
 	/* select dram controller 1 */
-	writel(DRAM_CSEL_MAGIC, &dram->csel);
+	write32(&dram->csel, DRAM_CSEL_MAGIC);
 
 	mctl_itm_disable();
 	mctl_enable_dll0(para->tpr3);
@@ -390,7 +390,7 @@ unsigned long dramc_init(struct dram_para *para)
 	reg32 |= DRAM_DCR_RANK_SEL(para->rank_num - 1);
 	reg32 |= DRAM_DCR_CMD_RANK_ALL;
 	reg32 |= DRAM_DCR_MODE(DRAM_DCR_MODE_INTERLEAVE);
-	writel(reg32, &dram->dcr);
+	write32(&dram->dcr, reg32);
 
 	/* dram clock on */
 	a1x_ungate_dram_clock_output();
@@ -405,21 +405,21 @@ unsigned long dramc_init(struct dram_para *para)
 	reg32 = ((para->zq) >> 8) & 0xfffff;
 	reg32 |= ((para->zq) & 0xff) << 20;
 	reg32 |= (para->zq) & 0xf0000000;
-	writel(reg32, &dram->zqcr0);
+	write32(&dram->zqcr0, reg32);
 
 	/* set I/O configure register */
 	reg32 = 0x00cc0000;
 	reg32 |= (para->odt_en) & 0x3;
 	reg32 |= ((para->odt_en) & 0x3) << 30;
-	writel(reg32, &dram->iocr);
+	write32(&dram->iocr, reg32);
 
 	/* set refresh period */
 	dramc_set_autorefresh_cycle(para->clock);
 
 	/* set timing parameters */
-	writel(para->tpr0, &dram->tpr0);
-	writel(para->tpr1, &dram->tpr1);
-	writel(para->tpr2, &dram->tpr2);
+	write32(&dram->tpr0, para->tpr0);
+	write32(&dram->tpr1, para->tpr1);
+	write32(&dram->tpr2, para->tpr2);
 
 	if (para->type == DRAM_MEMORY_TYPE_DDR3) {
 		reg32 = DRAM_MR_BURST_LENGTH(0x0);
@@ -430,11 +430,11 @@ unsigned long dramc_init(struct dram_para *para)
 		reg32 |= DRAM_MR_CAS_LAT(para->cas);
 		reg32 |= DRAM_MR_WRITE_RECOVERY(0x5);
 	}
-	writel(reg32, &dram->mr);
+	write32(&dram->mr, reg32);
 
-	writel(para->emr1, &dram->emr);
-	writel(para->emr2, &dram->emr2);
-	writel(para->emr3, &dram->emr3);
+	write32(&dram->emr, para->emr1);
+	write32(&dram->emr2, para->emr2);
+	write32(&dram->emr3, para->emr3);
 
 	/* set DQS window mode */
 	clrsetbits_le32(&dram->ccr, DRAM_CCR_DQS_DRIFT_COMP, DRAM_CCR_DQS_GATE);

@@ -49,9 +49,9 @@ static inline uint64_t timer_raw_value(void)
 	uint32_t count_l;
 
 	do {
-		count_h = readl(&timer_ptr->gtim_glob_hi);
-		count_l = readl(&timer_ptr->gtim_glob_low);
-		cur_tick = readl(&timer_ptr->gtim_glob_hi);
+		count_h = read32(&timer_ptr->gtim_glob_hi);
+		count_l = read32(&timer_ptr->gtim_glob_low);
+		cur_tick = read32(&timer_ptr->gtim_glob_hi);
 	} while (cur_tick != count_h);
 
 	return (cur_tick << 32) + count_l;
@@ -64,8 +64,8 @@ void timer_monotonic_get(struct mono_time *mt)
 
 void init_timer(void)
 {
-	writel(TIMER_GLB_TIM_CTRL_PRESC, &timer_ptr->gtim_glob_ctrl);
-	writel(0, &timer_ptr->gtim_glob_low);
-	writel(0, &timer_ptr->gtim_glob_hi);
-	writel(TIMER_GLB_TIM_CTRL_TIM_EN, &timer_ptr->gtim_glob_ctrl);
+	write32(&timer_ptr->gtim_glob_ctrl, TIMER_GLB_TIM_CTRL_PRESC);
+	write32(&timer_ptr->gtim_glob_low, 0);
+	write32(&timer_ptr->gtim_glob_hi, 0);
+	write32(&timer_ptr->gtim_glob_ctrl, TIMER_GLB_TIM_CTRL_TIM_EN);
 }

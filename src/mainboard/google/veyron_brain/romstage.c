@@ -48,7 +48,7 @@ static void regulate_vdd_log(unsigned int mv)
 	const u32 max_regulator_mv = 1350;	/* 1.35V */
 	const u32 min_regulator_mv = 870;	/* 0.87V */
 
-	writel(IOMUX_PWM1, &rk3288_grf->iomux_pwm1);
+	write32(&rk3288_grf->iomux_pwm1, IOMUX_PWM1);
 
 	assert((mv >= min_regulator_mv) && (mv <= max_regulator_mv));
 

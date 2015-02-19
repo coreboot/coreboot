@@ -14,7 +14,7 @@ void uart_pll_vote_clk_enable(unsigned int clk_dummy)
 	setbits_le32(BB_PLL_ENA_SC0_REG, BIT(8));
 
 	if (!clk_dummy)
-		while((readl(PLL_LOCK_DET_STATUS_REG) & BIT(8)) == 0);
+		while((read32(PLL_LOCK_DET_STATUS_REG) & BIT(8)) == 0);
 }
 
 /**
@@ -29,7 +29,7 @@ static void uart_set_rate_mnd(unsigned int gsbi_port, unsigned int m,
 	/* Assert MND reset. */
 	setbits_le32(GSBIn_UART_APPS_NS_REG(gsbi_port), BIT(7));
 	/* Program M and D values. */
-	writel(MD16(m, n), GSBIn_UART_APPS_MD_REG(gsbi_port));
+	write32(GSBIn_UART_APPS_MD_REG(gsbi_port), MD16(m, n));
 	/* Deassert MND reset. */
 	clrbits_le32(GSBIn_UART_APPS_NS_REG(gsbi_port), BIT(7));
 }
@@ -61,25 +61,25 @@ static void uart_local_clock_enable(unsigned int gsbi_port, unsigned int n,
 	* set in the set_rate path because power can be saved by deferring
 	* the selection of a clocked source until the clock is enabled.
 	*/
-	reg_val = readl(reg); // REG(0x29D4+(0x20*((n)-1)))
+	reg_val = read32(reg); // REG(0x29D4+(0x20*((n)-1)))
 	reg_val &= ~(Uart_clk_ns_mask);
 	uart_ns_val =  NS(BIT_POS_31,BIT_POS_16,n,m, 5, 4, 3, 1, 2, 0,3);
 	reg_val |= (uart_ns_val & Uart_clk_ns_mask);
-	writel(reg_val,reg);
+	write32(reg, reg_val);
 
 	/* enable MNCNTR_EN */
-	reg_val = readl(reg);
+	reg_val = read32(reg);
 	reg_val |= BIT(8);
-	writel(reg_val, reg);
+	write32(reg, reg_val);
 
 	/* set source to PLL8 running @384MHz */
-	reg_val = readl(reg);
+	reg_val = read32(reg);
 	reg_val |= 0x3;
-	writel(reg_val, reg);
+	write32(reg, reg_val);
 
 	/* Enable root. */
 	reg_val |= Uart_en_mask;
-	writel(reg_val, reg);
+	write32(reg, reg_val);
 	uart_branch_clk_enable_reg(gsbi_port);
 }
 
@@ -113,8 +113,8 @@ void uart_clock_config(unsigned int gsbi_port, unsigned int m,
  */
 void nand_clock_config(void)
 {
-	writel(CLK_BRANCH_ENA(1) | ALWAYS_ON_CLK_BRANCH_ENA(1),
-	       EBI2_CLK_CTL_REG);
+	write32(EBI2_CLK_CTL_REG,
+		CLK_BRANCH_ENA(1) | ALWAYS_ON_CLK_BRANCH_ENA(1));
 
 	/* Wait for clock to stabilize. */
 	udelay(10);
@@ -126,17 +126,17 @@ void nand_clock_config(void)
 void usb_clock_config(void)
 {
 	/* Magic clock initialization numbers, nobody knows how they work... */
-	writel(0x10, USB30_MASTER_CLK_CTL_REG);
-	writel(0x10, USB30_1_MASTER_CLK_CTL_REG);
-	writel(0x500DF, USB30_MASTER_CLK_MD);
-	writel(0xE40942, USB30_MASTER_CLK_NS);
-	writel(0x100D7, USB30_MOC_UTMI_CLK_MD);
-	writel(0xD80942, USB30_MOC_UTMI_CLK_NS);
-	writel(0x10, USB30_MOC_UTMI_CLK_CTL);
-	writel(0x10, USB30_1_MOC_UTMI_CLK_CTL);
+	write32(USB30_MASTER_CLK_CTL_REG, 0x10);
+	write32(USB30_1_MASTER_CLK_CTL_REG, 0x10);
+	write32(USB30_MASTER_CLK_MD, 0x500DF);
+	write32(USB30_MASTER_CLK_NS, 0xE40942);
+	write32(USB30_MOC_UTMI_CLK_MD, 0x100D7);
+	write32(USB30_MOC_UTMI_CLK_NS, 0xD80942);
+	write32(USB30_MOC_UTMI_CLK_CTL, 0x10);
+	write32(USB30_1_MOC_UTMI_CLK_CTL, 0x10);
 
-	writel(1 << 5 | 1 << 4 | 1 << 3 | 1 << 2 | 1 << 1 | 1 << 0 | 0,
-	       USB30_RESET);
+	write32(USB30_RESET,
+		1 << 5 | 1 << 4 | 1 << 3 | 1 << 2 | 1 << 1 | 1 << 0 | 0);
 	udelay(5);
-	writel(0, USB30_RESET);	/* deassert all USB resets again */
+	write32(USB30_RESET, 0);	/* deassert all USB resets again */
 }

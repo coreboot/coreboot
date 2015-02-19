@@ -82,10 +82,10 @@ void gpio_cfg_pin(int gpio, int cfg)
 	unsigned int value;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 
-	value = readl(&bank->con);
+	value = read32(&bank->con);
 	value &= ~CON_MASK(GPIO_BIT(gpio));
 	value |= CON_SFR(GPIO_BIT(gpio), cfg);
-	writel(value, &bank->con);
+	write32(&bank->con, value);
 }
 
 static int gpio_get_cfg(int gpio)
@@ -93,7 +93,7 @@ static int gpio_get_cfg(int gpio)
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 	int shift = GPIO_BIT(gpio) << 2;
 
-	return (readl(&bank->con) & CON_MASK(GPIO_BIT(gpio))) >> shift;
+	return (read32(&bank->con) & CON_MASK(GPIO_BIT(gpio))) >> shift;
 }
 
 void gpio_set_pull(int gpio, int mode)
@@ -101,7 +101,7 @@ void gpio_set_pull(int gpio, int mode)
 	unsigned int value;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 
-	value = readl(&bank->pull);
+	value = read32(&bank->pull);
 	value &= ~PULL_MASK(GPIO_BIT(gpio));
 
 	switch (mode) {
@@ -113,7 +113,7 @@ void gpio_set_pull(int gpio, int mode)
 		break;
 	}
 
-	writel(value, &bank->pull);
+	write32(&bank->pull, value);
 }
 
 void gpio_set_drv(int gpio, int mode)
@@ -121,7 +121,7 @@ void gpio_set_drv(int gpio, int mode)
 	unsigned int value;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 
-	value = readl(&bank->drv);
+	value = read32(&bank->drv);
 	value &= ~DRV_MASK(GPIO_BIT(gpio));
 
 	switch (mode) {
@@ -135,7 +135,7 @@ void gpio_set_drv(int gpio, int mode)
 		return;
 	}
 
-	writel(value, &bank->drv);
+	write32(&bank->drv, value);
 }
 
 void gpio_set_rate(int gpio, int mode)
@@ -143,7 +143,7 @@ void gpio_set_rate(int gpio, int mode)
 	unsigned int value;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 
-	value = readl(&bank->drv);
+	value = read32(&bank->drv);
 	value &= ~RATE_MASK(GPIO_BIT(gpio));
 
 	switch (mode) {
@@ -155,7 +155,7 @@ void gpio_set_rate(int gpio, int mode)
 		return;
 	}
 
-	writel(value, &bank->drv);
+	write32(&bank->drv, value);
 }
 
 int gpio_direction_input(unsigned gpio)
@@ -170,11 +170,11 @@ int gpio_direction_output(unsigned gpio, int value)
 	unsigned int val;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 
-	val = readl(&bank->dat);
+	val = read32(&bank->dat);
 	val &= ~DAT_MASK(GPIO_BIT(gpio));
 	if (value)
 		val |= DAT_SET(GPIO_BIT(gpio));
-	writel(val, &bank->dat);
+	write32(&bank->dat, val);
 
 	gpio_cfg_pin(gpio, GPIO_OUTPUT);
 
@@ -186,7 +186,7 @@ int gpio_get_value(unsigned gpio)
 	unsigned int value;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 
-	value = readl(&bank->dat);
+	value = read32(&bank->dat);
 	return !!(value & DAT_MASK(GPIO_BIT(gpio)));
 }
 
@@ -195,11 +195,11 @@ int gpio_set_value(unsigned gpio, int value)
 	unsigned int val;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 
-	val = readl(&bank->dat);
+	val = read32(&bank->dat);
 	val &= ~DAT_MASK(GPIO_BIT(gpio));
 	if (value)
 		val |= DAT_SET(GPIO_BIT(gpio));
-	writel(val, &bank->dat);
+	write32(&bank->dat, val);
 
 	return 0;
 }

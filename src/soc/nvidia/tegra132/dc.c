@@ -38,7 +38,7 @@ unsigned long READL(void * p)
         if (dump > 1)
 		printk(BIOS_SPEW, "readl %p\n", p);
 
-        value = readl(p);
+        value = read32(p);
         if (dump)
 		printk(BIOS_SPEW, "readl %p %08lx\n", p, value);
         return value;
@@ -48,7 +48,7 @@ void WRITEL(unsigned long value, void * p)
 {
         if (dump)
 		printk(BIOS_SPEW, "writel %p %08lx\n", p, value);
-        writel(value, p);
+        write32(p, value);
 }
 
 /* return in 1000ths of a Hertz */

@@ -35,12 +35,12 @@ static void wdog_reset(void)
 {
 	printk(BIOS_DEBUG, "\nResetting with watchdog!\n");
 
-	writel(0, APCS_WDT0_EN);
-	writel(1, APCS_WDT0_RST);
-	writel(RESET_WDT_BARK_TIME, APCS_WDT0_BARK_TIME);
-	writel(RESET_WDT_BITE_TIME, APCS_WDT0_BITE_TIME);
-	writel(1, APCS_WDT0_EN);
-	writel(1, APCS_WDT0_CPU0_WDOG_EXPIRED_ENABLE);
+	write32(APCS_WDT0_EN, 0);
+	write32(APCS_WDT0_RST, 1);
+	write32(APCS_WDT0_BARK_TIME, RESET_WDT_BARK_TIME);
+	write32(APCS_WDT0_BITE_TIME, RESET_WDT_BITE_TIME);
+	write32(APCS_WDT0_EN, 1);
+	write32(APCS_WDT0_CPU0_WDOG_EXPIRED_ENABLE, 1);
 
 	for (;;)
 		;

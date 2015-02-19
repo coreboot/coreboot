@@ -101,16 +101,16 @@ static struct usb_dwc3 * const usb_host2_dwc3 = (void *)USB_HOST2_DWC3_BASE;
 
 static void setup_dwc3(struct usb_dwc3 *dwc3)
 {
-	writel(0x1 << 31 | 0x1 << 25 | 0x1 << 24 | 0x1 << 19 | 0x1 << 18 | 0x1 << 1 | 0x1 << 0 | 0,
-	       &dwc3->usb3pipectl);
+	write32(&dwc3->usb3pipectl,
+		0x1 << 31 | 0x1 << 25 | 0x1 << 24 | 0x1 << 19 | 0x1 << 18 | 0x1 << 1 | 0x1 << 0 | 0);
 
-	writel(0x1 << 31 | 0x9 << 10 | 0x1 << 8 | 0x1 << 6 | 0,
-	       &dwc3->usb2phycfg);
+	write32(&dwc3->usb2phycfg,
+		0x1 << 31 | 0x9 << 10 | 0x1 << 8 | 0x1 << 6 | 0);
 
-	writel(0x2 << 19 | 0x1 << 16 | 0x1 << 12 | 0x1 << 11 | 0x1 << 10 | 0x1 << 2 | 0,
-	       &dwc3->ctl);
+	write32(&dwc3->ctl,
+		0x2 << 19 | 0x1 << 16 | 0x1 << 12 | 0x1 << 11 | 0x1 << 10 | 0x1 << 2 | 0);
 
-	writel(0x32 << 22 | 0x1 << 15 | 0x10 << 0 | 0, &dwc3->uctl);
+	write32(&dwc3->uctl, 0x32 << 22 | 0x1 << 15 | 0x10 << 0 | 0);
 
 	udelay(5);
 
@@ -121,16 +121,16 @@ static void setup_dwc3(struct usb_dwc3 *dwc3)
 
 static void setup_phy(struct usb_qc_phy *phy)
 {
-	writel(0x1 << 24 | 0x1 << 8 | 0x1 << 7 | 0x19 << 0 | 0,
-	       &phy->ss_phy_ctrl);
+	write32(&phy->ss_phy_ctrl,
+		0x1 << 24 | 0x1 << 8 | 0x1 << 7 | 0x19 << 0 | 0);
 
-	writel(0x1 << 26 | 0x1 << 25 | 0x1 << 24 | 0x1 << 21 | 0x1 << 20 | 0x1 << 18 | 0x1 << 17 | 0x1 << 11 | 0x1 << 9 | 0x1 << 8 | 0x1 << 7 | 0x7 << 4 | 0x1 << 1 | 0,
-	       &phy->hs_phy_ctrl);
+	write32(&phy->hs_phy_ctrl,
+		0x1 << 26 | 0x1 << 25 | 0x1 << 24 | 0x1 << 21 | 0x1 << 20 | 0x1 << 18 | 0x1 << 17 | 0x1 << 11 | 0x1 << 9 | 0x1 << 8 | 0x1 << 7 | 0x7 << 4 | 0x1 << 1 | 0);
 
-	writel(0x6e << 20 | 0x20 << 14 | 0x17 << 8 | 0x9 << 3 | 0,
-	       &phy->ss_phy_param1);
+	write32(&phy->ss_phy_param1,
+		0x6e << 20 | 0x20 << 14 | 0x17 << 8 | 0x9 << 3 | 0);
 
-	writel(0x1 << 2, &phy->general_cfg);	/* set XHCI 1.00 compliance */
+	write32(&phy->general_cfg, 0x1 << 2);	/* set XHCI 1.00 compliance */
 
 	udelay(5);
 	clrbits_le32(&phy->ss_phy_ctrl, 0x1 << 7); /* deassert SS PHY reset */
@@ -141,9 +141,9 @@ static void crport_handshake(void *capture_reg, void *acknowledge_bit, u32 data)
 	int usec = 100;
 
 	if (capture_reg)
-		writel(data, capture_reg);
+		write32(capture_reg, data);
 
-	writel(0x1 << 0, acknowledge_bit);
+	write32(acknowledge_bit, 0x1 << 0);
 	while (read32(acknowledge_bit) && --usec)
 		udelay(1);
 

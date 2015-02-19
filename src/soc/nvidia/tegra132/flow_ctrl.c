@@ -62,14 +62,14 @@ static uint32_t flowctrl_read_cpu_csr(int cpu)
 
 static void flowctrl_write_cpu_csr(int cpu, uint32_t val)
 {
-	writel(val, tegra_flowctrl_base + flowctrl_offset_cpu_csr[cpu]);
-	val = readl(tegra_flowctrl_base + flowctrl_offset_cpu_csr[cpu]);
+	write32(tegra_flowctrl_base + flowctrl_offset_cpu_csr[cpu], val);
+	val = read32(tegra_flowctrl_base + flowctrl_offset_cpu_csr[cpu]);
 }
 
 void flowctrl_write_cpu_halt(int cpu, uint32_t val)
 {
-	writel(val, tegra_flowctrl_base + flowctrl_offset_halt_cpu[cpu]);
-	val = readl(tegra_flowctrl_base + flowctrl_offset_halt_cpu[cpu]);
+	write32(tegra_flowctrl_base + flowctrl_offset_halt_cpu[cpu], val);
+	val = read32(tegra_flowctrl_base + flowctrl_offset_halt_cpu[cpu]);
 }
 
 static void flowctrl_prepare_cpu_off(int cpu)

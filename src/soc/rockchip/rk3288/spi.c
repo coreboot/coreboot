@@ -87,9 +87,9 @@ static void spi_cs_deactivate(struct spi_slave *slave)
 static void rockchip_spi_enable_chip(struct rockchip_spi *regs, int enable)
 {
 	if (enable == 1)
-		writel(1, &regs->spienr);
+		write32(&regs->spienr, 1);
 	else
-		writel(0, &regs->spienr);
+		write32(&regs->spienr, 0);
 }
 
 static void rockchip_spi_set_clk(struct rockchip_spi *regs, unsigned int hz)
@@ -100,7 +100,7 @@ static void rockchip_spi_set_clk(struct rockchip_spi *regs, unsigned int hz)
 	clk_div = SPI_SRCCLK_HZ / hz;
 	clk_div = (clk_div + 1) & 0xfffe;
 	assert((clk_div - 1) * hz == SPI_SRCCLK_HZ);
-	writel(clk_div, &regs->baudr);
+	write32(&regs->baudr, clk_div);
 }
 
 void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
@@ -139,11 +139,11 @@ void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 	/* Frame Format */
 	ctrlr0 |= (SPI_FRF_SPI << SPI_FRF_OFFSET);
 
-	writel(ctrlr0, &regs->ctrlr0);
+	write32(&regs->ctrlr0, ctrlr0);
 
 	/* fifo depth */
-	writel(SPI_FIFO_DEPTH / 2 - 1, &regs->txftlr);
-	writel(SPI_FIFO_DEPTH / 2 - 1, &regs->rxftlr);
+	write32(&regs->txftlr, SPI_FIFO_DEPTH / 2 - 1);
+	write32(&regs->rxftlr, SPI_FIFO_DEPTH / 2 - 1);
 }
 
 int spi_claim_bus(struct spi_slave *slave)
@@ -163,7 +163,7 @@ static int rockchip_spi_wait_till_not_busy(struct rockchip_spi *regs)
 
 	stopwatch_init_usecs_expire(&sw, SPI_TIMEOUT_US);
 	do {
-		if (!(readl(&regs->sr) & SR_BUSY))
+		if (!(read32(&regs->sr) & SR_BUSY))
 			return 0;
 	} while (!stopwatch_expired(&sw));
 	printk(BIOS_DEBUG,
@@ -207,18 +207,18 @@ static int do_xfer(struct spi_slave *slave, const void *dout,
 		min_xfer = MIN(*bytes_in, *bytes_out);
 
 	while (min_xfer) {
-		uint32_t sr = readl(&regs->sr);
+		uint32_t sr = read32(&regs->sr);
 		int xferred = 0;	/* in either (or both) directions */
 
 		if (*bytes_out && !(sr & SR_TF_FULL)) {
-			writel(*out_buf, &regs->txdr);
+			write32(&regs->txdr, *out_buf);
 			out_buf++;
 			*bytes_out -= 1;
 			xferred = 1;
 		}
 
 		if (*bytes_in && !(sr & SR_RF_EMPT)) {
-			*in_buf = readl(&regs->rxdr) & 0xff;
+			*in_buf = read32(&regs->rxdr) & 0xff;
 			in_buf++;
 			*bytes_in -= 1;
 			xferred = 1;
@@ -266,7 +266,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 		set_transfer_mode(regs, bytes_out, bytes_in);
 
 		/* MAX() in case either counter is 0 */
-		writel(MAX(in_now, out_now) - 1, &regs->ctrlr1);
+		write32(&regs->ctrlr1, MAX(in_now, out_now) - 1);
 
 		rockchip_spi_enable_chip(regs, 1);
 

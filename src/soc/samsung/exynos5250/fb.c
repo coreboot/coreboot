@@ -122,48 +122,48 @@ void fb_init(unsigned long int fb_size, void *lcdbase,
 
 	fb_size = ALIGN(fb_size, 4096);
 
-	writel(pd->ivclk | pd->fixvclk, &exynos_disp_ctrl->vidcon1);
+	write32(&exynos_disp_ctrl->vidcon1, pd->ivclk | pd->fixvclk);
 	val = ENVID_ON | ENVID_F_ON | (pd->clkval_f << CLKVAL_F_OFFSET);
-	writel(val, &exynos_fimd->vidcon0);
+	write32(&exynos_fimd->vidcon0, val);
 
 	val = (pd->vsync << VSYNC_PULSE_WIDTH_OFFSET) |
 		(pd->lower_margin << V_FRONT_PORCH_OFFSET) |
 		(pd->upper_margin << V_BACK_PORCH_OFFSET);
-	writel(val, &exynos_disp_ctrl->vidtcon0);
+	write32(&exynos_disp_ctrl->vidtcon0, val);
 
 	val = (pd->hsync << HSYNC_PULSE_WIDTH_OFFSET) |
 		(pd->right_margin << H_FRONT_PORCH_OFFSET) |
 		(pd->left_margin << H_BACK_PORCH_OFFSET);
-	writel(val, &exynos_disp_ctrl->vidtcon1);
+	write32(&exynos_disp_ctrl->vidtcon1, val);
 
 	val = ((pd->xres - 1) << HOZVAL_OFFSET) |
 		((pd->yres - 1) << LINEVAL_OFFSET);
-	writel(val, &exynos_disp_ctrl->vidtcon2);
+	write32(&exynos_disp_ctrl->vidtcon2, val);
 
-	writel((unsigned int)lcdbase, &exynos_fimd->vidw00add0b0);
-	writel((unsigned int)lcdbase + fb_size, &exynos_fimd->vidw00add1b0);
+	write32(&exynos_fimd->vidw00add0b0, (unsigned int)lcdbase);
+	write32(&exynos_fimd->vidw00add1b0, (unsigned int)lcdbase + fb_size);
 
-	writel(pd->xres * 2, &exynos_fimd->vidw00add2);
+	write32(&exynos_fimd->vidw00add2, pd->xres * 2);
 
 	val = ((pd->xres - 1) << OSD_RIGHTBOTX_F_OFFSET);
 	val |= ((pd->yres - 1) << OSD_RIGHTBOTY_F_OFFSET);
-	writel(val, &exynos_fimd->vidosd0b);
-	writel(pd->xres * pd->yres, &exynos_fimd->vidosd0c);
+	write32(&exynos_fimd->vidosd0b, val);
+	write32(&exynos_fimd->vidosd0c, pd->xres * pd->yres);
 
 	setbits_le32(&exynos_fimd->shadowcon, CHANNEL0_EN);
 
 	val = BPPMODE_F_RGB_16BIT_565 << BPPMODE_F_OFFSET;
 	val |= ENWIN_F_ENABLE | HALF_WORD_SWAP_EN;
-	writel(val, &exynos_fimd->wincon0);
+	write32(&exynos_fimd->wincon0, val);
 
 	/* DPCLKCON_ENABLE */
-	writel(1 << 1, &exynos_fimd->dpclkcon);
+	write32(&exynos_fimd->dpclkcon, 1 << 1);
 }
 
 #ifdef UNUSED_CODE
 void exynos_fimd_disable(void)
 {
-	writel(0, &exynos_fimd->wincon0);
+	write32(&exynos_fimd->wincon0, 0);
 	clrbits_le32(&exynos_fimd->shadowcon, CHANNEL0_EN);
 }
 #endif
@@ -328,18 +328,18 @@ static int s5p_dp_set_lane_lane_pre_emphasis(struct s5p_dp_device *dp,
 	reg = pre_emphasis << PRE_EMPHASIS_SET_SHIFT;
 	switch (lane) {
 	case 0:
-		writel(reg, &base->ln0_link_trn_ctl);
+		write32(&base->ln0_link_trn_ctl, reg);
 		break;
 	case 1:
-		writel(reg, &base->ln1_link_trn_ctl);
+		write32(&base->ln1_link_trn_ctl, reg);
 		break;
 
 	case 2:
-		writel(reg, &base->ln2_link_trn_ctl);
+		write32(&base->ln2_link_trn_ctl, reg);
 		break;
 
 	case 3:
-		writel(reg, &base->ln3_link_trn_ctl);
+		write32(&base->ln3_link_trn_ctl, reg);
 		break;
 	default:
 		printk(BIOS_DEBUG, "%s: Invalid lane %d\n", __func__, lane);
@@ -432,7 +432,7 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 		}
 
 	/* All DP analog module power up */
-	writel(0x00, &base->dp_phy_pd);
+	write32(&base->dp_phy_pd, 0x00);
 
 	/* Initialize by reading RX's DPCD */
 	s5p_dp_get_max_rx_bandwidth(dp, &dp->link_train.link_rate);
@@ -463,21 +463,21 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 		dp->link_train.link_rate = max_rate;
 
 	/* Set link rate and count as you want to establish*/
-	writel(dp->link_train.lane_count, &base->lane_count_set);
-	writel(dp->link_train.link_rate, &base->link_bw_set);
+	write32(&base->lane_count_set, dp->link_train.lane_count);
+	write32(&base->link_bw_set, dp->link_train.link_rate);
 
 	/* Set sink to D0 (Sink Not Ready) mode. */
 	s5p_dp_write_byte_to_dpcd(dp, DPCD_ADDR_SINK_POWER_STATE,
 				  DPCD_SET_POWER_STATE_D0);
 
 	/* Start HW link training */
-	writel(HW_TRAINING_EN, &base->dp_hw_link_training);
+	write32(&base->dp_hw_link_training, HW_TRAINING_EN);
 
 	/* Wait until HW link training done */
 	s5p_dp_wait_hw_link_training_done(dp);
 
 	/* Get hardware link training status */
-	data = readl(&base->dp_hw_link_training);
+	data = read32(&base->dp_hw_link_training);
 	printk(BIOS_SPEW, "hardware link training status: 0x%08x\n", data);
 	if (data != 0) {
 		printk(BIOS_ERR, " H/W link training failure: 0x%x\n", data);
@@ -485,11 +485,11 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	}
 
 	/* Get Link Bandwidth */
-	data = readl(&base->link_bw_set);
+	data = read32(&base->link_bw_set);
 
 	dp->link_train.link_rate = data;
 
-	data = readl(&base->lane_count_set);
+	data = read32(&base->lane_count_set);
 	dp->link_train.lane_count = data;
 	printk(BIOS_SPEW, "Done training: Link bandwidth: 0x%x, lane_count: %d\n",
 		dp->link_train.link_rate, data);
@@ -541,8 +541,8 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
 	/* Enable enhanced mode */
 	setbits_le32(&base->sys_ctl_4, ENHANCED);
 
-	writel(dp->link_train.lane_count, &base->lane_count_set);
-	writel(dp->link_train.link_rate, &base->link_bw_set);
+	write32(&base->lane_count_set, dp->link_train.lane_count);
+	write32(&base->link_bw_set, dp->link_train.link_rate);
 
 	s5p_dp_init_video(dp);
 	ret = s5p_dp_config_video(dp, dp->video_info);

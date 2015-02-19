@@ -48,16 +48,14 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 	u32 xpos = 0, ypos = 0;
 	struct rk3288_vop_regs *preg = vop_regs[vop_id];
 
-	writel(V_ACT_WIDTH(hactive - 1) | V_ACT_HEIGHT(vactive - 1),
-	       &preg->win0_act_info);
+	write32(&preg->win0_act_info,
+		V_ACT_WIDTH(hactive - 1) | V_ACT_HEIGHT(vactive - 1));
 
-	writel(V_DSP_XST(xpos + hsync_len + hback_porch) |
-	       V_DSP_YST(ypos + vsync_len + vback_porch),
-	       &preg->win0_dsp_st);
+	write32(&preg->win0_dsp_st,
+		V_DSP_XST(xpos + hsync_len + hback_porch) | V_DSP_YST(ypos + vsync_len + vback_porch));
 
-	writel(V_DSP_WIDTH(hactive - 1) |
-		V_DSP_HEIGHT(vactive - 1),
-		&preg->win0_dsp_info);
+	write32(&preg->win0_dsp_info,
+		V_DSP_WIDTH(hactive - 1) | V_DSP_HEIGHT(vactive - 1));
 
 	clrsetbits_le32(&preg->win0_color_key, M_WIN0_KEY_EN | M_WIN0_KEY_COLOR,
 						V_WIN0_KEY_EN(0) |
@@ -66,19 +64,16 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 	switch (edid->framebuffer_bits_per_pixel) {
 	case 16:
 		rgb_mode = RGB565;
-		writel(V_RGB565_VIRWIDTH(hactive),
-		       &preg->win0_vir);
+		write32(&preg->win0_vir, V_RGB565_VIRWIDTH(hactive));
 		break;
 	case 24:
 		rgb_mode = RGB888;
-		writel(V_RGB888_VIRWIDTH(hactive),
-		       &preg->win0_vir);
+		write32(&preg->win0_vir, V_RGB888_VIRWIDTH(hactive));
 		break;
 	case 32:
 	default:
 		rgb_mode = ARGB8888;
-		writel(V_ARGB888_VIRWIDTH(hactive),
-		       &preg->win0_vir);
+		write32(&preg->win0_vir, V_ARGB888_VIRWIDTH(hactive));
 		break;
 	}
 
@@ -96,9 +91,9 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 			V_WIN0_LB_MODE(lb_mode) |
 			V_WIN0_DATA_FMT(rgb_mode) | V_WIN0_EN(1));
 
-	writel(fbbase, &preg->win0_yrgb_mst);
+	write32(&preg->win0_yrgb_mst, fbbase);
 
-	writel(0x01, &preg->reg_cfg_done); /* enable reg config */
+	write32(&preg->reg_cfg_done, 0x01); /* enable reg config */
 }
 
 void rkvop_mode_set(u32 vop_id, const struct edid *edid)
@@ -116,29 +111,23 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid)
 	clrsetbits_le32(&preg->sys_ctrl, M_ALL_OUT_EN, V_EDP_OUT_EN(1));
 	clrsetbits_le32(&preg->dsp_ctrl0, M_DSP_OUT_MODE,
 					 V_DSP_OUT_MODE(15));
-	writel(V_HSYNC(hsync_len) |
-	       V_HORPRD(hsync_len + hback_porch + hactive + hfront_porch),
-			&preg->dsp_htotal_hs_end);
+	write32(&preg->dsp_htotal_hs_end,
+		V_HSYNC(hsync_len) | V_HORPRD(hsync_len + hback_porch + hactive + hfront_porch));
 
-	writel(V_HEAP(hsync_len + hback_porch + hactive) |
-	       V_HASP(hsync_len + hback_porch),
-	       &preg->dsp_hact_st_end);
+	write32(&preg->dsp_hact_st_end,
+		V_HEAP(hsync_len + hback_porch + hactive) | V_HASP(hsync_len + hback_porch));
 
-	writel(V_VSYNC(vsync_len) |
-	       V_VERPRD(vsync_len + vback_porch + vactive + vfront_porch),
-	       &preg->dsp_vtotal_vs_end);
+	write32(&preg->dsp_vtotal_vs_end,
+		V_VSYNC(vsync_len) | V_VERPRD(vsync_len + vback_porch + vactive + vfront_porch));
 
-	writel(V_VAEP(vsync_len + vback_porch + vactive)|
-	       V_VASP(vsync_len + vback_porch),
-	       &preg->dsp_vact_st_end);
+	write32(&preg->dsp_vact_st_end,
+		V_VAEP(vsync_len + vback_porch + vactive) | V_VASP(vsync_len + vback_porch));
 
-	writel(V_HEAP(hsync_len + hback_porch + hactive) |
-	       V_HASP(hsync_len + hback_porch),
-	       &preg->post_dsp_hact_info);
+	write32(&preg->post_dsp_hact_info,
+		V_HEAP(hsync_len + hback_porch + hactive) | V_HASP(hsync_len + hback_porch));
 
-	writel(V_VAEP(vsync_len + vback_porch + vactive)|
-	       V_VASP(vsync_len + vback_porch),
-	       &preg->post_dsp_vact_info);
+	write32(&preg->post_dsp_vact_info,
+		V_VAEP(vsync_len + vback_porch + vactive) | V_VASP(vsync_len + vback_porch));
 
-	writel(0x01, &preg->reg_cfg_done); /* enable reg config */
+	write32(&preg->reg_cfg_done, 0x01); /* enable reg config */
 }

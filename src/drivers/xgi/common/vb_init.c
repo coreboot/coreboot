@@ -568,23 +568,23 @@ static int XGINew_ReadWriteRest(unsigned short StopAddr,
 	unsigned long Position = 0;
 	void __iomem *fbaddr = pVBInfo->FBAddr;
 
-	writel(Position, fbaddr + Position);
+	write32(fbaddr + Position, Position);
 
 	for (i = StartAddr; i <= StopAddr; i++) {
 		Position = 1 << i;
-		writel(Position, fbaddr + Position);
+		write32(fbaddr + Position, Position);
 	}
 
 	udelay(500); /* Fix #1759 Memory Size error in Multi-Adapter. */
 
 	Position = 0;
 
-	if (readl(fbaddr + Position) != Position)
+	if (read32(fbaddr + Position) != Position)
 		return 0;
 
 	for (i = StartAddr; i <= StopAddr; i++) {
 		Position = 1 << i;
-		if (readl(fbaddr + Position) != Position)
+		if (read32(fbaddr + Position) != Position)
 			return 0;
 	}
 	return 1;

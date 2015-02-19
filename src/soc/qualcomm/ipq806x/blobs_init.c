@@ -107,7 +107,7 @@ void start_rpm(void)
 	u32 ready_mask = 1 << 10;
 	struct stopwatch sw;
 
-	if (readl(RPM_SIGNAL_COOKIE) == RPM_FW_MAGIC_NUM) {
+	if (read32(RPM_SIGNAL_COOKIE) == RPM_FW_MAGIC_NUM) {
 		printk(BIOS_INFO, "RPM appears to have already started\n");
 		return;
 	}
@@ -119,20 +119,20 @@ void start_rpm(void)
 	printk(BIOS_INFO, "Starting RPM\n");
 
 	/* Clear 'ready' indication. */
-	writel(readl(RPM_INT_ACK) & ~ready_mask, RPM_INT_ACK);
+	write32(RPM_INT_ACK, read32(RPM_INT_ACK) & ~ready_mask);
 
 	/* Set RPM entry address */
-	writel(load_addr, RPM_SIGNAL_ENTRY);
+	write32(RPM_SIGNAL_ENTRY, load_addr);
 	/* Set cookie */
-	writel(RPM_FW_MAGIC_NUM, RPM_SIGNAL_COOKIE);
+	write32(RPM_SIGNAL_COOKIE, RPM_FW_MAGIC_NUM);
 
 	/* Wait for RPM start indication, up to 100ms. */
 	stopwatch_init_usecs_expire(&sw, 100000);
-	while (!(readl(RPM_INT) & ready_mask))
+	while (!(read32(RPM_INT) & ready_mask))
 		if (stopwatch_expired(&sw))
 			die("RPM Initialization failed\n");
 
 	/* Acknowledge RPM initialization */
-	writel(ready_mask, RPM_INT_ACK);
+	write32(RPM_INT_ACK, ready_mask);
 }
 #endif  /* !__PRE_RAM__ */

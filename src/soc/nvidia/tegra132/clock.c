@@ -163,7 +163,7 @@ struct {
  */
 static u32 clock_get_osc_bits(void)
 {
-	return (readl(CLK_RST_REG(osc_ctrl)) & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
+	return (read32(CLK_RST_REG(osc_ctrl)) & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
 }
 
 int clock_get_osc_khz(void)
@@ -173,7 +173,7 @@ int clock_get_osc_khz(void)
 
 int clock_get_pll_input_khz(void)
 {
-	u32 osc_ctrl = readl(CLK_RST_REG(osc_ctrl));
+	u32 osc_ctrl = read32(CLK_RST_REG(osc_ctrl));
 	u32 osc_bits = (osc_ctrl & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
 	u32 pll_ref_div = (osc_ctrl & OSC_PREDIV_MASK) >> OSC_PREDIV_SHIFT;
 	return osc_table[osc_bits].khz >> pll_ref_div;
@@ -186,11 +186,11 @@ void clock_init_arm_generic_timer(void)
 	set_cntfrq(freq);
 
 	/* Record the system timer frequency. */
-	writel(freq, &sysctr->cntfid0);
+	write32(&sysctr->cntfid0, freq);
 	/* Enable the system counter. */
 	uint32_t cntcr = read32(&sysctr->cntcr);
 	cntcr |= SYSCTR_CNTCR_EN | SYSCTR_CNTCR_HDBG;
-	writel(cntcr, &sysctr->cntcr);
+	write32(&sysctr->cntcr, cntcr);
 }
 
 #define SOR0_CLK_SEL0			(1 << 14)
@@ -221,18 +221,18 @@ static void init_pll(u32 *base, u32 *misc, const union pll_fields pll, u32 lock)
 		       pll.div.lfcon << PLL_MISC_LFCON_SHIFT;
 
 	/* Write dividers but BYPASS the PLL while we're messing with it. */
-	writel(dividers | PLL_BASE_BYPASS, base);
+	write32(base, dividers | PLL_BASE_BYPASS);
 	/*
 	 * Set Lock bit, CPCON and LFCON fields (default to 0 if it doesn't
 	 * exist for this PLL)
 	 */
-	writel(lock | misc_con, misc);
+	write32(misc, lock | misc_con);
 
 	/* Enable PLL and take it back out of BYPASS */
-	writel(dividers | PLL_BASE_ENABLE, base);
+	write32(base, dividers | PLL_BASE_ENABLE);
 
 	/* Wait for lock ready */
-	while (!(readl(base) & PLL_BASE_LOCK));
+	while (!(read32(base) & PLL_BASE_LOCK));
 }
 
 static void init_utmip_pll(void)
@@ -243,14 +243,14 @@ static void init_utmip_pll(void)
 	clrbits_le32(CLK_RST_REG(utmip_pll_cfg2), 1 << 30); /* PHY_XTAL_CLKEN */
 	udelay(1);
 
-	writel(80 << 16 | 1 << 8 | 0, CLK_RST_REG(utmip_pll_cfg0));/* 960MHz * 1 / 80 == 12 MHz */
+	write32(CLK_RST_REG(utmip_pll_cfg0), 80 << 16 | 1 << 8 | 0);/* 960MHz * 1 / 80 == 12 MHz */
 
-	writel(div_round_up(khz, 8000) << 27 | 0 << 16 | 0 << 14 | 0 << 12 | div_round_up(khz, 102) << 0 | 0,
-	       CLK_RST_REG(utmip_pll_cfg1));
+	write32(CLK_RST_REG(utmip_pll_cfg1),
+		div_round_up(khz, 8000) << 27 | 0 << 16 | 0 << 14 | 0 << 12 | div_round_up(khz, 102) << 0 | 0);
 
 	/* TODO: TRM can't decide if actv is 5us or 10us, keep an eye on it */
-	writel(0 << 24 | div_round_up(khz, 3200) << 18 | div_round_up(khz, 256) << 6 | 0 << 4 | 0 << 2 | 0 << 0 | 0,
-	       CLK_RST_REG(utmip_pll_cfg2));
+	write32(CLK_RST_REG(utmip_pll_cfg2),
+		0 << 24 | div_round_up(khz, 3200) << 18 | div_round_up(khz, 256) << 6 | 0 << 4 | 0 << 2 | 0 << 0 | 0);
 
 	setbits_le32(CLK_RST_REG(utmip_pll_cfg2), 1 << 30); /* PHY_XTAL_CLKEN */
 }
@@ -274,12 +274,12 @@ static void graphics_pll(void)
 	 * that it is needed.
 	 */
 	u32 scfg = (1 << 28) | (1 << 24) | (1 << 22);
-	writel(scfg, cfg);
+	write32(cfg, scfg);
 	init_pll(CLK_RST_REG(plldp_base), CLK_RST_REG(plldp_misc),
 		osc_table[osc].plldp, PLLDPD2_MISC_LOCK_ENABLE);
 	/* leave dither and undoc bits set, release clamp */
 	scfg = (1<<28) | (1<<24);
-	writel(scfg, cfg);
+	write32(cfg, scfg);
 }
 
 /*
@@ -387,8 +387,8 @@ u32 clock_configure_plld(u32 frequency)
  * been determined through trial and error (must lead to div 13 at 24MHz). */
 void clock_early_uart(void)
 {
-	writel(CLK_SRC_DEV_ID(UARTA, CLK_M) << CLK_SOURCE_SHIFT | CLK_UART_DIV_OVERRIDE | CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900),
-	       CLK_RST_REG(clk_src_uarta));
+	write32(CLK_RST_REG(clk_src_uarta),
+		CLK_SRC_DEV_ID(UARTA, CLK_M) << CLK_SOURCE_SHIFT | CLK_UART_DIV_OVERRIDE | CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900));
 
 	clock_enable_clear_reset_l(CLK_L_UARTA);
 }
@@ -437,22 +437,22 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	 * values after coldboot reset).
 	 */
 
-	writel(misc1, CLK_RST_REG(pllm_misc1));
-	writel(misc2, CLK_RST_REG(pllm_misc2));
+	write32(CLK_RST_REG(pllm_misc1), misc1);
+	write32(CLK_RST_REG(pllm_misc2), misc2);
 
 	/* PLLM.BASE needs BYPASS=0, different from general init_pll */
-	base = readl(CLK_RST_REG(pllm_base));
+	base = read32(CLK_RST_REG(pllm_base));
 	base &= ~(PLLCMX_BASE_DIVN_MASK | PLLCMX_BASE_DIVM_MASK |
 		  PLLM_BASE_DIVP_MASK | PLL_BASE_BYPASS);
 	base |= ((m << PLL_BASE_DIVM_SHIFT) | (n << PLL_BASE_DIVN_SHIFT) |
 		 (p << PLL_BASE_DIVP_SHIFT));
-	writel(base, CLK_RST_REG(pllm_base));
+	write32(CLK_RST_REG(pllm_base), base);
 
 	setbits_le32(CLK_RST_REG(pllm_base), PLL_BASE_ENABLE);
 	/* stable_time is required, before we can start to check lock. */
 	udelay(stable_time);
 
-	while (!(readl(CLK_RST_REG(pllm_base)) & PLL_BASE_LOCK))
+	while (!(read32(CLK_RST_REG(pllm_base)) & PLL_BASE_LOCK))
 		udelay(1);
 
 	/*
@@ -466,7 +466,7 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 
 	/* Enable and start MEM(MC) and EMC. */
 	clock_enable_clear_reset(0, CLK_H_MEM | CLK_H_EMC, 0, 0, 0, 0);
-	writel(emc_source, CLK_RST_REG(clk_src_emc));
+	write32(CLK_RST_REG(clk_src_emc), emc_source);
 	udelay(IO_STABILIZATION_DELAY);
 }
 
@@ -477,9 +477,9 @@ void clock_cpu0_config(void)
 	u32 timeout = 0;
 
 	/* disable IDDQ */
-	reg = readl(&clst_clk->pllx_misc3);
+	reg = read32(&clst_clk->pllx_misc3);
 	reg &= ~PLLX_IDDQ;
-	writel(reg, &clst_clk->pllx_misc3);
+	write32(&clst_clk->pllx_misc3, reg);
 
 	/* init pllx */
 	init_pll(&clst_clk->pllx_base, &clst_clk->pllx_misc,
@@ -490,9 +490,9 @@ void clock_cpu0_config(void)
 	 * when above pllx programming has taken effect.
 	 */
 	do {
-		if (readl(&clst_clk->misc_ctrl) & CLK_SWITCH_MATCH) {
-			writel((CC_CCLK_BRST_POL_PLLX_OUT0_LJ << 28),
-			       &clst_clk->cclk_brst_pol);
+		if (read32(&clst_clk->misc_ctrl) & CLK_SWITCH_MATCH) {
+			write32(&clst_clk->cclk_brst_pol,
+				(CC_CCLK_BRST_POL_PLLX_OUT0_LJ << 28));
 			break;
 		}
 
@@ -512,8 +512,8 @@ void clock_cpu0_config(void)
 void clock_halt_avp(void)
 {
 	for (;;)
-		writel(FLOW_EVENT_JTAG | FLOW_EVENT_LIC_IRQ | FLOW_EVENT_GIC_IRQ | FLOW_MODE_WAITEVENT,
-		       &flow->halt_cop_events);
+		write32(&flow->halt_cop_events,
+		        FLOW_EVENT_JTAG | FLOW_EVENT_LIC_IRQ | FLOW_EVENT_GIC_IRQ | FLOW_MODE_WAITEVENT);
 }
 
 void clock_init(void)
@@ -521,7 +521,7 @@ void clock_init(void)
 	u32 osc = clock_get_osc_bits();
 
 	/* Set PLLC dynramp_step A to 0x2b and B to 0xb (from U-Boot -- why? */
-	writel(0x2b << 17 | 0xb << 9, CLK_RST_REG(pllc_misc2));
+	write32(CLK_RST_REG(pllc_misc2), 0x2b << 17 | 0xb << 9);
 
 	/* Max out the AVP clock before everything else (need PLLC for that). */
 	init_pll(CLK_RST_REG(pllc_base), CLK_RST_REG(pllc_misc),
@@ -529,12 +529,12 @@ void clock_init(void)
 
 	/* Typical ratios are 1:2:2 or 1:2:3 sclk:hclk:pclk (See: APB DMA
 	 * features section in the TRM). */
-	writel(1 << HCLK_DIVISOR_SHIFT | 0 << PCLK_DIVISOR_SHIFT,
-	       CLK_RST_REG(clk_sys_rate));	/* pclk = hclk = sclk/2 */
-	writel(CLK_DIVIDER(TEGRA_PLLC_KHZ, 300000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_CLKEN | PLL_OUT_RSTN,
-	       CLK_RST_REG(pllc_out));
-	writel(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT | SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT,
-	       CLK_RST_REG(sclk_brst_pol));		/* sclk = 300 MHz */
+	write32(CLK_RST_REG(clk_sys_rate),
+		1 << HCLK_DIVISOR_SHIFT | 0 << PCLK_DIVISOR_SHIFT);	/* pclk = hclk = sclk/2 */
+	write32(CLK_RST_REG(pllc_out),
+		CLK_DIVIDER(TEGRA_PLLC_KHZ, 300000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_CLKEN | PLL_OUT_RSTN);
+	write32(CLK_RST_REG(sclk_brst_pol),
+		SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT | SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT);		/* sclk = 300 MHz */
 
 	/* Change the oscillator drive strength (from U-Boot -- why?) */
 	clrsetbits_le32(CLK_RST_REG(osc_ctrl), OSC_XOFS_MASK,
@@ -549,10 +549,10 @@ void clock_init(void)
 			OSC_DRIVE_STRENGTH << PMC_OSC_EDPD_OVER_XOFS_SHIFT);
 
 	/* Set up PLLP_OUT(1|2|3|4) divisor to generate (9.6|48|102|204)MHz */
-	writel((CLK_DIVIDER(TEGRA_PLLP_KHZ, 9600) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT | (CLK_DIVIDER(TEGRA_PLLP_KHZ, 48000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT2_SHIFT,
-	       CLK_RST_REG(pllp_outa));
-	writel((CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT3_SHIFT | (CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
-	       CLK_RST_REG(pllp_outb));
+	write32(CLK_RST_REG(pllp_outa),
+		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 9600) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT | (CLK_DIVIDER(TEGRA_PLLP_KHZ, 48000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT2_SHIFT);
+	write32(CLK_RST_REG(pllp_outb),
+		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT3_SHIFT | (CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT);
 
 	/* init pllu */
 	init_pll(CLK_RST_REG(pllu_base), CLK_RST_REG(pllu_misc),
@@ -565,9 +565,9 @@ void clock_init(void)
 void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg,
 				  u32 *rst_dev_clr_reg)
 {
-	writel(val, clk_enb_set_reg);
+	write32(clk_enb_set_reg, val);
 	udelay(IO_STABILIZATION_DELAY);
-	writel(val, rst_dev_clr_reg);
+	write32(rst_dev_clr_reg, val);
 }
 
 static u32 * const clk_enb_set_arr[DEV_CONFIG_BLOCKS] = {
@@ -613,7 +613,7 @@ static void clock_write_regs(u32 * const regs[DEV_CONFIG_BLOCKS],
 
 	for (; i < DEV_CONFIG_BLOCKS; i++)
 		if (bits[i])
-			writel(bits[i], regs[i]);
+			write32(regs[i], bits[i]);
 }
 
 void clock_enable_regs(u32 bits[DEV_CONFIG_BLOCKS])
@@ -648,9 +648,9 @@ void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
 
 static void clock_reset_dev(u32 *setaddr, u32 *clraddr, u32 bit)
 {
-	writel(bit, setaddr);
+	write32(setaddr, bit);
 	udelay(LOGIC_STABILIZATION_DELAY);
-	writel(bit, clraddr);
+	write32(clraddr, bit);
 }
 
 void clock_reset_l(u32 bit)

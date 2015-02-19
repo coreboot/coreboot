@@ -92,43 +92,42 @@ static void rk3288_uart_init(void)
 	rk3288_uart_tx_flush();
 
 	// Disable interrupts.
-	writel(0, &uart_ptr->ier);
+	write32(&uart_ptr->ier, 0);
 	// Force DTR and RTS to high.
-	writel(UART8250_MCR_DTR | UART8250_MCR_RTS, &uart_ptr->mcr);
+	write32(&uart_ptr->mcr, UART8250_MCR_DTR | UART8250_MCR_RTS);
 	// Set line configuration, access divisor latches.
-	writel(UART8250_LCR_DLAB | line_config, &uart_ptr->lcr);
+	write32(&uart_ptr->lcr, UART8250_LCR_DLAB | line_config);
 	// Set the divisor.
-	writel(divisor & 0xff, &uart_ptr->dll);
-	writel((divisor >> 8) & 0xff, &uart_ptr->dlm);
+	write32(&uart_ptr->dll, divisor & 0xff);
+	write32(&uart_ptr->dlm, (divisor >> 8) & 0xff);
 	// Hide the divisor latches.
-	writel(line_config, &uart_ptr->lcr);
+	write32(&uart_ptr->lcr, line_config);
 	// Enable FIFOs, and clear receive and transmit.
-	writel(UART8250_FCR_FIFO_EN |
-		UART8250_FCR_CLEAR_RCVR |
-		UART8250_FCR_CLEAR_XMIT, &uart_ptr->fcr);
+	write32(&uart_ptr->fcr,
+		UART8250_FCR_FIFO_EN | UART8250_FCR_CLEAR_RCVR | UART8250_FCR_CLEAR_XMIT);
 }
 
 static void rk3288_uart_tx_byte(unsigned char data)
 {
-	while (!(readl(&uart_ptr->lsr) & UART8250_LSR_THRE));
-	writel(data, &uart_ptr->thr);
+	while (!(read32(&uart_ptr->lsr) & UART8250_LSR_THRE));
+	write32(&uart_ptr->thr, data);
 }
 
 static void rk3288_uart_tx_flush(void)
 {
-	while (!(readl(&uart_ptr->lsr) & UART8250_LSR_TEMT));
+	while (!(read32(&uart_ptr->lsr) & UART8250_LSR_TEMT));
 }
 
 static unsigned char rk3288_uart_rx_byte(void)
 {
 	if (!rk3288_uart_tst_byte())
 		return 0;
-	return readl(&uart_ptr->rbr);
+	return read32(&uart_ptr->rbr);
 }
 
 static int rk3288_uart_tst_byte(void)
 {
-	return (readl(&uart_ptr->lsr) & UART8250_LSR_DR) == UART8250_LSR_DR;
+	return (read32(&uart_ptr->lsr) & UART8250_LSR_DR) == UART8250_LSR_DR;
 }
 
 

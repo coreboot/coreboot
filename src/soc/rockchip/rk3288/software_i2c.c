@@ -81,20 +81,20 @@ void software_i2c_attach(unsigned bus)
 		clrbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 		break;
 	case 1:
-		writel(IOMUX_GPIO(IOMUX_I2C1), &rk3288_grf->iomux_i2c1);
+		write32(&rk3288_grf->iomux_i2c1, IOMUX_GPIO(IOMUX_I2C1));
 		break;
 	case 2:
-		writel(IOMUX_GPIO(IOMUX_I2C2), &rk3288_grf->iomux_i2c2);
+		write32(&rk3288_grf->iomux_i2c2, IOMUX_GPIO(IOMUX_I2C2));
 		break;
 	case 3:
-		writel(IOMUX_GPIO(IOMUX_I2C3), &rk3288_grf->iomux_i2c3);
+		write32(&rk3288_grf->iomux_i2c3, IOMUX_GPIO(IOMUX_I2C3));
 		break;
 	case 4:
-		writel(IOMUX_GPIO(IOMUX_I2C4), &rk3288_grf->iomux_i2c4);
+		write32(&rk3288_grf->iomux_i2c4, IOMUX_GPIO(IOMUX_I2C4));
 		break;
 	case 5:
-		writel(IOMUX_GPIO(IOMUX_I2C5SCL), &rk3288_grf->iomux_i2c5scl);
-		writel(IOMUX_GPIO(IOMUX_I2C5SDA), &rk3288_grf->iomux_i2c5sda);
+		write32(&rk3288_grf->iomux_i2c5scl, IOMUX_GPIO(IOMUX_I2C5SCL));
+		write32(&rk3288_grf->iomux_i2c5sda, IOMUX_GPIO(IOMUX_I2C5SDA));
 		break;
 	default:
 		die("Unknown I2C bus number!");
@@ -116,20 +116,20 @@ void software_i2c_detach(unsigned bus)
 		setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 		break;
 	case 1:
-		writel(IOMUX_I2C1, &rk3288_grf->iomux_i2c1);
+		write32(&rk3288_grf->iomux_i2c1, IOMUX_I2C1);
 		break;
 	case 2:
-		writel(IOMUX_I2C2, &rk3288_grf->iomux_i2c2);
+		write32(&rk3288_grf->iomux_i2c2, IOMUX_I2C2);
 		break;
 	case 3:
-		writel(IOMUX_I2C3, &rk3288_grf->iomux_i2c3);
+		write32(&rk3288_grf->iomux_i2c3, IOMUX_I2C3);
 		break;
 	case 4:
-		writel(IOMUX_I2C4, &rk3288_grf->iomux_i2c4);
+		write32(&rk3288_grf->iomux_i2c4, IOMUX_I2C4);
 		break;
 	case 5:
-		writel(IOMUX_I2C5SCL, &rk3288_grf->iomux_i2c5scl);
-		writel(IOMUX_I2C5SDA, &rk3288_grf->iomux_i2c5sda);
+		write32(&rk3288_grf->iomux_i2c5scl, IOMUX_I2C5SCL);
+		write32(&rk3288_grf->iomux_i2c5sda, IOMUX_I2C5SDA);
 		break;
 	default:
 		die("Unknown I2C bus number!");

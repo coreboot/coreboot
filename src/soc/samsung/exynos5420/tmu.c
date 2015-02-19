@@ -80,7 +80,7 @@ static int get_cur_temp(struct tmu_info *info)
 	struct tmu_reg *reg = (struct tmu_reg *)info->tmu_base;
 
 	/* Temperature code range between min 25 and max 125 */
-	cur_temp = readl(&reg->current_temp) & 0xff;
+	cur_temp = read32(&reg->current_temp) & 0xff;
 
 	/* Calibrate current temperature */
 	if (cur_temp)
@@ -142,10 +142,10 @@ static void tmu_setup_parameters(struct tmu_info *info)
 	struct tmu_reg *reg = (struct tmu_reg *)info->tmu_base;
 
 	/* Must reload for using efuse value at EXYNOS */
-	writel(TRIMINFO_RELOAD, &reg->triminfo_control);
+	write32(&reg->triminfo_control, TRIMINFO_RELOAD);
 
 	/* Get the compensation parameter */
-	te_temp = readl(&reg->triminfo);
+	te_temp = read32(&reg->triminfo);
 	info->te1 = te_temp & TRIM_INFO_MASK;
 	info->te2 = ((te_temp >> 8) & TRIM_INFO_MASK);
 
@@ -169,8 +169,8 @@ static void tmu_setup_parameters(struct tmu_info *info)
 			(hwtrip_code << 24));
 
 	/* Set interrupt level */
-	writel(rising_value, &reg->threshold_temp_rise);
-	writel(cooling_temp, &reg->threshold_temp_fall);
+	write32(&reg->threshold_temp_rise, rising_value);
+	write32(&reg->threshold_temp_fall, cooling_temp);
 
 	/*
 	 * Need to init all register settings after getting parameter info
@@ -183,20 +183,20 @@ static void tmu_setup_parameters(struct tmu_info *info)
 	 * TODO(bhthompson): rewrite this code such that we are not performing
 	 * a hard wipe of tmu_control and re verify functionality.
 	 */
-	writel(data->slope, &reg->tmu_control);
+	write32(&reg->tmu_control, data->slope);
 
-	writel(INTCLEARALL, &reg->intclear);
+	write32(&reg->intclear, INTCLEARALL);
 	/* TMU core enable */
-	con = readl(&reg->tmu_control);
+	con = read32(&reg->tmu_control);
 	con |= (info->tmu_mux << 20) | THERM_TRIP_EN | CORE_EN;
 
-	writel(con, &reg->tmu_control);
+	write32(&reg->tmu_control, con);
 
 	/* Enable HW thermal trip */
 	power_enable_hw_thermal_trip();
 
 	/* LEV1 LEV2 interrupt enable */
-	writel(INTEN_RISE1 | INTEN_RISE2, &reg->inten);
+	write32(&reg->inten, INTEN_RISE1 | INTEN_RISE2);
 }
 
 /*

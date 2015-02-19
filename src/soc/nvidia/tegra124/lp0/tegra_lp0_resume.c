@@ -282,17 +282,17 @@ inline static void write32(uint32_t val, void *addr)
 
 inline static void setbits32(uint32_t bits, void *addr)
 {
-	writel(read32(addr) | bits, addr);
+	write32(addr, read32(addr) | bits);
 }
 
 inline static void clrbits32(uint32_t bits, void *addr)
 {
-	writel(read32(addr) & ~bits, addr);
+	write32(addr, read32(addr) & ~bits);
 }
 
 static void __attribute__((noreturn)) reset(void)
 {
-	writel(SWR_TRIG_SYS_RST, clk_rst_rst_devices_l_ptr);
+	write32(clk_rst_rst_devices_l_ptr, SWR_TRIG_SYS_RST);
 	halt();
 }
 
@@ -337,7 +337,7 @@ static void config_oscillator(void)
 	osc_ctrl &= ~OSC_XOFS_MASK;
 	osc_ctrl |= (xofs << OSC_XOFS_SHIFT);
 	osc_ctrl |= OSC_XOE;
-	writel(osc_ctrl, clk_rst_osc_ctrl_ptr);
+	write32(clk_rst_osc_ctrl_ptr, osc_ctrl);
 }
 
 static void config_pllu(void)
@@ -382,17 +382,17 @@ static void config_pllu(void)
 	// Configure PLLU.
 	uint32_t base = PLLU_BYPASS | PLLU_OVERRIDE |
 			(divn << PLLU_DIVN_SHIFT) | (divm << PLLU_DIVM_SHIFT);
-	writel(base, clk_rst_pllu_base_ptr);
+	write32(clk_rst_pllu_base_ptr, base);
 	uint32_t misc = (cpcon << PLLU_CPCON_SHIFT) |
 			(lfcon << PLLU_LFCON_SHIFT);
-	writel(misc, clk_rst_pllu_misc_ptr);
+	write32(clk_rst_pllu_misc_ptr, misc);
 
 	// Enable PLLU.
 	base &= ~PLLU_BYPASS;
 	base |= PLLU_ENABLE;
-	writel(base, clk_rst_pllu_base_ptr);
+	write32(clk_rst_pllu_base_ptr, base);
 	misc |= PLLU_LOCK_ENABLE;
-	writel(misc, clk_rst_pllu_misc_ptr);
+	write32(clk_rst_pllu_misc_ptr, misc);
 }
 
 static void config_tsc(void)
@@ -400,26 +400,26 @@ static void config_tsc(void)
 	// Tell the TSC the oscillator frequency.
 	switch (get_osc_freq()) {
 	case OSC_FREQ_12:
-		writel(12000000, sysctr_cntfid0_ptr);
+		write32(sysctr_cntfid0_ptr, 12000000);
 		break;
 	case OSC_FREQ_48:
-		writel(48000000, sysctr_cntfid0_ptr);
+		write32(sysctr_cntfid0_ptr, 48000000);
 		break;
 	case OSC_FREQ_16P8:
-		writel(16800000, sysctr_cntfid0_ptr);
+		write32(sysctr_cntfid0_ptr, 16800000);
 		break;
 	case OSC_FREQ_19P2:
-		writel(19200000, sysctr_cntfid0_ptr);
+		write32(sysctr_cntfid0_ptr, 19200000);
 		break;
 	case OSC_FREQ_38P4:
-		writel(38400000, sysctr_cntfid0_ptr);
+		write32(sysctr_cntfid0_ptr, 38400000);
 		break;
 	case OSC_FREQ_26:
-		writel(26000000, sysctr_cntfid0_ptr);
+		write32(sysctr_cntfid0_ptr, 26000000);
 		break;
 	default:
 		// Default to 13MHz.
-		writel(13000000, sysctr_cntfid0_ptr);
+		write32(sysctr_cntfid0_ptr, 13000000);
 		break;
 	}
 
@@ -430,8 +430,8 @@ static void config_tsc(void)
 static void enable_cpu_clocks(void)
 {
 	// Enable the CPU complex clock.
-	writel(CLK_ENB_CPU, clk_rst_clk_enb_l_set_ptr);
-	writel(CLK_ENB_CPUG | CLK_ENB_CPULP, clk_rst_clk_enb_v_set_ptr);
+	write32(clk_rst_clk_enb_l_set_ptr, CLK_ENB_CPU);
+	write32(clk_rst_clk_enb_v_set_ptr, CLK_ENB_CPUG | CLK_ENB_CPULP);
 }
 
 
@@ -441,7 +441,7 @@ static void enable_cpu_clocks(void)
 static void config_core_sight(void)
 {
 	// Enable the CoreSight clock.
-	writel(CLK_ENB_CSITE, clk_rst_clk_out_enb_u_set_ptr);
+	write32(clk_rst_clk_out_enb_u_set_ptr, CLK_ENB_CSITE);
 
 	/*
 	 * De-assert CoreSight reset.
@@ -449,22 +449,22 @@ static void config_core_sight(void)
 	 *       now. It will be restored to its original clock source
 	 *       when the CPU-side restoration code runs.
 	 */
-	writel(SWR_CSITE_RST, clk_rst_rst_dev_u_clr_ptr);
+	write32(clk_rst_rst_dev_u_clr_ptr, SWR_CSITE_RST);
 }
 
 static void config_mselect(void)
 {
 	// Set MSELECT clock source to PLLP with 1:4 divider.
-	writel((6 << MSELECT_CLK_DIV_SHIFT) | MSELECT_CLK_SRC_PLLP_OUT0,
-	       clk_rst_clk_src_mselect_ptr);
+	write32(clk_rst_clk_src_mselect_ptr,
+		(6 << MSELECT_CLK_DIV_SHIFT) | MSELECT_CLK_SRC_PLLP_OUT0);
 
 	// Enable clock to MSELECT.
-	writel(CLK_ENB_MSELECT, clk_rst_clk_enb_v_set_ptr);
+	write32(clk_rst_clk_enb_v_set_ptr, CLK_ENB_MSELECT);
 
 	udelay(2);
 
 	// Bring MSELECT out of reset.
-	writel(SWR_MSELECT_RST, clk_rst_rst_dev_v_clr_ptr);
+	write32(clk_rst_rst_dev_v_clr_ptr, SWR_MSELECT_RST);
 }
 
 
@@ -474,16 +474,16 @@ static void config_mselect(void)
 static void clear_cpu_resets(void)
 {
 	// Take the non-cpu of the G and LP clusters out of reset.
-	writel(CLR_NONCPURESET, clk_rst_rst_cpulp_cmplx_clr_ptr);
-	writel(CLR_NONCPURESET, clk_rst_rst_cpug_cmplx_clr_ptr);
+	write32(clk_rst_rst_cpulp_cmplx_clr_ptr, CLR_NONCPURESET);
+	write32(clk_rst_rst_cpug_cmplx_clr_ptr, CLR_NONCPURESET);
 
 	// Clear software controlled reset of the slow cluster.
-	writel(CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0,
-	       clk_rst_rst_cpulp_cmplx_clr_ptr);
+	write32(clk_rst_rst_cpulp_cmplx_clr_ptr,
+		CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0);
 
 	// Clear software controlled reset of the fast cluster.
-	writel(CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0 | CLR_CPURESET1 | CLR_DBGRESET1 | CLR_CORERESET1 | CLR_CXRESET1 | CLR_CPURESET2 | CLR_DBGRESET2 | CLR_CORERESET2 | CLR_CXRESET2 | CLR_CPURESET3 | CLR_DBGRESET3 | CLR_CORERESET3 | CLR_CXRESET3,
-	       clk_rst_rst_cpug_cmplx_clr_ptr);
+	write32(clk_rst_rst_cpug_cmplx_clr_ptr,
+		CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0 | CLR_CPURESET1 | CLR_DBGRESET1 | CLR_CORERESET1 | CLR_CXRESET1 | CLR_CPURESET2 | CLR_DBGRESET2 | CLR_CORERESET2 | CLR_CXRESET2 | CLR_CPURESET3 | CLR_DBGRESET3 | CLR_CORERESET3 | CLR_CXRESET3);
 }
 
 
@@ -513,7 +513,8 @@ static void power_on_partition(unsigned id)
 	uint32_t bit = 0x1 << id;
 	if (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit)) {
 		// Partition is not on. Turn it on.
-		writel(id | PWRGATE_TOGGLE_START, pmc_ctlr_pwrgate_toggle_ptr);
+		write32(pmc_ctlr_pwrgate_toggle_ptr,
+			id | PWRGATE_TOGGLE_START);
 
 		// Wait until the partition is powerd on.
 		while (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit))
@@ -543,8 +544,8 @@ static void power_on_main_cpu(void)
 	 */
 	uint32_t orig_timer = read32(pmc_ctlr_cpupwrgood_timer_ptr);
 
-	writel(orig_timer * (204000000 / 32768),
-	       pmc_ctlr_cpupwrgood_timer_ptr);
+	write32(pmc_ctlr_cpupwrgood_timer_ptr,
+		orig_timer * (204000000 / 32768));
 
 	if (wakeup_on_lp()) {
 		power_on_partition(PARTID_C1NC);
@@ -556,7 +557,7 @@ static void power_on_main_cpu(void)
 	}
 
 	// Restore the original PMC_CPUPWRGOOD_TIMER.
-	writel(orig_timer, pmc_ctlr_cpupwrgood_timer_ptr);
+	write32(pmc_ctlr_cpupwrgood_timer_ptr, orig_timer);
 }
 
 
@@ -578,17 +579,17 @@ void lp0_resume(void)
 			  flow_ctlr_cluster_control_ptr);
 
 	// Program SUPER_CCLK_DIVIDER.
-	writel(SUPER_CDIV_ENB, clk_rst_super_cclk_div_ptr);
+	write32(clk_rst_super_cclk_div_ptr, SUPER_CDIV_ENB);
 
 	config_core_sight();
 
 	config_pllu();
 
 	// Set the CPU reset vector.
-	writel(get_wakeup_vector(), evp_cpu_reset_ptr);
+	write32(evp_cpu_reset_ptr, get_wakeup_vector());
 
 	// Select CPU complex clock source.
-	writel(CCLK_PLLP_BURST_POLICY, clk_rst_cclk_burst_policy_ptr);
+	write32(clk_rst_cclk_burst_policy_ptr, CCLK_PLLP_BURST_POLICY);
 
 	config_mselect();
 
@@ -599,14 +600,14 @@ void lp0_resume(void)
 	uint32_t ack_width = read32(clk_rst_cpu_softrst_ctrl2_ptr);
 	ack_width &= ~CAR2PMC_CPU_ACK_WIDTH_MASK;
 	ack_width |= 408 << CAR2PMC_CPU_ACK_WIDTH_SHIFT;
-	writel(ack_width, clk_rst_cpu_softrst_ctrl2_ptr);
+	write32(clk_rst_cpu_softrst_ctrl2_ptr, ack_width);
 
 	config_tsc();
 
 	// Disable VPR.
-	writel(0, mc_video_protect_size_mb_ptr);
-	writel(VIDEO_PROTECT_WRITE_ACCESS_DISABLE,
-               mc_video_protect_reg_ctrl_ptr);
+	write32(mc_video_protect_size_mb_ptr, 0);
+	write32(mc_video_protect_reg_ctrl_ptr,
+		VIDEO_PROTECT_WRITE_ACCESS_DISABLE);
 
 	enable_cpu_clocks();
 
@@ -619,8 +620,8 @@ void lp0_resume(void)
 
 	// Halt the AVP.
 	while (1)
-		writel(FLOW_MODE_STOP | EVENT_JTAG,
-		       flow_ctlr_halt_cop_events_ptr);
+		write32(flow_ctlr_halt_cop_events_ptr,
+		        FLOW_MODE_STOP | EVENT_JTAG);
 }
 
 

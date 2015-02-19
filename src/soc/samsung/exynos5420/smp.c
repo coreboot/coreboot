@@ -152,7 +152,7 @@ static void enable_smp(void)
 	actlr |= ACTLR_SMP;
 
 	/* Dummy read to assure L2 access */
-	val = readl(&exynos_power->inform0);
+	val = read32(&exynos_power->inform0);
 	val &= 0;
 	actlr |= val;
 
@@ -200,9 +200,9 @@ static void low_power_start(void)
 	/* On warm reset, because iRAM is not cleared, all cores will enter
 	 * low_power_start, not the initial address. So we need to check reset
 	 * status again, and jump to 0x0 in that case. */
-	reg_val = readl(&exynos_power->spare0);
+	reg_val = read32(&exynos_power->spare0);
 	if (reg_val != RST_FLAG_VAL) {
-		writel(0x0, VECTOR_LOW_POWER_FLAG);
+		write32(VECTOR_LOW_POWER_FLAG, 0x0);
 		jump_bx(CORE_RESET_INIT_ADDRESS);
 		/* restart cpu execution and never returns. */
 	}
@@ -211,9 +211,9 @@ static void low_power_start(void)
 	 * path, bypassing first jump address and makes final jump address 0x0,
 	 * so we try to make any core set again low_power_start address, if that
 	 * becomes zero. */
-	reg_val = readl(VECTOR_CORE_SEV_HANDLER);
+	reg_val = read32(VECTOR_CORE_SEV_HANDLER);
 	if (reg_val != (intptr_t)low_power_start) {
-		writel((intptr_t)low_power_start, VECTOR_CORE_SEV_HANDLER);
+		write32(VECTOR_CORE_SEV_HANDLER, (intptr_t)low_power_start);
 		dsb();
 		/* ask all cores to power on again. */
 		sev();
@@ -258,7 +258,7 @@ static void power_down_core(void)
 	 * S5E5420A User Manual, 8.8.1.202, ARM_CORE0_CONFIGURATION, two bits to
 	 * control power state in each power down level.
 	 */
-	writel(0x0, &exynos_power->arm_core[core_id].config);
+	write32(&exynos_power->arm_core[core_id].config, 0x0);
 
 	/* S5E5420A User Manual, 8.4.2.5, after ARM_CORE*_CONFIGURATION has been
 	 * set to zero, PMU will detect and wait for WFI then run power-down
@@ -281,15 +281,15 @@ static void configure_secondary_cores(void)
 	 * when we want to use SMP inside firmware. */
 
 	/* Clear boot reg (hotplug address) in cpu states */
-	writel(0, (void*)&exynos_cpu_states->hotplug_address);
+	write32((void *)&exynos_cpu_states->hotplug_address, 0);
 
 	/* set low_power flag and address */
-	writel((intptr_t)low_power_start, VECTOR_LOW_POWER_ADDRESS);
-	writel(RST_FLAG_VAL, VECTOR_LOW_POWER_FLAG);
-	writel(RST_FLAG_VAL, &exynos_power->spare0);
+	write32(VECTOR_LOW_POWER_ADDRESS, (intptr_t)low_power_start);
+	write32(VECTOR_LOW_POWER_FLAG, RST_FLAG_VAL);
+	write32(&exynos_power->spare0, RST_FLAG_VAL);
 
 	/* On next SEV, shutdown all cores. */
-	writel((intptr_t)power_down_core, VECTOR_CORE_SEV_HANDLER);
+	write32(VECTOR_CORE_SEV_HANDLER, (intptr_t)power_down_core);
 
 	/* Ask all cores in WFE mode to shutdown. */
 	dsb();

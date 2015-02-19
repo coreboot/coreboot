@@ -26,12 +26,12 @@ static struct apbmisc *misc = (struct apbmisc *)TEGRA_APB_MISC_BASE;
 
 void enable_jtag(void)
 {
-	writel(PP_CONFIG_CTL_JTAG, &misc->pp_config_ctl);
+	write32(&misc->pp_config_ctl, PP_CONFIG_CTL_JTAG);
 }
 
 void clamp_tristate_inputs(void)
 {
-	writel(PP_PINMUX_CLAMP_INPUTS, &misc->pp_pinmux_global);
+	write32(&misc->pp_pinmux_global, PP_PINMUX_CLAMP_INPUTS);
 }
 
 void tegra_revision_info(struct tegra_revision *id)

@@ -178,21 +178,21 @@ unsigned long get_pll_clk(int pllreg)
 
 	switch (pllreg) {
 	case APLL:
-		r = readl(&exynos_clock->apll_con0);
+		r = read32(&exynos_clock->apll_con0);
 		break;
 	case BPLL:
-		r = readl(&exynos_clock->bpll_con0);
+		r = read32(&exynos_clock->bpll_con0);
 		break;
 	case MPLL:
-		r = readl(&exynos_clock->mpll_con0);
+		r = read32(&exynos_clock->mpll_con0);
 		break;
 	case EPLL:
-		r = readl(&exynos_clock->epll_con0);
-		k = readl(&exynos_clock->epll_con1);
+		r = read32(&exynos_clock->epll_con0);
+		k = read32(&exynos_clock->epll_con1);
 		break;
 	case VPLL:
-		r = readl(&exynos_clock->vpll_con0);
-		k = readl(&exynos_clock->vpll_con1);
+		r = read32(&exynos_clock->vpll_con0);
+		k = read32(&exynos_clock->vpll_con1);
 		break;
 	default:
 		printk(BIOS_DEBUG, "Unsupported PLL (%d)\n", pllreg);
@@ -246,41 +246,41 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 	case PERIPH_ID_UART1:
 	case PERIPH_ID_UART2:
 	case PERIPH_ID_UART3:
-		src = readl(&exynos_clock->src_peric0);
-		div = readl(&exynos_clock->div_peric0);
+		src = read32(&exynos_clock->src_peric0);
+		div = read32(&exynos_clock->div_peric0);
 		break;
 	case PERIPH_ID_PWM0:
 	case PERIPH_ID_PWM1:
 	case PERIPH_ID_PWM2:
 	case PERIPH_ID_PWM3:
 	case PERIPH_ID_PWM4:
-		src = readl(&exynos_clock->src_peric0);
-		div = readl(&exynos_clock->div_peric3);
+		src = read32(&exynos_clock->src_peric0);
+		div = read32(&exynos_clock->div_peric3);
 		break;
 	case PERIPH_ID_SPI0:
 	case PERIPH_ID_SPI1:
-		src = readl(&exynos_clock->src_peric1);
-		div = readl(&exynos_clock->div_peric1);
+		src = read32(&exynos_clock->src_peric1);
+		div = read32(&exynos_clock->div_peric1);
 		break;
 	case PERIPH_ID_SPI2:
-		src = readl(&exynos_clock->src_peric1);
-		div = readl(&exynos_clock->div_peric2);
+		src = read32(&exynos_clock->src_peric1);
+		div = read32(&exynos_clock->div_peric2);
 		break;
 	case PERIPH_ID_SPI3:
 	case PERIPH_ID_SPI4:
-		src = readl(&exynos_clock->sclk_src_isp);
-		div = readl(&exynos_clock->sclk_div_isp);
+		src = read32(&exynos_clock->sclk_src_isp);
+		div = read32(&exynos_clock->sclk_div_isp);
 		break;
 	case PERIPH_ID_SATA:
-		src = readl(&exynos_clock->src_fsys);
-		div = readl(&exynos_clock->div_fsys0);
+		src = read32(&exynos_clock->src_fsys);
+		div = read32(&exynos_clock->div_fsys0);
 		break;
 	case PERIPH_ID_SDMMC0:
 	case PERIPH_ID_SDMMC1:
 	case PERIPH_ID_SDMMC2:
 	case PERIPH_ID_SDMMC3:
-		src = readl(&exynos_clock->src_fsys);
-		div = readl(&exynos_clock->div_fsys1);
+		src = read32(&exynos_clock->src_fsys);
+		div = read32(&exynos_clock->div_fsys1);
 		break;
 	case PERIPH_ID_I2C0:
 	case PERIPH_ID_I2C1:
@@ -291,9 +291,9 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 	case PERIPH_ID_I2C6:
 	case PERIPH_ID_I2C7:
 		sclk = get_pll_clk(MPLL);
-		sub_div = ((readl(&exynos_clock->div_top1)
+		sub_div = ((read32(&exynos_clock->div_top1)
 			    >> bit_info->div_bit) & 0x7) + 1;
-		div = ((readl(&exynos_clock->div_top0)
+		div = ((read32(&exynos_clock->div_top0)
 		        >> bit_info->prediv_bit) & 0x7) + 1;
 		return (sclk / sub_div) / div;
 	default:
@@ -337,7 +337,7 @@ unsigned long get_arm_clk(void)
 	unsigned int arm_ratio;
 	unsigned int arm2_ratio;
 
-	div = readl(&exynos_clock->div_cpu0);
+	div = read32(&exynos_clock->div_cpu0);
 
 	/* ARM_RATIO: [2:0], ARM2_RATIO: [30:28] */
 	arm_ratio = (div >> 0) & 0x7;
@@ -383,10 +383,10 @@ void set_mmc_clk(int dev_index, unsigned int div)
 		dev_index -= 2;
 	}
 
-	val = readl(addr);
+	val = read32(addr);
 	val &= ~(0xff << ((dev_index << 4) + 8));
 	val |= (div & 0xff) << ((dev_index << 4) + 8);
-	writel(val, addr);
+	write32(addr, val);
 }
 
 void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
@@ -582,10 +582,10 @@ int clock_set_mshci(enum periph_id peripheral)
 		printk(BIOS_DEBUG, "invalid peripheral\n");
 		return -1;
 	}
-	tmp = readl(addr) & ~0xff0f;
+	tmp = read32(addr) & ~0xff0f;
 	for (i = 0; i <= 0xf; i++) {
 		if ((clock / (i + 1)) <= 400) {
-			writel(tmp | i << 0, addr);
+			write32(addr, tmp | i << 0);
 			break;
 		}
 	}
@@ -599,7 +599,7 @@ int clock_epll_set_rate(unsigned long rate)
 	unsigned int lockcnt;
 	struct stopwatch sw;
 
-	epll_con = readl(&exynos_clock->epll_con0);
+	epll_con = read32(&exynos_clock->epll_con0);
 	epll_con &= ~((EPLL_CON0_LOCK_DET_EN_MASK <<
 			EPLL_CON0_LOCK_DET_EN_SHIFT) |
 		EPLL_CON0_MDIV_MASK << EPLL_CON0_MDIV_SHIFT |
@@ -627,13 +627,13 @@ int clock_epll_set_rate(unsigned long rate)
 	 */
 	lockcnt = 3000 * epll_div[i].p_div;
 
-	writel(lockcnt, &exynos_clock->epll_lock);
-	writel(epll_con, &exynos_clock->epll_con0);
-	writel(epll_con_k, &exynos_clock->epll_con1);
+	write32(&exynos_clock->epll_lock, lockcnt);
+	write32(&exynos_clock->epll_con0, epll_con);
+	write32(&exynos_clock->epll_con1, epll_con_k);
 
 	stopwatch_init_msecs_expire(&sw, TIMEOUT_EPLL_LOCK);
 
-	while (!(readl(&exynos_clock->epll_con0) &
+	while (!(read32(&exynos_clock->epll_con0) &
 			(0x1 << EXYNOS5_EPLLCON0_LOCKED_SHIFT))) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_DEBUG,

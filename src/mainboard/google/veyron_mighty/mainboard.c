@@ -50,10 +50,10 @@ static void configure_usb(void)
 
 static void configure_sdmmc(void)
 {
-	writel(IOMUX_SDMMC0, &rk3288_grf->iomux_sdmmc0);
+	write32(&rk3288_grf->iomux_sdmmc0, IOMUX_SDMMC0);
 
 	/* use sdmmc0 io, disable JTAG function */
-	writel(RK_CLRBITS(1 << 12), &rk3288_grf->soc_con0);
+	write32(&rk3288_grf->soc_con0, RK_CLRBITS(1 << 12));
 
 	/* Note: these power rail definitions are copied in romstage.c */
 	rk808_configure_ldo(4, 3300); /* VCCIO_SD */
@@ -64,34 +64,34 @@ static void configure_sdmmc(void)
 
 static void configure_emmc(void)
 {
-	writel(IOMUX_EMMCDATA, &rk3288_grf->iomux_emmcdata);
-	writel(IOMUX_EMMCPWREN, &rk3288_grf->iomux_emmcpwren);
-	writel(IOMUX_EMMCCMD, &rk3288_grf->iomux_emmccmd);
+	write32(&rk3288_grf->iomux_emmcdata, IOMUX_EMMCDATA);
+	write32(&rk3288_grf->iomux_emmcpwren, IOMUX_EMMCPWREN);
+	write32(&rk3288_grf->iomux_emmccmd, IOMUX_EMMCCMD);
 
 	gpio_output(GPIO(2, B, 1), 1);		/* EMMC_RST_L */
 }
 
 static void configure_codec(void)
 {
-	writel(IOMUX_I2C2, &rk3288_grf->iomux_i2c2);	/* CODEC I2C */
+	write32(&rk3288_grf->iomux_i2c2, IOMUX_I2C2);	/* CODEC I2C */
 	i2c_init(2, 400*KHz);				/* CODEC I2C */
 
-	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
-	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
+	write32(&rk3288_grf->iomux_i2s, IOMUX_I2S);
+	write32(&rk3288_grf->iomux_i2sclk, IOMUX_I2SCLK);
 
 	rk808_configure_ldo(6, 1800);	/* VCC18_CODEC */
 
 	/* AUDIO IO domain 1.8V voltage selection */
-	writel(RK_SETBITS(1 << 6), &rk3288_grf->io_vsel);
+	write32(&rk3288_grf->io_vsel, RK_SETBITS(1 << 6));
 	rkclk_configure_i2s(12288000);
 }
 
 static void configure_vop(void)
 {
-	writel(IOMUX_LCDC, &rk3288_grf->iomux_lcdc);
+	write32(&rk3288_grf->iomux_lcdc, IOMUX_LCDC);
 
 	/* lcdc(vop) iodomain select 1.8V */
-	writel(RK_SETBITS(1 << 0), &rk3288_grf->io_vsel);
+	write32(&rk3288_grf->io_vsel, RK_SETBITS(1 << 0));
 
 	switch (board_id()) {
 	case 0:
@@ -107,7 +107,7 @@ static void configure_vop(void)
 
 		/* enable edp HPD */
 		gpio_input_pulldown(GPIO(7, B, 3));
-		writel(IOMUX_EDP_HOTPLUG, &rk3288_grf->iomux_edp_hotplug);
+		write32(&rk3288_grf->iomux_edp_hotplug, IOMUX_EDP_HOTPLUG);
 		break;
 	}
 }

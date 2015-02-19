@@ -52,9 +52,8 @@ static void __gpio_input(gpio_t gpio, u32 pull)
 		clrsetbits_le32(&rk3288_pmu->gpio0pull[gpio.bank],
 				3 << (gpio.idx * 2),  pull << (gpio.idx * 2));
 	else
-		writel(RK_CLRSETBITS(3 << (gpio.idx * 2),
-			pull << (gpio.idx * 2)),
-			&rk3288_grf->gpio1_p[(gpio.port - 1)][gpio.bank]);
+		write32(&rk3288_grf->gpio1_p[(gpio.port - 1)][gpio.bank],
+		        RK_CLRSETBITS(3 << (gpio.idx * 2), pull << (gpio.idx * 2)));
 }
 
 void gpio_input(gpio_t gpio)
@@ -74,7 +73,7 @@ void gpio_input_pullup(gpio_t gpio)
 
 int gpio_get(gpio_t gpio)
 {
-	return (readl(&gpio_port[gpio.port]->ext_porta) >> gpio.num) & 0x1;
+	return (read32(&gpio_port[gpio.port]->ext_porta) >> gpio.num) & 0x1;
 }
 
 void gpio_output(gpio_t gpio, int value)

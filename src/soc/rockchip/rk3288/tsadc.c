@@ -94,13 +94,13 @@ void tsadc_init(void)
 			TSHUT_CRU_EN_SRC2 | TSHUT_CRU_EN_SRC1 |
 			TSHUT_GPIO_EN_SRC2 | TSHUT_GPIO_EN_SRC1);
 
-	writel(AUTO_PERIOD, &rk3288_tsadc->auto_period);
-	writel(AUTO_DEBOUNCE, &rk3288_tsadc->hight_int_debounce);
-	writel(AUTO_PERIOD_HT, &rk3288_tsadc->auto_period_ht);
-	writel(AUTO_DEBOUNCE_HT, &rk3288_tsadc->hight_tshut_debounce);
+	write32(&rk3288_tsadc->auto_period, AUTO_PERIOD);
+	write32(&rk3288_tsadc->hight_int_debounce, AUTO_DEBOUNCE);
+	write32(&rk3288_tsadc->auto_period_ht, AUTO_PERIOD_HT);
+	write32(&rk3288_tsadc->hight_tshut_debounce, AUTO_DEBOUNCE_HT);
 
-	writel(TSADC_SHUT_VALUE, &rk3288_tsadc->comp1_shut);
-	writel(TSADC_SHUT_VALUE, &rk3288_tsadc->comp2_shut);
+	write32(&rk3288_tsadc->comp1_shut, TSADC_SHUT_VALUE);
+	write32(&rk3288_tsadc->comp2_shut, TSADC_SHUT_VALUE);
 
 	/* polarity set to high,channel1 for cpu,channel2 for gpu */
 	setbits_le32(&rk3288_tsadc->auto_con, TSHUT_POL_HIGH | SRC2_EN |

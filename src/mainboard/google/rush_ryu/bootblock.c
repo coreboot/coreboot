@@ -71,7 +71,7 @@ void bootblock_mainboard_early_init(void)
 static void set_clock_sources(void)
 {
 	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
-	writel(PLLP << CLK_SOURCE_SHIFT, CLK_RST_REG(clk_src_uarta));
+	write32(CLK_RST_REG(clk_src_uarta), PLLP << CLK_SOURCE_SHIFT);
 }
 
 static const struct pad_config padcfgs[] = {

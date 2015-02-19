@@ -69,9 +69,9 @@ static inline struct exynos_spi_slave *to_exynos_spi(struct spi_slave *slave)
 
 static void spi_sw_reset(struct exynos_spi *regs, int word)
 {
-	const uint32_t orig_mode_cfg = readl(&regs->mode_cfg);
+	const uint32_t orig_mode_cfg = read32(&regs->mode_cfg);
 	uint32_t mode_cfg = orig_mode_cfg;
-	const uint32_t orig_swap_cfg = readl(&regs->swap_cfg);
+	const uint32_t orig_swap_cfg = read32(&regs->swap_cfg);
 	uint32_t swap_cfg = orig_swap_cfg;
 
 	mode_cfg &= ~(SPI_MODE_CH_WIDTH_MASK | SPI_MODE_BUS_WIDTH_MASK);
@@ -89,9 +89,9 @@ static void spi_sw_reset(struct exynos_spi *regs, int word)
 	}
 
 	if (mode_cfg != orig_mode_cfg)
-		writel(mode_cfg, &regs->mode_cfg);
+		write32(&regs->mode_cfg, mode_cfg);
 	if (swap_cfg != orig_swap_cfg)
-		writel(swap_cfg, &regs->swap_cfg);
+		write32(&regs->swap_cfg, swap_cfg);
 
 	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
 	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
@@ -106,7 +106,7 @@ void spi_init(void)
 static void exynos_spi_init(struct exynos_spi *regs)
 {
 	// Set FB_CLK_SEL.
-	writel(SPI_FB_DELAY_180, &regs->fb_clk);
+	write32(&regs->fb_clk, SPI_FB_DELAY_180);
 	// CPOL: Active high.
 	clrbits_le32(&regs->ch_cfg, SPI_CH_CPOL_L);
 
@@ -157,10 +157,10 @@ static void spi_transfer(struct exynos_spi *regs, void *in, const void *out,
 		out_bytes = in_bytes = packets * width;
 
 		spi_sw_reset(regs, width == 4);
-		writel(packets | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
+		write32(&regs->pkt_cnt, packets | SPI_PACKET_CNT_EN);
 
 		while (out_bytes || in_bytes) {
-			uint32_t spi_sts = readl(&regs->spi_sts);
+			uint32_t spi_sts = read32(&regs->spi_sts);
 			int rx_lvl = ((spi_sts >> 15) & 0x1ff);
 			int tx_lvl = ((spi_sts >> 6) & 0x1ff);
 
@@ -171,13 +171,13 @@ static void spi_transfer(struct exynos_spi *regs, void *in, const void *out,
 					memcpy(&data, outb, width);
 					outb += width;
 				}
-				writel(data, &regs->tx_data);
+				write32(&regs->tx_data, data);
 
 				out_bytes -= width;
 			}
 
 			if (rx_lvl >= width) {
-				uint32_t data = readl(&regs->rx_data);
+				uint32_t data = read32(&regs->rx_data);
 
 				if (inb) {
 					memcpy(inb, &data, width);

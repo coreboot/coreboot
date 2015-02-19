@@ -50,25 +50,25 @@ static void configure_usb(void)
 
 static void configure_emmc(void)
 {
-	writel(IOMUX_EMMCDATA, &rk3288_grf->iomux_emmcdata);
-	writel(IOMUX_EMMCPWREN, &rk3288_grf->iomux_emmcpwren);
-	writel(IOMUX_EMMCCMD, &rk3288_grf->iomux_emmccmd);
+	write32(&rk3288_grf->iomux_emmcdata, IOMUX_EMMCDATA);
+	write32(&rk3288_grf->iomux_emmcpwren, IOMUX_EMMCPWREN);
+	write32(&rk3288_grf->iomux_emmccmd, IOMUX_EMMCCMD);
 
 	gpio_output(GPIO(2, B, 1), 1);		/* EMMC_RST_L */
 }
 
 static void configure_codec(void)
 {
-	writel(IOMUX_I2C2, &rk3288_grf->iomux_i2c2);	/* CODEC I2C */
+	write32(&rk3288_grf->iomux_i2c2, IOMUX_I2C2);	/* CODEC I2C */
 	i2c_init(2, 400*KHz);				/* CODEC I2C */
 
-	writel(IOMUX_I2S, &rk3288_grf->iomux_i2s);
-	writel(IOMUX_I2SCLK, &rk3288_grf->iomux_i2sclk);
+	write32(&rk3288_grf->iomux_i2s, IOMUX_I2S);
+	write32(&rk3288_grf->iomux_i2sclk, IOMUX_I2SCLK);
 
 	rk808_configure_ldo(6, 1800);	/* VCC18_CODEC */
 
 	/* AUDIO IO domain 1.8V voltage selection */
-	writel(RK_SETBITS(1 << 6), &rk3288_grf->io_vsel);
+	write32(&rk3288_grf->io_vsel, RK_SETBITS(1 << 6));
 	rkclk_configure_i2s(12288000);
 }
 

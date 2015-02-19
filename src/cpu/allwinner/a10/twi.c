@@ -42,7 +42,7 @@ static void configure_clock(struct a1x_twi *twi, u32 speed_hz)
 	/* Pre-divide the clock by 8 */
 	n = 3;
 	m = (apb_clk >> n) / speed_hz;
-	writel(TWI_CLK_M(m) | TWI_CLK_N(n), &twi->clk);
+	write32(&twi->clk, TWI_CLK_M(m) | TWI_CLK_N(n));
 }
 
 void a1x_twi_init(u8 bus, u32 speed_hz)
@@ -53,9 +53,9 @@ void a1x_twi_init(u8 bus, u32 speed_hz)
 	configure_clock(twi, speed_hz);
 
 	/* Enable the I²C bus */
-	writel(TWI_CTL_BUS_EN, &twi->ctl);
+	write32(&twi->ctl, TWI_CTL_BUS_EN);
 	/* Issue soft reset */
-	writel(1, &twi->reset);
+	write32(&twi->reset, 1);
 
 	while (i-- && read32(&twi->reset))
 		udelay(1);
@@ -63,12 +63,12 @@ void a1x_twi_init(u8 bus, u32 speed_hz)
 
 static void clear_interrupt_flag(struct a1x_twi *twi)
 {
-	writel(read32(&twi->ctl) & ~TWI_CTL_INT_FLAG, &twi->ctl);
+	write32(&twi->ctl, read32(&twi->ctl) & ~TWI_CTL_INT_FLAG);
 }
 
 static void i2c_send_data(struct a1x_twi *twi, u8 data)
 {
-	writel(data, &twi->data);
+	write32(&twi->data, data);
 	clear_interrupt_flag(twi);
 }
 
@@ -90,7 +90,7 @@ static void i2c_send_start(struct a1x_twi *twi)
 	reg32 = read32(&twi->ctl);
 	reg32 &= ~TWI_CTL_INT_FLAG;
 	reg32 |= TWI_CTL_M_START;
-	writel(reg32, &twi->ctl);
+	write32(&twi->ctl, reg32);
 
 	/* M_START is automatically cleared after condition is transmitted */
 	i = TWI_TIMEOUT;
@@ -106,7 +106,7 @@ static void i2c_send_stop(struct a1x_twi *twi)
 	reg32 = read32(&twi->ctl);
 	reg32 &= ~TWI_CTL_INT_FLAG;
 	reg32 |= TWI_CTL_M_STOP;
-	writel(reg32, &twi->ctl);
+	write32(&twi->ctl, reg32);
 }
 
 static int i2c_read(struct a1x_twi *twi, uint8_t chip,

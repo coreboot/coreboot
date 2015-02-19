@@ -184,13 +184,13 @@ static void setup_kernel_info(void)
 	// from CONFIG_CONSOLE_SERIAL_UART[A-E]. Right now we simply copy the
 	// value defined in BCT.
 	struct tegra_pmc_regs *pmc = (void*)TEGRA_PMC_BASE;
-	writel(0x80080000, &pmc->odmdata);
+	write32(&pmc->odmdata, 0x80080000);
 
 	// Not strictly info, but kernel graphics driver needs this region locked down
 	struct tegra_mc_regs *mc = (void *)TEGRA_MC_BASE;
-	writel(0, &mc->video_protect_bom);
-	writel(0, &mc->video_protect_size_mb);
-	writel(1, &mc->video_protect_reg_ctrl);
+	write32(&mc->video_protect_bom, 0);
+	write32(&mc->video_protect_size_mb, 0);
+	write32(&mc->video_protect_reg_ctrl, 1);
 }
 
 static void setup_ec_spi(void)

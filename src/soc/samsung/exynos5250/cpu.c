@@ -38,7 +38,7 @@ static unsigned int cpu_rev;
 
 static void set_cpu_id(void)
 {
-	cpu_id = readl((void *)EXYNOS5_PRO_ID);
+	cpu_id = read32((void *)EXYNOS5_PRO_ID);
 	cpu_id = (0xC000 | ((cpu_id & 0x00FFF000) >> 12));
 
 	/*

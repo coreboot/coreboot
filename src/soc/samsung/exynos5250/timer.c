@@ -27,16 +27,15 @@ static const uint32_t clocks_per_usec = MCT_HZ/1000000;
 
 static uint64_t mct_raw_value(void)
 {
-	uint64_t upper = readl(&exynos_mct->g_cnt_u);
-	uint64_t lower = readl(&exynos_mct->g_cnt_l);
+	uint64_t upper = read32(&exynos_mct->g_cnt_u);
+	uint64_t lower = read32(&exynos_mct->g_cnt_l);
 
 	return (upper << 32) | lower;
 }
 
 void init_timer(void)
 {
-	writel(readl(&exynos_mct->g_tcon) | (0x1 << 8),
-		&exynos_mct->g_tcon);
+	write32(&exynos_mct->g_tcon, read32(&exynos_mct->g_tcon) | (0x1 << 8));
 }
 
 void timer_monotonic_get(struct mono_time *mt)

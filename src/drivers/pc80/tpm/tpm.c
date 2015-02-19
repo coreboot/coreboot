@@ -160,7 +160,7 @@ static u32 vendor_dev_id CAR_GLOBAL;
 
 static inline u8 tpm_read_status(int locality)
 {
-	u8 value = readb(TIS_REG(locality, TIS_REG_STS));
+	u8 value = read8(TIS_REG(locality, TIS_REG_STS));
 	TPM_DEBUG_IO_READ(TIS_REG_STS, value);
 	return value;
 }
@@ -168,12 +168,12 @@ static inline u8 tpm_read_status(int locality)
 static inline void tpm_write_status(u8 sts, int locality)
 {
 	TPM_DEBUG_IO_WRITE(TIS_REG_STS, sts);
-	writeb(sts, TIS_REG(locality, TIS_REG_STS));
+	write8(TIS_REG(locality, TIS_REG_STS), sts);
 }
 
 static inline u8 tpm_read_data(int locality)
 {
-	u8 value = readb(TIS_REG(locality, TIS_REG_DATA_FIFO));
+	u8 value = read8(TIS_REG(locality, TIS_REG_DATA_FIFO));
 	TPM_DEBUG_IO_READ(TIS_REG_DATA_FIFO, value);
 	return value;
 }
@@ -181,21 +181,21 @@ static inline u8 tpm_read_data(int locality)
 static inline void tpm_write_data(u8 data, int locality)
 {
 	TPM_DEBUG_IO_WRITE(TIS_REG_STS, data);
-	writeb(data, TIS_REG(locality, TIS_REG_DATA_FIFO));
+	write8(TIS_REG(locality, TIS_REG_DATA_FIFO), data);
 }
 
 static inline u16 tpm_read_burst_count(int locality)
 {
 	u16 count;
-	count = readb(TIS_REG(locality, TIS_REG_BURST_COUNT));
-	count |= readb(TIS_REG(locality, TIS_REG_BURST_COUNT + 1)) << 8;
+	count = read8(TIS_REG(locality, TIS_REG_BURST_COUNT));
+	count |= read8(TIS_REG(locality, TIS_REG_BURST_COUNT + 1)) << 8;
 	TPM_DEBUG_IO_READ(TIS_REG_BURST_COUNT, count);
 	return count;
 }
 
 static inline u8 tpm_read_access(int locality)
 {
-	u8 value = readb(TIS_REG(locality, TIS_REG_ACCESS));
+	u8 value = read8(TIS_REG(locality, TIS_REG_ACCESS));
 	TPM_DEBUG_IO_READ(TIS_REG_ACCESS, value);
 	return value;
 }
@@ -203,12 +203,12 @@ static inline u8 tpm_read_access(int locality)
 static inline void tpm_write_access(u8 data, int locality)
 {
 	TPM_DEBUG_IO_WRITE(TIS_REG_ACCESS, data);
-	writeb(data, TIS_REG(locality, TIS_REG_ACCESS));
+	write8(TIS_REG(locality, TIS_REG_ACCESS), data);
 }
 
 static inline u32 tpm_read_did_vid(int locality)
 {
-	u32 value = readl(TIS_REG(locality, TIS_REG_DID_VID));
+	u32 value = read32(TIS_REG(locality, TIS_REG_DID_VID));
 	TPM_DEBUG_IO_READ(TIS_REG_DID_VID, value);
 	return value;
 }
@@ -216,7 +216,7 @@ static inline u32 tpm_read_did_vid(int locality)
 static inline void tpm_write_int_vector(int vector, int locality)
 {
 	TPM_DEBUG_IO_WRITE(TIS_REG_INT_VECTOR, vector);
-	writeb(vector & 0xf, TIS_REG(locality, TIS_REG_INT_VECTOR));
+	write8(TIS_REG(locality, TIS_REG_INT_VECTOR), vector & 0xf);
 }
 
 static inline void tpm_write_int_polarity(int polarity, int locality)
@@ -224,7 +224,7 @@ static inline void tpm_write_int_polarity(int polarity, int locality)
 	/* Set polarity and leave all other bits at 0 */
 	u32 value = (polarity & 0x3) << 3;
 	TPM_DEBUG_IO_WRITE(TIS_REG_INT_ENABLE, value);
-	writel(value, TIS_REG(locality, TIS_REG_INT_ENABLE));
+	write32(TIS_REG(locality, TIS_REG_INT_ENABLE), value);
 }
 
 /*

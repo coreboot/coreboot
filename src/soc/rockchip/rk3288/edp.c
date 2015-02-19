@@ -53,66 +53,52 @@ static const char *pre_emph_names[] = {
 
 static void rk_edp_init_refclk(struct rk_edp *edp)
 {
-	writel(SEL_24M, &edp->regs->analog_ctl_2);
-	writel(REF_CLK_24M, &edp->regs->pll_reg_1);
+	write32(&edp->regs->analog_ctl_2, SEL_24M);
+	write32(&edp->regs->pll_reg_1, REF_CLK_24M);
 
 	/*initial value*/
-	writel(LDO_OUTPUT_V_SEL_145 |
-		KVCO_DEFALUT |
-		CHG_PUMP_CUR_SEL_5US |
-		V2L_CUR_SEL_1MA, &edp->regs->pll_reg_2);
+	write32(&edp->regs->pll_reg_2,
+		LDO_OUTPUT_V_SEL_145 | KVCO_DEFALUT | CHG_PUMP_CUR_SEL_5US | V2L_CUR_SEL_1MA);
 
-	writel(LOCK_DET_CNT_SEL_256 |
-		LOOP_FILTER_RESET |
-		PALL_SSC_RESET |
-		LOCK_DET_BYPASS |
-		PLL_LOCK_DET_MODE |
-		PLL_LOCK_DET_FORCE, &edp->regs->pll_reg_3);
+	write32(&edp->regs->pll_reg_3,
+		LOCK_DET_CNT_SEL_256 | LOOP_FILTER_RESET | PALL_SSC_RESET | LOCK_DET_BYPASS | PLL_LOCK_DET_MODE | PLL_LOCK_DET_FORCE);
 
-	writel(REGULATOR_V_SEL_950MV |
-		STANDBY_CUR_SEL |
-		CHG_PUMP_INOUT_CTRL_1200MV |
-		CHG_PUMP_INPUT_CTRL_OP, &edp->regs->pll_reg_5);
+	write32(&edp->regs->pll_reg_5,
+		REGULATOR_V_SEL_950MV | STANDBY_CUR_SEL | CHG_PUMP_INOUT_CTRL_1200MV | CHG_PUMP_INPUT_CTRL_OP);
 
-	writel(SSC_OFFSET | SSC_MODE | SSC_DEPTH, &edp->regs->ssc_reg);
+	write32(&edp->regs->ssc_reg, SSC_OFFSET | SSC_MODE | SSC_DEPTH);
 
-	writel(TX_SWING_PRE_EMP_MODE |
-		PRE_DRIVER_PW_CTRL1 |
-		LP_MODE_CLK_REGULATOR |
-		RESISTOR_MSB_CTRL |
-		RESISTOR_CTRL, &edp->regs->tx_common);
+	write32(&edp->regs->tx_common,
+		TX_SWING_PRE_EMP_MODE | PRE_DRIVER_PW_CTRL1 | LP_MODE_CLK_REGULATOR | RESISTOR_MSB_CTRL | RESISTOR_CTRL);
 
-	writel(DP_AUX_COMMON_MODE |
-		DP_AUX_EN |
-		AUX_TERM_50OHM, &edp->regs->dp_aux);
+	write32(&edp->regs->dp_aux,
+		DP_AUX_COMMON_MODE | DP_AUX_EN | AUX_TERM_50OHM);
 
-	writel(DP_BG_OUT_SEL |
-		DP_DB_CUR_CTRL |
-		DP_BG_SEL |
-		DP_RESISTOR_TUNE_BG, &edp->regs->dp_bias);
+	write32(&edp->regs->dp_bias,
+		DP_BG_OUT_SEL | DP_DB_CUR_CTRL | DP_BG_SEL | DP_RESISTOR_TUNE_BG);
 
-	writel(CH1_CH3_SWING_EMP_CTRL |
-		CH0_CH2_SWING_EMP_CTRL, &edp->regs->dp_reserv2);
+	write32(&edp->regs->dp_reserv2,
+		CH1_CH3_SWING_EMP_CTRL | CH0_CH2_SWING_EMP_CTRL);
 }
 
 static void rk_edp_init_interrupt(struct rk_edp *edp)
 {
 	/* Set interrupt pin assertion polarity as high */
-	writel(INT_POL, &edp->regs->int_ctl);
+	write32(&edp->regs->int_ctl, INT_POL);
 
 	/* Clear pending registers */
-	writel(0xff, &edp->regs->common_int_sta_1);
-	writel(0x4f, &edp->regs->common_int_sta_2);
-	writel(0xff, &edp->regs->common_int_sta_3);
-	writel(0x27, &edp->regs->common_int_sta_4);
-	writel(0x7f, &edp->regs->dp_int_sta);
+	write32(&edp->regs->common_int_sta_1, 0xff);
+	write32(&edp->regs->common_int_sta_2, 0x4f);
+	write32(&edp->regs->common_int_sta_3, 0xff);
+	write32(&edp->regs->common_int_sta_4, 0x27);
+	write32(&edp->regs->dp_int_sta, 0x7f);
 
 	/* 0:mask,1: unmask */
-	writel(0x00, &edp->regs->common_int_mask_1);
-	writel(0x00, &edp->regs->common_int_mask_2);
-	writel(0x00, &edp->regs->common_int_mask_3);
-	writel(0x00, &edp->regs->common_int_mask_4);
-	writel(0x00, &edp->regs->int_sta_mask);
+	write32(&edp->regs->common_int_mask_1, 0x00);
+	write32(&edp->regs->common_int_mask_2, 0x00);
+	write32(&edp->regs->common_int_mask_3, 0x00);
+	write32(&edp->regs->common_int_mask_4, 0x00);
+	write32(&edp->regs->int_sta_mask, 0x00);
 }
 
 static void rk_edp_enable_sw_function(struct rk_edp *edp)
@@ -124,7 +110,7 @@ static int rk_edp_get_pll_lock_status(struct rk_edp *edp)
 {
 	u32 val;
 
-	val = readl(&edp->regs->dp_debug_ctl);
+	val = read32(&edp->regs->dp_debug_ctl);
 	return (val & PLL_LOCK) ? DP_PLL_LOCKED : DP_PLL_UNLOCKED;
 }
 
@@ -132,9 +118,9 @@ static void rk_edp_init_analog_func(struct rk_edp *edp)
 {
 	struct stopwatch sw;
 
-	writel(0x00, &edp->regs->dp_pd);
+	write32(&edp->regs->dp_pd, 0x00);
 
-	writel(PLL_LOCK_CHG, &edp->regs->common_int_sta_1);
+	write32(&edp->regs->common_int_sta_1, PLL_LOCK_CHG);
 
 	clrbits_le32(&edp->regs->dp_debug_ctl, F_PLL_LOCK | PLL_LOCK_CTRL);
 
@@ -156,13 +142,13 @@ static void rk_edp_init_analog_func(struct rk_edp *edp)
 static void rk_edp_init_aux(struct rk_edp *edp)
 {
 	/* Clear inerrupts related to AUX channel */
-	writel(AUX_FUNC_EN_N, &edp->regs->dp_int_sta);
+	write32(&edp->regs->dp_int_sta, AUX_FUNC_EN_N);
 
 	/* Disable AUX channel module */
 	setbits_le32(&edp->regs->func_en_2, AUX_FUNC_EN_N);
 
 	/* Receive AUX Channel DEFER commands equal to DEFFER_COUNT*64 */
-	writel(DEFER_CTRL_EN | DEFER_COUNT(1), &edp->regs->aux_ch_defer_dtl);
+	write32(&edp->regs->aux_ch_defer_dtl, DEFER_CTRL_EN | DEFER_COUNT(1));
 
 	/* Enable AUX channel module */
 	clrbits_le32(&edp->regs->func_en_2, AUX_FUNC_EN_N);
@@ -175,7 +161,7 @@ static int rk_edp_aux_enable(struct rk_edp *edp)
 	setbits_le32(&edp->regs->aux_ch_ctl_2, AUX_EN);
 	stopwatch_init_msecs_expire(&sw, 20);
 	do {
-		if (!(readl(&edp->regs->aux_ch_ctl_2) & AUX_EN))
+		if (!(read32(&edp->regs->aux_ch_ctl_2) & AUX_EN))
 			return 0;
 	} while (!stopwatch_expired(&sw));
 
@@ -189,12 +175,12 @@ static int rk_edp_is_aux_reply(struct rk_edp *edp)
 
 	stopwatch_init_msecs_expire(&sw, 10);
 
-	while (!(readl(&edp->regs->dp_int_sta) & RPLY_RECEIV)) {
+	while (!(read32(&edp->regs->dp_int_sta) & RPLY_RECEIV)) {
 		if (stopwatch_expired(&sw))
 			return -1;
 	}
 
-	writel(RPLY_RECEIV, &edp->regs->dp_int_sta);
+	write32(&edp->regs->dp_int_sta, RPLY_RECEIV);
 
 	return 0;
 }
@@ -216,14 +202,14 @@ static int rk_edp_start_aux_transaction(struct rk_edp *edp)
 	}
 
 	/* Clear interrupt source for AUX CH access error */
-	val = readl(&edp->regs->dp_int_sta);
+	val = read32(&edp->regs->dp_int_sta);
 	if (val & AUX_ERR) {
-		writel(AUX_ERR, &edp->regs->dp_int_sta);
+		write32(&edp->regs->dp_int_sta, AUX_ERR);
 		return -1;
 	}
 
 	/* Check AUX CH error access status */
-	val = readl(&edp->regs->dp_int_sta);
+	val = read32(&edp->regs->dp_int_sta);
 	if ((val & AUX_STATUS_MASK) != 0) {
 		edp_debug("AUX CH error happens: %d\n\n",
 			val & AUX_STATUS_MASK);
@@ -249,15 +235,15 @@ static int rk_edp_dpcd_transfer(struct rk_edp *edp,
 
 			/* Clear AUX CH data buffer */
 			val = BUF_CLR;
-			writel(val, &edp->regs->buf_data_ctl);
+			write32(&edp->regs->buf_data_ctl, val);
 
 			/* Select DPCD device address */
 			val = AUX_ADDR_7_0(val_addr);
-			writel(val, &edp->regs->aux_addr_7_0);
+			write32(&edp->regs->aux_addr_7_0, val);
 			val = AUX_ADDR_15_8(val_addr);
-			writel(val, &edp->regs->aux_addr_15_8);
+			write32(&edp->regs->aux_addr_15_8, val);
 			val = AUX_ADDR_19_16(val_addr);
-			writel(val, &edp->regs->aux_addr_19_16);
+			write32(&edp->regs->aux_addr_19_16, val);
 
 			/*
 			 * Set DisplayPort transaction and read 1 byte
@@ -269,13 +255,14 @@ static int rk_edp_dpcd_transfer(struct rk_edp *edp,
 					AUX_TX_COMM_DP_TRANSACTION |
 					AUX_TX_COMM_WRITE;
 				for (i = 0; i < len; i++)
-					writel(*data++, &edp->regs->buf_data[i]);
+					write32(&edp->regs->buf_data[i],
+						*data++);
 			} else
 				val = AUX_LENGTH(len) |
 					AUX_TX_COMM_DP_TRANSACTION |
 					AUX_TX_COMM_READ;
 
-			writel(val, &edp->regs->aux_ch_ctl_1);
+			write32(&edp->regs->aux_ch_ctl_1, val);
 
 			/* Start AUX transaction */
 			retval = rk_edp_start_aux_transaction(edp);
@@ -291,7 +278,7 @@ static int rk_edp_dpcd_transfer(struct rk_edp *edp,
 
 		if (request == DPCD_READ) {
 			for (i = 0; i < len; i++)
-				*data++ = (u8)readl(&edp->regs->buf_data[i]);
+				*data++ = (u8)read32(&edp->regs->buf_data[i]);
 		}
 
 		length -= len;
@@ -357,7 +344,7 @@ static void rk_edp_set_link_training(struct rk_edp *edp,
 	int i;
 
 	for (i = 0; i < edp->link_train.lane_count; i++)
-		writel(training_values[i], &edp->regs->ln_link_trn_ctl[i]);
+		write32(&edp->regs->ln_link_trn_ctl[i], training_values[i]);
 }
 
 static u8 edp_link_status(const u8 *link_status, int r)
@@ -484,7 +471,7 @@ static int rk_edp_link_train_cr(struct rk_edp *edp)
 	u8 value;
 
 	value = DP_TRAINING_PATTERN_1;
-	writel(value, &edp->regs->dp_training_ptn_set);
+	write32(&edp->regs->dp_training_ptn_set, value);
 	rk_edp_dpcd_write(edp, DPCD_TRAINING_PATTERN_SET, &value, 1);
 	memset(edp->train_set, 0, 4);
 
@@ -557,7 +544,7 @@ static int rk_edp_link_train_ce(struct rk_edp *edp)
 	u8 status[DP_LINK_STATUS_SIZE];
 
 	value = DP_TRAINING_PATTERN_2;
-	writel(value, &edp->regs->dp_training_ptn_set);
+	write32(&edp->regs->dp_training_ptn_set, value);
 	rk_edp_dpcd_write(edp, DPCD_TRAINING_PATTERN_SET, &value, 1);
 
 	/* channel equalization loop */
@@ -635,18 +622,18 @@ static int rk_edp_hw_link_training(struct rk_edp *edp)
 	struct stopwatch sw;
 
 	/* Set link rate and count as you want to establish*/
-	writel(edp->link_train.link_rate, &edp->regs->link_bw_set);
-	writel(edp->link_train.lane_count, &edp->regs->lane_count_set);
+	write32(&edp->regs->link_bw_set, edp->link_train.link_rate);
+	write32(&edp->regs->lane_count_set, edp->link_train.lane_count);
 
 	if (rk_edp_link_train_cr(edp))
 		return -1;
 	if (rk_edp_link_train_ce(edp))
 		return -1;
 
-	writel(HW_LT_EN, &edp->regs->dp_hw_link_training);
+	write32(&edp->regs->dp_hw_link_training, HW_LT_EN);
 	stopwatch_init_msecs_expire(&sw, 10);
 	do {
-		val = readl(&edp->regs->dp_hw_link_training);
+		val = read32(&edp->regs->dp_hw_link_training);
 		if (!(val & HW_LT_EN))
 			break;
 	} while (!stopwatch_expired(&sw));
@@ -668,12 +655,12 @@ static int rk_edp_select_i2c_device(struct rk_edp *edp,
 
 	/* Set EDID device address */
 	val = device_addr;
-	writel(val, &edp->regs->aux_addr_7_0);
-	writel(0x0, &edp->regs->aux_addr_15_8);
-	writel(0x0, &edp->regs->aux_addr_19_16);
+	write32(&edp->regs->aux_addr_7_0, val);
+	write32(&edp->regs->aux_addr_15_8, 0x0);
+	write32(&edp->regs->aux_addr_19_16, 0x0);
 
 	/* Set offset from base address of EDID device */
-	writel(val_addr, &edp->regs->buf_data[0]);
+	write32(&edp->regs->buf_data[0], val_addr);
 
 	/*
 	 * Set I2C transaction and write address
@@ -682,7 +669,7 @@ static int rk_edp_select_i2c_device(struct rk_edp *edp,
 	 */
 	val = AUX_TX_COMM_I2C_TRANSACTION | AUX_TX_COMM_MOT |
 		AUX_TX_COMM_WRITE;
-	writel(val, &edp->regs->aux_ch_ctl_1);
+	write32(&edp->regs->aux_ch_ctl_1, val);
 
 	/* Start AUX transaction */
 	retval = rk_edp_start_aux_transaction(edp);
@@ -708,7 +695,7 @@ static int rk_edp_read_bytes_from_i2c(struct rk_edp *edp,
 		for (j = 0; j < 10; j++) { /* try 10 times */
 			/* Clear AUX CH data buffer */
 			val = BUF_CLR;
-			writel(val, &edp->regs->buf_data_ctl);
+			write32(&edp->regs->buf_data_ctl, val);
 
 			/* Set normal AUX CH command */
 			clrbits_le32(&edp->regs->aux_ch_ctl_2, ADDR_ONLY);
@@ -730,7 +717,7 @@ static int rk_edp_read_bytes_from_i2c(struct rk_edp *edp,
 			 */
 			val = AUX_LENGTH(16) | AUX_TX_COMM_I2C_TRANSACTION |
 				AUX_TX_COMM_READ;
-			writel(val, &edp->regs->aux_ch_ctl_1);
+			write32(&edp->regs->aux_ch_ctl_1, val);
 
 			/* Start AUX transaction */
 			retval = rk_edp_start_aux_transaction(edp);
@@ -742,7 +729,7 @@ static int rk_edp_read_bytes_from_i2c(struct rk_edp *edp,
 			}
 
 			/* Check if Rx sends defer */
-			val = readl(&edp->regs->aux_rx_comm);
+			val = read32(&edp->regs->aux_rx_comm);
 			if (val == AUX_RX_COMM_AUX_DEFER ||
 				val == AUX_RX_COMM_I2C_DEFER) {
 				edp_debug("Defer: %d\n\n", val);
@@ -754,7 +741,7 @@ static int rk_edp_read_bytes_from_i2c(struct rk_edp *edp,
 			return -1;
 
 		for (cur_data_idx = 0; cur_data_idx < 16; cur_data_idx++) {
-			val = readl(&edp->regs->buf_data[cur_data_idx]);
+			val = read32(&edp->regs->buf_data[cur_data_idx]);
 			edid[i + cur_data_idx] = (u8)val;
 		}
 	}
@@ -818,13 +805,13 @@ static void rk_edp_init_video(struct rk_edp *edp)
 	u32 val;
 
 	val = VSYNC_DET | VID_FORMAT_CHG | VID_CLK_CHG;
-	writel(val, &edp->regs->common_int_sta_1);
+	write32(&edp->regs->common_int_sta_1, val);
 
 	val = CHA_CRI(4) | CHA_CTRL;
-	writel(val, &edp->regs->sys_ctl_2);
+	write32(&edp->regs->sys_ctl_2, val);
 
 	val = VID_HRES_TH(2) | VID_VRES_TH(0);
-	writel(val, &edp->regs->video_ctl_8);
+	write32(&edp->regs->video_ctl_8, val);
 }
 
 static void rk_edp_config_video_slave_mode(struct rk_edp *edp)
@@ -843,24 +830,24 @@ static void rk_edp_set_video_cr_mn(struct rk_edp *edp,
 	if (type == REGISTER_M) {
 		setbits_le32(&edp->regs->sys_ctl_4, FIX_M_VID);
 		val = m_value & 0xff;
-		writel(val, &edp->regs->m_vid_0);
+		write32(&edp->regs->m_vid_0, val);
 		val = (m_value >> 8) & 0xff;
-		writel(val, &edp->regs->m_vid_1);
+		write32(&edp->regs->m_vid_1, val);
 		val = (m_value >> 16) & 0xff;
-		writel(val, &edp->regs->m_vid_2);
+		write32(&edp->regs->m_vid_2, val);
 
 		val = n_value & 0xff;
-		writel(val, &edp->regs->n_vid_0);
+		write32(&edp->regs->n_vid_0, val);
 		val = (n_value >> 8) & 0xff;
-		writel(val, &edp->regs->n_vid_1);
+		write32(&edp->regs->n_vid_1, val);
 		val = (n_value >> 16) & 0xff;
-		writel(val, &edp->regs->n_vid_2);
+		write32(&edp->regs->n_vid_2, val);
 	} else  {
 		clrbits_le32(&edp->regs->sys_ctl_4, FIX_M_VID);
 
-		writel(0x00, &edp->regs->n_vid_0);
-		writel(0x80, &edp->regs->n_vid_1);
-		writel(0x00, &edp->regs->n_vid_2);
+		write32(&edp->regs->n_vid_0, 0x00);
+		write32(&edp->regs->n_vid_1, 0x80);
+		write32(&edp->regs->n_vid_2, 0x00);
 	}
 }
 
@@ -871,19 +858,19 @@ static int rk_edp_is_video_stream_clock_on(struct rk_edp *edp)
 
 	stopwatch_init_msecs_expire(&sw, 100);
 	do {
-		val = readl(&edp->regs->sys_ctl_1);
+		val = read32(&edp->regs->sys_ctl_1);
 
 		/*must write value to update DET_STA bit status*/
-		writel(val, &edp->regs->sys_ctl_1);
-		val = readl(&edp->regs->sys_ctl_1);
+		write32(&edp->regs->sys_ctl_1, val);
+		val = read32(&edp->regs->sys_ctl_1);
 		if (!(val & DET_STA))
 			continue;
 
-		val = readl(&edp->regs->sys_ctl_2);
+		val = read32(&edp->regs->sys_ctl_2);
 
 		/*must write value to update CHA_STA bit status*/
-		writel(val, &edp->regs->sys_ctl_2);
-		val = readl(&edp->regs->sys_ctl_2);
+		write32(&edp->regs->sys_ctl_2, val);
+		val = read32(&edp->regs->sys_ctl_2);
 		if (!(val & CHA_STA))
 			return 0;
 	} while (!stopwatch_expired(&sw));
@@ -898,12 +885,12 @@ static int rk_edp_is_video_stream_on(struct rk_edp *edp)
 
 	stopwatch_init_msecs_expire(&sw, 100);
 	do {
-		val = readl(&edp->regs->sys_ctl_3);
+		val = read32(&edp->regs->sys_ctl_3);
 
 		/*must write value to update STRM_VALID bit status*/
-		writel(val, &edp->regs->sys_ctl_3);
+		write32(&edp->regs->sys_ctl_3, val);
 
-		val = readl(&edp->regs->sys_ctl_3);
+		val = read32(&edp->regs->sys_ctl_3);
 		if (!(val & STRM_VALID))
 			return 0;
 	} while (!stopwatch_expired(&sw));
@@ -942,16 +929,16 @@ static void rockchip_edp_force_hpd(struct rk_edp *edp)
 {
 	u32 val;
 
-	val = readl(&edp->regs->sys_ctl_3);
+	val = read32(&edp->regs->sys_ctl_3);
 	val |= (F_HPD | HPD_CTRL);
-	writel(val, &edp->regs->sys_ctl_3);
+	write32(&edp->regs->sys_ctl_3, val);
 }
 
 static int rockchip_edp_get_plug_in_status(struct rk_edp *edp)
 {
 	u32 val;
 
-	val = readl(&edp->regs->sys_ctl_3);
+	val = read32(&edp->regs->sys_ctl_3);
 	if (val & HPD_STATUS)
 		return 1;
 
@@ -1020,11 +1007,11 @@ void rk_edp_init(u32 vop_id)
 	rk_edp.regs = (struct rk3288_edp_regs *)EDP_BASE;
 
 	/* grf_edp_ref_clk_sel: from internal 24MHz or 27MHz clock */
-	writel(RK_SETBITS(1 << 4), &rk3288_grf->soc_con12);
+	write32(&rk3288_grf->soc_con12, RK_SETBITS(1 << 4));
 
 	/* select epd signal from vop0 or vop1 */
 	val = (vop_id == 1) ? RK_SETBITS(1 << 5) : RK_CLRBITS(1 << 5);
-	writel(val, &rk3288_grf->soc_con6);
+	write32(&rk3288_grf->soc_con6, val);
 
 	rockchip_edp_wait_hpd(&rk_edp);
 

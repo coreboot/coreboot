@@ -30,6 +30,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SOC_BROADCOM_CYGNUS
 	select SPI_FLASH
 	select SPI_FLASH_SPANSION
+	select SPI_FLASH_STMICRO # required for the reference board BCM958305K
+	select SPI_ATOMIC_SEQUENCING
 
 config MAINBOARD_DIR
 	string
@@ -49,7 +51,7 @@ config VBOOT_RAMSTAGE_INDEX
 
 config BOOT_MEDIA_SPI_BUS
 	int
-	default 2
+	default 0
 
 config DRAM_SIZE_MB
 	int

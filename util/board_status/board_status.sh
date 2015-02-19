@@ -213,8 +213,6 @@ fi
 # If the user does not wish to upload, results will remain in /tmp.
 tmpdir=$(mktemp -d --tmpdir coreboot_board_status.XXXXXXXX)
 
-# Obtain board and revision info to form the directory structure:
-# <vendor>/<board>/<revision>/<timestamp>
 cbfstool_cmd="build/cbfstool"
 if test ! -x build/cbfstool; then
 	make -C util/cbfstool/ && cp util/cbfstool/cbfstool build/cbfstool
@@ -222,6 +220,9 @@ fi
 test_cmd $LOCAL "$cbfstool_cmd"
 $cbfstool_cmd build/coreboot.rom extract -n config -f ${tmpdir}/config.txt
 $cbfstool_cmd build/coreboot.rom print > ${tmpdir}/cbfs.txt
+
+# Obtain board and revision info to form the directory structure:
+# <vendor>/<board>/<revision>/<timestamp>
 mainboard_dir="$(grep CONFIG_MAINBOARD_DIR ${tmpdir}/config.txt | awk -F '"' '{ print $2 }')"
 vendor=$(echo "$mainboard_dir" | awk -F '/' '{ print $1 }')
 mainboard=$(echo "$mainboard_dir" | awk -F '/' '{ print $2 }')

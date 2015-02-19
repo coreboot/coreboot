@@ -44,8 +44,8 @@
    macros for read/write. Hence, special macros for readl_i and writel_i are
    included to do this in one place for all occurrences in vendor code
  */
-#define readl_i(a)           read32((const void *)(a))
-#define writel_i(v,a)        write32(v,(void *)a)
+#define readl_i(a)           readl((const void *)(a))
+#define writel_i(v,a)        writel(v,(void *)a)
 #define clrsetbits_le32_i(addr, clear, set)  \
 	clrsetbits_le32(((void *)(addr)), (clear), (set))
 

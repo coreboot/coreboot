@@ -32,11 +32,11 @@
  * re-factor all code to specify the data length intended.
   */
 #define readb(a)	read8(a)
-#define writeb(v,a)	write8(v,a)
+#define writeb(v,a)	write8(a,v)
 #define readw(a)	read16(a)
-#define writew(v,a)	write16(v,a)
+#define writew(v,a)	write16(a,v)
 #define readl(a)	read32(a)
-#define writel(v,a)	write32(v,a)
+#define writel(v,a)	write32(a,v)
 
 /*
  * Clear and set bits in one shot. These macros can be used to clear and

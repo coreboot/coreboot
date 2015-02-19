@@ -1,24 +1,25 @@
 {
+	/* 4 Hynix H5TC8G63xxx chips */
 	{
 		{
-			.rank = 0x1,
+			.rank = 0x2,
 			.col = 0xA,
 			.bk = 0x3,
 			.bw = 0x2,
 			.dbw = 0x1,
 			.row_3_4 = 0x0,
-			.cs0_row = 0x10,
-			.cs1_row = 0x10
+			.cs0_row = 0xF,
+			.cs1_row = 0xF
 		},
 		{
-			.rank = 0x1,
+			.rank = 0x2,
 			.col = 0xA,
 			.bk = 0x3,
 			.bw = 0x2,
 			.dbw = 0x1,
 			.row_3_4 = 0x0,
-			.cs0_row = 0x10,
-			.cs1_row = 0x10
+			.cs0_row = 0xF,
+			.cs1_row = 0xF
 		}
 	},
 	{
@@ -68,7 +69,7 @@
 	},
 	.noc_timing = 0x30B25564,
 	.noc_activate = 0x627,
-	.ddrconfig = 4,
+	.ddrconfig = 3,
 	.ddr_freq = 666*MHz,
 	.dramtype = DDR3,
 	.num_channels = 2,

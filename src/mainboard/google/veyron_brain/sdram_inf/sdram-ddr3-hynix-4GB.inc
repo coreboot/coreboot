@@ -1,4 +1,5 @@
 {
+	/* 4 Hynix H5TC8G63xxx chips */
 	{
 		{
 			.rank = 0x2,

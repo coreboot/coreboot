@@ -41,7 +41,7 @@ void power_ungate_partition(uint32_t id)
 		pwrgate_toggle &= ~(PMC_PWRGATE_TOGGLE_PARTID_MASK);
 		pwrgate_toggle |= (id << PMC_PWRGATE_TOGGLE_PARTID_SHIFT);
 		pwrgate_toggle |= PMC_PWRGATE_TOGGLE_START;
-		write32(pwrgate_toggle, &pmc->pwrgate_toggle);
+		writel(pwrgate_toggle, &pmc->pwrgate_toggle);
 
 		/* Wait for the request to be accepted. */
 		while (read32(&pmc->pwrgate_toggle) & PMC_PWRGATE_TOGGLE_START)

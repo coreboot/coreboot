@@ -62,7 +62,7 @@ static uint32_t flowctrl_read_cpu_csr(int cpu)
 
 static void flowctrl_write_cpu_csr(int cpu, uint32_t val)
 {
-	write32(val, tegra_flowctrl_base + flowctrl_offset_cpu_csr[cpu]);
+	writel(val, tegra_flowctrl_base + flowctrl_offset_cpu_csr[cpu]);
 	val = readl(tegra_flowctrl_base + flowctrl_offset_cpu_csr[cpu]);
 }
 

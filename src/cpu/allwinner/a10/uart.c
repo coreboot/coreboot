@@ -22,10 +22,10 @@ static void a10_uart_configure(struct a10_uart *uart, u32 baud_rate, u8 data_bit
 	div = (u16) uart_baudrate_divisor(baud_rate,
 		uart_platform_refclk(), 16);
 	/* Enable access to Divisor Latch register */
-	write32(UART8250_LCR_DLAB, &uart->lcr);
+	writel(UART8250_LCR_DLAB, &uart->lcr);
 	/* Set baudrate */
-	write32((div >> 8) & 0xff, &uart->dlh);
-	write32(div & 0xff, &uart->dll);
+	writel((div >> 8) & 0xff, &uart->dlh);
+	writel(div & 0xff, &uart->dll);
 	/* Set line control */
 	reg32 = (data_bits - 5) & UART8250_LCR_WLS_MSK;
 	switch (parity) {
@@ -40,12 +40,12 @@ static void a10_uart_configure(struct a10_uart *uart, u32 baud_rate, u8 data_bit
 	default:
 		break;
 	}
-	write32(reg32, &uart->lcr);
+	writel(reg32, &uart->lcr);
 }
 
 static void a10_uart_enable_fifos(struct a10_uart *uart)
 {
-	write32(UART8250_FCR_FIFO_EN, &uart->fcr);
+	writel(UART8250_FCR_FIFO_EN, &uart->fcr);
 }
 
 static int tx_fifo_full(struct a10_uart *uart)
@@ -83,7 +83,7 @@ static void a10_uart_tx_blocking(struct a10_uart *uart, u8 data)
 {
 	while (tx_fifo_full(uart)) ;
 
-	return write32(data, &uart->thr);
+	return writel(data, &uart->thr);
 }
 
 

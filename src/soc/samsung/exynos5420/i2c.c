@@ -430,7 +430,7 @@ static int hsi2c_senddata(struct hsi2c_regs *regs, const uint8_t *data, int len)
 {
 	while (!hsi2c_check_transfer(regs) && len) {
 		if (!(read32(&regs->usi_fifo_stat) & Hsi2cTxFifoFull)) {
-			write32(*data++, &regs->usi_txdata);
+			writel(*data++, &regs->usi_txdata);
 			len--;
 		}
 	}
@@ -452,7 +452,7 @@ static int hsi2c_segment(struct i2c_seg *seg, struct hsi2c_regs *regs, int stop)
 {
 	const uint32_t usi_ctl = Hsi2cFuncModeI2c | Hsi2cMaster;
 
-	write32(HSI2C_SLV_ADDR_MAS(seg->chip), &regs->i2c_addr);
+	writel(HSI2C_SLV_ADDR_MAS(seg->chip), &regs->i2c_addr);
 
 	/*
 	 * We really only want to stop after this transaction (I think) if the
@@ -465,14 +465,14 @@ static int hsi2c_segment(struct i2c_seg *seg, struct hsi2c_regs *regs, int stop)
 		seg->len | Hsi2cMasterRun | Hsi2cStopAfterTrans;
 
 	if (seg->read) {
-		write32(usi_ctl | Hsi2cRxchon, &regs->usi_ctl);
-		write32(autoconf | Hsi2cReadWrite, &regs->i2c_auto_conf);
+		writel(usi_ctl | Hsi2cRxchon, &regs->usi_ctl);
+		writel(autoconf | Hsi2cReadWrite, &regs->i2c_auto_conf);
 
 		if (hsi2c_recvdata(regs, seg->buf, seg->len))
 			return -1;
 	} else {
-		write32(usi_ctl | Hsi2cTxchon, &regs->usi_ctl);
-		write32(autoconf, &regs->i2c_auto_conf);
+		writel(usi_ctl | Hsi2cTxchon, &regs->usi_ctl);
+		writel(autoconf, &regs->i2c_auto_conf);
 
 		if (hsi2c_senddata(regs, seg->buf, seg->len))
 			return -1;

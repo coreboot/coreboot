@@ -40,15 +40,15 @@ static void enable_core_clocks(int cpu)
 
 	/* Clear reset of CPU components. */
 	if (cpu == 0)
-		write32(cpu0_clocks, CLK_RST_REG(rst_cpug_cmplx_clr));
+		writel(cpu0_clocks, CLK_RST_REG(rst_cpug_cmplx_clr));
 	else
-		write32(cpu1_clocks, CLK_RST_REG(rst_cpug_cmplx_clr));
+		writel(cpu1_clocks, CLK_RST_REG(rst_cpug_cmplx_clr));
 }
 
 static void set_armv8_32bit_reset_vector(uintptr_t entry)
 {
 	void * const evp_cpu_reset_vector = EVP_CPU_RESET_VECTOR;
-	write32(entry, evp_cpu_reset_vector);
+	writel(entry, evp_cpu_reset_vector);
 }
 
 static void set_armv8_64bit_reset_vector(uintptr_t entry)
@@ -56,8 +56,8 @@ static void set_armv8_64bit_reset_vector(uintptr_t entry)
 	struct tegra_pmc_regs * const pmc = PMC_REGS;
 
 	/* Currently assume 32-bit addresses only. */
-	write32(entry, &pmc->secure_scratch34);
-	write32(0, &pmc->secure_scratch35);
+	writel(entry, &pmc->secure_scratch34);
+	writel(0, &pmc->secure_scratch35);
 }
 
 void cpu_prepare_startup(void *entry_64)

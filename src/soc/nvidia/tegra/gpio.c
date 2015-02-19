@@ -67,8 +67,8 @@ static void gpio_write_port(int index, size_t offset, u32 mask, u32 value)
 	u32 new_reg = (reg & ~mask) | (value & mask);
 
 	if (new_reg != reg) {
-		write32(new_reg, (u8 *)&gpio_banks[bank] + offset +
-			port * sizeof(u32));
+		writel(new_reg,
+		       (u8 *)&gpio_banks[bank] + offset + port * sizeof(u32));
 	}
 }
 

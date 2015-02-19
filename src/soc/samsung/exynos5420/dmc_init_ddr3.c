@@ -189,8 +189,8 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		 * release pad retention and retain the memory content until the
 		 * initialization is complete.
 		 */
-		write32(PAD_RETENTION_DRAM_COREBLK_VAL,
-			&exynos_power->padret_dram_cblk_opt);
+		writel(PAD_RETENTION_DRAM_COREBLK_VAL,
+		       &exynos_power->padret_dram_cblk_opt);
 		do {
 			ret = read32(&exynos_power->padret_dram_status);
 		} while (ret != 0x1);

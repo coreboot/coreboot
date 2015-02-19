@@ -186,11 +186,11 @@ void clock_init_arm_generic_timer(void)
 	set_cntfrq(freq);
 
 	/* Record the system timer frequency. */
-	write32(freq, &sysctr->cntfid0);
+	writel(freq, &sysctr->cntfid0);
 	/* Enable the system counter. */
 	uint32_t cntcr = read32(&sysctr->cntcr);
 	cntcr |= SYSCTR_CNTCR_EN | SYSCTR_CNTCR_HDBG;
-	write32(cntcr, &sysctr->cntcr);
+	writel(cntcr, &sysctr->cntcr);
 }
 
 #define SOR0_CLK_SEL0			(1 << 14)
@@ -243,25 +243,14 @@ static void init_utmip_pll(void)
 	clrbits_le32(CLK_RST_REG(utmip_pll_cfg2), 1 << 30); /* PHY_XTAL_CLKEN */
 	udelay(1);
 
-	write32(80 << 16 |			/* (rst) phy_divn */
-		1 << 8 |			/* (rst) phy_divm */
-		0, CLK_RST_REG(utmip_pll_cfg0));/* 960MHz * 1 / 80 == 12 MHz */
+	writel(80 << 16 | 1 << 8 | 0, CLK_RST_REG(utmip_pll_cfg0));/* 960MHz * 1 / 80 == 12 MHz */
 
-	write32(div_round_up(khz, 8000) << 27 |	/* pllu_enbl_cnt / 8 (1us) */
-		0 << 16 |			/* PLLU pwrdn */
-		0 << 14 |			/* pll_enable pwrdn */
-		0 << 12 |			/* pll_active pwrdn */
-		div_round_up(khz, 102) << 0 |	/* phy_stbl_cnt / 256 (2.5ms) */
-		0, CLK_RST_REG(utmip_pll_cfg1));
+	writel(div_round_up(khz, 8000) << 27 | 0 << 16 | 0 << 14 | 0 << 12 | div_round_up(khz, 102) << 0 | 0,
+	       CLK_RST_REG(utmip_pll_cfg1));
 
 	/* TODO: TRM can't decide if actv is 5us or 10us, keep an eye on it */
-	write32(0 << 24 |			/* SAMP_D/XDEV pwrdn */
-		div_round_up(khz, 3200) << 18 |	/* phy_actv_cnt / 16 (5us) */
-		div_round_up(khz, 256) << 6 |	/* pllu_stbl_cnt / 256 (1ms) */
-		0 << 4 |			/* SAMP_C/USB3 pwrdn */
-		0 << 2 |			/* SAMP_B/XHOST pwrdn */
-		0 << 0 |			/* SAMP_A/USBD pwrdn */
-		0, CLK_RST_REG(utmip_pll_cfg2));
+	writel(0 << 24 | div_round_up(khz, 3200) << 18 | div_round_up(khz, 256) << 6 | 0 << 4 | 0 << 2 | 0 << 0 | 0,
+	       CLK_RST_REG(utmip_pll_cfg2));
 
 	setbits_le32(CLK_RST_REG(utmip_pll_cfg2), 1 << 30); /* PHY_XTAL_CLKEN */
 }
@@ -398,9 +387,8 @@ u32 clock_configure_plld(u32 frequency)
  * been determined through trial and error (must lead to div 13 at 24MHz). */
 void clock_early_uart(void)
 {
-	write32(CLK_SRC_DEV_ID(UARTA, CLK_M) << CLK_SOURCE_SHIFT |
-		CLK_UART_DIV_OVERRIDE |
-		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900), CLK_RST_REG(clk_src_uarta));
+	writel(CLK_SRC_DEV_ID(UARTA, CLK_M) << CLK_SOURCE_SHIFT | CLK_UART_DIV_OVERRIDE | CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900),
+	       CLK_RST_REG(clk_src_uarta));
 
 	clock_enable_clear_reset_l(CLK_L_UARTA);
 }
@@ -503,8 +491,8 @@ void clock_cpu0_config(void)
 	 */
 	do {
 		if (readl(&clst_clk->misc_ctrl) & CLK_SWITCH_MATCH) {
-			write32((CC_CCLK_BRST_POL_PLLX_OUT0_LJ << 28),
-				&clst_clk->cclk_brst_pol);
+			writel((CC_CCLK_BRST_POL_PLLX_OUT0_LJ << 28),
+			       &clst_clk->cclk_brst_pol);
 			break;
 		}
 
@@ -524,9 +512,8 @@ void clock_cpu0_config(void)
 void clock_halt_avp(void)
 {
 	for (;;)
-		write32(FLOW_EVENT_JTAG | FLOW_EVENT_LIC_IRQ |
-			FLOW_EVENT_GIC_IRQ | FLOW_MODE_WAITEVENT,
-			&flow->halt_cop_events);
+		writel(FLOW_EVENT_JTAG | FLOW_EVENT_LIC_IRQ | FLOW_EVENT_GIC_IRQ | FLOW_MODE_WAITEVENT,
+		       &flow->halt_cop_events);
 }
 
 void clock_init(void)
@@ -542,13 +529,12 @@ void clock_init(void)
 
 	/* Typical ratios are 1:2:2 or 1:2:3 sclk:hclk:pclk (See: APB DMA
 	 * features section in the TRM). */
-	write32(1 << HCLK_DIVISOR_SHIFT | 0 << PCLK_DIVISOR_SHIFT,
-		CLK_RST_REG(clk_sys_rate));	/* pclk = hclk = sclk/2 */
-	write32(CLK_DIVIDER(TEGRA_PLLC_KHZ, 300000) << PLL_OUT_RATIO_SHIFT |
-		PLL_OUT_CLKEN | PLL_OUT_RSTN, CLK_RST_REG(pllc_out));
-	write32(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT |
-		SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT,
-		CLK_RST_REG(sclk_brst_pol));		/* sclk = 300 MHz */
+	writel(1 << HCLK_DIVISOR_SHIFT | 0 << PCLK_DIVISOR_SHIFT,
+	       CLK_RST_REG(clk_sys_rate));	/* pclk = hclk = sclk/2 */
+	writel(CLK_DIVIDER(TEGRA_PLLC_KHZ, 300000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_CLKEN | PLL_OUT_RSTN,
+	       CLK_RST_REG(pllc_out));
+	writel(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT | SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT,
+	       CLK_RST_REG(sclk_brst_pol));		/* sclk = 300 MHz */
 
 	/* Change the oscillator drive strength (from U-Boot -- why?) */
 	clrsetbits_le32(CLK_RST_REG(osc_ctrl), OSC_XOFS_MASK,
@@ -563,16 +549,10 @@ void clock_init(void)
 			OSC_DRIVE_STRENGTH << PMC_OSC_EDPD_OVER_XOFS_SHIFT);
 
 	/* Set up PLLP_OUT(1|2|3|4) divisor to generate (9.6|48|102|204)MHz */
-	write32((CLK_DIVIDER(TEGRA_PLLP_KHZ, 9600) << PLL_OUT_RATIO_SHIFT |
-		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT |
-		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 48000) << PLL_OUT_RATIO_SHIFT |
-		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT2_SHIFT,
-		CLK_RST_REG(pllp_outa));
-	write32((CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000) << PLL_OUT_RATIO_SHIFT |
-		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT3_SHIFT |
-		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT |
-		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
-		CLK_RST_REG(pllp_outb));
+	writel((CLK_DIVIDER(TEGRA_PLLP_KHZ, 9600) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT | (CLK_DIVIDER(TEGRA_PLLP_KHZ, 48000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT2_SHIFT,
+	       CLK_RST_REG(pllp_outa));
+	writel((CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT3_SHIFT | (CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
+	       CLK_RST_REG(pllp_outb));
 
 	/* init pllu */
 	init_pll(CLK_RST_REG(pllu_base), CLK_RST_REG(pllu_misc),

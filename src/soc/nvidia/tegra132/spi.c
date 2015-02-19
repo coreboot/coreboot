@@ -230,7 +230,7 @@ int spi_claim_bus(struct spi_slave *slave)
 	else
 		val |= SPI_CMD1_CS_SW_VAL;
 
-	write32(val, &regs->command1);
+	writel(val, &regs->command1);
 	return 0;
 }
 
@@ -246,7 +246,7 @@ void spi_release_bus(struct spi_slave *slave)
 	else
 		val &= ~SPI_CMD1_CS_SW_VAL;
 
-	write32(val, &regs->command1);
+	writel(val, &regs->command1);
 }
 
 static void dump_fifo_status(struct tegra_spi_channel *spi)
@@ -383,12 +383,12 @@ static int tegra_spi_pio_prepare(struct tegra_spi_channel *spi,
 
 	/* BLOCK_SIZE in SPI_DMA_BLK register applies to both DMA and
 	 * PIO transfers */
-	write32(todo - 1, &spi->regs->dma_blk);
+	writel(todo - 1, &spi->regs->dma_blk);
 
 	if (dir == SPI_SEND) {
 		unsigned int to_fifo = bytes;
 		while (to_fifo) {
-			write32(*p, &spi->regs->tx_fifo);
+			writel(*p, &spi->regs->tx_fifo);
 			p++;
 			to_fifo--;
 		}
@@ -493,11 +493,12 @@ static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
 		/* ensure bytes to send will be visible to DMA controller */
 		dcache_clean_by_mva(spi->out_buf, bytes);
 
-		write32((uintptr_t)&spi->regs->tx_fifo, &spi->dma_out->regs->apb_ptr);
-		write32((uintptr_t)spi->out_buf, &spi->dma_out->regs->ahb_ptr);
+		writel((uintptr_t) & spi->regs->tx_fifo,
+		       &spi->dma_out->regs->apb_ptr);
+		writel((uintptr_t)spi->out_buf, &spi->dma_out->regs->ahb_ptr);
 		setbits_le32(&spi->dma_out->regs->csr, APB_CSR_DIR);
 		setup_dma_params(spi, spi->dma_out);
-		write32(wcount, &spi->dma_out->regs->wcount);
+		writel(wcount, &spi->dma_out->regs->wcount);
 	} else {
 		spi->dma_in = dma_claim();
 		if (!spi->dma_in)
@@ -506,15 +507,16 @@ static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
 		/* avoid data collisions */
 		dcache_clean_invalidate_by_mva(spi->in_buf, bytes);
 
-		write32((uintptr_t)&spi->regs->rx_fifo, &spi->dma_in->regs->apb_ptr);
-		write32((uintptr_t)spi->in_buf, &spi->dma_in->regs->ahb_ptr);
+		writel((uintptr_t)&spi->regs->rx_fifo,
+		       &spi->dma_in->regs->apb_ptr);
+		writel((uintptr_t)spi->in_buf, &spi->dma_in->regs->ahb_ptr);
 		clrbits_le32(&spi->dma_in->regs->csr, APB_CSR_DIR);
 		setup_dma_params(spi, spi->dma_in);
-		write32(wcount, &spi->dma_in->regs->wcount);
+		writel(wcount, &spi->dma_in->regs->wcount);
 	}
 
 	/* BLOCK_SIZE starts at n-1 */
-	write32(todo - 1, &spi->regs->dma_blk);
+	writel(todo - 1, &spi->regs->dma_blk);
 	return todo;
 }
 

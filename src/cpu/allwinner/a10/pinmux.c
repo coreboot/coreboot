@@ -33,7 +33,7 @@ void gpio_set_pin_func(u8 port, u8 pin, u8 pad_func)
 	reg32 = read32(&gpio->port[port].cfg[reg]);
 	reg32 &= ~(0xf << bit);
 	reg32 |= (pad_func & 0xf) << bit;
-	write32(reg32, &gpio->port[port].cfg[reg]);
+	writel(reg32, &gpio->port[port].cfg[reg]);
 }
 
 /**
@@ -74,6 +74,6 @@ void gpio_set_multipin_func(u8 port, u32 pin_mask, u8 pad_func)
 			reg32 &= ~(0xf << bit);
 			reg32 |= (pad_func & 0xf) << bit;
 		}
-		write32(reg32, &gpio->port[port].cfg[reg]);
+		writel(reg32, &gpio->port[port].cfg[reg]);
 	}
 }

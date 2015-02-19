@@ -55,7 +55,7 @@ static inline unsigned long fradl(void *v) {
 
 #define lread32(a) fradl((void *)(a))
 #else
-#define lwrite32(a,b) write32((unsigned long)(a), (void *)(b))
+#define lwrite32(a,b) writel((unsigned long)(a), (void *)(b))
 #define lread32(a) read32((void *)(a))
 #endif
 

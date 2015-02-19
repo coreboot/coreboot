@@ -76,7 +76,7 @@ void gpio_write(u8 port, u32 val)
 	if ((port > GPS))
 		return;
 
-	write32(val, &gpio->port[port].dat);
+	writel(val, &gpio->port[port].dat);
 }
 
 /**

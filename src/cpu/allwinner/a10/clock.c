@@ -28,7 +28,7 @@ void a1x_periph_clock_enable(enum a1x_clken periph)
 	addr = (void *)A1X_CCM_BASE + (periph >> 5);
 	reg32 = read32(addr);
 	reg32 |= 1 << (periph & 0x1f);
-	write32(reg32, addr);
+	writel(reg32, addr);
 }
 
 /**
@@ -44,7 +44,7 @@ void a1x_periph_clock_disable(enum a1x_clken periph)
 	addr = (void *)A1X_CCM_BASE + (periph >> 5);
 	reg32 = read32(addr);
 	reg32 &= ~(1 << (periph & 0x1f));
-	write32(reg32, addr);
+	writel(reg32, addr);
 }
 
 /**
@@ -88,7 +88,7 @@ void a1x_pll5_configure(u8 mul_n, u8 mul_k, u8 div_m, u8 exp_div_p)
 	reg32 |= (PLL5_FACTOR_M(div_m) | PLL5_FACTOR_N(mul_n) |
 		  PLL5_FACTOR_K(mul_k) | PLL5_DIV_EXP_P(exp_div_p));
 	reg32 |= PLL5_PLL_ENABLE;
-	write32(reg32, &ccm->pll5_cfg);
+	writel(reg32, &ccm->pll5_cfg);
 }
 
 /**
@@ -166,7 +166,7 @@ static void cpu_clk_src_switch(u32 clksel_bits)
 	reg32 = read32(&ccm->cpu_ahb_apb0_cfg);
 	reg32 &= ~CPU_CLK_SRC_MASK;
 	reg32 |= clksel_bits & CPU_CLK_SRC_MASK;
-	write32(reg32, &ccm->cpu_ahb_apb0_cfg);
+	writel(reg32, &ccm->cpu_ahb_apb0_cfg);
 }
 
 static void change_sys_divisors(u8 axi, u8 ahb_exp, u8 apb0_exp)
@@ -179,7 +179,7 @@ static void change_sys_divisors(u8 axi, u8 ahb_exp, u8 apb0_exp)
 	reg32 |= ((axi - 1) << 0) & AXI_DIV_MASK;
 	reg32 |= (ahb_exp << 4) & AHB_DIV_MASK;
 	reg32 |= (apb0_exp << 8) & APB0_DIV_MASK;
-	write32(reg32, &ccm->cpu_ahb_apb0_cfg);
+	writel(reg32, &ccm->cpu_ahb_apb0_cfg);
 }
 
 static void spin_delay(u32 loops)
@@ -262,7 +262,7 @@ void a1x_set_cpu_clock(u16 cpu_clk_mhz)
 	change_sys_divisors(axi, ahb_exp, apb0_exp);
 
 	/* Configure PLL1 at the desired frequency */
-	write32(pll1_table[i].pll1_cfg, &ccm->pll1_cfg);
+	writel(pll1_table[i].pll1_cfg, &ccm->pll1_cfg);
 	spin_delay(8);
 
 	cpu_clk_src_switch(CPU_CLK_SRC_PLL1);

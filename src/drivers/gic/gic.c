@@ -61,7 +61,7 @@ static struct gic *gic_get(void)
 
 static inline void gic_write(uint32_t *base, uint32_t val)
 {
-	write32(val, base);
+	writel(val, base);
 }
 
 static void gic_write_regs(uint32_t *base, size_t num_regs, uint32_t val)

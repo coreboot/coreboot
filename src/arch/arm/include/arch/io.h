@@ -33,6 +33,8 @@
   */
 #define readb(a)	read8(a)
 #define writeb(v,a)	write8(v,a)
+#define readw(a)	read16(a)
+#define writew(v,a)	write16(v,a)
 #define readl(a)	read32(a)
 #define writel(v,a)	write32(v,a)
 

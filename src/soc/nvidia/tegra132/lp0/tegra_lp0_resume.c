@@ -261,17 +261,17 @@ inline static void write32(uint32_t val, void *addr)
 
 inline static void setbits32(uint32_t bits, void *addr)
 {
-	write32(read32(addr) | bits, addr);
+	writel(read32(addr) | bits, addr);
 }
 
 inline static void clrbits32(uint32_t bits, void *addr)
 {
-	write32(read32(addr) & ~bits, addr);
+	writel(read32(addr) & ~bits, addr);
 }
 
 static void __attribute__((noreturn)) reset(void)
 {
-	write32(SWR_TRIG_SYS_RST, clk_rst_rst_devices_l_ptr);
+	writel(SWR_TRIG_SYS_RST, clk_rst_rst_devices_l_ptr);
 	halt();
 }
 
@@ -370,18 +370,18 @@ static void enable_uart(void)
 	clrbits32(uart_mask, uart_rst_reg);
 
 	/* Program UART clock source: PLLP (408000000) */
-	write32(0, uart_clk_source);
+	writel(0, uart_clk_source);
 
 	/* Program 115200n8 to the uart port */
 	/* baud-rate of 115200 */
-	write32(LCR_DLAB, (uart_base + UART_LCR));
-	write32((UART_RATE_115200 & 0xff), (uart_base + UART_THR_DLAB));
-	write32((UART_RATE_115200 >> 8), (uart_base + UART_IER_DLAB));
+	writel(LCR_DLAB, (uart_base + UART_LCR));
+	writel((UART_RATE_115200 & 0xff), (uart_base + UART_THR_DLAB));
+	writel((UART_RATE_115200 >> 8), (uart_base + UART_IER_DLAB));
 	/* 8-bit and no parity */
-	write32(LCR_WD_SIZE_8, (uart_base + UART_LCR));
+	writel(LCR_WD_SIZE_8, (uart_base + UART_LCR));
 	/* enable and clear RX/TX FIFO */
-	write32((FCR_TX_CLR + FCR_RX_CLR + FCR_EN_FIFO),
-		(uart_base + UART_IIR_FCR));
+	writel((FCR_TX_CLR + FCR_RX_CLR + FCR_EN_FIFO),
+	       (uart_base + UART_IIR_FCR));
 }
 
 /* Accessors. */
@@ -401,7 +401,7 @@ static unsigned get_osc_freq(void)
 
 static void enable_jtag(void)
 {
-	write32(PP_CONFIG_CTL_JTAG, misc_pp_config_ctl_ptr);
+	writel(PP_CONFIG_CTL_JTAG, misc_pp_config_ctl_ptr);
 }
 
 /* Clock configuration. */
@@ -417,7 +417,7 @@ static void config_oscillator(void)
 	osc_ctrl &= ~OSC_XOFS_MASK;
 	osc_ctrl |= (xofs << OSC_XOFS_SHIFT);
 	osc_ctrl |= OSC_XOE;
-	write32(osc_ctrl, clk_rst_osc_ctrl_ptr);
+	writel(osc_ctrl, clk_rst_osc_ctrl_ptr);
 }
 
 static void config_pllu(void)
@@ -462,24 +462,24 @@ static void config_pllu(void)
 	// Configure PLLU.
 	uint32_t base = PLLU_BYPASS | PLLU_OVERRIDE |
 			(divn << PLLU_DIVN_SHIFT) | (divm << PLLU_DIVM_SHIFT);
-	write32(base, clk_rst_pllu_base_ptr);
+	writel(base, clk_rst_pllu_base_ptr);
 	uint32_t misc = (cpcon << PLLU_CPCON_SHIFT) |
 			(lfcon << PLLU_LFCON_SHIFT);
-	write32(misc, clk_rst_pllu_misc_ptr);
+	writel(misc, clk_rst_pllu_misc_ptr);
 
 	// Enable PLLU.
 	base &= ~PLLU_BYPASS;
 	base |= PLLU_ENABLE;
-	write32(base, clk_rst_pllu_base_ptr);
+	writel(base, clk_rst_pllu_base_ptr);
 	misc |= PLLU_LOCK_ENABLE;
-	write32(misc, clk_rst_pllu_misc_ptr);
+	writel(misc, clk_rst_pllu_misc_ptr);
 }
 
 static void enable_cpu_clocks(void)
 {
 	// Enable the CPU complex clock.
-	write32(CLK_ENB_CPU, clk_rst_clk_enb_l_set_ptr);
-	write32(CLK_ENB_CPUG | CLK_ENB_CPULP, clk_rst_clk_enb_v_set_ptr);
+	writel(CLK_ENB_CPU, clk_rst_clk_enb_l_set_ptr);
+	writel(CLK_ENB_CPUG | CLK_ENB_CPULP, clk_rst_clk_enb_v_set_ptr);
 }
 
 
@@ -489,7 +489,7 @@ static void enable_cpu_clocks(void)
 static void config_core_sight(void)
 {
 	// Enable the CoreSight clock.
-	write32(CLK_ENB_CSITE, clk_rst_clk_out_enb_u_set_ptr);
+	writel(CLK_ENB_CSITE, clk_rst_clk_out_enb_u_set_ptr);
 
 	/*
 	 * De-assert CoreSight reset.
@@ -497,7 +497,7 @@ static void config_core_sight(void)
 	 *       now. It will be restored to its original clock source
 	 *       when the CPU-side restoration code runs.
 	 */
-	write32(SWR_CSITE_RST, clk_rst_rst_dev_u_clr_ptr);
+	writel(SWR_CSITE_RST, clk_rst_rst_dev_u_clr_ptr);
 }
 
 
@@ -508,11 +508,11 @@ static void clear_cpu_resets(void)
 	/* Hold CPU1 in reset */
 	setbits32(SET_CXRESET1, clk_rst_rst_cpulp_cmplx_set_ptr);
 
-	write32(CLR_NONCPURESET | CLR_L2RESET | CLR_PRESETDBG,
-		clk_rst_rst_cpug_cmplx_clr_ptr);
+	writel(CLR_NONCPURESET | CLR_L2RESET | CLR_PRESETDBG,
+	       clk_rst_rst_cpug_cmplx_clr_ptr);
 
-	write32(CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0,
-		clk_rst_rst_cpug_cmplx_clr_ptr);
+	writel(CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0,
+	       clk_rst_rst_cpug_cmplx_clr_ptr);
 }
 
 
@@ -542,7 +542,7 @@ static void power_on_partition(unsigned id)
 	uint32_t bit = 0x1 << id;
 	if (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit)) {
 		// Partition is not on. Turn it on.
-		write32(id | PWRGATE_TOGGLE_START, pmc_ctlr_pwrgate_toggle_ptr);
+		writel(id | PWRGATE_TOGGLE_START, pmc_ctlr_pwrgate_toggle_ptr);
 
 		// Wait until the partition is powerd on.
 		while (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit))
@@ -572,15 +572,15 @@ static void power_on_main_cpu(void)
 	 */
 	uint32_t orig_timer = read32(pmc_ctlr_cpupwrgood_timer_ptr);
 
-	write32(orig_timer * (204000000 / 32768),
-		pmc_ctlr_cpupwrgood_timer_ptr);
+	writel(orig_timer * (204000000 / 32768),
+	       pmc_ctlr_cpupwrgood_timer_ptr);
 
 	power_on_partition(PARTID_CRAIL);
 	power_on_partition(PARTID_C0NC);
 	power_on_partition(PARTID_CE0);
 
 	// Restore the original PMC_CPUPWRGOOD_TIMER.
-	write32(orig_timer, pmc_ctlr_cpupwrgood_timer_ptr);
+	writel(orig_timer, pmc_ctlr_cpupwrgood_timer_ptr);
 }
 
 
@@ -609,7 +609,7 @@ void lp0_resume(void)
 	config_oscillator();
 
 	// Program SUPER_CCLK_DIVIDER.
-	write32(SUPER_CDIV_ENB, clk_rst_super_cclk_div_ptr);
+	writel(SUPER_CDIV_ENB, clk_rst_super_cclk_div_ptr);
 
 	config_core_sight();
 
@@ -623,12 +623,12 @@ void lp0_resume(void)
 	 * T132 always resets to AARCH32 and SW needs to write RMR_EL3
 	 * to bootstrap into AARCH64.
 	 */
-	write32(get_wakeup_vector(), pmc_ctlr_secure_scratch34_ptr);
-	write32(0, pmc_ctlr_secure_scratch35_ptr);
-	write32((uint32_t)aarch64_trampoline, evp_cpu_reset_ptr);
+	writel(get_wakeup_vector(), pmc_ctlr_secure_scratch34_ptr);
+	writel(0, pmc_ctlr_secure_scratch35_ptr);
+	writel((uint32_t)aarch64_trampoline, evp_cpu_reset_ptr);
 
 	// Select CPU complex clock source.
-	write32(CCLK_PLLP_BURST_POLICY, clk_rst_cclk_burst_policy_ptr);
+	writel(CCLK_PLLP_BURST_POLICY, clk_rst_cclk_burst_policy_ptr);
 
 	// Disable PLLX since it isn't used as CPU clock source.
 	clrbits32(PLLX_ENABLE, clk_rst_pllx_base_ptr);
@@ -637,12 +637,12 @@ void lp0_resume(void)
 	uint32_t ack_width = read32(clk_rst_cpu_softrst_ctrl2_ptr);
 	ack_width &= ~CAR2PMC_CPU_ACK_WIDTH_MASK;
 	ack_width |= 408 << CAR2PMC_CPU_ACK_WIDTH_SHIFT;
-	write32(ack_width, clk_rst_cpu_softrst_ctrl2_ptr);
+	writel(ack_width, clk_rst_cpu_softrst_ctrl2_ptr);
 
 	// Disable VPR.
-	write32(0, mc_video_protect_size_mb_ptr);
-	write32(VIDEO_PROTECT_WRITE_ACCESS_DISABLE,
-		mc_video_protect_reg_ctrl_ptr);
+	writel(0, mc_video_protect_size_mb_ptr);
+	writel(VIDEO_PROTECT_WRITE_ACCESS_DISABLE,
+               mc_video_protect_reg_ctrl_ptr);
 
 	enable_cpu_clocks();
 
@@ -655,8 +655,8 @@ void lp0_resume(void)
 
 	// Halt the AVP.
 	while (1)
-		write32(FLOW_MODE_STOP | EVENT_JTAG,
-			flow_ctlr_halt_cop_events_ptr);
+		writel(FLOW_MODE_STOP | EVENT_JTAG,
+		       flow_ctlr_halt_cop_events_ptr);
 }
 
 

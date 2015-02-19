@@ -26,7 +26,7 @@ static uint32_t *pingroup_regs = (void *)TEGRA_APB_PINGROUP_BASE;
 
 void pingroup_set_config(int group_index, uint32_t config)
 {
-	write32(config, &pingroup_regs[group_index]);
+	writel(config, &pingroup_regs[group_index]);
 }
 
 uint32_t pingroup_get_config(int group_index)

@@ -186,11 +186,11 @@ void clock_init_arm_generic_timer(void)
 	set_cntfrq(freq);
 
 	// Record the system timer frequency.
-	write32(freq, &sysctr->cntfid0);
+	writel(freq, &sysctr->cntfid0);
 	// Enable the system counter.
 	uint32_t cntcr = read32(&sysctr->cntcr);
 	cntcr |= SYSCTR_CNTCR_EN | SYSCTR_CNTCR_HDBG;
-	write32(cntcr, &sysctr->cntcr);
+	writel(cntcr, &sysctr->cntcr);
 }
 
 #define SOR0_CLK_SEL0			(1 << 14)
@@ -243,25 +243,14 @@ static void init_utmip_pll(void)
 	clrbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
 	udelay(1);
 
-	write32(80 << 16 |			/* (rst) phy_divn */
-		1 << 8 |			/* (rst) phy_divm */
-		0, &clk_rst->utmip_pll_cfg0);	/* 960MHz * 1 / 80 == 12 MHz */
+	writel(80 << 16 | 1 << 8 | 0, &clk_rst->utmip_pll_cfg0);	/* 960MHz * 1 / 80 == 12 MHz */
 
-	write32(CEIL_DIV(khz, 8000) << 27 |	/* pllu_enbl_cnt / 8 (1us) */
-		0 << 16 |			/* PLLU pwrdn */
-		0 << 14 |			/* pll_enable pwrdn */
-		0 << 12 |			/* pll_active pwrdn */
-		CEIL_DIV(khz, 102) << 0 |	/* phy_stbl_cnt / 256 (2.5ms) */
-		0, &clk_rst->utmip_pll_cfg1);
+	writel(CEIL_DIV(khz, 8000) << 27 | 0 << 16 | 0 << 14 | 0 << 12 | CEIL_DIV(khz, 102) << 0 | 0,
+	       &clk_rst->utmip_pll_cfg1);
 
 	/* TODO: TRM can't decide if actv is 5us or 10us, keep an eye on it */
-	write32(0 << 24 |			/* SAMP_D/XDEV pwrdn */
-		CEIL_DIV(khz, 3200) << 18 |	/* phy_actv_cnt / 16 (5us) */
-		CEIL_DIV(khz, 256) << 6 |	/* pllu_stbl_cnt / 256 (1ms) */
-		0 << 4 |			/* SAMP_C/USB3 pwrdn */
-		0 << 2 |			/* SAMP_B/XHOST pwrdn */
-		0 << 0 |			/* SAMP_A/USBD pwrdn */
-		0, &clk_rst->utmip_pll_cfg2);
+	writel(0 << 24 | CEIL_DIV(khz, 3200) << 18 | CEIL_DIV(khz, 256) << 6 | 0 << 4 | 0 << 2 | 0 << 0 | 0,
+	       &clk_rst->utmip_pll_cfg2);
 
 	setbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
 }
@@ -398,8 +387,8 @@ clock_display(u32 frequency)
  * been determined through trial and error (must lead to div 13 at 24MHz). */
 void clock_early_uart(void)
 {
-	write32(CLK_M << CLK_SOURCE_SHIFT | CLK_UART_DIV_OVERRIDE |
-		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900), &clk_rst->clk_src_uarta);
+	writel(CLK_M << CLK_SOURCE_SHIFT | CLK_UART_DIV_OVERRIDE | CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900),
+	       &clk_rst->clk_src_uarta);
 	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_UARTA);
 	udelay(2);
 	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_UARTA);
@@ -486,28 +475,24 @@ void clock_cpu0_config(void *entry)
 {
 	void * const evp_cpu_reset = (uint8_t *)TEGRA_EVP_BASE + 0x100;
 
-	write32((uintptr_t)_estack, &maincpu_stack_pointer);
-	write32((uintptr_t)entry, &maincpu_entry_point);
-	write32((uintptr_t)&maincpu_setup, evp_cpu_reset);
+	writel((uintptr_t)_estack, &maincpu_stack_pointer);
+	writel((uintptr_t)entry, &maincpu_entry_point);
+	writel((uintptr_t)&maincpu_setup, evp_cpu_reset);
 
 	/* Set active CPU cluster to G */
 	clrbits_le32(&flow->cluster_control, 1);
 
 	// Set up cclk_brst and divider.
-	write32((CRC_CCLK_BRST_POL_PLLX_OUT0 << 0) |
-		(CRC_CCLK_BRST_POL_PLLX_OUT0 << 4) |
-		(CRC_CCLK_BRST_POL_PLLX_OUT0 << 8) |
-		(CRC_CCLK_BRST_POL_PLLX_OUT0 << 12) |
-		(CRC_CCLK_BRST_POL_CPU_STATE_RUN << 28),
-		&clk_rst->cclk_brst_pol);
-	write32(CRC_SUPER_CCLK_DIVIDER_SUPER_CDIV_ENB,
-		&clk_rst->super_cclk_div);
+	writel((CRC_CCLK_BRST_POL_PLLX_OUT0 << 0) | (CRC_CCLK_BRST_POL_PLLX_OUT0 << 4) | (CRC_CCLK_BRST_POL_PLLX_OUT0 << 8) | (CRC_CCLK_BRST_POL_PLLX_OUT0 << 12) | (CRC_CCLK_BRST_POL_CPU_STATE_RUN << 28),
+	       &clk_rst->cclk_brst_pol);
+	writel(CRC_SUPER_CCLK_DIVIDER_SUPER_CDIV_ENB,
+	       &clk_rst->super_cclk_div);
 
 	// Enable the clocks for CPUs 0-3.
 	uint32_t cpu_cmplx_clr = read32(&clk_rst->clk_cpu_cmplx_clr);
 	cpu_cmplx_clr |= CRC_CLK_CLR_CPU0_STP | CRC_CLK_CLR_CPU1_STP |
 			 CRC_CLK_CLR_CPU2_STP | CRC_CLK_CLR_CPU3_STP;
-	write32(cpu_cmplx_clr, &clk_rst->clk_cpu_cmplx_clr);
+	writel(cpu_cmplx_clr, &clk_rst->clk_cpu_cmplx_clr);
 
 	// Enable other CPU related clocks.
 	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_CPU);
@@ -518,36 +503,23 @@ void clock_cpu0_config(void *entry)
 void clock_cpu0_remove_reset(void)
 {
 	// Disable the reset on the non-CPU parts of the fast cluster.
-	write32(CRC_RST_CPUG_CLR_NONCPU,
-		&clk_rst->rst_cpug_cmplx_clr);
+	writel(CRC_RST_CPUG_CLR_NONCPU, &clk_rst->rst_cpug_cmplx_clr);
 	// Disable the various resets on the CPUs.
-	write32(CRC_RST_CPUG_CLR_CPU0 | CRC_RST_CPUG_CLR_CPU1 |
-		CRC_RST_CPUG_CLR_CPU2 | CRC_RST_CPUG_CLR_CPU3 |
-		CRC_RST_CPUG_CLR_DBG0 | CRC_RST_CPUG_CLR_DBG1 |
-		CRC_RST_CPUG_CLR_DBG2 | CRC_RST_CPUG_CLR_DBG3 |
-		CRC_RST_CPUG_CLR_CORE0 | CRC_RST_CPUG_CLR_CORE1 |
-		CRC_RST_CPUG_CLR_CORE2 | CRC_RST_CPUG_CLR_CORE3 |
-		CRC_RST_CPUG_CLR_CX0 | CRC_RST_CPUG_CLR_CX1 |
-		CRC_RST_CPUG_CLR_CX2 | CRC_RST_CPUG_CLR_CX3 |
-		CRC_RST_CPUG_CLR_L2 | CRC_RST_CPUG_CLR_PDBG,
-		&clk_rst->rst_cpug_cmplx_clr);
+	writel(CRC_RST_CPUG_CLR_CPU0 | CRC_RST_CPUG_CLR_CPU1 | CRC_RST_CPUG_CLR_CPU2 | CRC_RST_CPUG_CLR_CPU3 | CRC_RST_CPUG_CLR_DBG0 | CRC_RST_CPUG_CLR_DBG1 | CRC_RST_CPUG_CLR_DBG2 | CRC_RST_CPUG_CLR_DBG3 | CRC_RST_CPUG_CLR_CORE0 | CRC_RST_CPUG_CLR_CORE1 | CRC_RST_CPUG_CLR_CORE2 | CRC_RST_CPUG_CLR_CORE3 | CRC_RST_CPUG_CLR_CX0 | CRC_RST_CPUG_CLR_CX1 | CRC_RST_CPUG_CLR_CX2 | CRC_RST_CPUG_CLR_CX3 | CRC_RST_CPUG_CLR_L2 | CRC_RST_CPUG_CLR_PDBG,
+	       &clk_rst->rst_cpug_cmplx_clr);
 
 	// Disable the reset on the non-CPU parts of the slow cluster.
-	write32(CRC_RST_CPULP_CLR_NONCPU,
-		&clk_rst->rst_cpulp_cmplx_clr);
+	writel(CRC_RST_CPULP_CLR_NONCPU, &clk_rst->rst_cpulp_cmplx_clr);
 	// Disable the various resets on the LP CPU.
-	write32(CRC_RST_CPULP_CLR_CPU0 | CRC_RST_CPULP_CLR_DBG0 |
-		CRC_RST_CPULP_CLR_CORE0 | CRC_RST_CPULP_CLR_CX0 |
-		CRC_RST_CPULP_CLR_L2 | CRC_RST_CPULP_CLR_PDBG,
-		&clk_rst->rst_cpulp_cmplx_clr);
+	writel(CRC_RST_CPULP_CLR_CPU0 | CRC_RST_CPULP_CLR_DBG0 | CRC_RST_CPULP_CLR_CORE0 | CRC_RST_CPULP_CLR_CX0 | CRC_RST_CPULP_CLR_L2 | CRC_RST_CPULP_CLR_PDBG,
+	       &clk_rst->rst_cpulp_cmplx_clr);
 }
 
 void clock_halt_avp(void)
 {
 	for (;;) {
-		write32(FLOW_EVENT_JTAG | FLOW_EVENT_LIC_IRQ |
-			FLOW_EVENT_GIC_IRQ | FLOW_MODE_WAITEVENT,
-			&flow->halt_cop_events);
+		writel(FLOW_EVENT_JTAG | FLOW_EVENT_LIC_IRQ | FLOW_EVENT_GIC_IRQ | FLOW_MODE_WAITEVENT,
+		       &flow->halt_cop_events);
 	}
 }
 
@@ -564,15 +536,12 @@ void clock_init(void)
 
 	/* Typical ratios are 1:2:2 or 1:2:3 sclk:hclk:pclk (See: APB DMA
 	 * features section in the TRM). */
-	write32(TEGRA_HCLK_RATIO << HCLK_DIVISOR_SHIFT |
-		TEGRA_PCLK_RATIO << PCLK_DIVISOR_SHIFT,
-		&clk_rst->clk_sys_rate);
-	write32(CLK_DIVIDER(TEGRA_PLLC_KHZ, TEGRA_SCLK_KHZ) <<
-		PLL_OUT_RATIO_SHIFT | PLL_OUT_CLKEN |
-		PLL_OUT_RSTN, &clk_rst->pllc_out);
-	write32(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT |
-		SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT,
-		&clk_rst->sclk_brst_pol);		/* sclk = 300 MHz */
+	writel(TEGRA_HCLK_RATIO << HCLK_DIVISOR_SHIFT | TEGRA_PCLK_RATIO << PCLK_DIVISOR_SHIFT,
+	       &clk_rst->clk_sys_rate);
+	writel(CLK_DIVIDER(TEGRA_PLLC_KHZ, TEGRA_SCLK_KHZ) << PLL_OUT_RATIO_SHIFT | PLL_OUT_CLKEN | PLL_OUT_RSTN,
+	       &clk_rst->pllc_out);
+	writel(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT | SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT,
+	       &clk_rst->sclk_brst_pol);		/* sclk = 300 MHz */
 
 	/* Change the oscillator drive strength (from U-Boot -- why?) */
 	clrsetbits_le32(&clk_rst->osc_ctrl, OSC_XOFS_MASK,
@@ -590,16 +559,10 @@ void clock_init(void)
 	clrbits_le32(&clk_rst->pllx_misc3, PLLX_IDDQ_MASK);
 
 	/* Set up PLLP_OUT(1|2|3|4) divisor to generate (9.6|48|102|204)MHz */
-	write32((CLK_DIVIDER(TEGRA_PLLP_KHZ, 9600) << PLL_OUT_RATIO_SHIFT |
-		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT |
-		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 48000) << PLL_OUT_RATIO_SHIFT |
-		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT2_SHIFT,
-		&clk_rst->pllp_outa);
-	write32((CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000) << PLL_OUT_RATIO_SHIFT |
-		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT3_SHIFT |
-		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT |
-		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
-		&clk_rst->pllp_outb);
+	writel((CLK_DIVIDER(TEGRA_PLLP_KHZ, 9600) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT | (CLK_DIVIDER(TEGRA_PLLP_KHZ, 48000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT2_SHIFT,
+	       &clk_rst->pllp_outa);
+	writel((CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT3_SHIFT | (CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT | PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
+	       &clk_rst->pllp_outb);
 
 	/* init pllx */
 	init_pll(&clk_rst->pllx_base, &clk_rst->pllx_misc,

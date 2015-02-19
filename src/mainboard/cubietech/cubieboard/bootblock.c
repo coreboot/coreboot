@@ -38,12 +38,12 @@ static void cubieboard_set_sys_clock(void)
 	struct a10_ccm *ccm = (void *)A1X_CCM_BASE;
 
 	/* Switch CPU clock to main oscillator */
-	write32(CPU_AHB_APB0_DEFAULT, &ccm->cpu_ahb_apb0_cfg);
+	writel(CPU_AHB_APB0_DEFAULT, &ccm->cpu_ahb_apb0_cfg);
 
 	/* Configure the PLL1. The value is the same one used by u-boot
 	 * P = 1, N = 16, K = 1, M = 1 --> Output = 384 MHz
 	 */
-	write32(0xa1005000, &ccm->pll1_cfg);
+	writel(0xa1005000, &ccm->pll1_cfg);
 
 	/* FIXME: Delay to wait for PLL to lock */
 	u32 wait = 1000;
@@ -53,7 +53,7 @@ static void cubieboard_set_sys_clock(void)
 	reg32 = read32(&ccm->cpu_ahb_apb0_cfg);
 	reg32 &= ~CPU_CLK_SRC_MASK;
 	reg32 |= CPU_CLK_SRC_PLL1;
-	write32(reg32, &ccm->cpu_ahb_apb0_cfg);
+	writel(reg32, &ccm->cpu_ahb_apb0_cfg);
 }
 
 static void cubieboard_setup_clocks(void)
@@ -62,12 +62,12 @@ static void cubieboard_setup_clocks(void)
 
 	cubieboard_set_sys_clock();
 	/* Configure the clock source for APB1. This drives our UART */
-	write32(APB1_CLK_SRC_OSC24M | APB1_RAT_N(0) | APB1_RAT_M(0),
-		&ccm->apb1_clk_div_cfg);
+	writel(APB1_CLK_SRC_OSC24M | APB1_RAT_N(0) | APB1_RAT_M(0),
+	       &ccm->apb1_clk_div_cfg);
 
 	/* Configure the clock for SD0 */
-	write32(SDx_CLK_GATE | SDx_CLK_SRC_OSC24M | SDx_RAT_EXP_N(0)
-		| SDx_RAT_M(1), &ccm->sd0_clk_cfg);
+	writel(SDx_CLK_GATE | SDx_CLK_SRC_OSC24M | SDx_RAT_EXP_N(0) | SDx_RAT_M(1),
+	       &ccm->sd0_clk_cfg);
 
 	/* Enable clock to SD0 */
 	a1x_periph_clock_enable(A1X_CLKEN_MMC0);

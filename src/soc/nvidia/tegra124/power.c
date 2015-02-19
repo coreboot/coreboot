@@ -48,7 +48,7 @@ static void power_ungate_partition(uint32_t id)
 		pwrgate_toggle &= ~(PMC_PWRGATE_TOGGLE_PARTID_MASK);
 		pwrgate_toggle |= (id << PMC_PWRGATE_TOGGLE_PARTID_SHIFT);
 		pwrgate_toggle |= PMC_PWRGATE_TOGGLE_START;
-		write32(pwrgate_toggle, &pmc->pwrgate_toggle);
+		writel(pwrgate_toggle, &pmc->pwrgate_toggle);
 
 		// Wait for the request to be accepted.
 		while (read32(&pmc->pwrgate_toggle) & PMC_PWRGATE_TOGGLE_START)
@@ -73,12 +73,12 @@ void power_enable_and_ungate_cpu(void)
 	 * Set CPUPWRGOOD_TIMER - APB clock is 1/2 of SCLK (150MHz),
 	 * set it for 5ms as per SysEng (5ms * PCLK_KHZ * 1000 / 1s).
 	 */
-	write32((TEGRA_PCLK_KHZ * 5), &pmc->cpupwrgood_timer);
+	writel((TEGRA_PCLK_KHZ * 5), &pmc->cpupwrgood_timer);
 
 	uint32_t cntrl = read32(&pmc->cntrl);
 	cntrl &= ~PMC_CNTRL_CPUPWRREQ_POLARITY;
 	cntrl |= PMC_CNTRL_CPUPWRREQ_OE;
-	write32(cntrl, &pmc->cntrl);
+	writel(cntrl, &pmc->cntrl);
 
 	power_ungate_partition(POWER_PARTID_CRAIL);
 

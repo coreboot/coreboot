@@ -36,7 +36,7 @@ static inline uint32_t pad_get_pinmux(int index)
 
 static inline void pad_set_pinmux(int index, uint32_t reg)
 {
-	return write32(reg, &pinmux_regs[index]);
+	return writel(reg, &pinmux_regs[index]);
 }
 
 static inline void pad_set_gpio_out(int gpio_index, int val)
@@ -45,10 +45,10 @@ static inline void pad_set_gpio_out(int gpio_index, int val)
 	int port = gpio_index_to_port(gpio_index);
 	int bit = gpio_to_bit(gpio_index);
 
-	write32((1 << (bit + GPIO_GPIOS_PER_PORT)) | (val << bit),
-		&regs->out_value_mask[port]);
-	write32((1 << (bit + GPIO_GPIOS_PER_PORT)) | (1 << bit),
-		&regs->out_enable_mask[port]);
+	writel((1 << (bit + GPIO_GPIOS_PER_PORT)) | (val << bit),
+	       &regs->out_value_mask[port]);
+	writel((1 << (bit + GPIO_GPIOS_PER_PORT)) | (1 << bit),
+	       &regs->out_enable_mask[port]);
 }
 
 static inline void pad_set_mode(int gpio_index, int sfio_or_gpio)
@@ -57,8 +57,8 @@ static inline void pad_set_mode(int gpio_index, int sfio_or_gpio)
 	int port = gpio_index_to_port(gpio_index);
 	int bit = gpio_to_bit(gpio_index);
 
-	write32((1 << (bit + GPIO_GPIOS_PER_PORT)) | (sfio_or_gpio << bit),
-		&regs->config_mask[port]);
+	writel((1 << (bit + GPIO_GPIOS_PER_PORT)) | (sfio_or_gpio << bit),
+	       &regs->config_mask[port]);
 }
 
 static inline void pad_set_gpio_mode(int gpio_index)

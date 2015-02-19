@@ -80,17 +80,17 @@ int vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
 		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 	}
 
-	write32(RK_SETBITS(1 << 6), &crypto->ctrl);	/* Assert HASH_FLUSH */
+	writel(RK_SETBITS(1 << 6), &crypto->ctrl);	/* Assert HASH_FLUSH */
 	udelay(1);					/* for 10+ cycles to */
-	write32(RK_CLRBITS(1 << 6), &crypto->ctrl);	/* clear out old hash */
+	writel(RK_CLRBITS(1 << 6), &crypto->ctrl);	/* clear out old hash */
 
 	/* Enable DMA byte swapping for little-endian bus (Byteswap_??FIFO) */
-	write32(1 << 5 | 1 << 4 | 1 << 3, &crypto->conf);
+	writel(1 << 5 | 1 << 4 | 1 << 3, &crypto->conf);
 
-	write32(HRDMA_ERR | HRDMA_DONE, &crypto->intena); /* enable interrupt */
+	writel(HRDMA_ERR | HRDMA_DONE, &crypto->intena); /* enable interrupt */
 
-	write32(data_size, &crypto->hash_msg_len);	/* program total size */
-	write32(1 << 3 | 0x2, &crypto->hash_ctrl);	/* swap DOUT, SHA256 */
+	writel(data_size, &crypto->hash_msg_len);	/* program total size */
+	writel(1 << 3 | 0x2, &crypto->hash_ctrl);	/* swap DOUT, SHA256 */
 
 	printk(BIOS_DEBUG, "Initialized RK3288 HW crypto for %u byte SHA256\n",
 	       data_size);
@@ -101,12 +101,12 @@ int vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 {
 	uint32_t intsts;
 
-	write32(HRDMA_ERR | HRDMA_DONE, &crypto->intsts); /* clear interrupts */
+	writel(HRDMA_ERR | HRDMA_DONE, &crypto->intsts); /* clear interrupts */
 
 	/* NOTE: This assumes that the DMA is reading from uncached SRAM. */
-	write32((uint32_t)buf, &crypto->hrdmas);
-	write32(size / sizeof(uint32_t), &crypto->hrdmal);
-	write32(RK_SETBITS(1 << 3), &crypto->ctrl);	/* Set HASH_START */
+	writel((uint32_t)buf, &crypto->hrdmas);
+	writel(size / sizeof(uint32_t), &crypto->hrdmal);
+	writel(RK_SETBITS(1 << 3), &crypto->ctrl);	/* Set HASH_START */
 	do {
 		intsts = read32(&crypto->intsts);
 		if (intsts & HRDMA_ERR) {

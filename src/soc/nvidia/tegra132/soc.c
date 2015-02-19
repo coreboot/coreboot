@@ -83,9 +83,9 @@ static void lock_down_vpr(void)
 {
 	struct tegra_mc_regs *regs = (void *)(uintptr_t)TEGRA_MC_BASE;
 
-	write32(0, &regs->video_protect_bom);
-	write32(0, &regs->video_protect_size_mb);
-	write32(1, &regs->video_protect_reg_ctrl);
+	writel(0, &regs->video_protect_bom);
+	writel(0, &regs->video_protect_size_mb);
+	writel(1, &regs->video_protect_reg_ctrl);
 }
 
 static void soc_init(device_t dev)

@@ -24,13 +24,13 @@ void init_timer(void)
 {
 	u32 reg32;
 	/* Load the timer rollover value */
-	write32(0xffffffff, &tmr0->interval);
+	writel(0xffffffff, &tmr0->interval);
 	/* Configure the timer to run from 24MHz oscillator, no prescaler */
 	reg32 = TIMER_CTRL_PRESC_DIV_EXP(0);
 	reg32 |= TIMER_CTRL_CLK_SRC_OSC24M;
 	reg32 |= TIMER_CTRL_RELOAD;
 	reg32 |= TIMER_CTRL_TMR_EN;
-	write32(reg32, &tmr0->ctrl);
+	writel(reg32, &tmr0->ctrl);
 }
 
 void udelay(unsigned usec)
@@ -61,6 +61,6 @@ void udelay(unsigned usec)
  */
 u8 a1x_get_cpu_chip_revision(void)
 {
-	write32(0, &timer_module->cpu_cfg);
+	writel(0, &timer_module->cpu_cfg);
 	return (read32(&timer_module->cpu_cfg) >> 6) & 0x3;
 }

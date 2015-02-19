@@ -42,88 +42,88 @@ static void am335x_uart_init(struct am335x_uart *uart, uint16_t div)
 	uint16_t lcr_orig, efr_orig, mcr_orig;
 
 	/* reset the UART */
-	write16(uart->sysc | SYSC_SOFTRESET, &uart->sysc);
+	writew(uart->sysc | SYSC_SOFTRESET, &uart->sysc);
 	while (!(read16(&uart->syss) & SYSS_RESETDONE))
 		;
 
 	/* 1. switch to register config mode B */
 	lcr_orig = read16(&uart->lcr);
-	write16(0xbf, &uart->lcr);
+	writew(0xbf, &uart->lcr);
 
 	/*
 	 * 2. Set EFR ENHANCED_EN bit. To access this bit, registers must
 	 * be in TCR_TLR submode, meaning EFR[4] = 1 and MCR[6] = 1.
 	 */
 	efr_orig = read16(&uart->efr);
-	write16(efr_orig | EFR_ENHANCED_EN, &uart->efr);
+	writew(efr_orig | EFR_ENHANCED_EN, &uart->efr);
 
 	/* 3. Switch to register config mode A */
-	write16(0x80, &uart->lcr);
+	writew(0x80, &uart->lcr);
 
 	/* 4. Enable register submode TCR_TLR to access the UARTi.UART_TLR */
 	mcr_orig = read16(&uart->mcr);
-	write16(mcr_orig | MCR_TCR_TLR, &uart->mcr);
+	writew(mcr_orig | MCR_TCR_TLR, &uart->mcr);
 
 	/* 5. Enable the FIFO. For now we'll ignore FIFO triggers and DMA */
-	write16(FCR_FIFO_EN, &uart->fcr);
+	writew(FCR_FIFO_EN, &uart->fcr);
 
 	/* 6. Switch to configuration mode B */
-	write16(0xbf, &uart->lcr);
+	writew(0xbf, &uart->lcr);
 	/* Skip steps 7 and 8 (setting up FIFO triggers for DMA) */
 
 	/* 9. Restore original EFR value */
-	write16(efr_orig, &uart->efr);
+	writew(efr_orig, &uart->efr);
 
 	/* 10. Switch to config mode A */
-	write16(0x80, &uart->lcr);
+	writew(0x80, &uart->lcr);
 
 	/* 11. Restore original MCR value */
-	write16(mcr_orig, &uart->mcr);
+	writew(mcr_orig, &uart->mcr);
 
 	/* 12. Restore original LCR value */
-	write16(lcr_orig, &uart->lcr);
+	writew(lcr_orig, &uart->lcr);
 
 	/* Protocol, baud rate and interrupt settings */
 
 	/* 1. Disable UART access to DLL and DLH registers */
-	write16(read16(&uart->mdr1) | 0x7, &uart->mdr1);
+	writew(read16(&uart->mdr1) | 0x7, &uart->mdr1);
 
 	/* 2. Switch to config mode B */
-	write16(0xbf, &uart->lcr);
+	writew(0xbf, &uart->lcr);
 
 	/* 3. Enable access to IER[7:4] */
-	write16(efr_orig | EFR_ENHANCED_EN, &uart->efr);
+	writew(efr_orig | EFR_ENHANCED_EN, &uart->efr);
 
 	/* 4. Switch to operational mode */
-	write16(0x0, &uart->lcr);
+	writew(0x0, &uart->lcr);
 
 	/* 5. Clear IER */
-	write16(0x0, &uart->ier);
+	writew(0x0, &uart->ier);
 
 	/* 6. Switch to config mode B */
-	write16(0xbf, &uart->lcr);
+	writew(0xbf, &uart->lcr);
 
 	/* 7. Set dll and dlh to the desired values (table 19-25) */
-	write16((div >> 8), &uart->dlh);
-	write16((div & 0xff), &uart->dll);
+	writew((div >> 8), &uart->dlh);
+	writew((div & 0xff), &uart->dll);
 
 	/* 8. Switch to operational mode to access ier */
-	write16(0x0, &uart->lcr);
+	writew(0x0, &uart->lcr);
 
 	/* 9. Clear ier to disable all interrupts */
-	write16(0x0, &uart->ier);
+	writew(0x0, &uart->ier);
 
 	/* 10. Switch to config mode B */
-	write16(0xbf, &uart->lcr);
+	writew(0xbf, &uart->lcr);
 
 	/* 11. Restore efr */
-	write16(efr_orig, &uart->efr);
+	writew(efr_orig, &uart->efr);
 
 	/* 12. Set protocol formatting 8n1 (8 bit data, no parity, 1 stop bit) */
-	write16(0x3, &uart->lcr);
+	writew(0x3, &uart->lcr);
 
 	/* 13. Load the new UART mode */
-	write16(0x0, &uart->mdr1);
+	writew(0x0, &uart->mdr1);
 }
 
 /*
@@ -145,7 +145,7 @@ static void am335x_uart_tx_byte(struct am335x_uart *uart, unsigned char data)
 {
 	while (!(read16(&uart->lsr) & LSR_TXFIFOE));
 
-	return write8(data, &uart->thr);
+	return writeb(data, &uart->thr);
 }
 
 unsigned int uart_platform_refclk(void)

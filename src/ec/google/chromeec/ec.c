@@ -232,11 +232,12 @@ int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len)
 	struct chromeec_command cec_cmd;
 	struct ec_params_vbnvcontext cmd_vbnvcontext;
 	struct ec_response_vbnvcontext rsp_vbnvcontext;
+	int retries = 3;
 
 	if (len != EC_VBNV_BLOCK_SIZE)
 		return -1;
 
-
+ retry:
 	cec_cmd.cmd_code = EC_CMD_VBNV_CONTEXT;
 	cec_cmd.cmd_version = EC_VER_VBNV_CONTEXT;
 	cec_cmd.cmd_data_in = &cmd_vbnvcontext;
@@ -251,7 +252,13 @@ int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len)
 	if (!is_read)
 		memcpy(&cmd_vbnvcontext.block, data, EC_VBNV_BLOCK_SIZE);
 
-	google_chromeec_command(&cec_cmd);
+	if (google_chromeec_command(&cec_cmd)) {
+		printk(BIOS_ERR, "ERROR: failed to %s vbnv_ec context: %d\n",
+			is_read ? "read" : "write", (int)cec_cmd.cmd_code);
+		mdelay(10);	/* just in case */
+		if (--retries)
+			goto retry;
+	}
 
 	if (is_read)
 		memcpy(data, &rsp_vbnvcontext.block, EC_VBNV_BLOCK_SIZE);

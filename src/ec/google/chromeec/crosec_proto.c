@@ -235,7 +235,7 @@ static int send_command_proto3(struct chromeec_command *cec_command,
 
 	rv = crosec_io(out_bytes, in_bytes, context);
 	if (rv != 0) {
-		printk(BIOS_ERR, "%s: failed to complete I/O: Err = %#x.",
+		printk(BIOS_ERR, "%s: failed to complete I/O: Err = %#x.\n",
 		       __func__, rv >= 0 ? rv : -rv);
 		return -EC_RES_ERROR;
 	}

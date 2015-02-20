@@ -67,10 +67,6 @@ config CBFS_SIZE
 	hex
 	default 0x00300000
 
-config DRIVERS_PS2_KEYBOARD
-	bool
-	default n
-
 config ENABLE_FSP_FAST_BOOT
 	bool
 	depends on HAVE_FSP_BIN

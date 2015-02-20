@@ -113,10 +113,6 @@ config XHC_BIOS_ID
 	depends on XHC_BIOS
 	default "1022,7812"
 
-config DRIVERS_PS2_KEYBOARD
-	bool
-	default y
-
 config SATA_CONTROLLER_MODE
 	hex
 	default 0x0

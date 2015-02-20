@@ -22,6 +22,7 @@
 #include <delay.h>
 #include <gpio.h>
 #include <string.h>
+#include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #define DEV_SW 15
@@ -60,9 +61,35 @@ int get_developer_mode_switch(void)
 	return read_gpio(DEV_SW) ^ !DEV_POL;
 }
 
+/*
+ * Holding recovery button pressed continuously for 5 seconds at reset time
+ * is required to trigger recovery mode.
+ */
+#define RECOVERY_MODE_DELAY_MS (5 * 1000)
 int get_recovery_mode_switch(void)
 {
-	return read_gpio(REC_SW) ^ !REC_POL;
+	struct stopwatch sw;
+	static int sampled_value = -1;
+
+	if (sampled_value == -1)
+		sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+
+	if (!sampled_value)
+		return 0;
+
+	printk(BIOS_INFO, "recovery button pressed\n");
+	stopwatch_init_msecs_expire(&sw, RECOVERY_MODE_DELAY_MS);
+
+	do {
+		sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+		if (!sampled_value)
+			break;
+	} while (!stopwatch_expired(&sw));
+
+	if (sampled_value)
+		printk(BIOS_INFO, "recovery mode requested\n");
+
+	return sampled_value;
 }
 
 int get_write_protect_state(void)

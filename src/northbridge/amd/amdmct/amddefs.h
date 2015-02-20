@@ -68,6 +68,7 @@
 #define	AMD_FAM10_ALL	(AMD_DR_ALL | AMD_RB_C2 | AMD_HY_D0 | AMD_DA_C3 | AMD_DA_C2 | AMD_RB_C3 | AMD_HY_D1 | AMD_PH_E0)
 #define AMD_FAM10_LT_D  (AMD_FAM10_ALL & ~(AMD_HY_D0))
 #define	AMD_FAM10_GT_B0	(AMD_FAM10_ALL & ~(AMD_DR_B0))
+#define AMD_FAM10_REV_D	(AMD_HY_D0 | AMD_HY_D1)
 #define	AMD_DA_Cx       (AMD_DA_C2 | AMD_DA_C3)
 #define	AMD_DR_Cx       (AMD_RB_C2 | AMD_RB_C3 | AMD_DA_Cx)
 #define	AMD_FAM10_C3       (AMD_RB_C3 | AMD_DA_C3)

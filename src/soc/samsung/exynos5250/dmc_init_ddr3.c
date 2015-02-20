@@ -86,8 +86,9 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 	write32(&exynos_phy0_control->phy_con14, mem->phy0_pulld_dqs);
 	write32(&exynos_phy1_control->phy_con14, mem->phy1_pulld_dqs);
 
-	write32(&exynos_dmc->concontrol,
-		mem->concontrol | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT) | (mem->dfi_init_start << CONCONTROL_DFI_INIT_START_SHIFT));
+	write32(&exynos_dmc->concontrol, mem->concontrol |
+		(mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT) |
+		(mem->dfi_init_start << CONCONTROL_DFI_INIT_START_SHIFT));
 
 	update_reset_dll(exynos_dmc, DDR_MODE_DDR3);
 
@@ -137,7 +138,8 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 
 	/* Power Down mode Configuration */
 	write32(&exynos_dmc->pwrdnconfig,
-		mem->dpwrdn_cyc << PWRDNCONFIG_DPWRDN_CYC_SHIFT | mem->dsref_cyc << PWRDNCONFIG_DSREF_CYC_SHIFT);
+		mem->dpwrdn_cyc << PWRDNCONFIG_DPWRDN_CYC_SHIFT |
+		mem->dsref_cyc << PWRDNCONFIG_DSREF_CYC_SHIFT);
 
 	/* TimingRow, TimingData, TimingPower and Timingaref
 	 * values as per Memory AC parameters
@@ -243,7 +245,8 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 	write32(&exynos_dmc->memcontrol, mem->memcontrol);
 
 	/* Set DMC Concontrol and enable auto-refresh counter */
-	write32(&exynos_dmc->concontrol,
-		mem->concontrol | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT) | (mem->aref_en << CONCONTROL_AREF_EN_SHIFT));
+	write32(&exynos_dmc->concontrol, mem->concontrol |
+		(mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT) |
+		(mem->aref_en << CONCONTROL_AREF_EN_SHIFT));
 	return 0;
 }

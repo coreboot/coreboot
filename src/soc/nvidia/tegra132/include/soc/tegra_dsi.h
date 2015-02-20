@@ -207,13 +207,13 @@ struct tegra_dsi {
 static inline unsigned long tegra_dsi_readl(struct tegra_dsi *dsi,
 			unsigned long reg)
 {
-	return readl(dsi->regs + (reg << 2));
+	return read32(dsi->regs + (reg << 2));
 }
 
 static inline void tegra_dsi_writel(struct tegra_dsi *dsi, unsigned long value,
 			unsigned long reg)
 {
-	writel(value, dsi->regs + (reg << 2));
+	write32(dsi->regs + (reg << 2), value);
 }
 
 #endif /* __TEGRA_DSI_H__ */

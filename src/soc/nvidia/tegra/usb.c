@@ -158,26 +158,60 @@ void usb_setup_utmip(void *usb_base)
 
 	/* Take stuff out of pwrdn and add some magic numbers from U-Boot */
 	write32(&usb->utmip.xcvr0,
-		0x8 << 25 | 0x3 << 22 | 0 << 21 | 0 << 18 | 0 << 16 | 0 << 14 | 1 << 13 | 0x1 << 10 | 0x1 << 8 | 0x4 << 0 | 0);
-	write32(&usb->utmip.xcvr1, 0x7 << 18 | 0 << 4 | 0 << 2 | 0 << 0 | 0);
-	write32(&usb->utmip.tx, 1 << 19 | 1 << 16 | 1 << 9 | 0);
+		0x8 << 25 |		/* HS slew rate [10:4] */
+		0x3 << 22 |		/* HS driver output 'SETUP' [6:4] */
+		  0 << 21 |		/* LS bias selection */
+		  0 << 18 |		/* PDZI pwrdn */
+		  0 << 16 |		/* PD2 pwrdn */
+		  0 << 14 |		/* PD pwrdn */
+		  1 << 13 |		/* (rst) HS receiver terminations */
+		0x1 << 10 |		/* (rst) LS falling slew rate */
+		0x1 <<  8 |		/* (rst) LS rising slew rate */
+		0x4 <<  0);		/* HS driver output 'SETUP' [3:0] */
+	write32(&usb->utmip.xcvr1,
+		0x7 << 18 |		/* Termination range adjustment */
+		  0 <<  4 |		/* PDDR pwrdn */
+		  0 <<  2 |		/* PDCHRP pwrdn */
+		  0 <<  0);		/* PDDISC pwrdn */
+	write32(&usb->utmip.tx,
+		  1 << 19 |		/* FS send initial J before sync(?) */
+		  1 << 16 |		/* (rst) Allow stuff error on SoP */
+		  1 <<  9);		/* (rst) Check disc only on EoP */
 	write32(&usb->utmip.hsrx0,
-		0x2 << 30 | 1 << 28 | 0x1 << 24 | 0x3 << 21 | 0x11 << 15 | 0x10 << 10 | 0);
+		0x2 << 30 |		/* (rst) Keep pattern on active */
+		  1 << 28 |		/* (rst) Realign inertia on pkt */
+		0x1 << 24 |		/* (rst) edges-1 to move sampling */
+		0x3 << 21 |		/* (rst) squelch delay on EoP */
+	       0x11 << 15 |		/* cycles until IDLE */
+	       0x10 << 10);		/* elastic input depth */
 
 	/* U-Boot claims the USBD values for these are used across all UTMI+
 	 * PHYs. That sounds so horribly wrong that I'm not going to implement
 	 * it, but keep it in mind if we're ever not using the USBD port. */
 	write32(&usb->utmip.bias0,
-		0x1 << 24 | 1 << 23 | 1 << 22 | 1 << 11 | 0 << 10 | 0x1 << 2 | 0x2 << 0 | 0);
+		0x1 << 24 |		/* HS disconnect detect level [2] */
+		  1 << 23 |		/* (rst) IDPD value */
+		  1 << 22 |		/* (rst) IDPD select */
+		  1 << 11 |		/* (rst) OTG pwrdn */
+		  0 << 10 |		/* bias pwrdn */
+		0x1 <<  2 |		/* HS disconnect detect level [1:0] */
+		0x2 <<  0);		/* HS squelch detect level */
 
-	write32(&usb->utmip.bias1, khz / 2200 << 3 | 1 << 2 | 0 << 0 | 0);
+	write32(&usb->utmip.bias1,
+		khz / 2200 << 3 |	/* bias pwrdn cycles (20us?) */
+			 1 << 2 |	/* (rst) VBUS wakeup pwrdn */
+			 0 << 0);	/* PDTRK pwrdn */
 
-	write32(&usb->utmip.debounce, 0xffff << 16 | 25 * khz / 10 << 0 | 0);
+	write32(&usb->utmip.debounce,
+		       0xffff << 16 |	/* (rst) */
+		25 * khz / 10 <<  0);	/* TODO: what's this, really? */
 
 	udelay(1);
 	setbits_le32(&usb->utmip.misc1, 1 << 30); /* PHY_XTAL_CLKEN */
 
-	write32(&usb->suspend_ctrl, 1 << 12 | 0 << 11 | 0);
+	write32(&usb->suspend_ctrl,
+		  1 << 12 |		/* UTMI+ enable */
+		  0 << 11);		/* UTMI+ reset */
 
 	usb_ehci_reset_and_prepare(usb, USB_PHY_UTMIP);
 	printk(BIOS_DEBUG, "USB controller @ %p set up with UTMI+ PHY\n",usb_base);

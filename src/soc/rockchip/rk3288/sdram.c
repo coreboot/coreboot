@@ -609,12 +609,15 @@ static void pctl_cfg(u32 channel,
 			sdram_params->pctl_timing.tcl - 1);
 		write32(&ddr_pctl_regs->dfitphywrlat,
 			sdram_params->pctl_timing.tcwl);
-		write32(&ddr_pctl_regs->mcfg,
-			LPDDR2_S4 | MDDR_LPDDR2_CLK_STOP_IDLE(0) | LPDDR2_EN | BURSTLENGTH_CFG(burstlen) | TFAW_CFG(6) | PD_EXIT_FAST | PD_TYPE(1) | PD_IDLE(0));
+		write32(&ddr_pctl_regs->mcfg, LPDDR2_S4 |
+			MDDR_LPDDR2_CLK_STOP_IDLE(0) | LPDDR2_EN |
+			BURSTLENGTH_CFG(burstlen) | TFAW_CFG(6) |
+			PD_EXIT_FAST | PD_TYPE(1) | PD_IDLE(0));
 		write32(&rk3288_grf->soc_con0, MSCH_MAINDDR3(channel, 0));
 
-		write32(&rk3288_grf->soc_con2,
-			PUBL_LPDDR3_EN(channel, 1) | PCTL_BST_DISABLE(channel, 1) | PCTL_LPDDR3_ODT_EN(channel, sdram_params->odt));
+		write32(&rk3288_grf->soc_con2, PUBL_LPDDR3_EN(channel, 1) |
+			PCTL_BST_DISABLE(channel, 1) |
+			PCTL_LPDDR3_ODT_EN(channel, sdram_params->odt));
 
 		break;
 	case DDR3:
@@ -627,11 +630,14 @@ static void pctl_cfg(u32 channel,
 		write32(&ddr_pctl_regs->dfitphywrlat,
 			sdram_params->pctl_timing.tcwl - 1);
 		write32(&ddr_pctl_regs->mcfg,
-			MDDR_LPDDR2_CLK_STOP_IDLE(0) | DDR3_EN | DDR2_DDR3_BL_8 | TFAW_CFG(6) | PD_EXIT_SLOW | PD_TYPE(1) | PD_IDLE(0));
+			MDDR_LPDDR2_CLK_STOP_IDLE(0) | DDR3_EN |
+			DDR2_DDR3_BL_8 | TFAW_CFG(6) |
+			PD_EXIT_SLOW | PD_TYPE(1) | PD_IDLE(0));
 		write32(&rk3288_grf->soc_con0, MSCH_MAINDDR3(channel, 1));
 
-		write32(&rk3288_grf->soc_con2,
-			PUBL_LPDDR3_EN(channel, 0) | PCTL_BST_DISABLE(channel, 0) | PCTL_LPDDR3_ODT_EN(channel, 0));
+		write32(&rk3288_grf->soc_con2, PUBL_LPDDR3_EN(channel, 0) |
+			PCTL_BST_DISABLE(channel, 0) |
+			PCTL_LPDDR3_ODT_EN(channel, 0));
 
 		break;
 	}
@@ -656,11 +662,14 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 	write32(&msch_regs->devtodev,
 		BUSWRTORD(2) | BUSRDTOWR(2) | BUSRDTORD(1));
 	write32(&ddr_publ_regs->ptr[0],
-		PRT_DLLLOCK(div_round_up(sdram_params->ddr_freq / MHz * 5120, 1000)) | PRT_DLLSRST(div_round_up(sdram_params->ddr_freq / MHz * 50, 1000)) | PRT_ITMSRST(8));
+	   PRT_DLLLOCK(div_round_up(sdram_params->ddr_freq / MHz * 5120, 1000))
+	 | PRT_DLLSRST(div_round_up(sdram_params->ddr_freq / MHz * 50, 1000))
+	 | PRT_ITMSRST(8));
 	write32(&ddr_publ_regs->ptr[1],
-		PRT_DINIT0(div_round_up(sdram_params->ddr_freq / MHz * 500000, 1000)) | PRT_DINIT1(div_round_up(sdram_params->ddr_freq / MHz * 400, 1000)));
-	write32(&ddr_publ_regs->ptr[2],
-		PRT_DINIT2(MIN(dinit2, 0x1ffff)) | PRT_DINIT3(div_round_up(sdram_params->ddr_freq / MHz * 1000, 1000)));
+	   PRT_DINIT0(div_round_up(sdram_params->ddr_freq / MHz * 500000, 1000))
+	 | PRT_DINIT1(div_round_up(sdram_params->ddr_freq / MHz * 400, 1000)));
+	write32(&ddr_publ_regs->ptr[2], PRT_DINIT2(MIN(dinit2, 0x1ffff))
+	 | PRT_DINIT3(div_round_up(sdram_params->ddr_freq / MHz * 1000, 1000)));
 
 	switch (sdram_params->dramtype) {
 	case LPDDR3:

@@ -220,7 +220,8 @@ static int rkclk_set_pll(u32 *pll_con, const struct pll_div *div)
 	write32(&pll_con[3], RK_SETBITS(PLL_RESET_MSK));
 
 	write32(&pll_con[0],
-		RK_CLRSETBITS(PLL_NR_MSK, (div->nr - 1) << PLL_NR_SHIFT) | RK_CLRSETBITS(PLL_OD_MSK, (div->no - 1)));
+		RK_CLRSETBITS(PLL_NR_MSK, (div->nr - 1) << PLL_NR_SHIFT) |
+		RK_CLRSETBITS(PLL_OD_MSK, (div->no - 1)));
 
 	write32(&pll_con[1], RK_CLRSETBITS(PLL_NF_MSK, (div->nf - 1)));
 
@@ -259,7 +260,8 @@ void rkclk_init(void)
 
 	/* pll enter slow-mode */
 	write32(&cru_ptr->cru_mode_con,
-		RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_SLOW) | RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_SLOW));
+		RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_SLOW) |
+		RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_SLOW));
 
 	/* init pll */
 	rkclk_set_pll(&cru_ptr->cru_gpll_con[0], &gpll_init_cfg);
@@ -288,8 +290,14 @@ void rkclk_init(void)
 	assert((pclk_div + 1) * PD_BUS_PCLK_HZ ==
 		PD_BUS_ACLK_HZ && pclk_div < 0x7);
 
-	write32(&cru_ptr->cru_clksel_con[1],
-		RK_SETBITS(PD_BUS_SEL_GPLL) | RK_CLRSETBITS(PD_BUS_PCLK_DIV_MSK, pclk_div << PD_BUS_PCLK_DIV_SHIFT) | RK_CLRSETBITS(PD_BUS_HCLK_DIV_MSK, hclk_div << PD_BUS_HCLK_DIV_SHIFT) | RK_CLRSETBITS(PD_BUS_ACLK_DIV0_MASK, aclk_div << PD_BUS_ACLK_DIV0_SHIFT) | RK_CLRSETBITS(PD_BUS_ACLK_DIV1_MASK, 0 << 0));
+	write32(&cru_ptr->cru_clksel_con[1], RK_SETBITS(PD_BUS_SEL_GPLL) |
+		RK_CLRSETBITS(PD_BUS_PCLK_DIV_MSK,
+			      pclk_div << PD_BUS_PCLK_DIV_SHIFT) |
+		RK_CLRSETBITS(PD_BUS_HCLK_DIV_MSK,
+			      hclk_div << PD_BUS_HCLK_DIV_SHIFT) |
+		RK_CLRSETBITS(PD_BUS_ACLK_DIV0_MASK,
+			      aclk_div << PD_BUS_ACLK_DIV0_SHIFT) |
+		RK_CLRSETBITS(PD_BUS_ACLK_DIV1_MASK, 0 << 0));
 
 	/*
 	 * peri clock pll source selection and
@@ -306,12 +314,18 @@ void rkclk_init(void)
 	assert((1 << pclk_div) * PERI_PCLK_HZ ==
 		PERI_ACLK_HZ && (pclk_div < 0x4));
 
-	write32(&cru_ptr->cru_clksel_con[10],
-		RK_SETBITS(PERI_SEL_GPLL) | RK_CLRSETBITS(PERI_PCLK_DIV_MSK, pclk_div << PERI_PCLK_DIV_SHIFT) | RK_CLRSETBITS(PERI_HCLK_DIV_MSK, hclk_div << PERI_HCLK_DIV_SHIFT) | RK_CLRSETBITS(PERI_ACLK_DIV_MSK, aclk_div << PERI_ACLK_DIV_SHIFT));
+	write32(&cru_ptr->cru_clksel_con[10], RK_SETBITS(PERI_SEL_GPLL) |
+		RK_CLRSETBITS(PERI_PCLK_DIV_MSK,
+			      pclk_div << PERI_PCLK_DIV_SHIFT) |
+		RK_CLRSETBITS(PERI_HCLK_DIV_MSK,
+			      hclk_div << PERI_HCLK_DIV_SHIFT) |
+		RK_CLRSETBITS(PERI_ACLK_DIV_MSK,
+			      aclk_div << PERI_ACLK_DIV_SHIFT));
 
 	/* PLL enter normal-mode */
 	write32(&cru_ptr->cru_mode_con,
-		RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_NORM) | RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_NORM));
+		RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_NORM) |
+		RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_NORM));
 
 }
 
@@ -336,15 +350,19 @@ void rkclk_configure_cpu(void)
 	 * core clock select apll, apll clk = 1800MHz
 	 * arm clk = 1800MHz, mpclk = 450MHz, m0clk = 900MHz
 	 */
-	write32(&cru_ptr->cru_clksel_con[0],
-		RK_CLRBITS(CORE_SEL_PLL_MSK) | RK_CLRSETBITS(A12_DIV_MSK, 0 << A12_DIV_SHIFT) | RK_CLRSETBITS(MP_DIV_MSK, 3 << MP_DIV_SHIFT) | RK_CLRSETBITS(M0_DIV_MSK, 1 << 0));
+	write32(&cru_ptr->cru_clksel_con[0], RK_CLRBITS(CORE_SEL_PLL_MSK) |
+		RK_CLRSETBITS(A12_DIV_MSK, 0 << A12_DIV_SHIFT) |
+		RK_CLRSETBITS(MP_DIV_MSK, 3 << MP_DIV_SHIFT) |
+		RK_CLRSETBITS(M0_DIV_MSK, 1 << 0));
 
 	/*
 	 * set up dependent divisors for L2RAM/ATCLK and PCLK clocks.
 	 * l2ramclk = 900MHz, atclk = 450MHz, pclk_dbg = 450MHz
 	 */
 	write32(&cru_ptr->cru_clksel_con[37],
-		RK_CLRSETBITS(L2_DIV_MSK, 1 << 0) | RK_CLRSETBITS(ATCLK_DIV_MSK, (3 << ATCLK_DIV_SHIFT)) | RK_CLRSETBITS(PCLK_DBG_DIV_MSK, (3 << PCLK_DBG_DIV_SHIFT)));
+		RK_CLRSETBITS(L2_DIV_MSK, 1 << 0) |
+		RK_CLRSETBITS(ATCLK_DIV_MSK, (3 << ATCLK_DIV_SHIFT)) |
+		RK_CLRSETBITS(PCLK_DBG_DIV_MSK, (3 << PCLK_DBG_DIV_SHIFT)));
 
 	/* PLL enter normal-mode */
 	write32(&cru_ptr->cru_mode_con,
@@ -399,7 +417,12 @@ void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy)
 	u32 phy_srstn_shift = 5 * ch;
 
 	write32(&cru_ptr->cru_softrst_con[10],
-		RK_CLRSETBITS(1 << phy_ctl_srstn_shift, phy << phy_ctl_srstn_shift) | RK_CLRSETBITS(1 << ctl_psrstn_shift, ctl << ctl_psrstn_shift) | RK_CLRSETBITS(1 << ctl_srstn_shift, ctl << ctl_srstn_shift) | RK_CLRSETBITS(1 << phy_psrstn_shift, phy << phy_psrstn_shift) | RK_CLRSETBITS(1 << phy_srstn_shift, phy << phy_srstn_shift));
+		RK_CLRSETBITS(1 << phy_ctl_srstn_shift,
+			      phy << phy_ctl_srstn_shift) |
+		RK_CLRSETBITS(1 << ctl_psrstn_shift, ctl << ctl_psrstn_shift) |
+		RK_CLRSETBITS(1 << ctl_srstn_shift, ctl << ctl_srstn_shift) |
+		RK_CLRSETBITS(1 << phy_psrstn_shift, phy << phy_psrstn_shift) |
+		RK_CLRSETBITS(1 << phy_srstn_shift, phy << phy_srstn_shift));
 }
 
 void rkclk_ddr_phy_ctl_reset(u32 ch, u32 n)
@@ -407,7 +430,8 @@ void rkclk_ddr_phy_ctl_reset(u32 ch, u32 n)
 	u32 phy_ctl_srstn_shift = 4 + 5 * ch;
 
 	write32(&cru_ptr->cru_softrst_con[10],
-		RK_CLRSETBITS(1 << phy_ctl_srstn_shift, n << phy_ctl_srstn_shift));
+		RK_CLRSETBITS(1 << phy_ctl_srstn_shift,
+		n << phy_ctl_srstn_shift));
 }
 
 void rkclk_configure_spi(unsigned int bus, unsigned int hz)
@@ -419,15 +443,18 @@ void rkclk_configure_spi(unsigned int bus, unsigned int hz)
 	switch (bus) {	/*select gpll as spi src clk, and set div*/
 	case 0:
 		write32(&cru_ptr->cru_clksel_con[25],
-			RK_CLRSETBITS(1 << 7 | 0x1f << 0, 1 << 7 | (src_clk_div - 1) << 0));
+			RK_CLRSETBITS(1 << 7 | 0x1f << 0,
+				      1 << 7 | (src_clk_div - 1) << 0));
 		break;
 	case 1:
 		write32(&cru_ptr->cru_clksel_con[25],
-			RK_CLRSETBITS(1 << 15 | 0x1f << 8, 1 << 15 | (src_clk_div - 1) << 8));
+			RK_CLRSETBITS(1 << 15 | 0x1f << 8,
+				      1 << 15 | (src_clk_div - 1) << 8));
 		break;
 	case 2:
 		write32(&cru_ptr->cru_clksel_con[39],
-			RK_CLRSETBITS(1 << 7 | 0x1f << 0, 1 << 7 | (src_clk_div - 1) << 0));
+			RK_CLRSETBITS(1 << 7 | 0x1f << 0,
+				      1 << 7 | (src_clk_div - 1) << 0));
 		break;
 	default:
 		printk(BIOS_ERR, "do not support this spi bus\n");
@@ -454,7 +481,8 @@ void rkclk_configure_i2s(unsigned int hz)
 	   i2s0_clk_sel: divider ouput from fraction
 	   i2s0_pll_div_con: 0*/
 	write32(&cru_ptr->cru_clksel_con[4],
-		RK_CLRSETBITS(1 << 15 | 1 << 12 | 3 << 8 | 0x7f << 0, 1 << 15 | 0 << 12 | 1 << 8 | 0 << 0));
+		RK_CLRSETBITS(1 << 15 | 1 << 12 | 3 << 8 | 0x7f << 0,
+			      1 << 15 | 0 << 12 | 1 << 8 | 0 << 0));
 
 	/* set frac divider */
 	v = clk_gcd(GPLL_HZ, hz);
@@ -569,12 +597,14 @@ void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz)
 	switch (vop_id) {
 	case 0:
 		write32(&cru_ptr->cru_clksel_con[31],
-			RK_CLRSETBITS(3 << 6 | 0x1f << 0, 0 << 6 | (div - 1) << 0));
+			RK_CLRSETBITS(3 << 6 | 0x1f << 0,
+				      0 << 6 | (div - 1) << 0));
 		break;
 
 	case 1:
 		write32(&cru_ptr->cru_clksel_con[31],
-			RK_CLRSETBITS(3 << 14 | 0x1f << 8, 0 << 14 | (div - 1) << 8));
+			RK_CLRSETBITS(3 << 14 | 0x1f << 8,
+				      0 << 14 | (div - 1) << 8));
 		break;
 	}
 }

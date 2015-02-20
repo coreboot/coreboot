@@ -224,8 +224,8 @@ void system_clock_init(struct mem_timings *mem,
 		;
 
 	if (mem->use_bpll) {
-		write32(&exynos_clock->src_cdrex,
-			MUX_BPLL_SEL_MASK | MUX_MCLK_CDREX_SEL | MUX_MCLK_DPHY_SEL);
+		write32(&exynos_clock->src_cdrex, MUX_BPLL_SEL_MASK |
+			MUX_MCLK_CDREX_SEL | MUX_MCLK_DPHY_SEL);
 	} else {
 		write32(&exynos_clock->src_cdrex, CLK_REG_DISABLE);
 	}

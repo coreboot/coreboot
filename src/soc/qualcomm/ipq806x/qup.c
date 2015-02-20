@@ -167,10 +167,10 @@ static qup_return_t qup_i2c_write_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj,
 	while (data_len) {
 		if (data_len == 1 && stop_seq) {
 			write32(QUP_ADDR(gsbi_id, QUP_OUTPUT_FIFO),
-				(QUP_I2C_STOP_SEQ | QUP_I2C_DATA(data_ptr[idx])));
+				QUP_I2C_STOP_SEQ | QUP_I2C_DATA(data_ptr[idx]));
 		} else {
 			write32(QUP_ADDR(gsbi_id, QUP_OUTPUT_FIFO),
-				(QUP_I2C_DATA_SEQ | QUP_I2C_DATA(data_ptr[idx])));
+				QUP_I2C_DATA_SEQ | QUP_I2C_DATA(data_ptr[idx]));
 		}
 		data_len--;
 		idx++;
@@ -235,10 +235,10 @@ static qup_return_t qup_i2c_read_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj)
 	qup_set_state(gsbi_id, QUP_STATE_RUN);
 
 	write32(QUP_ADDR(gsbi_id, QUP_OUTPUT_FIFO),
-		(QUP_I2C_START_SEQ | (QUP_I2C_ADDR(addr) | QUP_I2C_SLAVE_READ)));
+		QUP_I2C_START_SEQ | (QUP_I2C_ADDR(addr) | QUP_I2C_SLAVE_READ));
 
 	write32(QUP_ADDR(gsbi_id, QUP_OUTPUT_FIFO),
-		(QUP_I2C_RECV_SEQ | data_len));
+		QUP_I2C_RECV_SEQ | data_len);
 
 	ret = qup_fifo_wait_while(gsbi_id, OUTPUT_FIFO_NOT_EMPTY);
 	if (ret)

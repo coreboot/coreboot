@@ -75,8 +75,9 @@ void pwm_init(u32 id, u32 period_ns, u32 duty_ns)
 	/*use rk pwm*/
 	write32(&rk3288_grf->soc_con2, RK_SETBITS(1 << 0));
 
-	write32(&rk3288_pwm->pwm[id].pwm_ctrl,
-		PWM_SEL_SRC_CLK | PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_CONTINUOUS | PWM_DUTY_POSTIVE | PWM_INACTIVE_POSTIVE | RK_PWM_DISABLE);
+	write32(&rk3288_pwm->pwm[id].pwm_ctrl, PWM_SEL_SRC_CLK |
+		PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_CONTINUOUS |
+		PWM_DUTY_POSTIVE | PWM_INACTIVE_POSTIVE | RK_PWM_DISABLE);
 
 	period = (PD_BUS_PCLK_HZ / 1000) * period_ns / USECS_PER_SEC;
 	duty = (PD_BUS_PCLK_HZ / 1000) * duty_ns / USECS_PER_SEC;

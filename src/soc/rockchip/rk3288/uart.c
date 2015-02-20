@@ -103,8 +103,8 @@ static void rk3288_uart_init(void)
 	// Hide the divisor latches.
 	write32(&uart_ptr->lcr, line_config);
 	// Enable FIFOs, and clear receive and transmit.
-	write32(&uart_ptr->fcr,
-		UART8250_FCR_FIFO_EN | UART8250_FCR_CLEAR_RCVR | UART8250_FCR_CLEAR_XMIT);
+	write32(&uart_ptr->fcr, UART8250_FCR_FIFO_EN |
+		UART8250_FCR_CLEAR_RCVR | UART8250_FCR_CLEAR_XMIT);
 }
 
 static void rk3288_uart_tx_byte(unsigned char data)

@@ -53,7 +53,8 @@ static void __gpio_input(gpio_t gpio, u32 pull)
 				3 << (gpio.idx * 2),  pull << (gpio.idx * 2));
 	else
 		write32(&rk3288_grf->gpio1_p[(gpio.port - 1)][gpio.bank],
-		        RK_CLRSETBITS(3 << (gpio.idx * 2), pull << (gpio.idx * 2)));
+			RK_CLRSETBITS(3 << (gpio.idx * 2),
+				   pull << (gpio.idx * 2)));
 }
 
 void gpio_input(gpio_t gpio)

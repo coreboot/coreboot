@@ -136,7 +136,12 @@ void usb_clock_config(void)
 	write32(USB30_1_MOC_UTMI_CLK_CTL, 0x10);
 
 	write32(USB30_RESET,
-		1 << 5 | 1 << 4 | 1 << 3 | 1 << 2 | 1 << 1 | 1 << 0 | 0);
+		1 << 5 |		/* assert port2 HS PHY async reset */
+		1 << 4 |		/* assert master async reset */
+		1 << 3 |		/* assert sleep async reset */
+		1 << 2 |		/* assert MOC UTMI async reset */
+		1 << 1 |		/* assert power-on async reset */
+		1 << 0);		/* assert PHY async reset */
 	udelay(5);
 	write32(USB30_RESET, 0);	/* deassert all USB resets again */
 }

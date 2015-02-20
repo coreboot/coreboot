@@ -51,11 +51,11 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 	write32(&preg->win0_act_info,
 		V_ACT_WIDTH(hactive - 1) | V_ACT_HEIGHT(vactive - 1));
 
-	write32(&preg->win0_dsp_st,
-		V_DSP_XST(xpos + hsync_len + hback_porch) | V_DSP_YST(ypos + vsync_len + vback_porch));
+	write32(&preg->win0_dsp_st, V_DSP_XST(xpos + hsync_len + hback_porch) |
+				    V_DSP_YST(ypos + vsync_len + vback_porch));
 
-	write32(&preg->win0_dsp_info,
-		V_DSP_WIDTH(hactive - 1) | V_DSP_HEIGHT(vactive - 1));
+	write32(&preg->win0_dsp_info, V_DSP_WIDTH(hactive - 1) |
+				      V_DSP_HEIGHT(vactive - 1));
 
 	clrsetbits_le32(&preg->win0_color_key, M_WIN0_KEY_EN | M_WIN0_KEY_COLOR,
 						V_WIN0_KEY_EN(0) |
@@ -111,23 +111,27 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid)
 	clrsetbits_le32(&preg->sys_ctrl, M_ALL_OUT_EN, V_EDP_OUT_EN(1));
 	clrsetbits_le32(&preg->dsp_ctrl0, M_DSP_OUT_MODE,
 					 V_DSP_OUT_MODE(15));
-	write32(&preg->dsp_htotal_hs_end,
-		V_HSYNC(hsync_len) | V_HORPRD(hsync_len + hback_porch + hactive + hfront_porch));
+	write32(&preg->dsp_htotal_hs_end, V_HSYNC(hsync_len) |
+		V_HORPRD(hsync_len + hback_porch + hactive + hfront_porch));
 
 	write32(&preg->dsp_hact_st_end,
-		V_HEAP(hsync_len + hback_porch + hactive) | V_HASP(hsync_len + hback_porch));
+		V_HEAP(hsync_len + hback_porch + hactive) |
+		V_HASP(hsync_len + hback_porch));
 
-	write32(&preg->dsp_vtotal_vs_end,
-		V_VSYNC(vsync_len) | V_VERPRD(vsync_len + vback_porch + vactive + vfront_porch));
+	write32(&preg->dsp_vtotal_vs_end, V_VSYNC(vsync_len) |
+		V_VERPRD(vsync_len + vback_porch + vactive + vfront_porch));
 
 	write32(&preg->dsp_vact_st_end,
-		V_VAEP(vsync_len + vback_porch + vactive) | V_VASP(vsync_len + vback_porch));
+		V_VAEP(vsync_len + vback_porch + vactive) |
+		V_VASP(vsync_len + vback_porch));
 
 	write32(&preg->post_dsp_hact_info,
-		V_HEAP(hsync_len + hback_porch + hactive) | V_HASP(hsync_len + hback_porch));
+		V_HEAP(hsync_len + hback_porch + hactive) |
+		V_HASP(hsync_len + hback_porch));
 
 	write32(&preg->post_dsp_vact_info,
-		V_VAEP(vsync_len + vback_porch + vactive) | V_VASP(vsync_len + vback_porch));
+		V_VAEP(vsync_len + vback_porch + vactive) |
+		V_VASP(vsync_len + vback_porch));
 
 	write32(&preg->reg_cfg_done, 0x01); /* enable reg config */
 }

@@ -111,10 +111,12 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	write32(&exynos_drex0->phycontrol0, val);
 	write32(&exynos_drex1->phycontrol0, val);
 
-	write32(&exynos_drex0->concontrol,
-		mem->concontrol | (mem->dfi_init_start << CONCONTROL_DFI_INIT_START_SHIFT) | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT));
-	write32(&exynos_drex1->concontrol,
-		mem->concontrol | (mem->dfi_init_start << CONCONTROL_DFI_INIT_START_SHIFT) | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT));
+	write32(&exynos_drex0->concontrol, mem->concontrol |
+		(mem->dfi_init_start << CONCONTROL_DFI_INIT_START_SHIFT) |
+		(mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT));
+	write32(&exynos_drex1->concontrol, mem->concontrol |
+		(mem->dfi_init_start << CONCONTROL_DFI_INIT_START_SHIFT) |
+		(mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT));
 
 	do {
 		val = read32(&exynos_drex0->phystatus);
@@ -198,9 +200,11 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		for (i = 0; i < 128; i++) {
 			for (chip = 0; chip < mem->chips_to_configure; chip++) {
 				write32(&exynos_drex0->directcmd,
-					DIRECT_CMD_REFA | (chip << DIRECT_CMD_CHIP_SHIFT));
+					DIRECT_CMD_REFA |
+					(chip << DIRECT_CMD_CHIP_SHIFT));
 				write32(&exynos_drex1->directcmd,
-					DIRECT_CMD_REFA | (chip << DIRECT_CMD_CHIP_SHIFT));
+					DIRECT_CMD_REFA |
+					(chip << DIRECT_CMD_CHIP_SHIFT));
 			}
 		}
 	}
@@ -324,10 +328,14 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	 * read data fetch cycles and enable DREX auto set powerdown
 	 * for input buffer of I/O in none read memory state.
 	 */
-	write32(&exynos_drex0->concontrol,
-		mem->concontrol | (mem->aref_en << CONCONTROL_AREF_EN_SHIFT) | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT) | DMC_CONCONTROL_IO_PD_CON(0x2));
-	write32(&exynos_drex1->concontrol,
-		mem->concontrol | (mem->aref_en << CONCONTROL_AREF_EN_SHIFT) | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT) | DMC_CONCONTROL_IO_PD_CON(0x2));
+	write32(&exynos_drex0->concontrol, mem->concontrol |
+		(mem->aref_en << CONCONTROL_AREF_EN_SHIFT) |
+		(mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT) |
+		DMC_CONCONTROL_IO_PD_CON(0x2));
+	write32(&exynos_drex1->concontrol, mem->concontrol |
+		(mem->aref_en << CONCONTROL_AREF_EN_SHIFT) |
+		(mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT) |
+		DMC_CONCONTROL_IO_PD_CON(0x2));
 
 	/* Enable Clock Gating Control for DMC
 	 * this saves around 25 mw dmc power as compared to the power

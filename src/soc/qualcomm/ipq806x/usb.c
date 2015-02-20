@@ -102,15 +102,32 @@ static struct usb_dwc3 * const usb_host2_dwc3 = (void *)USB_HOST2_DWC3_BASE;
 static void setup_dwc3(struct usb_dwc3 *dwc3)
 {
 	write32(&dwc3->usb3pipectl,
-		0x1 << 31 | 0x1 << 25 | 0x1 << 24 | 0x1 << 19 | 0x1 << 18 | 0x1 << 1 | 0x1 << 0 | 0);
+		0x1 << 31 |	/* assert PHY soft reset */
+		0x1 << 25 |	/* (default) U1/U2 exit fail -> recovery? */
+		0x1 << 24 |	/* (default) activate PHY low power states */
+		0x1 << 19 |	/* (default) PHY low power delay value */
+		0x1 << 18 |	/* (default) activate PHY low power delay */
+		0x1 <<  1 |	/* (default) Tx deemphasis value */
+		0x1 <<  0);	/* (default) elastic buffer mode */
 
 	write32(&dwc3->usb2phycfg,
-		0x1 << 31 | 0x9 << 10 | 0x1 << 8 | 0x1 << 6 | 0);
+		0x1 << 31 |	/* assert PHY soft reset */
+		0x9 << 10 |	/* (default) PHY clock turnaround 8-bit UTMI+ */
+		0x1 <<  8 |	/* (default) enable PHY sleep in L1 */
+		0x1 <<  6);	/* (default) enable PHY suspend */
 
 	write32(&dwc3->ctl,
-		0x2 << 19 | 0x1 << 16 | 0x1 << 12 | 0x1 << 11 | 0x1 << 10 | 0x1 << 2 | 0);
+		0x2 << 19 |	/* (default) suspend clock scaling */
+		0x1 << 16 |	/* retry SS three times before HS downgrade */
+		0x1 << 12 |	/* port capability HOST */
+		0x1 << 11 |	/* assert core soft reset */
+		0x1 << 10 |	/* (default) sync ITP to refclk */
+		0x1 <<  2);	/* U2 exit after 8us LFPS (instead of 248ns) */
 
-	write32(&dwc3->uctl, 0x32 << 22 | 0x1 << 15 | 0x10 << 0 | 0);
+	write32(&dwc3->uctl,
+		0x32 << 22 |	/* (default) reference clock period in ns */
+		 0x1 << 15 |	/* (default) XHCI compliant device addressing */
+		0x10 << 0); 	/* (default) devices time out after 32us */
 
 	udelay(5);
 
@@ -122,13 +139,31 @@ static void setup_dwc3(struct usb_dwc3 *dwc3)
 static void setup_phy(struct usb_qc_phy *phy)
 {
 	write32(&phy->ss_phy_ctrl,
-		0x1 << 24 | 0x1 << 8 | 0x1 << 7 | 0x19 << 0 | 0);
+		0x1 << 24 |	/* Indicate VBUS power present */
+		0x1 <<  8 |	/* Enable USB3 ref clock to prescaler */
+		0x1 <<  7 |	/* assert SS PHY reset */
+		0x19 << 0);	/* (default) reference clock multiplier */
 
 	write32(&phy->hs_phy_ctrl,
-		0x1 << 26 | 0x1 << 25 | 0x1 << 24 | 0x1 << 21 | 0x1 << 20 | 0x1 << 18 | 0x1 << 17 | 0x1 << 11 | 0x1 << 9 | 0x1 << 8 | 0x1 << 7 | 0x7 << 4 | 0x1 << 1 | 0);
+		0x1 << 26 |	/* (default) unclamp DPSE/DMSE VLS */
+		0x1 << 25 |	/* (default) select freeclk for utmi_clk */
+		0x1 << 24 |	/* (default) unclamp DMSE VLS */
+		0x1 << 21 |	/* (default) enable UTMI clock */
+		0x1 << 20 |	/* set OTG VBUS as valid */
+		0x1 << 18 |	/* use ref clock from core */
+		0x1 << 17 |	/* (default) unclamp DPSE VLS */
+		0x1 << 11 |	/* force xo/bias/pll to stay on in suspend */
+		0x1 <<  9 | 	/* (default) unclamp IDHV */
+		0x1 <<  8 |	/* (default) unclamp VLS (again???) */
+		0x1 <<  7 |	/* (default) unclamp HV VLS */
+		0x7 <<  4 |	/* select frequency (no idea which one) */
+		0x1 <<  1);	/* (default) "retention enable" */
 
 	write32(&phy->ss_phy_param1,
-		0x6e << 20 | 0x20 << 14 | 0x17 << 8 | 0x9 << 3 | 0);
+		0x6e << 20 |	/* full TX swing amplitude */
+		0x20 << 14 |	/* (default) 6dB TX deemphasis */
+		0x17 <<  8 |	/* 3.5dB TX deemphasis */
+		 0x9 <<  3);	/* (default) LoS detector level */
 
 	write32(&phy->general_cfg, 0x1 << 2);	/* set XHCI 1.00 compliance */
 

@@ -275,7 +275,7 @@ inline static uint32_t read32(const void *addr)
 	return *(volatile uint32_t *)addr;
 }
 
-inline static void write32(uint32_t val, void *addr)
+inline static void write32(void *addr, uint32_t val)
 {
 	*(volatile uint32_t *)addr = val;
 }
@@ -483,7 +483,10 @@ static void clear_cpu_resets(void)
 
 	// Clear software controlled reset of the fast cluster.
 	write32(clk_rst_rst_cpug_cmplx_clr_ptr,
-		CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0 | CLR_CPURESET1 | CLR_DBGRESET1 | CLR_CORERESET1 | CLR_CXRESET1 | CLR_CPURESET2 | CLR_DBGRESET2 | CLR_CORERESET2 | CLR_CXRESET2 | CLR_CPURESET3 | CLR_DBGRESET3 | CLR_CORERESET3 | CLR_CXRESET3);
+		CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0 |
+		CLR_CPURESET1 | CLR_DBGRESET1 | CLR_CORERESET1 | CLR_CXRESET1 |
+		CLR_CPURESET2 | CLR_DBGRESET2 | CLR_CORERESET2 | CLR_CXRESET2 |
+		CLR_CPURESET3 | CLR_DBGRESET3 | CLR_CORERESET3 | CLR_CXRESET3);
 }
 
 
@@ -513,8 +516,7 @@ static void power_on_partition(unsigned id)
 	uint32_t bit = 0x1 << id;
 	if (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit)) {
 		// Partition is not on. Turn it on.
-		write32(pmc_ctlr_pwrgate_toggle_ptr,
-			id | PWRGATE_TOGGLE_START);
+		write32(pmc_ctlr_pwrgate_toggle_ptr, id | PWRGATE_TOGGLE_START);
 
 		// Wait until the partition is powerd on.
 		while (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit))

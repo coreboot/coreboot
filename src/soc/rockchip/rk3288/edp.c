@@ -57,25 +57,27 @@ static void rk_edp_init_refclk(struct rk_edp *edp)
 	write32(&edp->regs->pll_reg_1, REF_CLK_24M);
 
 	/*initial value*/
-	write32(&edp->regs->pll_reg_2,
-		LDO_OUTPUT_V_SEL_145 | KVCO_DEFALUT | CHG_PUMP_CUR_SEL_5US | V2L_CUR_SEL_1MA);
+	write32(&edp->regs->pll_reg_2, LDO_OUTPUT_V_SEL_145 | KVCO_DEFALUT |
+		CHG_PUMP_CUR_SEL_5US | V2L_CUR_SEL_1MA);
 
-	write32(&edp->regs->pll_reg_3,
-		LOCK_DET_CNT_SEL_256 | LOOP_FILTER_RESET | PALL_SSC_RESET | LOCK_DET_BYPASS | PLL_LOCK_DET_MODE | PLL_LOCK_DET_FORCE);
+	write32(&edp->regs->pll_reg_3, LOCK_DET_CNT_SEL_256 |
+		LOOP_FILTER_RESET | PALL_SSC_RESET | LOCK_DET_BYPASS |
+		PLL_LOCK_DET_MODE | PLL_LOCK_DET_FORCE);
 
-	write32(&edp->regs->pll_reg_5,
-		REGULATOR_V_SEL_950MV | STANDBY_CUR_SEL | CHG_PUMP_INOUT_CTRL_1200MV | CHG_PUMP_INPUT_CTRL_OP);
+	write32(&edp->regs->pll_reg_5, REGULATOR_V_SEL_950MV | STANDBY_CUR_SEL |
+		CHG_PUMP_INOUT_CTRL_1200MV | CHG_PUMP_INPUT_CTRL_OP);
 
 	write32(&edp->regs->ssc_reg, SSC_OFFSET | SSC_MODE | SSC_DEPTH);
 
-	write32(&edp->regs->tx_common,
-		TX_SWING_PRE_EMP_MODE | PRE_DRIVER_PW_CTRL1 | LP_MODE_CLK_REGULATOR | RESISTOR_MSB_CTRL | RESISTOR_CTRL);
+	write32(&edp->regs->tx_common, TX_SWING_PRE_EMP_MODE |
+		PRE_DRIVER_PW_CTRL1 | LP_MODE_CLK_REGULATOR |
+		RESISTOR_MSB_CTRL | RESISTOR_CTRL);
 
-	write32(&edp->regs->dp_aux,
-		DP_AUX_COMMON_MODE | DP_AUX_EN | AUX_TERM_50OHM);
+	write32(&edp->regs->dp_aux, DP_AUX_COMMON_MODE |
+		DP_AUX_EN | AUX_TERM_50OHM);
 
-	write32(&edp->regs->dp_bias,
-		DP_BG_OUT_SEL | DP_DB_CUR_CTRL | DP_BG_SEL | DP_RESISTOR_TUNE_BG);
+	write32(&edp->regs->dp_bias, DP_BG_OUT_SEL | DP_DB_CUR_CTRL |
+		DP_BG_SEL | DP_RESISTOR_TUNE_BG);
 
 	write32(&edp->regs->dp_reserv2,
 		CH1_CH3_SWING_EMP_CTRL | CH0_CH2_SWING_EMP_CTRL);

@@ -74,8 +74,8 @@ static void tegra132_uart_init(struct tegra132_uart *uart_ptr)
 	// Hide the divisor latches.
 	write8(&uart_ptr->lcr, line_config);
 	// Enable FIFOs, and clear receive and transmit.
-	write8(&uart_ptr->fcr,
-	       UART8250_FCR_FIFO_EN | UART8250_FCR_CLEAR_RCVR | UART8250_FCR_CLEAR_XMIT);
+	write8(&uart_ptr->fcr, UART8250_FCR_FIFO_EN |
+	       UART8250_FCR_CLEAR_RCVR | UART8250_FCR_CLEAR_XMIT);
 }
 
 static unsigned char tegra132_uart_rx_byte(struct tegra132_uart *uart_ptr)

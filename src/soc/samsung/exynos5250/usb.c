@@ -52,12 +52,22 @@ static void setup_dwc3(struct exynos5_usb_drd_dwc3 *dwc3)
 	/* Set relevant registers to default values (clearing all reset bits) */
 
 	write32(&dwc3->usb3pipectl,
-		0x1 << 24 | 0x4 << 19 | 0x1 << 18 | 0x1 << 17 | 0x1 << 1 | 0);
+		0x1 << 24 |	/* activate PHY low power states */
+		0x4 << 19 |	/* low power delay value */
+		0x1 << 18 |	/* activate PHY low power delay */
+		0x1 << 17 |	/* enable SuperSpeed PHY suspend */
+		0x1 <<  1);	/* default Tx deemphasis value */
 
 	/* Configure PHY clock turnaround for 8-bit UTMI+, disable suspend */
-	write32(&dwc3->usb2phycfg, 0x9 << 10 | 0x1 << 8 | 0x1 << 6 | 0);
+	write32(&dwc3->usb2phycfg,
+		0x9 << 10 |	/* PHY clock turnaround for 8-bit UTMI+ */
+		0x1 <<  8 |	/* enable PHY sleep in L1 */
+		0x1 <<  6);	/* enable PHY suspend */
 
-	write32(&dwc3->ctl, 0x5dc << 19 | 0x1 << 16 | 0x1 << 12 | 0);
+	write32(&dwc3->ctl,
+		0x5dc << 19 |	/* suspend clock scale for 24MHz */
+		0x1 << 16 |	/* retry SS three times (bugfix from U-Boot) */
+		0x1 << 12);	/* port capability HOST */
 }
 
 void setup_usb_drd_dwc3()
@@ -77,13 +87,32 @@ static void setup_drd_phy(struct exynos5_usb_drd_phy *phy)
 	write32(&phy->utmi, 1 << 6);
 
 	write32(&phy->clkrst,
-		0x88 << 23 | 0x1 << 20 | 0x1 << 19 | 0x68 << 11 | 0x5 << 5 | 0x1 << 4 | 0x3 << 2 | 0x1 << 1 | 0x1 << 0 | 0);
+		0x88 << 23 |	/* spread spectrum refclk selector */
+		 0x1 << 20 |	/* enable spread spectrum */
+		 0x1 << 19 |	/* enable prescaler refclk */
+		 0x68 << 11 |	/* multiplier for 24MHz refclk */
+		 0x5 <<  5 |	/* select 24MHz refclk (weird, from U-Boot) */
+		 0x1 <<  4 |	/* power supply in normal operating mode */
+		 0x3 <<  2 |	/* use external refclk (undocumented on 5420?)*/
+		 0x1 <<  1 |	/* force port reset */
+		 0x1 <<  0);	/* normal operating mode */
 
 	write32(&phy->param0,
-		0x9 << 26 | 0x3 << 22 | 0x1 << 20 | 0x1 << 18 | 0x3 << 13 | 0x3 << 9 | 0x3 << 6 | 0x4 << 3 | 0x4 << 0 | 0);
+		0x9 << 26 |	/* LOS level */
+		0x3 << 22 |	/* TX VREF tune */
+		0x1 << 20 |	/* TX rise tune */
+		0x1 << 18 |	/* TX res tune */
+		0x3 << 13 |	/* TX HS X Vtune */
+		0x3 <<  9 |	/* TX FS/LS tune */
+		0x3 <<  6 |	/* SQRX tune */
+		0x4 <<  3 |	/* OTG tune */
+		0x4 <<  0);	/* comp disc tune */
 
 	write32(&phy->param1,
-		0x7f << 19 | 0x7f << 12 | 0x20 << 6 | 0x1c << 0 | 0);
+		0x7f << 19 |	/* reserved */
+		0x7f << 12 |	/* Tx launch amplitude */
+		0x20 <<  6 |	/* Tx deemphasis 6dB */
+		0x1c <<  0);	/* Tx deemphasis 3.5dB (value from U-Boot) */
 
 	/* disable all test features */
 	write32(&phy->test, 0);

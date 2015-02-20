@@ -254,7 +254,7 @@ inline static uint32_t read32(const void *addr)
 	return *(volatile uint32_t *)addr;
 }
 
-inline static void write32(uint32_t val, void *addr)
+inline static void write32(void *addr, uint32_t val)
 {
 	*(volatile uint32_t *)addr = val;
 }
@@ -542,8 +542,7 @@ static void power_on_partition(unsigned id)
 	uint32_t bit = 0x1 << id;
 	if (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit)) {
 		// Partition is not on. Turn it on.
-		write32(pmc_ctlr_pwrgate_toggle_ptr,
-			id | PWRGATE_TOGGLE_START);
+		write32(pmc_ctlr_pwrgate_toggle_ptr, id | PWRGATE_TOGGLE_START);
 
 		// Wait until the partition is powerd on.
 		while (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit))

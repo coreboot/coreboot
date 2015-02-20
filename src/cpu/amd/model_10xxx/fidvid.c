@@ -78,17 +78,8 @@ Fam10 Bios and Kernel Development Guide #31116, rev 3.48, April 22, 2010
 
 11.- finalPstateChange() from init_fidvid_Stage2 (BKDG says just "may", anyway)
 
-12.- generate ACPI for p-states. FIXME
-     Needs more assessment. There's some kind of fixed support that
-     does not seem to depend on CPU revision or actual MSRC001_00[68:64]
-     as BKDG apparently requires.
-     http://www.coreboot.org/ACPI#CPU_Power_Management
-     At least for Tilapia board:
-     src/mainboard/<vendor>/<model>/acpi_tables.c  write_acpi_tables(...) calls
-      acpi_add_ssdt_pstates(...)
-     in /src/northbridge/amd/amdfam10/amdfam10_acpi.c
-     which apparently copies them from static info in
-     src/mainboard/<vendor>/<model>/acpi/cpstate.asl
+12.- generate ACPI for p-states.
+     generated in powernow_acpi.c pstates_algorithm()
 
 "must also be completed"
 

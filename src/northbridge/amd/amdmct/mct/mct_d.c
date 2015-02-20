@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -749,7 +750,12 @@ static void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
 		} while (!(val & (1 << Dr_MemClrStatus)));
 	}
 
-	val = 0x0FE40FC0;		// BKDG recommended
+	/* Implement BKDG Rev 3.62 recommendations */
+	val = 0x0FE40F80;
+	if (!(mctGetLogicalCPUID(0) & AMD_FAM10_LT_D) && mctGet_NVbits(NV_Unganged))
+		val |= (0x18 << 2);
+	else
+		val |= (0x10 << 2);
 	val |= MCCH_FlushWrOnStpGnt;	// Set for S3
 	Set_NB32(dev, 0x11C, val);
 }

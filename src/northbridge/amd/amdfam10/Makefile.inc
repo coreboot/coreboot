@@ -1,5 +1,7 @@
 ramstage-y += northbridge.c
 ramstage-y += misc_control.c
+romstage-y += amdfam10_util.c
+ramstage-y += amdfam10_util.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 

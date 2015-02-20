@@ -31,6 +31,8 @@
 #include <cpu/amd/amdfam10_sysconf.h>
 #include <arch/cpu.h>
 #include <northbridge/amd/amdht/AsPsDefs.h>
+#include <northbridge/amd/amdmct/mct/mct.h>
+#include <northbridge/amd/amdmct/amddefs.h>
 
 static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_power,
 				u32 *pstate_latency, u32 *pstate_control,
@@ -114,8 +116,6 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	printk(BIOS_INFO, "processor_brand=%s\n", processor_brand);
 
 	uint32_t dtemp;
-	uint32_t cpuid_fms;
-	uint8_t model;
 	uint8_t node_count;
 
 	/*
@@ -124,13 +124,10 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	 * cmp_cap : 0x0 SingleCore ; 0x1 DualCore ; 0x2 TripleCore ; 0x3 QuadCore ; 0x4 QuintupleCore ; 0x5 HexCore
 	 */
 	printk(BIOS_INFO, "Pstates algorithm ...\n");
-	/* Get CPU model */
-	cpuid_fms = cpuid_eax(0x80000001);
-	model = ((cpuid_fms & 0xf0000) >> 16) | ((cpuid_fms & 0xf0) >> 4);
 	/* Get number of cores */
 	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8);
 	cmp_cap = (dtemp & 0x3000) >> 12;
-	if ((model == 0x8) || (model == 0x9))	/* revision D */
+	if (mctGetLogicalCPUID(0) & AMD_FAM10_REV_D)	/* revision D */
 		cmp_cap |= (dtemp & 0x8000) >> 13;
 	/* Get number of nodes */
 	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 0)), 0x60);

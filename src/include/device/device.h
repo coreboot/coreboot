@@ -172,7 +172,7 @@ void dev_finalize_chips(void);
 
 /* Generic device helper functions */
 int reset_bus(struct bus *bus);
-unsigned int scan_bus(struct device *bus, unsigned int _max);
+void scan_bridges(struct bus *bus);
 void assign_resources(struct bus *bus);
 const char *dev_name(device_t dev);
 const char *dev_path(device_t dev);

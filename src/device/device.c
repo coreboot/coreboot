@@ -916,15 +916,15 @@ int reset_bus(struct bus *bus)
  * @param max Current bus number.
  * @return The maximum bus number found, after scanning all subordinate buses.
  */
-unsigned int scan_bus(struct device *busdev, unsigned int max)
+static unsigned int scan_bus(struct device *busdev, unsigned int max)
 {
 	unsigned int new_max;
 	int do_scan_bus;
 
-	if (!busdev || !busdev->enabled || !busdev->ops ||
-	    !busdev->ops->scan_bus) {
+	if (!busdev->enabled)
 		return max;
-	}
+
+	printk(BIOS_SPEW, "%s scanning...\n", dev_path(busdev));
 
 	post_log_path(busdev);
 
@@ -943,6 +943,19 @@ unsigned int scan_bus(struct device *busdev, unsigned int max)
 		}
 	}
 	return new_max;
+}
+
+void scan_bridges(struct bus *bus)
+{
+	struct device *child;
+	unsigned int max = bus->secondary;
+
+	for (child = bus->children; child; child = child->sibling) {
+		if (!child->ops || !child->ops->scan_bus)
+			continue;
+		max = scan_bus(child, max);
+	}
+	bus->subordinate = max;
 }
 
 /**

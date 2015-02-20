@@ -1083,7 +1083,6 @@ void pci_scan_bus(struct bus *bus, unsigned min_devfn,
 {
 	unsigned int devfn;
 	struct device *old_devices;
-	struct device *child;
 
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %02x\n", bus->secondary);
 
@@ -1144,12 +1143,8 @@ void pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	 * For all children that implement scan_bus() (i.e. bridges)
 	 * scan the bus behind that child.
 	 */
-	unsigned int max = bus->secondary;
 
-	for (child = bus->children; child; child = child->sibling)
-		max = scan_bus(child, max);
-
-	bus->subordinate = max;
+	scan_bridges(bus);
 
 	/*
 	 * We've scanned the bus and so we know all about what's on the other

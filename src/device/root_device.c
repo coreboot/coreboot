@@ -126,22 +126,14 @@ unsigned int scan_smbus(device_t bus, unsigned int passthru)
  */
 static unsigned int root_dev_scan_bus(device_t bus, unsigned int passthru)
 {
-	device_t child;
 	struct bus *link;
-	unsigned int max = 0;
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
 	scan_static_bus(bus, 0);
 
-	for (link = bus->link_list; link; link = link->next) {
-		for (child = link->children; child; child = child->sibling) {
-			if (!child->ops || !child->ops->scan_bus)
-				continue;
-			printk(BIOS_SPEW, "%s scanning...\n", dev_path(child));
-			max = scan_bus(child, max);
-		}
-	}
+	for (link = bus->link_list; link; link = link->next)
+		scan_bridges(link);
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 

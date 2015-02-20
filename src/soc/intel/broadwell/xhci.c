@@ -192,11 +192,30 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 }
 #else /* !__SMM__ */
 
+static void xhci_init(struct device *dev)
+{
+	struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	u16 reg16;
+	u32 reg32;
+
+	/* Ensure controller is in D0 state */
+	reg16 = pci_read_config16(dev, XHCI_PWR_CTL_STS);
+	reg16 &= ~XHCI_PWR_CTL_SET_MASK;
+	reg16 |= XHCI_PWR_CTL_SET_D0;
+	pci_write_config16(dev, XHCI_PWR_CTL_STS, reg16);
+
+	/* Disable Compliance Mode Entry */
+	reg32 = read32(res2mmio(res, 0x80ec, 0));
+	reg32 |= (1 << 0);
+	write32(res2mmio(res, 0x80ec, 0), reg32);
+}
+
 static struct device_operations usb_xhci_ops = {
 	.read_resources		= &pci_dev_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.ops_pci		= &broadwell_pci_ops,
+	.init			= &xhci_init,
 };
 
 static const unsigned short pci_device_ids[] = {

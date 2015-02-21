@@ -176,18 +176,8 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 #endif
 		u32 max_devfn;
 
-		if (link->link_num > 3) {
-			u32 regpos;
-			u32 reg;
-			regpos = 0x170 + 4 * (link->link_num & 3); // it is only on sublink0
-			reg = pci_read_config32(dev, regpos);
-			if(reg & 1) return max; // already ganged no sblink1
-
-			dev = get_node_pci(nodeid, 4);
-		}
-
 		/* Check for connected link. */
-		link->cap = 0x80 + ((link->link_num & 3) * 0x20);
+		link->cap = 0x80 + (link->link_num * 0x20);
 		if (!is_non_coherent_link(dev, link))
 			return max;
 
@@ -1178,14 +1168,16 @@ static void sysconf_init(device_t dev) // first node
 static void add_more_links(device_t dev, unsigned total_links)
 {
 	struct bus *link, *last = NULL;
-	int link_num;
+	int link_num = -1;
 
-	for (link = dev->link_list; link; link = link->next)
+	for (link = dev->link_list; link; link = link->next) {
+		if (link_num < link->link_num)
+			link_num = link->link_num;
 		last = link;
+	}
 
 	if (last) {
-		int links = total_links - last->link_num;
-		link_num = last->link_num;
+		int links = total_links - (link_num + 1);
 		if (links > 0) {
 			link = malloc(links*sizeof(*link));
 			if (!link)
@@ -1195,7 +1187,6 @@ static void add_more_links(device_t dev, unsigned total_links)
 		}
 	}
 	else {
-		link_num = -1;
 		link = malloc(total_links*sizeof(*link));
 		memset(link, 0, total_links*sizeof(*link));
 		dev->link_list = link;
@@ -1337,14 +1328,18 @@ static void cpu_bus_scan(device_t dev)
 				cdb_dev = pci_probe_dev(NULL, pbus,
 					PCI_DEVFN(devn, fn));
 			}
-			cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 0));
 		}
-		if (cdb_dev) {
-			/* Ok, We need to set the links for that device.
-			 * otherwise the device under it will not be scanned
-			 */
-			add_more_links(cdb_dev, 8);
-		}
+
+		/* Ok, We need to set the links for that device.
+		 * otherwise the device under it will not be scanned
+		 */
+		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 0));
+		if (cdb_dev)
+			add_more_links(cdb_dev, 4);
+
+		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 4));
+		if (cdb_dev)
+			add_more_links(cdb_dev, 4);
 
 		cores_found = 0; // one core
 		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));

@@ -1090,12 +1090,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	struct device *old_devices;
 	struct device *child;
 
-#if CONFIG_PCI_BUS_SEGN_BITS
-	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %04x:%02x\n",
-	       bus->secondary >> 8, bus->secondary & 0xff);
-#else
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %02x\n", bus->secondary);
-#endif
 
 	/* Maximum sane devfn is 0xFF. */
 	if (max_devfn > 0xff) {

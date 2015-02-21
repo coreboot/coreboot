@@ -267,7 +267,7 @@ static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 
 static inline pci_devfn_t pci_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
-	for(; dev <= PCI_DEV(255|(((1<<CONFIG_PCI_BUS_SEGN_BITS)-1)<<8), 31, 7); dev += PCI_DEV(0,0,1)) {
+	for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id) {

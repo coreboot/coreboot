@@ -251,20 +251,11 @@ const char *dev_path(device_t dev)
 			memcpy(buffer, "Root Device", 12);
 			break;
 		case DEVICE_PATH_PCI:
-#if CONFIG_PCI_BUS_SEGN_BITS
-			snprintf(buffer, sizeof (buffer),
-				 "PCI: %04x:%02x:%02x.%01x",
-				 dev->bus->secondary >> 8,
-				 dev->bus->secondary & 0xff,
-				 PCI_SLOT(dev->path.pci.devfn),
-				 PCI_FUNC(dev->path.pci.devfn));
-#else
 			snprintf(buffer, sizeof (buffer),
 				 "PCI: %02x:%02x.%01x",
 				 dev->bus->secondary,
 				 PCI_SLOT(dev->path.pci.devfn),
 				 PCI_FUNC(dev->path.pci.devfn));
-#endif
 			break;
 		case DEVICE_PATH_PNP:
 			snprintf(buffer, sizeof (buffer), "PNP: %04x.%01x",
@@ -643,14 +634,8 @@ void report_resource_stored(device_t dev, struct resource *resource,
 	buf[0] = '\0';
 
 	if (resource->flags & IORESOURCE_PCI_BRIDGE) {
-#if CONFIG_PCI_BUS_SEGN_BITS
-		snprintf(buf, sizeof (buf),
-			 "bus %04x:%02x ", dev->bus->secondary >> 8,
-			dev->link_list->secondary & 0xff);
-#else
 		snprintf(buf, sizeof (buf),
 			 "bus %02x ", dev->link_list->secondary);
-#endif
 	}
 	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] size 0x%08llx "
 	       "gran 0x%02x %s%s%s\n", dev_path(dev), resource->index,
@@ -854,19 +839,6 @@ void show_one_resource(int debug_level, struct device *dev,
 	base = resource->base;
 	end = resource_end(resource);
 	buf[0] = '\0';
-
-/*
-	if (resource->flags & IORESOURCE_BRIDGE) {
-#if CONFIG_PCI_BUS_SEGN_BITS
-		snprintf(buf, sizeof (buf), "bus %04x:%02x ",
-		         dev->bus->secondary >> 8,
-			 dev->link[0].secondary & 0xff);
-#else
-		snprintf(buf, sizeof (buf),
-		         "bus %02x ", dev->link[0].secondary);
-#endif
-	}
-*/
 
 	do_printk(debug_level, "%s %02lx <- [0x%010llx - 0x%010llx] "
 		  "size 0x%08llx gran 0x%02x %s%s%s\n", dev_path(dev),

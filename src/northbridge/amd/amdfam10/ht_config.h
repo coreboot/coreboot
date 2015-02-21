@@ -34,8 +34,6 @@ void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 				u32 nodes);
 void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 					u32 busn_min, u32 busn_max, u32 nodes);
-u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
-			sys_info_conf_t *sysinfo);
 
 void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
 				u32 busn_min, u32 busn_max,

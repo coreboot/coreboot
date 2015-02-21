@@ -259,10 +259,6 @@ config PCIEXP_CLK_PM
 	help
 	  Detect and enable Clock Power Management on PCIe.
 
-config PCI_BUS_SEGN_BITS
-	int
-	default 0
-
 config EARLY_PCI_BRIDGE
 	bool "Early PCI bridge"
 	depends on PCI

@@ -76,27 +76,6 @@ void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	}
 }
 
-#if CONFIG_PCI_BUS_SEGN_BITS
-u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
-			sys_info_conf_t *sysinfo)
-{
-	//check segbusn here, We need every node have the same segn
-	if ((segbusn & 0xff)>(0xe0-1)) {// use next segn
-		u32 segn = (segbusn >> 8) & 0x0f;
-		segn++;
-		segbusn = segn<<8;
-	}
-	if (segbusn>>8) {
-		u32 val;
-		val = pci_read_config32(dev, 0x160);
-		val &= ~(0xf<<25);
-		val |= (segbusn & 0xf00)<<(25-8);
-		pci_write_config32(dev, 0x160, val);
-	}
-
-	return segbusn;
-}
-#endif
 
 u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo)
 {

@@ -33,11 +33,7 @@ static inline void print_debug_addr(const char *str, void *val)
 
 static void print_debug_pci_dev(u32 dev)
 {
-#if !CONFIG_PCI_BUS_SEGN_BITS
 	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x", (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
-#else
-	printk(BIOS_DEBUG, "PCI: %04x:%02x:%02x.%02x", (dev>>28) & 0x0f, (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
-#endif
 }
 
 static inline void print_pci_devices(void)

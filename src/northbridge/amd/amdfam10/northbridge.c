@@ -167,7 +167,6 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		u32 max_bus;
 		u32 min_bus;
 		u32 busses;
-		u32 segn = max>>8;
 #if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
 		u32 busn = max&0xff;
 #endif
@@ -211,7 +210,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		else {
 			min_bus = ((busn>>3) + 1) << 3; // one node can have 8 link and segn is the same
 		}
-		max = min_bus | (segn<<8);
+		max = min_bus;
 	#else
 		//other ...
 		else {
@@ -221,7 +220,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 #else
 		min_bus = ++max;
 #endif
-		max_bus = 0xfc | (segn<<8);
+		max_bus = 0xfc;
 
 		link->secondary = min_bus;
 		link->subordinate = max_bus;
@@ -298,10 +297,6 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
 		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && is_sblink)
 			max = amdfam10_scan_chain(dev, nodeid, link, is_sblink, max);
 	}
-
-#if CONFIG_PCI_BUS_SEGN_BITS
-	max = check_segn(dev, max, sysconf.nodes, &sysconf);
-#endif
 
 	for (link = dev->link_list; link; link = link->next) {
 		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);

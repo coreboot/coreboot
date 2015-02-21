@@ -232,18 +232,15 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 			(link->subordinate << 24);
 		f1_write_config32(config_reg, config_busses);
 
-		{
-			// use config_reg and ht_unitid_base to update hcdn_reg
-			int index;
-			u32 temp = 0;
-			index = (config_reg-0xe0) >> 2;
-			for(i=0;i<4;i++) {
-				temp |= (ht_unitid_base[i] & 0xff) << (i*8);
-			}
 
-			sysconf.hcdn_reg[index] = temp;
+		// use config_reg and ht_unitid_base to update hcdn_reg
+		link->hcdn_reg = 0;
+		for (i = 0; i < 4; i++)
+			link->hcdn_reg |= (ht_unitid_base[i] & 0xff) << (i*8);
 
-		}
+		int index = (config_reg-0xe0) >> 2;
+		sysconf.hcdn_reg[index] = link->hcdn_reg;
+
 		return link->subordinate;
 }
 

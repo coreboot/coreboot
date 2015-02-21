@@ -17,11 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#if defined(__PRE_RAM__)
-typedef struct sys_info sys_info_conf_t;
-#else
 typedef struct amdfam10_sysconf_t sys_info_conf_t;
-#endif
 
 struct dram_base_mask_t {
 	u32 base; //[47:27] at [28:8]
@@ -30,13 +26,8 @@ struct dram_base_mask_t {
 
 static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
-	device_t dev;
 	struct dram_base_mask_t d;
-#if defined(__PRE_RAM__)
-	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 1);
-#else
-	dev = __f1_dev[0];
-#endif
+	device_t dev = __f1_dev[0];
 
 	u32 temp;
 	temp = pci_read_config32(dev, 0x44 + (nodeid << 3)); //[39:24] at [31:16]
@@ -60,18 +51,13 @@ static void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 {
 	u32 tempreg;
 	u32 i;
-	device_t dev;
 
 	busn_min>>=segbit;
 	busn_max>>=segbit;
 
 	tempreg = 3 | ((nodeid&0xf)<<4) | ((nodeid & 0x30)<<(12-4))|(linkn<<8)|((busn_min & 0xff)<<16)|((busn_max&0xff)<<24);
 	for (i=0; i<nodes; i++) {
-	#if defined(__PRE_RAM__)
-		dev = NODE_PCI(i, 1);
-	#else
-		dev = __f1_dev[i];
-	#endif
+		device_t dev = __f1_dev[i];
 		pci_write_config32(dev, 0xe0 + ht_c_index * 4, tempreg);
 	}
 }
@@ -80,14 +66,9 @@ static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 					u32 busn_min, u32 busn_max, u32 nodes)
 {
 	u32 i;
-	device_t dev;
 
 	for (i=0; i<nodes; i++) {
-	#if defined(__PRE_RAM__)
-		dev = NODE_PCI(i, 1);
-	#else
-		dev = __f1_dev[i];
-	#endif
+		device_t dev = __f1_dev[i];
 		pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
 	}
 }
@@ -111,54 +92,6 @@ static u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
 	}
 
 	return segbusn;
-}
-#endif
-
-#if defined(__PRE_RAM__)
-static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
-					u32 io_min, u32 io_max, u32 nodes)
-{
-	u32 i;
-	u32 tempreg;
-	device_t dev;
-
-	/* io range allocation */
-	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
-	for (i=0; i<nodes; i++) {
-	#if defined(__PRE_RAM__)
-		dev = NODE_PCI(i, 1);
-	#else
-		dev = __f1_dev[i];
-	#endif
-		pci_write_config32(dev, 0xC4 + ht_c_index * 8, tempreg);
-	}
-	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
-	for (i=0; i<nodes; i++) {
-	#if defined(__PRE_RAM__)
-		dev = NODE_PCI(i, 1);
-	#else
-		dev = __f1_dev[i];
-	#endif
-		pci_write_config32(dev, 0xC0 + ht_c_index * 8, tempreg);
-	}
-}
-
-
-static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
-					u32 io_min, u32 io_max, u32 nodes)
-{
-	u32 i;
-	device_t dev;
-	 /* io range allocation */
-	for (i=0; i<nodes; i++) {
-	#if defined(__PRE_RAM__)
-		dev = NODE_PCI(i, 1);
-	#else
-		dev = __f1_dev[i];
-	#endif
-		pci_write_config32(dev, 0xC4 + ht_c_index * 8, 0);
-		pci_write_config32(dev, 0xC0 + ht_c_index * 8, 0);
-	}
 }
 #endif
 
@@ -203,7 +136,6 @@ static void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
 
 }
 
-#if !defined(__PRE_RAM__)
 static u32 get_io_addr_index(u32 nodeid, u32 linkn)
 {
 	u32 index;
@@ -310,5 +242,3 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 	for (i=0; i<sysconf.nodes; i++)
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
-
-#endif

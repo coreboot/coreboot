@@ -33,10 +33,6 @@ config AGP_APERTURE_SIZE
 	hex
 	default 0x4000000
 
-config AMDMCT
-	bool
-	default y
-
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000

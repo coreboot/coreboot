@@ -976,41 +976,10 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #include "raminit.h"
 
-#if !CONFIG_AMDMCT
-
-//struct definitions
-
-struct dimm_size {
-	u8 per_rank; // it is rows + col + bank_lines + data lines */
-	u8 rows;
-	u8 col;
-	u8 bank; //1, 2, 3 mean 2, 4, 8
-	u8 rank;
-} __attribute__((packed));
-
-struct mem_info { // pernode
-	u32 dimm_mask;
-	struct dimm_size sz[DIMM_SOCKETS*2]; // for ungang support
-	u32 x4_mask;
-	u32 x16_mask;
-	u32 single_rank_mask;
-	u32 page_1k_mask;
-//	  u32 ecc_mask;
-//	  u32 registered_mask;
-	u8 is_opteron;
-	u8 is_registered; //don't support mixing on the same channel or between channel
-	u8 is_ecc; //don't support mixing on the same channel or between channel
-	u8 is_Width128;
-	u8 memclk_set; // we need to use this to retrieve the mem param, all dimms need to work at same freq for one node
-	u8 is_cs_interleaved[2]; //cs
-	u8 rsv[1];
-} __attribute__((packed));
-#else
- #if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
   #include "../amdmct/mct_ddr3/mct_d.h"
- #else
+#else
   #include "../amdmct/mct/mct_d.h"
- #endif
 #endif
 
 struct link_pair_t {
@@ -1034,13 +1003,6 @@ struct nodes_info_t {
 } __attribute__((packed));
 
 /* be careful with the alignment of sysinfo, bacause sysinfo may be shared by coreboot_car and ramstage stage. and ramstage may be running at 64bit later.*/
-#if !CONFIG_AMDMCT
-
-//#define MEM_CS_COPY 1
-#define MEM_CS_COPY NODE_NUMS
-#define DQS_DELAY_COPY NODE_NUMS
-#endif
-
 
 struct sys_info {
 	int32_t needs_reset;
@@ -1066,29 +1028,8 @@ struct sys_info {
 
 	struct mem_controller ctrl[NODE_NUMS];
 
-#if CONFIG_AMDMCT
-//	sMCTStruct MCTData;
-//	sDCTStruct *DCTNodeData[NODE_NUMS];
-//	sDCTStruct DCTNodeData_a[NODE_NUMS];
 	struct MCTStatStruc MCTstat;
 	struct DCTStatStruc DCTstatA[NODE_NUMS];
-#else
-
-	u8 ctrl_present[NODE_NUMS];
-	struct mem_info meminfo[NODE_NUMS];
-	u8 mem_trained[NODE_NUMS]; //0: no dimm, 1: trained, 0x80: not started, 0x81: recv1 fail, 0x82: Pos Fail, 0x83:recv2 fail
-	u32 tom_m;
-	u32 tom2_m;
-
-	//if we are getting tight of global space, may need to squesh following to one copy
-	u32 mem_base[MEM_CS_COPY][2]; // two dct
-	u32 cs_base[MEM_CS_COPY][2][8]; //8 cs_idx
-	u32 hole_startk; // 0 mean hole
-
-	u8 dqs_delay_a[DQS_DELAY_COPY*2*4*2*9]; //8 node, channel 2, dimm 4, direction 2 , bytelane *9
-	u8 dqs_rcvr_dly_a[DQS_DELAY_COPY*2*4*9]; //8 node, channel 2, dimm 4, bytelane *9
-	u8 dqs_rcvr_dly_a_1[9]; //8 node, channel 2, dimm 4, bytelane *9
-#endif
 
 } __attribute__((packed));
 
@@ -1098,78 +1039,6 @@ extern struct sys_info sysinfo_car;
 
 #ifndef __PRE_RAM__
 device_t get_node_pci(u32 nodeid, u32 fn);
-#endif
-
-#if !CONFIG_AMDMCT
-
-#ifdef __PRE_RAM__
-static void soft_reset(void);
-#endif
-static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
-{
-	int i;
-	u32 mask_lo = 0;
-	u32 mask_hi = 0;
-	unsigned needs_reset = 0;
-
-	if(sysinfo->nodes == 1) return; // in case only one cpu installed
-		for(i=1; i<sysinfo->nodes; i++) {
-			/* Skip everything if I don't have any memory on this controller */
-			if(sysinfo->mem_trained[i]==0x00) continue;
-
-			if(i<32) {
-				mask_lo |= (1<<i);
-			} else {
-				mask_hi |= (1<<(i-32));
-			}
-	}
-
-	i = 1;
-	while(1) {
-		if(i<32) {
-			if(mask_lo & (1<<i)) {
-				if(sysinfo->mem_trained[i] != 0x80) {
-					mask_lo &= ~(1<<i);
-				}
-			}
-		} else {
-			if(mask_hi & (1<<(i-32))) {
-				if(sysinfo->mem_trained[i] != 0x80) {
-					 mask_hi &= ~(1<<(i-32));
-				}
-			}
-		}
-
-			if((!mask_lo) && (!mask_hi)) break;
-
-		i++;
-		i%=sysinfo->nodes;
-	}
-
-	for(i=0; i<sysinfo->nodes; i++) {
-		printk(BIOS_DEBUG, "mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]);
-		switch(sysinfo->mem_trained[i]) {
-		case 0: //don't need train
-		case 1: //trained
-			break;
-		case 0x81: //recv1: fail
-		case 0x82: //Pos :fail
-		case 0x83: //recv2: fail
-			needs_reset = 1;
-			break;
-		}
-	}
-	if(needs_reset) {
-		printk(BIOS_DEBUG, "mem trained failed\n");
-#ifdef __PRE_RAM__
-		soft_reset();
-#else
-		hard_reset();
-#endif
-	}
-
-}
-
 #endif
 
 #ifdef __PRE_RAM__

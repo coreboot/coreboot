@@ -739,87 +739,6 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		return mem_hole;
 }
 
-// WHY this check? CONFIG_AMDMCT is enabled on all Fam10 boards.
-// Does it make sense not to?
-#if !CONFIG_AMDMCT
-static void disable_hoist_memory(unsigned long hole_startk, int node_id)
-{
-	int i;
-	device_t dev;
-	struct dram_base_mask_t d;
-	u32 sel_m;
-	u32 sel_hi_en;
-	u32 hoist;
-	u32 hole_sizek;
-
-	u32 one_DCT;
-	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox)); // in RAM
-	struct mem_info *meminfo;
-	meminfo = &sysinfox->meminfo[node_id];
-
-	one_DCT = get_one_DCT(meminfo);
-
-	// 1. find which node has hole
-	// 2. change limit in that node.
-	// 3. change base and limit in later node
-	// 4. clear that node f0
-
-	// if there is not mem hole enabled, we need to change it's base instead
-
-	hole_sizek = (4*1024*1024) - hole_startk;
-
-	for(i=NODE_NUMS-1;i>node_id;i--) {
-
-		d = get_dram_base_mask(i);
-
-		if(!(d.mask & 1)) continue;
-
-		d.base -= (hole_sizek>>9);
-		d.mask -= (hole_sizek>>9);
-		set_dram_base_mask(i, d, sysconf.nodes);
-
-		if(get_DctSelHiEn(i) & 1) {
-			sel_m = get_DctSelBaseAddr(i);
-			sel_m -= hole_startk>>10;
-			set_DctSelBaseAddr(i, sel_m);
-		}
-	}
-
-	d = get_dram_base_mask(node_id);
-	dev = __f1_dev[node_id];
-	sel_hi_en = get_DctSelHiEn(node_id);
-
-	if(sel_hi_en & 1) {
-		sel_m = get_DctSelBaseAddr(node_id);
-	}
-	hoist = pci_read_config32(dev, 0xf0);
-	if(hoist & 1) {
-		pci_write_config32(dev, 0xf0, 0);
-		d.mask -= (hole_sizek>>9);
-		set_dram_base_mask(node_id, d, sysconf.nodes);
-		if(one_DCT || (sel_m >= (hole_startk>>10))) {
-			if(sel_hi_en & 1) {
-				sel_m -= hole_startk>>10;
-				set_DctSelBaseAddr(node_id, sel_m);
-			}
-		}
-		if(sel_hi_en & 1) {
-			set_DctSelBaseOffset(node_id, 0);
-		}
-	} else {
-		d.base -= (hole_sizek>>9);
-		d.mask -= (hole_sizek>>9);
-		set_dram_base_mask(node_id, d, sysconf.nodes);
-
-		if(sel_hi_en & 1) {
-			sel_m -= hole_startk>>10;
-			set_DctSelBaseAddr(node_id, sel_m);
-		}
-	}
-
-}
-#endif
-
 #endif
 
 #include <cbmem.h>
@@ -947,44 +866,6 @@ static void amdfam10_domain_set_resources(device_t dev)
 		reset_memhole = 0;
 	}
 
-	#if !CONFIG_AMDMCT
-	//mmio_basek = 3*1024*1024; // for debug to meet boundary
-
-	if(reset_memhole) {
-		if(mem_hole.node_id!=-1) {
-		/* We need to select CONFIG_HW_MEM_HOLE_SIZEK for raminit, it can not
-		    make hole_startk to some basek too!
-		   We need to reset our Mem Hole, because We want more big HOLE
-		    than we already set
-		   Before that We need to disable mem hole at first, becase
-		    memhole could already be set on i+1 instead
-		 */
-			disable_hoist_memory(mem_hole.hole_startk, mem_hole.node_id);
-		}
-
-	#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC
-		// We need to double check if the mmio_basek is valid for hole
-		// setting, if it is equal to basek, we need to decrease it some
-		resource_t basek_pri;
-		for (i = 0; i < sysconf.nodes; i++) {
-			struct dram_base_mask_t d;
-			resource_t basek;
-			d = get_dram_base_mask(i);
-
-			if(!(d.mask &1)) continue;
-
-			basek = ((resource_t)(d.base & 0x1fffff00)) << 9;
-			if(mmio_basek == (u32)basek) {
-				mmio_basek -= (uin32_t)(basek - basek_pri); // increase mem hole size to make sure it is on middle of pri node
-				break;
-			}
-			basek_pri = basek;
-		}
-	#endif
-	}
-	#endif
-
-
 #endif
 
 	idx = 0x10;
@@ -1021,17 +902,6 @@ static void amdfam10_domain_set_resources(device_t dev)
 					if (!ramtop)
 						ramtop = mmio_basek * 1024;
 				}
-				#if !CONFIG_AMDMCT
-				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
-				if(reset_memhole) {
-					struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox)); // in RAM
-					struct mem_info *meminfo;
-					meminfo = &sysinfox->meminfo[i];
-					sizek += hoist_memory(mmio_basek,i, get_one_DCT(meminfo), sysconf.nodes);
-				}
-				#endif
-				#endif
-
 				basek = mmio_basek;
 			}
 			if ((basek + sizek) <= 4*1024*1024) {

@@ -17,14 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-typedef struct amdfam10_sysconf_t sys_info_conf_t;
+#include <arch/io.h>
+#include <stdint.h>
+#include <device/device.h>
+#include <device/pci_ops.h>
 
-struct dram_base_mask_t {
-	u32 base; //[47:27] at [28:8]
-	u32 mask; //[47:27] at [28:8] and enable at bit 0
-};
+#include <cpu/amd/amdfam10_sysconf.h>
+#include "northbridge.h"
+#include "amdfam10.h"
+#include "ht_config.h"
 
-static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
+struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
 	struct dram_base_mask_t d;
 	device_t dev = __f1_dev[0];
@@ -45,7 +48,7 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 }
 
 
-static void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
+void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 				u32 busn_min, u32 busn_max, u32 segbit,
 				u32 nodes)
 {
@@ -62,7 +65,7 @@ static void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	}
 }
 
-static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
+void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 					u32 busn_min, u32 busn_max, u32 nodes)
 {
 	u32 i;
@@ -74,7 +77,7 @@ static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 }
 
 #if CONFIG_PCI_BUS_SEGN_BITS
-static u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
+u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
 			sys_info_conf_t *sysinfo)
 {
 	//check segbusn here, We need every node have the same segn
@@ -95,7 +98,7 @@ static u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
 }
 #endif
 
-static u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo)
+u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo)
 {
 	u32 tempreg;
 	u32 ht_c_index = 0;
@@ -126,7 +129,7 @@ static u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo)
 	return	-1;
 }
 
-static void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
+void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
 				u32 busn_min, u32 busn_max,
 				sys_info_conf_t *sysinfo)
 {
@@ -136,7 +139,7 @@ static void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
 
 }
 
-static u32 get_io_addr_index(u32 nodeid, u32 linkn)
+u32 get_io_addr_index(u32 nodeid, u32 linkn)
 {
 	u32 index;
 
@@ -151,7 +154,7 @@ static u32 get_io_addr_index(u32 nodeid, u32 linkn)
 	 return	 0;
 }
 
-static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
+u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 {
 	u32 index;
 
@@ -166,7 +169,8 @@ static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 	return 0;
 }
 
-static void store_conf_io_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
+
+void store_conf_io_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 				u32 io_min, u32 io_max)
 {
 	u32 val;
@@ -184,7 +188,7 @@ static void store_conf_io_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 }
 
 
-static void store_conf_mmio_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
+void store_conf_mmio_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 					u32 mmio_min, u32 mmio_max)
 {
 	u32 val;
@@ -202,7 +206,7 @@ static void store_conf_mmio_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 }
 
 
-static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
+void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 				u32 io_min, u32 io_max)
 {
 	u32 i;
@@ -229,7 +233,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 		pci_write_config32(__f1_dev[i], reg, tempreg);
 }
 
-static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmio_min, u32 mmio_max, u32 nodes)
+void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmio_min, u32 mmio_max, u32 nodes)
 {
 	u32 i;
 	u32 tempreg;

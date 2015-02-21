@@ -32,6 +32,7 @@
 
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/amd/amdfam10_sysconf.h>
 
 #if CONFIG_LOGICAL_CPUS
 #include <cpu/amd/multicore.h>
@@ -39,14 +40,13 @@
 #endif
 
 #include "northbridge.h"
-
 #include "amdfam10.h"
+#include "ht_config.h"
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 #include <cpu/amd/model_10xxx_rev.h>
 #endif
 
-#include <cpu/amd/amdfam10_sysconf.h>
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
 #endif
@@ -55,7 +55,7 @@ struct amdfam10_sysconf_t sysconf;
 
 #define FX_DEVS NODE_NUMS
 static device_t __f0_dev[FX_DEVS];
-static device_t __f1_dev[FX_DEVS];
+device_t __f1_dev[FX_DEVS];
 static device_t __f2_dev[FX_DEVS];
 static device_t __f4_dev[FX_DEVS];
 static unsigned fx_devs=0;
@@ -126,8 +126,6 @@ static u32 amdfam10_nodeid(device_t dev)
 	return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
 #endif
 }
-
-#include "conf.c"
 
 static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 {

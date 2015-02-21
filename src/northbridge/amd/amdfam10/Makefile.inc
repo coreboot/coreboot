@@ -3,6 +3,8 @@ ramstage-y += misc_control.c
 romstage-y += amdfam10_util.c
 ramstage-y += amdfam10_util.c
 
+ramstage-y += ht_config.c
+
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 
 ramstage-y += get_pci1234.c

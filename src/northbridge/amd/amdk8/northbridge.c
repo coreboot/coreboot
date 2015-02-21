@@ -1165,14 +1165,16 @@ static struct device_operations pci_domain_ops = {
 static void add_more_links(device_t dev, unsigned total_links)
 {
 	struct bus *link, *last = NULL;
-	int link_num;
+	int link_num = -1;
 
-	for (link = dev->link_list; link; link = link->next)
+	for (link = dev->link_list; link; link = link->next) {
+		if (link_num < link->link_num)
+			link_num = link->link_num;
 		last = link;
+	}
 
 	if (last) {
-		int links = total_links - last->link_num;
-		link_num = last->link_num;
+		int links = total_links - (link_num + 1);
 		if (links > 0) {
 			link = malloc(links*sizeof(*link));
 			if (!link)
@@ -1182,7 +1184,6 @@ static void add_more_links(device_t dev, unsigned total_links)
 		}
 	}
 	else {
-		link_num = -1;
 		link = malloc(total_links*sizeof(*link));
 		memset(link, 0, total_links*sizeof(*link));
 		dev->link_list = link;

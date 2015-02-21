@@ -271,6 +271,36 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		return link->subordinate;
 }
 
+/* Do sb ht chain at first, in case s2885 put sb chain
+ * (8131/8111) on link2, but put 8151 on link0.
+ */
+static void relocate_sb_ht_chain(void)
+{
+	struct device *dev;
+	struct bus *link, *prev = NULL;
+	u8 sblink;
+
+	if (!CONFIG_SB_HT_CHAIN_ON_BUS0)
+		return;
+
+	dev = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 0));
+	sblink = (pci_read_config32(dev, 0x64)>>8) & 7;
+	link = dev->link_list;
+
+	while (link) {
+		if (link->link_num == sblink) {
+			if (!prev)
+				return;
+			prev->next = link->next;
+			link->next = dev->link_list;
+			dev->link_list = link;
+			return;
+		}
+		prev = link;
+		link = link->next;
+	}
+}
+
 static void amdfam10_scan_chains(device_t dev)
 {
 	unsigned nodeid;
@@ -283,15 +313,6 @@ static void amdfam10_scan_chains(device_t dev)
 	/* Do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0 */
 	for (link = dev->link_list; link; link = link->next) {
 		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
-		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && is_sblink)
-			max = amdfam10_scan_chain(dev, nodeid, link, is_sblink, max);
-	}
-
-	for (link = dev->link_list; link; link = link->next) {
-		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
-		if ((CONFIG_SB_HT_CHAIN_ON_BUS0 > 0) && is_sblink)
-			continue;
-
 		max = amdfam10_scan_chain(dev, nodeid, link, is_sblink, max);
 	}
 
@@ -582,9 +603,15 @@ static const struct pci_driver mcf0_driver __pci_driver = {
 	.device = 0x1200,
 };
 
+static void amdfam10_nb_init(void *chip_info)
+{
+	relocate_sb_ht_chain();
+}
+
 struct chip_operations northbridge_amd_amdfam10_ops = {
 	CHIP_NAME("AMD FAM10 Northbridge")
 	.enable_dev = 0,
+	.init = amdfam10_nb_init,
 };
 
 static void amdfam10_domain_read_resources(device_t dev)

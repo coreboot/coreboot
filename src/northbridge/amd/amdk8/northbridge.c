@@ -124,10 +124,7 @@ static u32 amdk8_scan_chain(struct bus *link, u32 max)
 		u32 free_reg, config_reg;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_devfn;
-
 		u32 nodeid = amdk8_nodeid(link->dev);
-		unsigned int sblink = (pci_read_config32(link->dev, 0x64)>>8) & 3;
-		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
 
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
@@ -161,11 +158,11 @@ static u32 amdk8_scan_chain(struct bus *link, u32 max)
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
 
-		if (!is_sblink)
+		if (max != 0)
 			max++;
 
 		/* Second chain will be on 0x40, third 0x80, forth 0xc0. */
-		if (CONFIG_HT_CHAIN_DISTRIBUTE && !is_sblink)
+		if (CONFIG_HT_CHAIN_DISTRIBUTE)
 			max = ALIGN_UP(max, 0x40);
 
 		link->secondary = max;
@@ -195,7 +192,7 @@ static u32 amdk8_scan_chain(struct bus *link, u32 max)
 		else
 			max_devfn = (0x1f<<3) | 7;
 
-		next_unitid = hypertransport_scan_chain(link, 0, max_devfn, ht_unitid_base, offset_unit_id(is_sblink));
+		next_unitid = hypertransport_scan_chain(link, 0, max_devfn, ht_unitid_base, offset_unit_id(link->secondary == 0));
 
 		/* Now that nothing is overlapping it is safe to scan the children. */
 		pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7);

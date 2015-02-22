@@ -179,26 +179,18 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		 * We have no idea how many busses are behind this bridge yet,
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
-#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
-		// first chain will on bus 0
-		if(is_sblink) { // actually max is 0 here
-			min_bus = max;
-		}
-	#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
-		// second chain will be on 0x40, third 0x80, forth 0xc0
-		else {
-			min_bus = ((max>>6) + 1) * 0x40;
-		}
-		max = min_bus;
-	#else
-		//other ...
-		else {
+		if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 0) {
 			min_bus = ++max;
+		} else if (is_sblink) {
+			// first chain will on bus 0
+			min_bus = max;  /* actually max is 0 here */
+		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 1) {
+			min_bus = ++max;
+		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 > 1) {
+			/* Second chain will be on 0x40, third 0x80, forth 0xc0. */
+			min_bus = (max & ~0x3f) + 0x40;
+			max = min_bus;
 		}
-	#endif
-#else
-		min_bus = ++max;
-#endif
 
 		link->secondary = min_bus;
 		link->subordinate = link->secondary;

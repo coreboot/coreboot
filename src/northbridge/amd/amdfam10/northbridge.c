@@ -218,29 +218,25 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		 * We have no idea how many busses are behind this bridge yet,
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
-#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
-		// first chain will on bus 0
-		if (is_sblink) { // actually max is 0 here
-			min_bus = max;
-		}
-	#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
-		// second chain will be on 0x40, third 0x80, forth 0xc0
-		// i would refined that to  2, 3, 4 ==> 0, 0x, 40, 0x80, 0xc0
-		//			    >4 will use	 more segments, We can have 16 segmment and every segment have 256 bus, For that case need the kernel support mmio pci config.
-		else {
+
+		if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 0) {
+			min_bus = ++max;
+		} else if (is_sblink) {
+			// first chain will on bus 0
+			min_bus = max;  /* actually max is 0 here */
+		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 == 1) {
+			min_bus = ++max;
+		} else if (CONFIG_SB_HT_CHAIN_ON_BUS0 > 1) {
+			// second chain will be on 0x40, third 0x80, forth 0xc0
+			// i would refined that to  2, 3, 4 ==> 0, 0x, 40, 0x80, 0xc0
+			//   >4 will use more segments,
+			// We can have 16 segmment and every segment have 256 bus,
+			// For that case need the kernel support mmio pci config.
+
 			/* One node can have 8 link and segn is the same. */
 			min_bus = (((max & 0xff) >> 3) + 1) << 3;
+			max = min_bus;
 		}
-		max = min_bus;
-	#else
-		//other ...
-		else {
-			min_bus = ++max;
-		}
-	#endif
-#else
-		min_bus = ++max;
-#endif
 
 		link->secondary = min_bus;
 		link->subordinate = link->secondary;

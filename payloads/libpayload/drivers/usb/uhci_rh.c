@@ -118,7 +118,7 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 		return;
 	}
 	int devno = RH_INST (dev)->port[offset];
-	if ((dev->controller->devices[devno] != 0) && (devno != -1)) {
+	if ((devno != -1) && (dev->controller->devices[devno] != 0)) {
 		usb_detach_device(dev->controller, devno);
 		RH_INST (dev)->port[offset] = -1;
 	}

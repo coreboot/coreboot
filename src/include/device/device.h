@@ -86,6 +86,8 @@ struct bus {
 	uint16_t	secondary; 	/* secondary bus number */
 	uint16_t	subordinate;	/* max subordinate bus number */
 	unsigned char   cap;		/* PCi capability offset */
+	uint32_t	hcdn_reg;		/* For HyperTransport link  */
+
 	unsigned	reset_needed : 1;
 	unsigned	disable_relaxed_ordering : 1;
 };

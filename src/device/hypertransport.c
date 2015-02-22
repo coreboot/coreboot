@@ -507,6 +507,23 @@ void ht_scan_bridge(struct device *dev)
 	do_pci_scan_bridge(dev, hypertransport_scan_chain_x);
 }
 
+bool ht_is_non_coherent_link(struct bus *link)
+{
+	u32 link_type;
+	do {
+		link_type = pci_read_config32(link->dev, link->cap + 0x18);
+	} while (link_type & ConnectionPending);
+
+	if (!(link_type & LinkConnected))
+		return false;
+
+	do {
+		link_type = pci_read_config32(link->dev, link->cap + 0x18);
+	} while (!(link_type & InitComplete));
+
+	return !!(link_type & NonCoherent);
+}
+
 /** Default device operations for hypertransport bridges */
 static struct pci_operations ht_bus_ops_pci = {
 	.set_subsystem = 0,

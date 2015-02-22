@@ -90,6 +90,7 @@ struct bus {
 
 	unsigned	reset_needed : 1;
 	unsigned	disable_relaxed_ordering : 1;
+	unsigned	ht_link_up : 1;
 };
 
 /*

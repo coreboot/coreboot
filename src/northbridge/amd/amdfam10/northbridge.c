@@ -141,23 +141,6 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 }
 
-static bool is_non_coherent_link(struct device *dev, struct bus *link)
-{
-	u32 link_type;
-	do {
-		link_type = pci_read_config32(dev, link->cap + 0x18);
-	} while (link_type & ConnectionPending);
-
-	if (!(link_type & LinkConnected))
-		return false;
-
-	do {
-		link_type = pci_read_config32(dev, link->cap + 0x18);
-	} while (!(link_type & InitComplete));
-
-	return !!(link_type & NonCoherent);
-}
-
 typedef enum {
 	HT_ROUTE_CLOSE,
 	HT_ROUTE_SCAN,
@@ -199,11 +182,6 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		unsigned int next_unitid;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_devfn;
-
-		/* Check for connected link. */
-		link->cap = 0x80 + (link->link_num * 0x20);
-		if (!is_non_coherent_link(dev, link))
-			return max;
 
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
@@ -298,6 +276,17 @@ static void relocate_sb_ht_chain(void)
 	}
 }
 
+static void trim_ht_chain(struct device *dev)
+{
+	struct bus *link;
+
+	/* Check for connected link. */
+	for (link = dev->link_list; link; link = link->next) {
+		link->cap = 0x80 + (link->link_num * 0x20);
+		link->ht_link_up = ht_is_non_coherent_link(link);
+	}
+}
+
 static void amdfam10_scan_chains(device_t dev)
 {
 	unsigned nodeid;
@@ -308,9 +297,12 @@ static void amdfam10_scan_chains(device_t dev)
 	nodeid = amdfam10_nodeid(dev);
 
 	/* Do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0 */
+	trim_ht_chain(dev);
+
 	for (link = dev->link_list; link; link = link->next) {
 		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
-		max = amdfam10_scan_chain(dev, nodeid, link, is_sblink, max);
+		if (link->ht_link_up)
+			max = amdfam10_scan_chain(dev, nodeid, link, is_sblink, max);
 	}
 
 	dev->bus->subordinate = max;

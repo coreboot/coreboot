@@ -223,6 +223,11 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			case 0x3:
 				expanded_cpuidv = 1000;
 				break;
+			default:
+				printk(BIOS_ERR, "%s:%s:%d: Invalid cpuidv, "
+					"not generating pstate tables.\n",
+					__FILE__, __func__, __LINE__);
+				return;
 		}
 		core_power = (core_voltage * cpuidd) / (expanded_cpuidv * 10);
 

@@ -145,7 +145,7 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	cpuid1 = cpuid(0x80000007);
 	if ((cpuid1.edx & 0x80) != 0x80) {
 		printk(BIOS_INFO, "No valid set of P-states\n");
-		goto write_pstates;
+		return;
 	}
 
 	uint8_t pviModeFlag;
@@ -258,7 +258,6 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			    Pstate_latency[index]);
 	}
 
-write_pstates:
 	for (index = 0; index < cmp_cap; index++)
 		write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_power,
 				Pstate_latency, Pstate_control, Pstate_status,

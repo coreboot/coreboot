@@ -199,11 +199,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		unsigned int next_unitid;
 		u32 ht_c_index;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
-		u32 max_bus;
 		u32 min_bus;
-#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
-		u32 busn = max&0xff;
-#endif
 		u32 max_devfn;
 
 		/* Check for connected link. */
@@ -232,7 +228,8 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		// i would refined that to  2, 3, 4 ==> 0, 0x, 40, 0x80, 0xc0
 		//			    >4 will use	 more segments, We can have 16 segmment and every segment have 256 bus, For that case need the kernel support mmio pci config.
 		else {
-			min_bus = ((busn>>3) + 1) << 3; // one node can have 8 link and segn is the same
+			/* One node can have 8 link and segn is the same. */
+			min_bus = (((max & 0xff) >> 3) + 1) << 3;
 		}
 		max = min_bus;
 	#else
@@ -244,7 +241,6 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 #else
 		min_bus = ++max;
 #endif
-		max_bus = 0xfc;
 
 		link->secondary = min_bus;
 		link->subordinate = link->secondary;

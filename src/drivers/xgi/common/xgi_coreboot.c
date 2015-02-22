@@ -333,7 +333,6 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 
 error_1:
 error_disable:
-	free(xgifb_info);
 	return ret;
 }
 

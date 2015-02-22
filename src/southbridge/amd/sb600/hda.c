@@ -157,11 +157,11 @@ static u32 find_verb(u32 viddid, u32 ** verb)
 	device_t azalia_dev = dev_find_slot(0, PCI_DEVFN(0x14, 2));
 	struct southbridge_amd_sb600_config *cfg =
 	    (struct southbridge_amd_sb600_config *)azalia_dev->chip_info;
+	if (!cfg)
+		return 0;
 	printk(BIOS_DEBUG, "Dev=%s\n", dev_path(azalia_dev));
 	printk(BIOS_DEBUG, "Default viddid=%x\n", cfg->hda_viddid);
 	printk(BIOS_DEBUG, "Reading viddid=%x\n", viddid);
-	if (!cfg)
-		return 0;
 	if (viddid != cfg->hda_viddid)
 		return 0;
 	*verb = (u32 *) cim_verb_data;

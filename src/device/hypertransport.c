@@ -248,7 +248,7 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 	}
 }
 
-unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
+static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 				       unsigned max_devfn,
 				       unsigned *ht_unitid_base,
 				       unsigned offset_unitid)
@@ -477,6 +477,30 @@ end_of_chain:
 	return next_unitid;
 }
 
+unsigned int hypertransport_scan_chain(struct bus *bus)
+{
+	int i;
+	unsigned int max_devfn;
+	u32 ht_unitid_base[4];
+
+	for (i = 0; i < 4; i++)
+		ht_unitid_base[i] = 0x20;
+
+	if (bus->secondary == 0)
+		max_devfn = (CONFIG_CDB << 3) - 1;
+	else
+		max_devfn = (0x20 << 3) - 1;
+
+	unsigned int next_unitid = do_hypertransport_scan_chain(bus, 0, max_devfn,
+					 ht_unitid_base, offset_unit_id(bus->secondary == 0));
+
+	bus->hcdn_reg = 0;
+	for (i = 0; i < 4; i++)
+		bus->hcdn_reg |= (ht_unitid_base[i] & 0xff) << (i*8);
+
+	return next_unitid;
+}
+
 /**
  * Scan a PCI bridge and the buses behind the bridge.
  *
@@ -495,7 +519,7 @@ static void hypertransport_scan_chain_x(struct bus *bus,
 	unsigned int ht_unitid_base[4];
 	unsigned int offset_unitid = 1;
 
-	unsigned int next_unitid = hypertransport_scan_chain(bus, min_devfn, max_devfn,
+	unsigned int next_unitid = do_hypertransport_scan_chain(bus, min_devfn, max_devfn,
 					 ht_unitid_base, offset_unitid);
 
 	/* Now that nothing is overlapping it is safe to scan the children. */

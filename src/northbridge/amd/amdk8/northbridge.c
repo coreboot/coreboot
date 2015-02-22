@@ -118,12 +118,10 @@ static u32 amdk8_nodeid(device_t dev)
 
 static u32 amdk8_scan_chain(struct bus *link, u32 max)
 {
-		int i;
 		unsigned int next_unitid;
+		int index;
 		u32 config_busses;
 		u32 free_reg, config_reg;
-		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
-		u32 max_devfn;
 		u32 nodeid = amdk8_nodeid(link->dev);
 
 		/* See if there is an available configuration space mapping
@@ -183,16 +181,8 @@ static u32 amdk8_scan_chain(struct bus *link, u32 max)
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link
 		 */
-		for(i=0;i<4;i++) {
-			ht_unitid_base[i] = 0x20;
-		}
 
-		if (link->secondary == 0)
-			max_devfn = (0x17<<3) | 7;
-		else
-			max_devfn = (0x1f<<3) | 7;
-
-		next_unitid = hypertransport_scan_chain(link, 0, max_devfn, ht_unitid_base, offset_unit_id(link->secondary == 0));
+		next_unitid = hypertransport_scan_chain(link);
 
 		/* Now that nothing is overlapping it is safe to scan the children. */
 		pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7);
@@ -207,13 +197,7 @@ static u32 amdk8_scan_chain(struct bus *link, u32 max)
 			(link->subordinate << 24);
 		f1_write_config32(config_reg, config_busses);
 
-
-		// use config_reg and ht_unitid_base to update hcdn_reg
-		link->hcdn_reg = 0;
-		for (i = 0; i < 4; i++)
-			link->hcdn_reg |= (ht_unitid_base[i] & 0xff) << (i*8);
-
-		int index = (config_reg-0xe0) >> 2;
+		index = (config_reg-0xe0) >> 2;
 		sysconf.hcdn_reg[index] = link->hcdn_reg;
 
 		return link->subordinate;

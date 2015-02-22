@@ -174,10 +174,7 @@ static void ht_route_link(struct bus *link, scan_state mode)
 
 static u32 amdfam10_scan_chain(struct bus *link, u32 max)
 {
-		int i;
 		unsigned int next_unitid;
-		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
-		u32 max_devfn;
 
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
@@ -208,17 +205,8 @@ static u32 amdfam10_scan_chain(struct bus *link, u32 max)
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link
 		 */
-		for(i=0;i<4;i++) {
-			ht_unitid_base[i] = 0x20;
-		}
 
-		//if ext conf is enabled, only need use 0x1f
-		if (link->secondary == 0)
-			max_devfn = (0x17<<3) | 7;
-		else
-			max_devfn = (0x1f<<3) | 7;
-
-		next_unitid = hypertransport_scan_chain(link, 0, max_devfn, ht_unitid_base, offset_unit_id(link->secondary == 0));
+		next_unitid = hypertransport_scan_chain(link);
 
 		/* Now that nothing is overlapping it is safe to scan the children. */
 		pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7);
@@ -234,11 +222,6 @@ static u32 amdfam10_scan_chain(struct bus *link, u32 max)
 		}
 
 		set_config_map_reg(link);
-
-		/* Use ht_unitid_base to update hcdn_reg. */
-		link->hcdn_reg = 0;
-		for (i = 0; i < 4;i++)
-			link->hcdn_reg |= (ht_unitid_base[i] & 0xff) << (i*8);
 
 		store_ht_c_conf_bus(link);
 

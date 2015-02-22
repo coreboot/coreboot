@@ -218,7 +218,6 @@ _free_return:
 	free(tr);
 	if (di)
 		free(di->ctx.raw);
-	free((void *)di);
 _free_ic_return:
 	if (ic)
 		free(ic->raw);

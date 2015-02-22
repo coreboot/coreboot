@@ -854,12 +854,12 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 				/* Free this TD, and */
 				free(td);
 				--intrq->remaining_tds;
-				/* the interrupt queue if it has no more TDs. */
-				if (!intrq->remaining_tds)
-					free(intrq);
 				usb_debug("Freed TD from orphaned interrupt "
 					  "queue, %d TDs remain.\n",
 					  intrq->remaining_tds);
+				/* the interrupt queue if it has no more TDs. */
+				if (!intrq->remaining_tds)
+					free(intrq);
 			} else {
 				/* Save done TD to be processed. */
 				td->next = temp_tdq;

@@ -1174,11 +1174,16 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 	struct bus *parent = dev->bus;
 	u32 reg, buses = 0;
 
+	if (state == PCI_ROUTE_SCAN) {
+		link->secondary = parent->subordinate + 1;
+		link->subordinate = link->secondary;
+	}
+
 	if (state == PCI_ROUTE_CLOSE) {
 		buses |= 0xfeff << 8;
 	} else if (state == PCI_ROUTE_SCAN) {
 		buses |= ((u32) link->secondary & 0xff) << 8;
-		buses |= ((u32) link->subordinate & 0xff) << 16;
+		buses |= 0xff << 16; /* MAX PCI_BUS number here */
 	} else if (state == PCI_ROUTE_FINAL) {
 		buses |= parent->secondary & 0xff;
 		buses |= ((u32) link->secondary & 0xff) << 8;
@@ -1205,9 +1210,9 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 
 	if (state == PCI_ROUTE_FINAL) {
 		pci_write_config16(dev, PCI_COMMAND, link->bridge_cmd);
+		parent->subordinate = link->subordinate;
 	}
 }
-
 
 /**
  * Scan a PCI bridge and the buses behind the bridge.
@@ -1244,29 +1249,13 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 
 	bus = dev->link_list;
 
-	/*
-	 * Set up the primary, secondary and subordinate bus numbers. We have
-	 * no idea how many buses are behind this bridge yet, so we set the
-	 * subordinate bus number to 0xff for the moment.
-	 */
-	bus->secondary = ++max;
-	bus->subordinate = 0xff;
-
 	pci_bridge_route(bus, PCI_ROUTE_SCAN);
 
-	/* Now we can scan all subordinate buses (those behind the bridge). */
-	max = do_scan_bus(bus, 0x00, 0xff, max);
-
-	/*
-	 * We know the number of buses behind this bridge. Set the subordinate
-	 * bus number to its real value.
-	 */
-	bus->subordinate = max;
+	bus->subordinate = do_scan_bus(bus, 0x00, 0xff, bus->secondary);
 
 	pci_bridge_route(bus, PCI_ROUTE_FINAL);
 
-	printk(BIOS_SPEW, "%s returns max %d\n", __func__, max);
-	return max;
+	return bus->subordinate;
 }
 
 /**

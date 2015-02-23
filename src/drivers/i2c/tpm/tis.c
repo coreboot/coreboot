@@ -25,8 +25,8 @@
 #include <string.h>
 #include <assert.h>
 #include <delay.h>
-#include <arch/byteorder.h>
 #include <device/i2c.h>
+#include <endian.h>
 #include <tpm.h>
 #include "tpm.h"
 #include <timer.h>

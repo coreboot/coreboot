@@ -29,11 +29,11 @@
  */
 
 #include <types.h>
-#include <arch/byteorder.h>
 #include <console/console.h>
 #include <device/device.h>	//Coreboot device access
 #include <device/pci.h>
 #include <delay.h>
+#include <endian.h>
 
 void broadcom_init(void);
 

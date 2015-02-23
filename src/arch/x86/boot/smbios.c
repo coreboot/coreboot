@@ -28,8 +28,8 @@
 #include <device/device.h>
 #include <arch/cpu.h>
 #include <cpu/x86/name.h>
-#include <arch/byteorder.h>
 #include <elog.h>
+#include <endian.h>
 #include <memory_info.h>
 #include <spd.h>
 #include <cbmem.h>

@@ -1,6 +1,6 @@
 #ifndef PCI_ROM_H
 #define PCI_ROM_H
-#include <arch/byteorder.h>
+#include <endian.h>
 #include <stddef.h>
 
 #define PCI_ROM_HDR 0xAA55

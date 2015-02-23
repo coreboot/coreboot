@@ -41,8 +41,8 @@
 #include <types.h>
 #include <delay.h>
 #include <console/console.h>
-#include <arch/byteorder.h>
 #include <device/i2c.h>
+#include <endian.h>
 #include "tpm.h"
 
 /* Address of the TPM on the I2C bus */

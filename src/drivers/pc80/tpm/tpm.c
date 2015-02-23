@@ -31,7 +31,6 @@
 #include <string.h>
 #include <delay.h>
 #include <arch/io.h>
-#include <arch/byteorder.h>
 #include <console/console.h>
 #include <tpm.h>
 #include <arch/early_variables.h>

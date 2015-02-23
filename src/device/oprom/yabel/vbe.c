@@ -17,7 +17,7 @@
 #include <boot/coreboot_tables.h>
 #endif
 
-#include <arch/byteorder.h>
+#include <endian.h>
 
 #include "debug.h"
 

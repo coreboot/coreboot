@@ -20,8 +20,8 @@
 #ifndef __INCLUDE_ARCH_CBFS__
 #define __INCLUDE_ARCH_CBFS__
 
-#include <arch/byteorder.h>
 #include <cbfs_serialized.h>
+#include <endian.h>
 
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 

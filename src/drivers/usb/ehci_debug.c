@@ -22,7 +22,6 @@
 #include <console/console.h>
 #include <console/usb.h>
 #include <arch/io.h>
-#include <arch/byteorder.h>
 #include <arch/early_variables.h>
 #include <string.h>
 #include <cbmem.h>

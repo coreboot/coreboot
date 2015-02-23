@@ -31,7 +31,6 @@
 #include <stddef.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <arch/byteorder.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>

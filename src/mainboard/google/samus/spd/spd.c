@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/byteorder.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <endian.h>
 #include <string.h>
 #include <soc/gpio.h>
 #include <soc/pei_data.h>

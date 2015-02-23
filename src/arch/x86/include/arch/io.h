@@ -1,6 +1,7 @@
 #ifndef _ASM_IO_H
 #define _ASM_IO_H
 
+#include <endian.h>
 #include <stdint.h>
 #include <rules.h>
 

@@ -22,7 +22,6 @@
 #include <string.h>
 #include <lib.h>
 #include <timestamp.h>
-#include <arch/byteorder.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>

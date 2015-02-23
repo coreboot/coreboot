@@ -152,6 +152,7 @@ static int enable_lcd_vdd(void)
 	case BOARD_ID_PROTO_1:
 	case BOARD_ID_PROTO_3:
 	case BOARD_ID_PROTO_4:
+	case BOARD_ID_EVT:
 		gpio_set(EN_VDD_LCD, 1);
 		break;
 	default: /* unknown board */

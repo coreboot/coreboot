@@ -211,10 +211,6 @@ static void w83793_init(struct device *dev)
 
 	smbus_write_byte(dev, 0x00, 0x00);
 
-	/* Fan output style */
-	smbus_write_byte(dev, 0xb4, 0x00);
-	smbus_write_byte(dev, 0xb5, 0x00);
-
 	/* start monitoring operation */
 	smbus_write_byte(dev, 0x40, 0x09);
 

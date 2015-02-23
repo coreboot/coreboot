@@ -17,7 +17,7 @@ bootblock-y += ../tegra/pinmux.c
 bootblock-y += ../tegra/apbmisc.c
 bootblock-y += timer.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
-bootblock-$(CONFIG_CONSOLE_SERIAL) += uart.c
+bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
 verstage-y += verstage.c
@@ -26,7 +26,7 @@ verstage-y += dma.c
 verstage-y += monotonic_timer.c
 verstage-y += spi.c
 verstage-y += timer.c
-verstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
+verstage-$(CONFIG_DRIVERS_UART) += uart.c
 verstage-y += ../tegra/gpio.c
 verstage-y += ../tegra/pinmux.c
 
@@ -46,7 +46,7 @@ romstage-y += ../tegra/i2c.c
 romstage-$(CONFIG_SOFTWARE_I2C) += ../tegra/software_i2c.c
 romstage-y += ../tegra/pinmux.c
 romstage-y += timer.c
-romstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
+romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 ramstage-y += cbfs.c
 ramstage-y += cbmem.c
@@ -67,7 +67,7 @@ ramstage-$(CONFIG_SOFTWARE_I2C) += ../tegra/software_i2c.c
 ramstage-y += ../tegra/pinmux.c
 ramstage-y += ../tegra/usb.c
 ramstage-y += timer.c
-ramstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
+ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 rmodules-y += monotonic_timer.c
 VBOOT_STUB_DEPS += $(obj)/soc/nvidia/tegra124/monotonic_timer.rmodules.o

@@ -81,6 +81,7 @@ struct bus {
 	ROMSTAGE_CONST struct device * 	children;	/* devices behind this bridge */
 	ROMSTAGE_CONST struct bus	*next;		/* The next bridge on this device */
 	unsigned	bridge_ctrl;	/* Bridge control register */
+	uint16_t	bridge_cmd;		/* Bridge command register */
 	unsigned char	link_num;	/* The index of this link */
 	uint16_t	secondary; 	/* secondary bus number */
 	uint16_t	subordinate;	/* max subordinate bus number */

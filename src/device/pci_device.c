@@ -1162,6 +1162,53 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	return max;
 }
 
+typedef enum {
+	PCI_ROUTE_CLOSE,
+	PCI_ROUTE_SCAN,
+	PCI_ROUTE_FINAL,
+} scan_state;
+
+static void pci_bridge_route(struct bus *link, scan_state state)
+{
+	struct device *dev = link->dev;
+	struct bus *parent = dev->bus;
+	u32 reg, buses = 0;
+
+	if (state == PCI_ROUTE_CLOSE) {
+		buses |= 0xfeff << 8;
+	} else if (state == PCI_ROUTE_SCAN) {
+		buses |= ((u32) link->secondary & 0xff) << 8;
+		buses |= ((u32) link->subordinate & 0xff) << 16;
+	} else if (state == PCI_ROUTE_FINAL) {
+		buses |= parent->secondary & 0xff;
+		buses |= ((u32) link->secondary & 0xff) << 8;
+		buses |= ((u32) link->subordinate & 0xff) << 16;
+	}
+
+	if (state == PCI_ROUTE_SCAN) {
+		/* Clear all status bits and turn off memory, I/O and master enables. */
+		link->bridge_cmd = pci_read_config16(dev, PCI_COMMAND);
+		pci_write_config16(dev, PCI_COMMAND, 0x0000);
+		pci_write_config16(dev, PCI_STATUS, 0xffff);
+	}
+
+	/*
+	 * Configure the bus numbers for this bridge: the configuration
+	 * transactions will not be propagated by the bridge if it is not
+	 * correctly configured.
+	 */
+
+	reg = pci_read_config32(dev, PCI_PRIMARY_BUS);
+	reg &= 0xff000000;
+	reg |= buses;
+	pci_write_config32(dev, PCI_PRIMARY_BUS, reg);
+
+	if (state == PCI_ROUTE_FINAL) {
+		pci_write_config16(dev, PCI_COMMAND, link->bridge_cmd);
+	}
+}
+
+
 /**
  * Scan a PCI bridge and the buses behind the bridge.
  *
@@ -1182,8 +1229,6 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 							     unsigned int max))
 {
 	struct bus *bus;
-	u32 buses;
-	u16 cr;
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(dev));
 
@@ -1207,27 +1252,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 	bus->secondary = ++max;
 	bus->subordinate = 0xff;
 
-	/* Clear all status bits and turn off memory, I/O and master enables. */
-	cr = pci_read_config16(dev, PCI_COMMAND);
-	pci_write_config16(dev, PCI_COMMAND, 0x0000);
-	pci_write_config16(dev, PCI_STATUS, 0xffff);
-
-	/*
-	 * Read the existing primary/secondary/subordinate bus
-	 * number configuration.
-	 */
-	buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
-
-	/*
-	 * Configure the bus numbers for this bridge: the configuration
-	 * transactions will not be propagated by the bridge if it is not
-	 * correctly configured.
-	 */
-	buses &= 0xff000000;
-	buses |= (((unsigned int)(dev->bus->secondary) << 0) |
-		  ((unsigned int)(bus->secondary) << 8) |
-		  ((unsigned int)(bus->subordinate) << 16));
-	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
+	pci_bridge_route(bus, PCI_ROUTE_SCAN);
 
 	/* Now we can scan all subordinate buses (those behind the bridge). */
 	max = do_scan_bus(bus, 0x00, 0xff, max);
@@ -1237,9 +1262,8 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 	 * bus number to its real value.
 	 */
 	bus->subordinate = max;
-	buses = (buses & 0xff00ffff) | ((unsigned int)(bus->subordinate) << 16);
-	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
-	pci_write_config16(dev, PCI_COMMAND, cr);
+
+	pci_bridge_route(bus, PCI_ROUTE_FINAL);
 
 	printk(BIOS_SPEW, "%s returns max %d\n", __func__, max);
 	return max;

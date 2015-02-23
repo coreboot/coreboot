@@ -158,6 +158,37 @@ static bool is_non_coherent_link(struct device *dev, struct bus *link)
 	return !!(link_type & NonCoherent);
 }
 
+typedef enum {
+	HT_ROUTE_CLOSE,
+	HT_ROUTE_SCAN,
+	HT_ROUTE_FINAL,
+} scan_state;
+
+static void ht_route_link(struct bus *link, scan_state mode)
+{
+	struct bus *parent = link->dev->bus;
+	u32 busses;
+
+	/* Configure the bus numbers for this bridge: the configuration
+	 * transactions will not be propagated by the bridge if it is
+	 * not correctly configured
+	 */
+	busses = pci_read_config32(link->dev, link->cap + 0x14);
+	busses &= 0xff000000;
+	busses |= parent->secondary & 0xff;
+	if (mode == HT_ROUTE_CLOSE) {
+		busses |= 0xfeff << 8;
+	} else if (mode == HT_ROUTE_SCAN) {
+		busses |= ((u32) link->secondary & 0xff) << 8;
+		busses |= 0xfc << 16;
+	} else if (mode == HT_ROUTE_FINAL) {
+		busses |= ((u32) link->secondary & 0xff) << 8;
+		busses |= ((u32) link->subordinate & 0xff) << 16;
+	}
+	pci_write_config32(link->dev, link->cap + 0x14, busses);
+
+}
+
 static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_sblink,
 				u32 max)
 {
@@ -170,7 +201,6 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_bus;
 		u32 min_bus;
-		u32 busses;
 #if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
 		u32 busn = max&0xff;
 #endif
@@ -219,23 +249,11 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		link->secondary = min_bus;
 		link->subordinate = link->secondary;
 
-		/* Read the existing primary/secondary/subordinate bus
-		 * number configuration.
-		 */
-		busses = pci_read_config32(dev, link->cap + 0x14);
-
-		/* Configure the bus numbers for this bridge: the configuration
-		 * transactions will not be propagates by the bridge if it is
-		 * not correctly configured
-		 */
-		busses &= 0xffff00ff;
-		busses |= ((u32)(link->secondary) << 8);
-		pci_write_config32(dev, link->cap + 0x14, busses);
-
+		ht_route_link(link, HT_ROUTE_SCAN);
 
 		/* set the config map space */
 
-		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, max_bus, sysconf.segbit, sysconf.nodes);
+		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
 
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link
@@ -254,6 +272,8 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 
 		/* Now that nothing is overlapping it is safe to scan the children. */
 		pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7);
+
+		ht_route_link(link, HT_ROUTE_FINAL);
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value

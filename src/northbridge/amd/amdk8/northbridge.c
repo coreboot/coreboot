@@ -96,6 +96,38 @@ static bool is_non_coherent_link(struct device *dev, struct bus *link)
 	return !!(link_type & NonCoherent);
 }
 
+typedef enum {
+	HT_ROUTE_CLOSE,
+	HT_ROUTE_SCAN,
+	HT_ROUTE_FINAL,
+} scan_state;
+
+static void ht_route_link(struct bus *link, scan_state mode)
+{
+	struct device *dev = link->dev;
+	struct bus *parent = dev->bus;
+	u32 busses;
+
+	/* Configure the bus numbers for this bridge: the configuration
+	 * transactions will not be propagated by the bridge if it is
+	 * not correctly configured
+	 */
+	busses = pci_read_config32(link->dev, link->cap + 0x14);
+	busses &= 0xff000000;
+	busses |= parent->secondary & 0xff;
+	if (mode == HT_ROUTE_CLOSE) {
+		busses |= 0xfeff << 8;
+	} else if (mode == HT_ROUTE_SCAN) {
+		busses |= ((u32) link->secondary & 0xff) << 8;
+		busses |= 0xff << 16;
+	} else if (mode == HT_ROUTE_FINAL) {
+		busses |= ((u32) link->secondary & 0xff) << 8;
+		busses |= ((u32) link->subordinate & 0xff) << 16;
+	}
+	pci_write_config32(link->dev, link->cap + 0x14, busses);
+
+}
+
 static u32 amdk8_nodeid(device_t dev)
 {
 	return (dev->path.pci.devfn >> 3) - 0x18;
@@ -106,10 +138,9 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 {
 		int i;
 		unsigned int next_unitid;
-		u32 busses, config_busses;
+		u32 config_busses;
 		u32 free_reg, config_reg;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
-		u32 max_bus;
 		u32 min_bus;
 		u32 max_devfn;
 
@@ -168,34 +199,20 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 #else
 		min_bus = ++max;
 #endif
-		max_bus = 0xff;
 
 		link->secondary = min_bus;
 		link->subordinate = link->secondary;
 
-		/* Read the existing primary/secondary/subordinate bus
-		 * number configuration.
-		 */
-		busses = pci_read_config32(dev, link->cap + 0x14);
+		ht_route_link(link, HT_ROUTE_SCAN);
+
 		config_busses = f1_read_config32(config_reg);
-
-		/* Configure the bus numbers for this bridge: the configuration
-		 * transactions will not be propagates by the bridge if it is
-		 * not correctly configured
-		 */
-		busses &= 0xff000000;
-		busses |= (((unsigned int)(dev->bus->secondary) << 0) |
-			((unsigned int)(link->secondary) << 8) |
-			(max_bus << 16));
-		pci_write_config32(dev, link->cap + 0x14, busses);
-
 		config_busses &= 0x000fc88;
 		config_busses |=
 			(3 << 0) |  /* rw enable, no device compare */
 			(( nodeid & 7) << 4) |
 			((link->link_num & 3) << 8) |
 			((link->secondary) << 16) |
-			(max_bus << 24);
+			(0xff << 24);
 		f1_write_config32(config_reg, config_busses);
 
 		/* Now we can scan all of the subordinate busses i.e. the
@@ -218,9 +235,8 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
 		 */
-		busses = (busses & 0xff00ffff) |
-			((unsigned int) (link->subordinate) << 16);
-		pci_write_config32(dev, link->cap + 0x14, busses);
+
+		ht_route_link(link, HT_ROUTE_FINAL);
 
 		config_busses = (config_busses & 0x00ffffff) |
 			(link->subordinate << 24);

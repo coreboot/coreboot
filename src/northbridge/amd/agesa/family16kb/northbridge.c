@@ -458,31 +458,6 @@ static void set_resources(device_t dev)
 	}
 }
 
-#if 0				/* TODO: Check if needed. */
-static unsigned scan_chains(device_t dev, unsigned max)
-{
-	unsigned nodeid;
-	struct bus *link;
-	device_t io_hub = NULL;
-	u32 next_unitid = 0x18;
-	nodeid = amdfam16_nodeid(dev);
-	if (nodeid == 0) {
-		for (link = dev->link_list; link; link = link->next) {
-			//if (link->link_num == sblink) { /* devicetree put IO Hub on link_lsit[sblink] */
-			if (link->link_num == 0) { /* devicetree put IO Hub on link_lsit[0] */
-				io_hub = link->children;
-				if (!io_hub || !io_hub->enabled) {
-					die("I can't find the IO Hub, or IO Hub not enabled, please check the device tree.\n");
-				}
-				/* Now that nothing is overlapping it is safe to scan the children. */
-				max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, 0);
-			}
-		}
-	}
-	return max;
-}
-#endif
-
 
 unsigned long acpi_fill_hest(acpi_hest_t *hest)
 {
@@ -631,7 +606,6 @@ static struct device_operations northbridge_operations = {
 	.init		  = DEVICE_NOOP,
 	.acpi_fill_ssdt_generator = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
-	//.scan_bus	  = scan_chains, /* TODO: */
 	.enable		  = 0,
 	.ops_pci	  = 0,
 };

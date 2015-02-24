@@ -117,7 +117,7 @@ static void sata_init(struct device *dev)
 		}
 		write32(abar + 0x00, reg32);
 		/* PI (Ports implemented) */
-		write32(abar + 0x0c, config->sata_port_map);
+		write32(abar + 0x03, config->sata_port_map);
 		(void)read32(abar + 0x03);	/* Read back 1 */
 		(void)read32(abar + 0x03);	/* Read back 2 */
 		/* CAP2 (HBA Capabilities Extended) */

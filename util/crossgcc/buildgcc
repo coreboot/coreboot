@@ -93,14 +93,20 @@ normalize_dirs()
 	perl -pi -e "s,/lib64,/lib," $DESTDIR$TARGETDIR/lib/*.la
 }
 
-searchgnu()
+searchtool()
 {
 	# $1 short name
-	# result: GNU version of that tool on stdout
-	#         or no output if no GNU version was found
+	# $2 search string
+	# $3 soft fail if set
+	# result: file name of that tool on stdout
+	#         or no output if nothing suitable was found
+	search=GNU
+	if [ -n "$2" ]; then
+		search="$2"
+	fi
 	for i in "$1" "g$1" "gnu$1"; do
 		if test -x "`which $i 2>/dev/null`"; then
-			if test `$i --version 2>/dev/null |grep -c GNU` \
+			if test `$i --version 2>/dev/null |grep -c "$search"` \
 			    -gt 0; then
 				echo $i
 				return
@@ -110,7 +116,7 @@ searchgnu()
 	# A workaround for OSX 10.9 and some BSDs, whose nongnu
 	# patch and tar also work.
 	if [ $UNAME = "Darwin" -o $UNAME = "FreeBSD" -o $UNAME = "NetBSD" ]; then
-		if [ $1 != "make" ]; then
+		if [ "$1" = "patch" -o "$1" = "tar" ]; then
 			if test -x "`which $1 2>/dev/null`"; then
 				echo $1
 				return
@@ -118,20 +124,19 @@ searchgnu()
 		fi
 	fi
 	printf "${RED}ERROR:${red} Missing toolchain: $1${NC}\n" >&2
-	exit 1
+	[ -z "$3" ] && exit 1
+	false
 }
 
-TAR=`searchgnu tar` || exit $?
-PATCH=`searchgnu patch` || exit $?
-MAKE=`searchgnu make` || exit $?
+TAR=`searchtool tar` || exit $?
+PATCH=`searchtool patch` || exit $?
+MAKE=`searchtool make` || exit $?
 
-searchgnu m4 > /dev/null
-searchgnu bison > /dev/null
-
-if ! flex --version > /dev/null 2> /dev/null; then
-	printf "${RED}ERROR:${red} Missing toolchain: flex${NC}\n" >&2
-	exit 1
-fi
+searchtool m4 > /dev/null
+searchtool bison > /dev/null
+searchtool flex flex > /dev/null
+searchtool g++ "Free Software Foundation" nofail > /dev/null || \
+searchtool clang "clang version"
 
 cleanup()
 {

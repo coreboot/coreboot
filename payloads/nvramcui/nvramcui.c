@@ -76,21 +76,6 @@ int main()
 		halt();
 	}
 
-	/* display initialization */
-	initscr();
-	keypad(stdscr, TRUE);
-	cbreak();
-	noecho();
-
-	start_color();
-	leaveok(stdscr, TRUE);
-	curs_set(1);
-
-	erase();
-	box(stdscr, 0, 0);
-	mvaddstr(0, 2, "coreboot configuration utility");
-	refresh();
-
 	/* prep CMOS layout into libcurses data structures */
 	
 	/* determine number of options, and maximum option name length */
@@ -178,6 +163,23 @@ int main()
 	}
 	fields[2*numopts]=NULL;
 
+	/* display initialization */
+	initscr();
+	keypad(stdscr, TRUE);
+	cbreak();
+	noecho();
+
+	if (start_color()) {
+		assume_default_colors (COLOR_BLUE, COLOR_CYAN);
+	}
+	leaveok(stdscr, TRUE);
+	curs_set(1);
+
+	erase();
+	box(stdscr, 0, 0);
+	mvaddstr(0, 2, "coreboot configuration utility");
+	refresh();
+
 	FORM *form = new_form(fields);
 	int numlines = min(numopts*2, 16);
 	WINDOW *w = newwin(numlines+2, 70, 2, 1);
@@ -230,6 +232,8 @@ int main()
 		}
 	}
 
+	endwin();
+
 	for (i = 0; i < numopts; i++) {
 		char *name = field_buffer(fields[2*i], 0);
 		char *value = field_buffer(fields[2*i+1], 0);
@@ -242,10 +246,7 @@ int main()
 
 	unpost_form(form);
 	free_form(form);
-	touchwin(stdscr);
-	refresh();
 
-	endwin();
 	/* TODO: reboot */
 	halt();
 }

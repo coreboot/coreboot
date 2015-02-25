@@ -765,7 +765,7 @@ static void domain_enable_resources(device_t dev)
 
 /* Bus related code */
 
-static u32 cpu_bus_scan(struct device *dev, u32 max)
+static u32 cpu_bus_scan(struct device *dev, u32 passthru)
 {
 	struct bus *cpu_bus = dev->link_list;
 	device_t cpu;
@@ -784,7 +784,7 @@ static u32 cpu_bus_scan(struct device *dev, u32 max)
 		if (cpu)
 			amd_cpu_topology(cpu, 0, apic_id);
 	}
-	return max;
+	return passthru;
 }
 
 static void cpu_bus_init(device_t dev)

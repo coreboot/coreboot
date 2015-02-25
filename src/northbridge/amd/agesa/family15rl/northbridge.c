@@ -992,7 +992,7 @@ static void add_more_links(struct device *dev, unsigned total_links)
 	last->next = NULL;
 }
 
-static u32 cpu_bus_scan(device_t dev, u32 max)
+static u32 cpu_bus_scan(device_t dev, u32 passthru)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
@@ -1166,7 +1166,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 				amd_cpu_topology(cpu, i, j);
 		} //j
 	}
-	return max;
+	return passthru;
 }
 
 static void cpu_bus_init(struct device *dev)

@@ -241,7 +241,7 @@ static void cpu_bus_init(device_t dev)
 	initialize_cpus(dev->link_list);
 }
 
-static unsigned int cpu_bus_scan(device_t bus, unsigned int max)
+static unsigned int cpu_bus_scan(device_t bus, unsigned int passthru)
 {
 	int max_cpus = fw_cfg_max_cpus();
 	device_t cpu;

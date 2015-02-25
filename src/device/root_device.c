@@ -49,7 +49,7 @@ const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_
  * @return The largest bus number used.
  */
 
-static unsigned int scan_static_bus(device_t bus, unsigned int max)
+static unsigned int scan_static_bus(device_t bus, unsigned int passthru)
 {
 	device_t child;
 	struct bus *link;
@@ -68,21 +68,21 @@ static unsigned int scan_static_bus(device_t bus, unsigned int max)
 		}
 	}
 
-	return max;
+	return passthru;
 }
 
-unsigned int scan_lpc_bus(device_t bus, unsigned int max)
+unsigned int scan_lpc_bus(device_t bus, unsigned int passthru)
 {
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	max = scan_static_bus(bus, max);
+	scan_static_bus(bus, 0);
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 
-	return max;
+	return passthru;
 }
 
-unsigned int scan_smbus(device_t bus, unsigned int max)
+unsigned int scan_smbus(device_t bus, unsigned int passthru)
 {
 	device_t child;
 	struct bus *link;
@@ -112,7 +112,7 @@ unsigned int scan_smbus(device_t bus, unsigned int max)
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 
-	return max;
+	return passthru;
 }
 
 /**
@@ -124,14 +124,15 @@ unsigned int scan_smbus(device_t bus, unsigned int max)
  * @param max The current bus number scanned so far, usually 0x00.
  * @return The largest bus number used.
  */
-static unsigned int root_dev_scan_bus(device_t bus, unsigned int max)
+static unsigned int root_dev_scan_bus(device_t bus, unsigned int passthru)
 {
 	device_t child;
 	struct bus *link;
+	unsigned int max = 0;
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	max = scan_static_bus(bus, max);
+	scan_static_bus(bus, 0);
 
 	for (link = bus->link_list; link; link = link->next) {
 		for (child = link->children; child; child = child->sibling) {
@@ -144,7 +145,7 @@ static unsigned int root_dev_scan_bus(device_t bus, unsigned int max)
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 
-	return max;
+	return passthru;
 }
 
 static void root_dev_reset(struct bus *bus)

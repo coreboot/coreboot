@@ -52,7 +52,7 @@ static void soc_enable_apic(struct device *dev)
 	u32 reg32;
 	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
 	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
-	u32 *ilb_base = (u32 *)(pci_read_config32(dev, IBASE) & ~0x0f);
+	u8 *ilb_base = (u8 *)(pci_read_config32(dev, IBASE) & ~0x0f);
 
 	/*
 	 * Enable ACPI I/O and power management.

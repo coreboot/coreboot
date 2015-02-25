@@ -48,7 +48,7 @@ void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 	reg32 &= ~(0xf << 28);
 	reg32 |= (port << 28);
 	reg32 |= (1 << 27); /* Enable Debug Port port number remapping. */
-	write32(base_regs + (DEBUGPORT_MISC_CONTROL / sizeof(u32)), reg32);
+	write32(base_regs + DEBUGPORT_MISC_CONTROL, reg32);
 }
 
 

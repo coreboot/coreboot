@@ -91,8 +91,8 @@ static void sc_enable_ioapic(struct device *dev)
 	 * Set SCI IRQ to IRQ9
 	 */
 	write32(ilb_base + ILB_OIC, 0x100);  /* AEN */
-	reg32 = read32(ilb_base + (ILB_OIC/sizeof(u32))); /* Read back per BWG */
-	write32(ilb_base + (ILB_ACTL/sizeof(u32)), 0);  /* ACTL bit 2:0 SCIS IRQ9 */
+	reg32 = read32(ilb_base + ILB_OIC); /* Read back per BWG */
+	write32(ilb_base + ILB_ACTL, 0);  /* ACTL bit 2:0 SCIS IRQ9 */
 
 	*ioapic_index = 0;
 	*ioapic_data = (1 << 25);

@@ -11,7 +11,7 @@
 #include "amd8111.h"
 
 
-#define CMD3		(0x54/(sizeof(u32)))
+#define CMD3		0x54
 
 typedef enum {
 	VAL3			= (1 << 31),   /* VAL bit for byte 3 */

@@ -33,7 +33,9 @@ struct romstage_handoff {
 	 * responsible for initializing this variable. Otherwise, ramstage
 	 * will be re-loaded from cbfs (which can be slower since it lives
 	 * in flash). */
-	uint32_t s3_resume;
+	uint8_t s3_resume;
+	uint8_t reboot_required;
+	uint8_t reserved[2];
 	/* The ramstage_entry_point is cached in the stag loading path. This
 	 * cached value can only be utilized when the chipset code properly
 	 * fills in the s3_resume field above. */

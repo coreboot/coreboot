@@ -17,37 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <device/device.h>
-#include <soc/cygnus.h>
-#include <soc/sdram.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <symbols.h>
+#ifndef __SOC_BROADCOM_CYGNUS_H__
+#define __SOC_BROADCOM_CYGNUS_H__
 
-static void soc_init(device_t dev)
-{
-	ram_resource(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*(MiB/KiB));
-	usb_init();
-}
+void usb_init(void);
 
-static void soc_noop(device_t dev)
-{
-}
+#endif
 
-static struct device_operations soc_ops = {
-	.read_resources   = soc_noop,
-	.set_resources    = soc_noop,
-	.enable_resources = soc_noop,
-	.init             = soc_init,
-	.scan_bus         = 0,
-};
-
-static void enable_cygnus_dev(device_t dev)
-{
-	dev->ops = &soc_ops;
-}
-
-struct chip_operations soc_broadcom_cygnus_ops = {
-	CHIP_NAME("SOC Broadcom Cygnus")
-	.enable_dev = enable_cygnus_dev,
-};

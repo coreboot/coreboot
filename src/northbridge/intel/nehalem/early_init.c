@@ -131,11 +131,6 @@ static void early_cpu_init (void)
 	m = rdmsr(MSR_IA32_MISC_ENABLES);
 	m.lo |= 0x10000;
 	wrmsr(MSR_IA32_MISC_ENABLES, m);
-
-	m = rdmsr(0x1f1);
-	m.lo |= 1;
-	wrmsr(0x1f1, m);
-
 }
 
 void nehalem_early_initialization(int chipset_type)

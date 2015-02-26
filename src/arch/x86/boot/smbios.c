@@ -251,11 +251,16 @@ static int smbios_write_type0(unsigned long *current, int handle)
 #define SPACES \
 	"                                                                  "
 	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	u32 version_offset = (u32)smbios_string_table_len(t->eos);
+#endif
 	t->bios_version = smbios_add_string(t->eos, SPACES);
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	/* SMBIOS offsets start at 1 rather than 0 */
 	vboot_data->vbt10 = (u32)t->eos + (version_offset - 1);
 #endif
+#endif /* CONFIG_CHROMEOS */
 
 	t->bios_rom_size = (CONFIG_ROM_SIZE / 65535) - 1;
 

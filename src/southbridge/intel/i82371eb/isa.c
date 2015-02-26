@@ -145,7 +145,7 @@ static const struct device_operations isa_ops = {
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 #endif
 	.init			= isa_init,
-	.scan_bus		= scan_static_bus,	/* TODO: Needed? */
+	.scan_bus		= scan_lpc_bus,	/* TODO: Needed? */
 	.enable			= 0,
 	.ops_pci		= 0, /* No subsystem IDs on 82371EB! */
 };

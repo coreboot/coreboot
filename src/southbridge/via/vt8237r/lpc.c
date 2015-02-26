@@ -657,7 +657,7 @@ static const struct device_operations vt8237r_lpc_ops_s = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= vt8237s_init,
-	.scan_bus		= scan_static_bus,
+	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &lops_pci,
 };
 
@@ -666,7 +666,7 @@ static const struct device_operations vt8237r_lpc_ops_r = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= vt8237r_init,
-	.scan_bus		= scan_static_bus,
+	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &lops_pci,
 };
 
@@ -675,7 +675,7 @@ static const struct device_operations vt8237r_lpc_ops_a = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= vt8237a_init,
-	.scan_bus		= scan_static_bus,
+	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &lops_pci,
 };
 

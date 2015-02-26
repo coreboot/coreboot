@@ -827,7 +827,7 @@ static struct device_operations device_ops = {
 	.init			= lpc_init,
 	.final			= lpc_final,
 	.enable			= pch_lpc_enable,
-	.scan_bus		= scan_static_bus,
+	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &pci_ops,
 };
 

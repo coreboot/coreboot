@@ -688,13 +688,18 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte  = lsmbus_read_byte,
 };
 
+static unsigned int scan_lpc_smbus(device_t dev, unsigned int max)
+{
+	/* FIXME. Do we have mixed LPC/SMBus device node here. */
+	return scan_smbus(dev, max);
+}
+
 static struct device_operations southbridge_ops = {
 	.read_resources = cs5536_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = southbridge_init,
-//      .enable                   = southbridge_enable,
-	.scan_bus = scan_static_bus,
+	.scan_bus = scan_lpc_smbus,
 	.ops_smbus_bus = &lops_smbus_bus,
 };
 

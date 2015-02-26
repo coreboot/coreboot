@@ -6,10 +6,10 @@ chip northbridge/amd/gx2
 	end
 
 	device domain 0 on
-		device pci 0.0 on end
+		device pci 0.0 on
 			chip southbridge/amd/cs5535
-			register "setupflash" = "0"
-				device pci 12.0 on
+				register "setupflash" = "0"
+				device pci 12.0 on end
 				device pci 12.1 off end		# SMI
 				device pci 12.2 on end		# IDE
 				device pci 12.3 off end		# Audio

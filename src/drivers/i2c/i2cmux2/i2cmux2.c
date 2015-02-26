@@ -1,10 +1,5 @@
-#include <console/console.h>
 #include <device/device.h>
 #include <device/smbus.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
-#include <cpu/x86/msr.h>
 
 static void i2cmux2_set_link(struct device *dev, unsigned int link)
 {
@@ -20,7 +15,7 @@ static struct device_operations i2cmux2_operations = {
 	.set_resources = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init = DEVICE_NOOP,
-	.scan_bus = scan_static_bus,
+	.scan_bus = scan_smbus,
 	.set_link = i2cmux2_set_link,
 };
 

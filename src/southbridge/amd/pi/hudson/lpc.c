@@ -340,7 +340,7 @@ static struct device_operations lpc_ops = {
 	.write_acpi_tables = acpi_write_hpet,
 #endif
 	.init = lpc_init,
-	.scan_bus = scan_static_bus,
+	.scan_bus = scan_lpc_bus,
 	.ops_pci = &lops_pci,
 };
 static const struct pci_driver lpc_driver __pci_driver = {

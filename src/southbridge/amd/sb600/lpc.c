@@ -242,7 +242,7 @@ static struct device_operations lpc_ops = {
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 #endif
 	.init = lpc_init,
-	.scan_bus = scan_static_bus,
+	.scan_bus = scan_lpc_bus,
 	/* .enable           = sb600_enable, */
 	.ops_pci = &lops_pci,
 };

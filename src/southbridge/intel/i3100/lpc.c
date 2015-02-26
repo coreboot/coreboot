@@ -457,7 +457,7 @@ static struct device_operations lpc_ops  = {
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 	.write_acpi_tables      = acpi_write_hpet,
 #endif
-	.scan_bus         = scan_static_bus,
+	.scan_bus         = scan_lpc_bus,
 	.enable           = i3100_enable,
 	.ops_pci          = &lops_pci,
 };

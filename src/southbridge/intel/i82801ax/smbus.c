@@ -48,7 +48,7 @@ static const struct device_operations smbus_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= 0,
-	.scan_bus		= scan_static_bus,
+	.scan_bus		= scan_smbus,
 	.enable			= i82801ax_enable,
 	.ops_smbus_bus		= &lops_smbus_bus,
 };

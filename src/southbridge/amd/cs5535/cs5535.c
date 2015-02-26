@@ -94,7 +94,6 @@ static struct device_operations southbridge_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = southbridge_init,
 	.enable           = southbridge_enable,
-	.scan_bus         = scan_static_bus,
 };
 
 static const struct pci_driver cs5535_pci_driver __pci_driver = {

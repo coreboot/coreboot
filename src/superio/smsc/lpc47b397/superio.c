@@ -134,7 +134,6 @@ static struct device_operations ops_hwm = {
 	.enable_resources = lpc47b397_pnp_enable_resources,
 	.enable           = pnp_alt_enable,
 	.init             = lpc47b397_init,
-	.scan_bus         = scan_static_bus,
 	.ops_smbus_bus    = &lops_smbus_bus,
 	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
 };

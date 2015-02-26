@@ -226,7 +226,7 @@ static struct device_operations acpi_ops  = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = acpi_enable_resources,
 	.init             = acpi_init,
-	.scan_bus         = scan_static_bus,
+	.scan_bus         = scan_smbus,
 	/*  We don't need amd8111_enable, chip ops takes care of it.
 	 *  It could be useful if these devices were not
 	 *  enabled by default.

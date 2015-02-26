@@ -163,7 +163,7 @@ static struct device_operations smbus_ops = {
 	.set_resources = hudson_sm_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = sm_init,
-	.scan_bus = scan_static_bus,
+	.scan_bus = scan_smbus,
 	.ops_pci = &lops_pci,
 	.ops_smbus_bus = &lops_smbus_bus,
 };

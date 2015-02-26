@@ -761,7 +761,7 @@ static struct device_operations device_ops = {
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.init			= lpc_init,
 	.enable			= pch_lpc_enable,
-	.scan_bus		= scan_static_bus,
+	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &pci_ops,
 };
 

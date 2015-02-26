@@ -56,7 +56,7 @@ struct kv_pair {
 	struct kv_pair *next;
 };
 
-extern enum kv_pair_style kv_pair_get_style();
+extern enum kv_pair_style kv_pair_get_style(void);
 
 extern void kv_pair_set_style(enum kv_pair_style style);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, Google Inc.
+ * Copyright 2015, Google Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,24 +97,6 @@ extern long int fmap_find(const uint8_t *image, unsigned int len);
 extern int fmap_print(const struct fmap *map);
 
 /*
- * fmap_get_csum - get the checksum of static regions of an image
- *
- * @image:	image to checksum
- * @len:	length of image
- * @digest:	double-pointer to store location of first byte of digest
- *
- * fmap_get_csum() will reset, write, and finalize the digest.
- * The location of the final digest will start at the location pointed to
- * by digest, which will be allocated and must be freed by the caller.
- *
- * returns digest length if successful
- * returns <0 to indicate error
- */
-extern int fmap_get_csum(const uint8_t *image,
-			 unsigned int image_len, uint8_t **digest);
-
-
-/*
  * fmap_flags_to_string - convert raw flags field into user-friendly string
  *
  * @flags:	raw flags
@@ -157,7 +139,7 @@ extern void fmap_destroy(struct fmap *fmap);
  * returns size of fmap structure if successful
  * returns <0 to indicate failure
  */
-extern int fmap_size(struct fmap *fmap);
+extern int fmap_size(const struct fmap *fmap);
 
 /*
  * fmap_append_area - realloc an existing flashmap and append an area
@@ -187,6 +169,6 @@ extern int fmap_append_area(struct fmap **fmap,
 extern struct fmap_area *fmap_find_area(struct fmap *fmap, const char *name);
 
 /* unit testing stuff */
-extern int fmap_test();
+extern int fmap_test(void);
 
 #endif	/* FLASHMAP_LIB_FMAP_H__*/

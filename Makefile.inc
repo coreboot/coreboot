@@ -285,9 +285,13 @@ build-dirs:
 #######################################################################
 # Build the tools
 CBFSTOOL:=$(objutil)/cbfstool/cbfstool
+FMAPTOOL:=$(objutil)/cbfstool/fmaptool
 RMODTOOL:=$(objutil)/cbfstool/rmodtool
 
 $(obj)/cbfstool: $(CBFSTOOL)
+	cp $< $@
+
+$(obj)/fmaptool: $(FMAPTOOL)
 	cp $< $@
 
 $(obj)/rmodtool: $(RMODTOOL)
@@ -473,7 +477,7 @@ crosstools-riscv: clean-for-update
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean
 
-tools: $(objutil)/kconfig/conf $(objutil)/cbfstool/cbfstool $(objutil)/cbfstool/rmodtool $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE)
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(FMAPTOOL) $(RMODTOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE)
 
 ###########################################################################
 # Common recipes for all stages
@@ -544,7 +548,7 @@ prebuild-files = \
 	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
-$(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)
+$(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(FMAPTOOL) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)
 	$(CBFSTOOL) $@.tmp create \
 	-B $(objcbfs)/bootblock.bin -a 64 \
 	$(CBFSTOOL_PRE1_OPTS)

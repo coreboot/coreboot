@@ -47,7 +47,7 @@ void kv_pair_set_style(enum kv_pair_style style)
 	_style = style;
 }
 
-enum kv_pair_style kv_pair_get_style()
+enum kv_pair_style kv_pair_get_style(void)
 {
 	return _style;
 }
@@ -60,18 +60,6 @@ struct kv_pair *kv_pair_new(void)
 	if (!kv)
 		return NULL;
 
-	return kv;
-}
-
-struct kv_pair **kv_pair_new_array(size_t size)
-{
-	struct kv_pair **kv;
-	size_t i;
-
-	kv = (struct kv_pair **) calloc(0, sizeof(kv) * size);
-	for (i = 0; i < size; ++i) {
-		kv[i] = kv_pair_new();
-	}
 	return kv;
 }
 
@@ -161,15 +149,6 @@ void kv_pair_free(struct kv_pair *kv_list)
 		free(kv_ptr);
 		kv_ptr = kv_next;
 	}
-}
-
-void kv_pair_free_array(struct kv_pair **kv_array, size_t size)
-{
-	size_t i;
-	for (i = 0; i < size; ++i) {
-		kv_pair_free(kv_array[i]);
-	}
-	free(kv_array);
 }
 
 void kv_pair_print_to_file(FILE* fp, struct kv_pair *kv_list,

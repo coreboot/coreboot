@@ -20,6 +20,7 @@
 #ifndef __CBFSTOOL_COMMON_H
 #define __CBFSTOOL_COMMON_H
 
+#include <stddef.h>
 #include <stdint.h>
 #include <assert.h>
 

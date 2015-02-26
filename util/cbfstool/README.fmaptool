@@ -1,0 +1,67 @@
+Flashmap descriptors in coreboot
+================================
+Flashmap (https://code.google.com/p/flashmap) is a binary format for representing the layout of
+flash chips. Since coreboot is starting to use a "partition" of this format to describe the flash
+chip layout---both at runtime and when flashing a new image onto a chip---, the project needed a
+reasonably expressive plaintext format for representing such sections in the source tree. Our
+solution is the fmd ("flashmap descriptor") language, and the files in this directory contain a
+scanner, parser, semantic analyser, and flashmap converter. Here's an informal language description:
+
+# <line comment>
+<image name>[@<memory-mapped address>] <image size> {
+	<section name>[@<offset from start of image>] [<section size>] [{
+		<subsection name>[@<offset from start of parent section>] [<subsection size>] [{
+			# Sections can be nested as deeply as desired
+			<subsubsection name>[(CBFS)][@...] [...] [{...}]
+		}]
+		[<subsection name>[(CBFS)][@...] [...] [{...}]]
+		# There can be many subsections at each level of nesting: they will be inserted
+		# sequentially, and although gaps are allowed, any provided offsets are always
+		# relative to the closest parent node's and must be strictly increasing with neither
+		# overlapping nor degenerate-size sections.
+	}]
+}
+
+Note that the above example contains a few symbols that are actually metasyntax, and therefore have
+neither meaning nor place in a real file. The <.*> s indicate placeholders for parameters:
+ - The names are strings, which are provided as single-word---no whitespace---groups of
+   syntactically unimportant symbols (i.e. everything except @, {, and }): they are not surrounded
+   by quotes or any other form of delimiter.
+ - The other fields are nonnegative integers, which may be given as decimal or hexadecimal; in
+   either case, a K, M, or G may be appended---without intermediate whitespace---as a multiplier.
+ - Comments consist of anything one manages to enter, provided it doesn't start a new line.
+The [.*] s indicate that a portion of the file could be omitted altogether:
+ - Just because something is noted as optional doesn't mean it is in every case: the answer might
+   actually depend on which other information is---or isn't---provided.
+ - In particular, it is only legal to place a (CBFS) annotation on a leaf section; that is, choosing
+   to add child sections excludes the possibility of putting a CBFS in their parent. Such
+   annotations are only used to decide where CBFS empty file headers should be created, and do not
+   result in the storage of any additional metadata in the resulting FMAP section.
+Additionally, it's important to note these properties of the overall file and its values:
+ - Other than within would-be strings and numbers, whitespace is ignored. It goes without saying
+   that such power comes with responsibility, which is why this sentence is here.
+ - Although the .*section names must be globally unique, one of them may---but is not required to---
+   match the image name.
+ - It is a syntax error to supply a number---besides 0---that begins with the character 0, as there
+   is no intention of adding octals to the mix.
+ - The image's memory address should be present on---and only on---layouts for memory-mapped chips.
+ - Although it may be evident from above, all .*section offsets are relative only to the immediate
+   parent. There is no way to include an absolute offset (i.e. from the beginning of flash), which
+   means that it is "safe" to reorder the .*section s within a particular level of nesting, as long
+   as the change doesn't cause their positions and sizes to necessitate overlap or zero sizes.
+ - A .*section with omitted offset is assumed to start at as low a position as possible---with no
+   consideration of alignment---and one with omitted size is assumed to fill the remaining space
+   until the next sibling or before the end of its parent.
+ - It's fine to omit any .*section 's offset, size, or both, provided its position and size are
+   still unambiguous in the context of its *sibling* sections and its parent's *size*. In
+   particular, knowledge of one .*section 's children or the .*section s' common parent's siblings
+   will not be used for this purpose.
+ - Although .*section s are not required to have children, the flash chip as a whole must have at
+   least one.
+ - Though the braces after .*section s may be omitted for those that have no children, if they are
+   present, they must contain at least one child.
+
+PL people and sympathizers may wish to examine the formal abstract syntax and context-free grammar,
+which are located in fmd_scanner.l and fmd_scanner.y, respectively. Those interested in the
+algorithm used to infer omitted values will feel at home in fmd.c, particularly near the definition
+of validate_and_complete_info().

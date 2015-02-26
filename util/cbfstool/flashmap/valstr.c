@@ -31,6 +31,7 @@
 
 #include <inttypes.h>
 #include <string.h>
+#include <strings.h>
 
 #include <valstr.h>
 

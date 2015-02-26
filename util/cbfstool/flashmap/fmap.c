@@ -1,4 +1,4 @@
-/* Copyright 2010, Google Inc.
+/* Copyright 2015, Google Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,6 @@
 #include <valstr.h>
 
 #include "kv_pair.h"
-#include "mincrypt/sha.h"
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
@@ -60,7 +59,7 @@ const struct valstr flag_lut[] = {
 };
 
 /* returns size of fmap data structure if successful, <0 to indicate error */
-int fmap_size(struct fmap *fmap)
+int fmap_size(const struct fmap *fmap)
 {
 	if (!fmap)
 		return -1;
@@ -71,7 +70,7 @@ int fmap_size(struct fmap *fmap)
 /* brute force linear search */
 static long int fmap_lsearch(const uint8_t *image, size_t len)
 {
-	long int offset;
+	unsigned long int offset;
 	int fmap_found = 0;
 
 	for (offset = 0; offset < len - strlen(FMAP_SIGNATURE); offset++) {
@@ -86,7 +85,7 @@ static long int fmap_lsearch(const uint8_t *image, size_t len)
 	if (!fmap_found)
 		return -1;
 
-	if (offset + fmap_size((struct fmap *)&image[offset]) > len)
+	if (offset + fmap_size((const struct fmap *)&image[offset]) > len)
 		return -1;
 
 	return offset;
@@ -95,7 +94,7 @@ static long int fmap_lsearch(const uint8_t *image, size_t len)
 /* if image length is a power of 2, use binary search */
 static long int fmap_bsearch(const uint8_t *image, size_t len)
 {
-	long int offset = -1;
+	unsigned long int offset = -1;
 	int fmap_found = 0, stride;
 
 	/*
@@ -125,7 +124,7 @@ static long int fmap_bsearch(const uint8_t *image, size_t len)
 	if (!fmap_found)
 		return -1;
 
-	if (offset + fmap_size((struct fmap *)&image[offset]) > len)
+	if (offset + fmap_size((const struct fmap *)&image[offset]) > len)
 		return -1;
 
 	return offset;
@@ -183,86 +182,42 @@ int fmap_print(const struct fmap *fmap)
 	kv_pair_free(kv);
 
 	for (i = 0; i < fmap->nareas; i++) {
-		struct kv_pair *kv;
+		struct kv_pair *pair;
 		uint16_t flags;
 		char *str;
 
-		kv = kv_pair_new();
-		if (!kv)
+		pair = kv_pair_new();
+		if (!pair)
 			return -1;
 
-		kv_pair_fmt(kv, "area_offset", "0x%08x",
+		kv_pair_fmt(pair, "area_offset", "0x%08x",
 				fmap->areas[i].offset);
-		kv_pair_fmt(kv, "area_size", "0x%08x",
+		kv_pair_fmt(pair, "area_size", "0x%08x",
 				fmap->areas[i].size);
-		kv_pair_fmt(kv, "area_name", "%s",
+		kv_pair_fmt(pair, "area_name", "%s",
 				fmap->areas[i].name);
-		kv_pair_fmt(kv, "area_flags_raw", "0x%02x",
+		kv_pair_fmt(pair, "area_flags_raw", "0x%02x",
 				fmap->areas[i].flags);
 
 		/* Print descriptive strings for flags rather than the field */
 		flags = fmap->areas[i].flags;
 		if ((str = fmap_flags_to_string(flags)) == NULL)
 			return -1;
-		kv_pair_fmt(kv, "area_flags", "%s", str );
+		kv_pair_fmt(pair, "area_flags", "%s", str);
 		free(str);
 
-		kv_pair_print(kv);
-		kv_pair_free(kv);
+		kv_pair_print(pair);
+		kv_pair_free(pair);
 	}
 
 	return 0;
-}
-
-/* get SHA1 sum of all static regions described by the flashmap and copy into
-   *digest (which will be allocated and must be freed by the caller),  */
-int fmap_get_csum(const uint8_t *image, unsigned int image_len, uint8_t **digest)
-{
-	int i;
-	struct fmap *fmap;
-	int fmap_offset;
-	SHA_CTX ctx;
-
-	if ((image == NULL))
-		return -1;
-
-	if ((fmap_offset = fmap_find(image, image_len)) < 0)
-		return -1;
-	fmap = (struct fmap *)(image + fmap_offset);
-
-	SHA_init(&ctx);
-
-	/* Iterate through flash map and calculate the checksum piece-wise. */
-	for (i = 0; i < fmap->nareas; i++) {
-		/* skip non-static areas */
-		if (!(fmap->areas[i].flags & FMAP_AREA_STATIC))
-			continue;
-
-		/* sanity check the offset */
-		if (fmap->areas[i].size + fmap->areas[i].offset > image_len) {
-			fprintf(stderr,
-				"(%s) invalid parameter detected in area %d\n",
-				__func__, i);
-			return -1;
-		}
-
-		SHA_update(&ctx,
-			   image + fmap->areas[i].offset,
-			   fmap->areas[i].size);
-	}
-
-	SHA_final(&ctx);
-	*digest = malloc(SHA_DIGEST_SIZE);
-	memcpy(*digest, ctx.buf, SHA_DIGEST_SIZE);
-
-	return SHA_DIGEST_SIZE;
 }
 
 /* convert raw flags field to user-friendly string */
 char *fmap_flags_to_string(uint16_t flags)
 {
 	char *str = NULL;
-	int i, total_size;
+	unsigned int i, total_size;
 
 	str = malloc(1);
 	str[0] = '\0';
@@ -302,8 +257,8 @@ struct fmap *fmap_create(uint64_t base, uint32_t size, uint8_t *name)
 
 	memset(fmap, 0, sizeof(*fmap));
 	memcpy(&fmap->signature, FMAP_SIGNATURE, strlen(FMAP_SIGNATURE));
-	fmap->ver_major = VERSION_MAJOR;
-	fmap->ver_minor = VERSION_MINOR;
+	fmap->ver_major = FMAP_VER_MAJOR;
+	fmap->ver_minor = FMAP_VER_MINOR;
 	fmap->base = base;
 	fmap->size = size;
 	memccpy(&fmap->name, name, '\0', FMAP_STRLEN);
@@ -390,8 +345,8 @@ static struct fmap *fmap_create_test(void)
 		goto fmap_create_test_exit;
 	}
 
-	if ((fmap->ver_major != VERSION_MAJOR) ||
-	    (fmap->ver_minor != VERSION_MINOR)) {
+	if ((fmap->ver_major != FMAP_VER_MAJOR) ||
+	    (fmap->ver_minor != FMAP_VER_MINOR)) {
 		printf("FAILURE: version is incorrect\n");
 		goto fmap_create_test_exit;
 	}
@@ -431,44 +386,7 @@ static int fmap_print_test(struct fmap *fmap)
 	return fmap_print(fmap);
 }
 
-static int fmap_get_csum_test(struct fmap *fmap)
-{
-	uint8_t *digest = NULL, *image = NULL;
-	/* assume 0x100-0x10100 is marked "static" and is filled with 0x00 */
-	int image_size = 0x20000;
-	uint8_t csum[SHA_DIGEST_SIZE] = {
-		0x1a, 0xdc, 0x95, 0xbe, 0xbe, 0x9e, 0xea, 0x8c,
-		0x11, 0x2d, 0x40, 0xcd, 0x04, 0xab, 0x7a, 0x8d,
-		0x75, 0xc4, 0xf9, 0x61 };
-
-	status = fail;
-
-	if ((fmap_get_csum(NULL, image_size, &digest) >= 0) ||
-	    (fmap_get_csum(image, image_size, NULL) >= 0)) {
-		printf("failed to abort on NULL pointer input\n");
-		goto fmap_get_csum_test_exit;
-	}
-
-	image = calloc(image_size, 1);
-	memcpy(image, fmap, fmap_size(fmap));
-
-	if (fmap_get_csum(image, image_size, &digest) != SHA_DIGEST_SIZE) {
-		printf("FAILURE: failed to calculate checksum\n");
-		goto fmap_get_csum_test_exit;
-	}
-	if (memcmp(digest, csum, SHA_DIGEST_SIZE)) {
-		printf("FAILURE: checksum is incorrect\n");
-		goto fmap_get_csum_test_exit;
-	}
-
-	status = pass;
-fmap_get_csum_test_exit:
-	free(image);
-	free(digest);
-	return status;
-}
-
-static int fmap_size_test(struct fmap *fmap)
+static int fmap_size_test(void)
 {
 	status = fail;
 
@@ -553,10 +471,10 @@ fmap_find_area_test_exit:
 	return status;
 }
 
-static int fmap_flags_to_string_test()
+static int fmap_flags_to_string_test(void)
 {
 	char *str, *my_str;
-	int i;
+	unsigned int i;
 	uint16_t flags;
 
 	status = fail;
@@ -646,11 +564,11 @@ static int fmap_find_test(struct fmap *fmap)
 	offset = (total_size / 2) + 1;
 	memcpy(&buf[offset], fmap, fmap_size(fmap));
 
-	if (fmap_find(buf, total_size - 1) != offset) {
+	if ((unsigned)fmap_find(buf, total_size - 1) != offset) {
 		printf("FAILURE: lsearch failed to find fmap\n");
 		goto fmap_find_test_exit;
 	}
-	if (fmap_find(buf, total_size) != offset) {
+	if ((unsigned)fmap_find(buf, total_size) != offset) {
 		printf("FAILURE: bsearch failed to find fmap\n");
 		goto fmap_find_test_exit;
 	}
@@ -659,7 +577,7 @@ static int fmap_find_test(struct fmap *fmap)
 	offset = 0;
 	memset(buf, 0, total_size);
 	memcpy(buf, fmap, fmap_size(fmap));
-	if (fmap_find(buf, total_size) != offset) {
+	if ((unsigned)fmap_find(buf, total_size) != offset) {
 		printf("FAILURE: bsearch failed to find fmap at offset 0\n");
 		goto fmap_find_test_exit;
 	}
@@ -684,7 +602,7 @@ fmap_find_test_exit:
 	return status;
 }
 
-int fmap_test()
+int fmap_test(void)
 {
 	int rc = EXIT_SUCCESS;
 	struct fmap *my_fmap;
@@ -713,8 +631,7 @@ int fmap_test()
 	}
 
 	rc |= fmap_find_area_test(my_fmap);
-	rc |= fmap_get_csum_test(my_fmap);
-	rc |= fmap_size_test(my_fmap);
+	rc |= fmap_size_test();
 	rc |= fmap_flags_to_string_test();
 	rc |= fmap_print_test(my_fmap);
 

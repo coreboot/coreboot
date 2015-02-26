@@ -108,15 +108,25 @@ config CCACHE
 
 	  For details see https://ccache.samba.org.
 
+config FMD_GENPARSER
+	bool "Generate flashmap descriptor parser using flex and bison"
+	default n
+	depends on EXPERT
+	help
+	  Enable this option if you are working on the flashmap descriptor
+	  parser and made changes to fmd_scanner.l or fmd_parser.y.
+
+	  Otherwise, say N to use the provided pregenerated scanner/parser.
+
 config SCONFIG_GENPARSER
 	bool "Generate SCONFIG parser using flex and bison"
 	default n
 	depends on EXPERT
 	help
 	  Enable this option if you are working on the sconfig device tree
-	  parser and made changes to sconfig.l and sconfig.y.
+	  parser and made changes to sconfig.l or sconfig.y.
 
-	  Otherwise, say N.
+	  Otherwise, say N to use the provided pregenerated scanner/parser.
 
 config USE_OPTION_TABLE
 	bool "Use CMOS for configuration values"

@@ -63,6 +63,12 @@ static qup_return_t qup_i2c_master_status(gsbi_id_t gsbi_id)
 		return QUP_ERR_I2C_ARB_LOST;
 	if (reg_val & QUP_I2C_BUS_ERROR)
 		return QUP_ERR_I2C_BUS_ERROR;
+	if (reg_val & QUP_I2C_INVALID_WRITE)
+		return QUP_ERR_I2C_INVALID_WRITE;
+	if (reg_val & QUP_I2C_PACKET_NACK)
+		return QUP_ERR_I2C_NACK;
+	if (reg_val & QUP_I2C_INVALID_TAG)
+		return QUP_ERR_I2C_INVALID_TAG;
 
 	return QUP_SUCCESS;
 }
@@ -193,7 +199,7 @@ static qup_return_t qup_i2c_write_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj,
 		return ret;
 
 	qup_set_state(gsbi_id, QUP_STATE_PAUSE);
-	return QUP_SUCCESS;
+	return qup_i2c_master_status(gsbi_id);
 }
 
 static qup_return_t qup_i2c_write(gsbi_id_t gsbi_id, uint8_t mode,

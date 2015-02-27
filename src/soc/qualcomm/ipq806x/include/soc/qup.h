@@ -109,7 +109,9 @@
 #define QUP_I2C_INVALID_READ_ADDR	(1 << 24)
 #define QUP_I2C_INVALID_TAG		(1 << 23)
 #define QUP_I2C_FAILED_MASK		(0x3 << 6)
+#define QUP_I2C_INVALID_WRITE		(1 << 5)
 #define QUP_I2C_ARB_LOST		(1 << 4)
+#define QUP_I2C_PACKET_NACK		(1 << 3)
 #define QUP_I2C_BUS_ERROR		(1 << 2)
 
 typedef enum {
@@ -123,6 +125,9 @@ typedef enum {
 	QUP_ERR_I2C_BUS_ERROR,
 	QUP_ERR_I2C_INVALID_SLAVE_ADDR,
 	QUP_ERR_XFER_FAIL,
+	QUP_ERR_I2C_NACK,
+	QUP_ERR_I2C_INVALID_WRITE,
+	QUP_ERR_I2C_INVALID_TAG,
 	QUP_ERR_UNDEFINED,
 } qup_return_t;
 

@@ -150,7 +150,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int seg_count)
 	if (i2c_init(bus))
 		return 1;
 
-	while (seg_count--) {
+	while (!ret && seg_count--) {
 		if (seg->read)
 			ret = i2c_read(bus, seg->chip, seg->buf, seg->len);
 		else

@@ -116,8 +116,7 @@ static u32 amdk8_nodeid(device_t dev)
 	return (dev->path.pci.devfn >> 3) - 0x18;
 }
 
-static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_sblink,
-				u32 max)
+static u32 amdk8_scan_chain(struct bus *link, u32 max)
 {
 		int i;
 		unsigned int next_unitid;
@@ -125,6 +124,10 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		u32 free_reg, config_reg;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_devfn;
+
+		u32 nodeid = amdk8_nodeid(link->dev);
+		unsigned int sblink = (pci_read_config32(link->dev, 0x64)>>8) & 3;
+		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
 
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
@@ -259,21 +262,14 @@ static void trim_ht_chain(struct device *dev)
 
 static void amdk8_scan_chains(device_t dev)
 {
-	unsigned nodeid;
 	struct bus *link;
-	unsigned sblink = 0;
 	unsigned int max = dev->bus->subordinate;
-
-	nodeid = amdk8_nodeid(dev);
-	if (nodeid == 0)
-		sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
 
 	trim_ht_chain(dev);
 
 	for (link = dev->link_list; link; link = link->next) {
-		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
 		if (link->ht_link_up)
-			max = amdk8_scan_chain(dev, nodeid, link, is_sblink, max);
+			max = amdk8_scan_chain(link, max);
 	}
 
 	dev->bus->subordinate = max;

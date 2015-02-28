@@ -172,16 +172,15 @@ static void ht_route_link(struct bus *link, scan_state mode)
 
 }
 
-static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_sblink,
-				u32 max)
+static u32 amdfam10_scan_chain(struct bus *link, u32 max)
 {
-//	I want to put sb chain in bus 0 can I?
-
-
 		int i;
 		unsigned int next_unitid;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_devfn;
+
+		u32 nodeid = amdfam10_nodeid(link->dev);
+		bool is_sblink = (nodeid == 0) && (link->link_num == sysconf.sblk);
 
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
@@ -289,20 +288,15 @@ static void trim_ht_chain(struct device *dev)
 
 static void amdfam10_scan_chains(device_t dev)
 {
-	unsigned nodeid;
 	struct bus *link;
-	unsigned sblink = sysconf.sblk;
 	unsigned int max = dev->bus->subordinate;
-
-	nodeid = amdfam10_nodeid(dev);
 
 	/* Do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0 */
 	trim_ht_chain(dev);
 
 	for (link = dev->link_list; link; link = link->next) {
-		bool is_sblink = (nodeid == 0) && (link->link_num == sblink);
 		if (link->ht_link_up)
-			max = amdfam10_scan_chain(dev, nodeid, link, is_sblink, max);
+			max = amdfam10_scan_chain(link, max);
 	}
 
 	dev->bus->subordinate = max;

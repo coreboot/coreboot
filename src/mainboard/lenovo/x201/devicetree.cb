@@ -99,7 +99,7 @@ chip northbridge/intel/nehalem
 			register "gpi1_routing" = "2"
 			register "gpi13_routing" = "2"
 
-			register "sata_port_map" = "0x33"
+			register "sata_port_map" = "0x03"
 
 			register "gpe0_en" = "0x20022046"
 			register "alt_gp_smi_en" = "0x0000"

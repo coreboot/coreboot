@@ -54,6 +54,7 @@
 #define RTC_CTRL_GET_TIME	(1 << 6)
 #define RTC_CTRL_RTC_READSEL	(1 << 7)
 
+#define DCDC_UV_ACT		0x28
 #define DCDC_ILMAX		0x90
 
 static int rk808_read(uint8_t reg, uint8_t *value)
@@ -134,6 +135,10 @@ void rk808_configure_buck(int buck, int millivolts)
 		die("Unknown buck index!");
 	}
 	rk808_clrsetbits(DCDC_ILMAX, 0, 3 << ((buck - 1) * 2));
+
+	/* undervoltage detection may be wrong, disable it */
+	rk808_clrsetbits(DCDC_UV_ACT, 1 << (buck - 1), 0);
+
 	rk808_clrsetbits(buck_reg, 0x3f, vsel);
 	rk808_clrsetbits(DCDC_EN, 0, 1 << (buck - 1));
 }

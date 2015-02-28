@@ -457,7 +457,7 @@ crossgcc-arm: clean-for-update
 crossgcc-aarch64: clean-for-update
 	$(MAKE) -C util/crossgcc build-aarch64-without-gdb
 
-crosstools: crosstools-i386
+crosstools: crosstools-i386 crosstools-arm crosstools-aarch64
 
 .PHONY: crosstools-i386 crosstools-arm crosstools-aarch64
 crosstools-i386: clean-for-update

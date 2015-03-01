@@ -736,6 +736,7 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH8:
 	case PCI_DEVICE_ID_INTEL_ICH8M:
+	case PCI_DEVICE_ID_INTEL_ICH8ME:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich8_pm_registers;
 		size = ARRAY_SIZE(ich8_pm_registers);

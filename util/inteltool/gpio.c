@@ -959,6 +959,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH8:
 	case PCI_DEVICE_ID_INTEL_ICH8M:
+	case PCI_DEVICE_ID_INTEL_ICH8ME:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = ich8_gpio_registers;
 		size = ARRAY_SIZE(ich8_gpio_registers);

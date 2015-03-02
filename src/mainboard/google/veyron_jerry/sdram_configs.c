@@ -39,8 +39,8 @@ static struct rk3288_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 1011 */
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 1100 */
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 1101 */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 1110 */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 1111 */
+#include "sdram_inf/sdram-ddr3-K4B8G1646Q-4GB.inc"	/* ram_code = 1110 */
+#include "sdram_inf/sdram-ddr3-H5TC8G63XXX-4GB.inc"	/* ram_code = 1111 */
 };
 
 const struct rk3288_sdram_params *get_sdram_config()

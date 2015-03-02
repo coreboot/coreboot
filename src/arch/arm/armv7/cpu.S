@@ -43,6 +43,8 @@
  * through the magic of double subtraction. It's quite ingenius, really.
  * Takes care to only use r0-r3 and ip so it's pefectly ABI-compatible without
  * needing to write to memory.
+ *
+ * THIS FUNCTION MUST PRESERVE THE VALUE OF r10
  */
 
 .macro	dcache_apply_all crm
@@ -109,6 +111,8 @@
  * known state regarding caches/SCTLR. Completely cleans and invalidates
  * icache/dcache, disables MMU and dcache (if active), and enables unaligned
  * accesses, icache and branch prediction (if inactive). Clobbers r4 and r5.
+ *
+ * THIS FUNCTION MUST PRESERVE THE VALUE OF r10
  */
 ENTRY(arm_init_caches)
 	/* r4: SCTLR, return address: r5 (stay valid for the whole function) */

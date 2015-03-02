@@ -32,6 +32,16 @@
 #include <arch/asm.h>
 
 .arm
+	/*
+	 * Just in case the maskrom or the vendor basic firmware passes on a
+	 * parameter when calling the bootblock, store it here for handling by C
+	 * code.
+	 */
+	.section .bss, "aw" @nobits
+	.global maskrom_param
+maskrom_param:
+	.word 0
+
 ENTRY(_start)
 	/*
 	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
@@ -45,6 +55,10 @@ ENDPROC(_start)
 
 .thumb
 ENTRY(_thumb_start)
+
+	/* Preserve the maskrom passed value, if any */
+	mov	r10, r0
+
 	bl	arm_init_caches
 
 	/*
@@ -71,9 +85,14 @@ init_stack_loop:
 	cmp	r0, r1
 	bne	init_stack_loop
 
-/* Set stackpointer in internal RAM to call bootblock main() */
 call_bootblock:
-	ldr	sp, =_estack /* Set up stack pointer */
+
+	/* Restore parameter passed in by maskrom/vendor firmware. */
+	ldr	r0, =maskrom_param
+	str	r10, [r0]
+
+	/* Set stackpointer in internal RAM to call bootblock main() */
+	ldr	sp, =_estack
 	ldr	r0,=0x00000000
 	 /*
 	  * The current design of cpu_info places the struct at the top of the

@@ -62,4 +62,6 @@ typedef struct {
 #define UBER_SBL_SHARED_INFO_START_MAGIC	0x5552504d // URPM
 #define UBER_SBL_SHARED_INFO_END_MAGIC		0x554b5254 // UKRT
 
+extern uber_sbl_shared_info *maskrom_param;
+
 #endif

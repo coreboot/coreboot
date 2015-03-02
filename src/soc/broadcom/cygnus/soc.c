@@ -18,29 +18,34 @@
  */
 
 #include <device/device.h>
-#include <boot/coreboot_tables.h>
+#include <soc/sdram.h>
+#include <stddef.h>
+#include <stdlib.h>
 #include <symbols.h>
 
-static void mainboard_init(device_t dev)
+static void soc_init(device_t dev)
+{
+	ram_resource(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*(MiB/KiB));
+}
+
+static void soc_noop(device_t dev)
 {
 }
 
-static void mainboard_enable(device_t dev)
-{
-	dev->ops->init = &mainboard_init;
-}
-
-struct chip_operations mainboard_ops = {
-	.enable_dev = mainboard_enable,
+static struct device_operations soc_ops = {
+	.read_resources   = soc_noop,
+	.set_resources    = soc_noop,
+	.enable_resources = soc_noop,
+	.init             = soc_init,
+	.scan_bus         = 0,
 };
 
-void lb_board(struct lb_header *header)
+static void enable_cygnus_dev(device_t dev)
 {
-	struct lb_range *dma;
-
-	dma = (struct lb_range *)lb_new_record(header);
-	dma->tag = LB_TAB_DMA;
-	dma->size = sizeof(*dma);
-	dma->range_start = (uintptr_t)_dma_coherent;
-	dma->range_size = _dma_coherent_size;
+	dev->ops = &soc_ops;
 }
+
+struct chip_operations soc_broadcom_cygnus_ops = {
+	CHIP_NAME("SOC Broadcom Cygnus")
+	.enable_dev = enable_cygnus_dev,
+};

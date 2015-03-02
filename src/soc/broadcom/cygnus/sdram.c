@@ -60,3 +60,8 @@ void sdram_init(void)
 
 	test_ddr();
 }
+
+uint32_t sdram_size_mb(void)
+{
+	return CONFIG_DRAM_SIZE_MB;
+}

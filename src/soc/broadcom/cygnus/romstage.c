@@ -55,9 +55,11 @@ void main(void)
 	after_dram_time = timestamp_get();
 #endif
 
-	mmu_init();
-	mmu_config_range(0, 4096, DCACHE_OFF);
-	dcache_mmu_enable();
+	/* Now that DRAM is up, add mappings for it and DMA coherency buffer. */
+	mmu_config_range((uintptr_t)_dram/MiB,
+			 sdram_size_mb(), DCACHE_WRITEBACK);
+	mmu_config_range((uintptr_t)_dma_coherent/MiB,
+			 _dma_coherent_size/MiB, DCACHE_OFF);
 
 	cbmem_initialize_empty();
 

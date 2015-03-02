@@ -47,6 +47,8 @@ romstage-y += timer.c
 
 ramstage-y += cbmem.c
 ramstage-y += i2c.c
+ramstage-y += sdram.c
+ramstage-y += soc.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-$(CONFIG_DRIVERS_UART) += ns16550.c

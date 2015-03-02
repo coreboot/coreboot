@@ -20,7 +20,10 @@
 #ifndef __SOC_BROADCOM_CYGNUS_SDRAM_H__
 #define __SOC_BROADCOM_CYGNUS_SDRAM_H__
 
+#include <stdint.h>
+
 void ddr_init2(void);
 void sdram_init(void);
+uint32_t sdram_size_mb(void);
 
 #endif	/* __SOC_BROADCOM_CYGNUS_SDRAM_H__ */

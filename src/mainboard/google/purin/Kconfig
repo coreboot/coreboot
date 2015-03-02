@@ -45,16 +45,12 @@ config MAINBOARD_VENDOR
 	string
 	default "Google"
 
-config VBOOT_RAMSTAGE_INDEX
-	hex
-	default 0x3
-
 config BOOT_MEDIA_SPI_BUS
 	int
 	default 0
 
 config DRAM_SIZE_MB
 	int
-	default 1024
+	default 256
 
 endif #  BOARD_GOOGLE_PURIN

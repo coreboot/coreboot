@@ -68,7 +68,8 @@ void main(void)
 
 	printk(BIOS_INFO, "T132 bootblock: Mainboard bootblock init done\n");
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/romstage");
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
+				CONFIG_CBFS_PREFIX "/romstage");
 
 	if (entry) {
 		printk(BIOS_INFO, "T132 bootblock: jumping to romstage\n");

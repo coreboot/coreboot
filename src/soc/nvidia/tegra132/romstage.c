@@ -40,6 +40,7 @@ void main(void)
 
 	while (1);
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
+				CONFIG_CBFS_PREFIX "/ramstage");
 	stage_exit(entry);
 }

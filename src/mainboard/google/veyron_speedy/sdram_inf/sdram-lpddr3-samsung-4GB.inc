@@ -73,5 +73,5 @@
 	.dramtype = LPDDR3,
 	.num_channels = 2,
 	.stride = 13,
-	.odt = 1
+	.odt = 0,
 },

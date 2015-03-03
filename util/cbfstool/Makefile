@@ -4,8 +4,7 @@ HOSTCC ?= $(CC)
 CFLAGS ?= -g
 CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS += -Wstrict-aliasing -Werror
-CFLAGS += -Wshadow
+CFLAGS += -Wstrict-aliasing -Wshadow -Werror
 
 CBFSTOOL_BINARY:=$(obj)/cbfstool
 

@@ -53,7 +53,8 @@ static off_t get_file_size(FILE *f)
 }
 /* Buffer and file I/O */
 
-int buffer_create(struct buffer *buffer, size_t size, const char *name) {
+int buffer_create(struct buffer *buffer, size_t size, const char *name)
+{
 	buffer->name = strdup(name);
 	buffer->size = size;
 	buffer->data = (char *)malloc(buffer->size);
@@ -64,7 +65,8 @@ int buffer_create(struct buffer *buffer, size_t size, const char *name) {
 	return (buffer->data == NULL);
 }
 
-int buffer_from_file(struct buffer *buffer, const char *filename) {
+int buffer_from_file(struct buffer *buffer, const char *filename)
+{
 	FILE *fp = fopen(filename, "rb");
 	if (!fp) {
 		perror(filename);
@@ -88,7 +90,8 @@ int buffer_from_file(struct buffer *buffer, const char *filename) {
 	return 0;
 }
 
-int buffer_write_file(struct buffer *buffer, const char *filename) {
+int buffer_write_file(struct buffer *buffer, const char *filename)
+{
 	FILE *fp = fopen(filename, "wb");
 	if (!fp) {
 		perror(filename);
@@ -104,7 +107,8 @@ int buffer_write_file(struct buffer *buffer, const char *filename) {
 	return 0;
 }
 
-void buffer_delete(struct buffer *buffer) {
+void buffer_delete(struct buffer *buffer)
+{
 	assert(buffer);
 	if (buffer->name) {
 		free(buffer->name);

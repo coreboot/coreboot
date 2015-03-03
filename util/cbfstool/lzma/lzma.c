@@ -31,12 +31,12 @@ static void put_64(void *p, uint64_t value)
 
 /* Memory Allocation API */
 
-static void *SzAlloc(void *unused, size_t size)
+static void *SzAlloc(unused void *u, size_t size)
 {
 	return malloc(size);
 }
 
-static void SzFree(void *unused, void *address)
+static void SzFree(unused void *u, void *address)
 {
 	free(address);
 }
@@ -53,7 +53,7 @@ struct vector_t {
 
 static struct vector_t instream, outstream;
 
-static SRes Read(void *unused, void *buf, size_t *size)
+static SRes Read(unused void *u, void *buf, size_t *size)
 {
 	if ((instream.size - instream.pos) < *size)
 		*size = instream.size - instream.pos;
@@ -62,7 +62,7 @@ static SRes Read(void *unused, void *buf, size_t *size)
 	return SZ_OK;
 }
 
-static size_t Write(void *unused, const void *buf, size_t size)
+static size_t Write(unused void *u, const void *buf, size_t size)
 {
 	if(outstream.size - outstream.pos < size)
 		size = outstream.size - outstream.pos;

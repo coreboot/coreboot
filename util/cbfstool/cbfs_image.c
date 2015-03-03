@@ -69,16 +69,6 @@ static uint32_t align_up(uint32_t value, uint32_t align)
 	return value;
 }
 
-static uint32_t lookup_type_by_name(const struct typedesc_t *desc, const char *name,
-			     uint32_t default_value)
-{
-	int i;
-	for (i = 0; desc[i].name; i++)
-		if (strcmp(desc[i].name, name) == 0)
-			return desc[i].type;
-	return default_value;
-}
-
 static const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t type,
 				const char *default_value)
 {
@@ -89,19 +79,9 @@ static const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t t
 	return default_value;
 }
 
-uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value)
-{
-	return lookup_type_by_name(types_cbfs_entry, name, default_value);
-}
-
-const char *get_cbfs_entry_type_name(uint32_t type)
+static const char *get_cbfs_entry_type_name(uint32_t type)
 {
 	return lookup_name_by_type(types_cbfs_entry, type, "(unknown)");
-}
-
-uint32_t get_cbfs_compression(const char *name, uint32_t unknown)
-{
-	return lookup_type_by_name(types_cbfs_compression, name, unknown);
 }
 
 /* CBFS image */
@@ -186,7 +166,7 @@ void cbfs_get_header(struct cbfs_header *header, const void *src)
 }
 
 int cbfs_image_create(struct cbfs_image *image,
-		      uint32_t myarch,
+		      uint32_t architecture,
 		      size_t size,
 		      uint32_t align,
 		      struct buffer *bootblock,
@@ -253,7 +233,7 @@ int cbfs_image_create(struct cbfs_image *image,
 	image->header->bootblocksize = bootblock->size;
 	image->header->align = align;
 	image->header->offset = entries_offset;
-	image->header->architecture = myarch;
+	image->header->architecture = architecture;
 
 	header_loc = (image->buffer.data + header_offset);
 	cbfs_put_header(header_loc, image->header);

@@ -125,7 +125,6 @@ struct cbfs_payload {
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 /* cbfs_image.c */
 uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);
-const char *get_cbfs_entry_type_name(uint32_t type);
 uint32_t get_cbfs_compression(const char *name, uint32_t unknown);
 
 /* common.c */

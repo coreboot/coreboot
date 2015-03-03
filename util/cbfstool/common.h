@@ -31,7 +31,7 @@
 #endif
 #define ntohll(x)	(is_big_endian() ? (x) : swab64(x))
 #define htonll(x)	(is_big_endian() ? (x) : swab64(x))
-extern int is_big_endian(void);
+int is_big_endian(void);
 
 /* Message output */
 extern int verbose;
@@ -40,6 +40,12 @@ extern int verbose;
 #define LOG(x...) { fprintf(stderr, x); }
 #define INFO(x...) { if (verbose > 0) fprintf(stderr, "INFO: " x); }
 #define DEBUG(x...) { if (verbose > 1) fprintf(stderr, "DEBUG: " x); }
+
+/* Helpers */
+#define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
+#define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
+
+#define unused __attribute__((unused))
 
 /* Buffer and file I/O */
 struct buffer {
@@ -72,8 +78,7 @@ static inline void buffer_init(struct buffer *b, char *name, void *data,
 	b->size = size;
 }
 
-/*
- * Splice a buffer into another buffer. If size is zero the entire buffer
+/* Splice a buffer into another buffer. If size is zero the entire buffer
  * is spliced while if size is non-zero the buffer is spliced starting at
  * offset for size bytes. Note that it's up to caller to bounds check.
  */
@@ -115,8 +120,6 @@ void buffer_delete(struct buffer *buffer);
 const char *arch_to_string(uint32_t a);
 uint32_t string_to_arch(const char *arch_string);
 
-#define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
-
 typedef int (*comp_func_ptr) (char *, int, char *, int *);
 typedef enum { CBFS_COMPRESS_NONE = 0, CBFS_COMPRESS_LZMA = 1 } comp_algo;
 
@@ -144,10 +147,10 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 
 void print_supported_filetypes(void);
 
-#define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
 /* lzma/lzma.c */
 int do_lzma_compress(char *in, int in_len, char *out, int *out_len);
 int do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len);
+
 /* xdr.c */
 struct xdr {
 	uint8_t (*get8)(struct buffer *input);
@@ -160,7 +163,6 @@ struct xdr {
 	void (*put64)(struct buffer *input, uint64_t val);
 };
 
-/* xdr.c */
 extern struct xdr xdr_le, xdr_be;
 size_t bgets(struct buffer *input, void *output, size_t len);
 size_t bputs(struct buffer *b, const void *data, size_t len);

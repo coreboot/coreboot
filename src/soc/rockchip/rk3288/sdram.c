@@ -456,11 +456,11 @@ static struct rk3288_msch_regs * const rk3288_msch[2] = {
 					| ((1 << (3 + (ch))) << 16))
 
 /* GRF_SOC_CON2 */
-#define PUBL_LPDDR3_EN(ch, n) RK_CLRSETBITS(1 << (10 + (3 * (ch))), \
+#define PCTL_LPDDR3_ODT_EN(ch, n) RK_CLRSETBITS(1 << (10 + (3 * (ch))), \
 	(n) << (10 + (3 * (ch))))
-#define PCTL_LPDDR3_ODT_EN(ch, n) RK_CLRSETBITS(1 << (9 + (3 * (ch))), \
+#define PCTL_BST_DISABLE(ch, n) RK_CLRSETBITS(1 << (9 + (3 * (ch))), \
 	(n) << (9 + (3 * (ch))))
-#define PCTL_BST_DISABLE(ch, n) RK_CLRSETBITS(1 << (8 + (3 * (ch))), \
+#define PUBL_LPDDR3_EN(ch, n) RK_CLRSETBITS(1 << (8 + (3 * (ch))), \
 	(n) << (8 + (3 * (ch))))
 
 /* mr1 for ddr3 */
@@ -616,7 +616,7 @@ static void pctl_cfg(u32 channel,
 
 		writel(PUBL_LPDDR3_EN(channel, 1)
 		       | PCTL_BST_DISABLE(channel, 1)
-		       | PCTL_LPDDR3_ODT_EN(channel, 1),
+		       | PCTL_LPDDR3_ODT_EN(channel, sdram_params->odt),
 		       &rk3288_grf->soc_con2);
 
 		break;

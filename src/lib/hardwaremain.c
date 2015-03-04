@@ -460,11 +460,6 @@ void main(void)
 
 	post_code(POST_CONSOLE_READY);
 
-	printk(BIOS_NOTICE, "coreboot-%s%s %s booting...\n",
-		      coreboot_version, coreboot_extra_version, coreboot_build);
-
-	post_code(POST_CONSOLE_BOOT_MSG);
-
 	/* Handoff sleep type from romstage. */
 #if CONFIG_HAVE_ACPI_RESUME
 	acpi_is_wakeup();

@@ -47,8 +47,14 @@ void console_init(void)
 
 	console_hw_init();
 
-#if defined(__PRE_RAM__)
-	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s starting...\n",
-		      coreboot_version, coreboot_extra_version, coreboot_build);
+	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s %s starting...\n",
+		      coreboot_version, coreboot_extra_version, coreboot_build,
+#if defined(__BOOT_BLOCK__)
+		      "bootblock"
+#elif defined(__PRE_RAM__)
+		      "romstage"
+#else
+		      "ramstage"
 #endif
+		      );
 }

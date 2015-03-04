@@ -62,4 +62,9 @@ config CYGNUS_SDRAM_TEST_DDR
 config CYGNUS_PRINT_SHMOO_DEBUG
 	bool "Print debug info for shmoo"
 	default n
+
+config CYGNUS_GPIO_TEST
+	bool "Run a test on gpio"
+	default n
+
 endif

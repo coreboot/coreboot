@@ -44,6 +44,8 @@ romstage-y += shmoo_and28.c
 romstage-y += phy_reg_access.c
 romstage-y += ydc_ddr_bist.c
 romstage-y += timer.c
+romstage-y += gpio.c
+romstage-y += iomux.c
 
 ramstage-y += cbmem.c
 ramstage-y += i2c.c

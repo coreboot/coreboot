@@ -4,7 +4,7 @@ if PC80_SYSTEM
 
 config DRIVERS_PS2_KEYBOARD
 	bool "PS/2 keyboard init"
-	default y
+	default n
 	help
 	  Enable this option to initialize PS/2 keyboards found connected
 	  to the PS/2 port.

@@ -436,6 +436,7 @@ lint lint-stable:
 	rm -f $$LINTLOG
 
 gitconfig:
+	[ -d .git ]
 	mkdir -p .git/hooks
 	for hook in commit-msg pre-commit ; do                       \
 		if [ util/gitconfig/$$hook -nt .git/hooks/$$hook -o  \

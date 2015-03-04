@@ -35,25 +35,13 @@
 
 void main(void)
 {
-#if CONFIG_COLLECT_TIMESTAMPS
-	uint64_t start_romstage_time;
-	uint64_t before_dram_time;
-	uint64_t after_dram_time;
-	uint64_t base_time = timestamp_get();
-	start_romstage_time = timestamp_get();
-#endif
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	console_init();
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	before_dram_time = timestamp_get();
-#endif
-
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_init();
-
-#if CONFIG_COLLECT_TIMESTAMPS
-	after_dram_time = timestamp_get();
-#endif
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/* Now that DRAM is up, add mappings for it and DMA coherency buffer. */
 	mmu_config_range((uintptr_t)_dram/MiB,
@@ -62,15 +50,6 @@ void main(void)
 			 _dma_coherent_size/MiB, DCACHE_OFF);
 
 	cbmem_initialize_empty();
-
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamp_init(base_time);
-	timestamp_add(TS_START_ROMSTAGE, start_romstage_time);
-	timestamp_add(TS_BEFORE_INITRAM, before_dram_time);
-	timestamp_add(TS_AFTER_INITRAM, after_dram_time);
-
-	timestamp_add_now(TS_END_ROMSTAGE);
-#endif
 
 	run_ramstage();
 }

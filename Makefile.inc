@@ -17,11 +17,13 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+GIT:=$(shell [ -d "$(top)/.git" ] && command -v git)
+
 #######################################################################
 # misleadingly named, this is the coreboot version
-export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "$(command -v git)" ]; \
-       then git describe --dirty --always || git describe; \
-       else echo 4.0$(KERNELREVISION); fi)
+export KERNELVERSION := $(strip $(if $(GIT),\
+	$(shell git describe --dirty --always || git describe),\
+	4.0$(KERNELREVISION)))
 
 #######################################################################
 # Test for coreboot toolchain (except when explicitely not requested)
@@ -140,13 +142,11 @@ ramstage-c-ccopts+=-fprofile-arcs -ftest-coverage
 endif
 
 # try to fetch non-optional submodules if the source is under git
-forgetthis:=$(shell if [ -d "$(top)/.git" -a -f "$(command -v git)" ]; \
-	then git submodule update --init; fi)
+forgetthis:=$(if $(GIT),$(shell git submodule update --init))
 ifeq ($(CONFIG_USE_BLOBS),y)
 # this is necessary because 3rdparty is update=none, and so is ignored
 # unless explicitly requested and enabled through --checkout
-forgetthis:=$(shell if [ -d "$(top)/.git" -a -f "$(command -v git)" ]; \
-	then git submodule update --init --checkout 3rdparty; fi)
+forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty))
 endif
 
 bootblock-c-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__

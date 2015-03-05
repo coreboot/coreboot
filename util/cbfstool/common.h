@@ -26,20 +26,20 @@
 /* Endianess */
 #include "swab.h"
 #ifndef __APPLE__
-#define ntohl(x)	(is_big_endian() ? (x) : swab32(x))
-#define htonl(x)	(is_big_endian() ? (x) : swab32(x))
+#define ntohl(x)	(is_big_endian() ? (uint32_t)(x) : swab32(x))
+#define htonl(x)	(is_big_endian() ? (uint32_t)(x) : swab32(x))
 #endif
-#define ntohll(x)	(is_big_endian() ? (x) : swab64(x))
-#define htonll(x)	(is_big_endian() ? (x) : swab64(x))
+#define ntohll(x)	(is_big_endian() ? (uint64_t)(x) : swab64(x))
+#define htonll(x)	(is_big_endian() ? (uint64_t)(x) : swab64(x))
 int is_big_endian(void);
 
 /* Message output */
 extern int verbose;
-#define ERROR(x...) { fprintf(stderr, "E: " x); }
-#define WARN(x...) { fprintf(stderr, "W: " x); }
-#define LOG(x...) { fprintf(stderr, x); }
-#define INFO(x...) { if (verbose > 0) fprintf(stderr, "INFO: " x); }
-#define DEBUG(x...) { if (verbose > 1) fprintf(stderr, "DEBUG: " x); }
+#define ERROR(...) { fprintf(stderr, "E: " __VA_ARGS__); }
+#define WARN(...) { fprintf(stderr, "W: " __VA_ARGS__); }
+#define LOG(...) { fprintf(stderr, __VA_ARGS__); }
+#define INFO(...) { if (verbose > 0) fprintf(stderr, "INFO: " __VA_ARGS__); }
+#define DEBUG(...) { if (verbose > 1) fprintf(stderr, "DEBUG: " __VA_ARGS__); }
 
 /* Helpers */
 #define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
@@ -135,8 +135,8 @@ comp_func_ptr compression_function(comp_algo algo);
 uint64_t intfiletype(const char *name);
 
 /* cbfs-mkpayload.c */
-int parse_elf_to_payload(const struct buffer *input,
-			 struct buffer *output, uint32_t arch, comp_algo algo);
+int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
+			 comp_algo algo);
 int parse_fv_to_payload(const struct buffer *input,
 			 struct buffer *output, comp_algo algo);
 int parse_bzImage_to_payload(const struct buffer *input,
@@ -149,7 +149,7 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 				 comp_algo algo);
 /* cbfs-mkstage.c */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       uint32_t arch, comp_algo algo, uint32_t *location,
+		       comp_algo algo, uint32_t *location,
 		       const char *ignore_section);
 
 void print_supported_filetypes(void);

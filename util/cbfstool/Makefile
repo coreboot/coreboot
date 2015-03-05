@@ -1,50 +1,61 @@
-obj ?= $(shell pwd)
+obj ?= .
 
 HOSTCC ?= $(CC)
-CFLAGS ?= -g
-CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS += -Wstrict-aliasing -Wshadow -Werror
+
+CFLAGS += -Og -g3
+CFLAGS += -std=c99 -Werror -Wall -Wextra
+CFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
+CFLAGS += -Wstrict-prototypes -Wwrite-strings
+CPPFLAGS += -D_POSIX_C_SOURCE=200809L # strdup() from string.h
+LINKFLAGS += -g3
 
 CBFSTOOL_BINARY:=$(obj)/cbfstool
-
-CBFSTOOL_COMMON:=cbfstool.o common.o cbfs_image.o compress.o fit.o
+CBFSTOOL_COMMON:=common.o cbfs_image.o compress.o fit.o
 CBFSTOOL_COMMON+=elfheaders.o cbfs-mkstage.o cbfs-mkpayload.o xdr.o
+CBFSTOOL_COMMON+=linux_trampoline.o cbfs-payload-linux.o
 # LZMA
 CBFSTOOL_COMMON+=lzma/lzma.o
 CBFSTOOL_COMMON+=lzma/C/LzFind.o  lzma/C/LzmaDec.o  lzma/C/LzmaEnc.o
-
-CBFSTOOL_COMMON+=linux_trampoline.o cbfs-payload-linux.o
 
 CBFSTOOL_COMMON:=$(addprefix $(obj)/,$(CBFSTOOL_COMMON))
 
 
 RMODTOOL_BINARY:=$(obj)/rmodtool
-RMODTOOL_COMMON:=rmodtool.o rmodule.o common.o elfheaders.o xdr.o
+RMODTOOL_COMMON:=rmodule.o common.o elfheaders.o xdr.o
 
 RMODTOOL_COMMON:=$(addprefix $(obj)/,$(RMODTOOL_COMMON))
 
-all: dep $(CBFSTOOL_BINARY) $(RMODTOOL_BINARY)
+.PHONY: all
+all: .dependencies $(CBFSTOOL_BINARY) $(RMODTOOL_BINARY)
 
+$(obj)/%: $(obj)/%.o
+	mkdir -p $(dir $@)
+	$(HOSTCC) $(LINKFLAGS) -o $@ $^ $(LDLIBS)
 $(obj)/%.o: %.c
-	$(HOSTCC) $(CFLAGS) -c -o $@ $<
+	mkdir -p $(dir $@)
+	$(HOSTCC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
+.PHONY: clean
 clean:
-	rm -f $(CBFSTOOL_COMMON) $(CBFSTOOL_BINARY)
-	rm -f $(RMODTOOL_COMMON) $(RMODTOOL_BINARY)
+	$(RM) $(CBFSTOOL_COMMON) $(CBFSTOOL_BINARY).o $(CBFSTOOL_BINARY)
+	$(RM) $(RMODTOOL_COMMON) $(RMODTOOL_BINARY).o $(RMODTOOL_BINARY)
+.PHONY: distclean
+distclean: clean
+	$(RM) .dependencies
 
 tags:
 	ctags *.[ch]
 
-$(obj)/cbfstool:$(CBFSTOOL_COMMON)
-	$(HOSTCC) $(CFLAGS) -o $@ $^
+.dependencies:
+	@$(HOSTCC) $(CPPFLAGS) $(CFLAGS) -MM -MG *.c > $@
+	@$(HOSTCC) $(CPPFLAGS) $(CFLAGS) -MM lzma/*.c >> $@
+	@$(HOSTCC) $(CPPFLAGS) $(CFLAGS) -MM lzma/C/*.c >> $@
+	@sed -i 's|.*:.*|$$(obj)/&|' $@
 
-$(obj)/rmodtool:$(RMODTOOL_COMMON)
-	$(HOSTCC) $(CFLAGS) -o $@ $^
+$(CBFSTOOL_BINARY): $(CBFSTOOL_COMMON)
+$(RMODTOOL_BINARY): $(RMODTOOL_COMMON)
 
-dep:
-	@$(HOSTCC) $(CFLAGS) -MM *.c > .dependencies
-	@$(HOSTCC) $(CFLAGS) -MM lzma/*.c >> .dependencies
-	@$(HOSTCC) $(CFLAGS) -MM lzma/C/*.c >> .dependencies
+# Tolerate lzma sdk warnings
+$(obj)/lzma/C/LzmaEnc.o: CFLAGS += -Wno-sign-compare -Wno-cast-qual
 
 -include .dependencies

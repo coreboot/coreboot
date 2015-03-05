@@ -142,6 +142,7 @@ int do_lzma_compress(char *in, int in_len, char *out, int *out_len)
 	Write(&os, propsEncoded, LZMA_PROPS_SIZE+8);
 
 	res = LzmaEnc_Encode(p, &os, &is, 0, &LZMAalloc, &LZMAalloc);
+	LzmaEnc_Destroy(p, &LZMAalloc, &LZMAalloc);
 	if (res != SZ_OK) {
 		ERROR("LZMA: LzmaEnc_Encode failed %d.\n", res);
 		return -1;

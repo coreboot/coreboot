@@ -95,7 +95,7 @@ static Elf64_Shdr *find_ignored_section_header(struct parsed_elf *pelf,
  * works for all elf files, not just the restricted set.
  */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       uint32_t arch, comp_algo algo, uint32_t *location,
+		       comp_algo algo, uint32_t *location,
 		       const char *ignore_section)
 {
 	struct parsed_elf pelf;
@@ -245,7 +245,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	 */
 	if (compress(buffer, data_end - data_start,
 		     (output->data + sizeof(struct cbfs_stage)),
-		     &outlen) < 0 || outlen > data_end - data_start) {
+		     &outlen) < 0 || (unsigned)outlen > data_end - data_start) {
 		WARN("Compression failed or would make the data bigger "
 		     "- disabled.\n");
 		memcpy(output->data + sizeof(struct cbfs_stage),

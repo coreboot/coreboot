@@ -588,12 +588,10 @@ void parsed_elf_destroy(struct parsed_elf *pelf)
  */
 int
 elf_headers(const struct buffer *pinput,
-	    uint32_t arch,
 	    Elf64_Ehdr *ehdr,
 	    Elf64_Phdr **pphdr,
 	    Elf64_Shdr **pshdr)
 {
-
 	struct parsed_elf pelf;
 	int flags;
 

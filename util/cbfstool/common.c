@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -36,7 +37,7 @@ int verbose = 0;
 int is_big_endian(void)
 {
 	static const uint32_t inttest = 0x12345678;
-	uint8_t inttest_lsb = *(uint8_t *)&inttest;
+	const uint8_t inttest_lsb = *(const uint8_t *)&inttest;
 	if (inttest_lsb == 0x12) {
 		return 1;
 	}
@@ -73,7 +74,7 @@ int buffer_from_file(struct buffer *buffer, const char *filename)
 		return -1;
 	}
 	buffer->size = get_file_size(fp);
-	if (buffer->size == -1) {
+	if (buffer->size == -1u) {
 		fprintf(stderr, "could not determine size of %s\n", filename);
 		fclose(fp);
 		return -1;

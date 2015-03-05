@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -104,8 +105,10 @@ static int cbfs_add_integer_component(const char *cbfs_name,
 		goto done;
 	}
 
-	if (cbfs_add_entry(&image, &buffer, name, CBFS_COMPONENT_RAW, param.baseaddress) != 0) {
-		ERROR("Failed to add %llu into ROM image as '%s'.\n", (long long unsigned)u64val, name);
+	if (cbfs_add_entry(&image, &buffer, name, CBFS_COMPONENT_RAW, offset) !=
+									0) {
+		ERROR("Failed to add %llu into ROM image as '%s'.\n",
+					(long long unsigned)u64val, name);
 		goto done;
 	}
 
@@ -189,8 +192,8 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset)
 {
 	struct buffer output;
 	int ret;
-	ret = parse_elf_to_stage(buffer, &output, param.arch, param.algo,
-				 offset, param.ignore_section);
+	ret = parse_elf_to_stage(buffer, &output, param.algo, offset,
+							param.ignore_section);
 	if (ret != 0)
 		return -1;
 	buffer_delete(buffer);
@@ -205,7 +208,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	struct buffer output;
 	int ret;
 	/* per default, try and see if payload is an ELF binary */
-	ret = parse_elf_to_payload(buffer, &output, param.arch, param.algo);
+	ret = parse_elf_to_payload(buffer, &output, param.algo);
 
 	/* If it's not an ELF, see if it's a UEFI FV */
 	if (ret != 0)
@@ -641,6 +644,11 @@ static void usage(char *name)
 	     " update-fit -n MICROCODE_BLOB_NAME -x EMTPY_FIT_ENTRIES\n  "
 			"Updates the FIT table with microcode entries\n"
 	     "\n"
+	     "OFFSETs:\n"
+	     "  Numbers accompanying -b, -H, and -o switches may be provided\n"
+	     "  in two possible formats: if their value is greater than\n"
+	     "  0x80000000, they are interpreted as a top-aligned x86 memory\n"
+	     "  address; otherwise, they are treated as an offset into flash.\n"
 	     "ARCHes:\n"
 	     "  arm64, arm, mips, x86\n"
 	     "TYPEs:\n", name, name

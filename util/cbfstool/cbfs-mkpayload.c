@@ -67,8 +67,8 @@ void xdr_get_seg(struct cbfs_payload_segment *out,
 	out->mem_len = xdr_be.get32(&inheader);
 }
 
-int parse_elf_to_payload(const struct buffer *input,
-			 struct buffer *output, uint32_t arch, comp_algo algo)
+int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
+			 comp_algo algo)
 {
 	Elf64_Phdr *phdr;
 	Elf64_Ehdr ehdr;
@@ -87,7 +87,7 @@ int parse_elf_to_payload(const struct buffer *input,
 	if (!compress)
 		return -1;
 
-	if (elf_headers(input, arch, &ehdr, &phdr, &shdr) < 0)
+	if (elf_headers(input, &ehdr, &phdr, &shdr) < 0)
 		return -1;
 
 	DEBUG("start: parse_elf_to_payload\n");
@@ -325,7 +325,7 @@ int parse_fv_to_payload(const struct buffer *input,
 	while (fh->file_type == FILETYPE_PAD) {
 		unsigned long offset = (fh->size[2] << 16) | (fh->size[1] << 8) | fh->size[0];
 		ERROR("skipping %lu bytes of FV padding\n", offset);
-		fh = (ffs_file_header_t *)(((void*)fh) + offset);
+		fh = (ffs_file_header_t *)(((uintptr_t)fh) + offset);
 	}
 	if (fh->file_type != FILETYPE_SEC) {
 		ERROR("Not a usable UEFI firmware volume.\n");
@@ -337,7 +337,7 @@ int parse_fv_to_payload(const struct buffer *input,
 	while (cs->section_type == SECTION_RAW) {
 		unsigned long offset = (cs->size[2] << 16) | (cs->size[1] << 8) | cs->size[0];
 		ERROR("skipping %lu bytes of section padding\n", offset);
-		cs = (common_section_header_t *)(((void*)cs) + offset);
+		cs = (common_section_header_t *)(((uintptr_t)cs) + offset);
 	}
 	if (cs->section_type != SECTION_PE32) {
 		ERROR("Not a usable UEFI firmware volume.\n");
@@ -355,7 +355,7 @@ int parse_fv_to_payload(const struct buffer *input,
 	dh_offset = (unsigned long)dh - (unsigned long)input->data;
 	DEBUG("dos header offset = %x\n", dh_offset);
 
-	ch = (coff_header_t *)(((void *)dh)+dh->e_lfanew);
+	ch = (coff_header_t *)(((uintptr_t)dh)+dh->e_lfanew);
 
 	if (ch->machine == MACHINE_TYPE_X86) {
 		pe_opt_header_32_t *ph;

@@ -17,11 +17,18 @@ cbfsobj += LzmaEnc.o
 cbfsobj += linux_trampoline.o
 cbfsobj += cbfs-payload-linux.o
 
+rmodobj :=
 rmodobj += rmodtool.o
 rmodobj += rmodule.o
 rmodobj += common.o
 rmodobj += elfheaders.o
 rmodobj += xdr.o
+
+TOOLCFLAGS ?= -std=c99 -Werror -Wall -Wextra
+TOOLCFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
+TOOLCFLAGS += -Wstrict-prototypes -Wwrite-strings
+TOOLCPPFLAGS ?= -D_POSIX_C_SOURCE=200809L # strdup() from string.h
+TOOLLINKFLAGS ?=
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLFLAGS+=-mno-ms-bitfields
@@ -29,20 +36,23 @@ endif
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(TOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(TOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(TOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(TOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
+	$(HOSTCC) $(TOOLLINKFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 
 $(objutil)/cbfstool/rmodtool: $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(TOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(rmodobj))
+	$(HOSTCC) $(TOOLLINKFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(rmodobj))
+
+# Tolerate lzma sdk warnings
+$(objutil)/cbfstool/LzmaEnc.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual

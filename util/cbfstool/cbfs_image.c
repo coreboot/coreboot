@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "common.h"
 #include "cbfs_image.h"
@@ -83,7 +84,7 @@ static const char *get_cbfs_entry_type_name(uint32_t type)
 
 /* CBFS image */
 
-static int cbfs_calculate_file_header_size(const char *name)
+static size_t cbfs_calculate_file_header_size(const char *name)
 {
 	return (sizeof(struct cbfs_file) +
 		align_up(strlen(name) + 1, CBFS_FILENAME_ALIGN));
@@ -146,11 +147,11 @@ static void cbfs_decode_payload_segment(struct cbfs_payload_segment *output,
 	assert(seg.size == 0);
 }
 
-void cbfs_get_header(struct cbfs_header *header, const void *src)
+void cbfs_get_header(struct cbfs_header *header, void *src)
 {
 	struct buffer outheader;
 
-	outheader.data = (void *)src;	/* We're not modifying the data */
+	outheader.data = src;	/* We're not modifying the data */
 	outheader.size = 0;
 
 	header->magic = xdr_be.get32(&outheader);
@@ -167,9 +168,9 @@ int cbfs_image_create(struct cbfs_image *image,
 		      size_t size,
 		      uint32_t align,
 		      struct buffer *bootblock,
-		      int32_t bootblock_offset,
-		      int32_t header_offset,
-		      int32_t entries_offset)
+		      uint32_t bootblock_offset,
+		      uint32_t header_offset,
+		      uint32_t entries_offset)
 {
 	struct cbfs_header header;
 	struct cbfs_file *entry;
@@ -191,11 +192,11 @@ int cbfs_image_create(struct cbfs_image *image,
 
 	// Adjust legcay top-aligned address to ROM offset.
 	if (IS_TOP_ALIGNED_ADDRESS(entries_offset))
-		entries_offset += (int32_t)size;
+		entries_offset = size + (int32_t)entries_offset;
 	if (IS_TOP_ALIGNED_ADDRESS(bootblock_offset))
-		bootblock_offset += (int32_t)size;
+		bootblock_offset = size + (int32_t)bootblock_offset;
 	if (IS_TOP_ALIGNED_ADDRESS(header_offset))
-		header_offset += (int32_t) size;
+		header_offset = size + (int32_t)header_offset;
 
 	DEBUG("cbfs_create_image: (real offset) bootblock=0x%x, "
 	      "header=0x%x, entries_offset=0x%x\n",
@@ -358,7 +359,8 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 		dst_entry = (struct cbfs_file *)(
 			(uintptr_t)dst_entry + align_up(entry_size, align));
 
-		if (((char *)dst_entry - image->buffer.data) >= copy_end) {
+		if ((size_t)((char *)dst_entry - image->buffer.data) >=
+								copy_end) {
 			ERROR("Ran out of room in copy region.\n");
 			return 1;
 		}
@@ -486,7 +488,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		uint32_t theromsize = image->header->romsize;
 		INFO("Converting top-aligned address 0x%x to offset: 0x%x\n",
 		     content_offset, content_offset + theromsize);
-		content_offset += theromsize;
+		content_offset = theromsize + (int32_t)content_offset;
 	}
 
 	// Merge empty entries.
@@ -614,12 +616,14 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 
 	buffer.data = CBFS_SUBHEADER(entry);
 	buffer.size = ntohl(entry->len);
-	buffer.name = (char *)"(cbfs_export_entry)";
+	buffer.name = strdup("(cbfs_export_entry)");
 	if (buffer_write_file(&buffer, filename) != 0) {
 		ERROR("Failed to write %s into %s.\n",
 		      entry_name, filename);
+		free(buffer.name);
 		return -1;
 	}
+	free(buffer.name);
 	INFO("Successfully dumped the file to: %s\n", filename);
 	return 0;
 }
@@ -793,7 +797,7 @@ int cbfs_print_directory(struct cbfs_image *image)
 }
 
 int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
-			   void *arg)
+			   unused void *arg)
 {
 	struct cbfs_file *next;
 	uint32_t type, addr, last_addr;

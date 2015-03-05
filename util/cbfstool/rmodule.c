@@ -15,6 +15,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,9 +29,9 @@ struct rmod_context;
 struct arch_ops {
 	int arch;
 	/* Determine if relocation is a valid type for the architecture. */
-	int (*valid_type)(struct rmod_context *ctx, Elf64_Rela *rel);
+	int (*valid_type)(Elf64_Rela *rel);
 	/* Determine if relocation should be emitted. */
-	int (*should_emit)(struct rmod_context *ctx, Elf64_Rela *rel);
+	int (*should_emit)(Elf64_Rela *rel);
 };
 
 struct rmod_context {
@@ -62,7 +63,7 @@ struct rmod_context {
 /*
  * Architecture specific support operations.
  */
-static int valid_reloc_386(struct rmod_context *ctx, Elf64_Rela *rel)
+static int valid_reloc_386(Elf64_Rela *rel)
 {
 	int type;
 
@@ -72,7 +73,7 @@ static int valid_reloc_386(struct rmod_context *ctx, Elf64_Rela *rel)
 	return (type == R_386_32 || type == R_386_PC32);
 }
 
-static int should_emit_386(struct rmod_context *ctx, Elf64_Rela *rel)
+static int should_emit_386(Elf64_Rela *rel)
 {
 	int type;
 
@@ -82,7 +83,7 @@ static int should_emit_386(struct rmod_context *ctx, Elf64_Rela *rel)
 	return (type == R_386_32);
 }
 
-static int valid_reloc_arm(struct rmod_context *ctx, Elf64_Rela *rel)
+static int valid_reloc_arm(Elf64_Rela *rel)
 {
 	int type;
 
@@ -94,7 +95,7 @@ static int valid_reloc_arm(struct rmod_context *ctx, Elf64_Rela *rel)
 		type == R_ARM_CALL || type == R_ARM_JUMP24);
 }
 
-static int should_emit_arm(struct rmod_context *ctx, Elf64_Rela *rel)
+static int should_emit_arm(Elf64_Rela *rel)
 {
 	int type;
 
@@ -104,7 +105,7 @@ static int should_emit_arm(struct rmod_context *ctx, Elf64_Rela *rel)
 	return (type == R_ARM_ABS32);
 }
 
-static int valid_reloc_aarch64(struct rmod_context *ctx, Elf64_Rela *rel)
+static int valid_reloc_aarch64(Elf64_Rela *rel)
 {
 	int type;
 
@@ -122,7 +123,7 @@ static int valid_reloc_aarch64(struct rmod_context *ctx, Elf64_Rela *rel)
 		type == R_AARCH64_ADR_PREL_LO21);
 }
 
-static int should_emit_aarch64(struct rmod_context *ctx, Elf64_Rela *rel)
+static int should_emit_aarch64(Elf64_Rela *rel)
 {
 	int type;
 
@@ -176,13 +177,13 @@ static int for_each_reloc(struct rmod_context *ctx, int do_emit)
 		for (j = 0; j < nrelocs; j++) {
 			Elf64_Rela *r = &relocs[j];
 
-			if (!ctx->ops->valid_type(ctx, r)) {
+			if (!ctx->ops->valid_type(r)) {
 				ERROR("Invalid reloc type: %u\n",
 				      (unsigned int)ELF64_R_TYPE(r->r_info));
 				return -1;
 			}
 
-			if (ctx->ops->should_emit(ctx, r)) {
+			if (ctx->ops->should_emit(r)) {
 				int n = ctx->nrelocs;
 				if (do_emit)
 					ctx->emitted_relocs[n] = r->r_offset;
@@ -306,7 +307,7 @@ static int vaddr_cmp(const void *a, const void *b)
 
 static int collect_relocations(struct rmod_context *ctx)
 {
-	int nrelocs;
+	Elf64_Xword nrelocs;
 
 	/*
 	 * The relocs array in the pelf should only contain relocations that
@@ -317,7 +318,7 @@ static int collect_relocations(struct rmod_context *ctx)
 		return -1;
 
 	nrelocs = ctx->nrelocs;
-	INFO("%d relocations to be emitted.\n", nrelocs);
+	INFO("%" PRIu64 " relocations to be emitted.\n", nrelocs);
 	if (!nrelocs)
 		return 0;
 
@@ -457,7 +458,6 @@ static int
 write_elf(const struct rmod_context *ctx, const struct buffer *in,
           struct buffer *out)
 {
-	int i;
 	int ret;
 	int bit64;
 	size_t loc;
@@ -556,7 +556,7 @@ write_elf(const struct rmod_context *ctx, const struct buffer *in,
 	ctx->xdr->put32(&rmod_header, 0);
 
 	/* Write the relocations. */
-	for (i = 0; i < ctx->nrelocs; i++) {
+	for (unsigned i = 0; i < ctx->nrelocs; i++) {
 		if (bit64)
 			ctx->xdr->put64(&relocs, ctx->emitted_relocs[i]);
 		else

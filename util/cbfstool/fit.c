@@ -48,7 +48,7 @@ struct fit_entry {
 
 struct fit_table {
 	struct fit_entry header;
-	struct fit_entry entries[0];
+	struct fit_entry entries[];
 } __attribute__ ((packed));
 
 struct microcode_header {

@@ -35,7 +35,7 @@ struct cbfs_image {
  * to cbfs format, i.e. big-endian. */
 void cbfs_put_header(void *dest, const struct cbfs_header *header);
 /* Or deserialize into host-native format */
-void cbfs_get_header(struct cbfs_header *header, const void *src);
+void cbfs_get_header(struct cbfs_header *header, void *src);
 
 /* Creates an empty CBFS image by given size, and description to its content
  * (bootblock, align, header location, starting offset of CBFS entries.
@@ -47,9 +47,9 @@ int cbfs_image_create(struct cbfs_image *image,
 		      size_t size,
 		      uint32_t align,
 		      struct buffer *bootblock,
-		      int32_t bootblock_offset,
-		      int32_t header_offset,
-		      int32_t entries_offset);
+		      uint32_t bootblock_offset,
+		      uint32_t header_offset,
+		      uint32_t entries_offset);
 
 /* Loads a CBFS image from file. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_from_file(struct cbfs_image *image,

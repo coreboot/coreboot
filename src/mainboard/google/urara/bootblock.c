@@ -51,13 +51,13 @@ typedef enum {
 #define SPIM1_D3_MFIO			7
 #define SPIM1_CS0_MFIO			0
 
-/* MFIO definitions for I2C0 */
-#define I2C0_DATA_MFIO			28
-#define I2C0_CLK_MFIO			29
-#define I2C0_DATA_FUNCTION_OFFSET	20
-#define I2C0_CLK_FUNCTION_OFFSET	21
-#define I2C0_DATA_FUNCTION_MASK		0x1
-#define I2C0_CLK_FUNCTION_MASK		0x1
+/* MFIO definitions for I2C */
+#define I2C_DATA_MFIO(i)		(28 + (2*(i)))
+#define I2C_CLK_MFIO(i)			(29 + (2*(i)))
+#define I2C_DATA_FUNCTION_OFFSET(i)	(20 + (2*(i)))
+#define I2C_CLK_FUNCTION_OFFSET(i)	(21 + (2*(i)))
+#define I2C_DATA_FUNCTION_MASK		0x1
+#define I2C_CLK_FUNCTION_MASK		0x1
 
 static void pad_drive_strength(u32 pad, drive_strength strength)
 {
@@ -136,17 +136,17 @@ static void spim1_mfio_setup(void)
 	pad_drive_strength(SPIM1_MCLK_MFIO, DRIVE_STRENGTH_12mA);
 }
 
-static void i2c0_mfio_setup(void)
+static void i2c_mfio_setup(int interface)
 {
 	u32 reg, mfio_mask;
 
+	assert(interface < 4);
 	/*
-	 * Disable GPIO for I2C0 MFIOs
-	 * All UART MFIOs have MFIO/16 = 1, therefore we use GPIO pad 1
+	 * Disable GPIO for I2C MFIOs
 	 */
-	reg = read32(GPIO_BIT_EN_ADDR(1));
-	mfio_mask =  1 << (I2C0_DATA_MFIO % 16);
-	mfio_mask |= 1 << (I2C0_CLK_MFIO % 16);
+	reg = read32(GPIO_BIT_EN_ADDR(I2C_DATA_MFIO(interface) / 16));
+	mfio_mask =  1 << (I2C_DATA_MFIO(interface) % 16);
+	mfio_mask |= 1 << (I2C_CLK_MFIO(interface) % 16);
 	/* Clear relevant bits */
 	reg &= ~mfio_mask;
 	/*
@@ -154,15 +154,21 @@ static void i2c0_mfio_setup(void)
 	 * in order to be able to modify the chosen pins
 	 */
 	reg |= mfio_mask << 16;
-	write32(GPIO_BIT_EN_ADDR(1), reg);
+	write32(GPIO_BIT_EN_ADDR(I2C_DATA_MFIO(interface) / 16), reg);
 
-	/* Set bits to 0 (clear) which is the primary function
+	/* for I2C0 and I2C1:
+	 * Set bits to 0 (clear) which is the primary function
 	 * for these MFIOs; those bits will all be set to 1 by
-	 * default
+	 * default.
+	 * There is no need to do that for I2C2 and I2C3
 	 */
+	if (interface > 1)
+		return;
 	reg = read32(PADS_FUNCTION_SELECT0_ADDR);
-	reg &= ~(I2C0_DATA_FUNCTION_MASK << I2C0_DATA_FUNCTION_OFFSET);
-	reg &= ~(I2C0_CLK_FUNCTION_MASK << I2C0_CLK_FUNCTION_OFFSET);
+	reg &= ~(I2C_DATA_FUNCTION_MASK <<
+		I2C_DATA_FUNCTION_OFFSET(interface));
+	reg &= ~(I2C_CLK_FUNCTION_MASK <<
+		I2C_CLK_FUNCTION_OFFSET(interface));
 	write32(PADS_FUNCTION_SELECT0_ADDR, reg);
 }
 
@@ -218,6 +224,6 @@ static void bootblock_mainboard_init(void)
 		/* Disable GPIO on the peripheral lines */
 		uart1_mfio_setup();
 		spim1_mfio_setup();
-		i2c0_mfio_setup();
+		i2c_mfio_setup(0);
 	}
 }

@@ -79,7 +79,7 @@ Fam10 Bios and Kernel Development Guide #31116, rev 3.48, April 22, 2010
 11.- finalPstateChange() from init_fidvid_Stage2 (BKDG says just "may", anyway)
 
 12.- generate ACPI for p-states.
-     generated in powernow_acpi.c pstates_algorithm()
+     generated in powernow_acpi.c amd_generate_powernow()
 
 "must also be completed"
 

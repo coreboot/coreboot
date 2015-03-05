@@ -79,7 +79,7 @@ static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_p
 * processor combination is installed.  If it does break please fix the
 * code in the proper locations!
 */
-static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
 	u8 processor_brand[49];
 	u32 *v;
@@ -260,17 +260,12 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			    Pstate_latency[index]);
 	}
 
+	char pscope[] = "\\_PR";
+
+	acpigen_write_scope(pscope);
 	for (index = 0; index < cmp_cap; index++)
 		write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_power,
 				Pstate_latency, Pstate_control, Pstate_status,
 				index, pcontrol_blk, plen, onlyBSP);
-}
-
-void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
-{
-	char pscope[] = "\\_PR";
-
-	acpigen_write_scope(pscope);
-	pstates_algorithm(pcontrol_blk, plen, onlyBSP);
 	acpigen_pop_len();
 }

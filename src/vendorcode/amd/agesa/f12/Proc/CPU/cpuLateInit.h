@@ -101,7 +101,7 @@ AGESA_FORWARD_DECLARATION (PROC_FAMILY_TABLE);
 #define NorthbridgeCapabilities 0xE8
 #define DRAMBase0 0x40
 #define MMIOBase0 0x80
-#define TOP_MEM 0xC001001A
+#define TOP_MEM 0xC001001Aul
 #define LOW_NODE_DEVICEID 24
 #define LOW_APICID 0
 

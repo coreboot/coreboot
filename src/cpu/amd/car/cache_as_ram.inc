@@ -468,8 +468,8 @@ all_mtrr_msrs:
 	.long	IORRMask_MSR(1)
 
 	/* Top of memory MTRR MSRs */
-	.long	TOP_MEM_MSR
-	.long	TOP_MEM2_MSR
+	.long	TOP_MEM
+	.long	TOP_MEM2
 
 	.long	0x000 /* NULL, end of table */
 

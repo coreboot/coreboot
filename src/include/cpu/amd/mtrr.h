@@ -25,13 +25,12 @@
 #define IORRBase_MSR(reg) (0xC0010016 + 2 * (reg))
 #define IORRMask_MSR(reg) (0xC0010016 + 2 * (reg) + 1)
 
-#define TOP_MEM_MSR			0xC001001A
-#define TOP_MEM2_MSR			0xC001001D
-#ifndef TOP_MEM
-  #define TOP_MEM			TOP_MEM_MSR
-#endif
-#ifndef TOP_MEM2
-  #define TOP_MEM2			TOP_MEM2_MSR
+#if defined(__ASSEMBLER__)
+#define TOP_MEM		0xC001001A
+#define TOP_MEM2	0xC001001D
+#else
+#define TOP_MEM		0xC001001Aul
+#define TOP_MEM2	0xC001001Dul
 #endif
 
 #define TOP_MEM_MASK			0x007fffff

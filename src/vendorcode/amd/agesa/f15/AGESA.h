@@ -1418,14 +1418,8 @@ typedef enum {
 
 ///< CPU MSR Register definitions ------------------------------------------
 #define SYS_CFG     0xC0010010
-//#define TOP_MEM     0xC001001A
-//#define TOP_MEM2    0xC001001D
-#ifndef TOP_MEM
-  #define TOP_MEM			0xC001001A
-#endif
-#ifndef TOP_MEM2
-  #define TOP_MEM2			0xC001001D
-#endif
+#define TOP_MEM		0xC001001Aul
+#define TOP_MEM2	0xC001001Dul
 #define HWCR        0xC0010015
 #define NB_CFG      0xC001001F
 

@@ -119,7 +119,7 @@
 #define DDRPHY_BISTUDPR_OFFSET		(0x0120)
 #define DDRPHY_DLLGCR_OFFSET		(0x0010)
 
-#define BL8		1
+#define BL8				0
 
 #define DDR_TIMEOUT_VALUE_US		100000
 

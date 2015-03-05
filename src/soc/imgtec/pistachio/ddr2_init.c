@@ -240,7 +240,7 @@ int init_ddr2(void)
 	 * 15:13 RSVD
 	 * 31:16 Reserved
 	 */
-	write32(DDR_PHY + DDRPHY_EMR_OFFSET, 0x00000004);
+	write32(DDR_PHY + DDRPHY_EMR_OFFSET, 0x00000044);
 	/* MR2 : EMR2 Register
 	 * Generate to use with PHY and PCTL
 	 * 2:0 PASR, NA 000

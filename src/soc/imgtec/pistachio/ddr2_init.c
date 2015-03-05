@@ -120,7 +120,6 @@
 #define DDRPHY_DLLGCR_OFFSET		(0x0010)
 
 #define BL8		1
-#define UMCTL_INIT	0
 
 #define DDR_TIMEOUT_VALUE_US		100000
 
@@ -143,9 +142,6 @@ static int wait_for_completion(u32 reg, u32 exp_val)
 int init_ddr2(void)
 {
 
-	u32 exp_val;
-	u32 mr, md_dllrst, emr, emr2, emr3;
-
 	/*
 	 * Reset the AXI bridge and DDR Controller in case any spurious
 	 * writes have already happened to DDR - note must be done together,
@@ -153,17 +149,14 @@ int init_ddr2(void)
 	 */
 	write32(TOPLEVEL_REGS + DDR_CTRL_OFFSET, 0x00000000);
 	write32(TOPLEVEL_REGS + DDR_CTRL_OFFSET, 0x0000000F);
-
 	/*
 	 * Dummy read to fence the access between the reset above
 	 * and thw DDR controller writes below
 	 */
 	read32(TOPLEVEL_REGS + DDR_CTRL_OFFSET);
-
 	/* Timings for 400MHz
 	 * therefore 200MHz (5ns) uMCTL (Internal) Rate
 	 */
-
 	/* TOGCNT1U: Toggle Counter 1U Register: 1us 200h C8h */
 	write32(DDR_PCTL + DDR_PCTL_TOGCNT1U_OFFSET, 0x000000C8);
 	/* TINIT: t_init Timing Register: at least 200us 200h C8h */
@@ -221,9 +214,8 @@ int init_ddr2(void)
 	 * 31 TPD LPDDR2 0
 	 */
 	write32(DDR_PHY + DDRPHY_DCR_OFFSET, 0x0000000A);
-	/* Generate to use with PHY and PCTL */
-	md_dllrst = 0x0B62 | (BL8 ? 0x1 : 0x0);
 	/* Generate to use with PHY and PCTL
+	 * MR0 : MR Register, bits 12:0 imported dfrom MR
 	 * 2:0 BL 8 011
 	 * 3 BT Sequential 0 Interleaved 1 = 0
 	 * 6:4 CL 6
@@ -231,46 +223,34 @@ int init_ddr2(void)
 	 * 8 DLL Reset 1 (self Clearing)
 	 * 11:9 WR 15 ns 6 (101)
 	 * 12 PD Slow 1 Fast 0 0
-	 */
-	mr = 0x0A62 | (BL8 ? 0x1 : 0x0);
-	/* MR0 : MR Register, bits 12:0 imported dfrom MR
-	 * 12:0 md_dllrst
-	 * c15:13 RSVD RSVD
+	 * 15:13 RSVD RSVD
 	 * 31:16 Reserved
 	 */
-	write32(DDR_PHY + DDRPHY_MR_OFFSET, 0x00000000 | mr);
-	/* Generate to use with PHY and PCTL
+	write32(DDR_PHY + DDRPHY_MR_OFFSET, 0x00000A62 | (BL8 ? 0x1 : 0x0));
+	/* MR1 : EMR Register
+	 * Generate to use with PHY and PCTL
 	 * 0 DE DLL Enable 0 Disable 1
 	 * 1 DIC Output Driver Imp Ctl 0 Full, 1 Half
-	 * 6,2 ODT 0 Disable, 1 75R, 2 150R, 3 50R = 1
+	 * 6,2 ODT 0 Disable, 1 75R, 2 150R, 3 50R; LSB: 2, MSB: 6
 	 * 5:3 AL = 0
 	 * 9:7 OCD = 0
 	 * 10 DQS 0 diff, 1 single = 0
 	 * 11 RDQS NA 0
 	 * 12 QOFF Normal mode 0
-	 */
-	emr = 0x4;
-	/* MR1 : EMR Register
-	 * 12:0 EMR1
 	 * 15:13 RSVD
 	 * 31:16 Reserved
 	 */
-	write32(DDR_PHY + DDRPHY_EMR_OFFSET, 0x00000000 | emr);
-
-	/* Generate to use with PHY and PCTL
+	write32(DDR_PHY + DDRPHY_EMR_OFFSET, 0x00000004);
+	/* MR2 : EMR2 Register
+	 * Generate to use with PHY and PCTL
 	 * 2:0 PASR, NA 000
 	 * 3 DDC NA 0
 	 * 6:4 RSVD
 	 * 7 SFR 0
-	 */
-	emr2 = 0x0;
-	/* MR2 : EMR2 Register
-	 * 7:0 EMR2
 	 * 15:8 RSVD
 	 * 31:16 Reserved
 	 */
-	write32(DDR_PHY + DDRPHY_EMR2_OFFSET, 0x00000000 | emr2);
-	emr3 = 0x0;
+	write32(DDR_PHY + DDRPHY_EMR2_OFFSET, 0x00000000);
 	/* DSGCR
 	 * 0 PUREN Def 1
 	 * 1 BDISEN Def 1
@@ -339,51 +319,24 @@ int init_ddr2(void)
 	 * 29:19 : tDINIT1 DRAM Init time 400ns 160 Dec 0xA0
 	 */
 	write32(DDR_PHY + DDRPHY_PTR1_OFFSET, 0x05013880);
-
 	/* PGSR : Wait for INIT/DLL/Z Done from Power on Reset */
 	if (wait_for_completion(DDR_PHY + DDRPHY_PGSR_OFFSET, 0x00000007))
 		return DDR_TIMEOUT;
-
-	if (UMCTL_INIT == 1) {
-		/* PIR : Trigger INIT/DLL/Z following soft reset of DLL & ITM */
-		write32(DDR_PHY + DDRPHY_PIR_OFFSET, 0x0000001F);
-
-		/* PGSR : Wait for INIT?DLL?Z Done from SOFT Reset */
-		if (wait_for_completion(DDR_PHY + DDRPHY_PGSR_OFFSET,
-						0x00000007))
+	/* PIR : use PHY for DRAM Init */
+	write32(DDR_PHY + DDRPHY_PIR_OFFSET, 0x000001DF);
+	/* PGSR : Wait for DRAM Init Done */
+	if (wait_for_completion(DDR_PHY + DDRPHY_PGSR_OFFSET, 0x0000001F))
 			return DDR_TIMEOUT;
-
-		/* PIR : use uMCTL for DRAM Init */
-		write32(DDR_PHY + DDRPHY_PIR_OFFSET, 0x00040001);
-
-		/* PGSR : Wait for DRAM Init Done */
-		if (wait_for_completion(DDR_PHY + DDRPHY_PGSR_OFFSET,
-						0x0000000F))
-			return DDR_TIMEOUT;
-
-	} else {
-		/* PIR : use uMCTL for DRAM Init */
-		write32(DDR_PHY + DDRPHY_PIR_OFFSET, 0x000001DF);
-		/* PGSR : Wait for DRAM Init Done */
-
-		if (wait_for_completion(DDR_PHY + DDRPHY_PGSR_OFFSET,
-						0x0000001F))
-			return DDR_TIMEOUT;
-	}
-
 	/* DF1STAT0 : wait for DFI_INIT_COMPLETE */
 	if (wait_for_completion(DDR_PCTL + DDR_PCTL_DFISTAT0_OFFSET,
 						0x00000001))
 		return DDR_TIMEOUT;
-
 	/* POWCTL : Start the memory Power Up seq*/
 	write32(DDR_PCTL + DDR_PCTL_POWCTL_OFFSET, 0x00000001);
-
 	/* POWSTAT : wait for POWER_UP_DONE */
 	if (wait_for_completion(DDR_PCTL + DDR_PCTL_POWSTAT_OFFSET,
 						0x00000001))
 		return DDR_TIMEOUT;
-
 	/*
 	 * TREFI : t_refi Timing Register 1X
 	 * 12:0 t_refi 7.8us in 100ns 0x4E
@@ -499,18 +452,14 @@ int init_ddr2(void)
 	 * 30:24 Reserved
 	 */
 	write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET, 0x80100001);
-
 	/* MRS cmd wait for completion */
 	if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET, 0x00100001))
 		return DDR_TIMEOUT;
-
 	/* SCTL : UPCTL switch INIT CONFIG State */
 	write32(DDR_PCTL + DDR_PCTL_SCTL_OFFSET, 0x00000001);
-
 	/* STAT : Wait for Switch INIT to Config State */
 	if (wait_for_completion(DDR_PCTL + DDR_PCTL_STAT_OFFSET, 0x00000001))
 		return DDR_TIMEOUT;
-
 	/* DFISTCFG0 : Drive various DFI signals appropriately
 	 * 0 dfi_init_start            0
 	 * 1 dfi_freq_ratio_en         1
@@ -549,7 +498,6 @@ int init_ddr2(void)
 	 * 3 rank0_odt_write_sel  1
 	 */
 	write32(DDR_PCTL + DDR_PCTL_DFIODTCFG_OFFSET, 0x00000008);
-
 	/* DFIODTCFG1 : DFI ODT Configuration
 	 * 4:0   odt_lat_w     4
 	 * 12:8  odt_lat_r     0 Def
@@ -557,92 +505,6 @@ int init_ddr2(void)
 	 * 12:8  odt_len_bl8_r 6 Def
 	 */
 	write32(DDR_PCTL + DDR_PCTL_DFIODTCFG1_OFFSET, 0x06060004);
-
-	if (UMCTL_INIT == 1) {
-		/* MCMD : Deselect command */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET, 0x80100000);
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-							0x00100000))
-			return DDR_TIMEOUT;
-
-		/* MCMD : Precharge ALL Banks */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET, 0x80100001);
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					0x00100001))
-			return DDR_TIMEOUT;
-
-		/* MCMD : MRS Cmd, EMR2 -- High Temp Self refresh Disable */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-			0x80140003 | (emr2 << 4));
-		exp_val = (0x00140003 | (emr2 << 4));
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					exp_val))
-			return DDR_TIMEOUT;
-
-		/* MCMD : MRS cmd, EMR3 */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-			0x80160003 | (emr3 << 4));
-		exp_val = (0x00160003 | (emr3 << 4));
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					exp_val))
-			return DDR_TIMEOUT;
-
-		/* MCMD : MRS Cmd, EMR-- DLL Enable */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-			0x80120003 | (emr << 4));
-		exp_val = (0x00120003 | (emr << 4));
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					exp_val))
-			return DDR_TIMEOUT;
-
-		/* MCMD : MRS Cmd, MR--DLL Reset */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-			(0x80100003 | (md_dllrst << 4)));
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					0x80000000))
-			return DDR_TIMEOUT;
-
-		/* MCMD : Precharge ALL Banks */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET, 0x80100001);
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					0x00100001))
-			return DDR_TIMEOUT;
-
-		/* MCMD : Refresh Command */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET, 0x80100002);
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					0x00100002))
-			return DDR_TIMEOUT;
-
-		/* MCMD : Refresh Command */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET, 0x80100002);
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					0x00100002))
-			return DDR_TIMEOUT;
-
-		/* MCMD : MRS Cmd, MR0-- Initialize Device Operation */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-			0x80100003 | (mr << 4));
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET, 0x0))
-			return DDR_TIMEOUT;
-
-		/* MCMD : MRS Cmd, MR1-- Set OCD Calibration Default */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-			0x80123803 | (emr << 4));
-		exp_val = (0x00123803 | (emr << 4));
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					exp_val))
-			return DDR_TIMEOUT;
-
-		/* MCMD : MRS Cmd, MR1-- Exit OCD calibration Mode */
-		write32(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-			0x80120003 | (emr << 4));
-		exp_val = (0x00120003 | (emr << 4));
-		if (wait_for_completion(DDR_PCTL + DDR_PCTL_MCMD_OFFSET,
-					exp_val))
-			return DDR_TIMEOUT;
-	}
-
 	/* DCFG : DRAM Density 256 Mb 16 Bit IO Width
 	 * 1:0  Devicw Width 1 x8, 2 x16, 3 x32  2
 	 * 5:2  Density 2Gb = 5
@@ -652,13 +514,11 @@ int init_ddr2(void)
 	 * 31:11 Reserved
 	 */
 	write32(DDR_PCTL + DDR_PCTL_DCFG_OFFSET, 0x00000016);
-
 	/* PCFG_0 : Port 0 AXI config  */
-	if (BL8 == 1)
+	if (BL8)
 		write32(DDR_PCTL + DDR_PCTL_PCFG0_OFFSET, 0x000800A0);
 	else
 		write32(DDR_PCTL + DDR_PCTL_PCFG0_OFFSET, 0x000400A0);
-
 	/* SCTL : UPCTL switch Config to ACCESS State */
 	write32(DDR_PCTL + DDR_PCTL_SCTL_OFFSET, 0x00000002);
 	/* STAT : Wait for switch CFG -> GO State */

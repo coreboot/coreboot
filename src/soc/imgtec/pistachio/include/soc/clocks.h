@@ -28,7 +28,7 @@ int mips_pll_setup(u8 divider1, u8 divider2, u8 predivider, u32 feedback);
 void system_clk_setup(u8 divider);
 void mips_clk_setup(u8 divider1, u8 divider2);
 void uart1_clk_setup(u8 divider1, u16 divider2);
-void i2c0_clk_setup(u8 divider1, u16 divider2);
+void i2c_clk_setup(u8 divider1, u16 divider2, u8 interface);
 int usb_clk_setup(u8 divider, u8 refclksel, u8 fsel);
 void rom_clk_setup(u8 divider);
 void eth_clk_setup(u8 mux, u8 divider);

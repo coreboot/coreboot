@@ -193,7 +193,7 @@ static int init_clocks(void)
 	uart1_clk_setup(6, 61);
 
 	/* System PLL divided by 4 divided by 3 -> 33.33 MHz */
-	i2c0_clk_setup(3, 2);
+	i2c_clk_setup(3, 2, 0);
 	/* Ethernet clocks setup: ENET as clock source */
 	eth_clk_setup(0, 7);
 

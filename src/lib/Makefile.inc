@@ -102,6 +102,9 @@ ramstage-y += b64_decode.c
 romstage-y += cbmem_common.c dynamic_cbmem.c
 ramstage-y += cbmem_common.c dynamic_cbmem.c
 
+romstage-y += imd.c
+ramstage-y += imd.c
+
 ramstage-y += hexdump.c
 romstage-y += hexdump.c
 

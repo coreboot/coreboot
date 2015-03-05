@@ -57,6 +57,7 @@
 #define CBMEM_ID_GDT		0x4c474454
 #define CBMEM_ID_HOB_POINTER	0x484f4221
 #define CBMEM_ID_IGD_OPREGION	0x4f444749
+#define CBMEM_ID_IMD_ROOT	0xff4017ff
 #define CBMEM_ID_MEMINFO	0x494D454D
 #define CBMEM_ID_MPTABLE	0x534d5054
 #define CBMEM_ID_MRCDATA	0x4d524344
@@ -103,6 +104,7 @@ struct cbmem_id_to_name {
 	{ CBMEM_ID_ELOG,		"ELOG       " }, \
 	{ CBMEM_ID_FREESPACE,		"FREE SPACE " }, \
 	{ CBMEM_ID_GDT,			"GDT        " }, \
+	{ CBMEM_ID_IMD_ROOT,		"IMD ROOT   " }, \
 	{ CBMEM_ID_MEMINFO,		"MEM INFO   " }, \
 	{ CBMEM_ID_MPTABLE,		"SMP TABLE  " }, \
 	{ CBMEM_ID_MRCDATA,		"MRC DATA   " }, \

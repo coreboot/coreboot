@@ -88,11 +88,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-struct cbmem_id_to_name {
-	u32 id;
-	const char *name;
-};
-
 #define CBMEM_ID_TO_NAME_TABLE				 \
 	{ CBMEM_ID_ACPI,		"ACPI       " }, \
 	{ CBMEM_ID_ACPI_GNVS,		"ACPI GNVS  " }, \
@@ -142,13 +137,6 @@ struct cbmem_entry;
  * dynamic cbmem infrastructure allocates new regions below the last allocated
  * region. Regions are defined by a cbmem_entry struct that is opaque. Regions
  * may be removed, but the last one added is the only that can be removed.
- *
- * Dynamic cbmem has two allocators within it. All allocators use a top down
- * allocation scheme. However, there are 2 modes for each allocation depending
- * on the requested size. There are large allocations and small allocations.
- * An allocation is considered to be small when it is less than or equal to
- * DYN_CBMEM_ALIGN_SIZE / 2. The smaller allocations are fit into a larger
- * allocation region.
  */
 
 #define DYN_CBMEM_ALIGN_SIZE (4096)
@@ -202,7 +190,6 @@ void cbmem_fail_resume(void);
 /* Add the cbmem memory used to the memory map at boot. */
 void cbmem_add_bootmem(void);
 void cbmem_list(void);
-void cbmem_print_entry(int n, u32 id, u64 start, u64 size);
 #endif /* __PRE_RAM__ */
 
 /* These are for compatibility with old boards only. Any new chipset and board

@@ -608,6 +608,10 @@ struct cbmem_entry {
 	uint64_t size;
 } __attribute__((packed));
 
+struct cbmem_id_to_name {
+	uint32_t id;
+	const char *name;
+};
 static const struct cbmem_id_to_name cbmem_ids[] = { CBMEM_ID_TO_NAME_TABLE };
 
 void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)

@@ -99,8 +99,11 @@ ramstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 ramstage-y += b64_decode.c
 
-romstage-y += cbmem_common.c dynamic_cbmem.c
-ramstage-y += cbmem_common.c dynamic_cbmem.c
+romstage-y += cbmem_common.c
+romstage-y += imd_cbmem.c
+
+ramstage-y += cbmem_common.c
+ramstage-y += imd_cbmem.c
 
 romstage-y += imd.c
 ramstage-y += imd.c

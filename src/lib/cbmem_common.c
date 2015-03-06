@@ -18,39 +18,16 @@
  */
 #include <console/console.h>
 #include <cbmem.h>
-#include <stdlib.h>
+#include <bootstate.h>
+#include <rules.h>
+#if IS_ENABLED(CONFIG_ARCH_X86) && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
+#include <arch/acpi.h>
+#endif
 
 /* FIXME: Remove after CBMEM_INIT_HOOKS. */
 #include <console/cbmem_console.h>
 #include <timestamp.h>
 
-#ifndef __PRE_RAM__
-
-static const struct cbmem_id_to_name cbmem_ids[] = { CBMEM_ID_TO_NAME_TABLE };
-
-void cbmem_print_entry(int n, u32 id, u64 base, u64 size)
-{
-	int i;
-	const char *name;
-
-	name = NULL;
-	for (i = 0; i < ARRAY_SIZE(cbmem_ids); i++) {
-		if (cbmem_ids[i].id == id) {
-			name = cbmem_ids[i].name;
-			break;
-		}
-	}
-
-	if (name == NULL)
-		printk(BIOS_DEBUG, "%08x ", id);
-	else
-		printk(BIOS_DEBUG, "%s", name);
-	printk(BIOS_DEBUG, "%2d. ", n);
-	printk(BIOS_DEBUG, "%08llx ", base);
-	printk(BIOS_DEBUG, "%08llx\n", size);
-}
-
-#endif /* !__PRE_RAM__ */
 
 /* FIXME: Replace with CBMEM_INIT_HOOKS API. */
 #if !IS_ENABLED(CONFIG_ARCH_X86)
@@ -66,4 +43,17 @@ void cbmem_run_init_hooks(void)
 void __attribute__((weak)) cbmem_fail_resume(void)
 {
 }
+#endif
+
+#if ENV_RAMSTAGE && !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
+static void init_cbmem_post_device(void *unused)
+{
+	if (acpi_is_wakeup())
+		cbmem_initialize();
+	else
+		cbmem_initialize_empty();
+}
+
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
+			init_cbmem_post_device, NULL);
 #endif

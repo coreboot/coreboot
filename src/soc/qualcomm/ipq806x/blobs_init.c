@@ -65,6 +65,9 @@ static void *load_ipq_blob(const char *file_name)
 
 #ifdef __PRE_RAM__
 
+#define DDR_VERSION() ((const char *)0x2a03f600)
+#define MAX_DDR_VERSION_SIZE 48
+
 int initialize_dram(void)
 {
 	void *cdt;
@@ -82,7 +85,12 @@ int initialize_dram(void)
 	if (ddr_init_function(cdt) < 0)
 		die("Fail to Initialize DDR\n");
 
-	printk(BIOS_INFO, "DDR initialized\n");
+	/*
+	 * Once DDR initializer finished, its verison can be found at a fixed
+	 * address in SRAM.
+	 */
+	printk(BIOS_INFO, "DDR version %.*s initialized\n",
+	       MAX_DDR_VERSION_SIZE, DDR_VERSION());
 
 	return 0;
 }
@@ -101,10 +109,14 @@ void start_tzbsp(void)
 	tz_init_wrapper(0, 0, tzbsp);
 }
 
+/* RPM version is encoded in a 32 bit word at the fixed address */
+#define RPM_VERSION() (*((u32 *)(0x00108008)))
 void start_rpm(void)
 {
 	u32 load_addr;
 	u32 ready_mask = 1 << 10;
+	u32 rpm_version;
+
 	struct stopwatch sw;
 
 	if (read32(RPM_SIGNAL_COOKIE) == RPM_FW_MAGIC_NUM) {
@@ -134,5 +146,12 @@ void start_rpm(void)
 
 	/* Acknowledge RPM initialization */
 	write32(RPM_INT_ACK, ready_mask);
+
+	/* Report RPM version, it is encoded in a 32 bit value. */
+	rpm_version = RPM_VERSION();
+	printk(BIOS_INFO, "Started RPM version %d.%d.%d\n",
+	       rpm_version >> 24,
+	       (rpm_version >> 16) & 0xff,
+	       rpm_version & 0xffff);
 }
 #endif  /* !__PRE_RAM__ */

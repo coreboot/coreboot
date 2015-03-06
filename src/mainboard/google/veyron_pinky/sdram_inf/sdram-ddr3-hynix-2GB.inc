@@ -1,5 +1,5 @@
 {
-	/* 4 Hynic H5TC4G63CFR chips */
+	/* 4 Hynic H5TC4G63CFR(0101b) or H5TC4G63AFR(1101b) chips */
         {
                 {
                         .rank = 0x1,

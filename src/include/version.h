@@ -13,9 +13,6 @@ extern const unsigned int coreboot_version_timestamp;
 
 /* When coreboot was compiled */
 extern const char coreboot_compile_time[];
-extern const char coreboot_compile_by[];
-extern const char coreboot_compile_host[];
-extern const char coreboot_compile_domain[];
 extern const char coreboot_dmi_date[];
 
 struct bcd_date {

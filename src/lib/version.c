@@ -18,12 +18,6 @@
 #ifndef COREBOOT_COMPILE_TIME
 #error  COREBOOT_COMPILE_TIME not defined
 #endif
-#ifndef COREBOOT_COMPILE_BY
-#error  COREBOOT_COMPILE_BY not defined
-#endif
-#ifndef COREBOOT_COMPILE_HOST
-#error  COREBOOT_COMPILE_HOST not defined
-#endif
 
 #ifndef  COREBOOT_EXTRA_VERSION
 #define COREBOOT_EXTRA_VERSION ""
@@ -38,10 +32,6 @@ const char coreboot_build[] = COREBOOT_BUILD;
 const unsigned int coreboot_version_timestamp = COREBOOT_VERSION_TIMESTAMP;
 
 const char coreboot_compile_time[]   = COREBOOT_COMPILE_TIME;
-const char coreboot_compile_by[]     = COREBOOT_COMPILE_BY;
-const char coreboot_compile_host[]   = COREBOOT_COMPILE_HOST;
-const char coreboot_compile_domain[] = COREBOOT_COMPILE_DOMAIN;
-
 const char coreboot_dmi_date[]       = COREBOOT_DMI_DATE;
 
 const struct bcd_date coreboot_build_date = {

@@ -29,7 +29,7 @@ printf "#define COREBOOT_VERSION %s\n" "\"$KERNELVERSION\""
 #See if the build is running in a git repo and the git command is available
 if [ -d "${top}/.git" ] && [ -f "$(command -v git)" ]; then
 	printf "/* %s UTC */\n" "$(LANG= TZ=UTC git log --date=local --pretty=format:%cd -1)"
-	printf "#define COREBOOT_VERSION_TIMESTAMP %s\n" "$(LANG= git log --pretty=format:%ct -1)"
+	printf "#define COREBOOT_VERSION_TIMESTAMP %s\n" "$(git log --pretty=format:%ct -1)"
 	printf "#define COREBOOT_ORIGIN_GIT_REVISION \"%s\"\n" "$(LANG= git log remotes/origin/master -1 --format=format:%h)"
 else
 	printf "/* `LANG= TZ=UTC date` */\n"
@@ -38,12 +38,12 @@ else
 fi
 
 printf "#define COREBOOT_EXTRA_VERSION \"%s\"\n" "$COREBOOT_EXTRA_VERSION"
-printf "#define COREBOOT_BUILD \"%s\"\n" "$(date-d @$DATE)"
-printf "#define COREBOOT_BUILD_YEAR_BCD 0x%s\n" "$(date -d @$DATE +%y)"
-printf "#define COREBOOT_BUILD_MONTH_BCD 0x%s\n" "$(date -d @$DATE +%m)"
-printf "#define COREBOOT_BUILD_DAY_BCD 0x%s\n" "$(date -d @$DATE +%d)"
-printf "#define COREBOOT_BUILD_WEEKDAY_BCD 0x%s\n" "$(date -d @$DATE +%w)"
-printf "#define COREBOOT_DMI_DATE \"%s\"\n" "$(date -d @$DATE +%m/%d/%Y)"
+printf "#define COREBOOT_BUILD \"%s\"\n" "$(LANG= TZ=UTC date -d @$DATE)"
+printf "#define COREBOOT_BUILD_YEAR_BCD 0x%s\n" "$(TZ=UTC date -d @$DATE +%y)"
+printf "#define COREBOOT_BUILD_MONTH_BCD 0x%s\n" "$(TZ=UTC date -d @$DATE +%m)"
+printf "#define COREBOOT_BUILD_DAY_BCD 0x%s\n" "$(TZ=UTC date -d @$DATE +%d)"
+printf "#define COREBOOT_BUILD_WEEKDAY_BCD 0x%s\n" "$(TZ=UTC date -d @$DATE +%w)"
+printf "#define COREBOOT_DMI_DATE \"%s\"\n" "$(TZ=UTC date -d @$DATE +%m/%d/%Y)"
 printf "\n"
-printf "#define COREBOOT_COMPILE_TIME \"%s\"\n" "$(date -d @$DATE +%T)"
+printf "#define COREBOOT_COMPILE_TIME \"%s\"\n" "$(TZ=UTC date -d @$DATE +%T)"
 printf "#endif\n"

@@ -230,6 +230,7 @@ case "$TARGETARCH" in
 	i386-elf)	;;
 	i386-mingw32)	;;
 	mipsel-elf)	;;
+	riscv-elf)	;;
 	i386*)		TARGETARCH=i386-elf;;
 	arm*)		TARGETARCH=armv7-a-eabi;;
 	aarch64*)	TARGETARCH=aarch64-elf;;

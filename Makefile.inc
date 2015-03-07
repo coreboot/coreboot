@@ -424,9 +424,9 @@ gitconfig:
 	git config remote.origin.push HEAD:refs/for/master
 	(git config --global user.name >/dev/null && git config --global user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
 
-crossgcc: crossgcc-i386 crossgcc-arm crossgcc-aarch64 crossgcc-mips
+crossgcc: crossgcc-i386 crossgcc-arm crossgcc-aarch64 crossgcc-mips crossgcc-riscv
 
-.PHONY: crossgcc-i386 crossgcc-arm crossgcc-aarch64 crossgcc-mips
+.PHONY: crossgcc-i386 crossgcc-arm crossgcc-aarch64 crossgcc-mips crossgcc-riscv
 crossgcc-i386: clean-for-update
 	$(MAKE) -C util/crossgcc build-i386-without-gdb
 
@@ -439,9 +439,12 @@ crossgcc-aarch64: clean-for-update
 crossgcc-mips: clean-for-update
 	$(MAKE) -C util/crossgcc build-mips-without-gdb
 
-crosstools: crosstools-i386 crosstools-arm crosstools-aarch64 crosstools-mips
+crossgcc-riscv: clean-for-update
+	$(MAKE) -C util/crossgcc build-riscv-without-gdb
 
-.PHONY: crosstools-i386 crosstools-arm crosstools-aarch64 crosstools-mips
+crosstools: crosstools-i386 crosstools-arm crosstools-aarch64 crosstools-mips crosstools-riscv
+
+.PHONY: crosstools-i386 crosstools-arm crosstools-aarch64 crosstools-mips crosstools-riscv
 crosstools-i386: clean-for-update
 	$(MAKE) -C util/crossgcc build-i386
 
@@ -453,6 +456,9 @@ crosstools-aarch64: clean-for-update
 
 crosstools-mips: clean-for-update
 	$(MAKE) -C util/crossgcc build-mips
+
+crosstools-riscv: clean-for-update
+	$(MAKE) -C util/crossgcc build-riscv
 
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean

@@ -123,18 +123,8 @@ void run_romstage(void);
 /* Run ramstage from romstage. */
 void run_ramstage(void);
 
-struct romstage_handoff;
-#if IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)
-/* Cache the loaded ramstage described by prog. */
-void cache_loaded_ramstage(struct romstage_handoff *, struct prog *p);
-/* Load ramstage from cache filling in struct prog. */
-void load_cached_ramstage(struct romstage_handoff *h, struct prog *p);
-#else
-static inline void cache_loaded_ramstage(struct romstage_handoff *h,
-						struct prog *p) {}
-static inline void load_cached_ramstage(struct romstage_handoff *h,
-					struct prog *p) {}
-#endif
+/* Called when the stage cache couldn't load ramstage on resume. */
+void ramstage_cache_invalid(void);
 
 /***********************
  *   PAYLOAD LOADING   *

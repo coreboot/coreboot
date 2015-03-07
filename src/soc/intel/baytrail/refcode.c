@@ -25,18 +25,13 @@
 #include <cpu/x86/tsc.h>
 #include <program_loading.h>
 #include <rmodule.h>
-#include <ramstage_cache.h>
+#include <stage_cache.h>
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/vboot_handoff.h>
 #endif
 
 #include <soc/ramstage.h>
 #include <soc/efi_wrapper.h>
-
-static inline struct ramstage_cache *next_cache(struct ramstage_cache *c)
-{
-	return (struct ramstage_cache *)&c->program[c->size];
-}
 
 static void ABI_X86 send_to_console(unsigned char b)
 {
@@ -45,60 +40,18 @@ static void ABI_X86 send_to_console(unsigned char b)
 
 static efi_wrapper_entry_t load_refcode_from_cache(void)
 {
-	struct ramstage_cache *c;
-	long cache_size;
+	struct prog refcode;
 
 	printk(BIOS_DEBUG, "refcode loading from cache.\n");
 
-	c = ramstage_cache_location(&cache_size);
+	stage_cache_load_stage(STAGE_REFCODE, &refcode);
 
-	if (!ramstage_cache_is_valid(c)) {
-		printk(BIOS_DEBUG, "Invalid ramstage cache descriptor.\n");
-		return NULL;
-	}
-
-	c = next_cache(c);
-	if (!ramstage_cache_is_valid(c)) {
-		printk(BIOS_DEBUG, "Invalid refcode cache descriptor.\n");
-		return NULL;
-	}
-
-	printk(BIOS_DEBUG, "Loading cached reference code from 0x%08x(%x)\n",
-	       c->load_address, c->size);
-	memcpy((void *)c->load_address, &c->program[0], c->size);
-
-	return (efi_wrapper_entry_t)c->entry_point;
+	return (efi_wrapper_entry_t)prog_entry(&refcode);
 }
 
 static void cache_refcode(const struct rmod_stage_load *rsl)
 {
-	struct ramstage_cache *c;
-	long cache_size;
-
-	c = ramstage_cache_location(&cache_size);
-
-	if (!ramstage_cache_is_valid(c)) {
-		printk(BIOS_DEBUG, "No place to cache reference code.\n");
-		return;
-	}
-
-	/* Determine how much remaining cache available. */
-	cache_size -= c->size + sizeof(*c);
-
-	if (cache_size < (sizeof(*c) + prog_size(rsl->prog))) {
-		printk(BIOS_DEBUG, "Not enough cache space for ref code.\n");
-		return;
-	}
-
-	c = next_cache(c);
-	c->magic = RAMSTAGE_CACHE_MAGIC;
-	c->entry_point = (uint32_t)(uintptr_t)prog_entry(rsl->prog);
-	c->load_address = (uint32_t)(uintptr_t)prog_start(rsl->prog);
-	c->size = prog_size(rsl->prog);
-
-	printk(BIOS_DEBUG, "Caching refcode at 0x%p(%x)\n",
-	       &c->program[0], c->size);
-	memcpy(&c->program[0], (void *)c->load_address, c->size);
+	stage_cache_add(STAGE_REFCODE, rsl->prog);
 }
 
 #if IS_ENABLED(CONFIG_CHROMEOS)

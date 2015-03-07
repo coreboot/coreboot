@@ -18,11 +18,11 @@
  */
 
 #include <cbmem.h>
-#include <ramstage_cache.h>
 #include <soc/smm.h>
+#include <stage_cache.h>
 #include <stdint.h>
 
-struct ramstage_cache *ramstage_cache_location(long *size)
+void stage_cache_external_region(void **base, size_t *size)
 {
 	/* The ramstage cache lives in the TSEG region.
 	 * The top of ram is defined to be the TSEG base address. */
@@ -30,6 +30,6 @@ struct ramstage_cache *ramstage_cache_location(long *size)
 	offset -= CONFIG_IED_REGION_SIZE;
 	offset -= CONFIG_SMM_RESERVED_SIZE;
 
+	*base = (void *)(cbmem_top() + offset);
 	*size = CONFIG_SMM_RESERVED_SIZE;
-	return (void *)(cbmem_top() + offset);
 }

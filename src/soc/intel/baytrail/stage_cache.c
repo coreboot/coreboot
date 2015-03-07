@@ -18,10 +18,10 @@
  */
 
 #include <cbmem.h>
-#include <ramstage_cache.h>
+#include <stage_cache.h>
 #include <soc/smm.h>
 
-struct ramstage_cache *ramstage_cache_location(long *size)
+void stage_cache_external_region(void **base, size_t *size)
 {
 	char *smm_base;
 	/* 1MiB cache size */
@@ -31,5 +31,5 @@ struct ramstage_cache *ramstage_cache_location(long *size)
 	 * cbmem_top(). */
 	smm_base = cbmem_top();
 	*size = cache_size;
-	return (void *)&smm_base[smm_region_size() - cache_size];
+	*base = &smm_base[smm_region_size() - cache_size];
 }

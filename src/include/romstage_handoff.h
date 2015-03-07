@@ -36,10 +36,6 @@ struct romstage_handoff {
 	uint8_t s3_resume;
 	uint8_t reboot_required;
 	uint8_t reserved[2];
-	/* The ramstage_entry_point is cached in the stag loading path. This
-	 * cached value can only be utilized when the chipset code properly
-	 * fills in the s3_resume field above. */
-	uint32_t ramstage_entry_point;
 };
 
 #if defined(__ROMSTAGE__)

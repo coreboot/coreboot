@@ -111,7 +111,14 @@ romstage-y += hexdump.c
 romstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 ramstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 
-romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += ramstage_cache.c
+ifeq ($(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM),y)
+ramstage-y += ext_stage_cache.c
+romstage-y += ext_stage_cache.c
+else
+ramstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
+romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
+endif
+
 
 smm-y += cbfs.c cbfs_core.c memcmp.c
 smm-$(CONFIG_COMPILER_GCC) += gcc.c

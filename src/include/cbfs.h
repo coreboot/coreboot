@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
- * Copyright (C) 2013 The Chromium OS Authors. All rights reserved.
+ * Copyright (C) 2013-2015 Google, Inc.
  *
  * This file is dual-licensed. You can choose between:
  *   - The GNU GPL, version 2, as published by the Free Software Foundation
@@ -90,4 +90,3 @@ void cbfs_set_header_offset(size_t offset);
 static inline void cbfs_set_header_offset(size_t offset) {}
 #endif
 #endif
-

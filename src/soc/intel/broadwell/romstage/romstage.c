@@ -25,11 +25,12 @@
 #include <arch/stages.h>
 #include <arch/early_variables.h>
 #include <console/console.h>
+#include <cbfs.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <elog.h>
-#include <ramstage_cache.h>
 #include <romstage_handoff.h>
+#include <stage_cache.h>
 #include <timestamp.h>
 #include <soc/me.h>
 #include <soc/pei_data.h>
@@ -142,7 +143,7 @@ void asmlinkage romstage_after_car(void)
 	while (1);
 }
 
-void ramstage_cache_invalid(struct ramstage_cache *cache)
+void ramstage_cache_invalid(void)
 {
 #if CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE
 	/* Perform cold reset on invalid ramstage cache. */

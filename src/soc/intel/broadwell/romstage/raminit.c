@@ -29,6 +29,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #endif
+#include <stage_cache.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
@@ -111,12 +112,16 @@ void raminit(struct pei_data *pei_data)
 
 	if (pei_data->boot_mode != SLEEP_STATE_S3) {
 		cbmem_initialize_empty();
-	} else if (cbmem_initialize()) {
+		stage_cache_create_empty();
+	} else {
+		stage_cache_recover();
+		if (cbmem_initialize()) {
 #if CONFIG_HAVE_ACPI_RESUME
-		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
-		/* Failed S3 resume, reset to come up cleanly */
-		reset_system();
+			printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
+			/* Failed S3 resume, reset to come up cleanly */
+			reset_system();
 #endif
+		}
 	}
 
 	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", pei_data->data_to_save,

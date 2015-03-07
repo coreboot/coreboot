@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <arch/cpu.h>
@@ -33,9 +34,9 @@
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <cbfs.h>
-#include <ramstage_cache.h>
 #include <romstage_handoff.h>
 #include <reset.h>
+#include <stage_cache.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #if CONFIG_EC_GOOGLE_CHROMEEC
 #include <ec/google/chromeec/ec.h>
@@ -256,13 +257,17 @@ void romstage_common(const struct romstage_params *params)
 
 	if (!wake_from_s3) {
 		cbmem_initialize_empty();
+		stage_cache_create_empty();
 		/* Save data returned from MRC on non-S3 resumes. */
 		save_mrc_data(params->pei_data);
-	} else if (cbmem_initialize()) {
-	#if CONFIG_HAVE_ACPI_RESUME
-		/* Failed S3 resume, reset to come up cleanly */
-		reset_system();
-	#endif
+	} else {
+		stage_cache_recover();
+		if (cbmem_initialize()) {
+		#if CONFIG_HAVE_ACPI_RESUME
+			/* Failed S3 resume, reset to come up cleanly */
+			reset_system();
+		#endif
+		}
 	}
 
 	handoff = romstage_handoff_find_or_add();
@@ -307,18 +312,17 @@ void romstage_after_car(void)
 }
 
 
-#if CONFIG_RELOCATABLE_RAMSTAGE
-#include <ramstage_cache.h>
+#if IS_ENABLED(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM)
 
-struct ramstage_cache *ramstage_cache_location(long *size)
+void stage_cache_external_region(void **base, size_t *size)
 {
 	/* The ramstage cache lives in the TSEG region at RESERVED_SMM_OFFSET.
 	 * The top of ram is defined to be the TSEG base address. */
 	*size = RESERVED_SMM_SIZE;
-	return (void *)((uint32_t)cbmem_top() + RESERVED_SMM_OFFSET);
+	*base = (void *)((uint32_t)cbmem_top() + RESERVED_SMM_OFFSET);
 }
 
-void ramstage_cache_invalid(struct ramstage_cache *cache)
+void ramstage_cache_invalid(void)
 {
 #if CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE
 	reset_system();

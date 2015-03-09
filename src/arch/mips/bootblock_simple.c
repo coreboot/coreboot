@@ -21,11 +21,14 @@
 
 #include <bootblock_common.h>
 #include <console/console.h>
+#include <halt.h>
 #include <program_loading.h>
 
 void main(void)
 {
 	bootblock_cpu_init();
+
+	/* Mainboard basic init */
 	bootblock_mainboard_init();
 
 #if CONFIG_BOOTBLOCK_CONSOLE
@@ -34,5 +37,10 @@ void main(void)
 
 	bootblock_mmu_init();
 
-	run_romstage();
+	if (init_extra_hardware()) {
+		printk(BIOS_ERR, "bootblock_simple: failed to init HW.\n");
+	} else {
+		run_romstage();
+	}
+	halt();
 }

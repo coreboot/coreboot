@@ -34,13 +34,14 @@
 const struct bid_map {
 	const char *board_name;
 	uint8_t   board_id;
+	struct board_hw hardware;
 } board_id_map[] = {
-	{"urara", URARA_BOARD_ID_BUB},
-	{"buranku", URARA_BOARD_ID_BURANKU},
-	{"derwent", URARA_BOARD_ID_DERWENT},
-	{"jaguar", URARA_BOARD_ID_JAGUAR},
-	{"kennet", URARA_BOARD_ID_KENNET},
-	{"space", URARA_BOARD_ID_SPACE},
+	{"urara", URARA_BOARD_ID_BUB, {0} },
+	{"buranku", URARA_BOARD_ID_BURANKU, {3} },
+	{"derwent", URARA_BOARD_ID_DERWENT, {3} },
+	{"jaguar", URARA_BOARD_ID_JAGUAR, {3} },
+	{"kennet", URARA_BOARD_ID_KENNET, {3} },
+	{"space", URARA_BOARD_ID_SPACE, {3} },
 };
 
 static int cached_board_id = -1;
@@ -87,6 +88,19 @@ static uint8_t retrieve_board_id(void)
 	printk(BIOS_WARNING, "board_id: no match for board name '%.*s'\n",
 	       length, file_contents);
 	printk(BIOS_WARNING, "board_id: will use default board ID 0\n");
+
+	return 0;
+}
+
+const struct board_hw *board_get_hw(void)
+{
+	int i;
+	uint8_t bid = board_id();
+
+	for (i = 0; i < ARRAY_SIZE(board_id_map); i++) {
+		if (bid == board_id_map[i].board_id)
+			return &(board_id_map[i].hardware);
+	}
 
 	return 0;
 }

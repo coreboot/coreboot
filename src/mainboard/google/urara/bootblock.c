@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <soc/clocks.h>
 #include <assert.h>
+#include <boardid.h>
 
 #define PADS_FUNCTION_SELECT0_ADDR	(0xB8101C00 + 0xC0)
 
@@ -172,14 +173,9 @@ static void i2c_mfio_setup(int interface)
 	write32(PADS_FUNCTION_SELECT0_ADDR, reg);
 }
 
-static int init_clocks(void)
+static void bootblock_mainboard_init(void)
 {
 	int ret;
-
-	/*
-	 * Set up dividers for peripherals before setting up PLLs
-	 * in order to not over-clock them when enabling PLLs
-	*/
 
 	/* System PLL divided by 2 -> 400 MHz */
 	/* The same frequency will be the input frequency for the SPFI block */
@@ -190,40 +186,57 @@ static int init_clocks(void)
 	 * the values set or not by the boot ROM code */
 	mips_clk_setup(0, 0);
 
-	/* System clock divided by 8 -> 50 MHz */
-	ret = usb_clk_setup(7, 2, 7);
+	/* Setup system PLL at 800 MHz */
+	ret = sys_pll_setup(2, 1);
 	if (ret != CLOCKS_OK)
-		return ret;
+		return;
+	/* Setup MIPS PLL at 546 MHz */
+	ret = mips_pll_setup(2, 1, 1, 21);
+	if (ret != CLOCKS_OK)
+		return;
 
-	/* System PLL divided by 7 divided by 62 -> 1.8433 Mhz */
+	/* Setup SPIM1 MFIOs */
+	spim1_mfio_setup();
+	/* Setup UART1 clock and MFIOs
+	 * System PLL divided by 7 divided by 62 -> 1.8433 Mhz
+	 */
 	uart1_clk_setup(6, 61);
+	uart1_mfio_setup();
+}
 
-	/* System PLL divided by 4 divided by 3 -> 33.33 MHz */
-	i2c_clk_setup(3, 2, 0);
+
+static int init_extra_hardware(void)
+{
+	const struct board_hw *hardware;
+
+	/* Obtain information about current board */
+	hardware = board_get_hw();
+	if (!hardware) {
+		printk(BIOS_ERR, "%s: Invalid hardware information.\n",
+			__func__);
+		return -1;
+	}
+
+	/* Setup USB clock
+	 * System clock divided by 8 -> 50 MHz
+	 */
+	if (usb_clk_setup(7, 2, 7) != CLOCKS_OK) {
+		printk(BIOS_ERR, "%s: Failed to set up USB clock.\n",
+			__func__);
+		return -1;
+	}
+
+	/* Setup I2C clocks and MFIOs
+	 * System PLL divided by 4 divided by 3 -> 33.33 MHz
+	 */
+	i2c_clk_setup(3, 2, hardware->i2c_interface);
+	i2c_mfio_setup(hardware->i2c_interface);
+
 	/* Ethernet clocks setup: ENET as clock source */
 	eth_clk_setup(0, 7);
-
 	/* ROM clock setup: system clock divided by 2 -> 200 MHz */
 	/* Hash accelerator is driven from the ROM clock */
 	rom_clk_setup(1);
 
-	/* Setup system PLL at 800 MHz */
-	ret = sys_pll_setup(2, 1);
-	if (ret != CLOCKS_OK)
-		return ret;
-	/* Setup MIPS PLL at 546 MHz */
-	ret = mips_pll_setup(2, 1, 1, 21);
-	if (ret != CLOCKS_OK)
-		return ret;
-	return CLOCKS_OK;
-}
-
-static void bootblock_mainboard_init(void)
-{
-	if (!init_clocks()) {
-		/* Disable GPIO on the peripheral lines */
-		uart1_mfio_setup();
-		spim1_mfio_setup();
-		i2c_mfio_setup(0);
-	}
+	return 0;
 }

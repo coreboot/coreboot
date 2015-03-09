@@ -22,6 +22,11 @@
 
 #include <stdint.h>
 
+struct board_hw {
+	uint8_t i2c_interface;
+};
+
+const struct board_hw *board_get_hw(void);
 uint8_t board_id(void);
 uint32_t ram_code(void);
 

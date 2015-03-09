@@ -108,7 +108,7 @@ searchtool()
 	fi
 	for i in "$1" "g$1" "gnu$1"; do
 		if test -x "`which $i 2>/dev/null`"; then
-			if test `$i --version 2>/dev/null |grep -c "$search"` \
+			if test `$i --version 2>&1 |grep -c "$search"` \
 			    -gt 0; then
 				echo $i
 				return
@@ -138,7 +138,9 @@ searchtool m4 > /dev/null
 searchtool bison > /dev/null
 searchtool flex flex > /dev/null
 searchtool g++ "Free Software Foundation" nofail > /dev/null || \
-searchtool clang "clang version"
+searchtool clang "clang version" > /dev/null
+searchtool wget > /dev/null
+searchtool bzip2 "bzip2," > /dev/null
 
 cleanup()
 {

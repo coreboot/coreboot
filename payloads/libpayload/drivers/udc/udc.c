@@ -142,9 +142,6 @@ static int setup_ep0(struct usbdev_ctrl *this, dev_req_t *dr)
 		struct usbdev_configuration *config =
 			fetch_config(this, dr->wValue);
 
-		this->current_config = config;
-		this->current_config_id = dr->wValue;
-
 		if (dr->wValue == 0)
 			cease_operation(this);
 
@@ -157,7 +154,10 @@ static int setup_ep0(struct usbdev_ctrl *this, dev_req_t *dr)
 		/* status phase IN */
 		this->enqueue_packet(this, 0, 1, NULL, 0, 0, 0);
 
-		/* automatically configure endpoints in interface 0 */
+		this->current_config = config;
+		this->current_config_id = dr->wValue;
+
+		/* activate first interface */
 		enable_interface(this, 0);
 		this->initialized = 1;
 		return 1;

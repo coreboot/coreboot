@@ -168,9 +168,10 @@ static int setup_ep0(struct usbdev_ctrl *this, dev_req_t *dr)
 		res[0] = this->current_config_id;
 
 		/* data phase IN */
-		this->enqueue_packet(this, 0, 1, res, 1, 0, 1);
+		this->enqueue_packet(this, 0, 1, res, min(1, dr->wLength),
+			0, 1);
 
-		// status phase OUT
+		/* status phase OUT */
 		this->enqueue_packet(this, 0, 0, NULL, 0, 0, 0);
 		return 1;
 	} else

@@ -128,6 +128,9 @@ static int chipidea_hw_init(struct usbdev_ctrl *this, void *_opreg,
 	debug("taking controller out of reset\n");
 	writel(USBCMD_8MICRO | USBCMD_RUN, &p->opreg->usbcmd);
 
+	this->stall(this, 0, 0, 0);
+	this->stall(this, 0, 1, 0);
+
 	return 1;
 }
 

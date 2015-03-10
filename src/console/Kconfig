@@ -186,7 +186,7 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 
 config CONSOLE_PRERAM_BUFFER_BASE
 	hex
-	default 0xabadbeef if !CACHE_AS_RAM || BROKEN_CAR_MIGRATE
+	default 0xabadbeef if !CACHE_AS_RAM || LATE_CBMEM_INIT
 	default 0x0
 
 config CONSOLE_PRERAM_BUFFER_SIZE

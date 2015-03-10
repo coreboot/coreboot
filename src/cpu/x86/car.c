@@ -149,9 +149,8 @@ static void do_car_migrate_hooks(void)
 
 void car_migrate_variables(void)
 {
-	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE) && !IS_ENABLED(PLATFORM_USES_FSP))
+	if (!IS_ENABLED(PLATFORM_USES_FSP))
 		do_car_migrate_variables();
 
-	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE))
-		do_car_migrate_hooks();
+	do_car_migrate_hooks();
 }

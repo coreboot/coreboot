@@ -38,8 +38,8 @@ CFLAGS_common += -DMOCK_TPM=0
 endif
 
 ifeq ($(CONFIG_VBOOT_VERIFY_FIRMWARE),y)
-romstage-y += vboot_handoff.c
-ramstage-y += vboot_handoff.c
+romstage-y += vboot_helper.c
+ramstage-y += vboot_helper.c
 romstage-y += vboot_loader.c
 rmodules_$(ARCH-romstage-y)-y += vboot_wrapper.c
 

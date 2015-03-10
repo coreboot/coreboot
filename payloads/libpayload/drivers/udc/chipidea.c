@@ -359,8 +359,47 @@ static int chipidea_poll(struct usbdev_ctrl *this)
 	}
 
 	if (sts & (USBSTS_UEI | USBSTS_UI)) {
-		uint32_t bitmap = readl(&p->opreg->epsetupstat);
-		int ep = 0;
+		uint32_t bitmap;
+		int ep;
+
+		/* This slightly deviates from the recommendation in the
+		 * data sheets, but the strict ordering is to simplify
+		 * handling control transfers, which are initialized in
+		 * the third step with a SETUP packet, then proceed in
+		 * the next poll loop with in transfers (either data or
+		 * status phase), then optionally out transfers (status
+		 * phase).
+		 */
+
+		/* in transfers */
+		bitmap = (readl(&p->opreg->epcomplete) >> 16) & 0xffff;
+		ep = 0;
+		while (bitmap) {
+			if (bitmap & 1) {
+				debug("incoming packet on EP %d (in)\n", ep);
+				handle_endpoint(this, ep, 1);
+				clear_ep(p, ep & 0xf, 1);
+			}
+			bitmap >>= 1;
+			ep++;
+		}
+
+		/* out transfers */
+		bitmap = readl(&p->opreg->epcomplete) & 0xffff;
+		ep = 0;
+		while (bitmap) {
+			if (bitmap & 1) {
+				debug("incoming packet on EP %d (out)\n", ep);
+				handle_endpoint(this, ep, 0);
+				clear_ep(p, ep, 0);
+			}
+			bitmap >>= 1;
+			ep++;
+		}
+
+		/* setup transfers */
+		bitmap = readl(&p->opreg->epsetupstat);
+		ep = 0;
 		while (bitmap) {
 			if (bitmap & 1) {
 				debug("incoming packet on EP %d (setup)\n", ep);
@@ -368,21 +407,6 @@ static int chipidea_poll(struct usbdev_ctrl *this)
 			}
 			bitmap >>= 1;
 			ep++;
-		}
-		bitmap = readl(&p->opreg->epcomplete);
-		ep = 0;
-		int dir_in = 0;
-		while (bitmap) {
-			if (bitmap & 1) {
-				debug("incoming packet on EP %d (%s)\n",
-					ep, dir_in ? "intr/in" : "out");
-				handle_endpoint(this, ep & 0xf, dir_in);
-				clear_ep(p, ep & 0xf, dir_in);
-			}
-			bitmap >>= 1;
-			ep++;
-			if (ep == 16)
-				dir_in = 1;
 		}
 	}
 

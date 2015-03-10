@@ -17,10 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <boardid.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <delay.h>
+#include <drivers/i2c/ww_ring/ww_ring.h>
 #include <gpio.h>
+#include <soc/cdp.h>
+#include <soc/gsbi.h>
 #include <string.h>
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -86,9 +90,11 @@ int get_recovery_mode_switch(void)
 			break;
 	} while (!stopwatch_expired(&sw));
 
-	if (sampled_value)
+	if (sampled_value) {
 		printk(BIOS_INFO, "recovery mode requested\n");
-
+		if (board_id() == BOARD_ID_WHIRLWIND_SP5)
+			ww_ring_display_pattern(GSBI_ID_7, 0);
+	}
 	return sampled_value;
 }
 

@@ -433,7 +433,7 @@ static void chipidea_stall(struct usbdev_ctrl *this,
 			clrbits_le32(ctrl, 1 << 16);
 		} else {
 			setbits_le32(ctrl, 1 << 6);
-			setbits_le32(ctrl, 1 << 0);
+			clrbits_le32(ctrl, 1 << 0);
 		}
 	}
 	this->ep_halted[ep][in_dir] = set;

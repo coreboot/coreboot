@@ -119,7 +119,7 @@ ramstage-y += rmodule.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c
 
 RMODULE_LDSCRIPT := $(src)/lib/rmodule.ld
-RMODULE_LDFLAGS  := -nostartfiles --emit-relocs -z defs -Bsymbolic -T$(RMODULE_LDSCRIPT)
+RMODULE_LDFLAGS  := -nostartfiles --gc-sections --emit-relocs -z defs -Bsymbolic -T$(RMODULE_LDSCRIPT)
 
 # rmodule_link_rules is a function that should be called with:
 # (1) the object name to link

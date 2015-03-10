@@ -42,7 +42,7 @@ SECTIONS
 	.ctors : {
 		. = ALIGN(0x100);
 		__CTOR_LIST__ = .;
-		*(.ctors);
+		KEEP(*(.ctors));
 		LONG(0);
 		__CTOR_END__ = .;
 	}
@@ -55,13 +55,13 @@ SECTIONS
 		 * section names the equivalent changes need to made to
 		 * rmodule.ld. */
 		pci_drivers = . ;
-		*(.rodata.pci_driver)
+		KEEP(*(.rodata.pci_driver));
 		epci_drivers = . ;
 		cpu_drivers = . ;
-		*(.rodata.cpu_driver)
+		KEEP(*(.rodata.cpu_driver));
 		ecpu_drivers = . ;
 		_bs_init_begin = .;
-		*(.bs_init)
+		KEEP(*(.bs_init));
 		_bs_init_end = .;
 
 		*(.rodata)
@@ -82,6 +82,7 @@ SECTIONS
 	.data : {
 		_data = .;
 		*(.data)
+		*(.data.*)
 		_edata = .;
 	}
 
@@ -92,7 +93,9 @@ SECTIONS
 	_bss = .;
 	.bss . : {
 		*(.bss)
+		*(.bss.*)
 		*(.sbss)
+		*(.sbss.*)
 		*(COMMON)
 	}
 	_ebss = .;

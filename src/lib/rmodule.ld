@@ -14,6 +14,8 @@
 
 BASE_ADDRESS = 0x00000;
 
+ENTRY(__rmodule_entry);
+
 SECTIONS
 {
 	. = BASE_ADDRESS;
@@ -38,15 +40,15 @@ SECTIONS
 		 * ramstage.ld should be made here as well. */
 		. = ALIGN(8);
 		pci_drivers = . ;
-		*(.rodata.pci_driver)
+		KEEP(*(.rodata.pci_driver));
 		epci_drivers = . ;
 		. = ALIGN(8);
 		cpu_drivers = . ;
-		*(.rodata.cpu_driver)
+		KEEP(*(.rodata.cpu_driver));
 		ecpu_drivers = . ;
 		. = ALIGN(8);
 		_bs_init_begin = .;
-		*(.bs_init)
+		KEEP(*(.bs_init));
 		_bs_init_end = .;
 
 		. = ALIGN(8);
@@ -59,7 +61,7 @@ SECTIONS
 		 * to a module, however there has to be an prior agreement
 		 * on how to interpret the parameters. */
 		_module_params_begin = .;
-		*(.module_parameters);
+		KEEP(*(.module_parameters));
 		_module_params_end = .;
 		. = ALIGN(8);
 

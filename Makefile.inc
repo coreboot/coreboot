@@ -253,7 +253,7 @@ CPPFLAGS_common += -include $(src)/include/kconfig.h
 CFLAGS_common += -pipe -g -nostdinc
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS_common += -Wstrict-aliasing -Wshadow
+CFLAGS_common += -Wstrict-aliasing -Wshadow -Wno-unused-but-set-variable
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS_common += -Werror
 endif

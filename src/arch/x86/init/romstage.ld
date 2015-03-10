@@ -30,13 +30,16 @@ SECTIONS
 	.rom . : {
 		_rom = .;
 		*(.rom.text);
+		*(.rom.text.*);
+		*(.text);
+		*(.text.*);
 		*(.rom.data);
 		*(.rodata);
 		*(.rodata.*);
 		*(.rom.data.*);
 		. = ALIGN(16);
 		_car_migrate_start = .;
-		*(.car.migrate);
+		KEEP(*(.car.migrate));
 		LONG(0);
 		_car_migrate_end = .;
 		. = ALIGN(16);
@@ -73,7 +76,7 @@ SECTIONS
 	. = 0xffffff00;
 	.illegal_globals . : {
 		*(EXCLUDE_FILE (*/libagesa.*.a: */buildOpts.romstage.o */agesawrapper.romstage.o */vendorcode/amd/agesa/* */vendorcode/amd/cimx/*) .data)
-		*(.data.*)
+		*(EXCLUDE_FILE (*/libagesa.*.a: */buildOpts.romstage.o */agesawrapper.romstage.o */vendorcode/amd/agesa/* */vendorcode/amd/cimx/*) .data.*)
 		*(.bss)
 		*(.bss.*)
 		*(.sbss)

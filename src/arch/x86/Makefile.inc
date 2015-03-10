@@ -27,11 +27,7 @@ subdirs-y += boot
 subdirs-y += lib
 subdirs-y += smp
 
-ifeq ($(CONFIG_COMPILER_GCC),y)
-DISASSEMBLY=-Wa,-acdlns
-else
 DISASSEMBLY=-Wa,--divide
-endif
 
 OPTION_TABLE_H:=
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
@@ -214,7 +210,7 @@ $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.
 
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld
+	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
@@ -310,7 +306,7 @@ else
 
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(src)/arch/x86/ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) -o $@ -L$(obj) $< -T $(src)/arch/x86/ramstage.ld
+	$(LD_ramstage) --gc-sections -o $@ -L$(obj) $< -T $(src)/arch/x86/ramstage.ld
 
 endif
 

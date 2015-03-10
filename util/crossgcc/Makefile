@@ -12,7 +12,7 @@ build-aarch64:
 build-mips:
 	bash ./buildgcc -G -p mips-elf
 
-build-mips:
+build-riscv:
 	bash ./buildgcc -G -p riscv-elf
 
 .PHONY: build-i386-without-gdb

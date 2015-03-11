@@ -37,8 +37,8 @@ int console_log_level(int msg_level)
 void console_init(void)
 {
 #if !defined(__PRE_RAM__)
-	if(get_option(&console_loglevel, "debug_level") != CB_SUCCESS)
-		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+	get_option(&console_loglevel, "debug_level");
 #endif
 
 #if CONFIG_EARLY_PCI_BRIDGE && !defined(__SMM__)

@@ -186,8 +186,8 @@ static void i82801ix_power_options(device_t dev)
 	 *
 	 * If the option is not existent (Laptops), use MAINBOARD_POWER_ON.
 	 */
-	if (get_option(&pwr_on, "power_on_after_fail") != CB_SUCCESS)
-		pwr_on = MAINBOARD_POWER_ON;
+	pwr_on = MAINBOARD_POWER_ON;
+	get_option(&pwr_on, "power_on_after_fail");
 
 	reg8 = pci_read_config8(dev, D31F0_GEN_PMCON_3);
 	reg8 &= 0xfe;

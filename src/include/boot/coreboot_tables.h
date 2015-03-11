@@ -296,6 +296,9 @@ struct lb_spi_flash {
 	uint32_t erase_cmd;
 };
 
+#define LB_TAG_SERIALNO		0x002a
+#define MAX_SERIALNO_LENGTH	32
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */
@@ -391,6 +394,8 @@ void lb_board(struct lb_header *header);
  * coreboot table.
  */
 void lb_table_add_macs_from_vpd(struct lb_header *header);
+
+void lb_table_add_serialno_from_vpd(struct lb_header *header);
 
 struct lb_record *lb_new_record(struct lb_header *header);
 

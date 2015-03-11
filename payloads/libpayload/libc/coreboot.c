@@ -333,6 +333,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_MAC_ADDRS:
 			cb_parse_mac_addresses(ptr, info);
 			break;
+		case CB_TAG_SERIALNO:
+			cb_parse_string(ptr, &info->serialno);
+			break;
 #endif
 		case CB_TAG_TIMESTAMPS:
 			cb_parse_tstamp(ptr, info);

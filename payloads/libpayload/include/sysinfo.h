@@ -91,6 +91,7 @@ struct sysinfo_t {
 	struct cb_gpio gpios[SYSINFO_MAX_GPIOS];
 	int num_macs;
 	struct mac_address macs[SYSINFO_MAX_MACS];
+	char *serialno;
 #endif
 
 	unsigned long *mbtable; /** Pointer to the multiboot table */

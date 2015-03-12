@@ -249,7 +249,7 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 }
 
 unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
-				       unsigned max_devfn, unsigned int max,
+				       unsigned max_devfn,
 				       unsigned *ht_unitid_base,
 				       unsigned offset_unitid)
 {
@@ -474,9 +474,7 @@ end_of_chain:
 			last_func->sibling = old_devices;
 	}
 
-	/* Now that nothing is overlapping it is safe to scan the children. */
-	max = pci_scan_bus(bus, 0x00, ((next_unitid - 1) << 3) | 7, max);
-	return max;
+	return next_unitid;
 }
 
 /**
@@ -498,8 +496,13 @@ static unsigned int hypertransport_scan_chain_x(struct bus *bus,
 {
 	unsigned int ht_unitid_base[4];
 	unsigned int offset_unitid = 1;
-	return hypertransport_scan_chain(bus, min_devfn, max_devfn, max,
+
+	unsigned int next_unitid = hypertransport_scan_chain(bus, min_devfn, max_devfn,
 					 ht_unitid_base, offset_unitid);
+
+	/* Now that nothing is overlapping it is safe to scan the children. */
+	max = pci_scan_bus(bus, 0x00, ((next_unitid - 1) << 3) | 7, max);
+	return max;
 }
 
 unsigned int ht_scan_bridge(struct device *dev, unsigned int max)

@@ -105,6 +105,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 				u32 max)
 {
 		int i;
+		unsigned int next_unitid;
 		u32 busses, config_busses;
 		u32 free_reg, config_reg;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
@@ -209,7 +210,10 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		else
 			max_devfn = (0x1f<<3) | 7;
 
-		max = hypertransport_scan_chain(link, 0, max_devfn, max, ht_unitid_base, offset_unit_id(is_sblink));
+		next_unitid = hypertransport_scan_chain(link, 0, max_devfn, ht_unitid_base, offset_unit_id(is_sblink));
+
+		/* Now that nothing is overlapping it is safe to scan the children. */
+		max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, max);
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value

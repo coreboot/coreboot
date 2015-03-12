@@ -34,11 +34,12 @@ static void oxford_oxpcie_enable(device_t dev)
 		printk(BIOS_WARNING, "OXPCIe952: No UART resource found.\n");
 		return;
 	}
+	void *bar0 = res2mmio(res, 0, 0);
 
 	printk(BIOS_DEBUG, "OXPCIe952: Class=%x Revision ID=%x\n",
-			(read32(res->base) >> 8), (read32(res->base) & 0xff));
+			(read32(bar0) >> 8), (read32(bar0) & 0xff));
 	printk(BIOS_DEBUG, "OXPCIe952: %d UARTs detected.\n",
-			(read32(res->base + 4) & 3));
+			(read32(bar0 + 4) & 3));
 	printk(BIOS_DEBUG, "OXPCIe952: UART BAR: 0x%x\n", (u32)res->base);
 }
 

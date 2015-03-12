@@ -36,12 +36,12 @@
 
 static uint8_t uart8250_read(void *base, uint8_t reg)
 {
-	return read8((uintptr_t) (base + reg));
+	return read8(base + reg);
 }
 
 static void uart8250_write(void *base, uint8_t reg, uint8_t data)
 {
-	write8((uintptr_t) (base + reg), data);
+	write8(base + reg, data);
 }
 
 static int uart8250_mem_can_tx_byte(void *base)

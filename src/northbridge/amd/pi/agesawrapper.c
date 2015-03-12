@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2012 - 2014 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,28 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <string.h>
-#include <config.h>
+#include <AGESA.h>
+#include <cpu/amd/pi/s3_resume.h>
 #include <cpu/x86/mtrr.h>
+#include <cpuRegisters.h>
+#include <FchPlatform.h>
+#include <heapManager.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/BiosCallOuts.h>
-#include "cpuRegisters.h"
-#include "cpuCacheInit.h"
-#include "cpuApicUtilities.h"
-#include "cpuEarlyInit.h"
-#include "cpuLateInit.h"
-#include "Dispatcher.h"
-#include "cpuCacheInit.h"
-#include "amdlib.h"
-#include "Filecode.h"
-#include "heapManager.h"
-#include "FchPlatform.h"
-#include "Fch.h"
-#include <cpu/amd/pi/s3_resume.h>
-#include <arch/io.h>
-#include <device/device.h>
-#include "hudson.h"
 
 VOID FchInitS3LateRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
@@ -56,7 +42,8 @@ static void *AcpiWheaMce = NULL;
 static void *AcpiWheaCmc = NULL;
 static void *AcpiAlib    = NULL;
 static void *AcpiIvrs    = NULL;
-#endif
+static void *AcpiCrat    = NULL;
+#endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amdinitreset(void)
 {
@@ -85,9 +72,13 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AmdCreateStruct (&AmdParamStruct);
 
 	AmdResetParams.FchInterface.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-	AmdResetParams.FchInterface.Xhci1Enable = FALSE;
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON))
+		AmdResetParams.FchInterface.Xhci1Enable = TRUE;
 
-	status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
+	AmdResetParams.FchInterface.SataEnable = !((CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3));
+	AmdResetParams.FchInterface.IdeEnable = (CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3);
+
+	status = AmdInitReset(&AmdResetParams);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 	return status;
@@ -116,7 +107,6 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	OemCustomizeInitEarly (AmdEarlyParamsPtr);
 
 	status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
-	//PspBarInitEarly ();
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
 
@@ -136,7 +126,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
-	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
+	AmdParamStruct.StdHeader.AltImageBasePtr = NULL;
 	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
@@ -149,6 +139,14 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
 	status = AmdInitPost (PostParams);
+	printk(
+			BIOS_SPEW,
+			"setup_uma_memory: umamode %s\n",
+			(PostParams->MemConfig.UmaMode == UMA_AUTO) ? "UMA_AUTO" :
+			(PostParams->MemConfig.UmaMode == UMA_SPECIFIED) ? "UMA_SPECIFIED" :
+			(PostParams->MemConfig.UmaMode == UMA_NONE) ? "UMA_NONE" :
+			"unknown"
+	);
 	printk(
 			BIOS_SPEW,
 			"setup_uma_memory: syslimit 0x%08llX, bottomio 0x%08lx\n",
@@ -190,6 +188,11 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	status = AmdCreateStruct (&AmdParamStruct);
 	EnvParam = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
 
+	EnvParam->FchInterface.AzaliaController = AzEnable;
+	EnvParam->FchInterface.SataClass = CONFIG_HUDSON_SATA_MODE;
+	EnvParam->FchInterface.SataEnable = !((CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3));
+	EnvParam->FchInterface.IdeEnable = (CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3);
+	EnvParam->FchInterface.SataIdeMode = (CONFIG_HUDSON_SATA_MODE == 3);
 	EnvParam->GnbEnvConfiguration.IommuSupport = FALSE;
 
 	status = AmdInitEnv (EnvParam);
@@ -222,16 +225,19 @@ VOID* agesawrapper_getlateinitptr (int pick)
 		return AcpiAlib;
 	case PICK_IVRS:
 		return AcpiIvrs;
+	case PICK_CRAT:
+		return AcpiCrat;
 	default:
 		return NULL;
 	}
 }
-#endif
+#endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amdinitmid(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
+	AMD_MID_PARAMS *MidParam;
 
 	/* Enable MMIO on AMD CPU Address Map Controller */
 	amd_initcpuio ();
@@ -249,8 +255,17 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
 	AmdCreateStruct (&AmdParamStruct);
+	MidParam = (AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr;
 
-	((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr)->GnbMidConfiguration.iGpuVgaMode = 0;/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
+	MidParam->GnbMidConfiguration.iGpuVgaMode = 0;/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
+	MidParam->GnbMidConfiguration.GnbIoapicAddress = 0xFEC20000;
+
+	MidParam->FchInterface.AzaliaController = AzEnable;
+	MidParam->FchInterface.SataClass = CONFIG_HUDSON_SATA_MODE;
+	MidParam->FchInterface.SataEnable = !((CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3));
+	MidParam->FchInterface.IdeEnable = (CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3);
+	MidParam->FchInterface.SataIdeMode = (CONFIG_HUDSON_SATA_MODE == 3);
+
 	status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
@@ -296,6 +311,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AcpiWheaCmc = AmdLateParams->AcpiWheaCmc;
 	AcpiAlib    = AmdLateParams->AcpiAlib;
 	AcpiIvrs    = AmdLateParams->AcpiIvrs;
+	AcpiCrat    = AmdLateParams->AcpiCrat;
 
 	printk(BIOS_DEBUG, "DmiTable:%x, AcpiPstatein: %x, AcpiSrat:%x,"
 	       "AcpiSlit:%x, Mce:%x, Cmc:%x,"
@@ -307,7 +323,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	/* AmdReleaseStruct (&AmdParamStruct); */
 	return Status;
 }
-#endif
+#endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amdlaterunaptask (
 	UINT32 Func,
@@ -393,6 +409,11 @@ AGESA_STATUS agesawrapper_fchs3earlyrestore(void)
 	StdHeader.Func = 0;
 	StdHeader.ImageBasePtr = 0;
 
+	LibAmdMemFill (&FchParams,
+		       0,
+		       sizeof (FchParams),
+		       &StdHeader);
+
 	FchParams.StdHeader = &StdHeader;
 	s3_resume_init_data(&FchParams);
 
@@ -400,7 +421,7 @@ AGESA_STATUS agesawrapper_fchs3earlyrestore(void)
 
 	return status;
 }
-#endif
+#endif /* #ifndef __PRE_RAM__ */
 
 AGESA_STATUS agesawrapper_amds3laterestore(void)
 {
@@ -443,15 +464,12 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 
 #ifndef __PRE_RAM__
 
-extern UINT8 picr_data[0x54], intr_data[0x54];
-
 AGESA_STATUS agesawrapper_fchs3laterestore(void)
 {
 	AGESA_STATUS status = AGESA_SUCCESS;
 
-	FCH_DATA_BLOCK      FchParams;
-	AMD_CONFIG_PARAMS StdHeader;
-	UINT8 byte;
+	AMD_CONFIG_PARAMS       StdHeader;
+	FCH_DATA_BLOCK          FchParams;
 
 	StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
 	StdHeader.HeapBasePtr = GetHeapBase(&StdHeader) + 0x10;
@@ -460,9 +478,15 @@ AGESA_STATUS agesawrapper_fchs3laterestore(void)
 	StdHeader.Func = 0;
 	StdHeader.ImageBasePtr = 0;
 
+	LibAmdMemFill (&FchParams,
+		       0,
+		       sizeof (FchParams),
+		       &StdHeader);
+
 	FchParams.StdHeader = &StdHeader;
 	s3_resume_init_data(&FchParams);
 	FchInitS3LateRestore(&FchParams);
+
 	/* PIC IRQ routine */
 	for (byte = 0x0; byte < sizeof(picr_data); byte ++) {
 		outb(byte, 0xC00);
@@ -477,9 +501,6 @@ AGESA_STATUS agesawrapper_fchs3laterestore(void)
 
 	return status;
 }
-#endif
-
-#ifndef __PRE_RAM__
 
 AGESA_STATUS agesawrapper_amdS3Save(void)
 {
@@ -516,11 +537,10 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 	       (unsigned int)AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
 	       (unsigned int)AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
 
-//	Status = OemAgesaSaveS3Info (
-//		S3DataType,
-//		AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
-//		AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
-//	PspMboxBiosCmdS3Info (AmdS3SaveParamsPtr->S3DataBlock.NvStorage, AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize);
+	Status = OemAgesaSaveS3Info (
+		S3DataType,
+		AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
+		AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
 
 	printk(BIOS_DEBUG, "VolatileStorageSize=%x, VolatileStorage=%x\n",
 	       (unsigned int)AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize,

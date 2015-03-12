@@ -17,10 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-romstage-y += agesawrapper.c
 romstage-y += BiosCallOuts.c
 romstage-y += PlatformGnbPcie.c
 
-ramstage-y += agesawrapper.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c

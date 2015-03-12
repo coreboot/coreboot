@@ -554,13 +554,14 @@ static void mcf0_control_init(struct device *dev)
 {
 }
 
-static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
+static unsigned amdfam10_scan_chains(device_t dev, unsigned unused)
 {
 	unsigned nodeid;
 	struct bus *link;
 	unsigned sblink = sysconf.sblk;
 	device_t io_hub = NULL;
 	u32 next_unitid = 0xff;
+	unsigned int max = dev->bus->subordinate;
 
 	nodeid = amdfam10_nodeid(dev);
 	if (nodeid == 0) {
@@ -576,7 +577,9 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
 		}
 	}
 
-	return max;
+	dev->bus->subordinate = max;
+
+	return unused;
 }
 
 static struct device_operations northbridge_operations = {
@@ -913,7 +916,9 @@ static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
 	}
 
 	for (link = dev->link_list; link; link = link->next) {
-		max = pci_scan_bus(link, PCI_DEVFN(CONFIG_CDB, 0), 0xff, max);
+		link->secondary = dev->bus->subordinate;
+		link->subordinate = pci_scan_bus(link, PCI_DEVFN(CONFIG_CDB, 0), 0xff, link->secondary);
+		dev->bus->subordinate = link->subordinate;
 	}
 
 	/* Tune the hypertransport transaction for best performance.

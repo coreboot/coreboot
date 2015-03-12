@@ -227,7 +227,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		max_bus = 0xfc;
 
 		link->secondary = min_bus;
-		link->subordinate = max_bus;
+		link->subordinate = link->secondary;
 
 		/* Read the existing primary/secondary/subordinate bus
 		 * number configuration.
@@ -245,7 +245,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 
 		/* set the config map space */
 
-		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
+		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, max_bus, sysconf.segbit, sysconf.nodes);
 
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link
@@ -263,16 +263,11 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		next_unitid = hypertransport_scan_chain(link, 0, max_devfn, ht_unitid_base, offset_unit_id(is_sblink));
 
 		/* Now that nothing is overlapping it is safe to scan the children. */
-		max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, max);
+		link->subordinate = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, link->secondary);
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
 		 */
-		if(ht_c_index>3) { // clear the extend reg
-			clear_config_map_reg(nodeid, link->link_num, ht_c_index, (max+1)>>sysconf.segbit, (link->subordinate)>>sysconf.segbit, sysconf.nodes);
-		}
-
-		link->subordinate = max;
 		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
 		sysconf.ht_c_num++;
 
@@ -286,15 +281,16 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 			sysconf.hcdn_reg[ht_c_index] = temp;
 
 		}
-	store_ht_c_conf_bus(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, &sysconf);
-	return max;
+		store_ht_c_conf_bus(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, &sysconf);
+		return link->subordinate;
 }
 
-static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
+static unsigned amdfam10_scan_chains(device_t dev, unsigned unused)
 {
 	unsigned nodeid;
 	struct bus *link;
 	unsigned sblink = sysconf.sblk;
+	unsigned int max = dev->bus->subordinate;
 
 	nodeid = amdfam10_nodeid(dev);
 
@@ -312,7 +308,10 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
 
 		max = amdfam10_scan_chain(dev, nodeid, link, is_sblink, max);
 	}
-	return max;
+
+	dev->bus->subordinate = max;
+
+	return unused;
 }
 
 
@@ -913,7 +912,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 	}
 }
 
-static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
+static u32 amdfam10_domain_scan_bus(device_t dev, u32 unused)
 {
 	u32 reg;
 	int i;
@@ -924,7 +923,9 @@ static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
 	}
 
 	for(link = dev->link_list; link; link = link->next) {
-		max = pci_scan_bus(link, PCI_DEVFN(CONFIG_CDB, 0), 0xff, max);
+		link->secondary = dev->bus->subordinate;
+		link->subordinate = pci_scan_bus(link, PCI_DEVFN(CONFIG_CDB, 0), 0xff, link->secondary);
+		dev->bus->subordinate = link->subordinate;
 	}
 
 	/* Tune the hypertransport transaction for best performance.
@@ -948,7 +949,7 @@ static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
 			pci_write_config32(f0_dev, HT_TRANSACTION_CONTROL, httc);
 		}
 	}
-	return max;
+	return unused;
 }
 
 #if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
@@ -1213,7 +1214,7 @@ static void add_more_links(device_t dev, unsigned total_links)
 	last->next = NULL;
 }
 
-static u32 cpu_bus_scan(device_t dev, u32 max)
+static u32 cpu_bus_scan(device_t dev, u32 passthru)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
@@ -1382,7 +1383,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 				amd_cpu_topology(cpu, i, j);
 		} //j
 	}
-	return max;
+	return passthru;
 }
 
 static void cpu_bus_init(device_t dev)

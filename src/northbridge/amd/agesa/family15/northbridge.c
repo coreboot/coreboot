@@ -459,12 +459,14 @@ static void nb_set_resources(device_t dev)
 	}
 }
 
-static unsigned scan_chains(device_t dev, unsigned max)
+static unsigned scan_chains(device_t dev, unsigned unused)
 {
 	unsigned nodeid;
 	struct bus *link;
 	device_t io_hub = NULL;
 	u32 next_unitid = 0x18;
+	unsigned int max = dev->bus->subordinate;
+
 	nodeid = amdfam15_nodeid(dev);
 	if (nodeid == 0) {
 		for (link = dev->link_list; link; link = link->next) {
@@ -479,7 +481,10 @@ static unsigned scan_chains(device_t dev, unsigned max)
 			}
 		}
 	}
-	return max;
+
+	dev->bus->subordinate = max;
+
+	return unused;
 }
 
 
@@ -948,8 +953,9 @@ static void domain_set_resources(device_t dev)
 /* all family15's pci devices are under 0x18.0, so we search from dev 0x18 fun 0 */
 static unsigned int f15_pci_domain_scan_bus(device_t dev, unsigned int max)
 {
-	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0x18, 0), 0xff, max);
-	return max;
+	struct bus *link = dev->link_list;
+	link->subordinate = pci_scan_bus(link, PCI_DEVFN(0x18, 0), 0xff, link->secondary);
+	return link->subordinate;
 }
 
 static struct device_operations pci_domain_ops = {

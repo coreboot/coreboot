@@ -501,8 +501,8 @@ static unsigned int hypertransport_scan_chain_x(struct bus *bus,
 					 ht_unitid_base, offset_unitid);
 
 	/* Now that nothing is overlapping it is safe to scan the children. */
-	max = pci_scan_bus(bus, 0x00, ((next_unitid - 1) << 3) | 7, max);
-	return max;
+	bus->subordinate = pci_scan_bus(bus, 0x00, ((next_unitid - 1) << 3) | 7, bus->secondary);
+	return bus->subordinate;
 }
 
 unsigned int ht_scan_bridge(struct device *dev, unsigned int max)

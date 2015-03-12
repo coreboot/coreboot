@@ -171,7 +171,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		max_bus = 0xff;
 
 		link->secondary = min_bus;
-		link->subordinate = max_bus;
+		link->subordinate = link->secondary;
 
 		/* Read the existing primary/secondary/subordinate bus
 		 * number configuration.
@@ -186,7 +186,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		busses &= 0xff000000;
 		busses |= (((unsigned int)(dev->bus->secondary) << 0) |
 			((unsigned int)(link->secondary) << 8) |
-			((unsigned int)(link->subordinate) << 16));
+			(max_bus << 16));
 		pci_write_config32(dev, link->cap + 0x14, busses);
 
 		config_busses &= 0x000fc88;
@@ -195,7 +195,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 			(( nodeid & 7) << 4) |
 			((link->link_num & 3) << 8) |
 			((link->secondary) << 16) |
-			((link->subordinate) << 24);
+			(max_bus << 24);
 		f1_write_config32(config_reg, config_busses);
 
 		/* Now we can scan all of the subordinate busses i.e. the
@@ -213,12 +213,11 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		next_unitid = hypertransport_scan_chain(link, 0, max_devfn, ht_unitid_base, offset_unit_id(is_sblink));
 
 		/* Now that nothing is overlapping it is safe to scan the children. */
-		max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, max);
+		link->subordinate = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, link->secondary);
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
 		 */
-		link->subordinate = max;
 		busses = (busses & 0xff00ffff) |
 			((unsigned int) (link->subordinate) << 16);
 		pci_write_config32(dev, link->cap + 0x14, busses);
@@ -239,14 +238,15 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 			sysconf.hcdn_reg[index] = temp;
 
 		}
-	return max;
+		return link->subordinate;
 }
 
-static unsigned amdk8_scan_chains(device_t dev, unsigned max)
+static unsigned amdk8_scan_chains(device_t dev, unsigned unused)
 {
 	unsigned nodeid;
 	struct bus *link;
 	unsigned sblink = 0;
+	unsigned int max = dev->bus->subordinate;
 
 	nodeid = amdk8_nodeid(dev);
 	if (nodeid == 0)
@@ -266,7 +266,10 @@ static unsigned amdk8_scan_chains(device_t dev, unsigned max)
 
 		max = amdk8_scan_chain(dev, nodeid, link, is_sblink, max);
 	}
-	return max;
+
+	dev->bus->subordinate = max;
+
+	return unused;
 }
 
 
@@ -1096,11 +1099,16 @@ static u32 amdk8_domain_scan_bus(device_t dev, u32 max)
 {
 	u32 reg;
 	int i;
+	struct bus *link = dev->link_list;
+
 	/* Unmap all of the HT chains */
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
-	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0x18, 0), 0xff, max);
+
+	link->secondary = dev->bus->subordinate;
+	link->subordinate = pci_scan_bus(link, PCI_DEVFN(0x18, 0), 0xff, link->secondary);
+	dev->bus->subordinate = link->subordinate;
 
 	/* Tune the hypertransport transaction for best performance.
 	 * Including enabling relaxed ordering if it is safe.

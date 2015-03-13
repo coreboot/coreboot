@@ -55,6 +55,40 @@
 #define SPI_ROM_ENABLE                0x02
 #define SPI_BASE_ADDRESS              0xFEC10000
 
+#define LPC_IO_PORT_DECODE_ENABLE     0x44
+#define DECODE_ENABLE_PARALLEL_PORT0  (1 << 0)
+#define DECODE_ENABLE_PARALLEL_PORT1  (1 << 1)
+#define DECODE_ENABLE_PARALLEL_PORT2  (1 << 2)
+#define DECODE_ENABLE_PARALLEL_PORT3  (1 << 3)
+#define DECODE_ENABLE_PARALLEL_PORT4  (1 << 4)
+#define DECODE_ENABLE_PARALLEL_PORT5  (1 << 5)
+#define DECODE_ENABLE_SERIAL_PORT0    (1 << 6)
+#define DECODE_ENABLE_SERIAL_PORT1    (1 << 7)
+#define DECODE_ENABLE_SERIAL_PORT2    (1 << 8)
+#define DECODE_ENABLE_SERIAL_PORT3    (1 << 9)
+#define DECODE_ENABLE_SERIAL_PORT4    (1 << 10)
+#define DECODE_ENABLE_SERIAL_PORT5    (1 << 11)
+#define DECODE_ENABLE_SERIAL_PORT6    (1 << 12)
+#define DECODE_ENABLE_SERIAL_PORT7    (1 << 13)
+#define DECODE_ENABLE_AUDIO_PORT0     (1 << 14)
+#define DECODE_ENABLE_AUDIO_PORT1     (1 << 15)
+#define DECODE_ENABLE_AUDIO_PORT2     (1 << 16)
+#define DECODE_ENABLE_AUDIO_PORT3     (1 << 17)
+#define DECODE_ENABLE_MIDI_PORT0      (1 << 18)
+#define DECODE_ENABLE_MIDI_PORT1      (1 << 19)
+#define DECODE_ENABLE_MIDI_PORT2      (1 << 20)
+#define DECODE_ENABLE_MIDI_PORT3      (1 << 21)
+#define DECODE_ENABLE_MSS_PORT0       (1 << 22)
+#define DECODE_ENABLE_MSS_PORT1       (1 << 23)
+#define DECODE_ENABLE_MSS_PORT2       (1 << 24)
+#define DECODE_ENABLE_MSS_PORT3       (1 << 25)
+#define DECODE_ENABLE_FDC_PORT0       (1 << 26)
+#define DECODE_ENABLE_FDC_PORT1       (1 << 27)
+#define DECODE_ENABLE_GAME_PORT       (1 << 28)
+#define DECODE_ENABLE_KBC_PORT        (1 << 29)
+#define DECODE_ENABLE_ACPIUC_PORT     (1 << 30)
+#define DECODE_ENABLE_ADLIB_PORT      (1 << 31)
+
 static inline int hudson_sata_enable(void)
 {
 	/* True if IDE or AHCI. */
@@ -76,6 +110,7 @@ u16 pm_read16(u16 reg);
 
 #ifdef __PRE_RAM__
 void hudson_lpc_port80(void);
+void hudson_lpc_decode(void);
 void hudson_pci_port80(void);
 void hudson_clk_output_48Mhz(void);
 

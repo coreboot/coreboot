@@ -28,6 +28,7 @@
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include "hudson.h"
+#include "pci_devs.h"
 
 void hudson_pci_port80(void)
 {
@@ -91,6 +92,29 @@ void hudson_lpc_port80(void)
 	byte = pci_read_config8(dev, 0x4a);
 	byte |= 1 << 5; /* enable port 80 */
 	pci_write_config8(dev, 0x4a, byte);
+}
+
+void hudson_lpc_decode(void)
+{
+	device_t dev;
+	u32 tmp = 0;
+
+	/* Enable I/O decode to LPC bus */
+	dev = PCI_DEV(0, PCU_DEV, LPC_FUNC);
+	tmp = DECODE_ENABLE_PARALLEL_PORT0 | DECODE_ENABLE_PARALLEL_PORT2
+		| DECODE_ENABLE_PARALLEL_PORT4 | DECODE_ENABLE_SERIAL_PORT0
+		| DECODE_ENABLE_SERIAL_PORT1 | DECODE_ENABLE_SERIAL_PORT2
+		| DECODE_ENABLE_SERIAL_PORT3 | DECODE_ENABLE_SERIAL_PORT4
+		| DECODE_ENABLE_SERIAL_PORT5 | DECODE_ENABLE_SERIAL_PORT6
+		| DECODE_ENABLE_SERIAL_PORT7 | DECODE_ENABLE_AUDIO_PORT0
+		| DECODE_ENABLE_AUDIO_PORT1 | DECODE_ENABLE_AUDIO_PORT2
+		| DECODE_ENABLE_AUDIO_PORT3 | DECODE_ENABLE_MSS_PORT2
+		| DECODE_ENABLE_MSS_PORT3 | DECODE_ENABLE_FDC_PORT0
+		| DECODE_ENABLE_FDC_PORT1 | DECODE_ENABLE_GAME_PORT
+		| DECODE_ENABLE_KBC_PORT | DECODE_ENABLE_ACPIUC_PORT
+		| DECODE_ENABLE_ADLIB_PORT;
+
+	pci_write_config32(dev, LPC_IO_PORT_DECODE_ENABLE, tmp);
 }
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)

@@ -756,7 +756,6 @@ static void amdfam10_domain_set_resources(device_t dev)
 #endif
 	unsigned long mmio_basek;
 	u32 pci_tolm;
-	u64 ramtop = 0;
 	int i, idx;
 	struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -879,8 +878,6 @@ static void amdfam10_domain_set_resources(device_t dev)
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-					if (!ramtop)
-						ramtop = mmio_basek * 1024;
 				}
 				basek = mmio_basek;
 			}
@@ -897,15 +894,13 @@ static void amdfam10_domain_set_resources(device_t dev)
 		idx += 0x10;
 		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 			     i, mmio_basek, basek, limitk);
-		if (!ramtop)
-			ramtop = limitk * 1024;
 	}
 
 #if CONFIG_GFXUMA
 	set_top_of_ram(uma_memory_base);
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
 #else
-	set_top_of_ram(ramtop);
+	set_top_of_ram(bsp_topmem());
 #endif
 
 	for(link = dev->link_list; link; link = link->next) {

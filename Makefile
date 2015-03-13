@@ -74,6 +74,9 @@ ifneq ($(Q),)
 endif
 endif
 
+# Disable implicit/built-in rules to make Makefile errors fail fast.
+.SUFFIXES:
+
 HOSTCC := gcc
 HOSTCXX = g++
 HOSTCFLAGS := -g

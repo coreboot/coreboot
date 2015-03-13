@@ -232,6 +232,8 @@ while true ; do
 done
 
 case "$TARGETARCH" in
+	x86_64-elf)	;;
+	x86_64*)	TARGETARCH=x86_64-elf;;
 	i386-elf)	;;
 	i386-mingw32)	;;
 	mipsel-elf)	;;

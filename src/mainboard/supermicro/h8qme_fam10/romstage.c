@@ -292,6 +292,7 @@ post_code(0x40);
 
  printk(BIOS_DEBUG, "raminit_amdmct()\n");
  raminit_amdmct(sysinfo);
+ cbmem_initialize_empty();
  post_code(0x41);
 
  post_cache_as_ram();  // BSP switch stack to ram, copy then execute LB.

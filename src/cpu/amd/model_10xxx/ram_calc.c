@@ -22,6 +22,8 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 
+#include <cbmem.h>
+
 #include "ram_calc.h"
 
 uint64_t get_uma_memory_size(uint64_t topmem)
@@ -40,4 +42,11 @@ uint64_t get_uma_memory_size(uint64_t topmem)
 	}
 
 	return uma_size;
+}
+
+void *cbmem_top(void)
+{
+	uint32_t topmem = rdmsr(TOP_MEM).lo;
+
+	return (void *) topmem - get_uma_memory_size(topmem);
 }

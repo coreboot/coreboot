@@ -897,10 +897,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 	}
 
 #if CONFIG_GFXUMA
-	set_top_of_ram(uma_memory_base);
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
-#else
-	set_top_of_ram(bsp_topmem());
 #endif
 
 	for(link = dev->link_list; link; link = link->next) {

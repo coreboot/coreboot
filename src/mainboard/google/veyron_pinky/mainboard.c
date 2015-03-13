@@ -197,17 +197,17 @@ void mainboard_power_on_backlight(void)
 	case 0:
 	case 1:
 	case 2:
-		gpio_output(GPIO_BACKLIGHT, 0);	/* BL_EN */
+		gpio_output(GPIO(7, A, 0), 0);	/* BL_EN */
 		gpio_output(GPIO(7, A, 2), 1);	/* LCD_BL */
 		mdelay(10);
-		gpio_output(GPIO_BACKLIGHT, 1);	/* BL_EN */
+		gpio_output(GPIO(7, A, 0), 1);	/* BL_EN */
 		break;
 	default:
 		gpio_output(GPIO(2, B, 4), 1);	/* BL_PWR_EN */
 		mdelay(20);
-		gpio_output(GPIO_BACKLIGHT, 1);	/* LCD_BL */
+		gpio_output(GPIO(7, A, 0), 1);	/* LCD_BL */
 		mdelay(10);
-		gpio_output(GPIO(7, A, 2), 1);	/* BL_EN */
+		gpio_output(GPIO_BACKLIGHT, 1);	/* BL_EN */
 		break;
 	}
 }

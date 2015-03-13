@@ -23,7 +23,7 @@
 #include <boardid.h>
 #include <gpio.h>
 
-#define GPIO_BACKLIGHT  GPIO(7, A, 3)
+#define GPIO_BACKLIGHT	GPIO(7, A, 3)
 #define GPIO_RESET	GPIO(0, B, 5)
 
 void setup_chromeos_gpios(void);

@@ -45,27 +45,6 @@ config ELOG_AREA_SIZE
 
 	  Default is 4K.
 
-config ELOG_FULL_THRESHOLD
-	hex "Threshold at which flash is considered full"
-	default 0xC00
-	help
-	  When the Event Log size is larger than this it will be shrunk
-	  to ELOG_SHRINK_SIZE.  Must be greater than ELOG_AREA_SIZE, and
-	  ELOG_AREA_SIZE - ELOG_FULL_THRESHOLD must be greater than the
-	  maximum event size of 128.
-
-	  Default is 75% of the log, or 3K.
-
-config ELOG_SHRINK_SIZE
-	hex "Resulting size when the event log is shrunk"
-	default 0x400
-	help
-	  When the Event Log is shrunk it will go to this size.
-	  ELOG_AREA_SIZE - ELOG_SHRINK_SIZE must be less than
-	  CONFIG_ELOG_FULL_THRESHOLD.
-
-	  Default is 1K.
-
 config ELOG_CBMEM
 	bool "Store a copy of ELOG in CBMEM"
 	default n

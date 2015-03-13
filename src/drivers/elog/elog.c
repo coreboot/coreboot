@@ -40,19 +40,6 @@
 #if !IS_ENABLED(CONFIG_CHROMEOS) && CONFIG_ELOG_FLASH_BASE == 0
 #error "CONFIG_ELOG_FLASH_BASE is invalid"
 #endif
-#if CONFIG_ELOG_FULL_THRESHOLD >= CONFIG_ELOG_AREA_SIZE
-#error "CONFIG_ELOG_FULL_THRESHOLD is larger than CONFIG_ELOG_AREA_SIZE"
-#endif
-#if (CONFIG_ELOG_AREA_SIZE - CONFIG_ELOG_FULL_THRESHOLD) < (MAX_EVENT_SIZE + 1)
-#error "CONFIG_ELOG_FULL_THRESHOLD is too small"
-#endif
-#if CONFIG_ELOG_SHRINK_SIZE >= CONFIG_ELOG_AREA_SIZE
-#error "CONFIG_ELOG_SHRINK_SIZE is larger than CONFIG_ELOG_AREA_SIZE"
-#endif
-#if (CONFIG_ELOG_AREA_SIZE - CONFIG_ELOG_SHRINK_SIZE) > \
-	CONFIG_ELOG_FULL_THRESHOLD
-#error "CONFIG_ELOG_SHRINK_SIZE is too large"
-#endif
 
 #if CONFIG_ELOG_DEBUG
 #define elog_debug(STR...) printk(BIOS_DEBUG, STR)
@@ -65,14 +52,16 @@
  */
 static struct elog_area *elog_area;
 static u16 total_size;
-static u16 log_size;
+static u16 log_size; /* excluding header */
 static u32 flash_base;
+static u16 full_threshold; /* from end of header */
+static u16 shrink_size; /* from end of header */
 
 static elog_area_state area_state;
 static elog_header_state header_state;
 static elog_event_buffer_state event_buffer_state;
 
-static u16 next_event_offset;
+static u16 next_event_offset; /* from end of header */
 static u16 event_count;
 
 static struct spi_flash *elog_spi;
@@ -402,12 +391,12 @@ static int elog_shrink(void)
 
 	elog_debug("elog_shrink()\n");
 
-	if (next_event_offset < CONFIG_ELOG_SHRINK_SIZE)
+	if (next_event_offset < shrink_size)
 		return 0;
 
 	while (1) {
 		/* Next event has exceeded constraints */
-		if (offset > CONFIG_ELOG_SHRINK_SIZE)
+		if (offset > shrink_size)
 			break;
 
 		event = elog_get_event_base(offset);
@@ -429,7 +418,7 @@ static int elog_shrink(void)
 	elog_scan_flash();
 
 	/* Ensure the area was successfully erased */
-	if (next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD) {
+	if (next_event_offset >= full_threshold) {
 		printk(BIOS_ERR, "ELOG: Flash area was not erased!\n");
 		return -1;
 	}
@@ -544,6 +533,9 @@ static void elog_find_flash(void)
 	total_size = CONFIG_ELOG_AREA_SIZE;
 #endif
 	log_size = total_size - sizeof(struct elog_header);
+	full_threshold = log_size - ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
+	shrink_size = MIN(total_size * ELOG_SHRINK_PERCENTAGE / 100,
+								full_threshold);
 }
 
 /*
@@ -574,6 +566,13 @@ int elog_init(void)
 	elog_find_flash();
 	if (flash_base == 0) {
 		printk(BIOS_ERR, "ELOG: Invalid flash base\n");
+		return -1;
+	} else if (total_size < sizeof(struct elog_header) + MAX_EVENT_SIZE) {
+		printk(BIOS_ERR, "ELOG: Region too small to hold any events\n");
+		return -1;
+	} else if (log_size - shrink_size >= full_threshold) {
+		printk(BIOS_ERR,
+			"ELOG: SHRINK_PERCENTAGE set too small for MIN_AVAILABLE_ENTRIES\n");
 		return -1;
 	}
 
@@ -608,13 +607,12 @@ int elog_init(void)
 	       elog_area, flash_base);
 
 	printk(BIOS_INFO, "ELOG: area is %d bytes, full threshold %d,"
-	       " shrink size %d\n", total_size,
-	       CONFIG_ELOG_FULL_THRESHOLD, CONFIG_ELOG_SHRINK_SIZE);
+	       " shrink size %d\n", total_size, full_threshold, shrink_size);
 
 	elog_initialized = ELOG_INITIALIZED;
 
 	/* Shrink the log if we are getting too full */
-	if (next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD)
+	if (next_event_offset >= full_threshold)
 		if (elog_shrink() < 0)
 			return -1;
 
@@ -726,7 +724,7 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	       event_type, event_size);
 
 	/* Shrink the log if we are getting too full */
-	if (next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD)
+	if (next_event_offset >= full_threshold)
 		elog_shrink();
 }
 

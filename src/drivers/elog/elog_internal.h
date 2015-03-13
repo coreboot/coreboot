@@ -31,6 +31,8 @@ struct elog_header {
 /* ELOG related constants */
 #define ELOG_SIGNATURE			0x474f4c45  /* 'ELOG' */
 #define ELOG_VERSION			1
+#define ELOG_MIN_AVAILABLE_ENTRIES	2  /* Shrink when this many can't fit */
+#define ELOG_SHRINK_PERCENTAGE		25 /* Percent of total area to remove */
 
 /* SMBIOS event log header */
 struct event_header {

@@ -166,6 +166,14 @@ config PHYSICAL_REC_SWITCH
 	help
 	  Whether this platform has a physical recovery switch
 
+config WIPEOUT_SUPPORTED
+	bool "User is able to request factory reset"
+	default n
+	help
+	  When this option is enabled, the firmware provides the ability to
+	  signal the application the need for factory reset (a.k.a. wipe
+	  out) of the device
+
 source src/vendorcode/google/chromeos/vboot1/Kconfig
 source src/vendorcode/google/chromeos/vboot2/Kconfig
 

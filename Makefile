@@ -209,7 +209,7 @@ $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 # Only .c and .S get converted to .o, other files (like .ld) keep their name.
 # $1 stage name
 # $2 file path (list)
-src-to-obj=$(foreach file,$(2),$(basename $(patsubst src/%,$(obj)/%,$(file))).$(1)$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(suffix $(file)))))
+src-to-obj=$(foreach file,$(2),$(subst .$(1),,$(basename $(patsubst src/%,$(obj)/%,$(file)))).$(1)$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(suffix $(file)))))
 
 $(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class),$($(class)-srcs))))
 

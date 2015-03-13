@@ -43,8 +43,6 @@ AGESA_STATUS agesawrapper_amdinitlate(void);
 AGESA_STATUS agesawrapper_amdinitpost(void);
 AGESA_STATUS agesawrapper_amdinitmid(void);
 AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
-AGESA_STATUS agesawrapper_amdinitmmio(void);
-AGESA_STATUS agesawrapper_amdinitcpuio(void);
 void *agesawrapper_getlateinitptr(int pick);
 AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, void *ConfigPtr);
 AGESA_STATUS agesawrapper_amdS3Save(void);
@@ -56,5 +54,6 @@ AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
 VOID OemCustomizeInitEarly (IN	OUT AMD_EARLY_PARAMS *InitEarly);
 VOID amd_initcpuio(void);
+VOID amd_initmmio(void);
 
 #endif /* _AGESAWRAPPER_H_ */

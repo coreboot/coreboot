@@ -33,6 +33,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SPI_FLASH
 	select SPI_FLASH_SPANSION
 	select SPI_FLASH_STMICRO
+	select WIPEOUT_SUPPORTED
 
 config BOARD_VARIANT_AP148
 	bool "pick this to build an image for ap148"

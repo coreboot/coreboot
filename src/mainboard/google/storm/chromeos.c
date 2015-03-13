@@ -66,23 +66,45 @@ int get_developer_mode_switch(void)
 }
 
 /*
- * Holding recovery button pressed continuously for 5 seconds at reset time
- * is required to trigger recovery mode.
+ * The recovery switch on storm is overloaded: it needs to be pressed for a
+ * certain duration at startup to signal different requests:
+ *
+ * - keeping it pressed for 8 to 16 seconds after startup signals the need for
+ *   factory reset (wipeout);
+ * - keeping it pressed for longer than 16 seconds signals the need for Chrome
+ *   OS recovery.
+ *
+ * The state is read once and cached for following inquiries. The below enum
+ * lists possible states.
  */
-#define RECOVERY_MODE_DELAY_MS (5 * 1000)
-int get_recovery_mode_switch(void)
+enum switch_state {
+	not_probed = -1,
+	no_req,
+	recovery_req,
+	wipeout_req
+};
+
+#define WIPEOUT_MODE_DELAY_MS (8 * 1000)
+#define RECOVERY_MODE_EXTRA_DELAY_MS (8 * 1000)
+
+static enum switch_state get_switch_state(void)
 {
 	struct stopwatch sw;
-	static int sampled_value = -1;
+	int sampled_value;
+	static enum switch_state saved_state = not_probed;
 
-	if (sampled_value == -1)
-		sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+	if (saved_state != not_probed)
+		return saved_state;
 
-	if (!sampled_value)
-		return 0;
+	sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+
+	if (!sampled_value) {
+		saved_state = no_req;
+		return saved_state;
+	}
 
 	printk(BIOS_INFO, "recovery button pressed\n");
-	stopwatch_init_msecs_expire(&sw, RECOVERY_MODE_DELAY_MS);
+	stopwatch_init_msecs_expire(&sw, WIPEOUT_MODE_DELAY_MS);
 
 	do {
 		sampled_value = read_gpio(REC_SW) ^ !REC_POL;
@@ -91,11 +113,38 @@ int get_recovery_mode_switch(void)
 	} while (!stopwatch_expired(&sw));
 
 	if (sampled_value) {
-		printk(BIOS_INFO, "recovery mode requested\n");
 		if (board_id() == BOARD_ID_WHIRLWIND_SP5)
 			ww_ring_display_pattern(GSBI_ID_7, 0);
+
+		printk(BIOS_INFO, "wipeout requested, checking recovery\n");
+		stopwatch_init_msecs_expire(&sw, RECOVERY_MODE_EXTRA_DELAY_MS);
+		do {
+			sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+			if (!sampled_value)
+				break;
+		} while (!stopwatch_expired(&sw));
+
+		if (sampled_value) {
+			saved_state = recovery_req;
+			printk(BIOS_INFO, "recovery requested\n");
+		} else {
+			saved_state = wipeout_req;
+		}
+	} else {
+		saved_state = no_req;
 	}
-	return sampled_value;
+
+	return saved_state;
+}
+
+int get_recovery_mode_switch(void)
+{
+	return get_switch_state() == recovery_req;
+}
+
+int get_wipeout_mode_switch(void)
+{
+	return get_switch_state() == wipeout_req;
 }
 
 int get_write_protect_state(void)

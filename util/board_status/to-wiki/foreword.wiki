@@ -1,3 +1,6 @@
+This page was automatically generated. Please do not edit, any edits will be overwritten by an
+automatic utility.
+
 = coreboot status by mainboard =
 
 * This list contains reports of successful coreboot execution, ordered by date. It's shows which boards can actually run with current coreboot versions.

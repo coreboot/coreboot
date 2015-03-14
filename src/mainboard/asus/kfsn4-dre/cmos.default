@@ -1,5 +1,5 @@
 baud_rate = 115200
-debug_level = Alert
+debug_level = Spew
 multi_core = Enable
 slow_cpu = off
 hypertransport_speed_limit = Auto

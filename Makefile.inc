@@ -259,7 +259,7 @@ CFLAGS_common += -Werror
 endif
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 ifneq ($(GDB_DEBUG),)
-CFLAGS_common += -O0
+CFLAGS_common += -Og
 else
 CFLAGS_common += -Os
 endif

@@ -19,9 +19,13 @@
 
 ramstage-$(CONFIG_BACKUP_DEFAULT_SMM_REGION) += backup_default_smm.c
 
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,smm,x86_32))
 $(eval $(call create_class_compiler,smmstub,x86_32))
-
+else
+$(eval $(call create_class_compiler,smm,x86_64))
+$(eval $(call create_class_compiler,smmstub,x86_64))
+endif
 
 $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
 	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --start-group $(smm-objs) $(COMPILER_RT_smm) --end-group
@@ -35,7 +39,11 @@ $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_L
 # ELF symbol names.
 $(obj)/cpu/x86/smm/smm_wrap.ramstage.o: $(obj)/cpu/x86/smm/smm_wrap
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.o
+else
+	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf64-x86_64 -B x86_64 smm_wrap.ramstage.o
+endif
 
 
 ifeq ($(CONFIG_SMM_MODULES),y)
@@ -66,14 +74,22 @@ $(obj)/cpu/x86/smm/smmstub.ramstage.o: $(obj)/cpu/x86/smm/smmstub
 
 # C-based SMM handler.
 
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 $(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smm.elf, $(obj)/cpu/x86/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE),x86_32))
+else
+$(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smm.elf, $(obj)/cpu/x86/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE),x86_64))
+endif
 
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf.rmod
 	$(OBJCOPY_smm) -O binary $< $@
 
 $(obj)/cpu/x86/smm/smm.ramstage.o: $(obj)/cpu/x86/smm/smm
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+else
+	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
+endif
 
 else # CONFIG_SMM_MODULES
 

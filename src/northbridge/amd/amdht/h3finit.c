@@ -77,7 +77,7 @@ static const uint16_t ht_speed_limit[16] =
 
 static const struct ht_speed_limit_map_t {
 	uint16_t mhz;
-	uint8_t config;
+	uint8_t nvram;
 } ht_speed_limit_map[] = {
 	{0, NVRAM_LIMIT_HT_SPEED_AUTO},
 	{200, NVRAM_LIMIT_HT_SPEED_200},
@@ -102,7 +102,7 @@ static const uint16_t ht_speed_mhz_to_hw(uint16_t mhz)
 	size_t i;
 	for (i = 0; i < ARRAY_SIZE(ht_speed_limit_map); i++)
 		if (ht_speed_limit_map[i].mhz == mhz)
-			return ht_speed_limit_map[i].config;
+			return ht_speed_limit[ht_speed_limit_map[i].nvram];
 
 	printk(BIOS_WARNING,
 		"WARNING: Invalid HT link limit frequency %d specified, ignoring...\n",

@@ -1,4 +1,4 @@
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 romstage-$(CONFIG_CACHE_AS_RAM) += car.c
 endif
 
@@ -19,11 +19,19 @@ rmodules_$(ARCH-ramstage-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
 $(SIPI_DOTO): $(dir $(SIPI_ELF))sipi_vector.rmodules_$(ARCH-ramstage-y).o
 	$(CC_rmodules_$(ARCH-ramstage-y)) $(CFLAGS_rmodules_$(ARCH-ramstage-y)) -nostdlib -r -o $@ $^
 
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 $(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0,x86_32))
+else
+$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0,x86_64))
+endif
 
 $(SIPI_BIN): $(SIPI_RMOD)
 	$(OBJCOPY_ramstage) -O binary $< $@
 
 $(SIPI_BIN).ramstage.manual: $(SIPI_BIN)
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+else
+	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
+endif

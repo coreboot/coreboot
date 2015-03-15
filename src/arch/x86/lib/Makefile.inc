@@ -1,5 +1,5 @@
 
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
 romstage-y += cbfs_and_run.c
 romstage-y += memset.c
@@ -7,9 +7,9 @@ romstage-y += memcpy.c
 romstage-y += memmove.c
 romstage-y += mmap_boot.c
 
-endif # CONFIG_ARCH_ROMSTAGE_X86_32
+endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
 ramstage-y += c_start.S
 ramstage-y += cpu.c
@@ -33,8 +33,14 @@ smm-y += memcpy.c
 smm-y += memmove.c
 smm-y += mmap_boot.c
 
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 rmodules_x86_32-y += memset.c
 rmodules_x86_32-y += memcpy.c
 rmodules_x86_32-y += memmove.c
+else
+rmodules_x86_64-y += memset.c
+rmodules_x86_64-y += memcpy.c
+rmodules_x86_64-y += memmove.c
+endif
 
-endif # CONFIG_ARCH_RAMSTAGE_X86_32
+endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64

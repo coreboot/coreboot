@@ -58,19 +58,18 @@ cbfs-files-$(CONFIG_INTEL_MBI) += mbi.bin
 mbi.bin-file := $(call strip_quotes,$(CONFIG_MBI_FILE))
 mbi.bin-type := mbi
 
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 CBFSTOOL_PRE1_OPTS = -m x86 -s $(CONFIG_ROM_SIZE) \
 		     -o $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
 # Make sure that segment for .car.data is ignored while adding romstage.
 CBFSTOOL_PRE_OPTS  = -b $(shell cat $(objcbfs)/base_xip.txt) -S ".car.data"
 endif
 
-
 ###############################################################################
 # bootblock
 ###############################################################################
 
-ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
+ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 
 bootblock-srcs += $(src)/arch/x86/init/failover.ld
 bootblock-srcs += $(src)/cpu/x86/16bit/entry16.ld
@@ -112,7 +111,7 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(CFLAGS_x86_32) -c -o $@ $<  > $(basename $@).disasm
+	$(CC_bootblock) $(CFLAGS_bootblock) -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -129,13 +128,13 @@ $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootbloc
 	$(LD_bootblock) -m elf_i386 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
 
 
-endif # CONFIG_ARCH_BOOTBLOCK_X86_32
+endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ###############################################################################
 # romstage
 ###############################################################################
 
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
 crt0s = $(src)/arch/x86/init/prologue.inc
 romstage-srcs += $(src)/arch/x86/init/romstage.ld
@@ -238,13 +237,13 @@ $(objgenerated)/crt0.S: $$(crt0s)
 # Compiling crt0 with -g seems to trigger https://sourceware.org/bugzilla/show_bug.cgi?id=6428
 romstage-S-ccopts += -I. -g0
 
-endif # CONFIG_ARCH_ROMSTAGE_X86_32
+endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 
 ###############################################################################
 # ramstage
 ###############################################################################
 
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
@@ -278,7 +277,11 @@ ramstage-libs ?=
 
 ifeq ($(CONFIG_RELOCATABLE_RAMSTAGE),y)
 
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 $(eval $(call rmodule_link,$(objcbfs)/ramstage.debug, $(objgenerated)/ramstage.o, $(CONFIG_HEAP_SIZE),x86_32))
+else
+$(eval $(call rmodule_link,$(objcbfs)/ramstage.debug, $(objgenerated)/ramstage.o, $(CONFIG_HEAP_SIZE),x86_64))
+endif
 
 # The rmodule_link defintion creates an elf file with .rmod extension.
 $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
@@ -296,9 +299,13 @@ endif
 
 $(objgenerated)/ramstage.o: $$(ramstage-objs) $(COMPILER_RT_ramstage) $$(ramstage-libs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 	$(LD_ramstage) -m elf_i386 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) --no-whole-archive $(COMPILER_RT_ramstage) --end-group
+else
+	$(LD_ramstage) -m elf_x86_64 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) --no-whole-archive $(COMPILER_RT_ramstage) --end-group
+endif
 
-endif # CONFIG_ARCH_RAMSTAGE_X86_32
+endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
 
 ################################################################################
 

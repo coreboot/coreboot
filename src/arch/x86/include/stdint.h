@@ -1,5 +1,5 @@
-#ifndef I386_STDINT_H
-#define I386_STDINT_H
+#ifndef X86_STDINT_H
+#define X86_STDINT_H
 
 #if defined(__GNUC__)
 #define __HAVE_LONG_LONG__ 1
@@ -53,8 +53,8 @@ typedef signed long long   int_fast64_t;
 #endif
 
 /* Types for `void *' pointers.  */
-typedef int                intptr_t;
-typedef unsigned int       uintptr_t;
+typedef long               intptr_t;
+typedef unsigned long      uintptr_t;
 
 /* Largest integral types */
 #if __HAVE_LONG_LONG__
@@ -85,6 +85,18 @@ typedef uint8_t bool;
 #ifndef UINT64_MAX
 # define UINT64_MAX (18446744073709551615ULL)
 #endif
+
+#ifdef __x86_64__
+
+#ifndef UINT64_C
+#define UINT64_C(c) c ## UL
+#endif
+#ifndef PRIu64
+#define PRIu64 "lu"
+#endif
+
+#else
+
 #ifndef UINT64_C
 #define UINT64_C(c) c ## ULL
 #endif
@@ -92,7 +104,9 @@ typedef uint8_t bool;
 #define PRIu64 "llu"
 #endif
 
+#endif
+
 
 #undef __HAVE_LONG_LONG__
 
-#endif /* I386_STDINT_H */
+#endif /* X86_STDINT_H */

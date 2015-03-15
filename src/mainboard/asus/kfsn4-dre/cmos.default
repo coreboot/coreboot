@@ -11,3 +11,4 @@ interleave_chip_selects = Enable
 interleave_nodes = Disable
 interleave_memory_channels = Enable
 power_on_after_fail = Enable
+boot_option = Fallback

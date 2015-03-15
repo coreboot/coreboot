@@ -18,6 +18,8 @@ config ARCH_X86
 	default n
 	select PCI
 
+# stage selectors for x86
+
 config ARCH_BOOTBLOCK_X86_32
 	bool
 	default n
@@ -32,6 +34,25 @@ config ARCH_ROMSTAGE_X86_32
 	default n
 
 config ARCH_RAMSTAGE_X86_32
+	bool
+	default n
+
+# stage selectors for x64
+
+config ARCH_BOOTBLOCK_X86_64
+	bool
+	default n
+	select ARCH_X86
+
+config ARCH_VERSTAGE_X86_64
+	bool
+	default n
+
+config ARCH_ROMSTAGE_X86_64
+	bool
+	default n
+
+config ARCH_RAMSTAGE_X86_64
 	bool
 	default n
 

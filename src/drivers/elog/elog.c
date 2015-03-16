@@ -37,7 +37,7 @@
 
 #include <vendorcode/google/chromeos/fmap.h>
 
-#if CONFIG_ELOG_FLASH_BASE == 0
+#if !IS_ENABLED(CONFIG_CHROMEOS) && CONFIG_ELOG_FLASH_BASE == 0
 #error "CONFIG_ELOG_FLASH_BASE is invalid"
 #endif
 #if CONFIG_ELOG_FULL_THRESHOLD >= CONFIG_ELOG_AREA_SIZE

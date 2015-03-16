@@ -51,7 +51,7 @@
 
 #if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 
-static int gtt_setup(unsigned int mmiobase)
+static int gtt_setup(void *mmiobase)
 {
 	unsigned long PGETBL_save;
 	unsigned long tom; // top of memory
@@ -87,7 +87,7 @@ static int gtt_setup(unsigned int mmiobase)
 
 static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 			  unsigned int pphysbase, unsigned int piobase,
-			  unsigned int pmmio, unsigned int pgfx)
+			  void *pmmio, unsigned int pgfx)
 {
 	struct edid edid;
 	u8 edid_data[128];
@@ -107,7 +107,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	u16 reg16;
 
 	printk(BIOS_SPEW,
-	       "i915lightup: graphics %p mmio %08x addrport %04x physbase %08x\n",
+	       "i915lightup: graphics %p mmio %p addrport %04x physbase %08x\n",
 	       (void *)pgfx, pmmio, piobase, pphysbase);
 
 	intel_gmbus_read_edid(pmmio + GMBUS0, 3, 0x50, edid_data, 128);
@@ -432,11 +432,12 @@ static void gma_func0_init(struct device *dev)
 #if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	/* This should probably run before post VBIOS init. */
 	printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
-	u32 iobase, mmiobase, graphics_base;
+	void *mmiobase;
+	u32 iobase, graphics_base;
 	struct northbridge_intel_i945_config *conf = dev->chip_info;
 
 	iobase = dev->resource_list[1].base;
-	mmiobase = dev->resource_list[0].base;
+	mmiobase = (void *)(uintptr_t)dev->resource_list[0].base;
 	graphics_base = dev->resource_list[2].base;
 
 	printk(BIOS_SPEW, "GMADR=0x%08x GTTADR=0x%08x\n",
@@ -471,17 +472,14 @@ static void gma_func0_disable(struct device *dev)
 static void gma_func1_init(struct device *dev)
 {
 	u32 reg32;
-	u8 val;
 
 	/* IGD needs to be Bus Master, also enable IO accesss */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 |
 			PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
-	if (get_option(&val, "tft_brightness") == CB_SUCCESS)
-		pci_write_config8(dev, 0xf4, val);
-	else
-		pci_write_config8(dev, 0xf4, 0xff);
+	/* Permanently set tft_brightness to 0xff. Ignore nvramtool configuration */
+	pci_write_config8(dev, 0xf4, 0xff);
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

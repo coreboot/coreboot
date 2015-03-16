@@ -11,5 +11,6 @@ cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
+smm-$(CONFIG_MONOTONIC_TIMER_MSR) += monotonic_timer.c
 
 cpu_incs += $(src)/cpu/intel/haswell/cache_as_ram.inc

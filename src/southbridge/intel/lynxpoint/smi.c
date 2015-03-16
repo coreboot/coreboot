@@ -135,9 +135,6 @@ static void finalize_boot(void *unused)
 	outb(0xcb, 0xb2);
 }
 
-BOOT_STATE_INIT_ENTRIES(finalize) = {
-	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY,
-			      finalize_boot, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, finalize_boot, NULL);
 
 #endif

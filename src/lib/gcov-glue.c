@@ -150,8 +150,6 @@ static void coverage_exit(void *unused)
 	__gcov_flush();
 }
 
-BOOT_STATE_INIT_ENTRIES(gcov_bscb) = {
-	BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, coverage_init, NULL),
-	BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, coverage_exit, NULL),
-	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, coverage_exit, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, coverage_init, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, coverage_exit, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, coverage_exit, NULL);

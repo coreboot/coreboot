@@ -318,8 +318,6 @@ static void find_fsp_hob_update_mrc(void *unused)
 }
 
 /* Update the MRC/fast boot cache as part of the late table writing stage */
-BOOT_STATE_INIT_ENTRIES(fsp_hob_find) = {
-	BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
-	                      find_fsp_hob_update_mrc, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
+			find_fsp_hob_update_mrc, NULL);
 #endif	/* #ifndef __PRE_RAM__ */

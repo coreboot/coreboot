@@ -435,11 +435,7 @@ static void init_cbmem_pre_device(void *unused)
 	cbmem_initialize();
 }
 
-BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
-	BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY,
-	                      init_cbmem_pre_device, NULL),
-};
-
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, init_cbmem_pre_device, NULL);
 #else
 
 static void init_cbmem_post_device(void *unused)
@@ -450,10 +446,8 @@ static void init_cbmem_post_device(void *unused)
 		cbmem_initialize_empty();
 }
 
-BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
-	BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
-	                      init_cbmem_post_device, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
+			init_cbmem_post_device, NULL);
 #endif
 
 void cbmem_add_bootmem(void)

@@ -182,6 +182,4 @@ static void edp_vdden_cb(void *unused)
 	ncore_select_func(SOC_DDI1_VDDEN_PAD, PAD_FUNC2);
 }
 
-BOOT_STATE_INIT_ENTRIES(edp_vdden_bscb) = {
-	BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, edp_vdden_cb, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, edp_vdden_cb, NULL);

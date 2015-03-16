@@ -303,9 +303,6 @@ static void update_mrc_cache(void *unused)
 	}
 }
 
-BOOT_STATE_INIT_ENTRIES(mrc_cache_update) = {
-	BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
-	                      update_mrc_cache, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, update_mrc_cache, NULL);
 
 #endif /* defined(__PRE_RAM__) */

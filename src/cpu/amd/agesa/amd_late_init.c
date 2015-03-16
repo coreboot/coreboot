@@ -42,7 +42,5 @@ static void agesawrapper_post_device(void *unused)
 	agesawrapper_amdS3Save();
 }
 
-BOOT_STATE_INIT_ENTRIES(agesa_bscb) = {
-	BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT,
-	                      agesawrapper_post_device, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT,
+			agesawrapper_post_device, NULL);

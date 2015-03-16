@@ -62,6 +62,7 @@ SECTIONS
 		ecpu_drivers = . ;
 		_bs_init_begin = .;
 		KEEP(*(.bs_init));
+		LONG(0);
 		_bs_init_end = .;
 
 		*(.rodata)

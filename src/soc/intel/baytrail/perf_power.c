@@ -288,7 +288,5 @@ static void perf_power(void *unused)
 	reg_script_run(perf_power_settings);
 }
 
-BOOT_STATE_INIT_ENTRIES(disable_rom_cache_bscb) = {
-	BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, perf_power, NULL),
-	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, perf_power, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, perf_power, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, perf_power, NULL);

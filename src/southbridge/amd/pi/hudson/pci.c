@@ -48,10 +48,7 @@ static void set_pci_irqs(void *unused)
  * Hook this function into the PCI state machine
  * on entry into BS_DEV_ENABLE.
  */
-BOOT_STATE_INIT_ENTRIES(pci_irq_update) = {
-	BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY,
-	                      set_pci_irqs, NULL),
-};
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, set_pci_irqs, NULL);
 
 static struct pci_operations lops_pci = {
 	.set_subsystem = 0,

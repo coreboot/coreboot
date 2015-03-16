@@ -22,6 +22,9 @@
 #if !defined(__SMM__) && !defined(__PRE_RAM__)
 
 #include <string.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
 
 /* Control debugging of the boot state machine. */
 #define BOOT_STATE_DEBUG 0
@@ -157,6 +160,10 @@ int boot_state_sched_on_entry(struct boot_state_callback *bscb,
                               boot_state_t state);
 int boot_state_sched_on_exit(struct boot_state_callback *bscb,
                              boot_state_t state);
+/* Schedule an array of entries of size num. */
+struct boot_state_init_entry;
+void boot_state_sched_entries(struct boot_state_init_entry *entries,
+				size_t num);
 
 /* Block/Unblock the (state, seq) pair from transitioning. Returns 0 on
  * success < 0  when the phase of the (state,seq) has already ran. */
@@ -180,15 +187,16 @@ struct boot_state_init_entry {
 
 #define BOOT_STATE_INIT_ATTR  __attribute__ ((used,section (".bs_init")))
 
-#define BOOT_STATE_INIT_ENTRIES(name_) \
-	static struct boot_state_init_entry name_[] BOOT_STATE_INIT_ATTR
-
-#define BOOT_STATE_INIT_ENTRY(state_, when_, func_, arg_)	\
-	{							\
-		.state = state_,				\
-		.when = when_,					\
-		.bscb = BOOT_STATE_CALLBACK_INIT(func_, arg_),	\
-	}
+#define BOOT_STATE_INIT_ENTRY(state_, when_, func_, arg_)		\
+	static struct boot_state_init_entry func_ ##_## state_ ##_## when_ = \
+	{								\
+		.state = state_,					\
+		.when = when_,						\
+		.bscb = BOOT_STATE_CALLBACK_INIT(func_, arg_),		\
+	};								\
+	static struct boot_state_init_entry *				\
+		bsie_ ## func_ ##_## state_ ##_## when_ BOOT_STATE_INIT_ATTR = \
+		& func_ ##_## state_ ##_## when_;
 
 #endif
 #endif /* BOOTSTATE_H */

@@ -432,18 +432,16 @@ int boot_state_sched_on_exit(struct boot_state_callback *bscb,
 
 static void boot_state_schedule_static_entries(void)
 {
-	extern struct boot_state_init_entry _bs_init_begin;
-	extern struct boot_state_init_entry _bs_init_end;
-	struct boot_state_init_entry *cur;
+	extern struct boot_state_init_entry *_bs_init_begin[];
+	struct boot_state_init_entry **slot;
 
-	cur = &_bs_init_begin;
+	for (slot = &_bs_init_begin[0]; *slot != NULL; slot++) {
+		struct boot_state_init_entry *cur = *slot;
 
-	while (cur != &_bs_init_end) {
 		if (cur->when == BS_ON_ENTRY)
 			boot_state_sched_on_entry(&cur->bscb, cur->state);
 		else
 			boot_state_sched_on_exit(&cur->bscb, cur->state);
-		cur++;
 	}
 }
 

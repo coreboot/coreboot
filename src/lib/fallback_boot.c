@@ -22,8 +22,9 @@ static void set_boot_successful(void)
 	byte |= (byte & (1 << 1)) >> 1;
 
 	/* If we are in normal mode set the boot count to 0 */
-	if(byte & 1)
-		byte &= 0x0f;
+	if (!IS_ENABLED(CONFIG_SKIP_MAX_REBOOT_CNT_CLEAR))
+		if(byte & 1)
+			byte &= 0x0f;
 	outb(byte, RTC_PORT(1));
 }
 #else

@@ -27,6 +27,7 @@
  */
 
 #include <console/console.h>
+#include <delay.h>
 #include <device/i2c.h>
 #include <string.h>
 
@@ -43,6 +44,7 @@
 #define LP55231_ENGCTRL2_REG	0x01
 #define LP55231_D1_CRT_CTRL_REG	0x26
 #define LP55231_MISC_REG	0x36
+#define LP55231_VARIABLE_REG	0x3c
 #define LP55231_RESET_REG	0x3d
 #define LP55231_ENG1_PROG_START	0x4c
 #define LP55231_PROG_PAGE_REG	0x4f
@@ -55,10 +57,21 @@
 #define LP55231_ENGCTRL1_CHIP_EN     0x40
 #define LP55231_ENGCTRL1_ALL_ENG_GO  0x2a
 
+/* LP55231_ENGCTRL2_REG	fields. */
+#define LP55231_ENGCTRL2_ALL_DISABLE 0
+#define LP55231_ENGCTRL2_ALL_LOAD    0x15
+#define LP55231_ENGCTRL2_ALL_RUN     0x2a
+
 /* LP55231_MISC_REG fields. */
 #define LP55231_MISC_AUTOINCR  (1 << 6)
 #define LP55231_MISC_PUMP_1X   (1 << 3)
 #define LP55231_MISC_INT_CLK   (3 << 0)
+
+/*
+ * LP55231_VARIABLE_REG cookie value. It indicates to depthcharge that the
+ * ring has been initialized by coreboot.
+ */
+#define LP55231_VARIABLE_COOKIE	0xb4
 
 /* Goes into LP55231_RESET_REG to reset the chip. */
 #define LP55231_RESET_VALUE	0xff
@@ -224,12 +237,24 @@ static int ledc_read(TiLp55231 *ledc, uint8_t addr, uint8_t *data)
 }
 
 /*
- * Reset transaction is expected to result in a failing i2c command,
- * no need to return a value.
+ * Reset transaction is expected to result in a failing i2c command. But even
+ * before trying it, read the reset register, which is supposed to always
+ * return 0. If this fails - there is no lp55231 at this address.
+ *
+ * Return 0 on success, -1 on failure to detect controller.
  */
-static void ledc_reset(TiLp55231 *ledc)
+static int ledc_reset(TiLp55231 *ledc)
 {
 	uint8_t data;
+
+	data = ~0;
+	ledc_read(ledc, LP55231_RESET_REG, &data);
+	if (data) {
+		printk(BIOS_WARNING,
+		       "WW_RING: no controller found at address %#2.2x\n",
+		       ledc->dev_addr);
+		return -1;
+	}
 
 	data = LP55231_RESET_VALUE;
 	ledc_write(ledc, LP55231_RESET_REG, &data, 1);
@@ -241,6 +266,7 @@ static void ledc_reset(TiLp55231 *ledc)
 	 * fails.
 	 */
 	ledc_read(ledc, LP55231_RESET_REG, &data);
+	return 0;
 }
 
 /*
@@ -271,22 +297,32 @@ static void ledc_write_program(TiLp55231 *ledc, uint8_t load_addr,
 			   program, segment_size);
 
 		count -= segment_size;
+		program += segment_size;
 		page_offs = 0;
 		page_num++;
 	}
+}
+
+static void ledc_write_engctrl2(TiLp55231 *ledc, uint8_t value)
+{
+	ledc_write(ledc, LP55231_ENGCTRL2_REG, &value, 1);
+	udelay(1500);
 }
 
 /* Run an lp55231 program on a controller. */
 static void ledc_run_program(TiLp55231 *ledc,
 			     const TiLp55231Program *program_desc)
 {
-	uint8_t data;
 	int i;
+	uint8_t data;
 
-	data = 0;
-	ledc_write(ledc, LP55231_ENGCTRL2_REG, &data, 1);
-	data = 0x15;
-	ledc_write(ledc, LP55231_ENGCTRL2_REG, &data, 1);
+	/* All engines on hold. */
+	data = LP55231_ENGCTRL1_CHIP_EN;
+	ledc_write(ledc, LP55231_ENGCTRL1_REG, &data, 1);
+
+	ledc_write_engctrl2(ledc, LP55231_ENGCTRL2_ALL_DISABLE);
+	ledc_write_engctrl2(ledc, LP55231_ENGCTRL2_ALL_LOAD);
+
 	ledc_write_program(ledc, program_desc->load_addr,
 			   program_desc->program_text,
 			   program_desc->program_size);
@@ -295,10 +331,9 @@ static void ledc_run_program(TiLp55231 *ledc,
 		ledc_write(ledc, LP55231_ENG1_PROG_START + i,
 			   program_desc->engine_start_addr + i, 1);
 
-	data = 0;
-	ledc_write(ledc, LP55231_ENGCTRL2_REG, &data, 1);
-	data = 0x2a;
-	ledc_write(ledc, LP55231_ENGCTRL2_REG, &data, 1);
+	data = LP55231_ENGCTRL1_CHIP_EN | LP55231_ENGCTRL1_ALL_ENG_GO;
+	ledc_write(ledc, LP55231_ENGCTRL1_REG, &data, 1);
+	ledc_write_engctrl2(ledc, LP55231_ENGCTRL2_ALL_RUN);
 }
 
 /*
@@ -307,19 +342,15 @@ static void ledc_run_program(TiLp55231 *ledc,
  */
 static int ledc_init_validate(TiLp55231 *ledc)
 {
-	const uint8_t ctrl1_reset[] = {
-		0,
-		LP55231_ENGCTRL1_CHIP_EN,
-		LP55231_ENGCTRL1_CHIP_EN | LP55231_ENGCTRL1_ALL_ENG_GO
-	};
 	uint8_t data;
 	int i;
 
-	ledc_reset(ledc);
+	if (ledc_reset(ledc))
+		return -1;
 
-	/* Set up all engines to run. */
-	for (i = 0; i < ARRAY_SIZE(ctrl1_reset); i++)
-		ledc_write(ledc, LP55231_ENGCTRL1_REG, ctrl1_reset + i, 1);
+	/* Enable the chip, keep engines in hold state. */
+	data = LP55231_ENGCTRL1_CHIP_EN;
+	ledc_write(ledc, LP55231_ENGCTRL1_REG, &data, 1);
 
 	/*
 	 * Internal clock, 3.3V output (pump 1x), autoincrement on multibyte
@@ -334,7 +365,6 @@ static int ledc_init_validate(TiLp55231 *ledc)
 	 * value at reset.
 	 */
 	for (i = 0; i < 9; i++) {
-		data = 0;
 		ledc_read(ledc, LP55231_D1_CRT_CTRL_REG + i, &data);
 		if (data != LP55231_CRT_CTRL_DEFAULT) {
 			printk(BIOS_WARNING,
@@ -343,6 +373,13 @@ static int ledc_init_validate(TiLp55231 *ledc)
 			return -1;
 		}
 	}
+
+	/*
+	 * Signal Depthcharge that the controller has been initiazed by
+	 * coreboot.
+	 */
+	data = LP55231_VARIABLE_COOKIE;
+	ledc_write(ledc, LP55231_VARIABLE_REG, &data, 1);
 
 	return 0;
 }
@@ -364,9 +401,13 @@ int ww_ring_display_pattern(unsigned i2c_bus, enum VbScreenType_t screen_type)
 	for (i = 0; i < ARRAY_SIZE(state_programs); i++)
 		if (state_programs[i].vb_screen == screen_type) {
 			int j;
-			for (j = 0; j < WW_RING_NUM_LED_CONTROLLERS; j++)
+
+			for (j = 0; j < WW_RING_NUM_LED_CONTROLLERS; j++) {
+				if (!lp55231s[j].dev_addr)
+					continue;
 				ledc_run_program(lp55231s + j,
 						 state_programs[i].programs[j]);
+			}
 			return 0;
 		}
 
@@ -393,9 +434,17 @@ static void ww_ring_init(unsigned i2c_bus)
 
 		if (!ledc_init_validate(ledc))
 			count++;
+		else
+			ledc->dev_addr = 0; /* Mark disabled. */
 	}
 
 	printk(BIOS_INFO, "WW_RING: initialized %d out of %d\n", count, i);
-	if (count != i)
-		printk(BIOS_WARNING, "WW_RING: will keep going anyway\n");
+	if (count != i) {
+		if (count)
+			printk(BIOS_WARNING,
+			       "WW_RING: will keep going anyway\n");
+		else
+			printk(BIOS_WARNING,
+			       "WW_RING: LED ring not present\n");
+	}
 }

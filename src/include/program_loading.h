@@ -22,6 +22,12 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/************************
+ *   ROMSTAGE LOADING   *
+ ************************/
+
+/* Run romstage from bootblock. */
+void run_romstage(void);
 
 /************************
  *   RAMSTAGE LOADING   *

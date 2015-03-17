@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+bootblock-y += load_and_run_romstage.c
 romstage-y += cbfs_ramstage_loader.c
 romstage-y += load_and_run_ramstage.c
 ramstage-y += cbfs_payload_loader.c

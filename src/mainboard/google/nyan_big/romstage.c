@@ -21,11 +21,11 @@
 #include <arch/cpu.h>
 #include <arch/exception.h>
 #include <arch/io.h>
-#include <arch/stages.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <mainboard/google/nyan/reset.h>
+#include <program_loading.h>
 #include <romstage_handoff.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "sdram_configs.h"
@@ -201,12 +201,7 @@ static void __attribute__((noinline)) romstage(void)
 
 	vboot_verify_firmware(romstage_handoff_find_or_add());
 
-	timestamp_add_now(TS_START_COPYRAM);
-	void *entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				      "fallback/coreboot_ram");
-	timestamp_add_now(TS_END_COPYRAM);
-
-	stage_exit(entry);
+	run_ramstage();
 }
 
 /* Stub to force arm_init_caches to the top, before any stack/memory accesses */

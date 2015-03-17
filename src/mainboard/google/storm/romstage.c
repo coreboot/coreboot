@@ -17,18 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/stages.h>
-#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <program_loading.h>
 
 void main(void)
 {
-	void *entry;
-
 	console_init();
 	cbmem_initialize_empty();
-
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
-	stage_exit(entry);
+	run_ramstage();
 }

@@ -21,17 +21,15 @@
 #include <armv7.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <arch/stages.h>
 #include <cbmem.h>
 #include <delay.h>
+#include <program_loading.h>
 #include <timestamp.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
 
 void main(void)
 {
-	void *entry;
-
 	console_init();
 
 	/* used for MMU and CBMEM setup, in MB */
@@ -54,6 +52,5 @@ void main(void)
 
 	cbmem_initialize_empty();
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
-	stage_exit(entry);
+	run_ramstage();
 }

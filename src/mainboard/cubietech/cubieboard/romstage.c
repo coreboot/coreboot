@@ -16,6 +16,7 @@
 #include <cpu/allwinner/a10/clock.h>
 #include <cpu/allwinner/a10/gpio.h>
 #include <cpu/allwinner/a10/twi.h>
+#include <program_loading.h>
 #define __SIMPLE_DEVICE__
 #include <device/device.h>
 #include <drivers/xpowers/axp209/axp209.h>
@@ -70,7 +71,6 @@ static enum cb_err cubieboard_setup_power(void)
 
 void main(void)
 {
-	void *entry;
 	enum cb_err err;
 
 	console_init();
@@ -87,8 +87,5 @@ void main(void)
 		a1x_set_cpu_clock(384);
 	}
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
-	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);
-
-	stage_exit(entry);
+	run_ramstage();
 }

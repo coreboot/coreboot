@@ -38,7 +38,7 @@
 #include <soc/samsung/exynos5420/trustzone.h>
 #include <soc/samsung/exynos5420/wakeup.h>
 #include <console/console.h>
-#include <arch/stages.h>
+#include <program_loading.h>
 
 #include <drivers/maxim/max77802/max77802.h>
 #include <device/i2c.h>
@@ -228,7 +228,6 @@ void main(void)
 {
 
 	extern struct mem_timings mem_timings;
-	void *entry;
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 	int power_init_failed;
 
@@ -278,10 +277,9 @@ void main(void)
 
 	cbmem_initialize_empty();
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
 	simple_spi_test();
 
 	timestamp_add_now(TS_END_ROMSTAGE);
 
-	stage_exit(entry);
+	run_ramstage();
 }

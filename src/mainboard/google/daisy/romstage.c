@@ -37,7 +37,7 @@
 #include <soc/samsung/exynos5250/trustzone.h>
 #include <soc/samsung/exynos5250/wakeup.h>
 #include <console/console.h>
-#include <arch/stages.h>
+#include <program_loading.h>
 
 #include <drivers/maxim/max77686/max77686.h>
 #include <device/i2c.h>
@@ -145,7 +145,6 @@ static struct mem_timings *setup_clock(void)
 void main(void)
 {
 	struct mem_timings *mem;
-	void *entry;
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 
 	timestamp_init(timestamp_get());
@@ -182,9 +181,7 @@ void main(void)
 
 	cbmem_initialize_empty();
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
-
 	timestamp_add_now(TS_END_ROMSTAGE);
 
-	stage_exit(entry);
+	run_ramstage();
 }

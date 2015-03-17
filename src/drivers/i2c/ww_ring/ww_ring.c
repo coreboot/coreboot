@@ -31,10 +31,7 @@
 #include <device/i2c.h>
 #include <string.h>
 
-#include "drivers/i2c/ww_ring/ww_ring.h"
-
-/* Number of lp55321 controllers on the ring */
-#define WW_RING_NUM_LED_CONTROLLERS 2
+#include "drivers/i2c/ww_ring/ww_ring_programs.h"
 
 /* I2c address of the first of the controllers, the rest are contiguous. */
 #define WW_RING_BASE_ADDR	0x32
@@ -84,9 +81,6 @@
 #define LP55231_PROG_PAGES      6
 #define LP55231_MAX_PROG_SIZE  (LP55231_PROG_PAGE_SIZE * LP55231_PROG_PAGES)
 
-/* There are threee independent engines/cores in the controller. */
-#define LP55231_NUM_OF_ENGINES 3
-
 /*
  * Structure to cache data relevant to accessing one controller. I2c interface
  * to use, device address on the i2c bus and a data buffer for write
@@ -99,54 +93,7 @@ typedef struct {
 	uint8_t  data_buffer[LP55231_PROG_PAGE_SIZE + 1];
 } TiLp55231;
 
-/*
- * Structure to describe an lp55231 program: pointer to the text of the
- * program, its size and load address (load addr + size sould not exceed
- * LP55231_MAX_PROG_SIZE), and start addresses for all of the three
- * engines.
- */
-typedef struct {
-	const uint8_t *program_text;
-	uint8_t program_size;
-	uint8_t  load_addr;
-	uint8_t  engine_start_addr[LP55231_NUM_OF_ENGINES];
-} TiLp55231Program;
-
-/* A structure to bind controller programs to a vboot state. */
-typedef struct {
-	enum display_pattern   led_pattern;
-	const TiLp55231Program * programs[WW_RING_NUM_LED_CONTROLLERS];
-} WwRingStateProg;
-
 static void ww_ring_init(unsigned i2c_bus);
-
-/****************************************************************/
-/*   LED ring program definitions for different vboot states.	*/
-
-static const uint8_t blink_program_text[] = {
-	0x40, 0x40, 0x9D, 0x04, 0x40, 0x40, 0x7E,
-	0x00, 0x9D, 0x07, 0x40, 0x00, 0x9D, 0x04,
-	0x40, 0x00, 0x7E, 0x00, 0xA0, 0x00, 0x00,
-	0x00 };
-
-static const TiLp55231Program led_blink_program = {
-	blink_program_text,
-	sizeof(blink_program_text),
-	0,
-	{0,
-	 sizeof(blink_program_text) - 2,
-	 sizeof(blink_program_text) - 2}
-};
-
-static const WwRingStateProg state_programs[] = {
-	/*
-	 * for test purposes the blank screen program is set to blinking, will
-	 * be changed soon.
-	 */
-	{WWR_ALL_OFF, {&led_blink_program, &led_blink_program} },
-};
-/*								*/
-/****************************************************************/
 
 /* Controller descriptors. */
 static TiLp55231 lp55231s[WW_RING_NUM_LED_CONTROLLERS];
@@ -389,23 +336,24 @@ static int ledc_init_validate(TiLp55231 *ledc)
  */
 int ww_ring_display_pattern(unsigned i2c_bus, enum display_pattern pattern)
 {
-	int i;
 	static int initted;
+	const WwRingStateProg *wwr_prog;
 
 	if (!initted) {
 		ww_ring_init(i2c_bus);
 		initted = 1;
 	}
 
-	for (i = 0; i < ARRAY_SIZE(state_programs); i++)
-		if (state_programs[i].led_pattern == pattern) {
+	/* Last entry does not have any actual programs defined. */
+	for (wwr_prog = wwr_state_programs; wwr_prog->programs[0]; wwr_prog++)
+		if (wwr_prog->led_pattern == pattern) {
 			int j;
 
 			for (j = 0; j < WW_RING_NUM_LED_CONTROLLERS; j++) {
 				if (!lp55231s[j].dev_addr)
 					continue;
 				ledc_run_program(lp55231s + j,
-						 state_programs[i].programs[j]);
+						 wwr_prog->programs[j]);
 			}
 			return 0;
 		}

@@ -22,7 +22,7 @@
 #include <arch/stages.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <ramstage_loader.h>
+#include <program_loading.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
 

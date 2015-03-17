@@ -1,6 +1,6 @@
 #include <console/console.h>
 #include <arch/stages.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 #include <ip_checksum.h>
 #include <string.h>
 

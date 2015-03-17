@@ -21,7 +21,7 @@
 #include <arch/stages.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 
 void arch_payload_run(const struct payload *payload)
 {

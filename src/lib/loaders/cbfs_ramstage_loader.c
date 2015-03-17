@@ -20,7 +20,7 @@
 #include <console/console.h>
 #include <cbfs.h>
 #include <arch/stages.h>
-#include <ramstage_loader.h>
+#include <program_loading.h>
 #include <timestamp.h>
 
 #if CONFIG_RELOCATABLE_RAMSTAGE

@@ -19,7 +19,7 @@
 
 #include <console/console.h>
 #include <arch/stages.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 #include <console/uart.h>
 
 void arch_payload_run(const struct payload *payload)

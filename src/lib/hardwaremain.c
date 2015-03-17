@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <reset.h>
 #include <boot/tables.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 #include <lib.h>
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>

@@ -27,7 +27,7 @@
 #include <cbfs.h>
 #include <lib.h>
 #include <bootmem.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 
 /* from ramstage.ld: */
 extern unsigned char _ram_seg;

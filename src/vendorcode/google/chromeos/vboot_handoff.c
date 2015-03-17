@@ -24,7 +24,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 #include "vboot_handoff.h"
 
 int vboot_enable_developer(void)

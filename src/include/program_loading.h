@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Google Inc.
+ * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-#ifndef PAYLOAD_LOADER_H
-#define PAYLOAD_LOADER_H
+#ifndef PROGRAM_LOADING_H
+#define PROGRAM_LOADING_H
 
 #include <stdint.h>
 #include <stddef.h>
+
+
+/************************
+ *   RAMSTAGE LOADING   *
+ ************************/
+
+struct cbmem_entry;
+
+/* Run ramstage from romstage. */
+void run_ramstage(void);
+
+struct ramstage_loader_ops {
+	const char *name;
+	void *(*load)(uint32_t cbmem_id, const char *name,
+			const struct cbmem_entry **cbmem_entry);
+};
+
+/***********************
+ *   PAYLOAD LOADING   *
+ ***********************/
 
 struct buffer_area {
 	void *data;
@@ -63,4 +83,5 @@ struct payload_loader_ops {
 /* Defined in src/lib/selfboot.c */
 void *selfload(struct payload *payload);
 
-#endif  /* PAYLOAD_LOADER_H */
+
+#endif /* PROGRAM_LOADING_H */

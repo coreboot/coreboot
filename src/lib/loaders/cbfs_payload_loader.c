@@ -18,7 +18,7 @@
  */
 
 #include <cbfs.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 
 static int cbfs_locate_payload(struct payload *payload)
 {

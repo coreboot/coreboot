@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <fallback.h>
 #include <lib.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 #include <timestamp.h>
 
 extern const struct payload_loader_ops vboot_payload_loader;

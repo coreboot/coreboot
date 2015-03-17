@@ -25,9 +25,9 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
+#include <program_loading.h>
 #include <tpm.h>
 #include <reset.h>
-#include <ramstage_loader.h>
 #include <romstage_handoff.h>
 #include <rmodule.h>
 #include <string.h>

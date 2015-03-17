@@ -22,7 +22,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <bootmem.h>
-#include <payload_loader.h>
+#include <program_loading.h>
 
 void mirror_payload(struct payload *payload)
 {

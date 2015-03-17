@@ -205,11 +205,6 @@ config PCI
 	bool
 	default n
 
-config PCI_64BIT_PREF_MEM
-	bool
-	depends on PCI
-	default n
-
 config HYPERTRANSPORT_PLUGIN_SUPPORT
 	bool
 	depends on PCI

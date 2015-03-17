@@ -652,30 +652,7 @@ static void domain_read_resources(struct device *dev)
 	/* FIXME: do we need to check extend conf space?
 	   I don't believe that much preset value */
 
-#if !CONFIG_PCI_64BIT_PREF_MEM
 	pci_domain_read_resources(dev);
-
-#else
-	struct bus *link;
-	struct resource *resource;
-	for (link=dev->link_list; link; link = link->next) {
-		/* Initialize the system wide io space constraints */
-		resource = new_resource(dev, 0|(link->link_num<<2));
-		resource->base	= 0x400;
-		resource->limit = 0xffffUL;
-		resource->flags = IORESOURCE_IO;
-
-		/* Initialize the system wide prefetchable memory resources constraints */
-		resource = new_resource(dev, 1|(link->link_num<<2));
-		resource->limit = 0xfcffffffffULL;
-		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-
-		/* Initialize the system wide memory resources constraints */
-		resource = new_resource(dev, 2|(link->link_num<<2));
-		resource->limit = 0xfcffffffffULL;
-		resource->flags = IORESOURCE_MEM;
-	}
-#endif
 }
 
 static void domain_enable_resources(struct device *dev)
@@ -776,10 +753,6 @@ static void setup_uma_memory(void)
 
 static void domain_set_resources(struct device *dev)
 {
-#if CONFIG_PCI_64BIT_PREF_MEM
-	struct resource *io, *mem1, *mem2;
-	struct resource *res;
-#endif
 	unsigned long mmio_basek;
 	u32 pci_tolm;
 	u64 ramtop = 0;
@@ -788,56 +761,6 @@ static void domain_set_resources(struct device *dev)
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
 	u32 reset_memhole = 1;
-#endif
-
-#if CONFIG_PCI_64BIT_PREF_MEM
-
-	for (link = dev->link_list; link; link = link->next) {
-		/* Now reallocate the pci resources memory with the
-		 * highest addresses I can manage.
-		 */
-		mem1 = find_resource(dev, 1|(link->link_num<<2));
-		mem2 = find_resource(dev, 2|(link->link_num<<2));
-
-		printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-				mem1->base, mem1->limit, mem1->size, mem1->align);
-		printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-				mem2->base, mem2->limit, mem2->size, mem2->align);
-
-		/* See if both resources have roughly the same limits */
-		if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
-				((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
-		{
-			/* If so place the one with the most stringent alignment first */
-			if (mem2->align > mem1->align) {
-				struct resource *tmp;
-				tmp = mem1;
-				mem1 = mem2;
-				mem2 = tmp;
-			}
-			/* Now place the memory as high up as it will go */
-			mem2->base = resource_max(mem2);
-			mem1->limit = mem2->base - 1;
-			mem1->base = resource_max(mem1);
-		}
-		else {
-			/* Place the resources as high up as they will go */
-			mem2->base = resource_max(mem2);
-			mem1->base = resource_max(mem1);
-		}
-
-		printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-				mem1->base, mem1->limit, mem1->size, mem1->align);
-		printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-				mem2->base, mem2->limit, mem2->size, mem2->align);
-	}
-
-	for (res = &dev->resource_list; res; res = res->next)
-	{
-		res->flags |= IORESOURCE_ASSIGNED;
-		res->flags |= IORESOURCE_STORED;
-		report_resource_stored(dev, res, "");
-	}
 #endif
 
 	pci_tolm = 0xffffffffUL;

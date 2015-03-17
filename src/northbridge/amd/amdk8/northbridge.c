@@ -634,13 +634,6 @@ static void amdk8_domain_read_resources(device_t dev)
 	}
 
 	pci_domain_read_resources(dev);
-
-#if CONFIG_PCI_64BIT_PREF_MEM
-	/* Initialize the system wide prefetchable memory resources constraints */
-	resource = new_resource(dev, 2);
-	resource->limit = 0xfcffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-#endif
 }
 
 static void my_tolm_test(void *gp, struct device *dev, struct resource *new)
@@ -871,10 +864,6 @@ static void setup_uma_memory(void)
 
 static void amdk8_domain_set_resources(device_t dev)
 {
-#if CONFIG_PCI_64BIT_PREF_MEM
-	struct resource *io, *mem1, *mem2;
-	struct resource *res;
-#endif
 	unsigned long mmio_basek;
 	u32 pci_tolm;
 	u64 ramtop = 0;
@@ -882,63 +871,6 @@ static void amdk8_domain_set_resources(device_t dev)
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
 	u32 reset_memhole = 1;
-#endif
-
-#if 0
-	/* Place the IO devices somewhere safe */
-	io = find_resource(dev, 0);
-	io->base = DEVICE_IO_START;
-#endif
-#if CONFIG_PCI_64BIT_PREF_MEM
-	/* Now reallocate the pci resources memory with the
-	 * highest addresses I can manage.
-	 */
-	mem1 = find_resource(dev, 1);
-	mem2 = find_resource(dev, 2);
-
-#if 1
-	printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-		mem1->base, mem1->limit, mem1->size, mem1->align);
-	printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-		mem2->base, mem2->limit, mem2->size, mem2->align);
-#endif
-
-	/* See if both resources have roughly the same limits */
-	if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
-		((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
-	{
-		/* If so place the one with the most stringent alignment first
-		 */
-		if (mem2->align > mem1->align) {
-			struct resource *tmp;
-			tmp = mem1;
-			mem1 = mem2;
-			mem2 = tmp;
-		}
-		/* Now place the memory as high up as it will go */
-		mem2->base = resource_max(mem2);
-		mem1->limit = mem2->base - 1;
-		mem1->base = resource_max(mem1);
-	}
-	else {
-		/* Place the resources as high up as they will go */
-		mem2->base = resource_max(mem2);
-		mem1->base = resource_max(mem1);
-	}
-
-#if 1
-	printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-		mem1->base, mem1->limit, mem1->size, mem1->align);
-	printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-		mem2->base, mem2->limit, mem2->size, mem2->align);
-#endif
-
-	for(res = dev->resource_list; res; res = res->next)
-	{
-		res->flags |= IORESOURCE_ASSIGNED;
-		res->flags |= IORESOURCE_STORED;
-		report_resource_stored(dev, res, "");
-	}
 #endif
 
 	pci_tolm = my_find_pci_tolm(dev->link_list);

@@ -44,10 +44,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "MS-7260"
 
-config PCI_64BIT_PREF_MEM
-	bool
-	default n
-
 config MAX_CPUS
 	int
 	default 2

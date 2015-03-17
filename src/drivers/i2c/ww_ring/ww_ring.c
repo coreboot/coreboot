@@ -114,7 +114,7 @@ typedef struct {
 
 /* A structure to bind controller programs to a vboot state. */
 typedef struct {
-	enum VbScreenType_t    vb_screen;
+	enum display_pattern   led_pattern;
 	const TiLp55231Program * programs[WW_RING_NUM_LED_CONTROLLERS];
 } WwRingStateProg;
 
@@ -143,8 +143,7 @@ static const WwRingStateProg state_programs[] = {
 	 * for test purposes the blank screen program is set to blinking, will
 	 * be changed soon.
 	 */
-	{VB_SCREEN_BLANK, {&led_blink_program, &led_blink_program} },
-	/* Other vboot state programs are coming. */
+	{WWR_ALL_OFF, {&led_blink_program, &led_blink_program} },
 };
 /*								*/
 /****************************************************************/
@@ -388,7 +387,7 @@ static int ledc_init_validate(TiLp55231 *ledc)
  * Find a program matching screen type, and run it on both controllers, if
  * found.
  */
-int ww_ring_display_pattern(unsigned i2c_bus, enum VbScreenType_t screen_type)
+int ww_ring_display_pattern(unsigned i2c_bus, enum display_pattern pattern)
 {
 	int i;
 	static int initted;
@@ -399,7 +398,7 @@ int ww_ring_display_pattern(unsigned i2c_bus, enum VbScreenType_t screen_type)
 	}
 
 	for (i = 0; i < ARRAY_SIZE(state_programs); i++)
-		if (state_programs[i].vb_screen == screen_type) {
+		if (state_programs[i].led_pattern == pattern) {
 			int j;
 
 			for (j = 0; j < WW_RING_NUM_LED_CONTROLLERS; j++) {
@@ -411,8 +410,8 @@ int ww_ring_display_pattern(unsigned i2c_bus, enum VbScreenType_t screen_type)
 			return 0;
 		}
 
-	printk(BIOS_WARNING, "%s: did not find program for screen %d\n",
-	       __func__, screen_type);
+	printk(BIOS_WARNING, "%s: did not find program for pattern %d\n",
+	       __func__, pattern);
 
 	return -1;
 }

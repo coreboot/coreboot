@@ -84,6 +84,12 @@ enum switch_state {
 	wipeout_req
 };
 
+static void display_pattern(int pattern)
+{
+	if (board_id() == BOARD_ID_WHIRLWIND_SP5)
+		ww_ring_display_pattern(GSBI_ID_7, pattern);
+}
+
 #define WIPEOUT_MODE_DELAY_MS (8 * 1000)
 #define RECOVERY_MODE_EXTRA_DELAY_MS (8 * 1000)
 
@@ -103,7 +109,9 @@ static enum switch_state get_switch_state(void)
 		return saved_state;
 	}
 
+	display_pattern(WWR_RECOVERY_PUSHED);
 	printk(BIOS_INFO, "recovery button pressed\n");
+
 	stopwatch_init_msecs_expire(&sw, WIPEOUT_MODE_DELAY_MS);
 
 	do {
@@ -113,9 +121,7 @@ static enum switch_state get_switch_state(void)
 	} while (!stopwatch_expired(&sw));
 
 	if (sampled_value) {
-		if (board_id() == BOARD_ID_WHIRLWIND_SP5)
-			ww_ring_display_pattern(GSBI_ID_7, 0);
-
+		display_pattern(WWR_WIPEOUT_REQUEST);
 		printk(BIOS_INFO, "wipeout requested, checking recovery\n");
 		stopwatch_init_msecs_expire(&sw, RECOVERY_MODE_EXTRA_DELAY_MS);
 		do {
@@ -126,12 +132,14 @@ static enum switch_state get_switch_state(void)
 
 		if (sampled_value) {
 			saved_state = recovery_req;
+			display_pattern(WWR_RECOVERY_REQUEST);
 			printk(BIOS_INFO, "recovery requested\n");
 		} else {
 			saved_state = wipeout_req;
 		}
 	} else {
 		saved_state = no_req;
+		display_pattern(WWR_ALL_OFF);
 	}
 
 	return saved_state;

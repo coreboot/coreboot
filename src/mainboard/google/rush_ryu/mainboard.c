@@ -35,6 +35,7 @@
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/display.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <vendorcode/google/chromeos/cros_vpd.h>
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vboot_struct.h>
 #include <vendorcode/google/chromeos/vboot_handoff.h>
@@ -298,3 +299,10 @@ struct chip_operations mainboard_ops = {
 	.name   = "rush_ryu",
 	.enable_dev = mainboard_enable,
 };
+
+#if IS_ENABLED(CONFIG_CHROMEOS)
+void lb_board(struct lb_header *header)
+{
+	lb_table_add_serialno_from_vpd(header);
+}
+#endif

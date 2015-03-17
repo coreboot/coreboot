@@ -25,7 +25,7 @@
 #include <arch/exception.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <halt.h>
+#include <program_loading.h>
 
 static int boot_cpu(void)
 {
@@ -39,9 +39,6 @@ static int boot_cpu(void)
 
 void main(void)
 {
-	const char *stage_name = CONFIG_CBFS_PREFIX"/romstage";
-	void *entry = NULL;
-
 	/* Globally disable MMU, caches, and branch prediction (these should
 	 * be disabled by default on reset) */
 	dcache_mmu_disable();
@@ -64,10 +61,5 @@ void main(void)
 	exception_init();
 #endif
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, stage_name);
-
-	printk(BIOS_SPEW, "stage_name %s, entry %p\n", stage_name, entry);
-
-	if (entry) stage_exit(entry);
-	halt();
+	run_romstage();
 }

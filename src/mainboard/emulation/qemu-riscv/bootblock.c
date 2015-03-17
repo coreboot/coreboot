@@ -18,28 +18,18 @@
  */
 
 #include <arch/exception.h>
-#include <arch/hlt.h>
 #include <bootblock_common.h>
-#include <cbfs.h>
 #include <console/console.h>
-#include <arch/stages.h>
+#include <program_loading.h>
 
 // the qemu part of all this is very, very non-hardware like.
 // so it gets its own bootblock.
 void main(void)
 {
-	void *entry;
-
 	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) {
 		console_init();
 		exception_init();
 	}
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, CONFIG_CBFS_PREFIX"/romstage");
-	if (! entry) {
-		printk(BIOS_EMERG, "AAAAAAAAAAAAAA no romstage!\n");
-		while (1);
-	}
-
-	stage_exit(entry);
+	run_romstage();
 }

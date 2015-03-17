@@ -71,7 +71,7 @@ VBOOT_STUB_DEPS += $(obj)/arch/x86/lib/memcpy.rmodules_$(ARCH-romstage-y).o
 VBOOT_STUB_DEPS += $(VB_LIB)
 # Remove the '-include' option since that will break vboot's build and ensure
 # vboot_reference can get to coreboot's include files.
-VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_romstage)))
+VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_romstage) $(CPPFLAGS_romstage)))
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 VBOOT_CFLAGS += $(rmodules_$(ARCH-ROMSTAGE-y)-c-ccopts)
 
@@ -84,11 +84,11 @@ $(eval $(call rmodule_link,$(VBOOT_STUB_ELF), $(VBOOT_STUB_DOTO), 0x10000,$(ARCH
 # Build vboot library without the default includes from coreboot proper.
 $(VB_LIB):
 	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	$(Q)FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
+	$(Q)$(MAKE) -C $(VB_SOURCE) \
 		CC="$(CC_romstage)" \
 		CFLAGS="$(VBOOT_CFLAGS)" \
-		make -C $(VB_SOURCE) \
 		$(VBOOT_MAKEFLAGS) \
+		FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
 		BUILD=$(top)/$(dir $(VB_LIB)) \
 		V=$(V) \
 		fwlib
@@ -117,17 +117,17 @@ romstage-y += vboot_handoff.c
 
 VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-VERSTAGE-y))
 VB2_LIB = $(obj)/external/vboot_reference/vboot_fw2.a
-VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_verstage)))
+VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_verstage) $(CPPFLAGS_verstage)))
 VBOOT_CFLAGS += $(verstage-c-ccopts)
 VBOOT_CFLAGS += -include $(top)/src/include/kconfig.h -Wno-missing-prototypes
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 
 $(VB2_LIB): $(obj)/config.h
 	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	$(Q)FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
-	CC="$(CC_verstage)" \
+	$(Q)$(MAKE) -C $(VB_SOURCE) \
+		CC="$(CC_verstage)" \
 		CFLAGS="$(VBOOT_CFLAGS)" VBOOT2="y" \
-		make -C $(VB_SOURCE) \
+		FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
 		BUILD=$(top)/$(dir $(VB2_LIB)) \
 		V=$(V) \
 		fwlib2

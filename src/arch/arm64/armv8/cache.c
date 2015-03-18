@@ -144,7 +144,5 @@ void dcache_mmu_enable(void)
 void cache_sync_instructions(void)
 {
 	flush_dcache_all();	/* includes trailing DSB (in assembly) */
-	iciallu();		/* includes BPIALLU (architecturally) */
-	dsb();
-	isb();
+	icache_invalidate_all(); /* includdes leading DSB and trailing ISB. */
 }

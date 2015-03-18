@@ -22,6 +22,7 @@
  * and parameter location for the rmodule.
  */
 
+#include <arch/cache.h>
 #include <arch/lib_helpers.h>
 #include <arch/secmon.h>
 #include <arch/spintable.h>
@@ -106,6 +107,8 @@ static void secmon_start(void *arg)
 	scr |= SCR_NS;
 	raw_write_scr_el3(scr);
 
+	/* Invalidate instruction cache. Necessary for non-BSP. */
+	icache_invalidate_all();
 	entry(p);
 }
 

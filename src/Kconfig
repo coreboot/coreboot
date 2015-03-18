@@ -1173,8 +1173,10 @@ config REG_SCRIPT
 	help
 	  Internal option that controls whether we compile in register scripts.
 
-# Maximum reboot count
-# TODO: Improve description.
 config MAX_REBOOT_CNT
 	int
 	default 3
+	help
+	  Internal option that sets the maximum number of bootblock executions allowed
+	  with the normal image enabled before assuming the normal image is defective
+	  and switching to the fallback image.

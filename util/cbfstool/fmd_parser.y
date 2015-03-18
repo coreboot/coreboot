@@ -19,6 +19,7 @@
 
 %{
 #include "fmd_scanner.h"
+#include "common.h"
 
 #include <stdlib.h>
 
@@ -90,7 +91,7 @@ flash_region: region_name region_annotation_opt region_offset_opt
 
 	char *annotation = $2;
 	if (annotation && !fmd_process_annotation_impl(node, annotation)) {
-		fprintf(stderr, "ERROR: Section '%s' has unexpected annotation '(%s)'\n",
+		ERROR("Section '%s' has unexpected annotation '(%s)'\n",
 							node->name, annotation);
 		YYABORT;
 	}
@@ -101,7 +102,7 @@ flash_region: region_name region_annotation_opt region_offset_opt
 region_name: STRING
 {
 	if (!$1) {
-		perror("ERROR: While allocating section name");
+		perror("E: While allocating section name");
 		YYABORT;
 	}
 };
@@ -125,7 +126,7 @@ region_list_entries: flash_region
 {
 	struct descriptor_node *node = malloc(sizeof(*node));
 	if (!node) {
-		perror("ERROR: While allocating linked list node");
+		perror("E: While allocating linked list node");
 		YYABORT;
 	}
 	node->val = $1;
@@ -136,7 +137,7 @@ region_list_entries: flash_region
 {
 	struct descriptor_node *node = malloc(sizeof(*node));
 	if (!node) {
-		perror("ERROR: While allocating linked list node");
+		perror("E: While allocating linked list node");
 		YYABORT;
 	}
 	node->val = $2;
@@ -155,7 +156,7 @@ struct flashmap_descriptor *parse_descriptor(char *name,
 {
 	struct flashmap_descriptor *region = malloc(sizeof(*region));
 	if (!region) {
-		perror("ERROR: While allocating descriptor section");
+		perror("E: While allocating descriptor section");
 		return NULL;
 	}
 	region->name = name;
@@ -167,7 +168,7 @@ struct flashmap_descriptor *parse_descriptor(char *name,
 	if (region->list_len) {
 		region->list = malloc(region->list_len * sizeof(*region->list));
 		if (!region->list) {
-			perror("ERROR: While allocating node children array");
+			perror("E: While allocating node children array");
 			return NULL;
 		}
 		struct descriptor_node *cur_node = children.head;

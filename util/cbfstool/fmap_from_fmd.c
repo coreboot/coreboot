@@ -28,9 +28,8 @@ static bool fmap_append_fmd_node(struct fmap **flashmap,
 				const struct flashmap_descriptor *section,
 						unsigned absolute_watermark) {
 	if (strlen(section->name) >= FMAP_STRLEN) {
-		fprintf(stderr,
-			"ERROR: Section name ('%s') exceeds %d character FMAP format limit\n",
-					section->name, FMAP_STRLEN - 1);
+		ERROR("Section name ('%s') exceeds %d character FMAP format limit\n",
+						section->name, FMAP_STRLEN - 1);
 		return false;
 	}
 
@@ -38,9 +37,8 @@ static bool fmap_append_fmd_node(struct fmap **flashmap,
 
 	if (fmap_append_area(flashmap, absolute_watermark, section->size,
 					(uint8_t *)section->name, 0) < 0) {
-		fprintf(stderr,
-			"ERROR: Failed to insert section '%s' into FMAP\n",
-							section->name);
+		ERROR("Failed to insert section '%s' into FMAP\n",
+								section->name);
 		return false;
 	}
 
@@ -59,8 +57,7 @@ struct fmap *fmap_from_fmd(const struct flashmap_descriptor *desc)
 	assert(desc->size_known);
 
 	if (strlen(desc->name) >= FMAP_STRLEN) {
-		fprintf(stderr,
-			"ERROR: Image name ('%s') exceeds %d character FMAP header limit\n",
+		ERROR("Image name ('%s') exceeds %d character FMAP header limit\n",
 						desc->name, FMAP_STRLEN - 1);
 		return NULL;
 	}
@@ -68,7 +65,7 @@ struct fmap *fmap_from_fmd(const struct flashmap_descriptor *desc)
 	struct fmap *fmap = fmap_create(desc->offset_known ? desc->offset : 0,
 					desc->size, (uint8_t *)desc->name);
 	if (!fmap) {
-		fputs("ERROR: Failed to allocate FMAP header\n", stderr);
+		ERROR("Failed to allocate FMAP header\n");
 		return fmap;
 	}
 

@@ -65,12 +65,13 @@
 #line 20 "fmd_parser.y" /* yacc.c:339  */
 
 #include "fmd_scanner.h"
+#include "common.h"
 
 #include <stdlib.h>
 
 struct flashmap_descriptor *res = NULL;
 
-#line 74 "y.tab.c" /* yacc.c:339  */
+#line 75 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -100,7 +101,7 @@ struct flashmap_descriptor *res = NULL;
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 36 "fmd_parser.y" /* yacc.c:355  */
+#line 37 "fmd_parser.y" /* yacc.c:355  */
 
 #include "fmd.h"
 #include "option.h"
@@ -125,7 +126,7 @@ struct flashmap_descriptor *parse_descriptor(char *name,
 					struct descriptor_list children);
 void yyerror(const char *s);
 
-#line 129 "y.tab.c" /* yacc.c:355  */
+#line 130 "y.tab.c" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -147,7 +148,7 @@ void yyerror(const char *s);
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 28 "fmd_parser.y" /* yacc.c:355  */
+#line 29 "fmd_parser.y" /* yacc.c:355  */
 
 	unsigned intval;
 	char *strval;
@@ -155,7 +156,7 @@ union YYSTYPE
 	struct flashmap_descriptor *region_ptr;
 	struct descriptor_list region_listhdr;
 
-#line 159 "y.tab.c" /* yacc.c:355  */
+#line 160 "y.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -170,7 +171,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 174 "y.tab.c" /* yacc.c:358  */
+#line 175 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -468,8 +469,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    79,    79,    84,   101,   108,   109,   110,   111,   112,
-     113,   114,   115,   116,   118,   122,   123,   124,   135
+       0,    80,    80,    85,   102,   109,   110,   111,   112,   113,
+     114,   115,   116,   117,   119,   123,   124,   125,   136
 };
 #endif
 
@@ -1251,16 +1252,16 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 80 "fmd_parser.y" /* yacc.c:1646  */
+#line 81 "fmd_parser.y" /* yacc.c:1646  */
     {
 	if (!(res = parse_descriptor((yyvsp[-3].strval), (yyvsp[-2].maybe_intval), (yyvsp[-1].maybe_intval), (yyvsp[0].region_listhdr))))
 		YYABORT;
 }
-#line 1260 "y.tab.c" /* yacc.c:1646  */
+#line 1261 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 86 "fmd_parser.y" /* yacc.c:1646  */
+#line 87 "fmd_parser.y" /* yacc.c:1646  */
     {
 	struct flashmap_descriptor *node = parse_descriptor((yyvsp[-4].strval), (yyvsp[-2].maybe_intval), (yyvsp[-1].maybe_intval), (yyvsp[0].region_listhdr));
 	if (!node)
@@ -1268,7 +1269,7 @@ yyreduce:
 
 	char *annotation = (yyvsp[-3].strval);
 	if (annotation && !fmd_process_annotation_impl(node, annotation)) {
-		fprintf(stderr, "ERROR: Section '%s' has unexpected annotation '(%s)'\n",
+		ERROR("Section '%s' has unexpected annotation '(%s)'\n",
 							node->name, annotation);
 		YYABORT;
 	}
@@ -1276,92 +1277,92 @@ yyreduce:
 
 	(yyval.region_ptr) = node;
 }
-#line 1280 "y.tab.c" /* yacc.c:1646  */
+#line 1281 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 102 "fmd_parser.y" /* yacc.c:1646  */
+#line 103 "fmd_parser.y" /* yacc.c:1646  */
     {
 	if (!(yyvsp[0].strval)) {
-		perror("ERROR: While allocating section name");
+		perror("E: While allocating section name");
 		YYABORT;
 	}
 }
-#line 1291 "y.tab.c" /* yacc.c:1646  */
+#line 1292 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 108 "fmd_parser.y" /* yacc.c:1646  */
+#line 109 "fmd_parser.y" /* yacc.c:1646  */
     { (yyval.strval) = NULL; }
-#line 1297 "y.tab.c" /* yacc.c:1646  */
+#line 1298 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 110 "fmd_parser.y" /* yacc.c:1646  */
+#line 111 "fmd_parser.y" /* yacc.c:1646  */
     { (yyval.strval) = (yyvsp[-1].strval); }
-#line 1303 "y.tab.c" /* yacc.c:1646  */
+#line 1304 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 111 "fmd_parser.y" /* yacc.c:1646  */
+#line 112 "fmd_parser.y" /* yacc.c:1646  */
     { (yyval.maybe_intval) = (struct unsigned_option){false, 0}; }
-#line 1309 "y.tab.c" /* yacc.c:1646  */
+#line 1310 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 113 "fmd_parser.y" /* yacc.c:1646  */
+#line 114 "fmd_parser.y" /* yacc.c:1646  */
     { (yyval.maybe_intval) = (struct unsigned_option){true, (yyvsp[0].intval)}; }
-#line 1315 "y.tab.c" /* yacc.c:1646  */
+#line 1316 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 114 "fmd_parser.y" /* yacc.c:1646  */
+#line 115 "fmd_parser.y" /* yacc.c:1646  */
     { (yyval.maybe_intval) = (struct unsigned_option){false, 0}; }
-#line 1321 "y.tab.c" /* yacc.c:1646  */
+#line 1322 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 116 "fmd_parser.y" /* yacc.c:1646  */
+#line 117 "fmd_parser.y" /* yacc.c:1646  */
     { (yyval.maybe_intval) = (struct unsigned_option){true, (yyvsp[0].intval)}; }
-#line 1327 "y.tab.c" /* yacc.c:1646  */
+#line 1328 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 118 "fmd_parser.y" /* yacc.c:1646  */
+#line 119 "fmd_parser.y" /* yacc.c:1646  */
     {
 	(yyval.region_listhdr) = (struct descriptor_list)
 					{.len = 0, .head = NULL, .tail = NULL};
 }
-#line 1336 "y.tab.c" /* yacc.c:1646  */
+#line 1337 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 123 "fmd_parser.y" /* yacc.c:1646  */
+#line 124 "fmd_parser.y" /* yacc.c:1646  */
     { (yyval.region_listhdr) = (yyvsp[-1].region_listhdr); }
-#line 1342 "y.tab.c" /* yacc.c:1646  */
+#line 1343 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 125 "fmd_parser.y" /* yacc.c:1646  */
+#line 126 "fmd_parser.y" /* yacc.c:1646  */
     {
 	struct descriptor_node *node = malloc(sizeof(*node));
 	if (!node) {
-		perror("ERROR: While allocating linked list node");
+		perror("E: While allocating linked list node");
 		YYABORT;
 	}
 	node->val = (yyvsp[0].region_ptr);
 	node->next = NULL;
 	(yyval.region_listhdr) = (struct descriptor_list){.len = 1, .head = node, .tail = node};
 }
-#line 1357 "y.tab.c" /* yacc.c:1646  */
+#line 1358 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 136 "fmd_parser.y" /* yacc.c:1646  */
+#line 137 "fmd_parser.y" /* yacc.c:1646  */
     {
 	struct descriptor_node *node = malloc(sizeof(*node));
 	if (!node) {
-		perror("ERROR: While allocating linked list node");
+		perror("E: While allocating linked list node");
 		YYABORT;
 	}
 	node->val = (yyvsp[0].region_ptr);
@@ -1371,11 +1372,11 @@ yyreduce:
 	(yyval.region_listhdr) = (struct descriptor_list)
 			{.len = (yyvsp[-1].region_listhdr).len + 1, .head = (yyvsp[-1].region_listhdr).head, .tail = node};
 }
-#line 1375 "y.tab.c" /* yacc.c:1646  */
+#line 1376 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1379 "y.tab.c" /* yacc.c:1646  */
+#line 1380 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1603,7 +1604,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 150 "fmd_parser.y" /* yacc.c:1906  */
+#line 151 "fmd_parser.y" /* yacc.c:1906  */
 
 
 struct flashmap_descriptor *parse_descriptor(char *name,
@@ -1612,7 +1613,7 @@ struct flashmap_descriptor *parse_descriptor(char *name,
 {
 	struct flashmap_descriptor *region = malloc(sizeof(*region));
 	if (!region) {
-		perror("ERROR: While allocating descriptor section");
+		perror("E: While allocating descriptor section");
 		return NULL;
 	}
 	region->name = name;
@@ -1624,7 +1625,7 @@ struct flashmap_descriptor *parse_descriptor(char *name,
 	if (region->list_len) {
 		region->list = malloc(region->list_len * sizeof(*region->list));
 		if (!region->list) {
-			perror("ERROR: While allocating node children array");
+			perror("E: While allocating node children array");
 			return NULL;
 		}
 		struct descriptor_node *cur_node = children.head;

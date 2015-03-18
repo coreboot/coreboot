@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 36 "fmd_parser.y" /* yacc.c:1909  */
+#line 37 "fmd_parser.y" /* yacc.c:1909  */
 
 #include "fmd.h"
 #include "option.h"
@@ -87,7 +87,7 @@ void yyerror(const char *s);
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 28 "fmd_parser.y" /* yacc.c:1909  */
+#line 29 "fmd_parser.y" /* yacc.c:1909  */
 
 	unsigned intval;
 	char *strval;

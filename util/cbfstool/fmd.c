@@ -19,6 +19,7 @@
 
 #include "fmd.h"
 
+#include "common.h"
 #include "fmd_parser.h"
 #include "fmd_scanner.h"
 #include "option.h"
@@ -56,8 +57,7 @@ static bool validate_descriptor_node(const struct flashmap_descriptor *node,
 
 	ENTRY search_key = {node->name, NULL};
 	if (hsearch(search_key, FIND)) {
-		fprintf(stderr, "ERROR: Multiple sections with name '%s'\n",
-								node->name);
+		ERROR("Multiple sections with name '%s'\n", node->name);
 		return false;
 	}
 	if (!hsearch(search_key, ENTER))
@@ -65,26 +65,22 @@ static bool validate_descriptor_node(const struct flashmap_descriptor *node,
 
 	if (node->offset_known) {
 		if (start.val_known && node->offset < start.val) {
-			fprintf(stderr, "ERROR: Section '%s' starts too low\n",
-								node->name);
+			ERROR("Section '%s' starts too low\n", node->name);
 			return false;
 		} else if (end.val_known && node->offset > end.val) {
-			fprintf(stderr, "ERROR: Section '%s' starts too high\n",
-								node->name);
+			ERROR("Section '%s' starts too high\n", node->name);
 			return false;
 		}
 	}
 
 	if (node->size_known) {
 		if (node->size == 0) {
-			fprintf(stderr, "ERROR: Section '%s' given no space\n",
-								node->name);
+			ERROR("Section '%s' given no space\n", node->name);
 			return false;
 		} else if (node->offset_known) {
 			unsigned node_end = node->offset + node->size;
 			if (end.val_known && node_end > end.val) {
-				fprintf(stderr, "ERROR: Section '%s' too big\n",
-								node->name);
+				ERROR("Section '%s' too big\n", node->name);
 				return false;
 			}
 		}
@@ -120,16 +116,14 @@ static bool complete_missing_info_backward(
 		assert(cur->offset_known || cur->size_known);
 		if (!cur->offset_known) {
 			if (cur->size > end_watermark) {
-				fprintf(stderr, "ERROR: Section '%s' too big\n",
-								cur->name);
+				ERROR("Section '%s' too big\n", cur->name);
 				return false;
 			}
 			cur->offset_known = true;
 			cur->offset = end_watermark -= cur->size;
 		} else if (!cur->size_known) {
 			if (cur->offset > end_watermark) {
-				fprintf(stderr,
-					"ERROR: Section '%s' starts too high\n",
+				ERROR("Section '%s' starts too high\n",
 								cur->name);
 				return false;
 			}
@@ -230,8 +224,7 @@ static bool validate_and_complete_info(struct flashmap_descriptor *cur_level)
 
 		if (!cur_section->size_known) {
 			if (!cur_section->offset_known) {
-				fprintf(stderr,
-					"ERROR: Cannot determine either offset or size of section '%s'\n",
+				ERROR("Cannot determine either offset or size of section '%s'\n",
 							cur_section->name);
 				return false;
 			} else if (!first_incomplete_it) {
@@ -315,7 +308,7 @@ struct flashmap_descriptor *fmd_create(FILE *stream)
 		// This hash table is used to store the declared name of each
 		// section and ensure that each is globally unique.
 		if (!hcreate(fmd_count_nodes(ret))) {
-			perror("ERROR: While initializing hashtable");
+			perror("E: While initializing hashtable");
 			fmd_cleanup(ret);
 			return NULL;
 		}

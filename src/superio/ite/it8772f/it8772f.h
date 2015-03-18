@@ -17,6 +17,13 @@
 #ifndef SUPERIO_ITE_IT8772F_H
 #define SUPERIO_ITE_IT8772F_H
 
+/* Supported thermal mode on TMPINx */
+enum thermal_mode {
+	THERMAL_MODE_DISABLED	= 0,
+	THERMAL_DIODE,
+	THERMAL_RESISTOR,
+};
+
 #define IT8772F_FDC  0x00 /* Floppy disk controller */
 #define IT8772F_SP1  0x01 /* Com1 */
 #define IT8772F_EC   0x04 /* Environment controller */
@@ -26,6 +33,7 @@
 #define IT8772F_IR   0x0a /* Consumer IR */
 
 /* Environmental Controller interface */
+#define IT8772F_CONFIGURATION			0x00
 #define IT8772F_INTERFACE_SELECT		0x0a
 #define  IT8772F_INTERFACE_PSEUDO_EOC		(1 << 7)
 #define  IT8772F_INTERFACE_SMB_ENABLE		(1 << 6)

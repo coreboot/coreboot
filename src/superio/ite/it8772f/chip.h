@@ -18,6 +18,7 @@
 #define SUPERIO_ITE_IT8772F_CHIP_H
 
 #include <device/device.h>
+#include "it8772f.h"
 
 struct superio_ite_it8772f_config {
 	/* GPIO SimpleIO register values via devicetree.cb */
@@ -35,6 +36,12 @@ struct superio_ite_it8772f_config {
 	 * command and store in register TMPIN 1, 2, or 3.
 	 */
 	u8 peci_tmpin;
+
+	/*
+	 * Enable thermal mode on tmpinx.
+	 */
+	enum thermal_mode tmpin1_mode;
+	enum thermal_mode tmpin2_mode;
 
 	/*
 	 * Enable a FAN for sofware control.

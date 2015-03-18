@@ -565,6 +565,7 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned unused)
 
 	nodeid = amdfam10_nodeid(dev);
 	if (nodeid == 0) {
+		ASSERT(dev->bus->secondary == 0);
 		for (link = dev->link_list; link; link = link->next) {
 			if (link->link_num == sblink) { /* devicetree put IO Hub on link_lsit[3] */
 				io_hub = link->children;
@@ -572,9 +573,10 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned unused)
 					die("I can't find the IO Hub, or IO Hub not enabled, please check the device tree.\n");
 				}
 				/* Now that nothing is overlapping it is safe to scan the children. */
-				max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, 0);
+				pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7);
 			}
 		}
+		max = dev->bus->subordinate;
 	}
 
 	dev->bus->subordinate = max;
@@ -917,7 +919,7 @@ static u32 amdfam10_domain_scan_bus(device_t dev, u32 unused)
 
 	for (link = dev->link_list; link; link = link->next) {
 		link->secondary = dev->bus->subordinate;
-		link->subordinate = pci_scan_bus(link, PCI_DEVFN(CONFIG_CDB, 0), 0xff, link->secondary);
+		pci_scan_bus(link, PCI_DEVFN(CONFIG_CDB, 0), 0xff);
 		dev->bus->subordinate = link->subordinate;
 	}
 

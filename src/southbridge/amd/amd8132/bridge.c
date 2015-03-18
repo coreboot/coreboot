@@ -138,15 +138,14 @@ static void amd8132_pcix_tune_dev(device_t dev, void *ptr)
 
 
 }
-static unsigned int amd8132_scan_bus(struct bus *bus,
-	unsigned min_devfn, unsigned max_devfn, unsigned int max)
+static void amd8132_scan_bus(struct bus *bus,
+	unsigned min_devfn, unsigned max_devfn)
 {
 	struct amd8132_bus_info info;
 	unsigned pos;
 
-
 	/* Find the children on the bus */
-	max = pci_scan_bus(bus, min_devfn, max_devfn, max);
+	pci_scan_bus(bus, min_devfn, max_devfn);
 
 	/* Find the revision of the 8132 */
 	info.rev = pci_read_config8(bus->dev, PCI_CLASS_REVISION);
@@ -181,20 +180,18 @@ static unsigned int amd8132_scan_bus(struct bus *bus,
 		pcix_misc &= ~(0x1f << 16);
 		pci_write_config32(bus->dev, 0x40, pcix_misc);
 
-		return max;
+		return;
 	}
 #endif
 
 	/* If we are in conventional PCI mode nothing more is necessary.
 	 */
 	if (PCI_X_SSTATUS_MFREQ(info.sstatus) == PCI_X_SSTATUS_CONVENTIONAL_PCI) {
-		return max;
+		return;
 	}
 
 	/* Tune the devices on the bus */
 	amd8132_walk_children(bus, amd8132_pcix_tune_dev, &info);
-
-	return max;
 }
 
 static unsigned int amd8132_scan_bridge(device_t dev, unsigned int max)

@@ -213,7 +213,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		next_unitid = hypertransport_scan_chain(link, 0, max_devfn, ht_unitid_base, offset_unit_id(is_sblink));
 
 		/* Now that nothing is overlapping it is safe to scan the children. */
-		link->subordinate = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, link->secondary);
+		pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7);
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
@@ -1107,7 +1107,7 @@ static u32 amdk8_domain_scan_bus(device_t dev, u32 unused)
 	}
 
 	link->secondary = dev->bus->subordinate;
-	link->subordinate = pci_scan_bus(link, PCI_DEVFN(0x18, 0), 0xff, link->secondary);
+	pci_scan_bus(link, PCI_DEVFN(0x18, 0), 0xff);
 	dev->bus->subordinate = link->subordinate;
 
 	/* Tune the hypertransport transaction for best performance.

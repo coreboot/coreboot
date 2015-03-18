@@ -488,11 +488,9 @@ end_of_chain:
  * @param bus TODO
  * @param min_devfn TODO
  * @param max_devfn TODO
- * @param max The highest bus number assigned up to now.
- * @return The maximum bus number found, after scanning all subordinate busses.
  */
-static unsigned int hypertransport_scan_chain_x(struct bus *bus,
-	unsigned int min_devfn, unsigned int max_devfn, unsigned int max)
+static void hypertransport_scan_chain_x(struct bus *bus,
+	unsigned int min_devfn, unsigned int max_devfn)
 {
 	unsigned int ht_unitid_base[4];
 	unsigned int offset_unitid = 1;
@@ -501,8 +499,7 @@ static unsigned int hypertransport_scan_chain_x(struct bus *bus,
 					 ht_unitid_base, offset_unitid);
 
 	/* Now that nothing is overlapping it is safe to scan the children. */
-	bus->subordinate = pci_scan_bus(bus, 0x00, ((next_unitid - 1) << 3) | 7, bus->secondary);
-	return bus->subordinate;
+	pci_scan_bus(bus, 0x00, ((next_unitid - 1) << 3) | 7);
 }
 
 unsigned int ht_scan_bridge(struct device *dev, unsigned int max)

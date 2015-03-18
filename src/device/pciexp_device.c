@@ -416,12 +416,12 @@ static void pciexp_tune_dev(device_t dev)
 #endif
 }
 
-unsigned int pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
-			     unsigned int max_devfn, unsigned int max)
+void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
+			     unsigned int max_devfn)
 {
 	device_t child;
 
-	max = pci_scan_bus(bus, min_devfn, max_devfn, max);
+	pci_scan_bus(bus, min_devfn, max_devfn);
 
 	for (child = bus->children; child; child = child->sibling) {
 		if ((child->path.pci.devfn < min_devfn) ||
@@ -430,7 +430,6 @@ unsigned int pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 		}
 		pciexp_tune_dev(child);
 	}
-	return max;
 }
 
 unsigned int pciexp_scan_bridge(device_t dev, unsigned int max)

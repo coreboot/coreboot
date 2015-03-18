@@ -192,16 +192,15 @@ static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
 		pci_write_config16(dev, cap + PCI_X_CMD, cmd);
 	}
 }
-static unsigned int amd8131_scan_bus(struct bus *bus,
-	unsigned min_devfn, unsigned max_devfn, unsigned int max)
+static void amd8131_scan_bus(struct bus *bus,
+	unsigned min_devfn, unsigned max_devfn)
 {
 	struct amd8131_bus_info info;
 	struct bus *pbus;
 	unsigned pos;
 
-
 	/* Find the children on the bus */
-	max = pci_scan_bus(bus, min_devfn, max_devfn, max);
+	pci_scan_bus(bus, min_devfn, max_devfn);
 
 	/* Find the revision of the 8131 */
 	info.rev = pci_read_config8(bus->dev, PCI_CLASS_REVISION);
@@ -243,13 +242,13 @@ static unsigned int amd8131_scan_bus(struct bus *bus,
 		pcix_misc &= ~(0x1f << 16);
 		pci_write_config32(bus->dev, 0x40, pcix_misc);
 
-		return max;
+		return;
 	}
 
 	/* If we are in conventional PCI mode nothing more is necessary.
 	 */
 	if (PCI_X_SSTATUS_MFREQ(info.sstatus) == PCI_X_SSTATUS_CONVENTIONAL_PCI) {
-		return max;
+		return;
 	}
 
 
@@ -264,7 +263,6 @@ static unsigned int amd8131_scan_bus(struct bus *bus,
 			bus_path(pbus));
 		pbus->disable_relaxed_ordering = 1;
 	}
-	return max;
 }
 
 static unsigned int amd8131_scan_bridge(device_t dev, unsigned int max)

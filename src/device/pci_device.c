@@ -1074,17 +1074,12 @@ unsigned int pci_match_simple_dev(device_t dev, pci_devfn_t sdev)
  * Determine the existence of devices and bridges on a PCI bus. If there are
  * bridges on the bus, recursively scan the buses behind the bridges.
  *
- * This function is the default scan_bus() method for the root device
- * 'dev_root'.
- *
  * @param bus Pointer to the bus structure.
  * @param min_devfn Minimum devfn to look at in the scan, usually 0x00.
  * @param max_devfn Maximum devfn to look at in the scan, usually 0xff.
- * @param max Current bus number.
- * @return The maximum bus number found, after scanning all subordinate busses.
  */
-unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
-			  unsigned max_devfn, unsigned int max)
+void pci_scan_bus(struct bus *bus, unsigned min_devfn,
+			  unsigned max_devfn)
 {
 	unsigned int devfn;
 	struct device *old_devices;
@@ -1149,17 +1144,19 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	 * For all children that implement scan_bus() (i.e. bridges)
 	 * scan the bus behind that child.
 	 */
+	unsigned int max = bus->secondary;
+
 	for (child = bus->children; child; child = child->sibling)
 		max = scan_bus(child, max);
+
+	bus->subordinate = max;
 
 	/*
 	 * We've scanned the bus and so we know all about what's on the other
 	 * side of any bridges that may be on this bus plus any devices.
 	 * Return how far we've got finding sub-buses.
 	 */
-	printk(BIOS_DEBUG, "PCI: pci_scan_bus returning with max=%03x\n", max);
 	post_code(0x55);
-	return max;
 }
 
 typedef enum {
@@ -1228,10 +1225,9 @@ static void pci_bridge_route(struct bus *link, scan_state state)
  * @return The maximum bus number found, after scanning all subordinate buses.
  */
 unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
-				unsigned int (*do_scan_bus) (struct bus * bus,
+				void (*do_scan_bus) (struct bus * bus,
 							     unsigned min_devfn,
-							     unsigned max_devfn,
-							     unsigned int max))
+							     unsigned max_devfn))
 {
 	struct bus *bus;
 
@@ -1251,7 +1247,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 
 	pci_bridge_route(bus, PCI_ROUTE_SCAN);
 
-	bus->subordinate = do_scan_bus(bus, 0x00, 0xff, bus->secondary);
+	do_scan_bus(bus, 0x00, 0xff);
 
 	pci_bridge_route(bus, PCI_ROUTE_FINAL);
 
@@ -1287,7 +1283,7 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 unsigned int pci_domain_scan_bus(device_t dev, unsigned int unused)
 {
 	struct bus *link = dev->link_list;
-	link->subordinate = pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff, link->secondary);
+	pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff);
 	return unused;
 }
 

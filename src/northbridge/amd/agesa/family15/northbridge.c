@@ -469,6 +469,7 @@ static unsigned scan_chains(device_t dev, unsigned unused)
 
 	nodeid = amdfam15_nodeid(dev);
 	if (nodeid == 0) {
+		ASSERT(dev->bus->secondary == 0);
 		for (link = dev->link_list; link; link = link->next) {
 			//if (link->link_num == sblink) { /* devicetree put IO Hub on link_lsit[sblink] */
 			if (link->link_num == 0) { /* devicetree put IO Hub on link_lsit[0] */
@@ -477,9 +478,10 @@ static unsigned scan_chains(device_t dev, unsigned unused)
 					die("I can't find the IO Hub, or IO Hub not enabled, please check the device tree.\n");
 				}
 				/* Now that nothing is overlapping it is safe to scan the children. */
-				max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, 0);
+				pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7);
 			}
 		}
+		max = dev->bus->subordinate;
 	}
 
 	dev->bus->subordinate = max;
@@ -954,7 +956,7 @@ static void domain_set_resources(device_t dev)
 static unsigned int f15_pci_domain_scan_bus(device_t dev, unsigned int unused)
 {
 	struct bus *link = dev->link_list;
-	link->subordinate = pci_scan_bus(link, PCI_DEVFN(0x18, 0), 0xff, link->secondary);
+	pci_scan_bus(link, PCI_DEVFN(0x18, 0), 0xff);
 	return unused;
 }
 

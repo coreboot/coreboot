@@ -25,20 +25,4 @@
 void pinmux_set_config(int pin_index, uint32_t config);
 uint32_t pinmux_get_config(int pin_index);
 
-enum {
-	PINMUX_FUNC_MASK = 3 << 0,
-
-	PINMUX_PULL_MASK = 3 << 2,
-	PINMUX_PULL_NONE = 0 << 2,
-	PINMUX_PULL_DOWN = 1 << 2,
-	PINMUX_PULL_UP = 2 << 2,
-
-	PINMUX_TRISTATE = 1 << 4,
-	PINMUX_INPUT_ENABLE = 1 << 5,
-	PINMUX_OPEN_DRAIN = 1 << 6,
-	PINMUX_LOCK = 1 << 7,
-	PINMUX_IO_RESET = 1 << 8,
-	PINMUX_RCV_SEL = 1 << 9
-};
-
 #endif	/* __SOC_NVIDIA_TEGRA_PINMUX_H__ */

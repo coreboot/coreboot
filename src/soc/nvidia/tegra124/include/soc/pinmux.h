@@ -23,6 +23,22 @@
 #include <soc/nvidia/tegra/pinmux.h>
 #include <stdint.h>
 
+enum {
+	PINMUX_FUNC_MASK = 3 << 0,
+
+	PINMUX_PULL_MASK = 3 << 2,
+	PINMUX_PULL_NONE = 0 << 2,
+	PINMUX_PULL_DOWN = 1 << 2,
+	PINMUX_PULL_UP = 2 << 2,
+
+	PINMUX_TRISTATE = 1 << 4,
+	PINMUX_INPUT_ENABLE = 1 << 5,
+	PINMUX_OPEN_DRAIN = 1 << 6,
+	PINMUX_LOCK = 1 << 7,
+	PINMUX_IO_RESET = 1 << 8,
+	PINMUX_RCV_SEL = 1 << 9
+};
+
 #define PINMUX_CONSTANTS(index, name, gpio, func0, func1, func2, func3) \
 	PINMUX_##name##_INDEX = index, \
 	PINMUX_##name##_FUNC_##func0 = 0, \

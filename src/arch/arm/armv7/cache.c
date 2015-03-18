@@ -34,6 +34,7 @@
 #include <stdint.h>
 
 #include <arch/cache.h>
+#include <program_loading.h>
 
 void tlb_invalidate_all(void)
 {
@@ -154,4 +155,13 @@ void cache_sync_instructions(void)
 	iciallu();		/* includes BPIALLU (architecturally) */
 	dsb();
 	isb();
+}
+
+/*
+ * For each segment of a program loaded this function is called
+ * to invalidate caches for the addresses of the loaded segment
+ */
+void arch_segment_loaded(uintptr_t start, size_t size, int flags)
+{
+	cache_sync_instructions();
 }

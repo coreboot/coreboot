@@ -190,28 +190,17 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 {
 	/* NB_InitGFXStraps */
 	u32 MMIOBase, apc04, apc18, apc24, romstrap2;
-	msr_t pcie_mmio_save = { 0, 0 };
 	volatile u32 * strap;
 
-	// disable processor pcie mmio, if enabled
-	if (is_family10h()) {
-		msr_t temp;
-		pcie_mmio_save = temp = rdmsr (0xc0010058);
-		temp.lo &= ~1;
-		wrmsr (0xc0010058, temp);
-	}
+	/* Choose a base address that is unused and routed to the RS780. */
+	MMIOBase = 0xFFB00000;
 
-	/* Get PCIe configuration space. */
-	MMIOBase = pci_read_config32(nb_dev, 0x1c) & 0xfffffff0;
-	/* Temporarily disable PCIe configuration space. */
-	set_htiu_enable_bits(nb_dev, 0x32, 1<<28, 0);
-
-	// 1E: NB_BIF_SPARE
+	/* 1E: NB_BIF_SPARE */
 	set_nbmisc_enable_bits(nb_dev, 0x1e, 0xffffffff, 1<<1 | 1<<4 | 1<<6 | 1<<7);
 	/* Set a temporary Bus number. */
 	apc18 = pci_read_config32(dev, 0x18);
 	pci_write_config32(dev, 0x18, 0x010100);
-	/* Set MMIO for AGP target(graphics controller). base = 0xe0000000, limit = 0x20000 */
+	/* Set MMIO window for AGP target(graphics controller). */
 	apc24 = pci_read_config32(dev, 0x24);
 	pci_write_config32(dev, 0x24, (MMIOBase>>16)+((MMIOBase+0x20000)&0xffff0000));
 	/* Enable memory access. */
@@ -261,13 +250,6 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 	pci_write_config32(dev, 0x04, apc04);
 	pci_write_config32(dev, 0x18, apc18);
 	pci_write_config32(dev, 0x24, apc24);
-
-	/* Enable PCIe configuration space. */
-	set_htiu_enable_bits(nb_dev, 0x32, 0, 1<<28);
-
-	// restore processor pcie mmio
-	if (is_family10h())
-		wrmsr (0xc0010058, pcie_mmio_save);
 
 	printk(BIOS_INFO, "GC is accessible from now on.\n");
 }

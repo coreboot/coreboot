@@ -28,6 +28,9 @@
 
 struct cbfs_image {
 	struct buffer buffer;
+	/* An image has a header iff it's a legacy CBFS. */
+	bool has_header;
+	/* Only meaningful if has_header is selected. */
 	struct cbfs_header header;
 };
 
@@ -37,18 +40,28 @@ void cbfs_put_header(void *dest, const struct cbfs_header *header);
 /* Or deserialize into host-native format */
 void cbfs_get_header(struct cbfs_header *header, void *src);
 
+/* Populates a CBFS with a single empty entry filling all available space
+ * (entries_size bytes). If image's header field is already present, its
+ * contents will be used to place an empty entry of the requested length at the
+ * appropriate position in the existing buffer; otherwise, if not has_header,
+ * the first entries_size bytes of buffer will be filled exclusively with the
+ * single empty entry (and no CBFS master header).
+ * Returns 0 on success, otherwise nonzero. */
+int cbfs_image_create(struct cbfs_image *image, size_t entries_size);
+
 /* Creates an empty CBFS image by given size, and description to its content
  * (bootblock, align, header location, starting offset of CBFS entries).
  * The output image will contain a valid cbfs_header, with one cbfs_file
  * entry with type CBFS_COMPONENT_NULL, with max available size.
- * Returns 0 on success, otherwise none-zero. */
-int cbfs_image_create(struct cbfs_image *image,
-		      uint32_t arch,
-		      uint32_t align,
-		      struct buffer *bootblock,
-		      uint32_t bootblock_offset,
-		      uint32_t header_offset,
-		      uint32_t entries_offset);
+ * Only call this if you want a legacy CBFS with a master header.
+ * Returns 0 on success, otherwise nonzero. */
+int cbfs_legacy_image_create(struct cbfs_image *image,
+			      uint32_t arch,
+			      uint32_t align,
+			      struct buffer *bootblock,
+			      uint32_t bootblock_offset,
+			      uint32_t header_offset,
+			      uint32_t entries_offset);
 
 /* Constructs a cbfs_image from a buffer. The resulting image contains a shallow
  * copy of the buffer; releasing either one is the legal way to clean up after
@@ -57,7 +70,8 @@ int cbfs_image_create(struct cbfs_image *image,
 int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
 			   uint32_t offset);
 
-/* Create a duplicate CBFS image. Returns 0 on success, otherwise non-zero. */
+/* Create a duplicate CBFS image. Returns 0 on success, otherwise non-zero.
+ * Will not succeed on new-style images without a master header. */
 int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 			size_t copy_size);
 
@@ -74,6 +88,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 
 /* Adds an entry to CBFS image by given name and type. If content_offset is
  * non-zero, try to align "content" (CBFS_SUBHEADER(p)) at content_offset.
+ * Note that top-aligned addresses are only supported for legacy CBFSes.
  * Returns 0 on success, otherwise non-zero. */
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		   const char *name, uint32_t type, uint32_t content_offset);
@@ -125,6 +140,12 @@ struct cbfs_file *cbfs_find_next_entry(struct cbfs_image *image,
 /* Returns ROM address (offset) of entry.
  * This is different from entry->offset (pointer to content). */
 uint32_t cbfs_get_entry_addr(struct cbfs_image *image, struct cbfs_file *entry);
+
+/* Returns 1 if valid new-format CBFS (without a master header), otherwise 0. */
+int cbfs_is_valid_cbfs(struct cbfs_image *image);
+
+/* Returns 1 if valid legacy CBFS (with a master header), otherwise 0. */
+int cbfs_is_legacy_cbfs(struct cbfs_image *image);
 
 /* Returns 1 if entry has valid data (by checking magic number), otherwise 0. */
 int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry);

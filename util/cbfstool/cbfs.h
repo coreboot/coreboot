@@ -32,6 +32,9 @@
 #define makemagic(b3, b2, b1, b0)\
 	(((b3)<<24) | ((b2) << 16) | ((b1) << 8) | (b0))
 
+// Alignment (in bytes) to be used when no master header is present
+#define CBFS_ENTRY_ALIGNMENT 64
+
 #define CBFS_HEADER_MAGIC  0x4F524243
 #define CBFS_HEADPTR_ADDR_X86 0xFFFFFFFC
 #define CBFS_HEADER_VERSION1 0x31313131

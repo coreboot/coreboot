@@ -47,6 +47,8 @@ extern int verbose;
 /* Helpers */
 #define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
 
 #define unused __attribute__((unused))
 

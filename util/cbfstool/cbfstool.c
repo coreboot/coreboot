@@ -46,10 +46,12 @@ struct command {
 static struct param {
 	partitioned_file_t *image_file;
 	struct buffer *image_region;
-	char *name;
-	char *filename;
-	char *bootblock;
-	char *ignore_section;
+	const char *name;
+	const char *filename;
+	const char *fmap;
+	const char *region_name;
+	const char *bootblock;
+	const char *ignore_section;
 	uint64_t u64val;
 	uint32_t type;
 	uint32_t baseaddress;
@@ -65,8 +67,11 @@ static struct param {
 	uint32_t pagesize;
 	uint32_t cbfsoffset;
 	uint32_t cbfsoffset_assigned;
-	uint32_t top_aligned;
 	uint32_t arch;
+	bool top_aligned;
+	bool fill_partial_upward;
+	bool fill_partial_downward;
+	bool show_immutable;
 	int fit_empty_entries;
 	comp_algo algo;
 	/* for linux payloads */
@@ -77,7 +82,21 @@ static struct param {
 	.arch = CBFS_ARCHITECTURE_UNKNOWN,
 	.algo = CBFS_COMPRESS_NONE,
 	.headeroffset = ~0,
+	.region_name = SECTION_NAME_PRIMARY_CBFS,
 };
+
+static bool region_is_flashmap(const char *region)
+{
+	return partitioned_file_region_check_magic(param.image_file, region,
+					FMAP_SIGNATURE, strlen(FMAP_SIGNATURE));
+}
+
+/* @return Same as cbfs_is_valid_cbfs(), but for a named region. */
+static bool region_is_modern_cbfs(const char *region)
+{
+	return partitioned_file_region_check_magic(param.image_file, region,
+				CBFS_FILE_MAGIC, strlen(CBFS_FILE_MAGIC));
+}
 
 typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset);
 
@@ -147,10 +166,8 @@ static int cbfs_add_component(const char *filename,
 	}
 
 	struct cbfs_image image;
-	if (cbfs_image_from_buffer(&image, param.image_region, headeroffset)) {
-		ERROR("Selected image region is not a CBFS.\n");
+	if (cbfs_image_from_buffer(&image, param.image_region, headeroffset))
 		return 1;
-	}
 
 	struct buffer buffer;
 	if (buffer_from_file(&buffer, filename) != 0) {
@@ -307,10 +324,8 @@ static int cbfs_remove(void)
 
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset)) {
-		ERROR("Selected image region is not a CBFS.\n");
+							param.headeroffset))
 		return 1;
-	}
 
 	if (cbfs_remove_entry(&image, param.name) != 0) {
 		ERROR("Removing file '%s' failed.\n",
@@ -323,6 +338,24 @@ static int cbfs_remove(void)
 
 static int cbfs_create(void)
 {
+	struct cbfs_image image;
+	memset(&image, 0, sizeof(image));
+	buffer_clone(&image.buffer, param.image_region);
+
+	if (param.fmap) {
+		if (param.arch != CBFS_ARCHITECTURE_UNKNOWN || param.size ||
+						param.baseaddress_assigned ||
+						param.headeroffset_assigned ||
+						param.cbfsoffset_assigned ||
+							param.alignment ||
+							param.bootblock) {
+			ERROR("Since -M was provided, -m, -s, -b, -o, -H, -a, and -B should be omitted\n");
+			return 1;
+		}
+
+		return cbfs_image_create(&image, image.buffer.size);
+	}
+
 	if (param.arch == CBFS_ARCHITECTURE_UNKNOWN) {
 		ERROR("You need to specify -m/--machine arch.\n");
 		return 1;
@@ -343,9 +376,8 @@ static int cbfs_create(void)
 	if (!param.baseaddress_assigned) {
 		if (param.arch == CBFS_ARCHITECTURE_X86) {
 			// Make sure there's at least enough room for rel_offset
-			param.baseaddress = param.size - (
-				bootblock.size > sizeof(int32_t) ?
-				bootblock.size : sizeof(int32_t));
+			param.baseaddress = param.size -
+					MAX(bootblock.size, sizeof(int32_t));
 			DEBUG("x86 -> bootblock lies at end of ROM (%#x).\n",
 			      param.baseaddress);
 		} else {
@@ -379,25 +411,15 @@ static int cbfs_create(void)
 		}
 	}
 
-	struct cbfs_image image;
-	if (!cbfs_image_from_buffer(&image, param.image_region, -1))
-		// It *already* contains a CBFS?! This should be a blank file.
-		assert(false);
-
-	if (cbfs_image_create(&image,
-			      param.arch,
-			      param.alignment,
-			      &bootblock,
-			      param.baseaddress,
-			      param.headeroffset,
-			      param.cbfsoffset) != 0) {
-		ERROR("Failed to initialize CBFS structure.\n");
-		buffer_delete(&bootblock);
-		return 1;
-	}
-
+	int ret = cbfs_legacy_image_create(&image,
+					   param.arch,
+					   param.alignment,
+					   &bootblock,
+					   param.baseaddress,
+					   param.headeroffset,
+					   param.cbfsoffset);
 	buffer_delete(&bootblock);
-	return 0;
+	return ret;
 }
 
 static int cbfs_locate(void)
@@ -414,8 +436,11 @@ static int cbfs_locate(void)
 
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset)) {
-		ERROR("Selected image region is not a CBFS.\n");
+							param.headeroffset))
+		return 1;
+
+	if (!cbfs_is_legacy_cbfs(&image) && param.top_aligned) {
+		ERROR("The -T switch is only valid on legacy images having CBFS master headers\n");
 		return 1;
 	}
 
@@ -445,15 +470,76 @@ static int cbfs_locate(void)
 	return 0;
 }
 
+static int cbfs_layout(void)
+{
+	const struct fmap *fmap = partitioned_file_get_fmap(param.image_file);
+	if (!fmap) {
+		LOG("This is a legacy image composed entirely of a single CBFS.\n");
+		return 1;
+	}
+
+	printf("This image contains the following sections that can be %s with this tool:\n",
+			param.show_immutable ? "accessed" : "manipulated");
+	puts("");
+	for (unsigned index = 0; index < fmap->nareas; ++index) {
+		const struct fmap_area *current = fmap->areas + index;
+
+		bool readonly = partitioned_file_fmap_count(param.image_file,
+			partitioned_file_fmap_select_children_of, current) ||
+				region_is_flashmap((const char *)current->name);
+		if (!param.show_immutable && readonly)
+			continue;
+
+		printf("'%s'", current->name);
+
+		// Detect consecutive sections that describe the same region and
+		// show them as aliases. This cannot find equivalent entries
+		// that aren't adjacent; however, fmaptool doesn't generate
+		// FMAPs with such sections, so this convenience feature works
+		// for all but the strangest manually created FMAP binaries.
+		// TODO: This could be done by parsing the FMAP into some kind
+		// of tree that had duplicate lists in addition to child lists,
+		// which would allow covering that weird, unlikely case as well.
+		unsigned lookahead;
+		for (lookahead = 1; index + lookahead < fmap->nareas;
+								++lookahead) {
+			const struct fmap_area *consecutive =
+					fmap->areas + index + lookahead;
+			if (consecutive->offset != current->offset ||
+					consecutive->size != current->size)
+				break;
+			printf(", '%s'", consecutive->name);
+		}
+		if (lookahead > 1)
+			fputs(" are aliases for the same region", stdout);
+
+		const char *qualifier = "";
+		if (readonly)
+			qualifier = "read-only, ";
+		else if (region_is_modern_cbfs((const char *)current->name))
+			qualifier = "CBFS, ";
+		printf(" (%ssize %u)\n", qualifier, current->size);
+
+		index += lookahead - 1;
+	}
+	puts("");
+
+	if (param.show_immutable) {
+		puts("It is at least possible to perform the read action on every section listed above.");
+	} else {
+		puts("It is possible to perform either the write action or the CBFS add/remove actions on every section listed above.");
+		puts("To see the image's read-only sections as well, rerun with the -w option.");
+	}
+
+	return 0;
+}
+
 static int cbfs_print(void)
 {
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset)) {
-		ERROR("Selected image region is not a CBFS.\n");
+							param.headeroffset))
 		return 1;
-	}
-
 	cbfs_print_directory(&image);
 	return 0;
 }
@@ -472,12 +558,91 @@ static int cbfs_extract(void)
 
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset)) {
-		ERROR("Selected image region is not a CBFS.\n");
+							param.headeroffset))
+		return 1;
+
+	return cbfs_export_entry(&image, param.name, param.filename);
+}
+
+static int cbfs_write(void)
+{
+	if (!param.filename) {
+		ERROR("You need to specify a valid input -f/--file.\n");
+		return 1;
+	}
+	if (!partitioned_file_is_partitioned(param.image_file)) {
+		ERROR("This operation isn't valid on legacy images having CBFS master headers\n");
 		return 1;
 	}
 
-	return cbfs_export_entry(&image, param.name, param.filename);
+	if (region_is_modern_cbfs(param.region_name)) {
+		ERROR("Target image region '%s' is a CBFS and must be manipulated using add and remove\n",
+							param.region_name);
+		return 1;
+	}
+
+	struct buffer new_content;
+	if (buffer_from_file(&new_content, param.filename))
+		return 1;
+
+	if (buffer_check_magic(&new_content, FMAP_SIGNATURE,
+						strlen(FMAP_SIGNATURE))) {
+		ERROR("File '%s' appears to be an FMAP and cannot be added to an existing image\n",
+								param.filename);
+		buffer_delete(&new_content);
+		return 1;
+	}
+	if (buffer_check_magic(&new_content, CBFS_FILE_MAGIC,
+						strlen(CBFS_FILE_MAGIC))) {
+		ERROR("File '%s' appears to be a CBFS and cannot be inserted into a raw region\n",
+								param.filename);
+		buffer_delete(&new_content);
+		return 1;
+	}
+
+	unsigned offset = 0;
+	if (param.fill_partial_upward && param.fill_partial_downward) {
+		ERROR("You may only specify one of -u and -d.\n");
+		buffer_delete(&new_content);
+		return 1;
+	} else if (!param.fill_partial_upward && !param.fill_partial_downward) {
+		if (new_content.size != param.image_region->size) {
+			ERROR("File to add is %zu bytes and would not fill %zu-byte target region (did you mean to pass either -u or -d?)\n",
+				new_content.size, param.image_region->size);
+			buffer_delete(&new_content);
+			return 1;
+		}
+	} else {
+		if (new_content.size > param.image_region->size) {
+			ERROR("File to add is %zu bytes and would overflow %zu-byte target region\n",
+				new_content.size, param.image_region->size);
+			buffer_delete(&new_content);
+			return 1;
+		}
+		WARN("Written area will abut %s of target region: any unused space will keep its current contents\n",
+				param.fill_partial_upward ? "bottom" : "top");
+		if (param.fill_partial_downward)
+			offset = param.image_region->size - new_content.size;
+	}
+
+	memcpy(param.image_region->data + offset, new_content.data,
+							new_content.size);
+	buffer_delete(&new_content);
+	return 0;
+}
+
+static int cbfs_read(void)
+{
+	if (!param.filename) {
+		ERROR("You need to specify a valid output -f/--file.\n");
+		return 1;
+	}
+	if (!partitioned_file_is_partitioned(param.image_file)) {
+		ERROR("This operation isn't valid on legacy images having CBFS master headers\n");
+		return 1;
+	}
+
+	return buffer_write_file(param.image_region, param.filename);
 }
 
 static int cbfs_update_fit(void)
@@ -495,10 +660,8 @@ static int cbfs_update_fit(void)
 
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset)) {
-		ERROR("Selected image region is not a CBFS.\n");
+							param.headeroffset))
 		return 1;
-	}
 
 	return fit_update_table(&image, param.fit_empty_entries, param.name);
 }
@@ -517,28 +680,40 @@ static int cbfs_copy(void)
 
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset)) {
-		ERROR("Selected image region is not a CBFS.\n");
+							param.headeroffset))
+		return 1;
+
+	if (!cbfs_is_legacy_cbfs(&image)) {
+		ERROR("This operation is only valid on legacy images having CBFS master headers\n");
 		return 1;
 	}
 
 	return cbfs_copy_instance(&image, param.copyoffset, param.size);
 }
 
+static bool cbfs_is_legacy_format(struct buffer *buffer)
+{
+	// Legacy CBFSes are those containing the deprecated CBFS master header.
+	return cbfs_find_header(buffer->data, buffer->size, -1);
+}
+
 static const struct command commands[] = {
-	{"add", "H:f:n:t:b:vh?", cbfs_add, true, true},
-	{"add-flat-binary", "H:f:n:l:e:c:b:vh?", cbfs_add_flat_binary, true,
+	{"add", "H:r:f:n:t:b:vh?", cbfs_add, true, true},
+	{"add-flat-binary", "H:r:f:n:l:e:c:b:vh?", cbfs_add_flat_binary, true,
 									true},
-	{"add-payload", "H:f:n:t:c:b:vh?C:I:", cbfs_add_payload, true, true},
-	{"add-stage", "H:f:n:t:c:b:S:vh?", cbfs_add_stage, true, true},
-	{"add-int", "H:i:n:b:vh?", cbfs_add_integer, true, true},
-	{"copy", "H:D:s:", cbfs_copy, true, true},
-	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create, true, true},
-	{"extract", "H:n:f:vh?", cbfs_extract, true, false},
-	{"locate", "H:f:n:P:a:Tvh?", cbfs_locate, true, false},
-	{"print", "H:vh?", cbfs_print, true, false},
-	{"remove", "H:n:vh?", cbfs_remove, true, true},
-	{"update-fit", "H:n:x:vh?", cbfs_update_fit, true, true},
+	{"add-payload", "H:r:f:n:t:c:b:C:I:vh?", cbfs_add_payload, true, true},
+	{"add-stage", "H:r:f:n:t:c:b:S:vh?", cbfs_add_stage, true, true},
+	{"add-int", "H:r:i:n:b:vh?", cbfs_add_integer, true, true},
+	{"copy", "H:D:s:h?", cbfs_copy, true, true},
+	{"create", "M:r:s:B:b:H:a:o:m:vh?", cbfs_create, true, true},
+	{"extract", "H:r:n:f:vh?", cbfs_extract, true, false},
+	{"locate", "H:r:f:n:P:a:Tvh?", cbfs_locate, true, false},
+	{"layout", "wvh?", cbfs_layout, false, false},
+	{"print", "H:r:vh?", cbfs_print, true, false},
+	{"read", "r:f:vh?", cbfs_read, true, false},
+	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
+	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
+	{"write", "r:f:udvh?", cbfs_write, true, true},
 };
 
 static struct option long_options[] = {
@@ -551,6 +726,10 @@ static struct option long_options[] = {
 	{"empty-fits",    required_argument, 0, 'x' },
 	{"entry-point",   required_argument, 0, 'e' },
 	{"file",          required_argument, 0, 'f' },
+	{"fill-downward", no_argument,       0, 'd' },
+	{"fill-upward",   no_argument,       0, 'u' },
+	{"flashmap",      required_argument, 0, 'M' },
+	{"fmap-regions",  required_argument, 0, 'r' },
 	{"header-offset", required_argument, 0, 'H' },
 	{"help",          no_argument,       0, 'h' },
 	{"ignore-sec",    required_argument, 0, 'S' },
@@ -565,8 +744,60 @@ static struct option long_options[] = {
 	{"top-aligned",   required_argument, 0, 'T' },
 	{"type",          required_argument, 0, 't' },
 	{"verbose",       no_argument,       0, 'v' },
+	{"with-readonly", no_argument,       0, 'w' },
 	{NULL,            0,                 0,  0  }
 };
+
+static int dispatch_command(struct command command)
+{
+	if (command.accesses_region) {
+		assert(param.image_file);
+
+		if (partitioned_file_is_partitioned(param.image_file)) {
+			LOG("Performing operation on '%s' region...\n",
+					param.region_name);
+		}
+		if (!partitioned_file_read_region(param.image_region,
+					param.image_file, param.region_name)) {
+			ERROR("The image will be left unmodified.\n");
+			return 1;
+		}
+
+		if (command.modifies_region) {
+			// We (intentionally) don't support overwriting the FMAP
+			// section. If you find yourself wanting to do this,
+			// consider creating a new image rather than performing
+			// whatever hacky transformation you were planning.
+			if (region_is_flashmap(param.region_name)) {
+				ERROR("Image region '%s' is read-only because it contains the FMAP.\n",
+							param.region_name);
+				ERROR("The image will be left unmodified.\n");
+				return 1;
+			}
+			// We don't allow writing raw data to regions that
+			// contain nested regions, since doing so would
+			// overwrite all such subregions.
+			if (partitioned_file_region_contains_nested(
+					param.image_file, param.region_name)) {
+				ERROR("Image region '%s' is read-only because it contains nested regions.\n",
+							param.region_name);
+				ERROR("The image will be left unmodified.\n");
+				return 1;
+			}
+		}
+	}
+
+	if (command.function()) {
+		if (partitioned_file_is_partitioned(param.image_file)) {
+			ERROR("Failed while operating on '%s' region!\n",
+							param.region_name);
+			ERROR("The image will be left unmodified.\n");
+		}
+		return 1;
+	}
+
+	return 0;
+}
 
 static void usage(char *name)
 {
@@ -574,44 +805,60 @@ static void usage(char *name)
 	    ("cbfstool: Management utility for CBFS formatted ROM images\n\n"
 	     "USAGE:\n" " %s [-h]\n"
 	     " %s FILE COMMAND [-v] [PARAMETERS]...\n\n" "OPTIONs:\n"
-	     "  -H header_offset  Do not search for header, use this offset\n"
-	     "  -T                Output top-aligned memory address\n"
-	     "  -v                Provide verbose output\n"
-	     "  -h                Display this help message\n\n"
+	     "  -H header_offset Do not search for header; use this offset*\n"
+	     "  -T               Output top-aligned memory address*\n"
+	     "  -u               Accept short data; fill upward/from bottom\n"
+	     "  -d               Accept short data; fill downward/from top\n"
+	     "  -v               Provide verbose output\n"
+	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"
-	     " add -f FILE -n NAME -t TYPE [-b base-address]               "
+	     " add [-r image,regions] -f FILE -n NAME -t TYPE \\\n"
+	     "        [-b base-address]                                    "
 			"Add a component\n"
-	     " add-payload -f FILE -n NAME [-c compression] [-b base]      "
+	     " add-payload [-r image,regions] -f FILE -n NAME \\\n"
+	     "        [-c compression] [-b base-address]                   "
 			"Add a payload to the ROM\n"
 	     "        (linux specific: [-C cmdline] [-I initrd])\n"
-	     " add-stage -f FILE -n NAME [-c compression] [-b base] \\\n"
-	     "        [-S section-to-ignore]                               "
+	     " add-stage [-r image,regions] -f FILE -n NAME \\\n"
+	     "        [-c compression] [-b base] [-S section-to-ignore]    "
 			"Add a stage to the ROM\n"
-	     " add-flat-binary -f FILE -n NAME -l load-address \\\n"
-	     "        -e entry-point [-c compression] [-b base]            "
+	     " add-flat-binary [-r image,regions] -f FILE -n NAME \\\n"
+	     "        -l load-address -e entry-point [-c compression] \\\n"
+	     "        [-b base]                                            "
 			"Add a 32bit flat mode binary\n"
-	     " add-int -i INTEGER -n NAME [-b base]                        "
+	     " add-int [-r image,regions] -i INTEGER -n NAME [-b base]     "
 			"Add a raw 64-bit integer value\n"
-	     " remove -n NAME                                              "
+	     " remove [-r image,regions] -n NAME                           "
 			"Remove a component\n"
 	     " copy -D new_header_offset -s region size \\\n"
-	     "        [-H source header offset]         "
-			"Create a copy (duplicate) cbfs instance\n"
-	     " create -s size -m ARCH [-B bootblock] [-b bootblock offset] \\\n"
-	     "        [-o CBFS offset] [-H header offset] [-a align]       "
-			"Create a ROM file\n"
-	     " locate -f FILE -n NAME [-P page-size] [-a align] [-T]       "
+	     "        [-H source header offset]                            "
+			"Create a copy (duplicate) cbfs instance*\n"
+	     " create -m ARCH -s size [-b bootblock offset] \\\n"
+	     "        [-o CBFS offset] [-H header offset] [-B bootblock] \\\n"
+	     "        [-a align]                                           "
+			"Create a legacy ROM file with CBFS master header*\n"
+	     " create -M flashmap [-r list,of,regions,containing,cbfses]   "
+			"Create a new-style partitioned firmware image\n"
+	     " locate [-r image,regions] -f FILE -n NAME [-P page-size] \\\n"
+	     "        [-a align] [-T]                                      "
 			"Find a place for a file of that size\n"
-	     " print                                                       "
+	     " layout [-w]                                                 "
+			"List mutable (or, with -w, readable) image regions\n"
+	     " print [-r image,regions]                                    "
 			"Show the contents of the ROM\n"
-	     " extract -n NAME -f FILE                                     "
+	     " extract [-r image,regions] -n NAME -f FILE                  "
 			"Extracts a raw payload from ROM\n"
-	     " update-fit -n MICROCODE_BLOB_NAME -x EMTPY_FIT_ENTRIES\n  "
+	     " write -r image,regions -f file [-u | -d]                    "
+			"Write file into same-size [or larger] raw region\n"
+	     " read [-r fmap-region] -f file                               "
+			"Extract raw region contents into binary file\n"
+	     " update-fit [-r image,regions] -n MICROCODE_BLOB_NAME \\\n"
+	     "          -x EMTPY_FIT_ENTRIES                               "
 			"Updates the FIT table with microcode entries\n"
 	     "\n"
 	     "OFFSETs:\n"
 	     "  Numbers accompanying -b, -H, and -o switches may be provided\n"
-	     "  in two possible formats: if their value is greater than\n"
+	     "  in two possible formats*: if their value is greater than\n"
 	     "  0x80000000, they are interpreted as a top-aligned x86 memory\n"
 	     "  address; otherwise, they are treated as an offset into flash.\n"
 	     "ARCHes:\n"
@@ -619,6 +866,22 @@ static void usage(char *name)
 	     "TYPEs:\n", name, name
 	    );
 	print_supported_filetypes();
+
+	printf(
+	     "\n* Note that these actions and switches are only valid when\n"
+	     "  working with legacy images whose structure is described\n"
+	     "  primarily by a CBFS master header. New-style images, in\n"
+	     "  contrast, exclusively make use of an FMAP to describe their\n"
+	     "  layout: this must minimally contain an '%s' section\n"
+	     "  specifying the location of this FMAP itself and a '%s'\n"
+	     "  section describing the primary CBFS. It should also be noted\n"
+	     "  that, when working with such images, the -F and -r switches\n"
+	     "  default to '%s' for convenience, and both the -b switch to\n"
+	     "  CBFS operations and the output of the locate action become\n"
+	     "  relative to the selected CBFS region's lowest address.\n",
+	     SECTION_NAME_FMAP, SECTION_NAME_PRIMARY_CBFS,
+	     SECTION_NAME_PRIMARY_CBFS
+	     );
 }
 
 int main(int argc, char **argv)
@@ -678,6 +941,12 @@ int main(int argc, char **argv)
 					WARN("Unknown compression '%s'"
 					     " ignored.\n", optarg);
 				break;
+			case 'M':
+				param.fmap = optarg;
+				break;
+			case 'r':
+				param.region_name = optarg;
+				break;
 			case 'b':
 				param.baseaddress = strtoul(optarg, NULL, 0);
 				// baseaddress may be zero on non-x86, so we
@@ -729,7 +998,16 @@ int main(int argc, char **argv)
 				param.u64val = strtoull(optarg, NULL, 0);
 				break;
 			case 'T':
-				param.top_aligned = 1;
+				param.top_aligned = true;
+				break;
+			case 'u':
+				param.fill_partial_upward = true;
+				break;
+			case 'd':
+				param.fill_partial_downward = true;
+				break;
+			case 'w':
+				param.show_immutable = true;
 				break;
 			case 'x':
 				param.fit_empty_entries = strtol(optarg, NULL, 0);
@@ -759,19 +1037,32 @@ int main(int argc, char **argv)
 		}
 
 		if (commands[i].function == cbfs_create) {
-			if (param.size == 0) {
-				ERROR("You need to specify a valid -s/--size.\n");
+			if (param.fmap) {
+				struct buffer flashmap;
+				if (buffer_from_file(&flashmap, param.fmap))
+					return 1;
+				param.image_file = partitioned_file_create(
+							image_name, &flashmap);
+				buffer_delete(&flashmap);
+			} else if (param.size) {
+				param.image_file = partitioned_file_create_flat(
+							image_name, param.size);
+			} else {
+				ERROR("You need to specify a valid -M/--flashmap or -s/--size.\n");
 				return 1;
 			}
-			param.image_file = partitioned_file_create_flat(
-							image_name, param.size);
 		} else {
 			param.image_file =
 				partitioned_file_reopen(image_name,
-						partitioned_file_open_as_flat);
+							cbfs_is_legacy_format);
 		}
 		if (!param.image_file)
 			return 1;
+
+		unsigned num_regions = 1;
+		for (const char *list = strchr(param.region_name, ','); list;
+						list = strchr(list + 1, ','))
+			++num_regions;
 
 		// If the action needs to read an image region, as indicated by
 		// having accesses_region set in its command struct, that
@@ -781,36 +1072,60 @@ int main(int argc, char **argv)
 		// since this behavior can be requested via its modifies_region
 		// field. Additionally, it should never free the region buffer,
 		// as that is performed automatically once it completes.
-		struct buffer image_region;
-		memset(&image_region, 0, sizeof(image_region));
+		struct buffer image_regions[num_regions];
+		memset(image_regions, 0, sizeof(image_regions));
 
-		if (commands[i].accesses_region) {
-			assert(param.image_file);
-
-			if (!partitioned_file_read_region(&image_region,
-				param.image_file, SECTION_NAME_PRIMARY_CBFS)) {
+		bool seen_primary_cbfs = false;
+		char region_name_scratch[strlen(param.region_name) + 1];
+		strcpy(region_name_scratch, param.region_name);
+		param.region_name = strtok(region_name_scratch, ",");
+		for (unsigned region = 0; region < num_regions; ++region) {
+			if (!param.region_name) {
+				ERROR("Encountered illegal degenerate region name in -r list\n");
+				ERROR("The image will be left unmodified.\n");
 				partitioned_file_close(param.image_file);
 				return 1;
 			}
-			param.image_region = &image_region;
-		}
 
-		int error = commands[i].function();
+			if (strcmp(param.region_name, SECTION_NAME_PRIMARY_CBFS)
+									== 0)
+				seen_primary_cbfs = true;
 
-		if (!error && commands[i].modifies_region) {
-			assert(param.image_file);
-			assert(commands[i].accesses_region);
-
-			if (!partitioned_file_write_region(param.image_file,
-							&image_region)) {
+			param.image_region = image_regions + region;
+			if (dispatch_command(commands[i])) {
 				partitioned_file_close(param.image_file);
 				return 1;
+			}
+
+			param.region_name = strtok(NULL, ",");
+		}
+
+		if (commands[i].function == cbfs_create && !seen_primary_cbfs) {
+			ERROR("The creation -r list must include the mandatory '%s' section.\n",
+						SECTION_NAME_PRIMARY_CBFS);
+			ERROR("The image will be left unmodified.\n");
+			partitioned_file_close(param.image_file);
+			return 1;
+		}
+
+		if (commands[i].modifies_region) {
+			assert(param.image_file);
+			assert(commands[i].accesses_region);
+			for (unsigned region = 0; region < num_regions;
+								++region) {
+
+				if (!partitioned_file_write_region(
+							param.image_file,
+						image_regions + region)) {
+					partitioned_file_close(
+							param.image_file);
+					return 1;
+				}
 			}
 		}
 
 		partitioned_file_close(param.image_file);
-
-		return error;
+		return 0;
 	}
 
 	ERROR("Unknown command '%s'.\n", cmd);

@@ -25,7 +25,8 @@ CBFSTOOL_COMMON+=flashmap/kv_pair.o flashmap/valstr.o
 CBFSTOOL_COMMON:=$(addprefix $(obj)/,$(CBFSTOOL_COMMON))
 
 FMAPTOOL_BINARY:=$(obj)/fmaptool
-FMAPTOOL_COMMON:=fmap_from_fmd.o fmd.o fmd_parser.o fmd_scanner.o
+FMAPTOOL_COMMON:=cbfs_sections.o fmap_from_fmd.o
+FMAPTOOL_COMMON+=fmd.o fmd_parser.o fmd_scanner.o
 # FMAP
 FMAPTOOL_COMMON+=flashmap/fmap.o
 FMAPTOOL_COMMON+=flashmap/kv_pair.o flashmap/valstr.o

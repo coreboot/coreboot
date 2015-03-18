@@ -24,6 +24,7 @@ cbfsobj += cbfs-payload-linux.o
 
 fmapobj :=
 fmapobj += fmaptool.o
+fmapobj += cbfs_sections.o
 fmapobj += fmap_from_fmd.o
 fmapobj += fmd.o
 fmapobj += fmd_parser.o

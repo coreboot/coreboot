@@ -29,13 +29,13 @@ uint64_t get_uma_memory_size(uint64_t topmem)
 	uint64_t uma_size = 0;
 	if (IS_ENABLED(CONFIG_GFXUMA)) {
 		/* refer to UMA Size Consideration in 780 BDG. */
-		if (topmem > 0x40000000)	/* 1GB and above system memory */
+		if (topmem >= 0x40000000)	/* 1GB and above system memory */
 			uma_size = 0x10000000;	/* 256M recommended UMA */
 
-		else if (topmem > 0x20000000)	/* 512M - 1023M system memory */
+		else if (topmem >= 0x20000000)	/* 512M - 1023M system memory */
 			uma_size = 0x8000000;	/* 128M recommended UMA */
 
-		else if (topmem > 0x10000000)	/* 256M - 511M system memory */
+		else if (topmem >= 0x10000000)	/* 256M - 511M system memory */
 			uma_size = 0x4000000;	/* 64M recommended UMA */
 	}
 

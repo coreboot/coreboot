@@ -30,6 +30,8 @@ int acpi_get_sleep_type(void)
 	return (int)tmp;
 }
 
+#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
+
 #ifndef __PRE_RAM__
 void backup_top_of_ram(uint64_t ramtop)
 {
@@ -57,3 +59,5 @@ unsigned long get_top_of_ram(void)
 	}
 	return (unsigned long) xdata;
 }
+
+#endif

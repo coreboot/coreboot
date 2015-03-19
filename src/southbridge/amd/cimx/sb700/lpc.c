@@ -24,6 +24,8 @@
 #include <console/console.h>	/* printk */
 #include <cbmem.h>
 
+#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
+
 #define BIOSRAM_INDEX   0xcd4
 #define BIOSRAM_DATA    0xcd5
 
@@ -37,6 +39,7 @@ void backup_top_of_ram(uint64_t ramtop)
 		nvram_pos++;
 	}
 }
+#endif
 
 void lpc_read_resources(device_t dev)
 {

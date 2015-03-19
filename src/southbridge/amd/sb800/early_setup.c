@@ -673,6 +673,7 @@ int acpi_get_sleep_type(void)
 	return ((tmp & (7 << 10)) >> 10);
 }
 
+#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 unsigned long get_top_of_ram(void)
 {
 	uint32_t xdata = 0;
@@ -687,5 +688,6 @@ unsigned long get_top_of_ram(void)
 	}
 	return (unsigned long) xdata;
 }
+#endif
 
 #endif

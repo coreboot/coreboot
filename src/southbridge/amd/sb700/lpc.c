@@ -88,6 +88,7 @@ int acpi_get_sleep_type(void)
 	return ((tmp & (7 << 10)) >> 10);
 }
 
+#if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 void backup_top_of_ram(uint64_t ramtop)
 {
 	u32 dword = (u32) ramtop;
@@ -98,6 +99,7 @@ void backup_top_of_ram(uint64_t ramtop)
 		nvram_pos++;
 	}
 }
+#endif
 
 static void sb700_lpc_read_resources(device_t dev)
 {

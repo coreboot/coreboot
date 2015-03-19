@@ -37,6 +37,7 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include <console/console.h>
+#include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
 #include <northbridge/amd/amdfam10/raminit.h>
@@ -95,6 +96,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct sys_info *sysinfo = &sysinfo_car;
 	u32 bsp_apicid = 0, val;
 	msr_t msr;
+
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
@@ -202,12 +206,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* all ap stopped? */
 //	init_timer(); // Need to use TMICT to synchronize FID/VID
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
+	timestamp_add_now(TS_AFTER_INITRAM);
+
 	cbmem_initialize_empty();
 	post_code(0x41);
 
 	bcm5785_early_setup();
+
+	timestamp_add_now(TS_END_ROMSTAGE);
 
 	post_cache_as_ram();
 }

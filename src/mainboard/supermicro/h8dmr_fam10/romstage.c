@@ -30,6 +30,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
+#include <timestamp.h>
 #include <lib.h>
 #include <spd.h>
 #include <cpu/amd/model_10xxx_rev.h>
@@ -105,6 +106,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct sys_info *sysinfo = &sysinfo_car;
 	u32 bsp_apicid = 0, val, wants_reset;
 	msr_t msr;
+
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
@@ -226,10 +230,15 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x40);
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
+	timestamp_add_now(TS_AFTER_INITRAM);
+
 	cbmem_initialize_empty();
 	post_code(0x41);
+
+	timestamp_add_now(TS_END_ROMSTAGE);
 
 	post_cache_as_ram(); // BSP switch stack to ram, copy + execute stage 2
 	post_code(0x42);     // Should never see this post code.

@@ -33,6 +33,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
+#include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/amd/amd8111/early_smbus.c"
 #include <northbridge/amd/amdfam10/raminit.h>
@@ -188,6 +189,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 bsp_apicid = 0, val;
 	msr_t msr;
 
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
@@ -310,8 +314,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 //	die("Die Before MCT init.");
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
+	timestamp_add_now(TS_AFTER_INITRAM);
+
 	cbmem_initialize_empty();
 	post_code(0x41);
 
@@ -323,6 +330,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 */
 
 //	die("After MCT init before CAR disabled.");
+
+	timestamp_add_now(TS_END_ROMSTAGE);
 
 	post_code(0x42);
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.

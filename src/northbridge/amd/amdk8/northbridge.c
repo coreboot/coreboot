@@ -1095,7 +1095,7 @@ static void amdk8_domain_set_resources(device_t dev)
 
 }
 
-static u32 amdk8_domain_scan_bus(device_t dev, u32 max)
+static u32 amdk8_domain_scan_bus(device_t dev, u32 unused)
 {
 	u32 reg;
 	int i;
@@ -1131,7 +1131,7 @@ static u32 amdk8_domain_scan_bus(device_t dev, u32 max)
 			pci_write_config32(f0_dev, HT_TRANSACTION_CONTROL, httc);
 		}
 	}
-	return max;
+	return unused;
 }
 
 static struct device_operations pci_domain_ops = {

@@ -1271,10 +1271,11 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
  * @param max The highest bus number assigned up to now.
  * @return The maximum bus number found, after scanning all subordinate busses.
  */
-unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
+unsigned int pci_domain_scan_bus(device_t dev, unsigned int unused)
 {
-	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0, 0), 0xff, max);
-	return max;
+	struct bus *link = dev->link_list;
+	link->subordinate = pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff, link->secondary);
+	return unused;
 }
 
 /**

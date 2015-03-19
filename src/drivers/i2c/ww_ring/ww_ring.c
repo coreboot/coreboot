@@ -349,6 +349,18 @@ int ww_ring_display_pattern(unsigned i2c_bus, enum display_pattern pattern)
 		if (wwr_prog->led_pattern == pattern) {
 			int j;
 
+			/*
+			 * First stop all running programs to avoid
+			 * inerference between the controllers.
+			 */
+			for (j = 0; j < WW_RING_NUM_LED_CONTROLLERS; j++) {
+				if (!lp55231s[j].dev_addr)
+					continue;
+				ledc_write_engctrl2
+					(lp55231s + j,
+					 LP55231_ENGCTRL2_ALL_DISABLE);
+			}
+
 			for (j = 0; j < WW_RING_NUM_LED_CONTROLLERS; j++) {
 				if (!lp55231s[j].dev_addr)
 					continue;

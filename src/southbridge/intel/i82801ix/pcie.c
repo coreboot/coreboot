@@ -110,19 +110,16 @@ static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static unsigned int pch_pciexp_scan_bridge(device_t dev, unsigned int max)
+static void pch_pciexp_scan_bridge(device_t dev)
 {
-	unsigned int ret;
 	struct southbridge_intel_i82801ix_config *config = dev->chip_info;
 
 	/* Normal PCIe Scan */
-	ret = pciexp_scan_bridge(dev, max);
+	pciexp_scan_bridge(dev);
 
 	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
 		intel_acpi_pcie_hotplug_scan_slot(dev->link_list);
 	}
-
-	return ret;
 }
 
 static struct pci_operations pci_ops = {

@@ -241,7 +241,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool is_
 		return link->subordinate;
 }
 
-static unsigned amdk8_scan_chains(device_t dev, unsigned unused)
+static void amdk8_scan_chains(device_t dev)
 {
 	unsigned nodeid;
 	struct bus *link;
@@ -268,8 +268,6 @@ static unsigned amdk8_scan_chains(device_t dev, unsigned unused)
 	}
 
 	dev->bus->subordinate = max;
-
-	return unused;
 }
 
 
@@ -1095,7 +1093,7 @@ static void amdk8_domain_set_resources(device_t dev)
 
 }
 
-static u32 amdk8_domain_scan_bus(device_t dev, u32 unused)
+static void amdk8_domain_scan_bus(device_t dev)
 {
 	u32 reg;
 	int i;
@@ -1131,7 +1129,6 @@ static u32 amdk8_domain_scan_bus(device_t dev, u32 unused)
 			pci_write_config32(f0_dev, HT_TRANSACTION_CONTROL, httc);
 		}
 	}
-	return unused;
 }
 
 static struct device_operations pci_domain_ops = {
@@ -1180,7 +1177,7 @@ static void add_more_links(device_t dev, unsigned total_links)
 	last->next = NULL;
 }
 
-static u32 cpu_bus_scan(device_t dev, u32 passthru)
+static void cpu_bus_scan(device_t dev)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
@@ -1319,7 +1316,6 @@ static u32 cpu_bus_scan(device_t dev, u32 passthru)
 				amd_cpu_topology(cpu, i, j);
 		} //j
 	}
-	return passthru;
 }
 
 static void cpu_bus_init(device_t dev)

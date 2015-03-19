@@ -1215,11 +1215,9 @@ static void pci_bridge_route(struct bus *link, scan_state state)
  * This function is the default scan_bus() method for PCI bridge devices.
  *
  * @param dev Pointer to the bridge device.
- * @param max The highest bus number assigned up to now.
  * @param do_scan_bus TODO
- * @return The maximum bus number found, after scanning all subordinate buses.
  */
-unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
+void do_pci_scan_bridge(struct device *dev,
 				void (*do_scan_bus) (struct bus * bus,
 							     unsigned min_devfn,
 							     unsigned max_devfn))
@@ -1245,8 +1243,6 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 	do_scan_bus(bus, 0x00, 0xff);
 
 	pci_bridge_route(bus, PCI_ROUTE_FINAL);
-
-	return bus->subordinate;
 }
 
 /**
@@ -1258,12 +1254,10 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
  * This function is the default scan_bus() method for PCI bridge devices.
  *
  * @param dev Pointer to the bridge device.
- * @param max The highest bus number assigned up to now.
- * @return The maximum bus number found, after scanning all subordinate buses.
  */
-unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
+void pci_scan_bridge(struct device *dev)
 {
-	return do_pci_scan_bridge(dev, max, pci_scan_bus);
+	do_pci_scan_bridge(dev, pci_scan_bus);
 }
 
 /**
@@ -1272,14 +1266,11 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
  * This function is the default scan_bus() method for PCI domains.
  *
  * @param dev Pointer to the domain.
- * @param max The highest bus number assigned up to now.
- * @return The maximum bus number found, after scanning all subordinate busses.
  */
-unsigned int pci_domain_scan_bus(device_t dev, unsigned int unused)
+void pci_domain_scan_bus(device_t dev)
 {
 	struct bus *link = dev->link_list;
 	pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff);
-	return unused;
 }
 
 /**

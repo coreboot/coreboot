@@ -112,12 +112,12 @@ const char *pcix_speed(u16 sstatus)
 	return result;
 }
 
-unsigned int pcix_scan_bridge(device_t dev, unsigned int max)
+void pcix_scan_bridge(device_t dev)
 {
 	unsigned int pos;
 	u16 sstatus;
 
-	max = do_pci_scan_bridge(dev, max, pci_scan_bus);
+	do_pci_scan_bridge(dev, pci_scan_bus);
 
 	/* Find the PCI-X capability. */
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
@@ -129,8 +129,6 @@ unsigned int pcix_scan_bridge(device_t dev, unsigned int max)
 	/* Print the PCI-X bus speed. */
 	printk(BIOS_DEBUG, "PCI: %02x: %s\n", dev->link_list->secondary,
 	       pcix_speed(sstatus));
-
-	return max;
 }
 
 /** Default device operations for PCI-X bridges */

@@ -45,11 +45,9 @@ const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_
  * file under some static bus in order to be enumerated at run time.
  *
  * @param bus Pointer to the device to which the static buses are attached to.
- * @param max Maximum bus number currently used before scanning.
- * @return The largest bus number used.
  */
 
-static unsigned int scan_static_bus(device_t bus, unsigned int passthru)
+static void scan_static_bus(device_t bus)
 {
 	device_t child;
 	struct bus *link;
@@ -67,22 +65,18 @@ static unsigned int scan_static_bus(device_t bus, unsigned int passthru)
 			       child->enabled ? "enabled" : "disabled");
 		}
 	}
-
-	return passthru;
 }
 
-unsigned int scan_lpc_bus(device_t bus, unsigned int passthru)
+void scan_lpc_bus(device_t bus)
 {
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	scan_static_bus(bus, 0);
+	scan_static_bus(bus);
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
-
-	return passthru;
 }
 
-unsigned int scan_smbus(device_t bus, unsigned int passthru)
+void scan_smbus(device_t bus)
 {
 	device_t child;
 	struct bus *link;
@@ -111,8 +105,6 @@ unsigned int scan_smbus(device_t bus, unsigned int passthru)
 	}
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
-
-	return passthru;
 }
 
 /**
@@ -121,23 +113,19 @@ unsigned int scan_smbus(device_t bus, unsigned int passthru)
  * This function is the default scan_bus() method of the root device.
  *
  * @param root The root device structure.
- * @param max The current bus number scanned so far, usually 0x00.
- * @return The largest bus number used.
  */
-static unsigned int root_dev_scan_bus(device_t bus, unsigned int passthru)
+static void root_dev_scan_bus(device_t bus)
 {
 	struct bus *link;
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	scan_static_bus(bus, 0);
+	scan_static_bus(bus);
 
 	for (link = bus->link_list; link; link = link->next)
 		scan_bridges(link);
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
-
-	return passthru;
 }
 
 static void root_dev_reset(struct bus *bus)

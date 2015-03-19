@@ -241,14 +241,14 @@ static void cpu_bus_init(device_t dev)
 	initialize_cpus(dev->link_list);
 }
 
-static unsigned int cpu_bus_scan(device_t bus, unsigned int passthru)
+static void cpu_bus_scan(device_t bus)
 {
 	int max_cpus = fw_cfg_max_cpus();
 	device_t cpu;
 	int i;
 
 	if (max_cpus < 0)
-		return 0;
+		return;
 
 	/*
 	 * TODO: This only handles the simple "qemu -smp $nr" case
@@ -261,7 +261,6 @@ static unsigned int cpu_bus_scan(device_t bus, unsigned int passthru)
 		if (cpu)
 			set_cpu_topology(cpu, 1, 0, i, 0);
 	}
-	return max_cpus;
 }
 
 static struct device_operations cpu_bus_ops = {

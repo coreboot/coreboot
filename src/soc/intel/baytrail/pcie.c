@@ -230,7 +230,7 @@ static void byt_pcie_enable(device_t dev)
 	southcluster_enable_dev(dev);
 }
 
-static unsigned int byt_pciexp_scan_bridge(device_t dev, unsigned int max)
+static void byt_pciexp_scan_bridge(device_t dev)
 {
 	static const struct reg_script wait_for_link_active[] = {
 		REG_PCI_POLL32(LCTL, (1 << 29) , (1 << 29), 50000),
@@ -240,7 +240,7 @@ static unsigned int byt_pciexp_scan_bridge(device_t dev, unsigned int max)
 	/* wait for Link Active with 50ms timeout */
 	reg_script_run_on_dev(dev, wait_for_link_active);
 
-	return do_pci_scan_bridge(dev, max, pciexp_scan_bus);
+	do_pci_scan_bridge(dev, pciexp_scan_bus);
 }
 
 static void pcie_root_set_subsystem(device_t dev, unsigned vid, unsigned did)

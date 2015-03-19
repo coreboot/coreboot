@@ -502,9 +502,9 @@ static void hypertransport_scan_chain_x(struct bus *bus,
 	pci_scan_bus(bus, 0x00, ((next_unitid - 1) << 3) | 7);
 }
 
-unsigned int ht_scan_bridge(struct device *dev, unsigned int max)
+void ht_scan_bridge(struct device *dev)
 {
-	return do_pci_scan_bridge(dev, max, hypertransport_scan_chain_x);
+	do_pci_scan_bridge(dev, hypertransport_scan_chain_x);
 }
 
 /** Default device operations for hypertransport bridges */

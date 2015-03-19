@@ -265,9 +265,9 @@ static void amd8131_scan_bus(struct bus *bus,
 	}
 }
 
-static unsigned int amd8131_scan_bridge(device_t dev, unsigned int max)
+static void amd8131_scan_bridge(device_t dev)
 {
-	return do_pci_scan_bridge(dev, max, amd8131_scan_bus);
+	do_pci_scan_bridge(dev, amd8131_scan_bus);
 }
 
 

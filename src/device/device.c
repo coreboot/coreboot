@@ -913,16 +913,13 @@ int reset_bus(struct bus *bus)
  * required, reset the bus and scan it again.
  *
  * @param busdev Pointer to the bus device.
- * @param max Current bus number.
- * @return The maximum bus number found, after scanning all subordinate buses.
  */
-static unsigned int scan_bus(struct device *busdev, unsigned int max)
+static void scan_bus(struct device *busdev)
 {
-	unsigned int new_max;
 	int do_scan_bus;
 
 	if (!busdev->enabled)
-		return max;
+		return;
 
 	printk(BIOS_SPEW, "%s scanning...\n", dev_path(busdev));
 
@@ -931,7 +928,7 @@ static unsigned int scan_bus(struct device *busdev, unsigned int max)
 	do_scan_bus = 1;
 	while (do_scan_bus) {
 		struct bus *link;
-		new_max = busdev->ops->scan_bus(busdev, max);
+		busdev->ops->scan_bus(busdev);
 		do_scan_bus = 0;
 		for (link = busdev->link_list; link; link = link->next) {
 			if (link->reset_needed) {
@@ -942,20 +939,17 @@ static unsigned int scan_bus(struct device *busdev, unsigned int max)
 			}
 		}
 	}
-	return new_max;
 }
 
 void scan_bridges(struct bus *bus)
 {
 	struct device *child;
-	unsigned int max = bus->secondary;
 
 	for (child = bus->children; child; child = child->sibling) {
 		if (!child->ops || !child->ops->scan_bus)
 			continue;
-		max = scan_bus(child, max);
+		scan_bus(child);
 	}
-	bus->subordinate = max;
 }
 
 /**
@@ -999,7 +993,7 @@ void dev_enumerate(void)
 		printk(BIOS_ERR, "dev_root missing scan_bus operation");
 		return;
 	}
-	scan_bus(root, 0);
+	scan_bus(root);
 	post_log_clear();
 	printk(BIOS_INFO, "done\n");
 }

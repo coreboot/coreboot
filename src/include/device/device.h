@@ -46,7 +46,7 @@ struct device_operations {
 	void (*enable_resources)(device_t dev);
 	void (*init)(device_t dev);
 	void (*final)(device_t dev);
-	unsigned int (*scan_bus)(device_t bus, unsigned int _max);
+	void (*scan_bus)(device_t bus);
 	void (*enable)(device_t dev);
 	void (*disable)(device_t dev);
 	void (*set_link)(device_t dev, unsigned int link);
@@ -224,13 +224,13 @@ void show_all_devs_resources(int debug_level, const char* msg);
 
 extern struct device_operations default_dev_ops_root;
 void pci_domain_read_resources(struct device *dev);
-unsigned int pci_domain_scan_bus(struct device *dev, unsigned int _max);
+void pci_domain_scan_bus(struct device *dev);
 
 void fixed_mem_resource(device_t dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type);
 
-unsigned int scan_smbus(device_t bus, unsigned int _max);
-unsigned int scan_lpc_bus(device_t bus, unsigned int _max);
+void scan_smbus(device_t bus);
+void scan_lpc_bus(device_t bus);
 
 /* It is the caller's responsibility to adjust regions such that ram_resource()
  * and mmio_resource() do not overlap.

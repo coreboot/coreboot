@@ -688,10 +688,10 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte  = lsmbus_read_byte,
 };
 
-static unsigned int scan_lpc_smbus(device_t dev, unsigned int max)
+static void scan_lpc_smbus(device_t dev)
 {
 	/* FIXME. Do we have mixed LPC/SMBus device node here. */
-	return scan_smbus(dev, max);
+	scan_smbus(dev);
 }
 
 static struct device_operations southbridge_ops = {

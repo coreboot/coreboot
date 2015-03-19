@@ -273,13 +273,12 @@ static void pch_pcie_enable(device_t dev)
 	pch_pcie_pm_early(dev);
 }
 
-static unsigned int pch_pciexp_scan_bridge(device_t dev, unsigned int max)
+static void pch_pciexp_scan_bridge(device_t dev)
 {
-	unsigned int ret;
 	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 
 	/* Normal PCIe Scan */
-	ret = pciexp_scan_bridge(dev, max);
+	pciexp_scan_bridge(dev);
 
 	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
 		intel_acpi_pcie_hotplug_scan_slot(dev->link_list);
@@ -287,8 +286,6 @@ static unsigned int pch_pciexp_scan_bridge(device_t dev, unsigned int max)
 
 	/* Late Power Management init after bridge device enumeration */
 	pch_pcie_pm_late(dev);
-
-	return ret;
 }
 
 static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)

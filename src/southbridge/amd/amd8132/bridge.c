@@ -194,9 +194,9 @@ static void amd8132_scan_bus(struct bus *bus,
 	amd8132_walk_children(bus, amd8132_pcix_tune_dev, &info);
 }
 
-static unsigned int amd8132_scan_bridge(device_t dev, unsigned int max)
+static void amd8132_scan_bridge(device_t dev)
 {
-	return do_pci_scan_bridge(dev, max, amd8132_scan_bus);
+	do_pci_scan_bridge(dev, amd8132_scan_bus);
 }
 
 

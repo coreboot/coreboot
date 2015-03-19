@@ -39,7 +39,7 @@ static void pcie_init(struct device *dev)
 {
 }
 
-static unsigned int pcie_scan_bridge(struct device *dev, unsigned int max)
+static void pcie_scan_bridge(struct device *dev)
 {
 	u16 val;
 	u16 ctl;
@@ -56,7 +56,8 @@ static unsigned int pcie_scan_bridge(struct device *dev, unsigned int max)
 			hard_reset();
 		}
 	} while	(val & (3<<10));
-	return pciexp_scan_bridge(dev, max);
+
+	pciexp_scan_bridge(dev);
 }
 
 static struct device_operations pcie_ops  = {

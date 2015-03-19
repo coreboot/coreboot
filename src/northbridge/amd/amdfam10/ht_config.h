@@ -20,6 +20,7 @@
 typedef struct amdfam10_sysconf_t sys_info_conf_t;
 
 /* FIXME */
+u32 amdfam10_nodeid(device_t dev);
 extern device_t __f1_dev[];
 
 struct dram_base_mask_t {
@@ -29,17 +30,11 @@ struct dram_base_mask_t {
 
 struct dram_base_mask_t get_dram_base_mask(u32 nodeid);
 
-void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
-				u32 busn_min, u32 busn_max, u32 segbit,
-				u32 nodes);
-void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
-					u32 busn_min, u32 busn_max, u32 nodes);
+u32 get_ht_c_index(struct bus *link);
+void store_ht_c_conf_bus(struct bus *link);
 
-void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
-				u32 busn_min, u32 busn_max,
-				sys_info_conf_t *sysinfo);
-
-u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo);
+void set_config_map_reg(struct bus *link);
+void clear_config_map_reg(struct bus *link);
 
 
 void store_conf_io_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,

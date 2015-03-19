@@ -47,54 +47,51 @@ struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	return d;
 }
 
-
-void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
-				u32 busn_min, u32 busn_max, u32 segbit,
-				u32 nodes)
+void set_config_map_reg(struct bus *link)
 {
 	u32 tempreg;
 	u32 i;
+	u32 ht_c_index = get_ht_c_index(link);
+	u32 linkn = link->link_num & 0x0f;
+	u32 busn_min = (link->secondary >> sysconf.segbit) & 0xff;
+	u32 busn_max = (link->subordinate >> sysconf.segbit) & 0xff;
+	u32 nodeid = amdfam10_nodeid(link->dev);
 
-	busn_min>>=segbit;
-	busn_max>>=segbit;
+	tempreg = ((nodeid & 0x30) << (12-4)) | ((nodeid & 0xf) << 4) | 3;
+	tempreg |= (busn_max << 24)|(busn_min << 16)|(linkn << 8);
 
-	tempreg = 3 | ((nodeid&0xf)<<4) | ((nodeid & 0x30)<<(12-4))|(linkn<<8)|((busn_min & 0xff)<<16)|((busn_max&0xff)<<24);
-	for (i=0; i<nodes; i++) {
+	for (i=0; i < sysconf.nodes; i++) {
 		device_t dev = __f1_dev[i];
 		pci_write_config32(dev, 0xe0 + ht_c_index * 4, tempreg);
 	}
 }
 
-void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
-					u32 busn_min, u32 busn_max, u32 nodes)
+void clear_config_map_reg(struct bus *link)
 {
 	u32 i;
+	u32 ht_c_index = get_ht_c_index(link);
 
-	for (i=0; i<nodes; i++) {
+	for (i=0; i < sysconf.nodes; i++) {
 		device_t dev = __f1_dev[i];
 		pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
 	}
 }
 
 
-u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo)
+static u32 ht_c_key(struct bus *link)
 {
-	u32 tempreg;
+	u32 nodeid = amdfam10_nodeid(link->dev);
+	u32 linkn = link->link_num & 0x0f;
+	u32 val = (linkn << 8) | ((nodeid & 0x3f) << 2) | 3;
+	return val;
+}
+
+static u32 get_ht_c_index_by_key(u32 key, sys_info_conf_t *sysinfo)
+{
 	u32 ht_c_index = 0;
 
-#if 0
-	tempreg = 3 | ((nodeid & 0xf) <<4) | ((nodeid & 0x30)<<(12-4)) | (linkn<<8);
-
-	for (ht_c_index=0;ht_c_index<4; ht_c_index++) {
-		reg = pci_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 1), 0xe0 + ht_c_index * 4);
-		if (((reg & 0xffff) == 0x0000)) {  /*found free*/
-			break;
-		}
-	}
-#endif
-	tempreg = 3 | ((nodeid & 0x3f)<<2) | (linkn<<8);
 	for (ht_c_index=0; ht_c_index<32; ht_c_index++) {
-		if ((sysinfo->ht_c_conf_bus[ht_c_index] & 0xfff) == tempreg) {
+		if ((sysinfo->ht_c_conf_bus[ht_c_index] & 0xfff) == key) {
 			return ht_c_index;
 		}
 	}
@@ -108,14 +105,26 @@ u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo)
 	return	-1;
 }
 
-void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
-				u32 busn_min, u32 busn_max,
-				sys_info_conf_t *sysinfo)
+u32 get_ht_c_index(struct bus *link)
 {
-	u32 val;
-	val = 3 | ((nodeid & 0x3f)<<2) | (linkn<<8);
-	sysinfo->ht_c_conf_bus[ht_c_index] = val | ((busn_min & 0xff) <<12) | (busn_max<<20);  // same node need segn are same
+	u32 val = ht_c_key(link);
+	return get_ht_c_index_by_key(val, &sysconf);
+}
 
+void store_ht_c_conf_bus(struct bus *link)
+{
+	u32 val = ht_c_key(link);
+	u32 ht_c_index = get_ht_c_index_by_key(val, &sysconf);
+
+	u32 segn = (link->subordinate >> 8) & 0x0f;
+	u32 busn_min = link->secondary & 0xff;
+	u32 busn_max = link->subordinate & 0xff;
+
+	val |= (segn << 28) | (busn_max << 20) | (busn_min << 12);
+
+	sysconf.ht_c_conf_bus[ht_c_index] = val;
+	sysconf.hcdn_reg[ht_c_index] = link->hcdn_reg;
+	sysconf.ht_c_num++;
 }
 
 u32 get_io_addr_index(u32 nodeid, u32 linkn)

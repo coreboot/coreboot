@@ -114,7 +114,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 	}
 }
 
-static u32 amdfam10_nodeid(device_t dev)
+u32 amdfam10_nodeid(device_t dev)
 {
 #if NODE_NUMS == 64
 	unsigned busn;
@@ -197,7 +197,6 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 
 		int i;
 		unsigned int next_unitid;
-		u32 ht_c_index;
 		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
 		u32 max_devfn;
 
@@ -209,9 +208,8 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		/* See if there is an available configuration space mapping
 		 * register in function 1.
 		 */
-		ht_c_index = get_ht_c_index(nodeid, link->link_num, &sysconf);
-
-		if(ht_c_index>=4) return max;
+		if (get_ht_c_index(link) >= 4)
+			return max;
 
 		/* Set up the primary, secondary and subordinate bus numbers.
 		 * We have no idea how many busses are behind this bridge yet,
@@ -239,8 +237,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		ht_route_link(link, HT_ROUTE_SCAN);
 
 		/* set the config map space */
-
-		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
+		set_config_map_reg(link);
 
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link
@@ -265,20 +262,20 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, bool 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
 		 */
-		set_config_map_reg(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, sysconf.segbit, sysconf.nodes);
-		sysconf.ht_c_num++;
-
-		{
-			// use ht_unitid_base to update hcdn_reg
-			u32 temp = 0;
-			for(i=0;i<4;i++) {
-				temp |= (ht_unitid_base[i] & 0xff) << (i*8);
-			}
-
-			sysconf.hcdn_reg[ht_c_index] = temp;
-
+		if (0) {
+			/* Clear the extend reg. */
+			clear_config_map_reg(link);
 		}
-		store_ht_c_conf_bus(nodeid, link->link_num, ht_c_index, link->secondary, link->subordinate, &sysconf);
+
+		set_config_map_reg(link);
+
+		/* Use ht_unitid_base to update hcdn_reg. */
+		link->hcdn_reg = 0;
+		for (i = 0; i < 4;i++)
+			link->hcdn_reg |= (ht_unitid_base[i] & 0xff) << (i*8);
+
+		store_ht_c_conf_bus(link);
+
 		return link->subordinate;
 }
 

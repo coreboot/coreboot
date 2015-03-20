@@ -24,6 +24,7 @@
 #include <console/console.h>
 #include <timer.h>
 #include <arch/exception.h>
+#include <program_loading.h>
 
 #include <soc/addressmap.h>
 #include <soc/sdram_configs.h>
@@ -38,30 +39,8 @@ void __attribute__((weak)) romstage_mainboard_init(void)
 	/* Default empty implementation. */
 }
 
-static void *load_ramstage(void)
-{
-	void *entry;
-	struct stopwatch sw;
-
-	stopwatch_init(&sw);
-	/*
-	 * This platform does not need to cache a loaded ramstage nor do we
-	 * go down this path on resume. Therefore, no romstage_handoff is
-	 * required.
-	 */
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				CONFIG_CBFS_PREFIX "/ramstage");
-
-	printk(BIOS_DEBUG, "Ramstage load time: %ld usecs.\n",
-		stopwatch_duration_usecs(&sw));
-
-	return entry;
-}
-
 void romstage(void)
 {
-	void *entry;
-
 	console_init();
 	exception_init();
 
@@ -99,16 +78,14 @@ void romstage(void)
 
 	romstage_mainboard_init();
 
-	entry = load_ramstage();
-
-	if (entry == NULL) {
-		printk(BIOS_INFO, "T132 romstage: error loading ramstage\n");
-		clock_halt_avp();
-	}
-
 	cbmemc_reinit();
 
-	ccplex_cpu_start(entry);
+	run_ramstage();
+}
+
+void platform_prog_run(struct prog *prog)
+{
+	ccplex_cpu_start(prog_entry(prog));
 
 	clock_halt_avp();
 }

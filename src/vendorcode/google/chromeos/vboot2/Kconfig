@@ -41,3 +41,12 @@ config VBOOT_ROMSTAGE_INDEX
 	help
 	  This is the index of the romstage component in the verified
 	  firmware block.
+
+config VBOOT_DISABLE_DEV_ON_RECOVERY
+	bool "Disable dev mode on recovery requests"
+	default n
+	depends on VBOOT2_VERIFY_FIRMWARE
+	help
+	  When this option is enabled, the Chrome OS device leaves the
+	  developer mode as soon as recovery request is detected. This is
+	  handy on embedded devices with limited input capabilities.

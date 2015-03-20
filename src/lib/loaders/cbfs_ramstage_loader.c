@@ -19,44 +19,37 @@
  */
 #include <console/console.h>
 #include <cbfs.h>
-#include <arch/stages.h>
 #include <program_loading.h>
-#include <timestamp.h>
 
 #if CONFIG_RELOCATABLE_RAMSTAGE
 #include <rmodule.h>
+#include <cbmem.h>
 
-static void *cbfs_load_ramstage(uint32_t cbmem_id, const char *name,
-				const struct cbmem_entry **cbmem_entry)
+static int cbfs_load_ramstage(struct prog *ramstage)
 {
 	struct rmod_stage_load rmod_ram = {
-		.cbmem_id = cbmem_id,
-		.name = name,
+		.cbmem_id = CBMEM_ID_RAMSTAGE,
+		.name = ramstage->name,
 	};
 
 	if (rmodule_stage_load_from_cbfs(&rmod_ram)) {
 		printk(BIOS_DEBUG, "Could not load ramstage.\n");
-		return NULL;
+		return -1;
 	}
 
-	*cbmem_entry = rmod_ram.cbmem_entry;
+	prog_set_area(ramstage, cbmem_entry_start(rmod_ram.cbmem_entry),
+			cbmem_entry_size(rmod_ram.cbmem_entry));
+	prog_set_entry(ramstage, rmod_ram.entry, NULL);
 
-	return rmod_ram.entry;
+	return 0;
 }
 
 #else /* CONFIG_RELOCATABLE_RAMSTAGE */
 
-static void *cbfs_load_ramstage(uint32_t cbmem_id, const char *name,
-				const struct cbmem_entry **cbmem_entry)
+static int cbfs_load_ramstage(struct prog *ramstage)
 {
-	void *entry;
+	return cbfs_load_prog_stage(CBFS_DEFAULT_MEDIA, ramstage);
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, name);
-
-	if ((void *)entry == (void *) -1)
-		entry = NULL;
-
-	return entry;
 }
 
 #endif /* CONFIG_RELOCATABLE_RAMSTAGE */

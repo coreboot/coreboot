@@ -18,17 +18,14 @@
  */
 
 #include <arch/cache.h>
-#include <arch/stages.h>
-#include <cbmem.h>
-#include <console/console.h>
 #include <program_loading.h>
 
 void arch_payload_run(const struct payload *payload)
 {
-	void (*doit)(void *) = payload->entry;
-	void *cb_tables = cbmem_find(CBMEM_ID_CBTABLE);
+	void (*doit)(void *);
 
-	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
 	cache_sync_instructions();
-	doit(cb_tables);
+
+	doit = prog_entry(&payload->prog);
+	doit(prog_entry_arg(&payload->prog));
 }

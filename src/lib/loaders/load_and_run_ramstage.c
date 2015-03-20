@@ -21,7 +21,6 @@
 #include <console/console.h>
 #include <arch/stages.h>
 #include <cbfs.h>
-#include <cbmem.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
@@ -36,46 +35,32 @@ static const struct ramstage_loader_ops *loaders[] = {
 	&cbfs_ramstage_loader,
 };
 
-static const char *ramstage_name = CONFIG_CBFS_PREFIX "/ramstage";
-static const uint32_t ramstage_id = CBMEM_ID_RAMSTAGE;
-
 static void
-load_ramstage(const struct ramstage_loader_ops *ops, struct romstage_handoff *handoff)
+load_ramstage(const struct ramstage_loader_ops *ops,
+		struct romstage_handoff *handoff, struct prog *ramstage)
 {
-	const struct cbmem_entry *cbmem_entry;
-	void *entry_point;
-
 	timestamp_add_now(TS_START_COPYRAM);
-	entry_point = ops->load(ramstage_id, ramstage_name, &cbmem_entry);
 
-	if (entry_point == NULL)
+	if (ops->load(ramstage))
 		return;
 
-	cache_loaded_ramstage(handoff, cbmem_entry, entry_point);
+	cache_loaded_ramstage(handoff, ramstage);
 
 	timestamp_add_now(TS_END_COPYRAM);
 
-	stage_exit(entry_point);
+	stage_exit(prog_entry(ramstage));
 }
 
-static void run_ramstage_from_resume(struct romstage_handoff *handoff)
+static void run_ramstage_from_resume(struct romstage_handoff *handoff,
+					struct prog *ramstage)
 {
-	void *entry;
-	const struct cbmem_entry *cbmem_entry;
-
 	if (handoff != NULL && handoff->s3_resume) {
-		cbmem_entry = cbmem_entry_find(ramstage_id);
-
-		/* No place to load ramstage. */
-		if (cbmem_entry == NULL)
-			return;
-
 		/* Load the cached ramstage to runtime location. */
-		entry = load_cached_ramstage(handoff, cbmem_entry);
+		load_cached_ramstage(handoff, ramstage);
 
-		if (entry != NULL) {
+		if (prog_entry(ramstage) != NULL) {
 			printk(BIOS_DEBUG, "Jumping to image.\n");
-			stage_exit(entry);
+			stage_exit(prog_entry(ramstage));
 		}
 	}
 }
@@ -85,15 +70,19 @@ void run_ramstage(void)
 	struct romstage_handoff *handoff;
 	const struct ramstage_loader_ops *ops;
 	int i;
+	struct prog ramstage = {
+		.name = CONFIG_CBFS_PREFIX "/ramstage",
+		.type = PROG_RAMSTAGE,
+	};
 
 	handoff = romstage_handoff_find_or_add();
 
-	run_ramstage_from_resume(handoff);
+	run_ramstage_from_resume(handoff, &ramstage);
 
 	for (i = 0; i < ARRAY_SIZE(loaders); i++) {
 		ops = loaders[i];
 		printk(BIOS_DEBUG, "Trying %s ramstage loader.\n", ops->name);
-		load_ramstage(ops, handoff);
+		load_ramstage(ops, handoff, &ramstage);
 	}
 
 	die("Ramstage was not loaded!\n");

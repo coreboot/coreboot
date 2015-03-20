@@ -27,16 +27,16 @@
 
 void run_romstage(void)
 {
-	void *entry;
+	struct prog romstage = {
+		.name = CONFIG_CBFS_PREFIX "/romstage",
+		.type = PROG_ROMSTAGE,
+	};
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				CONFIG_CBFS_PREFIX "/romstage");
-
-	if (entry == (void *)-1) {
+	if (cbfs_load_prog_stage(CBFS_DEFAULT_MEDIA, &romstage) < 0) {
 		if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
 			die("Couldn't load romstage.\n");
 		halt();
 	}
 
-	stage_exit(entry);
+	stage_exit(prog_entry(&romstage));
 }

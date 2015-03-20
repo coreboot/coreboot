@@ -26,14 +26,13 @@ static int cbfs_locate_payload(struct payload *payload)
 	size_t size;
 	const int type = CBFS_TYPE_PAYLOAD;
 
-	buffer = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, payload->name,
+	buffer = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, payload->prog.name,
 					type, &size);
 
 	if (buffer == NULL)
 		return -1;
 
-	payload->backing_store.data = buffer;
-	payload->backing_store.size = size;
+	prog_set_area(&payload->prog, buffer, size);
 
 	return 0;
 }

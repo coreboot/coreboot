@@ -29,9 +29,66 @@ enum {
 	SEG_FINAL = 1 << 0,
 };
 
-/* Called for each segment of a program loaded. The PROG_FLAG_FINAL will be
+/* Called for each segment of a program loaded. The SEG_FINAL flag will be
  * set on the last segment loaded. */
 void arch_segment_loaded(uintptr_t start, size_t size, int flags);
+
+struct buffer_area {
+	void *data;
+	size_t size;
+};
+
+enum prog_type {
+	PROG_ROMSTAGE,
+	PROG_RAMSTAGE,
+	PROG_PAYLOAD,
+};
+
+/* Representation of a program. */
+struct prog {
+	enum prog_type type;
+	const char *name;
+	/* The area can mean different things depending on what type the
+	 * program is. e.g. a payload prog uses this field for the backing
+	 * store of the payload_segments and data. */
+	struct buffer_area area;
+	/* Entry to program with optional argument. It's up to the architecture
+	 * to decide if argument is passed. */
+	void (*entry)(void *);
+	void *arg;
+};
+
+static inline size_t prog_size(const struct prog *prog)
+{
+	return prog->area.size;
+}
+
+static inline void *prog_start(const struct prog *prog)
+{
+	return prog->area.data;
+}
+
+static inline void *prog_entry(const struct prog *prog)
+{
+	return prog->entry;
+}
+
+static inline void *prog_entry_arg(const struct prog *prog)
+{
+	return prog->arg;
+}
+
+static inline void prog_set_area(struct prog *prog, void *start, size_t size)
+{
+	prog->area.data = start;
+	prog->area.size = size;
+}
+
+static inline void prog_set_entry(struct prog *prog, void *e, void *arg)
+{
+	prog->entry = e;
+	prog->arg = arg;
+}
 
 /************************
  *   ROMSTAGE LOADING   *
@@ -45,67 +102,35 @@ void run_romstage(void);
  ************************/
 
 struct romstage_handoff;
-struct cbmem_entry;
-
-#if defined(__PRE_RAM__)
-#if CONFIG_RELOCATABLE_RAMSTAGE
-/* The cache_loaded_ramstage() and load_cached_ramstage() functions are defined
- * to be weak so that board and chipset code may override them. Their job is to
- * cache and load the ramstage for quick S3 resume. By default a copy of the
- * relocated ramstage is saved using the cbmem infrastructure. These
- * functions are only valid during romstage. */
-
-/* The implementer of cache_loaded_ramstage() may use the romstage_handoff
- * structure to store information, but note that the handoff variable can be
- * NULL. The ramstage cbmem_entry represents the region occupied by the loaded
- * ramstage. */
-void cache_loaded_ramstage(struct romstage_handoff *handoff,
-                      const struct cbmem_entry *ramstage, void *entry_point);
-/* Return NULL on error or entry point on success. The ramstage cbmem_entry is
- * the region where to load the cached contents to. */
-void * load_cached_ramstage(struct romstage_handoff *handoff,
-                     const struct cbmem_entry *ramstage);
-#else  /* CONFIG_RELOCATABLE_RAMSTAGE */
-
-static inline void cache_loaded_ramstage(struct romstage_handoff *handoff,
-			const struct cbmem_entry *ramstage, void *entry_point)
-{
-}
-
-static inline void *
-load_cached_ramstage(struct romstage_handoff *handoff,
-			const struct cbmem_entry *ramstage)
-{
-	return NULL;
-}
-
-#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
-#endif /* defined(__PRE_RAM__) */
+#if IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)
+/* Cache the loaded ramstage described by prog. */
+void cache_loaded_ramstage(struct romstage_handoff *, struct prog *p);
+/* Load ramstage from cache filling in struct prog. */
+void load_cached_ramstage(struct romstage_handoff *h, struct prog *p);
+#else
+static inline void cache_loaded_ramstage(struct romstage_handoff *h,
+						struct prog *p) {}
+static inline void load_cached_ramstage(struct romstage_handoff *h,
+					struct prog *p) {}
+#endif
 
 /* Run ramstage from romstage. */
 void run_ramstage(void);
 
 struct ramstage_loader_ops {
 	const char *name;
-	void *(*load)(uint32_t cbmem_id, const char *name,
-			const struct cbmem_entry **cbmem_entry);
+	/* Returns 0 on succes. < 0 on error. */
+	int (*load)(struct prog *ramstage);
 };
 
 /***********************
  *   PAYLOAD LOADING   *
  ***********************/
 
-struct buffer_area {
-	void *data;
-	size_t size;
-};
-
 struct payload {
-	const char *name;
-	struct buffer_area backing_store;
+	struct prog prog;
 	/* Used when payload wants memory coreboot ramstage is running at. */
 	struct buffer_area bounce;
-	void *entry;
 };
 
 /* Load payload into memory in preparation to run. */

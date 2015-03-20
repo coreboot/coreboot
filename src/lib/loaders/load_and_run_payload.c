@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <fallback.h>
 #include <lib.h>
@@ -36,7 +37,10 @@ static const struct payload_loader_ops *payload_ops[] = {
 };
 
 static struct payload global_payload = {
-	.name = CONFIG_CBFS_PREFIX "/payload",
+	.prog = {
+		.name = CONFIG_CBFS_PREFIX "/payload",
+		.type = PROG_PAYLOAD,
+	},
 };
 
 void __attribute__((weak)) mirror_payload(struct payload *payload)
@@ -47,9 +51,9 @@ void __attribute__((weak)) mirror_payload(struct payload *payload)
 void payload_load(void)
 {
 	int i;
-	void *entry;
 	const struct payload_loader_ops *ops;
 	struct payload *payload = &global_payload;
+	struct prog * prog = &payload->prog;
 
 	for (i = 0; i < ARRAY_SIZE(payload_ops); i++) {
 		ops = payload_ops[i];
@@ -59,8 +63,7 @@ void payload_load(void)
 			continue;
 		}
 		printk(BIOS_DEBUG, "%s: located payload @ %p, %zu bytes.\n",
-			ops->name, payload->backing_store.data,
-			payload->backing_store.size);
+			ops->name, prog_start(prog), prog_size(prog));
 		break;
 	}
 
@@ -69,12 +72,12 @@ void payload_load(void)
 
 	mirror_payload(payload);
 
-	entry = selfload(payload);
-
-	payload->entry = entry;
+	/* Pass cbtables to payload if architecture desires it. */
+	prog_set_entry(&payload->prog, selfload(payload),
+			cbmem_find(CBMEM_ID_CBTABLE));
 
 out:
-	if (payload->entry == NULL)
+	if (prog_entry(&payload->prog) == NULL)
 		die("Payload not loaded.\n");
 }
 
@@ -85,7 +88,8 @@ void payload_run(void)
 	/* Reset to booting from this image as late as possible */
 	boot_successful();
 
-	printk(BIOS_DEBUG, "Jumping to boot code at %p\n", payload->entry);
+	printk(BIOS_DEBUG, "Jumping to boot code at %p(%p)\n",
+		prog_entry(&payload->prog), prog_entry_arg(&payload->prog));
 	post_code(POST_ENTER_ELF_BOOT);
 
 	timestamp_add_now(TS_SELFBOOT_JUMP);

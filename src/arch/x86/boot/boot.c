@@ -126,8 +126,9 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 void arch_payload_run(const struct payload *payload)
 {
 	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE))
-		jmp_payload_no_bounce_buffer(payload->entry);
+		jmp_payload_no_bounce_buffer(prog_entry(&payload->prog));
 	else
-		jmp_payload(payload->entry, (uintptr_t)payload->bounce.data,
+		jmp_payload(prog_entry(&payload->prog),
+				(uintptr_t)payload->bounce.data,
 				payload->bounce.size);
 }

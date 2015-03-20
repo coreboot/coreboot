@@ -23,21 +23,23 @@
 #include <arch/stages.h>
 #include <arch/spintable.h>
 #include <arch/transition.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <string.h>
 
 void arch_payload_run(const struct payload *payload)
 {
-	void (*payload_entry)(void *) = payload->entry;
+	void (*doit)(void *);
+	void *arg;
 
-	void *cb_tables = cbmem_find(CBMEM_ID_CBTABLE);
+	doit = prog_entry(&payload->prog);
+	arg = prog_entry_arg(&payload->prog);
+
 	uint8_t current_el = get_current_el();
 
-	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
+	printk(BIOS_SPEW, "entry    = %p\n", doit);
 
-	secmon_run(payload_entry, cb_tables);
+	secmon_run(doit, arg);
 
 	/* Start the other CPUs spinning. */
 	spintable_start();
@@ -46,7 +48,7 @@ void arch_payload_run(const struct payload *payload)
 	if (current_el != EL3) {
 		cache_sync_instructions();
 		/* Point of no-return */
-		payload_entry(cb_tables);
+		doit(arg);
 	}
 
 	/* If current EL is EL3, we transition to payload in EL2. */
@@ -57,5 +59,5 @@ void arch_payload_run(const struct payload *payload)
 	exc_state.elx.spsr = get_eret_el(EL2, SPSR_USE_L);
 
 	cache_sync_instructions();
-	transition_with_entry(payload->entry, cb_tables, &exc_state);
+	transition_with_entry(doit, arg, &exc_state);
 }

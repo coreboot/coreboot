@@ -17,14 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <arch/stages.h>
 #include <program_loading.h>
-#include <console/uart.h>
 
 void arch_payload_run(const struct payload *payload)
 {
-	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
 //	uart_rx_byte(0);
-	stage_exit(payload->entry);
+	stage_exit(prog_entry(&payload->prog));
 }

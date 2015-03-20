@@ -74,17 +74,18 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 	return dest;
 }
 
-void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset)
+static int cbfs_load_prog_stage_by_offset(struct cbfs_media *media,
+					struct prog *prog, ssize_t offset)
 {
 	struct cbfs_stage stage;
 	struct cbfs_media backing_store;
 
 	if (init_backing_media(&media, &backing_store))
-		return (void *)-1;
+		return -1;
 
 	if (cbfs_read(media, &stage, offset, sizeof(stage)) != sizeof(stage)) {
 		ERROR("ERROR: failed to read stage header\n");
-		return (void *)-1;
+		return -1;
 	}
 
 	LOG("loading stage @ 0x%llx (%d bytes), entry @ 0x%llx\n",
@@ -97,41 +98,71 @@ void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset)
 		if (cbfs_read(media, (void *)(uintptr_t)stage.load,
 			      offset + sizeof(stage), stage.len) != stage.len) {
 			ERROR("ERROR: Reading stage failed.\n");
-			return (void *)-1;
+			return -1;
 		}
 	} else {
 		void *data = media->map(media, offset + sizeof(stage),
 					stage.len);
 		if (data == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
 			ERROR("ERROR: Mapping stage failed.\n");
-			return (void *)-1;
+			return -1;
 		}
 		if (!cbfs_decompress(stage.compression, data,
 				    (void *)(uintptr_t)stage.load, stage.len))
-			return (void *)-1;
+			return -1;
 		media->unmap(media, data);
 	}
 
 	arch_segment_loaded(stage.load, stage.memlen, SEG_FINAL);
 	DEBUG("stage loaded\n");
 
-	return (void *)(uintptr_t)stage.entry;
+	prog_set_area(prog, (void *)(uintptr_t)stage.load, stage.memlen);
+	prog_set_entry(prog, (void *)(uintptr_t)stage.entry, NULL);
+
+	return 0;
 }
 
-void *cbfs_load_stage(struct cbfs_media *media, const char *name)
+int cbfs_load_prog_stage(struct cbfs_media *media, struct prog *prog)
 {
 	struct cbfs_file file;
 	ssize_t offset;
 	struct cbfs_media backing_store;
 
 	if (init_backing_media(&media, &backing_store))
-		return (void *)-1;
+		return -1;
 
-	offset = cbfs_locate_file(media, &file, name);
+	offset = cbfs_locate_file(media, &file, prog->name);
 	if (offset < 0 || file.type != CBFS_TYPE_STAGE)
+		return -1;
+
+	if (cbfs_load_prog_stage_by_offset(media, prog, offset) < 0)
+		return -1;
+
+	return 0;
+}
+
+void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset)
+{
+	struct prog prog = {
+		.name = NULL,
+	};
+
+	if (cbfs_load_prog_stage_by_offset(media, &prog, offset) < 0)
 		return (void *)-1;
 
-	return cbfs_load_stage_by_offset(media, offset);
+	return prog_entry(&prog);
+}
+
+void *cbfs_load_stage(struct cbfs_media *media, const char *name)
+{
+	struct prog prog = {
+		.name = name,
+	};
+
+	if (cbfs_load_prog_stage(media, &prog) < 0)
+		return (void *)-1;
+
+	return prog_entry(&prog);
 }
 
 /* Simple buffer */

@@ -220,7 +220,7 @@ static int build_self_segment_list(
 	struct segment *ptr;
 	struct cbfs_payload_segment *segment, *first_segment;
 	struct cbfs_payload *cbfs_payload;
-	cbfs_payload = payload->backing_store.data;
+	cbfs_payload = prog_start(&payload->prog);
 	memset(head, 0, sizeof(*head));
 	head->next = head->prev = head;
 	first_segment = segment = &cbfs_payload->segments;

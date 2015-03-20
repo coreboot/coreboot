@@ -27,8 +27,7 @@
 #if CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 
 void cache_loaded_ramstage(struct romstage_handoff *handoff,
-                           const struct cbmem_entry *ramstage,
-                           void *entry_point)
+				struct prog *ramstage)
 {
 	struct ramstage_cache *cache;
 	uint32_t total_size;
@@ -36,8 +35,8 @@ void cache_loaded_ramstage(struct romstage_handoff *handoff,
 	void *ramstage_base;
 	long cache_size = 0;
 
-	ramstage_size = cbmem_entry_size(ramstage);
-	ramstage_base = cbmem_entry_start(ramstage);
+	ramstage_size = prog_size(ramstage);
+	ramstage_base = prog_start(ramstage);
 
 	cache = ramstage_cache_location(&cache_size);
 
@@ -56,7 +55,7 @@ void cache_loaded_ramstage(struct romstage_handoff *handoff,
 	}
 
 	cache->magic = RAMSTAGE_CACHE_MAGIC;
-	cache->entry_point = (uint32_t)entry_point;
+	cache->entry_point = (uint32_t)prog_entry(ramstage);
 	cache->load_address = (uint32_t)ramstage_base;
 	cache->size = ramstage_size;
 
@@ -68,11 +67,11 @@ void cache_loaded_ramstage(struct romstage_handoff *handoff,
 	if (handoff == NULL)
 		return;
 
-	handoff->ramstage_entry_point = (uint32_t)entry_point;
+	handoff->ramstage_entry_point = cache->entry_point;
 }
 
-void *load_cached_ramstage(struct romstage_handoff *handoff,
-                           const struct cbmem_entry *ramstage)
+void load_cached_ramstage(struct romstage_handoff *handoff,
+				struct prog *ramstage)
 {
 	struct ramstage_cache *cache;
 	long size = 0;
@@ -82,14 +81,15 @@ void *load_cached_ramstage(struct romstage_handoff *handoff,
 	if (!ramstage_cache_is_valid(cache)) {
 		printk(BIOS_DEBUG, "Invalid ramstage cache found.\n");
 		ramstage_cache_invalid(cache);
-		return NULL;
+		return;
 	}
 
 	printk(BIOS_DEBUG, "Loading ramstage from %p.\n", cache);
 
-	memcpy((void *)cache->load_address, &cache->program[0], cache->size);
+	prog_set_area(ramstage, (void *)cache->load_address, cache->size);
+	prog_set_entry(ramstage, (void *)cache->entry_point, NULL);
 
-	return (void *)cache->entry_point;
+	memcpy((void *)cache->load_address, &cache->program[0], cache->size);
 }
 
 #else
@@ -97,7 +97,7 @@ void *load_cached_ramstage(struct romstage_handoff *handoff,
 /* Cache relocated ramstage in CBMEM. */
 
 void cache_loaded_ramstage(struct romstage_handoff *handoff,
-                      const struct cbmem_entry *ramstage, void *entry_point)
+				struct prog *ramstage)
 {
 	uint32_t ramstage_size;
 	const struct cbmem_entry *entry;
@@ -105,7 +105,7 @@ void cache_loaded_ramstage(struct romstage_handoff *handoff,
 	if (handoff == NULL)
 		return;
 
-	ramstage_size = cbmem_entry_size(ramstage);
+	ramstage_size = prog_size(ramstage);
 	/* cbmem_entry_add() does a find() before add(). */
 	entry = cbmem_entry_add(CBMEM_ID_RAMSTAGE_CACHE, ramstage_size);
 
@@ -113,30 +113,37 @@ void cache_loaded_ramstage(struct romstage_handoff *handoff,
 		return;
 
 	/* Keep track of the entry point in the handoff structure. */
-	handoff->ramstage_entry_point = (uint32_t)entry_point;
+	handoff->ramstage_entry_point = (uint32_t)prog_entry(ramstage);
 
-	memcpy(cbmem_entry_start(entry), cbmem_entry_start(ramstage),
-	       ramstage_size);
+	memcpy(cbmem_entry_start(entry), prog_start(ramstage), ramstage_size);
 }
 
-void *load_cached_ramstage(struct romstage_handoff *handoff,
-                     const struct cbmem_entry *ramstage)
+void load_cached_ramstage(struct romstage_handoff *handoff,
+				struct prog *ramstage)
 {
 	const struct cbmem_entry *entry_cache;
+	const struct cbmem_entry *entry_dest;
 
 	if (handoff == NULL)
-		return NULL;
+		return;
 
 	entry_cache = cbmem_entry_find(CBMEM_ID_RAMSTAGE_CACHE);
 
 	if (entry_cache == NULL)
-		return NULL;
+		return;
+
+	entry_dest = cbmem_entry_find(CBMEM_ID_RAMSTAGE);
+
+	if (entry_dest == NULL)
+		return;
+
+	prog_set_area(ramstage, cbmem_entry_start(entry_dest),
+			cbmem_entry_size(entry_dest));
+	prog_set_entry(ramstage, (void *)handoff->ramstage_entry_point, NULL);
 
 	/* Load the cached ramstage copy into the to-be-run region. */
-	memcpy(cbmem_entry_start(ramstage), cbmem_entry_start(entry_cache),
-	       cbmem_entry_size(ramstage));
-
-	return (void *)handoff->ramstage_entry_point;
+	memcpy(prog_start(ramstage), cbmem_entry_start(entry_cache),
+	       prog_size(ramstage));
 }
 
 #endif

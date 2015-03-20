@@ -26,4 +26,3 @@ void __attribute__ ((weak)) arch_segment_loaded(uintptr_t start, size_t size,
 {
 	/* do nothing */
 }
-

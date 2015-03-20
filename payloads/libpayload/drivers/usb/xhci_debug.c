@@ -41,7 +41,7 @@ xhci_dump_slotctx(const slotctx_t *const sc)
 	usb_debug(" FIELD3\t0x%08"PRIx32"\n", sc->f3);
 	usb_debug(" FIELD4\t0x%08"PRIx32"\n", sc->f4);
 	SC_DUMP(ROUTE,  sc);
-	SC_DUMP(SPEED,  sc);
+	SC_DUMP(SPEED1, sc);
 	SC_DUMP(MTT,    sc);
 	SC_DUMP(HUB,    sc);
 	SC_DUMP(CTXENT, sc);

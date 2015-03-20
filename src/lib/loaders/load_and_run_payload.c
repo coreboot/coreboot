@@ -26,24 +26,22 @@
 #include <program_loading.h>
 #include <timestamp.h>
 
-extern const struct payload_loader_ops vboot_payload_loader;
-extern const struct payload_loader_ops cbfs_payload_loader;
+extern const struct prog_loader_ops vboot_payload_loader;
+extern const struct prog_loader_ops cbfs_payload_loader;
 
-static const struct payload_loader_ops *payload_ops[] = {
+static const struct prog_loader_ops *payload_ops[] = {
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 	&vboot_payload_loader,
 #endif
 	&cbfs_payload_loader,
 };
 
-static struct payload global_payload = {
-	.prog = {
-		.name = CONFIG_CBFS_PREFIX "/payload",
-		.type = PROG_PAYLOAD,
-	},
+static struct prog global_payload = {
+	.name = CONFIG_CBFS_PREFIX "/payload",
+	.type = PROG_PAYLOAD,
 };
 
-void __attribute__((weak)) mirror_payload(struct payload *payload)
+void __attribute__((weak)) mirror_payload(struct prog *payload)
 {
 	return;
 }
@@ -51,19 +49,18 @@ void __attribute__((weak)) mirror_payload(struct payload *payload)
 void payload_load(void)
 {
 	int i;
-	const struct payload_loader_ops *ops;
-	struct payload *payload = &global_payload;
-	struct prog * prog = &payload->prog;
+	const struct prog_loader_ops *ops;
+	struct prog *payload = &global_payload;
 
 	for (i = 0; i < ARRAY_SIZE(payload_ops); i++) {
 		ops = payload_ops[i];
-		if (ops->locate(payload) < 0) {
+		if (ops->prepare(payload) < 0) {
 			printk(BIOS_DEBUG, "%s: could not locate payload.\n",
 				ops->name);
 			continue;
 		}
 		printk(BIOS_DEBUG, "%s: located payload @ %p, %zu bytes.\n",
-			ops->name, prog_start(prog), prog_size(prog));
+			ops->name, prog_start(payload), prog_size(payload));
 		break;
 	}
 
@@ -73,23 +70,23 @@ void payload_load(void)
 	mirror_payload(payload);
 
 	/* Pass cbtables to payload if architecture desires it. */
-	prog_set_entry(&payload->prog, selfload(payload),
+	prog_set_entry(payload, selfload(payload),
 			cbmem_find(CBMEM_ID_CBTABLE));
 
 out:
-	if (prog_entry(&payload->prog) == NULL)
+	if (prog_entry(payload) == NULL)
 		die("Payload not loaded.\n");
 }
 
 void payload_run(void)
 {
-	struct payload *payload = &global_payload;
+	struct prog *payload = &global_payload;
 
 	/* Reset to booting from this image as late as possible */
 	boot_successful();
 
 	printk(BIOS_DEBUG, "Jumping to boot code at %p(%p)\n",
-		prog_entry(&payload->prog), prog_entry_arg(&payload->prog));
+		prog_entry(payload), prog_entry_arg(payload));
 	post_code(POST_ENTER_ELF_BOOT);
 
 	timestamp_add_now(TS_SELFBOOT_JUMP);
@@ -99,5 +96,5 @@ void payload_run(void)
 	 */
 	checkstack(_estack, 0);
 
-	arch_payload_run(payload);
+	prog_run(payload);
 }

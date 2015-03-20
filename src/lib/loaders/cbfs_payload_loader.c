@@ -20,24 +20,24 @@
 #include <cbfs.h>
 #include <program_loading.h>
 
-static int cbfs_locate_payload(struct payload *payload)
+static int cbfs_locate_payload(struct prog *payload)
 {
 	void *buffer;
 	size_t size;
 	const int type = CBFS_TYPE_PAYLOAD;
 
-	buffer = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, payload->prog.name,
+	buffer = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, payload->name,
 					type, &size);
 
 	if (buffer == NULL)
 		return -1;
 
-	prog_set_area(&payload->prog, buffer, size);
+	prog_set_area(payload, buffer, size);
 
 	return 0;
 }
 
-const struct payload_loader_ops cbfs_payload_loader = {
+const struct prog_loader_ops cbfs_payload_loader = {
 	.name = "CBFS",
-	.locate = cbfs_locate_payload,
+	.prepare = cbfs_locate_payload,
 };

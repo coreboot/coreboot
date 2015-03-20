@@ -214,13 +214,13 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 
 static int build_self_segment_list(
 	struct segment *head,
-	struct payload *payload, uintptr_t *entry)
+	struct prog *payload, uintptr_t *entry)
 {
 	struct segment *new;
 	struct segment *ptr;
 	struct cbfs_payload_segment *segment, *first_segment;
 	struct cbfs_payload *cbfs_payload;
-	cbfs_payload = prog_start(&payload->prog);
+	cbfs_payload = prog_start(payload);
 	memset(head, 0, sizeof(*head));
 	head->next = head->prev = head;
 	first_segment = segment = &cbfs_payload->segments;
@@ -311,7 +311,7 @@ static int build_self_segment_list(
 
 static int load_self_segments(
 	struct segment *head,
-	struct payload *payload)
+	struct prog *payload)
 {
 	struct segment *ptr;
 	struct segment *last_non_empty;
@@ -364,10 +364,6 @@ static int load_self_segments(
 		printk(BIOS_ERR, "Could not find a bounce buffer...\n");
 		return 0;
 	}
-
-	/* Update the payload's bounce buffer data used when loading. */
-	payload->bounce.data = (void *)(uintptr_t)bounce_buffer;
-	payload->bounce.size = bounce_size;
 
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		unsigned char *dest, *src;
@@ -454,10 +450,13 @@ static int load_self_segments(
 		}
 	}
 
+	/* Update the payload's area with the bounce buffer information. */
+	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
+
 	return 1;
 }
 
-void *selfload(struct payload *payload)
+void *selfload(struct prog *payload)
 {
 	uintptr_t entry = 0;
 	struct segment head;

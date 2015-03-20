@@ -25,10 +25,10 @@
 #include <romstage_handoff.h>
 #include <timestamp.h>
 
-extern const struct ramstage_loader_ops cbfs_ramstage_loader;
-extern const struct ramstage_loader_ops vboot_ramstage_loader;
+extern const struct prog_loader_ops cbfs_ramstage_loader;
+extern const struct prog_loader_ops vboot_ramstage_loader;
 
-static const struct ramstage_loader_ops *loaders[] = {
+static const struct prog_loader_ops *loaders[] = {
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 	&vboot_ramstage_loader,
 #endif
@@ -36,12 +36,12 @@ static const struct ramstage_loader_ops *loaders[] = {
 };
 
 static void
-load_ramstage(const struct ramstage_loader_ops *ops,
+load_ramstage(const struct prog_loader_ops *ops,
 		struct romstage_handoff *handoff, struct prog *ramstage)
 {
 	timestamp_add_now(TS_START_COPYRAM);
 
-	if (ops->load(ramstage))
+	if (ops->prepare(ramstage))
 		return;
 
 	cache_loaded_ramstage(handoff, ramstage);
@@ -68,7 +68,7 @@ static void run_ramstage_from_resume(struct romstage_handoff *handoff,
 void run_ramstage(void)
 {
 	struct romstage_handoff *handoff;
-	const struct ramstage_loader_ops *ops;
+	const struct prog_loader_ops *ops;
 	int i;
 	struct prog ramstage = {
 		.name = CONFIG_CBFS_PREFIX "/ramstage",

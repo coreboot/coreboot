@@ -29,8 +29,3 @@ void arch_prog_run(struct prog *prog)
 	doit = prog_entry(prog);
 	doit(prog_entry_arg(prog));
 }
-
-void arch_payload_run(struct payload *payload)
-{
-	arch_prog_run(&payload->prog);
-}

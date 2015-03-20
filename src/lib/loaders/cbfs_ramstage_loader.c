@@ -54,7 +54,7 @@ static int cbfs_load_ramstage(struct prog *ramstage)
 
 #endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
-const struct ramstage_loader_ops cbfs_ramstage_loader = {
+const struct prog_loader_ops cbfs_ramstage_loader = {
 	.name = "CBFS",
-	.load = cbfs_load_ramstage,
+	.prepare = cbfs_load_ramstage,
 };

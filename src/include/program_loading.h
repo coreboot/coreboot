@@ -50,7 +50,8 @@ struct prog {
 	const char *name;
 	/* The area can mean different things depending on what type the
 	 * program is. e.g. a payload prog uses this field for the backing
-	 * store of the payload_segments and data. */
+	 * store of the payload_segments and data. After loading the segments
+	 * area is updated to reflect the bounce buffer used. */
 	struct buffer_area area;
 	/* Entry to program with optional argument. It's up to the architecture
 	 * to decide if argument is passed. */
@@ -100,6 +101,14 @@ void arch_prog_run(struct prog *prog);
  * code it needs to that as well. */
 void platform_prog_run(struct prog *prog);
 
+struct prog_loader_ops {
+	const char *name;
+	/* Returns < 0 on error or 0 on success. This function needs to do
+	 * different things depending on the prog type. See definition
+	 * of struct prog above. */
+	int (*prepare)(struct prog *prog);
+};
+
 /************************
  *   ROMSTAGE LOADING   *
  ************************/
@@ -110,6 +119,9 @@ void run_romstage(void);
 /************************
  *   RAMSTAGE LOADING   *
  ************************/
+
+/* Run ramstage from romstage. */
+void run_ramstage(void);
 
 struct romstage_handoff;
 #if IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)
@@ -124,24 +136,9 @@ static inline void load_cached_ramstage(struct romstage_handoff *h,
 					struct prog *p) {}
 #endif
 
-/* Run ramstage from romstage. */
-void run_ramstage(void);
-
-struct ramstage_loader_ops {
-	const char *name;
-	/* Returns 0 on succes. < 0 on error. */
-	int (*load)(struct prog *ramstage);
-};
-
 /***********************
  *   PAYLOAD LOADING   *
  ***********************/
-
-struct payload {
-	struct prog prog;
-	/* Used when payload wants memory coreboot ramstage is running at. */
-	struct buffer_area bounce;
-};
 
 /* Load payload into memory in preparation to run. */
 void payload_load(void);
@@ -150,23 +147,9 @@ void payload_load(void);
 void payload_run(void);
 
 /* Mirror the payload to be loaded. */
-void mirror_payload(struct payload *payload);
-
-/* architecture specific function to run payload. */
-void arch_payload_run(struct payload *payload);
-
-/* Payload loading operations. */
-struct payload_loader_ops {
-	const char *name;
-	/*
-	 * Fill in payload_backing_store structure.  Return 0 on success, < 0
-	 * on failure.
-	 */
-	int (*locate)(struct payload *payload);
-};
+void mirror_payload(struct prog *payload);
 
 /* Defined in src/lib/selfboot.c */
-void *selfload(struct payload *payload);
-
+void *selfload(struct prog *payload);
 
 #endif /* PROGRAM_LOADING_H */

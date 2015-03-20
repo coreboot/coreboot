@@ -112,8 +112,7 @@ void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset)
 		media->unmap(media, data);
 	}
 
-	arch_program_segment_loaded(stage.load, stage.memlen);
-	arch_program_loaded();
+	arch_segment_loaded(stage.load, stage.memlen, SEG_FINAL);
 	DEBUG("stage loaded\n");
 
 	return (void *)(uintptr_t)stage.entry;

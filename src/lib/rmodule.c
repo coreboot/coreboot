@@ -200,9 +200,8 @@ int rmodule_load(void *base, struct rmodule *module)
 		return -1;
 	rmodule_clear_bss(module);
 
-	arch_program_segment_loaded((uintptr_t)module->location,
-					rmodule_memory_size(module));
-	arch_program_loaded();
+	arch_segment_loaded((uintptr_t)module->location,
+				rmodule_memory_size(module), SEG_FINAL);
 
 	return 0;
 }

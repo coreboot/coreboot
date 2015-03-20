@@ -314,8 +314,15 @@ static int load_self_segments(
 	struct payload *payload)
 {
 	struct segment *ptr;
+	struct segment *last_non_empty;
 	const unsigned long one_meg = (1UL << 20);
 	unsigned long bounce_high = lb_end;
+
+	/* Determine last non-empty loaded segment. */
+	last_non_empty = NULL;
+	for(ptr = head->next; ptr != head; ptr = ptr->next)
+		if (ptr->s_filesz != 0)
+			last_non_empty = ptr;
 
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		if (bootmem_region_targets_usable_ram(ptr->s_dstaddr,
@@ -442,16 +449,10 @@ static int load_self_segments(
 			 * Each architecture can perform additonal operations
 			 * on the loaded segment
 			 */
-			arch_program_segment_loaded((uintptr_t)dest,
-							ptr->s_memsz);
+			arch_segment_loaded((uintptr_t)dest, ptr->s_memsz,
+					last_non_empty == ptr ? SEG_FINAL : 0);
 		}
 	}
-
-	/*
-	 * Each architecture can perform additonal operations once the entire
-	 * program is loaded
-	 */
-	arch_program_loaded();
 
 	return 1;
 }

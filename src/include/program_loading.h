@@ -23,11 +23,15 @@
 #include <stdint.h>
 #include <stddef.h>
 
-/* For each segment of a program loaded this function is called*/
-void arch_program_segment_loaded(uintptr_t start, size_t size);
+enum {
+	/* Last segment of program. Can be used to take different actions for
+	 * cache maintenance of a program load. */
+	SEG_FINAL = 1 << 0,
+};
 
-/* Upon completion of loading a program this function is called */
-void arch_program_loaded(void);
+/* Called for each segment of a program loaded. The PROG_FLAG_FINAL will be
+ * set on the last segment loaded. */
+void arch_segment_loaded(uintptr_t start, size_t size, int flags);
 
 /************************
  *   ROMSTAGE LOADING   *

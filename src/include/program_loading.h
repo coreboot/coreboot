@@ -104,14 +104,11 @@ struct payload {
 	void *entry;
 };
 
-/*
- * Load payload into memory and return pointer to payload structure. Returns
- * NULL on error.
- */
-struct payload *payload_load(void);
+/* Load payload into memory in preparation to run. */
+void payload_load(void);
 
 /* Run the loaded payload. */
-void payload_run(const struct payload *payload);
+void payload_run(void);
 
 /* Mirror the payload to be loaded. */
 void mirror_payload(struct payload *payload);

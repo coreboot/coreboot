@@ -227,26 +227,16 @@ static boot_state_t bs_write_tables(void *arg)
 
 static boot_state_t bs_payload_load(void *arg)
 {
-	struct payload *payload;
-
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
-	payload = payload_load();
-
-	if (! payload)
-		die("Could not load payload\n");
-
-	/* Pass the payload to the next state. */
-	boot_states[BS_PAYLOAD_BOOT].arg = payload;
+	payload_load();
 
 	return BS_PAYLOAD_BOOT;
 }
 
 static boot_state_t bs_payload_boot(void *arg)
 {
-	struct payload *payload = arg;
-
-	payload_run(payload);
+	payload_run();
 
 	printk(BIOS_EMERG, "Boot failed");
 	/* Returning from this state will fail because the following signals

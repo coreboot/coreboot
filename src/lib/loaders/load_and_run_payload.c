@@ -44,7 +44,7 @@ void __attribute__((weak)) mirror_payload(struct payload *payload)
 	return;
 }
 
-struct payload *payload_load(void)
+void payload_load(void)
 {
 	int i;
 	void *entry;
@@ -65,24 +65,22 @@ struct payload *payload_load(void)
 	}
 
 	if (i == ARRAY_SIZE(payload_ops))
-		return NULL;
+		goto out;
 
 	mirror_payload(payload);
 
 	entry = selfload(payload);
 
-	if (entry == NULL)
-		return NULL;
-
 	payload->entry = entry;
 
-	return payload;
+out:
+	if (payload->entry == NULL)
+		die("Payload not loaded.\n");
 }
 
-void payload_run(const struct payload *payload)
+void payload_run(void)
 {
-	if (payload == NULL)
-		return;
+	const struct payload *payload = &global_payload;
 
 	/* Reset to booting from this image as late as possible */
 	boot_successful();

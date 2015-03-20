@@ -48,7 +48,7 @@ load_ramstage(const struct ramstage_loader_ops *ops,
 
 	timestamp_add_now(TS_END_COPYRAM);
 
-	stage_exit(prog_entry(ramstage));
+	prog_run(ramstage);
 }
 
 static void run_ramstage_from_resume(struct romstage_handoff *handoff,
@@ -60,7 +60,7 @@ static void run_ramstage_from_resume(struct romstage_handoff *handoff,
 
 		if (prog_entry(ramstage) != NULL) {
 			printk(BIOS_DEBUG, "Jumping to image.\n");
-			stage_exit(prog_entry(ramstage));
+			prog_run(ramstage);
 		}
 	}
 }

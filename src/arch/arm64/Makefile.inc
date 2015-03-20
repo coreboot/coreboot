@@ -57,6 +57,7 @@ bootblock-y += div0.c
 bootblock-y += id.S
 $(obj)/arch/arm64/id.bootblock.o: $(obj)/build.h
 
+bootblock-y += boot.c
 bootblock-y += c_entry.c
 bootblock-y += stage_entry.S
 bootblock-y += stages.c
@@ -81,6 +82,7 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 
+romstage-y += boot.c
 romstage-y += c_entry.c
 romstage-y += stage_entry.S
 romstage-y += stages.c

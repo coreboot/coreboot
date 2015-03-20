@@ -38,5 +38,5 @@ void run_romstage(void)
 		halt();
 	}
 
-	stage_exit(prog_entry(&romstage));
+	prog_run(&romstage);
 }

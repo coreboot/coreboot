@@ -26,3 +26,14 @@ void __attribute__ ((weak)) arch_segment_loaded(uintptr_t start, size_t size,
 {
 	/* do nothing */
 }
+
+void prog_run(struct prog *prog)
+{
+	platform_prog_run(prog);
+	arch_prog_run(prog);
+}
+
+void __attribute__ ((weak)) platform_prog_run(struct prog *prog)
+{
+	/* do nothing */
+}

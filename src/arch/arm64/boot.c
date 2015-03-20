@@ -25,15 +25,16 @@
 #include <arch/transition.h>
 #include <console/console.h>
 #include <program_loading.h>
+#include <rules.h>
 #include <string.h>
 
-void arch_payload_run(const struct payload *payload)
+static void run_payload(struct prog *prog)
 {
 	void (*doit)(void *);
 	void *arg;
 
-	doit = prog_entry(&payload->prog);
-	arg = prog_entry_arg(&payload->prog);
+	doit = prog_entry(prog);
+	arg = prog_entry_arg(prog);
 
 	uint8_t current_el = get_current_el();
 
@@ -60,4 +61,24 @@ void arch_payload_run(const struct payload *payload)
 
 	cache_sync_instructions();
 	transition_with_entry(doit, arg, &exc_state);
+}
+
+void arch_prog_run(struct prog *prog)
+{
+	void (*doit)(void *);
+	void *arg;
+
+	if (ENV_RAMSTAGE && prog->type == PROG_PAYLOAD)
+		run_payload(prog);
+		return;
+
+	doit = prog_entry(prog);
+	arg = prog_entry_arg(prog);
+
+	doit(prog_entry_arg(prog));
+}
+
+void arch_payload_run(struct payload *payload)
+{
+	arch_prog_run(&payload->prog);
 }

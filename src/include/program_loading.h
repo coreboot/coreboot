@@ -90,6 +90,16 @@ static inline void prog_set_entry(struct prog *prog, void *e, void *arg)
 	prog->arg = arg;
 }
 
+/* Run the program described by prog. */
+void prog_run(struct prog *prog);
+/* Per architecture implementation running a program. */
+void arch_prog_run(struct prog *prog);
+/* Platform (SoC/chipset) specific overrides for running a program. This is
+ * called prior to calling the arch_prog_run. Thus, if there is anything
+ * special that needs to be done by the platform similar to the architecture
+ * code it needs to that as well. */
+void platform_prog_run(struct prog *prog);
+
 /************************
  *   ROMSTAGE LOADING   *
  ************************/
@@ -143,7 +153,7 @@ void payload_run(void);
 void mirror_payload(struct payload *payload);
 
 /* architecture specific function to run payload. */
-void arch_payload_run(const struct payload *payload);
+void arch_payload_run(struct payload *payload);
 
 /* Payload loading operations. */
 struct payload_loader_ops {

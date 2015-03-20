@@ -2,6 +2,7 @@
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 
 romstage-y += cbmem.c
+romstage-y += boot.c
 
 endif # CONFIG_ARCH_ROMSTAGE_X86_32
 

@@ -83,7 +83,7 @@ out:
 
 void payload_run(void)
 {
-	const struct payload *payload = &global_payload;
+	struct payload *payload = &global_payload;
 
 	/* Reset to booting from this image as late as possible */
 	boot_successful();

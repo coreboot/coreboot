@@ -123,7 +123,7 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 		);
 }
 
-void arch_payload_run(const struct payload *payload)
+void arch_payload_run(struct payload *payload)
 {
 	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE))
 		jmp_payload_no_bounce_buffer(prog_entry(&payload->prog));
@@ -131,4 +131,12 @@ void arch_payload_run(const struct payload *payload)
 		jmp_payload(prog_entry(&payload->prog),
 				(uintptr_t)payload->bounce.data,
 				payload->bounce.size);
+}
+
+void arch_prog_run(struct prog *prog)
+{
+	__asm__ volatile (
+		"jmp  *%%edi\n"
+		:: "D"(prog_entry(prog))
+	);
 }

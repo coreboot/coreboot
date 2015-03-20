@@ -31,6 +31,7 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 bootblock_lds = $(src)/arch/riscv/bootblock.ld
 
 bootblock-y = bootblock.S stages.c
+bootblock-y += boot.c
 bootblock-y += rom_media.c
 bootblock-y += \
 	$(top)/src/lib/memchr.c \
@@ -52,6 +53,7 @@ endif
 ################################################################################
 ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 
+romstage-y += boot.c
 romstage-y += stages.c
 romstage-y += rom_media.c
 romstage-y += \

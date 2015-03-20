@@ -30,7 +30,6 @@
 
 static unsigned int oxpcie_present CAR_GLOBAL;
 static ROMSTAGE_CONST u32 uart0_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x1000;
-static ROMSTAGE_CONST u32 uart1_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x2000;
 
 int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base)
 {
@@ -79,10 +78,8 @@ static int oxpcie_uart_active(void)
 
 uintptr_t uart_platform_base(int idx)
 {
-	if (idx == 0 && oxpcie_uart_active())
-		return uart0_base;
-	if (idx == 1 && oxpcie_uart_active())
-		return uart1_base;
+	if ((idx >= 0) && (idx < 8) && oxpcie_uart_active())
+		return uart0_base + idx * 0x200;
 	return 0;
 }
 
@@ -90,7 +87,6 @@ uintptr_t uart_platform_base(int idx)
 void oxford_remap(u32 new_base)
 {
 	uart0_base = new_base + 0x1000;
-	uart1_base = new_base + 0x2000;
 }
 
 void uart_fill_lb(void *data)

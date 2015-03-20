@@ -22,16 +22,30 @@
 #include <bootblock_common.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <program_loading.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "pinmux.h"
 #include "power.h"
 
+static void run_next_stage(void *entry)
+{
+	ASSERT(entry);
+	clock_cpu0_config(entry);
+
+	power_enable_and_ungate_cpu();
+
+	/* Repair ram on cluster0 and cluster1 after CPU is powered on. */
+	ram_repair();
+
+	clock_cpu0_remove_reset();
+
+	clock_halt_avp();
+}
+
 void main(void)
 {
-	void *entry;
-
 	// enable pinmux clamp inputs
 	clamp_tristate_inputs();
 
@@ -70,21 +84,10 @@ void main(void)
 			  PINMUX_PWR_INT_N_FUNC_PMICINTR |
 			  PINMUX_INPUT_ENABLE);
 
-	if (IS_ENABLED(CONFIG_VBOOT2_VERIFY_FIRMWARE))
-		entry = NULL;
-	else
-		entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-					CONFIG_CBFS_PREFIX "/romstage");
+	run_romstage();
+}
 
-	ASSERT(entry);
-	clock_cpu0_config(entry);
-
-	power_enable_and_ungate_cpu();
-
-	/* Repair ram on cluster0 and cluster1 after CPU is powered on. */
-	ram_repair();
-
-	clock_cpu0_remove_reset();
-
-	clock_halt_avp();
+void platform_prog_run(struct prog *prog)
+{
+	run_next_stage(prog_entry(prog));
 }

@@ -62,7 +62,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_developer_mode_switch(void)
 {
-	return read_gpio(DEV_SW) ^ !DEV_POL;
+	return 0;
 }
 
 /*

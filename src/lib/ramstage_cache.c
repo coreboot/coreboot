@@ -19,8 +19,8 @@
 
 #include <stddef.h>
 #include <string.h>
-#include <cbfs.h>
 #include <console/console.h>
+#include <program_loading.h>
 #include <ramstage_cache.h>
 #include <romstage_handoff.h>
 

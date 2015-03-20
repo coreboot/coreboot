@@ -240,16 +240,17 @@ void verstage_main(void)
 	antirollback_read_space_firmware(&ctx);
 	timestamp_add_now(TS_END_TPMINIT);
 
-	if (get_developer_mode_switch())
+	if (!IS_ENABLED(CONFIG_VIRTUAL_DEV_SWITCH) &&
+	    get_developer_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
+
 	if (get_recovery_mode_switch()) {
 		clear_recovery_mode_switch();
 		ctx.flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
 	}
-#if IS_ENABLED(CONFIG_WIPEOUT_SUPPORTED)
-	if (get_wipeout_mode_switch())
+
+	if (IS_ENABLED(CONFIG_WIPEOUT_SUPPORTED) && get_wipeout_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_WIPEOUT_MODE;
-#endif
 
 	/* Do early init (set up secdata and NVRAM, load GBB) */
 	printk(BIOS_INFO, "Phase 1\n");

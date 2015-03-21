@@ -132,18 +132,30 @@ unsigned long acpi_fill_srat(unsigned long current)
 
 unsigned long acpi_fill_slit(unsigned long current)
 {
-	/* need to find out the node num at first */
-	/* fill the first 8 byte with that num */
-	/* fill the next num*num byte with distance, local is 10, 1 hop mean 20, and 2 hop with 30.... */
-
-	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
-	u8 *ln = sysinfox->ln;
-
+	/* Implement SLIT algorithm in BKDG Rev. 3.62 § 2.3.6.1
+	 * Fill the first 8 bytes with the node number,
+	 * then fill the next num*num byte with the distance,
+	 * Distance entries vary with topology; the local node
+	 * is always 10.
+	 *
+	 * Fully connected:
+	 * Set all non-local nodes to 16
+	 *
+	 * Partially connected; with probe filter:
+	 * Set all non-local nodes to 10+(num_hops*6)
+	 *
+	 * Partially connected; without probe filter:
+	 * Set all non-local nodes to 13
+	 *
+	 * FIXME
+	 * The partially connected cases are not implemented;
+	 * once a means is found to detect partially connected
+	 * topologies, implement the remaining cases.
+	 */
 
 	u8 *p = (u8 *)current;
 	int nodes = sysconf.nodes;
 	int i,j;
-	u32 hops;
 
 	memset(p, 0, 8+nodes*nodes);
 	*p = (u8) nodes;
@@ -151,12 +163,10 @@ unsigned long acpi_fill_slit(unsigned long current)
 
 	for(i=0;i<nodes;i++) {
 		for(j=0;j<nodes; j++) {
-			if(i==j) {
+			if(i==j)
 				p[i*nodes+j] = 10;
-			} else {
-				hops = (((ln[i*NODE_NUMS+j]>>4) & 0x7)+1);
-				p[i*nodes+j] = hops * 2 + 10;
-			}
+			else
+				p[i*nodes+j] = 16;
 		}
 	}
 

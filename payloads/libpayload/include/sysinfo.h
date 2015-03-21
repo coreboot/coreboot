@@ -109,15 +109,15 @@ struct sysinfo_t {
 	int x86_rom_var_mtrr_index;
 #endif
 
-	void	*tstamp_table;
-	void	*cbmem_cons;
-	void	*mrc_cache;
-	void	*acpi_gnvs;
-	u32	board_id;
-	u32	ram_code;
-	void	*wifi_calibration;
-	uint64_t ramoops_buffer;
-	uint32_t ramoops_buffer_size;
+	void		*tstamp_table;
+	void		*cbmem_cons;
+	void		*mrc_cache;
+	void		*acpi_gnvs;
+	u32		board_id;
+	u32		ram_code;
+	void		*wifi_calibration;
+	uint64_t	ramoops_buffer;
+	uint32_t	ramoops_buffer_size;
 };
 
 extern struct sysinfo_t lib_sysinfo;

@@ -465,7 +465,6 @@ static void scan_chains(device_t dev)
 	struct bus *link;
 	device_t io_hub = NULL;
 	u32 next_unitid = 0x18;
-	unsigned int max = dev->bus->subordinate;
 
 	nodeid = amdfam15_nodeid(dev);
 	if (nodeid == 0) {
@@ -481,10 +480,7 @@ static void scan_chains(device_t dev)
 				pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7);
 			}
 		}
-		max = dev->bus->subordinate;
 	}
-
-	dev->bus->subordinate = max;
 }
 
 

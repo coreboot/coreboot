@@ -91,6 +91,15 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	struct bus *parent = dev->bus;
 	u32 busses;
 
+	if (mode == HT_ROUTE_SCAN) {
+		if (link->dev->bus->subordinate == 0)
+			link->secondary = 0;
+		else
+			link->secondary = parent->subordinate + 1;
+
+		link->subordinate = link->secondary;
+	}
+
 	/* Configure the bus numbers for this bridge: the configuration
 	 * transactions will not be propagated by the bridge if it is
 	 * not correctly configured
@@ -109,6 +118,13 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	}
 	pci_write_config32(link->dev, link->cap + 0x14, busses);
 
+	if (mode == HT_ROUTE_FINAL) {
+		/* Second chain will be on 0x40, third 0x80, forth 0xc0. */
+		if (CONFIG_HT_CHAIN_DISTRIBUTE)
+			parent->subordinate = ALIGN_UP(link->subordinate, 0x40) - 1;
+		else
+			parent->subordinate = link->subordinate;
+	}
 }
 
 static u32 amdk8_nodeid(device_t dev)
@@ -116,7 +132,7 @@ static u32 amdk8_nodeid(device_t dev)
 	return (dev->path.pci.devfn >> 3) - 0x18;
 }
 
-static u32 amdk8_scan_chain(struct bus *link, u32 max)
+static void amdk8_scan_chain(struct bus *link)
 {
 		unsigned int next_unitid;
 		int index;
@@ -148,23 +164,13 @@ static u32 amdk8_scan_chain(struct bus *link, u32 max)
 		 * register skip this bus
 		 */
 		if (config_reg > 0xec) {
-			return max;
+			return;
 		}
 
 		/* Set up the primary, secondary and subordinate bus numbers.
 		 * We have no idea how many busses are behind this bridge yet,
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
-
-		if (max != 0)
-			max++;
-
-		/* Second chain will be on 0x40, third 0x80, forth 0xc0. */
-		if (CONFIG_HT_CHAIN_DISTRIBUTE)
-			max = ALIGN_UP(max, 0x40);
-
-		link->secondary = max;
-		link->subordinate = link->secondary;
 
 		ht_route_link(link, HT_ROUTE_SCAN);
 
@@ -199,8 +205,6 @@ static u32 amdk8_scan_chain(struct bus *link, u32 max)
 
 		index = (config_reg-0xe0) >> 2;
 		sysconf.hcdn_reg[index] = link->hcdn_reg;
-
-		return link->subordinate;
 }
 
 /* Do sb ht chain at first, in case s2885 put sb chain
@@ -244,16 +248,13 @@ static void trim_ht_chain(struct device *dev)
 static void amdk8_scan_chains(device_t dev)
 {
 	struct bus *link;
-	unsigned int max = dev->bus->subordinate;
 
 	trim_ht_chain(dev);
 
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->ht_link_up)
-			max = amdk8_scan_chain(link, max);
+			amdk8_scan_chain(link);
 	}
-
-	dev->bus->subordinate = max;
 }
 
 

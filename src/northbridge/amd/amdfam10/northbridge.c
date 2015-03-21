@@ -152,6 +152,15 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	struct bus *parent = link->dev->bus;
 	u32 busses;
 
+	if (mode == HT_ROUTE_SCAN) {
+		if (parent->subordinate == 0)
+			link->secondary = 0;
+		else
+			link->secondary = parent->subordinate + 1;
+
+		link->subordinate = link->secondary;
+	}
+
 	/* Configure the bus numbers for this bridge: the configuration
 	 * transactions will not be propagated by the bridge if it is
 	 * not correctly configured
@@ -170,9 +179,15 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	}
 	pci_write_config32(link->dev, link->cap + 0x14, busses);
 
+	if (mode == HT_ROUTE_FINAL) {
+		if (CONFIG_HT_CHAIN_DISTRIBUTE)
+			parent->subordinate = ALIGN_UP(link->subordinate, 8) - 1;
+		else
+			parent->subordinate = link->subordinate;
+	}
 }
 
-static u32 amdfam10_scan_chain(struct bus *link, u32 max)
+static void amdfam10_scan_chain(struct bus *link)
 {
 		unsigned int next_unitid;
 
@@ -180,22 +195,12 @@ static u32 amdfam10_scan_chain(struct bus *link, u32 max)
 		 * register in function 1.
 		 */
 		if (get_ht_c_index(link) >= 4)
-			return max;
+			return;
 
 		/* Set up the primary, secondary and subordinate bus numbers.
 		 * We have no idea how many busses are behind this bridge yet,
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
-
-		if (max != 0)
-			max++;
-
-		/* One node can have 8 link and segn is the same. */
-		if (CONFIG_HT_CHAIN_DISTRIBUTE)
-			max = ALIGN_UP(max, 8);
-
-		link->secondary = max;
-		link->subordinate = link->secondary;
 
 		ht_route_link(link, HT_ROUTE_SCAN);
 
@@ -224,8 +229,6 @@ static u32 amdfam10_scan_chain(struct bus *link, u32 max)
 		set_config_map_reg(link);
 
 		store_ht_c_conf_bus(link);
-
-		return link->subordinate;
 }
 
 /* Do sb ht chain at first, in case s2885 put sb chain
@@ -269,17 +272,14 @@ static void trim_ht_chain(struct device *dev)
 static void amdfam10_scan_chains(device_t dev)
 {
 	struct bus *link;
-	unsigned int max = dev->bus->subordinate;
 
 	/* Do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0 */
 	trim_ht_chain(dev);
 
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->ht_link_up)
-			max = amdfam10_scan_chain(link, max);
+			amdfam10_scan_chain(link);
 	}
-
-	dev->bus->subordinate = max;
 }
 
 

@@ -561,7 +561,6 @@ static void amdfam10_scan_chains(device_t dev)
 	unsigned sblink = sysconf.sblk;
 	device_t io_hub = NULL;
 	u32 next_unitid = 0xff;
-	unsigned int max = dev->bus->subordinate;
 
 	nodeid = amdfam10_nodeid(dev);
 	if (nodeid == 0) {
@@ -578,8 +577,6 @@ static void amdfam10_scan_chains(device_t dev)
 		}
 		max = dev->bus->subordinate;
 	}
-
-	dev->bus->subordinate = max;
 }
 
 static struct device_operations northbridge_operations = {

@@ -17,8 +17,6 @@ DECLARE_SPIN_LOCK(console_lock)
 
 void do_putchar(unsigned char byte)
 {
-	if (byte == '\n')
-		console_tx_byte('\r');
 	console_tx_byte(byte);
 }
 

@@ -525,6 +525,7 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 			/* Base must be aligned. */
 			base = round(base, resource->align);
 			resource->base = base;
+			resource->limit = resource->base + resource->size - 1;
 			resource->flags |= IORESOURCE_ASSIGNED;
 			resource->flags &= ~IORESOURCE_STORED;
 			base += resource->size;

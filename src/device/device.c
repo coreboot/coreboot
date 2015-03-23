@@ -746,6 +746,10 @@ static void avoid_fixed_resources(struct device *dev)
 		if (res->limit > lim->limit)
 			res->limit = lim->limit;
 
+		/* MEM resources need to start at the highest address manageable. */
+		if (res->flags & IORESOURCE_MEM)
+			res->base = resource_max(res);
+
 		printk(BIOS_SPEW, "%s:@%s %02lx base %08llx limit %08llx\n",
 			__func__, dev_path(dev), res->index, res->base, res->limit);
 	}
@@ -1056,21 +1060,6 @@ void dev_configure(void)
 	for (child = root->link_list->children; child; child=child->sibling)
 		if (child->path.type == DEVICE_PATH_DOMAIN)
 			avoid_fixed_resources(child);
-
-	/*
-	 * Now we need to adjust the resources. MEM resources need to start at
-	 * the highest address manageable.
-	 */
-	for (child = root->link_list->children; child; child = child->sibling) {
-		if (child->path.type != DEVICE_PATH_DOMAIN)
-			continue;
-		for (res = child->resource_list; res; res = res->next) {
-			if (!(res->flags & IORESOURCE_MEM) ||
-			    res->flags & IORESOURCE_FIXED)
-				continue;
-			res->base = resource_max(res);
-		}
-	}
 
 	/* Store the computed resource allocations into device registers ... */
 	printk(BIOS_INFO, "Setting resources...\n");

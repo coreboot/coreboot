@@ -37,5 +37,5 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 # We don't ship that, but booting without it is bound to fail
 cbfs-files-$(CONFIG_HAVE_CMC) += cmc.bin
 cmc.bin-file := $(call strip_quotes,$(CONFIG_CMC_FILE))
-cmc.bin-type := 0xaa
+cmc.bin-type := raw
 cmc.bin-position := 0xfffd0000

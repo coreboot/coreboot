@@ -27,25 +27,25 @@ ramstage-y += ptn3460.c
 
 cbfs-files-y += hwinfo.hex
 hwinfo.hex-file := hwinfo.hex
-hwinfo.hex-type := 0x50
+hwinfo.hex-type := raw
 hwinfo.hex-align := 0x1000
 
 cbfs-files-y += version.hex
 version.hex-file := version.hex
-version.hex-type := 0x50
+version.hex-type := raw
 
 cbfs-files-y += hwinfo10.hex
 hwinfo10.hex-file := hwinfo10.hex
-hwinfo10.hex-type := 0x50
+hwinfo10.hex-type := raw
 
 cbfs-files-y += hwinfo12.hex
 hwinfo12.hex-file := hwinfo12.hex
-hwinfo12.hex-type := 0x50
+hwinfo12.hex-type := raw
 
 cbfs-files-y += hwinfo15.hex
 hwinfo15.hex-file := hwinfo15.hex
-hwinfo15.hex-type := 0x50
+hwinfo15.hex-type := raw
 
 cbfs-files-y += hwinfo19.hex
 hwinfo19.hex-file := hwinfo19.hex
-hwinfo19.hex-type := 0x50
+hwinfo19.hex-type := raw

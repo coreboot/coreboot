@@ -47,7 +47,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 cbfs-files-$(CONFIG_HAVE_MRC) += mrc.bin
 mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
 mrc.bin-position := 0xfffa0000
-mrc.bin-type := 0xab
+mrc.bin-type := mrc
 
 ifneq ($(CONFIG_CHROMEOS),y)
 $(obj)/mrc.cache: $(obj)/config.h
@@ -62,6 +62,6 @@ mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) := 0xfffd0000
 mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) := 0xfffe0000
 mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) := 0xfffe0000
 mrc.cache-position := $(mrc-cache-position-y)
-mrc.cache-type := 0xac
+mrc.cache-type := mrc_cache
 endif
 

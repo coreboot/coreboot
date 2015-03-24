@@ -30,4 +30,4 @@ $(SPD_BIN):
 
 cbfs-files-y += spd.bin
 spd.bin-file := $(SPD_BIN)
-spd.bin-type := 0xab
+spd.bin-type := spd

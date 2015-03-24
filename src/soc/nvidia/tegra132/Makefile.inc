@@ -123,4 +123,4 @@ MTS_FILE = $(MTS_DIR)/mts_cr.bin
 MTS_FILE_CBFS = mts
 cbfs-files-y += $(MTS_FILE_CBFS)
 $(MTS_FILE_CBFS)-file := $(MTS_FILE)
-$(MTS_FILE_CBFS)-type := 0x50
+$(MTS_FILE_CBFS)-type := raw

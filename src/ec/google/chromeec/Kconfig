@@ -3,6 +3,14 @@ config EC_GOOGLE_CHROMEEC
 	help
 	  Google's Chrome EC
 
+config EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+	depends on EC_GOOGLE_CHROMEEC_LPC
+	def_bool n
+	help
+	  When defined, ACPI accesses EC memmap data on ports 66h/62h. When
+	  not defined, the memmap data is instead accessed on 900h-9ffh via
+	  the LPC bus.
+
 config EC_GOOGLE_CHROMEEC_I2C
 	depends on EC_GOOGLE_CHROMEEC
 	bool
@@ -27,7 +35,7 @@ config EC_GOOGLE_CHROMEEC_I2C_PROTO3
 	  Use only proto3 for i2c EC communication.
 
 config EC_GOOGLE_CHROMEEC_LPC
-        depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
+	depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
 	def_bool y
 	select SERIRQ_CONTINUOUS_MODE
 	help

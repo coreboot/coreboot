@@ -117,6 +117,25 @@ static void init_this_cpu(void *arg)
 		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
 		dev->ops->init(dev);
 	}
+
+	/*
+	 * Disable coprocessor traps to EL3:
+	 * TCPAC [20] = 0, disable traps for EL2 accesses to CPTR_EL2 or HCPTR
+	 * and EL2/EL1 access to CPACR_EL1.
+	 * TTA [20] = 0, disable traps for trace register access from any EL.
+	 * TFP [10] = 0, disable traps for floating-point instructions from any
+	 * EL.
+	 */
+	raw_write_cptr_el3(CPTR_EL3_TCPAC_DISABLE | CPTR_EL3_TTA_DISABLE |
+			   CPTR_EL3_TFP_DISABLE);
+
+	/*
+	 * Allow FPU accesses:
+	 * FPEN [21:20] = 3, disable traps for floating-point instructions from
+	 * EL0/EL1.
+	 * TTA [28] = 0, disable traps for trace register access from EL0/EL1.
+	 */
+	raw_write_cpacr_el1(CPACR_TRAP_FP_DISABLE | CPACR_TTA_DISABLE);
 }
 
 /* Fill in cpu_info structures according to device tree. */

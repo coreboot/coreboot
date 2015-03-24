@@ -126,6 +126,28 @@
 #define SCTLR_LITTLE_END     (0 << SCTLR_ENDIAN_SHIFT)
 #define SCTLR_BIG_END        (1 << SCTLR_ENDIAN_SHIFT)
 
+#define CPTR_EL3_TCPAC_SHIFT	(31)
+#define CPTR_EL3_TTA_SHIFT	(20)
+#define CPTR_EL3_TFP_SHIFT	(10)
+#define CPTR_EL3_TCPAC_DISABLE	(0 << CPTR_EL3_TCPAC_SHIFT)
+#define CPTR_EL3_TCPAC_ENABLE	(1 << CPTR_EL3_TCPAC_SHIFT)
+#define CPTR_EL3_TTA_DISABLE	(0 << CPTR_EL3_TTA_SHIFT)
+#define CPTR_EL3_TTA_ENABLE	(1 << CPTR_EL3_TTA_SHIFT)
+#define CPTR_EL3_TFP_DISABLE	(0 << CPTR_EL3_TFP_SHIFT)
+#define CPTR_EL3_TFP_ENABLE	(1 << CPTR_EL3_TFP_SHIFT)
+
+#define CPACR_TTA_SHIFT	(28)
+#define CPACR_TTA_ENABLE	(1 << CPACR_TTA_SHIFT)
+#define CPACR_TTA_DISABLE	(0 << CPACR_TTA_SHIFT)
+#define CPACR_FPEN_SHIFT	(20)
+/*
+ * ARMv8-A spec: Values 0b00 and 0b10 both seem to enable traps from el0 and el1
+ * for fp reg access.
+ */
+#define CPACR_TRAP_FP_EL0_EL1	(0 << CPACR_FPEN_SHIFT)
+#define CPACR_TRAP_FP_EL0	(1 << CPACR_FPEN_SHIFT)
+#define CPACR_TRAP_FP_DISABLE	(3 << CPACR_FPEN_SHIFT)
+
 #ifdef __ASSEMBLY__
 
 /* Macro to switch to label based on current el */

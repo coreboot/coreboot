@@ -379,7 +379,7 @@ printf "Building GMP ${GMP_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-gmp/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-gmp/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-gmp/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-gmp/crossgcc-build.log.\n" || \
 	printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-gmp/.failed && exit 1
 fi
@@ -413,7 +413,7 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-mpfr/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-mpfr/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-mpfr/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-mpfr/crossgcc-build.log.\n" || \
 	     printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-mpfr/.failed && exit 1
 fi
@@ -436,7 +436,7 @@ printf "Building MPC ${MPC_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-mpc/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-mpc/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-mpc/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-mpc/crossgcc-build.log.\n" || \
 	     printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-mpc/.failed && exit 1
 fi
@@ -459,7 +459,7 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-libelf/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-libelf/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-libelf/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-libelf/crossgcc-build.log.\n" || \
 	     printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-libelf/.failed && exit 1
 fi
@@ -484,7 +484,7 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-binutils/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-binutils/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-binutils/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-binutils/crossgcc-build.log.\n" || \
 	     printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-binutils/.failed && exit 1
 fi
@@ -535,7 +535,7 @@ printf "Building GCC ${GCC_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-gcc/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-gcc/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-gcc/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-gcc/crossgcc-build.log.\n" || \
 	     printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-gcc/.failed && exit 1
 fi
@@ -558,7 +558,7 @@ printf "Building Expat ${EXPAT_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-expat/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-expat/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-expat/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-expat/crossgcc-build.log\n" || \
 	     printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-expat/.failed && exit 1
 fi
@@ -582,7 +582,7 @@ printf "Building Python ${PYTHON_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-python/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-python/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-python/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-python/crossgcc-build.log.\n" || \
 	     printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-python/.failed && exit 1
 fi
@@ -607,7 +607,7 @@ printf "Building GDB ${GDB_VERSION} ... "
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > ${BUILDDIRPREFIX}-gdb/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-gdb/.failed && printf "${RED}failed${NC}\n" || \
+test -r ${BUILDDIRPREFIX}-gdb/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-gdb/crossgcc-build.log.\n" || \
 	     printf "${green}ok${NC}\n"
 test -r ${BUILDDIRPREFIX}-gdb/.failed && exit 1
 fi
@@ -629,7 +629,7 @@ printf "Building IASL ${IASL_VERSION} ... "
 	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > $IASL_DIR/source/compiler/crossgcc-build.log 2>&1
-test -r $IASL_DIR/generate/unix/.failed && printf "${RED}failed${NC}\n" || \
+test -r $IASL_DIR/generate/unix/.failed && printf "${RED}failed${NC}. Check ${IASL_DIR}/source/compiler/crossgcc-build.log.\n" || \
 	     printf "${green}ok${NC}\n"
 test -r $IASL_DIR/generate/unix/.failed && exit 1
 fi

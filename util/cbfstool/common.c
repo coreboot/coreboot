@@ -184,8 +184,12 @@ static struct filetypes_t {
 	{CBFS_COMPONENT_VSA, "vsa"},
 	{CBFS_COMPONENT_MBI, "mbi"},
 	{CBFS_COMPONENT_MICROCODE, "microcode"},
+	{CBFS_COMPONENT_FSP, "fsp"},
+	{CBFS_COMPONENT_MRC, "mrc"},
 	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos default"},
 	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos layout"},
+	{CBFS_COMPONENT_SPD, "spd"},
+	{CBFS_COMPONENT_MRC_CACHE, "mrc_cache"},
 	{CBFS_COMPONENT_DELETED, "deleted"},
 	{CBFS_COMPONENT_NULL, "null"}
 };

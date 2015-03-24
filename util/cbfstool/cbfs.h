@@ -106,7 +106,11 @@ struct cbfs_payload {
 #define CBFS_COMPONENT_VSA        0x51
 #define CBFS_COMPONENT_MBI        0x52
 #define CBFS_COMPONENT_MICROCODE  0x53
+#define CBFS_COMPONENT_FSP        0x60
+#define CBFS_COMPONENT_MRC        0x61
 #define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
+#define CBFS_COMPONENT_SPD          0xab
+#define CBFS_COMPONENT_MRC_CACHE    0xac
 #define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
 
 /* The deleted type is chosen to be a value

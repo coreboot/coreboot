@@ -1,0 +1,88 @@
+#!/bin/bash
+#
+# miniconfig - utility to minimize your coreboot config files
+#
+# Copyright 2015 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+CONFIG=$1
+NEWCONFIG=$2
+
+CONF=build/util/kconfig/conf
+KCONFIG=src/Kconfig
+DOTCONFIG=.config
+PREVCONFIG=.config.prev
+TMPCONFIG=.config.mini
+
+recreate_config()
+{
+	$CONF --olddefconfig $KCONFIG &> /dev/null
+}
+
+if [ "$CONFIG" == "" ]; then
+  printf "usage: util/miniconfig/miniconfig [path to config file] <path to new config file>\n"
+  exit 0
+fi
+
+if [ ! -r "$CONFIG" ]; then
+  printf "Can't read $CONFIG.\n"
+  exit 1
+fi
+
+if [ "$CONFIG" == .config ]; then
+  printf "Can't use .config, it's overwritten. Make a backup.\n"
+  exit 1
+fi
+
+if [ ! -x "$CONF" ]; then
+  printf "conf utility at $CONF not available.\n"
+  exit 1
+fi
+
+# Start out by creating a default config file for a mainboard
+VENDOR=$( grep ^CONFIG_VENDOR "$CONFIG" )
+BOARD=$( grep ^CONFIG_BOARD "$CONFIG" | grep -v ROMSIZE | grep -v SPECIFIC_OPTIONS )
+
+printf "$VENDOR\n$BOARD\n" > "$TMPCONFIG"
+cp "$TMPCONFIG" "$DOTCONFIG"
+recreate_config
+
+LINES=$( cat "$CONFIG" | wc -l )
+CUR=1
+
+# Now go through each line of the existing, large config file, add it to our
+# new minimal config file, and see if it makes a difference when running "make
+# olddefconfig". If it does, keep the line, otherwise discard it.
+
+cat "$CONFIG" | while read L; do
+  printf "\rProcessing $CONFIG - $CUR / $LINES (%d%%)" $(( $CUR * 100 / $LINES))
+  mv "$DOTCONFIG" "$PREVCONFIG"
+  cp "$TMPCONFIG" "$DOTCONFIG"
+  echo "$L" >> "$DOTCONFIG"
+  recreate_config
+
+  if ! diff -q "$DOTCONFIG" "$PREVCONFIG" > /dev/null; then
+    echo "$L" >> "$TMPCONFIG"
+  fi
+  CUR=$(( $CUR + 1 ))
+done
+
+echo
+
+if [ "$NEWCONFIG" != "" ]; then
+  printf "Writing new, minimized config to $NEWCONFIG\n"
+  mv "$TMPCONFIG" "$NEWCONFIG"
+else
+  printf "Overwriting $CONFIG with new, minimized config.\n"
+  mv "$TMPCONFIG" "$CONFIG"
+fi
+

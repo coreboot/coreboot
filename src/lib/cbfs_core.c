@@ -94,7 +94,7 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 }
 
 
-static int init_media(struct cbfs_media **media, struct cbfs_media *backing)
+int init_backing_media(struct cbfs_media **media, struct cbfs_media *backing)
 {
 	if (*media == CBFS_DEFAULT_MEDIA) {
 		*media = backing;
@@ -115,7 +115,7 @@ ssize_t cbfs_locate_file(struct cbfs_media *media, struct cbfs_file *file,
 	const struct cbfs_header *header;
 	struct cbfs_media default_media;
 
-	if (init_media(&media, &default_media))
+	if (init_backing_media(&media, &default_media))
 		return -1;
 
 	if (CBFS_HEADER_INVALID_ADDRESS == (header = cbfs_get_header(media)))
@@ -200,7 +200,7 @@ size_t cbfs_read(struct cbfs_media *media, void *dest, size_t offset,
 	struct cbfs_media default_media;
 	size_t nread;
 
-	if (init_media(&media, &default_media))
+	if (init_backing_media(&media, &default_media))
 		return 0;
 
 	media->open(media);
@@ -216,7 +216,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	struct cbfs_file file, *file_ptr;
 	ssize_t offset;
 
-	if (init_media(&media, &default_media))
+	if (init_backing_media(&media, &default_media))
 		return NULL;
 
 	offset = cbfs_locate_file(media, &file, name);

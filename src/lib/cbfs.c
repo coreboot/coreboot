@@ -76,6 +76,10 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset)
 {
 	struct cbfs_stage stage;
+	struct cbfs_media backing_store;
+
+	if (init_backing_media(&media, &backing_store))
+		return (void *)-1;
 
 	if (cbfs_read(media, &stage, offset, sizeof(stage)) != sizeof(stage)) {
 		ERROR("ERROR: failed to read stage header\n");
@@ -116,6 +120,10 @@ void *cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_file file;
 	ssize_t offset;
+	struct cbfs_media backing_store;
+
+	if (init_backing_media(&media, &backing_store))
+		return (void *)-1;
 
 	offset = cbfs_locate_file(media, &file, name);
 	if (offset < 0 || file.type != CBFS_TYPE_STAGE)

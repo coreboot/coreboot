@@ -52,6 +52,7 @@
 
 #include <cbfs_core.h>
 
+int init_backing_media(struct cbfs_media **media, struct cbfs_media *backing);
 void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 			  uint16_t device, void * dest);
 void *cbfs_load_stage(struct cbfs_media *media, const char *name);

@@ -94,12 +94,8 @@ static void rockchip_spi_enable_chip(struct rockchip_spi *regs, int enable)
 
 static void rockchip_spi_set_clk(struct rockchip_spi *regs, unsigned int hz)
 {
-	unsigned short clk_div = 0;
-
-	/* Calculate clock divisor.  */
-	clk_div = SPI_SRCCLK_HZ / hz;
-	clk_div = (clk_div + 1) & 0xfffe;
-	assert((clk_div - 1) * hz == SPI_SRCCLK_HZ);
+	unsigned short clk_div = SPI_SRCCLK_HZ / hz;
+	assert(clk_div * hz == SPI_SRCCLK_HZ && !(clk_div & 1));
 	write32(&regs->baudr, clk_div);
 }
 

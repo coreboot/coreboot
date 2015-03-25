@@ -82,6 +82,18 @@ void imd_handle_init_partial_recovery(struct imd *imd);
 int imd_create_empty(struct imd *imd, size_t root_size, size_t entry_align);
 
 /*
+ * Create an empty imd with both large and small allocations. The small
+ * allocations come from a fixed imd stored internally within the large
+ * imd. The region allocated for tracking the smaller allocations is dependent
+ * on the small root_size and the large entry alignment by calculating the
+ * number of entries within the small imd and multiplying that by the small
+ * entry alignment.
+ */
+int imd_create_tiered_empty(struct imd *imd,
+				size_t lg_root_size, size_t lg_entry_align,
+				size_t sm_root_size, size_t sm_entry_align);
+
+/*
  * Recover a previously created imd.
  */
 int imd_recover(struct imd *imd);
@@ -131,9 +143,13 @@ int imd_print_entries(const struct imd *imd, const struct imd_lookup *lookup,
  * NOTE: Do not directly touch any fields within this structure. An imd pointer
  * is meant to be opaque, but the fields are exposed for stack allocation.
  */
-struct imd {
+struct imdr {
 	uintptr_t limit;
 	void *r;
+};
+struct imd {
+	struct imdr lg;
+	struct imdr sm;
 };
 
 #endif /* _IMD_H_ */

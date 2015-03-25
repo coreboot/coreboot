@@ -29,16 +29,23 @@
 #include "common.h"
 #include "cbfs.h"
 #include "cbfs_image.h"
+#include "cbfs_sections.h"
 #include "fit.h"
+#include "partitioned_file.h"
 
 struct command {
 	const char *name;
 	const char *optstring;
 	int (*function) (void);
+	// Whether to populate param.image_region before invoking function
+	bool accesses_region;
+	// Whether to write that region's contents back to image_file at the end
+	bool modifies_region;
 };
 
 static struct param {
-	char *cbfs_name;
+	partitioned_file_t *image_file;
+	struct buffer *image_region;
 	char *name;
 	char *filename;
 	char *bootblock;
@@ -74,8 +81,7 @@ static struct param {
 
 typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset);
 
-static int cbfs_add_integer_component(const char *cbfs_name,
-			      const char *name,
+static int cbfs_add_integer_component(const char *name,
 			      uint64_t u64val,
 			      uint32_t offset,
 			      uint32_t headeroffset) {
@@ -94,10 +100,9 @@ static int cbfs_add_integer_component(const char *cbfs_name,
 	for (i = 0; i < 8; i++)
 		buffer.data[i] = (u64val >> i*8) & 0xff;
 
-	if (cbfs_image_from_file(&image, cbfs_name, headeroffset) != 0) {
-		ERROR("Could not load ROM image '%s'.\n", cbfs_name);
-		buffer_delete(&buffer);
-		return 1;
+	if (cbfs_image_from_buffer(&image, param.image_region, headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
+		goto done;
 	}
 
 	if (cbfs_get_entry(&image, name)) {
@@ -112,26 +117,20 @@ static int cbfs_add_integer_component(const char *cbfs_name,
 		goto done;
 	}
 
-	if (cbfs_image_write_file(&image, cbfs_name) == 0)
-		ret = 0;
+	ret = 0;
 
 done:
 	buffer_delete(&buffer);
-	cbfs_image_delete(&image);
 	return ret;
 }
 
-static int cbfs_add_component(const char *cbfs_name,
-			      const char *filename,
+static int cbfs_add_component(const char *filename,
 			      const char *name,
 			      uint32_t type,
 			      uint32_t offset,
 			      uint32_t headeroffset,
 			      convert_buffer_t convert)
 {
-	struct cbfs_image image;
-	struct buffer buffer;
-
 	if (!filename) {
 		ERROR("You need to specify -f/--filename.\n");
 		return 1;
@@ -147,44 +146,37 @@ static int cbfs_add_component(const char *cbfs_name,
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, cbfs_name, headeroffset))
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region, headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
 		return 1;
+	}
 
+	struct buffer buffer;
 	if (buffer_from_file(&buffer, filename) != 0) {
 		ERROR("Could not load file '%s'.\n", filename);
-		cbfs_image_delete(&image);
 		return 1;
 	}
 
 	if (convert && convert(&buffer, &offset) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
 		buffer_delete(&buffer);
-		cbfs_image_delete(&image);
 		return 1;
 	}
 
 	if (cbfs_get_entry(&image, name)) {
 		ERROR("'%s' already in ROM image.\n", name);
 		buffer_delete(&buffer);
-		cbfs_image_delete(&image);
 		return 1;
 	}
 
 	if (cbfs_add_entry(&image, &buffer, name, type, offset) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
 		buffer_delete(&buffer);
-		cbfs_image_delete(&image);
-		return 1;
-	}
-
-	if (cbfs_image_write_file(&image, cbfs_name) != 0) {
-		buffer_delete(&buffer);
-		cbfs_image_delete(&image);
 		return 1;
 	}
 
 	buffer_delete(&buffer);
-	cbfs_image_delete(&image);
 	return 0;
 }
 
@@ -222,6 +214,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	/* Not a supported payload type */
 	if (ret != 0) {
 		ERROR("Not a supported payload type (ELF / FV).\n");
+		buffer_delete(buffer);
 		return -1;
 	}
 
@@ -247,11 +240,9 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 	return 0;
 }
 
-
 static int cbfs_add(void)
 {
-	return cbfs_add_component(param.cbfs_name,
-				  param.filename,
+	return cbfs_add_component(param.filename,
 				  param.name,
 				  param.type,
 				  param.baseaddress,
@@ -261,8 +252,7 @@ static int cbfs_add(void)
 
 static int cbfs_add_stage(void)
 {
-	return cbfs_add_component(param.cbfs_name,
-				  param.filename,
+	return cbfs_add_component(param.filename,
 				  param.name,
 				  CBFS_COMPONENT_STAGE,
 				  param.baseaddress,
@@ -272,8 +262,7 @@ static int cbfs_add_stage(void)
 
 static int cbfs_add_payload(void)
 {
-	return cbfs_add_component(param.cbfs_name,
-				  param.filename,
+	return cbfs_add_component(param.filename,
 				  param.name,
 				  CBFS_COMPONENT_PAYLOAD,
 				  param.baseaddress,
@@ -293,8 +282,7 @@ static int cbfs_add_flat_binary(void)
 			"-e/--entry-point.\n");
 		return 1;
 	}
-	return cbfs_add_component(param.cbfs_name,
-				  param.filename,
+	return cbfs_add_component(param.filename,
 				  param.name,
 				  CBFS_COMPONENT_PAYLOAD,
 				  param.baseaddress,
@@ -304,8 +292,7 @@ static int cbfs_add_flat_binary(void)
 
 static int cbfs_add_integer(void)
 {
-	return cbfs_add_integer_component(param.cbfs_name,
-				  param.name,
+	return cbfs_add_integer_component(param.name,
 				  param.u64val,
 				  param.baseaddress,
 				  param.headeroffset);
@@ -313,46 +300,35 @@ static int cbfs_add_integer(void)
 
 static int cbfs_remove(void)
 {
-	struct cbfs_image image;
-
 	if (!param.name) {
 		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
 		return 1;
+	}
 
 	if (cbfs_remove_entry(&image, param.name) != 0) {
 		ERROR("Removing file '%s' failed.\n",
 		      param.name);
-		cbfs_image_delete(&image);
-		return 1;
-	}
-	if (cbfs_image_write_file(&image, param.cbfs_name) != 0) {
-		cbfs_image_delete(&image);
 		return 1;
 	}
 
-	cbfs_image_delete(&image);
 	return 0;
 }
 
 static int cbfs_create(void)
 {
-	struct cbfs_image image;
-	struct buffer bootblock;
-
-	if (param.size == 0) {
-		ERROR("You need to specify a valid -s/--size.\n");
-		return 1;
-	}
-
 	if (param.arch == CBFS_ARCHITECTURE_UNKNOWN) {
 		ERROR("You need to specify -m/--machine arch.\n");
 		return 1;
 	}
 
+	struct buffer bootblock;
 	if (!param.bootblock) {
 		DEBUG("-B not given, creating image without bootblock.\n");
 		buffer_create(&bootblock, 0, "(dummy)");
@@ -403,34 +379,29 @@ static int cbfs_create(void)
 		}
 	}
 
+	struct cbfs_image image;
+	if (!cbfs_image_from_buffer(&image, param.image_region, -1))
+		// It *already* contains a CBFS?! This should be a blank file.
+		assert(false);
+
 	if (cbfs_image_create(&image,
 			      param.arch,
-			      param.size,
 			      param.alignment,
 			      &bootblock,
 			      param.baseaddress,
 			      param.headeroffset,
 			      param.cbfsoffset) != 0) {
-		ERROR("Failed to create %s.\n", param.cbfs_name);
+		ERROR("Failed to initialize CBFS structure.\n");
+		buffer_delete(&bootblock);
 		return 1;
 	}
-	buffer_delete(&bootblock);
 
-	if (cbfs_image_write_file(&image, param.cbfs_name) != 0) {
-		ERROR("Failed to write %s.\n", param.cbfs_name);
-		cbfs_image_delete(&image);
-		return 1;
-	}
-	cbfs_image_delete(&image);
+	buffer_delete(&bootblock);
 	return 0;
 }
 
 static int cbfs_locate(void)
 {
-	struct cbfs_image image;
-	struct buffer buffer;
-	int32_t address;
-
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
 		return 1;
@@ -441,33 +412,35 @@ static int cbfs_locate(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
 		return 1;
+	}
 
 	if (cbfs_get_entry(&image, param.name))
 		WARN("'%s' already in CBFS.\n", param.name);
 
+	struct buffer buffer;
 	if (buffer_from_file(&buffer, param.filename) != 0) {
 		ERROR("Cannot load %s.\n", param.filename);
-		cbfs_image_delete(&image);
 		return 1;
 	}
 
-	address = cbfs_locate_entry(&image, param.name, buffer.size,
+	int32_t address = cbfs_locate_entry(&image, param.name, buffer.size,
 				    param.pagesize, param.alignment);
 	buffer_delete(&buffer);
 
 	if (address == -1) {
 		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
 		      param.name, param.pagesize, param.alignment);
-		cbfs_image_delete(&image);
 		return 1;
 	}
 
 	if (param.top_aligned)
 		address = address - image.header.romsize;
 
-	cbfs_image_delete(&image);
 	printf("0x%x\n", address);
 	return 0;
 }
@@ -475,19 +448,18 @@ static int cbfs_locate(void)
 static int cbfs_print(void)
 {
 	struct cbfs_image image;
-	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
 		return 1;
+	}
 
 	cbfs_print_directory(&image);
-	cbfs_image_delete(&image);
 	return 0;
 }
 
 static int cbfs_extract(void)
 {
-	int result = 0;
-	struct cbfs_image image;
-
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
 		return 1;
@@ -498,21 +470,18 @@ static int cbfs_extract(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
-		result = 1;
-	else if (cbfs_export_entry(&image, param.name,
-				   param.filename))
-		result = 1;
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
+		return 1;
+	}
 
-	cbfs_image_delete(&image);
-	return result;
+	return cbfs_export_entry(&image, param.name, param.filename);
 }
 
 static int cbfs_update_fit(void)
 {
-	int ret = 0;
-	struct cbfs_image image;
-
 	if (!param.name) {
 		ERROR("You need to specify -n/--name.\n");
 		return 1;
@@ -524,21 +493,18 @@ static int cbfs_update_fit(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name, param.headeroffset))
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
 		return 1;
+	}
 
-	ret = fit_update_table(&image, param.fit_empty_entries, param.name);
-	if (!ret)
-		ret = cbfs_image_write_file(&image, param.cbfs_name);
-
-	cbfs_image_delete(&image);
-	return ret;
+	return fit_update_table(&image, param.fit_empty_entries, param.name);
 }
 
 static int cbfs_copy(void)
 {
-	struct cbfs_image image;
-
 	if (!param.copyoffset_assigned) {
 		ERROR("You need to specify -D/--copy_offset.\n");
 		return 1;
@@ -549,31 +515,30 @@ static int cbfs_copy(void)
 		return 1;
 	}
 
-	if (cbfs_image_from_file(&image, param.cbfs_name,
-				 param.headeroffset) != 0)
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
 		return 1;
+	}
 
-	if (cbfs_copy_instance(&image, param.copyoffset, param.size))
-		return 1;
-
-	/* Save the new image. */
-	return buffer_write_file(&image.buffer, param.cbfs_name);
-
+	return cbfs_copy_instance(&image, param.copyoffset, param.size);
 }
 
 static const struct command commands[] = {
-	{"add", "H;f:n:t:b:vh?", cbfs_add},
-	{"add-flat-binary", "H:f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
-	{"add-payload", "H:f:n:t:c:b:vh?C:I:", cbfs_add_payload},
-	{"add-stage", "H:f:n:t:c:b:S:vh?", cbfs_add_stage},
-	{"add-int", "H:i:n:b:vh?", cbfs_add_integer},
-	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create},
-	{"copy", "H:D:s:", cbfs_copy},
-	{"extract", "H:n:f:vh?", cbfs_extract},
-	{"locate", "H:f:n:P:a:Tvh?", cbfs_locate},
-	{"print", "H:vh?", cbfs_print},
-	{"remove", "H:n:vh?", cbfs_remove},
-	{"update-fit", "H:n:x:vh?", cbfs_update_fit},
+	{"add", "H:f:n:t:b:vh?", cbfs_add, true, true},
+	{"add-flat-binary", "H:f:n:l:e:c:b:vh?", cbfs_add_flat_binary, true,
+									true},
+	{"add-payload", "H:f:n:t:c:b:vh?C:I:", cbfs_add_payload, true, true},
+	{"add-stage", "H:f:n:t:c:b:S:vh?", cbfs_add_stage, true, true},
+	{"add-int", "H:i:n:b:vh?", cbfs_add_integer, true, true},
+	{"copy", "H:D:s:", cbfs_copy, true, true},
+	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create, true, true},
+	{"extract", "H:n:f:vh?", cbfs_extract, true, false},
+	{"locate", "H:f:n:P:a:Tvh?", cbfs_locate, true, false},
+	{"print", "H:vh?", cbfs_print, true, false},
+	{"remove", "H:n:vh?", cbfs_remove, true, true},
+	{"update-fit", "H:n:x:vh?", cbfs_update_fit, true, true},
 };
 
 static struct option long_options[] = {
@@ -666,7 +631,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	param.cbfs_name = argv[1];
+	char *image_name = argv[1];
 	char *cmd = argv[2];
 	optind += 2;
 
@@ -793,7 +758,59 @@ int main(int argc, char **argv)
 			}
 		}
 
-		return commands[i].function();
+		if (commands[i].function == cbfs_create) {
+			if (param.size == 0) {
+				ERROR("You need to specify a valid -s/--size.\n");
+				return 1;
+			}
+			param.image_file = partitioned_file_create_flat(
+							image_name, param.size);
+		} else {
+			param.image_file =
+				partitioned_file_reopen(image_name,
+						partitioned_file_open_as_flat);
+		}
+		if (!param.image_file)
+			return 1;
+
+		// If the action needs to read an image region, as indicated by
+		// having accesses_region set in its command struct, that
+		// region's buffer struct will be stored here and the client
+		// will receive a pointer to it via param.image_region. It
+		// need not write the buffer back to the image file itself,
+		// since this behavior can be requested via its modifies_region
+		// field. Additionally, it should never free the region buffer,
+		// as that is performed automatically once it completes.
+		struct buffer image_region;
+		memset(&image_region, 0, sizeof(image_region));
+
+		if (commands[i].accesses_region) {
+			assert(param.image_file);
+
+			if (!partitioned_file_read_region(&image_region,
+				param.image_file, SECTION_NAME_PRIMARY_CBFS)) {
+				partitioned_file_close(param.image_file);
+				return 1;
+			}
+			param.image_region = &image_region;
+		}
+
+		int error = commands[i].function();
+
+		if (!error && commands[i].modifies_region) {
+			assert(param.image_file);
+			assert(commands[i].accesses_region);
+
+			if (!partitioned_file_write_region(param.image_file,
+							&image_region)) {
+				partitioned_file_close(param.image_file);
+				return 1;
+			}
+		}
+
+		partitioned_file_close(param.image_file);
+
+		return error;
 	}
 
 	ERROR("Unknown command '%s'.\n", cmd);

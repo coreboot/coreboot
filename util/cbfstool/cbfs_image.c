@@ -184,18 +184,22 @@ void cbfs_get_header(struct cbfs_header *header, void *src)
 
 int cbfs_image_create(struct cbfs_image *image,
 		      uint32_t architecture,
-		      size_t size,
 		      uint32_t align,
 		      struct buffer *bootblock,
 		      uint32_t bootblock_offset,
 		      uint32_t header_offset,
 		      uint32_t entries_offset)
 {
+	assert(image);
+	assert(image->buffer.data);
+	assert(bootblock);
+
 	struct cbfs_file *entry;
 	int32_t *rel_offset;
 	uint32_t cbfs_len;
-	size_t entry_header_len;
 	void *header_loc;
+	size_t empty_header_len;
+	size_t size = image->buffer.size;
 
 	DEBUG("cbfs_image_create: bootblock=0x%x+0x%zx, "
 	      "header=0x%x+0x%zx, entries_offset=0x%x\n",
@@ -205,16 +209,12 @@ int cbfs_image_create(struct cbfs_image *image,
 	// This attribute must be given in order to prove that this module
 	// correctly preserves certain CBFS properties. See the block comment
 	// near the top of this file (and the associated commit message).
-	size_t empty_header_len = cbfs_calculate_file_header_size("");
+	empty_header_len = cbfs_calculate_file_header_size("");
 	if (align < empty_header_len) {
 		ERROR("CBFS must be aligned to at least %zu bytes\n",
 							empty_header_len);
 		return -1;
 	}
-
-	if (buffer_create(&image->buffer, size, "(new)") != 0)
-		return -1;
-	memset(image->buffer.data, CBFS_CONTENT_DEFAULT_VALUE, size);
 
 	// Adjust legcay top-aligned address to ROM offset.
 	if (IS_TOP_ALIGNED_ADDRESS(entries_offset))
@@ -274,10 +274,9 @@ int cbfs_image_create(struct cbfs_image *image,
 		      entries_offset, align);
 		return -1;
 	}
-	entry_header_len = cbfs_calculate_file_header_size("");
-	if (entries_offset + entry_header_len > size) {
+	if (entries_offset + empty_header_len > size) {
 		ERROR("Offset (0x%x+0x%zx) exceed ROM size(0x%zx)\n",
-		      entries_offset, entry_header_len, size);
+		      entries_offset, empty_header_len, size);
 		return -1;
 	}
 	entry = (struct cbfs_file *)(image->buffer.data + entries_offset);
@@ -292,34 +291,26 @@ int cbfs_image_create(struct cbfs_image *image,
 	// correctly preserves certain CBFS properties. See the block comment
 	// near the top of this file (and the associated commit message).
 	cbfs_len -= cbfs_len % align;
-	cbfs_len -= entries_offset + entry_header_len;
+	cbfs_len -= entries_offset + empty_header_len;
 	cbfs_create_empty_entry(entry, cbfs_len, "");
 	LOG("Created CBFS image (capacity = %d bytes)\n", cbfs_len);
 	return 0;
 }
 
-int cbfs_image_from_file(struct cbfs_image *image,
-			 const char *filename, uint32_t offset)
+int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
+			   uint32_t offset)
 {
-	void *header_loc;
+	assert(out);
+	assert(in);
+	assert(in->data);
 
-	if (buffer_from_file(&image->buffer, filename) != 0)
-		return -1;
-	DEBUG("read_cbfs_image: %s (%zd bytes)\n", image->buffer.name,
-	      image->buffer.size);
-	header_loc = cbfs_find_header(image->buffer.data,
-					 image->buffer.size,
-					 offset);
-	if (!header_loc) {
-		ERROR("%s does not have CBFS master header.\n", filename);
-		cbfs_image_delete(image);
-		return -1;
+	buffer_clone(&out->buffer, in);
+	void *header_loc = cbfs_find_header(in->data, in->size, offset);
+	if (header_loc) {
+		cbfs_get_header(&out->header, header_loc);
+		cbfs_fix_legacy_size(out, header_loc);
 	}
-
-	cbfs_get_header(&image->header, header_loc);
-	cbfs_fix_legacy_size(image, header_loc);
-
-	return 0;
+	return !header_loc;
 }
 
 int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
@@ -394,12 +385,6 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 		cbfs_create_empty_entry(dst_entry, last_entry_size, "");
 
 	return 0;
-}
-
-int cbfs_image_write_file(struct cbfs_image *image, const char *filename)
-{
-	assert(image && image->buffer.data);
-	return buffer_write_file(&image->buffer, filename);
 }
 
 int cbfs_image_delete(struct cbfs_image *image)
@@ -961,12 +946,16 @@ uint32_t cbfs_get_entry_addr(struct cbfs_image *image, struct cbfs_file *entry)
 
 int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry)
 {
-	return (entry &&
-		(char *)entry >= image->buffer.data &&
-		(char *)entry + sizeof(entry->magic) <
-			image->buffer.data + image->buffer.size &&
-		memcmp(entry->magic, CBFS_FILE_MAGIC,
-		       sizeof(entry->magic)) == 0);
+	uint32_t offset = cbfs_get_entry_addr(image, entry);
+
+	if (offset >= image->buffer.size)
+		return 0;
+
+	struct buffer entry_data;
+	buffer_clone(&entry_data, &image->buffer);
+	buffer_seek(&entry_data, offset);
+	return buffer_check_magic(&entry_data, CBFS_FILE_MAGIC,
+					strlen(CBFS_FILE_MAGIC));
 }
 
 int cbfs_create_empty_entry(struct cbfs_file *entry,

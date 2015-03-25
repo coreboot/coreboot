@@ -166,7 +166,8 @@ extern int fmap_append_area(struct fmap **fmap,
  * returns a pointer to the entry in the fmap structure if successful
  * returns NULL to indicate failure or if no matching area entry is found
  */
-extern struct fmap_area *fmap_find_area(struct fmap *fmap, const char *name);
+extern const struct fmap_area *fmap_find_area(const struct fmap *fmap,
+							const char *name);
 
 /* unit testing stuff */
 extern int fmap_test(void);

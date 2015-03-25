@@ -20,8 +20,10 @@
 #ifndef __CBFSTOOL_COMMON_H
 #define __CBFSTOOL_COMMON_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include <assert.h>
 
 /* Endianess */
@@ -119,6 +121,15 @@ static inline void buffer_seek(struct buffer *b, size_t size)
 	b->offset += size;
 	b->size -= size;
 	b->data += size;
+}
+
+/* Returns whether the buffer begins with the specified magic bytes. */
+static inline bool buffer_check_magic(const struct buffer *b, const char *magic,
+							size_t magic_len)
+{
+	assert(magic);
+	return b && b->size >= magic_len &&
+					memcmp(b->data, magic, magic_len) == 0;
 }
 
 /* Creates an empty memory buffer with given size.

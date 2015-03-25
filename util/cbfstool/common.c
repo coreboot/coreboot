@@ -87,6 +87,7 @@ int buffer_from_file(struct buffer *buffer, const char *filename)
 	if (fread(buffer->data, 1, buffer->size, fp) != buffer->size) {
 		fprintf(stderr, "incomplete read: %s\n", filename);
 		fclose(fp);
+		buffer_delete(buffer);
 		return -1;
 	}
 	fclose(fp);

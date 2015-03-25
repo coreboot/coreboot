@@ -38,29 +38,28 @@ void cbfs_put_header(void *dest, const struct cbfs_header *header);
 void cbfs_get_header(struct cbfs_header *header, void *src);
 
 /* Creates an empty CBFS image by given size, and description to its content
- * (bootblock, align, header location, starting offset of CBFS entries.
+ * (bootblock, align, header location, starting offset of CBFS entries).
  * The output image will contain a valid cbfs_header, with one cbfs_file
  * entry with type CBFS_COMPONENT_NULL, with max available size.
  * Returns 0 on success, otherwise none-zero. */
 int cbfs_image_create(struct cbfs_image *image,
 		      uint32_t arch,
-		      size_t size,
 		      uint32_t align,
 		      struct buffer *bootblock,
 		      uint32_t bootblock_offset,
 		      uint32_t header_offset,
 		      uint32_t entries_offset);
 
-/* Loads a CBFS image from file. Returns 0 on success, otherwise non-zero. */
-int cbfs_image_from_file(struct cbfs_image *image,
-			 const char *filename, uint32_t offset);
+/* Constructs a cbfs_image from a buffer. The resulting image contains a shallow
+ * copy of the buffer; releasing either one is the legal way to clean up after
+ * both of them at once. Always produces a cbfs_image, but...
+ * Returns 0 if it contains a valid CBFS, non-zero if it's unrecognized data. */
+int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
+			   uint32_t offset);
 
 /* Create a duplicate CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 			size_t copy_size);
-
-/* Writes a CBFS image into file. Returns 0 on success, otherwise non-zero. */
-int cbfs_image_write_file(struct cbfs_image *image, const char *filename);
 
 /* Releases the CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_delete(struct cbfs_image *image);

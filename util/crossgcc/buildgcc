@@ -142,6 +142,15 @@ searchtool clang "clang version" > /dev/null
 searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
 
+wait_for_build() {
+	# $1: directory in which log file and failure marker are stored
+	cat > "$1/crossgcc-build.log"
+	test -r "$1/.failed" && printf "${RED}failed${NC}. Check $1/crossgcc-build.log.\n" || \
+		printf "${green}ok${NC}\n"
+	test -r "$1/.failed" && exit 1
+	true
+}
+
 cleanup()
 {
 	printf "Cleaning up temporary files... "
@@ -378,10 +387,7 @@ printf "Building GMP ${GMP_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-gmp/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-gmp/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-gmp/crossgcc-build.log.\n" || \
-	printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-gmp/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gmp" || exit 1
 fi
 
 # Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
@@ -412,10 +418,7 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 	fi
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-mpfr/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-mpfr/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-mpfr/crossgcc-build.log.\n" || \
-	     printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-mpfr/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-mpfr" || exit 1
 fi
 
 if [ -f ${BUILDDIRPREFIX}-mpc/.success ]; then
@@ -435,10 +438,7 @@ printf "Building MPC ${MPC_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-mpc/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-mpc/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-mpc/crossgcc-build.log.\n" || \
-	     printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-mpc/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-mpc" || exit 1
 fi
 
 if [ -f ${BUILDDIRPREFIX}-libelf/.success ]; then
@@ -458,10 +458,7 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-libelf/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-libelf/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-libelf/crossgcc-build.log.\n" || \
-	     printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-libelf/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-libelf" || exit 1
 fi
 
 if [ -f ${BUILDDIRPREFIX}-binutils/.success ]; then
@@ -483,10 +480,7 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-binutils/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-binutils/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-binutils/crossgcc-build.log.\n" || \
-	     printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-binutils/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-binutils" || exit 1
 fi
 
 if [ -f ${BUILDDIRPREFIX}-gcc/.success ]; then
@@ -534,10 +528,7 @@ printf "Building GCC ${GCC_VERSION} ... "
 	fi
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-gcc/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-gcc/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-gcc/crossgcc-build.log.\n" || \
-	     printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-gcc/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gcc" || exit 1
 fi
 
 if [ -f ${BUILDDIRPREFIX}-expat/.success ]; then
@@ -557,10 +548,7 @@ printf "Building Expat ${EXPAT_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-expat/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-expat/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-expat/crossgcc-build.log\n" || \
-	     printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-expat/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-expat" || exit 1
 fi
 
 
@@ -581,10 +569,7 @@ printf "Building Python ${PYTHON_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-python/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-python/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-python/crossgcc-build.log.\n" || \
-	     printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-python/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-python" || exit 1
 fi
 
 
@@ -606,10 +591,7 @@ printf "Building GDB ${GDB_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) > ${BUILDDIRPREFIX}-gdb/crossgcc-build.log 2>&1
-test -r ${BUILDDIRPREFIX}-gdb/.failed && printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-gdb/crossgcc-build.log.\n" || \
-	     printf "${green}ok${NC}\n"
-test -r ${BUILDDIRPREFIX}-gdb/.failed && exit 1
+) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gdb" || exit 1
 fi
 
 if [ -f $IASL_DIR/source/compiler/.success ]; then
@@ -617,21 +599,19 @@ if [ -f $IASL_DIR/source/compiler/.success ]; then
 else
 printf "Building IASL ${IASL_VERSION} ... "
 (
+	RDIR=$IASL_DIR/source/compiler
 	cd $IASL_DIR/generate/unix
-	rm -f .failed
+	rm -f $RDIR/.failed
 	CFLAGS="$HOSTCFLAGS"
 	HOST="_LINUX"
 	test $UNAME = "Darwin" && HOST="_APPLE"
 	test $UNAME = "FreeBSD" && HOST="_FreeBSD"
 	test $UNAME = "Cygwin" && HOST="_CYGWIN"
-	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2" CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch .failed
-	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
-	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch .failed
-	if [ ! -f .failed ]; then touch .success; fi
-) > $IASL_DIR/source/compiler/crossgcc-build.log 2>&1
-test -r $IASL_DIR/generate/unix/.failed && printf "${RED}failed${NC}. Check ${IASL_DIR}/source/compiler/crossgcc-build.log.\n" || \
-	     printf "${green}ok${NC}\n"
-test -r $IASL_DIR/generate/unix/.failed && exit 1
+	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2" CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch $RDIR/.failed
+	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch $RDIR/.failed
+	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch $RDIR/.failed
+	if [ ! -f $RDIR/.failed ]; then touch $RDIR/.success; fi
+) 2>&1 | wait_for_build "$IASL_DIR/source/compiler" || exit 1
 fi
 
 rm -f $DESTDIR$TARGETDIR/$0.commit.*

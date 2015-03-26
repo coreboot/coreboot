@@ -20,7 +20,10 @@
 #ifndef __INCLUDE_ARCH_CBFS__
 #define __INCLUDE_ARCH_CBFS__
 
-#include <cbfs_core.h>
+#include <arch/byteorder.h>
+#include <cbfs_serialized.h>
+
+#define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 
 static struct cbfs_file *walkcbfs_head(char *target)
 {

@@ -621,6 +621,13 @@ $(obj)/coreboot.pre: $(objcbfs)/romstage.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
 		$(CBFSTOOL_PRE_OPTS)
 	mv $@.tmp $@
 
+cbfs-files-$(CONFIG_BOARD_ID_MANUAL) += board_id
+board_id-file := $(obj)/board_id
+board_id-type := raw
+
+$(obj)/board_id:
+	printf "$(CONFIG_BOARD_ID_STRING)" > $@
+
 JENKINS_PAYLOAD=none
 what-jenkins-does:
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c 4 -z -p $(JENKINS_PAYLOAD)

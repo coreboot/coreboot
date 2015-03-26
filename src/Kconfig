@@ -268,6 +268,39 @@ config UPDATE_IMAGE
 	  is a suitable file for further processing.
 	  The bootblock will not be modified.
 
+config GENERIC_GPIO_LIB
+	bool
+	default n
+	help
+	  If enabled, compile the generic GPIO library. A "generic" GPIO
+	  implies configurability usually found on SoCs, particularly the
+	  ability to control internal pull resistors.
+
+config BOARD_ID_AUTO
+	bool
+	default n
+	help
+	  Mainboards that can read a board ID from the hardware straps
+	  (ie. GPIO) select this configuration option.
+
+config BOARD_ID_MANUAL
+	bool "Add board ID file to CBFS"
+	default n
+	depends on !BOARD_ID_AUTO
+	help
+	  If you want to maintain a board ID, but the hardware does not
+	  have straps to automatically determine the ID, you can say Y
+	  here and add a file named 'board_id' to CBFS. If you don't know
+	  what this is about, say N.
+
+config BOARD_ID_STRING
+	string "Board ID"
+	default "(none)"
+	depends on BOARD_ID_MANUAL
+	help
+	  This string is placed in the 'board_id' CBFS file for indicating
+	  board type.
+
 config RAM_CODE_SUPPORT
 	bool "Discover RAM configuration code and store it in coreboot table"
 	default n
@@ -1140,22 +1173,6 @@ config DEBUG_COVERAGE
 	help
 	  If enabled, the code coverage hooks in coreboot will output some
 	  information about the coverage data that is dumped.
-
-config GENERIC_GPIO_LIB
-	bool "Build generic GPIO library"
-	default n
-	help
-	  If enabled, compile the generic GPIO library. A "generic" GPIO
-	  implies configurability usually found on SoCs, particularly the
-	  ability to control internal pull resistors.
-
-config BOARD_ID_SUPPORT
-	bool "Discover board ID and store it in coreboot table"
-	default n
-	help
-	  If enabled, coreboot discovers the board id of the hardware it is
-	  running on and reports it through the coreboot table to the rest of
-	  the system.
 
 endmenu
 

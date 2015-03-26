@@ -29,6 +29,7 @@ bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
+bootblock-y += region.c
 
 verstage-y += prog_ops.c
 verstage-y += delay.c
@@ -37,6 +38,7 @@ verstage-y += cbfs_core.c
 verstage-y += halt.c
 verstage-y += memcmp.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+verstage-y += region.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 
@@ -132,6 +134,8 @@ ramstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 endif
 
+romstage-y += region.c
+ramstage-y += region.c
 
 smm-y += cbfs.c cbfs_core.c memcmp.c
 smm-$(CONFIG_COMPILER_GCC) += gcc.c

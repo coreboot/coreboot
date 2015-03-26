@@ -47,11 +47,10 @@ void *memmove(void *dest, const void *src, size_t n)
 	if ((src < dest) && (dest - src < n)) {
 		u8 *ptr_d = dest;
 		const u8 *ptr_s = src;
-		size_t i;
 
 		/* copy backwards */
-		for (i = n - 1; i >= 0; i--)
-			ptr_d[i] = ptr_s[i];
+		while (n--)
+			ptr_d[n] = ptr_s[n];
 
 		return dest;
 	}

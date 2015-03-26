@@ -136,3 +136,20 @@ init_stages = \
 $(eval $(call toolchain_to_dir))
 
 $(call init_stages)
+
+# Test for coreboot toolchain (except when explicitely not requested)
+ifneq ($(NOCOMPILE),1)
+# only run if we're doing a build (not for tests, kconfig, ...), using gcc
+# rationale: gcc versions by Linux distributions tend to be quite messed up
+COMPILERFAIL:=0
+ifeq ($(CONFIG_COMPILER_GCC),y)
+ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
+$(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
+	$(if $(shell $(CC_$(arch)) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" || echo not-coreboot), \
+		$(eval COMPILERFAIL:=1)$(warning Please use the coreboot toolchain for '$(arch)' (or prove that your toolchain works))))
+endif
+endif
+endif
+ifeq ($(COMPILERFAIL),1)
+$(error consider building our compilers: make crossgcc)
+endif

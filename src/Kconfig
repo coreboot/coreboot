@@ -1152,7 +1152,6 @@ config GENERIC_GPIO_LIB
 config BOARD_ID_SUPPORT
 	bool "Discover board ID and store it in coreboot table"
 	default n
-	select GENERIC_GPIO_LIB
 	help
 	  If enabled, coreboot discovers the board id of the hardware it is
 	  running on and reports it through the coreboot table to the rest of

@@ -28,7 +28,6 @@
 #include <device/device.h>
 #include <arch/cpu.h>
 #include <cpu/x86/name.h>
-#include <cbfs_core.h>
 #include <arch/byteorder.h>
 #include <elog.h>
 #include <memory_info.h>
@@ -258,14 +257,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	vboot_data->vbt10 = (u32)t->eos + (version_offset - 1);
 #endif
 
-	{
-		const struct cbfs_header *header;
-		u32 romsize = CONFIG_ROM_SIZE;
-		header = cbfs_get_header(CBFS_DEFAULT_MEDIA);
-		if (header != CBFS_HEADER_INVALID_ADDRESS)
-			romsize = ntohl(header->romsize);
-		t->bios_rom_size = (romsize / 65535) - 1;
-	}
+	t->bios_rom_size = (CONFIG_ROM_SIZE / 65535) - 1;
 
 	t->system_bios_major_release = 4;
 	t->bios_characteristics =

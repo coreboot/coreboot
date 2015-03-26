@@ -19,8 +19,6 @@
 # MA 02110-1301 USA
 #
 
-menu "Architecture (mips)"
-
 config ARCH_BOOTBLOCK_MIPS
 	bool
 	default n
@@ -33,5 +31,3 @@ config ARCH_ROMSTAGE_MIPS
 config ARCH_RAMSTAGE_MIPS
 	bool
 	default n
-
-endmenu

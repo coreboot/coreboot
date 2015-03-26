@@ -35,21 +35,11 @@ static void soc_enable(device_t dev)
 	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB);
 }
 
-static void soc_init(device_t dev)
-{
-
-}
-
-static void soc_noop(device_t dev)
-{
-
-}
-
 static struct device_operations soc_ops = {
-	.read_resources   = soc_noop,
-	.set_resources    = soc_noop,
+	.read_resources   = DEVICE_NOOP,
+	.set_resources    = DEVICE_NOOP,
 	.enable_resources = soc_enable,
-	.init             = soc_init,
+	.init             = DEVICE_NOOP,
 	.scan_bus         = 0,
 };
 

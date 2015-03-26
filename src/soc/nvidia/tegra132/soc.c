@@ -86,14 +86,10 @@ static void soc_init(device_t dev)
 	arch_initialize_cpus(dev, &cntrl_ops);
 }
 
-static void soc_noop(device_t dev)
-{
-}
-
 static struct device_operations soc_ops = {
 	.read_resources   = soc_read_resources,
-	.set_resources    = soc_noop,
-	.enable_resources = soc_noop,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.init             = soc_init,
 	.scan_bus         = NULL,
 };

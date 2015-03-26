@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #define	LX_STACK_BASE		CONFIG_DCACHE_RAM_BASE		/* this is where the DCache will be mapped and be used as stack, It would be cool if it was the same base as coreboot normal stack */

@@ -29,6 +29,7 @@ bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
+bootblock-y += mem_pool.c
 bootblock-y += region.c
 
 verstage-y += prog_ops.c
@@ -50,6 +51,7 @@ endif
 
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
+verstage-y += mem_pool.c
 
 romstage-y += prog_ops.c
 romstage-y += memchr.c
@@ -133,6 +135,9 @@ else
 ramstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 endif
+
+romstage-y += mem_pool.c
+ramstage-y += mem_pool.c
 
 romstage-y += region.c
 ramstage-y += region.c

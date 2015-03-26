@@ -67,7 +67,7 @@ CFLAGS_arm64 := -ffunction-sections -fdata-sections
 CFLAGS_mipsel	:= -mips32r2 -G 0  -ffunction-sections -fdata-sections
 CFLAGS_mipsel	+= -mno-abicalls -fno-pic
 
-CFLAGS_x86_32 := -ffunction-sections -fdata-sections
+CFLAGS_x86_32 += -ffunction-sections -fdata-sections
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\

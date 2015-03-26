@@ -611,15 +611,27 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 	}
 }
 
-#define MEM_MASK (IORESOURCE_MEM)
-#define IO_MASK   (IORESOURCE_IO)
-#define PREF_TYPE (IORESOURCE_PREFETCH | IORESOURCE_MEM)
-#define MEM_TYPE  (IORESOURCE_MEM)
-#define IO_TYPE   (IORESOURCE_IO)
+static int resource_is(struct resource *res, u32 type)
+{
+	return (res->flags & IORESOURCE_TYPE_MASK) == type;
+}
 
 struct constraints {
 	struct resource io, mem;
 };
+
+static struct resource * resource_limit(struct constraints *limits, struct resource *res)
+{
+	struct resource *lim = NULL;
+
+	/* MEM, or I/O - skip any others. */
+	if (resource_is(res, IORESOURCE_MEM))
+		lim = &limits->mem;
+	else if (resource_is(res, IORESOURCE_IO))
+		lim = &limits->io;
+
+	return lim;
+}
 
 static void constrain_resources(struct device *dev, struct constraints* limits)
 {
@@ -639,12 +651,8 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 			continue;
 		}
 
-		/* MEM, or I/O - skip any others. */
-		if ((res->flags & MEM_MASK) == MEM_TYPE)
-			lim = &limits->mem;
-		else if ((res->flags & IO_MASK) == IO_TYPE)
-			lim = &limits->io;
-		else
+		lim = resource_limit(limits, res);
+		if (!lim)
 			continue;
 
 		/*
@@ -685,6 +693,7 @@ static void avoid_fixed_resources(struct device *dev)
 {
 	struct constraints limits;
 	struct resource *res;
+	struct resource *lim;
 
 	printk(BIOS_SPEW, "%s: %s\n", __func__, dev_path(dev));
 
@@ -701,12 +710,14 @@ static void avoid_fixed_resources(struct device *dev)
 		printk(BIOS_SPEW, "%s:@%s %02lx limit %08llx\n", __func__,
 		       dev_path(dev), res->index, res->limit);
 
-		if ((res->flags & MEM_MASK) == MEM_TYPE &&
-		    (res->limit < limits.mem.limit))
-			limits.mem.limit = res->limit;
-		if ((res->flags & IO_MASK) == IO_TYPE &&
-		    (res->limit < limits.io.limit))
-			limits.io.limit = res->limit;
+		lim = resource_limit(&limits, res);
+		if (!lim)
+			continue;
+
+		if (res->base > lim->base)
+			lim->base = res->base;
+		if  (res->limit < lim->limit)
+			lim->limit = res->limit;
 	}
 
 	/* Look through the tree for fixed resources and update the limits. */
@@ -714,17 +725,11 @@ static void avoid_fixed_resources(struct device *dev)
 
 	/* Update dev's resources with new limits. */
 	for (res = dev->resource_list; res; res = res->next) {
-		struct resource *lim;
-
 		if ((res->flags & IORESOURCE_FIXED))
 			continue;
 
-		/* MEM, or I/O - skip any others. */
-		if ((res->flags & MEM_MASK) == MEM_TYPE)
-			lim = &limits.mem;
-		else if ((res->flags & IO_MASK) == IO_TYPE)
-			lim = &limits.io;
-		else
+		lim = resource_limit(&limits, res);
+		if (!lim)
 			continue;
 
 		/* Is the resource outside the limits? */
@@ -1034,12 +1039,12 @@ void dev_configure(void)
 				continue;
 			if (res->flags & IORESOURCE_MEM) {
 				compute_resources(child->link_list,
-						  res, MEM_MASK, MEM_TYPE);
+						  res, IORESOURCE_TYPE_MASK, IORESOURCE_MEM);
 				continue;
 			}
 			if (res->flags & IORESOURCE_IO) {
 				compute_resources(child->link_list,
-						  res, IO_MASK, IO_TYPE);
+						  res, IORESOURCE_TYPE_MASK, IORESOURCE_IO);
 				continue;
 			}
 		}
@@ -1061,12 +1066,12 @@ void dev_configure(void)
 				continue;
 			if (res->flags & IORESOURCE_MEM) {
 				allocate_resources(child->link_list,
-						   res, MEM_MASK, MEM_TYPE);
+						   res, IORESOURCE_TYPE_MASK, IORESOURCE_MEM);
 				continue;
 			}
 			if (res->flags & IORESOURCE_IO) {
 				allocate_resources(child->link_list,
-						   res, IO_MASK, IO_TYPE);
+						   res, IORESOURCE_TYPE_MASK, IORESOURCE_IO);
 				continue;
 			}
 		}

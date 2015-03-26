@@ -73,9 +73,6 @@ void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
 void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
 			       const void *address);
 
-// Utility functions
-int run_address(void *f);
-
 /* Defined in individual arch / board implementation. */
 int init_default_cbfs_media(struct cbfs_media *media);
 

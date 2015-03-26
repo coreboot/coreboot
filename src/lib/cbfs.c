@@ -173,18 +173,4 @@ void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
 	return NULL;
 }
 
-/**
- * run_address is passed the address of a function taking no parameters and
- * jumps to it, returning the result.
- * @param f the address to call as a function.
- * @return value returned by the function.
- */
-
-int run_address(void *f)
-{
-	int (*v) (void);
-	v = f;
-	return v();
-}
-
 #endif

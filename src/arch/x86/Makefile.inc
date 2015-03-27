@@ -29,14 +29,27 @@ subdirs-y += smp
 
 DISASSEMBLY=-Wa,--divide
 
+################################################################################
+# i386 specific tools
+NVRAMTOOL:=$(objutil)/nvramtool/nvramtool
+
 OPTION_TABLE_H:=
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
+
 cbfs-files-y += cmos_layout.bin
 cmos_layout.bin-file = $(obj)/cmos_layout.bin
 cmos_layout.bin-type = 0x01aa
 
+$(obj)/cmos_layout.bin: $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
+	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
+	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -L $@
+
 OPTION_TABLE_H:=$(obj)/option_table.h
-endif
+
+$(OPTION_TABLE_H): $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
+	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
+	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -H $@
+endif # CONFIG_HAVE_OPTION_TABLE
 
 stripped_vgabios_id = $(call strip_quotes,$(CONFIG_VGA_BIOS_ID))
 cbfs-files-$(CONFIG_VGA_BIOS) += pci$(stripped_vgabios_id).rom
@@ -52,18 +65,6 @@ CBFSTOOL_PRE1_OPTS = -m x86 -o $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
 # Make sure that segment for .car.data is ignored while adding romstage.
 CBFSTOOL_PRE_OPTS  = -b $(shell cat $(objcbfs)/base_xip.txt) -S ".car.data"
 endif
-
-################################################################################
-# i386 specific tools
-NVRAMTOOL:=$(objutil)/nvramtool/nvramtool
-
-$(OPTION_TABLE_H): $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
-	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
-	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -H $@
-
-$(obj)/cmos_layout.bin: $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
-	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
-	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -L $@
 
 
 ###############################################################################

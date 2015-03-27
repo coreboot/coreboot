@@ -49,6 +49,12 @@ struct superio_ite_it8772f_config {
 	u8 fan1_enable;
 	u8 fan2_enable;
 	u8 fan3_enable;
+
+	/*
+	 * Default FAN speed
+	 */
+	u8 fan2_speed;
+	u8 fan3_speed;
 };
 
 #endif /* SUPERIO_ITE_IT8772F_CHIP_H */

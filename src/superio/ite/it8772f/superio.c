@@ -137,7 +137,7 @@ static void it8772f_enable_tmpin(struct resource *res, int tmpin,
 /*
  * Setup a FAN PWM interface for software control
  */
-static void it8772f_enable_fan(struct resource *res, int fan)
+static void it8772f_enable_fan(struct resource *res, int fan, u8 fan_speed)
 {
 	u8 reg;
 
@@ -165,8 +165,10 @@ static void it8772f_enable_fan(struct resource *res, int fan)
 		/* Disable Smoothing */
 		it8772f_envc_write(res, IT8772F_FAN_CTL2_AUTO_MODE,
 				   IT8772F_FAN_CTL_AUTO_SMOOTHING_DIS);
-		/* Set a default medium fan speed */
-		it8772f_envc_write(res, IT8772F_FAN_CTL2_PWM_START, 0x80);
+		/* Set a default fan speed */
+		if (fan_speed)
+			it8772f_envc_write(res, IT8772F_FAN_CTL2_PWM_START,
+				   fan_speed);
 		break;
 	case 3:
 		/* Enable software operation */
@@ -175,8 +177,10 @@ static void it8772f_enable_fan(struct resource *res, int fan)
 		/* Disable Smoothing */
 		it8772f_envc_write(res, IT8772F_FAN_CTL3_AUTO_MODE,
 				   IT8772F_FAN_CTL_AUTO_SMOOTHING_DIS);
-		/* Set a default medium fan speed */
-		it8772f_envc_write(res, IT8772F_FAN_CTL3_PWM_START, 0x80);
+		/* Set a default fan speed */
+		if (fan_speed)
+			it8772f_envc_write(res, IT8772F_FAN_CTL3_PWM_START,
+				   fan_speed);
 		break;
 	}
 }
@@ -206,11 +210,13 @@ static void it8772f_init(struct device *dev)
 
 		/* Enable FANx if configured */
 		if (conf->fan1_enable)
-			it8772f_enable_fan(res, 1);
+			it8772f_enable_fan(res, 1, 0);
 		if (conf->fan2_enable)
-			it8772f_enable_fan(res, 2);
+			it8772f_enable_fan(res, 2,
+				conf->fan2_speed ? conf->fan2_speed : 0x80);
 		if (conf->fan3_enable)
-			it8772f_enable_fan(res, 3);
+			it8772f_enable_fan(res, 3,
+				conf->fan3_speed ? conf->fan3_speed : 0x80);
 
 		/*
 		 * System may get wrong temperature data when SIO is in

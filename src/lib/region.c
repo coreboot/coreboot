@@ -161,3 +161,41 @@ const struct region_device_ops mem_rdev_ops = {
 	.munmap = mdev_munmap,
 	.readat = mdev_readat,
 };
+
+void mmap_helper_device_init(struct mmap_helper_region_device *mdev,
+				void *cache, size_t cache_size)
+{
+	mem_pool_init(&mdev->pool, cache, cache_size);
+}
+
+void *mmap_helper_rdev_mmap(const struct region_device *rd, size_t offset,
+				size_t size)
+{
+	struct mmap_helper_region_device *mdev;
+	void *mapping;
+
+	mdev = container_of((void *)rd, typeof(*mdev), rdev);
+
+	mapping = mem_pool_alloc(&mdev->pool, size);
+
+	if (mapping == NULL)
+		return NULL;
+
+	if (rd->ops->readat(rd, mapping, offset, size) != size) {
+		mem_pool_free(&mdev->pool, mapping);
+		return NULL;
+	}
+
+	return mapping;
+}
+
+int mmap_helper_rdev_munmap(const struct region_device *rd, void *mapping)
+{
+	struct mmap_helper_region_device *mdev;
+
+	mdev = container_of((void *)rd, typeof(*mdev), rdev);
+
+	mem_pool_free(&mdev->pool, mapping);
+
+	return 0;
+}

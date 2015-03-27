@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <mem_pool.h>
 
 /*
  * Region support.
@@ -115,5 +116,21 @@ extern const struct region_device_ops mem_rdev_ops;
 		.base = (void *)(base_),				\
 		.rdev = REGION_DEV_INIT(&mem_rdev_ops, 0, (size_)),	\
 	}
+
+struct mmap_helper_region_device {
+	struct mem_pool pool;
+	struct region_device rdev;
+};
+
+#define MMAP_HELPER_REGION_INIT(ops_, offset_, size_) \
+	{								\
+		.rdev = REGION_DEV_INIT((ops_), (offset_), (size_)),	\
+	}
+
+void mmap_helper_device_init(struct mmap_helper_region_device *mdev,
+				void *cache, size_t cache_size);
+
+void *mmap_helper_rdev_mmap(const struct region_device *, size_t, size_t);
+int mmap_helper_rdev_munmap(const struct region_device *, void *);
 
 #endif /* _REGION_H_ */

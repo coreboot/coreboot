@@ -61,7 +61,6 @@ CPPFLAGS_common += -I$(VB_SOURCE)/firmware/include
 
 VBOOT_STUB_ELF = $(obj)/vendorcode/google/chromeos/vbootstub.elf
 VBOOT_STUB = $(VBOOT_STUB_ELF).rmod
-VBOOT_STUB_DOTO = $(VBOOT_STUB_ELF:.elf=.o)
 
 # Dependency for the vboot rmodules. Ordering matters.
 VBOOT_STUB_DEPS += $(obj)/vendorcode/google/chromeos/vboot_wrapper.rmodules_$(ARCH-romstage-y).o
@@ -75,11 +74,8 @@ VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/k
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 VBOOT_CFLAGS += $(rmodules_$(ARCH-ROMSTAGE-y)-c-ccopts)
 
-$(VBOOT_STUB_DOTO): $(VBOOT_STUB_DEPS)
-	$(CC_rmodules_$(ARCH-romstage-y)) $(CFLAGS_rmodules_$(ARCH-romstage-y)) -nostdlib -r -o $@ $^
-
 # Link the vbootstub module with a 64KiB-byte heap.
-$(eval $(call rmodule_link,$(VBOOT_STUB_ELF), $(VBOOT_STUB_DOTO), 0x10000,$(ARCH-romstage-y)))
+$(eval $(call rmodule_link,$(VBOOT_STUB_ELF), $(VBOOT_STUB_DEPS), 0x10000,$(ARCH-romstage-y)))
 
 # Build vboot library without the default includes from coreboot proper.
 $(VB_LIB):

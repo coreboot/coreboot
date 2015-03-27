@@ -97,6 +97,7 @@ ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 ramstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
+ramstage-y += b64_decode.c
 
 romstage-y += cbmem_common.c dynamic_cbmem.c
 ramstage-y += cbmem_common.c dynamic_cbmem.c

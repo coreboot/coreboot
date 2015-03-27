@@ -97,4 +97,23 @@ static inline size_t region_sz(const struct region *r)
 	return r->size;
 }
 
+struct mem_region_device {
+	char *base;
+	struct region_device rdev;
+};
+
+/* Iniitalize at runtime a mem_region_device. This would be used when
+ * the base and size are dynamic or can't be known during linking. */
+void mem_region_device_init(struct mem_region_device *mdev, void *base,
+				size_t size);
+
+extern const struct region_device_ops mem_rdev_ops;
+
+/* Statically initialize mem_region_device. */
+#define MEM_REGION_DEV_INIT(base_, size_)				\
+	{								\
+		.base = (void *)(base_),				\
+		.rdev = REGION_DEV_INIT(&mem_rdev_ops, 0, (size_)),	\
+	}
+
 #endif /* _REGION_H_ */

@@ -119,3 +119,45 @@ int rdev_chain(struct region_device *child, const struct region_device *parent,
 
 	return 0;
 }
+
+void mem_region_device_init(struct mem_region_device *mdev, void *base,
+				size_t size)
+{
+	memset(mdev, 0, sizeof(*mdev));
+	mdev->base = base;
+	mdev->rdev.ops = &mem_rdev_ops;
+	mdev->rdev.region.size = size;
+}
+
+static void *mdev_mmap(const struct region_device *rd, size_t offset,
+			size_t size)
+{
+	const struct mem_region_device *mdev;
+
+	mdev = container_of(rd, typeof(*mdev), rdev);
+
+	return &mdev->base[offset];
+}
+
+static int mdev_munmap(const struct region_device *rd, void *mapping)
+{
+	return 0;
+}
+
+static ssize_t mdev_readat(const struct region_device *rd, void *b,
+				size_t offset, size_t size)
+{
+	const struct mem_region_device *mdev;
+
+	mdev = container_of(rd, typeof(*mdev), rdev);
+
+	memcpy(b, &mdev->base[offset], size);
+
+	return size;
+}
+
+const struct region_device_ops mem_rdev_ops = {
+	.mmap = mdev_mmap,
+	.munmap = mdev_munmap,
+	.readat = mdev_readat,
+};

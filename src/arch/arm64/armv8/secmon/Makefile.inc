@@ -28,8 +28,7 @@ SECMON_ELF=$(SECMON_DIR)/secmon.elf
 SECMON_RMOD=$(SECMON_DIR)/secmon.elf.rmod
 SECMON_RAMSTAGE=$(SECMON_DIR)/secmon.ramstage.o
 
-secmon-c-ccopts += -I$(src)/arch/arm64/include/armv8/ -include $(src)/include/kconfig.h -D__SECMON__
-secmon-S-ccopts += -I$(src)/arch/arm64/include/armv8/ -include $(src)/include/kconfig.h -D__SECMON__
+secmon-generic-ccopts += -I$(src)/arch/arm64/include/armv8/ -include $(src)/include/kconfig.h -D__SECMON__
 
 secmon-y += secmon_init.c
 secmon-y += psci.c

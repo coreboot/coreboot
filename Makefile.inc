@@ -116,8 +116,7 @@ ramstage-postprocess=$(foreach d,$(sort $(dir $(1))), \
 	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(1)); $$(LD_ramstage) -o $$@ -r $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(call files-in-dir,$(d),$(1)),$(ramstage-objs))))
 
-romstage-c-ccopts:=-D__PRE_RAM__
-romstage-S-ccopts:=-D__PRE_RAM__
+romstage-generic-ccopts += -D__PRE_RAM__
 ifeq ($(CONFIG_TRACE),y)
 ramstage-c-ccopts:= -finstrument-functions
 endif
@@ -133,13 +132,10 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty))
 endif
 
-bootblock-c-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
-bootblock-S-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
+bootblock-generic-ccopts += -D__BOOT_BLOCK__ -D__PRE_RAM__
 
-smmstub-c-ccopts:=-D__SMM__
-smmstub-S-ccopts:=-D__SMM__
-smm-c-ccopts:=-D__SMM__
-smm-S-ccopts:=-D__SMM__
+smmstub-generic-ccopts += -D__SMM__
+smm-generic-ccopts += -D__SMM__
 
 # SMM TSEG base is dynamic
 ifneq ($(CONFIG_SMM_MODULES),y)

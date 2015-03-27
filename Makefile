@@ -203,8 +203,8 @@ endif
 # Eliminate duplicate mentions of source files in a class
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 
-src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))
-$(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class))))
+src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $(2))))
+$(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class),$($(class)-srcs))))
 
 # Save all objs before processing them (for dependency inclusion)
 originalobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))

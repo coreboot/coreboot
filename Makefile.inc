@@ -134,21 +134,10 @@ endif
 
 bootblock-generic-ccopts += -D__BOOT_BLOCK__ -D__PRE_RAM__
 
-smmstub-generic-ccopts += -D__SMM__
-smm-generic-ccopts += -D__SMM__
-
-# SMM TSEG base is dynamic
-ifneq ($(CONFIG_SMM_MODULES),y)
-ifeq ($(CONFIG_SMM_TSEG),y)
-smm-c-ccopts += -fpic
-endif
-endif
-
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
 verstage-c-deps:=$$(OPTION_TABLE_H)
 bootblock-c-deps:=$$(OPTION_TABLE_H)
-smm-c-deps:=$$(OPTION_TABLE_H)
 
 #######################################################################
 # Add handler to compile ACPI's ASL

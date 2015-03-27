@@ -27,6 +27,10 @@ $(eval $(call create_class_compiler,smm,x86_64))
 $(eval $(call create_class_compiler,smmstub,x86_64))
 endif
 
+smmstub-generic-ccopts += -D__SMM__
+smm-generic-ccopts += -D__SMM__
+smm-c-deps:=$$(OPTION_TABLE_H)
+
 $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
 	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --start-group $(smm-objs) $(COMPILER_RT_smm) --end-group
 
@@ -101,6 +105,7 @@ endif
 # Use TSEG specific entry point and linker script
 ifeq ($(CONFIG_SMM_TSEG),y)
 smm-y += smmhandler_tseg.S
+smm-c-ccopts += -fpic
 SMM_LDFLAGS  := -pie
 SMM_LDSCRIPT := smm_tseg.ld
 else

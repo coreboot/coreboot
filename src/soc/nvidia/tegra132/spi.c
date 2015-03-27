@@ -20,7 +20,6 @@
 
 #include <assert.h>
 #include <cbfs.h>
-#include <cbfs_core.h>
 #include <inttypes.h>
 #include <spi-generic.h>
 #include <spi_flash.h>

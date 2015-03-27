@@ -18,7 +18,7 @@
  */
 #include <assert.h>
 #include <cbmem.h>
-#include <cbfs_core.h>
+#include <cbfs.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

@@ -38,7 +38,6 @@
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
-#include <cbfs_core.h>
 
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/cache.h>

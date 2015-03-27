@@ -196,7 +196,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/
 	mv $@.tmp $@
 endif
 
-romstage-srcs += $(objgenerated)/crt0.s
+romstage-srcs += $(objgenerated)/crt0.S
 
 romstage-libs ?=
 
@@ -237,11 +237,11 @@ $(objgenerated)/crt0.romstage.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
-$(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
+$(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_romstage) $(CFLAGS_x86_32) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
 
-$(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
+$(objgenerated)/crt0.S: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_romstage) $(CPPFLAGS_romstage) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 

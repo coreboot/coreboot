@@ -203,7 +203,12 @@ endif
 # Eliminate duplicate mentions of source files in a class
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 
-src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $(2))))
+# Converts one or more source file paths to their corresponding build/ paths.
+# Only .c and .S get converted to .o, other files (like .ld) keep their name.
+# $1 stage name
+# $2 file path (list)
+src-to-obj=$(foreach file,$(2),$(basename $(patsubst src/%,$(obj)/%,$(file))).$(1)$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(suffix $(file)))))
+
 $(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class),$($(class)-srcs))))
 
 # Save all objs before processing them (for dependency inclusion)
@@ -241,7 +246,7 @@ $(foreach class,$(classes), \
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))
 
-DEPENDENCIES = $(originalobjs:.o=.d)
+DEPENDENCIES = $(addsuffix .d,$(basename $(allobjs)))
 -include $(DEPENDENCIES)
 
 printall:

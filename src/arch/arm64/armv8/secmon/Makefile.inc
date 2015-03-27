@@ -38,7 +38,7 @@ secmon-y += ../exception.c
 secmon-y += ../../cpu.c
 secmon-y += ../../transition_asm.S ../../transition.c
 
-ramstage-srcs += $(SECMON_BIN)
+ramstage-srcs += $(SECMON_BIN).o
 
 $(SECMON_OBJ):  $$(secmon-objs)
 		$(CC_secmon) $(LDFLAGS) -nostdlib -r -o $@ $^

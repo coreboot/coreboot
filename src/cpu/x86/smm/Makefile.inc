@@ -58,8 +58,8 @@ smm-y += smm_module_handler.c
 
 ramstage-y += smm_module_loader.c
 
-ramstage-srcs += $(obj)/cpu/x86/smm/smm
-ramstage-srcs += $(obj)/cpu/x86/smm/smmstub
+ramstage-srcs += $(obj)/cpu/x86/smm/smm.o
+ramstage-srcs += $(obj)/cpu/x86/smm/smmstub.o
 
 # SMM Stub Module. The stub is used as a trampoline for relocation and normal
 # SMM handling.
@@ -99,7 +99,7 @@ else # CONFIG_SMM_MODULES
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.S
 ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
-ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap
+ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap.o
 endif
 
 # Use TSEG specific entry point and linker script

@@ -12,7 +12,7 @@ SIPI_BIN=$(SIPI_ELF:.elf=)
 SIPI_DOTO=$(SIPI_ELF:.elf=.o)
 
 ifeq ($(CONFIG_PARALLEL_MP),y)
-ramstage-srcs += $(SIPI_BIN)
+ramstage-srcs += $(SIPI_BIN).o
 endif
 rmodules_$(ARCH-ramstage-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
 

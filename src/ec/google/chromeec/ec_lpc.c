@@ -29,30 +29,6 @@
 #include "ec.h"
 #include "ec_commands.h"
 
-static int google_chromeec_command_version(void)
-{
-	u8 id1, id2, flags;
-
-	id1 = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID);
-	id2 = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID + 1);
-	flags = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_HOST_CMD_FLAGS);
-
-	if (id1 != 'E' || id2 != 'C') {
-		printk(BIOS_ERR, "Missing Chromium EC memory map.\n");
-		return -1;
-	}
-
-	if (flags & EC_HOST_CMD_FLAG_VERSION_3) {
-		return EC_HOST_CMD_FLAG_VERSION_3;
-	} else if (flags & EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED) {
-		return EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED;
-	} else {
-		printk(BIOS_ERR,
-		       "Chromium EC command version unsupported\n");
-		return -1;
-	}
-}
-
 static int google_chromeec_wait_ready(u16 port)
 {
 	u8 ec_status = inb(port);
@@ -73,6 +49,69 @@ static int google_chromeec_wait_ready(u16 port)
 		ec_status = inb(port);
 	}
 	return 0;
+}
+
+#if CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+/* Read memmap data through ACPI port 66/62 */
+static int read_memmap(u8 *data, u8 offset)
+{
+	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
+		printk(BIOS_ERR, "Timeout waiting for EC ready!\n");
+		return -1;
+	}
+
+	/* Issue the ACPI read command */
+	outb(EC_CMD_ACPI_READ, EC_LPC_ADDR_ACPI_CMD);
+
+	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
+		printk(BIOS_ERR, "Timeout waiting for EC READ_EVENT!\n");
+		return -1;
+	}
+
+	/* Write data address */
+	outb(offset + EC_ACPI_MEM_MAPPED_BEGIN, EC_LPC_ADDR_ACPI_DATA);
+
+	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
+		printk(BIOS_ERR, "Timeout waiting for EC DATA!\n");
+		return -1;
+	}
+
+	*data = inb(EC_LPC_ADDR_ACPI_DATA);
+	return 0;
+}
+#endif
+
+static int google_chromeec_command_version(void)
+{
+	u8 id1, id2, flags;
+
+#if CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+	if (read_memmap(&id1, EC_MEMMAP_ID) ||
+	    read_memmap(&id2, EC_MEMMAP_ID + 1) ||
+	    read_memmap(&flags, EC_MEMMAP_HOST_CMD_FLAGS)) {
+		printk(BIOS_ERR, "Error reading memmap data.\n");
+		return -1;
+	}
+#else
+	id1 = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID);
+	id2 = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID + 1);
+	flags = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_HOST_CMD_FLAGS);
+#endif
+
+	if (id1 != 'E' || id2 != 'C') {
+		printk(BIOS_ERR, "Missing Chromium EC memory map.\n");
+		return -1;
+	}
+
+	if (flags & EC_HOST_CMD_FLAG_VERSION_3) {
+		return EC_HOST_CMD_FLAG_VERSION_3;
+	} else if (flags & EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED) {
+		return EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED;
+	} else {
+		printk(BIOS_ERR,
+		       "Chromium EC command version unsupported\n");
+		return -1;
+	}
 }
 
 static int google_chromeec_command_v3(struct chromeec_command *cec_command)

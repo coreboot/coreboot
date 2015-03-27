@@ -162,7 +162,7 @@ static void nic_init(struct device *dev)
 //	if that is invalid we will read that from romstrap
 	if(!eeprom_valid) {
 		u32 *mac_pos;
-		mac_pos = (u32 *)0xffffffd0; // refer to romstrap.inc and romstrap.lds
+		mac_pos = (u32 *)0xffffffd0; // refer to romstrap.inc and romstrap.ld
 		mac_l = read32(mac_pos) + nic_index; // overflow?
 		mac_h = read32(mac_pos + 1);
 

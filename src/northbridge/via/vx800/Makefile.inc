@@ -24,4 +24,4 @@ ramstage-y += lpc.c
 ramstage-y += ide.c
 
 chipset_bootblock_inc += $(src)/northbridge/via/vx800/romstrap.inc
-chipset_bootblock_lds += $(src)/northbridge/via/vx800/romstrap.lds
+chipset_bootblock_lds += $(src)/northbridge/via/vx800/romstrap.ld

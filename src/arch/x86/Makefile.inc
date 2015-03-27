@@ -72,13 +72,13 @@ $(obj)/cmos_layout.bin: $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.l
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
 
-bootblock_lds = $(src)/arch/x86/init/ldscript_failover.lb
-bootblock_lds += $(src)/cpu/x86/16bit/entry16.lds
-bootblock_lds += $(src)/cpu/x86/16bit/reset16.lds
-bootblock_lds += $(src)/arch/x86/lib/id.lds
+bootblock_lds = $(src)/arch/x86/init/ldscript_failover.ld
+bootblock_lds += $(src)/cpu/x86/16bit/entry16.ld
+bootblock_lds += $(src)/cpu/x86/16bit/reset16.ld
+bootblock_lds += $(src)/arch/x86/lib/id.ld
 bootblock_lds += $(chipset_bootblock_lds)
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
-bootblock_lds += $(src)/cpu/intel/fit/fit.lds
+bootblock_lds += $(src)/cpu/intel/fit/fit.ld
 endif
 
 bootblock_inc = $(src)/arch/x86/init/prologue.inc
@@ -141,7 +141,7 @@ crt0s = $(src)/arch/x86/init/prologue.inc
 ldscripts =
 ldscripts += $(src)/arch/x86/init/romstage.ld
 crt0s += $(src)/cpu/x86/32bit/entry32.inc
-ldscripts += $(src)/cpu/x86/32bit/entry32.lds
+ldscripts += $(src)/cpu/x86/32bit/entry32.ld
 
 crt0s += $(src)/cpu/x86/fpu_enable.inc
 ifeq ($(CONFIG_SSE),y)

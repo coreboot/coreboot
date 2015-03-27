@@ -90,7 +90,7 @@ static void nic_init(struct device *dev)
 	/* If that is invalid we will read that from romstrap. */
 	if (!eeprom_valid) {
 		u32 *mac_pos;
-		mac_pos = (u32 *)0xffffffd0; /* See romstrap.inc and romstrap.lds. */
+		mac_pos = (u32 *)0xffffffd0; /* See romstrap.inc and romstrap.ld. */
 		mac_l = read32(mac_pos) + nic_index;
 		mac_h = read32(mac_pos + 1);
 	}

@@ -53,53 +53,6 @@ config I2C_BASE
 	hex
 	default 0xfb00
 
-# ROM Strap PLL config setting :
-
-choice
-	prompt "ROM Strap PLL config"
-	default PLL_300_300_33
-
-config PLL_200_200_33
-	bool "CPU=200Mhz/DRAM=200Mhz/PCI=33Mhz"
-
-config PLL_300_300_33
-	bool "CPU=300Mhz/DRAM=300Mhz/PCI=33Mhz"
-
-config PLL_300_300_100
-	bool "CPU=300Mhz/DRAM=300Mhz/PCI=100Mhz"
-
-config PLL_400_200_33
-	bool "CPU=400Mhz/DRAM=200Mhz/PCI=33Mhz"
-
-config PLL_400_200_100
-	bool "CPU=400Mhz/DRAM=200Mhz/PCI=100Mhz"
-
-config PLL_400_400_33
-	bool "CPU=400Mhz/DRAM=400Mhz/PCI=33Mhz"
-
-config PLL_500_250_33
-	bool "CPU=500Mhz/DRAM=250Mhz/PCI=33Mhz"
-
-config PLL_500_500_33
-	bool "CPU=500Mhz/DRAM=500Mhz/PCI=33Mhz"
-
-config PLL_400_300_33
-	bool "CPU=400Mhz/DRAM=300Mhz/PCI=33Mhz"
-
-config PLL_400_300_100
-	bool "CPU=400Mhz/DRAM=300Mhz/PCI=100Mhz"
-
-config PLL_444_333_33
-	bool "CPU=444Mhz/DRAM=333Mhz/PCI=33Mhz"
-
-config PLL_466_350_33
-	bool "CPU=466Mhz/DRAM=350Mhz/PCI=33Mhz"
-
-config PLL_500_375_33
-	bool "CPU=500Mhz/DRAM=375Mhz/PCI=33Mhz"
-
-endchoice
-
 menu "On-Chip Device Power Down Control"
 
 	config TEMP_POWERDOWN

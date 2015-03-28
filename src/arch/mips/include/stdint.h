@@ -94,6 +94,11 @@ typedef int8_t s8;
 typedef int16_t s16;
 typedef int32_t s32;
 
+typedef uint8_t bool;
+#define true	1
+#define false	0
+
+
 #undef __HAVE_LONG_LONG__
 
 #endif /* __MIPS_STDINT_H */

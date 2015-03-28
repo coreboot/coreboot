@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <console/streams.h>
 #include <cpu/x86/tsc.h>
+#include <program_loading.h>
 #include <rmodule.h>
 #include <ramstage_cache.h>
 #include <string.h>
@@ -80,16 +81,16 @@ static void cache_refcode(const struct rmod_stage_load *rsl)
 	/* Determine how much remaining cache available. */
 	cache_size -= c->size + sizeof(*c);
 
-	if (cache_size < (sizeof(*c) + cbmem_entry_size(rsl->cbmem_entry))) {
+	if (cache_size < (sizeof(*c) + prog_size(rsl->prog))) {
 		printk(BIOS_DEBUG, "Not enough cache space for ref code.\n");
 		return;
 	}
 
 	c = next_cache(c);
 	c->magic = RAMSTAGE_CACHE_MAGIC;
-	c->entry_point = (uint32_t)rsl->entry;
-	c->load_address = (uint32_t)cbmem_entry_start(rsl->cbmem_entry);
-	c->size = cbmem_entry_size(rsl->cbmem_entry);
+	c->entry_point = (uint32_t)(uintptr_t)prog_entry(rsl->prog);
+	c->load_address = (uint32_t)(uintptr_t)prog_start(rsl->prog);
+	c->size = prog_size(rsl->prog);
 
 	printk(BIOS_DEBUG, "Caching refcode at 0x%p(%x)\n",
 	       &c->program[0], c->size);
@@ -115,7 +116,7 @@ static int load_refcode_from_vboot(struct rmod_stage_load *refcode)
 	printk(BIOS_DEBUG, "refcode loading from vboot rw area.\n");
 	stage = (void *)(uintptr_t)fwc->address;
 
-	if (rmodule_stage_load(refcode, stage) || refcode->entry == NULL) {
+	if (rmodule_stage_load(refcode, stage)) {
 		printk(BIOS_DEBUG, "Error loading reference code.\n");
 		return -1;
 	}
@@ -132,7 +133,7 @@ static int load_refcode_from_cbfs(struct rmod_stage_load *refcode)
 {
 	printk(BIOS_DEBUG, "refcode loading from cbfs.\n");
 
-	if (rmodule_stage_load_from_cbfs(refcode) || refcode->entry == NULL) {
+	if (rmodule_stage_load_from_cbfs(refcode)) {
 		printk(BIOS_DEBUG, "Error loading reference code.\n");
 		return -1;
 	}
@@ -142,9 +143,12 @@ static int load_refcode_from_cbfs(struct rmod_stage_load *refcode)
 
 static pei_wrapper_entry_t load_reference_code(void)
 {
+	struct prog prog = {
+		.name = CONFIG_CBFS_PREFIX "/refcode",
+	};
 	struct rmod_stage_load refcode = {
 		.cbmem_id = CBMEM_ID_REFCODE,
-		.name = CONFIG_CBFS_PREFIX "/refcode",
+		.prog = &prog,
 	};
 
 	if (acpi_is_wakeup_s3()) {
@@ -158,7 +162,7 @@ static pei_wrapper_entry_t load_reference_code(void)
 	/* Cache loaded reference code. */
 	cache_refcode(&refcode);
 
-	return refcode.entry;
+	return prog_entry(&prog);
 }
 
 void broadwell_run_reference_code(void)

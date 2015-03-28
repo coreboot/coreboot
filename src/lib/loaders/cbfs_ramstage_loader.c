@@ -29,17 +29,13 @@ static int cbfs_load_ramstage(struct prog *ramstage)
 {
 	struct rmod_stage_load rmod_ram = {
 		.cbmem_id = CBMEM_ID_RAMSTAGE,
-		.name = ramstage->name,
+		.prog = ramstage,
 	};
 
 	if (rmodule_stage_load_from_cbfs(&rmod_ram)) {
 		printk(BIOS_DEBUG, "Could not load ramstage.\n");
 		return -1;
 	}
-
-	prog_set_area(ramstage, cbmem_entry_start(rmod_ram.cbmem_entry),
-			cbmem_entry_size(rmod_ram.cbmem_entry));
-	prog_set_entry(ramstage, rmod_ram.entry, NULL);
 
 	return 0;
 }

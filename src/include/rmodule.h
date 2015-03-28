@@ -55,15 +55,11 @@ int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
  * using dynamic cbmem because it uses the dynamic cbmem API to obtain
  * the backing store region for the stage. */
 struct cbfs_stage;
-struct cbmem_entry;
+struct prog;
 
 struct rmod_stage_load {
-	/* Inputs */
 	uint32_t cbmem_id;
-	const char *name;
-	/* Outputs */
-	const struct cbmem_entry *cbmem_entry;
-	void *entry;
+	struct prog *prog;
 };
 
 /* Both of the following functions return 0 on success, -1 on error. */

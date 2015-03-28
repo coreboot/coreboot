@@ -261,7 +261,7 @@ int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
 	int load_offset;
 	const struct cbmem_entry *cbmem_entry;
 
-	if (stage == NULL || rsl->name == NULL)
+	if (stage == NULL || rsl->prog == NULL || rsl->prog->name == NULL)
 		return -1;
 
 	rmodule_offset =
@@ -276,7 +276,7 @@ int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
 	stage_region = cbmem_entry_start(cbmem_entry);
 
 	printk(BIOS_INFO, "Decompressing stage %s @ 0x%p (%d bytes)\n",
-	       rsl->name, &stage_region[rmodule_offset], stage->memlen);
+	       rsl->prog->name, &stage_region[rmodule_offset], stage->memlen);
 
 	if (!cbfs_decompress(stage->compression, &stage[1],
 	                    &stage_region[rmodule_offset], stage->len))
@@ -288,8 +288,8 @@ int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
 	if (rmodule_load(&stage_region[load_offset], &rmod_stage))
 		return -1;
 
-	rsl->cbmem_entry = cbmem_entry;
-	rsl->entry = rmodule_entry(&rmod_stage);
+	prog_set_area(rsl->prog, stage_region, cbmem_entry_size(cbmem_entry));
+	prog_set_entry(rsl->prog, rmodule_entry(&rmod_stage), NULL);
 
 	return 0;
 }
@@ -299,7 +299,7 @@ int rmodule_stage_load_from_cbfs(struct rmod_stage_load *rsl)
 	struct cbfs_stage *stage;
 
 	stage = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-	                              rsl->name, CBFS_TYPE_STAGE, NULL);
+	                              rsl->prog->name, CBFS_TYPE_STAGE, NULL);
 
 	if (stage == NULL)
 		return -1;

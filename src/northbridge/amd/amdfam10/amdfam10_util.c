@@ -21,6 +21,7 @@
 #include <console/console.h>
 
 #include <arch/cpu.h>
+#include <northbridge/amd/amdmct/wrappers/mcti.h>
 #include <northbridge/amd/amdmct/mct/mct_d.h>
 #include <northbridge/amd/amdmct/amddefs.h>
 

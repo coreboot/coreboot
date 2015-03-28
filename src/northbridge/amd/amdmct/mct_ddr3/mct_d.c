@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -2030,7 +2031,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 	 * DATAAload=number of ranks on the "A" bus slots.
 	 * DATABload=number of ranks on the "B" bus slots.
 	 */
-	u16 i, j;
+	u16 i, j, k;
 	u8 smbaddr;
 	u8 SPDCtrl;
 	u16 RegDIMMPresent, MaxDimms;
@@ -2077,10 +2078,34 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 							pDCTstat->DIMMValid |= 1 << i;
 					}
 				}
+				/* Get module information for SMBIOS */
+				if (pDCTstat->DIMMValid & (1 << i)) {
+					pDCTstat->DimmManufacturerID[i] = 0;
+					for (k = 0; k < 8; k++)
+						pDCTstat->DimmManufacturerID[i] |= ((uint64_t)mctRead_SPD(smbaddr, SPD_MANID_START + k)) << (k * 8);
+					for (k = 0; k < SPD_PARTN_LENGTH; k++)
+						pDCTstat->DimmPartNumber[i][k] = mctRead_SPD(smbaddr, SPD_PARTN_START + k);
+					pDCTstat->DimmRevisionNumber[i] = 0;
+					for (k = 0; k < 2; k++)
+						pDCTstat->DimmRevisionNumber[i] |= ((uint16_t)mctRead_SPD(smbaddr, SPD_REVNO_START + k)) << (k * 8);
+					pDCTstat->DimmSerialNumber[i] = 0;
+					for (k = 0; k < 4; k++)
+						pDCTstat->DimmSerialNumber[i] |= ((uint32_t)mctRead_SPD(smbaddr, SPD_SERIAL_START + k)) << (k * 8);
+					pDCTstat->DimmRows[i] = (mctRead_SPD(smbaddr, SPD_Addressing) & 0x38) >> 3;
+					pDCTstat->DimmCols[i] = mctRead_SPD(smbaddr, SPD_Addressing) & 0x7;
+					pDCTstat->DimmRanks[i] = ((mctRead_SPD(smbaddr, SPD_Organization) & 0x38) >> 3) + 1;
+					pDCTstat->DimmBanks[i] = 1ULL << (((mctRead_SPD(smbaddr, SPD_Density) & 0x70) >> 4) + 3);
+					pDCTstat->DimmWidth[i] = 1ULL << ((mctRead_SPD(smbaddr, SPD_BusWidth) & 0x7) + 3);
+				}
 				/* Check module type */
 				byte = mctRead_SPD(smbaddr, SPD_DIMMTYPE) & 0x7;
-				if (byte == JED_RDIMM || byte == JED_MiniRDIMM)
+				if (byte == JED_RDIMM || byte == JED_MiniRDIMM) {
 					RegDIMMPresent |= 1 << i;
+					pDCTstat->DimmRegistered[i] = 1;
+				}
+				else {
+					pDCTstat->DimmRegistered[i] = 0;
+				}
 				/* Check ECC capable */
 				byte = mctRead_SPD(smbaddr, SPD_BusWidth);
 				if (byte & JED_ECC) {

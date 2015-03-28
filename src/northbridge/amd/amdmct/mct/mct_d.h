@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -231,9 +232,16 @@
 #define SPD_TRC	41
 #define SPD_TRFC	42
 
+#define SPD_MANID_START		64
+#define SPD_PARTN_START		73
+#define SPD_PARTN_LENGTH	18
+#define SPD_REVNO_START		91
+
 #define SPD_MANDATEYR	93		/*Module Manufacturing Year (BCD)*/
 
 #define SPD_MANDATEWK	94		/*Module Manufacturing Week (BCD)*/
+
+#define SPD_SERIAL_START	95
 
 /*-----------------------------
 	Jedec DDR II related equates
@@ -512,6 +520,18 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u32 dev_map;
 	u32 dev_dct;
 	u32 dev_nbmisc;
+
+	uint8_t DimmRows[MAX_DIMMS_SUPPORTED];
+	uint8_t DimmCols[MAX_DIMMS_SUPPORTED];
+	uint8_t DimmRanks[MAX_DIMMS_SUPPORTED];
+	uint8_t DimmBanks[MAX_DIMMS_SUPPORTED];
+	uint8_t DimmWidth[MAX_DIMMS_SUPPORTED];
+	uint8_t DimmRegistered[MAX_DIMMS_SUPPORTED];
+
+	uint64_t DimmManufacturerID[MAX_DIMMS_SUPPORTED];
+	char DimmPartNumber[MAX_DIMMS_SUPPORTED][SPD_PARTN_LENGTH];
+	uint16_t DimmRevisionNumber[MAX_DIMMS_SUPPORTED];
+	uint32_t DimmSerialNumber[MAX_DIMMS_SUPPORTED];
 } __attribute__((packed));
 
 /*===============================================================================
@@ -666,6 +686,15 @@ struct DCTStatStruc {		/* A per Node structure*/
 					xx0b = disable
 					yy1b = enable with DctSelIntLvAddr set to yyb */
 
+/*===============================================================================
+	CBMEM storage
+===============================================================================*/
+struct amdmct_memory_info {
+	struct MCTStatStruc mct_stat;
+	struct DCTStatStruc dct_stat[MAX_NODES_SUPPORTED];
+	uint16_t ecc_enabled;
+	uint16_t ecc_scrub_rate;
+} __attribute__((packed));
 
 u32 Get_NB32(u32 dev, u32 reg);
 void Set_NB32(u32 dev, u32 reg, u32 val);

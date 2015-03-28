@@ -2122,7 +2122,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 	 * DATABload=number of ranks on the "B" bus slots.
 	 */
 
-	u16 i, j;
+	u16 i, j, k;
 	u8 smbaddr, Index;
 	u16 Checksum;
 	u8 SPDCtrl;
@@ -2183,10 +2183,34 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 								pDCTstat->DIMMValid |= 1 << i;
 						}
 					}
+					/* Get module information for SMBIOS */
+					if (pDCTstat->DIMMValid & (1 << i)) {
+						pDCTstat->DimmManufacturerID[i] = 0;
+						for (k = 0; k < 8; k++)
+							pDCTstat->DimmManufacturerID[i] |= ((uint64_t)mctRead_SPD(smbaddr, SPD_MANID_START + k)) << (k * 8);
+						for (k = 0; k < SPD_PARTN_LENGTH; k++)
+							pDCTstat->DimmPartNumber[i][k] = mctRead_SPD(smbaddr, SPD_PARTN_START + k);
+						pDCTstat->DimmRevisionNumber[i] = 0;
+						for (k = 0; k < 2; k++)
+							pDCTstat->DimmRevisionNumber[i] |= ((uint16_t)mctRead_SPD(smbaddr, SPD_REVNO_START + k)) << (k * 8);
+						pDCTstat->DimmSerialNumber[i] = 0;
+						for (k = 0; k < 4; k++)
+							pDCTstat->DimmSerialNumber[i] |= ((uint32_t)mctRead_SPD(smbaddr, SPD_SERIAL_START + k)) << (k * 8);
+						pDCTstat->DimmRows[i] = mctRead_SPD(smbaddr, SPD_ROWSZ) & 0xf;
+						pDCTstat->DimmCols[i] = mctRead_SPD(smbaddr, SPD_COLSZ) & 0xf;
+						pDCTstat->DimmRanks[i] = (mctRead_SPD(smbaddr, SPD_DMBANKS) & 0x7) + 1;
+						pDCTstat->DimmBanks[i] = mctRead_SPD(smbaddr, SPD_LBANKS);
+						pDCTstat->DimmWidth[i] = mctRead_SPD(smbaddr, SPD_DEVWIDTH);
+					}
 					/* Check module type */
 					byte = mctRead_SPD(smbaddr, SPD_DIMMTYPE);
-					if (byte & JED_REGADCMSK)
+					if (byte & JED_REGADCMSK) {
 						RegDIMMPresent |= 1 << i;
+						pDCTstat->DimmRegistered[i] = 1;
+					}
+					else {
+						pDCTstat->DimmRegistered[i] = 0;
+					}
 					/* Check ECC capable */
 					byte = mctRead_SPD(smbaddr, SPD_EDCTYPE);
 					if (byte & JED_ECC) {

@@ -977,6 +977,7 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #include "raminit.h"
 
+#include "../amdmct/wrappers/mcti.h"
 #if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
   #include "../amdmct/mct_ddr3/mct_d.h"
 #else

@@ -427,4 +427,6 @@ struct smbios_type127 {
 	u8 eos[2];
 } __attribute__((packed));
 
+void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17 *t);
+
 #endif

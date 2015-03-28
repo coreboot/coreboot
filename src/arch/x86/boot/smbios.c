@@ -123,7 +123,7 @@ static int smbios_processor_name(char *start)
 }
 
 /* this function will fill the corresponding manufacturer */
-static void fill_dimm_manufacturer(uint16_t mod_id, struct smbios_type17 *t)
+void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17 *t)
 {
 	switch (mod_id) {
 		case 0x987f:
@@ -191,7 +191,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 			break;
 	}
 
-	fill_dimm_manufacturer(dimm->mod_id, t);
+	smbios_fill_dimm_manufacturer_from_id(dimm->mod_id, t);
 	/* put '\0' in the end of data */
 	length = sizeof(dimm->serial);
 	dimm->serial[length - 1] = '\0';

@@ -30,6 +30,7 @@ config ARCH_SPINTABLE
 	depends on ARCH_RAMSTAGE_ARM64
 
 source src/arch/arm64/armv8/Kconfig
+source src/arch/arm64/cpu/Kconfig
 
 # If a custom bootblock is necessary, this option should be "select"-ed by
 # the thing that needs it, probably the CPU.

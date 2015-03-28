@@ -13,7 +13,7 @@ build-aarch64:
 	bash ./buildgcc -G -p aarch64-elf
 
 build-mips:
-	bash ./buildgcc -G -p mips-elf
+	bash ./buildgcc -G -p mipsel-elf
 
 build-riscv:
 	bash ./buildgcc -G -p riscv-elf
@@ -36,7 +36,7 @@ build-aarch64-without-gdb:
 
 .PHONY: build-mips-without-gdb
 build-mips-without-gdb:
-	bash ./buildgcc -p mips-elf
+	bash ./buildgcc -p mipsel-elf
 
 .PHONY: build-riscv-without-gdb
 build-riscv-without-gdb:

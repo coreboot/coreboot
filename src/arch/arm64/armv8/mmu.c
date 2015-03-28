@@ -67,6 +67,7 @@ static uint64_t get_block_attr(unsigned long tag)
 	attr |= BLOCK_ACCESS;
 
 	if (tag & MA_MEM) {
+		attr |= BLOCK_SH_INNER_SHAREABLE;
 		if (tag & MA_MEM_NC)
 			attr |= BLOCK_INDEX_MEM_NORMAL_NC << BLOCK_INDEX_SHIFT;
 		else

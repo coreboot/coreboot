@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <lib.h>
+#include <smbios.h>
 #include <cpu/cpu.h>
 
 #include <cpu/x86/lapic.h>
@@ -43,6 +44,7 @@
 #include "northbridge.h"
 #include "amdfam10.h"
 #include "ht_config.h"
+#include "chip.h"
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 #include <cpu/amd/model_10xxx_rev.h>
@@ -945,6 +947,178 @@ static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
 	return max;
 }
 
+#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+static int amdfam10_get_smbios_data16(int* count, int handle, unsigned long *current)
+{
+	struct amdmct_memory_info *mem_info;
+	mem_info = cbmem_find(CBMEM_ID_AMDMCT_MEMINFO);
+	if (mem_info == NULL)
+		return 0;	/* can't find amdmct information in cbmem */
+
+	struct device *dev = get_node_pci(0, 0);
+	struct northbridge_amd_amdfam10_config *config = dev->chip_info;
+
+	int node;
+	int slot;
+
+	struct smbios_type16 *t = (struct smbios_type16 *)*current;
+	int len = sizeof(struct smbios_type16);
+
+	memset(t, 0, sizeof(struct smbios_type16));
+	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
+	t->handle = handle;
+	t->length = len - 2;
+	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
+	t->use = MEMORY_ARRAY_USE_SYSTEM;
+	t->memory_error_correction = MEMORY_ARRAY_ECC_NONE;
+	if ((mem_info->ecc_enabled)
+		&& (mem_info->mct_stat.GStatus & (1 << GSB_ECCDIMMs))
+		&& !(mem_info->mct_stat.GStatus & (1 << GSB_DramECCDis)))
+		/* Single-bit ECC enabled */
+		t->memory_error_correction = MEMORY_ARRAY_ECC_SINGLE_BIT;
+	t->maximum_capacity = config->maximum_memory_capacity / 1024; /* Convert to kilobytes */
+	t->memory_error_information_handle = 0xFFFE;	/* no error information handle available */
+
+	t->number_of_memory_devices = 0;
+	/* Check all nodes for installed DIMMs */
+	for (node = 0; node < MAX_NODES_SUPPORTED; node++)
+		/* Check all slots for installed DIMMs */
+		for (slot = 0; slot < MAX_DIMMS_SUPPORTED; slot++)
+			if (mem_info->dct_stat[node].DIMMPresent & (1 << slot))
+				/* Found an installed DIMM; increment count */
+				t->number_of_memory_devices++;
+
+	*current += len;
+	*count += 1;
+	return len;
+}
+
+static uint16_t amdmct_mct_speed_enum_to_mhz(uint8_t speed)
+{
+	switch (speed) {
+		case 1:
+			return 200;
+		case 2:
+			return 266;
+		case 3:
+			return 333;
+		case 4:
+			return 400;
+		case 5:
+			return 533;
+		default:
+			return 0;
+	}
+}
+
+static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle, unsigned long *current)
+{
+	struct amdmct_memory_info *mem_info;
+	mem_info = cbmem_find(CBMEM_ID_AMDMCT_MEMINFO);
+	if (mem_info == NULL)
+		return 0;       /* can't find amdmct information in cbmem */
+
+	int single_len;
+	int len = 0;
+	int node;
+	int slot;
+
+	/* Check all nodes for installed DIMMs */
+	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
+		/* Get configured RAM bus speed */
+		uint16_t speed;
+		speed = amdmct_mct_speed_enum_to_mhz(mem_info->dct_stat[node].Speed);
+
+		/* Get maximum RAM bus speed */
+		uint16_t max_speed;
+		max_speed = amdmct_mct_speed_enum_to_mhz(mem_info->dct_stat[node].DIMMAutoSpeed);
+
+		/* Check all slots for installed DIMMs */
+		for (slot = 0; slot < MAX_DIMMS_SUPPORTED; slot++) {
+			if (mem_info->dct_stat[node].DIMMPresent & (1 << slot)) {
+				/* Found an installed DIMM;  populate tables */
+				struct smbios_type17 *t = (struct smbios_type17 *)*current;
+				char string_buffer[256];
+
+				/* Initialize structure */
+				memset(t, 0, sizeof(struct smbios_type17));
+
+				/* Calculate the total module size in bytes:
+				* Primary data width * 2^(#rows) * 2^(#cols) * #banks * #ranks
+				*/
+				uint8_t width, rows, cols, banks, ranks;
+				width = 8;
+				rows = mem_info->dct_stat[node].DimmRows[slot];
+				cols = mem_info->dct_stat[node].DimmCols[slot];
+				ranks = mem_info->dct_stat[node].DimmRanks[slot];
+				banks = mem_info->dct_stat[node].DimmBanks[slot];
+				uint64_t dimm_size_bytes = width * (1ULL << rows) * (1ULL << cols) * banks * ranks;
+
+				memset(t, 0, sizeof(struct smbios_type17));
+				t->type = SMBIOS_MEMORY_DEVICE;
+				t->handle = handle;
+				t->phys_memory_array_handle = parent_handle;
+				t->length = sizeof(struct smbios_type17) - 2;
+				if (dimm_size_bytes > 0x800000000) {
+					t->size = 0x7FFF;
+					t->extended_size = dimm_size_bytes;
+				}
+				else {
+					t->size = dimm_size_bytes / (1024*1024);
+					t->size &= (~0x8000);	/* size specified in megabytes */
+				}
+				t->total_width = t->data_width = 64;
+				if (mem_info->dct_stat[node].DimmECCPresent & (1 << slot))
+					t->total_width += 8;
+				t->attributes = 0;
+				t->attributes |= ranks & 0xf;	/* rank number is stored in the lowest 4 bits of the attributes field */
+				t->form_factor = MEMORY_FORMFACTOR_DIMM;
+				snprintf(string_buffer, sizeof (string_buffer), "NODE %d DIMM_%s%d", node, (slot & 0x1)?"B":"A", (slot >> 1) + 1);
+				t->device_locator = smbios_add_string(t->eos, string_buffer);
+				if (IS_ENABLED(CONFIG_DIMM_DDR2))
+					t->memory_type = MEMORY_TYPE_DDR2;
+				else if (IS_ENABLED(CONFIG_DIMM_DDR3))
+					t->memory_type = MEMORY_TYPE_DDR3;
+				t->type_detail = MEMORY_TYPE_DETAIL_SYNCHRONOUS;
+				if (mem_info->dct_stat[node].DimmRegistered[slot])
+					t->type_detail |= MEMORY_TYPE_DETAIL_REGISTERED;
+				else
+					t->type_detail |= MEMORY_TYPE_DETAIL_UNBUFFERED;
+				t->speed = max_speed;
+				t->clock_speed = speed;
+				smbios_fill_dimm_manufacturer_from_id(mem_info->dct_stat[node].DimmManufacturerID[slot], t);
+				t->part_number = smbios_add_string(t->eos, mem_info->dct_stat[node].DimmPartNumber[slot]);
+				if (mem_info->dct_stat[node].DimmSerialNumber[slot] == 0) {
+					t->serial_number = smbios_add_string(t->eos, "None");
+				}
+				else {
+					snprintf(string_buffer, sizeof (string_buffer), "%08X", mem_info->dct_stat[node].DimmSerialNumber[slot]);
+					t->serial_number = smbios_add_string(t->eos, string_buffer);
+				}
+				t->memory_error_information_handle = 0xFFFE;	/* no error information handle available */
+				single_len = t->length + smbios_string_table_len(t->eos);
+				len += single_len;
+				*current += single_len;
+				handle++;
+				*count += 1;
+			}
+		}
+	}
+
+	return len;
+}
+
+static int amdfam10_get_smbios_data(device_t dev, int *handle, unsigned long *current)
+{
+	int len;
+	int count = 0;
+	len = amdfam10_get_smbios_data16(&count, *handle, current);
+	len += amdfam10_get_smbios_data17(&count, *handle + 1, *handle, current);
+	*handle += count;
+	return len;
+}
+#endif
+
 static struct device_operations pci_domain_ops = {
 	.read_resources	  = amdfam10_domain_read_resources,
 	.set_resources	  = amdfam10_domain_set_resources,
@@ -952,6 +1126,9 @@ static struct device_operations pci_domain_ops = {
 	.init		  = NULL,
 	.scan_bus	  = amdfam10_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
+#if CONFIG_GENERATE_SMBIOS_TABLES
+	.get_smbios_data  = amdfam10_get_smbios_data,
+#endif
 };
 
 static void sysconf_init(device_t dev) // first node

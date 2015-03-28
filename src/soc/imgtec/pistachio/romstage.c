@@ -19,21 +19,11 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/hlt.h>
-#include <arch/stages.h>
-#include <cbfs.h>
+#include <program_loading.h>
 #include <console/console.h>
 
 void main(void)
 {
-	void *entry;
-
 	console_init();
-
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				CONFIG_CBFS_PREFIX "/ramstage");
-	if (entry != (void *)-1)
-		stage_exit(entry);
-
-	hlt();
+	run_ramstage();
 }

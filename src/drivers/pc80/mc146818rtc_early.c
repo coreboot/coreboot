@@ -67,10 +67,10 @@ static inline __attribute__((unused)) int do_normal_boot(void)
 	/* The RTC_BOOT_BYTE is now o.k. see where to go. */
 	byte = cmos_read(RTC_BOOT_BYTE);
 
-	/* Are we in normal mode? */
-	if (byte & 1) {
-		byte &= 0x0f; /* yes, clear the boot count */
-	}
+	if (!IS_ENABLED(CONFIG_SKIP_MAX_REBOOT_CNT_CLEAR))
+		/* Are we in normal mode? */
+		if (byte & 1)
+			byte &= 0x0f; /* yes, clear the boot count */
 
 	/* Properly set the last boot flag */
 	byte &= 0xfc;

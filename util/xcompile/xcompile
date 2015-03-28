@@ -209,10 +209,11 @@ arch_config_x86() {
 }
 
 arch_config_mipsel() {
-	TARCH="mipsel"
+	TARCH="mips"
 	TBFDARCHS="tradlittlemips littlemips"
 	TCLIST="mipsel"
 	TWIDTH="32"
+	TSUPP="mips mipsel"
 	TABI="elf"
 }
 

@@ -7,6 +7,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 	device domain 0 on			# PCI domain
 		subsystemid 0x1043 0x8162 inherit
 		chip northbridge/amd/amdfam10		# Northbridge / RAM controller
+			register "maximum_memory_capacity" = "0x1000000000"	# 64GB
 			device pci 18.0 on end		# Link 0 == LDT 0
 			device pci 18.0 on		# Link 1 == LDT 1 [SB on link 1]
 				chip southbridge/nvidia/ck804		# Southbridge

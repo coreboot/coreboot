@@ -614,8 +614,9 @@ printf "Building IASL ${IASL_VERSION} ... "
 ) 2>&1 | wait_for_build "$IASL_DIR/source/compiler" || exit 1
 fi
 
-rm -f $DESTDIR$TARGETDIR/$0.commit.*
-cp $0 $DESTDIR$TARGETDIR/"$0.commit.`git describe`"
+PROGNAME=`basename "$0"`
+rm -f "$DESTDIR$TARGETDIR/$PROGNAME".commit.*
+cp "$PROGNAME" $DESTDIR$TARGETDIR/"$PROGNAME.commit.`git describe`"
 
 if [ $SAVETEMPS -eq 0 ]; then
 	printf "Cleaning up... "

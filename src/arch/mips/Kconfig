@@ -24,6 +24,10 @@ config ARCH_BOOTBLOCK_MIPS
 	default n
 	select ARCH_MIPS
 
+config ARCH_VERSTAGE_MIPS
+	bool
+	default n
+
 config ARCH_ROMSTAGE_MIPS
 	bool
 	default n

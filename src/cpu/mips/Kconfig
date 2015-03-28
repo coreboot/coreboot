@@ -22,6 +22,7 @@
 config CPU_MIPS
 	bool
 	select ARCH_BOOTBLOCK_MIPS
+	select ARCH_VERSTAGE_MIPS
 	select ARCH_ROMSTAGE_MIPS
 	select ARCH_RAMSTAGE_MIPS
 

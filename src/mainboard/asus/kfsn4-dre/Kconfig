@@ -28,6 +28,10 @@ config MAINBOARD_DIR
 	string
 	default asus/kfsn4-dre
 
+config BOOTBLOCK_MAINBOARD_INIT
+	string
+	default "mainboard/asus/kfsn4-dre/bootblock.c"
+
 config DCACHE_RAM_BASE
 	hex
 	default 0xc4000

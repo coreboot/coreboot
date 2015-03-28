@@ -47,6 +47,9 @@ Power LED (-) is connected to U15 (SuperIO) pin 64 via U4 pins 5,6 and a small M
 ID LED (-) is connected to a ??? via U4 pins 1,2,3,4 and U77 pins 5,6
 It appears that setting U15 (SuperIO) pin 88 LOW will override the ID LED and force it ON
 
+RECOVERY2 middle pin is connected to U15 (SuperIO) pin 89
+Normal is HIGH, recovery is LOW.
+
 PCIe slot WAKE# connects to U7 pin E23 (PCIE_WAKE#)
 
 CPU_WARN1 is driven by (???) via a simple buffer (U13 pin 10)

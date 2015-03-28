@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
  *
  * This program is free software; you can redistribute it and/or
@@ -125,6 +126,10 @@ static int smbios_processor_name(char *start)
 static void fill_dimm_manufacturer(uint16_t mod_id, struct smbios_type17 *t)
 {
 	switch (mod_id) {
+		case 0x987f:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Hynix");
+			break;
 		case 0xad80:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Hynix/Hyundai");
@@ -137,10 +142,18 @@ static void fill_dimm_manufacturer(uint16_t mod_id, struct smbios_type17 *t)
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Elpida");
 			break;
-		default:
+		case 0xff2c:
 			t->manufacturer = smbios_add_string(t->eos,
-							    "Unknown");
+							    "Micron");
 			break;
+		default: {
+			char string_buffer[256];
+			snprintf(string_buffer, sizeof(string_buffer),
+						"Unknown (%x)", mod_id);
+			t->manufacturer = smbios_add_string(t->eos,
+							    string_buffer);
+			break;
+		}
 	}
 }
 

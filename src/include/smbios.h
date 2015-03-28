@@ -1,3 +1,23 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) various authors, the coreboot project
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
 #ifndef SMBIOS_H
 #define SMBIOS_H
 
@@ -34,6 +54,25 @@ u8 smbios_mainboard_enclosure_type(void);
 #define BIOS_EXT1_CHARACTERISTICS_ACPI    (1 << 0)
 #define BIOS_EXT2_CHARACTERISTICS_TARGET  (1 << 2)
 
+#define BIOS_MEMORY_ECC_SINGLE_BIT_CORRECTING	(1 << 3)
+#define BIOS_MEMORY_ECC_DOUBLE_BIT_CORRECTING	(1 << 4)
+#define BIOS_MEMORY_ECC_SCRUBBING		(1 << 5)
+
+#define MEMORY_TYPE_DETAIL_OTHER		(1 << 1)
+#define MEMORY_TYPE_DETAIL_UNKNOWN		(1 << 2)
+#define MEMORY_TYPE_DETAIL_FAST_PAGED		(1 << 3)
+#define MEMORY_TYPE_DETAIL_STATIC_COLUMN	(1 << 4)
+#define MEMORY_TYPE_DETAIL_PSEUDO_STATIC	(1 << 5)
+#define MEMORY_TYPE_DETAIL_RAMBUS		(1 << 6)
+#define MEMORY_TYPE_DETAIL_SYNCHRONOUS		(1 << 7)
+#define MEMORY_TYPE_DETAIL_CMOS			(1 << 8)
+#define MEMORY_TYPE_DETAIL_EDO			(1 << 9)
+#define MEMORY_TYPE_DETAIL_WINDOW_DRAM		(1 << 10)
+#define MEMORY_TYPE_DETAIL_CACHE_DRAM		(1 << 11)
+#define MEMORY_TYPE_DETAIL_NON_VOLATILE		(1 << 12)
+#define MEMORY_TYPE_DETAIL_REGISTERED		(1 << 13)
+#define MEMORY_TYPE_DETAIL_UNBUFFERED		(1 << 14)
+
 typedef enum {
 	MEMORY_FORMFACTOR_OTHER = 0x01,
 	MEMORY_FORMFACTOR_UNKNOWN = 0x02,
@@ -51,6 +90,68 @@ typedef enum {
 	MEMORY_FORMFACTOR_SRIMM = 0x0e,
 	MEMORY_FORMFACTOR_FBDIMM = 0x0f,
 } smbios_memory_form_factor;
+
+typedef enum {
+	MEMORY_TYPE_OTHER = 0x01,
+	MEMORY_TYPE_UNKNOWN = 0x02,
+	MEMORY_TYPE_DRAM = 0x03,
+	MEMORY_TYPE_EDRAM = 0x04,
+	MEMORY_TYPE_VRAM = 0x05,
+	MEMORY_TYPE_SRAM = 0x06,
+	MEMORY_TYPE_RAM = 0x07,
+	MEMORY_TYPE_ROM = 0x08,
+	MEMORY_TYPE_FLASH = 0x09,
+	MEMORY_TYPE_EEPROM = 0x0a,
+	MEMORY_TYPE_FEPROM = 0x0b,
+	MEMORY_TYPE_EPROM = 0x0c,
+	MEMORY_TYPE_CDRAM = 0x0d,
+	MEMORY_TYPE_3DRAM = 0x0e,
+	MEMORY_TYPE_SDRAM = 0x0f,
+	MEMORY_TYPE_SGRAM = 0x10,
+	MEMORY_TYPE_RDRAM = 0x11,
+	MEMORY_TYPE_DDR = 0x12,
+	MEMORY_TYPE_DDR2 = 0x13,
+	MEMORY_TYPE_DDR2_FBDIMM = 0x14,
+	MEMORY_TYPE_DDR3 = 0x18,
+	MEMORY_TYPE_FBD2 = 0x19,
+} smbios_memory_type;
+
+typedef enum {
+	MEMORY_ARRAY_LOCATION_OTHER = 0x01,
+	MEMORY_ARRAY_LOCATION_UNKNOWN = 0x02,
+	MEMORY_ARRAY_LOCATION_SYSTEM_BOARD = 0x03,
+	MEMORY_ARRAY_LOCATION_ISA_ADD_ON = 0x04,
+	MEMORY_ARRAY_LOCATION_EISA_ADD_ON = 0x05,
+	MEMORY_ARRAY_LOCATION_PCI_ADD_ON = 0x06,
+	MEMORY_ARRAY_LOCATION_MCA_ADD_ON = 0x07,
+	MEMORY_ARRAY_LOCATION_PCMCIA_ADD_ON = 0x08,
+	MEMORY_ARRAY_LOCATION_PROPRIETARY_ADD_ON = 0x09,
+	MEMORY_ARRAY_LOCATION_NUBUS = 0x0a,
+	MEMORY_ARRAY_LOCATION_PC_98_C20_ADD_ON = 0xa0,
+	MEMORY_ARRAY_LOCATION_PC_98_C24_ADD_ON = 0xa1,
+	MEMORY_ARRAY_LOCATION_PC_98_E_ADD_ON = 0xa2,
+	MEMORY_ARRAY_LOCATION_PC_98_LOCAL_BUS_ADD_ON = 0xa3,
+} smbios_memory_array_location;
+
+typedef enum {
+	MEMORY_ARRAY_USE_OTHER = 0x01,
+	MEMORY_ARRAY_USE_UNKNOWN = 0x02,
+	MEMORY_ARRAY_USE_SYSTEM = 0x03,
+	MEMORY_ARRAY_USE_VIDEO = 0x04,
+	MEMORY_ARRAY_USE_FLASH = 0x05,
+	MEMORY_ARRAY_USE_NVRAM = 0x06,
+	MEMORY_ARRAY_USE_CACHE = 0x07,
+} smbios_memory_array_use;
+
+typedef enum {
+	MEMORY_ARRAY_ECC_OTHER = 0x01,
+	MEMORY_ARRAY_ECC_UNKNOWN = 0x02,
+	MEMORY_ARRAY_ECC_NONE = 0x03,
+	MEMORY_ARRAY_ECC_PARITY = 0x04,
+	MEMORY_ARRAY_ECC_SINGLE_BIT = 0x05,
+	MEMORY_ARRAY_ECC_MULTI_BIT = 0x06,
+	MEMORY_ARRAY_ECC_CRC = 0x07,
+} smbios_memory_array_ecc;
 
 #define SMBIOS_STATE_SAFE 3
 typedef enum {

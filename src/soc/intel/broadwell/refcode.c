@@ -21,11 +21,14 @@
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <console/streams.h>
 #include <cpu/x86/tsc.h>
 #include <rmodule.h>
 #include <ramstage_cache.h>
 #include <string.h>
+#if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/vboot_handoff.h>
+#endif
 #include <broadwell/pei_data.h>
 #include <broadwell/pei_wrapper.h>
 #include <broadwell/ramstage.h>
@@ -93,10 +96,24 @@ static void cache_refcode(const struct rmod_stage_load *rsl)
 	memcpy(&c->program[0], (void *)c->load_address, c->size);
 }
 
-static int load_refcode_from_vboot(struct rmod_stage_load *refcode,
-				    struct cbfs_stage *stage)
+#if IS_ENABLED(CONFIG_CHROMEOS)
+static int load_refcode_from_vboot(struct rmod_stage_load *refcode)
 {
+	struct vboot_handoff *vboot_handoff;
+	const struct firmware_component *fwc;
+	struct cbfs_stage *stage;
+
+	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+	fwc = &vboot_handoff->components[CONFIG_VBOOT_REFCODE_INDEX];
+
+	if (vboot_handoff == NULL ||
+	    vboot_handoff->selected_firmware == VB_SELECT_FIRMWARE_READONLY ||
+	    CONFIG_VBOOT_REFCODE_INDEX >= MAX_PARSED_FW_COMPONENTS ||
+	    fwc->size == 0 || fwc->address == 0)
+		return -1;
+
 	printk(BIOS_DEBUG, "refcode loading from vboot rw area.\n");
+	stage = (void *)(uintptr_t)fwc->address;
 
 	if (rmodule_stage_load(refcode, stage) || refcode->entry == NULL) {
 		printk(BIOS_DEBUG, "Error loading reference code.\n");
@@ -104,6 +121,12 @@ static int load_refcode_from_vboot(struct rmod_stage_load *refcode,
 	}
 	return 0;
 }
+#else
+static int load_refcode_from_vboot(struct rmod_stage_load *refcode)
+{
+	return -1;
+}
+#endif
 
 static int load_refcode_from_cbfs(struct rmod_stage_load *refcode)
 {
@@ -119,35 +142,18 @@ static int load_refcode_from_cbfs(struct rmod_stage_load *refcode)
 
 static pei_wrapper_entry_t load_reference_code(void)
 {
-	struct vboot_handoff *vboot_handoff;
-	const struct firmware_component *fwc;
 	struct rmod_stage_load refcode = {
 		.cbmem_id = CBMEM_ID_REFCODE,
 		.name = CONFIG_CBFS_PREFIX "/refcode",
 	};
-	int ret;
 
 	if (acpi_is_wakeup_s3()) {
 		return load_refcode_from_cache();
 	}
 
-	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-	fwc = &vboot_handoff->components[CONFIG_VBOOT_REFCODE_INDEX];
-
-	if (vboot_handoff == NULL ||
-	    vboot_handoff->selected_firmware == VB_SELECT_FIRMWARE_READONLY ||
-	    CONFIG_VBOOT_REFCODE_INDEX >= MAX_PARSED_FW_COMPONENTS ||
-	    fwc->size == 0 || fwc->address == 0) {
-		ret = load_refcode_from_cbfs(&refcode);
-	} else {
-		ret = load_refcode_from_vboot(&refcode, (void *)fwc->address);
-
-		if (ret < 0)
-			ret = load_refcode_from_cbfs(&refcode);
-	}
-
-	if (ret < 0)
-		return NULL;
+	if (load_refcode_from_vboot(&refcode) ||
+		load_refcode_from_cbfs(&refcode))
+			return NULL;
 
 	/* Cache loaded reference code. */
 	cache_refcode(&refcode);

@@ -215,6 +215,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	cbmem_initialize_empty();
 	post_code(0x41);
 
+	amdmct_cbmem_store_info(sysinfo);
+
 /*
 	dump_pci_device_range(PCI_DEV(0, 0x18, 0), 0, 0x200);
 	dump_pci_device_range(PCI_DEV(0, 0x18, 1), 0, 0x200);

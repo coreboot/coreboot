@@ -301,6 +301,8 @@ post_code(0x40);
  cbmem_initialize_empty();
  post_code(0x41);
 
+ amdmct_cbmem_store_info(sysinfo);
+
 	timestamp_add_now(TS_END_ROMSTAGE);
 
  post_cache_as_ram();  // BSP switch stack to ram, copy then execute LB.

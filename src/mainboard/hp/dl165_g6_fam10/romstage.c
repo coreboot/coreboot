@@ -214,6 +214,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	cbmem_initialize_empty();
 	post_code(0x41);
 
+	amdmct_cbmem_store_info(sysinfo);
+
 	bcm5785_early_setup();
 
 	timestamp_add_now(TS_END_ROMSTAGE);

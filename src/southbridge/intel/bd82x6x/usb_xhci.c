@@ -38,8 +38,8 @@ static void usb_xhci_init(struct device *dev)
 	reg32 |= 1;
 	pci_write_config32(dev, 0x44, reg32);
 
-	pci_write_config32(dev, 0xd4, config->xhci_switchable_ports);
-	pci_write_config32(dev, 0xdc, config->superspeed_capable_ports);
+	pci_write_config32(dev, XUSB2PRM, config->xhci_switchable_ports);
+	pci_write_config32(dev, USB3PRM, config->superspeed_capable_ports);
 
 	/* Enable clock gating */
 	reg32 = pci_read_config32(dev, 0x40);

@@ -448,6 +448,10 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define USBOCM1		0x35a0	/* 32bit */
 #define USBOCM2		0x35a4	/* 32bit */
 
+/* XHCI USB 3.0 */
+#define XUSB2PRM	0xd4	/* 32bit */
+#define USB3PRM		0xdc	/* 32bit */
+
 /* ICH7 GPIOBASE */
 #define GPIO_USE_SEL	0x00
 #define GP_IO_SEL	0x04

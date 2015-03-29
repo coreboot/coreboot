@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <b64_decode.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <string.h>
@@ -71,7 +72,7 @@ struct calibration_entry {
 struct vpd_blob_cache_t {
 	/* The longest name template must fit with an extra character. */
 	char key_name[40];
-	const void  *value_pointer;
+	void  *value_pointer;
 	unsigned blob_size;
 	unsigned key_size;
 	unsigned value_size;
@@ -108,7 +109,9 @@ static size_t fill_up_entries_cache(struct vpd_blob_cache_t *cache,
 
 		for (j = 0; j < MAX_WIFI_INTERFACE_COUNT; j++) {
 			const void *payload;
+			void *decoded_payload;
 			int payload_size;
+			size_t decoded_size;
 
 			strcpy(cache->key_name, templates[i]);
 			cache->key_name[index_location] = j + '0';
@@ -117,9 +120,27 @@ static size_t fill_up_entries_cache(struct vpd_blob_cache_t *cache,
 			if (!payload)
 				continue;
 
-			cache->value_pointer = payload;
+			decoded_size = B64_DECODED_SIZE(payload_size);
+			decoded_payload = malloc(decoded_size);
+			if (!decoded_payload) {
+				printk(BIOS_ERR,
+				       "%s: failed allocating %zd bytes\n",
+				       __func__, decoded_size);
+				continue;
+			}
+
+			decoded_size = b64_decode(payload, payload_size,
+						  decoded_payload);
+			if (!decoded_size) {
+				free(decoded_payload);
+				printk(BIOS_ERR, "%s: failed decoding %s\n",
+				       __func__, cache->key_name);
+				continue;
+			}
+
+			cache->value_pointer = decoded_payload;
 			cache->key_size = key_length;
-			cache->value_size = payload_size;
+			cache->value_size = decoded_size;
 			cache->blob_size =
 				ALIGN(sizeof(struct calibration_blob) +
 				      cache->key_size +
@@ -187,6 +208,7 @@ void cbmem_add_vpd_calibration_data(void)
 		/* and the value */
 		pointer += cache->key_size;
 		memcpy(pointer, cache->value_pointer, cache->value_size);
+		free(cache->value_pointer);
 
 		printk(BIOS_INFO, "%s: added %s to CBMEM\n",
 		       __func__, cache->key_name);

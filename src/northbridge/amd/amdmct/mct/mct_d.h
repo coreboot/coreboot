@@ -260,7 +260,7 @@ struct MCTStatStruc {
 				      of sub 4GB dram hole for HW remapping.*/
 	u32 Sub4GCacheTop;	/* If not zero, the 32-bit top of cacheable memory.*/
 	u32 SysLimit;		/* LIMIT[39:8] (system address)*/
-};
+} __attribute__((packed));
 
 /*=============================================================================
 	Global MCT Configuration Status Word (GStatus)
@@ -512,7 +512,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u32 dev_map;
 	u32 dev_dct;
 	u32 dev_nbmisc;
-};
+} __attribute__((packed));
 
 /*===============================================================================
 	Local Error Status Codes (DCTStatStruc.ErrCode)

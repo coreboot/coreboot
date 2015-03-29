@@ -33,12 +33,12 @@
  * Software Foundation.
  */
 
-#ifndef FLASHMAP_LIB_FMAP_H__
-#define FLASHMAP_LIB_FMAP_H__
+#ifndef FLASHMAP_SERIALIZED_H__
+#define FLASHMAP_SERIALIZED_H__
 
 #include <stdint.h>
 
-#define FMAP_REVERSED_SIGNATURE	"__PAMF__" /* avoid magic number in .rodata */
+#define FMAP_SIGNATURE		"__FMAP__"
 #define FMAP_VER_MAJOR		1	/* this header's FMAP minor version */
 #define FMAP_VER_MINOR		1	/* this header's FMAP minor version */
 #define FMAP_STRLEN		32	/* maximum length for strings, */
@@ -70,10 +70,4 @@ struct fmap {
 	struct fmap_area areas[];
 } __attribute__((packed));
 
-
-/* coreboot specific function prototypes */
-const struct fmap *fmap_find(void);
-const struct fmap_area *find_fmap_area(const struct fmap *fmap,
-							const char name[]);
-int find_fmap_entry(const char name[], void **pointer);
-#endif	/* FLASHMAP_LIB_FMAP_H__*/
+#endif	/* FLASHMAP_SERIALIZED_H__ */

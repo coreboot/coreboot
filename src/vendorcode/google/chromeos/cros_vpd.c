@@ -6,12 +6,11 @@
 
 #include <console/console.h>
 
-#include <cbfs.h>
+#include <fmap.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "cros_vpd.h"
-#include "fmap.h"
 #include "lib_vpd.h"
 #include "vpd_tables.h"
 
@@ -35,9 +34,7 @@ static int cros_vpd_load(uint8_t **vpd_address, int32_t *vpd_size)
 	MAYBE_STATIC int result = -1;
 	struct google_vpd_info info;
 	int32_t base;
-
-	const struct fmap_area *area;
-	struct cbfs_media media;
+	struct region_device vpd;
 
 	if (cached) {
 		*vpd_address = cached_address;
@@ -46,32 +43,31 @@ static int cros_vpd_load(uint8_t **vpd_address, int32_t *vpd_size)
 	}
 
 	cached = 1;
-	area = find_fmap_area(fmap_find(), "RO_VPD");
-	if (!area) {
+	if (fmap_locate_area_as_rdev("RO_VPD", &vpd)) {
 		printk(BIOS_ERR, "%s: No RO_VPD FMAP section.\n", __func__);
 		return result;
 	}
-	if (area->size <= GOOGLE_VPD_2_0_OFFSET + sizeof(info)) {
+
+	base = 0;
+	cached_size = region_device_sz(&vpd);
+
+	if ((cached_size < GOOGLE_VPD_2_0_OFFSET + sizeof(info)) ||
+	    rdev_chain(&vpd, &vpd, GOOGLE_VPD_2_0_OFFSET,
+			cached_size - GOOGLE_VPD_2_0_OFFSET)) {
 		printk(BIOS_ERR, "%s: Too small (%d) for Google VPD 2.0.\n",
-		       __func__, area->size);
+		       __func__, cached_size);
 		return result;
 	}
 
-	base = area->offset + GOOGLE_VPD_2_0_OFFSET;
-	cached_size = area->size - GOOGLE_VPD_2_0_OFFSET;
-	init_default_cbfs_media(&media);
-	media.open(&media);
-
 	/* Try if we can find a google_vpd_info, otherwise read whole VPD. */
-	if (media.read(&media, &info, base, sizeof(info)) == sizeof(info) &&
+	if (rdev_readat(&vpd, &info, base, sizeof(info)) == sizeof(info) &&
 	    memcmp(info.header.magic, VPD_INFO_MAGIC, sizeof(info.header.magic))
 	    == 0 && cached_size >= info.size + sizeof(info)) {
 		base += sizeof(info);
 		cached_size = info.size;
 	}
 
-	cached_address = media.map(&media, base, cached_size);
-	media.close(&media);
+	cached_address = rdev_mmap(&vpd, base, cached_size);
 	if (cached_address) {
 		*vpd_address = cached_address;
 		*vpd_size = cached_size;

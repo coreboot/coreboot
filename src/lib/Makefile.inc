@@ -32,12 +32,14 @@ bootblock-y += memcmp.c
 bootblock-y += mem_pool.c
 bootblock-y += region.c
 bootblock-y += boot_device.c
+bootblock-y += fmap.c
 
 verstage-y += prog_ops.c
 verstage-y += delay.c
 verstage-y += cbfs.c
 verstage-y += cbfs_core.c
 verstage-y += halt.c
+verstage-y += fmap.c
 verstage-y += memcmp.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-y += region.c
@@ -62,6 +64,7 @@ $(foreach arch,$(ARCH_SUPPORTED),\
 	    $(eval rmodules_$(arch)-y += memcmp.c) \
 	    $(eval rmodules_$(arch)-y += rmodule.ld))
 
+romstage-y += fmap.c
 romstage-$(CONFIG_I2C_TPM) += delay.c
 romstage-y += cbfs.c cbfs_core.c
 romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
@@ -89,6 +92,7 @@ ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c
 ramstage-y += coreboot_table.c
 ramstage-y += bootmem.c
+ramstage-y += fmap.c
 ramstage-y += memchr.c
 ramstage-y += memcmp.c
 ramstage-y += malloc.c
@@ -148,6 +152,7 @@ ramstage-y += boot_device.c
 
 smm-y += region.c
 smm-y += boot_device.c
+smm-y += fmap.c
 smm-y += cbfs.c cbfs_core.c memcmp.c
 smm-$(CONFIG_COMPILER_GCC) += gcc.c
 

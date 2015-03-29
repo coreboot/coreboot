@@ -244,6 +244,15 @@ config CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	 The relocated ramstage is saved in an area specified by the
 	 by the board and/or chipset.
 
+config FLASHMAP_OFFSET
+	hex "Flash Map Offset"
+	default 0x00670000 if NORTHBRIDGE_INTEL_SANDYBRIDGE
+	default 0x00610000 if NORTHBRIDGE_INTEL_IVYBRIDGE
+	default CBFS_SIZE if !ARCH_X86
+	default 0
+	help
+	  Offset of flash map in firmware image
+
 choice
 	prompt "Bootblock behaviour"
 	default BOOTBLOCK_SIMPLE

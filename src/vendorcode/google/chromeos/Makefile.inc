@@ -35,11 +35,7 @@ ramstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vboot.c
 ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += gnvs.c
-verstage-y += fmap.c
-romstage-y += fmap.c
-ramstage-y += fmap.c
 ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c
-smm-y += fmap.c
 romstage-y += vpd_decode.c cros_vpd.c
 ramstage-y += vpd_decode.c cros_vpd.c vpd_mac.c vpd_serialno.c vpd_calibration.c
 ifeq ($(CONFIG_ARCH_X86)$(CONFIG_ARCH_MIPS),)

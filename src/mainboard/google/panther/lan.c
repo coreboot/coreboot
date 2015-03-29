@@ -24,8 +24,8 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <fmap.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <vendorcode/google/chromeos/fmap.h>
 #include "onboard.h"
 
 static unsigned int search(char *p, u8 *a, unsigned int lengthp,
@@ -117,15 +117,24 @@ static void program_mac_address(u16 io_base)
 	u32 high_dword = 0xD0BA00A0;	/* high dword of mac address */
 	u32 low_dword = 0x0000AD0B;	/* low word of mac address as a dword */
 
-#if CONFIG_CHROMEOS
-	search_length = find_fmap_entry("RO_VPD", &search_address);
-#else
-	search_address = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "vpd.bin",
-					       CBFS_TYPE_RAW, &search_length);
-#endif
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		struct region_device rdev;
+
+		if (fmap_locate_area_as_rdev("RO_VPD", &rdev) == 0) {
+			search_address = rdev_mmap_full(&rdev);
+
+			if (search_address != NULL)
+				search_length = region_device_sz(&rdev);
+		}
+	} else {
+		search_address = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+							"vpd.bin",
+							CBFS_TYPE_RAW,
+							&search_length);
+	}
 
 	if (search_length <= 0)
-		printk(BIOS_ERR, "LAN: find_fmap_entry returned -1.\n");
+		printk(BIOS_ERR, "LAN: VPD not found.\n");
 	else
 		get_mac_address(&high_dword, &low_dword, search_address,
 				search_length);

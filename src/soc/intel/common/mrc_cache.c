@@ -20,10 +20,8 @@
 #include <string.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <fmap.h>
 #include <ip_checksum.h>
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/fmap.h>
-#endif
 #include "mrc_cache.h"
 
 #define MRC_DATA_ALIGN           0x1000
@@ -39,16 +37,23 @@ struct mrc_data_region {
 /* common code */
 static int mrc_cache_get_region(struct mrc_data_region *region)
 {
-#if CONFIG_CHROMEOS
-	int ret;
-	ret = find_fmap_entry("RW_MRC_CACHE", &region->base);
-	if (ret >= 0) {
-		region->size = ret;
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		struct region_device rdev;
+
+		if (fmap_locate_area_as_rdev("RW_MRC_CACHE", &rdev))
+			return -1;
+
+		region->size = region_device_sz(&rdev);
+		region->base = rdev_mmap_full(&rdev);
+
+		if (region->base == NULL)
+			return -1;
+
 		return 0;
+	} else {
+		region->base = (void *)CONFIG_MRC_SETTINGS_CACHE_BASE;
+		region->size = CONFIG_MRC_SETTINGS_CACHE_SIZE;
 	}
-#endif
-	region->base = (void *)CONFIG_MRC_SETTINGS_CACHE_BASE;
-	region->size = CONFIG_MRC_SETTINGS_CACHE_SIZE;
 	return 0;
 }
 

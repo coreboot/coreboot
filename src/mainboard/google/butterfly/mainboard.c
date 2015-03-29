@@ -20,11 +20,13 @@
 
 #include <types.h>
 #include <string.h>
+#include <cbfs.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>
+#include <fmap.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
@@ -36,11 +38,6 @@
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/quanta/ene_kb3940q/ec.h>
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/fmap.h>
-#else
-#include <cbfs.h>
-#endif
 
 static unsigned int search(char *p, char *a, unsigned int lengthp,
 			   unsigned int lengtha)
@@ -200,20 +197,30 @@ static void mainboard_init(device_t dev)
 	size_t search_length = -1;
 	u16 io_base = 0;
 	struct device *ethernet_dev = NULL;
-#if CONFIG_CHROMEOS
-	char **vpd_region_ptr = NULL;
-	search_length = find_fmap_entry("RO_VPD", (void **)vpd_region_ptr);
-	search_address = (unsigned long)(*vpd_region_ptr);
-#else
-	void *vpd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "vpd.bin",
-					       CBFS_TYPE_RAW, &search_length);
-	if (vpd_file) {
-		search_address = (unsigned long)vpd_file;
+	void *vpd_file;
+
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		struct region_device rdev;
+
+		if (fmap_locate_area_as_rdev("RO_VPD", &rdev) == 0) {
+			vpd_file = rdev_mmap_full(&rdev);
+
+			if (vpd_file != NULL) {
+				search_length = region_device_sz(&rdev);
+				search_address = (uintptr_t)vpd_file;
+			}
+		}
 	} else {
-		search_length = -1;
-		search_address = 0;
+		vpd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+						"vpd.bin", CBFS_TYPE_RAW,
+						&search_length);
+		if (vpd_file) {
+			search_address = (unsigned long)vpd_file;
+		} else {
+			search_length = -1;
+			search_address = 0;
+		}
 	}
-#endif
 
 	/* Initialize the Embedded Controller */
 	butterfly_ec_init();

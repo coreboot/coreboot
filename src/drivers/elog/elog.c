@@ -26,6 +26,7 @@
 #include <pc80/mc146818rtc.h>
 #endif
 #include <bcd.h>
+#include <fmap.h>
 #include <rtc.h>
 #include <smbios.h>
 #include <spi-generic.h>
@@ -35,7 +36,6 @@
 #include <elog.h>
 #include "elog_internal.h"
 
-#include <vendorcode/google/chromeos/fmap.h>
 
 #if !IS_ENABLED(CONFIG_CHROMEOS) && CONFIG_ELOG_FLASH_BASE == 0
 #error "CONFIG_ELOG_FLASH_BASE is invalid"
@@ -83,26 +83,6 @@ static inline u32 get_rom_size(void)
 		rom_size = CONFIG_ROM_SIZE;
 
 	return rom_size;
-}
-
-/*
- * Convert a memory mapped flash address into a flash offset
- */
-static inline u32 elog_flash_address_to_offset(u8 *address)
-{
-#if CONFIG_ARCH_X86
-	/* For x86, assume address is memory-mapped near 4GB */
-	u32 rom_size;
-
-	if (!elog_spi)
-		return 0;
-
-	rom_size = get_rom_size();
-
-	return (u32)address - ((u32)~0UL - rom_size + 1);
-#else
-	return (u32)(uintptr_t)address;
-#endif
 }
 
 /*
@@ -517,21 +497,22 @@ static void elog_find_flash(void)
 {
 	elog_debug("elog_find_flash()\n");
 
-#if CONFIG_CHROMEOS
-	/* Find the ELOG base and size in FMAP */
-	u8 *flash_base_ptr;
-	int fmap_size = find_fmap_entry("RW_ELOG", (void **)&flash_base_ptr);
-	if (fmap_size < 0) {
-		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP\n");
-		flash_base = total_size = 0;
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		/* Find the ELOG base and size in FMAP */
+		struct region r;
+
+		if (fmap_locate_area("RW_ELOG", &r) < 0) {
+			printk(BIOS_WARNING,
+				"ELOG: Unable to find RW_ELOG in FMAP\n");
+			flash_base = total_size = 0;
+		} else {
+			flash_base = region_offset(&r);
+			total_size = MIN(region_sz(&r), CONFIG_ELOG_AREA_SIZE);
+		}
 	} else {
-		flash_base = elog_flash_address_to_offset(flash_base_ptr);
-		total_size = MIN(fmap_size, CONFIG_ELOG_AREA_SIZE);
+		flash_base = CONFIG_ELOG_FLASH_BASE;
+		total_size = CONFIG_ELOG_AREA_SIZE;
 	}
-#else
-	flash_base = CONFIG_ELOG_FLASH_BASE;
-	total_size = CONFIG_ELOG_AREA_SIZE;
-#endif
 	log_size = total_size - sizeof(struct elog_header);
 	full_threshold = log_size - ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
 	shrink_size = MIN(total_size * ELOG_SHRINK_PERCENTAGE / 100,

@@ -22,27 +22,19 @@
 #include <cbmem.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
+#include <fmap.h>
 #include <reset.h>
 #include <stddef.h>
 #include <string.h>
 
 #include "chromeos.h"
-#include "fmap.h"
 #include "vboot_common.h"
 #include "vboot_handoff.h"
 
 void vboot_locate_region(const char *name, struct region *region)
 {
-	const struct fmap_area *area;
-
-	region->size = 0;
-
-	area = find_fmap_area(fmap_find(), name);
-
-	if (area != NULL) {
-		region->offset = area->offset;
-		region->size = area->size;
-	}
+	if (fmap_locate_area(name, region))
+		region->size = 0;
 }
 
 void *vboot_get_region(size_t offset, size_t size, void *dest)

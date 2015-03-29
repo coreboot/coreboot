@@ -26,13 +26,13 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
+#include <fmap.h>
 #include <stdlib.h>
 #include <timestamp.h>
 #define NEED_VB20_INTERNALS  /* TODO: remove me! */
 #include <vb2_api.h>
 #include <vboot_struct.h>
 #include "../chromeos.h"
-#include "../fmap.h"
 #include "../vboot_handoff.h"
 #include "misc.h"
 

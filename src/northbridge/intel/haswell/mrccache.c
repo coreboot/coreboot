@@ -22,6 +22,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <cbfs.h>
+#include <fmap.h>
 #include <ip_checksum.h>
 #include <device/device.h>
 #include <cbmem.h>
@@ -29,9 +30,6 @@
 #include "haswell.h"
 #include <spi-generic.h>
 #include <spi_flash.h>
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/fmap.h>
-#endif
 
 /* convert a pointer to flash area into the offset inside the flash */
 static inline u32 to_flash_offset(struct spi_flash *flash, void *p) {
@@ -66,16 +64,22 @@ static int is_mrc_cache(struct mrc_data_container *mrc_cache)
  */
 static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
-#if CONFIG_CHROMEOS
-	return find_fmap_entry("RW_MRC_CACHE", (void **)mrc_region_ptr);
-#else
-	size_t region_size;
-	*mrc_region_ptr = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-						"mrc.cache",
-						CBFS_TYPE_MRC_CACHE,
-						&region_size);
+	size_t region_size = 0;
+
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		struct region_device rdev;
+
+		if (fmap_locate_area_as_rdev("RW_MRC_CACHE", &rdev) == 0) {
+			region_size = region_device_sz(&rdev);
+			*mrc_region_ptr = rdev_mmap_full(&rdev);
+		}
+	} else {
+		*mrc_region_ptr = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+							"mrc.cache",
+							CBFS_TYPE_MRC_CACHE,
+							&region_size);
+	}
 	return region_size;
-#endif
 }
 
 /*

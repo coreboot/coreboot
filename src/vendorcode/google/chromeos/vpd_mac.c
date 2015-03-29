@@ -23,68 +23,88 @@
 
 #include <vendorcode/google/chromeos/cros_vpd.h>
 
+/*
+ * Decode string representation of the MAC address (a string of 12 hex
+ * symbols) into binary. 'key_name' is the name of the VPD field, it's used if
+ * it is necessary to report an input data format problem.
+ */
+static void decode_mac(struct mac_address *mac,
+		       const char *mac_addr_str,
+		       const char *key_name)
+{
+	int i;
+
+	for (i = 0; i < sizeof(mac->mac_addr); i++) {
+		int j;
+		uint8_t n = 0;
+
+		for (j = 0; j < 2; j++) {
+			char c = mac_addr_str[i * 2 + j];
+
+			if (isxdigit(c)) {
+				if (isdigit(c))
+					c -= '0';
+				else
+					c = tolower(c) - 'a' + 10;
+			} else {
+				printk(BIOS_ERR, "%s: non hexadecimal symbol "
+				       "%#2.2x in the VPD field %s:%s\n",
+				       __func__, (uint8_t)c, key_name,
+				       mac_addr_str);
+				c = 0;
+			}
+			n <<= 4;
+			n |= c;
+		}
+		mac->mac_addr[i] = n;
+	}
+}
+
 void lb_table_add_macs_from_vpd(struct lb_header *header)
 {
 	/*
-	 * In case there is one or more MAC addresses stored in the VPD, the
-	 * key is "ethernet_mac{0..9}", up to 10 values.
+	 * Mac addresses in the VPD can be stored in two groups, for ethernet
+	 * and WiFi, with keys 'ethernet_macX and wifi_macX.
 	 */
-	static const char mac_addr_key_base[] = "ethernet_mac0";
-	char mac_addr_key[sizeof(mac_addr_key_base)];
+	const char *mac_addr_key_bases[] = {"ethernet_mac0", "wifi_mac0"};
+	char mac_addr_key[20]; /* large enough for either key */
 	char mac_addr_str[13]; /* 12 symbols and the trailing zero. */
-	int count;
+	int i, count;
 	struct lb_macs *macs = NULL;
-	const int index_of_index = sizeof(mac_addr_key) - 2;
 
-	/*
-	 * MAC addresses are stored in the VPD as strings of hex numbers,
-	 * which need to be converted into binary for storing in the coreboot
-	 * table.
-	 */
-	strcpy(mac_addr_key, mac_addr_key_base);
+	/* Make sure the copy is always zero terminated. */
+	mac_addr_key[sizeof(mac_addr_key) - 1] = '\0';
+
 	count = 0;
-	do {
-		int i;
+	for (i = 0; i < ARRAY_SIZE(mac_addr_key_bases); i++) {
+		int index_of_index;
 
-		if (!cros_vpd_gets(mac_addr_key, mac_addr_str,
-				   sizeof(mac_addr_str)))
-			break; /* No more MAC addresses in VPD */
+		strncpy(mac_addr_key, mac_addr_key_bases[i],
+			sizeof(mac_addr_key) - 1);
+		index_of_index = strlen(mac_addr_key) - 1;
 
-		if (!macs) {
-			macs = (struct lb_macs *)lb_new_record(header);
-			macs->tag = LB_TAG_MAC_ADDRS;
-		}
+		do {
+			/*
+			 * If there are no more MAC addresses of this template
+			 * in the VPD - move on.
+			 */
+			if (!cros_vpd_gets(mac_addr_key, mac_addr_str,
+					   sizeof(mac_addr_str)))
+				break;
 
-		/* MAC address in symbolic form is in mac_addr_str. */
-		for (i = 0; i < sizeof(macs->mac_addrs[0].mac_addr); i++) {
-			int j;
-			uint8_t n = 0;
-
-			for (j = 0; j < 2; j++) {
-				char c = mac_addr_str[i * 2 + j];
-
-				if (isxdigit(c)) {
-					if (isdigit(c))
-						c -= '0';
-					else
-						c = tolower(c) - 'a' + 10;
-				} else {
-					printk(BIOS_ERR,
-					       "%s: non hexadecimal symbol "
-					       "%#2.2x in the VPD field %s\n",
-					       __func__, (uint8_t)c,
-					       mac_addr_key);
-					c = 0;
-				}
-				n <<= 4;
-				n |= c;
+			if (!macs) {
+				macs = (struct lb_macs *)lb_new_record(header);
+				macs->tag = LB_TAG_MAC_ADDRS;
 			}
-			macs->mac_addrs[count].mac_addr[i] = n;
-		}
-		count++;
-		mac_addr_key[index_of_index] = '0' + count;
-	} while (count < 10);
 
+			decode_mac(macs->mac_addrs + count,
+				   mac_addr_str,
+				   mac_addr_key);
+
+			count++;
+			mac_addr_key[index_of_index]++;
+		} while (count < 10);
+	}
 	if (!count)
 		return; /* No MAC addresses in the VPD. */
 

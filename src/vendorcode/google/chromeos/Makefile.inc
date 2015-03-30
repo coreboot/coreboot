@@ -93,8 +93,8 @@ endif
 
 ifeq ($(CONFIG_VBOOT2_VERIFY_FIRMWARE),y)
 VB_SOURCE := vboot_reference
-INCLUDES += -I$(VB_SOURCE)/firmware/2lib/include
-INCLUDES += -I$(VB_SOURCE)/firmware/include
+CPPFLAGS_common += -I$(VB_SOURCE)/firmware/2lib/include
+CPPFLAGS_common += -I$(VB_SOURCE)/firmware/include
 
 verstage-generic-ccopts += -D__PRE_RAM__ -D__VER_STAGE__
 

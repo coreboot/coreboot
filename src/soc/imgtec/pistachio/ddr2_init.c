@@ -259,7 +259,7 @@ int init_ddr2(void)
 	 * 4 LPDLLPD DEf 1 0
 	 * 7:5 DQSGX DQS Extention 000
 	 * 10:8 DQSGE DQS Early Gate
-	 * 11 NOBUB No Bubbles, adds latency 0
+	 * 11 NOBUB No Bubbles, adds latency 1
 	 * 12 FXDLAT Fixed Read Latency 0
 	 * 15:13 Reserved
 	 * 19:16 CKEPDD CKE Power Down 0000
@@ -273,7 +273,7 @@ int init_ddr2(void)
 	 * 30 RSTOE RST# Output Enable 1
 	 * 31 CKEOE CKE Output Enable 1
 	 */
-	write32(DDR_PHY + DDRPHY_DSGCR_OFFSET, 0xF2000007);
+	write32(DDR_PHY + DDRPHY_DSGCR_OFFSET, 0xF2000807);
 	/* DTPR0 : DRAM Timing Params 0
 	 * 1:0 tMRD 2
 	 * 4:2 tRTP 3

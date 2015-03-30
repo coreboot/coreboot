@@ -24,7 +24,7 @@ bootblock-y += spi.c
 romstage-y += spi.c
 ramstage-y += spi.c
 
-ifeq ($(CONFIG_CONSOLE_SERIAL_UART),y)
+ifeq ($(CONFIG_DRIVERS_UART),y)
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 romstage-y += uart.c
 ramstage-y += uart.c

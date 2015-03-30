@@ -22,11 +22,12 @@
  */
 
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
+#include <console/uart.h>
 #include <device/device.h>
 #include <delay.h>
-#include <uart.h>
-#include <uart8250.h>
+#include <drivers/uart/uart8250reg.h>
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 
@@ -115,13 +116,13 @@ static void uart8250_mem_init(unsigned base_port, unsigned divisor)
 	write_lcr(base_port, CONFIG_TTYS0_LCS);
 }
 
-static unsigned int uart_platform_refclk(void)
+unsigned int uart_platform_refclk(void)
 {
 	/* TODO: this is entirely arbitrary */
 	return 1000000;
 }
 
-static unsigned int uart_platform_base(int idx)
+uintptr_t uart_platform_base(int idx)
 {
 	switch (idx) {
 	case 0:
@@ -135,16 +136,9 @@ static unsigned int uart_platform_base(int idx)
 	}
 }
 
-/* Calculate divisor. Do not floor but round to nearest integer. */
-static unsigned int uart_baudrate_divisor(unsigned int baudrate,
-	unsigned int refclk, unsigned int oversample)
+void uart_init(int idx)
 {
-	return (1 + (2 * refclk) / (baudrate * oversample)) / 2;
-}
-
-static void pistachio_uart_init(void)
-{
-	u32 base = uart_platform_base(0);
+	u32 base = uart_platform_base(idx);
 	if (!base)
 		return;
 
@@ -154,64 +148,39 @@ static void pistachio_uart_init(void)
 	uart8250_mem_init(base, div);
 }
 
-static void pistachio_uart_tx_byte(unsigned char data)
+void uart_tx_byte(int idx, unsigned char data)
 {
-	u32 base = uart_platform_base(0);
+	u32 base = uart_platform_base(idx);
 	if (!base)
 		return;
 	uart8250_mem_tx_byte(base, data);
 }
 
-static unsigned char pistachio_uart_rx_byte(void)
+unsigned char uart_rx_byte(int idx)
 {
-	u32 base = uart_platform_base(0);
+	u32 base = uart_platform_base(idx);
 	if (!base)
 		return 0xff;
 	return uart8250_mem_rx_byte(base);
 }
 
-static void pistachio_uart_tx_flush(void)
+void uart_tx_flush(int idx)
 {
-	u32 base = uart_platform_base(0);
+	u32 base = uart_platform_base(idx);
 	if (!base)
 		return;
 	uart8250_mem_tx_flush(base);
 }
 
-#if !defined(__PRE_RAM__)
-
-static const struct console_driver pistachio_uart_console __console = {
-	.init     = pistachio_uart_init,
-	.tx_byte  = pistachio_uart_tx_byte,
-	.tx_flush = pistachio_uart_tx_flush,
-	.rx_byte  = pistachio_uart_rx_byte,
-};
-
-uint32_t uartmem_getbaseaddr(void)
+#ifndef __PRE_RAM__
+void uart_fill_lb(void *data)
 {
-	return uart_platform_base(0);
+	struct lb_serial serial;
+	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	serial.baud = default_baudrate();
+	lb_add_serial(&serial, data);
+
+	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
 }
-
-#else /* __PRE_RAM__ */
-
-void uart_init(void)
-{
-	pistachio_uart_init();
-}
-
-void uart_tx_byte(unsigned char data)
-{
-	pistachio_uart_tx_byte(data);
-}
-
-unsigned char uart_rx_byte(void)
-{
-	return pistachio_uart_rx_byte();
-}
-
-void uart_tx_flush(void)
-{
-	pistachio_uart_tx_flush();
-}
-
-#endif /* __PRE_RAM__ */
+#endif

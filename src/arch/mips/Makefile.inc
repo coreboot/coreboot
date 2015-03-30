@@ -37,7 +37,6 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_MIPS),y)
 bootblock-y += boot.c
 bootblock-y += bootblock.S
 bootblock-y += bootblock_simple.c
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += early_console.c
 bootblock-y += stages.c
 bootblock-y += timer.c
 bootblock-y += ../../lib/memcpy.c

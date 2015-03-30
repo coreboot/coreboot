@@ -69,6 +69,7 @@ chip northbridge/intel/sandybridge
 
 			register "xhci_switchable_ports" = "0xf"
 			register "superspeed_capable_ports" = "0xf"
+			register "xhci_overcurrent_mapping" = "0x4000201"
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "1"

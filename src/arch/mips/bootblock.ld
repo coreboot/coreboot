@@ -20,6 +20,7 @@
  */
 
 OUTPUT_ARCH(mips)
+INCLUDE ldoptions
 
 ENTRY(_start)
 

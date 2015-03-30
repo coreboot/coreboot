@@ -91,6 +91,7 @@
  *
  * All the bad magic is not all that bad after all.
  */
+.global smm_handler_start
 smm_handler_start:
 	movl	$(TSEG_BAR), %eax	/* Get TSEG base from PCIE */
 	addr32	movl (%eax), %edx	/* Save TSEG_BAR in %edx */

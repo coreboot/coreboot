@@ -1,5 +1,6 @@
 /* Maximum number of CPUs/cores */
 CPUS = 16;
+ENTRY(smm_handler_start);
 
 SECTIONS
 {
@@ -52,11 +53,14 @@ SECTIONS
 		/* C read-write data of the SMM handler */
 		 . = ALIGN(4);
 		*(.data)
+		*(.data.*)
 
 		/* C uninitialized data of the SMM handler */
 		 . = ALIGN(4);
 		*(.bss)
+		*(.bss.*)
 		*(.sbss)
+		*(.sbss.*)
 		*(COMMON)
 		 . = ALIGN(4);
 

@@ -75,6 +75,7 @@
  *
  * All the bad magic is not all that bad after all.
  */
+.global smm_handler_start
 smm_handler_start:
 	movw    $(smm_gdtptr16 - smm_handler_start + SMM_HANDLER_OFFSET), %bx
 	data32  lgdt %cs:(%bx)

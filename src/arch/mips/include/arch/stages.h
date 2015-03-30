@@ -24,6 +24,5 @@ extern void main(void);
 
 void stage_entry(void);
 void stage_exit(void *);
-void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size);
 
 #endif /* __MIPS_ARCH_STAGES_H */

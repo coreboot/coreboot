@@ -510,10 +510,10 @@ int init_ddr2(void)
 	 * 5:2  Density 2Gb = 5
 	 * 6    Dram Type (MDDR/LPDDR2) Only  0
 	 * 7    Reserved 0
-	 * 10:8 Address Map R/B/C = 0
+	 * 10:8 Address Map R/B/C = 1
 	 * 31:11 Reserved
 	 */
-	write32(DDR_PCTL + DDR_PCTL_DCFG_OFFSET, 0x00000016);
+	write32(DDR_PCTL + DDR_PCTL_DCFG_OFFSET, 0x00000116);
 	/* PCFG_0 : Port 0 AXI config  */
 	if (BL8)
 		write32(DDR_PCTL + DDR_PCTL_PCFG0_OFFSET, 0x000800A0);

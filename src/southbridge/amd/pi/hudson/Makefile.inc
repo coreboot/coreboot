@@ -28,8 +28,6 @@
 #
 #*****************************************************************************
 
-INCLUDES += -Isrc/southbridge/amd/pi/hudson
-
 romstage-y += smbus.c smbus_spd.c
 ramstage-y += hudson.c
 ramstage-y += usb.c

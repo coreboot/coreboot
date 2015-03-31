@@ -246,7 +246,7 @@ $(obj)/build.h: .xcompile
 	mv $(obj)/build.ht $(obj)/build.h
 
 $(obj)/ldoptions: $(obj)/config.h
-	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print $$2 " = " $$3 ";";}' $< > $@
+	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print "PROVIDE_HIDDEN(" $$2 " = " $$3 ");";}' $< > $@
 
 build-dirs:
 	mkdir -p $(objcbfs) $(objgenerated)

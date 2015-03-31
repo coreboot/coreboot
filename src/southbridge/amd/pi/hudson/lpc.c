@@ -30,6 +30,8 @@
 #include <arch/io.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
+#include <pc80/i8254.h>
+#include <pc80/i8259.h>
 #include "hudson.h"
 
 static void lpc_init(device_t dev)
@@ -79,6 +81,12 @@ static void lpc_init(device_t dev)
 	 * 1 tells cmos_init to always initialize the CMOS.
 	 */
 	cmos_init(0);
+
+	/* Initialize i8259 pic */
+	setup_i8259 ();
+
+	/* Initialize i8254 timers */
+	setup_i8254 ();
 }
 
 static void hudson_lpc_read_resources(device_t dev)

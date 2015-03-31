@@ -19,17 +19,12 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/hlt.h>
-#include <arch/stages.h>
 #include <bootblock_common.h>
-#include <cbfs.h>
 #include <console/console.h>
+#include <program_loading.h>
 
 void main(void)
 {
-	const char *stage_name = "fallback/romstage";
-	void *entry;
-
 	bootblock_cpu_init();
 	bootblock_mainboard_init();
 
@@ -37,9 +32,5 @@ void main(void)
 	console_init();
 #endif
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, stage_name);
-	if (entry != (void *)-1)
-		stage_exit(entry);
-
-	hlt();
+	run_romstage();
 }

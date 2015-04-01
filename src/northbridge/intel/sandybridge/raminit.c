@@ -246,9 +246,8 @@ void sdram_initialize(struct pei_data *pei_data)
 	pei_data->tx_byte = do_putchar;
 
 	/* Locate and call UEFI System Agent binary. */
-	/* TODO make MRC blob (0xab?) defined in cbfs_core.h. */
 	entry = cbfs_get_file_content(
-		CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab, NULL);
+		CBFS_DEFAULT_MEDIA, "mrc.bin", CBFS_TYPE_MRC, NULL);
 	if (entry) {
 		int rv;
 		rv = entry (pei_data);

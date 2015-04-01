@@ -71,7 +71,9 @@ static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 #else
 	size_t region_size;
 	*mrc_region_ptr = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-						"mrc.cache", 0xac, &region_size);
+						"mrc.cache",
+						CBFS_TYPE_MRC_CACHE,
+						&region_size);
 	return region_size;
 #endif
 }

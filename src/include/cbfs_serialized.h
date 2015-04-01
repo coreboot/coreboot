@@ -74,7 +74,11 @@
 #define CBFS_TYPE_VSA        0x51
 #define CBFS_TYPE_MBI        0x52
 #define CBFS_TYPE_MICROCODE  0x53
+#define CBFS_TYPE_FSP        0x60
+#define CBFS_TYPE_MRC        0x61
 #define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
+#define CBFS_TYPE_SPD          0xab
+#define CBFS_TYPE_MRC_CACHE    0xac
 #define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
 
 #define CBFS_HEADER_MAGIC  0x4F524243

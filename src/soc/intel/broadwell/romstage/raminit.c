@@ -86,7 +86,7 @@ void raminit(struct pei_data *pei_data)
 
 	/* Determine if mrc.bin is in the cbfs. */
 	entry = (pei_wrapper_entry_t)cbfs_get_file_content(
-		CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab, NULL);
+		CBFS_DEFAULT_MEDIA, "mrc.bin", CBFS_TYPE_MRC, NULL);
 	if (entry == NULL) {
 		printk(BIOS_DEBUG, "Couldn't find mrc.bin\n");
 		return;

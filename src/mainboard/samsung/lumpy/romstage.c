@@ -237,8 +237,8 @@ void main(unsigned long bist)
 		break;
 	}
 
-	spd_data = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin", 0xab,
-					 &spd_file_len);
+	spd_data = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin",
+					 CBFS_TYPE_SPD, &spd_file_len);
 	if (!spd_data)
 		die("SPD data not found.");
 	if (spd_file_len < (spd_index + 1) * 256)

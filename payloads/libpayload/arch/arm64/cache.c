@@ -122,3 +122,9 @@ void cache_sync_instructions(void)
 	dcache_clean_all();	/* includes trailing DSB (in assembly) */
 	icache_invalidate_all(); /* includes leading DSB and trailing ISB */
 }
+
+void arch_program_segment_loaded(void const *addr, size_t len)
+{
+	dcache_clean_invalidate_by_mva(addr, len);
+	icache_invalidate_all();
+}

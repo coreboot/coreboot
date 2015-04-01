@@ -100,6 +100,9 @@ void dcache_mmu_enable(void);
 /* perform all icache/dcache maintenance needed after loading new code */
 void cache_sync_instructions(void);
 
+/* Ensure that loaded program segment is synced back from cache to PoC */
+void arch_program_segment_loaded(void const *addr, size_t len);
+
 /* tlb invalidate all */
 void tlb_invalidate_all(void);
 

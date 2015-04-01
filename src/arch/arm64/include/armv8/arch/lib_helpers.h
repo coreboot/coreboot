@@ -261,6 +261,16 @@
 402:
 .endm
 
+/* Macro to read from an el0 register */
+.macro read_el0 xreg sysreg
+	mrs	\xreg, \sysreg\()_el0
+.endm
+
+/* Macro to write to an el0 register */
+.macro write_el0 sysreg xreg temp
+	msr	\sysreg\()_el0, \xreg
+.endm
+
 /* Macro to invalidate all stage 1 TLB entries for current EL */
 .macro tlbiall_current temp
 	switch_el \temp, 401f, 402f, 403f
@@ -547,6 +557,8 @@ uint64_t raw_read_vbar_current(void);
 void raw_write_vbar_current(uint64_t vbar);
 uint64_t raw_read_vbar(uint32_t el);
 void raw_write_vbar(uint64_t vbar, uint32_t el);
+uint32_t raw_read_cntfrq_el0(void);
+void raw_write_cntfrq_el0(uint32_t cntfrq_el0);
 
 /* Cache maintenance system instructions */
 void dccisw(uint64_t cisw);

@@ -190,6 +190,9 @@ ENDPROC(__rmodule_entry)
 	get_element_addr VBAR_INDEX
 	write_current vbar, x0, x1
 
+	get_element_addr CNTFRQ_INDEX
+	write_el0 cntfrq, x0, x1
+
 	dsb sy
 	isb
 

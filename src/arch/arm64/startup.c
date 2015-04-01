@@ -45,6 +45,7 @@ void startup_save_cpu_data(void)
 	save_element(TCR_INDEX, raw_read_tcr_current());
 	save_element(TTBR0_INDEX, raw_read_ttbr0_current());
 	save_element(VBAR_INDEX, raw_read_vbar_current());
+	save_element(CNTFRQ_INDEX, raw_read_cntfrq_el0());
 
 	if (get_current_el() == EL3)
 		save_element(SCR_INDEX, raw_read_scr_el3());

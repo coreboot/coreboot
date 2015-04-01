@@ -87,6 +87,8 @@ const char * pin_to_str(int pin);
 int get_pci_irq_pins(device_t dev, device_t *parent_bdg);
 void pci_assign_irqs(unsigned bus, unsigned slot,
 		     const unsigned char pIntAtoD[4]);
+const char *get_pci_class_name(device_t dev);
+const char *get_pci_subclass_name(device_t dev);
 
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)

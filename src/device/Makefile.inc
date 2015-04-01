@@ -2,6 +2,7 @@ ramstage-y += device.c
 ramstage-y += root_device.c
 ramstage-y += cpu_device.c
 ramstage-y += device_util.c
+ramstage-$(CONFIG_PCI) += pci_class.c
 ramstage-$(CONFIG_PCI) += pci_device.c
 ramstage-$(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT) += hypertransport.c
 ramstage-$(CONFIG_PCIX_PLUGIN_SUPPORT) += pcix_device.c

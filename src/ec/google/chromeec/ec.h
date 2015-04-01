@@ -54,6 +54,13 @@ void google_chromeec_post(u8 postcode);
 void google_chromeec_log_events(u32 mask);
 int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len);
 
+/* For MEC, access ranges 0x800 thru 0x9ff using EMI interface instead of LPC */
+#define MEC_EMI_RANGE_START EC_HOST_CMD_REGION0
+#define MEC_EMI_RANGE_END   (EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SIZE)
+
+void mec_io_bytes(int write, u16 offset, unsigned int length,
+		  u8 *buf, u8 *csum);
+
 enum usb_charge_mode {
 	USB_CHARGE_MODE_DISABLED,
 	USB_CHARGE_MODE_CHARGE_AUTO,

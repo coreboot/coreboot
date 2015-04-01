@@ -41,6 +41,12 @@ config EC_GOOGLE_CHROMEEC_LPC
 	help
 	  Google Chrome EC via LPC bus.
 
+config EC_GOOGLE_CHROMEEC_MEC
+	depends on EC_GOOGLE_CHROMEEC_LPC
+	def_bool n
+	help
+	  Microchip EC variant for LPC register access.
+
 config EC_GOOGLE_CHROMEEC_SPI
 	depends on EC_GOOGLE_CHROMEEC
 	def_bool n

@@ -41,6 +41,14 @@ static void read_bytes(u16 port, unsigned int length, u8 *dest, u8 *csum)
 {
 	int i;
 
+#if CONFIG_EC_GOOGLE_CHROMEEC_MEC
+	/* Access desired range though EMI interface */
+	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
+		mec_io_bytes(0, port, length, dest, csum);
+		return;
+	}
+#endif
+
 	for (i = 0; i < length; ++i) {
 		dest[i] = inb(port + i);
 		if (csum)
@@ -67,6 +75,14 @@ static inline u8 read_byte(u16 port)
 static void write_bytes(u16 port, unsigned int length, u8 *msg, u8 *csum)
 {
 	int i;
+
+#if CONFIG_EC_GOOGLE_CHROMEEC_MEC
+	/* Access desired range though EMI interface */
+	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
+		mec_io_bytes(1, port, length, msg, csum);
+		return;
+	}
+#endif
 
 	for (i = 0; i < length; ++i) {
 		outb(msg[i], port + i);

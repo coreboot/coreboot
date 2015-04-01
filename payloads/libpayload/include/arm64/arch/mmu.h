@@ -80,6 +80,12 @@ extern char _start[], _end[];
 
 #define BLOCK_ACCESS               (1 << 10)
 
+#define BLOCK_SH_SHIFT                 (8)
+#define BLOCK_SH_NON_SHAREABLE         (0 << BLOCK_SH_SHIFT)
+#define BLOCK_SH_UNPREDICTABLE         (1 << BLOCK_SH_SHIFT)
+#define BLOCK_SH_OUTER_SHAREABLE       (2 << BLOCK_SH_SHIFT)
+#define BLOCK_SH_INNER_SHAREABLE       (3 << BLOCK_SH_SHIFT)
+
 /* XLAT Table Init Attributes */
 
 #define VA_START                   0x0

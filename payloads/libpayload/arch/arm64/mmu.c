@@ -93,6 +93,7 @@ static uint64_t get_block_attr(unsigned long tag)
 	switch (tag) {
 
 	case TYPE_NORMAL_MEM:
+		attr |= BLOCK_SH_INNER_SHAREABLE;
 		attr |= (BLOCK_INDEX_MEM_NORMAL << BLOCK_INDEX_SHIFT);
 		break;
 	case TYPE_DEV_MEM:

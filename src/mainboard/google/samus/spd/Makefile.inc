@@ -45,7 +45,7 @@ SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).
 $(SPD_BIN): $(SPD_DEPS)
 	for f in $+; \
 	  do for c in $$(cat $$f | grep -v ^#); \
-	    do echo -e -n "\\x$$c"; \
+	    do printf $$(printf '\%o' 0x$$c); \
 	  done; \
 	done > $@
 

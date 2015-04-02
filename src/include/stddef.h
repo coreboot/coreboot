@@ -26,6 +26,10 @@ typedef unsigned int wint_t;
 /* Could we ever run into this one? I hope we get this much memory! */
 #define TiB (1<<40)
 
+#define KHz (1000)
+#define MHz (1000 * KHz)
+#define GHz (1000 * MHz)
+
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 #define check_member(structure, member, offset) _Static_assert( \

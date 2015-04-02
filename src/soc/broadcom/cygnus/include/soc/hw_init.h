@@ -1,7 +1,5 @@
 /*
- * This file is part of the coreboot project.
- *
- * Copyright 2015 Google Inc.
+ * Copyright (C) 2015 Broadcom Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,23 +15,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/cache.h>
-#include <bootblock_common.h>
-#include <stddef.h>
-#include <symbols.h>
-#include <soc/hw_init.h>
+#ifndef __SOC_BROADCOM_CYGNUS_HW_INIT_H__
+#define __SOC_BROADCOM_CYGNUS_HW_INIT_H__
 
-void bootblock_soc_init(void)
-{
-	/*
-	 * not only for speed but for preventing the cpu from crashing.
-	 * the cpu is not happy when cache is cleaned without mmu turned on.
-	 */
-	mmu_init();
-	mmu_config_range(0, 4096, DCACHE_OFF);
-	mmu_config_range_kb((uintptr_t)_sram/KiB, _sram_size/KiB,
-			    DCACHE_WRITETHROUGH);
-	dcache_mmu_enable();
+void hw_init(void);
 
-	hw_init();
-}
+#endif

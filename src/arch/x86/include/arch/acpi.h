@@ -28,6 +28,7 @@
 #define __ASM_ACPI_H
 
 #include <stdint.h>
+#include <rules.h>
 
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
 #define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
@@ -530,8 +531,13 @@ void acpi_create_srat(acpi_srat_t *srat);
 
 void acpi_create_slit(acpi_slit_t *slit);
 
+#if ENV_RAMSTAGE
 void acpi_create_hpet(acpi_hpet_t *hpet);
 unsigned long acpi_write_hpet(unsigned long start, acpi_rsdp_t *rsdp);
+
+/* cpu/intel/speedstep/acpi.c */
+void generate_cpu_entries(void);
+#endif
 
 void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 
@@ -558,9 +564,6 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *
 unsigned long acpi_fill_hest(acpi_hest_t *hest);
 
 void acpi_save_gnvs(u32 gnvs_address);
-
-/* cpu/intel/speedstep/acpi.c */
-void generate_cpu_entries(void);
 
 /* For ACPI S3 support. */
 void acpi_fail_wakeup(void);

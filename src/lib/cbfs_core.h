@@ -13,7 +13,7 @@
 # define CBFS_MINI_BUILD
 #elif defined(__SMM__)
 # define CBFS_MINI_BUILD
-#elif defined(__BOOT_BLOCK__)
+#elif defined(__BOOTBLOCK__)
   /* No LZMA in boot block. */
 #elif defined(__PRE_RAM__) && !CONFIG_COMPRESS_RAMSTAGE
   /* No LZMA in romstage if ramstage is not compressed. */

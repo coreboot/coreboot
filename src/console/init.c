@@ -49,7 +49,7 @@ void console_init(void)
 
 	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s %s starting...\n",
 		      coreboot_version, coreboot_extra_version, coreboot_build,
-#if defined(__BOOT_BLOCK__)
+#if defined(__BOOTBLOCK__)
 		      "bootblock"
 #elif defined(__PRE_RAM__)
 		      "romstage"

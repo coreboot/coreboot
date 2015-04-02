@@ -130,7 +130,7 @@ void a1x_gate_dram_clock_output(void)
  * Linker doesn't garbage collect and the function below adds about half
  * kilobyte to the bootblock, and log2_ceil is not available in the bootblock.
  */
-#ifndef __BOOT_BLOCK__
+#ifndef __BOOTBLOCK__
 
 #define PLL1_CFG(N, K, M, P_EXP)	\
 	((1 << 31 | 0 << 30 | 8 << 26 | 0 << 25 | 16 << 20 | 2 << 13) | \
@@ -270,4 +270,4 @@ void a1x_set_cpu_clock(u16 cpu_clk_mhz)
 	udelay(1);
 }
 
-#endif  /* __BOOT_BLOCK__ */
+#endif  /* __BOOTBLOCK__ */

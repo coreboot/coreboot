@@ -96,7 +96,7 @@ VB_SOURCE := vboot_reference
 CPPFLAGS_common += -I$(VB_SOURCE)/firmware/2lib/include
 CPPFLAGS_common += -I$(VB_SOURCE)/firmware/include
 
-verstage-generic-ccopts += -D__PRE_RAM__ -D__VER_STAGE__
+verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
 ifeq ($(CONFIG_RETURN_FROM_VERSTAGE),y)
 bootblock-y += verstub.c chromeos.c

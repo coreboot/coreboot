@@ -132,7 +132,7 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty))
 endif
 
-bootblock-generic-ccopts += -D__BOOT_BLOCK__ -D__PRE_RAM__
+bootblock-generic-ccopts += -D__BOOTBLOCK__ -D__PRE_RAM__
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)

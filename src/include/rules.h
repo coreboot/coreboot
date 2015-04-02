@@ -23,7 +23,7 @@
  * romstage, ramstage or SMM.
  */
 
-#if defined(__BOOT_BLOCK__)
+#if defined(__BOOTBLOCK__)
 #define ENV_BOOTBLOCK 1
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0

@@ -98,9 +98,9 @@ endif
 bootblock_inc += $(objgenerated)/bootblock.inc
 bootblock_inc += $(src)/arch/x86/lib/walkcbfs.S
 
-bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__ -D__BOOT_BLOCK__
+bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 ifeq ($(CONFIG_SSE),y)
-bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__ -D__BOOT_BLOCK__
+bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 endif
 
 $(objgenerated)/bootblock.ld: $(obj)/ldoptions $$(filter %.ld,$$(bootblock-srcs))

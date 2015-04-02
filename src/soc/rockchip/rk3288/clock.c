@@ -159,7 +159,6 @@ static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 2, 4);
  */
 #define PERI_ACLK_DIV_SHIFT	(0x0)
 #define PERI_ACLK_DIV_MSK	(0x1F)
-#define PERI_ACLK_DIV_SHIFT	(0)
 
 /*******************CLKSEL37 BITS***************************/
 #define L2_DIV_MSK	(0x7)

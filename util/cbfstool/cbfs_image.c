@@ -456,8 +456,10 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	// Process buffer AFTER entry.
 	entry = cbfs_find_next_entry(image, entry);
 	addr = cbfs_get_entry_addr(image, entry);
-	assert(addr < addr_next);
+	if (addr == addr_next)
+		return 0;
 
+	assert(addr < addr_next);
 	if (addr_next - addr < min_entry_size) {
 		DEBUG("No space after content to keep CBFS structure.\n");
 		return -1;

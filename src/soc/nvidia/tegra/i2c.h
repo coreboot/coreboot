@@ -172,4 +172,6 @@ struct tegra_i2c_regs {
 };
 check_member(tegra_i2c_regs, config_load, 0x8C);
 
+extern unsigned g_num_i2c_buses;
+
 #endif	/* __SOC_NVIDIA_TEGRA_I2C_H__ */

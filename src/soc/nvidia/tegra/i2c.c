@@ -194,8 +194,14 @@ static int i2c_transfer_segment(unsigned bus, unsigned chip, int restart,
 int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 {
 	struct i2c_seg *seg = segments;
-
 	int i;
+
+	if (bus >= g_num_i2c_buses) {
+		printk(BIOS_ERR, "%s: ERROR: invalid I2C bus (%u)\n", __func__,
+		       bus);
+		return -1;
+	}
+
 	for (i = 0; i < count; seg++, i++) {
 		if (i2c_transfer_segment(bus, seg->chip, i < count - 1,
 					 seg->read, seg->buf, seg->len))
@@ -206,7 +212,15 @@ int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 
 void i2c_init(unsigned bus)
 {
-	struct tegra_i2c_regs * const regs = tegra_i2c_info[bus].base;
+	struct tegra_i2c_regs *regs;
+
+	if (bus >= g_num_i2c_buses) {
+                printk(BIOS_ERR, "%s: ERROR: invalid I2C bus (%u)\n", __func__,
+		       bus);
+		return;
+	}
+
+	regs = tegra_i2c_info[bus].base;
 
 	write32(&regs->cnfg, I2C_CNFG_PACKET_MODE_EN);
 }

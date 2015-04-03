@@ -1,0 +1,70 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2015 Sergej Ivanov <getinaks@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+
+if BOARD_BIOSTAR_AM1ML
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_4096
+	select CPU_AMD_AGESA_FAMILY16_KB
+	select FORCE_AM1_SOCKET_SUPPORT
+	select GFXUMA
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select NORTHBRIDGE_AMD_AGESA_FAMILY16_KB
+	select SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	select SUPERIO_ITE_IT8728F
+
+config MAINBOARD_DIR
+	string
+	default biostar/am1ml
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "AM1ML"
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x200000
+
+config MAX_CPUS
+	int
+	default 4
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+
+config IRQ_SLOT_COUNT
+	int
+	default 10
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config HUDSON_LEGACY_FREE
+	bool
+	default n
+
+endif # BOARD_BIOSTAR_AM1ML

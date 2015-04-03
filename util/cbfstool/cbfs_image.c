@@ -28,6 +28,24 @@
 #include "common.h"
 #include "cbfs_image.h"
 
+/* Even though the file-adding functions---cbfs_add_entry() and
+ * cbfs_add_entry_at()---perform their sizing checks against the beginning of
+ * the subsequent section rather than a stable recorded value such as an empty
+ * file header's len field, it's possible to prove two interesting properties
+ * about their behavior:
+ *  - Placing a new file within an empty entry located below an existing file
+ *    entry will never leave an aligned flash address containing neither the
+ *    beginning of a file header nor part of a file.
+ *  - Placing a new file in an empty entry at the very end of the image such
+ *    that it fits, but leaves no room for a final header, is guaranteed not to
+ *    change the total amount of space for entries, even if that new file is
+ *    later removed from the CBFS.
+ * These properties are somewhat nonobvious from the implementation, so the
+ * reader is encouraged to blame this comment and examine the full proofs
+ * in the commit message before making significant changes that would risk
+ * removing said guarantees.
+ */
+
 /* The file name align is not defined in CBFS spec -- only a preference by
  * (old) cbfstool. */
 #define CBFS_FILENAME_ALIGN	(16)
@@ -185,6 +203,16 @@ int cbfs_image_create(struct cbfs_image *image,
 	      bootblock_offset, bootblock->size,
 	      header_offset, sizeof(header), entries_offset);
 
+	// This attribute must be given in order to prove that this module
+	// correctly preserves certain CBFS properties. See the block comment
+	// near the top of this file (and the associated commit message).
+	size_t empty_header_len = cbfs_calculate_file_header_size("");
+	if (align < empty_header_len) {
+		ERROR("CBFS must be aligned to at least %zu bytes\n",
+							empty_header_len);
+		return -1;
+	}
+
 	if (buffer_create(&image->buffer, size, "(new)") != 0)
 		return -1;
 	if ((image->header = malloc(sizeof(*image->header))) == NULL)
@@ -263,7 +291,11 @@ int cbfs_image_create(struct cbfs_image *image,
 		cbfs_len = bootblock_offset;
 	if (header_offset > entries_offset && header_offset < cbfs_len)
 		cbfs_len = header_offset;
-	cbfs_len -= entries_offset + align + entry_header_len;
+	// This alignment is necessary in order to prove that this module
+	// correctly preserves certain CBFS properties. See the block comment
+	// near the top of this file (and the associated commit message).
+	cbfs_len -= cbfs_len % align;
+	cbfs_len -= entries_offset + entry_header_len;
 	cbfs_create_empty_entry(entry, cbfs_len, "");
 	LOG("Created CBFS image (capacity = %d bytes)\n", cbfs_len);
 	return 0;
@@ -462,8 +494,12 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 
 	assert(addr < addr_next);
 	if (addr_next - addr < min_entry_size) {
-		DEBUG("No space after content to keep CBFS structure.\n");
-		return -1;
+		DEBUG("No need for new \"empty\" entry\n");
+		/* No need to increase the size of the just
+		 * stored file to extend to next file. Alignment
+		 * of next file takes care of this.
+		 */
+		return 0;
 	}
 
 	len = addr_next - addr - min_entry_size;

@@ -139,6 +139,11 @@ romstage-c-deps:=$$(OPTION_TABLE_H)
 verstage-c-deps:=$$(OPTION_TABLE_H)
 bootblock-c-deps:=$$(OPTION_TABLE_H)
 
+# Add handler to add no rules for manual files
+define generic-objs_manual_template_gen
+# do nothing
+endef
+
 #######################################################################
 # Add handler to compile ACPI's ASL
 define ramstage-objs_asl_template

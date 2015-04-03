@@ -12,7 +12,7 @@ SIPI_BIN=$(SIPI_ELF:.elf=)
 SIPI_DOTO=$(SIPI_ELF:.elf=.o)
 
 ifeq ($(CONFIG_PARALLEL_MP),y)
-ramstage-srcs += $(SIPI_BIN).o
+ramstage-srcs += $(SIPI_BIN).manual
 endif
 rmodules_$(ARCH-ramstage-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
 
@@ -24,6 +24,6 @@ $(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0,x86_32))
 $(SIPI_BIN): $(SIPI_RMOD)
 	$(OBJCOPY_ramstage) -O binary $< $@
 
-$(SIPI_BIN).ramstage.o: $(SIPI_BIN)
+$(SIPI_BIN).ramstage.manual: $(SIPI_BIN)
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)

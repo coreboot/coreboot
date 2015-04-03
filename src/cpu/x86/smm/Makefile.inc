@@ -41,12 +41,12 @@ $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_L
 
 # change to the target path because objcopy will use the path name in its
 # ELF symbol names.
-$(obj)/cpu/x86/smm/smm_wrap.ramstage.o: $(obj)/cpu/x86/smm/smm_wrap
+$(obj)/cpu/x86/smm/smm_wrap.ramstage.manual: $(obj)/cpu/x86/smm/smm_wrap
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.o
+	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.manual
 else
-	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf64-x86_64 -B x86_64 smm_wrap.ramstage.o
+	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf64-x86_64 -B x86_64 smm_wrap.ramstage.manual
 endif
 
 
@@ -58,8 +58,8 @@ smm-y += smm_module_handler.c
 
 ramstage-y += smm_module_loader.c
 
-ramstage-srcs += $(obj)/cpu/x86/smm/smm.o
-ramstage-srcs += $(obj)/cpu/x86/smm/smmstub.o
+ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
+ramstage-srcs += $(obj)/cpu/x86/smm/smmstub.manual
 
 # SMM Stub Module. The stub is used as a trampoline for relocation and normal
 # SMM handling.
@@ -72,7 +72,7 @@ $(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smmstub.elf, $(obj)/cpu/x86/smm/sm
 $(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf.rmod
 	$(OBJCOPY_smmstub) -O binary $< $@
 
-$(obj)/cpu/x86/smm/smmstub.ramstage.o: $(obj)/cpu/x86/smm/smmstub
+$(obj)/cpu/x86/smm/smmstub.ramstage.manual: $(obj)/cpu/x86/smm/smmstub
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cd $(dir $@); $(OBJCOPY_smmstub) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
 
@@ -87,7 +87,7 @@ endif
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf.rmod
 	$(OBJCOPY_smm) -O binary $< $@
 
-$(obj)/cpu/x86/smm/smm.ramstage.o: $(obj)/cpu/x86/smm/smm
+$(obj)/cpu/x86/smm/smm.ramstage.manual: $(obj)/cpu/x86/smm/smm
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
@@ -99,7 +99,7 @@ else # CONFIG_SMM_MODULES
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.S
 ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
-ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap.o
+ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap.manual
 endif
 
 # Use TSEG specific entry point and linker script

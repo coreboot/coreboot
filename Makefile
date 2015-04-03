@@ -241,7 +241,8 @@ filetypes-of-class=$(subst .,,$(sort $(suffix $($(1)-srcs))))
 $(foreach class,$(classes), \
 	$(foreach type,$(call filetypes-of-class,$(class)), \
 		$(eval $(class)-$(type)-ccopts += $(generic-$(type)-ccopts) $($(class)-generic-ccopts)) \
-		$(eval $(call create_cc_template,$(class),$(type),$($(class)-$(type)-ccopts),$($(class)-$(type)-deps)))))
+		$(if $(generic-objs_$(type)_template_gen),$(eval $(call generic-objs_$(type)_template_gen,$(class))),\
+		$(eval $(call create_cc_template,$(class),$(type),$($(class)-$(type)-ccopts),$($(class)-$(type)-deps))))))
 
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))

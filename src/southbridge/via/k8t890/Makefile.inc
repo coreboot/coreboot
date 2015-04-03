@@ -9,4 +9,4 @@ ramstage-y += error.c
 ramstage-y += chrome.c
 
 chipset_bootblock_inc += $(src)/southbridge/via/k8t890/romstrap.inc
-chipset_bootblock_lds += $(src)/southbridge/via/k8t890/romstrap.ld
+bootblock-y += romstrap.ld

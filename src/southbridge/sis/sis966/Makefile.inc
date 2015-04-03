@@ -14,4 +14,4 @@ romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 
 chipset_bootblock_inc += $(src)/southbridge/sis/sis966/romstrap.inc
-chipset_bootblock_lds += $(src)/southbridge/sis/sis966/romstrap.ld
+bootblock-y += romstrap.ld

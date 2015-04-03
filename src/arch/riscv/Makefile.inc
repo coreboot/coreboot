@@ -28,7 +28,7 @@ riscv_asm_flags =
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 
-bootblock_lds = $(src)/arch/riscv/bootblock.ld
+bootblock-y += bootblock.ld
 
 bootblock-y = bootblock.S stages.c
 bootblock-y += boot.c

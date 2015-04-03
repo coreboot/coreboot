@@ -73,15 +73,15 @@ endif
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
 
-bootblock_lds = $(src)/arch/x86/init/failover.ld
-bootblock_lds += $(src)/cpu/x86/16bit/entry16.ld
-bootblock_lds += $(src)/cpu/x86/16bit/reset16.ld
-bootblock_lds += $(src)/arch/x86/lib/id.ld
-bootblock_lds += $(chipset_bootblock_lds)
+bootblock-srcs += $(src)/arch/x86/init/failover.ld
+bootblock-srcs += $(src)/cpu/x86/16bit/entry16.ld
+bootblock-srcs += $(src)/cpu/x86/16bit/reset16.ld
+bootblock-srcs += $(src)/arch/x86/lib/id.ld
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
-bootblock_lds += $(src)/cpu/intel/fit/fit.ld
+bootblock-srcs += $(src)/cpu/intel/fit/fit.ld
 endif
 
+# TODO: Why can't this use the real bootblock-y += xxx.S mechanism instead?
 bootblock_inc = $(src)/arch/x86/init/prologue.inc
 bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
 bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
@@ -103,9 +103,9 @@ ifeq ($(CONFIG_SSE),y)
 bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__ -D__BOOT_BLOCK__
 endif
 
-$(objgenerated)/bootblock.ld: $$(bootblock_lds) $(obj)/ldoptions
+$(objgenerated)/bootblock.ld: $(obj)/ldoptions $$(filter %.ld,$$(bootblock-srcs))
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	printf '$(foreach ldscript,ldoptions $(bootblock_lds),INCLUDE "$(ldscript)"\n)' > $@
+	printf '$(foreach ldscript,$(^),INCLUDE "$(ldscript)"\n)' > $@
 
 $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
@@ -139,10 +139,9 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 
 crt0s = $(src)/arch/x86/init/prologue.inc
-ldscripts =
-ldscripts += $(src)/arch/x86/init/romstage.ld
+romstage-srcs += $(src)/arch/x86/init/romstage.ld
 crt0s += $(src)/cpu/x86/32bit/entry32.inc
-ldscripts += $(src)/cpu/x86/32bit/entry32.ld
+romstage-srcs += $(src)/cpu/x86/32bit/entry32.ld
 
 crt0s += $(src)/cpu/x86/fpu_enable.inc
 ifeq ($(CONFIG_SSE),y)
@@ -202,7 +201,7 @@ romstage-libs ?=
 
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld
+	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld
 	$(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders && \
 	$(NM_romstage) $(objcbfs)/romstage_null.offenders | grep -q ""; if [ $$? -eq 0 ]; then \
 		echo "Forbidden global variables in romstage:"; \
@@ -211,13 +210,13 @@ $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.
 
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(romstage-objs) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld
+	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld
 
-$(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
+$(objgenerated)/romstage_null.ld: $(obj)/ldoptions $$(filter %.ld,$$(romstage-srcs))
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
-	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
+	printf '$(foreach ldscript,$(^),INCLUDE "$(ldscript)"\n)' >> $@.tmp
 	mv $@.tmp $@
 
 $(objgenerated)/romstage.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
@@ -278,7 +277,7 @@ endif
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/fadt.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
 endif
-endif
+endif # CONFIG_GENERATE_ACPI_TABLES
 ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/smihandler.c),)
 smm-srcs += src/mainboard/$(MAINBOARDDIR)/smihandler.c
@@ -308,7 +307,7 @@ endif
 
 $(objgenerated)/ramstage.o: $$(ramstage-objs) $(COMPILER_RT_ramstage) $$(ramstage-libs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) -m elf_i386 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --start-group $(ramstage-objs) $(ramstage-libs) $(COMPILER_RT_ramstage) --end-group
+	$(LD_ramstage) -m elf_i386 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) $(COMPILER_RT_ramstage) --end-group
 
 endif # CONFIG_ARCH_RAMSTAGE_X86_32
 

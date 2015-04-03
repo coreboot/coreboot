@@ -225,7 +225,7 @@ alldirs:=$(sort $(abspath $(dir $(allobjs))))
 # macro to define template macros that are used by use_template macro
 define create_cc_template
 # $1 obj class
-# $2 source suffix (c, S)
+# $2 source suffix (c, S, ld, ...)
 # $3 additional compiler flags
 # $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template

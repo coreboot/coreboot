@@ -113,8 +113,8 @@ files-in-dir=$(filter-out $(call dir-wildcards,$(call filter-out-dirs,$(1),$(sor
 # reduce command line length by linking the objects of each
 # directory into an intermediate file
 ramstage-postprocess=$(foreach d,$(sort $(dir $(1))), \
-	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(1)); $$(LD_ramstage) -o $$@ -r $$^ ) \
-	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(call files-in-dir,$(d),$(1)),$(ramstage-objs))))
+	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); $$(LD_ramstage) -o $$@ -r $$^ ) \
+	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(call files-in-dir,$(d),$(1)),$(filter-out %.ld,$(ramstage-objs)))))
 
 romstage-generic-ccopts += -D__PRE_RAM__
 ifeq ($(CONFIG_TRACE),y)
@@ -138,6 +138,15 @@ ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
 verstage-c-deps:=$$(OPTION_TABLE_H)
 bootblock-c-deps:=$$(OPTION_TABLE_H)
+
+# Add handler to copy linker scripts
+define generic-objs_ld_template_gen
+de$(EMPTY)fine $(1)-objs_ld_template
+$$(call src-to-obj,$1,$$(1).ld): $$(1).ld
+	@printf "    CP         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	cp $$$$< $$$$@
+en$(EMPTY)def
+endef
 
 # Add handler to add no rules for manual files
 define generic-objs_manual_template_gen

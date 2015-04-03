@@ -25,7 +25,7 @@ subdirs-y += ../../x86/smm
 
 chipset_bootblock_inc += $(src)/cpu/dmp/vortex86ex/biosdata.inc
 chipset_bootblock_inc += $(src)/cpu/dmp/vortex86ex/biosdata_ex.inc
-chipset_bootblock_lds += $(src)/cpu/dmp/vortex86ex/biosdata.ld
-chipset_bootblock_lds += $(src)/cpu/dmp/vortex86ex/biosdata_ex.ld
+bootblock-y += biosdata.ld
+bootblock-y += biosdata_ex.ld
 
 ROMCCFLAGS := -mcpu=i386 -O2

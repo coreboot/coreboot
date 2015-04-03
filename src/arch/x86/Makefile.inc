@@ -73,7 +73,7 @@ endif
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
 
-bootblock_lds = $(src)/arch/x86/init/ldscript_failover.ld
+bootblock_lds = $(src)/arch/x86/init/failover.ld
 bootblock_lds += $(src)/cpu/x86/16bit/entry16.ld
 bootblock_lds += $(src)/cpu/x86/16bit/reset16.ld
 bootblock_lds += $(src)/arch/x86/lib/id.ld

@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <wordexp.h>
 
 #include "lkc.h"
 
@@ -334,6 +335,21 @@ void zconf_nextfile(const char *name)
 	file->lineno = 1;
 	file->parent = current_file;
 	current_file = file;
+}
+
+void zconf_nextfiles(const char *wildcard)
+{
+	wordexp_t p;
+	char **w;
+	int i;
+
+	wordexp(wildcard, &p, 0);
+	w = p.we_wordv;
+
+	for (i = p.we_wordc - 1; i >= 0; i--)
+		zconf_nextfile(w[i]);
+
+	wordfree(&p);
 }
 
 static void zconf_endfile(void)

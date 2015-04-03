@@ -326,10 +326,10 @@ $(obj)/zconf.lex.c: $(src)/zconf.l
 $(obj)/zconf.hash.c: $(src)/zconf.gperf
 
 %.tab.c: %.y
-	bison -l -b $* -p $(notdir $*) $<
+	bison -t -l -b $* -p $(notdir $*) $<
 	cp $@ $@_shipped
 
-lex.%.c: %.l
+%.lex.c: %.l
 	flex -L -P$(notdir $*) -o$@ $<
 	cp $@ $@_shipped
 

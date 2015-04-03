@@ -232,7 +232,7 @@ ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
 $(obj)/$$(1).$(1).o: src/$$(1).$(2) $(obj)/config.h $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	$(CC_$(1)) $(3) -MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -c -o $$$$@ $$$$<
+	$(CC_$(1)) -MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@) $(3) -c -o $$$$@ $$$$<
 en$(EMPTY)def
 end$(EMPTY)if
 endef

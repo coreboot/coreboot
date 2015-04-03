@@ -62,4 +62,15 @@ config HIGH_SCRATCH_MEMORY_SIZE
 	# Assume the maximum size of stack as (0xA0000 - 0x30000 + 0x1000)
 	default 0xA1000
 
+config FORCE_AM1_SOCKET_SUPPORT
+	bool
+	default n
+	help
+		Force AGESA to ignore package type mismatch between CPU and northbridge
+		in memory code. This enables Socket AM1 support with current AGESA
+		version for Kabini platform.
+		Enable this option only if you have Socket AM1 board.
+		Note that the AGESA release shipped with coreboot does not officially
+		support the AM1 socket. Selecting this option might damage your hardware.
+
 endif

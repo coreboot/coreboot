@@ -1,4 +1,0 @@
-source src/northbridge/via/cn700/Kconfig
-source src/northbridge/via/cx700/Kconfig
-source src/northbridge/via/vx800/Kconfig
-source src/northbridge/via/vx900/Kconfig

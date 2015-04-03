@@ -1,3 +1,7 @@
+config ARCH_ARM
+	bool
+	default n
+
 config ARCH_BOOTBLOCK_ARM
 	bool
 	default n

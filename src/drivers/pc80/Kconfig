@@ -1,5 +1,7 @@
 # Might be removed (alongside with the PS/2 init code) once payloads
 # reliably support PS/2 init themselves.
+if PC80_SYSTEM
+
 config DRIVERS_PS2_KEYBOARD
 	bool "PS/2 keyboard init"
 	default y
@@ -26,3 +28,5 @@ config LPC_TPM
 config DRIVERS_MC146818
 	bool
 	default y if ARCH_X86
+
+endif

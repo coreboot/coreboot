@@ -13,6 +13,14 @@ config SOC_QC_IPQ806X
 
 if SOC_QC_IPQ806X
 
+config CBFS_SIZE
+	hex "Size of CBFS filesystem in ROM"
+	default ROM_SIZE
+	help
+	  CBFS size needs to match the size of memory allocated to the
+	  coreboot blob elsewhere in the system. Make sure this config option
+	  is fine tuned in the board config file.
+
 config BOOTBLOCK_ROM_OFFSET
 	hex
 	default 0x0

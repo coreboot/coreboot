@@ -19,6 +19,10 @@
 # MA 02110-1301 USA
 #
 
+config ARCH_MIPS
+	bool
+	default n
+
 config ARCH_BOOTBLOCK_MIPS
 	bool
 	default n

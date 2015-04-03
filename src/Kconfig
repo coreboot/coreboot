@@ -255,39 +255,11 @@ config UPDATE_IMAGE
 
 endmenu
 
-source src/mainboard/Kconfig
+source "src/mainboard/Kconfig"
 
-# This option is used to set the architecture of a mainboard to X86.
-# It is usually set in mainboard/*/Kconfig.
-config ARCH_X86
-	bool
-	default n
-	select PCI
+source "src/arch/*/Kconfig"
 
-config ARCH_ARM
-	bool
-	default n
-
-config ARCH_ARM64
-	bool
-	default n
-
-config ARCH_RISCV
-	bool
-	default n
-	select ANY_TOOLCHAIN
-
-config ARCH_MIPS
-	bool
-	default n
-
-source src/arch/x86/Kconfig
-source src/arch/arm/Kconfig
-source src/arch/arm64/Kconfig
-source src/arch/riscv/Kconfig
-source src/arch/mips/Kconfig
-
-source src/vendorcode/Kconfig
+source "src/vendorcode/*/Kconfig"
 
 config SYSTEM_TYPE_LAPTOP
        default n
@@ -296,18 +268,19 @@ config SYSTEM_TYPE_LAPTOP
 menu "Chipset"
 
 comment "CPU"
-source src/cpu/Kconfig
+source "src/cpu/Kconfig"
 comment "Northbridge"
-source src/northbridge/Kconfig
+source "src/northbridge/*/*/Kconfig"
 comment "Southbridge"
-source src/southbridge/Kconfig
+source "src/southbridge/*/*/Kconfig"
 comment "Super I/O"
-source src/superio/Kconfig
+source "src/superio/*/Kconfig"
 comment "Embedded Controllers"
-source src/ec/Kconfig
+source "src/ec/acpi/Kconfig"
+source "src/ec/*/*/Kconfig"
 comment "SoC"
-source src/soc/Kconfig
-source src/drivers/intel/fsp/Kconfig
+source "src/soc/*/*/Kconfig"
+source "src/drivers/intel/fsp/Kconfig"
 
 endmenu
 
@@ -319,10 +292,10 @@ config MAINBOARD_HAS_BOOTBLOCK_INIT
 	bool
 	default n
 
-source src/device/Kconfig
+source "src/device/Kconfig"
 
 menu "Generic Drivers"
-source src/drivers/Kconfig
+source "src/drivers/*/Kconfig"
 endmenu
 
 config TPM
@@ -365,7 +338,7 @@ config BOOTMODE_STRAPS
 	bool
 	default n
 
-source src/console/Kconfig
+source "src/console/Kconfig"
 
 config HAVE_ACPI_RESUME
 	bool

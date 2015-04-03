@@ -1,2 +1,0 @@
-source src/southbridge/nvidia/ck804/Kconfig
-source src/southbridge/nvidia/mcp55/Kconfig

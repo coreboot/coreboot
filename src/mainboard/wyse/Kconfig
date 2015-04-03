@@ -21,12 +21,11 @@ if VENDOR_WYSE
 choice
 	prompt "Mainboard model"
 
-config BOARD_WYSE_S50
-	bool "S50"
+source "src/mainboard/wyse/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/wyse/s50/Kconfig"
+source "src/mainboard/wyse/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

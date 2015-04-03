@@ -1,0 +1,2 @@
+config BOARD_IBASE_MB899
+	bool "MB899"

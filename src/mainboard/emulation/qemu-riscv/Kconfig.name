@@ -1,0 +1,2 @@
+config BOARD_EMULATION_QEMU_UCB_RISCV
+	bool "QEMU ucb riscv"

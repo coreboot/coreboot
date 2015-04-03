@@ -1,0 +1,2 @@
+config BOARD_LENOVO_X60
+	bool "ThinkPad X60 / X60s / X60t"

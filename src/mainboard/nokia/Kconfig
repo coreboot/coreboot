@@ -21,12 +21,11 @@ if VENDOR_NOKIA
 choice
 	prompt "Mainboard model"
 
-config BOARD_NOKIA_IP530
-	bool "IP530"
+source "src/mainboard/nokia/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/nokia/ip530/Kconfig"
+source "src/mainboard/nokia/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

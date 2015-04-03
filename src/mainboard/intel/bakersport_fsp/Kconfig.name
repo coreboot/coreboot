@@ -1,0 +1,2 @@
+config BOARD_INTEL_BAKERSPORT_FSP
+	bool "Bakersport FSP-based CRB"

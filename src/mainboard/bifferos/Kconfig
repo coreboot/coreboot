@@ -22,12 +22,11 @@ if VENDOR_BIFFEROS
 choice
 	prompt "Mainboard model"
 
-config BOARD_BIFFEROS_BIFFERBOARD
-	bool "Bifferboard"
+source "src/mainboard/bifferos/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/bifferos/bifferboard/Kconfig"
+source "src/mainboard/bifferos/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

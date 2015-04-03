@@ -1,0 +1,2 @@
+config VENDOR_SIEMENS
+	bool "Siemens"

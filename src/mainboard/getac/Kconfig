@@ -21,12 +21,11 @@ if VENDOR_GETAC
 choice
 	prompt "Mainboard model"
 
-config BOARD_GETAC_P470
-	bool "P470"
+source "src/mainboard/getac/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/getac/p470/Kconfig"
+source "src/mainboard/getac/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

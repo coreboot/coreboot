@@ -21,12 +21,11 @@ if VENDOR_MITAC
 choice
 	prompt "Mainboard model"
 
-config BOARD_MITAC_6513WU
-	bool "6513WU"
+source "src/mainboard/mitac/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/mitac/6513wu/Kconfig"
+source "src/mainboard/mitac/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

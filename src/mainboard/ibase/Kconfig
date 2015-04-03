@@ -3,12 +3,11 @@ if VENDOR_IBASE
 choice
 	prompt "Mainboard model"
 
-config BOARD_IBASE_MB899
-	bool "MB899"
+source "src/mainboard/ibase/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/ibase/mb899/Kconfig"
+source "src/mainboard/ibase/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

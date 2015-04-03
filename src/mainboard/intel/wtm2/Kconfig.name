@@ -1,0 +1,2 @@
+config BOARD_INTEL_WTM2
+	bool "Whitetip Mountain 2 CRB"

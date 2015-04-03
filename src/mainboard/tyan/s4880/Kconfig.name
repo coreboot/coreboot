@@ -1,0 +1,2 @@
+config BOARD_TYAN_S4880
+	bool "S4880 (Thunder K8QS)"

@@ -1,0 +1,2 @@
+config BOARD_INTEL_MINNOWMAX
+	bool "Minnow Max"

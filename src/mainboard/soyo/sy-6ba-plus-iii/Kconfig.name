@@ -1,0 +1,2 @@
+config BOARD_SOYO_SY_6BA_PLUS_III
+	bool "SY-6BA+ III"

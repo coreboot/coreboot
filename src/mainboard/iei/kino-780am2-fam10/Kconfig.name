@@ -1,0 +1,2 @@
+config BOARD_IEI_KINO_FAM10
+	bool "Kino-780AM2(Fam10)"

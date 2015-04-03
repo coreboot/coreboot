@@ -1,0 +1,2 @@
+config BOARD_INTEL_BAYLEYBAY_FSP
+	bool "Bayley Bay FSP-based CRB"

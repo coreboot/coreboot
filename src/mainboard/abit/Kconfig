@@ -21,12 +21,11 @@ if VENDOR_ABIT
 choice
 	prompt "Mainboard model"
 
-config BOARD_ABIT_BE6_II_V2_0
-	bool "BE6-II V2.0"
+source "src/mainboard/abit/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/abit/be6-ii_v2_0/Kconfig"
+source "src/mainboard/abit/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

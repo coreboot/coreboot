@@ -22,16 +22,11 @@ if VENDOR_BIOSTAR
 choice
 	prompt "Mainboard model"
 
-config BOARD_BIOSTAR_M6TBA
-	bool "M6TBA"
-
-config BOARD_BIOSTAR_AM1ML
-	bool "AM1ML"
+source "src/mainboard/biostar/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/biostar/m6tba/Kconfig"
-source "src/mainboard/biostar/am1ml/Kconfig"
+source "src/mainboard/biostar/*/Kconfig"
 
 
 config MAINBOARD_VENDOR

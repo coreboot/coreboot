@@ -1,0 +1,2 @@
+config BOARD_TYAN_S2735
+	bool "S2735 (Tiger i7501R)"

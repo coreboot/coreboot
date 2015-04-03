@@ -1,0 +1,2 @@
+config BOARD_BROADCOM_BLAST
+	bool "Blast"

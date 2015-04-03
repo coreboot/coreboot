@@ -1,0 +1,2 @@
+config VENDOR_SUPERMICRO
+	bool "Supermicro"

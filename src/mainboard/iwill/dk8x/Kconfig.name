@@ -1,0 +1,2 @@
+config BOARD_IWILL_DK8X
+	bool "DK8X"

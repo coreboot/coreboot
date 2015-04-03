@@ -1,0 +1,2 @@
+config BOARD_SUPERMICRO_H8DMR
+	bool "H8DMR-i2"

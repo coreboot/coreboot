@@ -1,0 +1,2 @@
+config VENDOR_ARTECGROUP
+	bool "Artec Group"

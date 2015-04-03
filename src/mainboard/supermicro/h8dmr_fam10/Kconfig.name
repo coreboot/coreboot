@@ -1,0 +1,2 @@
+config BOARD_SUPERMICRO_H8DMR_FAM10
+	bool "H8DMR-i2 (Fam10)"

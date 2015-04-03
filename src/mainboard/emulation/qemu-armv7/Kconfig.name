@@ -1,0 +1,2 @@
+config BOARD_EMULATION_QEMU_ARMV7
+	bool "QEMU armv7 (vexpress-a9)"

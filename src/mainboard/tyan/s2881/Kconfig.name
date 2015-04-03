@@ -1,0 +1,2 @@
+config BOARD_TYAN_S2881
+	bool "S2881 (Thunder K8SR)"

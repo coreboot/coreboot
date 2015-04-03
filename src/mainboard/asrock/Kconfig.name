@@ -1,0 +1,2 @@
+config VENDOR_ASROCK
+	bool "ASROCK"

@@ -1,0 +1,2 @@
+config BOARD_AVALUE_EAX_785E
+	bool "EAX-785E"

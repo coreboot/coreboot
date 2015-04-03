@@ -22,16 +22,11 @@ if VENDOR_GIZMOSPHERE
 choice
 	prompt "Mainboard model"
 
-config BOARD_GIZMOSPHERE_GIZMO
-	bool "Gizmo"
-
-config BOARD_GIZMOSPHERE_GIZMO2
-	bool "Gizmo2"
+source "src/mainboard/gizmosphere/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/gizmosphere/gizmo/Kconfig"
-source "src/mainboard/gizmosphere/gizmo2/Kconfig"
+source "src/mainboard/gizmosphere/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

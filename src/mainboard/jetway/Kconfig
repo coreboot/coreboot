@@ -3,24 +3,11 @@ if VENDOR_JETWAY
 choice
 	prompt "Mainboard model"
 
-config BOARD_JETWAY_J7F2
-	bool "J7F2"
-config BOARD_JETWAY_J7F4K1G2E
-	bool "J7F4K1G2E"
-config BOARD_JETWAY_J7F4K1G5D
-	bool "J7F4K1G5D"
-config BOARD_JETWAY_PA78VM5
-	bool "PA78VM5 (Fam10)"
-config BOARD_JETWAY_NF81_T56N_LF
-	bool "NF81_T56N_LF"
+source "src/mainboard/jetway/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/jetway/j7f2/Kconfig"
-source "src/mainboard/jetway/j7f4k1g2e/Kconfig"
-source "src/mainboard/jetway/j7f4k1g5d/Kconfig"
-source "src/mainboard/jetway/pa78vm5/Kconfig"
-source "src/mainboard/jetway/nf81-t56n-lf/Kconfig"
+source "src/mainboard/jetway/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

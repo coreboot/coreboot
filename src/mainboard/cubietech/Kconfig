@@ -4,12 +4,11 @@ if VENDOR_CUBIETECH
 choice
 	prompt "Mainboard model"
 
-config BOARD_CUBIETECH_CUBIEBOARD
-	bool "Cubieboard"
+source "src/mainboard/cubietech/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/cubietech/cubieboard/Kconfig"
+source "src/mainboard/cubietech/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -1,0 +1,2 @@
+config BOARD_COMPAQ_DESKPRO_EN_SFF_P600
+	bool "Deskpro EN SFF P600"

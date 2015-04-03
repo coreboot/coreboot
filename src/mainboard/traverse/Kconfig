@@ -3,12 +3,11 @@ if VENDOR_TRAVERSE
 choice
 	prompt "Mainboard model"
 
-config BOARD_TRAVERSE_GEOS
-	bool "Geos"
+source "src/mainboard/traverse/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/traverse/geos/Kconfig"
+source "src/mainboard/traverse/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

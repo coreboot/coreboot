@@ -21,12 +21,11 @@ if VENDOR_NEC
 choice
 	prompt "Mainboard model"
 
-config BOARD_NEC_POWERMATE_2000
-	bool "PowerMate 2000"
+source "src/mainboard/nec/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/nec/powermate2000/Kconfig"
+source "src/mainboard/nec/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

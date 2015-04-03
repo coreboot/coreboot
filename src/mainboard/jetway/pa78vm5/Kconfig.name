@@ -1,0 +1,2 @@
+config BOARD_JETWAY_PA78VM5
+	bool "PA78VM5 (Fam10)"

@@ -1,0 +1,2 @@
+config BOARD_NOKIA_IP530
+	bool "IP530"

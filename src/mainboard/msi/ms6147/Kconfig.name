@@ -1,0 +1,2 @@
+config BOARD_MSI_MS_6147
+	bool "MS-6147"

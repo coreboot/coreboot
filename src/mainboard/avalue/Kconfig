@@ -21,12 +21,11 @@ if VENDOR_AVALUE
 choice
 	prompt "Mainboard model"
 
-config BOARD_AVALUE_EAX_785E
-	bool "EAX-785E"
+source "src/mainboard/avalue/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/avalue/eax-785e/Kconfig"
+source "src/mainboard/avalue/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

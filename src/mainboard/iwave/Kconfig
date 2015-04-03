@@ -4,12 +4,11 @@ choice
 	prompt "Mainboard model"
 	depends on VENDOR_IWAVE
 
-config BOARD_IWAVE_RAINBOW_G6
-	bool "iWRainbowG6"
+source "src/mainboard/iwave/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/iwave/iWRainbowG6/Kconfig"
+source "src/mainboard/iwave/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -1,0 +1,2 @@
+config VENDOR_SUNW
+	bool "Sun Microsystems"

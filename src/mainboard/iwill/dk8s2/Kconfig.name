@@ -1,0 +1,2 @@
+config BOARD_IWILL_DK8S2
+	bool "DK8S2"

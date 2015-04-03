@@ -3,12 +3,11 @@ if VENDOR_AAEON
 choice
 	prompt "Mainboard model"
 
-config BOARD_AAEON_PFM_540I_REVB
-	bool "PFM-540I_REVB"
+source "src/mainboard/aaeon/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/aaeon/pfm-540i_revb/Kconfig"
+source "src/mainboard/aaeon/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -1,0 +1,2 @@
+config BOARD_TYAN_S2892
+	bool "S2892 (Thunder K8SE)"

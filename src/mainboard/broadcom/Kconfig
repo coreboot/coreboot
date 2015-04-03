@@ -3,12 +3,11 @@ if VENDOR_BROADCOM
 choice
 	prompt "Mainboard model"
 
-config BOARD_BROADCOM_BLAST
-	bool "Blast"
+source "src/mainboard/broadcom/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/broadcom/blast/Kconfig"
+source "src/mainboard/broadcom/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -1,0 +1,2 @@
+config BOARD_HP_DL165_G6_FAM10
+	bool "ProLiant DL165 G6 Fam10"

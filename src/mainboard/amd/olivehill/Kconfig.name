@@ -1,0 +1,2 @@
+config BOARD_AMD_OLIVEHILL
+	bool "Olive Hill"

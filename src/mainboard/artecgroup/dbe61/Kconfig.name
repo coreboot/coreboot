@@ -1,0 +1,2 @@
+config BOARD_ARTECGROUP_DBE61
+	bool "DBE61"

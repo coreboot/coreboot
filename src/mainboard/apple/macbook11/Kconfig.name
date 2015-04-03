@@ -1,0 +1,2 @@
+config BOARD_APPLE_MACBOOK11
+	bool "Macbook1,1"

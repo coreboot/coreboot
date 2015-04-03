@@ -1,0 +1,2 @@
+config BOARD_EMULATION_QEMU_X86_Q35
+	bool "QEMU x86 q35/ich9 (aka qemu -M q35, since v1.4)"

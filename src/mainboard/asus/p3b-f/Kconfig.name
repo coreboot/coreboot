@@ -1,0 +1,2 @@
+config BOARD_ASUS_P3B_F
+	bool "P3B-F"

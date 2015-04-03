@@ -1,0 +1,2 @@
+config VENDOR_INTEL
+	bool "Intel"

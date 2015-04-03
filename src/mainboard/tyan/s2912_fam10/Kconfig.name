@@ -1,0 +1,2 @@
+config BOARD_TYAN_S2912_FAM10
+	bool "S2912 Fam10 (Thunder n3600R)"

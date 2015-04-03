@@ -3,12 +3,11 @@ if VENDOR_AOPEN
 choice
         prompt "Mainboard model"
 
-config BOARD_AOPEN_DXPLPLUSU
-	bool "DXPL Plus-U"
+source "src/mainboard/aopen/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/aopen/dxplplusu/Kconfig"
+source "src/mainboard/aopen/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

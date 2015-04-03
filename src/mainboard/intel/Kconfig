@@ -3,48 +3,11 @@ if VENDOR_INTEL
 choice
 	prompt "Mainboard model"
 
-config BOARD_INTEL_BAKERSPORT_FSP
-	bool "Bakersport FSP-based CRB"
-config BOARD_INTEL_BAYLEYBAY_FSP
-	bool "Bayley Bay FSP-based CRB"
-config BOARD_INTEL_COUGAR_CANYON2
-	bool "Cougar Canyon 2 CRB"
-config BOARD_INTEL_D810E2CB
-	bool "D810E2CB"
-config BOARD_INTEL_D945GCLF
-	bool "D945GCLF"
-config BOARD_INTEL_EAGLEHEIGHTS
-	bool "EagleHeights"
-config BOARD_INTEL_EMERALDLAKE2
-	bool "Emerald Lake 2 CRB"
-config BOARD_INTEL_MINNOWMAX
-	bool "Minnow Max"
-config BOARD_INTEL_MOHONPEAK
-	bool "Mohon Peak CRB"
-config BOARD_INTEL_MTARVON
-	bool "3100 devkit (Mt. Arvon)"
-config BOARD_INTEL_TRUXTON
-	bool "EP80579 devkit (Truxton)"
-config BOARD_INTEL_BASKING_RIDGE
-	bool "Basking Ridge CRB"
-config BOARD_INTEL_WTM2
-	bool "Whitetip Mountain 2 CRB"
+source "src/mainboard/intel/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/intel/bakersport_fsp/Kconfig"
-source "src/mainboard/intel/bayleybay_fsp/Kconfig"
-source "src/mainboard/intel/cougar_canyon2/Kconfig"
-source "src/mainboard/intel/d810e2cb/Kconfig"
-source "src/mainboard/intel/d945gclf/Kconfig"
-source "src/mainboard/intel/eagleheights/Kconfig"
-source "src/mainboard/intel/emeraldlake2/Kconfig"
-source "src/mainboard/intel/baskingridge/Kconfig"
-source "src/mainboard/intel/minnowmax/Kconfig"
-source "src/mainboard/intel/mohonpeak/Kconfig"
-source "src/mainboard/intel/mtarvon/Kconfig"
-source "src/mainboard/intel/truxton/Kconfig"
-source "src/mainboard/intel/wtm2/Kconfig"
+source "src/mainboard/intel/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -3,12 +3,11 @@ if VENDOR_NEWISYS
 choice
 	prompt "Mainboard model"
 
-config BOARD_NEWISYS_KHEPRI
-	bool "Khephri - 2100 Server (SUN Fire v20z)"
+source "src/mainboard/newisys/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/newisys/khepri/Kconfig"
+source "src/mainboard/newisys/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

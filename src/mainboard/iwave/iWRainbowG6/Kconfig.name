@@ -1,0 +1,2 @@
+config BOARD_IWAVE_RAINBOW_G6
+	bool "iWRainbowG6"

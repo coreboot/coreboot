@@ -23,12 +23,11 @@ if VENDOR_TI
 choice
 	prompt "Mainboard model"
 
-config BOARD_TI_BEAGLEBONE
-	bool "Beaglebone"
+source "src/mainboard/ti/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/ti/beaglebone/Kconfig"
+source "src/mainboard/ti/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

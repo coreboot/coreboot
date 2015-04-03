@@ -1,0 +1,2 @@
+config VENDOR_ECS
+	bool "ECS"

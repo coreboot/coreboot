@@ -1,0 +1,2 @@
+config BOARD_AMD_MAHOGANY_FAM10
+	bool "Mahogany (Fam10)"

@@ -21,12 +21,11 @@ if VENDOR_BCOM
 choice
 	prompt "Mainboard model"
 
-config BOARD_BCOM_WINNETP680
-	bool "WinNET P680"
+source "src/mainboard/bcom/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/bcom/winnetp680/Kconfig"
+source "src/mainboard/bcom/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

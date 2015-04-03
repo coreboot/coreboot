@@ -1,0 +1,2 @@
+config BOARD_INTEL_COUGAR_CANYON2
+	bool "Cougar Canyon 2 CRB"

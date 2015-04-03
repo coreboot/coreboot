@@ -1,0 +1,2 @@
+config BOARD_KONTRON_KTQM77
+	bool "KTQM77/mITX"

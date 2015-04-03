@@ -1,0 +1,2 @@
+config BOARD_WINENT_MB6047
+	bool "MB6047"

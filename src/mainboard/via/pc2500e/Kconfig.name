@@ -1,0 +1,2 @@
+config BOARD_VIA_PC2500E
+	bool "pc2500e"

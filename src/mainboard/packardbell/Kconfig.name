@@ -1,0 +1,2 @@
+config VENDOR_PACKARDBELL
+	bool "Packard Bell"

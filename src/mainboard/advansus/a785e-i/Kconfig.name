@@ -1,0 +1,2 @@
+config BOARD_ADVANSUS_A785E_I
+	bool "A785E-I"

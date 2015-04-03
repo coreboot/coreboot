@@ -21,15 +21,11 @@ if VENDOR_A_TREND
 choice
 	prompt "Mainboard model"
 
-config BOARD_A_TREND_ATC_6220
-	bool "ATC-6220"
-config BOARD_A_TREND_ATC_6240
-	bool "ATC-6240"
+source "src/mainboard/a-trend/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/a-trend/atc-6220/Kconfig"
-source "src/mainboard/a-trend/atc-6240/Kconfig"
+source "src/mainboard/a-trend/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

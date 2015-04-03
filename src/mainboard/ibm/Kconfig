@@ -3,15 +3,11 @@ if VENDOR_IBM
 choice
 	prompt "Mainboard model"
 
-config BOARD_IBM_E325
-	bool "eServer 325"
-config BOARD_IBM_E326
-	bool "eServer 326"
+source "src/mainboard/ibm/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/ibm/e325/Kconfig"
-source "src/mainboard/ibm/e326/Kconfig"
+source "src/mainboard/ibm/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

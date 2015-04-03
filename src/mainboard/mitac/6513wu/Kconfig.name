@@ -1,0 +1,2 @@
+config BOARD_MITAC_6513WU
+	bool "6513WU"

@@ -1,0 +1,2 @@
+config BOARD_EMULATION_QEMU_X86_I440FX
+	bool "QEMU x86 i440fx/piix4 (aka qemu -M pc)"

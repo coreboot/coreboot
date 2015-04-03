@@ -1,0 +1,2 @@
+config BOARD_NEC_POWERMATE_2000
+	bool "PowerMate 2000"

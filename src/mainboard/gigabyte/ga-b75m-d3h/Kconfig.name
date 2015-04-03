@@ -1,0 +1,2 @@
+config BOARD_GIGABYTE_GA_B75M_D3H
+	bool "GA-B75M-D3H"

@@ -1,0 +1,2 @@
+config VENDOR_NEWISYS
+	bool "Newisys"

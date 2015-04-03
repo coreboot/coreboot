@@ -3,12 +3,11 @@ if VENDOR_ARIMA
 choice
 	prompt "Mainboard model"
 
-config BOARD_ARIMA_HDAMA
-	bool "HDAMA"
+source "src/mainboard/arima/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/arima/hdama/Kconfig"
+source "src/mainboard/arima/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

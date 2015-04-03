@@ -1,0 +1,2 @@
+config BOARD_DIGITALLOGIC_ADL855PC
+	bool "smartModule855"

@@ -1,0 +1,2 @@
+config BOARD_TYAN_S2875
+	bool "S2875 (Tiger K8W)"

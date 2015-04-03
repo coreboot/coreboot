@@ -1,0 +1,2 @@
+config BOARD_INTEL_EMERALDLAKE2
+	bool "Emerald Lake 2 CRB"

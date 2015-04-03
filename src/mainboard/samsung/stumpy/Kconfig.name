@@ -1,0 +1,2 @@
+config BOARD_SAMSUNG_STUMPY
+	bool "Stumpy"

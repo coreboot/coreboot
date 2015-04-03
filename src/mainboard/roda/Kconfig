@@ -3,16 +3,11 @@ if VENDOR_RODA
 choice
 	prompt "Mainboard model"
 
-config BOARD_RODA_RK886EX
-	bool "RK886EX"
-
-config BOARD_RODA_RK9
-	bool "RK9"
+source "src/mainboard/roda/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/roda/rk886ex/Kconfig"
-source "src/mainboard/roda/rk9/Kconfig"
+source "src/mainboard/roda/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

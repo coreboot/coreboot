@@ -1,0 +1,2 @@
+config VENDOR_NOKIA
+	bool "Nokia"

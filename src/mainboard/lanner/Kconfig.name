@@ -1,0 +1,2 @@
+config VENDOR_LANNER
+	bool "Lanner"

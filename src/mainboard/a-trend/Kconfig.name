@@ -1,0 +1,2 @@
+config VENDOR_A_TREND
+	bool "A-Trend"

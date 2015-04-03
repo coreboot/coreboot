@@ -1,0 +1,2 @@
+config VENDOR_BACHMANN
+	bool "Bachmann electronic"

@@ -3,8 +3,7 @@ if VENDOR_LINUTOP
 choice
 	prompt "Mainboard model"
 
-config BOARD_LINUTOP_LINUTOP1
-	bool "Linutop-1"
+source "src/mainboard/linutop/*/Kconfig.name"
 
 endchoice
 
@@ -12,6 +11,6 @@ config MAINBOARD_VENDOR
 	string
 	default "Linutop"
 
-source "src/mainboard/linutop/linutop1/Kconfig"
+source "src/mainboard/linutop/*/Kconfig"
 
 endif # VENDOR_LINUTOP

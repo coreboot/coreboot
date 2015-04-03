@@ -1,0 +1,2 @@
+config BOARD_ECS_P6IWP_FE
+	bool "P6IWP-Fe"

@@ -21,12 +21,11 @@ if VENDOR_AZZA
 choice
 	prompt "Mainboard model"
 
-config BOARD_AZZA_PT_6IBD
-	bool "PT-6IBD"
+source "src/mainboard/azza/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/azza/pt-6ibd/Kconfig"
+source "src/mainboard/azza/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

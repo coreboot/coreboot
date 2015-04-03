@@ -3,12 +3,11 @@ if VENDOR_BACHMANN
 choice
 	prompt "Mainboard model"
 
-config BOARD_BACHMANN_OT200
-	bool "OT200"
+source "src/mainboard/bachmann/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/bachmann/ot200/Kconfig"
+source "src/mainboard/bachmann/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -1,0 +1,2 @@
+config BOARD_GIGABYTE_MA78GM
+	bool "GA-MA78GM-US2H"

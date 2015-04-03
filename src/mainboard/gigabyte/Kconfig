@@ -21,33 +21,11 @@ if VENDOR_GIGABYTE
 choice
 	prompt "Mainboard model"
 
-config BOARD_GIGABYTE_GA_2761GXDK
-	bool "GA-2761GXDK"
-config BOARD_GIGABYTE_GA_6BXC
-	bool "GA-6BXC"
-config BOARD_GIGABYTE_GA_6BXE
-	bool "GA-6BXE"
-config BOARD_GIGABYTE_GA_B75M_D3H
-	bool "GA-B75M-D3H"
-config BOARD_GIGABYTE_M57SLI
-	bool "GA-M57SLI-S4"
-config BOARD_GIGABYTE_MA785GMT
-	bool "GA-MA785GMT-UD2H"
-config BOARD_GIGABYTE_MA785GM
-	bool "GA-MA785GM-US2H"
-config BOARD_GIGABYTE_MA78GM
-	bool "GA-MA78GM-US2H"
+source "src/mainboard/gigabyte/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/gigabyte/ga_2761gxdk/Kconfig"
-source "src/mainboard/gigabyte/ga-6bxc/Kconfig"
-source "src/mainboard/gigabyte/ga-6bxe/Kconfig"
-source "src/mainboard/gigabyte/ga-b75m-d3h/Kconfig"
-source "src/mainboard/gigabyte/m57sli/Kconfig"
-source "src/mainboard/gigabyte/ma785gmt/Kconfig"
-source "src/mainboard/gigabyte/ma785gm/Kconfig"
-source "src/mainboard/gigabyte/ma78gm/Kconfig"
+source "src/mainboard/gigabyte/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

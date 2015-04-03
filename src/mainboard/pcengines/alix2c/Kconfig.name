@@ -1,0 +1,2 @@
+config BOARD_PCENGINES_ALIX2C
+	bool "ALIX.2C2 or 2C3"

@@ -3,12 +3,11 @@ if VENDOR_RCA
 choice
 	prompt "Mainboard model"
 
-config BOARD_RCA_RM4100
-	bool "RM4100"
+source "src/mainboard/rca/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/rca/rm4100/Kconfig"
+source "src/mainboard/rca/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

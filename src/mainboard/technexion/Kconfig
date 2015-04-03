@@ -3,15 +3,11 @@ if VENDOR_TECHNEXION
 choice
 	prompt "Mainboard model"
 
-config BOARD_TECHNEXION_TIM5690
-	bool "TIM-5690"
-config BOARD_TECHNEXION_TIM8690
-	bool "TIM-8690"
+source "src/mainboard/technexion/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/technexion/tim5690/Kconfig"
-source "src/mainboard/technexion/tim8690/Kconfig"
+source "src/mainboard/technexion/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

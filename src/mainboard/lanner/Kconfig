@@ -3,12 +3,11 @@ if VENDOR_LANNER
 choice
 	prompt "Mainboard model"
 
-config BOARD_LANNER_EM8510
-	bool "EM-8510"
+source "src/mainboard/lanner/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/lanner/em8510/Kconfig"
+source "src/mainboard/lanner/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

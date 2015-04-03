@@ -1,0 +1,2 @@
+config BOARD_INTEL_MTARVON
+	bool "3100 devkit (Mt. Arvon)"

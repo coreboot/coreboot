@@ -1,0 +1,2 @@
+config BOARD_AZZA_PT_6IBD
+	bool "PT-6IBD"

@@ -1,0 +1,2 @@
+config VENDOR_RCA
+	bool "RCA"

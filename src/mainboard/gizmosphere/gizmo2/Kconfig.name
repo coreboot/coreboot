@@ -1,0 +1,2 @@
+config BOARD_GIZMOSPHERE_GIZMO2
+	bool "Gizmo2"

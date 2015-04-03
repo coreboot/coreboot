@@ -1,0 +1,2 @@
+config VENDOR_LIPPERT
+	bool "LiPPERT"

@@ -1,0 +1,2 @@
+config BOARD_INTEL_TRUXTON
+	bool "EP80579 devkit (Truxton)"

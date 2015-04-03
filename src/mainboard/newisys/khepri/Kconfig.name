@@ -1,0 +1,2 @@
+config BOARD_NEWISYS_KHEPRI
+	bool "Khephri - 2100 Server (SUN Fire v20z)"

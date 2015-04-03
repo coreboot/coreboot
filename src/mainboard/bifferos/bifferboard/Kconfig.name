@@ -1,0 +1,2 @@
+config BOARD_BIFFEROS_BIFFERBOARD
+	bool "Bifferboard"

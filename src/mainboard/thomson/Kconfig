@@ -3,12 +3,11 @@ if VENDOR_THOMSON
 choice
 	prompt "Mainboard model"
 
-config BOARD_THOMSON_IP1000
-	bool "IP1000"
+source "src/mainboard/thomson/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/thomson/ip1000/Kconfig"
+source "src/mainboard/thomson/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

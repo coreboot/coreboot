@@ -1,0 +1,2 @@
+config BOARD_SUPERMICRO_H8SCM
+        bool "H8SCM"

@@ -1,0 +1,2 @@
+config BOARD_PCENGINES_ALIX6
+	bool "ALIX.6"

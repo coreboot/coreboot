@@ -1,0 +1,2 @@
+config VENDOR_MSI
+	bool "MSI"

@@ -3,16 +3,11 @@ if VENDOR_SAMSUNG
 choice
 	prompt "Mainboard model"
 
-config BOARD_SAMSUNG_LUMPY
-	bool "Lumpy"
-
-config BOARD_SAMSUNG_STUMPY
-	bool "Stumpy"
+source "src/mainboard/samsung/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/samsung/lumpy/Kconfig"
-source "src/mainboard/samsung/stumpy/Kconfig"
+source "src/mainboard/samsung/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

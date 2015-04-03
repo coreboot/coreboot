@@ -1,0 +1,2 @@
+config BOARD_TYAN_S2885
+	bool "S2885 (Thunder K8W)"

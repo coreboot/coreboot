@@ -1,0 +1,2 @@
+config BOARD_GOOGLE_NYAN_BIG
+	bool "Nyan Big"

@@ -1,0 +1,2 @@
+config BOARD_GOOGLE_VEYRON_DANGER
+	bool "Veyron_Danger"

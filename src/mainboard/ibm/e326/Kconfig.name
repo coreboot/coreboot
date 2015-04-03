@@ -1,0 +1,2 @@
+config BOARD_IBM_E326
+	bool "eServer 326"

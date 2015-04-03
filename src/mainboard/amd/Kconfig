@@ -3,71 +3,11 @@ if VENDOR_AMD
 choice
 	prompt "Mainboard model"
 
-config BOARD_AMD_DB800
-	bool "DB800 (Salsa)"
-config BOARD_AMD_DBM690T
-	bool "DBM690T (Herring)"
-config BOARD_AMD_DINAR
-	bool "Dinar"
-config BOARD_AMD_MAHOGANY
-	bool "Mahogany"
-config BOARD_AMD_MAHOGANY_FAM10
-	bool "Mahogany (Fam10)"
-config BOARD_AMD_NORWICH
-	bool "Norwich"
-config BOARD_AMD_PISTACHIO
-	bool "Pistachio"
-config BOARD_AMD_RUMBA
-	bool "Rumba"
-config BOARD_AMD_SERENGETI_CHEETAH
-	bool "Serengeti Cheetah"
-config BOARD_AMD_SERENGETI_CHEETAH_FAM10
-	bool "Serengeti Cheetah (Fam10)"
-config BOARD_AMD_TILAPIA_FAM10
-	bool "Tilapia (Fam10)"
-config BOARD_AMD_BIMINI_FAM10
-	bool "Bimini (Fam10)"
-config BOARD_AMD_INAGUA
-	bool "Inagua"
-config BOARD_AMD_PERSIMMON
-	bool "Persimmon"
-config BOARD_AMD_SOUTHSTATION
-	bool "Southstation"
-config BOARD_AMD_TORPEDO
-	bool "Torpedo"
-config BOARD_AMD_UNIONSTATION
-	bool "Unionstation"
-config BOARD_AMD_PARMER
-	bool "Parmer"
-config BOARD_AMD_THATCHER
-	bool "Thatcher"
-config BOARD_AMD_OLIVEHILL
-	bool "Olive Hill"
-config BOARD_AMD_OLIVEHILLPLUS
-	bool "Olive Hill Plus"
+source "src/mainboard/amd/*/Kconfig.name"
+
 endchoice
 
-source "src/mainboard/amd/db800/Kconfig"
-source "src/mainboard/amd/dbm690t/Kconfig"
-source "src/mainboard/amd/dinar/Kconfig"
-source "src/mainboard/amd/mahogany/Kconfig"
-source "src/mainboard/amd/mahogany_fam10/Kconfig"
-source "src/mainboard/amd/norwich/Kconfig"
-source "src/mainboard/amd/pistachio/Kconfig"
-source "src/mainboard/amd/rumba/Kconfig"
-source "src/mainboard/amd/serengeti_cheetah/Kconfig"
-source "src/mainboard/amd/serengeti_cheetah_fam10/Kconfig"
-source "src/mainboard/amd/tilapia_fam10/Kconfig"
-source "src/mainboard/amd/bimini_fam10/Kconfig"
-source "src/mainboard/amd/inagua/Kconfig"
-source "src/mainboard/amd/persimmon/Kconfig"
-source "src/mainboard/amd/south_station/Kconfig"
-source "src/mainboard/amd/torpedo/Kconfig"
-source "src/mainboard/amd/union_station/Kconfig"
-source "src/mainboard/amd/parmer/Kconfig"
-source "src/mainboard/amd/thatcher/Kconfig"
-source "src/mainboard/amd/olivehill/Kconfig"
-source "src/mainboard/amd/olivehillplus/Kconfig"
+source "src/mainboard/amd/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

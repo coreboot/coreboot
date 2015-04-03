@@ -1,0 +1,2 @@
+config BOARD_MSI_MS9652_FAM10
+	bool "MS-9652 Fam10 (Speedster K9ND)"

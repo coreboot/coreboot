@@ -22,12 +22,11 @@ if VENDOR_DMP
 choice
 	prompt "Mainboard model"
 
-config BOARD_DMP_EX
-	bool "Vortex86EX"
+source "src/mainboard/dmp/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/dmp/vortex86ex/Kconfig"
+source "src/mainboard/dmp/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

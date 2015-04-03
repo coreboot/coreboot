@@ -1,0 +1,2 @@
+config BOARD_LIPPERT_HURRICANE_LX
+	bool "Hurricane-LX"

@@ -1,0 +1,2 @@
+config BOARD_LANNER_EM8510
+	bool "EM-8510"

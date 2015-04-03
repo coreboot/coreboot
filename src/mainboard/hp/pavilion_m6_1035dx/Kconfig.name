@@ -1,0 +1,2 @@
+config BOARD_HP_PAVILION_M6_1035DX
+	bool "Pavilion m6 1035dx"

@@ -1,0 +1,2 @@
+config BOARD_ASUS_P2B_D
+	bool "P2B-D"

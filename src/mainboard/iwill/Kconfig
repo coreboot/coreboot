@@ -3,18 +3,11 @@ if VENDOR_IWILL
 choice
 	prompt "Mainboard model"
 
-config BOARD_IWILL_DK8_HTX
-	bool "DK8-HTX"
-config BOARD_IWILL_DK8S2
-	bool "DK8S2"
-config BOARD_IWILL_DK8X
-	bool "DK8X"
+source "src/mainboard/iwill/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/iwill/dk8_htx/Kconfig"
-source "src/mainboard/iwill/dk8s2/Kconfig"
-source "src/mainboard/iwill/dk8x/Kconfig"
+source "src/mainboard/iwill/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

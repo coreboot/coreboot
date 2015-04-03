@@ -1,0 +1,2 @@
+config BOARD_AMD_BIMINI_FAM10
+	bool "Bimini (Fam10)"

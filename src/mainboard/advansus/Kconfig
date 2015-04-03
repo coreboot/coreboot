@@ -21,12 +21,11 @@ if VENDOR_ADVANSUS
 choice
 	prompt "Mainboard model"
 
-config BOARD_ADVANSUS_A785E_I
-	bool "A785E-I"
+source "src/mainboard/advansus/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/advansus/a785e-i/Kconfig"
+source "src/mainboard/advansus/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

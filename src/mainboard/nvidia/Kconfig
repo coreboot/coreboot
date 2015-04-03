@@ -3,12 +3,11 @@ if VENDOR_NVIDIA
 choice
 	prompt "Mainboard model"
 
-config BOARD_NVIDIA_L1_2PVV
-	bool "l1_2pvv"
+source "src/mainboard/nvidia/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/nvidia/l1_2pvv/Kconfig"
+source "src/mainboard/nvidia/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -3,12 +3,11 @@ if VENDOR_SUNW
 choice
 	prompt "Mainboard model"
 
-config BOARD_SUNW_ULTRA40
-	bool "Ultra 40"
+source "src/mainboard/sunw/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/sunw/ultra40/Kconfig"
+source "src/mainboard/sunw/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

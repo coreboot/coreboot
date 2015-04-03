@@ -1,0 +1,2 @@
+config BOARD_IBM_E325
+	bool "eServer 325"

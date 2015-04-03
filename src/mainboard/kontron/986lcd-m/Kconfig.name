@@ -1,0 +1,2 @@
+config BOARD_KONTRON_986LCD_M
+	bool "986LCD-M/mITX"

@@ -21,12 +21,11 @@ if VENDOR_COMPAQ
 choice
 	prompt "Mainboard model"
 
-config BOARD_COMPAQ_DESKPRO_EN_SFF_P600
-	bool "Deskpro EN SFF P600"
+source "src/mainboard/compaq/*/Kconfig.name"
 
 endchoice
 
-source "src/mainboard/compaq/deskpro_en_sff_p600/Kconfig"
+source "src/mainboard/compaq/*/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

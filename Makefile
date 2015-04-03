@@ -230,7 +230,7 @@ define create_cc_template
 # $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
-$(obj)/$$(1).$(1).o: src/$$(1).$(2) $(obj)/config.h $(4)
+$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $(obj)/config.h $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC_$(1)) -MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@) $(3) -c -o $$$$@ $$$$<
 en$(EMPTY)def
@@ -244,7 +244,7 @@ $(foreach class,$(classes), \
 		$(if $(generic-objs_$(type)_template_gen),$(eval $(call generic-objs_$(type)_template_gen,$(class))),\
 		$(eval $(call create_cc_template,$(class),$(type),$($(class)-$(type)-ccopts),$($(class)-$(type)-deps))))))
 
-foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
+foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(basename $(file)))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))
 
 DEPENDENCIES = $(addsuffix .d,$(basename $(allobjs)))

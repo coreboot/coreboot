@@ -233,17 +233,12 @@ $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
 	mv $@.tmp $@
 
-$(objgenerated)/crt0.romstage.S: $$(crt0s)
+$(objgenerated)/crt0.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	printf '$(foreach crt0,$(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
+	printf '$(foreach crt0,$(crt0s),#include "$(crt0)"\n)' > $@
 
-$(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.S
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) $(CFLAGS_x86_32) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
-
-$(objgenerated)/crt0.S: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) $(CPPFLAGS_romstage) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
+# Compiling crt0 with -g seems to trigger https://sourceware.org/bugzilla/show_bug.cgi?id=6428
+romstage-S-ccopts += -I. -g0
 
 endif # CONFIG_ARCH_ROMSTAGE_X86_32
 

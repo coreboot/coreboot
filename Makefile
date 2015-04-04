@@ -79,6 +79,8 @@ HOSTCXX = g++
 HOSTCFLAGS := -g
 HOSTCXXFLAGS := -g
 
+PREPROCESS_ONLY := -E -P -x assembler-with-cpp -undef -I .
+
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
 

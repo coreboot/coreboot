@@ -21,7 +21,6 @@
 /* We use ELF as output format. So that we can debug the code in some form. */
 OUTPUT_FORMAT("elf64-littleaarch64", "elf64-littleaarch64", "elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
-INCLUDE ldoptions
 
 PHDRS
 {

@@ -75,8 +75,8 @@ SECTIONS
 
 	. = 0xffffff00;
 	.illegal_globals . : {
-		*(EXCLUDE_FILE (*/libagesa.*.a: */buildOpts.romstage.o */agesawrapper.romstage.o */vendorcode/amd/agesa/* */vendorcode/amd/cimx/*) .data)
-		*(EXCLUDE_FILE (*/libagesa.*.a: */buildOpts.romstage.o */agesawrapper.romstage.o */vendorcode/amd/agesa/* */vendorcode/amd/cimx/*) .data.*)
+		*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/buildOpts.romstage.o" "*/agesawrapper.romstage.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data)
+		*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/buildOpts.romstage.o" "*/agesawrapper.romstage.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data.*)
 		*(.bss)
 		*(.bss.*)
 		*(.sbss)

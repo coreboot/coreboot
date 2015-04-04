@@ -51,9 +51,9 @@ bootblock-y += bootblock.ld
 # prevent that.
 bootblock-S-ccopts += -undef
 
-$(objcbfs)/bootblock.debug:  $(src)/arch/mips/bootblock.ld $$(bootblock-objs) $(obj)/config.h $(obj)/ldoptions
+$(objcbfs)/bootblock.debug:  $(obj)/arch/mips/bootblock.bootblock.ld $$(bootblock-objs) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) -T $(src)/arch/mips/bootblock.ld --start-group $(bootblock-objs) --end-group
+	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/mips/bootblock.bootblock.ld --start-group $(bootblock-objs) --end-group
 
 endif # CONFIG_ARCH_BOOTBLOCK_MIPS
 
@@ -71,9 +71,11 @@ romstage-y += ../../lib/memcpy.c
 romstage-y += ../../lib/memmove.c
 romstage-y += ../../lib/memset.c
 
-$(objcbfs)/romstage.debug: $$(romstage-objs) $(src)/arch/mips/romstage.ld $(obj)/ldoptions
+romstage-y += romstage.ld
+
+$(objcbfs)/romstage.debug: $$(romstage-objs) $(obj)/arch/mips/romstage.romstage.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -static -o $@ -L$(obj) -T $(src)/arch/mips/romstage.ld --start-group $(romstage-objs) --end-group
+	$(LD_romstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/mips/romstage.romstage.ld --start-group $(romstage-objs) --end-group
 
 endif # CONFIG_ARCH_ROMSTAGE_MIPS
 
@@ -93,8 +95,10 @@ ramstage-y += ../../lib/memmove.c
 ramstage-y += ../../lib/memset.c
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
-$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(src)/arch/mips/ramstage.ld $(obj)/ldoptions
+ramstage-y += ramstage.ld
+
+$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(obj)/arch/mips/ramstage.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) --gc-sections -static -o $@ -L$(obj) -T $(src)/arch/mips/ramstage.ld --start-group $(ramstage-objs) --end-group
+	$(LD_ramstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/mips/ramstage.ramstage.ld --start-group $(ramstage-objs) --end-group
 
 endif # CONFIG_ARCH_RAMSTAGE_MIPS

@@ -28,8 +28,6 @@ riscv_asm_flags =
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 
-bootblock-y += bootblock.ld
-
 bootblock-y = bootblock.S stages.c
 bootblock-y += boot.c
 bootblock-y += rom_media.c
@@ -40,11 +38,13 @@ bootblock-y += \
 	$(top)/src/lib/memmove.c \
 	$(top)/src/lib/memset.c
 
-$(objcbfs)/bootblock.debug: $(src)/arch/riscv/bootblock.ld $(obj)/ldoptions $$(bootblock-objs)
+bootblock-y += bootblock.ld
+
+$(objcbfs)/bootblock.debug: $(obj)/arch/riscv/bootblock.bootblock.ld $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(CFLAGS_bootblock) -nostartfiles -Wl,--gc-sections -static -o $@ -L$(obj) \
-		-T $(src)/arch/riscv/bootblock.ld -Wl,--start-group $(bootblock-objs) \
-		$(LIBGCC_FILE_NAME_bootblock) -Wl,--end-group
+	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) \
+		-T $(obj)/arch/riscv/bootblock.bootblock.ld --start-group $(bootblock-objs) \
+		$(LIBGCC_FILE_NAME_bootblock) --end-group
 
 endif
 
@@ -65,11 +65,13 @@ romstage-y += \
 
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
+romstage-y += romstage.ld
+
 # Build the romstage
 
-$(objcbfs)/romstage.debug: $$(romstage-objs) $(src)/arch/riscv/romstage.ld $(obj)/ldoptions
+$(objcbfs)/romstage.debug: $$(romstage-objs) $(obj)/arch/riscv/romstage.romstage.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/riscv/romstage.ld -Wl,--start-group $(romstage-objs) -Wl,--end-group
+	$(LD_romstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/riscv/romstage.romstage.ld --start-group $(romstage-objs) --end-group
 
 romstage-c-ccopts += $(riscv_flags)
 romstage-S-ccopts += $(riscv_asm_flags)
@@ -101,13 +103,15 @@ $(eval $(call create_class_compiler,rmodules,riscv))
 
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
+ramstage-y += ramstage.ld
+
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 
 # Build the ramstage
 
-$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(src)/arch/riscv/ramstage.ld $(obj)/ldoptions
+$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(obj)/arch/riscv/ramstage.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -Wl,--start-group $(ramstage-objs) -Wl,--end-group -T $(src)/arch/riscv/ramstage.ld
+	$(LD_ramstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/riscv/ramstage.ramstage.ld --start-group $(ramstage-objs) --end-group
 
 ramstage-c-ccopts += $(riscv_flags)
 ramstage-S-ccopts += $(riscv_asm_flags)

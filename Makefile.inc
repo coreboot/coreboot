@@ -112,9 +112,9 @@ files-in-dir=$(filter-out $(call dir-wildcards,$(call filter-out-dirs,$(1),$(sor
 #######################################################################
 # reduce command line length by linking the objects of each
 # directory into an intermediate file
-ramstage-postprocess=$(foreach d,$(sort $(dir $(1))), \
+ramstage-postprocess=$(foreach d,$(sort $(dir $(filter-out %.ld,$(1)))), \
 	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); $$(LD_ramstage) -o $$@ -r $$^ ) \
-	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(call files-in-dir,$(d),$(1)),$(filter-out %.ld,$(ramstage-objs)))))
+	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(filter-out %.ld, $(call files-in-dir,$(d),$(1))),$(ramstage-objs))))
 
 romstage-generic-ccopts += -D__PRE_RAM__
 ifeq ($(CONFIG_TRACE),y)
@@ -142,9 +142,10 @@ bootblock-c-deps:=$$(OPTION_TABLE_H)
 # Add handler to copy linker scripts
 define generic-objs_ld_template_gen
 de$(EMPTY)fine $(1)-objs_ld_template
-$$(call src-to-obj,$1,$$(1).ld): $$(1).ld
+$$(call src-to-obj,$1,$$(1).ld): $$(1).ld $(obj)/config.h
 	@printf "    CP         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	cp $$$$< $$$$@
+	$$(CC_$(1)) $$(CPPFLAGS_$(1)) $($(1)-ld-ccopts) $(PREPROCESS_ONLY) -include $(obj)/config.h $$$$< > $$$$@.tmp
+	mv $$$$@.tmp $$$$@
 en$(EMPTY)def
 endef
 
@@ -258,9 +259,6 @@ $(obj)/build.h: .xcompile
 	rm -f $(obj)/build.h
 	util/genbuild_h/genbuild_h.sh > $(obj)/build.ht
 	mv $(obj)/build.ht $(obj)/build.h
-
-$(obj)/ldoptions: $(obj)/config.h
-	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print "PROVIDE_HIDDEN(" $$2 " = " $$3 ");";}' $< > $@
 
 build-dirs:
 	mkdir -p $(objcbfs) $(objgenerated)

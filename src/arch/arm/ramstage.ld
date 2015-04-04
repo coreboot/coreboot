@@ -19,9 +19,6 @@
  *  2005.12 yhlu add ramstage cross the vga font buffer handling
  */
 
-/* We use ELF as output format. So that we can debug the code in some form. */
-INCLUDE ldoptions
-
 ENTRY(stage_entry)
 
 PHDRS

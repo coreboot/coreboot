@@ -103,9 +103,9 @@ ifeq ($(CONFIG_SSE),y)
 bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 endif
 
-$(objgenerated)/bootblock.ld: $(obj)/ldoptions $$(filter %.ld,$$(bootblock-srcs))
+$(objgenerated)/bootblock.ld: $(obj)/config.h $$(filter %.ld,$$(bootblock-srcs))
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	printf '$(foreach ldscript,$(^),INCLUDE "$(ldscript)"\n)' > $@
+	printf '$(foreach ldscript,$(^),#include "$(ldscript)"\n)' | $(CC_bootblock) $(PREPROCESS_ONLY) - > $@
 
 $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
@@ -212,18 +212,18 @@ $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(roms
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld
 
-$(objgenerated)/romstage_null.ld: $(obj)/ldoptions $$(filter %.ld,$$(romstage-srcs))
+$(objgenerated)/romstage_null.ld: $(obj)/config.h $$(filter %.ld,$$(romstage-srcs))
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
-	printf '$(foreach ldscript,$(^),INCLUDE "$(ldscript)"\n)' >> $@.tmp
-	mv $@.tmp $@
+	printf '$(foreach ldscript,$(^),#include "$(ldscript)"\n)' >> $@.tmp
+	$(CC_romstage) $(PREPROCESS_ONLY) $@.tmp > $@
 
 $(objgenerated)/romstage.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	sed -e 's/^/ROMSTAGE_BASE = /g' -e 's/$$/;/g' $(objcbfs)/base_xip.txt > $@.tmp
-	sed -e '/ROMSTAGE_BASE/d' $(objgenerated)/romstage_null.ld >> $@.tmp
+	sed -e '/^ROMSTAGE_BASE/d' $(objgenerated)/romstage_null.ld >> $@.tmp
 	mv $@.tmp $@
 
 $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
@@ -299,9 +299,11 @@ $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 
 else
 
-$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(src)/arch/x86/ramstage.ld
+ramstage-srcs += $(src)/arch/x86/ramstage.ld
+
+$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(obj)/arch/x86/ramstage.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) --gc-sections -o $@ -L$(obj) $< -T $(src)/arch/x86/ramstage.ld
+	$(LD_ramstage) --gc-sections -o $@ -L$(obj) $< -T $(obj)/arch/x86/ramstage.ramstage.ld
 
 endif
 

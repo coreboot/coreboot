@@ -24,7 +24,6 @@
  */
 
 OUTPUT_ARCH(mips)
-INCLUDE ldoptions
 
 ENTRY(stage_entry)
 

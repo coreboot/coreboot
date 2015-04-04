@@ -21,7 +21,6 @@
 /* We use ELF as output format. So that we can debug the code in some form. */
 OUTPUT_FORMAT("elf64-littleriscv", "elf64-littleriscv", "elf64-littleriscv")
 OUTPUT_ARCH(riscv)
-INCLUDE ldoptions
 
 PHDRS
 {
@@ -29,7 +28,6 @@ PHDRS
 }
 
 ENTRY(_start)
-TARGET(binary)
 SECTIONS
 {
 	. = CONFIG_BOOTBLOCK_BASE;

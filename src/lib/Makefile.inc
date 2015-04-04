@@ -137,7 +137,7 @@ RMODULE_LDFLAGS  := -nostartfiles --gc-sections --emit-relocs -z defs -Bsymbolic
 # It will create the necessary Make rules to create a rmodule. The resulting
 # rmdoule is named $(1).rmod
 define rmodule_link
-$(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(obj)/ldoptions $$(RMODTOOL)
+$(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(RMODTOOL)
 	$$(LD_rmodules_$(4)) $$(RMODULE_LDFLAGS) --defsym=__heap_size=$(strip $(3)) -o $$@ --start-group $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) --end-group
 	$$(NM_rmodules_$(4)) -n $$@ > $$(basename $$@).map
 

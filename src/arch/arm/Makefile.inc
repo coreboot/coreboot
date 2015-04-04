@@ -63,9 +63,11 @@ bootblock-y += memmove.S
 bootblock-y += div0.c
 bootblock-y += clock.c
 
-$(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(bootblock-objs) $$(VERSTAGE_LIB)
+bootblock-y += bootblock.ld
+
+$(objcbfs)/bootblock.debug: $(obj)/arch/arm/bootblock.bootblock.ld $$(bootblock-objs) $$(VERSTAGE_LIB)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) --start-group $(bootblock-objs) --end-group -T $(src)/arch/arm/bootblock.ld
+	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/arm/bootblock.bootblock.ld --start-group $(bootblock-objs) --end-group
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM
 
@@ -73,9 +75,9 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM
 # verification stage
 ###############################################################################
 
-$(objcbfs)/verstage.debug: $$(verstage-objs) $(src)/arch/arm/verstage.ld $(obj)/ldoptions $$(VB2_LIB)
+$(objcbfs)/verstage.debug: $$(verstage-objs) $(obj)/arch/arm/verstage.verstage.ld $$(VB2_LIB)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --start-group $(verstage-objs) --end-group -T $(src)/arch/arm/verstage.ld
+	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/arm/verstage.verstage.ld --start-group $(verstage-objs) --end-group
 
 verstage-y += div0.c
 verstage-y += eabi_compat.c
@@ -83,6 +85,8 @@ verstage-y += memset.S
 verstage-y += memcpy.S
 verstage-y += memmove.S
 verstage-y += stages.c
+
+verstage-y += verstage.ld
 
 ###############################################################################
 # romstage
@@ -103,11 +107,13 @@ rmodules_arm-y += memcpy.S
 rmodules_arm-y += memmove.S
 rmodules_arm-y += eabi_compat.c
 
+romstage-y += romstage.ld
+
 VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm.o
 
-$(objcbfs)/romstage.debug: $$(romstage-objs) $(src)/arch/arm/romstage.ld $(obj)/ldoptions
+$(objcbfs)/romstage.debug: $$(romstage-objs) $(obj)/arch/arm/romstage.romstage.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) -nostdlib --gc-sections -static -o $@ -L$(obj) --start-group $(romstage-objs) --end-group -T $(src)/arch/arm/romstage.ld
+	$(LD_romstage) -nostdlib --gc-sections -static -o $@ -L$(obj) -T $(obj)/arch/arm/romstage.romstage.ld --start-group $(romstage-objs) --end-group
 
 endif # CONFIG_ARCH_ROMSTAGE_ARM
 
@@ -133,9 +139,11 @@ rmodules_arm-y += memmove.S
 rmodules_arm-y += eabi_compat.c
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
-$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(src)/arch/arm/ramstage.ld $(obj)/ldoptions
+ramstage-y += ramstage.ld
+
+$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(obj)/arch/arm/ramstage.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) -nostdlib --gc-sections -o $@ -L$(obj) --start-group $(ramstage-objs) --end-group -T $(src)/arch/arm/ramstage.ld
+	$(LD_ramstage) -nostdlib --gc-sections -o $@ -L$(obj) -T $(obj)/arch/arm/ramstage.ramstage.ld --start-group $(ramstage-objs) --end-group
 
 $(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

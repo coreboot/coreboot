@@ -1,0 +1,222 @@
+chip northbridge/intel/gm45
+	# IGD Displays
+	register "gfx.ndid" = "3"
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+
+	register "gfx.use_spread_spectrum_clock" = "1"
+	register "gfx.lvds_dual_channel" = "0"
+	register "gfx.link_frequency_270_mhz" = "1"
+	register "gfx.lvds_num_lanes" = "4"
+
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_BGA956
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_1067x
+			# Magic APIC ID to locate this chip
+			device lapic 0xACAC off end
+
+			# Enable Super LFM
+			register "slfm" = "1"
+
+			# Enable C5, C6
+			register "c5" = "1"
+			register "c6" = "1"
+		end
+	end
+
+	device domain 0 on
+		device pci 00.0 on
+			subsystemid 0x17aa 0x20e0
+		end # host bridge
+		device pci 02.0 on # VGA
+			subsystemid 0x17aa 0x20e4
+			ioapic_irq 2 INTA 0x10
+		end
+		device pci 02.1 on
+			subsystemid 0x17aa 0x20e4
+		end # Display
+		device pci 03.0 on
+			subsystemid 0x17aa 0x20e6
+		end # ME
+		device pci 03.1 off end # ME
+		device pci 03.2 off end # ME
+		device pci 03.3 off end # ME
+		chip southbridge/intel/i82801ix
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x80"
+
+			register "gpi8_routing"  = "2"
+			register "gpe0_en" = "0x01000000"
+			register "gpi1_routing"  = "2"
+
+			# Set AHCI mode, enable ports 1 and 2.
+			register "sata_port_map"		= "0x03"
+			register "sata_clock_request"		= "0"
+			register "sata_traffic_monitor"		= "0"
+
+			# Set c-state support
+			register "c4onc3_enable"		= "0"
+			register "c5_enable"			= "1"
+			register "c6_enable"			= "1"
+
+			# Set thermal throttling to 75%.
+			register "throttle_duty"		= "THTL_75_0"
+
+			# Enable PCIe ports 1,2,4 as slots (Mini * PCIe).
+			register "pcie_slot_implemented"	= "0xb"
+			# Set power limits to 10 * 10^0 watts.
+			# Maybe we should set less for Mini PCIe.
+			register "pcie_power_limits" = "{ { 10, 0 }, { 10, 0 }, { 0, 0 }, { 10, 0 }, { 0, 0 }, { 0, 0 } }"
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
+
+			chip drivers/generic/ioapic
+				register "have_isa_interrupts" = "1"
+				register "irq_on_fsb" = "1"
+				register "enable_virtual_wire" = "1"
+				register "base" = "(void *)0xfec00000"
+				device ioapic 2 on end
+			end
+
+			device pci 19.0 on end # LAN
+			device pci 1a.0 on # UHCI
+				subsystemid 0x17aa 0x20f0
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1a.1 on # UHCI
+				subsystemid 0x17aa 0x20f0
+				ioapic_irq 2 INTB 0x11
+			end
+			device pci 1a.2 on # UHCI
+				subsystemid 0x17aa 0x20f0
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1a.7 on # EHCI
+				subsystemid 0x17aa 0x20f1
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1b.0 on # HD Audio
+				subsystemid 0x17aa 0x20f2
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1c.0 on # PCIe Port #1
+				subsystemid 0x17aa 0x20f3 # WWAN
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1c.1 on
+				subsystemid 0x17aa 0x20f3 # WLAN
+			end # PCIe Port #2
+			device pci 1c.2 on
+				subsystemid 0x17aa 0x20f3 # UWB
+			end # PCIe Port #3
+			device pci 1c.3 on
+				subsystemid 0x17aa 0x20f3 # Expresscard
+			end # PCIe Port #4
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1d.0 on # UHCI
+				subsystemid 0x17aa 0x20f0
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1d.1 on # UHCI
+				subsystemid 0x17aa 0x20f0
+				ioapic_irq 2 INTB 0x11
+			end
+			device pci 1d.2 on # UHCI
+				subsystemid 0x17aa 0x20f0
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1d.7 on # EHCI
+				subsystemid 0x17aa 0x20f1
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1e.0 on # PCI
+				subsystemid 0x17aa 0x20f4
+			end
+			device pci 1f.0 on # LPC bridge
+				subsystemid 0x17aa 0x20f5
+				chip ec/lenovo/pmh7
+					device pnp ff.1 on # dummy
+					end
+					register "backlight_enable" = "0x01"
+					register "dock_event_enable" = "0x01"
+				end
+
+				chip ec/lenovo/h8
+					device pnp ff.2 on # dummy
+						io 0x60 = 0x62
+						io 0x62 = 0x66
+						io 0x64 = 0x1600
+						io 0x66 = 0x1604
+					end
+
+					register "config0" = "0xa6"
+					register "config1" = "0x04"
+					register "config2" = "0xa0"
+					register "config3" = "0x01"
+
+					register "beepmask0" = "0xfe"
+					register "beepmask1" = "0x96"
+					register "has_power_management_beeps" = "1"
+					register "has_uwb" = "1"
+
+					register "event2_enable" = "0xff"
+					register "event3_enable" = "0xff"
+					register "event4_enable" = "0xf4"
+					register "event5_enable" = "0x3c"
+					register "event6_enable" = "0x80"
+					register "event7_enable" = "0x01"
+					register "event8_enable" = "0x01"
+					register "event9_enable" = "0xff"
+					register "eventa_enable" = "0xff"
+					register "eventb_enable" = "0xff"
+					register "eventc_enable" = "0xff"
+					register "eventd_enable" = "0xff"
+				end
+
+				chip superio/nsc/pc87382
+					device pnp 164e.3 on # Digitizer
+						io 0x60 = 0x200
+						irq 0x29 = 0xb0
+						irq 0x70 = 0x5
+						irq 0xf0 = 0x82
+					end
+					# IR, not connected
+					device pnp 164e.2 off end
+					# GPIO, not connected
+					device pnp 164e.7 off end
+					# DLPC, not connected
+					device pnp 164e.19 off end
+				end
+
+			end
+			device pci 1f.2 on # SATA/IDE 1
+				subsystemid 0x17aa 0x20f8
+				ioapic_irq 2 INTB 0x11
+			end
+			device pci 1f.3 on # SMBus
+				subsystemid 0x17aa 0x20f9
+				ioapic_irq 2 INTC 0x12
+			        # eeprom, 8 virtual devices, same chip
+				chip drivers/i2c/at24rf08c
+					device i2c 54 on end
+					device i2c 55 on end
+					device i2c 56 on end
+					device i2c 57 on end
+					device i2c 5c on end
+					device i2c 5d on end
+					device i2c 5e on end
+					device i2c 5f on end
+				end
+			end
+			device pci 1f.5 off end # SATA/IDE 2
+			device pci 1f.6 off end # Thermal
+		end
+	end
+end

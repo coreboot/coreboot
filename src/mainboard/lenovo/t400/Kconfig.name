@@ -1,0 +1,2 @@
+config BOARD_LENOVO_X200
+	bool "ThinkPad X200 / X200t"

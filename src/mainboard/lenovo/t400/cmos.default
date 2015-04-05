@@ -1,0 +1,16 @@
+boot_option=Fallback
+last_boot=Fallback
+baud_rate=115200
+debug_level=Spew
+power_on_after_fail=Disable
+volume=0x3
+first_battery=Primary
+bluetooth=Enable
+wwan=Enable
+wlan=Enable
+trackpoint=Enable
+fn_ctrl_swap=Disable
+sticky_fn=Disable
+power_management_beeps=Enable
+low_battery_beep=Enable
+sata_mode=AHCI

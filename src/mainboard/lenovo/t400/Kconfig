@@ -1,0 +1,51 @@
+if BOARD_LENOVO_X200
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SYSTEM_TYPE_LAPTOP
+	select CPU_INTEL_SOCKET_BGA956
+	select NORTHBRIDGE_INTEL_GM45
+	select SOUTHBRIDGE_INTEL_I82801IX
+	select EC_LENOVO_PMH7
+	select EC_LENOVO_H8
+	select NO_UART_ON_SUPERIO
+	select DRIVERS_ICS_954309
+	select BOARD_ROMSIZE_KB_8192
+	select DRIVERS_GENERIC_IOAPIC
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_TABLES
+	select EC_ACPI
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
+	select INTEL_INT15
+	select SUPERIO_NSC_PC87382
+	select DRIVERS_LENOVO_WACOM
+
+config MAINBOARD_DIR
+	string
+	default lenovo/x200
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ThinkPad X200"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 2
+
+config MAX_CPUS
+	int
+	default 2
+
+config CBFS_SIZE
+	hex
+	default 0x200000
+
+endif # BOARD_LENOVO_X200

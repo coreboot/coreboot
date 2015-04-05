@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2008-2009 coresystems GmbH
  *               2012 secunet Security Networks AG
  *
@@ -75,6 +76,15 @@
 #define ALT_GP_SMI_EN	0x38
 #define ALT_GP_SMI_STS	0x3a
 
+
+#define GP_IO_USE_SEL	0x00
+#define GP_IO_SEL	0x04
+#define GP_LVL		0x0c
+#define GPO_BLINK	0x18
+#define GPI_INV		0x2c
+#define GP_IO_USE_SEL2	0x30
+#define GP_IO_SEL2	0x34
+#define GP_LVL2		0x38
 
 #define DEBUG_PERIODIC_SMIS	0
 

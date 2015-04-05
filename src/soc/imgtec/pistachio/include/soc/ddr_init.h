@@ -21,5 +21,6 @@
 #define DDR_TIMEOUT			-1
 
 int init_ddr2(void);
+int init_ddr3(void);
 
 #endif

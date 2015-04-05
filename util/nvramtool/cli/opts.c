@@ -51,8 +51,7 @@ static const char getopt_string[] = "-ab:B:c::C:dD:e:hH:iL:l::np:r:tvw:xX:y:Y";
 void parse_nvramtool_args(int argc, char *argv[])
 {
 	nvramtool_op_modifier_info_t *mod_info;
-	int i, op_found;
-	char c;
+	int i, op_found, c;
 
 	for (i = 0, mod_info = nvramtool_op_modifiers;
 	     i < NVRAMTOOL_NUM_OP_MODIFIERS; i++, mod_info++) {

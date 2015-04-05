@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or
@@ -32,6 +33,118 @@
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define MCH_DEV PCI_DEV(0, 0, 0)
+
+#define HYBRID_GRAPHICS_INTEGRATED_ONLY 0
+#define HYBRID_GRAPHICS_DISCRETE_ONLY 1
+#define HYBRID_GRAPHICS_SWITCHABLE 2
+
+#define HYBRID_GRAPHICS_GP_LVL_BITS 0x004a0000
+#define HYBRID_GRAPHICS_GP_LVL2_BITS 0x00020000
+
+#define HYBRID_GRAPHICS_DETECT_GP_BITS 0x00000010
+
+#define HYBRID_GRAPHICS_INT_CLAIM_VGA 0x2
+#define HYBRID_GRAPHICS_SEC_VGA_EN 0x2
+
+static void hybrid_graphics_configure_switchable_graphics(bool enable)
+{
+	uint32_t tmp;
+
+	if (enable) {
+		/* Disable integrated graphics legacy VGA cycles */
+		tmp = pci_read_config16(MCH_DEV, D0F0_GGC);
+		pci_write_config16(MCH_DEV, D0F0_GGC, tmp | HYBRID_GRAPHICS_INT_CLAIM_VGA);
+
+		/* Enable secondary VGA controller */
+		tmp = pci_read_config16(MCH_DEV, D0F0_DEVEN);
+		pci_write_config16(MCH_DEV, D0F0_DEVEN, tmp | HYBRID_GRAPHICS_SEC_VGA_EN);
+	}
+	else {
+		/* Enable integrated graphics legacy VGA cycles */
+		tmp = pci_read_config16(MCH_DEV, D0F0_GGC);
+		pci_write_config16(MCH_DEV, D0F0_GGC, tmp & ~HYBRID_GRAPHICS_INT_CLAIM_VGA);
+
+		/* Disable secondary VGA controller */
+		tmp = pci_read_config16(MCH_DEV, D0F0_DEVEN);
+		pci_write_config16(MCH_DEV, D0F0_DEVEN, tmp & ~HYBRID_GRAPHICS_SEC_VGA_EN);
+	}
+}
+
+static void hybrid_graphics_set_up_gpio(void)
+{
+	uint32_t tmp;
+
+	/* Enable hybrid graphics GPIO lines */
+	tmp = inl(DEFAULT_GPIOBASE + GP_IO_USE_SEL);
+	tmp = tmp | HYBRID_GRAPHICS_GP_LVL_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_IO_USE_SEL);
+
+	tmp = inl(DEFAULT_GPIOBASE + GP_IO_USE_SEL2);
+	tmp = tmp | HYBRID_GRAPHICS_GP_LVL2_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_IO_USE_SEL2);
+
+	/* Set hybrid graphics control GPIO lines to output */
+	tmp = inl(DEFAULT_GPIOBASE + GP_IO_SEL);
+	tmp = tmp & ~HYBRID_GRAPHICS_GP_LVL_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_IO_SEL);
+
+	tmp = inl(DEFAULT_GPIOBASE + GP_IO_SEL2);
+	tmp = tmp & ~HYBRID_GRAPHICS_GP_LVL2_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_IO_SEL2);
+
+	/* Set hybrid graphics detect GPIO lines to input */
+	tmp = inl(DEFAULT_GPIOBASE + GP_IO_SEL);
+	tmp = tmp | HYBRID_GRAPHICS_DETECT_GP_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_IO_SEL);
+}
+
+static bool hybrid_graphics_installed(void)
+{
+	if (inl(DEFAULT_GPIOBASE + GP_LVL) & HYBRID_GRAPHICS_DETECT_GP_BITS)
+		return false;
+	else
+		return true;
+}
+
+static void hybrid_graphics_switch_to_integrated_graphics(void)
+{
+	uint32_t tmp;
+
+	/* Disable switchable graphics */
+	hybrid_graphics_configure_switchable_graphics(false);
+
+	/* Configure muxes */
+	tmp = inl(DEFAULT_GPIOBASE + GP_LVL);
+	tmp = tmp & ~HYBRID_GRAPHICS_GP_LVL_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_LVL);
+
+	tmp = inl(DEFAULT_GPIOBASE + GP_LVL2);
+	tmp = tmp & ~HYBRID_GRAPHICS_GP_LVL2_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_LVL2);
+}
+
+static void hybrid_graphics_switch_to_discrete_graphics(void)
+{
+	uint32_t tmp;
+
+	/* Disable switchable graphics */
+	hybrid_graphics_configure_switchable_graphics(false);
+
+	/* Configure muxes */
+	tmp = inl(DEFAULT_GPIOBASE + GP_LVL);
+	tmp = tmp | HYBRID_GRAPHICS_GP_LVL_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_LVL);
+
+	tmp = inl(DEFAULT_GPIOBASE + GP_LVL2);
+	tmp = tmp | HYBRID_GRAPHICS_GP_LVL2_BITS;
+	outl(tmp, DEFAULT_GPIOBASE + GP_LVL2);
+}
+
+static void hybrid_graphics_switch_to_dual_graphics(void)
+{
+	/* Enable switchable graphics */
+	hybrid_graphics_configure_switchable_graphics(true);
+}
 
 static void default_southbridge_gpio_setup(void)
 {
@@ -93,6 +206,31 @@ void main(unsigned long bist)
 	}
 
 	default_southbridge_gpio_setup();
+
+	uint8_t hybrid_graphics_mode = HYBRID_GRAPHICS_INTEGRATED_ONLY;
+	get_option(&hybrid_graphics_mode, "hybrid_graphics_mode");
+
+	/* Set up hybrid graphics */
+	hybrid_graphics_set_up_gpio();
+	if (hybrid_graphics_installed()) {
+		/* Select appropriate hybrid graphics device */
+		printk(BIOS_DEBUG, "Hybrid graphics available, setting mode %d\n", hybrid_graphics_mode);
+		if (hybrid_graphics_mode == HYBRID_GRAPHICS_INTEGRATED_ONLY)
+			hybrid_graphics_switch_to_integrated_graphics();
+		else if (hybrid_graphics_mode == HYBRID_GRAPHICS_DISCRETE_ONLY)
+			hybrid_graphics_switch_to_discrete_graphics();
+		else if (hybrid_graphics_mode == HYBRID_GRAPHICS_SWITCHABLE)
+			hybrid_graphics_switch_to_integrated_graphics();
+			/* Switchable graphics are fully enabled after raminit */
+			/* FIXME
+			 * Enabling switchable graphics prevents bootup!
+			 * Debug and fix appropriately...
+			 */
+	}
+	else {
+		printk(BIOS_DEBUG, "Hybrid graphics not installed\n");
+		hybrid_graphics_switch_to_integrated_graphics();
+	}
 
 	/* ASPM related setting, set early by original BIOS. */
 	DMIBAR16(0x204) &= ~(3 << 10);
@@ -173,6 +311,11 @@ void main(unsigned long bist)
 	outl(inl(DEFAULT_GPIOBASE + 0x38) & ~0x400, DEFAULT_GPIOBASE + 0x38);
 
 	cbmem_initted = !cbmem_recovery(s3resume);
+
+	if (hybrid_graphics_installed())
+		if (hybrid_graphics_mode == HYBRID_GRAPHICS_SWITCHABLE)
+			hybrid_graphics_switch_to_dual_graphics();
+
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.

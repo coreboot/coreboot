@@ -1048,8 +1048,8 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 			udelay(10);
 			send_command(ddr_pctl_regs,
 				(sdram_params->ch[channel].rank | 1),
-				MRS_CMD, LPDDR2_MA(11) |
-				sdram_params->odt ? LPDDR2_OP(3) : 0);
+				MRS_CMD, LPDDR2_MA(11) | (sdram_params->odt ?
+				LPDDR2_OP(0x3) : LPDDR2_OP(0x0)));
 			if (channel == 0) {
 				write32(&ddr_pctl_regs->mrrcfg0, 0);
 				send_command(ddr_pctl_regs, 1, MRR_CMD,

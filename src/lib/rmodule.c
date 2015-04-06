@@ -259,7 +259,6 @@ int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
 	char *stage_region;
 	int rmodule_offset;
 	int load_offset;
-	const struct cbmem_entry *cbmem_entry;
 
 	if (stage == NULL || rsl->prog == NULL || rsl->prog->name == NULL)
 		return -1;
@@ -268,12 +267,10 @@ int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
 		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
 		                    stage->memlen, &region_size, &load_offset);
 
-	cbmem_entry = cbmem_entry_add(rsl->cbmem_id, region_size);
+	stage_region = cbmem_add(rsl->cbmem_id, region_size);
 
-	if (cbmem_entry == NULL)
+	if (stage_region == NULL)
 		return -1;
-
-	stage_region = cbmem_entry_start(cbmem_entry);
 
 	printk(BIOS_INFO, "Decompressing stage %s @ 0x%p (%d bytes)\n",
 	       rsl->prog->name, &stage_region[rmodule_offset], stage->memlen);
@@ -288,7 +285,8 @@ int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
 	if (rmodule_load(&stage_region[load_offset], &rmod_stage))
 		return -1;
 
-	prog_set_area(rsl->prog, stage_region, cbmem_entry_size(cbmem_entry));
+	prog_set_area(rsl->prog, rmod_stage.location,
+			rmodule_memory_size(&rmod_stage));
 	prog_set_entry(rsl->prog, rmodule_entry(&rmod_stage), NULL);
 
 	return 0;

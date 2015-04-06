@@ -26,6 +26,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>
+#include <cbmem.h>
 #include <version.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -433,6 +434,14 @@ static void boot_state_schedule_static_entries(void)
 
 void main(void)
 {
+	/*
+	 * CBMEM needs to be recovered in the EARLY_CBMEM_INIT case because
+	 * timestamps, APCI, etc rely on the cbmem infrastructure being
+	 * around. Explicitly recover it.
+	 */
+	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
+		cbmem_initialize();
+
 	/* Record current time, try to locate timestamps in CBMEM. */
 	timestamp_init(timestamp_get());
 

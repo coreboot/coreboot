@@ -426,18 +426,7 @@ void *cbmem_entry_start(const struct cbmem_entry *entry)
 
 #if !defined(__PRE_RAM__)
 
-#if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
-/* selected cbmem can be initialized early in ramstage. Additionally, that
- * means cbmem console can be reinitialized early as well. The post_device
- * function is empty since cbmem was initialized early in ramstage. */
-static void init_cbmem_pre_device(void *unused)
-{
-	cbmem_initialize();
-}
-
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, init_cbmem_pre_device, NULL);
-#else
-
+#if !IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 static void init_cbmem_post_device(void *unused)
 {
 	if (acpi_is_wakeup())

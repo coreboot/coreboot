@@ -63,28 +63,29 @@ entries
 
 # coreboot config options: southbridge
 408         1       e       10        sata_mode
+409         2       e       7         power_on_after_fail
 
 # coreboot config options: EC
-409         1       e       9        first_battery
-410         1       e       1        bluetooth
-411         1       e       1        wwan
-412         1       e       1        wlan
-413         1       e       1        trackpoint
-414         1       e       1        fn_ctrl_swap
-415         1       e       1        sticky_fn
+411         1       e       9        first_battery
+412         1       e       1        bluetooth
+413         1       e       1        wwan
+414         1       e       1        wlan
+415         1       e       1        trackpoint
+416         1       e       1        fn_ctrl_swap
+417         1       e       1        sticky_fn
 
 # coreboot config options: bootloader
-416         512       s       0        boot_devices
-928           8       h       0        boot_default
+418         512       s       0        boot_devices
+930           8       h       0        boot_default
 
-936         1       e       1        power_management_beeps
-937         1       e       1        low_battery_beep
-938         1       e       1        uwb
+938         1       e       1        power_management_beeps
+939         1       e       1        low_battery_beep
+940         1       e       1        uwb
 
 # coreboot config options: northbridge
-939         3       e       11       gfx_uma_size
+941         3       e       11       gfx_uma_size
 
-#942          2       r       0        unused
+#944          2       r       0        unused
 
 # coreboot config options: check sums
 984          16       h       0        check_sum

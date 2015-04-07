@@ -31,7 +31,7 @@ static void bootblock_cpu_init(void)
 {
 	rk3288_init_timer();
 
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_UART)) {
+	if (IS_ENABLED(CONFIG_DRIVERS_UART)) {
 		switch (CONFIG_CONSOLE_SERIAL_UART_ADDRESS) {
 		case UART2_BASE:
 			writel(IOMUX_UART2, &rk3288_grf->iomux_uart2);

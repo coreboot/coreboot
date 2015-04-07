@@ -10,4 +10,4 @@ romstage-y += smbus.c
 romstage-y += spi.c
 romstage-y += stack.c
 romstage-y += systemagent.c
-romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart.c
+romstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c

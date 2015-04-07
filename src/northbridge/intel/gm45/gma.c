@@ -134,9 +134,9 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 		outl(physbase + (i << 12) + 1, piobase + 4);
 	}
 
-	write32(mmio + 0x61100, 0x40008c18);
+	write32(mmio + ADPA, 0x40008c18);
 	write32(mmio + 0x7041c, 0x0);
-	write32(mmio + 0x6020, 0x3);
+	write32(mmio + _DPLL_B_MD, 0x3);
 
 	vga_misc_write(0x67);
 
@@ -174,9 +174,7 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 
 	target_frequency = info->gfx.lvds_dual_channel ? edid.pixel_clock
 		: (2 * edid.pixel_clock);
-#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	vga_textmode_init();
-#else
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	vga_sr_write(1, 1);
 	vga_sr_write(0x2, 0xf);
 	vga_sr_write(0x3, 0x0);
@@ -200,6 +198,8 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + DSPSURF(0), 0);
 	for (i = 0; i < 0x100; i++)
 		write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
+#else
+	vga_textmode_init();
 #endif
 
 	/* Find suitable divisors.  */
@@ -391,9 +391,6 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + 0x000f000c, 0xb01a2050);
 	mdelay(1);
 	write32(mmio + TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-		| TRANS_STATE_MASK
-#endif
 		);
 	write32(mmio + LVDS,
 		LVDS_PORT_ENABLE

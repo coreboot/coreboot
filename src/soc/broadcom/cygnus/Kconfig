@@ -51,6 +51,14 @@ config CYGNUS_DDR800
 	bool "DDR Speed at 800MHz"
 	default y
 
+config CYGNUS_DDR_AUTO_SELF_REFRESH_ENABLE
+	bool "Enable DDR auto self-refresh"
+	default y
+	help
+	  Warning: M0 expects that auto self-refresh is enabled. Modify
+	  with caution.
+
+
 config CYGNUS_SHMOO_REUSE_DDR_32BIT
 	bool "Indicate if DDR width is 32-bit"
 	default n

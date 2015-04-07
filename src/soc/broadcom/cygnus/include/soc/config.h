@@ -29,4 +29,8 @@
 #else
 #define SDI_NUM_ROWS			65536
 #endif
+
+/* Idle count (in units of 1024 cycles) before auto entering self-refresh  */
+#define DDR_AUTO_SELF_REFRESH_IDLE_COUNT	16
+
 #endif /* __SOC_BROADCOM_CYGNUS_CONFIG_H__ */

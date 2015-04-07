@@ -1490,6 +1490,27 @@ void ddr_init2(void)
 		}
 	}
 
+#if CONFIG_CYGNUS_DDR_AUTO_SELF_REFRESH_ENABLE
+#if (DDR_AUTO_SELF_REFRESH_IDLE_COUNT > 0) & (DDR_AUTO_SELF_REFRESH_IDLE_COUNT <= 0xff)
+	/* Enable auto self-refresh */
+	reg32_set_bits((unsigned int *)DDR_DENALI_CTL_57,
+		0x2 << DDR_DENALI_CTL_57__LP_AUTO_EXIT_EN_R |
+		0x2 << DDR_DENALI_CTL_57__LP_AUTO_ENTRY_EN_R );
+
+	reg32_set_bits((unsigned int *)DDR_DENALI_CTL_58,
+		DDR_AUTO_SELF_REFRESH_IDLE_COUNT << DDR_DENALI_CTL_58__LP_AUTO_SR_IDLE_R);
+#else
+	#error DDR_AUTO_SELF_REFRESH_IDLE_COUNT out of range
+#endif
+#else
+	/* Disable auto-self refresh */
+	reg32_clear_bits((unsigned int *)DDR_DENALI_CTL_57,
+		0x2 << DDR_DENALI_CTL_57__LP_AUTO_EXIT_EN_R |
+		0x2 << DDR_DENALI_CTL_57__LP_AUTO_ENTRY_EN_R );
+	reg32_clear_bits((unsigned int *)DDR_DENALI_CTL_58,
+		0xff << DDR_DENALI_CTL_58__LP_AUTO_SR_IDLE_R );
+#endif
+
 	/* Start the DDR */
 	reg32_set_bits((volatile uint32_t *)DDR_DENALI_CTL_00, 0x01);
 

@@ -446,12 +446,13 @@ static void gma_func0_init(struct device *dev)
 	/* Init graphics power management */
 	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
 
+	struct northbridge_intel_gm45_config *conf = dev->chip_info;
+
 #if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	/* PCI Init, will run VBIOS */
 	pci_dev_init(dev);
 #else
 	u32 physbase;
-	struct northbridge_intel_gm45_config *conf = dev->chip_info;
 	struct resource *lfb_res;
 	struct resource *pio_res;
 
@@ -475,7 +476,10 @@ static void gma_func0_init(struct device *dev)
 	/* Post VBIOS init */
 	/* Enable Backlight  */
 	gtt_write(BLC_PWM_CTL2, (1 << 31));
-	gtt_write(BLC_PWM_CTL, 0x06100610);
+	if (conf->gfx.backlight == 0)
+		gtt_write(BLC_PWM_CTL, 0x06100610);
+	else
+		gtt_write(BLC_PWM_CTL, conf->gfx.backlight);
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

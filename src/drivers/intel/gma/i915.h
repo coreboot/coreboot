@@ -291,6 +291,7 @@ struct i915_gpu_controller_info
 	int lvds_dual_channel;
 	int link_frequency_270_mhz;
 	int lvds_num_lanes;
+	u32 backlight;
 };
 
 int i915lightup(unsigned int physbase, unsigned int mmio,

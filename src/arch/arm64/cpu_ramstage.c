@@ -20,12 +20,18 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <arch/cache.h>
+#include <arch/cpu.h>
 #include <arch/lib_helpers.h>
 #include <cpu/cpu.h>
 #include <console/console.h>
 #include <gic.h>
 #include <timer.h>
 #include "cpu-internal.h"
+
+void __attribute__((weak)) arm64_arch_timer_init(void)
+{
+	/* Default weak implementation does nothing. */
+}
 
 static inline void cpu_disable_dev(device_t dev)
 {
@@ -136,6 +142,9 @@ static void init_this_cpu(void *arg)
 	 * TTA [28] = 0, disable traps for trace register access from EL0/EL1.
 	 */
 	raw_write_cpacr_el1(CPACR_TRAP_FP_DISABLE | CPACR_TTA_DISABLE);
+
+	/* Arch Timer init: setup cntfrq per CPU */
+	arm64_arch_timer_init();
 }
 
 /* Fill in cpu_info structures according to device tree. */

@@ -181,4 +181,10 @@ void arm64_cpu_startup(void);
  */
 void arm64_cpu_startup_resume(void);
 
+/*
+ * The arm64_arch_timer_init() initializes the per CPU's cntfrq register of
+ * ARM arch timer.
+ */
+void arm64_arch_timer_init(void);
+
 #endif /* __ARCH_CPU_H__ */

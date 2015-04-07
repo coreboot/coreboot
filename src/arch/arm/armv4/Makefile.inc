@@ -44,12 +44,12 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARMV4
 ## Verstage
 ################################################################################
 
-ifeq ($(CONFIG_ARCH_VERSTAGE_ARM_V4),y)
+ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV4),y)
 verstage-c-ccopts += $(armv4_flags)
 verstage-S-ccopts += $(armv4_flags)
 
 verstage-y += cache.c
-endif # CONFIG_ARCH_VERSTAGE_ARM_V4
+endif # CONFIG_ARCH_VERSTAGE_ARMV4
 
 ###############################################################################
 # romstage

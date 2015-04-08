@@ -237,7 +237,13 @@ CPPFLAGS_common += -include $(src)/include/kconfig.h
 CFLAGS_common += -pipe -g -nostdinc
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS_common += -Wstrict-aliasing -Wshadow -Wno-unused-but-set-variable
+CFLAGS_common += -Wstrict-aliasing -Wshadow
+
+ifeq ($(CONFIG_COMPILER_GCC),y)
+# cf. commit f69a99db (coreboot: x86: enable gc-sections)
+CFLAGS_common += -Wno-unused-but-set-variable
+endif
+
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS_common += -Werror
 endif

@@ -35,7 +35,13 @@ verstage-y += cbfs.c
 verstage-y += memcmp.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
+
+ifeq ($(MOCK_TPM),1)
+verstage-y += mocked_tlcl.c
+else
 verstage-y += tlcl.c
+endif
+
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 

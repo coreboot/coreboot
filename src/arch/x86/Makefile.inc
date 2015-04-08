@@ -318,7 +318,9 @@ endif # CONFIG_ARCH_RAMSTAGE_X86_32
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \
 			HOSTCC="$(HOSTCC)" \
-			CC="$(CC_x86_32)" LD="$(LD_x86_32)" OBJDUMP="$(OBJDUMP_x86_32)" \
+			CC=$(word 1,$(CC_x86_32)) CFLAGS="$(patsubst $(word 1,$(CC_x86_32))%,,$(CC_x86_32))" \
+			LD=$(word 1,$(LD_x86_32)) LDFLAGS="$(patsubst $(word 1,$(LD_x86_32))%,,$(LD_x86_32))" \
+			OBJDUMP="$(OBJDUMP_x86_32)" \
 			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
 			AS="$(AS_x86_32)" \
 			CONFIG_SEABIOS_MASTER=$(CONFIG_SEABIOS_MASTER) \

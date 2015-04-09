@@ -583,8 +583,11 @@ printf "Building GDB ${GDB_VERSION} ... "
 	cd ${BUILDDIRPREFIX}-gdb
 	export PYTHONHOME=$DESTDIR$TARGETDIR
 	rm -f .failed
+	if [ $(uname) != "FreeBSD" -a $(uname) != "NetBSD" ]; then
+		LIBDL="-ldl"
+	fi
 	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
-		 -lpthread -ldl -lutil" \
+		 -lpthread $LIBDL -lutil" \
 	CC="$CC" CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
 	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls

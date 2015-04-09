@@ -23,7 +23,3 @@
 void timer_monotonic_get(struct mono_time *mt)
 {
 }
-
-void init_timer(void)
-{
-}

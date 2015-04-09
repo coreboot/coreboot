@@ -24,6 +24,17 @@ config VBOOT2_VERIFY_FIRMWARE
 	  Enabling VBOOT2_VERIFY_FIRMWARE will use vboot2 to verify the romstage
 	  and boot loader.
 
+config VBOOT2_MOCK_SECDATA
+	bool "Mock secdata for firmware verification"
+	default n
+	depends on VBOOT2_VERIFY_FIRMWARE
+	help
+	  Enabling VBOOT2_MOCK_SECDATA will mock secdata for the firmware
+	  verification to avoid access to a secdata storage (typically TPM).
+	  All operations for a secdata storage will be successful. This option
+	  can be used during development when a TPM is not present or broken.
+	  THIS SHOULD NOT BE LEFT ON FOR PRODUCTION DEVICES.
+
 config RETURN_FROM_VERSTAGE
 	bool "return from verstage"
 	default n

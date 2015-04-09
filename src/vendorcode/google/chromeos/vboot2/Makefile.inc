@@ -28,7 +28,12 @@ bootblock-y += verstub.c
 verstage-y += verstub.c
 bootblock-y += common.c
 verstage-y += verstage.c
-verstage-y += antirollback.c common.c
+verstage-y += common.c
+ifeq (${CONFIG_VBOOT2_MOCK_SECDATA},y)
+verstage-y += secdata_mock.c
+else
+verstage-y += antirollback.c
+endif
 romstage-y += vboot_handoff.c common.c
 
 verstage-y += verstage.ld

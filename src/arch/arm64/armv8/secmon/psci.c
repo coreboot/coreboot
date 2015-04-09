@@ -368,7 +368,7 @@ static int psci_handler(struct smc_call *smc)
 	case PSCI_CPU_ON64:
 		psci_cpu_on(pf);
 		break;
-	case PSCI_CPU_OFF64:
+	case PSCI_CPU_OFF32:
 		psci32_return(pf, psci_turn_off_self());
 		break;
 	default:
@@ -563,7 +563,12 @@ void psci_init(uintptr_t cpu_on_entry)
 		printk(BIOS_ERR, "Error linking cpu_info to PSCI nodes.\n");
 
 	/* Register PSCI handlers. */
-	if (smc_register_range(PSCI_CPU_OFF64, PSCI_CPU_ON64, &psci_handler))
+	if (smc_register_range(PSCI_CPU_SUSPEND32, PSCI_CPU_ON32,
+			       &psci_handler))
+		printk(BIOS_ERR, "Couldn't register PSCI handler.\n");
+
+	if (smc_register_range(PSCI_CPU_SUSPEND64, PSCI_CPU_ON64,
+			       &psci_handler))
 		printk(BIOS_ERR, "Couldn't register PSCI handler.\n");
 
 	/* Inform SoC layer of CPU_ON entry point. */

@@ -164,7 +164,6 @@ enum {
 
 	/* 64-bit CPU support functions. */
 	PSCI_CPU_SUSPEND64 = SMC_FUNC_FAST64(0x4, 0x1),
-	PSCI_CPU_OFF64 = SMC_FUNC_FAST64(0x4, 0x2),
 	PSCI_CPU_ON64 = SMC_FUNC_FAST64(0x4, 0x3),
 };
 

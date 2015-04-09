@@ -63,7 +63,7 @@ fi
 cat <<EOF
 # platform agnostic and host tools
 IASL:=${IASL}
-HOSTCC:=${HOSTCC}
+HOSTCC?=${HOSTCC}
 
 EOF
 

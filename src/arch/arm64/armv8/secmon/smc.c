@@ -26,8 +26,10 @@
 #include <console/console.h>
 
 enum {
-	EC_SMC32 = 0x13,
-	EC_SMC64 = 0x17,
+	/* SMC called from AARCH32 */
+	EC_SMC_AARCH32 = 0x13,
+	/* SMC called from AARCH64 */
+	EC_SMC_AARCH64 = 0x17,
 
 	SMC_NUM_RANGES = 8,
 };
@@ -109,12 +111,12 @@ static int smc_handler(struct exc_state *state, uint64_t vector_id)
 	esr = raw_read_esr_el3();
 	exception_class = (esr >> 26) & 0x3f;
 
-	/* No support for 32-bit SMC calls. */
-	if (exception_class == EC_SMC32)
+	/* No support for SMC calls from AARCH32 */
+	if (exception_class == EC_SMC_AARCH32)
 		return smc_return_with_error(state, smc);
 
-	/* Check to ensure this is an SMC from aarch64. */
-	if (exception_class != EC_SMC64)
+	/* Check to ensure this is an SMC from AARCH64. */
+	if (exception_class != EC_SMC_AARCH64)
 		return EXC_RET_IGNORED;
 
 	/* Ensure immediate value is 0. */

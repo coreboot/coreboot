@@ -64,7 +64,7 @@ void setup_soc_gpios(const struct soc_gpio_map *gpio)
 	if (gpio->sus.we)
 		outl(*((u32*)gpio->sus.we), gpiobase + GPIO_SUS_WE);
 
-	/* GPIO PAD settings */
+	/* GPIO PAD Settings */
 	/* CFIO Core Well Set 1 */
 	if ((gpio->core.cfio_init != NULL) || (gpio->core.cfio_entrynum != 0)) {
 		write32(cfiobase + (0x0700 / sizeof(u32)), (u32)0x01001002);
@@ -100,7 +100,7 @@ int get_gpio(int gpio_num)
 	int bit;
 
 	if (gpio_num > MAX_GPIO_NUMBER)
-		return 0; /* Ignore wrong gpio numbers. */
+		return 0; /* Ignore wrong GPIO numbers. */
 
 	bit = gpio_num % 32;
 

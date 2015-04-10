@@ -49,7 +49,7 @@ static int early_spi_read_block(u32 offset, u8 size, u8 *buffer)
 	RCBA16(SPIBAR_HSFC) = SPIBAR_HSFC_BYTE_COUNT(size) |
 		SPIBAR_HSFC_CYCLE_READ;
 
-	/* Start transactinon */
+	/* Start transaction */
 	RCBA16(SPIBAR_HSFC) |= SPIBAR_HSFC_GO;
 
 	/* Wait for completion */

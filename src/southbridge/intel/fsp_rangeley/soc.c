@@ -61,7 +61,7 @@ int soc_silicon_supported(int type, int rev)
 	return 0;
 }
 
-/* Set bit in Function Disble register to hide this device */
+/* Set bit in Function Disable register to hide this device */
 static void soc_hide_devfn(unsigned devfn)
 {
 /* TODO Function Disable. */
@@ -77,7 +77,7 @@ void soc_enable(device_t dev)
 	if (!dev->enabled) {
 		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
 
-		/* Ensure memory, io, and bus master are all disabled */
+		/* Ensure memory, IO, and bus master are all disabled */
 		reg32 = pci_read_config32(dev, PCI_COMMAND);
 		reg32 &= ~(PCI_COMMAND_MASTER |
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);

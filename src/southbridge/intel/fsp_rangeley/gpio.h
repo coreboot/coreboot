@@ -117,11 +117,11 @@ struct soc_gpio_map {
 /* Configure GPIOs with mainboard provided settings */
 void setup_soc_gpios(const struct soc_gpio_map *gpio);
 
-/* get GPIO pin value */
+/* Get GPIO pin value */
 int get_gpio(int gpio_num);
 /*
- * get a number comprised of multiple GPIO values. gpio_num_array points to
- * the array of gpio pin numbers to scan, terminated by -1.
+ * Get a number comprised of multiple GPIO values. gpio_num_array points to
+ * the array of GPIO pin numbers to scan, terminated by -1.
  */
 unsigned get_gpios(const int *gpio_num_array);
 

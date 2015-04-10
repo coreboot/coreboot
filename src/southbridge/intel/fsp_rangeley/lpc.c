@@ -65,7 +65,7 @@ static void soc_enable_apic(struct device *dev)
 	*ioapic_index = 0;
 	*ioapic_data = (1 << 25);
 
-	/* affirm full set of redirection table entries ("write once") */
+	/* Affirm full set of redirection table entries ("write once") */
 	*ioapic_index = 1;
 	reg32 = *ioapic_data;
 	*ioapic_index = 1;

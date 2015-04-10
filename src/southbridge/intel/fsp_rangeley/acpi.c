@@ -30,7 +30,7 @@
 #endif
 
 /**
- * Fill in the fadt with generic values that can be overridden later.
+ * Fill in the FADT with generic values that can be overridden later.
  */
 
 typedef struct southbridge_intel_fsp_rangeley_config config_t;

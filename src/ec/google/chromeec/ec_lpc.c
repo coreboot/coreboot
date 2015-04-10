@@ -85,7 +85,7 @@ static int google_chromeec_command_v3(struct chromeec_command *cec_command)
 	int i;
 
 	if (cec_command->cmd_size_in + sizeof(rq) > EC_LPC_HOST_PACKET_SIZE) {
-		printk(BIOS_ERR, "EC cannot send %ld bytes\n",
+		printk(BIOS_ERR, "EC cannot send %zu bytes\n",
 		       cec_command->cmd_size_in + sizeof(rq));
 		return -1;
 	}

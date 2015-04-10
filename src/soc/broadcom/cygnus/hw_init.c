@@ -18,75 +18,139 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <console/console.h>
+#include <soc/tz.h>
 #include <soc/hw_init.h>
 
 /*****************************************************************************
  * TrustZone
  *****************************************************************************/
-#define TZPC_TZPCDECPROT0SET			0x18034804
-#define TZPC_TZPCDECPROT0CLR			0x18034808
-#define TZPC_TZPCDECPROT1SET			0x18034810
-#define TZPC_TZPCDECPROT1CLR			0x18034814
-#define TZPC_TZPCDECPROT2SET			0x1803481c
-#define TZPC_TZPCDECPROT2CLR			0x18034820
+#define IHOST_SCU_SECURE_ACCESS			0x19020054
 
-#define TZPCDECPROT0_MASK			0x000000FF
-#define TZPCDECPROT1_MASK			0x000000FF
-#define TZPCDECPROT2_MASK			0x000000FF
+#define SMAU_NIC_IDM_TZ_BASE			0x180150a0
+#define SMAU_DDR_TZ_BASE			0x18015200
+#define SMAU_FLASH0_TZ_BASE			0x18015300
+#define SMAU_FLASH1_TZ_BASE			0x18015308
+#define SMAU_FLASH2_TZ_BASE			0x18015310
+#define SMAU_FLASH3_TZ_BASE			0x18015318
+#define SMAU_TZ_BASE_ENABLE			0x00000001
 
-#define TZ_STATE_SECURE				0
-#define TZ_STATE_NON_SECURE			1
+#define CRMU_IPROC_ADDR_RANGE0_LOW		0x03024c30
+#define CRMU_IPROC_ADDR_RANGE0_HIGH		0x03024c34
+#define CRMU_ADDR_MASK				0xffffff00
+#define CRMU_ADDR_VALID				0x00000001
+#define CRMU_ADDR_START				0x03010000
+#define CRMU_ADDR_END				0x03100000
 
-#define CYGNUS_M_PCIE0_M0			0x00000003
-#define CYGNUS_M_PCIE1_M0			0x0000000c
-#define CYGNUS_M_CMICD_M0			0x00000030
-#define CYGNUS_M_EXT_M0				0x000000c0
-
-#define CYGNUS_M_EXT_M1				(0x00000003 << 8)
-#define CYGNUS_M_SDIO_M0			(0x0000000c << 8)
-#define CYGNUS_M_SDIO_M1			(0x00000030 << 8)
-#define CYGNUS_M_AMAC_M0			(0x000000c0 << 8)
-
-#define CYGNUS_M_AMAC_M1			(0x00000003 << 16)
-#define CYGNUS_M_USB2H_M0			(0x0000000c << 16)
-#define CYGNUS_M_USB2D_M0			(0x00000030 << 16)
-#define CYGNUS_M_A9JTAG_M0			(0x000000c0 << 16)
-
-#define IPROC_M_PCIE	(CYGNUS_M_PCIE0_M0 | CYGNUS_M_PCIE1_M0)
-#define IPROC_M_EXT	(CYGNUS_M_EXT_M0 | CYGNUS_M_EXT_M1)
-#define IPROC_M_SDIO	(CYGNUS_M_SDIO_M0 | CYGNUS_M_SDIO_M1)
-#define IPROC_M_AMAC	(CYGNUS_M_AMAC_M0 | CYGNUS_M_AMAC_M1)
-#define IPROC_M_USB	(CYGNUS_M_USB2H_M0 | CYGNUS_M_USB2D_M0)
-#define IPROC_M_CMICD	(CYGNUS_M_CMICD_M0)
-
-static void tz_set_masters_security(uint32_t masters, uint32_t ns_bit)
+static void scu_ns_config(void)
 {
-	uint32_t val = 0;
+	/*
+	 * Enable NS SCU access to ARM global timer, private timer, and
+	 * components
+	 */
+	write32((void *)IHOST_SCU_SECURE_ACCESS, 0xFFF);
+}
 
-	/* Check any TZPCDECPROT0 is set and then write to TZPCDECPROT0 */
-	if (masters & TZPCDECPROT0_MASK) {
-		val = masters & TZPCDECPROT0_MASK;
-		if (ns_bit)
-			write32((void *)TZPC_TZPCDECPROT0SET, val);
-		else
-			write32((void *)TZPC_TZPCDECPROT0CLR, val);
-	}
-	/* Check any TZPCDECPROT1 is set and then write to TZPCDECPROT1 */
-	if ((masters >> 8) & TZPCDECPROT1_MASK) {
-		val = (masters >> 8) & TZPCDECPROT1_MASK;
-		if (ns_bit)
-			write32((void *)TZPC_TZPCDECPROT1SET, val);
-		else
-			write32((void *)TZPC_TZPCDECPROT1CLR, val);
-	}
-	/* Check any TZPCDECPROT2 is set and then write to TZPCDECPROT2 */
-	if ((masters >> 16) & TZPCDECPROT2_MASK) {
-		val = (masters >> 16) & TZPCDECPROT2_MASK;
-		if (ns_bit)
-			write32((void *)TZPC_TZPCDECPROT2SET, val);
-		else
-			write32((void *)TZPC_TZPCDECPROT2CLR, val);
-	}
+static void smau_ns_config(void)
+{
+	unsigned int val;
+
+	/* Disable SMAU NIC IDM TZ */
+	val = read32((void *)SMAU_NIC_IDM_TZ_BASE);
+	val &= ~SMAU_TZ_BASE_ENABLE;
+	write32((void *)SMAU_NIC_IDM_TZ_BASE, val);
+
+	/*
+	 * Disable DDR TZ base
+	 *
+	 * This means the entire DDR is marked as NONSECURE (NS)
+	 *
+	 * NOTE: In the future, multiple regions of DDR may need to be marked
+	 * as SECURE for secure OS and other TZ usages
+	 */
+	val = read32((void *)SMAU_DDR_TZ_BASE);
+	val &= ~SMAU_TZ_BASE_ENABLE;
+	write32((void *)SMAU_DDR_TZ_BASE, val);
+
+
+	/*
+	 * Disable flash TZ support
+	 *
+	 * The entire flash is currently marked as NS
+	 *
+	 * NOTE: In the future, multiple regions of flash may need to be marked
+	 * as SECURE for secure OS and other TZ firmware/data storage
+	 */
+
+	/* Flash 0: ROM */
+	val = read32((void *)SMAU_FLASH0_TZ_BASE);
+	val &= ~SMAU_TZ_BASE_ENABLE;
+	write32((void *)SMAU_FLASH0_TZ_BASE, val);
+
+	/* Flash 1: QSPI */
+	val = read32((void *)SMAU_FLASH1_TZ_BASE);
+	val &= ~SMAU_TZ_BASE_ENABLE;
+	write32((void *)SMAU_FLASH1_TZ_BASE, val);
+
+	/* Flash 2: NAND */
+	val = read32((void *)SMAU_FLASH2_TZ_BASE);
+	val &= ~SMAU_TZ_BASE_ENABLE;
+	write32((void *)SMAU_FLASH2_TZ_BASE, val);
+
+	/* Flash 3: PNOR */
+	val = read32((void *)SMAU_FLASH3_TZ_BASE);
+	val &= ~SMAU_TZ_BASE_ENABLE;
+	write32((void *)SMAU_FLASH3_TZ_BASE, val);
+}
+
+static void crmu_ns_config(void)
+{
+
+	/*
+	 * Currently opens up the entire CRMU to allow iPROC NS access
+	 *
+	 * NOTE: In the future, we might want to protect particular CRMU
+	 * sub-blocks to allow SECURE access only. That can be done by
+	 * programing the CRMU IPROC address range registers. Up to 4 access
+	 * windows can be created
+	 */
+	write32((void *)CRMU_IPROC_ADDR_RANGE0_LOW,
+		(CRMU_ADDR_START & CRMU_ADDR_MASK) | CRMU_ADDR_VALID);
+	write32((void *)CRMU_IPROC_ADDR_RANGE0_HIGH,
+		(CRMU_ADDR_END & CRMU_ADDR_MASK) | CRMU_ADDR_VALID);
+}
+
+static void tz_init(void)
+{
+	/* Configure the Cygnus for non-secure access */
+	/* ARM Cortex A9 SCU NS access configuration */
+	scu_ns_config();
+
+	/* SMAU NS related configurations */
+	smau_ns_config();
+
+	/* CRMU NS related configurations */
+	crmu_ns_config();
+
+	/*
+	 * Configure multiple masters and slaves to run in NS
+	 */
+	tz_set_non_virtual_slaves_security(0xFFFFFFFF, TZ_STATE_NON_SECURE);
+	tz_set_periph_security(0xFFFFFFFF, TZ_STATE_NON_SECURE);
+	tz_set_masters_security(0xFFFFFFFF, TZ_STATE_NON_SECURE);
+	tz_set_wrapper_security(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+				TZ_STATE_NON_SECURE);
+	tz_set_cfg_slaves_security(0xFFFFFFFF, TZ_STATE_NON_SECURE);
+
+	tz_set_ext_slaves_security(0xFFFFFFFF, TZ_STATE_NON_SECURE);
+
+	/* configure sec peripherals to be accessed from non-secure world */
+	tz_set_sec_periphs_security(0xFFFFFFFF &
+				    ~(CYGNUS_sec_periph_APBz_sotp |
+				      CYGNUS_sec_periph_APBz_tzpc),
+				    TZ_STATE_NON_SECURE);
+
+	/* default sram to non-secure */
+	tz_set_sram_sec_region(0);
 }
 
 /*****************************************************************************
@@ -350,10 +414,6 @@ static void ccu_init(void)
 /*****************************************************************************
  * LCD
  *****************************************************************************/
-#define ASIU_TOP_LCD_AXI_SB_CTRL			0x180aa02c
-#define ASIU_TOP_LCD_AXI_SB_CTRL_LCD_ARPROT_MASK	0x03800000
-#define ASIU_TOP_LCD_AXI_SB_CTRL_LCD_HPROT_NON_SECURE	0x40000000
-
 #define ASIU_TOP_CLK_GATING_CTRL			0x180aa024
 #define ASIU_TOP_CLK_GATING_CTRL_LCD_CLK_GATE_EN	0x00000010
 #define ASIU_TOP_CLK_GATING_CTRL_MIPI_DSI_CLK_GATE_EN	0x00000008
@@ -363,12 +423,6 @@ static void ccu_init(void)
 static void lcd_init(void)
 {
 	unsigned int val;
-
-	val = read32((void *)ASIU_TOP_LCD_AXI_SB_CTRL);
-	/* set LCD_ARPROT and LCD_HPROT_NON_SECURE to 0 */
-	val &= ~(ASIU_TOP_LCD_AXI_SB_CTRL_LCD_ARPROT_MASK |
-		 ASIU_TOP_LCD_AXI_SB_CTRL_LCD_HPROT_NON_SECURE);
-	write32((void *)ASIU_TOP_LCD_AXI_SB_CTRL, val);
 
 	/* make sure the LCD clock is ungated */
 	val = read32((void *)ASIU_TOP_CLK_GATING_CTRL);
@@ -423,21 +477,9 @@ static void lcd_qos_init(unsigned int qos)
 /*****************************************************************************
  * V3D
  *****************************************************************************/
-#define ASIU_TOP_GFX_AXI_SB_CTRL			0x180aa034
-#define ASIU_TOP_GFX_AXI_SB_CTRL_GFX_ARPROT_MASK	0x03800000
-#define ASIU_TOP_GFX_AXI_SB_CTRL_GFX_AWPROT_MASK	0x00700000
-
 static void v3d_init(void)
 {
 	unsigned int val;
-
-	val = read32((void *)ASIU_TOP_GFX_AXI_SB_CTRL);
-	/*
-	 * set both GFX_ARPROT and GFX_AWPROT to 0
-	 */
-	val &= ~(ASIU_TOP_GFX_AXI_SB_CTRL_GFX_ARPROT_MASK |
-		 ASIU_TOP_GFX_AXI_SB_CTRL_GFX_AWPROT_MASK);
-	write32((void *)ASIU_TOP_GFX_AXI_SB_CTRL, val);
 
 	/* make sure the V3D clock is ungated */
 	val = read32((void *)ASIU_TOP_CLK_GATING_CTRL);
@@ -455,10 +497,6 @@ static void v3d_init(void)
 #define CRMU_PLL_AON_CTRL_ASIU_AUDIO_GENPLL_PWRON_LDO	0x00000200
 #define CRMU_PLL_AON_CTRL_ASIU_AUDIO_GENPLL_ISO_IN	0x00000100
 
-#define ASIU_TOP_AUD_AXI_SB_CTRL			0x180aa028
-#define ASIU_TOP_AUD_AXI_SB_CTRL_AUD_ARPROT_MASK	0x03800000
-#define ASIU_TOP_AUD_AXI_SB_CTRL_AUD_AWPROT_MASK	0x00700000
-
 static void audio_init(void)
 {
 	unsigned int val;
@@ -475,12 +513,6 @@ static void audio_init(void)
 	val |= CRMU_PLL_AON_CTRL_ASIU_AUDIO_GENPLL_PWRON_PLL;
 	val &= ~CRMU_PLL_AON_CTRL_ASIU_AUDIO_GENPLL_ISO_IN;
 	write32((void *)CRMU_PLL_AON_CTRL, val);
-
-	/* Clear AWPROT and ARPROT signals to audio block. */
-	val = read32((void *)ASIU_TOP_AUD_AXI_SB_CTRL);
-	val &= ~(ASIU_TOP_AUD_AXI_SB_CTRL_AUD_AWPROT_MASK |
-		 ASIU_TOP_AUD_AXI_SB_CTRL_AUD_ARPROT_MASK);
-	write32((void *)ASIU_TOP_AUD_AXI_SB_CTRL, val);
 }
 
 /*****************************************************************************
@@ -707,12 +739,10 @@ static void sdio_init(void)
 
 void hw_init(void)
 {
-	tz_set_masters_security(IPROC_M_PCIE | IPROC_M_EXT | IPROC_M_SDIO |
-				IPROC_M_AMAC | IPROC_M_USB | IPROC_M_CMICD,
-				TZ_STATE_SECURE);
+	tz_init();
 	printk(BIOS_INFO, "trustzone initialized\n");
 	dmac_init();
-	printk(BIOS_INFO, "PL022 DMAC initialized\n");
+	printk(BIOS_INFO, "PL330 DMAC initialized\n");
 	lcd_init();
 	lcd_qos_init(15);
 	printk(BIOS_INFO, "LCD initialized\n");

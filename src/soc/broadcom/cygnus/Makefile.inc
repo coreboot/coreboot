@@ -21,6 +21,7 @@ bootblock-y += bootblock.c
 bootblock-y += cbmem.c
 bootblock-y += i2c.c
 bootblock-y += timer.c
+bootblock-y += tz.c
 bootblock-y += hw_init.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)

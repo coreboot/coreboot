@@ -17,12 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stddef.h>
-#include <string.h>
 #include <boot/coreboot_tables.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <reset.h>
+#include <stddef.h>
+#include <string.h>
+
 #include "chromeos.h"
 #include "vboot_common.h"
 #include "vboot_handoff.h"
@@ -123,4 +125,10 @@ void *vboot_get_payload(int *len)
 
 	/* This will leak a mapping. */
 	return vboot_get_region(fwc->address, fwc->size, NULL);
+}
+
+void vboot_reboot(void)
+{
+	hard_reset();
+	die("failed to reboot");
 }

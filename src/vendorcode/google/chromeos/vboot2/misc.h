@@ -28,7 +28,6 @@ void verstage_main(void);
 void *vboot_load_stage(int stage_index,
 		       struct vboot_region *fw_main,
 		       struct vboot_components *fw_info);
-void vboot_reboot(void);
 
 /*
  * this is placed at the start of the vboot work buffer. selected_region is used

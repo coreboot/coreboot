@@ -73,7 +73,7 @@ static void log_msg(const char *fmt, va_list args)
 static void fatal_error(void)
 {
 	printk(BIOS_ERR, "vboot encountered fatal error. Resetting.\n");
-	hard_reset();
+	vboot_reboot();
 }
 
 static int fw_region_size(struct vboot_region *r)
@@ -195,11 +195,6 @@ static void vboot_clean_up(struct vboot_context *context)
 		cbmem_entry_remove(context->vblocks);
 }
 
-static void reset(void)
-{
-	hard_reset();
-}
-
 static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 {
 	VbCommonParams cparams;
@@ -280,7 +275,7 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 	context.log_msg = &log_msg;
 	context.fatal_error = &fatal_error;
 	context.get_region = &vboot_get_region;
-	context.reset = &reset;
+	context.reset = &vboot_reboot;
 
 	vboot_run_stub(&context);
 

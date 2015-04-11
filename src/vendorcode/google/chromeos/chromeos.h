@@ -87,5 +87,6 @@ static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
 
 void cbmem_add_vpd_calibration_data(void);
+void vboot_reboot(void);
 
 #endif /* __CHROMEOS_H__ */

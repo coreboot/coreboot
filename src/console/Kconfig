@@ -184,6 +184,15 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 	  value (128K or 0x20000 bytes) is large enough to accommodate
 	  even the BIOS_SPEW level.
 
+config CONSOLE_CBMEM_DUMP_TO_UART
+	depends on !CONSOLE_SERIAL
+	bool "Dump CBMEM console on resets"
+	default n
+	help
+	  Enable this to have CBMEM console buffer contents dumped on the
+	  serial output in case serial console is disabled and the device
+	  resets itself while trying to boot the payload.
+
 endif
 
 config CONSOLE_QEMU_DEBUGCON

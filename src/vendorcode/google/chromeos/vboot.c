@@ -234,6 +234,8 @@ static void init_vboot(int bootmode)
 #if !MOCK_TPM
 	printk(BIOS_ERR, "TPM: Error code 0x%x. Hard reset!\n", result);
 	post_code(POST_TPM_FAILURE);
+	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))
+		cbmem_dump_console();
 	hard_reset();
 #endif
 }

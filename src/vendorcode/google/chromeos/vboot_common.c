@@ -130,6 +130,8 @@ void *vboot_get_payload(int *len)
 
 void vboot_reboot(void)
 {
+	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))
+		cbmem_dump_console();
 	hard_reset();
 	die("failed to reboot");
 }

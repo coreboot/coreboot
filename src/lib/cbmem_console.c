@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <console/cbmem_console.h>
+#include <console/uart.h>
 #include <cbmem.h>
 #include <arch/early_variables.h>
 #include <symbols.h>
@@ -235,6 +236,22 @@ void cbmemc_reinit(void)
 
 	init_console_ptr(cbm_cons_p, size, flags);
 }
+
+#if IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART)
+void cbmem_dump_console(void)
+{
+	struct cbmem_console *cbm_cons_p;
+	int cursor;
+
+	cbm_cons_p = current_console();
+	if (!cbm_cons_p)
+		return;
+
+	uart_init(0);
+	for (cursor = 0; cursor < cbm_cons_p->buffer_cursor; cursor++)
+		uart_tx_byte(0, cbm_cons_p->buffer_body[cursor]);
+}
+#endif
 
 /* Call cbmemc_reinit() at CAR migration time. */
 CAR_MIGRATE(cbmemc_reinit)

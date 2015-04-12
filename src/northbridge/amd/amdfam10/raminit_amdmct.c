@@ -207,40 +207,39 @@ static void raminit_amdmct(struct sys_info *sysinfo)
 
 static void amdmct_cbmem_store_info(struct sys_info *sysinfo)
 {
+	if (!sysinfo)
+		return;
+
 	/* Save memory info structures for use in ramstage */
 	size_t i;
-	struct MCTStatStruc *pMCTstat = &(sysinfo->MCTstat);
 	struct DCTStatStruc *pDCTstatA = NULL;
 
-	if (pMCTstat && sysinfo->DCTstatA) {
-		/* Allocate memory */
-		struct amdmct_memory_info* mem_info;
-		mem_info = cbmem_add(CBMEM_ID_AMDMCT_MEMINFO, sizeof(struct amdmct_memory_info));
-		if (!mem_info)
-			return;
+	/* Allocate memory */
+	struct amdmct_memory_info* mem_info;
+	mem_info = cbmem_add(CBMEM_ID_AMDMCT_MEMINFO, sizeof(struct amdmct_memory_info));
+	if (!mem_info)
+		return;
 
-		printk(BIOS_DEBUG, "%s: Storing AMDMCT configuration in CBMEM\n", __func__);
+	printk(BIOS_DEBUG, "%s: Storing AMDMCT configuration in CBMEM\n", __func__);
 
-		/* Initialize memory */
-		memset(mem_info, 0,  sizeof(struct amdmct_memory_info));
+	/* Initialize memory */
+	memset(mem_info, 0,  sizeof(struct amdmct_memory_info));
 
-		/* Copy data */
-		memcpy(&mem_info->mct_stat, &(sysinfo->MCTstat), sizeof(struct MCTStatStruc));
-		for (i = 0; i < MAX_NODES_SUPPORTED; i++) {
-			pDCTstatA = sysinfo->DCTstatA + i;
-			memcpy(&mem_info->dct_stat[i], pDCTstatA, sizeof(struct DCTStatStruc));
-		}
-		mem_info->ecc_enabled = mctGet_NVbits(NV_ECC_CAP);
-		mem_info->ecc_scrub_rate = mctGet_NVbits(NV_DramBKScrub);
-
-		/* Zero out invalid/unused pointers */
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
-
-		for (i = 0; i < MAX_NODES_SUPPORTED; i++) {
-			mem_info->dct_stat[i].C_MCTPtr = NULL;
-			mem_info->dct_stat[i].C_DCTPtr[0] = NULL;
-			mem_info->dct_stat[i].C_DCTPtr[1] = NULL;
-		}
-#endif
+	/* Copy data */
+	memcpy(&mem_info->mct_stat, &(sysinfo->MCTstat), sizeof(struct MCTStatStruc));
+	for (i = 0; i < MAX_NODES_SUPPORTED; i++) {
+		pDCTstatA = sysinfo->DCTstatA + i;
+		memcpy(&mem_info->dct_stat[i], pDCTstatA, sizeof(struct DCTStatStruc));
 	}
+	mem_info->ecc_enabled = mctGet_NVbits(NV_ECC_CAP);
+	mem_info->ecc_scrub_rate = mctGet_NVbits(NV_DramBKScrub);
+
+	/* Zero out invalid/unused pointers */
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
+	for (i = 0; i < MAX_NODES_SUPPORTED; i++) {
+		mem_info->dct_stat[i].C_MCTPtr = NULL;
+		mem_info->dct_stat[i].C_DCTPtr[0] = NULL;
+		mem_info->dct_stat[i].C_DCTPtr[1] = NULL;
+	}
+#endif
 }

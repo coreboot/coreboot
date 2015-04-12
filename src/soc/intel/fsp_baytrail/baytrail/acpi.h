@@ -30,7 +30,8 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 void acpi_init_gnvs(global_nvs_t *gnvs);
-unsigned long southcluster_write_acpi_tables(unsigned long current,
+unsigned long southcluster_write_acpi_tables(device_t device,
+					     unsigned long current,
 					     struct acpi_rsdp *rsdp);
 void southcluster_inject_dsdt(device_t device);
 

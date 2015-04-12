@@ -109,7 +109,9 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 }
 
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
-unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp)
+unsigned long northbridge_write_acpi_tables(device_t device,
+					    unsigned long start,
+					    struct acpi_rsdp *rsdp)
 {
 	unsigned long current;
 #if CONFIG_IOMMU

@@ -204,7 +204,10 @@ static unsigned long acpi_fill_slit(unsigned long current)
 	return current;
 }
 
-unsigned long northbridge_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp)
+unsigned long northbridge_write_acpi_tables(
+		device_t device,
+		unsigned long start,
+		acpi_rsdp_t *rsdp)
 {
 	unsigned long current;
 	acpi_srat_t *srat;

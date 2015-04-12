@@ -786,7 +786,9 @@ static void southbridge_inject_dsdt(device_t dev)
 }
 
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
-static unsigned long southbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp)
+static unsigned long southbridge_write_acpi_tables(device_t device,
+						   unsigned long start,
+						   struct acpi_rsdp *rsdp)
 {
 	unsigned long current;
 	acpi_hpet_t *hpet;

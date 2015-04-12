@@ -508,7 +508,7 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
-unsigned long acpi_write_hpet(unsigned long current, acpi_rsdp_t *rsdp)
+unsigned long acpi_write_hpet(device_t device, unsigned long current, acpi_rsdp_t *rsdp)
 {
 	acpi_hpet_t *hpet;
 
@@ -898,7 +898,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->ops && dev->ops->write_acpi_tables) {
-			current = dev->ops->write_acpi_tables(current, rsdp);
+			current = dev->ops->write_acpi_tables(dev, current, rsdp);
 			ALIGN_CURRENT;
 		}
 	}

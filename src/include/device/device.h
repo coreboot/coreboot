@@ -56,7 +56,7 @@ struct device_operations {
 	void (*get_smbios_strings)(device_t dev, struct smbios_type11 *t);
 #endif
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-	unsigned long (*write_acpi_tables)(unsigned long start,  struct acpi_rsdp *rsdp);
+	unsigned long (*write_acpi_tables)(device_t dev, unsigned long start,  struct acpi_rsdp *rsdp);
 	void (*acpi_fill_ssdt_generator)(device_t dev);
 	void (*acpi_inject_dsdt_generator)(device_t dev);
 #endif

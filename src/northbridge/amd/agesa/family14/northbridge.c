@@ -832,7 +832,8 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static unsigned long agesa_write_acpi_tables(unsigned long current,
+static unsigned long agesa_write_acpi_tables(device_t device,
+					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {
 	acpi_srat_t *srat;

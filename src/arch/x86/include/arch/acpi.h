@@ -537,7 +537,7 @@ void acpi_create_slit(acpi_slit_t *slit,
 
 #if ENV_RAMSTAGE
 void acpi_create_hpet(acpi_hpet_t *hpet);
-unsigned long acpi_write_hpet(unsigned long start, acpi_rsdp_t *rsdp);
+unsigned long acpi_write_hpet(device_t device, unsigned long start, acpi_rsdp_t *rsdp);
 
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(device_t device);

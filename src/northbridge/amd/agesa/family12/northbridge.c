@@ -832,7 +832,8 @@ static void northbridge_fill_ssdt_generator(device_t device)
 	acpigen_pop_len();
 }
 
-static unsigned long agesa_write_acpi_tables(unsigned long current,
+static unsigned long agesa_write_acpi_tables(device_t device,
+					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {
 	acpi_srat_t *srat;

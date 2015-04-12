@@ -125,7 +125,9 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp)
+unsigned long mainboard_write_acpi_tables(device_t device,
+					  unsigned long start,
+					  acpi_rsdp_t *rsdp)
 {
 	unsigned long current;
 	acpi_header_t *ssdtx;

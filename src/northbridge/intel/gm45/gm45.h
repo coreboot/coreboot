@@ -25,6 +25,7 @@
 
 #ifndef __ACPI__
 
+#include <rules.h>
 #include <stdint.h>
 
 typedef enum {
@@ -435,8 +436,13 @@ u32 decode_igd_gtt_size(u32 gsm);
 
 void init_iommu(void);
 
+#if ENV_RAMSTAGE
+#include <device/device.h>
+
 struct acpi_rsdp;
-unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp);
+unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
 #endif
 
+
+#endif /* !__ACPI__ */
 #endif /* __NORTHBRIDGE_INTEL_GM45_GM45_H__ */

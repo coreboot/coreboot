@@ -569,12 +569,13 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
 
-unsigned long southcluster_write_acpi_tables(unsigned long current,
+unsigned long southcluster_write_acpi_tables(device_t device,
+					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
 	acpi_header_t *ssdt2;
 
-	current = acpi_write_hpet(current, rsdp);
+	current = acpi_write_hpet(device, current, rsdp);
 	ALIGN_CURRENT;
 
 	ssdt2 = (acpi_header_t *)current;

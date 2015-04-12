@@ -330,8 +330,9 @@ void northbridge_acpi_write_vars(device_t device)
 	acpigen_pop_len();
 }
 
-unsigned long northbridge_write_acpi_tables(unsigned long current,
-	struct acpi_rsdp *rsdp)
+unsigned long northbridge_write_acpi_tables(device_t device,
+					    unsigned long current,
+					    struct acpi_rsdp *rsdp)
 {
 	acpi_srat_t *srat;
 	acpi_slit_t *slit;

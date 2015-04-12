@@ -91,7 +91,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-void mainboard_inject_dsdt(void)
+void mainboard_inject_dsdt(device_t device)
 {
 	global_vars_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, GLOBAL_VARS_SIZE);
 

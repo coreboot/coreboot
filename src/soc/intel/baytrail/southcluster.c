@@ -513,7 +513,7 @@ void southcluster_enable_dev(device_t dev)
 	}
 }
 
-static void southcluster_inject_dsdt(void)
+static void southcluster_inject_dsdt(device_t device)
 {
 	global_nvs_t *gnvs;
 

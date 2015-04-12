@@ -824,7 +824,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		acpigen_set_current((char *) current);
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->ops && dev->ops->acpi_inject_dsdt_generator) {
-				dev->ops->acpi_inject_dsdt_generator();
+				dev->ops->acpi_inject_dsdt_generator(dev);
 			}
 		current = (unsigned long) acpigen_get_current();
 		memcpy((char *)current,

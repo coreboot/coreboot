@@ -126,7 +126,7 @@ static void traf_ctrl_enable_k8t890(struct device *dev)
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
-static void southbridge_acpi_fill_ssdt_generator(void) {
+static void southbridge_acpi_fill_ssdt_generator(device_t dev) {
 	amd_generate_powernow(0, 0, 0);
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
 }

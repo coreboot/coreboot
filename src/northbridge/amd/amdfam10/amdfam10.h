@@ -1076,6 +1076,6 @@ struct acpi_rsdp;
 
 unsigned long northbridge_write_acpi_tables(unsigned long start,
 					    struct acpi_rsdp *rsdp);
-void northbridge_acpi_write_vars(void);
+void northbridge_acpi_write_vars(device_t device);
 
 #endif /* AMDFAM10_H */

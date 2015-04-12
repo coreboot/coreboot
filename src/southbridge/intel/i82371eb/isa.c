@@ -129,10 +129,10 @@ static void sb_read_resources(struct device *dev)
 }
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
-static void southbridge_acpi_fill_ssdt_generator(void)
+static void southbridge_acpi_fill_ssdt_generator(device_t device)
 {
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
-	generate_cpu_entries();
+	generate_cpu_entries(device);
 }
 #endif
 

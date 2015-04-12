@@ -562,7 +562,7 @@ static void southbridge_inject_dsdt(device_t dev)
 	}
 }
 
-static void southbridge_fill_ssdt(void)
+static void southbridge_fill_ssdt(device_t device)
 {
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 	config_t *chip = dev->chip_info;

@@ -29,6 +29,7 @@
 
 #include <stdint.h>
 #include <rules.h>
+#include <device/device.h>
 
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
 #define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
@@ -539,7 +540,7 @@ void acpi_create_hpet(acpi_hpet_t *hpet);
 unsigned long acpi_write_hpet(unsigned long start, acpi_rsdp_t *rsdp);
 
 /* cpu/intel/speedstep/acpi.c */
-void generate_cpu_entries(void);
+void generate_cpu_entries(device_t device);
 #endif
 
 void acpi_create_mcfg(acpi_mcfg_t *mcfg);

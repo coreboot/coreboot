@@ -196,7 +196,7 @@ void update_ssdtx(void *ssdtx, int i)
 
 }
 
-void northbridge_acpi_write_vars(void)
+void northbridge_acpi_write_vars(device_t device)
 {
 	/*
 	 * If more than one physical CPU is installed, northbridge_acpi_write_vars()

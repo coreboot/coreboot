@@ -797,7 +797,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
-static void southbridge_fill_ssdt(void)
+static void southbridge_fill_ssdt(device_t device)
 {
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 	config_t *chip = dev->chip_info;

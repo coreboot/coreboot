@@ -793,7 +793,7 @@ static void cpu_bus_init(device_t dev)
 
 /* North Bridge Structures */
 
-static void northbridge_fill_ssdt_generator(void)
+static void northbridge_fill_ssdt_generator(device_t device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";

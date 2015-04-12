@@ -21,7 +21,7 @@
 #define AMDK8_ACPI_H
 #include <arch/acpigen.h>
 
-void k8acpi_write_vars(void);
+void k8acpi_write_vars(device_t device);
 unsigned long northbridge_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp);
 
 #endif

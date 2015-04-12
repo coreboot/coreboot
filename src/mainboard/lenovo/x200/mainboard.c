@@ -32,7 +32,7 @@
 #include <ec/lenovo/h8/h8.h>
 #include "drivers/lenovo/lenovo.h"
 
-static void fill_ssdt(void)
+static void fill_ssdt(device_t device)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
 }

@@ -27,6 +27,9 @@
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 
+#include <rules.h>
+#include <device/device.h>
+
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 
 /* SideBand B-UNIT */
@@ -72,7 +75,10 @@ void dump_pci_devices(void);
 void dump_spd_registers(void);
 void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
-void northbridge_acpi_fill_ssdt_generator(void);
+
+#if ENV_RAMSTAGE
+void northbridge_acpi_fill_ssdt_generator(device_t device);
+#endif
 
 #endif /* #ifndef __ASSEMBLER__ */
 #endif /* #ifndef __ACPI__ */

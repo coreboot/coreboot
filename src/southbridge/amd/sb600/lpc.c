@@ -223,7 +223,7 @@ static void sb600_lpc_enable_resources(device_t dev)
 
 extern u16 pm_base;
 
-static void southbridge_acpi_fill_ssdt_generator(void) {
+static void southbridge_acpi_fill_ssdt_generator(device_t device) {
 	amd_generate_powernow(pm_base + 8, 6, 1);
 }
 

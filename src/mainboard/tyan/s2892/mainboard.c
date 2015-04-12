@@ -6,7 +6,7 @@
 #include <arch/acpigen.h>
 #include <cpu/amd/amdk8_sysconf.h>
 
-static void mainboard_acpi_fill_ssdt_generator(void) {
+static void mainboard_acpi_fill_ssdt_generator(device_t device) {
 	amd_generate_powernow(0, 0, 0);
 }
 

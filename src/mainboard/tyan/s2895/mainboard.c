@@ -8,7 +8,7 @@
 
 extern u16 pm_base;
 
-static void mainboard_acpi_fill_ssdt_generator(void) {
+static void mainboard_acpi_fill_ssdt_generator(device_t device) {
 	amd_generate_powernow(0, 0, 0);
 }
 

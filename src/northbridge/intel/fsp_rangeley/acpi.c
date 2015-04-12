@@ -65,7 +65,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-void northbridge_acpi_fill_ssdt_generator(void)
+void northbridge_acpi_fill_ssdt_generator(device_t device)
 {
 	u32 bmbound;
 	char pscope[] = "\\_SB.PCI0";
@@ -74,5 +74,5 @@ void northbridge_acpi_fill_ssdt_generator(void)
 	acpigen_write_scope(pscope);
 	acpigen_write_name_dword("BMBD", bmbound);
 	acpigen_pop_len();
-	generate_cpu_entries();
+	generate_cpu_entries(device);
 }

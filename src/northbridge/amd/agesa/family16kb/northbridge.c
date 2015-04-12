@@ -477,7 +477,7 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static void northbridge_fill_ssdt_generator(void)
+static void northbridge_fill_ssdt_generator(device_t device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";

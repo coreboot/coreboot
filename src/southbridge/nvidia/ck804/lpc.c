@@ -313,7 +313,7 @@ static void ck804_lpc_enable_resources(device_t dev)
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
-static void southbridge_acpi_fill_ssdt_generator(void)
+static void southbridge_acpi_fill_ssdt_generator(device_t device)
 {
 	amd_generate_powernow(0, 0, 0);
 }

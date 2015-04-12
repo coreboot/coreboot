@@ -99,7 +99,7 @@ static void mainboard_init(device_t dev)
 	}
 }
 
-static void fill_ssdt(void)
+static void fill_ssdt(device_t device)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 1);
 }

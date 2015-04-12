@@ -283,7 +283,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
 
-static void southbridge_acpi_fill_ssdt_generator(void)
+static void southbridge_acpi_fill_ssdt_generator(device_t device)
 {
 	amd_generate_powernow(0, 0, 0);
 }

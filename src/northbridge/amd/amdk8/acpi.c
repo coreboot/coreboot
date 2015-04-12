@@ -277,7 +277,7 @@ static void k8acpi_write_pci_data(int dlen, const char *name, int offset) {
 	acpigen_pop_len();
 }
 
-void k8acpi_write_vars(void)
+void k8acpi_write_vars(device_t device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";

@@ -117,7 +117,7 @@ static void gen_pstate_entries(const sst_table_t *const pstates,
 /**
  * @brief Generate ACPI entries for Speedstep for each cpu
  */
-void generate_cpu_entries(void)
+void generate_cpu_entries(device_t device)
 {
 	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
 	int totalcores = determine_total_number_of_cores();

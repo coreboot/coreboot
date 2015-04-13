@@ -200,12 +200,24 @@ static uint64_t init_xlat_table(uint64_t base_addr,
 
 	/*
 	 * L1 table lookup
-	 * If VA has bits more than 41, lookup starts at L1
+	 * If VA has bits more than L2 can resolve, lookup starts at L1
+	 * Assumption: we don't need L0 table in coreboot
 	 */
-	if (l1_index) {
-		table = get_next_level_table(&table[l1_index]);
-		if (!table)
-			return 0;
+	if (BITS_PER_VA > L1_ADDR_SHIFT) {
+		if ((size >= L1_XLAT_SIZE) &&
+		    IS_ALIGNED(base_addr, (1UL << L1_ADDR_SHIFT))) {
+			/* If block address is aligned and size is greater than
+			 * or equal to size addressed by each L1 entry, we can
+			 * directly store a block desc */
+			desc = base_addr | BLOCK_DESC | attr;
+			table[l1_index] = desc;
+			/* L2 lookup is not required */
+			return L1_XLAT_SIZE;
+		} else {
+			table = get_next_level_table(&table[l1_index]);
+			if (!table)
+				return 0;
+		}
 	}
 
 	/*
@@ -213,10 +225,11 @@ static uint64_t init_xlat_table(uint64_t base_addr,
 	 * If lookup was performed at L1, L2 table addr is obtained from L1 desc
 	 * else, lookup starts at ttbr address
 	 */
-	if (!l3_index && (size >= L2_XLAT_SIZE)) {
+	if ((size >= L2_XLAT_SIZE) &&
+	    IS_ALIGNED(base_addr, (1UL << L2_ADDR_SHIFT))) {
 		/*
 		 * If block address is aligned and size is greater than or equal
-		 * to 512MiB i.e. size addressed by each L2 entry, we can
+		 * to size addressed by each L2 entry, we can
 		 * directly store a block desc
 		 */
 		desc = base_addr | BLOCK_DESC | attr;
@@ -369,7 +382,7 @@ void mmu_enable(void)
 
 	/* Initialize TCR flags */
 	raw_write_tcr_current(TCR_TOSZ | TCR_IRGN0_NM_WBWAC | TCR_ORGN0_NM_WBWAC |
-			      TCR_SH0_IS | TCR_TG0_64KB | TCR_PS_64GB |
+			      TCR_SH0_IS | TCR_TG0_4KB | TCR_PS_64GB |
 			      TCR_TBI_USED);
 
 	/* Initialize TTBR */

@@ -49,14 +49,6 @@ struct mmu_ranges {
  */
 extern char _start[], _end[];
 
-/* IMPORTANT!!!!!!!
- * Assumptions made:
- * Granule size is 64KiB
- * BITS per Virtual address is 33
- * All the calculations for tables L1,L2 and L3 are based on these assumptions
- * If these values are changed, recalculate the other macros as well
- */
-
 /* Memory attributes for mmap regions
  * These attributes act as tag values for memrange regions
  */
@@ -89,47 +81,32 @@ extern char _start[], _end[];
 /* XLAT Table Init Attributes */
 
 #define VA_START                   0x0
-/* If BITS_PER_VA or GRANULE_SIZE are changed, recalculate and change the
-   macros following them */
 #define BITS_PER_VA                33
-/* Granule size of 64KB is being used */
 #define MIN_64_BIT_ADDR            (1UL << 32)
-#define XLAT_TABLE_MASK            ~(0xffffUL)
-#define GRANULE_SIZE_SHIFT         16
+/* Granule size of 4KB is being used */
+#define GRANULE_SIZE_SHIFT         12
 #define GRANULE_SIZE               (1 << GRANULE_SIZE_SHIFT)
-#define GRANULE_SIZE_MASK          ((1 << 16) - 1)
+#define XLAT_TABLE_MASK            (~(0UL) << GRANULE_SIZE_SHIFT)
+#define GRANULE_SIZE_MASK          ((1 << GRANULE_SIZE_SHIFT) - 1)
 
-#define L1_ADDR_SHIFT              42
-#define L2_ADDR_SHIFT              29
-#define L3_ADDR_SHIFT              16
+#define BITS_RESOLVED_PER_LVL   (GRANULE_SIZE_SHIFT - 3)
+#define L1_ADDR_SHIFT           (GRANULE_SIZE_SHIFT + BITS_RESOLVED_PER_LVL * 2)
+#define L2_ADDR_SHIFT           (GRANULE_SIZE_SHIFT + BITS_RESOLVED_PER_LVL * 1)
+#define L3_ADDR_SHIFT           (GRANULE_SIZE_SHIFT + BITS_RESOLVED_PER_LVL * 0)
 
-#define L1_ADDR_MASK               (0UL << L1_ADDR_SHIFT)
-#define L2_ADDR_MASK               (0xfUL << L2_ADDR_SHIFT)
-#define L3_ADDR_MASK               (0x1fffUL << L3_ADDR_SHIFT)
+#if BITS_PER_VA > L1_ADDR_SHIFT + BITS_RESOLVED_PER_LVL
+  #error "BITS_PER_VA too large (we don't have L0 table support)"
+#endif
 
-/* Dependent on BITS_PER_VA and GRANULE_SIZE */
-#define INIT_LEVEL                 2
-#define XLAT_MAX_LEVEL             3
-
-/* Each entry in XLAT table is 8 bytes */
-#define XLAT_ENTRY_SHIFT           3
-#define XLAT_ENTRY_SIZE            (1 << XLAT_ENTRY_SHIFT)
-
-#define XLAT_TABLE_SHIFT           GRANULE_SIZE_SHIFT
-#define XLAT_TABLE_SIZE            (1 << XLAT_TABLE_SHIFT)
-
-#define XLAT_NUM_ENTRIES_SHIFT     (XLAT_TABLE_SHIFT - XLAT_ENTRY_SHIFT)
-#define XLAT_NUM_ENTRIES           (1 << XLAT_NUM_ENTRIES_SHIFT)
-
-#define L3_XLAT_SIZE_SHIFT         (GRANULE_SIZE_SHIFT)
-#define L2_XLAT_SIZE_SHIFT         (GRANULE_SIZE_SHIFT + XLAT_NUM_ENTRIES_SHIFT)
-#define L1_XLAT_SIZE_SHIFT         (GRANULE_SIZE_SHIFT + XLAT_NUM_ENTRIES_SHIFT)
+#define L1_ADDR_MASK     (((1UL << BITS_RESOLVED_PER_LVL) - 1) << L1_ADDR_SHIFT)
+#define L2_ADDR_MASK     (((1UL << BITS_RESOLVED_PER_LVL) - 1) << L2_ADDR_SHIFT)
+#define L3_ADDR_MASK     (((1UL << BITS_RESOLVED_PER_LVL) - 1) << L3_ADDR_SHIFT)
 
 /* These macros give the size of the region addressed by each entry of a xlat
    table at any given level */
-#define L3_XLAT_SIZE               (1 << L3_XLAT_SIZE_SHIFT)
-#define L2_XLAT_SIZE               (1 << L2_XLAT_SIZE_SHIFT)
-#define L1_XLAT_SIZE               (1 << L1_XLAT_SIZE_SHIFT)
+#define L3_XLAT_SIZE               (1UL << L3_ADDR_SHIFT)
+#define L2_XLAT_SIZE               (1UL << L2_ADDR_SHIFT)
+#define L1_XLAT_SIZE               (1UL << L1_ADDR_SHIFT)
 
 /* Block indices required for MAIR */
 #define BLOCK_INDEX_MEM_DEV_NGNRNE 0
@@ -184,7 +161,7 @@ extern char _start[], _end[];
 #define TCR_TBI_USED               (0x0 << TCR_TBI_SHIFT)
 #define TCR_TBI_IGNORED            (0x1 << TCR_TBI_SHIFT)
 
-#define DMA_DEFAULT_SIZE           (0x200 * GRANULE_SIZE)
+#define DMA_DEFAULT_SIZE           (32 * MiB)
 #define TTB_DEFAULT_SIZE           0x100000
 
 #define MB_SIZE			   (1UL << 20)

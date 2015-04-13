@@ -106,6 +106,7 @@ static enum switch_state get_switch_state(void)
 
 	if (!sampled_value) {
 		saved_state = no_req;
+		display_pattern(WWR_NORMAL_BOOT);
 		return saved_state;
 	}
 
@@ -139,7 +140,7 @@ static enum switch_state get_switch_state(void)
 		}
 	} else {
 		saved_state = no_req;
-		display_pattern(WWR_ALL_OFF);
+		display_pattern(WWR_NORMAL_BOOT);
 	}
 
 	return saved_state;

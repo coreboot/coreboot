@@ -270,6 +270,92 @@ static const TiLp55231Program blink_recovery2_program = {
 	{ 3,  26,  26,  }
 };
 
+/*
+ * fade_in1.src
+ *
+ row_red:   dw 0000000001001001b
+ row_green: dw 0000000010010010b
+ row_blue:  dw 0000000100100100b
+
+ .segment program1
+	mux_map_addr row_red
+	set_pwm 0h
+	trigger w{e}
+	trigger s{2|3}
+	end
+
+ .segment program2
+	mux_map_addr row_green
+	set_pwm 0h
+
+	trigger w{1}
+	ramp 2, 87
+	end
+
+.segment program3
+	mux_map_addr row_blue
+	set_pwm 0h
+ loop3: trigger w{1}
+	ramp 2, 155
+	end
+*/
+/*
+ * fade_in2.src
+ *
+ row_red:   dw 0000000001001001b
+ row_green: dw 0000000010010010b
+ row_blue:  dw 0000000100100100b
+
+ .segment program1
+	mux_map_addr row_red
+	set_pwm 0h
+	trigger s{e}
+	trigger s{2|3}
+	end
+
+ .segment program2
+	mux_map_addr row_green
+	set_pwm 0h
+
+	trigger w{1}
+	ramp 2, 87
+	end
+
+.segment program3
+	mux_map_addr row_blue
+	set_pwm 0h
+ loop3: trigger w{1}
+	ramp 2, 155
+	end
+*/
+
+static const uint8_t fade_in1_text[] = {
+	0x00,  0x49,  0x00,  0x92,  0x01,  0x24,  0x9f,  0x80,
+	0x40,  0x00,  0xf0,  0x00,  0xe0,  0x0c,  0xc0,  0x00,
+	0x9f,  0x81,  0x40,  0x00,  0xe0,  0x80,  0x42,  0x57,
+	0xc0,  0x00,  0x9f,  0x82,  0x40,  0x00,  0xe0,  0x80,
+	0x34,  0x9b,  0xc0,  0x00,  0x00,
+};
+static const TiLp55231Program fade_in1_program = {
+	fade_in1_text,
+	sizeof(fade_in1_text),
+	0,
+	{ 3,  8,  13,  }
+};
+
+static const uint8_t fade_in2_text[] = {
+	0x00,  0x49,  0x00,  0x92,  0x01,  0x24,  0x9f,  0x80,
+	0x40,  0x00,  0xe0,  0x40,  0xe0,  0x0c,  0xc0,  0x00,
+	0x9f,  0x81,  0x40,  0x00,  0xe0,  0x80,  0x42,  0x57,
+	0xc0,  0x00,  0x9f,  0x82,  0x40,  0x00,  0xe0,  0x80,
+	0x34,  0x9b,  0xc0,  0x00,  0x00,
+};
+static const TiLp55231Program fade_in2_program = {
+	fade_in2_text,
+	sizeof(fade_in2_text),
+	0,
+	{ 3,  8,  13,  }
+};
 
 const WwRingStateProg wwr_state_programs[] = {
 	/*
@@ -282,6 +368,6 @@ const WwRingStateProg wwr_state_programs[] = {
 			       &blink_wipeout2_program} },
 	{WWR_RECOVERY_REQUEST, {&blink_recovery1_program,
 				&blink_recovery2_program} },
+	{WWR_NORMAL_BOOT, {&fade_in1_program, &fade_in2_program} },
 	{}, /* Empty record to mark the end of the table. */
 };
-

@@ -108,7 +108,7 @@ searchtool()
 	fi
 	for i in "$1" "g$1" "gnu$1"; do
 		if test -x "`which $i 2>/dev/null`"; then
-			if test `$i --version 2>&1 |grep -c "$search"` \
+			if test `cat /dev/null | $i --version 2>&1 |grep -c "$search"` \
 			    -gt 0; then
 				echo $i
 				return

@@ -35,6 +35,7 @@ secmon-y += psci.c
 secmon-y += smc.c
 secmon-y += trampoline.S
 secmon-y += ../cache.c
+secmon-y += ../cache_helpers.S
 secmon-y += ../cpu.S
 secmon-y += ../exception.c
 secmon-y += ../../cpu.c

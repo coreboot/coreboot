@@ -37,6 +37,7 @@ bootblock-y += bootblock.S
 bootblock-y += bootblock_simple.c
 endif
 bootblock-y += cache.c
+bootblock-y += cache_helpers.S
 bootblock-y += cpu.S
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c
 
@@ -52,6 +53,7 @@ ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV8_64),y)
 
 verstage-y += cache.c
 verstage-y += cpu.S
+verstage-y += cache_helpers.S
 verstage-y += exception.c
 
 verstage-c-ccopts += $(armv8_flags)
@@ -65,6 +67,7 @@ endif
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV8_64),y)
 
 romstage-y += cache.c
+romstage-y += cache_helpers.S
 romstage-y += cpu.S
 romstage-y += exception.c
 
@@ -82,6 +85,7 @@ endif
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV8_64),y)
 
 ramstage-y += cache.c
+ramstage-y += cache_helpers.S
 ramstage-y += cpu.S
 ramstage-y += exception.c
 ramstage-y += mmu.c

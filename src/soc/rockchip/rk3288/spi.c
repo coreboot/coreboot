@@ -235,6 +235,11 @@ static int do_xfer(struct spi_slave *slave, const void *dout,
 	return 0;
 }
 
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return min(65535, buf_len);
+}
+
 int spi_xfer(struct spi_slave *slave, const void *dout,
 		unsigned int bytes_out, void *din, unsigned int bytes_in)
 {

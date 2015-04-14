@@ -125,7 +125,7 @@ junit.xml:
 	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
 	for i in $(filter-out %.old,$(wildcard configs/*)); do \
 		$(MAKE) clean; \
-		yes | $(MAKE) oldconfig DOTCONFIG=$$i V=$(V) Q=$(Q) 2>/dev/null >/dev/null; \
+		yes "" | $(MAKE) oldconfig DOTCONFIG=$$i V=$(V) Q=$(Q) 2>/dev/null >/dev/null; \
 		echo "<testcase classname='libpayload' name='$$i'>" >> $@.tmp; \
 		$(MAKE) V=$(V) Q=$(Q) CONFIG_CCACHE=$(CONFIG_CCACHE) DOTCONFIG=$$i >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
 		if [ $$type = "failure" ]; then \

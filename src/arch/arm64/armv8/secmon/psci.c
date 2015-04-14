@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <gic.h>
 #include <string.h>
 #include <stdlib.h>
 #include <smp/spinlock.h>
@@ -231,6 +232,7 @@ void psci_turn_on_self(const struct cpu_action *action)
 
 void psci_cpu_entry(void)
 {
+	gic_enable();
 	/*
 	 * Just wait for an action to be performed. Only CPU_ON is supported
 	 * initially. i.e. no power down then wake.
@@ -326,6 +328,8 @@ static int psci_turn_off_node(struct psci_node *e, int level,
 
 	if (ret != PSCI_RET_SUCCESS)
 		return ret;
+
+	gic_disable();
 
 	/* Should never return. */
 	ret = soc_psci_ops.cmd_commit(&cmd);

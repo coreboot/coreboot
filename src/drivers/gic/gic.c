@@ -59,6 +59,11 @@ static struct gic *gic_get(void)
 	return &gic;
 }
 
+static inline uint32_t gic_read(uint32_t *base)
+{
+	return read32(base);
+}
+
 static inline void gic_write(uint32_t *base, uint32_t val)
 {
 	write32(base, val);
@@ -117,4 +122,32 @@ void gic_init(void)
 	gic_write_regs(&gicd->igroupr[0], gic->num_interrupts / 32, ~0x0);
 	/* Allow Non-secure access to everything. */
 	gic_write_regs(&gicd->nsacr[0], gic->num_interrupts / 16, ~0x0);
+}
+
+void gic_disable(void)
+{
+	struct gic *gic;
+	struct gicc_mmio *gicc;
+
+	gic = gic_get();
+	gicc = gic->gicc;
+
+	/* Disable secure, non-secure interrupts. */
+	uint32_t val = gic_read(&gicc->ctlr);
+	val &= ~(ENABLE_GRP0 | ENABLE_GRP1);
+	gic_write(&gicc->ctlr, val);
+}
+
+void gic_enable(void)
+{
+	struct gic *gic;
+	struct gicc_mmio *gicc;
+
+	gic = gic_get();
+	gicc = gic->gicc;
+
+	/* Enable secure, non-secure interrupts. */
+	uint32_t val = gic_read(&gicc->ctlr);
+	val |= (ENABLE_GRP0 | ENABLE_GRP1);
+	gic_write(&gicc->ctlr, val);
 }

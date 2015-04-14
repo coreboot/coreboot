@@ -103,6 +103,7 @@ secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += flow_ctrl.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += power.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += psci.c
 secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += uart.c
+secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += gic.c
 
 modules_arm-y += monotonic_timer.c
 VBOOT_STUB_DEPS += $(obj)/soc/nvidia/tegra132/monotonic_timer.rmodules_arm.o

@@ -97,6 +97,9 @@ Device(SUPERIO_DEV) {
 
 		Offset (0x74),
 		PNP_DMA0,		8, /* DMA */
+
+		Offset (0xf3),
+		SULM,			8, /* Suspend LED Mode Register */
 	}
 
 	Method (_CRS)
@@ -136,6 +139,27 @@ Device(SUPERIO_DEV) {
 	Method (_PS2) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
 		  Store (One, IPD)
+		EXIT_CONFIG_MODE ()
+	}
+
+	/* Suspend LED: Write given three-bit value into appropriate register.
+	                From the datasheet:
+			000 - drive pin constantly high
+			001 - drive 0.5Hz pulses
+			010 - drive pin constantly low
+			011 - drive 2Hz pulses
+			100 - drive 1Hz pulses
+			101 - drive 4Hz pulses
+			110 - drive 0.25Hz pulses
+			111 - drive 0.25Hz pulses
+			(all pulses with 50% duty cycle) */
+	#define SUPERIO_SUSL_LDN 9
+	Method (SUSL, 1, Serialized) {
+		ENTER_CONFIG_MODE (SUPERIO_SUSL_LDN)
+		  Store (SULM, Local0)
+		  And (Local0, 0x1f, Local0)
+		  Or (Local0, ShiftLeft (Arg0, 5), Local0)
+		  Store (Local0, SULM)
 		EXIT_CONFIG_MODE ()
 	}
 

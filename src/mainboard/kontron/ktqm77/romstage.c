@@ -94,6 +94,7 @@ void mainboard_config_superio(void)
 	/* Values can only be changed, when devices are enabled. */
 	pnp_write_config(dev, 0xe3, 0xdd); /* GPIO2 bits 1, 5 are output */
 	pnp_write_config(dev, 0xe4, (dis_bl_inv << 5) | (lvds_3v << 1)); /* GPIO2 bits 1, 5 */
+	pnp_write_config(dev, 0xf3, 0x40); /* Disable suspend LED during normal operation */
 	pnp_exit_ext_func_mode(dev);
 }
 

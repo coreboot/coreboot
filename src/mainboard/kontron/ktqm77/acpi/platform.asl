@@ -20,12 +20,22 @@
 
 Method(_PTS,1)
 {
-
+	/* Let suspend LED flash slowly in S3 and S4 */
+	If (LOr (LEqual (Arg0, 3), LEqual (Arg0, 4)))
+	{
+		\_SB.PCI0.LPCB.SIO0.SUSL (0x06)
+	}
+	Else
+	{
+		\_SB.PCI0.LPCB.SIO0.SUSL (0x02)
+	}
 }
 
 /* The _WAK method is called on system wakeup */
 
 Method(_WAK,1)
 {
+	/* Disable suspend LED during normal operation */
+	\_SB.PCI0.LPCB.SIO0.SUSL (0x02)
 	Return(Package(){0,0})
 }

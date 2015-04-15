@@ -18,8 +18,14 @@
  */
 
 void arm64_cpu_early_setup(void);
+void cortex_a57_cpu_power_down(int l2_flush);
 
 void __attribute__((weak)) arm64_cpu_early_setup(void)
+{
+	/* Default empty implementation */
+}
+
+void __attribute__((weak)) cortex_a57_cpu_power_down(int l2_flush)
 {
 	/* Default empty implementation */
 }

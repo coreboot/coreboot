@@ -21,3 +21,8 @@ config ARCH_ARM64_CPU_CORTEX_A57
 	bool
 	default n
 	depends on ARCH_ARM64
+
+config ARCH_ARM64_CORTEX_A57_POWER_DOWN_SUPPORT
+	bool
+	default n
+	depends on ARCH_ARM64 && ARCH_ARM64_CPU_CORTEX_A57

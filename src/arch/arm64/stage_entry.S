@@ -216,6 +216,7 @@ ENDPROC(arm64_cpu_startup)
 
 CPU_RESET_ENTRY(arm64_cpu_startup_resume)
 	split_bsp_path
+	bl arm64_cpu_early_setup
 	setup_sctlr
 	startup_restore
 	b	arm64_c_environment

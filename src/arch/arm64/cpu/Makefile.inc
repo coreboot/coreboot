@@ -21,4 +21,5 @@
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
 ramstage-$(CONFIG_ARCH_ARM64_CPU_CORTEX_A57) += cortex_a57.S
+secmon-$(CONFIG_ARCH_ARM64_CPU_CORTEX_A57) += cortex_a57.S
 endif

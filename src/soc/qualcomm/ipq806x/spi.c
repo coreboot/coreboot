@@ -705,6 +705,11 @@ static int spi_xfer_rx_packet(struct ipq_spi_slave *ds,
 	return config_spi_state(ds, SPI_RESET_STATE);
 }
 
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return min(MAX_PACKET_COUNT, buf_len);
+}
+
 int spi_xfer(struct spi_slave *slave, const void *dout,
 	     unsigned out_bytes, void *din, unsigned in_bytes)
 {

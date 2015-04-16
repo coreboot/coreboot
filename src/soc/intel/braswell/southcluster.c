@@ -508,5 +508,4 @@ static void finalize_chipset(void *unused)
 	outb(APM_CNT_FINALIZE, APM_CNT);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, finalize_chipset, NULL);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, finalize_chipset, NULL);
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, finalize_chipset, NULL);

@@ -1,0 +1,6 @@
+
+config ACPI_SATA_GENERATOR
+	bool
+	default n
+	help
+	  Use acpi sata port generator.

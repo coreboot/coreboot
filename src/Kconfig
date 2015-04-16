@@ -330,6 +330,8 @@ config RAM_CODE_SUPPORT
 
 endmenu
 
+source "src/acpi/Kconfig"
+
 source "src/mainboard/Kconfig"
 
 source "src/arch/*/Kconfig"

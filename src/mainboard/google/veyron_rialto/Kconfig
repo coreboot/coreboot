@@ -74,7 +74,7 @@ config DRIVER_TPM_I2C_ADDR
 
 config CONSOLE_SERIAL_UART_ADDRESS
 	hex
-	depends on CONSOLE_SERIAL_UART
+	depends on DRIVERS_UART
 	default 0xFF690000
 
 # FIXME(dhendrix): This is a gross hack intended to get us past

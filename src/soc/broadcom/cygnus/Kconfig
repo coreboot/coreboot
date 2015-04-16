@@ -41,7 +41,7 @@ config BOOTBLOCK_CPU_INIT
 
 config CONSOLE_SERIAL_UART_ADDRESS
 	hex
-	depends on CONSOLE_SERIAL_UART
+	depends on DRIVERS_UART
 	default 0x18023000
 
 endif

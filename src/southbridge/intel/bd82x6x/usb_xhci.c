@@ -33,6 +33,9 @@ static void usb_xhci_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "XHCI: Setting up controller.. ");
 
+	if (config->xhci_overcurrent_mapping)
+		pci_write_config32(dev, XOCM, config->xhci_overcurrent_mapping);
+
 	/* lock overcurrent map */
 	reg32 = pci_read_config32(dev, 0x44);
 	reg32 |= 1;

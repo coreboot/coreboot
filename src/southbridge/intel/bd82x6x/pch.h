@@ -449,6 +449,7 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define USBOCM2		0x35a4	/* 32bit */
 
 /* XHCI USB 3.0 */
+#define XOCM		0xc0	/* 32bit */
 #define XUSB2PRM	0xd4	/* 32bit */
 #define USB3PRM		0xdc	/* 32bit */
 

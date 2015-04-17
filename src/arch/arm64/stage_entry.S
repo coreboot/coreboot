@@ -193,6 +193,12 @@ ENDPROC(__rmodule_entry)
 	get_element_addr CNTFRQ_INDEX
 	write_el0 cntfrq, x0, x1
 
+	get_element_addr CPTR_INDEX
+	write_el3 cptr, x0, x1
+
+	get_element_addr CPACR_INDEX
+	write_el1 cpacr, x0, x1
+
 	dsb sy
 	isb
 

@@ -261,6 +261,16 @@
 402:
 .endm
 
+/* Macro to read from an el1 register */
+.macro read_el1 xreg sysreg
+	mrs	\xreg, \sysreg\()_el1
+.endm
+
+/* Macro to write to an el1 register */
+.macro write_el1 sysreg xreg temp
+	msr	\sysreg\()_el1, \xreg
+.endm
+
 /* Macro to read from an el0 register */
 .macro read_el0 xreg sysreg
 	mrs	\xreg, \sysreg\()_el0

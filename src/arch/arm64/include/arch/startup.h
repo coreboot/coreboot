@@ -30,8 +30,10 @@
 #define SCR_INDEX			3
 #define VBAR_INDEX			4
 #define CNTFRQ_INDEX			5
+#define CPTR_INDEX			6
+#define CPACR_INDEX			7
 /* IMPORTANT!!! If any new element is added please update NUM_ELEMENTS */
-#define NUM_ELEMENTS			6
+#define NUM_ELEMENTS			8
 
 #ifndef __ASSEMBLY__
 

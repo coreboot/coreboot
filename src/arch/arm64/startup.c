@@ -46,9 +46,12 @@ void startup_save_cpu_data(void)
 	save_element(TTBR0_INDEX, raw_read_ttbr0_current());
 	save_element(VBAR_INDEX, raw_read_vbar_current());
 	save_element(CNTFRQ_INDEX, raw_read_cntfrq_el0());
+	save_element(CPACR_INDEX, raw_read_cpacr_el1());
 
-	if (get_current_el() == EL3)
+	if (get_current_el() == EL3) {
 		save_element(SCR_INDEX, raw_read_scr_el3());
+		save_element(CPTR_INDEX, raw_read_cptr_el3());
+	}
 
 	dcache_clean_by_mva(_arm64_startup_data,
 			    NUM_ELEMENTS * PER_ELEMENT_SIZE_BYTES);

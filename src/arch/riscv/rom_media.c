@@ -60,12 +60,12 @@ static int rom_media_close(struct cbfs_media *media) {
 }
 
 static int init_rom_media_cbfs(struct cbfs_media *media) {
-	//extern unsigned long _cbfs_master_header;
-	// On X86, we always keep a reference of pointer to CBFS header in
-	// 0xfffffffc, and the pointer is still a memory-mapped address.
-	// Since the CBFS core always use ROM offset, we need to figure out
-	// header->romsize even before media is initialized.
-	struct cbfs_header *header = (struct cbfs_header*) CONFIG_CBFS_HEADER_ROM_OFFSET; //&_cbfs_master_header;
+	/* this assumes that the CBFS resides at 0x0,
+	 * which is true for the default configuration
+	 */
+	int32_t *cbfs_header_ptr = (int32_t*)(uintptr_t)(CONFIG_CBFS_SIZE - 4);
+	uint64_t cbfs_header_offset = CONFIG_CBFS_SIZE + *cbfs_header_ptr;
+	struct cbfs_header *header = (struct cbfs_header*) cbfs_header_offset;
 	if (CBFS_HEADER_MAGIC != ntohl(header->magic)) {
 		printk(BIOS_ERR, "Invalid CBFS master header at %p\n", header);
 		printk(BIOS_ERR, "Expected %08lx and got %08lx\n", (unsigned long) CBFS_HEADER_MAGIC, (unsigned long) ntohl(header->magic));

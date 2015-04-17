@@ -58,25 +58,6 @@ _start:
 .stack_size:
 	.quad 0xf00
 
-.globl _cbfs_master_header
-_cbfs_master_header:
-	.balignl 16,0xdeadbeef
-	.align 8
-	// this assembler SUCKS
-	.long  0x4F524243
-	.long 0xdeadbeef
-	.long 0xdeadbeef
-	.long 0xdeadbeef
-	.long 0xdeadbeef
-	.long 0xdeadbeef
-	.long 0xdeadbeef
-	/* The CBFS master header is inserted by cbfstool at the first
-	 * aligned offset after the above anchor string is found.
-	 * Hence, we leave some space for it.
-	 * Assumes 64-byte alignment.
-	 */
-	.space 128
-
 reset:
 init_stack_loop:
 

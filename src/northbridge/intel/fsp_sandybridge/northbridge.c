@@ -39,7 +39,6 @@
 #include <fsp_util.h>
 
 static int bridge_revision_id = -1;
-static u8 finished_FSP_after_pci = 0;
 
 /* IGD UMA memory */
 static uint64_t uma_memory_base = 0;
@@ -372,31 +371,9 @@ static void enable_dev(device_t dev)
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	}
-
-	/*
-	 * Notify FSP for PostPciEnumeration.
-	 * This call needs to be done before resource allocation.
-	 */
-	if (!finished_FSP_after_pci) {
-		finished_FSP_after_pci = 1;
-		printk(BIOS_DEBUG, "FspNotify(EnumInitPhaseAfterPciEnumeration)\n");
-		FspNotify(EnumInitPhaseAfterPciEnumeration);
-		printk(BIOS_DEBUG,
-		       "Returned from FspNotify(EnumInitPhaseAfterPciEnumeration)\n\n");
-	}
-}
-
-static void finalize_chip(void *chip_info)
-{
-	/* Notify FSP for ReadyToBoot */
-	printk(BIOS_DEBUG, "FspNotify(EnumInitPhaseReadyToBoot)\n");
-	print_fsp_info();
-	FspNotify(EnumInitPhaseReadyToBoot);
-	printk(BIOS_DEBUG, "Returned from FspNotify(EnumInitPhaseReadyToBoot)\n");
 }
 
 struct chip_operations northbridge_intel_fsp_sandybridge_ops = {
 	CHIP_NAME("Intel i7 (SandyBridge/IvyBridge) integrated Northbridge")
 	.enable_dev = enable_dev,
-	.final = finalize_chip,
 };

@@ -112,17 +112,6 @@ static int add_fixed_resources(struct device *dev, int index)
 	return index;
 }
 
-static void finalize_dev (device_t dev)
-{
-	/*
-	 * Notify FSP for PostPciEnumeration.
-	 * Northbridge APIC init should be early and late enough...
-	 */
-	printk(BIOS_DEBUG, "FspNotify(EnumInitPhaseAfterPciEnumeration)\n");
-	FspNotify(EnumInitPhaseAfterPciEnumeration);
-	printk(BIOS_DEBUG, "Returned from FspNotify(EnumInitPhaseAfterPciEnumeration)\n");
-}
-
 static void mc_add_dram_resources(device_t dev)
 {
 	u32 tomlow, bmbound, bsmmrrl, bsmmrrh;
@@ -233,7 +222,6 @@ static struct device_operations pci_domain_ops = {
 	.set_resources    = pci_domain_set_resources,
 	.enable_resources = NULL,
 	.init             = NULL,
-	.final            = finalize_dev,
 	.scan_bus         = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
 };
@@ -294,17 +282,7 @@ static void enable_dev(device_t dev)
 	}
 }
 
-static void finalize_chip(void *chip_info)
-{
-	/* Notify FSP for ReadyToBoot */
-	printk(BIOS_DEBUG, "FspNotify(EnumInitPhaseReadyToBoot)\n");
-	print_fsp_info();
-	FspNotify(EnumInitPhaseReadyToBoot);
-	printk(BIOS_DEBUG, "Returned from FspNotify(EnumInitPhaseReadyToBoot)\n");
-}
-
 struct chip_operations northbridge_intel_fsp_rangeley_ops = {
 	CHIP_NAME("Intel Rangeley Northbridge")
 	.enable_dev = enable_dev,
-	.final = finalize_chip,
 };

@@ -30,22 +30,11 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
-static void finalize_dev (device_t dev)
-{
-	/*
-	 * Notify FSP for PostPciEnumeration.
-	 * Northbridge APIC init should be early and late enough...
-	 */
-	printk(BIOS_DEBUG, "FspNotify(EnumInitPhaseAfterPciEnumeration)\n");
-	FspNotify(EnumInitPhaseAfterPciEnumeration);
-}
-
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
 	.set_resources    = pci_domain_set_resources,
 	.enable_resources = NULL,
 	.init             = NULL,
-	.final            = &finalize_dev,
 	.scan_bus         = pci_domain_scan_bus,
 	.ops_pci_bus      = pci_bus_default_ops,
 };
@@ -77,14 +66,6 @@ static void enable_dev(device_t dev)
 	}
 }
 
-static void finalize_chip(void *chip_info)
-{
-	/* Notify FSP for ReadyToBoot */
-	printk(BIOS_DEBUG, "FspNotify(EnumInitPhaseReadyToBoot)\n");
-	FspNotify(EnumInitPhaseReadyToBoot);
-
-}
-
 /* Called at BS_DEV_INIT_CHIPS time -- very early. Just after BS_PRE_DEVICE. */
 static void soc_init(void *chip_info)
 {
@@ -95,7 +76,6 @@ struct chip_operations soc_intel_fsp_baytrail_ops = {
 	CHIP_NAME("Intel BayTrail SoC")
 	.enable_dev = enable_dev,
 	.init = soc_init,
-	.final = &finalize_chip,
 };
 
 static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

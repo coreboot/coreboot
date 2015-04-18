@@ -1,4 +1,3 @@
-ramstage-y += socket_LGA775.c
 subdirs-y += ../model_6ex
 subdirs-y += ../model_6fx
 subdirs-y += ../model_f3x

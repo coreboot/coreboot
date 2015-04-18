@@ -1,4 +1,3 @@
-ramstage-y += socket_754.c
 subdirs-y += ../model_fxx
 subdirs-y += ../dualcore
 subdirs-y += ../mtrr

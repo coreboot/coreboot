@@ -1,4 +1,3 @@
-ramstage-y += socket_mPGA479M.c
 subdirs-y += ../model_69x
 subdirs-y += ../model_6dx
 subdirs-y += ../model_f2x

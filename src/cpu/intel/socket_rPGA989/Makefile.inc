@@ -1,4 +1,3 @@
-ramstage-y += socket_rPGA989.c
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic

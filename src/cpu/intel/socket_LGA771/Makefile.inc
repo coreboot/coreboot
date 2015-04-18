@@ -1,4 +1,3 @@
-ramstage-y += socket_LGA771.c
 subdirs-y += ../model_6ex
 subdirs-y += ../model_6fx
 subdirs-y += ../../x86/tsc

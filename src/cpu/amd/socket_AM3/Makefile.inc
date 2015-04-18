@@ -1,4 +1,3 @@
-ramstage-y += socket_AM3.c
 subdirs-y += ../model_10xxx
 subdirs-y += ../quadcore
 subdirs-y += ../mtrr

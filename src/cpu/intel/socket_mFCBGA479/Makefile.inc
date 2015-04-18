@@ -1,4 +1,3 @@
-ramstage-y += socket_mFCBGA479.c
 subdirs-y += ../model_6bx
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr

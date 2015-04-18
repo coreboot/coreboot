@@ -1,4 +1,3 @@
-ramstage-y += socket_F.c
 subdirs-y += ../model_fxx
 subdirs-y += ../dualcore
 subdirs-y += ../mtrr

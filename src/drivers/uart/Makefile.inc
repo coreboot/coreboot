@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_DRIVERS_UART),y)
+
 romstage-y += util.c
 ramstage-y += util.c
 bootblock-y += util.c
@@ -27,4 +29,6 @@ ifeq ($(CONFIG_DRIVERS_UART_PL011),y)
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += pl011.c
 romstage-y += pl011.c
 ramstage-y += pl011.c
+endif
+
 endif

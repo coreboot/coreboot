@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_ARCH_X86),y)
+
 romstage-$(CONFIG_DRIVERS_MC146818) += mc146818rtc.c
 ramstage-$(CONFIG_DRIVERS_MC146818) += mc146818rtc.c
 ramstage-y += isa-dma.c
@@ -18,3 +20,5 @@ cmos.default-file = $(CONFIG_CMOS_DEFAULT_FILE):nvramtool
 cmos.default-type = 0xaa
 
 smm-$(CONFIG_DRIVERS_MC146818) += mc146818rtc.c
+
+endif

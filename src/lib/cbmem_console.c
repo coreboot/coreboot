@@ -83,7 +83,7 @@ static inline void init_console_ptr(void *storage, u32 total_space, int flags)
 {
 	struct cbmem_console *cbm_cons_p = storage;
 
-	if (!cbm_cons_p) {
+	if (!cbm_cons_p || total_space == 0) {
 		current_console_set(NULL);
 		return;
 	}
@@ -209,22 +209,32 @@ static void copy_console_buffer(struct cbmem_console *old_cons_p,
 
 void cbmemc_reinit(void)
 {
-	struct cbmem_console *cbm_cons_p = NULL;
+	struct cbmem_console *cbm_cons_p;
+	const size_t size = CONFIG_CONSOLE_CBMEM_BUFFER_SIZE;
 	int flags = CBMEMC_APPEND;
 
-	if (ENV_ROMSTAGE && (CONFIG_CONSOLE_PRERAM_BUFFER_SIZE == 0))
-		return;
+	/* No appending when no preram console available and adding for
+	 * the first time. */
+	if (!ENV_RAMSTAGE && _preram_cbmem_console_size == 0)
+		flags = CBMEMC_RESET;
 
-	/* If CBMEM entry already existed, old contents is not altered. */
-	cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE,
-		CONFIG_CONSOLE_CBMEM_BUFFER_SIZE);
-
-	/* Clear old contents of CBMEM buffer. */
-	if (ENV_ROMSTAGE || (CONFIG_CONSOLE_PRERAM_BUFFER_SIZE == 0))
+	/* Need to reset the newly added cbmem console in romstage. */
+	if (ENV_ROMSTAGE)
 		flags |= CBMEMC_RESET;
 
-	init_console_ptr(cbm_cons_p,
-		CONFIG_CONSOLE_CBMEM_BUFFER_SIZE, flags);
+	/* Need to reset the newly added cbmem console in ramstage
+	 * when there was no console in preram environment. */
+	if (ENV_RAMSTAGE) {
+		cbm_cons_p = cbmem_find(CBMEM_ID_CONSOLE);
+		if (cbm_cons_p == NULL)
+			flags |= CBMEMC_RESET;
+	}
+
+	/* If CBMEM entry already existed, old contents is not altered. */
+	cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE, size);
+
+	init_console_ptr(cbm_cons_p, size, flags);
 }
+
 /* Call cbmemc_reinit() at CAR migration time. */
 CAR_MIGRATE(cbmemc_reinit)

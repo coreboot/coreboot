@@ -72,9 +72,4 @@ config UDELAY_LAPIC_FIXED_FSB
 	int
 	default 200
 
-config CONSOLE_PRERAM_BUFFER_SIZE
-	hex
-	default 0x0 if CONSOLE_PRERAM_BUFFER_BASE = 0xabadbeef
-	default 0x8000
-
 endif	# CPU_AMD_MODEL_10XXX

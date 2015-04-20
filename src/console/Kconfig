@@ -184,11 +184,6 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 	  value (128K or 0x20000 bytes) is large enough to accommodate
 	  even the BIOS_SPEW level.
 
-config CONSOLE_PRERAM_BUFFER_BASE
-	hex
-	default 0xabadbeef if !CACHE_AS_RAM || LATE_CBMEM_INIT
-	default 0x0
-
 endif
 
 config CONSOLE_QEMU_DEBUGCON

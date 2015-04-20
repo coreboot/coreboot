@@ -162,23 +162,23 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 	if (!is_broadwell) {
 		/* This WA is only for lpt */
 
-	/* Clear PCI 0xB0[14:13] */
-	reg32 = pci_read_config32(dev, 0xb0);
-	reg32 &= ~((1 << 14) | (1 << 13));
-	pci_write_config32(dev, 0xb0, reg32);
+		/* Clear PCI 0xB0[14:13] */
+		reg32 = pci_read_config32(dev, 0xb0);
+		reg32 &= ~((1 << 14) | (1 << 13));
+		pci_write_config32(dev, 0xb0, reg32);
 
-	/* Clear MMIO 0x816c[14,2] */
-	reg32 = read32(mem_base + 0x816c);
-	reg32 &= ~((1 << 14) | (1 << 2));
-	write32(mem_base + 0x816c, reg32);
+		/* Clear MMIO 0x816c[14,2] */
+		reg32 = read32(mem_base + 0x816c);
+		reg32 &= ~((1 << 14) | (1 << 2));
+		write32(mem_base + 0x816c, reg32);
 
-	/* Reset disconnected USB3 ports */
-	usb_xhci_reset_usb3(dev, 0);
+		/* Reset disconnected USB3 ports */
+		usb_xhci_reset_usb3(dev, 0);
 
-	/* Set MMIO 0x80e0[15] */
-	reg32 = read32(mem_base + 0x80e0);
-	reg32 |= (1 << 15);
-	write32(mem_base + 0x80e0, reg32);
+		/* Set MMIO 0x80e0[15] */
+		reg32 = read32(mem_base + 0x80e0);
+		reg32 |= (1 << 15);
+		write32(mem_base + 0x80e0, reg32);
 	}
 
 	reg32 = read32(mem_base + 0x8154);

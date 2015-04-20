@@ -154,7 +154,7 @@ int mrc_cache_get_current(const struct mrc_saved_data **cache)
 	return __mrc_cache_get_current(&region, cache);
 }
 
-#if defined(__PRE_RAM__)
+#if ENV_ROMSTAGE
 
 /*
  * romstage code
@@ -331,4 +331,4 @@ static void update_mrc_cache(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, update_mrc_cache, NULL);
 
-#endif /* defined(__PRE_RAM__) */
+#endif /* ENV_ROMSTAGE */

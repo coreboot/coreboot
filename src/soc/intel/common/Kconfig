@@ -3,30 +3,92 @@ config SOC_INTEL_COMMON
 	help
 	  common code for Intel SOCs
 
+if SOC_INTEL_COMMON
+
 if HAVE_MRC
 
 config CACHE_MRC_SETTINGS
 	bool "Save cached MRC settings"
 	default n
+	help
+	  If CONFIG_USE_FMAP is enabled, it is assumed that a flashmap
+	  containing an RW_MRC_CACHE entry that specifies the location and size
+	  of the cache will be added to the image and present at runtime.
 
 if CACHE_MRC_SETTINGS
 
 config MRC_SETTINGS_CACHE_BASE
 	hex
+	depends on !USE_FMAP
 	default 0xffb00000
 
 config MRC_SETTINGS_CACHE_SIZE
 	hex
+	depends on !USE_FMAP
 	default 0x10000
 
 config MRC_SETTINGS_PROTECT
 	bool "Enable protection on MRC settings"
+	depends on !USE_FMAP
 	default n
 
 endif # CACHE_MRC_SETTINGS
 
 endif # HAVE_MRC
 
+config CHIPSET_RESERVED_MEM_BYTES
+	hex "Size in bytes of chipset reserved memory area"
+	default 0
+	help
+          If insufficient documentation is available to determine the size of
+	  the chipset reserved memory area by walking the chipset registers,
+	  the CHIPSET_RESERVED_MEM_BYTES may be used as a workaround to account
+	  for the missing pieces of memory.  The value specified in bytes is:
+
+	  value = TSEG base - top of low usable memory - (any sizes determined
+	  by reading chipset registers)
+
+config DISPLAY_MTRRS
+	bool "MTRRs: Display the MTRR settings
+	default n
+
+config DISPLAY_SMM_MEMORY_MAP
+	bool "SMM: Display the SMM memory map"
+	default n
+
+config FSP_CACHE_SIZE
+	hex "FSP Cache Size in bytes"
+	default 0
+	help
+	  Size of the region in SMM used to cache the FSP binary. This region
+	  size value is used to split the SMM_RESERVED_SIZE config value
+	  into a region specifically for FSP.  The remaining region is for
+	  ramstage.
+
+config SOC_INTEL_COMMON_FSP_RAM_INIT
+	bool "FSP: Use the common raminit.c module"
+	default n
+	depends on PLATFORM_USES_FSP1_1
+
+config SOC_INTEL_COMMON_FSP_ROMSTAGE
+	bool
+	default n
+
 config SOC_INTEL_COMMON_RESET
 	bool
 	default n
+
+config SOC_INTEL_COMMON_STACK
+	bool
+	default n
+
+config SOC_INTEL_COMMON_STAGE_CACHE
+	bool
+	default n
+
+config ROMSTAGE_RAM_STACK_SIZE
+	hex "Size of the romstage RAM stack in bytes"
+	default 0x5000
+	depends on SOC_INTEL_COMMON_STACK
+
+endif # SOC_INTEL_COMMON

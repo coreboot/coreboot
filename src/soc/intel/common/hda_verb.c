@@ -72,7 +72,7 @@ int hda_codec_detect(u8 *base)
 
 	/* Clear the "State Change Status Register" STATESTS bits
 	 * for each of the "SDIN Stat Change Status Flag"
-	*/
+	 */
 	write8(base + HDA_STATESTS_REG, 0xf);
 
 	/* Turn off the link and poll RESET# bit until it reads back as 0 */

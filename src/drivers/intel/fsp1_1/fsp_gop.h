@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,18 @@
  * Foundation, Inc.
  */
 
-#ifndef FSP_VALUES_H
-#define FSP_VALUES_H
+#ifndef _FSP_GOP_H_
+#define _FSP_GOP_H_
 
-#ifndef FSP_DEBUG_LEVEL
-# define FSP_DEBUG_LEVEL	BIOS_SPEW
-#endif
+/* GOP support */
+#if IS_ENABLED(CONFIG_GOP_SUPPORT)
 
-#ifndef FSP_INFO_LEVEL
-# define FSP_INFO_LEVEL	BIOS_DEBUG
-#endif
+#include <boot/coreboot_tables.h>
+#include <soc/intel/common/gma.h>
 
-#define INCREMENT_FOR_DEFAULT(x) (x+1)
-
-#define UPD_DEFAULT		0x00
-#define UPD_DISABLE		INCREMENT_FOR_DEFAULT(0)
-#define UPD_ENABLE		INCREMENT_FOR_DEFAULT(1)
-#define UPD_USE_DEVICETREE	0xff
-
-#define UPD_SPD_ADDR_DEFAULT	UPD_DEFAULT
-#define UPD_SPD_ADDR_DISABLED	0xFF
-
-#endif
+const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len);
+#if ENV_RAMSTAGE
+void fsp_gop_framebuffer(struct lb_header *header);
+#endif /* ENV_RAMSTAGE */
+#endif /* CONFIG_GOP_SUPPORT */
+#endif /* _FSP_GOP_H_ */

@@ -17,5 +17,6 @@
 ## Foundation, Inc.
 ##
 
+source src/drivers/intel/fsp1_1/Kconfig
 source src/drivers/intel/gma/Kconfig
 source src/drivers/intel/i210/Kconfig

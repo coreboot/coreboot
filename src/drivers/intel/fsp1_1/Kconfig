@@ -17,18 +17,14 @@
 ## Foundation, Inc.
 ##
 
-if PLATFORM_USES_FSP1_0
-
 comment "Intel FSP"
 
-config HAVE_FSP_BIN
+config PLATFORM_USES_FSP1_1
 	bool "Use Intel Firmware Support Package"
 	help
-	  Select this option to add an Intel FSP binary to
-	  the resulting coreboot image.
+	  Does the code require the Intel Firmware Support Package?
 
-	  Note: Without this binary, coreboot builds relying on the FSP
-	  will not boot
+if PLATFORM_USES_FSP1_1
 
 config DCACHE_RAM_BASE
 	hex
@@ -38,10 +34,58 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x4000
 
+config HAVE_FSP_BIN
+	bool "Should the Intel FSP binary be added to the flash image"
+	help
+	  Select this option to add an Intel FSP binary to
+	  the resulting coreboot image.
+
+	  Note: Without this binary, coreboot builds relying on the FSP
+	  will not boot
+
 if HAVE_FSP_BIN
+
+config CPU_MICROCODE_CBFS_LEN
+	hex "Microcode update region length in bytes"
+	default 0
+	help
+	  The length in bytes of the microcode update region.
+
+config CPU_MICROCODE_CBFS_LOC
+	hex "Microcode update base address in CBFS"
+	default 0
+	help
+	  The location (base address) in CBFS that contains the microcode update
+	  binary.
+
+config ENABLE_MRC_CACHE
+	bool
+	default y if HAVE_ACPI_RESUME
+	default n
+	help
+	  Enabling this feature will cause MRC data to be cached in NV storage.
+	  This can either be used for fast boot, or just because the FSP wants
+	  it to be saved.
 
 config FSP_FILE
 	string "Intel FSP binary path and filename"
+	help
+	  The path and filename of the Intel FSP binary for this platform.
+
+config FSP_IMAGE_ID_DWORD0
+	hex "First 4 bytes of 8 byte platform string"
+	help
+	  The first four bytes of the eight byte platform specific string
+	  used to identify the FSP binary that should be used.
+
+config FSP_IMAGE_ID_DWORD1
+	hex "Second 4 bytes of 8 byte platform string"
+	help
+	  The second four bytes of the eight byte platform specific string
+	  used to identify the FSP binary that should be used.
+
+config FSP_INCLUDE_PATH
+	string "Path for FSP specific include files"
 	help
 	  The path and filename of the Intel FSP binary for this platform.
 
@@ -52,23 +96,27 @@ config FSP_LOC
 	  value that is set in the FSP binary.  If the FSP needs to be moved,
 	  rebase the FSP with Intel's BCT (tool).
 
-config ENABLE_FSP_FAST_BOOT
-	bool "Enable Fast Boot"
-	select ENABLE_MRC_CACHE
-	default n
+config MRC_CACHE_FILE
+	string "File containing the cached MRC values"
 	help
-	  Enabling this feature will force the MRC data to be cached in NV
-	  storage to be used for speeding up boot time on future reboots
-	  and/or power cycles.
+	  The path and filename of the cached MRC values.
 
-config ENABLE_MRC_CACHE
-	bool
-	default y if HAVE_ACPI_RESUME
-	default n
+config MRC_CACHE_LOC
+	hex "Fast Boot Data Cache location in CBFS"
+	default MRC_CACHE_LOC_OVERRIDE if OVERRIDE_CACHE_CACHE_LOC
+	default 0xfff50000
+	depends on ENABLE_MRC_CACHE
 	help
-	  Enabling this feature will cause MRC data to be cached in NV storage.
-	  This can either be used for fast boot, or just because the FSP wants
-	  it to be saved.
+	  The location in CBFS for the MRC data to be cached.
+
+	  WARNING: This should be on a sector boundary of the BIOS ROM chip
+	  and nothing else should be included in that sector, or IT WILL BE
+	  ERASED.
+
+config MRC_CACHE_LOC_OVERRIDE
+	hex
+	help
+	  Sets the override CBFS location of the MRC/fast boot cache.
 
 config MRC_CACHE_SIZE
 	hex "Fast Boot Data Cache Size"
@@ -87,23 +135,6 @@ config OVERRIDE_CACHE_CACHE_LOC
 	help
 	  Selected by the platform to set a new default location for the
 	  MRC/fast boot cache.
-
-config MRC_CACHE_LOC_OVERRIDE
-	hex
-	help
-	  Sets the override CBFS location of the MRC/fast boot cache.
-
-config MRC_CACHE_LOC
-	hex "Fast Boot Data Cache location in CBFS"
-	default MRC_CACHE_LOC_OVERRIDE if OVERRIDE_CACHE_CACHE_LOC
-	default 0xfff50000
-	depends on ENABLE_MRC_CACHE
-	help
-	  The location in CBFS for the MRC data to be cached.
-
-	  WARNING: This should be on a sector boundary of the BIOS ROM chip
-	  and nothing else should be included in that sector, or IT WILL BE
-	  ERASED.
 
 config VIRTUAL_ROM_SIZE
 	hex "Virtual ROM Size"
@@ -126,9 +157,43 @@ config CACHE_ROM_SIZE_OVERRIDE
 	default CBFS_SIZE
 	help
 	  This is the size of the cachable area that is passed into the FSP in
-	  the early initialization.  Typically this should be the size of the CBFS
-	  area, but the size must be a power of 2 whereas the CBFS size does not
-	  have this limitation.
+	  the early initialization.  Typically this should be the size of the
+	  CBFS area, but the size must be a power of 2 whereas the CBFS size
+	  does not have this limitation.
+
+config DISPLAY_FAST_BOOT_DATA
+	bool "Display fast boot data"
+	default n
+
+config DISPLAY_HOBS
+	bool "Display hand-off-blocks (HOBs)"
+	default n
+
+config DISPLAY_VBT
+	bool "Display Video BIOS Table (VBT)"
+	default n
+
+config DISPLAY_FSP_ENTRY_POINTS
+	bool "Display FSP entry points"
+	default n
+
+config DISPLAY_UPD_DATA
+	bool "Display UPD data"
+	default n
+	help
+	  Display the user specified product data prior to memory
+	  initialization.
+
+config FSP_USES_UPD
+	bool
+	default n
+	help
+	  If this FSP uses UPD/VPD data regions, select this in the chipset
+	  Kconfig.
+
+config GOP_SUPPORT
+	bool "Enable GOP support"
+	default y
 
 config USE_GENERIC_FSP_CAR_INC
 	bool
@@ -137,9 +202,9 @@ config USE_GENERIC_FSP_CAR_INC
 	  The chipset can select this to use a generic cache_as_ram.inc file
 	  that should be good for all FSP based platforms.
 
-config FSP_USES_UPD
-	bool
-	default n
-	help
-	  If this FSP uses UPD/VPD data regions, select this in the chipset Kconfig.
-endif #PLATFORM_USES_FSP1_0
+config VBT_FILE
+	string "GOP Video BIOS table binary path"
+	depends on GOP_SUPPORT
+	default "3rdparty/mainboard/$(MAINBOARDDIR)/vbt.bin"
+
+endif #PLATFORM_USES_FSP1_1

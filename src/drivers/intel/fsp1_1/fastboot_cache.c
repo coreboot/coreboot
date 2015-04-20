@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2012 Google Inc.
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +19,23 @@
  * Foundation, Inc.
  */
 
-#include <stdint.h>
-#include <string.h>
-#include <bootstate.h>
-#include <console/console.h>
 #include <cbfs.h>
-#include <ip_checksum.h>
-#include <device/device.h>
 #include <cbmem.h>
-#include <spi-generic.h>
-#include <spi_flash.h>
-#include <lib.h> // hexdump
+#include <console/console.h>
 #include "fsp_util.h"
+#include <ip_checksum.h>
+#include <lib.h> // hexdump
+#include <spi_flash.h>
+#include <string.h>
 
 #ifndef CONFIG_VIRTUAL_ROM_SIZE
 #error "CONFIG_VIRTUAL_ROM_SIZE must be set."
 #endif
 
 /* convert a pointer to flash area into the offset inside the flash */
-static inline u32 to_flash_offset(void *p) {
-	return ((u32)p + CONFIG_VIRTUAL_ROM_SIZE);
+static inline u32 to_flash_offset(void *p)
+{
+	return (u32)p + CONFIG_VIRTUAL_ROM_SIZE;
 }
 
 static struct mrc_data_container *next_mrc_block(
@@ -50,14 +48,15 @@ static struct mrc_data_container *next_mrc_block(
 		mrc_size += MRC_DATA_ALIGN;
 	}
 
-	u8 *region_ptr = (u8*)mrc_cache;
+	u8 *region_ptr = (u8 *)mrc_cache;
 	region_ptr += mrc_size;
 	return (struct mrc_data_container *)region_ptr;
 }
 
 static int is_mrc_cache(struct mrc_data_container *mrc_cache)
 {
-	return (!!mrc_cache) && (mrc_cache->mrc_signature == MRC_DATA_SIGNATURE);
+	return (!!mrc_cache)
+		&& (mrc_cache->mrc_signature == MRC_DATA_SIGNATURE);
 }
 
 static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
@@ -96,7 +95,8 @@ static struct mrc_data_container *find_current_mrc_cache_local
 	}
 
 	if (entry_id == 0) {
-		printk(BIOS_ERR, "%s: No valid fast boot cache found.\n", __func__);
+		printk(BIOS_ERR, "%s: No valid fast boot cache found.\n",
+			__func__);
 		return NULL;
 	}
 
@@ -104,7 +104,8 @@ static struct mrc_data_container *find_current_mrc_cache_local
 	if (mrc_cache->mrc_checksum !=
 	    compute_ip_checksum(mrc_cache->mrc_data,
 				mrc_cache->mrc_data_size)) {
-		printk(BIOS_ERR, "%s: fast boot cache checksum mismatch\n", __func__);
+		printk(BIOS_ERR, "%s: fast boot cache checksum mismatch\n",
+			__func__);
 		return NULL;
 	}
 
@@ -117,7 +118,7 @@ static struct mrc_data_container *find_current_mrc_cache_local
 /* SPI code needs malloc/free.
  * Also unknown if writing flash from XIP-flash code is a good idea
  */
-#if !defined(__PRE_RAM__)
+#if ENV_RAMSTAGE
 /* find the first empty block in the MRC cache area.
  * If there's none, return NULL.
  *
@@ -164,6 +165,7 @@ void update_mrc_cache(void *unused)
 		return;
 	}
 
+	cache_base = NULL;
 	cache_size = get_mrc_cache_region(&cache_base);
 	if (cache_base == NULL) {
 		printk(BIOS_ERR, "%s: could not find fast boot cache area\n",
@@ -218,19 +220,21 @@ void update_mrc_cache(void *unused)
 		     current->mrc_data_size + sizeof(*current), current);
 }
 
-#endif	/* !defined(__PRE_RAM__) */
+#endif	/* ENV_RAMSTAGE */
 
-void * find_and_set_fastboot_cache(void)
+void *find_and_set_fastboot_cache(void)
 {
 	struct mrc_data_container *mrc_cache = NULL;
-	if (((mrc_cache = find_current_mrc_cache()) == NULL) ||
+	mrc_cache = find_current_mrc_cache();
+	if ((mrc_cache == NULL) ||
 	    (mrc_cache->mrc_data_size == -1UL)) {
 		printk(BIOS_DEBUG, "FSP MRC cache not present.\n");
 		return NULL;
 	}
 	printk(BIOS_DEBUG, "FSP MRC cache present at %x.\n", (u32)mrc_cache);
 	printk(BIOS_SPEW, "Saved MRC data:\n");
-	hexdump32(BIOS_SPEW, (void *)mrc_cache->mrc_data, (mrc_cache->mrc_data_size) / 4);
+	hexdump32(BIOS_SPEW, (void *)mrc_cache->mrc_data,
+		mrc_cache->mrc_data_size);
 	return (void *) mrc_cache->mrc_data;
 }
 
@@ -239,6 +243,7 @@ struct mrc_data_container *find_current_mrc_cache(void)
 	struct mrc_data_container *cache_base;
 	u32 cache_size;
 
+	cache_base = NULL;
 	cache_size = get_mrc_cache_region(&cache_base);
 	if (cache_base == NULL) {
 		printk(BIOS_ERR, "%s: could not find fast boot cache area\n",

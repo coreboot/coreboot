@@ -4,6 +4,7 @@
  * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007-2008 coresystems GmbH
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +20,17 @@
  * Foundation, Inc.
  */
 
+/*
+ * Replacement for cache_as_ram.inc when using the FSP binary.  This code
+ * locates the FSP binary, initializes the cache as RAM and performs the
+ * first stage of initialization.  Next this code switches the stack from
+ * the cache to RAM and then disables the cache as RAM.  Finally this code
+ * performs the final stage of initialization.
+ */
+
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
-#include <microcode_size.h>
 #include <cbmem.h>
 
 #ifndef CONFIG_FSP_LOC
@@ -33,7 +41,7 @@
 # error "CONFIG_POST_IO must be set."
 #endif
 
-#if CONFIG_POST_IO
+#if IS_ENABLED(CONFIG_POST_IO)
 # ifndef CONFIG_POST_IO_PORT
 #  error "CONFIG_POST_IO_PORT must be set."
 # endif
@@ -45,79 +53,216 @@
 
 #define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
 
-	cmp   $0, %eax
-	jne   bisthalt
+	/*
+	 * eax:  BIST value
+	 * mm0:  low 32-bits of TSC value
+	 * mm1:  high 32-bits of TSC value
+	 */
+
+	mov	%eax, %edi
 
 cache_as_ram:
 	post_code(0x20)
 
 	/*
+	 * edi:  BIST value
+	 * mm0:  low 32-bits of TSC value
+	 * mm1:  high 32-bits of TSC value
+	 */
+
+	/*
 	 * Find the FSP binary in cbfs.
 	 * Make a fake stack that has the return value back to this code.
 	 */
-	lea   fake_fsp_stack, %esp
-	jmp   find_fsp
+	lea	fake_fsp_stack, %esp
+	jmp	find_fsp
 find_fsp_ret:
 	/* Save the FSP location */
-	mov   %eax,   %ebp
-	cmp   $CONFIG_FSP_LOC, %eax
-	jb    halt1
+	mov	%eax, %ebp
+
+	/*
+	 * Only when a valid FSP binary is found at CONFIG_FSP_LOC is
+	 * the returned FSP_INFO_HEADER structure address above the base
+	 * address of FSP binary specified by the CONFIG_FSP_LOC value.
+	 * All of the error values are in the 0x8xxxxxxx range which are
+	 * below the CONFIG_FSP_LOC value.
+	 */
+	cmp	$CONFIG_FSP_LOC, %eax
+	jbe	halt1
 
 	post_code(0x22)
 
 	/* Calculate entry into FSP */
-	mov   0x30(%ebp), %eax	/* Load TempRamInitEntry */
-	add   0x1c(%ebp), %eax	/* add in the offset for the FSP base address */
+	mov	0x30(%ebp), %eax	/* Load TempRamInitEntry */
+	add	0x1c(%ebp), %eax	/* add in the offset for FSP */
 
 	/*
 	 * Pass early init variables on a fake stack (no memory yet)
 	 * as well as the return location
 	 */
-	lea   CAR_init_stack, %esp
-
-	/* call FSP binary to setup temporary stack */
-	jmp   *%eax
-
-CAR_init_done:
-	addl  $4, %esp
-	cmp   $0, %eax
-	jne   halt2
-
-	/* Save FSP_INFO_HEADER location in ebx */
-	mov    %ebp, %ebx
+	lea	CAR_init_stack, %esp
 
 	/*
-	 * set up bootloader stack
-	 * ecx:  stack base
-	 * edx:  stack top
+	 *       BIST value is zero
+	 * eax:  TempRamInitApi address
+	 * ebp:  FSP_INFO_HEADER address
+	 * edi:  BIST value
+	 * esi:  Not used
+	 * mm0:  low 32-bits of TSC value
+	 * mm1:  high 32-bits of TSC value
 	 */
-	mov   %edx, %esp
-	movl  %esp, %ebp
 
-	/* Clear the cbmem CAR memory region. */
-	movl  %ecx, %edi
-	movl  %edx, %ecx
-	sub   %edi, %ecx
-	shr   $2, %ecx
-	xorl  %eax, %eax
-	rep   stosl
+	/* call FSP binary to setup temporary stack */
+	jmp	*%eax
+
+CAR_init_done:
+	addl	$4, %esp
+
+	/*
+	 * ebp:  FSP_INFO_HEADER address
+	 * ecx:  Temp RAM base
+	 * edx:  Temp RAM top
+	 * edi:  BIST value
+	 * mm0:  low 32-bits of TSC value
+	 * mm1:  high 32-bits of TSC value
+	 */
+
+	cmp	$0, %eax
+	jne	halt2
+
+	/* Setup bootloader stack */
+	movl	%edx, %esp
+
+	/* Save BIST value */
+	movd	%edi, %mm2
+
+	/*
+	 * ebp:  FSP_INFO_HEADER address
+	 * ecx:  Temp RAM base
+	 * edx:  Temp RAM top
+	 * esp:  Top of stack in temp RAM
+	 * mm0:  low 32-bits of TSC value
+	 * mm1:  high 32-bits of TSC value
+	 * mm2:  BIST value
+	 */
+
+	/* Coreboot assumes stack/heap region will be zero */
+	cld
+	movl	%ecx, %edi
+	neg	%ecx
+	add	%edx, %ecx
+	shrl	$2, %ecx
+	xorl	%eax, %eax
+	rep	stosl
+
+	/* Save FSP_INFO_HEADER location in ebx */
+	mov	%ebp, %ebx
+
+	/*
+	 * ebx:  FSP_INFO_HEADER address
+	 * esi:  Temp RAM base
+	 * esp:  Top of stack in temp RAM
+	 * mm0:  low 32-bits of TSC value
+	 * mm1:  high 32-bits of TSC value
+	 * mm2:  BIST value
+	 */
+
+	/* Frame for romstage_main(bist, tsc_low, tsc_hi, fih) */
+	pushl	%ebx
+	movd	%mm1, %eax
+	pushl	%eax
+	movd	%mm0, %eax
+	pushl	%eax
+	movd	%mm2, %eax
+	pushl	%eax
 
 before_romstage:
 	post_code(0x23)
 
 	/* Call romstage.c main function. */
-	pushl %ebx /* main takes FSP_INFO_HEADER as its argument */
-	call  main /* does not return */
-	movb  $0xB8, %ah
-	jmp   .Lhlt
+	call	romstage_main
 
-bisthalt:
-	movb  $0xB9, %ah
-	jmp   .Lhlt
+	/*
+	 * eax:  New stack address
+	 * ebx:  FSP_INFO_HEADER address
+	 */
+
+	/* Switch to the stack in RAM */
+	movl	%eax, %esp
+
+	/* Calculate TempRamExit entry into FSP */
+	movl	%ebx, %ebp
+	mov	0x40(%ebp), %eax
+	add	0x1c(%ebp), %eax
+
+	/* Build the call frame */
+	pushl	$0
+
+	/* Call TempRamExit */
+	call	*%eax
+	add	$4, %esp
+	cmp	$0, %eax
+	jne	halt3
+
+	/* Get number of MTRRs. */
+	popl	%ebx
+	movl	$MTRRphysBase_MSR(0), %ecx
+1:
+	testl	%ebx, %ebx
+	jz	1f
+
+	/* Low 32 bits of MTRR base. */
+	popl	%eax
+	/* Upper 32 bits of MTRR base. */
+	popl	%edx
+	/* Write MTRR base. */
+	wrmsr
+	inc	%ecx
+	/* Low 32 bits of MTRR mask. */
+	popl	%eax
+	/* Upper 32 bits of MTRR mask. */
+	popl	%edx
+	/* Write MTRR mask. */
+	wrmsr
+	inc	%ecx
+
+	dec	%ebx
+	jmp	1b
+1:
+	post_code(0x39)
+
+	/* And enable cache again after setting MTRRs. */
+	movl	%cr0, %eax
+	andl	$~(CR0_CacheDisable | CR0_NoWriteThrough), %eax
+	movl	%eax, %cr0
+
+	post_code(0x3a)
+
+	/* Enable MTRR. */
+	movl	$MTRRdefType_MSR, %ecx
+	rdmsr
+	orl	$MTRRdefTypeEn, %eax
+	wrmsr
+
+	post_code(0x3b)
+
+	/* Invalidate the cache again. */
+	invd
+
+	post_code(0x3c)
+
+__main:
+	post_code(POST_PREPARE_RAMSTAGE)
+	cld			/* Clear direction flag. */
+	call	romstage_after_car
+
+
+	movb	$0x69, %ah
+	jmp	.Lhlt
 
 halt1:
 	/*
-	 * Failures for postcode 0xBA - failed in find_fsp()
+	 * Failures for postcode 0xBA - failed in fsp_fih_early_find()
 	 *
 	 * Values are:
 	 * 0x01 - FV signature, "_FVH" not present
@@ -128,8 +273,8 @@ halt1:
 	 * 0x05 - FSP INFO Header signature "FSPH" not found
 	 * 0x06 - FSP Image ID is not the expected ID.
 	 */
-	movb  $0xBA, %ah
-	jmp   .Lhlt
+	movb	$0xBA, %ah
+	jmp	.Lhlt
 
 halt2:
 	/*
@@ -137,25 +282,37 @@ halt2:
 	 *
 	 * 0x00 - FSP_SUCCESS: Temp RAM was initialized successfully.
 	 * 0x02 - FSP_INVALID_PARAMETER: Input parameters are invalid.
-	 * 0x0E - FSP_NOT_FOUND: No valid microcode was found in the microcode region.
 	 * 0x03 - FSP_UNSUPPORTED: The FSP calling conditions were not met.
 	 * 0x07 - FSP_DEVICE_ERROR: Temp RAM initialization failed
+	 * 0x0E - FSP_NOT_FOUND: No valid microcode was found in the microcode region.
 	 * 0x14 - FSP_ALREADY_STARTED: Temp RAM initialization has been invoked
 	 */
-	movb  $0xBB, %ah
+	movb	$0xBB, %ah
+	jmp	.Lhlt
+
+halt3:
+	/*
+	 * Failures for post code BC - failed in TempRamExit
+	 *
+	 * 0x00 - FSP_SUCCESS: Temp RAM Exit completed successfully.
+	 * 0x02 - FSP_INVALID_PARAMETER: Input parameters are invalid.
+	 * 0x03 - FSP_UNSUPPORTED: The FSP calling conditions were not met.
+	 * 0x07 - FSP_DEVICE_ERROR: Temp RAM Exit failed.
+	 */
+	movb	$0xBC, %ah
 
 .Lhlt:
-	xchg  %al, %ah
-#if CONFIG_POST_IO
-	outb  %al, $CONFIG_POST_IO_PORT
+	xchg	%al, %ah
+#if IS_ENABLED(CONFIG_POST_IO)
+	outb	%al, $CONFIG_POST_IO_PORT
 #else
 	post_code(POST_DEAD_CODE)
 #endif
-	movl  $LHLT_DELAY, %ecx
+	movl	$LHLT_DELAY, %ecx
 .Lhlt_Delay:
-	outb  %al, $0xED
-	loop  .Lhlt_Delay
-	jmp   .Lhlt
+	outb	%al, $0xED
+	loop	.Lhlt_Delay
+	jmp	.Lhlt
 
 /*
  * esp is set to this location so that the call into and return from the FSP
@@ -163,15 +320,14 @@ halt2:
  */
 	.align 4
 fake_fsp_stack:
-	.long  find_fsp_ret
+	.long	find_fsp_ret
 
 CAR_init_params:
-	.long  CONFIG_CPU_MICROCODE_CBFS_LOC
-	.long  MICROCODE_REGION_LENGTH
-	.long  0xFFFFFFFF - CACHE_ROM_SIZE + 1	/* Firmware Location */
-	.long  CACHE_ROM_SIZE	/* Total Firmware Length */
+	.long	CONFIG_CPU_MICROCODE_CBFS_LOC		/* Microcode Location */
+	.long	CONFIG_CPU_MICROCODE_CBFS_LEN		/* Microcode Length */
+	.long	0xFFFFFFFF - CONFIG_CBFS_SIZE + 1	/* Firmware Location */
+	.long	CONFIG_CBFS_SIZE				/* Total Firmware Length */
 
 CAR_init_stack:
-	.long  CAR_init_done
-	.long  CAR_init_params
-
+	.long	CAR_init_done
+	.long	CAR_init_params

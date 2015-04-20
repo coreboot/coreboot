@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,150 +18,329 @@
  * Foundation, Inc.
  */
 
-#include <types.h>
-#include <string.h>
+#include <arch/early_variables.h>
+#include <arch/hlt.h>
+#include <bootstate.h>
+#include <cbmem.h>
 #include <console/console.h>
-#include <lib.h> // hexdump
 #include "fsp_util.h"
+#include <ip_checksum.h>
+#include <lib.h> // hexdump
+#include <string.h>
 
-
-/** Displays a GUID's address and value
+/*
+ * Reads a 64-bit value from memory that may be unaligned.
  *
- * @param guid pointer to the GUID to display
+ * This function returns the 64-bit value pointed to by buffer. The
+ * function guarantees that the read operation does not produce an
+ * alignment fault.
+ *
+ * If buffer is NULL, then ASSERT().
+ *
+ * buffer: Pointer to a 64-bit value that may be unaligned.
+ *
+ * Returns the 64-bit value read from buffer.
+ *
  */
-void printguid(EFI_GUID *guid)
+static
+uint64_t
+read_unaligned_64(
+	const uint64_t *buffer
+	)
 {
-	printk(BIOS_SPEW,"Address: %p Guid: %08lx-%04x-%04x-",
-			guid, (unsigned long)guid->Data1,
-			guid->Data2, guid->Data3);
-	printk(BIOS_SPEW,"%02x%02x%02x%02x%02x%02x%02x%02x\n",
-			guid->Data4[0], guid->Data4[1],
-			guid->Data4[2], guid->Data4[3],
-			guid->Data4[4], guid->Data4[5],
-			guid->Data4[6], guid->Data4[7] );
+	ASSERT(buffer != NULL);
+
+	return *buffer;
 }
 
-void print_hob_mem_attributes(void *Hobptr)
+/*
+ * Compares two GUIDs.
+ *
+ * This function compares guid1 to guid2.  If the GUIDs are identical then
+ * TRUE is returned.  If there are any bit differences in the two GUIDs,
+ * then FALSE is returned.
+ *
+ * If guid1 is NULL, then ASSERT().
+ * If guid2 is NULL, then ASSERT().
+ *
+ * guid1: A pointer to a 128 bit GUID.
+ * guid2: A pointer to a 128 bit GUID.
+ *
+ * Returns non-zero if guid1 and guid2 are identical, otherwise returns 0.
+ *
+ */
+static
+long
+compare_guid(
+	const EFI_GUID * guid1,
+	const EFI_GUID * guid2
+	)
 {
-	EFI_HOB_MEMORY_ALLOCATION *HobMemoryPtr = (EFI_HOB_MEMORY_ALLOCATION *)Hobptr;
-	EFI_MEMORY_TYPE Hobmemtype = HobMemoryPtr->AllocDescriptor.MemoryType;
-	u64 Hobmemaddr = HobMemoryPtr->AllocDescriptor.MemoryBaseAddress;
-	u64 Hobmemlength = HobMemoryPtr->AllocDescriptor.MemoryLength;
-	const char * Hobmemtypenames[15];
+	uint64_t low_part_of_guid1;
+	uint64_t low_part_of_guid2;
+	uint64_t high_part_of_guid1;
+	uint64_t high_part_of_guid2;
 
-	Hobmemtypenames[0] = "EfiReservedMemoryType";
-	Hobmemtypenames[1] = "EfiLoaderCode";
-	Hobmemtypenames[2] = "EfiLoaderData";
-	Hobmemtypenames[3] = "EfiBootServicesCode";
-	Hobmemtypenames[4] = "EfiBootServicesData";
-	Hobmemtypenames[5] = "EfiRuntimeServicesCode";
-	Hobmemtypenames[6] = "EfiRuntimeServicesData";
-	Hobmemtypenames[7] = "EfiConventionalMemory";
-	Hobmemtypenames[8] = "EfiUnusableMemory";
-	Hobmemtypenames[9] = "EfiACPIReclaimMemory";
-	Hobmemtypenames[10] = "EfiACPIMemoryNVS";
-	Hobmemtypenames[11] = "EfiMemoryMappedIO";
-	Hobmemtypenames[12] = "EfiMemoryMappedIOPortSpace";
-	Hobmemtypenames[13] = "EfiPalCode";
-	Hobmemtypenames[14] = "EfiMaxMemoryType";
+	low_part_of_guid1  = read_unaligned_64((const uint64_t *) guid1);
+	low_part_of_guid2  = read_unaligned_64((const uint64_t *) guid2);
+	high_part_of_guid1 = read_unaligned_64((const uint64_t *) guid1 + 1);
+	high_part_of_guid2 = read_unaligned_64((const uint64_t *) guid2 + 1);
+
+	return ((low_part_of_guid1 == low_part_of_guid2)
+		&& (high_part_of_guid1 == high_part_of_guid2));
+}
+
+/* Returns the pointer to the HOB list. */
+VOID *
+EFIAPI
+get_hob_list(
+	VOID
+	)
+{
+	void *hob_list;
+
+	hob_list = fsp_get_hob_list();
+	if (hob_list == NULL)
+		die("Call fsp_set_runtime() before this call!\n");
+	return hob_list;
+}
+
+/* Returns the next instance of a HOB type from the starting HOB. */
+VOID *
+EFIAPI
+get_next_hob(
+	UINT16 type,
+	CONST VOID *hob_start
+	)
+{
+	EFI_PEI_HOB_POINTERS hob;
+
+	ASSERT(hob_start != NULL);
+
+	hob.Raw = (UINT8 *)hob_start;
+
+	/* Parse the HOB list until end of list or matching type is found. */
+	while (!END_OF_HOB_LIST(hob.Raw)) {
+		if (hob.Header->HobType == type)
+			return hob.Raw;
+		if (GET_HOB_LENGTH(hob.Raw) < sizeof(*hob.Header))
+			break;
+		hob.Raw = GET_NEXT_HOB(hob.Raw);
+	}
+	return NULL;
+}
+
+/* Returns the first instance of a HOB type among the whole HOB list. */
+VOID *
+EFIAPI
+get_first_hob(
+	UINT16 type
+	)
+{
+	VOID *hob_list;
+
+	hob_list = get_hob_list();
+	return get_next_hob(type, hob_list);
+}
+
+/* Returns the next instance of the matched GUID HOB from the starting HOB. */
+VOID *
+EFIAPI
+get_next_guid_hob(
+	CONST EFI_GUID * guid,
+	CONST VOID *hob_start
+	)
+{
+	EFI_PEI_HOB_POINTERS hob;
+
+	hob.Raw = (UINT8 *)hob_start;
+	while ((hob.Raw = get_next_hob(EFI_HOB_TYPE_GUID_EXTENSION, hob.Raw))
+					!= NULL) {
+		if (compare_guid(guid, &hob.Guid->Name))
+			break;
+		hob.Raw = GET_NEXT_HOB(hob.Raw);
+	}
+	return hob.Raw;
+}
+
+/*
+ * Returns the first instance of the matched GUID HOB among the whole HOB list.
+ */
+VOID *
+EFIAPI
+get_first_guid_hob(
+	CONST EFI_GUID * guid
+	)
+{
+	return get_next_guid_hob(guid, get_hob_list());
+}
+
+/*
+ * Returns the next instance of the matching resource HOB from the starting HOB.
+ */
+void *get_next_resource_hob(const EFI_GUID *guid, const void *hob_start)
+{
+	EFI_PEI_HOB_POINTERS hob;
+
+	hob.Raw = (UINT8 *)hob_start;
+	while ((hob.Raw = get_next_hob(EFI_HOB_TYPE_RESOURCE_DESCRIPTOR,
+					    hob.Raw)) != NULL) {
+		if (compare_guid(guid, &hob.ResourceDescriptor->Owner))
+			break;
+		hob.Raw = GET_NEXT_HOB(hob.Raw);
+	}
+	return hob.Raw;
+}
+
+/*
+ * Returns the first instance of the matching resource HOB among the whole HOB
+ * list.
+ */
+void *get_first_resource_hob(const EFI_GUID *guid)
+{
+	return get_next_resource_hob(guid, get_hob_list());
+}
+
+static void print_hob_mem_attributes(void *hob_ptr)
+{
+	EFI_HOB_MEMORY_ALLOCATION *hob_memory_ptr =
+		(EFI_HOB_MEMORY_ALLOCATION *)hob_ptr;
+	EFI_MEMORY_TYPE hob_mem_type =
+		hob_memory_ptr->AllocDescriptor.MemoryType;
+	u64 hob_mem_addr = hob_memory_ptr->AllocDescriptor.MemoryBaseAddress;
+	u64 hob_mem_length = hob_memory_ptr->AllocDescriptor.MemoryLength;
+	const char *hob_mem_type_names[15];
+
+	hob_mem_type_names[0] = "EfiReservedMemoryType";
+	hob_mem_type_names[1] = "EfiLoaderCode";
+	hob_mem_type_names[2] = "EfiLoaderData";
+	hob_mem_type_names[3] = "EfiBootServicesCode";
+	hob_mem_type_names[4] = "EfiBootServicesData";
+	hob_mem_type_names[5] = "EfiRuntimeServicesCode";
+	hob_mem_type_names[6] = "EfiRuntimeServicesData";
+	hob_mem_type_names[7] = "EfiConventionalMemory";
+	hob_mem_type_names[8] = "EfiUnusableMemory";
+	hob_mem_type_names[9] = "EfiACPIReclaimMemory";
+	hob_mem_type_names[10] = "EfiACPIMemoryNVS";
+	hob_mem_type_names[11] = "EfiMemoryMappedIO";
+	hob_mem_type_names[12] = "EfiMemoryMappedIOPortSpace";
+	hob_mem_type_names[13] = "EfiPalCode";
+	hob_mem_type_names[14] = "EfiMaxMemoryType";
 
 	printk(BIOS_SPEW, "  Memory type %s (0x%x)\n",
-			Hobmemtypenames[(u32)Hobmemtype], (u32) Hobmemtype);
+			hob_mem_type_names[(u32)hob_mem_type],
+			(u32)hob_mem_type);
 	printk(BIOS_SPEW, "  at location 0x%0lx with length 0x%0lx\n",
-			(unsigned long)Hobmemaddr, (unsigned long)Hobmemlength);
+			(unsigned long)hob_mem_addr,
+			(unsigned long)hob_mem_length);
 }
 
-void print_hob_resource_attributes(void *Hobptr)
+static void print_hob_resource_attributes(void *hob_ptr)
 {
-	EFI_HOB_RESOURCE_DESCRIPTOR *HobResourcePtr =
-		(EFI_HOB_RESOURCE_DESCRIPTOR *)Hobptr;
-	u32 Hobrestype   = HobResourcePtr->ResourceType;
-	u32 Hobresattr   = HobResourcePtr->ResourceAttribute;
-	u64 Hobresaddr   = HobResourcePtr->PhysicalStart;
-	u64 Hobreslength = HobResourcePtr->ResourceLength;
-	const char *Hobrestypestr = NULL;
+	EFI_HOB_RESOURCE_DESCRIPTOR *hob_resource_ptr =
+		(EFI_HOB_RESOURCE_DESCRIPTOR *)hob_ptr;
+	u32 hob_res_type   = hob_resource_ptr->ResourceType;
+	u32 hob_res_attr   = hob_resource_ptr->ResourceAttribute;
+	u64 hob_res_addr   = hob_resource_ptr->PhysicalStart;
+	u64 hob_res_length = hob_resource_ptr->ResourceLength;
+	const char *hob_res_type_str = NULL;
 
-	// HOB Resource Types
-	switch (Hobrestype) {
+	/* HOB Resource Types */
+	switch (hob_res_type) {
 	case EFI_RESOURCE_SYSTEM_MEMORY:
-		Hobrestypestr = "EFI_RESOURCE_SYSTEM_MEMORY"; break;
+		hob_res_type_str = "EFI_RESOURCE_SYSTEM_MEMORY";
+		break;
 	case EFI_RESOURCE_MEMORY_MAPPED_IO:
-		Hobrestypestr = "EFI_RESOURCE_MEMORY_MAPPED_IO"; break;
+		hob_res_type_str = "EFI_RESOURCE_MEMORY_MAPPED_IO";
+		break;
 	case EFI_RESOURCE_IO:
-		Hobrestypestr = "EFI_RESOURCE_IO"; break;
+		hob_res_type_str = "EFI_RESOURCE_IO";
+		break;
 	case EFI_RESOURCE_FIRMWARE_DEVICE:
-		Hobrestypestr = "EFI_RESOURCE_FIRMWARE_DEVICE"; break;
+		hob_res_type_str = "EFI_RESOURCE_FIRMWARE_DEVICE";
+		break;
 	case EFI_RESOURCE_MEMORY_MAPPED_IO_PORT:
-		Hobrestypestr = "EFI_RESOURCE_MEMORY_MAPPED_IO_PORT"; break;
+		hob_res_type_str = "EFI_RESOURCE_MEMORY_MAPPED_IO_PORT";
+		break;
 	case EFI_RESOURCE_MEMORY_RESERVED:
-		Hobrestypestr = "EFI_RESOURCE_MEMORY_RESERVED"; break;
+		hob_res_type_str = "EFI_RESOURCE_MEMORY_RESERVED";
+		break;
 	case EFI_RESOURCE_IO_RESERVED:
-		Hobrestypestr = "EFI_RESOURCE_IO_RESERVED"; break;
+		hob_res_type_str = "EFI_RESOURCE_IO_RESERVED";
+		break;
 	case EFI_RESOURCE_MAX_MEMORY_TYPE:
-		Hobrestypestr = "EFI_RESOURCE_MAX_MEMORY_TYPE"; break;
+		hob_res_type_str = "EFI_RESOURCE_MAX_MEMORY_TYPE";
+		break;
 	default:
-		Hobrestypestr = "EFI_RESOURCE_UNKNOWN"; break;
+		hob_res_type_str = "EFI_RESOURCE_UNKNOWN";
+		break;
 	}
 
 	printk(BIOS_SPEW, "  Resource %s (0x%0x) has attributes 0x%0x\n",
-			Hobrestypestr, Hobrestype, Hobresattr);
+			hob_res_type_str, hob_res_type, hob_res_attr);
 	printk(BIOS_SPEW, "  at location 0x%0lx with length 0x%0lx\n",
-			(unsigned long)Hobresaddr, (unsigned long)Hobreslength);
+			(unsigned long)hob_res_addr,
+			(unsigned long)hob_res_length);
 }
 
-const char * get_hob_type_string(void *Hobptr)
+static const char *get_hob_type_string(void *hob_ptr)
 {
-	EFI_HOB_GENERIC_HEADER *HobHeaderPtr = (EFI_HOB_GENERIC_HEADER *)Hobptr;
-	u16 Hobtype = HobHeaderPtr->HobType;
-	const char *Hobtypestring = NULL;
+	EFI_PEI_HOB_POINTERS hob;
+	const char *hob_type_string = NULL;
+	const EFI_GUID fsp_reserved_guid =
+		FSP_RESERVED_MEMORY_RESOURCE_HOB_GUID;
+	const EFI_GUID mrc_guid = FSP_NON_VOLATILE_STORAGE_HOB_GUID;
+	const EFI_GUID bootldr_tmp_mem_guid =
+		FSP_BOOTLOADER_TEMP_MEMORY_HOB_GUID;
+	const EFI_GUID bootldr_tolum_guid = FSP_BOOTLOADER_TOLUM_HOB_GUID;
+	const EFI_GUID graphics_info_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
 
-	switch (Hobtype) {
+	hob.Header = (EFI_HOB_GENERIC_HEADER *)hob_ptr;
+	switch (hob.Header->HobType) {
 	case EFI_HOB_TYPE_HANDOFF:
-		Hobtypestring = "EFI_HOB_TYPE_HANDOFF"; break;
+		hob_type_string = "EFI_HOB_TYPE_HANDOFF";
+		break;
 	case EFI_HOB_TYPE_MEMORY_ALLOCATION:
-		Hobtypestring = "EFI_HOB_TYPE_MEMORY_ALLOCATION"; break;
+		hob_type_string = "EFI_HOB_TYPE_MEMORY_ALLOCATION";
+		break;
 	case EFI_HOB_TYPE_RESOURCE_DESCRIPTOR:
-		Hobtypestring = "EFI_HOB_TYPE_RESOURCE_DESCRIPTOR"; break;
+		hob_type_string = "EFI_HOB_TYPE_RESOURCE_DESCRIPTOR";
+		break;
 	case EFI_HOB_TYPE_GUID_EXTENSION:
-		Hobtypestring = "EFI_HOB_TYPE_GUID_EXTENSION"; break;
+		hob_type_string = "EFI_HOB_TYPE_GUID_EXTENSION";
+		if (compare_guid(&bootldr_tmp_mem_guid, &hob.Guid->Name))
+			hob_type_string = "FSP_BOOTLOADER_TEMP_MEMORY_HOB";
+		else if (compare_guid(&fsp_reserved_guid, &hob.Guid->Name))
+			hob_type_string = "FSP_RESERVED_MEMORY_RESOURCE_HOB";
+		else if (compare_guid(&mrc_guid, &hob.Guid->Name))
+			hob_type_string = "FSP_NON_VOLATILE_STORAGE_HOB";
+		else if (compare_guid(&bootldr_tolum_guid, &hob.Guid->Name))
+			hob_type_string = "FSP_BOOTLOADER_TOLUM_HOB_GUID";
+		else if (compare_guid(&graphics_info_guid, &hob.Guid->Name))
+			hob_type_string = "EFI_PEI_GRAPHICS_INFO_HOB_GUID";
+		break;
 	case EFI_HOB_TYPE_MEMORY_POOL:
-		Hobtypestring = "EFI_HOB_TYPE_MEMORY_POOL"; break;
+		hob_type_string = "EFI_HOB_TYPE_MEMORY_POOL";
+		break;
 	case EFI_HOB_TYPE_UNUSED:
-		Hobtypestring = "EFI_HOB_TYPE_UNUSED"; break;
+		hob_type_string = "EFI_HOB_TYPE_UNUSED";
+		break;
 	case EFI_HOB_TYPE_END_OF_HOB_LIST:
-		Hobtypestring = "EFI_HOB_TYPE_END_OF_HOB_LIST"; break;
+		hob_type_string = "EFI_HOB_TYPE_END_OF_HOB_LIST";
+		break;
 	default:
-		Hobtypestring = "EFI_HOB_TYPE_UNRECOGNIZED"; break;
+		hob_type_string = "EFI_HOB_TYPE_UNRECOGNIZED";
+		break;
 	}
 
-	return Hobtypestring;
+	return hob_type_string;
 }
 
-/** Displays the length, location, and GUID value of a GUID extension
- *
- * The EFI_HOB_GUID_TYPE is very basic - it just contains the standard
- * HOB header containing the HOB type and length, and a GUID for
- * identification.  The rest of the data is undefined and must be known
- * based on the GUID.
- *
- * This displays the entire HOB length, and the location of the start
- * of the HOB, *NOT* the length of or the start of the data inside the HOB.
- *
- * @param Hobptr
- */
-void print_guid_type_attributes(void *Hobptr)
-{
-	printk(BIOS_SPEW, "  at location %p with length0x%0lx\n  ",
-		Hobptr, (unsigned long)(((EFI_PEI_HOB_POINTERS *) \
-		Hobptr)->Guid->Header.HobLength));
-	printguid(&(((EFI_HOB_GUID_TYPE *)Hobptr)->Name));
-
-}
-
-/* Print out a structure of all the HOBs
+/*
+ * Print out a structure of all the HOBs
  * that match a certain type:
  * Print all types			(0x0000)
- * EFI_HOB_TYPE_HANDOFF			(0x0001)
+ * EFI_HOB_TYPE_HANDOFF		(0x0001)
  * EFI_HOB_TYPE_MEMORY_ALLOCATION	(0x0002)
  * EFI_HOB_TYPE_RESOURCE_DESCRIPTOR	(0x0003)
  * EFI_HOB_TYPE_GUID_EXTENSION		(0x0004)
@@ -168,102 +348,148 @@ void print_guid_type_attributes(void *Hobptr)
  * EFI_HOB_TYPE_UNUSED			(0xFFFE)
  * EFI_HOB_TYPE_END_OF_HOB_LIST	(0xFFFF)
  */
-void print_hob_type_structure(u16 Hobtype, void *Hoblistptr)
+void print_hob_type_structure(u16 hob_type, void *hob_list_ptr)
 {
-	u32 *Currenthob;
-	u32 *Nexthob = 0;
-	u8  Lasthob = 0;
-	u32 Currenttype;
-	const char *Currenttypestr;
+	u32 *current_hob;
+	u32 *next_hob = 0;
+	u8  last_hob = 0;
+	u32 current_type;
+	const char *current_type_str;
 
-	Currenthob = Hoblistptr;
+	current_hob = hob_list_ptr;
 
-	/* Print out HOBs of our desired type until
+	/*
+	 * Print out HOBs of our desired type until
 	 * the end of the HOB list
 	 */
 	printk(BIOS_DEBUG, "\n=== FSP HOB Data Structure ===\n");
-	printk(BIOS_DEBUG, "FSP Hoblistptr: 0x%0x\n",
-			(u32) Hoblistptr);
+	printk(BIOS_DEBUG, "0x%p: hob_list_ptr\n", hob_list_ptr);
 	do {
-		EFI_HOB_GENERIC_HEADER *CurrentHeaderPtr =
-			(EFI_HOB_GENERIC_HEADER *)Currenthob;
-		Currenttype = CurrentHeaderPtr->HobType;  /* Get the type of this HOB */
-		Currenttypestr = get_hob_type_string(Currenthob);
+		EFI_HOB_GENERIC_HEADER *current_header_ptr =
+			(EFI_HOB_GENERIC_HEADER *)current_hob;
 
-		if (Currenttype == Hobtype || Hobtype == 0x0000) {
+		/* Get the type of this HOB */
+		current_type = current_header_ptr->HobType;
+		current_type_str = get_hob_type_string(current_hob);
+
+		if (current_type == hob_type || hob_type == 0x0000) {
 			printk(BIOS_DEBUG, "HOB 0x%0x is an %s (type 0x%0x)\n",
-					(u32) Currenthob, Currenttypestr, Currenttype);
-			switch (Currenttype) {
+					(u32)current_hob, current_type_str,
+					current_type);
+			switch (current_type) {
 			case EFI_HOB_TYPE_MEMORY_ALLOCATION:
-				print_hob_mem_attributes(Currenthob); break;
+				print_hob_mem_attributes(current_hob);
+				break;
 			case EFI_HOB_TYPE_RESOURCE_DESCRIPTOR:
-				print_hob_resource_attributes(Currenthob); break;
-			case EFI_HOB_TYPE_GUID_EXTENSION:
-				print_guid_type_attributes(Currenthob);	break;
+				print_hob_resource_attributes(current_hob);
+				break;
 			}
 		}
 
-		Lasthob = END_OF_HOB_LIST(Currenthob);	/* Check for end of HOB list */
-		if (!Lasthob) {
-			Nexthob = GET_NEXT_HOB(Currenthob);	/* Get next HOB pointer */
-			Currenthob = Nexthob;	// Start on next HOB
+		/* Check for end of HOB list */
+		last_hob = END_OF_HOB_LIST(current_hob);
+		if (!last_hob) {
+			/* Get next HOB pointer */
+			next_hob = GET_NEXT_HOB(current_hob);
+
+			/* Start on next HOB */
+			current_hob = next_hob;
 		}
-	} while (!Lasthob);
+	} while (!last_hob);
 	printk(BIOS_DEBUG, "=== End of FSP HOB Data Structure ===\n\n");
 }
 
-
-/** Finds a HOB entry based on type and guid
- *
- * @param current_hob pointer to the start of the HOB list
- * @param guid the GUID of the HOB entry to find
- * @return pointer to the start of the requested HOB or NULL if not found.
+#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
+/*
+ *  Save the FSP memory HOB (mrc data) to the MRC area in CBMEM
  */
-void * find_hob_by_guid(void *current_hob, EFI_GUID *guid)
+int save_mrc_data(void *hob_start)
 {
-	do {
-		switch (((EFI_HOB_GENERIC_HEADER *)current_hob)->HobType) {
+	u32 *mrc_hob;
+	u32 *mrc_hob_data;
+	u32 mrc_hob_size;
+	struct mrc_data_container *mrc_data;
+	int output_len;
+	const EFI_GUID mrc_guid = FSP_NON_VOLATILE_STORAGE_HOB_GUID;
 
-		case EFI_HOB_TYPE_MEMORY_ALLOCATION:
-			if (guids_are_equal(guid, &(((EFI_HOB_MEMORY_ALLOCATION *) \
-				current_hob)->AllocDescriptor.Name)))
-				return current_hob;
-			break;
-		case EFI_HOB_TYPE_RESOURCE_DESCRIPTOR:
-			if (guids_are_equal(guid,
-				&(((EFI_HOB_RESOURCE_DESCRIPTOR *) \
-				current_hob)->Owner)))
-				return current_hob;
-			break;
-		case EFI_HOB_TYPE_GUID_EXTENSION:
-			if (guids_are_equal(guid, &(((EFI_HOB_GUID_TYPE *) \
-					current_hob)->Name)))
-				return current_hob;
-			break;
-		}
-
-		if (!END_OF_HOB_LIST(current_hob))
-			current_hob = GET_NEXT_HOB(current_hob); /* Get next HOB pointer */
-	} while (!END_OF_HOB_LIST(current_hob));
-
-	return NULL;
-}
-
-/** Compares a pair of GUIDs to see if they are equal
- *
- * GUIDs are 128 bits long, so compare them as pairs of quadwords.
- *
- * @param guid1 pointer to the first of the GUIDs to compare
- * @param guid2 pointer to the second of the GUIDs to compare
- * @return 1 if the GUIDs were equal, 0 if GUIDs were not equal
- */
-uint8_t guids_are_equal(EFI_GUID *guid1, EFI_GUID *guid2)
-{
-	uint64_t* guid_1 = (void *) guid1;
-	uint64_t* guid_2 = (void *) guid2;
-
-	if ((*(guid_1) != *(guid_2)) || (*(guid_1 + 1) != *(guid_2 + 1)))
+	mrc_hob = get_next_guid_hob(&mrc_guid, hob_start);
+	if (mrc_hob == NULL) {
+		printk(BIOS_DEBUG,
+			"Memory Configure Data Hob is not present\n");
 		return 0;
+	}
 
+	mrc_hob_data = GET_GUID_HOB_DATA(mrc_hob);
+	mrc_hob_size = (u32) GET_HOB_LENGTH(mrc_hob);
+
+	printk(BIOS_DEBUG, "Memory Configure Data Hob at %p (size = 0x%x).\n",
+			(void *)mrc_hob_data, mrc_hob_size);
+
+	output_len = ALIGN(mrc_hob_size, 16);
+
+	/* Save the MRC S3/fast boot/ADR restore data to cbmem */
+	mrc_data = cbmem_add(CBMEM_ID_MRCDATA,
+			output_len + sizeof(struct mrc_data_container));
+
+	/* Just return if there was a problem with getting CBMEM */
+	if (mrc_data == NULL) {
+		printk(BIOS_WARNING,
+			"CBMEM was not available to save the fast boot cache data.\n");
+		return 0;
+	}
+
+	printk(BIOS_DEBUG,
+		"Copy FSP MRC DATA to HOB (source addr %p, dest addr %p, %u bytes)\n",
+		(void *)mrc_hob_data, mrc_data, output_len);
+
+	mrc_data->mrc_signature = MRC_DATA_SIGNATURE;
+	mrc_data->mrc_data_size = output_len;
+	mrc_data->reserved = 0;
+	memcpy(mrc_data->mrc_data, (const void *)mrc_hob_data, mrc_hob_size);
+
+	/* Zero the unused space in aligned buffer. */
+	if (output_len > mrc_hob_size)
+		memset((mrc_data->mrc_data + mrc_hob_size), 0,
+				output_len - mrc_hob_size);
+
+	mrc_data->mrc_checksum = compute_ip_checksum(mrc_data->mrc_data,
+			mrc_data->mrc_data_size);
+
+#if IS_ENABLED(CONFIG_DISPLAY_FAST_BOOT_DATA)
+	printk(BIOS_SPEW, "Fast boot data (includes align and checksum):\n");
+	hexdump32(BIOS_SPEW, (void *)mrc_data->mrc_data, output_len);
+#endif
 	return 1;
 }
+
+void __attribute__ ((weak)) update_mrc_cache(void *unused)
+{
+	printk(BIOS_ERR, "Add routine %s to save the MRC data.\n", __func__);
+}
+#endif /* CONFIG_ENABLE_MRC_CACHE */
+
+#if ENV_RAMSTAGE
+
+static void find_fsp_hob_update_mrc(void *unused)
+{
+	void *hob_list_ptr;
+
+	/* 0x0000: Print all types */
+	hob_list_ptr = get_hob_list();
+#if IS_ENABLED(CONFIG_DISPLAY_HOBS)
+	print_hob_type_structure(0x000, hob_list_ptr);
+#endif
+
+	#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
+	if (save_mrc_data(hob_list_ptr))
+		update_mrc_cache(NULL);
+	else
+		printk(BIOS_DEBUG, "Not updating MRC data in flash.\n");
+	#endif
+}
+
+/* Update the MRC/fast boot cache as part of the late table writing stage */
+BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
+	find_fsp_hob_update_mrc, NULL);
+
+#endif /* ENV_RAMSTAGE */

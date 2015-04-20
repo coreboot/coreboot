@@ -542,3 +542,8 @@ int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytesout,
 	}
 	return spim_io(slave, &buff_0, (dout && din) ? &buff_1 : NULL);
 }
+
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return min(IMGTEC_SPI_MAX_TRANSFER_SIZE, buf_len);
+}

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -18,20 +19,23 @@
  * Foundation, Inc.
  */
 
-#include <device/device.h>
-#include <device/pci.h>
-#include <console/console.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
-
+#include <device/device.h>
+#include <device/pci.h>
 #include <soc/iomap.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/smm.h>
+#include <string.h>
 
 /* Save settings which will be committed in SMI functions. */
 static uint32_t smm_save_params[SMM_SAVE_PARAM_COUNT];
+
+void smm_init(void)
+{
+}
 
 void southcluster_smm_save_param(int param, uint32_t data)
 {
@@ -65,7 +69,7 @@ void southcluster_smm_clear_state(void)
 
 static void southcluster_smm_route_gpios(void)
 {
-	u32 *gpio_rout = (u32 *)(PMC_BASE_ADDRESS + GPIO_ROUT);
+	void *gpio_rout = (void *)(PMC_BASE_ADDRESS + GPIO_ROUT);
 	const unsigned short alt_gpio_smi = ACPI_BASE_ADDRESS + ALT_GPIO_SMI;
 	uint32_t alt_gpio_reg = 0;
 	uint32_t route_reg = smm_save_params[SMM_SAVE_PARAM_GPIO_ROUTE];
@@ -78,9 +82,8 @@ static void southcluster_smm_route_gpios(void)
 
 	/* Enable SMIs for the gpios that are set to trigger the SMI. */
 	for (i = 0; i < 16; i++) {
-		if ((route_reg & ROUTE_MASK) == ROUTE_SMI) {
+		if ((route_reg & ROUTE_MASK) == ROUTE_SMI)
 			alt_gpio_reg |= (1 << i);
-		}
 		route_reg >>= 2;
 	}
 	printk(BIOS_DEBUG, "ALT_GPIO_SMI = %08x\n", alt_gpio_reg);
@@ -101,7 +104,8 @@ void southcluster_smm_enable_smi(void)
 	/* Set up the GPIO route. */
 	southcluster_smm_route_gpios();
 
-	/* Enable SMI generation:
+	/*
+	 * Enable SMI generation:
 	 *  - on APMC writes (io 0xb2)
 	 *  - on writes to SLP_EN (sleep states)
 	 *  - on writes to GBL_RLS (bios commands)

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _BAYTRAIL_PMC_H_
-#define _BAYTRAIL_PMC_H_
+#ifndef _SOC_PM_H_
+#define _SOC_PM_H_
 
 
 #define IOCOM1		0x3f8
@@ -164,42 +165,7 @@
 #define   SCI_EN	(1 << 0)
 #define PM1_TMR			0x08
 #define GPE0_STS		0x20
-#define   CORE_GPIO_STS7	(1 << 31)
-#define   CORE_GPIO_STS6	(1 << 30)
-#define   CORE_GPIO_STS5	(1 << 29)
-#define   CORE_GPIO_STS4	(1 << 28)
-#define   CORE_GPIO_STS3	(1 << 27)
-#define   CORE_GPIO_STS2	(1 << 26)
-#define   CORE_GPIO_STS1	(1 << 25)
-#define   CORE_GPIO_STS0	(1 << 24)
-#define   SUS_GPIO_STS7		(1 << 23)
-#define   SUS_GPIO_STS6		(1 << 22)
-#define   SUS_GPIO_STS5		(1 << 21)
-#define   SUS_GPIO_STS4		(1 << 20)
-#define   SUS_GPIO_STS3		(1 << 19)
-#define   SUS_GPIO_STS2		(1 << 18)
-#define   SUS_GPIO_STS1		(1 << 17)
-#define   SUS_GPIO_STS0		(1 << 16)
-#define   PME_B0_STS		(1 << 13)
-#define   BATLOW_STS		(1 << 10)
-#define   PCI_EXP_STS		(1 << 9)
-#define   PCIE_WAKE3_STS	(1 << 8)
-#define   PCIE_WAKE2_STS	(1 << 7)
-#define   PCIE_WAKE1_STS	(1 << 6)
-#define   GUNIT_SCI_STS		(1 << 5)
-#define   PUNIT_SCI_STS		(1 << 4)
-#define   PCIE_WAKE0_STS	(1 << 3)
-#define   SWGPE_STS		(1 << 2)
-#define   HOT_PLUG_STS		(1 << 1)
 #define GPE0_EN			0x28
-#define   CORE_GPIO_EN7	(1 << 31)
-#define   CORE_GPIO_EN6	(1 << 30)
-#define   CORE_GPIO_EN5	(1 << 29)
-#define   CORE_GPIO_EN4	(1 << 28)
-#define   CORE_GPIO_EN3	(1 << 27)
-#define   CORE_GPIO_EN2	(1 << 26)
-#define   CORE_GPIO_EN1	(1 << 25)
-#define   CORE_GPIO_EN0	(1 << 24)
 #define   SUS_GPIO_EN7_BIT	23
 #define   SUS_GPIO_EN7		(1 << SUS_GPIO_EN7_BIT)
 #define   SUS_GPIO_EN6_BIT	22
@@ -216,33 +182,31 @@
 #define   SUS_GPIO_EN1		(1 << SUS_GPIO_EN1_BIT)
 #define   SUS_GPIO_EN0_BIT	16
 #define   SUS_GPIO_EN0		(1 << SUS_GPIO_EN0_BIT)
+#define   SUS_GPIO_STS0		(1 << 16)
+#define   PCIE_WAKE3_STS	(1 << 8)
+#define   PCIE_WAKE2_STS	(1 << 7)
+#define   PCIE_WAKE1_STS	(1 << 6)
+#define   PCIE_WAKE0_STS	(1 << 3)
+#define   PCI_EXP_STS		(1 << 9)
 #define   PME_B0_EN		(1 << 13)
-#define   BATLOW_EN		(1 << 10)
-#define   PCI_EXP_EN		(1 << 9)
-#define   PCIE_WAKE3_EN		(1 << 8)
-#define   PCIE_WAKE2_EN		(1 << 7)
-#define   PCIE_WAKE1_EN		(1 << 6)
-#define   PCIE_WAKE0_EN		(1 << 3)
-#define   SWGPE_EN		(1 << 2)
-#define   HOT_PLUG_EN		(1 << 1)
 #define   _ACPI_ENABLE_WAKE_SUS_GPIO(x) SUS_GPIO_EN##x##_BIT
 #define   ACPI_ENABLE_WAKE_SUS_GPIO(x) _ACPI_ENABLE_WAKE_SUS_GPIO(x)
 #define SMI_EN			0x30
-#define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
-#define   USB_EN	 (1 << 17) // Legacy USB2 SMI logic
-#define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
-#define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
-#define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
-#define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
-#define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
-#define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
-#define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
-#define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
-#define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
+#define   INTEL_USB2_EN	 (1 << 18) /* Intel-Specific USB2 SMI logic */
+#define   USB_EN	 (1 << 17) /* Legacy USB2 SMI logic */
+#define   PERIODIC_EN	 (1 << 14) /* SMI on PERIODIC_STS in SMI_STS */
+#define   TCO_EN	 (1 << 13) /* Enable TCO Logic (BIOSWE et al) */
+#define   BIOS_RLS	 (1 <<  7) /* asserts SCI on bit set */
+#define   SWSMI_TMR_EN	 (1 <<  6) /* start software smi timer on bit set */
+#define   APMC_EN	 (1 <<  5) /* Writes to APM_CNT cause SMI# */
+#define   SLP_SMI_EN	 (1 <<  4) /* Write to SLP_EN in PM1_CNT asserts SMI# */
+#define   BIOS_EN	 (1 <<  2) /* Assert SMI# on setting GBL_RLS bit */
+#define   EOS		 (1 <<  1) /* End of SMI (deassert SMI#) */
+#define   GBL_SMI_EN	 (1 <<  0) /* SMI# generation at all? */
 #define SMI_STS			0x34
 #define ALT_GPIO_SMI		0x38
 #define UPRWC			0x3c
-# define  UPRWC_WR_EN	 (1 << 1) // USB Per-Port Registers Write Enable
+# define  UPRWC_WR_EN	 (1 << 1) /* USB Per-Port Registers Write Enable */
 #define GPE_CTRL		0x40
 #define PM2A_CNT_BLK		0x50
 #define TCO_RLD			0x60
@@ -254,11 +218,10 @@
 #	define TCO_TMR_HALT	(1 << 11)
 #define TCO_TMR			0x70
 
-/* I/O ports */
-#define RST_CNT			0xcf9
-#	define FULL_RST		(1 << 3)
-#	define RST_CPU		(1 << 2)
-#	define SYS_RST		(1 << 1)
+/* Generic sleep state types */
+#define SLEEP_STATE_S0		0
+#define SLEEP_STATE_S3		3
+#define SLEEP_STATE_S5		5
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 
@@ -273,6 +236,7 @@ struct chipset_power_state {
 	uint32_t prsts;
 	uint32_t gen_pmcon1;
 	uint32_t gen_pmcon2;
+	int prev_sleep_state;
 } __attribute__((packed));
 
 /* Power Management Utility Functions. */
@@ -292,7 +256,7 @@ void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 void disable_all_gpe(void);
 
-#if CONFIG_ELOG
+#if IS_ENABLED(CONFIG_ELOG)
 void southcluster_log_state(void);
 #else
 static inline void southcluster_log_state(void) {}
@@ -300,4 +264,4 @@ static inline void southcluster_log_state(void) {}
 
 #endif /* !defined(__ASSEMBLER__) && !defined(__ACPI__) */
 
-#endif /* _BAYTRAIL_PMC_H_ */
+#endif /* _SOC_PM_H_ */

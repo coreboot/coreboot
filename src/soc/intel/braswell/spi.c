@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -20,18 +21,17 @@
  */
 
 /* This file is derived from the flashrom project. */
+#include <arch/io.h>
+#include <bootstate.h>
+#include <console/console.h>
+#include <delay.h>
+#include <device/pci_ids.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <spi_flash.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bootstate.h>
-#include <delay.h>
-#include <arch/io.h>
-#include <console/console.h>
-#include <device/pci_ids.h>
-#include <spi_flash.h>
-
-#include <soc/lpc.h>
-#include <soc/pci_devs.h>
 
 #ifdef __SMM__
 #define pci_read_config_byte(dev, reg, targ)\
@@ -84,20 +84,6 @@ typedef struct ich9_spi_regs {
 	uint16_t preop;
 	uint16_t optype;
 	uint8_t opmenu[8];
-	uint32_t bbar;
-	uint8_t _reserved3[12];
-	uint32_t fdoc;
-	uint32_t fdod;
-	uint8_t _reserved4[8];
-	uint32_t afc;
-	uint32_t lvscc;
-	uint32_t uvscc;
-	uint8_t _reserved5[4];
-	uint32_t fpb;
-	uint8_t _reserved6[28];
-	uint32_t srdl;
-	uint32_t srdc;
-	uint32_t srd;
 } __attribute__((packed)) ich9_spi_regs;
 
 typedef struct ich_spi_controller {
@@ -112,7 +98,6 @@ typedef struct ich_spi_controller {
 	unsigned databytes;
 	uint8_t *status;
 	uint16_t *control;
-	uint32_t *bbar;
 } ich_spi_controller;
 
 static ich_spi_controller cntlr;
@@ -167,51 +152,45 @@ enum {
 	SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS =	3
 };
 
-#if CONFIG_DEBUG_SPI_FLASH
+#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
 
-static u8 readb_(const void *addr)
+static u8 readb_(void *addr)
 {
-	u8 v = read8((unsigned long)addr);
-	printk(BIOS_DEBUG, "read %2.2x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	u8 v = read8(addr);
+	printk(BIOS_DEBUG, "0x%p --> 0x%2.2x\n", addr, v);
 	return v;
 }
 
-static u16 readw_(const void *addr)
+static u16 readw_(void *addr)
 {
-	u16 v = read16((unsigned long)addr);
-	printk(BIOS_DEBUG, "read %4.4x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	u16 v = read16(addr);
+	printk(BIOS_DEBUG, "0x%p --> 0x%4.4x\n", addr, v);
 	return v;
 }
 
-static u32 readl_(const void *addr)
+static u32 readl_(void *addr)
 {
-	u32 v = read32((unsigned long)addr);
-	printk(BIOS_DEBUG, "read %8.8x from %4.4x\n",
-	       v, ((unsigned) addr & 0xffff) - 0xf020);
+	u32 v = read32(addr);
+	printk(BIOS_DEBUG, "0x%p --> 0x%8.8x\n", addr, v);
 	return v;
 }
 
-static void writeb_(u8 b, const void *addr)
+static void writeb_(u8 b, void *addr)
 {
+	printk(BIOS_DEBUG, "0x%p <-- 0x%2.2x\n", addr, b);
 	write8(addr, b);
-	printk(BIOS_DEBUG, "wrote %2.2x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
 }
 
-static void writew_(u16 b, const void *addr)
+static void writew_(u16 b, void *addr)
 {
+	printk(BIOS_DEBUG, "0x%p <-- 0x%4.4x\n", addr, b);
 	write16(addr, b);
-	printk(BIOS_DEBUG, "wrote %4.4x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
 }
 
-static void writel_(u32 b, const void *addr)
+static void writel_(u32 b, void *addr)
 {
+	printk(BIOS_DEBUG, "0x%p <-- 0x%8.8x\n", addr, b);
 	write32(addr, b);
-	printk(BIOS_DEBUG, "wrote %8.8x to %4.4x\n",
-	       b, ((unsigned) addr & 0xffff) - 0xf020);
 }
 
 #else /* CONFIG_DEBUG_SPI_FLASH ^^^ enabled  vvv NOT enabled */
@@ -240,9 +219,9 @@ static void write_reg(const void *value, void *dest, uint32_t size)
 	}
 }
 
-static void read_reg(const void *src, void *value, uint32_t size)
+static void read_reg(void *src, void *value, uint32_t size)
 {
-	const uint8_t *bsrc = src;
+	uint8_t *bsrc = src;
 	uint8_t *bvalue = value;
 
 	while (size >= 4) {
@@ -255,23 +234,12 @@ static void read_reg(const void *src, void *value, uint32_t size)
 	}
 }
 
-static void ich_set_bbar(uint32_t minaddr)
-{
-	const uint32_t bbar_mask = 0x00ffff00;
-	uint32_t ichspi_bbar;
-
-	minaddr &= bbar_mask;
-	ichspi_bbar = readl_(cntlr.bbar) & ~bbar_mask;
-	ichspi_bbar |= minaddr;
-	writel_(ichspi_bbar, cntlr.bbar);
-}
-
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	ich_spi_slave *slave = malloc(sizeof(*slave));
 
 	if (!slave) {
-		printk(BIOS_DEBUG, "ICH SPI: Bad allocation\n");
+		printk(BIOS_ERR, "ICH SPI: Bad allocation\n");
 		return NULL;
 	}
 
@@ -292,6 +260,11 @@ static ich9_spi_regs *spi_regs(void)
 #else
 	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 #endif
+	if (!dev) {
+		printk(BIOS_ERR, "%s: PCI device not found", __func__);
+		return NULL;
+	}
+
 	pci_read_config_dword(dev, SBASE, &sbase);
 	sbase &= ~0x1ff;
 
@@ -300,7 +273,14 @@ static ich9_spi_regs *spi_regs(void)
 
 void spi_init(void)
 {
-	ich9_spi_regs *ich9_spi = spi_regs();
+	ich9_spi_regs *ich9_spi;
+
+	ich9_spi = spi_regs();
+	if (!ich9_spi) {
+		printk(BIOS_ERR, "Not initialising spi as %s returned NULL\n",
+			__func__);
+		return;
+	}
 
 	ichspi_lock = readw_(&ich9_spi->hsfs) & HSFS_FLOCKDN;
 	cntlr.opmenu = ich9_spi->opmenu;
@@ -311,19 +291,19 @@ void spi_init(void)
 	cntlr.databytes = sizeof(ich9_spi->fdata);
 	cntlr.status = &ich9_spi->ssfs;
 	cntlr.control = (uint16_t *)ich9_spi->ssfc;
-	cntlr.bbar = &ich9_spi->bbar;
 	cntlr.preop = &ich9_spi->preop;
-	ich_set_bbar(0);
 }
 
-#ifndef __SMM__
+#if ENV_RAMSTAGE
+
 static void spi_init_cb(void *unused)
 {
 	spi_init();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, spi_init_cb, NULL);
-#endif
+
+#endif /* ENV_RAMSTAGE */
 
 int spi_claim_bus(struct spi_slave *slave)
 {
@@ -460,13 +440,14 @@ static int spi_setup_offset(spi_transaction *trans)
 		spi_use_out(trans, 3);
 		return 1;
 	default:
-		printk(BIOS_DEBUG, "Unrecognized SPI transaction type %#x\n", trans->type);
+		printk(BIOS_DEBUG, "Unrecognized SPI transaction type %#x\n",
+			trans->type);
 		return -1;
 	}
 }
 
 /*
- * Wait for up to 60ms til status register bit(s) turn 1 (in case wait_til_set
+ * Wait for up to 400ms til status register bit(s) turn 1 (in case wait_til_set
  * below is True) or 0. In case the wait was for the bit(s) to set - write
  * those bits back, which would cause resetting them.
  *
@@ -477,6 +458,7 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 	int timeout = 40000; /* This will result in 400 ms */
 	u16 status = 0;
 
+	wait_til_set &= 1;
 	while (timeout--) {
 		status = readw_(cntlr.status);
 		if (wait_til_set ^ ((status & bitmask) == 0)) {
@@ -487,7 +469,7 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 		udelay(10);
 	}
 
-	printk(BIOS_DEBUG, "ICH SPI: SCIP timeout, read %x, expected %x\n",
+	printk(BIOS_ERR, "ICH SPI: SCIP timeout, read %x, expected %x\n",
 		status, bitmask);
 	return -1;
 }
@@ -528,9 +510,11 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	writew_(SPIS_CDS | SPIS_FCERR, cntlr.status);
 
 	spi_setup_type(&trans);
-	if ((opcode_index = spi_setup_opcode(&trans)) < 0)
+	opcode_index = spi_setup_opcode(&trans);
+	if (opcode_index < 0)
 		return -1;
-	if ((with_address = spi_setup_offset(&trans)) < 0)
+	with_address = spi_setup_offset(&trans);
+	if (with_address < 0)
 		return -1;
 
 	if (trans.opcode == SPI_OPCODE_WREN) {
@@ -570,7 +554,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 			return -1;
 
 		if (status & SPIS_FCERR) {
-			printk(BIOS_DEBUG, "ICH SPI: Command transaction error\n");
+			printk(BIOS_ERR, "ICH SPI: Command transaction error\n");
 			return -1;
 		}
 
@@ -585,8 +569,9 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	 * by the SPI chip driver.
 	 */
 	if (trans.bytesout > cntlr.databytes) {
-		printk(BIOS_DEBUG, "ICH SPI: Too much to write. Does your SPI chip driver use"
-		     " spi_crop_chunk()?\n");
+		printk(BIOS_DEBUG,
+		"ICH SPI: Too much to write. Does your SPI chip driver use"
+		     " CONTROLLER_PAGE_LIMIT?\n");
 		return -1;
 	}
 
@@ -627,7 +612,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 			return -1;
 
 		if (status & SPIS_FCERR) {
-			printk(BIOS_DEBUG, "ICH SPI: Data transaction error\n");
+			printk(BIOS_ERR, "ICH SPI: Data transaction error\n");
 			return -1;
 		}
 

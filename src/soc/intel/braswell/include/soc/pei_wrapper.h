@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,22 +17,14 @@
  * Foundation, Inc.
  */
 
-#include <arch/io.h>
-#include <soc/gpio.h>
-#include <soc/iomap.h>
-#include <soc/lpc.h>
-#include <soc/pci_devs.h>
-#include <soc/romstage.h>
+#ifndef _SOC_PEI_WRAPPER_H_
+#define _SOC_PEI_WRAPPER_H_
 
-void byt_config_com1_and_enable(void)
-{
-	uint32_t reg;
+#include <soc/pei_data.h>
 
-	/* Enable the UART hardware for COM1. */
-	reg = 1;
-	pci_write_config32(PCI_DEV(0, LPC_DEV, 0), UART_CONT, reg);
+typedef int ABI_X86(*pei_wrapper_entry_t)(struct pei_data *pei_data);
 
-	/* Set up the pads to select the UART function */
-	score_select_func(UART_RXD_PAD, 1);
-	score_select_func(UART_TXD_PAD, 1);
-}
+void broadwell_fill_pei_data(struct pei_data *pei_data);
+void mainboard_fill_pei_data(struct pei_data *pei_data);
+
+#endif

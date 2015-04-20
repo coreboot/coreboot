@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +18,13 @@
  * Foundation, Inc.
  */
 
-#include <stdint.h>
 #include <arch/io.h>
 #include <console/console.h>
-
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
+#include <stdint.h>
 
 #if defined(__SMM__)
 
@@ -54,7 +54,7 @@ uint16_t get_pmbase(void)
 }
 
 static void print_num_status_bits(int num_bits, uint32_t status,
-                                  const char *bit_names[])
+				  const char * const bit_names[])
 {
 	int i;
 
@@ -71,14 +71,14 @@ static void print_num_status_bits(int num_bits, uint32_t status,
 	}
 }
 
-static void print_status_bits(uint32_t status, const char *bit_names[])
+static void print_status_bits(uint32_t status, const char * const bit_names[])
 {
 	print_num_status_bits(32, status, bit_names);
 }
 
 static uint32_t print_smi_status(uint32_t smi_sts)
 {
-	static const char *smi_sts_bits[] = {
+	static const char * const smi_sts_bits[] = {
 		[2] = "BIOS",
 		[4] = "SLP_SMI",
 		[5] = "APM",
@@ -163,7 +163,7 @@ static uint16_t reset_pm1_status(void)
 
 static uint16_t print_pm1_status(uint16_t pm1_sts)
 {
-	static const char *pm1_sts_bits[] = {
+	static const char * const pm1_sts_bits[] = {
 		[0] = "TMROF",
 		[5] = "GBL",
 		[8] = "PWRBTN",
@@ -196,7 +196,7 @@ void enable_pm1(uint16_t events)
 
 static uint32_t print_tco_status(uint32_t tco_sts)
 {
-	static const char *tco_sts_bits[] = {
+	static const char * const tco_sts_bits[] = {
 		[3] = "TIMEOUT",
 		[17] = "SECOND_TO",
 	};
@@ -258,7 +258,7 @@ static uint32_t reset_gpe_status(void)
 
 static uint32_t print_gpe_sts(uint32_t gpe_sts)
 {
-	static const char *gpe_sts_bits[] = {
+	static const char * const gpe_sts_bits[] = {
 		[1] = "HOTPLUG",
 		[2] = "SWGPE",
 		[3] = "PCIE_WAKE0",
@@ -314,7 +314,7 @@ static uint32_t reset_alt_status(void)
 static uint32_t print_alt_sts(uint32_t alt_gpio_smi)
 {
 	uint32_t alt_gpio_sts;
-	static const char *alt_gpio_smi_sts_bits[] = {
+	static const char * const alt_gpio_smi_sts_bits[] = {
 		[0] = "SUS_GPIO_0",
 		[1] = "SUS_GPIO_1",
 		[2] = "SUS_GPIO_2",
@@ -355,10 +355,10 @@ void clear_pmc_status(void)
 	uint32_t prsts;
 	uint32_t gen_pmcon1;
 
-	prsts = read32((u32 *)(PMC_BASE_ADDRESS + PRSTS));
-	gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
+	prsts = read32((void *)(PMC_BASE_ADDRESS + PRSTS));
+	gen_pmcon1 = read32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1));
 
 	/* Clear the status bits. The RPS field is cleared on a 0 write. */
-	write32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1), gen_pmcon1 & ~RPS);
-	write32((u32 *)(PMC_BASE_ADDRESS + PRSTS), prsts);
+	write32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1), gen_pmcon1 & ~RPS);
+	write32((void *)(PMC_BASE_ADDRESS + PRSTS), prsts);
 }

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.  All rights reserved.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -26,16 +27,18 @@
 #include <soc/romstage.h>
 #include <soc/spi.h>
 
-#define SPI_CYCLE_DELAY 10 				/* 10us */
-#define SPI_CYCLE_TIMEOUT 400000 / SPI_CYCLE_DELAY	/* 400ms */
+#define SPI_CYCLE_DELAY 10				/* 10us */
+#define SPI_CYCLE_TIMEOUT (400000 / SPI_CYCLE_DELAY)	/* 400ms */
 
-#define SPI8(x) *((volatile u8 *)(SPI_BASE_ADDRESS + x))
-#define SPI16(x) *((volatile u16 *)(SPI_BASE_ADDRESS + x))
-#define SPI32(x) *((volatile u32 *)(SPI_BASE_ADDRESS + x))
+#define SPI8(x) (*((volatile u8 *)(SPI_BASE_ADDRESS + (x))))
+#define SPI16(x) (*((volatile u16 *)(SPI_BASE_ADDRESS + (x))))
+#define SPI32(x) (*((volatile u32 *)(SPI_BASE_ADDRESS + (x))))
 
-/* Minimal set of commands to read wpsr from SPI. Don't use this code outside
+/*
+ * Minimal set of commands to read wpsr from SPI. Don't use this code outside
  * romstage -- it trashes the opmenu table.
- * Returns 0 on success, < 0 on failure. */
+ * Returns 0 on success, < 0 on failure.
+ */
 int early_spi_read_wpsr(u8 *sr)
 {
 	int timeout = SPI_CYCLE_TIMEOUT;
@@ -49,7 +52,7 @@ int early_spi_read_wpsr(u8 *sr)
 	SPI16(SSFC) = DATA_CYCLE | SPI_CYCLE_GO;
 
 	/* Wait for error / complete status */
-	while(timeout--) {
+	while (timeout--) {
 		u16 status = SPI16(SSFS);
 		if (status & FLASH_CYCLE_ERROR) {
 			printk(BIOS_ERR, "SPI rdsr failed\n");

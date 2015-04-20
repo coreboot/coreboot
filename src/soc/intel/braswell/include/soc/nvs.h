@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2011 Google Inc
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +19,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _BAYTRAIL_NVS_H_
-#define _BAYTRAIL_NVS_H_
+#ifndef _SOC_NVS_H_
+#define _SOC_NVS_H_
 
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>
@@ -39,12 +40,13 @@ typedef struct {
 	u32	p80d; /* 0x0b - Debug port (IO 0x80) value */
 	u8	lids; /* 0x0f - LID state (open = 1) */
 	u8	pwrs; /* 0x10 - Power state (AC = 1) */
-	u8	pcnt; /* 0x11 - Processor Count */
+	u8      pcnt; /* 0x11 - Processor Count */
 	u8	tpmp; /* 0x12 - TPM Present and Enabled */
 	u8	tlvl; /* 0x13 - Throttle Level */
 	u8	ppcm; /* 0x14 - Maximum P-state usable by OS */
 	u32	pm1i; /* 0x15 - System Wake Source - PM1 Index */
-	u8	rsvd1[7];
+	u8	bdid; /* 0x19 - Board ID */
+	u8	rsvd1[6];
 
 	/* Device Config */
 	u8	s5u0; /* 0x20 - Enable USB0 in S5 */
@@ -58,21 +60,22 @@ typedef struct {
 	u8	rsvd2[8];
 
 	/* Base Addresses */
-	u32	obsolete_cmem; /* 0x30 - CBMEM TOC */
+	u32	cmem; /* 0x30 - CBMEM TOC */
 	u32	tolm; /* 0x34 - Top of Low Memory */
 	u32	cbmc; /* 0x38 - coreboot memconsole */
 	u8	rsvd3[196];
 
-	/* ChromeOS specific (0x100-0xfff)*/
+	/* ChromeOS specific (0x100-0xfff) */
 	chromeos_acpi_t chromeos;
 
-	/* Baytrail LPSS (0x1000) */
+	/* LPSS (0x1000) */
 	device_nvs_t dev;
 } __attribute__((packed)) global_nvs_t;
 
+void acpi_create_gnvs(global_nvs_t *gnvs);
 #ifdef __SMM__
 /* Used in SMM to find the ACPI GNVS address */
 global_nvs_t *smm_get_gnvs(void);
 #endif
 
-#endif /* _BAYTRAIL_NVS_H_ */
+#endif /* _SOC_NVS_H_ */

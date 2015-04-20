@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +18,17 @@
  * Foundation, Inc.
  */
 
+#include "chip.h"
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
 #include <reg_script.h>
-
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>
 #include <soc/ramstage.h>
 #include <soc/smm.h>
-
-#include "chip.h"
 
 static int pll_en_off;
 static uint32_t strpfusecfg;
@@ -47,11 +46,13 @@ static inline int is_first_port(device_t dev)
 static const struct reg_script init_static_before_exit_latency[] = {
 	/* Disable optimized buffer flush fill and latency tolerant reporting */
 	REG_PCI_RMW32(DCAP2, ~(OBFFS | LTRMS), 0),
-	REG_PCI_RMW32(DSTS2, ~(OBFFEN| LTRME), 0),
+	REG_PCI_RMW32(DSTS2, ~(OBFFEN | LTRME), 0),
 	/* Set maximum payload size. */
 	REG_PCI_RMW32(DCAP, ~MPS_MASK, 0),
-	/* Disable transmit datapath flush timer, clear transmit config change
-	 * wait time, clear sideband interface idle counter. */
+	/*
+	 * Disable transmit datapath flush timer, clear transmit config change
+	 * wait time, clear sideband interface idle counter.
+	 */
 	REG_PCI_RMW32(PHYCTL2_IOSFBCTL, ~(TDFT | TXCFGCHWAIT | SIID), 0),
 	REG_SCRIPT_END,
 };
@@ -67,8 +68,10 @@ static const struct reg_script init_static_after_exit_latency[] = {
 	REG_PCI_RMW32(RTP, 0xff000000, 0x854c74),
 	/* Set IOSF packet fast transmit mode and link speed training policy. */
 	REG_PCI_OR16(MPC2, IPF | LSTP),
-	/* Channel configuration - enable upstream posted split, set non-posted
-	 * and posted request size */
+	/*
+	 * Channel configuration - enable upstream posted split, set non-posted
+	 * and posted request size
+	 */
 	REG_PCI_RMW32(CHCFG, ~UPSD, UNRS | UPRS),
 	/* Completion status replay enable and set TLP grant count */
 	REG_PCI_RMW32(CFG2, ~(LATGC_MASK), CSREN | (3 << LATGC_SHIFT)),
@@ -80,7 +83,7 @@ static const struct reg_script init_static_after_exit_latency[] = {
 	REG_PCI_RMW16(DSTS2, ~CTD, 0x6),
 	/* Enable AER */
 	REG_PCI_OR16(DCTL_DSTS, URE | FEE | NFE | CEE),
-	/* Read and write back capability registers. */
+	/* Read and write back capabaility registers. */
 	REG_PCI_OR32(0x34, 0),
 	REG_PCI_OR32(0x80, 0),
 	/* Retrain the link. */
@@ -88,14 +91,16 @@ static const struct reg_script init_static_after_exit_latency[] = {
 	REG_SCRIPT_END,
 };
 
-static void byt_pcie_init(device_t dev)
+static void pcie_init(device_t dev)
 {
 	struct reg_script init_script[] = {
 		REG_SCRIPT_NEXT(init_static_before_exit_latency),
-		/* Exit latency configuration based on
-		 * PHYCTL2_IOSFBCTL[PLL_OFF_EN] set in root port 1*/
+		/*
+		 * Exit latency configuration based on
+		 * PHYCTL2_IOSFBCTL[PLL_OFF_EN] set in root port 1
+		 */
 		REG_PCI_RMW32(LCAP, ~L1EXIT_MASK,
-			2 << (L1EXIT_SHIFT + pll_en_off)),
+			2 << (L1EXIT_MASK + pll_en_off)),
 		REG_SCRIPT_NEXT(init_static_after_exit_latency),
 		/* Disable hot plug, set power to 10W, set slot number. */
 		REG_PCI_RMW32(SLCAP, ~(HPC | HPS),
@@ -108,10 +113,13 @@ static void byt_pcie_init(device_t dev)
 		REG_SCRIPT_END,
 	};
 
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
+
 	reg_script_run_on_dev(dev, init_script);
 
 	if (is_first_port(dev)) {
-		struct soc_intel_baytrail_config *config = dev->chip_info;
+		struct soc_intel_braswell_config *config = dev->chip_info;
 		uint32_t reg = pci_read_config32(dev, RPPGEN);
 		reg |= SRDLCGEN | SRDBCGEN;
 
@@ -132,6 +140,9 @@ static const struct reg_script no_dev_behind_port[] = {
 static void check_port_enabled(device_t dev)
 {
 	int rp_config = (strpfusecfg & LANECFG_MASK) >> LANECFG_SHIFT;
+
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 
 	switch (root_port_offset(dev)) {
 	case PCIE_PORT1_FUNC:
@@ -155,63 +166,66 @@ static void check_port_enabled(device_t dev)
 	}
 }
 
-static u8 all_ports_no_dev_present(device_t dev)
-{
-	u8 func;
-	u8 temp = dev->path.pci.devfn;
-	u8 device_not_present = 1;
-	u8 data;
-
-	for (func = 1; func < PCIE_ROOT_PORT_COUNT; func++) {
-		dev->path.pci.devfn &= ~0x7;
-		dev->path.pci.devfn |= func;
-
-		/* is pcie device there */
-		if (pci_read_config32(dev, 0) == 0xFFFFFFFF)
-			continue;
-
-		data = pci_read_config8(dev, XCAP + 3) | (SI >> 24);
-		pci_write_config8(dev, XCAP + 3, data);
-
-		/* is any device present */
-		if ((pci_read_config32(dev, SLCTL_SLSTS) & PDS)) {
-			device_not_present = 0;
-			break;
-		}
-	}
-
-	dev->path.pci.devfn = temp;
-	return device_not_present;
-}
-
 static void check_device_present(device_t dev)
 {
+	/* port1_dev will store the dev struct pointer of the PORT1 */
+	static device_t port1_dev;
+
+	/*
+	 * The SOC has 4 ROOT ports defined with MAX_ROOT_PORTS_BSW.
+	 * For each port initial assumption is that, each port will have
+	 * devices connected to it. Later we will scan each PORT and if
+	 * the device is not attached to that port we will update
+	 * rootports_in_use. If none of the root port is in use we will
+	 * disable PORT1 otherwise we will keep PORT1 enabled per spec.
+	 * In future if the Soc has more number of PCIe Root ports then
+	 * change MAX_ROOT_PORTS_BSW value accordingly.
+	 */
+
+	static uint32_t rootports_in_use = MAX_ROOT_PORTS_BSW;
+
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 	/* Set slot implemented. */
 	pci_write_config32(dev, XCAP, pci_read_config32(dev, XCAP) | SI);
 
 	/* No device present. */
 	if (!(pci_read_config32(dev, SLCTL_SLSTS) & PDS)) {
-		printk(BIOS_DEBUG, "No PCIe device present.\n");
-		if (is_first_port(dev)) {
-			if (all_ports_no_dev_present(dev)) {
-				reg_script_run_on_dev(dev, no_dev_behind_port);
-				dev->enabled = 0;
-			}
-		} else {
+		rootports_in_use--;
+		printk(BIOS_DEBUG, "No PCIe device present.");
+
+		/*
+		 * Defer PORT1 disabling for now. When we are at Last port
+		 * we will check rootports_in_use and disable PORT1 if none
+		 * of the port has any device connected
+		 */
+		if (!is_first_port(dev)) {
 			reg_script_run_on_dev(dev, no_dev_behind_port);
 			dev->enabled = 0;
+		} else
+			port1_dev = dev;
+		/*
+		 * If none of the ROOT PORT has devices connected then
+		 * disable PORT1 else keep the PORT1 enable
+		 */
+		if (!rootports_in_use) {
+			reg_script_run_on_dev(port1_dev, no_dev_behind_port);
+			port1_dev->enabled = 0;
+			southcluster_enable_dev(port1_dev);
 		}
-	} else if(!dev->enabled) {
+	} else if (!dev->enabled) {
 		/* Port is disabled, but device present. Disable link. */
 		pci_write_config32(dev, LCTL,
 			pci_read_config32(dev, LCTL) | LD);
 	}
 }
 
-static void byt_pcie_enable(device_t dev)
+static void pcie_enable(device_t dev)
 {
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 	if (is_first_port(dev)) {
-		struct soc_intel_baytrail_config *config = dev->chip_info;
+		struct soc_intel_braswell_config *config = dev->chip_info;
 		uint32_t reg = pci_read_config32(dev, PHYCTL2_IOSFBCTL);
 		pll_en_off = !!(reg & PLL_OFF_EN);
 
@@ -230,21 +244,10 @@ static void byt_pcie_enable(device_t dev)
 	southcluster_enable_dev(dev);
 }
 
-static unsigned int byt_pciexp_scan_bridge(device_t dev, unsigned int max)
-{
-	static const struct reg_script wait_for_link_active[] = {
-		REG_PCI_POLL32(LCTL, (1 << 29) , (1 << 29), 50000),
-		REG_SCRIPT_END,
-	};
-
-	/* wait for Link Active with 50ms timeout */
-	reg_script_run_on_dev(dev, wait_for_link_active);
-
-	return do_pci_scan_bridge(dev, max, pciexp_scan_bus);
-}
-
 static void pcie_root_set_subsystem(device_t dev, unsigned vid, unsigned did)
 {
+	printk(BIOS_SPEW, "%s/%s ( %s, 0x%04x, 0x%04x )\n",
+			__FILE__, __func__, dev_name(dev), vid, did);
 	uint32_t didvid = ((did & 0xffff) << 16) | (vid & 0xffff);
 
 	if (!didvid)
@@ -260,9 +263,9 @@ static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
-	.init			= byt_pcie_init,
-	.scan_bus		= byt_pciexp_scan_bridge,
-	.enable			= byt_pcie_enable,
+	.init			= pcie_init,
+	.scan_bus		= pciexp_scan_bridge,
+	.enable			= pcie_enable,
 	.ops_pci		= &pcie_root_ops,
 };
 

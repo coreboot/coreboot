@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,27 +21,30 @@
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
+#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <cpu/x86/smm.h>
-#include <console/console.h>
-#include <types.h>
-#include <string.h>
-#include <arch/cpu.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/tsc.h>
 #include <cpu/intel/turbo.h>
-
+#include <cpu/x86/msr.h>
+#include <cpu/x86/smm.h>
+#include <cpu/x86/tsc.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include <ec/google/chromeec/ec.h>
+#include <fsp_gop.h>
 #include <soc/acpi.h>
+#include <soc/gfx.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>
-#include <soc/pmc.h>
-
-#include <ec/google/chromeec/ec.h>
+#include <soc/pci_devs.h>
+#include <soc/pm.h>
+#include <string.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 
 #define MWAIT_RES(state, sub_state)                         \
@@ -89,15 +93,15 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 	/* Top of Low Memory (start of resource allocation) */
 	gnvs->tolm = nc_read_top_of_low_memory();
 
-#if CONFIG_CONSOLE_CBMEM
+#if IS_ENABLED(CONFIG_CONSOLE_CBMEM)
 	/* Update the mem console pointer. */
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 #endif
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Initialize Verified Boot data */
 	chromeos_init_vboot(&(gnvs->chromeos));
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif
@@ -137,7 +141,7 @@ static int acpi_sci_irq(void)
 	return sci_irq;
 }
 
-void acpi_create_intel_hpet(acpi_hpet_t * hpet)
+void acpi_create_intel_hpet(acpi_hpet_t *hpet)
 {
 	acpi_header_t *header = &(hpet->header);
 	acpi_addr_t *addr = &(hpet->addr);
@@ -284,7 +288,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
-static acpi_tstate_t baytrail_tss_table[] = {
+static acpi_tstate_t soc_tss_table[] = {
 	{ 100, 1000, 0, 0x00, 0 },
 	{ 88, 875, 0, 0x1e, 0 },
 	{ 75, 750, 0, 0x1c, 0 },
@@ -295,24 +299,20 @@ static acpi_tstate_t baytrail_tss_table[] = {
 	{ 13, 125, 0, 0x12, 0 },
 };
 
-static int generate_T_state_entries(int core, int cores_per_package)
+static void generate_T_state_entries(int core, int cores_per_package)
 {
-	int len;
-
 	/* Indicate SW_ALL coordination for T-states */
-	len = acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
+	acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
 
 	/* Indicate FFixedHW so OS will use MSR */
-	len += acpigen_write_empty_PTC();
+	acpigen_write_empty_PTC();
 
 	/* Set NVS controlled T-state limit */
-	len += acpigen_write_TPC("\\TLVL");
+	acpigen_write_TPC("\\TLVL");
 
 	/* Write TSS table for MSR access */
-	len += acpigen_write_TSS_package(
-		ARRAY_SIZE(baytrail_tss_table), baytrail_tss_table);
-
-	return len;
+	acpigen_write_TSS_package(
+		ARRAY_SIZE(soc_tss_table), soc_tss_table);
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)
@@ -336,9 +336,8 @@ static int calculate_power(int tdp, int p1_ratio, int ratio)
 	return (int)power;
 }
 
-static int generate_P_state_entries(int core, int cores_per_package)
+static void generate_P_state_entries(int core, int cores_per_package)
 {
-	int len, len_pss;
 	int ratio_min, ratio_max, ratio_turbo, ratio_step, ratio_range_2;
 	int coord_type, power_max, power_unit, num_entries;
 	int ratio, power, clock, clock_max;
@@ -366,16 +365,16 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
 
 	/* Write _PCT indicating use of FFixedHW */
-	len = acpigen_write_empty_PCT();
+	acpigen_write_empty_PCT();
 
 	/* Write _PPC with NVS specified limit on supported P-state */
-	len += acpigen_write_PPC_NVS();
+	acpigen_write_PPC_NVS();
 
 	/* Write PSD indicating configured coordination type */
-	len += acpigen_write_PSD_package(core, 1, coord_type);
+	acpigen_write_PSD_package(core, 1, coord_type);
 
 	/* Add P-state entries in _PSS table */
-	len += acpigen_write_name("_PSS");
+	acpigen_write_name("_PSS");
 
 	/* Determine ratio points */
 	ratio_step = 1;
@@ -388,36 +387,36 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	/* P[T] is Turbo state if enabled */
 	if (get_turbo_state() == TURBO_ENABLED) {
 		/* _PSS package count including Turbo */
-		len_pss = acpigen_write_package(num_entries + 2);
+		acpigen_write_package(num_entries + 2);
 
 		ratio_turbo = pattrs->iacore_ratios[IACORE_TURBO];
 		vid_turbo = pattrs->iacore_vids[IACORE_TURBO];
 		control_status = (ratio_turbo << 8) | vid_turbo;
 
 		/* Add entry for Turbo ratio */
-		len_pss += acpigen_write_PSS_package(
-			clock_max + 1,		/*MHz*/
-			power_max,		/*mW*/
-			10,			/*lat1*/
-			10,			/*lat2*/
-			control_status,		/*control*/
-			control_status);	/*status*/
+		acpigen_write_PSS_package(
+			clock_max + 1,		/* MHz */
+			power_max,		/* mW */
+			10,			/* lat1 */
+			10,			/* lat2 */
+			control_status,		/* control */
+			control_status);	/* status */
 	} else {
 		/* _PSS package count without Turbo */
-		len_pss = acpigen_write_package(num_entries + 1);
+		acpigen_write_package(num_entries + 1);
 		ratio_turbo = ratio_max;
 		vid_turbo = vid_max;
 	}
 
 	/* First regular entry is max non-turbo ratio */
 	control_status = (ratio_max << 8) | vid_max;
-	len_pss += acpigen_write_PSS_package(
-		clock_max,		/*MHz*/
-		power_max,		/*mW*/
-		10,			/*lat1*/
-		10,			/*lat2*/
-		control_status,		/*control */
-		control_status);	/*status*/
+	acpigen_write_PSS_package(
+		clock_max,		/* MHz */
+		power_max,		/* mW */
+		10,			/* lat1 */
+		10,			/* lat2 */
+		control_status,		/* control */
+		control_status);	/* status */
 
 	/* Set up ratio and vid ranges for VID calculation */
 	ratio_range_2 = (ratio_turbo - ratio_min) * 2;
@@ -439,52 +438,48 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		clock = (ratio * pattrs->bclk_khz) / 1000;
 		control_status = (ratio << 8) | (vid & 0xff);
 
-		len_pss += acpigen_write_PSS_package(
-			clock,			/*MHz*/
-			power,			/*mW*/
-			10,			/*lat1*/
-			10,			/*lat2*/
-			control_status,		/*control*/
-			control_status);	/*status*/
+		acpigen_write_PSS_package(
+			clock,			/* MHz */
+			power,			/* mW */
+			10,			/* lat1 */
+			10,			/* lat2 */
+			control_status,		/* control */
+			control_status);	/* status */
 	}
 
 	/* Fix package length */
-	len_pss--;
-	acpigen_patch_len(len_pss);
-
-	return len + len_pss;
+	acpigen_pop_len();
 }
 
-void generate_cpu_entries(void)
+void generate_cpu_entries(device_t device)
 {
-	int len_pr, core;
+	int core;
 	int pcontrol_blk = get_pmbase(), plen = 6;
 	const struct pattrs *pattrs = pattrs_get();
 
-	for (core=0; core<pattrs->num_cpus; core++) {
+	for (core = 0; core < pattrs->num_cpus; core++) {
 		if (core > 0) {
 			pcontrol_blk = 0;
 			plen = 0;
 		}
 
 		/* Generate processor \_PR.CPUx */
-		len_pr = acpigen_write_processor(
+		acpigen_write_processor(
 			core, pcontrol_blk, plen);
 
 		/* Generate  P-state tables */
-		len_pr += generate_P_state_entries(
+		generate_P_state_entries(
 			core, pattrs->num_cpus);
 
 		/* Generate C-state tables */
-		len_pr += acpigen_write_CST_package(
+		acpigen_write_CST_package(
 			cstate_map, ARRAY_SIZE(cstate_map));
 
 		/* Generate T-state tables */
-		len_pr += generate_T_state_entries(
+		generate_T_state_entries(
 			core, pattrs->num_cpus);
 
-		len_pr--;
-		acpigen_patch_len(len_pr);
+		acpigen_pop_len();
 	}
 }
 
@@ -505,7 +500,80 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 
 	irqovr = (void *)current;
 	current += acpi_create_madt_irqoverride(irqovr, 0, sci_irq, sci_irq,
-	                                        sci_flags);
+						sci_flags);
 
 	return current;
 }
+
+#if CONFIG_GOP_SUPPORT
+/* Reading VBT table from flash */
+static void get_fsp_vbt(igd_opregion_t *opregion)
+{
+	const optionrom_vbt_t *vbt;
+	uint32_t vbt_len;
+
+	vbt = fsp_get_vbt(&vbt_len);
+	if (!vbt)
+		die("vbt data not found");
+	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild, 4);
+	memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size <
+		sizeof(opregion->vbt.gvd1) ? vbt->hdr_vbt_size :
+		sizeof(opregion->vbt.gvd1));
+}
+
+/* Initialize IGD OpRegion, called from ACPI code */
+int init_igd_opregion(igd_opregion_t *opregion)
+{
+	device_t igd;
+	u16 reg16;
+
+	memset(opregion, 0, sizeof(igd_opregion_t));
+
+	/* FIXME if IGD is disabled, we should exit here. */
+
+	memcpy(&opregion->header.signature, IGD_OPREGION_SIGNATURE,
+		sizeof(IGD_OPREGION_SIGNATURE));
+
+	/* 8kb */
+	opregion->header.size = sizeof(igd_opregion_t) / 1024;
+	opregion->header.version = IGD_OPREGION_VERSION;
+
+	/* FIXME We just assume we're mobile for now */
+	opregion->header.mailboxes = MAILBOXES_MOBILE;
+
+	/* TODO Initialize Mailbox 1 */
+
+	/* TODO Initialize Mailbox 3 */
+	opregion->mailbox3.bclp = IGD_BACKLIGHT_BRIGHTNESS;
+	opregion->mailbox3.pfit = IGD_FIELD_VALID | IGD_PFIT_STRETCH;
+	opregion->mailbox3.pcft = 0; /* should be (IMON << 1) & 0x3e */
+	opregion->mailbox3.cblv = IGD_FIELD_VALID | IGD_INITIAL_BRIGHTNESS;
+	opregion->mailbox3.bclm[0] = IGD_WORD_FIELD_VALID + 0x0000;
+	opregion->mailbox3.bclm[1] = IGD_WORD_FIELD_VALID + 0x0a19;
+	opregion->mailbox3.bclm[2] = IGD_WORD_FIELD_VALID + 0x1433;
+	opregion->mailbox3.bclm[3] = IGD_WORD_FIELD_VALID + 0x1e4c;
+	opregion->mailbox3.bclm[4] = IGD_WORD_FIELD_VALID + 0x2866;
+	opregion->mailbox3.bclm[5] = IGD_WORD_FIELD_VALID + 0x327f;
+	opregion->mailbox3.bclm[6] = IGD_WORD_FIELD_VALID + 0x3c99;
+	opregion->mailbox3.bclm[7] = IGD_WORD_FIELD_VALID + 0x46b2;
+	opregion->mailbox3.bclm[8] = IGD_WORD_FIELD_VALID + 0x50cc;
+	opregion->mailbox3.bclm[9] = IGD_WORD_FIELD_VALID + 0x5ae5;
+	opregion->mailbox3.bclm[10] = IGD_WORD_FIELD_VALID + 0x64ff;
+
+	get_fsp_vbt(opregion);
+
+	/*
+	 * TODO This needs to happen in S3 resume, too.
+	 * Maybe it should move to the finalize handler
+	 */
+	igd = dev_find_slot(0, PCI_DEVFN(GFX_DEV, GFX_FUNC));
+
+	pci_write_config32(igd, ASLS, (u32)opregion);
+	reg16 = pci_read_config16(igd, SWSCI);
+	reg16 &= ~(1 << 0);
+	reg16 |= (1 << 15);
+	pci_write_config16(igd, SWSCI, reg16);
+
+	return 0;
+}
+#endif

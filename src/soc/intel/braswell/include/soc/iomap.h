@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _BAYTRAIL_IOMAP_H_
-#define _BAYTRAIL_IOMAP_H_
+#ifndef _SOC_IOMAP_H_
+#define _SOC_IOMAP_H_
 
 
 /*
@@ -38,11 +39,12 @@
 #define PMC_BASE_SIZE			0x400
 
 /* IO Memory */
-#define IO_BASE_ADDRESS			0xfed0c000
-#define  IO_BASE_OFFSET_GPSCORE		0x0000
-#define  IO_BASE_OFFSET_GPNCORE		0x1000
-#define  IO_BASE_OFFSET_GPSSUS		0x2000
+#define IO_BASE_ADDRESS			0xfed80000
 #define IO_BASE_SIZE			0x4000
+#define COMMUNITY_OFFSET_GPSOUTHWEST            0x00000
+#define COMMUNITY_OFFSET_GPNORTH                0x08000
+#define COMMUNITY_OFFSET_GPEAST                 0x10000
+#define COMMUNITY_OFFSET_GPSOUTHEAST            0x18000
 
 /* Intel Legacy Block */
 #define ILB_BASE_ADDRESS		0xfed08000
@@ -53,11 +55,11 @@
 #define SPI_BASE_SIZE			0x400
 
 /* MODPHY */
-#define MPHY_BASE_ADDRESS		0xfef00000
+#define MPHY_BASE_ADDRESS		0xfea00000
 #define MPHY_BASE_SIZE			0x100000
 
 /* Power Management Unit */
-#define PUNIT_BASE_ADDRESS		0xfed05000
+#define PUNIT_BASE_ADDRESS		0xfed06000
 #define PUNIT_BASE_SIZE			0x800
 
 /* Root Complex Base Address */
@@ -87,4 +89,4 @@
 uint32_t nc_read_top_of_low_memory(void);
 #endif
 
-#endif /* _BAYTRAIL_IOMAP_H_ */
+#endif /* _SOC_IOMAP_H_ */

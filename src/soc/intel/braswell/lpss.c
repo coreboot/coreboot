@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +49,7 @@ static void dev_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
 	global_nvs_t *gnvs;
 
 	/* Find ACPI NVS to update BARs */
-	gnvs = (global_nvs_t *)cbmem_find(CBMEM_ID_ACPI_GNVS);
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {
 		printk(BIOS_ERR, "Unable to locate Global NVS\n");
 		return;
@@ -70,26 +71,16 @@ static void dev_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
 	reg_script_run_on_dev(dev, ops);
 }
 
-static void dev_enable_snoop_and_pm(device_t dev, int iosf_reg)
-{
-	struct reg_script ops[] = {
-		REG_IOSF_RMW(IOSF_PORT_LPSS, iosf_reg,
-		             ~(LPSS_CTL_SNOOP | LPSS_CTL_NOSNOOP),
-		             LPSS_CTL_SNOOP | LPSS_CTL_PM_CAP_PRSNT),
-		REG_SCRIPT_END,
-	};
-
-	reg_script_run_on_dev(dev, ops);
-}
-
 static void dev_ctl_reg(device_t dev, int *iosf_reg, int *nvs_index)
 {
 	*iosf_reg = -1;
 	*nvs_index = -1;
 #define SET_IOSF_REG(name_) \
 	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC): \
-		*iosf_reg = LPSS_ ## name_ ## _CTL; \
-		*nvs_index = LPSS_NVS_ ## name_
+		do { \
+			*iosf_reg = LPSS_ ## name_ ## _CTL; \
+			*nvs_index = LPSS_NVS_ ## name_; \
+		} while (0)
 
 	switch (dev->path.pci.devfn) {
 	SET_IOSF_REG(SIO_DMA1);
@@ -135,13 +126,13 @@ static void i2c_disable_resets(device_t dev)
 	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC)
 
 	switch (dev->path.pci.devfn) {
-	CASE_I2C(I2C1):
-	CASE_I2C(I2C2):
-	CASE_I2C(I2C3):
-	CASE_I2C(I2C4):
-	CASE_I2C(I2C5):
-	CASE_I2C(I2C6):
-	CASE_I2C(I2C7):
+	CASE_I2C(I2C1) :
+	CASE_I2C(I2C2) :
+	CASE_I2C(I2C3) :
+	CASE_I2C(I2C4) :
+	CASE_I2C(I2C5) :
+	CASE_I2C(I2C6) :
+	CASE_I2C(I2C7) :
 		printk(BIOS_DEBUG, "Releasing I2C device from reset.\n");
 		reg_script_run_on_dev(dev, ops);
 		break;
@@ -152,8 +143,14 @@ static void i2c_disable_resets(device_t dev)
 
 static void lpss_init(device_t dev)
 {
-	struct soc_intel_baytrail_config *config = dev->chip_info;
+	struct soc_intel_braswell_config *config = dev->chip_info;
 	int iosf_reg, nvs_index;
+
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s - %s\n",
+			get_pci_class_name(dev),
+			get_pci_subclass_name(dev));
 
 	dev_ctl_reg(dev, &iosf_reg, &nvs_index);
 
@@ -164,7 +161,7 @@ static void lpss_init(device_t dev)
 		       slot, func);
 		return;
 	}
-	dev_enable_snoop_and_pm(dev, iosf_reg);
+
 	i2c_disable_resets(dev);
 
 	if (config->lpss_acpi_mode)

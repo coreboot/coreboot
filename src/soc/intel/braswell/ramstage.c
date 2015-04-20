@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@
 
 #include <arch/cpu.h>
 #include <arch/acpi.h>
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
@@ -27,23 +29,23 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include <fsp_util.h>
+#include <romstage_handoff.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/msr.h>
 #include <soc/nvs.h>
 #include <soc/pattrs.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
-#include <soc/iosf.h>
-
-/* Global PATTRS */
-DEFINE_PATTRS;
+#include <soc/intel/common/ramstage.h>
+#include <boardid.h>
+#include <stdlib.h>
 
 #define SHOW_PATTRS 1
+
+struct pattrs __global_pattrs;
 
 static void detect_num_cpus(struct pattrs *attrs)
 {
@@ -54,8 +56,10 @@ static void detect_num_cpus(struct pattrs *attrs)
 
 		leaf_b = cpuid_ext(0xb, ecx);
 
-		/* Bay Trail doesn't have hyperthreading so just determine the
-		 * number of cores by from level type (ecx[15:8] == * 2). */
+		/*
+		 * The SOC doesn't have hyperthreading so just determine the
+		 * number of cores by from level type (ecx[15:8] == * 2).
+		 */
 		if ((leaf_b.ecx & 0xff00) == 0x0200) {
 			attrs->num_cpus = leaf_b.ebx & 0xffff;
 			break;
@@ -73,7 +77,7 @@ static inline void fill_in_msr(msr_t *msr, int idx)
 	}
 }
 
-static const char *stepping_str[] = {
+static const char * const stepping_str[] = {
 	"A0", "A1", "B0", "B1", "B2", "B3", "C0"
 };
 
@@ -103,7 +107,7 @@ static void fill_in_pattrs(void)
 	detect_num_cpus(attrs);
 
 	if (SHOW_PATTRS) {
-		printk(BIOS_DEBUG, "BYT: cpuid %08x cpus %d rid %02x step %s\n",
+		printk(BIOS_DEBUG, "Cpuid %08x cpus %d rid %02x step %s\n",
 		       attrs->cpuid, attrs->num_cpus, attrs->revid,
 		       (attrs->stepping >= ARRAY_SIZE(stepping_str)) ? "??" :
 		       stepping_str[attrs->stepping]);
@@ -113,22 +117,29 @@ static void fill_in_pattrs(void)
 	fill_in_msr(&attrs->platform_info, MSR_PLATFORM_INFO);
 
 	/* Set IA core speed ratio and voltages */
-	msr = rdmsr(MSR_IACORE_RATIOS);
+	fill_in_msr(&msr, MSR_IACORE_RATIOS);
 	attrs->iacore_ratios[IACORE_MIN] = msr.lo & 0x7f;
 	attrs->iacore_ratios[IACORE_LFM] = (msr.lo >> 8) & 0x7f;
 	attrs->iacore_ratios[IACORE_MAX] = (msr.lo >> 16) & 0x7f;
-	msr = rdmsr(MSR_IACORE_TURBO_RATIOS);
+	fill_in_msr(&msr, MSR_IACORE_TURBO_RATIOS);
 	attrs->iacore_ratios[IACORE_TURBO] = (msr.lo & 0xff); /* 1 core max */
 
-	msr = rdmsr(MSR_IACORE_VIDS);
+	fill_in_msr(&msr, MSR_IACORE_VIDS);
 	attrs->iacore_vids[IACORE_MIN] = msr.lo & 0x7f;
 	attrs->iacore_vids[IACORE_LFM] = (msr.lo >> 8) & 0x7f;
 	attrs->iacore_vids[IACORE_MAX] = (msr.lo >> 16) & 0x7f;
-	msr = rdmsr(MSR_IACORE_TURBO_VIDS);
+	fill_in_msr(&msr, MSR_IACORE_TURBO_VIDS);
 	attrs->iacore_vids[IACORE_TURBO] = (msr.lo & 0xff); /* 1 core max */
 
 	/* Set bus clock speed */
-	attrs->bclk_khz = bus_freq_khz();
+	attrs->bclk_khz = BUS_FREQ_KHZ;
+}
+
+static inline void set_acpi_sleep_type(int val)
+{
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+	acpi_slp_type = val;
+#endif
 }
 
 /* Save bit index for first enabled event in PM1_STS for \_SB._SWS */
@@ -160,34 +171,40 @@ static void s3_save_acpi_wake_source(global_nvs_t *gnvs)
 static void s3_resume_prepare(void)
 {
 	global_nvs_t *gnvs;
+	struct romstage_handoff *romstage_handoff;
 
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
-	if (gnvs == NULL)
+
+	romstage_handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+	if (romstage_handoff == NULL || romstage_handoff->s3_resume == 0) {
+		if (gnvs != NULL)
+			memset(gnvs, 0, sizeof(global_nvs_t));
+		set_acpi_sleep_type(0);
 		return;
+	}
 
-	if (!acpi_is_wakeup_s3())
-		memset(gnvs, 0, sizeof(global_nvs_t));
-	else
-		s3_save_acpi_wake_source(gnvs);
+	set_acpi_sleep_type(3);
+
+	s3_save_acpi_wake_source(gnvs);
 }
 
-static void baytrail_enable_2x_refresh_rate(void)
+static void set_board_id(void)
 {
-	u32 reg;
-	reg = iosf_dunit_read(0x8);
-	reg = reg & ~0x7000;
-	reg = reg | 0x2000;
-	iosf_dunit_write(0x8, reg);
+	global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		printk(BIOS_ERR, "Unable to locate Global NVS\n");
+		return;
+	}
+	gnvs->bdid = board_id();
 }
 
-void baytrail_init_pre_device(struct soc_intel_baytrail_config *config)
+void soc_init_pre_device(struct soc_intel_braswell_config *config)
 {
 	struct soc_gpio_config *gpio_config;
 
 	fill_in_pattrs();
-
-	if (!config->disable_ddr_2x_refresh_rate)
-		baytrail_enable_2x_refresh_rate();
 
 	/* Allow for SSE instructions to be executed. */
 	write_cr4(read_cr4() | CR4_OSFXSR | CR4_OSXMMEXCPT);
@@ -195,12 +212,11 @@ void baytrail_init_pre_device(struct soc_intel_baytrail_config *config)
 	/* Indicate S3 resume to rest of ramstage. */
 	s3_resume_prepare();
 
-	/* Run reference code. */
-	baytrail_run_reference_code();
+	/* Perform silicon specific init. */
+	intel_silicon_init();
 
+	set_board_id();
 	/* Get GPIO initial states from mainboard */
 	gpio_config = mainboard_get_gpios();
 	setup_soc_gpios(gpio_config, config->enable_xdp_tap);
-
-	baytrail_init_scc();
 }

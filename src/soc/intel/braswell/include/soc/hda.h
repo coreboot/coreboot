@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,20 +18,28 @@
  * Foundation, Inc.
  */
 
-#ifndef _BAYTRAIL_RESET_H_
-#define _BAYTRAIL_RESET_H_
-#include <reset.h>
+#ifndef _SOC_HDA_H_
+#define _SOC_HDA_H_
 
-/* Bay Trail has the following types of resets:
- * - Soft reset (INIT# to cpu) - write 0x1 to I/O 0x92
- * - Soft reset (INIT# to cpu)- write 0x4 to I/0 0xcf9
- * - Cold reset (S0->S5->S0) - write 0xe to I/0 0xcf9
- * - Warm reset (PMC_PLTRST# assertion) - write 0x6 to I/O 0xcf9
- * - Global reset (S0->S5->S0 with TXE reset) - write 0x6 or 0xe to 0xcf9 but
- *   with ETR[20] set.
+/*
+ * PCI config registers.
  */
 
-void cold_reset(void);
-void warm_reset(void);
+#define HDA_DCKSTS		0x4d
+# define HDA_DCKSTS_DS		(1 << 7)
+# define HDA_DCKSTS_DM		(1 << 0)
 
-#endif /* _BAYTRAIL_RESET_H_ */
+#define HDA_DEVC		0x78
+# define HDA_DEVC_MRRS		0x7000
+# define HDA_DEVC_NSNPEN	(1 << 11)
+# define HDA_DEVC_AUXPEN	(1 << 10)
+# define HDA_DEVC_PEEN		(1 << 9)
+# define HDA_DEVC_ETEN		(1 << 8)
+# define HDA_DEVC_MAXPAY	0x00e0
+# define HDA_DEVC_ROEN		(1 << 4)
+# define HDA_DEVC_URREN		(1 << 3)
+# define HDA_DEVC_FEREN		(1 << 2)
+# define HDA_DEVC_NFEREN	(1 << 1)
+# define HDA_DEVC_CEREN		(1 << 0)
+
+#endif /* _SOC_HDA_H_ */

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _BAYTRAIL_SPI_H_
-#define _BAYTRAIL_SPI_H_
+#ifndef _SOC_SPI_H_
+#define _SOC_SPI_H_
 
 #include <stdint.h>
 
@@ -71,4 +72,4 @@ struct spi_config {
 /* Return 0 on success < 0 on failure. */
 int mainboard_get_spi_config(struct spi_config *cfg);
 
-#endif /* _BAYTRAIL_SPI_H_ */
+#endif /* _SOC_SPI_H_ */

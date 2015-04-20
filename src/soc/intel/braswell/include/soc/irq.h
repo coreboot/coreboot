@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _BAYTRAIL_IRQ_H_
-#define _BAYTRAIL_IRQ_H_
+#ifndef _SOC_IRQ_H_
+#define _SOC_IRQ_H_
 
 #define PIRQA_APIC_IRQ			16
 #define PIRQB_APIC_IRQ			17
@@ -28,6 +29,7 @@
 #define PIRQF_APIC_IRQ			21
 #define PIRQG_APIC_IRQ			22
 #define PIRQH_APIC_IRQ			23
+
 /* The below IRQs are for when devices are in ACPI mode. Active low. */
 #define LPE_DMA0_IRQ			24
 #define LPE_DMA1_IRQ			25
@@ -47,50 +49,101 @@
 #define LPSS_SPI_IRQ			41
 #define LPSS_DMA1_IRQ			42
 #define LPSS_DMA2_IRQ			43
-#define SCC_EMMC_IRQ			44
+#define SCC_EMMC_IRQ			45
 #define SCC_SDIO_IRQ			46
-#define SCC_SD_IRQ			47
-#define GPIO_NC_IRQ			48
-#define GPIO_SC_IRQ			49
-#define GPIO_SUS_IRQ			50
+#define SCC_SD_IRQ				47
+
+#define GPIO_N_IRQ				48
+#define GPIO_SW_IRQ				49
+#define GPIO_E_IRQ				50
+
 /* GPIO direct / dedicated IRQs. */
-#define GPIO_S0_DED_IRQ_0		51
-#define GPIO_S0_DED_IRQ_1		52
-#define GPIO_S0_DED_IRQ_2		53
-#define GPIO_S0_DED_IRQ_3		54
-#define GPIO_S0_DED_IRQ_4		55
-#define GPIO_S0_DED_IRQ_5		56
-#define GPIO_S0_DED_IRQ_6		57
-#define GPIO_S0_DED_IRQ_7		58
-#define GPIO_S0_DED_IRQ_8		59
-#define GPIO_S0_DED_IRQ_9		60
-#define GPIO_S0_DED_IRQ_10		61
-#define GPIO_S0_DED_IRQ_11		62
-#define GPIO_S0_DED_IRQ_12		63
-#define GPIO_S0_DED_IRQ_13		64
-#define GPIO_S0_DED_IRQ_14		65
-#define GPIO_S0_DED_IRQ_15		66
-#define GPIO_S5_DED_IRQ_0		67
-#define GPIO_S5_DED_IRQ_1		68
-#define GPIO_S5_DED_IRQ_2		69
-#define GPIO_S5_DED_IRQ_3		70
-#define GPIO_S5_DED_IRQ_4		71
-#define GPIO_S5_DED_IRQ_5		72
-#define GPIO_S5_DED_IRQ_6		73
-#define GPIO_S5_DED_IRQ_7		74
-#define GPIO_S5_DED_IRQ_8		75
-#define GPIO_S5_DED_IRQ_9		76
-#define GPIO_S5_DED_IRQ_10		77
-#define GPIO_S5_DED_IRQ_11		78
-#define GPIO_S5_DED_IRQ_12		79
-#define GPIO_S5_DED_IRQ_13		80
-#define GPIO_S5_DED_IRQ_14		81
-#define GPIO_S5_DED_IRQ_15		82
+
+/* NORTH COMMUNITY */
+#define GPIO_N_DED_IRQ_0		51
+#define GPIO_N_DED_IRQ_1		52
+#define GPIO_N_DED_IRQ_2		53
+#define GPIO_N_DED_IRQ_3		54
+#define GPIO_N_DED_IRQ_4		55
+#define GPIO_N_DED_IRQ_5		56
+#define GPIO_N_DED_IRQ_6		57
+#define GPIO_N_DED_IRQ_7		58
+
+/* SOUTH WEST COMMUNITY */
+#define GPIO_SW_DED_IRQ_0		59
+#define GPIO_SW_DED_IRQ_1		60
+#define GPIO_SW_DED_IRQ_2		61
+#define GPIO_SW_DED_IRQ_3		62
+#define GPIO_SW_DED_IRQ_4		63
+#define GPIO_SW_DED_IRQ_5		64
+#define GPIO_SW_DED_IRQ_6		65
+#define GPIO_SW_DED_IRQ_7		66
+
+/* EAST COMMUNITY */
+#define GPIO_E_DED_IRQ_0		67
+#define GPIO_E_DED_IRQ_1		68
+#define GPIO_E_DED_IRQ_2		69
+#define GPIO_E_DED_IRQ_3		70
+#define GPIO_E_DED_IRQ_4		71
+#define GPIO_E_DED_IRQ_5		72
+#define GPIO_E_DED_IRQ_6		73
+#define GPIO_E_DED_IRQ_7		74
+#define GPIO_E_DED_IRQ_8		75
+#define GPIO_E_DED_IRQ_9		76
+#define GPIO_E_DED_IRQ_10		77
+#define GPIO_E_DED_IRQ_11		78
+#define GPIO_E_DED_IRQ_12		79
+#define GPIO_E_DED_IRQ_13		80
+#define GPIO_E_DED_IRQ_14		81
+#define GPIO_E_DED_IRQ_15		82
+
+/* More IRQ */
+#define LPSS_SPI2_IRQ			89
+#define LPSS_SPI3_IRQ			90
+#define GPIO_SE_IRQ			91
+
+/* GPIO direct / dedicated IRQs. */
+/* SOUTH EAST COMMUNITY */
+#define GPIO_SE_DED_IRQ_0		92
+#define GPIO_SE_DED_IRQ_1		93
+#define GPIO_SE_DED_IRQ_2		94
+#define GPIO_SE_DED_IRQ_3		95
+#define GPIO_SE_DED_IRQ_4		96
+#define GPIO_SE_DED_IRQ_5		97
+#define GPIO_SE_DED_IRQ_6		98
+#define GPIO_SE_DED_IRQ_7		99
+#define GPIO_SE_DED_IRQ_8		100
+#define GPIO_SE_DED_IRQ_9		101
+#define GPIO_SE_DED_IRQ_10		102
+#define GPIO_SE_DED_IRQ_11		103
+#define GPIO_SE_DED_IRQ_12		104
+#define GPIO_SE_DED_IRQ_13		105
+#define GPIO_SE_DED_IRQ_14		106
+#define GPIO_SE_DED_IRQ_15		107
+
+/* OTHER IRQs */
+#define GPIO_VIRTUAL			108
+#define LPE_DMA2			109
+#define LPE_SSP3			110
+#define LPE_SSP4			111
+#define LPE_SSP5			112
+
 /* DIRQs - Two levels of expansion to evaluate to numeric constants for ASL. */
-#define _GPIO_S0_DED_IRQ(slot)		GPIO_S0_DED_IRQ_##slot
-#define _GPIO_S5_DED_IRQ(slot)		GPIO_S5_DED_IRQ_##slot
-#define GPIO_S0_DED_IRQ(slot)		_GPIO_S0_DED_IRQ(slot)
-#define GPIO_S5_DED_IRQ(slot)		_GPIO_S5_DED_IRQ(slot)
+#define _GPIO_N_DED_IRQ(slot)		GPIO_N_DED_IRQ_##slot
+#define _GPIO_SW_DED_IRQ(slot)		GPIO_SW_DED_IRQ_##slot
+#define _GPIO_E_DED_IRQ(slot)		GPIO_E_DED_IRQ_##slot
+#define _GPIO_SE_DED_IRQ(slot)		GPIO_SE_DED_IRQ_##slot
+#define GPIO_N_DED_IRQ(slot)		_GPIO_N_DED_IRQ(slot)
+#define GPIO_SW_DED_IRQ(slot)		_GPIO_SW_DED_IRQ(slot)
+#define GPIO_E_DED_IRQ(slot)		_GPIO_E_DED_IRQ(slot)
+#define GPIO_SE_DED_IRQ(slot)		_GPIO_SE_DED_IRQ(slot)
+
+/* TODO NEED TO UPDATE THESE IN onboard.h */
+#define _GPIO_S0_DED_IRQ(slot)		GPIO_N_DED_IRQ_##slot
+#define _GPIO_S5_DED_IRQ(slot)		GPIO_SE_DED_IRQ_##slot
+#define GPIO_S0_DED_IRQ(slot)		_GPIO_N_DED_IRQ(slot)
+#define GPIO_S5_DED_IRQ(slot)		_GPIO_E_DED_IRQ(slot)
+
 
 /* PIC IRQ settings. */
 #define PIRQ_PIC_IRQDISABLE		0x0
@@ -127,9 +180,11 @@
 # define SCIS_IRQ22				0x06
 # define SCIS_IRQ23				0x07
 
-/* In each mainboard directory there should exist a header file irqroute.h that
+/*
+ * In each mainbaord directory there should exist a header file irqroute.h that
  * defines the PCI_DEV_PIRQ_ROUTES and PIRQ_PIC_ROUTES macros which
- * consist of PCI_DEV_PIRQ_ROUTE and PIRQ_PIC entries. */
+ * consist of PCI_DEV_PIRQ_ROUTE and PIRQ_PIC entries.
+ */
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 #include <stdint.h>
@@ -137,28 +192,29 @@
 #define NUM_IR_DEVS 32
 #define NUM_PIRQS   8
 
-struct baytrail_irq_route {
+struct soc_irq_route {
 	/* Per device configuration. */
 	uint16_t pcidev[NUM_IR_DEVS];
 	/* Route path for each internal PIRQx in PIC mode. */
 	uint8_t  pic[NUM_PIRQS];
 };
 
-extern const struct baytrail_irq_route global_baytrail_irq_route;
+extern const struct soc_irq_route global_soc_irq_route;
 
 #define DEFINE_IRQ_ROUTES \
-	const struct baytrail_irq_route global_baytrail_irq_route = { \
+	const struct soc_irq_route global_soc_irq_route = { \
 		.pcidev = { PCI_DEV_PIRQ_ROUTES, }, \
 		.pic = { PIRQ_PIC_ROUTES, }, \
 	}
 
+/* The following macros are used for ACPI by the ASL compiler */
 #define PCI_DEV_PIRQ_ROUTE(dev_, a_, b_, c_, d_) \
-	[dev_] = ((PIRQ ## d_) << 12) | ((PIRQ ## c_) << 8) | \
-	         ((PIRQ ## b_) <<  4) | ((PIRQ ## a_) << 0)
+	[dev_] = (((PIRQ ## d_) << 12) | ((PIRQ ## c_) << 8) | \
+		   ((PIRQ ## b_) <<  4) | ((PIRQ ## a_) << 0))
 
 #define PIRQ_PIC(pirq_, pic_irq_) \
 	[PIRQ ## pirq_] = PIRQ_PIC_IRQ ## pic_irq_
 
 #endif /* !defined(__ASSEMBLER__) && !defined(__ACPI__) */
 
-#endif /* _BAYTRAIL_IRQ_H_ */
+#endif /* _SOC_IRQ_H_ */

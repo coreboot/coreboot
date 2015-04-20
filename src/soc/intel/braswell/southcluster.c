@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,37 +19,40 @@
  * Foundation, Inc.
  */
 
-#include <stdint.h>
 #include <arch/io.h>
 #include <arch/acpi.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include "chip.h"
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
-#include <drivers/uart/uart8250reg.h>
-
+#include <romstage_handoff.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/lpc.h>
-#include <soc/nvs.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/spi.h>
-#include "chip.h"
+#include <spi-generic.h>
+#include <stdint.h>
 
 static inline void
 add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
 {
+	printk(BIOS_SPEW, "%s/%s ( %s, 0x%016lx, 0x%016lx )\n",
+			__FILE__, __func__, dev_name(dev), addr, size);
 	mmio_resource(dev, i, addr >> 10, size >> 10);
 }
 
 static void sc_add_mmio_resources(device_t dev)
 {
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 	add_mmio_resource(dev, 0xfeb, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE);
 	add_mmio_resource(dev, PBASE, PMC_BASE_ADDRESS, PMC_BASE_SIZE);
 	add_mmio_resource(dev, IOBASE, IO_BASE_ADDRESS, IO_BASE_SIZE);
@@ -86,6 +90,9 @@ static void sc_add_io_resource(device_t dev, int base, int size, int index)
 {
 	struct resource *res;
 
+	printk(BIOS_SPEW, "%s/%s ( %s, 0x%08x, 0x%08x, 0x%08x )\n",
+			__FILE__, __func__, dev_name(dev), base, size, index);
+
 	if (io_range_in_default(base, size))
 		return;
 
@@ -98,6 +105,9 @@ static void sc_add_io_resource(device_t dev, int base, int size, int index)
 static void sc_add_io_resources(device_t dev)
 {
 	struct resource *res;
+
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 
 	/* Add the default claimed IO range for the LPC device. */
 	res = new_resource(dev, 0);
@@ -114,6 +124,9 @@ static void sc_add_io_resources(device_t dev)
 
 static void sc_read_resources(device_t dev)
 {
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
+
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
@@ -130,75 +143,43 @@ static void sc_rtc_init(void)
 	int rtc_fail;
 	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
 
-	if (ps != NULL) {
+	printk(BIOS_SPEW, "%s/%s\n",
+			__FILE__, __func__);
+	if (ps != NULL)
 		gen_pmcon1 = ps->gen_pmcon1;
-	} else {
-		gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
-	}
+	else
+		gen_pmcon1 = read32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1));
 
 	rtc_fail = !!(gen_pmcon1 & RPS);
 
-	if (rtc_fail) {
+	if (rtc_fail)
 		printk(BIOS_DEBUG, "RTC failure.\n");
-	}
 
 	cmos_init(rtc_fail);
-}
-
-/*
- * The UART hardware loses power while in suspend. Because of this the kernel
- * can hang because it doesn't re-initialize serial ports it is using for
- * consoles at resume time. The following function configures the UART
- * if the hardware is enabled though it may not be the correct baud rate
- * or configuration.  This is definitely a hack, but it helps the kernel
- * along.
- */
-static void com1_configure_resume(device_t dev)
-{
-	const uint16_t port = 0x3f8;
-
-	/* Is the UART I/O port enabled? */
-	if (!(pci_read_config32(dev, UART_CONT) & 1))
-		return;
-
-	/* Disable interrupts */
-	outb(0x0, port + UART8250_IER);
-
-	/* Enable FIFOs */
-	outb(UART8250_FCR_FIFO_EN, port + UART8250_FCR);
-
-	/* assert DTR and RTS so the other end is happy */
-	outb(UART8250_MCR_DTR | UART8250_MCR_RTS, port + UART8250_MCR);
-
-	/* DLAB on */
-	outb(UART8250_LCR_DLAB | 3, port + UART8250_LCR);
-
-	/* Set Baud Rate Divisor. 1 ==> 115200 Baud */
-	outb(1, port + UART8250_DLL);
-	outb(0, port + UART8250_DLM);
-
-	/* Set to 3 for 8N1 */
-	outb(3, port + UART8250_LCR);
 }
 
 static void sc_init(device_t dev)
 {
 	int i;
-	u8 *pr_base = (u8 *)(ILB_BASE_ADDRESS + 0x08);
-	u16 *ir_base = (u16 *)ILB_BASE_ADDRESS + 0x20;
-	u32 *gen_pmcon1 = (u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1);
-	u32 *actl = (u32 *)(ILB_BASE_ADDRESS + ACTL);
-	const struct baytrail_irq_route *ir = &global_baytrail_irq_route;
-	struct soc_intel_baytrail_config *config = dev->chip_info;
+	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
+	const unsigned long ir_base = ILB_BASE_ADDRESS + 0x20;
+	void *gen_pmcon1 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON1);
+	void *actl = (void *)(ILB_BASE_ADDRESS + ACTL);
+	const struct soc_irq_route *ir = &global_soc_irq_route;
+	struct soc_intel_braswell_config *config = dev->chip_info;
+
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 
 	/* Set up the PIRQ PIC routing based on static config. */
-	for (i = 0; i < NUM_PIRQS; i++) {
-		write8(pr_base + i, ir->pic[i]);
-	}
+	for (i = 0; i < NUM_PIRQS; i++)
+		write8((void *)(pr_base + i*sizeof(ir->pic[i])),
+			ir->pic[i]);
+
 	/* Set up the per device PIRQ routing base on static config. */
-	for (i = 0; i < NUM_IR_DEVS; i++) {
-		write16(ir_base + i, ir->pcidev[i]);
-	}
+	for (i = 0; i < NUM_IR_DEVS; i++)
+		write16((void *)(ir_base + i*sizeof(ir->pcidev[i])),
+			ir->pcidev[i]);
 
 	/* Route SCI to IRQ9 */
 	write32(actl, (read32(actl) & ~SCIS_MASK) | SCIS_IRQ9);
@@ -214,108 +195,86 @@ static void sc_init(device_t dev)
 			read32(gen_pmcon1) & ~DIS_SLP_X_STRCH_SUS_UP);
 	}
 
-	if (acpi_is_wakeup_s3())
-		com1_configure_resume(dev);
 }
 
 /*
  * Common code for the south cluster devices.
  */
 
-/* Set bit in function disable register to hide this device. */
+/* Set bit in function disble register to hide this device. */
 static void sc_disable_devfn(device_t dev)
 {
-	u32 *func_dis = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS);
-	u32 *func_dis2 = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS2);
+	void *func_dis = (void *)(PMC_BASE_ADDRESS + FUNC_DIS);
+	void *func_dis2 = (void *)(PMC_BASE_ADDRESS + FUNC_DIS2);
 	uint32_t mask = 0;
 	uint32_t mask2 = 0;
 
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
+
+#define SET_DIS_MASK(name_) \
+	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC): \
+		mask |= name_ ## _DIS
+#define SET_DIS_MASK2(name_) \
+	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC): \
+		mask2 |= name_ ## _DIS
+
 	switch (dev->path.pci.devfn) {
-	case PCI_DEVFN(SDIO_DEV, SDIO_FUNC):
-		mask |= SDIO_DIS;
+	SET_DIS_MASK(SDIO);
 		break;
-	case PCI_DEVFN(SD_DEV, SD_FUNC):
-		mask |= SD_DIS;
+	SET_DIS_MASK(SD);
 		break;
-	case PCI_DEVFN(SATA_DEV, SATA_FUNC):
-		mask |= SATA_DIS;
+	SET_DIS_MASK(SATA);
 		break;
-	case PCI_DEVFN(XHCI_DEV, XHCI_FUNC):
-		mask |= XHCI_DIS;
+	SET_DIS_MASK(XHCI);
 		/* Disable super speed PHY when XHCI is not available. */
 		mask2 |= USH_SS_PHY_DIS;
 		break;
-	case PCI_DEVFN(LPE_DEV, LPE_FUNC):
-		mask |= LPE_DIS;
+	SET_DIS_MASK(LPE);
 		break;
-	case PCI_DEVFN(MMC_DEV, MMC_FUNC):
-		mask |= MMC_DIS;
+	SET_DIS_MASK(MMC);
 		break;
-	case PCI_DEVFN(SIO_DMA1_DEV, SIO_DMA1_FUNC):
-		mask |= SIO_DMA1_DIS;
+	SET_DIS_MASK(SIO_DMA1);
 		break;
-	case PCI_DEVFN(I2C1_DEV, I2C1_FUNC):
-		mask |= I2C1_DIS;
+	SET_DIS_MASK(I2C1);
 		break;
-	case PCI_DEVFN(I2C2_DEV, I2C2_FUNC):
-		mask |= I2C1_DIS;
+	SET_DIS_MASK(I2C2);
 		break;
-	case PCI_DEVFN(I2C3_DEV, I2C3_FUNC):
-		mask |= I2C3_DIS;
+	SET_DIS_MASK(I2C3);
 		break;
-	case PCI_DEVFN(I2C4_DEV, I2C4_FUNC):
-		mask |= I2C4_DIS;
+	SET_DIS_MASK(I2C4);
 		break;
-	case PCI_DEVFN(I2C5_DEV, I2C5_FUNC):
-		mask |= I2C5_DIS;
+	SET_DIS_MASK(I2C5);
 		break;
-	case PCI_DEVFN(I2C6_DEV, I2C6_FUNC):
-		mask |= I2C6_DIS;
+	SET_DIS_MASK(I2C6);
 		break;
-	case PCI_DEVFN(I2C7_DEV, I2C7_FUNC):
-		mask |= I2C7_DIS;
+	SET_DIS_MASK(I2C7);
 		break;
-	case PCI_DEVFN(TXE_DEV, TXE_FUNC):
-		mask |= TXE_DIS;
+	SET_DIS_MASK(TXE);
 		break;
-	case PCI_DEVFN(HDA_DEV, HDA_FUNC):
-		mask |= HDA_DIS;
+	SET_DIS_MASK(HDA);
 		break;
-	case PCI_DEVFN(PCIE_PORT1_DEV, PCIE_PORT1_FUNC):
-		mask |= PCIE_PORT1_DIS;
+	SET_DIS_MASK(PCIE_PORT1);
 		break;
-	case PCI_DEVFN(PCIE_PORT2_DEV, PCIE_PORT2_FUNC):
-		mask |= PCIE_PORT2_DIS;
+	SET_DIS_MASK(PCIE_PORT2);
 		break;
-	case PCI_DEVFN(PCIE_PORT3_DEV, PCIE_PORT3_FUNC):
-		mask |= PCIE_PORT3_DIS;
+	SET_DIS_MASK(PCIE_PORT3);
 		break;
-	case PCI_DEVFN(PCIE_PORT4_DEV, PCIE_PORT4_FUNC):
-		mask |= PCIE_PORT4_DIS;
+	SET_DIS_MASK(PCIE_PORT4);
 		break;
-	case PCI_DEVFN(EHCI_DEV, EHCI_FUNC):
-		mask |= EHCI_DIS;
+	SET_DIS_MASK(SIO_DMA2);
 		break;
-	case PCI_DEVFN(SIO_DMA2_DEV, SIO_DMA2_FUNC):
-		mask |= SIO_DMA2_DIS;
+	SET_DIS_MASK(PWM1);
 		break;
-	case PCI_DEVFN(PWM1_DEV, PWM1_FUNC):
-		mask |= PWM1_DIS;
+	SET_DIS_MASK(PWM2);
 		break;
-	case PCI_DEVFN(PWM2_DEV, PWM2_FUNC):
-		mask |= PWM2_DIS;
+	SET_DIS_MASK(HSUART1);
 		break;
-	case PCI_DEVFN(HSUART1_DEV, HSUART1_FUNC):
-		mask |= HSUART1_DIS;
+	SET_DIS_MASK(HSUART2);
 		break;
-	case PCI_DEVFN(HSUART2_DEV, HSUART2_FUNC):
-		mask |= HSUART2_DIS;
+	SET_DIS_MASK(SPI);
 		break;
-	case PCI_DEVFN(SPI_DEV, SPI_FUNC):
-		mask |= SPI_DIS;
-		break;
-	case PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC):
-		mask2 |= SMBUS_DIS;
+	SET_DIS_MASK2(SMBUS);
 		break;
 	}
 
@@ -335,24 +294,34 @@ static void sc_disable_devfn(device_t dev)
 static inline void set_d3hot_bits(device_t dev, int offset)
 {
 	uint32_t reg8;
+
+	printk(BIOS_SPEW, "%s/%s ( %s, 0x%08x )\n",
+			__FILE__, __func__, dev_name(dev), offset);
 	printk(BIOS_DEBUG, "Power management CAP offset 0x%x.\n", offset);
 	reg8 = pci_read_config8(dev, offset + 4);
 	reg8 |= 0x3;
 	pci_write_config8(dev, offset + 4, reg8);
 }
 
-/* Parts of the audio subsystem are powered by the HDA device. Therefore, one
+/*
+ * Parts of the audio subsystem are powered by the HDA device. Therefore, one
  * cannot put HDA into D3Hot. Instead perform this workaround to make some of
- * the audio paths work for LPE audio. */
+ * the audio paths work for LPE audio.
+ */
 static void hda_work_around(device_t dev)
 {
-	u32 *gctl = (u32 *)(TEMP_BASE_ADDRESS + 0x8);
+	void *gctl = (void *)(TEMP_BASE_ADDRESS + 0x8);
+
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 
 	/* Need to set magic register 0x43 to 0xd7 in config space. */
 	pci_write_config8(dev, 0x43, 0xd7);
 
-	/* Need to set bit 0 of GCTL to take the device out of reset. However,
-	 * that requires setting up the 64-bit BAR. */
+	/*
+	 * Need to set bit 0 of GCTL to take the device out of reset. However,
+	 * that requires setting up the 64-bit BAR.
+	 */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, TEMP_BASE_ADDRESS);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
@@ -365,8 +334,13 @@ static int place_device_in_d3hot(device_t dev)
 {
 	unsigned offset;
 
-	/* Parts of the HDA block are used for LPE audio as well.
-	 * Therefore assume the HDA will never be put into D3Hot. */
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
+
+	/*
+	 * Parts of the HDA block are used for LPE audio as well.
+	 * Therefore assume the HDA will never be put into D3Hot.
+	 */
 	if (dev->path.pci.devfn == PCI_DEVFN(HDA_DEV, HDA_FUNC)) {
 		hda_work_around(dev);
 		return 0;
@@ -379,91 +353,50 @@ static int place_device_in_d3hot(device_t dev)
 		return 0;
 	}
 
-	/* For some reason some of the devices don't have the capability
-	 * pointer set correctly. Work around this by hard coding the offset. */
+	/*
+	 * For some reason some of the devices don't have the capability
+	 * pointer set correctly. Work around this by hard coding the offset.
+	 */
+#define DEV_CASE(name_) \
+	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC)
+
 	switch (dev->path.pci.devfn) {
-	case PCI_DEVFN(SDIO_DEV, SDIO_FUNC):
+	DEV_CASE(SDIO) :
+	DEV_CASE(SD) :
+	DEV_CASE(MMC) :
+	DEV_CASE(LPE) :
+	DEV_CASE(SIO_DMA1) :
+	DEV_CASE(I2C1) :
+	DEV_CASE(I2C2) :
+	DEV_CASE(I2C3) :
+	DEV_CASE(I2C4) :
+	DEV_CASE(I2C5) :
+	DEV_CASE(I2C6) :
+	DEV_CASE(I2C7) :
+	DEV_CASE(SIO_DMA2) :
+	DEV_CASE(PWM1) :
+	DEV_CASE(PWM2) :
+	DEV_CASE(HSUART1) :
+	DEV_CASE(HSUART2) :
+	DEV_CASE(SPI) :
 		offset = 0x80;
 		break;
-	case PCI_DEVFN(SD_DEV, SD_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(MMC_DEV, MMC_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(LPE_DEV, LPE_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(SIO_DMA1_DEV, SIO_DMA1_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(I2C1_DEV, I2C1_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(I2C2_DEV, I2C2_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(I2C3_DEV, I2C3_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(I2C4_DEV, I2C4_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(I2C5_DEV, I2C5_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(I2C6_DEV, I2C6_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(I2C7_DEV, I2C7_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(SIO_DMA2_DEV, SIO_DMA2_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(PWM1_DEV, PWM1_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(PWM2_DEV, PWM2_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(HSUART1_DEV, HSUART1_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(HSUART2_DEV, HSUART2_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(SPI_DEV, SPI_FUNC):
-		offset = 0x80;
-		break;
-	case PCI_DEVFN(SATA_DEV, SATA_FUNC):
+	DEV_CASE(SATA) :
+	DEV_CASE(XHCI) :
 		offset = 0x70;
 		break;
-	case PCI_DEVFN(XHCI_DEV, XHCI_FUNC):
-		offset = 0x70;
-		break;
-	case PCI_DEVFN(EHCI_DEV, EHCI_FUNC):
-		offset = 0x70;
-		break;
-	case PCI_DEVFN(HDA_DEV, HDA_FUNC):
+	DEV_CASE(HDA) :
+	DEV_CASE(SMBUS) :
 		offset = 0x50;
 		break;
-	case PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC):
-		offset = 0x50;
-		break;
-	case PCI_DEVFN(TXE_DEV, TXE_FUNC):
+	DEV_CASE(TXE) :
 		/* TXE cannot be placed in D3Hot. */
 		return 0;
-	case PCI_DEVFN(PCIE_PORT1_DEV, PCIE_PORT1_FUNC):
-		offset = 0xa0;
 		break;
-	case PCI_DEVFN(PCIE_PORT2_DEV, PCIE_PORT2_FUNC):
-		offset = 0xa0;
-		break;
-	case PCI_DEVFN(PCIE_PORT3_DEV, PCIE_PORT3_FUNC):
-		offset = 0xa0;
-		break;
-	case PCI_DEVFN(PCIE_PORT4_DEV, PCIE_PORT4_FUNC):
+	DEV_CASE(PCIE_PORT1) :
+	DEV_CASE(PCIE_PORT2) :
+	DEV_CASE(PCIE_PORT3) :
+	DEV_CASE(PCIE_PORT4) :
 		offset = 0xa0;
 		break;
 	}
@@ -481,6 +414,8 @@ void southcluster_enable_dev(device_t dev)
 {
 	uint32_t reg32;
 
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 	if (!dev->enabled) {
 		int slot = PCI_SLOT(dev->path.pci.devfn);
 		int func = PCI_FUNC(dev->path.pci.devfn);
@@ -516,7 +451,7 @@ static struct device_operations device_ops = {
 	.enable_resources	= NULL,
 	.init			= sc_init,
 	.enable			= southcluster_enable_dev,
-	.scan_bus		= scan_static_bus,
+	.scan_bus		= scan_lpc_bus,
 	.ops_pci		= &soc_pci_ops,
 };
 
@@ -528,17 +463,22 @@ static const struct pci_driver southcluster __pci_driver = {
 
 int __attribute__((weak)) mainboard_get_spi_config(struct spi_config *cfg)
 {
+	printk(BIOS_SPEW, "%s/%s ( 0x%p )\n",
+			__FILE__, __func__, (void *)cfg);
 	return -1;
 }
 
 static void finalize_chipset(void *unused)
 {
-	u32 *bcr = (u32 *)(SPI_BASE_ADDRESS + BCR);
-	u32 *gcs = (u32 *)(RCBA_BASE_ADDRESS + GCS);
-	u32 *gen_pmcon2 = (u32 *)(PMC_BASE_ADDRESS + GEN_PMCON2);
-	u32 *etr = (u32 *)(PMC_BASE_ADDRESS + ETR);
-	u8 *spi = (u8 *)SPI_BASE_ADDRESS;
+	void *bcr = (void *)(SPI_BASE_ADDRESS + BCR);
+	void *gcs = (void *)(RCBA_BASE_ADDRESS + GCS);
+	void *gen_pmcon2 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON2);
+	void *etr = (void *)(PMC_BASE_ADDRESS + ETR);
+	uint8_t *spi = (uint8_t *)SPI_BASE_ADDRESS;
 	struct spi_config cfg;
+
+	printk(BIOS_SPEW, "%s/%s ( 0x%p )\n",
+			__FILE__, __func__, unused);
 
 	/* Set the lock enable on the BIOS control register. */
 	write32(bcr, read32(bcr) | BCR_LE);
@@ -563,6 +503,7 @@ static void finalize_chipset(void *unused)
 		write32(spi + UVSCC, cfg.uvscc);
 		write32(spi + LVSCC, cfg.lvscc | VCL);
 	}
+	spi_init();
 
 	printk(BIOS_DEBUG, "Finalizing SMM.\n");
 	outb(APM_CNT_FINALIZE, APM_CNT);

@@ -21,26 +21,26 @@
 #include <soc/iomap.h>
 #include <soc/irq.h>
 
-/* SouthCluster GPIO */
-Device (GPSC)
+/* GPIO SouthWest Community */
+Device (GPSW)
 {
-	Name (_HID, "INT33FC")
-	Name (_CID, "INT33FC")
+	Name (_HID, "INT33FF")
+	Name (_CID, "INT33FF")
 	Name (_UID, 1)
 
 	Name (RBUF, ResourceTemplate()
 	{
-		Memory32Fixed (ReadWrite, 0, 0x1000, RMEM)
+		Memory32Fixed (ReadWrite, 0, 0x8000, RMEM)
 		Interrupt (ResourceConsumer, Level, ActiveLow, Shared,,,)
 		{
-			GPIO_SC_IRQ
+			GPIO_SW_IRQ
 		}
 	})
 
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-		Add (IO_BASE_ADDRESS, IO_BASE_OFFSET_GPSCORE, RBAS)
+		Add (IO_BASE_ADDRESS, COMMUNITY_OFFSET_GPSOUTHWEST, RBAS)
 		Return (^RBUF)
 	}
 
@@ -50,26 +50,26 @@ Device (GPSC)
 	}
 }
 
-/* NorthCluster GPIO */
+/* GPIO North Community */
 Device (GPNC)
 {
-	Name (_HID, "INT33FC")
-	Name (_CID, "INT33FC")
+	Name (_HID, "INT33FF")
+	Name (_CID, "INT33FF")
 	Name (_UID, 2)
 
 	Name (RBUF, ResourceTemplate()
 	{
-		Memory32Fixed (ReadWrite, 0, 0x1000, RMEM)
+		Memory32Fixed (ReadWrite, 0, 0x8000, RMEM)
 		Interrupt (ResourceConsumer, Level, ActiveLow, Shared,,,)
 		{
-			GPIO_NC_IRQ
+			GPIO_N_IRQ
 		}
 	})
 
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-		Add (IO_BASE_ADDRESS, IO_BASE_OFFSET_GPNCORE, RBAS)
+		Add (IO_BASE_ADDRESS, COMMUNITY_OFFSET_GPNORTH, RBAS)
 		Return (^RBUF)
 	}
 
@@ -79,26 +79,55 @@ Device (GPNC)
 	}
 }
 
-/* SUS GPIO */
-Device (GPSS)
+/* GPIO East Community */
+Device (GPEC)
 {
-	Name (_HID, "INT33FC")
-	Name (_CID, "INT33FC")
+	Name (_HID, "INT33FF")
+	Name (_CID, "INT33FF")
 	Name (_UID, 3)
 
 	Name (RBUF, ResourceTemplate()
 	{
-		Memory32Fixed (ReadWrite, 0, 0x1000, RMEM)
+		Memory32Fixed (ReadWrite, 0, 0x8000, RMEM)
 		Interrupt (ResourceConsumer, Level, ActiveLow, Shared,,,)
 		{
-			GPIO_SUS_IRQ
+			GPIO_E_IRQ
 		}
 	})
 
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
-		Add (IO_BASE_ADDRESS, IO_BASE_OFFSET_GPSSUS, RBAS)
+		Add (IO_BASE_ADDRESS, COMMUNITY_OFFSET_GPEAST, RBAS)
+		Return (^RBUF)
+	}
+
+	Method (_STA)
+	{
+		Return (0xF)
+	}
+}
+
+/* GPIO SouthEast Community */
+Device (GPSE)
+{
+	Name (_HID, "INT33FF")
+	Name (_CID, "INT33FF")
+	Name (_UID, 4)
+
+	Name (RBUF, ResourceTemplate()
+	{
+		Memory32Fixed (ReadWrite, 0, 0x8000, RMEM)
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared,,,)
+		{
+			GPIO_SE_IRQ
+		}
+	})
+
+	Method (_CRS)
+	{
+		CreateDwordField (^RBUF, ^RMEM._BAS, RBAS)
+		Add (IO_BASE_ADDRESS, COMMUNITY_OFFSET_GPSOUTHEAST, RBAS)
 		Return (^RBUF)
 	}
 

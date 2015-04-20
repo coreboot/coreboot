@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,21 +18,20 @@
  * Foundation, Inc.
  */
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <elog.h>
-#include <halt.h>
-#include <spi-generic.h>
-
-#include <soc/iosf.h>
-#include <soc/pci_devs.h>
-#include <soc/pmc.h>
 #include <soc/nvs.h>
+#include <soc/pci_devs.h>
+#include <soc/pm.h>
+#include <spi-generic.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <soc/gpio.h>
 
 /* GNVS needs to be set by coreboot initiating a software SMI. */
 static global_nvs_t *gnvs;
@@ -42,7 +42,8 @@ int southbridge_io_trap_handler(int smif)
 	switch (smif) {
 	case 0x32:
 		printk(BIOS_DEBUG, "OS Init\n");
-		/* gnvs->smif:
+		/*
+		 * gnvs->smif:
 		 *  On success, the IO Trap Handler returns 0
 		 *  On failure, the IO Trap Handler returns a value != 0
 		 */
@@ -99,6 +100,36 @@ static void busmaster_disable_on_bus(int bus)
 	}
 }
 
+static void tristate_gpios(uint32_t val)
+{
+	/* Tri-state eMMC */
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			SDMMC1_CMD_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			SDMMC1_D0_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			SDMMC1_D1_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			SDMMC1_D2_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			SDMMC1_D3_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			MMC1_D4_SD_WE_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			MMC1_D5_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			MMC1_D6_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			MMC1_D7_MMIO_OFFSET, val);
+
+	/* Tri-state HDMI */
+	write32((void *)COMMUNITY_GPNORTH_BASE +
+			HV_DDI2_DDC_SDA_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPNORTH_BASE +
+			HV_DDI2_DDC_SCL_MMIO_OFFSET, val);
+}
+
+
 static void southbridge_smi_sleep(void)
 {
 	uint32_t reg32;
@@ -116,14 +147,15 @@ static void southbridge_smi_sleep(void)
 	/* Do any mainboard sleep handling */
 	mainboard_smi_sleep(slp_typ-2);
 
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 	/* Log S3, S4, and S5 entry */
 	if (slp_typ >= 5)
 		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ-2);
 #endif
+      /* Clear pending GPE events */
+	clear_gpe_status();
 
-	/* Next, do the deed.
-	 */
+	/* Next, do the deed. */
 
 	switch (slp_typ) {
 	case SLP_TYP_S0:
@@ -154,8 +186,16 @@ static void southbridge_smi_sleep(void)
 		printk(BIOS_DEBUG, "SMI#: ERROR: SLP_TYP reserved\n");
 		break;
 	}
+	/* Clear pending wake status bit to avoid immediate wake */
+	write32((void *)(0xfed88000 + 0x0200),
+		read32((void *)(0xfed88000 + 0x0200)));
 
-	/* Write back to the SLP register to cause the originally intended
+	/* Tri-state specific GPIOS to avoid leakage during S3/S5 */
+	if ((slp_typ == SLP_TYP_S3) || (slp_typ == SLP_TYP_S5))
+		tristate_gpios(PAD_CONTROL_REG0_TRISTATE);
+
+	/*
+	 * Write back to the SLP register to cause the originally intended
 	 * event again. We need to set BIT13 (SLP_EN) though to make the
 	 * sleep happen.
 	 */
@@ -163,9 +203,10 @@ static void southbridge_smi_sleep(void)
 
 	/* Make sure to stop executing code here for S3/S4/S5 */
 	if (slp_typ > 1)
-		halt();
+		hlt();
 
-	/* In most sleep states, the code flow of this function ends at
+	/*
+	 * In most sleep states, the code flow of this function ends at
 	 * the line above. However, if we entered sleep state S1 and wake
 	 * up again, we will continue to execute code in this function.
 	 */
@@ -212,7 +253,7 @@ static em64t100_smm_state_save_area_t *smi_apmc_find_state_save(uint8_t cmd)
 	return NULL;
 }
 
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 static void southbridge_smi_gsmi(void)
 {
 	u32 *ret, *param;
@@ -224,11 +265,11 @@ static void southbridge_smi_gsmi(void)
 		return;
 
 	/* Command and return value in EAX */
-	ret = (u32*)&io_smi->rax;
+	ret = (u32 *)&io_smi->rax;
 	sub_command = (uint8_t)(*ret >> 8);
 
 	/* Parameter buffer in EBX */
-	param = (u32*)&io_smi->rbx;
+	param = (u32 *)&io_smi->rbx;
 
 	/* drivers/elog/gsmi.c */
 	*ret = gsmi_exec(sub_command, param);
@@ -245,64 +286,10 @@ static void finalize(void)
 	}
 	finalize_done = 1;
 
-#if CONFIG_SPI_FLASH_SMM
+#if IS_ENABLED(CONFIG_SPI_FLASH_SMM)
 	/* Re-init SPI driver to handle locked BAR */
 	spi_init();
 #endif
-}
-
-/*
- * soc_legacy: A payload (Depthcharge) has indicated that the
- *   legacy payload (SeaBIOS) is being loaded. Switch devices that are
- *   in ACPI mode to PCI mode so that non-ACPI drivers may work.
- *
- */
-static void soc_legacy(void)
-{
-	u32 reg32;
-
-	/* LPE Device */
-	 if (gnvs->dev.lpe_en) {
-		reg32 = iosf_port58_read(LPE_PCICFGCTR1);
-		reg32 &=
-		~(LPE_PCICFGCTR1_PCI_CFG_DIS | LPE_PCICFGCTR1_ACPI_INT_EN);
-		iosf_port58_write(LPE_PCICFGCTR1, reg32);
-	}
-
-	/* SCC Devices */
-#define SCC_ACPI_MODE_DISABLE(name_) \
-	do { if (gnvs->dev.scc_en[SCC_NVS_ ## name_]) { \
-		reg32 = iosf_scc_read(SCC_ ## name_ ## _CTL); \
-		reg32 &= ~(SCC_CTL_PCI_CFG_DIS | SCC_CTL_ACPI_INT_EN); \
-		iosf_scc_write(SCC_ ## name_ ## _CTL, reg32); \
-	} } while (0)
-
-	SCC_ACPI_MODE_DISABLE(MMC);
-	SCC_ACPI_MODE_DISABLE(SD);
-	SCC_ACPI_MODE_DISABLE(SDIO);
-
-	 /* LPSS Devices */
-#define LPSS_ACPI_MODE_DISABLE(name_) \
-	do { if (gnvs->dev.lpss_en[LPSS_NVS_ ## name_]) { \
-		reg32 = iosf_lpss_read(LPSS_ ## name_ ## _CTL); \
-		reg32 &= ~LPSS_CTL_PCI_CFG_DIS | ~LPSS_CTL_ACPI_INT_EN; \
-		iosf_lpss_write(LPSS_ ## name_ ## _CTL, reg32); \
-	} } while (0)
-
-	LPSS_ACPI_MODE_DISABLE(SIO_DMA1);
-	LPSS_ACPI_MODE_DISABLE(I2C1);
-	LPSS_ACPI_MODE_DISABLE(I2C2);
-	LPSS_ACPI_MODE_DISABLE(I2C3);
-	LPSS_ACPI_MODE_DISABLE(I2C4);
-	LPSS_ACPI_MODE_DISABLE(I2C5);
-	LPSS_ACPI_MODE_DISABLE(I2C6);
-	LPSS_ACPI_MODE_DISABLE(I2C7);
-	LPSS_ACPI_MODE_DISABLE(SIO_DMA2);
-	LPSS_ACPI_MODE_DISABLE(PWM1);
-	LPSS_ACPI_MODE_DISABLE(PWM2);
-	LPSS_ACPI_MODE_DISABLE(HSUART1);
-	LPSS_ACPI_MODE_DISABLE(HSUART2);
-	LPSS_ACPI_MODE_DISABLE(SPI);
 }
 
 static void southbridge_smi_apmc(void)
@@ -315,14 +302,16 @@ static void southbridge_smi_apmc(void)
 	reg8 = inb(APM_CNT);
 	switch (reg8) {
 	case APM_CNT_CST_CONTROL:
-		/* Calling this function seems to cause
+		/*
+		 * Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
 		printk(BIOS_DEBUG, "C-state control\n");
 		break;
 	case APM_CNT_PST_CONTROL:
-		/* Calling this function seems to cause
+		/*
+		 * Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
@@ -350,17 +339,13 @@ static void southbridge_smi_apmc(void)
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}
 		break;
-#if CONFIG_ELOG_GSMI
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 	case ELOG_GSMI_APM_CNT:
 		southbridge_smi_gsmi();
 		break;
 #endif
 	case APM_CNT_FINALIZE:
 		finalize();
-		break;
-
-	case APM_CNT_LEGACY:
-		soc_legacy();
 		break;
 	}
 
@@ -371,12 +356,13 @@ static void southbridge_smi_pm1(void)
 {
 	uint16_t pm1_sts = clear_pm1_status();
 
-	/* While OSPM is not active, poweroff immediately
+	/*
+	 * While OSPM is not active, poweroff immediately
 	 * on a power button event.
 	 */
 	if (pm1_sts & PWRBTN_STS) {
-		// power button pressed
-#if CONFIG_ELOG_GSMI
+		/* power button pressed */
+#if IS_ENABLED(CONFIG_ELOG_GSMI)
 		elog_add_event(ELOG_TYPE_POWER_BUTTON);
 #endif
 		disable_pm1_control(-1UL);
@@ -419,38 +405,38 @@ static void southbridge_smi_periodic(void)
 typedef void (*smi_handler_t)(void);
 
 static const smi_handler_t southbridge_smi[32] = {
-	NULL,			  //  [0] reserved
-	NULL,			  //  [1] reserved
-	NULL,			  //  [2] BIOS_STS
-	NULL,			  //  [3] LEGACY_USB_STS
-	southbridge_smi_sleep,	  //  [4] SLP_SMI_STS
-	southbridge_smi_apmc,	  //  [5] APM_STS
-	NULL,			  //  [6] SWSMI_TMR_STS
-	NULL,			  //  [7] reserved
-	southbridge_smi_pm1,	  //  [8] PM1_STS
-	southbridge_smi_gpe0,	  //  [9] GPE0_STS
-	NULL,			  // [10] reserved
-	NULL,			  // [11] reserved
-	NULL,			  // [12] reserved
-	southbridge_smi_tco,	  // [13] TCO_STS
-	southbridge_smi_periodic, // [14] PERIODIC_STS
-	NULL,			  // [15] SERIRQ_SMI_STS
-	NULL,			  // [16] SMBUS_SMI_STS
-	NULL,			  // [17] LEGACY_USB2_STS
-	NULL,			  // [18] INTEL_USB2_STS
-	NULL,			  // [19] reserved
-	NULL,			  // [20] PCI_EXP_SMI_STS
-	NULL,			  // [21] reserved
-	NULL,			  // [22] reserved
-	NULL,			  // [23] reserved
-	NULL,			  // [24] reserved
-	NULL,			  // [25] reserved
-	NULL,			  // [26] SPI_STS
-	NULL,			  // [27] reserved
-	NULL,			  // [28] PUNIT
-	NULL,			  // [29] GUNIT
-	NULL,			  // [30] reserved
-	NULL			  // [31] reserved
+	NULL,			  /*  [0] reserved */
+	NULL,			  /*  [1] reserved */
+	NULL,			  /*  [2] BIOS_STS */
+	NULL,			  /*  [3] LEGACY_USB_STS */
+	southbridge_smi_sleep,	  /*  [4] SLP_SMI_STS */
+	southbridge_smi_apmc,	  /*  [5] APM_STS */
+	NULL,			  /*  [6] SWSMI_TMR_STS */
+	NULL,			  /*  [7] reserved */
+	southbridge_smi_pm1,	  /*  [8] PM1_STS */
+	southbridge_smi_gpe0,	  /*  [9] GPE0_STS */
+	NULL,			  /* [10] reserved */
+	NULL,			  /* [11] reserved */
+	NULL,			  /* [12] reserved */
+	southbridge_smi_tco,	  /* [13] TCO_STS */
+	southbridge_smi_periodic, /* [14] PERIODIC_STS */
+	NULL,			  /* [15] SERIRQ_SMI_STS */
+	NULL,			  /* [16] SMBUS_SMI_STS */
+	NULL,			  /* [17] LEGACY_USB2_STS */
+	NULL,			  /* [18] INTEL_USB2_STS */
+	NULL,			  /* [19] reserved */
+	NULL,			  /* [20] PCI_EXP_SMI_STS */
+	NULL,			  /* [21] reserved */
+	NULL,			  /* [22] reserved */
+	NULL,			  /* [23] reserved */
+	NULL,			  /* [24] reserved */
+	NULL,			  /* [25] reserved */
+	NULL,			  /* [26] SPI_STS */
+	NULL,			  /* [27] reserved */
+	NULL,			  /* [28] PUNIT */
+	NULL,			  /* [29] GUNIT */
+	NULL,			  /* [30] reserved */
+	NULL			  /* [31] reserved */
 };
 
 void southbridge_smi_handler(void)
@@ -458,7 +444,8 @@ void southbridge_smi_handler(void)
 	int i;
 	uint32_t smi_sts;
 
-	/* We need to clear the SMI status registers, or we won't see what's
+	/*
+	 * We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.
 	 */
 	smi_sts = clear_smi_status();
@@ -472,12 +459,14 @@ void southbridge_smi_handler(void)
 			southbridge_smi[i]();
 		} else {
 			printk(BIOS_DEBUG,
-			       "SMI_STS[%d] occurred, but no "
+			       "SMI_STS[%d] occured, but no "
 			       "handler available.\n", i);
 		}
 	}
 
-	/* The GPIO SMI events do not have a status bit in SMI_STS. Therefore,
-	 * these events need to be cleared and checked unconditionally. */
+	/*
+	 * The GPIO SMI events do not have a status bit in SMI_STS. Therefore,
+	 * these events need to be cleared and checked unconditionally.
+	 */
 	mainboard_smi_gpi(clear_alt_status());
 }

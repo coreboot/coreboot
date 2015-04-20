@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,228 +18,298 @@
  * Foundation, Inc.
  */
 
-#include <device/pci.h>
+
 #include <console/console.h>
+#include <device/pci.h>
 #include <soc/gpio.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/smm.h>
 
-/* GPIO-to-Pad LUTs */
-static const u8 gpncore_gpio_to_pad[GPNCORE_COUNT] =
-	{ 19, 18, 17, 20, 21, 22, 24, 25,	/* [ 0: 7] */
-	  23, 16, 14, 15, 12, 26, 27,  1,	/* [ 8:15] */
-	   4,  8, 11,  0,  3,  6, 10, 13,	/* [16:23] */
-	   2,  5,  9 };				/* [24:26] */
 
-static const u8 gpscore_gpio_to_pad[GPSCORE_COUNT] =
-	{  85,  89, 93,  96, 99, 102,  98, 101,	/* [ 0:  7] */
-	   34,  37, 36,  38, 39,  35,  40,  84,	/* [ 8: 15] */
-	   62,  61, 64,  59, 54,  56,  60,  55,	/* [16: 23] */
-	   63,  57, 51,  50, 53,  47,  52,  49,	/* [24: 31] */
-	   48,  43, 46,  41, 45,  42,  58,  44,	/* [32: 39] */
-	   95, 105, 70,  68, 67,  66,  69,  71,	/* [40: 47] */
-	   65,  72, 86,  90, 88,  92, 103,  77,	/* [48: 55] */
-	   79,  83, 78,  81, 80,  82,  13,  12,	/* [56: 63] */
-	   15,  14, 17,  18, 19,  16,   2,   1,	/* [64: 71] */
-	    0,   4,  6,   7,  9,   8,  33,  32,	/* [72: 79] */
-	   31,  30, 29,  27, 25,  28,  26,  23,	/* [80: 87] */
-	   21,  20, 24,  22,  5,   3,  10,  11,	/* [88: 95] */
-	  106,  87, 91, 104, 97, 100 };		/* [96:101] */
+#define GPIO_DEBUG
 
-static const u8 gpssus_gpio_to_pad[GPSSUS_COUNT] =
-	{ 29, 33, 30, 31, 32, 34, 36, 35,	/* [ 0: 7] */
-	  38, 37, 18,  7, 11, 20, 17,  1,	/* [ 8:15] */
-	   8, 10, 19, 12,  0,  2, 23, 39,	/* [16:23] */
-	  28, 27, 22, 21, 24, 25, 26, 51,	/* [24:31] */
-	  56, 54, 49, 55, 48, 57, 50, 58,	/* [32:39] */
-	  52, 53, 59, 40 };			/* [40:43] */
+/* gpio map to pad number LUTs */
 
-/* GPIO bank descriptions */
-static const struct gpio_bank gpncore_bank = {
-	.gpio_count = GPNCORE_COUNT,
-	.gpio_to_pad = gpncore_gpio_to_pad,
-	.legacy_base = GP_LEGACY_BASE_NONE,
-	.pad_base = GPNCORE_PAD_BASE,
-	.has_wake_en = 0,
-	.gpio_f1_range_start = GPNCORE_GPIO_F1_RANGE_START,
-	.gpio_f1_range_end = GPNCORE_GPIO_F1_RANGE_END,
-};
+static const u8 gpncommunity_gpio_to_pad[GP_NORTH_COUNT] = {
+	 0,  1,  2,  3,  4,  5,  6,  7,  8, 15,
+	16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+	26, 27, 30, 31, 32, 33, 34, 35, 36, 37,
+	38, 39, 40, 41, 45, 46, 47, 48, 49, 50,
+	51, 52, 53, 54, 55, 56, 60, 61, 62, 63,
+	64, 65, 66, 67, 68, 69, 70, 71, 72 };
 
-static const struct gpio_bank gpscore_bank = {
-	.gpio_count = GPSCORE_COUNT,
-	.gpio_to_pad = gpscore_gpio_to_pad,
-	.legacy_base = GPSCORE_LEGACY_BASE,
-	.pad_base = GPSCORE_PAD_BASE,
-	.has_wake_en = 0,
-	.gpio_f1_range_start = GPSCORE_GPIO_F1_RANGE_START,
-	.gpio_f1_range_end = GPSCORE_GPIO_F1_RANGE_END,
-};
+static const u8 gpsecommunity_gpio_to_pad[GP_SOUTHEAST_COUNT] = {
+	 0,  1,  2,  3,  4,  5,  6,  7, 15, 16,
+	17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+	30, 31, 32, 33, 34, 35, 45, 46, 47, 48,
+	49, 50, 51, 52, 60, 61, 62, 63, 64, 65,
+	66, 67, 68, 69, 75, 76, 77, 78, 79, 80,
+	81, 82, 83, 84, 85 };
 
-static const struct gpio_bank gpssus_bank = {
-	.gpio_count = GPSSUS_COUNT,
-	.gpio_to_pad = gpssus_gpio_to_pad,
-	.legacy_base = GPSSUS_LEGACY_BASE,
-	.pad_base = GPSSUS_PAD_BASE,
+
+static const u8 gpswcommunity_gpio_to_pad[GP_SOUTHWEST_COUNT] = {
+	 0,  1,  2,  3,  4,  5,  6,  7, 15, 16,
+	17, 18, 19, 20, 21, 22, 30, 31, 32, 33,
+	34, 35, 36, 37, 45, 46, 47, 48, 49, 50,
+	51, 52, 60, 61, 62, 63, 64, 65, 66, 67,
+	75, 76, 77, 78, 79, 80, 81, 82, 90, 91,
+	92, 93, 94, 95, 96, 97 };
+
+static const u8 gpecommunity_gpio_to_pad[GP_EAST_COUNT] = {
+	 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+	10, 11, 15, 16, 17, 18, 19, 20, 21, 22,
+	23, 24, 25, 26 };
+
+/* GPIO Community descriptions */
+static const struct gpio_bank gpnorth_community = {
+	.gpio_count = GP_NORTH_COUNT,
+	.gpio_to_pad = gpncommunity_gpio_to_pad ,
+	.pad_base = COMMUNITY_GPNORTH_BASE	,
+	.has_gpe_en = GPE_CAPABLE ,
 	.has_wake_en = 1,
-	.gpio_f1_range_start = GPSSUS_GPIO_F1_RANGE_START,
-	.gpio_f1_range_end = GPSSUS_GPIO_F1_RANGE_END,
 };
 
-static void setup_gpios(const struct soc_gpio_map *gpios,
-			const struct gpio_bank *bank)
+static const struct gpio_bank gpsoutheast_community = {
+	.gpio_count = GP_SOUTHEAST_COUNT,
+	.gpio_to_pad = gpsecommunity_gpio_to_pad,
+	.pad_base = COMMUNITY_GPSOUTHEAST_BASE,
+	.has_gpe_en = GPE_CAPABLE_NONE,
+	.has_wake_en = 1,
+};
+
+static const struct gpio_bank gpsouthwest_community = {
+	.gpio_count = GP_SOUTHWEST_COUNT,
+	.gpio_to_pad = gpswcommunity_gpio_to_pad,
+	.pad_base = COMMUNITY_GPSOUTHWEST_BASE,
+	.has_gpe_en = GPE_CAPABLE,
+	.has_wake_en = 1,
+};
+
+static const struct gpio_bank gpeast_community = {
+	.gpio_count = GP_EAST_COUNT,
+	.gpio_to_pad = gpecommunity_gpio_to_pad,
+	.pad_base = COMMUNITY_GPEAST_BASE,
+	.has_gpe_en = GPE_CAPABLE_NONE,
+	.has_wake_en = 1,
+};
+
+static void setup_gpio_route(const struct soc_gpio_map *sw_gpios,
+				const struct soc_gpio_map *n_gpios)
 {
-	const struct soc_gpio_map *config;
-	int gpio = 0;
-	u32 reg, pad_conf0;
-	u8 set, bit;
-
-	u32 use_sel[4] = {0};
-	u32 io_sel[4] = {0};
-	u32 gp_lvl[4] = {0};
-	u32 tpe[4] = {0};
-	u32 tne[4] = {0};
-	u32 wake_en[4] = {0};
-
-	if (!gpios)
-		return;
-
-	for (config = gpios; config->pad_conf0 != GPIO_LIST_END;
-	     config++, gpio++) {
-		if (gpio > bank->gpio_count)
-			break;
-
-		set = gpio >> 5;
-		bit = gpio % 32;
-
-		if (bank->legacy_base != GP_LEGACY_BASE_NONE) {
-			/* Legacy IO configuration */
-			use_sel[set] |= config->use_sel << bit;
-			io_sel[set]  |= config->io_sel  << bit;
-			gp_lvl[set]  |= config->gp_lvl  << bit;
-			tpe[set]     |= config->tpe     << bit;
-			tne[set]     |= config->tne     << bit;
-
-			/* Some banks do not have wake_en ability */
-			if (bank->has_wake_en)
-				wake_en[set] |= config->wake_en << bit;
-		}
-
-		/* Pad configuration registers */
-		reg = bank->pad_base + 16 * bank->gpio_to_pad[gpio];
-
-		/* Add correct func to GPIO pad config */
-		pad_conf0 = config->pad_conf0;
-		if (config->is_gpio)
-		{
-			if (gpio >= bank->gpio_f1_range_start &&
-			    gpio <= bank->gpio_f1_range_end)
-				pad_conf0 |= PAD_FUNC1;
-			else
-				pad_conf0 |= PAD_FUNC0;
-		}
-
-#ifdef GPIO_DEBUG
-		printk(BIOS_DEBUG, "Write Pad: Base(%x) - %x %x %x\n",
-		       reg, pad_conf0, config->pad_conf1, config->pad_val);
-#endif
-
-		write32((u32 *)(reg + PAD_CONF0_REG), pad_conf0);
-		write32((u32 *)(reg + PAD_CONF1_REG), config->pad_conf1);
-		write32((u32 *)(reg + PAD_VAL_REG), config->pad_val);
-	}
-
-	if (bank->legacy_base != GP_LEGACY_BASE_NONE)
-		for (set = 0; set <= (bank->gpio_count - 1) / 32; ++set) {
-			reg = bank->legacy_base + 0x20 * set;
-
-#ifdef GPIO_DEBUG
-			printk(BIOS_DEBUG,
-			       "Write GPIO: Reg(%x) - %x %x %x %x %x\n",
-				reg, use_sel[set], io_sel[set], gp_lvl[set],
-				tpe[set], tne[set]);
-#endif
-
-			outl(use_sel[set], reg + LEGACY_USE_SEL_REG);
-			outl(io_sel[set], reg + LEGACY_IO_SEL_REG);
-			outl(gp_lvl[set], reg + LEGACY_GP_LVL_REG);
-			outl(tpe[set], reg + LEGACY_TPE_REG);
-			outl(tne[set], reg + LEGACY_TNE_REG);
-
-			/* TS registers are WOC  */
-			outl(0, reg + LEGACY_TS_REG);
-
-			if (bank->has_wake_en)
-				outl(wake_en[set], reg + LEGACY_WAKE_EN_REG);
-		}
-}
-
-static void setup_gpio_route(const struct soc_gpio_map *sus,
-                             const struct soc_gpio_map *core)
-{
+	const struct soc_gpio_map *n_config;
+	const struct soc_gpio_map *sw_config;
 	uint32_t route_reg = 0;
-	int i;
+	uint32_t int_selection = 0;
+	uint32_t alt_gpio_smi = 0;
+	uint32_t gpe0a_en = 0;
+	int gpio = 0;
+	int north_done = 0;
+	int south_done = 0;
 
-	for (i = 0; i < 8; i++) {
-		/* SMI takes precedence and wake_en implies SCI. */
-		if (sus[i].smi) {
-			route_reg |= ROUTE_SMI << (2 * i);
-		} else if (sus[i].sci) {
-			route_reg |= ROUTE_SCI << (2 * i);
+	for (sw_config = sw_gpios, n_config = n_gpios;
+		(!north_done || !south_done); sw_config++, n_config++, gpio++) {
+
+		/* when north config is done */
+		if ((gpio > GP_NORTH_COUNT) ||
+		    (n_config->pad_conf0 == GPIO_LIST_END))
+			north_done = 1;
+
+		/* when sw is done */
+		if ((gpio > GP_SOUTHWEST_COUNT) ||
+		    (sw_config->pad_conf0 == GPIO_LIST_END))
+			south_done = 1;
+
+		/* route north gpios */
+		if (!north_done) {
+			 /* Int select from 8 to 15 */
+			int_selection = ((n_config->pad_conf0 >> 28) & 0xf);
+			if (n_config->gpe == SMI) {
+				/*
+				 * Set the corresponding bits (01) as
+				 *  per the interrupt line
+				 */
+				route_reg |= (1 << ((int_selection - 8) * 2));
+				/* reset the higher bit */
+				route_reg &=
+					~(1 << ((int_selection - 8) * 2 + 1));
+				alt_gpio_smi |= (1 << (int_selection + 8));
+			} else if (n_config->gpe == SCI) {
+				/*
+				 * Set the corresponding bits as per the
+				 * interrupt line
+				 */
+				route_reg |=
+					(1 << (((int_selection - 8) * 2) + 1));
+				/* reset the bit */
+				route_reg &= ~(1 << ((int_selection - 8) * 2));
+				gpe0a_en |= (1 << (int_selection + 8));
+			}
 		}
 
-		if (core[i].smi) {
-			route_reg |= ROUTE_SMI << (2 * (i + 8));
-		} else if (core[i].sci) {
-			route_reg |= ROUTE_SCI << (2 * (i + 8));
+		/* route southwest gpios */
+		if (!south_done) {
+			 /* Int select from 8 to 15 */
+			int_selection = ((sw_config->pad_conf0 >> 28) & 0xf);
+			if (sw_config->gpe == SMI) {
+				/*
+				 * Set the corresponding bits (10) as
+				 * per the interrupt line
+				 */
+				route_reg |= (1 << (int_selection * 2));
+				route_reg &= ~(1 << (int_selection * 2 + 1));
+				alt_gpio_smi |= (1 << (int_selection + 16));
+			} else if (sw_config->gpe == SCI) {
+				/*
+				 * Set the corresponding bits as
+				 * per the interrupt line
+				 */
+				route_reg |= (1 << ((int_selection * 2) + 1));
+				/* reset the bit */
+				route_reg &= ~(1 << (int_selection * 2));
+				gpe0a_en |= (1 << (int_selection + 16));
+			}
 		}
 	}
+
+	/* enable gpe bits in GPE0A_EN_REG */
+	outl(gpe0a_en, ACPI_BASE_ADDRESS + GPE0A_EN_REG);
+
+#ifdef GPIO_DEBUG
+	printk(BIOS_DEBUG, "gpio_rout = %x alt_gpio_smi = %x  gpe0a_en = %x\n",
+	route_reg, alt_gpio_smi, gpe0a_en);
+#endif
+	/* Save as an smm param */
 	southcluster_smm_save_param(SMM_SAVE_PARAM_GPIO_ROUTE, route_reg);
 }
 
-static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
-			const struct gpio_bank *bank)
-{
-	u32 *reg = (u32 *)(bank->pad_base + PAD_BASE_DIRQ_OFFSET);
-	u32 val;
-	int i;
 
-	/* Write all four DIRQ registers */
-	for (i=0; i<4; ++i) {
-		val = dirq[i * 4 + 3] << 24 | dirq[i * 4 + 2] << 16 |
-		      dirq[i * 4 + 1] << 8  | dirq[i * 4];
-		write32(reg + i, val);
+static void setup_gpios(const struct soc_gpio_map *gpios,
+			const struct gpio_bank *community)
+{
+	const struct soc_gpio_map *config;
+	int gpio = 0;
+	u32 reg, family, internal_pad_num;
+	u32 mmio_addr, int_selection;
+	u32 gpio_wake0 = 0;
+	u32 gpio_wake1 = 0;
+	u32 gpio_int_mask = 0;
+
+	if (!gpios)
+		return;
+	for (config = gpios; config->pad_conf0 != GPIO_LIST_END;
+	     config++, gpio++) {
+		if (gpio > community->gpio_count)
+			break;
+
+		/* Pad configuration registers */
+		family = community->gpio_to_pad[gpio] / MAX_FAMILY_PAD_GPIO_NO;
+		internal_pad_num = community->gpio_to_pad[gpio] %
+				   MAX_FAMILY_PAD_GPIO_NO;
+
+		/*
+		 * Calculate the MMIO Address for specific GPIO pin
+		 * control register pointed by index.
+		 * REG = (IOBASE + COMMUNITY_BASE + (0X04400)) +
+		 * (0X400*FAMILY_NUM) + (8 * PAD_NUM)
+		 */
+		mmio_addr = FAMILY_PAD_REGS_OFF
+			  + (FAMILY_PAD_REGS_SIZE * family)
+			  + (GPIO_REGS_SIZE * internal_pad_num);
+
+		reg = community->pad_base + mmio_addr;
+
+		/* get int selection value */
+		int_selection = ((config->pad_conf0 >> 28) & 0xf);
+
+		/* get int mask register value */
+		gpio_int_mask |= (config->int_mask << int_selection);
+
+		/*
+		 * wake capable programming
+		 * some communities have 2 wake regs
+		 */
+		if (gpio > 31)
+			gpio_wake1 |= config->wake_mask << (gpio % 32);
+		else
+			gpio_wake0 |= config->wake_mask << gpio;
+
+		if (!config->skip_config) {
 #ifdef GPIO_DEBUG
-		printk(BIOS_DEBUG, "Write DIRQ reg(%x) - %x\n",
-			reg + i, val);
+			printk(BIOS_DEBUG,
+				"Write Pad: Base(%x) - conf0 = %x conf1= %x gpio #- %d pad # = %d\n",
+				reg, config->pad_conf0, config->pad_conf1,
+				community->gpio_to_pad[gpio], gpio);
 #endif
+			/*
+			 * write pad configurations to conf0 and conf1 register
+			 */
+			write32((void *)(reg + PAD_CONF0_REG),
+				config->pad_conf0);
+			write32((void *)(reg + PAD_CONF1_REG),
+				config->pad_conf1);
+		}
 	}
+
+#ifdef GPIO_DEBUG
+	printk(BIOS_DEBUG,
+		"gpio_wake_mask0 = %x gpio_wake_mask1 = %x gpio_int_mask = %x\n",
+		gpio_wake0, gpio_wake1, gpio_int_mask);
+#endif
+
+	/* Wake */
+	write32((void *)(community->pad_base + GPIO_WAKE_MASK_REG0),
+		gpio_wake0);
+
+	/* wake mask config for communities with 2 regs */
+	if (community->gpio_count > 32)
+		write32((void *)(community->pad_base + GPIO_WAKE_MASK_REG1),
+		gpio_wake1);
+
+	/* Interrupt */
+	write32((void *)(community->pad_base + GPIO_INTERRUPT_MASK),
+		gpio_int_mask);
+
 }
+
 
 void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
 {
-	if (config) {
-		setup_gpios(config->ncore, &gpncore_bank);
-		setup_gpios(config->score, &gpscore_bank);
-		setup_gpios(config->ssus,  &gpssus_bank);
-		setup_gpio_route(config->ssus, config->score);
 
-		if (config->core_dirq)
-			setup_dirqs(*config->core_dirq, &gpscore_bank);
-		if (config->sus_dirq)
-			setup_dirqs(*config->sus_dirq, &gpssus_bank);
+	if (config) {
+
+		/*
+		 * Write the default value 0xffffff to the SW
+		 * write_access_policy_interrupt_reg to allow the SW interrupt
+		 * mask register to be set
+		 */
+		write32((void *)(COMMUNITY_GPSOUTHWEST_BASE + 0x108),
+			0xffffffff);
+
+		printk(BIOS_DEBUG, "north\n");
+		setup_gpios(config->north, &gpnorth_community);
+
+		printk(BIOS_DEBUG, "southwest\n");
+		setup_gpios(config->southwest, &gpsouthwest_community);
+
+		printk(BIOS_DEBUG, "southeast\n");
+		setup_gpios(config->southeast, &gpsoutheast_community);
+
+		printk(BIOS_DEBUG, "east\n");
+		setup_gpios(config->east, &gpeast_community);
+
+		printk(BIOS_DEBUG, "Routing SW and N gpios\n");
+		setup_gpio_route(config->southwest, config->north);
 	}
 
-	/* Set on die termination feature with pull up value and
+	/*
+	 * Set on die termination feature with pull up value and
 	 * drive the pad high for TAP_TDO and TAP_TMS
 	 */
-	if (!enable_xdp_tap) {
+	if (!enable_xdp_tap)
 		printk(BIOS_DEBUG, "Tri-state TDO and TMS\n");
-		write32((u32 *)(GPSSUS_PAD_BASE + 0x2fc), 0xc);
-		write32((u32 *)(GPSSUS_PAD_BASE + 0x2cc), 0xc);
-	}
 }
 
-struct soc_gpio_config* __attribute__((weak)) mainboard_get_gpios(void)
+__attribute__((weak)) struct soc_gpio_config *mainboard_get_gpios(void)
 {
 	printk(BIOS_DEBUG, "Default/empty GPIO config\n");
 	return NULL;

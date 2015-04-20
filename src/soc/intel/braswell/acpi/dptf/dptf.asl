@@ -1,3 +1,4 @@
+
 Device (DPTF)
 {
 	Name (_HID, EISAID ("INT3400"))
@@ -24,7 +25,8 @@ Device (DPTF)
 		}
 	}
 
-	/* Arg0: Buffer containing UUID
+	/*
+	 * Arg0: Buffer containing UUID
 	 * Arg1: Integer containing Revision ID of buffer format
 	 * Arg2: Integer containing count of entries in Arg3
 	 * Arg3: Buffer containing list of DWORD capabilities
@@ -65,9 +67,6 @@ Device (DPTF)
 		Return (Local0)
 	}
 
-	/* Include CPU Participant */
-	#include "cpu.asl"
-
 	/* Include Thermal Participants */
 	#include "thermal.asl"
 
@@ -75,4 +74,8 @@ Device (DPTF)
 	/* Include Charger Participant */
 	#include "charger.asl"
 #endif
+
+        /* Include Network Participants */
+	#include "wifi.asl"
+	#include "wwan.asl"
 }

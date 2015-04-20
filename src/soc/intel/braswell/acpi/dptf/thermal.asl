@@ -60,12 +60,12 @@ Device (TSR0)
 
 	Method (_PSV)
 	{
-		Return (^^CTOK (DPTF_TSR0_PASSIVE))
+		Return (CTOK (DPTF_TSR0_PASSIVE))
 	}
 
 	Method (_CRT)
 	{
-		Return (^^CTOK (DPTF_TSR0_CRITICAL))
+		Return (CTOK (DPTF_TSR0_CRITICAL))
 	}
 
 	Name (PATC, 2)
@@ -116,12 +116,12 @@ Device (TSR1)
 
 	Method (_PSV)
 	{
-		Return (^^CTOK (DPTF_TSR1_PASSIVE))
+		Return (CTOK (DPTF_TSR1_PASSIVE))
 	}
 
 	Method (_CRT)
 	{
-		Return (^^CTOK (DPTF_TSR1_CRITICAL))
+		Return (CTOK (DPTF_TSR1_CRITICAL))
 	}
 
 	Name (PATC, 2)
@@ -172,12 +172,12 @@ Device (TSR2)
 
 	Method (_PSV)
 	{
-		Return (^^CTOK (DPTF_TSR2_PASSIVE))
+		Return (CTOK (DPTF_TSR2_PASSIVE))
 	}
 
 	Method (_CRT)
 	{
-		Return (^^CTOK (DPTF_TSR2_CRITICAL))
+		Return (CTOK (DPTF_TSR2_CRITICAL))
 	}
 
 	Name (PATC, 2)

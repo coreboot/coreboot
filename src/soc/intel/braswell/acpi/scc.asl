@@ -135,18 +135,18 @@ Device (SDIO)
 
 Device (SDCD)
 {
-	Name (_HID, "80860F16")
+	Name (_HID, "INT33BB")
 	Name (_CID, "PNP0D40")
 	Name (_UID, 3)
 	Name (_DDN, "SD Card Controller")
 
 	Name (RBUF, ResourceTemplate()
 	{
-		Memory32Fixed (ReadWrite, 0, 0x1000, BAR0)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive,,,)
-		{
-			SCC_SD_IRQ
-		}
+		Memory32Fixed (ReadWrite, 0x00000000, 0x00001000, BAR0)
+		Interrupt(ResourceConsumer, Level, ActiveLow, Exclusive, , , )
+			{SCC_SD_IRQ}  /* SD Card IRQ */
+		GpioInt(Edge, ActiveBoth, SharedAndWake, PullNone, 10000, "\\_SB.GPSE", 0, ResourceConsumer, , )
+			{SDCARD_CD}  /* SE81 */
 	})
 
 	Method (_CRS)

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _PATTRS_H_
-#define _PATTRS_H_
+#ifndef _SOC_PATTRS_H_
+#define _SOC_PATTRS_H_
 
 #include <stdint.h>
 #include <cpu/x86/msr.h>
@@ -31,7 +32,8 @@ enum {
 	IACORE_END
 };
 
-/* The pattrs structure is a common place to stash pertinent information
+/*
+ * The pattrs structure is a common place to stash pertinent information
  * about the processor or platform. Instead of going to the source (msrs, cpuid)
  * every time an attribute is needed use the pattrs structure.
  */
@@ -49,16 +51,14 @@ struct pattrs {
 	unsigned bclk_khz;
 };
 
-/* This is just to hide the abstraction w/o relying on how the underlying
- * storage is allocated. */
-#define PATTRS_GLOB_NAME __global_pattrs
-#define DEFINE_PATTRS struct pattrs PATTRS_GLOB_NAME
-extern DEFINE_PATTRS;
-
+/*
+ * This is just to hide the abstraction w/o relying on how the underlying
+ * storage is allocated.
+ */
+extern struct pattrs __global_pattrs;
 static inline const struct pattrs *pattrs_get(void)
 {
-	return &PATTRS_GLOB_NAME;
+	return &__global_pattrs;
 }
 
-
-#endif /* _PATTRS_H_ */
+#endif /* _SOC_PATTRS_H_ */

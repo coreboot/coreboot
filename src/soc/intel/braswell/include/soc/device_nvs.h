@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _BAYTRAIL_DEVICE_NVS_H_
-#define _BAYTRAIL_DEVICE_NVS_H_
+#ifndef _SOC_DEVICE_NVS_H_
+#define _SOC_DEVICE_NVS_H_
 
 #include <stdint.h>
 
@@ -62,7 +63,6 @@ typedef struct {
 
 	/* Extra */
 	u32	lpe_fw; /* LPE Firmware */
-	u8	rsvd1[3930]; /* Add padding so sizeof(device_nvs_t) == 0x1000 */
 } __attribute__((packed)) device_nvs_t;
 
-#endif
+#endif	/* _SOC_DEVICE_NVS_H_ */

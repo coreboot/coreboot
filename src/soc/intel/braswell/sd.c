@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +37,10 @@
 
 static void sd_init(device_t dev)
 {
-	struct soc_intel_baytrail_config *config = dev->chip_info;
+	struct soc_intel_braswell_config *config = dev->chip_info;
+
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(dev));
 
 	if (config == NULL)
 		return;
@@ -44,12 +48,12 @@ static void sd_init(device_t dev)
 	if (config->sdcard_cap_low != 0 || config->sdcard_cap_high != 0) {
 		printk(BIOS_DEBUG, "Overriding SD Card controller caps.\n");
 		pci_write_config32(dev, CAP_OVERRIDE_LOW,
-		                   config->sdcard_cap_low);
+				   config->sdcard_cap_low);
 		pci_write_config32(dev, CAP_OVERRIDE_HIGH,
-		                   config->sdcard_cap_high | USE_CAP_OVERRIDES);
+				   config->sdcard_cap_high | USE_CAP_OVERRIDES);
 	}
 
-	if (config->scc_acpi_mode)
+	if (config->sd_acpi_mode)
 		scc_enable_acpi_mode(dev, SCC_SD_CTL, SCC_NVS_SD);
 }
 
@@ -58,8 +62,6 @@ static const struct device_operations device_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= sd_init,
-	.enable			= NULL,
-	.scan_bus		= NULL,
 	.ops_pci		= &soc_pci_ops,
 };
 

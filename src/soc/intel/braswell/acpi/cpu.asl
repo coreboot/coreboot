@@ -18,22 +18,34 @@
  * Foundation, Inc.
  */
 
+/* CPU */
+#define DPTF_CPU_PASSIVE	80
+#define DPTF_CPU_CRITICAL	90
+#define DPTF_CPU_PASSIVE	80
+#define DPTF_CPU_CRITICAL	90
+#define DPTF_CPU_ACTIVE_AC0	90
+#define DPTF_CPU_ACTIVE_AC1	80
+#define DPTF_CPU_ACTIVE_AC2	70
+#define DPTF_CPU_ACTIVE_AC3	60
+#define DPTF_CPU_ACTIVE_AC4	50
+
 /* These devices are created at runtime */
-External (\_PR.CP00, DeviceObj)
-External (\_PR.CP01, DeviceObj)
-External (\_PR.CP02, DeviceObj)
-External (\_PR.CP03, DeviceObj)
+External (\_PR.CPU0, DeviceObj)
+External (\_PR.CPU1, DeviceObj)
+External (\_PR.CPU2, DeviceObj)
+External (\_PR.CPU3, DeviceObj)
+
 
 /* Notify OS to re-read CPU tables, assuming ^2 CPU count */
 Method (PNOT)
 {
 	If (LGreaterEqual (\PCNT, 2)) {
-		Notify (\_PR.CP00, 0x81)  // _CST
-		Notify (\_PR.CP01, 0x81)  // _CST
+		Notify (\_PR.CPU0, 0x81)  /* _CST */
+		Notify (\_PR.CPU1, 0x81)  /* _CST */
 	}
 	If (LGreaterEqual (\PCNT, 4)) {
-		Notify (\_PR.CP02, 0x81)  // _CST
-		Notify (\_PR.CP03, 0x81)  // _CST
+		Notify (\_PR.CPU2, 0x81)  /* _CST */
+		Notify (\_PR.CPU3, 0x81)  /* _CST */
 	}
 }
 
@@ -41,12 +53,12 @@ Method (PNOT)
 Method (PPCN)
 {
 	If (LGreaterEqual (\PCNT, 2)) {
-		Notify (\_PR.CP00, 0x80)  // _PPC
-		Notify (\_PR.CP01, 0x80)  // _PPC
+		Notify (\_PR.CPU0, 0x80)  /* _PPC */
+		Notify (\_PR.CPU1, 0x80)  /* _PPC */
 	}
 	If (LGreaterEqual (\PCNT, 4)) {
-		Notify (\_PR.CP02, 0x80)  // _PPC
-		Notify (\_PR.CP03, 0x80)  // _PPC
+		Notify (\_PR.CPU2, 0x80)  /* _PPC */
+		Notify (\_PR.CPU3, 0x80)  /* _PPC */
 	}
 }
 
@@ -54,12 +66,12 @@ Method (PPCN)
 Method (TNOT)
 {
 	If (LGreaterEqual (\PCNT, 2)) {
-		Notify (\_PR.CP00, 0x82)  // _TPC
-		Notify (\_PR.CP01, 0x82)  // _TPC
+		Notify (\_PR.CPU0, 0x82)  /* _TPC */
+		Notify (\_PR.CPU1, 0x82)  /* _TPC */
 	}
 	If (LGreaterEqual (\PCNT, 4)) {
-		Notify (\_PR.CP02, 0x82)  // _TPC
-		Notify (\_PR.CP03, 0x82)  // _TPC
+		Notify (\_PR.CPU2, 0x82)  /* _TPC */
+		Notify (\_PR.CPU3, 0x82)  /* _TPC */
 	}
 }
 
@@ -67,10 +79,10 @@ Method (TNOT)
 Method (PPKG)
 {
 	If (LGreaterEqual (\PCNT, 4)) {
-		Return (Package() {\_PR.CP00, \_PR.CP01, \_PR.CP02, \_PR.CP03})
+		Return (Package() {\_PR.CPU0, \_PR.CPU1, \_PR.CPU2, \_PR.CPU3})
 	} ElseIf (LGreaterEqual (\PCNT, 2)) {
-		Return (Package() {\_PR.CP00, \_PR.CP01})
+		Return (Package() {\_PR.CPU0, \_PR.CPU1})
 	} Else {
-		Return (Package() {\_PR.CP00})
+		Return (Package() {\_PR.CPU0})
 	}
 }

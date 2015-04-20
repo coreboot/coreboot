@@ -2,13 +2,14 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google, Inc.
+ * Copyright (C) 2015 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * but WITHOUT ANY WARRANTY; without even the implied wacbmem_entryanty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
@@ -17,8 +18,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _BAYTRAIL_PCIE_H_
-#define _BAYTRAIL_PCIE_H_
+#ifndef _SOC_PCIE_H_
+#define _SOC_PCIE_H_
 
 /* PCIe root port config space registers. */
 #define XCAP			0x40
@@ -98,5 +99,4 @@
 #define PHYCTL4			0x408
 # define SQDIS			(1 << 27)
 
-#define PCIE_ROOT_PORT_COUNT	4
-#endif /* _BAYTRAIL_PCIE_H_ */
+#endif /* _SOC_PCIE_H_ */

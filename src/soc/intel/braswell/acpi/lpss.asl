@@ -84,7 +84,7 @@ Device (SDM2)
 
 Device (I2C1)
 {
-	Name (_HID, "80860F41")
+	Name (_HID, "808622C1")
 	Name (_UID, 1)
 	Name (_DDN, "I2C Controller #1")
 
@@ -143,7 +143,7 @@ Device (I2C1)
 
 Device (I2C2)
 {
-	Name (_HID, "80860F41")
+	Name (_HID, "808622C1")
 	Name (_UID, 2)
 	Name (_DDN, "I2C Controller #2")
 
@@ -202,7 +202,7 @@ Device (I2C2)
 
 Device (I2C3)
 {
-	Name (_HID, "80860F41")
+	Name (_HID, "808622C1")
 	Name (_UID, 3)
 	Name (_DDN, "I2C Controller #3")
 
@@ -261,7 +261,7 @@ Device (I2C3)
 
 Device (I2C4)
 {
-	Name (_HID, "80860F41")
+	Name (_HID, "808622C1")
 	Name (_UID, 4)
 	Name (_DDN, "I2C Controller #4")
 
@@ -320,7 +320,7 @@ Device (I2C4)
 
 Device (I2C5)
 {
-	Name (_HID, "80860F41")
+	Name (_HID, "808622C1")
 	Name (_UID, 5)
 	Name (_DDN, "I2C Controller #5")
 
@@ -379,7 +379,7 @@ Device (I2C5)
 
 Device (I2C6)
 {
-	Name (_HID, "80860F41")
+	Name (_HID, "808622C1")
 	Name (_UID, 6)
 	Name (_DDN, "I2C Controller #6")
 
@@ -438,7 +438,7 @@ Device (I2C6)
 
 Device (I2C7)
 {
-	Name (_HID, "80860F41")
+	Name (_HID, "808622C1")
 	Name (_UID, 7)
 	Name (_DDN, "I2C Controller #7")
 
@@ -497,7 +497,7 @@ Device (I2C7)
 
 Device (SPI1)
 {
-	Name (_HID, "80860F0E")
+	Name (_HID, "8086228E")
 	Name (_UID, 1)
 	Name (_DDN, "SPI Controller #2")
 
@@ -550,7 +550,7 @@ Device (SPI1)
 
 Device (PWM1)
 {
-	Name (_HID, "80860F09")
+	Name (_HID, "80862288")
 	Name (_UID, 1)
 	Name (_DDN, "PWM Controller #1")
 
@@ -578,7 +578,7 @@ Device (PWM1)
 
 Device (PWM2)
 {
-	Name (_HID, "80860F09")
+	Name (_HID, "80862288")
 	Name (_UID, 2)
 	Name (_DDN, "PWM Controller #2")
 
@@ -606,7 +606,7 @@ Device (PWM2)
 
 Device (UAR1)
 {
-	Name (_HID, "80860F0A")
+	Name (_HID, "8086228A")
 	Name (_UID, 1)
 	Name (_DDN, "HS-UART Controller #1")
 
@@ -659,7 +659,7 @@ Device (UAR1)
 
 Device (UAR2)
 {
-	Name (_HID, "80860F0A")
+	Name (_HID, "8086228A")
 	Name (_UID, 2)
 	Name (_DDN, "HS-UART Controller #2")
 

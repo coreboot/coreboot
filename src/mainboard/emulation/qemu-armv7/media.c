@@ -26,7 +26,9 @@ static int emu_rom_open(struct cbfs_media *media)
 
 static void *emu_rom_map(struct cbfs_media *media, size_t offset, size_t count)
 {
-        return (void*)offset;
+	if (offset + count > CONFIG_ROM_SIZE)
+		return  (void *)-1;
+        return (void*)(offset + 0x10000);
 }
 
 static void *emu_rom_unmap(struct cbfs_media *media, const void *address)
@@ -38,6 +40,10 @@ static size_t emu_rom_read(struct cbfs_media *media, void *dest, size_t offset,
 			   size_t count)
 {
 	void *ptr = emu_rom_map(media, offset, count);
+
+	if (ptr == (void *)-1)
+		return 0;
+
 	memcpy(dest, ptr, count);
 	emu_rom_unmap(media, ptr);
 	return count;

@@ -34,7 +34,6 @@
 #include <stdint.h>
 
 #include <arch/cache.h>
-#include <arch/cache_helpers.h>
 #include <arch/lib_helpers.h>
 #include <program_loading.h>
 
@@ -121,7 +120,11 @@ void dcache_invalidate_by_mva(void const *addr, size_t len)
 
 void cache_sync_instructions(void)
 {
-	flush_dcache_all(DCCISW); /* includes trailing DSB (in assembly) */
+	uint32_t sctlr = raw_read_sctlr_current();
+	if (sctlr & SCTLR_C)
+		dcache_clean_all();	/* includes trailing DSB (assembly) */
+	else if (sctlr & SCTLR_I)
+		dcache_clean_invalidate_all();
 	icache_invalidate_all(); /* includdes leading DSB and trailing ISB. */
 }
 
@@ -131,6 +134,10 @@ void cache_sync_instructions(void)
  */
 void arch_segment_loaded(uintptr_t start, size_t size, int flags)
 {
-	dcache_clean_invalidate_by_mva((void *)start, size);
+	uint32_t sctlr = raw_read_sctlr_current();
+	if (sctlr & SCTLR_C)
+		dcache_clean_by_mva((void *)start, size);
+	else if (sctlr & SCTLR_I)
+		dcache_clean_invalidate_by_mva((void *)start, size);
 	icache_invalidate_all();
 }

@@ -26,33 +26,6 @@
 #include <console/console.h>
 #include "vboot_handoff.h"
 
-static int vboot_enable_developer(void)
-{
-	struct vboot_handoff *vbho;
-
-	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-
-	if (vbho == NULL) {
-		printk(BIOS_ERR, "%s: Couldn't find vboot_handoff structure!\n",
-		        __func__);
-		return 0;
-	}
-
-	return !!(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_DEVELOPER);
-}
-
-static int vboot_enable_recovery(void)
-{
-	struct vboot_handoff *vbho;
-
-	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-
-	if (vbho == NULL)
-		return 0;
-
-	return !!(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_RECOVERY);
-}
-
 int vboot_skip_display_init(void)
 {
 	struct vboot_handoff *vbho;

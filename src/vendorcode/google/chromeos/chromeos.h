@@ -23,8 +23,13 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <bootmode.h>
+#include <rules.h>
 #include "vboot_common.h"
 #include "vboot2/misc.h"
+
+#if ENV_ROMSTAGE
+void save_chromeos_gpios(void);
+#endif
 
 /* functions implemented in vbnv.c: */
 int get_recovery_mode_from_vbnv(void);

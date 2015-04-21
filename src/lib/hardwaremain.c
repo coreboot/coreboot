@@ -434,6 +434,12 @@ static void boot_state_schedule_static_entries(void)
 
 void main(void)
 {
+	/* console_init() MUST PRECEDE ALL printk()! Additionally, ensure
+	 * it is the very first thing done in ramstage.*/
+	console_init();
+
+	post_code(POST_CONSOLE_READY);
+
 	/*
 	 * CBMEM needs to be recovered in the EARLY_CBMEM_INIT case because
 	 * timestamps, APCI, etc rely on the cbmem infrastructure being
@@ -447,11 +453,6 @@ void main(void)
 
 	timestamp_add_now(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);
-
-	/* console_init() MUST PRECEDE ALL printk()! */
-	console_init();
-
-	post_code(POST_CONSOLE_READY);
 
 	/* Handoff sleep type from romstage. */
 #if CONFIG_HAVE_ACPI_RESUME

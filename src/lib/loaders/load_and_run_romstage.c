@@ -26,20 +26,38 @@
 #include <program_loading.h>
 #include <timestamp.h>
 
+extern const struct prog_loader_ops cbfs_romstage_loader;
+
+static const struct prog_loader_ops *loaders[] = {
+	&cbfs_romstage_loader,
+};
+
 void run_romstage(void)
 {
+	int i;
 	struct prog romstage = {
 		.name = CONFIG_CBFS_PREFIX "/romstage",
 		.type = PROG_ROMSTAGE,
 	};
 
-	timestamp_add_now(TS_START_COPYROM);
-	if (cbfs_load_prog_stage(CBFS_DEFAULT_MEDIA, &romstage) < 0) {
-		if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
-			die("Couldn't load romstage.\n");
-		halt();
-	}
-	timestamp_add_now(TS_END_COPYROM);
+	for (i = 0; i < ARRAY_SIZE(loaders); i++) {
+		const struct prog_loader_ops *ops;
 
-	prog_run(&romstage);
+		ops = loaders[i];
+
+		printk(BIOS_DEBUG, "Trying %s romstage loader.\n", ops->name);
+
+		timestamp_add_now(TS_START_COPYROM);
+
+		if (ops->prepare(&romstage))
+			continue;
+
+		timestamp_add_now(TS_END_COPYROM);
+
+		prog_run(&romstage);
+	}
+
+	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+		die("Couldn't load romstage.\n");
+	halt();
 }

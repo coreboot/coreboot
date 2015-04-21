@@ -18,6 +18,7 @@
 #
 
 bootblock-y += load_and_run_romstage.c
+bootblock-y += cbfs_romstage_loader.c
 romstage-y += cbfs_ramstage_loader.c
 romstage-y += load_and_run_ramstage.c
 ramstage-y += cbfs_payload_loader.c

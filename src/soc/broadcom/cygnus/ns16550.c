@@ -50,39 +50,39 @@ static void ns16550_init(void)
 {
 	int baud_divisor = calc_divisor();
 
-	while (!(readl(&regs->lsr) & UART_LSR_TEMT))
+	while (!(read32(&regs->lsr) & UART_LSR_TEMT))
 		;
 
-	writel(0, &regs->ier);
-	writel(UART_LCR_BKSE | UART_LCR_8N1, &regs->lcr);
-	writel(0, &regs->dll);
-	writel(0, &regs->dlm);
-	writel(UART_LCR_8N1, &regs->lcr);
-	writel(UART_MCR_DTR | UART_MCR_RTS, &regs->mcr);
+	write32(&regs->ier, 0);
+	write32(&regs->lcr, UART_LCR_BKSE | UART_LCR_8N1);
+	write32(&regs->dll, 0);
+	write32(&regs->dlm, 0);
+	write32(&regs->lcr, UART_LCR_8N1);
+	write32(&regs->mcr, UART_MCR_DTR | UART_MCR_RTS);
 	/* clear & enable FIFOs */
-	writel(UART_FCR_FIFO_EN | UART_FCR_RXSR | UART_FCR_TXSR, &regs->fcr);
-	writel(UART_LCR_BKSE | UART_LCR_8N1, &regs->lcr);
-	writel(baud_divisor & 0xff, &regs->dll);
-	writel((baud_divisor >> 8) & 0xff, &regs->dlm);
-	writel(UART_LCR_8N1, &regs->lcr);
+	write32(&regs->fcr, UART_FCR_FIFO_EN | UART_FCR_RXSR | UART_FCR_TXSR);
+	write32(&regs->lcr, UART_LCR_BKSE | UART_LCR_8N1);
+	write32(&regs->dll, baud_divisor & 0xff);
+	write32(&regs->dlm, (baud_divisor >> 8) & 0xff);
+	write32(&regs->lcr, UART_LCR_8N1);
 }
 
 static void ns16550_tx_byte(unsigned char data)
 {
-	while ((readl(&regs->lsr) & UART_LSR_THRE) == 0)
+	while ((read32(&regs->lsr) & UART_LSR_THRE) == 0)
 		;
-	writel(data, &regs->thr);
+	write32(&regs->thr, data);
 }
 
 static void ns16550_tx_flush(void)
 {
-	while (!(readl(&regs->lsr) & UART_LSR_TEMT))
+	while (!(read32(&regs->lsr) & UART_LSR_TEMT))
 		;
 }
 
 static int ns16550_tst_byte(void)
 {
-	return (readl(&regs->lsr) & UART_LSR_DR) != 0;
+	return (read32(&regs->lsr) & UART_LSR_DR) != 0;
 }
 
 static unsigned char ns16550_rx_byte(void)
@@ -91,7 +91,7 @@ static unsigned char ns16550_rx_byte(void)
 	while (i-- && !ns16550_tst_byte())
 		udelay(1);
 	if (i)
-		return readl(&regs->rbr);
+		return read32(&regs->rbr);
 	else
 		return 0x0;
 }

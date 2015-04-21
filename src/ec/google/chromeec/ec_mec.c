@@ -76,12 +76,22 @@ void mec_io_bytes(int write, u16 port, unsigned int length, u8 *buf, u8 *csum)
 {
 	int i = 0;
 	int io_addr;
+	u8 access_mode, new_access_mode;
 
 	if (length == 0)
 		return;
 
+	/*
+	 * Long access cannot be used on misaligned data since reading B0 loads
+	 * the data register and writing B3 flushes it.
+	 */
+	if (port & 0x3)
+		access_mode = ACCESS_TYPE_BYTE;
+	else
+		access_mode = ACCESS_TYPE_LONG_AUTO_INCREMENT;
+
 	/* Initialize I/O at desired address */
-	mec_emi_write_address(port, ACCESS_TYPE_LONG_AUTO_INCREMENT);
+	mec_emi_write_address(port, access_mode);
 
 	/* Skip bytes in case of misaligned port */
 	io_addr = MEC_EMI_EC_DATA_B0 + (port & 0x3);
@@ -94,9 +104,24 @@ void mec_io_bytes(int write, u16 port, unsigned int length, u8 *buf, u8 *csum)
 			if (csum)
 				*csum += buf[i];
 
+			port++;
 			/* Extra bounds check in case of misaligned length */
 			if (++i == length)
 				return;
+		}
+
+		/*
+		 * Use long auto-increment access except for misaligned write,
+		 * since writing B3 triggers the flush.
+		 */
+		if (length - i < 4 && write)
+			new_access_mode = ACCESS_TYPE_BYTE;
+		else
+			new_access_mode = ACCESS_TYPE_LONG_AUTO_INCREMENT;
+		if (new_access_mode != access_mode ||
+		    access_mode != ACCESS_TYPE_LONG_AUTO_INCREMENT) {
+			access_mode = new_access_mode;
+			mec_emi_write_address(port, access_mode);
 		}
 
 		/* Access [B0, B3] on each loop pass */

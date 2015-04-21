@@ -18,7 +18,7 @@
 
 config VBOOT2_VERIFY_FIRMWARE
 	bool "Firmware Verification with vboot2"
-	default n
+	default y if VBOOT_VERIFY_FIRMARE
 	depends on CHROMEOS && HAVE_HARD_RESET
 	select COLLECT_TIMESTAMPS
 	help
@@ -45,14 +45,6 @@ config RETURN_FROM_VERSTAGE
 	  exits to the romstage so that the verstage space can be reused by the
 	  romstage. Useful if a ram space is too small to fit both the verstage
 	  and the romstage.
-
-config VBOOT_ROMSTAGE_INDEX
-	hex
-	default 2
-	depends on VBOOT2_VERIFY_FIRMWARE
-	help
-	  This is the index of the romstage component in the verified
-	  firmware block.
 
 config VBOOT_DISABLE_DEV_ON_RECOVERY
 	bool "Disable dev mode on recovery requests"

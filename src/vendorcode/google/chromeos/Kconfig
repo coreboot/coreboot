@@ -132,6 +132,14 @@ config VIRTUAL_DEV_SWITCH
 	help
 	  Whether this platform has a virtual developer switch.
 
+config VBOOT_VERIFY_FIRMWARE
+	bool "Verify firmware with vboot."
+	default n
+	depends on CHROMEOS
+	help
+	  Enabling VBOOT_VERIFY_FIRMWARE will use vboot to verify the components
+	  of the firmware (stages, payload, etc).
+
 # These VBOOT_X_INDEX are the position of X in FW_MAIN_A/B region. The index
 # table is created by cros_bundle_firmware at build time based on the positions
 # of the blobs listed in fmap.dts and stored at the top of FW_MAIN_A/B region.
@@ -145,12 +153,28 @@ config VBOOT_BOOT_LOADER_INDEX
 	  This is the index of the bootloader component in the verified
 	  firmware block.
 
+config VBOOT_REFCODE_INDEX
+	hex "Reference code firmware index"
+	default 1
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the reference code component in the verified
+	  firmware block.
+
 config VBOOT_RAMSTAGE_INDEX
 	hex "Ramstage component index"
 	default 1
 	depends on VBOOT_VERIFY_FIRMWARE || VBOOT2_VERIFY_FIRMWARE
 	help
 	  This is the index of the ramstage component in the verified
+	  firmware block.
+
+config VBOOT_ROMSTAGE_INDEX
+	hex "Romstage component index"
+	default 2
+	depends on VBOOT2_VERIFY_FIRMWARE
+	help
+	  This is the index of the romstage component in the verified
 	  firmware block.
 
 config NO_TPM_RESUME
@@ -175,7 +199,6 @@ config WIPEOUT_SUPPORTED
 	  signal the application the need for factory reset (a.k.a. wipe
 	  out) of the device
 
-source src/vendorcode/google/chromeos/vboot1/Kconfig
 source src/vendorcode/google/chromeos/vboot2/Kconfig
 
 endif # CHROMEOS

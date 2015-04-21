@@ -37,7 +37,6 @@
 #include <arch/mmu.h>
 #include <arch/lib_helpers.h>
 #include <arch/cache.h>
-#include <arch/cache_helpers.h>
 
 /* This just caches the next free table slot (okay to do since they fill up from
  * bottom to top and can never be freed up again). It will reset to its initial
@@ -295,7 +294,7 @@ void mmu_enable(void)
  */
 void mmu_disable(void)
 {
-	flush_dcache_all(DCCISW);
+	dcache_clean_invalidate_all();
 	uint32_t sctlr = raw_read_sctlr_el3();
 	sctlr &= ~(SCTLR_C | SCTLR_M);
 	raw_write_sctlr_el3(sctlr);

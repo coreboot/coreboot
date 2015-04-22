@@ -649,6 +649,7 @@ int elog_init(void)
  */
 static void elog_fill_timestamp(struct event_header *event)
 {
+#if IS_ENABLED(CONFIG_RTC)
 	struct rtc_time time;
 
 	rtc_get(&time);
@@ -659,9 +660,12 @@ static void elog_fill_timestamp(struct event_header *event)
 	event->month = bin2bcd(time.mon);
 	event->year = bin2bcd(time.year) & 0xff;
 
+
 	/* Basic sanity check of expected ranges */
 	if (event->month > 0x12 || event->day > 0x31 || event->hour > 0x23 ||
-	    event->minute > 0x59 || event->second > 0x59) {
+	    event->minute > 0x59 || event->second > 0x59)
+#endif
+	{
 		event->year   = 0;
 		event->month  = 0;
 		event->day    = 0;

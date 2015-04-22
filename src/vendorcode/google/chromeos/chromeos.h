@@ -43,11 +43,16 @@ void elog_add_boot_reason(void);
 /* functions implemented in watchdog.c */
 void elog_add_watchdog_reset(void);
 void reboot_from_watchdog(void);
+
+int vboot_enable_developer(void);
+int vboot_enable_recovery(void);
+int vboot_skip_display_init(void);
 #else
 static inline void init_chromeos(int bootmode) { }
 static inline void elog_add_boot_reason(void) { return; }
 static inline void elog_add_watchdog_reset(void) { return; }
 static inline void reboot_from_watchdog(void) { return; }
+static inline int vboot_skip_display_init(void) { return 0; }
 #endif /* CONFIG_CHROMEOS */
 
 struct romstage_handoff;
@@ -55,9 +60,6 @@ struct romstage_handoff;
 #if CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE
 /* Returns 0 on success < 0 on error. */
 int vboot_get_handoff_info(void **addr, uint32_t *size);
-int vboot_enable_developer(void);
-int vboot_enable_recovery(void);
-int vboot_skip_display_init(void);
 void *vboot_get_payload(int *len);
 #else /* CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE */
 static inline void vboot_verify_firmware(struct romstage_handoff *h) {}
@@ -66,7 +68,6 @@ static inline int vboot_get_handoff_info(void **addr, uint32_t *size)
 {
 	return -1;
 }
-static inline int vboot_skip_display_init(void) { return 0; }
 #endif /* CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE */
 
 int vboot_get_sw_write_protect(void);

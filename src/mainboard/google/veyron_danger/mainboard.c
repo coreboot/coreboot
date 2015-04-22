@@ -93,6 +93,17 @@ static void configure_vop(void)
 	/* lcdc(vop) iodomain select 1.8V */
 	write32(&rk3288_grf->io_vsel, RK_SETBITS(1 << 0));
 
+	/*
+	 * BL_EN gates VCC_LCD. This might be changed in future revisions
+	 * of the board so that the display can be stablized before we
+	 * turn on the backlight.
+	 *
+	 * To minimize display corruption, turn off LCDC_BL before
+	 * powering on the backlight.
+	 */
+	gpio_output(GPIO_BACKLIGHT, 1);	/* BL_EN */
+	gpio_output(GPIO_LCDC_BL, 0);
+
 	rk808_configure_switch(2, 1);	/* VCC18_LCD (HDMI_AVDD_1V8) */
 	rk808_configure_ldo(7, 1000);	/* VDD10_LCD (HDMI_AVDD_1V0) */
 	rk808_configure_switch(1, 1);	/* VCC33_LCD */
@@ -135,5 +146,5 @@ void lb_board(struct lb_header *header)
 
 void mainboard_power_on_backlight(void)
 {
-	gpio_output(GPIO_BACKLIGHT, 1);	/* BL_EN */
+	gpio_output(GPIO_LCDC_BL, 1);
 }

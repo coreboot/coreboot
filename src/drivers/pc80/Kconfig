@@ -20,6 +20,7 @@ config DRIVERS_PS2_KEYBOARD
 config DRIVERS_MC146818
 	bool
 	default y if ARCH_X86
+	select RTC
 
 source src/drivers/pc80/tpm/Kconfig
 

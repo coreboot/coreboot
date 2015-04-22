@@ -1,6 +1,7 @@
 config DRIVERS_AS3722_RTC
 	bool "AS3722 RTC support"
 	default n
+	select RTC
 
 config DRIVERS_AS3722_RTC_BUS
 	int "AS3722 RTC bus"

@@ -345,6 +345,10 @@ menu "Generic Drivers"
 source "src/drivers/*/Kconfig"
 endmenu
 
+config RTC
+	bool
+	default n
+
 config TPM
 	bool
 	default n

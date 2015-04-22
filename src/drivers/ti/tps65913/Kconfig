@@ -25,6 +25,7 @@ config DRIVERS_TI_TPS65913_RTC
 	bool "TI TPS65913 RTC support"
 	default n
 	select DRIVERS_TI_TPS65913
+	select RTC
 
 config DRIVERS_TI_TPS65913_RTC_BUS
 	int "TI TPS65913 RTC bus"

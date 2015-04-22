@@ -60,10 +60,6 @@ config EC_GOOGLE_CHROMEEC_SPI_WAKEUP_DELAY_US
 	int
 	default 100
 
-config VBOOT_RAMSTAGE_INDEX
-	hex
-	default 0x3
-
 config BOOT_MEDIA_SPI_BUS
         int
         default 2

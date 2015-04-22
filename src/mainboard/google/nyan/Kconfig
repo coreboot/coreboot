@@ -81,10 +81,6 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 1
 
-config VBOOT_RAMSTAGE_INDEX
-	hex
-	default 0x2
-
 config FLASHMAP_OFFSET
 	hex
 	default 0x00100000

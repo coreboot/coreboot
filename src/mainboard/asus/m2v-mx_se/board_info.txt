@@ -4,3 +4,4 @@ ROM package: DIP8
 ROM protocol: SPI
 ROM socketed: y
 Flashrom support: y
+Release year: 2007

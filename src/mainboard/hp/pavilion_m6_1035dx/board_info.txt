@@ -3,3 +3,4 @@ ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n
 Flashrom support: y
+Release year: 2012

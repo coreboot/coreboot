@@ -3,3 +3,4 @@ Board URL: http://www.elhvb.com/mboards/OEM/HP/manual/ASUS%20MEW-VM.htm
 ROM package: PLCC
 ROM socketed: y
 Flashrom support: n
+Release year: 2002

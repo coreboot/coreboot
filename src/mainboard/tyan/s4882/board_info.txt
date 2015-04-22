@@ -1,3 +1,4 @@
 Board name: Thunder K8QS Pro (S4882)
 Category: server
 Board URL: http://www.tyan.com/archive/products/html/thunderk8qspro.html
+Release year: 2004

@@ -1,3 +1,4 @@
 Board name: Thunder K8WE (S2895)
 Category: desktop
 Board URL: http://www.tyan.com/archive/products/html/thunderk8we.html
+Release year: 2005

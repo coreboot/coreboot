@@ -2,3 +2,4 @@ Board name: Bakersport
 Category: eval
 ROM protocol: SPI
 ROM socketed: n
+Release year: 2014

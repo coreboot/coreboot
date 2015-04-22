@@ -4,3 +4,4 @@ ROM package: DIP32
 ROM protocol: Parallel
 ROM socketed: y
 Flashrom support: y
+Release year: 1999

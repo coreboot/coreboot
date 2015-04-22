@@ -4,3 +4,4 @@ ROM package: DIP8
 ROM protocol: [http://www.winbond-usa.com/hq/enu/ProductAndSales/ProductLines/FlashMemory/SerialFlash/W25Q64BV.htm SPI]
 ROM socketed: y
 Flashrom support: y
+Release year: 2013

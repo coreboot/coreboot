@@ -4,3 +4,4 @@ ROM package: PLCC
 ROM socketed: y
 Flashrom support: y
 Clone of: asus/a8n_e
+Release year: 2005

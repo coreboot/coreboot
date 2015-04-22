@@ -3,3 +3,4 @@ Board URL: http://www.asus.com/Motherboards/AMD_Socket_939/A8VE_Deluxe/
 ROM package: PLCC
 ROM socketed: y
 Flashrom support: y
+Release year: 2005

@@ -3,3 +3,4 @@ Board URL: http://downloadcenter.intel.com/Detail_Desc.aspx?agr=Y&DwnldID=17789&
 ROM package: PLCC
 ROM protocol: FWH
 ROM socketed: n
+Release year: 1999

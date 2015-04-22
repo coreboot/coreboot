@@ -254,6 +254,7 @@ function compile_target
 		junit "<failure type='BuildFailed'>"
 		junitfile make.log
 		junit "</failure>"
+		printf "failed\n" > compile.status
 		printf "$VENDOR/$MAINBOARD build FAILED after ${duration}s!\nLog excerpt:\n"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
 		failed=1

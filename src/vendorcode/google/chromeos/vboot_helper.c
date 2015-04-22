@@ -105,12 +105,6 @@ int __attribute((weak)) vboot_get_sw_write_protect(void)
 	return 0;
 }
 
-#if CONFIG_VBOOT2_VERIFY_FIRMWARE
-
-void *vboot_get_payload(int *len) { return NULL; }
-
-#else /* CONFIG_VBOOT2_VERIFY_FIRMWARE */
-
 static void *vboot_get_payload(size_t *len)
 {
 	struct vboot_handoff *vboot_handoff;
@@ -137,7 +131,6 @@ static void *vboot_get_payload(size_t *len)
 
 	return (void *)fwc->address;
 }
-#endif
 
 static int vboot_locate_payload(struct payload *payload)
 {

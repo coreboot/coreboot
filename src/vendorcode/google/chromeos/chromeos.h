@@ -62,18 +62,18 @@ static inline int vboot_skip_display_init(void) { return 0; }
 
 struct romstage_handoff;
 
-#if CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
 /* Returns 0 on success < 0 on error. */
 int vboot_get_handoff_info(void **addr, uint32_t *size);
 void *vboot_get_payload(int *len);
-#else /* CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE */
+#else /* CONFIG_VBOOT_VERIFY_FIRMWARE */
 static inline void vboot_verify_firmware(struct romstage_handoff *h) {}
 static inline void *vboot_get_payload(int *len) { return NULL; }
 static inline int vboot_get_handoff_info(void **addr, uint32_t *size)
 {
 	return -1;
 }
-#endif /* CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE */
+#endif /* CONFIG_VBOOT_VERIFY_FIRMWARE */
 
 int vboot_get_sw_write_protect(void);
 

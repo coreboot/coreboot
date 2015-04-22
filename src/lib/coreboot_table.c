@@ -195,7 +195,7 @@ static void lb_vbnv(struct lb_header *header)
 #endif
 }
 
-#if CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
 static void lb_vboot_handoff(struct lb_header *header)
 {
 	void *addr;

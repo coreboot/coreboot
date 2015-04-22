@@ -85,8 +85,7 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 
 config VBOOT_RAMSTAGE_INDEX
 	hex
-	default 0x3 if VBOOT2_VERIFY_FIRMWARE
-	default 0x2
+	default 0x3
 
 config FLASHMAP_OFFSET
 	hex

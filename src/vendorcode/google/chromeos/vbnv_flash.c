@@ -29,13 +29,7 @@
 #include "chromeos.h"
 #include "vbnv_layout.h"
 
-#if IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE)
-#define BLOB_SIZE VBNV_BLOCK_SIZE
-#elif IS_ENABLED(CONFIG_VBOOT2_VERIFY_FIRMWARE)
 #define BLOB_SIZE VB2_NVDATA_SIZE
-#else
-#error unable to determine BLOB_SIZE
-#endif
 
 /* FMAP descriptor of the NVRAM area */
 static struct vboot_region nvram_region;

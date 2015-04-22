@@ -17,8 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-bootblock-$(CONFIG_VBOOT2_VERIFY_FIRMWARE) += bootblock_asm.S
-bootblock-$(CONFIG_VBOOT2_VERIFY_FIRMWARE) += bootblock.c
+bootblock-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += bootblock_asm.S
+bootblock-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += bootblock.c
 
 bootblock-y += cbmem.c
 bootblock-y += i2c.c

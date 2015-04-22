@@ -65,29 +65,6 @@ int vboot_skip_display_init(void)
 	return !(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_DISPLAY);
 }
 
-int developer_mode_enabled(void)
-{
-	return get_developer_mode_switch() || vboot_enable_developer();
-}
-
-int recovery_mode_enabled(void)
-{
-	/*
-	 * This is called in multiple places and has to detect
-	 * recovery mode triggered from the EC and via shared
-	 * recovery reason set with crossystem.
-	 *
-	 * If shared recovery reason is set:
-	 * - before VbInit then get_recovery_mode_from_vbnv() is true
-	 * - after VbInit then vboot_enable_recovery() is true
-	 *
-	 * Otherwise the mainboard handler for get_recovery_mode_switch()
-	 * will detect recovery mode initiated by the EC.
-	 */
-	return get_recovery_mode_switch() || get_recovery_mode_from_vbnv() ||
-		vboot_enable_recovery();
-}
-
 int __attribute__((weak)) clear_recovery_mode_switch(void)
 {
 	// Can be implemented by a mainboard

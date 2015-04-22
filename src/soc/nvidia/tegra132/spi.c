@@ -731,6 +731,11 @@ static int xfer_finish(struct tegra_spi_channel *spi)
 	return ret;
 }
 
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return buf_len;
+}
+
 int spi_xfer(struct spi_slave *slave, const void *dout,
 		unsigned int out_bytes, void *din, unsigned int in_bytes)
 {

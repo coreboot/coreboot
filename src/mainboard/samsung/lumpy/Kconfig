@@ -19,6 +19,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select DRIVERS_GENERIC_IOAPIC
 	select INTEL_INT15
 	select HAVE_MRC
+	select CHROMEOS_VBNV_CMOS
 
 config MAINBOARD_DIR
 	string

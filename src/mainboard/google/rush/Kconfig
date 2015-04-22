@@ -34,6 +34,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select VIRTUAL_DEV_SWITCH
 	select BOARD_ROMSIZE_KB_4096
 	select ARCH_SPINTABLE
+	select CHROMEOS_VBNV_EC
 
 config MAINBOARD_DIR
 	string

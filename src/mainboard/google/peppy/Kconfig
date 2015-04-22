@@ -24,6 +24,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select INTEL_DP
 	select INTEL_DDI
 	select INTEL_INT15
+	select CHROMEOS_VBNV_CMOS
 
 config VBOOT_RAMSTAGE_INDEX
 	hex

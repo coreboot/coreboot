@@ -72,7 +72,7 @@ config CPU_ADDR_BITS
 
 config SMM_TSEG_SIZE
 	hex
-	default 0x100000
+	default 0x800000
 	help
 	  This is set by the FSP
 

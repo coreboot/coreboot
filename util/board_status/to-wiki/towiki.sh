@@ -176,6 +176,7 @@ EOF
 			vendor_cooperation_page="$(sed -n "/^[[:space:]]*Vendor cooperation page:/ s,^[[:space:]]*Vendor cooperation page:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			board_url="$(sed -n "/^[[:space:]]*Board URL:/ s,^[[:space:]]*Board URL:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			clone_of="$(sed -n "/^[[:space:]]*Clone of:/ s,^[[:space:]]*Clone of:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
+			release_year="$(sed -n "/^[[:space:]]*Release year:/ s,^[[:space:]]*Release year:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 		else
 			vendor_2nd=
 			board_nice=
@@ -187,6 +188,7 @@ EOF
 			vendor_cooperation_page=
 			board_url=
 			clone_of=
+			release_year=
 		fi
 		if [ "$last_vendor" != "$vendor" ]; then
 			last_vendor="$vendor"
@@ -402,6 +404,10 @@ EOF
 		fi
 
 		echo "| [[Board:$vendor/$board|$board_nice]]"
+
+		if ! [ -z "$release_year" ]; then
+			echo " (released $release_year)"
+		fi
 
 		if [ -z "$lastgood" ]; then
 			echo "| style=\"background:red\" | Unknown"

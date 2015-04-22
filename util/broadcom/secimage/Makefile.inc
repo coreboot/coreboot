@@ -15,4 +15,4 @@ $(objutil)/broadcom/secimage/%.o: $(top)/util/broadcom/secimage/%.c
 $(objutil)/broadcom/secimage/secimage: \
 		$(addprefix $(objutil)/broadcom/secimage/,$(secimageobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(LIBS) -o $@ $^
+	$(HOSTCC) -o $@ $^ $(LIBS)

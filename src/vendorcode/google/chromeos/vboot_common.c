@@ -26,6 +26,7 @@
 #include <string.h>
 
 #include "chromeos.h"
+#include "fmap.h"
 #include "vboot_common.h"
 #include "vboot_handoff.h"
 

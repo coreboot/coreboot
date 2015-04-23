@@ -23,10 +23,10 @@ romstage-y += fsp_util.c hob.c
 ramstage-$(CONFIG_ENABLE_MRC_CACHE) += fastboot_cache.c
 romstage-$(CONFIG_ENABLE_MRC_CACHE) += fastboot_cache.c
 
-CPPFLAGS_common += -Isrc/drivers/intel/fsp
+CPPFLAGS_common += -Isrc/drivers/intel/fsp1_0
 
 ifeq ($(CONFIG_USE_GENERIC_FSP_CAR_INC),y)
-cpu_incs += $(src)/drivers/intel/fsp/cache_as_ram.inc
+cpu_incs += $(src)/drivers/intel/fsp1_0/cache_as_ram.inc
 endif
 
 ifeq ($(CONFIG_HAVE_FSP_BIN),y)

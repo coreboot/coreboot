@@ -20,7 +20,7 @@
  */
 
 #include <baytrail/romstage.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <baytrail/gpio.h>

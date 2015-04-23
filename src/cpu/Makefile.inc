@@ -30,7 +30,7 @@ cpu_ucode_cbfs_file = $(obj)/cpu_microcode_blob.bin
 cbfs_include_ucode = y
 endif
 
-ifeq ($(CONFIG_PLATFORM_USES_FSP), y)
+ifeq ($(CONFIG_PLATFORM_USES_FSP1_0), y)
 cpu_ucode_cbfs_offset = "-b $(CONFIG_CPU_MICROCODE_CBFS_LOC)"
 else
 cpu_ucode_cbfs_offset = "-b"

@@ -23,7 +23,7 @@
 #define _FSP_BAYTRAIL_CHIP_H_
 
 #include <arch/acpi.h>
-#include <drivers/intel/fsp/fsp_values.h>
+#include <drivers/intel/fsp1_0/fsp_values.h>
 
 /* The devicetree parser expects chip.h to reside directly in the path
  * specified by the devicetree. */

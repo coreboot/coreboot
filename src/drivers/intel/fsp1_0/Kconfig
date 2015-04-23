@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-if PLATFORM_USES_FSP
+if PLATFORM_USES_FSP1_0
 
 comment "Intel FSP"
 
@@ -142,4 +142,4 @@ config FSP_USES_UPD
 	default n
 	help
 	  If this FSP uses UPD/VPD data regions, select this in the chipset Kconfig.
-endif #PLATFORM_USES_FSP
+endif #PLATFORM_USES_FSP1_0

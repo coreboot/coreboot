@@ -23,7 +23,7 @@
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #include <southbridge/intel/fsp_rangeley/soc.h>
 #include <southbridge/intel/fsp_rangeley/gpio.h>
 #include <southbridge/intel/fsp_rangeley/romstage.h>

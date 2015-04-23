@@ -29,7 +29,7 @@
 #include <pc80/mc146818rtc.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #include "northbridge/intel/fsp_rangeley/northbridge.h"
 #include "southbridge/intel/fsp_rangeley/soc.h"
 #include "southbridge/intel/fsp_rangeley/gpio.h"

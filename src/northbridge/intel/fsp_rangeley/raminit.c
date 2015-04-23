@@ -24,7 +24,7 @@
 #include <cbmem.h>
 #include <device/pci_def.h>
 #include "northbridge.h"
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 
 static uintptr_t smm_region_start(void)
 {

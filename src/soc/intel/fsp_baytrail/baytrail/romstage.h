@@ -29,7 +29,7 @@ void report_platform_info(void);
 
 #include <stdint.h>
 #include <arch/cpu.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 
 void main(FSP_INFO_HEADER *fsp_info_header);
 void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr);

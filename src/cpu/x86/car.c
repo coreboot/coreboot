@@ -23,8 +23,8 @@
 #include <cbmem.h>
 #include <arch/early_variables.h>
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP)
-#include <drivers/intel/fsp/fsp_util.h>
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #endif
 typedef void (* const car_migration_func_t)(void);
 
@@ -67,7 +67,7 @@ void *car_get_var_ptr(void *var)
 		return var;
 	}
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP)
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
 	migrated_base=(char *)find_saved_temp_mem(
 			*(void **)CBMEM_FSP_HOB_PTR);
 #else
@@ -100,7 +100,7 @@ void *car_sync_var_ptr(void *var)
 	if (*mig_var < _car_start || *mig_var > _car_end)
 		return mig_var;
 
-#if !IS_ENABLED(CONFIG_PLATFORM_USES_FSP)
+#if !IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
 	/* Keep console buffer in CAR until cbmemc_reinit() moves it. */
 	if (*mig_var == _car_end)
 		return mig_var;
@@ -149,7 +149,7 @@ static void do_car_migrate_hooks(void)
 
 void car_migrate_variables(void)
 {
-	if (!IS_ENABLED(PLATFORM_USES_FSP))
+	if (!IS_ENABLED(PLATFORM_USES_FSP1_0))
 		do_car_migrate_variables();
 
 	do_car_migrate_hooks();

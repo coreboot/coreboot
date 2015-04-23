@@ -31,7 +31,7 @@
 #include <device/pci.h>
 #include <cbmem.h>
 #include <baytrail/baytrail.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 
 
 static const int legacy_hole_base_k = 0xa0000 / 1024;

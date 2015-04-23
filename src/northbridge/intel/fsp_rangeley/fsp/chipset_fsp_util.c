@@ -25,7 +25,7 @@
 #include <cbmem.h>
 #include <device/device.h>
 #include <southbridge/intel/fsp_rangeley/pci_devs.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #include <fspvpd.h>
 #include <fspbootmode.h>
 #include <reset.h>

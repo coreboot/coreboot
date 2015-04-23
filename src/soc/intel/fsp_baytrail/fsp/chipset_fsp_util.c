@@ -26,7 +26,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <baytrail/pci_devs.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #include "../chip.h"
 #include <arch/io.h>
 #include <baytrail/reset.h>

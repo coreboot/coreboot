@@ -35,7 +35,7 @@
 #include <cbmem.h>
 #include "chip.h"
 #include "northbridge.h"
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #include <cpu/x86/lapic.h>
 
 static int bridge_revision_id = -1;

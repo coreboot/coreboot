@@ -37,7 +37,7 @@
 #include <baytrail/romstage.h>
 #include <baytrail/acpi.h>
 #include <baytrail/baytrail.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #include <baytrail/pmc.h>
 #include <baytrail/spi.h>
 #include <version.h>

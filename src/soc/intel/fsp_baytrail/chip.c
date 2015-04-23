@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/ramstage.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 #include "chip.h"
 
 static void pci_domain_set_resources(device_t dev)

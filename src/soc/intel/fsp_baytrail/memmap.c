@@ -22,7 +22,7 @@
 #include <cbmem.h>
 #include <baytrail/iosf.h>
 #include <baytrail/smm.h>
-#include <drivers/intel/fsp/fsp_util.h>
+#include <drivers/intel/fsp1_0/fsp_util.h>
 
 uintptr_t smm_region_start(void)
 {

@@ -19,7 +19,7 @@
 
 config RANGELEY_FSP_SPECIFIC_OPTIONS
 	def_bool y
-	select PLATFORM_USES_FSP
+	select PLATFORM_USES_FSP1_0
 	select USE_GENERIC_FSP_CAR_INC
 	select FSP_USES_UPD
 	select ENABLE_MRC_CACHE #rangeley FSP always needs MRC data

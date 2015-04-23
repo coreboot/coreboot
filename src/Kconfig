@@ -335,7 +335,7 @@ source "src/ec/acpi/Kconfig"
 source "src/ec/*/*/Kconfig"
 comment "SoC"
 source "src/soc/*/*/Kconfig"
-source "src/drivers/intel/fsp/Kconfig"
+source "src/drivers/intel/fsp1_0/Kconfig"
 
 endmenu
 

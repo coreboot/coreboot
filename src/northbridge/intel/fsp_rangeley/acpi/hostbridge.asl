@@ -111,11 +111,11 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x000f0000, 0x000fffff, 0x00000000,
 				0x00010000,,, FSEG)
 
-		// PCI Memory Region (Top of memory-0xfebfffff)
+		// PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
-				0x00000000, 0x00000000, 0xfebfffff, 0x00000000,
-				0xfec00000,,, PM01)
+				0x00000000, 0x00000000, 0, 0x00000000,
+				0,,, PM01)
 
 		// TPM Area (0xfed40000-0xfed44fff)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
@@ -131,7 +131,9 @@ Method (_CRS, 0, Serialized)
 
 	// Fix up PCI memory region
 	// Start with Top of Lower Usable DRAM
-	Store (BMBD, PMIN)					// Memory goes from BMBOUND to 0xfebfffff (PM01 above)
+	// Memory goes from BMBOUND to CONFIG_MMCONF_BASE_ADDRESS (PM01 above)
+	Store (BMBD, PMIN)
+	Store (Subtract(CONFIG_MMCONF_BASE_ADDRESS, 1), PMAX)
 	Add(Subtract(PMAX, PMIN), 1, PLEN)	// Store Memory Size
 
 	Return (MCRS)

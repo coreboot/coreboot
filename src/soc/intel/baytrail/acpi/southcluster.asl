@@ -158,11 +158,11 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x000f0000, 0x000fffff, 0x00000000,
 				0x00010000,,, FSEG)
 
-		// PCI Memory Region (Top of memory-0xfeafffff)
+		// PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
-				0x00000000, 0xfea00000, 0xfeafffff, 0x00000000,
-				0x00100000,,, PMEM)
+				0x00000000, 0x00000000, 0x00000000, 0x00000000,
+				0x00000000,,, PMEM)
 
 		// TPM Area (0xfed40000-0xfed44fff)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
@@ -178,6 +178,7 @@ Method (_CRS, 0, Serialized)
 
 	// TOLM is BMBOUND accessible from IOSF so is saved in NVS
 	Store (\TOLM, PMIN)
+	Store (Subtract(CONFIG_MMCONF_BASE_ADDRESS, 1), PMAX)
 	Add (Subtract (PMAX, PMIN), 1, PLEN)
 
 	Return (MCRS)

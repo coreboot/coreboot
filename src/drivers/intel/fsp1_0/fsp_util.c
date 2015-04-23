@@ -292,7 +292,7 @@ int save_mrc_data(void *hob_start)
 			mrc_data->mrc_data_size);
 
 	printk(BIOS_SPEW, "Fast boot data (includes align and checksum):\n");
-	hexdump32(BIOS_SPEW, (void *)mrc_data->mrc_data, output_len);
+	hexdump32(BIOS_SPEW, (void *)mrc_data->mrc_data, output_len / 4);
 	return (1);
 }
 #endif /* CONFIG_ENABLE_MRC_CACHE */

@@ -230,7 +230,7 @@ void * find_and_set_fastboot_cache(void)
 	}
 	printk(BIOS_DEBUG, "FSP MRC cache present at %x.\n", (u32)mrc_cache);
 	printk(BIOS_SPEW, "Saved MRC data:\n");
-	hexdump32(BIOS_SPEW, (void *)mrc_cache->mrc_data, mrc_cache->mrc_data_size);
+	hexdump32(BIOS_SPEW, (void *)mrc_cache->mrc_data, (mrc_cache->mrc_data_size) / 4);
 	return (void *) mrc_cache->mrc_data;
 }
 

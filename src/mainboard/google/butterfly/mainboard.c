@@ -265,10 +265,10 @@ static int butterfly_onboard_smbios_data(device_t dev, int *handle,
 
 	len += smbios_write_type41(
 		current, handle,
-		BUTTERFLY_TRACKPAD_NAME,	/* name */
-		BUTTERFLY_TRACKPAD_IRQ,		/* instance */
+		BOARD_TRACKPAD_NAME,		/* name */
+		BOARD_TRACKPAD_IRQ,		/* instance */
 		0,				/* segment */
-		BUTTERFLY_TRACKPAD_I2C_ADDR,	/* bus */
+		BOARD_TRACKPAD_I2C_ADDR,	/* bus */
 		0,				/* device */
 		0);				/* function */
 

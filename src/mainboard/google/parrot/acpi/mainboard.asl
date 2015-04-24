@@ -19,6 +19,8 @@
  * MA 02110-1301 USA
  */
 
+#include <mainboard/google/parrot/onboard.h>
+
 Scope (\_GPE) {
 	Method(_L1F, 0x0, NotSerialized)
 	{
@@ -59,19 +61,25 @@ Scope (\_SB) {
 		Name(_HID, EisaId("PNP0C0E"))
 
 		// Trackpad Wake is GPIO12, wake from S3
-		Name(_PRW, Package(){0x1c, 0x03})
+		Name(_PRW, Package() { BOARD_TRACKPAD_WAKE_GPIO, 0x03 })
 
 		Name(_CRS, ResourceTemplate()
 		{
 
 			// PIRQA -> GSI16
-			Interrupt (ResourceConsumer, Level, ActiveLow) {16}
+			Interrupt (ResourceConsumer, Level, ActiveLow)
+			{
+				BOARD_TRACKPAD_IRQ_DVT
+			}
 
 			// PIRQE -> GSI20
-			Interrupt (ResourceConsumer, Edge, ActiveLow) {20}
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
+				BOARD_TRACKPAD_IRQ_PVT
+			}
 
 			// SMBUS Address 0x67
-			VendorShort (ADDR) {0x67}
+			VendorShort (ADDR) { BOARD_TRACKPAD_I2C_ADDR }
 		})
 	}
 

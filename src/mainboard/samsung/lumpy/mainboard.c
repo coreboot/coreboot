@@ -86,14 +86,14 @@ static int lumpy_onboard_smbios_data(device_t dev, int *handle,
 	int len = 0;
 
 	len += lumpy_smbios_type41_irq(handle, current,
-				       LUMPY_LIGHTSENSOR_NAME,
-				       LUMPY_LIGHTSENSOR_IRQ,
-				       LUMPY_LIGHTSENSOR_I2C_ADDR);
+				       BOARD_LIGHTSENSOR_NAME,
+				       BOARD_LIGHTSENSOR_IRQ,
+				       BOARD_LIGHTSENSOR_I2C_ADDR);
 
 	len += lumpy_smbios_type41_irq(handle, current,
-				       LUMPY_TRACKPAD_NAME,
-				       LUMPY_TRACKPAD_IRQ,
-				       LUMPY_TRACKPAD_I2C_ADDR);
+				       BOARD_TRACKPAD_NAME,
+				       BOARD_TRACKPAD_IRQ,
+				       BOARD_TRACKPAD_I2C_ADDR);
 
 	return len;
 }

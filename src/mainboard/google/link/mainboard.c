@@ -173,28 +173,28 @@ static int link_onboard_smbios_data(device_t dev, int *handle,
 
 	len += smbios_write_type41(
 		current, handle,
-		LINK_LIGHTSENSOR_NAME,		/* name */
-		LINK_LIGHTSENSOR_IRQ,		/* instance */
+		BOARD_LIGHTSENSOR_NAME,		/* name */
+		BOARD_LIGHTSENSOR_IRQ,		/* instance */
 		0,				/* segment */
-		LINK_LIGHTSENSOR_I2C_ADDR,	/* bus */
+		BOARD_LIGHTSENSOR_I2C_ADDR,	/* bus */
 		0,				/* device */
 		0);				/* function */
 
 	len += smbios_write_type41(
 		current, handle,
-		LINK_TRACKPAD_NAME,		/* name */
-		LINK_TRACKPAD_IRQ,		/* instance */
+		BOARD_TRACKPAD_NAME,		/* name */
+		BOARD_TRACKPAD_IRQ,		/* instance */
 		0,				/* segment */
-		LINK_TRACKPAD_I2C_ADDR,		/* bus */
+		BOARD_TRACKPAD_I2C_ADDR,	/* bus */
 		0,				/* device */
 		0);				/* function */
 
 	len += smbios_write_type41(
 		current, handle,
-		LINK_TOUCHSCREEN_NAME,		/* name */
-		LINK_TOUCHSCREEN_IRQ,		/* instance */
+		BOARD_TOUCHSCREEN_NAME,		/* name */
+		BOARD_TOUCHSCREEN_IRQ,		/* instance */
 		0,				/* segment */
-		LINK_TOUCHSCREEN_I2C_ADDR,	/* bus */
+		BOARD_TOUCHSCREEN_I2C_ADDR,	/* bus */
 		0,				/* device */
 		0);				/* function */
 

@@ -19,6 +19,8 @@
  * MA 02110-1301 USA
  */
 
+#include <mainboard/google/link/onboard.h>
+
 Scope (\_SB) {
 	Device (LID0)
 	{
@@ -48,15 +50,18 @@ Scope (\_SB) {
 		Name(_HID, EisaId("PNP0C0E"))
 
 		// Trackpad Wake is GPIO12
-		Name(_PRW, Package(){0x1c, 0x03})
+		Name(_PRW, Package() { BOARD_TRACKPAD_WAKE_GPIO, 0x03 } )
 
 		Name(_CRS, ResourceTemplate()
 		{
 			// PIRQE -> GSI20
-			Interrupt (ResourceConsumer, Edge, ActiveLow) {20}
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
+				BOARD_TRACKPAD_IRQ
+			}
 
 			// SMBUS Address 0x4b
-			VendorShort (ADDR) {0x4b}
+			VendorShort (ADDR) { BOARD_TRACKPAD_I2C_ADDR }
 		})
 	}
 

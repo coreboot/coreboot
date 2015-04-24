@@ -62,19 +62,19 @@ static int parrot_onboard_smbios_data(device_t dev, int *handle,
 	if (hardware_version < 0x2) {		/* DVT vs PVT */
 		len += smbios_write_type41(
 			current, handle,
-			PARROT_TRACKPAD_NAME,		/* name */
-			PARROT_TRACKPAD_IRQ_DVT,	/* instance */
+			BOARD_TRACKPAD_NAME,		/* name */
+			BOARD_TRACKPAD_IRQ_DVT,		/* instance */
 			0,				/* segment */
-			PARROT_TRACKPAD_I2C_ADDR,	/* bus */
+			BOARD_TRACKPAD_I2C_ADDR,	/* bus */
 			0,				/* device */
 			0);				/* function */
 	} else {
 		len += smbios_write_type41(
 			current, handle,
-			PARROT_TRACKPAD_NAME,		/* name */
-			PARROT_TRACKPAD_IRQ_PVT,	/* instance */
+			BOARD_TRACKPAD_NAME,		/* name */
+			BOARD_TRACKPAD_IRQ_PVT,		/* instance */
 			0,				/* segment */
-			PARROT_TRACKPAD_I2C_ADDR,	/* bus */
+			BOARD_TRACKPAD_I2C_ADDR,	/* bus */
 			0,				/* device */
 			0);				/* function */
 	}

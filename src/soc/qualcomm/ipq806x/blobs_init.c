@@ -131,7 +131,11 @@ void start_rpm(void)
 	printk(BIOS_INFO, "Starting RPM\n");
 
 	/* Clear 'ready' indication. */
-	write32(RPM_INT_ACK, read32(RPM_INT_ACK) & ~ready_mask);
+	/*
+	 * RPM_INT_ACK is clear-on-write type register,
+	 * read-modify-write is not recommended.
+	 */
+	write32(RPM_INT_ACK, ready_mask);
 
 	/* Set RPM entry address */
 	write32(RPM_SIGNAL_ENTRY, load_addr);

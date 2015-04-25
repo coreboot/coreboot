@@ -35,7 +35,8 @@
 $(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
 
 .xcompile: util/xcompile/xcompile
-	A=`mktemp $@.XXXXXX`; $< $(XGCCPATH) > $$A && mv $$A $@ 2> /dev/null
+	$< $(XGCCPATH) > $@.tmp
+	\mv -f $@.tmp $@ 2> /dev/null
 
 include .xcompile
 

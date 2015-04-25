@@ -32,6 +32,7 @@
 #define GPIO_POWER	GPIO(0, A, 5)
 #define GPIO_RECOVERY	GPIO(0, B, 1)
 #define GPIO_ECINRW	GPIO(0, A, 7)
+#define GPIO_ECIRQ	GPIO(7, A, 7)
 
 void setup_chromeos_gpios(void)
 {
@@ -39,6 +40,7 @@ void setup_chromeos_gpios(void)
 	gpio_input_pullup(GPIO_LID);
 	gpio_input(GPIO_POWER);
 	gpio_input_pullup(GPIO_RECOVERY);
+	gpio_input(GPIO_ECIRQ);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
@@ -90,6 +92,14 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
 	gpios->gpios[count].value = -1;
 	strncpy((char *)gpios->gpios[count].name, "EC in RW",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
+
+	/* EC interrupt: GPIO active high */
+	gpios->gpios[count].port = GPIO_ECIRQ.raw;
+	gpios->gpios[count].polarity = ACTIVE_LOW;
+	gpios->gpios[count].value = -1;
+	strncpy((char *)gpios->gpios[count].name, "EC interrupt",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 

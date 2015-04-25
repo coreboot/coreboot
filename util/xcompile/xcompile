@@ -76,7 +76,7 @@ testcc() {
 }
 
 testas() {
-	local gccprefixes="$1"
+	local gccprefix="$1"
 	local twidth="$2"
 	local arch="$3"
 	local use_dash_twidth="$4"
@@ -85,16 +85,16 @@ testas() {
 
 	rm -f "$obj_file"
 	[ -n "$use_dash_twidth" ] && use_dash_twidth="--$twidth"
-	${gccprefixes}as $use_dash_twidth -o "$obj_file" $TMPFILE 2>/dev/null ||
+	${gccprefix}as $use_dash_twidth -o "$obj_file" $TMPFILE 2>/dev/null ||
 		return 1
 
 	# Check output content type.
-	local obj_type="$(${gccprefixes}objdump -p $obj_file)"
+	local obj_type="$(${gccprefix}objdump -p $obj_file)"
 	local obj_arch="$(expr "$obj_type" : '.*format \(.[a-z0-9-]*\)')"
 	[ "$obj_arch" = "$full_arch" ] || return 1
 
 	# Architecture matched.
-	GCCPREFIX="$gccprefixes"
+	GCCPREFIX="$gccprefix"
 
 	if [ -z "$use_dash_twidth" ]; then
 		ASFLAGS=""
@@ -146,7 +146,7 @@ detect_special_flags() {
 		;;
 	mipsel)
 		testcc "$CC" "$CFLAGS -mno-abicalls -fno-pic" && \
-                  CFLAGS+=" -mno-abicalls -fno-pic"
+		  CFLAGS+=" -mno-abicalls -fno-pic"
 		;;
 	esac
 }
@@ -171,8 +171,8 @@ AR_${TARCH}:=${GCCPREFIX}ar
 EOF
 }
 
-# Architecture definition
-SUPPORTED_ARCHITECTURE="x86 arm arm64 riscv mipsel"
+# Architecture definitions
+SUPPORTED_ARCHITECTURES="arm arm64 mipsel riscv x86"
 
 arch_config_arm() {
 	TARCH="arm"
@@ -218,7 +218,8 @@ arch_config_mipsel() {
 }
 
 test_architecture() {
-	architecture=$1
+	local architecture=$1
+	local gccprefix search
 
 	GCCPREFIX="invalid"
 	unset TARCH TBFDARCH TCLIST TWIDTH TSUPP TABI
@@ -244,10 +245,10 @@ test_architecture() {
 
 	# Search toolchain by checking assembler capability.
 	for TBFDARCH in $TBFDARCHS; do
-		for gccprefixes in $search ""; do
-			program_exists "${gccprefixes}as" || continue
-			testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "" && break
-			testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "TRUE" && break
+		for gccprefix in $search ""; do
+			program_exists "${gccprefix}as" || continue
+			testas "$gccprefix" "$TWIDTH" "$TBFDARCH" "" && break
+			testas "$gccprefix" "$TWIDTH" "$TBFDARCH" "TRUE" && break
 		done
 		[ "$GCCPREFIX" = "invalid" ] || break
 	done
@@ -263,7 +264,6 @@ test_architecture() {
 }
 
 # This loops over all supported architectures.
-for architecture in $SUPPORTED_ARCHITECTURE; do
+for architecture in $SUPPORTED_ARCHITECTURES; do
 	test_architecture $architecture
 done
-

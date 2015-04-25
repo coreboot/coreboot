@@ -80,13 +80,15 @@ testas() {
 	local twidth="$2"
 	local arch="$3"
 	local use_dash_twidth="$4"
+	local endian="$5"
 	local obj_file="$TMPFILE.o"
 	local full_arch="elf$twidth-$arch"
 
 	rm -f "$obj_file"
 	[ -n "$use_dash_twidth" ] && use_dash_twidth="--$twidth"
-	${gccprefix}as $use_dash_twidth -o "$obj_file" $TMPFILE 2>/dev/null ||
-		return 1
+	[ -n "$endian" ] && endian="-$endian"
+	${gccprefix}as $use_dash_twidth $endian -o "$obj_file" $TMPFILE \
+		2>/dev/null || return 1
 
 	# Check output content type.
 	local obj_type="$(${gccprefix}objdump -p $obj_file)"
@@ -147,6 +149,10 @@ detect_special_flags() {
 	mipsel)
 		testcc "$CC" "$CFLAGS -mno-abicalls -fno-pic" && \
 		  CFLAGS+=" -mno-abicalls -fno-pic"
+
+                # Enforce little endian mode.
+		testcc "$CC" "$CFLAGS -EL" && \
+		  CFLAGS+=" -EL"
 		;;
 	esac
 }
@@ -215,14 +221,15 @@ arch_config_mipsel() {
 	TWIDTH="32"
 	TSUPP="mips mipsel"
 	TABI="elf"
+	TENDIAN="EL"
 }
 
 test_architecture() {
 	local architecture=$1
-	local gccprefix search
+	local endian gccprefix search
 
 	GCCPREFIX="invalid"
-	unset TARCH TBFDARCH TCLIST TWIDTH TSUPP TABI
+	unset TABI TARCH TBFDARCH TCLIST TENDIAN TSUPP TWIDTH
 	if type arch_config_$architecture > /dev/null; then
 		arch_config_$architecture
 	else
@@ -247,23 +254,24 @@ test_architecture() {
 	for TBFDARCH in $TBFDARCHS; do
 		for gccprefix in $search ""; do
 			program_exists "${gccprefix}as" || continue
-			testas "$gccprefix" "$TWIDTH" "$TBFDARCH" "" && break
-			testas "$gccprefix" "$TWIDTH" "$TBFDARCH" "TRUE" && break
+			for endian in $TENDIAN ""; do
+				testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
+					"" "$endian" && return 0
+				testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
+					"TRUE" "$endian" && return 0
+			done
 		done
-		[ "$GCCPREFIX" = "invalid" ] || break
 	done
 
-	if [ "$GCCPREFIX" = "invalid" ]; then
-		echo "Warning: no suitable GCC for $architecture." >&2
-		continue
-	fi
-	CC="${GCCPREFIX}"gcc
-
-	detect_special_flags "$architecture"
-	report_arch_toolchain
+	echo "Warning: no suitable GCC for $architecture." >&2
+	return 1
 }
 
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURES; do
-	test_architecture $architecture
+	if test_architecture $architecture; then
+		CC="${GCCPREFIX}"gcc
+		detect_special_flags "$architecture"
+		report_arch_toolchain
+	fi
 done

@@ -57,6 +57,7 @@ static off_t get_file_size(FILE *f)
 int buffer_create(struct buffer *buffer, size_t size, const char *name)
 {
 	buffer->name = strdup(name);
+	buffer->offset = 0;
 	buffer->size = size;
 	buffer->data = (char *)malloc(buffer->size);
 	if (!buffer->data) {
@@ -73,6 +74,7 @@ int buffer_from_file(struct buffer *buffer, const char *filename)
 		perror(filename);
 		return -1;
 	}
+	buffer->offset = 0;
 	buffer->size = get_file_size(fp);
 	if (buffer->size == -1u) {
 		fprintf(stderr, "could not determine size of %s\n", filename);
@@ -116,9 +118,10 @@ void buffer_delete(struct buffer *buffer)
 		buffer->name = NULL;
 	}
 	if (buffer->data) {
-		free(buffer->data);
+		free(buffer->data - buffer->offset);
 		buffer->data = NULL;
 	}
+	buffer->offset = 0;
 	buffer->size = 0;
 }
 

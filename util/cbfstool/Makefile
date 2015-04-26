@@ -2,7 +2,7 @@ obj ?= .
 
 HOSTCC ?= $(CC)
 
-CFLAGS += -Og -g3
+CFLAGS += -g3
 CFLAGS += -std=c99 -Werror -Wall -Wextra
 CFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
 CFLAGS += -Wstrict-prototypes -Wwrite-strings

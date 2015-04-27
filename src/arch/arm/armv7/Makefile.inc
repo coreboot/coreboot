@@ -59,6 +59,8 @@ bootblock-y += cache_m.c
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 
+bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+
 ################################################################################
 ## verification stage
 ################################################################################
@@ -78,6 +80,8 @@ verstage-c-ccopts += $(armv7-m_flags)
 verstage-S-ccopts += $(armv7-m_asm_flags)
 
 endif # CONFIG_ARCH_VERSTAGE_ARMV7_M
+
+verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 ################################################################################
 ## ROM stage

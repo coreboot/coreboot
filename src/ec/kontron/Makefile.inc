@@ -1,1 +1,0 @@
-subdirs-$(CONFIG_EC_KONTRON_IT8516E) += it8516e

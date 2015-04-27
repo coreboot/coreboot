@@ -1,3 +1,7 @@
+ifeq ($(CONFIG_EC_COMPAL_ENE932),y)
+
 ramstage-y += ec.c
 smm-y += ec.c
 smm-y += ../../../lib/delay.c
+
+endif

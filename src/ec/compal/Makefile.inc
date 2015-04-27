@@ -1,1 +1,0 @@
-subdirs-$(CONFIG_EC_COMPAL_ENE932) += ene932

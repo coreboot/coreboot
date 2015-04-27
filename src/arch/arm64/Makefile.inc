@@ -84,9 +84,9 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARM64),y)
 
-$(objcbfs)/verstage.debug: $$(verstage-objs) $$(VB2_LIB) $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld $(obj)/config.h
+$(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --start-group $(verstage-objs) $(VBS_LIB) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
+	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --start-group $(objgenerated)/libverstage.a --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
 
 verstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
 verstage-y += div0.c

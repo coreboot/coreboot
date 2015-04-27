@@ -56,6 +56,8 @@ $(VB2_LIB): $(obj)/config.h
 		fwlib20
 
 VERSTAGE_ELF = $(objcbfs)/verstage.elf
+verstage-srcs += $(VB2_LIB)
+
 cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage
 fallback/verstage-file = $(VERSTAGE_ELF)
 fallback/verstage-type = stage

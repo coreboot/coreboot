@@ -360,6 +360,10 @@ $(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) -MMD $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) $(bootblock-c-ccopts) -c -o $@ $<
 
+$(objgenerated)/libverstage.a: $$(verstage-objs)
+	rm -f $@
+	ar rcsT $@ $^
+
 #######################################################################
 # Clean up rules
 clean-abuild:

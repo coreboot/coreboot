@@ -57,12 +57,12 @@ config IRQ_SLOT_COUNT
 	default 11
 
 config VGA_BIOS
-        bool
-        default n
+	bool
+	default n
 
 config VGA_BIOS_ID
-        string
-        depends on VGA_BIOS
-        default "1002,9615"
+	string
+	depends on VGA_BIOS
+	default "1002,9615"
 
 endif # BOARD_AMD_TILAPIA_FAM10

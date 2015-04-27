@@ -34,7 +34,7 @@ config EHCI_BAR
 	default 0xfef00000
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
+	string
 	default "southbridge/intel/i82801gx/bootblock.c"
 
 config HPET_MIN_TICKS

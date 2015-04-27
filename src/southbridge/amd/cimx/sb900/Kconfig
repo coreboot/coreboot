@@ -29,30 +29,30 @@ config SATA_CONTROLLER_MODE
 	hex
 	default 0x0
 	help
-		0x0 = Native IDE mode.
-		0x1 = RAID mode.
-		0x2 = AHCI mode.
-		0x3 = Legacy IDE mode.
-		0x4 = IDE->AHCI mode.
-		0x5 = AHCI mode as 7804 ID (AMD driver).
-		0x6 = IDE->AHCI mode as 7804 ID (AMD driver).
+	  0x0 = Native IDE mode.
+	  0x1 = RAID mode.
+	  0x2 = AHCI mode.
+	  0x3 = Legacy IDE mode.
+	  0x4 = IDE->AHCI mode.
+	  0x5 = AHCI mode as 7804 ID (AMD driver).
+	  0x6 = IDE->AHCI mode as 7804 ID (AMD driver).
 
 config PCIB_ENABLE
 	bool
 	default n
 	help
-		n = Disable PCI Bridge Device 14 Function 4.
-		y = Enable PCI Bridge Device 14 Function 4.
+	  n = Disable PCI Bridge Device 14 Function 4.
+	  y = Enable PCI Bridge Device 14 Function 4.
 
 config ACPI_SCI_IRQ
 	hex
 	default 0x9
 	help
-		Set SCI IRQ to 9.
+	  Set SCI IRQ to 9.
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
-        default "southbridge/amd/cimx/sb900/bootblock.c"
+	string
+	default "southbridge/amd/cimx/sb900/bootblock.c"
 
 endif #SOUTHBRIDGE_AMD_CIMX_SB900
 

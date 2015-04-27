@@ -69,7 +69,7 @@ config IRQ_SLOT_COUNT
 	default 11
 
 config VGA_BIOS_ID
-        string
-        default "1002,9712"
+	string
+	default "1002,9712"
 
 endif #BOARD_ADVANSUS_A785E_I

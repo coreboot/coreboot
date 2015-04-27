@@ -18,43 +18,43 @@ config BOARD_SPECIFIC_OPTIONS
 	select VGA
 	select INTEL_EDID
 	select UDELAY_TSC
-        select SERIRQ_CONTINUOUS_MODE
+	select SERIRQ_CONTINUOUS_MODE
 
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf8000000
 
 config DRAM_RESET_GATE_GPIO
-        int
+	int
 	default 25
 
 config USBDEBUG_HCD_INDEX
-       int
-       default 2
+	int
+	default 2
 
 config MAINBOARD_DIR
-        string
-        default gigabyte/ga-b75m-d3v
+	string
+	default gigabyte/ga-b75m-d3v
 
 config MAINBOARD_PART_NUMBER
-        string
-        default "GA-B75M-D3V"
+	string
+	default "GA-B75M-D3V"
 
 config IRQ_SLOT_COUNT
-        int
-        default 18
+	int
+	default 18
 
 config MAX_CPUS
-        int
-        default 8
+	int
+	default 8
 
 config VGA_BIOS_ID
 	string
 	default "8086,0102"
 
 config VGA_BIOS_FILE
-        string
-        default "pci8086,0102.rom"
+	string
+	default "pci8086,0102.rom"
 
 config HAVE_IFD_BIN
 	bool
@@ -65,11 +65,11 @@ config HAVE_ME_BIN
 	default n
 
 config IFD_BIOS_SECTION
-        string
-        default "0x00600000:0x007fffff"
+	string
+	default "0x00600000:0x007fffff"
 
 config IFD_ME_SECTION
-        string
-        default "0x00001000:0x004fffff"
+	string
+	default "0x00001000:0x004fffff"
 
 endif # BOARD_GIGABYTE_GA_B75M_D3V

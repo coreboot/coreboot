@@ -50,8 +50,8 @@ config MAINBOARD_VENDOR
 	default "Google"
 
 config BOOT_MEDIA_SPI_BUS
-        int
-        default 2
+	int
+	default 2
 
 config DRIVER_TPM_I2C_BUS
 	hex

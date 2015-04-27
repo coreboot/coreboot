@@ -40,7 +40,7 @@ config HPET_MIN_TICKS
 	default 0x80
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
+	string
 	default "southbridge/intel/i82801ix/bootblock.c"
 
 endif

@@ -1,5 +1,5 @@
 config CPU_AMD_SOCKET_S1G1
-        bool
+	bool
 
 if CPU_AMD_SOCKET_S1G1
 

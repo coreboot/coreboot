@@ -18,8 +18,8 @@
 #
 
 config NORTHBRIDGE_AMD_PI
-        bool
-        default CPU_AMD_PI
+	bool
+	default CPU_AMD_PI
 	select LATE_CBMEM_INIT
 
 if NORTHBRIDGE_AMD_PI

@@ -1,6 +1,6 @@
 config DRIVERS_LENOVO_WACOM
-       bool
-       default n
+	bool
+	default n
 
 if DRIVERS_LENOVO_WACOM
 

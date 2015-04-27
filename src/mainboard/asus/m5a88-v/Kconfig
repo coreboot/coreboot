@@ -67,7 +67,7 @@ config IRQ_SLOT_COUNT
 	default 11
 
 config VGA_BIOS_ID
-        string
-        default "1002,9715"
+	string
+	default "1002,9715"
 
 endif #BOARD_ASUS_M5A88_V

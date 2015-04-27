@@ -63,11 +63,11 @@ config XIP_ROM_SIZE
 	default 0x80000
 
 config REDIRECT_IDS_HDT_CONSOLE_TO_SERIAL
-        bool "Redirect AGESA IDS_HDT_CONSOLE to serial console"
-        default n
-        help
-          This Option allows you to redirect the AMD AGESA IDS_HDT_CONSOLE debug information to the serial console.
+	bool "Redirect AGESA IDS_HDT_CONSOLE to serial console"
+	default n
+	help
+	  This Option allows you to redirect the AMD AGESA IDS_HDT_CONSOLE debug information to the serial console.
 
-          Warning: Only enable this option when debuging or tracing AMD AGESA code.
+	  Warning: Only enable this option when debuging or tracing AMD AGESA code.
 
 endif #CPU_AMD_AGESA_FAMILY15

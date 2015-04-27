@@ -79,9 +79,9 @@ config BUILD_WITH_FAKE_IFD
 	  support this yet. But there is a patch pending [1].
 
 	  WARNING: Never write a complete coreboot.rom to your flash ROM if it
-		   was built with a fake IFD. It just won't work.
+	           was built with a fake IFD. It just won't work.
 
-          [1] http://www.flashrom.org/pipermail/flashrom/2013-June/011083.html
+	  [1] http://www.flashrom.org/pipermail/flashrom/2013-June/011083.html
 
 config IFD_BIOS_SECTION
 	depends on BUILD_WITH_FAKE_IFD

@@ -61,8 +61,8 @@ config EC_GOOGLE_CHROMEEC_SPI_WAKEUP_DELAY_US
 	default 100
 
 config BOOT_MEDIA_SPI_BUS
-        int
-        default 2
+	int
+	default 2
 
 config DRIVER_TPM_I2C_BUS
 	hex

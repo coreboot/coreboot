@@ -62,3 +62,13 @@ config VBOOT_DISABLE_DEV_ON_RECOVERY
 	  When this option is enabled, the Chrome OS device leaves the
 	  developer mode as soon as recovery request is detected. This is
 	  handy on embedded devices with limited input capabilities.
+
+config VERSTAGE_IN_BOOTBLOCK
+	bool
+	default n
+	depends on VBOOT2_VERIFY_FIRMWARE
+
+config SEPARATE_VERSTAGE
+	bool
+	default !VERSTAGE_IN_BOOTBLOCK
+	depends on VBOOT2_VERIFY_FIRMWARE

@@ -149,6 +149,16 @@ $$(call src-to-obj,$1,$$(1).ld): $$(1).ld $(obj)/config.h
 en$(EMPTY)def
 endef
 
+# Add handler to deal with archives
+define generic-objs_a_template_gen
+de$(EMPTY)fine $(1)-objs_a_template
+$$(call src-to-obj,$1,$$(1).a): $$(1).a
+	@printf "    CP         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	cp $$$$< $$$$@.tmp
+	mv $$$$@.tmp $$$$@
+en$(EMPTY)def
+endef
+
 # Add handler to add no rules for manual files
 define generic-objs_manual_template_gen
 # do nothing

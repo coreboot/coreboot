@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_NORTHBRIDGE_VIA_CX700),y)
+
 ramstage-y += reset.c
 ramstage-y += northbridge.c
 
@@ -24,3 +26,5 @@ ramstage-y += agp.c
 ramstage-y += lpc.c
 ramstage-y += sata.c
 ramstage-y += vga.c
+
+endif

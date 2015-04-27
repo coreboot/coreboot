@@ -18,7 +18,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I440BX),y)
+
 ramstage-y += northbridge.c
 
 romstage-y += raminit.c
 romstage-y += debug.c
+
+endif

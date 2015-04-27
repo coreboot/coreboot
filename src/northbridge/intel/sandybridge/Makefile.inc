@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE)$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE),y)
+
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
@@ -65,3 +67,4 @@ mrc.cache-position := $(mrc-cache-position-y)
 mrc.cache-type := mrc_cache
 endif
 
+endif

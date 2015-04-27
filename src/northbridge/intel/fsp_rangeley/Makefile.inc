@@ -18,6 +18,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_FSP_RANGELEY),y)
+
 subdirs-y += fsp
 ramstage-y += northbridge.c
 ramstage-y += raminit.c
@@ -36,3 +38,4 @@ CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)
 CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_rangeley/
 CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_rangeley/fsp
 
+endif

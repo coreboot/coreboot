@@ -17,6 +17,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I5000),y)
+
 ramstage-y += northbridge.c
 romstage-y += raminit.c
 cpu_incs += src/northbridge/intel/i5000/halt_second_bsp.S
+
+endif

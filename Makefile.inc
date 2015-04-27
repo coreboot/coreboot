@@ -54,8 +54,8 @@ PHONY+= clean-abuild coreboot lint lint-stable build-dirs
 # root source directories of coreboot
 subdirs-y := src/lib src/console src/device
 subdirs-y += src/ec/acpi $(wildcard src/ec/*/*) $(wildcard src/southbridge/*/*)
-subdirs-y += $(wildcard src/soc/*/*)
-subdirs-y += src/northbridge src/superio src/drivers src/cpu src/vendorcode
+subdirs-y += $(wildcard src/soc/*/*) $(wildcard src/northbridge/*/*)
+subdirs-y += src/superio src/drivers src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool util/broadcom
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)

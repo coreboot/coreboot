@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_GM45),y)
+
 romstage-y += early_init.c
 romstage-y += early_reset.c
 romstage-y += delay.c
@@ -38,3 +40,5 @@ ramstage-y += northbridge.c
 ramstage-y += gma.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += delay.c
+
+endif

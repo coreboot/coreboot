@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I945),y)
+
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
@@ -29,3 +31,5 @@ romstage-y += errata.c
 romstage-y += debug.c
 
 smm-y += udelay.c
+
+endif

@@ -16,6 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
+
+ifeq ($(CONFIG_NORTHBRIDGE_AMD_AGESA),y)
+
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10) += family10
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY12) += family12
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14) += family14
@@ -26,3 +29,5 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB) += family16kb
 
 romstage-y += def_callouts.c agesawrapper.c eventlog.c
 ramstage-y += def_callouts.c agesawrapper.c eventlog.c
+
+endif

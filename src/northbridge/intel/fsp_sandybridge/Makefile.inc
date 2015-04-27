@@ -18,6 +18,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_FSP_IVYBRIDGE),y)
+
 subdirs-y += fsp
 ramstage-y += northbridge.c
 ramstage-y += ram_calc.c
@@ -36,3 +38,4 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_sandybridge/fsp
 
+endif

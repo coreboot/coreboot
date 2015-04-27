@@ -18,6 +18,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_NORTHBRIDGE_VIA_CN700),y)
+
 ramstage-y += northbridge.c
 ramstage-y += agp.c
 ramstage-y += vga.c
+
+endif

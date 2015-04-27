@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_NORTHBRIDGE_AMD_AMDK8),y)
+
 ramstage-y += northbridge.c
 ramstage-y += misc_control.c
 ramstage-y += get_sblk_pci1234.c
@@ -27,3 +29,5 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 #
 #end
 #
+
+endif

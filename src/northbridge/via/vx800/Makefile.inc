@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_NORTHBRIDGE_VIA_VX800),y)
+
 ramstage-y += northbridge.c
 ramstage-y += vga.c
 ramstage-y += lpc.c
@@ -25,3 +27,5 @@ ramstage-y += ide.c
 
 chipset_bootblock_inc += $(src)/northbridge/via/vx800/romstrap.inc
 bootblock-y += romstrap.ld
+
+endif

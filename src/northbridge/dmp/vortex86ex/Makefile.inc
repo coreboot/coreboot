@@ -17,5 +17,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_NORTHBRIDGE_DMP_VORTEX86EX),y)
+
 ramstage-y += northbridge.c
 ramstage-y += xgi_oprom.c
+
+endif

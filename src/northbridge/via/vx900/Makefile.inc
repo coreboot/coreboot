@@ -17,6 +17,8 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+ifeq ($(CONFIG_NORTHBRIDGE_VIA_VX900),y)
+
 romstage-y += pci_util.c
 romstage-y += early_smbus.c
 romstage-y += early_vx900.c
@@ -46,3 +48,5 @@ ramstage-y += ./../../../drivers/pc80/vga/vga_io.c
 
 chipset_bootblock_inc += $(src)/northbridge/via/vx900/romstrap.inc
 bootblock-y += romstrap.ld
+
+endif

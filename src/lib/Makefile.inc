@@ -25,6 +25,7 @@ bootblock-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 
 bootblock-$(CONFIG_GENERIC_UDELAY) += timer.c
 
+bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
@@ -33,6 +34,7 @@ verstage-y += prog_ops.c
 verstage-y += delay.c
 verstage-y += cbfs.c
 verstage-y += memcmp.c
+verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 

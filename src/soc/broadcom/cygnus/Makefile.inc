@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOC_BROADCOM_CYGNUS),y)
+
 bootblock-y += bootblock.c
 bootblock-y += cbmem.c
 bootblock-y += i2c.c
@@ -102,3 +104,5 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.tmp \
 	$(objutil)/broadcom/secimage/secimage -out $@ \
 		-config util/broadcom/unauth.cfg \
 		-hmac util/broadcom/khmacsha256 -bl $<
+
+endif

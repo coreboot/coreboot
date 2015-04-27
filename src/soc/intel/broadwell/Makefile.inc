@@ -1,7 +1,8 @@
+ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
+
 subdirs-y += bootblock
 subdirs-y += microcode
 subdirs-y += romstage
-subdirs-y += ../common
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/smm
@@ -128,3 +129,5 @@ cbfs-files-$(CONFIG_HAVE_MRC) += mrc.bin
 mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
 mrc.bin-position := $(if $(findstring elf,$(CONFIG_MRC_FILE)),$(shell printf "0x%x" $$(( $(mrcelfentry) - $(mrcelfoffset) )) ),$(CONFIG_MRC_BIN_ADDRESS))
 mrc.bin-type := mrc
+
+endif

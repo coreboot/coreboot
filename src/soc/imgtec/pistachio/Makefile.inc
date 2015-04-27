@@ -19,6 +19,8 @@
 # MA 02110-1301 USA
 #
 
+ifeq ($(CONFIG_CPU_IMGTEC_PISTACHIO),y)
+
 # We enable CBFS_SPI_WRAPPER for Pistachio targets.
 bootblock-y += clocks.c
 bootblock-y += spi.c
@@ -55,3 +57,4 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw $(BIMGTOOL)
 	@printf "    BIMGTOOL   $(subst $(obj)/,,$(@))\n"
 	$(BIMGTOOL) $< $@ $(call loadaddr,bootblock)
 
+endif

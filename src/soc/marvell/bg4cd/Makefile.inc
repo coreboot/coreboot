@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOC_MARVELL_BG4CD),y)
+
 bootblock-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += bootblock_asm.S
 bootblock-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += bootblock.c
 
@@ -50,3 +52,5 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
 	@mkdir -p $(dir $@)
 	@mv $< $@
+
+endif

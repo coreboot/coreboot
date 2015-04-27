@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOC_ROCKCHIP_RK3288),y)
+
 IDBTOOL = util/rockchip/make_idb.py
 
 #bootblock-y += bootblock.c
@@ -79,3 +81,5 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
 	@mkdir -p $(dir $@)
 	@$(IDBTOOL) --from=$< --to=$@ --enable-align
+
+endif

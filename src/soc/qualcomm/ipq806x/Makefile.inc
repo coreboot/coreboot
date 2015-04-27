@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOC_QC_IPQ806X),y)
+
 bootblock-y += clock.c
 bootblock-y += gpio.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
@@ -88,3 +90,5 @@ mbn-root := 3rdparty/cpu/qualcomm/ipq806x
 $(foreach f,$(mbn-files),$(eval cbfs-files-y += $(f))\
 	  $(eval $(f)-file := $(mbn-root)/$(f))\
 	  $(eval $(f)-type := raw))
+
+endif

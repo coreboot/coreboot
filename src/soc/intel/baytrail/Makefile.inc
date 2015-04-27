@@ -1,7 +1,8 @@
+ifeq ($(CONFIG_SOC_INTEL_BAYTRAIL),y)
+
 subdirs-y += bootblock
 subdirs-y += microcode
 subdirs-y += romstage
-subdirs-y += ../common
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/smm
@@ -102,3 +103,5 @@ mrc.bin-position := $(if $(findstring elf,$(CONFIG_MRC_FILE)),$(shell printf "0x
 mrc.bin-type := mrc
 
 PHONY += baytrail_add_me
+
+endif

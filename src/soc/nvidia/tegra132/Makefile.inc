@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_SOC_NVIDIA_TEGRA132),y)
+
 bootblock-y += bootblock.c
 bootblock-y += bootblock_asm.S
 bootblock-y += cbfs.c
@@ -150,3 +152,5 @@ MTS_FILE_CBFS = mts
 cbfs-files-y += $(MTS_FILE_CBFS)
 $(MTS_FILE_CBFS)-file := $(MTS_FILE)
 $(MTS_FILE_CBFS)-type := raw
+
+endif

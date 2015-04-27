@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_CPU_SAMSUNG_EXYNOS5420),y)
+
 bootblock-y += spi.c alternate_cbfs.c
 bootblock-y += bootblock.c
 bootblock-y += pinmux.c timer.c power.c
@@ -53,3 +55,5 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "    BL1, CKSUM $(subst $(obj)/,,$(@))\n"
 	util/exynos/variable_cksum.py $< $<.cksum
 	cat 3rdparty/cpu/samsung/exynos5420/bl1.bin $<.cksum > $@
+
+endif

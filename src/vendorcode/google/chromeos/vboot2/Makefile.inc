@@ -55,10 +55,9 @@ $(VB2_LIB): $(obj)/config.h
 		V=$(V) \
 		fwlib20
 
-VERSTAGE_ELF = $(objcbfs)/verstage.elf
 verstage-srcs += $(VB2_LIB)
 
 cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage
-fallback/verstage-file = $(VERSTAGE_ELF)
+fallback/verstage-file = $(objcbfs)/verstage.elf
 fallback/verstage-type = stage
 fallback/verstage-compression = none

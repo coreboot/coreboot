@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_SB800),y)
+
 ramstage-y += sb800.c
 ramstage-y += usb.c
 ramstage-y += lpc.c
@@ -11,3 +13,5 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+
+endif

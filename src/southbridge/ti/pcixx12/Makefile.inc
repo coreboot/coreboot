@@ -17,4 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_TI_PCIXX12),y)
+
 ramstage-y += pcixx12.c
+
+endif

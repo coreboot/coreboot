@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_VIA_VT8237R),y)
+
 ramstage-y += vt8237r.c
 ramstage-y += ctrl.c
 ramstage-y += ide.c
@@ -27,3 +29,5 @@ ramstage-$(CONFIG_PIRQ_ROUTE) += pirq.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+
+endif

@@ -30,7 +30,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 
-#include <southbridge/amd/amd_pci_util.h>
+#include <southbridge/amd/common/amd_pci_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <southbridge/amd/cimx/cimx_util.h>

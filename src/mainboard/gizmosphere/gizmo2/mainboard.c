@@ -29,7 +29,7 @@
 #include <arch/acpi.h>
 #include <southbridge/amd/agesa/hudson/pci_devs.h>
 #include <southbridge/amd/agesa/hudson/amd_pci_int_defs.h>
-#include <southbridge/amd/amd_pci_util.h>
+#include <southbridge/amd/common/amd_pci_util.h>
 #include <northbridge/amd/agesa/family16kb/pci_devs.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <cpu/amd/agesa/s3_resume.h>

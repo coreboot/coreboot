@@ -17,5 +17,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
+
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
+
+endif

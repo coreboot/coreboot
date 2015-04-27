@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_SCH),y)
+
 ramstage-y += south.c
 ramstage-y += audio.c
 ramstage-y += lpc.c
@@ -39,3 +41,5 @@ cbfs-files-$(CONFIG_HAVE_CMC) += cmc.bin
 cmc.bin-file := $(call strip_quotes,$(CONFIG_CMC_FILE))
 cmc.bin-type := raw
 cmc.bin-position := 0xfffd0000
+
+endif

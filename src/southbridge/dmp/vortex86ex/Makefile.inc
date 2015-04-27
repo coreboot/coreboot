@@ -17,7 +17,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_DMP_VORTEX86EX),y)
+
 ramstage-y += southbridge.c
 ramstage-y += hard_reset.c
 ramstage-y += ide_sd_sata.c
 ramstage-y += audio.c
+
+endif

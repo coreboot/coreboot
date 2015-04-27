@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82371EB),y)
+
 ramstage-y +=  i82371eb.c
 ramstage-y +=  isa.c
 ramstage-y +=  ide.c
@@ -30,3 +32,5 @@ ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.c
 
 romstage-y += early_pm.c
 romstage-y += early_smbus.c
+
+endif

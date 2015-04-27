@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55),y)
+
 ramstage-y += mcp55.c
 ramstage-y += azalia.c
 ramstage-y += ht.c
@@ -20,3 +22,5 @@ ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 
 chipset_bootblock_inc += $(src)/southbridge/nvidia/mcp55/romstrap.inc
 bootblock-y += romstrap.ld
+
+endif

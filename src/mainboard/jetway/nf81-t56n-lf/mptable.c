@@ -30,7 +30,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <southbridge/amd/amd_pci_util.h>
+#include <southbridge/amd/common/amd_pci_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 
 

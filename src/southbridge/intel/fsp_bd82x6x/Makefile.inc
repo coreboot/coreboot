@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_FSP_BD82X6X),y)
+
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware
 # image outside of CBFS
@@ -71,3 +73,5 @@ endif
 PHONY += bd82x6x_add_me
 
 CPPFLAGS_common += -I$(src)/southbridge/intel/fsp_bd82x6x
+
+endif

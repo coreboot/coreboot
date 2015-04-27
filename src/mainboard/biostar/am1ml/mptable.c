@@ -27,7 +27,7 @@
 #include <cpu/amd/amdfam16.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include <southbridge/amd/amd_pci_util.h>
+#include <southbridge/amd/common/amd_pci_util.h>
 #include <drivers/generic/ioapic/chip.h>
 
 static void *smp_write_config_table(void *v)

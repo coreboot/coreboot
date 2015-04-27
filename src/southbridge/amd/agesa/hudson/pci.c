@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include "hudson.h"
-#include <southbridge/amd/amd_pci_util.h>
+#include <southbridge/amd/common/amd_pci_util.h>
 #include <bootstate.h>
 
 

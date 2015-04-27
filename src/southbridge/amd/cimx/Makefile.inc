@@ -16,10 +16,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
+
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += sb700
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += sb800
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += sb900
 
-romstage-y += cimx_util.c
+romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += cimx_util.c
+romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += cimx_util.c
+romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += cimx_util.c
 
-ramstage-y += cimx_util.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += cimx_util.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += cimx_util.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += cimx_util.c

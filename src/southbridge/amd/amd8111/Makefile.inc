@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_AMD8111),y)
+
 ramstage-y += amd8111.c
 ramstage-y += usb.c
 ramstage-y += lpc.c
@@ -9,3 +11,5 @@ ramstage-y += nic.c
 ramstage-y += pci.c
 ramstage-y += smbus.c
 ramstage-y += reset.c
+
+endif

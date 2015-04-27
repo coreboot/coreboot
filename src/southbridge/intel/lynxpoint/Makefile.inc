@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT),y)
+
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware
 # image outside of CBFS
@@ -104,3 +106,5 @@ else ifneq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 endif
 
 PHONY += lynxpoint_add_me
+
+endif

@@ -33,7 +33,7 @@
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <southbridge/amd/agesa/hudson/pci_devs.h>
 #include <southbridge/amd/agesa/hudson/amd_pci_int_defs.h>
-#include <southbridge/amd/amd_pci_util.h>
+#include <southbridge/amd/common/amd_pci_util.h>
 #include <northbridge/amd/agesa/family16kb/pci_devs.h>
 
 const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {

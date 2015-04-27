@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_SOUTHBRIDGE_VIA_K8T890),y)
+
 ramstage-y += ctrl.c
 ramstage-y += dram.c
 ramstage-y += bridge.c
@@ -10,3 +12,5 @@ ramstage-y += chrome.c
 
 chipset_bootblock_inc += $(src)/southbridge/via/k8t890/romstrap.inc
 bootblock-y += romstrap.ld
+
+endif

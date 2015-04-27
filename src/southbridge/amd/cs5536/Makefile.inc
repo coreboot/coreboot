@@ -17,8 +17,12 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_CS5536),y)
+
 ramstage-y += cs5536.c
 ramstage-y += ide.c
 ramstage-y += pirq.c
 ramstage-y += smbus.c
 romstage-y += smbus.c
+
+endif

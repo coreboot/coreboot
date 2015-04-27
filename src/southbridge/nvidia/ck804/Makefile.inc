@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_CK804),y)
+
 ramstage-y += ck804.c
 ramstage-y += usb.c
 ramstage-y += lpc.c
@@ -21,3 +23,5 @@ romstage-y += early_smbus.c
 
 chipset_bootblock_inc += $(src)/southbridge/nvidia/ck804/romstrap.inc
 bootblock-y += romstrap.ld
+
+endif

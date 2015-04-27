@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_FSP_RANGELEY),y)
+
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware
 # image outside of CBFS
@@ -48,3 +50,5 @@ rangeley_add_descriptor: $(obj)/coreboot.pre $(IFDTOOL)
 endif
 
 PHONY += rangeley_add_descriptor
+
+endif

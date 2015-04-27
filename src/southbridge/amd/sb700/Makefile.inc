@@ -1,3 +1,5 @@
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_SB700),y)
+
 ramstage-y += sb700.c
 ramstage-y += usb.c
 ramstage-y += lpc.c
@@ -15,3 +17,5 @@ ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 
 romstage-y += early_setup.c
 romstage-y += smbus.c
+
+endif

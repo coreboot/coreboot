@@ -1,1 +1,5 @@
-ramstage-$(CONFIG_SOUTHBRIDGE_TI_PCI1X2X) += pci1x2x.c
+ifeq ($(CONFIG_SOUTHBRIDGE_TI_PCI1X2X),y)
+
+ramstage-y += pci1x2x.c
+
+endif

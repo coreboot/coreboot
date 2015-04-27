@@ -1,6 +1,15 @@
+# TODO These two options look too similar
 config PARALLEL_CPU_INIT
 	bool
 	default n
+
+config PARALLEL_MP
+	def_bool n
+	help
+	 This option uses common MP infrastructure for bringing up APs
+	 in parallel. It additionally provides a more flexible mechanism
+	 for sequencing the steps of bringing up the APs.
+
 
 config UDELAY_IO
 	bool
@@ -39,11 +48,14 @@ config TSC_MONOTONIC_TIMER
 	help
 	  Expose monotonic time using the TSC.
 
-config UDELAY_TIMER2
+# This option is used in code but never selected.
+config TSC_CALIBRATE_WITH_IO
 	bool
+	depends on UDELAY_TSC
 	default n
 
-config TSC_CALIBRATE_WITH_IO
+# This option is used in code but never selected.
+config UDELAY_TIMER2
 	bool
 	default n
 
@@ -120,13 +132,6 @@ config PLATFORM_USES_FSP1_0
 	help
 	  Selected for Intel processors/platform combinations that use the
 	  Intel Firmware Support Package (FSP) 1.0 for initialization.
-
-config PARALLEL_MP
-	def_bool n
-	help
-	 This option uses common MP infrastructure for bringing up APs
-	 in parallel. It additionally provides a more flexible mechanism
-	 for sequencing the steps of bringing up the APs.
 
 config BACKUP_DEFAULT_SMM_REGION
 	def_bool n

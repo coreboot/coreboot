@@ -117,7 +117,7 @@ searchtool()
 	done
 	# A workaround for OSX 10.9 and some BSDs, whose nongnu
 	# patch and tar also work.
-	if [ $UNAME = "Darwin" -o $UNAME = "FreeBSD" -o $UNAME = "NetBSD" ]; then
+	if [ $UNAME = "Darwin" -o $UNAME = "FreeBSD" -o $UNAME = "NetBSD" -o $UNAME = "OpenBSD" ]; then
 		if [ "$1" = "patch" -o "$1" = "tar" ]; then
 			if test -x "`which $1 2>/dev/null`"; then
 				echo $1

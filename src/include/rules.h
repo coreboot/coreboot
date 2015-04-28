@@ -31,7 +31,7 @@
 #define ENV_SECMON 0
 #define ENV_VERSTAGE 0
 
-#elif defined(__PRE_RAM__)
+#elif defined(__ROMSTAGE__)
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 1
 #define ENV_RAMSTAGE 0

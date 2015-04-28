@@ -182,12 +182,12 @@ $(objcbfs)/romstage%.elf: $(objcbfs)/romstage%.debug
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	printf "    ROMCC      romstage.inc\n"
-	$(ROMCC) -c -S $(ROMCCFLAGS) -D__PRE_RAM__ -I. $(CPPFLAGS_romstage) $< -o $@
+	$(ROMCC) -c -S $(ROMCCFLAGS) -D__ROMSTAGE__ -D__PRE_RAM__ -I. $(CPPFLAGS_romstage) $< -o $@
 else
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"
-	$(CC_romstage) $(CPPFLAGS_romstage) $(CFLAGS_romstage) -MMD -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
+	$(CC_romstage) $(CPPFLAGS_romstage) $(CFLAGS_romstage) -MMD -D__ROMSTAGE__ -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
 	@printf "    POST       romstage.inc\n"

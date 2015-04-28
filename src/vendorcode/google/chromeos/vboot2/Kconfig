@@ -55,3 +55,40 @@ config SEPARATE_VERSTAGE
 	bool
 	default !VERSTAGE_IN_BOOTBLOCK
 	depends on VBOOT_VERIFY_FIRMWARE
+
+# These VBOOT_X_INDEX are the position of X in FW_MAIN_A/B region. The index
+# table is created by cros_bundle_firmware at build time based on the positions
+# of the blobs listed in fmap.dts and stored at the top of FW_MAIN_A/B region.
+# Unfortunately, there is no programmatical link between the blob list and the
+# index number here.
+config VBOOT_ROMSTAGE_INDEX
+	hex "Romstage component index"
+	default 2
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the romstage component in the verified
+	  firmware block.
+
+config VBOOT_RAMSTAGE_INDEX
+	hex "Ramstage component index"
+	default 1
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the ramstage component in the verified
+	  firmware block.
+
+config VBOOT_REFCODE_INDEX
+	hex "Reference code firmware index"
+	default 1
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the reference code component in the verified
+	  firmware block.
+
+config VBOOT_BOOT_LOADER_INDEX
+	hex "Bootloader component index"
+	default 0
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the bootloader component in the verified
+	  firmware block.

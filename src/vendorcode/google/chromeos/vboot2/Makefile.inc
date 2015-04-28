@@ -63,5 +63,9 @@ fallback/verstage-file = $(objcbfs)/verstage.elf
 fallback/verstage-type = stage
 fallback/verstage-compression = none
 else
+ifeq ($(VBOOT_STARTS_IN_BOOTBLOCK),y)
 bootblock-srcs += $(objgenerated)/libverstage.a
+else
+romstage-srcs += $(objgenerated)/libverstage.a
 endif
+endif # CONFIG_SEPARATE_VERSTAGE

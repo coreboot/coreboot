@@ -16,6 +16,20 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+config VBOOT_STARTS_IN_BOOTBLOCK
+	bool
+	default n
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  Firmware verification happens during or at the end of bootblock.
+
+config VBOOT_STARTS_IN_ROMSTAGE
+	bool
+	default n
+	depends on VBOOT_VERIFY_FIRMWARE && !VBOOT_STARTS_IN_BOOTBLOCK
+	help
+	  Firmware verification happens during or at the end of romstage.
+
 config VBOOT2_MOCK_SECDATA
 	bool "Mock secdata for firmware verification"
 	default n
@@ -27,16 +41,6 @@ config VBOOT2_MOCK_SECDATA
 	  can be used during development when a TPM is not present or broken.
 	  THIS SHOULD NOT BE LEFT ON FOR PRODUCTION DEVICES.
 
-config RETURN_FROM_VERSTAGE
-	bool "return from verstage"
-	default n
-	depends on VBOOT_VERIFY_FIRMWARE
-	help
-	  If this is set, the verstage returns back to the bootblock instead of
-	  exits to the romstage so that the verstage space can be reused by the
-	  romstage. Useful if a ram space is too small to fit both the verstage
-	  and the romstage.
-
 config VBOOT_DISABLE_DEV_ON_RECOVERY
 	bool "Disable dev mode on recovery requests"
 	default n
@@ -46,15 +50,20 @@ config VBOOT_DISABLE_DEV_ON_RECOVERY
 	  developer mode as soon as recovery request is detected. This is
 	  handy on embedded devices with limited input capabilities.
 
-config VERSTAGE_IN_BOOTBLOCK
+config SEPARATE_VERSTAGE
 	bool
 	default n
 	depends on VBOOT_VERIFY_FIRMWARE
 
-config SEPARATE_VERSTAGE
+config RETURN_FROM_VERSTAGE
 	bool
-	default !VERSTAGE_IN_BOOTBLOCK
-	depends on VBOOT_VERIFY_FIRMWARE
+	default n
+	depends on SEPARATE_VERSTAGE
+	help
+	  If this is set, the verstage returns back to the calling stage instead
+	  of exiting to the succeeding stage so that the verstage space can be
+	  reused by the succeeding stage. This is useful if a ram space is too
+	  small to fit both the verstage and the succeeding stage.
 
 # These VBOOT_X_INDEX are the position of X in FW_MAIN_A/B region. The index
 # table is created by cros_bundle_firmware at build time based on the positions

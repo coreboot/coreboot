@@ -19,6 +19,7 @@
 
 #include <inttypes.h>
 #include <libgen.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -449,7 +450,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	      content_offset, (int)((char*)CBFS_SUBHEADER(entry) -
 				    image->buffer.data));
 	assert((char*)CBFS_SUBHEADER(entry) - image->buffer.data ==
-	       content_offset);
+	       (ptrdiff_t)content_offset);
 	memcpy(CBFS_SUBHEADER(entry), data, size);
 	if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
 

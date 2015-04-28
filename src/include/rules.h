@@ -29,6 +29,7 @@
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SECMON 0
+#define ENV_VERSTAGE 0
 
 #elif defined(__PRE_RAM__)
 #define ENV_BOOTBLOCK 0
@@ -36,6 +37,7 @@
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SECMON 0
+#define ENV_VERSTAGE 0
 
 #elif defined(__SMM__)
 #define ENV_BOOTBLOCK 0
@@ -43,6 +45,7 @@
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 1
 #define ENV_SECMON 0
+#define ENV_VERSTAGE 0
 
 #elif defined(__SECMON__)
 #define ENV_BOOTBLOCK 0
@@ -50,6 +53,15 @@
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SECMON 1
+#define ENV_VERSTAGE 0
+
+#elif defined(__VERSTAGE__)
+#define ENV_BOOTBLOCK 0
+#define ENV_ROMSTAGE 0
+#define ENV_RAMSTAGE 0
+#define ENV_SMM 0
+#define ENV_SECMON 0
+#define ENV_VERSTAGE 1
 
 #else
 #define ENV_BOOTBLOCK 0
@@ -57,6 +69,7 @@
 #define ENV_RAMSTAGE 1
 #define ENV_SMM 0
 #define ENV_SECMON 0
+#define ENV_VERSTAGE 0
 #endif
 
 /* For romstage and ramstage always build with simple device model, ie.

@@ -52,8 +52,8 @@ is_file_tracked() {
 # Takes one optional argument: the path to inspect
 git_url() {
   # Note: This may not work as expected if multiple remotes are fetched from.
-  echo $(git remote -v | \
-         awk '/fetch/ {split($2, pieces, "@"); print pieces[2]; exit 0}')
+  echo $(git remote -v | grep "^origin\>" | \
+         awk '/fetch/ {print $2; exit 0}' | sed "s,^.*@,,")
 }
 
 # Returns a string indicating where others can get the current source code (excluding uncommitted changes)

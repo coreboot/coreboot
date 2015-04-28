@@ -418,7 +418,7 @@ gitconfig:
 	for hook in commit-msg pre-commit ; do                       \
 		if [ util/gitconfig/$$hook -nt .git/hooks/$$hook -o  \
 		! -x .git/hooks/$$hook ]; then			     \
-			cp util/gitconfig/$$hook .git/hooks/$$hook;  \
+			sed -e "s,%MAKE%,$(MAKE),g" util/gitconfig/$$hook > .git/hooks/$$hook;  \
 			chmod +x .git/hooks/$$hook;		     \
 		fi;						     \
 	done

@@ -1,2 +1,2 @@
 #!/bin/sh
-exec make lint-stable
+exec %MAKE% lint-stable

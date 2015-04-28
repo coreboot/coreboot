@@ -54,7 +54,24 @@ void payload_load(void)
 	struct prog *payload = &global_payload;
 
 	for (i = 0; i < ARRAY_SIZE(payload_ops); i++) {
+		/* Default loader state is active. */
+		int ret = 1;
+
 		ops = payload_ops[i];
+
+		if (ops->is_loader_active != NULL)
+			ret = ops->is_loader_active(payload);
+
+		if (ret == 0) {
+			printk(BIOS_DEBUG, "%s payload loader inactive.\n",
+				ops->name);
+			continue;
+		} else if (ret < 0) {
+			printk(BIOS_DEBUG, "%s payload loader failure.\n",
+				ops->name);
+			continue;
+		}
+
 		if (ops->prepare(payload) < 0) {
 			printk(BIOS_DEBUG, "%s: could not locate payload.\n",
 				ops->name);

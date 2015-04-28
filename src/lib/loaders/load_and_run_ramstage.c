@@ -83,8 +83,25 @@ void run_ramstage(void)
 	run_ramstage_from_resume(romstage_handoff_find_or_add(), &ramstage);
 
 	for (i = 0; i < ARRAY_SIZE(loaders); i++) {
+		/* Default loader state is active. */
+		int ret = 1;
+
 		ops = loaders[i];
-		printk(BIOS_DEBUG, "Trying %s ramstage loader.\n", ops->name);
+
+		if (ops->is_loader_active != NULL)
+			ret = ops->is_loader_active(&ramstage);
+
+		if (ret == 0) {
+			printk(BIOS_DEBUG, "%s ramstage loader inactive.\n",
+				ops->name);
+			continue;
+		} else if (ret < 0) {
+			printk(BIOS_DEBUG, "%s ramstage loader failure.\n",
+				ops->name);
+			continue;
+		}
+
+		printk(BIOS_DEBUG, "%s ramstage loader active.\n", ops->name);
 		load_ramstage(ops, &ramstage);
 	}
 

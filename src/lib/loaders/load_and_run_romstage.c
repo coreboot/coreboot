@@ -41,11 +41,26 @@ void run_romstage(void)
 	};
 
 	for (i = 0; i < ARRAY_SIZE(loaders); i++) {
+		/* Default loader state is active. */
+		int ret = 1;
 		const struct prog_loader_ops *ops;
 
 		ops = loaders[i];
 
-		printk(BIOS_DEBUG, "Trying %s romstage loader.\n", ops->name);
+		if (ops->is_loader_active != NULL)
+			ret = ops->is_loader_active(&romstage);
+
+		if (ret == 0) {
+			printk(BIOS_DEBUG, "%s romstage loader inactive.\n",
+				ops->name);
+			continue;
+		} else if (ret < 0) {
+			printk(BIOS_DEBUG, "%s romstage loader failure.\n",
+				ops->name);
+			continue;
+		}
+
+		printk(BIOS_DEBUG, "%s romstage loader active.\n", ops->name);
 
 		timestamp_add_now(TS_START_COPYROM);
 

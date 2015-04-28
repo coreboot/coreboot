@@ -103,6 +103,9 @@ void platform_prog_run(struct prog *prog);
 
 struct prog_loader_ops {
 	const char *name;
+	/* Determine if the loader is the active one. If so returns 1 else 0
+	 * or < 0 on error. */
+	int (*is_loader_active)(struct prog *prog);
 	/* Returns < 0 on error or 0 on success. This function needs to do
 	 * different things depending on the prog type. See definition
 	 * of struct prog above. */

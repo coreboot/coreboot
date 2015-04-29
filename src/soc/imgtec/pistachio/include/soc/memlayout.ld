@@ -38,12 +38,12 @@ SECTIONS
 	 * and then through the identity mapping in ROM stage.
 	 */
 	SRAM_START(0x1a000000)
-	ROMSTAGE(0x1a004800, 36K)
-	PRERAM_CBFS_CACHE(0x1a00d800, 74K)
+	ROMSTAGE(0x1a005000, 36K)
+	PRERAM_CBFS_CACHE(0x1a00e000, 72K)
 	SRAM_END(0x1a020000)
 
 	/* Bootblock executes out of KSEG0 and sets up the identity mapping. */
-	BOOTBLOCK(0x9a000000, 18K)
+	BOOTBLOCK(0x9a000000, 20K)
 
 	/*
 	 * Let's use SRAM for stack and CBMEM console.  Always accessed

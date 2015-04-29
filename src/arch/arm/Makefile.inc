@@ -20,11 +20,6 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
-###############################################################################
-# Take care of subdirectories
-###############################################################################
-subdirs-y += libgcc/
-subdirs-y += armv4/ armv7/
 
 ###############################################################################
 # ARM specific options
@@ -36,6 +31,9 @@ CBFSTOOL_PRE_OPTS = -b 0
 endif
 
 ifeq ($(CONFIG_ARCH_ARM),y)
+subdirs-y += libgcc/
+subdirs-y += armv4/ armv7/
+
 stages_c = $(src)/arch/arm/stages.c
 stages_o = $(obj)/arch/arm/stages.o
 

@@ -125,7 +125,7 @@ searchtool()
 			fi
 		fi
 	fi
-	printf "${RED}ERROR:${red} Missing toolchain: $1${NC}\n" >&2
+	printf "${RED}ERROR:${red} Missing tool: Please install $1 (eg using your OS packaging system)${NC}\n" >&2
 	[ -z "$3" ] && exit 1
 	false
 }

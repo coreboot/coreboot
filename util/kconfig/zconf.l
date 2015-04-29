@@ -8,12 +8,12 @@
  * Released under the terms of the GNU GPL v2.0.
  */
 
+#include <glob.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <wordexp.h>
 
 #include "lkc.h"
 
@@ -339,17 +339,23 @@ void zconf_nextfile(const char *name)
 
 void zconf_nextfiles(const char *wildcard)
 {
-	wordexp_t p;
+	glob_t g;
 	char **w;
 	int i;
 
-	wordexp(wildcard, &p, 0);
-	w = p.we_wordv;
+	if (glob(wildcard, 0, NULL, &g) != 0) {
+		return;
+	}
+	if (g.gl_pathv == NULL) {
+		globfree(&g);
+		return;
+	}
 
-	for (i = p.we_wordc - 1; i >= 0; i--)
-		zconf_nextfile(w[i]);
+	w = g.gl_pathv;
+	while (*w)
+		zconf_nextfile(*w++);
 
-	wordfree(&p);
+	globfree(&g);
 }
 
 static void zconf_endfile(void)

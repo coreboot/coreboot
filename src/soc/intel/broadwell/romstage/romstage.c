@@ -38,6 +38,7 @@
 #include <soc/reset.h>
 #include <soc/romstage.h>
 #include <soc/spi.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Entry from cache-as-ram.inc. */
 void * asmlinkage romstage_main(unsigned long bist,

@@ -18,6 +18,7 @@
  */
 
 #include <types.h>
+#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <tpm.h>

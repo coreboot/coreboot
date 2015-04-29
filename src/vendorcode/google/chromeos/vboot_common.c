@@ -20,6 +20,7 @@
 #include <boot/coreboot_tables.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <reset.h>
 #include <stddef.h>

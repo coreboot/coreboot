@@ -33,6 +33,7 @@ ramstage-y += memmap.c
 romstage-y += memmap.c
 ramstage-y += minihd.c
 ramstage-y += monotonic_timer.c
+smm-y      += monotonic_timer.c
 ramstage-y += pch.c
 romstage-y += pch.c
 ramstage-y += pcie.c

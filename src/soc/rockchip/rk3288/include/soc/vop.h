@@ -100,6 +100,11 @@ enum {
 	LB_RGB_1280X8 = 0x5
 };
 
+enum {
+	EDP_MODE,
+	HDMI_MODE,
+};
+
 /* VOP_VERSION_INFO */
 #define M_FPGA_VERSION (0xffff << 16)
 #define M_RTL_VERSION  (0xffff)
@@ -351,6 +356,6 @@ enum {
 #define V_VAEP(x)		(((x)&0x1fff)<<0)
 #define V_VASP(x)		(((x)&0x1fff)<<16)
 
-void rkvop_mode_set(u32 vop_id, const struct edid *edid);
+void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode);
 void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid);
 #endif

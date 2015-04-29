@@ -96,7 +96,7 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 	write32(&preg->reg_cfg_done, 0x01); /* enable reg config */
 }
 
-void rkvop_mode_set(u32 vop_id, const struct edid *edid)
+void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 {
 	u32 hactive = edid->ha;
 	u32 vactive = edid->va;
@@ -108,9 +108,26 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid)
 	u32 vback_porch = edid->vbl - edid->vso - edid->vspw;
 	struct rk3288_vop_regs *preg = vop_regs[vop_id];
 
-	clrsetbits_le32(&preg->sys_ctrl, M_ALL_OUT_EN, V_EDP_OUT_EN(1));
-	clrsetbits_le32(&preg->dsp_ctrl0, M_DSP_OUT_MODE,
-					 V_DSP_OUT_MODE(15));
+	switch (mode) {
+
+	case HDMI_MODE:
+		clrsetbits_le32(&preg->sys_ctrl,
+				M_ALL_OUT_EN, V_HDMI_OUT_EN(1));
+		break;
+
+	case EDP_MODE:
+	default:
+		clrsetbits_le32(&preg->sys_ctrl,
+				M_ALL_OUT_EN, V_EDP_OUT_EN(1));
+		break;
+	}
+
+	clrsetbits_le32(&preg->dsp_ctrl0,
+			M_DSP_OUT_MODE | M_DSP_VSYNC_POL | M_DSP_HSYNC_POL,
+			V_DSP_OUT_MODE(15) |
+			V_DSP_HSYNC_POL(!!edid->phsync) |
+			V_DSP_VSYNC_POL(!!edid->pvsync));
+
 	write32(&preg->dsp_htotal_hs_end, V_HSYNC(hsync_len) |
 		V_HORPRD(hsync_len + hback_porch + hactive + hfront_porch));
 

@@ -31,6 +31,7 @@
 #include <soc/clock.h>
 #include <soc/display.h>
 #include <soc/edp.h>
+#include <soc/hdmi.h>
 #include <soc/gpio.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
@@ -51,15 +52,27 @@ void rk_display_init(device_t dev, u32 lcdbase,
 	dcache_clean_invalidate_by_mva((void *)lower, upper - lower);
 	mmu_config_range(lower / MiB, (upper - lower) / MiB, DCACHE_OFF);
 
-	rkclk_configure_edp();
+	switch (conf->vop_mode) {
+	case HDMI_MODE:
+		rkclk_configure_hdmi();
+		rkclk_configure_vop_aclk(conf->vop_id, 384 * MHz);
+		rk_hdmi_init(conf->vop_id);
+		if (rk_hdmi_get_edid(&edid)) {
+			printk(BIOS_WARNING, "can not get edid\n");
+			return;
+		}
+		break;
 
-	rkclk_configure_vop_aclk(conf->vop_id, 192 * MHz);
-
-	rk_edp_init(conf->vop_id);
-
-	if (rk_edp_get_edid(&edid)) {
-		printk(BIOS_WARNING, "can not get edid\n");
-		return;
+	case EDP_MODE:
+	default:
+		rkclk_configure_edp();
+		rkclk_configure_vop_aclk(conf->vop_id, 192 * MHz);
+		rk_edp_init(conf->vop_id);
+		if (rk_edp_get_edid(&edid)) {
+			printk(BIOS_WARNING, "can not get edid\n");
+			return;
+		}
+		break;
 	}
 
 	if (rkclk_configure_vop_dclk(conf->vop_id, edid.pixel_clock * KHz)) {
@@ -71,15 +84,34 @@ void rk_display_init(device_t dev, u32 lcdbase,
 	edid.bytes_per_line = edid.ha * conf->framebuffer_bits_per_pixel / 8;
 	edid.x_resolution = edid.ha;
 	edid.y_resolution = edid.va;
-	rkvop_mode_set(conf->vop_id, &edid);
+	rkvop_mode_set(conf->vop_id, &edid, conf->vop_mode);
 
 	rkvop_enable(conf->vop_id, lcdbase, &edid);
 
-	if (rk_edp_enable()) {
-		printk(BIOS_WARNING, "edp enable err\n");
-		return;
+	switch (conf->vop_mode) {
+	case HDMI_MODE:
+		if (rk_hdmi_enable(&edid)) {
+			printk(BIOS_WARNING, "hdmi enable err\n");
+			return;
+		}
+
+		/*
+		 * HACK: if we do remove this delay, HDMI TV may not show
+		 * anythings. So we make an delay here, ensure TV have
+		 * enough time to respond.
+		 */
+		mdelay(2000);
+		break;
+
+	case EDP_MODE:
+	default:
+		if (rk_edp_enable()) {
+			printk(BIOS_WARNING, "edp enable err\n");
+			return;
+		}
+		mainboard_power_on_backlight();
+		break;
 	}
 
 	set_vbe_mode_info_valid(&edid, (uintptr_t)lcdbase);
-	mainboard_power_on_backlight();
 }

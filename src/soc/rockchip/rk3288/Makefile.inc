@@ -69,6 +69,7 @@ ramstage-y += rk808.c
 ramstage-y += pwm.c
 ramstage-y += vop.c
 ramstage-y += edp.c
+ramstage-y += hdmi.c
 ramstage-y += display.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 

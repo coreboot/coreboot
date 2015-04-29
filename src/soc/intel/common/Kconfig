@@ -1,3 +1,8 @@
+config SOC_INTEL_COMMON
+	bool
+	help
+	  common code for Intel SOCs
+
 if HAVE_MRC
 
 config CACHE_MRC_SETTINGS

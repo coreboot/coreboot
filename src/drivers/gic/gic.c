@@ -26,6 +26,10 @@
 enum {
 	ENABLE_GRP0 = 0x1 << 0,
 	ENABLE_GRP1 = 0x1 << 1,
+	FIQ_BYP_DIS_GRP0 = 0x1 << 5,
+	IRQ_BYP_DIS_GRP0 = 0x1 << 6,
+	FIQ_BYP_DIS_GRP1 = 0x1 << 7,
+	IRQ_BYP_DIS_GRP1 = 0x1 << 8,
 };
 
 struct gic {
@@ -135,6 +139,13 @@ void gic_disable(void)
 	/* Disable secure, non-secure interrupts. */
 	uint32_t val = gic_read(&gicc->ctlr);
 	val &= ~(ENABLE_GRP0 | ENABLE_GRP1);
+	/*
+	 * Enable the IRQ/FIQ BypassDisable bits to bypass the IRQs.
+	 * So the CPU can wake up from power gating state when the GIC
+	 * was disabled.
+	 */
+	val |= FIQ_BYP_DIS_GRP0 | IRQ_BYP_DIS_GRP0 |
+	       FIQ_BYP_DIS_GRP1 | IRQ_BYP_DIS_GRP1;
 	gic_write(&gicc->ctlr, val);
 }
 

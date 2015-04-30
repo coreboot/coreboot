@@ -222,7 +222,7 @@ config ME_BIN_PATH
 	default "3rdparty/mainboard/$(MAINBOARDDIR)/me.bin"
 
 config HAVE_IFD_BIN
-	bool
+	bool "Use Intel Firmware Descriptor from existing binary"
 	default n
 
 config BUILD_WITH_FAKE_IFD

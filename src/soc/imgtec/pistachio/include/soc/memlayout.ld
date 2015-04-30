@@ -42,7 +42,10 @@ SECTIONS
 	PRERAM_CBFS_CACHE(0x1a00e000, 72K)
 	SRAM_END(0x1a020000)
 
-	/* Bootblock executes out of KSEG0 and sets up the identity mapping. */
+	/* Bootblock executes out of KSEG0 and sets up the identity mapping.
+	 * This is identical to SRAM above, and thus also limited 64K and
+	 * needs to avoid conflicts with items set up above.
+	 */
 	BOOTBLOCK(0x9a000000, 20K)
 
 	/*

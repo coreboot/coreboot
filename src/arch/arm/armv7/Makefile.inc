@@ -91,8 +91,6 @@ verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ## ROM stage
 ################################################################################
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV7),y)
->>>>>>> 34b838e... armv7-m: add armv7-m configuration
-
 romstage-y += cache.c
 romstage-y += cpu.S
 romstage-y += exception.c

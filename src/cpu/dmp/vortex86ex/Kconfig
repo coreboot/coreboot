@@ -19,6 +19,11 @@
 
 config CPU_DMP_VORTEX86EX
 	bool
+
+if CPU_DMP_VORTEX86EX
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_VERSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
@@ -71,3 +76,5 @@ config PLL_500_375_33
 	bool "CPU=500Mhz/DRAM=375Mhz/PCI=33Mhz"
 
 endchoice
+
+endif

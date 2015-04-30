@@ -604,9 +604,6 @@ ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    REVISION   build.h\n"
 	if [ -f $(obj)/build.h ]; then $(CBFSTOOL) $@.tmp add -f $(obj)/build.h -n revision -t raw; fi
 endif
-ifeq ($(CONFIG_VBOOT_VERIFY_FIRMWARE),y)
-	$(CBFSTOOL) $@.tmp add-stage -f $(VBOOT_STUB) -n $(CONFIG_CBFS_PREFIX)/vboot -c $(CBFS_COMPRESS_FLAG)
-endif
 ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
 	$(CBFSTOOL) $@.tmp add-stage -f $(REFCODE_BLOB) -n $(CONFIG_CBFS_PREFIX)/refcode -c $(CBFS_COMPRESS_FLAG)
 endif

@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
+libverstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
 bootblock-y += ../vboot_common.c
 verstage-y += ../vboot_common.c
@@ -25,14 +25,14 @@ romstage-y += ../vboot_common.c
 ramstage-y += ../vboot_common.c
 
 bootblock-y += verstub.c
-verstage-y += verstub.c
+libverstage-y += verstub.c
 bootblock-y += common.c
-verstage-y += verstage.c
+libverstage-y += verstage.c
 verstage-y += common.c
 ifeq (${CONFIG_VBOOT2_MOCK_SECDATA},y)
-verstage-y += secdata_mock.c
+libverstage-y += secdata_mock.c
 else
-verstage-y += antirollback.c
+libverstage-y += antirollback.c
 endif
 romstage-y += vboot_handoff.c common.c
 
@@ -41,7 +41,7 @@ verstage-y += verstage.ld
 VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-VERSTAGE-y))
 VB2_LIB = $(obj)/external/vboot_reference/vboot_fw20.a
 VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CPPFLAGS_verstage)))
-VBOOT_CFLAGS += $(verstage-c-ccopts)
+VBOOT_CFLAGS += $(libverstage-c-ccopts)
 VBOOT_CFLAGS += -include $(top)/src/include/kconfig.h -Wno-missing-prototypes
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 
@@ -55,7 +55,7 @@ $(VB2_LIB): $(obj)/config.h
 		V=$(V) \
 		fwlib20
 
-verstage-srcs += $(VB2_LIB)
+libverstage-srcs += $(VB2_LIB)
 
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
 cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage

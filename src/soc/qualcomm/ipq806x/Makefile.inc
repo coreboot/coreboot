@@ -27,10 +27,10 @@ bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 
 verstage-y += clock.c
 verstage-y += gpio.c
-verstage-y += gsbi.c
-verstage-y += i2c.c
-verstage-y += qup.c
-verstage-y += spi.c
+libverstage-y += gsbi.c
+libverstage-y += i2c.c
+libverstage-y += qup.c
+libverstage-y += spi.c
 verstage-y += timer.c
 verstage-$(CONFIG_CONSOLE_SERIAL_IPQ806X) += uart.c
 

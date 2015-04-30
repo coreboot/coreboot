@@ -64,7 +64,7 @@ subdirs-y += site-local
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage bootblock smm smmstub cpu_microcode verstage secmon
+classes-y := ramstage romstage bootblock smm smmstub cpu_microcode libverstage verstage secmon
 
 # Add dynamic classes for rmodules
 $(foreach supported_arch,$(ARCH_SUPPORTED), \
@@ -138,6 +138,7 @@ endif
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
+libverstage-c-deps:=$$(OPTION_TABLE_H)
 verstage-c-deps:=$$(OPTION_TABLE_H)
 bootblock-c-deps:=$$(OPTION_TABLE_H)
 
@@ -362,7 +363,7 @@ $(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) -MMD $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) $(bootblock-c-ccopts) -c -o $@ $<
 
-$(objgenerated)/libverstage.a: $$(verstage-objs)
+$(objgenerated)/libverstage.a: $$(libverstage-objs)
 	rm -f $@
 	ar rcsT $@ $^
 

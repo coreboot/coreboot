@@ -73,9 +73,9 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARM),y)
 
-$(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
+$(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs) $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld --start-group $(objgenerated)/libverstage.a --end-group
+	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld --start-group $(objgenerated)/libverstage.a $$(verstage-objs) --end-group
 
 verstage-y += div0.c
 verstage-y += eabi_compat.c

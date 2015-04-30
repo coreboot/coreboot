@@ -45,6 +45,8 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARMV4
 ################################################################################
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV4),y)
+libverstage-c-ccopts += $(armv4_flags)
+libverstage-S-ccopts += $(armv4_flags)
 verstage-c-ccopts += $(armv4_flags)
 verstage-S-ccopts += $(armv4_flags)
 

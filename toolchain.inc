@@ -51,7 +51,8 @@ HOSTCXX:=CCC_CXX="$(HOSTCXX)" $(CXX)
 ROMCC=CCC_CC="$(ROMCC_BIN)" $(CC)
 endif
 
-COREBOOT_STANDARD_STAGES := bootblock verstage romstage ramstage
+COREBOOT_STANDARD_STAGES := bootblock libverstage verstage romstage ramstage
+MAP-libverstage := verstage
 
 ARCHDIR-i386	:= x86
 ARCHDIR-x86_32	:= x86
@@ -81,8 +82,9 @@ toolchain_to_dir = \
 # This step is essential for initializing the toolchain for coreboot standard
 # stages i.e. bootblock, romstage and ramstage, since it acts as the second
 # parameter to create_class_compiler below in init_standard_toolchain
+map_stage = $(strip $(if $(MAP-$(1)),$(MAP-$(1)),$(1)))
 set_stage_toolchain= \
-	$(foreach arch,$(ARCH_SUPPORTED),$(eval ARCH-$(1)-$($(shell echo CONFIG_ARCH_$(1)_$(arch) | tr '[:lower:]' '[:upper:]')) := $(arch)))
+	$(foreach arch,$(ARCH_SUPPORTED),$(eval ARCH-$(1)-$($(shell echo CONFIG_ARCH_$(call map_stage,$(1))_$(arch) | tr '[:lower:]' '[:upper:]')) := $(arch)))
 
 # create_class_compiler: Used to create compiler tool set for
 # special classes

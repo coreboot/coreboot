@@ -66,6 +66,8 @@ bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ################################################################################
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV7),y)
+libverstage-c-ccopts += $(armv7-a_flags)
+libverstage-S-ccopts += $(armv7-a_asm_flags)
 verstage-c-ccopts += $(armv7-a_flags)
 verstage-S-ccopts += $(armv7-a_asm_flags)
 
@@ -76,6 +78,8 @@ verstage-y += exception_asm.S
 verstage-y += mmu.c
 
 else ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV7_M),y)
+libverstage-c-ccopts += $(armv7-m_flags)
+libverstage-S-ccopts += $(armv7-m_asm_flags)
 verstage-c-ccopts += $(armv7-m_flags)
 verstage-S-ccopts += $(armv7-m_asm_flags)
 

@@ -39,7 +39,7 @@ verstage-y += timer.c
 verstage-$(CONFIG_DRIVERS_UART) += uart.c
 verstage-y += gpio.c
 verstage-y += clock.c
-verstage-y += crypto.c
+libverstage-y += crypto.c
 verstage-y += i2c.c
 verstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 

@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <cbfs.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <arch/cpu.h>
 #include <cpu/x86/bist.h>
@@ -313,15 +312,6 @@ void romstage_after_car(void)
 
 
 #if IS_ENABLED(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM)
-
-void stage_cache_external_region(void **base, size_t *size)
-{
-	/* The ramstage cache lives in the TSEG region at RESERVED_SMM_OFFSET.
-	 * The top of ram is defined to be the TSEG base address. */
-	*size = RESERVED_SMM_SIZE;
-	*base = (void *)((uint32_t)cbmem_top() + RESERVED_SMM_OFFSET);
-}
-
 void ramstage_cache_invalid(void)
 {
 #if CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE

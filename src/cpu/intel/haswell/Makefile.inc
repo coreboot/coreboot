@@ -4,8 +4,11 @@ romstage-y += romstage.c
 romstage-y += tsc_freq.c
 
 ramstage-y += acpi.c
+ramstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 ramstage-$(CONFIG_MONOTONIC_TIMER_MSR) += monotonic_timer.c
+
+romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
 

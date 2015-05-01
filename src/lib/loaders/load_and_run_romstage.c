@@ -24,12 +24,19 @@
 #include <cbfs.h>
 #include <halt.h>
 #include <program_loading.h>
+#include <rules.h>
 #include <timestamp.h>
 
 extern const struct prog_loader_ops cbfs_romstage_loader;
+extern const struct prog_loader_ops vboot_loader;
 
 static const struct prog_loader_ops *loaders[] = {
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+	&vboot_loader,
+#endif
+#if !ENV_VERSTAGE || (ENV_VERSTAGE && !CONFIG_RETURN_FROM_VERSTAGE)
 	&cbfs_romstage_loader,
+#endif
 };
 
 void run_romstage(void)

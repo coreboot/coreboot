@@ -34,6 +34,7 @@ verstage-y += prog_ops.c
 verstage-y += delay.c
 verstage-y += cbfs.c
 verstage-y += cbfs_core.c
+verstage-y += halt.c
 verstage-y += memcmp.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c

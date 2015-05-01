@@ -27,12 +27,12 @@
 #include <symbols.h>
 #include <timestamp.h>
 
-extern const struct prog_loader_ops vboot_payload_loader;
+extern const struct prog_loader_ops vboot_loader;
 extern const struct prog_loader_ops cbfs_payload_loader;
 
 static const struct prog_loader_ops *payload_ops[] = {
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
-	&vboot_payload_loader,
+	&vboot_loader,
 #endif
 	&cbfs_payload_loader,
 };

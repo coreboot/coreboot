@@ -27,11 +27,11 @@
 #include <timestamp.h>
 
 extern const struct prog_loader_ops cbfs_ramstage_loader;
-extern const struct prog_loader_ops vboot_ramstage_loader;
+extern const struct prog_loader_ops vboot_loader;
 
 static const struct prog_loader_ops *loaders[] = {
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
-	&vboot_ramstage_loader,
+	&vboot_loader,
 #endif
 	&cbfs_ramstage_loader,
 };

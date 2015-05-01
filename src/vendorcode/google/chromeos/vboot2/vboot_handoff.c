@@ -36,30 +36,6 @@
 #include "../vboot_handoff.h"
 #include "misc.h"
 
-static void *load_ramstage(struct vboot_handoff *vboot_handoff,
-			   struct vboot_region *fw_main)
-{
-	struct vboot_components *fw_info;
-	void *ret;
-	int i;
-
-	fw_info = vboot_locate_components(fw_main);
-	if (fw_info == NULL)
-		die("failed to locate firmware components\n");
-
-	/* these offset & size are used to load a rw boot loader */
-	for (i = 0; i < fw_info->num_components; i++) {
-		vboot_handoff->components[i].address =
-			fw_main->offset_addr + fw_info->entries[i].offset;
-		vboot_handoff->components[i].size = fw_info->entries[i].size;
-	}
-
-	timestamp_add_now(TS_START_COPYRAM);
-	ret = vboot_load_stage(CONFIG_VBOOT_RAMSTAGE_INDEX, fw_main, fw_info);
-	timestamp_add_now(TS_END_COPYRAM);
-	return ret;
-}
-
 /**
  * Sets vboot_handoff based on the information in vb2_shared_data
  *
@@ -146,14 +122,13 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 	vb_sd->recovery_reason = vb2_sd->recovery_reason;
 }
 
-/**
- * Load ramstage and return the entry point
- */
-void *vboot2_load_ramstage(void)
+void vboot_fill_handoff(void)
 {
+	int i;
 	struct vboot_handoff *vh;
 	struct vb2_shared_data *sd;
 	struct vboot_region fw_main;
+	struct vboot_components *fw_info;
 	struct vb2_working_data *wd = vboot_get_working_data();
 
 	sd = vboot_get_work_buffer(wd);
@@ -172,17 +147,15 @@ void *vboot2_load_ramstage(void)
 	/* needed until we finish transtion to vboot2 for kernel verification */
 	fill_vboot_handoff(vh, sd);
 
-	if (vboot_is_readonly_path(wd))
-		/* we're on recovery path. continue to ro-ramstage. */
-		return NULL;
+	vb2_get_selected_region(wd, &fw_main);
+	fw_info = vboot_locate_components(&fw_main);
+	if (fw_info == NULL)
+		die("failed to locate firmware components\n");
 
-	if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES)) {
-		return cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				       CONFIG_CBFS_PREFIX "/ramstage");
-	} else {
-		printk(BIOS_INFO, "loading ramstage from Slot %c\n",
-		       sd->fw_slot ? 'B' : 'A');
-		vb2_get_selected_region(wd, &fw_main);
-		return load_ramstage(vh, &fw_main);
+	/* these offset & size are used to load a rw boot loader */
+	for (i = 0; i < fw_info->num_components; i++) {
+		vh->components[i].address =
+			fw_main.offset_addr + fw_info->entries[i].offset;
+		vh->components[i].size = fw_info->entries[i].size;
 	}
 }

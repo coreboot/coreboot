@@ -20,13 +20,16 @@
 libverstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
+bootblock-y += vboot_loader.c
+romstage-y += vboot_loader.c
+ramstage-y += vboot_loader.c
+verstage-y += vboot_loader.c
+
 bootblock-y += ../vboot_common.c
 verstage-y += ../vboot_common.c
 romstage-y += ../vboot_common.c
 ramstage-y += ../vboot_common.c
 
-bootblock-y += verstub.c
-libverstage-y += verstub.c
 bootblock-y += common.c
 libverstage-y += verstage.c
 verstage-y += common.c
@@ -36,6 +39,8 @@ else
 libverstage-y += antirollback.c
 endif
 romstage-y += vboot_handoff.c common.c
+
+ramstage-y += common.c
 
 verstage-y += verstage.ld
 

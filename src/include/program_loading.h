@@ -39,6 +39,7 @@ struct buffer_area {
 };
 
 enum prog_type {
+	PROG_VERSTAGE,
 	PROG_ROMSTAGE,
 	PROG_RAMSTAGE,
 	PROG_PAYLOAD,

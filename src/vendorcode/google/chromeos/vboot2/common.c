@@ -25,39 +25,6 @@
 #include "../vboot_handoff.h"
 #include "misc.h"
 
-void *vboot_load_stage(int stage_index,
-		       struct vboot_region *fw_main,
-		       struct vboot_components *fw_info)
-{
-	struct cbfs_media default_media, *media = &default_media;
-	uintptr_t fc_addr;
-	uint32_t fc_size;
-	void *entry;
-
-	if (stage_index >= fw_info->num_components) {
-		printk(BIOS_INFO, "invalid stage index\n");
-		return NULL;
-	}
-
-	fc_addr = fw_main->offset_addr + fw_info->entries[stage_index].offset;
-	fc_size = fw_info->entries[stage_index].size;
-	if (fc_size == 0 ||
-	    fc_addr + fc_size > fw_main->offset_addr + fw_main->size) {
-		printk(BIOS_INFO, "invalid stage address or size\n");
-		return NULL;
-	}
-
-	init_default_cbfs_media(media);
-
-	/* we're making cbfs access offset outside of the region managed by
-	 * cbfs. this works because cbfs_load_stage_by_offset does not check
-	 * the offset. */
-	entry = cbfs_load_stage_by_offset(media, fc_addr);
-	if (entry == (void *)-1)
-		entry = NULL;
-	return entry;
-}
-
 struct vb2_working_data * const vboot_get_working_data(void)
 {
 	return (struct vb2_working_data *)_vboot2_work;

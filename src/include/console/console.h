@@ -80,9 +80,9 @@ static inline void do_putchar(unsigned char byte) {}
 /* FIXME: Collision of varargs with AMD headers without guard. */
 #include <console/vtxprintf.h>
 #if __CONSOLE_ENABLE__
-void do_vtxprintf(const char *fmt, va_list args);
+void do_printk_va_list(int msg_level, const char *fmt, va_list args);
 #else
-static inline void do_vtxprintf(const char *fmt, va_list args) {};
+static inline void do_printk_va_list(int l, const char *fmt, va_list args) {}
 #endif
 #endif
 

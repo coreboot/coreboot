@@ -54,8 +54,10 @@ int do_printk(int msg_level, const char *fmt, ...)
 }
 
 #if IS_ENABLED (CONFIG_CHROMEOS)
-void do_vtxprintf(const char *fmt, va_list args)
+void do_printk_va_list(int msg_level, const char *fmt, va_list args)
 {
+	if (!console_log_level(msg_level))
+		return;
 	vtxprintf(wrap_putchar, fmt, args, NULL);
 	console_tx_flush();
 }

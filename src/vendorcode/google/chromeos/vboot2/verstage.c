@@ -45,7 +45,7 @@ void vb2ex_printf(const char *func, const char *fmt, ...)
 
 	printk(BIOS_INFO, "VB2:%s() ", func);
 	va_start(args, fmt);
-	vprintk(BIOS_INFO, fmt, args);
+	do_printk_va_list(BIOS_INFO, fmt, args);
 	va_end(args);
 
 	return;

@@ -30,7 +30,7 @@ Device (PDRC)
 	Name (_UID, 1)
 
 	Name (PDRS, ResourceTemplate() {
-		Memory32Fixed(ReadWrite, DEFAULT_ECBASE, 0x04000000)
+		Memory32Fixed(ReadWrite, DEFAULT_ECBASE, 0x10000000)
 	})
 
 	// Current Resource Settings

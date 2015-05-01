@@ -95,13 +95,6 @@ static void __attribute__((noinline)) romstage(void)
 
 	early_mainboard_init();
 
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
-	entry = vboot2_load_ramstage();
-#else
-	early_mainboard_init();
-	vboot_verify_firmware(romstage_handoff_find_or_add());
-#endif
-
 	run_ramstage();
 }
 

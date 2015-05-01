@@ -126,11 +126,5 @@ void main(void)
 	timestamp_add_now(TS_END_ROMSTAGE);
 #endif
 
-#if IS_ENABLED(CONFIG_VBOOT_VERIFY_FIRMWARE)
-	void *entry = vboot2_load_ramstage();
-	if (entry != NULL)
-		stage_exit(entry);
-#endif
-
 	run_ramstage();
 }

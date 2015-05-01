@@ -22,11 +22,11 @@
 #include <arch/hlt.h>
 #include <arch/stages.h>
 #include <console/console.h>
+#include <program_loading.h>
 #include <soc/cache.h>
 #include <soc/early_configs.h>
 #include <stdlib.h>
 #include <symbols.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 static void enable_cache(void)
 {
@@ -51,14 +51,9 @@ static void soc_init(void)
 
 static void verstage(void)
 {
-	void *entry;
-
 	soc_init();
 	early_mainboard_init();
-
-	entry = vboot2_verify_firmware();
-	if (entry != (void *)-1)
-		stage_exit(entry);
+	run_romstage();
 }
 
 void main(void)

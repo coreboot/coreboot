@@ -18,10 +18,11 @@
  */
 
 #include <console/console.h>
+#include <program_loading.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void main(void)
 {
 	console_init();
-	vboot2_verify_firmware();
+	run_romstage();
 }

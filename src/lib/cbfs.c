@@ -74,7 +74,7 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 	return dest;
 }
 
-static int cbfs_load_prog_stage_by_offset(struct cbfs_media *media,
+int cbfs_load_prog_stage_by_offset(struct cbfs_media *media,
 					struct prog *prog, ssize_t offset)
 {
 	struct cbfs_stage stage;

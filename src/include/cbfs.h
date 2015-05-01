@@ -60,6 +60,8 @@ void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset);
 /* Load a stage from a prog structure. Returns < 0 on error. 0 on success. */
 struct prog;
 int cbfs_load_prog_stage(struct cbfs_media *media, struct prog *prog);
+int cbfs_load_prog_stage_by_offset(struct cbfs_media *media,
+					struct prog *prog, ssize_t offset);
 
 /* Simple buffer for streaming media. */
 struct cbfs_simple_buffer {

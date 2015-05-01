@@ -174,3 +174,14 @@ void timestamp_reinit(void)
 
 /* Call timestamp_reinit at CAR migration time. */
 CAR_MIGRATE(timestamp_reinit)
+
+/* Provide default timestamp implementation using monotonic timer. */
+uint64_t  __attribute__((weak)) timestamp_get(void)
+{
+	struct mono_time t1, t2;
+
+	mono_time_set_usecs(&t1, 0);
+	timer_monotonic_get(&t2);
+
+	return mono_time_diff_microseconds(&t1, &t2);
+}

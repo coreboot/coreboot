@@ -22,6 +22,7 @@
 #include <arch/lib_helpers.h>
 #include <cpu/cpu.h>
 #include <console/console.h>
+#include <smp/node.h>
 #include "cpu-internal.h"
 
 struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
@@ -217,4 +218,9 @@ void arch_cpu_wait_for_action(void)
 		action_run(&action);
 		action_queue_complete(q, orig);
 	}
+}
+
+int boot_cpu(void)
+{
+	return cpu_is_bsp();
 }

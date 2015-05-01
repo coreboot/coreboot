@@ -94,41 +94,6 @@ struct vboot_components *vboot_locate_components(struct vboot_region *region)
 	return vbc;
 }
 
-void *vboot_get_payload(int *len)
-{
-	struct vboot_handoff *vboot_handoff;
-	struct firmware_component *fwc;
-
-	if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES))
-		return NULL; /* Let CBFS figure it out. */
-
-	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-
-	if (vboot_handoff == NULL)
-		return NULL;
-
-	if (CONFIG_VBOOT_BOOT_LOADER_INDEX >= MAX_PARSED_FW_COMPONENTS) {
-		printk(BIOS_ERR, "Invalid boot loader index: %d\n",
-		       CONFIG_VBOOT_BOOT_LOADER_INDEX);
-		return NULL;
-	}
-
-	fwc = &vboot_handoff->components[CONFIG_VBOOT_BOOT_LOADER_INDEX];
-
-	/* If payload size is zero fall back to cbfs path. */
-	if (fwc->size == 0)
-		return NULL;
-
-	if (len != NULL)
-		*len = fwc->size;
-
-	printk(BIOS_DEBUG, "Booting 0x%x byte verified payload at 0x%08x.\n",
-	       fwc->size, fwc->address);
-
-	/* This will leak a mapping. */
-	return vboot_get_region(fwc->address, fwc->size, NULL);
-}
-
 void vboot_reboot(void)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))

@@ -1,0 +1,67 @@
+if BOARD_INTEL_STRAGO
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ALWAYS_LOAD_OPROM
+	select BOARD_ROMSIZE_KB_8192
+	select CHROMEOS
+	select CHROMEOS_VBNV_CMOS
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_MEC
+	select EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
+	select EC_SOFTWARE_SYNC
+	select ENABLE_BUILTIN_COM1
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_LPC_TPM
+	select SOC_INTEL_BRASWELL
+	select VBOOT_DYNAMIC_WORK_BUFFER
+	select VIRTUAL_DEV_SWITCH
+	select LID_SWITCH
+
+
+config DISPLAY_SPD_DATA
+	bool "Display Memory Serial Presence Detect Data"
+	default n
+	help
+	  When enabled displays the memory configuration data.
+
+config DISPLAY_SPD_DATA
+	bool "Display Memory Serial Presence Detect Data"
+	default n
+	help
+	  When enabled displays the memory SPD data.
+config DYNAMIC_VNN_SUPPORT
+	bool "Enables support for Dynamic VNN"
+	default n
+config MAINBOARD_DIR
+	string
+	default intel/strago
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Strago"
+
+config MAINBOARD_VENDOR
+	string
+	default "Intel"
+
+config VBOOT_RAMSTAGE_INDEX
+	hex
+	default 0x2
+config VBOOT_REFCODE_INDEX
+	hex
+	default 0x3
+if !CONFIG_GOP_SUPPORT
+config VGA_BIOS_FILE
+	string
+	default "3rdparty/blobs/mainboard/intel/strago/vgabios_c0.bin" if C0_DISP_SUPPORT
+	default "3rdparty/blobs/mainboard/intel/strago/vgabios.bin" if !C0_DISP_SUPPORT
+config VGA_BIOS_ID
+	string
+	default "8086,22b1" if C0_DISP_SUPPORT
+	default "8086,22b0" if !C0_DISP_SUPPORT
+endif
+endif # BOARD_INTEL_STRAGO

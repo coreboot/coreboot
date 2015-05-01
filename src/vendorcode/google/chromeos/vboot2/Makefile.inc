@@ -18,6 +18,7 @@
 ##
 
 libverstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
+verstage-generic-ccopts += -D__PRE_RAM__ -D__VERSTAGE__
 
 bootblock-y += ../vboot_common.c
 verstage-y += ../vboot_common.c

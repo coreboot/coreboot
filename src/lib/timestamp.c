@@ -21,8 +21,10 @@
 #include <stdint.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <timer.h>
 #include <timestamp.h>
 #include <arch/early_variables.h>
+#include <rules.h>
 #include <smp/node.h>
 
 #define MAX_TIMESTAMPS 60
@@ -52,12 +54,24 @@ static void timestamp_real_init(uint64_t base)
 	car_set_var(ts_table_p, tst);
 }
 
+/* Determine if one should proceed into timestamp code. This is for protecting
+ * systems that have multiple processors running in romstage -- namely AMD
+ * based x86 platforms. */
+static int timestamp_should_run(void)
+{
+	/* Only check boot_cpu() in other stages than ramstage on x86. */
+	if ((!ENV_RAMSTAGE && IS_ENABLED(CONFIG_ARCH_X86)) && !boot_cpu())
+		return 0;
+
+	return 1;
+}
+
 void timestamp_add(enum timestamp_id id, uint64_t ts_time)
 {
 	struct timestamp_entry *tse;
 	struct timestamp_table *ts_table = NULL;
 
-	if (!boot_cpu())
+	if (!timestamp_should_run())
 		return;
 
 	ts_table = car_get_var(ts_table_p);
@@ -121,7 +135,7 @@ static void timestamp_do_sync(void)
 
 void timestamp_init(uint64_t base)
 {
-	if (!boot_cpu())
+	if (!timestamp_should_run())
 		return;
 
 #ifdef __PRE_RAM__
@@ -145,7 +159,7 @@ void timestamp_init(uint64_t base)
 
 void timestamp_reinit(void)
 {
-	if (!boot_cpu())
+	if (!timestamp_should_run())
 		return;
 
 #ifdef __PRE_RAM__

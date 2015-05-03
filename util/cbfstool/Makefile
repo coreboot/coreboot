@@ -7,7 +7,7 @@ CFLAGS += -std=c99 -Werror -Wall -Wextra
 CFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
 CFLAGS += -Wstrict-prototypes -Wwrite-strings
 CPPFLAGS += -D_POSIX_C_SOURCE=200809L # strdup() from string.h
-LINKFLAGS += -g3
+LDFLAGS += -g3
 
 CBFSTOOL_BINARY:=$(obj)/cbfstool
 CBFSTOOL_COMMON:=common.o cbfs_image.o compress.o fit.o
@@ -30,7 +30,7 @@ all: .dependencies $(CBFSTOOL_BINARY) $(RMODTOOL_BINARY)
 
 $(obj)/%: $(obj)/%.o
 	mkdir -p $(dir $@)
-	$(HOSTCC) $(LINKFLAGS) -o $@ $^ $(LDLIBS)
+	$(HOSTCC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 $(obj)/%.o: %.c
 	mkdir -p $(dir $@)
 	$(HOSTCC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

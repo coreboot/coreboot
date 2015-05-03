@@ -28,7 +28,7 @@ TOOLCFLAGS ?= -std=c99 -Werror -Wall -Wextra
 TOOLCFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
 TOOLCFLAGS += -Wstrict-prototypes -Wwrite-strings
 TOOLCPPFLAGS ?= -D_POSIX_C_SOURCE=200809L # strdup() from string.h
-TOOLLINKFLAGS ?=
+TOOLLDFLAGS ?=
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLFLAGS+=-mno-ms-bitfields
@@ -48,11 +48,11 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
 
 $(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(TOOLLINKFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
+	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 
 $(objutil)/cbfstool/rmodtool: $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(TOOLLINKFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(rmodobj))
+	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 
 # Tolerate lzma sdk warnings
 $(objutil)/cbfstool/LzmaEnc.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual

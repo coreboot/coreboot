@@ -165,9 +165,10 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 	},
 	{
 		.device_id = STM_ID_N25Q256A,
+		.op_erase = CMD_M25PXX_SSE,
 		.page_size = 256,
-		.pages_per_sector = 256,
-		.nr_sectors = 512,
+		.pages_per_sector = 16,
+		.nr_sectors = 8192,
 		.name = "N25Q256A",
 	},
 };

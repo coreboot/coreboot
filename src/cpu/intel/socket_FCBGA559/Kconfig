@@ -1,0 +1,20 @@
+config CPU_INTEL_SOCKET_FCBGA559
+	bool
+
+if CPU_INTEL_SOCKET_FCBGA559
+
+config SOCKET_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_INTEL_MODEL_106CX
+	select MMX
+	select SSE
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffafc000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x4000
+
+endif

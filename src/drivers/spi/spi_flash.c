@@ -381,7 +381,7 @@ flash_detected:
 	tseg_relocate((void **)&flash->name);
 #endif
 
-	printk(BIOS_INFO, "SF: Detected %s with page size %x, total %x\n",
+	printk(BIOS_INFO, "SF: Detected %s with sector size 0x%x, total 0x%x\n",
 			flash->name, flash->sector_size, flash->size);
 
 	spi_flash_dev = flash;

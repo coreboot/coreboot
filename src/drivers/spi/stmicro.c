@@ -60,11 +60,6 @@
 #define STM_ID_N25Q256A		0xba19
 #define STM_ID_N25Q128		0xbb18
 
-/* Some SPI flash share the same .idcode1 (idcode[2]). To handle this without
- * (possibly) breaking existing implementations, add the new device at the top
- * of the flash table array and set its .idcode1 = STM_ID_USE_ALT_ID. The .id
- * is then (idcode[1] << 8 | idcode[2]).
- */
 struct stmicro_spi_flash_params {
 	u16 device_id;
 	u8 op_erase;
@@ -87,14 +82,6 @@ static inline struct stmicro_spi_flash *to_stmicro_spi_flash(struct spi_flash
 }
 
 static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
-	{
-		.device_id = STM_ID_N25Q128,
-		.op_erase = CMD_M25PXX_SSE,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.nr_sectors = 4096,
-		.name = "N25Q128",
-	},
 	{
 		.device_id = STM_ID_M25P10,
 		.op_erase = CMD_M25PXX_SE,
@@ -158,6 +145,14 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.pages_per_sector = 1024,
 		.nr_sectors = 64,
 		.name = "M25P128",
+	},
+	{
+		.device_id = STM_ID_N25Q128,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 4096,
+		.name = "N25Q128",
 	},
 	{
 		.device_id = STM_ID_N25Q256A,

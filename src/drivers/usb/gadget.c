@@ -224,6 +224,85 @@ small_write:
 	return 0;
 }
 
+/* FTDI FT232H UART programming. */
+#define FTDI_SIO_SET_FLOW_CTRL_REQUEST 0x02
+#define FTDI_SIO_SET_BAUDRATE_REQUEST  0x03
+#define FTDI_SIO_SET_DATA_REQUEST      0x04
+#define FTDI_SIO_SET_BITMODE_REQUEST   0x0b
+
+static int probe_for_ftdi(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe)
+{
+	int ret;
+	u8 devnum = 0;
+	u8 uart_if = 1; /* FTDI_INTERFACE_A 1 */
+
+	/* Move the device to 127 if it isn't already there */
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
+		USB_REQ_SET_ADDRESS, USB_DEBUG_DEVNUM, 0, NULL, 0);
+	if (ret < 0) {
+		dprintk(BIOS_INFO, "Could not move attached device to %d.\n",
+			USB_DEBUG_DEVNUM);
+			return -2;
+	}
+	devnum = USB_DEBUG_DEVNUM;
+	dprintk(BIOS_INFO, "EHCI debug device renamed to %d.\n", devnum);
+
+	/* Send Set Configure request to device.  */
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
+		USB_REQ_SET_CONFIGURATION, 1, 0, NULL, 0);
+	if (ret < 0) {
+		dprintk(BIOS_INFO, "FTDI set configuration failed.\n");
+		return -2;
+	}
+
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+		FTDI_SIO_SET_BITMODE_REQUEST, 0, uart_if, NULL, 0);
+	if (ret < 0) {
+		dprintk(BIOS_INFO, "FTDI SET_BITMODE failed.\n");
+		return -3;
+	}
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+		FTDI_SIO_SET_BAUDRATE_REQUEST,
+		0xc068, 0x0200 | uart_if, NULL, 0);
+	if (ret < 0) {
+		dprintk(BIOS_INFO, "FTDI SET_BAUDRATE failed.\n");
+		return -3;
+	}
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+		FTDI_SIO_SET_DATA_REQUEST,
+		0x0008, uart_if, NULL, 0);
+	if (ret < 0) {
+		dprintk(BIOS_INFO, "FTDI SET_DATA failed.\n");
+		return -3;
+	}
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+		FTDI_SIO_SET_FLOW_CTRL_REQUEST,
+		0x0000, uart_if, NULL, 0);
+	if (ret < 0) {
+		dprintk(BIOS_INFO, "FTDI SET_FLOW_CTRL failed.\n");
+		return -3;
+	}
+
+	pipe[DBGP_CONSOLE_EPOUT].endpoint = 0x02;
+	pipe[DBGP_CONSOLE_EPIN].endpoint = 0x81;
+
+	ack_set_configuration(pipe, devnum, 1000);
+
+	/* Perform a small write. */
+	ret = dbgp_bulk_write_x(&pipe[DBGP_CONSOLE_EPOUT], "USB\r\n", 5);
+	if (ret < 0) {
+		dprintk(BIOS_INFO, "dbgp_bulk_write failed: %d\n", ret);
+		return -4;
+	}
+	dprintk(BIOS_INFO, "Test write done\n");
+	return 0;
+}
 
 int dbgp_probe_gadget(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe)
 {
@@ -238,9 +317,13 @@ int dbgp_probe_gadget(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe)
 		}
 	}
 
-	ret = probe_for_debug_descriptor(ehci_debug, pipe);
+	if (IS_ENABLED(CONFIG_USBDEBUG_DONGLE_FTDI_FT232H)) {
+		ret = probe_for_ftdi(ehci_debug, pipe);
+	} else {
+		ret = probe_for_debug_descriptor(ehci_debug, pipe);
+	}
 	if (ret < 0) {
-		dprintk(BIOS_INFO, "Could not enable gadget using Debug Descriptor.\n");
+		dprintk(BIOS_INFO, "Could not enable debug dongle.\n");
 		return ret;
 	}
 

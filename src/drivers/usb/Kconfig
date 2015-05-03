@@ -89,6 +89,12 @@ config USBDEBUG_DONGLE_BEAGLEBONE_BLACK
 	help
 	  Use this with BeagleBone Black.
 
+config USBDEBUG_DONGLE_FTDI_FT232H
+	bool "FTDI FT232H UART"
+	help
+	  Use this with FT232H usb-to-uart. Configuration is hard-coded
+	  to use 115200, 8n1, no flow control.
+
 endchoice
 
 config USBDEBUG_OPTIONAL_HUB_PORT

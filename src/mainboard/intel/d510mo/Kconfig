@@ -1,0 +1,47 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015  Damien Zammit <damien@zamaudio.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_INTEL_D510MO
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_INTEL_SOCKET_FCBGA559
+	select NORTHBRIDGE_INTEL_PINEVIEW
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SUPERIO_WINBOND_W83627THG
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_1024
+
+config MAX_CPUS
+	int
+	default 4
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+
+config CBFS_SIZE
+	hex "Size of CBFS filesystem in ROM"
+	default 0x100000
+
+config MAINBOARD_DIR
+	string
+	default intel/d510mo
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "D510MO"
+
+endif # BOARD_INTEL_D510MO

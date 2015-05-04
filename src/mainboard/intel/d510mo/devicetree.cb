@@ -1,0 +1,94 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015  Damien Zammit <damien@zamaudio.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+chip northbridge/intel/pineview		# Northbridge
+  device cpu_cluster 0 on		# APIC cluster
+    chip cpu/intel/socket_FCBGA559	# CPU
+      device lapic 0 on end		# APIC
+    end
+  end
+  device domain 0 on		# PCI domain
+    device pci 0.0 on end		# Host Bridge
+    device pci 2.0 off end		# Integrated graphics controller
+    chip southbridge/intel/i82801gx	# Southbridge
+      register "pirqa_routing" = "0x0b"
+      register "pirqb_routing" = "0x0b"
+      register "pirqc_routing" = "0x0b"
+      register "pirqd_routing" = "0x0b"
+      register "pirqe_routing" = "0x0b"
+      register "pirqf_routing" = "0x0b"
+      register "pirqg_routing" = "0x0b"
+      register "pirqh_routing" = "0x0b"
+      register "ide_legacy_combined" = "0x1"
+      register "ide_enable_primary" = "0x1"
+      register "ide_enable_secondary" = "0x0"
+      register "sata_ahci" = "0x0"
+
+      device pci 1b.0 on end		# Audio
+      device pci 1c.0 on end		# PCIe 1
+      device pci 1c.1 on end		# PCIe 2
+      device pci 1c.2 on end		# PCIe 3
+      device pci 1c.3 on end		# PCIe 4
+      device pci 1d.0 on end		# USB
+      device pci 1d.1 on end		# USB
+      device pci 1d.2 on end		# USB
+      device pci 1d.3 on end		# USB
+      device pci 1d.7 on end		# USB
+      device pci 1e.0 on end		# PCI bridge
+      device pci 1f.0 on		# ISA bridge
+        chip superio/winbond/w83627thg	# Super I/O
+          device pnp 4e.0 off end	# Floppy
+          device pnp 4e.1 on		# Parallel port
+            io 0x60 = 0x378
+            irq 0x70 = 7
+            drq 0x74 = 4
+          end
+          device pnp 4e.2 on		# COM1
+            io 0x60 = 0x3f8
+            irq 0x70 = 4
+          end
+          device pnp 4e.3 on		# COM2
+            io 0x60 = 0x2f8
+            irq 0x70 = 3
+            irq 0xf1 = 0
+          end
+          device pnp 4e.5 on		# PS/2 keyboard / mouse
+            io 0x60 = 0x60
+            io 0x62 = 0x64
+            irq 0x70 = 1		# PS/2 keyboard interrupt
+            irq 0x72 = 12		# PS/2 mouse interrupt
+            irq 0xf0 = 0x80
+          end
+          device pnp 4e.6 off end
+          device pnp 4e.7 off end
+          device pnp 4e.8 off end
+          device pnp 4e.9 off end
+          device pnp 4e.a off end	# ACPI
+          device pnp 4e.b on		# HWM
+            io 0x60 = 0x290
+            irq 0x70 = 0
+          end
+        end
+      end
+      device pci 1f.1 off end
+      device pci 1f.2 on end		# SATA
+      device pci 1f.3 on end		# SMbus
+      device pci 1f.4 off end
+      device pci 1f.5 off end
+      device pci 1f.6 off end
+    end
+  end
+end

@@ -336,17 +336,13 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 	size_t align, entry_offset;
 	ssize_t last_entry_size;
 
-	size_t header_offset, header_end;
 	size_t cbfs_offset, cbfs_end;
 	size_t copy_end = copy_offset + copy_size;
 
-	align = htonl(image->header->align);
+	align = image->header->align;
 
-	header_offset = (char *)image->header - image->buffer.data;
-	header_end = header_offset + sizeof(image->header);
-
-	cbfs_offset = htonl(image->header->offset);
-	cbfs_end = htonl(image->header->romsize);
+	cbfs_offset = image->header->offset;
+	cbfs_end = image->header->romsize;
 
 	if (copy_end > image->buffer.size) {
 		ERROR("Copy offset out of range: [%zx:%zx)\n",
@@ -354,12 +350,7 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 		return 1;
 	}
 
-	/* Range check requested copy region with header and source cbfs. */
-	if ((copy_offset >= header_offset && copy_offset < header_end) ||
-	    (copy_end >= header_offset && copy_end <= header_end)) {
-		ERROR("New image would overlap old header.\n");
-	}
-
+	/* Range check requested copy region with source cbfs. */
 	if ((copy_offset >= cbfs_offset && copy_offset < cbfs_end) ||
 	    (copy_end >= cbfs_offset && copy_end <= cbfs_end)) {
 		ERROR("New image would overlap old one.\n");
@@ -368,7 +359,7 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 
 	/* This will work, let's create a copy. */
 	copy_header = (struct cbfs_header *)(image->buffer.data + copy_offset);
-	*copy_header = *image->header;
+	cbfs_put_header(copy_header, image->header);
 
 	copy_header->bootblocksize = 0;
 	/* Romsize is a misnomer. It's the absolute limit of cbfs content.*/

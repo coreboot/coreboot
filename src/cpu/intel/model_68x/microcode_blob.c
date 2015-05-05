@@ -1,3 +1,3 @@
 unsigned microcode_updates_68x[] = {
-	#include "../../../../blobs/cpu/intel/model_68x/microcode.h"
+	#include "../../../../3rdparty/blobs/cpu/intel/model_68x/microcode.h"
 };

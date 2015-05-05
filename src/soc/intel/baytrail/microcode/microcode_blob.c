@@ -1,3 +1,3 @@
 unsigned microcode[] = {
-#include "../../../../../blobs/soc/intel/baytrail/microcode_blob.h"
+#include "../../../../../3rdparty/blobs/soc/intel/baytrail/microcode_blob.h"
 };

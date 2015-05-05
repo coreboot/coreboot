@@ -105,7 +105,7 @@ config HAVE_MRC
 config MRC_FILE
 	string "Intel System Agent path and filename"
 	depends on HAVE_MRC
-	default "blobs/northbridge/intel/sandybridge/systemagent-r6.bin"
+	default "3rdparty/blobs/northbridge/intel/sandybridge/systemagent-r6.bin"
 	help
 	  The path and filename of the file to use as System Agent
 	  binary.

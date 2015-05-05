@@ -134,7 +134,7 @@ if SB800_IMC_FWM
 
 config SB800_IMC_FWM_FILE
 	string "IMC firmware path and filename"
-	default "blobs/southbridge/amd/sb800/imc.bin"
+	default "3rdparty/blobs/southbridge/amd/sb800/imc.bin"
 
 choice
 	prompt "SB800 Firmware ROM Position"

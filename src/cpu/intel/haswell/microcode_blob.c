@@ -23,8 +23,8 @@ unsigned microcode[] = {
 	 * a very good reason why we only use one at a time?
 	 */
 	#if CONFIG_INTEL_LYNXPOINT_LP
-	#include "../../../../blobs/cpu/intel/model_4065x/microcode.h"
+	#include "../../../../3rdparty/blobs/cpu/intel/model_4065x/microcode.h"
 	#else
-	#include "../../../../blobs/cpu/intel/model_306cx/microcode.h"
+	#include "../../../../3rdparty/blobs/cpu/intel/model_306cx/microcode.h"
 	#endif
 };

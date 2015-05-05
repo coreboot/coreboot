@@ -49,7 +49,7 @@ config MAX_CPUS
 
 config MTS_DIRECTORY
 	string "Directory where MTS microcode files are located"
-	default "blobs/cpu/nvidia/tegra132/current/prod"
+	default "3rdparty/blobs/cpu/nvidia/tegra132/current/prod"
 	help
 	  Path to directory where MTS microcode files are located.
 

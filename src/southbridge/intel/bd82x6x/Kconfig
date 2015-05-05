@@ -106,7 +106,7 @@ config IFD_PLATFORM_SECTION
 config IFD_BIN_PATH
 	string "Path to intel firmware descriptor"
 	depends on !BUILD_WITH_FAKE_IFD
-	default "blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
 
 config HAVE_GBE_BIN
 	bool "Add gigabit ethernet firmware"
@@ -119,7 +119,7 @@ config HAVE_GBE_BIN
 config GBE_BIN_PATH
 	string "Path to gigabit ethernet firmware"
 	depends on HAVE_GBE_BIN
-	default "blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
 
 config HAVE_ME_BIN
 	bool "Add Intel Management Engine firmware"
@@ -127,7 +127,7 @@ config HAVE_ME_BIN
 	help
 	  The Intel processor in the selected system requires a special firmware
 	  for an integrated controller called Management Engine (ME). The ME
-	  firmware might be provided in coreboot's blobs repository. If
+	  firmware might be provided in coreboot's 3rdparty/blobs repository. If
 	  not and if you don't have the firmware elsewhere, you can still
 	  build coreboot without it. In this case however, you'll have to make
 	  sure that you don't overwrite your ME firmware on your flash ROM.
@@ -135,7 +135,7 @@ config HAVE_ME_BIN
 config ME_BIN_PATH
 	string "Path to management engine firmware"
 	depends on HAVE_ME_BIN
-	default "blobs/mainboard/$(MAINBOARDDIR)/me.bin"
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
 
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock Management Engine section"

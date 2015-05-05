@@ -30,7 +30,7 @@ config MBN_ENCAPSULATION
 config SBL_BLOB
 	depends on USE_BLOBS
 	string "file name of the Qualcomm SBL blob"
-	default "blobs/cpu/qualcomm/ipq806x/uber-sbl.mbn"
+	default "3rdparty/blobs/cpu/qualcomm/ipq806x/uber-sbl.mbn"
 	help
 	  The path and filename of the binary blob containing
 	  ipq806x early initialization code, as supplied by the

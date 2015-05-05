@@ -131,9 +131,9 @@ endif
 # try to fetch non-optional submodules if the source is under git
 forgetthis:=$(if $(GIT),$(shell git submodule update --init))
 ifeq ($(CONFIG_USE_BLOBS),y)
-# this is necessary because blobs is update=none, and so is ignored
+# this is necessary because 3rdparty/blobs is update=none, and so is ignored
 # unless explicitly requested and enabled through --checkout
-forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout blobs))
+forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/blobs))
 endif
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)

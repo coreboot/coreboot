@@ -6,3 +6,6 @@
 [submodule "util/nvidia-cbootimage"]
 	path = util/nvidia/cbootimage
 	url = ../nvidia-cbootimage.git
+[submodule "vboot"]
+	path = 3rdparty/vboot
+	url = ../vboot.git

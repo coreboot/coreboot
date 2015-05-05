@@ -60,9 +60,9 @@ libverstage-srcs += $(VB2_LIB)
 
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
 cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage
-fallback/verstage-file = $(objcbfs)/verstage.elf
-fallback/verstage-type = stage
-fallback/verstage-compression = none
+$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-file = $(objcbfs)/verstage.elf
+$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-type = stage
+$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-compression = none
 else
 ifeq ($(VBOOT_STARTS_IN_BOOTBLOCK),y)
 bootblock-srcs += $(objgenerated)/libverstage.a

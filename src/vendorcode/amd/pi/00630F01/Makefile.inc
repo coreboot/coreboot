@@ -48,6 +48,7 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
 AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
 
+AGESA_INC += -I$(src)/northbridge/amd/pi
 AGESA_INC += -I$(src)/southbridge/amd/pi/hudson
 
 AGESA_INC += -I$(src)/arch/x86/include

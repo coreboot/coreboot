@@ -18,6 +18,7 @@
  */
 
 #include <AGESA.h>
+#include <cbfs.h>
 #include <cpu/amd/pi/s3_resume.h>
 #include <cpu/x86/mtrr.h>
 #include <cpuRegisters.h>
@@ -588,4 +589,28 @@ AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
 	}
 
 	return Status;
+}
+
+const void *agesawrapper_locate_module (const CHAR8 name[8])
+{
+	struct cbfs_media media;
+	struct cbfs_file* file;
+	const void* agesa;
+	const AMD_IMAGE_HEADER* image;
+	const AMD_MODULE_HEADER* module;
+	size_t file_size;
+
+	if (init_default_cbfs_media(&media))
+		return NULL;
+	file = cbfs_get_file(&media, (const char*)CONFIG_CBFS_AGESA_NAME);
+	if (!file)
+		return NULL;
+	agesa = cbfs_get_file_content(&media, (const char*)CONFIG_CBFS_AGESA_NAME,
+		ntohl(file->type), &file_size);
+	if (!agesa)
+		return NULL;
+	image =  LibAmdLocateImage(agesa, agesa + file_size - 1, 4096, name);
+	module = (AMD_MODULE_HEADER*)image->ModuleInfoOffset;
+
+	return module;
 }

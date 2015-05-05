@@ -12,7 +12,7 @@ CFLAGS  += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS  += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS  += -Wstrict-aliasing -Wshadow -Wextra
 
-INCLUDES = -Iinclude -I../../src/device/oprom/include/
+INCLUDES = -Iinclude -I../../src/device/oprom/include/ -I../../src --include include/stdtypes.h
 
 INTOBJS  = int10.o int15.o int16.o int1a.o inte6.o
 X86EMUOBJS  = sys.o decode.o ops.o ops2.o prim_ops.o fpu.o debug.o
@@ -33,7 +33,7 @@ helper_exec.o: helper_exec.c test.h
 clean:
 	rm -f *.o *~ testbios
 
-%.o: ../../src/devices/oprom/x86emu/%.c
+%.o: ../../src/device/oprom/x86emu/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -include stdio.h -c -o $@ $^
 
 %.o: %.c

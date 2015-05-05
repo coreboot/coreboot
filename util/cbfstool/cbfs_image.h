@@ -28,7 +28,7 @@
 
 struct cbfs_image {
 	struct buffer buffer;
-	struct cbfs_header *header;
+	struct cbfs_header header;
 };
 
 /* Given a pointer, serialize the header from host-native byte format

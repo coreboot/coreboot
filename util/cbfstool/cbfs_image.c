@@ -125,7 +125,7 @@ static int cbfs_fix_legacy_size(struct cbfs_image *image, char *hdr_loc)
 	    (char *)entry > (char *)hdr_loc) {
 		WARN("CBFS image was created with old cbfstool with size bug. "
 		     "Fixing size in last entry...\n");
-		last->len = htonl(ntohl(last->len) - image->header->align);
+		last->len = htonl(ntohl(last->len) - image->header.align);
 		DEBUG("Last entry has been changed from 0x%x to 0x%x.\n",
 		      cbfs_get_entry_addr(image, entry),
 		      cbfs_get_entry_addr(image,
@@ -215,8 +215,6 @@ int cbfs_image_create(struct cbfs_image *image,
 
 	if (buffer_create(&image->buffer, size, "(new)") != 0)
 		return -1;
-	if ((image->header = malloc(sizeof(*image->header))) == NULL)
-		return -1;
 	memset(image->buffer.data, CBFS_CONTENT_DEFAULT_VALUE, size);
 
 	// Adjust legcay top-aligned address to ROM offset.
@@ -252,16 +250,16 @@ int cbfs_image_create(struct cbfs_image *image,
 		      header_offset, sizeof(header), size);
 		return -1;
 	}
-	image->header->magic = CBFS_HEADER_MAGIC;
-	image->header->version = CBFS_HEADER_VERSION;
-	image->header->romsize = size;
-	image->header->bootblocksize = bootblock->size;
-	image->header->align = align;
-	image->header->offset = entries_offset;
-	image->header->architecture = architecture;
+	image->header.magic = CBFS_HEADER_MAGIC;
+	image->header.version = CBFS_HEADER_VERSION;
+	image->header.romsize = size;
+	image->header.bootblocksize = bootblock->size;
+	image->header.align = align;
+	image->header.offset = entries_offset;
+	image->header.architecture = architecture;
 
 	header_loc = (image->buffer.data + header_offset);
-	cbfs_put_header(header_loc, image->header);
+	cbfs_put_header(header_loc, &image->header);
 
 	// The last 4 byte of the image contain the relative offset from the end
 	// of the image to the master header as a 32-bit signed integer. x86
@@ -319,10 +317,7 @@ int cbfs_image_from_file(struct cbfs_image *image,
 		return -1;
 	}
 
-	if ((image->header = malloc(sizeof(*image->header))) == NULL)
-		return -1;
-
-	cbfs_get_header(image->header, header_loc);
+	cbfs_get_header(&image->header, header_loc);
 	cbfs_fix_legacy_size(image, header_loc);
 
 	return 0;
@@ -339,10 +334,10 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 	size_t cbfs_offset, cbfs_end;
 	size_t copy_end = copy_offset + copy_size;
 
-	align = image->header->align;
+	align = image->header.align;
 
-	cbfs_offset = image->header->offset;
-	cbfs_end = image->header->romsize;
+	cbfs_offset = image->header.offset;
+	cbfs_end = image->header.romsize;
 
 	if (copy_end > image->buffer.size) {
 		ERROR("Copy offset out of range: [%zx:%zx)\n",
@@ -359,7 +354,7 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 
 	/* This will work, let's create a copy. */
 	copy_header = (struct cbfs_header *)(image->buffer.data + copy_offset);
-	cbfs_put_header(copy_header, image->header);
+	cbfs_put_header(copy_header, &image->header);
 
 	copy_header->bootblocksize = 0;
 	/* Romsize is a misnomer. It's the absolute limit of cbfs content.*/
@@ -414,7 +409,6 @@ int cbfs_image_delete(struct cbfs_image *image)
 		return 0;
 
 	buffer_delete(&image->buffer);
-	image->header = NULL;
 	return 0;
 }
 
@@ -433,7 +427,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	uint32_t header_size = cbfs_calculate_file_header_size(name),
 		 min_entry_size = cbfs_calculate_file_header_size("");
 	uint32_t len, target;
-	uint32_t align = image->header->align;
+	uint32_t align = image->header.align;
 
 	target = content_offset - header_size;
 	if (target % align)
@@ -515,7 +509,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 
 	if (IS_TOP_ALIGNED_ADDRESS(content_offset)) {
 		// legacy cbfstool takes top-aligned address.
-		uint32_t theromsize = image->header->romsize;
+		uint32_t theromsize = image->header.romsize;
 		INFO("Converting top-aligned address 0x%x to offset: 0x%x\n",
 		     content_offset, content_offset + theromsize);
 		content_offset = theromsize + (int32_t)content_offset;
@@ -685,16 +679,16 @@ int cbfs_remove_entry(struct cbfs_image *image, const char *name)
 int cbfs_print_header_info(struct cbfs_image *image)
 {
 	char *name = strdup(image->buffer.name);
-	assert(image && image->header);
+	assert(image);
 	printf("%s: %zd kB, bootblocksize %d, romsize %d, offset 0x%x\n"
 	       "alignment: %d bytes, architecture: %s\n\n",
 	       basename(name),
 	       image->buffer.size / 1024,
-	       image->header->bootblocksize,
-	       image->header->romsize,
-	       image->header->offset,
-	       image->header->align,
-	       arch_to_string(image->header->architecture));
+	       image->header.bootblocksize,
+	       image->header.romsize,
+	       image->header.offset,
+	       image->header.align,
+	       arch_to_string(image->header.architecture));
 	free(name);
 	return 0;
 }
@@ -944,16 +938,16 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size,
 
 struct cbfs_file *cbfs_find_first_entry(struct cbfs_image *image)
 {
-	assert(image && image->header);
+	assert(image);
 	return (struct cbfs_file *)(image->buffer.data +
-				   image->header->offset);
+				   image->header.offset);
 }
 
 struct cbfs_file *cbfs_find_next_entry(struct cbfs_image *image,
 				       struct cbfs_file *entry)
 {
 	uint32_t addr = cbfs_get_entry_addr(image, entry);
-	int align = image->header->align;
+	int align = image->header.align;
 	assert(entry && cbfs_is_valid_entry(image, entry));
 	addr += ntohl(entry->offset) + ntohl(entry->len);
 	addr = align_up(addr, align);
@@ -1017,7 +1011,7 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
 
 	/* Default values: allow fitting anywhere in ROM. */
 	if (!page_size)
-		page_size = image->header->romsize;
+		page_size = image->header.romsize;
 	if (!align)
 		align = 1;
 
@@ -1025,9 +1019,9 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
 		ERROR("Input file size (%d) greater than page size (%d).\n",
 		      size, page_size);
 
-	if (page_size % image->header->align)
+	if (page_size % image->header.align)
 		WARN("%s: Page size (%#x) not aligned with CBFS image (%#x).\n",
-		     __func__, page_size, image->header->align);
+		     __func__, page_size, image->header.align);
 
 	/* TODO Old cbfstool always assume input is a stage file (and adding
 	 * sizeof(cbfs_stage) for header. We should fix that by adding "-t"

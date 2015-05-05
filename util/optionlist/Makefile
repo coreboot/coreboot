@@ -15,12 +15,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-
-SVNVERSION := $(shell LC_ALL=C svnversion -cn ../.. | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/" | grep "[0-9]" || LC_ALL=C svn info . | grep ^Revision | sed "s/.*[[:blank:]]\+\([0-9]*\)[^0-9]*/\1/" | grep "[0-9]" || echo unknown)
+VERSION := $(shell git describe --dirty --always || git describe)
 
 all:
-	cd ../..; util/optionlist/kconfig2wiki src/Kconfig $(SVNVERSION) > util/optionlist/Options.wiki
+	cd ../..; util/optionlist/kconfig2wiki src/Kconfig $(VERSION) > util/optionlist/Options.wiki
 
 clean:
 	rm -rf Options.wiki
-

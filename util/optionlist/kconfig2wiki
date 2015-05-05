@@ -21,6 +21,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+import glob
+
 helplen = 0
 extra_chapters = 0
 
@@ -105,7 +107,8 @@ def readfile(filename):
 			sys.stdout.write("\n")
 		elif words[0] == "source":
 			fn=zapquotes(words[1])
-			readfile(fn)
+			for name in glob.glob(fn):
+				readfile(name)
 		elif words[0] in ("default","depends", "select", "if", "endif", "#"): pass
 		#else: sys.stderr.write("unknown: %s\n" % i)
 	if helplen: sys.stdout.write("||\n")

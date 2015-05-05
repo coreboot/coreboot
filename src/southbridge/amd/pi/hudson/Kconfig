@@ -83,12 +83,12 @@ config HUDSON_PSP
 
 config HUDSON_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
-	default "3rdparty/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_PI_AVALON
+	default "blobs/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_PI_AVALON
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
 	string "IMC firmware path and filename"
-	default "3rdparty/southbridge/amd/avalon/imc.bin" if SOUTHBRIDGE_AMD_PI_AVALON
+	default "blobs/southbridge/amd/avalon/imc.bin" if SOUTHBRIDGE_AMD_PI_AVALON
 	depends on HUDSON_IMC_FWM
 
 config HUDSON_GEC_FWM_FILE
@@ -126,7 +126,7 @@ endif # HUDSON_FWM
 config AMD_PUBKEY_FILE
 	depends on HUDSON_PSP
 	string "AMD public Key"
-	default "3rdparty/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
+	default "blobs/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
 
 config HUDSON_SATA_MODE
 	int "SATA Mode"

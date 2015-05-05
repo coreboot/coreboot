@@ -74,20 +74,20 @@ config HUDSON_GEC_FWM
 
 config HUDSON_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
-	default "3rdparty/southbridge/amd/hudson/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
-	default "3rdparty/southbridge/amd/yangtze/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	default "blobs/southbridge/amd/hudson/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
+	default "blobs/southbridge/amd/yangtze/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
 	string "IMC firmware path and filename"
-	default "3rdparty/southbridge/amd/hudson/imc.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
-	default "3rdparty/southbridge/amd/yangtze/imc.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	default "blobs/southbridge/amd/hudson/imc.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
+	default "blobs/southbridge/amd/yangtze/imc.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_IMC_FWM
 
 config HUDSON_GEC_FWM_FILE
 	string "GEC firmware path and filename"
-	default "3rdparty/southbridge/amd/hudson/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_HUDSON
-	default "3rdparty/southbridge/amd/yangtze/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	default "blobs/southbridge/amd/hudson/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_HUDSON
+	default "blobs/southbridge/amd/yangtze/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_GEC_FWM
 
 config HUDSON_FWM

@@ -79,7 +79,7 @@ config ONBOARD_VGA_IS_PRIMARY
 
 config HUDSON_XHCI_FWM_FILE
 	string
-	default "3rdparty/southbridge/amd/bolton/xhci.bin"
+	default "blobs/southbridge/amd/bolton/xhci.bin"
 
 config AZ_PIN
 	hex

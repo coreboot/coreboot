@@ -1,5 +1,5 @@
 [submodule "3rdparty"]
-	path = 3rdparty
+	path = blobs
 	url = ../blobs.git
 	update = none
 	ignore = dirty

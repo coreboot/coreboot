@@ -54,6 +54,6 @@ $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "    BL1, CKSUM $(subst $(obj)/,,$(@))\n"
 	util/exynos/variable_cksum.py $< $<.cksum
-	cat 3rdparty/cpu/samsung/exynos5420/bl1.bin $<.cksum > $@
+	cat blobs/cpu/samsung/exynos5420/bl1.bin $<.cksum > $@
 
 endif

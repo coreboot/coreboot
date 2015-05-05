@@ -35,7 +35,7 @@ config AGESA_BINARY_PI_DEFAULTS # dummy
 
 config AGESA_BINARY_PI_PATH_DEFAULT
 	string
-	default "3rdparty/pi/amd/00730F01"
+	default "blobs/pi/amd/00730F01"
 	help
 	  The default binary file name to use for AMD platform initialization.
 

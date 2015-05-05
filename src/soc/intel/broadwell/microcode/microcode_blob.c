@@ -18,6 +18,6 @@
  */
 
 unsigned microcode[] = {
-#include "../../../../../3rdparty/soc/intel/broadwell/microcode_blob.h"
+#include "../../../../../blobs/soc/intel/broadwell/microcode_blob.h"
 };
 

@@ -89,7 +89,7 @@ cbfs-files-y += hudson/xhci
 hudson/xhci-file := $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE))
 hudson/xhci-position := $(HUDSON_XHCI_POSITION)
 hudson/xhci-type := raw
-hudson/xhci-required := Hudson XHCI firmware (available in coreboot/3rdparty if enabled)
+hudson/xhci-required := Hudson XHCI firmware (available in coreboot/blobs if enabled)
 endif
 
 ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
@@ -97,7 +97,7 @@ cbfs-files-y += hudson/imc
 hudson/imc-file := $(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE))
 hudson/imc-position := $(HUDSON_IMC_POSITION)
 hudson/imc-type := raw
-hudson/imc-required := Hudson IMC Firmware (available in coreboot/3rdparty if enabled)
+hudson/imc-required := Hudson IMC Firmware (available in coreboot/blobs if enabled)
 endif
 
 ifeq ($(CONFIG_HUDSON_GEC_FWM), y)

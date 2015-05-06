@@ -33,6 +33,8 @@
 #include "fit.h"
 #include "partitioned_file.h"
 
+#define SECTION_WITH_FIT_TABLE	"BOOTBLOCK"
+
 struct command {
 	const char *name;
 	const char *optstring;
@@ -677,12 +679,29 @@ static int cbfs_update_fit(void)
 		return 1;
 	}
 
+	// Decide which region to read/write the FIT table from/to.
+	struct buffer bootblock;
+	if (partitioned_file_is_partitioned(param.image_file)) {
+		if (!partitioned_file_read_region(&bootblock, param.image_file,
+							SECTION_WITH_FIT_TABLE))
+			return 1;
+	} else {
+		// In legacy images, the bootblock is part of the CBFS.
+		buffer_clone(&bootblock, param.image_region);
+	}
+
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, param.image_region,
 							param.headeroffset))
 		return 1;
 
-	return fit_update_table(&image, param.fit_empty_entries, param.name);
+	if (fit_update_table(&bootblock, &image, param.name,
+			param.fit_empty_entries, convert_to_from_top_aligned))
+		return 1;
+
+	// The region to be written depends on the type of image, so we write it
+	// here rather than having main() write the CBFS region back as usual.
+	return !partitioned_file_write_region(param.image_file, &bootblock);
 }
 
 static int cbfs_copy(void)
@@ -731,7 +750,7 @@ static const struct command commands[] = {
 	{"print", "H:r:vh?", cbfs_print, true, false},
 	{"read", "r:f:vh?", cbfs_read, true, false},
 	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
-	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
+	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, false},
 	{"write", "r:f:udvh?", cbfs_write, true, true},
 };
 

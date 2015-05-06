@@ -92,9 +92,26 @@ static void request_ram_repair(void)
 		stopwatch_duration_usecs(&sw));
 }
 
+static void set_cpu_ack_width(uint32_t val)
+{
+	uint32_t reg;
+
+	reg = read32(CLK_RST_REG(cpu_softrst_ctrl2));
+	reg &= ~CAR2PMC_CPU_ACK_WIDTH_MASK;
+	reg |= val;
+	write32(CLK_RST_REG(cpu_softrst_ctrl2), reg);
+}
+
 void ccplex_cpu_prepare(void)
 {
 	enable_cpu_clocks();
+
+	/*
+	 * The POR value of CAR2PMC_CPU_ACK_WIDTH is 0x200.
+	 * The recommended value is 0.
+	 */
+	set_cpu_ack_width(0);
+
 	enable_cpu_power_partitions();
 
 	mainboard_configure_pmc();

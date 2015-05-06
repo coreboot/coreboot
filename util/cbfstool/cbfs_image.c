@@ -191,7 +191,6 @@ int cbfs_image_create(struct cbfs_image *image,
 		      uint32_t header_offset,
 		      uint32_t entries_offset)
 {
-	struct cbfs_header header;
 	struct cbfs_file *entry;
 	int32_t *rel_offset;
 	uint32_t cbfs_len;
@@ -200,8 +199,8 @@ int cbfs_image_create(struct cbfs_image *image,
 
 	DEBUG("cbfs_image_create: bootblock=0x%x+0x%zx, "
 	      "header=0x%x+0x%zx, entries_offset=0x%x\n",
-	      bootblock_offset, bootblock->size,
-	      header_offset, sizeof(header), entries_offset);
+	      bootblock_offset, bootblock->size, header_offset,
+	      sizeof(image->header), entries_offset);
 
 	// This attribute must be given in order to prove that this module
 	// correctly preserves certain CBFS properties. See the block comment
@@ -245,9 +244,9 @@ int cbfs_image_create(struct cbfs_image *image,
 	       bootblock->size);
 
 	// Prepare header
-	if (header_offset + sizeof(header) > size - sizeof(int32_t)) {
+	if (header_offset + sizeof(image->header) > size - sizeof(int32_t)) {
 		ERROR("Header (0x%x+0x%zx) exceed ROM size (0x%zx)\n",
-		      header_offset, sizeof(header), size);
+		      header_offset, sizeof(image->header), size);
 		return -1;
 	}
 	image->header.magic = CBFS_HEADER_MAGIC;

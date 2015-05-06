@@ -57,7 +57,7 @@ Version: $V
 
 Options:
   -q, --quiet                quiet
-  --no-tree                  run without a kernel tree
+  --no-tree                  run without a coreboot tree
   --no-signoff               do not check for 'Signed-off-by' line
   --patch                    treat FILE as patchfile (default)
   --emacs                    emacs compile window format
@@ -69,7 +69,7 @@ Options:
   --max-line-length=n        set the maximum line length, if exceeded, warn
   --min-conf-desc-length=n   set the min description length, if shorter, warn
   --show-types               show the message "types" in the output
-  --root=PATH                PATH to the kernel tree root
+  --root=PATH                PATH to the coreboot tree root
   --no-summary               suppress the per-file summary
   --mailback                 only produce a report in case of warnings/errors
   --summary-file             include the filename in summary
@@ -233,7 +233,7 @@ if ($tree) {
 	}
 
 	if (!defined $root) {
-		print "Must be run from the top-level dir. of a kernel tree\n";
+		print "Must be run from the top-level dir. of a coreboot tree\n";
 		exit(2);
 	}
 }
@@ -700,7 +700,7 @@ sub top_of_kernel_tree {
 
 	my @tree_check = (
 		"COPYING", "README", "Makefile", "Makefile.inc",
-		"src", "documentation", "util", "payloads",
+		"src", "Documentation", "util", "payloads",
 	);
 
 	foreach my $check (@tree_check) {

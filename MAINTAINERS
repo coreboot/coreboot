@@ -134,6 +134,11 @@ ATI MACH64 Driver
 S:	Orphan
 F:	drivers/ati/mach64
 
+LINT SCRIPTS
+M:	Patrick Georgi <patrick@georgi-clan.de>
+S:	Supported
+F:	util/lint/
+
 THE REST
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 L:	coreboot@coreboot.org

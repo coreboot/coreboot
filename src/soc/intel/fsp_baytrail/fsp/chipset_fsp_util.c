@@ -173,14 +173,14 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 				if (FspInfo->ImageRevision >= FSP_GOLD3_REV_ID) {
 					UpdData->ISPEnable = dev->enabled;
 				} else {
-					/* Gold2 and earlier FSP: ISPEnable is the filed	*/
+					/* Gold2 and earlier FSP: ISPEnable is the field	*/
 					/* next to PcdGttSize in UPD_DATA_REGION struct		*/
 					*(&(UpdData->PcdGttSize)+sizeof(UINT8)) = dev->enabled;
 					printk (FSP_INFO_LEVEL,
 						"Baytrail Gold2 or earlier FSP, adjust ISPEnable offset.\n");
 				}
 				printk(FSP_INFO_LEVEL, "MIPI/ISP:\t\t%s\n",
-						UpdData->PcdEnableSdio?"Enabled":"Disabled");
+						dev->enabled?"Enabled":"Disabled");
 				break;
 			case EMMC_DEV_FUNC: /* EMMC 4.1*/
 				if ((dev->enabled) &&

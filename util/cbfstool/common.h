@@ -86,23 +86,19 @@ static inline void buffer_init(struct buffer *b, char *name, void *data,
 	b->size = size;
 }
 
-/* Splice a buffer into another buffer. If size is zero the entire buffer
- * is spliced while if size is non-zero the buffer is spliced starting at
- * offset for size bytes. Note that it's up to caller to bounds check.
- */
+/* Splice a buffer into another buffer. Note that it's up to the caller to
+ * bounds check the offset and size. */
 static inline void buffer_splice(struct buffer *dest, const struct buffer *src,
                                  size_t offset, size_t size)
 {
 	buffer_init(dest, src->name, src->data, src->size);
-	if (size != 0) {
-		dest->data += offset;
-		buffer_set_size(dest, size);
-	}
+	dest->data += offset;
+	buffer_set_size(dest, size);
 }
 
 static inline void buffer_clone(struct buffer *dest, const struct buffer *src)
 {
-	buffer_splice(dest, src, 0, 0);
+	buffer_splice(dest, src, 0, src->size);
 }
 
 static inline void buffer_seek(struct buffer *b, size_t size)

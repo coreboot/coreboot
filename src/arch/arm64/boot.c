@@ -40,27 +40,29 @@ static void run_payload(struct prog *prog)
 
 	printk(BIOS_SPEW, "entry    = %p\n", doit);
 
-	secmon_run(doit, arg);
+	if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_MONITOR))
+		secmon_run(doit, arg);
+	else {
+		/* Start the other CPUs spinning. */
+		spintable_start();
 
-	/* Start the other CPUs spinning. */
-	spintable_start();
+		/* If current EL is not EL3, jump to payload at same EL. */
+		if (current_el != EL3) {
+			cache_sync_instructions();
+			/* Point of no-return */
+			doit(arg);
+		}
 
-	/* If current EL is not EL3, jump to payload at same EL. */
-	if (current_el != EL3) {
+		/* If current EL is EL3, we transition to payload in EL2. */
+		struct exc_state exc_state;
+
+		memset(&exc_state, 0, sizeof(exc_state));
+
+		exc_state.elx.spsr = get_eret_el(EL2, SPSR_USE_L);
+
 		cache_sync_instructions();
-		/* Point of no-return */
-		doit(arg);
+		transition_with_entry(doit, arg, &exc_state);
 	}
-
-	/* If current EL is EL3, we transition to payload in EL2. */
-	struct exc_state exc_state;
-
-	memset(&exc_state, 0, sizeof(exc_state));
-
-	exc_state.elx.spsr = get_eret_el(EL2, SPSR_USE_L);
-
-	cache_sync_instructions();
-	transition_with_entry(doit, arg, &exc_state);
 }
 
 void arch_prog_run(struct prog *prog)

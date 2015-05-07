@@ -50,19 +50,16 @@ static void run_payload(struct prog *prog)
 		printk(BIOS_SPEW, "entry    = %p\n", doit);
 
 		/* If current EL is not EL3, jump to payload at same EL. */
-		if (current_el != EL3) {
-			/* Point of no-return */
+		if (current_el != EL3)
 			doit(arg);
+		else {
+			/* If current EL is EL3, we transition to payload in EL2. */
+			struct exc_state exc_state;
+			memset(&exc_state, 0, sizeof(exc_state));
+			exc_state.elx.spsr = get_eret_el(EL2, SPSR_USE_L);
+
+			transition_with_entry(doit, arg, &exc_state);
 		}
-
-		/* If current EL is EL3, we transition to payload in EL2. */
-		struct exc_state exc_state;
-
-		memset(&exc_state, 0, sizeof(exc_state));
-
-		exc_state.elx.spsr = get_eret_el(EL2, SPSR_USE_L);
-
-		transition_with_entry(doit, arg, &exc_state);
 	}
 }
 

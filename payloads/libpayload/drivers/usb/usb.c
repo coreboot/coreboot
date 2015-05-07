@@ -252,7 +252,7 @@ usb_decode_mps0(usb_speed speed, u8 bMaxPacketSize0)
 			usb_debug("Invalid MPS0: 0x%02x\n", bMaxPacketSize0);
 			bMaxPacketSize0 = 9;
 		}
-		return 2 << bMaxPacketSize0;
+		return 1 << bMaxPacketSize0;
 	default: 	/* GCC is stupid and cannot deal with enums correctly */
 		return 8;
 	}

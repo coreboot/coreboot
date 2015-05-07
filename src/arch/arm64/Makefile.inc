@@ -161,13 +161,13 @@ rmodules_arm64-y += ../../lib/memcpy.c
 rmodules_arm64-y += ../../lib/memmove.c
 rmodules_arm64-y += eabi_compat.c
 
-secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += stage_entry.S
-secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += cpu-stubs.c
-secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += startup.c
-secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += ../../lib/malloc.c
-secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += ../../lib/memset.c
-secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += ../../lib/memcmp.c
-secmon-$(CONFIG_ARCH_USE_SECURE_MONITOR) += ../../lib/memcpy.c
+secmon-y += stage_entry.S
+secmon-y += cpu-stubs.c
+secmon-y += startup.c
+secmon-y += ../../lib/malloc.c
+secmon-y += ../../lib/memset.c
+secmon-y += ../../lib/memcmp.c
+secmon-y += ../../lib/memcpy.c
 
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 

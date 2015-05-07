@@ -220,11 +220,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo = &sysinfo_car;
 
-	u32 bsp_apicid = 0, val;
+	uint32_t bsp_apicid = 0, val;
+	uint8_t byte;
 	msr_t msr;
 
 	timestamp_init(timestamp_get());
 	timestamp_add_now(TS_START_ROMSTAGE);
+
+	int s3resume = acpi_is_wakeup_s3();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
@@ -243,6 +246,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Initialize early serial */
 		nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
+
+		/* Disable LPC legacy DMA support to prevent lockup */
+		byte = pci_read_config8(PCI_DEV(0, 0x14, 3), 0x78);
+		byte &= ~(1 << 0);
+		pci_write_config8(PCI_DEV(0, 0x14, 3), 0x78, byte);
 	}
 
 	post_code(0x30);
@@ -280,14 +288,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	amd_ht_init(sysinfo);
 	amd_ht_fixup(sysinfo);
 	post_code(0x35);
-
-	/* Set DDR memory voltage
-	 * FIXME
-	 * This should be set based on the output of the DIMM SPDs
-	 * For now it is locked to 1.5V
-	 */
-	set_ddr3_voltage(0, 0);	/* Node 0 */
-	set_ddr3_voltage(1, 0);	/* Node 1 */
 
 	/* Setup nodes PCI space and start core 0 AP init. */
 	finalize_node_setup(sysinfo);
@@ -351,6 +351,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		die("After soft_reset_x - shouldn't see this message!!!\n");
 	}
 
+	/* Set DDR memory voltage
+	 * FIXME
+	 * This should be set based on the output of the DIMM SPDs
+	 * For now it is locked to 1.5V
+	 */
+	set_lpc_sticky_ctl(1);	/* Retain LPC/IMC GPIO configuration during S3 sleep */
+	if (!s3resume) {	/* Avoid supply voltage glitches while the DIMMs are retaining data */
+		set_ddr3_voltage(0, 0);	/* Node 0 */
+		set_ddr3_voltage(1, 0);	/* Node 1 */
+	}
+
 	/* Set up peripheral control lines */
 	set_peripheral_control_lines();
 
@@ -380,7 +391,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	timestamp_add_now(TS_AFTER_INITRAM);
 
 #if !IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
-	cbmem_initialize_empty();
+	if (s3resume)
+		cbmem_initialize();
+	else
+		cbmem_initialize_empty();
 	post_code(0x41);
 
 	amdmct_cbmem_store_info(sysinfo);

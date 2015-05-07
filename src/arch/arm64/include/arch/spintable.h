@@ -25,7 +25,7 @@ struct spintable_attributes {
 	void *addr;
 };
 
-#if IS_ENABLED(CONFIG_ARCH_SPINTABLE)
+#if IS_ENABLED(CONFIG_ARM64_USE_SPINTABLE)
 
 /* Initialize spintable with provided monitor address. */
 void spintable_init(void *monitor_address);
@@ -33,7 +33,7 @@ void spintable_init(void *monitor_address);
 /* Return NULL on failure, otherwise the spintable info. */
 const struct spintable_attributes *spintable_get_attributes(void);
 
-#else /* IS_ENABLED(CONFIG_SPINTABLE) */
+#else /* IS_ENABLED(CONFIG_ARM64_USE_SPINTABLE) */
 
 static inline void spintable_init(void *monitor_address) {}
 static inline const struct spintable_attributes *spintable_get_attributes(void)
@@ -41,7 +41,7 @@ static inline const struct spintable_attributes *spintable_get_attributes(void)
 	return NULL;
 }
 
-#endif /* IS_ENABLED(CONFIG_SPINTABLE) */
+#endif /* IS_ENABLED(CONFIG_ARM64_USE_SPINTABLE) */
 
 /* Start spinning on the non-boot CPUs. */
 void spintable_start(void);

@@ -28,12 +28,13 @@ config ARM64_BOOTBLOCK_CUSTOM
 	bool
 	default n
 
-config ARCH_USE_SECURE_MONITOR
+config ARM64_USE_SECURE_MONITOR
 	bool
 	default n
 	select RELOCATABLE_MODULES
+	depends on ARCH_RAMSTAGE_ARM64
 
-config ARCH_SPINTABLE
+config ARM64_USE_SPINTABLE
 	bool
 	default n
 	depends on ARCH_RAMSTAGE_ARM64

@@ -96,7 +96,7 @@ ramstage-y += ramstage.c
 ramstage-y += mmu_operations.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += ../tegra/usb.c
-ramstage-$(CONFIG_ARCH_USE_SECURE_MONITOR) += secmon.c
+ramstage-$(CONFIG_ARM64_USE_SECURE_MONITOR) += secmon.c
 
 secmon-y += 32bit_reset.S
 secmon-y += cpu.c

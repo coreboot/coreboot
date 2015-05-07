@@ -21,7 +21,7 @@
 
 subdirs-y += lib/
 
-subdirs-$(CONFIG_ARCH_USE_SECURE_MONITOR) += secmon/
+subdirs-$(CONFIG_ARM64_USE_SECURE_MONITOR) += secmon/
 
 armv8_flags = -march=armv8-a -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_ARM_ARCH__=8
 
@@ -92,7 +92,7 @@ ramstage-y += cpu.S
 ramstage-y += exception.c
 ramstage-y += mmu.c
 
-ramstage-$(CONFIG_ARCH_USE_SECURE_MONITOR) += secmon_loader.c
+ramstage-$(CONFIG_ARM64_USE_SECURE_MONITOR) += secmon_loader.c
 
 ramstage-c-ccopts += $(armv8_flags)
 ramstage-S-ccopts += $(armv8_asm_flags)

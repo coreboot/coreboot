@@ -180,6 +180,9 @@ uint64_t  __attribute__((weak)) timestamp_get(void)
 {
 	struct mono_time t1, t2;
 
+	if (!IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER))
+		return 0;
+
 	mono_time_set_usecs(&t1, 0);
 	timer_monotonic_get(&t2);
 

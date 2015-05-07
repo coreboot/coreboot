@@ -146,7 +146,7 @@ void uart_tx_flush(int idx)
 	tegra132_uart_tx_flush(uart_ptr);
 }
 
-#ifndef __PRE_RAM__
+#if ENV_RAMSTAGE
 void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;

@@ -22,8 +22,6 @@
 #include "common.h"
 #include "cbfs.h"
 
-#define IS_TOP_ALIGNED_ADDRESS(x)	((uint32_t)(x) > 0x80000000)
-
 /* CBFS image processing */
 
 struct cbfs_image {
@@ -88,7 +86,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 
 /* Adds an entry to CBFS image by given name and type. If content_offset is
  * non-zero, try to align "content" (CBFS_SUBHEADER(p)) at content_offset.
- * Note that top-aligned addresses are only supported for legacy CBFSes.
+ * Never pass this function a top-aligned address: convert it to an offset.
  * Returns 0 on success, otherwise non-zero. */
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		   const char *name, uint32_t type, uint32_t content_offset);

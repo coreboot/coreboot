@@ -133,6 +133,9 @@ void partitioned_file_close(partitioned_file_t *file);
 /** @return Whether the file is partitioned (i.e. not flat). */
 bool partitioned_file_is_partitioned(const partitioned_file_t *file);
 
+/** @return The image's overall filesize, regardless of whether it's flat. */
+size_t partitioned_file_total_size(const partitioned_file_t *file);
+
 /** @return Whether the specified region begins with the magic bytes. */
 bool partitioned_file_region_check_magic(const partitioned_file_t *file,
 		const char *region, const char *magic, size_t magic_len);

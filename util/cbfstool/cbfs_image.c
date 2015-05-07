@@ -526,6 +526,12 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		   const char *name, uint32_t type, uint32_t content_offset)
 {
+	assert(image);
+	assert(buffer);
+	assert(buffer->data);
+	assert(name);
+	assert(!IS_TOP_ALIGNED_ADDRESS(content_offset));
+
 	uint32_t entry_type;
 	uint32_t addr, addr_next;
 	struct cbfs_file *entry, *next;
@@ -536,19 +542,6 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 	need_size = header_size + buffer->size;
 	DEBUG("cbfs_add_entry('%s'@0x%x) => need_size = %u+%zu=%u\n",
 	      name, content_offset, header_size, buffer->size, need_size);
-
-	if (IS_TOP_ALIGNED_ADDRESS(content_offset)) {
-		if (!cbfs_is_legacy_cbfs(image)) {
-			ERROR("Top-aligned offsets are only supported for legacy CBFSes (with master headers)\n");
-			return -1;
-		}
-
-		// legacy cbfstool takes top-aligned address.
-		uint32_t theromsize = image->header.romsize;
-		INFO("Converting top-aligned address 0x%x to offset: 0x%x\n",
-		     content_offset, content_offset + theromsize);
-		content_offset = theromsize + (int32_t)content_offset;
-	}
 
 	// Merge empty entries.
 	DEBUG("(trying to merge empty entries...)\n");

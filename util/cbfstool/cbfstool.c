@@ -98,6 +98,21 @@ static bool region_is_modern_cbfs(const char *region)
 				CBFS_FILE_MAGIC, strlen(CBFS_FILE_MAGIC));
 }
 
+/*
+ * Converts between offsets from the start of the specified image region and
+ * "top-aligned" offsets from the top of the entire flash image. Works in either
+ * direction: pass in one type of offset and receive the other type.
+ * N.B. A top-aligned offset is always a positive number, and should not be
+ * confused with a top-aliged *address*, which is its arithmetic inverse. */
+static unsigned convert_to_from_top_aligned(const struct buffer *region,
+								unsigned offset)
+{
+	assert(region);
+
+	size_t image_size = partitioned_file_total_size(param.image_file);
+	return image_size - region->offset - offset;
+}
+
 typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset);
 
 static int cbfs_add_integer_component(const char *name,
@@ -128,6 +143,10 @@ static int cbfs_add_integer_component(const char *name,
 		ERROR("'%s' already in ROM image.\n", name);
 		goto done;
 	}
+
+	if (IS_TOP_ALIGNED_ADDRESS(offset))
+		offset = convert_to_from_top_aligned(param.image_region,
+								-offset);
 
 	if (cbfs_add_entry(&image, &buffer, name, CBFS_COMPONENT_RAW, offset) !=
 									0) {
@@ -186,6 +205,10 @@ static int cbfs_add_component(const char *filename,
 		buffer_delete(&buffer);
 		return 1;
 	}
+
+	if (IS_TOP_ALIGNED_ADDRESS(offset))
+		offset = convert_to_from_top_aligned(param.image_region,
+								-offset);
 
 	if (cbfs_add_entry(&image, &buffer, name, type, offset) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
@@ -439,11 +462,6 @@ static int cbfs_locate(void)
 							param.headeroffset))
 		return 1;
 
-	if (!cbfs_is_legacy_cbfs(&image) && param.top_aligned) {
-		ERROR("The -T switch is only valid on legacy images having CBFS master headers\n");
-		return 1;
-	}
-
 	if (cbfs_get_entry(&image, param.name))
 		WARN("'%s' already in CBFS.\n", param.name);
 
@@ -464,7 +482,8 @@ static int cbfs_locate(void)
 	}
 
 	if (param.top_aligned)
-		address = address - image.header.romsize;
+		address = -convert_to_from_top_aligned(param.image_region,
+								address);
 
 	printf("0x%x\n", address);
 	return 0;
@@ -806,7 +825,7 @@ static void usage(char *name)
 	     "USAGE:\n" " %s [-h]\n"
 	     " %s FILE COMMAND [-v] [PARAMETERS]...\n\n" "OPTIONs:\n"
 	     "  -H header_offset Do not search for header; use this offset*\n"
-	     "  -T               Output top-aligned memory address*\n"
+	     "  -T               Output top-aligned memory address\n"
 	     "  -u               Accept short data; fill upward/from bottom\n"
 	     "  -d               Accept short data; fill downward/from top\n"
 	     "  -v               Provide verbose output\n"
@@ -857,8 +876,8 @@ static void usage(char *name)
 			"Updates the FIT table with microcode entries\n"
 	     "\n"
 	     "OFFSETs:\n"
-	     "  Numbers accompanying -b, -H, and -o switches may be provided\n"
-	     "  in two possible formats*: if their value is greater than\n"
+	     "  Numbers accompanying -b, -H, and -o switches* may be provided\n"
+	     "  in two possible formats: if their value is greater than\n"
 	     "  0x80000000, they are interpreted as a top-aligned x86 memory\n"
 	     "  address; otherwise, they are treated as an offset into flash.\n"
 	     "ARCHes:\n"
@@ -878,7 +897,11 @@ static void usage(char *name)
 	     "  that, when working with such images, the -F and -r switches\n"
 	     "  default to '%s' for convenience, and both the -b switch to\n"
 	     "  CBFS operations and the output of the locate action become\n"
-	     "  relative to the selected CBFS region's lowest address.\n",
+	     "  relative to the selected CBFS region's lowest address.\n"
+	     "  The one exception to this rule is the top-aligned address,\n"
+	     "  which is always relative to the end of the entire image\n"
+	     "  rather than relative to the local region; this is true for\n"
+	     "  for both input (sufficiently large) and output (-T) data.\n",
 	     SECTION_NAME_FMAP, SECTION_NAME_PRIMARY_CBFS,
 	     SECTION_NAME_PRIMARY_CBFS
 	     );

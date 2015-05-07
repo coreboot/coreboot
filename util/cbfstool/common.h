@@ -50,6 +50,8 @@ extern int verbose;
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
+#define IS_TOP_ALIGNED_ADDRESS(x)	((uint32_t)(x) > 0x80000000)
+
 #define unused __attribute__((unused))
 
 static inline uint32_t align_up(uint32_t value, uint32_t align)

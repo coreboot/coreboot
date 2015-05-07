@@ -290,6 +290,13 @@ bool partitioned_file_is_partitioned(const partitioned_file_t *file)
 	return partitioned_file_get_fmap(file) != NULL;
 }
 
+size_t partitioned_file_total_size(const partitioned_file_t *file)
+{
+	assert(file);
+
+	return file->buffer.size;
+}
+
 bool partitioned_file_region_check_magic(const partitioned_file_t *file,
 			const char *region, const char *magic, size_t magic_len)
 {

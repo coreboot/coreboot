@@ -45,11 +45,12 @@ static void run_payload(struct prog *prog)
 		if (IS_ENABLED(CONFIG_ARM64_USE_SPINTABLE))
 			spintable_start();
 
+		cache_sync_instructions();
+
 		printk(BIOS_SPEW, "entry    = %p\n", doit);
 
 		/* If current EL is not EL3, jump to payload at same EL. */
 		if (current_el != EL3) {
-			cache_sync_instructions();
 			/* Point of no-return */
 			doit(arg);
 		}
@@ -61,7 +62,6 @@ static void run_payload(struct prog *prog)
 
 		exc_state.elx.spsr = get_eret_el(EL2, SPSR_USE_L);
 
-		cache_sync_instructions();
 		transition_with_entry(doit, arg, &exc_state);
 	}
 }

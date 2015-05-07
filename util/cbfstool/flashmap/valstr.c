@@ -35,7 +35,7 @@
 #include <valstr.h>
 
 const char *val2str_default(uint32_t val, const struct valstr *vs,
-                            const char *def_str)
+			    const char *def_str)
 {
 	int i;
 

@@ -43,21 +43,21 @@ struct valstr {
 /*
  * val2str_default  -  convert value to string
  *
- * @val:        value to convert
- * @vs:         value-string data
- * @def_str:    default string to return if no matching value found
+ * @val:	value to convert
+ * @vs:		value-string data
+ * @def_str:	default string to return if no matching value found
  *
  * returns pointer to string
  * returns def_str if no matching value found
  */
 const char *val2str_default(uint32_t val, const struct valstr *vs,
-                            const char *def_str);
+			    const char *def_str);
 
 /*
  * val2str  -  convert value to string
  *
- * @val:        value to convert
- * @vs:         value-string data
+ * @val:	value to convert
+ * @vs:		value-string data
  *
  * returns pointer to string
  * returns pointer to "unknown" static string if not found
@@ -67,8 +67,8 @@ const char *val2str(uint32_t val, const struct valstr *vs);
 /*
  * str2val  -  convert string to value
  *
- * @str:        string to convert
- * @vs:         value-string data
+ * @str:	string to convert
+ * @vs:		value-string data
  *
  * returns value for string
  * returns value for last entry in value-string data if not found

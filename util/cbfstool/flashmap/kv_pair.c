@@ -76,7 +76,7 @@ struct kv_pair **kv_pair_new_array(size_t size)
 }
 
 struct kv_pair *kv_pair_add(struct kv_pair *kv_list,
-                            const char *key, const char *value)
+			    const char *key, const char *value)
 {
 	struct kv_pair *kv_new;
 	struct kv_pair *kv_ptr;
@@ -117,7 +117,7 @@ kv_pair_add_failed:
 }
 
 struct kv_pair *kv_pair_add_bool(struct kv_pair *kv_list,
-                                 const char *key, int value)
+				 const char *key, int value)
 {
 	const char *str;
 
@@ -130,7 +130,7 @@ struct kv_pair *kv_pair_add_bool(struct kv_pair *kv_list,
 }
 
 struct kv_pair *kv_pair_fmt(struct kv_pair *kv_list,
-        		    const char *kv_key, const char *format, ...)
+			    const char *kv_key, const char *format, ...)
 {
 	char kv_value[KV_PAIR_MAX_VALUE_LEN];
 	va_list vptr;
@@ -173,7 +173,7 @@ void kv_pair_free_array(struct kv_pair **kv_array, size_t size)
 }
 
 void kv_pair_print_to_file(FILE* fp, struct kv_pair *kv_list,
-                           enum kv_pair_style style)
+			   enum kv_pair_style style)
 {
 	struct kv_pair *kv_ptr;
 
@@ -182,7 +182,7 @@ void kv_pair_print_to_file(FILE* fp, struct kv_pair *kv_list,
 		for (kv_ptr = kv_list; kv_ptr != NULL; kv_ptr = kv_ptr->next) {
 			if (kv_ptr->key && kv_ptr->value) {
 				fprintf(fp, "%s=\"%s\" ",
-				        kv_ptr->key, kv_ptr->value);
+					kv_ptr->key, kv_ptr->value);
 			}
 		}
 		break;
@@ -201,7 +201,7 @@ void kv_pair_print_to_file(FILE* fp, struct kv_pair *kv_list,
 		for (kv_ptr = kv_list; kv_ptr != NULL; kv_ptr = kv_ptr->next) {
 			if (kv_ptr->key && kv_ptr->value)
 				fprintf(fp, "%-20s | %s\n",
-				        kv_ptr->key, kv_ptr->value);
+					kv_ptr->key, kv_ptr->value);
 		}
 		break;
 	}

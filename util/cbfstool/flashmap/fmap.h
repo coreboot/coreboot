@@ -54,10 +54,10 @@ enum fmap_flags {
 
 /* Mapping of volatile and static regions in firmware binary */
 struct fmap_area {
-	uint32_t offset;                /* offset relative to base */
-	uint32_t size;                  /* size in bytes */
-	uint8_t  name[FMAP_STRLEN];     /* descriptive name */
-	uint16_t flags;                 /* flags for this area */
+	uint32_t offset;		/* offset relative to base */
+	uint32_t size;			/* size in bytes */
+	uint8_t  name[FMAP_STRLEN];	/* descriptive name */
+	uint16_t flags;			/* flags for this area */
 }  __attribute__((packed));
 
 struct fmap {
@@ -111,7 +111,7 @@ extern int fmap_print(const struct fmap *map);
  * returns <0 to indicate error
  */
 extern int fmap_get_csum(const uint8_t *image,
-                         unsigned int image_len, uint8_t **digest);
+			 unsigned int image_len, uint8_t **digest);
 
 
 /*
@@ -144,7 +144,7 @@ char *fmap_flags_to_string(uint16_t flags);
  * returns NULL to indicate failure
  */
 extern struct fmap *fmap_create(uint64_t base,
-                                uint32_t size, uint8_t *name);
+				uint32_t size, uint8_t *name);
 
 /* free memory used by an fmap structure */
 extern void fmap_destroy(struct fmap *fmap);
@@ -172,8 +172,8 @@ extern int fmap_size(struct fmap *fmap);
  * returns <0 to indicate failure
  */
 extern int fmap_append_area(struct fmap **fmap,
-                            uint32_t offset, uint32_t size,
-                            const uint8_t *name, uint16_t flags);
+			    uint32_t offset, uint32_t size,
+			    const uint8_t *name, uint16_t flags);
 
 /*
  * fmap_find_area - find an fmap_area entry (by name) and return pointer to it

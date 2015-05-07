@@ -76,8 +76,8 @@ static long int fmap_lsearch(const uint8_t *image, size_t len)
 
 	for (offset = 0; offset < len - strlen(FMAP_SIGNATURE); offset++) {
 		if (!memcmp(&image[offset],
-		            FMAP_SIGNATURE,
-		            strlen(FMAP_SIGNATURE))) {
+			    FMAP_SIGNATURE,
+			    strlen(FMAP_SIGNATURE))) {
 			fmap_found = 1;
 			break;
 		}
@@ -114,8 +114,8 @@ static long int fmap_bsearch(const uint8_t *image, size_t len)
 			if ((offset % (stride * 2) == 0) && (offset != 0))
 					continue;
 			if (!memcmp(&image[offset],
-			            FMAP_SIGNATURE,
-			            strlen(FMAP_SIGNATURE))) {
+				    FMAP_SIGNATURE,
+				    strlen(FMAP_SIGNATURE))) {
 				fmap_found = 1;
 				break;
 			}
@@ -163,19 +163,19 @@ int fmap_print(const struct fmap *fmap)
 	struct kv_pair *kv = NULL;
 	const uint8_t *tmp;
 
-        kv = kv_pair_new();
+	kv = kv_pair_new();
 	if (!kv)
 		return -1;
 
 	tmp = fmap->signature;
 	kv_pair_fmt(kv, "fmap_signature",
-	                "0x%02x%02x%02x%02x%02x%02x%02x%02x",
+			"0x%02x%02x%02x%02x%02x%02x%02x%02x",
 			tmp[0], tmp[1], tmp[2], tmp[3],
 			tmp[4], tmp[5], tmp[6], tmp[7]);
 	kv_pair_fmt(kv, "fmap_ver_major", "%d", fmap->ver_major);
 	kv_pair_fmt(kv, "fmap_ver_minor","%d", fmap->ver_minor);
 	kv_pair_fmt(kv, "fmap_base", "0x%016llx",
-	            (unsigned long long)fmap->base);
+		    (unsigned long long)fmap->base);
 	kv_pair_fmt(kv, "fmap_size", "0x%04x", fmap->size);
 	kv_pair_fmt(kv, "fmap_name", "%s", fmap->name);
 	kv_pair_fmt(kv, "fmap_nareas", "%d", fmap->nareas);
@@ -241,14 +241,14 @@ int fmap_get_csum(const uint8_t *image, unsigned int image_len, uint8_t **digest
 		/* sanity check the offset */
 		if (fmap->areas[i].size + fmap->areas[i].offset > image_len) {
 			fprintf(stderr,
-			        "(%s) invalid parameter detected in area %d\n",
-			        __func__, i);
+				"(%s) invalid parameter detected in area %d\n",
+				__func__, i);
 			return -1;
 		}
 
 		SHA_update(&ctx,
-		           image + fmap->areas[i].offset,
-		           fmap->areas[i].size);
+			   image + fmap->areas[i].offset,
+			   fmap->areas[i].size);
 	}
 
 	SHA_final(&ctx);
@@ -278,7 +278,7 @@ char *fmap_flags_to_string(uint16_t flags)
 			total_size += strlen(tmp);
 			str = realloc(str, total_size);
 			strcat(str, tmp);
-			
+
 			flags &= ~(1 << i);
 			if (flags) {
 				total_size++;
@@ -318,8 +318,8 @@ void fmap_destroy(struct fmap *fmap) {
 
 /* append area to existing structure, return new total size if successful */
 int fmap_append_area(struct fmap **fmap,
-                     uint32_t offset, uint32_t size,
-                     const uint8_t *name, uint16_t flags)
+		     uint32_t offset, uint32_t size,
+		     const uint8_t *name, uint16_t flags)
 {
 	struct fmap_area *area;
 	int orig_size, new_size;
@@ -513,10 +513,10 @@ static int fmap_append_area_test(struct fmap **fmap)
 
 	total_size = sizeof(**fmap) + sizeof(test_area);
 	if (fmap_append_area(fmap,
-	                     test_area.offset,
-	                     test_area.size,
-	                     test_area.name,
-	                     test_area.flags
+			     test_area.offset,
+			     test_area.size,
+			     test_area.name,
+			     test_area.flags
 			     ) != total_size) {
 		printf("failed to append area\n");
 		goto fmap_append_area_test_exit;
@@ -618,7 +618,7 @@ static int fmap_find_test(struct fmap *fmap)
 	status = fail;
 
 	/*
-         * Note: In these tests, we'll use fmap_find() and control usage of
+	 * Note: In these tests, we'll use fmap_find() and control usage of
 	 * lsearch and bsearch by using a power-of-2 total_size. For lsearch,
 	 * use total_size - 1. For bsearch, use total_size.
 	 */

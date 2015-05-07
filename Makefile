@@ -43,9 +43,12 @@ include .xcompile
 export top := $(CURDIR)
 export src := src
 export srck := $(top)/util/kconfig
-export obj ?= build
+obj ?= build
+override obj := $(subst $(top)/,,$(abspath $(obj)))
+export obj
 export objutil ?= $(obj)/util
 export objk := $(objutil)/kconfig
+absobj := $(abspath $(obj))
 
 
 export KCONFIG_AUTOHEADER := $(obj)/config.h
@@ -184,8 +187,9 @@ includemakefiles= \
 	$(foreach class,$(classes-y), $(call add-class,$(class))) \
 	$(foreach class,$(classes), \
 		$(eval $(class)-srcs+= \
+			$$(subst $(absobj)/,$(obj)/, \
 			$$(subst $(top)/,, \
-			$$(abspath $$(subst $(dir $(1))/,/,$$(addprefix $(dir $(1)),$$($(class)-y))))))) \
+			$$(abspath $$(subst $(dir $(1))/,/,$$(addprefix $(dir $(1)),$$($(class)-y)))))))) \
 	$(foreach special,$(special-classes), \
 		$(foreach item,$($(special)-y), $(call $(special)-handler,$(dir $(1)),$(item)))) \
 	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))

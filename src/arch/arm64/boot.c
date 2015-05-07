@@ -36,15 +36,15 @@ static void run_payload(struct prog *prog)
 	doit = prog_entry(prog);
 	arg = prog_entry_arg(prog);
 
-	uint8_t current_el = get_current_el();
-
-	printk(BIOS_SPEW, "entry    = %p\n", doit);
-
 	if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_MONITOR))
 		secmon_run(doit, arg);
 	else {
+		uint8_t current_el = get_current_el();
+
 		/* Start the other CPUs spinning. */
 		spintable_start();
+
+		printk(BIOS_SPEW, "entry    = %p\n", doit);
 
 		/* If current EL is not EL3, jump to payload at same EL. */
 		if (current_el != EL3) {

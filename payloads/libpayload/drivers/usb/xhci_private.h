@@ -33,6 +33,8 @@
 
 //#define USB_DEBUG
 #include <usb/usb.h>
+#include <arch/barrier.h>
+#include <kconfig.h>
 
 //#define XHCI_DUMPS
 #define xhci_debug(fmt, args...) usb_debug("%s: " fmt, __func__, ## args)
@@ -242,6 +244,13 @@ typedef volatile struct slotctx {
 #define EC_MXESIT_FIELD		f5		/* MXESIT - Max ESIT Payload */
 #define EC_MXESIT_START		16
 #define EC_MXESIT_LEN		16
+#define EC_BPKTS_FIELD		rsvd[0]		/* BPKTS - packets tx in scheduled uframe */
+#define EC_BPKTS_START		0
+#define EC_BPKTS_LEN		6
+#define EC_BBM_FIELD		rsvd[0]		/* BBM - burst mode for scheduling */
+#define EC_BBM_START		11
+#define EC_BBM_LEN		1
+
 #define EC_MASK(tok)		MASK(EC_##tok##_START, EC_##tok##_LEN)
 #define EC_GET(tok, ec)		(((ec)->EC_##tok##_FIELD & EC_MASK(tok)) \
 				 >> EC_##tok##_START)

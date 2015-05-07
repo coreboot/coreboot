@@ -313,6 +313,16 @@ xhci_finish_ep_config(const endpoint_t *const ep, inputctx_t *const ic)
 	EC_SET(AVRTRB,	epctx, avrtrb);
 	EC_SET(MXESIT,  epctx, EC_GET(MPS, epctx) * EC_GET(MBS, epctx));
 
+	if (IS_ENABLED(CONFIG_LP_USB_XHCI_MTK_QUIRK)) {
+		/* The MTK xHCI defines some extra SW parameters which are
+		 * put into reserved DWs in Slot and Endpoint Contexts for
+		 * synchronous endpoints. But for non-isochronous transfers,
+		 * it is enough to set the following two fields to 1, and others
+		 * are set to 0.
+		 */
+		EC_SET(BPKTS, epctx, 1);
+		EC_SET(BBM, epctx, 1);
+	}
 	return 0;
 }
 

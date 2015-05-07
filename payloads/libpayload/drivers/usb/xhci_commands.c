@@ -47,6 +47,8 @@ xhci_post_command(xhci_t *const xhci)
 	TRB_SET(C, xhci->cr.cur, xhci->cr.pcs);
 	++xhci->cr.cur;
 
+	/* pass command trb to hardware */
+	wmb();
 	/* Ring the doorbell */
 	xhci->dbreg[0] = 0;
 

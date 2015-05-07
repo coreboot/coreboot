@@ -370,6 +370,8 @@ xhci_reinit (hci_t *controller)
 	xhci->ev_ring_table[0].seg_base_hi = 0;
 	xhci->ev_ring_table[0].seg_size = EVENT_RING_SIZE;
 
+	/* pass event ring table to hardware */
+	wmb();
 	/* Initialize primary interrupter */
 	xhci->hcrreg->intrrs[0].erstsz = 1;
 	xhci_update_event_dq(xhci);
@@ -510,6 +512,7 @@ xhci_enqueue_trb(transfer_ring_t *const tr)
 		xhci_spew("Handling LINK pointer\n");
 		const int tc = TRB_GET(TC, tr->cur);
 		TRB_SET(CH, tr->cur, chain);
+		wmb();
 		TRB_SET(C, tr->cur, tr->pcs);
 		tr->cur = phys_to_virt(tr->cur->ptr_low);
 		if (tc)
@@ -535,7 +538,7 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 			cur_length = length;
 			packets = 0;
 			length = 0;
-		} else {
+		} else if (!IS_ENABLED(CONFIG_LP_XHCI_MTK_QUIRK)) {
 			packets -= (residue + cur_length) / mps;
 			residue = (residue + cur_length) % mps;
 			length -= cur_length;
@@ -547,6 +550,18 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 		TRB_SET(TL, trb, cur_length);
 		TRB_SET(TDS, trb, MIN(TRB_MAX_TD_SIZE, packets));
 		TRB_SET(CH, trb, 1);
+
+		if (length && IS_ENABLED(CONFIG_LP_XHCI_MTK_QUIRK)) {
+			/*
+			 * For MTK's xHCI controller, TDS defines a number of
+			 * packets that remain to be transferred for a TD after
+			 * processing all Max packets in all previous TRBs, that
+			 * means don't include the current TRB's.
+			 */
+			packets -= (residue + cur_length) / mps;
+			residue = (residue + cur_length) % mps;
+			length -= cur_length;
+		}
 
 		/* Check for first, data stage TRB */
 		if (!trb_count && ep == 1) {

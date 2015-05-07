@@ -19,6 +19,15 @@ config ARCH_RAMSTAGE_ARM64
 	bool
 	default n
 
+source src/arch/arm64/armv8/Kconfig
+source src/arch/arm64/cpu/Kconfig
+
+# If a custom bootblock is necessary, this option should be "select"-ed by
+# the thing that needs it, probably the CPU.
+config ARM64_BOOTBLOCK_CUSTOM
+	bool
+	default n
+
 config ARCH_USE_SECURE_MONITOR
 	bool
 	default n
@@ -28,12 +37,3 @@ config ARCH_SPINTABLE
 	bool
 	default n
 	depends on ARCH_RAMSTAGE_ARM64
-
-source src/arch/arm64/armv8/Kconfig
-source src/arch/arm64/cpu/Kconfig
-
-# If a custom bootblock is necessary, this option should be "select"-ed by
-# the thing that needs it, probably the CPU.
-config ARM64_BOOTBLOCK_CUSTOM
-	bool
-	default n

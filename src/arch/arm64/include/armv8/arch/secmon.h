@@ -22,8 +22,6 @@
 
 #include <arch/cpu.h>
 
-#if IS_ENABLED(CONFIG_ARCH_USE_SECURE_MONITOR)
-
 struct secmon_params {
 	size_t online_cpus;
 	struct cpu_action bsp;
@@ -32,11 +30,5 @@ struct secmon_params {
 
 void secmon_run(void (*entry)(void *), void *arg);
 void soc_get_secmon_base_size(uint64_t *secmon_base, size_t *secmon_size);
-
-#else
-
-static inline void secmon_run(void (*entry)(void *), void *arg) {}
-
-#endif /* IS_ENABLED(CONFIG_ARCH_USE_SECURE_MONITOR) */
 
 #endif /*__ARCH_ARM64_ARMV8_SECMON__ */

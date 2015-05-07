@@ -42,7 +42,8 @@ static void run_payload(struct prog *prog)
 		uint8_t current_el = get_current_el();
 
 		/* Start the other CPUs spinning. */
-		spintable_start();
+		if (IS_ENABLED(CONFIG_ARM64_USE_SPINTABLE))
+			spintable_start();
 
 		printk(BIOS_SPEW, "entry    = %p\n", doit);
 

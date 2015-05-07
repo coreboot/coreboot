@@ -32,7 +32,7 @@ smm-generic-ccopts += -D__SMM__
 smm-c-deps:=$$(OPTION_TABLE_H)
 
 $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
-	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --start-group $(smm-objs) $(COMPILER_RT_smm) --end-group
+	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --whole-archive --start-group $(smm-objs) --no-whole-archive $(COMPILER_RT_smm) --end-group
 
 ifeq ($(CONFIG_SMM_MODULES),y)
 

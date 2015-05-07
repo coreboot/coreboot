@@ -115,8 +115,8 @@ files-in-dir=$(filter-out $(call dir-wildcards,$(call filter-out-dirs,$(1),$(sor
 # directory into an intermediate file
 ramstage-postprocess=$$(eval DEPENDENCIES+=$$(addsuffix .d,$$(basename $(1)))) \
 	$(foreach d,$(sort $(dir $(filter-out %.ld,$(1)))), \
-	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); $$(LD_ramstage) -o $$@ -r $$^ ) \
-	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(filter-out %.ld, $(call files-in-dir,$(d),$(1))),$(ramstage-objs))))
+	$(eval $(d)ramstage.a: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); rm -f $$@ && $(AR_ramstage) rcsT $$@ $$^ ) \
+	$(eval ramstage-objs:=$(d)ramstage.a $(filter-out $(filter-out %.ld, $(call files-in-dir,$(d),$(1))),$(ramstage-objs))))
 
 bootblock-generic-ccopts += -D__PRE_RAM__ -D__BOOTBLOCK__
 romstage-generic-ccopts += -D__PRE_RAM__ -D__ROMSTAGE__

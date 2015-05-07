@@ -365,7 +365,7 @@ $(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h
 
 $(objgenerated)/libverstage.a: $$(libverstage-objs)
 	rm -f $@
-	ar rcsT $@ $^
+	$(AR_libverstage) rcsT $@ $^
 
 #######################################################################
 # Clean up rules

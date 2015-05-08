@@ -39,7 +39,16 @@ romstage-y += vboot_handoff.c common.c
 
 verstage-y += verstage.ld
 
-VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-VERSTAGE-y))
+ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
+VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-verstage-y))
+else
+ifeq ($(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),y)
+VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-bootblock-y))
+else
+VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-romstage-y))
+endif
+endif # CONFIG_SEPARATE_VERSTAGE
+
 VB2_LIB = $(obj)/external/vboot_reference/vboot_fw20.a
 VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CPPFLAGS_verstage)))
 VBOOT_CFLAGS += $(libverstage-c-ccopts)
@@ -64,7 +73,7 @@ $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-file = $(objcbfs)/verstage.e
 $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-type = stage
 $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-compression = none
 else
-ifeq ($(VBOOT_STARTS_IN_BOOTBLOCK),y)
+ifeq ($(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),y)
 bootblock-srcs += $(objgenerated)/libverstage.a
 else
 romstage-srcs += $(objgenerated)/libverstage.a

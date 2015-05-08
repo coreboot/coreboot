@@ -30,13 +30,6 @@
 #include <arch/acpi.h>
 #endif
 
-/* The root region is at least DYN_CBMEM_ALIGN_SIZE . */
-#define ROOT_MIN_SIZE DYN_CBMEM_ALIGN_SIZE
-#define LG_ALIGN ROOT_MIN_SIZE
-/* Small allocation parameters. */
-#define SM_ROOT_SIZE 1024
-#define SM_ALIGN 32
-
 static inline struct imd *cbmem_get_imd(void)
 {
 	/* Only supply a backing store for imd in ramstage. */
@@ -116,6 +109,11 @@ static struct imd *imd_init_backing_with_recover(struct imd *backing)
 
 void cbmem_initialize_empty(void)
 {
+	cbmem_initialize_empty_id_size(0, 0);
+}
+
+void cbmem_initialize_empty_id_size(u32 id, u64 size)
+{
 	struct imd *imd;
 	struct imd imd_backing;
 
@@ -127,11 +125,15 @@ void cbmem_initialize_empty(void)
 
 	printk(BIOS_DEBUG, "CBMEM:\n");
 
-	if (imd_create_tiered_empty(imd, ROOT_MIN_SIZE, LG_ALIGN,
-					SM_ROOT_SIZE, SM_ALIGN)) {
+	if (imd_create_tiered_empty(imd, CBMEM_ROOT_MIN_SIZE, CBMEM_LG_ALIGN,
+					CBMEM_SM_ROOT_SIZE, CBMEM_SM_ALIGN)) {
 		printk(BIOS_DEBUG, "failed.\n");
 		return;
 	}
+
+	/* Add the specified range first */
+	if (size)
+		cbmem_add(id, size);
 
 	/* Complete migration to CBMEM. */
 	cbmem_run_init_hooks();
@@ -145,6 +147,11 @@ static inline int cbmem_fail_recovery(void)
 }
 
 int cbmem_initialize(void)
+{
+	return cbmem_initialize_id_size(0, 0);
+}
+
+int cbmem_initialize_id_size(u32 id, u64 size)
 {
 	struct imd *imd;
 	struct imd imd_backing;
@@ -166,6 +173,10 @@ int cbmem_initialize(void)
 	 */
 	imd_lockdown(imd);
 #endif
+
+	/* Add the specified range first */
+	if (size)
+		cbmem_add(id, size);
 
 	/* Complete migration to CBMEM. */
 	cbmem_run_init_hooks();

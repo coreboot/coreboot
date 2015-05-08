@@ -146,12 +146,30 @@ struct cbmem_entry;
  */
 
 #define DYN_CBMEM_ALIGN_SIZE (4096)
+#define CBMEM_ROOT_SIZE      DYN_CBMEM_ALIGN_SIZE
+
+/* The root region is at least DYN_CBMEM_ALIGN_SIZE . */
+#define CBMEM_ROOT_MIN_SIZE DYN_CBMEM_ALIGN_SIZE
+#define CBMEM_LG_ALIGN CBMEM_ROOT_MIN_SIZE
+
+/* Small allocation parameters. */
+#define CBMEM_SM_ROOT_SIZE 1024
+#define CBMEM_SM_ALIGN 32
+
+/* Determine the size for CBMEM root and the small allocations */
+static inline size_t cbmem_overhead_size(void)
+{
+   return 2 * CBMEM_ROOT_MIN_SIZE;
+}
 
 /* By default cbmem is attempted to be recovered. Returns 0 if cbmem was
  * recovered or 1 if cbmem had to be reinitialized. */
 int cbmem_initialize(void);
+int cbmem_initialize_id_size(u32 id, u64 size);
+
 /* Initialize cbmem to be empty. */
 void cbmem_initialize_empty(void);
+void cbmem_initialize_empty_id_size(u32 id, u64 size);
 
 /* Return the top address for dynamic cbmem. The address returned needs to
  * be consistent across romstage and ramstage, and it is required to be

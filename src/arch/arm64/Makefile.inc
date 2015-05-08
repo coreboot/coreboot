@@ -84,11 +84,12 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARM64),y)
 
-$(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs) $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld $(obj)/config.h
+$(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --start-group $(objgenerated)/libverstage.a $$(verstage-objs)--end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
+	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --start-group $(objgenerated)/libverstage.a $$(verstage-objs) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
 
 verstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
+verstage-y += boot.c
 verstage-y += div0.c
 verstage-y += eabi_compat.c
 verstage-y += ../../lib/memset.c

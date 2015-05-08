@@ -61,7 +61,7 @@ bootblock-y += memmove.S
 bootblock-y += div0.c
 bootblock-y += clock.c
 
-$(objcbfs)/bootblock.debug: $$(bootblock-objs) $$(VERSTAGE_LIB)
+$(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.bootblock.ld --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group
 
@@ -73,10 +73,11 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARM),y)
 
-$(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs) $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
+$(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld --start-group $(objgenerated)/libverstage.a $$(verstage-objs) --end-group
+	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld --start-group $(filter-out %.ld,$(verstage-objs)) $(objgenerated)/libverstage.a --end-group
 
+verstage-y += boot.c
 verstage-y += div0.c
 verstage-y += eabi_compat.c
 verstage-y += memset.S

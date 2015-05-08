@@ -38,7 +38,7 @@ static int none_compress(char *in, int in_len, char *out, int *out_len)
 	return 0;
 }
 
-comp_func_ptr compression_function(comp_algo algo)
+comp_func_ptr compression_function(enum comp_algo algo)
 {
 	comp_func_ptr compress;
 	switch (algo) {

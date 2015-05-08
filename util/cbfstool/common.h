@@ -154,28 +154,28 @@ const char *arch_to_string(uint32_t a);
 uint32_t string_to_arch(const char *arch_string);
 
 typedef int (*comp_func_ptr) (char *, int, char *, int *);
-typedef enum { CBFS_COMPRESS_NONE = 0, CBFS_COMPRESS_LZMA = 1 } comp_algo;
+enum comp_algo { CBFS_COMPRESS_NONE = 0, CBFS_COMPRESS_LZMA = 1 };
 
-comp_func_ptr compression_function(comp_algo algo);
+comp_func_ptr compression_function(enum comp_algo algo);
 
 uint64_t intfiletype(const char *name);
 
 /* cbfs-mkpayload.c */
 int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
-			 comp_algo algo);
-int parse_fv_to_payload(const struct buffer *input,
-			 struct buffer *output, comp_algo algo);
+			 enum comp_algo algo);
+int parse_fv_to_payload(const struct buffer *input, struct buffer *output,
+			enum comp_algo algo);
 int parse_bzImage_to_payload(const struct buffer *input,
 			     struct buffer *output, const char *initrd,
-			     char *cmdline, comp_algo algo);
+			     char *cmdline, enum comp_algo algo);
 int parse_flat_binary_to_payload(const struct buffer *input,
 				 struct buffer *output,
 				 uint32_t loadaddress,
 				 uint32_t entrypoint,
-				 comp_algo algo);
+				 enum comp_algo algo);
 /* cbfs-mkstage.c */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       comp_algo algo, uint32_t *location,
+		       enum comp_algo algo, uint32_t *location,
 		       const char *ignore_section);
 
 void print_supported_filetypes(void);

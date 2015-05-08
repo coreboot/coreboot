@@ -95,7 +95,7 @@ static Elf64_Shdr *find_ignored_section_header(struct parsed_elf *pelf,
  * works for all elf files, not just the restricted set.
  */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       comp_algo algo, uint32_t *location,
+		       enum comp_algo algo, uint32_t *location,
 		       const char *ignore_section)
 {
 	struct parsed_elf pelf;

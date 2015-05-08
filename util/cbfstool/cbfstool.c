@@ -73,7 +73,7 @@ static struct param {
 	bool fill_partial_downward;
 	bool show_immutable;
 	int fit_empty_entries;
-	comp_algo algo;
+	enum comp_algo algo;
 	/* for linux payloads */
 	char *initrd;
 	char *cmdline;

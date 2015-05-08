@@ -973,15 +973,15 @@ int main(int argc, char **argv)
 					WARN("Unknown type '%s' ignored\n",
 							optarg);
 				break;
-			case 'c':
-				if (!strncasecmp(optarg, "lzma", 5))
-					param.compression = CBFS_COMPRESS_LZMA;
-				else if (!strncasecmp(optarg, "none", 5))
-					param.compression = CBFS_COMPRESS_NONE;
+			case 'c': {
+				int algo = cbfs_parse_comp_algo(optarg);
+				if (algo >= 0)
+					param.compression = algo;
 				else
-					WARN("Unknown compression '%s'"
-					     " ignored.\n", optarg);
+					WARN("Unknown compression '%s' ignored.\n",
+									optarg);
 				break;
+			}
 			case 'M':
 				param.fmap = optarg;
 				break;

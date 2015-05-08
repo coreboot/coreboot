@@ -96,9 +96,21 @@ static const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t t
 	return default_value;
 }
 
+static int lookup_type_by_name(const struct typedesc_t *desc, const char *name)
+{
+	int i;
+	for (i = 0; desc[i].name && strcasecmp(name, desc[i].name); ++i);
+	return desc[i].name ? (int)desc[i].type : -1;
+}
+
 static const char *get_cbfs_entry_type_name(uint32_t type)
 {
 	return lookup_name_by_type(types_cbfs_entry, type, "(unknown)");
+}
+
+int cbfs_parse_comp_algo(const char *name)
+{
+	return lookup_type_by_name(types_cbfs_compression, name);
 }
 
 /* CBFS image */

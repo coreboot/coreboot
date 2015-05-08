@@ -32,6 +32,10 @@ struct cbfs_image {
 	struct cbfs_header header;
 };
 
+/* Given the string name of a compression algorithm, return the corresponding
+ * enum comp_algo if it's supported, or a number < 0 otherwise. */
+int cbfs_parse_comp_algo(const char *name);
+
 /* Given a pointer, serialize the header from host-native byte format
  * to cbfs format, i.e. big-endian. */
 void cbfs_put_header(void *dest, const struct cbfs_header *header);

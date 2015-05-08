@@ -17,14 +17,14 @@
 ##
 
 config VBOOT_STARTS_IN_BOOTBLOCK
-	bool
+	bool "Vboot starts verifying in bootblock"
 	default n
 	depends on VBOOT_VERIFY_FIRMWARE
 	help
 	  Firmware verification happens during or at the end of bootblock.
 
 config VBOOT_STARTS_IN_ROMSTAGE
-	bool
+	bool "Vboot starts verifying in romstage"
 	default n
 	depends on VBOOT_VERIFY_FIRMWARE && !VBOOT_STARTS_IN_BOOTBLOCK
 	help
@@ -51,12 +51,12 @@ config VBOOT_DISABLE_DEV_ON_RECOVERY
 	  handy on embedded devices with limited input capabilities.
 
 config SEPARATE_VERSTAGE
-	bool
+	bool "Vboot verification is built into a separate stage"
 	default n
 	depends on VBOOT_VERIFY_FIRMWARE
 
 config RETURN_FROM_VERSTAGE
-	bool
+	bool "The separate verification stage returns to its caller"
 	default n
 	depends on SEPARATE_VERSTAGE
 	help

@@ -75,14 +75,14 @@ static struct param {
 	bool fill_partial_downward;
 	bool show_immutable;
 	int fit_empty_entries;
-	enum comp_algo algo;
+	enum comp_algo compression;
 	/* for linux payloads */
 	char *initrd;
 	char *cmdline;
 } param = {
 	/* All variables not listed are initialized as zero. */
 	.arch = CBFS_ARCHITECTURE_UNKNOWN,
-	.algo = CBFS_COMPRESS_NONE,
+	.compression = CBFS_COMPRESS_NONE,
 	.headeroffset = ~0,
 	.region_name = SECTION_NAME_PRIMARY_CBFS,
 };
@@ -226,7 +226,7 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset)
 {
 	struct buffer output;
 	int ret;
-	ret = parse_elf_to_stage(buffer, &output, param.algo, offset,
+	ret = parse_elf_to_stage(buffer, &output, param.compression, offset,
 							param.ignore_section);
 	if (ret != 0)
 		return -1;
@@ -242,16 +242,16 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	struct buffer output;
 	int ret;
 	/* per default, try and see if payload is an ELF binary */
-	ret = parse_elf_to_payload(buffer, &output, param.algo);
+	ret = parse_elf_to_payload(buffer, &output, param.compression);
 
 	/* If it's not an ELF, see if it's a UEFI FV */
 	if (ret != 0)
-		ret = parse_fv_to_payload(buffer, &output, param.algo);
+		ret = parse_fv_to_payload(buffer, &output, param.compression);
 
 	/* If it's neither ELF nor UEFI Fv, try bzImage */
 	if (ret != 0)
 		ret = parse_bzImage_to_payload(buffer, &output,
-				param.initrd, param.cmdline, param.algo);
+				param.initrd, param.cmdline, param.compression);
 
 	/* Not a supported payload type */
 	if (ret != 0) {
@@ -273,7 +273,7 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 	if (parse_flat_binary_to_payload(buffer, &output,
 					 param.loadaddress,
 					 param.entrypoint,
-					 param.algo) != 0) {
+					 param.compression) != 0) {
 		return -1;
 	}
 	buffer_delete(buffer);
@@ -975,9 +975,9 @@ int main(int argc, char **argv)
 				break;
 			case 'c':
 				if (!strncasecmp(optarg, "lzma", 5))
-					param.algo = CBFS_COMPRESS_LZMA;
+					param.compression = CBFS_COMPRESS_LZMA;
 				else if (!strncasecmp(optarg, "none", 5))
-					param.algo = CBFS_COMPRESS_NONE;
+					param.compression = CBFS_COMPRESS_NONE;
 				else
 					WARN("Unknown compression '%s'"
 					     " ignored.\n", optarg);

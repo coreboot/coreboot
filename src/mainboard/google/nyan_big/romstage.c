@@ -26,7 +26,6 @@
 #include <console/console.h>
 #include <reset.h>
 #include <program_loading.h>
-#include <romstage_handoff.h>
 #include <soc/addressmap.h>
 #include <soc/cache.h>
 #include <soc/clk_rst.h>
@@ -39,7 +38,6 @@
 #include <soc/sdram.h>
 #include <symbols.h>
 #include <timestamp.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "sdram_configs.h"
 
@@ -91,8 +89,6 @@ static void __attribute__((noinline)) romstage(void)
 	timestamp_add(TS_START_ROMSTAGE, romstage_start_time);
 
 	early_mainboard_init();
-
-	vboot_verify_firmware(romstage_handoff_find_or_add());
 
 	run_ramstage();
 }

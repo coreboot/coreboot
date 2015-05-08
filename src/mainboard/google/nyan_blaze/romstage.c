@@ -26,7 +26,6 @@
 #include <console/console.h>
 #include <reset.h>
 #include <program_loading.h>
-#include <romstage_handoff.h>
 #include <soc/addressmap.h>
 #include <soc/cache.h>
 #include <soc/clk_rst.h>

@@ -145,7 +145,10 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	printk(BIOS_INFO, "processor_brand=%s\n", processor_brand);
 
 	uint32_t dtemp;
+	uint8_t node_index;
 	uint8_t node_count;
+	uint8_t cores_per_node;
+	uint8_t total_core_count;
 
 	/*
 	 * Based on the CPU socket type,cmp_cap and pwr_lmt , get the power limit.
@@ -161,9 +164,10 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	/* Get number of nodes */
 	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 0)), 0x60);
 	node_count = ((dtemp & 0x70) >> 4) + 1;
+	cores_per_node = cmp_cap + 1;
+
 	/* Compute total number of cores installed in system */
-	cmp_cap++;
-	cmp_cap *= node_count;
+	total_core_count = cores_per_node * node_count;
 
 	Pstate_num = 0;
 
@@ -190,10 +194,6 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	uint32_t core_latency;
 	uint32_t core_voltage;	/* multiplied by 10000 */
 	uint8_t single_link;
-
-	/* Determine if this is a single-link system */
-	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 0)), 0x80);
-	single_link = !!(((dtemp & 0xff00) >> 8) == 0);
 
 	/* Determine if this is a PVI or SVI system */
 	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xA0);
@@ -297,9 +297,15 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	char pscope[] = "\\_PR";
 
 	acpigen_write_scope(pscope);
-	for (index = 0; index < cmp_cap; index++)
+	for (index = 0; index < total_core_count; index++) {
+		/* Determine if this is a single-link processor */
+		node_index = 0x18 + (index / cores_per_node);
+		dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(node_index, 0)), 0x80);
+		single_link = !!(((dtemp & 0xff00) >> 8) == 0);
+
 		write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_power,
 				Pstate_latency, Pstate_control, Pstate_status,
 				index, pcontrol_blk, plen, onlyBSP, single_link);
+	}
 	acpigen_pop_len();
 }

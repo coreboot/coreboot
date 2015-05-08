@@ -63,15 +63,17 @@ static int verstage_should_load(void)
 static void init_vb2_working_data(void)
 {
 	struct vb2_working_data *wd;
+	size_t work_size;
 
+	work_size = vb2_working_data_size();
 	wd = vboot_get_working_data();
-	memset(wd, 0, _vboot2_work_size);
+	memset(wd, 0, work_size);
 	/*
 	 * vboot prefers 16-byte alignment. This takes away 16 bytes
 	 * from the VBOOT2_WORK region, but the vboot devs said that's okay.
 	 */
 	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 16);
-	wd->buffer_size = _vboot2_work_size - wd->buffer_offset;
+	wd->buffer_size = work_size - wd->buffer_offset;
 }
 
 static int vboot_loader_active(struct prog *prog)

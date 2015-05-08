@@ -43,6 +43,7 @@ struct vb2_working_data {
 };
 
 struct vb2_working_data * const vboot_get_working_data(void);
+size_t vb2_working_data_size(void);
 void *vboot_get_work_buffer(struct vb2_working_data *wd);
 
 static inline void vb2_get_selected_region(struct vb2_working_data *wd,

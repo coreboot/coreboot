@@ -101,3 +101,13 @@ config VBOOT_BOOT_LOADER_INDEX
 	help
 	  This is the index of the bootloader component in the verified
 	  firmware block.
+
+config VBOOT_DYNAMIC_WORK_BUFFER
+	bool "Vboot's work buffer is dynamically allocated."
+	default n
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This option is used when there isn't enough pre-main memory
+	  ram to allocate the vboot work buffer. That means vboot verification
+	  is after memory init and requires main memory to back the work
+	  buffer.

@@ -18,6 +18,7 @@
  */
 
 #include <cbfs.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <reset.h>
 #include "../chromeos.h"
@@ -25,14 +26,23 @@
 #include "../vboot_handoff.h"
 #include "misc.h"
 
+static const size_t vb_work_buf_size = 16 * KiB;
+
 struct vb2_working_data * const vboot_get_working_data(void)
 {
-	return (struct vb2_working_data *)_vboot2_work;
+	if (IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER))
+		/* cbmem_add() does a cbmem_find() first. */
+		return cbmem_add(CBMEM_ID_VBOOT_WORKBUF, vb_work_buf_size);
+	else
+		return (struct vb2_working_data *)_vboot2_work;
 }
 
 size_t vb2_working_data_size(void)
 {
-	return _vboot2_work_size;
+	if (IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER))
+		return vb_work_buf_size;
+	else
+		return _vboot2_work_size;
 }
 
 void *vboot_get_work_buffer(struct vb2_working_data *wd)

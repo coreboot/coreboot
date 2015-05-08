@@ -77,13 +77,13 @@ static const struct typedesc_t types_cbfs_entry[] = {
 	{CBFS_COMPONENT_MRC_CACHE, "mrc_cache"},
 	{CBFS_COMPONENT_DELETED, "deleted"},
 	{CBFS_COMPONENT_NULL, "null"},
-	{0, NULL},
+	{0, NULL}
 };
 
 static const struct typedesc_t types_cbfs_compression[] = {
 	{CBFS_COMPRESS_NONE, "none"},
 	{CBFS_COMPRESS_LZMA, "LZMA"},
-	{0, NULL},
+	{0, NULL}
 };
 
 static const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t type,

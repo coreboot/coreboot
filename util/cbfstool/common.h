@@ -28,15 +28,6 @@
 
 /* Endianess */
 #include "swab.h"
-#if !defined(__APPLE__) && !defined(__NetBSD__)
-#define ntohl(x)	(is_big_endian() ? (uint32_t)(x) : swab32(x))
-#define htonl(x)	(is_big_endian() ? (uint32_t)(x) : swab32(x))
-#elif defined(__NetBSD__)
-#include <arpa/inet.h>
-#endif
-#define ntohll(x)	(is_big_endian() ? (uint64_t)(x) : swab64(x))
-#define htonll(x)	(is_big_endian() ? (uint64_t)(x) : swab64(x))
-int is_big_endian(void);
 
 /* Message output */
 extern int verbose;

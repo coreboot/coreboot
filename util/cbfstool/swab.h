@@ -15,6 +15,15 @@
  *
  */
 
+#if !defined(__APPLE__) && !defined(__NetBSD__)
+#define ntohl(x)	(is_big_endian() ? (uint32_t)(x) : swab32(x))
+#define htonl(x)	(is_big_endian() ? (uint32_t)(x) : swab32(x))
+#elif defined(__NetBSD__)
+#include <arpa/inet.h>
+#endif
+#define ntohll(x)	(is_big_endian() ? (uint64_t)(x) : swab64(x))
+#define htonll(x)	(is_big_endian() ? (uint64_t)(x) : swab64(x))
+
 /* casts are necessary for constants, because we never know how for sure
  * how U/UL/ULL map to __u16, __u32, __u64. At least not in a portable way.
  */
@@ -40,5 +49,8 @@
 		(((uint64_t)(x) & (uint64_t)0x0000ff0000000000ULL) >> 24) | \
 		(((uint64_t)(x) & (uint64_t)0x00ff000000000000ULL) >> 40) | \
 		(((uint64_t)(x) & (uint64_t)0xff00000000000000ULL) >> 56) ))
+
+/* common.c */
+int is_big_endian(void);
 
 #endif /* _SWAB_H */

@@ -37,9 +37,11 @@
 static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_power,
 				u32 *pstate_latency, u32 *pstate_control,
 				u32 *pstate_status, int coreID,
-				u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+				u32 pcontrol_blk, u8 plen, u8 onlyBSP,
+				uint8_t single_link)
 {
 	int i;
+	struct cpuid_result cpuid1;
 
 	if ((onlyBSP) && (coreID != 0)) {
 	    plen = 0;
@@ -64,7 +66,34 @@ static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_p
 	/* update the package size */
 	acpigen_pop_len();
 
+	/* Write PPC object */
 	acpigen_write_PPC(pstate_num);
+
+	/* Write PSD indicating coordination type */
+	if ((single_link) && (mctGetLogicalCPUID(0) & AMD_DR_GT_Bx)) {
+		/* Revision C or greater single-link processor */
+		cpuid1 = cpuid(0x80000008);
+		acpigen_write_PSD_package(0, (cpuid1.ecx & 0xff) + 1, SW_ALL);
+	}
+	else {
+		/* Find the local APIC ID for the specified core ID */
+		struct device* cpu;
+		int cpu_index = 0;
+		for (cpu = all_devices; cpu; cpu = cpu->next) {
+			if ((cpu->path.type != DEVICE_PATH_APIC) ||
+				(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER))
+				continue;
+			if (!cpu->enabled)
+				continue;
+			if (cpu_index == coreID)
+				break;
+			cpu_index++;
+		}
+
+		if (cpu)
+			acpigen_write_PSD_package(cpu->path.apic.apic_id, 1, SW_ANY);
+	}
+
 	/* patch the whole Processor token length */
 	acpigen_pop_len();
 }
@@ -160,6 +189,11 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	uint32_t core_power;
 	uint32_t core_latency;
 	uint32_t core_voltage;	/* multiplied by 10000 */
+	uint8_t single_link;
+
+	/* Determine if this is a single-link system */
+	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 0)), 0x80);
+	single_link = !!(((dtemp & 0xff00) >> 8) == 0);
 
 	/* Determine if this is a PVI or SVI system */
 	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xA0);
@@ -266,6 +300,6 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	for (index = 0; index < cmp_cap; index++)
 		write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_power,
 				Pstate_latency, Pstate_control, Pstate_status,
-				index, pcontrol_blk, plen, onlyBSP);
+				index, pcontrol_blk, plen, onlyBSP, single_link);
 	acpigen_pop_len();
 }

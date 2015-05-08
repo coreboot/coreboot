@@ -335,9 +335,3 @@ const PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 };
 
 
-/* DA Customer table */
-const uint8_t AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
-{
-	NBACCESS (MTEnd, 0,	0, 0, 0, 0), /* End of Table */
-};
-const uint8_t SizeOfTableON = ARRAY_SIZE(AGESA_MEM_TABLE_ON);

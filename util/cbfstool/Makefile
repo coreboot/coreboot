@@ -93,7 +93,8 @@ $(FMAPTESTS_BINARY): $(FMAPTESTS_COMMON)
 
 # Yacc source is superset of header
 $(obj)/fmd_parser.o: CFLAGS += -Wno-redundant-decls
-# Lex generates unneeded functions
+# Lex generates unneeded functions and declarations
+$(obj)/fmd_scanner.o: CFLAGS += -Wno-redundant-decls
 $(obj)/fmd_scanner.o: CFLAGS += -Wno-unused-function
 # Tolerate lzma sdk warnings
 $(obj)/lzma/C/LzmaEnc.o: CFLAGS += -Wno-sign-compare -Wno-cast-qual

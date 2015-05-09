@@ -23,8 +23,8 @@
 #include <assert.h>
 #include <string.h>
 
-int parse_integer(char *input, int base);
-int copy_string(const char *input);
+int parse_integer(char *src, int base);
+int copy_string(const char *src);
 %}
 
 %option noyywrap
@@ -44,10 +44,10 @@ MULTIPLIER [KMG]
 
 %%
 
-int parse_integer(char *input, int base)
+int parse_integer(char *src, int base)
 {
 	char *multiplier = NULL;
-	unsigned val = strtoul(input, &multiplier, base);
+	unsigned val = strtoul(src, &multiplier, base);
 
 	if (*multiplier) {
 		switch(*multiplier) {
@@ -71,8 +71,8 @@ int parse_integer(char *input, int base)
 	return INTEGER;
 }
 
-int copy_string(const char *input)
+int copy_string(const char *src)
 {
-	yylval.strval = strdup(input);
+	yylval.strval = strdup(src);
 	return STRING;
 }

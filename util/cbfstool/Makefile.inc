@@ -82,8 +82,10 @@ $(objutil)/cbfstool/rmodtool: $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 
 # Yacc source is superset of header
+$(objutil)/cbfstool/fmd.o: TOOLCFLAGS += -Wno-redundant-decls
 $(objutil)/cbfstool/fmd_parser.o: TOOLCFLAGS += -Wno-redundant-decls
-# Lex generates unneeded functions
+# Lex generates unneeded functions and declarations
+$(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-redundant-decls
 $(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-unused-function
 # Tolerate lzma sdk warnings
 $(objutil)/cbfstool/LzmaEnc.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual

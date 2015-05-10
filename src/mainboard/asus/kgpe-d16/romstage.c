@@ -131,7 +131,7 @@ static void activate_spd_rom(const struct mem_controller *ctrl) {
  */
 static void set_ddr3_voltage(uint8_t node, uint8_t index) {
 	uint8_t byte;
-	uint8_t value;
+	uint8_t value = 0;
 
 	if (index == 0)
 		value = 0x0;
@@ -157,6 +157,82 @@ static void set_ddr3_voltage(uint8_t node, uint8_t index) {
 	byte = pci_read_config8(PCI_DEV(0, 0x14, 3), 0xd0);
 	byte &= 0x0f;
 	pci_write_config8(PCI_DEV(0, 0x14, 3), 0xd0, byte);
+
+	printk(BIOS_DEBUG, "Node %02d DIMM voltage set to index %02x\n", node, index);
+}
+
+void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstatA) {
+	/* This mainboard allows the DIMM voltage to be set per-socket.
+	 * Therefore, for each socket, iterate over all DIMMs to find the
+	 * lowest supported voltage common to all DIMMs on that socket.
+	 */
+	uint8_t nvram;
+	uint8_t dimm;
+	uint8_t node;
+	uint8_t socket;
+	uint8_t allowed_voltages = 0xf;	/* The mainboard VRMs allow 1.15V, 1.25V, 1.35V, and 1.5V */
+	uint8_t node_allowed_voltages;
+	uint32_t set_voltage = 0;
+
+	if (get_option(&nvram, "minimum_memory_voltage") == CB_SUCCESS) {
+		switch (nvram) {
+		case 2:
+			allowed_voltages = 0x7;	/* Allow 1.25V, 1.35V, and 1.5V */
+			break;
+		case 1:
+			allowed_voltages = 0x3;	/* Allow 1.35V and 1.5V */
+			break;
+		case 0:
+		default:
+			allowed_voltages = 0x1;	/* Allow 1.5V only */
+			break;
+		}
+	}
+
+	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
+		socket = node / 2;
+		node_allowed_voltages = allowed_voltages;
+		struct DCTStatStruc *pDCTstat;
+		pDCTstat = pDCTstatA + node;
+		if (pDCTstat->NodePresent) {
+			for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
+				if (pDCTstat->DIMMValid & (1 << dimm)) {
+					node_allowed_voltages &= pDCTstat->DimmSupportedVoltages[dimm];
+				}
+			}
+		}
+
+		if (pDCTstat->NodePresent && (node % 2)) {
+			/* Set voltages */
+			if (node_allowed_voltages & 0x8) {
+				set_voltage = 1150;
+				set_ddr3_voltage(socket, 3);
+			} else if (node_allowed_voltages & 0x4) {
+				set_voltage = 1250;
+				set_ddr3_voltage(socket, 2);
+			} else if (node_allowed_voltages & 0x2) {
+				set_voltage = 1350;
+				set_ddr3_voltage(socket, 1);
+			} else {
+				set_voltage = 1500;
+				set_ddr3_voltage(socket, 0);
+			}
+
+			/* Save final DIMM voltages for SMBIOS use */
+			if (pDCTstat->NodePresent) {
+				for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
+					pDCTstat->DimmConfiguredVoltage[dimm] = set_voltage;
+				}
+			}
+			pDCTstat = pDCTstatA + (node - 1);
+			if (pDCTstat->NodePresent) {
+				for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
+					pDCTstat->DimmConfiguredVoltage[dimm] = set_voltage;
+				}
+			}
+		}
+	}
 }
 
 static void set_peripheral_control_lines(void) {
@@ -351,10 +427,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		die("After soft_reset_x - shouldn't see this message!!!\n");
 	}
 
-	/* Set DDR memory voltage
-	 * FIXME
-	 * This should be set based on the output of the DIMM SPDs
-	 * For now it is locked to 1.5V
+	/* Set default DDR memory voltage
+	 * This will be overridden later during RAM initialization
 	 */
 	set_lpc_sticky_ctl(1);	/* Retain LPC/IMC GPIO configuration during S3 sleep */
 	if (!s3resume) {	/* Avoid supply voltage glitches while the DIMMs are retaining data */

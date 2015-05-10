@@ -116,9 +116,10 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	UPD_DEFAULT_CHECK(AutoSelfRefreshEnable);
 	UPD_DEFAULT_CHECK(APTaskTimeoutCnt);
 
-	if ((config->PcdeMMCBootMode != EMMC_USE_DEFAULT) ||
-			(config->PcdeMMCBootMode != EMMC_FOLLOWS_DEVICETREE))
-		UpdData->PcdeMMCBootMode = config->PcdeMMCBootMode;
+	if (config->PcdeMMCBootMode == EMMC_FOLLOWS_DEVICETREE)
+		UpdData->PcdeMMCBootMode = 0;
+	else if ((config->PcdeMMCBootMode != EMMC_USE_DEFAULT))
+		UpdData->PcdeMMCBootMode = config->PcdeMMCBootMode - EMMC_DISABLED;
 
 	UpdData->PcdMrcInitTsegSize = smm_region_size() >> 20;
 

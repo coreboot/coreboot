@@ -351,9 +351,14 @@ void zconf_nextfiles(const char *wildcard)
 		return;
 	}
 
-	w = g.gl_pathv;
-	while (*w)
-		zconf_nextfile(*w++);
+	/* working through files backwards, since
+	 * we're first pushing them on a stack
+	 * before actually handling them.
+	 */
+	for (i = g.gl_pathc; i > 0; i--) {
+		w = &g.gl_pathv[i - 1];
+		zconf_nextfile(*w);
+	}
 
 	globfree(&g);
 }

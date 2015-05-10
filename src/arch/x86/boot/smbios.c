@@ -529,11 +529,14 @@ static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned lo
 	return len;
 }
 
+#define update_max(len, max_len, stmt) do { int tmp = stmt; max_len = MAX(max_len, tmp); len += tmp; } while(0)
 unsigned long smbios_write_tables(unsigned long current)
 {
 	struct smbios_entry *se;
 	unsigned long tables;
-	int len, handle = 0;
+	int len = 0;
+	int max_struct_size = 0;
+	int handle = 0;
 
 	current = ALIGN(current, 16);
 	printk(BIOS_DEBUG, "%s: %08lx\n", __func__, current);
@@ -543,28 +546,28 @@ unsigned long smbios_write_tables(unsigned long current)
 	current = ALIGN(current, 16);
 
 	tables = current;
-	len = smbios_write_type0(&current, handle++);
-	len += smbios_write_type1(&current, handle++);
-	len += smbios_write_type2(&current, handle++);
-	len += smbios_write_type3(&current, handle++);
-	len += smbios_write_type4(&current, handle++);
-	len += smbios_write_type11(&current, &handle);
+	update_max(len, max_struct_size, smbios_write_type0(&current, handle++));
+	update_max(len, max_struct_size, smbios_write_type1(&current, handle++));
+	update_max(len, max_struct_size, smbios_write_type2(&current, handle++));
+	update_max(len, max_struct_size, smbios_write_type3(&current, handle++));
+	update_max(len, max_struct_size, smbios_write_type4(&current, handle++));
+	update_max(len, max_struct_size, smbios_write_type11(&current, &handle));
 #if CONFIG_ELOG
-	len += elog_smbios_write_type15(&current, handle++);
+	update_max(len, max_struct_size, smbios_write_type15(&current, &handle));
 #endif
-	len += smbios_write_type17(&current, &handle);
-	len += smbios_write_type32(&current, handle++);
+	update_max(len, max_struct_size, smbios_write_type17(&current, &handle));
+	update_max(len, max_struct_size, smbios_write_type32(&current, handle++));
 
-	len += smbios_walk_device_tree(all_devices, &handle, &current);
+	update_max(len, max_struct_size, smbios_walk_device_tree(all_devices, &handle, &current));
 
-	len += smbios_write_type127(&current, handle++);
+	update_max(len, max_struct_size, smbios_write_type127(&current, handle++));
 
 	memset(se, 0, sizeof(struct smbios_entry));
 	memcpy(se->anchor, "_SM_", 4);
 	se->length = sizeof(struct smbios_entry);
 	se->major_version = 2;
 	se->minor_version = 7;
-	se->max_struct_size = 24;
+	se->max_struct_size = max_struct_size;
 	se->struct_count = handle;
 	memcpy(se->intermediate_anchor_string, "_DMI_", 5);
 

@@ -209,10 +209,17 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	if (UpdData->PcdEnableLpe < sizeof(acpi_pci_mode_strings) / sizeof (char *))
 		printk(FSP_INFO_LEVEL, "Lpe:\t\t\t%s\n",
 			acpi_pci_mode_strings[UpdData->PcdEnableLpe]);
+	else
+		printk(FSP_INFO_LEVEL, "Lpe:\t\t\tUnknown (0x%02x)\n",
+			UpdData->PcdEnableLpe);
 
 	if (UpdData->PcdeMMCBootMode < sizeof(emmc_mode_strings) / sizeof (char *))
 		printk(FSP_INFO_LEVEL, "eMMC Mode:\t\t%s\n",
 			emmc_mode_strings[UpdData->PcdeMMCBootMode]);
+	else
+		printk(FSP_INFO_LEVEL, "eMMC Mode:\t\tUnknown (0x%02x)\n",
+			UpdData->PcdeMMCBootMode);
+
 
 	if (UpdData->PcdEnableSata)
 		printk(FSP_INFO_LEVEL, "SATA Mode:\t\t%s\n",

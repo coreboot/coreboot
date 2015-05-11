@@ -33,6 +33,7 @@
 #include "SBPLATFORM.h"
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <northbridge/amd/agesa/family14/pci_devs.h>
+#include <superio/nuvoton/nct5104d/nct5104d.h>
 #include "gpio_ftns.h"
 
 void set_pcie_reset(void);
@@ -135,6 +136,30 @@ static void pirq_setup(void)
 	picr_data_ptr = mainboard_picr_data;
 }
 
+/* Wrapper to enable GPIO/UART devices under menuconfig. Revisit
+ * once configuration file format for SPI flash storage is complete.
+ */
+#define SIO_PORT 0x2e
+
+static void config_gpio_mux(void)
+{
+	struct device *uart, *gpio;
+
+	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
+	gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO0);
+	if (uart)
+		uart->enabled = CONFIG_PINMUX_UART_C;
+	if (gpio)
+		gpio->enabled = CONFIG_PINMUX_GPIO0;
+
+	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
+	gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO1);
+	if (uart)
+		uart->enabled = CONFIG_PINMUX_UART_D;
+	if (gpio)
+		gpio->enabled = CONFIG_PINMUX_GPIO1;
+}
+
 /**
  * TODO
  * SB CIMx callback
@@ -157,6 +182,8 @@ void set_pcie_dereset(void)
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
+
+	config_gpio_mux();
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

@@ -25,15 +25,9 @@
 #include "nct5104d.h"
 #include "chip.h"
 
-static void nct5104d_init(struct device *dev)
+static void set_irq_trigger_type(struct device *dev, bool trig_level)
 {
-	struct superio_nuvoton_nct5104d_config *conf = dev->chip_info;
 	u8 reg10, reg11, reg26;
-
-	if (!dev->enabled)
-		return;
-
-	pnp_enter_conf_mode(dev);
 
 	//Before accessing CR10 OR CR11 Bit 4 in CR26 must be set to 1
 	reg26 = pnp_read_config(dev, GLOBAL_OPTION_CR26);
@@ -44,7 +38,7 @@ static void nct5104d_init(struct device *dev)
 	//SP1 (UARTA) IRQ type selection (1:level,0:edge) is controlled by CR 10, bit 5
 	case NCT5104D_SP1:
 		reg10 = pnp_read_config(dev, IRQ_TYPE_SEL_CR10);
-		if (conf->irq_trigger_type)
+		if (trig_level)
 			reg10 |= (1 << 5);
 		else
 			reg10 &= ~(1 << 5);
@@ -53,7 +47,7 @@ static void nct5104d_init(struct device *dev)
 	//SP2 (UARTB) IRQ type selection (1:level,0:edge) is controlled by CR 10, bit 4
 	case NCT5104D_SP2:
 		reg10 = pnp_read_config(dev, IRQ_TYPE_SEL_CR10);
-		if (conf->irq_trigger_type)
+		if (trig_level)
 			reg10 |= (1 << 4);
 		else
 			reg10 &= ~(1 << 4);
@@ -62,7 +56,7 @@ static void nct5104d_init(struct device *dev)
 	//SP3 (UARTC) IRQ type selection (1:level,0:edge) is controlled by CR 11, bit 5
 	case NCT5104D_SP3:
 		reg11 = pnp_read_config(dev,IRQ_TYPE_SEL_CR11);
-		if (conf->irq_trigger_type)
+		if (trig_level)
 			reg11 |= (1 << 5);
 		else
 			reg11 &= ~(1 << 5);
@@ -71,7 +65,7 @@ static void nct5104d_init(struct device *dev)
 	//SP4 (UARTD) IRQ type selection (1:level,0:edge) is controlled by CR 11, bit 4
 	case NCT5104D_SP4:
 		reg11 = pnp_read_config(dev,IRQ_TYPE_SEL_CR11);
-		if (conf->irq_trigger_type)
+		if (trig_level)
 			reg11 |= (1 << 4);
 		else
 			reg11 &= ~(1 << 4);
@@ -85,6 +79,28 @@ static void nct5104d_init(struct device *dev)
 	reg26 = pnp_read_config(dev, GLOBAL_OPTION_CR26);
 	reg26 &= ~CR26_LOCK_REG;
 	pnp_write_config(dev, GLOBAL_OPTION_CR26, reg26);
+}
+
+static void nct5104d_init(struct device *dev)
+{
+	struct superio_nuvoton_nct5104d_config *conf = dev->chip_info;
+
+	if (!dev->enabled)
+		return;
+
+	pnp_enter_conf_mode(dev);
+
+	switch(dev->path.pnp.device) {
+	case NCT5104D_SP1:
+	case NCT5104D_SP2:
+	case NCT5104D_SP3:
+	case NCT5104D_SP4:
+		set_irq_trigger_type(dev, conf->irq_trigger_type != 0);
+		break;
+	default:
+		break;
+	}
+
 	pnp_exit_conf_mode(dev);
 }
 

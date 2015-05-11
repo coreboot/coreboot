@@ -81,6 +81,36 @@ static void set_irq_trigger_type(struct device *dev, bool trig_level)
 	pnp_write_config(dev, GLOBAL_OPTION_CR26, reg26);
 }
 
+static void route_pins_to_uart(struct device *dev, bool to_uart)
+{
+	u8 reg;
+
+	reg = pnp_read_config(dev, 0x1c);
+
+	switch (dev->path.pnp.device) {
+	case NCT5104D_SP3:
+	case NCT5104D_GPIO0:
+		/* Route pins 33 - 40. */
+		if (to_uart)
+			reg |= (1 << 3);
+		else
+			reg &= ~(1 << 3);
+		break;
+	case NCT5104D_SP4:
+	case NCT5104D_GPIO1:
+		/* Route pins 41 - 48. */
+		if (to_uart)
+			reg |= (1 << 2);
+		else
+			reg &= ~(1 << 2);
+		break;
+	default:
+		break;
+	}
+
+	pnp_write_config(dev, 0x1c, reg);
+}
+
 static void nct5104d_init(struct device *dev)
 {
 	struct superio_nuvoton_nct5104d_config *conf = dev->chip_info;
@@ -93,9 +123,16 @@ static void nct5104d_init(struct device *dev)
 	switch(dev->path.pnp.device) {
 	case NCT5104D_SP1:
 	case NCT5104D_SP2:
+		set_irq_trigger_type(dev, conf->irq_trigger_type != 0);
+		break;
 	case NCT5104D_SP3:
 	case NCT5104D_SP4:
+		route_pins_to_uart(dev, true);
 		set_irq_trigger_type(dev, conf->irq_trigger_type != 0);
+		break;
+	case NCT5104D_GPIO0:
+	case NCT5104D_GPIO1:
+		route_pins_to_uart(dev, false);
 		break;
 	default:
 		break;

@@ -154,6 +154,7 @@ ramstage-y += ../../lib/memmove.c
 ramstage-y += stage_entry.S
 ramstage-y += cpu-stubs.c
 ramstage-$(CONFIG_ARM64_USE_SPINTABLE) += spintable.c spintable_asm.S
+ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += arm_tf.c
 ramstage-y += transition.c transition_asm.S
 
 rmodules_arm64-y += ../../lib/memset.c
@@ -178,5 +179,47 @@ ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(LD_ramstage) -nostdlib --gc-sections -o $@ -L$(obj) --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.ramstage.ld
+
+# Build ARM Trusted Firmware (BL31)
+
+ifeq ($(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE),y)
+
+BL31_SOURCE := $(top)/3rdparty/arm-trusted-firmware
+
+BL31_MAKEARGS := PLAT=$(call strip_quotes,$(CONFIG_ARM_TF_PLATFORM_NAME))
+
+ifeq ($(V),1)
+BL31_MAKEARGS += V=1
+endif
+
+# Build ARM TF in debug mode (with serial output) if coreboot uses serial
+ifeq ($(CONFIG_CONSOLE_SERIAL),y)
+BL31_MAKEARGS += DEBUG=1
+endif # CONFIG_CONSOLE_SERIAL
+
+# Avoid build/release|build/debug distinction by overriding BUILD_PLAT directly
+BL31_MAKEARGS += BUILD_PLAT="$(top)/$(obj)/3rdparty/arm-trusted-firmware"
+
+BL31_CFLAGS := -fno-pic -fno-stack-protector
+BL31_LDFLAGS := --emit-relocs
+
+BL31 := $(obj)/3rdparty/arm-trusted-firmware/bl31/bl31.elf
+
+$(BL31):
+	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
+	CROSS_COMPILE="$(CROSS_COMPILE)" \
+	CFLAGS="$(BL31_CFLAGS)" \
+	LDFLAGS="$(BL31_LDFLAGS)" \
+	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) bl31
+
+.PHONY: $(BL31)
+
+BL31_CBFS := $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/bl31
+$(BL31_CBFS)-file := $(BL31)
+$(BL31_CBFS)-type := stage
+$(BL31_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(BL31_CBFS)
+
+endif # CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE
 
 endif # CONFIG_ARCH_RAMSTAGE_ARM64

@@ -23,6 +23,8 @@
 #include <arch/stages.h>
 #include <arch/spintable.h>
 #include <arch/transition.h>
+#include <arm_tf.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <rules.h>
@@ -35,8 +37,11 @@ static void run_payload(struct prog *prog)
 
 	doit = prog_entry(prog);
 	arg = prog_entry_arg(prog);
+	u64 payload_spsr = get_eret_el(EL2, SPSR_USE_L);
 
-	if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_MONITOR))
+	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE))
+		arm_tf_run_bl31((u64)doit, (u64)arg, payload_spsr);
+	else if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_MONITOR))
 		secmon_run(doit, arg);
 	else {
 		uint8_t current_el = get_current_el();
@@ -56,7 +61,7 @@ static void run_payload(struct prog *prog)
 			/* If current EL is EL3, we transition to payload in EL2. */
 			struct exc_state exc_state;
 			memset(&exc_state, 0, sizeof(exc_state));
-			exc_state.elx.spsr = get_eret_el(EL2, SPSR_USE_L);
+			exc_state.elx.spsr = payload_spsr;
 
 			transition_with_entry(doit, arg, &exc_state);
 		}

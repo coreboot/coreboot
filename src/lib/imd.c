@@ -411,6 +411,9 @@ void imd_handle_init_partial_recovery(struct imd *imd)
 	struct imd_root_pointer *rp;
 	struct imdr *imdr;
 
+	if (imd->lg.limit == 0)
+		return;
+
 	imd_handle_init(imd, (void *)imd->lg.limit);
 
 	/* Initialize root pointer for the large regions. */

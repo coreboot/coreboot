@@ -816,8 +816,8 @@ ehci_init (unsigned long physical_bar)
 	controller->poll_intr_queue = ehci_poll_intr_queue;
 	init_device_entry (controller, 0);
 
-	EHCI_INST(controller)->capabilities = phys_to_virt(controller->reg_base);
-	EHCI_INST(controller)->operation = (hc_op_t *)(phys_to_virt(controller->reg_base) + EHCI_INST(controller)->capabilities->caplength);
+	EHCI_INST(controller)->capabilities = phys_to_virt(physical_bar);
+	EHCI_INST(controller)->operation = (hc_op_t *)(phys_to_virt(physical_bar) + EHCI_INST(controller)->capabilities->caplength);
 
 	/* Set the high address word (aka segment) if controller is 64-bit */
 	if (EHCI_INST(controller)->capabilities->hccparams & 1)

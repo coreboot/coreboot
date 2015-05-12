@@ -151,14 +151,35 @@ config LOCK_MANAGEMENT_ENGINE
 
 	  If unsure, say N.
 
-config LOCK_SPI_ON_RESUME
+endif
+
+if SOUTHBRIDGE_INTEL_BD82X6X || SOUTHBRIDGE_INTEL_C216 || SOUTHBRIDGE_INTEL_IBEXPEAK
+
+choice
+	prompt "Flash ROM locking on S3 resume"
+	default LOCK_SPI_ON_RESUME_NONE
+
+config LOCK_SPI_ON_RESUME_NONE
+	bool "Don't lock ROM sections on S3 resume"
+
+config LOCK_SPI_ON_RESUME_RO
 	bool "Lock all flash ROM sections on S3 resume"
-	default n
 	help
 	  If the flash ROM shall be protected against write accesses from the
 	  operating system (OS), the locking procedure has to be repeated after
 	  each resume from S3. Select this if you never want to update the flash
 	  ROM from within your OS. Notice: Even with this option, the write lock
 	  has still to be enabled on the normal boot path (e.g. by the payload).
+
+config LOCK_SPI_ON_RESUME_NO_ACCESS
+	bool "Lock and disable reads all flash ROM sections on S3 resume"
+	help
+	  If the flash ROM shall be protected against all accesses from the
+	  operating system (OS), the locking procedure has to be repeated after
+	  each resume from S3. Select this if you never want to update the flash
+	  ROM from within your OS. Notice: Even with this option, the lock
+	  has still to be enabled on the normal boot path (e.g. by the payload).
+
+endchoice
 
 endif

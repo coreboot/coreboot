@@ -25,13 +25,16 @@
 
 void intel_pch_finalize_smm(void)
 {
-#if CONFIG_LOCK_SPI_ON_RESUME
-	/* Copy flash regions from FREG0-4 to PR0-4
-	   and enable write protection bit31 */
-	int i;
-	for (i = 0; i < 20; i += 4)
-		RCBA32(0x3874 + i) = RCBA32(0x3854 + i) | (1 << 31);
-#endif
+	if (CONFIG_LOCK_SPI_ON_RESUME_RO || CONFIG_LOCK_SPI_ON_RESUME_NO_ACCESS) {
+		/* Copy flash regions from FREG0-4 to PR0-4
+		   and enable write protection bit31 */
+		int i;
+		u32 lockmask = (1 << 31);
+		if (CONFIG_LOCK_SPI_ON_RESUME_NO_ACCESS)
+			lockmask |= (1 << 15);
+		for (i = 0; i < 20; i += 4)
+			RCBA32(0x3874 + i) = RCBA32(0x3854 + i) | lockmask;
+	}
 
 	/* Set SPI opcode menu */
 	RCBA16(0x3894) = SPI_OPPREFIX;

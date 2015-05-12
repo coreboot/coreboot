@@ -18,8 +18,10 @@
  */
 
 #include <cbfs.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <program_loading.h>
+#include <rmodule.h>
 #include <rules.h>
 #include <string.h>
 #include "misc.h"
@@ -231,7 +233,15 @@ static int vboot_prepare(struct prog *prog)
 		if (stage == 0)
 			die("Vboot stage load failed.");
 
-		if (cbfs_load_prog_stage_by_offset(CBFS_DEFAULT_MEDIA,
+		if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
+			struct rmod_stage_load rmod_ram = {
+				.cbmem_id = CBMEM_ID_RAMSTAGE,
+				.prog = prog,
+			};
+
+			if (rmodule_stage_load(&rmod_ram, (void *)stage))
+				die("Vboot couldn't load stage");
+		} else if (cbfs_load_prog_stage_by_offset(CBFS_DEFAULT_MEDIA,
 							prog, stage) < 0)
 			die("Vboot couldn't load stage");
 	}

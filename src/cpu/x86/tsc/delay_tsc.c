@@ -190,7 +190,7 @@ void udelay(unsigned us)
 	}
 }
 
-#if CONFIG_TSC_MONOTONIC_TIMER && !defined(__PRE_RAM__) && !defined(__SMM__)
+#if CONFIG_TSC_MONOTONIC_TIMER && !defined(__PRE_RAM__)
 #include <timer.h>
 
 static struct monotonic_counter {

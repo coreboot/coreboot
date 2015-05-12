@@ -112,7 +112,7 @@ static efi_wrapper_entry_t load_reference_code(void)
 		return load_refcode_from_cache();
 	}
 
-	if (load_refcode_from_vboot(&refcode) ||
+	if (load_refcode_from_vboot(&refcode) &&
 		load_refcode_from_cbfs(&refcode))
 			return NULL;
 

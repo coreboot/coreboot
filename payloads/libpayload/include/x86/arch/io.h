@@ -33,13 +33,13 @@
 
 #define readb(_a) (*(volatile const unsigned char *) (_a))
 #define readw(_a) (*(volatile const unsigned short *) (_a))
-#define readl(_a) (*(volatile const unsigned long *) (_a))
+#define readl(_a) (*(volatile const unsigned int *) (_a))
 
 #define writeb(_v, _a) (*(volatile unsigned char *) (_a) = (_v))
 #define writew(_v, _a) (*(volatile unsigned short *) (_a) = (_v))
-#define writel(_v, _a) (*(volatile unsigned long *) (_a) = (_v))
+#define writel(_v, _a) (*(volatile unsigned int *) (_a) = (_v))
 
-static inline unsigned long inl(int port)
+static inline unsigned int inl(int port)
 {
 	unsigned long val;
 	__asm__ __volatile__("inl %w1, %0" : "=a"(val) : "Nd"(port));
@@ -60,7 +60,7 @@ static inline unsigned char inb(int port)
 	return val;
 }
 
-static inline void outl(unsigned long val, int port)
+static inline void outl(unsigned int val, int port)
 {
 	__asm__ __volatile__("outl %0, %w1" : : "a"(val), "Nd"(port));
 }

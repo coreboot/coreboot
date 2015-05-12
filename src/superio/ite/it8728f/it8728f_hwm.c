@@ -35,12 +35,6 @@
 #define HWM_FAN3_CTL_PWM		 0x17	/* default 0x00 */
 #define HWM_ADC_TEMP_CHAN_EN_REG 0x51	/* default 0x00 */
 
-static void pnp_write_index(u16 port, u8 reg, u8 value)
-{
-	outb(reg, port);
-	outb(value, port + 1);
-}
-
 void it8728f_hwm_ec_init(struct device *dev)
 {
 	struct superio_ite_it8728f_config *conf = dev->chip_info;

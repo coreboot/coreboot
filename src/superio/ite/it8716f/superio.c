@@ -32,17 +32,6 @@
 #include "it8716f.h"
 
 #if !CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
-static void pnp_write_index(u16 port_base, u8 reg, u8 value)
-{
-	outb(reg, port_base);
-	outb(value, port_base + 1);
-}
-
-static u8 pnp_read_index(u16 port_base, u8 reg)
-{
-	outb(reg, port_base);
-	return inb(port_base + 1);
-}
 
 static void init_ec(u16 base)
 {

@@ -55,12 +55,6 @@
 #define HWM_FAN1_SEG3_SPEED_COUNT  0xAC
 #define HWM_FAN1_TEMP_MAP_SEL      0xAF
 
-static void pnp_write_index(u16 port, u8 reg, u8 value)
-{
-	outb(reg, port);
-	outb(value, port + 1);
-}
-
 /* note: multifunc registers need to be tweaked before here */
 void f71869ad_hwm_init(struct device *dev)
 {

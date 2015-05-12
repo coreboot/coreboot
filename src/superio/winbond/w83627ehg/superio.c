@@ -32,18 +32,6 @@
 #include <stdlib.h>
 #include "w83627ehg.h"
 
-static void pnp_write_index(u16 port, u8 reg, u8 value)
-{
-	outb(reg, port);
-	outb(value, port + 1);
-}
-
-static u8 pnp_read_index(u16 port, u8 reg)
-{
-	outb(reg, port);
-	return inb(port + 1);
-}
-
 static void enable_hwm_smbus(struct device *dev)
 {
 	u8 reg8;

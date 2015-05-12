@@ -5,6 +5,7 @@
 #include <rules.h>
 #include <device/device.h>
 #include <device/pnp_def.h>
+#include <arch/io.h>
 
 #ifndef __SIMPLE_DEVICE__
 
@@ -62,6 +63,44 @@ struct pnp_mode_ops {
 };
 void pnp_enter_conf_mode(device_t dev);
 void pnp_exit_conf_mode(device_t dev);
+
+/* PNP indexed I/O operations */
+
+/*
+ * u8 pnp_read_index(u16 port, u8 reg)
+ * Description:
+ *  This routine reads indexed I/O registers. The reg byte is written
+ *  to the index register at I/O address = port. The result is then
+ *  read from the data register at I/O address = port + 1.
+ *
+ * Parameters:
+ *  @param[in]  u16 port   = The I/O address of the port index register.
+ *  @param[in]  u8  reg    = The offset within the indexed space.
+ *  @param[out] u8  result = The value read back from the data register.
+ */
+static inline u8 pnp_read_index(u16 port, u8 reg)
+{
+	outb(reg, port);
+	return inb(port + 1);
+}
+
+/*
+ * void pnp_write_index(u16 port, u8 reg, u8 value)
+ * Description:
+ *  This routine writes indexed I/O registers. The reg byte is written
+ *  to the index register at I/O address = port. The value byte is then
+ *  written to the data register at I/O address = port + 1.
+ *
+ * Parameters:
+ *  @param[in] u16 port   = The address of the port index register.
+ *  @param[in] u8  reg    = The offset within the indexed space.
+ *  @param[in] u8  value  = The value to be written to the data register.
+ */
+static inline void pnp_write_index(u16 port, u8 reg, u8 value)
+{
+	outb(reg, port);
+	outb(value, port + 1);
+}
 
 #endif /* ! __SIMPLE_DEVICE__ */
 #endif /* DEVICE_PNP_H */

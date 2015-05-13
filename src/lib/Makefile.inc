@@ -141,11 +141,13 @@ romstage-y += version.c
 ramstage-y += version.c
 smm-y += version.c
 secmon-y += version.c
+verstage-y += version.c
 
 $(obj)/lib/version.bootblock.o : $(obj)/build.h
 $(obj)/lib/version.romstage.o : $(obj)/build.h
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
 $(obj)/lib/version.smm.o : $(obj)/build.h
+$(obj)/lib/version.verstage.o : $(obj)/build.h
 
 romstage-y += bootmode.c
 ramstage-y += bootmode.c

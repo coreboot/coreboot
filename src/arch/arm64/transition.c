@@ -21,9 +21,6 @@
 #include <arch/transition.h>
 #include <console/console.h>
 
-/* Mask out debug exceptions, serror, irq and fiq */
-#define SPSR_MASK   (SPSR_FIQ_MASK | SPSR_IRQ_MASK | SPSR_SERROR_MASK | \
-		     SPSR_DEBUG_MASK)
 /* Litte-endian, No XN-forced, Instr cache disabled,
  * Stack alignment disabled, Data and unified cache
  * disabled, Alignment check disabled, MMU disabled
@@ -101,10 +98,6 @@ void transition(struct exc_state *exc_state)
 		hcr_mask = HCR_LOWER_AARCH64;
 	}
 
-	/* SPSR: Mask out debug exceptions, serror, irq, fiq */
-	elx->spsr |= SPSR_MASK;
-	raw_write_spsr_current(elx->spsr);
-
 	/* SCR: Write to SCR if current EL is EL3 */
 	if (current_el == EL3) {
 		uint32_t scr = raw_read_scr_el3();
@@ -118,8 +111,9 @@ void transition(struct exc_state *exc_state)
 		raw_write_hcr_el2(hcr);
 	}
 
-	/* ELR: Write entry point of program */
+	/* ELR/SPSR: Write entry point and processor state of program */
 	raw_write_elr_current(elx->elr);
+	raw_write_spsr_current(elx->spsr);
 
 	/* SCTLR: Initialize EL with selected properties */
 	sctlr = raw_read_sctlr(elx_el);

@@ -39,18 +39,11 @@
 #define SPSR_M_SHIFT         4
 #define SPSR_ERET_32         (1 << SPSR_M_SHIFT)
 #define SPSR_ERET_64         (0 << SPSR_M_SHIFT)
-#define SPSR_FIQ_SHIFT       6
-#define SPSR_FIQ_MASK        (0 << SPSR_FIQ_SHIFT)
-#define SPSR_FIQ_ENABLE      (1 << SPSR_FIQ_SHIFT)
-#define SPSR_IRQ_SHIFT       7
-#define SPSR_IRQ_MASK        (0 << SPSR_IRQ_SHIFT)
-#define SPSR_IRQ_ENABLE      (1 << SPSR_IRQ_SHIFT)
-#define SPSR_SERROR_SHIFT    8
-#define SPSR_SERROR_MASK     (0 << SPSR_SERROR_SHIFT)
-#define SPSR_SERROR_ENABLE   (1 << SPSR_SERROR_SHIFT)
-#define SPSR_DEBUG_SHIFT     9
-#define SPSR_DEBUG_MASK      (0 << SPSR_DEBUG_SHIFT)
-#define SPSR_DEBUG_ENABLE    (1 << SPSR_DEBUG_SHIFT)
+#define SPSR_FIQ             (1 << 6)
+#define SPSR_IRQ             (1 << 7)
+#define SPSR_SERROR          (1 << 8)
+#define SPSR_DEBUG           (1 << 9)
+#define SPSR_EXCEPTION_MASK  (SPSR_FIQ | SPSR_IRQ | SPSR_SERROR | SPSR_DEBUG)
 
 #define SCR_NS_SHIFT         0
 #define SCR_NS_MASK          (1 << SCR_NS_SHIFT)

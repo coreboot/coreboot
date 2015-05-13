@@ -24,6 +24,7 @@
 #include <console/streams.h>
 #include <device/pci.h>
 #include <option.h>
+#include <rules.h>
 #include <version.h>
 
 /* While in romstage, console loglevel is built-time constant. */
@@ -49,12 +50,18 @@ void console_init(void)
 
 	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s %s starting...\n",
 		      coreboot_version, coreboot_extra_version, coreboot_build,
-#if defined(__BOOTBLOCK__)
+#if ENV_BOOTBLOCK
 		      "bootblock"
-#elif defined(__PRE_RAM__)
+#elif ENV_ROMSTAGE
 		      "romstage"
-#else
+#elif ENV_RAMSTAGE
 		      "ramstage"
+#elif ENV_VERSTAGE
+		      "verstage"
+#elif ENV_SECMON
+		      "secmon"
+#else
+		      "UNKNOWN"
 #endif
 		      );
 }

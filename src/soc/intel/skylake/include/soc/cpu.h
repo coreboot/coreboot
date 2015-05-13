@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,29 +15,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_CPU_H_
-#define _BROADWELL_CPU_H_
+#ifndef _SOC_CPU_H_
+#define _SOC_CPU_H_
 
 #include <arch/cpu.h>
 #include <device/device.h>
 
 /* CPU types */
-#define HASWELL_FAMILY_ULT	0x40650
-#define BROADWELL_FAMILY_ULT	0x306d0
+#define SKYLAKE_FAMILY_ULT	0x406e0
 
 /* Supported CPUIDs */
-#define CPUID_HASWELL_A0	0x306c1
-#define CPUID_HASWELL_B0	0x306c2
-#define CPUID_HASWELL_C0	0x306c3
-#define CPUID_HASWELL_ULT_B0	0x40650
-#define CPUID_HASWELL_ULT	0x40651
-#define CPUID_HASWELL_HALO	0x40661
-#define CPUID_BROADWELL_C0	0x306d2
-#define CPUID_BROADWELL_D0	0x306d3
-#define CPUID_BROADWELL_E0	0x306d4
+#define CPUID_SKYLAKE_C0	0x406e2
+#define CPUID_SKYLAKE_D0	0x406e3
 
 /* CPU bus clock is fixed at 100MHz */
 #define CPU_BCLK		100
@@ -53,7 +46,7 @@
 	(((1 << ((base)*5)) * (limit)) / 1000)
 #define C_STATE_LATENCY_FROM_LAT_REG(reg) \
 	C_STATE_LATENCY_MICRO_SECONDS(C_STATE_LATENCY_CONTROL_ ##reg## _LIMIT, \
-	                              (IRTL_1024_NS >> 10))
+				      (IRTL_1024_NS >> 10))
 
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);

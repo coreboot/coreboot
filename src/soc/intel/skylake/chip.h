@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2008 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,13 +16,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _SOC_INTEL_BROADWELL_CHIP_H_
-#define _SOC_INTEL_BROADWELL_CHIP_H_
+#include <stdint.h>
+#include <soc/pci_devs.h>
+#include <soc/serialio.h>
 
-struct soc_intel_broadwell_config {
+#ifndef _SOC_CHIP_H_
+#define _SOC_CHIP_H_
+
+struct soc_intel_skylake_config {
 	/*
 	 * Interrupt Routing configuration
 	 * If bit7 is 1, the interrupt is disabled.
@@ -42,28 +47,8 @@ struct soc_intel_broadwell_config {
 	uint32_t gpe0_en_4;
 
 	/* GPIO SMI configuration */
+	uint32_t ec_smi_gpio;
 	uint32_t alt_gp_smi_en;
-
-	/* IDE configuration */
-	uint8_t sata_port_map;
-	uint32_t sata_port0_gen3_tx;
-	uint32_t sata_port1_gen3_tx;
-	uint32_t sata_port0_gen3_dtle;
-	uint32_t sata_port1_gen3_dtle;
-
-	/*
-	 * SATA DEVSLP Mux
-	 * 0 = port 0 DEVSLP on DEVSLP0/GPIO33
-	 * 1 = port 3 DEVSLP on DEVSLP0/GPIO33
-	 */
-	uint8_t sata_devslp_mux;
-
-	/*
-	 * DEVSLP Disable
-	 * 0: DEVSLP is enabled
-	 * 1: DEVSLP is disabled
-	 */
-	uint8_t sata_devslp_disable;
 
 	/* Generic IO decode ranges */
 	uint32_t gen1_dec;
@@ -76,13 +61,6 @@ struct soc_intel_broadwell_config {
 
 	/* Force root port ASPM configuration with port bitmap */
 	uint8_t pcie_port_force_aspm;
-
-	/* Put SerialIO devices into ACPI mode instead of a PCI device */
-	uint8_t sio_acpi_mode;
-
-	/* I2C voltage select: 0=3.3V 1=1.8V */
-	uint8_t sio_i2c0_voltage;
-	uint8_t sio_i2c1_voltage;
 
 	/* Enable ADSP power gating features */
 	uint8_t adsp_d3_pg_enable;
@@ -130,37 +108,125 @@ struct soc_intel_broadwell_config {
 	/* Enable S0iX support */
 	int s0ix_enable;
 
-	/*
-	 * Minimum voltage for C6/C7 state:
-	 * 0x67 = 1.6V (full swing)
-	 *  ...
-	 * 0x79 = 1.7V
-	 *  ...
-	 * 0x83 = 1.8V (no swing)
-	 */
-	int vr_cpu_min_vid;
-
-	/*
-	 * Set slow VR ramp rate on C-state exit:
-	 * 0 = Fast VR ramp rate / 2
-	 * 1 = Fast VR ramp rate / 4
-	 * 2 = Fast VR ramp rate / 8
-	 * 3 = Fast VR ramp rate / 16
-	 */
-	int vr_slow_ramp_rate_set;
-
-	/* Enable slow VR ramp rate */
-	int vr_slow_ramp_rate_enable;
-
-	/* Deep SX enable */
-	int deep_sx_enable_ac;
-	int deep_sx_enable_dc;
+	/* Deep SX enable for both AC and DC */
+	int deep_s3_enable;
+	int deep_s5_enable;
 
 	/* TCC activation offset */
 	int tcc_offset;
+
+	/*
+	 * The following fields come from fsp_vpd.h.
+	 * These are configuration values that are passed to FSP during
+	 * MemoryInit.
+	 */
+	u64 PlatformMemorySize;
+	u8 SmramMask;
+	u8 MrcFastBoot;
+	u32 IedSize;
+	u32 TsegSize;
+	u16 MmioSize;
+
+	/* Probeless Trace function */
+	u8 ProbelessTrace;
+
+	/* Lan */
+	u8 EnableLan;
+
+	/* SATA related */
+	u8 EnableSata;
+	u8 SataMode;
+	u8 SataSalpSupport;
+	u8 SataPortsEnable[8];
+	u8 SataPortsDevSlp[8];
+
+	/* Audio related */
+	u8 EnableAzalia;
+	u8 DspEnable;
+	u8 IoBufferOwnership;
+
+	/* Trace Hub function */
+	u8 EnableTraceHub;
+
+	/* Pcie Root Ports */
+	u8 PcieRpEnable[20];
+	u8 PcieRpClkReqSupport[20];
+	u8 PcieRpClkReqNumber[20];
+
+	/* USB related */
+	u8 PortUsb20Enable[16];
+	u8 PortUsb30Enable[10];
+	u8 XdciEnable;
+	u8 SsicPortEnable;
+
+	/* SMBus */
+	u8 SmbusEnable;
+
+	/*
+	 * SerialIO device mode selection:
+	 *
+	 * Device index:
+	 * PchSerialIoIndexI2C0
+	 * PchSerialIoIndexI2C1
+	 * PchSerialIoIndexI2C2
+	 * PchSerialIoIndexI2C3
+	 * PchSerialIoIndexI2C4
+	 * PchSerialIoIndexI2C5
+	 * PchSerialIoIndexI2C6
+	 * PchSerialIoIndexSpi0
+	 * PchSerialIoIndexSpi1
+	 * PchSerialIoIndexUart0
+	 * PchSerialIoIndexUart1
+	 * PchSerialIoIndexUart2
+	 *
+	 * Mode select:
+	 * PchSerialIoDisabled
+	 * PchSerialIoAcpi
+	 * PchSerialIoPci
+	 * PchSerialIoAcpiHidden
+	 * PchSerialIoLegacyUart
+	 */
+	u8 SerialIoDevMode[PchSerialIoIndexMax];
+
+	/* Camera */
+	u8 Cio2Enable;
+
+	/* eMMC and SD */
+	u8 ScsEmmcEnabled;
+	u8 ScsEmmcHs400Enabled;
+	u8 ScsSdCardEnabled;
+
+	/* Integrated Sensor */
+	u8 IshEnable;
+
+	/* SPI related */
+	u8 ShowSpiController;
+
+	u8 PttSwitch;
+	u8 HeciTimeouts;
+	u8 HsioMessaging;
+	u8 Heci3Enabled;
+
+	/* Gfx related */
+	u8 IgdDvmt50PreAlloc;
+	u8 PrimaryDisplay;
+	u8 InternalGfx;
+	u8 ApertureSize;
+	u8 SkipExtGfxScan;
+	u8 ScanExtGfxForLegacyOpRom;
+
+	/*
+	 * The following fields come from fsp_vpd.h
+	 * These are configuration values that are passed to FSP during
+	 * SiliconInit.
+	 */
+	u32 LogoPtr;
+	u32 LogoSize;
+	u32 GraphicsConfigPtr;
+	u8 Device4Enable;
 };
 
-typedef struct soc_intel_broadwell_config config_t;
+typedef struct soc_intel_skylake_config config_t;
 
 extern struct chip_operations soc_ops;
 

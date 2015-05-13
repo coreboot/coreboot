@@ -4,6 +4,7 @@
  * Copyright (C) 2005 Yinghai Lu <yinghailu@gmail.com>
  * Copyright (C) 2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +17,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_SMBUS_H_
-#define _BROADWELL_SMBUS_H_
+#ifndef _SOC_SMBUS_H_
+#define _SOC_SMBUS_H_
 
 /* PCI Configuration Space (D31:F3): SMBus */
 #define SMB_BASE		0x20
 #define HOSTC			0x40
 #define  HST_EN			(1 << 0)
 #define SMB_RCV_SLVA		0x09
+/* SMBUS TCO base address. */
+#define TCOBASE		0x50
 
 /* SMBus I/O bits. */
 #define SMBHSTSTAT		0x0

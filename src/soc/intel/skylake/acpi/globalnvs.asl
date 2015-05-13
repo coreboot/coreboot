@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 /* Global Variables */
@@ -29,8 +30,7 @@ Name (\PICM, 0)		// IOAPIC/8259
  * we have to fix it up in coreboot's ACPI creation phase.
  */
 
-External(NVSA)
-OperationRegion (GNVS, SystemMemory, NVSA, 0x2000)
+OperationRegion (GNVS, SystemMemory, 0xC0DEBABE, 0x2000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
@@ -62,6 +62,18 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	CBMC,	32,	// 0x1c - 0x1f - Coreboot Memory Console
 	PM1I,	64,	// 0x20 - 0x27 - PM1 wake status bit
 	GPEI,	64,	// 0x28 - 0x2f - GPE wake status bit
+	RPA1,	32,	// 0x30 - 0x33 - Root port address 1
+	RPA2,	32,	// 0x34 - 0x37 - Root port address 2
+	RPA3,	32,	// 0x38 - 0x3b - Root port address 3
+	RPA4,	32,	// 0x3c - 0x3f - Root port address 4
+	RPA5,	32,	// 0x40 - 0x43 - Root port address 5
+	RPA6,	32,	// 0x44 - 0x47 - Root port address 6
+	RPA7,	32,	// 0x48 - 0x4b - Root port address 7
+	RPA8,	32,	// 0x4c - 0x4f - Root port address 8
+	RPA9,	32,	// 0x50 - 0x53 - Root port address 9
+	RPAA,	32,	// 0x54 - 0x57 - Root port address 10
+	RPAB,	32,	// 0x58 - 0x5b - Root port address 11
+	RPAC,	32,	// 0x5c - 0x5f - Root port address 12
 
 	/* ChromeOS specific */
 	Offset (0x100),
@@ -70,18 +82,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	/* Device specific */
 	Offset (0x1000),
 	#include "device_nvs.asl"
-}
-
-/* Set flag to enable USB charging in S3 */
-Method (S3UE)
-{
-	Store (One, \S3U0)
-}
-
-/* Set flag to disable USB charging in S3 */
-Method (S3UD)
-{
-	Store (Zero, \S3U0)
 }
 
 /* Set flag to enable USB charging in S5 */
@@ -94,16 +94,4 @@ Method (S5UE)
 Method (S5UD)
 {
 	Store (Zero, \S5U0)
-}
-
-/* Set flag to enable 3G module in S3 */
-Method (S3GE)
-{
-	Store (One, \S33G)
-}
-
-/* Set flag to disable 3G module in S3 */
-Method (S3GD)
-{
-	Store (Zero, \S33G)
 }

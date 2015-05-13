@@ -8,36 +8,41 @@ if SOC_INTEL_SKYLAKE
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select ARCH_BOOTBLOCK_X86_32
-	select ARCH_VERSTAGE_X86_32
-	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
-	select ALT_CBFS_LOAD_PAYLOAD
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_VERSTAGE_X86_32
 	select ALWAYS_LOAD_OPROM
 	select BACKUP_DEFAULT_SMM_REGION
-	select CACHE_MRC_BIN
 	select CACHE_MRC_SETTINGS
-	select MRC_SETTINGS_PROTECT
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	select CACHE_ROM
 	select CAR_MIGRATION
 	select COLLECT_TIMESTAMPS
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
-	select SUPPORT_CPU_UCODE_IN_CBFS
+	select CPU_MICROCODE_IN_CBFS
+	select HAS_PRECBMEM_TIMESTAMP_REGION
+	select HAVE_HARD_RESET
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_SMI_HANDLER
-	select HAVE_HARD_RESET
-	select HAVE_USBDEBUG
 	select IOAPIC
 	select MMCONF_SUPPORT
 	select MMCONF_SUPPORT_DEFAULT
-	select RELOCATABLE_MODULES
-	select RELOCATABLE_RAMSTAGE
-	select REG_SCRIPT
 	select PARALLEL_MP
 	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
 	select PCIEXP_CLK_PM
-	select PCIEXP_L1_SUB_STATE
+	# External devices not working on glados
+	#select PCIEXP_L1_SUB_STATE
+	select PLATFORM_USES_FSP1_1
+	select REG_SCRIPT
+	select RELOCATABLE_MODULES
+	select RELOCATABLE_RAMSTAGE
+	select SOC_INTEL_COMMON
+	select SOC_INTEL_COMMON_FSP_RAM_INIT
+	select SOC_INTEL_COMMON_FSP_ROMSTAGE
+	select SOC_INTEL_COMMON_RESET
+	select SOC_INTEL_COMMON_STACK
+	select SOC_INTEL_COMMON_STAGE_CACHE
 	select SMM_MODULES
 	select SMM_TSEG
 	select SMP
@@ -47,8 +52,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_CONSTANT_RATE
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
-	select PER_DEVICE_ACPI_TABLES
-	select SOC_INTEL_COMMON
+	select USE_GENERIC_FSP_CAR_INC
 
 config BOOTBLOCK_CPU_INIT
 	string
@@ -58,94 +62,17 @@ config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "soc/intel/skylake/bootblock/systemagent.c"
 
+config BOOTBLOCK_RESETS
+	string
+	default "soc/intel/common/reset.c"
+
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "soc/intel/skylake/bootblock/pch.c"
 
-
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xf0000000
-
-config SERIAL_CPU_INIT
-	bool
-	default n
-
-config SMM_TSEG_SIZE
-	hex
-	default 0x800000
-
-config IED_REGION_SIZE
-	hex
-	default 0x400000
-
-config SMM_RESERVED_SIZE
-	hex
-	default 0x100000
-
-config VGA_BIOS_ID
-	string
-	default "8086,0406"
-
-config CACHE_MRC_SIZE_KB
-	int
-	default 512
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xff7c0000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x10000
-	help
-	  The size of the cache-as-ram region required during bootblock
-	  and/or romstage. Note DCACHE_RAM_SIZE and DCACHE_RAM_MRC_VAR_SIZE
-	  must add up to a power of 2.
-
-config DCACHE_RAM_MRC_VAR_SIZE
-	hex
-	default 0x30000
-	help
-	  The amount of cache-as-ram region required by the reference code.
-
-config DCACHE_RAM_ROMSTAGE_STACK_SIZE
-	hex
-	default 0x2000
-	help
-	  The amount of anticipated stack usage from the data cache
-	  during pre-ram rom stage execution.
-
-config HAVE_MRC
-	bool "Add a Memory Reference Code binary"
-	help
-	  Select this option to add a Memory Reference Code binary to
-	  the resulting coreboot image.
-
-	  Note: Without this binary coreboot will not work
-
-if HAVE_MRC
-
-config MRC_FILE
-	string "Intel Memory Reference Code path and filename"
-	depends on HAVE_MRC
-	default "mrc.bin"
-	help
-	  The filename of the file to use as Memory Reference Code binary.
-
-config MRC_BIN_ADDRESS
-	hex
-	default 0xfffa0000
-
-config CACHE_MRC_SETTINGS
-	bool "Save cached MRC settings"
-	default y
-
-endif # HAVE_MRC
-
 config CBFS_SIZE
 	hex "Size of CBFS filesystem in ROM"
-	default 0x100000
+	default 0x200000
 	help
 	  The firmware image has to store more than just coreboot, including:
 	   - a firmware descriptor
@@ -154,72 +81,25 @@ config CBFS_SIZE
 	  This option allows to limit the size of the CBFS portion in the
 	  firmware image.
 
-config PRE_GRAPHICS_DELAY
-	int "Graphics initialization delay in ms"
-	default 0
+config CPU_ADDR_BITS
+	int
+	default 36
+
+config DCACHE_RAM_BASE
+	hex "Base address of cache-as-RAM"
+	default 0xfef00000
+
+config DCACHE_RAM_SIZE
+	hex "Length in bytes of cache-as-RAM"
+	default 0x4000
 	help
-	  On some systems, coreboot boots so fast that connected monitors
-	  (mostly TVs) won't be able to wake up fast enough to talk to the
-	  VBIOS. On those systems we need to wait for a bit before executing
-	  the VBIOS.
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage.
 
-config RESET_ON_INVALID_RAMSTAGE_CACHE
-	bool "Reset the system on S3 wake when ramstage cache invalid."
-	default n
-	depends on RELOCATABLE_RAMSTAGE
+config EXTRA_MICROCODE_INCLUDE_PATH
+	string "Include path for extra microcode patches."
 	help
-	  The romstage code caches the loaded ramstage program in SMM space.
-	  On S3 wake the romstage will copy over a fresh ramstage that was
-	  cached in the SMM space. This option determines the action to take
-	  when the ramstage cache is invalid. If selected the system will
-	  reset otherwise the ramstage will be reloaded from cbfs.
-
-config INTEL_PCH_UART_CONSOLE
-	bool "Use Serial IO UART for console"
-	default n
-	select HAVE_UART_MEMORY_MAPPED
-	select CONSOLE_SERIAL8250MEM
-	depends on !CONFIG_DRIVERS_OXFORD_OXPCIE
-
-config INTEL_PCH_UART_CONSOLE_NUMBER
-	hex "Serial IO UART number to use for console"
-	default "0x0"
-	depends on INTEL_PCH_UART_CONSOLE
-
-config TTYS0_BASE
-	hex
-	default 0xd6000000
-	depends on INTEL_PCH_UART_CONSOLE
-
-config EHCI_BAR
-	hex
-	default 0xd8000000
-
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xa0
-
-config SERIRQ_CONTINUOUS_MODE
-	bool
-	default y
-	help
-	  If you set this option to y, the serial IRQ machine will be
-	  operated in continuous mode.
-config HAVE_ME_BIN
-	bool "Add Intel Management Engine firmware"
-	default y
-	help
-	  The Intel processor in the selected system requires a special firmware
-	  for an integrated controller called Management Engine (ME). The ME
-	  firmware might be provided in coreboot's 3rdparty/blobs repository. If
-	  not and if you don't have the firmware elsewhere, you can still
-	  build coreboot without it. In this case however, you'll have to make
-	  sure that you don't overwrite your ME firmware on your flash ROM.
-
-config ME_BIN_PATH
-	string "Path to management engine firmware"
-	depends on HAVE_ME_BIN
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
+	  The path to any extra microcode patches from other sources.
 
 config HAVE_IFD_BIN
 	bool "Use Intel Firmware Descriptor from existing binary"
@@ -242,6 +122,30 @@ config BUILD_WITH_FAKE_IFD
 
 	  [1] http://www.flashrom.org/pipermail/flashrom/2013-June/011083.html
 
+config HAVE_ME_BIN
+	bool "Add Intel Management Engine firmware"
+	default y
+	help
+	  The Intel processor in the selected system requires a special firmware
+	  for an integrated controller called Management Engine (ME). The ME
+	  firmware might be provided in coreboot's 3rdparty/blobs repository. If
+	  not and if you don't have the firmware elsewhere, you can still
+	  build coreboot without it. In this case however, you'll have to make
+	  sure that you don't overwrite your ME firmware on your flash ROM.
+
+config HEAP_SIZE
+	hex
+	default 0x80000
+
+config IED_REGION_SIZE
+	hex
+	default 0x400000
+
+config IFD_BIN_PATH
+	string "Path to intel firmware descriptor"
+	depends on !BUILD_WITH_FAKE_IFD
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+
 config IFD_BIOS_SECTION
 	depends on BUILD_WITH_FAKE_IFD
 	string
@@ -257,22 +161,72 @@ config IFD_PLATFORM_SECTION
 	string
 	default ""
 
-config IFD_BIN_PATH
-	string "Path to intel firmware descriptor"
-	depends on !BUILD_WITH_FAKE_IFD
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
-
-config LOCK_MANAGEMENT_ENGINE
-	bool "Lock Management Engine section"
+config INTEL_PCH_UART_CONSOLE
+	bool "Use Serial IO UART for console"
 	default n
-	help
-	  The Intel Management Engine supports preventing write accesses
-	  from the host to the Management Engine section in the firmware
-	  descriptor. If the ME section is locked, it can only be overwritten
-	  with an external SPI flash programmer. You will want this if you
-	  want to increase security of your ROM image once you are sure
-	  that the ME firmware is no longer going to change.
+	select HAVE_UART_MEMORY_MAPPED
+	select CONSOLE_SERIAL8250MEM
+	depends on !CONFIG_DRIVERS_OXFORD_OXPCIE
 
-	  If unsure, say N.
+config INTEL_PCH_UART_CONSOLE_NUMBER
+	hex "Serial IO UART number to use for console"
+	default "0x0"
+	depends on INTEL_PCH_UART_CONSOLE
+
+config ME_BIN_PATH
+	string "Path to management engine firmware"
+	depends on HAVE_ME_BIN
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
+
+config MICROCODE_INCLUDE_PATH
+	string
+	default "src/soc/intel/skylake/microcode"
+
+config MMCONF_BASE_ADDRESS
+	hex "MMIO Base Address"
+	default 0xe0000000
+
+config MONOTONIC_TIMER_MSR
+	def_bool y
+	select HAVE_MONOTONIC_TIMER
+	help
+	  Provide a monotonic timer using the 24MHz MSR counter.
+
+config PRE_GRAPHICS_DELAY
+	int "Graphics initialization delay in ms"
+	default 0
+	help
+	  On some systems, coreboot boots so fast that connected monitors
+	  (mostly TVs) won't be able to wake up fast enough to talk to the
+	  VBIOS. On those systems we need to wait for a bit before executing
+	  the VBIOS.
+
+config SERIAL_CPU_INIT
+	bool
+	default n
+
+config SERIRQ_CONTINUOUS_MODE
+	bool
+	default y
+	help
+	  If you set this option to y, the serial IRQ machine will be
+	  operated in continuous mode.
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x200000
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config TTYS0_BASE
+	hex
+	default 0xfe034000
+	depends on INTEL_PCH_UART_CONSOLE
+
+config VGA_BIOS_ID
+	string
+	default "8086,0406"
 
 endif

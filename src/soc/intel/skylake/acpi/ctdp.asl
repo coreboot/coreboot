@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 Scope (\_SB.PCI0.MCHC)
@@ -30,40 +31,43 @@ Scope (\_SB.PCI0.MCHC)
 			Add (MCH_BASE_ADDRESS, 0x5000), 0x1000)
 	Field (MCHB, DWordAcc, Lock, Preserve)
 	{
-		Offset (0x930), /* PACKAGE_POWER_SKU */
+		Offset (0x930),	/* PACKAGE_POWER_SKU */
 		CTDN, 15,	/* CTDP Nominal PL1 */
-		Offset (0x938), /* PACKAGE_POWER_SKU_UNIT */
+		Offset (0x938),	/* PACKAGE_POWER_SKU_UNIT */
 		PUNI, 4,	/* Power Units */
 		,     4,
 		EUNI, 5,	/* Energy Units */
 		,     3,
 		TUNI, 4,	/* Time Units */
-		Offset (0x958), /* PLATFORM_INFO */
-		,     40,
+		Offset (0x958),	/* PLATFORM_INFO */
+		,     32,
+		LPMS, 1,	/* LPM Support */
+		CTNL, 2,	/* Config TDP Number level */
+		,     5,
 		LFM_, 8,	/* Maximum Efficiency Ratio (LFM) */
-		Offset (0x9a0), /* TURBO_POWER_LIMIT1 */
+		Offset (0x9a0),	/* TURBO_POWER_LIMIT1 */
 		PL1V, 15,	/* Power Limit 1 Value */
 		PL1E, 1,	/* Power Limit 1 Enable */
 		PL1C, 1,	/* Power Limit 1 Clamp */
 		PL1T, 7,	/* Power Limit 1 Time */
-		Offset (0x9a4), /* TURBO_POWER_LIMIT2 */
+		Offset (0x9a4),	/* TURBO_POWER_LIMIT2 */
 		PL2V, 15,	/* Power Limit 2 Value */
 		PL2E, 1,	/* Power Limit 2 Enable */
 		PL2C, 1,	/* Power Limit 2 Clamp */
 		PL2T, 7,	/* Power Limit 2 Time */
-		Offset (0xf3c), /* CONFIG_TDP_NOMINAL */
+		Offset (0xf3c),	/* CONFIG_TDP_NOMINAL */
 		TARN, 8,	/* CTDP Nominal Turbo Activation Ratio */
-		Offset (0xf40), /* CONFIG_TDP_LEVEL1 */
+		Offset (0xf40),	/* CONFIG_TDP_LEVEL1 */
 		CTDD, 15,	/* CTDP Down PL1 */
 		,     1,
 		TARD, 8,	/* CTDP Down Turbo Activation Ratio */
-		Offset (0xf48), /* MSR_CONFIG_TDP_LEVEL2 */
+		Offset (0xf48),	/* MSR_CONFIG_TDP_LEVEL2 */
 		CTDU, 15,	/* CTDP Up PL1 */
 		,     1,
 		TARU, 8,	/* CTDP Up Turbo Activation Ratio */
-		Offset (0xf50), /* CONFIG_TDP_CONTROL */
+		Offset (0xf50),	/* CONFIG_TDP_CONTROL */
 		CTCS, 2,	/* CTDP Select */
-		Offset (0xf54), /* TURBO_ACTIVATION_RATIO */
+		Offset (0xf54),	/* TURBO_ACTIVATION_RATIO */
 		TARS, 8,	/* Turbo Activation Ratio Select */
 	}
 
@@ -85,7 +89,7 @@ Scope (\_SB.PCI0.MCHC)
 		While (LLess (Local0, Local1)) {
 			/* Store _PSS entry Control value to Local2 */
 			ShiftRight (DeRefOf (Index (DeRefOf (Index
-			      (\_PR.CP00._PSS, Local0)), 4)), 8, Local2)
+				(\_PR.CP00._PSS, Local0)), 4)), 8, Local2)
 			If (LEqual (Local2, Arg0)) {
 				Return (Subtract (Local0, 1))
 			}
@@ -98,8 +102,6 @@ Scope (\_SB.PCI0.MCHC)
 	/* Calculate PL2 based on chip type */
 	Method (CPL2, 1, NotSerialized)
 	{
-		/* Haswell ULT PL2 = 25W */
-		/* FIXME: update for broadwell */
 		Return (Multiply (25, 8))
 	}
 

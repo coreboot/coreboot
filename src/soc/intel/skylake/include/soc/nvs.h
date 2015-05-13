@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,12 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_NVS_H_
-#define _BROADWELL_NVS_H_
+#ifndef _SOC_NVS_H_
+#define _SOC_NVS_H_
 
+#include <rules.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>
 
@@ -53,7 +55,9 @@ typedef struct {
 	u32	cbmc; /* 0x1c - 0x1f - Coreboot Memory Console */
 	u64	pm1i; /* 0x20 - 0x27 - PM1 wake status bit */
 	u64	gpei; /* 0x28 - 0x2f - GPE wake status bit */
-	u8	unused[208];
+	u32	rpa[12]; /* 0x30 - 0x5f - Root Port Address */
+
+	u8	unused[160];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;
@@ -63,7 +67,7 @@ typedef struct {
 } __attribute__((packed)) global_nvs_t;
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
-#ifdef __SMM__
+#if ENV_SMM
 /* Used in SMM to find the ACPI GNVS address */
 global_nvs_t *smm_get_gnvs(void);
 #endif

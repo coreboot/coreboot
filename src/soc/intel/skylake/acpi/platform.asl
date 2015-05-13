@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 /* The APM port can be used for generating software SMIs */
@@ -43,7 +44,8 @@ Method (TRAP, 1, Serialized)
 	Return (SMIF)		// Return value of SMI handler
 }
 
-/* The _PIC method is called by the OS to choose between interrupt
+/*
+ * The _PIC method is called by the OS to choose between interrupt
  * routing via the i8259 interrupt controller or the APIC.
  *
  * _PIC is called with a parameter of 0 for i8259 configuration and

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,16 +15,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <arch/io.h>
 #include <console/console.h>
-#include <device/pci_ids.h>
-#include <device/pci_def.h>
 #include <delay.h>
 #include <soc/spi.h>
-#include <soc/rcba.h>
 #include <soc/romstage.h>
 
 #define SPI_DELAY 10     /* 10us */
@@ -31,43 +29,47 @@
 
 static int early_spi_read_block(u32 offset, u8 size, u8 *buffer)
 {
-	u32 *ptr32 = (u32*)buffer;
+	u32 *ptr32 = (u32 *)buffer;
 	u32 i;
+	u16 hsfs, hsfc;
+	void *spibar = get_spi_bar();
 
 	/* Clear status bits */
-	SPIBAR16(SPIBAR_HSFS) |= SPIBAR_HSFS_AEL | SPIBAR_HSFS_FCERR |
-		SPIBAR_HSFS_FDONE;
+	hsfs = read16(spibar + SPIBAR_HSFS);
+	write16(spibar + SPIBAR_HSFS, hsfs | SPIBAR_HSFS_AEL |
+			SPIBAR_HSFS_FCERR | SPIBAR_HSFS_FDONE);
 
-	if (SPIBAR16(SPIBAR_HSFS) & SPIBAR_HSFS_SCIP) {
+	if (read16(spibar + SPIBAR_HSFS) & SPIBAR_HSFS_SCIP) {
 		printk(BIOS_ERR, "SPI ERROR: transaction in progress\n");
 		return -1;
 	}
 
 	/* Set flash address */
-	SPIBAR32(SPIBAR_FADDR) = offset;
+	write32(spibar + SPIBAR_FADDR, offset);
 
 	/* Setup read transaction */
-	SPIBAR16(SPIBAR_HSFC) = SPIBAR_HSFC_BYTE_COUNT(size) |
-		SPIBAR_HSFC_CYCLE_READ;
+	write16(spibar + SPIBAR_HSFC, SPIBAR_HSFC_BYTE_COUNT(size) |
+			SPIBAR_HSFC_CYCLE_READ);
 
-	/* Start transaction */
-	SPIBAR16(SPIBAR_HSFC) |= SPIBAR_HSFC_GO;
+	/* Start transactinon */
+	hsfc = read16(spibar + SPIBAR_HSFC);
+	write16(spibar + SPIBAR_HSFC, hsfc | SPIBAR_HSFC_GO);
 
 	/* Wait for completion */
 	for (i = 0; i < SPI_RETRY; i++) {
-		if (SPIBAR16(SPIBAR_HSFS) & SPIBAR_HSFS_SCIP) {
+		if (read16(spibar + SPIBAR_HSFS) & SPIBAR_HSFS_SCIP) {
 			/* Cycle in progress, wait 1ms */
 			udelay(SPI_DELAY);
 			continue;
 		}
 
-		if (SPIBAR16(SPIBAR_HSFS) & SPIBAR_HSFS_AEL) {
+		if (read16(spibar + SPIBAR_HSFS) & SPIBAR_HSFS_AEL) {
 			printk(BIOS_ERR, "SPI ERROR: Access Error\n");
 			return -1;
 
 		}
 
-		if (SPIBAR16(SPIBAR_HSFS) & SPIBAR_HSFS_FCERR) {
+		if (read16(spibar + SPIBAR_HSFS) & SPIBAR_HSFS_FCERR) {
 			printk(BIOS_ERR, "SPI ERROR: Flash Cycle Error\n");
 			return -1;
 		}
@@ -80,14 +82,18 @@ static int early_spi_read_block(u32 offset, u8 size, u8 *buffer)
 	}
 
 	/* Read the data */
-	for (i = 0; i < size; i+=sizeof(u32)) {
+	for (i = 0; i < size; i += sizeof(u32)) {
 		if (size-i >= 4) {
 			/* reading >= dword */
-			*ptr32++ = SPIBAR32(SPIBAR_FDATA(i/sizeof(u32)));
+			*ptr32++ = read32(spibar +
+				SPIBAR_FDATA(i/sizeof(u32)));
 		} else {
 			/* reading < dword */
-			u8 j, *ptr8 = (u8*)ptr32;
-			u32 temp = SPIBAR32(SPIBAR_FDATA(i/sizeof(u32)));
+			u8 j, *ptr8 = (u8 *)ptr32;
+			u32 temp;
+
+			temp = read32(spibar +
+				SPIBAR_FDATA(i/sizeof(u32)));
 			for (j = 0; j < (size-i); j++) {
 				*ptr8++ = temp & 0xff;
 				temp >>= 8;
@@ -122,18 +128,19 @@ int early_spi_read(u32 offset, u32 size, u8 *buffer)
 int early_spi_read_wpsr(u8 *sr)
 {
 	int retry;
+	void *spibar = get_spi_bar();
 
 	/* No address associated with rdsr */
-	SPIBAR8(SPIBAR_OPTYPE) = 0x0;
+	write8(spibar + SPIBAR_OPTYPE, 0x0);
 	/* Setup opcode[0] = read wpsr */
-	SPIBAR8(SPIBAR_OPMENU_LOWER) = 0x5;
+	write8(spibar + SPIBAR_OPMENU_LOWER, 0x5);
 
 	/* Start transaction */
-	SPIBAR16(SPIBAR_SSFC) = SPIBAR_SSFC_DATA | SPIBAR_SSFC_GO;
+	write16(spibar + SPIBAR_SSFC, SPIBAR_SSFC_DATA | SPIBAR_SSFC_GO);
 
 	/* Wait for error / complete status */
 	for (retry = SPI_RETRY; retry; retry--) {
-		u16 status = SPIBAR16(SPIBAR_SSFS);
+		u16 status = read16(spibar + SPIBAR_SSFS);
 		if (status & SPIBAR_SSFS_ERROR) {
 			printk(BIOS_ERR, "SPI rdsr failed\n");
 			return -1;
@@ -143,7 +150,9 @@ int early_spi_read_wpsr(u8 *sr)
 
 		udelay(SPI_DELAY);
 	}
-
-	*sr = SPIBAR32(SPIBAR_FDATA(0)) & 0xff;
+	/* Flash protected range 0 register bit 31 indicates WP
+	 * Bit 31[WPE] 1= WP Enable 0= WP Disable
+	 */
+	*sr = (read32(spibar + SPIBAR_FPR(0)) & SPIBAR_FPR_WPE) >> 24;
 	return 0;
 }

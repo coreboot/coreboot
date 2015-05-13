@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <arch/io.h>
@@ -26,101 +27,66 @@
 #include <spi-generic.h>
 #include <stdlib.h>
 #include <soc/pci_devs.h>
-#include <soc/lpc.h>
-#include <soc/me.h>
-#include <soc/rcba.h>
+#include <soc/pcr.h>
+#include <soc/pm.h>
+#include <soc/pmc.h>
 #include <soc/spi.h>
 #include <soc/systemagent.h>
+#include <device/pci.h>
 
-const struct reg_script system_agent_finalize_script[] = {
-	REG_PCI_OR16(0x50, 1 << 0),				/* GGC */
-	REG_PCI_OR32(0x5c, 1 << 0),				/* DPR */
-	REG_PCI_OR32(0x78, 1 << 10),				/* ME */
-	REG_PCI_OR32(0x90, 1 << 0),				/* REMAPBASE */
-	REG_PCI_OR32(0x98, 1 << 0),				/* REMAPLIMIT */
-	REG_PCI_OR32(0xa0, 1 << 0),				/* TOM */
-	REG_PCI_OR32(0xa8, 1 << 0),				/* TOUUD */
-	REG_PCI_OR32(0xb0, 1 << 0),				/* BDSM */
-	REG_PCI_OR32(0xb4, 1 << 0),				/* BGSM */
-	REG_PCI_OR32(0xb8, 1 << 0),				/* TSEGMB */
-	REG_PCI_OR32(0xbc, 1 << 0),				/* TOLUD */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5500, 1 << 0),	/* PAVP */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5f00, 1 << 31),	/* SA PM */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x6020, 1 << 0),	/* UMA GFX */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x63fc, 1 << 0),	/* VTDTRK */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x6800, 1 << 31),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x7000, 1 << 31),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x77fc, 1 << 0),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x50fc, 0x8f),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x7ffc, 1 << 0),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5880, 1 << 5),
-	REG_MMIO_WRITE8(MCH_BASE_ADDRESS + 0x50fc, 0x8f),	/* MC */
+static void pch_finalize_script(void)
+{
+	device_t dev;
+	uint32_t reg32, hsfs;
+	void *spibar = get_spi_bar();
+	u8 reg8;
+	u16 tcobase;
+	u16 tcocnt;
+	uint8_t *pmcbase;
+	u32 pmsyncreg;
 
-	REG_SCRIPT_END
-};
-
-const struct reg_script pch_finalize_script[] = {
 	/* Set SPI opcode menu */
-	REG_MMIO_WRITE16(RCBA_BASE_ADDRESS + SPIBAR_OFFSET + SPIBAR_PREOP,
-			 SPI_OPPREFIX),
-	REG_MMIO_WRITE16(RCBA_BASE_ADDRESS + SPIBAR_OFFSET + SPIBAR_OPTYPE,
-			 SPI_OPTYPE),
-	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + SPIBAR_OFFSET +
-			 SPIBAR_OPMENU_LOWER, SPI_OPMENU_LOWER),
-	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + SPIBAR_OFFSET +
-			 SPIBAR_OPMENU_UPPER, SPI_OPMENU_UPPER),
-
+	write16(spibar + SPIBAR_PREOP, SPI_OPPREFIX);
+	write16(spibar + SPIBAR_OPTYPE, SPI_OPTYPE);
+	write32(spibar + SPIBAR_OPMENU_LOWER, SPI_OPMENU_LOWER);
+	write32(spibar + SPIBAR_OPMENU_UPPER, SPI_OPMENU_UPPER);
 	/* Lock SPIBAR */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + SPIBAR_OFFSET + SPIBAR_HSFS,
-		      SPIBAR_HSFS_FLOCKDN),
+	hsfs = read32(spibar + SPIBAR_HSFS);
+	hsfs |= SPIBAR_HSFS_FLOCKDN;
+	write32(spibar + SPIBAR_HSFS, hsfs);
 
-	/* TC Lockdown */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x0050, (1 << 31)),
-
-	/* BIOS Interface Lockdown */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + GCS, (1 << 0)),
-
-	/* Function Disable SUS Well Lockdown */
-	REG_MMIO_OR8(RCBA_BASE_ADDRESS + FDSW, (1 << 7)),
+	/*TCO Lock down*/
+	tcobase = pmc_tco_regs();
+	tcocnt = inw(tcobase + TCO1_CNT);
+	tcocnt |= TCO_LOCK;
+	outw(tcocnt, tcobase + TCO1_CNT);
 
 	/* Global SMI Lock */
-	REG_PCI_OR16(GEN_PMCON_1, SMI_LOCK),
+	dev = PCH_DEV_PMC;
+	reg8 = pci_read_config8(dev, GEN_PMCON_A);
+	reg8 |= SMI_LOCK;
+	pci_write_config8(dev, GEN_PMCON_A, reg8);
 
-	/* GEN_PMCON Lock */
-	REG_PCI_OR8(GEN_PMCON_LOCK, SLP_STR_POL_LOCK | ACPI_BASE_LOCK),
+	/* Lock down ABASE and sleep stretching policy */
+	reg32 = pci_read_config32(dev, GEN_PMCON_B);
+	reg32 |= (SLP_STR_POL_LOCK | ACPI_BASE_LOCK);
+	pci_write_config32(dev, GEN_PMCON_B, reg32);
 
 	/* PMSYNC */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + PMSYNC_CONFIG, (1 << 31)),
+	pmcbase = pmc_mmio_regs();
+	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
+	pmsyncreg |= PMSYNC_LOCK;
+	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
+}
 
-
-	REG_SCRIPT_END
-};
-
-static void broadwell_finalize(void *unused)
+static void soc_finalize(void *unused)
 {
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
-
-	reg_script_run_on_dev(SA_DEV_ROOT, system_agent_finalize_script);
-	reg_script_run_on_dev(PCH_DEV_LPC, pch_finalize_script);
-
-	/* Lock */
-	RCBA32_OR(0x3a6c, 0x00000001);
-
-	/* Read+Write the following registers */
-	MCHBAR32(0x6030) = MCHBAR32(0x6030);
-	MCHBAR32(0x6034) = MCHBAR32(0x6034);
-	MCHBAR32(0x6008) = MCHBAR32(0x6008);
-	RCBA32(0x21a4) = RCBA32(0x21a4);
-
-	/* Re-init SPI after lockdown */
-	spi_init();
-
-	printk(BIOS_DEBUG, "Finalizing SMM.\n");
-	outb(APM_CNT_FINALIZE, APM_CNT);
+	pch_finalize_script();
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, broadwell_finalize, NULL);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, broadwell_finalize, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, soc_finalize, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, soc_finalize, NULL);

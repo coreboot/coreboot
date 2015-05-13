@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <arch/io.h>
@@ -32,7 +33,7 @@ static void bootblock_northbridge_init(void)
 	 * MCFG. This code also assumes that bootblock_northbridge_init() is
 	 * the first thing called in the non-asm boot block code. The final
 	 * assumption is that no assembly code is using the
-	 * CONFIG_MMCONF_SUPPORT_DEFAULT option to do PCI config accesses.
+	 * CONFIG_MMCONF_SUPPORT_DEFAULT option to do PCI config acceses.
 	 *
 	 * The PCIEXBAR is assumed to live in the memory mapped IO space under
 	 * 4GiB.

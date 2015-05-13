@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2008 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,31 +16,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_SYSTEMAGENT_H_
-#define _BROADWELL_SYSTEMAGENT_H_
+#ifndef _SOC_SYSTEMAGENT_H_
+#define _SOC_SYSTEMAGENT_H_
 
 #include <soc/iomap.h>
 
 #define SA_IGD_OPROM_VENDEV	0x80860406
 
-#define IGD_HASWELL_ULT_GT1	0x0a06
-#define IGD_HASWELL_ULT_GT2	0x0a16
-#define IGD_HASWELL_ULT_GT3	0x0a26
-#define IGD_BROADWELL_U_GT1	0x1606
-#define IGD_BROADWELL_U_GT2	0x1616
-#define IGD_BROADWELL_U_GT3_15W	0x1626
-#define IGD_BROADWELL_U_GT3_28W	0x162b
-#define IGD_BROADWELL_Y_GT2	0x161e
-#define IGD_BROADWELL_H_GT2	0x1612
-#define IGD_BROADWELL_H_GT3	0x1622
+#define IGD_SKYLAKE_GT1_SULTM	0x1906
+#define IGD_SKYLAKE_GT2_SULXM	0x191E
+#define IGD_SKYLAKE_GT2_SULTM	0x1916
 
-#define MCH_BROADWELL_ID_U_Y	0x1604
-#define MCH_BROADWELL_REV_D0	0x06
-#define MCH_BROADWELL_REV_E0	0x08
-#define MCH_BROADWELL_REV_F0	0x09
+#define MCH_SKYLAKE_ID_U	0x1904
+#define MCH_SKYLAKE_ID_Y	0x190c
+#define MCH_SKYLAKE_ID_ULX	0x1924
 
 /* Device 0:0.0 PCI configuration space */
 
@@ -91,9 +84,9 @@
 
 /* MCHBAR */
 
-#define MCHBAR8(x)	*((volatile u8 *)(MCH_BASE_ADDRESS + x))
-#define MCHBAR16(x)	*((volatile u16 *)(MCH_BASE_ADDRESS + x))
-#define MCHBAR32(x)	*((volatile u32 *)(MCH_BASE_ADDRESS + x))
+#define MCHBAR8(x)	(*(volatile u8 *)(MCH_BASE_ADDRESS + x))
+#define MCHBAR16(x)	(*(volatile u16 *)(MCH_BASE_ADDRESS + x))
+#define MCHBAR32(x)	(*(volatile u32 *)(MCH_BASE_ADDRESS + x))
 
 #define MCHBAR_PEI_VERSION	0x5034
 #define BIOS_RESET_CPL		0x5da8
@@ -115,8 +108,6 @@
 #define  MAILBOX_BIOS_CMD_FSM_MEASURE_INTVL	0x909
 #define  MAILBOX_BIOS_CMD_READ_PCH_POWER	0xa
 #define  MAILBOX_BIOS_CMD_READ_PCH_POWER_EXT	0xb
-#define  MAILBOX_BIOS_CMD_READ_C9C10_VOLTAGE	0x26
-#define  MAILBOX_BIOS_CMD_WRITE_C9C10_VOLTAGE	0x27
 /* Errors are returned back in bits 7:0. */
 #define  MAILBOX_BIOS_ERROR_NONE		0
 #define  MAILBOX_BIOS_ERROR_INVALID_COMMAND	1

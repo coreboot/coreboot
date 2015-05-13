@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <device/device.h>
@@ -60,7 +61,8 @@ void southbridge_smm_enable_smi(void)
 	enable_pm1(PWRBTN_EN | GBL_EN);
 	disable_gpe(PME_B0_EN);
 
-	/* Enable SMI generation:
+	/*
+	 * Enable SMI generation:
 	 *  - on APMC writes (io 0xb2)
 	 *  - on writes to SLP_EN (sleep states)
 	 *  - on writes to GBL_RLS (bios commands)
@@ -73,7 +75,7 @@ void southbridge_smm_enable_smi(void)
 
 void southbridge_trigger_smi(void)
 {
-	/**
+	/*
 	 * There are several methods of raising a controlled SMI# via
 	 * software, among them:
 	 *  - Writes to io 0xb2 (APMC)

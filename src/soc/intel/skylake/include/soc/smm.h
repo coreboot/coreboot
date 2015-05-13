@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +15,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_SMM_H_
-#define _BROADWELL_SMM_H_
+#ifndef _SOC_SMM_H_
+#define _SOC_SMM_H_
 
 #include <stdint.h>
 #include <cpu/x86/msr.h>
+#include <soc/intel/common/romstage.h>
+#include <soc/intel/common/memmap.h>
 
 struct ied_header {
 	char signature[10];
@@ -40,23 +43,16 @@ struct smm_relocation_params {
 	msr_t emrr_mask;
 	msr_t uncore_emrr_base;
 	msr_t uncore_emrr_mask;
-	/* The smm_save_state_in_msrs field indicates if SMM save state
+	/*
+	 * The smm_save_state_in_msrs field indicates if SMM save state
 	 * locations live in MSRs. This indicates to the CPUs how to adjust
-	 * the SMMBASE and IEDBASE */
+	 * the SMMBASE and IEDBASE
+	 */
 	int smm_save_state_in_msrs;
 };
 
-/* There is a bug in the order of Kconfig includes in that arch/x86/Kconfig
- * is included after chipset code. This causes the chipset's Kconfig to be
- * clobbered by the arch/x86/Kconfig if they have the same name. */
-static inline int smm_region_size(void)
-{
-        /* Make it 8MiB by default. */
-        if (CONFIG_SMM_TSEG_SIZE == 0)
-                return (8 << 20);
-        return CONFIG_SMM_TSEG_SIZE;
-}
-
+#define smm_region_size mmap_region_granluarity
+#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 int smm_initialize(void);
 void smm_relocate(void);
 
@@ -64,10 +60,24 @@ void smm_relocate(void);
 void southbridge_trigger_smi(void);
 void southbridge_clear_smi_status(void);
 
-/* The initialization of the southbridge is split into 2 components. One is
+/*
+ * The initialization of the southbridge is split into 2 compoments. One is
  * for clearing the state in the SMM registers. The other is for enabling
- * SMIs. They are split so that other work between the 2 actions. */
+ * SMIs.
+ */
 void southbridge_smm_clear_state(void);
 void southbridge_smm_enable_smi(void);
+#else	/* CONFIG_HAVE_SMI_HANDLER */
+static inline int smm_initialize(void)
+{
+	return 0;
+}
+
+static inline void smm_relocate(void) {}
+static inline void southbridge_trigger_smi(void) {}
+static inline void southbridge_clear_smi_status(void) {}
+static inline void southbridge_smm_clear_state(void) {}
+static inline void southbridge_smm_enable_smi(void) {}
+#endif	/* CONFIG_HAVE_SMI_HANDLER */
 
 #endif

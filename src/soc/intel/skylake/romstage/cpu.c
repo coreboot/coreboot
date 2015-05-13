@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <arch/cpu.h>
@@ -34,7 +35,7 @@ void set_max_freq(void)
 {
 	msr_t msr, perf_ctl, platform_info;
 
-        /* Check for configurable TDP option */
+	/* Check for configurable TDP option */
 	platform_info = rdmsr(MSR_PLATFORM_INFO);
 
 	if ((platform_info.hi >> 1) & 3) {
@@ -51,5 +52,5 @@ void set_max_freq(void)
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 
 	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * CPU_BCLK);
+		((perf_ctl.lo >> 8) & 0xff) * CPU_BCLK);
 }

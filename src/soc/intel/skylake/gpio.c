@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,10 +12,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #include <stdint.h>
@@ -22,178 +19,305 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <soc/gpio.h>
+#include <gpio.h>
+#include <soc/pcr.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 
-/*
- * This function will return a number that indicates which PIRQ
- * this GPIO maps to.  If this is not a PIRQ capable GPIO then
- * it will return -1.  The GPIO to PIRQ mapping is not linear.
+/* Keep the ordering intact GPP_A ~ G, GPD.
+ * As the gpio/smi functions get_smi_status() and
+ * enable_gpio_groupsmi() depends on this ordering.
  */
-static int gpio_to_pirq(int gpio)
+static const GPIO_GROUP_INFO gpio_group_info[] = {
+	/* GPP_A */
+	{
+		.community = PID_GPIOCOM0,
+		.padcfgoffset = R_PCH_PCR_GPIO_GPP_A_PADCFG_OFFSET,
+		.padpergroup = V_PCH_GPIO_GPP_A_PAD_MAX,
+		.smistsoffset = R_PCH_PCR_GPIO_GPP_A_SMI_STS,
+		.smienoffset = R_PCH_PCR_GPIO_GPP_A_SMI_EN,
+	},
+	/* GPP_B */
+	{
+		.community = PID_GPIOCOM0,
+		.padcfgoffset = R_PCH_PCR_GPIO_GPP_B_PADCFG_OFFSET,
+		.padpergroup = V_PCH_GPIO_GPP_B_PAD_MAX,
+		.smistsoffset = R_PCH_PCR_GPIO_GPP_B_SMI_STS,
+		.smienoffset = R_PCH_PCR_GPIO_GPP_B_SMI_EN,
+	},
+	/* GPP_C */
+	{
+		.community = PID_GPIOCOM1,
+		.padcfgoffset = R_PCH_PCR_GPIO_GPP_C_PADCFG_OFFSET,
+		.padpergroup = V_PCH_GPIO_GPP_C_PAD_MAX,
+		.smistsoffset = R_PCH_PCR_GPIO_GPP_C_SMI_STS,
+		.smienoffset = R_PCH_PCR_GPIO_GPP_C_SMI_EN,
+	},
+	/* GPP_D */
+	{
+		.community = PID_GPIOCOM1,
+		.padcfgoffset = R_PCH_PCR_GPIO_GPP_D_PADCFG_OFFSET,
+		.padpergroup = V_PCH_GPIO_GPP_D_PAD_MAX,
+		.smistsoffset = R_PCH_PCR_GPIO_GPP_D_SMI_STS,
+		.smienoffset = R_PCH_PCR_GPIO_GPP_D_SMI_EN,
+	},
+	/* GPP_E */
+	{
+		.community = PID_GPIOCOM1,
+		.padcfgoffset = R_PCH_PCR_GPIO_GPP_E_PADCFG_OFFSET,
+		.padpergroup = V_PCH_GPIO_GPP_E_PAD_MAX,
+		.smistsoffset = R_PCH_PCR_GPIO_GPP_E_SMI_STS,
+		.smienoffset = R_PCH_PCR_GPIO_GPP_E_SMI_EN,
+	},
+	/* GPP_F */
+	{
+		.community = PID_GPIOCOM3,
+		.padcfgoffset = R_PCH_PCR_GPIO_GPP_F_PADCFG_OFFSET,
+		.padpergroup = V_PCH_GPIO_GPP_F_PAD_MAX,
+		.smistsoffset = NO_REGISTER_PROPERTY,
+		.smienoffset = NO_REGISTER_PROPERTY,
+	},
+	/* GPP_G */
+	{
+		.community = PID_GPIOCOM3,
+		.padcfgoffset = R_PCH_PCR_GPIO_GPP_G_PADCFG_OFFSET,
+		.padpergroup = V_PCH_GPIO_GPP_G_PAD_MAX,
+		.smistsoffset = NO_REGISTER_PROPERTY,
+		.smienoffset = NO_REGISTER_PROPERTY,
+	},
+	/* GPP_H */
+	{
+		.community = PID_GPIOCOM2,
+		.padcfgoffset = R_PCH_PCR_GPIO_GPD_PADCFG_OFFSET,
+		.padpergroup = V_PCH_GPIO_GPD_PAD_MAX,
+		.smistsoffset = NO_REGISTER_PROPERTY,
+		.smienoffset = NO_REGISTER_PROPERTY,
+	},
+};
+
+/*
+ * SPT has 7 GPIO communities named as GPP_A to GPP_G.
+ * Each community has 24 GPIO PIN.
+ * Below formula to calculate GPIO Pin from GPIO PAD.
+ * PIN# = GROUP_PAD# + GROUP# * 24
+ * ====================================
+ * Community || Group#
+ * ====================================
+ * GPP_A	||	0
+ * GPP_B	||	1
+ * GPP_C	||	2
+ * GPP_D	||	3
+ * GPP_E	||	4
+ * GPP_F	||	5
+ * GPP_G	||	6
+ */
+static u32 get_padnumber_from_gpiopad(GPIO_PAD gpiopad)
 {
-	switch (gpio) {
-	case 8:  return 0;	/* PIRQI */
-	case 9:  return 1;	/* PIRQJ */
-	case 10: return 2;	/* PIRQK */
-	case 13: return 3;	/* PIRQL */
-	case 14: return 4;	/* PIRQM */
-	case 45: return 5;	/* PIRQN */
-	case 46: return 6;	/* PIRQO */
-	case 47: return 7;	/* PIRQP */
-	case 48: return 8;	/* PIRQQ */
-	case 49: return 9;	/* PIRQR */
-	case 50: return 10;	/* PIRQS */
-	case 51: return 11;	/* PIRQT */
-	case 52: return 12;	/* PIRQU */
-	case 53: return 13;	/* PIRQV */
-	case 54: return 14;	/* PIRQW */
-	case 55: return 15;	/* PIRQX */
-	default: return -1;
-	};
+	return (u32) GPIO_GET_PAD_NUMBER(gpiopad);
 }
 
-void init_one_gpio(int gpio_num, struct gpio_config *config)
+static u32 get_groupindex_from_gpiopad(GPIO_PAD gpiopad)
 {
-	u32 owner, route, irqen, reset;
-	int set, bit;
-
-	if (gpio_num > MAX_GPIO_NUMBER || !config)
-		return;
-
-	outl(config->conf0, GPIO_BASE_ADDRESS + GPIO_CONFIG0(gpio_num));
-	outl(config->conf1, GPIO_BASE_ADDRESS + GPIO_CONFIG1(gpio_num));
-
-	/* Determine set and bit based on GPIO number */
-	set = gpio_num >> 5;
-	bit = gpio_num % 32;
-
-	/* Save settings from current GPIO config */
-	owner = inl(GPIO_BASE_ADDRESS + GPIO_OWNER(set));
-	route = inl(GPIO_BASE_ADDRESS + GPIO_ROUTE(set));
-	irqen = inl(GPIO_BASE_ADDRESS + GPIO_IRQ_IE(set));
-	reset = inl(GPIO_BASE_ADDRESS + GPIO_RESET(set));
-
-	owner |= config->owner << bit;
-	route |= config->route << bit;
-	irqen |= config->irqen << bit;
-	reset |= config->reset << bit;
-
-	outl(owner, GPIO_BASE_ADDRESS + GPIO_OWNER(set));
-	outl(route, GPIO_BASE_ADDRESS + GPIO_ROUTE(set));
-	outl(irqen, GPIO_BASE_ADDRESS + GPIO_IRQ_IE(set));
-	outl(reset, GPIO_BASE_ADDRESS + GPIO_RESET(set));
-
-	if (set == 0) {
-		u32 blink = inl(GPIO_BASE_ADDRESS + GPIO_BLINK);
-		blink |= config->blink << bit;
-		outl(blink, GPIO_BASE_ADDRESS + GPIO_BLINK);
-	}
-
-	/* PIRQ to IO-APIC map */
-	if (config->pirq == GPIO_PIRQ_APIC_ROUTE) {
-		u32 pirq2apic = inl(GPIO_BASE_ADDRESS + GPIO_PIRQ_APIC_EN);
-		set = gpio_to_pirq(gpio_num);
-		if (set >= 0) {
-			pirq2apic |= 1 << set;
-			outl(pirq2apic, GPIO_BASE_ADDRESS + GPIO_PIRQ_APIC_EN);
-		}
-	}
+	return (u32) GPIO_GET_GROUP_INDEX_FROM_PAD(gpiopad);
 }
 
-void init_gpios(const struct gpio_config config[])
+static int read_write_gpio_pad_reg(u32 gpiopad, u8 dwreg, u32 mask, int write,
+			    u32 *readwriteval)
 {
-	const struct gpio_config *entry;
-	u32 owner[3] = {0};
-	u32 route[3] = {0};
-	u32 irqen[3] = {0};
-	u32 reset[3] = {0};
-	u32 blink = 0;
-	u16 pirq2apic = 0;
-	int set, bit, gpio = 0;
+	u32 padcfgreg;
+	u32 gpiogroupinfolength;
+	u32 groupindex;
+	u32 padnumber;
 
-	for (entry = config; entry->conf0 != GPIO_LIST_END; entry++, gpio++) {
-		if (gpio > MAX_GPIO_NUMBER)
-			break;
+	groupindex = get_groupindex_from_gpiopad(gpiopad);
+	padnumber = get_padnumber_from_gpiopad(gpiopad);
 
-		/* Setup Configuration registers 1 and 2 */
-		outl(entry->conf0, GPIO_BASE_ADDRESS + GPIO_CONFIG0(gpio));
-		outl(entry->conf1, GPIO_BASE_ADDRESS + GPIO_CONFIG1(gpio));
+	gpiogroupinfolength = sizeof(gpio_group_info) / sizeof(GPIO_GROUP_INFO);
 
-		/* Determine set and bit based on GPIO number */
-		set = gpio >> 5;
-		bit = gpio % 32;
-
-		/* Apply settings to set specific bits */
-		owner[set] |= entry->owner << bit;
-		route[set] |= entry->route << bit;
-		irqen[set] |= entry->irqen << bit;
-		reset[set] |= entry->reset << bit;
-
-		if (set == 0)
-			blink |= entry->blink << bit;
-
-		/* PIRQ to IO-APIC map */
-		if (entry->pirq == GPIO_PIRQ_APIC_ROUTE) {
-			set = gpio_to_pirq(gpio);
-			if (set >= 0)
-				pirq2apic |= 1 << set;
-		}
+	/* Check if group argument exceeds GPIO GROUP INFO array */
+	if ((u32) groupindex >= gpiogroupinfolength)
+		return -1;
+	/* Check if legal pin number */
+	if (padnumber >= gpio_group_info[groupindex].padpergroup)
+		return -1;
+	/* Create Pad Configuration register offset */
+	padcfgreg = 0x8 * padnumber + gpio_group_info[groupindex].padcfgoffset;
+	if (dwreg == 1)
+		padcfgreg += 0x4;
+	if (write) {
+		pcr_andthenor32(gpio_group_info[groupindex].community,
+				padcfgreg, (u32) (~mask),
+				(u32) (*readwriteval & mask));
+	} else {
+		pcr_read32(gpio_group_info[groupindex].community, padcfgreg,
+			   readwriteval);
+		*readwriteval &= mask;
 	}
 
-	for (set = 0; set <= 2; set++) {
-		outl(owner[set], GPIO_BASE_ADDRESS + GPIO_OWNER(set));
-		outl(route[set], GPIO_BASE_ADDRESS + GPIO_ROUTE(set));
-		outl(irqen[set], GPIO_BASE_ADDRESS + GPIO_IRQ_IE(set));
-		outl(reset[set], GPIO_BASE_ADDRESS + GPIO_RESET(set));
-	}
-
-	outl(blink, GPIO_BASE_ADDRESS + GPIO_BLINK);
-	outl(pirq2apic, GPIO_BASE_ADDRESS + GPIO_PIRQ_APIC_EN);
+	return 0;
 }
 
-int get_gpio(int gpio_num)
+static int convert_gpio_num_to_pad(gpio_t gpionum)
 {
+	int group_pad_num = 0;
+	int gpio_group = 0;
+	u32 gpio_pad = 0;
+
+	group_pad_num = (gpionum % MAX_GPIO_PIN_PER_GROUP);
+	gpio_group = (gpionum / MAX_GPIO_PIN_PER_GROUP);
+
+	switch (gpio_group) {
+	case GPIO_LP_GROUP_A:
+		gpio_pad = GPIO_LP_GROUP_GPP_A;
+		break;
+
+	case GPIO_LP_GROUP_B:
+		gpio_pad = GPIO_LP_GROUP_GPP_B;
+		break;
+
+	case GPIO_LP_GROUP_C:
+		gpio_pad = GPIO_LP_GROUP_GPP_C;
+		break;
+
+	case GPIO_LP_GROUP_D:
+		gpio_pad = GPIO_LP_GROUP_GPP_D;
+		break;
+
+	case GPIO_LP_GROUP_E:
+		gpio_pad = GPIO_LP_GROUP_GPP_E;
+		break;
+
+	case GPIO_LP_GROUP_F:
+		gpio_pad = GPIO_LP_GROUP_GPP_F;
+		break;
+
+	case GPIO_LP_GROUP_G:
+		gpio_pad = GPIO_LP_GROUP_GPP_G;
+		break;
+	default:
+		return -1;
+		break;
+	}
+	gpio_pad = (gpio_pad << GPIO_GROUP_SHIFT) + group_pad_num;
+
+	return gpio_pad;
+}
+
+int gpio_get(gpio_t gpio_num)
+{
+	u32 gpiopad = 0;
+	u32 outputvalue = 0;
+	int status = 0;
+
 	if (gpio_num > MAX_GPIO_NUMBER)
 		return 0;
 
-	return !!(inl(GPIO_BASE_ADDRESS + GPIO_CONFIG0(gpio_num)) & GPI_LEVEL);
+	gpiopad = convert_gpio_num_to_pad(gpio_num);
+	if (gpiopad < 0)
+		return -1;
+
+	status = read_write_gpio_pad_reg(gpiopad,
+					 0,
+					 B_PCH_GPIO_TX_STATE,
+					 READ, &outputvalue);
+	outputvalue >>= N_PCH_GPIO_TX_STATE;
+	return outputvalue;
 }
 
-/*
- * get a number comprised of multiple GPIO values. gpio_num_array points to
- * the array of gpio pin numbers to scan, terminated by -1.
- */
-unsigned get_gpios(const int *gpio_num_array)
+void gpio_set(gpio_t gpio_num, int value)
 {
-	int gpio;
-	unsigned bitmask = 1;
-	unsigned vector = 0;
-
-	while (bitmask &&
-	       ((gpio = *gpio_num_array++) != -1)) {
-		if (get_gpio(gpio))
-			vector |= bitmask;
-		bitmask <<= 1;
-	}
-	return vector;
-}
-
-void set_gpio(int gpio_num, int value)
-{
-	u32 conf0;
+	int status = 0;
+	u32 gpiopad = 0;
+	u32 outputvalue = 0;
 
 	if (gpio_num > MAX_GPIO_NUMBER)
 		return;
 
-	conf0 = inl(GPIO_BASE_ADDRESS + GPIO_CONFIG0(gpio_num));
-	conf0 &= ~GPO_LEVEL_MASK;
-	conf0 |= value << GPO_LEVEL_SHIFT;
-	outl(conf0, GPIO_BASE_ADDRESS + GPIO_CONFIG0(gpio_num));
+	gpiopad = convert_gpio_num_to_pad(gpio_num);
+	if (gpiopad < 0)
+		return;
+
+	outputvalue = value;
+
+	status = read_write_gpio_pad_reg(gpiopad,
+					 0,
+					 B_PCH_GPIO_TX_STATE,
+					 WRITE, &outputvalue);
 }
 
-int gpio_is_native(int gpio_num)
+void clear_all_smi(void)
 {
-	return !(inl(GPIO_BASE_ADDRESS + GPIO_CONFIG0(gpio_num)) & 1);
+	u32 gpiogroupinfolength;
+	u32 gpioindex = 0;
+
+	gpiogroupinfolength = sizeof(gpio_group_info) / sizeof(GPIO_GROUP_INFO);
+
+	for (gpioindex = 0; gpioindex < gpiogroupinfolength; gpioindex++) {
+		/*Check if group has GPI SMI register */
+		if (gpio_group_info[gpioindex].smistsoffset ==
+		    NO_REGISTER_PROPERTY)
+			continue;
+		/* Clear all GPI SMI Status bits by writing '1' */
+		pcr_write32(gpio_group_info[gpioindex].community,
+			    gpio_group_info[gpioindex].smistsoffset,
+			    0xFFFFFFFF);
+	}
+}
+
+void get_smi_status(u32 status[GPIO_COMMUNITY_MAX])
+{
+	u32 num_of_communities;
+	u32 gpioindex;
+	u32 outputvalue = 0;
+
+	num_of_communities = ARRAY_SIZE(gpio_group_info);
+
+	for (gpioindex = 0; gpioindex < num_of_communities; gpioindex++) {
+		/*Check if group has GPI SMI register */
+		if (gpio_group_info[gpioindex].smistsoffset ==
+		    NO_REGISTER_PROPERTY)
+			continue;
+		/* Read SMI status register */
+		pcr_read32(gpio_group_info[gpioindex].community,
+			   gpio_group_info[gpioindex].smistsoffset,
+			   &outputvalue);
+		status[gpioindex] = outputvalue;
+	}
+}
+
+void enable_all_smi(void)
+{
+	u32 gpiogroupinfolength;
+	u32 gpioindex = 0;
+
+	gpiogroupinfolength = sizeof(gpio_group_info) / sizeof(GPIO_GROUP_INFO);
+
+	for (gpioindex = 0; gpioindex < gpiogroupinfolength; gpioindex++) {
+		/*Check if group has GPI SMI register */
+		if (gpio_group_info[gpioindex].smienoffset ==
+		    NO_REGISTER_PROPERTY)
+			continue;
+		/* Set all GPI SMI Enable bits by writing '1' */
+		pcr_write32(gpio_group_info[gpioindex].community,
+			    gpio_group_info[gpioindex].smienoffset,
+			    0xFFFFFFFF);
+	}
+}
+
+void enable_gpio_groupsmi(gpio_t gpio_num, u32 mask)
+{
+	u32 gpioindex = 0;
+	u32 smien = 0;
+
+	if (gpio_num > MAX_GPIO_NUMBER)
+		return;
+
+	gpioindex = (gpio_num / MAX_GPIO_PIN_PER_GROUP);
+
+	pcr_read32(gpio_group_info[gpioindex].community,
+		   gpio_group_info[gpioindex].smienoffset, &smien);
+	smien |= mask;
+	/* Set all GPI SMI Enable bits by writing '1' */
+	pcr_write32(gpio_group_info[gpioindex].community,
+		    gpio_group_info[gpioindex].smienoffset, smien);
 }

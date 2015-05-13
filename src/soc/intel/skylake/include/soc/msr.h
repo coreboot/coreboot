@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +15,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_MSR_H_
-#define _BROADWELL_MSR_H_
+#ifndef _SOC_MSR_H_
+#define _SOC_MSR_H_
 
 #define MSR_PIC_MSG_CONTROL		0x2e
 #define CORE_THREAD_COUNT_MSR		0x35
@@ -41,21 +42,21 @@
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)
 #define MSR_TURBO_RATIO_LIMIT		0x1ad
 #define MSR_TEMPERATURE_TARGET		0x1a2
-#define IA32_PERF_CTL 			0x199
+#define IA32_PERF_CTL			0x199
 #define IA32_THERM_INTERRUPT		0x19b
 #define IA32_ENERGY_PERFORMANCE_BIAS	0x1b0
 #define  ENERGY_POLICY_PERFORMANCE	0
 #define  ENERGY_POLICY_NORMAL		6
 #define  ENERGY_POLICY_POWERSAVE	15
 #define IA32_PACKAGE_THERM_INTERRUPT	0x1b2
-#define EMRRphysBase_MSR		0x1f4
-#define EMRRphysMask_MSR		0x1f5
+#define EMRR_PHYS_BASE_MSR		0x1f4
+#define EMRR_PHYS_MASK_MSR		0x1f5
 #define IA32_PLATFORM_DCA_CAP		0x1f8
 #define MSR_POWER_CTL			0x1fc
 #define MSR_LT_LOCK_MEMORY		0x2e7
-#define UNCORE_EMRRphysBase_MSR 	0x2f4
-#define UNCORE_EMRRphysMask_MSR 	0x2f5
-#define IA32_MC0_STATUS 		0x401
+#define UNCORE_EMRR_PHYS_BASE_MSR	0x2f4
+#define UNCORE_EMRR_PHYS_MASK_MSR	0x2f5
+#define IA32_MC0_STATUS			0x401
 #define SMM_FEATURE_CONTROL_MSR		0x4e0
 #define  SMM_CPU_SAVE_EN		(1 << 1)
 

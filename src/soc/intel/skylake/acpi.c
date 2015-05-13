@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <arch/acpi.h>
@@ -23,9 +24,10 @@
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
+#include <chip.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
-#include <console/console.h>
 #include <types.h>
 #include <string.h>
 #include <arch/cpu.h>
@@ -41,36 +43,33 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/intel/broadwell/chip.h>
 
 /*
- * List of supported C-states in this processor. Only the ULT parts support C8,
- * C9, and C10.
+ * List of suported C-states in this processor.
  */
 enum {
-	C_STATE_C0,             /* 0 */
-	C_STATE_C1,             /* 1 */
-	C_STATE_C1E,            /* 2 */
-	C_STATE_C3,             /* 3 */
-	C_STATE_C6_SHORT_LAT,   /* 4 */
-	C_STATE_C6_LONG_LAT,    /* 5 */
-	C_STATE_C7_SHORT_LAT,   /* 6 */
-	C_STATE_C7_LONG_LAT,    /* 7 */
-	C_STATE_C7S_SHORT_LAT,  /* 8 */
-	C_STATE_C7S_LONG_LAT,   /* 9 */
-	C_STATE_C8,             /* 10 */
-	C_STATE_C9,             /* 11 */
-	C_STATE_C10,            /* 12 */
+	C_STATE_C0,		/* 0 */
+	C_STATE_C1,		/* 1 */
+	C_STATE_C1E,		/* 2 */
+	C_STATE_C3,		/* 3 */
+	C_STATE_C6_SHORT_LAT,	/* 4 */
+	C_STATE_C6_LONG_LAT,	/* 5 */
+	C_STATE_C7_SHORT_LAT,	/* 6 */
+	C_STATE_C7_LONG_LAT,	/* 7 */
+	C_STATE_C7S_SHORT_LAT,	/* 8 */
+	C_STATE_C7S_LONG_LAT,	/* 9 */
+	C_STATE_C8,		/* 10 */
+	C_STATE_C9,		/* 11 */
+	C_STATE_C10,		/* 12 */
 	NUM_C_STATES
 };
-
-#define MWAIT_RES(state, sub_state)                         \
-	{                                                   \
-		.addrl = (((state) << 4) | (sub_state)),    \
-		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
-		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
-		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
-		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
+#define MWAIT_RES(state, sub_state)				\
+	{							\
+		.addrl = (((state) << 4) | (sub_state)),	\
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,		\
+		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,	\
+		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,	\
+		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,	\
 	}
 
 static acpi_cstate_t cstate_map[NUM_C_STATES] = {
@@ -78,75 +77,78 @@ static acpi_cstate_t cstate_map[NUM_C_STATES] = {
 	[C_STATE_C1] = {
 		.latency = 0,
 		.power = 1000,
-		.resource = MWAIT_RES(0,0),
+		.resource = MWAIT_RES(0, 0),
 	},
 	[C_STATE_C1E] = {
 		.latency = 0,
 		.power = 1000,
-		.resource = MWAIT_RES(0,1),
+		.resource = MWAIT_RES(0, 1),
 	},
 	[C_STATE_C3] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(0),
-		.power = 900,
+		.power = 500,
 		.resource = MWAIT_RES(1, 0),
 	},
 	[C_STATE_C6_SHORT_LAT] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
-		.power = 800,
+		.power = 350,
 		.resource = MWAIT_RES(2, 0),
 	},
 	[C_STATE_C6_LONG_LAT] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
-		.power = 800,
+		.power = 350,
 		.resource = MWAIT_RES(2, 1),
 	},
 	[C_STATE_C7_SHORT_LAT] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
-		.power = 700,
+		.power = 200,
 		.resource = MWAIT_RES(3, 0),
 	},
 	[C_STATE_C7_LONG_LAT] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
-		.power = 700,
+		.power = 200,
 		.resource = MWAIT_RES(3, 1),
 	},
 	[C_STATE_C7S_SHORT_LAT] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
-		.power = 700,
+		.power = 200,
 		.resource = MWAIT_RES(3, 2),
 	},
 	[C_STATE_C7S_LONG_LAT] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
-		.power = 700,
+		.power = 200,
 		.resource = MWAIT_RES(3, 3),
 	},
 	[C_STATE_C8] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(3),
-		.power = 600,
+		.power = 200,
 		.resource = MWAIT_RES(4, 0),
 	},
 	[C_STATE_C9] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(4),
-		.power = 500,
+		.power = 200,
 		.resource = MWAIT_RES(5, 0),
 	},
 	[C_STATE_C10] = {
 		.latency = C_STATE_LATENCY_FROM_LAT_REG(5),
-		.power = 400,
+		.power = 200,
 		.resource = MWAIT_RES(6, 0),
 	},
 };
 
-static int cstate_set_s0ix[3] = {
+static int cstate_set_s0ix[] = {
 	C_STATE_C1E,
 	C_STATE_C7S_LONG_LAT,
 	C_STATE_C10
 };
 
-static int cstate_set_non_s0ix[3] = {
+static int cstate_set_non_s0ix[] = {
 	C_STATE_C1E,
 	C_STATE_C3,
-	C_STATE_C7S_LONG_LAT
+	C_STATE_C7S_LONG_LAT,
+	C_STATE_C8,
+	C_STATE_C9,
+	C_STATE_C10
 };
 
 static int get_cores_per_package(void)
@@ -173,51 +175,20 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 
-#if CONFIG_CONSOLE_CBMEM
+#if IS_ENABLED(CONFIG_CONSOLE_CBMEM)
 	/* Update the mem console pointer. */
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 #endif
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Initialize Verified Boot data */
 	chromeos_init_vboot(&(gnvs->chromeos));
-#if CONFIG_EC_GOOGLE_CHROMEEC
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif
 	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 #endif
-}
-
-void acpi_create_intel_hpet(acpi_hpet_t * hpet)
-{
-	acpi_header_t *header = &(hpet->header);
-	acpi_addr_t *addr = &(hpet->addr);
-
-	memset((void *) hpet, 0, sizeof(acpi_hpet_t));
-
-	/* fill out header fields */
-	memcpy(header->signature, "HPET", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-
-	header->length = sizeof(acpi_hpet_t);
-	header->revision = 1;
-
-	/* fill out HPET address */
-	addr->space_id = 0;	/* Memory */
-	addr->bit_width = 64;
-	addr->bit_offset = 0;
-	addr->addrl = (unsigned long long)HPET_BASE_ADDRESS & 0xffffffff;
-	addr->addrh = (unsigned long long)HPET_BASE_ADDRESS >> 32;
-
-	hpet->id = 0x8086a201;	/* Intel */
-	hpet->number = 0x00;
-	hpet->min_tick = 0x0080;
-
-	header->checksum =
-	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -336,82 +307,25 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
-static acpi_tstate_t tss_table_fine[] = {
-	{ 100, 1000, 0, 0x00, 0 },
-	{ 94, 940, 0, 0x1f, 0 },
-	{ 88, 880, 0, 0x1e, 0 },
-	{ 82, 820, 0, 0x1d, 0 },
-	{ 75, 760, 0, 0x1c, 0 },
-	{ 69, 700, 0, 0x1b, 0 },
-	{ 63, 640, 0, 0x1a, 0 },
-	{ 57, 580, 0, 0x19, 0 },
-	{ 50, 520, 0, 0x18, 0 },
-	{ 44, 460, 0, 0x17, 0 },
-	{ 38, 400, 0, 0x16, 0 },
-	{ 32, 340, 0, 0x15, 0 },
-	{ 25, 280, 0, 0x14, 0 },
-	{ 19, 220, 0, 0x13, 0 },
-	{ 13, 160, 0, 0x12, 0 },
-};
-
-static acpi_tstate_t tss_table_coarse[] = {
-	{ 100, 1000, 0, 0x00, 0 },
-	{ 88, 875, 0, 0x1f, 0 },
-	{ 75, 750, 0, 0x1e, 0 },
-	{ 63, 625, 0, 0x1d, 0 },
-	{ 50, 500, 0, 0x1c, 0 },
-	{ 38, 375, 0, 0x1b, 0 },
-	{ 25, 250, 0, 0x1a, 0 },
-	{ 13, 125, 0, 0x19, 0 },
-};
-
-static int generate_T_state_entries(int core, int cores_per_package)
+static void generate_c_state_entries(int s0ix_enable, int max_cstate)
 {
-	int len;
 
-	/* Indicate SW_ALL coordination for T-states */
-	len = acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
-
-	/* Indicate FFixedHW so OS will use MSR */
-	len += acpigen_write_empty_PTC();
-
-	/* Set a T-state limit that can be modified in NVS */
-	len += acpigen_write_TPC("\\TLVL");
-
-	/*
-	 * CPUID.(EAX=6):EAX[5] indicates support
-	 * for extended throttle levels.
-	 */
-	if (cpuid_eax(6) & (1 << 5))
-		len += acpigen_write_TSS_package(
-			ARRAY_SIZE(tss_table_fine), tss_table_fine);
-	else
-		len += acpigen_write_TSS_package(
-			ARRAY_SIZE(tss_table_coarse), tss_table_coarse);
-
-	return len;
-}
-
-static int generate_C_state_entries(void)
-{
-	device_t dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
-	acpi_cstate_t map[3];
+	acpi_cstate_t map[max_cstate];
 	int *set;
 	int i;
 
-	if (config->s0ix_enable)
+	if (s0ix_enable)
 		set = cstate_set_s0ix;
 	else
 		set = cstate_set_non_s0ix;
 
-	for (i = 0; i < 3; i++) {
+	for (i = 0; i < max_cstate; i++) {
 		memcpy(&map[i], &cstate_map[set[i]], sizeof(acpi_cstate_t));
 		map[i].ctype = i + 1;
 	}
 
 	/* Generate C-state tables */
-	return acpigen_write_CST_package(map, ARRAY_SIZE(map));
+	acpigen_write_CST_package(map, ARRAY_SIZE(map));
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)
@@ -435,7 +349,7 @@ static int calculate_power(int tdp, int p1_ratio, int ratio)
 	return (int)power;
 }
 
-static void generate_P_state_entries(int core, int cores_per_package)
+static void generate_p_state_entries(int core, int cores_per_package)
 {
 	int ratio_min, ratio_max, ratio_turbo, ratio_step;
 	int coord_type, power_max, power_unit, num_entries;
@@ -484,10 +398,10 @@ static void generate_P_state_entries(int core, int cores_per_package)
 
 	/* Determine ratio points */
 	ratio_step = PSS_RATIO_STEP;
-	num_entries = (ratio_max - ratio_min) / ratio_step;
-	while (num_entries > PSS_MAX_ENTRIES-1) {
-		ratio_step <<= 1;
-		num_entries >>= 1;
+	num_entries = ((ratio_max - ratio_min) / ratio_step) + 1;
+	if (num_entries > PSS_MAX_ENTRIES) {
+		ratio_step += 1;
+		num_entries = ((ratio_max - ratio_min) / ratio_step) + 1;
 	}
 
 	/* P[T] is Turbo state if enabled */
@@ -500,12 +414,12 @@ static void generate_P_state_entries(int core, int cores_per_package)
 
 		/* Add entry for Turbo ratio */
 		acpigen_write_PSS_package(
-			clock_max + 1,		/*MHz*/
-			power_max,		/*mW*/
-			PSS_LATENCY_TRANSITION,	/*lat1*/
-			PSS_LATENCY_BUSMASTER,	/*lat2*/
-			ratio_turbo << 8,	/*control*/
-			ratio_turbo << 8);	/*status*/
+			clock_max + 1,		/* MHz */
+			power_max,		/* mW */
+			PSS_LATENCY_TRANSITION,	/* lat1 */
+			PSS_LATENCY_BUSMASTER,	/* lat2 */
+			ratio_turbo << 8,	/* control */
+			ratio_turbo << 8);	/* status */
 	} else {
 		/* _PSS package count without Turbo */
 		acpigen_write_package(num_entries + 1);
@@ -513,12 +427,12 @@ static void generate_P_state_entries(int core, int cores_per_package)
 
 	/* First regular entry is max non-turbo ratio */
 	acpigen_write_PSS_package(
-		clock_max,		/*MHz*/
-		power_max,		/*mW*/
-		PSS_LATENCY_TRANSITION,	/*lat1*/
-		PSS_LATENCY_BUSMASTER,	/*lat2*/
-		ratio_max << 8,		/*control*/
-		ratio_max << 8);	/*status*/
+		clock_max,		/* MHz */
+		power_max,		/* mW */
+		PSS_LATENCY_TRANSITION,	/* lat1 */
+		PSS_LATENCY_BUSMASTER,	/* lat2 */
+		ratio_max << 8,		/* control */
+		ratio_max << 8);	/* status */
 
 	/* Generate the remaining entries */
 	for (ratio = ratio_min + ((num_entries - 1) * ratio_step);
@@ -529,50 +443,55 @@ static void generate_P_state_entries(int core, int cores_per_package)
 		clock = ratio * CPU_BCLK;
 
 		acpigen_write_PSS_package(
-			clock,			/*MHz*/
-			power,			/*mW*/
-			PSS_LATENCY_TRANSITION,	/*lat1*/
-			PSS_LATENCY_BUSMASTER,	/*lat2*/
-			ratio << 8,		/*control*/
-			ratio << 8);		/*status*/
+			clock,			/* MHz */
+			power,			/* mW */
+			PSS_LATENCY_TRANSITION,	/* lat1 */
+			PSS_LATENCY_BUSMASTER,	/* lat2 */
+			ratio << 8,		/* control */
+			ratio << 8);		/* status */
 	}
 
 	/* Fix package length */
 	acpigen_pop_len();
 }
 
-void generate_cpu_entries(void)
+void generate_cpu_entries(device_t device)
 {
-	int coreID, cpuID, pcontrol_blk = ACPI_BASE_ADDRESS, plen = 6;
+	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS, plen = 6;
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_cores_per_package();
 	int numcpus = totalcores/cores_per_package;
+	device_t dev = SA_DEV_ROOT;
+	config_t *config = dev->chip_info;
+	int is_s0ix_enable = config->s0ix_enable;
+	int max_c_state;
+
+	if (is_s0ix_enable)
+		max_c_state = ARRAY_SIZE(cstate_set_s0ix);
+	else
+		max_c_state = ARRAY_SIZE(cstate_set_non_s0ix);
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	for (cpuID=1; cpuID <=numcpus; cpuID++) {
-		for (coreID=1; coreID<=cores_per_package; coreID++) {
-			if (coreID>1) {
+	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
+		for (core_id = 0; core_id < cores_per_package; core_id++) {
+			if (core_id > 0) {
 				pcontrol_blk = 0;
 				plen = 0;
 			}
 
 			/* Generate processor \_PR.CPUx */
 			acpigen_write_processor(
-				(cpuID-1)*cores_per_package+coreID-1,
+				cpu_id*cores_per_package+core_id,
 				pcontrol_blk, plen);
+			/* Generate C-state tables */
+			generate_c_state_entries(is_s0ix_enable,
+				max_c_state);
 
 			/* Generate P-state tables */
-			generate_P_state_entries(
-				coreID-1, cores_per_package);
-
-			/* Generate C-state tables */
-			generate_C_state_entries();
-
-			/* Generate T-state tables */
-			generate_T_state_entries(
-				cpuID-1, cores_per_package);
+			generate_p_state_entries(core_id,
+				cores_per_package);
 
 			acpigen_pop_len();
 		}
@@ -599,4 +518,72 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	current += acpi_create_madt_irqoverride(irqovr, 0, sci, sci, flags);
 
 	return current;
+}
+
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
+
+unsigned long southcluster_write_acpi_tables(device_t device,
+					     unsigned long current,
+					     struct acpi_rsdp *rsdp)
+{
+	acpi_header_t *ssdt2;
+
+	current = acpi_write_hpet(device, current, rsdp);
+	ALIGN_CURRENT;
+
+#if CONFIG_GOP_SUPPORT
+	igd_opregion_t *opregion;
+
+	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
+	opregion = (igd_opregion_t *)current;
+	init_igd_opregion(opregion);
+	current += sizeof(igd_opregion_t);
+	ALIGN_CURRENT;
+#endif
+
+	ssdt2 = (acpi_header_t *)current;
+	memset(ssdt2, 0, sizeof(acpi_header_t));
+	acpi_create_serialio_ssdt(ssdt2);
+	if (ssdt2->length) {
+		current += ssdt2->length;
+		acpi_add_table(rsdp, ssdt2);
+		printk(BIOS_DEBUG, "ACPI:     * SSDT2 @ %p Length %x\n",ssdt2,
+		       ssdt2->length);
+		ALIGN_CURRENT;
+	} else {
+		ssdt2 = NULL;
+		printk(BIOS_DEBUG, "ACPI:     * SSDT2 not generated.\n");
+	}
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+
+	return current;
+}
+
+void southcluster_inject_dsdt(device_t device)
+{
+	global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+		if (gnvs)
+			memset(gnvs, 0, sizeof(*gnvs));
+	}
+
+	if (gnvs) {
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((unsigned long)gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to DSDT.  */
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_pop_len();
+	}
+}
+
+__attribute__((weak)) void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
+{
 }

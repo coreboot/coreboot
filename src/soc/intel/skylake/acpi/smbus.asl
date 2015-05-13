@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,14 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 // Intel SMBus Controller 0:1f.3
 
 Device (SBUS)
 {
-	Name (_ADR, 0x001f0003)
+	Name (_ADR, 0x001f0004)
 
 #ifdef ENABLE_SMBUS_METHODS
 	OperationRegion (SMBP, PCI_Config, 0x00, 0x100)

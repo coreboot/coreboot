@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 Device (LNKA)
@@ -26,14 +27,14 @@ Device (LNKA)
 	// Disable method
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTA)
+		Or (\_SB.PARC, 0x80, \_SB.PARC)
 	}
 
 	// Possible Resource Settings for this Link
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 7, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -49,7 +50,7 @@ Device (LNKA)
 		Store (Zero, IRQ0)
 
 		// Set the bit from PRTA
-		ShiftLeft (1, And (PRTA, 0x0f), IRQ0)
+		ShiftLeft (1, And (\_SB.PARC, 0x0f), IRQ0)
 
 		Return (RTLA)
 	}
@@ -63,13 +64,13 @@ Device (LNKA)
 		FindSetRightBit (IRQ0, Local0)
 
 		Decrement(Local0)
-		Store (Local0, PRTA)
+		Store (Local0, \_SB.PARC)
 	}
 
 	// Status
 	Method (_STA, 0, Serialized)
 	{
-		If(And (PRTA, 0x80)) {
+		If(And (\_SB.PARC, 0x80)) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -85,14 +86,14 @@ Device (LNKB)
 	// Disable method
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTB)
+		Or (\_SB.PBRC, 0x80, \_SB.PBRC)
 	}
 
 	// Possible Resource Settings for this Link
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 7, 11, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -108,7 +109,7 @@ Device (LNKB)
 		Store (Zero, IRQ0)
 
 		// Set the bit from PRTB
-		ShiftLeft (1, And (PRTB, 0x0f), IRQ0)
+		ShiftLeft (1, And (\_SB.PBRC, 0x0f), IRQ0)
 
 		Return (RTLB)
 	}
@@ -122,13 +123,13 @@ Device (LNKB)
 		FindSetRightBit (IRQ0, Local0)
 
 		Decrement(Local0)
-		Store (Local0, PRTB)
+		Store (Local0, \_SB.PBRC)
 	}
 
 	// Status
 	Method (_STA, 0, Serialized)
 	{
-		If(And (PRTB, 0x80)) {
+		If(And (\_SB.PBRC, 0x80)) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -144,14 +145,14 @@ Device (LNKC)
 	// Disable method
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTC)
+		Or (\_SB.PCRC, 0x80, \_SB.PCRC)
 	}
 
 	// Possible Resource Settings for this Link
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 7, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -167,7 +168,7 @@ Device (LNKC)
 		Store (Zero, IRQ0)
 
 		// Set the bit from PRTC
-		ShiftLeft (1, And (PRTC, 0x0f), IRQ0)
+		ShiftLeft (1, And (\_SB.PCRC, 0x0f), IRQ0)
 
 		Return (RTLC)
 	}
@@ -181,13 +182,13 @@ Device (LNKC)
 		FindSetRightBit (IRQ0, Local0)
 
 		Decrement(Local0)
-		Store (Local0, PRTC)
+		Store (Local0, \_SB.PCRC)
 	}
 
 	// Status
 	Method (_STA, 0, Serialized)
 	{
-		If(And (PRTC, 0x80)) {
+		If(And (\_SB.PCRC, 0x80)) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -203,14 +204,14 @@ Device (LNKD)
 	// Disable method
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTD)
+		Or (\_SB.PDRC, 0x80, \_SB.PDRC)
 	}
 
 	// Possible Resource Settings for this Link
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 7, 11, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -226,7 +227,7 @@ Device (LNKD)
 		Store (Zero, IRQ0)
 
 		// Set the bit from PRTD
-		ShiftLeft (1, And (PRTD, 0x0f), IRQ0)
+		ShiftLeft (1, And (\_SB.PDRC, 0x0f), IRQ0)
 
 		Return (RTLD)
 	}
@@ -240,13 +241,13 @@ Device (LNKD)
 		FindSetRightBit (IRQ0, Local0)
 
 		Decrement(Local0)
-		Store (Local0, PRTD)
+		Store (Local0, \_SB.PDRC)
 	}
 
 	// Status
 	Method (_STA, 0, Serialized)
 	{
-		If(And (PRTD, 0x80)) {
+		If(And (\_SB.PDRC, 0x80)) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -262,14 +263,14 @@ Device (LNKE)
 	// Disable method
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTE)
+		Or (\_SB.PERC, 0x80, \_SB.PERC)
 	}
 
 	// Possible Resource Settings for this Link
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 7, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -285,7 +286,7 @@ Device (LNKE)
 		Store (Zero, IRQ0)
 
 		// Set the bit from PRTE
-		ShiftLeft (1, And (PRTE, 0x0f), IRQ0)
+		ShiftLeft (1, And (\_SB.PERC, 0x0f), IRQ0)
 
 		Return (RTLE)
 	}
@@ -299,13 +300,13 @@ Device (LNKE)
 		FindSetRightBit (IRQ0, Local0)
 
 		Decrement(Local0)
-		Store (Local0, PRTE)
+		Store (Local0, \_SB.PERC)
 	}
 
 	// Status
 	Method (_STA, 0, Serialized)
 	{
-		If(And (PRTE, 0x80)) {
+		If(And (\_SB.PERC, 0x80)) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -321,14 +322,14 @@ Device (LNKF)
 	// Disable method
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTF)
+		Or (\_SB.PFRC, 0x80, \_SB.PFRC)
 	}
 
 	// Possible Resource Settings for this Link
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 7, 11, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -344,7 +345,7 @@ Device (LNKF)
 		Store (Zero, IRQ0)
 
 		// Set the bit from PRTF
-		ShiftLeft (1, And (PRTF, 0x0f), IRQ0)
+		ShiftLeft (1, And (\_SB.PFRC, 0x0f), IRQ0)
 
 		Return (RTLF)
 	}
@@ -358,13 +359,13 @@ Device (LNKF)
 		FindSetRightBit (IRQ0, Local0)
 
 		Decrement(Local0)
-		Store (Local0, PRTF)
+		Store (Local0, \_SB.PFRC)
 	}
 
 	// Status
 	Method (_STA, 0, Serialized)
 	{
-		If(And (PRTF, 0x80)) {
+		If(And (\_SB.PFRC, 0x80)) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -380,14 +381,14 @@ Device (LNKG)
 	// Disable method
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTG)
+		Or (\_SB.PGRC, 0x80, \_SB.PGRC)
 	}
 
 	// Possible Resource Settings for this Link
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 7, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -403,7 +404,7 @@ Device (LNKG)
 		Store (Zero, IRQ0)
 
 		// Set the bit from PRTG
-		ShiftLeft (1, And (PRTG, 0x0f), IRQ0)
+		ShiftLeft (1, And (\_SB.PGRC, 0x0f), IRQ0)
 
 		Return (RTLG)
 	}
@@ -417,13 +418,13 @@ Device (LNKG)
 		FindSetRightBit (IRQ0, Local0)
 
 		Decrement(Local0)
-		Store (Local0, PRTG)
+		Store (Local0, \_SB.PGRC)
 	}
 
 	// Status
 	Method (_STA, 0, Serialized)
 	{
-		If(And (PRTG, 0x80)) {
+		If(And (\_SB.PGRC, 0x80)) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -439,14 +440,14 @@ Device (LNKH)
 	// Disable method
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTH)
+		Or (\_SB.PHRC, 0x80, \_SB.PHRC)
 	}
 
 	// Possible Resource Settings for this Link
 	Name (_PRS, ResourceTemplate()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 7, 11, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 12, 14, 15 }
 	})
 
 	// Current Resource Settings for this link
@@ -462,7 +463,7 @@ Device (LNKH)
 		Store (Zero, IRQ0)
 
 		// Set the bit from PRTH
-		ShiftLeft (1, And (PRTH, 0x0f), IRQ0)
+		ShiftLeft (1, And (\_SB.PHRC, 0x0f), IRQ0)
 
 		Return (RTLH)
 	}
@@ -476,13 +477,13 @@ Device (LNKH)
 		FindSetRightBit (IRQ0, Local0)
 
 		Decrement(Local0)
-		Store (Local0, PRTH)
+		Store (Local0, \_SB.PHRC)
 	}
 
 	// Status
 	Method (_STA, 0, Serialized)
 	{
-		If(And (PRTH, 0x80)) {
+		If(And (\_SB.PHRC, 0x80)) {
 			Return (0x9)
 		} Else {
 			Return (0xb)

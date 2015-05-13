@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 Device (GPIO)
@@ -22,13 +23,8 @@ Device (GPIO)
 	// GPIO Controller
 	Method (_HID)
 	{
-		If (\ISWP ()) {
-			// WildcatPoint
-			Return ("INT3437")
-		}
-
-		// LynxPoint-LP
-		Return ("INT33C7")
+		//Sunrisepoint-LP PCH
+		Return ("INT344B")
 	}
 	Name (_UID, 1)
 

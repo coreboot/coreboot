@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <console/console.h>
@@ -23,6 +24,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <chip.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
@@ -40,10 +42,8 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
-#include <soc/rcba.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
-#include <soc/intel/broadwell/chip.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -103,9 +103,11 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x11] = 128,
 };
 
-/* The core 100MHz BLCK is disabled in deeper c-states. One needs to calibrate
+/*
+ * The core 100MHz BLCK is disabled in deeper c-states. One needs to calibrate
  * the 100MHz BCLCK against the 24MHz BLCK to restore the clocks properly
- * when a core is woken up. */
+ * when a core is woken up.
+ */
 static int pcode_ready(void)
 {
 	int wait_count;
@@ -159,57 +161,18 @@ static void calibrate_24mhz_bclk(void)
 	       MCHBAR32(BIOS_MAILBOX_DATA));
 }
 
-static u32 pcode_mailbox_read(u32 command)
-{
-	if (pcode_ready() < 0) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on wait ready.\n");
-		return 0;
-	}
-
-	/* Send command and start transaction */
-	MCHBAR32(BIOS_MAILBOX_INTERFACE) = command | MAILBOX_RUN_BUSY;
-
-	if (pcode_ready() < 0) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on completion.\n");
-		return 0;
-	}
-
-	/* Read mailbox */
-	return MCHBAR32(BIOS_MAILBOX_DATA);
-}
-
-static int pcode_mailbox_write(u32 command, u32 data)
-{
-	if (pcode_ready() < 0) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on wait ready.\n");
-		return -1;
-	}
-
-	MCHBAR32(BIOS_MAILBOX_DATA) = data;
-
-	/* Send command and start transaction */
-	MCHBAR32(BIOS_MAILBOX_INTERFACE) = command | MAILBOX_RUN_BUSY;
-
-	if (pcode_ready() < 0) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on completion.\n");
-		return -1;
-	}
-
-	return 0;
-}
-
 static void initialize_vr_config(void)
 {
-	device_t dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
 	msr_t msr;
 
 	printk(BIOS_DEBUG, "Initializing VR config.\n");
 
 	/*  Configure VR_CURRENT_CONFIG. */
 	msr = rdmsr(MSR_VR_CURRENT_CONFIG);
-	/* Preserve bits 63 and 62. Bit 62 is PSI4 enable, but it is only valid
-	 * on ULT systems. */
+	/*
+	 * Preserve bits 63 and 62. Bit 62 is PSI4 enable, but it is only valid
+	 * on ULT systems.
+	 */
 	msr.hi &= 0xc0000000;
 	msr.hi |= (0x01 << (52 - 32)); /* PSI3 threshold -  1A. */
 	msr.hi |= (0x05 << (42 - 32)); /* PSI2 threshold -  5A. */
@@ -225,88 +188,31 @@ static void initialize_vr_config(void)
 	msr.hi |= (0x200 << (40 - 32)); /* 1.0 */
 	/* Set IOUT_OFFSET to 0. */
 	msr.hi &= ~0xff;
+	/* Set exit ramp rate to fast. */
+	msr.hi |= (1 << (50 - 32));
 	/* Set entry ramp rate to slow. */
 	msr.hi &= ~(1 << (51 - 32));
 	/* Enable decay mode on C-state entry. */
 	msr.hi |= (1 << (52 - 32));
-	/* Set the slow ramp rate */
+	/* Set the slow ramp rate to be fast ramp rate / 4 */
 	msr.hi &= ~(0x3 << (53 - 32));
-	/* Configure the C-state exit ramp rate. */
-	if (conf->vr_slow_ramp_rate_enable) {
-		/* Configured slow ramp rate. */
-		msr.hi |= ((conf->vr_slow_ramp_rate_set & 0x3) << (53 - 32));
-		/* Set exit ramp rate to slow. */
-		msr.hi &= ~(1 << (50 - 32));
-	} else {
-		/* Fast ramp rate / 4. */
-		msr.hi |= (0x01 << (53 - 32));
-		/* Set exit ramp rate to fast. */
-		msr.hi |= (1 << (50 - 32));
-	}
+	msr.hi |= (0x01 << (53 - 32));
 	/* Set MIN_VID (31:24) to allow CPU to have full control. */
 	msr.lo &= ~0xff000000;
-	msr.lo |= (conf->vr_cpu_min_vid & 0xff) << 24;
 	wrmsr(MSR_VR_MISC_CONFIG, msr);
 
 	/*  Configure VR_MISC_CONFIG2 MSR. */
 	msr = rdmsr(MSR_VR_MISC_CONFIG2);
 	msr.lo &= ~0xffff;
-	/* Allow CPU to control minimum voltage completely (15:8) and
-	 * set the fast ramp voltage in 10mV steps. */
-	if (cpu_family_model() == BROADWELL_FAMILY_ULT)
+	/*
+	 * Allow CPU to control minimum voltage completely (15:8) and
+	 * set the fast ramp voltage in 10mV steps.
+	 */
+	if (cpu_family_model() == SKYLAKE_FAMILY_ULT)
 		msr.lo |= 0x006a; /* 1.56V */
 	else
 		msr.lo |= 0x006f; /* 1.60V */
 	wrmsr(MSR_VR_MISC_CONFIG2, msr);
-
-	/* Set C9/C10 VCC Min */
-	pcode_mailbox_write(MAILBOX_BIOS_CMD_WRITE_C9C10_VOLTAGE, 0x1f1f);
-}
-
-static void configure_pch_power_sharing(void)
-{
-	u32 pch_power, pch_power_ext, pmsync, pmsync2;
-	int i;
-
-	/* Read PCH Power levels from PCODE */
-	pch_power = pcode_mailbox_read(MAILBOX_BIOS_CMD_READ_PCH_POWER);
-	pch_power_ext = pcode_mailbox_read(MAILBOX_BIOS_CMD_READ_PCH_POWER_EXT);
-
-	printk(BIOS_INFO, "PCH Power: PCODE Levels 0x%08x 0x%08x\n",
-               pch_power, pch_power_ext);
-
-	pmsync = RCBA32(PMSYNC_CONFIG);
-	pmsync2 = RCBA32(PMSYNC_CONFIG2);
-
-	/* Program PMSYNC_TPR_CONFIG PCH power limit values
-	 *  pmsync[0:4]   = mailbox[0:5]
-	 *  pmsync[8:12]  = mailbox[6:11]
-	 *  pmsync[16:20] = mailbox[12:17]
-	 */
-	for (i = 0; i < 3; i++) {
-		u32 level = pch_power & 0x3f;
-		pch_power >>= 6;
-		pmsync &= ~(0x1f << (i * 8));
-		pmsync |= (level & 0x1f) << (i * 8);
-	}
-	RCBA32(PMSYNC_CONFIG) = pmsync;
-
-	/* Program PMSYNC_TPR_CONFIG2 Extended PCH power limit values
-	 *  pmsync2[0:4]   = mailbox[23:18]
-	 *  pmsync2[8:12]  = mailbox_ext[6:11]
-	 *  pmsync2[16:20] = mailbox_ext[12:17]
-	 *  pmsync2[24:28] = mailbox_ext[18:22]
-	 */
-	pmsync2 &= ~0x1f;
-	pmsync2 |= pch_power & 0x1f;
-
-	for (i = 1; i < 4; i++) {
-		u32 level = pch_power_ext & 0x3f;
-		pch_power_ext >>= 6;
-		pmsync2 &= ~(0x1f << (i * 8));
-		pmsync2 |= (level & 0x1f) << (i * 8);
-	}
-	RCBA32(PMSYNC_CONFIG2) = pmsync2;
 }
 
 int cpu_config_tdp_levels(void)
@@ -371,8 +277,8 @@ void set_power_limits(u8 power_limit_1_time)
 	limit.hi = 0;
 	limit.hi |= ((tdp * 125) / 100) & PKG_POWER_LIMIT_MASK;
 	limit.hi |= PKG_POWER_LIMIT_EN;
-	/* Power limit 2 time is only programmable on server SKU */
 
+	/* Power limit 2 time is only programmable on server SKU */
 	wrmsr(MSR_PKG_POWER_LIMIT, limit);
 
 	/* Set power limit values in MCHBAR as well */
@@ -393,73 +299,13 @@ void set_power_limits(u8 power_limit_1_time)
 	}
 }
 
-static void configure_c_states(void)
-{
-	msr_t msr;
-
-	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
-	msr.lo |= (1 << 31);	// Timed MWAIT Enable
-	msr.lo |= (1 << 30);	// Package c-state Undemotion Enable
-	msr.lo |= (1 << 29);	// Package c-state Demotion Enable
-	msr.lo |= (1 << 28);	// C1 Auto Undemotion Enable
-	msr.lo |= (1 << 27);	// C3 Auto Undemotion Enable
-	msr.lo |= (1 << 26);	// C1 Auto Demotion Enable
-	msr.lo |= (1 << 25);	// C3 Auto Demotion Enable
-	msr.lo &= ~(1 << 10);	// Disable IO MWAIT redirection
-	/* The deepest package c-state defaults to factory-configured value. */
-	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
-
-	msr = rdmsr(MSR_MISC_PWR_MGMT);
-	msr.lo &= ~(1 << 0);	// Enable P-state HW_ALL coordination
-	wrmsr(MSR_MISC_PWR_MGMT, msr);
-
-	msr = rdmsr(MSR_POWER_CTL);
-	msr.lo |= (1 << 18);	// Enable Energy Perf Bias MSR 0x1b0
-	msr.lo |= (1 << 1);	// C1E Enable
-	msr.lo |= (1 << 0);	// Bi-directional PROCHOT#
-	wrmsr(MSR_POWER_CTL, msr);
-
-	/* C-state Interrupt Response Latency Control 0 - package C3 latency */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_0_LIMIT;
-	wrmsr(MSR_C_STATE_LATENCY_CONTROL_0, msr);
-
-	/* C-state Interrupt Response Latency Control 1 */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_1_LIMIT;
-	wrmsr(MSR_C_STATE_LATENCY_CONTROL_1, msr);
-
-	/* C-state Interrupt Response Latency Control 2 - package C6/C7 short */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_2_LIMIT;
-	wrmsr(MSR_C_STATE_LATENCY_CONTROL_2, msr);
-
-	/* C-state Interrupt Response Latency Control 3 - package C8 */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS |
-	         C_STATE_LATENCY_CONTROL_3_LIMIT;
-	wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
-
-	/* C-state Interrupt Response Latency Control 4 - package C9 */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS |
-	         C_STATE_LATENCY_CONTROL_4_LIMIT;
-	wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
-
-	/* C-state Interrupt Response Latency Control 5 - package C10 */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS |
-	         C_STATE_LATENCY_CONTROL_5_LIMIT;
-	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
-}
-
 static void configure_thermal_target(void)
 {
 	device_t dev = SA_DEV_ROOT;
 	config_t *conf = dev->chip_info;
 	msr_t msr;
 
-	/* Set TCC activation offset if supported */
+	/* Set TCC activaiton offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);
 	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
 		msr = rdmsr(MSR_TEMPERATURE_TARGET);
@@ -474,9 +320,9 @@ static void configure_misc(void)
 	msr_t msr;
 
 	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.lo |= (1 << 0);	  /* Fast String enable */
-	msr.lo |= (1 << 3); 	  /* TM1/TM2/EMTTM enable */
-	msr.lo |= (1 << 16);	  /* Enhanced SpeedStep Enable */
+	msr.lo |= (1 << 0);	/* Fast String enable */
+	msr.lo |= (1 << 3);	/* TM1/TM2/EMTTM enable */
+	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Disable Thermal interrupts */
@@ -567,37 +413,24 @@ static void configure_mca(void)
 	msr = rdmsr(mcg_cap_msr);
 	num_banks = msr.lo & 0xff;
 	msr.lo = msr.hi = 0;
-	/* TODO(adurbin): This should only be done on a cold boot. Also, some
+	/*
+	 * TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
-	 * every bank. */
+	 * every bank.
+	 */
 	for (i = 0; i < num_banks; i++)
 		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
 }
 
-#if CONFIG_USBDEBUG
-static unsigned ehci_debug_addr;
-#endif
-
 static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 {
-#if CONFIG_USBDEBUG
-	if(!ehci_debug_addr)
-		ehci_debug_addr = get_ehci_debug();
-	set_ehci_debug(0);
-#endif
-
 	/* Setup MTRRs based on physical address size. */
 	x86_setup_fixed_mtrrs();
 	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
 	x86_mtrr_check();
 
-#if CONFIG_USBDEBUG
-	set_ehci_debug(ehci_debug_addr);
-#endif
-
 	initialize_vr_config();
 	calibrate_24mhz_bclk();
-	configure_pch_power_sharing();
 }
 
 /* All CPUs including BSP will run the following function. */
@@ -609,9 +442,6 @@ static void cpu_core_init(device_t cpu)
 	/* Enable the local cpu apics */
 	enable_lapic_tpr();
 	setup_lapic();
-
-	/* Configure C States */
-	configure_c_states();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();
@@ -649,31 +479,36 @@ static void relocate_and_load_microcode(void *unused)
 
 static void enable_smis(void *unused)
 {
-	/* Now that all APs have been relocated as well as the BSP let SMIs
-	 * start flowing. */
+	/*
+	 * Now that all APs have been relocated as well as the BSP let SMIs
+	 * start flowing.
+	 */
 	southbridge_smm_enable_smi();
 
 	/* Lock down the SMRAM space. */
+#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 	smm_lock();
+#endif
 }
 
 static struct mp_flight_record mp_steps[] = {
 	MP_FR_NOBLOCK_APS(relocate_and_load_microcode, NULL,
-	                  relocate_and_load_microcode, NULL),
+			  relocate_and_load_microcode, NULL),
+#if IS_ENABLED(CONFIG_SMP)
 	MP_FR_BLOCK_APS(mp_initialize_cpu, NULL, mp_initialize_cpu, NULL),
 	/* Wait for APs to finish initialization before proceeding. */
+#endif
 	MP_FR_BLOCK_APS(NULL, NULL, enable_smis, NULL),
 };
 
 static struct device_operations cpu_dev_ops = {
 	.init = cpu_core_init,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, CPUID_HASWELL_ULT },
-	{ X86_VENDOR_INTEL, CPUID_BROADWELL_C0 },
-	{ X86_VENDOR_INTEL, CPUID_BROADWELL_D0 },
-	{ X86_VENDOR_INTEL, CPUID_BROADWELL_E0 },
+	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_C0 },
+	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_D0 },
 	{ 0, 0 },
 };
 
@@ -682,7 +517,7 @@ static const struct cpu_driver driver __cpu_driver = {
 	.id_table = cpu_table,
 };
 
-void broadwell_init_cpus(device_t dev)
+void soc_init_cpus(device_t dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 	int num_threads;
@@ -699,15 +534,20 @@ void broadwell_init_cpus(device_t dev)
 
 	ht_disabled = num_threads == num_cores;
 
-	/* Perform any necessary BSP initialization before APs are brought up.
+	/*
+	 * Perform any necessary BSP initialization before APs are brought up.
 	 * This call also allows the BSP to prepare for any secondary effects
-	 * from calling cpu_initialize() such as smm_init(). */
+	 * from calling cpu_initialize() such as smm_init().
+	 */
 	bsp_init_before_ap_bringup(cpu_bus);
 
 	microcode_patch = intel_microcode_find();
 
 	/* Save default SMM area before relocation occurs. */
-	smm_save_area = backup_default_smm_area();
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER))
+		smm_save_area = backup_default_smm_area();
+	else
+		smm_save_area = NULL;
 
 	mp_params.num_cpus = num_threads;
 	mp_params.parallel_microcode_load = 1;
@@ -719,17 +559,18 @@ void broadwell_init_cpus(device_t dev)
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
 	mp_params.microcode_pointer = microcode_patch;
 
-	/* Load relocation and permanent handlers. Then initiate relocation. */
+	/* Load relocation and permeanent handlers. Then initiate relocation. */
 	if (smm_initialize())
-		printk(BIOS_CRIT, "SMM initialization failed...\n");
+		printk(BIOS_CRIT, "SMM Initialiazation failed...\n");
 
-	if (mp_init(cpu_bus, &mp_params)) {
-		printk(BIOS_ERR, "MP initialization failure.\n");
-	}
+	if (IS_ENABLED(CONFIG_SMP))
+		if (mp_init(cpu_bus, &mp_params))
+			printk(BIOS_ERR, "MP initialization failure.\n");
 
 	/* Set Max Ratio */
 	set_max_ratio();
 
 	/* Restore the default SMM region. */
-	restore_default_smm_area(smm_save_area);
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER))
+		restore_default_smm_area(smm_save_area);
 }

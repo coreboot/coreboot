@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <console/console.h>
@@ -23,6 +24,7 @@
 #include <cpu/x86/msr.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
+#include <soc/ramstage.h>
 #include <soc/systemagent.h>
 
 u32 cpu_family_model(void)
@@ -42,7 +44,7 @@ int cpu_is_ult(void)
 
 	if (ult < 0) {
 		u32 fm = cpu_family_model();
-		if (fm == BROADWELL_FAMILY_ULT || fm == HASWELL_FAMILY_ULT)
+		if (fm == SKYLAKE_FAMILY_ULT)
 			ult = 1;
 		else
 			ult = 0;

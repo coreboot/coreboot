@@ -1,7 +1,8 @@
 /*
- * Broadwell UEFI PEI wrapper
+ * UEFI PEI wrapper
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,17 +27,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PEI_DATA_H
-#define PEI_DATA_H
+#ifndef _PEI_DATA_H_
+#define _PEI_DATA_H_
 
 #include <types.h>
-#include <memory_info.h>
 
 #define PEI_VERSION 22
 
 #define ABI_X86 __attribute__((regparm(0)))
 
-typedef void ABI_X86 (*tx_byte_func)(unsigned char byte);
+typedef void ABI_X86(*tx_byte_func)(unsigned char byte);
 
 enum board_type {
 	BOARD_TYPE_CRB_MOBILE = 0,	/* CRB Mobile */
@@ -86,24 +86,19 @@ struct usb3_port_setting {
 	uint8_t fixed_eq;
 } __attribute__((packed));
 
-struct pei_data
-{
+struct pei_data {
 	uint32_t pei_version;
 
 	enum board_type board_type;
 	int boot_mode;
 	int ec_present;
-	int usbdebug;
 
 	/* Base addresses */
 	uint32_t pciexbar;
 	uint16_t smbusbar;
 	uint32_t xhcibar;
-	uint32_t ehcibar;
 	uint32_t gttbar;
-	uint32_t rcba;
 	uint32_t pmbase;
-	uint32_t gpiobase;
 	uint32_t temp_mmio_base;
 	uint32_t tseg_size;
 
@@ -173,14 +168,15 @@ struct pei_data
 	 * DQByteMap[5] - CmdVDQByteMap: Always program to [0xFF, 0]
 	 *                since we have 1 CA Vref
 	 */
-	uint8_t dq_map[2][6][2];
+	uint8_t dq_map[2][12];
 
 	/*
 	 * LPDDR3 Map from CPU DQS pins to SDRAM DQS pins
 	 * [CHANNEL][MAX_BYTES]
 	 */
 	uint8_t dqs_map[2][8];
-
+	uint16_t RcompResistor[3];
+	uint16_t RcompTarget[5];
 	/* Data read from flash and passed into MRC */
 	const void *saved_data;
 	int saved_data_size;
@@ -191,9 +187,8 @@ struct pei_data
 	/* Data from MRC that should be saved to flash */
 	void *data_to_save;
 	int data_to_save_size;
-	struct memory_info meminfo;
 } __attribute__((packed));
 
 typedef struct pei_data PEI_DATA;
 
-#endif
+#endif /* _PEI_DATA_H_ */

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +16,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
+
+#include <soc/iomap.h>
 
 // Intel LPC Bus Device  - 0:1f.0
 
@@ -33,16 +36,7 @@ Device (LPCB)
 		PMBS,	16,	// PMBASE
 		Offset (0x48),
 		GPBS,	16,	// GPIOBASE
-		Offset (0x60),	// Interrupt Routing Registers
-		PRTA,	8,
-		PRTB,	8,
-		PRTC,	8,
-		PRTD,	8,
-		Offset (0x68),
-		PRTE,	8,
-		PRTF,	8,
-		PRTG,	8,
-		PRTH,	8,
+
 
 		Offset (0x80),	// IO Decode Ranges
 		IOD0,	8,
@@ -74,48 +68,22 @@ Device (LPCB)
 	Device (HPET)
 	{
 		Name (_HID, EISAID("PNP0103"))
-		Name (_CID, 0x010CD041)
-
 		Name (BUF0, ResourceTemplate()
 		{
-			Memory32Fixed(ReadOnly, 0xfed00000, 0x400, FED0)
+			Memory32Fixed(ReadOnly, HPET_BASE_ADDRESS, 0x400, FED0)
 		})
 
 		Method (_STA, 0)	// Device Status
 		{
-			If (HPTE) {
-				// Note: Ancient versions of Windows don't want
-				// to see the HPET in order to work right
-				If (LGreaterEqual(OSYS, 2001)) {
-					Return (0xf)	// Enable and show device
-				} Else {
-					Return (0xb)	// Enable and don't show device
-				}
-			}
-
-			Return (0x0)	// Not enabled, don't show.
+			Return (0xf)
 		}
-
 		Method (_CRS, 0, Serialized) // Current resources
 		{
-			If (HPTE) {
-				CreateDWordField (BUF0,
-					\_SB.PCI0.LPCB.HPET.FED0._BAS, HPT0)
+			CreateDWordField (BUF0, ^FED0._BAS, HPT0)
+			/* TODO: Base address configured need to pass as GNVS */
+			Store(HPET_BASE_ADDRESS, HPT0)
 
-				If (Lequal(HPAS, 1)) {
-					Store(0xfed01000, HPT0)
-				}
-
-				If (Lequal(HPAS, 2)) {
-					Store(0xfed02000, HPT0)
-				}
-
-				If (Lequal(HPAS, 3)) {
-					Store(0xfed03000, HPT0)
-				}
-			}
-
-			Return (BUF0)
+			Return(BUF0)
 		}
 	}
 

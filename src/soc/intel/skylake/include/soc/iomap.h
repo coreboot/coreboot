@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +15,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_IOMAP_H_
-#define _BROADWELL_IOMAP_H_
+#ifndef _SOC_IOMAP_H_
+#define _SOC_IOMAP_H_
 
 #define MCFG_BASE_ADDRESS	CONFIG_MMCONF_BASE_ADDRESS
 #define MCFG_BASE_SIZE		0x4000000
@@ -38,12 +39,16 @@
 #define GDXC_BASE_ADDRESS	0xfed84000
 #define GDXC_BASE_SIZE		0x1000
 
+/* TODO: need to remove RCBA code after ASL clean up */
 #define RCBA_BASE_ADDRESS	0xfed1c000
 #define RCBA_BASE_SIZE		0x4000
 
 #define HPET_BASE_ADDRESS	0xfed00000
 
-#define ACPI_BASE_ADDRESS	0x1000
+#define PCH_PWRM_BASE_ADDRESS	0xfe000000
+#define PCH_PWRM_BASE_SIZE	0x10000
+
+#define ACPI_BASE_ADDRESS	0x1800
 #define ACPI_BASE_SIZE		0x100
 
 #define GPIO_BASE_ADDRESS	0x1400
@@ -55,7 +60,6 @@
 /* Temporary addresses used in romstage */
 #define EARLY_GTT_BAR		0xe0000000
 #define EARLY_XHCI_BAR		0xd7000000
-#define EARLY_EHCI_BAR		CONFIG_EHCI_BAR
 #define EARLY_UART_BAR		CONFIG_TTYS0_BASE
 #define EARLY_TEMP_MMIO		0xfed08000
 

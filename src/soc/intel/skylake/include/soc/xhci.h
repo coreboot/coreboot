@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +15,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_XHCI_H_
-#define _BROADWELL_XHCI_H_
+#ifndef _SOC_XHCI_H_
+#define _SOC_XHCI_H_
+
+#include <rules.h>
 
 /* XHCI PCI Registers */
 #define XHCI_PWR_CTL_STS	0x74
@@ -39,14 +42,14 @@
 #define XHCI_USB3PDO		0xe8
 
 /* XHCI Memory Registers */
-#define XHCI_USB3_PORTSC(port)	(0x530 + (port * 0x10))
+#define XHCI_USB3_PORTSC(port)	(0x510 + (port * 0x10))
 #define  XHCI_USB3_PORTSC_CHST	(0x7f << 17)
 #define  XHCI_USB3_PORTSC_WCE	(1 << 25)	/* Wake on Connect */
 #define  XHCI_USB3_PORTSC_WDE	(1 << 26)	/* Wake on Disconnect */
 #define  XHCI_USB3_PORTSC_WOE	(1 << 27)	/* Wake on Overcurrent */
 #define  XHCI_USB3_PORTSC_WRC	(1 << 19)	/* Warm Reset Complete */
-#define  XHCI_USB3_PORTSC_LWS  	(1 << 16)	/* Link Write Strobe */
-#define  XHCI_USB3_PORTSC_PED 	(1 << 1)	/* Port Enabled/Disabled */
+#define  XHCI_USB3_PORTSC_LWS	(1 << 16)	/* Link Write Strobe */
+#define  XHCI_USB3_PORTSC_PED	(1 << 1)	/* Port Enabled/Disabled */
 #define  XHCI_USB3_PORTSC_WPR	(1 << 31)	/* Warm Port Reset */
 #define  XHCI_USB3_PORTSC_PLS	(0xf << 5)	/* Port Link State */
 #define   XHCI_PLSR_DISABLED	(4 << 5)	/* Port is disabled */
@@ -54,7 +57,7 @@
 #define   XHCI_PLSR_POLLING	(7 << 5)	/* Port is polling */
 #define   XHCI_PLSW_ENABLE	(5 << 5)	/* Transition from disabled */
 
-#ifdef __SMM__
+#if ENV_SMM
 void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ);
 #endif
 

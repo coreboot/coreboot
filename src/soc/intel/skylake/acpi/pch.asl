@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,78 +16,47 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <soc/iomap.h>
 
 Scope (\)
 {
-	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
+	/* IO-Trap at 0x800.
+	 * This is the ACPI->SMI communication interface.
+	 */
 	OperationRegion (IO_T, SystemIO, 0x800, 0x10)
 	Field (IO_T, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0x8),
-		TRP0, 8		// IO-Trap at 0x808
-	}
-
-	// Root Complex Register Block
-	OperationRegion (RCRB, SystemMemory, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE)
-	Field (RCRB, DWordAcc, Lock, Preserve)
-	{
-		Offset (0x3404), // High Performance Timer Configuration
-		HPAS, 2, 	// Address Select
-		, 5,
-		HPTE, 1,	// Address Enable
-	}
-
-	/*
-	 * Check PCH type
-	 * Return 1 if PCH is WildcatPoint
-	 * Return 0 if PCH is LynxPoint
-	 */
-	Method (ISWP)
-	{
-		And (\_SB.PCI0.LPCB.PDID, 0xfff0, Local0)
-		If (LEqual (Local0, 0x9cc0)) {
-			Return (1)
-		} Else {
-			Return (0)
-		}
+		TRP0, 8		/* IO-Trap at 0x808 */
 	}
 }
 
-// High Definition Audio (Azalia) 0:1b.0
-#include "hda.asl"
-
-// ADSP/SST 0:13.0
-#include "adsp.asl"
-
-// PCI Express Ports 0:1c.x
+/* PCI Express Ports 0:1c.x */
 #include "pcie.asl"
 
-// USB EHCI 0:1d.0
-#include "ehci.asl"
-
-// USB XHCI 0:14.0
+/* USB XHCI 0:14.0 */
 #include "xhci.asl"
 
-// LPC Bridge 0:1f.0
+/* LPC Bridge 0:1f.0 */
 #include "lpc.asl"
 
-// SATA 0:1f.2
-#include "sata.asl"
-
-// SMBus 0:1f.3
+/* SMBus 0:1f.3 */
 #include "smbus.asl"
 
-// Serial IO
+/* Serial IO */
 #include "serialio.asl"
+
+/* Interrupt Routing */
+#include "itss.asl"
+#include "irqlinks.asl"
 
 Method (_OSC, 4)
 {
 	/* Check for proper GUID */
-	If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+	If (LEqual (Arg0, ToUUID ("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
 	{
 		/* Let OS control everything */
 		Return (Arg3)

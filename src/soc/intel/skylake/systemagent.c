@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <console/console.h>
@@ -29,6 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cbmem.h>
+#include <romstage_handoff.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
@@ -54,17 +56,17 @@ static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 		return 0;
 
 	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: // 256MB
+	case 0: /* 256MB */
 		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|
 					(1 << 28));
 		*len = 256 * 1024 * 1024;
 		return 1;
-	case 1: // 128M
+	case 1: /* 128M */
 		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|
 					(1 << 28)|(1 << 27));
 		*len = 128 * 1024 * 1024;
 		return 1;
-	case 2: // 64M
+	case 2: /* 64M */
 		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|
 					(1 << 28)|(1 << 27)|(1 << 26));
 		*len = 64 * 1024 * 1024;
@@ -90,11 +92,13 @@ static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 	return 1;
 }
 
-/* There are special BARs that actually are programmed in the MCHBAR. These
+/*
+ * There are special BARs that actually are programmed in the MCHBAR. These
  * Intel special features, but they do consume resources that need to be
- * accounted for. */
+ * accounted for.
+ */
 static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base,
-                             u32 *len)
+			     u32 *len)
 {
 	u32 bar;
 
@@ -114,7 +118,7 @@ struct fixed_mmio_descriptor {
 	unsigned int index;
 	u32 size;
 	int (*get_resource)(device_t dev, unsigned int index,
-	                    u32 *base, u32 *size);
+			    u32 *base, u32 *size);
 	const char *description;
 };
 
@@ -144,13 +148,13 @@ static void mc_add_fixed_mmio_resources(device_t dev)
 		size = mc_fixed_resources[i].size;
 		index = mc_fixed_resources[i].index;
 		if (!mc_fixed_resources[i].get_resource(dev, index,
-		                                        &base, &size))
+							&base, &size))
 			continue;
 
 		resource = new_resource(dev, mc_fixed_resources[i].index);
 		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-		                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-		                  IORESOURCE_ASSIGNED;
+				  IORESOURCE_STORED | IORESOURCE_RESERVE |
+				  IORESOURCE_ASSIGNED;
 		resource->base = base;
 		resource->size = size;
 		printk(BIOS_DEBUG, "%s: Adding %s @ %x 0x%08lx-0x%08lx.\n",
@@ -159,7 +163,8 @@ static void mc_add_fixed_mmio_resources(device_t dev)
 	}
 }
 
-/* Host Memory Map:
+/*
+ * Host Memory Map:
  *
  * +--------------------------+ TOUUD
  * |                          |
@@ -172,6 +177,10 @@ static void mc_add_fixed_mmio_resources(device_t dev)
  * +--------------------------+ BGSM
  * |     TSEG                 |
  * +--------------------------+ TSEGMB
+ * |   DMA Protected Region   |
+ * +--------------------------+ DPR
+ * |     Reserved - FSP       |
+ * +--------------------------+ RSVFSP
  * |     Usage DRAM           |
  * +--------------------------+ 0
  *
@@ -189,7 +198,7 @@ struct map_entry {
 };
 
 static void read_map_entry(device_t dev, struct map_entry *entry,
-                           uint64_t *result)
+			   uint64_t *result)
 {
 	uint64_t value;
 	uint64_t mask;
@@ -240,7 +249,7 @@ enum {
 	BGSM_REG,
 	BDSM_REG,
 	TSEG_REG,
-	// Must be last.
+	/* Must be last. */
 	NUM_MAP_ENTRIES
 };
 
@@ -260,9 +269,8 @@ static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
 static void mc_read_map_entries(device_t dev, uint64_t *values)
 {
 	int i;
-	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
+	for (i = 0; i < NUM_MAP_ENTRIES; i++)
 		read_map_entry(dev, &memory_map[i], &values[i]);
-	}
 }
 
 static void mc_report_map_entries(device_t dev, uint64_t *values)
@@ -343,23 +351,26 @@ static void mc_add_dram_resources(device_t dev)
 	base_k = 0xc0000 >> 10;
 	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
 	size_k -= dpr_size >> 10;
+	size_k -= CONFIG_CHIPSET_RESERVED_MEM_BYTES >> 10;
 	ram_resource(dev, index++, base_k, size_k);
 
 	/* TSEG - DPR -> BGSM */
 	resource = new_resource(dev, index++);
 	resource->base = mc_values[TSEG_REG] - dpr_size;
 	resource->size = mc_values[BGSM_REG] - resource->base;
+	resource->base -= CONFIG_CHIPSET_RESERVED_MEM_BYTES;
+	resource->size += CONFIG_CHIPSET_RESERVED_MEM_BYTES;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-	                  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+			  IORESOURCE_STORED | IORESOURCE_RESERVE |
+			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
 
 	/* BGSM -> TOLUD */
 	resource = new_resource(dev, index++);
 	resource->base = mc_values[BGSM_REG];
 	resource->size = mc_values[TOLUD_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-	                  IORESOURCE_ASSIGNED;
+			  IORESOURCE_STORED | IORESOURCE_RESERVE |
+			  IORESOURCE_ASSIGNED;
 
 	/* 4GiB -> TOUUD */
 	base_k = 4096 * 1024; /* 4GiB */
@@ -368,14 +379,15 @@ static void mc_add_dram_resources(device_t dev)
 	if (touud_k > base_k)
 		ram_resource(dev, index++, base_k, size_k);
 
-	/* Reserve everything between A segment and 1MB:
+	/*
+	 * Reserve everything between A segment and 1MB:
 	 *
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
-	                      (0x100000 - 0xc0000) >> 10);
+			      (0x100000 - 0xc0000) >> 10);
 
 	chromeos_reserve_ram_oops(dev, index++);
 }
@@ -416,32 +428,39 @@ static void systemagent_init(struct device *dev)
 	set_power_limits(28);
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
+static void systemagent_enable(device_t dev)
 {
-	// Not implemented
-	return current;
-}
+#if CONFIG_HAVE_ACPI_RESUME
+	struct romstage_handoff *handoff;
 
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	/* No NUMA, no SRAT */
-	return current;
+	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+
+	if (handoff == NULL) {
+		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
+		acpi_slp_type = 0;
+	} else if (handoff->s3_resume) {
+		printk(BIOS_DEBUG, "S3 Resume.\n");
+		acpi_slp_type = 3;
+	} else {
+		printk(BIOS_DEBUG, "Normal boot.\n");
+		acpi_slp_type = 0;
+	}
+#endif
 }
 
 static struct device_operations systemagent_ops = {
 	.read_resources   = &systemagent_read_resources,
-	.acpi_fill_ssdt_generator = &generate_cpu_entries,
 	.set_resources    = &pci_dev_set_resources,
 	.enable_resources = &pci_dev_enable_resources,
 	.init             = &systemagent_init,
-	.ops_pci          = &broadwell_pci_ops,
+	.enable           = &systemagent_enable,
+	.ops_pci          = &soc_pci_ops,
 };
 
 static const unsigned short systemagent_ids[] = {
-	0x0a04, /* Haswell ULT */
-	0x1604, /* Broadwell-U/Y */
-	0x1610, /* Broadwell-H Desktop */
-	0x1614, /* Broadwell-H Mobile */
+	MCH_SKYLAKE_ID_U,
+	MCH_SKYLAKE_ID_Y,
+	MCH_SKYLAKE_ID_ULX,
 	0
 };
 

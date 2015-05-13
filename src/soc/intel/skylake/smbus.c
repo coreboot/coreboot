@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <arch/io.h>
@@ -94,15 +95,14 @@ static struct device_operations smbus_ops = {
 	.read_resources		= &smbus_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
-	.scan_bus		= &scan_static_bus,
+	.scan_bus		= &scan_smbus,
 	.init			= &pch_smbus_init,
 	.ops_smbus_bus		= &lops_smbus_bus,
-	.ops_pci		= &broadwell_pci_ops,
+	.ops_pci		= &soc_pci_ops,
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x9c22, /* LynxPoint */
-	0x9ca2, /* WildcatPoint */
+	0x9d23, /* SunRisePoint LP */
 	0
 };
 

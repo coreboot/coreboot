@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 /*
@@ -27,11 +28,14 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <stdlib.h>
+#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/gpio.h>
+#include <soc/pmc.h>
+#include <soc/smbus.h>
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
@@ -41,7 +45,7 @@ static void print_status_bits(u32 status, const char *bit_names[])
 	if (!status)
 		return;
 
-	for (i=31; i>=0; i--) {
+	for (i = 31; i >= 0; i--) {
 		if (status & (1 << i)) {
 			if (bit_names[i])
 				printk(BIOS_DEBUG, "%s ", bit_names[i]);
@@ -59,7 +63,7 @@ static void print_gpio_status(u32 status, int start)
 	if (!status)
 		return;
 
-	for (i=31; i>=0; i--) {
+	for (i = 31; i >= 0; i--) {
 		if (status & (1 << i))
 			printk(BIOS_DEBUG, "GPIO%d ", start + i);
 	}
@@ -212,49 +216,53 @@ void disable_smi(u32 mask)
  */
 
 /* Clear GPIO SMI status and return events that are enabled and active */
-static u32 reset_alt_smi_status(void)
+void reset_alt_smi_status(void)
 {
-	u32 alt_sts, alt_en;
-
-	/* Low Power variant moves this to GPIO region as dword */
-	alt_sts = inl(GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_STS);
-	outl(alt_sts, GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_STS);
-	alt_en = inl(GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_EN);
-
-	/* Only report enabled events */
-	return alt_sts & alt_en;
+	/*Clear GPIO SMI Status*/
+	clear_all_smi();
 }
 
 /* Print GPIO SMI status bits */
-static u32 print_alt_smi_status(u32 alt_sts)
+static u32 print_alt_smi_status(void)
 {
-	if (!alt_sts)
-		return 0;
+	u32 alt_sts[GPIO_COMMUNITY_MAX];
+	int gpio_index;
+	/* GPIO Communities GPP_A ~ E support SMI */
+	const char gpiowell[] = {
+		[0] = 'A',
+		[1] = 'B',
+		[2] = 'C',
+		[3] = 'D',
+		[4] = 'E'
+	};
 
 	printk(BIOS_DEBUG, "ALT_STS: ");
-
-	/* First 16 events are GPIO 32-47 */
-	print_gpio_status(alt_sts & 0xffff, 32);
+	get_smi_status(alt_sts);
+	/* GPP_A to GPP_E GPIO has Status and Enable functionality*/
+	for (gpio_index = 0; gpio_index < ARRAY_SIZE(gpiowell);
+		gpio_index++) {
+		printk(BIOS_DEBUG, "GPIO Group_%c\n",
+				gpiowell[gpio_index]);
+		print_gpio_status(alt_sts[gpio_index], 0);
+	}
 
 	printk(BIOS_DEBUG, "\n");
 
-	return alt_sts;
+	return 0;
 }
 
 /* Print, clear, and return GPIO SMI status */
 u32 clear_alt_smi_status(void)
 {
-	return print_alt_smi_status(reset_alt_smi_status());
+	reset_alt_smi_status();
+	return print_alt_smi_status();
 }
 
 /* Enable GPIO SMI events */
-void enable_alt_smi(u32 mask)
+void enable_alt_smi(int gpionum, u32 mask)
 {
-	u32 alt_en;
-
-	alt_en = inl(GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_EN);
-	alt_en |= mask;
-	outl(alt_en, GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_EN);
+	/*Set GPIO EN Status*/
+	enable_gpio_groupsmi(gpionum, mask);
 }
 
 
@@ -265,18 +273,25 @@ void enable_alt_smi(u32 mask)
 /* Clear TCO status and return events that are enabled and active */
 static u32 reset_tco_status(void)
 {
-	u32 tcobase = ACPI_BASE_ADDRESS + 0x60;
-	u32 tco_sts = inl(tcobase + 0x04);
-	u32 tco_en = inl(ACPI_BASE_ADDRESS + 0x68);
+	u16 tco1_sts;
+	u16 tco2_sts;
+	u16 tcobase;
 
-	/* Don't clear BOOT_STS before SECOND_TO_STS */
-	outl(tco_sts & ~(1 << 18), tcobase + 0x04);
+	tcobase = pmc_tco_regs();
 
-	/* Clear BOOT_STS */
-	if (tco_sts & (1 << 18))
-		outl(tco_sts & (1 << 18), tcobase + 0x04);
+	/* TCO Status 2 register*/
+	tco2_sts = inw(tcobase + TCO2_STS);
+	tco2_sts |= (TCO2_STS_SECOND_TO | TCO2_STS_BOOT);
+	outw(tco2_sts, tcobase + TCO2_STS);
 
-	return tco_sts & tco_en;
+	/* TCO Status 1 register*/
+	tco1_sts = inw(tcobase + TCO1_STS);
+
+	/* Clear SECOND_TO_STS bit */
+	if (tco2_sts & TCO2_STS_SECOND_TO)
+		outw(tco2_sts & ~TCO2_STS_SECOND_TO, tcobase + TCO2_STS);
+
+	return (tco2_sts << 16) | tco1_sts;
 }
 
 /* Print TCO status bits */
@@ -319,7 +334,7 @@ u32 clear_tco_status(void)
 void enable_tco_sci(void)
 {
 	/* Clear pending events */
-	outl(ACPI_BASE_ADDRESS + GPE0_STS(3), TCOSCI_STS);
+	outl(TCOSCI_STS, ACPI_BASE_ADDRESS + GPE0_STS(3));
 
 	/* Enable TCO SCI events */
 	enable_gpe(TCOSCI_EN);
@@ -425,7 +440,7 @@ void disable_gpe(u32 mask)
 
 int acpi_sci_irq(void)
 {
-	int scis = pci_read_config32(PCH_DEV_LPC, ACPI_CNTL) & SCI_IRQ_SEL;
+	int scis = pci_read_config32(PCH_DEV_PMC, ACTL) & SCI_IRQ_SEL;
 	int sci_irq = 9;
 
 	/* Determine how SCI is routed. */
@@ -449,4 +464,27 @@ int acpi_sci_irq(void)
 
 	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
 	return sci_irq;
+}
+
+uint8_t *pmc_mmio_regs(void)
+{
+	uint32_t reg32;
+
+	reg32 = pci_read_config32(PCH_DEV_PMC, PWRMBASE);
+
+	/* 4KiB alignment. */
+	reg32 &= ~0xfff;
+
+	return (void *)(uintptr_t)reg32;
+}
+
+uint16_t pmc_tco_regs(void)
+{
+	uint16_t reg16;
+
+	reg16 = pci_read_config16(PCH_DEV_SMBUS, TCOBASE);
+
+	reg16 &= ~0x1f;
+
+	return reg16;
 }

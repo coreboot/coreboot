@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,77 +15,55 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <device/pci.h>
-#include <string.h>
 #include <cpu/x86/msr.h>
+#include <device/pci.h>
 #include <soc/cpu.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
+#include <string.h>
 
 static struct {
 	u32 cpuid;
 	const char *name;
 } cpu_table[] = {
-	{ CPUID_HASWELL_A0,     "Haswell A0" },
-	{ CPUID_HASWELL_B0,     "Haswell B0" },
-	{ CPUID_HASWELL_C0,     "Haswell C0" },
-	{ CPUID_HASWELL_ULT_B0, "Haswell ULT B0" },
-	{ CPUID_HASWELL_ULT,    "Haswell ULT C0 or D0" },
-	{ CPUID_HASWELL_HALO,   "Haswell Perf Halo" },
-	{ CPUID_BROADWELL_C0,   "Broadwell C0" },
-	{ CPUID_BROADWELL_D0,   "Broadwell D0" },
-	{ CPUID_BROADWELL_E0,   "Broadwell E0 or F0" },
+	{ CPUID_SKYLAKE_C0,	"Skylake C0" },
+	{ CPUID_SKYLAKE_D0,	"Skylake D0" },
 };
 
 static struct {
-	u8 revid;
+	u16 mchid;
 	const char *name;
-} mch_rev_table[] = {
-	{ MCH_BROADWELL_REV_D0, "Broadwell D0" },
-	{ MCH_BROADWELL_REV_E0, "Broadwell E0" },
-	{ MCH_BROADWELL_REV_F0, "Broadwell F0" },
+} mch_table[] = {
+	{ MCH_SKYLAKE_ID_U,	"Skylake-U" },
+	{ MCH_SKYLAKE_ID_Y,	"Skylake-Y" },
+	{ MCH_SKYLAKE_ID_ULX,	"Skylake-ULX" },
 };
 
 static struct {
 	u16 lpcid;
 	const char *name;
 } pch_table[] = {
-	{ PCH_LPT_LP_SAMPLE,     "LynxPoint LP Sample" },
-	{ PCH_LPT_LP_PREMIUM,    "LynxPoint LP Premium" },
-	{ PCH_LPT_LP_MAINSTREAM, "LynxPoint LP Mainstream" },
-	{ PCH_LPT_LP_VALUE,      "LynxPoint LP Value" },
-	{ PCH_WPT_HSW_U_SAMPLE,  "Haswell U Sample" },
-	{ PCH_WPT_BDW_U_SAMPLE,  "Broadwell U Sample" },
-	{ PCH_WPT_BDW_U_PREMIUM, "Broadwell U Premium" },
-	{ PCH_WPT_BDW_U_BASE,    "Broadwell U Base" },
-	{ PCH_WPT_BDW_Y_SAMPLE,  "Broadwell Y Sample" },
-	{ PCH_WPT_BDW_Y_PREMIUM, "Broadwell Y Premium" },
-	{ PCH_WPT_BDW_Y_BASE,    "Broadwell Y Base" },
-	{ PCH_WPT_BDW_H,         "Broadwell H" },
+	{ PCH_SPT_LP_SAMPLE,	"Skylake LP Sample" },
+	{ PCH_SPT_LP_U_BASE,	"Skylake-U Base" },
+	{ PCH_SPT_LP_U_PREMIUM,	"Skylake-U Premium" },
+	{ PCH_SPT_LP_Y_PREMIUM,	"Skylake-Y Premium" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ IGD_HASWELL_ULT_GT1,     "Haswell ULT GT1" },
-	{ IGD_HASWELL_ULT_GT2,     "Haswell ULT GT2" },
-	{ IGD_HASWELL_ULT_GT3,     "Haswell ULT GT3" },
-	{ IGD_BROADWELL_U_GT1,     "Broadwell U GT1" },
-	{ IGD_BROADWELL_U_GT2,     "Broadwell U GT2" },
-	{ IGD_BROADWELL_U_GT3_15W, "Broadwell U GT3 (15W)" },
-	{ IGD_BROADWELL_U_GT3_28W, "Broadwell U GT3 (28W)" },
-	{ IGD_BROADWELL_Y_GT2,     "Broadwell Y GT2" },
-	{ IGD_BROADWELL_H_GT2,     "Broadwell U GT2" },
-	{ IGD_BROADWELL_H_GT3,     "Broadwell U GT3" },
+	{ IGD_SKYLAKE_GT1_SULTM, "Skylake ULT GT1"},
+	{ IGD_SKYLAKE_GT2_SULXM, "Skylake ULX GT2" },
+	{ IGD_SKYLAKE_GT2_SULTM, "Skylake ULT GT2" },
 };
 
 static void report_cpu_info(void)
@@ -102,8 +81,8 @@ static void report_cpu_info(void)
 	if (cpuidr.eax < 0x80000004) {
 		strcpy(cpu_string, "Platform info not available");
 	} else {
-		u32 *p = (u32*) cpu_string;
-		for (i = 2; i <= 4 ; i++) {
+		u32 *p = (u32 *) cpu_string;
+		for (i = 2; i <= 4; i++) {
 			cpuidr = cpuid(index + i);
 			*p++ = cpuidr.eax;
 			*p++ = cpuidr.ebx;
@@ -136,29 +115,27 @@ static void report_cpu_info(void)
 	aes = (cpuidr.ecx & (1 << 25)) ? 1 : 0;
 	txt = (cpuidr.ecx & (1 << 6)) ? 1 : 0;
 	vt = (cpuidr.ecx & (1 << 5)) ? 1 : 0;
-	printk(BIOS_DEBUG, "CPU: AES %ssupported, TXT %ssupported, "
-	       "VT %ssupported\n", mode[aes], mode[txt], mode[vt]);
+	printk(BIOS_DEBUG,
+		"CPU: AES %ssupported, TXT %ssupported, VT %ssupported\n",
+		mode[aes], mode[txt], mode[vt]);
 }
 
 static void report_mch_info(void)
 {
 	int i;
-	u16 mch_device = pci_read_config16(SA_DEV_ROOT, PCI_DEVICE_ID);
+	u16 mchid = pci_read_config16(SA_DEV_ROOT, PCI_DEVICE_ID);
 	u8 mch_revision = pci_read_config8(SA_DEV_ROOT, PCI_REVISION_ID);
 	const char *mch_type = "Unknown";
 
-	/* Look for string to match the revision for Broadwell U/Y */
-	if (mch_device == MCH_BROADWELL_ID_U_Y) {
-		for (i = 0; i < ARRAY_SIZE(mch_rev_table); i++) {
-			if (mch_rev_table[i].revid == mch_revision) {
-				mch_type = mch_rev_table[i].name;
-				break;
-			}
+	for (i = 0; i < ARRAY_SIZE(mch_table); i++) {
+		if (mch_table[i].mchid == mchid) {
+			mch_type = mch_table[i].name;
+			break;
 		}
 	}
 
 	printk(BIOS_DEBUG, "MCH: device id %04x (rev %02x) is %s\n",
-	       mch_device, mch_revision, mch_type);
+	       mchid, mch_revision, mch_type);
 }
 
 static void report_pch_info(void)

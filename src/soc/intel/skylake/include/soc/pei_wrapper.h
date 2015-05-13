@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
-#ifndef _BROADWELL_PEI_WRAPPER_H_
-#define _BROADWELL_PEI_WRAPPER_H_
+#ifndef _SOC_PEI_WRAPPER_H_
+#define _SOC_PEI_WRAPPER_H_
 
 #include <soc/pei_data.h>
 
-typedef int ABI_X86 (*pei_wrapper_entry_t)(struct pei_data *pei_data);
+typedef int ABI_X86(*pei_wrapper_entry_t)(struct pei_data *pei_data);
 
 static inline void pei_data_usb2_port(struct pei_data *pei_data, int port,
 				      uint16_t length, uint8_t enable,
@@ -43,7 +44,7 @@ static inline void pei_data_usb3_port(struct pei_data *pei_data, int port,
 	pei_data->usb3_ports[port].fixed_eq = fixed_eq;
 }
 
-void broadwell_fill_pei_data(struct pei_data *pei_data);
+void soc_fill_pei_data(struct pei_data *pei_data);
 void mainboard_fill_pei_data(struct pei_data *pei_data);
 
 #endif

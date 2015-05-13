@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc.
  */
 
 /* Intel PCH PCIe support */
@@ -29,10 +30,10 @@ Method (IRQM, 1, Serialized) {
 		Package() { 0x0000ffff, 2, 0, 18 },
 		Package() { 0x0000ffff, 3, 0, 19 } })
 	Name (IQAP, Package() {
-		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
-		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
-		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
-		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 } })
+		Package() { 0x0000ffff, 0, \_SB.PCI0.LNKA, 0 },
+		Package() { 0x0000ffff, 1, \_SB.PCI0.LNKB, 0 },
+		Package() { 0x0000ffff, 2, \_SB.PCI0.LNKC, 0 },
+		Package() { 0x0000ffff, 3, \_SB.PCI0.LNKD, 0 } })
 
 	/* Interrupt Map INTA->INTB, INTB->INTC, INTC->INTD, INTD->INTA */
 	Name (IQBA, Package() {
@@ -41,10 +42,10 @@ Method (IRQM, 1, Serialized) {
 		Package() { 0x0000ffff, 2, 0, 19 },
 		Package() { 0x0000ffff, 3, 0, 16 } })
 	Name (IQBP, Package() {
-		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKB, 0 },
-		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKC, 0 },
-		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKD, 0 },
-		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKA, 0 } })
+		Package() { 0x0000ffff, 0, \_SB.PCI0.LNKB, 0 },
+		Package() { 0x0000ffff, 1, \_SB.PCI0.LNKC, 0 },
+		Package() { 0x0000ffff, 2, \_SB.PCI0.LNKD, 0 },
+		Package() { 0x0000ffff, 3, \_SB.PCI0.LNKA, 0 } })
 
 	/* Interrupt Map INTA->INTC, INTB->INTD, INTC->INTA, INTD->INTB */
 	Name (IQCA, Package() {
@@ -53,10 +54,10 @@ Method (IRQM, 1, Serialized) {
 		Package() { 0x0000ffff, 2, 0, 16 },
 		Package() { 0x0000ffff, 3, 0, 17 } })
 	Name (IQCP, Package() {
-		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKC, 0 },
-		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKD, 0 },
-		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKA, 0 },
-		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKB, 0 } })
+		Package() { 0x0000ffff, 0, \_SB.PCI0.LNKC, 0 },
+		Package() { 0x0000ffff, 1, \_SB.PCI0.LNKD, 0 },
+		Package() { 0x0000ffff, 2, \_SB.PCI0.LNKA, 0 },
+		Package() { 0x0000ffff, 3, \_SB.PCI0.LNKB, 0 } })
 
 	/* Interrupt Map INTA->INTD, INTB->INTA, INTC->INTB, INTD->INTC */
 	Name (IQDA, Package() {
@@ -65,10 +66,10 @@ Method (IRQM, 1, Serialized) {
 		Package() { 0x0000ffff, 2, 0, 17 },
 		Package() { 0x0000ffff, 3, 0, 18 } })
 	Name (IQDP, Package() {
-		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKD, 0 },
-		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKA, 0 },
-		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKB, 0 },
-		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKC, 0 } })
+		Package() { 0x0000ffff, 0, \_SB.PCI0.LNKD, 0 },
+		Package() { 0x0000ffff, 1, \_SB.PCI0.LNKA, 0 },
+		Package() { 0x0000ffff, 2, \_SB.PCI0.LNKB, 0 },
+		Package() { 0x0000ffff, 3, \_SB.PCI0.LNKC, 0 } })
 
 	Switch (ToInteger (Arg0)) {
 		/* PCIe Root Port 1 and 5 */
@@ -121,11 +122,9 @@ Device (RP01)
 {
 	Name (_ADR, 0x001c0000)
 
-	#include "pcie_port.asl"
-
 	Method (_PRT)
 	{
-		Return (IRQM (RPPN))
+		Return (IRQM (RPA1))
 	}
 }
 
@@ -133,11 +132,9 @@ Device (RP02)
 {
 	Name (_ADR, 0x001c0001)
 
-	#include "pcie_port.asl"
-
 	Method (_PRT)
 	{
-		Return (IRQM (RPPN))
+		Return (IRQM (RPA2))
 	}
 }
 
@@ -145,11 +142,9 @@ Device (RP03)
 {
 	Name (_ADR, 0x001c0002)
 
-	#include "pcie_port.asl"
-
 	Method (_PRT)
 	{
-		Return (IRQM (RPPN))
+		Return (IRQM (RPA3))
 	}
 }
 
@@ -157,11 +152,9 @@ Device (RP04)
 {
 	Name (_ADR, 0x001c0003)
 
-	#include "pcie_port.asl"
-
 	Method (_PRT)
 	{
-		Return (IRQM (RPPN))
+		Return (IRQM (RPA4))
 	}
 }
 
@@ -169,11 +162,9 @@ Device (RP05)
 {
 	Name (_ADR, 0x001c0004)
 
-	#include "pcie_port.asl"
-
 	Method (_PRT)
 	{
-		Return (IRQM (RPPN))
+		Return (IRQM (RPA5))
 	}
 }
 
@@ -181,11 +172,9 @@ Device (RP06)
 {
 	Name (_ADR, 0x001c0005)
 
-	#include "pcie_port.asl"
-
 	Method (_PRT)
 	{
-		Return (IRQM (RPPN))
+		Return (IRQM (RPA6))
 	}
 }
 
@@ -193,11 +182,9 @@ Device (RP07)
 {
 	Name (_ADR, 0x001c0006)
 
-	#include "pcie_port.asl"
-
 	Method (_PRT)
 	{
-		Return (IRQM (RPPN))
+		Return (IRQM (RPA7))
 	}
 }
 
@@ -205,10 +192,48 @@ Device (RP08)
 {
 	Name (_ADR, 0x001c0007)
 
-	#include "pcie_port.asl"
-
 	Method (_PRT)
 	{
-		Return (IRQM (RPPN))
+		Return (IRQM (RPA8))
 	}
 }
+Device (RP09)
+{
+        Name (_ADR, 0x001D0000)
+
+        Method (_PRT)
+        {
+		Return (IRQM (RPA9))
+        }
+}
+
+Device (RP10)
+{
+        Name (_ADR, 0x001D0001)
+
+        Method (_PRT)
+        {
+		Return (IRQM (RPAA))
+        }
+}
+
+Device (RP11)
+{
+        Name (_ADR, 0x001D0002)
+
+        Method (_PRT)
+        {
+		Return (IRQM (RPAB))
+        }
+}
+
+Device (RP12)
+{
+        Name (_ADR, 0x001D0003)
+
+        Method (_PRT)
+        {
+		Return (IRQM (RPAC))
+        }
+}
+

@@ -43,6 +43,10 @@ Device(EC)
 				EVNT, 8,	/* write will trigger EC event */
 		Offset (0x3a),
 				AMUT, 1,	/* Audio Mute */
+				    , 3,
+				BTEB, 1,
+				WLEB, 1,
+				WWEB, 1,
 		Offset (0x3B),
 				    , 1,
 				KBLT, 1,	/* Keyboard Light */
@@ -88,6 +92,13 @@ Device(EC)
 	Method (MUTE, 1, NotSerialized)
 	{
 		Store(Arg0, AMUT)
+	}
+
+	Method (RADI, 1, NotSerialized)
+	{
+		Store(Arg0, WLEB)
+		Store(Arg0, WWEB)
+		Store(Arg0, BTEB)
 	}
 
 	Method (USBP, 1, NotSerialized)

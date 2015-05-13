@@ -61,7 +61,7 @@ Method(_PIC, 1)
 
 Method(_PTS,1)
 {
-
+	\_SB.PCI0.LPCB.EC.RADI(0)
 }
 
 /* The _WAK method is called on system wakeup */

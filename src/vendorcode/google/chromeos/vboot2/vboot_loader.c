@@ -94,6 +94,8 @@ static int vboot_loader_active(struct prog *prog)
 			.name = CONFIG_CBFS_PREFIX "/verstage",
 		};
 
+		printk(BIOS_DEBUG, "VBOOT: Loading verstage.\n");
+
 		/* load verstage from RO */
 		if (cbfs_load_prog_stage(CBFS_DEFAULT_MEDIA, &verstage))
 			die("failed to load verstage");

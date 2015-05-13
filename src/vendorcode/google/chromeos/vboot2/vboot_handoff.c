@@ -147,6 +147,10 @@ void vboot_fill_handoff(void)
 	/* needed until we finish transtion to vboot2 for kernel verification */
 	fill_vboot_handoff(vh, sd);
 
+	/* Nothing left to do in readonly path. */
+	if (vboot_is_readonly_path(wd))
+		return;
+
 	vb2_get_selected_region(wd, &fw_main);
 	fw_info = vboot_locate_components(&fw_main);
 	if (fw_info == NULL)

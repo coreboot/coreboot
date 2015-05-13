@@ -37,6 +37,30 @@ static void wait_rdy(u8 *mmio)
 	}
 }
 
+static void intel_gmbus_stop_bus(u8 * mmio, u8 bus)
+{
+	wait_rdy(mmio);
+	write32(mmio + 4 * 0, bus);
+	wait_rdy(mmio);
+	write32(mmio + 4 * 8, 0);
+	write32(mmio + 4 * 1, 0x4e0400a1);
+	wait_rdy(mmio);
+	write32(mmio + 4 * 8, 0);
+	write32(mmio + 4 * 1, 0x80000000);
+	write32(mmio + 4 * 1, 0x00000000);
+	wait_rdy(mmio);
+	write32(mmio + 4 * 1, 0x480000a0);
+	wait_rdy(mmio);
+	write32(mmio + 4 * 0, 0x48000000);
+	write32(mmio + 4 * 2, 0x00008000);
+}
+
+void intel_gmbus_stop(u8 *mmio)
+{
+	intel_gmbus_stop_bus(mmio, 6);
+	intel_gmbus_stop_bus(mmio, 2);
+}
+
 void intel_gmbus_read_edid(u8 *mmio, u8 bus, u8 slave, u8 *edid, u32 edid_size)
 {
 	int i;

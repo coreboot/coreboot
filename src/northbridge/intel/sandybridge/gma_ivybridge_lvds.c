@@ -206,6 +206,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	enable_port(mmio);
 
 	intel_gmbus_read_edid(mmio + PCH_GMBUS0, 3, 0x50, edid_data, 128);
+	intel_gmbus_stop(mmio + PCH_GMBUS0);
 	decode_edid(edid_data,
 		    sizeof(edid_data), &edid);
 
@@ -236,9 +237,8 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	u32 pixel_m1 = 1;
 	u32 pixel_m2 = 1;
 
-#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	vga_textmode_init();
-#else
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	vga_sr_write(1, 1);
 	vga_sr_write(0x2, 0xf);
 	vga_sr_write(0x3, 0x0);
@@ -512,6 +512,13 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	memset ((void *) lfb, 0, edid.x_resolution * edid.y_resolution * 4);
 	set_vbe_mode_info_valid(&edid, lfb);
 #endif
+
+	/* Doesn't change any hw behaviour but vga oprom expects it there. */
+	write32(mmio + 0x0004f040, 0x01000008);
+	write32(mmio + 0x0004f044, 0x00001800);
+	write32(mmio + 0x0004f04c, 0x7f7f0000);
+	write32(mmio + 0x0004f054, 0x0000422d);
+	write32(mmio + 0x0004f05c, 0x00000008);
 
 	/* Linux relies on VBT for panel info.  */
 	generate_fake_intel_oprom(info, dev_find_slot(0, PCI_DEVFN(2, 0)),

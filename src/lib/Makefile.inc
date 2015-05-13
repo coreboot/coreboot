@@ -147,6 +147,7 @@ $(obj)/lib/version.bootblock.o : $(obj)/build.h
 $(obj)/lib/version.romstage.o : $(obj)/build.h
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
 $(obj)/lib/version.smm.o : $(obj)/build.h
+$(obj)/lib/version.secmon.o : $(obj)/build.h
 $(obj)/lib/version.verstage.o : $(obj)/build.h
 
 romstage-y += bootmode.c

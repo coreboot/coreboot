@@ -1,0 +1,52 @@
+if BOARD_INTEL_SKLRVP
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select CACHE_ROM
+	select CHROMEOS
+	select CHROMEOS_RAMOOPS_DYNAMIC
+	select CHROMEOS_VBNV_CMOS
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_SMI_HANDLER
+	select MAINBOARD_HAS_CHROMEOS
+	select MARK_GRAPHICS_MEM_WRCOMB
+	select MMCONF_SUPPORT
+	select MONOTONIC_TIMER_MSR
+	select INTEL_PCH_UART_CONSOLE
+	select SOC_INTEL_SKYLAKE
+	select VBOOT_DYNAMIC_WORK_BUFFER
+	select VIRTUAL_DEV_SWITCH
+	select LID_SWITCH
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config BOOT_MEDIA_SPI_BUS
+	int
+	default 0
+
+config INTEL_PCH_UART_CONSOLE_NUMBER
+	hex
+	default 2
+
+config MAINBOARD_DIR
+	string
+	default "intel/sklrvp"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Skylake RVP"
+
+config MAX_CPUS
+	int
+	default 8
+
+config VBOOT_RAMSTAGE_INDEX
+	hex
+	default 0x3
+
+endif

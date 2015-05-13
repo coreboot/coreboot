@@ -1,0 +1,164 @@
+chip soc/intel/skylake
+
+	# SerialIO device modes
+	register "SerialIoDevMode" = "{ \
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci, \
+		[PchSerialIoIndexSpi0]  = PchSerialIoPci, \
+		[PchSerialIoIndexSpi1]  = PchSerialIoPci, \
+		[PchSerialIoIndexUart0] = PchSerialIoPci, \
+		[PchSerialIoIndexUart1] = PchSerialIoPci, \
+		[PchSerialIoIndexUart2] = PchSerialIoLegacyUart, \
+	}"
+
+	# Enable eDP Hotplug with 6ms pulse
+	register "gpu_dp_d_hotplug" = "0x06"
+
+	# Enable DDI1 Hotplug with 6ms pulse
+	register "gpu_dp_b_hotplug" = "0x06"
+
+	# Enable DDI2 Hotplug with 6ms pulse
+	register "gpu_dp_c_hotplug" = "0x06"
+
+	# Set backlight PWM values for eDP
+	register "gpu_cpu_backlight" = "0x00000200"
+	register "gpu_pch_backlight" = "0x04000000"
+
+	# Enable Panel and configure power delays
+	register "gpu_panel_port_select" = "1"			# eDP
+	register "gpu_panel_power_cycle_delay" = "6"		# 500ms
+	register "gpu_panel_power_up_delay" = "2000"		# 200ms
+	register "gpu_panel_power_down_delay" = "500"		# 50ms
+	register "gpu_panel_power_backlight_on_delay" = "2000"	# 200ms
+	register "gpu_panel_power_backlight_off_delay" = "2000"	# 200ms
+
+	register "pirqa_routing" = "0x8b"
+	register "pirqb_routing" = "0x8a"
+	register "pirqc_routing" = "0x8b"
+	register "pirqd_routing" = "0x8b"
+	register "pirqe_routing" = "0x80"
+	register "pirqf_routing" = "0x80"
+	register "pirqg_routing" = "0x80"
+	register "pirqh_routing" = "0x80"
+
+	# EC range is 0x800-0x9ff
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x00fc0901"
+
+	# EC_SMI
+	register "ec_smi_gpio" = "34"
+	register "alt_gp_smi_en" = "0x0400"
+	register "gpe0_en_1" = "0x00000000"
+	# EC_SCI is GPIO36
+	register "gpe0_en_2" = "0x00000010"
+	register "gpe0_en_3" = "0x00000000"
+	register "gpe0_en_4" = "0x00000000"
+
+	# Force enable ASPM for PCIe Port 3
+	register "pcie_port_force_aspm" = "0x04"
+	register "pcie_port_coalesce" = "1"
+
+	# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
+	register "icc_clock_disable" = "0x013b0000"
+
+	# Enable S0ix
+	register "s0ix_enable" = "0"
+
+	# Memory related
+	register "IedSize" = "0x0"
+
+	# Probeless Trace function
+	register "ProbelessTrace" = "0"
+
+	# Lan
+	register "EnableLan" = "0"
+
+	# SATA related
+	register "EnableSata" = "0"
+	register "SataSalpSupport" = "0"
+	register "SataMode" = "0"
+	register "SataPortsEnable[0]" = "0"
+
+	# Audio related
+	register "EnableAzalia" = "1"
+	register "EnableTraceHub" = "0"
+	register "DspEnable" = "1"
+
+	# I/O Buffer Ownership:
+	#  0: HD-A Link
+	#  1 Shared, HD-A Link and I2S Port
+	#  3: I2S Ports
+	register "IoBufferOwnership" = "3"
+
+	# USB related
+	register "SsicPortEnable" = "0"
+
+	# SMBUS
+	register "SmbusEnable" = "1"
+
+	# Camera
+	register "Cio2Enable" = "0"
+
+	# eMMC
+	register "ScsEmmcEnabled" = "1"
+	register "ScsEmmcHs400Enabled" = "0"
+	register "ScsSdCardEnabled" = "2"
+
+	# Integrated Sensor
+	register "IshEnable" = "0"
+
+	# XDCI controller
+	register "XdciEnable" = "0"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+	device domain 0 on
+					# Refered from SKL EDS Vol 1 : Page No: 31-32
+		device pci 00.0 on  end # Host Bridge
+		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 14.0 on  end # USB 3.0 xHCI Controller
+		device pci 14.1 off end # USB Device Controller (OTG)
+		device pci 14.2 on  end # Thermal Subsystem
+		device pci 15.0 on  end # I2C Controller #0
+		device pci 15.1 on  end # I2C Controller #1
+		device pci 15.2 on  end # I2C Controller #2
+		device pci 15.3 on  end # I2C Controller #3
+		device pci 16.0 on  end # Management Engine Interface 1
+		device pci 16.1 off end # Management Engine Interface 2
+		device pci 16.2 off end # Management Engine IDE Redirection (IDE-R)
+		device pci 16.3 off end # Management Engine Keyboard and Text (KT) Redirection
+		device pci 16.4 off end # Management Engine Intel MEI #3
+		device pci 17.0 off end # SATA Controller
+		device pci 19.0 on  end # UART Controller #2
+		device pci 19.1 on  end # I2C Controller #5
+		device pci 19.2 on  end # I2C Controller #4
+		device pci 1c.0 off end # PCI Express Port 1
+		device pci 1c.1 off end # PCI Express Port 2
+		device pci 1c.2 off end # PCI Express Port 3
+		device pci 1c.3 off end # PCI Express Port 4
+		device pci 1c.4 off end # PCI Express Port 5
+		device pci 1c.5 off end # PCI Express Port 6
+		device pci 1c.6 off end # PCI Express Port 7
+		device pci 1c.7 off end # PCI Express Port 8
+		device pci 1d.0 on  end # PCI Express Port 9
+		device pci 1d.1 off end # PCI Express Port 10
+		device pci 1d.2 off end # PCI Express Port 11
+		device pci 1d.3 off end # PCI Express Port 12
+		device pci 1e.0 on  end # UART #0
+		device pci 1e.1 on  end # UART #1
+		device pci 1e.2 on  end # SPI #0
+		device pci 1e.4 on  end # eMMC
+		device pci 1e.5 off end # SDIO
+		device pci 1e.6 on  end # SDCard
+		device pci 1f.0 on  end # LPC Interface (eSPI Enable Strap = 0) eSPI Interface (eSPI Enable Strap = 1)
+		device pci 1f.3 on  end # Intel High Definition Audio (Intel HD Audio) (Audio, Voice, Speech)
+		device pci 1f.4 off end # SMBus Controller
+		device pci 1f.5 on  end # SPI
+		device pci 1f.6 off end # GbE Controller
+	end
+end

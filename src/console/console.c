@@ -43,6 +43,14 @@ void console_tx_byte(unsigned char byte)
 	__spkmodem_tx_byte(byte);
 	__qemu_debugcon_tx_byte(byte);
 
+	/* Some consoles want newline conversion
+	 * to keep terminals happy.
+	 */
+	if (byte == '\n') {
+		__uart_tx_byte('\r');
+		__usb_tx_byte('\r');
+	}
+
 	__uart_tx_byte(byte);
 	__ne2k_tx_byte(byte);
 	__usb_tx_byte(byte);

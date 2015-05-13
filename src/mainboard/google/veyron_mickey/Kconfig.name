@@ -1,0 +1,2 @@
+config BOARD_GOOGLE_VEYRON_Mickey
+	bool "Veyron_Mickey"

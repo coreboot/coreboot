@@ -39,7 +39,11 @@ int primitive_memtest(uintptr_t base, uintptr_t size);
 /* Defined in src/lib/stack.c */
 int checkstack(void *top_of_stack, int core);
 
-/* Defined in src/lib/hexdump.c */
+/*
+ * Defined in src/lib/hexdump.c
+ * Use the Linux command "xxd" for matching output.  xxd is found in package
+ * https://packages.debian.org/jessie/amd64/vim-common/filelist
+ */
 void hexdump(const void *memory, size_t length);
 void hexdump32(char LEVEL, const void *d, size_t len);
 

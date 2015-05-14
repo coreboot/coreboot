@@ -42,6 +42,7 @@ struct spi_flash {
 
 	u8		status_cmd;
 
+	/* All callbacks return 0 on success and != 0 on error. */
 	int		(*read)(struct spi_flash *flash, u32 offset,
 				size_t len, void *buf);
 	int		(*write)(struct spi_flash *flash, u32 offset,

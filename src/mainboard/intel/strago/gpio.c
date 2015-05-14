@@ -242,7 +242,7 @@ static const struct soc_gpio_map  gpe_gpio_map[] = {
 	GPIO_NC, /* 19 MF_GPIO_5 */
 	GPIO_NC, /* 20 MF_GPIO_9 */
 	GPIO_NC, /* 21 MF_GPIO_0 */
-	GPIO_NC, /* 22 MF_GPIO_4 */
+	GPIO_INPUT_PU_20K, /* 22 MF_GPIO_4 */
 	GPIO_NC, /* 23 MF_GPIO_8 */
 	GPIO_NC, /* 24 MF_GPIO_2 */
 	GPIO_NC, /* 25 MF_GPIO_6 */

@@ -21,7 +21,6 @@
 #define __SOC_ROCKCHIP_RK3288_SPI_H__
 
 /* This driver serves as a CBFS media source. */
-#include <cbfs.h>
 #include <spi-generic.h>
 #include <stdint.h>
 
@@ -195,10 +194,6 @@ check_member(rockchip_spi, rxdr, 0x800);
 #define SPI_CLEAR_INT_RXOI	(1 << 2)
 #define SPI_CLEAR_INT_TXOI	(1 << 3)
 
-/* Serve as CBFS media source */
-int initialize_rockchip_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size);
 void rockchip_spi_init(unsigned int bus, unsigned int speed_hz);
 
 #endif

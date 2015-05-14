@@ -288,8 +288,3 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	rockchip_spi_enable_chip(regs, 0);
 	return ret < 0 ? ret : 0;
 }
-
-struct rockchip_spi_media {
-	struct spi_slave *slave;
-	struct cbfs_simple_buffer buffer;
-};

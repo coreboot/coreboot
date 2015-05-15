@@ -32,7 +32,7 @@
 #define BLOB_SIZE VB2_NVDATA_SIZE
 
 /* FMAP descriptor of the NVRAM area */
-static struct vboot_region nvram_region;
+static struct region nvram_region;
 
 /* offset of the current nvdata in SPI flash */
 static int blob_offset = -1;
@@ -74,7 +74,7 @@ static int init_vbnv(void)
 	int i;
 
 	vboot_locate_region("RW_NVRAM", &nvram_region);
-	if (nvram_region.size < BLOB_SIZE) {
+	if (region_sz(&nvram_region) < BLOB_SIZE) {
 		printk(BIOS_ERR, "%s: failed to locate NVRAM\n", __func__);
 		return 1;
 	}
@@ -83,8 +83,8 @@ static int init_vbnv(void)
 	for (i = 0; i < BLOB_SIZE; i++)
 		empty_blob[i] = erase_value();
 
-	offset = nvram_region.offset_addr;
-	top_offset = nvram_region.offset_addr + nvram_region.size - BLOB_SIZE;
+	offset = region_offset(&nvram_region);
+	top_offset = offset + region_sz(&nvram_region) - BLOB_SIZE;
 
 	/*
 	 * after the loop, offset is supposed to point the blob right before
@@ -130,8 +130,8 @@ static int erase_nvram(void)
 	if (vbnv_flash_probe())
 		return 1;
 
-	if (spi_flash->erase(spi_flash, nvram_region.offset_addr,
-			     nvram_region.size)) {
+	if (spi_flash->erase(spi_flash, region_offset(&nvram_region),
+			     region_sz(&nvram_region))) {
 		printk(BIOS_ERR, "failed to erase nvram\n");
 		return 1;
 	}
@@ -171,7 +171,7 @@ void save_vbnv(const uint8_t *vbnv_copy)
 			if (new_offset > top_offset) {
 				if (erase_nvram())
 					return;  /* error */
-				new_offset = nvram_region.offset_addr;
+				new_offset = region_offset(&nvram_region);
 			}
 			break;
 		}

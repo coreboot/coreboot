@@ -25,7 +25,7 @@
 void vboot_fill_handoff(void);
 void verstage_main(void);
 void *vboot_load_stage(int stage_index,
-		       struct vboot_region *fw_main,
+		       struct region *fw_main,
 		       struct vboot_components *fw_info);
 
 /*
@@ -47,17 +47,17 @@ size_t vb2_working_data_size(void);
 void *vboot_get_work_buffer(struct vb2_working_data *wd);
 
 static inline void vb2_get_selected_region(struct vb2_working_data *wd,
-					   struct vboot_region *region)
+					   struct region *region)
 {
-	region->offset_addr = wd->selected_region_offset;
+	region->offset = wd->selected_region_offset;
 	region->size = wd->selected_region_size;
 }
 
 static inline void vb2_set_selected_region(struct vb2_working_data *wd,
-					   struct vboot_region *region)
+					   struct region *region)
 {
-	wd->selected_region_offset = region->offset_addr;
-	wd->selected_region_size = region->size;
+	wd->selected_region_offset = region_offset(region);
+	wd->selected_region_size = region_sz(region);
 }
 
 static inline int vboot_is_slot_selected(struct vb2_working_data *wd)

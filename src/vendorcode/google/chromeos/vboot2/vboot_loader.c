@@ -121,10 +121,10 @@ static int vboot_loader_active(struct prog *prog)
 		if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES) &&
 		    run_verification) {
 			/* RW A or B */
-			struct vboot_region fw_main;
+			struct region fw_main;
 
 			vb2_get_selected_region(wd, &fw_main);
-			cbfs_set_header_offset(fw_main.offset_addr);
+			cbfs_set_header_offset(region_offset(&fw_main));
 		}
 		return 1;
 	}
@@ -132,27 +132,30 @@ static int vboot_loader_active(struct prog *prog)
 	return 0;
 }
 
-static uintptr_t vboot_fw_region(int fw_index, struct vboot_region *fw_main,
-				struct vboot_components *fw_info, size_t *size)
+static int vboot_fw_region(int fw_index, struct region *fw_main,
+				struct vboot_components *fw_info,
+				struct region *fc)
 {
-	uintptr_t fc_addr;
-	uint32_t fc_size;
+	size_t fw_main_end;
+	size_t fc_end;
 
 	if (fw_index >= fw_info->num_components) {
 		printk(BIOS_INFO, "invalid stage index: %d\n", fw_index);
-		return 0;
+		return -1;
 	}
 
-	fc_addr = fw_main->offset_addr + fw_info->entries[fw_index].offset;
-	fc_size = fw_info->entries[fw_index].size;
-	if (fc_size == 0 ||
-	    fc_addr + fc_size > fw_main->offset_addr + fw_main->size) {
+	fc->offset = region_offset(fw_main) + fw_info->entries[fw_index].offset;
+	fc->size = fw_info->entries[fw_index].size;
+
+	fw_main_end = region_offset(fw_main) + region_sz(fw_main);
+	fc_end = region_offset(fc) + region_sz(fc);
+
+	if (region_sz(fc) == 0 || fc_end > fw_main_end) {
 		printk(BIOS_INFO, "invalid stage address or size\n");
-		return 0;
+		return -1;
 	}
 
-	*size = fc_size;
-	return fc_addr;
+	return 0;
 }
 
 /* This function is only called when vboot_loader_active() returns 1. That
@@ -160,7 +163,7 @@ static uintptr_t vboot_fw_region(int fw_index, struct vboot_region *fw_main,
 static int vboot_prepare(struct prog *prog)
 {
 	struct vb2_working_data *wd;
-	struct vboot_region fw_main;
+	struct region fw_main;
 	struct vboot_components *fw_info;
 
 	/* Code size optimization. We'd never actually get called under the
@@ -202,25 +205,22 @@ static int vboot_prepare(struct prog *prog)
 
 	/* Load payload in ramstage. */
 	if (ENV_RAMSTAGE) {
-		uintptr_t payload;
+		struct region payload;
 		void *payload_ptr;
-		size_t size;
 
-		payload = vboot_fw_region(CONFIG_VBOOT_BOOT_LOADER_INDEX,
-						&fw_main, fw_info, &size);
-
-		if (payload == 0)
+		if (vboot_fw_region(CONFIG_VBOOT_BOOT_LOADER_INDEX,
+						&fw_main, fw_info, &payload))
 			die("Couldn't load payload.");
 
-		payload_ptr = vboot_get_region(payload, size, NULL);
+		payload_ptr = vboot_get_region(region_offset(&payload),
+						region_sz(&payload), NULL);
 
 		if (payload_ptr == NULL)
 			die("Couldn't load payload.");
 
-		prog_set_area(prog, payload_ptr, size);
+		prog_set_area(prog, payload_ptr, region_sz(&payload));
 	} else {
-		uintptr_t stage;
-		size_t size;
+		struct region stage;
 		int stage_index = 0;
 
 		if (prog->type == PROG_ROMSTAGE)
@@ -230,22 +230,31 @@ static int vboot_prepare(struct prog *prog)
 		else
 			die("Invalid program type for vboot.");
 
-		stage = vboot_fw_region(stage_index, &fw_main, fw_info, &size);
-
-		if (stage == 0)
+		if (vboot_fw_region(stage_index, &fw_main, fw_info, &stage))
 			die("Vboot stage load failed.");
 
 		if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
+			void *stage_ptr;
 			struct rmod_stage_load rmod_ram = {
 				.cbmem_id = CBMEM_ID_RAMSTAGE,
 				.prog = prog,
 			};
 
-			if (rmodule_stage_load(&rmod_ram, (void *)stage))
+			stage_ptr = vboot_get_region(region_offset(&stage),
+						region_sz(&stage), NULL);
+
+			if (stage_ptr == NULL)
+				die("Vboot couldn't load stage.");
+
+			if (rmodule_stage_load(&rmod_ram, stage_ptr))
 				die("Vboot couldn't load stage");
-		} else if (cbfs_load_prog_stage_by_offset(CBFS_DEFAULT_MEDIA,
-							prog, stage) < 0)
-			die("Vboot couldn't load stage");
+		} else {
+			size_t offset = region_offset(&stage);
+
+			if (cbfs_load_prog_stage_by_offset(CBFS_DEFAULT_MEDIA,
+								prog, offset))
+				die("Vboot couldn't load stage");
+		}
 	}
 
 	return 0;

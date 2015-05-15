@@ -18,7 +18,7 @@
  */
 
 #include <boot/coreboot_tables.h>
-#include <cbfs.h>
+#include <boot_device.h>
 #include <cbmem.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
@@ -31,36 +31,42 @@
 #include "vboot_common.h"
 #include "vboot_handoff.h"
 
-void vboot_locate_region(const char *name, struct vboot_region *region)
+void vboot_locate_region(const char *name, struct region *region)
 {
-	region->size = find_fmap_entry(name, (void **)&region->offset_addr);
+	const struct fmap_area *area;
+
+	region->size = 0;
+
+	area = find_fmap_area(fmap_find(), name);
+
+	if (area != NULL) {
+		region->offset = area->offset;
+		region->size = area->size;
+	}
 }
 
-void *vboot_get_region(uintptr_t offset_addr, size_t size, void *dest)
+void *vboot_get_region(size_t offset, size_t size, void *dest)
 {
-	if (IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED)) {
-		if (dest != NULL)
-			return memcpy(dest, (void *)offset_addr, size);
-		else
-			return (void *)offset_addr;
-	} else {
-		struct cbfs_media default_media, *media = &default_media;
-		void *cache;
+	const struct region_device *boot_dev;
+	struct region_device rdev;
 
-		init_default_cbfs_media(media);
-		media->open(media);
-		if (dest != NULL) {
-			cache = dest;
-			if (media->read(media, dest, offset_addr, size) != size)
-				cache = NULL;
-		} else {
-			cache = media->map(media, offset_addr, size);
-			if (cache == CBFS_MEDIA_INVALID_MAP_ADDRESS)
-				cache = NULL;
-		}
-		media->close(media);
-		return cache;
-	}
+	boot_device_init();
+	boot_dev = boot_device_ro();
+
+	if (boot_dev == NULL)
+		return NULL;
+
+	if (rdev_chain(&rdev, boot_dev, offset, size))
+		return NULL;
+
+	/* Each call will leak a mapping. */
+	if (dest == NULL)
+		return rdev_mmap_full(&rdev);
+
+	if (rdev_readat(&rdev, dest, 0, size) != size)
+		return NULL;
+
+	return dest;
 }
 
 int vboot_get_handoff_info(void **addr, uint32_t *size)
@@ -78,7 +84,7 @@ int vboot_get_handoff_info(void **addr, uint32_t *size)
 }
 
 /* This will leak a mapping of a fw region */
-struct vboot_components *vboot_locate_components(struct vboot_region *region)
+struct vboot_components *vboot_locate_components(struct region *region)
 {
 	size_t req_size;
 	struct vboot_components *vbc;
@@ -87,7 +93,7 @@ struct vboot_components *vboot_locate_components(struct vboot_region *region)
 	req_size += sizeof(struct vboot_component_entry) *
 			MAX_PARSED_FW_COMPONENTS;
 
-	vbc = vboot_get_region(region->offset_addr, req_size, NULL);
+	vbc = vboot_get_region(region_offset(region), req_size, NULL);
 	if (vbc && vbc->num_components > MAX_PARSED_FW_COMPONENTS)
 		vbc = NULL;
 

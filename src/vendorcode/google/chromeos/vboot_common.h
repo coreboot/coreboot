@@ -20,11 +20,7 @@
 #define VBOOT_COMMON_H
 
 #include <stdint.h>
-
-struct vboot_region {
-	uintptr_t offset_addr;
-	int32_t size;
-};
+#include <region.h>
 
 /* The FW areas consist of multiple components. At the beginning of
  * each area is the number of total compoments as well as the size and
@@ -40,9 +36,9 @@ struct vboot_components {
 	struct vboot_component_entry entries[0];
 } __attribute__((packed));
 
-void vboot_locate_region(const char *name, struct vboot_region *region);
+void vboot_locate_region(const char *name, struct region *region);
 
-struct vboot_components *vboot_locate_components(struct vboot_region *region);
+struct vboot_components *vboot_locate_components(struct region *region);
 
 /*
  * This is a dual purpose routine. If dest is non-NULL the region at
@@ -50,6 +46,6 @@ struct vboot_components *vboot_locate_components(struct vboot_region *region);
  * is NULL,the region will be mapped to a memory location. NULL is
  * returned on error else the location of the requested region.
  */
-void *vboot_get_region(uintptr_t offset_addr, size_t size, void *dest);
+void *vboot_get_region(size_t offset, size_t size, void *dest);
 
 #endif /* VBOOT_COMMON_H */

@@ -67,7 +67,7 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 			void *buf,
 			uint32_t size)
 {
-	struct vboot_region region;
+	struct region region;
 
 	switch (index) {
 	case VB2_RES_GBB:
@@ -83,10 +83,10 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 		return VB2_ERROR_EX_READ_RESOURCE_INDEX;
 	}
 
-	if (offset + size > region.size)
+	if (offset + size > region_sz(&region))
 		return VB2_ERROR_EX_READ_RESOURCE_SIZE;
 
-	if (vboot_get_region(region.offset_addr + offset, size, buf) == NULL)
+	if (vboot_get_region(region_offset(&region) + offset, size, buf) == NULL)
 		return VB2_ERROR_UNKNOWN;
 
 	return VB2_SUCCESS;
@@ -114,13 +114,13 @@ int vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
 	return VB2_ERROR_UNKNOWN;
 }
 
-static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
+static int hash_body(struct vb2_context *ctx, struct region *fw_main)
 {
 	uint64_t load_ts;
 	uint32_t expected_size;
 	MAYBE_STATIC uint8_t block[TODO_BLOCK_SIZE];
 	size_t block_size = sizeof(block);
-	uintptr_t offset;
+	size_t offset;
 	int rv;
 
 	/*
@@ -132,8 +132,8 @@ static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 	load_ts = timestamp_get();
 	timestamp_add(TS_START_HASH_BODY, load_ts);
 
-	expected_size = fw_main->size;
-	offset = fw_main->offset_addr;
+	expected_size = region_sz(fw_main);
+	offset = region_offset(fw_main);
 
 	/* Start the body hash */
 	rv = vb2api_init_hash(ctx, VB2_HASH_TAG_FW_BODY, &expected_size);
@@ -174,15 +174,14 @@ static int hash_body(struct vb2_context *ctx, struct vboot_region *fw_main)
 	return VB2_SUCCESS;
 }
 
-static int locate_firmware(struct vb2_context *ctx,
-			   struct vboot_region *fw_main)
+static int locate_firmware(struct vb2_context *ctx, struct region *fw_main)
 {
 	if (is_slot_a(ctx))
 		vboot_locate_region("FW_MAIN_A", fw_main);
 	else
 		vboot_locate_region("FW_MAIN_B", fw_main);
 
-	if (fw_main->size < 0)
+	if (region_sz(fw_main) == 0)
 		return 1;
 
 	return 0;
@@ -220,7 +219,7 @@ static uint32_t extend_pcrs(struct vb2_context *ctx)
 void verstage_main(void)
 {
 	struct vb2_context ctx;
-	struct vboot_region fw_main;
+	struct region fw_main;
 	struct vb2_working_data *wd = vboot_get_working_data();
 	int rv;
 	timestamp_add_now(TS_START_VBOOT);

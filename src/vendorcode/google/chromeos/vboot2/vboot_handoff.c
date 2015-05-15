@@ -127,7 +127,7 @@ void vboot_fill_handoff(void)
 	int i;
 	struct vboot_handoff *vh;
 	struct vb2_shared_data *sd;
-	struct vboot_region fw_main;
+	struct region fw_main;
 	struct vboot_components *fw_info;
 	struct vb2_working_data *wd = vboot_get_working_data();
 
@@ -159,7 +159,7 @@ void vboot_fill_handoff(void)
 	/* these offset & size are used to load a rw boot loader */
 	for (i = 0; i < fw_info->num_components; i++) {
 		vh->components[i].address =
-			fw_main.offset_addr + fw_info->entries[i].offset;
+			region_offset(&fw_main) + fw_info->entries[i].offset;
 		vh->components[i].size = fw_info->entries[i].size;
 	}
 }

@@ -48,7 +48,7 @@ SECTIONS
 	 */
 	. = 0xa8000 - (( CPUS - 1) * 0x400);
 	.jumptable : {
-		*(.jumptable)
+		KEEP(*(.jumptable));
 	}
 
 	/DISCARD/ : {

@@ -82,7 +82,7 @@ endif
 else # CONFIG_SMM_MODULES
 
 $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_LDSCRIPT)
-	$(LD_smm) $(SMM_LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
+	$(LD_smm) $(SMM_LDFLAGS) -nostdlib -nostartfiles --gc-sections -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
 	$(NM_smm) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
 	$(OBJCOPY_smm) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
 

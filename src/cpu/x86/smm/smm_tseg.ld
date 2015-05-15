@@ -19,7 +19,7 @@ SECTIONS
 	 */
 	. = 0x8000 - (( CPUS - 1) * 0x400);
 	.jumptable : {
-		*(.jumptable)
+		KEEP(*(.jumptable));
 	}
 
 	/* Data used in early SMM TSEG handler. */

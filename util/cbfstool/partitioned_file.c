@@ -46,8 +46,8 @@ static unsigned count_selected_fmap_entries(const struct fmap *fmap,
 	assert(callback);
 
 	unsigned count = 0;
-	for (unsigned index = 0; index < fmap->nareas; ++index) {
-		if (callback(fmap->areas + index, arg))
+	for (unsigned i = 0; i < fmap->nareas; ++i) {
+		if (callback(fmap->areas + i, arg))
 			++count;
 	}
 	return count;

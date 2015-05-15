@@ -500,8 +500,8 @@ static int cbfs_layout(void)
 	printf("This image contains the following sections that can be %s with this tool:\n",
 			param.show_immutable ? "accessed" : "manipulated");
 	puts("");
-	for (unsigned index = 0; index < fmap->nareas; ++index) {
-		const struct fmap_area *current = fmap->areas + index;
+	for (unsigned i = 0; i < fmap->nareas; ++i) {
+		const struct fmap_area *current = fmap->areas + i;
 
 		bool readonly = partitioned_file_fmap_count(param.image_file,
 			partitioned_file_fmap_select_children_of, current) ||
@@ -520,10 +520,10 @@ static int cbfs_layout(void)
 		// of tree that had duplicate lists in addition to child lists,
 		// which would allow covering that weird, unlikely case as well.
 		unsigned lookahead;
-		for (lookahead = 1; index + lookahead < fmap->nareas;
+		for (lookahead = 1; i + lookahead < fmap->nareas;
 								++lookahead) {
 			const struct fmap_area *consecutive =
-					fmap->areas + index + lookahead;
+					fmap->areas + i + lookahead;
 			if (consecutive->offset != current->offset ||
 					consecutive->size != current->size)
 				break;
@@ -539,7 +539,7 @@ static int cbfs_layout(void)
 			qualifier = "CBFS, ";
 		printf(" (%ssize %u)\n", qualifier, current->size);
 
-		index += lookahead - 1;
+		i += lookahead - 1;
 	}
 	puts("");
 

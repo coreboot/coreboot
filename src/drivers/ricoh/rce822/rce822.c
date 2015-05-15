@@ -46,7 +46,6 @@ static void rce822_init(struct device *dev)
 
 static void rce822_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-
 	if (!vendor || !device) {
 		pci_write_config32(dev, 0xac,
 				pci_read_config32(dev, PCI_VENDOR_ID));
@@ -60,7 +59,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem	= &rce822_set_subsystem,
 };
 
-static struct device_operations usb_ehci_ops = {
+static struct device_operations rce822_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -72,8 +71,8 @@ static struct device_operations usb_ehci_ops = {
 
 static const unsigned short pci_device_ids[] = { 0xe822, 0xe823, 0 };
 
-static const struct pci_driver pch_usb_ehci __pci_driver = {
-	.ops	 = &usb_ehci_ops,
+static const struct pci_driver rce822 __pci_driver = {
+	.ops	 = &rce822_ops,
 	.vendor	 = PCI_VENDOR_ID_RICOH,
 	.devices = pci_device_ids,
 };

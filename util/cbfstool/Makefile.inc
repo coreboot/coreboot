@@ -90,20 +90,31 @@ $(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-unused-function
 # Tolerate lzma sdk warnings
 $(objutil)/cbfstool/LzmaEnc.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 
+$(objutil)/cbfstool/fmd.o: $(top)/util/cbfstool/fmd_parser.h
+$(objutil)/cbfstool/fmd.o: $(top)/util/cbfstool/fmd_scanner.h
+$(objutil)/cbfstool/fmd_parser.o: $(objutil)/cbfstool/fmd.o
+$(objutil)/cbfstool/fmd_scanner.o: $(objutil)/cbfstool/fmd.o
+
+$(top)/util/cbfstool/%: $(top)/util/cbfstool/%_shipped
+	mkdir -p $(dir $@)
+	cp $< $@
+
 ifeq ($(CONFIG_FMD_GENPARSER),y)
 TOOLLEX := lex
 TOOLYACC := yacc
 
-$(objutil)/cbfstool/fmd.o: $(top)/util/cbfstool/fmd_parser.c
-$(objutil)/cbfstool/fmd.o: $(top)/util/cbfstool/fmd_scanner.c
-$(objutil)/cbfstool/fmd_parser.o: $(objutil)/cbfstool/fmd.o
-$(objutil)/cbfstool/fmd_scanner.o: $(objutil)/cbfstool/fmd.o
-$(top)/util/cbfstool/fmd_scanner.c $(top)/util/cbfstool/fmd_scanner.h: $(top)/util/cbfstool/fmd_scanner.l
+# the .c rule also creates .h
+$(top)/util/cbfstool/fmd_scanner.h_shipped: $(top)/util/cbfstool/fmd_scanner.c_shipped
+$(top)/util/cbfstool/fmd_scanner.c_shipped: $(top)/util/cbfstool/fmd_scanner.l
 	echo "    LEX        util/cbfstool/fmd_scanner.[ch]"
-	$(TOOLLEX) -t --header-file=$(top)/util/cbfstool/fmd_scanner.h $< >$(top)/util/cbfstool/fmd_scanner.c
-$(top)/util/cbfstool/fmd_parser.c $(top)/util/cbfstool/fmd_parser.h: $(top)/util/cbfstool/fmd_parser.y
+	$(TOOLLEX) -t --header-file=$(top)/util/cbfstool/fmd_scanner.h_shipped $< >$(top)/util/cbfstool/fmd_scanner.c_shipped
+
+# the .c rule also creates .h
+$(top)/util/cbfstool/fmd_parser.h_shipped: $(top)/util/cbfstool/fmd_parser.c_shipped
+$(top)/util/cbfstool/fmd_parser.c_shipped: $(top)/util/cbfstool/fmd_parser.y
 	echo "    YACC       util/cbfstool/fmd_parser.[ch]"
 	$(TOOLYACC) -d $<
-	mv -f y.tab.c $(top)/util/cbfstool/fmd_parser.c
-	mv -f y.tab.h $(top)/util/cbfstool/fmd_parser.h
-endif
+	mv -f y.tab.c $(top)/util/cbfstool/fmd_parser.c_shipped
+	mv -f y.tab.h $(top)/util/cbfstool/fmd_parser.h_shipped
+
+endif # CONFIG_FMD_GENPARSER

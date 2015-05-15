@@ -52,10 +52,6 @@ config BOOTBLOCK_ROM_OFFSET
 	hex
 	default 0x0
 
-config CBFS_HEADER_ROM_OFFSET
-	hex
-	default 0x10
-
 config UART_FOR_CONSOLE
 	int
 	default 0

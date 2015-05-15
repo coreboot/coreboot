@@ -93,9 +93,30 @@ struct region_device {
 		},					\
 	}
 
+static inline size_t region_offset(const struct region *r)
+{
+	return r->offset;
+}
+
 static inline size_t region_sz(const struct region *r)
 {
 	return r->size;
+}
+
+static inline size_t region_device_sz(const struct region_device *rdev)
+{
+	return region_sz(&rdev->region);
+}
+
+static inline size_t region_device_offset(const struct region_device *rdev)
+{
+	return region_offset(&rdev->region);
+}
+
+/* Memory map entire region device. Same semantics as rdev_mmap() above. */
+static inline void *rdev_mmap_full(const struct region_device *rd)
+{
+	return rdev_mmap(rd, 0, region_device_sz(rd));
 }
 
 struct mem_region_device {

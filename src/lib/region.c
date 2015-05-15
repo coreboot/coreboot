@@ -20,11 +20,6 @@
 #include <region.h>
 #include <string.h>
 
-static inline size_t region_offset(const struct region *r)
-{
-	return r->offset;
-}
-
 static inline size_t region_end(const struct region *r)
 {
 	return region_sz(r) + region_offset(r);

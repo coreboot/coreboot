@@ -23,17 +23,52 @@
  * SPI.
  */
 
+#include <boot_device.h>
 #include <cbfs.h>
+#include <region.h>
 #include <spi_flash.h>
 #include <symbols.h>
 
-/* SPI flash as CBFS media. */
-struct cbfs_spi_context {
-	struct spi_flash *spi_flash_info;
-	struct cbfs_simple_buffer buffer;
+static struct spi_flash *spi_flash_info;
+
+static ssize_t spi_readat(const struct region_device *rd, void *b,
+				size_t offset, size_t size)
+{
+	if (spi_flash_info->read(spi_flash_info, offset, size, b))
+		return -1;
+	return size;
+}
+
+static const struct region_device_ops spi_ops = {
+	.mmap = mmap_helper_rdev_mmap,
+	.munmap = mmap_helper_rdev_munmap,
+	.readat = spi_readat,
 };
 
-static struct cbfs_spi_context spi_context;
+static struct mmap_helper_region_device mdev =
+	MMAP_HELPER_REGION_INIT(&spi_ops, 0, CONFIG_ROM_SIZE);
+
+void boot_device_init(void)
+{
+	int bus = CONFIG_BOOT_MEDIA_SPI_BUS;
+	int cs = 0;
+
+	if (spi_flash_info != NULL)
+		return;
+
+	spi_flash_info = spi_flash_probe(bus, cs);
+
+	mmap_helper_device_init(&mdev, _cbfs_cache, _cbfs_cache_size);
+}
+
+/* Return the CBFS boot device. */
+const struct region_device *boot_device_ro(void)
+{
+	if (spi_flash_info == NULL)
+		return NULL;
+
+	return &mdev.rdev;
+}
 
 static int cbfs_media_open(struct cbfs_media *media)
 {
@@ -49,52 +84,58 @@ static size_t cbfs_media_read(struct cbfs_media *media,
 			      void *dest, size_t offset,
 			      size_t count)
 {
-	struct cbfs_spi_context *context = media->context;
+	const struct region_device *boot_dev;
 
-	return context->spi_flash_info->read
-		(context->spi_flash_info, offset, count, dest) ? 0 : count;
+	boot_dev = media->context;
+
+	if (rdev_readat(boot_dev, dest, offset, count) < 0)
+		return 0;
+
+	return count;
 }
 
 static void *cbfs_media_map(struct cbfs_media *media,
 			    size_t offset, size_t count)
 {
-	struct cbfs_spi_context *context = media->context;
+	const struct region_device *boot_dev;
+	void *ptr;
 
-	return cbfs_simple_buffer_map(&context->buffer, media, offset, count);
+	boot_dev = media->context;
+
+	ptr = rdev_mmap(boot_dev, offset, count);
+
+	if (ptr == NULL)
+		return (void *)-1;
+
+	return ptr;
 }
 
 static void *cbfs_media_unmap(struct cbfs_media *media,
 			       const void *address)
 {
-	struct cbfs_spi_context *context = media->context;
+	const struct region_device *boot_dev;
 
-	return cbfs_simple_buffer_unmap(&context->buffer, address);
+	boot_dev = media->context;
+
+	rdev_munmap(boot_dev, (void *)address);
+
+	return NULL;
 }
 
-static int init_cbfs_media_context(void)
-{
-	if (!spi_context.spi_flash_info) {
-
-		spi_context.spi_flash_info = spi_flash_probe
-			(CONFIG_BOOT_MEDIA_SPI_BUS, 0);
-
-		if (!spi_context.spi_flash_info)
-			return -1;
-
-		spi_context.buffer.buffer = (void *)_cbfs_cache;
-		spi_context.buffer.size = _cbfs_cache_size;
-	}
-	return 0;
-
-}
 int init_default_cbfs_media(struct cbfs_media *media)
 {
-	media->context = &spi_context;
+	boot_device_init();
+
+	media->context = (void *)boot_device_ro();
+
+	if (media->context == NULL)
+		return -1;
+
 	media->open = cbfs_media_open;
 	media->close = cbfs_media_close;
 	media->read = cbfs_media_read;
 	media->map = cbfs_media_map;
 	media->unmap = cbfs_media_unmap;
 
-	return init_cbfs_media_context();
+	return 0;
 }

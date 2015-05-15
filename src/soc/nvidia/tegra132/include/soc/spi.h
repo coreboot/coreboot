@@ -62,11 +62,6 @@ struct tegra_spi_channel {
 	enum spi_xfer_mode xfer_mode;
 };
 
-struct cbfs_media;
-int initialize_tegra_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size);
-
 struct tegra_spi_channel *tegra_spi_init(unsigned int bus);
 
 #endif	/* __NVIDIA_TEGRA132_SPI_H__ */

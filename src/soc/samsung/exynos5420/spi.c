@@ -26,6 +26,7 @@
 #include <spi_flash.h>
 #include <stdlib.h>
 #include <string.h>
+#include <symbols.h>
 
 #define EXYNOS_SPI_MAX_TRANSFER_BYTES (65535)
 
@@ -242,76 +243,43 @@ static int exynos_spi_read(struct spi_slave *slave, void *dest, uint32_t len,
 	return len;
 }
 
-// SPI as CBFS media.
-struct exynos_spi_media {
-	struct spi_slave *slave;
-	struct cbfs_simple_buffer buffer;
-};
+static struct exynos_spi_slave *boot_slave;
 
-static int exynos_spi_cbfs_open(struct cbfs_media *media)
+static ssize_t exynos_spi_readat(const struct region_device *rdev, void *dest,
+					size_t offset, size_t count)
 {
-	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
-	DEBUG_SPI("exynos_spi_cbfs_open\n");
-	return spi_claim_bus(spi->slave);
-}
-
-static int exynos_spi_cbfs_close(struct cbfs_media *media)
-{
-	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
-	DEBUG_SPI("exynos_spi_cbfs_close\n");
-	spi_release_bus(spi->slave);
-	return 0;
-}
-
-static size_t exynos_spi_cbfs_read(struct cbfs_media *media, void *dest,
-				   size_t offset, size_t count)
-{
-	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
-	int bytes;
 	DEBUG_SPI("exynos_spi_cbfs_read(%u)\n", count);
-	bytes = exynos_spi_read(spi->slave, dest, count, offset);
-	return bytes;
+	return exynos_spi_read(&boot_slave->slave, dest, count, offset);
 }
 
-static void *exynos_spi_cbfs_map(struct cbfs_media *media, size_t offset,
-				 size_t count)
+static void *exynos_spi_map(const struct region_device *rdev,
+					size_t offset, size_t count)
 {
-	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	DEBUG_SPI("exynos_spi_cbfs_map\n");
 	// exynos: spi_rx_tx may work in 4 byte-width-transmission mode and
 	// requires buffer memory address to be aligned.
 	if (count % 4)
 		count += 4 - (count % 4);
-	return cbfs_simple_buffer_map(&spi->buffer, media, offset, count);
+	return mmap_helper_rdev_mmap(rdev, offset, count);
 }
 
-static void *exynos_spi_cbfs_unmap(struct cbfs_media *media,
-				   const void *address)
+static const struct region_device_ops exynos_spi_ops = {
+	.mmap = exynos_spi_map,
+	.munmap = mmap_helper_rdev_munmap,
+	.readat = exynos_spi_readat,
+};
+
+static struct mmap_helper_region_device mdev =
+	MMAP_HELPER_REGION_INIT(&exynos_spi_ops, 0, CONFIG_ROM_SIZE);
+
+void exynos_init_spi_boot_device(void)
 {
-	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
-	DEBUG_SPI("exynos_spi_cbfs_unmap\n");
-	return cbfs_simple_buffer_unmap(&spi->buffer, address);
+	boot_slave = &exynos_spi_slaves[1];
+
+	mmap_helper_device_init(&mdev, _cbfs_cache, _cbfs_cache_size);
 }
 
-int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size)
+const struct region_device *exynos_spi_boot_device(void)
 {
-	// TODO Replace static variable to support multiple streams.
-	static struct exynos_spi_media context;
-	static struct exynos_spi_slave *eslave = &exynos_spi_slaves[1];
-	DEBUG_SPI("initialize_exynos_spi_cbfs_media\n");
-
-	context.slave = &eslave->slave;
-	context.buffer.allocated = context.buffer.last_allocate = 0;
-	context.buffer.buffer = buffer_address;
-	context.buffer.size = buffer_size;
-	media->context = (void*)&context;
-	media->open = exynos_spi_cbfs_open;
-	media->close = exynos_spi_cbfs_close;
-	media->read = exynos_spi_cbfs_read;
-	media->map = exynos_spi_cbfs_map;
-	media->unmap = exynos_spi_cbfs_unmap;
-
-	return 0;
+	return &mdev.rdev;
 }

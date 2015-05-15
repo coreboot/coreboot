@@ -2,7 +2,6 @@ ifeq ($(CONFIG_SOC_NVIDIA_TEGRA132),y)
 
 bootblock-y += bootblock.c
 bootblock-y += bootblock_asm.S
-bootblock-y += cbfs.c
 bootblock-y += clock.c
 bootblock-y += spi.c
 bootblock-y += i2c.c
@@ -23,7 +22,6 @@ bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
 verstage-y += verstage.c
-verstage-y += cbfs.c
 verstage-y += dma.c
 verstage-y += monotonic_timer.c
 verstage-y += spi.c
@@ -39,7 +37,6 @@ verstage-y += i2c.c
 romstage-y += 32bit_reset.S
 romstage-y += romstage_asm.S
 romstage-y += addressmap.c
-romstage-y += cbfs.c
 romstage-y += cbmem.c
 romstage-y += ccplex.c
 romstage-y += clock.c
@@ -63,7 +60,6 @@ romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 ramstage-y += 32bit_reset.S
 ramstage-y += addressmap.c
-ramstage-y += cbfs.c
 ramstage-y += cbmem.c
 ramstage-y += cpu.c
 ramstage-y += cpu_lib.S

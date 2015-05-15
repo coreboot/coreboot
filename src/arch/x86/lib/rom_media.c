@@ -17,6 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc.
  */
+
+#include <boot_device.h>
 #include <cbfs.h>
 #include <string.h>
 
@@ -36,14 +38,19 @@ static int x86_rom_open(struct cbfs_media *media) {
 
 static void *x86_rom_map(struct cbfs_media *media, size_t offset, size_t count) {
 	void *ptr;
-	// Some address (ex, pointer to master header) may be given in memory
-	// mapped location. To workaround that, we handle >0xf0000000 as real
-	// memory pointer.
+	const struct region_device *boot_dev;
 
+	boot_dev = media->context;
+
+	/* Extremely large offsets are considered relative to end of region. */
 	if ((uint32_t)offset > (uint32_t)0xf0000000)
-		ptr = (void*)offset;
-	else
-		ptr = (void*)(0 - (uint32_t)media->context + offset);
+		offset += region_device_sz(boot_dev);
+
+	ptr = rdev_mmap(boot_dev, offset, count);
+
+	if (ptr == NULL)
+		return (void *)-1;
+
 	return ptr;
 }
 
@@ -53,7 +60,13 @@ static void *x86_rom_unmap(struct cbfs_media *media, const void *address) {
 
 static size_t x86_rom_read(struct cbfs_media *media, void *dest, size_t offset,
 			   size_t count) {
-	void *ptr = x86_rom_map(media, offset, count);
+	void *ptr;
+
+	ptr = x86_rom_map(media, offset, count);
+
+	if (ptr == (void *)-1)
+		return 0;
+
 	memcpy(dest, ptr, count);
 	x86_rom_unmap(media, ptr);
 	return count;
@@ -63,30 +76,14 @@ static int x86_rom_close(struct cbfs_media *media) {
 	return 0;
 }
 
-int init_x86rom_cbfs_media(struct cbfs_media *media);
-int init_x86rom_cbfs_media(struct cbfs_media *media) {
-	// On X86, we always keep a reference of pointer to CBFS header in
-	// 0xfffffffc, and the pointer is still a memory-mapped address.
-	// Since the CBFS core always use ROM offset, we need to figure out
-	// header->romsize even before media is initialized.
-	struct cbfs_header *header = (struct cbfs_header*)
-			*(uint32_t*)(0xfffffffc);
-	if (CBFS_HEADER_MAGIC != ntohl(header->magic)) {
-#if defined(CONFIG_ROM_SIZE)
-		printk(BIOS_ERR, "Invalid CBFS master header at %p\n", header);
-		media->context = (void*)CONFIG_ROM_SIZE;
-#else
+static int init_x86rom_cbfs_media(struct cbfs_media *media) {
+	boot_device_init();
+
+	media->context = (void *)boot_device_ro();
+
+	if (media->context == NULL)
 		return -1;
-#endif
-	} else {
-		uint32_t romsize = ntohl(header->romsize);
-		media->context = (void*)romsize;
-#if defined(CONFIG_ROM_SIZE)
-		if (CONFIG_ROM_SIZE != romsize)
-			printk(BIOS_INFO, "Warning: rom size unmatch (%d/%d)\n",
-			       CONFIG_ROM_SIZE, romsize);
-#endif
-	}
+
 	media->open = x86_rom_open;
 	media->close = x86_rom_close;
 	media->map = x86_rom_map;

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
+ * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,14 @@
  */
 
 #include <boot_device.h>
-#include <cbfs.h>
+
+/* The ROM is memory mapped just below 4GiB. Form a pointer for the base. */
+#define rom_base ((void *)(uintptr_t)(-(int32_t)CONFIG_ROM_SIZE))
+
+static const struct mem_region_device boot_dev =
+	MEM_REGION_DEV_INIT(rom_base, CONFIG_ROM_SIZE);
 
 const struct region_device *boot_device_ro(void)
 {
-	return NULL;
-}
-
-int init_default_cbfs_media(struct cbfs_media *media)
-{
-	/* FIXME: add support for reading coreboot from NAND */
-	return -1;
+	return &boot_dev.rdev;
 }

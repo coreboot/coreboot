@@ -12,12 +12,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#include <boot_device.h>
 #include <cbfs.h>
 #include <string.h>
 #include <symbols.h>
 #include <console/console.h>
 
-/* Simple memory-mapped ROM emulation. */
+/* Maps directly to qemu memory mapped space of 0x10000 up to rom size. */
+static const struct mem_region_device gboot_dev =
+	MEM_REGION_DEV_INIT((void *)0x10000, CONFIG_ROM_SIZE);
+
+const struct region_device *boot_device_ro(void)
+{
+	return &gboot_dev.rdev;
+}
 
 static int emu_rom_open(struct cbfs_media *media)
 {
@@ -26,26 +34,40 @@ static int emu_rom_open(struct cbfs_media *media)
 
 static void *emu_rom_map(struct cbfs_media *media, size_t offset, size_t count)
 {
-	if (offset + count > CONFIG_ROM_SIZE)
-		return  (void *)-1;
-        return (void*)(offset + 0x10000);
+	const struct region_device *boot_dev;
+	void *ptr;
+
+	boot_dev = media->context;
+
+	ptr = rdev_mmap(boot_dev, offset, count);
+
+	if (ptr == NULL)
+		return (void *)-1;
+
+	return ptr;
 }
 
 static void *emu_rom_unmap(struct cbfs_media *media, const void *address)
 {
+	const struct region_device *boot_dev;
+
+	boot_dev = media->context;
+
+	rdev_munmap(boot_dev, (void *)address);
+
 	return NULL;
 }
 
 static size_t emu_rom_read(struct cbfs_media *media, void *dest, size_t offset,
 			   size_t count)
 {
-	void *ptr = emu_rom_map(media, offset, count);
+	const struct region_device *boot_dev;
 
-	if (ptr == (void *)-1)
+	boot_dev = media->context;
+
+	if (rdev_readat(boot_dev, dest, offset, count) < 0)
 		return 0;
 
-	memcpy(dest, ptr, count);
-	emu_rom_unmap(media, ptr);
 	return count;
 }
 
@@ -54,10 +76,11 @@ static int emu_rom_close(struct cbfs_media *media)
 	return 0;
 }
 
-int init_emu_rom_cbfs_media(struct cbfs_media *media);
-
-int init_emu_rom_cbfs_media(struct cbfs_media *media)
+static int init_emu_rom_cbfs_media(struct cbfs_media *media)
 {
+	boot_device_init();
+
+	media->context = (void *)boot_device_ro();
 	media->open = emu_rom_open;
 	media->close = emu_rom_close;
 	media->map = emu_rom_map;

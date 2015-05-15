@@ -6,6 +6,7 @@ romstage-y += memset.c
 romstage-y += memcpy.c
 romstage-y += memmove.c
 romstage-y += rom_media.c
+romstage-y += mmap_boot.c
 
 endif # CONFIG_ARCH_ROMSTAGE_X86_32
 
@@ -22,6 +23,7 @@ ramstage-y += memcpy.c
 ramstage-y += memmove.c
 ramstage-y += ebda.c
 ramstage-y += rom_media.c
+ramstage-y += mmap_boot.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
@@ -32,6 +34,7 @@ smm-y += memset.c
 smm-y += memcpy.c
 smm-y += memmove.c
 smm-y += rom_media.c
+smm-y += mmap_boot.c
 
 rmodules_x86_32-y += memset.c
 rmodules_x86_32-y += memcpy.c

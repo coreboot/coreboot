@@ -20,6 +20,7 @@
 
 #include <arch/cache.h>
 #include <assert.h>
+#include <boot_device.h>
 #include <cbfs.h>  /* This driver serves as a CBFS media source. */
 #include <console/console.h>
 #include <soc/alternate_cbfs.h>
@@ -46,7 +47,7 @@
  * rest of the firmware's lifetime and all subsequent stages (which will not
  * have __PRE_RAM__ defined) can just directly reference it there.
  */
-static int usb_cbfs_open(struct cbfs_media *media)
+static int usb_cbfs_open(void)
 {
 #ifdef __PRE_RAM__
 	static int first_run = 1;
@@ -84,7 +85,7 @@ static int usb_cbfs_open(struct cbfs_media *media)
  * this seems like a safer approach. It also makes it easy to pass our image
  * down to payloads.
  */
-static int sdmmc_cbfs_open(struct cbfs_media *media)
+static int sdmmc_cbfs_open(void)
 {
 #ifdef __PRE_RAM__
 	/*
@@ -118,66 +119,109 @@ static int sdmmc_cbfs_open(struct cbfs_media *media)
 	return 0;
 }
 
-static int alternate_cbfs_close(struct cbfs_media *media) { return 0; }
+static int exynos_cbfs_open(struct cbfs_media *media) {
+	return 0;
+}
 
-static size_t alternate_cbfs_read(struct cbfs_media *media, void *dest,
-				  size_t offset, size_t count)
-{
-	ASSERT(offset + count < _cbfs_cache_size);
-	memcpy(dest, _cbfs_cache + offset, count);
+static int exynos_cbfs_close(struct cbfs_media *media) {
+	return 0;
+}
+
+static size_t exynos_cbfs_read(struct cbfs_media *media, void *dest,
+				   size_t offset, size_t count) {
+	const struct region_device *boot_dev;
+
+	boot_dev = media->context;
+
+	if (rdev_readat(boot_dev, dest, offset, count) < 0)
+		return 0;
+
 	return count;
 }
 
-static void *alternate_cbfs_map(struct cbfs_media *media, size_t offset,
-				   size_t count)
-{
-	ASSERT(offset + count < _cbfs_cache_size);
-	return _cbfs_cache + offset;
+static void *exynos_cbfs_map(struct cbfs_media *media, size_t offset,
+				 size_t count) {
+	const struct region_device *boot_dev;
+	void *ptr;
+
+	boot_dev = media->context;
+
+	ptr = rdev_mmap(boot_dev, offset, count);
+
+	if (ptr == NULL)
+		return (void *)-1;
+
+	return ptr;
 }
 
-static void *alternate_cbfs_unmap(struct cbfs_media *media,
-				  const void *buffer) { return 0; }
+static void *exynos_cbfs_unmap(struct cbfs_media *media,
+				   const void *address) {
+	const struct region_device *boot_dev;
 
-static int initialize_exynos_sdmmc_cbfs_media(struct cbfs_media *media)
-{
-	printk(BIOS_DEBUG, "Using Exynos alternate boot mode SDMMC\n");
+	boot_dev = media->context;
 
-	media->open = sdmmc_cbfs_open;
-	media->close = alternate_cbfs_close;
-	media->read = alternate_cbfs_read;
-	media->map = alternate_cbfs_map;
-	media->unmap = alternate_cbfs_unmap;
+	rdev_munmap(boot_dev, (void *)address);
 
-	return 0;
-}
-
-static int initialize_exynos_usb_cbfs_media(struct cbfs_media *media)
-{
-	printk(BIOS_DEBUG, "Using Exynos alternate boot mode USB A-A\n");
-
-	media->open = usb_cbfs_open;
-	media->close = alternate_cbfs_close;
-	media->read = alternate_cbfs_read;
-	media->map = alternate_cbfs_map;
-	media->unmap = alternate_cbfs_unmap;
-
-	return 0;
+	return NULL;
 }
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {
+	boot_device_init();
+
+	media->context = (void *)boot_device_ro();
+
+	if (media->context == NULL)
+		return -1;
+
+	media->open = exynos_cbfs_open;
+	media->close = exynos_cbfs_close;
+	media->read = exynos_cbfs_read;
+	media->map = exynos_cbfs_map;
+	media->unmap = exynos_cbfs_unmap;
+
+	return 0;
+}
+
+static struct mem_region_device alternate_rdev = MEM_REGION_DEV_INIT(NULL, 0);
+
+const struct region_device *boot_device_ro(void)
+{
 	if (*iram_secondary_base == SECONDARY_BASE_BOOT_USB)
-		return initialize_exynos_usb_cbfs_media(media);
+		return &alternate_rdev.rdev;
 
 	switch (exynos_power->om_stat & OM_STAT_MASK) {
 	case OM_STAT_SDMMC:
-		return initialize_exynos_sdmmc_cbfs_media(media);
+		return &alternate_rdev.rdev;
 	case OM_STAT_SPI:
-		return initialize_exynos_spi_cbfs_media(media,
-			_cbfs_cache, _cbfs_cache_size);
+		return exynos_spi_boot_device();
 	default:
 		printk(BIOS_EMERG, "Exynos OM_STAT value 0x%x not supported!\n",
 			exynos_power->om_stat);
-		return 1;
+		return NULL;
+	}
+}
+
+void boot_device_init(void)
+{
+	mem_region_device_init(&alternate_rdev, _cbfs_cache, _cbfs_cache_size);
+
+	if (*iram_secondary_base == SECONDARY_BASE_BOOT_USB) {
+		printk(BIOS_DEBUG, "Using Exynos alternate boot mode USB A-A\n");
+		usb_cbfs_open();
+		return;
+	}
+
+	switch (exynos_power->om_stat & OM_STAT_MASK) {
+	case OM_STAT_SDMMC:
+		printk(BIOS_DEBUG, "Using Exynos alternate boot mode SDMMC\n");
+		sdmmc_cbfs_open();
+		break;
+	case OM_STAT_SPI:
+		exynos_init_spi_boot_device();
+		break;
+	default:
+		printk(BIOS_EMERG, "Exynos OM_STAT value 0x%x not supported!\n",
+			exynos_power->om_stat);
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2013 Google Inc.
+ * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,22 @@
  * Foundation, Inc.
  */
 
+#include <boot_device.h>
 
-#include <cbfs.h>  /* This driver serves as a CBFS media source. */
-#include <soc/spi.h>
-#include <symbols.h>
-
-int init_default_cbfs_media(struct cbfs_media *media)
+void __attribute__((weak)) boot_device_init(void)
 {
-	return initialize_tegra_spi_cbfs_media(media,
-		_cbfs_cache, _cbfs_cache_size);
+	/* Provide weak do-nothing init. */
+}
+
+int boot_device_ro_subregion(const struct region *sub,
+				struct region_device *subrd)
+{
+	const struct region_device *boot_dev;
+
+	boot_dev = boot_device_ro();
+
+	if (boot_dev == NULL)
+		return -1;
+
+	return rdev_chain(subrd, boot_dev, region_offset(sub), region_sz(sub));
 }

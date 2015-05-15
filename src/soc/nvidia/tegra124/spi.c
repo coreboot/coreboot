@@ -21,6 +21,7 @@
 #include <arch/cache.h>
 #include <arch/io.h>
 #include <assert.h>
+#include <boot_device.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <delay.h>
@@ -33,6 +34,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <symbols.h>
 #include <timer.h>
 
 
@@ -800,12 +802,6 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	return ret;
 }
 
-/* SPI as CBFS media. */
-struct tegra_spi_media {
-	struct spi_slave *slave;
-	struct cbfs_simple_buffer buffer;
-};
-
 static int tegra_spi_cbfs_open(struct cbfs_media *media)
 {
 	DEBUG_SPI("tegra_spi_cbfs_open\n");
@@ -823,16 +819,17 @@ static int tegra_spi_cbfs_close(struct cbfs_media *media)
 #define JEDEC_FAST_READ_DUAL		0x3b
 #define JEDEC_FAST_READ_DUAL_OUTSIZE	0x05
 
-static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
-				   size_t offset, size_t count)
+static struct spi_slave *boot_slave;
+
+static ssize_t tegra_spi_readat(const struct region_device *rdev, void *dest,
+				size_t offset, size_t count)
 {
-	struct tegra_spi_media *spi = (struct tegra_spi_media *)media->context;
 	u8 spi_read_cmd[JEDEC_FAST_READ_DUAL_OUTSIZE];
 	unsigned int read_cmd_bytes;
 	int ret = count;
 	struct tegra_spi_channel *channel;
 
-	channel = to_tegra_spi(spi->slave->bus);
+	channel = to_tegra_spi(boot_slave->bus);
 
 	if (channel->dual_mode) {
 		/*
@@ -853,9 +850,9 @@ static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
 	spi_read_cmd[2] = (offset >> 8) & 0xff;
 	spi_read_cmd[3] = offset & 0xff;
 
-	spi_claim_bus(spi->slave);
+	spi_claim_bus(boot_slave);
 
-	if (spi_xfer(spi->slave, spi_read_cmd,
+	if (spi_xfer(boot_slave, spi_read_cmd,
 			read_cmd_bytes, NULL, 0) < 0) {
 		ret = -1;
 		printk(BIOS_ERR, "%s: Failed to transfer %u bytes\n",
@@ -866,7 +863,7 @@ static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
 	if (channel->dual_mode) {
 		setbits_le32(&channel->regs->command1, SPI_CMD1_BOTH_EN_BIT);
 	}
-	if (spi_xfer(spi->slave, NULL, 0, dest, count)) {
+	if (spi_xfer(boot_slave, NULL, 0, dest, count)) {
 		ret = -1;
 		printk(BIOS_ERR, "%s: Failed to transfer %u bytes\n",
 				__func__, count);
@@ -876,55 +873,69 @@ static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
 
 tegra_spi_cbfs_read_exit:
 	/* de-assert /CS */
-	spi_release_bus(spi->slave);
-	return (ret < 0) ? 0 : ret;
+	spi_release_bus(boot_slave);
+	return ret;
+}
+
+static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
+				size_t offset, size_t count)
+{
+	const struct region_device *boot_dev;
+
+	boot_dev = media->context;
+
+	printk(BIOS_ERR, "%s: reading %zx bytes from %zx\n",
+			__func__, count, offset);
+	if (rdev_readat(boot_dev, dest, offset, count) < 0)
+		return 0;
+
+	return count;
 }
 
 static void *tegra_spi_cbfs_map(struct cbfs_media *media, size_t offset,
 				 size_t count)
 {
-	struct tegra_spi_media *spi = (struct tegra_spi_media*)media->context;
+	const struct region_device *boot_dev;
 	void *map;
+
 	DEBUG_SPI("tegra_spi_cbfs_map\n");
-	map = cbfs_simple_buffer_map(&spi->buffer, media, offset, count);
+
+	boot_dev = media->context;
+
+	map = rdev_mmap(boot_dev, offset, count);
+
+	if (map == NULL)
+		map = (void *)-1;
+
 	return map;
 }
 
 static void *tegra_spi_cbfs_unmap(struct cbfs_media *media,
 				   const void *address)
 {
-	struct tegra_spi_media *spi = (struct tegra_spi_media*)media->context;
+	const struct region_device *boot_dev;
+
 	DEBUG_SPI("tegra_spi_cbfs_unmap\n");
-	return cbfs_simple_buffer_unmap(&spi->buffer, address);
+
+	boot_dev = media->context;
+
+	rdev_munmap(boot_dev, (void *)address);
+
+	return NULL;
 }
 
-int initialize_tegra_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size)
+int init_default_cbfs_media(struct cbfs_media *media)
 {
-	// TODO Replace static variable to support multiple streams.
-	static struct tegra_spi_media context;
-	static struct tegra_spi_channel *channel;
-
-	channel = &tegra_spi_channels[CONFIG_BOOT_MEDIA_SPI_BUS - 1];
-	channel->slave.cs = CONFIG_BOOT_MEDIA_SPI_CHIP_SELECT;
-
 	DEBUG_SPI("Initializing CBFS media on SPI\n");
 
-	context.slave = &channel->slave;
-	context.buffer.allocated = context.buffer.last_allocate = 0;
-	context.buffer.buffer = buffer_address;
-	context.buffer.size = buffer_size;
-	media->context = (void*)&context;
+	boot_device_init();
+
+	media->context = (void *)boot_device_ro();
 	media->open = tegra_spi_cbfs_open;
 	media->close = tegra_spi_cbfs_close;
 	media->read = tegra_spi_cbfs_read;
 	media->map = tegra_spi_cbfs_map;
 	media->unmap = tegra_spi_cbfs_unmap;
-
-#if CONFIG_SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B == 1
-	channel->dual_mode = 1;
-#endif
 
 	return 0;
 }
@@ -936,4 +947,33 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 		return NULL;
 
 	return &channel->slave;
+}
+
+static const struct region_device_ops tegra_spi_ops = {
+	.mmap = mmap_helper_rdev_mmap,
+	.munmap = mmap_helper_rdev_munmap,
+	.readat = tegra_spi_readat,
+};
+
+static struct mmap_helper_region_device mdev =
+	MMAP_HELPER_REGION_INIT(&tegra_spi_ops, 0, CONFIG_ROM_SIZE);
+
+const struct region_device *boot_device_ro(void)
+{
+	return &mdev.rdev;
+}
+
+void boot_device_init(void)
+{
+	struct tegra_spi_channel *boot_chan;
+
+	boot_chan = &tegra_spi_channels[CONFIG_BOOT_MEDIA_SPI_BUS - 1];
+	boot_chan->slave.cs = CONFIG_BOOT_MEDIA_SPI_CHIP_SELECT;
+
+#if CONFIG_SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B == 1
+	boot_chan->dual_mode = 1;
+#endif
+	boot_slave = &boot_chan->slave;
+
+	mmap_helper_device_init(&mdev, _cbfs_cache, _cbfs_cache_size);
 }

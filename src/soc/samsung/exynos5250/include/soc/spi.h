@@ -20,8 +20,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_SPI_H
 #define CPU_SAMSUNG_EXYNOS5250_SPI_H
 
-/* This driver serves as a CBFS media source. */
-#include <cbfs.h>
+#include <boot_device.h>
 
 /* SPI peripheral register map; padded to 64KB */
 struct exynos_spi {
@@ -92,8 +91,6 @@ int exynos_spi_open(struct exynos_spi *regs);
 int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off);
 int exynos_spi_close(struct exynos_spi *regs);
 
-/* Serve as CBFS media source */
-int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size);
+void exynos_init_spi_boot_device(void);
+const struct region_device *exynos_spi_boot_device(void);
 #endif

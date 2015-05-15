@@ -2,7 +2,6 @@ ifeq ($(CONFIG_SOC_NVIDIA_TEGRA124),y)
 
 bootblock-y += bootblock.c
 bootblock-y += bootblock_asm.S
-bootblock-y += cbfs.c
 bootblock-y += clock.c
 bootblock-y += dma.c
 bootblock-y += i2c.c
@@ -22,7 +21,6 @@ bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
 verstage-y += verstage.c
-verstage-y += cbfs.c
 verstage-y += dma.c
 verstage-y += monotonic_timer.c
 verstage-y += spi.c
@@ -34,7 +32,6 @@ verstage-y += clock.c
 verstage-y += i2c.c
 verstage-y += cache.c
 
-romstage-y += cbfs.c
 romstage-y += cbmem.c
 romstage-y += clock.c
 romstage-y += dma.c
@@ -51,7 +48,6 @@ romstage-y += ../tegra/pinmux.c
 romstage-y += cache.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
-ramstage-y += cbfs.c
 ramstage-y += cbmem.c
 ramstage-y += clock.c
 ramstage-y += display.c

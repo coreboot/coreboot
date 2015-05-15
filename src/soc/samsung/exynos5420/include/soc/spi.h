@@ -20,8 +20,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_SPI_H
 #define CPU_SAMSUNG_EXYNOS5420_SPI_H
 
-/* This driver serves as a CBFS media source. */
-#include <cbfs.h>
+#include <boot_device.h>
 
 /* SPI peripheral register map; padded to 64KB */
 struct exynos_spi {
@@ -91,8 +90,6 @@ check_member(exynos_spi, fb_clk, 0x2c);
 #define SPI_RX_BYTE_SWAP	(1 << 6)
 #define SPI_RX_HWORD_SWAP	(1 << 7)
 
-/* Serve as CBFS media source */
-int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size);
+void exynos_init_spi_boot_device(void);
+const struct region_device *exynos_spi_boot_device(void);
 #endif

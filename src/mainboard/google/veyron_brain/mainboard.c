@@ -43,9 +43,7 @@
 
 static void configure_usb(void)
 {
-	gpio_output(GPIO(0, B, 3), 1);			/* HOST1_PWR_EN */
-	gpio_output(GPIO(0, B, 4), 1);			/* USBOTG_PWREN_H */
-	gpio_output(GPIO(7, C, 5), 1);			/* 5V_DRV */
+	gpio_output(GPIO(0, B, 4), 1);		/* USB2_PWR_EN */
 }
 
 static void configure_emmc(void)

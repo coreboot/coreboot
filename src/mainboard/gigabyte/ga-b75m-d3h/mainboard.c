@@ -35,24 +35,12 @@
 #include <smbios.h>
 #include <device/pci.h>
 #include <cbfs.h>
-#include <build.h>
 
 void mainboard_suspend_resume(void)
 {
 	/* Call SMM finalize() handlers before resume */
 	outb(0xcb, 0xb2);
 }
-
-const char *smbios_mainboard_bios_version(void)
-{
-	/* Satisfy thinkpad_acpi.  */
-	if (strlen(CONFIG_LOCALVERSION))
-		return "CBET4000 " CONFIG_LOCALVERSION;
-	else
-		return "CBET4000 " COREBOOT_VERSION;
-}
-
-
 
 static void mainboard_init(device_t dev)
 {

@@ -58,6 +58,9 @@ static int verbose = 0;
 /* File handle used to access /dev/mem */
 static int mem_fd;
 
+/* IMD root pointer location */
+static uint64_t rootptr = 0;
+
 /*
  * calculate ip checksum (16 bit quantities) on a passed in buffer. In case
  * the buffer length is odd last byte is excluded from the calculation
@@ -95,8 +98,14 @@ static void unmap_memory(void)
 		fprintf(stderr, "Error unmapping memory\n");
 		return;
 	}
-	debug("Unmapping %zuMB of virtual memory at %p.\n",
-	      size_to_mib(mapped_size), mapped_virtual);
+	if (size_to_mib(mapped_size) == 0) {
+		debug("Unmapping %zuMB of virtual memory at %p.\n",
+		      size_to_mib(mapped_size), mapped_virtual);
+	}
+	else {
+		debug("Unmapping %zuMB of virtual memory at %p.\n",
+		      size_to_mib(mapped_size), mapped_virtual);
+	}
 	munmap(mapped_virtual, mapped_size);
 	mapped_virtual = NULL;
 	mapped_size = 0;
@@ -117,10 +126,29 @@ static void *map_memory_size(u64 physical, size_t size)
 	padding = physical & (page-1);
 	size += padding;
 
-	debug("Mapping %zuMB of physical memory at 0x%jx.\n",
-	      size_to_mib(size), (intmax_t)p);
+	if (size_to_mib(size) == 0) {
+		debug("Mapping %zuB of physical memory at 0x%jx (requested 0x%jx).\n",
+		      size, (intmax_t)p, (intmax_t)physical);
+	}
+	else {
+		debug("Mapping %zuMB of physical memory at 0x%jx (requested 0x%jx).\n",
+		      size_to_mib(size), (intmax_t)p, (intmax_t)physical);
+	}
 
 	v = mmap(NULL, size, PROT_READ, MAP_SHARED, mem_fd, p);
+
+	if (v == MAP_FAILED) {
+		/* The mapped area may have overrun the upper cbmem boundary when trying to
+		 * align to the page size.  Try growing down instead of up...
+		 */
+		p -= page;
+		padding += page;
+		size &= ~(page - 1);
+		size = size + (page - 1);
+		v = mmap(NULL, size, PROT_READ, MAP_SHARED, mem_fd, p);
+		debug("  ... failed.  Mapping %zuB of physical memory at 0x%jx.\n",
+		      size, (intmax_t)p);
+	}
 
 	if (v == MAP_FAILED) {
 		fprintf(stderr, "Failed to mmap /dev/mem: %s\n",
@@ -588,17 +616,18 @@ static void dump_cbmem_hex(void)
 /* The root region is at least DYN_CBMEM_ALIGN_SIZE . */
 #define DYN_CBMEM_ALIGN_SIZE (4096)
 #define ROOT_MIN_SIZE DYN_CBMEM_ALIGN_SIZE
-#define CBMEM_POINTER_MAGIC 0xc0389479
+#define CBMEM_POINTER_MAGIC 0xc0389481
 #define CBMEM_ENTRY_MAGIC ~(CBMEM_POINTER_MAGIC)
 
 struct cbmem_root_pointer {
 	uint32_t magic;
-	uint32_t root;
+	/* Relative to upper limit/offset. */
+	int32_t root_offset;
 } __attribute__((packed));
 
 struct dynamic_cbmem_entry {
 	uint32_t magic;
-	uint32_t start;
+	int32_t start_offset;
 	uint32_t size;
 	uint32_t id;
 } __attribute__((packed));
@@ -606,8 +635,9 @@ struct dynamic_cbmem_entry {
 struct cbmem_root {
 	uint32_t max_entries;
 	uint32_t num_entries;
-	uint32_t locked;
-	uint32_t size;
+	uint32_t flags;
+	uint32_t entry_align;
+	int32_t max_offset;
 	struct dynamic_cbmem_entry entries[0];
 } __attribute__((packed));
 
@@ -667,8 +697,8 @@ static void dump_static_cbmem_toc(struct cbmem_entry *entries)
 static void dump_dynamic_cbmem_toc(struct cbmem_root *root)
 {
 	int i;
-	debug("CBMEM: max_entries=%d num_entries=%d locked=0x%x, size=%d\n\n",
-		root->max_entries, root->num_entries, root->locked, root->size);
+	debug("CBMEM: max_entries=%d num_entries=%d flags=0x%x, entry_align=0x%x, max_offset=%d\n\n",
+		root->max_entries, root->num_entries, root->flags, root->entry_align, root->max_offset);
 
 	printf("CBMEM table of contents:\n");
 	printf("    ID           START      LENGTH\n");
@@ -677,7 +707,7 @@ static void dump_dynamic_cbmem_toc(struct cbmem_root *root)
 		if(root->entries[i].magic != CBMEM_ENTRY_MAGIC)
 			break;
 		cbmem_print_entry(i, root->entries[i].id,
-			root->entries[i].start, root->entries[i].size);
+			rootptr + root->entries[i].start_offset, root->entries[i].size);
 	}
 }
 
@@ -700,8 +730,6 @@ static void dump_cbmem_toc(void)
 	if (entries[0].magic == CBMEM_MAGIC) {
 		dump_static_cbmem_toc(entries);
 	} else {
-		uint64_t rootptr;
-
 		rootptr = unpack_lb64(cbmem.start) + unpack_lb64(cbmem.size);
 		rootptr &= ~(DYN_CBMEM_ALIGN_SIZE - 1);
 		rootptr -= sizeof(struct cbmem_root_pointer);
@@ -710,7 +738,7 @@ static void dump_cbmem_toc(void)
 			map_memory_size(rootptr, sizeof(*r));
 		if (r->magic == CBMEM_POINTER_MAGIC) {
 			struct cbmem_root *root;
-			uint64_t rootaddr = r->root;
+			uint64_t rootaddr = rootptr + r->root_offset;
 			unmap_memory();
 			root = map_memory_size(rootaddr, ROOT_MIN_SIZE);
 			dump_dynamic_cbmem_toc(root);

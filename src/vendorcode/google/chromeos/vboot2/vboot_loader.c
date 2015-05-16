@@ -25,6 +25,7 @@
 #include <rules.h>
 #include <string.h>
 #include "misc.h"
+#include "../vboot_handoff.h"
 #include "../symbols.h"
 
 /* The stage loading code is compiled and entered from multiple stages. The
@@ -121,10 +122,11 @@ static int vboot_loader_active(struct prog *prog)
 		if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES) &&
 		    run_verification) {
 			/* RW A or B */
-			struct region fw_main;
+			struct region_device fw_main;
 
-			vb2_get_selected_region(wd, &fw_main);
-			cbfs_set_header_offset(region_offset(&fw_main));
+			if (vb2_get_selected_region(wd, &fw_main))
+				die("failed to reference selected region\n");
+			cbfs_set_header_offset(region_device_offset(&fw_main));
 		}
 		return 1;
 	}
@@ -132,25 +134,35 @@ static int vboot_loader_active(struct prog *prog)
 	return 0;
 }
 
-static int vboot_fw_region(int fw_index, struct region *fw_main,
-				struct vboot_components *fw_info,
-				struct region *fc)
+static int vboot_fw_region(int fw_index, const struct region_device *fw_main,
+				struct region_device *fw)
 {
-	size_t fw_main_end;
-	size_t fc_end;
+	struct vboot_components *fw_info;
+	size_t metadata_sz;
+	size_t offset;
+	size_t size;
 
-	if (fw_index >= fw_info->num_components) {
-		printk(BIOS_INFO, "invalid stage index: %d\n", fw_index);
+	metadata_sz = sizeof(*fw_info);
+	metadata_sz += MAX_PARSED_FW_COMPONENTS * sizeof(fw_info->entries[0]);
+
+	fw_info = rdev_mmap(fw_main, 0, metadata_sz);
+
+	if (fw_info == NULL) {
+		printk(BIOS_INFO, "No component metadata.\n");
 		return -1;
 	}
 
-	fc->offset = region_offset(fw_main) + fw_info->entries[fw_index].offset;
-	fc->size = fw_info->entries[fw_index].size;
+	if (fw_index >= fw_info->num_components) {
+		printk(BIOS_INFO, "invalid stage index: %d\n", fw_index);
+		rdev_munmap(fw_main, fw_info);
+		return -1;
+	}
 
-	fw_main_end = region_offset(fw_main) + region_sz(fw_main);
-	fc_end = region_offset(fc) + region_sz(fc);
+	offset = fw_info->entries[fw_index].offset;
+	size = fw_info->entries[fw_index].size;
+	rdev_munmap(fw_main, fw_info);
 
-	if (region_sz(fc) == 0 || fc_end > fw_main_end) {
+	if (rdev_chain(fw, fw_main, offset, size)) {
 		printk(BIOS_INFO, "invalid stage address or size\n");
 		return -1;
 	}
@@ -163,8 +175,7 @@ static int vboot_fw_region(int fw_index, struct region *fw_main,
 static int vboot_prepare(struct prog *prog)
 {
 	struct vb2_working_data *wd;
-	struct region fw_main;
-	struct vboot_components *fw_info;
+	struct region_device fw_main;
 
 	/* Code size optimization. We'd never actually get called under the
 	 * followin cirumstances because verstage was loaded and ran -- never
@@ -198,29 +209,26 @@ static int vboot_prepare(struct prog *prog)
 	}
 
 	wd = vboot_get_working_data();
-	vb2_get_selected_region(wd, &fw_main);
-	fw_info = vboot_locate_components(&fw_main);
-	if (fw_info == NULL)
-		die("failed to locate firmware components\n");
+	if (vb2_get_selected_region(wd, &fw_main))
+		die("failed to reference selected region\n");
 
 	/* Load payload in ramstage. */
 	if (ENV_RAMSTAGE) {
-		struct region payload;
+		struct region_device payload;
 		void *payload_ptr;
 
 		if (vboot_fw_region(CONFIG_VBOOT_BOOT_LOADER_INDEX,
-						&fw_main, fw_info, &payload))
+						&fw_main, &payload))
 			die("Couldn't load payload.");
 
-		payload_ptr = vboot_get_region(region_offset(&payload),
-						region_sz(&payload), NULL);
+		payload_ptr = rdev_mmap_full(&payload);
 
 		if (payload_ptr == NULL)
 			die("Couldn't load payload.");
 
-		prog_set_area(prog, payload_ptr, region_sz(&payload));
+		prog_set_area(prog, payload_ptr, region_device_sz(&payload));
 	} else {
-		struct region stage;
+		struct region_device stage;
 		int stage_index = 0;
 
 		if (prog->type == PROG_ROMSTAGE)
@@ -230,7 +238,7 @@ static int vboot_prepare(struct prog *prog)
 		else
 			die("Invalid program type for vboot.");
 
-		if (vboot_fw_region(stage_index, &fw_main, fw_info, &stage))
+		if (vboot_fw_region(stage_index, &fw_main, &stage))
 			die("Vboot stage load failed.");
 
 		if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
@@ -240,8 +248,7 @@ static int vboot_prepare(struct prog *prog)
 				.prog = prog,
 			};
 
-			stage_ptr = vboot_get_region(region_offset(&stage),
-						region_sz(&stage), NULL);
+			stage_ptr = rdev_mmap_full(&stage);
 
 			if (stage_ptr == NULL)
 				die("Vboot couldn't load stage.");
@@ -249,7 +256,7 @@ static int vboot_prepare(struct prog *prog)
 			if (rmodule_stage_load(&rmod_ram, stage_ptr))
 				die("Vboot couldn't load stage");
 		} else {
-			size_t offset = region_offset(&stage);
+			size_t offset = region_device_offset(&stage);
 
 			if (cbfs_load_prog_stage_by_offset(CBFS_DEFAULT_MEDIA,
 								prog, offset))

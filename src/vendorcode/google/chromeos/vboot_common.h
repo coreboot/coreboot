@@ -36,16 +36,8 @@ struct vboot_components {
 	struct vboot_component_entry entries[0];
 } __attribute__((packed));
 
-void vboot_locate_region(const char *name, struct region *region);
-
-struct vboot_components *vboot_locate_components(struct region *region);
-
-/*
- * This is a dual purpose routine. If dest is non-NULL the region at
- * offset_addr will be read into the area pointed to by dest.  If dest
- * is NULL,the region will be mapped to a memory location. NULL is
- * returned on error else the location of the requested region.
- */
-void *vboot_get_region(size_t offset, size_t size, void *dest);
+/* The following functions return 0 on success, < 0 on error. */
+int vboot_named_region_device(const char *name, struct region_device *rdev);
+int vboot_region_device(const struct region *reg, struct region_device *rdev);
 
 #endif /* VBOOT_COMMON_H */

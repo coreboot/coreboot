@@ -46,18 +46,22 @@ struct vb2_working_data * const vboot_get_working_data(void);
 size_t vb2_working_data_size(void);
 void *vboot_get_work_buffer(struct vb2_working_data *wd);
 
-static inline void vb2_get_selected_region(struct vb2_working_data *wd,
-					   struct region *region)
+/* Returns 0 on success. < 0 on failure. */
+static inline int vb2_get_selected_region(struct vb2_working_data *wd,
+					   struct region_device *rdev)
 {
-	region->offset = wd->selected_region_offset;
-	region->size = wd->selected_region_size;
+	struct region reg = {
+		.offset = wd->selected_region_offset,
+		.size = wd->selected_region_size,
+	};
+	return vboot_region_device(&reg, rdev);
 }
 
 static inline void vb2_set_selected_region(struct vb2_working_data *wd,
-					   struct region *region)
+					   struct region_device *rdev)
 {
-	wd->selected_region_offset = region_offset(region);
-	wd->selected_region_size = region_sz(region);
+	wd->selected_region_offset = region_device_offset(rdev);
+	wd->selected_region_size = region_device_sz(rdev);
 }
 
 static inline int vboot_is_slot_selected(struct vb2_working_data *wd)

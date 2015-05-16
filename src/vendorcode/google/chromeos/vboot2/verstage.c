@@ -67,27 +67,28 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 			void *buf,
 			uint32_t size)
 {
-	struct region region;
+	struct region_device rdev;
+	const char *name;
 
 	switch (index) {
 	case VB2_RES_GBB:
-		vboot_locate_region("GBB", &region);
+		name = "GBB";
 		break;
 	case VB2_RES_FW_VBLOCK:
 		if (is_slot_a(ctx))
-			vboot_locate_region("VBLOCK_A", &region);
+			name = "VBLOCK_A";
 		else
-			vboot_locate_region("VBLOCK_B", &region);
+			name = "VBLOCK_B";
 		break;
 	default:
 		return VB2_ERROR_EX_READ_RESOURCE_INDEX;
 	}
 
-	if (offset + size > region_sz(&region))
+	if (vboot_named_region_device(name, &rdev))
 		return VB2_ERROR_EX_READ_RESOURCE_SIZE;
 
-	if (vboot_get_region(region_offset(&region) + offset, size, buf) == NULL)
-		return VB2_ERROR_UNKNOWN;
+	if (rdev_readat(&rdev, buf, offset, size) != size)
+		return VB2_ERROR_EX_READ_RESOURCE_SIZE;
 
 	return VB2_SUCCESS;
 }
@@ -114,7 +115,7 @@ int vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
 	return VB2_ERROR_UNKNOWN;
 }
 
-static int hash_body(struct vb2_context *ctx, struct region *fw_main)
+static int hash_body(struct vb2_context *ctx, struct region_device *fw_main)
 {
 	uint64_t load_ts;
 	uint32_t expected_size;
@@ -132,8 +133,8 @@ static int hash_body(struct vb2_context *ctx, struct region *fw_main)
 	load_ts = timestamp_get();
 	timestamp_add(TS_START_HASH_BODY, load_ts);
 
-	expected_size = region_sz(fw_main);
-	offset = region_offset(fw_main);
+	expected_size = region_device_sz(fw_main);
+	offset = 0;
 
 	/* Start the body hash */
 	rv = vb2api_init_hash(ctx, VB2_HASH_TAG_FW_BODY, &expected_size);
@@ -143,17 +144,15 @@ static int hash_body(struct vb2_context *ctx, struct region *fw_main)
 	/* Extend over the body */
 	while (expected_size) {
 		uint64_t temp_ts;
-		void *b;
 		if (block_size > expected_size)
 			block_size = expected_size;
 
 		temp_ts = timestamp_get();
-		b = vboot_get_region(offset, block_size, block);
-		if (b == NULL)
+		if (rdev_readat(fw_main, block, offset, block_size) < 0)
 			return VB2_ERROR_UNKNOWN;
 		load_ts += timestamp_get() - temp_ts;
 
-		rv = vb2api_extend_hash(ctx, b, block_size);
+		rv = vb2api_extend_hash(ctx, block, block_size);
 		if (rv)
 			return rv;
 
@@ -174,17 +173,17 @@ static int hash_body(struct vb2_context *ctx, struct region *fw_main)
 	return VB2_SUCCESS;
 }
 
-static int locate_firmware(struct vb2_context *ctx, struct region *fw_main)
+static int locate_firmware(struct vb2_context *ctx,
+				struct region_device *fw_main)
 {
+	const char *name;
+
 	if (is_slot_a(ctx))
-		vboot_locate_region("FW_MAIN_A", fw_main);
+		name = "FW_MAIN_A";
 	else
-		vboot_locate_region("FW_MAIN_B", fw_main);
+		name = "FW_MAIN_B";
 
-	if (region_sz(fw_main) == 0)
-		return 1;
-
-	return 0;
+	return vboot_named_region_device(name, fw_main);
 }
 
 /**
@@ -219,7 +218,7 @@ static uint32_t extend_pcrs(struct vb2_context *ctx)
 void verstage_main(void)
 {
 	struct vb2_context ctx;
-	struct region fw_main;
+	struct region_device fw_main;
 	struct vb2_working_data *wd = vboot_get_working_data();
 	int rv;
 	timestamp_add_now(TS_START_VBOOT);

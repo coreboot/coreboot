@@ -31,34 +31,14 @@
 #include "vboot_common.h"
 #include "vboot_handoff.h"
 
-void vboot_locate_region(const char *name, struct region *region)
+int vboot_named_region_device(const char *name, struct region_device *rdev)
 {
-	if (fmap_locate_area(name, region))
-		region->size = 0;
+	return fmap_locate_area_as_rdev(name, rdev);
 }
 
-void *vboot_get_region(size_t offset, size_t size, void *dest)
+int vboot_region_device(const struct region *reg, struct region_device *rdev)
 {
-	const struct region_device *boot_dev;
-	struct region_device rdev;
-
-	boot_device_init();
-	boot_dev = boot_device_ro();
-
-	if (boot_dev == NULL)
-		return NULL;
-
-	if (rdev_chain(&rdev, boot_dev, offset, size))
-		return NULL;
-
-	/* Each call will leak a mapping. */
-	if (dest == NULL)
-		return rdev_mmap_full(&rdev);
-
-	if (rdev_readat(&rdev, dest, 0, size) != size)
-		return NULL;
-
-	return dest;
+	return boot_device_ro_subregion(reg, rdev);
 }
 
 int vboot_get_handoff_info(void **addr, uint32_t *size)
@@ -73,23 +53,6 @@ int vboot_get_handoff_info(void **addr, uint32_t *size)
 	*addr = vboot_handoff;
 	*size = sizeof(*vboot_handoff);
 	return 0;
-}
-
-/* This will leak a mapping of a fw region */
-struct vboot_components *vboot_locate_components(struct region *region)
-{
-	size_t req_size;
-	struct vboot_components *vbc;
-
-	req_size = sizeof(*vbc);
-	req_size += sizeof(struct vboot_component_entry) *
-			MAX_PARSED_FW_COMPONENTS;
-
-	vbc = vboot_get_region(region_offset(region), req_size, NULL);
-	if (vbc && vbc->num_components > MAX_PARSED_FW_COMPONENTS)
-		vbc = NULL;
-
-	return vbc;
 }
 
 void vboot_reboot(void)

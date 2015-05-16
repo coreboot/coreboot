@@ -31,11 +31,6 @@
 #include <pc80/mc146818rtc.h>
 #include <delay.h>
 
-/* The southbridge SMI handler checks whether gnvs has a
- * valid pointer before calling the trap handler
- */
-extern global_nvs_t *gnvs;
-
 static void mainboard_smm_init(void)
 {
 	printk(BIOS_DEBUG, "initializing SMI\n");

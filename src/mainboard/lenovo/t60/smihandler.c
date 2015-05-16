@@ -31,10 +31,6 @@
 #define GPE_EC_SCI	12
 
 #define LVTMA_BL_MOD_LEVEL 0x7af9 /* ATI Radeon backlight level */
-/* The southbridge SMI handler checks whether gnvs has a
- * valid pointer before calling the trap handler
- */
-extern global_nvs_t *gnvs;
 
 static void mainboard_smm_init(void)
 {

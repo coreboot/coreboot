@@ -203,9 +203,8 @@ static void mainboard_init(device_t dev)
 			}
 		}
 	} else {
-		vpd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-						"vpd.bin", CBFS_TYPE_RAW,
-						&search_length);
+		vpd_file = cbfs_boot_map_with_leak("vpd.bin", CBFS_TYPE_RAW,
+							&search_length);
 		if (vpd_file) {
 			search_address = (unsigned long)vpd_file;
 		} else {

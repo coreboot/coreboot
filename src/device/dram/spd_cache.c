@@ -36,8 +36,8 @@ int read_spd_from_cbfs(u8 *buf, int idx)
 	size_t min_len = (idx + 1) * SPD_SIZE;
 
 	printk(BIOS_DEBUG, "read SPD\n");
-	spd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin",
-					 CBFS_TYPE_SPD, &spd_file_len);
+	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
+						&spd_file_len);
 	if (!spd_file)
 		printk(BIOS_EMERG, "file [spd.bin] not found in CBFS");
 	if (spd_file_len < min_len)

@@ -759,8 +759,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	if (fw)
 		return fw;
 
-	slic_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-				     CONFIG_CBFS_PREFIX "/slic",
+	slic_file = cbfs_boot_map_with_leak(CONFIG_CBFS_PREFIX "/slic",
 				     CBFS_TYPE_RAW, &slic_size);
 	if (slic_file
 	    && (slic_file->length > slic_size

@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <lib.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <rmodule.h>
@@ -252,34 +253,60 @@ int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
 	return region_alignment - sizeof(struct rmodule_header);
 }
 
-int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
+int rmodule_stage_load(struct rmod_stage_load *rsl)
 {
 	struct rmodule rmod_stage;
 	size_t region_size;
 	char *stage_region;
 	int rmodule_offset;
 	int load_offset;
+	struct cbfs_stage stage;
+	void *rmod_loc;
+	struct region_device *fh;
 
-	if (stage == NULL || rsl->prog == NULL || rsl->prog->name == NULL)
+	if (rsl->prog == NULL || rsl->prog->name == NULL)
+		return -1;
+
+	fh = &rsl->prog->rdev;
+
+	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
 		return -1;
 
 	rmodule_offset =
 		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
-		                    stage->memlen, &region_size, &load_offset);
+		                    stage.memlen, &region_size, &load_offset);
 
 	stage_region = cbmem_add(rsl->cbmem_id, region_size);
 
 	if (stage_region == NULL)
 		return -1;
 
-	printk(BIOS_INFO, "Decompressing stage %s @ 0x%p (%d bytes)\n",
-	       rsl->prog->name, &stage_region[rmodule_offset], stage->memlen);
+	rmod_loc = &stage_region[rmodule_offset];
 
-	if (!cbfs_decompress(stage->compression, &stage[1],
-	                    &stage_region[rmodule_offset], stage->len))
+	printk(BIOS_INFO, "Decompressing stage %s @ 0x%p (%d bytes)\n",
+	       rsl->prog->name, rmod_loc, stage.memlen);
+
+	if (stage.compression == CBFS_COMPRESS_NONE) {
+		if (rdev_readat(fh, rmod_loc, sizeof(stage), stage.len) !=
+		    stage.len)
+			return -1;
+	} else if (stage.compression == CBFS_COMPRESS_LZMA) {
+		size_t fsize;
+		void *map = rdev_mmap(fh, sizeof(stage), stage.len);
+
+		if (map == NULL)
+			return -1;
+
+		fsize = ulzma(map, rmod_loc);
+
+		rdev_munmap(fh, map);
+
+		if (!fsize)
+			return -1;
+	} else
 		return -1;
 
-	if (rmodule_parse(&stage_region[rmodule_offset], &rmod_stage))
+	if (rmodule_parse(rmod_loc, &rmod_stage))
 		return -1;
 
 	if (rmodule_load(&stage_region[load_offset], &rmod_stage))
@@ -290,17 +317,4 @@ int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
 	prog_set_entry(rsl->prog, rmodule_entry(&rmod_stage), NULL);
 
 	return 0;
-}
-
-int rmodule_stage_load_from_cbfs(struct rmod_stage_load *rsl)
-{
-	struct cbfs_stage *stage;
-
-	stage = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-	                              rsl->prog->name, CBFS_TYPE_STAGE, NULL);
-
-	if (stage == NULL)
-		return -1;
-
-	return rmodule_stage_load(rsl, stage);
 }

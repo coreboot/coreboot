@@ -22,7 +22,7 @@
 #include <string.h>
 
 #include <boardid.h>
-#include <cbfs_core.h>
+#include <cbfs.h>
 #include <console/console.h>
 
 #include "mainboard/google/urara/urara_boardid.h"
@@ -47,28 +47,17 @@ static int cached_board_id = -1;
 
 static uint8_t retrieve_board_id(void)
 {
-	struct cbfs_file *board_id_file;
 	const char *board_id_file_name = CBFS_BOARD_ID_FILE_NAME;
 	char *file_contents;
 	int i;
-	unsigned length;
+	size_t length;
 
-	board_id_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, board_id_file_name);
-	if (!board_id_file) {
-		printk(BIOS_WARNING,
-		       "board_id: failed to locate file '%s'\n",
-		       board_id_file_name);
-		return 0;
-	}
-
-	length = be32_to_cpu(board_id_file->len);
-
-	file_contents = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-					      board_id_file_name,
-					      CBFS_TYPE_RAW, NULL);
+	file_contents = cbfs_boot_map_with_leak(board_id_file_name,
+						CBFS_TYPE_RAW, &length);
 
 	if (!file_contents) {
-		printk(BIOS_WARNING, "board_id: failed to read file '%s'\n",
+		printk(BIOS_WARNING,
+		       "board_id: failed to locate file '%s'\n",
 		       board_id_file_name);
 		return 0;
 	}

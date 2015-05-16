@@ -1,14 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
- * Copyright (C) 2013-2015 Google, Inc.
+ * Copyright 2015 Google Inc.
  *
- * This file is dual-licensed. You can choose between:
- *   - The GNU GPL, version 2, as published by the Free Software Foundation
- *   - The revised BSD license (without advertising clause)
- *
- * ---------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -21,74 +15,71 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc.
- * ---------------------------------------------------------------------------
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ---------------------------------------------------------------------------
  */
 
 #ifndef _CBFS_H_
 #define _CBFS_H_
 
-#include <cbfs_core.h>
-
-int init_backing_media(struct cbfs_media **media, struct cbfs_media *backing);
-void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
-			  uint16_t device, void * dest);
-void *cbfs_load_stage(struct cbfs_media *media, const char *name);
-void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset);
-/* Load a stage from a prog structure. Returns < 0 on error. 0 on success. */
-struct prog;
-int cbfs_load_prog_stage(struct cbfs_media *media, struct prog *prog);
-int cbfs_load_prog_stage_by_offset(struct cbfs_media *media,
-					struct prog *prog, ssize_t offset);
-
-/* Simple buffer for streaming media. */
-struct cbfs_simple_buffer {
-	char *buffer;
-	size_t allocated;
-	size_t size;
-	size_t last_allocate;
-};
-
-void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
-			     struct cbfs_media *media,
-			     size_t offset, size_t count);
-
-void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
-			       const void *address);
-
+#include <cbfs_serialized.h>
+#include <program_loading.h>
+#include <region.h>
 
 /*
- * Defined in individual arch / board implementation.
- *
- * it returns 0 on success and non-zero on error.
+ * CBFS operations consist of the following concepts:
+ * - region_device for the boot media
+ * - cbfsd which is a descriptor for representing a cbfs instance
  */
-int init_default_cbfs_media(struct cbfs_media *media);
 
-#if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES))
-void cbfs_set_header_offset(size_t offset);
-#else
-static inline void cbfs_set_header_offset(size_t offset) {}
-#endif
+/* Descriptor for cbfs lookup operations. */
+struct cbfsd;
+
+/***********************************************
+ * Perform CBFS operations on the boot device. *
+ ***********************************************/
+
+/* Return mapping of option rom found in boot device. NULL on error. */
+void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device);
+/* Load stage by name into memory. Returns entry address on success. NULL on
+ * failure. */
+void *cbfs_boot_load_stage_by_name(const char *name);
+/* Locate file by name and optional type. Return 0 on success. < 0 on error. */
+int cbfs_boot_locate(struct region_device *fh, const char *name,
+			uint32_t *type);
+/* Map file into memory leaking the mapping. Only should be used when
+ * leaking mappings are a no-op. Returns NULL on error, else returns
+ * the mapping and sets the size of the file. */
+void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size);
+
+/* Load stage into memory filling in prog. Return 0 on success. < 0 on error. */
+int cbfs_prog_stage_load(struct prog *prog);
+
+/* Locate file by name and optional type. Returns 0 on succcess else < 0 on
+ * error.*/
+int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
+		const char *name, uint32_t *type);
+
+/*****************************************************************
+ * Support structures and functions. Direct field access should  *
+ * only be done by implementers of cbfs regions -- Not the above *
+ * API.                                                          *
+ *****************************************************************/
+
+struct cbfsd {
+	const struct region_device *rdev;
+	size_t align;
+};
+
+/* The cbfs_props struct describes the properties associated with a CBFS. */
+struct cbfs_props {
+	/* Each file is aligned. */
+	size_t align;
+	/* CBFS starts at the following offset within the boot region. */
+	size_t offset;
+	/* CBFS size. */
+	size_t size;
+};
+
+/* Return < 0 on error otherwise props are filled out accordingly. */
+int cbfs_boot_region_properties(struct cbfs_props *props);
+
 #endif

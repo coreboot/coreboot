@@ -54,7 +54,6 @@ int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
 /* Support for loading rmodule stages. This API is only available when
  * using dynamic cbmem because it uses the dynamic cbmem API to obtain
  * the backing store region for the stage. */
-struct cbfs_stage;
 struct prog;
 
 struct rmod_stage_load {
@@ -63,8 +62,7 @@ struct rmod_stage_load {
 };
 
 /* Both of the following functions return 0 on success, -1 on error. */
-int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage);
-int rmodule_stage_load_from_cbfs(struct rmod_stage_load *rsl);
+int rmodule_stage_load(struct rmod_stage_load *rsl);
 
 struct rmodule {
 	void *location;

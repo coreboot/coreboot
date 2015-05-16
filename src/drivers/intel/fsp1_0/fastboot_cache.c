@@ -63,10 +63,9 @@ static int is_mrc_cache(struct mrc_data_container *mrc_cache)
 static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
 	size_t region_size;
-	*mrc_region_ptr = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-						"mrc.cache",
-						CBFS_TYPE_MRC_CACHE,
-						&region_size);
+	*mrc_region_ptr = cbfs_boot_map_with_leak("mrc.cache",
+							CBFS_TYPE_MRC_CACHE,
+							&region_size);
 
 	return region_size;
 }

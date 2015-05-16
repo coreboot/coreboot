@@ -110,9 +110,8 @@ unsigned int nano_update_ucode(void)
 	u32 *ucode_data;
 	size_t ucode_len;
 
-	ucode_data = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-					   "cpu_microcode_blob.bin",
-					   CBFS_TYPE_MICROCODE, &ucode_len);
+	ucode_data = cbfs_boot_map_with_leak("cpu_microcode_blob.bin",
+					     CBFS_TYPE_MICROCODE, &ucode_len);
 	/* Oops, did you forget to include the microcode ? */
 	if(ucode_data == NULL) {
 		printk(BIOS_ALERT, "WARNING: No microcode file found in CBFS. "

@@ -109,25 +109,29 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 
 const void *intel_microcode_find(void)
 {
-	struct cbfs_file *microcode_file;
 	const struct microcode *ucode_updates;
-	u32 eax, microcode_len;
+	size_t microcode_len;
+	u32 eax;
 	u32 pf, rev, sig, update_size;
 	unsigned int x86_model, x86_family;
 	msr_t msr;
 
 #ifdef __PRE_RAM__
-	microcode_file = walkcbfs_head((char *) MICROCODE_CBFS_FILE);
-#else
-	microcode_file = cbfs_get_file(CBFS_DEFAULT_MEDIA,
-					  MICROCODE_CBFS_FILE);
-#endif
+	struct cbfs_file *microcode_file;
 
+	microcode_file = walkcbfs_head((char *) MICROCODE_CBFS_FILE);
 	if (!microcode_file)
 		return NULL;
 
 	ucode_updates = CBFS_SUBHEADER(microcode_file);
 	microcode_len = ntohl(microcode_file->len);
+#else
+	ucode_updates = cbfs_boot_map_with_leak(MICROCODE_CBFS_FILE,
+						CBFS_TYPE_MICROCODE,
+						&microcode_len);
+	if (ucode_updates == NULL)
+		return NULL;
+#endif
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;

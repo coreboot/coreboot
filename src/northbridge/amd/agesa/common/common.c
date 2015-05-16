@@ -38,7 +38,8 @@ AGESA_STATUS common_ReadCbfsSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	char *spd_file;
 
-	spd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin", CBFS_TYPE_SPD_BIN, &spd_file_length);
+	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD_BIN,
+						&spd_file_length);
 	if (!spd_file)
 		die("file [spd.bin] not found in CBFS");
 

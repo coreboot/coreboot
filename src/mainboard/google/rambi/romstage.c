@@ -71,9 +71,10 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
-	struct cbfs_file *spd_file;
 	void *spd_content;
 	int dual_channel = 0;
+	void *spd_file;
+	size_t spd_fsize;
 
 	struct mrc_params mp = {
 		.mainboard = {
@@ -83,12 +84,12 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 		},
 	};
 
-	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
+	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
+						&spd_fsize);
 	if (!spd_file)
 		die("SPD data not found.");
 
-	spd_content = get_spd_pointer(CBFS_SUBHEADER(spd_file),
-	                              ntohl(spd_file->len) / SPD_SIZE,
+	spd_content = get_spd_pointer(spd_file, spd_fsize / SPD_SIZE,
 	                              &dual_channel);
 	mp.mainboard.dram_data[0] = spd_content;
 	if (dual_channel)

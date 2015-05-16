@@ -38,8 +38,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	struct pci_data *rom_data;
 
 	/* If it's in FLASH, then don't check device for ROM. */
-	rom_header = cbfs_load_optionrom(CBFS_DEFAULT_MEDIA, dev->vendor,
-					 dev->device, NULL);
+	rom_header = cbfs_boot_map_optionrom(dev->vendor, dev->device);
 
 	u32 vendev = (dev->vendor << 16) | dev->device;
 	u32 mapped_vendev = vendev;
@@ -48,10 +47,9 @@ struct rom_header *pci_rom_probe(struct device *dev)
 
 	if (!rom_header) {
 		if (vendev != mapped_vendev) {
-			rom_header = cbfs_load_optionrom(
-					CBFS_DEFAULT_MEDIA,
+			rom_header = cbfs_boot_map_optionrom(
 					mapped_vendev >> 16,
-					mapped_vendev & 0xffff, NULL);
+					mapped_vendev & 0xffff);
 		}
 	}
 

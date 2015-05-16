@@ -396,8 +396,8 @@ unsigned long write_coreboot_table(
 
 #if CONFIG_USE_OPTION_TABLE
 	{
-		struct cmos_option_table *option_table = cbfs_get_file_content(
-				CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
+		struct cmos_option_table *option_table =
+			cbfs_boot_map_with_leak("cmos_layout.bin",
 				CBFS_COMPONENT_CMOS_LAYOUT, NULL);
 		if (option_table) {
 			struct lb_record *rec_dest = lb_new_record(head);

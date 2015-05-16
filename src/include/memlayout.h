@@ -102,6 +102,4 @@
 		. += sz;
 #endif
 
-#define CBFS_HEADER_OFFSET(addr) REGION(cbfs_header_offset, addr, 4, 4)
-
 #endif /* __MEMLAYOUT_H */

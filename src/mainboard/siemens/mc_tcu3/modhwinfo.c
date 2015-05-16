@@ -31,8 +31,7 @@ u8* get_first_linked_block(char *filename, u8 **file_offset)
 {
 	u8* block_ptr = NULL;
 
-	block_ptr = (cbfs_get_file_content(CBFS_DEFAULT_MEDIA, filename,
-			0x50, NULL));
+	block_ptr = cbfs_boot_map_with_leak(filename, 0x50, NULL);
 	if (!block_ptr)
 		return NULL;
 	if (!strncmp((char*)block_ptr, "H1W2M3I4", LEN_MAGIC_NUM)) {
@@ -57,8 +56,7 @@ struct hwinfo* get_hwinfo(char *filename)
 {
 	struct hwinfo* main_hwinfo;
 
-	main_hwinfo = (struct hwinfo*)(cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-							filename, 0x50, NULL));
+	main_hwinfo = cbfs_boot_map_with_leak(filename, 0x50, NULL);
 	if ((main_hwinfo) &&
 		(!strncmp(main_hwinfo->magicNumber, "H1W2M3I4", LEN_MAGIC_NUM)) &&
 		(main_hwinfo->length == LEN_MAIN_HWINFO))

@@ -18,41 +18,37 @@
  */
 
 #include <boot_device.h>
-#include <console/console.h>
 #include <cbfs.h>
+#include <console/console.h>
 #include <endian.h>
-#include <stdlib.h>
+#include <region.h>
 
-/* The ROM is memory mapped just below 4GiB. Form a pointer for the base. */
-#define rom_base ((void *)(uintptr_t)(-(int32_t)CONFIG_ROM_SIZE))
-
-static const struct mem_region_device boot_dev =
-	MEM_REGION_DEV_INIT(rom_base, CONFIG_ROM_SIZE);
-
-const struct region_device *boot_device_ro(void)
-{
-	return &boot_dev.rdev;
-}
-
-int cbfs_boot_region_properties(struct cbfs_props *props)
+/* This function is marked as weak to allow a particular platform to
+ * override the logic. This implementation should work for most devices. */
+int __attribute__((weak)) cbfs_boot_region_properties(struct cbfs_props *props)
 {
 	struct cbfs_header header;
-	int32_t offset;
 	const struct region_device *bdev;
+	int32_t rel_offset;
+	size_t offset;
 
 	bdev = boot_device_ro();
 
-	rdev_readat(bdev, &offset, CONFIG_ROM_SIZE - sizeof(offset),
-			sizeof(offset));
+	if (bdev == NULL)
+		return -1;
 
-	/* The offset is relative to the end of the media. */
-	offset += CONFIG_ROM_SIZE;
+	/* Find location of header using signed 32-bit offset from
+	 * end of CBFS region. */
+	offset = CONFIG_CBFS_SIZE - sizeof(int32_t);
+	if (rdev_readat(bdev, &rel_offset, offset, sizeof(int32_t)) < 0)
+		return -1;
 
-	rdev_readat(bdev, &header , offset, sizeof(header));
+	offset = CONFIG_CBFS_SIZE + rel_offset;
+	if (rdev_readat(bdev, &header, offset, sizeof(header)) < 0)
+		return -1;
 
 	header.magic = ntohl(header.magic);
 	header.romsize = ntohl(header.romsize);
-	header.bootblocksize = ntohl(header.bootblocksize);
 	header.align = ntohl(header.align);
 	header.offset = ntohl(header.offset);
 
@@ -61,15 +57,10 @@ int cbfs_boot_region_properties(struct cbfs_props *props)
 
 	props->align = header.align;
 	props->offset = header.offset;
-	if (CONFIG_ROM_SIZE != header.romsize)
-		props->size = CONFIG_ROM_SIZE;
-	else
-		props->size = header.romsize;
+	props->size = header.romsize;
 	props->size -= props->offset;
-	props->size -= header.bootblocksize;
-	props->size = ALIGN_DOWN(props->size, props->align);
 
-	printk(BIOS_DEBUG, "CBFS @ %zx size %zx\n", props->offset, props->size);
+	printk(BIOS_SPEW, "CBFS @ %zx size %zx\n", props->offset, props->size);
 
 	return 0;
 }

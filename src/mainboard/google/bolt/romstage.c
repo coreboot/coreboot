@@ -78,8 +78,8 @@ static void copy_spd(struct pei_data *peid)
 	int spd_index = 0; /* No GPIO selection, force index 0 for now */
 
 	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
-	spd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin",
-					 CBFS_TYPE_SPD, &spd_file_len);
+	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
+						&spd_file_len);
 	if (!spd_file)
 		die("SPD data not found.");
 

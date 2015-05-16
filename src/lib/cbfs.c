@@ -1,8 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008, Jordan Crouse <jordan@cosmicpenguin.net>
- * Copyright (C) 2013 The Chromium OS Authors. All rights reserved.
+ * Copyright (C) 2011 secunet Security Networks AG
+ * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,151 @@
  * Foundation, Inc.
  */
 
+#include <assert.h>
+#include <string.h>
+#include <stdlib.h>
+#include <boot_device.h>
+#include <cbfs.h>
+#include <endian.h>
+#include <lib.h>
+#include <symbols.h>
 
-#include <program_loading.h>
-#include "cbfs_core.h"
+#define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
+#define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
+#if IS_ENABLED(CONFIG_DEBUG_CBFS)
+#define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
+#else
+#define DEBUG(x...)
+#endif
 
-#ifndef __SMM__
+int cbfs_boot_locate(struct region_device *fh, const char *name, uint32_t *type)
+{
+	struct cbfsd cbfs;
+	struct region_device rdev;
+	const struct region_device *boot_dev;
+	struct cbfs_props props;
+
+	boot_device_init();
+
+	if (cbfs_boot_region_properties(&props))
+		return -1;
+
+	/* All boot CBFS operations are performed using the RO devie. */
+	boot_dev = boot_device_ro();
+
+	if (boot_dev == NULL)
+		return -1;
+
+	if (rdev_chain(&rdev, boot_dev, props.offset, props.size))
+		return -1;
+
+	cbfs.rdev = &rdev;
+	cbfs.align = props.align;
+
+	return cbfs_locate(fh, &cbfs, name, type);
+}
+
+void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size)
+{
+	struct region_device fh;
+	size_t fsize;
+
+	if (cbfs_boot_locate(&fh, name, &type))
+		return NULL;
+
+	fsize = region_device_sz(&fh);
+
+	if (size != NULL)
+		*size = fsize;
+
+	return rdev_mmap(&fh, 0, fsize);
+}
+
+int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
+		const char *name, uint32_t *type)
+{
+	size_t offset;
+	const struct region_device *rd;
+	size_t align;
+
+	offset = 0;
+	rd = cbfs->rdev;
+	align = cbfs->align;
+
+	LOG("Locating '%s'\n", name);
+
+	/* Try to scan the entire cbfs region looking for file name. */
+	while (1) {
+		struct cbfs_file file;
+		const size_t fsz = sizeof(file);
+		char *fname;
+		int name_match;
+		size_t datasz;
+
+		DEBUG("Checking offset %zx\n", offset);
+
+		/* Can't read file. Nothing else to do but bail out. */
+		if (rdev_readat(rd, &file, offset, fsz) != fsz)
+			break;
+
+		if (memcmp(file.magic, CBFS_FILE_MAGIC, sizeof(file.magic))) {
+			offset++;
+			offset = ALIGN_UP(offset, align);
+			continue;
+		}
+
+		file.len = ntohl(file.len);
+		file.type = ntohl(file.type);
+		file.offset = ntohl(file.offset);
+
+		/* See if names match. */
+		fname = rdev_mmap(rd, offset + fsz, file.offset - fsz);
+
+		if (fname == NULL)
+			break;
+
+		name_match = !strcmp(fname, name);
+		rdev_munmap(rd, fname);
+
+		if (!name_match) {
+			DEBUG(" Unmatched '%s' at %zx\n", fname, offset);
+			offset += file.offset + file.len;
+			offset = ALIGN_UP(offset, align);
+			continue;
+		}
+
+		if (type != NULL && *type != file.type) {
+			DEBUG(" Unmatched type %x at %zx\n", file.type, offset);
+			offset += file.offset + file.len;
+			offset = ALIGN_UP(offset, align);
+			continue;
+		}
+
+		LOG("Found @ offset %zx size %x\n", offset, file.len);
+		/* File and type match. Create a chained region_device to
+		 * represent the cbfs file. */
+		offset += file.offset;
+		datasz = file.len;
+		if (rdev_chain(fh, rd, offset, datasz))
+			break;
+
+		/* Success. */
+		return 0;
+	}
+
+	LOG("'%s' not found.\n", name);
+	return -1;
+}
+
+static size_t inflate(void *src, void *dst)
+{
+	if (ENV_BOOTBLOCK || ENV_VERSTAGE)
+		return 0;
+	if (ENV_ROMSTAGE && !IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE))
+		return 0;
+	return ulzma(src, dst);
+}
+
 static inline int tohex4(unsigned int c)
 {
 	return (c <= 9) ? (c + '0') : (c - 10 + 'a');
@@ -36,174 +176,80 @@ static void tohex16(unsigned int val, char* dest)
 	dest[3] = tohex4(val & 0xf);
 }
 
-void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
-			  uint16_t device, void *dest)
+void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
 {
 	char name[17] = "pciXXXX,XXXX.rom";
-	struct cbfs_optionrom *orom;
-	uint8_t *src;
 
 	tohex16(vendor, name+3);
 	tohex16(device, name+8);
 
-	orom = (struct cbfs_optionrom *)
-	  cbfs_get_file_content(media, name, CBFS_TYPE_OPTIONROM, NULL);
-
-	if (orom == NULL)
-		return NULL;
-
-	/* They might have specified a dest address. If so, we can decompress.
-	 * If not, there's not much hope of decompressing or relocating the rom.
-	 * in the common case, the expansion rom is uncompressed, we
-	 * pass 0 in for the dest, and all we have to do is find the rom and
-	 * return a pointer to it.
-	 */
-
-	/* BUG: the cbfstool is (not yet) including a cbfs_optionrom header */
-	src = (uint8_t *)orom; // + sizeof(struct cbfs_optionrom);
-
-	if (! dest)
-		return src;
-
-	if (!cbfs_decompress(ntohl(orom->compression),
-			     src,
-			     dest,
-			     ntohl(orom->len)))
-		return NULL;
-
-	return dest;
+	return cbfs_boot_map_with_leak(name, CBFS_TYPE_OPTIONROM, NULL);
 }
 
-int cbfs_load_prog_stage_by_offset(struct cbfs_media *media,
-					struct prog *prog, ssize_t offset)
+void *cbfs_boot_load_stage_by_name(const char *name)
 {
-	struct cbfs_stage stage;
-	struct cbfs_media backing_store;
-
-	if (init_backing_media(&media, &backing_store))
-		return -1;
-
-	if (cbfs_read(media, &stage, offset, sizeof(stage)) != sizeof(stage)) {
-		ERROR("ERROR: failed to read stage header\n");
-		return -1;
-	}
-
-	LOG("loading stage from %#zx @ 0x%llx (%d bytes), entry @ 0x%llx\n",
-	    offset, stage.load, stage.memlen, stage.entry);
-
-	/* Stages rely the below clearing so that the bss is initialized. */
-	memset((void *)(uintptr_t)stage.load, 0, stage.memlen);
-
-	if (stage.compression == CBFS_COMPRESS_NONE) {
-		if (cbfs_read(media, (void *)(uintptr_t)stage.load,
-			      offset + sizeof(stage), stage.len) != stage.len) {
-			ERROR("ERROR: Reading stage failed.\n");
-			return -1;
-		}
-	} else {
-		void *data = media->map(media, offset + sizeof(stage),
-					stage.len);
-		if (data == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
-			ERROR("ERROR: Mapping stage failed.\n");
-			return -1;
-		}
-		if (!cbfs_decompress(stage.compression, data,
-				    (void *)(uintptr_t)stage.load, stage.len))
-			return -1;
-		media->unmap(media, data);
-	}
-
-	arch_segment_loaded(stage.load, stage.memlen, SEG_FINAL);
-	DEBUG("stage loaded\n");
-
-	prog_set_area(prog, (void *)(uintptr_t)stage.load, stage.memlen);
-	prog_set_entry(prog, (void *)(uintptr_t)stage.entry, NULL);
-
-	return 0;
-}
-
-int cbfs_load_prog_stage(struct cbfs_media *media, struct prog *prog)
-{
-	struct cbfs_file file;
-	ssize_t offset;
-	struct cbfs_media backing_store;
-
-	if (init_backing_media(&media, &backing_store))
-		return -1;
-
-	offset = cbfs_locate_file(media, &file, prog->name);
-	if (offset < 0 || file.type != CBFS_TYPE_STAGE)
-		return -1;
-
-	if (cbfs_load_prog_stage_by_offset(media, prog, offset) < 0)
-		return -1;
-
-	return 0;
-}
-
-void *cbfs_load_stage_by_offset(struct cbfs_media *media, ssize_t offset)
-{
-	struct prog prog = {
-		.name = NULL,
-	};
-
-	if (cbfs_load_prog_stage_by_offset(media, &prog, offset) < 0)
-		return (void *)-1;
-
-	return prog_entry(&prog);
-}
-
-void *cbfs_load_stage(struct cbfs_media *media, const char *name)
-{
-	struct prog prog = {
+	struct prog stage = {
 		.name = name,
 	};
+	uint32_t type = CBFS_TYPE_STAGE;
 
-	if (cbfs_load_prog_stage(media, &prog) < 0)
-		return (void *)-1;
+	if (cbfs_boot_locate(&stage.rdev, name, &type))
+		return NULL;
 
-	return prog_entry(&prog);
+	if (cbfs_prog_stage_load(&stage))
+		return NULL;
+
+	return prog_entry(&stage);
 }
 
-/* Simple buffer */
+int cbfs_prog_stage_load(struct prog *pstage)
+{
+	struct cbfs_stage stage;
+	uint8_t *load;
+	void *entry;
+	size_t fsize;
+	size_t foffset;
+	const struct region_device *fh = &pstage->rdev;
 
-void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
-			     struct cbfs_media *media,
-			     size_t offset, size_t count) {
-	void *address = buffer->buffer + buffer->allocated;
-	DEBUG("simple_buffer_map(offset=%zd, count=%zd): "
-	      "allocated=%zd, size=%zd, last_allocate=%zd\n",
-	    offset, count, buffer->allocated, buffer->size,
-	    buffer->last_allocate);
-	if (buffer->allocated + count > buffer->size) {
-		ERROR("simple_buffer: no room to map %zd bytes from %#zx\n",
-		      count, offset);
-		return CBFS_MEDIA_INVALID_MAP_ADDRESS;
-	}
-	if (media->read(media, address, offset, count) != count) {
-		ERROR("simple_buffer: fail to read %zd bytes from 0x%zx\n",
-		      count, offset);
-		return CBFS_MEDIA_INVALID_MAP_ADDRESS;
-	}
-	buffer->allocated += count;
-	buffer->last_allocate = count;
-	return address;
+	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
+		return 0;
+
+	fsize = region_device_sz(fh);
+	fsize -= sizeof(stage);
+	foffset = 0;
+	foffset += sizeof(stage);
+
+	assert(fsize == stage.len);
+
+	/* Note: cbfs_stage fields are currently in the endianness of the
+	 * running processor. */
+	load = (void *)(uintptr_t)stage.load;
+	entry = (void *)(uintptr_t)stage.entry;
+
+	if (stage.compression == CBFS_COMPRESS_NONE) {
+		if (rdev_readat(fh, load, foffset, fsize) != fsize)
+			return -1;
+	} else if (stage.compression == CBFS_COMPRESS_LZMA) {
+		void *map = rdev_mmap(fh, foffset, fsize);
+
+		if (map == NULL)
+			return -1;
+
+		fsize = inflate(map, load);
+
+		rdev_munmap(fh, map);
+
+		if (!fsize)
+			return -1;
+	} else
+		return -1;
+
+	/* Clear area not covered by file. */
+	memset(&load[fsize], 0, stage.memlen - fsize);
+
+	arch_segment_loaded((uintptr_t)load, stage.memlen, SEG_FINAL);
+	prog_set_area(pstage, load, stage.memlen);
+	prog_set_entry(pstage, entry, NULL);
+
+	return 0;
 }
-
-void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
-			       const void *address) {
-	// TODO Add simple buffer management so we can free more than last
-	// allocated one.
-	DEBUG("simple_buffer_unmap(address=0x%p): "
-	      "allocated=%zd, size=%zd, last_allocate=%zd\n",
-	    address, buffer->allocated, buffer->size,
-	    buffer->last_allocate);
-	if ((buffer->buffer + buffer->allocated - buffer->last_allocate) ==
-	    address) {
-		buffer->allocated -= buffer->last_allocate;
-		buffer->last_allocate = 0;
-	}
-	return NULL;
-}
-
-#endif

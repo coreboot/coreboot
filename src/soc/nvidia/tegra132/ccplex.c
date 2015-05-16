@@ -75,10 +75,9 @@ static int ccplex_start(void)
 
 int ccplex_load_mts(void)
 {
-	struct cbfs_file file;
-	ssize_t offset;
-	size_t nread;
+	ssize_t nread;
 	struct stopwatch sw;
+	struct region_device fh;
 
 	/*
 	 * MTS location is hard coded to this magic address. The hardware will
@@ -86,21 +85,19 @@ int ccplex_load_mts(void)
 	 * place in the carveout region.
 	 */
 	void * const mts = (void *)(uintptr_t)MTS_LOAD_ADDRESS;
-	struct cbfs_media *media = CBFS_DEFAULT_MEDIA;
 
 	stopwatch_init(&sw);
-	offset = cbfs_locate_file(media, &file, MTS_FILE_NAME);
-	if (offset < 0) {
+	if (cbfs_boot_locate(&fh, MTS_FILE_NAME, NULL)) {
 		printk(BIOS_DEBUG, "MTS file not found: %s\n", MTS_FILE_NAME);
 		return -1;
 	}
 
 	/* Read MTS file into the carveout region. */
-	nread = cbfs_read(media, mts, offset, file.len);
+	nread = rdev_readat(&fh, mts, 0, region_device_sz(&fh));
 
-	if (nread != file.len) {
+	if (nread != region_device_sz(&fh)) {
 		printk(BIOS_DEBUG, "MTS bytes read (%zu) != file length(%u)!\n",
-			nread, file.len);
+			nread, region_device_sz(&fh));
 		return -1;
 	}
 

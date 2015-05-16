@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <region.h>
 
 enum {
 	/* Last segment of program. Can be used to take different actions for
@@ -42,17 +43,22 @@ enum prog_type {
 	PROG_VERSTAGE,
 	PROG_ROMSTAGE,
 	PROG_RAMSTAGE,
+	PROG_REFCODE,
 	PROG_PAYLOAD,
+	PROG_BL31,
 };
 
 /* Representation of a program. */
 struct prog {
 	enum prog_type type;
 	const char *name;
+	/* Source of program content to load. */
+	struct region_device rdev;
 	/* The area can mean different things depending on what type the
-	 * program is. e.g. a payload prog uses this field for the backing
-	 * store of the payload_segments and data. After loading the segments
-	 * area is updated to reflect the bounce buffer used. */
+	 * program is. A stage after being loaded reflects the memory occupied
+	 * by the program, Since payloads are multi-segment one can't express
+	 * the memory layout with one range. Instead this field is updated
+	 * to reflect the bounce buffer used. */
 	struct buffer_area area;
 	/* Entry to program with optional argument. It's up to the architecture
 	 * to decide if argument is passed. */
@@ -92,6 +98,8 @@ static inline void prog_set_entry(struct prog *prog, void *e, void *arg)
 	prog->arg = arg;
 }
 
+/* Locate the identified program to run. Return 0 on success. < 0 on error. */
+int prog_locate(struct prog *prog);
 /* Run the program described by prog. */
 void prog_run(struct prog *prog);
 /* Per architecture implementation running a program. */
@@ -107,10 +115,10 @@ struct prog_loader_ops {
 	/* Determine if the loader is the active one. If so returns 1 else 0
 	 * or < 0 on error. */
 	int (*is_loader_active)(struct prog *prog);
-	/* Returns < 0 on error or 0 on success. This function needs to do
-	 * different things depending on the prog type. See definition
-	 * of struct prog above. */
-	int (*prepare)(struct prog *prog);
+	/* Returns < 0 on error or 0 on success. This function locates
+	 * the rdev representing the file data associated with the passed in
+	 * prog. */
+	int (*locate)(struct prog *prog);
 };
 
 /************************

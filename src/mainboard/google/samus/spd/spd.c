@@ -90,8 +90,8 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	};
 	int spd_gpio[4];
 	int spd_index;
-	int spd_file_len;
-	struct cbfs_file *spd_file;
+	size_t spd_file_len;
+	char *spd_file;
 
 	spd_gpio[0] = get_gpio(spd_bits[0]);
 	spd_gpio[1] = get_gpio(spd_bits[1]);
@@ -106,10 +106,9 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	       spd_bits[3], spd_gpio[3], spd_bits[2], spd_gpio[2],
 	       spd_bits[1], spd_gpio[1], spd_bits[0], spd_gpio[0]);
 
-	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
+	spd_file = cbfs_boot_map_with_leak("spd.bin", 0xab, &spd_file_len);
 	if (!spd_file)
 		die("SPD data not found.");
-	spd_file_len = ntohl(spd_file->len);
 
 	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
@@ -121,10 +120,8 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 
 	/* Assume same memory in both channels */
 	spd_index *= SPD_LEN;
-	memcpy(pei_data->spd_data[0][0],
-	       ((char*)CBFS_SUBHEADER(spd_file)) + spd_index, SPD_LEN);
-	memcpy(pei_data->spd_data[1][0],
-	       ((char*)CBFS_SUBHEADER(spd_file)) + spd_index, SPD_LEN);
+	memcpy(pei_data->spd_data[0][0], spd_file + spd_index, SPD_LEN);
+	memcpy(pei_data->spd_data[1][0], spd_file + spd_index, SPD_LEN);
 
 	/* Make sure a valid SPD was found */
 	if (pei_data->spd_data[0][0][0] == 0)

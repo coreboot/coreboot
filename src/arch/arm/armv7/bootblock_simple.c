@@ -21,7 +21,6 @@
 #include <arch/exception.h>
 #include <arch/stages.h>
 #include <bootblock_common.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
 #include <program_loading.h>
@@ -44,8 +43,6 @@ void main(void)
 	console_init();
 	exception_init();
 #endif
-
-	cbfs_set_header_offset(0);
 
 	bootblock_soc_init();
 	bootblock_mainboard_init();

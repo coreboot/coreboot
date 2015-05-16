@@ -18,15 +18,9 @@
  */
 
 #include <boot_device.h>
-#include <cbfs.h>
 
 const struct region_device *boot_device_ro(void)
 {
-	return NULL;
-}
-
-int init_default_cbfs_media(struct cbfs_media *media)
-{
 	/* FIXME: add support for reading coreboot from NAND */
-	return -1;
+	return NULL;
 }

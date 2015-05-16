@@ -25,28 +25,28 @@
 /* Reading VBT table from flash */
 const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len)
 {
-	struct cbfs_file *vbt_file;
+	size_t vbt_size;
 	union {
 		const optionrom_vbt_t *data;
 		uint32_t *signature;
 	} vbt;
 
 	/* Locate the vbt file in cbfs */
-	vbt_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "vbt.bin");
-	if (!vbt_file) {
+	vbt.data = cbfs_boot_map_with_leak("vbt.bin", CBFS_TYPE_OPTIONROM,
+						&vbt_size);
+	if (!vbt.data) {
 		printk(BIOS_INFO,
 			"FSP_INFO: VBT data file (vbt.bin) not found in CBFS");
 		return NULL;
 	}
 
 	/* Validate the vbt file */
-	vbt.data = CBFS_SUBHEADER(vbt_file);
 	if (*vbt.signature != VBT_SIGNATURE) {
 		printk(BIOS_WARNING,
 			"FSP_WARNING: Invalid signature in VBT data file (vbt.bin)!\n");
 		return NULL;
 	}
-	*vbt_len = ntohl(vbt_file->len);
+	*vbt_len = vbt_size;
 	printk(BIOS_DEBUG, "FSP_INFO: VBT found at %p, 0x%08x bytes\n",
 		vbt.data, *vbt_len);
 

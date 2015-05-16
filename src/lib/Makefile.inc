@@ -18,8 +18,10 @@
 #
 subdirs-y += loaders
 
+bootblock-y += prog_loaders.c
 bootblock-y += prog_ops.c
-bootblock-y += cbfs.c cbfs_core.c
+bootblock-y += cbfs.c
+bootblock-y += cbfs_boot_props.c
 bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 bootblock-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 
@@ -34,12 +36,13 @@ bootblock-y += region.c
 bootblock-y += boot_device.c
 bootblock-y += fmap.c
 
+verstage-y += prog_loaders.c
 verstage-y += prog_ops.c
 verstage-y += delay.c
 verstage-y += cbfs.c
-verstage-y += cbfs_core.c
 verstage-y += halt.c
 verstage-y += fmap.c
+verstage-y += cbfs_boot_props.c
 verstage-y += memcmp.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-y += region.c
@@ -57,6 +60,7 @@ verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 verstage-y += mem_pool.c
 
+romstage-y += prog_loaders.c
 romstage-y += prog_ops.c
 romstage-y += memchr.c
 romstage-y += memcmp.c
@@ -66,7 +70,8 @@ $(foreach arch,$(ARCH_SUPPORTED),\
 
 romstage-y += fmap.c
 romstage-$(CONFIG_I2C_TPM) += delay.c
-romstage-y += cbfs.c cbfs_core.c
+romstage-y += cbfs.c
+romstage-y += cbfs_boot_props.c
 romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
 romstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
@@ -87,6 +92,7 @@ endif
 
 romstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 
+ramstage-y += prog_loaders.c
 ramstage-y += prog_ops.c
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c
@@ -100,7 +106,8 @@ smm-$(CONFIG_SMM_TSEG) += malloc.c
 ramstage-y += delay.c
 ramstage-y += fallback_boot.c
 ramstage-y += compute_ip_checksum.c
-ramstage-y += cbfs.c cbfs_core.c
+ramstage-y += cbfs.c
+ramstage-y += cbfs_boot_props.c
 ramstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 ramstage-y += lzma.c lzmadecode.c
 ramstage-y += stack.c
@@ -153,7 +160,7 @@ ramstage-y += boot_device.c
 smm-y += region.c
 smm-y += boot_device.c
 smm-y += fmap.c
-smm-y += cbfs.c cbfs_core.c memcmp.c
+smm-y += cbfs.c memcmp.c
 smm-$(CONFIG_COMPILER_GCC) += gcc.c
 
 bootblock-y += version.c

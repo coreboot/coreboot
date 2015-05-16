@@ -24,8 +24,6 @@
  */
 
 #include <boot_device.h>
-#include <cbfs.h>
-#include <region.h>
 #include <spi_flash.h>
 #include <symbols.h>
 
@@ -68,74 +66,4 @@ const struct region_device *boot_device_ro(void)
 		return NULL;
 
 	return &mdev.rdev;
-}
-
-static int cbfs_media_open(struct cbfs_media *media)
-{
-	return 0;
-}
-
-static int cbfs_media_close(struct cbfs_media *media)
-{
-	return 0;
-}
-
-static size_t cbfs_media_read(struct cbfs_media *media,
-			      void *dest, size_t offset,
-			      size_t count)
-{
-	const struct region_device *boot_dev;
-
-	boot_dev = media->context;
-
-	if (rdev_readat(boot_dev, dest, offset, count) < 0)
-		return 0;
-
-	return count;
-}
-
-static void *cbfs_media_map(struct cbfs_media *media,
-			    size_t offset, size_t count)
-{
-	const struct region_device *boot_dev;
-	void *ptr;
-
-	boot_dev = media->context;
-
-	ptr = rdev_mmap(boot_dev, offset, count);
-
-	if (ptr == NULL)
-		return (void *)-1;
-
-	return ptr;
-}
-
-static void *cbfs_media_unmap(struct cbfs_media *media,
-			       const void *address)
-{
-	const struct region_device *boot_dev;
-
-	boot_dev = media->context;
-
-	rdev_munmap(boot_dev, (void *)address);
-
-	return NULL;
-}
-
-int init_default_cbfs_media(struct cbfs_media *media)
-{
-	boot_device_init();
-
-	media->context = (void *)boot_device_ro();
-
-	if (media->context == NULL)
-		return -1;
-
-	media->open = cbfs_media_open;
-	media->close = cbfs_media_close;
-	media->read = cbfs_media_read;
-	media->map = cbfs_media_map;
-	media->unmap = cbfs_media_unmap;
-
-	return 0;
 }

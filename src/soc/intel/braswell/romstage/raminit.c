@@ -148,8 +148,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	}
 
 	/* Determine if mrc.bin is in the cbfs. */
-	if (cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "mrc.bin", CBFS_TYPE_MRC,
-			NULL) == NULL) {
+	if (cbfs_boot_map_with_leak("mrc.bin", CBFS_TYPE_MRC, NULL) == NULL) {
 		printk(BIOS_DEBUG, "Couldn't find mrc.bin\n");
 		return;
 	}

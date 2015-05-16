@@ -21,12 +21,14 @@
 #include <arch/exception.h>
 #include <arch/stages.h>
 #include <armv7.h>
+#include <boot_device.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/i2c.h>
 #include <drivers/maxim/max77802/max77802.h>
 #include <program_loading.h>
+#include <region.h>
 #include <soc/clk.h>
 #include <soc/cpu.h>
 #include <soc/dmc.h>
@@ -176,29 +178,28 @@ static unsigned long primitive_mem_test(void)
 /* here is a simple SPI debug test, known to fid trouble */
 static void simple_spi_test(void)
 {
-	struct cbfs_media default_media, *media;
+	const struct region_device *boot_dev;
 	int i, amt = 4 * MiB, errors = 0;
 	//u32 *data = (void *)0x40000000;
 	u32 data[1024];
 	u32 in;
 
+	boot_device_init();
+	boot_dev = boot_device_ro();
 	amt = sizeof(data);
-	media = &default_media;
-	if (init_default_cbfs_media(media) != 0) {
+	if (boot_dev == NULL) {
 		printk(BIOS_SPEW, "Failed to initialize default media.\n");
 		return;
 	}
 
-
-	media->open(media);
-	if (media->read(media, data, (size_t) 0, amt) < amt){
+	if (rdev_readat(boot_dev, data, 0, amt) < amt) {
 		printk(BIOS_SPEW, "simple_spi_test fails\n");
 		return;
 	}
 
 
 	for(i = 0; i < amt; i += 4){
-		if (media->read(media, &in, (size_t) i, 4) < 1){
+		if (rdev_readat(boot_dev, &in, i, 4) < 4) {
 			printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);
 			return;
 		}
@@ -207,7 +208,7 @@ static void simple_spi_test(void)
 			printk(BIOS_SPEW, "BAD at %d(%p):\nRAM %08lx\nSPI %08lx\n",
 			       i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
 			/* reread it to see which is wrong. */
-			if (media->read(media, &in, (size_t) i, 4) < 1){
+			if (rdev_readat(boot_dev, &in, i, 4) < 4) {
 				printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);
 				return;
 			}

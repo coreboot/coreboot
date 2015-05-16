@@ -26,9 +26,6 @@
 #include <program_loading.h>
 #include <rmodule.h>
 #include <stage_cache.h>
-#if IS_ENABLED(CONFIG_CHROMEOS)
-#include <vendorcode/google/chromeos/vboot_handoff.h>
-#endif
 
 #include <soc/ramstage.h>
 #include <soc/efi_wrapper.h>
@@ -49,58 +46,10 @@ static efi_wrapper_entry_t load_refcode_from_cache(void)
 	return (efi_wrapper_entry_t)prog_entry(&refcode);
 }
 
-static void cache_refcode(const struct rmod_stage_load *rsl)
-{
-	stage_cache_add(STAGE_REFCODE, rsl->prog);
-}
-
-#if IS_ENABLED(CONFIG_CHROMEOS)
-static int load_refcode_from_vboot(struct rmod_stage_load *refcode)
-{
-	struct vboot_handoff *vboot_handoff;
-	const struct firmware_component *fwc;
-	struct cbfs_stage *stage;
-
-	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-	fwc = &vboot_handoff->components[CONFIG_VBOOT_REFCODE_INDEX];
-
-	if (vboot_handoff == NULL ||
-	    vboot_handoff->selected_firmware == VB_SELECT_FIRMWARE_READONLY ||
-	    CONFIG_VBOOT_REFCODE_INDEX >= MAX_PARSED_FW_COMPONENTS ||
-	    fwc->size == 0 || fwc->address == 0)
-		return -1;
-
-	printk(BIOS_DEBUG, "refcode loading from vboot rw area.\n");
-	stage = (void *)(uintptr_t)fwc->address;
-
-	if (rmodule_stage_load(refcode, stage)) {
-		printk(BIOS_DEBUG, "Error loading reference code.\n");
-		return -1;
-	}
-	return 0;
-}
-#else
-static int load_refcode_from_vboot(struct rmod_stage_load *refcode)
-{
-	return -1;
-}
-#endif
-
-static int load_refcode_from_cbfs(struct rmod_stage_load *refcode)
-{
-	printk(BIOS_DEBUG, "refcode loading from cbfs.\n");
-
-	if (rmodule_stage_load_from_cbfs(refcode)) {
-		printk(BIOS_DEBUG, "Error loading reference code.\n");
-		return -1;
-	}
-
-	return 0;
-}
-
 static efi_wrapper_entry_t load_reference_code(void)
 {
 	struct prog prog = {
+		.type = PROG_REFCODE,
 		.name = CONFIG_CBFS_PREFIX "/refcode",
 	};
 	struct rmod_stage_load refcode = {
@@ -112,12 +61,18 @@ static efi_wrapper_entry_t load_reference_code(void)
 		return load_refcode_from_cache();
 	}
 
-	if (load_refcode_from_vboot(&refcode) &&
-		load_refcode_from_cbfs(&refcode))
-			return NULL;
+	if (prog_locate(&prog)) {
+		printk(BIOS_DEBUG, "Couldn't locate reference code.\n");
+		return NULL;
+	}
+
+	if (rmodule_stage_load(&refcode)) {
+		printk(BIOS_DEBUG, "Error loading reference code.\n");
+		return NULL;
+	}
 
 	/* Cache loaded reference code. */
-	cache_refcode(&refcode);
+	stage_cache_add(STAGE_REFCODE, &prog);
 
 	return prog_entry(&prog);
 }

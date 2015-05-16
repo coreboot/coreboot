@@ -7,6 +7,7 @@
  * Licensed under the GPL-2 or later.
  */
 
+#include <boot_device.h>
 #include <cbfs.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
@@ -390,10 +391,8 @@ void lb_spi_flash(struct lb_header *header)
 	flash->size = sizeof(*flash);
 
 	/* Try to get the flash device if not loaded yet */
-	if (!spi_flash_dev) {
-		struct cbfs_media media;
-		init_default_cbfs_media(&media);
-	}
+	if (!spi_flash_dev)
+		boot_device_init();
 
 	if (spi_flash_dev) {
 		flash->flash_size = spi_flash_dev->size;

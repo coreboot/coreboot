@@ -32,20 +32,18 @@
 
 static void *load_ipq_blob(const char *file_name)
 {
-	struct cbfs_file *blob_file;
 	struct mbn_header *blob_mbn;
 	void *blob_dest;
+	size_t blob_size;
 
-	blob_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, file_name);
-	if (!blob_file)
+	blob_mbn = cbfs_boot_map_with_leak(file_name, CBFS_TYPE_RAW,
+						&blob_size);
+	if (!blob_mbn)
 		return NULL;
-
-	blob_mbn = (struct mbn_header *)((uintptr_t)blob_file +
-					 ntohl(blob_file->offset));
 
 	/* some sanity checks on the headers */
 	if ((blob_mbn->mbn_version != 3) ||
-	    (blob_mbn->mbn_total_size > ntohl(blob_file->len)))
+	    (blob_mbn->mbn_total_size > blob_size))
 		return NULL;
 
 	blob_dest = (void *) blob_mbn->mbn_destination;

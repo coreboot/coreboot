@@ -105,8 +105,8 @@ void amd_update_microcode_from_cbfs(u32 equivalent_processor_rev_id)
 		return;
 	}
 
-	ucode = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, MICROCODE_CBFS_FILE,
-				      CBFS_TYPE_MICROCODE, &ucode_len);
+	ucode = cbfs_boot_map_with_leak(MICROCODE_CBFS_FILE,
+					CBFS_TYPE_MICROCODE, &ucode_len);
 	if (!ucode) {
 		UCODE_DEBUG("microcode file not found. Skipping updates.\n");
 		return;

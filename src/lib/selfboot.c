@@ -211,13 +211,11 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 
 static int build_self_segment_list(
 	struct segment *head,
-	struct prog *payload, uintptr_t *entry)
+	struct cbfs_payload *cbfs_payload, uintptr_t *entry)
 {
 	struct segment *new;
 	struct segment *ptr;
 	struct cbfs_payload_segment *segment, *first_segment;
-	struct cbfs_payload *cbfs_payload;
-	cbfs_payload = prog_start(payload);
 	memset(head, 0, sizeof(*head));
 	head->next = head->prev = head;
 	first_segment = segment = &cbfs_payload->segments;
@@ -447,9 +445,6 @@ static int load_self_segments(
 		}
 	}
 
-	/* Update the payload's area with the bounce buffer information. */
-	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
-
 	return 1;
 }
 
@@ -457,9 +452,15 @@ void *selfload(struct prog *payload)
 {
 	uintptr_t entry = 0;
 	struct segment head;
+	void *data;
+
+	data = rdev_mmap_full(&payload->rdev);
+
+	if (data == NULL)
+		return NULL;
 
 	/* Preprocess the self segments */
-	if (!build_self_segment_list(&head, payload, &entry))
+	if (!build_self_segment_list(&head, data, &entry))
 		goto out;
 
 	/* Load the segments */
@@ -468,8 +469,14 @@ void *selfload(struct prog *payload)
 
 	printk(BIOS_SPEW, "Loaded segments\n");
 
+	rdev_munmap(&payload->rdev, data);
+
+	/* Update the payload's area with the bounce buffer information. */
+	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
+
 	return (void *)entry;
 
 out:
+	rdev_munmap(&payload->rdev, data);
 	return NULL;
 }

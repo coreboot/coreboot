@@ -802,18 +802,6 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	return ret;
 }
 
-static int tegra_spi_cbfs_open(struct cbfs_media *media)
-{
-	DEBUG_SPI("tegra_spi_cbfs_open\n");
-	return 0;
-}
-
-static int tegra_spi_cbfs_close(struct cbfs_media *media)
-{
-	DEBUG_SPI("tegra_spi_cbfs_close\n");
-	return 0;
-}
-
 #define JEDEC_READ			0x03
 #define JEDEC_READ_OUTSIZE		0x04
 #define JEDEC_FAST_READ_DUAL		0x3b
@@ -875,69 +863,6 @@ tegra_spi_cbfs_read_exit:
 	/* de-assert /CS */
 	spi_release_bus(boot_slave);
 	return ret;
-}
-
-static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
-				size_t offset, size_t count)
-{
-	const struct region_device *boot_dev;
-
-	boot_dev = media->context;
-
-	printk(BIOS_ERR, "%s: reading %zx bytes from %zx\n",
-			__func__, count, offset);
-	if (rdev_readat(boot_dev, dest, offset, count) < 0)
-		return 0;
-
-	return count;
-}
-
-static void *tegra_spi_cbfs_map(struct cbfs_media *media, size_t offset,
-				 size_t count)
-{
-	const struct region_device *boot_dev;
-	void *map;
-
-	DEBUG_SPI("tegra_spi_cbfs_map\n");
-
-	boot_dev = media->context;
-
-	map = rdev_mmap(boot_dev, offset, count);
-
-	if (map == NULL)
-		map = (void *)-1;
-
-	return map;
-}
-
-static void *tegra_spi_cbfs_unmap(struct cbfs_media *media,
-				   const void *address)
-{
-	const struct region_device *boot_dev;
-
-	DEBUG_SPI("tegra_spi_cbfs_unmap\n");
-
-	boot_dev = media->context;
-
-	rdev_munmap(boot_dev, (void *)address);
-
-	return NULL;
-}
-
-int init_default_cbfs_media(struct cbfs_media *media)
-{
-	DEBUG_SPI("Initializing CBFS media on SPI\n");
-
-	boot_device_init();
-
-	media->context = (void *)boot_device_ro();
-	media->open = tegra_spi_cbfs_open;
-	media->close = tegra_spi_cbfs_close;
-	media->read = tegra_spi_cbfs_read;
-	media->map = tegra_spi_cbfs_map;
-	media->unmap = tegra_spi_cbfs_unmap;
-
-	return 0;
 }
 
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)

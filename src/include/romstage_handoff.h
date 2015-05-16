@@ -38,8 +38,6 @@ struct romstage_handoff {
 	uint8_t reserved[2];
 };
 
-#if defined(__ROMSTAGE__)
-#if CONFIG_EARLY_CBMEM_INIT
 /* The romstage_handoff_find_or_add() function provides the necessary logic
  * for initializing the romstage_handoff structure in cbmem. Different components
  * of the romstage may be responsible for setting up different fields. Therefore
@@ -62,14 +60,6 @@ static inline struct romstage_handoff *romstage_handoff_find_or_add(void)
 
 	return handoff;
 }
-#else /* CONFIG_EARLY_CBMEM_INIT */
-static inline struct romstage_handoff *romstage_handoff_find_or_add(void)
-{
-	return NULL;
-}
-#endif /* CONFIG_EARLY_CBMEM_INIT */
-
-#endif /* defined(__PRE_RAM__) */
 
 #endif /* ROMSTAGE_HANDOFF_H */
 

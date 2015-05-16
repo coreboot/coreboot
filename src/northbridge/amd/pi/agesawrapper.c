@@ -593,20 +593,13 @@ AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
 
 const void *agesawrapper_locate_module (const CHAR8 name[8])
 {
-	struct cbfs_media media;
-	struct cbfs_file* file;
 	const void* agesa;
 	const AMD_IMAGE_HEADER* image;
 	const AMD_MODULE_HEADER* module;
 	size_t file_size;
 
-	if (init_default_cbfs_media(&media))
-		return NULL;
-	file = cbfs_get_file(&media, (const char*)CONFIG_CBFS_AGESA_NAME);
-	if (!file)
-		return NULL;
-	agesa = cbfs_get_file_content(&media, (const char*)CONFIG_CBFS_AGESA_NAME,
-		ntohl(file->type), &file_size);
+	agesa = cbfs_boot_map_with_leak((const char *)CONFIG_CBFS_AGESA_NAME,
+					CBFS_TYPE_RAW, &file_size);
 	if (!agesa)
 		return NULL;
 	image =  LibAmdLocateImage(agesa, agesa + file_size - 1, 4096, name);

@@ -85,7 +85,6 @@ void mainboard_smi_gpi(u32 gpi_sts)
 	}
 }
 
-#define APMC_FINALIZE 0xcb
 
 static int mainboard_finalized = 0;
 
@@ -104,7 +103,7 @@ int mainboard_smi_apmc(u8 apmc)
 		send_ec_command(EC_ACPI_DISABLE);
 		break;
 
-	case APMC_FINALIZE:
+	case APM_CNT_FINALIZE:
 		if (mainboard_finalized) {
 			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
 			return 0;

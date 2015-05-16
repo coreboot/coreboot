@@ -52,14 +52,13 @@ int mainboard_io_trap_handler(int smif)
 	return 1;
 }
 
-#define APMC_FINALIZE 0xcb
 
 static int mainboard_finalized = 0;
 
 int mainboard_smi_apmc(u8 apmc)
 {
 	switch (apmc) {
-	case APMC_FINALIZE:
+	case APM_CNT_FINALIZE:
 		if (mainboard_finalized) {
 			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
 			return 0;

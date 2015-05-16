@@ -53,7 +53,6 @@ void mainboard_smi_gpi(u32 gpi_sts)
 	printk(BIOS_DEBUG, "warn: unknown mainboard_smi_gpi: %x\n", gpi_sts);
 }
 
-#define APMC_FINALIZE 0xcb
 
 static int mainboard_finalized = 0;
 
@@ -61,7 +60,7 @@ int mainboard_smi_apmc(u8 apmc)
 {
 	printk(BIOS_DEBUG, "mainboard_smi_apmc: %x\n", apmc);
 	switch (apmc) {
-	case APMC_FINALIZE:
+	case APM_CNT_FINALIZE:
 		printk(BIOS_DEBUG, "APMC: FINALIZE\n");
 		if (mainboard_finalized) {
 			printk(BIOS_DEBUG, "APMC#: Already finalized\n");

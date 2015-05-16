@@ -144,14 +144,13 @@ void mainboard_smi_sleep(u8 slp_typ)
 	google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 }
 
-#define APMC_FINALIZE 0xcb
 
 static int mainboard_finalized = 0;
 
 int mainboard_smi_apmc(u8 apmc)
 {
 	switch (apmc) {
-	case APMC_FINALIZE:
+	case APM_CNT_FINALIZE:
 		if (mainboard_finalized) {
 			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
 			return 0;

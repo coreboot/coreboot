@@ -110,7 +110,6 @@ void mainboard_smi_sleep(u8 slp_typ)
 	ec_it8518_enable_wake_events();
 }
 
-#define APMC_FINALIZE 0xcb
 #define APMC_ACPI_EN  0xe1
 #define APMC_ACPI_DIS 0x1e
 
@@ -119,7 +118,7 @@ static int mainboard_finalized = 0;
 int mainboard_smi_apmc(u8 apmc)
 {
 	switch (apmc) {
-	case APMC_FINALIZE:
+	case APM_CNT_FINALIZE:
 		if (mainboard_finalized) {
 			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
 			return 0;

@@ -7,6 +7,8 @@ DefinitionBlock(
 	0x20141018	// OEM revision
 )
 {
+	#include <southbridge/intel/bd82x6x/acpi/platform.asl>
+
 	// Some generic macros
 	#include "acpi/platform.asl"
 	#include <cpu/intel/model_206ax/acpi/cpu.asl>

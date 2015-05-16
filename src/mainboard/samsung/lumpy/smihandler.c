@@ -64,9 +64,6 @@ void mainboard_smi_gpi(u32 gpi_sts)
 	}
 }
 
-
-static int mainboard_finalized = 0;
-
 int mainboard_smi_apmc(u8 apmc)
 {
 	ec_set_ports(EC_MAILBOX_PORT, EC_MAILBOX_PORT+1);
@@ -80,20 +77,6 @@ int mainboard_smi_apmc(u8 apmc)
 	case 0x1e: /* ACPI DISABLE */
 		send_ec_command(EC_SMI_ENABLE);
 		send_ec_command(EC_ACPI_DISABLE);
-		break;
-
-	case APM_CNT_FINALIZE:
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
-			return 0;
-		}
-
-		intel_me_finalize_smm();
-		intel_pch_finalize_smm();
-		intel_sandybridge_finalize_smm();
-		intel_model_206ax_finalize_smm();
-
-		mainboard_finalized = 1;
 		break;
 	}
 	return 0;

@@ -38,6 +38,8 @@
  */
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <arch/pci_mmio_cfg.h>
+#include <southbridge/intel/bd82x6x/me.h>
+#include <cpu/intel/model_206ax/model_206ax.h>
 
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value
@@ -584,6 +586,8 @@ static void southbridge_smi_gsmi(void)
 }
 #endif
 
+static int mainboard_finalized = 0;
+
 static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state_save)
 {
 	u32 pmctrl;
@@ -633,6 +637,19 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 			smm_initialized = 1;
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}
+		break;
+	case APM_CNT_FINALIZE:
+		if (mainboard_finalized) {
+			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
+			return;
+		}
+
+		intel_me_finalize_smm();
+		intel_pch_finalize_smm();
+		intel_sandybridge_finalize_smm();
+		intel_model_206ax_finalize_smm();
+
+		mainboard_finalized = 1;
 		break;
 #if CONFIG_ELOG_GSMI
 	case ELOG_GSMI_APM_CNT:

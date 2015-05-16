@@ -92,24 +92,11 @@ void mainboard_smi_sleep(u8 slp_typ)
 #define APMC_ACPI_EN  0xe1
 #define APMC_ACPI_DIS 0x1e
 
-static int mainboard_finalized = 0;
-
 int mainboard_smi_apmc(u8 apmc)
 {
 	switch (apmc) {
 	case APM_CNT_FINALIZE:
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
-			return 0;
-		}
-	printk(BIOS_DEBUG, "SMI#: finalize\n");
-		intel_me_finalize_smm();
-		intel_pch_finalize_smm();
-		intel_sandybridge_finalize_smm();
-		intel_model_206ax_finalize_smm();
 		stout_ec_finalize_smm();
-
-		mainboard_finalized = 1;
 		break;
 	case APMC_ACPI_EN:
 		/*

@@ -110,8 +110,6 @@ void mainboard_smi_gpi(u32 gpi_sts)
 		mainboard_smi_handle_ec_sci();
 }
 
-static int mainboard_finalized = 0;
-
 int mainboard_smi_apmc(u8 data)
 {
 	switch (data) {
@@ -132,21 +130,6 @@ int mainboard_smi_apmc(u8 data)
 			/* discard all events, and enable attention */
 			ec_write(0x80, 0x01);
 			break;
-		case APM_CNT_FINALIZE:
-			printk(BIOS_DEBUG, "APMC: FINALIZE\n");
-			if (mainboard_finalized) {
-				printk(BIOS_DEBUG, "APMC#: Already finalized\n");
-				return 0;
-			}
-
-			intel_me_finalize_smm();
-			intel_pch_finalize_smm();
-			intel_sandybridge_finalize_smm();
-			intel_model_206ax_finalize_smm();
-
-			mainboard_finalized = 1;
-			break;
-
 		default:
 			break;
 	}

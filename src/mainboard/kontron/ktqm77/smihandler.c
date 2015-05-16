@@ -30,28 +30,3 @@ void mainboard_smi_gpi(u32 gpi_sts)
 {
 	printk(BIOS_DEBUG, "warn: unknown mainboard_smi_gpi: %x\n", gpi_sts);
 }
-
-
-static int mainboard_finalized = 0;
-
-int mainboard_smi_apmc(u8 apmc)
-{
-	printk(BIOS_DEBUG, "mainboard_smi_apmc: %x\n", apmc);
-	switch (apmc) {
-	case APM_CNT_FINALIZE:
-		printk(BIOS_DEBUG, "APMC: FINALIZE\n");
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "APMC#: Already finalized\n");
-			return 0;
-		}
-
-		intel_me_finalize_smm();
-		intel_pch_finalize_smm();
-		intel_sandybridge_finalize_smm();
-		intel_model_206ax_finalize_smm();
-
-		mainboard_finalized = 1;
-		break;
-	}
-	return 0;
-}

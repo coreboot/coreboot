@@ -32,27 +32,6 @@
 #define GPIO_WLAN_DISABLE_L 46
 #define GPIO_LTE_DISABLE_L  59
 
-int mainboard_io_trap_handler(int smif)
-{
-	switch (smif) {
-	case 0x99:
-		printk(BIOS_DEBUG, "Sample\n");
-		smm_get_gnvs()->smif = 0;
-		break;
-	default:
-		return 0;
-	}
-
-	/* On success, the IO Trap Handler returns 0
-	 * On failure, the IO Trap Handler returns a value != 0
-	 *
-	 * For now, we force the return value to 0 and log all traps to
-	 * see what's going on.
-	 */
-	return 1;
-}
-
-
 static int mainboard_finalized = 0;
 
 int mainboard_smi_apmc(u8 apmc)

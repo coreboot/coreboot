@@ -23,7 +23,5 @@ ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += i915.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += graphics.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += intel_dp.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
-
 romstage-y += pei_data.c
 ramstage-y += pei_data.c

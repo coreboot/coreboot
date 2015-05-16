@@ -26,28 +26,6 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 
-int mainboard_io_trap_handler(int smif)
-{
-	printk(BIOS_DEBUG, "mainboard_io_trap_handler: %x\n", smif);
-	switch (smif) {
-	case 0x99:
-		printk(BIOS_DEBUG, "Sample\n");
-		smm_get_gnvs()->smif = 0;
-		break;
-	default:
-		return 0;
-	}
-
-	/* On success, the IO Trap Handler returns 0
-	 * On failure, the IO Trap Handler returns a value != 0
-	 *
-	 * For now, we force the return value to 0 and log all traps to
-	 * see what's going on.
-	 */
-	//gnvs->smif = 0;
-	return 1;
-}
-
 void mainboard_smi_gpi(u32 gpi_sts)
 {
 	printk(BIOS_DEBUG, "warn: unknown mainboard_smi_gpi: %x\n", gpi_sts);

@@ -26,27 +26,6 @@
 #include <northbridge/intel/haswell/haswell.h>
 #include <cpu/intel/haswell/haswell.h>
 
-int mainboard_io_trap_handler(int smif)
-{
-	switch (smif) {
-	case 0x99:
-		printk(BIOS_DEBUG, "Sample\n");
-		smm_get_gnvs()->smif = 0;
-		break;
-	default:
-		return 0;
-	}
-
-	/* On success, the IO Trap Handler returns 0
-	 * On failure, the IO Trap Handler returns a value != 0
-	 *
-	 * For now, we force the return value to 0 and log all traps to
-	 * see what's going on.
-	 */
-	//gnvs->smif = 0;
-	return 1;
-}
-
 /*
  * Change LED_POWER# (SIO GPIO 45) state based on sleep type.
  * The IO address is hardcoded as we don't have device path in SMM.

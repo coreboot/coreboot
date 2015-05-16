@@ -24,32 +24,6 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <ec/acpi/ec.h>
 
-/* The southbridge SMI handler checks whether gnvs has a
- * valid pointer before calling the trap handler
- */
-extern global_nvs_t *gnvs;
-
-int mainboard_io_trap_handler(int smif)
-{
-	switch (smif) {
-	case 0x99:
-		printk(BIOS_DEBUG, "Sample\n");
-		gnvs->smif = 0;
-		break;
-	default:
-		return 0;
-	}
-
-	/* On success, the IO Trap Handler returns 0
-	 * On failure, the IO Trap Handler returns a value != 0
-	 *
-	 * For now, we force the return value to 0 and log all traps to
-	 * see what's going on.
-	 */
-	//gnvs->smif = 0;
-	return 1;
-}
-
 void mainboard_smi_gpi(u32 gpi_sts)
 {
 	if (gpi_sts & (1 << 1)) {

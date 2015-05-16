@@ -30,6 +30,8 @@ DefinitionBlock(
 	0x20130325	/* OEM revision */
 )
 {
+	#include <southbridge/intel/bd82x6x/acpi/platform.asl>
+
 	/* Some generic macros */
 	#include "acpi/platform.asl"
 

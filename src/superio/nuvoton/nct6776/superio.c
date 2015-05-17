@@ -69,7 +69,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, NCT6776_DSLP},
 	{ &ops, NCT6776_GPIOA_LDN},
 	{ &ops, NCT6776_WDT1},
-	{ &ops, NCT6776_GPIOBASE, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
+	{ &ops, NCT6776_GPIOBASE, PNP_IO0, {0x0ff8, 0}, },
 	{ &ops, NCT6776_GPIO0},
 	{ &ops, NCT6776_GPIO1},
 	{ &ops, NCT6776_GPIO2},

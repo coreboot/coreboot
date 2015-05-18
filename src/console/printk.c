@@ -2,6 +2,7 @@
  *  blatantly copied from linux/kernel/printk.c
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
+ *  Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  */
 
@@ -13,7 +14,9 @@
 #include <stddef.h>
 #include <trace.h>
 
+#if (!defined(__PRE_RAM__) && IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)) || !IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
 DECLARE_SPIN_LOCK(console_lock)
+#endif
 
 void do_putchar(unsigned char byte)
 {
@@ -39,7 +42,13 @@ int do_printk(int msg_level, const char *fmt, ...)
 #endif
 
 	DISABLE_TRACE;
+#ifdef __PRE_RAM__
+#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
+	spin_lock(romstage_console_lock());
+#endif
+#else
 	spin_lock(&console_lock);
+#endif
 
 	va_start(args, fmt);
 	i = vtxprintf(wrap_putchar, fmt, args, NULL);
@@ -47,7 +56,13 @@ int do_printk(int msg_level, const char *fmt, ...)
 
 	console_tx_flush();
 
+#ifdef __PRE_RAM__
+#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
+	spin_unlock(romstage_console_lock());
+#endif
+#else
 	spin_unlock(&console_lock);
+#endif
 	ENABLE_TRACE;
 
 	return i;

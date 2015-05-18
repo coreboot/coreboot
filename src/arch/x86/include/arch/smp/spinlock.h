@@ -1,7 +1,7 @@
 #ifndef ARCH_SMP_SPINLOCK_H
 #define ARCH_SMP_SPINLOCK_H
 
-#ifndef __PRE_RAM__
+#if !defined(__PRE_RAM__) || IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
 
 /*
  * Your basic SMP spinlocks, allowing only a single CPU anywhere
@@ -11,9 +11,18 @@ typedef struct {
 	volatile unsigned int lock;
 } spinlock_t;
 
+#ifdef __PRE_RAM__
+spinlock_t *romstage_console_lock(void);
+void initialize_romstage_console_lock(void);
+#endif
 
 #define SPIN_LOCK_UNLOCKED (spinlock_t) { 1 }
+
+#ifndef __PRE_RAM__
 #define DECLARE_SPIN_LOCK(x) static spinlock_t x = SPIN_LOCK_UNLOCKED;
+#else
+#define DECLARE_SPIN_LOCK(x)
+#endif
 
 /*
  * Simple spin lock operations.  There are two variants, one clears IRQ's

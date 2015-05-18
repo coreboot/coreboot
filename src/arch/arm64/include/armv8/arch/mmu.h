@@ -148,5 +148,7 @@
 void mmu_init(struct memranges *ranges, uint64_t *ttb, uint64_t ttb_size);
 /* Enable the mmu based on previous mmu_init(). */
 void mmu_enable(void);
+/* Change a memory type for a range of bytes at runtime. */
+void mmu_config_range(void *start, size_t size, uint64_t tag);
 
 #endif // __ARCH_ARM64_MMU_H__

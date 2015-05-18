@@ -175,6 +175,9 @@ void mmu_enable(void);
 /* Disable mmu */
 void mmu_disable(void);
 
+/* Change a memory type for a range of bytes at runtime. */
+void mmu_config_range(void *start, size_t size, uint64_t tag);
+
 /*
  * Based on the memory ranges provided in coreboot tables,
  * initialize the mmu_memranges used for mmu initialization

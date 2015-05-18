@@ -51,6 +51,12 @@ static const struct {
 };
 
 static const struct {
+	u8 buffer[12];
+} tpm_deactivate_cmd = {
+	{0x0, 0xc1, 0x0, 0x0, 0x0, 0xc, 0x0, 0x0, 0x0, 0x99, 0x0, 0x3 }
+};
+
+static const struct {
 	u8 buffer[10];
 } tpm_continueselftest_cmd = {
 	{ 0x0, 0xc1, 0x0, 0x0, 0x0, 0xa, 0x0, 0x0, 0x0, 0x53 }
@@ -180,6 +186,19 @@ void init_tpm(int s3resume)
 {
 	u32 result;
 	u8 response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
+
+	if (CONFIG_TPM_DEACTIVATE) {
+		printk(BIOS_SPEW, "TPM: Deactivate\n");
+		result = TlclSendReceive(tpm_deactivate_cmd.buffer,
+					response, sizeof(response));
+		if (result == TPM_SUCCESS) {
+			printk(BIOS_SPEW, "TPM: OK.\n");
+			return;
+		}
+
+		printk(BIOS_ERR, "TPM: Error code 0x%x.\n", result);
+		return;
+	}
 
 	/* Doing TPM startup when we're not coming in on the S3 resume path
 	 * saves us roughly 20ms in boot time only. This does not seem to

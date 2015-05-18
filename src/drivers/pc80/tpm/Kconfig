@@ -37,3 +37,10 @@ config SKIP_TPM_STARTUP_ON_NORMAL_BOOT
 	depends on LPC_TPM
 	help
 	  Skip TPM init on normal boot. Useful if payload does TPM init.
+
+config TPM_DEACTIVATE
+	bool "Deactivate TPM"
+	default n
+	depends on LPC_TPM
+	help
+	  Deactivate TPM by issuing deactivate command.

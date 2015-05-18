@@ -27,11 +27,11 @@ Device (TPM)
 
 	Method (_STA, 0)
 	{
-		If (CONFIG_LPC_TPM) {
-			Return (0xf)
-		} Else {
-			Return (0x0)
-		}
+#if CONFIG_LPC_TPM && !CONFIG_TPM_DEACTIVATE
+		Return (0xf)
+#else
+		Return (0x0)
+#endif
 	}
 
 	Name (IBUF, ResourceTemplate ()

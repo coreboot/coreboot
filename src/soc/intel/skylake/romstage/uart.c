@@ -57,8 +57,9 @@ void pch_uart_init(void)
 	write32(base + SIO_REG_PPR_CLOCK, tmp);
 
 	/* Put UART2 in byte access mode for 16550 compatibility */
-	pcr_andthenor32(PID_SERIALIO, R_PCH_PCR_SERIAL_IO_GPPRVRW7, 0,
-		SIO_PCH_LEGACY_UART2);
+	if (!IS_ENABLED(CONFIG_CONSOLE_SERIAL8250MEM_32))
+		pcr_andthenor32(PID_SERIALIO,
+		R_PCH_PCR_SERIAL_IO_GPPRVRW7, 0, SIO_PCH_LEGACY_UART2);
 
 	/* Configure GPIO for UART2 in native mode*/
 	uartgpioinit(FALSE);

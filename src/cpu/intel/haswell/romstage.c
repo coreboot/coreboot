@@ -45,7 +45,7 @@
 #include "northbridge/intel/haswell/raminit.h"
 #include "southbridge/intel/lynxpoint/pch.h"
 #include "southbridge/intel/lynxpoint/me.h"
-
+#include <tpm.h>
 
 static inline void reset_system(void)
 {
@@ -276,9 +276,9 @@ void romstage_common(const struct romstage_params *params)
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
 	post_code(0x3f);
-#if CONFIG_CHROMEOS
-	init_chromeos(boot_mode);
-#endif
+	if (CONFIG_LPC_TPM) {
+		init_tpm(wake_from_s3);
+	}
 	timestamp_add_now(TS_END_ROMSTAGE);
 }
 

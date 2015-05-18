@@ -66,4 +66,6 @@ int tis_close(void);
 int tis_sendrecv(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
 			size_t *recv_len);
 
+void init_tpm(int s3resume);
+
 #endif /* TPM_H_ */

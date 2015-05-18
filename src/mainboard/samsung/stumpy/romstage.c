@@ -41,12 +41,10 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
+#include <tpm.h>
 #include "gpio.h"
 #if CONFIG_DRIVERS_UART_8250IO
 #include <superio/smsc/lpc47n207/lpc47n207.h>
-#endif
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/chromeos.h>
 #endif
 
 /* Stumpy USB Reset Disable defined in cmos.layout */
@@ -283,8 +281,8 @@ void main(unsigned long bist)
 	northbridge_romstage_finalize(boot_mode==2);
 
 	post_code(0x3f);
-#if CONFIG_CHROMEOS
-	init_chromeos(boot_mode);
-#endif
+	if (CONFIG_LPC_TPM) {
+		init_tpm(boot_mode == 2);
+	}
 	timestamp_add_now(TS_END_ROMSTAGE);
 }

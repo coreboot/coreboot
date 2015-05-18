@@ -1,5 +1,12 @@
+config MAINBOARD_HAS_LPC_TPM
+       bool
+       default n
+       help
+         Board has TPM support
+
 config LPC_TPM
-	bool
+	bool "Enable TPM support"
+	depends on MAINBOARD_HAS_LPC_TPM
 	default n
 	help
 	  Enable this option to enable LPC TPM support in coreboot.
@@ -15,3 +22,18 @@ config TPM_TIS_BASE_ADDRESS
 	  The default is specified by the TCG PC Client Specific TPM
 	  Interface Specification 1.2 and should not be changed unless
 	  the TPM being used does not conform to TPM TIS 1.2.
+
+config TPM_INIT_FAILURE_IS_FATAL
+	bool
+	default n
+	depends on LPC_TPM
+	help
+	  What to do if TPM init failed. If true, force a hard reset,
+	  otherwise just log error message to console.
+
+config SKIP_TPM_STARTUP_ON_NORMAL_BOOT
+	bool
+	default n
+	depends on LPC_TPM
+	help
+	  Skip TPM init on normal boot. Useful if payload does TPM init.

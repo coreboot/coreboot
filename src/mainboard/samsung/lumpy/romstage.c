@@ -32,6 +32,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <bootmode.h>
+#include <tpm.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
@@ -44,9 +45,6 @@
 #include "gpio.h"
 #if CONFIG_DRIVERS_UART_8250IO
 #include <superio/smsc/lpc47n207/lpc47n207.h>
-#endif
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/chromeos.h>
 #endif
 
 static void pch_enable_lpc(void)
@@ -273,8 +271,8 @@ void main(unsigned long bist)
 	}
 	northbridge_romstage_finalize(boot_mode==2);
 	post_code(0x3f);
-#if CONFIG_CHROMEOS
-	init_chromeos(boot_mode);
-#endif
+	if (CONFIG_LPC_TPM) {
+		init_tpm(boot_mode == 2);
+	}
 	timestamp_add_now(TS_END_ROMSTAGE);
 }

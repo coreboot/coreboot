@@ -29,6 +29,7 @@
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <elog.h>
+#include <tpm.h>
 #include <romstage_handoff.h>
 #include <stage_cache.h>
 #include <timestamp.h>
@@ -89,14 +90,6 @@ void * asmlinkage romstage_main(unsigned long bist,
 	return setup_stack_and_mttrs();
 }
 
-static inline void chromeos_init(int prev_sleep_state)
-{
-#if CONFIG_CHROMEOS
-	/* Normalize the sleep state to what init_chromeos() wants for S3: 2 */
-	init_chromeos(prev_sleep_state == SLEEP_STATE_S3 ? 2 : 0);
-#endif
-}
-
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
@@ -132,7 +125,9 @@ void romstage_common(struct romstage_params *params)
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
-	chromeos_init(params->power_state->prev_sleep_state);
+#if CONFIG_LPC_TPM
+	init_tpm(prev_sleep_state == SLEEP_STATE_S3);
+#endif
 }
 
 void asmlinkage romstage_after_car(void)

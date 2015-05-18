@@ -23,10 +23,8 @@
 #include <arch/acpi.h>
 #include <tpm.h>
 #include <reset.h>
-#include "chromeos.h"
 
 //#define EXTRA_LOGGING
-#define UBOOT_DOES_TPM_STARTUP
 
 #define TPM_LARGE_ENOUGH_COMMAND_SIZE 256	/* saves space in the firmware */
 
@@ -40,11 +38,6 @@
 #define TPM_E_NEEDS_SELFTEST     ((u32)(TPM_E_NON_FATAL + 1))
 #define TPM_E_DOING_SELFTEST     ((u32)(TPM_E_NON_FATAL + 2))
 
-#if CONFIG_NO_TPM_RESUME
-static void init_vboot(int bootmode)
-{
-}
-#else
 static const struct {
 	u8 buffer[12];
 } tpm_resume_cmd = {
@@ -183,22 +176,21 @@ static u32 TlclSendReceive(const u8 * request, u8 * response, int max_length)
 	return result;
 }
 
-static void init_vboot(int bootmode)
+void init_tpm(int s3resume)
 {
 	u32 result;
 	u8 response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 
-#ifdef UBOOT_DOES_TPM_STARTUP
 	/* Doing TPM startup when we're not coming in on the S3 resume path
 	 * saves us roughly 20ms in boot time only. This does not seem to
 	 * be worth an API change to vboot_reference-firmware right now, so
 	 * let's keep the code around, but just bail out early:
 	 */
-	if (bootmode != 2)
+	if (s3resume ? CONFIG_NO_TPM_RESUME
+	    : CONFIG_SKIP_TPM_STARTUP_ON_NORMAL_BOOT)
 		return;
-#endif
 
-	printk(BIOS_DEBUG, "Verified boot TPM initialization.\n");
+	printk(BIOS_DEBUG, "TPM initialization.\n");
 
 	printk(BIOS_SPEW, "TPM: Init\n");
 	if (tis_init())
@@ -209,7 +201,7 @@ static void init_vboot(int bootmode)
 		return;
 
 
-	if (bootmode == 2) {
+	if (s3resume) {
 		/* S3 Resume */
 		printk(BIOS_SPEW, "TPM: Resume\n");
 		result = TlclSendReceive(tpm_resume_cmd.buffer,
@@ -232,17 +224,13 @@ static void init_vboot(int bootmode)
 		return;
 	}
 
-#if !MOCK_TPM
-	printk(BIOS_ERR, "TPM: Error code 0x%x. Hard reset!\n", result);
-	post_code(POST_TPM_FAILURE);
-	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))
-		cbmem_dump_console();
-	hard_reset();
-#endif
-}
-#endif
+	printk(BIOS_ERR, "TPM: Error code 0x%x.\n", result);
 
-void init_chromeos(int bootmode)
-{
-	init_vboot(bootmode);
+	if (CONFIG_TPM_INIT_FAILURE_IS_FATAL) {
+		printk(BIOS_ERR, "Hard reset!\n");
+		post_code(POST_TPM_FAILURE);
+		if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))
+			cbmem_dump_console();
+		hard_reset();
+	}
 }

@@ -39,10 +39,8 @@
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include "gpio.h"
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/chromeos.h>
-#endif
 #include <cbfs.h>
+#include <tpm.h>
 #include "ec/compal/ene932/ec.h"
 
 static void pch_enable_lpc(void)
@@ -197,8 +195,8 @@ void main(unsigned long bist)
 	northbridge_romstage_finalize(boot_mode==2);
 
 	post_code(0x3f);
-#if CONFIG_CHROMEOS
-	init_chromeos(boot_mode);
-#endif
+	if (CONFIG_LPC_TPM) {
+		init_tpm(boot_mode == 2);
+	}
 	timestamp_add_now(TS_END_ROMSTAGE);
 }

@@ -39,9 +39,6 @@ void read_vbnv(uint8_t *vbnv_copy);
 void save_vbnv(const uint8_t *vbnv_copy);
 
 #if CONFIG_CHROMEOS
-/* functions implemented in vboot.c */
-void init_chromeos(int bootmode);
-
 /* functions implemented in elog.c */
 void elog_add_boot_reason(void);
 
@@ -53,7 +50,6 @@ int vboot_enable_developer(void);
 int vboot_enable_recovery(void);
 int vboot_skip_display_init(void);
 #else
-static inline void init_chromeos(int bootmode) { }
 static inline void elog_add_boot_reason(void) { return; }
 static inline void elog_add_watchdog_reset(void) { return; }
 static inline void reboot_from_watchdog(void) { return; }

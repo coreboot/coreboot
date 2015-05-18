@@ -32,7 +32,6 @@ verstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 romstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 ramstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 
-romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vboot.c
 ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += gnvs.c
 ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c

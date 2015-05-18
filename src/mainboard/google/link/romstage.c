@@ -41,9 +41,7 @@
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include "gpio.h"
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/chromeos.h>
-#endif
+#include <tpm.h>
 #include <cbfs.h>
 
 #include <southbridge/intel/bd82x6x/chip.h>
@@ -246,8 +244,9 @@ void main(unsigned long bist)
 	northbridge_romstage_finalize(boot_mode==2);
 
 	post_code(0x3f);
-#if CONFIG_CHROMEOS
-	init_chromeos(boot_mode);
-#endif
+	if (CONFIG_LPC_TPM) {
+		init_tpm(boot_mode == 2);
+	}
+
 	timestamp_add_now(TS_END_ROMSTAGE);
 }

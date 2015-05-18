@@ -26,6 +26,8 @@ config CHROMEOS
 	bool "Build for ChromeOS"
 	default n
 	select TPM
+	select TPM_INIT_FAILURE_IS_FATAL
+	select SKIP_TPM_STARTUP_ON_NORMAL_BOOT
 	select BOOTMODE_STRAPS
 	select ELOG
 	help

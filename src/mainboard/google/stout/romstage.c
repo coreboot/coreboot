@@ -40,9 +40,7 @@
 #include <halt.h>
 #include "gpio.h"
 #include <bootmode.h>
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/chromeos.h>
-#endif
+#include <tpm.h>
 #include <cbfs.h>
 #include <ec/quanta/it8518/ec.h>
 #include "ec.h"
@@ -251,8 +249,8 @@ void main(unsigned long bist)
 	northbridge_romstage_finalize(boot_mode==2);
 
 	post_code(0x3f);
-#if CONFIG_CHROMEOS
-	init_chromeos(boot_mode);
-#endif
+	if (CONFIG_LPC_TPM) {
+		init_tpm(boot_mode == 2);
+	}
 	timestamp_add_now(TS_END_ROMSTAGE);
 }

@@ -33,6 +33,7 @@
 #include <romstage_handoff.h>
 #include <stage_cache.h>
 #include <timestamp.h>
+#include <tpm.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -211,14 +212,6 @@ static int chipset_prev_sleep_state(struct chipset_power_state *ps)
 	return prev_sleep_state;
 }
 
-static inline void chromeos_init(int prev_sleep_state)
-{
-#if CONFIG_CHROMEOS
-	/* Normalize the sleep state to what init_chromeos() wants for S3: 2. */
-	init_chromeos(prev_sleep_state == 3 ? 2 : 0);
-#endif
-}
-
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
@@ -250,7 +243,9 @@ void romstage_common(struct romstage_params *params)
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
-	chromeos_init(prev_sleep_state);
+	if (CONFIG_LPC_TPM) {
+		init_tpm(prev_sleep_state == 3);
+	}
 }
 
 void asmlinkage romstage_after_car(void)

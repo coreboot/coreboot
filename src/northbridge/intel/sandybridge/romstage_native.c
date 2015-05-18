@@ -32,6 +32,7 @@
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <halt.h>
+#include <tpm.h>
 #include "raminit_native.h"
 #include <northbridge/intel/sandybridge/chip.h>
 #include "southbridge/intel/bd82x6x/pch.h"
@@ -128,6 +129,10 @@ void main(unsigned long bist)
 	post_code(0x3d);
 
 	northbridge_romstage_finalize(s3resume);
+
+#if CONFIG_LPC_TPM
+       init_tpm(s3resume);
+#endif
 
 	post_code(0x3f);
 	timestamp_add_now(TS_END_ROMSTAGE);

@@ -69,6 +69,7 @@ CFLAGS_mips	:= -mips32r2 -G 0  -ffunction-sections -fdata-sections
 CFLAGS_mips	+= -mno-abicalls -fno-pic
 
 CFLAGS_x86_32 += -ffunction-sections -fdata-sections
+CFLAGS_riscv	:= -ffunction-sections -fdata-sections
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\

@@ -54,9 +54,13 @@ $(obj)/%: $(obj)/%.o
 $(obj)/%.o: %.c
 	mkdir -p $(dir $@)
 	$(HOSTCC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-%.c %.h: %.l
+
+fmd_scanner.h: fmd_scanner.c
+fmd_scanner.c: fmd_scanner.l
 	$(LEX) $(LFLAGS) -t --header-file=$*.h $< >$*.c
-%.c %.h: %.y
+
+fmd_parser.h: fmd_parser.c
+fmd_parser.c: fmd_parser.y
 	$(YACC) $(YFLAGS) -d $<
 	mv -f y.tab.c $*.c
 	mv -f y.tab.h $*.h

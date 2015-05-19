@@ -25,10 +25,6 @@ config RISCV_BOOTBLOCK_CUSTOM
 	bool
 	default n
 
-config CPU_HAS_BOOTBLOCK_INIT
-	bool
-	default n
-
 config MAINBOARD_HAS_BOOTBLOCK_INIT
 	bool
 	default n

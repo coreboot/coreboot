@@ -13,7 +13,6 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_SPECIAL
 	select BOOTBLOCK_CONSOLE
-	select CPU_HAS_BOOTBLOCK_INIT
 
 ## TODO Change this to some better address not overlapping bootblock when
 ## cbfstool supports creating header in arbitrary location.

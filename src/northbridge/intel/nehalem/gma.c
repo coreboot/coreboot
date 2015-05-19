@@ -700,6 +700,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	power_port(mmio);
 
 	intel_gmbus_read_edid(mmio + PCH_GMBUS0, 3, 0x50, edid_data, 128);
+	intel_gmbus_stop(mmio + PCH_GMBUS0);
 	decode_edid(edid_data,
 		    sizeof(edid_data), &edid);
 
@@ -721,9 +722,8 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 
 	target_frequency = info->gfx.lvds_dual_channel ? edid.pixel_clock
 		: (2 * edid.pixel_clock);
-#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	vga_textmode_init();
-#else
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	vga_sr_write(1, 1);
 	vga_sr_write(0x2, 0xf);
 	vga_sr_write(0x3, 0x0);
@@ -981,6 +981,11 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	/* Clear interrupts. */
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
+
+	/* Doesn't change any hw behaviour but vga oprom expects it there. */
+	write32(mmio + 0x0004f040, 0x01000008);
+	write32(mmio + 0x0004f04c, 0x7f7f0000);
+	write32(mmio + 0x0004f054, 0x0000020d);
 
 #if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	memset ((void *) lfb, 0, edid.x_resolution * edid.y_resolution * 4);

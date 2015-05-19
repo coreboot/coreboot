@@ -11,6 +11,7 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
 	select BACKUP_DEFAULT_SMM_REGION
+	select HAVE_MONOTONIC_TIMER
 	select SMP
 	select MMX
 	select SSE
@@ -59,12 +60,5 @@ config RESET_ON_INVALID_RAMSTAGE_CACHE
 	  the action to take when the ramstage cache is invalid. If selected
 	  the system will reset otherwise the ramstage will be reloaded from
 	  cbfs.
-
-config MONOTONIC_TIMER_MSR
-	def_bool n
-	depends on INTEL_LYNXPOINT_LP
-	select HAVE_MONOTONIC_TIMER
-	help
-	  Provide a monotonic timer using the 24MHz MSR counter.
 
 endif

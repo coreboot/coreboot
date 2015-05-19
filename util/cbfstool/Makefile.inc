@@ -47,11 +47,17 @@ TOOLCFLAGS += -Wstrict-prototypes -Wwrite-strings
 TOOLCPPFLAGS ?= -D_DEFAULT_SOURCE # memccpy() from string.h
 TOOLCPPFLAGS += -D_POSIX_C_SOURCE=200809L # strdup() from string.h
 TOOLCPPFLAGS += -I$(top)/util/cbfstool/flashmap
+TOOLCPPFLAGS += -I$(top)/util/cbfstool
+TOOLCPPFLAGS += -I$(objutil)/cbfstool
 TOOLLDFLAGS ?=
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLFLAGS+=-mno-ms-bitfields
 endif
+
+$(objutil)/cbfstool/%.o: $(objutil)/cbfstool/%.c
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
@@ -90,12 +96,12 @@ $(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-unused-function
 # Tolerate lzma sdk warnings
 $(objutil)/cbfstool/LzmaEnc.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 
-$(objutil)/cbfstool/fmd.o: $(top)/util/cbfstool/fmd_parser.h
-$(objutil)/cbfstool/fmd.o: $(top)/util/cbfstool/fmd_scanner.h
+$(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_parser.h
+$(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_scanner.h
 $(objutil)/cbfstool/fmd_parser.o: $(objutil)/cbfstool/fmd.o
 $(objutil)/cbfstool/fmd_scanner.o: $(objutil)/cbfstool/fmd.o
 
-$(top)/util/cbfstool/%: $(top)/util/cbfstool/%_shipped
+$(objutil)/cbfstool/%: $(top)/util/cbfstool/%_shipped
 	mkdir -p $(dir $@)
 	cp $< $@
 

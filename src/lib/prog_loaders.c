@@ -35,6 +35,9 @@
 #include <symbols.h>
 #include <timestamp.h>
 
+/* Only can represent up to 1 byte less than size_t. */
+const struct mem_region_device addrspace_32bit = MEM_REGION_DEV_INIT(0, ~0UL);
+
 #define DEFAULT_CBFS_LOADER_PRESENT \
 	(!ENV_VERSTAGE || (ENV_VERSTAGE && !CONFIG_RETURN_FROM_VERSTAGE))
 

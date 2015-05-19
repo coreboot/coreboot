@@ -34,11 +34,6 @@ enum {
  * set on the last segment loaded. */
 void arch_segment_loaded(uintptr_t start, size_t size, int flags);
 
-struct buffer_area {
-	void *data;
-	size_t size;
-};
-
 enum prog_type {
 	PROG_VERSTAGE,
 	PROG_ROMSTAGE,
@@ -52,28 +47,27 @@ enum prog_type {
 struct prog {
 	enum prog_type type;
 	const char *name;
-	/* Source of program content to load. */
+	/* Source of program content to load. After loading program it
+	 * represents the memory region of the stages and payload. For
+	 * architectures that use a bounce buffer then it would represent
+	 * the bounce buffer. */
 	struct region_device rdev;
-	/* The area can mean different things depending on what type the
-	 * program is. A stage after being loaded reflects the memory occupied
-	 * by the program, Since payloads are multi-segment one can't express
-	 * the memory layout with one range. Instead this field is updated
-	 * to reflect the bounce buffer used. */
-	struct buffer_area area;
 	/* Entry to program with optional argument. It's up to the architecture
 	 * to decide if argument is passed. */
 	void (*entry)(void *);
 	void *arg;
 };
 
+/* Only valid for loaded programs. */
 static inline size_t prog_size(const struct prog *prog)
 {
-	return prog->area.size;
+	return region_device_sz(&prog->rdev);
 }
 
+/* Only valid for loaded programs. */
 static inline void *prog_start(const struct prog *prog)
 {
-	return prog->area.data;
+	return rdev_mmap_full(&prog->rdev);
 }
 
 static inline void *prog_entry(const struct prog *prog)
@@ -86,10 +80,18 @@ static inline void *prog_entry_arg(const struct prog *prog)
 	return prog->arg;
 }
 
+/* region_device representing the 32-bit flat address space. */
+extern const struct mem_region_device addrspace_32bit;
+
+static inline void prog_memory_init(struct prog *prog, uintptr_t ptr,
+					size_t size)
+{
+	rdev_chain(&prog->rdev, &addrspace_32bit.rdev, ptr, size);
+}
+
 static inline void prog_set_area(struct prog *prog, void *start, size_t size)
 {
-	prog->area.data = start;
-	prog->area.size = size;
+	prog_memory_init(prog, (uintptr_t)start, size);
 }
 
 static inline void prog_set_entry(struct prog *prog, void *e, void *arg)

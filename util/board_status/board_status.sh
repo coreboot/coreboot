@@ -286,11 +286,19 @@ if [ $UPLOAD_RESULTS -eq 1 ]; then
 	echo "Uploading results"
 	git add "${vendor}"
 	git commit -a -m "${mainboard_dir}/${tagged_version}/${timestamp}"
-	git push origin
+	count=0
+	until git push origin || test $count -eq 3; do
+	        git pull --rebase
+		count=$((count + 1))
+	done
 
 	# Results have been uploaded so it's pointless to keep the
 	# temporary files around.
 	rm -rf "${tmpdir}"
+	if test $count -eq 3; then
+		echo "Error uploading to board-status repo, aborting."
+		exit $EXIT_FAILURE
+	fi
 fi
 cd "$coreboot_dir"
 

@@ -46,8 +46,8 @@ static int free_idx;
 
 static void print_tag(int level, uint64_t tag)
 {
-	printk(level, tag & MA_MEM_NC ? "    cacheable | " :
-					"non-cacheable | ");
+	printk(level, tag & MA_MEM_NC ? "non-cacheable | " :
+					"    cacheable | ");
 	printk(level, tag & MA_RO ?	"read-only  | " :
 					"read-write | ");
 	printk(level, tag & MA_NS ?	"non-secure | " :

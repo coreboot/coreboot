@@ -186,8 +186,6 @@ ifeq ($(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE),y)
 
 BL31_SOURCE := $(top)/3rdparty/arm-trusted-firmware
 
-BL31_MAKEARGS := PLAT=$(call strip_quotes,$(CONFIG_ARM_TF_PLATFORM_NAME))
-
 ifeq ($(V),1)
 BL31_MAKEARGS += V=1
 endif

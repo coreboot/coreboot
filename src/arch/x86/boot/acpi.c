@@ -250,6 +250,61 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 	header->checksum = acpi_checksum((void *)mcfg, header->length);
 }
 
+static void *get_tcpa_log(u32 *size)
+{
+	const struct cbmem_entry *ce;
+	const u32 tcpa_default_log_len = 0x10000;
+	void *lasa;
+	ce = cbmem_entry_find(CBMEM_ID_TCPA_LOG);
+	if (ce) {
+		lasa = cbmem_entry_start(ce);
+		*size = cbmem_entry_size(ce);
+		printk(BIOS_DEBUG, "TCPA log found at %p\n", lasa);
+		return lasa;
+	}
+	lasa = cbmem_add(CBMEM_ID_TCPA_LOG, tcpa_default_log_len);
+	if (!lasa) {
+		printk(BIOS_ERR, "TCPA log creation failed\n");
+		return NULL;
+	}
+
+	printk(BIOS_DEBUG, "TCPA log created at %p\n", lasa);
+	memset (lasa, 0, tcpa_default_log_len);
+
+	*size = tcpa_default_log_len;
+	return lasa;
+}
+
+static void acpi_create_tcpa(acpi_tcpa_t *tcpa)
+{
+	acpi_header_t *header = &(tcpa->header);
+	u32 tcpa_log_len;
+	void *lasa;
+
+	memset((void *)tcpa, 0, sizeof(acpi_tcpa_t));
+
+	lasa = get_tcpa_log(&tcpa_log_len);
+	if (!lasa) {
+		return;
+	}
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "TCPA", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->length = sizeof(acpi_tcpa_t);
+	header->revision = 2;
+
+	tcpa->platform_class = 0;
+	tcpa->laml = tcpa_log_len;
+	tcpa->lasa = (u32) lasa;
+
+	/* Calculate checksum. */
+	header->checksum = acpi_checksum((void *)tcpa, header->length);
+}
+
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 {
 	unsigned long current = (unsigned long)ssdt + sizeof(acpi_header_t);
@@ -688,6 +743,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
 	acpi_mcfg_t *mcfg;
+	acpi_tcpa_t *tcpa;
 	acpi_madt_t *madt;
 	struct device *dev;
 	unsigned long fw;
@@ -803,6 +859,15 @@ unsigned long write_acpi_tables(unsigned long start)
 		current += mcfg->header.length;
 		ALIGN_CURRENT;
 		acpi_add_table(rsdp, mcfg);
+	}
+
+	printk(BIOS_DEBUG, "ACPI:    * TCPA\n");
+	tcpa = (acpi_tcpa_t *) current;
+	acpi_create_tcpa(tcpa);
+	if (tcpa->header.length >= sizeof(acpi_tcpa_t)) {
+		current += tcpa->header.length;
+		ALIGN_CURRENT;
+		acpi_add_table(rsdp, tcpa);
 	}
 
 	printk(BIOS_DEBUG, "ACPI:    * MADT\n");

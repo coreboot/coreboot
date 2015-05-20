@@ -129,6 +129,13 @@ typedef struct acpi_mcfg {
 	u8 reserved[8];
 } __attribute__ ((packed)) acpi_mcfg_t;
 
+typedef struct acpi_tcpa {
+	struct acpi_table_header header;
+	u16 platform_class;
+	u32 laml;
+	u64 lasa;
+} __attribute__ ((packed)) acpi_tcpa_t;
+
 typedef struct acpi_mcfg_mmconfig {
 	u32 base_address;
 	u32 base_reserved;

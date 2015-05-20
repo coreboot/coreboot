@@ -207,7 +207,7 @@ BL31 := $(obj)/3rdparty/arm-trusted-firmware/bl31/bl31.elf
 
 $(BL31):
 	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	CROSS_COMPILE="$(CROSS_COMPILE)" \
+	CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
 	CFLAGS="$(BL31_CFLAGS)" \
 	LDFLAGS="$(BL31_LDFLAGS)" \
 	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) bl31

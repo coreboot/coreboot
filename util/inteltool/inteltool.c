@@ -217,6 +217,7 @@ void print_usage(const char *name)
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
 	     "   -s | --spi:                       dump southbridge spi and bios_cntrl registers\n"
+	     "   -f | --gfx:                       dump graphics registers\n"
 	     "   -g | --gpio:                      dump southbridge GPIO registers\n"
 	     "   -G | --gpio-diffs:                show GPIO differences from defaults\n"
 	     "   -r | --rcba:                      dump southbridge RCBA registers\n"
@@ -235,16 +236,16 @@ void print_usage(const char *name)
 int main(int argc, char *argv[])
 {
 	struct pci_access *pacc;
-	struct pci_dev *sb = NULL, *nb, *dev;
+	struct pci_dev *sb = NULL, *nb, *gfx = NULL, *dev;
 	int i, opt, option_index = 0;
 	unsigned int id;
 
-	char *sbname = "unknown", *nbname = "unknown";
+	char *sbname = "unknown", *nbname = "unknown", *gfxname = "unknown";
 
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
-	int dump_spi = 0;
+	int dump_spi = 0, dump_gfx = 0;
 	int show_gpio_diffs = 0;
 
 	static struct option long_options[] = {
@@ -262,10 +263,11 @@ int main(int argc, char *argv[])
 		{"ambs", 0, 0, 'A'},
 		{"spi", 0, 0, 's'},
 		{"all", 0, 0, 'a'},
+		{"gfx", 0, 0, 'f'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAs",
+	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsf",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -274,6 +276,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'g':
 			dump_gpios = 1;
+			break;
+		case 'f':
+			dump_gfx = 1;
 			break;
 		case 'G':
 			show_gpio_diffs = 1;
@@ -311,6 +316,7 @@ int main(int argc, char *argv[])
 			dump_coremsrs = 1;
 			dump_ambs = 1;
 			dump_spi = 1;
+			dump_gfx = 1;
 			break;
 		case 'A':
 			dump_ambs = 1;
@@ -390,6 +396,15 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+	gfx = pci_get_dev(pacc, 0, 0, 0x02, 0);
+
+	if (gfx) {
+		pci_fill_info(gfx, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
+
+		if (gfx->vendor_id != PCI_VENDOR_ID_INTEL)
+			gfx = 0;
+	}
+
 	id = cpuid(1);
 
 	/* Intel has suggested applications to display the family of a CPU as
@@ -409,12 +424,22 @@ int main(int argc, char *argv[])
 	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)
 		if (sb->device_id == supported_chips_list[i].device_id)
 			sbname = supported_chips_list[i].name;
+	if (gfx) {
+		for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)
+			if (gfx->device_id == supported_chips_list[i].device_id)
+				gfxname = supported_chips_list[i].name;
+	}
 
 	printf("Northbridge: %04x:%04x (%s)\n",
 		nb->vendor_id, nb->device_id, nbname);
 
 	printf("Southbridge: %04x:%04x (%s)\n",
 		sb->vendor_id, sb->device_id, sbname);
+
+	if (gfx) {
+		printf("IGD: %04x:%04x (%s)\n",
+		       gfx->vendor_id, gfx->device_id, gfxname);
+	}
 
 	/* Now do the deed */
 
@@ -468,6 +493,11 @@ int main(int argc, char *argv[])
 	if (dump_spi) {
 		print_spi(sb);
 	}
+
+	if (dump_gfx) {
+		print_gfx(gfx);
+	}
+
 	/* Clean up */
 	pci_free_dev(nb);
 	// pci_free_dev(sb); // TODO: glibc detected "double free or corruption"

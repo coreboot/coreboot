@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <region.h>
+#include <assets.h>
 
 enum {
 	/* Last segment of program. Can be used to take different actions for
@@ -34,40 +34,49 @@ enum {
  * set on the last segment loaded. */
 void arch_segment_loaded(uintptr_t start, size_t size, int flags);
 
-enum prog_type {
-	PROG_VERSTAGE,
-	PROG_ROMSTAGE,
-	PROG_RAMSTAGE,
-	PROG_REFCODE,
-	PROG_PAYLOAD,
-	PROG_BL31,
-};
-
 /* Representation of a program. */
 struct prog {
-	enum prog_type type;
-	const char *name;
-	/* Source of program content to load. After loading program it
-	 * represents the memory region of the stages and payload. For
-	 * architectures that use a bounce buffer then it would represent
-	 * the bounce buffer. */
-	struct region_device rdev;
+	/* The region_device within the asset is the source of program content
+	 * to load. After loading program it represents the memory region of
+	 * the stages and payload. For architectures that use a bounce buffer
+	 * then it would represent the bounce buffer. */
+	struct asset asset;
 	/* Entry to program with optional argument. It's up to the architecture
 	 * to decide if argument is passed. */
 	void (*entry)(void *);
 	void *arg;
 };
 
+#define PROG_INIT(type_, name_)				\
+	{						\
+		.asset = ASSET_INIT(type_, name_),	\
+	}
+
+static inline const char *prog_name(const struct prog *prog)
+{
+	return asset_name(&prog->asset);
+}
+
+static inline enum asset_type prog_type(const struct prog *prog)
+{
+	return asset_type(&prog->asset);
+}
+
+static inline struct region_device *prog_rdev(struct prog *prog)
+{
+	return asset_rdev(&prog->asset);
+}
+
 /* Only valid for loaded programs. */
 static inline size_t prog_size(const struct prog *prog)
 {
-	return region_device_sz(&prog->rdev);
+	return asset_size(&prog->asset);
 }
 
 /* Only valid for loaded programs. */
 static inline void *prog_start(const struct prog *prog)
 {
-	return rdev_mmap_full(&prog->rdev);
+	return asset_mmap(&prog->asset);
 }
 
 static inline void *prog_entry(const struct prog *prog)
@@ -86,7 +95,7 @@ extern const struct mem_region_device addrspace_32bit;
 static inline void prog_memory_init(struct prog *prog, uintptr_t ptr,
 					size_t size)
 {
-	rdev_chain(&prog->rdev, &addrspace_32bit.rdev, ptr, size);
+	rdev_chain(&prog->asset.rdev, &addrspace_32bit.rdev, ptr, size);
 }
 
 static inline void prog_set_area(struct prog *prog, void *start, size_t size)
@@ -101,7 +110,11 @@ static inline void prog_set_entry(struct prog *prog, void *e, void *arg)
 }
 
 /* Locate the identified program to run. Return 0 on success. < 0 on error. */
-int prog_locate(struct prog *prog);
+static inline int prog_locate(struct prog *prog)
+{
+	return asset_locate(&prog->asset);
+}
+
 /* Run the program described by prog. */
 void prog_run(struct prog *prog);
 /* Per architecture implementation running a program. */

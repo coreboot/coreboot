@@ -264,10 +264,10 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 	void *rmod_loc;
 	struct region_device *fh;
 
-	if (rsl->prog == NULL || rsl->prog->name == NULL)
+	if (rsl->prog == NULL || prog_name(rsl->prog) == NULL)
 		return -1;
 
-	fh = &rsl->prog->rdev;
+	fh = prog_rdev(rsl->prog);
 
 	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
 		return -1;
@@ -284,7 +284,7 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 	rmod_loc = &stage_region[rmodule_offset];
 
 	printk(BIOS_INFO, "Decompressing stage %s @ 0x%p (%d bytes)\n",
-	       rsl->prog->name, rmod_loc, stage.memlen);
+	       prog_name(rsl->prog), rmod_loc, stage.memlen);
 
 	if (stage.compression == CBFS_COMPRESS_NONE) {
 		if (rdev_readat(fh, rmod_loc, sizeof(stage), stage.len) !=

@@ -45,10 +45,8 @@ static pei_wrapper_entry_t load_refcode_from_cache(void)
 
 static efi_wrapper_entry_t load_reference_code(void)
 {
-	struct prog prog = {
-		.type = PROG_REFCODE,
-		.name = CONFIG_CBFS_PREFIX "/refcode",
-	};
+	struct prog prog =
+		PROG_INIT(ASSET_REFCODE, CONFIG_CBFS_PREFIX "/refcode");
 	struct rmod_stage_load refcode = {
 		.cbmem_id = CBMEM_ID_REFCODE,
 		.prog = &prog,

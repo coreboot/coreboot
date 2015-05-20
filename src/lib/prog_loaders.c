@@ -20,7 +20,6 @@
 
 #include <stdlib.h>
 #include <arch/stages.h>
-#include <boot_device.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -38,83 +37,10 @@
 /* Only can represent up to 1 byte less than size_t. */
 const struct mem_region_device addrspace_32bit = MEM_REGION_DEV_INIT(0, ~0UL);
 
-#define DEFAULT_CBFS_LOADER_PRESENT \
-	(!ENV_VERSTAGE || (ENV_VERSTAGE && !CONFIG_RETURN_FROM_VERSTAGE))
-
-#if DEFAULT_CBFS_LOADER_PRESENT
-static int cbfs_boot_prog_locate(struct prog *prog)
-{
-	return cbfs_boot_locate(&prog->rdev, prog->name, NULL);
-}
-
-static const struct prog_loader_ops cbfs_default_loader = {
-	.locate = cbfs_boot_prog_locate,
-};
-#endif
-
-extern const struct prog_loader_ops vboot_loader;
-
-static const struct prog_loader_ops *loaders[] = {
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
-	&vboot_loader,
-#endif
-#if DEFAULT_CBFS_LOADER_PRESENT
-	&cbfs_default_loader,
-#endif
-};
-
-int prog_locate(struct prog *prog)
-{
-	int i;
-
-	boot_device_init();
-
-	for (i = 0; i < ARRAY_SIZE(loaders); i++) {
-		/* Default loader state is active. */
-		int ret = 1;
-		const struct prog_loader_ops *ops;
-
-		ops = loaders[i];
-
-		if (ops->is_loader_active != NULL)
-			ret = ops->is_loader_active(prog);
-
-		if (ret == 0) {
-			printk(BIOS_DEBUG, "%s loader inactive.\n",
-				ops->name);
-			continue;
-		} else if (ret < 0) {
-			printk(BIOS_DEBUG, "%s loader failure.\n",
-				ops->name);
-			continue;
-		}
-
-		printk(BIOS_DEBUG, "%s loader active.\n", ops->name);
-
-		if (ops->locate(prog))
-			continue;
-
-		printk(BIOS_DEBUG, "'%s' located at offset: %zx size: %zx\n",
-			prog->name, region_device_offset(&prog->rdev),
-			region_device_sz(&prog->rdev));
-
-		return 0;
-	}
-
-	return -1;
-}
-
 void run_romstage(void)
 {
-	struct prog romstage = {
-		.name = CONFIG_CBFS_PREFIX "/romstage",
-		.type = PROG_ROMSTAGE,
-	};
-
-	/* The only time the default CBFS loader isn't present is during
-	 * VERSTAGE in which it returns back to the calling stage. */
-	if (!DEFAULT_CBFS_LOADER_PRESENT)
-		return;
+	struct prog romstage =
+		PROG_INIT(ASSET_ROMSTAGE, CONFIG_CBFS_PREFIX "/romstage");
 
 	if (prog_locate(&romstage))
 		goto fail;
@@ -166,10 +92,8 @@ static int load_relocatable_ramstage(struct prog *ramstage)
 
 void run_ramstage(void)
 {
-	struct prog ramstage = {
-		.name = CONFIG_CBFS_PREFIX "/ramstage",
-		.type = PROG_RAMSTAGE,
-	};
+	struct prog ramstage =
+		PROG_INIT(ASSET_RAMSTAGE, CONFIG_CBFS_PREFIX "/ramstage");
 
 	/* Only x86 systems currently take the same firmware path on resume. */
 	if (IS_ENABLED(CONFIG_ARCH_X86) && IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
@@ -197,10 +121,8 @@ fail:
 	die("Ramstage was not loaded!\n");
 }
 
-static struct prog global_payload = {
-	.name = CONFIG_CBFS_PREFIX "/payload",
-	.type = PROG_PAYLOAD,
-};
+static struct prog global_payload =
+	PROG_INIT(ASSET_PAYLOAD, CONFIG_CBFS_PREFIX "/payload");
 
 void __attribute__((weak)) mirror_payload(struct prog *payload)
 {

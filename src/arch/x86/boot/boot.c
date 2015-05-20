@@ -125,7 +125,7 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 
 static void try_payload(struct prog *prog)
 {
-	if (prog->type == PROG_PAYLOAD) {
+	if (prog_type(prog) == ASSET_PAYLOAD) {
 		if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE))
 			jmp_payload_no_bounce_buffer(prog_entry(prog));
 		else

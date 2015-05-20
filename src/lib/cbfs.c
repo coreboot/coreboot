@@ -188,12 +188,10 @@ void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
 
 void *cbfs_boot_load_stage_by_name(const char *name)
 {
-	struct prog stage = {
-		.name = name,
-	};
+	struct prog stage = PROG_INIT(ASSET_UNKNOWN, name);
 	uint32_t type = CBFS_TYPE_STAGE;
 
-	if (cbfs_boot_locate(&stage.rdev, name, &type))
+	if (cbfs_boot_locate(&stage.asset.rdev, name, &type))
 		return NULL;
 
 	if (cbfs_prog_stage_load(&stage))
@@ -209,7 +207,7 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	void *entry;
 	size_t fsize;
 	size_t foffset;
-	const struct region_device *fh = &pstage->rdev;
+	const struct region_device *fh = &pstage->asset.rdev;
 
 	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
 		return 0;

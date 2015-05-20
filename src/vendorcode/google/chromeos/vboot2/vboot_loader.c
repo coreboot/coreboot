@@ -17,10 +17,10 @@
  * Foundation, Inc.
  */
 
+#include <assets.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <program_loading.h>
 #include <rmodule.h>
 #include <rules.h>
 #include <string.h>
@@ -79,7 +79,7 @@ static void init_vb2_working_data(void)
 	wd->buffer_size = work_size - wd->buffer_offset;
 }
 
-static int vboot_loader_active(struct prog *prog)
+static int vboot_active(struct asset *asset)
 {
 	struct vb2_working_data *wd;
 	int run_verification;
@@ -90,15 +90,15 @@ static int vboot_loader_active(struct prog *prog)
 		init_vb2_working_data();
 		verstage_main();
 	} else if (verstage_should_load()) {
-		struct prog verstage = {
-			.type = PROG_VERSTAGE,
-			.name = CONFIG_CBFS_PREFIX "/verstage",
-		};
+		struct prog verstage =
+			PROG_INIT(ASSET_VERSTAGE,
+				CONFIG_CBFS_PREFIX "/verstage");
 
 		printk(BIOS_DEBUG, "VBOOT: Loading verstage.\n");
 
 		/* load verstage from RO */
-		if (cbfs_boot_locate(&verstage.rdev, verstage.name, NULL) ||
+		if (cbfs_boot_locate(prog_rdev(&verstage),
+						prog_name(&verstage), NULL) ||
 		    cbfs_prog_stage_load(&verstage))
 			die("failed to load verstage");
 
@@ -126,24 +126,24 @@ static int vboot_loader_active(struct prog *prog)
 }
 
 static int vboot_locate_by_components(const struct region_device *fw_main,
-					struct prog *prog)
+					struct asset *asset)
 {
 	struct vboot_components *fw_info;
 	size_t metadata_sz;
 	size_t offset;
 	size_t size;
-	struct region_device *fw = &prog->rdev;
+	struct region_device *fw = asset_rdev(asset);
 	int fw_index = 0;
 
-	if (prog->type == PROG_ROMSTAGE)
+	if (asset_type(asset) == ASSET_ROMSTAGE)
 		fw_index = CONFIG_VBOOT_ROMSTAGE_INDEX;
-	else if (prog->type == PROG_RAMSTAGE)
+	else if (asset_type(asset) == ASSET_RAMSTAGE)
 		fw_index = CONFIG_VBOOT_RAMSTAGE_INDEX;
-	else if (prog->type == PROG_PAYLOAD)
+	else if (asset_type(asset) == ASSET_PAYLOAD)
 		fw_index = CONFIG_VBOOT_BOOT_LOADER_INDEX;
-	else if (prog->type == PROG_REFCODE)
+	else if (asset_type(asset) == ASSET_REFCODE)
 		fw_index = CONFIG_VBOOT_REFCODE_INDEX;
-	else if (prog->type == PROG_BL31)
+	else if (asset_type(asset) == ASSET_BL31)
 		fw_index = CONFIG_VBOOT_BL31_INDEX;
 	else
 		die("Invalid program type for vboot.");
@@ -177,7 +177,7 @@ static int vboot_locate_by_components(const struct region_device *fw_main,
 }
 
 static int vboot_locate_by_multi_cbfs(const struct region_device *fw_main,
-					struct prog *prog)
+					struct asset *asset)
 {
 	struct cbfsd cbfs;
 	struct region_device rdev;
@@ -192,21 +192,21 @@ static int vboot_locate_by_multi_cbfs(const struct region_device *fw_main,
 	cbfs.rdev = &rdev;
 	cbfs.align = props.align;
 
-	return cbfs_locate(&prog->rdev, &cbfs, prog->name, NULL);
+	return cbfs_locate(asset_rdev(asset), &cbfs, asset_name(asset), NULL);
 }
 
-static int vboot_prog_locate(const struct region_device *fw_main,
-				struct prog *prog)
+static int vboot_asset_locate(const struct region_device *fw_main,
+				struct asset *asset)
 {
 	if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES))
-		return vboot_locate_by_multi_cbfs(fw_main, prog);
+		return vboot_locate_by_multi_cbfs(fw_main, asset);
 	else
-		return vboot_locate_by_components(fw_main, prog);
+		return vboot_locate_by_components(fw_main, asset);
 }
 
-/* This function is only called when vboot_loader_active() returns 1. That
+/* This function is only called when vboot_active() returns 1. That
  * means we are taking vboot paths. */
-static int vboot_locate(struct prog *prog)
+static int vboot_locate(struct asset *asset)
 {
 	struct vb2_working_data *wd;
 	struct region_device fw_main;
@@ -221,11 +221,11 @@ static int vboot_locate(struct prog *prog)
 	if (vb2_get_selected_region(wd, &fw_main))
 		die("failed to reference selected region\n");
 
-	return vboot_prog_locate(&fw_main, prog);
+	return vboot_asset_locate(&fw_main, asset);
 }
 
-const struct prog_loader_ops vboot_loader = {
+const struct asset_provider vboot_provider = {
 	.name = "VBOOT",
-	.is_loader_active = vboot_loader_active,
+	.is_active = vboot_active,
 	.locate = vboot_locate,
 };

@@ -45,10 +45,7 @@ void __attribute__((weak)) *soc_get_bl31_plat_params(bl31_params_t *params)
 
 void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 {
-	struct prog bl31 = {
-		.type = PROG_BL31,
-		.name = CONFIG_CBFS_PREFIX"/bl31",
-	};
+	struct prog bl31 = PROG_INIT(ASSET_BL31, CONFIG_CBFS_PREFIX"/bl31");
 	void (*bl31_entry)(bl31_params_t *params, void *plat_params) = NULL;
 
 	if (prog_locate(&bl31))

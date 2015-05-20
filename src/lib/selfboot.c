@@ -454,7 +454,7 @@ void *selfload(struct prog *payload)
 	struct segment head;
 	void *data;
 
-	data = rdev_mmap_full(&payload->rdev);
+	data = rdev_mmap_full(prog_rdev(payload));
 
 	if (data == NULL)
 		return NULL;
@@ -469,7 +469,10 @@ void *selfload(struct prog *payload)
 
 	printk(BIOS_SPEW, "Loaded segments\n");
 
-	rdev_munmap(&payload->rdev, data);
+	rdev_munmap(prog_rdev(payload), data);
+
+	/* Update the payload's area with the bounce buffer information. */
+	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
 
 	/* Update the payload's area with the bounce buffer information. */
 	prog_set_area(payload, (void *)(uintptr_t)bounce_buffer, bounce_size);
@@ -477,6 +480,6 @@ void *selfload(struct prog *payload)
 	return (void *)entry;
 
 out:
-	rdev_munmap(&payload->rdev, data);
+	rdev_munmap(prog_rdev(payload), data);
 	return NULL;
 }

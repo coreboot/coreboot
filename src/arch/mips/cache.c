@@ -20,6 +20,7 @@
 #include <arch/cache.h>
 #include <arch/cpu.h>
 #include <console/console.h>
+#include <program_loading.h>
 #include <symbols.h>
 
 /* cache_op: issues cache operation for specified address */
@@ -108,4 +109,11 @@ void cache_invalidate_all(uintptr_t start, size_t size)
 	perform_cache_operation(start, size, CACHE_CODE(ICACHE, WB_INVD));
 	perform_cache_operation(start, size, CACHE_CODE(DCACHE, WB_INVD));
 	perform_cache_operation(start, size, CACHE_CODE(L2CACHE, WB_INVD));
+}
+
+void arch_segment_loaded(uintptr_t start, size_t size, int flags)
+{
+	cache_invalidate_all(start, size);
+	if (flags & SEG_FINAL)
+		cache_invalidate_all((uintptr_t)_cbfs_cache, _cbfs_cache_size);
 }

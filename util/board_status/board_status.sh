@@ -272,7 +272,7 @@ if [ $UPLOAD_RESULTS -eq 1 ]; then
 		# whole repo?
 		git clone $bsrepo
 		if [ $? -ne 0 ]; then
-			"Error cloning board-status repo, aborting."
+			echo "Error cloning board-status repo, aborting."
 			exit $EXIT_FAILURE
 		fi
 	fi

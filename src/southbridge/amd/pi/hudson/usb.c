@@ -43,35 +43,19 @@ static struct device_operations usb_ops = {
 	.ops_pci = &lops_pci,
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_ATI_SB900_USB_18_0,
+	PCI_DEVICE_ID_ATI_SB900_USB_18_2,
+	PCI_DEVICE_ID_ATI_SB900_USB_20_5,
+	PCI_DEVICE_ID_AMD_CZ_USB_0,
+	PCI_DEVICE_ID_AMD_CZ_USB_1,
+	0
+};
+
 static const struct pci_driver usb_0_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_USB_18_0,
-};
-static const struct pci_driver usb_1_driver __pci_driver = {
-	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_USB_18_2,
-};
-
-/* the pci id of usb ctrl 0 and 1 are the same. */
-/*
- * static const struct pci_driver usb_3_driver __pci_driver = {
- * 	.ops = &usb_ops,
- * 	.vendor = PCI_VENDOR_ID_AMD,
- * 	.device = PCI_DEVICE_ID_ATI_HUDSON_USB_19_0,
- * };
- * static const struct pci_driver usb_4_driver __pci_driver = {
- * 	.ops = &usb_ops,
- * 	.vendor = PCI_VENDOR_ID_AMD,
- * 	.device = PCI_DEVICE_ID_ATI_HUDSON_USB_19_1,
- * };
- */
-
-static const struct pci_driver usb_4_driver __pci_driver = {
-	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_USB_20_5,
+	.devices = pci_device_ids,
 };
 
 /*

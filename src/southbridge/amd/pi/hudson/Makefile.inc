@@ -99,6 +99,13 @@ HUDSON_PSP_DIRECTORY_POSITION=$(call int-align,\
 		$(CBFS_HEADER_SIZE) $(GEC_FWM_SIZE) $(CBFS_HEADER_SIZE) $(IMC_FWM_SIZE) $(CBFS_HEADER_SIZE)),\
 	65536)
 HUDSON_PSP_DIRECTORY_SIZE=256
+else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+HUDSON_PSP_DIRECTORY_POSITION=$(call int-align,\
+	$(call int-add,\
+		$(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) $(CBFS_HEADER_SIZE) $(XHCI_FWM_SIZE)\
+		$(CBFS_HEADER_SIZE) $(GEC_FWM_SIZE) $(CBFS_HEADER_SIZE) $(IMC_FWM_SIZE) $(CBFS_HEADER_SIZE)),\
+	65536)
+HUDSON_PSP_DIRECTORY_SIZE=256
 else
 HUDSON_PSP_DIRECTORY_POSITION=0
 HUDSON_PSP_DIRECTORY_SIZE=0
@@ -172,47 +179,109 @@ FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
 FIRMWARE_TYPE=
 endif
 
+ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
+FIRMWARE_TYPE=CZ
+endif
+
+#5
 CONFIG_PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSigned$(FIRMWARE_TYPE).key
 PUBSIGNEDKEY_POS=$(call int-align, \
 	$(call int-add,$(AMDPUBKEY_POS) $(AMDPUBKEY_SIZE) $(CBFS_HEADER_SIZE)), \
 	$(CBFS_HEADER_SIZE))
 PUBSIGNEDKEY_SIZE=$(call file-size,$(CONFIG_PUBSIGNEDKEY_FILE))
 
+#1
+ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
 CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader$(FIRMWARE_TYPE).Bypass.sbin
+else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+CONFIG_PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_$(FIRMWARE_TYPE).sbin
+endif
 PSPBTLDR_POS=$(call int-align, \
 	$(call int-add,$(PUBSIGNEDKEY_POS) $(PUBSIGNEDKEY_SIZE) $(CBFS_HEADER_SIZE)), \
 	$(CBFS_HEADER_SIZE))
 PSPBTLDR_SIZE=$(call file-size,$(CONFIG_PSPBTLDR_FILE))
 
+#3
+ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
 CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecovery$(FIRMWARE_TYPE).sbin
+else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+CONFIG_PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecoveryBootLoader_prod_$(FIRMWARE_TYPE).sbin
+endif
 PSPRCVR_POS=$(call int-align, \
 	$(call int-add,$(PSPBTLDR_POS) $(PSPBTLDR_SIZE) $(CBFS_HEADER_SIZE)), \
 	$(CBFS_HEADER_SIZE))
 PSPRCVR_SIZE=$(call file-size,$(CONFIG_PSPRCVR_FILE))
 
+#2
+ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
 CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs$(FIRMWARE_TYPE).sbin
+else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+CONFIG_PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).sbin
+endif
 PSPSECUREOS_POS=$(call int-align, \
 	$(call int-add,$(PSPRCVR_POS) $(PSPRCVR_SIZE) $(CBFS_HEADER_SIZE)), \
 	$(CBFS_HEADER_SIZE))
 PSPSECUREOS_SIZE=$(call file-size,$(CONFIG_PSPSCUREOS_FILE))
 
+#4
 CONFIG_PSPNVRAM_FILE=$(top)/$(FIRMWARE_LOCATE)/PspNvram$(FIRMWARE_TYPE).bin
 PSPNVRAM_POS=$(call int-align, \
 	$(call int-add,$(PSPSECUREOS_POS) $(PSPSECUREOS_SIZE) $(CBFS_HEADER_SIZE)), \
 	$(CBFS_HEADER_SIZE))
 PSPNVRAM_SIZE=$(call file-size,$(CONFIG_PSPNVRAM_FILE))
 
+#8
 CONFIG_SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE).sbin
 SMUFWM_POS=$(call int-align, \
 	$(call int-add,$(PSPNVRAM_POS) $(PSPNVRAM_SIZE) $(CBFS_HEADER_SIZE)), \
 	$(CBFS_HEADER_SIZE))
 SMUFWM_SIZE=$(call file-size,$(CONFIG_SMUFWM_FILE))
 
+#95
 CONFIG_SMUSCS_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuScs$(FIRMWARE_TYPE).bin
 SMUSCS_POS=$(call int-align, \
 	$(call int-add,$(SMUFWM_POS) $(SMUFWM_SIZE) $(CBFS_HEADER_SIZE)), \
 	$(CBFS_HEADER_SIZE))
 SMUSCS_SIZE=$(call file-size,$(CONFIG_SMUSCS_FILE))
+
+#9
+CONFIG_PSPSECUREDEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureDebug$(FIRMWARE_TYPE).Key
+PSPSECUREDEBUG_POS=$(call int-align, \
+	$(call int-add,$(SMUSCS_POS) $(SMUSCS_SIZE) $(CBFS_HEADER_SIZE)), \
+	$(CBFS_HEADER_SIZE))
+PSPSECUREDEBUG_SIZE=$(call file-size,$(CONFIG_PSPSECUREDEBUG_FILE))
+
+#12
+ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
+CONFIG_PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/trustlets.bin
+else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+CONFIG_PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspTrustlets_prod_$(FIRMWARE_TYPE).cbin
+endif
+PSPTRUSTLETS_POS=$(call int-align, \
+	$(call int-add,$(PSPSECUREDEBUG_POS) $(PSPSECUREDEBUG_SIZE) $(CBFS_HEADER_SIZE)), \
+	$(CBFS_HEADER_SIZE))
+PSPTRUSTLETS_SIZE=$(call file-size,$(CONFIG_PSPTRUSTLETS_FILE))
+
+#13
+ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
+CONFIG_TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/Trustlet.tkn.cert
+else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+CONFIG_TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/TrustletKey_prod_$(FIRMWARE_TYPE).sbin
+endif
+TRUSTLETKEY_POS=$(call int-align, \
+	$(call int-add,$(PSPTRUSTLETS_POS) $(PSPTRUSTLETS_SIZE) $(CBFS_HEADER_SIZE)), \
+	$(CBFS_HEADER_SIZE))
+TRUSTLETKEY_SIZE=$(call file-size,$(CONFIG_TRUSTLETKEY_FILE))
+
+#18
+ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+CONFIG_SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).sbin
+SMUFIRMWARE2_POS=$(call int-align, \
+	$(call int-add,$(TRUSTLETKEY_POS) $(TRUSTLETKEY_SIZE) $(CBFS_HEADER_SIZE)), \
+	$(CBFS_HEADER_SIZE))
+SMUFIRMWARE2_SIZE=$(call file-size,$(CONFIG_SMUFIRMWARE2_FILE))
+endif
 
 define output_hex
 echo $(1) | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'
@@ -241,10 +310,24 @@ $(obj)/coreboot_psp_directory.bin: $(obj)/config.h $(FLETCHER) $(RTM_FILE)
 	for fwm in 4 $(PSPNVRAM_SIZE) $(PSPNVRAM_POS) 0; do \
 	echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
 	done >> $@_tail.tmp
+	for fwm in 9 $(PSPSECUREDEBUG_SIZE) $(PSPSECUREDEBUG_POS) 0; do \
+	echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
+	done >> $@_tail.tmp
+	for fwm in 12 $(PSPTRUSTLETS_SIZE) $(PSPTRUSTLETS_POS) 0; do \
+	echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
+	done >> $@_tail.tmp
+	for fwm in 13 $(TRUSTLETKEY_SIZE) $(TRUSTLETKEY_POS) 0; do \
+	echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
+	done >> $@_tail.tmp
+ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+	for fwm in 18 $(SMUFIRMWARE2_SIZE) $(SMUFIRMWARE2_POS) 0; do \
+	echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
+	done >> $@_tail.tmp
+endif
 	for fwm in 95 $(SMUSCS_SIZE) $(SMUSCS_POS) 0; do \
 	echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
 	done >> $@_tail.tmp
-	for fwm in 11 4294967295 0 0; do \
+	for fwm in 11 4294967295 1 0; do \
 	echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
 	done >> $@_tail.tmp
 	for fwm in  1347637284 0 `ls -l $@_tail.tmp | awk '{printf("%d", $$5/16);}'` 0; do \
@@ -300,9 +383,36 @@ apu/smufwm-file := $(CONFIG_SMUFWM_FILE)
 apu/smufwm-position := $(SMUFWM_POS)
 apu/smufwm-type := raw
 
+#95
 cbfs-files-y += apu/smuscs
 apu/smuscs-file := $(CONFIG_SMUSCS_FILE)
 apu/smuscs-position := $(SMUSCS_POS)
 apu/smuscs-type := raw
+
+#9
+cbfs-files-y += apu/pspsecuredebug
+apu/pspsecuredebug-file := $(CONFIG_PSPSECUREDEBUG_FILE)
+apu/pspsecuredebug-position := $(PSPSECUREDEBUG_POS)
+apu/pspsecuredebug-type := raw
+
+#12
+cbfs-files-y += apu/psptrustlets
+apu/psptrustlets-file := $(CONFIG_PSPTRUSTLETS_FILE)
+apu/psptrustlets-position := $(PSPTRUSTLETS_POS)
+apu/psptrustlets-type := raw
+
+#13
+cbfs-files-y += apu/trustletkey
+apu/trustletkey-file := $(CONFIG_TRUSTLETKEY_FILE)
+apu/trustletkey-position := $(TRUSTLETKEY_POS)
+apu/trustletkey-type := raw
+
+#18
+ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+cbfs-files-y += apu/smufirmware2
+apu/smufirmware2-file := $(CONFIG_SMUFIRMWARE2_FILE)
+apu/smufirmware2-position := $(SMUFIRMWARE2_POS)
+apu/smufirmware2-type := raw
+endif
 
 endif

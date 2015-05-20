@@ -26,6 +26,11 @@
 #include <delay.h>
 #include "hudson.h"
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_ATI_SB900_HDA,
+	PCI_DEVICE_ID_AMD_CZ_HDA,
+	0
+};
 
 static void hda_init(struct device *dev)
 {
@@ -47,5 +52,5 @@ static struct device_operations hda_audio_ops = {
 static const struct pci_driver hdaaudio_driver __pci_driver = {
 	.ops = &hda_audio_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_HDA,
+	.devices = pci_device_ids,
 };

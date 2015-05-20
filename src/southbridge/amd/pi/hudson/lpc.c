@@ -343,8 +343,14 @@ static struct device_operations lpc_ops = {
 	.scan_bus = scan_lpc_bus,
 	.ops_pci = &lops_pci,
 };
+
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_ATI_SB900_LPC,
+	PCI_DEVICE_ID_AMD_CZ_LPC,
+	0
+};
 static const struct pci_driver lpc_driver __pci_driver = {
 	.ops = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_LPC,
+	.devices = pci_device_ids,
 };

@@ -29,7 +29,7 @@
 
 static void sata_init(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_AVALON)
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_AVALON) || IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
 	/**************************************
 	 * Configure the SATA port multiplier *
 	 **************************************/
@@ -72,14 +72,16 @@ static struct device_operations sata_ops = {
 	.ops_pci = &lops_pci,
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_ATI_SB900_SATA,
+	PCI_DEVICE_ID_ATI_SB900_SATA_AHCI,
+	PCI_DEVICE_ID_AMD_CZ_SATA,
+	PCI_DEVICE_ID_AMD_CZ_SATA_AHCI,
+	0
+};
+
 static const struct pci_driver sata0_driver __pci_driver = {
 	.ops = &sata_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_SATA,
-};
-
-static const struct pci_driver sata0_driver_ahci __pci_driver = {
-	.ops = &sata_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_ATI_SB900_SATA_AHCI,
+	.devices = pci_device_ids,
 };

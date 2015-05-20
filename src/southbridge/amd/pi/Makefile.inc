@@ -18,3 +18,4 @@
 #
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_PI_AVALON) += hudson
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON) += hudson
+subdirs-$(CONFIG_SOUTHBRIDGE_AMD_PI_KERN) += hudson

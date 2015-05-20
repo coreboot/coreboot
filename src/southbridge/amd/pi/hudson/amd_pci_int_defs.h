@@ -80,4 +80,9 @@
 #define PIRQ_GPP3	0x53	/* GPP INT 3 */
 #endif
 
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
+#define FCH_INT_TABLE_SIZE 0x75
+#define PIRQ_GPIO	0x62	/* GPIO Controller Interrupt */
+#endif
+
 #endif /* AMD_PCI_INT_DEFS_H */

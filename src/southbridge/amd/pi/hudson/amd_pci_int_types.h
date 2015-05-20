@@ -33,6 +33,10 @@ const char * intr_types[] = {
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON)
 	[0x40] = "IDE\t", "SATA\t",
 	[0x50] = "GPPInt0\t", "GPPInt1\t", "GPPInt2\t", "GPPInt3\t",
+#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
+	[0x40] = "IDE\t", "SATA\t",
+	[0x50] = "GPPInt0\t", "GPPInt1\t", "GPPInt2\t", "GPPInt3\t",
+	[0x75] = NULL
 #endif
 };
 

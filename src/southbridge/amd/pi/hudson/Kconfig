@@ -29,7 +29,13 @@ config SOUTHBRIDGE_AMD_PI_AVALON
 	select HAVE_USBDEBUG_OPTIONS
 	select HAVE_HARD_RESET
 
-if SOUTHBRIDGE_AMD_PI_AVALON || SOUTHBRIDGE_AMD_PI_BOLTON
+config SOUTHBRIDGE_AMD_PI_KERN
+	bool
+	select IOAPIC
+	select HAVE_USBDEBUG_OPTIONS
+	select HAVE_HARD_RESET
+
+if SOUTHBRIDGE_AMD_PI_AVALON || SOUTHBRIDGE_AMD_PI_BOLTON || SOUTHBRIDGE_AMD_PI_KERN
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
@@ -79,16 +85,18 @@ config HUDSON_GEC_FWM
 
 config HUDSON_PSP
 	bool
-	default y if CPU_AMD_PI_00730F01
+	default y if CPU_AMD_PI_00730F01 || CPU_AMD_PI_00660F01
 
 config HUDSON_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
 	default "3rdparty/blobs/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_PI_AVALON
+	default "3rdparty/blobs/southbridge/amd/kern/xhci.bin" if SOUTHBRIDGE_AMD_PI_KERN
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
 	string "IMC firmware path and filename"
 	default "3rdparty/blobs/southbridge/amd/avalon/imc.bin" if SOUTHBRIDGE_AMD_PI_AVALON
+	default "3rdparty/blobs/southbridge/amd/kern/imc.bin" if SOUTHBRIDGE_AMD_PI_KERN
 	depends on HUDSON_IMC_FWM
 
 config HUDSON_GEC_FWM_FILE
@@ -127,6 +135,7 @@ config AMD_PUBKEY_FILE
 	depends on HUDSON_PSP
 	string "AMD public Key"
 	default "3rdparty/blobs/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
+	default "3rdparty/blobs/southbridge/amd/kern/PSP/AmdPubKeyCZ.bin" if CPU_AMD_PI_00660F01
 
 config HUDSON_SATA_MODE
 	int "SATA Mode"

@@ -305,8 +305,10 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 
 	DmiTable    = AmdLateParams->DmiTable;
 	AcpiPstate  = AmdLateParams->AcpiPState;
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00630F01) || IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00730F01)
 	AcpiSrat    = AmdLateParams->AcpiSrat;
 	AcpiSlit    = AmdLateParams->AcpiSlit;
+#endif
 
 	AcpiWheaMce = AmdLateParams->AcpiWheaMce;
 	AcpiWheaCmc = AmdLateParams->AcpiWheaCmc;

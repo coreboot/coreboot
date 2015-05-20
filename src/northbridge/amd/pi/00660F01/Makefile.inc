@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2015 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,23 +17,6 @@
 # Foundation, Inc.
 #
 
-config NORTHBRIDGE_AMD_PI
-	bool
-	default CPU_AMD_PI
-	select LATE_CBMEM_INIT
+romstage-y += dimmSpd.c
 
-if NORTHBRIDGE_AMD_PI
-
-config CONSOLE_VGA_MULTI
-	bool
-	default n
-
-config S3_VGA_ROM_RUN
-	bool
-	default n
-
-source src/northbridge/amd/pi/00630F01/Kconfig
-source src/northbridge/amd/pi/00730F01/Kconfig
-source src/northbridge/amd/pi/00660F01/Kconfig
-
-endif # NORTHBRIDGE_AMD_PI
+ramstage-y += northbridge.c

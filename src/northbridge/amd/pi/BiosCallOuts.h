@@ -24,19 +24,9 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-#if CONFIG_NORTHBRIDGE_AMD_PI_00630F01 || CONFIG_NORTHBRIDGE_AMD_PI_00730F01
-
 #define BIOS_HEAP_START_ADDRESS 	0x010000000
 #define BIOS_HEAP_SIZE			0x30000
 #define BSP_STACK_BASE_ADDR		0x30000
-
-#else
-
-#define BIOS_HEAP_START_ADDRESS		0x10000 /* HEAP during cold boot */
-#define BIOS_HEAP_SIZE			0x20000
-#define BSP_STACK_BASE_ADDR		0x30000
-
-#endif
 
 typedef struct _BIOS_HEAP_MANAGER {
 	UINT32 StartOfAllocatedNodes;

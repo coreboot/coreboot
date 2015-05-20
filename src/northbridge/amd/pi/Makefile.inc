@@ -21,6 +21,7 @@ ifeq ($(CONFIG_NORTHBRIDGE_AMD_PI),y)
 
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00630F01) += 00630F01
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00730F01) += 00730F01
+subdirs-$(CONFIG_NORTHBRIDGE_AMD_PI_00660F01) += 00660F01
 
 romstage-y += agesawrapper.c
 romstage-y += def_callouts.c

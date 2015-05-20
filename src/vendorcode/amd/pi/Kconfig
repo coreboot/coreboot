@@ -1,2 +1,1 @@
-source src/vendorcode/amd/pi/00630F01/Kconfig
-source src/vendorcode/amd/pi/00730F01/Kconfig
+source "src/vendorcode/amd/pi/*/Kconfig"

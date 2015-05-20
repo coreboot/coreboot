@@ -7,7 +7,7 @@ config LPC_TPM
 	  If unsure, say N.
 
 config TPM_TIS_BASE_ADDRESS
-	hex "TPM Base Address"
+	hex
 	default 0xfed40000
 	depends on LPC_TPM
 	help

@@ -65,6 +65,12 @@ static void *vboot_get_bl31(void)
 	return bl31_entry;
 }
 
+void __attribute__((weak)) *soc_get_bl31_plat_params(bl31_params_t *params)
+{
+	/* Default weak implementation. */
+	return NULL;
+}
+
 void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 {
 	const char *bl31_filename = CONFIG_CBFS_PREFIX"/bl31";

@@ -54,12 +54,6 @@ void mainboard_post(u8 value)
 	 */
 }
 
-void mainboard_suspend_resume(void)
-{
-	/* Call SMM finalize() handlers before resume */
-	outb(0xcb, 0xb2);
-}
-
 #if CONFIG_VGA_ROM_RUN
 static int int15_handler(void)
 {

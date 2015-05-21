@@ -805,6 +805,14 @@ static void southbridge_fill_ssdt(void)
 	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);
 }
 
+static void lpc_final(struct device *dev)
+{
+	if (CONFIG_HAVE_SMI_HANDLER && acpi_is_wakeup_s3()) {
+		/* Call SMM finalize() handlers before resume */
+		outb(0xcb, 0xb2);
+	}
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -817,6 +825,7 @@ static struct device_operations device_ops = {
 	.acpi_inject_dsdt_generator = southbridge_inject_dsdt,
 	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
 	.init			= lpc_init,
+	.final			= lpc_final,
 	.enable			= pch_lpc_enable,
 	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_ops,

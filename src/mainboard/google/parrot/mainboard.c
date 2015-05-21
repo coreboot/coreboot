@@ -39,13 +39,9 @@
 
 void mainboard_suspend_resume(void)
 {
-	/* Call SMM finalize() handlers before resume */
-	outb(0xcb, 0xb2);
-
 	/* Enable ACPI mode before OS resume */
 	outb(0xe1, 0xb2);
 }
-
 
 
 static void mainboard_init(device_t dev)

@@ -38,9 +38,6 @@
 
 void mainboard_suspend_resume(void)
 {
-	/* Call SMM finalize() handlers before resume */
-	outb(0xcb, 0xb2);
-
 	/* Enable EC ACPI mode for the OS before resume */
 	send_ec_command(EC_SMI_DISABLE);
 	send_ec_command(EC_ACPI_ENABLE);

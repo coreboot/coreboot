@@ -33,12 +33,6 @@
 #include <pc80/keyboard.h>
 #include <ec/lenovo/h8/h8.h>
 
-void mainboard_suspend_resume(void)
-{
-	/* Call SMM finalize() handlers before resume */
-	outb(0xcb, 0xb2);
-}
-
 static void mainboard_init(device_t dev)
 {
 	/* init spi */

@@ -33,14 +33,6 @@
 #include <boot/coreboot_tables.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
-void mainboard_suspend_resume(void)
-{
-	/* Call SMM finalize() handlers before resume */
-	outb(0xcb, 0xb2);
-}
-
-
-
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 

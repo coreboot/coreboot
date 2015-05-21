@@ -39,9 +39,6 @@
 
 void mainboard_suspend_resume(void)
 {
-	/* Call SMM finalize() handlers before resume */
-	outb(0xcb, 0xb2);
-
 	/* Stout EC needs to be put back in ACPI mode */
 	ec_write_cmd(EC_CMD_NOTIFY_ACPI_ENTER);
 }

@@ -97,6 +97,7 @@
 #define DDR_PCTL_CCFG1_OFFSET		(0x048C)
 
 #define DDR_PHY				0xB8180800
+#define DDRPHY_PGCR_OFFSET		(0x0008)
 #define DDRPHY_DCR_OFFSET		(0x0030)
 #define DDRPHY_MR_OFFSET		(0x0040)
 #define DDRPHY_EMR_OFFSET		(0x0044)
@@ -318,6 +319,28 @@ int init_ddr2(void)
 	 * 29:19 : tDINIT1 DRAM Init time 400ns 160 Dec 0xA0
 	 */
 	write32(DDR_PHY + DDRPHY_PTR1_OFFSET, 0x05013880);
+	/* DQS gating configuration: passive windowing mode */
+	/*
+	 * PGCR: PHY General cofiguration register
+	 * 0 ITM DDR mode: 0
+	 * 1 DQS gading configuration: passive windowing 1
+	 * 2 DQS drift compensation: not supported in passive windowing 0
+	 * 4:3 DQS drift limit 0
+	 * 8:5 Digital test output select 0
+	 * 11:9 CK Enable: one bit for each 3 CK pair: 0x7
+	 * 13:12 CK Disable values: 0x2
+	 * 14 CK Invert 0
+	 * 15 IO loopback 0
+	 * 17:16 I/O DDR mode 0
+	 * 21:18 Ranks enable by training: 0xF
+	 * 23:22 Impedance clock divider select 0x2
+	 * 24 Power down disable 1
+	 * 28:25 Refresh during training 0
+	 * 29 loopback DQS shift 0
+	 * 30 loopback DQS gating 0
+	 * 31 loopback mode 0
+	 */
+	write32(DDR_PHY + DDRPHY_PGCR_OFFSET, 0x01BC2E02);
 	/* PGSR : Wait for INIT/DLL/Z Done from Power on Reset */
 	if (wait_for_completion(DDR_PHY + DDRPHY_PGSR_OFFSET, 0x00000007))
 		return DDR_TIMEOUT;

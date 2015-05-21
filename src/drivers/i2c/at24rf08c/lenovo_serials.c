@@ -24,6 +24,7 @@
 #include <device/smbus.h>
 #include <smbios.h>
 #include <console/console.h>
+#include <version.h>
 #include "lenovo.h"
 
 #define ERROR_STRING "*INVALID*"
@@ -197,4 +198,18 @@ const char *smbios_mainboard_version(void)
 
 	already_read = 1;
 	return result;
+}
+
+const char *smbios_mainboard_bios_version(void)
+{
+	static char *s = NULL;
+
+	/* Satisfy thinkpad_acpi.  */
+	if (strlen(CONFIG_LOCALVERSION))
+		return "CBET4000 " CONFIG_LOCALVERSION;
+
+	if (s != NULL)
+		return s;
+	s = strconcat("CBET4000 ", coreboot_version);
+	return s;
 }

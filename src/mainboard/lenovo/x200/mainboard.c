@@ -27,7 +27,6 @@
 #include <ec/acpi/ec.h>
 #include <smbios.h>
 #include <string.h>
-#include <version.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
@@ -35,20 +34,6 @@
 
 #include "cstates.c" /* Include it, as the linker won't find
 			the overloaded weak function in there. */
-
-const char *smbios_mainboard_bios_version(void)
-{
-	static char *s = NULL;
-
-	/* Satisfy thinkpad_acpi.  */
-	if (strlen(CONFIG_LOCALVERSION))
-		return "CBET4000 " CONFIG_LOCALVERSION;
-
-	if (s != NULL)
-		return s;
-	s = strconcat("CBET4000 ", coreboot_version);
-	return s;
-}
 
 static void fill_ssdt(void)
 {

@@ -32,26 +32,11 @@
 #include <device/pci.h>
 #include <pc80/keyboard.h>
 #include <ec/lenovo/h8/h8.h>
-#include <version.h>
 
 void mainboard_suspend_resume(void)
 {
 	/* Call SMM finalize() handlers before resume */
 	outb(0xcb, 0xb2);
-}
-
-const char *smbios_mainboard_bios_version(void)
-{
-	static char *s = NULL;
-
-	/* Satisfy thinkpad_acpi.  */
-	if (strlen(CONFIG_LOCALVERSION))
-		return "CBET4000 " CONFIG_LOCALVERSION;
-
-	if (s != NULL)
-		return s;
-	s = strconcat("CBET4000 ", coreboot_version);
-	return s;
 }
 
 static void mainboard_init(device_t dev)

@@ -139,6 +139,14 @@ M:	Patrick Georgi <patrick@georgi-clan.de>
 S:	Supported
 F:	util/lint/
 
+BUILD SYSTEM
+M:	Patrick Georgi <patrick@georgi-clan.de>
+S:	Supported
+F:	Makefile
+F:	*.inc
+F:	util/kconfig
+F:	util/sconfig
+
 THE REST
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 L:	coreboot@coreboot.org

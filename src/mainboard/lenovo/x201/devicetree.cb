@@ -153,6 +153,9 @@ chip northbridge/intel/nehalem
 					# DLPC, not connected
 					device pnp 164e.19 off end
 				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
 			end
 			device pci 1f.2 on # IDE/SATA
 				subsystemid 0x17aa 0x2168

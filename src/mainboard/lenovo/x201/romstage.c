@@ -37,6 +37,7 @@
 #include <timestamp.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
+#include <tpm.h>
 
 #include "gpio.h"
 #include "dock.h"
@@ -304,6 +305,10 @@ void main(unsigned long bist)
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
 		quick_ram_check();
 	}
+#endif
+
+#if CONFIG_LPC_TPM
+	init_tpm(s3resume);
 #endif
 
 	timestamp_add_now(TS_END_ROMSTAGE);

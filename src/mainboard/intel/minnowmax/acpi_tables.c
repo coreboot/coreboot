@@ -69,18 +69,6 @@ unsigned long acpi_fill_ssdt_generator(unsigned long current,
 	return (unsigned long) (acpigen_get_current());
 }
 
-unsigned long acpi_fill_slit(unsigned long current)
-{
-	// Not implemented
-	return current;
-}
-
-unsigned long acpi_fill_srat(unsigned long current)
-{
-	/* No NUMA, no SRAT */
-	return current;
-}
-
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long write_acpi_tables(unsigned long start)
 {

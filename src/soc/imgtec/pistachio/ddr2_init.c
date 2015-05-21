@@ -143,8 +143,8 @@ int init_ddr2(void)
 	 * 2 ZUEN Def 1
 	 * 3 LPIOPD DEf 1 0
 	 * 4 LPDLLPD DEf 1 0
-	 * 7:5 DQSGX DQS Extention 000
-	 * 10:8 DQSGE DQS Early Gate
+	 * 7:5 DQSGX DQS Extention set to 1 - advised by Synopsys
+	 * 10:8 DQSGE DQS Early Gate - 1 - advised by Sysnopsys
 	 * 11 NOBUB No Bubbles, adds latency 1
 	 * 12 FXDLAT Fixed Read Latency 0
 	 * 15:13 Reserved
@@ -159,7 +159,9 @@ int init_ddr2(void)
 	 * 30 RSTOE RST# Output Enable 1
 	 * 31 CKEOE CKE Output Enable 1
 	 */
-	write32(DDR_PHY + DDRPHY_DSGCR_OFFSET, 0xF2000807);
+	write32(DDR_PHY + DDRPHY_DSGCR_OFFSET, 0xF2000927);
+	/* Sysnopsys advised 500R pullup/pulldown DQS DQSN */
+	write32(DDR_PHY + DDRPHY_DXCCR_OFFSET, 0x00000C40);
 	/* DTPR0 : DRAM Timing Params 0
 	 * 1:0 tMRD 2
 	 * 4:2 tRTP 3
@@ -235,6 +237,10 @@ int init_ddr2(void)
 	/* PGSR : Wait for DRAM Init Done */
 	if (wait_for_completion(DDR_PHY + DDRPHY_PGSR_OFFSET, 0x0000001F))
 			return DDR_TIMEOUT;
+	/* Disable Impedance Calibration */
+	write32(DDR_PHY + DDRPHY_ZQ0CR0_OFFSET, 0x3000014A);
+	write32(DDR_PHY + DDRPHY_ZQ1CR0_OFFSET, 0x3000014A);
+
 	/* DF1STAT0 : wait for DFI_INIT_COMPLETE */
 	if (wait_for_completion(DDR_PCTL + DDR_PCTL_DFISTAT0_OFFSET,
 						0x00000001))
@@ -315,10 +321,10 @@ int init_ddr2(void)
 	 * DQS additional turn around Rank 2 Rank (1 Rank) Def 1
 	 */
 	write32(DDR_PCTL + DDR_PCTL_TDQS_OFFSET, 0x00000001);
-	/*TRTW : Read to Write turn around time Def 2
+	/*TRTW : Read to Write turn around time Def 3
 	 * Actual gap t_bl + t_rtw
 	 */
-	write32(DDR_PCTL + DDR_PCTL_TRTW_OFFSET, 0x00000002);
+	write32(DDR_PCTL + DDR_PCTL_TRTW_OFFSET, 0x00000003);
 	/* TCKE : CKE min pulse width DEf 3 */
 	write32(DDR_PCTL + DDR_PCTL_TCKE_OFFSET, 0x00000003);
 	/*

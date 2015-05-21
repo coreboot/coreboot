@@ -53,10 +53,6 @@
 	/* If any changes are made to the driver start/symbols or the
 	 * section names the equivalent changes need to made to
 	 * rmodule.ld. */
-	console_drivers = .;
-	KEEP(*(.rodata.console_drivers));
-	econsole_drivers = . ;
-	. = ALIGN(8);
 	pci_drivers = . ;
 	KEEP(*(.rodata.pci_driver));
 	epci_drivers = . ;

@@ -34,12 +34,6 @@ struct console_driver {
 	int (*tst_byte)(void);
 };
 
-#define __console	__attribute__((used, __section__ (".rodata.console_drivers")))
-
-/* Defined by the linker... */
-extern struct console_driver console_drivers[];
-extern struct console_driver econsole_drivers[];
-
 void post_code(u8 value);
 #if CONFIG_CMOS_POST_EXTRA
 void post_log_extra(u32 value);

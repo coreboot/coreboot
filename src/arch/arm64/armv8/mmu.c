@@ -220,9 +220,12 @@ void mmu_config_range(void *start, size_t size, uint64_t tag)
 	uint64_t base_addr = (uintptr_t)start;
 	uint64_t temp_size = size;
 
-	printk(BIOS_INFO, "Mapping address range [%p:%p) as ",
-	       start, start + size);
-	print_tag(BIOS_INFO, tag);
+	if (!IS_ENABLED(CONFIG_SMP)) {
+		printk(BIOS_INFO, "Mapping address range [%p:%p) as ",
+		       start, start + size);
+		print_tag(BIOS_INFO, tag);
+	}
+
 	sanity_check(base_addr, temp_size);
 
 	while (temp_size)

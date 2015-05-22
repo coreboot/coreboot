@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2011 secunet Security Networks AG
+ * Copyright 2015 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,6 +13,10 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
+ *
+ * Alternatively, this software may be distributed under the terms of the
+ * GNU General Public License ("GPL") version 2 as published by the Free
+ * Software Foundation.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,16 +31,38 @@
  * SUCH DAMAGE.
  */
 
-#include <strings.h>
+#include <libpayload.h>
 
-int ffs(int i)
+/*
+ * Provide platform-independent backend implementation for __builtin_clz() in
+ * <libpayload.h> in case GCC does not have an assembly version for this arch.
+ */
+
+int __clzsi2(u32 a);
+int __clzsi2(u32 a)
 {
-	int count = 1;
-	if (i == 0) return 0;
+	static const u8 four_bit_table[] = {
+		[0x0] = 4, [0x1] = 3, [0x2] = 2, [0x3] = 2,
+		[0x4] = 1, [0x5] = 1, [0x6] = 1, [0x7] = 1,
+		[0x8] = 0, [0x9] = 0, [0xa] = 0, [0xb] = 0,
+		[0xc] = 0, [0xd] = 0, [0xe] = 0, [0xf] = 0,
+	};
+	int r = 0;
 
-	while ((i & 1) != 1) {
-		i>>=1;
-		count++;
+	if (!(a & (0xffff << 16))) {
+		r += 16;
+		a <<= 16;
 	}
-	return count;
+
+	if (!(a & (0xff << 24))) {
+		r += 8;
+		a <<= 8;
+	}
+
+	if (!(a & (0xf << 28))) {
+		r += 4;
+		a <<= 4;
+	}
+
+	return r + four_bit_table[a >> 28];
 }

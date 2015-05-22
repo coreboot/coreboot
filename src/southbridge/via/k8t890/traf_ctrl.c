@@ -24,9 +24,8 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cpu/amd/powernow.h>
+#include <lib.h>
 #include "k8t890.h"
-
-extern unsigned long log2(unsigned long x);
 
 static void mmconfig_set_resources(device_t dev)
 {

@@ -7,6 +7,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
+#include <lib.h>
 #include <stdlib.h>
 #include <arch/acpi.h>
 #include <reset.h>
@@ -1655,7 +1656,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	/* if the next lower frequency gives a CL at least one whole cycle
 	 * shorter, select that (see end of BKDG 4.1.1.1) */
 	if (freq < sizeof(cl_at_freq)-1 && cl_at_freq[freq+1] &&
-		log2f(cl_at_freq[freq]) - log2f(cl_at_freq[freq+1]) >= 2)
+		__ffs(cl_at_freq[freq]) - __ffs(cl_at_freq[freq+1]) >= 2)
 			freq++;
 
 	if (freq == sizeof(cl_at_freq))
@@ -1690,7 +1691,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	/* Update DRAM Timing Low with our selected cas latency */
 	value = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW);
 	value &= ~(DTL_TCL_MASK << DTL_TCL_SHIFT);
-	value |= latencies[log2f(cl_at_freq[freq]) - 2] << DTL_TCL_SHIFT;
+	value |= latencies[__ffs(cl_at_freq[freq]) - 2] << DTL_TCL_SHIFT;
 	pci_write_config32(ctrl->f2, DRAM_TIMING_LOW, value);
 
 	result.dimm_mask = dimm_mask;

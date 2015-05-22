@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <lib.h>
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>

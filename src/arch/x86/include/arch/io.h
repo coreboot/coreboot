@@ -174,8 +174,8 @@ static inline __attribute__((always_inline)) void write32(volatile void *addr, u
 }
 
 /* Conflicts with definition in lib.h */
-#if defined(__ROMCC__) || defined(__SMM__)
-static inline int log2(int value)
+#if defined(__ROMCC__)
+static inline int log2(u32 value)
 {
         unsigned int r = 0;
         __asm__ volatile (
@@ -187,10 +187,8 @@ static inline int log2(int value)
         return r;
 
 }
-#endif
 
-#if defined(__PRE_RAM__) || defined(__SMM__)
-static inline int log2f(int value)
+static inline int __ffs(u32 value)
 {
         unsigned int r = 0;
         __asm__ volatile (

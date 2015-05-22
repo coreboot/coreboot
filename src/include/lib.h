@@ -24,12 +24,6 @@
 #include <stdint.h>
 #include <types.h>
 
-#if !defined(__ROMCC__) /* Conflicts with inline function in arch/io.h */
-/* Defined in src/lib/clog2.c */
-unsigned long log2(unsigned long x);
-#endif
-unsigned long log2_ceil(unsigned long x);
-
 /* Defined in src/lib/lzma.c */
 unsigned long ulzma(unsigned char *src, unsigned char *dst);
 
@@ -48,5 +42,17 @@ int checkstack(void *top_of_stack, int core);
 /* Defined in src/lib/hexdump.c */
 void hexdump(const void *memory, size_t length);
 void hexdump32(char LEVEL, const void *d, size_t len);
+
+#if !defined(__ROMCC__)
+/* Count Leading Zeroes: clz(0) == 32, clz(0xf) == 28, clz(1 << 31) == 0 */
+static inline int clz(u32 x) { return x ? __builtin_clz(x) : sizeof(x) * 8; }
+/* Integer binary logarithm (rounding down): log2(0) == -1, log2(5) == 2 */
+static inline int log2(u32 x) { return sizeof(x) * 8 - clz(x) - 1; }
+/* Find First Set: __ffs(1) == 0, __ffs(0) == -1, __ffs(1<<31) == 31 */
+static inline int __ffs(u32 x) { return log2(x & (u32)(-(s32)x)); }
+#endif
+
+/* Integer binary logarithm (rounding up): log2_ceil(0) == -1, log2(5) == 3 */
+static inline int log2_ceil(u32 x) { return (x == 0) ? -1 : log2(x * 2 - 1); }
 
 #endif /* __LIB_H__ */

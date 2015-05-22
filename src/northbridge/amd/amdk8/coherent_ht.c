@@ -66,6 +66,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
+#include <lib.h>
 #include <stdlib.h>
 #include <arch/io.h>
 #include <pc80/mc146818rtc.h>

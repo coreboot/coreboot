@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <limits.h>
+#include <lib.h>
 #include <stdint.h>
 #include <string.h>
 #include <setjmp.h>

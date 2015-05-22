@@ -25,6 +25,7 @@
 #include <cpu/x86/tsc.h>
 #include <cpu/amd/mtrr.h>
 
+#include <lib.h>
 #include <stdlib.h>
 #include <arch/acpi.h>
 #include "raminit.h"

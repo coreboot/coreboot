@@ -19,6 +19,7 @@
  */
 
 #include <assert.h>
+#include <lib.h>
 #include <spd.h>
 #include <sdram_mode.h>
 #include <stdlib.h>

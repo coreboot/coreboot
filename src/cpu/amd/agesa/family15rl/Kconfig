@@ -29,10 +29,6 @@ config CPU_ADDR_BITS
 	int
 	default 48
 
-config CPU_SOCKET_TYPE
-	hex
-	default 0x10
-
 config CBB
 	hex
 	default 0x0

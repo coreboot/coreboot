@@ -16,6 +16,7 @@
 /* This file is for helpers for both coreboot firmware and its utilities. */
 
 #ifndef __ASSEMBLER__
+#include <commonlib/compiler.h>
 #include <stddef.h>
 #endif
 
@@ -29,35 +30,71 @@
 #define ALIGN_DOWN(x, a)        ((x) & ~((__typeof__(x))(a)-1UL))
 #define IS_ALIGNED(x, a)        (((x) & ((__typeof__(x))(a)-1UL)) == 0)
 
+/* Double-evaluation unsafe min/max, for bitfields and outside of functions */
+#define __CMP_UNSAFE(a, b, op) ((a) op (b) ? (a) : (b))
+#define MIN_UNSAFE(a, b) __CMP_UNSAFE(a, b, <)
+#define MAX_UNSAFE(a, b) __CMP_UNSAFE(a, b, >)
+
+#define __CMP_SAFE(a, b, op, var_a, var_b) ({ \
+	__TYPEOF_UNLESS_CONST(a, b) var_a = (a); \
+	__TYPEOF_UNLESS_CONST(b, a) var_b = (b); \
+	var_a op var_b ? var_a : var_b; \
+})
+
+#ifdef __ROMCC__	/* romcc doesn't support __builtin_choose_expr() */
+#define __CMP(a, b, op) __CMP_UNSAFE(a, b, op)
+#else
+#define __CMP(a, b, op) __builtin_choose_expr( \
+	__builtin_constant_p(a) && __builtin_constant_p(b), \
+	__CMP_UNSAFE(a, b, op), __CMP_SAFE(a, b, op, __TMPNAME, __TMPNAME))
+#endif
+
 #ifndef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MIN(a, b) __CMP(a, b, <)
 #endif
 #ifndef MAX
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MAX(a, b) __CMP(a, b, >)
 #endif
-#define ABS(a) (((a) < 0) ? (-(a)) : (a))
-#define IS_POWER_OF_2(x)  (((x) & ((x) - 1)) == 0)
-#define DIV_ROUND_UP(x, y)  (((x) + (y) - 1) / (y))
-#define SWAP(a, b)	do { \
-				typeof(a) tmp = a; \
-				a = (typeof(a)) b; \
-				b = (typeof(b)) tmp; \
-			} while (0)
+
+#ifndef ABS
+#define ABS(a) ({ \
+	__typeof__(a) _abs_local_a = (a); \
+	(_abs_local_a < 0) ? (-_abs_local_a) : _abs_local_a; \
+})
+#endif
+
+#define IS_POWER_OF_2(x) ({ \
+	__typeof__(x) _power_local_x = (x); \
+	(_power_local_x & (_power_local_x - 1)) == 0; \
+})
+
+#define DIV_ROUND_UP(x, y) ({ \
+	__typeof__(x) _div_local_x = (x); \
+	__typeof__(y) _div_local_y = (y); \
+	(_div_local_x + _div_local_y - 1) / _div_local_y; \
+})
+
+#define SWAP(a, b) do { \
+	__typeof__(&(a)) _swap_local_a = &(a); \
+	__typeof__(&(b)) _swap_local_b = &(b); \
+	__typeof__(a) _swap_local_tmp = *_swap_local_a; \
+	*_swap_local_a = *_swap_local_b; \
+	*_swap_local_b = _swap_local_tmp; \
+} while (0)
+
 /*
  * Divide positive or negative dividend by positive divisor and round
  * to closest integer. Result is undefined for negative divisors and
  * for negative dividends if the divisor variable type is unsigned.
  */
-#define DIV_ROUND_CLOSEST(x, divisor)(			\
-{							\
-	typeof(x) __x = x;				\
-	typeof(divisor) __d = divisor;			\
-	(((typeof(x))-1) > 0 ||			\
-	 ((typeof(divisor))-1) > 0 || (__x) > 0) ?	\
-		(((__x) + ((__d) / 2)) / (__d)) :	\
-		(((__x) - ((__d) / 2)) / (__d));	\
-}							\
-)
+#define DIV_ROUND_CLOSEST(x, divisor)({					\
+	__typeof__(x) _div_local_x = (x);				\
+	__typeof__(divisor) _div_local_d = (divisor);			\
+	(((__typeof__(x))-1) > 0 ||					\
+	 ((__typeof__(divisor))-1) > 0 || (_div_local_x) > 0) ?		\
+		((_div_local_x + (_div_local_d / 2)) / _div_local_d) :	\
+		((_div_local_x - (_div_local_d / 2)) / _div_local_d);	\
+})
 
 /* Standard units. */
 #define KiB (1<<10)

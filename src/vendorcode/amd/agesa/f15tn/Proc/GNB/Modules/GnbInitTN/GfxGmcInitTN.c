@@ -340,30 +340,30 @@ GfxGmcInitializeSequencerTN (
   GnbRegisterReadTN (TYPE_GMM , 0x27fc , &ex1061.Value, 0, GnbLibGetHeader (Gfx));
 
   if (((DramChannelPresent & GNB_GFX_DRAM_CH_0_PRESENT) != 0) && ((DramChannelPresent & GNB_GFX_DRAM_CH_1_PRESENT) != 0)) {
-    ex1047.Field.ex1047_0 = (MIN (DctChannel.D18F2x200_dct0_mp0.Field.Trcd, DctChannel.D18F2x200_dct1_mp0.Field.Trcd) * scale_mp0) / 100;
+    ex1047.Field.ex1047_0 = (MIN_UNSAFE (DctChannel.D18F2x200_dct0_mp0.Field.Trcd, DctChannel.D18F2x200_dct1_mp0.Field.Trcd) * scale_mp0) / 100;
     ex1047.Field.ex1047_1 = ex1047.Field.ex1047_0;
-    ex1047.Field.ex1047_2 = (MIN ((DctChannel.D18F2x204_dct0_mp0.Field.Trc - DctChannel.D18F2x200_dct0_mp0.Field.Trcd),
+    ex1047.Field.ex1047_2 = (MIN_UNSAFE ((DctChannel.D18F2x204_dct0_mp0.Field.Trc - DctChannel.D18F2x200_dct0_mp0.Field.Trcd),
                                      (DctChannel.D18F2x204_dct1_mp0.Field.Trc - DctChannel.D18F2x200_dct1_mp0.Field.Trcd)) * scale_mp0) / 100;
     ex1047.Field.ex1047_3 = ex1047.Field.ex1047_2;
 
-    ex1048.Field.ex1048_0 = (MIN (DctChannel.D18F2x204_dct0_mp0.Field.Trc, DctChannel.D18F2x204_dct1_mp0.Field.Trc) * scale_mp0) / 100;
-    ex1048.Field.ex1048_1 = (MIN (DctChannel.D18F2x200_dct0_mp0.Field.Trp, DctChannel.D18F2x200_dct1_mp0.Field.Trp) * scale_mp0) / 100;
-    ex1048.Field.ex1048_2 = (MIN ((DctChannel.D18F2x22C_dct0_mp0.Field.Twr + DctChannel.D18F2x200_dct0_mp0.Field.Trp),
+    ex1048.Field.ex1048_0 = (MIN_UNSAFE (DctChannel.D18F2x204_dct0_mp0.Field.Trc, DctChannel.D18F2x204_dct1_mp0.Field.Trc) * scale_mp0) / 100;
+    ex1048.Field.ex1048_1 = (MIN_UNSAFE (DctChannel.D18F2x200_dct0_mp0.Field.Trp, DctChannel.D18F2x200_dct1_mp0.Field.Trp) * scale_mp0) / 100;
+    ex1048.Field.ex1048_2 = (MIN_UNSAFE ((DctChannel.D18F2x22C_dct0_mp0.Field.Twr + DctChannel.D18F2x200_dct0_mp0.Field.Trp),
                                     (DctChannel.D18F2x22C_dct1_mp0.Field.Twr + DctChannel.D18F2x200_dct1_mp0.Field.Trp)) * scale_mp0) / 100;
-    ex1048.Field.ex1048_3 = ((MIN ((DctChannel.D18F2x20C_dct0_mp0.Field.Tcwl + 4 + DctChannel.D18F2x20C_dct0_mp0.Field.Twtr + DctChannel.D18F2x21C_dct0_mp0.Field.TrwtTO),
+    ex1048.Field.ex1048_3 = ((MIN_UNSAFE ((DctChannel.D18F2x20C_dct0_mp0.Field.Tcwl + 4 + DctChannel.D18F2x20C_dct0_mp0.Field.Twtr + DctChannel.D18F2x21C_dct0_mp0.Field.TrwtTO),
                                      (DctChannel.D18F2x20C_dct1_mp0.Field.Tcwl + 4 + DctChannel.D18F2x20C_dct1_mp0.Field.Twtr + DctChannel.D18F2x21C_dct1_mp0.Field.TrwtTO)) / 2) * scale_mp0) / 100;
 
-    ex1060.Field.ex1060_0 = (MIN (DctChannel.D18F2x200_dct0_mp1.Field.Trcd, DctChannel.D18F2x200_dct1_mp1.Field.Trcd) * scale_mp1) / 100;
+    ex1060.Field.ex1060_0 = (MIN_UNSAFE (DctChannel.D18F2x200_dct0_mp1.Field.Trcd, DctChannel.D18F2x200_dct1_mp1.Field.Trcd) * scale_mp1) / 100;
     ex1060.Field.ex1060_1 = ex1060.Field.ex1060_0;
-    ex1060.Field.ex1060_2 = (MIN ((DctChannel.D18F2x204_dct0_mp1.Field.Trc - DctChannel.D18F2x200_dct0_mp1.Field.Trcd),
+    ex1060.Field.ex1060_2 = (MIN_UNSAFE ((DctChannel.D18F2x204_dct0_mp1.Field.Trc - DctChannel.D18F2x200_dct0_mp1.Field.Trcd),
                                      (DctChannel.D18F2x204_dct1_mp1.Field.Trc - DctChannel.D18F2x200_dct1_mp1.Field.Trcd)) * scale_mp1) / 100;
     ex1060.Field.ex1060_3 = ex1060.Field.ex1060_2;
 
-    ex1061.Field.ex1061_0 = (MIN (DctChannel.D18F2x204_dct0_mp1.Field.Trc, DctChannel.D18F2x204_dct1_mp1.Field.Trc) * scale_mp1) / 100;
-    ex1061.Field.ex1061_1 = (MIN (DctChannel.D18F2x200_dct0_mp1.Field.Trp, DctChannel.D18F2x200_dct1_mp1.Field.Trp) * scale_mp1) / 100;
-    ex1061.Field.ex1061_2 = (MIN ((DctChannel.D18F2x22C_dct0_mp1.Field.Twr + DctChannel.D18F2x200_dct0_mp1.Field.Trp),
+    ex1061.Field.ex1061_0 = (MIN_UNSAFE (DctChannel.D18F2x204_dct0_mp1.Field.Trc, DctChannel.D18F2x204_dct1_mp1.Field.Trc) * scale_mp1) / 100;
+    ex1061.Field.ex1061_1 = (MIN_UNSAFE (DctChannel.D18F2x200_dct0_mp1.Field.Trp, DctChannel.D18F2x200_dct1_mp1.Field.Trp) * scale_mp1) / 100;
+    ex1061.Field.ex1061_2 = (MIN_UNSAFE ((DctChannel.D18F2x22C_dct0_mp1.Field.Twr + DctChannel.D18F2x200_dct0_mp1.Field.Trp),
                                     (DctChannel.D18F2x22C_dct1_mp1.Field.Twr + DctChannel.D18F2x200_dct1_mp1.Field.Trp)) * scale_mp1) / 100;
-    ex1061.Field.ex1061_3 = ((MIN ((DctChannel.D18F2x20C_dct0_mp1.Field.Tcwl + 4 + DctChannel.D18F2x20C_dct0_mp1.Field.Twtr + DctChannel.D18F2x21C_dct0_mp1.Field.TrwtTO),
+    ex1061.Field.ex1061_3 = ((MIN_UNSAFE ((DctChannel.D18F2x20C_dct0_mp1.Field.Tcwl + 4 + DctChannel.D18F2x20C_dct0_mp1.Field.Twtr + DctChannel.D18F2x21C_dct0_mp1.Field.TrwtTO),
                                      (DctChannel.D18F2x20C_dct1_mp1.Field.Tcwl + 4 + DctChannel.D18F2x20C_dct1_mp1.Field.Twtr + DctChannel.D18F2x21C_dct1_mp1.Field.TrwtTO)) / 2) * scale_mp1) / 100;
 
   } else if ((DramChannelPresent & GNB_GFX_DRAM_CH_0_PRESENT) != 0) {

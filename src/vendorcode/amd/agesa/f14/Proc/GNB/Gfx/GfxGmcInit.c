@@ -361,12 +361,12 @@ GfxGmcInitializeSequencerModel (
 
   if (ActiveChannel == 2) {
     // Both controllers enabled
-    GMMx277C.Field.ActRd = MIN (DctChannel[0].D18F2x0F4_x40.Field.Trcd, DctChannel[1].D18F2x0F4_x40.Field.Trcd) + 5;
-    GMMx277C.Field.RasMActRd = MIN ((DctChannel[0].D18F2x0F4_x40.Field.Trc + 11 - (DctChannel[0].D18F2x0F4_x40.Field.Trcd + 5)),
+    GMMx277C.Field.ActRd = MIN_UNSAFE (DctChannel[0].D18F2x0F4_x40.Field.Trcd, DctChannel[1].D18F2x0F4_x40.Field.Trcd) + 5;
+    GMMx277C.Field.RasMActRd = MIN_UNSAFE ((DctChannel[0].D18F2x0F4_x40.Field.Trc + 11 - (DctChannel[0].D18F2x0F4_x40.Field.Trcd + 5)),
                                     (DctChannel[1].D18F2x0F4_x40.Field.Trc + 11 - (DctChannel[1].D18F2x0F4_x40.Field.Trcd + 5)));
-    GMMx2780.Field.Ras2Ras = MIN (DctChannel[0].D18F2x0F4_x40.Field.Trc, DctChannel[1].D18F2x0F4_x40.Field.Trc) + 11 - 1;
-    GMMx2780.Field.Rp = MIN (DctChannel[0].D18F2x0F4_x40.Field.Trp, DctChannel[1].D18F2x0F4_x40.Field.Trp) + 5 - 1;
-    GMMx2780.Field.WrPlusRp = MIN (
+    GMMx2780.Field.Ras2Ras = MIN_UNSAFE (DctChannel[0].D18F2x0F4_x40.Field.Trc, DctChannel[1].D18F2x0F4_x40.Field.Trc) + 11 - 1;
+    GMMx2780.Field.Rp = MIN_UNSAFE (DctChannel[0].D18F2x0F4_x40.Field.Trp, DctChannel[1].D18F2x0F4_x40.Field.Trp) + 5 - 1;
+    GMMx2780.Field.WrPlusRp = MIN_UNSAFE (
                                 ((DctChannel[0].D18F2x084.Field.Twr == 0) ? 16 :
                                 ((DctChannel[0].D18F2x084.Field.Twr < 4) ? (DctChannel[0].D18F2x084.Field.Twr + 4) :
                                 (DctChannel[0].D18F2x084.Field.Twr * 2)) + DctChannel[0].D18F2x0F4_x40.Field.Trp + 5),
@@ -374,7 +374,7 @@ GfxGmcInitializeSequencerModel (
                                 ((DctChannel[1].D18F2x084.Field.Twr < 4) ? (DctChannel[1].D18F2x084.Field.Twr + 4) :
                                 (DctChannel[1].D18F2x084.Field.Twr * 2)) + DctChannel[1].D18F2x0F4_x40.Field.Trp + 5)
                                 ) - 1;
-    GMMx2780.Field.BusTurn = (MIN (
+    GMMx2780.Field.BusTurn = (MIN_UNSAFE (
                                 DctChannel[0].D18F2x084.Field.Tcwl + 5 +
                                 DctChannel[0].D18F2x0F4_x41.Field.Twtr + 4 +
                                 DctChannel[0].D18F2x08C.Field.TrwtTO + 2 ,

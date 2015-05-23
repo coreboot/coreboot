@@ -718,8 +718,10 @@ typedef UINTN  *BASE_LIST;
   @return  The absolute value of the signed operand.
 
 **/
+#ifndef ABS
 #define ABS(a)                          \
   (((a) < 0) ? (-(a)) : (a))
+#endif
 
 //
 // Status codes common to all execution phases

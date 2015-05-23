@@ -42,26 +42,4 @@ config MMCONF_BUS_NUMBER
 	int
 	default 256
 
-config DIMM_DDR3
-	bool
-	default n
-
-config DIMM_REGISTERED
-	bool
-	default n
-
-if !DIMM_REGISTERED
-	config DIMM_SUPPORT
-		hex
-		default 0x0004
-endif
-
-if DIMM_DDR3
-	if DIMM_REGISTERED
-	  config DIMM_SUPPORT
-		  hex
-		  default 0x0005
-	endif
-endif
-
 endif # NORTHBRIDGE_AMD_AGESA_FAMILY_12

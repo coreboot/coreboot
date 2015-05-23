@@ -25,10 +25,6 @@ config CPU_AMD_AGESA_FAMILY10
 
 if CPU_AMD_AGESA_FAMILY10
 
-config EXT_RT_TBL_SUPPORT
-	bool
-	default n
-
 config CBB
 	hex
 	default 0x0

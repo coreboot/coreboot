@@ -46,10 +46,6 @@ config CPU_AMD_SOCKET_AM3R2
 	help
 	  AMD AM3r2 Socket
 
-config EXT_RT_TBL_SUPPORT
-	bool
-	default n
-
 config CBB
 	hex
 	default 0x0

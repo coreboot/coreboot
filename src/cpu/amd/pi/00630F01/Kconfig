@@ -32,10 +32,6 @@ config CPU_SOCKET_TYPE
 	hex
 	default 0x10
 
-config EXT_RT_TBL_SUPPORT
-	bool
-	default n
-
 config EXT_CONF_SUPPORT
 	bool
 	default n

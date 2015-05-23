@@ -21,7 +21,7 @@
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
-const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	{
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 3, 3),
@@ -73,7 +73,7 @@ const PCIe_PORT_DESCRIPTOR PortList [] = {
 	}
 };
 
-const PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 	/* DP0 to HDMI0/DP */
 	{
 		0,
@@ -94,7 +94,7 @@ const PCIe_DDI_DESCRIPTOR DdiList [] = {
 	},
 };
 
-const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
+static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 	.Flags        = DESCRIPTOR_TERMINATE_LIST,
 	.SocketId     = 0,
 	.PciePortList = PortList,

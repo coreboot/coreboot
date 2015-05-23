@@ -26,7 +26,7 @@ Name(WKST,Package(){Zero, Zero})
 *	Entry:
 *		Arg0=The value of the sleeping state S1=1, S2=2, etc
 *
-*s	Exit:
+*	Exit:
 *		-none-
 *
 * The _PTS control method is executed at the beginning of the sleep process
@@ -89,7 +89,9 @@ Method(\_WAK, 1) {
 	/* DBGO("From S") */
 	/* DBGO(Arg0) */
 	/* DBGO(" to S0\n") */
-	Store(1,USBS)
+
+	/* clear USB wake up signal */
+	Store(1, USBS)
 
 	\_SB.AWAK(Arg0)
 

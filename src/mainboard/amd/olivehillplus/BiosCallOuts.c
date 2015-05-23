@@ -266,7 +266,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	AMD_CONFIG_PARAMS *StdHeader = (AMD_CONFIG_PARAMS *)ConfigPtr;
 	if (StdHeader->Func == AMD_INIT_RESET) {
 		FCH_RESET_DATA_BLOCK *FchParams =  (FCH_RESET_DATA_BLOCK *) FchData;
-		printk(BIOS_DEBUG, "\nFch OEM config in INIT RESET\n");
+		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
 		//FchParams_reset->EcChannel0 = TRUE; /* logical devicd 3 */
 		FchParams->LegacyFree = CONFIG_HUDSON_LEGACY_FREE;
 		FchParams->FchReset.SataEnable = hudson_sata_enable();

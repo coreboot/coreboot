@@ -300,7 +300,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	AMD_CONFIG_PARAMS *StdHeader = (AMD_CONFIG_PARAMS *)ConfigPtr;
 	if (StdHeader->Func == AMD_INIT_RESET) {
 		FCH_RESET_DATA_BLOCK *FchParams =  (FCH_RESET_DATA_BLOCK *) FchData;
-		printk(BIOS_DEBUG, "\nFch OEM config in INIT RESET\n");
+		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
 		//FchParams->EcChannel0 = TRUE; /* logical devicd 3 */
 		FchParams->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
 
@@ -317,7 +317,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams = (FCH_DATA_BLOCK *)FchData;
-		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV");
+		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
 		/* Turn on FCH GPP slots */
 		FchParams->Gpp.GppFunctionEnable = TRUE;
@@ -337,7 +337,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		/* Fan Control */
 		oem_fan_control(FchParams);
 	}
-	printk(BIOS_DEBUG, " Done\n");
+	printk(BIOS_DEBUG, "Done\n");
 
 	return AGESA_SUCCESS;
 }

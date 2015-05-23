@@ -22,7 +22,7 @@
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
-const PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList [] = {
 
 	/*
 	 * Lanes to pins to PCI device mapping can be found in section 2.12 of the
@@ -107,7 +107,7 @@ static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 	},
 };
 
-const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
+static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 	.Flags        = DESCRIPTOR_TERMINATE_LIST,
 	.SocketId     = 0,
 	.PciePortList = PortList,

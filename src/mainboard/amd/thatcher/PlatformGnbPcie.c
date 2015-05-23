@@ -75,48 +75,48 @@
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* PCIe port, Lanes 15:8, PCI Device Number 2, PCIE SLOT x8 */
 	{
-		0, /* Descriptor flags */
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 15, 8),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 	/* PCIe port, Lanes 16:23, PCI Device Number 3, Disabled */
 	{
-		0, /* Descriptor flags */
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 16, 23),
 		PCIE_PORT_DATA_INITIALIZER (PortDisabled, ChannelTypeExt6db, 3, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 4, PCI Device Number 4, LAN */
 	{
-		0, /* Descriptor flags */
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 5, PCI Device Number 5, PCIE MINI0 */
 	{
-		0, /* Descriptor flags */
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 6, PCI Device Number 6, PCIE MINI1 */
 	{
-		0, /* Descriptor flags */
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 7, PCI Device Number 7, Disabled */
 	{
-		0, /* Descriptor flags */
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
 		PCIE_PORT_DATA_INITIALIZER (PortDisabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
 	/* PCIe port, Lanes 0:3, PCI Device Number 8, Bridge to FCH */
 	{
-		DESCRIPTOR_TERMINATE_LIST, /* Descriptor flags  !!!IMPORTANT!!! Terminate last element of array */
+		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 	},

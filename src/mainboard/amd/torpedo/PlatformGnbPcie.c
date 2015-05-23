@@ -28,43 +28,43 @@
 static const PCIe_PORT_DESCRIPTOR PortList [] = {
 			// Initialize Port descriptor (PCIe port, Lanes 8:15, PCI Device Number 2, ...)
 			{
-			  0,   //Descriptor flags
+			  0,
 			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 15),
 			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, BIT2)
 			},
 			// Initialize Port descriptor (PCIe port, Lanes 16:19, PCI Device Number 3, ...)
 			{
-			  0,   //Descriptor flags
+			  0,
 			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 16, 19),
 			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 3, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, BIT3)
 			},
 			// Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
 			{
-			  0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+			  0,
 			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
 			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 			},
 			// Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
 			{
-			  0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+			  0,
 			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
 			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 			},
 			// Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
 			{
-			  0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+			  0,
 			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
 			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 			},
 			// Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
 			{
-			  DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+			  DESCRIPTOR_TERMINATE_LIST,
 			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
 			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 			}
 			// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
 //			{
-//			  DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+//			  DESCRIPTOR_TERMINATE_LIST,
 //			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 8),
 //			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 //			}
@@ -73,13 +73,13 @@ static const PCIe_PORT_DESCRIPTOR PortList [] = {
 static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 			// Initialize Ddi descriptor (DDI interface Lanes 24:27, DdA, ...)
 			{
-			  0,   //Descriptor flags
+			  0,
 			  PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
 			  PCIE_DDI_DATA_INITIALIZER (ConnectorTypeNutmegDpToVga, Aux2, Hdp2)
 			},
 			// Initialize Ddi descriptor (DDI interface Lanes 28:31, DdB, ...)
 			{
-			  DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+			  DESCRIPTOR_TERMINATE_LIST,
 			  PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 28, 31),
 			  PCIE_DDI_DATA_INITIALIZER (ConnectorTypeEDP, Aux1, Hdp1)
 			}

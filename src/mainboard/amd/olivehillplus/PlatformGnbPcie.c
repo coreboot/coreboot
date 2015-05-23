@@ -23,7 +23,7 @@
 
 const PCIe_PORT_DESCRIPTOR PortList [] = {
 	{
-		0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 3, 3),
 		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 5,
 				HotplugDisabled,
@@ -33,7 +33,7 @@ const PCIe_PORT_DESCRIPTOR PortList [] = {
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 1, PCI Device Number 2, ...) */
 	{
-		0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 2, 2),
 		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 4,
 				HotplugDisabled,
@@ -43,7 +43,7 @@ const PCIe_PORT_DESCRIPTOR PortList [] = {
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 2, PCI Device Number 2, ...) */
 	{
-		0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 1, 1),
 		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 3,
 				HotplugDisabled,
@@ -63,7 +63,7 @@ const PCIe_PORT_DESCRIPTOR PortList [] = {
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device Number 4, ...) */
 	{
-		DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 7),
 		PCIE_PORT_DATA_INITIALIZER_V2 (PortEnabled, ChannelTypeExt6db, 2, 1,
 				HotplugDisabled,

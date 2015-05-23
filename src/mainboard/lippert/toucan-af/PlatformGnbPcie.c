@@ -57,19 +57,19 @@ static AGESA_STATUS OemInitEarly(AMD_EARLY_PARAMS * InitEarly)
 PCIe_PORT_DESCRIPTOR PortList [] = {
 		// Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
 		{
-			0, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
+			0,
 			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
 			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT4_PORT_PRESENT, GNB_GPP_PORT4_CHANNEL_TYPE, 4, GNB_GPP_PORT4_HOTPLUG_SUPPORT, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_LINK_ASPM, 0)
 		},
 		// Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
 		{
-			0, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
+			0,
 			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
 			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT5_PORT_PRESENT, GNB_GPP_PORT5_CHANNEL_TYPE, 5, GNB_GPP_PORT5_HOTPLUG_SUPPORT, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_LINK_ASPM, 0)
 		},
 		// Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
 		{
-			0, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
+			0,
 			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
 			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT6_PORT_PRESENT, GNB_GPP_PORT6_CHANNEL_TYPE, 6, GNB_GPP_PORT6_HOTPLUG_SUPPORT, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_LINK_ASPM, 0)
 		},
@@ -81,7 +81,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 		},
 		// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
 		{
-			DESCRIPTOR_TERMINATE_LIST, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
+			DESCRIPTOR_TERMINATE_LIST,
 			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
 			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT8_PORT_PRESENT, GNB_GPP_PORT8_CHANNEL_TYPE, 8, GNB_GPP_PORT8_HOTPLUG_SUPPORT, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_LINK_ASPM, 0)
 		}
@@ -90,14 +90,14 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 PCIe_DDI_DESCRIPTOR DdiList [] = {
 		// Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...)
 		{
-			0,	 //Descriptor flags
+			0,
 			PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
 			//PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
 			{ConnectorTypeAutoDetect, Aux1, Hdp1}
 		},
 		// Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...)
 		{
-			DESCRIPTOR_TERMINATE_LIST, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
+			DESCRIPTOR_TERMINATE_LIST,
 			PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
 			//PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
 			{ConnectorTypeAutoDetect, Aux2, Hdp2}

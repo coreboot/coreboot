@@ -66,6 +66,8 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
+static inline u32 div_round_up(u32 n, u32 d) { return n + d - 1 / d; }
+
 #define LITTLE_ENDIAN	1234
 #define BIG_ENDIAN	4321
 

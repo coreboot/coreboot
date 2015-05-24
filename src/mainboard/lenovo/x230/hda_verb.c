@@ -31,7 +31,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0269,	// Codec Vendor / Device ID: Realtek ALC269VC
 	0x17aa21fa,	// Subsystem ID
-	0x00000012,	// Number of 4 dword sets
+	0x00000013,	// Number of 4 dword sets
 
 /* Bits 31:28 - Codec Address */
 /* Bits 27:20 - NID */
@@ -76,27 +76,35 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0x0, 0x18, 0x03A11830),
 	AZALIA_PIN_CFG(0x0, 0x19, 0x411111F0),
 
-	0x01970804,
-	0x01870803,
-	0x01470740,
-	0x00970600,
-
 	AZALIA_PIN_CFG(0x0, 0x1A, 0x411111F0),
 	AZALIA_PIN_CFG(0x0, 0x1D, 0x40138205),
 	AZALIA_PIN_CFG(0x0, 0x1E, 0x411111F0),
 
 	/* Misc entries */
-		0x00370600,
-		0x00270600,
-		0x00B707C0, /* Enable PortB as Output with HP amp */
-		0x00D70740, /* Enable PortD as Output */
-		0x0017A200, /* Disable ClkEn of PortSenseTst */
-		0x0017C621, /* Slave Port - Port A used as microphone input for
-		                            combo Jack
-		               Master Port - Port B used for Jack Presence Detect
-		               Enable Combo Jack Detection */
-		0x0017A208, /* Enable ClkEn of PortSenseTst */
-		0x00170500, /* Set power state to D0 */
+	0x01970804,
+	0x01870803,
+	0x01470740,
+	0x00970640,
+
+	0x00370680,
+	0x00270680,
+	0x01470C02,
+	0x01570C02,
+
+	/* ALC coefficients.  */
+
+	/* 08 */
+	0x02050008,
+	0x02040700,
+	/* 18 */
+	0x02050018,
+	0x02045184,
+	/* 1c */
+	0x0205001c,
+	0x02042800,
+
+	0x01870724, /* Enable Vrefout for mic */
+	0x00170500, /* Set power state to D0 */
 
 	/* --- Next Codec --- */
 

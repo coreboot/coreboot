@@ -233,6 +233,9 @@ static void h8_enable(struct device *dev)
 
 	ec_write(H8_SOUND_REPEAT, 0x00);
 
+	/* silence sounds in queue */
+	ec_write(H8_SOUND_REG, 0x00);
+
 	ec_write(0x10, conf->event0_enable);
 	ec_write(0x11, conf->event1_enable);
 	ec_write(0x12, conf->event2_enable);

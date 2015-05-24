@@ -33,6 +33,7 @@ u32 OemAgesaSaveS3Info (S3_DATA_TYPE S3DataType, u32 DataSize, void *Data);
 void OemAgesaGetS3Info (S3_DATA_TYPE S3DataType, u32 *DataSize, void **Data);
 void OemAgesaSaveMtrr (void);
 
-void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len);
+void get_s3nv_data(S3_DATA_TYPE S3DataType, u32 *pos, u32 *len);
+int spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len);
 
 #endif

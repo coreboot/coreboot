@@ -34,40 +34,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "s3_resume.h"
 
-/* The size needs to be 4k aligned, which is the sector size of most flashes. */
-#define S3_DATA_VOLATILE_SIZE		0x6000
-#define S3_DATA_MTRR_SIZE		0x1000
-#define S3_DATA_NONVOLATILE_SIZE	0x1000
-
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
-	(S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
-#error "Please increase the value of S3_DATA_SIZE"
-#endif
-
-static void get_s3nv_data(S3_DATA_TYPE S3DataType, u32 *pos, u32 *len)
-{
-	/* FIXME: Find file from CBFS. */
-	u32 s3_data = CONFIG_S3_DATA_POS;
-
-	switch (S3DataType) {
-	case S3DataTypeVolatile:
-		*pos = s3_data;
-		*len = S3_DATA_VOLATILE_SIZE;
-		break;
-	case S3DataTypeMTRR:
-		*pos = s3_data + S3_DATA_VOLATILE_SIZE;
-		*len = S3_DATA_MTRR_SIZE;
-		break;
-	case S3DataTypeNonVolatile:
-		*pos = s3_data + S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE;
-		*len = S3_DATA_NONVOLATILE_SIZE;
-		break;
-	default:
-		*pos = 0;
-		*len = 0;
-		break;
-	}
-}
 
 void restore_mtrr(void)
 {
@@ -173,6 +139,7 @@ static void move_stack_high_mem(void)
 
 #ifndef __PRE_RAM__
 /* FIXME: Why store MTRR in SPI, just use CBMEM ? */
+#define S3_DATA_MTRR_SIZE			0x1000
 static u8 mtrr_store[S3_DATA_MTRR_SIZE];
 
 static void write_mtrr(u8 **p_nvram_pos, unsigned idx)

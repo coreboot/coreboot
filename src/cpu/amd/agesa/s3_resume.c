@@ -26,21 +26,24 @@
 #include <cbmem.h>
 #include <string.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
+#include <halt.h>
 #include "s3_resume.h"
 
 static void *backup_resume(void)
 {
 	void *resume_backup_memory;
 
-	if (cbmem_recovery(1))
-		return NULL;
+	printk(BIOS_DEBUG, "Find resume memory location\n");
+
+	if (cbmem_recovery(1)) {
+		printk(BIOS_EMERG, "Unable to recover CBMEM\n");
+		halt();
+	}
 
 	resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-	if (((u32) resume_backup_memory == 0)
-	    || ((u32) resume_backup_memory == -1)) {
-		printk(BIOS_ERR, "Error: resume_backup_memory: %x\n",
-		       (u32) resume_backup_memory);
-		for (;;) ;
+	if (resume_backup_memory == NULL) {
+		printk(BIOS_EMERG, "No storage for low-memory backup\n");
+		halt();
 	}
 
 	return resume_backup_memory;
@@ -87,7 +90,6 @@ static void set_resume_cache(void)
 
 void prepare_for_resume(void)
 {
-	printk(BIOS_DEBUG, "Find resume memory location\n");
 	void *resume_backup_memory = backup_resume();
 
 	post_code(0x62);

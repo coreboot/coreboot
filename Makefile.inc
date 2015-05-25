@@ -351,10 +351,6 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 ramstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 romstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
-$(objutil)/%.o: $(objutil)/%.c
-	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) -MMD -I$(subst $(objutil)/,util/,$(dir $<)) -I$(dir $<) $(HOSTCFLAGS) -c -o $@ $<
-
 $(obj)/%.ramstage.o $(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_ramstage) -MMD $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) $(ramstage-c-ccopts) -c -o $@ $<

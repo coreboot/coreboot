@@ -30,6 +30,8 @@ util/crossgcc/Python-*/
 util/crossgcc/tarballs/
 util/crossgcc/w32api-*/
 util/crossgcc/xgcc/
+util/crossgcc/xgcc-*/
+util/crossgcc/xgcc
 site-local
 
 *.\#

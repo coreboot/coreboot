@@ -2,6 +2,8 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2014 Sage Electronic Engineering, LLC.
+# Copyright (C) 2015 BAP - Bruhnspace Advanced Projects
+# (Written by Fabian Kunkel <fabi@adv.bruhnspace.com> for BAP)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,21 +18,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc. 
 
-# Gizmo2 has 1GB using 4 Micron_MT41J128M16JT-125 chips
-# The datasheet is available at:
-# http://download.micron.com/pdf/datasheets/dram/ddr3/2Gb_DDR3_SDRAM.pdf
-
-#	SPD contents for Gizmo2 2GB DDR3 (1600MHz PC3-12800) soldered down
+# BAP ODE E20XX has 2GB ram soldered down on the Q7
 
 #	0 Number of SPD Bytes used / Total SPD Size / CRC Coverage
 #		bits[3:0]: 1 = 128 SPD Bytes Used
 #		bits[6:4]: 1 = 256 SPD Bytes Total
 #		bit7     : 0 = CRC covers bytes 0 ~ 125
-11
+92
 
 #	1 SPD Revision -
 #		0x10 = Revision 1.0
-10
+12
 
 #	2 Key Byte / DRAM Device Type
 #		bits[7:0]: 0x0b = DDR3 SDRAM
@@ -45,13 +43,13 @@
 #		bits[3:0]: 3 = 2 Gigabits Total SDRAM capacity per chip
 #		bits[6:4]: 0 = 3 (8 banks)
 #		bit7     :     reserved
-03
+04
 
 #	5 SDRAM Addressing
 #		bits[2:0]: 1 = 10 Column Address Bits
 #		bits[5:3]: 2 = 14 Row Address Bits
 #		bits[7:6]:     reserved
-11
+19
 
 #	6 Module Nominal Voltage, VDD
 #		bit0     : 0 = 1.5 V operable
@@ -70,7 +68,7 @@
 #		bits[2:0]: 3 = Primary bus width is 64 bits
 #		bits[4:3]: 0 = 0 bits (no bus width extension)
 #		bits[7:5]:     reserved
-03
+08
 
 #	9 Fine Timebase (FTB) Dividend / Divisor
 #		bits[3:0]: 0x02 divisor
@@ -85,7 +83,7 @@
 
 #	12 SDRAM Minimum Cycle Time (tCKmin)
 #		0x0a  = tCKmin of 1.25 ns = DDR3-1600 (800 MHz clock)
-0A
+0C
 
 #	13 Reserved
 00
@@ -93,11 +91,11 @@
 #	14 CAS Latencies Supported, Least Significant Byte
 #	15 CAS Latencies Supported, Most Significant Byte
 #		Cas Latencies of 11 - 5 are supported
-FE 00
+7E 00
 
 #	16 Minimum CAS Latency Time (tAAmin)
 #		0x6E = 13.75ns - DDR3-1600K
-6E
+69
 
 #	17 Minimum Write Recovery Time (tWRmin)
 #		0x78 = tWR of 15ns - All DDR3 speed grades
@@ -105,7 +103,7 @@ FE 00
 
 #	18 Minimum RAS# to CAS# Delay Time (tRCDmin)
 #		0x6E = 13.75ns -  DDR3-1600K
-6E
+69
 
 #	19 Minimum Row Active to Row Active Delay Time (tRRDmin)
 #		0x3C = 7.5ns
@@ -113,7 +111,7 @@ FE 00
 
 #	20 Minimum Row Precharge Delay Time (tRPmin)
 #		0x6E = 13.75ns -  DDR3-1600K
-6E
+69
 
 #	21 Upper Nibbles for tRAS and tRC
 #		bits[3:0]: tRAS most significant nibble = 1 (see byte 22)
@@ -122,16 +120,16 @@ FE 00
 
 #	22 Minimum Active to Precharge Delay Time (tRASmin), LSB
 #		0x118 = 35ns - DDR3-1600 (see byte 21)
-18
+20
 
 #	23 Minimum Active to Active/Refresh Delay Time (tRCmin), LSB
 #		0x186 = 48.75ns - DDR3-1600K
-86
+89
 
 #	24 Minimum Refresh Recovery Delay Time (tRFCmin), LSB
 #	25 Minimum Refresh Recovery Delay Time (tRFCmin), MSB
 #		0x500 = 160ns - for 2 Gigabit chips
-00 05
+20 08
 
 #	26 Minimum Internal Write to Read Command Delay Time (tWTRmin)
 #		0x3c = 7.5 ns - All DDR3 SDRAM speed bins
@@ -144,7 +142,7 @@ FE 00
 #	28 Upper Nibble for tFAWmin
 #	29 Minimum Four Activate Window Delay Time (tFAWmin)
 #		0x0140 = 40ns -  DDR3-1600, 2 KB page size
-01 40
+01 68
 
 #	30 SDRAM Optional Feature
 #		bit0     : 1= RZQ/6 supported
@@ -160,7 +158,7 @@ FE 00
 #		bit3     : 0 = no on die thermal sensor
 #		bits[6:4]:     reserved
 #		bit7     : 0 = partial self refresh supported
-05
+01
 
 #	32 Module Thermal Sensor
 #		0 = Thermal sensor not incorporated onto this assembly
@@ -188,18 +186,18 @@ FE 00
 #	60 Raw Card Extension, Module Nominal Height
 #		bits[4:0]: 0 = <= 15mm tall
 #		bits[7:5]: 0 = raw card revision 0-3
-00
+0f
 
 #	61 Module Maximum Thickness
 #		bits[3:0]: 0 = thickness front <= 1mm
 #		bits[7:4]: 0 = thinkness back <= 1mm
-00
+11
 
 #	62 Reference Raw Card Used
 #		bits[4:0]: 0 = Reference Raw card A used
 #		bits[6:5]: 0 = revision 0
 #		bit7     : 0 = Reference raw cards A through AL
-00
+22
 
 #	63 Address Mapping from Edge Connector to DRAM
 #		bit0     : 0 = standard mapping (not mirrored)
@@ -217,19 +215,68 @@ FE 00
 
 #	117 - 118 Module ID: Module Manufacturers JEDEC ID Code
 #		0x0001 = AMD
-00 01
+80 AD
 
 #	119 Module ID: Module Manufacturing Location - oem specified
 #	120 Module ID: Module Manufacture Year in BCD
 #		0x13 = 2013
-00 13
+01 00
 
 #	121 Module ID: Module Manufacture week
 #		0x12 = 12th week
-12
+00
 
 #	122 - 125: Module Serial Number
-53 41 47 45
+00 00 00 00
 
 #	126 - 127: Cyclical Redundancy Code
-00 00
+D4 51
+
+# Coreboot is only interested in the first 128 values
+#128 - 135
+48 4d 54 34 32 35 53 36
+
+#136 - 143
+4d 46 52 36 43 2d 48 39
+
+#144 - 151
+20 20 4e 30 80 ad 00 00
+
+#152 - 159
+00 00 00 00 00 00 00 00
+
+#160 - 167
+00 00 00 00 00 00 00 00
+
+#168 - 175
+00 00 00 00 00 00 00 00
+
+#176 - 183
+00 00 00 00 00 00 00 00
+
+#184 - 191
+00 00 00 00 00 00 00 00
+
+#192 - 199
+00 00 00 00 00 00 00 00
+
+#200 - 207
+00 00 00 00 00 00 00 00
+
+#208 - 215
+00 00 00 00 00 00 00 00
+
+#216 - 223
+00 00 00 00 00 00 00 00
+
+#224 - 231
+00 00 00 00 00 00 00 00
+
+#232 - 239
+00 00 00 00 00 00 00 00
+
+#240 - 247
+00 00 00 00 00 00 00 00
+
+#248 - 255
+00 00 00 00 00 00 00 00

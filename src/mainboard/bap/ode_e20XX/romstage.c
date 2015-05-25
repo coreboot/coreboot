@@ -2,6 +2,8 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 BAP - Bruhnspace Advanced Projects
+ * (Written by Fabian Kunkel <fabi@adv.bruhnspace.com> for BAP)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,20 +37,15 @@
 #include <cpu/x86/lapic.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <cpu/amd/agesa/s3_resume.h>
+#include <superio/fintek/common/fintek.h>
+#include <superio/fintek/f81866d/f81866d.h>
 #include "cbmem.h"
 
+#define SERIAL_DEV1 PNP_DEV(0x4e, F81866D_SP1)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-
-	/* In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
-	 *  LpcClk[1:0]".  To be consistent with Parmer, setting to 4mA
-	 *  even though the register is not documented in the Kabini BKDG.
-	 *  Otherwise the serial output is bad code.
-	 */
-	outb(0xD2, 0xcd6);
-	outb(0x00, 0xcd7);
 
 	amd_initmmio();
 
@@ -62,6 +59,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		post_code(0x30);
 
 		post_code(0x31);
+		fintek_enable_serial(SERIAL_DEV1, CONFIG_TTYS0_BASE);
 		console_init();
 	}
 

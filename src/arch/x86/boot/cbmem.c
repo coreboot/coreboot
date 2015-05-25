@@ -56,7 +56,6 @@ static inline void *saved_ramtop(void)
 
 unsigned long __attribute__((weak)) get_top_of_ram(void)
 {
-	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");
 	return 0;
 }
 

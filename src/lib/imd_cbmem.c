@@ -96,9 +96,8 @@ static struct imd *imd_init_backing_with_recover(struct imd *backing)
 
 	imd = imd_init_backing(backing);
 	if (!ENV_RAMSTAGE) {
-		/* Early cbmem init platforms need to always use cbmem_top(). */
-		if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
-			imd_handle_init(imd, cbmem_top());
+		imd_handle_init(imd, cbmem_top());
+
 		/* Need to partially recover all the time outside of ramstage
 		 * because there's object storage outside of the stack. */
 		imd_handle_init_partial_recovery(imd);
@@ -118,10 +117,7 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size)
 	struct imd imd_backing;
 
 	imd = imd_init_backing(&imd_backing);
-
-	/* Early cbmem init platforms need to always use cbmem_top(). */
-	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
-		imd_handle_init(imd, cbmem_top());
+	imd_handle_init(imd, cbmem_top());
 
 	printk(BIOS_DEBUG, "CBMEM:\n");
 
@@ -157,10 +153,7 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 	struct imd imd_backing;
 
 	imd = imd_init_backing(&imd_backing);
-
-	/* Early cbmem init platforms need to always use cbmem_top(). */
-	if (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
-		imd_handle_init(imd, cbmem_top());
+	imd_handle_init(imd, cbmem_top());
 
 	if (imd_recover(imd))
 		return 1;

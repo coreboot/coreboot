@@ -42,10 +42,8 @@ static void timestamp_real_init(uint64_t base)
 			sizeof(struct timestamp_table) +
 			MAX_TIMESTAMPS * sizeof(struct timestamp_entry));
 
-	if (!tst) {
-		printk(BIOS_ERR, "ERROR: failed to allocate timestamp table\n");
+	if (!tst)
 		return;
-	}
 
 	tst->base_time = base;
 	tst->max_entries = MAX_TIMESTAMPS;
@@ -142,10 +140,12 @@ void timestamp_init(uint64_t base)
 	/* Copy of basetime, it is too early for CBMEM. */
 	car_set_var(ts_basetime, base);
 #else
-	struct timestamp_table* tst;
+	struct timestamp_table *tst = NULL;
 
 	/* Locate and use an already existing table. */
-	tst = cbmem_find(CBMEM_ID_TIMESTAMP);
+	if (!IS_ENABLED(CONFIG_LATE_CBMEM_INIT))
+		tst = cbmem_find(CBMEM_ID_TIMESTAMP);
+
 	if (tst) {
 		car_set_var(ts_table_p, tst);
 		return;

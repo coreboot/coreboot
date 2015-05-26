@@ -40,20 +40,6 @@ static inline struct imd *cbmem_get_imd(void)
 	return NULL;
 }
 
-/*
- * x86 !CONFIG_EARLY_CBMEM_INIT platforms need to do the following in ramstage:
- * 1. Call set_top_of_ram() which in turn calls cbmem_set_top().
- * 2. Provide a get_top_of_ram() implementation.
- *
- * CONFIG_EARLY_CBMEM_INIT platforms just need to provide cbmem_top().
- */
-void cbmem_set_top(void *ramtop)
-{
-	struct imd *imd = cbmem_get_imd();
-
-	imd_handle_init(imd, ramtop);
-}
-
 static inline const struct cbmem_entry *imd_to_cbmem(const struct imd_entry *e)
 {
 	return (const struct cbmem_entry *)e;

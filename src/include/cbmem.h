@@ -176,9 +176,6 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size);
  * below 4GiB. */
 void *cbmem_top(void);
 
-/* Set the top address for dynamic cbmem. Not for new designs. */
-void cbmem_set_top(void *ramtop);
-
 /* Add a cbmem entry of a given size and id. These return NULL on failure. The
  * add function performs a find first and do not check against the original
  * size. */

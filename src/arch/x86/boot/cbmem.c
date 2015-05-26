@@ -40,7 +40,6 @@ void set_top_of_ram(uint64_t ramtop)
 {
 	backup_top_of_ram(ramtop);
 	ramtop_pointer = (void *)(uintptr_t)ramtop;
-	cbmem_set_top(ramtop_pointer);
 }
 
 static inline void *saved_ramtop(void)

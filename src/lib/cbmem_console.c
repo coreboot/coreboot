@@ -225,11 +225,8 @@ void cbmemc_reinit(void)
 
 	/* Need to reset the newly added cbmem console in ramstage
 	 * when there was no console in preram environment. */
-	if (ENV_RAMSTAGE) {
-		cbm_cons_p = cbmem_find(CBMEM_ID_CONSOLE);
-		if (cbm_cons_p == NULL)
-			flags |= CBMEMC_RESET;
-	}
+	if (ENV_RAMSTAGE && IS_ENABLED(CONFIG_LATE_CBMEM_INIT))
+		flags |= CBMEMC_RESET;
 
 	/* If CBMEM entry already existed, old contents is not altered. */
 	cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE, size);

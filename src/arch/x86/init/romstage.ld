@@ -65,7 +65,7 @@ SECTIONS
 		 * statically checked because the cache-as-ram region usage is
 		 * cpu/chipset dependent. */
 		_preram_cbmem_console = .;
-		_epreram_cbmem_console = . + 0xc00;
+		_epreram_cbmem_console = . + (CONFIG_LATE_CBMEM_INIT ? 0 : 0xc00);
 	}
 
 	/* Global variables are not allowed in romstage

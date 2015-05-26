@@ -23,6 +23,7 @@
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "amdlib.h"
+#include <cpu/amd/agesa/s3_resume.h>
 
 #include "heapManager.h"
 

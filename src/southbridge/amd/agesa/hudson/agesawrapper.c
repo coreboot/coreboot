@@ -41,13 +41,17 @@
 
 extern UINT8 picr_data[0x54], intr_data[0x54];
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#error Use of GetHeapBase() is incorrect or at least suspicious
+#endif
+
 AGESA_STATUS agesawrapper_fchs3earlyrestore (void)
 {
 	FCH_DATA_BLOCK      FchParams;
 	AMD_CONFIG_PARAMS StdHeader;
 
 	StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
-	StdHeader.HeapBasePtr = GetHeapBase(&StdHeader) + 0x10;
+	StdHeader.HeapBasePtr = (uintptr_t) GetHeapBase() + 0x10;
 	StdHeader.AltImageBasePtr = 0;
 	StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	StdHeader.Func = 0;
@@ -67,7 +71,7 @@ AGESA_STATUS agesawrapper_fchs3laterestore (void)
 	UINT8 byte;
 
 	StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
-	StdHeader.HeapBasePtr = GetHeapBase(&StdHeader) + 0x10;
+	StdHeader.HeapBasePtr = (uintptr_t) GetHeapBase() + 0x10;
 	StdHeader.AltImageBasePtr = 0;
 	StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	StdHeader.Func = 0;

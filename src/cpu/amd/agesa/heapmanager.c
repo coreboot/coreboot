@@ -10,24 +10,48 @@
 #include <arch/acpi.h>
 #include <string.h>
 
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || \
+  IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL) || \
+  IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB)
+
+/* BIOS_HEAP_START_ADDRESS is only for cold boots. */
+#define BIOS_HEAP_SIZE		0x30000
+#define BIOS_HEAP_START_ADDRESS	0x010000000
+
+#else
+
+/* BIOS_HEAP_START_ADDRESS is only for cold boots. */
+#define BIOS_HEAP_SIZE		0x20000
+#define BIOS_HEAP_START_ADDRESS	(BSP_STACK_BASE_ADDR - BIOS_HEAP_SIZE)
+
+#endif
+
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && (HIGH_MEMORY_SCRATCH < BIOS_HEAP_SIZE)
 #error Increase HIGH_MEMORY_SCRATCH allocation
 #endif
 
-UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader)
+void *GetHeapBase(void)
 {
-	UINT32 heap = BIOS_HEAP_START_ADDRESS;
+	void *heap = (void *)BIOS_HEAP_START_ADDRESS;
 
 	if (acpi_is_wakeup_s3())
-		heap = (UINT32) cbmem_find(CBMEM_ID_RESUME_SCRATCH);
+		heap = cbmem_find(CBMEM_ID_RESUME_SCRATCH);
 
 	return heap;
 }
 
 void EmptyHeap(void)
 {
-	void *BiosManagerPtr = (void *) GetHeapBase(NULL);
-	memset(BiosManagerPtr, 0, BIOS_HEAP_SIZE);
+	void *base = GetHeapBase();
+	memset(base, 0, BIOS_HEAP_SIZE);
+}
+
+void ResumeHeap(void **heap, size_t *len)
+{
+	void *base = GetHeapBase();
+	memset(base, 0, BIOS_HEAP_SIZE);
+	*heap = base;
+	*len = BIOS_HEAP_SIZE;
 }
 
 #if (IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || \
@@ -96,7 +120,7 @@ static AGESA_STATUS agesa_AllocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigP
 #endif
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof (BIOS_HEAP_MANAGER);
-	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = GetHeapBase();
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	if (BiosHeapBasePtr->StartOfAllocatedNodes == 0) {
@@ -221,7 +245,7 @@ static AGESA_STATUS agesa_DeallocateBuffer(UINT32 Func, UINT32 Data, VOID *Confi
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = GetHeapBase();
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	/* Find target node to deallocate in list of allocated nodes.
@@ -332,7 +356,7 @@ static AGESA_STATUS agesa_LocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = GetHeapBase();
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;

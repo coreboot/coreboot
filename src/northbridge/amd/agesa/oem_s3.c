@@ -22,7 +22,6 @@
 #include <string.h>
 #include <cbmem.h>
 #include <cpu/amd/agesa/s3_resume.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <AGESA.h>
 
@@ -85,18 +84,21 @@ AGESA_STATUS OemInitResume(AMD_RESUME_PARAMS *ResumeParams)
 AGESA_STATUS OemS3LateRestore(AMD_S3LATE_PARAMS *S3LateParams)
 {
 	AMD_S3_PARAMS *dataBlock = &S3LateParams->S3DataBlock;
-	AMD_CONFIG_PARAMS StdHeader;
 	u32 pos, size;
+	void *dst;
+	size_t len;
 
+	/* TODO: Named volatile, do we need to save it over S3? */
 	get_s3nv_data(S3DataTypeVolatile, &pos, &size);
-
-	u32 len = *(UINT32 *) pos;
 	void *src = (void *) (pos + sizeof(UINT32));
-	void *dst = (void *) GetHeapBase(&StdHeader);
 
-	memcpy(dst, src, len);
+	ResumeHeap(&dst, &len);
 	dataBlock->VolatileStorageSize = len;
 	dataBlock->VolatileStorage = dst;
+
+	len = *(UINT32 *) pos;
+	memcpy(dst, src, len);
+
 	return AGESA_SUCCESS;
 }
 

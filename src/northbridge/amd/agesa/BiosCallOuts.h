@@ -24,24 +24,6 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) || \
-  IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_RL) || \
-  IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB)
-
-#define BIOS_HEAP_START_ADDRESS 	0x010000000
-#define BIOS_HEAP_SIZE			0x30000
-
-#else
-
-#define BIOS_HEAP_START_ADDRESS		0x10000 /* HEAP during cold boot */
-#define BIOS_HEAP_SIZE			0x20000
-
-#endif
-
-
-UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
-void EmptyHeap(void);
-
 AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);

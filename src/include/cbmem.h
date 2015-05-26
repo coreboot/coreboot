@@ -221,6 +221,9 @@ void cbmem_list(void);
  * early features like COLLECT_TIMESTAMPS and CBMEM_CONSOLE.
  */
 #if IS_ENABLED(CONFIG_ARCH_X86) && IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
+/* Note that many of the current providers of get_top_of_ram() conditionally
+ * return 0 when the sleep type is non S3. i.e. cold and warm boots would
+ * return 0 from get_top_of_ram(). */
 unsigned long get_top_of_ram(void);
 void set_top_of_ram(uint64_t ramtop);
 void backup_top_of_ram(uint64_t ramtop);

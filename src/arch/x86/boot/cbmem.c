@@ -34,10 +34,23 @@ void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM. */
 }
 
+static void *ramtop_pointer;
+
 void set_top_of_ram(uint64_t ramtop)
 {
 	backup_top_of_ram(ramtop);
-	cbmem_set_top((void*)(uintptr_t)ramtop);
+	ramtop_pointer = (void *)(uintptr_t)ramtop;
+	cbmem_set_top(ramtop_pointer);
+}
+
+static inline void *saved_ramtop(void)
+{
+	return ramtop_pointer;
+}
+#else
+static inline void *saved_ramtop(void)
+{
+	return NULL;
 }
 #endif /* !__PRE_RAM__ */
 
@@ -50,6 +63,11 @@ unsigned long __attribute__((weak)) get_top_of_ram(void)
 void *cbmem_top(void)
 {
 	/* Top of cbmem is at lowest usable DRAM address below 4GiB. */
+	void *ptr = saved_ramtop();
+
+	if (ptr != NULL)
+		return ptr;
+
 	return (void *)get_top_of_ram();
 }
 

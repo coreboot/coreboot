@@ -112,7 +112,7 @@ int init_ddr2(void)
 	 * 15:13 RSVD RSVD
 	 * 31:16 Reserved
 	 */
-	write32(DDR_PHY + DDRPHY_MR_OFFSET, 0x00000A62 | (BL8 ? 0x1 : 0x0));
+	write32(DDR_PHY + DDRPHY_MR_OFFSET, 0x00000B62 | (BL8 ? 0x1 : 0x0));
 	/* MR1 : EMR Register
 	 * Generate to use with PHY and PCTL
 	 * 0 DE DLL Enable 0 Disable 1

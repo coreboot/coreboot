@@ -119,7 +119,7 @@ int init_ddr3(void)
 	 * 15:13 RSVD RSVD
 	 * 31:16 Reserved
 	 */
-	write32(DDR_PHY + DDRPHY_MR_OFFSET, 0x00001420);
+	write32(DDR_PHY + DDRPHY_MR_OFFSET, 0x00001520);
 	/* MR1 : DDR3 mode register 1
 	 * Generate to use with PHY and PCTL
 	 * 0 DE DLL Enable 0 Disable 1

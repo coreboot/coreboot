@@ -22,5 +22,8 @@
 
 void arch_prog_run(struct prog *prog)
 {
-	stage_exit(prog_entry(prog));
+	void *cb_tables = prog_entry_arg(prog);
+	void (*doit)(void *) = prog_entry(prog);
+
+	doit(cb_tables);
 }

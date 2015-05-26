@@ -18,6 +18,7 @@
  * Foundation, Inc.
  */
 
+#include <cbmem.h>
 #include <program_loading.h>
 #include <console/console.h>
 #include <halt.h>
@@ -30,6 +31,12 @@ void main(void)
 	error = init_ddr2();
 
 	if (!error) {
+		/*
+		 * When romstage is running it's always on the reboot path and
+		 * never a resume path where cbmem recovery is required.
+		 * Therefore, always initialize the cbmem area to be empty.
+		 */
+		cbmem_initialize_empty();
 		run_ramstage();
 	}
 	halt();

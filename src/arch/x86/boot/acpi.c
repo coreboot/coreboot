@@ -913,9 +913,6 @@ void acpi_prepare_resume_backup(void)
 
 	if (HIGH_MEMORY_SAVE)
 		cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
-
-	if (HIGH_MEMORY_SCRATCH)
-		cbmem_add(CBMEM_ID_RESUME_SCRATCH, HIGH_MEMORY_SCRATCH);
 }
 
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)

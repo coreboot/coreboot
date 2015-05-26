@@ -30,13 +30,11 @@
 
 #define BIOS_HEAP_START_ADDRESS 	0x010000000
 #define BIOS_HEAP_SIZE			0x30000
-#define BSP_STACK_BASE_ADDR		0x30000
 
 #else
 
 #define BIOS_HEAP_START_ADDRESS		0x10000 /* HEAP during cold boot */
 #define BIOS_HEAP_SIZE			0x20000
-#define BSP_STACK_BASE_ADDR		0x30000
 
 #endif
 

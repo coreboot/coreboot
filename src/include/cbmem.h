@@ -28,13 +28,6 @@
 #define HIGH_MEMORY_SAVE	0
 #endif
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
-	defined(CONFIG_HIGH_SCRATCH_MEMORY_SIZE)
-#define HIGH_MEMORY_SCRATCH	CONFIG_HIGH_SCRATCH_MEMORY_SIZE
-#else
-#define HIGH_MEMORY_SCRATCH	0
-#endif
-
 /* Delegation of resume backup memory so we don't have to
  * (slowly) handle backing up OS memory in romstage.c
  */

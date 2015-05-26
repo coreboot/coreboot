@@ -1,21 +1,25 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
-#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "heapManager.h"
 
 #include <cbmem.h>
+#include <cpu/amd/agesa/s3_resume.h>
+#include <northbridge/amd/agesa/BiosCallOuts.h>
+
 #include <arch/acpi.h>
 #include <string.h>
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && (HIGH_MEMORY_SCRATCH < BIOS_HEAP_SIZE)
+#error Increase HIGH_MEMORY_SCRATCH allocation
+#endif
 
 UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader)
 {
 	UINT32 heap = BIOS_HEAP_START_ADDRESS;
 
 	if (acpi_is_wakeup_s3())
-		heap = (UINT32) cbmem_find(CBMEM_ID_RESUME_SCRATCH) +
-		 (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE);
-		  /* himem_heap_base + high_stack_size */
+		heap = (UINT32) cbmem_find(CBMEM_ID_RESUME_SCRATCH);
 
 	return heap;
 }

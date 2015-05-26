@@ -25,7 +25,6 @@
 #include <cpu/x86/cache.h>
 #include <cbmem.h>
 #include <string.h>
-#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <halt.h>
 #include "s3_resume.h"
 
@@ -51,12 +50,12 @@ static void *backup_resume(void)
 
 static void move_stack_high_mem(void)
 {
-	void *high_stack;
+	void *high_stack = cbmem_find(CBMEM_ID_ROMSTAGE_RAM_STACK);
 
-	high_stack = cbmem_find(CBMEM_ID_RESUME_SCRATCH);
-	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR,
-		(CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE));
+	/* TODO: Make the switch with empty stack instead. */
+	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR, HIGH_ROMSTAGE_STACK_SIZE);
 
+	/* TODO: We only switch stack on BSP. */
 	__asm__
 	    volatile ("add	%0, %%esp; add %0, %%ebp; invd"::"g"
 		      (high_stack - BSP_STACK_BASE_ADDR)
@@ -95,7 +94,6 @@ void prepare_for_resume(void)
 	post_code(0x62);
 	printk(BIOS_DEBUG, "Move CAR stack.\n");
 	move_stack_high_mem();
-	printk(BIOS_DEBUG, "stack moved to: 0x%x\n", (u32) (resume_backup_memory + HIGH_MEMORY_SAVE));
 
 	post_code(0x63);
 	disable_cache_as_ram();

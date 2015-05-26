@@ -27,17 +27,15 @@
 
 typedef enum {
 	S3DataTypeNonVolatile=0,	///< NonVolatile Data Type
-	S3DataTypeVolatile,		///< Volatile Data Type
 	S3DataTypeMTRR			///< MTRR storage
 } S3_DATA_TYPE;
 
 /* The size needs to be 4k aligned, which is the sector size of most flashes. */
-#define S3_DATA_VOLATILE_SIZE		0x6000
 #define S3_DATA_MTRR_SIZE			0x1000
 #define S3_DATA_NONVOLATILE_SIZE	0x1000
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
-	(S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
+	(S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
 #error "Please increase the value of S3_DATA_SIZE"
 #endif
 
@@ -47,16 +45,12 @@ static void get_s3nv_data(S3_DATA_TYPE S3DataType, u32 *pos, u32 *len)
 	u32 s3_data = CONFIG_S3_DATA_POS;
 
 	switch (S3DataType) {
-	case S3DataTypeVolatile:
-		*pos = s3_data;
-		*len = S3_DATA_VOLATILE_SIZE;
-		break;
 	case S3DataTypeMTRR:
-		*pos = s3_data + S3_DATA_VOLATILE_SIZE;
+		*pos = s3_data;
 		*len = S3_DATA_MTRR_SIZE;
 		break;
 	case S3DataTypeNonVolatile:
-		*pos = s3_data + S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE;
+		*pos = s3_data + S3_DATA_MTRR_SIZE;
 		*len = S3_DATA_NONVOLATILE_SIZE;
 		break;
 	default:
@@ -84,20 +78,12 @@ AGESA_STATUS OemInitResume(AMD_RESUME_PARAMS *ResumeParams)
 AGESA_STATUS OemS3LateRestore(AMD_S3LATE_PARAMS *S3LateParams)
 {
 	AMD_S3_PARAMS *dataBlock = &S3LateParams->S3DataBlock;
-	u32 pos, size;
 	void *dst;
 	size_t len;
-
-	/* TODO: Named volatile, do we need to save it over S3? */
-	get_s3nv_data(S3DataTypeVolatile, &pos, &size);
-	void *src = (void *) (pos + sizeof(UINT32));
 
 	ResumeHeap(&dst, &len);
 	dataBlock->VolatileStorageSize = len;
 	dataBlock->VolatileStorage = dst;
-
-	len = *(UINT32 *) pos;
-	memcpy(dst, src, len);
 
 	return AGESA_SUCCESS;
 }
@@ -139,9 +125,6 @@ AGESA_STATUS OemS3Save(AMD_S3SAVE_PARAMS *S3SaveParams)
 	if (HIGH_ROMSTAGE_STACK_SIZE)
 		cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, HIGH_ROMSTAGE_STACK_SIZE);
 
-	if (HIGH_MEMORY_SCRATCH)
-		cbmem_add(CBMEM_ID_RESUME_SCRATCH, HIGH_MEMORY_SCRATCH);
-
 	/* To be consumed in AmdInitResume. */
 	get_s3nv_data(S3DataTypeNonVolatile, &pos, &size);
 	if (size && dataBlock->NvStorageSize)
@@ -149,10 +132,11 @@ AGESA_STATUS OemS3Save(AMD_S3SAVE_PARAMS *S3SaveParams)
 			dataBlock->NvStorageSize);
 
 	/* To be consumed in AmdS3LateRestore. */
-	get_s3nv_data(S3DataTypeVolatile, &pos, &size);
-	if (size && dataBlock->VolatileStorageSize)
-		spi_SaveS3info(pos, size, dataBlock->VolatileStorage,
-			dataBlock->VolatileStorageSize);
+	char *heap = cbmem_add(CBMEM_ID_RESUME_SCRATCH, HIGH_MEMORY_SCRATCH);
+	if (heap) {
+		memset(heap, 0, HIGH_MEMORY_SCRATCH);
+		memcpy(heap, dataBlock->VolatileStorage, dataBlock->VolatileStorageSize);
+	}
 
 	/* Collect MTRR setup. */
 	backup_mtrr(MTRRStorage, &MTRRStorageSize);

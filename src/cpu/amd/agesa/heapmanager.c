@@ -49,7 +49,6 @@ void EmptyHeap(void)
 void ResumeHeap(void **heap, size_t *len)
 {
 	void *base = GetHeapBase();
-	memset(base, 0, BIOS_HEAP_SIZE);
 	*heap = base;
 	*len = BIOS_HEAP_SIZE;
 }

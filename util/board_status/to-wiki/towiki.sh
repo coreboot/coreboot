@@ -197,7 +197,7 @@ EOF
 			fi
 		fi
 
-		vendor_nice="$(grep -A1 -i "config VENDOR_$vendor" "$COREBOOT_DIR"/src/mainboard/Kconfig|tail -n1|sed -n 's,^[[:space:]]*bool[[:space:]]*"\(.*\)"[[:space:]]*$,\1,p')"
+		vendor_nice="$(grep -A1 -i "config VENDOR_$vendor" "$COREBOOT_DIR"/src/mainboard/$vendor/Kconfig.name|tail -n1|sed -n 's,^[[:space:]]*bool[[:space:]]*"\(.*\)"[[:space:]]*$,\1,p')"
 
 		if [ -z "$vendor_nice" ]; then
 			vendor_nice="$(echo "$vendor" |sed -e "s/\(.\)/\u\1/g")";

@@ -219,13 +219,13 @@ EOF
 		vendor_board_dir="$COREBOOT_DIR"/src/mainboard/"$venboard";
 
 		northbridge="$(sed -n "/^[[:space:]]*select NORTHBRIDGE_/ s,^[[:space:]]*select NORTHBRIDGE_,,p" "$vendor_board_dir/Kconfig")"
-		northbridge_nice="$(echo "$northbridge"|sed 's,AMD_AGESA_FAMILY\([0-9a-fA-F]*\)\(.*\),AMD Family \1h\2 (AGESA),g;s,AMD_FAMILY\([0-9a-fA-F]*\),AMD Family \1h,g;s,AMD_AMDFAM\([0-9a-fA-F]*\),AMD Family \1h,g;s,_, ,g;s,INTEL,Intel®,g;')"
+		northbridge_nice="$(echo "$northbridge"|sed 's,AMD_AGESA_FAMILY\([0-9a-fA-F]*\)\(.*\),AMD Family \1h\2 (AGESA),g;s,AMD_PI_\(.*\),AMD \1 (PI),g;s,INTEL_FSP_\(.*\),Intel® \1 (FSP),g;s,AMD_FAMILY\([0-9a-fA-F]*\),AMD Family \1h,g;s,AMD_AMDFAM\([0-9a-fA-F]*\),AMD Family \1h,g;s,_, ,g;s,INTEL,Intel®,g;')"
 
 		southbridge="$(sed -n "/[[:space:]]*select SOUTHBRIDGE_/ s,[[:space:]]*select SOUTHBRIDGE_\([^ ]*\).*$,\1,p" "$vendor_board_dir/Kconfig"|grep -v SKIP_ISA_DMA_INIT)"
 		southbridge_nice="$(echo "$southbridge"|sed 's,_, ,g;s,INTEL,Intel®,g')"
 		superio="$(sed -n "/[[:space:]]*select SUPERIO_/ s,[[:space:]]*select SUPERIO_,,p" "$vendor_board_dir/Kconfig"|grep -v OVERRIDE_FANCTL)"
-		superio_nice="$(echo "$superio"|sed 's,_, ,g;s,WINBOND,Winbond™,g;s,ITE,ITE™,g;s,SMSC,SMSC®,g')"
-		cpu="$(sed -n "/	select CPU_/ s,	select CPU_,,p" "$vendor_board_dir/Kconfig"|grep -v "AMD_AGESA_FAMILY")"
+		superio_nice="$(echo "$superio"|sed 's,_, ,g;s,WINBOND,Winbond™,g;s,ITE,ITE™,g;s,SMSC,SMSC®,g;s,NUVOTON,Nuvoton ,g')"
+		cpu="$(sed -n "/	select CPU_/ s,	select CPU_,,p" "$vendor_board_dir/Kconfig"|grep -v "AMD_AGESA_FAMILY"|grep -v CPU_MICROCODE_CBFS_NONE)"
 		case "$cpu" in
 			ALLWINNER_A10)
 				cpu_nice="Allwinner A10"
@@ -313,20 +313,25 @@ EOF
 				cpu_nice="Intel® Mobile Celeron"
 				socket_nice="Socket 479"
 				;;
-			INTEL_SOCKET_RPGA989)
+			INTEL_HASWELL)
+			        cpu_nice="Intel® 4th Gen (Haswell) Core i3/i5/i7"
+			        socket_nice="?"
+				;;
+			INTEL_FSP_RANGELEY)
+			        cpu_nice="Intel® Atom Rangeley (FSP)"
+			        socket_nice="?"
+				;;
+			INTEL_SOCKET_RPGA989|INTEL_SOCKET_LGA1155|INTEL_SOCKET_RPGA988B)
+			        socket_nice="`echo $socket | sed 's,INTEL_SOCKET_,Socket ,g'`"
 				case $northbridge in
 					INTEL_HASWELL)
-						cpu_nice="Intel® 4th Gen (Haswell) Core i3/i5/i7"
-						socket_nice="Socket RPGA989";;
+						cpu_nice="Intel® 4th Gen (Haswell) Core i3/i5/i7";;
 					INTEL_IVYBRIDGE_NATIVE|INTEL_IVYBRIDGE|INTEL_FSP_IVYBRIDGE)
-						cpu_nice="Intel® 3rd Gen (Ivybridge) Core i3/i5/i7"
-						socket_nice="Socket RPGA989";;
-					INTEL_SANDYBRIDGE)
-						cpu_nice="Intel® 2nd Gen (Sandybridge) Core i3/i5/i7"
-						socket_nice="Socket RPGA989";;
+						cpu_nice="Intel® 3rd Gen (Ivybridge) Core i3/i5/i7";;
+					INTEL_SANDYBRIDGE|INTEL_SANDYBRIDGE_NATIVE)
+						cpu_nice="Intel® 2nd Gen (Sandybridge) Core i3/i5/i7";;
 					*)
-						cpu_nice="$northbridge"
-						socket_nice="$northbridge";;
+						cpu_nice="$northbridge";;
 				esac
 				;;
 			INTEL_SOCKET_441)
@@ -377,8 +382,8 @@ EOF
 					RDC_R8610)
 						cpu_nice="RDC 8610"
 						socket_nice="—";;
-					AMD_AGESA_FAMILY14|AMD_AGESA_FAMILY15_TN|AMD_AGESA_FAMILY15_KB|AMD_AGESA_FAMILY16_KB|AMD_AGESA_FAMILY12)
-						cpu_nice="?"
+					AMD_AGESA_*|AMD_PI_*)
+						cpu_nice="$northbridge_nice"
 						socket_nice="?";;
 					*)
 						cpu_nice="$northbridge"

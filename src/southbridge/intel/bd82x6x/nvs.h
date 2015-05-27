@@ -18,6 +18,7 @@
  * Foundation, Inc.
  */
 
+#include <stdint.h>
 #include "vendorcode/google/chromeos/gnvs.h"
 typedef struct {
 	/* Miscellaneous */

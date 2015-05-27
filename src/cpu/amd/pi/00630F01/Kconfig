@@ -40,10 +40,6 @@ config CDB
 	hex
 	default 0x18
 
-config XIP_ROM_BASE
-	hex
-	default 0xfff80000
-
 config XIP_ROM_SIZE
 	hex
 	default 0x100000

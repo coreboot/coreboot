@@ -49,8 +49,6 @@ static void mainboard_init(device_t dev)
 	RCBA32(0x38c8) = 0x00002005;
 	RCBA32(0x38c4) = 0x00802005;
 	RCBA32(0x38c0) = 0x00000007;
-
-	pc_keyboard_init();
 }
 
 /* mainboard_enable is executed as first thing after

@@ -37,19 +37,10 @@ static void fill_ssdt(void)
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
 }
 
-static void mainboard_init(device_t dev)
-{
-	/* This sneaked in here, because X200 SuperIO chip isn't really
-	   connected to anything and hence we don't init it.
-	 */
-	pc_keyboard_init();
-}
-
 static void mainboard_enable(device_t dev)
 {
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_CENTERING, GMA_INT15_BOOT_DISPLAY_DEFAULT, 2);
 
-	dev->ops->init = mainboard_init;
 	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
 }
 

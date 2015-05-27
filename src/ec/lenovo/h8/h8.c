@@ -27,6 +27,7 @@
 #include <string.h>
 #include <smbios.h>
 #include <pc80/mc146818rtc.h>
+#include <pc80/keyboard.h>
 
 #include "h8.h"
 #include "chip.h"
@@ -176,8 +177,14 @@ static void h8_smbios_strings(struct device *dev, struct smbios_type11 *t)
 	t->count = smbios_add_string(t->eos, tpec);
 }
 
+static void h8_init(device_t dev)
+{
+	pc_keyboard_init();
+}
+
 struct device_operations h8_dev_ops = {
-	.get_smbios_strings = h8_smbios_strings
+	.get_smbios_strings = h8_smbios_strings,
+	.init = h8_init,
 };
 
 static void h8_enable(struct device *dev)

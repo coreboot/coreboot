@@ -85,10 +85,6 @@ static void mainboard_init(device_t dev)
 	RCBA32(0x3804) = 0x3f04e008;
 
 	printk(BIOS_SPEW, "SPI configured\n");
-	/* This sneaked in here, because X201 SuperIO chip isn't really
-	   connected to anything and hence we don't init it.
-	 */
-	pc_keyboard_init();
 }
 
 static void fill_ssdt(void)

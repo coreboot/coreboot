@@ -66,12 +66,14 @@ static inline void debug_dead_loop(void)
 }
 
 #define _ASSERT(expression)  debug_dead_loop()
+#ifndef ASSERT
 #define ASSERT(expression)			\
 	do {					\
 		if (!(expression)) {		\
 			_ASSERT(expression);	\
 		}				\
 	} while (FALSE)
+#endif
 
 //
 // Contents of the PEI_GRAPHICS_INFO_HOB

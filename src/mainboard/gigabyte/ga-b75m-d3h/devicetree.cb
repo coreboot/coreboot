@@ -8,7 +8,6 @@ chip northbridge/intel/sandybridge
 			device lapic 0 on end
 		end
 		chip cpu/intel/model_206ax
-			register "pstate_coord_type" = "0xfe"
 			register "c1_acpower" = "1"
 			register "c2_acpower" = "3"
 			register "c3_acpower" = "5"

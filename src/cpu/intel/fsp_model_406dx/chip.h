@@ -24,8 +24,6 @@
 #define SPEEDSTEP_APIC_MAGIC 0xACAC
 
 struct cpu_intel_fsp_model_406dx_config {
-	u8 pstate_coord_type;	/* Processor Coordination Type */
-
 	int c1_battery;		/* ACPI C1 on Battery Power */
 	int c2_battery;		/* ACPI C2 on Battery Power */
 	int c3_battery;		/* ACPI C3 on Battery Power */

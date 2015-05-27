@@ -25,9 +25,6 @@ chip northbridge/intel/sandybridge
 			# Magic APIC ID to locate this chip
 			device lapic 0xACAC off end
 
-			# Coordinate with HW_ALL
-			register "pstate_coord_type" = "0xfe"
-
 			register "c1_acpower" = "1"	# ACPI(C1) = MWAIT(C1)
 			register "c2_acpower" = "3"	# ACPI(C2) = MWAIT(C3)
 			register "c3_acpower" = "5"	# ACPI(C3) = MWAIT(C7)

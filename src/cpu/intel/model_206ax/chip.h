@@ -23,8 +23,6 @@
 struct cpu_intel_model_206ax_config {
 	u8 disable_acpi;	/* Do not generate CPU ACPI tables */
 
-	u8 pstate_coord_type;	/* Processor Coordination Type */
-
 	int c1_battery;		/* ACPI C1 on Battery Power */
 	int c2_battery;		/* ACPI C2 on Battery Power */
 	int c3_battery;		/* ACPI C3 on Battery Power */

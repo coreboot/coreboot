@@ -144,7 +144,7 @@ EOF
 	for vendor_board_dir in "$COREBOOT_DIR"/src/mainboard/*/* ; do
 		board="$(basename "$vendor_board_dir")"
 		vendor="$(basename "$(dirname "$vendor_board_dir")")"
-		if [ "$board" = Kconfig ]; then
+		if [ "$board" = Kconfig ] || [ "$board" = Kconfig.name ]; then
 			continue
 		fi
 

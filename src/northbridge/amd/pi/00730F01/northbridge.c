@@ -323,6 +323,15 @@ static void amdfam16_link_read_bases(device_t dev, u32 nodeid, u32 link)
 
 }
 
+static void enable_mmconf_resource(device_t dev)
+{
+	struct resource *resource = new_resource(dev, 0xc0010058);
+	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
+	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096 * 256;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+}
+
 static void read_resources(device_t dev)
 {
 	u32 nodeid;
@@ -334,6 +343,14 @@ static void read_resources(device_t dev)
 			amdfam16_link_read_bases(dev, nodeid, link->link_num);
 		}
 	}
+
+	/*
+	 * This MMCONF resource must be reserved in the PCI domain.
+	 * It is not honored by the coreboot resource allocator if it is in
+	 * the CPU_CLUSTER.
+	 */
+	if(IS_ENABLED(CONFIG_MMCONF_SUPPORT))
+		enable_mmconf_resource(dev);
 }
 
 static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
@@ -1115,13 +1132,6 @@ static void cpu_bus_init(device_t dev)
 
 static void cpu_bus_read_resources(device_t dev)
 {
-#if CONFIG_MMCONF_SUPPORT
-	struct resource *resource = new_resource(dev, 0xc0010058);
-	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
-	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
-#endif
 }
 
 static void cpu_bus_set_resources(device_t dev)

@@ -42,9 +42,6 @@ static void model_16_init(device_t dev)
 	u32 siblings;
 #endif
 
-	//x86_enable_cache();
-	//amd_setup_mtrrs();
-	//x86_mtrr_check();
 	disable_cache ();
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
@@ -115,7 +112,8 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, 0x730f00 },	  /* ML-A0, Guess, TODO: */
+	{ X86_VENDOR_AMD, 0x730F00 },
+	{ X86_VENDOR_AMD, 0x730F01 },
 	{ 0, 0 },
 };
 

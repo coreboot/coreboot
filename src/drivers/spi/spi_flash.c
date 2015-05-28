@@ -349,10 +349,6 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 	/* search the table for matches in shift and id */
 	for (i = 0; i < ARRAY_SIZE(flashes); ++i)
 		if (flashes[i].shift == shift && flashes[i].idcode == *idp) {
-#if CONFIG_SMM_TSEG && defined(__SMM__)
-			/* Need to relocate this function */
-			tseg_relocate((void **)&flashes[i].probe);
-#endif
 			/* we have a match, call probe */
 			flash = flashes[i].probe(spi, idp);
 			if (flash)
@@ -360,10 +356,6 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 		}
 
 	if (!flash && spi->programmer_specific_probe) {
-#if CONFIG_SMM_TSEG && defined(__SMM__)
-		/* Need to relocate this function */
-		tseg_relocate((void **)&spi->programmer_specific_probe);
-#endif
 		flash = spi->programmer_specific_probe (spi);
 	}
 	if (!flash) {
@@ -372,15 +364,6 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 	}
 
 flash_detected:
-#if CONFIG_SMM_TSEG && defined(__SMM__)
-	/* Ensure flash handlers are valid for TSEG */
-	tseg_relocate((void **)&flash->read);
-	tseg_relocate((void **)&flash->write);
-	tseg_relocate((void **)&flash->erase);
-	tseg_relocate((void **)&flash->status);
-	tseg_relocate((void **)&flash->name);
-#endif
-
 	printk(BIOS_INFO, "SF: Detected %s with sector size 0x%x, total 0x%x\n",
 			flash->name, flash->sector_size, flash->size);
 

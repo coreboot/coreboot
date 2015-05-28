@@ -27,7 +27,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
 	select REG_SCRIPT
-	select SMM_MODULES
 	select SMM_TSEG
 	select SMP
 	select SPI_FLASH

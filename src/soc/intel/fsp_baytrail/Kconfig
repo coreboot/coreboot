@@ -38,7 +38,6 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_MODULES
 	select PARALLEL_MP
 	select REG_SCRIPT
-	select SMM_MODULES
 	select SMM_TSEG
 	select BAYTRAIL_SMM
 	select SMP

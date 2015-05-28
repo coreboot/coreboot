@@ -79,21 +79,12 @@ config LOGICAL_CPUS
 config SMM_TSEG
 	bool
 	default n
-
-config SMM_MODULES
-	bool
-	default n
-	depends on HAVE_SMI_HANDLER
 	select RELOCATABLE_MODULES
-	help
-	 If SMM_MODULES is selected then SMM handlers are built as modules.
-	 A SMM stub along with a SMM loader/relocator. All the handlers are
-	 written in C with stub being the only assembly.
 
 config SMM_MODULE_HEAP_SIZE
 	hex
 	default 0x4000
-	depends on SMM_MODULES
+	depends on SMM_TSEG
 	help
 	  This option determines the size of the heap within the SMM handler
 	  modules.

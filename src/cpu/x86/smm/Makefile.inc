@@ -34,7 +34,7 @@ smm-c-deps:=$$(OPTION_TABLE_H)
 $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
 	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --whole-archive --start-group $(smm-objs) --no-whole-archive $(COMPILER_RT_smm) --end-group
 
-ifeq ($(CONFIG_SMM_MODULES),y)
+ifeq ($(CONFIG_SMM_TSEG),y)
 
 smmstub-y += smm_stub.S
 
@@ -79,7 +79,7 @@ else
 	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
 endif
 
-else # CONFIG_SMM_MODULES
+else # CONFIG_SMM_TSEG
 
 $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_LDSCRIPT)
 	$(LD_smm) $(SMM_LDFLAGS) -nostdlib -nostartfiles --gc-sections -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
@@ -101,19 +101,11 @@ ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
 ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap.manual
 endif
 
-# Use TSEG specific entry point and linker script
-ifeq ($(CONFIG_SMM_TSEG),y)
-smm-y += smmhandler_tseg.S
-smm-c-ccopts += -fpic
-SMM_LDFLAGS  := -pie
-SMM_LDSCRIPT := smm_tseg.ld
-else
 smm-y += smmhandler.S
 SMM_LDFLAGS  :=
 SMM_LDSCRIPT := smm.ld
-endif
 
 smm-y += smihandler.c
 
 
-endif # CONFIG_SMM_MODULES
+endif # CONFIG_SMM_TSEG

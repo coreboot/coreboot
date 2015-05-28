@@ -38,7 +38,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PCIEXP_COMMON_CLOCK
 	select PCIEXP_CLK_PM
 	select PCIEXP_L1_SUB_STATE
-	select SMM_MODULES
 	select SMM_TSEG
 	select SMP
 	select SPI_FLASH

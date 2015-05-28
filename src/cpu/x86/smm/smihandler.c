@@ -29,7 +29,6 @@
 
 static int do_driver_init = 1;
 
-#if !CONFIG_SMM_TSEG /* TSEG handler locks in assembly */
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */
@@ -61,7 +60,6 @@ void smi_release_lock(void)
 		: "eax"
 	);
 }
-#endif
 
 #define LAPIC_ID 0xfee00020
 static inline __attribute__((always_inline)) unsigned long nodeid(void)
@@ -129,12 +127,6 @@ void smi_handler(u32 smm_revision)
 	smm_state_save_area_t state_save;
 	u32 smm_base = 0xa0000; /* ASEG */
 
-#if CONFIG_SMM_TSEG
-	/* Update global variable TSEG base */
-	if (!smi_get_tseg_base())
-		return;
-	smm_base = smi_get_tseg_base();
-#else
 	/* Are we ok to execute the handler? */
 	if (!smi_obtain_lock()) {
 		/* For security reasons we don't release the other CPUs
@@ -147,7 +139,6 @@ void smi_handler(u32 smm_revision)
 		}
 		return;
 	}
-#endif
 
 	smi_backup_pci_address();
 
@@ -204,9 +195,7 @@ void smi_handler(u32 smm_revision)
 
 	smi_restore_pci_address();
 
-#if !CONFIG_SMM_TSEG
 	smi_release_lock();
-#endif
 
 	/* De-assert SMI# signal to allow another SMI */
 	smi_set_eos();

@@ -472,7 +472,7 @@ int mainboard_io_trap_handler(int smif);
 
 void southbridge_smi_set_eos(void);
 
-#if CONFIG_SMM_MODULES
+#if CONFIG_SMM_TSEG
 void cpu_smi_handler(void);
 void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);
@@ -480,24 +480,21 @@ void southbridge_smi_handler(void);
 void cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 void northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
-#endif /* CONFIG_SMM_MODULES */
+#endif /* CONFIG_SMM_TSEG */
 void mainboard_smi_gpi(u32 gpi_sts);
 int  mainboard_smi_apmc(u8 data);
 void mainboard_smi_sleep(u8 slp_typ);
 
 #if !CONFIG_SMM_TSEG
 void smi_release_lock(void);
-#elif CONFIG_SMM_MODULES
-#define smi_get_tseg_base() 0
 #else
-/* Return address of TSEG base */
-u32 smi_get_tseg_base(void);
+#define smi_get_tseg_base() 0
 #endif
 
 /* Get PMBASE address */
 u16 smm_get_pmbase(void);
 
-#if CONFIG_SMM_MODULES
+#if CONFIG_SMM_TSEG
 
 struct smm_runtime {
 	u32 smbase;
@@ -569,7 +566,7 @@ struct smm_loader_params {
 int smm_setup_relocation_handler(struct smm_loader_params *params);
 int smm_load_module(void *smram, int size, struct smm_loader_params *params);
 #endif /* __SMM__ */
-#endif /* CONFIG_SMM_MODULES */
+#endif /* CONFIG_SMM_TSEG */
 
 /* Backup and restore default SMM region. */
 void *backup_default_smm_area(void);

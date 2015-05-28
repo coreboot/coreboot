@@ -149,6 +149,12 @@ config PHYSICAL_REC_SWITCH
 	help
 	  Whether this platform has a physical recovery switch
 
+config LID_SWITCH
+	bool "Lid switch is present"
+	default n
+	help
+	  Whether this platform has a lid switch
+
 config WIPEOUT_SUPPORTED
 	bool "User is able to request factory reset"
 	default n

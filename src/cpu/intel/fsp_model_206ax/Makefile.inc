@@ -13,3 +13,5 @@ ifneq ($(wildcard $(shell readlink -f "$(top)/$(CONFIG_MICROCODE_INCLUDE_PATH)")
 CPPFLAGS_common += -I$(CONFIG_MICROCODE_INCLUDE_PATH)
 endif
 endif
+
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c

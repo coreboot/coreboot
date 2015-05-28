@@ -66,6 +66,11 @@ void intel_pch_finalize_smm(void);
 #include "chip.h"
 void pch_enable(device_t dev);
 #endif
+/* These helpers are for performing SMM relocation. */
+void southbridge_smm_init(void);
+void southbridge_trigger_smi(void);
+void southbridge_clear_smi_status(void);
+
 int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);

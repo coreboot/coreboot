@@ -99,6 +99,7 @@
 
 #define TOM		0xa0
 #define TOUUD		0xa8	/* Top of Upper Usable DRAM */
+#define BGSM		0xb4	/* Base GTT Stolen Memory */
 #define TSEG		0xb8	/* TSEG base */
 #define TOLUD		0xbc	/* Top of Low Used Memory */
 

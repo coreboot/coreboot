@@ -487,8 +487,6 @@ void mainboard_smi_sleep(u8 slp_typ);
 
 #if !CONFIG_SMM_TSEG
 void smi_release_lock(void);
-#else
-#define smi_get_tseg_base() 0
 #endif
 
 /* Get PMBASE address */

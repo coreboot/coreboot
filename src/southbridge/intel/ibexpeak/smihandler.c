@@ -52,27 +52,11 @@ static u8 smm_initialized = 0;
 /* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located
  * by coreboot.
  */
-static global_nvs_t *gnvs = (global_nvs_t *)0x0;
+static global_nvs_t *gnvs;
 global_nvs_t *smm_get_gnvs(void)
 {
 	return gnvs;
 }
-
-#if CONFIG_SMM_TSEG
-static u32 tseg_base = 0;
-u32 smi_get_tseg_base(void)
-{
-	if (!tseg_base)
-		tseg_base = pci_read_config32(PCI_DEV(0, 0, 0), TSEG) & ~1;
-	return tseg_base;
-}
-void tseg_relocate(void **ptr)
-{
-	/* Adjust pointer with TSEG base */
-	if (*ptr && *ptr < (void*)smi_get_tseg_base())
-		*ptr = (void *)(((u8*)*ptr) + smi_get_tseg_base());
-}
-#endif
 
 static void alt_gpi_mask(u16 clr, u16 set)
 {
@@ -422,7 +406,7 @@ static void xhci_sleep(u8 slp_typ)
 }
 
 
-static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_sleep(void)
 {
 	u8 reg8;
 	u32 reg32;
@@ -436,8 +420,6 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	get_option(&s5pwr, "power_on_after_fail");
 	outb(tmp70, 0x70);
 	outb(tmp72, 0x72);
-
-	void (*mainboard_sleep)(u8 slp_typ) = mainboard_smi_sleep;
 
 	/* First, disable further SMIs */
 	reg8 = inb(pmbase + SMI_EN);
@@ -453,8 +435,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 		xhci_sleep(slp_typ);
 
 	/* Do any mainboard sleep handling */
-	tseg_relocate((void **)&mainboard_sleep);
-	mainboard_sleep(slp_typ-2);
+	mainboard_smi_sleep(slp_typ-2);
 
 #if CONFIG_ELOG_GSMI
 	/* Log S3, S4, and S5 entry */
@@ -530,13 +511,11 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 {
 	em64t101_smm_state_save_area_t *state;
-	u32 base = smi_get_tseg_base() + SMM_EM64T101_SAVE_STATE_OFFSET;
 	int node;
 
 	/* Check all nodes looking for the one that issued the IO */
 	for (node = 0; node < CONFIG_MAX_CPUS; node++) {
-		state = (em64t101_smm_state_save_area_t *)
-			(base - (node * 0x400));
+		state = smm_get_save_state(node);
 
 		/* Check for Synchronous IO (bit0==1) */
 		if (!(state->io_misc_info & (1 << 0)))
@@ -583,11 +562,10 @@ static void southbridge_smi_gsmi(void)
 }
 #endif
 
-static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_apmc(void)
 {
 	u32 pmctrl;
 	u8 reg8;
-	int (*mainboard_apmc)(u8 apmc) = mainboard_smi_apmc;
 	em64t101_smm_state_save_area_t *state;
 
 	/* Emulate B2 register as the FADT / Linux expects it */
@@ -640,11 +618,10 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 #endif
 	}
 
-	tseg_relocate((void **)&mainboard_apmc);
-	mainboard_apmc(reg8);
+	mainboard_smi_apmc(reg8);
 }
 
-static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_pm1(void)
 {
 	u16 pm1_sts;
 
@@ -665,7 +642,7 @@ static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_
 	}
 }
 
-static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_gpe0(void)
 {
 	u32 gpe0_sts;
 
@@ -673,17 +650,15 @@ static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state
 	dump_gpe0_status(gpe0_sts);
 }
 
-static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_gpi(void)
 {
-	void (*mainboard_gpi)(u32 gpi_sts) = mainboard_smi_gpi;
 	u16 reg16;
 	reg16 = inw(pmbase + ALT_GP_SMI_STS);
 	outw(reg16, pmbase + ALT_GP_SMI_STS);
 
 	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
 
-	tseg_relocate((void **)&mainboard_gpi);
-	mainboard_gpi(reg16);
+	mainboard_smi_gpi(reg16);
 
 	if (reg16)
 		printk(BIOS_DEBUG, "GPI (mask %04x)\n",reg16);
@@ -691,7 +666,7 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 	outw(reg16, pmbase + ALT_GP_SMI_STS);
 }
 
-static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_mc(void)
 {
 	u32 reg32;
 
@@ -706,7 +681,7 @@ static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_s
 
 
 
-static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_tco(void)
 {
 	u32 tco_sts;
 
@@ -743,7 +718,7 @@ static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_
 	}
 }
 
-static void southbridge_smi_periodic(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_periodic(void)
 {
 	u32 reg32;
 
@@ -756,7 +731,7 @@ static void southbridge_smi_periodic(unsigned int node, smm_state_save_area_t *s
 	printk(BIOS_DEBUG, "Periodic SMI.\n");
 }
 
-static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_monitor(void)
 {
 #define IOTRAP(x) (trap_sts & (1 << x))
 	u32 trap_sts, trap_cycle;
@@ -810,8 +785,7 @@ static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *st
 #undef IOTRAP
 }
 
-typedef void (*smi_handler_t)(unsigned int node,
-		smm_state_save_area_t *state_save);
+typedef void (*smi_handler_t)(void);
 
 static smi_handler_t southbridge_smi[32] = {
 	NULL,			  //  [0] reserved
@@ -853,7 +827,7 @@ static smi_handler_t southbridge_smi[32] = {
  * @param node
  * @param state_save
  */
-void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save)
+void southbridge_smi_handler(void)
 {
 	int i, dump = 0;
 	u32 smi_sts;
@@ -870,15 +844,7 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	for (i = 0; i < 31; i++) {
 		if (smi_sts & (1 << i)) {
 			if (southbridge_smi[i]) {
-#if CONFIG_SMM_TSEG
-				smi_handler_t handler = (smi_handler_t)
-					((u8*)southbridge_smi[i] +
-					 smi_get_tseg_base());
-				if (handler)
-					handler(node, state_save);
-#else
-				southbridge_smi[i](node, state_save);
-#endif
+				southbridge_smi[i]();
 			} else {
 				printk(BIOS_DEBUG, "SMI_STS[%d] occured, but no "
 						"handler available.\n", i);

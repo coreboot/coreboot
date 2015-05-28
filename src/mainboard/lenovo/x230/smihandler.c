@@ -23,14 +23,8 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <ec/acpi/ec.h>
-#include <pc80/mc146818rtc.h>
 #include <ec/lenovo/h8/h8.h>
-#include <delay.h>
-#include <southbridge/intel/bd82x6x/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/bd82x6x/me.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
-#include <cpu/intel/model_206ax/model_206ax.h>
 
 #define GPE_EC_SCI	1
 #define GPE_EC_WAKE	13
@@ -51,14 +45,7 @@ int mainboard_io_trap_handler(int smif)
 		smm_initialized = 1;
 	}
 
-	switch (smif) {
-	default:
-		return 0;
-	}
-
-	/* On success, the IO Trap Handler returns 1
-	 * On failure, the IO Trap Handler returns a value != 1 */
-	return 1;
+	return 0;
 }
 
 static void mainboard_smi_handle_ec_sci(void)

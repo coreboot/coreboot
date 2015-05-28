@@ -4784,7 +4784,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		ram_training(&info);
 
 	/* After training. */
-	timestamp_add_now (104);
+	timestamp_add_now(104);
 
 	dump_timings(&info);
 

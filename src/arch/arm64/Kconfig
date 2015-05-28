@@ -44,3 +44,13 @@ config ARM64_USE_ARM_TRUSTED_FIRMWARE
 	bool
 	default n
 	depends on ARCH_RAMSTAGE_ARM64
+
+config ARM64_USE_SECURE_OS
+	bool
+	default n
+	depends on ARM64_USE_ARM_TRUSTED_FIRMWARE
+
+config ARM64_SECURE_OS_FILE
+	string "Secure OS binary file"
+	help
+	  Secure OS binary file.

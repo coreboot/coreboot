@@ -217,6 +217,16 @@ $(BL31_CBFS)-type := stage
 $(BL31_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(BL31_CBFS)
 
+ifeq ($(CONFIG_ARM64_USE_SECURE_OS),y)
+
+SECURE_OS_FILE := $(CONFIG_ARM64_SECURE_OS_FILE)
+SECURE_OS_FILE_CBFS := $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/secure_os
+$(SECURE_OS_FILE_CBFS)-file := $(SECURE_OS_FILE)
+$(SECURE_OS_FILE_CBFS)-type := stage
+cbfs-files-y += $(SECURE_OS_FILE_CBFS)
+
+endif # CONFIG_ARM64_USE_SECURE_OS
+
 endif # CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE
 
 endif # CONFIG_ARCH_RAMSTAGE_ARM64

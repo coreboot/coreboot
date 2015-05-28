@@ -33,6 +33,7 @@ enum asset_type {
 	ASSET_REFCODE,
 	ASSET_PAYLOAD,
 	ASSET_BL31,
+	ASSET_BL32,
 };
 
 struct asset {

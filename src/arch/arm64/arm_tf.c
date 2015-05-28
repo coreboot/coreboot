@@ -18,6 +18,8 @@
  */
 
 #include <arch/cache.h>
+#include <arch/lib_helpers.h>
+#include <arch/transition.h>
 #include <arm_tf.h>
 #include <assert.h>
 #include <cbfs.h>
@@ -32,8 +34,8 @@
 static image_info_t bl31_image_info;
 static image_info_t bl32_image_info;
 static image_info_t bl33_image_info;
-static entry_point_info_t bl32_ep_info;
  */
+static entry_point_info_t bl32_ep_info;
 static entry_point_info_t bl33_ep_info;
 static bl31_params_t bl31_params;
 
@@ -57,6 +59,22 @@ void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 	bl31_entry = prog_entry(&bl31);
 
 	SET_PARAM_HEAD(&bl31_params, PARAM_BL31, VERSION_1, 0);
+
+	if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_OS)) {
+		struct prog bl32 = PROG_INIT(ASSET_BL32, CONFIG_CBFS_PREFIX"/secure_os");
+
+		if (prog_locate(&bl32))
+			die("BL31 not found");
+
+		if (cbfs_prog_stage_load(&bl32))
+			die("BL31 load failed");
+
+		SET_PARAM_HEAD(&bl32_ep_info, PARAM_EP, VERSION_1, PARAM_EP_SECURE);
+		bl32_ep_info.pc = (uintptr_t)prog_entry(&bl32);
+		bl32_ep_info.spsr = SPSR_EXCEPTION_MASK | get_eret_el(EL1, SPSR_USE_L);
+		bl31_params.bl32_ep_info = &bl32_ep_info;
+	}
+
 	bl31_params.bl33_ep_info = &bl33_ep_info;
 
 	SET_PARAM_HEAD(&bl33_ep_info, PARAM_EP, VERSION_1, PARAM_EP_NON_SECURE);

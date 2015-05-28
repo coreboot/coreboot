@@ -37,18 +37,6 @@
 
 #define GPIO_COUNT	6
 
-static int get_lid_switch(void)
-{
-#if CONFIG_EC_GOOGLE_CHROMEEC
-	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
-
-	return !!(ec_switches & EC_SWITCH_LID_OPEN);
-#else
-	/* Default to force open. */
-	return 1;
-#endif
-}
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio *gpio;
@@ -68,6 +56,18 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", gfx_get_init_done());
 }
 #endif
+
+int get_lid_switch(void)
+{
+#if CONFIG_EC_GOOGLE_CHROMEEC
+	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
+
+	return !!(ec_switches & EC_SWITCH_LID_OPEN);
+#else
+	/* Default to force open. */
+	return 1;
+#endif
+}
 
 int get_developer_mode_switch(void)
 {

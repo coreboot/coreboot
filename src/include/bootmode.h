@@ -27,6 +27,7 @@ int get_developer_mode_switch(void);
 int get_recovery_mode_switch(void);
 int clear_recovery_mode_switch(void);
 int get_wipeout_mode_switch(void);
+int get_lid_switch(void);
 
 
 int gfx_get_init_done(void);

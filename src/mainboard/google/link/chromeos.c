@@ -31,13 +31,6 @@
 
 #define GPIO_COUNT	6
 
-static int get_lid_switch(void)
-{
-	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
-
-	return !!(ec_switches & EC_SWITCH_LID_OPEN);
-}
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
@@ -90,6 +83,13 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
 }
 #endif
+
+int get_lid_switch(void)
+{
+	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
+
+	return !!(ec_switches & EC_SWITCH_LID_OPEN);
+}
 
 /* The dev-switch is virtual on Link (and so handled elsewhere). */
 int get_developer_mode_switch(void)

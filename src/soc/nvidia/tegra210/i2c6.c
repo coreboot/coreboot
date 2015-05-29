@@ -65,6 +65,9 @@ void soc_configure_i2c6pad(void)
 	 */
 	soc_configure_host1x();
 
+	/* enable SOR_SAFE and DPAUX_1 clocks */
+	clock_enable_y(CLK_Y_DPAUX1 | CLK_Y_SOR_SAFE);
+
 	/* Now we can write the I2C6 mux in DPAUX */
 	write32((void *)DPAUX_HYBRID_PADCTL, I2C6_PADCTL);
 	/* Finally, power up the pads */

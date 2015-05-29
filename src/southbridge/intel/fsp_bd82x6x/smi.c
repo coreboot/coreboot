@@ -27,6 +27,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
+#include <cpu/intel/smm/gen1/smi.h>
 #include "pch.h"
 
 /* While we read PMBASE dynamically in case it changed, let's

@@ -34,6 +34,9 @@
 #include <pc80/mc146818rtc.h>
 #include "model_206ax.h"
 #include "chip.h"
+#include <cpu/intel/smm/gen1/smi.h>
+
+#define CORE_THREAD_COUNT_MSR 0x35
 
 static void enable_vmx(void)
 {
@@ -284,6 +287,20 @@ static void configure_mca(void)
 	/* This should only be done on a cold boot */
 	for (i = 0; i < 7; i++)
 		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
+}
+
+int cpu_get_apic_id_map(int *apic_id_map)
+{
+	msr_t msr;
+	int num_cpus, i;
+
+	msr = rdmsr(CORE_THREAD_COUNT_MSR);
+	num_cpus = msr.lo & 0xffff;
+
+	for (i = 0; i < num_cpus && i < CONFIG_MAX_CPUS; i++)
+		apic_id_map[i] = i;
+
+	return num_cpus;
 }
 
 /*

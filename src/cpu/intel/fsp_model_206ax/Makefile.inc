@@ -1,5 +1,6 @@
 ramstage-y += model_206ax_init.c
 subdirs-y += ../../x86/name
+subdirs-y += ../smm/gen1
 
 ramstage-y += acpi.c
 
@@ -13,5 +14,3 @@ ifneq ($(wildcard $(shell readlink -f "$(top)/$(CONFIG_MICROCODE_INCLUDE_PATH)")
 CPPFLAGS_common += -I$(CONFIG_MICROCODE_INCLUDE_PATH)
 endif
 endif
-
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c

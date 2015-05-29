@@ -37,6 +37,7 @@
 #include "chip.h"
 #include "northbridge.h"
 #include <fsp_util.h>
+#include <cpu/intel/smm/gen1/smi.h>
 
 static int bridge_revision_id = -1;
 
@@ -316,6 +317,33 @@ static void northbridge_init(struct device *dev)
 	bios_reset_cpl |= 1;
 	MCHBAR8(BIOS_RESET_CPL) = bios_reset_cpl;
 	printk(BIOS_DEBUG, "Set BIOS_RESET_CPL\n");
+}
+
+static u32 northbridge_get_base_reg(device_t dev, int reg)
+{
+	u32 value;
+
+	value = pci_read_config32(dev, reg);
+	/* Base registers are at 1MiB granularity. */
+	value &= ~((1 << 20) - 1);
+	return value;
+}
+
+void
+northbridge_get_tseg_base_and_size(u32 *tsegmb, u32 *tseg_size)
+{
+	device_t dev;
+	u32 bgsm;
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+	*tsegmb = northbridge_get_base_reg(dev, TSEG);
+	bgsm = northbridge_get_base_reg(dev, BGSM);
+	*tseg_size = bgsm - *tsegmb;
+}
+
+void northbridge_write_smram(u8 smram)
+{
+	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM, smram);
 }
 
 static struct pci_operations intel_pci_ops = {

@@ -64,11 +64,6 @@ void intel_pch_finalize_smm(void);
 #if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include "chip.h"
-/* These helpers are for performing SMM relocation. */
-void southbridge_smm_init(void);
-void southbridge_trigger_smi(void);
-void southbridge_clear_smi_status(void);
-
 int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);

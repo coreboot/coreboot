@@ -2,16 +2,17 @@
 
 ## Supported platforms
 
-### Chipset.
+### Chipset
 For any sandybridge or ivybridge platform generated result should
 be bootable, possibly with minor fixes.
 
 ### EC
-EC support is likely to work on intel-based thinkpads. Other laptops are likely to miss EC support
+EC support is likely to work on intel-based thinkpads. Other laptops are
+likely to miss EC support
 
 ## How to use
 
-* Go into BIOS setup on target machine and enable all the device.
+* Go into BIOS setup on target machine and enable all the devices.
 This will allow autoport to detect as much as possible
 * Boot into target machine under GNU/Linux
 * Make sure you have GCC and golang installed
@@ -91,14 +92,14 @@ up in SPD. Under Linux you can see present SPD addresses with following commands
 	I will probe address range 0x03-0x77.
 	Continue? [Y/n] y
 	     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
-	00:          -- -- -- -- -- 08 -- -- -- -- -- -- -- 
-	10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	20: -- -- -- -- 24 -- -- -- -- -- -- -- -- -- -- -- 
-	30: 30 31 -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	50: 50 -- -- -- 54 55 56 57 -- -- -- -- 5c 5d 5e 5f 
-	60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	70: -- -- -- -- -- -- -- --                         
+	00:          -- -- -- -- -- 08 -- -- -- -- -- -- --
+	10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+	20: -- -- -- -- 24 -- -- -- -- -- -- -- -- -- -- --
+	30: 30 31 -- -- -- -- -- -- -- -- -- -- -- -- -- --
+	40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+	50: 50 -- -- -- 54 55 56 57 -- -- -- -- 5c 5d 5e 5f
+	60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+	70: -- -- -- -- -- -- -- --
 
 Make sure to replace `9` with whatever bus is marked as smbus. Here in an example
 you see SPD at address `0x50`. Since we've booted with just the module in C0S0, so
@@ -116,7 +117,7 @@ You can and should omit lines which correspond to
 slots not present on your machine.
 
 This way works well if your RAM is socketed. For soldered RAM if you see
-its SPD, you're in a luck and can proceed the same way although you may have to
+its SPD, you're in luck and can proceed the same way although you may have to
 guess some entries due to RAM not being removable.
 
 Most cases of soldered RAM don't have EEPROM chip. In this case you'd have to create
@@ -124,39 +125,39 @@ fake SPD. Look in `inteltool.log`. You'll see something like:
 
 	/* SPD matching current mode:  */
 	/* CH0S0  */
-	00: 92 11 0b 03 04 00 00 09 03 52 01 08 0a 00 80 00 
-	10: 6e 78 6e 32 6e 11 18 81 20 08 3c 3c 00 f0 00 00 
-	20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 65 00 
-	40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 6d 17 
-	80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00: 92 11 0b 03 04 00 00 09 03 52 01 08 0a 00 80 00
+	10: 6e 78 6e 32 6e 11 18 81 20 08 3c 3c 00 f0 00 00
+	20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 65 00
+	40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 6d 17
+	80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 	f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 	/* CH1S0  */
-	00: 92 11 0b 03 04 00 00 09 03 52 01 08 0a 00 80 00 
-	10: 6e 78 6e 32 6e 11 18 81 20 08 3c 3c 00 f0 00 00 
-	20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 65 00 
-	40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 6d 17 
-	80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00: 92 11 0b 03 04 00 00 09 03 52 01 08 0a 00 80 00
+	10: 6e 78 6e 32 6e 11 18 81 20 08 3c 3c 00 f0 00 00
+	20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 65 00
+	40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 6d 17
+	80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
 This is not completely exact represantation of RAM
 capablities as it lists only the mode currently used
@@ -164,22 +165,22 @@ and lacks minor info like serial number. Using `xxd`
 you can create binary represantation of this SPD:
 
 	cat | xxd -r > spd.bin  <<EOF
-	00: 92 11 0b 03 04 00 00 09 03 52 01 08 0a 00 80 00 
-	10: 6e 78 6e 32 6e 11 18 81 20 08 3c 3c 00 f0 00 00 
-	20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 65 00 
-	40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 6d 17 
-	80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-	f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+	00: 92 11 0b 03 04 00 00 09 03 52 01 08 0a 00 80 00
+	10: 6e 78 6e 32 6e 11 18 81 20 08 3c 3c 00 f0 00 00
+	20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 65 00
+	40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 6d 17
+	80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 	EOF
 
 Then you can place this file into mainboard directory
@@ -295,11 +296,11 @@ your device has very special power saving requirements.
 
 ## `install_intel_vga_int15_handler`
 
-This is used to configure int15 hook used by vga bios. Parameters 2 and 3 usually
-shouldn't be modified as vgabios is quite ok to figure panel fit and active output
-by itself. Last number is the numerical ID of display type. If you don't get any output
-with VGABIOS you should try different values for 4th parameter. If it doesn't help
-try different values for first parameter as well
+This is used to configure int15 hook used by vgabios. Parameters 2 and 3 usually
+shouldn't be modified as vgabios is quite ok to figure panel fit and active
+output by itself. Last number is the numerical ID of display type. If you
+don't get any output with vgabios you should try different values for 4th
+parameter. If it doesn't help try different values for first parameter as well
 
 ## CMOS options
 

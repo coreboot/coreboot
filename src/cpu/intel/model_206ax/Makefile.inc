@@ -1,5 +1,6 @@
 ramstage-y += model_206ax_init.c
 subdirs-y += ../../x86/name
+subdirs-y += ../smm/gen1
 
 ramstage-y += acpi.c
 
@@ -8,5 +9,3 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
 
 cpu_incs += $(src)/cpu/intel/model_206ax/cache_as_ram.inc
-
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c

@@ -30,8 +30,8 @@
 #include <soc/power.h>
 #include <timestamp.h>
 
-#define BCT_OFFSET_IN_BIT	0x50
-#define ODMDATA_OFFSET_IN_BCT	0x6A8
+#define BCT_OFFSET_IN_BIT	0x4c
+#define ODMDATA_OFFSET_IN_BCT	0x508
 #define TEGRA_SRAM_MAX		(TEGRA_SRAM_BASE + TEGRA_SRAM_SIZE)
 
 static void save_odmdata(void)

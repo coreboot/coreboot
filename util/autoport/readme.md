@@ -25,7 +25,12 @@ This will allow autoport to detect as much as possible
 		make
 		cd ../autoport
 		go build
-		./autoport --input_log=logs --make_logs --coreboot_dir=../..
+		sudo ./autoport --input_log=logs --make_logs --coreboot_dir=../..
+
+	Note: in case you have problems getting gcc and golang to target machine
+	you can just compile on another machine and transfer binaries
+	`autoport`, `inteltool` and `ectool`. You'll still need other prerequisites
+	but you may place them in the same directory as autoport.
 
 * Look for output unknown PCI devices. E.g.
 

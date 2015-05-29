@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func RunAndSave(output string, name string, arg ...string) {
+func TryRunAndSave(output string, name string, arg []string) error {
 	cmd := exec.Command(name, arg...)
 
 	f, err := os.Create(output)
@@ -22,9 +22,27 @@ func RunAndSave(output string, name string, arg ...string) {
 
 	err = cmd.Start()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	cmd.Wait()
+	return nil
+}
+
+func RunAndSave(output string, name string, arg ...string) {
+	err := TryRunAndSave(output, name, arg)
+	if err == nil {
+		return
+	}
+	idx := strings.LastIndex(name, "/")
+	relname := name
+	if idx >= 0 {
+		relname = name[idx+1:]
+	}
+	relname = "./" + relname
+	err = TryRunAndSave(output, relname, arg)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func MakeLogs(outDir string) {

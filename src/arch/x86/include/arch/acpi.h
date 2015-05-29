@@ -691,7 +691,6 @@ static inline int acpi_s3_resume_allowed(void)
 void *acpi_backup_container(uintptr_t base, size_t size);
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
-extern int acpi_slp_type;
 
 #ifdef __PRE_RAM__
 static inline int acpi_is_wakeup_s3(void)
@@ -706,7 +705,6 @@ int acpi_is_wakeup_s4(void);
 void acpi_prepare_for_resume(void);
 
 #else
-#define acpi_slp_type ACPI_S0
 static inline int acpi_is_wakeup(void) { return 0; }
 static inline int acpi_is_wakeup_s3(void) { return 0; }
 static inline int acpi_is_wakeup_s4(void) { return 0; }

@@ -81,8 +81,8 @@ endif
 
 else # CONFIG_SMM_TSEG
 
-$(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_LDSCRIPT)
-	$(LD_smm) $(SMM_LDFLAGS) -nostdlib -nostartfiles --gc-sections -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
+$(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld
+	$(LD_smm) -nostdlib -nostartfiles --gc-sections -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/cpu/x86/smm/smm.o
 	$(NM_smm) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
 	$(OBJCOPY_smm) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
 
@@ -102,10 +102,6 @@ ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap.manual
 endif
 
 smm-y += smmhandler.S
-SMM_LDFLAGS  :=
-SMM_LDSCRIPT := smm.ld
-
 smm-y += smihandler.c
-
 
 endif # CONFIG_SMM_TSEG

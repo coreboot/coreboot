@@ -15,7 +15,12 @@ likely to miss EC support
 * Go into BIOS setup on target machine and enable all the devices.
 This will allow autoport to detect as much as possible
 * Boot into target machine under GNU/Linux
-* Make sure you have GCC and golang installed
+* Make sure that following components are installed:
+  * GCC
+  * golang
+  * lspci
+  * dmidecode
+  * acpidump
 * Grab coreboot tree
 * Execute following commands starting from coreboot tree
 

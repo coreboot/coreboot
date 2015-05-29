@@ -489,7 +489,7 @@ static void igd_init(struct device *dev)
 		return;
 
 	/* Wait for any configured pre-graphics delay */
-	if (acpi_slp_type != SLEEP_STATE_S3) {
+	if (!acpi_is_wakeup_s3()) {
 #if IS_ENABLED(CONFIG_CHROMEOS)
 		if (developer_mode_enabled() || recovery_mode_enabled() ||
 		    vboot_wants_oprom())
@@ -542,7 +542,7 @@ static void igd_init(struct device *dev)
 		memset((void *)((u32)fb->base), 0, 64);
 	}
 
-	if (!gfx_get_init_done() && acpi_slp_type != 3) {
+	if (!gfx_get_init_done() && !acpi_is_wakeup_s3()) {
 		/*
 		 * Enable DDI-A if the Option ROM did not execute:
 		 *

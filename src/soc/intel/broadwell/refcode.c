@@ -32,6 +32,7 @@
 #endif
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
 
 static pei_wrapper_entry_t load_refcode_from_cache(void)
@@ -128,7 +129,7 @@ void broadwell_run_reference_code(void)
 	mainboard_fill_pei_data(&pei_data);
 	broadwell_fill_pei_data(&pei_data);
 
-	pei_data.boot_mode = acpi_slp_type;
+	pei_data.boot_mode = acpi_is_wakeup_s3() ? SLEEP_STATE_S3 : 0;
 	pei_data.saved_data = (void *) &dummy;
 
 	entry = load_reference_code();

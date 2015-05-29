@@ -1053,13 +1053,11 @@ static void intel_me_init(device_t dev)
 
 static void intel_me_enable(device_t dev)
 {
-#if CONFIG_HAVE_ACPI_RESUME
 	/* Avoid talking to the device in S3 path */
-	if (acpi_slp_type == 3) {
+	if (acpi_is_wakeup_s3()) {
 		dev->enabled = 0;
 		pch_disable_devfn(dev);
 	}
-#endif
 }
 
 static struct device_operations device_ops = {

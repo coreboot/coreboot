@@ -27,7 +27,7 @@
 #if ENV_RAMSTAGE
 
 /* This is filled with acpi_is_wakeup() call early in ramstage. */
-int acpi_slp_type = -1;
+static int acpi_slp_type = -1;
 
 #if IS_ENABLED(CONFIG_EARLY_CBMEM_INIT)
 int acpi_get_sleep_type(void)

@@ -359,6 +359,22 @@ func (l *LogDevReader) GetCPUModel() (ret []uint32) {
 	return
 }
 
+func (l *LogDevReader) HasPS2() bool {
+	file, err := os.Open(l.InputDirectory + "/input_bustypes.log")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Index(line, "0011") >= 0 {
+			return true
+		}
+	}
+	return false
+}
+
 var FlagLogInput = flag.String("input_log", ".", "Input log directory")
 var FlagLogMkLogs = flag.Bool("make_logs", false, "Dump logs")
 

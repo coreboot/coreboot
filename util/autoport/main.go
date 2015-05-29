@@ -59,6 +59,7 @@ type DevReader interface {
 	GetCPUModel() []uint32
 	GetEC() []byte
 	GetIOPorts() []IOPorts
+	HasPS2() bool
 }
 
 type IOPorts struct {

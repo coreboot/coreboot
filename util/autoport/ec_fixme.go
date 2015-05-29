@@ -6,7 +6,7 @@ func FIXMEEC(ctx Context) {
 	ap := Create(ctx, "acpi/platform.asl")
 	defer ap.Close()
 
-	hasKeyboard := IsIOPortUsedBy(ctx, 0x60, "keyboard")
+	hasKeyboard := ctx.InfoSource.HasPS2()
 
 	sbGPE := GuessECGPE(ctx)
 	var GPEUnsure bool

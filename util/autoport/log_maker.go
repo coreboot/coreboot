@@ -103,4 +103,23 @@ func MakeLogs(outDir string) {
 		defer out.Close()
 		io.Copy(out, in)
 	}
+
+	out, err := os.Create(outDir + "/input_bustypes.log")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer out.Close()
+
+	ClassInputDir := "/sys/class/input/"
+	files, _ = ioutil.ReadDir(ClassInputDir)
+	for _, f := range files {
+		if strings.HasPrefix(f.Name(), "input") && !f.Mode().IsRegular() { /* Allow both dirs and symlinks.  */
+			in, err := os.Open(ClassInputDir + f.Name() + "/id/bustype")
+			defer in.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+			io.Copy(out, in)
+		}
+	}
 }

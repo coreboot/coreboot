@@ -21,6 +21,7 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_NEHALEM),y)
 
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
+ramstage-y += smi.c
 ramstage-y += gma.c
 
 ramstage-y += acpi.c

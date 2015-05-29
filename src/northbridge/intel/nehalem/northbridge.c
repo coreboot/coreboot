@@ -37,6 +37,7 @@
 #include <cbmem.h>
 #include "chip.h"
 #include "nehalem.h"
+#include <cpu/intel/smm/gen1/smi.h>
 
 static int bridge_revision_id = -1;
 
@@ -163,6 +164,18 @@ static void mc_read_resources(device_t dev)
 	    bad_ram_resource(dev, 9, 0x1fc000000ULL >> 10, 0x004000000 >> 10);
 
 	add_fixed_resources(dev, 10);
+}
+
+void
+northbridge_get_tseg_base_and_size(u32 *tsegmb, u32 *tseg_size)
+{
+	device_t dev;
+	u32 bgsm;
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+	*tsegmb = pci_read_config32(dev, TSEG) & ~1;
+	bgsm = pci_read_config32(dev, D0F0_GTT_BASE);
+	*tseg_size = bgsm - *tsegmb;
 }
 
 static void mc_set_resources(device_t dev)

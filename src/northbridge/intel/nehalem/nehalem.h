@@ -481,11 +481,6 @@ void init_iommu(void);
 
 #define LAC		0x87	/* Legacy Access Control */
 #define QPD0F1_SMRAM		0x4d	/* System Management RAM Control */
-#define  D_OPEN		(1 << 6)
-#define  D_CLS		(1 << 5)
-#define  D_LCK		(1 << 4)
-#define  G_SMRAME	(1 << 3)
-#define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
 #define SKPAD		0xdc	/* Scratchpad Data */
 
@@ -582,12 +577,6 @@ void init_iommu(void);
 
 #ifndef __ASSEMBLER__
 static inline void barrier(void) { asm("" ::: "memory"); }
-
-struct ied_header {
-	char signature[10];
-	u32 size;
-	u8 reserved[34];
-} __attribute__ ((packed));
 
 #define PCI_DEVICE_ID_SB 0x0104
 #define PCI_DEVICE_ID_IB 0x0154

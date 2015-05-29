@@ -35,6 +35,7 @@
 #include <pc80/mc146818rtc.h>
 #include "model_2065x.h"
 #include "chip.h"
+#include <cpu/intel/smm/gen1/smi.h>
 
 /*
  * List of supported C-states in this processor
@@ -112,6 +113,28 @@ static acpi_cstate_t cstate_map[] = {
 	},
 	{ 0 }
 };
+
+int cpu_get_apic_id_map(int *apic_id_map)
+{
+	int i;
+	struct cpuid_result result;
+	unsigned threads_per_package, threads_per_core;
+
+	/* Logical processors (threads) per core */
+	result = cpuid_ext(0xb, 0);
+	threads_per_core = result.ebx & 0xffff;
+
+	/* Logical processors (threads) per package */
+	result = cpuid_ext(0xb, 1);
+	threads_per_package = result.ebx & 0xffff;
+
+	for (i = 0; i < threads_per_package && i < CONFIG_MAX_CPUS; ++i) {
+		apic_id_map[i] = (i % threads_per_core)
+			+ ((i / threads_per_core) << 2);
+	}
+
+	return threads_per_package;
+}
 
 static void enable_vmx(void)
 {

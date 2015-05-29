@@ -105,7 +105,7 @@ func ich9GetFlashSize(ctx Context) {
 		highflkb := uint32(0)
 		for reg := uint16(0); reg < 5; reg++ {
 			fl := (inteltool.RCBA[0x3854+4*reg] >> 16) & 0x1fff
-			flkb := fl << 2
+			flkb := (fl + 1) << 2
 			if flkb > highflkb {
 				highflkb = flkb
 			}

@@ -102,6 +102,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	Elf64_Phdr *phdr;
 	Elf64_Ehdr *ehdr;
 	Elf64_Shdr *shdr_ignored;
+	Elf64_Addr virt_to_phys;
 	char *buffer;
 	struct buffer outheader;
 	int ret = -1;
@@ -143,6 +144,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	data_start = ~0;
 	data_end = 0;
 	mem_end = 0;
+	virt_to_phys = 0;
 
 	for (i = 0; i < headers; i++) {
 		unsigned int start, mend, rend;
@@ -169,6 +171,9 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 
 		if (mend > mem_end)
 			mem_end = mend;
+
+		if (virt_to_phys == 0)
+			virt_to_phys = phdr[i].p_paddr - phdr[i].p_vaddr;
 	}
 
 	if (data_start < *location) {
@@ -262,7 +267,10 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	 * Maybe we should just change the spec.
 	 */
 	xdr_le.put32(&outheader, algo);
-	xdr_le.put64(&outheader, ehdr->e_entry);
+	/* Coreboot expects entry point to be physical address. Thus, adjust the
+	 * entry point accordingly.
+	 */
+	xdr_le.put64(&outheader, ehdr->e_entry + virt_to_phys);
 	xdr_le.put64(&outheader, data_start);
 	xdr_le.put32(&outheader, outlen);
 	xdr_le.put32(&outheader, mem_end - data_start);

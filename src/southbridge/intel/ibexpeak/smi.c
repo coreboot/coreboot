@@ -323,7 +323,7 @@ void southbridge_clear_smi_status(void)
 {
 	/* Clear SMI status */
 	reset_smi_status();
- 
+
 	/* Clear PM1 status */
 	reset_pm1_status();
 

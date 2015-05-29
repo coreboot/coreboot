@@ -121,6 +121,9 @@ the first entry in SPD map has to be `0x50`. Once you have SPD map your
 You can and should omit lines which correspond to
 slots not present on your machine.
 
+Note: slot labelling may be missing or unreliable. Use `inteltool` to see
+which slot have modules in them.
+
 This way works well if your RAM is socketed. For soldered RAM if you see
 its SPD, you're in luck and can proceed the same way although you may have to
 guess some entries due to RAM not being removable.

@@ -34,6 +34,16 @@ smm-c-deps:=$$(OPTION_TABLE_H)
 $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
 	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --whole-archive --start-group $(smm-objs) --no-whole-archive $(COMPILER_RT_smm) --end-group
 
+# change to the target path because objcopy will use the path name in its
+# ELF symbol names.
+$(obj)/cpu/x86/smm/smm.ramstage.manual: $(obj)/cpu/x86/smm/smm
+	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
+	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+else
+	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
+endif
+
 ifeq ($(CONFIG_SMM_TSEG),y)
 
 smmstub-y += smm_stub.S
@@ -71,34 +81,16 @@ endif
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf.rmod
 	$(OBJCOPY_smm) -O binary $< $@
 
-$(obj)/cpu/x86/smm/smm.ramstage.manual: $(obj)/cpu/x86/smm/smm
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
-else
-	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
-endif
-
 else # CONFIG_SMM_TSEG
 
-$(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld
+$(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld
 	$(LD_smm) -nostdlib -nostartfiles --gc-sections -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/cpu/x86/smm/smm.o
 	$(NM_smm) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
-	$(OBJCOPY_smm) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
-
-# change to the target path because objcopy will use the path name in its
-# ELF symbol names.
-$(obj)/cpu/x86/smm/smm_wrap.ramstage.manual: $(obj)/cpu/x86/smm/smm_wrap
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.manual
-else
-	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf64-x86_64 -B x86_64 smm_wrap.ramstage.manual
-endif
+	$(OBJCOPY_smm) -O binary $(obj)/cpu/x86/smm/smm.elf $@
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.S
 ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
-ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap.manual
+ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
 endif
 
 smm-y += smmhandler.S

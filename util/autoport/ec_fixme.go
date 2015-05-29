@@ -34,6 +34,7 @@ Method(_PTS,1)
 
 	ecs := ctx.InfoSource.GetEC()
 	MainboardIncludes = append(MainboardIncludes, "ec/acpi/ec.h")
+	MainboardIncludes = append(MainboardIncludes, "console/console.h")
 
 	MainboardInit +=
 		`	/* FIXME: trim this down or remove if necessary */
@@ -58,6 +59,7 @@ Method(_PTS,1)
 	}
 `
 
+	KconfigBool["EC_ACPI"] = true
 	si := Create(ctx, "acpi/superio.asl")
 	defer si.Close()
 
@@ -82,4 +84,5 @@ Method(_PTS,1)
 		fmt.Fprintf(ec, "\tName (_GPE, %d)\n", sbGPE)
 	}
 	ec.WriteString("/* FIXME: EC support */\n")
+	ec.WriteString("}\n")
 }

@@ -90,6 +90,7 @@ type Context struct {
 	Model         string
 	BaseDirectory string
 	InfoSource    DevReader
+	SaneVendor    string
 }
 
 type IOAPICIRQ struct {
@@ -622,7 +623,7 @@ const MoboDir = "/src/mainboard/"
 
 func makeVendor(ctx Context) {
 	vendor := ctx.Vendor
-	vendorSane := sanitize(ctx.Vendor)
+	vendorSane := ctx.SaneVendor
 	vendorDir := *FlagOutDir + MoboDir + vendorSane
 	vendorUpper := strings.ToUpper(vendorSane)
 	kconfig := vendorDir + "/Kconfig"
@@ -702,8 +703,18 @@ func main() {
 	if dmi.IsLaptop {
 		KconfigBool["SYSTEM_TYPE_LAPTOP"] = true
 	}
-	ctx.MoboID = sanitize(ctx.Vendor) + "/" + sanitize(ctx.Model)
-	ctx.KconfigName = "BOARD_" + strings.ToUpper(sanitize(ctx.Vendor)+"_"+sanitize(ctx.Model))
+	ctx.SaneVendor = sanitize(ctx.Vendor)
+	for {
+		last := ctx.SaneVendor
+		for _, suf := range []string{"_inc", "_co", "_corp"} {
+			ctx.SaneVendor = strings.TrimSuffix(ctx.SaneVendor, suf)
+		}
+		if last == ctx.SaneVendor {
+			break
+		}
+	}
+	ctx.MoboID = ctx.SaneVendor + "/" + sanitize(ctx.Model)
+	ctx.KconfigName = "BOARD_" + strings.ToUpper(ctx.SaneVendor+"_"+sanitize(ctx.Model))
 	ctx.BaseDirectory = *FlagOutDir + MoboDir + ctx.MoboID
 	KconfigStringUnquoted["MAINBOARD_DIR"] = ctx.MoboID
 	KconfigString["MAINBOARD_PART_NUMBER"] = ctx.Model

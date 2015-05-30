@@ -362,7 +362,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->type = SMBIOS_SYSTEM_ENCLOSURE;
 	t->handle = handle;
 	t->length = len - 2;
-	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_SMBIOS_MANUFACTURER);
+	t->manufacturer = smbios_add_string(t->eos, smbios_mainboard_manufacturer());
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;

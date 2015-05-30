@@ -302,7 +302,7 @@ config BOARD_ID_AUTO
 	  (ie. GPIO) select this configuration option.
 
 config BOARD_ID_MANUAL
-	bool "Add board ID file to CBFS"
+	bool
 	default n
 	depends on !BOARD_ID_AUTO
 	help

@@ -213,3 +213,8 @@ const char *smbios_mainboard_bios_version(void)
 	s = strconcat("CBET4000 ", coreboot_version);
 	return s;
 }
+
+const char *smbios_mainboard_manufacturer(void)
+{
+	return "LENOVO";
+}

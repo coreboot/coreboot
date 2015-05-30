@@ -1,0 +1,7 @@
+if VENDOR_LENOVO
+
+config SMBIOS_PROVIDED_BY_MOBO
+	bool
+	default y
+
+endif

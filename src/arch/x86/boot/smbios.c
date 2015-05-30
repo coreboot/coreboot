@@ -281,6 +281,8 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	return len;
 }
 
+#if !CONFIG_SMBIOS_PROVIDED_BY_MOBO
+
 const char *__attribute__((weak)) smbios_mainboard_serial_number(void)
 {
 	return CONFIG_MAINBOARD_SERIAL_NUMBER;
@@ -305,6 +307,7 @@ void __attribute__((weak)) smbios_mainboard_set_uuid(u8 *uuid)
 {
 	/* leave all zero */
 }
+#endif
 
 #ifdef CONFIG_MAINBOARD_FAMILY
 const char *smbios_mainboard_family(void)

@@ -639,7 +639,7 @@ board_id-file := $(obj)/board_id
 board_id-type := raw
 
 $(obj)/board_id:
-	printf "$(CONFIG_BOARD_ID_STRING)" > $@
+	printf $(CONFIG_BOARD_ID_STRING) > $@
 
 JENKINS_PAYLOAD=none
 what-jenkins-does:

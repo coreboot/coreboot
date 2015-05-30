@@ -320,7 +320,7 @@ config BOARD_ID_STRING
 	  board type.
 
 config RAM_CODE_SUPPORT
-	bool "Discover RAM configuration code and store it in coreboot table"
+	bool
 	default n
 	help
 	  If enabled, coreboot discovers RAM configuration (value obtained by

@@ -218,7 +218,7 @@ config COVERAGE
 	  If unsure, say N.
 
 config RELOCATABLE_MODULES
-	bool "Relocatable Modules"
+	bool
 	default n
 	help
 	 If RELOCATABLE_MODULES is selected then support is enabled for
@@ -226,9 +226,10 @@ config RELOCATABLE_MODULES
 	 loaded anywhere and all the relocations are handled automatically.
 
 config RELOCATABLE_RAMSTAGE
-	depends on (RELOCATABLE_MODULES && EARLY_CBMEM_INIT)
+	depends on EARLY_CBMEM_INIT
 	bool "Build the ramstage to be relocatable in 32-bit address space."
 	default n
+	select RELOCATABLE_MODULES
 	help
 	 The reloctable ramstage support allows for the ramstage to be built
 	 as a relocatable module. The stage loader can identify a place

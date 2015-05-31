@@ -13,5 +13,6 @@
 # GNU General Public License for more details.
 #
 
+subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_BOLTON) += hudson
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON) += hudson
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE) += hudson

@@ -13,6 +13,12 @@
 ## GNU General Public License for more details.
 ##
 
+config SOUTHBRIDGE_AMD_AGESA_BOLTON
+	bool
+	select IOAPIC
+	select HAVE_USBDEBUG_OPTIONS
+	select HAVE_HARD_RESET
+
 config SOUTHBRIDGE_AMD_AGESA_HUDSON
 	bool
 	select IOAPIC
@@ -25,7 +31,7 @@ config SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	select HAVE_USBDEBUG_OPTIONS
 	select HAVE_HARD_RESET
 
-if SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
+if SOUTHBRIDGE_AMD_AGESA_BOLTON || SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
@@ -70,18 +76,21 @@ config HUDSON_GEC_FWM
 
 config HUDSON_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
+	default "3rdparty/blobs/southbridge/amd/bolton/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_BOLTON
 	default "3rdparty/blobs/southbridge/amd/hudson/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
 	default "3rdparty/blobs/southbridge/amd/yangtze/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
 	string "IMC firmware path and filename"
+	default "3rdparty/blobs/southbridge/amd/bolton/imc.bin" if SOUTHBRIDGE_AMD_AGESA_BOLTON
 	default "3rdparty/blobs/southbridge/amd/hudson/imc.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
 	default "3rdparty/blobs/southbridge/amd/yangtze/imc.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_IMC_FWM
 
 config HUDSON_GEC_FWM_FILE
 	string "GEC firmware path and filename"
+	default "3rdparty/blobs/southbridge/amd/bolton/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_BOLTON
 	default "3rdparty/blobs/southbridge/amd/hudson/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_HUDSON
 	default "3rdparty/blobs/southbridge/amd/yangtze/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_GEC_FWM
@@ -204,7 +213,7 @@ config ACPI_ENABLE_THERMAL_ZONE
 	bool
 	default y
 
-endif # SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
+endif # SOUTHBRIDGE_AMD_AGESA_BOLTON || SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
 
 if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	config AZ_PIN

@@ -16,7 +16,7 @@
 #ifndef AMD_PCI_INT_TYPES_H
 #define AMD_PCI_INT_TYPES_H
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON)
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_BOLTON) || IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON)
 const char * intr_types[] = {
 	[0x00] = "INTA#\t", "INTB#\t", "INTC#\t", "INTD#\t", "INTE#\t", "INTF#\t", "INTG#\t", "INTH#\t",
 	[0x08] = "Misc\t", "Misc0\t", "Misc1\t", "Misc2\t", "Ser IRQ INTA", "Ser IRQ INTB", "Ser IRQ INTC", "Ser IRQ INTD",

@@ -539,10 +539,17 @@ int8_t save_mct_information_to_nvram(void)
 
 	struct spi_flash *flash;
 	ssize_t s3nv_offset;
-	struct amd_s3_persistent_data persistent_data;
+	struct amd_s3_persistent_data *persistent_data;
+
+	/* Allocate temporary data structures */
+	persistent_data = malloc(sizeof(struct amd_s3_persistent_data));
+	if (!persistent_data) {
+		printk(BIOS_DEBUG, "Could not allocate S3 data structure in RAM\n");
+		return -1;
+	}
 
 	/* Obtain MCT configuration data */
-	copy_mct_data_to_save_variable(&persistent_data);
+	copy_mct_data_to_save_variable(persistent_data);
 
 	/* Obtain CBFS file offset */
 	s3nv_offset = get_s3nv_file_offset();
@@ -572,7 +579,10 @@ int8_t save_mct_information_to_nvram(void)
 
 	/* Erase and write data structure */
 	flash->erase(flash, s3nv_offset, CONFIG_S3_DATA_SIZE);
-	flash->write(flash, s3nv_offset, sizeof(struct amd_s3_persistent_data), &persistent_data);
+	flash->write(flash, s3nv_offset, sizeof(struct amd_s3_persistent_data), persistent_data);
+
+	/* Deallocate temporary data structures */
+	free(persistent_data);
 
 	/* Tear down SPI flash access */
 	flash->spi->rw = SPI_WRITE_FLAG;

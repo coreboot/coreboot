@@ -723,8 +723,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt)
 }
 #endif
 
-extern const unsigned char AmlCode[];
-
 unsigned long __attribute__ ((weak)) fw_cfg_acpi_tables(unsigned long start)
 {
 	return 0;
@@ -741,13 +739,13 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_facs_t *facs;
 	acpi_header_t *slic_file, *slic;
 	acpi_header_t *ssdt;
-	acpi_header_t *dsdt;
+	acpi_header_t *dsdt_file, *dsdt;
 	acpi_mcfg_t *mcfg;
 	acpi_tcpa_t *tcpa;
 	acpi_madt_t *madt;
 	struct device *dev;
 	unsigned long fw;
-	size_t slic_size;
+	size_t slic_size, dsdt_size;
 	char oem_id[6], oem_table_id[8];
 
 	current = start;
@@ -758,6 +756,21 @@ unsigned long write_acpi_tables(unsigned long start)
 	fw = fw_cfg_acpi_tables(current);
 	if (fw)
 		return fw;
+
+	dsdt_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+				     CONFIG_CBFS_PREFIX "/dsdt.aml",
+				     CBFS_TYPE_RAW, &dsdt_size);
+	if (!dsdt_file) {
+		printk(BIOS_ERR, "No DSDT file, skipping ACPI tables\n");
+		return current;
+	}
+
+	if (dsdt_file->length > dsdt_size
+	    || dsdt_file->length < sizeof (acpi_header_t)
+	    || memcmp(dsdt_file->signature, "DSDT", 4) != 0) {
+		printk(BIOS_ERR, "Invalid DSDT file, skipping ACPI tables\n");
+		return current;
+	}
 
 	slic_file = cbfs_boot_map_with_leak(CONFIG_CBFS_PREFIX "/slic",
 				     CBFS_TYPE_RAW, &slic_size);
@@ -804,7 +817,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
 	dsdt = (acpi_header_t *) current;
-	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
+	memcpy(dsdt, dsdt_file, sizeof(acpi_header_t));
 	if (dsdt->length >= sizeof(acpi_header_t)) {
 		current += sizeof(acpi_header_t);
 
@@ -815,7 +828,7 @@ unsigned long write_acpi_tables(unsigned long start)
 			}
 		current = (unsigned long) acpigen_get_current();
 		memcpy((char *)current,
-		       (char *)&AmlCode + sizeof(acpi_header_t),
+		       (char *)dsdt_file + sizeof(acpi_header_t),
 		       dsdt->length - sizeof(acpi_header_t));
 		current += dsdt->length - sizeof(acpi_header_t);
 

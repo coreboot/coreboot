@@ -262,19 +262,7 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
 endif
 ifeq ($(CONFIG_HAVE_ACPI_TABLES),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/dsdt.asl
-ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/ssdt2.asl),)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt2.asl
-endif
-ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/ssdt3.asl),)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt3.asl
-endif
-ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/ssdt4.asl),)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt4.asl
-endif
-ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/ssdt5.asl),)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt5.asl
-endif
+$(eval $(call asl_template,dsdt))
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/fadt.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
 endif

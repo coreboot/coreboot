@@ -169,15 +169,15 @@ endef
 
 #######################################################################
 # Add handler to compile ACPI's ASL
-define ramstage-objs_asl_template
-$$(call src-to-obj,ramstage,$(1).asl): $(1).asl $(obj)/config.h
+define asl_template
+$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-file = $(obj)/$(1).aml
+$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-type = raw
+$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-compression = none
+cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml
+$(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) $$(CPPFLAGS_ramstage) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-ramstage-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$@
-	cd $$(dir $$@); $(IASL) -p $$(notdir $$@) -tc $$(notdir $$@)
-	mv $$(basename $$@).hex $$(basename $$@).c
-	$(CC_ramstage) $$(CFLAGS_ramstage) $$(CPPFLAGS_ramstage) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c
-	# keep %.o: %.c rule from catching the temporary .c file after a make clean
-	mv $$(basename $$@).c $$(basename $$@).hex
+	cd $$(dir $$@); $(IASL) -p $$(notdir $$@) $$(notdir $$@)
 endef
 
 #######################################################################

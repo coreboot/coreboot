@@ -20,11 +20,7 @@
 #include "northbridge/amd/amdk8/acpi.h"
 #include "mb_sysconf.h"
 #include "mainboard.h"
-
-extern const unsigned char AmlCode_ssdt2[];
-extern const unsigned char AmlCode_ssdt3[];
-extern const unsigned char AmlCode_ssdt4[];
-extern const unsigned char AmlCode_ssdt5[];
+#include <cbfs.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -134,6 +130,7 @@ unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp
 	unsigned long current;
 	acpi_header_t *ssdtx;
 	const void *p;
+	size_t p_size;
 
 	int i;
 
@@ -146,6 +143,7 @@ unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp
         //same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table
 
         for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
+		const char *file_name;
                 if((sysconf.pci1234[i] & 1) != 1 ) continue;
                 uint8_t c;
                 if(i<7) {
@@ -159,19 +157,25 @@ unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp
                 ssdtx = (acpi_header_t *)current;
                 switch(sysconf.hcid[i]) {
                 case 1: //8132
-                        p = &AmlCode_ssdt2;
+			file_name = CONFIG_CBFS_PREFIX "/ssdt2.aml";
                         break;
                 case 2: //8151
-                        p = &AmlCode_ssdt3;
+			file_name = CONFIG_CBFS_PREFIX "/ssdt3.aml";
                         break;
 		case 3: //8131
-                        p = &AmlCode_ssdt4;
+			file_name = CONFIG_CBFS_PREFIX "/ssdt4.aml";
                         break;
                 default:
 			//HTX no io apic
-                        p = &AmlCode_ssdt5;
+			file_name = CONFIG_CBFS_PREFIX "/ssdt5.aml";
 			break;
                 }
+		p = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+					  file_name,
+					  CBFS_TYPE_RAW, &p_size);
+		if (!p || p_size < sizeof(acpi_header_t))
+			continue;
+
 		memcpy(ssdtx, p, sizeof(acpi_header_t));
 		current += ssdtx->length;
 		memcpy(ssdtx, p, ssdtx->length);

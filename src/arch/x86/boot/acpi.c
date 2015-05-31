@@ -762,8 +762,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	slic_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
 				     CONFIG_CBFS_PREFIX "/slic",
 				     CBFS_TYPE_RAW, &slic_size);
-	if (slic_file && (slic_file->length > slic_size
-			  || slic_file->length < sizeof (acpi_header_t))) {
+	if (slic_file
+	    && (slic_file->length > slic_size
+		|| slic_file->length < sizeof (acpi_header_t)
+		|| memcmp(slic_file->signature, "SLIC", 4) != 0)) {
 		slic_file = 0;
 	}
 

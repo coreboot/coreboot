@@ -99,10 +99,32 @@ static void configure_vop(void)
 	 * To minimize display corruption, turn off LCDC_BL before
 	 * powering on the backlight.
 	 */
-	gpio_output(GPIO_BACKLIGHT, 1);	/* BL_EN */
-	gpio_output(GPIO_LCDC_BL, 0);
+	switch (board_id()) {
+	case 0:
+		gpio_output(GPIO(7, A, 3), 1);
+		break;
+	default:
+		gpio_output(GPIO(7, A, 2), 1);
+		break;
+	}
 
+	gpio_output(GPIO_LCDC_BL, 0);
 	rk808_configure_switch(1, 1);	/* VCC33_LCD */
+
+	/* EDP_HPD setup */
+	switch (board_id()) {
+	case 0:
+		/* not present */
+		break;
+	default:
+		/* Unlike other Veyrons, Danger has external pull resistors on
+		 * EDP_HPD. Default for GPIO(7, B, 3) is pull-down, set to
+		 * float.
+		 */
+		gpio_input(GPIO(7, B, 3));
+		write32(&rk3288_grf->iomux_edp_hotplug, IOMUX_EDP_HOTPLUG);
+		break;
+	}
 }
 
 static void configure_hdmi(void)

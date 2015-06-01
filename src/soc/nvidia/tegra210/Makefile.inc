@@ -54,9 +54,7 @@ romstage-y += power.c
 romstage-y += ram_code.c
 ifneq ($(CONFIG_BOOTROM_SDRAM_INIT),y)
 romstage-y += sdram.c
- ifeq ($(CONFIG_LP0_SUPPORT),y)
 romstage-y += sdram_lp0.c
- endif
 endif
 romstage-y += ../tegra/gpio.c
 romstage-y += ../tegra/i2c.c
@@ -78,6 +76,7 @@ ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += ./jdi_25x18_display/panel-jdi-lpm102
 ramstage-$(CONFIG_MAINBOARD_DO_SOR_INIT) += dp.c
 ramstage-$(CONFIG_MAINBOARD_DO_SOR_INIT) += sor.c
 
+ramstage-y += sdram_lp0.c
 ramstage-y += soc.c
 ramstage-y += spi.c
 ramstage-y += i2c.c

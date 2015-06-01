@@ -36,6 +36,8 @@
 #include <string.h>
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <soc/sdram.h>
+#include <soc/sdram_configs.h>
 
 #include "chip.h"
 
@@ -144,6 +146,10 @@ static void tegra210_init(void *chip_info)
 
 	printk(BIOS_INFO, "chip %x rev %02x.%x\n",
 		rev.chip_id, rev.major, rev.minor);
+
+	/* Save sdram parameters to scratch regs to be used in LP0 resume */
+	sdram_lp0_save_params(get_sdram_config());
+	printk(BIOS_INFO, "sdram params saved.\n");
 }
 
 struct chip_operations soc_nvidia_tegra210_ops = {

@@ -1076,7 +1076,4 @@ void sdram_init(const struct sdram_params *param)
 	sdram_set_refresh(param, emc);
 	sdram_enable_arbiter(param);
 	sdram_lock_carveouts(param, mc);
-#if defined(CONFIG_LP0)
-	sdram_lp0_save_params(param);
-#endif
 }

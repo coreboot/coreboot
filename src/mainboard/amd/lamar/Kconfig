@@ -44,33 +44,13 @@ config MAINBOARD_SERIAL_NUMBER
 	string
 	default "52198A"
 
-config HW_MEM_HOLE_SIZEK
-	hex
-	default 0x200000
-
 config MAX_CPUS
 	int
 	default 4
 
-config HW_MEM_HOLE_SIZE_AUTO_INC
-	bool
-	default n
-
 config IRQ_SLOT_COUNT
 	int
 	default 11
-
-config RAMTOP
-	hex
-	default 0x1000000
-
-config HEAP_SIZE
-	hex
-	default 0xc0000
-
-config RAMBASE
-	hex
-	default 0x200000
 
 config ONBOARD_VGA_IS_PRIMARY
 	bool

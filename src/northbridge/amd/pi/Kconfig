@@ -36,4 +36,24 @@ source src/northbridge/amd/pi/00630F01/Kconfig
 source src/northbridge/amd/pi/00730F01/Kconfig
 source src/northbridge/amd/pi/00660F01/Kconfig
 
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x200000
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+
+config RAMTOP
+	hex
+	default 0x1000000
+
+config HEAP_SIZE
+	hex
+	default 0xc0000
+
+config RAMBASE
+	hex
+	default 0x200000
+
 endif # NORTHBRIDGE_AMD_PI

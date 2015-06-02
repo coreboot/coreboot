@@ -39,17 +39,9 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "DB-FT3b"
 
-config HW_MEM_HOLE_SIZEK
-	hex
-	default 0x200000
-
 config MAX_CPUS
 	int
 	default 4
-
-config HW_MEM_HOLE_SIZE_AUTO_INC
-	bool
-	default n
 
 config IRQ_SLOT_COUNT
 	int

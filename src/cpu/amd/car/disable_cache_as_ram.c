@@ -4,6 +4,7 @@
  * original idea yhlu 6.2005 (assembler code)
  *
  * Copyright (C) 2010 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +36,12 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 	wrmsr(MTRRfix4K_C8000_MSR, msr);
 #if CONFIG_DCACHE_RAM_SIZE > 0x8000
 	wrmsr(MTRRfix4K_C0000_MSR, msr);
+#endif
+#if CONFIG_DCACHE_RAM_SIZE > 0x10000
+	wrmsr(MTRRfix4K_D0000_MSR, msr);
+#endif
+#if CONFIG_DCACHE_RAM_SIZE > 0x18000
+	wrmsr(MTRRfix4K_D8000_MSR, msr);
 #endif
 	/* disable fixed mtrr from now on, it will be enabled by ramstage again*/
 

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2005-2007 Advanced Micro Devices, Inc.
  * Copyright (C) 2008 Carl-Daniel Hailfinger
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -250,8 +251,14 @@ clear_fixed_var_mtrr_out:
 	 */
 .endm
 
-#if CacheSize > 0x10000
-#error Invalid CAR size, must be at most 64k.
+#if IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX)
+  #if CacheSize > 0x80000
+  #error Invalid CAR size, must be at most 128k (processor limit is 512k).
+  #endif
+#else
+  #if CacheSize > 0x10000
+  #error Invalid CAR size, must be at most 64k.
+  #endif
 #endif
 #if CacheSize < 0x1000
 #error Invalid CAR size, must be at least 4k. This is a processor limitation.
@@ -264,6 +271,20 @@ clear_fixed_var_mtrr_out:
 	/* Enable caching for 32K-64K using fixed MTRR. */
 	movl	$MTRRfix4K_C0000_MSR, %ecx
 	simplemask CacheSize, 0x8000
+	wrmsr
+#endif
+
+#if CacheSize > 0x10000
+	/* Enable caching for 64K-96K using fixed MTRR. */
+	movl	$MTRRfix4K_D0000_MSR, %ecx
+	simplemask CacheSize, 0x10000
+	wrmsr
+#endif
+
+#if CacheSize > 0x18000
+	/* Enable caching for 96K-128K using fixed MTRR. */
+	movl	$MTRRfix4K_D8000_MSR, %ecx
+	simplemask CacheSize, 0x18000
 	wrmsr
 #endif
 

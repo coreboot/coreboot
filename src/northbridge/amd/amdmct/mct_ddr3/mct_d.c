@@ -1848,11 +1848,13 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 
 	if (nv_DQSTrainCTL) {
 		mctHookBeforeAnyTraining(pMCTstat, pDCTstatA);
-		/* TODO: should be in mctHookBeforeAnyTraining */
-		_WRMSR(0x26C, 0x04040404, 0x04040404);
-		_WRMSR(0x26D, 0x04040404, 0x04040404);
-		_WRMSR(0x26E, 0x04040404, 0x04040404);
-		_WRMSR(0x26F, 0x04040404, 0x04040404);
+		if (!is_fam15h()) {
+			/* TODO: should be in mctHookBeforeAnyTraining */
+			_WRMSR(0x26C, 0x04040404, 0x04040404);
+			_WRMSR(0x26D, 0x04040404, 0x04040404);
+			_WRMSR(0x26E, 0x04040404, 0x04040404);
+			_WRMSR(0x26F, 0x04040404, 0x04040404);
+		}
 		mct_WriteLevelization_HW(pMCTstat, pDCTstatA, FirstPass);
 
 		if (is_fam15h()) {

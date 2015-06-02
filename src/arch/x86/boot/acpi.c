@@ -757,7 +757,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	if (fw)
 		return fw;
 
-	dsdt_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+	dsdt_file = cbfs_boot_map_with_leak(
 				     CONFIG_CBFS_PREFIX "/dsdt.aml",
 				     CBFS_TYPE_RAW, &dsdt_size);
 	if (!dsdt_file) {

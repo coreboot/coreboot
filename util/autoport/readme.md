@@ -213,7 +213,7 @@ soldered and another is socketed:
 		void *spd_file;
 		size_t spd_file_len = 0;
 		/* C0S0 is a soldered RAM with no real SPD. Use stored SPD.  */
-		spd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin", CBFS_TYPE_RAW,
+		spd_file = cbfs_boot_map_with_leak( "spd.bin", CBFS_TYPE_RAW,
 						 &spd_file_len);
 		if (spd_file && spd_file_len >= 128)
 			memcpy(&spd[0], spd_file, 128);

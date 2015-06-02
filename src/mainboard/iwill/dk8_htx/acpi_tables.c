@@ -170,7 +170,7 @@ unsigned long mainboard_write_acpi_tables(unsigned long start, acpi_rsdp_t *rsdp
 			file_name = CONFIG_CBFS_PREFIX "/ssdt5.aml";
 			break;
                 }
-		p = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+		p = cbfs_boot_map_with_leak(
 					  file_name,
 					  CBFS_TYPE_RAW, &p_size);
 		if (!p || p_size < sizeof(acpi_header_t))

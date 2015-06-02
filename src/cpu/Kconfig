@@ -16,6 +16,12 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 
+config DCACHE_BSP_STACK_SIZE
+	hex
+
+config DCACHE_AP_STACK_SIZE
+	hex
+
 config SMP
 	bool
 	default y if MAX_CPUS != 1

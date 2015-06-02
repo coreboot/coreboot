@@ -37,6 +37,14 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x04000
 
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x1000
+
+config DCACHE_AP_STACK_SIZE
+	hex
+	default 0x400
+
 config GEODE_VSA
 	bool
 	default y

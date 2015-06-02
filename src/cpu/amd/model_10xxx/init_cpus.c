@@ -250,6 +250,14 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 	u32 apicid;
 	struct node_core_id id;
 
+	uint32_t max_ap_stack_region_size = CONFIG_MAX_CPUS * CONFIG_DCACHE_AP_STACK_SIZE;
+	uint32_t bsp_stack_region_lower_boundary = CONFIG_DCACHE_RAM_BASE + (CONFIG_DCACHE_RAM_SIZE / 2);
+	void * lower_stack_region_boundary = (void*)(bsp_stack_region_lower_boundary - max_ap_stack_region_size);
+	if (((void*)(sysinfo + 1)) > lower_stack_region_boundary)
+		printk(BIOS_WARNING,
+			"sysinfo extends into stack region (sysinfo range: [%p,%p] lower stack region boundary: %p)\n",
+			sysinfo, sysinfo + 1, lower_stack_region_boundary);
+
 	/*
 	 * already set early mtrr in cache_as_ram.inc
 	 */

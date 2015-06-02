@@ -24,9 +24,10 @@
 
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
 #define CacheBase		(0xd0000 - CacheSize)
+#define CacheSizeBSPStack	CONFIG_DCACHE_BSP_STACK_SIZE
 
 /* For CAR with Fam10h. */
-#define CacheSizeAPStack	0x400 /* 1K */
+#define CacheSizeAPStack	CONFIG_DCACHE_AP_STACK_SIZE
 
 #define MSR_MCFG_BASE		0xC0010058
 #define MSR_FAM10		0xC001102A

@@ -20,7 +20,7 @@
 #include <cpu/amd/mtrr.h>
 
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
-#define CacheBase		(0xd0000 - CacheSize)
+#define CacheBase		CONFIG_DCACHE_RAM_BASE
 #define CacheSizeBSPStack	CONFIG_DCACHE_BSP_STACK_SIZE
 #define CacheSizeBSPSlush	CONFIG_DCACHE_BSP_STACK_SLUSH
 
@@ -495,6 +495,10 @@ CAR_skip_k8_errata_part2:
 	/* Set up the stack pointer. */
 	movl	$(CacheBase + CacheSize), %eax
 	movl	%eax, %esp
+
+	/* Poison the lower stack boundary */
+	movl	$((CacheBase + CacheSize) - CacheSizeBSPStack), %eax
+	movl	$0xdeadbeef, (%eax)
 
 	post_code(0xa3)
 

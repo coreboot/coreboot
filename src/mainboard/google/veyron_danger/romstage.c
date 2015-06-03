@@ -78,12 +78,6 @@ static void configure_l2ctlr(void)
 	write_l2ctlr(l2ctlr);
 }
 
-static void sdmmc_power_off(void)
-{
-	rk808_configure_ldo(4, 0); /* VCCIO_SD */
-	rk808_configure_ldo(5, 0); /* VCC33_SD */
-}
-
 void main(void)
 {
 #if CONFIG_COLLECT_TIMESTAMPS

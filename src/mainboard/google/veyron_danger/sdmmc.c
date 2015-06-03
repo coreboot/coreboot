@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Google Inc.
+ * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +14,32 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc.
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __MAINBOARD_GOOGLE_VEYRON_DANGER_BOARD_H
-#define __MAINBOARD_GOOGLE_VEYRON_DANGER_BOARD_H
+#include "board.h"
 
-#include <boardid.h>
-#include <gpio.h>
+#include <soc/rk808.h>
 
-#define GPIO_BACKLIGHT	GPIO(7, A, 3)
-#define GPIO_RESET	GPIO(0, B, 5)
-#define GPIO_LCDC_BL	GPIO(7, A, 7)
+static void sdmmc_power(int enable)
+{
+	switch (board_id()) {
+	case 0:
+		/* VCC33_SD is tied to VCC33_SYS and is always on */
+		break;
+	default:
+		rk808_configure_ldo(4, enable ? 3300 : 0); /* VCC33_SD_LDO */
+		rk808_configure_ldo(5, enable ? 3300 : 0); /* VCCIO_SD */
+		break;
+	}
+}
 
-void sdmmc_power_off(void);
-void sdmmc_power_on(void);
-void setup_chromeos_gpios(void);
+void sdmmc_power_off(void)
+{
+	sdmmc_power(0);
+}
 
-#endif	/* __MAINBOARD_GOOGLE_VEYRON_DANGER_BOARD_H */
+void sdmmc_power_on(void)
+{
+	sdmmc_power(1);
+}

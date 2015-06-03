@@ -27,6 +27,7 @@ verstage-y += reset.c
 
 romstage-y += boardid.c
 romstage-y += romstage.c
+romstage-y += sdmmc.c
 romstage-y += sdram_configs.c
 romstage-y += reset.c
 
@@ -34,6 +35,7 @@ ramstage-y += boardid.c
 ramstage-y += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += reset.c
+ramstage-y += sdmmc.c
 
 bootblock-y += memlayout.ld
 verstage-y += memlayout.ld

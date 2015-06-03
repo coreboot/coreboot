@@ -26,6 +26,7 @@
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
 #define CacheBase		(0xd0000 - CacheSize)
 #define CacheSizeBSPStack	CONFIG_DCACHE_BSP_STACK_SIZE
+#define CacheSizeBSPSlush	CONFIG_DCACHE_BSP_STACK_SLUSH
 
 /* For CAR with Fam10h. */
 #define CacheSizeAPStack	CONFIG_DCACHE_AP_STACK_SIZE
@@ -377,9 +378,17 @@ CAR_FAM10_ap:
 	/*
 	 * Need to set stack pointer for AP.
 	 * It will be from:
-	 *   CacheBase + CacheSize / 2
+	 *   CacheBase + (CacheSize - (CacheSizeBSPStack + CacheSizeBSPSlush))
 	 *   - (NodeID << CoreIDbits + CoreID) * CacheSizeAPStack
-	 * So need to get the NodeID and CoreID at first.
+	 * The spacing between the BSP stack and the top of the AP
+	 * stacks is purposefully set larger (an extra CacheSizeBSPSlush
+	 * worth of unused space) than necessary to aid debugging when
+	 * additional stack variables are added by future developers.
+	 * The extra space will allow BSP overruns to be caught by
+	 * the warning logic and easily fixed instead of crashing the
+	 * system with no obvious clues of what went wrong.
+	 *
+	 * So, need to get the NodeID and CoreID at first.
 	 * If NB_CFG bit 54 is set just use initial APIC ID, otherwise need
 	 * to reverse it.
 	 */
@@ -411,7 +420,7 @@ roll_cfg:
 	/* Calculate stack pointer. */
 	movl	$CacheSizeAPStack, %eax
 	mull	%ebx
-	movl	$(CacheBase + CacheSize / 2), %esp
+	movl	$(CacheBase + (CacheSize - (CacheSizeBSPStack + CacheSizeBSPSlush))), %esp
 	subl	%eax, %esp
 
 	/* Retrive init detected. */

@@ -19,6 +19,9 @@ config DCACHE_RAM_SIZE
 config DCACHE_BSP_STACK_SIZE
 	hex
 
+config DCACHE_BSP_STACK_SLUSH
+	hex
+
 config DCACHE_AP_STACK_SIZE
 	hex
 

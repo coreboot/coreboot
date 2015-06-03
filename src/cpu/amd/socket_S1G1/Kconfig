@@ -35,6 +35,10 @@ config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x2000
 
+config DCACHE_BSP_STACK_SLUSH
+	hex
+	default 0x1000
+
 config DCACHE_AP_STACK_SIZE
 	hex
 	default 0x400

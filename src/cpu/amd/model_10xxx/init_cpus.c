@@ -250,8 +250,11 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 	u32 apicid;
 	struct node_core_id id;
 
+	/* Please refer to the calculations and explaination in cache_as_ram.inc before modifying these values */
 	uint32_t max_ap_stack_region_size = CONFIG_MAX_CPUS * CONFIG_DCACHE_AP_STACK_SIZE;
-	uint32_t bsp_stack_region_lower_boundary = CONFIG_DCACHE_RAM_BASE + (CONFIG_DCACHE_RAM_SIZE / 2);
+	uint32_t max_bsp_stack_region_size = CONFIG_DCACHE_BSP_STACK_SIZE + CONFIG_DCACHE_BSP_STACK_SLUSH;
+	uint32_t bsp_stack_region_upper_boundary = CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE;
+	uint32_t bsp_stack_region_lower_boundary = bsp_stack_region_upper_boundary - max_bsp_stack_region_size;
 	void * lower_stack_region_boundary = (void*)(bsp_stack_region_lower_boundary - max_ap_stack_region_size);
 	if (((void*)(sysinfo + 1)) > lower_stack_region_boundary)
 		printk(BIOS_WARNING,

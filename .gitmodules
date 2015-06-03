@@ -9,3 +9,6 @@
 [submodule "vboot"]
 	path = 3rdparty/vboot
 	url = ../vboot.git
+[submodule "arm-trusted-firmware"]
+	path = 3rdparty/arm-trusted-firmware
+	url = ../arm-trusted-firmware.git

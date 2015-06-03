@@ -98,6 +98,10 @@ chip northbridge/intel/sandybridge
 					register "dock_event_enable" = "0x01"
 				end
 
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+
 				chip ec/lenovo/h8
 					device pnp ff.2 on # dummy
 						io 0x60 = 0x62

@@ -176,7 +176,7 @@ static void mct_WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 static u8 Get_Latency_Diff(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct);
 static void SyncSetting(struct DCTStatStruc *pDCTstat);
-static u8 crcCheck(u8 smbaddr);
+static uint8_t crcCheck(struct DCTStatStruc *pDCTstat, uint8_t dimm);
 static void mct_ExtMCTConfig_Bx(struct DCTStatStruc *pDCTstat);
 static void mct_ExtMCTConfig_Cx(struct DCTStatStruc *pDCTstat);
 
@@ -1176,6 +1176,20 @@ static void precise_memclk_delay_fam15(struct MCTStatStruc *pMCTstat, struct DCT
 	precise_ndelay_fam15(pMCTstat, delay_ns);
 }
 
+static void read_spd_bytes(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, uint8_t dimm)
+{
+	uint8_t addr;
+	uint16_t byte;
+
+	addr = Get_DIMMAddress_D(pDCTstat, dimm);
+	pDCTstat->spd_data.spd_address[dimm] = addr;
+
+	for (byte = 0; byte < 256; byte++) {
+		pDCTstat->spd_data.spd_bytes[dimm][byte] = mctRead_SPD(addr, byte);
+	}
+}
+
 static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA)
 {
@@ -1281,7 +1295,7 @@ restartinit:
 				mct_InitialMCT_D(pMCTstat, pDCTstat);
 
 				printk(BIOS_DEBUG, "%s: mctSMBhub_Init\n", __func__);
-				mctSMBhub_Init(Node);		/* Switch SMBUS crossbar to proper node*/
+				mctSMBhub_Init(Node);		/* Switch SMBUS crossbar to proper node */
 
 				printk(BIOS_DEBUG, "%s: mct_preInitDCT\n", __func__);
 				mct_preInitDCT(pMCTstat, pDCTstat);
@@ -2441,7 +2455,6 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 	u32 dword;
 	u32 dev;
 	u32 val;
-	u16 smbaddr;
 
 	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 
@@ -2461,64 +2474,62 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 	for ( i = 0; i< MAX_DIMMS_SUPPORTED; i++) {
 		LDIMM = i >> 1;
 		if (pDCTstat->DIMMValid & (1 << i)) {
-			smbaddr = Get_DIMMAddress_D(pDCTstat, (dct + i));
-
-			val = mctRead_SPD(smbaddr, SPD_MTBDivisor); /* MTB=Dividend/Divisor */
-			MTB16x = ((mctRead_SPD(smbaddr, SPD_MTBDividend) & 0xFF)<<4);
+			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_MTBDivisor];	/* MTB=Dividend/Divisor */
+			MTB16x = ((pDCTstat->spd_data.spd_bytes[dct + i][SPD_MTBDividend] & 0xff) << 4);
 			MTB16x /= val; /* transfer to MTB*16 */
 
-			byte = mctRead_SPD(smbaddr, SPD_tRPmin);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRPmin];
 			val = byte * MTB16x;
 			if (Trp < val)
 				Trp = val;
 
-			byte = mctRead_SPD(smbaddr, SPD_tRRDmin);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRRDmin];
 			val = byte * MTB16x;
 			if (Trrd < val)
 				Trrd = val;
 
-			byte = mctRead_SPD(smbaddr, SPD_tRCDmin);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRCDmin];
 			val = byte * MTB16x;
 			if (Trcd < val)
 				Trcd = val;
 
-			byte = mctRead_SPD(smbaddr, SPD_tRTPmin);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRTPmin];
 			val = byte * MTB16x;
 			if (Trtp < val)
 				Trtp = val;
 
-			byte = mctRead_SPD(smbaddr, SPD_tWRmin);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_tWRmin];
 			val = byte * MTB16x;
 			if (Twr < val)
 				Twr = val;
 
-			byte = mctRead_SPD(smbaddr, SPD_tWTRmin);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_tWTRmin];
 			val = byte * MTB16x;
 			if (Twtr < val)
 				Twtr = val;
 
-			val = mctRead_SPD(smbaddr, SPD_Upper_tRAS_tRC) & 0xFF;
+			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tRAS_tRC] & 0xFF;
 			val >>= 4;
 			val <<= 8;
-			val |= mctRead_SPD(smbaddr, SPD_tRCmin) & 0xFF;
+			val |= pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRCmin] & 0xFF;
 			val *= MTB16x;
 			if (Trc < val)
 				Trc = val;
 
-			byte = mctRead_SPD(smbaddr, SPD_Density) & 0xF;
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Density] & 0xF;
 			if (Trfc[LDIMM] < byte)
 				Trfc[LDIMM] = byte;
 
-			val = mctRead_SPD(smbaddr, SPD_Upper_tRAS_tRC) & 0xF;
+			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tRAS_tRC] & 0xF;
 			val <<= 8;
-			val |= (mctRead_SPD(smbaddr, SPD_tRASmin) & 0xFF);
+			val |= (pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRASmin] & 0xFF);
 			val *= MTB16x;
 			if (Tras < val)
 				Tras = val;
 
-			val = mctRead_SPD(smbaddr, SPD_Upper_tFAW) & 0xF;
+			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tFAW] & 0xF;
 			val <<= 8;
-			val |= mctRead_SPD(smbaddr, SPD_tFAWmin) & 0xFF;
+			val |= pDCTstat->spd_data.spd_bytes[dct + i][SPD_tFAWmin] & 0xFF;
 			val *= MTB16x;
 			if (Tfaw < val)
 				Tfaw = val;
@@ -2934,7 +2945,7 @@ static void SPDGetTCL_D(struct MCTStatStruc *pMCTstat,
 	u8 CLactual, CLdesired, CLT_Fail;
 	uint16_t min_frequency_tck16x;
 
-	u8 smbaddr, byte = 0, bytex = 0;
+	u8 byte = 0, bytex = 0;
 
 	CASLatLow = 0xFF;
 	CASLatHigh = 0xFF;
@@ -2955,28 +2966,27 @@ static void SPDGetTCL_D(struct MCTStatStruc *pMCTstat,
 
 	for (i = 0; i < MAX_DIMMS_SUPPORTED; i++) {
 		if (pDCTstat->DIMMValid & (1 << i)) {
-			smbaddr = Get_DIMMAddress_D(pDCTstat, (dct + i));
 			/* Step 1: Determine the common set of supported CAS Latency
 			 * values for all modules on the memory channel using the CAS
 			 * Latencies Supported in SPD bytes 14 and 15.
 			 */
-			byte = mctRead_SPD(smbaddr, SPD_CASLow);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_CASLow];
 			CASLatLow &= byte;
-			byte = mctRead_SPD(smbaddr, SPD_CASHigh);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_CASHigh];
 			CASLatHigh &= byte;
 			/* Step 2: Determine tAAmin(all) which is the largest tAAmin
 			   value for all modules on the memory channel (SPD byte 16). */
-			byte = mctRead_SPD(smbaddr, SPD_MTBDivisor);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_MTBDivisor];
 
-			MTB16x = ((mctRead_SPD(smbaddr, SPD_MTBDividend) & 0xFF)<<4);
+			MTB16x = ((pDCTstat->spd_data.spd_bytes[dct + i][SPD_MTBDividend] & 0xFF)<<4);
 			MTB16x /= byte; /* transfer to MTB*16 */
 
-			byte = mctRead_SPD(smbaddr, SPD_tAAmin);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_tAAmin];
 			if (tAAmin16x < byte * MTB16x)
 				tAAmin16x = byte * MTB16x;
 			/* Step 3: Determine tCKmin(all) which is the largest tCKmin
 			   value for all modules on the memory channel (SPD byte 12). */
-			byte = mctRead_SPD(smbaddr, SPD_tCKmin);
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_tCKmin];
 
 			if (tCKmin16x < byte * MTB16x)
 				tCKmin16x = byte * MTB16x;
@@ -3347,7 +3357,6 @@ static void SPDSetBanks_D(struct MCTStatStruc *pMCTstat,
 	u8 byte;
 	u16 word;
 	u32 dword;
-	u16 smbaddr;
 
 	dev = pDCTstat->dev_dct;
 
@@ -3358,16 +3367,14 @@ static void SPDSetBanks_D(struct MCTStatStruc *pMCTstat,
 			byte -= 3;
 
 		if (pDCTstat->DIMMValid & (1<<byte)) {
-			smbaddr = Get_DIMMAddress_D(pDCTstat, (ChipSel + dct));
-
-			byte = mctRead_SPD(smbaddr, SPD_Addressing);
+			byte = pDCTstat->spd_data.spd_bytes[ChipSel + dct][SPD_Addressing];
 			Rows = (byte >> 3) & 0x7; /* Rows:0b=12-bit,... */
 			Cols = byte & 0x7; /* Cols:0b=9-bit,... */
 
-			byte = mctRead_SPD(smbaddr, SPD_Density);
+			byte = pDCTstat->spd_data.spd_bytes[ChipSel + dct][SPD_Density];
 			Banks = (byte >> 4) & 7; /* Banks:0b=3-bit,... */
 
-			byte = mctRead_SPD(smbaddr, SPD_Organization);
+			byte = pDCTstat->spd_data.spd_bytes[ChipSel + dct][SPD_Organization];
 			Ranks = ((byte >> 3) & 7) + 1;
 
 			/* Configure Bank encoding
@@ -3462,46 +3469,42 @@ static void SPDCalcWidth_D(struct MCTStatStruc *pMCTstat,
 	 * and determine the width mode: 64-bit, 64-bit muxed, 128-bit.
 	 */
 	u8 i;
-	u8 smbaddr, smbaddr1;
 	u8 byte, byte1;
 
 	/* Check Symmetry of Channel A and Channel B DIMMs
 	  (must be matched for 128-bit mode).*/
 	for (i=0; i < MAX_DIMMS_SUPPORTED; i += 2) {
 		if ((pDCTstat->DIMMValid & (1 << i)) && (pDCTstat->DIMMValid & (1<<(i+1)))) {
-			smbaddr = Get_DIMMAddress_D(pDCTstat, i);
-			smbaddr1 = Get_DIMMAddress_D(pDCTstat, i+1);
-
-			byte = mctRead_SPD(smbaddr, SPD_Addressing) & 0x7;
-			byte1 = mctRead_SPD(smbaddr1, SPD_Addressing) & 0x7;
+			byte = pDCTstat->spd_data.spd_bytes[i][SPD_Addressing] & 0x7;
+			byte1 = pDCTstat->spd_data.spd_bytes[i + 1][SPD_Addressing] & 0x7;
 			if (byte != byte1) {
 				pDCTstat->ErrStatus |= (1<<SB_DimmMismatchO);
 				break;
 			}
 
-			byte =	 mctRead_SPD(smbaddr, SPD_Density) & 0x0f;
-			byte1 =	 mctRead_SPD(smbaddr1, SPD_Density) & 0x0f;
+			byte =	 pDCTstat->spd_data.spd_bytes[i][SPD_Density] & 0x0f;
+			byte1 =	 pDCTstat->spd_data.spd_bytes[i + 1][SPD_Density] & 0x0f;
 			if (byte != byte1) {
 				pDCTstat->ErrStatus |= (1<<SB_DimmMismatchO);
 				break;
 			}
 
-			byte = mctRead_SPD(smbaddr, SPD_Organization) & 0x7;
-			byte1 = mctRead_SPD(smbaddr1, SPD_Organization) & 0x7;
+			byte = pDCTstat->spd_data.spd_bytes[i][SPD_Organization] & 0x7;
+			byte1 = pDCTstat->spd_data.spd_bytes[i + 1][SPD_Organization] & 0x7;
 			if (byte != byte1) {
 				pDCTstat->ErrStatus |= (1<<SB_DimmMismatchO);
 				break;
 			}
 
-			byte = (mctRead_SPD(smbaddr, SPD_Organization) >> 3) & 0x7;
-			byte1 = (mctRead_SPD(smbaddr1, SPD_Organization) >> 3) & 0x7;
+			byte = (pDCTstat->spd_data.spd_bytes[i][SPD_Organization] >> 3) & 0x7;
+			byte1 = (pDCTstat->spd_data.spd_bytes[i + 1][SPD_Organization] >> 3) & 0x7;
 			if (byte != byte1) {
 				pDCTstat->ErrStatus |= (1<<SB_DimmMismatchO);
 				break;
 			}
 
-			byte = mctRead_SPD(smbaddr, SPD_DMBANKS) & 7;	 /* #ranks-1 */
-			byte1 = mctRead_SPD(smbaddr1, SPD_DMBANKS) & 7;	  /* #ranks-1 */
+			byte = pDCTstat->spd_data.spd_bytes[i][SPD_DMBANKS] & 7;	 /* #ranks-1 */
+			byte1 = pDCTstat->spd_data.spd_bytes[i + 1][SPD_DMBANKS] & 7;	  /* #ranks-1 */
 			if (byte != byte1) {
 				pDCTstat->ErrStatus |= (1<<SB_DimmMismatchO);
 				break;
@@ -3682,8 +3685,9 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 			status = mctRead_SPD(smbaddr, SPD_ByteUse);
 			if (status >= 0) { /* SPD access is ok */
 				pDCTstat->DIMMPresent |= 1 << i;
-				if (crcCheck(smbaddr)) { /* CRC is OK */
-					byte = mctRead_SPD(smbaddr, SPD_TYPE);
+				read_spd_bytes(pMCTstat, pDCTstat, i);
+				if (crcCheck(pDCTstat, i)) { /* CRC is OK */
+					byte = pDCTstat->spd_data.spd_bytes[i][SPD_TYPE];
 					if (byte == JED_DDR3SDRAM) {
 						/*Dimm is 'Present'*/
 						pDCTstat->DIMMValid |= 1 << i;
@@ -3696,36 +3700,41 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 					} else {
 						/*if NV_SPDCHK_RESTRT is set to 1, ignore faulty SPD checksum*/
 						pDCTstat->ErrStatus |= 1<<SB_DIMMChkSum;
-						byte = mctRead_SPD(smbaddr, SPD_TYPE);
+						byte = pDCTstat->spd_data.spd_bytes[i][SPD_TYPE];
 						if (byte == JED_DDR3SDRAM)
 							pDCTstat->DIMMValid |= 1 << i;
 					}
 				}
+
+				/* Zero DIMM SPD data cache if DIMM not present / valid */
+				if (!(pDCTstat->DIMMValid & (1 << i)))
+					memset(pDCTstat->spd_data.spd_bytes[i], 0, sizeof(pDCTstat->spd_data.spd_bytes[i]));
+
 				/* Get module information for SMBIOS */
 				if (pDCTstat->DIMMValid & (1 << i)) {
 					pDCTstat->DimmManufacturerID[i] = 0;
 					for (k = 0; k < 8; k++)
-						pDCTstat->DimmManufacturerID[i] |= ((uint64_t)mctRead_SPD(smbaddr, SPD_MANID_START + k)) << (k * 8);
+						pDCTstat->DimmManufacturerID[i] |= ((uint64_t)pDCTstat->spd_data.spd_bytes[i][SPD_MANID_START + k]) << (k * 8);
 					for (k = 0; k < SPD_PARTN_LENGTH; k++)
-						pDCTstat->DimmPartNumber[i][k] = mctRead_SPD(smbaddr, SPD_PARTN_START + k);
+						pDCTstat->DimmPartNumber[i][k] = pDCTstat->spd_data.spd_bytes[i][SPD_PARTN_START + k];
 					pDCTstat->DimmPartNumber[i][SPD_PARTN_LENGTH] = 0;
 					pDCTstat->DimmRevisionNumber[i] = 0;
 					for (k = 0; k < 2; k++)
-						pDCTstat->DimmRevisionNumber[i] |= ((uint16_t)mctRead_SPD(smbaddr, SPD_REVNO_START + k)) << (k * 8);
+						pDCTstat->DimmRevisionNumber[i] |= ((uint16_t)pDCTstat->spd_data.spd_bytes[i][SPD_REVNO_START + k]) << (k * 8);
 					pDCTstat->DimmSerialNumber[i] = 0;
 					for (k = 0; k < 4; k++)
-						pDCTstat->DimmSerialNumber[i] |= ((uint32_t)mctRead_SPD(smbaddr, SPD_SERIAL_START + k)) << (k * 8);
-					pDCTstat->DimmRows[i] = (mctRead_SPD(smbaddr, SPD_Addressing) & 0x38) >> 3;
-					pDCTstat->DimmCols[i] = mctRead_SPD(smbaddr, SPD_Addressing) & 0x7;
-					pDCTstat->DimmRanks[i] = ((mctRead_SPD(smbaddr, SPD_Organization) & 0x38) >> 3) + 1;
-					pDCTstat->DimmBanks[i] = 1ULL << (((mctRead_SPD(smbaddr, SPD_Density) & 0x70) >> 4) + 3);
-					pDCTstat->DimmWidth[i] = 1ULL << ((mctRead_SPD(smbaddr, SPD_BusWidth) & 0x7) + 3);
+						pDCTstat->DimmSerialNumber[i] |= ((uint32_t)pDCTstat->spd_data.spd_bytes[i][SPD_SERIAL_START + k]) << (k * 8);
+					pDCTstat->DimmRows[i] = (pDCTstat->spd_data.spd_bytes[i][SPD_Addressing] & 0x38) >> 3;
+					pDCTstat->DimmCols[i] = pDCTstat->spd_data.spd_bytes[i][SPD_Addressing] & 0x7;
+					pDCTstat->DimmRanks[i] = ((pDCTstat->spd_data.spd_bytes[i][SPD_Organization] & 0x38) >> 3) + 1;
+					pDCTstat->DimmBanks[i] = 1ULL << (((pDCTstat->spd_data.spd_bytes[i][SPD_Density] & 0x70) >> 4) + 3);
+					pDCTstat->DimmWidth[i] = 1ULL << ((pDCTstat->spd_data.spd_bytes[i][SPD_BusWidth] & 0x7) + 3);
 				}
 				/* Check supported voltage(s) */
-				pDCTstat->DimmSupportedVoltages[i] = mctRead_SPD(smbaddr, SPD_Voltage) & 0x7;
+				pDCTstat->DimmSupportedVoltages[i] = pDCTstat->spd_data.spd_bytes[i][SPD_Voltage] & 0x7;
 				pDCTstat->DimmSupportedVoltages[i] ^= 0x1;	/* Invert LSB to convert from SPD format to internal bitmap format */
 				/* Check module type */
-				byte = mctRead_SPD(smbaddr, SPD_DIMMTYPE) & 0x7;
+				byte = pDCTstat->spd_data.spd_bytes[i][SPD_DIMMTYPE] & 0x7;
 				if (byte == JED_RDIMM || byte == JED_MiniRDIMM) {
 					RegDIMMPresent |= 1 << i;
 					pDCTstat->DimmRegistered[i] = 1;
@@ -3739,13 +3748,13 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 					pDCTstat->DimmLoadReduced[i] = 0;
 				}
 				/* Check ECC capable */
-				byte = mctRead_SPD(smbaddr, SPD_BusWidth);
+				byte = pDCTstat->spd_data.spd_bytes[i][SPD_BusWidth];
 				if (byte & JED_ECC) {
 					/* DIMM is ECC capable */
 					pDCTstat->DimmECCPresent |= 1 << i;
 				}
 				/* Check if x4 device */
-				devwidth = mctRead_SPD(smbaddr, SPD_Organization) & 0x7; /* 0:x4,1:x8,2:x16 */
+				devwidth = pDCTstat->spd_data.spd_bytes[i][SPD_Organization] & 0x7; /* 0:x4,1:x8,2:x16 */
 				if (devwidth == 0) {
 					/* DIMM is made with x4 or x16 drams */
 					pDCTstat->Dimmx4Present |= 1 << i;
@@ -3755,7 +3764,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 					pDCTstat->Dimmx16Present |= 1 << i;
 				}
 
-				byte = (mctRead_SPD(smbaddr, SPD_Organization) >> 3);
+				byte = (pDCTstat->spd_data.spd_bytes[i][SPD_Organization] >> 3);
 				byte &= 7;
 				if (byte == 3) { /* 4ranks */
 					/* if any DIMMs are QR, we have to make two passes through DIMMs*/
@@ -3790,7 +3799,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 
 				/* check address mirror support for unbuffered dimm */
 				/* check number of registers on a dimm for registered dimm */
-				byte = mctRead_SPD(smbaddr, SPD_AddressMirror);
+				byte = pDCTstat->spd_data.spd_bytes[i][SPD_AddressMirror];
 				if (RegDIMMPresent & (1 << i)) {
 					if ((byte & 3) > 1)
 						pDCTstat->MirrPresU_NumRegR |= 1 << i;
@@ -3799,20 +3808,20 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 						pDCTstat->MirrPresU_NumRegR |= 1 << i;
 				}
 				/* Get byte62: Reference Raw Card information. We dont need it now. */
-				/* byte = mctRead_SPD(smbaddr, SPD_RefRawCard); */
+				/* byte = pDCTstat->spd_data.spd_bytes[i][SPD_RefRawCard]; */
 				/* Get Byte65/66 for register manufacture ID code */
-				if ((0x97 == mctRead_SPD(smbaddr, SPD_RegManufactureID_H)) &&
-				    (0x80 == mctRead_SPD(smbaddr, SPD_RegManufactureID_L))) {
-					if (0x16 == mctRead_SPD(smbaddr, SPD_RegManRevID))
+				if ((0x97 == pDCTstat->spd_data.spd_bytes[i][SPD_RegManufactureID_H]) &&
+				    (0x80 == pDCTstat->spd_data.spd_bytes[i][SPD_RegManufactureID_L])) {
+					if (0x16 == pDCTstat->spd_data.spd_bytes[i][SPD_RegManRevID])
 						pDCTstat->RegMan2Present |= 1 << i;
 					else
 						pDCTstat->RegMan1Present |= 1 << i;
 				}
 				/* Get Control word values for RC3. We dont need it. */
-				byte = mctRead_SPD(smbaddr, 70);
+				byte = pDCTstat->spd_data.spd_bytes[i][70];
 				pDCTstat->CtrlWrd3 |= (byte >> 4) << (i << 2); /* C3 = SPD byte 70 [7:4] */
 				/* Get Control word values for RC4, and RC5 */
-				byte = mctRead_SPD(smbaddr, 71);
+				byte = pDCTstat->spd_data.spd_bytes[i][71];
 				pDCTstat->CtrlWrd4 |= (byte & 0xFF) << (i << 2); /* RC4 = SPD byte 71 [3:0] */
 				pDCTstat->CtrlWrd5 |= (byte >> 4) << (i << 2); /* RC5 = SPD byte 71 [7:4] */
 			}
@@ -6190,14 +6199,14 @@ static void AfterDramInit_D(struct DCTStatStruc *pDCTstat, u8 dct) {
  *  1010	001111	16	3	10	4GB
  *  1011	010111	16	3	11	8GB
  */
-u8 crcCheck(u8 smbaddr)
+uint8_t crcCheck(struct DCTStatStruc *pDCTstat, uint8_t dimm)
 {
 	u8 byte_use;
 	u8 Index;
 	u16 CRC;
 	u8 byte, i;
 
-	byte_use = mctRead_SPD(smbaddr, SPD_ByteUse);
+	byte_use = pDCTstat->spd_data.spd_bytes[dimm][SPD_ByteUse];
 	if (byte_use & 0x80)
 		byte_use = 117;
 	else
@@ -6205,7 +6214,7 @@ u8 crcCheck(u8 smbaddr)
 
 	CRC = 0;
 	for (Index = 0; Index < byte_use; Index ++) {
-		byte = mctRead_SPD(smbaddr, Index);
+		byte = pDCTstat->spd_data.spd_bytes[dimm][Index];
 		CRC ^= byte << 8;
 		for (i=0; i<8; i++) {
 			if (CRC & 0x8000) {
@@ -6215,5 +6224,5 @@ u8 crcCheck(u8 smbaddr)
 				CRC <<= 1;
 		}
 	}
-	return CRC == (mctRead_SPD(smbaddr, SPD_byte_127) << 8 | mctRead_SPD(smbaddr, SPD_byte_126));
+	return CRC == (pDCTstat->spd_data.spd_bytes[dimm][SPD_byte_127] << 8 | pDCTstat->spd_data.spd_bytes[dimm][SPD_byte_126]);
 }

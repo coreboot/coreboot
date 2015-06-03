@@ -318,6 +318,11 @@ struct MCTStatStruc {
 ===============================================================================*/
 #include "mwlc_d.h"		/* I have to */
 
+struct amd_spd_node_data {
+	uint8_t spd_bytes[MAX_DIMMS_SUPPORTED][256];	/* [DIMM][byte] */
+	uint8_t spd_address[MAX_DIMMS_SUPPORTED];	/* [DIMM] */
+} __attribute__((packed));
+
 struct DCTStatStruc {		/* A per Node structure*/
 /* DCTStatStruct_F -  start */
 	u8 Node_ID;		/* Node ID of current controller */
@@ -611,6 +616,8 @@ struct DCTStatStruc {		/* A per Node structure*/
 	char DimmPartNumber[MAX_DIMMS_SUPPORTED][SPD_PARTN_LENGTH+1];
 	uint16_t DimmRevisionNumber[MAX_DIMMS_SUPPORTED];
 	uint32_t DimmSerialNumber[MAX_DIMMS_SUPPORTED];
+
+	struct amd_spd_node_data spd_data;
 } __attribute__((packed));
 
 struct amd_s3_persistent_mct_channel_data {

@@ -552,9 +552,21 @@ $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(FMAPTOOL) $(
 	$(call add-cpu-microcode-to-cbfs,$@.tmp)
 	mv $@.tmp $@
 else
+prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
+# Add all cbfs files to image of the form: CONFIG_CBFS_PREFIX/<filename>
+prebuild-files = \
+	$(foreach file,$(cbfs-files), \
+	       $(if $(filter $(call strip_quotes, $(CONFIG_CBFS_PREFIX))/%,\
+	           $(call extract_nth,2,$(file))), \
+	       $(if $(call extract_nth,6,$(file)),$(CBFSTOOL) $@.tmp locate -f $(call extract_nth,1,$(file)) -n $(call extract_nth,2,$(file)) -a $(call extract_nth,6,$(file))|xargs -i \
+	       $(cbfs-add-cmd) -b {} &&,\
+	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&)))
+
 .PHONY: $(obj)/coreboot.pre1
-$(obj)/coreboot.pre1: $(CBFSTOOL)
-	mv $(obj)/coreboot.rom $@
+$(obj)/coreboot.pre1: $$(prebuilt-files) $(CBFSTOOL)
+	mv $(obj)/coreboot.rom $@.tmp
+	$(prebuild-files) true
+	mv $@.tmp $@
 endif
 
 ifeq ($(CONFIG_PAYLOAD_LINUX),y)

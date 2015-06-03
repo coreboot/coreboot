@@ -19,17 +19,20 @@
 
 /* Function unit addresses. */
 enum {
-	UP_TAG_BASE = 0X60000000,
-	TIMER_BASE = 0X60005000,
-	CLK_RST_BASE = 0X60006000,
-	FLOW_CTLR_BASE = 0X60007000,
+	UP_TAG_BASE = 0x60000000,
+	TIMER_BASE = 0x60005000,
+	CLK_RST_BASE = 0x60006000,
+	FLOW_CTLR_BASE = 0x60007000,
+	SECURE_BOOT_BASE = 0x6000C200,
 	TEGRA_EVP_BASE = 0x6000f000,
 	APB_MISC_BASE = 0x70000000,
-	PMC_CTLR_BASE = 0X7000e400,
-	MC_CTLR_BASE = 0X70019000,
+	PINMUX_BASE = 0x70003000,
+	PMC_CTLR_BASE = 0x7000e400,
+	MC_CTLR_BASE = 0x70019000,
+	FUSE_BASE = 0x7000F800,
+	EMC_BASE = 0x7001B000,
+	I2C5_BASE = 0x7000D000
 };
-
-
 
 /* UP tag registers. */
 static uint32_t *up_tag_ptr = (void *)(UP_TAG_BASE + 0x0);
@@ -41,13 +44,32 @@ enum {
 /*  APB Misc JTAG Configuration Register */
 static uint32_t *misc_pp_config_ctl_ptr = (void *)(APB_MISC_BASE + 0x24);
 enum {
+	PP_CONFIG_CTL_TBE = 0x1 << 7,
 	PP_CONFIG_CTL_JTAG = 0x1 << 6
 };
 
+static uint32_t *misc_gp_asdbgreg_ptr = (void *)(APB_MISC_BASE + 0x810);
+enum {
+	CFG2TMC_RAM_SVOP_PDP_MASK = 0x3 << 24,
+	CFG2TMC_RAM_SVOP_PDP_VAL_2 = 0x2 << 24,
+};
+
+
+/* PINMUX registers. */
+static uint32_t *pinmux_pwr_i2c_scl_ptr = (void *)(PINMUX_BASE + 0xdc);
+static uint32_t *pinmux_pwr_i2c_sda_ptr = (void *)(PINMUX_BASE + 0xe0);
+static uint32_t *pinmux_dvfs_pwm_ptr = (void *)(PINMUX_BASE + 0x184);
+static uint32_t *pinmux_gpio_pa6_ptr = (void *)(PINMUX_BASE + 0x244);
+enum {
+	E_INPUT = 1 << 6,
+	TRISTATE = 1 << 4,
+	PM_CLDVFS = 1,
+	PM_I2CPMU = 0
+};
 
 /* Timer registers. */
 static uint32_t *timer_us_ptr = (void *)(TIMER_BASE + 0x10);
-
+static uint32_t *timer_us_cfg_ptr = (void *)(TIMER_BASE + 0x14);
 
 
 /* Clock and reset controller registers. */
@@ -56,12 +78,18 @@ enum {
 	SWR_TRIG_SYS_RST = 0x1 << 2
 };
 
-static uint32_t *clk_rst_cclk_burst_policy_ptr = (void *)(CLK_RST_BASE + 0x20);
+static uint32_t *clk_rst_cclkg_burst_policy_ptr = (void *)(CLK_RST_BASE + 0x368);
 enum {
-	CCLK_PLLP_BURST_POLICY = 0x20004444
+	CCLKG_PLLP_BURST_POLICY = 0x20004444
 };
 
-static uint32_t *clk_rst_super_cclk_div_ptr = (void *)(CLK_RST_BASE + 0x24);
+static uint32_t *clk_rst_cclklp_burst_policy_ptr = (void *)(CLK_RST_BASE + 0x370);
+enum {
+	CCLKLP_PLLP_BURST_POLICY = 0x20004444
+};
+
+static uint32_t *clk_rst_super_cclkg_div_ptr = (void *)(CLK_RST_BASE + 0x36c);
+static uint32_t *clk_rst_super_cclklp_div_ptr = (void *)(CLK_RST_BASE + 0x374);
 enum {
 	SUPER_CDIV_ENB = 0x1 << 31
 };
@@ -74,45 +102,42 @@ enum {
 	OSC_FREQ_SHIFT = 28,
 	OSC_FREQ_MASK = 0xf << OSC_FREQ_SHIFT
 };
-enum {
-	OSC_FREQ_13 = 0,
-	OSC_FREQ_16P8 = 1,
-	OSC_FREQ_19P2 = 4,
-	OSC_FREQ_38P4 = 5,
-	OSC_FREQ_12 = 8,
-	OSC_FREQ_48 = 9,
-	OSC_FREQ_26 = 12
-};
-
-static uint32_t *clk_rst_pllu_base_ptr = (void *)(CLK_RST_BASE + 0xc0);
-enum {
-	PLLU_DIVM_SHIFT = 0,
-	PLLU_DIVN_SHIFT = 8,
-	PLLU_OVERRIDE = 0x1 << 24,
-	PLLU_ENABLE = 0x1 << 30,
-	PLLU_BYPASS = 0x1 << 31
-};
-
-static uint32_t *clk_rst_pllu_misc_ptr = (void *)(CLK_RST_BASE + 0xcc);
-enum {
-	PLLU_LFCON_SHIFT = 4,
-	PLLU_CPCON_SHIFT = 8,
-	PLLU_LOCK_ENABLE = 22
-};
 
 static uint32_t *clk_rst_pllx_base_ptr = (void *)(CLK_RST_BASE + 0xe0);
 enum {
 	PLLX_ENABLE = 0x1 << 30
 };
 
+static uint32_t *clk_rst_clk_source_i2c5_ptr = (void *)(CLK_RST_BASE + 0x128);
+enum {
+	I2C5_CLK_DIVISOR = 4
+};
+
+static uint32_t *clk_rst_rst_dev_h_set_ptr = (void *)(CLK_RST_BASE + 0x308);
+enum {
+	I2C5_RST = 0x1 << 15
+};
+
+static uint32_t *clk_rst_rst_dev_h_clr_ptr = (void *)(CLK_RST_BASE + 0x30c);
+
 static uint32_t *clk_rst_rst_dev_u_clr_ptr = (void *)(CLK_RST_BASE + 0x314);
 enum {
 	SWR_CSITE_RST = 0x1 << 9
 };
 
+static uint32_t *clk_rst_rst_dev_v_clr_ptr = (void *)(CLK_RST_BASE + 0x434);
+enum {
+	MSELECT_RST = 0x1 << 3
+};
+
 static uint32_t *clk_rst_clk_enb_l_set_ptr = (void *)(CLK_RST_BASE + 0x320);
 enum {
 	CLK_ENB_CPU = 0x1 << 0
+};
+
+static uint32_t *clk_rst_clk_enb_h_set_ptr = (void *)(CLK_RST_BASE + 0x328);
+enum {
+	CLK_ENB_I2C5 = 0x1 << 15
 };
 
 static uint32_t *clk_rst_clk_out_enb_u_set_ptr =
@@ -121,26 +146,17 @@ enum {
 	CLK_ENB_CSITE = 0x1 << 9
 };
 
-static uint32_t *clk_rst_cpu_softrst_ctrl2_ptr =
-	(void *)(CLK_RST_BASE + 0x388);
-enum {
-	CAR2PMC_CPU_ACK_WIDTH_SHIFT = 0,
-	CAR2PMC_CPU_ACK_WIDTH_MASK = 0xfff << CAR2PMC_CPU_ACK_WIDTH_SHIFT
-};
-
 static uint32_t *clk_rst_clk_enb_v_set_ptr = (void *)(CLK_RST_BASE + 0x440);
 enum {
 	CLK_ENB_CPUG = 0x1 << 0,
-	CLK_ENB_CPULP = 0x1 << 1,
 };
 
-static uint32_t *clk_rst_rst_cpulp_cmplx_set_ptr =
-	(void *)(CLK_RST_BASE + 0x450);
+static uint32_t *clk_rst_clk_enb_y_set_ptr = (void *)(CLK_RST_BASE + 0x29c);
 enum {
-	SET_CXRESET0 = 0x1 << 20,
-	SET_CXRESET1 = 0x1 << 21
+	CLK_ENB_PLLP_OUT_CPU = 0x1 << 31
 };
-static uint32_t *clk_rst_rst_cpug_cmplx_clr_ptr =
+
+static uint32_t *clk_rst_cpug_cmplx_clr_ptr =
 	(void *)(CLK_RST_BASE + 0x454);
 enum {
 	CLR_CPURESET0 = 0x1 << 0,
@@ -164,12 +180,55 @@ enum {
 	CLR_PRESETDBG = 0x1 << 30
 };
 
+static uint32_t *clk_rst_spare_reg0_ptr =
+	(void *)(CLK_RST_BASE + 0x55c);
+enum {
+	CLK_M_DIVISOR_MASK = 0x3 << 2,
+	CLK_M_DIVISOR_BY_2 = 0x1 << 2
+};
 
-/* Reset vector. */
+static uint32_t *clk_rst_clk_out_enb_l_ptr = (void *)(CLK_RST_BASE + 0x10);
+static uint32_t *clk_rst_clk_out_enb_h_ptr = (void *)(CLK_RST_BASE + 0x14);
+static uint32_t *clk_rst_clk_out_enb_u_ptr = (void *)(CLK_RST_BASE + 0x18);
+static uint32_t *clk_rst_clk_out_enb_v_ptr = (void *)(CLK_RST_BASE + 0x360);
+static uint32_t *clk_rst_clk_out_enb_w_ptr = (void *)(CLK_RST_BASE + 0x364);
+static uint32_t *clk_rst_clk_out_enb_x_ptr = (void *)(CLK_RST_BASE + 0x280);
+static uint32_t *clk_rst_clk_out_enb_y_ptr = (void *)(CLK_RST_BASE + 0x298);
 
-static uint32_t *evp_cpu_reset_ptr = (void *)(TEGRA_EVP_BASE + 0x100);
+static uint32_t *clk_rst_clk_enb_l_clr_ptr = (void *)(CLK_RST_BASE + 0x324);
+static uint32_t *clk_rst_clk_enb_h_clr_ptr = (void *)(CLK_RST_BASE + 0x32c);
+static uint32_t *clk_rst_clk_enb_u_clr_ptr = (void *)(CLK_RST_BASE + 0x334);
+static uint32_t *clk_rst_clk_enb_v_clr_ptr = (void *)(CLK_RST_BASE + 0x444);
+static uint32_t *clk_rst_clk_enb_w_clr_ptr = (void *)(CLK_RST_BASE + 0x44c);
+static uint32_t *clk_rst_clk_enb_x_clr_ptr = (void *)(CLK_RST_BASE + 0x288);
+static uint32_t *clk_rst_clk_enb_y_clr_ptr = (void *)(CLK_RST_BASE + 0x2a0);
 
+static uint32_t *clk_rst_clk_enb_v_ptr = (void *)(CLK_RST_BASE + 0x440);
+enum {
+	CLK_ENB_MSELECT = 0x1 << 3
+};
 
+static uint32_t *clk_rst_clk_enb_w_set_ptr = (void *)(CLK_RST_BASE + 0x448);
+enum {
+	CLK_ENB_MC1 = 0x1 << 30,
+	CLK_ENB_DVFS = 0x1 << 27
+};
+
+static uint32_t *clk_rst_clk_source_mselect_ptr = (void *)(CLK_RST_BASE + 0x3b4);
+enum {
+	CLK_SRC_PLLP_OUT0 = (0x0 << 29),
+	MSELECT_CLK_DIVISOR_4 = 6
+};
+
+static uint32_t *clk_rst_clk_dvfs_ref_ptr = (void *)(CLK_RST_BASE + 0x62c);
+enum {
+	DVFS_REF_CLK_DIVISOR = 0xe
+};
+
+static uint32_t *clk_rst_clk_dvfs_soc_ptr = (void *)(CLK_RST_BASE + 0x630);
+enum {
+	DVFS_SOC_CLK_DIVISOR = 0xe
+};
 
 /* Flow controller registers. */
 static uint32_t *flow_ctlr_halt_cop_events_ptr =
@@ -181,12 +240,6 @@ enum {
 	FLOW_MODE_STOP = 2 << FLOW_MODE_SHIFT,
 };
 
-static uint32_t *flow_ctlr_cluster_control_ptr =
-	(void *)(FLOW_CTLR_BASE + 0x2c);
-enum {
-	FLOW_CLUSTER_ACTIVE_LP = 0x1 << 0
-};
-
 static uint32_t *flow_ctlr_ram_repair_ptr =
 	(void *)(FLOW_CTLR_BASE + 0x40);
 static uint32_t *flow_ctlr_ram_repair_cluster1_ptr =
@@ -196,39 +249,67 @@ enum {
 	RAM_REPAIR_STS = 0x1 << 1,
 };
 
+static uint32_t *flow_ctlr_bpmp_cluster_control_ptr =
+	(void *)(FLOW_CTLR_BASE + 0x98);
+enum {
+	ACTIVE_SLOW = 0x1 << 0
+};
+
 
 /* Power management controller registers. */
 enum {
 	PARTID_CRAIL = 0,
+	PARTID_CE1 = 9,
+	PARTID_CE2 = 10,
+	PARTID_CE3 = 11,
 	PARTID_CE0 = 14,
 	PARTID_C0NC = 15,
 };
 
-static uint32_t *pmc_ctlr_clamp_status_ptr = (void *)(PMC_CTLR_BASE + 0x2c);
+static uint32_t *pmc_dpd_sample_ptr = (void *)(PMC_CTLR_BASE + 0x20);
+static uint32_t *pmc_clamp_status_ptr = (void *)(PMC_CTLR_BASE + 0x2c);
 
-static uint32_t *pmc_ctlr_pwrgate_toggle_ptr = (void *)(PMC_CTLR_BASE + 0x30);
+static uint32_t *pmc_pwrgate_toggle_ptr = (void *)(PMC_CTLR_BASE + 0x30);
 enum {
 	PWRGATE_TOGGLE_START = 0x1 << 8
 };
 
-static uint32_t *pmc_ctlr_pwrgate_status_ptr = (void *)(PMC_CTLR_BASE + 0x38);
+static uint32_t *pmc_remove_clamping_cmd_ptr = (void *)(PMC_CTLR_BASE + 0x34);
 
-static uint32_t *pmc_ctlr_cpupwrgood_timer_ptr =
-	(void *)(PMC_CTLR_BASE + 0xc8);
+static uint32_t *pmc_pwrgate_status_ptr = (void *)(PMC_CTLR_BASE + 0x38);
+
+static uint32_t *pmc_cpupwrgood_timer_ptr = (void *)(PMC_CTLR_BASE + 0xc8);
 
 static uint32_t *pmc_odmdata_ptr = (void *)(PMC_CTLR_BASE + 0xa0);
 
-static uint32_t *pmc_ctlr_scratch41_ptr = (void *)(PMC_CTLR_BASE + 0x140);
-static uint32_t *pmc_ctlr_secure_scratch34_ptr = (void *)(PMC_CTLR_BASE + 0x368);
-static uint32_t *pmc_ctlr_secure_scratch35_ptr = (void *)(PMC_CTLR_BASE + 0x36c);
+static uint32_t *pmc_scratch4_ptr = (void *)(PMC_CTLR_BASE + 0x60);
+enum {
+	PMC_WAKEUP_CLUSTER_LPCPU = 1 << 31
+};
 
-static uint32_t *pmc_ctlr_osc_edpd_over_ptr = (void *)(PMC_CTLR_BASE + 0x1a4);
+static uint32_t *pmc_scratch190_ptr = (void *)(PMC_CTLR_BASE + 0x818);
+
+/* SCRATCH201 bit 1 is used to designate 77621 PMIC for CPU rail. */
+static uint32_t *pmc_scratch201_ptr = (void *)(PMC_CTLR_BASE + 0x844);
+enum {
+	PMIC_77621 = 0x1 << 1
+};
+
+static uint32_t *pmc_secure_scratch34_ptr = (void *)(PMC_CTLR_BASE + 0x368);
+static uint32_t *pmc_secure_scratch35_ptr = (void *)(PMC_CTLR_BASE + 0x36c);
+
+static uint32_t *pmc_osc_edpd_over_ptr = (void *)(PMC_CTLR_BASE + 0x1a4);
 enum {
 	PMC_XOFS_SHIFT = 1,
 	PMC_XOFS_MASK = 0x3f << PMC_XOFS_SHIFT
 };
 
+static uint32_t *pmc_sticky_bits_ptr = (void *)(PMC_CTLR_BASE + 0x2c0);
+enum {
+	HDA_LPBK_DIS = 1 << 0,
+};
 
+static uint32_t *pmc_set_sw_clamp_ptr = (void *)(PMC_CTLR_BASE + 0x47c);
 
 /* Memory controller registers. */
 static uint32_t *mc_video_protect_size_mb_ptr = (void *)(MC_CTLR_BASE + 0x64c);
@@ -236,9 +317,80 @@ static uint32_t *mc_video_protect_size_mb_ptr = (void *)(MC_CTLR_BASE + 0x64c);
 static uint32_t *mc_video_protect_reg_ctrl_ptr =
 	(void *)(MC_CTLR_BASE + 0x650);
 enum {
-	VIDEO_PROTECT_WRITE_ACCESS_DISABLE = 0x1 << 0,
-	VIDEO_PROTECT_ALLOW_TZ_WRITE_ACCESS = 0x1 << 1
+	VPR_WR_ACCESS_DISABLE = 0x1 << 0,
+	VPR_ALLOW_TZ_WR_ACCESS = 0x1 << 1
 };
+/* FUSE registers */
+static uint32_t *fuse_security_mode_ptr = (void *)(FUSE_BASE + 0x1a0);
+enum {
+	SECURITY_MODE = 0x1 << 0
+};
+
+/* SECURE_BOOT registers */
+static uint32_t *sb_pfcfg_ptr = (void *)(SECURE_BOOT_BASE + 0x8);
+enum {
+	SECURE_BOOT_DEBUG_CONFIG = 0x1 << 3
+};
+
+static uint32_t *sb_aa64_reset_low = (void *)(SECURE_BOOT_BASE + 0x30);
+static uint32_t *sb_aa64_reset_high = (void *)(SECURE_BOOT_BASE + 0x34);
+
+
+/* EMC registers */
+static uint32_t *pmacro_cfg_pm_global = (void *)(EMC_BASE + 0xc30);
+enum {
+	DISABLE_CFG_BYTE0 = 0x1 << 16,
+	DISABLE_CFG_BYTE1 = 0x1 << 17,
+	DISABLE_CFG_BYTE2 = 0x1 << 18,
+	DISABLE_CFG_BYTE3 = 0x1 << 19,
+	DISABLE_CFG_BYTE4 = 0x1 << 20,
+	DISABLE_CFG_BYTE5 = 0x1 << 21,
+	DISABLE_CFG_BYTE6 = 0x1 << 22,
+	DISABLE_CFG_BYTE7 = 0x1 << 23,
+	DISABLE_CFG_BYTES = 0xff << 16,
+	ENABLE_CFG_BYTES = 0 << 16,
+	DISABLE_CFG_CMD0 = 0x1 << 24,
+	DISABLE_CFG_CMD1 = 0x1 << 25,
+	DISABLE_CFG_CMD2 = 0x1 << 26,
+	DISABLE_CFG_CMD3 = 0x1 << 27,
+};
+
+static uint32_t *pmacro_training_ctrl_0_ptr = (void *)(EMC_BASE + 0xcf8);
+static uint32_t *pmacro_training_ctrl_1_ptr = (void *)(EMC_BASE + 0xcfc);
+enum {
+	TRAINING_E_WRPTR = 0x1 << 3
+};
+
+/* I2C5 registers */
+static uint32_t *i2c5_cnfg_ptr = (void *)(I2C5_BASE + 0x0);
+enum {
+	I2C_DEBOUNCE_CNT_4 = 2 << 12,
+	I2C_NEW_MASTER_FSM = 1 << 11,
+	I2C_SEND = 1 << 9,
+	I2C_LENGTH_2_BYTES = 1 << 1
+};
+
+static uint32_t *i2c5_cmd_addr0_ptr = (void *)(I2C5_BASE + 0x4);
+static uint32_t *i2c5_cmd_data1_ptr = (void *)(I2C5_BASE + 0xc);
+static uint32_t *i2c5_status_ptr = (void *)(I2C5_BASE + 0x1c);
+enum {
+	I2C_STATUS_BUSY = 1 << 8,
+	I2C_STATUS_CMD1_STAT_MASK = 0xf << 0,
+	I2C_STATUS_CMD1_XFER_SUCCESS = 0 << 0
+};
+
+static uint32_t *i2c5_config_load_ptr = (void *)(I2C5_BASE + 0x8c);
+enum {
+	MSTR_CONFIG_LOAD = 1 << 0
+};
+
+#define MAX77620_I2C_ADDR	(0x3c << 1)
+#define MAX77620_GPIO5_DATA	(0x3b | (0x9 << 8))
+
+#define MAX77621_I2C_ADDR	(0x1b << 1)
+#define MAX77621_VOUT_REG	0x0
+#define MAX77621_VOUT_VAL	(0x80 | 0x27)
+#define MAX77621_VOUT_DATA	(MAX77621_VOUT_REG | (MAX77621_VOUT_VAL << 8))
 
 
 /* Utility functions. */
@@ -308,15 +460,16 @@ static uint32_t *uart_clk_source_regs[4] = {
 	(uint32_t *)0x60006178,
 	(uint32_t *)0x6000617c,
 	(uint32_t *)0x600061a0,
-	(uint32_t *)0x600061c0,
+	(uint32_t *)0x600061c0
 };
 
 static uint32_t *uart_base_regs[4] = {
 	(uint32_t *)0x70006000,
 	(uint32_t *)0x70006040,
 	(uint32_t *)0x70006200,
-	(uint32_t *)0x70006300,
+	(uint32_t *)0x70006300
 };
+
 enum {
 	UART_THR_DLAB = 0x0,
 	UART_IER_DLAB = 0x1,
@@ -329,7 +482,7 @@ enum {
 	FCR_RX_CLR = 0x2,	/* bit 1 of FCR : clear RX FIFO */
 	FCR_EN_FIFO = 0x1,	/* bit 0 of FCR : enable TX & RX FIFO */
 	LCR_DLAB = 0x80,	/* bit 7 of LCR : Divisor Latch Access Bit */
-	LCR_WD_SIZE_8 = 0x3,	/* bit 1:0 of LCR : word length of 8 */
+	LCR_WD_SIZE_8 = 0x3	/* bit 1:0 of LCR : word length of 8 */
 };
 
 static void enable_uart(void)
@@ -386,17 +539,6 @@ static void enable_uart(void)
 
 /* Accessors. */
 
-static uint32_t get_wakeup_vector(void)
-{
-	return read32(pmc_ctlr_scratch41_ptr);
-}
-
-static unsigned get_osc_freq(void)
-{
-	return (read32(clk_rst_osc_ctrl_ptr) & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
-}
-
-
 /* Jtag configuration. */
 
 static void enable_jtag(void)
@@ -408,9 +550,11 @@ static void enable_jtag(void)
 
 static void config_oscillator(void)
 {
-	// Read oscillator drive strength from OSC_EDPD_OVER.XOFS and copy
-	// to OSC_CTRL.XOFS and set XOE.
-	uint32_t xofs = (read32(pmc_ctlr_osc_edpd_over_ptr) &
+	/*
+	 * Read oscillator drive strength from OSC_EDPD_OVER.XOFS and copy
+	 * to OSC_CTRL.XOFS and set XOE.
+	 */
+	uint32_t xofs = (read32(pmc_osc_edpd_over_ptr) &
 		    PMC_XOFS_MASK) >> PMC_XOFS_SHIFT;
 
 	uint32_t osc_ctrl = read32(clk_rst_osc_ctrl_ptr);
@@ -420,75 +564,25 @@ static void config_oscillator(void)
 	write32(clk_rst_osc_ctrl_ptr, osc_ctrl);
 }
 
-static void config_pllu(void)
+static void enable_select_cpu_clocks(void)
 {
-	// Figure out what parameters to use for PLLU.
-	uint32_t divm, divn, cpcon, lfcon;
-	switch (get_osc_freq()) {
-	case OSC_FREQ_12:
-	case OSC_FREQ_48:
-		divm = 0x0c;
-		divn = 0x3c0;
-		cpcon = 0x0c;
-		lfcon = 0x02;
-		break;
-	case OSC_FREQ_16P8:
-		divm = 0x07;
-		divn = 0x190;
-		cpcon = 0x05;
-		lfcon = 0x02;
-		break;
-	case OSC_FREQ_19P2:
-	case OSC_FREQ_38P4:
-		divm = 0x04;
-		divn = 0xc8;
-		cpcon = 0x03;
-		lfcon = 0x02;
-		break;
-	case OSC_FREQ_26:
-		divm = 0x1a;
-		divn = 0x3c0;
-		cpcon = 0x0c;
-		lfcon = 0x02;
-		break;
-	default:
-		// Map anything that's not recognized to 13MHz.
-		divm = 0x0d;
-		divn = 0x3c0;
-		cpcon = 0x0c;
-		lfcon = 0x02;
-	}
-
-	// Configure PLLU.
-	uint32_t base = PLLU_BYPASS | PLLU_OVERRIDE |
-			(divn << PLLU_DIVN_SHIFT) | (divm << PLLU_DIVM_SHIFT);
-	write32(clk_rst_pllu_base_ptr, base);
-	uint32_t misc = (cpcon << PLLU_CPCON_SHIFT) |
-			(lfcon << PLLU_LFCON_SHIFT);
-	write32(clk_rst_pllu_misc_ptr, misc);
-
-	// Enable PLLU.
-	base &= ~PLLU_BYPASS;
-	base |= PLLU_ENABLE;
-	write32(clk_rst_pllu_base_ptr, base);
-	misc |= PLLU_LOCK_ENABLE;
-	write32(clk_rst_pllu_misc_ptr, misc);
-}
-
-static void enable_cpu_clocks(void)
-{
-	// Enable the CPU complex clock.
+	/* Enable the CPU complex clock. */
 	write32(clk_rst_clk_enb_l_set_ptr, CLK_ENB_CPU);
-	write32(clk_rst_clk_enb_v_set_ptr, CLK_ENB_CPUG | CLK_ENB_CPULP);
-}
+	write32(clk_rst_clk_enb_v_set_ptr, CLK_ENB_CPUG);
+	udelay(10);
 
+	/* Select CPU complex clock source. */
+	write32(clk_rst_cclkg_burst_policy_ptr, CCLKG_PLLP_BURST_POLICY);
+	write32(clk_rst_cclklp_burst_policy_ptr, CCLKLP_PLLP_BURST_POLICY);
+	udelay(10);
+}
 
 
 /* Function unit configuration. */
 
 static void config_core_sight(void)
 {
-	// Enable the CoreSight clock.
+	/* Enable the CoreSight clock. */
 	write32(clk_rst_clk_out_enb_u_set_ptr, CLK_ENB_CSITE);
 
 	/*
@@ -501,36 +595,14 @@ static void config_core_sight(void)
 }
 
 
-/* Resets. */
-
-static void clear_cpu_resets(void)
-{
-	/* Hold CPU1 in reset */
-	setbits32(SET_CXRESET1, clk_rst_rst_cpulp_cmplx_set_ptr);
-
-	write32(clk_rst_rst_cpug_cmplx_clr_ptr,
-		CLR_NONCPURESET | CLR_L2RESET | CLR_PRESETDBG);
-
-	write32(clk_rst_rst_cpug_cmplx_clr_ptr,
-		CLR_CPURESET0 | CLR_DBGRESET0 | CLR_CORERESET0 | CLR_CXRESET0);
-}
-
-
-
 /* RAM repair */
 
 void ram_repair(void)
 {
-	// Request Cluster0 RAM repair.
+	/* Request Cluster0 RAM repair. */
 	setbits32(RAM_REPAIR_REQ, flow_ctlr_ram_repair_ptr);
-	// Poll for Cluster0 RAM repair status.
+	/* Poll for Cluster0 RAM repair status. */
 	while (!(read32(flow_ctlr_ram_repair_ptr) & RAM_REPAIR_STS))
-		;
-
-	// Request Cluster1 RAM repair.
-	setbits32(RAM_REPAIR_REQ, flow_ctlr_ram_repair_cluster1_ptr);
-	// Poll for Cluster1 RAM repair status.
-	while (!(read32(flow_ctlr_ram_repair_cluster1_ptr) & RAM_REPAIR_STS))
 		;
 }
 
@@ -540,23 +612,237 @@ void ram_repair(void)
 static void power_on_partition(unsigned id)
 {
 	uint32_t bit = 0x1 << id;
-	if (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit)) {
-		// Partition is not on. Turn it on.
-		write32(pmc_ctlr_pwrgate_toggle_ptr,
-			id | PWRGATE_TOGGLE_START);
+	if (!(read32(pmc_pwrgate_status_ptr) & bit)) {
+		/* Partition is not on. Turn it on. */
+		write32(pmc_pwrgate_toggle_ptr, id | PWRGATE_TOGGLE_START);
 
-		// Wait until the partition is powerd on.
-		while (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit))
+		/* Wait until the partition is powerd on. */
+		while (!(read32(pmc_pwrgate_status_ptr) & bit))
 			;
 
-		// Wait until clamp is off.
-		while (read32(pmc_ctlr_clamp_status_ptr) & bit)
+		/* Wait until clamp is off. */
+		while (read32(pmc_clamp_status_ptr) & bit)
 			;
 	}
 }
 
-static void power_on_main_cpu(void)
+static void config_hda_lpbk_dis(void)
 {
+	/* Set HDA_LPBK_DIS bit in APBDEV_PMC_STICKY_BITS_0 register */
+	if (read32(fuse_security_mode_ptr) & SECURITY_MODE)
+		setbits32(HDA_LPBK_DIS, pmc_sticky_bits_ptr);
+}
+
+static void set_gpio_pa6_input_mode(void)
+{
+	setbits32(E_INPUT, pinmux_gpio_pa6_ptr);
+}
+
+static void set_clk_m(void)
+{
+	uint32_t spare;
+
+	/* set clk_m frequency to 19.2MHz: set divisor to 2. */
+	spare = read32(clk_rst_spare_reg0_ptr);
+	spare &= ~CLK_M_DIVISOR_MASK;
+	spare |= CLK_M_DIVISOR_BY_2;
+	write32(clk_rst_spare_reg0_ptr, spare);
+
+	/*
+	 * Restore TIMERUS config for 19.2MHz. (19.2 = 96/5 = 0x60/5)
+	 * USEC_DIVIDEND(15:8) = 5-1; USEC_DIVISOR(7:0) = 0x60-1
+	 */
+	write32(timer_us_cfg_ptr, 0x045f);
+}
+
+static void restore_ram_svop(void)
+{
+	uint32_t asdbgreg;
+
+	asdbgreg = read32(misc_gp_asdbgreg_ptr);
+	asdbgreg &= ~CFG2TMC_RAM_SVOP_PDP_MASK;
+	asdbgreg |= CFG2TMC_RAM_SVOP_PDP_VAL_2;
+	write32(misc_gp_asdbgreg_ptr, asdbgreg);
+}
+
+static void set_pmacro_training_wrptr(void)
+{
+	/* disable writes to BYTES 7-0 of pad macro */
+	write32(pmacro_cfg_pm_global, DISABLE_CFG_BYTES);
+
+	/* Set E_WRPTR mode on Channel 0 and 1 */
+	write32(pmacro_training_ctrl_0_ptr, TRAINING_E_WRPTR);
+	write32(pmacro_training_ctrl_1_ptr, TRAINING_E_WRPTR);
+
+	/* Re-enable writes to BYTE0-7 */
+	write32(pmacro_cfg_pm_global, ENABLE_CFG_BYTES);
+}
+
+static void config_mselect(void)
+{
+	/* Set MSELECT clock source to PLL_P with 1:4 divider */
+	write32(clk_rst_clk_source_mselect_ptr,
+		(CLK_SRC_PLLP_OUT0 | MSELECT_CLK_DIVISOR_4));
+	/* Enable clock to MSELECT */
+	write32(clk_rst_clk_enb_v_ptr, CLK_ENB_MSELECT);
+	/* Bring MSELECT out of reset, after 2 microsecond wait */
+	udelay(2);
+	write32(clk_rst_rst_dev_v_clr_ptr, MSELECT_RST);
+}
+
+/* Routine to do i2c send of 'data' to 'addr' */
+static void i2c_send(uint32_t addr, uint32_t data)
+{
+	uint32_t delay;
+
+	write32(i2c5_cmd_addr0_ptr, addr);
+	write32(i2c5_cmd_data1_ptr, data);
+
+	write32(i2c5_cnfg_ptr, (I2C_DEBOUNCE_CNT_4 | I2C_NEW_MASTER_FSM |
+				I2C_LENGTH_2_BYTES));
+
+	write32(i2c5_config_load_ptr, MSTR_CONFIG_LOAD);
+	delay = 0;
+	while (read32(i2c5_config_load_ptr) & MSTR_CONFIG_LOAD) {
+		udelay(1);
+		if (++delay > 100)
+			reset();
+	}
+
+	write32(i2c5_cnfg_ptr, (I2C_DEBOUNCE_CNT_4 | I2C_NEW_MASTER_FSM |
+				I2C_SEND | I2C_LENGTH_2_BYTES));
+
+	/* Check busy */
+	delay = 0;
+	while (read32(i2c5_status_ptr) & I2C_STATUS_BUSY) {
+		udelay(1);
+		if (++delay > 1000)
+			reset();
+	}
+
+	/* Check xfer successful; */
+	if (read32(i2c5_status_ptr) & I2C_STATUS_CMD1_STAT_MASK)
+		reset();
+}
+
+/* Entry point. */
+
+void lp0_resume(void)
+{
+	uint32_t orig_timer;
+
+	/* If not on the AVP, reset. */
+	if (read32(up_tag_ptr) != UP_TAG_AVP)
+		reset();
+
+	/* Enable JTAG */
+	enable_jtag();
+
+	/* Set HDA_LPBK_DIS bit in APBDEV_PMC_STICKY_BITS_0 register */
+	config_hda_lpbk_dis();
+
+	/*
+	 * From T210 TRM:
+	 *   8.9.1.2 Deep Sleep Exit:
+	 *     5.a: Set the E_INPUT bit of the PINMUX_AUX_GPIO_PA6_0 register
+	 *          to Logic 1.
+	 */
+	set_gpio_pa6_input_mode();
+
+	config_oscillator();
+
+	/* set clk_m frequency to 19.2MHz */
+	set_clk_m();
+
+	/* Restore RAM SVOP setting */
+	restore_ram_svop();
+
+	/* Bad qpop value on cmd pad macros removes clock gating from IB path */
+	set_pmacro_training_wrptr();
+
+	/*
+	 * Find out which CPU (slow or fast) to wake up. The default setting
+	 * in flow controller is to wake up GCPU
+	 */
+	if (read32(pmc_scratch4_ptr) & PMC_WAKEUP_CLUSTER_LPCPU) {
+		setbits32(ACTIVE_SLOW, flow_ctlr_bpmp_cluster_control_ptr);
+	}
+
+	/* Set the CPU reset vector */
+	write32(sb_aa64_reset_low, (read32(pmc_secure_scratch34_ptr) | 1));
+	write32(sb_aa64_reset_high, read32(pmc_secure_scratch35_ptr));
+
+	/* Program SUPER_CCLK_DIVIDER. */
+	write32(clk_rst_super_cclkg_div_ptr, SUPER_CDIV_ENB);
+	write32(clk_rst_super_cclklp_div_ptr, SUPER_CDIV_ENB);
+
+	config_core_sight();
+
+	/* Set MSELECT clock source to PLL_P with 1:4 divider */
+	config_mselect();
+
+	/* Enable UART */
+	enable_uart();
+
+	/* Disable PLLX since it isn't used in the kernel as CPU clk source. */
+	clrbits32(PLLX_ENABLE, clk_rst_pllx_base_ptr);
+
+	/* Clear PMC_SCRATCH190 */
+	clrbits32(1, pmc_scratch190_ptr);
+
+	/* Clear PMC_DPD_SAMPLE */
+	write32(pmc_dpd_sample_ptr, 0);
+	udelay(10);
+
+	/*
+	 * Set both _ACCESS bits so that kernel/secure code
+	 * can reconfig VPR careveout as needed from the TrustZone.
+	 */
+	write32(mc_video_protect_size_mb_ptr, 0);
+	write32(mc_video_protect_reg_ctrl_ptr,
+		VPR_WR_ACCESS_DISABLE | VPR_ALLOW_TZ_WR_ACCESS);
+
+	/* Tristate CLDVFS PWM */
+	write32(pinmux_dvfs_pwm_ptr, (TRISTATE | PM_CLDVFS));
+
+	/* Restore PWR I2C pinmux configuration */
+	write32(pinmux_pwr_i2c_scl_ptr, (E_INPUT | PM_I2CPMU));
+	write32(pinmux_pwr_i2c_sda_ptr, (E_INPUT | PM_I2CPMU));
+
+	/* Enable CLDVFS clock */
+	write32(clk_rst_clk_enb_w_set_ptr, CLK_ENB_DVFS);
+
+	/* Set CLDVFS clock source and divider */
+	write32(clk_rst_clk_dvfs_ref_ptr, DVFS_REF_CLK_DIVISOR);
+	write32(clk_rst_clk_dvfs_soc_ptr, DVFS_SOC_CLK_DIVISOR);
+
+	/* Enable PWR I2C controller */
+	write32(clk_rst_clk_enb_h_set_ptr, CLK_ENB_I2C5);
+	write32(clk_rst_rst_dev_h_set_ptr, I2C5_RST);
+	udelay(5);
+	write32(clk_rst_clk_source_i2c5_ptr, CLK_SRC_PLLP_OUT0 | I2C5_CLK_DIVISOR);
+	write32(clk_rst_rst_dev_h_clr_ptr, I2C5_RST);
+
+	/*
+	 * Turn on CPU rail:
+	 * SCRATCH201[1] is being used to identify CPU PMIC in warmboot code.
+	 * 0 : OVR2
+	 * 1 : MAX77621
+	 */
+	if (read32(pmc_scratch201_ptr) & PMIC_77621)
+		/* Set cpu rail 0.85V */
+		i2c_send(MAX77621_I2C_ADDR, MAX77621_VOUT_DATA);
+	else
+		/* Enable GPIO5 on MAX77620 PMIC */
+		i2c_send(MAX77620_I2C_ADDR, MAX77620_GPIO5_DATA);
+
+	/* Disable PWR I2C */
+	write32(clk_rst_rst_dev_h_set_ptr, I2C5_RST);
+	write32(clk_rst_clk_enb_h_clr_ptr, CLK_ENB_I2C5);
+
+	/* Delay before removing clamp */
+	udelay(2000);
+
 	/*
 	 * Reprogram PMC_CPUPWRGOOD_TIMER register:
 	 *
@@ -571,95 +857,54 @@ static void power_on_main_cpu(void)
 	 * Save the original PMC_CPUPWRGOOD_TIMER register which we need to
 	 * restore after the CPU is powered up.
 	 */
-	uint32_t orig_timer = read32(pmc_ctlr_cpupwrgood_timer_ptr);
+	orig_timer = read32(pmc_cpupwrgood_timer_ptr);
+	write32(pmc_cpupwrgood_timer_ptr, orig_timer * (204000000 / 32768));
 
-	write32(pmc_ctlr_cpupwrgood_timer_ptr,
-		orig_timer * (204000000 / 32768));
-
+	/* Power on CRAIL in PMC */
 	power_on_partition(PARTID_CRAIL);
+
+	/* Remove SW controlled clamp */
+	write32(pmc_set_sw_clamp_ptr, 0);
+	write32(pmc_remove_clamping_cmd_ptr, (1 << PARTID_CRAIL));
+	/* Wait until clamp is off. */
+	while (read32(pmc_clamp_status_ptr) & (1 << PARTID_CRAIL))
+		;
+
+	/* Disable CLDVFS clock */
+	write32(clk_rst_clk_enb_w_clr_ptr, CLK_ENB_DVFS);
+
+	/* Perform fast cluster RAM repair. */
+	if (!(read32(flow_ctlr_bpmp_cluster_control_ptr) & ACTIVE_SLOW))
+		ram_repair();
+
+	/* Power up the non-CPU partition. */
 	power_on_partition(PARTID_C0NC);
+
+	/* Enable PLLP branch going to CPU */
+	write32(clk_rst_clk_enb_y_set_ptr, CLK_ENB_PLLP_OUT_CPU);
+	udelay(2);
+
+	/* Enable the CPU complex clocks */
+	enable_select_cpu_clocks();
+	udelay(10);
+
+	/* Take non-cpu OUT of reset */
+	write32(clk_rst_cpug_cmplx_clr_ptr, CLR_NONCPURESET);
+
+	/* Power up the CPU0 partition. */
 	power_on_partition(PARTID_CE0);
 
-	// Restore the original PMC_CPUPWRGOOD_TIMER.
-	write32(pmc_ctlr_cpupwrgood_timer_ptr, orig_timer);
-}
+	/* Restore the original PMC_CPUPWRGOOD_TIMER. */
+	write32(pmc_cpupwrgood_timer_ptr, orig_timer);
 
+	/* Clear software controlled reset */
+	write32(clk_rst_cpug_cmplx_clr_ptr, (CLR_CPURESET0 | CLR_CORERESET0));
 
-static void aarch64_trampoline(void)
-{
-	uint32_t val = 3;	/* bit1: to warm reset; bit0: AARCH64*/
-
-	asm volatile ("mcr p15, 0, %0, c12, c0, 2" : : "r" (val));
-
-	/* unreachable */
-	halt();
-}
-
-
-/* Entry point. */
-
-void lp0_resume(void)
-{
-	// If not on the AVP, reset.
-	if (read32(up_tag_ptr) != UP_TAG_AVP)
-		reset();
-
-	// Enable JTAG
-	enable_jtag();
-
-	config_oscillator();
-
-	// Program SUPER_CCLK_DIVIDER.
-	write32(clk_rst_super_cclk_div_ptr, SUPER_CDIV_ENB);
-
-	config_core_sight();
-
-	enable_uart();
-
-	config_pllu();
-
-	/*
-	 * Set the CPU reset vector.
-	 *
-	 * T210 always resets to AARCH32 and SW needs to write RMR_EL3
-	 * to bootstrap into AARCH64.
-	 */
-	write32(pmc_ctlr_secure_scratch34_ptr, get_wakeup_vector());
-	write32(pmc_ctlr_secure_scratch35_ptr, 0);
-	write32(evp_cpu_reset_ptr, (uint32_t)aarch64_trampoline);
-
-	// Select CPU complex clock source.
-	write32(clk_rst_cclk_burst_policy_ptr, CCLK_PLLP_BURST_POLICY);
-
-	// Disable PLLX since it isn't used as CPU clock source.
-	clrbits32(PLLX_ENABLE, clk_rst_pllx_base_ptr);
-
-	// Set CAR2PMC_CPU_ACK_WIDTH to 408.
-	uint32_t ack_width = read32(clk_rst_cpu_softrst_ctrl2_ptr);
-	ack_width &= ~CAR2PMC_CPU_ACK_WIDTH_MASK;
-	ack_width |= 408 << CAR2PMC_CPU_ACK_WIDTH_SHIFT;
-	write32(clk_rst_cpu_softrst_ctrl2_ptr, ack_width);
-
-	// Disable VPR.
-	write32(mc_video_protect_size_mb_ptr, 0);
-	write32(mc_video_protect_reg_ctrl_ptr,
-		VIDEO_PROTECT_WRITE_ACCESS_DISABLE);
-
-	enable_cpu_clocks();
-
-	power_on_main_cpu();
-
-	// Perform ram repair after cpu is powered on.
-	ram_repair();
-
-	clear_cpu_resets();
-
-	// Halt the AVP.
+	/* Halt the AVP. */
 	while (1)
 		write32(flow_ctlr_halt_cop_events_ptr,
 		        FLOW_MODE_STOP | EVENT_JTAG);
 }
-
 
 
 /* Header. */

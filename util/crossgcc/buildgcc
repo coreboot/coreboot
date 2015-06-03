@@ -22,8 +22,8 @@
 
 cd `dirname $0`
 
-CROSSGCC_DATE="March 8th, 2015"
-CROSSGCC_VERSION="1.27"
+CROSSGCC_DATE="June 3th, 2015"
+CROSSGCC_VERSION="1.28"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -418,7 +418,7 @@ printf "Building GMP ${GMP_VERSION} ... "
 (
 	cd ${BUILDDIRPREFIX}-gmp
 	rm -f .failed
-	CC="$CC" ../${GMP_DIR}/configure --disable-shared --prefix=$TARGETDIR $OPTIONS \
+	CC="$CC" CFLAGS="-Os" ../${GMP_DIR}/configure --disable-shared --enable-fat --prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed

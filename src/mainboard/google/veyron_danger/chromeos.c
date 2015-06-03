@@ -28,11 +28,13 @@
 #define GPIO_WP		GPIO(7, A, 6)
 #define GPIO_POWER	GPIO(0, A, 5)
 #define GPIO_RECOVERY	GPIO(0, B, 1)
+#define GPIO_DEV_MODE	GPIO(7, B, 2)
 
 void setup_chromeos_gpios(void)
 {
 	gpio_input(GPIO_WP);
 	gpio_input(GPIO_POWER);
+	gpio_input(GPIO_DEV_MODE);
 	gpio_input_pullup(GPIO_RECOVERY);
 }
 
@@ -64,9 +66,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 
-	/* Developer: GPIO active high */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	/* Developer: Danger has a physical dev switch that is active low */
+	gpios->gpios[count].port = GPIO_DEV_MODE.raw;
+	gpios->gpios[count].polarity = ACTIVE_LOW;
 	gpios->gpios[count].value = get_developer_mode_switch();
 	strncpy((char *)gpios->gpios[count].name, "developer",
 		GPIO_MAX_NAME_LENGTH);
@@ -88,7 +90,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_developer_mode_switch(void)
 {
-	return 0;
+	return !gpio_get(GPIO_DEV_MODE);
 }
 
 int get_recovery_mode_switch(void)

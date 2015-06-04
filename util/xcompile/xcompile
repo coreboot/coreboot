@@ -124,21 +124,21 @@ detect_special_flags() {
 	local architecture="$1"
 	# GCC 4.6 is much more picky about unused variables.
 	# Turn off it's warnings for now:
-	testcc "$CC"       "$CFLAGS_GCC -Wno-unused-but-set-variable " &&
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-unused-but-set-variable " &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wno-unused-but-set-variable "
 
 	# Use bfd linker instead of gold if available:
-	testcc "$CC"       "$CFLAGS_GCC -fuse-ld=bfd" &&
+	testcc "$GCC"      "$CFLAGS_GCC -fuse-ld=bfd" &&
 		CFLAGS_GCC="$CFLAGS_GCC -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'
 
-	testcc "$CC"       "$CFLAGS_GCC -fno-stack-protector"&&
+	testcc "$GCC"      "$CFLAGS_GCC -fno-stack-protector"&&
 		CFLAGS_GCC="$CFLAGS_GCC -fno-stack-protector"
-	testcc "$CC"       "$CFLAGS_GCC -Wl,--build-id=none" &&
+	testcc "$GCC"      "$CFLAGS_GCC -Wl,--build-id=none" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wl,--build-id=none"
 
 	case "$architecture" in
 	x86)
-		testcc "$CC"       "$CFLAGS_GCC -Wa,--divide" &&
+		testcc "$GCC"      "$CFLAGS_GCC -Wa,--divide" &&
 			CFLAGS_GCC="$CFLAGS_GCC -Wa,--divide"
 		# Always build for i686 -- no sse/mmx instructions since SMM
 		# modules are compiled using these flags. Note that this
@@ -147,11 +147,11 @@ detect_special_flags() {
 		CFLAGS_GCC="$CFLAGS_GCC  -march=i686"
 		;;
 	mipsel)
-		testcc "$CC" "$CFLAGS_GCC -mno-abicalls -fno-pic" && \
+		testcc "$GCC" "$CFLAGS_GCC -mno-abicalls -fno-pic" && \
 		  CFLAGS_GCC+=" -mno-abicalls -fno-pic"
 
                 # Enforce little endian mode.
-		testcc "$CC" "$CFLAGS_GCC -EL" && \
+		testcc "$GCC" "$CFLAGS_GCC -EL" && \
 		  CFLAGS_GCC+=" -EL"
 		;;
 	esac
@@ -159,11 +159,15 @@ detect_special_flags() {
 
 report_arch_toolchain() {
 	cat <<EOF
-# elf${TWIDTH}-${TBFDARCH} toolchain (${GCCPREFIX}gcc)
+# elf${TWIDTH}-${TBFDARCH} toolchain (${GCC})
 ARCH_SUPPORTED+=${TARCH}
 SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
-CC_${TARCH}:=${GCCPREFIX}gcc
+ifeq (\$(CONFIG_COMPILER_GCC),y)
+CC_${TARCH}:=${GCC}
 CFLAGS_${TARCH}:=${CFLAGS_GCC}
+else
+CC_${TARCH}:=${CLANG}
+endif
 CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
 LD_${TARCH}:=${GCCPREFIX}ld${LINKER_SUFFIX} ${LDFLAGS}
@@ -231,6 +235,7 @@ test_architecture() {
 
 	GCCPREFIX="invalid"
 	unset TABI TARCH TBFDARCH TCLIST TENDIAN TSUPP TWIDTH
+	unset GCC CLANG
 	if type arch_config_$architecture > /dev/null; then
 		arch_config_$architecture
 	else
@@ -257,21 +262,36 @@ test_architecture() {
 			program_exists "${gccprefix}as" || continue
 			for endian in $TENDIAN ""; do
 				testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
-					"" "$endian" && return 0
+					"" "$endian" && break 3
 				testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
-					"TRUE" "$endian" && return 0
+					"TRUE" "$endian" && break 3
 			done
 		done
 	done
+	if [ "invalid" != "$GCCPREFIX" ]; then
+		GCC="${GCCPREFIX}gcc"
+	fi
 
-	echo "Warning: no suitable GCC for $architecture." >&2
-	return 1
+	for clang_arch in $TCLIST invalid; do
+		testcc "clang" "-target ${clang_arch}-$TABI -c" && break
+	done
+
+	if [ "invalid" != "$clang_arch" ]; then
+		# FIXME: this may break in a clang && !gcc configuration,
+		# but that's more of a clang limitation. Let's be optimistic
+		# that this will change in the future.
+		CLANG="clang -target ${clang_arch}-${TABI} -ccc-gcc-name ${GCC}"
+	fi
+
+	if [ -z "$GCC" -a -z "$CLANG" ]; then
+		echo "Warning: no suitable compiler for $architecture." >&2
+		return 1
+	fi
 }
 
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURES; do
 	if test_architecture $architecture; then
-		CC="${GCCPREFIX}"gcc
 		detect_special_flags "$architecture"
 		report_arch_toolchain
 	fi

@@ -118,12 +118,6 @@ static void init_this_cpu(void *arg)
 	/* Initialize the GIC. */
 	gic_init();
 
-	if (dev->ops != NULL && dev->ops->init != NULL) {
-		dev->initialized = 1;
-		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
-		dev->ops->init(dev);
-	}
-
 	/*
 	 * Disable coprocessor traps to EL3:
 	 * TCPAC [20] = 0, disable traps for EL2 accesses to CPTR_EL2 or HCPTR
@@ -145,6 +139,12 @@ static void init_this_cpu(void *arg)
 
 	/* Arch Timer init: setup cntfrq per CPU */
 	arm64_arch_timer_init();
+
+	if (dev->ops != NULL && dev->ops->init != NULL) {
+		dev->initialized = 1;
+		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
+		dev->ops->init(dev);
+	}
 }
 
 /* Fill in cpu_info structures according to device tree. */

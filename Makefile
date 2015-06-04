@@ -38,8 +38,6 @@ $(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > 
 	$< $(XGCCPATH) > $@.tmp
 	\mv -f $@.tmp $@ 2> /dev/null
 
-include .xcompile
-
 export top := $(CURDIR)
 export src := src
 export srck := $(top)/util/kconfig
@@ -121,6 +119,8 @@ real-all: config
 else
 
 include $(HAVE_DOTCONFIG)
+
+include .xcompile
 
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 # FIXME: armv7/aarch64 won't build right now

@@ -3642,6 +3642,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 	u8 devwidth;
 	u16 DimmSlots;
 	u8 byte = 0, bytex;
+	uint8_t crc_status;
 
 	/* preload data structure with addrs */
 	mctGet_DIMMAddr(pDCTstat, pDCTstat->Node_ID);
@@ -3662,10 +3663,20 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 			int status;
 			smbaddr = Get_DIMMAddress_D(pDCTstat, i);
 			status = mctRead_SPD(smbaddr, SPD_ByteUse);
+			if (status >= 0) {
+				/* Verify result */
+				status = mctRead_SPD(smbaddr, SPD_ByteUse);
+			}
 			if (status >= 0) { /* SPD access is ok */
 				pDCTstat->DIMMPresent |= 1 << i;
 				read_spd_bytes(pMCTstat, pDCTstat, i);
-				if (crcCheck(pDCTstat, i)) { /* CRC is OK */
+				crc_status = crcCheck(pDCTstat, i);
+				if (!crc_status) {
+					/* Try again in case there was a transient glitch */
+					read_spd_bytes(pMCTstat, pDCTstat, i);
+					crc_status = crcCheck(pDCTstat, i);
+				}
+				if (crc_status) { /* CRC is OK */
 					byte = pDCTstat->spd_data.spd_bytes[i][SPD_TYPE];
 					if (byte == JED_DDR3SDRAM) {
 						/*Dimm is 'Present'*/

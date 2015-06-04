@@ -321,6 +321,10 @@ struct MCTStatStruc {
 struct amd_spd_node_data {
 	uint8_t spd_bytes[MAX_DIMMS_SUPPORTED][256];	/* [DIMM][byte] */
 	uint8_t spd_address[MAX_DIMMS_SUPPORTED];	/* [DIMM] */
+	uint64_t spd_hash[MAX_DIMMS_SUPPORTED];		/* [DIMM] */
+	uint64_t nvram_spd_hash[MAX_DIMMS_SUPPORTED];	/* [DIMM] */
+	uint8_t nvram_spd_match;
+	uint8_t nvram_memclk[2];			/* [channel] */
 } __attribute__((packed));
 
 struct DCTStatStruc {		/* A per Node structure*/
@@ -780,6 +784,8 @@ struct amd_s3_persistent_mct_channel_data {
 
 struct amd_s3_persistent_node_data {
 	uint32_t node_present;
+	uint64_t spd_hash[MAX_DIMMS_SUPPORTED];
+	uint8_t memclk[2];
 	struct amd_s3_persistent_mct_channel_data channel[2];
 } __attribute__((packed));
 

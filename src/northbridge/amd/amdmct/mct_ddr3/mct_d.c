@@ -35,7 +35,8 @@
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
 static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstatA);
+				struct DCTStatStruc *pDCTstatA,
+				uint8_t allow_config_restore);
 static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
 static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
@@ -1169,6 +1170,30 @@ static void read_spd_bytes(struct MCTStatStruc *pMCTstat,
 	}
 }
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+static void calculate_and_store_spd_hashes(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat)
+{
+	uint8_t dimm;
+
+	for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
+		calculate_spd_hash(pDCTstat->spd_data.spd_bytes[dimm], &pDCTstat->spd_data.spd_hash[dimm]);
+	}
+}
+
+static void compare_nvram_spd_hashes(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat)
+{
+	uint8_t dimm;
+
+	pDCTstat->spd_data.nvram_spd_match = 1;
+	for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
+		if (pDCTstat->spd_data.spd_hash[dimm] != pDCTstat->spd_data.nvram_spd_hash[dimm])
+			pDCTstat->spd_data.nvram_spd_match = 0;
+	}
+}
+#endif
+
 static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA)
 {
@@ -1217,6 +1242,8 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 */
 	u8 Node, NodesWmem;
 	u32 node_sys_base;
+	uint8_t nvram;
+	uint8_t allow_config_restore;
 
 	uint8_t s3resume = acpi_is_wakeup_s3();
 
@@ -1233,7 +1260,8 @@ restartinit:
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: Restoring DCT configuration from NVRAM\n");
-		restore_mct_information_from_nvram();
+		if (restore_mct_information_from_nvram(0) != 0)
+			printk(BIOS_CRIT, "%s: ERROR: Unable to restore DCT configuration from NVRAM\n", __func__);
 #endif
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
@@ -1283,10 +1311,25 @@ restartinit:
 			node_sys_base += (pDCTstat->NodeSysLimit + 2) & ~0x0F;
 		}
 
+		/* If the boot fails make sure training is attempted after reset */
+		nvram = 0;
+		set_option("allow_spd_nvram_cache_restore", &nvram);
+
 #if IS_ENABLED(DIMM_VOLTAGE_SET_SUPPORT)
 		printk(BIOS_DEBUG, "%s: DIMMSetVoltage\n", __func__);
 		DIMMSetVoltages(pMCTstat, pDCTstatA);	/* Set the DIMM voltages (mainboard specific) */
 #endif
+
+		/* If DIMM configuration has not changed since last boot restore training values */
+		allow_config_restore = 1;
+		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+			struct DCTStatStruc *pDCTstat;
+			pDCTstat = pDCTstatA + Node;
+
+			if (pDCTstat->NodePresent)
+				if (!pDCTstat->spd_data.nvram_spd_match)
+					allow_config_restore = 0;
+		}
 
 		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
 			struct DCTStatStruc *pDCTstat;
@@ -1321,14 +1364,33 @@ restartinit:
 		CPUMemTyping_D(pMCTstat, pDCTstatA);	/* Map dram into WB/UC CPU cacheability */
 		mctHookAfterCPU();			/* Setup external northbridge(s) */
 
+		/* FIXME
+		 * Previous training values should only be used if the current desired
+		 * speed is the same as the speed used in the previous boot.
+		 * How to get the desired speed at this point in the code?
+		 */
+#if 0
+		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+			struct DCTStatStruc *pDCTstat;
+			pDCTstat = pDCTstatA + Node;
+
+			if (pDCTstat->NodePresent) {
+				if (pDCTstat->spd_data.nvram_memclk[0] != pDCTstat->DIMMAutoSpeed)
+					allow_config_restore = 0;
+			}
+		}
+#endif
+
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: DQSTiming_D\n");
-		DQSTiming_D(pMCTstat, pDCTstatA);	/* Get Receiver Enable and DQS signal timing*/
+		DQSTiming_D(pMCTstat, pDCTstatA, allow_config_restore);	/* Get Receiver Enable and DQS signal timing*/
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
 		UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
 
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: :OtherTiming\n");
-		mct_OtherTiming(pMCTstat, pDCTstatA);
+		if (!allow_config_restore) {
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: :OtherTiming\n");
+			mct_OtherTiming(pMCTstat, pDCTstatA);
+		}
 
 		if (ReconfigureDIMMspare_D(pMCTstat, pDCTstatA)) { /* RESET# if 1st pass of DIMM spare enabled*/
 			goto restartinit;
@@ -1810,7 +1872,7 @@ static void exit_training_mode_fam15(struct MCTStatStruc *pMCTstat,
 }
 
 static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstatA)
+				struct DCTStatStruc *pDCTstatA, uint8_t allow_config_restore)
 {
 	u8 nv_DQSTrainCTL;
 
@@ -1818,9 +1880,8 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 		return;
 	}
 
-	nv_DQSTrainCTL = mctGet_NVbits(NV_DQSTrainCTL);
-	/* FIXME: BOZO- DQS training every time*/
-	nv_DQSTrainCTL = 1;
+	// nv_DQSTrainCTL = mctGet_NVbits(NV_DQSTrainCTL);
+	nv_DQSTrainCTL = !allow_config_restore;
 
 	mct_BeforeDQSTrain_D(pMCTstat, pDCTstatA);
 	phyAssistedMemFnceTraining(pMCTstat, pDCTstatA);
@@ -1839,15 +1900,16 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 		}
 	}
 
+	mctHookBeforeAnyTraining(pMCTstat, pDCTstatA);
+	if (!is_fam15h()) {
+		/* TODO: should be in mctHookBeforeAnyTraining */
+		_WRMSR(0x26C, 0x04040404, 0x04040404);
+		_WRMSR(0x26D, 0x04040404, 0x04040404);
+		_WRMSR(0x26E, 0x04040404, 0x04040404);
+		_WRMSR(0x26F, 0x04040404, 0x04040404);
+	}
+
 	if (nv_DQSTrainCTL) {
-		mctHookBeforeAnyTraining(pMCTstat, pDCTstatA);
-		if (!is_fam15h()) {
-			/* TODO: should be in mctHookBeforeAnyTraining */
-			_WRMSR(0x26C, 0x04040404, 0x04040404);
-			_WRMSR(0x26D, 0x04040404, 0x04040404);
-			_WRMSR(0x26E, 0x04040404, 0x04040404);
-			_WRMSR(0x26F, 0x04040404, 0x04040404);
-		}
 		mct_WriteLevelization_HW(pMCTstat, pDCTstatA, FirstPass);
 
 		if (is_fam15h()) {
@@ -1877,18 +1939,26 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 			exit_training_mode_fam15(pMCTstat, pDCTstatA);
 		else
 			mctSetEccDQSRcvrEn_D(pMCTstat, pDCTstatA);
-
-		/* FIXME - currently uses calculated value	TrainMaxReadLatency_D(pMCTstat, pDCTstatA); */
-		mctHookAfterAnyTraining();
-		mctSaveDQSSigTmg_D();
-
-		MCTMemClr_D(pMCTstat, pDCTstatA);
 	} else {
-		mctGetDQSSigTmg_D();	/* get values into data structure */
-		LoadDQSSigTmgRegs_D(pMCTstat, pDCTstatA);	/* load values into registers.*/
-		/* mctDoWarmResetMemClr_D(); */
-		MCTMemClr_D(pMCTstat, pDCTstatA);
+		mct_WriteLevelization_HW(pMCTstat, pDCTstatA, FirstPass);
+
+		mct_WriteLevelization_HW(pMCTstat, pDCTstatA, SecondPass);
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: Restoring DIMM training configuration from NVRAM\n");
+		if (restore_mct_information_from_nvram(1) != 0)
+			printk(BIOS_CRIT, "%s: ERROR: Unable to restore DCT configuration from NVRAM\n", __func__);
+#endif
+
+		if (is_fam15h())
+			exit_training_mode_fam15(pMCTstat, pDCTstatA);
 	}
+
+	/* FIXME - currently uses calculated value	TrainMaxReadLatency_D(pMCTstat, pDCTstatA); */
+	mctHookAfterAnyTraining();
+
+	/* mctDoWarmResetMemClr_D(); */
+	MCTMemClr_D(pMCTstat, pDCTstatA);
 }
 
 static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
@@ -3898,6 +3968,8 @@ static void mct_preInitDCT(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat)
 {
 	u8 err_code;
+	uint8_t nvram;
+	uint8_t allow_config_restore;
 
 	/* Preconfigure DCT0 */
 	DCTPreInit_D(pMCTstat, pDCTstat, 0);
@@ -3912,6 +3984,27 @@ static void mct_preInitDCT(struct MCTStatStruc *pMCTstat,
 				pDCTstat->ErrCode = err_code;	/* Using DCT0 Error code to update pDCTstat.ErrCode */
 		}
 	}
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+	calculate_and_store_spd_hashes(pMCTstat, pDCTstat);
+
+	if (load_spd_hashes_from_nvram(pDCTstat) < 0) {
+		pDCTstat->spd_data.nvram_spd_match = 0;
+	}
+	else {
+		compare_nvram_spd_hashes(pMCTstat, pDCTstat);
+	}
+#else
+	pDCTstat->spd_data.nvram_spd_match = 0;
+#endif
+
+	/* Check to see if restoration of SPD data from NVRAM is allowed */
+	allow_config_restore = 0;
+	if (get_option(&nvram, "allow_spd_nvram_cache_restore") == CB_SUCCESS)
+		allow_config_restore = !!nvram;
+
+	if (!allow_config_restore)
+		pDCTstat->spd_data.nvram_spd_match = 0;
 }
 
 static void mct_initDCT(struct MCTStatStruc *pMCTstat,

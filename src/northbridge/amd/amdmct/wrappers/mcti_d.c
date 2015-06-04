@@ -396,14 +396,18 @@ static void mctHookAfterCPU(void)
 }
 
 
+#if IS_ENABLED(CONFIG_DIMM_DDR2)
 static void mctSaveDQSSigTmg_D(void)
 {
 }
+#endif
 
 
+#if IS_ENABLED(CONFIG_DIMM_DDR2)
 static void mctGetDQSSigTmg_D(void)
 {
 }
+#endif
 
 
 static void mctHookBeforeECC(void)

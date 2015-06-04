@@ -16,9 +16,15 @@
 #include "../wrappers/mcti.h"
 #include "mct_d.h"
 
+void calculate_spd_hash(uint8_t *spd_data, uint64_t *spd_hash);
+
+#ifdef __PRE_RAM__
+int8_t load_spd_hashes_from_nvram(struct DCTStatStruc *pDCTstat);
+#endif
+
 #ifdef __RAMSTAGE__
 int8_t save_mct_information_to_nvram(void);
 #endif
-int8_t restore_mct_information_from_nvram(void);
+int8_t restore_mct_information_from_nvram(uint8_t training_only);
 void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_data);
-void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persistent_data);
+void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persistent_data, uint8_t training_only);

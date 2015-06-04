@@ -22,8 +22,10 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <cbfs.h>
+#include <cbmem.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
+#include <pc80/mc146818rtc.h>
 
 #include "s3utils.h"
 
@@ -120,6 +122,68 @@ static uint32_t read_amd_dct_index_register_dct(device_t dev, uint8_t node, uint
 	return read_amd_dct_index_register(dev, index_ctl_reg, index);
 }
 
+/* Non-cryptographic 64-bit hash function taken from Stack Overflow:
+ * http://stackoverflow.com/a/13326345
+ * Any 64-bit hash with sufficiently low collision potential
+ * could be used instead.
+ */
+void calculate_spd_hash(uint8_t *spd_data, uint64_t *spd_hash)
+{
+	const unsigned long long prime = 2654435789ULL;
+	uint16_t byte;
+	*spd_hash = 104395301;
+
+	for (byte = 0; byte < 256; byte++)
+		*spd_hash += (spd_data[byte] * prime) ^ (*spd_hash >> 23);
+
+	*spd_hash = *spd_hash ^ (*spd_hash << 37);
+}
+
+static struct amd_s3_persistent_data * map_s3nv_in_nvram(void)
+{
+	ssize_t s3nv_offset;
+	ssize_t s3nv_file_offset;
+	void * s3nv_cbfs_file_ptr;
+	struct amd_s3_persistent_data *persistent_data;
+
+	/* Obtain CBFS file offset */
+	s3nv_offset = get_s3nv_file_offset();
+	if (s3nv_offset == -1)
+		return NULL;
+
+	/* Align flash pointer to nearest boundary */
+	s3nv_file_offset = s3nv_offset;
+	s3nv_offset &= ~(CONFIG_S3_DATA_SIZE-1);
+	s3nv_offset += CONFIG_S3_DATA_SIZE;
+	s3nv_file_offset = s3nv_offset - s3nv_file_offset;
+
+	/* Map data structure in CBFS and restore settings */
+	s3nv_cbfs_file_ptr = cbfs_boot_map_with_leak(S3NV_FILE_NAME, CBFS_TYPE_RAW, NULL);
+	if (!s3nv_cbfs_file_ptr) {
+		printk(BIOS_DEBUG, "S3 state file could not be mapped: %s\n", S3NV_FILE_NAME);
+		return NULL;
+	}
+	persistent_data = (s3nv_cbfs_file_ptr + s3nv_file_offset);
+
+	return persistent_data;
+}
+
+#ifdef __PRE_RAM__
+int8_t load_spd_hashes_from_nvram(struct DCTStatStruc *pDCTstat)
+{
+	struct amd_s3_persistent_data *persistent_data;
+
+	persistent_data = map_s3nv_in_nvram();
+	if (!persistent_data)
+		return -1;
+
+	memcpy(pDCTstat->spd_data.nvram_spd_hash, persistent_data->node[pDCTstat->Node_ID].spd_hash, sizeof(pDCTstat->spd_data.nvram_spd_hash));
+	memcpy(pDCTstat->spd_data.nvram_memclk, persistent_data->node[pDCTstat->Node_ID].memclk, sizeof(pDCTstat->spd_data.nvram_memclk));
+
+	return 0;
+}
+#endif
+
 #ifdef __RAMSTAGE__
 static uint64_t rdmsr_uint64_t(unsigned long index) {
 	msr_t msr = rdmsr(index);
@@ -143,6 +207,31 @@ static uint32_t read_config32_dct_nbpstate(device_t dev, uint8_t node, uint8_t d
 	pci_write_config32(dev_fn1, 0x10c, dword);
 
 	return pci_read_config32(dev, reg);
+}
+
+static void copy_cbmem_spd_data_to_save_variable(struct amd_s3_persistent_data* persistent_data)
+{
+	uint8_t node;
+	uint8_t dimm;
+	uint8_t channel;
+	struct amdmct_memory_info *mem_info;
+	mem_info = cbmem_find(CBMEM_ID_AMDMCT_MEMINFO);
+	if (mem_info == NULL) {
+		/* can't find amdmct information in cbmem */
+		for (node = 0; node < MAX_NODES_SUPPORTED; node++)
+			for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++)
+				persistent_data->node[node].spd_hash[dimm] = 0xffffffffffffffffULL;
+
+		return;
+	}
+
+	for (node = 0; node < MAX_NODES_SUPPORTED; node++)
+		for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++)
+			calculate_spd_hash(mem_info->dct_stat[node].spd_data.spd_bytes[dimm], &persistent_data->node[node].spd_hash[dimm]);
+
+	for (node = 0; node < MAX_NODES_SUPPORTED; node++)
+		for (channel = 0; channel < 2; channel++)
+			persistent_data->node[node].memclk[channel] = mem_info->dct_stat[node].Speed;
 }
 
 void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_data)
@@ -437,7 +526,7 @@ static void wrmsr_uint64_t(unsigned long index, uint64_t value) {
 	wrmsr(index, msr);
 }
 
-void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persistent_data)
+void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persistent_data, uint8_t training_only)
 {
 	uint8_t i;
 	uint8_t j;
@@ -446,6 +535,51 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 	uint8_t ganged;
 	uint8_t dct_enabled;
 	uint32_t dword;
+
+	if (training_only) {
+		/* Only restore the Receiver Enable and DQS training registers */
+		for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
+			for (channel = 0; channel < 2; channel++) {
+				struct amd_s3_persistent_mct_channel_data* data = &persistent_data->node[node].channel[channel];
+				if (!persistent_data->node[node].node_present)
+					continue;
+
+				/* Restore training parameters */
+				for (i=0; i<4; i++)
+					for (j=0; j<3; j++)
+						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, (0x01 + i) + (0x100 * j), data->f2x9cx3_0_0_3_1[i][j]);
+				for (i=0; i<4; i++)
+					for (j=0; j<3; j++)
+						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, (0x05 + i) + (0x100 * j), data->f2x9cx3_0_0_7_5[i][j]);
+
+				for (i=0; i<12; i++)
+					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x10 + i, data->f2x9cx10[i]);
+				for (i=0; i<12; i++)
+					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x20 + i, data->f2x9cx20[i]);
+
+				if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+					for (i=0; i<12; i++)
+						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x30 + i, data->f2x9cx30[i]);
+					for (i=0; i<12; i++)
+						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x40 + i, data->f2x9cx40[i]);
+				}
+
+				/* Restore MaxRdLatency */
+				if (is_fam15h()) {
+					for (i=0; i<4; i++)
+						write_config32_dct_nbpstate(PCI_DEV(0, 0x18 + node, 2), node, channel, i, 0x210, data->f2x210[i]);
+				}
+				else {
+					write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x78, data->f2x78);
+				}
+
+				/* Other timing control registers */
+				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x8c, data->f2x8c);
+			}
+		}
+
+		return;
+	}
 
 	/* Load data from data structure into DCTs */
 	/* Stage 1 */
@@ -497,7 +631,8 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 			wrmsr_uint64_t(0x00000250, data->msr00000250);
 			wrmsr_uint64_t(0x00000258, data->msr00000258);
 			/* FIXME
-			 * Restoring these MSRs causes a hang on resume
+			 * Restoring these MSRs causes a hang on resume due to
+			 * destroying CAR while still executing from CAR!
 			 * For now, skip restoration...
 			 */
 			// for (i=0; i<8; i++)
@@ -886,6 +1021,8 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 #ifdef __RAMSTAGE__
 int8_t save_mct_information_to_nvram(void)
 {
+	uint8_t nvram;
+
 	if (acpi_is_wakeup_s3())
 		return 0;
 
@@ -904,6 +1041,9 @@ int8_t save_mct_information_to_nvram(void)
 
 	/* Obtain MCT configuration data */
 	copy_mct_data_to_save_variable(persistent_data);
+
+	/* Save RAM SPD data at the same time */
+	copy_cbmem_spd_data_to_save_variable(persistent_data);
 
 	/* Obtain CBFS file offset */
 	s3nv_offset = get_s3nv_file_offset();
@@ -945,36 +1085,23 @@ int8_t save_mct_information_to_nvram(void)
 	/* Restore SPI MMIO address */
 	pci_write_config32(lpc_dev, 0xa0, spi_mmio_prev);
 
+	/* Allow training bypass if DIMM configuration is unchanged on next boot */
+	nvram = 1;
+	set_option("allow_spd_nvram_cache_restore", &nvram);
+
 	return 0;
 }
 #endif
 
-int8_t restore_mct_information_from_nvram(void)
+int8_t restore_mct_information_from_nvram(uint8_t training_only)
 {
-	ssize_t s3nv_offset;
-	ssize_t s3nv_file_offset;
-	void * s3nv_cbfs_file_ptr;
 	struct amd_s3_persistent_data *persistent_data;
 
-	/* Obtain CBFS file offset */
-	s3nv_offset = get_s3nv_file_offset();
-	if (s3nv_offset == -1)
+	persistent_data = map_s3nv_in_nvram();
+	if (!persistent_data)
 		return -1;
 
-	/* Align flash pointer to nearest boundary */
-	s3nv_file_offset = s3nv_offset;
-	s3nv_offset &= ~(CONFIG_S3_DATA_SIZE-1);
-	s3nv_offset += CONFIG_S3_DATA_SIZE;
-	s3nv_file_offset = s3nv_offset - s3nv_file_offset;
-
-	/* Map data structure in CBFS and restore settings */
-	s3nv_cbfs_file_ptr = cbfs_boot_map_with_leak(S3NV_FILE_NAME, CBFS_TYPE_RAW, NULL);
-	if (!s3nv_cbfs_file_ptr) {
-		printk(BIOS_DEBUG, "S3 state file could not be mapped: %s\n", S3NV_FILE_NAME);
-		return -1;
-	}
-	persistent_data = (s3nv_cbfs_file_ptr + s3nv_file_offset);
-	restore_mct_data_from_save_variable(persistent_data);
+	restore_mct_data_from_save_variable(persistent_data, training_only);
 
 	return 0;
 }

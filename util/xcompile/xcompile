@@ -157,6 +157,11 @@ detect_special_flags() {
 	esac
 }
 
+detect_compiler_runtime() {
+	CC_RT_CLANG="`${CLANG} ${CFLAGS} -print-librt-file-name`"
+	CC_RT_GCC="`${GCC} ${CFLAGS} -print-libgcc-file-name`"
+}
+
 report_arch_toolchain() {
 	cat <<EOF
 # elf${TWIDTH}-${TBFDARCH} toolchain (${GCC})
@@ -165,8 +170,12 @@ SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
 ifeq (\$(CONFIG_COMPILER_GCC),y)
 CC_${TARCH}:=${GCC}
 CFLAGS_${TARCH}:=${CFLAGS_GCC}
+COMPILER_RT_${TARCH}:=${CC_RT_GCC}
+COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}
 else
 CC_${TARCH}:=${CLANG}
+COMPILER_RT_${TARCH}:=${CC_RT_CLANG}
+COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_CLANG}
 endif
 CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
@@ -217,6 +226,7 @@ arch_config_x86() {
 	TCLIST="i386 x86_64"
 	TWIDTH="32"
 	TABI="elf"
+	CC_RT_EXTRA_GCC="--wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3"
 }
 
 arch_config_mipsel() {
@@ -235,6 +245,7 @@ test_architecture() {
 
 	GCCPREFIX="invalid"
 	unset TABI TARCH TBFDARCH TCLIST TENDIAN TSUPP TWIDTH
+	unset CC_RT_EXTRA_GCC CC_RT_EXTRA_CLANG
 	unset GCC CLANG
 	if type arch_config_$architecture > /dev/null; then
 		arch_config_$architecture
@@ -293,6 +304,7 @@ test_architecture() {
 for architecture in $SUPPORTED_ARCHITECTURES; do
 	if test_architecture $architecture; then
 		detect_special_flags "$architecture"
+		detect_compiler_runtime "$architecture"
 		report_arch_toolchain
 	fi
 done

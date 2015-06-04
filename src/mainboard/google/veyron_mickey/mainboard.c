@@ -55,15 +55,10 @@ static void configure_emmc(void)
 	gpio_output(GPIO(2, B, 1), 1);		/* EMMC_RST_L */
 }
 
-static void configure_codec(void)
+static void configure_i2s(void)
 {
-	write32(&rk3288_grf->iomux_i2c2, IOMUX_I2C2);	/* CODEC I2C */
-	i2c_init(2, 400*KHz);				/* CODEC I2C */
-
 	write32(&rk3288_grf->iomux_i2s, IOMUX_I2S);
 	write32(&rk3288_grf->iomux_i2sclk, IOMUX_I2SCLK);
-
-	rk808_configure_ldo(6, 1800);	/* VCC18_CODEC */
 
 	/* AUDIO IO domain 1.8V voltage selection */
 	write32(&rk3288_grf->io_vsel, RK_SETBITS(1 << 6));
@@ -77,9 +72,18 @@ static void configure_vop(void)
 	/* lcdc(vop) iodomain select 1.8V */
 	write32(&rk3288_grf->io_vsel, RK_SETBITS(1 << 0));
 
-	rk808_configure_switch(2, 1);	/* VCC18_LCD (HDMI_AVDD_1V8) */
+	rk808_configure_ldo(8, 1800);	/* VCC18_LCD (HDMI_AVDD_1V8) */
 	rk808_configure_ldo(7, 1000);	/* VDD10_LCD (HDMI_AVDD_1V0) */
 	rk808_configure_switch(1, 1);	/* VCC33_LCD */
+}
+
+static void configure_hdmi(void)
+{
+	/* HDMI I2C */
+	write32(&rk3288_grf->iomux_i2c5sda, IOMUX_HDMI_EDP_I2C_SDA);
+	write32(&rk3288_grf->iomux_i2c5scl, IOMUX_HDMI_EDP_I2C_SCL);
+
+	gpio_output(GPIO(7, B, 3), 1);	/* POWER_HDMI_ON */
 }
 
 static void mainboard_init(device_t dev)
@@ -88,8 +92,9 @@ static void mainboard_init(device_t dev)
 
 	configure_usb();
 	configure_emmc();
-	configure_codec();
+	configure_i2s();
 	configure_vop();
+	configure_hdmi();
 
 	elog_init();
 	elog_add_watchdog_reset();
@@ -114,4 +119,9 @@ void lb_board(struct lb_header *header)
 	dma->size = sizeof(*dma);
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = _dma_coherent_size;
+}
+
+void mainboard_power_on_backlight(void)
+{
+	return;
 }

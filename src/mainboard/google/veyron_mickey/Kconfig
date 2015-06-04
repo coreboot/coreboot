@@ -65,14 +65,6 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	depends on DRIVERS_UART
 	default 0xFF690000
 
-# FIXME(dhendrix): This is a gross hack intended to get us past
-# display init which currently hangs the machine. It will be removed
-# once we've re-factored the display init code to properly handle
-# various types of displays.
-config SKIP_DISPLAY_INIT_HACK
-	int
-	default 1
-
 config PMIC_BUS
 	int
 	default 0

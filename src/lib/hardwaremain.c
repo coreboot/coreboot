@@ -432,6 +432,11 @@ static void boot_state_schedule_static_entries(void)
 
 void main(void)
 {
+	/* TODO: Understand why this is here and move to arch/platform code. */
+	/* For MMIO UART this needs to be called before any other printk. */
+	if (IS_ENABLED(CONFIG_ARCH_X86))
+		init_timer();
+
 	/* console_init() MUST PRECEDE ALL printk()! Additionally, ensure
 	 * it is the very first thing done in ramstage.*/
 	console_init();
@@ -462,10 +467,6 @@ void main(void)
 
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();
-
-	/* TODO: Understand why this is here and move to arch/platform code. */
-	if (IS_ENABLED(CONFIG_ARCH_X86))
-		init_timer();
 
 	bs_walk_state_machine();
 

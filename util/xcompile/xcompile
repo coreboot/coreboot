@@ -100,11 +100,11 @@ testas() {
 
 	if [ -z "$use_dash_twidth" ]; then
 		ASFLAGS=""
-		CFLAGS=""
+		CFLAGS_GCC=""
 		LDFLAGS=""
 	else
 		ASFLAGS="--$twidth"
-		CFLAGS="-m$twidth"
+		CFLAGS_GCC="-m$twidth"
 		LDFLAGS="-b $full_arch"
 
 	fi
@@ -113,7 +113,7 @@ testas() {
 	[ -n "$use_dash_twidth" ] && case "$full_arch" in
 		"elf32-i386" )
 			LDFLAGS="$LDFLAGS -melf_i386"
-			CFLAGS="$CFLAGS -Wl,-b,elf32-i386 -Wl,-melf_i386"
+			CFLAGS_GCC="$CFLAGS_GCC -Wl,-b,elf32-i386 -Wl,-melf_i386"
 			;;
 	esac
 
@@ -124,35 +124,35 @@ detect_special_flags() {
 	local architecture="$1"
 	# GCC 4.6 is much more picky about unused variables.
 	# Turn off it's warnings for now:
-	testcc "$CC"   "$CFLAGS -Wno-unused-but-set-variable " &&
-		CFLAGS="$CFLAGS -Wno-unused-but-set-variable "
+	testcc "$CC"       "$CFLAGS_GCC -Wno-unused-but-set-variable " &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-unused-but-set-variable "
 
 	# Use bfd linker instead of gold if available:
-	testcc "$CC"   "$CFLAGS -fuse-ld=bfd" &&
-		CFLAGS="$CFLAGS -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'
+	testcc "$CC"       "$CFLAGS_GCC -fuse-ld=bfd" &&
+		CFLAGS_GCC="$CFLAGS_GCC -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'
 
-	testcc "$CC"   "$CFLAGS -fno-stack-protector"&&
-		CFLAGS="$CFLAGS -fno-stack-protector"
-	testcc "$CC"   "$CFLAGS -Wl,--build-id=none" &&
-		CFLAGS="$CFLAGS -Wl,--build-id=none"
+	testcc "$CC"       "$CFLAGS_GCC -fno-stack-protector"&&
+		CFLAGS_GCC="$CFLAGS_GCC -fno-stack-protector"
+	testcc "$CC"       "$CFLAGS_GCC -Wl,--build-id=none" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wl,--build-id=none"
 
 	case "$architecture" in
 	x86)
-		testcc "$CC"   "$CFLAGS -Wa,--divide" &&
-			CFLAGS="$CFLAGS -Wa,--divide"
+		testcc "$CC"       "$CFLAGS_GCC -Wa,--divide" &&
+			CFLAGS_GCC="$CFLAGS_GCC -Wa,--divide"
 		# Always build for i686 -- no sse/mmx instructions since SMM
 		# modules are compiled using these flags. Note that this
 		# doesn't prevent a project using xcompile to explicitly
 		# specify -mmsse, etc flags.
-		CFLAGS="$CFLAGS  -march=i686"
+		CFLAGS_GCC="$CFLAGS_GCC  -march=i686"
 		;;
 	mipsel)
-		testcc "$CC" "$CFLAGS -mno-abicalls -fno-pic" && \
-		  CFLAGS+=" -mno-abicalls -fno-pic"
+		testcc "$CC" "$CFLAGS_GCC -mno-abicalls -fno-pic" && \
+		  CFLAGS_GCC+=" -mno-abicalls -fno-pic"
 
                 # Enforce little endian mode.
-		testcc "$CC" "$CFLAGS -EL" && \
-		  CFLAGS+=" -EL"
+		testcc "$CC" "$CFLAGS_GCC -EL" && \
+		  CFLAGS_GCC+=" -EL"
 		;;
 	esac
 }
@@ -163,7 +163,7 @@ report_arch_toolchain() {
 ARCH_SUPPORTED+=${TARCH}
 SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
 CC_${TARCH}:=${GCCPREFIX}gcc
-CFLAGS_${TARCH}:=${CFLAGS}
+CFLAGS_${TARCH}:=${CFLAGS_GCC}
 CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
 LD_${TARCH}:=${GCCPREFIX}ld${LINKER_SUFFIX} ${LDFLAGS}

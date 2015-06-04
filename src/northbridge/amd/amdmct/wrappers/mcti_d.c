@@ -31,6 +31,18 @@
 #define NVRAM_DDR3_1066 2
 #define NVRAM_DDR3_800  3
 
+/* The recommended maximum GFX Upper Memory Area
+ * size is 256M, however, to be on the safe side
+ * move TOM down by 512M.
+ */
+#define MAXIMUM_GFXUMA_SIZE 0x20000000
+
+/* Do not allow less than 16M of DRAM in 32-bit space.
+ * This number is not hardware constrained and can be
+ * changed as needed.
+ */
+#define MINIMUM_DRAM_BELOW_4G 0x1000000
+
 static const uint16_t ddr2_limits[4] = {400, 333, 266, 200};
 static const uint16_t ddr3_limits[4] = {800, 666, 533, 400};
 
@@ -159,17 +171,15 @@ static u16 mctGet_NVbits(u8 index)
 		//val = 1;	/* enable */
 		break;
 	case NV_BottomIO:
-#if !CONFIG_GFXUMA
-		val = 0xE0;	/* address bits [31:24] */
-#elif CONFIG_GFXUMA
-		val = 0xC0;	/* address bits [31:24] */
-#endif
-		break;
 	case NV_BottomUMA:
+		/* address bits [31:24] */
 #if !CONFIG_GFXUMA
-		val = 0xE0;	/* address bits [31:24] */
+		val = (CONFIG_MMCONF_BASE_ADDRESS >> 24);
 #elif CONFIG_GFXUMA
-		val = 0xC0;	/* address bits [31:24] */
+  #if (CONFIG_MMCONF_BASE_ADDRESS < (MAXIMUM_GFXUMA_SIZE + MINIMUM_DRAM_BELOW_4G))
+  #error "MMCONF_BASE_ADDRESS is too small"
+  #endif
+		val = ((CONFIG_MMCONF_BASE_ADDRESS - MAXIMUM_GFXUMA_SIZE) >> 24);
 #endif
 		break;
 	case NV_ECC:

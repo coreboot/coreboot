@@ -27,8 +27,6 @@ subdirs-y += boot
 subdirs-y += lib
 subdirs-y += smp
 
-DISASSEMBLY=-Wa,--divide
-
 ################################################################################
 # i386 specific tools
 NVRAMTOOL:=$(objutil)/nvramtool/nvramtool
@@ -114,7 +112,7 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(CFLAGS_x86_32) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
+	$(CC_bootblock) $(CFLAGS_x86_32) -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

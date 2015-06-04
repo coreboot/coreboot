@@ -17,8 +17,8 @@
  * Foundation, Inc.
  */
 
-#ifndef THINKPAD_X200_DOCK_H
-#define THINKPAD_X200_DOCK_H
+#ifndef THINKPAD_T400_DOCK_H
+#define THINKPAD_T400_DOCK_H
 
 extern void dock_connect(void);
 extern void dock_disconnect(void);

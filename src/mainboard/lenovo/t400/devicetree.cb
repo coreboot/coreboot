@@ -181,12 +181,7 @@ chip northbridge/intel/gm45
 				end
 
 				chip superio/nsc/pc87382
-					device pnp 164e.3 on # Digitizer
-						io 0x60 = 0x200
-						irq 0x29 = 0xb0
-						irq 0x70 = 0x5
-						irq 0xf0 = 0x82
-					end
+					device pnp 164e.3 off end
 					# IR, not connected
 					device pnp 164e.2 off end
 					# GPIO, not connected

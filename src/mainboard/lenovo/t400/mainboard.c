@@ -34,7 +34,6 @@
 
 static void fill_ssdt(void)
 {
-	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
 }
 
 static void mainboard_enable(device_t dev)

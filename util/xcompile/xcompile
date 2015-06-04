@@ -98,13 +98,13 @@ testas() {
 	# Architecture matched.
 	GCCPREFIX="$gccprefix"
 
-	if [ -z "$use_dash_twidth" ]; then
-		ASFLAGS=""
-		CFLAGS_GCC=""
-		LDFLAGS=""
-	else
+	unset ASFLAGS LDFLAGS
+	unset CFLAGS_GCC CFLAGS_CLANG
+
+	if [ -n "$use_dash_twidth" ]; then
 		ASFLAGS="--$twidth"
 		CFLAGS_GCC="-m$twidth"
+		CFLAGS_CLANG="-m$twidth"
 		LDFLAGS="-b $full_arch"
 
 	fi
@@ -114,6 +114,7 @@ testas() {
 		"elf32-i386" )
 			LDFLAGS="$LDFLAGS -melf_i386"
 			CFLAGS_GCC="$CFLAGS_GCC -Wl,-b,elf32-i386 -Wl,-melf_i386"
+			CFLAGS_CLANG="$CFLAGS_GCC -Wl,-b,elf32-i386 -Wl,-melf_i386"
 			;;
 	esac
 
@@ -140,6 +141,8 @@ detect_special_flags() {
 	x86)
 		testcc "$GCC"      "$CFLAGS_GCC -Wa,--divide" &&
 			CFLAGS_GCC="$CFLAGS_GCC -Wa,--divide"
+		testcc "$CLANG"      "$CFLAGS_CLANG -Wa,--divide" &&
+			CFLAGS_CLANG="$CFLAGS_CLANG -Wa,--divide"
 		# Always build for i686 -- no sse/mmx instructions since SMM
 		# modules are compiled using these flags. Note that this
 		# doesn't prevent a project using xcompile to explicitly
@@ -174,6 +177,10 @@ COMPILER_RT_${TARCH}:=${CC_RT_GCC}
 COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}
 else
 CC_${TARCH}:=${CLANG}
+CFLAGS_${TARCH}:=${CFLAGS_CLANG}
+CFLAGS_${TARCH}+=-no-integrated-as -Qunused-arguments -m${TWIDTH}
+# tone down compiler warnings
+CFLAGS_${TARCH}+=-Wno-unused-variable -Wno-unused-function -Wno-tautological-compare -Wno-shift-overflow
 COMPILER_RT_${TARCH}:=${CC_RT_CLANG}
 COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_CLANG}
 endif

@@ -181,9 +181,8 @@ searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
 
 download() {
-	PACKAGE=$1
-	archive=$PACKAGE"_ARCHIVE"
-	archive="`eval echo '$'$archive`"
+	package=$1
+	archive="$(eval echo \$$package"_ARCHIVE")"
 
 	FILE=`basename $archive`
 	printf " * $FILE "
@@ -208,11 +207,9 @@ download() {
 }
 
 unpack_and_patch() {
-	PACKAGE=$1
-	archive=$PACKAGE"_ARCHIVE"
-	archive="`eval echo '$'$archive`"
-	dir=$PACKAGE"_DIR"
-	dir="`eval echo '$'${dir}`"
+	package=$1
+	archive="$(eval echo \$$package"_ARCHIVE")"
+	dir="$(eval echo \$$package"_DIR")"
 	test -d ${dir} && test -f ${dir}/.unpack_success || (
 		printf " * `basename $archive`\n"
 		FLAGS=zxf
@@ -241,26 +238,29 @@ wait_for_build() {
 	true
 }
 
+build() {
+	package=$1
+	version="$(eval echo \$$package"_VERSION")"
+	[[ "$PACKAGES" == *$package* ]] && \
+	if [ -f ${BUILDDIRPREFIX}-$package/.success ]; then
+		printf "Skipping $package as it is already built\n"
+	else
+		printf "Building $package $version ... "
+	        (
+			cd ${BUILDDIRPREFIX}-$package
+			rm -f .failed
+			build_${package}
+			if [ ! -f .failed ]; then touch .success; fi
+		) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-$package" || exit 1
+	fi
+}
+
 cleanup()
 {
 	printf "Cleaning up temporary files... "
-	# GCC toolchain
-	rm -rf ${GMP_DIR} ${BUILDDIRPREFIX}-gmp
-	rm -rf ${MPFR_DIR} ${BUILDDIRPREFIX}-mpfr
-	rm -rf ${MPC_DIR} ${BUILDDIRPREFIX}-mpc
-	rm -rf ${LIBELF_DIR} ${BUILDDIRPREFIX}-libelf
-	rm -rf ${BINUTILS_DIR} ${BUILDDIRPREFIX}-binutils
-	rm -rf ${GCC_DIR} ${BUILDDIRPREFIX}-gcc
-
-	# Other tools
-	rm -rf ${GDB_DIR} ${BUILDDIRPREFIX}-gdb
-	rm -rf ${EXPAT_DIR} ${BUILDDIRPREFIX}-expat
-	rm -rf ${PYTHON_DIR} ${BUILDDIRPREFIX}-python
-	rm -rf ${IASL_DIR}
-
-	# CLANG
-	rm -rf ${LLVM_DIR} ${CFE_DIR} ${CRT_DIR} ${CTE_DIR} ${BUILDDIR}
-
+	for package in $PACKAGES; do
+		rm -rf ${BUILDDIRPREFIX}-$package $(eval echo \$$package"_DIR")
+	done
 	printf "${green}ok${NC}\n"
 }
 
@@ -307,6 +307,170 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 EOF
+}
+
+build_GMP() {
+	CC="$CC" CFLAGS="-Os" ../${GMP_DIR}/configure --disable-shared --enable-fat --prefix=$TARGETDIR $OPTIONS \
+		|| touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+}
+
+build_MPFR() {
+	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
+	CC="$CC" ../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+		--infodir=$TARGETDIR/info \
+		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
+		touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+
+	# work around build problem of libgmp.la
+	if [ "$DESTDIR" != "" ]; then
+	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/libgmp.la
+	fi
+}
+
+build_MPC() {
+	CC="$CC" ../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
+		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
+		touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+}
+
+build_LIBELF() {
+	CC="$CC" CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
+	../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install prefix=$DESTDIR$TARGETDIR || touch .failed
+
+	normalize_dirs
+}
+
+build_BINUTILS() {
+	# What a pain: binutils don't come with configure
+	# script anymore. Create it:
+	cd ../binutils-${BINUTILS_VERSION}/
+	autoconf
+	cd -
+	# Now build binutils
+	rm -f .failed
+	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
+		--target=${TARGETARCH} --disable-werror --disable-nls \
+		$USE_GOLD CFLAGS="$HOSTCFLAGS" || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+}
+
+
+build_GCC() {
+	# Even worse than binutils: GCC does not come with configure
+	# script anymore, but also enforces an obsolete autoconf version
+	# to create it. This is a poster child of how autotools help make
+	# software portable.
+	cd ../gcc-${GCC_VERSION}
+	sed '/dnl Ensure exactly this Autoconf version is used/d' \
+		config/override.m4 > config/override.m4.new
+	autoconf_version=`autoconf -V | grep "autoconf" | tr ' ' '\n' | tail -1`
+	sed "s/${GCC_AUTOCONF_VERSION}/${autoconf_version}/g" \
+		config/override.m4.new > config/override.m4
+	autoconf
+	cd -
+
+	# Now, finally, we can build gcc:
+	# GCC does not honour HOSTCFLAGS at all. CFLAGS are used for
+	# both target and host object files. This is pretty misdesigned.
+	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
+	# but it does not seem to work properly. At least the host library
+	# libiberty is not compiled with CFLAGS_FOR_BUILD.
+	CC="$CC" CFLAGS_FOR_TARGET="-O2" CFLAGS="$HOSTCFLAGS" \
+		CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
+		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
+		--target=${TARGETARCH} --disable-werror --disable-shared \
+		--disable-libssp --disable-bootstrap --disable-nls \
+		--disable-libquadmath --without-headers \
+		$GCC_OPTIONS --enable-languages="c" $USE_GOLD \
+		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
+		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
+		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
+		|| touch .failed
+	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc || touch .failed
+	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
+
+	if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -eq 0 ]; then
+		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc || touch .failed
+		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
+	fi
+}
+
+build_EXPAT() {
+	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
+		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
+	$MAKE || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+}
+
+build_PYTHON() {
+	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
+		--target=${TARGETARCH} || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+}
+
+build_GDB() {
+	export PYTHONHOME=$DESTDIR$TARGETDIR
+	if [ $(uname) != "FreeBSD" -a $(uname) != "NetBSD" ]; then
+		LIBDL="-ldl"
+	fi
+	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
+		 -lpthread $LIBDL -lutil" \
+	CC="$CC" CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
+	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR \
+		--target=${TARGETARCH} --disable-werror --disable-nls
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+}
+
+build_IASL() {
+	RDIR=$PWD
+	cd ../$IASL_DIR/generate/unix
+	CFLAGS="$HOSTCFLAGS"
+	HOST="_LINUX"
+	test $UNAME = "Darwin" && HOST="_APPLE"
+	test $UNAME = "FreeBSD" && HOST="_FreeBSD"
+	test $UNAME = "Cygwin" && HOST="_CYGWIN"
+	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2" CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch $RDIR/.failed
+	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch $RDIR/.failed
+	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch $RDIR/.failed
+}
+
+build_LLVM() {
+	cd ..
+	ln -sf $PWD/$CFE_DIR  $LLVM_DIR/tools/clang
+	ln -sf $PWD/$CTE_DIR  $LLVM_DIR/tools/clang/tools/extra
+	ln -sf $PWD/$CRT_DIR  $LLVM_DIR/projects/compiler-rt
+	cd -
+
+	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$DESTDIR$TARGETDIR \
+		-DCMAKE_BUILD_TYPE=Release ../$LLVM_DIR || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install || touch .failed
+
+	cp -a ../$CFE_DIR/tools/scan-build/* $DESTDIR$TARGETDIR/bin
+	cp -a ../$CFE_DIR/tools/scan-view/* $DESTDIR$TARGETDIR/bin
 }
 
 printf "${blue}Welcome to the ${red}coreboot${blue} cross toolchain builder v$CROSSGCC_VERSION ($CROSSGCC_DATE)${NC}\n\n"
@@ -441,285 +605,30 @@ if [ "$USECCACHE" = 1 ]; then
 	CC="ccache $CC"
 fi
 
-mkdir -p ${BUILDDIRPREFIX}-gmp ${BUILDDIRPREFIX}-mpfr ${BUILDDIRPREFIX}-mpc ${BUILDDIRPREFIX}-libelf ${BUILDDIRPREFIX}-binutils \
-		${BUILDDIRPREFIX}-gcc ${BUILDDIRPREFIX}-python ${BUILDDIRPREFIX}-expat ${BUILDDIRPREFIX}-gdb
-mkdir -p ${BUILDDIR}
+for package in $PACKAGES; do
+	mkdir -p ${BUILDDIRPREFIX}-$package
+done
 
 mkdir -p $DESTDIR$TARGETDIR/bin
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
-[[ "$PACKAGES" == *GMP* ]] && \
-if [ -f ${BUILDDIRPREFIX}-gmp/.success ]; then
-	printf "Skipping GMP as it is already built\n"
-else
-	printf "Building GMP ${GMP_VERSION} ... "
-(
-	cd ${BUILDDIRPREFIX}-gmp
-	rm -f .failed
-	CC="$CC" CFLAGS="-Os" ../${GMP_DIR}/configure --disable-shared --enable-fat --prefix=$TARGETDIR $OPTIONS \
-		|| touch .failed
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
-
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gmp" || exit 1
+build GMP
 
 # Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
 # as GCC 4.6.x fails if it's there.
 HOSTCFLAGS=`grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
 	    sed s,-pedantic,,`
-fi
 
-[[ "$PACKAGES" == *MPFR* ]] && \
-if [ -f ${BUILDDIRPREFIX}-mpfr/.success ]; then
-	printf "Skipping MPFR as it is already built\n"
-else
-	printf "Building MPFR ${MPFR_VERSION} ... "
-(
-	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
-	cd ${BUILDDIRPREFIX}-mpfr
-	rm -f .failed
-	CC="$CC" ../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
-		--infodir=$TARGETDIR/info \
-		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
-		touch .failed
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
-
-	# work around build problem of libgmp.la
-	if [ "$DESTDIR" != "" ]; then
-	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/libgmp.la
-	fi
-
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-mpfr" || exit 1
-fi
-
-[[ "$PACKAGES" == *MPC* ]] && \
-if [ -f ${BUILDDIRPREFIX}-mpc/.success ]; then
-	printf "Skipping MPC as it is already built\n"
-else
-	printf "Building MPC ${MPC_VERSION} ... "
-(
-	cd ${BUILDDIRPREFIX}-mpc
-	rm -f .failed
-	CC="$CC" ../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
-		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
-		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
-		touch .failed
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
-
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-mpc" || exit 1
-fi
-
-[[ "$PACKAGES" == *LIBELF* ]] && \
-if [ -f ${BUILDDIRPREFIX}-libelf/.success ]; then
-	printf "Skipping libelf as it is already built\n"
-else
-	printf "Building libelf ${LIBELF_VERSION} ... "
-(
-	cd ${BUILDDIRPREFIX}-libelf
-	rm -f .failed
-	echo "$HOSTCFLAGS"
-	CC="$CC" CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
-	../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
-		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
-	$MAKE $JOBS || touch .failed
-	$MAKE install prefix=$DESTDIR$TARGETDIR || touch .failed
-
-	normalize_dirs
-
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-libelf" || exit 1
-fi
-
-[[ "$PACKAGES" == *BINUTILS* ]] && \
-if [ -f ${BUILDDIRPREFIX}-binutils/.success ]; then
-	printf "Skipping binutils as it is already built\n"
-else
-	printf "Building binutils ${BINUTILS_VERSION} ... "
-(
-	# What a pain: binutils don't come with configure
-	# script anymore. Create it:
-	cd binutils-${BINUTILS_VERSION}/
-	autoconf
-	cd ..
-	# Now build binutils
-	cd ${BUILDDIRPREFIX}-binutils
-	rm -f .failed
-	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
-		--target=${TARGETARCH} --disable-werror --disable-nls \
-		$USE_GOLD CFLAGS="$HOSTCFLAGS" || touch .failed
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-binutils" || exit 1
-fi
-
-[[ "$PACKAGES" == *GCC* ]] && \
-if [ -f ${BUILDDIRPREFIX}-gcc/.success ]; then
-	printf "Skipping GCC as it is already built\n"
-else
-	printf "Building GCC ${GCC_VERSION} ... "
-(
-	# Even worse than binutils: GCC does not come with configure
-	# script anymore, but also enforces an obsolete autoconf version
-	# to create it. This is a poster child of how autotools help make
-	# software portable.
-	cd gcc-${GCC_VERSION}
-	sed '/dnl Ensure exactly this Autoconf version is used/d' \
-		config/override.m4 > config/override.m4.new
-	autoconf_version=`autoconf -V | grep "autoconf" | tr ' ' '\n' | tail -1`
-	sed "s/${GCC_AUTOCONF_VERSION}/${autoconf_version}/g" \
-		config/override.m4.new > config/override.m4
-	autoconf
-	cd ..
-	# Now, finally, we can build gcc:
-	cd ${BUILDDIRPREFIX}-gcc
-	rm -f .failed
-	# GCC does not honour HOSTCFLAGS at all. CFLAGS are used for
-	# both target and host object files. This is pretty misdesigned.
-	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
-	# but it does not seem to work properly. At least the host library
-	# libiberty is not compiled with CFLAGS_FOR_BUILD.
-	CC="$CC" CFLAGS_FOR_TARGET="-O2" CFLAGS="$HOSTCFLAGS" \
-		CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
-		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
-		--target=${TARGETARCH} --disable-werror --disable-shared \
-		--disable-libssp --disable-bootstrap --disable-nls \
-		--disable-libquadmath --without-headers \
-		$GCC_OPTIONS --enable-languages="c" $USE_GOLD \
-		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
-		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
-		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
-		|| touch .failed
-	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc || touch .failed
-	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
-
-	if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -eq 0 ]; then
-		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc || touch .failed
-		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
-	fi
-
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gcc" || exit 1
-fi
-
-[[ "$PACKAGES" == *EXPAT* ]] && \
-if [ -f ${BUILDDIRPREFIX}-expat/.success ]; then
-	printf "Skipping Expat as it is already built\n"
-else
-	printf "Building Expat ${EXPAT_VERSION} ... "
-(
-	cd ${BUILDDIRPREFIX}-expat
-	rm -f .failed
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
-		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
-	$MAKE || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
-
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-expat" || exit 1
-fi
-
-[[ "$PACKAGES" == *PYTHON* ]] && \
-if [ -f ${BUILDDIRPREFIX}-python/.success ]; then
-	printf "Skipping Python as it is already built\n"
-else
-	printf "Building Python ${PYTHON_VERSION} ... "
-(
-	cd ${BUILDDIRPREFIX}-python
-	rm -f .failed
-	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
-		--target=${TARGETARCH} || touch .failed
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
-
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-python" || exit 1
-fi
-
-[[ "$PACKAGES" == *GDB* ]] && \
-if [ -f ${BUILDDIRPREFIX}-gdb/.success ]; then
-	printf "Skipping GDB as it is already built\n"
-else
-	printf "Building GDB ${GDB_VERSION} ... "
-(
-	cd ${BUILDDIRPREFIX}-gdb
-	export PYTHONHOME=$DESTDIR$TARGETDIR
-	rm -f .failed
-	if [ $(uname) != "FreeBSD" -a $(uname) != "NetBSD" ]; then
-		LIBDL="-ldl"
-	fi
-	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
-		 -lpthread $LIBDL -lutil" \
-	CC="$CC" CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
-	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR \
-		--target=${TARGETARCH} --disable-werror --disable-nls
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gdb" || exit 1
-fi
-
-[[ "$PACKAGES" == *IASL* ]] && \
-if [ -f $IASL_DIR/source/compiler/.success ]; then
-	printf "Skipping IASL as it is already built\n"
-else
-	printf "Building IASL ${IASL_VERSION} ... "
-(
-	RDIR=$IASL_DIR/source/compiler
-	cd $IASL_DIR/generate/unix
-	rm -f $RDIR/.failed
-	CFLAGS="$HOSTCFLAGS"
-	HOST="_LINUX"
-	test $UNAME = "Darwin" && HOST="_APPLE"
-	test $UNAME = "FreeBSD" && HOST="_FreeBSD"
-	test $UNAME = "Cygwin" && HOST="_CYGWIN"
-	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2" CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch $RDIR/.failed
-	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch $RDIR/.failed
-	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch $RDIR/.failed
-	if [ ! -f $RDIR/.failed ]; then touch $RDIR/.success; fi
-) 2>&1 | wait_for_build "$IASL_DIR/source/compiler" || exit 1
-fi
-
-[[ "$PACKAGES" == *CLANG* ]] && \
-if [ -f ${BUILDDIR}/.success ]; then
-	printf "Skipping CLANG as it is already built\n"
-else
-	printf "Building CLANG ${CLANG_VERSION} ... "
-(
-	ln -sf $PWD/$CFE_DIR  $LLVM_DIR/tools/clang
-	ln -sf $PWD/$CTE_DIR  $LLVM_DIR/tools/clang/tools/extra
-	ln -sf $PWD/$CRT_DIR  $LLVM_DIR/projects/compiler-rt
-
-	cd ${BUILDDIR}
-
-	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$DESTDIR$TARGETDIR \
-		-DCMAKE_BUILD_TYPE=Release ../$LLVM_DIR || touch .failed
-	$MAKE $JOBS || touch .failed
-	$MAKE install || touch .failed
-
-	cd -
-
-	cp -a $CFE_DIR/tools/scan-build/* $DESTDIR$TARGETDIR/bin
-	cp -a $CFE_DIR/tools/scan-view/* $DESTDIR$TARGETDIR/bin
-
-	if [ ! -f .failed ]; then touch .success; fi
-) 2>&1 | wait_for_build "${BUILDDIR}" || exit 1
-fi
+build MPFR
+build MPC
+build LIBELF
+build BINUTILS
+build GCC
+build EXPAT
+build PYTHON
+build GDB
+build IASL
+build LLVM
 
 # Adding git information of current tree to target directory
 # for reproducibility

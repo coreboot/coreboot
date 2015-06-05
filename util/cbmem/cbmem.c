@@ -46,7 +46,7 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
-#include "cbmem.h"
+#include "cbmem_id.h"
 #include "timestamp.h"
 
 #define CBMEM_VERSION "1.1"

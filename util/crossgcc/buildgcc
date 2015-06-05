@@ -30,7 +30,7 @@ TARGETDIR=`pwd`/xgcc
 TARGETARCH=i386-elf
 DESTDIR=
 
-# version numbers
+# GCC toolchain version numbers
 GMP_VERSION=6.0.0
 MPFR_VERSION=3.1.2
 MPC_VERSION=1.0.3
@@ -43,7 +43,7 @@ IASL_VERSION=20150204
 PYTHON_VERSION=3.4.3
 EXPAT_VERSION=2.1.0
 
-# archive locations
+# GCC toolchain archive locations
 GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}a.tar.bz2"
 MPFR_ARCHIVE="http://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.bz2"
 MPC_ARCHIVE="http://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
@@ -55,6 +55,7 @@ IASL_ARCHIVE="https://acpica.org/sites/acpica/files/acpica-unix-${IASL_VERSION}.
 PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz"
 EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.gz"
 
+# GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
 MPC_DIR="mpc-${MPC_VERSION}"
@@ -153,6 +154,9 @@ searchtool()
 TAR=`searchtool tar` || exit $?
 PATCH=`searchtool patch` || exit $?
 MAKE=`searchtool make` || exit $?
+SHA1SUM=`searchtool sha1sum`
+SHA512SUM=`searchtool sha512sum`
+CHECKSUM=$SHA1SUM
 
 searchtool m4 > /dev/null
 searchtool bison > /dev/null
@@ -163,8 +167,11 @@ searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
 
 download() {
-	ARCHIVE=$1
-	FILE=`basename $ARCHIVE`
+	PACKAGE=$1
+	archive=$PACKAGE"_ARCHIVE"
+	archive="`eval echo '$'$archive`"
+
+	FILE=`basename $archive`
 	printf " * $FILE "
 
 	test -f tarballs/$FILE && \
@@ -174,7 +181,7 @@ download() {
 		printf "(downloading)"
 		rm -f tarballs/$FILE
 		cd tarballs
-		wget --no-check-certificate -q $ARCHIVE
+		wget --no-check-certificate -q $archive
 		cd ..
 		test ! -f sum/$FILE.cksum && test -f tarballs/$FILE && \
 			(test -z "$CHECKSUM" || $CHECKSUM tarballs/$FILE > sum/$FILE.cksum ) && \
@@ -220,15 +227,23 @@ wait_for_build() {
 	true
 }
 
-SHA1SUM=`searchtool sha1sum`
-SHA512SUM=`searchtool sha512sum`
-CHECKSUM=$SHA1SUM
-
 cleanup()
 {
 	printf "Cleaning up temporary files... "
-	rm -rf ${BUILDDIRPREFIX}-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-*
-	rm -rf gdb-* acpica-* python-* expat-*
+	# GCC toolchain
+	rm -rf ${GMP_DIR} ${BUILDDIRPREFIX}-gmp
+	rm -rf ${MPFR_DIR} ${BUILDDIRPREFIX}-mpfr
+	rm -rf ${MPC_DIR} ${BUILDDIRPREFIX}-mpc
+	rm -rf ${LIBELF_DIR} ${BUILDDIRPREFIX}-libelf
+	rm -rf ${BINUTILS_DIR} ${BUILDDIRPREFIX}-binutils
+	rm -rf ${GCC_DIR} ${BUILDDIRPREFIX}-gcc
+
+	# Other tools
+	rm -rf ${GDB_DIR} ${BUILDDIRPREFIX}-gdb
+	rm -rf ${EXPAT_DIR} ${BUILDDIRPREFIX}-expat
+	rm -rf ${PYTHON_DIR} ${BUILDDIRPREFIX}-python
+	rm -rf ${IASL_DIR}
+
 	printf "${green}ok${NC}\n"
 }
 
@@ -331,29 +346,26 @@ case "$TARGETARCH" in
 esac
 
 echo "Target arch is now $TARGETARCH"
+NAME="${TARGETARCH} cross"
+PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC IASL"
+
 BUILDDIRPREFIX=build-${TARGETARCH}
 
 if [ "$clean" = "1" ]; then
 	cleanup
 fi
 
-GDB_PACKAGE="GDB"
-PYTHON_PACKAGE="PYTHON"
-EXPAT_PACKAGE="EXPAT"
 if [ $SKIPGDB -eq 1 ]; then
 	printf "Will skip GDB ... ${green}ok${NC}\n"
-	GDB_ARCHIVE=""
-	GDB_PACKAGE=""
 	if [ $SKIPPYTHON -eq 0 ]; then
 		printf "Python scripting needs GDB ... disabling ... ${green}ok${NC}\n"
 		SKIPPYTHON=1
 	fi
+else
+	PACKAGES="$PACKAGES GDB"
 fi
-if [ $SKIPPYTHON -eq 1 ]; then
-	PYTHON_ARCHIVE=""
-	PYTHON_PACKAGE=""
-	EXPAT_ARCHIVE=""
-	EXPAT_PACKAGE=""
+if [ $SKIPPYTHON -eq 0 ]; then
+	PACKAGES="$PACKAGES EXPAT PYTHON"
 fi
 
 # coreboot does not like the GOLD linker
@@ -363,21 +375,16 @@ GCC_OPTIONS="--enable-lto"
 
 printf "Downloading tar balls ... \n"
 mkdir -p tarballs
-for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
-	    $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE \
-	    $IASL_ARCHIVE $PYTHON_ARCHIVE $EXPAT_ARCHIVE; do
-	download $ARCHIVE
+for P in $PACKAGES; do
+	download $P
 done
-printf "Downloaded tar balls ... "
-printf "${green}ok${NC}\n"
+printf "Downloaded tar balls ... ${green}ok${NC}\n"
 
 printf "Unpacking and patching ... \n"
-for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE \
-	    $EXPAT_PACKAGE $GDB_PACKAGE IASL; do
-	unpack_and_patch $PACKAGE
+for P in $PACKAGES; do
+	unpack_and_patch $P
 done
-printf "Unpacked and patched ... "
-printf "${green}ok${NC}\n"
+printf "Unpacked and patched ... ${green}ok${NC}\n"
 
 CC=cc
 if [ $UNAME = "Darwin" ]; then
@@ -407,18 +414,16 @@ if [ "$USECCACHE" = 1 ]; then
 fi
 
 mkdir -p ${BUILDDIRPREFIX}-gmp ${BUILDDIRPREFIX}-mpfr ${BUILDDIRPREFIX}-mpc ${BUILDDIRPREFIX}-libelf ${BUILDDIRPREFIX}-binutils \
-		${BUILDDIRPREFIX}-gcc ${BUILDDIRPREFIX}-python ${BUILDDIRPREFIX}-expat
+		${BUILDDIRPREFIX}-gcc ${BUILDDIRPREFIX}-python ${BUILDDIRPREFIX}-expat ${BUILDDIRPREFIX}-gdb
 
 mkdir -p $DESTDIR$TARGETDIR/bin
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
-if [ $SKIPGDB -eq 0 ]; then
-	mkdir -p ${BUILDDIRPREFIX}-gdb
-fi
+[[ "$PACKAGES" == *GMP* ]] && \
 if [ -f ${BUILDDIRPREFIX}-gmp/.success ]; then
 	printf "Skipping GMP as it is already built\n"
 else
-printf "Building GMP ${GMP_VERSION} ... "
+	printf "Building GMP ${GMP_VERSION} ... "
 (
 	cd ${BUILDDIRPREFIX}-gmp
 	rm -f .failed
@@ -431,17 +436,18 @@ printf "Building GMP ${GMP_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gmp" || exit 1
-fi
 
 # Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
 # as GCC 4.6.x fails if it's there.
 HOSTCFLAGS=`grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
 	    sed s,-pedantic,,`
+fi
 
+[[ "$PACKAGES" == *MPFR* ]] && \
 if [ -f ${BUILDDIRPREFIX}-mpfr/.success ]; then
 	printf "Skipping MPFR as it is already built\n"
 else
-printf "Building MPFR ${MPFR_VERSION} ... "
+	printf "Building MPFR ${MPFR_VERSION} ... "
 (
 	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
 	cd ${BUILDDIRPREFIX}-mpfr
@@ -464,10 +470,11 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-mpfr" || exit 1
 fi
 
+[[ "$PACKAGES" == *MPC* ]] && \
 if [ -f ${BUILDDIRPREFIX}-mpc/.success ]; then
 	printf "Skipping MPC as it is already built\n"
 else
-printf "Building MPC ${MPC_VERSION} ... "
+	printf "Building MPC ${MPC_VERSION} ... "
 (
 	cd ${BUILDDIRPREFIX}-mpc
 	rm -f .failed
@@ -484,10 +491,11 @@ printf "Building MPC ${MPC_VERSION} ... "
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-mpc" || exit 1
 fi
 
+[[ "$PACKAGES" == *LIBELF* ]] && \
 if [ -f ${BUILDDIRPREFIX}-libelf/.success ]; then
 	printf "Skipping libelf as it is already built\n"
 else
-printf "Building libelf ${LIBELF_VERSION} ... "
+	printf "Building libelf ${LIBELF_VERSION} ... "
 (
 	cd ${BUILDDIRPREFIX}-libelf
 	rm -f .failed
@@ -504,10 +512,11 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-libelf" || exit 1
 fi
 
+[[ "$PACKAGES" == *BINUTILS* ]] && \
 if [ -f ${BUILDDIRPREFIX}-binutils/.success ]; then
 	printf "Skipping binutils as it is already built\n"
 else
-printf "Building binutils ${BINUTILS_VERSION} ... "
+	printf "Building binutils ${BINUTILS_VERSION} ... "
 (
 	# What a pain: binutils don't come with configure
 	# script anymore. Create it:
@@ -526,10 +535,11 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-binutils" || exit 1
 fi
 
+[[ "$PACKAGES" == *GCC* ]] && \
 if [ -f ${BUILDDIRPREFIX}-gcc/.success ]; then
 	printf "Skipping GCC as it is already built\n"
 else
-printf "Building GCC ${GCC_VERSION} ... "
+	printf "Building GCC ${GCC_VERSION} ... "
 (
 	# Even worse than binutils: GCC does not come with configure
 	# script anymore, but also enforces an obsolete autoconf version
@@ -574,12 +584,11 @@ printf "Building GCC ${GCC_VERSION} ... "
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gcc" || exit 1
 fi
 
+[[ "$PACKAGES" == *EXPAT* ]] && \
 if [ -f ${BUILDDIRPREFIX}-expat/.success ]; then
 	printf "Skipping Expat as it is already built\n"
-elif [ $SKIPPYTHON -eq 1 ]; then
-	printf "Skipping Expat (Python scripting not enabled)\n"
 else
-printf "Building Expat ${EXPAT_VERSION} ... "
+	printf "Building Expat ${EXPAT_VERSION} ... "
 (
 	cd ${BUILDDIRPREFIX}-expat
 	rm -f .failed
@@ -594,13 +603,11 @@ printf "Building Expat ${EXPAT_VERSION} ... "
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-expat" || exit 1
 fi
 
-
+[[ "$PACKAGES" == *PYTHON* ]] && \
 if [ -f ${BUILDDIRPREFIX}-python/.success ]; then
 	printf "Skipping Python as it is already built\n"
-elif [ $SKIPPYTHON -eq 1 ]; then
-	printf "Skipping Python (Python scripting not enabled)\n"
 else
-printf "Building Python ${PYTHON_VERSION} ... "
+	printf "Building Python ${PYTHON_VERSION} ... "
 (
 	cd ${BUILDDIRPREFIX}-python
 	rm -f .failed
@@ -615,13 +622,11 @@ printf "Building Python ${PYTHON_VERSION} ... "
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-python" || exit 1
 fi
 
-
+[[ "$PACKAGES" == *GDB* ]] && \
 if [ -f ${BUILDDIRPREFIX}-gdb/.success ]; then
 	printf "Skipping GDB as it is already built\n"
-elif [ $SKIPGDB -eq 1 ]; then
-	printf "Skipping GDB (GDB support not enabled)\n"
 else
-printf "Building GDB ${GDB_VERSION} ... "
+	printf "Building GDB ${GDB_VERSION} ... "
 (
 	cd ${BUILDDIRPREFIX}-gdb
 	export PYTHONHOME=$DESTDIR$TARGETDIR
@@ -640,10 +645,11 @@ printf "Building GDB ${GDB_VERSION} ... "
 ) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-gdb" || exit 1
 fi
 
+[[ "$PACKAGES" == *IASL* ]] && \
 if [ -f $IASL_DIR/source/compiler/.success ]; then
 	printf "Skipping IASL as it is already built\n"
 else
-printf "Building IASL ${IASL_VERSION} ... "
+	printf "Building IASL ${IASL_VERSION} ... "
 (
 	RDIR=$IASL_DIR/source/compiler
 	cd $IASL_DIR/generate/unix
@@ -660,25 +666,16 @@ printf "Building IASL ${IASL_VERSION} ... "
 ) 2>&1 | wait_for_build "$IASL_DIR/source/compiler" || exit 1
 fi
 
+# Adding git information of current tree to target directory
+# for reproducibility
 PROGNAME=`basename "$0"`
 rm -f "$DESTDIR$TARGETDIR/$PROGNAME".commit.*
 cp "$PROGNAME" $DESTDIR$TARGETDIR/"$PROGNAME.commit.`git describe`"
 
 if [ $SAVETEMPS -eq 0 ]; then
-	printf "Cleaning up... "
-	rm -rf ${GMP_DIR} ${BUILDDIRPREFIX}-gmp
-	rm -rf ${MPFR_DIR} ${BUILDDIRPREFIX}-mpfr
-	rm -rf ${MPC_DIR} ${BUILDDIRPREFIX}-mpc
-	rm -rf ${LIBELF_DIR} ${BUILDDIRPREFIX}-libelf
-	rm -rf ${BINUTILS_DIR} ${BUILDDIRPREFIX}-binutils
-	rm -rf ${GCC_DIR} ${BUILDDIRPREFIX}-gcc
-	rm -rf ${GDB_DIR} ${BUILDDIRPREFIX}-gdb
-	rm -rf ${EXPAT_DIR} ${BUILDDIRPREFIX}-expat
-	rm -rf ${PYTHON_DIR} ${BUILDDIRPREFIX}-python
-	rm -rf ${IASL_DIR}
-	printf "${green}ok${NC}\n"
+	cleanup
 else
 	printf "Leaving temporary files around... ${green}ok${NC}\n"
 fi
 
-printf "\n${green}You can now run your $TARGETARCH cross toolchain from $TARGETDIR.${NC}\n"
+printf "\n${green}You can now run your $NAME toolchain from $TARGETDIR.${NC}\n"

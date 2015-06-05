@@ -1,0 +1,79 @@
+Frontend driver patch from Edward O'Callaghan
+
+https://llvm.org/bugs/show_bug.cgi?id=21538
+
+Index: include/clang/Driver/Driver.h
+===================================================================
+--- cfe-3.6.1.src/include/clang/Driver/Driver.h	(revision 211898)
++++ cfe-3.6.1.src/include/clang/Driver/Driver.h	(working copy)
+@@ -325,6 +325,14 @@
+   // FIXME: This should be in CompilationInfo.
+   std::string GetFilePath(const char *Name, const ToolChain &TC) const;
+ 
++  /// GetCompilerRTPath - Find Compiler-RT library path
++  ///
++  /// \param TC - The provided tool chain for additional information on
++  /// directories to search.
++  //
++  // FIXME: This should be in CompilationInfo.
++  std::string GetCompilerRTPath(const ToolChain &TC) const;
++
+   /// GetProgramPath - Lookup \p Name in the list of program search paths.
+   ///
+   /// \param TC - The provided tool chain for additional information on
+Index: include/clang/Driver/Options.td
+===================================================================
+--- cfe-3.6.1.src/include/clang/Driver/Options.td	(revision 211898)
++++ cfe-3.6.1.src/include/clang/Driver/Options.td	(working copy)
+@@ -1269,6 +1269,8 @@
+   HelpText<"Enable Objective-C Ivar layout bitmap print trace">;
+ def print_libgcc_file_name : Flag<["-", "--"], "print-libgcc-file-name">,
+   HelpText<"Print the library path for \"libgcc.a\"">;
++def print_librt_file_name : Flag<["-", "--"], "print-librt-file-name">,
++  HelpText<"Print the library path for \"libclang_rt.builtins-ARCH.a\"">;
+ def print_multi_directory : Flag<["-", "--"], "print-multi-directory">;
+ def print_multi_lib : Flag<["-", "--"], "print-multi-lib">;
+ def print_multi_os_directory : Flag<["-", "--"], "print-multi-os-directory">;
+Index: lib/Driver/Driver.cpp
+===================================================================
+--- cfe-3.6.1.src/lib/Driver/Driver.cpp	(revision 211898)
++++ cfe-3.6.1.src/lib/Driver/Driver.cpp	(working copy)
+@@ -756,6 +756,11 @@
+     return false;
+   }
+ 
++  if (C.getArgs().hasArg(options::OPT_print_librt_file_name)) {
++    llvm::outs() << GetCompilerRTPath(TC) << "\n";
++    return false;
++  }
++
+   if (C.getArgs().hasArg(options::OPT_print_multi_lib)) {
+     const MultilibSet &Multilibs = TC.getMultilibs();
+ 
+@@ -1820,6 +1825,26 @@
+   return Name;
+ }
+ 
++std::string Driver::GetCompilerRTPath(const ToolChain &TC) const {
++  // The runtimes are located in the OS-specific resource directory.
++  SmallString<128> Res(TC.getDriver().ResourceDir);
++  const llvm::Triple &Triple = TC.getTriple();
++
++  // TC.getOS() yield "freebsd10.0" whereas "freebsd" is expected.
++  StringRef OSLibName = (Triple.getOS() == llvm::Triple::FreeBSD) ?
++    "freebsd" : TC.getOS();
++  llvm::sys::path::append(Res, "lib", OSLibName);
++
++  StringRef archName = TC.getArchName();
++  // Until ARM libraries are build separately, we have them all in one library
++  if (TC.getArch() == llvm::Triple::arm ||
++      TC.getArch() == llvm::Triple::armeb)
++    archName = "arm";
++
++  llvm::sys::path::append(Res, Twine("libclang_rt.builtins-") + archName + ".a");
++  return Res.str();
++}
++
+ std::string Driver::GetProgramPath(const char *Name,
+                                    const ToolChain &TC) const {
+   // FIXME: Needs a better variable than DefaultTargetTriple

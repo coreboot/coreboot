@@ -22,8 +22,8 @@
 
 cd `dirname $0`
 
-CROSSGCC_DATE="June 3th, 2015"
-CROSSGCC_VERSION="1.28"
+CROSSGCC_DATE="June 4th, 2015"
+CROSSGCC_VERSION="1.29"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -42,6 +42,8 @@ GDB_VERSION=7.9
 IASL_VERSION=20150204
 PYTHON_VERSION=3.4.3
 EXPAT_VERSION=2.1.0
+# CLANG version number
+CLANG_VERSION=3.6.1
 
 # GCC toolchain archive locations
 GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}a.tar.bz2"
@@ -54,6 +56,11 @@ GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.xz"
 IASL_ARCHIVE="https://acpica.org/sites/acpica/files/acpica-unix-${IASL_VERSION}.tar.gz"
 PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz"
 EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.gz"
+# CLANG toolchain archive locations
+LLVM_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
+CFE_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src.tar.xz"
+CRT_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
+CTE_ARCHIVE="http://llvm.org/releases/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
 
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -66,10 +73,16 @@ GDB_DIR="gdb-${GDB_VERSION}"
 IASL_DIR="acpica-unix-${IASL_VERSION}"
 PYTHON_DIR="Python-${PYTHON_VERSION}"
 EXPAT_DIR="expat-${EXPAT_VERSION}"
+# CLANG toolchain directories
+LLVM_DIR="llvm-${CLANG_VERSION}.src"
+CFE_DIR="cfe-${CLANG_VERSION}.src"
+CRT_DIR="compiler-rt-${CLANG_VERSION}.src"
+CTE_DIR="clang-tools-extra-${CLANG_VERSION}.src"
 
 unset MAKELEVEL MAKEFLAGS
 
 SAVETEMPS=0
+BUILDCLANG=0
 SKIPGDB=1
 SKIPPYTHON=1
 
@@ -154,6 +167,7 @@ searchtool()
 TAR=`searchtool tar` || exit $?
 PATCH=`searchtool patch` || exit $?
 MAKE=`searchtool make` || exit $?
+CMAKE=`searchtool cmake "cmake"` || exit $?
 SHA1SUM=`searchtool sha1sum`
 SHA512SUM=`searchtool sha512sum`
 CHECKSUM=$SHA1SUM
@@ -244,12 +258,15 @@ cleanup()
 	rm -rf ${PYTHON_DIR} ${BUILDDIRPREFIX}-python
 	rm -rf ${IASL_DIR}
 
+	# CLANG
+	rm -rf ${LLVM_DIR} ${CFE_DIR} ${CRT_DIR} ${CTE_DIR} ${BUILDDIR}
+
 	printf "${green}ok${NC}\n"
 }
 
 myhelp()
 {
-	printf "Usage: $0 [-V] [-c] [-p <platform>] [-d <target directory>] [-D <dest dir>] [-G] [-S]\n"
+	printf "Usage: $0 [-V] [-c] [-p <platform>] [-d <target directory>] [-D <dest dir>] [-C] [-G] [-S]\n"
 	printf "       $0 [-V|--version]\n"
 	printf "       $0 [-h|--help]\n\n"
 
@@ -260,14 +277,16 @@ myhelp()
 	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
 	printf "    [-y|--ccache]                 Use ccache when building cross compiler\n"
 	printf "    [-j|--jobs <num>]             run <num> jobs in parallel in make\n"
+	printf "    [-C|--clang]                  build CLANG toolchain"
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
-	printf "                                  (defaults to $TARGETARCH)\n"
+	printf "                                  (defaults to $TARGETARCH) *)\n"
 	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
 	printf "                                  (defaults to $TARGETDIR)\n\n"
 	printf "    [-D|--destdir <dest dir>]     destination directory to install cross compiler to\n"
 	printf "                                  (for RPM builds, default unset)\n"
-	printf "    [-G|--gdb]                    build GNU debugger\n"
-	printf "    [-S|--scripting]              build scripting support for GDB\n\n"
+	printf "    [-G|--gdb]                    build GNU debugger *)\n"
+	printf "    [-S|--scripting]              build scripting support for GDB *)\n\n"
+	printf " *) option only available when building GCC toolchain (not with CLANG)\n\n"
 }
 
 myversion()
@@ -300,11 +319,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="`getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,'`"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb,ccache Vhcd:p:j:D:tGy -- "$@"`
+	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb,ccache,clang Vhcd:p:j:D:tGyC -- "$@"`
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vhcd:p:j:D:tGy $*`
+	args=`getopt Vhcd:p:j:D:tGyC $*`
 	set -- $args
 fi
 
@@ -323,6 +342,7 @@ while true ; do
 		-p|--platform)	shift; TARGETARCH="$1"; shift;;
 		-D|--destdir)	shift; DESTDIR="$1"; shift;;
 		-j|--jobs)	shift; JOBS="-j $1"; shift;;
+		-C|--clang)	shift; BUILDCLANG=1;;
 		-G|--gdb)	shift; SKIPGDB=0;;
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
@@ -345,11 +365,17 @@ case "$TARGETARCH" in
 	*)		printf "${red}WARNING: Unsupported architecture $TARGETARCH.${NC}\n\n"; ;;
 esac
 
-echo "Target arch is now $TARGETARCH"
+if [ "$BUILDCLANG" -eq 0 ]; then
+echo "Target architecture is now $TARGETARCH"
 NAME="${TARGETARCH} cross"
 PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC IASL"
+else
+NAME=clang
+PACKAGES="LLVM CFE CRT CTE"
+fi
 
 BUILDDIRPREFIX=build-${TARGETARCH}
+BUILDDIR=$PWD/build-clang
 
 if [ "$clean" = "1" ]; then
 	cleanup
@@ -386,6 +412,7 @@ for P in $PACKAGES; do
 done
 printf "Unpacked and patched ... ${green}ok${NC}\n"
 
+if [[ "$PACKAGES" == *GCC* ]]; then
 CC=cc
 if [ $UNAME = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
@@ -408,6 +435,7 @@ if [ $UNAME = "Darwin" ]; then
 		CC=llvm-gcc
 	fi
 fi
+fi # GCC
 
 if [ "$USECCACHE" = 1 ]; then
 	CC="ccache $CC"
@@ -415,6 +443,7 @@ fi
 
 mkdir -p ${BUILDDIRPREFIX}-gmp ${BUILDDIRPREFIX}-mpfr ${BUILDDIRPREFIX}-mpc ${BUILDDIRPREFIX}-libelf ${BUILDDIRPREFIX}-binutils \
 		${BUILDDIRPREFIX}-gcc ${BUILDDIRPREFIX}-python ${BUILDDIRPREFIX}-expat ${BUILDDIRPREFIX}-gdb
+mkdir -p ${BUILDDIR}
 
 mkdir -p $DESTDIR$TARGETDIR/bin
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
@@ -664,6 +693,32 @@ else
 	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch $RDIR/.failed
 	if [ ! -f $RDIR/.failed ]; then touch $RDIR/.success; fi
 ) 2>&1 | wait_for_build "$IASL_DIR/source/compiler" || exit 1
+fi
+
+[[ "$PACKAGES" == *CLANG* ]] && \
+if [ -f ${BUILDDIR}/.success ]; then
+	printf "Skipping CLANG as it is already built\n"
+else
+	printf "Building CLANG ${CLANG_VERSION} ... "
+(
+	ln -sf $PWD/$CFE_DIR  $LLVM_DIR/tools/clang
+	ln -sf $PWD/$CTE_DIR  $LLVM_DIR/tools/clang/tools/extra
+	ln -sf $PWD/$CRT_DIR  $LLVM_DIR/projects/compiler-rt
+
+	cd ${BUILDDIR}
+
+	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$DESTDIR$TARGETDIR \
+		-DCMAKE_BUILD_TYPE=Release ../$LLVM_DIR || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install || touch .failed
+
+	cd -
+
+	cp -a $CFE_DIR/tools/scan-build/* $DESTDIR$TARGETDIR/bin
+	cp -a $CFE_DIR/tools/scan-view/* $DESTDIR$TARGETDIR/bin
+
+	if [ ! -f .failed ]; then touch .success; fi
+) 2>&1 | wait_for_build "${BUILDDIR}" || exit 1
 fi
 
 # Adding git information of current tree to target directory

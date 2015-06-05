@@ -23,15 +23,15 @@
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x14f15051,	// Conexant CX20561 (Hermosa)
-	0x17aa20ff,	// Subsystem ID
+	0x17aa211c,	// Subsystem ID
 	0x00000008,	// Number of entries
 
 	/* Pin Widget Verb Table */
 
-	AZALIA_PIN_CFG(0, 0x16, 0x042140f0),
+	AZALIA_PIN_CFG(0, 0x16, 0x022140f0),
 	AZALIA_PIN_CFG(0, 0x17, 0x61a190f0),
-	AZALIA_PIN_CFG(0, 0x18, 0x04a190f0),
-	AZALIA_PIN_CFG(0, 0x19, 0x612140f0),
+	AZALIA_PIN_CFG(0, 0x18, 0x02a190f0),
+	AZALIA_PIN_CFG(0, 0x19, 0x40f000f0),
 	AZALIA_PIN_CFG(0, 0x1a, 0x901701f0),
 	AZALIA_PIN_CFG(0, 0x1b, 0x40f001f0),
 	AZALIA_PIN_CFG(0, 0x1c, 0x40f001f0),

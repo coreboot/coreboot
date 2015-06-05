@@ -162,6 +162,55 @@ searchtool clang "clang version" > /dev/null
 searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
 
+download() {
+	ARCHIVE=$1
+	FILE=`basename $ARCHIVE`
+	printf " * $FILE "
+
+	test -f tarballs/$FILE && \
+			(test -z "$CHECKSUM" || \
+			test "`cat sum/$FILE.cksum 2>/dev/null | sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,'`" = "`$CHECKSUM tarballs/$FILE 2>/dev/null | sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,'`" ) && \
+			printf "(cached)" || (
+		printf "(downloading)"
+		rm -f tarballs/$FILE
+		cd tarballs
+		wget --no-check-certificate -q $ARCHIVE
+		cd ..
+		test ! -f sum/$FILE.cksum && test -f tarballs/$FILE && \
+			(test -z "$CHECKSUM" || $CHECKSUM tarballs/$FILE > sum/$FILE.cksum ) && \
+			printf "(checksum created. ${RED}Note. Please upload sum/$FILE.cksum if the corresponding archive is upgraded.${NC})"
+	)
+	test -f tarballs/$FILE || \
+		printf "\n${RED}Failed to download $FILE.${NC}\n"
+	test -f tarballs/$FILE || exit 1
+	printf "\n"
+}
+
+unpack_and_patch() {
+	PACKAGE=$1
+	archive=$PACKAGE"_ARCHIVE"
+	archive="`eval echo '$'$archive`"
+	dir=$PACKAGE"_DIR"
+	dir="`eval echo '$'${dir}`"
+	test -d ${dir} && test -f ${dir}/.unpack_success || (
+		printf " * `basename $archive`\n"
+		FLAGS=zxf
+		suffix=`echo $archive | sed 's,.*\.,,'`
+		test "$suffix" = "gz" && FLAGS=zxf
+		test "$suffix" = "bz2" && FLAGS=jxf
+		test "$suffix" = "xz" && FLAGS="--xz -xf"
+		test "$suffix" = "lzma" && FLAGS="--lzma -xf"
+		$TAR $FLAGS tarballs/`basename $archive`
+		for patch in patches/${dir}_*.patch; do
+			test -r $patch || continue
+			printf "   o `basename $patch`\n"
+			$PATCH -s -N -p0 < `echo $patch` || \
+				printf "\n${RED}Failed $patch.${NC}\n"
+		done
+		touch ${dir}/.unpack_success
+	)
+}
+
 wait_for_build() {
 	# $1: directory in which log file and failure marker are stored
 	cat > "$1/crossgcc-build.log"
@@ -317,32 +366,7 @@ mkdir -p tarballs
 for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
 	    $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE \
 	    $IASL_ARCHIVE $PYTHON_ARCHIVE $EXPAT_ARCHIVE; do
-	FILE=`basename $ARCHIVE`
-	printf " * $FILE "
-
-	##create the sum
-	#test -f sum/$FILE.cksum || (
-	#	$CHECKSUM tarballs/$FILE > sum/$FILE.cksum
-	#	continue
-	#)
-
-	test -f tarballs/$FILE && \
-			(test -z "$CHECKSUM" || \
-			test "`cat sum/$FILE.cksum 2>/dev/null | sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,'`" = "`$CHECKSUM tarballs/$FILE 2>/dev/null | sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,'`" ) && \
-			printf "(cached)" || (
-		printf "(downloading)"
-		rm -f tarballs/$FILE
-		cd tarballs
-		wget --no-check-certificate -q $ARCHIVE
-		cd ..
-		test ! -f sum/$FILE.cksum && test -f tarballs/$FILE && \
-			(test -z "$CHECKSUM" || $CHECKSUM tarballs/$FILE > sum/$FILE.cksum ) && \
-			printf "(checksum created. ${RED}Note. Please upload sum/$FILE.cksum if the corresponding archive is upgraded.${NC})"
-	)
-	test -f tarballs/$FILE || \
-		printf "\n${RED}Failed to download $FILE.${NC}\n"
-	test -f tarballs/$FILE || exit 1
-	printf "\n"
+	download $ARCHIVE
 done
 printf "Downloaded tar balls ... "
 printf "${green}ok${NC}\n"
@@ -350,27 +374,7 @@ printf "${green}ok${NC}\n"
 printf "Unpacking and patching ... \n"
 for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE \
 	    $EXPAT_PACKAGE $GDB_PACKAGE IASL; do
-	archive=$PACKAGE"_ARCHIVE"
-	archive="`eval echo '$'$archive`"
-	dir=$PACKAGE"_DIR"
-	dir="`eval echo '$'${dir}`"
-	test -d ${dir} && test -f ${dir}/.unpack_success || (
-		printf " * `basename $archive`\n"
-		FLAGS=zxf
-		suffix=`echo $archive | sed 's,.*\.,,'`
-		test "$suffix" = "gz" && FLAGS=zxf
-		test "$suffix" = "bz2" && FLAGS=jxf
-		test "$suffix" = "xz" && FLAGS="--xz -xf"
-		test "$suffix" = "lzma" && FLAGS="--lzma -xf"
-		$TAR $FLAGS tarballs/`basename $archive`
-		for patch in patches/${dir}_*.patch; do
-			test -r $patch || continue
-			printf "   o `basename $patch`\n"
-			$PATCH -s -N -p0 < `echo $patch` || \
-				printf "\n${RED}Failed $patch.${NC}\n"
-		done
-		touch ${dir}/.unpack_success
-	)
+	unpack_and_patch $PACKAGE
 done
 printf "Unpacked and patched ... "
 printf "${green}ok${NC}\n"

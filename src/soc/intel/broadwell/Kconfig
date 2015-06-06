@@ -175,7 +175,6 @@ config INTEL_PCH_UART_CONSOLE
 	bool "Use Serial IO UART for console"
 	default n
 	select CONSOLE_SERIAL8250MEM
-	depends on !CONFIG_DRIVERS_OXFORD_OXPCIE
 
 config INTEL_PCH_UART_CONSOLE_NUMBER
 	hex "Serial IO UART number to use for console"

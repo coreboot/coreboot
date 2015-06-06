@@ -44,62 +44,8 @@ config DRAM_SIZE_MB
 	int
 	default 256
 
-config NR_DRAM_BANKS
-	int
-	default 1
-
-config BOOTBLOCK_ROM_OFFSET
-	hex
-	default 0x0
-
 config UART_FOR_CONSOLE
 	int
 	default 0
-
-#################################################################
-#   stuff from smdk5250.h                                       #
-#   FIXME: can we move some of these to exynos5250's Kconfig?   #
-#################################################################
-config SYS_I2C_SPEED
-	int
-	default 100000
-
-config I2C_MULTI_BUS
-	bool
-	default y
-
-#FIXME: get proper voltages
-
-config VDD_ARM_MV
-	int
-	default 1300	#1.3V
-
-config VDD_INT_UV
-	int
-	default 1012500	# 1.0125v
-
-config VDD_MIF_MV
-	int
-	default 1000	# 1.0v
-
-config VDD_G3D_MV
-	int
-	default 1200	# 1.2v
-
-config VDD_LDO2_MV
-	int
-	default 1500	# 1.5v
-
-config VDD_LDO3_MV
-	int
-	default 1800	# 1.8v
-
-config VDD_LDO5_MV
-	int
-	default 1800	# 1.8v
-
-config VDD_LDO10_MV
-	int
-	default 1800	# 1.8v
 
 endif # BOARD_TI_BEAGLEBONE

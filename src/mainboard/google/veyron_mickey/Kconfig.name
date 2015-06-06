@@ -1,2 +1,2 @@
-config BOARD_GOOGLE_VEYRON_Mickey
+config BOARD_GOOGLE_VEYRON_MICKEY
 	bool "Veyron_Mickey"

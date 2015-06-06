@@ -256,10 +256,10 @@ cscope:
 
 doxy: doxygen
 doxygen:
-	$(DOXYGEN) documentation/Doxyfile.coreboot
+	$(DOXYGEN) Documentation/Doxyfile.coreboot
 
 doxygen_simple:
-	$(DOXYGEN) documentation/Doxyfile.coreboot_simple
+	$(DOXYGEN) Documentation/Doxyfile.coreboot_simple
 
 doxyclean: doxygen-clean
 doxygen-clean:

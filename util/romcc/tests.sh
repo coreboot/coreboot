@@ -65,5 +65,3 @@ if [ '(' -f $base.c ')' -a '(' '!' -f core ')' -a '(' -f $base.S ')' ]; then
 else
 	/bin/false
 fi
-
-

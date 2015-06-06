@@ -28,4 +28,3 @@
 /* TODO: Need to add DMA_COHERENT region like on ARM? */
 
 #endif /* __ARCH_MEMLAYOUT_H */
-

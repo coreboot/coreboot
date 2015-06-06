@@ -125,4 +125,3 @@ static int default_memcmp(const void *s1, const void *s2, size_t n)
 
 int memcmp(const void *s1, const void *s2, size_t n)
 	__attribute__((weak, alias("default_memcmp")));
-

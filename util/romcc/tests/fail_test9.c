@@ -6,4 +6,3 @@ static msr_t rdmsr(unsigned long index)
 }
 
 #warning "romcc should die gracefully here"
-

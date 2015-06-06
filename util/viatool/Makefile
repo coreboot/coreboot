@@ -96,4 +96,3 @@ install: $(PROGRAM)
 .PHONY: all clean distclean dep pciutils
 
 -include .dependencies
-

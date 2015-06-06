@@ -325,5 +325,3 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	xdr_segs(output, bzp.segs, bzp.num_segments);
 	return 0;
 }
-
-

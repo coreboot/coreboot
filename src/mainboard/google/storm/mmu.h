@@ -22,4 +22,3 @@ enum dram_state {
 
 void setup_dram_mappings(enum dram_state dram);
 void setup_mmu(enum dram_state);
-

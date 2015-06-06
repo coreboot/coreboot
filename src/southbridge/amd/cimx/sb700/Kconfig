@@ -68,4 +68,3 @@ config REDIRECT_SBCIMX_TRACE_TO_SERIAL
 	  Warning: Only enable this option when debuging or tracing AMD CIMX code.
 
 endif #SOUTHBRIDGE_AMD_CIMX_SB700
-

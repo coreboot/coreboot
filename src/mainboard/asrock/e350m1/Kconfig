@@ -66,4 +66,3 @@ config VGA_BIOS_ID
 	default "1002,9802"
 
 endif # BOARD_ASROCK_E350M1
-

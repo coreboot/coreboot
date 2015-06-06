@@ -51,4 +51,3 @@ config HPET_MIN_TICKS
 	default 0x80
 
 endif
-

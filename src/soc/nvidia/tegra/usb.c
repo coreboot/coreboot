@@ -216,4 +216,3 @@ void usb_setup_utmip(void *usb_base)
 	usb_ehci_reset_and_prepare(usb, USB_PHY_UTMIP);
 	printk(BIOS_DEBUG, "USB controller @ %p set up with UTMI+ PHY\n",usb_base);
 }
-

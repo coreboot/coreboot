@@ -174,4 +174,3 @@ CAR_init_params:
 CAR_init_stack:
 	.long  CAR_init_done
 	.long  CAR_init_params
-

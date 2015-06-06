@@ -40,4 +40,3 @@ static void spd_set_memclk(void)
 		min_latency = new_latency;
 	}
 }
-

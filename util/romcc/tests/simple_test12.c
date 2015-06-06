@@ -6,4 +6,3 @@ static void spd_set_drb(void)
 	ch = *str;
 	__builtin_outb(ch, 0xab);
 }
-

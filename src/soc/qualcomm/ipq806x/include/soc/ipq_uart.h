@@ -270,4 +270,3 @@ enum MSM_BOOT_UART_DM_BITS_PER_CHAR {
 void ipq806x_uart_init(void);
 
 #endif				/* __UART_DM_H__ */
-

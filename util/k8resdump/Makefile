@@ -66,4 +66,3 @@ pciutils:
 .PHONY: all clean distclean dep pciutils
 
 -include .dependencies
-

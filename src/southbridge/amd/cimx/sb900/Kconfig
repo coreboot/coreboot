@@ -55,4 +55,3 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
 	default "southbridge/amd/cimx/sb900/bootblock.c"
 
 endif #SOUTHBRIDGE_AMD_CIMX_SB900
-

@@ -60,4 +60,3 @@ $(obj)/util/lzma/%.o: $(src)/util/lzma/C/Common/%.cpp
 $(obj)/util/lzma/%.o: $(src)/util/lzma/%.cc
 	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
-

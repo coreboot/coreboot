@@ -35,4 +35,3 @@ struct quirk_list {
 	/* NULL-terminated list of quirks */
 	struct quirk *dev_quirks;
 };
-

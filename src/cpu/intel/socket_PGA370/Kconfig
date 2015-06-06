@@ -39,4 +39,3 @@ config DCACHE_RAM_SIZE
 	default 0x01000
 
 endif
-

@@ -29,4 +29,3 @@ config DCACHE_RAM_SIZE
 	default 0x4000
 
 endif # CPU_INTEL_SOCKET_MPGA604
-

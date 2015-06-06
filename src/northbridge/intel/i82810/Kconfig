@@ -47,4 +47,3 @@ config VGA_BIOS_ID
 	string
 	default "8086,7121"
 	depends on NORTHBRIDGE_INTEL_I82810
-

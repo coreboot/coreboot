@@ -307,4 +307,3 @@ void sdram_enable_refresh(void)
 {
 	spd_enable_refresh();
 }
-

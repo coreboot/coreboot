@@ -23,4 +23,3 @@
 void pwm_init(u32 id, u32 period_ns, u32 duty_ns);
 
 #endif
-

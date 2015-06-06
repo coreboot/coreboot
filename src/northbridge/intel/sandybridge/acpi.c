@@ -211,4 +211,3 @@ void *igd_make_opregion(void)
 		init_igd_opregion(opregion);
 	return opregion;
 }
-

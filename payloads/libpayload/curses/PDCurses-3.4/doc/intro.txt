@@ -831,4 +831,3 @@ Functions specific to the X11 port of PDCurses:
 	sb_refresh		sb
 
 --------------------------------------------------------------------------
-

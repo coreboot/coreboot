@@ -106,4 +106,3 @@ chip northbridge/amd/agesa/family15/root_complex
 		end #chip northbridge/amd/agesa/family15 # CPU side of HT root complex
 	end #domain
 end #northbridge/amd/agesa/family15/root_complex
-

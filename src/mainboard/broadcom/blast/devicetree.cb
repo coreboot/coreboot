@@ -120,4 +120,3 @@ chip northbridge/amd/amdk8/root_complex
 
 	end #domain
 end
-

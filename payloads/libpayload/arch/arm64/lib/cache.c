@@ -88,6 +88,3 @@ void icivau(uint64_t ivau)
 {
 	__asm__ __volatile__("ic ivau, %0\n\t" : : "r" (ivau) :"memory");
 }
-
-
-

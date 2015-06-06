@@ -1145,4 +1145,3 @@ const struct msrdef intel_atom_msrs[] = {
 	}},
 	{ MSR_EOT }
 };
-

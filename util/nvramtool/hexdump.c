@@ -185,4 +185,3 @@ static void addrprint(FILE * outfile, uint64_t address, int width)
 			fprintf(outfile, ":");
 	}
 }
-

@@ -56,4 +56,3 @@ uint64_t timer_raw_value(void)
 
 	return rawv;
 }
-

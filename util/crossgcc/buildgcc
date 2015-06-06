@@ -682,5 +682,3 @@ else
 fi
 
 printf "\n${green}You can now run your $TARGETARCH cross toolchain from $TARGETDIR.${NC}\n"
-
-

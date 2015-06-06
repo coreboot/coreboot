@@ -251,4 +251,3 @@ int main()
 	outb (0x6, 0xcf9);
 	halt();
 }
-

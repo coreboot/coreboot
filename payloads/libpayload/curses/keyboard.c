@@ -261,4 +261,3 @@ int curses_serial_enabled(void)
 void curses_enable_serial(int state) { }
 int curses_serial_enabled(void) { return 0; }
 #endif
-

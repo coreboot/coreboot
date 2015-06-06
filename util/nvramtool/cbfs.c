@@ -151,4 +151,3 @@ void open_cbfs(const char *filename)
 	}
 	cbfs_offset = cbfs_mapped-(0xffffffff-cbfs_stat.st_size+1);
 }
-

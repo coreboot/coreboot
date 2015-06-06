@@ -127,4 +127,3 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	return current;
 }
-

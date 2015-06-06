@@ -282,4 +282,3 @@ fixed_mtrr_table:
 	.word 0x26B, 0x26C, 0x26D
 	.word 0x26E, 0x26F
 fixed_mtrr_table_end:
-

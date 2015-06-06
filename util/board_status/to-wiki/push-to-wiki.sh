@@ -77,4 +77,3 @@ CR=$(curl -sS \
         --form "title=${TITLE}" \
         --form "text=<$1" \
         --request "POST" "${WIKIAPI}?action=edit&")
-

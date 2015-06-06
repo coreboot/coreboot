@@ -36,4 +36,3 @@ static void main(void)
 	outb(p.i, 0x80);
 	outb(p.j, 0x80);
 }
-

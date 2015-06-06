@@ -21,4 +21,3 @@
 
 .section ".rom.data", "a", @progbits
 .section ".rom.text", "ax", @progbits
-

@@ -25,4 +25,3 @@ void software_i2c_attach(unsigned bus);
 void software_i2c_detach(unsigned bus);
 
 #endif
-

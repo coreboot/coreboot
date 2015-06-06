@@ -141,4 +141,3 @@ junit.xml:
 	done
 	echo "</testsuite>" >> $@.tmp
 	mv $@.tmp $@
-

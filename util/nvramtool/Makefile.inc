@@ -50,5 +50,3 @@ $(objutil)/nvramtool/%.o: $(top)/util/nvramtool/%.c
 $(objutil)/nvramtool/nvramtool: $(objutil)/nvramtool $(objutil)/nvramtool/accessors $(objutil)/nvramtool/cli $(addprefix $(objutil)/nvramtool/,$(nvramtoolobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(NVRAMTOOLFLAGS) -o $@ $(addprefix $(objutil)/nvramtool/,$(nvramtoolobj)) $(NVRAMTOOLLDFLAGS)
-
-

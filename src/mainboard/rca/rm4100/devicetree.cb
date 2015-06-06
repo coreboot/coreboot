@@ -65,4 +65,3 @@ chip northbridge/intel/i82830		# Northbridge
     end
   end
 end
-

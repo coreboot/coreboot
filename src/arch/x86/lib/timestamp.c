@@ -24,4 +24,3 @@ uint64_t timestamp_get(void)
 {
 	return rdtscll();
 }
-

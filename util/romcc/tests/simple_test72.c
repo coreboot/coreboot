@@ -161,4 +161,3 @@ static void spd_set_memclk(void)
 		}
 	}
 }
-

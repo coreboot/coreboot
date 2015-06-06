@@ -63,4 +63,3 @@ __protected_start:
 
 	/* Restore the BIST value to %eax */
 	movl	%ebp, %eax
-

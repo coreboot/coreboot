@@ -47,4 +47,3 @@ int curses_vga_enabled(void)
 {
     return !!(curses_flags & F_ENABLE_CONSOLE);
 }
-

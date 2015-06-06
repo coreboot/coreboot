@@ -351,4 +351,3 @@ void udc_handle_setup(struct usbdev_ctrl *this, int ep, dev_req_t *dr)
 	this->halt_ep(this, ep, 0);
 	this->halt_ep(this, ep, 1);
 }
-

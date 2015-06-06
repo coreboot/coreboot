@@ -73,4 +73,3 @@ config VGA_BIOS_ID
 	default "1002,9806"
 
 endif # BOARD_AMD_SOUTHSTATION
-

@@ -44,4 +44,3 @@ struct cpu_info *cpu_info(void)
 	addr -= sizeof(struct cpu_info);
 	return (void *)addr;
 }
-

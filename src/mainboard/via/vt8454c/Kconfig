@@ -24,4 +24,3 @@ config IRQ_SLOT_COUNT
 	default 15
 
 endif # BOARD_VIA_VT8454C
-

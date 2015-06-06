@@ -10,4 +10,3 @@ config CPU_SOCKET_TYPE
 	hex
 	default 0x11
 	depends on CPU_AMD_SOCKET_AM2
-

@@ -24,4 +24,3 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x01000
 	depends on CPU_INTEL_SLOT_2
-

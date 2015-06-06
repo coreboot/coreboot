@@ -223,4 +223,3 @@ config SB800_IMC_FAN_CONTROL
 endchoice
 
 endif #SOUTHBRIDGE_AMD_CIMX_SB800
-

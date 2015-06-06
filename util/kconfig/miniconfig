@@ -85,4 +85,3 @@ else
   printf "Overwriting $CONFIG with new, minimized config.\n"
   mv "$TMPCONFIG" "$CONFIG"
 fi
-

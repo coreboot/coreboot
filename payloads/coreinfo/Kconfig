@@ -115,4 +115,3 @@ config MODULE_CBFS
 	  This option will increase the ELF file size by ca. 1440 bytes.
 
 endmenu
-

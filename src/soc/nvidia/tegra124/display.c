@@ -342,4 +342,3 @@ void display_startup(device_t dev)
 	edid.framebuffer_bits_per_pixel = config->framebuffer_bits_per_pixel;
 	set_vbe_mode_info_valid(&edid, (uintptr_t)(framebuffer_base_mb*MiB));
 }
-

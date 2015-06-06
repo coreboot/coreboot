@@ -420,4 +420,3 @@ int parse_fv_to_payload(const struct buffer *input, struct buffer *output,
 	return 0;
 
 }
-

@@ -266,5 +266,3 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	unmap_physical((void *)mchbar, size);
 	return 0;
 }
-
-

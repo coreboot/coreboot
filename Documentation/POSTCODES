@@ -23,4 +23,3 @@ Errors (used in several places):
 
 0xee Not supposed to get here
 0xff Elfload fail or die() called
-

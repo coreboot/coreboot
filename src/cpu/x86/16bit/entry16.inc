@@ -138,4 +138,3 @@ nullidt:
 .globl _estart
 _estart:
 	.code32
-

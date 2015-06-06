@@ -145,4 +145,3 @@ smm_trampoline32:
 
 	/* Exit from SM mode. */
 	rsm
-

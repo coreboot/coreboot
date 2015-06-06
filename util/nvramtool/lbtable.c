@@ -887,4 +887,3 @@ static void string_print_fn(const struct lb_record *rec)
 	p = (const struct lb_string *)rec;
 	printf("%s\n", p->string);
 }
-

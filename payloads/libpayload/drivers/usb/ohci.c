@@ -902,4 +902,3 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 
 	return result;
 }
-

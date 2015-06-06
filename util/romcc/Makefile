@@ -238,4 +238,3 @@ echo:
 
 clean:
 	rm -f romcc romcc_pg core $(TEST_ASM_ALL) $(TEST_OBJ) $(TEST_ELF) tests/*.debug tests/*.debug2 tests/*.gmon.out tests/*.out
-

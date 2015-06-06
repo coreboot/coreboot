@@ -54,4 +54,3 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 
 	acpi_update_thermal_table(gnvs);
 }
-

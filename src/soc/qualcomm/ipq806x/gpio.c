@@ -151,4 +151,3 @@ void gpio_input(gpio_t gpio)
 	gpio_tlmm_config_set(gpio, GPIO_FUNC_DISABLE,
 			     GPIO_NO_PULL, GPIO_2MA, GPIO_DISABLE);
 }
-

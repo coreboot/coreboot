@@ -23,4 +23,3 @@
 void usb_init(void);
 
 #endif
-

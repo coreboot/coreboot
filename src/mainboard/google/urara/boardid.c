@@ -100,4 +100,3 @@ uint8_t board_id(void)
 
 	return cached_board_id;
 }
-

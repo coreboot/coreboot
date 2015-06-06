@@ -31,4 +31,3 @@ sort -r -k4 -t/ | while read file; do
 	printf "$file "
 done
 printf "\n"
-

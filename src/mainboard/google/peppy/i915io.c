@@ -141,4 +141,3 @@ void runio(struct intel_dp *dp,  int verbose)
 	gtt_write(DEIIR,0x00000000);
 
 }
-

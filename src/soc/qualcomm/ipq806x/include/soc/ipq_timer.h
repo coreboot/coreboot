@@ -36,5 +36,3 @@
 #define DGT_ENABLE_EN                     1
 
 #define SPSS_TIMER_STATUS_DGT_EN    (1 << 0)
-
-

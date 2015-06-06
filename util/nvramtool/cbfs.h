@@ -178,4 +178,3 @@ void *cbfs_find_file(const char *name, unsigned int type, unsigned int *len);
 
 void open_cbfs(const char *filename);
 #endif
-

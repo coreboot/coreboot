@@ -38,5 +38,3 @@ int add_reset_handler(void (*new_handler)(void))
 
 	return 0;
 }
-
-

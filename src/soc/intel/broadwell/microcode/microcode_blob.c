@@ -20,4 +20,3 @@
 unsigned microcode[] = {
 #include "../../../../../3rdparty/blobs/soc/intel/broadwell/microcode_blob.h"
 };
-

@@ -19,4 +19,3 @@
 
 config SOUTHBRIDGE_TI_PCI7420
 	bool
-

@@ -50,4 +50,3 @@ install: $(PROGRAM)
 .PHONY: all clean distclean dep
 
 -include .dependencies
-

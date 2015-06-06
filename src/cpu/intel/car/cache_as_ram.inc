@@ -368,4 +368,3 @@ __main:
 	post_code(POST_DEAD_CODE)
 	hlt
 	jmp	.Lhlt
-

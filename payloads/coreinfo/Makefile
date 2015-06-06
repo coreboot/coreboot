@@ -108,4 +108,3 @@ distclean: clean
 include util/kconfig/Makefile
 
 .PHONY: $(PHONY) prepare clean distclean
-

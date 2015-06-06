@@ -333,5 +333,3 @@ const PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 1),
 	PSO_END
 };
-
-

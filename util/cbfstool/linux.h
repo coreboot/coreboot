@@ -184,4 +184,3 @@ struct linux_params {
 	u8 command_line[COMMAND_LINE_SIZE];	/* 0x800 */
 	u8 reserved17[1792];	/* 0x900 - 0x1000 */
 };
-

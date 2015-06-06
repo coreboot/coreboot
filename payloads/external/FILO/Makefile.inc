@@ -47,4 +47,3 @@ distclean:
 	rm -rf filo
 
 .PHONY: checkout config filo clean distclean
-

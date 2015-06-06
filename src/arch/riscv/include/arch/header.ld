@@ -30,4 +30,3 @@ ENTRY(_start)
 #else
 ENTRY(stage_entry)
 #endif
-

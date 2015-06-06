@@ -606,4 +606,3 @@ static const struct lb_record *next_cmos_rec(const struct lb_record *last,
 
 	return NULL;
 }
-

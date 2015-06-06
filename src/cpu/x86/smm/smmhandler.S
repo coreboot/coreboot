@@ -207,4 +207,3 @@ jumptable:
 	/* core 0 */
 	ljmp $0xa000, $SMM_HANDLER_OFFSET
 .align 1024, 0x00
-

@@ -166,4 +166,3 @@ cmos_access_t cmos_hal = {
 	.write = cmos_hal_write,
 	.set_iopl = cmos_set_iopl,
 };
-

@@ -34,4 +34,3 @@ config SDRAMPWR_4DIMM
 	  If your board has 4 DIMM slots, you must use select this option, in
 	  your Kconfig file of the board. On boards with 3 DIMM slots,
 	  do _not_ select this option.
-

@@ -157,4 +157,3 @@ enum drc_reg_set {
 #endif /* #ifndef __SOC_BROADCOM_CYGNUS_DDR_BIST_H__*/
 
 /* End of File */
-

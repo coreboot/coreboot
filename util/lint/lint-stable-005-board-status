@@ -42,4 +42,3 @@ for mobodir in $(git diff --diff-filter ACMR --name-only src/mainboard | sed -n 
 done
 
 exit 0
-

@@ -68,4 +68,3 @@ clean:
 
 distclean: clean
 	rm -f CorebootPortingGuide.pdf Kconfig.pdf
-

@@ -74,4 +74,3 @@ config VGA_BIOS_ID
 	default "102b,0532"
 
 endif # BOARD_SUPERMICRO_H8QGI
-

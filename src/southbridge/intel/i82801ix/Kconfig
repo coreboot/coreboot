@@ -43,4 +43,3 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
 	default "southbridge/intel/i82801ix/bootblock.c"
 
 endif
-

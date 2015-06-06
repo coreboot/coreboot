@@ -48,4 +48,3 @@ void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 		exit(1);
 	}
 }
-

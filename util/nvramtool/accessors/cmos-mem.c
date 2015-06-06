@@ -34,4 +34,3 @@ cmos_access_t memory_hal = {
 	.write = mem_hal_write,
 	.set_iopl = mem_set_iopl,
 };
-

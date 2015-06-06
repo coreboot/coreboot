@@ -76,4 +76,3 @@ clean:
 	rm -f $(PROGRAM) *.o
 
 .PHONY: all install clean
-

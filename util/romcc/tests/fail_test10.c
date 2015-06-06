@@ -16,4 +16,3 @@ static struct result main(int a, int b, struct big_arg d)
 	result.d = a + 1;
 
 }
-

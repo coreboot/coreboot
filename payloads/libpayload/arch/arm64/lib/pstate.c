@@ -453,4 +453,3 @@ void raw_write_spsr_und(uint32_t spsr_und)
 {
 	__asm__ __volatile__("msr SPSR_und, %0\n\t" : : "r" (spsr_und) : "memory");
 }
-

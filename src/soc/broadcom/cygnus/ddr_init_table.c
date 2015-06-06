@@ -1808,4 +1808,3 @@ const unsigned int ddr2_mode_reg_tab[] = {
 		0x0000
 };
 #endif
-

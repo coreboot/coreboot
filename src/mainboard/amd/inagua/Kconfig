@@ -80,4 +80,3 @@ config SB800_AHCI_ROM
 	default n
 
 endif # BOARD_AMD_INAGUA
-

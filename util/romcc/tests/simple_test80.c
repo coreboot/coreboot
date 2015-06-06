@@ -10,4 +10,3 @@ static void main(void)
 	msr_t msr;
 	msr = rdmsr(0x12345678);
 }
-

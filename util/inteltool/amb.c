@@ -465,5 +465,3 @@ int print_ambs(struct pci_dev *dev, struct pci_access *pacc)
 	unmap_physical((void *)ambconfig, AMB_CONFIG_SPACE_SIZE);
 	return 0;
 }
-
-

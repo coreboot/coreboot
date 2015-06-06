@@ -86,4 +86,3 @@ int usb_interface_check(u16 vendor, u16 device)
 
 	return -1;
 }
-

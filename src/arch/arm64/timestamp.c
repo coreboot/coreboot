@@ -26,4 +26,3 @@ uint64_t timestamp_get(void)
 	timer_monotonic_get(&timestamp);
 	return (uint64_t)timestamp.microseconds;
 }
-

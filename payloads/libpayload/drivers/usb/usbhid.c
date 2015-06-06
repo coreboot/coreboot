@@ -513,4 +513,3 @@ int usbhid_getchar (void)
 
 	return (int)ret;
 }
-

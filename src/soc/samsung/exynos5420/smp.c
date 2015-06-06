@@ -303,4 +303,3 @@ void exynos5420_config_smp(void)
 	init_exynos_cpu_states();
 	configure_secondary_cores();
 }
-

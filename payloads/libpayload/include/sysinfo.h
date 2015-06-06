@@ -143,4 +143,3 @@ int cb_parse_arch_specific(struct cb_record *rec, struct sysinfo_t *info);
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info);
 
 #endif
-

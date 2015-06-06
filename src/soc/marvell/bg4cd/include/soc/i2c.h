@@ -23,4 +23,3 @@
 void i2c_init(unsigned int bus, unsigned int hz);
 
 #endif
-

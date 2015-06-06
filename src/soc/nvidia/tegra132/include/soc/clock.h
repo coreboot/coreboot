@@ -410,4 +410,3 @@ void sor_clock_start(void);
 void clock_enable_audio(void);
 
 #endif /* __SOC_NVIDIA_TEGRA132_CLOCK_H__ */
-

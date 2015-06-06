@@ -20,4 +20,3 @@
 config SOUTHBRIDGE_AMD_CS5536
 	bool
 	select UDELAY_TSC
-

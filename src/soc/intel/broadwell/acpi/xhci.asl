@@ -368,4 +368,3 @@ Device (XHCI)
 		Device (PRT6) { Name (_ADR, 6) } // USB Port 5
 	}
 }
-

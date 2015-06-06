@@ -34,4 +34,3 @@
 void acpi_create_gnvs(global_nvs_t * gnvs)
 {
 }
-

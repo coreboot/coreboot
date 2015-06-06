@@ -165,4 +165,3 @@ libform-$(CONFIG_LP_PDCURSES) += form/fld_opts.c
 libform-$(CONFIG_LP_PDCURSES) += form/fld_attr.c
 libform-$(CONFIG_LP_PDCURSES) += form/fld_dup.c
 libform-$(CONFIG_LP_PDCURSES) += form/fld_just.c
-

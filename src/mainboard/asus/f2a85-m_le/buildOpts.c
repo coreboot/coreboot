@@ -447,4 +447,3 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
   */
   PSO_END
 };
-

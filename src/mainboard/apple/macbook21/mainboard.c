@@ -94,4 +94,3 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 	.final = mainboard_final,
 };
-

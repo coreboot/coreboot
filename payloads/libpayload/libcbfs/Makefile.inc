@@ -29,4 +29,3 @@
 
 libcbfs-$(CONFIG_LP_CBFS) += cbfs.c
 libcbfs-$(CONFIG_LP_CBFS) += ram_media.c
-

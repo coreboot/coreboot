@@ -27,4 +27,3 @@
 
 	/* Restore BIST. */
 	movl	%ebp, %eax
-

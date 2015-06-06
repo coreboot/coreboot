@@ -32,4 +32,3 @@ void install_intel_vga_int15_handler(int active_lfp, int pfit, int display, int 
 #else
 static inline void install_intel_vga_int15_handler(int active_lfp, int pfit, int display, int panel_type) {}
 #endif
-

@@ -307,4 +307,3 @@ void sor_clock_stop(void);
 void sor_clock_start(void);
 
 #endif /* __SOC_NVIDIA_TEGRA124_CLOCK_H__ */
-

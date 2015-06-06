@@ -131,5 +131,3 @@ void rtc_read_clock(struct tm *time)
 	if (time->tm_year < 80)
 		time->tm_year += 100;
 }
-
-

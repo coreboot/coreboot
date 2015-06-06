@@ -28,4 +28,3 @@ static void spd_set_drb(void)
 		device += SMBUS_MEM_DEVICE_INC;
 	}
 }
-

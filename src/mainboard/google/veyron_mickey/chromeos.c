@@ -100,4 +100,3 @@ int get_write_protect_state(void)
 {
 	return !gpio_get(GPIO_WP);
 }
-

@@ -221,4 +221,3 @@ int video_console_init(void)
 	console_add_output_driver(&cons);
 	return 0;
 }
-

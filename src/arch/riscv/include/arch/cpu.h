@@ -50,4 +50,3 @@ struct cpuinfo_riscv {
 
 struct cpu_info *cpu_info(void);
 #endif /* __ARCH_CPU_H__ */
-

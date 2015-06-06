@@ -244,4 +244,3 @@ void PDC_transform_line(int lineno, int x, int len, const chtype *srcp)
 #endif
     }
 }
-

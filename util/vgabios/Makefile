@@ -38,4 +38,3 @@ clean:
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
-

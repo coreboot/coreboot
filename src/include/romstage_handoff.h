@@ -62,4 +62,3 @@ static inline struct romstage_handoff *romstage_handoff_find_or_add(void)
 }
 
 #endif /* ROMSTAGE_HANDOFF_H */
-

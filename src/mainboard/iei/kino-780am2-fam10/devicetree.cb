@@ -68,4 +68,3 @@ chip northbridge/amd/amdfam10/root_complex
 		end
 	end #domain
 end #root_complex
-

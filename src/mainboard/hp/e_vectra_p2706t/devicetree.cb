@@ -56,4 +56,3 @@ chip northbridge/intel/i82810			# Northbridge
     end
   end
 end
-

@@ -1292,5 +1292,3 @@ const struct msrdef intel_core2_later_msrs[] = {
 	}},
 	{ MSR_EOT }
 };
-
-

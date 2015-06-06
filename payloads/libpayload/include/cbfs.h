@@ -85,4 +85,3 @@ int run_address(void *f);
 int init_default_cbfs_media(struct cbfs_media *media);
 
 #endif
-

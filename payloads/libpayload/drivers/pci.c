@@ -128,4 +128,3 @@ void pci_set_bus_master(pcidev_t dev)
 	val |= REG_COMMAND_BM;
 	pci_write_config16(dev, REG_COMMAND, val);
 }
-

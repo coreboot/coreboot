@@ -26,4 +26,3 @@ config VIDEO_MB
 	default 1   if I830_VIDEO_MB_1MB
 	default 8   if I830_VIDEO_MB_8MB
 	depends on NORTHBRIDGE_INTEL_I82830
-

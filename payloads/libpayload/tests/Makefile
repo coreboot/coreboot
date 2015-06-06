@@ -10,4 +10,3 @@ all: $(TARGETS)
 
 run: all
 	for i in $(TARGETS); do ./$$i; done
-

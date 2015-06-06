@@ -218,4 +218,3 @@ int print_spibar(struct pci_dev *sb) {
 int print_spi(struct pci_dev *sb) {
 	return (print_bioscntl(sb) || print_spibar(sb));
 }
-

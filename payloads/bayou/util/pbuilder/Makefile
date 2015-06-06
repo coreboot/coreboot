@@ -65,4 +65,3 @@ liblar/liblar.a:
 clean:
 	rm -f pbuilder *.o lzma/*.o
 	$(MAKE) -C liblar clean
-

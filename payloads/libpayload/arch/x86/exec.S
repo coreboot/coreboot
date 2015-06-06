@@ -96,4 +96,3 @@ i386_do_exec:
 	movl %ebp,%esp
 	popl %ebp
 	ret
-

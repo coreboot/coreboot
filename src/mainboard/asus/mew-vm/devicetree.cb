@@ -49,4 +49,3 @@ chip northbridge/intel/i82810
 	chip cpu/intel/socket_PGA370
 	end
 end
-

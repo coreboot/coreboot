@@ -2279,5 +2279,3 @@ const struct msrdef intel_nehalem_msrs[] = {
 	}},
 	{ MSR_EOT }
 };
-
-

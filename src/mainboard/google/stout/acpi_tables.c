@@ -72,4 +72,3 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* XHCI Mode */
 	gnvs->xhci = XHCI_MODE;
 }
-

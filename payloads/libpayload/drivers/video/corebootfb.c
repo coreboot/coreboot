@@ -263,4 +263,3 @@ struct video_console coreboot_video_console = {
 	.columns = 80,
 	.rows    = 25
 };
-

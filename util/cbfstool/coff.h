@@ -121,4 +121,3 @@ typedef struct {
 	uint32_t number_of_va_and_sizes;
 	/* data directory not needed */
 } pe_opt_header_64_t;
-

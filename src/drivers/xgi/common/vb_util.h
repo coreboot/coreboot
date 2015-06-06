@@ -25,4 +25,3 @@ extern void xgifb_reg_or(unsigned long, u8, unsigned);
 extern void xgifb_reg_and(unsigned long, u8, unsigned);
 extern void xgifb_reg_and_or(unsigned long, u8, unsigned, unsigned);
 #endif
-

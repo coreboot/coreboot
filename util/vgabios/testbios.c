@@ -391,4 +391,3 @@ unsigned short get_device(char *arg_val)
 
 	return devfn;
 }
-

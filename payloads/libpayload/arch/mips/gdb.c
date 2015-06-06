@@ -29,4 +29,3 @@ void gdb_arch_init(void)
 void gdb_arch_enter(void)
 {
 }
-

@@ -37,5 +37,3 @@ static void main(void)
 
 	accum += loops1 + loops0;
 }
-
-

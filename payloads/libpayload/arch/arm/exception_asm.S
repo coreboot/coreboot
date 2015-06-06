@@ -123,4 +123,3 @@ exception_idx:
 set_vbar:
 	mcr	p15, 0, r0, c12, c0, 0
 	bx	lr
-

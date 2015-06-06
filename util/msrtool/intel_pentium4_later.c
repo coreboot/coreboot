@@ -341,4 +341,3 @@ const struct msrdef intel_pentium4_later_msrs[] = {
 	}},
 	{ MSR_EOT }
 };
-

@@ -179,4 +179,3 @@ reg8_read(volatile uint8_t *reg)
 	return *reg;
 }
 #endif /* __SOC_BROADCOM_CYGNUS_REG_UTILS__ */
-

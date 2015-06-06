@@ -74,4 +74,3 @@ static inline void writel(uint32_t _v, volatile void *_a)
 }
 
 #endif
-

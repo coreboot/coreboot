@@ -84,4 +84,3 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	// Stumpy has no arms^H^H^H^HEC.
 	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 }
-

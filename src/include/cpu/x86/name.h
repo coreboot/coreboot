@@ -23,4 +23,3 @@
 void fill_processor_name(char *processor_name);
 
 #endif
-

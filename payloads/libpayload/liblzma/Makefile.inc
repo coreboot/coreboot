@@ -28,4 +28,3 @@
 ##
 
 liblzma-$(CONFIG_LP_LZMA) += lzma.c
-

@@ -256,8 +256,6 @@ Scope(\)
 // SMBus 0:1f.3
 #include "smbus.asl"
 
-#include "irq.asl"
-
 Method (_OSC, 4)
 {
 	/* Check for XHCI */

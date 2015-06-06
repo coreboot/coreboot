@@ -43,6 +43,7 @@ DefinitionBlock(
 		{
 			#include <northbridge/intel/nehalem/acpi/nehalem.asl>
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
+			#include <southbridge/intel/bd82x6x/acpi/default_irq_route.asl>
 		}
 		Device (UNCR)
 		{

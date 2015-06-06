@@ -47,6 +47,7 @@ DefinitionBlock(
 		{
 			#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
+			#include <southbridge/intel/bd82x6x/acpi/default_irq_route.asl>
 		}
 	}
 

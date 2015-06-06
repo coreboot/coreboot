@@ -1194,6 +1194,100 @@ static void compare_nvram_spd_hashes(struct MCTStatStruc *pMCTstat,
 }
 #endif
 
+static void set_up_cc6_storage_fam15(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, uint8_t num_nodes)
+{
+	uint8_t interleaved;
+	uint8_t destination_node;
+	int8_t range;
+	int8_t max_range;
+	uint8_t max_node;
+	uint64_t max_range_limit;
+	uint32_t dword;
+	uint32_t dword2;
+	uint64_t qword;
+
+	interleaved = 0;
+	if (pMCTstat->GStatus & (1 << GSB_NodeIntlv))
+		interleaved = 1;
+
+	/* Find highest DRAM range (DramLimitAddr) */
+	max_node = 0;
+	max_range = -1;
+	max_range_limit = 0;
+	for (range = 0; range < 8; range++) {
+		dword = Get_NB32(pDCTstat->dev_map, 0x40 + (range * 0x8));
+		if (!(dword & 0x3))
+			continue;
+
+		dword = Get_NB32(pDCTstat->dev_map, 0x44 + (range * 0x8));
+		dword2 = Get_NB32(pDCTstat->dev_map, 0x144 + (range * 0x8));
+		qword = ((((uint64_t)dword) >> 16) & 0xffff) << 24;
+		qword |= (((uint64_t)dword2) & 0xff) << 40;
+
+		if (qword > max_range_limit) {
+			max_range = range;
+			max_range_limit = qword;
+			max_node = dword & 0x7;
+		}
+	}
+
+	if (pDCTstat->Node_ID == max_node) {
+		if (max_range >= 0) {
+			if (interleaved)
+				/* Move upper limit down by 16M * the number of nodes */
+				max_range_limit -= (0x1000000 * num_nodes);
+			else
+				/* Move upper limit down by 16M */
+				max_range_limit -= 0x1000000;
+
+			/* Store modified range */
+			dword = Get_NB32(pDCTstat->dev_map, 0x44 + (range * 0x8));
+			dword &= ~(0xffff << 16);		/* DramLimit[39:24] = max_range_limit[39:24] */
+			dword |= (max_range_limit >> 24) & 0xffff;
+			Set_NB32(pDCTstat->dev_map, 0x44 + (range * 0x8), dword);
+
+			dword = Get_NB32(pDCTstat->dev_map, 0x144 + (range * 0x8));
+			dword &= ~(0xffff << 16);		/* DramLimit[47:40] = max_range_limit[47:40] */
+			dword |= (max_range_limit >> 40) & 0xff;
+			Set_NB32(pDCTstat->dev_map, 0x144 + (range * 0x8), dword);
+		}
+	}
+
+	/* Determine save state destination node */
+	if (interleaved)
+		destination_node = Get_NB32(pDCTstat->dev_host, 0x60) & 0x7;
+	else
+		destination_node = max_node;
+
+	/* Set save state destination node */
+	dword = Get_NB32(pDCTstat->dev_link, 0x128);
+	dword &= ~(0x3f << 12);				/* CoreSaveStateDestNode = destination_node */
+	dword |= (destination_node & 0x3f) << 12;
+	Set_NB32(pDCTstat->dev_link, 0x128, dword);
+}
+
+static void lock_dram_config(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat)
+{
+	uint32_t dword;
+
+	dword = Get_NB32(pDCTstat->dev_dct, 0x118);
+	dword |= 0x1 << 19;		/* LockDramCfg = 1 */
+	Set_NB32(pDCTstat->dev_dct, 0x118, dword);
+}
+
+static void set_cc6_save_enable(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, uint8_t enable)
+{
+	uint32_t dword;
+
+	dword = Get_NB32(pDCTstat->dev_dct, 0x118);
+	dword &= ~(0x1 << 18); 		/* CC6SaveEn = enable */
+	dword |= (enable & 0x1) << 18;
+	Set_NB32(pDCTstat->dev_dct, 0x118, dword);
+}
+
 static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA)
 {
@@ -1243,6 +1337,7 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	u8 Node, NodesWmem;
 	u32 node_sys_base;
 	uint8_t nvram;
+	uint8_t enable_cc6;
 	uint8_t allow_config_restore;
 
 	uint8_t s3resume = acpi_is_wakeup_s3();
@@ -1411,6 +1506,43 @@ restartinit:
 			pDCTstat = pDCTstatA + Node;
 
 			mct_ForceNBPState0_Dis_Fam15(pMCTstat, pDCTstat);
+		}
+
+		if (is_fam15h()) {
+			enable_cc6 = 0;
+			if (get_option(&nvram, "cpu_cc6_state") == CB_SUCCESS)
+				enable_cc6 = !!nvram;
+
+			if (enable_cc6) {
+				uint8_t num_nodes;
+
+				num_nodes = 0;
+				for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+					struct DCTStatStruc *pDCTstat;
+					pDCTstat = pDCTstatA + Node;
+
+					if (pDCTstat->NodePresent)
+						num_nodes++;
+				}
+
+				for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+					struct DCTStatStruc *pDCTstat;
+					pDCTstat = pDCTstatA + Node;
+
+					if (pDCTstat->NodePresent)
+						set_up_cc6_storage_fam15(pMCTstat, pDCTstat, num_nodes);
+				}
+
+				for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+					struct DCTStatStruc *pDCTstat;
+					pDCTstat = pDCTstatA + Node;
+
+					if (pDCTstat->NodePresent) {
+						lock_dram_config(pMCTstat, pDCTstat);
+						set_cc6_save_enable(pMCTstat, pDCTstat, 1);
+					}
+				}
+			}
 		}
 
 		mct_FinalMCT_D(pMCTstat, pDCTstatA);

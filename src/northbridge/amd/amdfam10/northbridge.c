@@ -702,6 +702,8 @@ struct chip_operations northbridge_amd_amdfam10_ops = {
 static void amdfam10_domain_read_resources(device_t dev)
 {
 	unsigned reg;
+	uint8_t nvram;
+	uint8_t enable_cc6;
 
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
@@ -745,6 +747,74 @@ static void amdfam10_domain_read_resources(device_t dev)
 	/* Reserve lower DRAM region to force PCI MMIO region to correct location above 0xefffffff */
 	ram_resource(dev, 7, 0, rdmsr(TOP_MEM).lo >> 10);
 #endif
+
+	if (is_fam15h()) {
+		enable_cc6 = 0;
+		if (get_option(&nvram, "cpu_cc6_state") == CB_SUCCESS)
+			enable_cc6 = !!nvram;
+
+		if (enable_cc6) {
+			uint8_t node;
+			uint8_t interleaved;
+			int8_t range;
+			int8_t max_range;
+			uint8_t max_node;
+			uint64_t max_range_limit;
+			uint32_t dword;
+			uint32_t dword2;
+			uint64_t qword;
+			uint8_t num_nodes;
+
+			/* Find highest DRAM range (DramLimitAddr) */
+			max_node = 0;
+			max_range = -1;
+			interleaved = 0;
+			max_range_limit = 0;
+			for (range = 0; range < 8; range++) {
+				dword = f1_read_config32(0x40 + (range * 0x8));
+				if (!(dword & 0x3))
+					continue;
+
+				if ((dword >> 8) & 0x7)
+					interleaved = 1;
+
+				dword = f1_read_config32(0x44 + (range * 0x8));
+				dword2 = f1_read_config32(0x144 + (range * 0x8));
+				qword = ((((uint64_t)dword) >> 16) & 0xffff) << 24;
+				qword |= (((uint64_t)dword2) & 0xff) << 40;
+
+				if (qword > max_range_limit) {
+					max_range = range;
+					max_range_limit = qword;
+					max_node = dword & 0x7;
+				}
+			}
+
+			num_nodes = 0;
+			device_t node_dev;
+			for (node = 0; node < FX_DEVS; node++) {
+				node_dev = get_node_pci(node, 0);
+				/* Test for node presence */
+				if ((node_dev) && (pci_read_config32(node_dev, PCI_VENDOR_ID) != 0xffffffff))
+					num_nodes++;
+			}
+
+			/* Calculate CC6 sotrage area size */
+			if (interleaved)
+				qword = (0x1000000 * num_nodes);
+			else
+				qword = 0x1000000;
+
+			/* Reserve the CC6 save segment */
+			reserved_ram_resource(dev, 8, max_range_limit >> 10, qword >> 10);
+
+			/* Set up the C-state base address */
+			msr_t c_state_addr_msr;
+			c_state_addr_msr = rdmsr(0xc0010073);
+			c_state_addr_msr.lo = 0xe0e0;		/* CstateAddr = 0xe0e0 */
+			wrmsr(0xc0010073, c_state_addr_msr);
+		}
+	}
 }
 
 static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)

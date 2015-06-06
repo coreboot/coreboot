@@ -621,7 +621,11 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 1), node, channel, 0x124, data->f1x124);
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x10c, data->f2x10c);
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x114, data->f2x114);
-			write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x118, data->f2x118);
+			if (is_fam15h())
+				/* Do not set LockDramCfg or CC6SaveEn at this time */
+				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x118, data->f2x118 & ~(0x3 << 18));
+			else
+				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x118, data->f2x118);
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x11c, data->f2x11c);
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x1b0, data->f2x1b0);
 			write_config32_dct(PCI_DEV(0, 0x18 + node, 3), node, channel, 0x44, data->f3x44);
@@ -1013,6 +1017,10 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 
 			/* ECC scrub rate control */
 			pci_write_config32(PCI_DEV(0, 0x18 + node, 3), 0x58, data->f3x58);
+
+			if (is_fam15h())
+				/* Set LockDramCfg and CC6SaveEn */
+				write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x118, data->f2x118);
 		}
 	}
 }

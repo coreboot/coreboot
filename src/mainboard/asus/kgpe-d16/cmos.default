@@ -14,6 +14,7 @@ ecc_scrub_rate = 1.28us
 interleave_chip_selects = Enable
 interleave_nodes = Disable
 interleave_memory_channels = Enable
+cpu_cc6_state = Enable
 ieee1394_controller = Enable
 power_on_after_fail = On
 boot_option = Fallback

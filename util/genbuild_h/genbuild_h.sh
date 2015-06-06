@@ -27,7 +27,7 @@ if [ -d "${top}/.git" ] && [ -f "$(command -v git)" ]; then
 	DATE=$(git log --pretty=format:%ct -1)
 else
 	GITREV=Unknown
-	TIMESOURCE="LANG= TZ=UTC date"
+	TIMESOURCE="LANG=C LC_ALL=C TZ=UTC date"
 	DATE=$(date +%s)
 fi
 

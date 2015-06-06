@@ -58,9 +58,6 @@
 #include <arch/virtual.h>
 #include <sysinfo.h>
 #include <pci.h>
-#ifdef CONFIG_LP_LAR
-#include <lar.h>
-#endif
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -353,63 +350,6 @@ struct timeval {
 
 int gettimeofday(struct timeval *tv, void *tz);
 /** @} */
-
-#ifdef CONFIG_LP_LAR
-/**
- * @defgroup lar LAR functions
- * @{
- */
-
-/** LAR file header */
-struct LAR {
-	void *start;    /**< Location of the LAR in memory */
-	int cindex;     /**< Next file to return in readlar() */
-	int count;      /**< Number of entries in the header cache */
-	int alloc;      /**< Number of slots in the header cache */
-	int eof;        /**< Last entry in the header cache */
-	void **headers; /**< Pointer to the header cache */
-};
-
-/** A structure representing the next LAR entry */
-struct larent {
-	u8 name[LAR_MAX_PATHLEN]; /**< The name of the next LAR entry */
-};
-
-/** A structure containing information about a LAR file */
-struct larstat {
-	u32 len;           /**< Length of the file in the LAR */
-	u32 reallen;       /**< Length of the uncompressed file */
-	u32 checksum;      /**< Checksum of the uncompressed file */
-	u32 compchecksum;  /**< Checksum of the compressed file in the LAR */
-	u32 offset;        /**< Offset of the file in the LAR */
-	u32 compression;   /**< Compression type of the file */
-	u64 entry;         /**< Entry point of the file for executables */
-	u64 loadaddress;   /**< Address in memory to put the uncompressed file */
-};
-
-/** A structure representing a LAR file */
-struct LFILE {
-	struct LAR *lar;           /**< Pointer to the LAR struct */
-	struct lar_header *header; /**< Pointer to the header struct */
-	u32 size;                  /**< Size of the file */
-	void *start;               /**< Start of the file in memory */
-	u32 offset;                /**< Offset of the file in the LAR */
-};
-
-struct LAR *openlar(void *addr);
-int closelar(struct LAR *lar);
-struct larent *readlar(struct LAR *lar);
-void rewindlar(struct LAR *lar);
-int larstat(struct LAR *lar, const char *path, struct larstat *buf);
-void *larfptr(struct LAR *lar, const char *filename);
-int lfverify(struct LAR *lar, const char *filename);
-struct LFILE *lfopen(struct LAR *lar, const char *filename);
-int lfread(void *ptr, size_t size, size_t nmemb, struct LFILE *stream);
-
-int lfseek(struct LFILE *stream, long offset, int whence);
-int lfclose(struct LFILE *file);
-/** @} */
-#endif
 
 /**
  * @defgroup info System information functions

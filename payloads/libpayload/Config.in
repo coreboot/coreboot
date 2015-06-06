@@ -48,13 +48,6 @@ config EXPERIMENTAL
 	  Prompt for experimental functionality. Attention: This is not likely
 	  to work without problems
 
-config OBSOLETE
-	bool "Obsolete Options"
-	default n
-	help
-	  Prompt for obsolete options. These options are for old, unsupported
-	  features and are likely to go away in the future.
-
 config DEVELOPER
 	bool "Developer Options"
 	default n
@@ -148,13 +141,6 @@ config PDCURSES
 	  It requires more system resources, in particularily heap memory.
 
 endchoice
-
-config LAR
-	bool "LAR support"
-	default n
-	depends on OBSOLETE
-	help
-	  LAR is the archive format of (obsolete) coreboot v3
 
 config CBFS
 	bool "CBFS support"

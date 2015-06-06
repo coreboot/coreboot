@@ -88,7 +88,6 @@ $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld
 	$(NM_smm) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
 	$(OBJCOPY_smm) -O binary $(obj)/cpu/x86/smm/smm.elf $@
 
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.S
 ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
 ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
 endif

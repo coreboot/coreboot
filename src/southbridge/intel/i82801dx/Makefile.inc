@@ -29,8 +29,9 @@ ramstage-y += usb.c
 ramstage-y += usb2.c
 
 ramstage-y += reset.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 romstage-y += early_smbus.c

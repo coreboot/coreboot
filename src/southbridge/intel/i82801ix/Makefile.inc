@@ -37,6 +37,7 @@ ramstage-y += ../i82801gx/reset.c
 ramstage-y += ../i82801gx/watchdog.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 romstage-y += early_init.c

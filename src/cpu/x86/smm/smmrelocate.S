@@ -21,11 +21,6 @@
 // Make sure no stage 2 code is included:
 #define __PRE_RAM__
 
-/* On AMD's platforms we can set SMBASE by writing an MSR */
-#if !CONFIG_NORTHBRIDGE_AMD_AMDK8 && !CONFIG_NORTHBRIDGE_AMD_AMDFAM10 \
-	&& !CONFIG_CPU_AMD_AGESA_FAMILY15_TN \
-	&& !CONFIG_CPU_AMD_AGESA_FAMILY15_RL
-
 // FIXME: Is this piece of code southbridge specific, or
 // can it be cleaned up so this include is not required?
 // It's needed right now because we get our DEFAULT_PMBASE from
@@ -191,4 +186,3 @@ smm_relocate:
 	/* That's it. return */
 	rsm
 smm_relocation_end:
-#endif

@@ -21,6 +21,10 @@
 DATE=""
 GITREV=""
 TIMESOURCE=""
+
+export LANG=C
+export TZ=UTC
+
 if [ -d "${top}/.git" ] && [ -f "$(command -v git)" ]; then
 	GITREV=$(LANG= git log remotes/origin/master -1 --format=format:%h)
 	TIMESOURCE=git
@@ -34,10 +38,10 @@ fi
 our_date() {
 case $(uname) in
 NetBSD|OpenBSD|DragonFly|FreeBSD)
-	TZ=UTC date -r $1 $2
+	date -r $1 $2
 	;;
 *)
-	TZ=UTC date -d @$1 $2
+	date -d @$1 $2
 esac
 }
 
@@ -53,7 +57,7 @@ printf "#define COREBOOT_VERSION_TIMESTAMP $DATE\n"
 printf "#define COREBOOT_ORIGIN_GIT_REVISION \"$GITREV\"\n"
 
 printf "#define COREBOOT_EXTRA_VERSION \"%s\"\n" "$COREBOOT_EXTRA_VERSION"
-printf "#define COREBOOT_BUILD \"$(LANG= our_date "$DATE")\"\n"
+printf "#define COREBOOT_BUILD \"$(our_date "$DATE")\"\n"
 printf "#define COREBOOT_BUILD_YEAR_BCD 0x$(our_date "$DATE" +%y)\n"
 printf "#define COREBOOT_BUILD_MONTH_BCD 0x$(our_date "$DATE" +%m)\n"
 printf "#define COREBOOT_BUILD_DAY_BCD 0x$(our_date "$DATE" +%d)\n"

@@ -33,6 +33,7 @@
 #include <arch/x86/include/arch/acpigen.h>
 #include <smbios.h>
 #include <drivers/intel/gma/int15.h>
+#include <ec/acpi/ec.h>
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
 static acpi_cstate_t cst_entries[] = {
@@ -84,7 +85,13 @@ static void mainboard_enable(device_t dev)
 	dev->ops->init = mainboard_init;
 }
 
+static void mainboard_final(void *chip_info)
+{
+	ec_set_bit(0x10, 2); /* switch off led */
+}
+
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
+	.final = mainboard_final,
 };
 

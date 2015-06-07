@@ -23,6 +23,7 @@ GITREV=""
 TIMESOURCE=""
 
 export LANG=C
+export LC_ALL=C
 export TZ=UTC
 
 if [ -d "${top}/.git" ] && [ -f "$(command -v git)" ]; then

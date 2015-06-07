@@ -28,8 +28,8 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
-#include <arch/acpi.h>
 #include <arch/ioapic.h>
+#include <arch/acpi.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include "hudson.h"
@@ -134,7 +134,7 @@ static void hudson_lpc_set_resources(struct device *dev)
 /**
  * @brief Enable resources for children devices
  *
- * @param dev the device whos children's resources are to be enabled
+ * @param dev the device whose children's resources are to be enabled
  *
  */
 static void hudson_lpc_enable_childrens_resources(device_t dev)
@@ -316,16 +316,16 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 	pci_write_config8(dev, 0x74, wiosize);
 }
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	/* Just a dummy */
-	return current;
-}
-
 static void hudson_lpc_enable_resources(device_t dev)
 {
 	pci_dev_enable_resources(dev);
 	hudson_lpc_enable_childrens_resources(dev);
+}
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
 }
 
 static struct pci_operations lops_pci = {

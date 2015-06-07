@@ -1144,11 +1144,11 @@ static void init_dev(struct device *dev)
 			       dev_path(dev->bus->dev), dev->bus->link_num);
 		}
 
-		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
+		printk(BIOS_DEBUG, "%s init ...\n", dev_path(dev));
 		dev->initialized = 1;
 		dev->ops->init(dev);
 #if CONFIG_HAVE_MONOTONIC_TIMER
-		printk(BIOS_DEBUG, "%s init %ld usecs\n", dev_path(dev),
+		printk(BIOS_DEBUG, "%s init finished in %ld usecs\n", dev_path(dev),
 			stopwatch_duration_usecs(&sw));
 #endif
 	}

@@ -17,11 +17,11 @@
  * Foundation, Inc.
  */
 
+#include <arch/cpu.h>
+#include <soc/cpu.h>
 #include <stdint.h>
 #include <timer.h>
 #include <timestamp.h>
-#include <arch/cpu.h>
-#include <soc/cpu.h>
 
 #define PISTACHIO_CLOCK_SWITCH		0xB8144200
 #define MIPS_EXTERN_PLL_BYPASS_MASK	0x00000002

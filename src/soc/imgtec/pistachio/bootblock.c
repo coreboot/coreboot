@@ -18,10 +18,10 @@
  * Foundation, Inc.
  */
 
-#include <stdint.h>
 #include <arch/cpu.h>
 #include <arch/mmu.h>
 #include <assert.h>
+#include <stdint.h>
 #include <symbols.h>
 
 static void bootblock_cpu_init(void)

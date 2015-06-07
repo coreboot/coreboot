@@ -18,11 +18,11 @@
  * Foundation, Inc.
  */
 
-#include <stdint.h>
 #include <arch/cpu.h>
-#include <delay.h>
 #include <arch/io.h>
+#include <delay.h>
 #include <soc/ddr_init.h>
+#include <stdint.h>
 #include <timer.h>
 
 #define MAX_WAIT_MICROS			100000

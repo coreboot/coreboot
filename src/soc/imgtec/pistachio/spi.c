@@ -13,13 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
-#include <stdlib.h>
-#include <timer.h>
 #include <soc/cpu.h>
 #include <soc/spi.h>
-#include <spi-generic.h>
 #include <spi_flash.h>
+#include <spi-generic.h>
+#include <stdlib.h>
+#include <string.h>
+#include <timer.h>
 
 #if !CONFIG_SPI_ATOMIC_SEQUENCING
 #error "Unsupported SPI driver API"

@@ -19,10 +19,10 @@
  */
 
 #include <arch/io.h>
+#include <assert.h>
+#include <delay.h>
 #include <soc/clocks.h>
 #include <timer.h>
-#include <delay.h>
-#include <assert.h>
 
 /* Definitions for PLL enable */
 #define PISTACHIO_CLOCK_SWITCH		0xB8144200

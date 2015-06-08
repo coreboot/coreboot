@@ -107,6 +107,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	AmdEarlyParamsPtr = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
 	OemCustomizeInitEarly (AmdEarlyParamsPtr);
 
+	AmdEarlyParamsPtr->GnbConfig.PsppPolicy = PsppDisabled;
 	status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);

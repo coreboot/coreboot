@@ -37,8 +37,6 @@
 #include "chip.h"
 #include <cpu/intel/smm/gen1/smi.h>
 
-#define CORE_THREAD_COUNT_MSR 0x35
-
 /*
  * List of supported C-states in this processor
  *
@@ -478,16 +476,24 @@ static void configure_mca(void)
 
 int cpu_get_apic_id_map(int *apic_id_map)
 {
-	msr_t msr;
-	int num_cpus, i;
+	struct cpuid_result result;
+	unsigned threads_per_package, threads_per_core, i, shift = 0;
 
-	msr = rdmsr(CORE_THREAD_COUNT_MSR);
-	num_cpus = msr.lo & 0xffff;
+	/* Logical processors (threads) per core */
+	result = cpuid_ext(0xb, 0);
+	threads_per_core = result.ebx & 0xffff;
 
-	for (i = 0; i < num_cpus && i < CONFIG_MAX_CPUS; i++)
-		apic_id_map[i] = i;
+	/* Logical processors (threads) per package */
+	result = cpuid_ext(0xb, 1);
+	threads_per_package = result.ebx & 0xffff;
 
-	return num_cpus;
+	if (threads_per_core == 1)
+		shift++;
+
+	for (i = 0; i < threads_per_package && i < CONFIG_MAX_CPUS; i++)
+		apic_id_map[i] = i << shift;
+
+	return threads_per_package;
 }
 
 /*

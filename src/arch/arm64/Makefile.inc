@@ -66,9 +66,9 @@ bootblock-y += eabi_compat.c
 bootblock-y += transition.c transition_asm.S
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
-bootblock-y += ../../lib/memset.c
-bootblock-y += ../../lib/memcpy.c
-bootblock-y += ../../lib/memmove.c
+bootblock-y += memset.S
+bootblock-y += memcpy.S
+bootblock-y += memmove.S
 
 # Build the bootblock
 
@@ -112,15 +112,15 @@ romstage-y += cpu-stubs.c
 romstage-y += stages.c
 romstage-y += div0.c
 romstage-y += eabi_compat.c
-romstage-y += ../../lib/memset.c
-romstage-y += ../../lib/memcpy.c
-romstage-y += ../../lib/memmove.c
+romstage-y += memset.S
+romstage-y += memcpy.S
+romstage-y += memmove.S
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-y += transition.c transition_asm.S
 
-rmodules_arm64-y += ../../lib/memset.c
-rmodules_arm64-y += ../../lib/memcpy.c
-rmodules_arm64-y += ../../lib/memmove.c
+rmodules_arm64-y += memset.S
+rmodules_arm64-y += memcpy.S
+rmodules_arm64-y += memmove.S
 rmodules_arm64-y += eabi_compat.c
 
 # Build the romstage
@@ -147,27 +147,27 @@ ramstage-y += cpu_ramstage.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
 ramstage-y += tables.c
-ramstage-y += ../../lib/memset.c
-ramstage-y += ../../lib/memcpy.c
-ramstage-y += ../../lib/memmove.c
+ramstage-y += memset.S
+ramstage-y += memcpy.S
+ramstage-y += memmove.S
 ramstage-y += stage_entry.S
 ramstage-y += cpu-stubs.c
 ramstage-$(CONFIG_ARM64_USE_SPINTABLE) += spintable.c spintable_asm.S
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += arm_tf.c
 ramstage-y += transition.c transition_asm.S
 
-rmodules_arm64-y += ../../lib/memset.c
-rmodules_arm64-y += ../../lib/memcpy.c
-rmodules_arm64-y += ../../lib/memmove.c
+rmodules_arm64-y += memset.S
+rmodules_arm64-y += memcpy.S
+rmodules_arm64-y += memmove.S
 rmodules_arm64-y += eabi_compat.c
 
 secmon-y += stage_entry.S
 secmon-y += cpu-stubs.c
 secmon-y += startup.c
 secmon-y += ../../lib/malloc.c
-secmon-y += ../../lib/memset.c
-secmon-y += ../../lib/memcmp.c
-secmon-y += ../../lib/memcpy.c
+secmon-y += memset.S
+secmon-y += memmove.S
+secmon-y += memcpy.S
 
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 

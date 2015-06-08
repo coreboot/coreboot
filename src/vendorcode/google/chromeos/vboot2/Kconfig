@@ -102,6 +102,20 @@ config VBOOT_BOOT_LOADER_INDEX
 	  This is the index of the bootloader component in the verified
 	  firmware block.
 
+config VBOOT_SECURE_OS_INDEX
+	hex "ARM64 Secure OS index"
+	default 0x5
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  Secure OS software component used on ARM64 machines.
+
+config VBOOT_BL31_INDEX
+	hex "ARM64 BL31 index"
+	default 0x4
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the BL31 program on ARM64 machines.
+
 config VBOOT_DYNAMIC_WORK_BUFFER
 	bool "Vboot's work buffer is dynamically allocated."
 	default n

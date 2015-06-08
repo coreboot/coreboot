@@ -76,10 +76,13 @@ update-po-config: $(obj)/kxgettext $(obj)/gconf.glade.h
 	$(Q)rm -f $(obj)/config.pot
 # --- UNUSED, ignore ----------------------------------------------------------
 
-PHONY += allnoconfig allyesconfig allmodconfig alldefconfig randconfig
+PHONY += allnoconfig allyesconfig allmodconfig alldefconfig randconfig savedefconfig
 
 allnoconfig allyesconfig allmodconfig alldefconfig randconfig: $(objk)/conf
 	$< --$@ $(Kconfig)
+
+savedefconfig: $(objk)/conf
+	$< --$@=defconfig $(Kconfig)
 
 defconfig: $(objk)/conf
 ifeq ($(KBUILD_DEFCONFIG),)
@@ -104,6 +107,7 @@ help:
 	@echo  '  localyesconfig  - Update current config converting local mods to core'
 	@echo  '  silentoldconfig - Same as oldconfig, but quietly, additionally update deps'
 	@echo  '  defconfig	  - New config with default answer to all options'
+	@echo  '  savedefconfig   - Save current config as ./defconfig (minimal config)'
 	@echo  '  allnoconfig	  - New config where all options are answered with no'
 	@echo  '  allyesconfig	  - New config where all options are accepted with yes'
 	@echo  '  allmodconfig	  - New config selecting modules when possible'

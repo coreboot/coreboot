@@ -114,6 +114,7 @@ static int valid_reloc_aarch64(Elf64_Rela *rel)
 	return (type == R_AARCH64_ADR_PREL_PG_HI21 ||
 		type == R_AARCH64_ADD_ABS_LO12_NC  ||
 		type == R_AARCH64_LDST8_ABS_LO12_NC ||
+		type == R_AARCH64_CONDBR19 ||
 		type == R_AARCH64_JUMP26 ||
 		type == R_AARCH64_LDST32_ABS_LO12_NC ||
 		type == R_AARCH64_LDST64_ABS_LO12_NC ||

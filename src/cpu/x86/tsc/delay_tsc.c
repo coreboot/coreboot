@@ -152,10 +152,8 @@ static unsigned long long calibrate_tsc(void)
 
 void init_timer(void)
 {
-	if (!clocks_per_usec) {
+	if (!clocks_per_usec)
 		clocks_per_usec = calibrate_tsc();
-		printk(BIOS_INFO, "clocks_per_usec: %lu\n", clocks_per_usec);
-	}
 }
 
 static inline unsigned long get_clocks_per_usec(void)

@@ -382,7 +382,7 @@ build_BINUTILS() {
 	# Now build binutils
 	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls \
-		$USE_GOLD CFLAGS="$HOSTCFLAGS" || touch .failed
+		--enable-lto --enable-gold --enable-plugins CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 }
@@ -398,9 +398,10 @@ build_GCC() {
 		CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
+		--enable-lto --enable-plugins --enable-gold --enable-ld=default \
 		--disable-libssp --disable-bootstrap --disable-nls \
 		--disable-libquadmath --without-headers \
-		$GCC_OPTIONS --enable-languages="c" $USE_GOLD \
+		${GCC_OPTIONS} --enable-languages="c" \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
@@ -595,11 +596,6 @@ fi # GCC
 if [ "$USECCACHE" = 1 ]; then
 	CC="ccache $CC"
 fi
-
-# coreboot does not like the GOLD linker
-# USE_GOLD="--enable-gold"
-USE_GOLD=""
-GCC_OPTIONS="--enable-lto"
 
 # Prepare target directory for building GCC
 # (dependencies must be in the PATH)

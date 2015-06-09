@@ -268,10 +268,6 @@ void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	byte &= ~(1<<6);
 	pmio_write(0x8d, byte);
 
-	byte = pmio_read(0x61);
-	byte &= ~0x04;
-	pmio_write(0x61, byte);
-
 	byte = pmio_read(0x42);
 	byte &= ~0x04;
 	pmio_write(0x42, byte);
@@ -583,6 +579,13 @@ static void sb700_devices_por_init(void)
 static void sb700_pmio_por_init(void)
 {
 	u8 byte;
+	uint8_t enable_c_states;
+
+	enable_c_states = 0;
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	if (get_option(&byte, "cpu_c_states") == CB_SUCCESS)
+		enable_c_states = !!byte;
+#endif
 
 	printk(BIOS_INFO, "sb700_pmio_por_init()\n");
 	/* K8KbRstEn, KB_RST# control for K8 system. */
@@ -643,6 +646,14 @@ static void sb700_pmio_por_init(void)
 	byte = pmio_read(0xB2);
 	byte |= 1 << 0;
 	pmio_write(0xB2, byte);
+
+	/* Set up IOAPIC and BM_STS monitoring */
+	byte = pmio_read(0x61);
+	if (enable_c_states)
+		byte |= 0x4;
+	else
+		byte &= ~0x04;
+	pmio_write(0x61, byte);
 
 	/* NOTE: Enabling automatic C1e state switch caused failures when initializing processors */
 

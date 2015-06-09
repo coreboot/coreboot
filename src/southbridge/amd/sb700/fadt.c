@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
+#include <cpu/amd/powernow.h>
 #include "sb700.h"
 
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
@@ -151,6 +153,9 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_gpe1_blk.resv = 0;
 	fadt->x_gpe1_blk.addrl = 0;
 	fadt->x_gpe1_blk.addrh = 0x0;
+
+	if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX))
+		amd_powernow_update_fadt(fadt);
 
 	header->checksum = acpi_checksum((void *)fadt, sizeof(acpi_fadt_t));
 }

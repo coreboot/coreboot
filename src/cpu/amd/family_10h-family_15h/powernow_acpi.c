@@ -17,6 +17,7 @@
 
 #include <console/console.h>
 #include <stdint.h>
+#include <option.h>
 #include <cpu/x86/msr.h>
 #include <arch/acpigen.h>
 #include <cpu/amd/powernow.h>
@@ -30,21 +31,29 @@
 #include <northbridge/amd/amdmct/mct/mct.h>
 #include <northbridge/amd/amdmct/amddefs.h>
 
+static inline uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
+
 static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_power,
 				u32 *pstate_latency, u32 *pstate_control,
 				u32 *pstate_status, int coreID,
-				u32 pcontrol_blk, u8 plen, u8 onlyBSP,
 				uint8_t single_link)
 {
 	int i;
 	struct cpuid_result cpuid1;
 
-	if ((onlyBSP) && (coreID != 0)) {
-	    plen = 0;
-	    pcontrol_blk = 0;
-	}
-
-	acpigen_write_processor(coreID, pcontrol_blk, plen);
 	acpigen_write_empty_PCT();
 	acpigen_write_name("_PSS");
 
@@ -88,9 +97,62 @@ static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_p
 		if (cpu)
 			acpigen_write_PSD_package(cpu->path.apic.apic_id, 1, SW_ANY);
 	}
+}
 
-	/* patch the whole Processor token length */
-	acpigen_pop_len();
+static void write_cstates_for_core(int coreID)
+{
+	/* Generate C state entries */
+	uint8_t cstate_count = 1;
+	acpi_cstate_t cstate;
+
+	if (is_fam15h()) {
+		cstate.ctype = 2;
+		cstate.latency = 100;
+		cstate.power = 0;
+		cstate.resource.space_id = ACPI_ADDRESS_SPACE_IO;
+		cstate.resource.bit_width = 8;
+		cstate.resource.bit_offset = 0;
+		cstate.resource.addrl = rdmsr(0xc0010073).lo + 1;
+		cstate.resource.addrh = 0;
+		cstate.resource.resv = 1;
+	} else {
+		cstate.ctype = 2;
+		cstate.latency = 75;
+		cstate.power = 0;
+		cstate.resource.space_id = ACPI_ADDRESS_SPACE_IO;
+		cstate.resource.bit_width = 8;
+		cstate.resource.bit_offset = 0;
+		cstate.resource.addrl = rdmsr(0xc0010073).lo;
+		cstate.resource.addrh = 0;
+		cstate.resource.resv = 1;
+	}
+
+	acpigen_write_CST_package(&cstate, cstate_count);
+
+	/* Find the local APIC ID for the specified core ID */
+	if (is_fam15h()) {
+		struct device* cpu;
+		int cpu_index = 0;
+		for (cpu = all_devices; cpu; cpu = cpu->next) {
+			if ((cpu->path.type != DEVICE_PATH_APIC) ||
+				(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER))
+				continue;
+			if (!cpu->enabled)
+				continue;
+			if (cpu_index == coreID)
+				break;
+			cpu_index++;
+		}
+
+		if (cpu) {
+			/* TODO
+			 * Detect dual core status and skip CSD generation if dual core is disabled
+			 */
+
+			/* Generate C state dependency entries */
+			acpigen_write_CSD_package((cpu->path.apic.apic_id >> 1) & 0x7f, 2, CSD_HW_ALL, 0);
+		}
+	}
 }
 
 /*
@@ -120,6 +182,15 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	u8 cmp_cap;
 	u8 index;
 	msr_t msr;
+
+	uint8_t nvram;
+	uint8_t enable_c_states;
+
+	enable_c_states = 0;
+#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+	if (get_option(&nvram, "cpu_c_states") == CB_SUCCESS)
+		enable_c_states = !!nvram;
+#endif
 
 	/* Get the Processor Brand String using cpuid(0x8000000x) command x=2,3,4 */
 	cpuid1 = cpuid(0x80000002);
@@ -195,6 +266,10 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		printk(BIOS_INFO, "No valid set of P-states\n");
 		return;
 	}
+
+	if (fam15h)
+		/* Set P_LVL2 P_BLK entry */
+		*(((uint8_t *)pcontrol_blk) + 0x04) = (rdmsr(0xc0010073).lo + 1) & 0xff;
 
 	uint8_t pviModeFlag;
 	uint8_t Pstate_max;
@@ -314,18 +389,56 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			    Pstate_latency[index]);
 	}
 
+	/* Enter processor block scope */
 	char pscope[] = "\\_PR";
-
 	acpigen_write_scope(pscope);
+
 	for (index = 0; index < total_core_count; index++) {
 		/* Determine if this is a single-link processor */
 		node_index = 0x18 + (index / cores_per_node);
 		dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(node_index, 0)), 0x80);
 		single_link = !!(((dtemp & 0xff00) >> 8) == 0);
 
+		/* Enter processor core scope */
+		uint8_t plen_cur = plen;
+		uint32_t pcontrol_blk_cur = pcontrol_blk;
+		if ((onlyBSP) && (index != 0)) {
+			plen_cur = 0;
+			pcontrol_blk_cur = 0;
+		}
+		acpigen_write_processor(index, pcontrol_blk_cur, plen_cur);
+
+		/* Write P-state status and dependency objects */
 		write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_power,
 				Pstate_latency, Pstate_control, Pstate_status,
-				index, pcontrol_blk, plen, onlyBSP, single_link);
+				index, single_link);
+
+		/* Write C-state status and dependency objects */
+		if (fam15h && enable_c_states)
+			write_cstates_for_core(index);
+
+		/* Exit processor core scope */
+		acpigen_pop_len();
 	}
+
+	/* Exit processor block scope */
 	acpigen_pop_len();
+}
+
+void amd_powernow_update_fadt(acpi_fadt_t * fadt)
+{
+	if (is_fam15h()) {
+		fadt->p_lvl2_lat = 101;		/* NOTE: While the BKDG states this should
+						 * be set to 100, there is no way to meet
+						 * the other FADT requirements.  I suspect
+						 * there is an error in the BKDG for ACPI
+						 * 1.x support; disable all FADT-based C
+						 * states > 2... */
+		fadt->p_lvl3_lat = 1001;
+		fadt->flags |= 0x1 << 2;	/* FLAGS.PROC_C1 = 1 */
+		fadt->flags |= 0x1 << 3;	/* FLAGS.P_LVL2_UP = 1 */
+	} else {
+		fadt->cst_cnt = 0;
+	}
+	fadt->pstate_cnt = 0;
 }

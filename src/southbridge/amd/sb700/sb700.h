@@ -32,10 +32,11 @@
 
 #define ACPI_PM_EVT_BLK		(SB700_ACPI_IO_BASE + 0x00) /* 4 bytes */
 #define ACPI_PM1_CNT_BLK	(SB700_ACPI_IO_BASE + 0x04) /* 2 bytes */
-#define ACPI_PMA_CNT_BLK	(SB700_ACPI_IO_BASE + 0x0E) /* 1 byte */
-#define ACPI_PM_TMR_BLK		(SB700_ACPI_IO_BASE + 0x18) /* 4 bytes */
-#define ACPI_GPE0_BLK		(SB700_ACPI_IO_BASE + 0x10) /* 8 bytes */
+#define ACPI_PMA_CNT_BLK	(SB700_ACPI_IO_BASE + 0x16) /* 1 byte */
+#define ACPI_PM_TMR_BLK		(SB700_ACPI_IO_BASE + 0x20) /* 4 bytes */
+#define ACPI_GPE0_BLK		(SB700_ACPI_IO_BASE + 0x18) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(SB700_ACPI_IO_BASE + 0x08) /* 6 bytes */
+#define ACPI_CPU_P_LVL2		(ACPI_CPU_CONTROL + 0x4)    /* 1 byte */
 
 extern void pm_iowrite(u8 reg, u8 value);
 extern u8 pm_ioread(u8 reg);

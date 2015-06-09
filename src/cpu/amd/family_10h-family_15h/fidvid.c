@@ -165,87 +165,87 @@ static void applyBoostFIDOffset(device_t dev, uint32_t nodeid) {
 }
 
 static void enableNbPState1( device_t dev ) {
-  uint64_t cpuRev =  mctGetLogicalCPUID(0xFF);
-  if (cpuRev & AMD_FAM10_C3) {
-    u32 nbPState = (pci_read_config32(dev, 0x1F0) & NB_PSTATE_MASK);
-    if ( nbPState){
-      u32 nbVid1 = (pci_read_config32(dev, 0x1F4) & NB_VID1_MASK) >> NB_VID1_SHIFT;
-      u32 i;
-      for (i = nbPState; i < NM_PS_REG; i++) {
-         msr_t msr =  rdmsr(PS_REG_BASE + i);
-         if (msr.hi &  PS_EN_MASK ) {
-            msr.hi |= NB_DID_M_ON;
-            msr.lo &= NB_VID_MASK_OFF;
-	    msr.lo |= ( nbVid1 << NB_VID_POS);
-	    wrmsr(PS_REG_BASE + i, msr);
-	 }
-      }
-    }
-  }
+	uint64_t cpuRev =  mctGetLogicalCPUID(0xFF);
+	if (cpuRev & AMD_FAM10_C3) {
+		u32 nbPState = (pci_read_config32(dev, 0x1F0) & NB_PSTATE_MASK);
+		if ( nbPState){
+			u32 nbVid1 = (pci_read_config32(dev, 0x1F4) & NB_VID1_MASK) >> NB_VID1_SHIFT;
+			u32 i;
+			for (i = nbPState; i < NM_PS_REG; i++) {
+				msr_t msr =  rdmsr(PS_REG_BASE + i);
+				if (msr.hi &  PS_EN_MASK ) {
+				msr.hi |= NB_DID_M_ON;
+				msr.lo &= NB_VID_MASK_OFF;
+				msr.lo |= ( nbVid1 << NB_VID_POS);
+				wrmsr(PS_REG_BASE + i, msr);
+				}
+			}
+		}
+	}
 }
 
-static u8 setPStateMaxVal( device_t dev ) {
-      u8 i,maxpstate=0;
-      for (i = 0; i < NM_PS_REG; i++) {
-         msr_t msr =  rdmsr(PS_REG_BASE + i);
-         if (msr.hi & PS_IDD_VALUE_MASK) {
-	   msr.hi |= PS_EN_MASK ;
-	     wrmsr(PS_REG_BASE + i, msr);
-	 }
-         if (msr.hi & PS_EN_MASK) {
-	   maxpstate = i;
-	 }
-      }
-      //FIXME: CPTC2 and HTC_REG should get max per node, not per core ?
-      u32 reg = pci_read_config32(dev, CPTC2);
-      reg &= PS_MAX_VAL_MASK;
-      reg |= (maxpstate << PS_MAX_VAL_POS);
-      pci_write_config32(dev, CPTC2,reg);
-      return maxpstate;
+static u8 setPStateMaxVal(device_t dev) {
+	u8 i, maxpstate=0;
+	for (i = 0; i < NM_PS_REG; i++) {
+		msr_t msr = rdmsr(PS_REG_BASE + i);
+		if (msr.hi & PS_IDD_VALUE_MASK) {
+			msr.hi |= PS_EN_MASK ;
+			wrmsr(PS_REG_BASE + i, msr);
+		}
+		if (msr.hi & PS_EN_MASK) {
+			maxpstate = i;
+		}
+	}
+	//FIXME: CPTC2 and HTC_REG should get max per node, not per core ?
+	u32 reg = pci_read_config32(dev, CPTC2);
+	reg &= PS_MAX_VAL_MASK;
+	reg |= (maxpstate << PS_MAX_VAL_POS);
+	pci_write_config32(dev, CPTC2,reg);
+	return maxpstate;
 }
 
 static void dualPlaneOnly(  device_t dev ) {
-  // BKDG 2.4.2.7
+	// BKDG 2.4.2.7
 
-  uint64_t cpuRev =  mctGetLogicalCPUID(0xFF);
-  if ((mctGetProcessorPackageType() ==  AMD_PKGTYPE_AM3_2r2)
-      && (cpuRev & AMD_DR_Cx)) { // should be rev C or rev E but there's no constant for E
-    if ( (pci_read_config32(dev, 0x1FC) & DUAL_PLANE_ONLY_MASK)
-	 && (pci_read_config32(dev, 0xA0) & PVI_MODE) ){
-      if (cpuid_edx(0x80000007) & CPB_MASK) {
-          // revision E only, but E is apparently not supported yet, therefore untested
-         msr_t minPstate = rdmsr(0xC0010065);
-         wrmsr(0xC0010065, rdmsr(0xC0010068) );
-         wrmsr(0xC0010068,minPstate);
-      } else {
-	 msr_t msr;
-         msr.lo=0; msr.hi=0;
-         wrmsr(0xC0010064, rdmsr(0xC0010068) );
-         wrmsr(0xC0010068, msr );
-      }
+	uint64_t cpuRev = mctGetLogicalCPUID(0xFF);
+	if ((mctGetProcessorPackageType() == AMD_PKGTYPE_AM3_2r2)
+		&& (cpuRev & (AMD_DR_Cx | AMD_DR_Ex))) {
+		if ((pci_read_config32(dev, 0x1FC) & DUAL_PLANE_ONLY_MASK)
+			&& (pci_read_config32(dev, 0xA0) & PVI_MODE)) {
+			if (cpuid_edx(0x80000007) & CPB_MASK) {
+				// revision E only, but E is apparently not supported yet, therefore untested
+				msr_t minPstate = rdmsr(0xC0010065);
+				wrmsr(0xC0010065, rdmsr(0xC0010068));
+				wrmsr(0xC0010068, minPstate);
+			} else {
+				msr_t msr;
+				msr.lo=0; msr.hi=0;
+				wrmsr(0xC0010064, rdmsr(0xC0010068) );
+				wrmsr(0xC0010068, msr);
+			}
 
-      //FIXME: CPTC2 and HTC_REG should get max per node, not per core ?
-      u8 maxpstate = setPStateMaxVal(dev);
+			//FIXME: CPTC2 and HTC_REG should get max per node, not per core ?
+			u8 maxpstate = setPStateMaxVal(dev);
 
-      u32 reg = pci_read_config32(dev, HTC_REG);
-      reg &= HTC_PS_LMT_MASK;
-      reg |= (maxpstate << PS_LIMIT_POS);
-      pci_write_config32(dev, HTC_REG,reg);
-
-    }
-  }
+			u32 reg = pci_read_config32(dev, HTC_REG);
+			reg &= HTC_PS_LMT_MASK;
+			reg |= (maxpstate << PS_LIMIT_POS);
+			pci_write_config32(dev, HTC_REG,reg);
+		}
+	}
 }
 
 static int vidTo100uV(u8 vid)
-{// returns voltage corresponding to vid in tenths of mV, i.e. hundreds of uV
- // BKDG #31116 rev 3.48 2.4.1.6
-  int voltage;
-  if (vid >= 0x7c) {
-    voltage = 0;
-  } else {
-    voltage = (15500 - (125*vid));
-  }
-  return voltage;
+{
+	// returns voltage corresponding to vid in tenths of mV, i.e. hundreds of uV
+	// BKDG #31116 rev 3.48 2.4.1.6
+	int voltage;
+	if (vid >= 0x7c) {
+		voltage = 0;
+	} else {
+		voltage = (15500 - (125*vid));
+	}
+	return voltage;
 }
 
 static void setVSRamp(device_t dev) {
@@ -344,7 +344,7 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	}
 
 	/* Get AltVID */
-	dtemp = pci_read_config32(dev, 0xDC);
+	dtemp = pci_read_config32(dev, 0xdc);
 	bValue = (u8) (dtemp & BIT_MASK_7);
 
 	/* Use the VID with the lowest voltage (higher VID) */
@@ -508,15 +508,15 @@ static void config_nb_syn_ptr_adj(device_t dev, u32 cpuRev) {
            values (min latency) */
 	u32 nbPstate = pci_read_config32(dev,0x1f0) & NB_PSTATE_MASK;
         u8 nbSynPtrAdj;
-	if ((cpuRev & (AMD_DR_Bx|AMD_DA_Cx) )
-	    || ( (cpuRev & AMD_RB_C3) && (nbPstate!=0)))  {
-	  nbSynPtrAdj = 5;
+	if ((cpuRev & (AMD_DR_Bx | AMD_DA_Cx | AMD_FAM15_ALL) )
+		|| ((cpuRev & AMD_RB_C3) && (nbPstate != 0))) {
+		nbSynPtrAdj = 5;
 	} else {
-          nbSynPtrAdj = 6;
+		nbSynPtrAdj = 6;
 	}
 
-	u32 dword = pci_read_config32(dev, 0xDc);
-        dword &= ~ NB_SYN_PTR_ADJ_MASK;
+	u32 dword = pci_read_config32(dev, 0xdc);
+        dword &= ~NB_SYN_PTR_ADJ_MASK;
 	dword |= nbSynPtrAdj << NB_SYN_PTR_ADJ_POS;
         /* NbsynPtrAdj set to 5 or 6 per BKDG (needs reset) */
 	pci_write_config32(dev, 0xdc, dword);
@@ -548,7 +548,7 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg
 			}
 		} else { // rev C or later
 			// same doubt as cache scrubbing: ok to check current state ?
-			dword = pci_read_config32(dev, 0xDC);
+			dword = pci_read_config32(dev, 0xdc);
 			u32 cacheFlushOnHalt = dword & (7 << 16);
 			if (!cacheFlushOnHalt) {
 				c1 = 0x80;
@@ -619,11 +619,11 @@ static void prep_fid_change(void)
 		printk(BIOS_DEBUG, "  F3x80: %08x\n", dword);
 		dword = pci_read_config32(dev, 0x84);
 		printk(BIOS_DEBUG, "  F3x84: %08x\n", dword);
-		dword = pci_read_config32(dev, 0xD4);
+		dword = pci_read_config32(dev, 0xd4);
 		printk(BIOS_DEBUG, "  F3xD4: %08x\n", dword);
-		dword = pci_read_config32(dev, 0xD8);
+		dword = pci_read_config32(dev, 0xd8);
 		printk(BIOS_DEBUG, "  F3xD8: %08x\n", dword);
-		dword = pci_read_config32(dev, 0xDC);
+		dword = pci_read_config32(dev, 0xdc);
 		printk(BIOS_DEBUG, "  F3xDC: %08x\n", dword);
 	}
 }
@@ -752,7 +752,7 @@ static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid, u32 dev, u8 pviMode)
          * synchronization between cores and we don't think
          * PstatMaxVal is going to be 0 on cold reset anyway ?
 	 */
-        if ( ! (pci_read_config32(dev, 0xDC) & (~ PS_MAX_VAL_MASK)) ) {
+        if (!(pci_read_config32(dev, 0xdc) & (~PS_MAX_VAL_MASK))) {
   	   printk(BIOS_ERR,"F3xDC[PstateMaxVal] is zero. Northbridge voltage setting will fail. fixPsNbVidBeforeWR in fidvid.c needs fixing. See AMD # 31116 rev 3.48 BKDG 2.4.2.9.1 \n");
 	};
 

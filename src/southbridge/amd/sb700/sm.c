@@ -123,7 +123,10 @@ static void sm_init(device_t dev)
 	pci_write_config8(dev, 0x41, byte);
 
 	byte = pm_ioread(0x61);
-	byte |= 1 << 1;		/* Set to enable NB/SB handshake during IOAPIC interrupt for AMD K8/K7 */
+	if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX))
+		byte &= ~(1 << 1);	/* Clear for non-K8 CPUs */
+	else
+		byte |= 1 << 1;		/* Set to enable NB/SB handshake during IOAPIC interrupt for AMD K8/K7 */
 	pm_iowrite(0x61, byte);
 
 	/* disable SMI */

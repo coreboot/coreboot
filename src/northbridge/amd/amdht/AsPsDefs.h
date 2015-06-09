@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -250,7 +251,7 @@
 #define DUAL_PLANE_NB_VID_SHIFT 17/* for CPU rev <= C */
 
 
-#define NM_PS_REG 5			/* number of P-state MSR registers */
+#define NM_PS_REG (is_fam15h()?8:5)	/* number of P-state MSR registers */
 
 /* sFidVidInit.outFlags defines */
 #define PWR_CK_OK 0			/* System board check OK */

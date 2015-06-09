@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2009 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,11 +18,11 @@
 #define ACPIGEN_LENSTACK_SIZE 10
 
 /*
- * If you need to change this, change acpigen_write_f and
+ * If you need to change this, change acpigen_write_len_f and
  * acpigen_pop_len
  */
 
-#define ACPIGEN_MAXLEN 0xfff
+#define ACPIGEN_MAXLEN 0xfffff
 
 #include <string.h>
 #include <arch/acpigen.h>
@@ -39,6 +40,7 @@ void acpigen_write_len_f(void)
 	len_stack[ltop++] = gencurrent;
 	acpigen_emit_byte(0);
 	acpigen_emit_byte(0);
+	acpigen_emit_byte(0);
 }
 
 void acpigen_pop_len(void)
@@ -48,9 +50,10 @@ void acpigen_pop_len(void)
 	char *p = len_stack[--ltop];
 	len = gencurrent - p;
 	ASSERT(len <= ACPIGEN_MAXLEN)
-	/* generate store length for 0xfff max */
-	p[0] = (0x40 | (len & 0xf));
+	/* generate store length for 0xfffff max */
+	p[0] = (0x80 | (len & 0xf));
 	p[1] = (len >> 4 & 0xff);
+	p[2] = (len >> 12 & 0xff);
 
 }
 
@@ -476,6 +479,21 @@ void acpigen_write_CST_package(acpi_cstate_t *cstate, int nentries)
 	for (i = 0; i < nentries; i++)
 		acpigen_write_CST_package_entry(cstate + i);
 
+	acpigen_pop_len();
+}
+
+void acpigen_write_CSD_package(u32 domain, u32 numprocs, CSD_coord coordtype, u32 index)
+{
+	acpigen_write_name("_CSD");
+	acpigen_write_package(1);
+	acpigen_write_package(6);
+	acpigen_write_byte(6);	// 6 values
+	acpigen_write_byte(0);	// revision 0
+	acpigen_write_dword(domain);
+	acpigen_write_dword(coordtype);
+	acpigen_write_dword(numprocs);
+	acpigen_write_dword(index);
+	acpigen_pop_len();
 	acpigen_pop_len();
 }
 

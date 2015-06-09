@@ -1203,6 +1203,7 @@ static void set_up_cc6_storage_fam15(struct MCTStatStruc *pMCTstat,
 	int8_t max_range;
 	uint8_t max_node;
 	uint64_t max_range_limit;
+	uint8_t byte;
 	uint32_t dword;
 	uint32_t dword2;
 	uint64_t qword;
@@ -1222,7 +1223,8 @@ static void set_up_cc6_storage_fam15(struct MCTStatStruc *pMCTstat,
 
 		dword = Get_NB32(pDCTstat->dev_map, 0x44 + (range * 0x8));
 		dword2 = Get_NB32(pDCTstat->dev_map, 0x144 + (range * 0x8));
-		qword = ((((uint64_t)dword) >> 16) & 0xffff) << 24;
+		qword = 0xffffff;
+		qword |= ((((uint64_t)dword) >> 16) & 0xffff) << 24;
 		qword |= (((uint64_t)dword2) & 0xff) << 40;
 
 		if (qword > max_range_limit) {
@@ -1232,26 +1234,35 @@ static void set_up_cc6_storage_fam15(struct MCTStatStruc *pMCTstat,
 		}
 	}
 
-	if (pDCTstat->Node_ID == max_node) {
-		if (max_range >= 0) {
-			if (interleaved)
-				/* Move upper limit down by 16M * the number of nodes */
-				max_range_limit -= (0x1000000 * num_nodes);
-			else
-				/* Move upper limit down by 16M */
-				max_range_limit -= 0x1000000;
+	if (max_range >= 0) {
+		if (interleaved)
+			/* Move upper limit down by 16M * the number of nodes */
+			max_range_limit -= (0x1000000 * num_nodes);
+		else
+			/* Move upper limit down by 16M */
+			max_range_limit -= 0x1000000;
 
-			/* Store modified range */
-			dword = Get_NB32(pDCTstat->dev_map, 0x44 + (range * 0x8));
-			dword &= ~(0xffff << 16);		/* DramLimit[39:24] = max_range_limit[39:24] */
-			dword |= (max_range_limit >> 24) & 0xffff;
-			Set_NB32(pDCTstat->dev_map, 0x44 + (range * 0x8), dword);
+		/* Disable the range */
+		dword = Get_NB32(pDCTstat->dev_map, 0x40 + (max_range * 0x8));
+		byte = dword & 0x3;
+		dword &= ~(0x3);
+		Set_NB32(pDCTstat->dev_map, 0x40 + (max_range * 0x8), dword);
 
-			dword = Get_NB32(pDCTstat->dev_map, 0x144 + (range * 0x8));
-			dword &= ~(0xffff << 16);		/* DramLimit[47:40] = max_range_limit[47:40] */
-			dword |= (max_range_limit >> 40) & 0xff;
-			Set_NB32(pDCTstat->dev_map, 0x144 + (range * 0x8), dword);
-		}
+		/* Store modified range */
+		dword = Get_NB32(pDCTstat->dev_map, 0x44 + (max_range * 0x8));
+		dword &= ~(0xffff << 16);		/* DramLimit[39:24] = max_range_limit[39:24] */
+		dword |= ((max_range_limit >> 24) & 0xffff) << 16;
+		Set_NB32(pDCTstat->dev_map, 0x44 + (max_range * 0x8), dword);
+
+		dword = Get_NB32(pDCTstat->dev_map, 0x144 + (max_range * 0x8));
+		dword &= ~0xff;			/* DramLimit[47:40] = max_range_limit[47:40] */
+		dword |= (max_range_limit >> 40) & 0xff;
+		Set_NB32(pDCTstat->dev_map, 0x144 + (max_range * 0x8), dword);
+
+		/* Reenable the range */
+		dword = Get_NB32(pDCTstat->dev_map, 0x40 + (max_range * 0x8));
+		dword |= byte;
+		Set_NB32(pDCTstat->dev_map, 0x40 + (max_range * 0x8), dword);
 	}
 
 	/* Determine save state destination node */
@@ -1538,8 +1549,8 @@ restartinit:
 					pDCTstat = pDCTstatA + Node;
 
 					if (pDCTstat->NodePresent) {
-						lock_dram_config(pMCTstat, pDCTstat);
 						set_cc6_save_enable(pMCTstat, pDCTstat, 1);
+						lock_dram_config(pMCTstat, pDCTstat);
 					}
 				}
 			}
@@ -5118,7 +5129,7 @@ static void mct_HTMemMapExt(struct MCTStatStruc *pMCTstat,
 		/* get base/limit from Node0 */
 		reg = 0x40 + (Node << 3);		/* Node0/Dram Base 0 */
 		val = Get_NB32(dev, reg);
-		Drambase = val >> ( 16 + 3);
+		Drambase = val >> (16 + 3);
 
 		reg = 0x44 + (Node << 3);		/* Node0/Dram Base 0 */
 		val = Get_NB32(dev, reg);

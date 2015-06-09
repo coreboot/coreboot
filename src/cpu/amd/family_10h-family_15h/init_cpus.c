@@ -26,6 +26,14 @@
 #include <northbridge/amd/amdfam10/raminit_amdmct.c>
 #include <reset.h>
 
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700)
+#include <southbridge/amd/sb700/sb700.h>
+#endif
+
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB800)
+#include <southbridge/amd/sb800/sb800.h>
+#endif
+
 #if IS_ENABLED(CONFIG_SET_FIDVID)
 static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);
@@ -870,6 +878,7 @@ void cpuSetAMDMSR(uint8_t node_id)
 	u8 i;
 	u32 platform;
 	uint64_t revision;
+	uint8_t enable_c_states;
 
 	printk(BIOS_DEBUG, "cpuSetAMDMSR ");
 
@@ -932,6 +941,44 @@ void cpuSetAMDMSR(uint8_t node_id)
 		wrmsr(FP_CFG, msr);
 	}
 
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700) || IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB800)
+	uint8_t nvram;
+
+	if (revision & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
+		/* Set up message triggered C1E */
+		msr = rdmsr(0xc0010055);
+		msr.lo &= ~0xffff;		/* IOMsgAddr = ACPI_PM_EVT_BLK */
+		msr.lo |= ACPI_PM_EVT_BLK & 0xffff;
+		msr.lo |= (0x1 << 29);		/* BmStsClrOnHltEn = 1 */
+		if (revision & AMD_DR_GT_D0) {
+			msr.lo &= ~(0x1 << 28);	/* C1eOnCmpHalt = 0 */
+			msr.lo &= ~(0x1 << 27);	/* SmiOnCmpHalt = 0 */
+		}
+		wrmsr(0xc0010055, msr);
+
+		msr = rdmsr(0xc0010015);
+		msr.lo |= (0x1 << 12);		/* HltXSpCycEn = 1 */
+		wrmsr(0xc0010015, msr);
+	}
+
+	if (revision & (AMD_DR_Ex | AMD_FAM15_ALL)) {
+		enable_c_states = 0;
+		if (IS_ENABLED(CONFIG_HAVE_ACPI_TABLES))
+			if (get_option(&nvram, "cpu_c_states") == CB_SUCCESS)
+				enable_c_states = !!nvram;
+
+		if (enable_c_states) {
+			/* Set up the C-state base address */
+			msr_t c_state_addr_msr;
+			c_state_addr_msr = rdmsr(0xc0010073);
+			c_state_addr_msr.lo = ACPI_CPU_P_LVL2;	/* CstateAddr = ACPI_CPU_P_LVL2 */
+			wrmsr(0xc0010073, c_state_addr_msr);
+		}
+	}
+#else
+	enable_c_states = 0;
+#endif
+
 	printk(BIOS_DEBUG, " done\n");
 }
 
@@ -946,6 +993,7 @@ static void cpuSetAMDPCI(u8 node)
 	u32 platform;
 	u32 val;
 	u8 offset;
+	uint32_t dword;
 	uint64_t revision;
 
 	printk(BIOS_DEBUG, "cpuSetAMDPCI %02d", node);
@@ -1003,6 +1051,39 @@ static void cpuSetAMDPCI(u8 node)
 	/* FIXME: if the dct phy doesn't init correct it needs to reset.
 	   if (revision & (AMD_DR_B2 | AMD_DR_B3))
 	   dctPhyDiag(); */
+
+	if (revision & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
+		/* Set up message triggered C1E */
+		dword = pci_read_config32(NODE_PCI(node, 3), 0xd4);
+		dword &= ~(0x1 << 14);			/* CacheFlushImmOnAllHalt = !is_fam15h() */
+		dword |= (is_fam15h()?0:1) << 14;
+		pci_write_config32(NODE_PCI(node, 3), 0xd4, dword);
+
+		dword = pci_read_config32(NODE_PCI(node, 3), 0xdc);
+		dword |= 0x1 << 26;			/* IgnCpuPrbEn = 1 */
+		dword &= ~(0x7f << 19);			/* CacheFlushOnHaltTmr = 0x28 */
+		dword |= 0x28 << 19;
+		dword |= 0x7 << 16;			/* CacheFlushOnHaltCtl = 0x7 */
+		pci_write_config32(NODE_PCI(node, 3), 0xdc, dword);
+
+		dword = pci_read_config32(NODE_PCI(node, 3), 0xa0);
+		dword |= 0x1 << 10;			/* IdleExitEn = 1 */
+		pci_write_config32(NODE_PCI(node, 3), 0xa0, dword);
+
+		if (revision & AMD_DR_GT_D0) {
+			dword = pci_read_config32(NODE_PCI(node, 3), 0x188);
+			dword |= 0x1 << 4;			/* EnStpGntOnFlushMaskWakeup = 1 */
+			pci_write_config32(NODE_PCI(node, 3), 0x188, dword);
+		} else {
+			dword = pci_read_config32(NODE_PCI(node, 4), 0x128);
+			dword &= ~(0x1 << 31);			/* CstateMsgDis = 0 */
+			pci_write_config32(NODE_PCI(node, 4), 0x128, dword);
+		}
+
+		dword = pci_read_config32(NODE_PCI(node, 3), 0xd4);
+		dword |= 0x1 << 13;			/* MTC1eEn = 1 */
+		pci_write_config32(NODE_PCI(node, 3), 0xd4, dword);
+	}
 
 	printk(BIOS_DEBUG, " done\n");
 }

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +21,19 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
+#include <option.h>
 #include "sb700.h"
 
-static int sata_drive_detect(int portnum, u16 iobar)
+static int sata_drive_detect(int portnum, uint16_t iobar)
 {
 	u8 byte, byte2;
 	int i = 0;
-	outb(0xA0 + 0x10 * (portnum % 2), iobar + 0x6);
+	outb(0xa0 + 0x10 * (portnum % 2), iobar + 0x6);
 	while (byte = inb(iobar + 0x6), byte2 = inb(iobar + 0x7),
-		(byte != (0xA0 + 0x10 * (portnum % 2))) ||
+		(byte != (0xa0 + 0x10 * (portnum % 2))) ||
 		((byte2 & 0x88) != 0)) {
 		printk(BIOS_SPEW, "0x6=%x, 0x7=%x\n", byte, byte2);
-		if (byte != (0xA0 + 0x10 * (portnum % 2))) {
+		if (byte != (0xa0 + 0x10 * (portnum % 2))) {
 			/* This will happen at the first iteration of this loop
 			 * if the first SATA port is unpopulated and the
 			 * second SATA port is populated.
@@ -61,15 +63,15 @@ void __attribute__((weak)) sb7xx_51xx_setup_sata_phys(struct device *dev)
 	pci_write_config32(dev, 0x90, 0x01B48016);
 	pci_write_config32(dev, 0x94, 0x01B48016);
 	pci_write_config32(dev, 0x98, 0x01B48016);
-	pci_write_config32(dev, 0x9C, 0x01B48016);
+	pci_write_config32(dev, 0x9c, 0x01B48016);
 
 	/* RPR7.6.3 SATA GEN II PHY port setting for port [0~5]. */
-	pci_write_config16(dev, 0xA0, 0xA09A);
-	pci_write_config16(dev, 0xA2, 0xA09F);
-	pci_write_config16(dev, 0xA4, 0xA07A);
-	pci_write_config16(dev, 0xA6, 0xA07A);
-	pci_write_config16(dev, 0xA8, 0xA07A);
-	pci_write_config16(dev, 0xAA, 0xA07A);
+	pci_write_config16(dev, 0xa0, 0xA09A);
+	pci_write_config16(dev, 0xa2, 0xA09F);
+	pci_write_config16(dev, 0xa4, 0xA07A);
+	pci_write_config16(dev, 0xa6, 0xA07A);
+	pci_write_config16(dev, 0xa8, 0xA07A);
+	pci_write_config16(dev, 0xaa, 0xA07A);
 }
 
 static void sata_init(struct device *dev)
@@ -79,8 +81,18 @@ static void sata_init(struct device *dev)
 	u32 dword;
 	u8 rev_id;
 	void *sata_bar5;
-	u16 sata_bar0, sata_bar1, sata_bar2, sata_bar3, sata_bar4;
+	uint16_t sata_bar0, sata_bar1, sata_bar2, sata_bar3, sata_bar4;
+	uint16_t ide_bar0, ide_bar1, ide_bar2, ide_bar3;
+	uint16_t current_bar;
 	int i, j;
+	uint8_t nvram;
+	uint8_t sata_ahci_mode;
+	uint8_t port_count;
+	uint8_t max_port_count;
+
+	sata_ahci_mode = 0;
+	if (get_option(&nvram, "sata_ahci_mode") == CB_SUCCESS)
+		sata_ahci_mode = !!nvram;
 
 	device_t sm_dev;
 	/* SATA SMBus Disable */
@@ -94,21 +106,39 @@ static void sata_init(struct device *dev)
 	byte |= (1 << 5);
 	pci_write_config8(sm_dev, 0xad, byte);
 
+	/* get rev_id */
+	rev_id = pci_read_config8(sm_dev, 0x08) - 0x28;
+
+	if (sata_ahci_mode) {
+		/* Enable link latency enhancement on A14 and above */
+		if (rev_id >= 0x14) {
+			byte = pci_read_config8(sm_dev, 0xad);
+			byte &= ~(1 << 5);
+			pci_write_config8(sm_dev, 0xad, byte);
+		}
+	}
+
+	/* Disable combined mode */
+	byte = pci_read_config8(sm_dev, 0xad);
+	byte &= ~(1 << 3);
+	pci_write_config8(sm_dev, 0xad, byte);
+
+	device_t ide_dev;
+	/* IDE Device */
+	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
+
 	/* RPR 7.2 SATA Initialization */
 	/* Set the interrupt Mapping to INTG# */
 	byte = pci_read_config8(sm_dev, 0xaf);
 	byte = 0x6 << 2;
 	pci_write_config8(sm_dev, 0xaf, byte);
 
-	/* get rev_id */
-	rev_id = pci_read_config8(sm_dev, 0x08) - 0x28;
-
 	/* get base address */
 	sata_bar5 = (void *)(pci_read_config32(dev, 0x24) & ~0x3FF);
 	sata_bar0 = pci_read_config16(dev, 0x10) & ~0x7;
 	sata_bar1 = pci_read_config16(dev, 0x14) & ~0x3;
 	sata_bar2 = pci_read_config16(dev, 0x18) & ~0x7;
-	sata_bar3 = pci_read_config16(dev, 0x1C) & ~0x3;
+	sata_bar3 = pci_read_config16(dev, 0x1c) & ~0x3;
 	sata_bar4 = pci_read_config16(dev, 0x20) & ~0xf;
 
 	printk(BIOS_SPEW, "sata_bar0=%x\n", sata_bar0);	/* 3030 */
@@ -118,11 +148,16 @@ static void sata_init(struct device *dev)
 	printk(BIOS_SPEW, "sata_bar4=%x\n", sata_bar4);	/* 3000 */
 	printk(BIOS_SPEW, "sata_bar5=%p\n", sata_bar5);	/* e0309000 */
 
-	/* disable combined mode */
-	byte = pci_read_config8(sm_dev, 0xAD);
-	byte &= ~(1 << 3);
-	pci_write_config8(sm_dev, 0xAD, byte);
-	/* Program the 2C to 0x43801002 */
+	ide_bar0 = pci_read_config16(ide_dev, 0x10) & ~0x7;
+	ide_bar1 = pci_read_config16(ide_dev, 0x14) & ~0x3;
+	ide_bar2 = pci_read_config16(ide_dev, 0x18) & ~0x7;
+	ide_bar3 = pci_read_config16(ide_dev, 0x1c) & ~0x3;
+	printk(BIOS_SPEW, "ide_bar0=%x\n", ide_bar0);
+	printk(BIOS_SPEW, "ide_bar1=%x\n", ide_bar1);
+	printk(BIOS_SPEW, "ide_bar2=%x\n", ide_bar2);
+	printk(BIOS_SPEW, "ide_bar3=%x\n", ide_bar3);
+
+	/* Program the Subsystem ID/VID to 0x43801002 */
 	dword = 0x43801002;
 	pci_write_config32(dev, 0x2c, dword);
 
@@ -136,15 +171,48 @@ static void sata_init(struct device *dev)
 	byte |= (1 << 2);
 	pci_write_config8(dev, 0x40, byte);
 
-	/* Set SATA Operation Mode, Set to IDE mode */
+	/* Unlock subclass and certain BAR R/O registers */
 	byte = pci_read_config8(dev, 0x40);
 	byte |= (1 << 0);
-	byte |= (1 << 4);
 	pci_write_config8(dev, 0x40, byte);
 
-	dword = 0x01018f00;
-	pci_write_config32(dev, 0x8, dword);
+	/* Disable AHCI enhancement (AMD SP5100 RPR page 54) */
+	dword = pci_read_config32(dev, 0x40);
+	dword |= (1 << 23);
+	pci_write_config32(dev, 0x40, dword);
 
+	if (sata_ahci_mode) {
+		/* Force number of ports to 6
+		 * NOTE: This is not documented in the register
+		 * reference guide, but CIMX needs to do this
+		 * to activate all 6 ports when IDE is disabled.
+		 */
+		dword = read32(sata_bar5 + 0x00);
+		dword &= ~0x7;
+		dword |= 0x5;
+		write32(sata_bar5 + 0x00, dword);
+	} else {
+		/* Set SATA Operation Mode, Set to IDE mode */
+		byte = pci_read_config8(dev, 0x40);
+		byte |= (1 << 4);
+		pci_write_config8(dev, 0x40, byte);
+
+		dword = 0x01018f00;
+		pci_write_config32(dev, 0x8, dword);
+	}
+
+	/* Get maximum number of ports */
+	max_port_count = read32(sata_bar5 + 0x00) & 0x1f;
+	max_port_count++;
+	printk(BIOS_SPEW, "Maximum SATA port count supported by silicon: %d\n", max_port_count);
+
+	/* Set number of ports */
+	dword = CONFIG_SOUTHBRIDGE_AMD_SB700_SATA_PORT_COUNT_BITFIELD;
+	for (i = max_port_count; i < 32; i++)
+		dword &= ~(0x1 << i);
+	write32(sata_bar5 + 0x0c, dword);
+
+	/* Write protect Sub-Class Code */
 	byte = pci_read_config8(dev, 0x40);
 	byte &= ~(1 << 0);
 	pci_write_config8(dev, 0x40, byte);
@@ -177,6 +245,7 @@ static void sata_init(struct device *dev)
 	byte = 0x10;
 	pci_write_config8(dev, 0x46, byte);
 	sb7xx_51xx_setup_sata_phys(dev);
+
 	/* Enable the I/O, MM, BusMaster access for SATA */
 	byte = pci_read_config8(dev, 0x4);
 	byte |= 7 << 0;
@@ -187,62 +256,75 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, 0xC, 0x00004000);
 #endif
 
-	/* RPR7.7 SATA drive detection. */
-	/* Use BAR5+0x128,BAR0 for Primary Slave */
-	/* Use BAR5+0x1A8,BAR0 for Primary Slave */
-	/* Use BAR5+0x228,BAR2 for Secondary Master */
-	/* Use BAR5+0x2A8,BAR2 for Secondary Slave */
-	/* Use BAR5+0x328,PATA_BAR0/2 for Primary/Secondary master emulation */
-	/* Use BAR5+0x3A8,PATA_BAR0/2 for Primary/Secondary Slave emulation */
+	/* Determine port count */
+	port_count = 0;
+	for (i = 0; i < 32; i++) {
+		if (CONFIG_SOUTHBRIDGE_AMD_SB700_SATA_PORT_COUNT_BITFIELD & (0x1 << i))
+			port_count = i;
+	}
+	port_count++;
+	if (port_count > max_port_count)
+		port_count = max_port_count;
 
-	/* TODO: port 4,5, which are PATA emulations. What are PATA_BARs? */
-
-	for (i = 0; i < 4; i++) {
-		byte = read8(sata_bar5 + 0x128 + 0x80 * i);
-		printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
-		byte &= 0xF;
-		if( byte == 0x1 ) {
-			/* If the drive status is 0x1 then we see it but we aren't talking to it. */
-			/* Try to do something about it. */
-			printk(BIOS_SPEW, "SATA device detected but not talking. Trying lower speed.\n");
-
-			/* Read in Port-N Serial ATA Control Register */
-			byte = read8(sata_bar5 + 0x12C + 0x80 * i);
-
-			/* Set Reset Bit and 1.5g bit */
-			byte |= 0x11;
-			write8((sata_bar5 + 0x12C + 0x80 * i), byte);
-
-			/* Wait 1ms */
-			mdelay(1);
-
-			/* Clear Reset Bit */
-			byte &= ~0x01;
-			write8((sata_bar5 + 0x12C + 0x80 * i), byte);
-
-			/* Wait 1ms */
-			mdelay(1);
-
-			/* Reread status */
+	if (!sata_ahci_mode) {
+		/* RPR7.7 SATA drive detection. */
+		/* Use BAR5+0x128,BAR0 for Primary Slave */
+		/* Use BAR5+0x1A8,BAR0 for Primary Slave */
+		/* Use BAR5+0x228,BAR2 for Secondary Master */
+		/* Use BAR5+0x2A8,BAR2 for Secondary Slave */
+		/* Use BAR5+0x328,PATA_BAR0/2 for Primary/Secondary Master emulation */
+		/* Use BAR5+0x3A8,PATA_BAR0/2 for Primary/Secondary Slave emulation */
+		for (i = 0; i < port_count; i++) {
 			byte = read8(sata_bar5 + 0x128 + 0x80 * i);
 			printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
 			byte &= 0xF;
-		}
+			if (byte == 0x1) {
+				/* If the drive status is 0x1 then we see it but we aren't talking to it. */
+				/* Try to do something about it. */
+				printk(BIOS_SPEW, "SATA device detected but not talking. Trying lower speed.\n");
 
-		if (byte == 0x3) {
-			for (j = 0; j < 10; j++) {
-				if (!sata_drive_detect(i, ((i / 2) == 0) ? sata_bar0 : sata_bar2))
-					break;
+				/* Read in Port-N Serial ATA Control Register */
+				byte = read8(sata_bar5 + 0x12C + 0x80 * i);
+
+				/* Set Reset Bit and 1.5g bit */
+				byte |= 0x11;
+				write8((sata_bar5 + 0x12C + 0x80 * i), byte);
+
+				/* Wait 1ms */
+				mdelay(1);
+
+				/* Clear Reset Bit */
+				byte &= ~0x01;
+				write8((sata_bar5 + 0x12C + 0x80 * i), byte);
+
+				/* Wait 1ms */
+				mdelay(1);
+
+				/* Reread status */
+				byte = read8(sata_bar5 + 0x128 + 0x80 * i);
+				printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
+				byte &= 0xF;
 			}
-			printk(BIOS_DEBUG, "%s %s device is %sready after %i tries\n",
-					(i / 2) ? "Secondary" : "Primary",
-					(i % 2 ) ? "Slave" : "Master",
-					(j == 10) ? "not " : "",
-					(j == 10) ? j : j + 1);
-		} else {
-			printk(BIOS_DEBUG, "No %s %s SATA drive on Slot%i\n",
-					(i / 2) ? "Secondary" : "Primary",
-					(i % 2 ) ? "Slave" : "Master", i);
+
+			if (byte == 0x3) {
+				for (j = 0; j < 10; j++) {
+					if (i < 4)
+						current_bar = ((i / 2) == 0) ? sata_bar0 : sata_bar2;
+					else
+						current_bar = ide_bar0;
+					if (!sata_drive_detect(i, current_bar))
+						break;
+				}
+				printk(BIOS_DEBUG, "%s %s device is %sready after %i tries\n",
+						(i / 2) ? "Secondary" : "Primary",
+						(i % 2 ) ? "Slave" : "Master",
+						(j == 10) ? "not " : "",
+						(j == 10) ? j : j + 1);
+			} else {
+				printk(BIOS_DEBUG, "No %s %s SATA drive on Slot%i\n",
+						(i / 2) ? "Secondary" : "Primary",
+						(i % 2 ) ? "Slave" : "Master", i);
+			}
 		}
 	}
 
@@ -252,13 +334,15 @@ static void sata_init(struct device *dev)
 	byte |= 1 << 1;
 	write8((sata_bar5 + 0x4), byte);
 
-	/* Clear error status */
-	write32((sata_bar5 + 0x130), 0xFFFFFFFF);
-	write32((sata_bar5 + 0x1b0), 0xFFFFFFFF);
-	write32((sata_bar5 + 0x230), 0xFFFFFFFF);
-	write32((sata_bar5 + 0x2b0), 0xFFFFFFFF);
-	write32((sata_bar5 + 0x330), 0xFFFFFFFF);
-	write32((sata_bar5 + 0x3b0), 0xFFFFFFFF);
+	if (!sata_ahci_mode) {
+		/* Clear error status */
+		write32((sata_bar5 + 0x130), 0xFFFFFFFF);
+		write32((sata_bar5 + 0x1b0), 0xFFFFFFFF);
+		write32((sata_bar5 + 0x230), 0xFFFFFFFF);
+		write32((sata_bar5 + 0x2b0), 0xFFFFFFFF);
+		write32((sata_bar5 + 0x330), 0xFFFFFFFF);
+		write32((sata_bar5 + 0x3b0), 0xFFFFFFFF);
+	}
 
 	/* Clear SATA status,Firstly we get the AcpiGpe0BlkAddr */
 	/* ????? why CIM does not set the AcpiGpe0BlkAddr , but use it??? */
@@ -288,4 +372,16 @@ static const struct pci_driver sata0_driver __pci_driver = {
 	.ops = &sata_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB700_SATA,
+};
+
+static const struct pci_driver sata1_driver __pci_driver = {
+	.ops = &sata_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB700_SATA_AHCI,
+};
+
+static const struct pci_driver sata2_driver __pci_driver = {
+	.ops = &sata_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB700_SATA_AHCI_AMD,
 };

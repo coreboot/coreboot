@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <option.h>
 #include "sb700.h"
 
 static void ide_init(struct device *dev)
@@ -26,6 +28,12 @@ static void ide_init(struct device *dev)
 	/* Enable ide devices so the linux ide driver will work */
 	u32 dword;
 	u8 byte;
+	uint8_t nvram;
+	uint8_t sata_ahci_mode;
+
+	sata_ahci_mode = 0;
+	if (get_option(&nvram, "sata_ahci_mode") == CB_SUCCESS)
+		sata_ahci_mode = !!nvram;
 
 	conf = dev->chip_info;
 
@@ -35,25 +43,25 @@ static void ide_init(struct device *dev)
 	dword &= ~(1 << 16);
 	pci_write_config32(dev, 0x70, dword);
 
-	/* Enable UDMA on all devices, it will become UDMA0 (default PIO is PIO0) */
-	byte = pci_read_config8(dev, 0x54);
-	byte |= 0xf;
-	pci_write_config8(dev, 0x54, byte);
+	if (!sata_ahci_mode) {
+		/* Enable UDMA on all devices, it will become UDMA0 (default PIO is PIO0) */
+		byte = pci_read_config8(dev, 0x54);
+		byte |= 0xf;
+		pci_write_config8(dev, 0x54, byte);
 
-	/* Enable I/O Access&& Bus Master */
-	dword = pci_read_config16(dev, 0x4);
-	dword |= 1 << 2;
-	pci_write_config16(dev, 0x4, dword);
+		/* Enable I/O Access&& Bus Master */
+		dword = pci_read_config16(dev, 0x4);
+		dword |= 1 << 2;
+		pci_write_config16(dev, 0x4, dword);
 
-	/* set ide as primary, if you want to boot from IDE, you'd better set it
-	 * in $vendor/$mainboard/devicetree.cb */
-
-
-	if (conf->boot_switch_sata_ide == 1) {
-		struct device *sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-		byte = pci_read_config8(sm_dev, 0xAD);
-		byte |= 1 << 4;
-		pci_write_config8(sm_dev, 0xAD, byte);
+		/* set ide as primary, if you want to boot from IDE, you'd better set it
+		 * in $vendor/$mainboard/devicetree.cb */
+		if (conf->boot_switch_sata_ide == 1) {
+			struct device *sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+			byte = pci_read_config8(sm_dev, 0xad);
+			byte |= 1 << 4;
+			pci_write_config8(sm_dev, 0xad, byte);
+		}
 	}
 }
 

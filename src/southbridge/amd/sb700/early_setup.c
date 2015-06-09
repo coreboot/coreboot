@@ -353,9 +353,13 @@ static void sb700_devices_por_init(void)
 {
 	device_t dev;
 	u8 byte;
-#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
-	u32 dword;
-#endif
+	uint32_t dword;
+	uint8_t nvram;
+	uint8_t sata_ahci_mode;
+
+	sata_ahci_mode = 0;
+	if (get_option(&nvram, "sata_ahci_mode") == CB_SUCCESS)
+		sata_ahci_mode = !!nvram;
 
 	printk(BIOS_INFO, "sb700_devices_por_init()\n");
 	/* SMBus Device, BDF:0-20-0 */
@@ -516,34 +520,56 @@ static void sb700_devices_por_init(void)
 	/* Enable PCIB_DUAL_EN_UP will fix potential problem with PCI cards. */
 	pci_write_config8(dev, 0x50, 0x01);
 
+	if (!sata_ahci_mode){
 #if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
-	/* SP5100 default SATA mode is RAID5 MODE */
-	dev = pci_locate_device(PCI_ID(0x1002, 0x4393), 0);
-	/* Set SATA Operation Mode, Set to IDE mode */
-	byte = pci_read_config8(dev, 0x40);
-	byte |= (1 << 0);
-	pci_write_config8(dev, 0x40, byte);
+		/* SP5100 default SATA mode is RAID5 MODE */
+		dev = pci_locate_device(PCI_ID(0x1002, 0x4393), 0);
 
-	dword = 0x01018f00;
-	pci_write_config32(dev, 0x8, dword);
+		/* Set SATA Operation Mode, Set to IDE mode */
+		byte = pci_read_config8(dev, 0x40);
+		byte |= (1 << 0);
+		pci_write_config8(dev, 0x40, byte);
 
-	/* set SATA Device ID writable */
-	dword = pci_read_config32(dev, 0x40);
-	dword &= ~(1 << 24);
-	pci_write_config32(dev, 0x40, dword);
+		dword = 0x01018f00;
+		pci_write_config32(dev, 0x8, dword);
 
-	/* set Device ID accommodate with IDE emulation mode configuration*/
-	pci_write_config32(dev, 0x0, 0x43901002);
+		/* set SATA Device ID writable */
+		dword = pci_read_config32(dev, 0x40);
+		dword &= ~(1 << 24);
+		pci_write_config32(dev, 0x40, dword);
 
-	/* rpr v2.13 4.17 Reset CPU on Sync Flood */
-	abcfg_reg(0x10050, 1 << 2, 1 << 2);
+		/* set Device ID consistent with IDE emulation mode configuration */
+		pci_write_config32(dev, 0x0, 0x43901002);
+
+		/* rpr v2.13 4.17 Reset CPU on Sync Flood */
+		abcfg_reg(0x10050, 1 << 2, 1 << 2);
 #endif
+	}
 
 	/* SATA Device, BDF:0-17-0, Non-Raid-5 SATA controller */
-	printk(BIOS_INFO, "sb700_devices_por_init(): SATA Device, BDF:0-18-0\n");
+	printk(BIOS_INFO, "sb700_devices_por_init(): SATA Device, BDF:0-17-0\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4390), 0);
 
-	/*PHY Global Control*/
+	if (sata_ahci_mode) {
+		/* Switch to AHCI mode (AMD inbox) */
+		dword = pci_read_config32(dev, 0x40);
+		dword |= (0x1 << 24);		/* Lock Flash Device ID = 1 */
+		pci_write_config32(dev, 0x40, dword);
+
+		/* Deactivate Sub-Class Code write protection */
+		byte = pci_read_config8(dev, 0x40);
+		byte |= (1 << 0);
+		pci_write_config8(dev, 0x40, byte);
+
+		dword = pci_read_config32(dev, 0x08);
+		dword &= ~(0xff << 16);		/* Sub-Class Code = 0x6 */
+		dword |= (0x6 << 16);
+		dword &= ~(0xff << 8);		/* Operating Mode Selection = 0x1 */
+		dword |= (0x1 << 8);
+		pci_write_config32(dev, 0x08, dword);
+	}
+
+	/* PHY Global Control */
 	pci_write_config16(dev, 0x86, 0x2C00);
 }
 
@@ -675,6 +701,11 @@ static void sb700_pci_cfg(void)
 
 	/* SATA Device, BDF:0-17-0, Non-Raid-5 SATA controller */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4390), 0);
+	if (dev == PCI_DEV_INVALID)
+		dev = pci_locate_device(PCI_ID(0x1002, 0x4391), 0);
+	if (dev == PCI_DEV_INVALID)
+		dev = pci_locate_device(PCI_ID(0x1002, 0x4394), 0);
+
 	/* rpr7.12 SATA MSI and D3 Power State Capability. */
 	byte = pci_read_config8(dev, 0x40);
 	byte |= 1 << 0;

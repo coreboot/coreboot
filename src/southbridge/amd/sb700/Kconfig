@@ -42,6 +42,10 @@ config SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA
 	bool
 	default n
 
+config SOUTHBRIDGE_AMD_SB700_SATA_PORT_COUNT_BITFIELD
+	hex
+	default 0xf
+
 config EHCI_BAR
 	hex
 	default 0xfef00000

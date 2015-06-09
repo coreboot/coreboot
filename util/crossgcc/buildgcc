@@ -20,13 +20,13 @@
 # Foundation, Inc.
 #
 
-cd `dirname $0`
+cd $(dirname $0)
 
 CROSSGCC_DATE="June 4th, 2015"
 CROSSGCC_VERSION="1.29"
 
 # default settings
-TARGETDIR=`pwd`/xgcc
+TARGETDIR=$(pwd)/xgcc
 TARGETARCH=i386-elf
 DESTDIR=
 
@@ -96,7 +96,7 @@ cyan='\033[0;36m'
 CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
-UNAME=`uname`
+UNAME=$(uname)
 
 normalize_dirs()
 {
@@ -121,8 +121,8 @@ searchtool()
 		search="$2"
 	fi
 	for i in "$1" "g$1" "gnu$1"; do
-		if test -x "`which $i 2>/dev/null`"; then
-			if test `cat /dev/null | $i --version 2>&1 |grep -c "$search"` \
+		if test -x "$(which $i 2>/dev/null)"; then
+			if test $(cat /dev/null | $i --version 2>&1 |grep -c "$search") \
 			    -gt 0; then
 				echo $i
 				return
@@ -133,28 +133,28 @@ searchtool()
 	# patch and tar also work.
 	if [ $UNAME = "Darwin" -o $UNAME = "FreeBSD" -o $UNAME = "NetBSD" -o $UNAME = "OpenBSD" ]; then
 		if [ "$1" = "patch" -o "$1" = "tar" ]; then
-			if test -x "`which $1 2>/dev/null`"; then
+			if test -x "$(which $1 2>/dev/null)"; then
 				echo $1
 				return
 			fi
 		fi
 	fi
-	if [ "`echo $1 | cut -b -3`" = "sha" ]; then
+	if [ "$(echo $1 | cut -b -3)" = "sha" ]; then
 		if [ $UNAME = "FreeBSD" ]; then
-			if test -x "`which sha1 2>/dev/null`"; then
+			if test -x "$(which sha1 2>/dev/null)"; then
 				echo sha1
 				return
 			fi
 		fi
 		if [ $UNAME = "NetBSD" ]; then
-			if test -x "`which cksum 2>/dev/null`"; then
-				echo cksum -a `echo $1 | sed -e 's,sum,,'`
+			if test -x "$(which cksum 2>/dev/null)"; then
+				echo cksum -a $(echo $1 | sed -e 's,sum,,')
 				return
 			fi
 		fi
 		if [ $UNAME = "Darwin" ]; then
-			if test -x "`which openssl 2>/dev/null`"; then
-				echo openssl `echo $1 | sed -e 's,sum,,'`
+			if test -x "$(which openssl 2>/dev/null)"; then
+				echo openssl $(echo $1 | sed -e 's,sum,,')
 				return
 			fi
 		fi
@@ -164,12 +164,12 @@ searchtool()
 	false
 }
 
-TAR=`searchtool tar` || exit $?
-PATCH=`searchtool patch` || exit $?
-MAKE=`searchtool make` || exit $?
-CMAKE=`searchtool cmake "cmake"` || exit $?
-SHA1SUM=`searchtool sha1sum`
-SHA512SUM=`searchtool sha512sum`
+TAR=$(searchtool tar) || exit $?
+PATCH=$(searchtool patch) || exit $?
+MAKE=$(searchtool make) || exit $?
+CMAKE=$(searchtool cmake "cmake") || exit $?
+SHA1SUM=$(searchtool sha1sum)
+SHA512SUM=$(searchtool sha512sum)
 CHECKSUM=$SHA1SUM
 
 searchtool m4 > /dev/null
@@ -184,12 +184,12 @@ download() {
 	package=$1
 	archive="$(eval echo \$$package"_ARCHIVE")"
 
-	FILE=`basename $archive`
+	FILE=$(basename $archive)
 	printf " * $FILE "
 
 	test -f tarballs/$FILE && \
 			(test -z "$CHECKSUM" || \
-			test "`cat sum/$FILE.cksum 2>/dev/null | sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,'`" = "`$CHECKSUM tarballs/$FILE 2>/dev/null | sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,'`" ) && \
+			 test "$(cat sum/$FILE.cksum 2>/dev/null | sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,')" = "$($CHECKSUM tarballs/$FILE 2>/dev/null | sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,')" ) && \
 			printf "(cached)" || (
 		printf "(downloading)"
 		rm -f tarballs/$FILE
@@ -211,18 +211,18 @@ unpack_and_patch() {
 	archive="$(eval echo \$$package"_ARCHIVE")"
 	dir="$(eval echo \$$package"_DIR")"
 	test -d ${dir} && test -f ${dir}/.unpack_success || (
-		printf " * `basename $archive`\n"
+		printf " * $(basename $archive)\n"
 		FLAGS=zxf
-		suffix=`echo $archive | sed 's,.*\.,,'`
+		suffix=$(echo $archive | sed 's,.*\.,,')
 		test "$suffix" = "gz" && FLAGS=zxf
 		test "$suffix" = "bz2" && FLAGS=jxf
 		test "$suffix" = "xz" && FLAGS="--xz -xf"
 		test "$suffix" = "lzma" && FLAGS="--lzma -xf"
-		$TAR $FLAGS tarballs/`basename $archive`
+		$TAR $FLAGS tarballs/$(basename $archive)
 		for patch in patches/${dir}_*.patch; do
 			test -r $patch || continue
-			printf "   o `basename $patch`\n"
-			$PATCH -s -N -p0 < `echo $patch` || \
+			printf "   o $(basename $patch)\n"
+			$PATCH -s -N -p0 < $(echo $patch) || \
 				printf "\n${RED}Failed $patch.${NC}\n"
 		done
 		touch ${dir}/.unpack_success
@@ -380,7 +380,7 @@ build_GCC() {
 	cd ../gcc-${GCC_VERSION}
 	sed '/dnl Ensure exactly this Autoconf version is used/d' \
 		config/override.m4 > config/override.m4.new
-	autoconf_version=`autoconf -V | grep "autoconf" | tr ' ' '\n' | tail -1`
+	autoconf_version=$(autoconf -V | grep "autoconf" | tr ' ' '\n' | tail -1)
 	sed "s/${GCC_AUTOCONF_VERSION}/${autoconf_version}/g" \
 		config/override.m4.new > config/override.m4
 	autoconf
@@ -406,7 +406,7 @@ build_GCC() {
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc || touch .failed
 	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
 
-	if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -eq 0 ]; then
+	if [ "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then
 		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc || touch .failed
 		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
 	fi
@@ -480,14 +480,14 @@ export PATH=$PATH:.
 getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 
 # parse parameters.. try to find out whether we're running GNU getopt
-getoptbrand="`getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,'`"
+getoptbrand="$(getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb,ccache,clang Vhcd:p:j:D:tGyC -- "$@"`
+	args=$(getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb,ccache,clang Vhcd:p:j:D:tGyC -- "$@")
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vhcd:p:j:D:tGyC $*`
+	args=$(getopt Vhcd:p:j:D:tGyC $*)
 	set -- $args
 fi
 
@@ -586,7 +586,7 @@ if [ $UNAME = "Darwin" ]; then
 	# binaries in 10.6 (even if the kernel is 32bit)
 	# For some weird reason, 10.5 autodetects an ABI=64 though
 	# so we're setting the ABI explicitly here.
-	if [ `sysctl -n hw.optional.x86_64 2>/dev/null` -eq 1 ] 2>/dev/null; then
+	if [ $(sysctl -n hw.optional.x86_64 2>/dev/null) -eq 1 ] 2>/dev/null; then
 		OPTIONS="ABI=64"
 	else
 		OPTIONS="ABI=32"
@@ -616,8 +616,8 @@ build GMP
 
 # Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
 # as GCC 4.6.x fails if it's there.
-HOSTCFLAGS=`grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
-	    sed s,-pedantic,,`
+HOSTCFLAGS=$(grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
+	    sed s,-pedantic,,)
 
 build MPFR
 build MPC
@@ -632,9 +632,9 @@ build LLVM
 
 # Adding git information of current tree to target directory
 # for reproducibility
-PROGNAME=`basename "$0"`
+PROGNAME=$(basename "$0")
 rm -f "$DESTDIR$TARGETDIR/$PROGNAME".commit.*
-cp "$PROGNAME" $DESTDIR$TARGETDIR/"$PROGNAME.commit.`git describe`"
+cp "$PROGNAME" $DESTDIR$TARGETDIR/"$PROGNAME.commit.$(git describe)"
 
 if [ $SAVETEMPS -eq 0 ]; then
 	cleanup

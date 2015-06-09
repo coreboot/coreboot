@@ -361,13 +361,7 @@ build_LIBELF() {
 }
 
 build_BINUTILS() {
-	# What a pain: binutils don't come with configure
-	# script anymore. Create it:
-	cd ../binutils-${BINUTILS_VERSION}/
-	autoconf
-	cd -
 	# Now build binutils
-	rm -f .failed
 	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls \
 		$USE_GOLD CFLAGS="$HOSTCFLAGS" || touch .failed
@@ -377,22 +371,8 @@ build_BINUTILS() {
 
 
 build_GCC() {
-	# Even worse than binutils: GCC does not come with configure
-	# script anymore, but also enforces an obsolete autoconf version
-	# to create it. This is a poster child of how autotools help make
-	# software portable.
-	cd ../gcc-${GCC_VERSION}
-	sed '/dnl Ensure exactly this Autoconf version is used/d' \
-		config/override.m4 > config/override.m4.new
-	autoconf_version=$(autoconf -V | grep "autoconf" | tr ' ' '\n' | tail -1)
-	sed "s/${GCC_AUTOCONF_VERSION}/${autoconf_version}/g" \
-		config/override.m4.new > config/override.m4
-	autoconf
-	cd -
-
-	# Now, finally, we can build gcc:
-	# GCC does not honour HOSTCFLAGS at all. CFLAGS are used for
-	# both target and host object files. This is pretty misdesigned.
+	# GCC does not honor HOSTCFLAGS at all. CFLAGS are used for
+	# both target and host object files.
 	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
 	# but it does not seem to work properly. At least the host library
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.

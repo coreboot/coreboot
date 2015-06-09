@@ -25,7 +25,7 @@
 #include <arch/acpi.h>
 #endif
 
-void cbmem_run_init_hooks(void)
+void cbmem_run_init_hooks(int is_recovery)
 {
 	cbmem_init_hook_t *init_hook_ptr = (cbmem_init_hook_t*) &_cbmem_init_hooks;
 	cbmem_init_hook_t *einit_hook_ptr =  (cbmem_init_hook_t*) &_ecbmem_init_hooks;
@@ -34,7 +34,7 @@ void cbmem_run_init_hooks(void)
 		return;
 
 	while (init_hook_ptr !=  einit_hook_ptr) {
-		(*init_hook_ptr)();
+		(*init_hook_ptr)(is_recovery);
 		init_hook_ptr++;
 	}
 }

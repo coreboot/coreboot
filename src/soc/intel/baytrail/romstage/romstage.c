@@ -144,7 +144,7 @@ void * asmlinkage romstage_main(unsigned long bist,
 
 static struct chipset_power_state power_state CAR_GLOBAL;
 
-static void migrate_power_state(void)
+static void migrate_power_state(int is_recovery)
 {
 	struct chipset_power_state *ps_cbmem;
 	struct chipset_power_state *ps_car;

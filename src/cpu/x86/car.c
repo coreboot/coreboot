@@ -136,7 +136,7 @@ static void do_car_migrate_variables(void)
 	car_migrated = ~0;
 }
 
-static void car_migrate_variables(void)
+static void car_migrate_variables(int is_recovery)
 {
 	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE) && !IS_ENABLED(PLATFORM_USES_FSP1_0))
 		do_car_migrate_variables();

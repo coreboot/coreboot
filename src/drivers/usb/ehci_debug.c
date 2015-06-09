@@ -670,7 +670,7 @@ static int get_usbdebug_from_cbmem(struct ehci_debug_info *info)
 }
 
 #elif defined(__PRE_RAM__)
-static void migrate_ehci_debug(void)
+static void migrate_ehci_debug(int is_recovery)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	struct ehci_debug_info *dbg_info_cbmem;

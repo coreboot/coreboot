@@ -101,6 +101,7 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size)
 {
 	struct imd *imd;
 	struct imd imd_backing;
+	const int no_recovery = 0;
 
 	imd = imd_init_backing(&imd_backing);
 	imd_handle_init(imd, cbmem_top());
@@ -118,7 +119,7 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size)
 		cbmem_add(id, size);
 
 	/* Complete migration to CBMEM. */
-	cbmem_run_init_hooks();
+	cbmem_run_init_hooks(no_recovery);
 }
 
 static inline int cbmem_fail_recovery(void)
@@ -137,6 +138,7 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 {
 	struct imd *imd;
 	struct imd imd_backing;
+	const int recovery = 1;
 
 	imd = imd_init_backing(&imd_backing);
 	imd_handle_init(imd, cbmem_top());
@@ -158,7 +160,7 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 		cbmem_add(id, size);
 
 	/* Complete migration to CBMEM. */
-	cbmem_run_init_hooks();
+	cbmem_run_init_hooks(recovery);
 
 	/* Recovery successful. */
 	return 0;

@@ -32,7 +32,7 @@ struct gdtarg {
 /* Copy GDT to new location and reload it.
  * FIXME: We only do this for BSP CPU.
  */
-static void move_gdt(void)
+static void move_gdt(int is_recovery)
 {
 	void *newgdt;
 	u16 num_gdt_bytes = (u32)&gdt_end - (u32)&gdt;

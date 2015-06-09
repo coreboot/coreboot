@@ -113,8 +113,9 @@ void *cbmem_add(u32 id, u64 size);
 /* Find a cbmem entry of a given id. These return NULL on failure. */
 void *cbmem_find(u32 id);
 
-typedef void (* const cbmem_init_hook_t)(void);
-void cbmem_run_init_hooks(void);
+/* Indicate to each hook if cbmem is being recovered or not. */
+typedef void (* const cbmem_init_hook_t)(int is_recovery);
+void cbmem_run_init_hooks(int is_recovery);
 void cbmem_fail_resume(void);
 
 #ifndef __PRE_RAM__

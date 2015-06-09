@@ -157,7 +157,7 @@ void timestamp_init(uint64_t base)
 #endif
 }
 
-static void timestamp_reinit(void)
+static void timestamp_reinit(int is_recovery)
 {
 	if (!timestamp_should_run())
 		return;

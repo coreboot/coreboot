@@ -562,8 +562,8 @@ fi
 
 # Set up host compiler and flags needed for various OSes
 
-if [[ "$PACKAGES" == *GCC* ]]; then
 CC=cc
+if [[ "$PACKAGES" == *GCC* ]]; then
 if [ $UNAME = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
 

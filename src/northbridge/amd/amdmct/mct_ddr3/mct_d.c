@@ -1368,6 +1368,7 @@ restartinit:
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: Restoring DCT configuration from NVRAM\n");
 		if (restore_mct_information_from_nvram(0) != 0)
 			printk(BIOS_CRIT, "%s: ERROR: Unable to restore DCT configuration from NVRAM\n", __func__);
+		pMCTstat->GStatus |= 1 << GSB_ConfigRestored;
 #endif
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
@@ -2095,6 +2096,8 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 
 		if (is_fam15h())
 			exit_training_mode_fam15(pMCTstat, pDCTstatA);
+
+		pMCTstat->GStatus |= 1 << GSB_ConfigRestored;
 	}
 
 	/* FIXME - currently uses calculated value	TrainMaxReadLatency_D(pMCTstat, pDCTstatA); */

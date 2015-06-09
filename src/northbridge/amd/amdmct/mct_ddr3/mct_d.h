@@ -312,6 +312,7 @@ struct MCTStatStruc {
 #define GSB_SpIntRemapHole	16	/* Special condition for Node Interleave and HW remapping*/
 #define GSB_EnDIMMSpareNW	17	/* Indicates that DIMM Spare can be used without a warm reset */
 					/* NOTE: This is a local bit used by memory code */
+#define GSB_ConfigRestored	18	/* Training configuration was restored from NVRAM */
 
 /*===============================================================================
 	Local DCT Status structure (a structure for each DCT)

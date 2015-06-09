@@ -209,7 +209,7 @@ static uint32_t read_config32_dct_nbpstate(device_t dev, uint8_t node, uint8_t d
 	return pci_read_config32(dev, reg);
 }
 
-static void copy_cbmem_spd_data_to_save_variable(struct amd_s3_persistent_data* persistent_data)
+static void copy_cbmem_spd_data_to_save_variable(struct amd_s3_persistent_data* persistent_data, uint8_t * restored)
 {
 	uint8_t node;
 	uint8_t dimm;
@@ -232,6 +232,13 @@ static void copy_cbmem_spd_data_to_save_variable(struct amd_s3_persistent_data* 
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++)
 		for (channel = 0; channel < 2; channel++)
 			persistent_data->node[node].memclk[channel] = mem_info->dct_stat[node].Speed;
+
+	if (restored) {
+		if (mem_info->mct_stat.GStatus & (1 << GSB_ConfigRestored))
+			*restored = 1;
+		else
+			*restored = 0;
+	}
 }
 
 void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_data)
@@ -1030,6 +1037,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 int8_t save_mct_information_to_nvram(void)
 {
 	uint8_t nvram;
+	uint8_t restored = 0;
 
 	if (acpi_is_wakeup_s3())
 		return 0;
@@ -1051,7 +1059,16 @@ int8_t save_mct_information_to_nvram(void)
 	copy_mct_data_to_save_variable(persistent_data);
 
 	/* Save RAM SPD data at the same time */
-	copy_cbmem_spd_data_to_save_variable(persistent_data);
+	copy_cbmem_spd_data_to_save_variable(persistent_data, &restored);
+
+	if (restored) {
+		/* Allow training bypass if DIMM configuration is unchanged on next boot */
+		nvram = 1;
+		set_option("allow_spd_nvram_cache_restore", &nvram);
+
+		printk(BIOS_DEBUG, "Hardware configuration unchanged since last boot; skipping write\n");
+		return 0;
+	}
 
 	/* Obtain CBFS file offset */
 	s3nv_offset = get_s3nv_file_offset();

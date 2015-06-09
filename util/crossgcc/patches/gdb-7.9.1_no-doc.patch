@@ -1,0 +1,12 @@
+diff -ur gdb-7.9.1/gdb/Makefile.in gdb-7.9.1/gdb/Makefile.in
+--- gdb-7.9.1/gdb/Makefile.in	2015-05-13 10:36:05.000000000 -0700
++++ gdb-7.9.1/gdb/Makefile.in	2015-06-09 13:22:53.594505278 -0700
+@@ -1065,7 +1065,7 @@
+ 
+ TSOBS = inflow.o
+ 
+-SUBDIRS = doc @subdirs@ data-directory $(GNULIB_BUILDDIR)
++SUBDIRS = @subdirs@ data-directory $(GNULIB_BUILDDIR)
+ CLEANDIRS = $(SUBDIRS)
+ 
+ # List of subdirectories in the build tree that must exist.

@@ -1,8 +1,8 @@
-diff -ur gdb-7.6/gdb/python/python.c gdb-7.6.patched/gdb/python/python.c
---- gdb-7.6/gdb/python/python.c	2012-06-25 18:53:20.000000000 +0200
-+++ gdb-7.6.patched/gdb/python/python.c	2012-10-24 15:28:37.422047.69 +0200
-@@ -1227,6 +1227,15 @@
- 			     SLASH_STRING, "python", NULL));
+diff -ur gdb-7.9.1/gdb/python/python.c gdb-7.9.1.patched/gdb/python/python.c
+--- gdb-7.9.1/gdb/python/python.c	2015-05-13 10:36:05.000000000 -0700
++++ gdb-7.9.1.patched/gdb/python/python.c	2015-06-09 13:13:24.824178760 -0700
+@@ -1681,6 +1681,15 @@
+ #endif
  #endif
  
 +  char readlinkbuffer[BUFSIZ];

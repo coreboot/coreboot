@@ -26,9 +26,12 @@ CROSSGCC_DATE="June 9th, 2015"
 CROSSGCC_VERSION="1.30"
 
 # default settings
+PACKAGE=GCC
 TARGETDIR=$(pwd)/xgcc
 TARGETARCH=i386-elf
 DESTDIR=
+SAVETEMPS=0
+SKIPPYTHON=1
 
 # GCC toolchain version numbers
 GMP_VERSION=6.0.0
@@ -80,11 +83,6 @@ CRT_DIR="compiler-rt-${CLANG_VERSION}.src"
 CTE_DIR="clang-tools-extra-${CLANG_VERSION}.src"
 
 unset MAKELEVEL MAKEFLAGS
-
-SAVETEMPS=0
-BUILDCLANG=0
-SKIPGDB=1
-SKIPPYTHON=1
 
 red='\033[0;31m'
 RED='\033[1;31m'
@@ -293,16 +291,19 @@ myhelp()
 	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
 	printf "    [-y|--ccache]                 Use ccache when building cross compiler\n"
 	printf "    [-j|--jobs <num>]             run <num> jobs in parallel in make\n"
-	printf "    [-C|--clang]                  build CLANG toolchain"
-	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
-	printf "                                  (defaults to $TARGETARCH) *)\n"
 	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
 	printf "                                  (defaults to $TARGETDIR)\n\n"
 	printf "    [-D|--destdir <dest dir>]     destination directory to install cross compiler to\n"
 	printf "                                  (for RPM builds, default unset)\n"
-	printf "    [-G|--gdb]                    build GNU debugger *)\n"
-	printf "    [-S|--scripting]              build scripting support for GDB *)\n\n"
-	printf " *) option only available when building GCC toolchain (not with CLANG)\n\n"
+	printf "    [-P|--package <package>]      Build a specific package: GCC, CLANG, IASL, GDB\n"
+	printf "                                  (defaults to $PACKAGE)\n"
+	printf "GCC specific options:\n"
+	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
+	printf "                                  (defaults to $TARGETARCH)\n"
+	printf "GDB specific options:\n"
+	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
+	printf "                                  (defaults to $TARGETARCH)\n"
+	printf "    [-S|--scripting]              build scripting support for GDB\n\n"
 }
 
 myversion()
@@ -507,8 +508,7 @@ while true ; do
 		-p|--platform)	shift; TARGETARCH="$1"; shift;;
 		-D|--destdir)	shift; DESTDIR="$1"; shift;;
 		-j|--jobs)	shift; JOBS="-j $1"; shift;;
-		-C|--clang)	shift; BUILDCLANG=1;;
-		-G|--gdb)	shift; SKIPGDB=0;;
+		-P|--package)   shift; PACKAGE="$1"; shift;;
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
 		--)		shift; break;;
@@ -532,27 +532,32 @@ esac
 
 # Figure out which packages to build
 
-if [ "$BUILDCLANG" -eq 0 ]; then
-	echo "Target architecture is now $TARGETARCH"
-	NAME="${TARGETARCH} cross"
-	PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC IASL"
-else
-	NAME=clang
-	PACKAGES="LLVM CFE CRT CTE"
-fi
-
-if [ $SKIPGDB -eq 1 ]; then
-	printf "Will skip GDB ... ${green}ok${NC}\n"
-	if [ $SKIPPYTHON -eq 0 ]; then
-		printf "Python scripting needs GDB ... disabling ... ${green}ok${NC}\n"
-		SKIPPYTHON=1
-	fi
-else
-	if [ $SKIPPYTHON -eq 0 ]; then
-		PACKAGES="$PACKAGES EXPAT PYTHON"
-	fi
-	PACKAGES="$PACKAGES GDB"
-fi
+case "$PACKAGE" in
+	GCC|gcc)
+		echo "Target architecture is now $TARGETARCH"
+		NAME="${TARGETARCH} cross GCC"
+		PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC IASL"
+		;;
+	GDB|gdb)
+		NAME="${TARGETARCH} cross GDB"
+		PACKAGES="GDB"
+		if [ $SKIPPYTHON -eq 0 ]; then
+			PACKAGES="EXPAT PYTHON $PACKAGES"
+		fi
+		;;
+	CLANG|clang)
+		NAME=clang
+		PACKAGES="LLVM CFE CRT CTE"
+		;;
+	IASL|iasl)
+		NAME="IASL ACPI compiler"
+		PACKAGES=IASL
+		;;
+	*)
+		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, GDB, CLANG, IASL)${NC}\n\n";
+		exit 1
+		;;
+esac
 
 # This initial cleanup is useful when updating the toolchain script.
 

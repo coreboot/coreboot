@@ -72,6 +72,29 @@ static void mainboard_enable(device_t dev)
 	/* get_ide_dma66(); */
 }
 
+/* override the default SATA PHY setup */
+void sb7xx_51xx_setup_sata_phys(struct device *dev)
+{
+	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
+	pci_write_config16(dev, 0x86, 0x2c00);
+
+	/* RPR7.6.2 SATA GENI PHY ports setting */
+	pci_write_config32(dev, 0x88, 0x01b48016);
+	pci_write_config32(dev, 0x8c, 0x01b48016);
+	pci_write_config32(dev, 0x90, 0x01b48016);
+	pci_write_config32(dev, 0x94, 0x01b48016);
+	pci_write_config32(dev, 0x98, 0x01b48016);
+	pci_write_config32(dev, 0x9c, 0x01b48016);
+
+	/* RPR7.6.3 SATA GEN II PHY port setting for port [0~5]. */
+	pci_write_config16(dev, 0xa0, 0xa07a);
+	pci_write_config16(dev, 0xa2, 0xa07a);
+	pci_write_config16(dev, 0xa4, 0xa07a);
+	pci_write_config16(dev, 0xa6, 0xa07a);
+	pci_write_config16(dev, 0xa8, 0xa07a);
+	pci_write_config16(dev, 0xaa, 0xa07a);
+}
+
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 };

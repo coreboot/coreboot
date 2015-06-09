@@ -1,0 +1,2 @@
+config BOARD_GOOGLE_VEYRON_SHARK
+	bool "Veyron_Shark"

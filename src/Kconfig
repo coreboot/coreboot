@@ -344,6 +344,8 @@ config SYSTEM_TYPE_LAPTOP
 
 menu "Chipset"
 
+comment "SoC"
+source "src/soc/*/*/Kconfig"
 comment "CPU"
 source "src/cpu/Kconfig"
 comment "Northbridge"
@@ -355,8 +357,6 @@ source "src/superio/*/Kconfig"
 comment "Embedded Controllers"
 source "src/ec/acpi/Kconfig"
 source "src/ec/*/*/Kconfig"
-comment "SoC"
-source "src/soc/*/*/Kconfig"
 source "src/drivers/intel/fsp1_0/Kconfig"
 
 endmenu

@@ -235,29 +235,37 @@ unpack_and_patch() {
 	)
 }
 
-wait_for_build() {
-	# $1: directory in which log file and failure marker are stored
-	cat > "$1/crossgcc-build.log"
-	test -r "$1/.failed" && printf "${RED}failed${NC}. Check $1/crossgcc-build.log.\n" || \
-		printf "${green}ok${NC}\n"
-	test -r "$1/.failed" && exit 1
-	true
+fn_exists()
+{
+	type $1 2>/dev/null | grep -q 'is a function'
 }
 
 build() {
 	package=$1
 	version="$(eval echo \$$package"_VERSION")"
+
+	fn_exists build_$package || return
+
+	mkdir -p ${BUILDDIRPREFIX}-$package
+
 	[[ "$PACKAGES" == *$package* ]] && \
 	if [ -f ${BUILDDIRPREFIX}-$package/.success ]; then
 		printf "Skipping $package as it is already built\n"
 	else
 		printf "Building $package $version ... "
-	        (
-			cd ${BUILDDIRPREFIX}-$package
-			rm -f .failed
-			build_${package}
-			if [ ! -f .failed ]; then touch .success; fi
-		) 2>&1 | wait_for_build "${BUILDDIRPREFIX}-$package" || exit 1
+		DIR=$PWD
+		cd ${BUILDDIRPREFIX}-$package
+		rm -f .failed
+		build_${package} > build.log 2>&1
+		cd $DIR/${BUILDDIRPREFIX}-$package
+		if [ ! -f .failed ]; then touch .success; fi
+		cd ..
+
+		if [ -r "${BUILDDIRPREFIX}-$package/.failed" ]; then
+			printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-$package/build.log.\n"
+			exit 1
+		fi
+		printf "${green}ok${NC}\n"
 	fi
 }
 
@@ -322,6 +330,11 @@ build_GMP() {
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	normalize_dirs
+
+	# Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
+	# as GCC 4.6.x fails if it's there.
+	export HOSTCFLAGS=$(grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
+	    sed s,-pedantic,,)
 }
 
 build_MPFR() {
@@ -538,10 +551,10 @@ if [ $SKIPGDB -eq 1 ]; then
 		SKIPPYTHON=1
 	fi
 else
+	if [ $SKIPPYTHON -eq 0 ]; then
+		PACKAGES="$PACKAGES EXPAT PYTHON"
+	fi
 	PACKAGES="$PACKAGES GDB"
-fi
-if [ $SKIPPYTHON -eq 0 ]; then
-	PACKAGES="$PACKAGES EXPAT PYTHON"
 fi
 
 # coreboot does not like the GOLD linker
@@ -558,7 +571,7 @@ printf "Downloaded tar balls ... ${green}ok${NC}\n"
 
 printf "Unpacking and patching ... \n"
 for P in $PACKAGES; do
-	unpack_and_patch $P
+	unpack_and_patch $P || exit 1
 done
 printf "Unpacked and patched ... ${green}ok${NC}\n"
 
@@ -591,30 +604,12 @@ if [ "$USECCACHE" = 1 ]; then
 	CC="ccache $CC"
 fi
 
-for package in $PACKAGES; do
-	mkdir -p ${BUILDDIRPREFIX}-$package
-done
-
 mkdir -p $DESTDIR$TARGETDIR/bin
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
-build GMP
-
-# Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
-# as GCC 4.6.x fails if it's there.
-HOSTCFLAGS=$(grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
-	    sed s,-pedantic,,)
-
-build MPFR
-build MPC
-build LIBELF
-build BINUTILS
-build GCC
-build EXPAT
-build PYTHON
-build GDB
-build IASL
-build LLVM
+for package in $PACKAGES; do
+	build $package
+done
 
 # Adding git information of current tree to target directory
 # for reproducibility

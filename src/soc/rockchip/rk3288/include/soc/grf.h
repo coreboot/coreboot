@@ -221,6 +221,8 @@ static struct rk3288_sgrf_regs * const rk3288_sgrf = (void *)GRF_SECURE_BASE;
 #define IOMUX_EMMCCMD	 RK_CLRSETBITS(0x3f, 2 << 4 | 2 << 2 | 2 << 0)
 #define IOMUX_PWM1	RK_SETBITS(1 << 2)
 #define IOMUX_EDP_HOTPLUG	RK_CLRSETBITS(0x3 << 6, 0x2 << 6)
+#define IOMUX_HDMI_EDP_I2C_SDA	RK_CLRSETBITS(0x3 << 12, 2 << 12)
+#define IOMUX_HDMI_EDP_I2C_SCL	RK_CLRSETBITS(0x3 << 0, 2 << 0)
 
 /* Use to mux a pin back to GPIO function. Since the selector for that is always
  * 0, we can just reuse RK mask/value patterns and mask out the "value" part. */

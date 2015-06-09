@@ -530,17 +530,15 @@ case "$TARGETARCH" in
 	*)		printf "${red}WARNING: Unsupported architecture $TARGETARCH.${NC}\n\n"; ;;
 esac
 
-if [ "$BUILDCLANG" -eq 0 ]; then
-echo "Target architecture is now $TARGETARCH"
-NAME="${TARGETARCH} cross"
-PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC IASL"
-else
-NAME=clang
-PACKAGES="LLVM CFE CRT CTE"
-fi
+# Figure out which packages to build
 
-if [ "$clean" = "1" ]; then
-	cleanup
+if [ "$BUILDCLANG" -eq 0 ]; then
+	echo "Target architecture is now $TARGETARCH"
+	NAME="${TARGETARCH} cross"
+	PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC IASL"
+else
+	NAME=clang
+	PACKAGES="LLVM CFE CRT CTE"
 fi
 
 if [ $SKIPGDB -eq 1 ]; then
@@ -556,23 +554,13 @@ else
 	PACKAGES="$PACKAGES GDB"
 fi
 
-# coreboot does not like the GOLD linker
-# USE_GOLD="--enable-gold"
-USE_GOLD=""
-GCC_OPTIONS="--enable-lto"
+# This initial cleanup is useful when updating the toolchain script.
 
-printf "Downloading tar balls ... \n"
-mkdir -p tarballs
-for P in $PACKAGES; do
-	download $P
-done
-printf "Downloaded tar balls ... ${green}ok${NC}\n"
+if [ "$clean" = "1" ]; then
+	cleanup
+fi
 
-printf "Unpacking and patching ... \n"
-for P in $PACKAGES; do
-	unpack_and_patch $P || exit 1
-done
-printf "Unpacked and patched ... ${green}ok${NC}\n"
+# Set up host compiler and flags needed for various OSes
 
 if [[ "$PACKAGES" == *GCC* ]]; then
 CC=cc
@@ -603,12 +591,36 @@ if [ "$USECCACHE" = 1 ]; then
 	CC="ccache $CC"
 fi
 
+# coreboot does not like the GOLD linker
+# USE_GOLD="--enable-gold"
+USE_GOLD=""
+GCC_OPTIONS="--enable-lto"
+
+# Prepare target directory for building GCC
+# (dependencies must be in the PATH)
 mkdir -p $DESTDIR$TARGETDIR/bin
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
+# Download, unpack, patch and build all packages
+
+printf "Downloading tar balls ... \n"
+mkdir -p tarballs
+for P in $PACKAGES; do
+	download $P
+done
+printf "Downloaded tar balls ... ${green}ok${NC}\n"
+
+printf "Unpacking and patching ... \n"
+for P in $PACKAGES; do
+	unpack_and_patch $P || exit 1
+done
+printf "Unpacked and patched ... ${green}ok${NC}\n"
+
+printf "Building packages ... \n"
 for package in $PACKAGES; do
 	build $package
 done
+printf "Packages built ... ${green}ok${NC}\n"
 
 # Adding git information of current tree to target directory
 # for reproducibility

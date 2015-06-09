@@ -242,27 +242,29 @@ fn_exists()
 
 build() {
 	package=$1
-	version="$(eval echo \$$package"_VERSION")"
 
 	fn_exists build_$package || return
 
-	mkdir -p ${BUILDDIRPREFIX}-$package
+	version="$(eval echo \$$package"_VERSION")"
+	BUILDDIR=build-${TARGETARCH}-$package
+
+	mkdir -p ${BUILDDIR}
 
 	[[ "$PACKAGES" == *$package* ]] && \
-	if [ -f ${BUILDDIRPREFIX}-$package/.success ]; then
+	if [ -f ${BUILDDIR}/.success ]; then
 		printf "Skipping $package as it is already built\n"
 	else
 		printf "Building $package $version ... "
 		DIR=$PWD
-		cd ${BUILDDIRPREFIX}-$package
+		cd ${BUILDDIR}
 		rm -f .failed
 		build_${package} > build.log 2>&1
-		cd $DIR/${BUILDDIRPREFIX}-$package
+		cd $DIR/${BUILDDIR}
 		if [ ! -f .failed ]; then touch .success; fi
 		cd ..
 
-		if [ -r "${BUILDDIRPREFIX}-$package/.failed" ]; then
-			printf "${RED}failed${NC}. Check ${BUILDDIRPREFIX}-$package/build.log.\n"
+		if [ -r "${BUILDDIR}/.failed" ]; then
+			printf "${RED}failed${NC}. Check ${BUILDDIR}/build.log.\n"
 			exit 1
 		fi
 		printf "${green}ok${NC}\n"
@@ -273,7 +275,7 @@ cleanup()
 {
 	printf "Cleaning up temporary files... "
 	for package in $PACKAGES; do
-		rm -rf ${BUILDDIRPREFIX}-$package $(eval echo \$$package"_DIR")
+		rm -rf build-${TARGETARCH}-$package $(eval echo \$$package"_DIR")
 	done
 	printf "${green}ok${NC}\n"
 }
@@ -536,9 +538,6 @@ else
 NAME=clang
 PACKAGES="LLVM CFE CRT CTE"
 fi
-
-BUILDDIRPREFIX=build-${TARGETARCH}
-BUILDDIR=$PWD/build-clang
 
 if [ "$clean" = "1" ]; then
 	cleanup

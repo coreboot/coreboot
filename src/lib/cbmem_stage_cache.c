@@ -22,11 +22,6 @@
 #include <stage_cache.h>
 #include <string.h>
 
-
-/* Provide empty implementations by default. */
-void __attribute__((weak)) stage_cache_create_empty(void) {}
-void __attribute__((weak)) stage_cache_recover(void) {}
-
 /* Stage cache uses cbmem. */
 void stage_cache_add(int stage_id, struct prog *stage)
 {

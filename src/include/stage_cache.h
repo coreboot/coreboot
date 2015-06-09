@@ -29,10 +29,6 @@ enum {
 	STAGE_REFCODE,
 };
 
-/* Create an empty stage cache. */
-void stage_cache_create_empty(void);
-/* Recover existing stage cache. */
-void stage_cache_recover(void);
 /* Cache the loaded stage provided according to the parameters. */
 void stage_cache_add(int stage_id, struct prog *stage);
 /* Load the cached stage at given location returning the stage entry point. */

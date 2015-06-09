@@ -33,7 +33,7 @@ static inline struct imd *imd_get(void)
 	return car_get_var_ptr(&imd_stage_cache);
 }
 
-void stage_cache_create_empty(void)
+static void stage_cache_create_empty(void)
 {
 	struct imd *imd;
 	void *base;
@@ -49,7 +49,7 @@ void stage_cache_create_empty(void)
 		printk(BIOS_DEBUG, "Could not limit stage cache size.\n");
 }
 
-void stage_cache_recover(void)
+static void stage_cache_recover(void)
 {
 	struct imd *imd;
 	void *base;
@@ -120,10 +120,13 @@ void stage_cache_load_stage(int stage_id, struct prog *stage)
 	prog_set_entry(stage, (void *)(uintptr_t)meta->entry_addr, NULL);
 }
 
-#if ENV_RAMSTAGE
-static void recover_sc(void *unused)
+static void stage_cache_setup(int is_recovery)
 {
-	stage_cache_recover();
+	if (is_recovery)
+		stage_cache_recover();
+	else
+		stage_cache_create_empty();
 }
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, recover_sc, NULL);
-#endif
+
+ROMSTAGE_CBMEM_INIT_HOOK(stage_cache_setup)
+RAMSTAGE_CBMEM_INIT_HOOK(stage_cache_setup)

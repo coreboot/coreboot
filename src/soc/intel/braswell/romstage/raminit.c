@@ -25,7 +25,6 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <halt.h>
-#include <stage_cache.h>
 #include <soc/gpio.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <soc/iomap.h>
@@ -169,16 +168,12 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 
 	if (prev_sleep_state != 3) {
 		cbmem_initialize_empty();
-		stage_cache_create_empty();
-	} else {
-		stage_cache_recover();
-		if (cbmem_initialize()) {
-		#if CONFIG_HAVE_ACPI_RESUME
-			printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
-			/* Failed S3 resume, reset to come up cleanly */
-			reset_system();
-		#endif
-		}
+	} else if (cbmem_initialize()) {
+	#if CONFIG_HAVE_ACPI_RESUME
+		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
+		/* Failed S3 resume, reset to come up cleanly */
+		reset_system();
+	#endif
 	}
 
 	printk(BIOS_DEBUG, "MRC Wrapper returned %d\n", ret);

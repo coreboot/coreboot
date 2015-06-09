@@ -147,15 +147,20 @@ static void pciexp_config_max_latency(device_t root, device_t dev)
 {
 	unsigned int cap;
 	cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID);
-	if (root->ops->ops_pci->set_L1_ss_latency != NULL)
-		root->ops->ops_pci->set_L1_ss_latency(dev, cap + 4);
+	if ((cap) && (root->ops->ops_pci != NULL) &&
+		(root->ops->ops_pci->set_L1_ss_latency != NULL))
+			root->ops->ops_pci->set_L1_ss_latency(dev, cap + 4);
 }
 
 static void pciexp_enable_ltr(device_t dev)
 {
 	unsigned int cap;
 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
-
+	if(!cap) {
+		printk(BIOS_INFO, "Failed to enable LTR for dev = %s\n",
+			dev_path(dev));
+		return;
+	}
 	pcie_update_cfg(dev, cap + 0x28, ~(1 << 10), 1 << 10);
 }
 

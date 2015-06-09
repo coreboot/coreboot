@@ -424,7 +424,7 @@ build_GDB() {
 	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
 		 -lpthread $LIBDL -lutil" \
 	CC="$CC" CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
-	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR \
+	../${GDB_DIR}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed

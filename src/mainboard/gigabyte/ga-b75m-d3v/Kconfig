@@ -40,10 +40,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "GA-B75M-D3V"
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAX_CPUS
 	int
 	default 8

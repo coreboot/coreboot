@@ -27,10 +27,6 @@ config BOOTBLOCK_MAINBOARD_INIT
 	string
 	default "mainboard/emulation/qemu-q35/bootblock.c"
 
-#config IRQ_SLOT_COUNT
-#	int
-#	default 6
-
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xb0000000

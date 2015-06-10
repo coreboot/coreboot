@@ -120,16 +120,32 @@ static void mcf3_set_resources(device_t dev)
 
 static void misc_control_init(struct device *dev)
 {
-	u32 cmd;
+	uint32_t dword;
+	uint8_t nvram;
+	uint8_t boost_limit;
+	uint8_t current_boost;
 
 	printk(BIOS_DEBUG, "NB: Function 3 Misc Control.. ");
 
 	/* Disable Machine checks from Invalid Locations.
 	 * This is needed for PC backwards compatibility.
 	 */
-	cmd = pci_read_config32(dev, 0x44);
-	cmd |= (1<<6) | (1<<25);
-	pci_write_config32(dev, 0x44, cmd );
+	dword = pci_read_config32(dev, 0x44);
+	dword |= (1<<6) | (1<<25);
+	pci_write_config32(dev, 0x44, dword);
+
+	boost_limit = 0xf;
+	if (get_option(&nvram, "maximum_p_state_limit") == CB_SUCCESS)
+		boost_limit = nvram & 0xf;
+
+	/* Set P-state maximum value */
+	dword = pci_read_config32(dev, 0xdc);
+	current_boost = (dword >> 8) & 0x7;
+	if (boost_limit > current_boost)
+		boost_limit = current_boost;
+	dword &= ~(0x7 << 8);
+	dword |= (boost_limit & 0x7) << 8;
+	pci_write_config32(dev, 0xdc, dword);
 
 	printk(BIOS_DEBUG, "done.\n");
 }

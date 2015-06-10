@@ -1,2 +1,2 @@
 config BOARD_GOOGLE_JECHT
-	bool "Jecht" 
+	bool "Jecht"

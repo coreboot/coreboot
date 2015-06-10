@@ -658,6 +658,7 @@ static void sb700_pci_cfg(void)
 {
 	device_t dev;
 	u8 byte;
+	uint8_t acpi_s1_supported = 1;
 
 	/* SMBus Device, BDF:0-20-0 */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
@@ -710,10 +711,10 @@ static void sb700_pci_cfg(void)
 	byte = pci_read_config8(dev, 0x40);
 	byte |= 1 << 0;
 	pci_write_config8(dev, 0x40, byte);
-	if (get_sb700_revision(pci_locate_device(PCI_ID(0x1002, 0x4385), 0)) <= 0x12)
-		pci_write_config8(dev, 0x34, 0x70); /* set 0x61 to 0x70 if S1 is not supported. */
+	if (acpi_s1_supported)
+		pci_write_config8(dev, 0x34, 0x70);	/* Hide D3 power state and MSI capabilities */
 	else
-		pci_write_config8(dev, 0x34, 0x50); /* set 0x61 to 0x50 if S1 is not supported. */
+		pci_write_config8(dev, 0x61, 0x70);	/* Hide MSI capability */
 	byte &= ~(1 << 0);
 	pci_write_config8(dev, 0x40, byte);
 }

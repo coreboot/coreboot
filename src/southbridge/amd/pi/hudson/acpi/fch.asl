@@ -45,7 +45,6 @@ Method(_OSC,4)
 /* 0:11.0 - SATA */
 Device(STCR) {
 	Name(_ADR, 0x00110000)
-	#include "acpi/sata.asl"
 } /* end STCR */
 
 /* 0:14.0 - SMBUS */

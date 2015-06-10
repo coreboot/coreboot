@@ -1,5 +1,5 @@
-Vendor name: Acer
-Board name: C720 Chromebook
+Vendor name: Google
+Board name: Auron Broadwell Reference Board
 Category: laptop
 ROM package: SOIC-8
 ROM protocol: SPI

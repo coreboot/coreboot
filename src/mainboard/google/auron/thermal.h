@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,16 +23,17 @@
 /* Control TDP Settings */
 #define CTL_TDP_SENSOR_ID		0	/* PECI */
 #define CTL_TDP_POWER_LIMIT		12	/* 12W */
-#define CTL_TDP_THRESHOLD_OFF		80	/* Normal at 80C */
-#define CTL_TDP_THRESHOLD_ON		85	/* Limited at 85C */
+#define CTL_TDP_THRESHILD_NORMAL	0	/*Normal TDP Threshold*/
+#define CTL_TDP_THRESHOLD_OFF		85	/* Normal at 85C */
+#define CTL_TDP_THRESHOLD_ON		90	/* Limited at 90C */
 
 /* Temperature which OS will shutdown at */
-#define CRITICAL_TEMPERATURE		99
+#define CRITICAL_TEMPERATURE		104
 
 /* Temperature which OS will throttle CPU */
 #define PASSIVE_TEMPERATURE		95
 
 /* Tj_max value for calculating PECI CPU temperature */
-#define MAX_TEMPERATURE			100
+#define MAX_TEMPERATURE			105
 
 #endif

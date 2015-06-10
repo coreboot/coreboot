@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  */
 
 #include <arch/acpi.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include <types.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
@@ -37,7 +38,8 @@ void mainboard_ec_init(void)
 		google_chromeec_set_smi_mask(0);
 
 		/* Clear pending events */
-		while (google_chromeec_get_event() != 0);
+		while (google_chromeec_get_event() != 0)
+			;
 		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
 	} else {
 		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |

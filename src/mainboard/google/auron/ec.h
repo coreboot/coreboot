@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,11 @@
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_LOW)       |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_CRITICAL)  |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY)           |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_STATUS)    |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_THERMAL_THRESHOLD) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_THERMAL_OVERLOAD)  |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_THROTTLE_START)    |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_THROTTLE_STOP)     |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_USB_CHARGER))
 
 #define MAINBOARD_EC_SMI_EVENTS \

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2012 Google Inc.
+## Copyright (C) 2014 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,36 +17,15 @@
 ## Foundation, Inc.
 ##
 
+subdirs-y += spd
+
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
-ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += gma.c i915io.c
+
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
-## DIMM SPD for on-board memory
-SPD_BIN = $(obj)/spd.bin
-
-# Order of names in SPD_SOURCES is important!
-SPD_SOURCES  = Micron_4KTF25664HZ	# 0: 4GB / CH0 + CH1
-SPD_SOURCES += Hynix_HMT425S6AFR6A	# 1: 4GB / CH0 + CH1
-SPD_SOURCES += Elpida_EDJ4216EFBG	# 2: 4GB / CH0 + CH1
-SPD_SOURCES += Micron_4KTF25664HZ	# 3: Reserved / place holder
-SPD_SOURCES += Micron_4KTF25664HZ	# 4: 2GB / CH0 + CH1
-SPD_SOURCES += Hynix_HMT425S6AFR6A	# 5: 2GB / CH0 + CH1
-SPD_SOURCES += Elpida_EDJ4216EFBG	# 6: 2GB / CH0 + CH1
-
-SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
-
-# Include spd rom data
-$(SPD_BIN): $(SPD_DEPS)
-	for f in $+; \
-	  do for c in $$(cat $$f | grep -v ^#); \
-	    do printf $$(printf '\%o' 0x$$c); \
-	  done; \
-	done > $@
-
-cbfs-files-y += spd.bin
-spd.bin-file := $(SPD_BIN)
-spd.bin-type := spd
+romstage-y += pei_data.c
+ramstage-y += pei_data.c

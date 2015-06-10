@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc.
  */
+
+#include <mainboard/google/auron/thermal.h>
 
 // Thermal Zone
 
@@ -61,7 +63,7 @@ Scope (\_TZ)
 			Return (\PPKG ())
 		}
 
-		Method (_TMP, 0, Serialized)
+		Method (TCHK, 0, Serialized)
 		{
 			// Get Temperature from TIN# set in NVS
 			Store (\_SB.PCI0.LPCB.EC0.TINS (TMPS), Local0)
@@ -94,21 +96,46 @@ Scope (\_TZ)
 			Return (Local0)
 		}
 
+		Method (_TMP, 0, Serialized)
+		{
+			// Get temperature from EC in deci-kelvin
+			Store (TCHK (), Local0)
+
+			// Critical temperature in deci-kelvin
+			Store (CTOK (\TCRT), Local1)
+
+			If (LGreaterEqual (Local0, Local1)) {
+				Store ("CRITICAL TEMPERATURE", Debug)
+				Store (Local0, Debug)
+
+				// Wait 1 second for EC to re-poll
+				Sleep (1000)
+
+				// Re-read temperature from EC
+				Store (TCHK (), Local0)
+
+				Store ("RE-READ TEMPERATURE", Debug)
+				Store (Local0, Debug)
+			}
+
+			Return (Local0)
+		}
+
 		/* CTDP Down */
 		Method (_AC0) {
 			If (LLessEqual (\FLVL, 0)) {
-				Return (CTOK (\F0OF))
+				Return (CTOK (CTL_TDP_THRESHOLD_OFF))
 			} Else {
-				Return (CTOK (\F0ON))
+				Return (CTOK (CTL_TDP_THRESHOLD_ON))
 			}
 		}
 
 		/* CTDP Nominal */
 		Method (_AC1) {
 			If (LLessEqual (\FLVL, 1)) {
-				Return (CTOK (\F1OF))
+				Return (CTOK (CTL_TDP_THRESHILD_NORMAL))
 			} Else {
-				Return (CTOK (\F1ON))
+				Return (CTOK (CTL_TDP_THRESHILD_NORMAL))
 			}
 		}
 
@@ -128,7 +155,7 @@ Scope (\_TZ)
 				Store (0, \FLVL)
 
 				/* Enable Power Limit */
-				\_SB.PCI0.MCHC.CTLE (\F0PW)
+				\_SB.PCI0.MCHC.CTLE (CTL_TDP_POWER_LIMIT)
 
 				Notify (\_TZ.THRM, 0x81)
 			}

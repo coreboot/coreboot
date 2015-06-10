@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,17 @@
  */
 
 #include <string.h>
-#include <bootmode.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <southbridge/intel/lynxpoint/pch.h>
-
-#if CONFIG_EC_GOOGLE_CHROMEEC
-#include "ec.h"
+#include <console/console.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include <ec/google/chromeec/ec.h>
-#endif
+#include <soc/gpio.h>
+#include "ec.h"
+
+/* SPI Write protect is GPIO 16 */
+#define CROS_WP_GPIO	58
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
@@ -36,15 +37,24 @@
 
 static int get_lid_switch(void)
 {
-#if CONFIG_EC_GOOGLE_CHROMEEC
 	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
 
 	return !!(ec_switches & EC_SWITCH_LID_OPEN);
-#else
-	return 0;
-#endif
 }
 
+/*static void fill_lb_gpio(struct lb_gpio *gpio, int num,
+			 int polarity, const char *name, int force)
+{
+	memset(gpio, 0, sizeof(*gpio));
+	gpio->port = num;
+	gpio->polarity = polarity;
+	if (force >= 0)
+		gpio->value = force;
+	else if (num >= 0)
+		gpio->value = get_gpio(num);
+	strncpy((char *)gpio->name, name, GPIO_MAX_NAME_LENGTH);
+}
+*/
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio *gpio;
@@ -53,7 +63,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->count = GPIO_COUNT;
 
 	gpio = gpios->gpios;
-	fill_lb_gpio(gpio++, 58, ACTIVE_HIGH, "write protect", 0);
+	fill_lb_gpio(gpio++, CROS_WP_GPIO, ACTIVE_HIGH, "write protect", 0);
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery",
 		     get_recovery_mode_switch());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer",
@@ -95,5 +105,5 @@ int get_recovery_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return get_gpio(58);
+	return get_gpio(CROS_WP_GPIO);
 }

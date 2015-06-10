@@ -17,13 +17,27 @@
  * Foundation, Inc.
  */
 
-/* mainboard configuration */
-#include <mainboard/google/auron/ec.h>
+#ifndef MAINBOARD_SPD_H
+#define MAINBOARD_SPD_H
 
-#define SIO_EC_MEMMAP_ENABLE     // EC Memory Map Resources
-#define SIO_EC_HOST_ENABLE       // EC Host Interface Resources
-#define SIO_EC_ENABLE_PS2K       // Enable PS/2 Keyboard
-#define SIO_EC_ENABLE_COM1       // Enable Serial Port 1
+#define SPD_LEN			256
 
-/* ACPI code for EC SuperIO functions */
-#include <ec/google/chromeec/acpi/superio.asl>
+#define SPD_DRAM_TYPE		2
+#define  SPD_DRAM_DDR3		0x0b
+#define  SPD_DRAM_LPDDR3	0xf1
+#define SPD_DENSITY_BANKS	4
+#define SPD_ADDRESSING		5
+#define SPD_ORGANIZATION	7
+#define SPD_BUS_DEV_WIDTH	8
+#define SPD_PART_OFF		128
+#define  SPD_PART_LEN		18
+
+/* Auron board memory configuration GPIOs */
+#define SPD_GPIO_BIT0		13
+#define SPD_GPIO_BIT1		9
+#define SPD_GPIO_BIT2		47
+
+struct pei_data;
+void mainboard_fill_spd_data(struct pei_data *pei_data);
+
+#endif

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,6 @@
  */
 
 Name(OIPG, Package() {
-	Package () { 0x0001, 0, 0xFFFFFFFF, "LynxPoint" }, // no recovery button
-	Package () { 0x0003, 1, 58, "LynxPoint" }, // firmware write protect
+	Package () { 0x0001, 0, 0xFFFFFFFF, "PCH-LP" }, // no recovery button
+	Package () { 0x0003, 1, 58, "PCH-LP" }, // firmware write protect
 })

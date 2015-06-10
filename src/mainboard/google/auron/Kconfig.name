@@ -1,2 +1,2 @@
-config BOARD_GOOGLE_PEPPY
-	bool "Peppy"
+config BOARD_GOOGLE_AURON
+	bool "Auron"

@@ -74,6 +74,23 @@ void __attribute__((weak)) sb7xx_51xx_setup_sata_phys(struct device *dev)
 	pci_write_config16(dev, 0xaa, 0xA07A);
 }
 
+/* This function can be overloaded in mainboard.c */
+void __attribute__((weak)) sb7xx_51xx_setup_sata_port_indication(void *sata_bar5)
+{
+	uint32_t dword;
+
+	/* RPR7.9 Program Port Indication Registers */
+	dword = read32(sata_bar5 + 0xf8);
+	dword &= ~(0x3f << 12);	/* Ports 0 and 1 are eSATA */
+	dword |= (0x3 << 12);
+	dword &= ~0x3f;
+	write32(sata_bar5 + 0xf8, dword);
+
+	dword = read32(sata_bar5 + 0xfc);
+	dword |= 0x1 << 20;	/* At least one eSATA port is present */
+	write32(sata_bar5 + 0xfc, dword);
+}
+
 static void sata_init(struct device *dev)
 {
 	u8 byte;
@@ -244,7 +261,9 @@ static void sata_init(struct device *dev)
 	/* Program the watchdog counter to 0x10 */
 	byte = 0x10;
 	pci_write_config8(dev, 0x46, byte);
+
 	sb7xx_51xx_setup_sata_phys(dev);
+	sb7xx_51xx_setup_sata_port_indication(sata_bar5);
 
 	/* Enable the I/O, MM, BusMaster access for SATA */
 	byte = pci_read_config8(dev, 0x4);

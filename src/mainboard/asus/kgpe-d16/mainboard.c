@@ -95,6 +95,22 @@ void sb7xx_51xx_setup_sata_phys(struct device *dev)
 	pci_write_config16(dev, 0xaa, 0xa07a);
 }
 
+/* override the default SATA port setup */
+void sb7xx_51xx_setup_sata_port_indication(void *sata_bar5)
+{
+	uint32_t dword;
+
+	/* RPR7.9 Program Port Indication Registers */
+	dword = read32(sata_bar5 + 0xf8);
+	dword &= ~(0x3f << 12);	/* All ports are iSATA */
+	dword &= ~0x3f;
+	write32(sata_bar5 + 0xf8, dword);
+
+	dword = read32(sata_bar5 + 0xfc);
+	dword &= ~(0x1 << 20);	/* No eSATA ports are present */
+	write32(sata_bar5 + 0xfc, dword);
+}
+
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 };

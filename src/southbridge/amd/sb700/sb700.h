@@ -69,6 +69,7 @@ void sb7xx_51xx_before_pci_init(void);
 #include <device/pci.h>
 /* allow override in mainboard.c */
 void sb7xx_51xx_setup_sata_phys(struct device *dev);
+void sb7xx_51xx_setup_sata_port_indication(void *sata_bar5);
 
 #endif
 

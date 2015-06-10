@@ -297,6 +297,7 @@ struct MCTStatStruc {
 	u32 Sub4GCacheTop;	/* If not zero, the 32-bit top of cacheable memory.*/
 	u32 SysLimit;		/* LIMIT[39:8] (system address)*/
 	uint32_t TSCFreq;
+	uint16_t nvram_checksum;
 } __attribute__((packed));
 
 /*=============================================================================
@@ -792,6 +793,7 @@ struct amd_s3_persistent_node_data {
 
 struct amd_s3_persistent_data {
 	struct amd_s3_persistent_node_data node[MAX_NODES_SUPPORTED];
+	uint16_t nvram_checksum;
 } __attribute__((packed));
 
 /*===============================================================================

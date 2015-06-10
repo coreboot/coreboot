@@ -139,6 +139,36 @@ void calculate_spd_hash(uint8_t *spd_data, uint64_t *spd_hash)
 	*spd_hash = *spd_hash ^ (*spd_hash << 37);
 }
 
+uint16_t calculate_nvram_mct_hash(void)
+{
+	uint32_t nvram;
+	uint16_t ret;
+
+	ret = 0;
+	if (get_option(&nvram, "max_mem_clock") == CB_SUCCESS)
+		ret |= nvram & 0xf;
+	if (get_option(&nvram, "minimum_memory_voltage") == CB_SUCCESS)
+		ret |= (nvram & 0x3) << 4;
+	if (get_option(&nvram, "ECC_memory") == CB_SUCCESS)
+		ret |= (nvram & 0x1) << 6;
+	if (get_option(&nvram, "ECC_redirection") == CB_SUCCESS)
+		ret |= (nvram & 0x1) << 7;
+	if (get_option(&nvram, "ecc_scrub_rate") == CB_SUCCESS)
+		ret |= (nvram & 0x1) << 8;
+	if (get_option(&nvram, "interleave_chip_selects") == CB_SUCCESS)
+		ret |= (nvram & 0x1) << 9;
+	if (get_option(&nvram, "interleave_nodes") == CB_SUCCESS)
+		ret |= (nvram & 0x1) << 10;
+	if (get_option(&nvram, "interleave_memory_channels") == CB_SUCCESS)
+		ret |= (nvram & 0x1) << 11;
+	if (get_option(&nvram, "cpu_c_states") == CB_SUCCESS)
+		ret |= (nvram & 0x1) << 12;
+	if (get_option(&nvram, "cpu_cc6_state") == CB_SUCCESS)
+		ret |= (nvram & 0x1) << 13;
+
+	return ret;
+}
+
 static struct amd_s3_persistent_data * map_s3nv_in_nvram(void)
 {
 	ssize_t s3nv_offset;
@@ -169,7 +199,7 @@ static struct amd_s3_persistent_data * map_s3nv_in_nvram(void)
 }
 
 #ifdef __PRE_RAM__
-int8_t load_spd_hashes_from_nvram(struct DCTStatStruc *pDCTstat)
+int8_t load_spd_hashes_from_nvram(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
 {
 	struct amd_s3_persistent_data *persistent_data;
 
@@ -179,6 +209,8 @@ int8_t load_spd_hashes_from_nvram(struct DCTStatStruc *pDCTstat)
 
 	memcpy(pDCTstat->spd_data.nvram_spd_hash, persistent_data->node[pDCTstat->Node_ID].spd_hash, sizeof(pDCTstat->spd_data.nvram_spd_hash));
 	memcpy(pDCTstat->spd_data.nvram_memclk, persistent_data->node[pDCTstat->Node_ID].memclk, sizeof(pDCTstat->spd_data.nvram_memclk));
+
+	pMCTstat->nvram_checksum = persistent_data->nvram_checksum;
 
 	return 0;
 }
@@ -232,6 +264,8 @@ static void copy_cbmem_spd_data_to_save_variable(struct amd_s3_persistent_data* 
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++)
 		for (channel = 0; channel < 2; channel++)
 			persistent_data->node[node].memclk[channel] = mem_info->dct_stat[node].Speed;
+
+	persistent_data->nvram_checksum = calculate_nvram_mct_hash();
 
 	if (restored) {
 		if (mem_info->mct_stat.GStatus & (1 << GSB_ConfigRestored))

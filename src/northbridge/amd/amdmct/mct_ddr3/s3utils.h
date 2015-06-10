@@ -17,9 +17,10 @@
 #include "mct_d.h"
 
 void calculate_spd_hash(uint8_t *spd_data, uint64_t *spd_hash);
+uint16_t calculate_nvram_mct_hash(void);
 
 #ifdef __PRE_RAM__
-int8_t load_spd_hashes_from_nvram(struct DCTStatStruc *pDCTstat);
+int8_t load_spd_hashes_from_nvram(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 #endif
 
 #ifdef __RAMSTAGE__

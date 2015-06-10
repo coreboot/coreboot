@@ -4134,7 +4134,7 @@ static void mct_preInitDCT(struct MCTStatStruc *pMCTstat,
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 	calculate_and_store_spd_hashes(pMCTstat, pDCTstat);
 
-	if (load_spd_hashes_from_nvram(pDCTstat) < 0) {
+	if (load_spd_hashes_from_nvram(pMCTstat, pDCTstat) < 0) {
 		pDCTstat->spd_data.nvram_spd_match = 0;
 	}
 	else {
@@ -4148,6 +4148,13 @@ static void mct_preInitDCT(struct MCTStatStruc *pMCTstat,
 	allow_config_restore = 0;
 	if (get_option(&nvram, "allow_spd_nvram_cache_restore") == CB_SUCCESS)
 		allow_config_restore = !!nvram;
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+	if (pMCTstat->nvram_checksum != calculate_nvram_mct_hash())
+		allow_config_restore = 0;
+#else
+	allow_config_restore = 0;
+#endif
 
 	if (!allow_config_restore)
 		pDCTstat->spd_data.nvram_spd_match = 0;

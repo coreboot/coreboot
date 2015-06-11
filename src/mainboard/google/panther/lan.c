@@ -132,7 +132,7 @@ static void program_mac_address(u16 io_base)
 							&search_length);
 	}
 
-	if (search_length <= 0)
+	if (search_address == NULL)
 		printk(BIOS_ERR, "LAN: VPD not found.\n");
 	else
 		get_mac_address(&high_dword, &low_dword, search_address,

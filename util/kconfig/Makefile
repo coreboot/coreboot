@@ -2,6 +2,9 @@
 # Kernel configuration targets
 # These targets are used from top-level makefile
 
+export LC_ALL=C
+export LANG=C
+
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config \
 	localmodconfig localyesconfig
 

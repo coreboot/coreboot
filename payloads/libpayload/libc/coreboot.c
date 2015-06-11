@@ -203,6 +203,14 @@ static void cb_parse_ramoops(void *ptr, struct sysinfo_t *info)
 	info->ramoops_buffer_size = ramoops->range_size;
 }
 
+static void cb_parse_mtc(void *ptr, struct sysinfo_t *info)
+{
+	struct lb_range *mtc = (struct lb_range *)ptr;
+
+	info->mtc_start = mtc->range_start;
+	info->mtc_size = mtc->range_size;
+}
+
 static void cb_parse_spi_flash(void *ptr, struct sysinfo_t *info)
 {
 	struct cb_spi_flash *flash = (struct cb_spi_flash *)ptr;
@@ -360,6 +368,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_SPI_FLASH:
 			cb_parse_spi_flash(ptr, info);
+			break;
+		case CB_TAG_MTC:
+			cb_parse_mtc(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

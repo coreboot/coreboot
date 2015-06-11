@@ -124,6 +124,8 @@ struct sysinfo_t {
 		uint32_t sector_size;
 		uint32_t erase_cmd;
 	} spi_flash;
+	uint64_t mtc_start;
+	uint32_t mtc_size;
 };
 
 extern struct sysinfo_t lib_sysinfo;

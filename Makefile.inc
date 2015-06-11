@@ -627,8 +627,8 @@ endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"
 	if [ -f $(DOTCONFIG) ]; then \
-	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp ; \
-	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
+	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp && \
+	make DOTCONFIG=$(DOTCONFIG) DEFCONFIG=$(obj)/config.tmp savedefconfig && \
 	$(CBFSTOOL) $@.tmp add -f $(obj)/config.tmp -n config -t raw; rm -f $(obj)/config.tmp ; fi
 	@printf "    REVISION   build.h\n"
 	if [ -f $(obj)/build.h ]; then $(CBFSTOOL) $@.tmp add -f $(obj)/build.h -n revision -t raw; fi

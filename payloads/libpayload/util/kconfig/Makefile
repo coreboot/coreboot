@@ -10,7 +10,7 @@ ifeq ($(_OS),MINGW32)
        regex-objs=regex.o
 endif
 
-Kconfig := Config.in
+Kconfig := Kconfig
 
 xconfig: prepare $(objk)/qconf
 	$(Q)$(objk)/qconf $(Kconfig)

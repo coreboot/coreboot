@@ -47,6 +47,9 @@ endif
 
 build: config
 	echo "    MAKE       SeaBIOS $(TAG-y)"
+	export VERSION=$$(cd seabios && \
+		git describe --tags --long --dirty 2>/dev/null || \
+		echo "unknown") ; \
 	$(MAKE) -C seabios OUT=out/
 
 clean:

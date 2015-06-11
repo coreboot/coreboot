@@ -238,6 +238,11 @@ fn_exists()
 	type $1 2>/dev/null | grep -q 'is a function'
 }
 
+is_package_enabled()
+{
+	echo "$PACKAGES" |grep -q "\<$1\>"
+}
+
 build() {
 	package=$1
 
@@ -248,7 +253,7 @@ build() {
 
 	mkdir -p ${BUILDDIR}
 
-	[[ "$PACKAGES" == *$package* ]] && \
+	is_package_enabled "$package" && \
 	if [ -f ${BUILDDIR}/.success ]; then
 		printf "Skipping $package as it is already built\n"
 	else
@@ -569,7 +574,7 @@ fi
 # Set up host compiler and flags needed for various OSes
 
 CC=cc
-if [[ "$PACKAGES" == *GCC* ]]; then
+if is_package_enabled "GCC"; then
 if [ $UNAME = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
 

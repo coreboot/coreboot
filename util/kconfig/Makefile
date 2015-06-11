@@ -5,6 +5,8 @@
 export LC_ALL=C
 export LANG=C
 
+DEFCONFIG?=defconfig
+
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config \
 	localmodconfig localyesconfig
 
@@ -85,7 +87,7 @@ allnoconfig allyesconfig allmodconfig alldefconfig randconfig: $(objk)/conf
 	$< --$@ $(Kconfig)
 
 savedefconfig: $(objk)/conf
-	$< --$@=defconfig $(Kconfig)
+	$< --$@=$(DEFCONFIG) $(Kconfig)
 
 defconfig: $(objk)/conf
 ifeq ($(KBUILD_DEFCONFIG),)

@@ -235,7 +235,7 @@ unpack_and_patch() {
 
 fn_exists()
 {
-	type $1 2>/dev/null | grep -q 'is a function'
+	type $1 >/dev/null 2>&1
 }
 
 is_package_enabled()

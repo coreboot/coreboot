@@ -45,14 +45,19 @@ endif
 
 export top := $(CURDIR)
 export src := src
-export srck := $(top)/util/kconfig
+export srck := $(top)/../../util/kconfig
 export obj ?= build
 export objutil ?= $(obj)/util
 export objk := $(objutil)/lp_kconfig
 
-
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
+export KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
+export KCONFIG_SPLITCONFIG := $(obj)/config
+export KCONFIG_TRISTATE := $(obj)/tristate.conf
+export KCONFIG_NEGATIVES := 1
+export Kconfig := Kconfig
+export CONFIG_ := CONFIG_LP_
 
 # directory containing the toplevel Makefile.inc
 TOPLEVEL := .
@@ -87,7 +92,7 @@ all: real-all
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
-include util/kconfig/Makefile
+include ../../util/kconfig/Makefile
 
 include $(HAVE_DOTCONFIG)
 
@@ -276,7 +281,7 @@ printall:
 
 endif
 
-$(shell mkdir -p $(obj) $(objk)/lxdialog $(additional-dirs) $(alldirs))
+$(shell mkdir -p $(KCONFIG_SPLITCONFIG) $(obj) $(objk)/lxdialog $(additional-dirs) $(alldirs))
 
 cscope:
 	cscope -bR

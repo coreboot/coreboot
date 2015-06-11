@@ -16,7 +16,7 @@ ifeq ($(_OS),MINGW32)
 	regex-objs=regex.o
 endif
 
-Kconfig := src/Kconfig
+Kconfig ?= src/Kconfig
 
 xconfig: $(objk)/qconf
 	$< $(Kconfig)

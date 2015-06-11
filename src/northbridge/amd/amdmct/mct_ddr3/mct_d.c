@@ -1456,7 +1456,7 @@ restartinit:
 			}
 		}
 		if (NodesWmem == 0) {
-			printk(BIOS_DEBUG, "No Nodes?!\n");
+			printk(BIOS_ALERT, "Unable to detect valid memory on any nodes.  Halting!\n");
 			goto fatalexit;
 		}
 
@@ -3892,13 +3892,14 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 					read_spd_bytes(pMCTstat, pDCTstat, i);
 					crc_status = crcCheck(pDCTstat, i);
 				}
-				if (crc_status) { /* CRC is OK */
+				if ((crc_status) || (SPDCtrl == 2)) { /* CRC is OK */
 					byte = pDCTstat->spd_data.spd_bytes[i][SPD_TYPE];
 					if (byte == JED_DDR3SDRAM) {
 						/*Dimm is 'Present'*/
 						pDCTstat->DIMMValid |= 1 << i;
 					}
 				} else {
+					printk(BIOS_WARNING, "Node %d DIMM %d: SPD checksum invalid\n", pDCTstat->Node_ID, i);
 					pDCTstat->DIMMSPDCSE = 1 << i;
 					if (SPDCtrl == 0) {
 						pDCTstat->ErrStatus |= 1 << SB_DIMMChkSum;

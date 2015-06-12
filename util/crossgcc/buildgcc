@@ -188,7 +188,7 @@ download() {
 			"$($CHECKSUM tarballs/$FILE 2>/dev/null | \
 				sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,')" ) && \
 			printf "(cached)" || (
-		printf "(downloading)"
+		printf "(downloading from $archive)"
 		rm -f tarballs/$FILE
 		cd tarballs
 		wget --no-check-certificate -q $archive

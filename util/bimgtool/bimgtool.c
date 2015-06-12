@@ -160,7 +160,7 @@ static const struct crc_t crc_type = {
 static int write_binary(FILE *out, FILE *in, struct bimg_header *hdr)
 {
 	static uint8_t file_buf[MAX_RECORD_BYTES];
-	struct bimg_data_header data_hdr;
+	struct bimg_data_header data_hdr = { 0 };
 	size_t n_written;
 
 	data_hdr.dest_addr = hdr->entry_addr;

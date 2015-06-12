@@ -219,6 +219,8 @@ if test ! -x build/cbfstool; then
 fi
 test_cmd $LOCAL "$cbfstool_cmd"
 $cbfstool_cmd build/coreboot.rom extract -n config -f ${tmpdir}/config.txt
+cp ${tmpdir}/config.txt ${tmpdir}/config.short.txt
+yes "" | make DOTCONFIG=${tmpdir}/config.txt oldconfig
 $cbfstool_cmd build/coreboot.rom print > ${tmpdir}/cbfs.txt
 
 # Obtain board and revision info to form the directory structure:
@@ -238,6 +240,7 @@ echo "Temporarily placing output in ${tmpdir}/${results}"
 mkdir -p "${tmpdir}/${results}"
 
 mv "${tmpdir}/config.txt" "${tmpdir}/${results}"
+mv "${tmpdir}/config.short.txt" "${tmpdir}/${results}"
 mv "${tmpdir}/cbfs.txt" "${tmpdir}/${results}"
 
 touch ${tmpdir}/${results}/revision.txt

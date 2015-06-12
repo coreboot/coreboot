@@ -115,9 +115,15 @@ static int spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 #endif
 }
 
-AGESA_STATUS OemS3Save(AMD_S3SAVE_PARAMS *S3SaveParams)
+AGESA_STATUS OemS3Save(void *vS3SaveParams)
 {
+#if IS_ENABLED(CONFIG_CPU_AMD_PI_00660F01)
+	AMD_RTB_PARAMS *S3SaveParams = (AMD_RTB_PARAMS *)vS3SaveParams;
+	S3_DATA_BLOCK *dataBlock = &S3SaveParams->S3DataBlock;
+#else
+	AMD_S3SAVE_PARAMS *S3SaveParams = (AMD_S3SAVE_PARAMS *)vS3SaveParams;
 	AMD_S3_PARAMS *dataBlock = &S3SaveParams->S3DataBlock;
+#endif
 	u8 MTRRStorage[S3_DATA_MTRR_SIZE];
 	u32 MTRRStorageSize = 0;
 	u32 pos, size;

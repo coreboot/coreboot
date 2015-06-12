@@ -123,6 +123,7 @@ RISC-V ARCHITECTURE
 M:	Ronald Minnich <rminnich@gmail.com>
 S:	Maintained
 F:	src/arch/riscv/
+F:	src/soc/ucb/
 F:	src/mainboard/emulation/qemu-riscv/
 
 LENOVO EC
@@ -181,12 +182,85 @@ F:	src/drivers/intel/fsp1_1/
 
 ATI MACH64 Driver
 S:	Orphan
-F:	drivers/ati/mach64/
+F:	src/drivers/ati/mach64/
+
+ABUILD
+M:	Patrick Georgi <patrick@georgi-clan.de>
+S:	Supported
+F:	util/abuild/
+
+ACPI
+F:	src/acpi/
+F:	src/arch/x86/acpi/
+F:	util/acpi/
+
+ARM ARCHITECTURE
+F:	src/arch/arm/
+F:	src/arch/arm64
+F:	src/cpu/allwinner/
+F:	src/cpu/armltd/
+F:	src/cpu/samsung/
+F:	src/cpu/ti/
+F:	src/soc/broadcom/
+F:	src/soc/marvell/
+F:	src/soc/nvidia/
+F:	src/soc/qualcomm/
+F:	src/soc/rockchip/
+F:	src/soc/samsung/
+F:	util/arm_boot_tools/
+F:	util/broadcom/
+F:	util/exynos/
+F:	util/ipqheader/
+F:	util/nvidia/
+F:	util/rockchip/
+
+MIPS ARCHITECTURE
+F:	src/arch/mips/
+F:	src/cpu/mips/
+F:	src/soc/imgtec/
+F:	util/bimgtool/
+
+X86 ARCHITECTURE
+F:	src/arch/x86/
+F:	src/cpu/x86/
+F:	src/drivers/pc80/
+F:	src/include/pc80/
+F:	src/include/cpu/x86/
+
+INTEL SUPPORT
+F:	src/vendorcode/intel/
+F:	src/cpu/intel/
+F:	src/northbridge/intel/
+F:	src/southbridge/intel/
+F:	src/soc/intel/
+F:	src/drivers/intel/
+F:	src/include/cpu/intel/
+
+AMD SUPPORT
+F:	src/vendorcode/amd/
+F:	src/cpu/amd/
+F:	src/northbridge/amd/
+F:	src/southbridge/amd/
+F:	src/include/cpu/amd/
+
+VIA SUPPORT
+F:	src/cpu/via/
+F:	src/northbridge/via/
+F:	src/southbridge/via/
 
 LINT SCRIPTS
 M:	Patrick Georgi <patrick@georgi-clan.de>
 S:	Supported
 F:	util/lint/
+
+INTELTOOL
+M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
+F:	util/inteltool/
+
+IFDTOOL
+M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
+F:	util/ifdtool/
+F:	util/ifdfake/
 
 BUILD SYSTEM
 M:	Patrick Georgi <patrick@georgi-clan.de>
@@ -194,8 +268,88 @@ M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	Makefile
 F:	*.inc
+F:	src/include/kconfig.h
 F:	util/kconfig/
 F:	util/sconfig/
+
+BOARD STATUS
+F:	util/board_status/
+
+BINARY OBJECTS
+F:	3rdparty/blobs/
+
+VERIFIED BOOT
+F:	3rdparty/vboot/
+F:	src/vendorcode/google/chromeos/
+F:	src/include/tpm.h
+F:	src/include/tpm_lite/
+
+RESOURCE ALLOCATOR
+F:	src/device/*
+F:	src/include/device/
+F:	src/include/cpu/cpu.h
+
+OPTION ROM EXECUTION & X86EMU
+F:	src/device/oprom/
+
+CBFS
+F:	src/include/cbfs.h
+F:	src/include/cbfs_serialized.h
+F:	util/cbfstool/
+
+CBMEM
+F:	src/include/cbmem.h
+F:	src/include/cbmem_id.h
+F:	util/cbmem/
+
+CONSOLE
+F:	src/console/
+F:	src/include/console/
+F:	src/drivers/uart/
+
+NVRAM
+F:	util/nvramtool/
+F:	util/optionlist/
+F:	payloads/nvramcui/
+
+LIBPAYLOAD
+F:	payloads/libpayload/
+
+BAYOU PAYLOAD
+F:	payloads/bayou/
+
+COREINFO PAYLOAD
+F:	payloads/coreinfo/
+
+EXTERNAL PAYLOADS INTEGRATION
+M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
+F:	payloads/external
+
+VERIFIED BOOT 2
+M:	Aaron Durbin <adurbin@chromium.org>
+F:	src/vendorcode/google/chromeos/vboot2/
+
+MISSING: TIMERS / DELAYS
+
+MISSING: TIMESTAMPS
+
+MISSING: MEMLAYOUT
+
+MISSING: FMAP
+
+MISSING: GPIO
+
+MISSING: SMP
+
+MISSING: SUPERIOS
+
+MISSING: DMP / QEMU-X86
+
+MISSING: ELOG
+
+MISSING: GENERIC DRAM (should drop)
+
+MISSING: SPI
 
 THE REST
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>

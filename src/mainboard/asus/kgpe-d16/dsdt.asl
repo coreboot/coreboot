@@ -292,13 +292,29 @@ DefinitionBlock (
 
 			Name (PR03, Package () {
 				/* PIC */
+				Package (0x04) { 0xFFFF, 0x00, LNKE, 0x00 },
+				Package (0x04) { 0xFFFF, 0x01, LNKF, 0x00 },
+				Package (0x04) { 0xFFFF, 0x02, LNKG, 0x00 },
+				Package (0x04) { 0xFFFF, 0x03, LNKH, 0x00 },
+			})
+
+			Name (AR03, Package () {
+				/* APIC */
+				Package (0x04) { 0xFFFF, 0x00, 0x00, 44 },
+				Package (0x04) { 0xFFFF, 0x01, 0x00, 45 },
+				Package (0x04) { 0xFFFF, 0x02, 0x00, 46 },
+				Package (0x04) { 0xFFFF, 0x03, 0x00, 47 },
+			})
+
+			Name (PR04, Package () {
+				/* PIC */
 				Package (0x04) { 0xFFFF, 0x00, LNKA, 0x00 },
 				Package (0x04) { 0xFFFF, 0x01, LNKB, 0x00 },
 				Package (0x04) { 0xFFFF, 0x02, LNKC, 0x00 },
 				Package (0x04) { 0xFFFF, 0x03, LNKD, 0x00 },
 			})
 
-			Name (AR03, Package () {
+			Name (AR04, Package () {
 				/* APIC */
 				Package (0x04) { 0xFFFF, 0x00, 0x00, 48 },
 				Package (0x04) { 0xFFFF, 0x01, 0x00, 49 },
@@ -306,7 +322,7 @@ DefinitionBlock (
 				Package (0x04) { 0xFFFF, 0x03, 0x00, 51 },
 			})
 
-			Name (PR04, Package () {
+			Name (PR05, Package () {
 				/* PIC */
 				Package (0x04) { 0xFFFF, 0x00, LNKH, 0x00 },
 				Package (0x04) { 0xFFFF, 0x01, LNKE, 0x00 },
@@ -314,7 +330,7 @@ DefinitionBlock (
 				Package (0x04) { 0xFFFF, 0x03, LNKG, 0x00 },
 			})
 
-			Name (AR04, Package () {
+			Name (AR05, Package () {
 				/* APIC */
 				Package (0x04) { 0xFFFF, 0x00, 0x00, 47 },
 				Package (0x04) { 0xFFFF, 0x01, 0x00, 44 },
@@ -322,7 +338,7 @@ DefinitionBlock (
 				Package (0x04) { 0xFFFF, 0x03, 0x00, 46 },
 			})
 
-			Name (PR05, Package () {
+			Name (PR06, Package () {
 				/* PIC */
 				Package (0x04) { 0xFFFF, 0x00, LNKA, 0x00 },
 				Package (0x04) { 0xFFFF, 0x01, LNKB, 0x00 },
@@ -330,7 +346,7 @@ DefinitionBlock (
 				Package (0x04) { 0xFFFF, 0x03, LNKD, 0x00 },
 			})
 
-			Name (AR05, Package () {
+			Name (AR06, Package () {
 				/* APIC */
 				Package (0x04) { 0xFFFF, 0x00, 0x00, 32 },
 				Package (0x04) { 0xFFFF, 0x01, 0x00, 33 },
@@ -338,7 +354,7 @@ DefinitionBlock (
 				Package (0x04) { 0xFFFF, 0x03, 0x00, 35 },
 			})
 
-			Name (PR06, Package () {
+			Name (PR07, Package () {
 				/* PIC */
 				Package (0x04) { 0xFFFF, 0x00, LNKE, 0x00 },
 				Package (0x04) { 0xFFFF, 0x01, LNKF, 0x00 },
@@ -346,7 +362,7 @@ DefinitionBlock (
 				Package (0x04) { 0xFFFF, 0x03, LNKH, 0x00 },
 			})
 
-			Name (AR06, Package () {
+			Name (AR07, Package () {
 				/* APIC */
 				Package (0x04) { 0xFFFF, 0x00, 0x00, 36 },
 				Package (0x04) { 0xFFFF, 0x01, 0x00, 37 },
@@ -354,7 +370,7 @@ DefinitionBlock (
 				Package (0x04) { 0xFFFF, 0x03, 0x00, 39 },
 			})
 
-			Name (PR07, Package () {
+			Name (PR08, Package () {
 				/* PIC */
 				Package (0x04) { 0xFFFF, 0x00, LNKA, 0x00 },
 				Package (0x04) { 0xFFFF, 0x01, LNKB, 0x00 },
@@ -362,7 +378,7 @@ DefinitionBlock (
 				Package (0x04) { 0xFFFF, 0x03, LNKD, 0x00 },
 			})
 
-			Name (AR07, Package () {
+			Name (AR08, Package () {
 				/* APIC */
 				Package (0x04) { 0xFFFF, 0x00, 0x00, 40 },
 				Package (0x04) { 0xFFFF, 0x01, 0x00, 41 },
@@ -613,6 +629,26 @@ DefinitionBlock (
 				}
 			}
 
+			/* 1:00.0 PIKE */
+			Device (PIKE)
+			{
+				Name (_ADR, 0x00040000)			// _ADR: Address
+				Name(_PRW, Package () {0x11, 0x04})	// Wake from S1-S4
+				Method (_PRT, 0, NotSerialized)		// _PRT: PCI Routing Table
+				{
+					If (PICM) {
+						Return (AR03)
+					} Else {
+						Return (PR03)
+					}
+				}
+				Device (SLT1)
+				{
+					Name (_ADR, 0xFFFF)			// _ADR: Address
+					Name(_PRW, Package () {0x0B, 0x04})	// Wake from S1-S4
+				}
+			}
+
 			/* 3:00.0 PCIe NIC A */
 			Device (NICA)
 			{
@@ -621,9 +657,9 @@ DefinitionBlock (
 				Method (_PRT, 0, NotSerialized)  // _PRT: PCI Routing Table
 				{
 					If (PICM) {
-						Return (AR03)
+						Return (AR04)
 					} Else {
-						Return (PR03)
+						Return (PR04)
 					}
 				}
 				Device (BDC1)
@@ -640,9 +676,9 @@ DefinitionBlock (
 				Method (_PRT, 0, NotSerialized)  // _PRT: PCI Routing Table
 				{
 					If (PICM) {
-						Return (AR04)
+						Return (AR05)
 					} Else {
-						Return (PR04)
+						Return (PR05)
 					}
 				}
 				Device (BDC2)
@@ -659,9 +695,9 @@ DefinitionBlock (
 				Method (_PRT, 0, NotSerialized)		// _PRT: PCI Routing Table
 				{
 					If (PICM) {
-						Return (AR05)
+						Return (AR06)
 					} Else {
-						Return (PR05)
+						Return (PR06)
 					}
 				}
 				Device (SLT1)
@@ -679,9 +715,9 @@ DefinitionBlock (
 				Method (_PRT, 0, NotSerialized)		// _PRT: PCI Routing Table
 				{
 					If (PICM) {
-						Return (AR06)
+						Return (AR07)
 					} Else {
-						Return (PR06)
+						Return (PR07)
 					}
 				}
 				Device (SLT1)
@@ -699,9 +735,9 @@ DefinitionBlock (
 				Method (_PRT, 0, NotSerialized)		// _PRT: PCI Routing Table
 				{
 					If (PICM) {
-						Return (AR07)
+						Return (AR08)
 					} Else {
-						Return (PR07)
+						Return (PR08)
 					}
 				}
 				Device (SLT1)

@@ -333,7 +333,7 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 #if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
 	uint8_t dimm;
 
-	for (i = 0; i < 15; i = i + 2) {
+	for (i = 0; i < MAX_DIMMS_SUPPORTED; i = i + 2) {
 		if (pDCTstat->DIMMValid & (1 << i))
 			ch1_voltage |= pDCTstat->DimmConfiguredVoltage[i];
 		if (pDCTstat->DIMMValid & (1 << (i + 1)))
@@ -343,7 +343,7 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 	for (i = 0; i < 2; i++) {
 		sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[i];
 		highest_rank_count[i] = 0x0;
-		for (dimm = 0; dimm < 8; dimm++) {
+		for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
 			if (pDCTData->DimmRanks[dimm] > highest_rank_count[i])
 				highest_rank_count[i] = pDCTData->DimmRanks[dimm];
 		}

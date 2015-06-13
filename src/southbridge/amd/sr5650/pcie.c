@@ -224,7 +224,7 @@ static void switching_gpp3a_configurations(device_t nb_dev, device_t sb_dev)
 		reg |= 0xFF0BAA0;
 		break;
 	default:	/* shouldn't be here. */
-		printk(BIOS_DEBUG, "Warning:gpp3a_configuration is not correct. Check you devicetree.cb\n");
+		printk(BIOS_DEBUG, "Warning:gpp3a_configuration is not correct. Check your devicetree.cb\n");
 		break;
 	}
 	nbmisc_write_index(nb_dev, 0x26, reg);
@@ -695,10 +695,53 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 
 		/* check port enable */
 		if (cfg->port_enable & (1 << port)) {
-			PcieReleasePortTraining(nb_dev, dev, port);
+			uint32_t hw_port = port;
+			switch (cfg->gpp3a_configuration) {
+			case 0x1: /* 4:2:0:0:0:0 */
+				if (hw_port == 9)
+					hw_port = 4 + 1;
+				break;
+			case 0x2: /* 4:1:1:0:0:0 */
+				if (hw_port == 9)
+					hw_port = 4 + 1;
+				else if (hw_port == 10)
+					hw_port = 4 + 2;
+				break;
+			case 0xc: /* 2:2:2:0:0:0 */
+				if (hw_port == 6)
+					hw_port = 4 + 1;
+				else if (hw_port == 9)
+					hw_port = 4 + 2;
+				break;
+			case 0xa: /* 2:2:1:1:0:0 */
+				if (hw_port == 6)
+					hw_port = 4 + 1;
+				else if (hw_port == 9)
+					hw_port = 4 + 2;
+				else if (hw_port == 10)
+					hw_port = 4 + 3;
+				break;
+			case 0x4: /* 2:1:1:1:1:0 */
+				if (hw_port == 6)
+					hw_port = 4 + 1;
+				else if (hw_port == 7)
+					hw_port = 4 + 2;
+				else if (hw_port == 9)
+					hw_port = 4 + 3;
+				else if (hw_port == 10)
+					hw_port = 4 + 4;
+				break;
+			case 0xb: /* 1:1:1:1:1:1 */
+				break;
+			default:  /* shouldn't be here. */
+				printk(BIOS_WARNING, "invalid gpp3a_configuration\n");
+				return;
+			}
+			PcieReleasePortTraining(nb_dev, dev, hw_port);
 			if (!(AtiPcieCfg.Config & PCIE_GPP_COMPLIANCE)) {
-				u8 res = PcieTrainPort(nb_dev, dev, port);
-				printk(BIOS_DEBUG, "PcieTrainPort port=0x%x result=%d\n", port, res);
+				u8 res = PcieTrainPort(nb_dev, dev, hw_port);
+				printk(BIOS_DEBUG, "PcieTrainPort port=0x%x hw_port=0x%x result=%d\n",
+					port, hw_port, res);
 				if (res) {
 					AtiPcieCfg.PortDetect |= 1 << port;
 				}

@@ -198,7 +198,6 @@ device_t dev_find_slot_pnp(u16 port, u16 device);
 device_t dev_find_lapic(unsigned apic_id);
 int dev_count_cpu(void);
 
-void remap_bsp_lapic(struct bus *cpu_bus);
 device_t add_cpu_device(struct bus *cpu_bus, unsigned apic_id, int enabled);
 void set_cpu_topology(device_t cpu, unsigned node, unsigned package, unsigned core, unsigned thread);
 

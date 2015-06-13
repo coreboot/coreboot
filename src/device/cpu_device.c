@@ -22,21 +22,6 @@
 #include <console/console.h>
 #include <cpu/x86/lapic.h>
 
-void remap_bsp_lapic(struct bus *cpu_bus)
-{
-	struct device_path cpu_path;
-	device_t cpu;
-	u32 bsp_lapic_id = lapicid();
-
-	if (bsp_lapic_id) {
-		cpu_path.type = DEVICE_PATH_APIC;
-		cpu_path.apic.apic_id = 0;
-		cpu = find_dev_path(cpu_bus, &cpu_path);
-		if (cpu)
-			cpu->path.apic.apic_id = bsp_lapic_id;
-	}
-}
-
 device_t add_cpu_device(struct bus *cpu_bus, unsigned apic_id, int enabled)
 {
 	struct device_path cpu_path;

@@ -1112,6 +1112,21 @@ static void add_more_links(device_t dev, unsigned total_links)
 	last->next = NULL;
 }
 
+static void remap_bsp_lapic(struct bus *cpu_bus)
+{
+	struct device_path cpu_path;
+	device_t cpu;
+	u32 bsp_lapic_id = lapicid();
+
+	if (bsp_lapic_id) {
+		cpu_path.type = DEVICE_PATH_APIC;
+		cpu_path.apic.apic_id = 0;
+		cpu = find_dev_path(cpu_bus, &cpu_path);
+		if (cpu)
+			cpu->path.apic.apic_id = bsp_lapic_id;
+	}
+}
+
 static void cpu_bus_scan(device_t dev)
 {
 	struct bus *cpu_bus;

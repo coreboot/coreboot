@@ -346,6 +346,7 @@ void sr5650_enable(device_t dev)
 {
 	device_t nb_dev = 0, sb_dev = 0;
 	int dev_ind;
+	struct southbridge_amd_sr5650_config *cfg;
 
 	printk(BIOS_INFO, "sr5650_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));
 	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
@@ -353,6 +354,7 @@ void sr5650_enable(device_t dev)
 		die("sr5650_enable: CAN NOT FIND SR5650 DEVICE, HALT!\n");
 		/* NOT REACHED */
 	}
+	cfg = (struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
 
 	/* sb_dev (dev 8) is a bridge that links to southbridge. */
 	sb_dev = dev_find_slot(0, PCI_DEVFN(8, 0));
@@ -433,6 +435,7 @@ void sr5650_enable(device_t dev)
 	/* Lock HWInit Register after the last device was done */
 	if (dev_ind == 13) {
 		sr56x0_lock_hwinitreg();
+		udelay(cfg->pcie_settling_time);
 	}
 }
 

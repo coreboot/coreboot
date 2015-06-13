@@ -43,9 +43,9 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 					end
 					register "gpp1_configuration" = "0"	# Configuration 16:0 default
 					register "gpp2_configuration" = "1"	# Configuration 8:8
-					#register "gpp3a_configuration" = "2"	# Configuration 4:1:1:0:0:0
-					register "gpp3a_configuration" = "11"	# Configuration 1:1:1:1:1:1
-					register "port_enable" = "0x3ffc"	# Enable all ports except 0 and 1
+					register "gpp3a_configuration" = "2"	# Configuration 4:1:1:0:0:0
+					register "port_enable" = "0x3f1c"	# Enable all ports except 0, 1, 5, 6, and 7
+					register "pcie_settling_time" = "1000000"	# Allow PIKE to be detected / configured
 				end
 				chip southbridge/amd/sb700		# Secondary southbridge
 					device pci 11.0 on end			# SATA

@@ -64,6 +64,12 @@ DefinitionBlock (
 	#include "acpi/sleep.asl"
 
 	#include "acpi/gpe.asl"
+
+	/* Contains the GPIO led and button setup for this board */
+	#include "acpi/buttons.asl"
+	#include "acpi/gpio.asl"
+	#include "acpi/leds.asl"
+
 	#include "acpi/thermal.asl"
 }
 /* End of ASL file */

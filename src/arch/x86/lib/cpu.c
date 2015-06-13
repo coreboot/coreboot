@@ -31,12 +31,6 @@ static inline int flag_is_changeable_p(uint32_t flag)
 	return ((f1^f2) & flag) != 0;
 }
 
-/* Probe for the CPUID instruction */
-int cpu_have_cpuid(void)
-{
-	return flag_is_changeable_p(X86_EFLAGS_ID);
-}
-
 /*
  * Cyrix CPUs without cpuid or with cpuid not yet enabled can be detected
  * by the fact that they preserve the flags across the division of 5/2.
@@ -130,26 +124,6 @@ static const char *cpu_vendor_name(int vendor)
 	return name;
 }
 
-static int cpu_cpuid_extended_level(void)
-{
-	return cpuid_eax(0x80000000);
-}
-
-#define CPUID_FEATURE_PAE (1 << 6)
-#define CPUID_FEATURE_PSE36 (1 << 17)
-
-int cpu_phys_address_size(void)
-{
-	if (!(cpu_have_cpuid()))
-		return 32;
-
-	if (cpu_cpuid_extended_level() >= 0x80000008)
-		return cpuid_eax(0x80000008) & 0xff;
-
-	if (cpuid_edx(1) & (CPUID_FEATURE_PAE | CPUID_FEATURE_PSE36))
-		return 36;
-	return 32;
-}
 static void identify_cpu(struct device *cpu)
 {
 	char vendor_name[16];

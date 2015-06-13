@@ -425,6 +425,13 @@ gitconfig:
 			chmod +x .git/hooks/$$hook;		     \
 		fi;						     \
 	done
+	# Now set up thehooks for 3rdparty/blobs
+	if [ util/gitconfig/commit-msg -nt .git/modules/3rdparty/hooks/commit-msg -o  \
+	! -x .git/modules/3rdparty/hooks/commit-msg ]; then			     \
+		sed -e "s,%MAKE%,$(MAKE),g" util/gitconfig/commit-msg > .git/modules/3rdparty/hooks/commit-msg;  \
+		chmod +x .git/modules/3rdparty/hooks/commit-msg;		     \
+	fi
+	[ -d 3rdparty/blobs ] && cd 3rdparty/blobs && git config remote.origin.push HEAD:refs/for/master
 	git config remote.origin.push HEAD:refs/for/master
 	(git config --global user.name >/dev/null && git config --global user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
 

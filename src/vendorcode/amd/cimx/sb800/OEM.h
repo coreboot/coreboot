@@ -285,6 +285,14 @@
 #endif
 
 /**
+ * USB_RX_MODE - Enable CG2 clock voltage setting.
+ *
+ */
+#ifndef USB_RX_MODE
+  #define USB_RX_MODE                  0x01
+#endif
+
+/**
  * Spread_Spectrum_Type
  *
  *  - 0 : Normal platform

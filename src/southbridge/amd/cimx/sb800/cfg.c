@@ -84,7 +84,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->USBMODE.UsbModeReg = USB_CONFIG;
 	sb_config->SbUsbPll = 0;
 	/* CG PLL multiplier for USB Rx 1.1 mode (0=disable, 1=enable) */
-	sb_config->UsbRxMode = 1;
+	sb_config->UsbRxMode = USB_RX_MODE;
 
 	/* SATA */
 	sb_config->SataClass = SATA_MODE;

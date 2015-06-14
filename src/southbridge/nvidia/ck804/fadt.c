@@ -64,7 +64,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->flush_size = 0;
 	fadt->flush_stride = 0;
 	fadt->duty_offset = 1;
-	fadt->duty_width = 0;
+	fadt->duty_width = 3;
 	fadt->day_alrm = 0x7d;
 	fadt->mon_alrm = 0x7e;
 	fadt->century = 0x32;

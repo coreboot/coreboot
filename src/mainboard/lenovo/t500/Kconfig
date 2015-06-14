@@ -1,0 +1,7 @@
+if BOARD_LENOVO_T500
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ThinkPad T500"
+
+endif

@@ -166,7 +166,7 @@ detect_special_flags() {
 
 detect_compiler_runtime() {
 	test -z "$CLANG" || \
-	CC_RT_CLANG="`${CLANG} ${CFLAGS} -print-librt-file-name`"
+	CC_RT_CLANG="`${CLANG} ${CFLAGS} -print-librt-file-name 2>/dev/null`"
 	test -z "$GCC" || \
 	CC_RT_GCC="`${GCC} ${CFLAGS} -print-libgcc-file-name`"
 }

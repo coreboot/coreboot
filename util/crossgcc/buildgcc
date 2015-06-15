@@ -107,6 +107,18 @@ normalize_dirs()
 	perl -pi -e "s,/lib64,/lib," $DESTDIR$TARGETDIR/lib/*.la
 }
 
+please_install()
+{
+	test -r /etc/os-release && source /etc/os-release
+	case "$ID_LIKE" in
+	debian) solution="sudo apt-get install $1" ;;
+	suse) solution="sudo zypper install $1" ;;
+	*) solution="using your OS packaging system" ;;
+	esac
+
+	printf "${RED}ERROR:${red} Missing tool: Please install \'$1\' utility. (eg $solution)${NC}\n" >&2
+}
+
 searchtool()
 {
 	# $1 short name
@@ -157,7 +169,7 @@ searchtool()
 			fi
 		fi
 	fi
-	printf "${RED}ERROR:${red} Missing tool: Please install $1 (eg using your OS packaging system)${NC}\n" >&2
+	please_install $1
 	[ -z "$3" ] && exit 1
 	false
 }

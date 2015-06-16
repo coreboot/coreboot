@@ -180,7 +180,7 @@ void usb_setup_utmip(void *usb_base)
 	write32(&usb->utmip.hsrx0,
 		0x2 << 30 |		/* (rst) Keep pattern on active */
 		  1 << 28 |		/* (rst) Realign inertia on pkt */
-		0x1 << 24 |		/* (rst) edges-1 to move sampling */
+		0x0 << 24 |		/* (rst) edges-1 to move sampling */
 		0x3 << 21 |		/* (rst) squelch delay on EoP */
 	       0x11 << 15 |		/* cycles until IDLE */
 	       0x10 << 10);		/* elastic input depth */

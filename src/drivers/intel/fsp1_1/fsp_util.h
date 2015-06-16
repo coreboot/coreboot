@@ -37,7 +37,7 @@
 #define GetFirstGuidHob	get_first_guid_hob
 
 /* Include the EDK2 headers */
-#include <chipset_fsp_util.h>
+#include <soc/chipset_fsp_util.h>
 
 #if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
 int save_mrc_data(void *hob_start);
@@ -104,6 +104,8 @@ void update_mrc_cache(void *unused);
 #define FSP_IMAGE_SIG_LOC			0
 #define FSP_IMAGE_ID_LOC			16
 #define FSP_IMAGE_BASE_LOC			28
+#define FSP_IMAGE_ATTRIBUTE_LOC			32
+#define  GRAPHICS_SUPPORT_BIT			(1 << 0)
 
 #define FSP_SIG					0x48505346	/* 'FSPH' */
 

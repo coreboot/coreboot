@@ -205,6 +205,6 @@ config USE_GENERIC_FSP_CAR_INC
 config VBT_FILE
 	string "GOP Video BIOS table binary path"
 	depends on GOP_SUPPORT
-	default "3rdparty/mainboard/$(MAINBOARDDIR)/vbt.bin"
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/vbt.bin"
 
 endif #PLATFORM_USES_FSP1_1

@@ -294,6 +294,7 @@ static const char *get_hob_type_string(void *hob_ptr)
 		FSP_BOOTLOADER_TEMP_MEMORY_HOB_GUID;
 	const EFI_GUID bootldr_tolum_guid = FSP_BOOTLOADER_TOLUM_HOB_GUID;
 	const EFI_GUID graphics_info_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
+	const EFI_GUID memory_info_hob_guid = FSP_SMBIOS_MEMORY_INFO_GUID;
 
 	hob.Header = (EFI_HOB_GENERIC_HEADER *)hob_ptr;
 	switch (hob.Header->HobType) {
@@ -305,19 +306,21 @@ static const char *get_hob_type_string(void *hob_ptr)
 		break;
 	case EFI_HOB_TYPE_RESOURCE_DESCRIPTOR:
 		hob_type_string = "EFI_HOB_TYPE_RESOURCE_DESCRIPTOR";
+		if (compare_guid(&fsp_reserved_guid, &hob.Guid->Name))
+			hob_type_string = "FSP_RESERVED_MEMORY_RESOURCE_HOB";
+		else if (compare_guid(&bootldr_tolum_guid, &hob.Guid->Name))
+			hob_type_string = "FSP_BOOTLOADER_TOLUM_HOB_GUID";
 		break;
 	case EFI_HOB_TYPE_GUID_EXTENSION:
 		hob_type_string = "EFI_HOB_TYPE_GUID_EXTENSION";
 		if (compare_guid(&bootldr_tmp_mem_guid, &hob.Guid->Name))
 			hob_type_string = "FSP_BOOTLOADER_TEMP_MEMORY_HOB";
-		else if (compare_guid(&fsp_reserved_guid, &hob.Guid->Name))
-			hob_type_string = "FSP_RESERVED_MEMORY_RESOURCE_HOB";
 		else if (compare_guid(&mrc_guid, &hob.Guid->Name))
 			hob_type_string = "FSP_NON_VOLATILE_STORAGE_HOB";
-		else if (compare_guid(&bootldr_tolum_guid, &hob.Guid->Name))
-			hob_type_string = "FSP_BOOTLOADER_TOLUM_HOB_GUID";
 		else if (compare_guid(&graphics_info_guid, &hob.Guid->Name))
 			hob_type_string = "EFI_PEI_GRAPHICS_INFO_HOB_GUID";
+		else if (compare_guid(&memory_info_hob_guid, &hob.Guid->Name))
+			hob_type_string = "FSP_SMBIOS_MEMORY_INFO_GUID";
 		break;
 	case EFI_HOB_TYPE_MEMORY_POOL:
 		hob_type_string = "EFI_HOB_TYPE_MEMORY_POOL";

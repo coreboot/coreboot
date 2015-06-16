@@ -204,12 +204,51 @@ before_romstage:
 	cmp	$0, %eax
 	jne	halt3
 
-	/* Get number of MTRRs. */
+	/* Display the MTRRs */
+	call	soc_display_mtrrs
+
+	/*
+	 * The stack contents are initialized in src/soc/intel/common/stack.c
+	 * to be the following:
+	 *
+	 *		*
+	 *		*
+	 *		*
+	 *  +36: MTRR mask 1 63:32
+	 *  +32: MTRR mask 1 31:0
+	 *  +28: MTRR base 1 63:32
+	 *  +24: MTRR base 1 31:0
+	 *  +20: MTRR mask 0 63:32
+	 *  +16: MTRR mask 0 31:0
+	 *  +12: MTRR base 0 63:32
+	 *   +8: MTRR base 0 31:0
+	 *   +4: Number of MTRRs to setup (described above)
+	 *   +0: Number of variable MTRRs to clear
+	 */
+
+	/* Clear all of the variable MTRRs. */
 	popl	%ebx
 	movl	$MTRRphysBase_MSR(0), %ecx
+	clr	%eax
+	clr	%edx
+
 1:
 	testl	%ebx, %ebx
 	jz	1f
+	wrmsr			/* Write MTRR base. */
+	inc	%ecx
+	wrmsr			/* Write MTRR mask. */
+	inc	%ecx
+	dec	%ebx
+	jmp	1b
+
+1:
+	/* Get number of MTRRs. */
+	popl	%ebx
+	movl	$MTRRphysBase_MSR(0), %ecx
+2:
+	testl	%ebx, %ebx
+	jz	2f
 
 	/* Low 32 bits of MTRR base. */
 	popl	%eax
@@ -227,8 +266,8 @@ before_romstage:
 	inc	%ecx
 
 	dec	%ebx
-	jmp	1b
-1:
+	jmp	2b
+2:
 	post_code(0x39)
 
 	/* And enable cache again after setting MTRRs. */

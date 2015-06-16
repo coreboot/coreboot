@@ -174,21 +174,6 @@ searchtool()
 	false
 }
 
-TAR=$(searchtool tar) || exit $?
-PATCH=$(searchtool patch) || exit $?
-MAKE=$(searchtool make) || exit $?
-SHA1SUM=$(searchtool sha1sum)
-SHA512SUM=$(searchtool sha512sum)
-CHECKSUM=$SHA1SUM
-
-searchtool m4 > /dev/null
-searchtool bison > /dev/null
-searchtool flex flex > /dev/null
-searchtool g++ "Free Software Foundation" nofail > /dev/null || \
-searchtool clang "clang version" > /dev/null
-searchtool wget > /dev/null
-searchtool bzip2 "bzip2," > /dev/null
-
 download() {
 	package=$1
 	archive="$(eval echo \$$package"_ARCHIVE")"
@@ -576,6 +561,23 @@ case "$PACKAGE" in
 		exit 1
 		;;
 esac
+
+# Find all the required tools:
+
+TAR=$(searchtool tar) || exit $?
+PATCH=$(searchtool patch) || exit $?
+MAKE=$(searchtool make) || exit $?
+SHA1SUM=$(searchtool sha1sum)
+SHA512SUM=$(searchtool sha512sum)
+CHECKSUM=$SHA1SUM
+
+searchtool m4 > /dev/null
+searchtool bison > /dev/null
+searchtool flex flex > /dev/null
+searchtool g++ "Free Software Foundation" nofail > /dev/null || \
+searchtool clang "clang version" > /dev/null
+searchtool wget > /dev/null
+searchtool bzip2 "bzip2," > /dev/null
 
 # This initial cleanup is useful when updating the toolchain script.
 

@@ -165,7 +165,6 @@ searchtool()
 TAR=$(searchtool tar) || exit $?
 PATCH=$(searchtool patch) || exit $?
 MAKE=$(searchtool make) || exit $?
-CMAKE=$(searchtool cmake "cmake") || exit $?
 SHA1SUM=$(searchtool sha1sum)
 SHA512SUM=$(searchtool sha512sum)
 CHECKSUM=$SHA1SUM
@@ -554,6 +553,7 @@ case "$PACKAGE" in
 	CLANG|clang)
 		NAME=clang
 		PACKAGES="LLVM CFE CRT CTE"
+		CMAKE=$(searchtool cmake "cmake") || exit $?
 		;;
 	IASL|iasl)
 		NAME="IASL ACPI compiler"

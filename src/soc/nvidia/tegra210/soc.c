@@ -156,7 +156,7 @@ static void tegra210_cpu_init(device_t cpu)
 {
 	if (cpu_is_bsp())
 		if (tegra210_run_mtc() != 0)
-			printk(BIOS_ERR, "MTC: Training failed\n");
+			printk(BIOS_ERR, "MTC: No training data.\n");
 }
 
 static const struct cpu_device_id ids[] = {

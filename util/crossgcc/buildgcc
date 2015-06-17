@@ -578,7 +578,8 @@ searchtool m4 > /dev/null
 searchtool bison > /dev/null
 searchtool flex flex > /dev/null
 searchtool g++ "Free Software Foundation" nofail > /dev/null || \
-searchtool clang "clang version" > /dev/null
+searchtool clang "clang version" nofail > /dev/null || \
+searchtool clang "LLVM"  > /dev/null
 searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
 

@@ -100,9 +100,15 @@ enum {
 	LB_RGB_1280X8 = 0x5
 };
 
-enum {
-	EDP_MODE,
-	HDMI_MODE,
+enum vop_modes {
+	/* EDP == 0 is used for early RK3288 products and is the most likely
+	 * use case, so keep it as the default. Other desired modes should
+	 * be set explicitly in the board's devicetree.cb.
+	 */
+	VOP_MODE_EDP = 0,
+	VOP_MODE_HDMI,
+	VOP_MODE_AUTO_DETECT,
+	VOP_MODE_UNKNOWN,
 };
 
 /* VOP_VERSION_INFO */

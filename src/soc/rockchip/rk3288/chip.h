@@ -21,6 +21,7 @@
 #define __SOC_ROCKCHIP_RK3288_CHIP_H__
 
 #include <soc/gpio.h>
+#include <soc/vop.h>	/* for vop_modes enum used in devicetree.cb */
 
 struct soc_rockchip_rk3288_config {
 	u32 vop_id;

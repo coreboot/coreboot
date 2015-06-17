@@ -110,12 +110,12 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 
 	switch (mode) {
 
-	case HDMI_MODE:
+	case VOP_MODE_HDMI:
 		clrsetbits_le32(&preg->sys_ctrl,
 				M_ALL_OUT_EN, V_HDMI_OUT_EN(1));
 		break;
 
-	case EDP_MODE:
+	case VOP_MODE_EDP:
 	default:
 		clrsetbits_le32(&preg->sys_ctrl,
 				M_ALL_OUT_EN, V_EDP_OUT_EN(1));

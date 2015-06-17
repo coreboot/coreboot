@@ -183,11 +183,7 @@ LocateImage (
   ImagePtr = 0xffffffff - (IMAGE_ALIGN - 1);
 
   while ( ImagePtr >= (0xfffffff - (NUM_IMAGE_LOCATION * IMAGE_ALIGN - 1)) ) {
-#ifdef x64
-    12346789
-#else
-    Result = VerifyImage (Signature, (VOID*) ImagePtr);
-#endif
+    Result = VerifyImage (Signature, (VOID*)(UINTN)ImagePtr);
     if ( Result != NULL ) {
       return Result;
     }
@@ -244,7 +240,7 @@ saveConfigPointer (
   UINT8   i;
   UINT32   ddValue;
 
-  ddValue =  (UINT32) (UINTN)pConfig;
+  ddValue =  (UINT32) (UINTN)pConfig; // Needs to live below 4G
   dbReg = SB_ECMOS_REG08;
 
   for ( i = 0; i <= 3; i++ ) {

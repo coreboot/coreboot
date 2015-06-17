@@ -240,7 +240,7 @@ sbSmmAcpiOn (
  * @param[in] Data    Callback specific data.
  * @param[in] pConfig Southbridge configuration structure pointer.
  */
-UINTN
+UINT32
 CallBackToOEM (
   IN       UINT32 Func,
   IN       UINT32 Data,

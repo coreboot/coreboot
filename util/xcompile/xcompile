@@ -153,6 +153,12 @@ detect_special_flags() {
 		# specify -mmsse, etc flags.
 		CFLAGS_GCC="$CFLAGS_GCC  -march=i686"
 		;;
+	x64)
+		testcc "$GCC"      "$CFLAGS_GCC -Wa,--divide" &&
+			CFLAGS_GCC="$CFLAGS_GCC -Wa,--divide"
+		testcc "$CLANG"      "$CFLAGS_CLANG -Wa,--divide" &&
+			CFLAGS_CLANG="$CFLAGS_CLANG -Wa,--divide"
+		;;
 	mipsel)
 		testcc "$GCC" "$CFLAGS_GCC -mno-abicalls -fno-pic" && \
 		  CFLAGS_GCC+=" -mno-abicalls -fno-pic"

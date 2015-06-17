@@ -685,7 +685,7 @@ static void dump_console(void)
 	 */
 	if (size > cursor)
 		size = cursor;
-	console_c = malloc(size + 1);
+	console_c = calloc(1, size + 1);
 	unmap_memory();
 	if (!console_c) {
 		fprintf(stderr, "Not enough memory for console.\n");
@@ -695,8 +695,6 @@ static void dump_console(void)
 	console_p = map_memory_size((unsigned long)console.cbmem_addr,
 	                            size + sizeof(size) + sizeof(cursor), 1);
 	memcpy(console_c, console_p + 8, size);
-	console_c[size] = 0;
-	console_c[cursor] = 0;
 
 	printf("%s\n", console_c);
 	if (size < cursor)

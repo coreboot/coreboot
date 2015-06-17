@@ -489,6 +489,7 @@ struct usbdev_ctrl *chipidea_init(device_descriptor_t *dd)
 
 	ctrl->poll = chipidea_poll;
 	ctrl->add_gadget = udc_add_gadget;
+	ctrl->add_strings = udc_add_strings;
 	ctrl->enqueue_packet = chipidea_enqueue_packet;
 	ctrl->shutdown = chipidea_shutdown;
 	ctrl->set_address = chipidea_set_address;

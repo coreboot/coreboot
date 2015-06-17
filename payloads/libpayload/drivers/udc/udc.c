@@ -47,6 +47,18 @@
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 
+static unsigned short strings_lang_id = 0;
+static unsigned char strings_count = 0;
+static const char **strings;
+
+void udc_add_strings(unsigned short lang_id, unsigned char count,
+	const char **str)
+{
+	strings_lang_id = lang_id;
+	strings_count = count;
+	strings = str;
+}
+
 /* determine if an additional zero length packet is necessary for
  * a transfer */
 static unsigned int zlp(struct usbdev_ctrl *this, const int epnum,
@@ -299,6 +311,62 @@ static int setup_ep0(struct usbdev_ctrl *this, dev_req_t *dr)
 
 		/* status phase OUT */
 		this->enqueue_packet(this, 0, 0, NULL, 0, 0, 0);
+		return 1;
+	} else
+	if ((dr->bmRequestType == 0x80) &&
+	    (dr->bRequest == GET_DESCRIPTOR) &&
+	    ((dr->wValue & 0xff00) == 0x0300)) {
+		int id = (dr->wValue & 0xff);
+		if (id == 0) {
+			if (strings_lang_id == 0)
+				return 0;
+
+			uint8_t *data = dma_malloc(4);
+			data[0] = 0x04; // length
+			data[1] = 0x03; // string descriptor
+			data[2] = strings_lang_id & 0xff;
+			data[3] = strings_lang_id >> 8;
+			/* data phase IN */
+			this->enqueue_packet(this, 0, 1,
+				data,
+				min(data[0], dr->wLength),
+				zlp(this, 0, data[0], dr->wLength),
+				1);
+
+			/* status phase OUT */
+			this->enqueue_packet(this, 0, 0, NULL, 0, 0, 0);
+		} else {
+			if (strings_lang_id == 0)
+				return 0;
+
+			int lang = dr->wIndex;
+			if (lang != strings_lang_id)
+				return 0;
+
+			if (id > strings_count)
+				return 0;
+
+			int s_len = strlen(strings[id]);
+			int d_len = s_len * 2;
+
+			uint8_t *data = dma_malloc(d_len + 2);
+			memset(data, 0, d_len);
+			data[0] = d_len + 2; // length
+			data[1] = 0x03; // string descriptor
+			int i;
+			for (i = 0; i < s_len; i++)
+				data[i * 2 + 2] = strings[id][i];
+
+			/* data phase IN */
+			this->enqueue_packet(this, 0, 1,
+				data,
+				min(d_len + 2, dr->wLength),
+				zlp(this, 0, d_len + 2, dr->wLength),
+				1);
+
+			/* status phase OUT */
+			this->enqueue_packet(this, 0, 0, NULL, 0, 0, 0);
+		}
 		return 1;
 	} else
 	if ((dr->bmRequestType == 0x80) &&

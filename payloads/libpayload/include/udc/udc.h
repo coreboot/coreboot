@@ -103,6 +103,22 @@ struct usbdev_ctrl {
 		struct usbdev_configuration *config);
 
 	/**
+	 * Add a set of strings to use for string descriptors.
+         *
+         * 's' must point to an array of strings of which the first
+         * element is unused, with at most 255 elements.
+         *
+         * 'm' is the size of 'strings' (ie. the index of the last entry).
+         *
+         * 'l' is the USB language code, of which some are defined below,
+         * eg. LANG_EN_US.
+	 *
+	 * For now, only one language is ever exposed: Calling add_strings overwrites
+         * older configuration.
+	 */
+	void (*add_strings)(unsigned short l, unsigned char m, const char **s);
+
+	/**
 	 * Add packet to process by the controller.
 	 * zlp: zero length packet, if such a termination is necessary
 	 * autofree: free data after use
@@ -136,8 +152,13 @@ struct usbdev_ctrl {
 	void (*free_data)(void *);
 };
 
+#define LANG_DE_DE 0x0407
+#define LANG_EN_US 0x0409
+
 void udc_add_gadget(struct usbdev_ctrl *this,
 	struct usbdev_configuration *config);
+void udc_add_strings(unsigned short id, unsigned char count,
+	const char *strings[]);
 void udc_handle_setup(struct usbdev_ctrl *this, int ep, dev_req_t *dr);
 
 #endif

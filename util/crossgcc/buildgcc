@@ -541,7 +541,7 @@ case "$PACKAGE" in
 	GCC|gcc)
 		echo "Target architecture is now $TARGETARCH"
 		NAME="${TARGETARCH} cross GCC"
-		PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC IASL"
+		PACKAGES="GMP MPFR MPC LIBELF BINUTILS GCC"
 		;;
 	GDB|gdb)
 		NAME="${TARGETARCH} cross GDB"

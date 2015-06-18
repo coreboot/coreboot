@@ -58,13 +58,17 @@ int  lowmem_backup_size;
 static inline void setup_secondary_gdt(void)
 {
 	u16 *gdt_limit;
+#ifdef __x86_64__
+	u64 *gdt_base;
+#else
 	u32 *gdt_base;
+#endif
 
 	gdt_limit = (void *)&_secondary_gdt_addr;
 	gdt_base = (void *)&gdt_limit[1];
 
-	*gdt_limit = (u32)&gdt_end - (u32)&gdt - 1;
-	*gdt_base = (u32)&gdt;
+	*gdt_limit = (uintptr_t)&gdt_end - (uintptr_t)&gdt - 1;
+	*gdt_base = (uintptr_t)&gdt;
 }
 
 static void copy_secondary_start_to_lowest_1M(void)

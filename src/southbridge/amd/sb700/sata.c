@@ -104,12 +104,17 @@ static void sata_init(struct device *dev)
 	int i, j;
 	uint8_t nvram;
 	uint8_t sata_ahci_mode;
+	uint8_t sata_alpm_enable;
 	uint8_t port_count;
 	uint8_t max_port_count;
 
 	sata_ahci_mode = 0;
 	if (get_option(&nvram, "sata_ahci_mode") == CB_SUCCESS)
 		sata_ahci_mode = !!nvram;
+
+	sata_alpm_enable = 0;
+	if (get_option(&nvram, "sata_alpm") == CB_SUCCESS)
+		sata_alpm_enable = !!nvram;
 
 	device_t sm_dev;
 	/* SATA SMBus Disable */
@@ -228,6 +233,13 @@ static void sata_init(struct device *dev)
 	for (i = max_port_count; i < 32; i++)
 		dword &= ~(0x1 << i);
 	write32(sata_bar5 + 0x0c, dword);
+
+	/* Disable ALPM if ALPM support not requested */
+	if (!sata_alpm_enable) {
+		dword = read32(sata_bar5 + 0xfc);
+		dword &= ~(0x1 << 11);	/* Disable ALPM */
+		write32(sata_bar5 + 0xfc, dword);
+	}
 
 	/* Write protect Sub-Class Code */
 	byte = pci_read_config8(dev, 0x40);

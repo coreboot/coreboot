@@ -73,7 +73,7 @@ static unsigned char smp_compute_checksum(void *v, int len)
 	return checksum;
 }
 
-static void *smp_write_floating_table_physaddr(u32 addr, u32 mpf_physptr, unsigned int virtualwire)
+static void *smp_write_floating_table_physaddr(uintptr_t addr, uintptr_t mpf_physptr, unsigned int virtualwire)
 {
 	struct intel_mp_floating *mf;
 	void *v;
@@ -591,6 +591,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 
 	mptable_lintsrc(mc, isa_bus);
 	tmp = mptable_finalize(mc);
-	printk(BIOS_INFO, "MPTABLE len: %d\n", (unsigned int)tmp - (unsigned int)v);
+	printk(BIOS_INFO, "MPTABLE len: %d\n", (unsigned int)((uintptr_t)tmp -
+				(uintptr_t)v));
 	return (unsigned long)tmp;
 }

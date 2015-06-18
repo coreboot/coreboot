@@ -179,8 +179,14 @@ struct cpu_info {
 static inline struct cpu_info *cpu_info(void)
 {
 	struct cpu_info *ci;
-	__asm__("andl %%esp,%0; "
+	__asm__(
+#ifdef __x86_64__
+		"and %%rsp,%0; "
+		"or  %2, %0 "
+#else
+		"andl %%esp,%0; "
 		"orl  %2, %0 "
+#endif
 		:"=r" (ci)
 		: "0" (~(CONFIG_STACK_SIZE - 1)),
 		"r" (CONFIG_STACK_SIZE - sizeof(struct cpu_info))

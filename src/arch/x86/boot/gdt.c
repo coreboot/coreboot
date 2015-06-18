@@ -26,7 +26,11 @@
 /* i386 lgdt argument */
 struct gdtarg {
 	u16 limit;
+#ifdef __x86_64__
+	u64 base;
+#else
 	u32 base;
+#endif
 } __attribute__((packed));
 
 /* Copy GDT to new location and reload it.
@@ -35,7 +39,7 @@ struct gdtarg {
 static void move_gdt(int is_recovery)
 {
 	void *newgdt;
-	u16 num_gdt_bytes = (u32)&gdt_end - (u32)&gdt;
+	u16 num_gdt_bytes = (uintptr_t)&gdt_end - (uintptr_t)&gdt;
 	struct gdtarg gdtarg;
 
 	newgdt = cbmem_find(CBMEM_ID_GDT);
@@ -49,7 +53,7 @@ static void move_gdt(int is_recovery)
 		memcpy((void*)newgdt, &gdt, num_gdt_bytes);
 	}
 
-	gdtarg.base = (u32)newgdt;
+	gdtarg.base = (uintptr_t)newgdt;
 	gdtarg.limit = num_gdt_bytes - 1;
 
 	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));

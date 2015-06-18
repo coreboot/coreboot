@@ -40,8 +40,8 @@ void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 	write16(X86_EBDA_SEGMENT, ebda_segment);
 
 	/* Set up EBDA */
-	memset((void *)(ebda_segment << 4), 0, ebda_size);
-	write16((void*)(ebda_segment << 4), (ebda_size >> 10));
+	memset((void *)((uintptr_t)ebda_segment << 4), 0, ebda_size);
+	write16((void*)((uintptr_t)ebda_segment << 4), (ebda_size >> 10));
 }
 
 void setup_default_ebda(void)

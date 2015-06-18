@@ -10,6 +10,7 @@
 #include <device/device.h>
 #include <smp/spinlock.h>
 
+#ifndef __x86_64__
 /* Standard macro to see if a specific flag is changeable */
 static inline int flag_is_changeable_p(uint32_t flag)
 {
@@ -36,6 +37,14 @@ int cpu_have_cpuid(void)
 {
 	return flag_is_changeable_p(X86_EFLAGS_ID);
 }
+
+#else
+
+int cpu_have_cpuid(void)
+{
+	return 1;
+}
+#endif
 
 int cpu_cpuid_extended_level(void)
 {

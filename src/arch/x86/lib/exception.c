@@ -494,16 +494,16 @@ void x86_exception(struct eregs *info)
 		info->error_code, info->eflags,
 		info->eax, info->ebx, info->ecx, info->edx,
 		info->edi, info->esi, info->ebp, info->esp);
-	u8 *code = (u8*)((u32)info->eip - (MDUMP_SIZE >>1));
+	u8 *code = (u8*)((uintptr_t)info->eip - (MDUMP_SIZE >>1));
 	/* Align to 8-byte boundary please, and print eight bytes per row.
 	 * This is done to make DRAM burst timing/reordering errors more
 	 * evident from the looking at the dump */
-	code = (u8*)((u32)code & ~0x7);
+	code = (u8*)((uintptr_t)code & ~0x7);
 	int i;
 	for(i = 0; i < MDUMP_SIZE; i++)
 	{
 		if( (i & 0x07) == 0 )
-			printk(BIOS_EMERG, "\n%.8x:\t", (int)code + i );
+			printk(BIOS_EMERG, "\n%p:\t", code + i);
 		printk(BIOS_EMERG, "%.2x ", code[i]);
 	}
 	die("");

@@ -39,17 +39,74 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 	/* Jump to kernel */
 	__asm__ __volatile__(
 		"	cld	\n\t"
+#ifdef __x86_64__
+		/* switch back to 32-bit mode */
+		"       push    %4\n\t"
+		"       push    %3\n\t"
+		"       push    %2\n\t"
+		"       push    %1\n\t"
+		"       push    %0\n\t"
+
+		".intel_syntax noprefix\n\t"
+		/* use iret to switch to 32-bit code segment */
+		"       xor     rax,rax\n\t"
+		"       mov     ax, ss\n\t"
+		"       push    rax\n\t"
+		"       mov     rax, rsp\n\t"
+		"       add     rax, 8\n\t"
+		"       push    rax\n\t"
+		"       pushfq\n\t"
+		"       push    0x10\n\t"
+		"       lea     rax,[rip+3]\n\t"
+		"       push    rax\n\t"
+		"       iretq\n\t"
+		".code32\n\t"
+		/* disable paging */
+		"       mov     eax, cr0\n\t"
+		"       btc     eax, 31\n\t"
+		"       mov     cr0, eax\n\t"
+		/* disable long mode */
+		"       mov     ecx, 0xC0000080\n\t"
+		"       rdmsr\n\t"
+		"       btc     eax, 8\n\t"
+		"       wrmsr\n\t"
+
+		"       pop     eax\n\t"
+		"       add     esp, 4\n\t"
+		"       pop     ebx\n\t"
+		"       add     esp, 4\n\t"
+		"       pop     ecx\n\t"
+
+		"       add     esp, 4\n\t"
+		"       pop     edx\n\t"
+		"       add     esp, 4\n\t"
+		"       pop     esi\n\t"
+		"       add     esp, 4\n\t"
+
+		".att_syntax prefix\n\t"
+#endif
+
 		/* Save the callee save registers... */
 		"	pushl	%%esi\n\t"
 		"	pushl	%%edi\n\t"
 		"	pushl	%%ebx\n\t"
 		/* Save the parameters I was passed */
+#ifdef __x86_64__
+		"	pushl	$0\n\t"    /* 20 adjust */
+	        "	pushl	%%eax\n\t" /* 16 lb_start */
+		"	pushl	%%ebx\n\t" /* 12 buffer */
+		"	pushl	%%ecx\n\t" /*  8 lb_size */
+		"	pushl	%%edx\n\t" /*  4 entry */
+		"	pushl	%%esi\n\t" /*  0 elf_boot_notes */
+#else
 		"	pushl	$0\n\t" /* 20 adjust */
 	        "	pushl	%0\n\t" /* 16 lb_start */
 		"	pushl	%1\n\t" /* 12 buffer */
 		"	pushl	%2\n\t" /*  8 lb_size */
 		"	pushl	%3\n\t" /*  4 entry */
 		"	pushl	%4\n\t" /*  0 elf_boot_notes */
+
+#endif
 		/* Compute the adjustment */
 		"	xorl	%%eax, %%eax\n\t"
 		"	subl	16(%%esp), %%eax\n\t"
@@ -115,7 +172,9 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 		"	popl	%%ebx\n\t"
 		"	popl	%%edi\n\t"
 		"	popl	%%esi\n\t"
-
+#ifdef __x86_64__
+		".code64\n\t"
+#endif
 		::
 		"ri" (lb_start), "ri" (buffer), "ri" (lb_size),
 		"ri" (entry),
@@ -140,7 +199,12 @@ void arch_prog_run(struct prog *prog)
 	if (ENV_RAMSTAGE)
 		try_payload(prog);
 	__asm__ volatile (
+#ifdef __x86_64__
+		"jmp  *%%rdi\n"
+#else
 		"jmp  *%%edi\n"
+#endif
+
 		:: "D"(prog_entry(prog))
 	);
 }

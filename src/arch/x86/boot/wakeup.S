@@ -24,7 +24,12 @@
 /* CR0 bits */
 #define PE		(1 << 0)
 
+#ifdef __x86_64__
+	.code64
+#else
 	.code32
+#endif
+
 	.globl __wakeup
 __wakeup:
 	/* First prepare the jmp to the resume vector */

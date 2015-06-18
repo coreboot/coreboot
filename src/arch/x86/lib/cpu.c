@@ -10,6 +10,7 @@
 #include <device/device.h>
 #include <smp/spinlock.h>
 
+#ifndef __x86_64__
 /* Standard macro to see if a specific flag is changeable */
 static inline int flag_is_changeable_p(uint32_t flag)
 {
@@ -78,6 +79,7 @@ static int deep_magic_nexgen_probe(void)
 		: "=a" (ret) : : "cx", "dx" );
 	return  ret;
 }
+#endif
 
 /* List of cpu vendor strings along with their normalized
  * id values.
@@ -131,6 +133,7 @@ static void identify_cpu(struct device *cpu)
 
 	vendor_name[0] = '\0'; /* Unset */
 
+#ifndef __x86_64__
 	/* Find the id and vendor_name */
 	if (!cpu_have_cpuid()) {
 		/* Its a 486 if we can modify the AC flag */
@@ -148,6 +151,7 @@ static void identify_cpu(struct device *cpu)
 			memcpy(vendor_name, "NexGenDriven", 13);
 		}
 	}
+#endif
 	if (cpu_have_cpuid()) {
 		int  cpuid_level;
 		struct cpuid_result result;

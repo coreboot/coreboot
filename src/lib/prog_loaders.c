@@ -121,6 +121,8 @@ fail:
 	die("Ramstage was not loaded!\n");
 }
 
+#ifdef __RAMSTAGE__ // gc-sections should take care of this
+
 static struct prog global_payload =
 	PROG_INIT(ASSET_PAYLOAD, CONFIG_CBFS_PREFIX "/payload");
 
@@ -170,3 +172,5 @@ void payload_run(void)
 
 	prog_run(payload);
 }
+
+#endif

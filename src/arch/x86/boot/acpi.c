@@ -65,11 +65,11 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 	acpi_xsdt_t *xsdt = NULL;
 
 	/* The RSDT is mandatory... */
-	rsdt = (acpi_rsdt_t *)rsdp->rsdt_address;
+	rsdt = (acpi_rsdt_t *)(uintptr_t)rsdp->rsdt_address;
 
 	/* ...while the XSDT is not. */
 	if (rsdp->xsdt_address)
-		xsdt = (acpi_xsdt_t *)((u32)rsdp->xsdt_address);
+		xsdt = (acpi_xsdt_t *)((uintptr_t)rsdp->xsdt_address);
 
 	/* This should always be MAX_ACPI_TABLES. */
 	entries_num = ARRAY_SIZE(rsdt->entry);
@@ -86,7 +86,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 	}
 
 	/* Add table to the RSDT. */
-	rsdt->entry[i] = (u32)table;
+	rsdt->entry[i] = (uintptr_t)table;
 
 	/* Fix RSDT length or the kernel will assume invalid entries. */
 	rsdt->header.length = sizeof(acpi_header_t) + (sizeof(u32) * (i + 1));
@@ -101,7 +101,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 	 */
 	if (xsdt) {
 		/* Add table to the XSDT. */
-		xsdt->entry[i] = (u64)(u32)table;
+		xsdt->entry[i] = (u64)(uintptr_t)table;
 
 		/* Fix XSDT length. */
 		xsdt->header.length = sizeof(acpi_header_t) +
@@ -299,7 +299,7 @@ static void acpi_create_tcpa(acpi_tcpa_t *tcpa)
 
 	tcpa->platform_class = 0;
 	tcpa->laml = tcpa_log_len;
-	tcpa->lasa = (u32) lasa;
+	tcpa->lasa = (uintptr_t) lasa;
 
 	/* Calculate checksum. */
 	header->checksum = acpi_checksum((void *)tcpa, header->length);
@@ -588,7 +588,7 @@ static void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt,
 	memcpy(rsdp->oem_id, oem_id, 6);
 
 	rsdp->length = sizeof(acpi_rsdp_t);
-	rsdp->rsdt_address = (u32)rsdt;
+	rsdp->rsdt_address = (uintptr_t)rsdt;
 
 	/*
 	 * Revision: ACPI 1.0: 0, ACPI 2.0/3.0/4.0: 2.
@@ -600,7 +600,7 @@ static void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt,
 	if (xsdt == NULL) {
 		rsdp->revision = 0;
 	} else {
-		rsdp->xsdt_address = (u64)(u32)xsdt;
+		rsdp->xsdt_address = (u64)(uintptr_t)xsdt;
 		rsdp->revision = 2;
 	}
 

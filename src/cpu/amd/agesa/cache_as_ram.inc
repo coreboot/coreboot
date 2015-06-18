@@ -64,9 +64,67 @@ cache_as_ram_setup:
   cvtsi2sd  %ebx, %xmm1
 
   post_code(0xa1)
-  AMD_ENABLE_STACK
 
-  post_code(0xa1)
+#ifdef __x86_64__
+  /* switch to 64 bit long mode */
+  .intel_syntax noprefix
+
+  mov     ecx, esi
+  add     ecx, 0 # core number
+  xor     eax, eax
+  lea     edi, [ecx+0x1000+0x23]
+  mov     dword ptr [ecx+0], edi
+  mov     dword ptr [ecx+4], eax
+
+  lea     edi, [ecx+0x1000]
+  mov     dword ptr [edi+0x00], 0x000000e3
+  mov     dword ptr [edi+0x04], eax
+  mov     dword ptr [edi+0x08], 0x400000e3
+  mov     dword ptr [edi+0x0c], eax
+  mov     dword ptr [edi+0x10], 0x800000e3
+  mov     dword ptr [edi+0x14], eax
+  mov     dword ptr [edi+0x18], 0xc00000e3
+  mov     dword ptr [edi+0x1c], eax
+
+  # load rom based identity mapped page tables
+  mov     eax, ecx
+  mov     cr3,eax
+
+  # enable PAE
+  mov     eax, cr4
+  bts     eax, 5
+  mov     cr4, eax
+
+  # enable long mode
+  mov     ecx, 0xC0000080
+  rdmsr
+  bts     eax, 8
+  wrmsr
+
+  # enable paging
+  mov     eax, cr0
+  bts     eax, 31
+  mov     cr0, eax
+
+  # use call far to switch to 64-bit code segment
+  jmp 0x18,.+7
+
+  /* Pass the BIST result */
+  cvtsd2si        esi, xmm1
+
+  /* Pass the cpu_init_detected */
+  cvtsd2si        edi, xmm0
+
+  /* align the stack */
+  and     esp, 0xFFFFFFF0
+
+  .code64
+  call    cache_as_ram_main
+  .code32
+
+  .att_syntax prefix
+#else
+  AMD_ENABLE_STACK
 
   /* Restore the BIST result */
   cvtsd2si  %xmm0, %edx
@@ -77,6 +135,7 @@ cache_as_ram_setup:
   pushl %ebx  /* init detected */
   pushl %edx  /* bist */
   call  cache_as_ram_main
+#endif
 
   /* Should never see this postcode */
   post_code(0xaf)
@@ -108,3 +167,6 @@ disable_cache_as_ram:
   ret
 
 cache_as_ram_setup_out:
+#ifdef __x86_64__
+.code64
+#endif

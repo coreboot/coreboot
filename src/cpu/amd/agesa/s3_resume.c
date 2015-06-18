@@ -56,10 +56,17 @@ static void move_stack_high_mem(void)
 	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR, HIGH_ROMSTAGE_STACK_SIZE);
 
 	/* TODO: We only switch stack on BSP. */
+#ifdef __x86_64__
+	__asm__
+	    volatile ("add	%0, %%rsp; add %0, %%rbp; invd"::"g"
+		      (high_stack - BSP_STACK_BASE_ADDR)
+		      :);
+#else
 	__asm__
 	    volatile ("add	%0, %%esp; add %0, %%ebp; invd"::"g"
 		      (high_stack - BSP_STACK_BASE_ADDR)
 		      :);
+#endif
 }
 
 static void set_resume_cache(void)

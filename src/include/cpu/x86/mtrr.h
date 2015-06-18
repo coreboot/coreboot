@@ -12,10 +12,17 @@
 #define MTRR_NUM_TYPES       7
 
 #define MTRRcap_MSR     0x0fe
+
+#define MTRRcapSmrr		(1 << 11)
+#define MTRRcapWc		(1 << 10)
+#define MTRRcapFix		(1 << 8)
+#define MTRRcapVcnt		0xff
+
 #define MTRRdefType_MSR 0x2ff
 
 #define MTRRdefTypeEn		(1 << 11)
 #define MTRRdefTypeFixEn	(1 << 10)
+#define MTRRdefTypeType		0xff
 
 #define SMRRphysBase_MSR 0x1f2
 #define SMRRphysMask_MSR 0x1f3

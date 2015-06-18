@@ -116,7 +116,7 @@ $(obj)/coreboot_hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM
 			$(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE)) \
 			$(obj)/config.h
 	echo "    Hudson FW  $@"
-	dd if=/dev/zero of=$@ count=$(ROMSIG_SIZE) ibs=1 status=noxfer 2>/dev/null; \
+	printf %d $(ROMSIG_SIZE) | LC_ALL=C awk '{for (i=0; i<$$1; i++) {printf "%c", 255}}' > $@; \
 	for fwm in 1437226410 \
 		$(HUDSON_IMC_POSITION) \
 		$(HUDSON_GEC_POSITION) \

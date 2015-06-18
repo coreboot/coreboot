@@ -529,7 +529,7 @@ static void setup_uma_memory(void)
 static void domain_set_resources(device_t dev)
 {
 	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
-	printk(BIOS_DEBUG, "  amsr - incoming dev = %08x\n", (u32) dev);
+	printk(BIOS_DEBUG, "  amsr - incoming dev = %p\n", dev);
 
 	unsigned long mmio_basek;
 	u32 pci_tolm;
@@ -741,11 +741,13 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 
 	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
 	if (addr != NULL)
-		current += acpi_create_hest_error_source(hest, current, 0, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+		current += acpi_create_hest_error_source(hest, current, 0,
+				addr + 2, *(UINT16 *)addr - 2);
 
 	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
 	if (addr != NULL)
-		current += acpi_create_hest_error_source(hest, current, 1, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+		current += acpi_create_hest_error_source(hest, current, 1,
+				addr + 2, *(UINT16 *)addr - 2);
 
 	return (unsigned long)current;
 }

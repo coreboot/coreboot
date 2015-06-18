@@ -39,7 +39,7 @@ typedef enum {
 #error "Please increase the value of S3_DATA_SIZE"
 #endif
 
-static void get_s3nv_data(S3_DATA_TYPE S3DataType, u32 *pos, u32 *len)
+static void get_s3nv_data(S3_DATA_TYPE S3DataType, uintptr_t *pos, uintptr_t *len)
 {
 	/* FIXME: Find file from CBFS. */
 	u32 s3_data = CONFIG_S3_DATA_POS;
@@ -65,7 +65,7 @@ static void get_s3nv_data(S3_DATA_TYPE S3DataType, u32 *pos, u32 *len)
 AGESA_STATUS OemInitResume(AMD_RESUME_PARAMS *ResumeParams)
 {
 	AMD_S3_PARAMS *dataBlock = &ResumeParams->S3DataBlock;
-	u32 pos, size;
+	uintptr_t pos, size;
 
 	get_s3nv_data(S3DataTypeNonVolatile, &pos, &size);
 
@@ -126,7 +126,7 @@ AGESA_STATUS OemS3Save(void *vS3SaveParams)
 #endif
 	u8 MTRRStorage[S3_DATA_MTRR_SIZE];
 	u32 MTRRStorageSize = 0;
-	u32 pos, size;
+	uintptr_t pos, size;
 
 	if (HIGH_ROMSTAGE_STACK_SIZE)
 		cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, HIGH_ROMSTAGE_STACK_SIZE);
@@ -157,7 +157,7 @@ AGESA_STATUS OemS3Save(void *vS3SaveParams)
 
 const void *OemS3Saved_MTRR_Storage(void)
 {
-	u32 pos, size;
+	uintptr_t pos, size;
 	get_s3nv_data(S3DataTypeMTRR, &pos, &size);
 	if (!size)
 		return NULL;

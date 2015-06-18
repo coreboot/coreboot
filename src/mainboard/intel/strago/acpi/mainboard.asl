@@ -166,48 +166,6 @@ Scope (\_SB.I2C1)
 	}
 }
 
-Scope (\_SB.I2C2)
-{
-	/* Realtek Audio Codec */
-	Device (RTEK)   /* Audio Codec driver I2C */
-	{
-		Name (_ADR, 0)
-		Name (_HID, AUDIO_CODEC_HID)
-		Name (_CID, AUDIO_CODEC_CID)
-		Name (_DDN, AUDIO_CODEC_DDN)
-		Name (_UID, 1)
-
-		Method(_CRS, 0x0, NotSerialized)
-		{
-			Name(SBUF,ResourceTemplate ()
-			{
-				I2CSerialBus(
-					AUDIO_CODEC_I2C_ADDR,	/* SlaveAddress: bus address */
-					ControllerInitiated,	/* SlaveMode: default to ControllerInitiated */
-					400000,			/* ConnectionSpeed: in Hz */
-					AddressingMode7Bit,	/* Addressing Mode: default to 7 bit */
-					"\\_SB.I2C2",		/* ResourceSource: I2C bus controller name */
-				)
-
-
-			 /* Jack Detect (index 0) */
-			 GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
-				  "\\_SB.GPSW") { JACK_DETECT_GPIO_INDEX }
-			} )
-			Return (SBUF)
-		}
-
-		Method (_STA)
-		{
-			If (LEqual (\S2EN, 1)) {
-				Return (0xF)
-			} Else {
-				Return (0x0)
-			}
-		}
-	}
-}
-
 Scope (\_SB.I2C5)
 {
 	Device (ALSI)
@@ -239,11 +197,54 @@ Scope (\_SB.I2C5)
 
 		Method (_STA)
 		{
+			If (LEqual (\BDID, BOARD_BCRD2)) {
+				Return (0x0)
+			}
 			If (LEqual (\S5EN, 1)) {
 				Return (0xF)
 			} Else {
 				Return (0x0)
 			}
+		}
+	}
+
+	/* Realtek Audio Codec */
+	Device (RTEK)   /* Audio Codec driver I2C */
+	{
+		Name (_ADR, 0)
+		Name (_HID, AUDIO_CODEC_HID)
+		Name (_CID, AUDIO_CODEC_CID)
+		Name (_DDN, AUDIO_CODEC_DDN)
+		Name (_UID, 1)
+
+		Method(_CRS, 0x0, NotSerialized)
+		{
+			Name(SBUF,ResourceTemplate ()
+			{
+				I2CSerialBus(
+					AUDIO_CODEC_I2C_ADDR,	/* SlaveAddress: bus address */
+					ControllerInitiated,	/* SlaveMode: default to ControllerInitiated */
+					400000,			/* ConnectionSpeed: in Hz */
+					AddressingMode7Bit,	/* Addressing Mode: default to 7 bit */
+					"\\_SB.I2C5",		/* ResourceSource: I2C bus controller name */
+				)
+
+
+			 /* Jack Detect (index 0) */
+			 GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
+				  "\\_SB.GPSW") { JACK_DETECT_GPIO_INDEX }
+			} )
+			Return (SBUF)
+		}
+
+		Method (_STA)
+		{
+			If (LEqual (\S5EN, 1)) {
+				If (LEqual (\BDID, BOARD_BCRD2)) {
+					Return (0xF)
+				}
+			}
+			Return (0x0)
 		}
 	}
 }

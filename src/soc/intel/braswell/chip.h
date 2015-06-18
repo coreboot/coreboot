@@ -30,8 +30,9 @@
 #include <fsp_util.h>
 #include <soc/pci_devs.h>
 
-#define SVID_CONFIG1	1
-#define SVID_CONFIG3	3
+#define SVID_CONFIG1		1
+#define SVID_CONFIG3		3
+#define SVID_PMIC_CONFIG	8
 
 struct soc_intel_braswell_config {
 	uint8_t enable_xdp_tap;

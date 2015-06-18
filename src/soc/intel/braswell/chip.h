@@ -34,6 +34,9 @@
 #define SVID_CONFIG3		3
 #define SVID_PMIC_CONFIG	8
 
+#define MEM_DDR3	0
+#define MEM_LPDDR3	1
+
 struct soc_intel_braswell_config {
 	uint8_t enable_xdp_tap;
 	uint8_t clkreq_enable;

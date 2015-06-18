@@ -35,7 +35,7 @@ static int bus_claimed = 0;
 
 #define AMD_SB_SPI_TX_LEN	8
 
-static u32 spibar;
+static uintptr_t spibar;
 
 static void reset_internal_fifo_pointer(void)
 {

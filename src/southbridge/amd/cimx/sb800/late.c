@@ -92,7 +92,8 @@ static u32 sb800_callout_entry(u32 func, u32 data, void* config)
 static void ahci_raid_init(struct device *dev)
 {
 	u8 irq = 0;
-	u32 bar5, caps, ports, val;
+	void *bar5;
+	u32 caps, ports, val;
 
 	val = pci_read_config16(dev, PCI_CLASS_DEVICE);
 	if (val == PCI_CLASS_STORAGE_SATA) {
@@ -105,18 +106,18 @@ static void ahci_raid_init(struct device *dev)
 	}
 
 	irq = pci_read_config8(dev, PCI_INTERRUPT_LINE);
-	bar5 = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
-	printk(BIOS_DEBUG, "IOMEM base: 0x%X, IRQ: 0x%X\n", bar5, irq);
+	bar5 = (void *)(uintptr_t)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+	printk(BIOS_DEBUG, "IOMEM base: %p, IRQ: 0x%X\n", bar5, irq);
 
-	caps = *(volatile u32 *)(bar5 + HOST_CAP);
+	caps = read32(bar5 + HOST_CAP);
 	caps = (caps & 0x1F) + 1;
-	ports= *(volatile u32 *)(bar5 + HOST_PORTS_IMPL);
+	ports= read32(bar5 + HOST_PORTS_IMPL);
 	printk(BIOS_DEBUG, "Number of Ports: 0x%x, Port implemented(bit map): 0x%x\n", caps, ports);
 
 	/* make sure ahci is enabled */
-	val = *(volatile u32 *)(bar5 + HOST_CTL);
+	val = read32(bar5 + HOST_CTL);
 	if (!(val & HOST_CTL_AHCI_EN)) {
-		*(volatile u32 *)(bar5 + HOST_CTL) = val | HOST_CTL_AHCI_EN;
+		write32(bar5 + HOST_CTL, val | HOST_CTL_AHCI_EN);
 	}
 
 	dev->command |= PCI_COMMAND_MASTER;

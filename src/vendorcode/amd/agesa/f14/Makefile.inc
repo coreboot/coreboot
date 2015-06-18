@@ -64,15 +64,21 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/CPU
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/Mem
 
 CFLAGS_x86_32 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
+CFLAGS_x86_64 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 
 export AGESA_ROOT := $(AGESA_ROOT)
 export AGESA_INC  := $(AGESA_INC)
 CPPFLAGS_x86_32 += $(AGESA_INC)
+CPPFLAGS_x86_64 += $(AGESA_INC)
 #######################################################################
 
 classes-y += libagesa
 
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,libagesa,x86_32))
+else
+$(eval $(call create_class_compiler,libagesa,x86_64))
+endif
 
 libagesa-y  = Proc/GNB/Modules/GnbGfxConfig/GfxConfigPost.c
 libagesa-y += Proc/GNB/Modules/GnbGfxConfig/GfxConfigEnv.c

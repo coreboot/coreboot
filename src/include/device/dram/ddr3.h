@@ -186,7 +186,7 @@ void dram_print_spd_ddr3(const dimm_attr * dimm);
  *
  * Should be useful when doing an MRS to the DIMM
  */
-static inline u32 volatile_read(volatile u32 addr)
+static inline u32 volatile_read(volatile uintptr_t addr)
 {
 	volatile u32 result;
 	result = *(volatile u32 *)addr;

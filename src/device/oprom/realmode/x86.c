@@ -188,7 +188,7 @@ static void setup_realmode_idt(void)
 	 for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
 		idts[i].offset = 0x1000 + (i * __idt_handler_size);
-		write_idt_stub((void *)((u32 )idts[i].offset), i);
+		write_idt_stub((void *)((uintptr_t)idts[i].offset), i);
 	}
 
 	/* Many option ROMs use the hard coded interrupt entry points in the

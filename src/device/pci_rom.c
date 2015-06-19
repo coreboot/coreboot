@@ -57,7 +57,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",
 		       dev_path(dev), rom_header);
 	} else {
-		u32 rom_address;
+		uintptr_t rom_address;
 
 		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 

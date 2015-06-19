@@ -132,7 +132,8 @@ char *cros_vpd_gets(const char *key, char *buffer, int size)
 		return NULL;
 
 	if (size > (string_size + 1)) {
-		strcpy(buffer, string_address);
+		memcpy(buffer, string_address, string_size);
+		buffer[string_size] = '\0';
 	} else {
 		memcpy(buffer, string_address, size - 1);
 		buffer[size - 1] = '\0';

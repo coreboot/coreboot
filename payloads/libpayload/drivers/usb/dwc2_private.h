@@ -24,8 +24,17 @@
 typedef struct dwc_ctrl {
 #define DMA_SIZE (64 * 1024)
 	void *dma_buffer;
-	uint32_t *hprt0;
+	u32 *hprt0;
+	u32 frame;
 } dwc_ctrl_t;
+
+typedef struct {
+	u8 *data;
+	endpoint_t *endp;
+	int reqsize;
+	u32 reqtiming;
+	u32 timestamp;
+} intr_queue_t;
 
 #define DWC2_INST(controller) ((dwc_ctrl_t *)((controller)->instance))
 #define DWC2_REG(controller) ((dwc2_reg_t *)((controller)->reg_base))

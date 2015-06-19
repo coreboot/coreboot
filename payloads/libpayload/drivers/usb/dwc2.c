@@ -37,7 +37,8 @@ static void dwc2_reinit(hci_t *controller)
 	grxfsiz_t grxfsiz = { .d32 = 0 };
 	ghwcfg3_t hwcfg3 = { .d32 = 0 };
 	hcintmsk_t hcintmsk = { .d32 = 0 };
-	gnptxfsiz_t gnptxfsiz = { .d32 = 0 };
+	gtxfsiz_t gnptxfsiz = { .d32 = 0 };
+	gtxfsiz_t hptxfsiz = { .d32 = 0 };
 
 	const int timeout = 10000;
 	int i, fifo_blocks, tx_blocks;
@@ -97,15 +98,19 @@ static void dwc2_reinit(hci_t *controller)
 	 * Reserve 2 spaces for the status entries of received packets
 	 * and 2 spaces for bulk and control OUT endpoints. Calculate how
 	 * many blocks can be alloted, assume largest packet size is 512.
+	 * 16 locations reserved for periodic TX .
 	 */
-	fifo_blocks = (hwcfg3.dfifodepth - 4) / (512 / 4);
+	fifo_blocks = (hwcfg3.dfifodepth - 4 - 16) / (512 / 4);
 	tx_blocks = fifo_blocks / 2;
 
 	grxfsiz.rxfdep = (fifo_blocks - tx_blocks) * (512 / 4) + 4;
 	writel(grxfsiz.d32, &reg->core.grxfsiz);
-	gnptxfsiz.nptxfstaddr = grxfsiz.rxfdep;
-	gnptxfsiz.nptxfdep = tx_blocks * (512 / 4);
+	gnptxfsiz.txfstaddr = grxfsiz.rxfdep;
+	gnptxfsiz.txfdep = tx_blocks * (512 / 4);
 	writel(gnptxfsiz.d32, &reg->core.gnptxfsiz);
+	hptxfsiz.txfstaddr = gnptxfsiz.txfstaddr + gnptxfsiz.txfdep;
+	hptxfsiz.txfdep = 16;
+	writel(hptxfsiz.d32, &reg->core.hptxfsiz);
 
 	/* Init host channels */
 	hcintmsk.xfercomp = 1;
@@ -159,8 +164,9 @@ wait_for_complete(endpoint_t *ep, uint32_t ch_num)
 
 		if (hcint.chhltd) {
 			writel(hcint.d32, &reg->host.hchn[ch_num].hcintn);
-
 			if (hcint.xfercomp)
+				return hctsiz.xfersize;
+			else if (hcint.nak || hcint.frmovrun)
 				return hctsiz.xfersize;
 			else if (hcint.xacterr)
 				return -HCSTAT_XFERERR;
@@ -327,6 +333,101 @@ dwc2_control(usbdev_t *dev, direction_t dir, int drlen, void *setup,
 	return ret;
 }
 
+static int
+dwc2_intr(endpoint_t *ep, int size, u8 *src)
+{
+	ep_dir_t data_dir;
+
+	if (ep->direction == IN)
+		data_dir = EPDIR_IN;
+	else if (ep->direction == OUT)
+		data_dir = EPDIR_OUT;
+	else
+		return -1;
+
+	return dwc2_transfer(ep, size, ep->toggle, data_dir, 0, src);
+}
+
+static u32 dwc2_intr_get_timestamp(intr_queue_t *q)
+{
+	hprt_t hprt;
+	hfnum_t hfnum;
+	hci_t *controller = q->endp->dev->controller;
+	dwc_ctrl_t *dwc2 = DWC2_INST(controller);
+	dwc2_reg_t *reg = DWC2_REG(controller);
+
+	hfnum.d32 = readl(&reg->host.hfnum);
+	hprt.d32 = readl(dwc2->hprt0);
+
+	/*
+	 * hfnum.frnum increments when a new SOF is transmitted on
+	 * the USB, and is reset to 0 when it reaches 16'h3FFF
+	 */
+	switch (hprt.prtspd) {
+	case PRTSPD_HIGH:
+		/* 8 micro-frame per ms for high-speed */
+		return hfnum.frnum / 8;
+	case PRTSPD_FULL:
+	case PRTSPD_LOW:
+	default:
+		/* 1 micro-frame per ms for high-speed */
+		return hfnum.frnum / 1;
+	}
+}
+
+/* create and hook-up an intr queue into device schedule */
+static void *
+dwc2_create_intr_queue(endpoint_t *ep, const int reqsize,
+		       const int reqcount, const int reqtiming)
+{
+	intr_queue_t *q = (intr_queue_t *)xzalloc(sizeof(intr_queue_t));
+
+	q->data = dma_memalign(4, reqsize);
+	q->endp = ep;
+	q->reqsize = reqsize;
+	q->reqtiming = reqtiming;
+
+	return q;
+}
+
+static void
+dwc2_destroy_intr_queue(endpoint_t *ep, void *_q)
+{
+	intr_queue_t *q = (intr_queue_t *)_q;
+
+	free(q->data);
+	free(q);
+}
+
+/*
+ * read one intr-packet from queue, if available. extend the queue for
+ * new input. Return NULL if nothing new available.
+ * Recommended use: while (data=poll_intr_queue(q)) process(data);
+ */
+static u8 *
+dwc2_poll_intr_queue(void *_q)
+{
+	intr_queue_t *q = (intr_queue_t *)_q;
+	int ret = 0;
+	u32 timestamp = dwc2_intr_get_timestamp(q);
+
+	/*
+	 * If hfnum.frnum run overflow it will schedule
+	 * an interrupt transfer immediately
+	 */
+	if (timestamp - q->timestamp < q->reqtiming)
+		return NULL;
+
+	q->timestamp = timestamp;
+
+	ret = dwc2_intr(q->endp, q->reqsize, q->data);
+
+	if (ret > 0)
+		return q->data;
+	else
+		return NULL;
+}
+
 hci_t *dwc2_init(void *bar)
 {
 	hci_t *controller = new_controller();
@@ -349,9 +450,9 @@ hci_t *dwc2_init(void *bar)
 	controller->set_address = generic_set_address;
 	controller->finish_device_config = NULL;
 	controller->destroy_device = NULL;
-	controller->create_intr_queue = NULL;
-	controller->destroy_intr_queue = NULL;
-	controller->poll_intr_queue = NULL;
+	controller->create_intr_queue = dwc2_create_intr_queue;
+	controller->destroy_intr_queue = dwc2_destroy_intr_queue;
+	controller->poll_intr_queue = dwc2_poll_intr_queue;
 	controller->reg_base = (uintptr_t)bar;
 	init_device_entry(controller, 0);
 

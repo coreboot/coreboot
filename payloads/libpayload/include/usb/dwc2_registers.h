@@ -364,10 +364,10 @@ typedef union {
 	uint32_t d32;
 	/* register bits */
 	struct {
-		unsigned nptxfstaddr:16;
-		unsigned nptxfdep:16;
+		unsigned txfstaddr:16;
+		unsigned txfdep:16;
 	};
-} gnptxfsiz_t;
+} gtxfsiz_t;
 
 /**
  * This union represents the bit fields of the Core Receive FIFO Size
@@ -510,6 +510,23 @@ typedef union {
 		unsigned fslssupp:1;
 	};
 } hcfg_t;
+
+/**
+ * This union represents the bit fields in the Host Frame Number/Frame Time
+ * Remaining Register
+ */
+typedef union {
+	/* raw register data */
+	uint32_t d32;
+
+	/* register bits */
+	struct {
+		/** Frame Number */
+		unsigned frnum:16;
+		/** Frame Time Remaining */
+		unsigned frrem:16;
+	};
+} hfnum_t;
 
 /**
  * This union represents the bit fields in the Host Port Control and status

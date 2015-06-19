@@ -126,7 +126,7 @@ static void init(struct device *dev)
 	}
 
 	/* Lower SPI speed from default 66 to 22 MHz for SST 25VF032B */
-	spi_base = (u8*)(pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x14, 3)), 0xA0) & 0xFFFFFFE0);
+	spi_base = (u8*)((uintptr_t)pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x14, 3)), 0xA0) & 0xFFFFFFE0);
 	spi_base[0x0D] = (spi_base[0x0D] & ~0x30) | 0x20; // NormSpeed in SPI_Cntrl1 register
 
 	/* Notify the SMC we're alive and kicking, or after a while it will

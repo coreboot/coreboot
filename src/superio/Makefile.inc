@@ -29,3 +29,4 @@ subdirs-y += via
 subdirs-y += winbond
 
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += common/conf_mode.c
+ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += common/conf_mode.c

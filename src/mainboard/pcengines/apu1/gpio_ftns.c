@@ -23,10 +23,10 @@
 #include <southbridge/amd/cimx/cimx_util.h>
 #include "gpio_ftns.h"
 
-u32 find_gpio_base(void)
+uintptr_t find_gpio_base(void)
 {
 	u8 pm_index, pm_data;
-	u32 base_addr = 0;
+	uintptr_t base_addr = 0;
 
 	/* Find the ACPImmioAddr base address */
 	for ( pm_index = 0x27; pm_index > 0x23; pm_index-- ) {
@@ -39,7 +39,7 @@ u32 find_gpio_base(void)
 	return (base_addr);
 }
 
-void configure_gpio(u32 base_addr, u32 gpio, u8 iomux_ftn, u8 setting)
+void configure_gpio(uintptr_t base_addr, u32 gpio, u8 iomux_ftn, u8 setting)
 {
 	u8 bdata;
 	u8 *memptr;
@@ -54,7 +54,7 @@ void configure_gpio(u32 base_addr, u32 gpio, u8 iomux_ftn, u8 setting)
 	*memptr = bdata;
 }
 
-u8 read_gpio(u32 base_addr, u32 gpio)
+u8 read_gpio(uintptr_t base_addr, u32 gpio)
 {
 	u8 *memptr = (u8 *)(base_addr + GPIO_OFFSET + gpio);
 	return (*memptr & GPIO_DATA_IN) ? 1 : 0;
@@ -62,7 +62,7 @@ u8 read_gpio(u32 base_addr, u32 gpio)
 
 int get_spd_offset(void)
 {
-	u32 base_addr = find_gpio_base();
+	uintptr_t base_addr = find_gpio_base();
 	u8 spd_offset = read_gpio(base_addr, GPIO_16);
 	return spd_offset;
 }

@@ -20,9 +20,9 @@
 #ifndef GPIO_FTNS_H
 #define GPIO_FTNS_H
 
-u32 find_gpio_base(void);
-void configure_gpio(u32 base_addr, u32 gpio, u8 iomux_ftn, u8 setting);
-u8 read_gpio(u32 base_addr, u32 gpio);
+uintptr_t find_gpio_base(void);
+void configure_gpio(uintptr_t base_addr, u32 gpio, u8 iomux_ftn, u8 setting);
+u8 read_gpio(uintptr_t base_addr, u32 gpio);
 int get_spd_offset(void);
 
 #define IOMUX_OFFSET    0xD00

@@ -326,7 +326,7 @@ libagesa-y += Proc/Mem/Main/mu.c
 
 $(obj)/libagesa.fam14.a: $$(libagesa-objs)
 	@printf " AGESA $(subst $(obj)/,,$(@))\n"
-	ar rcs $@ $+
+	$(AR_romstage) rcs $@ $+
 
 romstage-libs += $(obj)/libagesa.fam14.a
 ramstage-libs += $(obj)/libagesa.fam14.a

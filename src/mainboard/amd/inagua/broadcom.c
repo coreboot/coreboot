@@ -325,8 +325,8 @@ void broadcom_init(void)
 	u8 sum;
 	int i;
 
-	gec_base = (u32*)(long)dev_find_slot(0, PCI_DEVFN(0x14, 6))->resource_list->base;
-	gec_shadow = (u8*)(pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x14, 3)), 0x9C) & 0xFFFFFC00);
+	gec_base = (u32*)(uintptr_t)dev_find_slot(0, PCI_DEVFN(0x14, 6))->resource_list->base;
+	gec_shadow = (u8*)((uintptr_t)pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x14, 3)), 0x9C) & 0xFFFFFC00);
 	printk(BIOS_DEBUG, "Upload GbE 'NV'RAM contents @ 0x%08lx\n", (unsigned long)gec_shadow);
 
 	/* Halt RISC CPU before uploading the firmware patch */

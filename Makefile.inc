@@ -647,6 +647,16 @@ ifeq ($(CONFIG_CPU_MICROCODE_ADDED_DURING_BUILD),y)
 	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
 endif
 endif
+ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
+	@printf "    CONFIG      $(PAYLOAD_CONFIG)\n"
+	if [ -f "$(PAYLOAD_CONFIG)" ]; then \
+		$(CBFSTOOL) $@.tmp add -f  "$(PAYLOAD_CONFIG)" -n payload_config -t raw; \
+	fi
+	@printf "    REVISION   $(PAYLOAD_VERSION)\n"
+	if [ -f "$(PAYLOAD_VERSION)" ]; then \
+		$(CBFSTOOL) $@.tmp add -f "$(PAYLOAD_VERSION)" -n payload_revision -t raw; \
+	fi
+endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print

@@ -32,6 +32,17 @@ ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
 COREBOOT_ROM_DEPENDENCIES+=grub2
 endif
 
+######################################################################
+# set up payload config and version files for later inclusion
+ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
+PAYLOAD_CONFIG=payloads/external/SeaBIOS/seabios/.config
+PAYLOAD_VERSION=payloads/external/SeaBIOS/seabios/out/version.c
+endif
+ifeq ($(CONFIG_PAYLOAD_FILO),y)
+PAYLOAD_CONFIG=payloads/external/FILO/filo/.config
+PAYLOAD_VERSION=payloads/external/FILO/filo/build/version.h
+endif
+
 SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \

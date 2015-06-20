@@ -341,11 +341,10 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 	}
 
 	for (i = 0; i < 2; i++) {
-		sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[i];
 		highest_rank_count[i] = 0x0;
 		for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
-			if (pDCTData->DimmRanks[dimm] > highest_rank_count[i])
-				highest_rank_count[i] = pDCTData->DimmRanks[dimm];
+			if (pDCTstat->DimmRanks[dimm] > highest_rank_count[i])
+				highest_rank_count[i] = pDCTstat->DimmRanks[dimm];
 		}
 	}
 #endif

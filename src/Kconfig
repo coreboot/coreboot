@@ -334,10 +334,6 @@ source "src/acpi/Kconfig"
 
 source "src/mainboard/Kconfig"
 
-source "src/arch/*/Kconfig"
-
-source "src/vendorcode/*/Kconfig"
-
 config SYSTEM_TYPE_LAPTOP
 	default n
 	bool
@@ -358,6 +354,9 @@ comment "Embedded Controllers"
 source "src/ec/acpi/Kconfig"
 source "src/ec/*/*/Kconfig"
 source "src/drivers/intel/fsp1_0/Kconfig"
+
+source "src/vendorcode/*/Kconfig"
+source "src/arch/*/Kconfig"
 
 endmenu
 

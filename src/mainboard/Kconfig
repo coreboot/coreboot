@@ -1,5 +1,3 @@
-menu "Mainboard"
-
 choice
 	prompt "Mainboard vendor"
 	default VENDOR_EMULATION
@@ -147,5 +145,3 @@ config ENABLE_POWER_BUTTON
 config ENABLE_POWER_BUTTON
 	def_bool y if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_ENABLE
 	def_bool n if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_DISABLE
-
-endmenu

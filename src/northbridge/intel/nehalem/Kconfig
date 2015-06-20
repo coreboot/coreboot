@@ -49,15 +49,4 @@ config TRAINING_CACHE_SIZE
 	hex
 	default 0x10000
 
-config CBFS_SIZE
-	hex "Size of CBFS filesystem in ROM"
-	default 0x100000
-	help
-	  On Nehalem systems the firmware image has to
-	  store a lot more than just coreboot, including:
-	   - a firmware descriptor
-	   - Intel Management Engine firmware
-	  This option allows to limit the size of the CBFS portion in the
-	  firmware image.
-
 endif

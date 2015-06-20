@@ -40,17 +40,6 @@ config VGA_BIOS_ID
 	  0x80860102, 0x8086010a, 0x80860112, 0x80860116
 	  0x80860122, 0x80860126, 0x80860166
 
-config CBFS_SIZE
-	hex "Size of CBFS filesystem in ROM"
-	default 0x100000
-	help
-	  On Sandybridge and Ivybridge systems the firmware image may
-	  have to store a lot more than just coreboot, including:
-	   - a firmware descriptor
-	   - Intel Management Engine firmware
-	  This option specifies the maximum size of the CBFS portion in the
-	  firmware image.
-
 # Ivybridge Specific FSP Kconfig
 source src/northbridge/intel/fsp_sandybridge/fsp/Kconfig
 

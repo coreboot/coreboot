@@ -95,17 +95,6 @@ config CPU_MICROCODE_CBFS_LOC
 	hex
 	default 0xfff10040
 
-config CBFS_SIZE
-	hex
-	default 0x200000
-	help
-	  On Bay Trail systems the firmware image has to store a lot more
-	  than just coreboot, including:
-	   - a firmware descriptor
-	   - Intel Trusted Execution Engine firmware
-	  This option specifies the maximum size of the CBFS portion in the
-	  firmware image.
-
 config INCLUDE_ME
 	bool "Include the TXE"
 	default n

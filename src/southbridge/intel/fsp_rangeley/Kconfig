@@ -32,6 +32,7 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
 	select SPI_FLASH
+	select HAVE_INTEL_FIRMWARE
 
 config EHCI_BAR
 	hex
@@ -52,21 +53,11 @@ config HPET_MIN_TICKS
 	hex
 	default 0x80
 
-if HAVE_FSP_BIN
-
-config INCLUDE_ME
-	bool "Add Intel descriptor.bin file"
-	default n
-	help
-	  Include the descriptor.bin for rangeley.
-
-config ME_PATH
-	string "Path to descriptor.bin file"
-	depends on INCLUDE_ME
+config IFD_BIN_PATH
+	string
+	depends on HAVE_IFD_BIN
 	default "../intel/mainboard/intel/rangeley"
 	help
-	  The path of the descriptor.bin file.
-
-endif # HAVE_FSP_BIN
+	  The path and filename to the descriptor.bin file.
 
 endif

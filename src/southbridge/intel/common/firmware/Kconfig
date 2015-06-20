@@ -1,0 +1,94 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2011 Google Inc.
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc.
+##
+
+config HAVE_INTEL_FIRMWARE
+	bool
+	help
+	  Chipset uses the Intel Firmware Descriptor to describe the
+	  layout of the SPI ROM chip.
+
+if HAVE_INTEL_FIRMWARE
+
+comment "Intel Firmware"
+
+config HAVE_IFD_BIN
+	bool "Add Intel descriptor.bin file"
+	help
+	  The descriptor binary
+
+config IFD_BIN_PATH
+	string "Path and filename of the descriptor.bin file"
+	depends on HAVE_IFD_BIN && !BUILD_WITH_FAKE_IFD
+
+config HAVE_ME_BIN
+	bool "Add Intel Management Engine firmware"
+	depends on USES_INTEL_ME && HAVE_IFD_BIN
+	help
+	  The Intel processor in the selected system requires a special firmware
+	  for an integrated controller called Management Engine (ME). The ME
+	  firmware might be provided in coreboot's 3rdparty/blobs repository. If
+	  not and if you don't have the firmware elsewhere, you can still
+	  build coreboot without it. In this case however, you'll have to make
+	  sure that you don't overwrite your ME firmware on your flash ROM.
+
+config ME_BIN_PATH
+	string "Path to management engine firmware"
+	depends on HAVE_ME_BIN
+
+##### Fake IFD #####
+
+config BUILD_WITH_FAKE_IFD
+	bool "Build with a fake IFD" if !HAVE_IFD_BIN
+	help
+	  If you don't have an Intel Firmware Descriptor (descriptor.bin) for your
+	  board, you can select this option and coreboot will build without it.
+	  The resulting coreboot.rom will not contain all parts required
+	  to get coreboot running on your board. You can however write only the
+	  BIOS section to your board's flash ROM and keep the other sections
+	  untouched. Unfortunately the current version of flashrom doesn't
+	  support this yet. But there is a patch pending [1].
+
+	  WARNING: Never write a complete coreboot.rom to your flash ROM if it
+	           was built with a fake IFD. It just won't work.
+
+	  [1] http://www.flashrom.org/pipermail/flashrom/2013-June/011083.html
+
+config IFD_BIOS_SECTION
+	depends on BUILD_WITH_FAKE_IFD
+	string
+	default ""
+
+config IFD_ME_SECTION
+	depends on BUILD_WITH_FAKE_IFD
+	string
+	default ""
+
+config IFD_GBE_SECTION
+	depends on BUILD_WITH_FAKE_IFD
+	string
+	default ""
+
+config IFD_PLATFORM_SECTION
+	depends on BUILD_WITH_FAKE_IFD
+	string
+	default ""
+
+
+endif #INTEL_FIRMWARE

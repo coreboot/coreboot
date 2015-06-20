@@ -338,10 +338,10 @@ source "src/mainboard/Kconfig"
 
 config CBFS_SIZE
 	hex "Size of CBFS filesystem in ROM"
-	default 0x100000 if NORTHBRIDGE_INTEL_GM45 || NORTHBRIDGE_INTEL_SANDYBRIDGE || \
+	default 0x100000 if HAVE_INTEL_FIRMWARE || \
+	  NORTHBRIDGE_INTEL_GM45 || NORTHBRIDGE_INTEL_SANDYBRIDGE || \
 	  NORTHBRIDGE_INTEL_IVYBRIDGE || NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE || \
-	  NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE || NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE || \
-	  NORTHBRIDGE_INTEL_FSP_IVYBRIDGE || NORTHBRIDGE_INTEL_HASWELL || \
+	  NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE || \
 	  NORTHBRIDGE_INTEL_NEHALEM || SOC_INTEL_BAYTRAIL || SOC_INTEL_BRASWELL || \
 	  SOC_INTEL_BROADWELL
 	default 0x200000 if SOC_INTEL_FSP_BAYTRAIL
@@ -378,7 +378,9 @@ source "src/ec/acpi/Kconfig"
 source "src/ec/*/*/Kconfig"
 source "src/drivers/intel/fsp1_0/Kconfig"
 
+source "src/southbridge/intel/common/firmware/Kconfig"
 source "src/vendorcode/*/Kconfig"
+
 source "src/arch/*/Kconfig"
 
 endmenu

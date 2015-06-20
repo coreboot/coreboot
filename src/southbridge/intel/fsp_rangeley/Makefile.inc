@@ -20,9 +20,7 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_FSP_RANGELEY),y)
 
-# Run an intermediate step when producing coreboot.rom
-# that adds additional components to the final firmware
-# image outside of CBFS
+subdirs-y += ../common/firmware
 
 ramstage-y += soc.c
 ramstage-y += lpc.c
@@ -38,17 +36,5 @@ romstage-y += romstage.c
 
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
-
-
-ifeq ($(CONFIG_INCLUDE_ME),y)
-INTERMEDIATE+=rangeley_add_descriptor
-
-rangeley_add_descriptor: $(obj)/coreboot.pre $(IFDTOOL)
-	printf "    DD         Adding Intel Firmware Descriptor\n"
-	dd if=$(call strip_quotes,$(CONFIG_ME_PATH))/descriptor.bin \
-		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
-endif
-
-PHONY += rangeley_add_descriptor
 
 endif

@@ -273,6 +273,8 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	})
 	DSDTPCI0Includes = append(DSDTPCI0Includes, DSDTInclude{
 		File: "southbridge/intel/bd82x6x/acpi/pch.asl",
+	}, DSDTInclude{
+		File: "southbridge/intel/bd82x6x/acpi/default_irq_route.asl",
 	})
 
 	sb := Create(ctx, "early_southbridge.c")

@@ -26,7 +26,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_8192
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
-	select OVERRIDE_MRC_CACHE_LOC
 	select TSC_MONOTONIC_TIMER
 	select HAVE_ACPI_RESUME
 
@@ -58,7 +57,7 @@ config FSP_FILE
 	string
 	default "../intel/fsp/baytrail/BAYTRAIL_FSP.fd"
 
-config MRC_CACHE_LOC_OVERRIDE
+config MRC_CACHE_LOC
 	hex
 	default 0xfff80000
 	depends on ENABLE_FSP_FAST_BOOT

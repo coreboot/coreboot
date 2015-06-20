@@ -25,7 +25,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_2048
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
-	select OVERRIDE_MRC_CACHE_LOC
 	select POST_IO
 	select ENABLE_BUILTIN_COM1 if FSP_PACKAGE_DEFAULT
 	select HAVE_FSP_BIN if FSP_PACKAGE_DEFAULT
@@ -59,7 +58,7 @@ config FSP_FILE
 	string
 	default "../intel/fsp/baytrail/BAYTRAIL_FSP_ECC.fd" if BOARD_INTEL_BAKERSPORT_FSP
 
-config MRC_CACHE_LOC_OVERRIDE
+config MRC_CACHE_LOC
 	hex
 	default 0xfff80000
 	depends on ENABLE_FSP_FAST_BOOT

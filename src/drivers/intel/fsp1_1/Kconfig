@@ -103,7 +103,6 @@ config MRC_CACHE_FILE
 
 config MRC_CACHE_LOC
 	hex "Fast Boot Data Cache location in CBFS"
-	default MRC_CACHE_LOC_OVERRIDE if OVERRIDE_CACHE_CACHE_LOC
 	default 0xfff50000
 	depends on ENABLE_MRC_CACHE
 	help
@@ -112,11 +111,6 @@ config MRC_CACHE_LOC
 	  WARNING: This should be on a sector boundary of the BIOS ROM chip
 	  and nothing else should be included in that sector, or IT WILL BE
 	  ERASED.
-
-config MRC_CACHE_LOC_OVERRIDE
-	hex
-	help
-	  Sets the override CBFS location of the MRC/fast boot cache.
 
 config MRC_CACHE_SIZE
 	hex "Fast Boot Data Cache Size"
@@ -129,12 +123,6 @@ config MRC_CACHE_SIZE
 	  WARNING: Because this area will be erased and re-written, the size
 	  should be a full sector of the flash ROM chip and nothing else should
 	  be included in CBFS in any sector that the fast boot cache data is in.
-
-config OVERRIDE_CACHE_CACHE_LOC
-	bool
-	help
-	  Selected by the platform to set a new default location for the
-	  MRC/fast boot cache.
 
 config VIRTUAL_ROM_SIZE
 	hex "Virtual ROM Size"

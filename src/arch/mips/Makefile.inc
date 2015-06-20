@@ -61,7 +61,6 @@ endif # CONFIG_ARCH_BOOTBLOCK_MIPS
 ifeq ($(CONFIG_ARCH_ROMSTAGE_MIPS),y)
 
 romstage-y += boot.c
-romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
 romstage-y += cache.c
 romstage-y += mmu.c
 romstage-y += stages.c

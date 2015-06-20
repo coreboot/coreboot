@@ -33,7 +33,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_8192
 	select GFXUMA
 	select HUDSON_DISABLE_IMC
-	select HUDSON_NOT_LEGACY_FREE
 
 choice
 	prompt "DDR3 memory voltage"

@@ -84,6 +84,10 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	u32 val;
 	u16 nvbits;
 
+	uint32_t dword;
+	uint8_t sync_flood_on_dram_err[MAX_NODES_SUPPORTED];
+	uint8_t sync_flood_on_any_uc_err[MAX_NODES_SUPPORTED];
+
 	mctHookBeforeECC();
 
 	/* Construct these booleans, based on setup options, for easy handling
@@ -106,6 +110,25 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 
 	nvbits = mctGet_NVbits(NV_DramBKScrub);
 	OF_ScrubCTL |= nvbits;
+
+	/* Prevent lockups on DRAM errors during ECC init */
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		struct DCTStatStruc *pDCTstat;
+		pDCTstat = pDCTstatA + Node;
+
+		if (NodePresent_D(Node)) {
+			dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
+			sync_flood_on_dram_err[Node] = (dword >> 30) & 0x1;
+			sync_flood_on_any_uc_err[Node] = (dword >> 21) & 0x1;
+			dword &= ~(0x1 << 30);
+			dword &= ~(0x1 << 21);
+			Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
+
+			/* Clear the RAM before enabling ECC to prevent MCE-related lockups */
+			DCTMemClr_Init_D(pMCTstat, pDCTstat);
+			DCTMemClr_Sync_D(pMCTstat, pDCTstat);
+		}
+	}
 
 	AllECC = 1;
 	MemClrECC = 0;
@@ -153,7 +176,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 			}	/* Node has Dram */
 
 			if (MemClrECC) {
-				MCTMemClrSync_D(pMCTstat, pDCTstatA);
+				DCTMemClr_Sync_D(pMCTstat, pDCTstat);
 			}
 
 			if (pDCTstat->LogicalCPUID & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
@@ -164,6 +187,19 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 				pci_write_config32(pDCTstat->dev_nbmisc, 0xd4, val);
 			}
 		}	/* if Node present */
+	}
+
+	/* Restore previous MCA error handling settings */
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		struct DCTStatStruc *pDCTstat;
+		pDCTstat = pDCTstatA + Node;
+
+		if (NodePresent_D(Node)) {
+			dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
+			dword |= (sync_flood_on_dram_err[Node] & 0x1) << 30;
+			dword |= (sync_flood_on_any_uc_err[Node] & 0x1) << 21;
+			Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
+		}
 	}
 
 	if(AllECC)

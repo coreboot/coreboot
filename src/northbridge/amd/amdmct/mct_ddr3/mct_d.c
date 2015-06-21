@@ -47,8 +47,6 @@ static void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat);
 static void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat);
-static void MCTMemClrSync_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstatA);
 static u8 NodePresent_D(u8 Node);
 static void SyncDCTsReady_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA);
@@ -1507,10 +1505,11 @@ restartinit:
 		InterleaveChannels_D(pMCTstat, pDCTstatA);
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: ECCInit_D\n");
-		if (ECCInit_D(pMCTstat, pDCTstatA)) {		/* Setup ECC control and ECC check-bits*/
-			printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
-			MCTMemClr_D(pMCTstat,pDCTstatA);
-		}
+		ECCInit_D(pMCTstat, pDCTstatA);			/* Setup ECC control and ECC check-bits*/
+
+		/* mctDoWarmResetMemClr_D(); */
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
+		MCTMemClr_D(pMCTstat,pDCTstatA);
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
 		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
@@ -2102,9 +2101,6 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 
 	/* FIXME - currently uses calculated value	TrainMaxReadLatency_D(pMCTstat, pDCTstatA); */
 	mctHookAfterAnyTraining();
-
-	/* mctDoWarmResetMemClr_D(); */
-	MCTMemClr_D(pMCTstat, pDCTstatA);
 }
 
 static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
@@ -2389,26 +2385,6 @@ static void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
 
 		val |= (1 << MemClrInit);
 		Set_NB32(dev, reg, val);
-	}
-}
-
-static void MCTMemClrSync_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstatA)
-{
-	/* Ensures that memory clear has completed on all node.*/
-	u8 Node;
-	struct DCTStatStruc *pDCTstat;
-
-	if (!mctGet_NVbits(NV_DQSTrainCTL)){
-		/* callback to wrapper: mctDoWarmResetMemClr_D */
-	} else {	/* NV_DQSTrainCTL == 1 */
-		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
-			pDCTstat = pDCTstatA + Node;
-
-			if (pDCTstat->NodePresent) {
-				DCTMemClr_Sync_D(pMCTstat, pDCTstat);
-			}
-		}
 	}
 }
 
@@ -3097,6 +3073,8 @@ static void GetPresetmaxF_D(struct MCTStatStruc *pMCTstat,
 	u16 proposedFreq;
 	u16 word;
 
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	/* Get CPU Si Revision defined limit (NPT) */
 	if (is_fam15h())
 		proposedFreq = 933;
@@ -3121,6 +3099,8 @@ static void GetPresetmaxF_D(struct MCTStatStruc *pMCTstat,
 		pDCTstat->PresetmaxFreq = word;
 	}
 	/* Check F3xE8[DdrMaxRate] for maximum DRAM data rate support */
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static void SPDGetTCL_D(struct MCTStatStruc *pMCTstat,

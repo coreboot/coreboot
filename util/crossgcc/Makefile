@@ -44,5 +44,13 @@ build-riscv-without-gdb:
 
 clean:
 	rm -rf xgcc
+	rm -rf build-*
+	rm -rf binutils-* gcc-* gmp-* libelf-* mpc-* mpfr-*
+	rm -rf llvm-* clang-tools-* cfe-* compiler-rt-*
+	rm -rf acpica-*
+	rm -rf gdb-*
 
-.PHONY: all build clean
+distclean: clean
+	rm -rf tarballs
+
+.PHONY: all build clean distclean

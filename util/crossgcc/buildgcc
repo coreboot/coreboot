@@ -305,6 +305,8 @@ myhelp()
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
 	printf "                                  (defaults to $TARGETARCH)\n"
 	printf "    [-S|--scripting]              build scripting support for GDB\n\n"
+	printf "Platforms for GCC & GDB:\n"
+	printf "    x86_64 i386-elf i386-mingw32 mipsel-elf riscv-elf arm aarch64\n\n"
 }
 
 myversion()

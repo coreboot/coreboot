@@ -297,65 +297,72 @@ static void sata_init(struct device *dev)
 	if (port_count > max_port_count)
 		port_count = max_port_count;
 
-	if (!sata_ahci_mode) {
-		/* RPR7.7 SATA drive detection. */
-		/* Use BAR5+0x128,BAR0 for Primary Slave */
-		/* Use BAR5+0x1A8,BAR0 for Primary Slave */
-		/* Use BAR5+0x228,BAR2 for Secondary Master */
-		/* Use BAR5+0x2A8,BAR2 for Secondary Slave */
-		/* Use BAR5+0x328,PATA_BAR0/2 for Primary/Secondary Master emulation */
-		/* Use BAR5+0x3A8,PATA_BAR0/2 for Primary/Secondary Slave emulation */
-		for (i = 0; i < port_count; i++) {
+	/* RPR7.7 SATA drive detection. */
+	/* Use BAR5+0x128,BAR0 for Primary Slave */
+	/* Use BAR5+0x1A8,BAR0 for Primary Slave */
+	/* Use BAR5+0x228,BAR2 for Secondary Master */
+	/* Use BAR5+0x2A8,BAR2 for Secondary Slave */
+	/* Use BAR5+0x328,PATA_BAR0/2 for Primary/Secondary Master emulation */
+	/* Use BAR5+0x3A8,PATA_BAR0/2 for Primary/Secondary Slave emulation */
+	for (i = 0; i < port_count; i++) {
+		byte = read8(sata_bar5 + 0x128 + 0x80 * i);
+		printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
+		byte &= 0xF;
+		if (byte == 0x1) {
+			/* If the drive status is 0x1 then we see it but we aren't talking to it. */
+			/* Try to do something about it. */
+			printk(BIOS_SPEW, "SATA device detected but not talking. Trying lower speed.\n");
+
+			/* Read in Port-N Serial ATA Control Register */
+			byte = read8(sata_bar5 + 0x12C + 0x80 * i);
+
+			/* Set Reset Bit and 1.5g bit */
+			byte |= 0x11;
+			write8((sata_bar5 + 0x12C + 0x80 * i), byte);
+
+			/* Wait 1ms */
+			mdelay(1);
+
+			/* Clear Reset Bit */
+			byte &= ~0x01;
+			write8((sata_bar5 + 0x12C + 0x80 * i), byte);
+
+			/* Wait 1ms */
+			mdelay(1);
+
+			/* Reread status */
 			byte = read8(sata_bar5 + 0x128 + 0x80 * i);
 			printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
 			byte &= 0xF;
-			if (byte == 0x1) {
-				/* If the drive status is 0x1 then we see it but we aren't talking to it. */
-				/* Try to do something about it. */
-				printk(BIOS_SPEW, "SATA device detected but not talking. Trying lower speed.\n");
+		}
 
-				/* Read in Port-N Serial ATA Control Register */
-				byte = read8(sata_bar5 + 0x12C + 0x80 * i);
-
-				/* Set Reset Bit and 1.5g bit */
-				byte |= 0x11;
-				write8((sata_bar5 + 0x12C + 0x80 * i), byte);
-
-				/* Wait 1ms */
-				mdelay(1);
-
-				/* Clear Reset Bit */
-				byte &= ~0x01;
-				write8((sata_bar5 + 0x12C + 0x80 * i), byte);
-
-				/* Wait 1ms */
-				mdelay(1);
-
-				/* Reread status */
-				byte = read8(sata_bar5 + 0x128 + 0x80 * i);
-				printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
-				byte &= 0xF;
+		if (byte == 0x3) {
+			for (j = 0; j < 10; j++) {
+				if (i < 4)
+					current_bar = ((i / 2) == 0) ? sata_bar0 : sata_bar2;
+				else
+					current_bar = ide_bar0;
+				if (!sata_drive_detect(i, current_bar))
+					break;
 			}
-
-			if (byte == 0x3) {
-				for (j = 0; j < 10; j++) {
-					if (i < 4)
-						current_bar = ((i / 2) == 0) ? sata_bar0 : sata_bar2;
-					else
-						current_bar = ide_bar0;
-					if (!sata_drive_detect(i, current_bar))
-						break;
-				}
+			if (sata_ahci_mode)
+				printk(BIOS_DEBUG, "AHCI device %d is %sready after %i tries\n",
+						i,
+						(j == 10) ? "not " : "",
+						(j == 10) ? j : j + 1);
+			else
 				printk(BIOS_DEBUG, "%s %s device is %sready after %i tries\n",
 						(i / 2) ? "Secondary" : "Primary",
 						(i % 2 ) ? "Slave" : "Master",
 						(j == 10) ? "not " : "",
 						(j == 10) ? j : j + 1);
-			} else {
+		} else {
+			if (sata_ahci_mode)
+				printk(BIOS_DEBUG, "No AHCI SATA drive on Slot%i\n", i);
+			else
 				printk(BIOS_DEBUG, "No %s %s SATA drive on Slot%i\n",
 						(i / 2) ? "Secondary" : "Primary",
 						(i % 2 ) ? "Slave" : "Master", i);
-			}
 		}
 	}
 

@@ -57,8 +57,6 @@ DefinitionBlock (
 	#include "acpi/sleep.asl"
 
 	#include "acpi/gpe.asl"
-	#include <southbridge/amd/cimx/sb800/acpi/smbus.asl>
-	#include "acpi/thermal.asl"
 	#include "acpi/superio.asl"
 }
 /* End of ASL file */

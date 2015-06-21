@@ -63,7 +63,5 @@ DefinitionBlock (
 	#include "acpi/buttons.asl"
 	#include "acpi/gpio.asl"
 	#include "acpi/leds.asl"
-
-	#include "acpi/thermal.asl"
 }
 /* End of ASL file */

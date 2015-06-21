@@ -126,3 +126,11 @@ Device(PE23) {
 		Return (PE3)				/* PIC Mode */
 	} /* end _PRT */
 } /* end PE23 */
+
+/* Northbridge function 3 */
+Device(NBF3) {
+	Name(_ADR, 0x00180003)
+
+	/* k10temp thermal zone */
+	#include <northbridge/amd/amdfam10/thermal_mixin.asl>
+} /* end NBF3 */

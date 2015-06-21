@@ -131,6 +131,8 @@ static void sata_init(struct device *dev)
 	/* get rev_id */
 	rev_id = pci_read_config8(sm_dev, 0x08) - 0x28;
 
+	printk(BIOS_SPEW, "rev_id=%x\n", rev_id);
+
 	if (sata_ahci_mode) {
 		/* Enable link latency enhancement on A14 and above */
 		if (rev_id >= 0x14) {
@@ -239,6 +241,27 @@ static void sata_init(struct device *dev)
 		dword = read32(sata_bar5 + 0xfc);
 		dword &= ~(0x1 << 11);	/* Disable ALPM */
 		write32(sata_bar5 + 0xfc, dword);
+	}
+
+	if (sata_ahci_mode) {
+		/* FIXME
+		* SeaBIOS does not know how to spin
+		* up the drives and therefore hangs
+		* in AHCI init if this is enabled...
+		*/
+		/* Enable staggered spin-up */
+		dword = read32(sata_bar5 + 0x00);
+#if 0
+		dword |= 0x1 << 27;
+#else
+		dword &= ~(0x1 << 27);
+#endif
+		write32(sata_bar5 + 0x00, dword);
+
+		/* Reset the HBA to avoid stuck drives in SeaBIOS */
+		dword = read32(sata_bar5 + 0x04);
+		dword |= 0x1;
+		write32(sata_bar5 + 0x04, dword);
 	}
 
 	/* Write protect Sub-Class Code */
@@ -367,20 +390,20 @@ static void sata_init(struct device *dev)
 	}
 
 	/* Below is CIM InitSataLateFar */
-	/* Enable interrupts from the HBA  */
-	byte = read8(sata_bar5 + 0x4);
-	byte |= 1 << 1;
-	write8((sata_bar5 + 0x4), byte);
-
 	if (!sata_ahci_mode) {
-		/* Clear error status */
-		write32((sata_bar5 + 0x130), 0xFFFFFFFF);
-		write32((sata_bar5 + 0x1b0), 0xFFFFFFFF);
-		write32((sata_bar5 + 0x230), 0xFFFFFFFF);
-		write32((sata_bar5 + 0x2b0), 0xFFFFFFFF);
-		write32((sata_bar5 + 0x330), 0xFFFFFFFF);
-		write32((sata_bar5 + 0x3b0), 0xFFFFFFFF);
+		/* Enable interrupts from the HBA  */
+		byte = read8(sata_bar5 + 0x4);
+		byte |= 1 << 1;
+		write8((sata_bar5 + 0x4), byte);
 	}
+
+	/* Clear error status */
+	write32((sata_bar5 + 0x130), 0xFFFFFFFF);
+	write32((sata_bar5 + 0x1b0), 0xFFFFFFFF);
+	write32((sata_bar5 + 0x230), 0xFFFFFFFF);
+	write32((sata_bar5 + 0x2b0), 0xFFFFFFFF);
+	write32((sata_bar5 + 0x330), 0xFFFFFFFF);
+	write32((sata_bar5 + 0x3b0), 0xFFFFFFFF);
 
 	/* Clear SATA status,Firstly we get the AcpiGpe0BlkAddr */
 	/* ????? why CIM does not set the AcpiGpe0BlkAddr , but use it??? */

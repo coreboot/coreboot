@@ -75,6 +75,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	RPAA,	32,	// 0x54 - 0x57 - Root port address 10
 	RPAB,	32,	// 0x58 - 0x5b - Root port address 11
 	RPAC,	32,	// 0x5c - 0x5f - Root port address 12
+	DPTE,	8,	// 0x60 - Enable DPTF
 
 	/* ChromeOS specific */
 	Offset (0x100),

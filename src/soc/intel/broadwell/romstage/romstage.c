@@ -126,7 +126,7 @@ void romstage_common(struct romstage_params *params)
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
 #if CONFIG_LPC_TPM
-	init_tpm(prev_sleep_state == SLEEP_STATE_S3);
+	init_tpm(params->power_state->prev_sleep_state == SLEEP_STATE_S3);
 #endif
 }
 

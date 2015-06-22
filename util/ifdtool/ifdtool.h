@@ -18,14 +18,21 @@
  */
 
 #include <stdint.h>
-#define IFDTOOL_VERSION "1.1"
+#define IFDTOOL_VERSION "1.2"
+
+enum ifd_version {
+	IFD_VERSION_1,
+	IFD_VERSION_2,
+};
 
 #define LAYOUT_LINELEN 80
 
 enum spi_frequency {
 	SPI_FREQUENCY_20MHZ = 0,
 	SPI_FREQUENCY_33MHZ = 1,
-	SPI_FREQUENCY_50MHZ = 4,
+	SPI_FREQUENCY_48MHZ = 2,
+	SPI_FREQUENCY_50MHZ_30MHZ = 4,
+	SPI_FREQUENCY_17MHZ = 6,
 };
 
 enum component_density {
@@ -35,6 +42,9 @@ enum component_density {
 	COMPONENT_DENSITY_4MB   = 3,
 	COMPONENT_DENSITY_8MB   = 4,
 	COMPONENT_DENSITY_16MB  = 5,
+	COMPONENT_DENSITY_32MB  = 6,
+	COMPONENT_DENSITY_64MB  = 7,
+	COMPONENT_DENSITY_UNUSED = 0xf
 };
 
 // flash descriptor
@@ -48,12 +58,18 @@ typedef struct {
 } __attribute__((packed)) fdbar_t;
 
 // regions
+#define MAX_REGIONS 9
+#define MAX_REGIONS_OLD 5
 typedef struct {
 	uint32_t flreg0;
 	uint32_t flreg1;
 	uint32_t flreg2;
 	uint32_t flreg3;
 	uint32_t flreg4;
+	uint32_t flreg5;
+	uint32_t flreg6;
+	uint32_t flreg7;
+	uint32_t flreg8;
 } __attribute__((packed)) frba_t;
 
 // component section
@@ -90,6 +106,8 @@ typedef struct {
 	uint32_t flmstr1;
 	uint32_t flmstr2;
 	uint32_t flmstr3;
+	uint32_t flmstr4;
+	uint32_t flmstr5;
 } __attribute__((packed)) fmba_t;
 
 // processor strap

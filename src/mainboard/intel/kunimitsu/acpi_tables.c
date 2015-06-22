@@ -47,6 +47,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 	gnvs->tmax = MAX_TEMPERATURE;
+	gnvs->dpte = 1;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

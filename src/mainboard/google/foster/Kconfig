@@ -1,0 +1,97 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2014 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc.
+##
+
+if BOARD_GOOGLE_FOSTER
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+        def_bool y
+	select BOARD_ID_AUTO
+	select BOARD_ROMSIZE_KB_4096
+	select CHROMEOS_VBNV_FLASH
+	select SPI_FLASH
+	select SOC_NVIDIA_TEGRA210
+	select MAINBOARD_HAS_BOOTBLOCK_INIT
+	select MAINBOARD_HAS_CHROMEOS
+	select VIRTUAL_DEV_SWITCH
+	select BOOTROM_SDRAM_INIT # use BootRom to config sdram
+	select COMMON_CBFS_SPI_WRAPPER
+	select SPI_FLASH_WINBOND
+
+config MAINBOARD_DIR
+        string
+        default google/foster
+
+config MAINBOARD_PART_NUMBER
+        string
+        default "Foster"
+
+config DRAM_SIZE_MB
+        int
+        default 2048
+
+choice
+	prompt "BCT boot media"
+	default FOSTER_BCT_CFG_SPI
+	help
+	  Which boot media to configure the BCT for.
+
+config FOSTER_BCT_CFG_SPI
+	bool "SPI"
+	help
+	  Configure the BCT for booting from SPI.
+
+config FOSTER_BCT_CFG_EMMC
+	bool "eMMC"
+	help
+	  Configure the BCT for booting from eMMC.
+
+endchoice
+
+config BOOT_MEDIA_SPI_BUS
+	int "SPI bus with boot media ROM"
+	range 1 7
+	depends on FOSTER_BCT_CFG_SPI
+	default 7
+	help
+	  Which SPI bus the boot media is connected to.
+
+config BOOT_MEDIA_SPI_CHIP_SELECT
+	int "Chip select for SPI boot media"
+	range 0 3
+	depends on FOSTER_BCT_CFG_SPI
+	default 0
+	help
+	  Which chip select to use for boot media.
+
+# For foster, we are using vboot2. Thus, index for stages:
+# VBOOT_ROMSTAGE_INDEX -> Use default value of 0x2
+# VBOOT_RAMSTAGE_INDEX -> Use 0x3
+config VBOOT_RAMSTAGE_INDEX
+	hex
+	default 0x3
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x2
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x20
+
+endif # BOARD_GOOGLE_FOSTER

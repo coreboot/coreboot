@@ -1,0 +1,95 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2015 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc.
+##
+
+chip soc/nvidia/tegra210
+	register  "spintable_addr" = "0x80000008"
+
+	device cpu_cluster 0 on
+		device cpu 0 on end
+		device cpu 1 on end
+		device cpu 2 on end
+		device cpu 3 on end
+	end
+
+	register "display_controller" = "TEGRA_ARM_DISPLAYA"
+	register "xres" = "1366"
+	register "yres" = "768"
+
+	# framebuffer resolution
+	register "display_xres" = "1368"
+	register "display_yres" = "678"
+
+	# bits per pixel and color depth
+	register "framebuffer_bits_per_pixel" = "16"
+	register "color_depth" = "6"
+
+	register "panel_bits_per_pixel" = "18"
+
+# How to compute these: xrandr --verbose will give you this:
+#Detailed mode: Clock 285.250 MHz, 272 mm x 181 mm
+#               2560 2608 2640 2720 hborder 0
+#               1700 1703 1713 1749 vborder 0
+#Then you can compute your values:
+#H front porch = 2608 - 2560 = 48
+#H sync = 2640 - 2608 = 32
+#H back porch = 2720 - 2640 = 80
+#V front porch = 1703 - 1700 = 3
+#V sync = 1713 - 1703 = 10
+#V back porch = 1749 - 1713 = 36
+#href_to_sync and vref_to_sync are from the vendor
+#this is just an example for a Pixel panel; other panels differ.
+# Here is a peppy panel:
+#  1366x768 (0x45)   76.4MHz -HSync -VSync *current +preferred
+#        h: width  1366 start 1502 end 1532 total 1592
+#        v: height  768 start  776 end  788 total  800
+	register "href_to_sync" = "1"
+	register "hfront_porch" = "136"
+	register "hsync_width" = "30"
+	register "hback_porch" = "60"
+
+	register "vref_to_sync" = "1"
+	register "vfront_porch" = "8"
+	register "vsync_width" = "12"
+	register "vback_porch" = "12"
+
+	register "pixel_clock" = "76400000"
+
+	register "win_opt" = "SOR_ENABLE"
+
+	#
+	# dp specific fields
+	#
+	register "dp.pwm" = "1"
+
+	# various panel delay time
+	register "dp.vdd_to_hpd_delay_ms" = "200"
+	register "dp.hpd_unplug_min_us" = "2000"
+	register "dp.hpd_plug_min_us" = "250"
+	register "dp.hpd_irq_min_us" = "250"
+
+	# link configurations
+	register "dp.lane_count" = "1"
+	register "dp.enhanced_framing" = "1"
+	register "dp.link_bw" = "10"
+	# "10" is defined as SOR_LINK_SPEED_G2_7 in sor.h
+
+	register "dp.drive_current" = "0x40404040"
+	register "dp.preemphasis" = "0x0f0f0f0f"
+	register "dp.postcursor" = "0"
+end

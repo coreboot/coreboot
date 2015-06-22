@@ -128,7 +128,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	dimm->dram_type = SPD_MEMORY_TYPE_SDRAM_DDR3;
 	dimm->dimm_type = spd[3] & 0xf;
 
-	crc = spd_ddr3_calc_crc(spd, sizeof(*spd));
+	crc = spd_ddr3_calc_crc(spd, sizeof(spd_raw_data));
 	/* Compare with the CRC in the SPD */
 	spd_crc = (spd[127] << 8) + spd[126];
 	/* Verify the CRC is correct */

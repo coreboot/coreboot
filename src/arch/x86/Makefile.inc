@@ -245,6 +245,23 @@ endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
+ifeq ($(CONFIG_COMPILE_IN_DSDT),y)
+ramstage-srcs += $(obj)/dsdt.aml
+
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
+target-objcopy=-O elf32-i386 -B i386
+endif
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_64),y)
+target-objcopy=-O elf64-x86_64 -B x86_64
+endif
+
+define ramstage-objs_aml_template
+$(call src-to-obj,ramstage,$(1).aml): $(1).aml
+	@printf "    OBJCOPY    $$(subst $$(obj)/,,$$(@))\n"
+	cd $$(dir $$@) && $$(OBJCOPY_ramstage) -I binary $$(target-objcopy) $$(notdir $$<) $$(notdir $$@)
+endef
+endif
+
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/mptable.c),)

@@ -134,3 +134,7 @@ config HPET_ADDRESS
 config ID_SECTION_OFFSET
 	hex
 	default 0x80
+
+config COMPILE_IN_DSDT
+	bool "compile in DSDT and use that over DSDT in CBFS"
+	default n

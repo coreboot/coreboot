@@ -757,9 +757,16 @@ unsigned long write_acpi_tables(unsigned long start)
 	if (fw)
 		return fw;
 
+#if CONFIG_COMPILE_IN_DSDT
+	extern char _binary_dsdt_aml_start;
+	extern char _binary_dsdt_aml_end;
+	dsdt_file = (acpi_header_t *)&_binary_dsdt_aml_start;
+	dsdt_size = (size_t)(&_binary_dsdt_aml_end - &_binary_dsdt_aml_start);
+#else
 	dsdt_file = cbfs_boot_map_with_leak(
 				     CONFIG_CBFS_PREFIX "/dsdt.aml",
 				     CBFS_TYPE_RAW, &dsdt_size);
+#endif
 	if (!dsdt_file) {
 		printk(BIOS_ERR, "No DSDT file, skipping ACPI tables\n");
 		return current;

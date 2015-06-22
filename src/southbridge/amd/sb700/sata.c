@@ -27,12 +27,15 @@
 static int sata_drive_detect(int portnum, uint16_t iobar)
 {
 	u8 byte, byte2;
+	u8 byte_prev, byte2_prev;
 	int i = 0;
+	byte_prev = byte2_prev = 0;
 	outb(0xa0 + 0x10 * (portnum % 2), iobar + 0x6);
 	while (byte = inb(iobar + 0x6), byte2 = inb(iobar + 0x7),
 		(byte != (0xa0 + 0x10 * (portnum % 2))) ||
 		((byte2 & 0x88) != 0)) {
-		printk(BIOS_SPEW, "0x6=%x, 0x7=%x\n", byte, byte2);
+		if ((byte != byte_prev) || (byte2 != byte2_prev))
+			printk(BIOS_SPEW, "0x6=%x, 0x7=%x\n", byte, byte2);
 		if (byte != (0xa0 + 0x10 * (portnum % 2))) {
 			/* This will happen at the first iteration of this loop
 			 * if the first SATA port is unpopulated and the
@@ -41,11 +44,22 @@ static int sata_drive_detect(int portnum, uint16_t iobar)
 			printk(BIOS_DEBUG, "drive no longer selected after %i ms, "
 				"retrying init\n", i * 10);
 			return 1;
-		} else
-			printk(BIOS_SPEW, "drive detection not yet completed, "
-				"waiting...\n");
+		} else {
+			if (i == 0)
+				printk(BIOS_SPEW, "drive detection not yet completed, "
+					"waiting...\n");
+		}
 		mdelay(10);
 		i++;
+		byte_prev = byte;
+		byte2_prev = byte2;
+
+		/* Detect stuck SATA controller and attempt reset */
+		if (i > 1024) {
+			printk(BIOS_DEBUG, "drive detection not done after %i ms, "
+				"resetting HBA and retrying init\n", i * 10);
+			return 2;
+		}
 	}
 	printk(BIOS_SPEW, "drive detection done after %i ms\n", i * 10);
 	return 0;
@@ -101,12 +115,13 @@ static void sata_init(struct device *dev)
 	uint16_t sata_bar0, sata_bar1, sata_bar2, sata_bar3, sata_bar4;
 	uint16_t ide_bar0, ide_bar1, ide_bar2, ide_bar3;
 	uint16_t current_bar;
-	int i, j;
+	int i, j, ret;
 	uint8_t nvram;
 	uint8_t sata_ahci_mode;
 	uint8_t sata_alpm_enable;
 	uint8_t port_count;
 	uint8_t max_port_count;
+	uint8_t hba_reset_count;
 
 	sata_ahci_mode = 0;
 	if (get_option(&nvram, "sata_ahci_mode") == CB_SUCCESS)
@@ -120,13 +135,22 @@ static void sata_init(struct device *dev)
 	/* SATA SMBus Disable */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
+	hba_reset_count = 0;
+
+retry_init:
 	byte = pci_read_config8(sm_dev, 0xad);
 	/* Disable SATA SMBUS */
-	byte |= (1 << 0);
-	/* Enable SATA and power saving */
 	byte |= (1 << 1);
+	/* Enable SATA and power saving */
+	byte |= (1 << 0);
 	byte |= (1 << 5);
 	pci_write_config8(sm_dev, 0xad, byte);
+
+	/* Take the PHY logic out of reset */
+	word = pci_read_config16(dev, 0x84);
+	word |= 0x1 << 2;
+	word &= ~0x1f8;
+	pci_write_config16(dev, 0x84, word);
 
 	/* get rev_id */
 	rev_id = pci_read_config8(sm_dev, 0x08) - 0x28;
@@ -320,6 +344,26 @@ static void sata_init(struct device *dev)
 	if (port_count > max_port_count)
 		port_count = max_port_count;
 
+	/* Send COMRESET to all ports */
+	for (i = 0; i < port_count; i++) {
+		/* Read in Port-N Serial ATA Control Register */
+		byte = read8(sata_bar5 + 0x12C + 0x80 * i);
+
+		/* Set Reset Bit */
+		byte |= 0x1;
+		write8((sata_bar5 + 0x12C + 0x80 * i), byte);
+
+		/* Wait 1ms */
+		mdelay(1);
+
+		/* Clear Reset Bit */
+		byte &= ~0x01;
+		write8((sata_bar5 + 0x12C + 0x80 * i), byte);
+
+		/* Wait 1ms */
+		mdelay(1);
+	}
+
 	/* RPR7.7 SATA drive detection. */
 	/* Use BAR5+0x128,BAR0 for Primary Slave */
 	/* Use BAR5+0x1A8,BAR0 for Primary Slave */
@@ -365,8 +409,31 @@ static void sata_init(struct device *dev)
 					current_bar = ((i / 2) == 0) ? sata_bar0 : sata_bar2;
 				else
 					current_bar = ide_bar0;
-				if (!sata_drive_detect(i, current_bar))
+				ret = sata_drive_detect(i, current_bar);
+				if (ret == 0) {
 					break;
+				} else if (ret == 2) {
+					/* Reset PHY logic */
+					word = pci_read_config16(dev, 0x84);
+					word &= ~(0x1 << 2);
+					word |= 0x1f8;
+					pci_write_config16(dev, 0x84, word);
+
+					/* Disable SATA controller */
+					byte = pci_read_config8(sm_dev, 0xad);
+					byte &= ~(0x1);
+					pci_write_config8(sm_dev, 0xad, byte);
+
+					mdelay(100);
+
+					/* Retry initialization */
+					hba_reset_count++;
+					if (hba_reset_count < 16)
+						goto retry_init;
+					else
+						printk(BIOS_WARNING, "HBA reset count exceeded, "
+							"continuing but AHCI drives may not function\n");
+				}
 			}
 			if (sata_ahci_mode)
 				printk(BIOS_DEBUG, "AHCI device %d is %sready after %i tries\n",

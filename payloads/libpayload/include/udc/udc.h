@@ -140,6 +140,15 @@ struct usbdev_ctrl {
 	 */
 	void (*stall)(struct usbdev_ctrl *, uint8_t ep, int in_dir, int set);
 
+	/**
+	 * Disable controller and deallocate data structures.
+	 */
+	void (*force_shutdown)(struct usbdev_ctrl *this);
+
+	/**
+	 * Let queues run out, then disable controller and deallocate data
+	 * structures.
+	 */
 	void (*shutdown)(struct usbdev_ctrl *this);
 
 	/**

@@ -413,6 +413,18 @@ static int chipidea_poll(struct usbdev_ctrl *this)
 	return 1;
 }
 
+static void chipidea_force_shutdown(struct usbdev_ctrl *this)
+{
+	struct chipidea_pdata *p = CI_PDATA(this);
+	writel(0xffffffff, &p->opreg->epflush);
+	writel(USBCMD_8MICRO | USBCMD_RST, &p->opreg->usbcmd);
+	writel(0, &p->opreg->usbmode);
+	writel(USBCMD_8MICRO, &p->opreg->usbcmd);
+	free(p->qhlist);
+	free(p);
+	free(this);
+}
+
 static void chipidea_shutdown(struct usbdev_ctrl *this)
 {
 	struct chipidea_pdata *p = CI_PDATA(this);
@@ -426,13 +438,7 @@ static void chipidea_shutdown(struct usbdev_ctrl *this)
 				if (!SIMPLEQ_EMPTY(&p->job_queue[i][j]))
 					is_empty = 0;
 	}
-	writel(0xffffffff, &p->opreg->epflush);
-	writel(USBCMD_8MICRO | USBCMD_RST, &p->opreg->usbcmd);
-	writel(0, &p->opreg->usbmode);
-	writel(USBCMD_8MICRO, &p->opreg->usbcmd);
-	free(p->qhlist);
-	free(p);
-	free(this);
+	chipidea_force_shutdown(this);
 }
 
 static void chipidea_set_address(struct usbdev_ctrl *this, int address)
@@ -491,6 +497,7 @@ struct usbdev_ctrl *chipidea_init(device_descriptor_t *dd)
 	ctrl->add_gadget = udc_add_gadget;
 	ctrl->add_strings = udc_add_strings;
 	ctrl->enqueue_packet = chipidea_enqueue_packet;
+	ctrl->force_shutdown = chipidea_force_shutdown;
 	ctrl->shutdown = chipidea_shutdown;
 	ctrl->set_address = chipidea_set_address;
 	ctrl->stall = chipidea_stall;

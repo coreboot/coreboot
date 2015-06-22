@@ -122,6 +122,8 @@ static void sata_init(struct device *dev)
 	uint8_t port_count;
 	uint8_t max_port_count;
 	uint8_t hba_reset_count;
+	uint8_t ide_io_enabled;
+	uint8_t ide_legacy_io_enabled;
 
 	sata_ahci_mode = 0;
 	if (get_option(&nvram, "sata_ahci_mode") == CB_SUCCESS)
@@ -166,14 +168,26 @@ retry_init:
 		}
 	}
 
-	/* Disable combined mode */
+	/* Enable combined mode */
 	byte = pci_read_config8(sm_dev, 0xad);
-	byte &= ~(1 << 3);
+	byte |= (1 << 3);
 	pci_write_config8(sm_dev, 0xad, byte);
 
 	device_t ide_dev;
 	/* IDE Device */
 	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
+
+	/* Disable legacy IDE mode (enable PATA_BAR0/2) */
+	byte = pci_read_config8(ide_dev, 0x09);
+	ide_legacy_io_enabled = !(byte & 0x1);
+	byte |= 0x1;
+	pci_write_config8(ide_dev, 0x09, byte);
+
+	/* Enable IDE I/O access (enable PATA_BAR0/2) */
+	byte = pci_read_config8(ide_dev, 0x04);
+	ide_io_enabled = byte & 0x1;
+	byte |= 0x1;
+	pci_write_config8(ide_dev, 0x04, byte);
 
 	/* RPR 7.2 SATA Initialization */
 	/* Set the interrupt Mapping to INTG# */
@@ -421,7 +435,8 @@ retry_init:
 
 					/* Disable SATA controller */
 					byte = pci_read_config8(sm_dev, 0xad);
-					byte &= ~(0x1);
+					byte &= ~(1 << 0);
+					byte &= ~(1 << 3);
 					pci_write_config8(sm_dev, 0xad, byte);
 
 					mdelay(100);
@@ -456,8 +471,27 @@ retry_init:
 		}
 	}
 
+	/* Restore IDE I/O access */
+	if (!ide_io_enabled) {
+		byte = pci_read_config8(ide_dev, 0x04);
+		byte &= ~0x1;
+		pci_write_config8(ide_dev, 0x04, byte);
+	}
+
+	/* Re-enable legacy IDE mode */
+	if (ide_legacy_io_enabled) {
+		byte = pci_read_config8(ide_dev, 0x09);
+		byte &= ~0x1;
+		pci_write_config8(ide_dev, 0x09, byte);
+	}
+
 	/* Below is CIM InitSataLateFar */
-	if (!sata_ahci_mode) {
+	if (sata_ahci_mode) {
+		/* Disable combined mode */
+		byte = pci_read_config8(sm_dev, 0xad);
+		byte &= ~(1 << 3);
+		pci_write_config8(sm_dev, 0xad, byte);
+	} else {
 		/* Enable interrupts from the HBA  */
 		byte = read8(sata_bar5 + 0x4);
 		byte |= 1 << 1;

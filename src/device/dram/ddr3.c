@@ -133,7 +133,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	spd_crc = (spd[127] << 8) + spd[126];
 	/* Verify the CRC is correct */
 	if (crc != spd_crc) {
-		printram("ERROR: SPD CRC failed!!!");
+		printram("ERROR: SPD CRC failed!!!\n");
 		ret = SPD_STATUS_CRC_ERROR;
 	};
 

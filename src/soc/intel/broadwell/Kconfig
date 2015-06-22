@@ -200,6 +200,24 @@ config SERIRQ_CONTINUOUS_MODE
 	help
 	  If you set this option to y, the serial IRQ machine will be
 	  operated in continuous mode.
+
+config HAVE_REFCODE_BLOB
+	depends on ARCH_X86
+	bool "An external reference code blob should be put into cbfs."
+	default n
+	help
+	 The reference code blob will be placed into cbfs.
+
+if HAVE_REFCODE_BLOB
+
+config REFCODE_BLOB_FILE
+	string "Path and filename to reference code blob."
+	default "refcode.elf"
+	help
+	 The path and filename to the file to be added to cbfs.
+
+endif # HAVE_REFCODE_BLOB
+
 config HAVE_ME_BIN
 	bool "Add Intel Management Engine firmware"
 	default y

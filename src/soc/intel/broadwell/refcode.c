@@ -43,7 +43,7 @@ static pei_wrapper_entry_t load_refcode_from_cache(void)
 	return (pei_wrapper_entry_t)prog_entry(&refcode);
 }
 
-static efi_wrapper_entry_t load_reference_code(void)
+static pei_wrapper_entry_t load_reference_code(void)
 {
 	struct prog prog =
 		PROG_INIT(ASSET_REFCODE, CONFIG_CBFS_PREFIX "/refcode");
@@ -69,7 +69,7 @@ static efi_wrapper_entry_t load_reference_code(void)
 	/* Cache loaded reference code. */
 	stage_cache_add(STAGE_REFCODE, &prog);
 
-	return prog_entry(&prog);
+	return (pei_wrapper_entry_t)prog_entry(&prog);
 }
 
 void broadwell_run_reference_code(void)

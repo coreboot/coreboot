@@ -22,3 +22,6 @@ romstage-y += PlatformGnbPcie.c
 
 ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
+ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
+ramstage-y += fchec.c
+endif

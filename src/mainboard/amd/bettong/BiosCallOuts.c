@@ -76,6 +76,9 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+		oem_fan_control(FchParams_env);
+#endif
 
 		/* XHCI configuration */
 #if CONFIG_HUDSON_XHCI_ENABLE

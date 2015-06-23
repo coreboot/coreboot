@@ -34,7 +34,7 @@ choice
 
 config CPU_AMD_AGESA_BINARY_PI
 	bool "binary PI"
-	select HUDSON_DISABLE_IMC
+	select HUDSON_DISABLE_IMC if CPU_AMD_PI_00730F01 || CPU_AMD_PI_00630F01
 	help
 	  Use a binary PI package.  Generally, these will be stored in the
 	  "3rdparty/blobs" directory.  For some processors, these must be obtained

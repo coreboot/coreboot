@@ -125,7 +125,11 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOC
 
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) -m elf_i386 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
+ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
+	$(LD_bootblock) -m elf_i386 --oformat elf32-i386 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
+else
+	$(LD_bootblock) -m elf_x86_64 --oformat elf64-x86-64 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
+endif
 
 
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
@@ -197,9 +201,15 @@ romstage-srcs += $(objgenerated)/crt0.S
 
 romstage-libs ?=
 
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
+romstage-oformat=elf32-i386
+else
+romstage-oformat=elf64-x86-64
+endif
+
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld
+	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld --oformat $(romstage-oformat)
 	$(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders && \
 	$(NM_romstage) $(objcbfs)/romstage_null.offenders | grep -q ""; if [ $$? -eq 0 ]; then \
 		echo "Forbidden global variables in romstage:"; \
@@ -208,7 +218,7 @@ $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.
 
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld
+	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld --oformat $(romstage-oformat)
 
 $(objgenerated)/romstage_null.ld: $(obj)/config.h $$(filter %.ld,$$(romstage-srcs))
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"

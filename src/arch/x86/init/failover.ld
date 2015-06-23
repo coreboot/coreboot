@@ -18,10 +18,6 @@
  * Foundation, Inc.
  */
 
-/* We use ELF as output format. So that we can debug the code in some form. */
-OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
-OUTPUT_ARCH(i386)
-
 MEMORY {
 	rom : ORIGIN = 0xffff0000, LENGTH = 64K
 }

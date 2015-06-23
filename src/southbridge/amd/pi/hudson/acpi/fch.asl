@@ -160,9 +160,11 @@ Method(_INI, 0) {
 	/* Determine the OS we're running on */
 	OSFL()
 
+#if IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
 	/* TODO: It is unstable. */
-	//#include "acpi/AmdImc.asl" /* Hudson IMC function */
-	//ITZE() /* enable IMC Fan Control*/
+	#include "acpi/AmdImc.asl" /* Hudson IMC function */
+	ITZE() /* enable IMC Fan Control*/
+#endif
 } /* End Method(_SB._INI) */
 
 Method(OSFL, 0){

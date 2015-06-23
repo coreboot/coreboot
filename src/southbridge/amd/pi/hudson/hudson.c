@@ -30,6 +30,9 @@
 #include "hudson.h"
 #include "smbus.h"
 #include "smi.h"
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+#include "fchec.h"
+#endif
 
 /* Offsets from ACPI_MMIO_BASE
  * This is defined by AGESA, but we don't include AGESA headers to avoid
@@ -130,6 +133,12 @@ static void hudson_init(void *chip_info)
 
 static void hudson_final(void *chip_info)
 {
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+	agesawrapper_fchecfancontrolservice();
+#if !IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
+	enable_imc_thermal_zone();
+#endif
+#endif
 }
 
 struct chip_operations southbridge_amd_pi_hudson_ops = {

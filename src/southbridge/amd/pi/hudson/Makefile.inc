@@ -45,6 +45,10 @@ ramstage-y += reset.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-y += early_setup.c
+ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
+romstage-y += imc.c
+ramstage-y += imc.c
+endif
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c smi_util.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c smi_util.c
@@ -109,10 +113,15 @@ HUDSON_PSP_DIRECTORY_POSITION=$(call int-align,\
 	65536)
 HUDSON_PSP_DIRECTORY_SIZE=256
 else ifeq ($(CONFIG_CPU_AMD_PI_00660F01), y)
+ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
+HUDSON_PSP_OFFSET=131072
+else
+HUDSON_PSP_OFFSET=0
+endif
 HUDSON_PSP_DIRECTORY_POSITION=$(call int-align,\
 	$(call int-add,\
 		$(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) $(CBFS_HEADER_SIZE) $(XHCI_FWM_SIZE)\
-		$(CBFS_HEADER_SIZE) $(GEC_FWM_SIZE) $(CBFS_HEADER_SIZE) $(IMC_FWM_SIZE) $(CBFS_HEADER_SIZE)),\
+		$(CBFS_HEADER_SIZE) $(GEC_FWM_SIZE) $(CBFS_HEADER_SIZE) $(IMC_FWM_SIZE) $(CBFS_HEADER_SIZE) $(HUDSON_PSP_OFFSET)),\
 	65536)
 HUDSON_PSP_DIRECTORY_SIZE=256
 else

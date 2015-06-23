@@ -350,7 +350,7 @@ static int setup_ep0(struct usbdev_ctrl *this, dev_req_t *dr)
 			int d_len = s_len * 2;
 
 			uint8_t *data = dma_malloc(d_len + 2);
-			memset(data, 0, d_len);
+			memset(data, 0, d_len + 2);
 			data[0] = d_len + 2; // length
 			data[1] = 0x03; // string descriptor
 			int i;

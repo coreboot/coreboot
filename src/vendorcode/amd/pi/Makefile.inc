@@ -103,6 +103,9 @@ agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Kern/KernImc/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Fch/Common/*.[cS])
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/Proc/Psp/PspBaseLib/*.[cS])
 endif
+ifeq ($(CONFIG_HUDSON_IMC_FWM),y)
+agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/imc/*.c)
+endif
 
 classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa
 $(eval $(call create_class_compiler,libagesa,x86_32))

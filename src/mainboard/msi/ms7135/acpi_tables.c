@@ -8,17 +8,10 @@
  *  2005.9 yhlu modify that to more dynamic for AMD Opteron Based MB
  */
 
-#include <console/console.h>
-#include <string.h>
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
-#include <cpu/amd/amdk8_sysconf.h>
-#include "../../../northbridge/amd/amdk8/acpi.h"
+#include <assert.h>
 
 /* APIC */
 unsigned long acpi_fill_madt(unsigned long current)

@@ -40,9 +40,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	pci_write_config32(dev, 0x84, 0x0000007d);
 #endif
 
-	/* IRQ of timer */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		current, 0, 0, 2, 0);
 	/* IRQ9 */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 		current, 0, 9, 9, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);

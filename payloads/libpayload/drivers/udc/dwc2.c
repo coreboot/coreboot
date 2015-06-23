@@ -675,21 +675,10 @@ static int dwc2_check_irq(struct usbdev_ctrl *this)
 	return 1;
 }
 
-static void dwc2_shutdown(struct usbdev_ctrl *this)
+static void dwc2_force_shutdown(struct usbdev_ctrl *this)
 {
-	dwc2_pdata_t *p = DWC2_PDATA(this);
-	int i, j;
-	int is_empty = 0;
 	gusbcfg_t gusbcfg;
-
-	while (!is_empty) {
-		is_empty = 1;
-		this->poll(this);
-		for (i = 0; i < 16; i++)
-			for (j = 0; j < 2; j++)
-				if (!SIMPLEQ_EMPTY(&p->eps[i][j].job_queue))
-					is_empty = 0;
-	}
+	dwc2_pdata_t *p = DWC2_PDATA(this);
 
 	/* Disconnect */
 	dwc2_connect(this, 0);
@@ -702,6 +691,24 @@ static void dwc2_shutdown(struct usbdev_ctrl *this)
 
 	free(p);
 	free(this);
+}
+
+static void dwc2_shutdown(struct usbdev_ctrl *this)
+{
+	dwc2_pdata_t *p = DWC2_PDATA(this);
+	int i, j;
+	int is_empty = 0;
+
+	while (!is_empty) {
+		is_empty = 1;
+		this->poll(this);
+		for (i = 0; i < 16; i++)
+			for (j = 0; j < 2; j++)
+				if (!SIMPLEQ_EMPTY(&p->eps[i][j].job_queue))
+					is_empty = 0;
+	}
+
+	dwc2_force_shutdown(this);
 }
 
 static void dwc2_set_address(struct usbdev_ctrl *this, int address)
@@ -910,6 +917,7 @@ struct usbdev_ctrl *dwc2_udc_init(device_descriptor_t *dd)
 	ctrl->poll = dwc2_check_irq;
 	ctrl->add_gadget = udc_add_gadget;
 	ctrl->enqueue_packet = dwc2_enqueue_packet;
+	ctrl->force_shutdown = dwc2_force_shutdown;
 	ctrl->shutdown = dwc2_shutdown;
 	ctrl->set_address = dwc2_set_address;
 	ctrl->stall = dwc2_stall;

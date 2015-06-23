@@ -121,7 +121,6 @@ static void sata_init(struct device *dev)
 	uint8_t sata_alpm_enable;
 	uint8_t port_count;
 	uint8_t max_port_count;
-	uint8_t hba_reset_count;
 	uint8_t ide_io_enabled;
 	uint8_t ide_legacy_io_enabled;
 
@@ -137,14 +136,20 @@ static void sata_init(struct device *dev)
 	/* SATA SMBus Disable */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
-	hba_reset_count = 0;
-
-retry_init:
+	/* WARNING
+	 * Enabling the SATA link latency enhancement (SMBUS 0xAD bit 5)
+	 * causes random persistent drive detection failures until it is cleared,
+	 * with the probabability of detection failure rising exponentially with
+	 * the number of drives attached to the controller!
+	 * This happens on Rev15 H/W.
+	 * Do NOT follow the RPR advice; leave this bit set at all times...
+	 */
 	byte = pci_read_config8(sm_dev, 0xad);
 	/* Disable SATA SMBUS */
 	byte |= (1 << 1);
 	/* Enable SATA and power saving */
 	byte |= (1 << 0);
+	/* Disable link latency enhancement */
 	byte |= (1 << 5);
 	pci_write_config8(sm_dev, 0xad, byte);
 
@@ -158,15 +163,6 @@ retry_init:
 	rev_id = pci_read_config8(sm_dev, 0x08) - 0x28;
 
 	printk(BIOS_SPEW, "rev_id=%x\n", rev_id);
-
-	if (sata_ahci_mode) {
-		/* Enable link latency enhancement on A14 and above */
-		if (rev_id >= 0x14) {
-			byte = pci_read_config8(sm_dev, 0xad);
-			byte &= ~(1 << 5);
-			pci_write_config8(sm_dev, 0xad, byte);
-		}
-	}
 
 	/* Enable combined mode */
 	byte = pci_read_config8(sm_dev, 0xad);
@@ -281,6 +277,17 @@ retry_init:
 		write32(sata_bar5 + 0xfc, dword);
 	}
 
+	/* Enable SATA ports */
+	byte = pci_read_config8(dev, 0x42);
+	if (max_port_count <= 6) {
+		byte |= 0x3f;
+		for (i = 0; i < max_port_count; i++)
+			byte &= ~(0x1 << i);
+	} else {
+		byte &= ~0x3f;
+	}
+	pci_write_config8(dev, 0x42, byte);
+
 	if (sata_ahci_mode) {
 		/* FIXME
 		* SeaBIOS does not know how to spin
@@ -301,6 +308,9 @@ retry_init:
 		dword |= 0x1;
 		write32(sata_bar5 + 0x04, dword);
 	}
+
+	sb7xx_51xx_setup_sata_phys(dev);
+	sb7xx_51xx_setup_sata_port_indication(sata_bar5);
 
 	/* Write protect Sub-Class Code */
 	byte = pci_read_config8(dev, 0x40);
@@ -327,16 +337,13 @@ retry_init:
 	else {
 		dword &= ~(1 << 24 | 1 << 21); /* A14 and above */
 		dword &= ~0xFF80; /* 15:7 */
-		dword |= 1 << 15 | 0x7F << 7;
+		dword |= 1 << 15 | 0x7F << 7 | 1 << 6;
 	}
 	pci_write_config32(dev, 0x48, dword);
 
 	/* Program the watchdog counter to 0x10 */
 	byte = 0x10;
 	pci_write_config8(dev, 0x46, byte);
-
-	sb7xx_51xx_setup_sata_phys(dev);
-	sb7xx_51xx_setup_sata_port_indication(sata_bar5);
 
 	/* Enable the I/O, MM, BusMaster access for SATA */
 	byte = pci_read_config8(dev, 0x4);
@@ -422,32 +429,28 @@ retry_init:
 				if (i < 4)
 					current_bar = ((i / 2) == 0) ? sata_bar0 : sata_bar2;
 				else
-					current_bar = ide_bar0;
+					current_bar = (pci_read_config8(sm_dev, 0xad) & (0x1 << 4))
+						? ide_bar2 : ide_bar0;
 				ret = sata_drive_detect(i, current_bar);
 				if (ret == 0) {
 					break;
 				} else if (ret == 2) {
-					/* Reset PHY logic */
-					word = pci_read_config16(dev, 0x84);
-					word &= ~(0x1 << 2);
-					word |= 0x1f8;
-					pci_write_config16(dev, 0x84, word);
+					/* Read in Port-N Serial ATA Control Register */
+					byte = read8(sata_bar5 + 0x12C + 0x80 * i);
 
-					/* Disable SATA controller */
-					byte = pci_read_config8(sm_dev, 0xad);
-					byte &= ~(1 << 0);
-					byte &= ~(1 << 3);
-					pci_write_config8(sm_dev, 0xad, byte);
+					/* Set Reset Bit */
+					byte |= 0x1;
+					write8((sata_bar5 + 0x12C + 0x80 * i), byte);
 
-					mdelay(100);
+					/* Wait 1000ms */
+					mdelay(1000);
 
-					/* Retry initialization */
-					hba_reset_count++;
-					if (hba_reset_count < 16)
-						goto retry_init;
-					else
-						printk(BIOS_WARNING, "HBA reset count exceeded, "
-							"continuing but AHCI drives may not function\n");
+					/* Clear Reset Bit */
+					byte &= ~0x01;
+					write8((sata_bar5 + 0x12C + 0x80 * i), byte);
+
+					/* Wait 1ms */
+					mdelay(1);
 				}
 			}
 			if (sata_ahci_mode)

@@ -23,9 +23,7 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 #include <fsp_util.h>
-#endif	/* CONFIG_PLATFORM_USES_FSP1_1 */
 #include <soc/intel/common/util.h>
 #include <soc/pei_data.h>
 #include <soc/pm.h>		/* chip_power_state */
@@ -73,10 +71,8 @@ struct romstage_params {
  */
 
 void mainboard_check_ec_image(struct romstage_params *params);
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params);
-#endif	/* CONFIG_PLATFORM_USES_FSP1_1 */
 void mainboard_pre_console_init(struct romstage_params *params);
 void mainboard_romstage_entry(struct romstage_params *params);
 void mainboard_save_dimm_info(struct romstage_params *params);
@@ -91,11 +87,9 @@ void *setup_stack_and_mtrrs(void);
 void set_max_freq(void);
 void soc_after_ram_init(struct romstage_params *params);
 void soc_after_temp_ram_exit(void);
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	MEMORY_INIT_UPD *new);
 void soc_memory_init_params(MEMORY_INIT_UPD *params);
-#endif	/* CONFIG_PLATFORM_USES_FSP1_1 */
 void soc_pre_console_init(struct romstage_params *params);
 void soc_pre_ram_init(struct romstage_params *params);
 void soc_romstage_init(struct romstage_params *params);

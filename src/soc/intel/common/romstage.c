@@ -85,10 +85,8 @@ asmlinkage void *romstage_main(unsigned int bist,
 		"No Memory Support"));
 
 	/* Display FSP banner */
-	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)) {
-		printk(BIOS_DEBUG, "FSP TempRamInit successful\n");
-		print_fsp_info(params.chipset_context);
-	}
+	printk(BIOS_DEBUG, "FSP TempRamInit successful\n");
+	print_fsp_info(params.chipset_context);
 
 	/* Get power state */
 	params.power_state = fill_power_state();
@@ -109,10 +107,8 @@ asmlinkage void *romstage_main(unsigned int bist,
 
 	top_of_stack = setup_stack_and_mtrrs();
 
-	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)) {
-		printk(BIOS_DEBUG, "Calling FspTempRamExit API\n");
-		timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_START);
-	}
+	printk(BIOS_DEBUG, "Calling FspTempRamExit API\n");
+	timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_START);
 	return top_of_stack;
 }
 
@@ -197,12 +193,10 @@ void romstage_common(struct romstage_params *params)
 
 asmlinkage void romstage_after_car(void *chipset_context)
 {
-	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)) {
-		timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_END);
-		printk(BIOS_DEBUG, "FspTempRamExit returned successfully\n");
-		soc_after_temp_ram_exit();
-		soc_display_mtrrs();
-	}
+	timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_END);
+	printk(BIOS_DEBUG, "FspTempRamExit returned successfully\n");
+	soc_after_temp_ram_exit();
+	soc_display_mtrrs();
 
 	timestamp_add_now(TS_END_ROMSTAGE);
 
@@ -253,7 +247,6 @@ __attribute__((weak)) void mainboard_romstage_entry(
 }
 
 /* Save the DIMM information for SMBIOS table 17 */
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
 __attribute__((weak)) void mainboard_save_dimm_info(
 	struct romstage_params *params)
 {
@@ -348,13 +341,6 @@ __attribute__((weak)) void mainboard_save_dimm_info(
 	mem_info->dimm_cnt = index;
 	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
 }
-#else /* CONFIG_PLATFORM_USES_FSP1_1 */
-__attribute__((weak)) void mainboard_save_dimm_info(
-	struct romstage_params *params)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-#endif /* CONFIG_PLATFORM_USES_FSP1_1 */
 
 /* Get the memory configuration data */
 __attribute__((weak)) int mrc_cache_get_current(

@@ -96,7 +96,7 @@ static const struct soc_gpio_map  gpsw_gpio_map[] = {
 	GPIO_NC, /* GPO FST_SPI_CS1_B */
 	Native_M1, /* 05 FST_SPI_D1 */
 	Native_M1, /* 06 FST_SPI_CS0_B */
-	GPIO_OUT_HIGH, /* 07 FST_SPI_CS2_B */
+	GPIO_NC, /* 07 FST_SPI_CS2_B */
 	GPIO_NC, /* 15 UART1_RTS_B */
 	Native_M2, /* 16 UART1_RXD */
 	GPIO_NC, /* 17 UART2_RXD */

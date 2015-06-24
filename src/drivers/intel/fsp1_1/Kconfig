@@ -17,14 +17,14 @@
 ## Foundation, Inc.
 ##
 
-comment "Intel FSP"
-
 config PLATFORM_USES_FSP1_1
 	bool
 	help
 	  Does the code require the Intel Firmware Support Package?
 
 if PLATFORM_USES_FSP1_1
+
+comment "Intel FSP 1.1"
 
 config DCACHE_RAM_BASE
 	hex

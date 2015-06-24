@@ -47,6 +47,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
 	select SUPPORT_CPU_UCODE_IN_CBFS
+	select HAVE_INTEL_FIRMWARE
 
 config SOC_INTEL_FSP_BAYTRAIL_MD
 	bool
@@ -93,34 +94,6 @@ config MICROCODE_INCLUDE_PATH
 config CPU_MICROCODE_CBFS_LOC
 	hex
 	default 0xfff10040
-
-config INCLUDE_ME
-	bool "Include the TXE"
-	default n
-	help
-	  Build the TXE and descriptor.bin into the ROM image.  If you want to use a
-	  descriptor.bin and TXE file from the previous ROM image, you may not want
-	  to build it in here.
-
-config ME_PATH
-	string "Path to ME"
-	depends on INCLUDE_ME
-	help
-	  The path of the TXE and Descriptor files.
-
-config LOCK_MANAGEMENT_ENGINE
-	bool "Lock TXE section"
-	default n
-	depends on INCLUDE_ME
-	help
-	  The Intel Trusted Execution Engine supports preventing write accesses
-	  from the host to the Management Engine section in the firmware
-	  descriptor. If the ME section is locked, it can only be overwritten
-	  with an external SPI flash programmer. You will want this if you
-	  want to increase security of your ROM image once you are sure
-	  that the ME firmware is no longer going to change.
-
-	  If unsure, say N.
 
 config ENABLE_BUILTIN_COM1
 	bool "Enable built-in legacy Serial Port"

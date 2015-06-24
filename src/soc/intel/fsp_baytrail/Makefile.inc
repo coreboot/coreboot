@@ -30,6 +30,7 @@ subdirs-y += ../../../cpu/x86/cache
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../lib/fsp
 subdirs-y += fsp
+subdirs-y += ../../../southbridge/intel/common/firmware
 
 ramstage-y += memmap.c
 romstage-y += memmap.c
@@ -61,34 +62,5 @@ ramstage-y += i2c.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/fsp
-
-# Run an intermediate step when producing coreboot.rom
-# that adds additional components to the final firmware
-# image outside of CBFS
-ifeq ($(CONFIG_INCLUDE_ME),y)
-ifneq ($(CONFIG_ME_PATH),)
-INTERMEDIATE:=baytrail_add_txe
-
-baytrail_add_txe: $(obj)/coreboot.pre $(IFDTOOL)
-	printf "    DD         Adding Intel Firmware Descriptor\n"
-	dd if=$(call strip_quotes,$(CONFIG_ME_PATH))/descriptor.bin \
-		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
-	printf "    IFDTOOL    txe.bin -> coreboot.pre\n"
-	$(objutil)/ifdtool/ifdtool \
-		-i ME:$(call strip_quotes,$(CONFIG_ME_PATH))/txe.bin \
-		$(obj)/coreboot.pre
-	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
-ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
-	printf "    IFDTOOL    Locking Management Engine\n"
-	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre
-	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
-else
-	printf "    IFDTOOL    Unlocking Management Engine\n"
-	$(objutil)/ifdtool/ifdtool -u $(obj)/coreboot.pre
-	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
-endif
-
-endif
-endif
 
 endif

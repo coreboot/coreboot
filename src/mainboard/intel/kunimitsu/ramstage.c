@@ -19,5 +19,5 @@
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
 {
 	/*update gpio table*/
-	params->GpioTablePtr = (UINT32 *)GpioTableKunimitsu;
+	params->GpioTablePtr = (UINT32 *)mainboard_gpio_table;
 }

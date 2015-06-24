@@ -257,6 +257,18 @@ typedef struct {
 	  .owner = GPIO_OWNER_GPIO, \
 	  .conf1 = GPIO_SENSE_DISABLE }
 
+/* Number of pins used by SerialIo controllers */
+#define PCH_SERIAL_IO_PINS_PER_UART_CONTROLLER			4
+#define PCH_SERIAL_IO_PINS_PER_UART_CONTROLLER_NO_FLOW_CTRL	2
+
+/* Below defines are based on GPIO_CONFIG structure fields */
+#define GPIO_CONF_PAD_MODE_MASK		0xF
+#define GPIO_CONF_PAD_MODE_BIT_POS	0
+
+/* GPIO Pad Mode */
+#define B_PCH_GPIO_PAD_MODE	(0x1000 | 0x800 | 0x400)
+#define N_PCH_GPIO_PAD_MODE	10
+
 struct gpio_config {
 	u8 gpio;
 	u32 conf0;

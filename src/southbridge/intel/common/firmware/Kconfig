@@ -74,23 +74,46 @@ config BUILD_WITH_FAKE_IFD
 
 config IFD_BIOS_SECTION
 	depends on BUILD_WITH_FAKE_IFD
-	string
+	string "BIOS Region Starting:Ending addresses within the ROM"
 	default ""
+	help
+	  The BIOS region is typically the size of the CBFS area, and is located
+	  at the end of the ROM space.
+
+	  For an 8MB ROM with a 3MB CBFS area, this would look like:
+	  0x00500000:0x007fffff
 
 config IFD_ME_SECTION
 	depends on BUILD_WITH_FAKE_IFD
-	string
+	string "ME/TXE Region Starting:Ending addresses within the ROM"
 	default ""
+	help
+	  The ME/TXE region typically starts at around 0x1000 and often fills the
+	  ROM space not used by CBFS.
+
+	  For an 8MB ROM with a 3MB CBFS area, this might look like:
+	  0x00001000:0x004fffff
 
 config IFD_GBE_SECTION
 	depends on BUILD_WITH_FAKE_IFD
-	string
+	string "GBE Region Starting:Ending addresses within the ROM"
 	default ""
+	help
+	  The Gigabit Ethernet ROM region is used when an Intel NIC is built into
+	  the Southbridge/SOC and the platform uses this device instead of an external
+	  PCIe NIC.  It will be located between the ME/TXE and the BIOS region.
+
+	  Leave this empty if you're unsure.
 
 config IFD_PLATFORM_SECTION
 	depends on BUILD_WITH_FAKE_IFD
-	string
+	string "Platform Region Starting:Ending addresses within the Rom"
 	default ""
+	help
+	  The Platform region is used for platform specific data.
+	  It will be located between the ME/TXE and the BIOS region.
+
+	  Leave this empty if you're unsure.
 
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock ME/TXE section"

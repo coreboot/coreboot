@@ -812,7 +812,6 @@ static void dram_timing_regs(ramctr_timing * ctrl)
 
 static void dram_dimm_mapping(dimm_info * info, ramctr_timing * ctrl)
 {
-	int t;
 	u32 reg, val32;
 	int channel;
 
@@ -832,11 +831,6 @@ static void dram_dimm_mapping(dimm_info * info, ramctr_timing * ctrl)
 			dimmA = &info->dimm[channel][1];
 			dimmB = &info->dimm[channel][0];
 			reg |= (1 << 16);
-			// swap dimm info
-			t = ctrl->rank_mirror[channel][1];
-			ctrl->rank_mirror[channel][1] =
-			    ctrl->rank_mirror[channel][3];
-			ctrl->rank_mirror[channel][3] = t;
 		}
 		// dimmA
 		if (dimmA && (dimmA->ranks > 0)) {
@@ -1231,6 +1225,9 @@ static void write_mrreg(ramctr_timing * ctrl, int channel, int slotrank,
 	printram("MRd: %x <= %x\n", reg, val);
 
 	if (ctrl->rank_mirror[channel][slotrank]) {
+		/* DDR3 Rank1 Address mirror
+		 * swap the following pins:
+		 * A3<->A4, A5<->A6, A7<->A8, BA0<->BA1 */
 		reg = ((reg >> 1) & 1) | ((reg << 1) & 2);
 		val = (val & ~0x1f8) | ((val >> 1) & 0xa8)
 		    | ((val & 0xa8) << 1);

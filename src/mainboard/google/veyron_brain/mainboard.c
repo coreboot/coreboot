@@ -76,10 +76,20 @@ static void configure_vop(void)
 
 	/* lcdc(vop) iodomain select 1.8V */
 	write32(&rk3288_grf->io_vsel, RK_SETBITS(1 << 0));
+}
 
+static void configure_hdmi(void)
+{
 	rk808_configure_switch(2, 1);	/* VCC18_LCD (HDMI_AVDD_1V8) */
 	rk808_configure_ldo(7, 1000);	/* VDD10_LCD (HDMI_AVDD_1V0) */
 	rk808_configure_switch(1, 1);	/* VCC33_LCD */
+
+	/* set POWER_HDMI_ON */
+	gpio_output(GPIO(7, A, 2), 1);
+
+	/* HDMI I2C */
+	write32(&rk3288_grf->iomux_i2c5sda, IOMUX_HDMI_EDP_I2C_SDA);
+	write32(&rk3288_grf->iomux_i2c5scl, IOMUX_HDMI_EDP_I2C_SCL);
 }
 
 static void mainboard_init(device_t dev)
@@ -90,6 +100,7 @@ static void mainboard_init(device_t dev)
 	configure_emmc();
 	configure_codec();
 	configure_vop();
+	configure_hdmi();
 
 	elog_init();
 	elog_add_watchdog_reset();

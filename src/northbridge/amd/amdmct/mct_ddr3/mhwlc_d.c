@@ -50,7 +50,7 @@ static int32_t abs(int32_t val) {
  */
 
 /*-----------------------------------------------------------------------------
- * void AgesaHwWlPhase1(SPDStruct *SPDData,MCTStruct *MCTData, DCTStruct *DCTData,
+ * uint8_t AgesaHwWlPhase1(SPDStruct *SPDData,MCTStruct *MCTData, DCTStruct *DCTData,
  *                  u8 Dimm, u8 Pass)
  *
  *  Description:
@@ -67,7 +67,7 @@ static int32_t abs(int32_t val) {
  *       OUT
  *-----------------------------------------------------------------------------
  */
-void AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
+uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 		u8 dct, u8 dimm, u8 pass)
 {
 	u8 ByteLane;
@@ -170,12 +170,15 @@ void AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTsta
 	}
 
 	pDCTData->WLCriticalGrossDelayPrevPass = 0x1f;
+
+	return 0;
 }
 
-void AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
+uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 		u8 dct, u8 dimm, u8 pass)
 {
 	u8 ByteLane;
+	uint8_t status = 0;
 	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
 
 	if (is_fam15h()) {
@@ -202,19 +205,38 @@ void AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTsta
 
 		/* Compensate for occasional noise/instability causing sporadic training failure */
 		for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
+			uint8_t faulty_value_detected = 0;
 			uint16_t total_delay_seed = ((pDCTData->WLSeedGrossDelay[index+ByteLane] & 0x1f) << 5) | (pDCTData->WLSeedFineDelay[index+ByteLane] & 0x1f);
 			uint16_t total_delay_phy = ((pDCTData->WLGrossDelay[index+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[index+ByteLane] & 0x1f);
-			if (abs(total_delay_phy - total_delay_seed) > 0x20) {
-				printk(BIOS_DEBUG, "%s: overriding faulty phy value (seed: %04x phy: %04x step: %04x)\n", __func__,
+			if (pass == FirstPass) {
+				/* Allow a somewhat higher step threshold on the first pass
+				 * For the most part, as long as the phy isn't stepping
+				 * several clocks at once the values are probably valid.
+				 */
+				if (abs(total_delay_phy - total_delay_seed) > 0x30)
+					faulty_value_detected = 1;
+			} else {
+				/* Stepping memory clocks between adjacent allowed frequencies
+				 *  should not yield large phy value differences...
+				 */
+
+				if (abs(total_delay_phy - total_delay_seed) > 0x20)
+					faulty_value_detected = 1;
+			}
+			if (faulty_value_detected) {
+				printk(BIOS_INFO, "%s: overriding faulty phy value (seed: %04x phy: %04x step: %04x)\n", __func__,
 					total_delay_seed, total_delay_phy, abs(total_delay_phy - total_delay_seed));
 				pDCTData->WLGrossDelay[index+ByteLane] = pDCTData->WLSeedGrossDelay[index+ByteLane];
 				pDCTData->WLFineDelay[index+ByteLane] = pDCTData->WLSeedFineDelay[index+ByteLane];
+				status = 1;
 			}
 		}
 	}
+
+	return status;
 }
 
-void AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
+uint8_t AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 		u8 dct, u8 dimm, u8 pass)
 {
 	u8 ByteLane;
@@ -281,6 +303,8 @@ void AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTsta
 	 * to the normal operating termination:
 	 */
 	prepareDimms(pMCTstat, pDCTstat, dct, dimm, FALSE);
+
+	return 0;
 }
 
 /*----------------------------------------------------------------------------

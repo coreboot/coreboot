@@ -14,11 +14,11 @@
  * GNU General Public License for more details.
  */
 
-static void AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat,
+static uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
-static void AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat,
+static uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
-static void AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat,
+static uint8_t AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
 static void EnableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 static void DisableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
@@ -96,11 +96,12 @@ static void DisableAutoRefresh_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void PhyWLPass1(struct MCTStatStruc *pMCTstat,
+static uint8_t PhyWLPass1(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct)
 {
 	u8 dimm;
 	u16 DIMMValid;
+	uint8_t status = 0;
 	void *DCTPtr;
 
 	dct &= 1;
@@ -117,19 +118,22 @@ static void PhyWLPass1(struct MCTStatStruc *pMCTstat,
 		PrepareC_DCT(pMCTstat, pDCTstat, dct);
 		for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm ++) {
 			if (DIMMValid & (1 << (dimm << 1))) {
-				AgesaHwWlPhase1(pMCTstat, pDCTstat, dct, dimm, FirstPass);
-				AgesaHwWlPhase2(pMCTstat, pDCTstat, dct, dimm, FirstPass);
-				AgesaHwWlPhase3(pMCTstat, pDCTstat, dct, dimm, FirstPass);
+				status |= AgesaHwWlPhase1(pMCTstat, pDCTstat, dct, dimm, FirstPass);
+				status |= AgesaHwWlPhase2(pMCTstat, pDCTstat, dct, dimm, FirstPass);
+				status |= AgesaHwWlPhase3(pMCTstat, pDCTstat, dct, dimm, FirstPass);
 			}
 		}
 	}
+
+	return status;
 }
 
-static void PhyWLPass2(struct MCTStatStruc *pMCTstat,
+static uint8_t PhyWLPass2(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct)
 {
 	u8 dimm;
 	u16 DIMMValid;
+	uint8_t status = 0;
 	void *DCTPtr;
 
 	dct &= 1;
@@ -159,12 +163,14 @@ static void PhyWLPass2(struct MCTStatStruc *pMCTstat,
 		DisableAutoRefresh_D(pMCTstat, pDCTstat);
 		for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm ++) {
 			if (DIMMValid & (1 << (dimm << 1))) {
-				AgesaHwWlPhase1(pMCTstat, pDCTstat, dct, dimm, SecondPass);
-				AgesaHwWlPhase2(pMCTstat, pDCTstat, dct, dimm, SecondPass);
-				AgesaHwWlPhase3(pMCTstat, pDCTstat, dct, dimm, SecondPass);
+				status |= AgesaHwWlPhase1(pMCTstat, pDCTstat, dct, dimm, SecondPass);
+				status |= AgesaHwWlPhase2(pMCTstat, pDCTstat, dct, dimm, SecondPass);
+				status |= AgesaHwWlPhase3(pMCTstat, pDCTstat, dct, dimm, SecondPass);
 			}
 		}
 	}
+
+	return status;
 }
 
 static uint16_t fam15h_next_highest_memclk_freq(uint16_t memclk_freq)
@@ -179,6 +185,8 @@ static uint16_t fam15h_next_highest_memclk_freq(uint16_t memclk_freq)
 static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, uint8_t Pass)
 {
+	uint8_t status;
+	uint8_t timeout;
 	uint16_t final_target_freq;
 
 	pDCTstat->C_MCTPtr  = &(pDCTstat->s_C_MCTPtr);
@@ -197,8 +205,21 @@ static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (Pass == FirstPass) {
-		PhyWLPass1(pMCTstat, pDCTstat, 0);
-		PhyWLPass1(pMCTstat, pDCTstat, 1);
+		timeout = 0;
+		do {
+			status = 0;
+			timeout++;
+			status |= PhyWLPass1(pMCTstat, pDCTstat, 0);
+			status |= PhyWLPass1(pMCTstat, pDCTstat, 1);
+			if (status)
+				printk(BIOS_INFO,
+					"%s: Retrying write levelling due to invalid value(s) detected in first phase\n",
+					__func__);
+		} while (status && (timeout < 8));
+		if (status)
+			printk(BIOS_INFO,
+				"%s: Uncorrectable invalid value(s) detected in first phase of write levelling\n",
+				__func__);
 	}
 
 	if (Pass == SecondPass) {
@@ -207,6 +228,7 @@ static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 			 * NOTE: BIOS must program both DCTs to the same frequency.
 			 * NOTE: Fam15h steps the frequency, Fam10h slams the frequency.
 			 */
+			uint8_t global_phy_training_status = 0;
 			final_target_freq = pDCTstat->TargetFreq;
 
 			while (pDCTstat->Speed != final_target_freq) {
@@ -215,11 +237,27 @@ static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 				else
 					pDCTstat->TargetFreq = final_target_freq;
 				SetTargetFreq(pMCTstat, pDCTstat);
-				PhyWLPass2(pMCTstat, pDCTstat, 0);
-				PhyWLPass2(pMCTstat, pDCTstat, 1);
+				timeout = 0;
+				do {
+					status = 0;
+					timeout++;
+					status |= PhyWLPass2(pMCTstat, pDCTstat, 0);
+					status |= PhyWLPass2(pMCTstat, pDCTstat, 1);
+					if (status)
+						printk(BIOS_INFO,
+							"%s: Retrying write levelling due to invalid value(s) detected in last phase\n",
+							__func__);
+				} while (status && (timeout < 8));
+				global_phy_training_status |= status;
 			}
 
 			pDCTstat->TargetFreq = final_target_freq;
+
+			if (global_phy_training_status)
+				printk(BIOS_WARNING,
+					"%s: Uncorrectable invalid value(s) detected in second phase of write levelling; "
+					"continuing but system may be unstable!\n",
+					__func__);
 
 			uint8_t dct;
 			for (dct = 0; dct < 2; dct++) {

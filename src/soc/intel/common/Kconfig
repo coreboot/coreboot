@@ -40,7 +40,7 @@ config CHIPSET_RESERVED_MEM_BYTES
 	hex "Size in bytes of chipset reserved memory area"
 	default 0
 	help
-          If insufficient documentation is available to determine the size of
+	  If insufficient documentation is available to determine the size of
 	  the chipset reserved memory area by walking the chipset registers,
 	  the CHIPSET_RESERVED_MEM_BYTES may be used as a workaround to account
 	  for the missing pieces of memory.  The value specified in bytes is:
@@ -49,7 +49,7 @@ config CHIPSET_RESERVED_MEM_BYTES
 	  by reading chipset registers)
 
 config DISPLAY_MTRRS
-	bool "MTRRs: Display the MTRR settings
+	bool "MTRRs: Display the MTRR settings"
 	default n
 
 config DISPLAY_SMM_MEMORY_MAP

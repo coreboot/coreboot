@@ -19,7 +19,27 @@ u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat, u8 dct, u32 misc2)
 {
 	u32 val;
 
-	if (pDCTstat->LogicalCPUID & (AMD_DR_Dx | AMD_DR_Cx)) {
+	/* FIXME
+	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
+	 * For now assume a maximum of 2 DIMMs per channel can be installed
+	 */
+	uint8_t MaxDimmsInstallable = 2;
+
+	if (pDCTstat->LogicalCPUID & AMD_FAM15_ALL) {
+		uint8_t cs_mux_45;
+		uint8_t cs_mux_67;
+
+		/* BKDG v3.14 Table 200 / Table 201 */
+		if (MaxDimmsInstallable < 3) {
+			cs_mux_45 = 1;
+			cs_mux_67 = 1;
+		} else {
+			cs_mux_45 = 0;
+			cs_mux_67 = 0;
+		}
+		misc2 |= (cs_mux_45 & 0x1) << 26;
+		misc2 |= (cs_mux_67 & 0x1) << 27;
+	} else if (pDCTstat->LogicalCPUID & (AMD_DR_Dx | AMD_DR_Cx)) {
 		if (pDCTstat->Status & (1 << SB_Registered)) {
 			misc2 |= 1 << SubMemclkRegDly;
 			if (mctGet_NVbits(NV_MAX_DIMMS) == 8)

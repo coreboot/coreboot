@@ -88,7 +88,12 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	uint8_t sync_flood_on_dram_err[MAX_NODES_SUPPORTED];
 	uint8_t sync_flood_on_any_uc_err[MAX_NODES_SUPPORTED];
 
+	uint8_t redirect_ecc_scrub = 0;
+
 	mctHookBeforeECC();
+
+	if ((pMCTstat->GStatus & 1 << GSB_ECCDIMMs) && mctGet_NVbits(NV_ECCRedir))
+		redirect_ecc_scrub = 1;
 
 	/* Construct these booleans, based on setup options, for easy handling
 	later in this procedure */
@@ -226,12 +231,12 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 					}
 					dev = pDCTstat->dev_nbmisc;
 					val = curBase << 8;
-					if(OB_ECCRedir) {
-						val |= (1<<0); /* enable redirection */
+					if (OB_ECCRedir) {
+						val |= (1<<0);			/* enable redirection */
 					}
-					Set_NB32(dev, 0x5C, val); /* Dram Scrub Addr Low */
+					Set_NB32(dev, 0x5c, val);		/* Dram Scrub Addr Low */
 					val = curBase>>24;
-					Set_NB32(dev, 0x60, val); /* Dram Scrub Addr High */
+					Set_NB32(dev, 0x60, val);		/* Dram Scrub Addr High */
 					Set_NB32(dev, 0x58, OF_ScrubCTL);	/*Scrub Control */
 
 					if (!is_fam15h()) {
@@ -246,6 +251,32 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 								val |= 0x80000000;	/* set it to divide-by-16 */
 								Set_NB32(dev, 0x84, val);
 							}
+						}
+					}
+
+					if (is_fam15h()) {
+						uint8_t dct;
+
+						/* Disable training mode
+						 * See fam15EnableTrainingMode for the non-ECC training mode tear-down code
+						 */
+						for (dct = 0; dct < 2; dct++) {
+							/* NOTE: Reads use DCT 0 and writes use the current DCT per Erratum 505 */
+							dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, 0, 0x58);	/* Scrub Rate Control */
+							dword &= ~(0x1f << 24);					/* L3Scrub = NV_L3BKScrub */
+							dword |= (mctGet_NVbits(NV_L3BKScrub) & 0x1f) << 24;
+							dword &= ~(0x1f);					/* DramScrub = NV_DramBKScrub */
+							dword |= mctGet_NVbits(NV_DramBKScrub) & 0x1f;
+							Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x58, dword);	/* Scrub Rate Control */
+
+							dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x5c);	/* DRAM Scrub Address Low */
+							dword &= ~(0x1);					/* ScrubReDirEn = redirect_ecc_scrub */
+							dword |= redirect_ecc_scrub & 0x1;
+							Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x5c, dword);	/* DRAM Scrub Address Low */
+
+							dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x1b8);	/* L3 Control 1 */
+							dword &= ~(0x1 << 4);					/* L3ScrbRedirDis = 0 */
+							Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x1b8, dword);	/* L3 Control 1 */
 						}
 					}
 				}	/* this node has ECC enabled dram */

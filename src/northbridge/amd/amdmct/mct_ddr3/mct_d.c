@@ -1517,11 +1517,12 @@ restartinit:
 		InterleaveChannels_D(pMCTstat, pDCTstatA);
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: ECCInit_D\n");
-		ECCInit_D(pMCTstat, pDCTstatA);			/* Setup ECC control and ECC check-bits*/
-
-		/* mctDoWarmResetMemClr_D(); */
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
-		MCTMemClr_D(pMCTstat,pDCTstatA);
+		if (!ECCInit_D(pMCTstat, pDCTstatA)) {			/* Setup ECC control and ECC check-bits*/
+			/* Memory was not cleared during ECC setup */
+			/* mctDoWarmResetMemClr_D(); */
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
+			MCTMemClr_D(pMCTstat,pDCTstatA);
+		}
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
 		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
@@ -1714,7 +1715,6 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		uint8_t x8_present = 0;
 		uint8_t memclk_index;
 		uint8_t interleave_channels = 0;
-		uint8_t redirect_ecc_scrub = 0;
 		uint16_t trdrdsddc;
 		uint16_t trdrddd;
 		uint16_t cdd_trdrddd;
@@ -1751,9 +1751,6 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 
 		if (pDCTstat->DIMMValidDCT[0] && pDCTstat->DIMMValidDCT[1] && mctGet_NVbits(NV_Unganged))
 			interleave_channels = 1;
-
-		if ((pMCTstat->GStatus & 1 << GSB_ECCDIMMs) && mctGet_NVbits(NV_ECCRedir))
-			redirect_ecc_scrub = 1;
 
 		dword = (Get_NB32_DCT(dev, dct, 0x240) >> 4) & 0xf;
 		if (dword > 6)
@@ -1946,21 +1943,10 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		dword |= (interleave_channels & 0x1) << 2;
 		Set_NB32_DCT(dev, dct, 0x110, dword);			/* DRAM Controller Select Low */
 
-		dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x58);	/* Scrub Rate Control */
-		dword &= ~(0x1f << 24);					/* L3Scrub = NV_L3BKScrub */
-		dword |= (mctGet_NVbits(NV_L3BKScrub) & 0x1f) << 24;
-		dword &= ~(0x1f);					/* DramScrub = NV_DramBKScrub */
-		dword |= mctGet_NVbits(NV_DramBKScrub) & 0x1f;
-		Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x58, dword);	/* Scrub Rate Control */
-
-		dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x5c);	/* DRAM Scrub Address Low */
-		dword &= ~(0x1);					/* ScrubReDirEn = redirect_ecc_scrub */
-		dword |= redirect_ecc_scrub & 0x1;
-		Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x5c, dword);	/* DRAM Scrub Address Low */
-
-		dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x1b8);	/* L3 Control 1 */
-		dword &= ~(0x1 << 4);					/* L3ScrbRedirDis = 0 */
-		Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x1b8, dword);	/* L3 Control 1 */
+		/* NOTE
+		 * ECC-related setup is performed as part of ECCInit_D and must not be located here,
+		 * otherwise semi-random lockups will occur due to misconfigured scrubbing hardware!
+		 */
 
 		/* FIXME
 		 * The BKDG-recommended settings cause memory corruption on the ASUS KGPE-D16.
@@ -2002,11 +1988,17 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		dword |= ((((dword >> 8) & 0x1f) + 1) << 16);
 		Set_NB32_DCT(dev, dct, 0x21c, dword);			/* DRAM Timing 6 */
 
+		/* Configure partial power down delay */
+		dword = Get_NB32(dev, 0x244);				/* DRAM Controller Miscellaneous 3 */
+		dword &= ~0xf;						/* PrtlChPDDynDly = 0x2 */
+		dword |= 0x2;
+		Set_NB32(dev, 0x244, dword);				/* DRAM Controller Miscellaneous 3 */
+
 		/* Enable prefetchers */
-		dword = Get_NB32_DCT(dev, dct, 0x110);			/* Memory Controller Configuration High */
+		dword = Get_NB32(dev, 0x11c);				/* Memory Controller Configuration High */
 		dword &= ~(0x1 << 13);					/* PrefIoDis = 0 */
 		dword &= ~(0x1 << 12);					/* PrefCpuDis = 0 */
-		Set_NB32_DCT(dev, dct, 0x110, dword);			/* Memory Controller Configuration High */
+		Set_NB32(dev, 0x11c, dword);				/* Memory Controller Configuration High */
 	}
 }
 
@@ -2109,6 +2101,19 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 			exit_training_mode_fam15(pMCTstat, pDCTstatA);
 
 		pMCTstat->GStatus |= 1 << GSB_ConfigRestored;
+	}
+
+	if (is_fam15h()) {
+		uint8_t Node;
+		struct DCTStatStruc *pDCTstat;
+
+		/* Switch DCT control register to DCT 0 per Erratum 505 */
+		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+			pDCTstat = pDCTstatA + Node;
+			if (pDCTstat->NodePresent) {
+				fam15h_switch_dct(pDCTstat->dev_map, 0);
+			}
+		}
 	}
 
 	/* FIXME - currently uses calculated value	TrainMaxReadLatency_D(pMCTstat, pDCTstatA); */
@@ -2357,6 +2362,7 @@ static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
 	 * status are checked to ensure that memclr has completed.
 	 */
 	u8 Node;
+	uint32_t dword;
 	struct DCTStatStruc *pDCTstat;
 
 	if (!mctGet_NVbits(NV_DQSTrainCTL)){
@@ -2377,6 +2383,18 @@ static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
 			}
 		}
 	}
+
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		pDCTstat = pDCTstatA + Node;
+
+		/* Configure and enable prefetchers */
+		if (is_fam15h())
+			dword = 0x0ce00f41;	/* BKDG recommended */
+		else
+			dword = 0x0fe40fc0;	/* BKDG recommended */
+		dword |= MCCH_FlushWrOnStpGnt;	/* Set for S3 */
+		Set_NB32(pDCTstat->dev_dct, 0x11c, dword);
+	}
 }
 
 static void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
@@ -2384,48 +2402,59 @@ static void DCTMemClr_Init_D(struct MCTStatStruc *pMCTstat,
 {
 	u32 val;
 	u32 dev;
-	u32 reg;
+	uint32_t dword;
 
 	/* Initiates a memory clear operation on one node */
 	if (pDCTstat->DCTSysLimit) {
 		dev = pDCTstat->dev_dct;
-		reg = 0x110;
+
+		/* Disable prefetchers */
+		dword = Get_NB32(dev, 0x11c);		/* Memory Controller Configuration High */
+		dword |= 0x1 << 13;			/* PrefIoDis = 1 */
+		dword |= 0x1 << 12;			/* PrefCpuDis = 1 */
+		Set_NB32(dev, 0x11c, dword);		/* Memory Controller Configuration High */
 
 		do {
-			val = Get_NB32(dev, reg);
+			val = Get_NB32(dev, 0x110);
 		} while (val & (1 << MemClrBusy));
 
 		val |= (1 << MemClrInit);
-		Set_NB32(dev, reg, val);
+		Set_NB32(dev, 0x110, val);
 	}
 }
 
 static void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat)
 {
-	u32 val;
-	u32 dev = pDCTstat->dev_dct;
-	u32 reg;
+	uint32_t dword;
+	uint32_t dev = pDCTstat->dev_dct;
+
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 
 	/* Ensure that a memory clear operation has completed on one node */
 	if (pDCTstat->DCTSysLimit){
-		reg = 0x110;
-
+		printk(BIOS_DEBUG, "%s: Waiting for memory clear to complete", __func__);
 		do {
-			val = Get_NB32(dev, reg);
-		} while (val & (1 << MemClrBusy));
+			dword = Get_NB32(dev, 0x110);
 
+			printk(BIOS_DEBUG, ".");
+		} while (dword & (1 << MemClrBusy));
+
+		printk(BIOS_DEBUG, "\n");
 		do {
-			val = Get_NB32(dev, reg);
-		} while (!(val & (1 << Dr_MemClrStatus)));
+			printk(BIOS_DEBUG, ".");
+			dword = Get_NB32(dev, 0x110);
+		} while (!(dword & (1 << Dr_MemClrStatus)));
+		printk(BIOS_DEBUG, "\n");
 	}
 
-	if (is_fam15h())
-		val = 0x0ce00f41;	/* BKDG recommended */
-	else
-		val = 0x0fe40fc0;	/* BKDG recommended */
-	val |= MCCH_FlushWrOnStpGnt;	/* Set for S3 */
-	Set_NB32(dev, 0x11c, val);
+	/* Enable prefetchers */
+	dword = Get_NB32(dev, 0x11c);		/* Memory Controller Configuration High */
+	dword &= ~(0x1 << 13);			/* PrefIoDis = 0 */
+	dword &= ~(0x1 << 12);			/* PrefCpuDis = 0 */
+	Set_NB32(dev, 0x11c, dword);		/* Memory Controller Configuration High */
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static u8 NodePresent_D(u8 Node)
@@ -3366,8 +3395,8 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	dev = pDCTstat->dev_dct;
 
 	/* Build Dram Control Register Value */
-	DramConfigMisc2 = Get_NB32_DCT(dev, dct, 0xA8);		/* Dram Control*/
-	DramControl = Get_NB32_DCT(dev, dct, 0x78);		/* Dram Control*/
+	DramConfigMisc2 = Get_NB32_DCT(dev, dct, 0xa8);		/* Dram Miscellaneous 2 */
+	DramControl = Get_NB32_DCT(dev, dct, 0x78);		/* Dram Control */
 
 	/* FIXME: Skip mct_checkForDxSupport */
 	/* REV_CALL mct_DoRdPtrInit if not Dx */
@@ -3422,9 +3451,15 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 			/* set only if x8 Registered DIMMs in System*/
 			DramConfigHi |= 1 << RDqsEn;
 
-	if (mctGet_NVbits(NV_CKE_CTL))
-		/*Chip Select control of CKE*/
-		DramConfigHi |= 1 << 16;
+	if (pDCTstat->LogicalCPUID & AMD_FAM15_ALL) {
+		DramConfigLo |= 1 << 25;	/* PendRefPaybackS3En = 1 */
+		DramConfigLo |= 1 << 24;	/* StagRefEn = 1 */
+		DramConfigHi |= 1 << 16;	/* PowerDownMode = 1 */
+	} else {
+		if (mctGet_NVbits(NV_CKE_CTL))
+			/*Chip Select control of CKE*/
+			DramConfigHi |= 1 << 16;
+	}
 
 	/* Control Bank Swizzle */
 	if (0) /* call back not needed mctBankSwizzleControl_D()) */
@@ -4132,8 +4167,7 @@ static void mct_preInitDCT(struct MCTStatStruc *pMCTstat,
 
 	if (load_spd_hashes_from_nvram(pMCTstat, pDCTstat) < 0) {
 		pDCTstat->spd_data.nvram_spd_match = 0;
-	}
-	else {
+	} else {
 		compare_nvram_spd_hashes(pMCTstat, pDCTstat);
 	}
 #else
@@ -4331,8 +4365,8 @@ static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
 	}
 	for (i=i_start; i<i_end; i++) {
 		index_reg = 0x98;
-		Set_NB32_index_wait_DCT(dev, i, index_reg, 0x00, pDCTstat->CH_ODC_CTL[i]); /* Channel A Output Driver Compensation Control */
-		Set_NB32_index_wait_DCT(dev, i, index_reg, 0x04, pDCTstat->CH_ADDR_TMG[i]); /* Channel A Output Driver Compensation Control */
+		Set_NB32_index_wait_DCT(dev, i, index_reg, 0x00, pDCTstat->CH_ODC_CTL[i]); /* Channel A/B Output Driver Compensation Control */
+		Set_NB32_index_wait_DCT(dev, i, index_reg, 0x04, pDCTstat->CH_ADDR_TMG[i]); /* Channel A/B Output Driver Compensation Control */
 	}
 
 	return pDCTstat->ErrCode;
@@ -6130,11 +6164,11 @@ void ProgDramMRSReg_D(struct MCTStatStruc *pMCTstat,
 		DramMRS |= 1 << 1;
 
 	dword = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x84);
+	dword |= DramMRS;
 	if (is_fam15h())
 		dword &= ~0x00800003;
 	else
 		dword &= ~0x00fc2f8f;
-	dword |= DramMRS;
 	Set_NB32_DCT(pDCTstat->dev_dct, dct, 0x84, dword);
 }
 

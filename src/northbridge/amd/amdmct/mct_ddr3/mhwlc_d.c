@@ -205,7 +205,8 @@ void AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTsta
 			uint16_t total_delay_seed = ((pDCTData->WLSeedGrossDelay[index+ByteLane] & 0x1f) << 5) | (pDCTData->WLSeedFineDelay[index+ByteLane] & 0x1f);
 			uint16_t total_delay_phy = ((pDCTData->WLGrossDelay[index+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[index+ByteLane] & 0x1f);
 			if (abs(total_delay_phy - total_delay_seed) > 0x20) {
-				printk(BIOS_DEBUG, "%s: overriding faulty phy value\n", __func__);
+				printk(BIOS_DEBUG, "%s: overriding faulty phy value (seed: %04x phy: %04x step: %04x)\n", __func__,
+					total_delay_seed, total_delay_phy, abs(total_delay_phy - total_delay_seed));
 				pDCTData->WLGrossDelay[index+ByteLane] = pDCTData->WLSeedGrossDelay[index+ByteLane];
 				pDCTData->WLFineDelay[index+ByteLane] = pDCTData->WLSeedFineDelay[index+ByteLane];
 			}

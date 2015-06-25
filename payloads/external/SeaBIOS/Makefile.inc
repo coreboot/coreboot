@@ -53,7 +53,7 @@ build: config
 	$(MAKE) -C seabios OUT=out/
 
 clean:
-	test -d seabios && $(MAKE) -C seabios clean OUT=out/ || exit 0
+	test -d seabios/out && rm -rf seabios/out || exit 0
 
 distclean:
 	rm -rf seabios

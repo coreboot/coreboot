@@ -31,6 +31,7 @@ config CHROMEOS
 	select BOOTMODE_STRAPS
 	select ELOG
 	select COLLECT_TIMESTAMPS
+	select VBOOT_VERIFY_FIRMWARE
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in
 	  the coreboot table. NOTE: Enabling this option on an unsupported
@@ -129,7 +130,7 @@ config VIRTUAL_DEV_SWITCH
 config VBOOT_VERIFY_FIRMWARE
 	bool "Verify firmware with vboot."
 	default n
-	depends on CHROMEOS && HAVE_HARD_RESET
+	depends on HAVE_HARD_RESET
 	help
 	  Enabling VBOOT_VERIFY_FIRMWARE will use vboot to verify the components
 	  of the firmware (stages, payload, etc).

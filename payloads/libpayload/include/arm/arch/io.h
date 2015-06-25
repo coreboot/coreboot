@@ -34,6 +34,14 @@
 #include <stdint.h>
 #include <arch/cache.h>
 
+/*
+ * readb/w/l writeb/w/l are deprecated. use read8/16/32 and write8/16/32
+ * instead for future development.
+ *
+ * TODO: make the existing code use read8/16/32 and write8/16/32 then remove
+ * readb/w/l and writeb/w/l.
+ */
+
 static inline uint8_t readb(volatile const void *_a)
 {
 	dmb();
@@ -70,6 +78,45 @@ static inline void writel(uint32_t _v, volatile void *_a)
 {
 	dmb();
 	*(volatile uint32_t *)_a = _v;
+	dmb();
+}
+
+static inline uint8_t read8(const void *addr)
+{
+	dmb();
+	return *(volatile uint8_t *)addr;
+}
+
+static inline uint16_t read16(const void *addr)
+{
+	dmb();
+	return *(volatile uint16_t *)addr;
+}
+
+static inline uint32_t read32(const void *addr)
+{
+	dmb();
+	return *(volatile uint32_t *)addr;
+}
+
+static inline void write8(void *addr, uint8_t val)
+{
+	dmb();
+	*(volatile uint8_t *)addr = val;
+	dmb();
+}
+
+static inline void write16(void *addr, uint16_t val)
+{
+	dmb();
+	*(volatile uint16_t *)addr = val;
+	dmb();
+}
+
+static inline void write32(void *addr, uint32_t val)
+{
+	dmb();
+	*(volatile uint32_t *)addr = val;
 	dmb();
 }
 

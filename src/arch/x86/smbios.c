@@ -124,9 +124,17 @@ static int smbios_processor_name(char *start)
 void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17 *t)
 {
 	switch (mod_id) {
+		case 0x9801:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Kingston");
+			break;
 		case 0x987f:
 			t->manufacturer = smbios_add_string(t->eos,
 							    "Hynix");
+			break;
+		case 0x9e02:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Corsair");
 			break;
 		case 0xad80:
 			t->manufacturer = smbios_add_string(t->eos,

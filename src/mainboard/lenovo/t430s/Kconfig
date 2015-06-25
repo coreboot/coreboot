@@ -70,4 +70,8 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x21fb
 
+# TODO: Remove this when platform ASL is fixed
+config IASL_WARNINGS_ARE_ERRORS
+	def_bool n
+
 endif # BOARD_LENOVO_T430S

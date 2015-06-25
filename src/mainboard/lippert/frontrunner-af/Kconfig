@@ -76,4 +76,8 @@ config SB800_AHCI_ROM
 	bool
 	default n
 
+# TODO: Remove this when platform ASL is fixed
+config IASL_WARNINGS_ARE_ERRORS
+	def_bool n
+
 endif # BOARD_LIPPERT_FRONTRUNNER_AF

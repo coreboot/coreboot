@@ -196,7 +196,11 @@ cbfs-files-$(if $(2),$(2),y) += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).
 $(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) $$(CPPFLAGS_ramstage) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-ramstage-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$@
+ifeq ($(CONFIG_IASL_WARNINGS_ARE_ERRORS),y)
+	cd $$(dir $$@); $(IASL) -we -p $$(notdir $$@) $$(notdir $$@)
+else
 	cd $$(dir $$@); $(IASL) -p $$(notdir $$@) $$(notdir $$@)
+endif
 endef
 
 #######################################################################
@@ -660,6 +664,10 @@ endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print
+ifeq ($(CONFIG_IASL_WARNINGS_ARE_ERRORS),)
+	@printf "\n***** WARNING: IASL warnings as errors is disabled!  *****\n"
+	@printf "*****          Please fix the ASL for this platform. *****\n\n"
+endif
 
 cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash.jpg
 bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))

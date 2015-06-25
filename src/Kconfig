@@ -1067,6 +1067,19 @@ config WARNINGS_ARE_ERRORS
 	bool
 	default y
 
+# TODO: Remove this when all platforms are fixed.
+config IASL_WARNINGS_ARE_ERRORS
+	def_bool y
+	help
+	  Select to Fail the build if a IASL generates a warning.
+	  This will be defaulted to disabled for the platforms that
+	  currently fail.  This allows the REST of the platforms to
+	  have this check enabled while we're working to get those
+	  boards fixed.
+
+	  DO NOT ADD TO ANY ADDITIONAL PLATFORMS INSTEAD OF FIXING
+	  THE ASL.
+
 # The four POWER_BUTTON_DEFAULT_ENABLE, POWER_BUTTON_DEFAULT_DISABLE,
 # POWER_BUTTON_FORCE_ENABLE and POWER_BUTTON_FORCE_DISABLE options are
 # mutually exclusive. One of these options must be selected in the

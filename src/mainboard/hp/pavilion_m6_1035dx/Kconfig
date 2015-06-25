@@ -65,4 +65,8 @@ config VGA_BIOS_ID
 	string
 	default "1002,9900"
 
+# TODO: Remove this when platform ASL is fixed
+config IASL_WARNINGS_ARE_ERRORS
+	def_bool n
+
 endif # BOARD_HP_PAVILION_M6_1035DX

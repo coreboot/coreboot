@@ -54,4 +54,8 @@ config SEABIOS_PS2_TIMEOUT
 	int
 	default 3000
 
+# TODO: Remove this when platform ASL is fixed
+config IASL_WARNINGS_ARE_ERRORS
+	def_bool n
+
 endif

@@ -110,4 +110,8 @@ config PINMUX_UART_D
 
 endchoice
 
+# TODO: Remove this when platform ASL is fixed
+config IASL_WARNINGS_ARE_ERRORS
+	def_bool n
+
 endif # BOARD_PCENGINES_APU1

@@ -48,4 +48,8 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
+# TODO: Remove this when platform ASL is fixed
+config IASL_WARNINGS_ARE_ERRORS
+	def_bool n
+
 endif # BOARD_LENOVO_X200

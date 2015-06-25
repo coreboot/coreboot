@@ -203,6 +203,22 @@ uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 
 		pDCTData->WLCriticalGrossDelayPrevPass = cgd;
 
+		if (pDCTstat->Speed != pDCTstat->TargetFreq) {
+			/* FIXME
+			 * Using the Pass 1 training values causes major phy training problems on
+			 * all Family 15h processors I tested (Pass 1 values are randomly too high,
+			 * and Pass 2 cannot lock).
+			 * Figure out why this is and fix it, then remove the bypass code below...
+			 */
+			if (pass == FirstPass) {
+				for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
+					pDCTData->WLGrossDelay[index+ByteLane] = pDCTData->WLSeedGrossDelay[index+ByteLane];
+					pDCTData->WLFineDelay[index+ByteLane] = pDCTData->WLSeedFineDelay[index+ByteLane];
+				}
+				return 0;
+			}
+		}
+
 		/* Compensate for occasional noise/instability causing sporadic training failure */
 		for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
 			uint8_t faulty_value_detected = 0;

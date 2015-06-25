@@ -898,6 +898,16 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint32_t dev = pDCTstat->dev_dct;
 	uint16_t fam15h_freq_tab[] = {0, 0, 0, 0, 333, 0, 400, 0, 0, 0, 533, 0, 0, 0, 667, 0, 0, 0, 800, 0, 0, 0, 933};
 
+#if DQS_TRAIN_DEBUG > 0
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+#endif
+
+	mem_clk = Get_NB32_DCT(dev, dct, 0x94) & 0x1f;
+	if (fam15h_freq_tab[mem_clk] == 0) {
+		pDCTstat->CH_MaxRdLat[dct] = 0x55;
+		return;
+	}
+
 	/* P is specified in PhyCLKs (1/2 MEMCLKs) */
 	for (nb_pstate = 0; nb_pstate < 2; nb_pstate++) {
 		/* 2.10.5.8.5 (2) */
@@ -945,7 +955,6 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 		t += 800;
 
 		/* 2.10.5.8.5 (10) */
-		mem_clk = Get_NB32_DCT(dev, dct, 0x94) & 0x1f;
 		dword = Get_NB32(pDCTstat->dev_nbctl, (0x160 + (nb_pstate * 4)));		/* Retrieve NbDid, NbFid */
 		nb_clk = (200 * (((dword >> 1) & 0x1f) + 0x4)) / (((dword >> 7) & 0x1)?2:1);
 		n = (((((uint64_t)p * 1000000000000ULL)/(((uint64_t)fam15h_freq_tab[mem_clk] * 1000000ULL) * 2)) + ((uint64_t)t)) * ((uint64_t)nb_clk * 1000)) / 1000000000ULL;
@@ -960,8 +969,16 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 		Set_NB32_DCT_NBPstate(dev, dct, nb_pstate, 0x210, dword);
 
 		/* Save result for later use */
-		pDCTstat->CH_MaxRdLat[dct] = n;
+		pDCTstat->CH_MaxRdLat[dct] = n - 1;
+
+#if DQS_TRAIN_DEBUG > 0
+	printk(BIOS_DEBUG, "%s: CH_MaxRdLat[%d]: %03x\n", __func__, dct, pDCTstat->CH_MaxRdLat[dct]);
+#endif
 	}
+
+#if DQS_TRAIN_DEBUG > 0
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
+#endif
 }
 
 static void start_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,

@@ -88,12 +88,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	uint8_t sync_flood_on_dram_err[MAX_NODES_SUPPORTED];
 	uint8_t sync_flood_on_any_uc_err[MAX_NODES_SUPPORTED];
 
-	uint8_t redirect_ecc_scrub = 0;
-
 	mctHookBeforeECC();
-
-	if ((pMCTstat->GStatus & 1 << GSB_ECCDIMMs) && mctGet_NVbits(NV_ECCRedir))
-		redirect_ecc_scrub = 1;
 
 	/* Construct these booleans, based on setup options, for easy handling
 	later in this procedure */
@@ -113,8 +108,11 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 		OF_ScrubCTL |= (u32) nvbits << 8;
 	}
 
+	nvbits = mctGet_NVbits(NV_L3BKScrub);
+	OF_ScrubCTL |= (nvbits & 0x1f) << 24;			/* L3Scrub = NV_L3BKScrub */
+
 	nvbits = mctGet_NVbits(NV_DramBKScrub);
-	OF_ScrubCTL |= nvbits;
+	OF_ScrubCTL |= nvbits;					/* DramScrub = NV_DramBKScrub */
 
 	/* Prevent lockups on DRAM errors during ECC init */
 	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
@@ -128,6 +126,10 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 			dword &= ~(0x1 << 30);
 			dword &= ~(0x1 << 21);
 			Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
+
+			/* Clear MC4 error status */
+			pci_write_config32(pDCTstat->dev_nbmisc, 0x48, 0x0);
+			pci_write_config32(pDCTstat->dev_nbmisc, 0x4c, 0x0);
 
 			/* Clear the RAM before enabling ECC to prevent MCE-related lockups */
 			DCTMemClr_Init_D(pMCTstat, pDCTstat);
@@ -166,6 +168,9 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 				if(LDramECC) {	/* if ECC is enabled on this dram */
 					if (OB_NBECC) {
 						mct_EnableDatIntlv_D(pMCTstat, pDCTstat);
+						val = Get_NB32(pDCTstat->dev_dct, 0x110);
+						val |= 1 << 5;	/* DctDatIntLv = 1 */
+						Set_NB32(pDCTstat->dev_dct, 0x110, val);
 						dev = pDCTstat->dev_nbmisc;
 						reg = 0x44;	/* MCA NB Configuration */
 						val = Get_NB32(dev, reg);
@@ -176,35 +181,14 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 						printk(BIOS_DEBUG, "  ECC enabled on node: %02x\n", Node);
 					}
 				}	/* this node has ECC enabled dram */
+
+				if (MemClrECC) {
+					DCTMemClr_Sync_D(pMCTstat, pDCTstat);
+				}
 			} else {
 				LDramECC = 0;
 			}	/* Node has Dram */
-
-			if (MemClrECC) {
-				DCTMemClr_Sync_D(pMCTstat, pDCTstat);
-			}
-
-			if (pDCTstat->LogicalCPUID & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
-				/* Set up message triggered C1E */
-				val = pci_read_config32(pDCTstat->dev_nbmisc, 0xd4);
-				val &= ~(0x1 << 15);			/* StutterScrubEn = DRAM scrub enabled */
-				val |= (mctGet_NVbits(NV_DramBKScrub)?1:0) << 15;
-				pci_write_config32(pDCTstat->dev_nbmisc, 0xd4, val);
-			}
 		}	/* if Node present */
-	}
-
-	/* Restore previous MCA error handling settings */
-	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
-		struct DCTStatStruc *pDCTstat;
-		pDCTstat = pDCTstatA + Node;
-
-		if (NodePresent_D(Node)) {
-			dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
-			dword |= (sync_flood_on_dram_err[Node] & 0x1) << 30;
-			dword |= (sync_flood_on_any_uc_err[Node] & 0x1) << 21;
-			Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
-		}
 	}
 
 	if(AllECC)
@@ -225,19 +209,26 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 			/*WE/RE is checked because memory config may have been */
 			if((val & 3)==3) {	/* Node has dram populated */
 				if (isDramECCEn_D(pDCTstat)) {	/* if ECC is enabled on this dram */
+					dev = pDCTstat->dev_nbmisc;
+					val = curBase << 8;
+					if (OB_ECCRedir) {
+						val |= (1 << 0);		/* Enable redirection */
+					}
+					Set_NB32(dev, 0x5c, val);		/* Dram Scrub Addr Low */
+					val = curBase >> 24;
+					Set_NB32(dev, 0x60, val);		/* Dram Scrub Addr High */
+
+					/* Set scrub rate controls */
 					if (is_fam15h()) {
 						/* Erratum 505 */
 						fam15h_switch_dct(pDCTstat->dev_map, 0);
 					}
-					dev = pDCTstat->dev_nbmisc;
-					val = curBase << 8;
-					if (OB_ECCRedir) {
-						val |= (1<<0);			/* enable redirection */
+					Set_NB32(dev, 0x58, OF_ScrubCTL);	/* Scrub Control */
+					if (is_fam15h()) {
+						fam15h_switch_dct(pDCTstat->dev_map, 1);	/* Erratum 505 */
+						Set_NB32(dev, 0x58, OF_ScrubCTL);		/* Scrub Control */
+						fam15h_switch_dct(pDCTstat->dev_map, 0);	/* Erratum 505 */
 					}
-					Set_NB32(dev, 0x5c, val);		/* Dram Scrub Addr Low */
-					val = curBase>>24;
-					Set_NB32(dev, 0x60, val);		/* Dram Scrub Addr High */
-					Set_NB32(dev, 0x58, OF_ScrubCTL);	/*Scrub Control */
 
 					if (!is_fam15h()) {
 						/* Divisor should not be set deeper than
@@ -254,34 +245,29 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 						}
 					}
 
-					if (is_fam15h()) {
-						uint8_t dct;
-
-						/* Disable training mode
-						 * See fam15EnableTrainingMode for the non-ECC training mode tear-down code
-						 */
-						for (dct = 0; dct < 2; dct++) {
-							/* NOTE: Reads use DCT 0 and writes use the current DCT per Erratum 505 */
-							dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, 0, 0x58);	/* Scrub Rate Control */
-							dword &= ~(0x1f << 24);					/* L3Scrub = NV_L3BKScrub */
-							dword |= (mctGet_NVbits(NV_L3BKScrub) & 0x1f) << 24;
-							dword &= ~(0x1f);					/* DramScrub = NV_DramBKScrub */
-							dword |= mctGet_NVbits(NV_DramBKScrub) & 0x1f;
-							Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x58, dword);	/* Scrub Rate Control */
-
-							dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x5c);	/* DRAM Scrub Address Low */
-							dword &= ~(0x1);					/* ScrubReDirEn = redirect_ecc_scrub */
-							dword |= redirect_ecc_scrub & 0x1;
-							Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x5c, dword);	/* DRAM Scrub Address Low */
-
-							dword = Get_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x1b8);	/* L3 Control 1 */
-							dword &= ~(0x1 << 4);					/* L3ScrbRedirDis = 0 */
-							Set_NB32_DCT(pDCTstat->dev_nbmisc, dct, 0x1b8, dword);	/* L3 Control 1 */
-						}
+					if (pDCTstat->LogicalCPUID & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
+						/* Set up message triggered C1E */
+						val = pci_read_config32(pDCTstat->dev_nbmisc, 0xd4);
+						val &= ~(0x1 << 15);			/* StutterScrubEn = DRAM scrub enabled */
+						val |= (mctGet_NVbits(NV_DramBKScrub)?1:0) << 15;
+						pci_write_config32(pDCTstat->dev_nbmisc, 0xd4, val);
 					}
 				}	/* this node has ECC enabled dram */
 			}	/*Node has Dram */
 		}	/*if Node present */
+	}
+
+	/* Restore previous MCA error handling settings */
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		struct DCTStatStruc *pDCTstat;
+		pDCTstat = pDCTstatA + Node;
+
+		if (NodePresent_D(Node)) {
+			dword = Get_NB32(pDCTstat->dev_nbmisc, 0x44);
+			dword |= (sync_flood_on_dram_err[Node] & 0x1) << 30;
+			dword |= (sync_flood_on_any_uc_err[Node] & 0x1) << 21;
+			Set_NB32(pDCTstat->dev_nbmisc, 0x44, dword);
+		}
 	}
 
 	if(mctGet_NVbits(NV_SyncOnUnEccEn))

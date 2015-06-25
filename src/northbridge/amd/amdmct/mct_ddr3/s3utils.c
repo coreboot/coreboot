@@ -85,6 +85,28 @@ static uint32_t read_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint3
 	return pci_read_config32(dev, reg);
 }
 
+static void write_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint32_t reg, uint32_t value) {
+	if (is_fam15h()) {
+		uint32_t dword;
+#ifdef __PRE_RAM__
+		device_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
+#else
+		device_t dev_fn1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
+#endif
+
+		/* Select DCT */
+		dword = pci_read_config32(dev_fn1, 0x10c);
+		dword &= ~0x1;
+		dword |= (dct & 0x1);
+		pci_write_config32(dev_fn1, 0x10c, dword);
+	} else {
+		/* Apply offset */
+		reg += dct * 0x100;
+	}
+
+	pci_write_config32(dev, reg, value);
+}
+
 static uint32_t read_amd_dct_index_register(device_t dev, uint32_t index_ctl_reg, uint32_t index)
 {
 	uint32_t dword;
@@ -485,29 +507,17 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 
 			/* Other */
 			/* ECC scrub rate control */
-			data->f3x58 = pci_read_config32(dev_fn3, 0x58);
+			data->f3x58 = read_config32_dct(dev_fn3, node, 0, 0x58);
+
+			/* ECC scrub location */
+			write_config32_dct(dev_fn3, node, 0, 0x58, 0x0);		/* Disable sequential scrub to work around non-atomic location read */
+			data->f3x5c = read_config32_dct(dev_fn3, node, 0, 0x5c);
+			data->f3x60 = read_config32_dct(dev_fn3, node, 0, 0x60);
+			write_config32_dct(dev_fn3, node, 0, 0x58, data->f3x58);	/* Re-enable sequential scrub */
 		}
 	}
 }
 #else
-static void write_config32_dct(device_t dev, uint8_t node, uint8_t dct, uint32_t reg, uint32_t value) {
-	if (is_fam15h()) {
-		uint32_t dword;
-		device_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
-
-		/* Select DCT */
-		dword = pci_read_config32(dev_fn1, 0x10c);
-		dword &= ~0x1;
-		dword |= (dct & 0x1);
-		pci_write_config32(dev_fn1, 0x10c, dword);
-	} else {
-		/* Apply offset */
-		reg += dct * 0x100;
-	}
-
-	pci_write_config32(dev, reg, value);
-}
-
 static void write_config32_dct_nbpstate(device_t dev, uint8_t node, uint8_t dct, uint8_t nb_pstate, uint32_t reg, uint32_t value) {
 	uint32_t dword;
 	device_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
@@ -609,8 +619,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 				if (is_fam15h()) {
 					for (i=0; i<4; i++)
 						write_config32_dct_nbpstate(PCI_DEV(0, 0x18 + node, 2), node, channel, i, 0x210, data->f2x210[i]);
-				}
-				else {
+				} else {
 					write_config32_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x78, data->f2x78);
 				}
 
@@ -1056,8 +1065,12 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 			if (!persistent_data->node[node].node_present)
 				continue;
 
+			/* ECC scrub location */
+			write_config32_dct(PCI_DEV(0, 0x18 + node, 3), node, 0, 0x5c, data->f3x5c);
+			write_config32_dct(PCI_DEV(0, 0x18 + node, 3), node, 0, 0x60, data->f3x60);
+
 			/* ECC scrub rate control */
-			pci_write_config32(PCI_DEV(0, 0x18 + node, 3), 0x58, data->f3x58);
+			write_config32_dct(PCI_DEV(0, 0x18 + node, 3), node, 0, 0x58, data->f3x58);
 
 			if (is_fam15h())
 				/* Set LockDramCfg and CC6SaveEn */

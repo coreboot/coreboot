@@ -313,6 +313,22 @@ static void STOP_CAR_AND_CPU(uint8_t skip_sharedc_config, uint32_t apicid)
 		msr = rdmsr(BU_CFG2);
 		msr.lo &= ~(1 << ClLinesToNbDis);
 		wrmsr(BU_CFG2, msr);
+	} else {
+		/* Family 15h or later
+		 * DRAM setup is delayed on Fam15 in order to prevent
+		 * any DRAM access before ECC check bits are initialized.
+		 * Each core also needs to have its initial DRAM map initialized
+		 * before it is put to sleep, otherwise it will fail to wake
+		 * in ramstage.  To meet both of these goals, delay DRAM map
+		 * setup until the last possible moment, where speculative
+		 * memory access is highly unlikely before core halt...
+		 */
+		if (!skip_sharedc_config) {
+			/* Enable memory access for first MBs using top_mem */
+			msr.hi = 0;
+			msr.lo = (CONFIG_RAMTOP + TOP_MEM_MASK) & (~TOP_MEM_MASK);
+			wrmsr(TOP_MEM, msr);
+		}
 	}
 
 	disable_cache_as_ram(skip_sharedc_config);	// inline

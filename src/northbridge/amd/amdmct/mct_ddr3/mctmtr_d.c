@@ -228,9 +228,9 @@ void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat
 		Cache32bTOP = val;
 		pMCTstat->Sub4GCacheTop = val;
 
-	/*======================================================================
-	 * Clear variable MTRR values
-	 *======================================================================*/
+		/*======================================================================
+		 * Clear variable MTRR values
+		 *======================================================================*/
 		addr = 0x200;
 		lo = 0;
 		hi = lo;

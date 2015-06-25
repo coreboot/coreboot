@@ -359,11 +359,15 @@ clear_fixed_var_mtrr_out:
 	simplemask CacheSize, 0
 	wrmsr
 
+	jmp_if_fam15h(fam15_skip_dram_mtrr_setup)
+
 	/* Enable memory access for first MBs using top_mem. */
 	movl	$TOP_MEM, %ecx
 	xorl	%edx, %edx
 	movl	$(((CONFIG_RAMTOP) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
 	wrmsr
+
+fam15_skip_dram_mtrr_setup:
 
 #if CONFIG_XIP_ROM_SIZE
 

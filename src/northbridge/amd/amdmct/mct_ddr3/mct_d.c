@@ -1477,8 +1477,7 @@ restartinit:
 		HTMemMapInit_D(pMCTstat, pDCTstatA);	/* Map local memory into system address space.*/
 		mctHookAfterHTMap();
 
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: CPUMemTyping_D\n");
-		CPUMemTyping_D(pMCTstat, pDCTstatA);	/* Map dram into WB/UC CPU cacheability */
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mctHookAfterCPU\n");
 		mctHookAfterCPU();			/* Setup external northbridge(s) */
 
 		/* FIXME
@@ -1501,9 +1500,6 @@ restartinit:
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: DQSTiming_D\n");
 		DQSTiming_D(pMCTstat, pDCTstatA, allow_config_restore);	/* Get Receiver Enable and DQS signal timing*/
 
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
-		UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
-
 		if (!allow_config_restore) {
 			printk(BIOS_DEBUG, "mctAutoInitMCT_D: :OtherTiming\n");
 			mct_OtherTiming(pMCTstat, pDCTstatA);
@@ -1523,6 +1519,12 @@ restartinit:
 			printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
 			MCTMemClr_D(pMCTstat,pDCTstatA);
 		}
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: CPUMemTyping_D\n");
+		CPUMemTyping_D(pMCTstat, pDCTstatA);	/* Map dram into WB/UC CPU cacheability */
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
+		UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
 		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {

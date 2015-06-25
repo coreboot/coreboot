@@ -828,28 +828,12 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 
 	if (package_type == PT_GR) {
 		/* Socket G34 */
-		/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 73 */
-		if (MaxDimmsInstallable == 1) {
-			if (MemClkFreq == 0x4) {
-				/* DDR3-667 */
-				calibration_code = 0x00112222;
-			}
-			else if (MemClkFreq == 0x6) {
-				/* DDR3-800 */
-				calibration_code = 0x10112222;
-			} else if (MemClkFreq == 0xa) {
-				/* DDR3-1066 */
-				calibration_code = 0x20112222;
-			} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
-				/* DDR3-1333 - DDR3-1600 */
-				calibration_code = 0x30112222;
-			} else if (MemClkFreq == 0x16) {
-				/* DDR3-1866 */
-				calibration_code = 0x30332222;
-			}
-		} else if (MaxDimmsInstallable == 2) {
-			if (dimm_count == 1) {
-				/* 1 DIMM detected */
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* RDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 74 */
+			if (MaxDimmsInstallable == 1) {
+				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+
 				if (MemClkFreq == 0x4) {
 					/* DDR3-667 */
 					calibration_code = 0x00112222;
@@ -862,36 +846,137 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 				} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
 					/* DDR3-1333 - DDR3-1600 */
 					calibration_code = 0x30112222;
+				} else if (MemClkFreq == 0x16) {
+					/* DDR3-1866 */
+					calibration_code = 0x30332222;
 				}
-			} else if (dimm_count == 2) {
-				/* 2 DIMMs detected */
+
+				if (rank_count_dimm0 == 4) {
+					calibration_code &= ~(0xff << 16);
+					calibration_code |= 0x22 << 16;
+				}
+			} else if (MaxDimmsInstallable == 2) {
 				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
 				rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
 
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					if (MemClkFreq == 0x4) {
+						/* DDR3-667 */
+						calibration_code = 0x00112222;
+					} else if (MemClkFreq == 0x6) {
+						/* DDR3-800 */
+						calibration_code = 0x10112222;
+					} else if (MemClkFreq == 0xa) {
+						/* DDR3-1066 */
+						calibration_code = 0x20112222;
+					} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
+						/* DDR3-1333 - DDR3-1600 */
+						calibration_code = 0x30112222;
+					}
+
+					if ((rank_count_dimm0 == 4) || (rank_count_dimm1 == 4)) {
+						calibration_code &= ~(0xff << 16);
+						calibration_code |= 0x22 << 16;
+					}
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
+					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+
+					if (MemClkFreq == 0x4) {
+						/* DDR3-667 */
+						calibration_code = 0x10222222;
+					} else if (MemClkFreq == 0x6) {
+						/* DDR3-800 */
+						calibration_code = 0x20222222;
+					} else if (MemClkFreq == 0xa) {
+						/* DDR3-1066 */
+						calibration_code = 0x30222222;
+					} else if (MemClkFreq == 0xe) {
+						/* DDR3-1333 */
+						calibration_code = 0x30222222;
+					} else if (MemClkFreq == 0x12) {
+						/* DDR3-1600 */
+						calibration_code = 0x30222222;
+					}
+				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				* 3 DIMM/channel support unimplemented
+				*/
+			}
+		} else if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+			/* LRDIMM */
+			/* TODO
+			 * LRDIMM support unimplemented
+			 */
+		} else {
+			/* UDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 73 */
+			if (MaxDimmsInstallable == 1) {
 				if (MemClkFreq == 0x4) {
 					/* DDR3-667 */
-					calibration_code = 0x10222222;
+					calibration_code = 0x00112222;
 				} else if (MemClkFreq == 0x6) {
 					/* DDR3-800 */
-					calibration_code = 0x20222222;
+					calibration_code = 0x10112222;
 				} else if (MemClkFreq == 0xa) {
 					/* DDR3-1066 */
-					calibration_code = 0x30222222;
-				} else if (MemClkFreq == 0xe) {
-					/* DDR3-1333 */
-					calibration_code = 0x30222222;
-				} else if (MemClkFreq == 0x12) {
- 					/* DDR3-1600 */
- 					if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 1))
- 						calibration_code = 0x30222222;
- 					else
- 						calibration_code = 0x30112222;
+					calibration_code = 0x20112222;
+				} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
+					/* DDR3-1333 - DDR3-1600 */
+					calibration_code = 0x30112222;
+				} else if (MemClkFreq == 0x16) {
+					/* DDR3-1866 */
+					calibration_code = 0x30332222;
 				}
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					if (MemClkFreq == 0x4) {
+						/* DDR3-667 */
+						calibration_code = 0x00112222;
+					} else if (MemClkFreq == 0x6) {
+						/* DDR3-800 */
+						calibration_code = 0x10112222;
+					} else if (MemClkFreq == 0xa) {
+						/* DDR3-1066 */
+						calibration_code = 0x20112222;
+					} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
+						/* DDR3-1333 - DDR3-1600 */
+						calibration_code = 0x30112222;
+					}
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
+					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+
+					if (MemClkFreq == 0x4) {
+						/* DDR3-667 */
+						calibration_code = 0x10222222;
+					} else if (MemClkFreq == 0x6) {
+						/* DDR3-800 */
+						calibration_code = 0x20222222;
+					} else if (MemClkFreq == 0xa) {
+						/* DDR3-1066 */
+						calibration_code = 0x30222222;
+					} else if (MemClkFreq == 0xe) {
+						/* DDR3-1333 */
+						calibration_code = 0x30222222;
+					} else if (MemClkFreq == 0x12) {
+						/* DDR3-1600 */
+						if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 1))
+							calibration_code = 0x30222222;
+						else
+							calibration_code = 0x30112222;
+					}
+				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
 			}
-		} else if (MaxDimmsInstallable == 3) {
-			/* TODO
-			 * 3 DIMM/channel support unimplemented
-			 */
 		}
 	} else {
 		/* TODO
@@ -923,41 +1008,69 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 
 	if (package_type == PT_GR) {
 		/* Socket G34 */
-		/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 73 */
-		if (MaxDimmsInstallable == 1) {
-			rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
-
-			if (MemClkFreq == 0x4) {
-				/* DDR3-667 */
-				if (rank_count_dimm0 == 1)
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* RDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 74 */
+			if (MaxDimmsInstallable == 1) {
+				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+					/* DDR3-667 - DDR3-800*/
 					calibration_code = 0x00000000;
-				else
-					calibration_code = 0x003b0000;
-			} else if (MemClkFreq == 0x6) {
-				/* DDR3-800 */
-				if (rank_count_dimm0 == 1)
-					calibration_code = 0x00000000;
-				else
-					calibration_code = 0x003b0000;
-			} else if (MemClkFreq == 0xa) {
-				/* DDR3-1066 */
-				calibration_code = 0x00383837;
-			} else if (MemClkFreq == 0xe) {
-				/* DDR3-1333 */
-				calibration_code = 0x00363635;
-			} else if (MemClkFreq == 0x12) {
-				/* DDR3-1600 */
-				if (rank_count_dimm0 == 1)
-					calibration_code = 0x00353533;
-				else
-					calibration_code = 0x00003533;
-			} else if (MemClkFreq == 0x16) {
-				/* DDR3-1866 */
-				calibration_code = 0x00333330;
+				} else if (MemClkFreq == 0xa) {
+					/* DDR3-1066 */
+					calibration_code = 0x003c3c3c;
+				} else if (MemClkFreq == 0xe) {
+					/* DDR3-1333 */
+					calibration_code = 0x003a3a3a;
+				} else if ((MemClkFreq == 0x12) || (MemClkFreq == 0x16)) {
+					/* DDR3-1600 - DDR3-1866 */
+					calibration_code = 0x00393939;
+				}
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+						/* DDR3-667 - DDR3-800*/
+						calibration_code = 0x00000000;
+					} else if (MemClkFreq == 0xa) {
+						/* DDR3-1066 */
+						calibration_code = 0x00393c39;
+					} else if (MemClkFreq == 0xe) {
+						/* DDR3-1333 */
+						calibration_code = 0x00373a37;
+					} else if (MemClkFreq == 0x12) {
+						/* DDR3-1600 */
+						calibration_code = 0x00363936;
+					}
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+						/* DDR3-667 - DDR3-800*/
+						calibration_code = 0x00000000;
+					} else if (MemClkFreq == 0xa) {
+						/* DDR3-1066 */
+						calibration_code = 0x003a3c3a;
+					} else if (MemClkFreq == 0xe) {
+						/* DDR3-1333 */
+						calibration_code = 0x00383a38;
+					} else if (MemClkFreq == 0x12) {
+						/* DDR3-1600 */
+						calibration_code = 0x00353935;
+					}
+				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
 			}
-		} else if (MaxDimmsInstallable == 2) {
-			if (dimm_count == 1) {
-				/* 1 DIMM detected */
+		} else if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+			/* LRDIMM */
+			/* TODO
+			 * LRDIMM support unimplemented
+			 */
+		} else {
+			/* UDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 73 */
+			if (MaxDimmsInstallable == 1) {
 				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
 
 				if (MemClkFreq == 0x4) {
@@ -984,34 +1097,68 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 						calibration_code = 0x00353533;
 					else
 						calibration_code = 0x00003533;
+				} else if (MemClkFreq == 0x16) {
+					/* DDR3-1866 */
+					calibration_code = 0x00333330;
 				}
-			} else if (dimm_count == 2) {
-				/* 2 DIMMs detected */
-				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
-				rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
 
-				if (MemClkFreq == 0x4) {
-					/* DDR3-667 */
-					calibration_code = 0x00390039;
-				} else if (MemClkFreq == 0x6) {
-					/* DDR3-800 */
-					calibration_code = 0x00390039;
-				} else if (MemClkFreq == 0xa) {
-					/* DDR3-1066 */
-					calibration_code = 0x003a3a3a;
-				} else if (MemClkFreq == 0xe) {
-					/* DDR3-1333 */
-					calibration_code = 0x00003939;
-				} else if (MemClkFreq == 0x12) {
-					/* DDR3-1600 */
-					if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 1))
-						calibration_code = 0x00003738;
+					if (MemClkFreq == 0x4) {
+						/* DDR3-667 */
+						if (rank_count_dimm0 == 1)
+							calibration_code = 0x00000000;
+						else
+							calibration_code = 0x003b0000;
+					} else if (MemClkFreq == 0x6) {
+						/* DDR3-800 */
+						if (rank_count_dimm0 == 1)
+							calibration_code = 0x00000000;
+						else
+							calibration_code = 0x003b0000;
+					} else if (MemClkFreq == 0xa) {
+						/* DDR3-1066 */
+						calibration_code = 0x00383837;
+					} else if (MemClkFreq == 0xe) {
+						/* DDR3-1333 */
+						calibration_code = 0x00363635;
+					} else if (MemClkFreq == 0x12) {
+						/* DDR3-1600 */
+						if (rank_count_dimm0 == 1)
+							calibration_code = 0x00353533;
+						else
+							calibration_code = 0x00003533;
+					}
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
+					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+
+					if (MemClkFreq == 0x4) {
+						/* DDR3-667 */
+						calibration_code = 0x00390039;
+					} else if (MemClkFreq == 0x6) {
+						/* DDR3-800 */
+						calibration_code = 0x00390039;
+					} else if (MemClkFreq == 0xa) {
+						/* DDR3-1066 */
+						calibration_code = 0x003a3a3a;
+					} else if (MemClkFreq == 0xe) {
+						/* DDR3-1333 */
+						calibration_code = 0x00003939;
+					} else if (MemClkFreq == 0x12) {
+						/* DDR3-1600 */
+						if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 1))
+							calibration_code = 0x00003738;
+					}
 				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
 			}
-		} else if (MaxDimmsInstallable == 3) {
-			/* TODO
-			 * 3 DIMM/channel support unimplemented
-			 */
 		}
 	} else {
 		/* TODO
@@ -1043,55 +1190,66 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 
 	if (package_type == PT_GR) {
 		/* Socket G34 */
-		/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 73 */
-		if (MaxDimmsInstallable == 1) {
-			rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
-
-			if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
-				|| (MemClkFreq == 0xa) | (MemClkFreq == 0xe)) {
-				/* DDR3-667 - DDR3-1333 */
-				slow_access = 0;
-			} else if ((MemClkFreq == 0x12) || (MemClkFreq == 0x16)) {
-				/* DDR3-1600 - DDR3-1866 */
-				if (rank_count_dimm0 == 1)
-					slow_access = 0;
-				else
-					slow_access = 1;
-			}
-		} else if (MaxDimmsInstallable == 2) {
-			if (dimm_count == 1) {
-				/* 1 DIMM detected */
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* RDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 74 */
+			slow_access = 0;
+		} else if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+			/* LRDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 75 */
+			slow_access = 0;
+		} else {
+			/* UDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 73 */
+			if (MaxDimmsInstallable == 1) {
 				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
 
 				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
 					|| (MemClkFreq == 0xa) | (MemClkFreq == 0xe)) {
 					/* DDR3-667 - DDR3-1333 */
 					slow_access = 0;
-				} else if (MemClkFreq == 0x12) {
-					/* DDR3-1600 */
+				} else if ((MemClkFreq == 0x12) || (MemClkFreq == 0x16)) {
+					/* DDR3-1600 - DDR3-1866 */
 					if (rank_count_dimm0 == 1)
 						slow_access = 0;
 					else
 						slow_access = 1;
 				}
-			} else if (dimm_count == 2) {
-				/* 2 DIMMs detected */
-				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
-				rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
 
-				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
-					|| (MemClkFreq == 0xa)) {
-					/* DDR3-667 - DDR3-1066 */
-					slow_access = 0;
-				} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
-					/* DDR3-1333 - DDR3-1600 */
-					slow_access = 1;
+					if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
+						|| (MemClkFreq == 0xa) | (MemClkFreq == 0xe)) {
+						/* DDR3-667 - DDR3-1333 */
+						slow_access = 0;
+					} else if (MemClkFreq == 0x12) {
+						/* DDR3-1600 */
+						if (rank_count_dimm0 == 1)
+							slow_access = 0;
+						else
+							slow_access = 1;
+					}
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
+					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+
+					if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
+						|| (MemClkFreq == 0xa)) {
+						/* DDR3-667 - DDR3-1066 */
+						slow_access = 0;
+					} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
+						/* DDR3-1333 - DDR3-1600 */
+						slow_access = 1;
+					}
 				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
 			}
-		} else if (MaxDimmsInstallable == 3) {
-			/* TODO
-			 * 3 DIMM/channel support unimplemented
-			 */
 		}
 	} else {
 		/* TODO

@@ -90,6 +90,7 @@ static int vboot_active(struct asset *asset)
 		init_vb2_working_data();
 		verstage_main();
 	} else if (verstage_should_load()) {
+		init_vb2_working_data();
 		struct prog verstage =
 			PROG_INIT(ASSET_VERSTAGE,
 				CONFIG_CBFS_PREFIX "/verstage");

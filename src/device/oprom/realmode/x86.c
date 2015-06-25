@@ -31,6 +31,7 @@
 #include <device/pci_ids.h>
 #include <lib/jpeg.h>
 #include <pc80/i8259.h>
+#include <pc80/i8254.h>
 #include <string.h>
 #include <vbe.h>
 
@@ -326,6 +327,7 @@ void run_bios(struct device *dev, unsigned long addr)
 	 * in some option roms.
 	 */
 	setup_i8259();
+	setup_i8254();
 
 	/* Set up some legacy information in the F segment */
 	setup_rombios();

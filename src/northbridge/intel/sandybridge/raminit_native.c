@@ -3392,7 +3392,7 @@ static void channel_test(ramctr_timing * ctrl)
 		write32(DEFAULT_MCHBAR + 0x4284 + (channel << 10), 0x000c0001);
 		wait_428c(channel);
 		FOR_ALL_LANES
-		    if (read32(DEFAULT_MCHBAR + 0x4340 + (channel << 10)))
+		    if (read32(DEFAULT_MCHBAR + 0x4340 + (channel << 10) + 4 * lane))
 			 die("Mini channel test failed (2)\n");
 	}
 }

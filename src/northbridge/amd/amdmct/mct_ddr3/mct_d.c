@@ -1396,6 +1396,18 @@ restartinit:
 			pDCTstat->dev_nbctl = PA_NBCTL(Node);
 			pDCTstat->NodeSysBase = node_sys_base;
 
+			if (mctGet_NVbits(NV_PACK_TYPE) == PT_GR) {
+				uint32_t dword;
+				pDCTstat->Dual_Node_Package = 1;
+
+				/* Get the internal node number */
+				dword = Get_NB32(pDCTstat->dev_nbmisc, 0xe8);
+				dword = (dword >> 30) & 0x3;
+				pDCTstat->Internal_Node_ID = dword;
+			} else {
+				pDCTstat->Dual_Node_Package = 0;
+			}
+
 			printk(BIOS_DEBUG, "%s: mct_init Node %d\n", __func__, Node);
 			mct_init(pMCTstat, pDCTstat);
 			mctNodeIDDebugPort_D();

@@ -1203,7 +1203,12 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 				t->attributes = 0;
 				t->attributes |= ranks & 0xf;	/* rank number is stored in the lowest 4 bits of the attributes field */
 				t->form_factor = MEMORY_FORMFACTOR_DIMM;
-				snprintf(string_buffer, sizeof (string_buffer), "NODE %d DIMM_%s%d", node, (slot & 0x1)?"B":"A", (slot >> 1) + 1);
+				if (mem_info->dct_stat[node].Dual_Node_Package) {
+					snprintf(string_buffer, sizeof (string_buffer), "NODE %d DIMM_%s%d", node >> 1,
+						(mem_info->dct_stat[node].Internal_Node_ID)?((slot & 0x1)?"D":"C"):((slot & 0x1)?"B":"A"), (slot >> 1) + 1);
+				} else {
+					snprintf(string_buffer, sizeof (string_buffer), "NODE %d DIMM_%s%d", node, (slot & 0x1)?"B":"A", (slot >> 1) + 1);
+				}
 				t->device_locator = smbios_add_string(t->eos, string_buffer);
 				if (IS_ENABLED(CONFIG_DIMM_DDR2))
 					t->memory_type = MEMORY_TYPE_DDR2;

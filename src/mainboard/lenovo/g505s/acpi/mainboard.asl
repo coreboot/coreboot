@@ -105,6 +105,8 @@ Scope (\_SB) {
 	}
 
 	Device (MB) {
+		Name(_HID, EisaId("PNP0C01")) // System Board
+
 		/* Lid open */
 		Method (LIDO) { /* Stub */ }
 		/* Lid closed */

@@ -2653,7 +2653,7 @@ static void DCTPreInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDC
 
 	/* Reset DCT registers */
 	ClearDCT_D(pMCTstat, pDCTstat, dct);
-	pDCTstat->stopDCT = 1;		/*preload flag with 'disable' */
+	pDCTstat->stopDCT[dct] = 1;	/* preload flag with 'disable' */
 
 	if (!is_fam15h()) {
 		/* Enable DDR3 support */
@@ -2664,7 +2664,7 @@ static void DCTPreInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDC
 
 	/* Read the SPD information into the data structures */
 	if (mct_DIMMPresence(pMCTstat, pDCTstat, dct) < SC_StopError) {
-		printk(BIOS_DEBUG, "\t\tDCTInit_D: mct_DIMMPresence Done\n");
+		printk(BIOS_DEBUG, "\t\tDCTPreInit_D: mct_DIMMPresence Done\n");
 	}
 }
 
@@ -2690,17 +2690,40 @@ static void DCTInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTst
 				printk(BIOS_DEBUG, "\t\tDCTInit_D: AutoConfig_D Done\n");
 				if (PlatformSpec_D(pMCTstat, pDCTstat, dct) < SC_StopError) {
 					printk(BIOS_DEBUG, "\t\tDCTInit_D: PlatformSpec_D Done\n");
-					pDCTstat->stopDCT = 0;
-					if (!(pMCTstat->GStatus & (1 << GSB_EnDIMMSpareNW))) {
-						printk(BIOS_DEBUG, "\t\tDCTInit_D: StartupDCT_D\n");
-						StartupDCT_D(pMCTstat, pDCTstat, dct);   /*yeaahhh! */
-					}
+					pDCTstat->stopDCT[dct] = 0;
 				}
 			}
 		}
 	}
 
-	if (pDCTstat->stopDCT) {
+
+}
+
+static void DCTFinalInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct)
+{
+	uint32_t dword;
+
+	/* Finalize DRAM init on a single node */
+	if (is_fam15h()) {
+		/* Set memory clock skew if needed */
+		if (dct == 0) {
+			if (!pDCTstat->stopDCT[0] && !pDCTstat->stopDCT[1]) {
+				dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, dct, 0x98, 0x0d0fe00a);
+				dword |= (0x1 << 4);				/* SkewMemClk = 1 */
+				Set_NB32_index_wait_DCT(pDCTstat->dev_dct, dct, 0x98, 0x0d0fe00a, dword);
+			}
+		}
+	}
+
+	if (!pDCTstat->stopDCT[dct]) {
+		if (!(pMCTstat->GStatus & (1 << GSB_EnDIMMSpareNW))) {
+			printk(BIOS_DEBUG, "\t\tDCTFinalInit_D: StartupDCT_D Start\n");
+			StartupDCT_D(pMCTstat, pDCTstat, dct);
+			printk(BIOS_DEBUG, "\t\tDCTFinalInit_D: StartupDCT_D Done\n");
+		}
+	}
+
+	if (pDCTstat->stopDCT[dct]) {
 		dword = 1 << DisDramInterface;
 		Set_NB32_DCT(pDCTstat->dev_dct, dct, 0x94, dword);
 
@@ -4358,6 +4381,7 @@ static void mct_initDCT(struct MCTStatStruc *pMCTstat,
 
 	/* Config. DCT0 for Ganged or unganged mode */
 	DCTInit_D(pMCTstat, pDCTstat, 0);
+	DCTFinalInit_D(pMCTstat, pDCTstat, 0);
 	if (pDCTstat->ErrCode == SC_FatalErr) {
 		/* Do nothing goto exitDCTInit; any fatal errors? */
 	} else {
@@ -4367,6 +4391,7 @@ static void mct_initDCT(struct MCTStatStruc *pMCTstat,
 				err_code = pDCTstat->ErrCode;		/* save DCT0 errors */
 				pDCTstat->ErrCode = 0;
 				DCTInit_D(pMCTstat, pDCTstat, 1);
+				DCTFinalInit_D(pMCTstat, pDCTstat, 1);
 				if (pDCTstat->ErrCode == 2)		/* DCT1 is not Running */
 					pDCTstat->ErrCode = err_code;	/* Using DCT0 Error code to update pDCTstat.ErrCode */
 			} else {

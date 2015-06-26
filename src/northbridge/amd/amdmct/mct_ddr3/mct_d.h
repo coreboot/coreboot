@@ -334,7 +334,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u8 Node_ID;			/* Node ID of current controller */
 	uint8_t Internal_Node_ID;	/* Internal Node ID of the current controller */
 	uint8_t Dual_Node_Package;	/* 1=Dual node package (G34) */
-	uint8_t stopDCT;		/* Set if the DCT will be stopped */
+	uint8_t stopDCT[2];		/* Set if the DCT will be stopped */
 	u8 ErrCode;			/* Current error condition of Node
 		0= no error
 		1= Variance Error, DCT is running but not in an optimal configuration.

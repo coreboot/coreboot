@@ -903,8 +903,8 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 				}
 			} else if (MaxDimmsInstallable == 3) {
 				/* TODO
-				* 3 DIMM/channel support unimplemented
-				*/
+				 * 3 DIMM/channel support unimplemented
+				 */
 			}
 		} else if (pDCTstat->Status & (1 << SB_LoadReduced)) {
 			/* LRDIMM */

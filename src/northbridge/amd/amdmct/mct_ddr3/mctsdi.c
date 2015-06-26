@@ -38,6 +38,10 @@ static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t d
 	uint8_t frequency_index;
 	uint8_t rank_count = pDCTstat->DimmRanks[(dimm * 2) + dct];
 
+	uint8_t rank_count_dimm0;
+	uint8_t rank_count_dimm1;
+	uint8_t rank_count_dimm2;
+
 	if (is_fam15h())
 		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x1f;
 	else
@@ -50,11 +54,80 @@ static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t d
 	uint8_t MaxDimmsInstallable = 2;
 
 	if (is_fam15h()) {
-		if (pDCTstat->Status & (1 << SB_Registered)) {
+		if (pDCTstat->Status & (1 << SB_LoadReduced)) {
 			/* TODO
-			 * RDIMM unimplemented
+			 * LRDIMM unimplemented
 			 */
+		} else if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* RDIMM */
+			if (package_type == PT_GR) {
+				/* Socket G34: Fam15h BKDG v3.14 Table 57 */
+				if (MaxDimmsInstallable == 1) {
+					if ((frequency_index == 0x4) || (frequency_index == 0x6)
+						|| (frequency_index == 0xa) || (frequency_index == 0xe)) {
+						/* DDR3-667 - DDR3-1333 */
+						if (rank_count < 3)
+							term = 0x0;
+						else
+							term = 0x2;
+					} else {
+						/* DDR3-1600 */
+						term = 0x0;
+					}
+				} else if (MaxDimmsInstallable == 2) {
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if ((frequency_index == 0x4) || (frequency_index == 0x6)) {
+						/* DDR3-667 - DDR3-800 */
+						if ((number_of_dimms == 1) && ((rank_count_dimm0 < 4)
+							&& (rank_count_dimm1 < 4)))
+							term = 0x0;
+						else
+							term = 0x2;
+					} else if (frequency_index == 0xa) {
+						/* DDR3-1066 */
+						if (number_of_dimms == 1) {
+							if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4))
+								term = 0x0;
+							else
+								term = 0x2;
+						} else {
+							term = 0x1;
+						}
+					} else if (frequency_index == 0xe) {
+						/* DDR3-1333 */
+						term = 0x2;
+					} else {
+						/* DDR3-1600 */
+						if (number_of_dimms == 1)
+							term = 0x0;
+						else
+							term = 0x1;
+					}
+				} else if (MaxDimmsInstallable == 3) {
+					rank_count_dimm2 = pDCTstat->DimmRanks[(2 * 2) + dct];
+
+					if ((frequency_index == 0xa) || (frequency_index == 0xe)) {
+						/* DDR3-1066 - DDR3-1333 */
+						if (rank_count_dimm2 < 4)
+							term = 0x1;
+						else
+							term = 0x2;
+					} else if (frequency_index == 0x12) {
+						/* DDR3-1600 */
+						term = 0x1;
+					} else {
+						term = 0x2;
+					}
+				}
+			} else {
+				/* TODO
+				 * Other sockets unimplemented
+				 */
+			}
 		} else {
+			/* UDIMM */
 			if (package_type == PT_GR) {
 				/* Socket G34: Fam15h BKDG v3.14 Table 56 */
 				if (MaxDimmsInstallable == 1) {
@@ -99,6 +172,9 @@ static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t 
 	uint8_t number_of_dimms = pDCTstat->MAdimms[dct];
 	uint8_t frequency_index;
 
+	uint8_t rank_count_dimm0;
+	uint8_t rank_count_dimm1;
+
 	if (is_fam15h())
 		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x1f;
 	else
@@ -116,10 +192,125 @@ static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t 
 			 * LRDIMM unimplemented
 			 */
 		} else if (pDCTstat->Status & (1 << SB_Registered)) {
-			/* TODO
-			 * RDIMM unimplemented
-			 */
+			/* RDIMM */
+			if (package_type == PT_GR) {
+				/* Socket G34: Fam15h BKDG v3.14 Table 57 */
+				if (MaxDimmsInstallable == 1) {
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+
+					if ((frequency_index == 0x4) || (frequency_index == 0x6)) {
+						/* DDR3-667 - DDR3-800 */
+						if (rank_count_dimm0 < 4) {
+							term = 0x2;
+						} else {
+							if (!rank)
+								term = 0x2;
+							else
+								term = 0x0;
+						}
+					} else if (frequency_index == 0xa) {
+						/* DDR3-1066 */
+						term = 0x1;
+					} else if (frequency_index == 0xe) {
+						/* DDR3-1333 */
+						if (rank_count_dimm0 < 4) {
+							term = 0x1;
+						} else {
+							if (!rank)
+								term = 0x3;
+							else
+								term = 0x0;
+						}
+					} else {
+						term = 0x3;
+					}
+				} else if (MaxDimmsInstallable == 2) {
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if ((frequency_index == 0x4) || (frequency_index == 0x6)) {
+						/* DDR3-667 - DDR3-800 */
+						if (number_of_dimms == 1) {
+							if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4))
+								term = 0x2;
+							else if (rank)
+								term = 0x0;
+							else
+								term = 0x2;
+						} else {
+							if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4)) {
+								term = 0x3;
+							} else {
+								if (rank_count_dimm0 == 4) {
+									if (rank_count_dimm1 == 1)
+										term = 0x5;
+									else
+										term = 0x1;
+								} else if (rank_count_dimm1 == 4) {
+									if (rank_count_dimm0 == 1)
+										term = 0x5;
+									else
+										term = 0x1;
+								}
+								if (rank)
+									term = 0x0;
+							}
+						}
+					} else if (frequency_index == 0xa) {
+						/* DDR3-1066 */
+						if (number_of_dimms == 1) {
+							if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4))
+								term = 0x1;
+							else if (rank)
+								term = 0x0;
+							else
+								term = 0x1;
+						} else {
+							if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4)) {
+								term = 0x3;
+							} else {
+								if (rank_count_dimm0 == 4) {
+									if (rank_count_dimm1 == 1)
+										term = 0x5;
+									else
+										term = 0x1;
+								} else if (rank_count_dimm1 == 4) {
+									if (rank_count_dimm0 == 1)
+										term = 0x5;
+									else
+										term = 0x1;
+								}
+								if (rank)
+									term = 0x0;
+							}
+						}
+					} else if (frequency_index == 0xe) {
+						/* DDR3-1333 */
+						if (number_of_dimms == 1) {
+							if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4))
+								term = 0x1;
+							else if (rank)
+								term = 0x0;
+							else
+								term = 0x3;
+						} else {
+							term = 0x5;
+						}
+					} else {
+						/* DDR3-1600 */
+						if (number_of_dimms == 1)
+							term = 0x3;
+						else
+							term = 0x4;
+					}
+				} else if (MaxDimmsInstallable == 3) {
+					/* TODO
+					 * 3 DIMM/channel support unimplemented
+					 */
+				}
+			}
 		} else {
+			/* UDIMM */
 			if (package_type == PT_GR) {
 				/* Socket G34: Fam15h BKDG v3.14 Table 56 */
 				if (MaxDimmsInstallable == 1) {

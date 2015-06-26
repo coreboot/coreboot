@@ -39,11 +39,9 @@ static void soc_init(device_t dev)
 	ram_resource(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*(MiB/KiB));
 	if (vboot_skip_display_init())
 		printk(BIOS_INFO, "Skipping display init.\n");
-#if !IS_ENABLED(CONFIG_SKIP_DISPLAY_INIT_HACK)
 	else
 		rk_display_init(dev, (uintptr_t)_framebuffer,
 				_framebuffer_size);
-#endif
 }
 
 static struct device_operations soc_ops = {

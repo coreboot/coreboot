@@ -188,9 +188,13 @@ static void mct_DCTAccessDone(struct DCTStatStruc *pDCTstat, u8 dct)
 	u32 dev = pDCTstat->dev_dct;
 	u32 val;
 
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	do {
 		val = Get_NB32_DCT(dev, dct, 0x98);
 	} while (!(val & (1 << DctAccessDone)));
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static u32 swapAddrBits(struct DCTStatStruc *pDCTstat, u32 MR_register_setting, u8 MrsChipSel, u8 dct)
@@ -235,6 +239,8 @@ static void mct_SendMrsCmd(struct DCTStatStruc *pDCTstat, u8 dct, u32 EMRS)
 	u32 dev = pDCTstat->dev_dct;
 	u32 val;
 
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	val = Get_NB32_DCT(dev, dct, 0x7c);
 	val &= ~0x00ffffff;
 	val |= EMRS;
@@ -244,6 +250,8 @@ static void mct_SendMrsCmd(struct DCTStatStruc *pDCTstat, u8 dct, u32 EMRS)
 	do {
 		val = Get_NB32_DCT(dev, dct, 0x7c);
 	} while (val & (1 << SendMrsCmd));
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static u32 mct_MR2(struct MCTStatStruc *pMCTstat,
@@ -553,6 +561,8 @@ static void mct_SendZQCmd(struct DCTStatStruc *pDCTstat, u8 dct)
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword;
 
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	/*1.Program MrsAddress[10]=1
 	  2.Set SendZQCmd=1
 	 */
@@ -569,6 +579,8 @@ static void mct_SendZQCmd(struct DCTStatStruc *pDCTstat, u8 dct)
 
 	/* 4.Wait 512 MEMCLKs */
 	mct_Wait(300);
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
@@ -577,6 +589,8 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 	u8 MrsChipSel;
 	u32 dword;
 	u32 dev = pDCTstat->dev_dct;
+
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 
 	if (pDCTstat->DIMMAutoSpeed == mhz_to_memclk_config(mctGet_NVbits(NV_MIN_MEMCLK))) {
 		/* 3.Program F2x[1,0]7C[EnDramInit]=1 */
@@ -659,4 +673,6 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 		Set_NB32_DCT(dev, dct, 0x7C, dword);
 		mct_DCTAccessDone(pDCTstat, dct);
 	}
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }

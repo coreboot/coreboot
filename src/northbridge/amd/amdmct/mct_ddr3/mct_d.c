@@ -5631,7 +5631,11 @@ static void mct_ResetDataStruct_D(struct MCTStatStruc *pMCTstat,
 static void mct_BeforeDramInit_Prod_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct)
 {
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	mct_ProgramODT_D(pMCTstat, pDCTstat, dct);
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
@@ -5640,6 +5644,8 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 	u8 i;
 	u32 dword;
 	u32 dev = pDCTstat->dev_dct;
+
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 
 	/* FIXME
 	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
@@ -5955,6 +5961,8 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 			Set_NB32_index_wait_DCT(dev, i, 0xf0, 0x183, odt_pattern_2);
 		}
 	}
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static void mct_EnDllShutdownSR(struct MCTStatStruc *pMCTstat,

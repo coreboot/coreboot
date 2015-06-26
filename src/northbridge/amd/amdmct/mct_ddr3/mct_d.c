@@ -832,7 +832,7 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 			/* RDIMM */
 			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 74 */
 			if (MaxDimmsInstallable == 1) {
-				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 				if (MemClkFreq == 0x4) {
 					/* DDR3-667 */
@@ -856,8 +856,8 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 					calibration_code |= 0x22 << 16;
 				}
 			} else if (MaxDimmsInstallable == 2) {
-				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
-				rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+				rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+				rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 				if (dimm_count == 1) {
 					/* 1 DIMM detected */
@@ -881,8 +881,8 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 					}
 				} else if (dimm_count == 2) {
 					/* 2 DIMMs detected */
-					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
-					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 					if (MemClkFreq == 0x4) {
 						/* DDR3-667 */
@@ -949,8 +949,8 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 					}
 				} else if (dimm_count == 2) {
 					/* 2 DIMMs detected */
-					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
-					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 					if (MemClkFreq == 0x4) {
 						/* DDR3-667 */
@@ -1071,7 +1071,7 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 			/* UDIMM */
 			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 73 */
 			if (MaxDimmsInstallable == 1) {
-				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 				if (MemClkFreq == 0x4) {
 					/* DDR3-667 */
@@ -1104,7 +1104,7 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 			} else if (MaxDimmsInstallable == 2) {
 				if (dimm_count == 1) {
 					/* 1 DIMM detected */
-					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 					if (MemClkFreq == 0x4) {
 						/* DDR3-667 */
@@ -1133,8 +1133,8 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 					}
 				} else if (dimm_count == 2) {
 					/* 2 DIMMs detected */
-					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
-					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 					if (MemClkFreq == 0x4) {
 						/* DDR3-667 */
@@ -1202,7 +1202,7 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 			/* UDIMM */
 			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 73 */
 			if (MaxDimmsInstallable == 1) {
-				rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
 					|| (MemClkFreq == 0xa) | (MemClkFreq == 0xe)) {
@@ -1218,7 +1218,7 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 			} else if (MaxDimmsInstallable == 2) {
 				if (dimm_count == 1) {
 					/* 1 DIMM detected */
-					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 					if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
 						|| (MemClkFreq == 0xa) | (MemClkFreq == 0xe)) {
@@ -1233,8 +1233,8 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 					}
 				} else if (dimm_count == 2) {
 					/* 2 DIMMs detected */
-					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
-					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
 
 					if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
 						|| (MemClkFreq == 0xa)) {
@@ -5861,14 +5861,18 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 		uint8_t write_odt_delay;
 		uint8_t read_odt_delay;
 
+		/* NOTE
+		 * Rank count per DIMM and DCT is encoded by pDCTstat->DimmRanks[(<dimm number> * 2) + dct]
+		 */
+
 		/* Select appropriate ODT pattern for installed DIMMs
 		 * Refer to the Fam15h BKDG Rev. 3.14, page 149 onwards
 		 */
-		if (pDCTstat->C_DCTPtr[dct]->Status[DCT_STATUS_REGISTERED]) {
+		if (pDCTstat->Status & (1 << SB_Registered)) {
 			if (MaxDimmsInstallable == 2) {
 				if (dimm_count == 1) {
 					/* 1 DIMM detected */
-					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
 					if (rank_count_dimm1 == 1) {
 						odt_pattern_0 = 0x00000000;
 						odt_pattern_1 = 0x00000000;
@@ -5893,8 +5897,8 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 					}
 				} else {
 					/* 2 DIMMs detected */
-					rank_count_dimm0 = pDCTstat->C_DCTPtr[dct]->DimmRanks[0];
-					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
 					if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4)) {
 						odt_pattern_0 = 0x00000000;
 						odt_pattern_1 = 0x01010202;
@@ -5932,7 +5936,7 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 				odt_pattern_2 = 0x00000000;
 				odt_pattern_3 = 0x00000000;
 			}
-		} else if (pDCTstat->C_DCTPtr[dct]->Status[DCT_STATUS_LOAD_REDUCED]) {
+		} else if (pDCTstat->Status & (1 << SB_LoadReduced)) {
 			/* TODO
 			 * Load reduced dimms UNIMPLEMENTED
 			 */
@@ -5944,7 +5948,7 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 			if (MaxDimmsInstallable == 2) {
 				if (dimm_count == 1) {
 					/* 1 DIMM detected */
-					rank_count_dimm1 = pDCTstat->C_DCTPtr[dct]->DimmRanks[1];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
 					if (rank_count_dimm1 == 1) {
 						odt_pattern_0 = 0x00000000;
 						odt_pattern_1 = 0x00000000;
@@ -5980,7 +5984,7 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 			}
 		}
 
-		if (pDCTstat->C_DCTPtr[dct]->Status[DCT_STATUS_LOAD_REDUCED]) {
+		if (pDCTstat->Status & (1 << SB_LoadReduced)) {
 			/* TODO
 			 * Load reduced dimms UNIMPLEMENTED
 			 */
@@ -6040,11 +6044,11 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 			/* Select appropriate ODT pattern for installed DIMMs
 			 * Refer to the Fam10h BKDG Rev. 3.62, page 120 onwards
 			 */
-			if (pDCTstat->C_DCTPtr[i]->Status[DCT_STATUS_REGISTERED]) {
+			if (pDCTstat->Status & (1 << SB_Registered)) {
 				if (MaxDimmsInstallable == 2) {
 					if (dimm_count == 1) {
 						/* 1 DIMM detected */
-						rank_count_dimm1 = pDCTstat->C_DCTPtr[i]->DimmRanks[1];
+						rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + i];
 						if (rank_count_dimm1 == 1) {
 							odt_pattern_0 = 0x00000000;
 							odt_pattern_1 = 0x00000000;
@@ -6069,8 +6073,8 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 						}
 					} else {
 						/* 2 DIMMs detected */
-						rank_count_dimm0 = pDCTstat->C_DCTPtr[i]->DimmRanks[0];
-						rank_count_dimm1 = pDCTstat->C_DCTPtr[i]->DimmRanks[1];
+						rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + i];
+						rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + i];
 						if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4)) {
 							odt_pattern_0 = 0x00000000;
 							odt_pattern_1 = 0x01010202;
@@ -6112,7 +6116,7 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 				if (MaxDimmsInstallable == 2) {
 					if (dimm_count == 1) {
 						/* 1 DIMM detected */
-						rank_count_dimm1 = pDCTstat->C_DCTPtr[i]->DimmRanks[1];
+						rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + i];
 						if (rank_count_dimm1 == 1) {
 							odt_pattern_0 = 0x00000000;
 							odt_pattern_1 = 0x00000000;

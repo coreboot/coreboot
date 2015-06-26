@@ -34,10 +34,9 @@ static uint8_t fam15_dimm_dic(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_
 static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
 {
 	uint8_t term = 0;
-	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
-	uint8_t number_of_dimms = pDCTData->MaxDimmsInstalled;
+	uint8_t number_of_dimms = pDCTstat->MAdimms[dct];
 	uint8_t frequency_index;
-	uint8_t rank_count = pDCTData->DimmRanks[dimm];
+	uint8_t rank_count = pDCTstat->DimmRanks[(dimm * 2) + dct];
 
 	if (is_fam15h())
 		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x1f;
@@ -97,8 +96,7 @@ static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t d
 static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
 {
 	uint8_t term = 0;
-	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
-	uint8_t number_of_dimms = pDCTData->MaxDimmsInstalled;
+	uint8_t number_of_dimms = pDCTstat->MAdimms[dct];
 	uint8_t frequency_index;
 
 	if (is_fam15h())

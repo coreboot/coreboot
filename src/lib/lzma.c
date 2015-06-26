@@ -54,5 +54,5 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 		return 0;
 	}
 	timestamp_add_now(TS_END_ULZMA);
-	return outSize;
+	return outProcessed;
 }

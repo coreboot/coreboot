@@ -48,7 +48,7 @@ unsigned long ulzman(const unsigned char *src, unsigned long srcn,
 		printf("lzma: Decoding error = %d\n", res);
 		return 0;
 	}
-	return outSize;
+	return outProcessed;
 }
 
 unsigned long ulzma(const unsigned char *src, unsigned char *dst)

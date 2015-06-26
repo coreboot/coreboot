@@ -54,6 +54,8 @@ void rk_display_init(device_t dev, u32 lcdbase,
 	mmu_config_range(lower / MiB, (upper - lower) / MiB, DCACHE_OFF);
 
 	switch (conf->vop_mode) {
+	case VOP_MODE_NONE:
+		return;
 	case VOP_MODE_AUTO_DETECT:
 		/* try EDP first, then HDMI */
 	case VOP_MODE_EDP:

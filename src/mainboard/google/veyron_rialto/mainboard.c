@@ -108,4 +108,5 @@ void lb_board(struct lb_header *header)
 
 void mainboard_power_on_backlight(void)
 {
+	return;
 }

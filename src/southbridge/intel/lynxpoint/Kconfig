@@ -33,7 +33,6 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select PCIEXP_COMMON_CLOCK
 	select SPI_FLASH
 	select HAVE_INTEL_FIRMWARE
-	select USES_INTEL_ME
 
 config INTEL_LYNXPOINT_LP
 	bool

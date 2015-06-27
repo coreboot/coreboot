@@ -39,7 +39,7 @@ config IFD_BIN_PATH
 
 config HAVE_ME_BIN
 	bool "Add Intel Management Engine firmware"
-	depends on USES_INTEL_ME && HAVE_IFD_BIN
+	depends on HAVE_IFD_BIN
 	help
 	  The Intel processor in the selected system requires a special firmware
 	  for an integrated controller called Management Engine (ME). The ME
@@ -89,6 +89,5 @@ config IFD_PLATFORM_SECTION
 	depends on BUILD_WITH_FAKE_IFD
 	string
 	default ""
-
 
 endif #INTEL_FIRMWARE

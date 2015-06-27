@@ -904,9 +904,15 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 			 * Flush the receiver FIFO
 			 * Write one full cache line of non-0x55/0xaa data to one of the test addresses, then read it back to flush the FIFO
 			 */
-
+			/* FIXME
+			 * This does not seem to be needed, and has a tendency to lock up the
+			 * boot process while attempting to write the test pattern.
+			 */
+#if 0
+			SetUpperFSbase(TestAddr0);
 			WriteLNTestPattern(TestAddr0 << 8, (uint8_t *)TestPattern2_D, 1);
 			mct_Read1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0);
+#endif
 		}
 		MaxDelay_CH[Channel] = CTLRMaxDelay;
 	}

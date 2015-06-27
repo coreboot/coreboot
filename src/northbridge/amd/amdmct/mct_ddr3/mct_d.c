@@ -1635,6 +1635,11 @@ restartinit:
 		HTMemMapInit_D(pMCTstat, pDCTstatA);	/* Map local memory into system address space.*/
 		mctHookAfterHTMap();
 
+		if (!is_fam15h()) {
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: CPUMemTyping_D\n");
+			CPUMemTyping_D(pMCTstat, pDCTstatA);	/* Map dram into WB/UC CPU cacheability */
+		}
+
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mctHookAfterCPU\n");
 		mctHookAfterCPU();			/* Setup external northbridge(s) */
 
@@ -1658,6 +1663,11 @@ restartinit:
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: DQSTiming_D\n");
 		DQSTiming_D(pMCTstat, pDCTstatA, allow_config_restore);	/* Get Receiver Enable and DQS signal timing*/
 
+		if (!is_fam15h()) {
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
+			UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
+		}
+
 		if (!allow_config_restore) {
 			printk(BIOS_DEBUG, "mctAutoInitMCT_D: :OtherTiming\n");
 			mct_OtherTiming(pMCTstat, pDCTstatA);
@@ -1678,11 +1688,13 @@ restartinit:
 			MCTMemClr_D(pMCTstat,pDCTstatA);
 		}
 
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: CPUMemTyping_D\n");
-		CPUMemTyping_D(pMCTstat, pDCTstatA);	/* Map dram into WB/UC CPU cacheability */
+		if (is_fam15h()) {
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: CPUMemTyping_D\n");
+			CPUMemTyping_D(pMCTstat, pDCTstatA);	/* Map dram into WB/UC CPU cacheability */
 
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
-		UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
+			UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
+		}
 
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
 		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
@@ -6353,11 +6365,13 @@ void ProgDramMRSReg_D(struct MCTStatStruc *pMCTstat,
 		DramMRS |= 1 << 1;
 
 	dword = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x84);
-	dword |= DramMRS;
-	if (is_fam15h())
+	if (is_fam15h()) {
+		dword |= DramMRS;
 		dword &= ~0x00800003;
-	else
+	} else {
 		dword &= ~0x00fc2f8f;
+		dword |= DramMRS;
+	}
 	Set_NB32_DCT(pDCTstat->dev_dct, dct, 0x84, dword);
 }
 

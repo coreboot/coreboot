@@ -119,6 +119,9 @@ static void proc_CLFLUSH(u32 addr_hi)
 
 static void WriteLNTestPattern(u32 addr_lo, u8 *buf_a, u32 line_num)
 {
+	uint32_t step = 16;
+	uint32_t count = line_num * 4;
+
 	__asm__ volatile (
 		/*prevent speculative execution of following instructions*/
 		/* FIXME: needed ? */
@@ -131,7 +134,7 @@ static void WriteLNTestPattern(u32 addr_lo, u8 *buf_a, u32 line_num)
 		"loop 1b\n\t"
 		"mfence\n\t"
 
-		 :: "a" (addr_lo), "d" (16), "c" (line_num * 4), "b"(buf_a)
+		 : "+a" (addr_lo), "+d" (step), "+c" (count), "+b" (buf_a) : :
 	);
 
 }
@@ -251,6 +254,10 @@ static void ReadMaxRdLat1CLTestPattern_D(u32 addr)
 
 static void WriteMaxRdLat1CLTestPattern_D(u32 buf, u32 addr)
 {
+	uint32_t addr_phys = addr << 8;
+	uint32_t step = 16;
+	uint32_t count = 3 * 4;
+
 	SetUpperFSbase(addr);
 
 	__asm__ volatile (
@@ -263,7 +270,7 @@ static void WriteMaxRdLat1CLTestPattern_D(u32 buf, u32 addr)
 		"loop 1b\n\t"
 		"mfence\n\t"
 
-		 :: "a" (addr<<8), "d" (16), "c" (3 * 4), "b"(buf)
+		 : "+a" (addr_phys), "+d" (step), "+c" (count), "+b" (buf) : :
 	);
 }
 

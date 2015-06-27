@@ -93,3 +93,75 @@ Scope (\_SB.PCI0.I2C1)
 		}
 	}
 }
+
+Scope (\_SB.PCI0.I2C4)
+{
+	Device (CODC) // Codec for headset
+	{
+		Name (_HID, "10508825")
+		Name (_DDN, "NAU88L25 Codec")
+		Name (_UID, 1)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x1A,				/* SlaveAddress */
+				ControllerInitiated,		/* SlaveMode */
+				400000,				/* ConnectionSpeed */
+				AddressingMode7Bit,		/* AddressingMode */
+				"\\_SB.PCI0.I2C4",		/* ResourceSource */
+			)
+		})
+
+		Method (_STA)
+		{
+			Return (0xF)
+		}
+	}
+
+	Device (SPK0) // Left speaker Amp
+	{
+		Name (_HID, "INT343B")
+		Name (_DDN, "SSM4567 Speaker Amp")
+		Name (_UID, 0)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x34,				/* SlaveAddress */
+				ControllerInitiated,		/* SlaveMode */
+				400000,				/* ConnectionSpeed */
+				AddressingMode7Bit,		/* AddressingMode */
+				"\\_SB.PCI0.I2C4",		/* ResourceSource */
+			)
+		})
+
+		Method (_STA)
+		{
+			Return (0xF)
+		}
+	}
+
+	Device (SPK1) // Right speaker Amp
+	{
+		Name (_HID, "INT343B")
+		Name (_DDN, "SSM4567 Speaker Amp")
+		Name (_UID, 1)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x35,				/* SlaveAddress */
+				ControllerInitiated,		/* SlaveMode */
+				400000,				/* ConnectionSpeed */
+				AddressingMode7Bit,		/* AddressingMode */
+				"\\_SB.PCI0.I2C4",		/* ResourceSource */
+			)
+		})
+
+		Method (_STA)
+		{
+			Return (0xF)
+		}
+	}
+}

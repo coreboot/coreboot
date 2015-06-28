@@ -65,6 +65,9 @@ CBFSTOOL_PRE1_OPTS = -m x86 -s $(CONFIG_ROM_SIZE) \
 CBFSTOOL_PRE_OPTS  = -b $(shell cat $(objcbfs)/base_xip.txt) -S ".car.data"
 endif
 
+## Calculate the base address of CBFS for later comparisons
+CBFS_BASE_ADDRESS=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_CBFS_SIZE)) 1)
+
 ###############################################################################
 # bootblock
 ###############################################################################

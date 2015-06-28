@@ -1,56 +1,89 @@
-all: build-i386 build-x64 build-armv7a build-aarch64 build-mips build-riscv
+# if no architecture is specified, set a default
+BUILD_PLATFORM ?= i386-elf
 
+all:
+	$(MAKE) BUILDGCC_OPTIONS=-t build-i386 build-x64 build-armv7a build-mips build-riscv build-aarch64 \
+	        build_clang
+	$(MAKE) clean_tempfiles
+
+all_without_gdb:
+	$(MAKE) BUILDGCC_OPTIONS=-t build-i386-without-gdb build-x64-without-gdb build-armv7a-without-gdb \
+	        build-mips-without-gdb build-riscv-without-gdb build-aarch64-without-gdb build_clang
+	$(MAKE) clean_tempfiles
+
+build_tools: build_gcc build_iasl build_gdb
+
+build_tools_without_gdb: build_gcc build_iasl
+
+###########################################################
+### targets to do buildgcc builds
+
+build_gcc:
+	bash ./buildgcc -p $(BUILD_PLATFORM) $(if $(BUILDJOBS),-j $(BUILDJOBS)) $(BUILDGCC_OPTIONS)
+
+build_gdb:
+	bash ./buildgcc -p $(BUILD_PLATFORM) -P gdb $(if $(BUILDJOBS),-j $(BUILDJOBS)) $(BUILDGCC_OPTIONS)
+
+build_iasl:
+	bash ./buildgcc -P iasl $(if $(BUILDJOBS),-j $(BUILDJOBS)) $(BUILDGCC_OPTIONS)
+
+build_clang:
+	bash ./buildgcc -P clang $(if $(BUILDJOBS),-j $(BUILDJOBS)) $(BUILDGCC_OPTIONS)
+
+###########################################################
+### Build with GDB ###
 build-i386:
-	bash ./buildgcc -G -p i386-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools BUILD_PLATFORM=i386-elf
 
 build-x64:
-	bash ./buildgcc -G -p x86_64-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools BUILD_PLATFORM=x86_64-elf
 
 build-armv7a:
-	bash ./buildgcc -G -p armv7a-eabi $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools BUILD_PLATFORM=armv7a-eabi
 
 build-aarch64:
-	bash ./buildgcc -G -p aarch64-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools BUILD_PLATFORM=aarch64-elf
 
 build-mips:
-	bash ./buildgcc -G -p mipsel-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools BUILD_PLATFORM=mipsel-elf
 
 build-riscv:
-	bash ./buildgcc -G -p riscv-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools BUILD_PLATFORM=riscv-elf
 
-.PHONY: build-i386-without-gdb
+###########################################################
+### Build without GDB
 build-i386-without-gdb:
-	bash ./buildgcc -p i386-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=i386-elf
 
-.PHONY: build-x64-without-gdb
 build-x64-without-gdb:
-	bash ./buildgcc -p x86_64-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=x86_64-elf
 
-.PHONY: build-armv7a-without-gdb
 build-armv7a-without-gdb:
-	bash ./buildgcc -p armv7a-eabi $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=armv7a-eabi
 
-.PHONY: build-aarch64-without-gdb
 build-aarch64-without-gdb:
-	bash ./buildgcc -p aarch64-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=aarch64-elf
 
-.PHONY: build-mips-without-gdb
 build-mips-without-gdb:
-	bash ./buildgcc -p mipsel-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=mipsel-elf
 
-.PHONY: build-riscv-without-gdb
 build-riscv-without-gdb:
-	bash ./buildgcc -p riscv-elf $(if $(BUILDJOBS),-j $(BUILDJOBS))
+	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=riscv-elf
 
-clean:
-	rm -rf xgcc
+clean_tempfiles:
 	rm -rf build-*
 	rm -rf binutils-* gcc-* gmp-* libelf-* mpc-* mpfr-*
 	rm -rf llvm-* clang-tools-* cfe-* compiler-rt-*
 	rm -rf acpica-*
 	rm -rf gdb-*
 
+clean: clean_tempfiles
+	rm -rf xgcc
+
 distclean: clean
 	rm -rf tarballs
 
-.PHONY: all build clean distclean
+.PHONY: build_gcc build_iasl build_gdb build_tools build_tools_without_gdb \
+	build-i386-without-gdb build-x64-without-gdb build-armv7a-without-gdb \
+	build-aarch64-without-gdb build-mips-without-gdb build-riscv-without-gdb \
+	all build clean distclean clean_tempfiles all_without_gdb

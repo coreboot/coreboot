@@ -35,6 +35,9 @@ config SOUTHBRIDGE_AMD_PI_KERN
 	select HAVE_USBDEBUG_OPTIONS
 	select HAVE_HARD_RESET
 
+config HUDSON_DISABLE_IMC
+	bool
+
 if SOUTHBRIDGE_AMD_PI_AVALON || SOUTHBRIDGE_AMD_PI_BOLTON || SOUTHBRIDGE_AMD_PI_KERN
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
@@ -64,10 +67,6 @@ config HUDSON_XHCI_FWM
 	default y
 	help
 	  Add Hudson 2/3/4 XHCI Firmware to support the onboard USB 3.0
-
-config HUDSON_DISABLE_IMC
-	bool
-	default n
 
 config HUDSON_IMC_FWM
 	bool "Add IMC firmware"

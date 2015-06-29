@@ -30,6 +30,7 @@ bootblock-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
+bootblock-$(CONFIG_I2C_TPM) += delay.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
 bootblock-y += mem_pool.c

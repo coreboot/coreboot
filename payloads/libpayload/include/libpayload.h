@@ -48,6 +48,7 @@
 #include <die.h>
 #include <endian.h>
 #include <ipchksum.h>
+#include <kconfig.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>

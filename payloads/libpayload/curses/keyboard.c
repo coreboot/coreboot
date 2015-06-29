@@ -45,7 +45,7 @@ static int _halfdelay = 0;
 
 /* ============== Serial ==================== */
 
-#ifdef CONFIG_LP_SERIAL_CONSOLE
+#if IS_ENABLED(CONFIG_LP_SERIAL_CONSOLE)
 /* We treat serial like a vt100 terminal.  For now we
    do the cooking in here, but we should probably eventually
    pass it to dedicated vt100 code */
@@ -146,12 +146,13 @@ static int cook_serial(unsigned char ch)
 
 static int curses_getchar(int _delay)
 {
-#if defined(CONFIG_LP_USB_HID) || defined(CONFIG_LP_PC_KEYBOARD) || defined(CONFIG_LP_SERIAL_CONSOLE)
+#if IS_ENABLED(CONFIG_LP_USB_HID) || IS_ENABLED(CONFIG_LP_PC_KEYBOARD) || \
+	IS_ENABLED(CONFIG_LP_SERIAL_CONSOLE)
 	unsigned short c;
 #endif
 
 	do {
-#ifdef CONFIG_LP_USB_HID
+#if IS_ENABLED(CONFIG_LP_USB_HID)
 		usb_poll();
 		if ((curses_flags & F_ENABLE_CONSOLE) &&
 		    usbhid_havechar()) {
@@ -159,7 +160,7 @@ static int curses_getchar(int _delay)
 			if (c != 0) return c;
 		}
 #endif
-#ifdef CONFIG_LP_PC_KEYBOARD
+#if IS_ENABLED(CONFIG_LP_PC_KEYBOARD)
 		if ((curses_flags & F_ENABLE_CONSOLE) &&
 		    keyboard_havechar()) {
 			c = keyboard_getchar();
@@ -167,7 +168,7 @@ static int curses_getchar(int _delay)
 		}
 #endif
 
-#ifdef CONFIG_LP_SERIAL_CONSOLE
+#if IS_ENABLED(CONFIG_LP_SERIAL_CONSOLE)
 		if ((curses_flags & F_ENABLE_SERIAL) &&
 		    serial_havechar()) {
 			c = serial_getchar();
@@ -225,7 +226,7 @@ int nocbreak(void)
 	return 0;
 }
 
-#ifdef CONFIG_LP_VGA_VIDEO_CONSOLE
+#if IS_ENABLED(CONFIG_LP_VGA_VIDEO_CONSOLE)
 void curses_enable_vga(int state)
 {
 	if (state)
@@ -243,7 +244,7 @@ void curses_enable_vga(int state) { }
 int curses_vga_enabled(void) { return 0; }
 #endif
 
-#ifdef CONFIG_LP_SERIAL_CONSOLE
+#if IS_ENABLED(CONFIG_LP_SERIAL_CONSOLE)
 void curses_enable_serial(int state)
 {
 	if (state)

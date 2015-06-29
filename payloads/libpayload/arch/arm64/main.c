@@ -123,7 +123,7 @@ void start_main(void)
 
 	post_sysinfo_scan_mmu_setup();
 
-#ifndef CONFIG_LP_SKIP_CONSOLE_INIT
+#if !IS_ENABLED(CONFIG_LP_SKIP_CONSOLE_INIT)
 	console_init();
 #endif
 

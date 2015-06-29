@@ -47,7 +47,7 @@ struct memory_type {
 	void *start;
 	void *end;
 	struct align_region_t* align_regions;
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 	int magic_initialized;
 	size_t minimal_free;
 	const char *name;
@@ -58,7 +58,7 @@ extern char _heap, _eheap;	/* Defined in the ldscript. */
 
 static struct memory_type default_type =
 	{ (void *)&_heap, (void *)&_eheap, NULL
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 	, 0, 0, "HEAP"
 #endif
 	};
@@ -104,7 +104,7 @@ void init_dma_memory(void *start, u32 size)
 	dma->end = start + size;
 	dma->align_regions = NULL;
 
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 	dma->minimal_free = 0;
 	dma->magic_initialized = 0;
 	dma->name = "DMA";
@@ -139,7 +139,7 @@ static void *alloc(int len, struct memory_type *type)
 	if (!HAS_MAGIC(*ptr)) {
 		size_t size = (type->end - type->start) - HDRSIZE;
 		*ptr = FREE_BLOCK(size);
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 		type->magic_initialized = 1;
 		type->minimal_free = size;
 #endif
@@ -356,7 +356,7 @@ static struct align_region_t *allocate_region(int alignment, int num_elements,
 	struct align_region_t *r;
 	size_t extra_space;
 
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 	printf("%s(old align_regions=%p, alignment=%u, num_elements=%u, size=%zu)\n",
 		__func__, type->align_regions, alignment, num_elements, size);
 #endif
@@ -479,7 +479,7 @@ look_further:
 	{
 		if ((reg->alignment == align) && (reg->free >= (size + align - 1)/align))
 		{
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 			printf("  found memalign region. %x free, %x required\n", reg->free, (size + align - 1)/align);
 #endif
 			break;
@@ -488,12 +488,12 @@ look_further:
 	}
 	if (reg == 0)
 	{
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 		printf("  need to allocate a new memalign region\n");
 #endif
 		/* get align regions */
 		reg = allocate_region(align, large_request/align, size, type);
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 		printf("  ... returned %p\n", reg);
 #endif
 	}
@@ -539,7 +539,7 @@ void *dma_memalign(size_t align, size_t size)
 }
 
 /* This is for debugging purposes. */
-#ifdef CONFIG_LP_DEBUG_MALLOC
+#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC)
 void print_malloc_map(void)
 {
 	struct memory_type *type = heap;

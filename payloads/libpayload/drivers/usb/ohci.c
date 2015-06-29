@@ -246,7 +246,7 @@ ohci_init (unsigned long physical_bar)
 	return controller;
 }
 
-#ifdef CONFIG_LP_USB_PCI
+#if IS_ENABLED(CONFIG_LP_USB_PCI)
 hci_t *
 ohci_pci_init (pcidev_t addr)
 {

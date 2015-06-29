@@ -53,7 +53,7 @@ static inline uint64_t swap_bytes64(uint64_t in)
 
 /* Endian functions from glibc 2.9 / BSD "endian.h" */
 
-#if defined CONFIG_LP_BIG_ENDIAN
+#if IS_ENABLED(CONFIG_LP_BIG_ENDIAN)
 
 #define htobe16(in) (in)
 #define htobe32(in) (in)
@@ -63,7 +63,7 @@ static inline uint64_t swap_bytes64(uint64_t in)
 #define htole32(in) swap_bytes32(in)
 #define htole64(in) swap_bytes64(in)
 
-#elif defined CONFIG_LP_LITTLE_ENDIAN
+#elif IS_ENABLED(CONFIG_LP_LITTLE_ENDIAN)
 
 #define htobe16(in) swap_bytes16(in)
 #define htobe32(in) swap_bytes32(in)

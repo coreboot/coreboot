@@ -56,7 +56,7 @@ static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 	for (i = 0; i < count; i++) {
 		struct cb_memory_range *range = MEM_RANGE_PTR(mem, i);
 
-#ifdef CONFIG_LP_MEMMAP_RAM_ONLY
+#if IS_ENABLED(CONFIG_LP_MEMMAP_RAM_ONLY)
 		if (range->type != CB_MEM_RAM)
 			continue;
 #endif
@@ -78,7 +78,7 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 	info->serial = ((struct cb_serial *)ptr);
 }
 
-#ifdef CONFIG_LP_CHROMEOS
+#if IS_ENABLED(CONFIG_LP_CHROMEOS)
 static void cb_parse_vboot_handoff(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct lb_range *vbho = (struct lb_range *)ptr;
@@ -160,7 +160,7 @@ static void cb_parse_ram_code(unsigned char *ptr, struct sysinfo_t *info)
 	info->ram_code = ram_code->ram_code;
 }
 
-#ifdef CONFIG_LP_NVRAM
+#if IS_ENABLED(CONFIG_LP_NVRAM)
 static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
 	/* ptr points to a coreboot table entry and is already virtual */
@@ -176,7 +176,7 @@ static void cb_parse_checksum(void *ptr, struct sysinfo_t *info)
 }
 #endif
 
-#ifdef CONFIG_LP_COREBOOT_VIDEO_CONSOLE
+#if IS_ENABLED(CONFIG_LP_COREBOOT_VIDEO_CONSOLE)
 static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 {
 	/* ptr points to a coreboot table entry and is already virtual */
@@ -307,7 +307,7 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_ASSEMBLER:
 			cb_parse_string(ptr, &info->assembler);
 			break;
-#ifdef CONFIG_LP_NVRAM
+#if IS_ENABLED(CONFIG_LP_NVRAM)
 		case CB_TAG_CMOS_OPTION_TABLE:
 			cb_parse_optiontable(ptr, info);
 			break;
@@ -315,7 +315,7 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			cb_parse_checksum(ptr, info);
 			break;
 #endif
-#ifdef CONFIG_LP_COREBOOT_VIDEO_CONSOLE
+#if IS_ENABLED(CONFIG_LP_COREBOOT_VIDEO_CONSOLE)
 		// FIXME we should warn on serial if coreboot set up a
 		// framebuffer buf the payload does not know about it.
 		case CB_TAG_FRAMEBUFFER:
@@ -325,7 +325,7 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_MAINBOARD:
 			info->mainboard = (struct cb_mainboard *)ptr;
 			break;
-#ifdef CONFIG_LP_CHROMEOS
+#if IS_ENABLED(CONFIG_LP_CHROMEOS)
 		case CB_TAG_GPIO:
 			cb_parse_gpios(ptr, info);
 			break;

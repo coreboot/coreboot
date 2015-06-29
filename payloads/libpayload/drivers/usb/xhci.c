@@ -88,7 +88,7 @@ xhci_init_cycle_ring(transfer_ring_t *const tr, const size_t ring_size)
 }
 
 /* On Panther Point: switch ports shared with EHCI to xHCI */
-#ifdef CONFIG_LP_USB_PCI
+#if IS_ENABLED(CONFIG_LP_USB_PCI)
 static void
 xhci_switch_ppt_ports(pcidev_t addr)
 {
@@ -112,7 +112,7 @@ xhci_switch_ppt_ports(pcidev_t addr)
 }
 #endif
 
-#ifdef CONFIG_LP_USB_PCI
+#if IS_ENABLED(CONFIG_LP_USB_PCI)
 /* On Panther Point: switch all ports back to EHCI */
 static void
 xhci_switchback_ppt_ports(pcidev_t addr)
@@ -296,7 +296,7 @@ _free_xhci:
 	return NULL;
 }
 
-#ifdef CONFIG_LP_USB_PCI
+#if IS_ENABLED(CONFIG_LP_USB_PCI)
 hci_t *
 xhci_pci_init (pcidev_t addr)
 {
@@ -411,7 +411,7 @@ xhci_shutdown(hci_t *const controller)
 	xhci_t *const xhci = XHCI_INST(controller);
 	xhci_stop(controller);
 
-#ifdef CONFIG_LP_USB_PCI
+#if IS_ENABLED(CONFIG_LP_USB_PCI)
         if (controller->pcidev)
 		xhci_switchback_ppt_ports(controller->pcidev);
 #endif

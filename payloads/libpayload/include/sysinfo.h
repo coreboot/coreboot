@@ -66,7 +66,7 @@ struct sysinfo_t {
 	u32 cmos_range_start;
 	u32 cmos_range_end;
 	u32 cmos_checksum_location;
-#ifdef CONFIG_LP_CHROMEOS
+#if IS_ENABLED(CONFIG_LP_CHROMEOS)
 	u32 vbnv_start;
 	u32 vbnv_size;
 #endif
@@ -86,7 +86,7 @@ struct sysinfo_t {
 
 	struct cb_framebuffer *framebuffer;
 
-#ifdef CONFIG_LP_CHROMEOS
+#if IS_ENABLED(CONFIG_LP_CHROMEOS)
 	int num_gpios;
 	struct cb_gpio gpios[SYSINFO_MAX_GPIOS];
 	int num_macs;
@@ -99,14 +99,14 @@ struct sysinfo_t {
 	struct cb_header *header;
 	struct cb_mainboard *mainboard;
 
-#ifdef CONFIG_LP_CHROMEOS
+#if IS_ENABLED(CONFIG_LP_CHROMEOS)
 	void	*vboot_handoff;
 	u32	vboot_handoff_size;
 	void	*vdat_addr;
 	u32	vdat_size;
 #endif
 
-#ifdef CONFIG_LP_ARCH_X86
+#if IS_ENABLED(CONFIG_LP_ARCH_X86)
 	int x86_rom_var_mtrr_index;
 #endif
 

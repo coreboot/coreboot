@@ -121,7 +121,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 
 	// TODO Add a "size" in CBFS header for a platform independent way to
 	// determine the end of CBFS data.
-#if defined(CONFIG_LP_ARCH_X86) && CONFIG_LP_ARCH_X86
+#if IS_ENABLED(CONFIG_LP_ARCH_X86)
 	// resolve actual length of ROM used for CBFS components
 	// the bootblock size was not taken into account
 	romsize -= ntohl(header->bootblocksize);

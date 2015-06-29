@@ -51,7 +51,7 @@ void start_main(void)
 	lib_get_sysinfo();
 
 	/* Optionally set up the consoles. */
-#ifndef CONFIG_LP_SKIP_CONSOLE_INIT
+#if !IS_ENABLED(CONFIG_LP_SKIP_CONSOLE_INIT)
 	console_init();
 #endif
 

@@ -55,7 +55,8 @@ subdirs-$(CONFIG_LP_CURSES) += curses
 subdirs-$(CONFIG_LP_CBFS) += libcbfs
 subdirs-$(CONFIG_LP_LZMA) += liblzma
 
-INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
+INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj) -include include/kconfig.h
+
 CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc -ggdb3
 CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer
 CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes

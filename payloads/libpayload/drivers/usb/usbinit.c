@@ -37,7 +37,7 @@
 #include "dwc2.h"
 #include <usb/usbdisk.h>
 
-#ifdef CONFIG_LP_USB_PCI
+#if IS_ENABLED(CONFIG_LP_USB_PCI)
 /**
  * Initializes USB controller attached to PCI
  *
@@ -72,7 +72,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 			pciid >> 16, pciid & 0xFFFF, func);
 		switch (prog_if) {
 		case 0x00:
-#ifdef CONFIG_LP_USB_UHCI
+#if IS_ENABLED(CONFIG_LP_USB_UHCI)
 			usb_debug("UHCI controller\n");
 			uhci_pci_init (pci_device);
 #else
@@ -81,7 +81,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 			break;
 
 		case 0x10:
-#ifdef CONFIG_LP_USB_OHCI
+#if IS_ENABLED(CONFIG_LP_USB_OHCI)
 			usb_debug("OHCI controller\n");
 			ohci_pci_init(pci_device);
 #else
@@ -90,7 +90,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 			break;
 
 		case 0x20:
-#ifdef CONFIG_LP_USB_EHCI
+#if IS_ENABLED(CONFIG_LP_USB_EHCI)
 			usb_debug("EHCI controller\n");
 			ehci_pci_init(pci_device);
 #else
@@ -99,7 +99,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 			break;
 
 		case 0x30:
-#ifdef CONFIG_LP_USB_XHCI
+#if IS_ENABLED(CONFIG_LP_USB_XHCI)
 			usb_debug("xHCI controller\n");
 			xhci_pci_init(pci_device);
 #else
@@ -166,7 +166,7 @@ static void usb_scan_pci_bus(int bus)
  */
 int usb_initialize(void)
 {
-#ifdef CONFIG_LP_USB_PCI
+#if IS_ENABLED(CONFIG_LP_USB_PCI)
 	usb_scan_pci_bus(0);
 #endif
 	return 0;
@@ -175,19 +175,19 @@ int usb_initialize(void)
 hci_t *usb_add_mmio_hc(hc_type type, void *bar)
 {
 	switch (type) {
-#ifdef CONFIG_LP_USB_OHCI
+#if IS_ENABLED(CONFIG_LP_USB_OHCI)
 	case OHCI:
 		return ohci_init((unsigned long)bar);
 #endif
-#ifdef CONFIG_LP_USB_EHCI
+#if IS_ENABLED(CONFIG_LP_USB_EHCI)
 	case EHCI:
 		return ehci_init((unsigned long)bar);
 #endif
-#ifdef CONFIG_LP_USB_DWC2
+#if IS_ENABLED(CONFIG_LP_USB_DWC2)
 	case DWC2:
 		return dwc2_init(bar);
 #endif
-#ifdef CONFIG_LP_USB_XHCI
+#if IS_ENABLED(CONFIG_LP_USB_XHCI)
 	case XHCI:
 		return xhci_init((unsigned long)bar);
 #endif

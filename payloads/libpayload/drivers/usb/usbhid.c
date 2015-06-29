@@ -138,7 +138,7 @@ struct layout_maps {
 static const struct layout_maps *map;
 
 static const struct layout_maps keyboard_layouts[] = {
-// #ifdef CONFIG_LP_PC_KEYBOARD_LAYOUT_US
+// #if IS_ENABLED(CONFIG_LP_PC_KEYBOARD_LAYOUT_US)
 { .country = "us", .map = {
 	{ /* No modifier */
 	-1, -1, -1, -1, 'a', 'b', 'c', 'd',

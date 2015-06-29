@@ -30,7 +30,7 @@
 #include <libpayload-config.h>
 #include <stdlib.h>
 
-#ifndef CONFIG_LP_LITTLE_ENDIAN
+#if !IS_ENABLED(CONFIG_LP_LITTLE_ENDIAN)
 #error this code is for little endian only
 #endif
 

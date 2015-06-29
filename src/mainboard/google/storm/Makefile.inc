@@ -31,6 +31,7 @@ verstage-y += reset.c
 
 romstage-y += romstage.c
 romstage-y += cdp.c
+romstage-y += chromeos.c
 romstage-y += mmu.c
 romstage-y += reset.c
 

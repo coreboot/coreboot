@@ -32,7 +32,7 @@ libverstage-y += i2c.c
 libverstage-y += qup.c
 libverstage-y += spi.c
 verstage-y += timer.c
-verstage-$(CONFIG_CONSOLE_SERIAL_IPQ806X) += uart.c
+verstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 romstage-y += clock.c
 romstage-y += blobs_init.c

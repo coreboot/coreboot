@@ -20,7 +20,7 @@
 #include "coreinfo.h"
 #include <coreboot_tables.h>
 
-#ifdef CONFIG_MODULE_COREBOOT
+#if IS_ENABLED(CONFIG_MODULE_COREBOOT)
 
 #define MAX_MEMORY_COUNT 5
 

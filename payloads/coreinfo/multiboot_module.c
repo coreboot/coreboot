@@ -20,7 +20,7 @@
 #include <multiboot_tables.h>
 #include "coreinfo.h"
 
-#ifdef CONFIG_MODULE_MULTIBOOT
+#if IS_ENABLED(CONFIG_MODULE_MULTIBOOT)
 
 #define MAX_MEMORY_COUNT  10
 

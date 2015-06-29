@@ -22,7 +22,7 @@
 
 #include "coreinfo.h"
 
-#ifdef CONFIG_MODULE_CPUINFO
+#if IS_ENABLED(CONFIG_MODULE_CPUINFO)
 #include <arch/rdtsc.h>
 
 #define VENDOR_INTEL 0x756e6547

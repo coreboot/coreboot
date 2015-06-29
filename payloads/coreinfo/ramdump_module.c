@@ -19,7 +19,7 @@
 
 #include "coreinfo.h"
 
-#ifdef CONFIG_MODULE_RAMDUMP
+#if IS_ENABLED(CONFIG_MODULE_RAMDUMP)
 
 static s64 cursor = 0;
 static s64 cursor_max = (1 * 1024 * 1024 * 1024); /* Max. 1 GB RAM for now. */

@@ -20,7 +20,7 @@
 #include "coreinfo.h"
 #include "endian.h"
 
-#ifdef CONFIG_MODULE_CBFS
+#if IS_ENABLED(CONFIG_MODULE_CBFS)
 
 #define ALIGN(_v, _a) (((_v) + ((_a) - 1)) & ~((_a) - 1))
 

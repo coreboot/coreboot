@@ -19,7 +19,7 @@
 
 #include "coreinfo.h"
 
-#ifdef CONFIG_MODULE_NVRAM
+#if IS_ENABLED(CONFIG_MODULE_NVRAM)
 
 /**
  * Dump 256 bytes of NVRAM.

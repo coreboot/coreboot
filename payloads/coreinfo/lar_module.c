@@ -19,7 +19,7 @@
 
 #include "coreinfo.h"
 
-#ifdef CONFIG_MODULE_LAR
+#if IS_ENABLED(CONFIG_MODULE_LAR)
 
 static struct LAR *lar;
 static int lcount, selected;

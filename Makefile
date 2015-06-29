@@ -93,7 +93,7 @@ all: real-all
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
-include util/kconfig/Makefile
+include $(srck)/Makefile
 
 # Three cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
@@ -248,7 +248,7 @@ printall:
 endif
 
 ifndef NOMKDIR
-$(shell mkdir -p $(KCONFIG_SPLITCONFIG) $(objutil)/kconfig/lxdialog $(additional-dirs) $(alldirs))
+$(shell mkdir -p $(KCONFIG_SPLITCONFIG) $(objk)/lxdialog $(additional-dirs) $(alldirs))
 endif
 
 cscope:

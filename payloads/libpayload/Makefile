@@ -45,7 +45,7 @@ endif
 
 export top := $(CURDIR)
 export src := src
-export srck := $(top)/../../util/kconfig
+export srck := $(abspath $(top)/../../util/kconfig)
 export obj ?= build
 export objutil ?= $(obj)/util
 export objk := $(objutil)/lp_kconfig
@@ -92,7 +92,7 @@ all: real-all
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
-include ../../util/kconfig/Makefile
+include $(srck)/Makefile
 
 include $(HAVE_DOTCONFIG)
 

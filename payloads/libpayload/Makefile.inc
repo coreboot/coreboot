@@ -132,7 +132,7 @@ junit.xml:
 		$(MAKE) clean; \
 		yes "" | $(MAKE) oldconfig DOTCONFIG=$$i V=$(V) Q=$(Q) 2>/dev/null >/dev/null; \
 		echo "<testcase classname='libpayload' name='$$i'>" >> $@.tmp; \
-		$(MAKE) V=$(V) Q=$(Q) CONFIG_CCACHE=$(CONFIG_CCACHE) DOTCONFIG=$$i >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
+		$(MAKE) V=$(V) Q=$(Q) CONFIG_LP_CCACHE=$(CONFIG_LP_CCACHE) DOTCONFIG=$$i >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
 		if [ $$type = "failure" ]; then \
 			echo "<failure type='buildFailed'>" >> $@.tmp; \
 		else \

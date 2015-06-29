@@ -22,8 +22,6 @@
 
 #if IS_ENABLED(CONFIG_MODULE_CBFS)
 
-#define ALIGN(_v, _a) (((_v) + ((_a) - 1)) & ~((_a) - 1))
-
 #define HEADER_MAGIC		0x4F524243
 #define HEADER_ADDR		0xfffffffc
 #define LARCHIVE_MAGIC		0x455649484352414cLL	/* "LARCHIVE" */

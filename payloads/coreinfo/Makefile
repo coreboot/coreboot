@@ -52,15 +52,15 @@ HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
 LIBCONFIG_PATH := ../libpayload
-LIBPAYLOAD_DIR := ./libpayloadbin
+LIBPAYLOAD_DIR := build/libpayload
 LPCC := $(LIBPAYLOAD_DIR)/libpayload/bin/lpgcc
 LPAS := $(LIBPAYLOAD_DIR)/libpayload/bin/lpas
 HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/libpayload/lib/libpayload.a)
 LIB_CONFIG ?= defconfig
 OBJCOPY ?= objcopy
 
-INCLUDES = -I$(obj)
-CFLAGS := -Wall -Werror -Os $(INCLUDES)
+INCLUDES = -I$(obj) -include $(LIBPAYLOAD_DIR)/libpayload/include/kconfig.h
+CFLAGS := -Wall -Werror -Os -fno-builtin $(INCLUDES)
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 	  nvram_module.o bootlog_module.o ramdump_module.o lar_module.o \
 	  multiboot_module.o cbfs_module.o coreinfo.o
@@ -71,7 +71,7 @@ ifneq ($(strip $(HAVE_DOTCONFIG)),)
 include $(src)/.config
 all: $(TARGET)
 
-$(TARGET): $(src)/.config $(OBJS) libpayload
+$(TARGET): $(src)/.config $(obj)/config.h $(OBJS) libpayload
 	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LPCC) -o $@ $(OBJS)
 	$(Q)$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
@@ -100,6 +100,9 @@ libpayload:
 	$(Q)make -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
 	$(Q)make -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
 endif
+
+$(obj)/config.h:
+	$(MAKE) oldconfig
 
 $(shell mkdir -p $(obj) $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
 

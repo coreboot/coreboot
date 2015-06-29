@@ -220,7 +220,9 @@ void arch_cpu_wait_for_action(void)
 	}
 }
 
+#if IS_ENABLED(CONFIG_SMP)
 int boot_cpu(void)
 {
 	return cpu_is_bsp();
 }
+#endif

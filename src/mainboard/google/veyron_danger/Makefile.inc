@@ -26,6 +26,7 @@ verstage-y += chromeos.c
 verstage-y += reset.c
 
 romstage-y += boardid.c
+romstage-y += chromeos.c
 romstage-y += romstage.c
 romstage-y += sdmmc.c
 romstage-y += sdram_configs.c

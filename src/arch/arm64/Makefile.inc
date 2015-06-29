@@ -195,12 +195,12 @@ BL31_MAKEARGS += DEBUG=1
 endif # CONFIG_CONSOLE_SERIAL
 
 # Avoid build/release|build/debug distinction by overriding BUILD_PLAT directly
-BL31_MAKEARGS += BUILD_PLAT="$(top)/$(obj)/3rdparty/arm-trusted-firmware"
+BL31_MAKEARGS += BUILD_PLAT="$(abspath $(obj)/3rdparty/arm-trusted-firmware)"
 
 BL31_CFLAGS := -fno-pic -fno-stack-protector
 BL31_LDFLAGS := --emit-relocs
 
-BL31 := $(obj)/3rdparty/arm-trusted-firmware/bl31/bl31.elf
+BL31 := $(obj)/bl31.elf
 
 $(BL31):
 	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
@@ -208,6 +208,7 @@ $(BL31):
 	CFLAGS="$(BL31_CFLAGS)" \
 	LDFLAGS="$(BL31_LDFLAGS)" \
 	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) bl31
+	mv $(obj)/3rdparty/arm-trusted-firmware/bl31/bl31.elf $@
 
 .PHONY: $(BL31)
 

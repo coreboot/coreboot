@@ -20,13 +20,19 @@
 
 src := $(shell pwd)
 srctree := $(src)
-srck := $(src)/util/kconfig
+srck := $(src)/../../util/kconfig
 obj := $(src)/build
 objk := $(src)/build/util/kconfig
 
 export KERNELVERSION      := 0.1.0
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
+export KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
+export KCONFIG_SPLITCONFIG := $(obj)/config
+export KCONFIG_TRISTATE := $(obj)/tristate.conf
+export KCONFIG_NEGATIVES := 1
+export Kconfig := Kconfig
+
 export V := $(V)
 
 CONFIG_SHELL := sh
@@ -65,7 +71,7 @@ ifneq ($(strip $(HAVE_DOTCONFIG)),)
 include $(src)/.config
 all: $(TARGET)
 
-$(TARGET): $(src)/.config $(OBJS) prepare libpayload
+$(TARGET): $(src)/.config $(OBJS) libpayload
 	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LPCC) -o $@ $(OBJS)
 	$(Q)$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
@@ -95,8 +101,7 @@ libpayload:
 	$(Q)make -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
 endif
 
-prepare:
-	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
+$(shell mkdir -p $(obj) $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
 
 clean:
 	$(Q)rm -rf build/*.elf build/*.o
@@ -105,6 +110,6 @@ distclean: clean
 	$(Q)rm -rf build
 	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
-include util/kconfig/Makefile
+include $(srck)/Makefile
 
 .PHONY: $(PHONY) prepare clean distclean

@@ -91,14 +91,14 @@ savedefconfig: $(objk)/conf
 
 defconfig: $(objk)/conf
 ifeq ($(KBUILD_DEFCONFIG),)
-	$< -d $(Kconfig)
+	$< --defconfig $(Kconfig)
 else
 	@echo "*** Default configuration is based on '$(KBUILD_DEFCONFIG)'"
-	$< -D $(KBUILD_DEFCONFIG) $(Kconfig)
+	$< --defconfig=$(KBUILD_DEFCONFIG) $(Kconfig)
 endif
 
 %_defconfig: $(objk)/conf
-	$< -D configs/$@ $(Kconfig)
+	$< --defconfig=configs/$@ $(Kconfig)
 
 # Help text used by make help
 help:

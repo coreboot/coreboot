@@ -22,13 +22,13 @@ verstage-y += chromeos.c
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
 
-verstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
+libverstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 romstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 ramstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
-verstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
+libverstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
 romstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
 ramstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
-verstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
+libverstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 romstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 ramstage-$(CONFIG_CHROMEOS_VBNV_FLASH) += vbnv_flash.c
 

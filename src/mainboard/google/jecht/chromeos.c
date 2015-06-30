@@ -39,19 +39,6 @@
 
 #define GPIO_COUNT	6
 
-static void fill_lb_gpio(struct lb_gpio *gpio, int num,
-			 int polarity, const char *name, int force)
-{
-	memset(gpio, 0, sizeof(*gpio));
-	gpio->port = num;
-	gpio->polarity = polarity;
-	if (force >= 0)
-		gpio->value = force;
-	else if (num >= 0)
-		gpio->value = get_gpio(num);
-	strncpy((char *)gpio->name, name, GPIO_MAX_NAME_LENGTH);
-}
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio *gpio;
@@ -60,14 +47,15 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->count = GPIO_COUNT;
 
 	gpio = gpios->gpios;
-	fill_lb_gpio(gpio++, GPIO_SPI_WP, ACTIVE_HIGH, "write protect", 0);
+	fill_lb_gpio(gpio++, GPIO_SPI_WP, ACTIVE_HIGH, "write protect",
+		     get_gpio(GPIO_SPI_WP));
 	fill_lb_gpio(gpio++, GPIO_REC_MODE, ACTIVE_LOW, "recovery",
 		     get_recovery_mode_switch());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer",
 		     get_developer_mode_switch());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "lid", 1);
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "power", 0);
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", oprom_is_loaded);
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", gfx_get_init_done());
 }
 #endif
 

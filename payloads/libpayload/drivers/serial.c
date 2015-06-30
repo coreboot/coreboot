@@ -171,8 +171,8 @@ int serial_getchar(void)
 #define VT100_SREVERSE    "\e[7m"
 #define VT100_EREVERSE    "\e[m"
 #define VT100_CURSOR_ADDR "\e[%d;%dH"
-#define VT100_CURSOR_ON   "\e[?25l"
-#define VT100_CURSOR_OFF  "\e[?25h"
+#define VT100_CURSOR_ON   "\e[?25h"
+#define VT100_CURSOR_OFF  "\e[?25l"
 /* The following smacs/rmacs are actually for xterm; a real vt100 has
    enacs=\E(B\E)0, smacs=^N, rmacs=^O.  */
 #define VT100_SMACS       "\e(0"

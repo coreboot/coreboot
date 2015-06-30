@@ -328,19 +328,9 @@ static void init_utmip_pll(void)
 {
 	int khz = clock_get_pll_input_khz();
 
-	/* Shut off PLL crystal clock while we mess with it */
-	clrbits_le32(CLK_RST_REG(utmip_pll_cfg2), UTMIP_CFG2_PHY_XTAL_CLOCKEN);
-	udelay(1);
-
-	/* CFG0 */
-	u32 div_n = div_round_up(960000, khz);
-	write32(CLK_RST_REG(utmip_pll_cfg0), /* 960 MHz VCO */
-		1 << UTMIP_CFG0_PLL_MDIV_SHIFT |
-		div_n << UTMIP_CFG0_PLL_NDIV_SHIFT);
-
 	/* CFG1 */
-	u32 pllu_enb_ct = div_round_up(khz, 8000); /* pllu_enb_ct / 8 (1us) */
-	u32 phy_stb_ct = div_round_up(khz, 102);  /* phy_stb_ct / 256(2.5ms) */
+	u32 pllu_enb_ct = 0;
+	u32 phy_stb_ct = div_round_up(khz, 300);  /* phy_stb_ct = 128 */
 	write32(CLK_RST_REG(utmip_pll_cfg1),
 		pllu_enb_ct << UTMIP_CFG1_PLLU_ENABLE_DLY_COUNT_SHIFT |
 		UTMIP_CFG1_FORCE_PLLU_POWERDOWN_ENABLE |
@@ -350,16 +340,28 @@ static void init_utmip_pll(void)
 		phy_stb_ct << UTMIP_CFG1_XTAL_FREQ_COUNT_SHIFT);
 
 	/* CFG2 */
-	u32 pllu_stb_ct = div_round_up(khz, 256); /* pllu_stb_ct / 256 (1ms) */
-	u32 phy_act_ct = div_round_up(khz, 3200); /* phy_act_ct / 16 (5us) */
+	u32 pllu_stb_ct = 0;
+	u32 phy_act_ct = div_round_up(khz, 6400); /* phy_act_ct = 6 */
 	write32(CLK_RST_REG(utmip_pll_cfg2),
 		phy_act_ct << UTMIP_CFG2_PLL_ACTIVE_DLY_COUNT_SHIFT |
 		pllu_stb_ct << UTMIP_CFG2_PLLU_STABLE_COUNT_SHIFT |
+		UTMIP_CFG2_FORCE_PD_SAMP_D_POWERDOWN_DISABLE |
 		UTMIP_CFG2_FORCE_PD_SAMP_C_POWERDOWN_DISABLE |
 		UTMIP_CFG2_FORCE_PD_SAMP_B_POWERDOWN_DISABLE |
-		UTMIP_CFG2_FORCE_PD_SAMP_A_POWERDOWN_DISABLE);
+		UTMIP_CFG2_FORCE_PD_SAMP_A_POWERDOWN_DISABLE |
+		UTMIP_CFG2_FORCE_PD_SAMP_D_POWERUP_ENABLE |
+		UTMIP_CFG2_FORCE_PD_SAMP_C_POWERUP_ENABLE |
+		UTMIP_CFG2_FORCE_PD_SAMP_B_POWERUP_ENABLE |
+		UTMIP_CFG2_FORCE_PD_SAMP_A_POWERUP_ENABLE);
 
-	setbits_le32(CLK_RST_REG(utmip_pll_cfg2), UTMIP_CFG2_PHY_XTAL_CLOCKEN);
+	printk(BIOS_DEBUG, "%s: UTMIPLL_HW_PWRDN_CFG0:0x%08x\n",
+		__func__, read32(CLK_RST_REG(utmipll_hw_pwrdn_cfg0)));
+	printk(BIOS_DEBUG, "%s: UTMIP_PLL_CFG0:0x%08x\n",
+		__func__, read32(CLK_RST_REG(utmip_pll_cfg0)));
+	printk(BIOS_DEBUG, "%s: UTMIP_PLL_CFG1:0x%08x\n",
+		__func__, read32(CLK_RST_REG(utmip_pll_cfg1)));
+	printk(BIOS_DEBUG, "%s: UTMIP_PLL_CFG2:0x%08x\n",
+		__func__, read32(CLK_RST_REG(utmip_pll_cfg2)));
 }
 
 /* Graphics just has to be different. There's a few more bits we

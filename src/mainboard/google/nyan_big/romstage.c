@@ -83,10 +83,8 @@ static void __attribute__((noinline)) romstage(void)
 		hard_reset();
 	}
 
+	/* FIXME: this may require coordination with moving timestamps */
 	cbmem_initialize_empty();
-
-	timestamp_init(0);
-	timestamp_add(TS_START_ROMSTAGE, romstage_start_time);
 
 	early_mainboard_init();
 

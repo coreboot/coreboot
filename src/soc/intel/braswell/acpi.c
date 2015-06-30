@@ -27,6 +27,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
@@ -139,37 +140,6 @@ static int acpi_sci_irq(void)
 
 	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
 	return sci_irq;
-}
-
-void acpi_create_intel_hpet(acpi_hpet_t *hpet)
-{
-	acpi_header_t *header = &(hpet->header);
-	acpi_addr_t *addr = &(hpet->addr);
-
-	memset((void *) hpet, 0, sizeof(acpi_hpet_t));
-
-	/* fill out header fields */
-	memcpy(header->signature, "HPET", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-
-	header->length = sizeof(acpi_hpet_t);
-	header->revision = 1;
-
-	/* fill out HPET address */
-	addr->space_id = 0;	/* Memory */
-	addr->bit_width = 64;
-	addr->bit_offset = 0;
-	addr->addrl = (unsigned long long)HPET_BASE_ADDRESS & 0xffffffff;
-	addr->addrh = (unsigned long long)HPET_BASE_ADDRESS >> 32;
-
-	hpet->id = 0x8086a201;	/* Intel */
-	hpet->number = 0x00;
-	hpet->min_tick = 0x0080;
-
-	header->checksum =
-	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -503,6 +473,74 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 						sci_flags);
 
 	return current;
+}
+
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
+
+unsigned long southcluster_write_acpi_tables(device_t device,
+					     unsigned long current,
+					     struct acpi_rsdp *rsdp)
+{
+	acpi_header_t *ssdt2;
+
+	current = acpi_write_hpet(device, current, rsdp);
+	ALIGN_CURRENT;
+
+#if CONFIG_GOP_SUPPORT
+	igd_opregion_t *opregion;
+
+	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
+	opregion = (igd_opregion_t *)current;
+	init_igd_opregion(opregion);
+	current += sizeof(igd_opregion_t);
+	ALIGN_CURRENT;
+#endif
+
+	ssdt2 = (acpi_header_t *)current;
+	memset(ssdt2, 0, sizeof(acpi_header_t));
+	acpi_create_serialio_ssdt(ssdt2);
+	if (ssdt2->length) {
+		current += ssdt2->length;
+		acpi_add_table(rsdp, ssdt2);
+		printk(BIOS_DEBUG, "ACPI:     * SSDT2 @ %p Length %x\n",ssdt2,
+		       ssdt2->length);
+		ALIGN_CURRENT;
+	} else {
+		ssdt2 = NULL;
+		printk(BIOS_DEBUG, "ACPI:     * SSDT2 not generated.\n");
+	}
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+
+	return current;
+}
+
+void southcluster_inject_dsdt(device_t device)
+{
+	global_nvs_t *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof (*gnvs));
+		if (gnvs)
+			memset(gnvs, 0, sizeof(*gnvs));
+	}
+
+	if (gnvs) {
+		acpi_create_gnvs(gnvs);
+		acpi_save_gnvs((unsigned long)gnvs);
+		/* And tell SMI about it */
+		smm_setup_structures(gnvs, NULL, NULL);
+
+		/* Add it to DSDT.  */
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_pop_len();
+	}
+}
+
+__attribute__((weak)) void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
+{
 }
 
 #if CONFIG_GOP_SUPPORT

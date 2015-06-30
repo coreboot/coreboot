@@ -21,6 +21,7 @@
 
 #include <arch/io.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include "chip.h"
@@ -31,6 +32,7 @@
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
+#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/lpc.h>
@@ -449,6 +451,8 @@ static struct device_operations device_ops = {
 	.read_resources		= sc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= NULL,
+	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
+	.write_acpi_tables	= southcluster_write_acpi_tables,
 	.init			= sc_init,
 	.enable			= southcluster_enable_dev,
 	.scan_bus		= scan_lpc_bus,

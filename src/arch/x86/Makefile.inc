@@ -101,9 +101,10 @@ ifeq ($(CONFIG_SSE),y)
 bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 endif
 
-$(objgenerated)/bootblock.ld: $(obj)/config.h $$(filter %.ld,$$(bootblock-srcs))
+$(objgenerated)/bootblock.ld: $$(filter %.ld,$$(bootblock-objs))
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	printf '$(foreach ldscript,$(^),#include "$(ldscript)"\n)' | $(CC_bootblock) $(PREPROCESS_ONLY) - > $@
+	cat $^ >> $@.tmp
+	mv $@.tmp $@
 
 $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
@@ -220,12 +221,12 @@ $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(roms
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld --oformat $(romstage-oformat)
 
-$(objgenerated)/romstage_null.ld: $(obj)/config.h $$(filter %.ld,$$(romstage-srcs))
+$(objgenerated)/romstage_null.ld: $$(filter %.ld,$$(romstage-objs))
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
-	printf '$(foreach ldscript,$(^),#include "$(ldscript)"\n)' >> $@.tmp
-	$(CC_romstage) $(PREPROCESS_ONLY) $@.tmp > $@
+	cat $^ >> $@.tmp
+	mv $@.tmp $@
 
 $(objgenerated)/romstage.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"

@@ -360,7 +360,7 @@ void rkclk_configure_ddr(unsigned int hz)
 
 	switch (hz) {
 	case 300*MHz:
-		dpll_cfg = (struct pll_div){.nf = 25, .nr = 2, .no = 1};
+		dpll_cfg = (struct pll_div){.nf = 50, .nr = 2, .no = 2};
 		break;
 	case 533*MHz:	/* actually 533.3P MHz */
 		dpll_cfg = (struct pll_div){.nf = 400, .nr = 9, .no = 2};

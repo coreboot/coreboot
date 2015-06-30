@@ -72,7 +72,8 @@ static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 		if (fmap_locate_area_as_rdev("RW_MRC_CACHE", &rdev) == 0) {
 			region_size = region_device_sz(&rdev);
 			*mrc_region_ptr = rdev_mmap_full(&rdev);
-		}
+		} else
+			*mrc_region_ptr = NULL;
 	} else {
 		*mrc_region_ptr = cbfs_boot_map_with_leak("mrc.cache",
 							CBFS_TYPE_MRC_CACHE,

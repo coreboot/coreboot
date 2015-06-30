@@ -1,0 +1,9 @@
+if PAYLOAD_TIANOCORE
+
+config PAYLOAD_FILE
+	string "Tianocore firmware volume"
+	default "COREBOOT.fd"
+	help
+	  The result of a corebootPkg build
+
+endif

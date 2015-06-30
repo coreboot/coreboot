@@ -1,0 +1,22 @@
+if PAYLOAD_FILO
+
+choice
+	prompt "FILO version"
+	default FILO_STABLE
+
+config FILO_STABLE
+	bool "0.6.0"
+	help
+	  Stable FILO version
+
+config FILO_MASTER
+	bool "HEAD"
+	help
+	  Newest FILO version
+
+endchoice
+
+config PAYLOAD_FILE
+	default "payloads/external/FILO/filo/build/filo.elf"
+
+endif

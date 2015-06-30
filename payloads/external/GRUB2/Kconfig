@@ -1,0 +1,17 @@
+if PAYLOAD_GRUB2
+
+choice
+	prompt "GRUB2 version"
+	default GRUB2_MASTER
+
+config GRUB2_MASTER
+	bool "HEAD"
+	help
+	  Newest GRUB2 version
+
+endchoice
+
+config PAYLOAD_FILE
+	default "payloads/external/GRUB2/grub2/build/default_payload.elf"
+
+endif

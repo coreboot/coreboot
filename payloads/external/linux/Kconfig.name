@@ -1,0 +1,9 @@
+config PAYLOAD_LINUX
+	bool "A Linux payload"
+	help
+	  Select this option if you have a Linux bzImage which coreboot
+	  should run as soon as the basic hardware initialization
+	  is completed.
+
+	  You will be able to specify the location and file name of the
+	  payload image later.

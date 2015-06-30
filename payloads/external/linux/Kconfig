@@ -1,0 +1,21 @@
+if PAYLOAD_LINUX
+
+config PAYLOAD_FILE
+	string "Linux path and filename"
+	default "bzImage"
+	help
+	  The path and filename of the bzImage kernel to use as payload.
+
+config LINUX_COMMAND_LINE
+	string "Linux command line"
+	default ""
+	help
+	  A command line to add to the Linux kernel.
+
+config LINUX_INITRD
+	string "Linux initrd"
+	default ""
+	help
+	  An initrd image to add to the Linux kernel.
+
+endif

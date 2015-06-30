@@ -675,144 +675,11 @@ config PAYLOAD_ELF
 	  You will be able to specify the location and file name of the
 	  payload image later.
 
-config PAYLOAD_LINUX
-	bool "A Linux payload"
-	help
-	  Select this option if you have a Linux bzImage which coreboot
-	  should run as soon as the basic hardware initialization
-	  is completed.
-
-	  You will be able to specify the location and file name of the
-	  payload image later.
-
-config PAYLOAD_SEABIOS
-	bool "SeaBIOS"
-	depends on ARCH_X86
-	help
-	  Select this option if you want to build a coreboot image
-	  with a SeaBIOS payload. If you don't know what this is
-	  about, just leave it enabled.
-
-	  See http://coreboot.org/Payloads for more information.
-
-config PAYLOAD_FILO
-	bool "FILO"
-	help
-	  Select this option if you want to build a coreboot image
-	  with a FILO payload. If you don't know what this is
-	  about, just leave it enabled.
-
-	  See http://coreboot.org/Payloads for more information.
-
-config PAYLOAD_GRUB2
-	bool "GRUB2"
-	help
-	  Select this option if you want to build a coreboot image
-	  with a GRUB2 payload. If you don't know what this is
-	  about, just leave it enabled.
-
-	  See http://coreboot.org/Payloads for more information.
-
-config PAYLOAD_TIANOCORE
-	bool "Tiano Core"
-	help
-	  Select this option if you want to build a coreboot image
-	  with a Tiano Core payload. If you don't know what this is
-	  about, just leave it enabled.
-
-	  See http://coreboot.org/Payloads for more information.
+source "payloads/external/*/Kconfig.name"
 
 endchoice
 
-choice
-	prompt "SeaBIOS version"
-	default SEABIOS_STABLE
-	depends on PAYLOAD_SEABIOS
-
-config SEABIOS_STABLE
-	bool "1.7.5"
-	help
-	  Stable SeaBIOS version
-config SEABIOS_MASTER
-	bool "master"
-	help
-	  Newest SeaBIOS version
-
-endchoice
-
-config SEABIOS_PS2_TIMEOUT
-	prompt "PS/2 keyboard controller initialization timeout (milliseconds)" if PAYLOAD_SEABIOS
-	default 0
-	depends on EXPERT
-	int
-	help
-	  Some PS/2 keyboard controllers don't respond to commands immediately
-	  after powering on. This specifies how long SeaBIOS will wait for the
-	  keyboard controller to become ready before giving up.
-
-config SEABIOS_THREAD_OPTIONROMS
-	prompt "Hardware init during option ROM execution" if PAYLOAD_SEABIOS
-	default n
-	bool
-	help
-	  Allow hardware init to run in parallel with optionrom execution.
-
-	  This can reduce boot time, but can cause some timing
-	  variations during option ROM code execution. It is not
-	  known if all option ROMs will behave properly with this option.
-
-config SEABIOS_MALLOC_UPPERMEMORY
-	bool
-	default y
-	depends on PAYLOAD_SEABIOS
-	help
-	  Use the "Upper Memory Block" area (0xc0000-0xf0000) for internal
-	  "low memory" allocations.  If this is not selected, the memory is
-	  instead allocated from the "9-segment" (0x90000-0xa0000).
-	  This is not typically needed, but may be required on some platforms
-	  to allow USB and SATA buffers to be written correctly by the
-	  hardware.  In general, if this is desired, the option will be
-	  set to 'N' by the chipset Kconfig.
-
-config SEABIOS_VGA_COREBOOT
-	prompt "Include generated option rom that implements legacy VGA BIOS compatibility" if PAYLOAD_SEABIOS
-	default n
-	depends on !VGA_BIOS && (MAINBOARD_DO_NATIVE_VGA_INIT || MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG)
-	bool
-	help
-	  Coreboot can initialize the GPU of some mainboards.
-
-	  After initializing the GPU, the information about it can be passed to the payload.
-	  Provide an option rom that implements this legacy VGA BIOS compatibility requirement.
-
-choice
-	prompt "GRUB2 version"
-	default GRUB2_MASTER
-	depends on PAYLOAD_GRUB2
-
-config GRUB2_MASTER
-	bool "HEAD"
-	help
-	  Newest GRUB2 version
-
-endchoice
-
-choice
-	prompt "FILO version"
-	default FILO_STABLE
-	depends on PAYLOAD_FILO
-
-config FILO_STABLE
-	bool "0.6.0"
-	help
-	  Stable FILO version
-
-config FILO_MASTER
-	bool "HEAD"
-	help
-	  Newest FILO version
-
-endchoice
+source "payloads/external/*/Kconfig"
 
 config PAYLOAD_FILE
 	string "Payload path and filename"
@@ -821,59 +688,14 @@ config PAYLOAD_FILE
 	help
 	  The path and filename of the ELF executable file to use as payload.
 
-config PAYLOAD_FILE
-	string "Linux path and filename"
-	depends on PAYLOAD_LINUX
-	default "bzImage"
-	help
-	  The path and filename of the bzImage kernel to use as payload.
-
-config PAYLOAD_FILE
-	depends on PAYLOAD_SEABIOS
-	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
-
-config PAYLOAD_VGABIOS_FILE
-	string
-	depends on PAYLOAD_SEABIOS && SEABIOS_VGA_COREBOOT
-	default "payloads/external/SeaBIOS/seabios/out/vgabios.bin"
-
-config PAYLOAD_FILE
-	depends on PAYLOAD_FILO
-	default "payloads/external/FILO/filo/build/filo.elf"
-
-config PAYLOAD_FILE
-	depends on PAYLOAD_GRUB2
-	default "payloads/external/GRUB2/grub2/build/default_payload.elf"
-
-config PAYLOAD_FILE
-	string "Tianocore firmware volume"
-	depends on PAYLOAD_TIANOCORE
-	default "COREBOOT.fd"
-	help
-	  The result of a corebootPkg build
-
 # TODO: Defined if no payload? Breaks build?
 config COMPRESSED_PAYLOAD_LZMA
 	bool "Use LZMA compression for payloads"
 	default y
-	depends on PAYLOAD_ELF || PAYLOAD_SEABIOS || PAYLOAD_FILO || PAYLOAD_TIANOCORE || PAYLOAD_GRUB2
+	depends on !PAYLOAD_NONE && !PAYLOAD_LINUX
 	help
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.
-
-config LINUX_COMMAND_LINE
-	string "Linux command line"
-	depends on PAYLOAD_LINUX
-	default ""
-	help
-	  A command line to add to the Linux kernel.
-
-config LINUX_INITRD
-	string "Linux initrd"
-	depends on PAYLOAD_LINUX
-	default ""
-	help
-	  An initrd image to add to the Linux kernel.
 
 endmenu
 

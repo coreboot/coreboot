@@ -1,0 +1,70 @@
+if PAYLOAD_SEABIOS
+
+choice
+	prompt "SeaBIOS version"
+	default SEABIOS_STABLE
+
+config SEABIOS_STABLE
+	bool "1.7.5"
+	help
+	  Stable SeaBIOS version
+config SEABIOS_MASTER
+	bool "master"
+	help
+	  Newest SeaBIOS version
+
+endchoice
+
+config SEABIOS_PS2_TIMEOUT
+	prompt "PS/2 keyboard controller initialization timeout (milliseconds)"
+	default 0
+	depends on EXPERT
+	int
+	help
+	  Some PS/2 keyboard controllers don't respond to commands immediately
+	  after powering on. This specifies how long SeaBIOS will wait for the
+	  keyboard controller to become ready before giving up.
+
+config SEABIOS_THREAD_OPTIONROMS
+	prompt "Hardware init during option ROM execution"
+	default n
+	bool
+	help
+	  Allow hardware init to run in parallel with optionrom execution.
+
+	  This can reduce boot time, but can cause some timing
+	  variations during option ROM code execution. It is not
+	  known if all option ROMs will behave properly with this option.
+
+config SEABIOS_MALLOC_UPPERMEMORY
+	bool
+	default y
+	help
+	  Use the "Upper Memory Block" area (0xc0000-0xf0000) for internal
+	  "low memory" allocations.  If this is not selected, the memory is
+	  instead allocated from the "9-segment" (0x90000-0xa0000).
+	  This is not typically needed, but may be required on some platforms
+	  to allow USB and SATA buffers to be written correctly by the
+	  hardware.  In general, if this is desired, the option will be
+	  set to 'N' by the chipset Kconfig.
+
+config SEABIOS_VGA_COREBOOT
+	prompt "Include generated option rom that implements legacy VGA BIOS compatibility"
+	default n
+	depends on !VGA_BIOS && (MAINBOARD_DO_NATIVE_VGA_INIT || MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG)
+	bool
+	help
+	  Coreboot can initialize the GPU of some mainboards.
+	  
+	  After initializing the GPU, the information about it can be passed to the payload.
+	  Provide an option rom that implements this legacy VGA BIOS compatibility requirement.
+
+config PAYLOAD_FILE
+	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
+
+config PAYLOAD_VGABIOS_FILE
+	string
+	depends on SEABIOS_VGA_COREBOOT
+	default "payloads/external/SeaBIOS/seabios/out/vgabios.bin"
+
+endif

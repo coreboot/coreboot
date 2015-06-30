@@ -45,6 +45,7 @@ classes-$(CONFIG_LP_CURSES) += libcurses
 classes-$(CONFIG_LP_PDCURSES) += libmenu libform libpanel
 classes-$(CONFIG_LP_CBFS) += libcbfs
 classes-$(CONFIG_LP_LZMA) += liblzma
+classes-$(CONFIG_LP_LZ4) += liblz4
 classes-$(CONFIG_LP_REMOTEGDB) += libgdb
 libraries := $(classes-y)
 classes-y += head.o
@@ -54,6 +55,7 @@ subdirs-y += crypto libc drivers libpci gdb
 subdirs-$(CONFIG_LP_CURSES) += curses
 subdirs-$(CONFIG_LP_CBFS) += libcbfs
 subdirs-$(CONFIG_LP_LZMA) += liblzma
+subdirs-$(CONFIG_LP_LZ4) += liblz4
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj) -include include/kconfig.h
 

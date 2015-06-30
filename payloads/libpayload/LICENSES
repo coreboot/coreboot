@@ -131,3 +131,7 @@ holders, and the exact license terms that apply.
   Source: GNU C Library (glibc), http://www.gnu.org/software/libc/libc.html
   Original files: sysdeps/i386/memset.c
   Current version we use: 2.14
+
+* liblz4/lz4.c: 2-clause BSD
+  Source: LZ4 library, https://github.com/Cyan4973/lz4
+  Current version we use: r130 (baf78e7e4dcbdf824a76f990ffeb573d113bbbdb)

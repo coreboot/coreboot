@@ -172,6 +172,13 @@ config LZMA
 	help
 	  LZMA decoder implementation, usable eg. by CBFS,
 	  but also externally.
+
+config LZ4
+	bool "LZ4 decoder"
+	default y
+	help
+	  Decoder implementation for the LZ4 compression algorithm.
+	  Adds standalone functions (CBFS support coming soon).
 endmenu
 
 menu "Console Options"

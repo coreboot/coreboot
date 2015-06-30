@@ -43,7 +43,7 @@ MAKEFLAGS += -rR --no-print-directory
 
 # Make is silent per default, but 'make V=1' will show all compiler calls.
 ifneq ($(V),1)
-Q := @
+.SILENT:
 endif
 
 HOSTCC ?= gcc
@@ -72,19 +72,19 @@ include $(src)/.config
 all: $(TARGET)
 
 $(TARGET): $(src)/.config $(obj)/config.h $(OBJS) libpayload
-	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LPCC) -o $@ $(OBJS)
-	$(Q)$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
-	$(Q)$(OBJCOPY) --strip-debug $@
-	$(Q)$(OBJCOPY) --add-gnu-debuglink=$(TARGET).debug $@
+	printf "    LPCC       $(subst $(shell pwd)/,,$(@)) (LINK)\n"
+	$(LPCC) -o $@ $(OBJS)
+	$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
+	$(OBJCOPY) --strip-debug $@
+	$(OBJCOPY) --add-gnu-debuglink=$(TARGET).debug $@
 
 $(obj)/%.S.o: $(src)/%.S libpayload
-	$(Q)printf "  LPAS      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LPAS) -o $@ $<
+	printf "    LPAS       $(subst $(shell pwd)/,,$(@))\n"
+	$(LPAS) -o $@ $<
 
 $(obj)/%.o: $(src)/%.c libpayload
-	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LPCC) $(CFLAGS) -c -o $@ $<
+	printf "    LPCC       $(subst $(shell pwd)/,,$(@))\n"
+	$(LPCC) $(CFLAGS) -c -o $@ $<
 
 else
 all: config
@@ -92,13 +92,13 @@ endif
 
 ifneq ($(strip $(HAVE_LIBPAYLOAD)),)
 libpayload:
-	$(Q)printf "Found Libpayload $(LIBPAYLOAD_DIR).\n"
+	printf "Found Libpayload $(LIBPAYLOAD_DIR).\n"
 else
 libpayload:
-	$(Q)printf "Building libpayload @ $(LIBCONFIG_PATH).\n"
-	$(Q)make -C $(LIBCONFIG_PATH) distclean
-	$(Q)make -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
-	$(Q)make -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
+	printf "Building libpayload @ $(LIBCONFIG_PATH).\n"
+	make -C $(LIBCONFIG_PATH) distclean
+	make -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
+	make -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
 endif
 
 $(obj)/config.h:
@@ -107,11 +107,11 @@ $(obj)/config.h:
 $(shell mkdir -p $(obj) $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
 
 clean:
-	$(Q)rm -rf build/*.elf build/*.o
+	rm -rf build/*.elf build/*.o
 
 distclean: clean
-	$(Q)rm -rf build
-	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
+	rm -rf build
+	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
 include $(srck)/Makefile
 

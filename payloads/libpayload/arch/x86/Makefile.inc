@@ -27,6 +27,8 @@
 ## SUCH DAMAGE.
 ##
 
+CFLAGS += -mpreferred-stack-boundary=2
+
 head.o-y += head.S
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S

@@ -37,8 +37,8 @@
 	*(.rodata.*);
 	*(.data);
 	*(.data.*);
-	_preram_cbmem_console = DEFINED(_preram_cbmem_console) ? _preram_cbmem_console : 0;
-	_epreram_cbmem_console = DEFINED(_epreram_cbmem_console) ? _epreram_cbmem_console : 0;
+	PROVIDE(_preram_cbmem_console = .);
+	PROVIDE(_epreram_cbmem_console = _preram_cbmem_console);
 	. = ALIGN(8);
 }
 

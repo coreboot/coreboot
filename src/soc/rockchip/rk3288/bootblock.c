@@ -27,7 +27,7 @@
 #include <soc/timer.h>
 #include <symbols.h>
 
-static void bootblock_soc_init(void)
+void bootblock_soc_init(void)
 {
 	rkclk_init();
 

@@ -21,7 +21,7 @@ ifeq ($(CONFIG_SOC_ROCKCHIP_RK3288),y)
 
 IDBTOOL = util/rockchip/make_idb.py
 
-#bootblock-y += bootblock.c
+bootblock-y += bootblock.c
 bootblock-y += cbmem.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c

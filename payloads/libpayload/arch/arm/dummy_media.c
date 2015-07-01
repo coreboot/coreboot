@@ -36,7 +36,8 @@
 
 int libpayload_init_default_cbfs_media(struct cbfs_media *media);
 
-int libpayload_init_default_cbfs_media(struct cbfs_media *media)
+__attribute__((weak)) int libpayload_init_default_cbfs_media(
+		struct cbfs_media *media)
 {
 	return -1;
 }

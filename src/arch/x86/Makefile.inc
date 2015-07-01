@@ -335,36 +335,4 @@ endif
 
 endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
 
-################################################################################
 
-seabios:
-	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \
-			HOSTCC="$(HOSTCC)" \
-			CC=$(word 1,$(CC_x86_32)) CFLAGS="$(patsubst $(word 1,$(CC_x86_32))%,,$(CC_x86_32))" \
-			LD=$(word 1,$(LD_x86_32)) LDFLAGS="$(patsubst $(word 1,$(LD_x86_32))%,,$(LD_x86_32))" \
-			OBJDUMP="$(OBJDUMP_x86_32)" \
-			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
-			AS="$(AS_x86_32)" IASL="$(IASL)" \
-			CONFIG_SEABIOS_MASTER=$(CONFIG_SEABIOS_MASTER) \
-			CONFIG_SEABIOS_STABLE=$(CONFIG_SEABIOS_STABLE) \
-			CONFIG_SEABIOS_THREAD_OPTIONROMS=$(CONFIG_SEABIOS_THREAD_OPTIONROMS) \
-			CONFIG_SEABIOS_VGA_COREBOOT=$(CONFIG_SEABIOS_VGA_COREBOOT) \
-			CONFIG_CONSOLE_SERIAL=$(CONFIG_CONSOLE_SERIAL) \
-			CONFIG_TTYS0_BASE=$(CONFIG_TTYS0_BASE) \
-			CONFIG_SEABIOS_MALLOC_UPPERMEMORY=$(CONFIG_SEABIOS_MALLOC_UPPERMEMORY)
-
-filo:
-	$(MAKE) -C payloads/external/FILO -f Makefile.inc \
-			HOSTCC="$(HOSTCC)" \
-			CC="$(CC_x86_32)" LD="$(LD_x86_32)" OBJDUMP="$(OBJDUMP_x86_32)" \
-			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
-			CONFIG_FILO_MASTER=$(CONFIG_FILO_MASTER) \
-			CONFIG_FILO_STABLE=$(CONFIG_FILO_STABLE)
-
-
-grub2:
-	$(MAKE) -C payloads/external/GRUB2 -f Makefile.inc \
-			HOSTCC="$(HOSTCC)" \
-			CC="$(CC_x86_32)" LD="$(LD_x86_32)" OBJDUMP="$(OBJDUMP_x86_32)" \
-			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
-			CONFIG_GRUB2_MASTER=$(CONFIG_GRUB2_MASTER)

@@ -59,6 +59,7 @@ subdirs-y += src/superio $(wildcard src/drivers/*) src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool util/broadcom
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
+subdirs-y += payloads/external
 
 subdirs-y += site-local
 

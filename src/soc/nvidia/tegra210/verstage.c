@@ -20,11 +20,9 @@
 #include <arch/cache.h>
 #include <arch/exception.h>
 #include <arch/hlt.h>
-#include <arch/stages.h>
-#include <console/console.h>
 #include <soc/verstage.h>
-#include <timestamp.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <console/console.h>
+#include <program_loading.h>
 
 void __attribute__((weak)) verstage_mainboard_init(void)
 {

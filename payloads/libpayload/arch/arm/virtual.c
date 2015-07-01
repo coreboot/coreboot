@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 
+#include <libpayload.h>
 #include <assert.h>
 #include <die.h>
 #include <stdlib.h>

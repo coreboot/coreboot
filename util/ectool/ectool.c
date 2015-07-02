@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* preserve default - dump_ram if nothing selected */
-	if (!dump_ram && !dump_idx && !dump_query) {
+	if (!dump_ram && !dump_idx && !dump_query && !write_addr) {
 		dump_ram = 1;
 	}
 

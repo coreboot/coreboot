@@ -104,8 +104,8 @@ config TRUSTZONE_CARVEOUT_SIZE_MB
 
 # Default to 700MHz. This value is based on nv bootloader setting.
 config PLLX_KHZ
-        int
-        default 700000
+	int
+	default 700000
 endif
 
 config HAVE_MTC

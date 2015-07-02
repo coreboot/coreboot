@@ -20,7 +20,7 @@
 if BOARD_GOOGLE_FOSTER
 
 config BOARD_SPECIFIC_OPTIONS # dummy
-        def_bool y
+	def_bool y
 	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_4096
 	select CHROMEOS_VBNV_FLASH
@@ -34,16 +34,16 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH_WINBOND
 
 config MAINBOARD_DIR
-        string
-        default google/foster
+	string
+	default google/foster
 
 config MAINBOARD_PART_NUMBER
-        string
-        default "Foster"
+	string
+	default "Foster"
 
 config DRAM_SIZE_MB
-        int
-        default 2048
+	int
+	default 2048
 
 choice
 	prompt "BCT boot media"

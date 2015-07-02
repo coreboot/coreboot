@@ -20,7 +20,7 @@
 if BOARD_GOOGLE_SMAUG
 
 config BOARD_SPECIFIC_OPTIONS # dummy
-        def_bool y
+	def_bool y
 	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_16384
 	select CHROMEOS_VBNV_EC
@@ -38,16 +38,16 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select RAM_CODE_SUPPORT
 
 config MAINBOARD_DIR
-        string
-        default google/smaug
+	string
+	default google/smaug
 
 config MAINBOARD_PART_NUMBER
-        string
-        default "Smaug"
+	string
+	default "Smaug"
 
 config DRAM_SIZE_MB
-        int
-        default 2048
+	int
+	default 2048
 
 choice
 	prompt "BCT boot media"

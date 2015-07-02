@@ -48,7 +48,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Halt if there was a built in self test failure */
 	post_code(0x34);
-	report_bist_failure(bist);
+	report_bist_failure(bist & 0x7FFFFFFF); /* Mask bit 31. One result of Silicon Observation */
 
 	/* Load MPB */
 	val = cpuid_eax(1);

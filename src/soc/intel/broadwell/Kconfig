@@ -160,7 +160,7 @@ config RESET_ON_INVALID_RAMSTAGE_CACHE
 config INTEL_PCH_UART_CONSOLE
 	bool "Use Serial IO UART for console"
 	default n
-	select CONSOLE_SERIAL8250MEM
+	select DRIVERS_UART_8250MEM
 
 config INTEL_PCH_UART_CONSOLE_NUMBER
 	hex "Serial IO UART number to use for console"

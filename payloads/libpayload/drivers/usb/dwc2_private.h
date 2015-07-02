@@ -36,6 +36,11 @@ typedef struct {
 	u32 timestamp;
 } intr_queue_t;
 
+typedef struct {
+	int hubaddr;
+	int hubport;
+} split_info_t;
+
 #define DWC2_INST(controller) ((dwc_ctrl_t *)((controller)->instance))
 #define DWC2_REG(controller) ((dwc2_reg_t *)((controller)->reg_base))
 
@@ -44,6 +49,9 @@ typedef enum {
 	HCSTAT_XFERERR,
 	HCSTAT_BABBLE,
 	HCSTAT_STALL,
+	HCSTAT_ACK,
+	HCSTAT_NAK,
+	HCSTAT_NYET,
 	HCSTAT_UNKNOW,
 	HCSTAT_TIMEOUT,
 } hcstat_t;

@@ -164,16 +164,20 @@ wait_for_complete(endpoint_t *ep, uint32_t ch_num)
 
 		if (hcint.chhltd) {
 			writel(hcint.d32, &reg->host.hchn[ch_num].hcintn);
-			if (hcint.xfercomp)
+			if (hcint.xfercomp || hcint.ack)
 				return hctsiz.xfersize;
 			else if (hcint.nak || hcint.frmovrun)
-				return hctsiz.xfersize;
+				return -HCSTAT_NAK;
 			else if (hcint.xacterr)
 				return -HCSTAT_XFERERR;
 			else if (hcint.bblerr)
 				return -HCSTAT_BABBLE;
 			else if (hcint.stall)
 				return -HCSTAT_STALL;
+			else if (hcint.ack)
+				return -HCSTAT_ACK;
+			else if (hcint.nyet)
+				return -HCSTAT_NYET;
 			else
 				return -HCSTAT_UNKNOW;
 		}
@@ -204,7 +208,7 @@ wait_for_complete(endpoint_t *ep, uint32_t ch_num)
 }
 
 static int
-dwc2_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
+dwc2_do_xfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 			  uint32_t ch_num, u8 *data_buf)
 {
 	uint32_t do_copy;
@@ -241,6 +245,8 @@ dwc2_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 	hcchar.devaddr = ep->dev->address;
 	hcchar.chdis = 0;
 	hcchar.chen = 1;
+	if (ep->dev->speed == LOW_SPEED)
+		hcchar.lspddev = 1;
 
 	if (size > DMA_SIZE) {
 		usb_debug("Transfer too large: %d\n", size);
@@ -285,6 +291,110 @@ dwc2_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 }
 
 static int
+dwc2_split_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
+		    uint32_t ch_num, u8 *data_buf, split_info_t *split)
+{
+	dwc2_reg_t *reg = DWC2_REG(ep->dev->controller);
+	hfnum_t hfnum;
+	hcsplit_t hcsplit = { .d32 = 0 };
+	int ret, transferred = 0;
+
+	hcsplit.hubaddr = split->hubaddr;
+	hcsplit.prtaddr = split->hubport;
+	hcsplit.spltena = 1;
+	writel(hcsplit.d32, &reg->host.hchn[ch_num].hcspltn);
+
+	/* Wait for next frame boundary */
+	do {
+		hfnum.d32 = readl(&reg->host.hfnum);
+	} while (hfnum.frnum % 8 != 0);
+
+	/* Handle Start-Split */
+	ret = dwc2_do_xfer(ep, dir == EPDIR_IN ? 0 : size, pid, dir, ch_num,
+			   data_buf);
+	if (ret < 0)
+		goto out;
+
+	hcsplit.spltena = 1;
+	hcsplit.compsplt = 1;
+	writel(hcsplit.d32, &reg->host.hchn[ch_num].hcspltn);
+	ep->toggle = pid;
+
+	if (dir == EPDIR_OUT)
+		transferred += ret;
+
+	/* Handle Complete-Split */
+	do {
+		ret = dwc2_do_xfer(ep, dir == EPDIR_OUT ? 0 : size, ep->toggle,
+				   dir, ch_num, data_buf);
+	} while (ret == -HCSTAT_NYET);
+
+	if (dir == EPDIR_IN)
+		transferred += ret;
+
+out:
+	/* Clear hcsplit reg */
+	hcsplit.spltena = 0;
+	hcsplit.compsplt = 0;
+	writel(hcsplit.d32, &reg->host.hchn[ch_num].hcspltn);
+
+	if (ret < 0)
+		return ret;
+
+	return transferred;
+}
+
+static int dwc2_need_split(usbdev_t *dev, split_info_t *split)
+{
+	if (dev->speed == HIGH_SPEED)
+		return 0;
+
+	if (closest_usb2_hub(dev, &split->hubaddr, &split->hubport))
+		return 0;
+
+	return 1;
+}
+
+static int
+dwc2_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir, uint32_t ch_num,
+	      u8 *src, uint8_t skip_nak)
+{
+	split_info_t split;
+	int ret, transferred = 0, timeout = 3000;
+
+	ep->toggle = pid;
+
+	do {
+		if (dwc2_need_split(ep->dev, &split)) {
+nak_retry:
+			ret = dwc2_split_transfer(ep, size, ep->toggle, dir, 0,
+			      src, &split);
+
+			/*
+			 * dwc2_split_transfer() waits for the next FullSpeed
+			 * frame boundary, so we have one try per millisecond.
+			 * It's 3s timeout for each split transfer.
+			 */
+			if (ret == -HCSTAT_NAK && !skip_nak && --timeout) {
+				udelay(500);
+				goto nak_retry;
+			}
+		} else {
+			ret = dwc2_do_xfer(ep, size, pid, dir, 0, src);
+		}
+
+		if (ret < 0)
+			return ret;
+
+		size -= ret;
+		src += ret;
+		transferred += ret;
+	} while (size > 0);
+
+	return transferred;
+}
+
+static int
 dwc2_bulk(endpoint_t *ep, int size, u8 *src, int finalize)
 {
 	ep_dir_t data_dir;
@@ -296,7 +406,7 @@ dwc2_bulk(endpoint_t *ep, int size, u8 *src, int finalize)
 	else
 		return -1;
 
-	return dwc2_transfer(ep, size, ep->toggle, data_dir, 0, src);
+	return dwc2_transfer(ep, size, ep->toggle, data_dir, 0, src, 0);
 }
 
 static int
@@ -304,8 +414,8 @@ dwc2_control(usbdev_t *dev, direction_t dir, int drlen, void *setup,
 		   int dalen, u8 *src)
 {
 	int ret = 0;
-
 	ep_dir_t data_dir;
+	endpoint_t *ep = &dev->endpoints[0];
 
 	if (dir == IN)
 		data_dir = EPDIR_IN;
@@ -315,19 +425,19 @@ dwc2_control(usbdev_t *dev, direction_t dir, int drlen, void *setup,
 		return -1;
 
 	/* Setup Phase */
-	if (dwc2_transfer(&dev->endpoints[0], drlen, PID_SETUP, EPDIR_OUT, 0,
-	    setup) < 0)
+	if (dwc2_transfer(ep, drlen, PID_SETUP, EPDIR_OUT, 0, setup, 0) < 0)
 		return -1;
+
 	/* Data Phase */
+	ep->toggle = PID_DATA1;
 	if (dalen > 0) {
-		ret = dwc2_transfer(&dev->endpoints[0], dalen, PID_DATA1,
-				    data_dir, 0, src);
+		ret = dwc2_transfer(ep, dalen, ep->toggle, data_dir, 0, src, 0);
 		if (ret < 0)
 			return -1;
 	}
+
 	/* Status Phase */
-	if (dwc2_transfer(&dev->endpoints[0], 0, PID_DATA1, !data_dir, 0,
-	    NULL) < 0)
+	if (dwc2_transfer(ep, 0, PID_DATA1, !data_dir, 0, NULL, 0) < 0)
 		return -1;
 
 	return ret;
@@ -345,7 +455,7 @@ dwc2_intr(endpoint_t *ep, int size, u8 *src)
 	else
 		return -1;
 
-	return dwc2_transfer(ep, size, ep->toggle, data_dir, 0, src);
+	return dwc2_transfer(ep, size, ep->toggle, data_dir, 0, src, 1);
 }
 
 static u32 dwc2_intr_get_timestamp(intr_queue_t *q)

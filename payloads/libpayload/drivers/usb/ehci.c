@@ -194,30 +194,6 @@ static void ehci_shutdown (hci_t *controller)
 
 enum { EHCI_OUT=0, EHCI_IN=1, EHCI_SETUP=2 };
 
-/*
- * returns the address of the closest USB2.0 hub, which is responsible for
- * split transactions, along with the number of the used downstream port
- */
-static int closest_usb2_hub(const usbdev_t *dev, int *const addr, int *const port)
-{
-	const usbdev_t *usb1dev;
-	do {
-		usb1dev = dev;
-		if ((dev->hub >= 0) && (dev->hub < 128))
-			dev = dev->controller->devices[dev->hub];
-		else
-			dev = NULL;
-	} while (dev && (dev->speed < 2));
-	if (dev) {
-		*addr = usb1dev->hub;
-		*port = usb1dev->port;
-		return 0;
-	} else {
-		usb_debug("ehci: Couldn't find closest USB2.0 hub.\n");
-		return 1;
-	}
-}
-
 /* returns handled bytes. assumes that the fields it writes are empty on entry */
 static int fill_td(qtd_t *td, void* data, int datalen)
 {

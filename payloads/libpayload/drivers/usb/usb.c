@@ -653,3 +653,29 @@ usb_generic_init (usbdev_t *dev)
 		usb_detach_device(dev->controller, dev->address);
 	}
 }
+
+/*
+ * returns the address of the closest USB2.0 hub, which is responsible for
+ * split transactions, along with the number of the used downstream port
+ */
+int closest_usb2_hub(const usbdev_t *dev, int *const addr, int *const port)
+{
+	const usbdev_t *usb1dev;
+
+	do {
+		usb1dev = dev;
+		if ((dev->hub >= 0) && (dev->hub < 128))
+			dev = dev->controller->devices[dev->hub];
+		else
+			dev = NULL;
+	} while (dev && (dev->speed < 2));
+
+	if (dev) {
+		*addr = usb1dev->hub;
+		*port = usb1dev->port;
+		return 0;
+	}
+
+	usb_debug("Couldn't find closest USB2.0 hub.\n");
+	return 1;
+}

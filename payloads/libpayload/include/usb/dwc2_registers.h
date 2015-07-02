@@ -597,6 +597,30 @@ typedef union {
 	};
 } hcchar_t;
 
+/**
+ * This union represents the bit fields in the Host Channel-n Split Control
+ * Register.
+ */
+typedef union {
+	/* raw register data */
+	uint32_t d32;
+
+	/* register bits */
+	struct {
+		/** Port Address */
+		unsigned prtaddr:7;
+		/** Hub Address */
+		unsigned hubaddr:7;
+		/** Transaction Position */
+		unsigned xactpos:2;
+		/** Do Complete Split */
+		unsigned compsplt:1;
+		unsigned reserved:14;
+		/** Split Enable */
+		unsigned spltena:1;
+	};
+} hcsplit_t;
+
 typedef enum {
 	EPDIR_OUT = 0,
 	EPDIR_IN,

@@ -277,6 +277,8 @@ void usb_hid_init (usbdev_t *dev);
 void usb_msc_init (usbdev_t *dev);
 void usb_generic_init (usbdev_t *dev);
 
+int closest_usb2_hub(const usbdev_t *dev, int *const addr, int *const port);
+
 static inline unsigned char
 gen_bmRequestType (dev_req_dir dir, dev_req_type type, dev_req_recp recp)
 {

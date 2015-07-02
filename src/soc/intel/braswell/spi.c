@@ -26,6 +26,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_ids.h>
+#include <rules.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <spi_flash.h>
@@ -33,7 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __SMM__
+#if ENV_SMM
 #define pci_read_config_byte(dev, reg, targ)\
 	*(targ) = pci_read_config8(dev, reg)
 #define pci_read_config_word(dev, reg, targ)\
@@ -46,7 +47,7 @@
 	pci_write_config16(dev, reg, val)
 #define pci_write_config_dword(dev, reg, val)\
 	pci_write_config32(dev, reg, val)
-#else /* !__SMM__ */
+#else /* ENV_SMM */
 #include <device/device.h>
 #include <device/pci.h>
 #define pci_read_config_byte(dev, reg, targ)\
@@ -61,7 +62,7 @@
 	pci_write_config16(dev, reg, val)
 #define pci_write_config_dword(dev, reg, val)\
 	pci_write_config32(dev, reg, val)
-#endif /* !__SMM__ */
+#endif /* ENV_SMM */
 
 typedef struct spi_slave ich_spi_slave;
 
@@ -255,7 +256,7 @@ static ich9_spi_regs *spi_regs(void)
 	device_t dev;
 	uint32_t sbase;
 
-#ifdef __SMM__
+#if ENV_SMM
 	dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
 #else
 	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));

@@ -20,13 +20,14 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <rules.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <stdint.h>
 
-#if defined(__SMM__)
+#if ENV_SMM
 
 static const device_t pcu_dev = PCI_DEV(0, PCU_DEV, 0);
 
@@ -35,7 +36,7 @@ static inline device_t get_pcu_dev(void)
 	return pcu_dev;
 }
 
-#else /* !__SMM__ */
+#else /* ENV_SMM */
 #include <device/device.h>
 #include <device/pci.h>
 
@@ -46,7 +47,7 @@ static device_t get_pcu_dev(void)
 		pcu_dev = dev_find_slot(0, PCI_DEVFN(PCU_DEV, 0));
 	return pcu_dev;
 }
-#endif
+#endif /* ENV_SMM */
 
 uint16_t get_pmbase(void)
 {

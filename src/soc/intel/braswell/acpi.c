@@ -36,6 +36,7 @@
 #include <device/pci_ids.h>
 #include <ec/google/chromeec/ec.h>
 #include <fsp_gop.h>
+#include <rules.h>
 #include <soc/acpi.h>
 #include <soc/gfx.h>
 #include <soc/iomap.h>
@@ -269,7 +270,7 @@ static acpi_tstate_t soc_tss_table[] = {
 	{ 13, 125, 0, 0x12, 0 },
 };
 
-static void generate_T_state_entries(int core, int cores_per_package)
+static void generate_t_state_entries(int core, int cores_per_package)
 {
 	/* Indicate SW_ALL coordination for T-states */
 	acpigen_write_TSD_package(core, cores_per_package, SW_ALL);
@@ -306,7 +307,7 @@ static int calculate_power(int tdp, int p1_ratio, int ratio)
 	return (int)power;
 }
 
-static void generate_P_state_entries(int core, int cores_per_package)
+static void generate_p_state_entries(int core, int cores_per_package)
 {
 	int ratio_min, ratio_max, ratio_turbo, ratio_step, ratio_range_2;
 	int coord_type, power_max, power_unit, num_entries;
@@ -438,7 +439,7 @@ void generate_cpu_entries(device_t device)
 			core, pcontrol_blk, plen);
 
 		/* Generate  P-state tables */
-		generate_P_state_entries(
+		generate_p_state_entries(
 			core, pattrs->num_cpus);
 
 		/* Generate C-state tables */
@@ -446,7 +447,7 @@ void generate_cpu_entries(device_t device)
 			cstate_map, ARRAY_SIZE(cstate_map));
 
 		/* Generate T-state tables */
-		generate_T_state_entries(
+		generate_t_state_entries(
 			core, pattrs->num_cpus);
 
 		acpigen_pop_len();

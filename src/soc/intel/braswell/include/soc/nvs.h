@@ -22,6 +22,7 @@
 #ifndef _SOC_NVS_H_
 #define _SOC_NVS_H_
 
+#include <rules.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>
 
@@ -73,7 +74,7 @@ typedef struct {
 } __attribute__((packed)) global_nvs_t;
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
-#ifdef __SMM__
+#if ENV_SMM
 /* Used in SMM to find the ACPI GNVS address */
 global_nvs_t *smm_get_gnvs(void);
 #endif

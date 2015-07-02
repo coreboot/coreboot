@@ -187,6 +187,7 @@ void soc_romstage_init(struct romstage_params *params)
 	/* Ensure the EC is in the right mode for recovery */
 	google_chromeec_early_init();
 #endif
+	lpc_init();
 }
 
 /* SOC initialization after RAM is enabled */
@@ -220,6 +221,7 @@ void soc_memory_init_params(MEMORY_INIT_UPD *params)
 	params->PcdApertureSize = config->PcdApertureSize;
 	params->PcdGttSize = config->PcdGttSize;
 	params->PcdLegacySegDecode = config->PcdLegacySegDecode;
+	params->PcdDvfsEnable = config->PcdDvfsEnable;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
@@ -249,4 +251,6 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 		old->PcdGttSize, new->PcdGttSize);
 	soc_display_upd_value("PcdLegacySegDecode", 1,
 		old->PcdLegacySegDecode, new->PcdLegacySegDecode);
+	soc_display_upd_value("PcdDvfsEnable", 1,
+		old->PcdDvfsEnable, new->PcdDvfsEnable);
 }

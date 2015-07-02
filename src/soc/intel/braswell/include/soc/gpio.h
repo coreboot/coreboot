@@ -573,4 +573,7 @@ int get_gpio(int community_base, int pad0_offset);
 uint16_t gpio_family_number(uint8_t community, uint8_t pad);
 uint32_t *gpio_pad_config_reg(uint8_t community, uint8_t pad);
 
+void lpc_init(void);
+void lpc_set_low_power(void);
+
 #endif /* _SOC_GPIO_H_ */

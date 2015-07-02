@@ -20,6 +20,7 @@
 
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
+#include <rules.h>
 #include <soc/msr.h>
 #include <console/console.h>
 #if ENV_RAMSTAGE
@@ -37,7 +38,7 @@ unsigned long tsc_freq_mhz(void)
 	return (BUS_FREQ_KHZ * ((ia_core_ratios.lo >> 16) & 0x3f)) / 1000;
 }
 
-#if !defined(__SMM__)
+#if !ENV_SMM
 
 void set_max_freq(void)
 {
@@ -67,4 +68,4 @@ void set_max_freq(void)
 	wrmsr(MSR_IA32_PERF_CTL, perf_ctl);
 }
 
-#endif /* __SMM__ */
+#endif /* ENV_SMM */

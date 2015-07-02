@@ -29,6 +29,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <soc/intel/common/memmap.h>
+#include <reg_script.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>
@@ -53,6 +54,31 @@ static int adjust_apic_id(int index, int apic_id)
 	return 2 * index;
 }
 
+/* Package level MSRs */
+const struct reg_script package_msr_script[] = {
+	/* Set Package TDP to ~7W */
+	REG_MSR_WRITE(MSR_PKG_POWER_LIMIT, 0x3880fa),
+	REG_MSR_RMW(MSR_PP1_POWER_LIMIT, ~(0x7f << 17), 0),
+	REG_MSR_WRITE(MSR_PKG_TURBO_CFG1, 0x702),
+	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG1, 0x200b),
+	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG2, 0),
+	REG_MSR_WRITE(MSR_CPU_THERM_CFG1, 0x00000305),
+	REG_MSR_WRITE(MSR_CPU_THERM_CFG2, 0x0405500d),
+	REG_MSR_WRITE(MSR_CPU_THERM_SENS_CFG, 0x27),
+	REG_SCRIPT_END
+};
+
+/* Core level MSRs */
+const struct reg_script core_msr_script[] = {
+	/* Dynamic L2 shrink enable and threshold, clear SINGLE_PCTL bit 11 */
+	REG_MSR_RMW(MSR_PMG_CST_CONFIG_CONTROL, ~0x3f080f, 0xe0008),
+	REG_MSR_RMW(MSR_POWER_MISC,
+		    ~(ENABLE_ULFM_AUTOCM_MASK | ENABLE_INDP_AUTOCM_MASK), 0),
+	/* Disable C1E */
+	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
+	REG_MSR_OR(MSR_POWER_MISC, 0x44),
+	REG_SCRIPT_END
+};
 
 void soc_init_cpus(device_t dev)
 {
@@ -78,6 +104,10 @@ void soc_init_cpus(device_t dev)
 
 	default_smm_area = backup_default_smm_area();
 
+	/* Set package MSRs */
+	reg_script_run(package_msr_script);
+
+	/* Enable Turbo Mode on BSP and siblings of the BSP's building block. */
 	enable_turbo();
 
 	if (mp_init(cpu_bus, &mp_params))
@@ -86,9 +116,30 @@ void soc_init_cpus(device_t dev)
 	restore_default_smm_area(default_smm_area);
 }
 
+static void soc_core_init(device_t cpu)
+{
+	printk(BIOS_SPEW, "%s/%s ( %s )\n",
+			__FILE__, __func__, dev_name(cpu));
+	printk(BIOS_DEBUG, "Init Braswell core.\n");
+
+	/*
+	 * The turbo disable bit is actually scoped at building
+	 * block level -- not package. For non-bsp cores that are within a
+	 * building block enable turbo. The cores within the BSP's building
+	 * block will just see it already enabled and move on.
+	 */
+	if (lapicid())
+		enable_turbo();
+
+	/* Set core MSRs */
+	reg_script_run(core_msr_script);
+
+	/* Set this core to max frequency ratio */
+	set_max_freq();
+}
 
 static struct device_operations cpu_dev_ops = {
-	.init = NULL,
+	.init = soc_core_init,
 };
 
 static struct cpu_device_id cpu_table[] = {

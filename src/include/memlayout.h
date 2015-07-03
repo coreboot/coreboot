@@ -47,6 +47,9 @@
 
 #define DRAM_START(addr) SYMBOL(dram, addr)
 
+#define TIMESTAMP(addr, size) \
+	REGION(timestamp, addr, size, 8)
+
 #define PRERAM_CBMEM_CONSOLE(addr, size) \
 	REGION(preram_cbmem_console, addr, size, 4)
 

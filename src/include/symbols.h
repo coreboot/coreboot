@@ -28,6 +28,10 @@ extern u8 _esram[];
 
 extern u8 _dram[];
 
+extern u8 _timestamp[];
+extern u8 _etimestamp[];
+#define _timestamp_size	(_etimestamp - _timestamp)
+
 extern u8 _preram_cbmem_console[];
 extern u8 _epreram_cbmem_console[];
 #define _preram_cbmem_console_size \

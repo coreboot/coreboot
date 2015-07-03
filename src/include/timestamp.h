@@ -89,8 +89,21 @@ enum timestamp_id {
 };
 
 #if CONFIG_COLLECT_TIMESTAMPS && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
+/*
+ * timestamp_init() needs to be called once for each of these cases:
+ *    1. __PRE_RAM__ (bootblock, romstage, verstage, etc) and
+ *    2. !__PRE_RAM__ (ramstage)
+ * The latter is taken care of by the generic coreboot infrastructure so
+ * it's up to the chipset/arch to call timestamp_init() in *one* of
+ * the __PRE_RAM__ stages. If multiple calls are made timestamps will be lost.
+ */
 void timestamp_init(uint64_t base);
+/*
+ * Add a new timestamp. Depending on cbmem is available or not, this timestamp
+ * will be stored to cbmem / timestamp cache.
+ */
 void timestamp_add(enum timestamp_id id, uint64_t ts_time);
+/* Calls timestamp_add with current timestamp. */
 void timestamp_add_now(enum timestamp_id id);
 #else
 #define timestamp_init(base)

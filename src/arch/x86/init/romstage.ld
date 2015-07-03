@@ -52,6 +52,11 @@ SECTIONS
 	. = CONFIG_DCACHE_RAM_BASE;
 	.car.data . (NOLOAD) : {
 		_car_data_start = .;
+#if IS_ENABLED(CONFIG_HAS_PRECBMEM_TIMESTAMP_REGION)
+		_timestamp = .;
+		. = . + 0x100;
+		_etimestamp = .;
+#endif
 		*(.car.global_data);
 		_car_data_end = .;
 		/* The preram cbmem console area comes last to take advantage

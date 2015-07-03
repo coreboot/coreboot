@@ -136,7 +136,7 @@ typedef struct ramctr_timing_st {
 	int ref_card_offset[NUM_CHANNELS];
 	u32 mad_dimm[NUM_CHANNELS];
 	int channel_size_mb[NUM_CHANNELS];
-	u32 reg_4004_b30[NUM_CHANNELS];
+	u32 cmd_stretch[NUM_CHANNELS];
 
 	int reg_c14_offset;
 	int reg_320c_range_threshold;
@@ -2683,7 +2683,7 @@ static void reprogram_320c(ramctr_timing * ctrl)
 
 #define MIN_C320C_LEN 13
 
-static int try_reg_4004_b30(ramctr_timing * ctrl, int r4004b30)
+static int try_cmd_stretch(ramctr_timing * ctrl, int cmd_stretch)
 {
 	struct ram_rank_timings saved_timings[NUM_CHANNELS][NUM_SLOTRANKS];
 	int channel, slotrank;
@@ -2695,7 +2695,7 @@ static int try_reg_4004_b30(ramctr_timing * ctrl, int r4004b30)
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
-		ctrl->reg_4004_b30[channel] = r4004b30;
+		ctrl->cmd_stretch[channel] = cmd_stretch;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS
@@ -2706,14 +2706,14 @@ static int try_reg_4004_b30(ramctr_timing * ctrl, int r4004b30)
 		| (ctrl->tWTR << 12)
 		| (ctrl->tFAW << 16)
 		| (ctrl->tWR << 24)
-		| (ctrl->reg_4004_b30[channel] << 30);
+		| (ctrl->cmd_stretch[channel] << 30);
 
 
 	FOR_ALL_CHANNELS {
 		int delta = 0;
-		if (ctrl->reg_4004_b30[channel] == 2)
+		if (ctrl->cmd_stretch[channel] == 2)
 			delta = 2;
-		else if (ctrl->reg_4004_b30[channel] == 0)
+		else if (ctrl->cmd_stretch[channel] == 0)
 			delta = 4;
 
 		FOR_ALL_POPULATED_RANKS {
@@ -2764,7 +2764,8 @@ static void command_training(ramctr_timing * ctrl)
 		write32(DEFAULT_MCHBAR + 0x4288 + 0x400 * channel, 0x1f);
 	}
 
-	if (!try_reg_4004_b30(ctrl, 0) && !try_reg_4004_b30(ctrl, 2))
+	/* try command rate 1T and 2T */
+	if (!try_cmd_stretch(ctrl, 0) && !try_cmd_stretch(ctrl, 2))
 		die("c320c discovery failed");
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -3621,7 +3622,7 @@ static void restore_timings(ramctr_timing * ctrl)
 		| (ctrl->tWTR << 12)
 		| (ctrl->tFAW << 16)
 		| (ctrl->tWR << 24)
-		| (ctrl->reg_4004_b30[channel] << 30);
+		| (ctrl->cmd_stretch[channel] << 30);
 
 	udelay(1);
 

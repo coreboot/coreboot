@@ -57,6 +57,8 @@
 #define PCH_PWRM_BASE_ADDRESS	0xfe000000
 #define PCH_PWRM_BASE_SIZE	0x10000
 
+#define GPIO_BASE_SIZE		0x10000
+
 /*
  * I/O port address space
  */
@@ -65,10 +67,6 @@
 
 #define ACPI_BASE_ADDRESS	0x1800
 #define ACPI_BASE_SIZE		0x100
-
-/* FIXME: not applicable as there is no I/O space for gpio access. */
-#define GPIO_BASE_ADDRESS	0x1400
-#define GPIO_BASE_SIZE		0x400
 
 #define TCO_BASE_ADDDRESS	0x400
 #define TCO_BASE_SIZE		0x20

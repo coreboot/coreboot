@@ -17,6 +17,8 @@
 #ifndef _SOC_IRQ_H_
 #define _SOC_IRQ_H_
 
+#define GPIO_IRQ14 14
+#define GPIO_IRQ15 15
 #define LPSS_I2C0_IRQ 16
 #define LPSS_I2C1_IRQ 17
 #define LPSS_I2C2_IRQ 18

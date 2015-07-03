@@ -858,8 +858,6 @@ void sr56x0_lock_hwinitreg(void)
 void config_gpp_core(device_t nb_dev, device_t sb_dev)
 {
 	u32 reg;
-	struct southbridge_amd_sr5650_config *cfg =
-		(struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
 
 	reg = nbmisc_read_index(nb_dev, 0x20);
 	if (AtiPcieCfg.Config & PCIE_ENABLE_STATIC_DEV_REMAP)
@@ -875,14 +873,9 @@ void config_gpp_core(device_t nb_dev, device_t sb_dev)
 	reg &= ~((1 << 31) | (1 << 15) | (1 << 13));	//De-asserts
 	nbmisc_write_index(nb_dev, 0x8, reg);
 
-	reg = nbmisc_read_index(nb_dev, 0x67); /* get STRAP_BIF_LINK_CONFIG at bit 0-4 */
-	if (cfg->gpp3a_configuration != (reg & 0x1F))
-		switching_gpp3a_configurations(nb_dev, sb_dev);
-	reg = nbmisc_read_index(nb_dev, 0x8);  /* get MULTIPORT_CONFIG_GPP1 MULTIPORT_CONFIG_CONFIG_GPP2 at bit 8,9 */
-	if ((cfg->gpp1_configuration << 8) != (reg & (1 << 8)))
-		switching_gpp1_configurations(nb_dev, sb_dev);
-	if ((cfg->gpp2_configuration << 9) != (reg & (1 << 9)))
-		switching_gpp2_configurations(nb_dev, sb_dev);
+	switching_gpp3a_configurations(nb_dev, sb_dev);
+	switching_gpp1_configurations(nb_dev, sb_dev);
+	switching_gpp2_configurations(nb_dev, sb_dev);
 	ValidatePortEn(nb_dev);
 }
 

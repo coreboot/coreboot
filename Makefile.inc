@@ -72,15 +72,31 @@ $(foreach supported_arch,$(ARCH_SUPPORTED), \
 	    $(eval $(call define_class,rmodules_$(supported_arch),$(supported_arch))))
 
 #######################################################################
-# Helper functions for various file placement matters
+# Helper functions for math and various file placement matters.
+# macros work on all formats understood by printf(1)
+# values are space separated if using more than one value
 #
-# int-add: adds an arbitrary number of space-separated integers in
-#          all formats understood by printf(1)
-# int-align: align $1 to $2 units
-# file-size: returns the filesize of the given file
+# int-add:       adds an arbitrary length list of integers
+# int-subtract:  subtracts the the second of two integers from the first
+# int-multiply:  multiplies an arbitrary length list of integers
+# int-divide:    divides the first integer by the second
+# int-remainder: arithmetic remainder of the first number divided by the second
+# int-lt:        1 if the first value is less than the second.  0 otherwise
+# int-gt:        1 if the first values is greater than the second.  0 otherwise
+# int-eq:        1 if the two values are equal.  0 otherwise
+# int-align:     align $1 to $2 units
+# file-size:     returns the filesize of the given file
 _toint=$(shell printf "%d" $1)
 _int-add2=$(shell expr $(call _toint,$1) + $(call _toint,$2))
 int-add=$(if $(filter 1,$(words $1)),$(strip $1),$(call int-add,$(call _int-add2,$(word 1,$1),$(word 2,$1)) $(wordlist 3,$(words $1),$1)))
+int-subtract=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) - $(call _toint,$(word 2,$1))))
+_int-multiply2=$(shell expr $(call _toint,$1) \* $(call _toint,$2))
+int-multiply=$(if $(filter 1,$(words $1)),$(strip $1),$(call int-multiply,$(call _int-multiply2,$(word 1,$1),$(word 2,$1)) $(wordlist 3,$(words $1),$1)))
+int-divide=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) / $(call _toint,$(word 2,$1))))
+int-remainder=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) % $(call _toint,$(word 2,$1))))
+int-lt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) \< $(call _toint,$(word 2,$1))))
+int-gt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) \> $(call _toint,$(word 2,$1))))
+int-eq=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) = $(call _toint,$(word 2,$1))))
 int-align=$(shell A=$(call _toint,$1) B=$(call _toint,$2); expr $$A + \( \( $$B - \( $$A % $$B \) \) % $$B \) )
 file-size=$(shell cat $1 | wc -c)
 

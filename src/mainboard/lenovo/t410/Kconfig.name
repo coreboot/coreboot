@@ -1,0 +1,2 @@
+config BOARD_LENOVO_T410
+	bool "ThinkPad T410"

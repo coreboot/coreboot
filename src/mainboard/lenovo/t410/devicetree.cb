@@ -1,0 +1,198 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+## Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of
+## the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+chip northbridge/intel/nehalem
+	# IGD Displays
+	register "gfx.ndid" = "3"
+	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410 }"
+
+	# Enable DisplayPort Hotplug with 6ms pulse
+	register "gpu_dp_d_hotplug" = "0x06"
+
+	# Enable Panel as LVDS and configure power delays
+	register "gpu_panel_port_select" = "0"			# LVDS
+	register "gpu_panel_power_cycle_delay" = "1"
+	register "gpu_panel_power_up_delay" = "1"
+	register "gpu_panel_power_down_delay" = "600"
+	register "gpu_panel_power_backlight_on_delay" = "0"
+	register "gpu_panel_power_backlight_off_delay" = "0"
+	register "gpu_cpu_backlight" = "0x58d"
+	register "gpu_pch_backlight" = "0x061a061a"
+	register "gfx.use_spread_spectrum_clock" = "1"
+	register "gfx.link_frequency_270_mhz" = "1"
+
+	device cpu_cluster 0 on
+		chip cpu/intel/model_2065x
+			device lapic 0 on end
+		end
+	end
+
+	register "pci_mmio_size" = "2048"
+
+	device domain 0 on
+		device pci 00.0 on # Host bridge
+			subsystemid 0x17aa 0x2193
+		end
+		device pci 01.0 on end # PEG
+		device pci 02.0 on # VGA controller
+			subsystemid 0x17aa 0x215a
+		end
+		chip southbridge/intel/ibexpeak
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "gpi1_routing" = "2"
+			register "gpi13_routing" = "2"
+
+			# 0:HDD Bay 1:ODD Bay 4:eSATA Combo Connector
+			register "sata_port_map" = "0x13"
+
+			register "gpe0_en" = "0x20022046"
+			register "alt_gp_smi_en" = "0x0000"
+			register "gen1_dec" = "0x7c1601" # EC
+			register "gen2_dec" = "0x0c15e1" # PMH7
+			register "gen3_dec" = "0x1c1681" # EC ?
+			register "gen4_dec" = "0x040069" # ?
+
+			register "c2_latency" = "1"
+			register "docking_supported" = "1"
+
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
+
+			device pci 16.0 off end # MEI
+			device pci 16.2 on # IDE/SATA
+				subsystemid 0x17aa 0x2161
+			end
+
+			device pci 19.0 on # Ethernet
+				subsystemid 0x17aa 0x2153
+			end
+
+			device pci 1a.0 on # USB2 EHCI
+				subsystemid 0x17aa 0x2163
+			end
+
+			device pci 1b.0 on # Audio Controller
+				subsystemid 0x17aa 0x215e
+			end
+
+			device pci 1c.0 on end # PCIe Port #1 (wlan)
+			device pci 1c.1 off end # PCIe Port #2 (wwan)
+			device pci 1c.2 off end # PCIe Port #3 (wusb)
+			device pci 1c.3 on end # PCIe Port #4 (ExpressCard)
+			device pci 1c.4 on
+				subsystemid 0x17aa 0x2133
+				chip drivers/ricoh/rce822
+					register "sdwppol" = "1"
+					register "disable_mask" = "0x87"
+					device pci 00.0 on
+						subsystemid 0x17aa 0x2134
+					end
+				end
+			end # PCIe Port #5 (Ricoh SD & FW)
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1c.6 off end # PCIe Port #7
+			device pci 1c.7 off end # PCIe Port #8 Intel Gigabit Ethernet PHY (not PCIe)
+
+			device pci 1d.0 on # USB2 EHCI
+				subsystemid 0x17aa 0x2163
+			end
+			device pci 1f.0 on # PCI-LPC bridge
+				subsystemid 0x17aa 0x2166
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+				chip ec/lenovo/pmh7
+					device pnp ff.1 on end # dummy
+					register "backlight_enable" = "0x01"
+					register "dock_event_enable" = "0x01"
+				end
+				chip ec/lenovo/h8
+					device pnp ff.2 on # dummy
+						io 0x60 = 0x62
+						io 0x62 = 0x66
+						io 0x64 = 0x1600
+						io 0x66 = 0x1604
+					end
+
+					register "config0" = "0xa6"
+					register "config1" = "0x05"
+					register "config2" = "0xa0"
+					register "config3" = "0xe0"
+
+					register "beepmask0" = "0xfe"
+					register "beepmask1" = "0x96"
+					register "has_power_management_beeps" = "1"
+
+					register "event2_enable" = "0xff"
+					register "event3_enable" = "0xff"
+					register "event4_enable" = "0xf4"
+					register "event5_enable" = "0x3c"
+					register "event6_enable" = "0x87"
+					register "event7_enable" = "0x89"
+					register "event8_enable" = "0x7b"
+					register "event9_enable" = "0xff"
+					register "eventa_enable" = "0x83"
+					register "eventb_enable" = "0x00"
+					register "eventc_enable" = "0xff"
+					register "eventd_enable" = "0xff"
+					register "evente_enable" = "0x2d"
+				end
+				chip drivers/lenovo/hybrid_graphics
+					device pnp ff.f on end # dummy
+
+					register "detect_gpio" = "21"
+
+					register "has_panel_hybrid_gpio" = "1"
+					register "panel_hybrid_gpio" = "52"
+					register "panel_integrated_lvl" = "1"
+
+					register "has_backlight_gpio" = "1"
+					register "backlight_gpio" = "50"
+					register "backlight_integrated_lvl" = "0"
+
+					register "has_dgpu_power_gpio" = "1"
+					register "dgpu_power_gpio" = "49"
+					register "dgpu_power_off_lvl" = "0"
+
+					register "has_thinker1" = "1"
+				end
+			end
+			device pci 1f.2 on # IDE/SATA
+				subsystemid 0x17aa 0x2168
+			end
+			device pci 1f.3 on # SMBUS
+				subsystemid 0x17aa 0x2167
+				# eeprom, 8 virtual devices, same chip
+				chip drivers/i2c/at24rf08c
+					device i2c 54 on end
+					device i2c 55 on end
+					device i2c 56 on end
+					device i2c 57 on end
+					device i2c 5c on end
+					device i2c 5d on end
+					device i2c 5e on end
+					device i2c 5f on end
+				end
+			end
+			device pci 1f.6 on # Thermal Subsystem
+				subsystemid 0x17aa 0x2190
+			end
+		end
+	end
+end

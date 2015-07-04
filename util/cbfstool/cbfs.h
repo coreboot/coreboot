@@ -32,6 +32,12 @@
 #define makemagic(b3, b2, b1, b0)\
 	(((b3)<<24) | ((b2) << 16) | ((b1) << 8) | (b0))
 
+#if defined(__WIN32) || defined(__WIN64)
+#define __PACKED __attribute__((gcc_struct, packed))
+#else
+#define __PACKED __attribute__((packed))
+#endif
+
 // Alignment (in bytes) to be used when no master header is present
 #define CBFS_ENTRY_ALIGNMENT 64
 
@@ -50,7 +56,7 @@ struct cbfs_header {
 	uint32_t offset;
 	uint32_t architecture;	/* Version 2 */
 	uint32_t pad[1];
-} __attribute__ ((packed));
+} __PACKED;
 
 #define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
 #define CBFS_ARCHITECTURE_X86      0x00000001
@@ -67,7 +73,7 @@ struct cbfs_file {
 	uint32_t type;
 	uint32_t checksum;
 	uint32_t offset;
-} __attribute__ ((packed));
+} __PACKED;
 
 struct cbfs_stage {
 	uint32_t compression;
@@ -75,7 +81,7 @@ struct cbfs_stage {
 	uint64_t load;
 	uint32_t len;
 	uint32_t memlen;
-} __attribute__ ((packed));
+} __PACKED;
 
 #define PAYLOAD_SEGMENT_CODE	makemagic('C', 'O', 'D', 'E')
 #define PAYLOAD_SEGMENT_DATA	makemagic('D', 'A', 'T', 'A')
@@ -90,11 +96,11 @@ struct cbfs_payload_segment {
 	uint64_t load_addr;
 	uint32_t len;
 	uint32_t mem_len;
-} __attribute__ ((packed));
+} __PACKED;
 
 struct cbfs_payload {
 	struct cbfs_payload_segment segments;
-} __attribute__ ((packed));
+} __PACKED;
 
 /** These are standard component types for well known
     components (i.e - those that coreboot needs to consume.

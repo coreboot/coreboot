@@ -176,7 +176,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	// fidvid change will issue one LDTSTOP and the HT change will be effective too
 	if (needs_reset) {
 		printk(BIOS_INFO, "ht reset -\n");
-	      	soft_reset();
+		soft_reset();
 	}
 	allow_all_aps_stop(bsp_apicid);
 

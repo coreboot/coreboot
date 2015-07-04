@@ -1,0 +1,14 @@
+Taken from https://sourceware.org/ml/binutils/2014-10/msg00099.html
+Authored by Andreas Schwab <schwab@linux-m68k.org>
+diff --git a/gold/configure.tgt b/gold/configure.tgt
+index 9a75070..59a681e 100644
+--- binutils-2.25/gold/configure.tgt
++++ binutils-2.25/gold/configure.tgt
+@@ -146,6 +146,7 @@ arm*-*-*)
+  ;;
+ aarch64*-*)
+  targ_obj=aarch64
++ targ_extra_obj=aarch64-reloc-property
+  targ_machine=EM_AARCH64
+  targ_size=64
+  targ_extra_size=32

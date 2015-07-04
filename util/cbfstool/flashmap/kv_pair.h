@@ -108,7 +108,11 @@ extern struct kv_pair *kv_pair_add_bool(struct kv_pair *kv_list,
  */
 extern struct kv_pair *kv_pair_fmt(struct kv_pair *kv_list,
 				   const char *kv_key, const char *format, ...)
+#if defined(_WIN32) || (_WIN64)
+				   __attribute__((format(gnu_printf, 3, 4)));
+#else
 				   __attribute__((format(printf, 3, 4)));
+#endif
 
 /*
  * kv_pair_free  -  clean a key=value pair list

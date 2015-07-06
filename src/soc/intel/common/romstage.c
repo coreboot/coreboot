@@ -231,7 +231,6 @@ __attribute__((weak)) void mainboard_check_ec_image(
 __attribute__((weak)) void mainboard_pre_console_init(
 	struct romstage_params *params)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
 /* Board initialization before and after RAM is enabled */

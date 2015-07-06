@@ -53,3 +53,23 @@ void udelay(u32 us)
 	} while ((tsc.hi < tsc1.hi)
 		 || ((tsc.hi == tsc1.hi) && (tsc.lo < tsc1.lo)));
 }
+
+#if CONFIG_LAPIC_MONOTONIC_TIMER && !defined(__PRE_RAM__)
+#include <timer.h>
+
+void timer_monotonic_get(struct mono_time *mt)
+{
+	tsc_t tsc;
+	msr_t msr;
+	u32 fsb = 100, divisor;
+	u32 d;			/* ticks per us */
+
+	msr = rdmsr(0xce);
+	divisor = (msr.lo >> 8) & 0xff;
+	d = fsb * divisor;	/* On Core/Core2 this is divided by 4 */
+
+	tsc = rdtsc();
+
+	mt->microseconds = (long)((((uint64_t)tsc.hi << 32) | tsc.lo) / d);
+}
+#endif

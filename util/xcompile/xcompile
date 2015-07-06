@@ -72,7 +72,7 @@ testcc() {
 	local tmp_o="$TMPFILE.o"
 	rm -f "$tmp_c" "$tmp_o"
 	echo "void _start(void) {}" >"$tmp_c"
-	"$1" -nostdlib -Werror $2 "$tmp_c" -o "$tmp_o" >/dev/null 2>&1
+	$1 -nostdlib -Werror $2 -c "$tmp_c" -o "$tmp_o" >/dev/null 2>&1
 }
 
 testas() {

@@ -34,8 +34,13 @@ ifeq ($(INNER_SCANBUILD),y)
 CC_real:=$(CC)
 endif
 
-$(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile > .xcompile)))
-include .xcompile
+# in addition to the dependency below, create the file if it doesn't exist
+# to silence stupid warnings about a file that would be generated anyway.
+$(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
+
+.xcompile: util/xcompile/xcompile
+	$< $(XGCCPATH) > $@.tmp
+	\mv -f $@.tmp $@ 2> /dev/null
 
 ifeq ($(INNER_SCANBUILD),y)
 CC:=$(CC_real)
@@ -95,6 +100,8 @@ all: real-all
 include $(srck)/Makefile
 
 include $(HAVE_DOTCONFIG)
+
+include .xcompile
 
 ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCHDIR-$(CONFIG_LP_ARCH_ARM64)   := arm64

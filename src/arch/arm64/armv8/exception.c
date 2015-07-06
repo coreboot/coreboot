@@ -68,6 +68,7 @@ static void print_regs(struct exc_state *exc_state)
 	printk(BIOS_DEBUG, "ESR = 0x%016llx\n", elx_esr);
 	printk(BIOS_DEBUG, "SPSR = 0x%08llx\n", elx->spsr);
 	printk(BIOS_DEBUG, "FAR = 0x%016llx\n", elx_far);
+	printk(BIOS_DEBUG, "SP = 0x%016llx\n", regs->sp);
 	for (i = X0_INDEX; i < XMAX_INDEX; i++)
 		printk(BIOS_DEBUG, "X%02d = 0x%016llx\n", i, regs->x[i]);
 }

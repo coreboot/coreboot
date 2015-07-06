@@ -57,7 +57,7 @@ subdirs-$(CONFIG_LP_LZMA) += liblzma
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj) -include include/kconfig.h
 
-CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc -ggdb3
+CFLAGS +=  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc -ggdb3
 CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer
 CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes

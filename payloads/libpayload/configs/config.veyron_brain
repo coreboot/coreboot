@@ -1,7 +1,6 @@
 #
-# Automatically generated make config: don't edit
-# libpayload version: 0.2.0
-# Wed Oct 15 20:54:55 2014
+# Automatically generated file; DO NOT EDIT.
+# Libpayload Configuration
 #
 
 #
@@ -9,8 +8,9 @@
 #
 CONFIG_LP_GPL=y
 # CONFIG_LP_EXPERIMENTAL is not set
-# CONFIG_LP_OBSOLETE is not set
 # CONFIG_LP_DEVELOPER is not set
+CONFIG_LP_COMPILER_GCC=y
+# CONFIG_LP_COMPILER_LLVM_CLANG is not set
 # CONFIG_LP_REMOTEGDB is not set
 CONFIG_LP_CHROMEOS=y
 
@@ -59,7 +59,9 @@ CONFIG_LP_COREBOOT_VIDEO_CONSOLE=y
 # CONFIG_LP_TIMER_IPQ806X is not set
 CONFIG_LP_TIMER_RK=y
 # CONFIG_LP_TIMER_BG4CD is not set
+# CONFIG_LP_TIMER_CYGNUS is not set
 # CONFIG_LP_TIMER_IMG_PISTACHIO is not set
+# CONFIG_LP_TIMER_MTK is not set
 CONFIG_LP_TIMER_RK_ADDRESS=0xff810020
 CONFIG_LP_USB=y
 # CONFIG_LP_USB_OHCI is not set
@@ -72,6 +74,7 @@ CONFIG_LP_USB_HUB=y
 CONFIG_LP_USB_MSC=y
 CONFIG_LP_USB_GEN_HUB=y
 # CONFIG_LP_USB_PCI is not set
+# CONFIG_LP_UDC is not set
 # CONFIG_LP_BIG_ENDIAN is not set
 CONFIG_LP_LITTLE_ENDIAN=y
 # CONFIG_LP_IO_ADDRESS_SPACE is not set

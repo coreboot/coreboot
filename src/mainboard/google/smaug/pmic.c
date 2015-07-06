@@ -84,29 +84,34 @@ void pmic_init(unsigned bus)
 	/* Restore PMIC POR defaults, in case kernel changed 'em */
 	pmic_slam_defaults(bus);
 
-	/* Setup/Enable GPIO5 - VDD_CPU_REG_EN */
-	pmic_write_reg_77620(bus, MAX77620_GPIO5_REG, 0x09, 1);
+	/* MAX77620: Set SD0 to 1.0V - VDD_CORE */
+	pmic_write_reg_77620(bus, MAX77620_SD0_REG, 0x20, 1);
+	pmic_write_reg_77620(bus, MAX77620_VDVSSD0_REG, 0x20, 1);
 
-	/* Setup/Enable GPIO1 - VDD_HDMI_5V0_BST_EN -- ??? */
-	pmic_write_reg_77620(bus, MAX77620_GPIO1_REG, 0x09, 1);
+	/* MAX77620: GPIO 0,1,2,5,6,7 = GPIO, 3,4 = alt mode */
+	pmic_write_reg_77620(bus, MAX77620_AME_GPIO, 0x18, 1);
 
-	/* GPIO 0,1,5,6,7 = GPIO, 2,3,4 = alt mode */
-	pmic_write_reg_77620(bus, MAX77620_AME_GPIO, 0x1c, 1);
-
-	/* Disable SD1 Remote Sense, Set SD1 for LPDDR4 to 1.125v? */
+	/* MAX77620: Disable SD1 Remote Sense, Set SD1 for LPDDR4 to 1.125V */
 	pmic_write_reg_77620(bus, MAX77620_CNFG2SD_REG, 0x04, 1);
-
 	pmic_write_reg_77620(bus, MAX77620_SD1_REG, 0x2a, 1);
 
-	/* Max77621 VREG for CPU needs to be set to 0.85V as per SysEng */
+	/* MAX77621: Set VOUT_REG to 1.0V - CPU VREG */
+	pmic_write_reg_77621(bus, MAX77621_VOUT_REG, 0xBF, 1);
 
-	/* Max77621 CPU VREG, register 0, 0.85V = 0x27(0.60625 + (39*6.25mV)) */
-	pmic_write_reg_77621(bus, MAX77621_VOUT_REG, 0x27, 1);
-	pmic_write_reg_77621(bus, MAX77621_VOUT_REG, 0xa7, 1);
+	/* MAX77621: Set VOUT_DVC_REG to 1.0V - CPU VREG DVC */
+	pmic_write_reg_77621(bus, MAX77621_VOUT_DVC_REG, 0xBF, 1);
 
-	/* Max77621 CPU VREG DVC, register 1, 0.85V = 0x27 */
-	pmic_write_reg_77621(bus, MAX77621_VOUT_DVC_REG, 0x27, 1);
-	pmic_write_reg_77621(bus, MAX77621_VOUT_DVC_REG, 0xa7, 1);
+	/* MAX77621: Set CONTROL1 to 0x38 */
+	pmic_write_reg_77621(bus, MAX77621_CONTROL1_REG, 0x38, 1);
+
+	/* MAX77621: Set CONTROL2 to 0xD2 */
+	pmic_write_reg_77621(bus, MAX77621_CONTROL2_REG, 0xD2, 1);
+
+	/* MAX77620: Setup/Enable GPIO5 - EN_VDD_CPU */
+	pmic_write_reg_77620(bus, MAX77620_GPIO5_REG, 0x09, 1);
+
+	/* Required delay of 2msec */
+	udelay(2000);
 
 	printk(BIOS_DEBUG, "PMIC init done\n");
 }

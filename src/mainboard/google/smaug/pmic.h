@@ -25,6 +25,7 @@
 #define MAX77620_SD1_REG		0x17
 #define MAX77620_SD2_REG		0x18
 #define MAX77620_SD3_REG		0x19
+#define MAX77620_VDVSSD0_REG		0x1B
 #define MAX77620_CNFG2SD_REG		0x22
 
 #define MAX77620_CNFG1_L0_REG		0x23
@@ -71,6 +72,8 @@
 
 #define MAX77621_VOUT_REG		0x00
 #define MAX77621_VOUT_DVC_REG		0x01
+#define MAX77621_CONTROL1_REG		0x02
+#define MAX77621_CONTROL2_REG		0x03
 
 void pmic_init(unsigned bus);
 void pmic_write_reg_77620(unsigned bus, uint8_t reg, uint8_t val,

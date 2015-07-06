@@ -51,6 +51,14 @@ void smscsuperio_enable_serial(pnp_devfn_t dev, u16 iobase)
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
+	switch (iobase) {
+	case 0x03f8:
+		pnp_set_irq(dev, PNP_IDX_IRQ0, 4);
+		break;
+	case 0x02f8:
+		pnp_set_irq(dev, PNP_IDX_IRQ0, 3);
+		break;
+	}
 	pnp_set_enable(dev, 1);
 	pnp_exit_conf_state(dev);
 }

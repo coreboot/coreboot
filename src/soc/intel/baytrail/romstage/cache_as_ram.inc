@@ -82,7 +82,7 @@ wait_for_sipi:
 
 	/* Zero out all fixed range and variable range MTRRs. */
 	movl	$fixed_mtrr_table, %esi
-	movl	$((fixed_mtrr_table_end - fixed_mtrr_table) / 2), %edi
+	movl	$((fixed_mtrr_table_end - fixed_mtrr_table) >> 1), %edi
 	xorl	%eax, %eax
 	xorl	%edx, %edx
 	1:
@@ -152,7 +152,7 @@ wait_for_sipi:
 	/* Clear the cache memory region. This will also fill up the cache */
 	movl	$CACHE_AS_RAM_BASE, %esi
 	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
+	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
 	xorl	%eax, %eax
 	rep	stosl
 

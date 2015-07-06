@@ -36,7 +36,7 @@ cache_as_ram:
        /* Clear the cache memory region. This will also fill up the cache */
 	movl	$CACHE_AS_RAM_BASE, %esi
 	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
+	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
 	// movl	$0x23322332, %eax
 	xorl	%eax, %eax
 	rep	stosl

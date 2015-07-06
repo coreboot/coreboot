@@ -166,7 +166,7 @@ done_cache_as_ram_main:
 	/* We now run over the stack-in-cache, copying it back to itself to invalidate the cache */
 
 	push   %edi
-	mov    $(CONFIG_DCACHE_RAM_SIZE/4),%ecx
+	mov    $(CONFIG_DCACHE_RAM_SIZE >> 2),%ecx
 	push   %esi
 	mov    $(CONFIG_DCACHE_RAM_BASE),%edi
 	mov    %edi,%esi

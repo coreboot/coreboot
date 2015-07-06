@@ -57,7 +57,7 @@ wait_for_sipi:
 	post_code(0x22)
 	/* Zero out all fixed range MTRRs. */
 	movl	$mtrr_table, %esi
-	movl	$((mtrr_table_end - mtrr_table) / 2), %edi
+	movl	$((mtrr_table_end - mtrr_table) >> 1), %edi
 	xorl	%eax, %eax
 	xorl	%edx, %edx
 clear_mtrrs:
@@ -121,7 +121,7 @@ clear_var_mtrrs:
        /* Clear the cache memory region. This will also fill up the cache */
 	movl	$CACHE_AS_RAM_BASE, %esi
 	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
+	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
 	// movl	$0x23322332, %eax
 	xorl	%eax, %eax
 	rep	stosl

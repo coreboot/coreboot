@@ -47,7 +47,7 @@ cache_as_ram:
 	 * For hyper-threaded CPUs these are shared.
 	 */
 	movl	$mtrr_table, %esi
-	movl	$((mtrr_table_end - mtrr_table) / 2), %edi
+	movl	$((mtrr_table_end - mtrr_table) >> 1), %edi
 	xorl	%eax, %eax
 	xorl	%edx, %edx
 clear_mtrrs:
@@ -296,7 +296,7 @@ no_msr_11e:
 	cld
 	xorl	%eax, %eax
 	movl	$CACHE_AS_RAM_BASE, %edi
-	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
+	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
 	rep	stosl
 
 	/* Enable Cache-as-RAM mode by disabling cache. */

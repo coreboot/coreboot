@@ -247,9 +247,6 @@ $(objgenerated)/crt0.S: $$(crt0s)
 # Compiling crt0 with -g seems to trigger https://sourceware.org/bugzilla/show_bug.cgi?id=6428
 romstage-S-ccopts += -I. -g0
 
-# Some cache as ram code is doing divisions
-romstage-S-ccopts +=-Wa,--divide
-
 endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 
 ###############################################################################

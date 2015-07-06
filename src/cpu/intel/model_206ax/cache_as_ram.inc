@@ -55,7 +55,7 @@ wait_for_sipi:
 	post_code(0x21)
 	/* Zero out all fixed range and variable range MTRRs. */
 	movl	$mtrr_table, %esi
-	movl	$((mtrr_table_end - mtrr_table) / 2), %edi
+	movl	$((mtrr_table_end - mtrr_table) >> 1), %edi
 	xorl	%eax, %eax
 	xorl	%edx, %edx
 clear_mtrrs:
@@ -111,7 +111,7 @@ clear_mtrrs:
        /* Clear the cache memory region. This will also fill up the cache */
 	movl	$CACHE_AS_RAM_BASE, %esi
 	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
+	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
 	// movl	$0x23322332, %eax
 	xorl	%eax, %eax
 	rep	stosl
@@ -298,7 +298,7 @@ before_romstage:
 	cld
 	movl	$CONFIG_RAMBASE, %esi
 	movl	CBMEM_RESUME_BACKUP, %edi
-	movl	$HIGH_MEMORY_SAVE / 4, %ecx
+	movl	$HIGH_MEMORY_SAVE >> 2, %ecx
 	rep	movsl
 
 __acpi_resume_backup_done:

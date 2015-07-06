@@ -143,10 +143,6 @@ detect_special_flags() {
 
 	case "$architecture" in
 	x86)
-		testcc "$GCC"      "$CFLAGS_GCC -Wa,--divide" &&
-			CFLAGS_GCC="$CFLAGS_GCC -Wa,--divide"
-		testcc "$CLANG"      "$CFLAGS_CLANG -Wa,--divide" &&
-			CFLAGS_CLANG="$CFLAGS_CLANG -Wa,--divide"
 		# Always build for i686 -- no sse/mmx instructions since SMM
 		# modules are compiled using these flags. Note that this
 		# doesn't prevent a project using xcompile to explicitly
@@ -154,10 +150,6 @@ detect_special_flags() {
 		CFLAGS_GCC="$CFLAGS_GCC  -march=i686"
 		;;
 	x64)
-		testcc "$GCC"      "$CFLAGS_GCC -Wa,--divide" &&
-			CFLAGS_GCC="$CFLAGS_GCC -Wa,--divide"
-		testcc "$CLANG"      "$CFLAGS_CLANG -Wa,--divide" &&
-			CFLAGS_CLANG="$CFLAGS_CLANG -Wa,--divide"
 		;;
 	mipsel)
 		testcc "$GCC" "$CFLAGS_GCC -mno-abicalls -fno-pic" && \

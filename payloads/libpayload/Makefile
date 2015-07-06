@@ -110,12 +110,12 @@ ARCHDIR-$(CONFIG_LP_ARCH_X86)     := x86
 
 ARCH-y := $(ARCHDIR-y)
 
-# If architecture folder name is different from GCC binutils architecture name,
+# If architecture folder name is different from xcompile architecture name,
 # override here.
 ARCH-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCH-$(CONFIG_LP_ARCH_ARM64)   := arm64
-ARCH-$(CONFIG_LP_ARCH_X86)     := i386
-ARCH-$(CONFIG_LP_ARCH_MIPS)    := mipsel
+ARCH-$(CONFIG_LP_ARCH_X86)     := x86_32
+ARCH-$(CONFIG_LP_ARCH_MIPS)    := mips
 
 CC := $(CC_$(ARCH-y))
 AS := $(AS_$(ARCH-y))

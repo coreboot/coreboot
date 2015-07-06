@@ -480,6 +480,13 @@ build_LLVM() {
 
 	cp -a ../$CFE_DIR/tools/scan-build/* $DESTDIR$TARGETDIR/bin
 	cp -a ../$CFE_DIR/tools/scan-view/* $DESTDIR$TARGETDIR/bin
+
+	# create symlinks to work around broken --print-librt-file-name
+	# when used with -target.
+	cd $DESTDIR$TARGETDIR/lib/clang/${CLANG_VERSION}/lib
+	for i in */libclang_rt.builtins*.a; do
+		ln -s $i .
+	done
 }
 
 printf "${blue}Welcome to the ${red}coreboot${blue} cross toolchain builder v$CROSSGCC_VERSION ($CROSSGCC_DATE)${NC}\n\n"

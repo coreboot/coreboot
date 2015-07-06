@@ -129,9 +129,6 @@ AR := $(AR_$(ARCH-y))
 
 CFLAGS += $(CFLAGS_$(ARCH-y))
 
-LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && \
-		      $(CC) -print-libgcc-file-name)
-
 # Three cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
 # 2. when make config (in any flavour) is run
@@ -283,7 +280,6 @@ printall:
 	@echo alldirs:=$(alldirs)
 	@echo allsrcs=$(allsrcs)
 	@echo DEPENDENCIES=$(DEPENDENCIES)
-	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME)
 	@$(foreach class,$(special-classes),echo $(class):='$($(class))'; )
 
 endif

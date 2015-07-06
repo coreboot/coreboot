@@ -182,7 +182,7 @@ report_arch_toolchain() {
 # elf${TWIDTH}-${TBFDARCH} toolchain (${GCC})
 ARCH_SUPPORTED+=${TARCH}
 SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
-ifeq (\$(CONFIG_COMPILER_GCC),y)
+ifeq (\$(CONFIG_LP_COMPILER_GCC),y)
 CC_${TARCH}:=${GCC}
 CFLAGS_${TARCH}:=${CFLAGS_GCC}
 COMPILER_RT_${TARCH}:=${CC_RT_GCC}

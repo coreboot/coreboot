@@ -55,6 +55,24 @@ config DEVELOPER
 	  Prompt for developer options. These options are only interesting for
 	  libpayload developers.
 
+choice
+	prompt "Compiler to use"
+	default COMPILER_GCC
+	help
+	  This option allows you to select the compiler.
+
+config COMPILER_GCC
+	bool "GCC"
+	help
+	  Use the GNU Compiler Collection (GCC).
+
+config COMPILER_LLVM_CLANG
+	bool "LLVM/clang"
+	help
+	  Use LLVM/clang.
+
+endchoice
+
 config REMOTEGDB
 	bool "Remote GDB stub"
 	default n

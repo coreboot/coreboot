@@ -62,17 +62,17 @@ ARCHDIR-arm64	:= arm64
 ARCHDIR-riscv	:= riscv
 ARCHDIR-mips	:= mips
 
-CFLAGS_arm      := -ffunction-sections -fdata-sections
+CFLAGS_arm      += -ffunction-sections -fdata-sections
 
-CFLAGS_arm64    := -ffunction-sections -fdata-sections
+CFLAGS_arm64    += -ffunction-sections -fdata-sections
 
-CFLAGS_mips	:= -mips32r2 -G 0  -ffunction-sections -fdata-sections
+CFLAGS_mips	+= -mips32r2 -G 0  -ffunction-sections -fdata-sections
 CFLAGS_mips	+= -mno-abicalls -fno-pic
 
 CFLAGS_x86_32 += -ffunction-sections -fdata-sections
-CFLAGS_riscv	:= -ffunction-sections -fdata-sections
+CFLAGS_riscv	+= -ffunction-sections -fdata-sections
 
-CFLAGS_x86_64   := -mcmodel=large
+CFLAGS_x86_64   += -mcmodel=large
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\

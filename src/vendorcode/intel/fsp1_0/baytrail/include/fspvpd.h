@@ -1,6 +1,6 @@
 /**
 
-Copyright (C) 2013-2014 Intel Corporation
+Copyright (C) 2013-2015 Intel Corporation
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ typedef struct _UPD_DATA_REGION {
   UINT8                       PcdEnableHsuart0;              /* Offset 0x0029 */
   UINT8                       PcdEnableHsuart1;              /* Offset 0x002A */
   UINT8                       PcdEnableSpi;                  /* Offset 0x002B */
-  UINT8                       PcdEnableLan;                  /* Offset 0x002C */
+  UINT8                       ReservedUpdSpace1;             /* Offset 0x002C */
   UINT8                       PcdEnableSata;                 /* Offset 0x002D */
   UINT8                       PcdSataMode;                   /* Offset 0x002E */
   UINT8                       PcdEnableAzalia;               /* Offset 0x002F */

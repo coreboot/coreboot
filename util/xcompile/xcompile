@@ -208,7 +208,7 @@ SUPPORTED_ARCHITECTURES="arm arm64 mipsel riscv x64 x86"
 arch_config_arm() {
 	TARCH="arm"
 	TBFDARCHS="littlearm"
-	TCLIST="armv7a armv7-a"
+	TCLIST="armv7-a armv7a"
 	TWIDTH="32"
 	TSUPP="arm armv4 armv7 armv7_m"
 	TABI="eabi"

@@ -97,7 +97,12 @@ typedef struct _UPD_DATA_REGION {
   UINT8                       PcdSccEnablePciMode;           /* Offset 0x004D */
   UINT8                       IgdRenderStandby;              /* Offset 0x004E */
   UINT8                       TxeUmaEnable;                  /* Offset 0x004F */
-  UINT8                       UnusedUpdSpace1[160];          /* Offset 0x0050 */
+  UINT8                       PcdOsSelection;                /* Offset 0x0050 */
+  UINT8                       PcdEMMC45DDR50Enabled;         /* Offset 0x0051 */
+  UINT8                       PcdEMMC45HS200Enabled;         /* Offset 0x0052 */
+  UINT8                       PcdEMMC45RetuneTimerValue;     /* Offset 0x0053 */
+  UINT8                       PcdEnableIgd;                  /* Offset 0x0054 */
+  UINT8                       UnusedUpdSpace1[155];          /* Offset 0x0055 */
   MEMORY_DOWN_DATA            PcdMemoryParameters;           /* Offset 0x00F0 */
   UINT16                      PcdRegionTerminator;           /* Offset 0x0100 */
 } UPD_DATA_REGION;

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
- * Copyright (C) 2014 Intel Corporation
+ * Copyright (C) 2014-2015 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,6 +112,11 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	UPD_DEFAULT_CHECK(PcdSccEnablePciMode);
 	UPD_DEFAULT_CHECK(IgdRenderStandby);
 	UPD_DEFAULT_CHECK(TxeUmaEnable);
+	UPD_DEFAULT_CHECK(PcdOsSelection);
+	UPD_DEFAULT_CHECK(PcdEMMC45DDR50Enabled);
+	UPD_DEFAULT_CHECK(PcdEMMC45HS200Enabled);
+	UPD_DEFAULT_CHECK(PcdEMMC45RetuneTimerValue);
+	UPD_DEFAULT_CHECK(PcdEnableIgd);
 
 	if ((config->PcdeMMCBootMode != EMMC_USE_DEFAULT) ||
 			(config->PcdeMMCBootMode != EMMC_FOLLOWS_DEVICETREE))

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
- * Copyright (C) 2014 Intel Corporation
+ * Copyright (C) 2014-2015 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,6 +188,38 @@ struct soc_intel_fsp_baytrail_config {
 	#define  TXE_UMA_DEFAULT	UPD_DEFAULT
 	#define  TXE_UMA_DISABLE	UPD_DISABLE
 	#define  TXE_UMA_ENABLE		UPD_ENABLE
+
+	/*
+	 * PcdOsSelection
+	 * Selection 0x1 , "Android"
+	 * Selection 0x4 , "Linux OS"
+	 */
+	uint8_t  PcdOsSelection;
+	#define  OS_SELECTION_DEFAULT	UPD_DEFAULT
+	#define  OS_SELECTION_ANDROID	INCREMENT_FOR_DEFAULT(1)
+	#define  OS_SELECTION_LINUX	INCREMENT_FOR_DEFAULT(4)
+
+	/* PcdEMMC45DDR50Enabled */
+	uint8_t  PcdEMMC45DDR50Enabled;
+	#define  EMMC45_DDR50_DEFAULT	UPD_DEFAULT
+	#define  EMMC45_DDR50_DISABLE	UPD_DISABLE
+	#define  EMMC45_DDR50_ENABLE	UPD_ENABLE
+
+	/* PcdEMMC45HS200Enabled */
+	uint8_t  PcdEMMC45HS200Enabled;
+	#define  EMMC45_HS200_DEFAULT	UPD_DEFAULT
+	#define  EMMC45_HS200_DISABLE	UPD_DISABLE
+	#define  EMMC45_HS200_ENABLE	UPD_ENABLE
+
+	/* PcdEMMC45RetuneTimerValue */
+	uint8_t  PcdEMMC45RetuneTimerValue;
+	#define  EMMC45_RETURN_TIMER_DEFAULT UPD_DEFAULT
+
+	/* PcdEnableIgd */
+	uint8_t  PcdEnableIgd;
+	#define  ENABLE_IGD_DEFAULT	UPD_DEFAULT
+	#define  ENABLE_IGD_DISABLE	UPD_DISABLE
+	#define  ENABLE_IGD_ENABLE	UPD_ENABLE
 
 	/* Memory down data */
 	uint8_t  EnableMemoryDown;

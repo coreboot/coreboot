@@ -78,10 +78,10 @@ static inline void debug_dead_loop(void)
 //
 // Contents of the PEI_GRAPHICS_INFO_HOB
 //
-typedef struct  {
-	EFI_PHYSICAL_ADDRESS FrameBufferBase;
-	UINT64 FrameBufferSize;
-	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION GraphicsMode;
+typedef struct {
+	EFI_PHYSICAL_ADDRESS			FrameBufferBase;
+	UINT32					FrameBufferSize;
+	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION	GraphicsMode;
 } EFI_PEI_GRAPHICS_INFO_HOB;
 
 //

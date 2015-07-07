@@ -19,10 +19,12 @@
 
 #include <console/console.h>
 #include <program_loading.h>
+#include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void main(void)
 {
 	console_init();
+	timestamp_init(timestamp_get());
 	run_romstage();
 }

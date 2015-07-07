@@ -553,7 +553,7 @@ unsigned long smbios_write_tables(unsigned long current)
 	update_max(len, max_struct_size, smbios_write_type4(&current, handle++));
 	update_max(len, max_struct_size, smbios_write_type11(&current, &handle));
 #if CONFIG_ELOG
-	update_max(len, max_struct_size, smbios_write_type15(&current, &handle));
+	update_max(len, max_struct_size, elog_smbios_write_type15(&current, handle++));
 #endif
 	update_max(len, max_struct_size, smbios_write_type17(&current, &handle));
 	update_max(len, max_struct_size, smbios_write_type32(&current, handle++));

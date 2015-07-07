@@ -105,6 +105,6 @@
 
 /* MTRRcap_MSR bits */
 #define SMRR_SUPPORTED (1<<11)
-#define EMRR_SUPPORTED (1<<12)
+#define PRMRR_SUPPORTED (1<<12)
 
 #endif

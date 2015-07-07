@@ -37,4 +37,7 @@ const u32 cim_verb_data[] = {
 	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
 	AZALIA_PIN_CFG(0x3, 0x07, 0x18560030)
 };
+
+const u32 pc_beep_verbs[0] = {};
+
 AZALIA_ARRAY_SIZES;

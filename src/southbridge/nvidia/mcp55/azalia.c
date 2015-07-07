@@ -20,6 +20,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <device/azalia_device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
@@ -27,6 +28,7 @@
 #include <delay.h>
 #include "mcp55.h"
 
+#if IS_ENABLED(CONFIG_MCP55_USE_AZA)
 #define HDA_ICII_REG 0x68
 #define HDA_ICII_BUSY (1 << 0)
 #define HDA_ICII_VALID (1 << 1)
@@ -86,10 +88,8 @@ no_codec:
 	return 0;
 }
 
-u32 *cim_verb_data = NULL;
-u32 cim_verb_data_size = 0;
 
-static u32 find_verb(struct device *dev, u32 viddid, u32 **verb)
+static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
 {
 	int idx = 0;
 
@@ -155,7 +155,7 @@ static int wait_for_valid(u8 *base)
 static void codec_init(struct device *dev, u8 *base, int addr)
 {
 	u32 reg32, verb_size;
-	u32 *verb;
+	const u32 *verb;
 	int i;
 
 	printk(BIOS_DEBUG, "Azalia: Initializing codec #%d\n", addr);
@@ -203,9 +203,11 @@ static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)
 			codec_init(dev, base, i);
 	}
 }
+#endif
 
 static void azalia_init(struct device *dev)
 {
+#if IS_ENABLED(CONFIG_MCP55_USE_AZA)
 	u8 *base;
 	u32 codec_mask, reg32;
 	struct resource *res;
@@ -253,6 +255,7 @@ static void azalia_init(struct device *dev)
 		printk(BIOS_DEBUG, "Azalia: codec_mask = %02x\n", codec_mask);
 		codecs_init(dev, base, codec_mask);
 	}
+#endif
 }
 
 static void azalia_set_subsystem(device_t dev, unsigned vendor, unsigned device)

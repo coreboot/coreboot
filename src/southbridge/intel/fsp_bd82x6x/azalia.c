@@ -21,6 +21,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <device/azalia_device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
@@ -90,11 +91,6 @@ no_codec:
 	printk(BIOS_DEBUG, "Azalia: No codec!\n");
 	return 0;
 }
-
-const u32 * cim_verb_data = NULL;
-u32 cim_verb_data_size = 0;
-const u32 * pc_beep_verbs = NULL;
-u32 pc_beep_verbs_size = 0;
 
 static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
 {

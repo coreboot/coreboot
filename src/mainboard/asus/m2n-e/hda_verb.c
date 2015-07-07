@@ -78,4 +78,6 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0x0, 0x25, 0x01012014),
 };
 
+const u32 pc_beep_verbs[0] = {};
+
 AZALIA_ARRAY_SIZES;

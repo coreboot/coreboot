@@ -39,6 +39,8 @@ smm-$(CONFIG_SPI_FLASH_SMM) += ../common/spi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c
 
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+
 romstage-y += early_usb.c early_smbus.c early_me.c me_status.c gpio.c early_init.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c

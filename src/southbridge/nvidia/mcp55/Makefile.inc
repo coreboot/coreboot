@@ -20,6 +20,10 @@ ramstage-y += reset.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 
+ifeq ($(CONFIG_MCP55_USE_AZA),y)
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+endif
+
 chipset_bootblock_inc += $(src)/southbridge/nvidia/mcp55/romstrap.inc
 bootblock-y += romstrap.ld
 

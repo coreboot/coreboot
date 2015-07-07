@@ -21,6 +21,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <device/azalia_device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
@@ -30,11 +31,6 @@
 #include <soc/pch.h>
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
-
-const u32 * cim_verb_data = NULL;
-u32 cim_verb_data_size = 0;
-const u32 * pc_beep_verbs = NULL;
-u32 pc_beep_verbs_size = 0;
 
 static void codecs_init(u8 *base, u32 codec_mask)
 {
@@ -48,7 +44,7 @@ static void codecs_init(u8 *base, u32 codec_mask)
 				       cim_verb_data);
 	}
 
-	if (pc_beep_verbs_size && pc_beep_verbs)
+	if (pc_beep_verbs_size)
 		hda_codec_write(base, pc_beep_verbs_size, pc_beep_verbs);
 }
 

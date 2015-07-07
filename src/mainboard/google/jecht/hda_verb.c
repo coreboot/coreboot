@@ -17,7 +17,9 @@
  * Foundation, Inc.
  */
 
-static const u32 mainboard_cim_verb_data[] = {
+#include <device/azalia_device.h>
+
+const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0283,	// Codec Vendor / Device ID: Realtek ALC283
 	0x10ec0283,	// Subsystem ID
@@ -99,7 +101,7 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x0204081b,
 };
 
-static const u32 mainboard_pc_beep_verbs[] = {
+const u32 pc_beep_verbs[] = {
 	0x00170500,	/* power up everything (codec, dac, adc, mixers)  */
 	0x01470740,	/* enable speaker out */
 	0x01470c02,	/* set speaker EAPD pin */
@@ -108,5 +110,4 @@ static const u32 mainboard_pc_beep_verbs[] = {
 	0x00b37410,	/* unmute mixer nid 0xb beep input and set volume */
 };
 
-static const u32 mainboard_pc_beep_verbs_size =
-	sizeof(mainboard_pc_beep_verbs) / sizeof(mainboard_pc_beep_verbs[0]);
+AZALIA_ARRAY_SIZES;

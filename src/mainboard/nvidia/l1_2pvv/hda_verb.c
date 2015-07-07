@@ -19,7 +19,9 @@
  * Foundation, Inc.
  */
 
-static u32 mainboard_cim_verb_data[] = {
+#include <device/azalia_device.h>
+
+const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0880,	// Codec Vendor / Device ID: Realtek ALC880
 	0x00000000,	// Subsystem ID
@@ -64,4 +66,7 @@ static u32 mainboard_cim_verb_data[] = {
 	/* NID 0x1f, S/PDIF-IN */
 	AZALIA_PIN_CFG(0x0, 0x1f, 0x01c59150),
 };
+
+const u32 pc_beep_verbs[0] = {};
+
 AZALIA_ARRAY_SIZES;

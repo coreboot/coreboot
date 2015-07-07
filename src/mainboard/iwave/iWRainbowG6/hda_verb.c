@@ -17,7 +17,9 @@
  * Foundation, Inc.
  */
 
-static u32 mainboard_cim_verb_data[] = {
+#include <device/azalia_device.h>
+
+const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x111d76d5,		// Codec Vendor / Device ID: IDT 92HD81
 	0x00000000,		// Subsystem ID
@@ -89,4 +91,7 @@ static u32 mainboard_cim_verb_data[] = {
 	/* BTL Gain */
 	0x017F417, /* Gain = 16.79dB */
 };
+
+const u32 pc_beep_verbs[0] = {};
+
 AZALIA_ARRAY_SIZES;

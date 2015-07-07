@@ -66,6 +66,8 @@ ramstage-y += ehci.c
 ramstage-y += xhci.c
 smm-y      += xhci.c
 
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+
 ifeq ($(CONFIG_USBDEBUG),y)
 ramstage-y += usbdebug.c
 romstage-y += usbdebug.c

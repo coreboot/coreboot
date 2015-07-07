@@ -36,6 +36,7 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
 # We don't ship that, but booting without it is bound to fail
 cbfs-files-$(CONFIG_HAVE_CMC) += cmc.bin

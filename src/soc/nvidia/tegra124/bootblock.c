@@ -19,6 +19,7 @@
 
 #include <assert.h>
 #include <arch/exception.h>
+#include <arch/stages.h>
 #include <bootblock_common.h>
 #include <cbfs.h>
 #include <console/console.h>

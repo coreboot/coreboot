@@ -19,6 +19,7 @@
 
 #include <arch/exception.h>
 #include <arch/hlt.h>
+#include <arch/stages.h>
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <program_loading.h>

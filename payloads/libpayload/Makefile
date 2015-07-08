@@ -34,20 +34,6 @@ ifeq ($(INNER_SCANBUILD),y)
 CC_real:=$(CC)
 endif
 
-# in addition to the dependency below, create the file if it doesn't exist
-# to silence stupid warnings about a file that would be generated anyway.
-$(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
-
-.xcompile: util/xcompile/xcompile
-	$< $(XGCCPATH) > $@.tmp
-	\mv -f $@.tmp $@ 2> /dev/null
-
-ifeq ($(INNER_SCANBUILD),y)
-CC:=$(CC_real)
-HOSTCC:=$(CC_real) --hostcc
-HOSTCXX:=$(CC_real) --hostcxx
-endif
-
 export top := $(CURDIR)
 export src := src
 export srck := $(abspath $(top)/../../util/kconfig)
@@ -94,6 +80,20 @@ DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
 
 all: real-all
+
+# in addition to the dependency below, create the file if it doesn't exist
+# to silence stupid warnings about a file that would be generated anyway.
+$(if $(wildcard .xcompile),,$(eval $(shell $(top)/../../util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
+
+.xcompile: $(top)/../../util/xcompile/xcompile
+	$< $(XGCCPATH) > $@.tmp
+	\mv -f $@.tmp $@ 2> /dev/null
+
+ifeq ($(INNER_SCANBUILD),y)
+CC:=$(CC_real)
+HOSTCC:=$(CC_real) --hostcc
+HOSTCXX:=$(CC_real) --hostcxx
+endif
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.

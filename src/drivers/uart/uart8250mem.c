@@ -34,6 +34,17 @@
 #define SINGLE_CHAR_TIMEOUT	(50 * 1000)
 #define FIFO_TIMEOUT		(16 * SINGLE_CHAR_TIMEOUT)
 
+#if IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32)
+static uint8_t uart8250_read(void *base, uint8_t reg)
+{
+	return read32(base + 4 * reg) & 0xff;
+}
+
+static void uart8250_write(void *base, uint8_t reg, uint8_t data)
+{
+	write32(base + 4 * reg, data);
+}
+#else
 static uint8_t uart8250_read(void *base, uint8_t reg)
 {
 	return read8(base + reg);
@@ -43,6 +54,7 @@ static void uart8250_write(void *base, uint8_t reg, uint8_t data)
 {
 	write8(base + reg, data);
 }
+#endif
 
 static int uart8250_mem_can_tx_byte(void *base)
 {

@@ -17,6 +17,11 @@ config DRIVERS_UART_8250MEM
 	bool
 	default n
 
+config DRIVERS_UART_8250MEM_32
+	bool
+	default n
+	depends on DRIVERS_UART_8250MEM
+
 config HAVE_UART_SPECIAL
 	bool
 	default n

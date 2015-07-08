@@ -270,6 +270,9 @@ void verstage_main(void)
 	if (IS_ENABLED(CONFIG_WIPEOUT_SUPPORTED) && get_wipeout_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_WIPEOUT_MODE;
 
+	if (IS_ENABLED(CONFIG_LID_SWITCH) && !get_lid_switch())
+		ctx.flags |= VB2_CONTEXT_NOFAIL_BOOT;
+
 	/* Do early init (set up secdata and NVRAM, load GBB) */
 	printk(BIOS_INFO, "Phase 1\n");
 	rv = vb2api_fw_phase1(&ctx);

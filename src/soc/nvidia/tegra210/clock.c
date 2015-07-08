@@ -146,7 +146,7 @@ struct {
 	int			khz;
 	struct pll_fields	plls[PLL_MAX_INDEX];
 } static osc_table[16] = {
-	[OSC_FREQ_12]{
+	[OSC_FREQ_12] = {
 		.khz = 12000,
 		.plls = {
 			PLLX(TEGRA_PLLX_KHZ / 12000, 1, 0, 0, 0),
@@ -155,7 +155,7 @@ struct {
 			PLLDP(90, 1, 2, 0, 0), /* 270 MHz */
 		},
 	},
-	[OSC_FREQ_13]{
+	[OSC_FREQ_13] = {
 		.khz = 13000,
 		.plls = {
 			PLLX(TEGRA_PLLX_KHZ / 13000, 1, 0, 0, 0),
@@ -164,7 +164,7 @@ struct {
 			PLLDP(83, 1, 3, 0, 0), /* 269.8 MHz */
 		},
 	},
-	[OSC_FREQ_16P8]{
+	[OSC_FREQ_16P8] = {
 		.khz = 16800,
 		.plls = {
 			PLLX(TEGRA_PLLX_KHZ / 16800, 1, 0, 0, 0),
@@ -173,7 +173,7 @@ struct {
 			PLLDP(64, 1, 2, 0, 0), /* 268.8 MHz */
 		},
 	},
-	[OSC_FREQ_19P2]{
+	[OSC_FREQ_19P2] = {
 		.khz = 19200,
 		.plls = {
 			PLLX(TEGRA_PLLX_KHZ / 19200, 1, 0, 0, 0),
@@ -182,7 +182,7 @@ struct {
 			PLLDP(56, 1, 2, 0, 0), /* 268.8 MHz */
 		},
 	},
-	[OSC_FREQ_26]{
+	[OSC_FREQ_26] = {
 		.khz = 26000,
 		.plls = {
 			PLLX(TEGRA_PLLX_KHZ / 26000, 1, 0, 0, 0),
@@ -191,7 +191,7 @@ struct {
 			PLLDP(83, 2, 2, 0, 0), /* 269.8 MHz */
 		},
 	},
-	[OSC_FREQ_38P4]{
+	[OSC_FREQ_38P4] = {
 		.khz = 38400,
 		.plls = {
 			PLLX(TEGRA_PLLX_KHZ / 38400, 1, 0, 0, 0),
@@ -200,7 +200,7 @@ struct {
 			PLLDP(56, 2, 2, 0, 0), /* 268.8 MHz */
 		},
 	},
-	[OSC_FREQ_48]{
+	[OSC_FREQ_48] = {
 		.khz = 48000,
 		.plls = {
 			PLLX(TEGRA_PLLX_KHZ / 48000, 1, 0, 0, 0),

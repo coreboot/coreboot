@@ -102,6 +102,19 @@ config TRUSTZONE_CARVEOUT_SIZE_MB
 	help
 	  Size of Trust Zone area in MiB to reserve in memory map.
 
+config TTB_SIZE_MB
+	hex "Size of TTB"
+	default 0x4
+	help
+	  Maximum size of Translation Table Buffer in MiB.
+
+config SEC_COMPONENT_SIZE_MB
+	hex "Size of resident EL3 components"
+	default 0x10
+	help
+	  Maximum size of resident EL3 components in MiB including BL31 and
+	  Secure OS.
+
 # Default to 700MHz. This value is based on nv bootloader setting.
 config PLLX_KHZ
 	int

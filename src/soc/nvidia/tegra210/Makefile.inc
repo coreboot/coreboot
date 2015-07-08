@@ -146,6 +146,28 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(BCT_BIN)
 	@printf "    CBOOTIMAGE $(subst $(obj)/,,$(@))\n"
 	$(CBOOTIMAGE) $(CBOOTIMAGE_OPTS) $(BCT_WRAPPER) $@
 
+# We need to ensure that TZ memory has enough space to hold TTB and resident EL3
+# components (including BL31 and Secure OS)
+ttb_size=$(shell printf "%d" $(CONFIG_TTB_SIZE_MB))
+sec_size=$(shell printf "%d" $(CONFIG_SEC_COMPONENT_SIZE_MB))
+req_tz_size=$(shell expr $(ttb_size) + $(sec_size))
+
+tz_size=$(shell printf "%d" $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB))
+
+ifeq ($(shell test $(tz_size) -lt $(req_tz_size) && echo 1), 1)
+     $(error "TRUSTZONE_CARVEOUT_SIZE_MB should be atleast as big as TTB_SIZE_MB + SEC_COMPONENT_SIZE_MB")
+endif
+
+# BL31 component is placed towards the end of 32-bit address space. This assumes
+# that TrustZone memory is placed at the end of 32-bit address space. Within the
+# TZ memory, we place TTB at the beginning and then remaining space can be used
+# up by BL31 and secure OS. Calculate TZDRAM_BASE i.e. base of BL31 component
+# by:
+#   0x1000 = end of 32-bit address space in MiB
+#   0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB) = start of TZ memory in MiB
+#   0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB) + $(CONFIG_TTB_SIZE_MB)
+#             = skip TTB buffer and get base address of BL31
+BL31_MAKEARGS += TZDRAM_BASE=$$(((0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB) + $(CONFIG_TTB_SIZE_MB)) << 20))
 BL31_MAKEARGS += PLAT=tegra TARGET_SOC=t210
 
 # MTC fw

@@ -77,7 +77,7 @@ void tegra210_mmu_init(void)
 	/* Place page tables at the base of the trust zone region. */
 	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
 	tz_base_mib *= MiB;
-	ttb_size_mib = TTB_SIZE * MiB;
+	ttb_size_mib = CONFIG_TTB_SIZE_MB * MiB;
 	mmu_init(map, (void *)tz_base_mib, ttb_size_mib);
 	mmu_enable();
 }

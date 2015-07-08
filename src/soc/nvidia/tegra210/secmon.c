@@ -43,7 +43,7 @@ void soc_get_secmon_base_size(uint64_t *base, size_t *size)
 
 	soc_get_secure_mem(&tz_base, &tz_size);
 
-	ttb_size = TTB_SIZE * MiB;
+	ttb_size = CONFIG_TTB_SIZE_MB * MiB;
 
 	*base = tz_base + ttb_size;
 	*size = tz_size - ttb_size;

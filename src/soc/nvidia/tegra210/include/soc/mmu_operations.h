@@ -22,7 +22,4 @@
 
 void tegra210_mmu_init(void);
 
-/* Default ttb size of 4MiB */
-#define TTB_SIZE 0x4
-
 #endif //__SOC_NVIDIA_TEGRA210_MMU_OPERATIONS_H__

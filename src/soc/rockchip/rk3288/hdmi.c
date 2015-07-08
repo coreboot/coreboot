@@ -238,7 +238,7 @@ static void hdmi_update_csc_coeffs(void)
 		for (j = 0; j < ARRAY_SIZE(csc_coeff_default[0]); j++) {
 			u32 coeff = csc_coeff_default[i][j];
 			write32(&hdmi_regs->csc_coef[i][j].msb, coeff >> 8);
-			write32(&hdmi_regs->csc_coef[i][j].lsb, coeff && 0xff);
+			write32(&hdmi_regs->csc_coef[i][j].lsb, coeff & 0xff);
 		}
 	}
 

@@ -20,7 +20,6 @@
 
 #include <device/device.h>
 #include <console/console.h>
-#include <cpu/x86/lapic.h>
 
 device_t add_cpu_device(struct bus *cpu_bus, unsigned apic_id, int enabled)
 {

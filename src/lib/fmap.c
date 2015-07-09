@@ -117,3 +117,46 @@ int fmap_locate_area(const char *name, struct region *ar)
 
 	return -1;
 }
+
+int fmap_find_region_name(const struct region * const ar,
+	char name[FMAP_STRLEN])
+{
+	struct region_device fmrd;
+	size_t offset;
+
+	if (find_fmap_directory(&fmrd))
+		return -1;
+
+	/* Start reading the areas just after fmap header. */
+	offset = sizeof(struct fmap);
+
+	while (1) {
+		struct fmap_area *area;
+
+		area = rdev_mmap(&fmrd, offset, sizeof(*area));
+
+		if (area == NULL)
+			return -1;
+
+		if ((ar->offset != area->offset) ||
+		    (ar->size != area->size)) {
+			rdev_munmap(&fmrd, area);
+			offset += sizeof(struct fmap_area);
+			continue;
+		}
+
+		printk(BIOS_DEBUG, "FMAP: area (%zx, %zx) found, named %s\n",
+			ar->offset, ar->size, area->name);
+
+		memcpy(name, area->name, FMAP_STRLEN);
+
+		rdev_munmap(&fmrd, area);
+
+		return 0;
+	}
+
+	printk(BIOS_DEBUG, "FMAP: area (%zx, %zx) not found\n",
+		ar->offset, ar->size);
+
+	return -1;
+}

@@ -21,6 +21,7 @@
 #define _FMAP_H_
 
 #include <region.h>
+#include <fmap_serialized.h>
 
 /* Locate the named area in the fmap and fill in a region device representing
  * that area. The region is a sub-region of the readonly boot media. Return
@@ -32,4 +33,8 @@ int fmap_locate_area_as_rdev(const char *name, struct region_device *area);
  * < 0 on error. */
 int fmap_locate_area(const char *name, struct region *r);
 
+/* Find fmap area name by offset and size.
+ * Return 0 on success, < 0 on error. */
+int fmap_find_region_name(const struct region * const ar,
+	char name[FMAP_STRLEN]);
 #endif

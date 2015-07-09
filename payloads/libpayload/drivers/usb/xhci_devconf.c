@@ -267,10 +267,11 @@ _free_ic_return:
 static int
 xhci_finish_hub_config(usbdev_t *const dev, inputctx_t *const ic)
 {
+	int type = dev->speed == SUPER_SPEED ? 0x2a : 0x29; /* similar enough */
 	hub_descriptor_t desc;
 
 	if (get_descriptor(dev, gen_bmRequestType(device_to_host, class_type,
-		dev_recp), 0x29, 0, &desc, sizeof(desc)) != sizeof(desc)) {
+		dev_recp), type, 0, &desc, sizeof(desc)) != sizeof(desc)) {
 		xhci_debug("Failed to fetch hub descriptor\n");
 		return COMMUNICATION_ERROR;
 	}
@@ -386,8 +387,9 @@ xhci_finish_device_config(usbdev_t *const dev)
 	ic->dev.slot->f1 = di->ctx.slot->f1;
 	ic->dev.slot->f2 = di->ctx.slot->f2;
 	ic->dev.slot->f3 = di->ctx.slot->f3;
+	/* f4 *must* be 0 in the Input Context... yeah, it's weird, I know. */
 
-	if (dev->descriptor->bDeviceClass == 0x09 && dev->speed < SUPER_SPEED) {
+	if (dev->descriptor->bDeviceClass == 0x09) {
 		ret = xhci_finish_hub_config(dev, ic);
 		if (ret)
 			goto _free_return;

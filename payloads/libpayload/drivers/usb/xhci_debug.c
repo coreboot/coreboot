@@ -80,8 +80,8 @@ xhci_dump_devctx(const devctx_t *const dc, const u32 ctx_mask)
 	int i;
 	if (ctx_mask & 1)
 		xhci_dump_slotctx(dc->slot);
-	for (i = 0; i < SC_GET(CTXENT, dc->slot); ++i) {
-		if (ctx_mask & (2 << i))
+	for (i = 1; i <= SC_GET(CTXENT, dc->slot); ++i) {
+		if (ctx_mask & (1 << i))
 			xhci_dump_epctx(dc->ep[i]);
 	}
 }

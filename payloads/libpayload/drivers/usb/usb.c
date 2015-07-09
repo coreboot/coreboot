@@ -556,17 +556,13 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 #endif
 		break;
 	case hub_device:
-		if (speed < SUPER_SPEED) {
-			usb_debug ("hub (2.0)\n");
+		usb_debug ("hub\n");
 #if IS_ENABLED(CONFIG_LP_USB_HUB)
-			dev->init = usb_hub_init;
-			return dev->address;
+		dev->init = usb_hub_init;
+		return dev->address;
 #else
-			usb_debug ("NOTICE: USB hub support not compiled in\n");
+		usb_debug ("NOTICE: USB hub support not compiled in\n");
 #endif
-		} else {
-			usb_debug ("hub (3.0) - not yet supported!\n");
-		}
 		break;
 	case cdc_device:
 		usb_debug("CDC\n");

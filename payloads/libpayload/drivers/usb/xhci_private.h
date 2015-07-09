@@ -55,6 +55,9 @@
 #define CC_SUCCESS			 1
 #define CC_TRB_ERROR			 5
 #define CC_STALL_ERROR			 6
+#define CC_RESOURCE_ERROR		 7
+#define CC_BANDWIDTH_ERROR		 8
+#define CC_NO_SLOTS_AVAILABLE		 9
 #define CC_SHORT_PACKET			13
 #define CC_EVENT_RING_FULL_ERROR	21
 #define CC_COMMAND_RING_STOPPED		24
@@ -307,7 +310,7 @@ typedef struct intrq {
 typedef struct devinfo {
 	devctx_t ctx;
 	transfer_ring_t *transfer_rings[NUM_EPS];
-	intrq_t *interrupt_queues[32];
+	intrq_t *interrupt_queues[NUM_EPS];
 } devinfo_t;
 
 typedef struct erst_entry {

@@ -75,6 +75,31 @@ xhci_get_tt(xhci_t *const xhci, const usb_speed speed,
 	return *tt != 0;
 }
 
+static void
+xhci_reap_slots(xhci_t *const xhci, int skip_slot)
+{
+	int i;
+
+	xhci_debug("xHC resource shortage, trying to reap old slots...\n");
+	for (i = 1; i <= xhci->max_slots_en; i++) {
+		if (i == skip_slot)
+			continue;	/* don't reap slot we were working on */
+		if (xhci->dev[i].transfer_rings[1])
+			continue;	/* slot still in use */
+		if (!xhci->dev[i].ctx.raw)
+			continue;	/* slot already disabled */
+
+		const int cc = xhci_cmd_disable_slot(xhci, i);
+		if (cc != CC_SUCCESS)
+			xhci_debug("Failed to disable slot %d: %d\n", i, cc);
+		else
+			xhci_spew("Successfully reaped slot %d\n", i);
+		xhci->dcbaa[i] = 0;
+		free(xhci->dev[i].ctx.raw);
+		xhci->dev[i].ctx.raw = NULL;
+	}
+}
+
 static inputctx_t *
 xhci_make_inputctx(const size_t ctxsize)
 {
@@ -119,6 +144,10 @@ xhci_set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 
 	int slot_id;
 	int cc = xhci_cmd_enable_slot(xhci, &slot_id);
+	if (cc == CC_NO_SLOTS_AVAILABLE) {
+		xhci_reap_slots(xhci, 0);
+		cc = xhci_cmd_enable_slot(xhci, &slot_id);
+	}
 	if (cc != CC_SUCCESS) {
 		xhci_debug("Enable slot failed: %d\n", cc);
 		goto _free_return;
@@ -163,6 +192,10 @@ xhci_set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	xhci->dcbaa[slot_id] = virt_to_phys(di->ctx.raw);
 
 	cc = xhci_cmd_address_device(xhci, slot_id, ic);
+	if (cc == CC_RESOURCE_ERROR) {
+		xhci_reap_slots(xhci, slot_id);
+		cc = xhci_cmd_address_device(xhci, slot_id, ic);
+	}
 	if (cc != CC_SUCCESS) {
 		xhci_debug("Address device failed: %d\n", cc);
 		goto _disable_return;
@@ -199,6 +232,10 @@ xhci_set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		*ic->add = (1 << 1); /* EP0 Context */
 		EC_SET(MPS, ic->dev.ep0, dev->endpoints[0].maxpacketsize);
 		cc = xhci_cmd_evaluate_context(xhci, slot_id, ic);
+		if (cc == CC_RESOURCE_ERROR) {
+			xhci_reap_slots(xhci, slot_id);
+			cc = xhci_cmd_evaluate_context(xhci, slot_id, ic);
+		}
 		if (cc != CC_SUCCESS) {
 			xhci_debug("Context evaluation failed: %d\n", cc);
 			goto _disable_return;
@@ -216,8 +253,10 @@ _free_return:
 	if (tr)
 		free((void *)tr->ring);
 	free(tr);
-	if (di)
+	if (di) {
 		free(di->ctx.raw);
+		di->ctx.raw = 0;
+	}
 _free_ic_return:
 	if (ic)
 		free(ic->raw);
@@ -330,7 +369,8 @@ int
 xhci_finish_device_config(usbdev_t *const dev)
 {
 	xhci_t *const xhci = XHCI_INST(dev->controller);
-	devinfo_t *const di = &xhci->dev[dev->address];
+	int slot_id = dev->address;
+	devinfo_t *const di = &xhci->dev[slot_id];
 
 	int i, ret = 0;
 
@@ -363,8 +403,11 @@ xhci_finish_device_config(usbdev_t *const dev)
 
 	const int config_id = dev->configuration->bConfigurationValue;
 	xhci_debug("config_id: %d\n", config_id);
-	const int cc =
-		xhci_cmd_configure_endpoint(xhci, dev->address, config_id, ic);
+	int cc = xhci_cmd_configure_endpoint(xhci, slot_id, config_id, ic);
+	if (cc == CC_RESOURCE_ERROR || cc == CC_BANDWIDTH_ERROR) {
+		xhci_reap_slots(xhci, slot_id);
+		cc = xhci_cmd_configure_endpoint(xhci, slot_id, config_id, ic);
+	}
 	if (cc != CC_SUCCESS) {
 		xhci_debug("Configure endpoint failed: %d\n", cc);
 		ret = CONTROLLER_ERROR;
@@ -396,19 +439,31 @@ xhci_destroy_dev(hci_t *const controller, const int slot_id)
 	if (slot_id <= 0 || slot_id > xhci->max_slots_en)
 		return;
 
-	int i;
-
-	const int cc = xhci_cmd_disable_slot(xhci, slot_id);
+	inputctx_t *const ic = xhci_make_inputctx(CTXSIZE(xhci));
+	if (!ic) {
+		xhci_debug("Out of memory, leaking resources!\n");
+		return;
+	}
+	const int num_eps = controller->devices[slot_id]->num_endp;
+	*ic->add = 0;	/* Leave Slot/EP0 state as it is for now. */
+	*ic->drop = (1 << num_eps) - 1;	/* Drop all endpoints we can. */
+	*ic->drop &= ~(1 << 1 | 1 << 0); /* Not allowed to drop EP0 or Slot. */
+	int cc = xhci_cmd_evaluate_context(xhci, slot_id, ic);
 	if (cc != CC_SUCCESS)
-		xhci_debug("Failed to disable slot %d: %d\n", slot_id, cc);
+		xhci_debug("Failed to quiesce slot %d: %d\n", slot_id, cc);
+	cc = xhci_cmd_stop_endpoint(xhci, slot_id, 1);
+	if (cc != CC_SUCCESS)
+		xhci_debug("Failed to stop EP0 on slot %d: %d\n", slot_id, cc);
 
+	int i;
 	devinfo_t *const di = &xhci->dev[slot_id];
-	for (i = 1; i < 31; ++i) {
+	for (i = 1; i < num_eps; ++i) {
 		if (di->transfer_rings[i])
 			free((void *)di->transfer_rings[i]->ring);
 		free(di->transfer_rings[i]);
-
 		free(di->interrupt_queues[i]);
 	}
-	xhci->dcbaa[slot_id] = 0;
+
+	xhci_spew("Stopped slot %d, but not disabling it yet.\n", slot_id);
+	di->transfer_rings[1] = NULL;
 }

@@ -12,7 +12,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexUart0] = PchSerialIoPci, \
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoLegacyUart, \
+		[PchSerialIoIndexUart2] = PchSerialIoPci, \
 	}"
 
 	register "pirqa_routing" = "0x8b"

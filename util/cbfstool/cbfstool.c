@@ -230,6 +230,40 @@ static int cbfs_add_component(const char *filename,
 	return 0;
 }
 
+static int cbfstool_convert_raw(struct buffer *buffer,
+	unused uint32_t *offset, struct cbfs_file *header)
+{
+	char *compressed;
+	int compressed_size;
+
+	comp_func_ptr compress = compression_function(param.compression);
+	if (!compress)
+		return -1;
+	compressed = calloc(buffer->size, 1);
+
+	if (compress(buffer->data, buffer->size,
+		     compressed, &compressed_size)) {
+		WARN("Compression failed - disabled\n");
+	} else {
+		struct cbfs_file_attr_compression *attrs =
+			(struct cbfs_file_attr_compression *)
+			cbfs_add_file_attr(header,
+				CBFS_FILE_ATTR_TAG_COMPRESSION,
+				sizeof(struct cbfs_file_attr_compression));
+		if (attrs == NULL)
+			return -1;
+		attrs->compression = htonl(param.compression);
+		attrs->decompressed_size = htonl(buffer->size);
+
+		free(buffer->data);
+		buffer->data = compressed;
+		buffer->size = compressed_size;
+
+		header->len = htonl(buffer->size);
+	}
+	return 0;
+}
+
 static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 	struct cbfs_file *header)
 {
@@ -301,7 +335,7 @@ static int cbfs_add(void)
 				  param.type,
 				  param.baseaddress,
 				  param.headeroffset,
-				  NULL);
+				  cbfstool_convert_raw);
 }
 
 static int cbfs_add_stage(void)
@@ -747,7 +781,7 @@ static bool cbfs_is_legacy_format(struct buffer *buffer)
 }
 
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:b:vh?", cbfs_add, true, true},
+	{"add", "H:r:f:n:t:c:b:vh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:vh?", cbfs_add_flat_binary, true,
 									true},
 	{"add-payload", "H:r:f:n:t:c:b:C:I:vh?", cbfs_add_payload, true, true},
@@ -862,7 +896,7 @@ static void usage(char *name)
 	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE \\\n"
-	     "        [-b base-address]                                    "
+	     "        [-c compression] [-b base-address]                   "
 			"Add a component\n"
 	     " add-payload [-r image,regions] -f FILE -n NAME \\\n"
 	     "        [-c compression] [-b base-address]                   "

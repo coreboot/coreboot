@@ -104,6 +104,15 @@ struct cbfs_file_attribute {
  * 0xff. Support both. */
 #define CBFS_FILE_ATTR_TAG_UNUSED 0
 #define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
+#define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
+
+struct cbfs_file_attr_compression {
+	uint32_t tag;
+	uint32_t len;
+	/* whole file compression format. 0 if no compression. */
+	uint32_t compression;
+	uint32_t decompressed_size;
+} __PACKED;
 
 struct cbfs_stage {
 	uint32_t compression;

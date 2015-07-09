@@ -59,5 +59,5 @@ $(obj)/mrc.cache:
 cbfs-files-y += mrc.cache
 mrc.cache-file := $(call strip_quotes,$(CONFIG_MRC_CACHE_FILE))
 mrc.cache-position := $(CONFIG_MRC_CACHE_LOC)
-mrc.cache-type := CBFS_TYPE_MRC_CACHE
+mrc.cache-type := mrc_cache
 endif

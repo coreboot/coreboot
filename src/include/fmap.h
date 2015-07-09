@@ -23,6 +23,9 @@
 #include <region.h>
 #include <fmap_serialized.h>
 
+/* Locate the fmap directory. Return 0 on success, < 0 on error. */
+int find_fmap_directory(struct region_device *fmrd);
+
 /* Locate the named area in the fmap and fill in a region device representing
  * that area. The region is a sub-region of the readonly boot media. Return
  * 0 on success, < 0 on error. */

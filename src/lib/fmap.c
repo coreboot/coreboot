@@ -28,7 +28,7 @@
  * See http://code.google.com/p/flashmap/ for more information on FMAP.
  */
 
-static int find_fmap_directory(struct region_device *fmrd)
+int find_fmap_directory(struct region_device *fmrd)
 {
 	const struct region_device *boot;
 	struct fmap *fmap;

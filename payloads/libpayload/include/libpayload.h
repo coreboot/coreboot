@@ -47,6 +47,7 @@
 #include <ctype.h>
 #include <die.h>
 #include <endian.h>
+#include <fmap_serialized.h>
 #include <ipchksum.h>
 #include <kconfig.h>
 #include <stddef.h>
@@ -405,4 +406,8 @@ void gdb_enter(void);
 /* Disconnect existing GDB connection if one exists. */
 void gdb_exit(s8 exit_status);
 
+/* look for area "name" in "fmap", setting offset and size to describe it.
+   Returns 0 on success, < 0 on error. */
+int fmap_region_by_name(const uint32_t fmap_offset, const char * const name,
+			uint32_t * const offset, uint32_t * const size);
 #endif

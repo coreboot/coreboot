@@ -59,7 +59,7 @@ void *cbfs_find_file(const char *name, int type);
 
 int cbfs_execute_stage(struct cbfs_media *media, const char *name);
 void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
-			  uint16_t device, void * dest);
+			  uint16_t device);
 void *cbfs_load_payload(struct cbfs_media *media, const char *name);
 void *cbfs_load_stage(struct cbfs_media *media, const char *name);
 

@@ -79,41 +79,14 @@ static void tohex16(unsigned int val, char* dest)
 }
 
 void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
-			  uint16_t device, void *dest)
+			  uint16_t device)
 {
 	char name[17] = "pciXXXX,XXXX.rom";
-	struct cbfs_optionrom *orom;
-	uint8_t *src;
 
 	tohex16(vendor, name+3);
 	tohex16(device, name+8);
 
-	orom = (struct cbfs_optionrom *)
-		cbfs_get_file_content(media, name, CBFS_TYPE_OPTIONROM, NULL);
-
-	if (orom == NULL)
-		return NULL;
-
-	/* They might have specified a dest address. If so, we can decompress.
-	 * If not, there's not much hope of decompressing or relocating the rom.
-	 * in the common case, the expansion rom is uncompressed, we
-	 * pass 0 in for the dest, and all we have to do is find the rom and
-	 * return a pointer to it.
-	 */
-
-	/* BUG: the cbfstool is (not yet) including a cbfs_optionrom header */
-	src = (uint8_t*)orom; // + sizeof(struct cbfs_optionrom);
-
-	if (! dest)
-		return src;
-
-	if (!cbfs_decompress(ntohl(orom->compression),
-			     src,
-			     dest,
-			     ntohl(orom->len)))
-		return NULL;
-
-	return dest;
+	return cbfs_get_file_content(media, name, CBFS_TYPE_OPTIONROM, NULL);
 }
 
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
@@ -149,6 +122,7 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	entry = stage->entry;
 	// entry = ntohll(stage->entry);
 
+	free(stage);
 	return (void *) entry;
 }
 
@@ -163,11 +137,14 @@ int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 	if (ntohl(stage->compression) != CBFS_COMPRESS_NONE) {
 		LOG("Unable to run %s:  Compressed file"
 		       "Not supported for in-place execution\n", name);
+		free(stage);
 		return 1;
 	}
 
 	LOG("run @ %p\n", (void *) (uintptr_t)ntohll(stage->entry));
-	return run_address((void *)(uintptr_t)ntohll(stage->entry));
+	int result = run_address((void *)(uintptr_t)ntohll(stage->entry));
+	free(stage);
+	return result;
 }
 
 void *cbfs_load_payload(struct cbfs_media *media, const char *name)

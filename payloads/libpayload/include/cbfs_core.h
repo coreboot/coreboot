@@ -53,6 +53,7 @@
 #include <endian.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 /** These are standard values for the known compression
     alogrithms that coreboot knows about for stages and
@@ -141,6 +142,7 @@ struct cbfs_file {
  * 0xff. Support both. */
 #define CBFS_FILE_ATTR_TAG_UNUSED 0
 #define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
+#define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
 
 /* The common fields of extended cbfs file attributes.
    Attributes are expected to start with tag/len, then append their
@@ -150,6 +152,14 @@ struct cbfs_file_attribute {
 	/* len covers the whole structure, incl. tag and len */
 	uint32_t len;
 	uint8_t data[0];
+} __attribute__((packed));
+
+struct cbfs_file_attr_compression {
+	uint32_t tag;
+	uint32_t len;
+	/* whole file compression format. 0 if no compression. */
+	uint32_t compression;
+	uint32_t decompressed_size;
 } __attribute__((packed));
 
 /* Given a cbfs_file, return the first file attribute, or NULL. */
@@ -237,10 +247,14 @@ struct cbfs_media {
 	int (*close)(struct cbfs_media *media);
 };
 
-/* returns pointer to a file entry inside CBFS or NULL */
+/* returns pointer to a file entry inside CBFS or NULL on error */
 struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name);
 
-/* returns pointer to file content inside CBFS after if type is correct */
+/*
+ * Returns pointer to a copy of the file content or NULL on error.
+ * If the file is compressed, data will be decompressed.
+ * The caller owns the returned memory.
+ */
 void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 			    int type, size_t *sz);
 

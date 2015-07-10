@@ -41,4 +41,8 @@
  */
 #define CPU_RESET_ENTRY(name) ENTRY_WITH_ALIGN(name, 6)
 
+#define ENTRY_WEAK(name)	\
+	ENTRY(name)		\
+	.weak name		\
+
 #endif	/* __ARM_ARM64_ASM_H */

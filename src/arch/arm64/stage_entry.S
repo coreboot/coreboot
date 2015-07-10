@@ -228,6 +228,12 @@ CPU_RESET_ENTRY(arm64_cpu_startup_resume)
 	b	arm64_c_environment
 ENDPROC(arm64_cpu_startup_resume)
 
-ENTRY(stage_entry)
+/*
+ * stage_entry is defined as a weak symbol to allow SoCs/CPUs to define a custom
+ * entry point to perform any fixups that need to be done immediately after
+ * power on reset. In case SoC/CPU does not need any custom-defined entrypoint,
+ * this weak symbol can be used to jump directly to arm64_cpu_startup.
+ */
+ENTRY_WEAK(stage_entry)
 	b	arm64_cpu_startup
 ENDPROC(stage_entry)

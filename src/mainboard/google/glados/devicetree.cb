@@ -16,7 +16,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexUart0] = PchSerialIoPci, \
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoLegacyUart, \
+		[PchSerialIoIndexUart2] = PchSerialIoPci, \
 	}"
 
 	# Enable Root port 1 and 5.

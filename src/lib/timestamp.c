@@ -34,7 +34,7 @@
 #define MAX_TIMESTAMP_CACHE 16
 
 struct __attribute__((__packed__)) timestamp_cache {
-	int cache_state;
+	uint32_t cache_state;
 	struct timestamp_table table;
 	/* The struct timestamp_table has a 0 length array as its last field.
 	 * The  following 'entries' array serves as the storage space for the
@@ -198,6 +198,13 @@ void timestamp_init(uint64_t base)
 		printk(BIOS_ERR, "ERROR: No timestamp cache to init\n");
 		return;
 	}
+
+	/* In the EARLY_CBMEM_INIT case timestamps could have already been
+	 * recovered. In those circumstances honor the cache which sits in BSS
+	 * as it has already been initialized. */
+	if (ENV_RAMSTAGE &&
+	    ts_cache->cache_state != TIMESTAMP_CACHE_UNINITIALIZED)
+		return;
 
 	timestamp_cache_init(ts_cache, base);
 }

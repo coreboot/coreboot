@@ -20,6 +20,9 @@
 #ifndef __ARCH_ARM64_CORTEX_A57_H__
 #define __ARCH_ARM64_CORTEX_A57_H__
 
+#define CPUACTLR_EL1	s3_1_c15_c2_0
+#define BTB_INVALIDATE	(1 << 0)
+
 #define CPUECTLR_EL1	S3_1_c15_c2_1
 #define SMPEN_SHIFT	6
 

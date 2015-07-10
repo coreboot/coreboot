@@ -19,7 +19,7 @@
 
 #include <arch/asm.h>
 #include <arch/cache_helpers.h>
-#include "cortex_a57.h"
+#include <cpu/cortex_a57.h>
 
 ENTRY(arm64_cpu_early_setup)
 	mrs x0, CPUECTLR_EL1

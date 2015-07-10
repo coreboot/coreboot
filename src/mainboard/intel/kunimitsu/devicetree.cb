@@ -82,6 +82,13 @@ chip soc/intel/skylake
 	# Integrated Sensor
 	register "IshEnable" = "0"
 
+	# Enable deep Sx states
+	register "deep_s3_enable" = "0"
+	register "deep_s5_enable" = "1"
+
+	# CPU Thermal participant device
+	register "Device4Enable" = "1"
+
 	# XDCI controller
 	register "XdciEnable" = "0"
 
@@ -131,6 +138,7 @@ chip soc/intel/skylake
 				device pnp 0c09.0 on end
 			end
 		end # LPC Interface
+		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 on  end # Intel High Definition Audio (Intel HD Audio) (Audio, Voice, Speech)
 		device pci 1f.4 off end # SMBus Controller
 		device pci 1f.5 on  end # SPI

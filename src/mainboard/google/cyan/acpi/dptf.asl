@@ -39,10 +39,10 @@
 
 /* Charger performance states, board-specific values from charger and EC */
 Name (CHPS, Package () {
-	Package () { 0, 0, 0, 0, 255, 0x6a4, "mA", 0 },	/* 1.7A (MAX) */
-	Package () { 0, 0, 0, 0, 24, 0x600, "mA", 0 },	/* 1.5A */
-	Package () { 0, 0, 0, 0, 16, 0x400, "mA", 0 },	/* 1.0A */
+	Package () { 0, 0, 0, 0, 255, 0x400, "mA", 0 },	/* 1.0A (MAX) */
+	Package () { 0, 0, 0, 0, 12, 0x300, "mA", 0 },	/* 0.77A */
 	Package () { 0, 0, 0, 0, 8, 0x200, "mA", 0 },	/* 0.5A */
+	Package () { 0, 0, 0, 0, 4, 0x100, "mA", 0 },	/* 0.25A */
 	Package () { 0, 0, 0, 0, 0, 0x000, "mA", 0 },	/* 0.0A */
 })
 

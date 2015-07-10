@@ -58,6 +58,13 @@ ifeq ($(CONFIG_HAVE_ME_BIN),y)
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
+ifeq ($(CONFIG_HAVE_GBE_BIN),y)
+	printf "    IFDTOOL    gbe.bin -> coreboot.pre\n"
+	$(objutil)/ifdtool/ifdtool \
+		-i GbE:$(CONFIG_GBE_BIN_PATH) \
+		$(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+endif
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	printf "    IFDTOOL    Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre

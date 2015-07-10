@@ -56,6 +56,19 @@ config ME_BIN_PATH
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
 	depends on HAVE_ME_BIN
 
+config HAVE_GBE_BIN
+	bool "Add gigabit ethernet firmware"
+	depends on HAVE_IFD_BIN
+	help
+	  The integrated gigabit ethernet controller needs a firmware file.
+	  Select this if you are going to use the PCH integrated controller
+	  and have the firmware.
+
+config GBE_BIN_PATH
+	string "Path to gigabit ethernet firmware"
+	depends on HAVE_GBE_BIN
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
+
 ##### Fake IFD #####
 
 config BUILD_WITH_FAKE_IFD

@@ -202,7 +202,7 @@ void timestamp_init(uint64_t base)
 	/* In the EARLY_CBMEM_INIT case timestamps could have already been
 	 * recovered. In those circumstances honor the cache which sits in BSS
 	 * as it has already been initialized. */
-	if (ENV_RAMSTAGE &&
+	if (ENV_RAMSTAGE && IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) &&
 	    ts_cache->cache_state != TIMESTAMP_CACHE_UNINITIALIZED)
 		return;
 

@@ -50,7 +50,7 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 		wrmsr(msr_nr, msr);
 	}
 
-#if defined(CONFIG_XIP_ROM_SIZE)
+#if defined(CONFIG_XIP_ROM_SIZE) && CONFIG_XIP_ROM_SIZE
 	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 * Determine address by calculating the XIP_ROM_SIZE sized area with

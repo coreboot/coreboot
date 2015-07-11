@@ -87,8 +87,8 @@ void set_var_mtrr(unsigned reg, unsigned base, unsigned size, unsigned type);
 					(x>>6)|(x>>7)|(x>>8)|((1<<18)-1))
 #define _ALIGN_UP_POW2(x)	((x + _POW2_MASK(x)) & ~_POW2_MASK(x))
 
-#if !defined(CONFIG_RAMTOP)
-# error "CONFIG_RAMTOP not defined"
+#if !defined(CONFIG_RAMTOP) || !CONFIG_RAMTOP
+# error "CONFIG_RAMTOP not configured"
 #endif
 
 #if ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE -1)) != 0)

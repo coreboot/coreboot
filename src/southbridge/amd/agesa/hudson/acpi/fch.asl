@@ -179,11 +179,9 @@ Method(_INI, 0) {
 	/* Determine the OS we're running on */
 	OSFL()
 
-#ifdef CONFIG_HUDSON_IMC_FWM
-#if CONFIG_HUDSON_IMC_FWM
+#if defined(CONFIG_HUDSON_IMC_FWM) && CONFIG_HUDSON_IMC_FWM
 	#include "acpi/AmdImc.asl" /* Hudson IMC function */
 	ITZE() /* enable IMC Fan Control*/
-#endif
 #endif
 } /* End Method(_SB._INI) */
 

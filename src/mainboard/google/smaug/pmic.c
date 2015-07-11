@@ -95,6 +95,13 @@ void pmic_init(unsigned bus)
 	pmic_write_reg_77620(bus, MAX77620_CNFG2SD_REG, 0x04, 1);
 	pmic_write_reg_77620(bus, MAX77620_SD1_REG, 0x2a, 1);
 
+	/*
+	 * MAX77620: Set LDO2 output to 1.8V. LDO2 is used as always-on
+	 * reference for the droop alert circuit. Match this setting with what
+	 * the kernel expects.
+	 */
+	pmic_write_reg_77620(bus, MAX77620_CNFG1_L2_REG, 0x14, 1);
+
 	/* MAX77621: Set VOUT_REG to 1.0V - CPU VREG */
 	pmic_write_reg_77621(bus, MAX77621_VOUT_REG, 0xBF, 1);
 

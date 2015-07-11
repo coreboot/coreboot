@@ -201,7 +201,7 @@ static int find_program_segment(struct rmod_context *ctx)
 	int i;
 	int nsegments;
 	struct parsed_elf *pelf;
-	Elf64_Phdr *phdr;
+	Elf64_Phdr *phdr = NULL;
 
 	pelf = &ctx->pelf;
 

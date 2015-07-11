@@ -413,6 +413,8 @@ static const struct timestamp_id_to_name {
 	u32 id;
 	const char *name;
 } timestamp_ids[] = {
+	/* Marker to report base_time. */
+	{ 0,			"1st timestamp" },
 	{ TS_START_ROMSTAGE,	"start of rom stage" },
 	{ TS_BEFORE_INITRAM,	"before ram initialization" },
 	{ TS_AFTER_INITRAM,	"after ram initialization" },
@@ -504,6 +506,7 @@ static void dump_timestamps(void)
 	int i;
 	struct timestamp_table *tst_p;
 	size_t size;
+	uint64_t prev_stamp;
 
 	if (timestamps.tag != LB_TAG_TIMESTAMPS) {
 		fprintf(stderr, "No timestamps found in coreboot table.\n");
@@ -519,10 +522,19 @@ static void dump_timestamps(void)
 	unmap_memory();
 	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size);
 
+	/* Report the base time within the table. */
+	prev_stamp = 0;
+	timestamp_print_entry(0,  tst_p->base_time, prev_stamp);
+	prev_stamp = tst_p->base_time;
+
 	for (i = 0; i < tst_p->num_entries; i++) {
-		const struct timestamp_entry *tse_p = tst_p->entries + i;
-		timestamp_print_entry(tse_p->entry_id, tse_p->entry_stamp,
-			i ? tse_p[-1].entry_stamp : 0);
+		uint64_t stamp;
+		const struct timestamp_entry *tse = &tst_p->entries[i];
+
+		/* Make all timestamps absolute. */
+		stamp = tse->entry_stamp + tst_p->base_time;
+		timestamp_print_entry(tse->entry_id, stamp, prev_stamp);
+		prev_stamp = stamp;
 	}
 
 	unmap_memory();

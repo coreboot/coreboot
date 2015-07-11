@@ -55,7 +55,7 @@
  * disabled.
  * @{
  */
-#if defined(CONFIG_DEBUG_RAM_SETUP) && (CONFIG_DEBUG_RAM_SETUP)
+#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
 #define printram(x, ...) printk(BIOS_DEBUG, x, ##__VA_ARGS__)
 #else
 #define printram(x, ...)

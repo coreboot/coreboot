@@ -35,7 +35,7 @@
 #define DEFAULT_RCBA		0xfed1c000
 #endif
 
-#ifdef CONFIG_BOARD_EMULATION_QEMU_X86_Q35
+#if IS_ENABLED(CONFIG_BOARD_EMULATION_QEMU_X86_Q35)
 /*
  * Qemu has the fw_cfg interface at 0x510.  Move the pmbase to a
  * non-conflicting address.  No need to worry about speedstep, it

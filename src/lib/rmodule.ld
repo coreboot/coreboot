@@ -30,7 +30,7 @@ SECTIONS
 		/* C read-only data. */
 		. = ALIGN(16);
 
-#ifdef CONFIG_COVERAGE
+#if IS_ENABLED(CONFIG_COVERAGE)
 		__CTOR_LIST__ = .;
 		*(.ctors);
 		LONG(0);

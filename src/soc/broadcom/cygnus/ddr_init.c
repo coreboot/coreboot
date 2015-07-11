@@ -45,7 +45,7 @@ extern unsigned int ddr3_init_tab_1066[];
 #define CONFIG_DRAM_FREQ 667
 extern unsigned int ddr3_init_tab_1333[];
 #endif
-#ifdef CONFIG_CYGNUS_DDR800
+#if IS_ENABLED(CONFIG_CYGNUS_DDR800)
 #define CONFIG_DRAM_FREQ 800
 extern unsigned int ddr3_init_tab_1600[];
 #endif
@@ -64,7 +64,7 @@ int cygnus_phy_powerup(void);
 void ddr_init2(void);
 void PRE_SRX(void);
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 void PRE_SRX(void)
 {
 	uint32_t readvalue = 0;
@@ -281,7 +281,7 @@ void iproc_clear_ecc_syndrome(void)
 }
 #endif
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 uint32_t iproc_get_ddr3_clock_mhz(uint32_t unit)
 {
 	uint32_t ndiv, mdiv, pdiv, ddrclk, data;
@@ -306,7 +306,7 @@ uint32_t iproc_get_ddr3_clock_mhz(uint32_t unit)
 
 #endif
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 
 int cygnus_phy_powerup(void)
 {
@@ -1187,7 +1187,7 @@ static int clear_ddr(uint32_t offset, uint32_t size)
 extern void restore_shmoo_config(and28_shmoo_config_param_t *shmoo_control_para);
 #endif
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 static int simple_ddr_crc32_check(void)
 {
 	return 0;
@@ -1226,7 +1226,7 @@ void ddr_init2(void)
 	uint32_t status, sku_id, ddr_clk, dev_id = 0;
 	uint32_t unit = 0;
 	uint32_t skip_shmoo = 0;
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	uint32_t pwrctli0 = reg32_read((volatile uint32_t *)IHOST_SCU_POWER_STATUS)  & 0x3;
 	skip_shmoo = reg32_read((volatile uint32_t *)CRMU_IHOST_POR_WAKEUP_FLAG) & 0x1;
 
@@ -1239,22 +1239,22 @@ void ddr_init2(void)
 		skip_shmoo = 1;
 		reg32_write((volatile uint32_t *)IHOST_GTIM_GLOB_CTRL, reg32_read((volatile uint32_t *)IHOST_GTIM_GLOB_CTRL)| 0x1);
 	}
-#endif	/* defined(CONFIG_SOC_BROADCOM_CYGNUS) */
+#endif	/* IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS) */
 
 	dev_id = dev_id;
-#ifdef CONFIG_SOC_BROADCOM_CYGNUS
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	and28_shmoo_dram_info_t sdi;
 	and28_shmoo_config_param_t config_param;
 #endif
 
-#ifndef CONFIG_SOC_BROADCOM_CYGNUS
+#if !IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	dev_id = (reg32_read((volatile uint32_t *)ChipcommonA_ChipID)) & 0x0000ffff;
 #else
     dev_id = 0x5800;
     cygnus_phy_powerup();
 #endif
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	sku_id = (reg32_read((volatile uint32_t *)ROM_S0_IDM_IO_STATUS) >> 8) & 0x0f;
 #else
 	sku_id = (reg32_read((volatile uint32_t *)ROM_S0_IDM_IO_STATUS) >> 2) & 0x03;
@@ -1279,7 +1279,7 @@ void ddr_init2(void)
 		goto done;
 	}
     printk(BIOS_INFO, "DDR type: DDR%d\n", (ddr_type == 1)? 3 : 4);
-#elif defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#elif IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
     ddr_type = 1;
 #else
 	ddr_type = reg32_read((volatile uint32_t *)DDR_S1_IDM_IO_STATUS) & 0x1;
@@ -1337,7 +1337,7 @@ void ddr_init2(void)
 	}
 #endif /* defined(CONFIG_IPROC_P7) */
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS) || defined(CONFIG_IPROC_P7)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS) || defined(CONFIG_IPROC_P7)
 	/* Get the DDR S1 and S2 out of reset */
 	reg32_write((volatile uint32_t *)DDR_S1_IDM_RESET_CONTROL, 0);
 	reg32_write((volatile uint32_t *)DDR_S2_IDM_RESET_CONTROL, 0);
@@ -1357,7 +1357,7 @@ void ddr_init2(void)
     reg32_write((volatile uint32_t *)DDR_S2_IDM_RESET_CONTROL, 0);
     /* Set the ddr_ck to 400 MHz, 2x memc clock */
     reg32_write_masked((volatile uint32_t *)DDR_S1_IDM_IO_CONTROL_DIRECT, 0xfff << 16, /*ddr_clk*/ 0x190 << 16);
-#endif /* defined(CONFIG_SOC_BROADCOM_CYGNUS) || defined(CONFIG_IPROC_P7) */
+#endif /* IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS) || defined(CONFIG_IPROC_P7) */
 
 #if defined(CONFIG_IPROC_P7)
 	if (is_ddr_32bit()) {
@@ -1398,7 +1398,7 @@ void ddr_init2(void)
 		return;
 	}
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	if(!skip_shmoo)
 	{
 		printk(BIOS_INFO, "ddr_init2: Calling soc_and28_shmoo_dram_info_set\n");
@@ -1433,7 +1433,7 @@ void ddr_init2(void)
 #error "DRAM config is not set"
 #endif
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	if(!skip_shmoo)
 	{
 		printk(BIOS_INFO, "ddr_init2: Calling soc_and28_shmoo_phy_init\n");
@@ -1481,7 +1481,7 @@ void ddr_init2(void)
 				ddr_init_regs(ddr3_init_tab_1333);
 				break;
 #endif
-#if (defined(CONFIG_DDR750) || defined(CONFIG_CYGNUS_DDR800))
+#if (defined(CONFIG_DDR750) || IS_ENABLED(CONFIG_CYGNUS_DDR800))
 			case 750:
 			case 800:
 				ddr_init_regs(ddr3_init_tab_1600);
@@ -1514,7 +1514,7 @@ void ddr_init2(void)
 	/* Start the DDR */
 	reg32_set_bits((volatile uint32_t *)DDR_DENALI_CTL_00, 0x01);
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	if(!skip_shmoo)
 	{
 		while(!(reg32_read((volatile uint32_t *)DDR_DENALI_CTL_175) & 0x100));
@@ -1605,7 +1605,7 @@ void ddr_init2(void)
 
 	//dump_phy_regs();
 
-#if defined(CONFIG_SOC_BROADCOM_CYGNUS)
+#if IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS)
 	/* SRX */
 	if(skip_shmoo)
 	{
@@ -1652,7 +1652,7 @@ wakeup:
 		"ldr 	r5, [r3]\n"
 		"mov	lr, #0\n"
 		"mov	pc, r5\n");
-#endif /* defined(CONFIG_SOC_BROADCOM_CYGNUS) */
+#endif /* IS_ENABLED(CONFIG_SOC_BROADCOM_CYGNUS) */
 
 done:
 	/* Reclaim everything we have previously allocated for temporary usage. */

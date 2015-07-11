@@ -1488,7 +1488,7 @@ const unsigned int ddr3_init_tab_1333[] = {
 };
 #endif
 
-#ifdef CONFIG_CYGNUS_DDR800
+#if IS_ENABLED(CONFIG_CYGNUS_DDR800)
 const unsigned int ddr3_init_tab_1600[] = {
         14, 0x01000000,
         36, 0x0a140a0a,

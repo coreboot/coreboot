@@ -34,7 +34,7 @@
 	_etext = .;
 } : to_load
 
-#ifdef CONFIG_COVERAGE
+#if IS_ENABLED(CONFIG_COVERAGE)
 .ctors : {
 	. = ALIGN(0x100);
 	__CTOR_LIST__ = .;

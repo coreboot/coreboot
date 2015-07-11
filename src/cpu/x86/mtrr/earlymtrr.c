@@ -19,7 +19,7 @@ void set_var_mtrr(
 	wrmsr(MTRRphysMask_MSR(reg), maskm);
 }
 
-#if !defined(CONFIG_CACHE_AS_RAM) || !CONFIG_CACHE_AS_RAM
+#if !IS_ENABLED(CONFIG_CACHE_AS_RAM)
 static void cache_ramstage(void)
 {
 	/* Enable caching for lower 1MB and ram stage using variable mtrr */

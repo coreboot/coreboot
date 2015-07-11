@@ -55,7 +55,7 @@ void main(void)
 		//bootblock_mainboard_init();
 	}
 
-#ifdef CONFIG_BOOTBLOCK_CONSOLE
+#if IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)
 	console_init();
 	exception_init();
 #endif

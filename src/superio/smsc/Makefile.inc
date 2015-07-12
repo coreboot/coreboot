@@ -18,6 +18,7 @@
 ## Foundation, Inc.
 ##
 
+subdirs-y += dme1737
 subdirs-y += fdc37m60x
 subdirs-y += fdc37n972
 subdirs-y += lpc47b272

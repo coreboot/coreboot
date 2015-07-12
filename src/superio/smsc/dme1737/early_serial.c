@@ -23,7 +23,7 @@
 #include <arch/io.h>
 #include <device/pnp.h>
 #include <stdint.h>
-#include "lpc47b397.h"
+#include "dme1737.h"
 
 static void pnp_enter_conf_state(pnp_devfn_t dev)
 {
@@ -37,7 +37,7 @@ static void pnp_exit_conf_state(pnp_devfn_t dev)
 	outb(0xaa, port);
 }
 
-void lpc47b397_enable_serial(pnp_devfn_t dev, u16 iobase)
+void dme1737_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

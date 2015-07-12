@@ -20,5 +20,5 @@
 ## Foundation, Inc.
 ##
 
-romstage-$(CONFIG_SUPERIO_SMSC_LPC47B397) += early_serial.c
-ramstage-$(CONFIG_SUPERIO_SMSC_LPC47B397) += superio.c
+romstage-$(CONFIG_SUPERIO_SMSC_DME1737) += early_serial.c
+ramstage-$(CONFIG_SUPERIO_SMSC_DME1737) += superio.c

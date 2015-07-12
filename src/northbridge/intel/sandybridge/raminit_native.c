@@ -2288,18 +2288,17 @@ static int get_timB_high_adjust(u64 val)
 	if (val == 0xffffffffffffffffLL)
 		return 0;
 
-	if (val >= 0xfffffffffffff000LL)
-		return 3;
-	if (val >= 0xfffffffffff00000LL)
-		return -1;
-	if (val >= 0xfffffff000000000LL)
-		return -2;
-	if (val >= 0xfff0000000000000LL)
-		return -3;
-
-	for (i = 0; i < 8; i++)
-		if (val >> (8 * (7 - i) + 4))
-			return i;
+	if (val >= 0xf000000000000000LL) {
+		/* needs negative adjustment */
+		for (i = 0; i < 8; i++)
+			if (val << (8 * (7 - i) + 4))
+				return -i;
+	} else {
+		/* needs positive adjustment */
+		for (i = 0; i < 8; i++)
+			if (val >> (8 * (7 - i) + 4))
+				return i;
+	}
 	return 8;
 }
 

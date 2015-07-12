@@ -2283,6 +2283,11 @@ static void discover_timB(ramctr_timing * ctrl, int channel, int slotrank)
 static int get_timB_high_adjust(u64 val)
 {
 	int i;
+
+	/* good */
+	if (val == 0xffffffffffffffffLL)
+		return 0;
+
 	if (val >= 0xfffffffffffff000LL)
 		return 3;
 	if (val >= 0xfffffffffff00000LL)

@@ -2305,7 +2305,7 @@ static int get_timB_high_adjust(u64 val)
 
 static void adjust_high_timB(ramctr_timing * ctrl)
 {
-	int channel, slotrank, lane;
+	int channel, slotrank, lane, old;
 	write32(DEFAULT_MCHBAR + 0x3400, 0x200);
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern1(ctrl, channel);
@@ -2380,12 +2380,13 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 			res |=
 				((u64) read32(DEFAULT_MCHBAR + lane_registers[lane] +
 					0x100 * channel + 8)) << 32;
+			old = ctrl->timings[channel][slotrank].lanes[lane].timB;
 			ctrl->timings[channel][slotrank].lanes[lane].timB +=
 				get_timB_high_adjust(res) * 64;
 
 			printk(BIOS_DEBUG, "High adjust %d:%016llx\n", lane, res);
-			printram("Bval+: %d, %d, %d, %x\n", channel,
-				slotrank, lane,
+			printram("Bval+: %d, %d, %d, %x -> %x\n", channel,
+				slotrank, lane, old,
 				ctrl->timings[channel][slotrank].lanes[lane].
 				timB);
 		}

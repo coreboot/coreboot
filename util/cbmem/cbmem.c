@@ -35,6 +35,11 @@
 #include <libgen.h>
 #include <assert.h>
 
+#ifdef __OpenBSD__
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#endif
+
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #define MAP_BYTES (1024*1024)
 #define IS_ENABLED(x) (defined (x) && (x))
@@ -294,7 +299,7 @@ static int parse_cbtable(u64 address, size_t table_size)
 	return found;
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(linux) && (defined(__i386__) || defined(__x86_64__))
 /*
  * read CPU frequency from a sysfs file, return an frequency in Kilohertz as
  * an int or exit on any error.
@@ -349,6 +354,18 @@ u64 arch_convert_raw_ts_entry(u64 ts)
 	return ts / cpu_freq_mhz;
 }
 
+#elif defined(__OpenBSD__) && (defined(__i386__) || defined(__x86_64__))
+u64 arch_convert_raw_ts_entry(u64 ts)
+{
+	int mib[2] = { CTL_HW, HW_CPUSPEED };
+	static int value = 0;
+	size_t value_len = sizeof(value);
+
+	if ((value == 0) && (sysctl(mib, 2, &value, &value_len, NULL, 0) == -1))
+		return ts;
+
+	return ts / value;
+}
 #else
 
 /* On non-x86 platforms the timestamp entries

@@ -90,6 +90,13 @@ void soc_memory_init_params(MEMORY_INIT_UPD *params)
 	for (i = 0; i < PchSerialIoIndexMax; i++)
 		params->SerialIoDevMode[i] = config->SerialIoDevMode[i];
 
+	memcpy(params->PcieRpEnable, config->PcieRpEnable,
+		sizeof(params->PcieRpEnable));
+	memcpy(params->PcieRpClkReqSupport, config->PcieRpClkReqSupport,
+		sizeof(params->PcieRpClkReqSupport));
+	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
+		sizeof(params->PcieRpClkReqNumber));
+
 	params->MmioSize = 0x800; /* 2GB in MB */
 	params->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	params->IedSize = config->IedSize;

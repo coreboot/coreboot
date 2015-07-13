@@ -81,5 +81,5 @@ void *cbmem_top(void)
 	*/
 
 	smm_region((void **)&smm_base, &smm_size);
-	return (void *)(smm_base - CONFIG_CHIPSET_RESERVED_MEM_BYTES);
+	return (void *)smm_base;
 }

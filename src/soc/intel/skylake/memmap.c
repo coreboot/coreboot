@@ -96,6 +96,6 @@ void *cbmem_top(void)
 		top_of_ram = ALIGN_DOWN(top_of_ram, mmap_region_granluarity());
 	}
 
-	return (void *)(top_of_ram - CONFIG_CHIPSET_RESERVED_MEM_BYTES);
+	return (void *)top_of_ram;
 }
 

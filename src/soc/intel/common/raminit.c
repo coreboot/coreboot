@@ -153,8 +153,6 @@ void raminit(struct romstage_params *params)
 #endif
 
 	/* Migrate CAR data */
-	printk(BIOS_DEBUG, "0x%08x: CONFIG_CHIPSET_RESERVED_MEM_BYTES\n",
-		CONFIG_CHIPSET_RESERVED_MEM_BYTES);
 	printk(BIOS_DEBUG, "0x%p: cbmem_top\n", cbmem_top());
 	if (pei_ptr->boot_mode != SLEEP_STATE_S3) {
 		cbmem_initialize_empty_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
@@ -267,9 +265,6 @@ void raminit(struct romstage_params *params)
 			size_t delta_bytes = (unsigned int)smm_base
 				- cbmem_root->PhysicalStart
 				- cbmem_root->ResourceLength;
-			printk(BIOS_DEBUG,
-				"0x%08x: CONFIG_CHIPSET_RESERVED_MEM_BYTES\n",
-				CONFIG_CHIPSET_RESERVED_MEM_BYTES);
 			printk(BIOS_DEBUG,
 				"0x%08x: Chipset reserved bytes reported by FSP\n",
 				(unsigned int)delta_bytes);

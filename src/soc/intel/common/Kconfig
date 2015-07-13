@@ -36,18 +36,6 @@ endif # CACHE_MRC_SETTINGS
 
 endif # HAVE_MRC
 
-config CHIPSET_RESERVED_MEM_BYTES
-	hex "Size in bytes of chipset reserved memory area"
-	default 0
-	help
-	  If insufficient documentation is available to determine the size of
-	  the chipset reserved memory area by walking the chipset registers,
-	  the CHIPSET_RESERVED_MEM_BYTES may be used as a workaround to account
-	  for the missing pieces of memory.  The value specified in bytes is:
-
-	  value = TSEG base - top of low usable memory - (any sizes determined
-	  by reading chipset registers)
-
 config DISPLAY_MTRRS
 	bool "MTRRs: Display the MTRR settings"
 	default n

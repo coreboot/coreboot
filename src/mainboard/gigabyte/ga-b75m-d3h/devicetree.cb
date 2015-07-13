@@ -24,7 +24,7 @@ chip northbridge/intel/sandybridge
 		device pci 00.0 on # host bridge
 			subsystemid 0x1458 0x5000
 		end
-		device pci 01.0 off end # PCIe Bridge for discrete graphics
+		device pci 01.0 on end # PCIe Bridge for discrete graphics
 		device pci 02.0 on # vga controller
 			subsystemid 0x1458 0xd000
 		end
@@ -58,7 +58,7 @@ chip northbridge/intel/sandybridge
 			device pci 1b.0 on # High Definition Audio
 				subsystemid 0x1458 0xa002
 			end
-			device pci 1c.0 off end # PCIe Port #1
+			device pci 1c.0 on end # PCIe Port #1
 			device pci 1c.1 off end # PCIe Port #2
 			device pci 1c.2 off end # PCIe Port #3
 			device pci 1c.3 off end # PCIe Port #4
@@ -92,17 +92,19 @@ chip northbridge/intel/sandybridge
 						drq 0x74 = 4
 					end
 					device pnp 2e.4 on # EC
+						io 0x60 = 0xa30
 						irq 0x70 = 9
+						io 0x62 = 0xa20
 					end
 					device pnp 2e.5 on # Keyboard
+						io 0x60 = 0x60
 						irq 0x70 = 1
+						io 0x62 = 0x64
 					end
 					device pnp 2e.6 on # Mouse
 						irq 0x70 = 12
 					end
-					device pnp 2e.7 on # GPIO
-						irq 0x70 = 0
-					end
+					device pnp 2e.7 off end # GPIO
 					device pnp 2e.a off end # IR
 				end
 			end

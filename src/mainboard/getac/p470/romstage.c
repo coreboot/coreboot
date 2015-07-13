@@ -34,6 +34,7 @@
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <timestamp.h>
 #include "option_table.h"
 
 void setup_ich7_gpios(void)
@@ -266,6 +267,9 @@ static void early_ich7_init(void)
 void main(unsigned long bist)
 {
 	int s3resume = 0;
+
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (bist == 0)
 		enable_lapic();

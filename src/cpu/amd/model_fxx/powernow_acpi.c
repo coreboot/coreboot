@@ -194,11 +194,6 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	else
 		PstateStep_coef = 2;
 
-	if (IntPstateSup == 0) {
-		printk(BIOS_INFO, "No intermediate P-states are supported\n");
-		goto write_pstates;
-	}
-
 	/* Get the multiplier of the fid frequency */
 	/*
 	 * Fid multiplier is always 100 revF and revG.
@@ -231,6 +226,11 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		Pstate_volt[0] = 1550 - Pstate_vid[0] * 25;
 		Pstate_power[0] = power_limit * 1000;	/* mw */
 		Pstate_num++;
+	}
+
+	if (IntPstateSup == 0) {
+		printk(BIOS_SPEW, "No intermediate P-states are supported\n");
+		goto nointpstatesup;
 	}
 
 	Cur_feq = Max_feq;
@@ -313,6 +313,7 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		Pstate_num++;
 	}
 
+nointpstatesup:
 	/* Construct P[Min] State */
 	if (Max_fid == 0x2A && Max_vid != 0x0) {
 		Pstate_fid[Pstate_num] = 0x2;

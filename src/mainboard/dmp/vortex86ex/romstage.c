@@ -21,7 +21,7 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <stdlib.h>
-#include "arch/x86/lib/romcc_console.c"
+#include "arch/x86/romcc_console.c"
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <halt.h>

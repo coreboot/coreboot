@@ -23,7 +23,7 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <pc80/mc146818rtc.h>
-#include "arch/x86/lib/romcc_console.c"
+#include "arch/x86/romcc_console.c"
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 

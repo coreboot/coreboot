@@ -31,7 +31,7 @@ romstage-y += ram_calc.c
 romstage-y += raminit.c
 romstage-y += early_init.c
 romstage-y += ../sandybridge/mrccache.c
-romstage-y += ../../../arch/x86/lib/walkcbfs.S
+romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 

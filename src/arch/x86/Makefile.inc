@@ -19,13 +19,6 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc.
 ##
-###############################################################################
-# Take care of subdirectories
-###############################################################################
-subdirs-y += boot
-# subdirs-y += init
-subdirs-y += lib
-subdirs-y += smp
 
 ################################################################################
 # i386 specific tools
@@ -74,20 +67,20 @@ CBFS_BASE_ADDRESS=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_CBFS_
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 
-bootblock-srcs += $(src)/arch/x86/init/failover.ld
+bootblock-srcs += $(src)/arch/x86/failover.ld
 bootblock-srcs += $(src)/cpu/x86/16bit/entry16.ld
 bootblock-srcs += $(src)/cpu/x86/16bit/reset16.ld
-bootblock-srcs += $(src)/arch/x86/lib/id.ld
+bootblock-srcs += $(src)/arch/x86/id.ld
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 bootblock-srcs += $(src)/cpu/intel/fit/fit.ld
 endif
 
 # TODO: Why can't this use the real bootblock-y += xxx.S mechanism instead?
-bootblock_inc = $(src)/arch/x86/init/prologue.inc
+bootblock_inc = $(src)/arch/x86/prologue.inc
 bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
 bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
 bootblock_inc += $(src)/cpu/x86/32bit/entry32.inc
-bootblock_inc += $(src)/arch/x86/lib/id.inc
+bootblock_inc += $(src)/arch/x86/id.inc
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 bootblock_inc += $(src)/cpu/intel/fit/fit.inc
 endif
@@ -97,7 +90,7 @@ ifeq ($(CONFIG_SSE),y)
 bootblock_inc += $(src)/cpu/x86/sse_enable.inc
 endif
 bootblock_inc += $(objgenerated)/bootblock.inc
-bootblock_inc += $(src)/arch/x86/lib/walkcbfs.S
+bootblock_inc += $(src)/arch/x86/walkcbfs.S
 
 bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 ifeq ($(CONFIG_SSE),y)
@@ -121,7 +114,7 @@ $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-$(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
+$(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
@@ -144,8 +137,8 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
-crt0s = $(src)/arch/x86/init/prologue.inc
-romstage-srcs += $(src)/arch/x86/init/romstage.ld
+crt0s = $(src)/arch/x86/prologue.inc
+romstage-srcs += $(src)/arch/x86/romstage.ld
 crt0s += $(src)/cpu/x86/32bit/entry32.inc
 romstage-srcs += $(src)/cpu/x86/32bit/entry32.ld
 
@@ -160,7 +153,7 @@ crt0s += $(cpu_incs-y)
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
 ifeq ($(CONFIG_ROMCC),y)
-crt0s += $(src)/arch/x86/init/crt0_romcc_epilogue.inc
+crt0s += $(src)/arch/x86/crt0_romcc_epilogue.inc
 endif
 
 ifeq ($(CONFIG_ROMCC),y)
@@ -339,3 +332,64 @@ endif
 endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
 
 
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
+
+romstage-y += cbmem.c
+romstage-y += boot.c
+
+romstage-y += cbfs_and_run.c
+romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
+romstage-y += memset.c
+romstage-y += memcpy.c
+romstage-y += memmove.c
+romstage-y += mmap_boot.c
+
+romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+
+endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
+
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
+
+ramstage-y += boot.c
+ramstage-y += gdt.c
+ramstage-y += tables.c
+ramstage-y += cbmem.c
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mpspec.c
+ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
+ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen.c
+ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
+
+ramstage-y += c_start.S
+ramstage-y += cpu.c
+ramstage-y += cpu_common.c
+ramstage-y += pci_ops_conf1.c
+ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
+ramstage-y += exception.c
+ramstage-$(CONFIG_IOAPIC) += ioapic.c
+ramstage-y += memset.c
+ramstage-y += memcpy.c
+ramstage-y += memmove.c
+ramstage-y += ebda.c
+ramstage-y += mmap_boot.c
+ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
+ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
+ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+
+smm-y += memset.c
+smm-y += memcpy.c
+smm-y += memmove.c
+smm-y += mmap_boot.c
+
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
+rmodules_x86_32-y += memset.c
+rmodules_x86_32-y += memcpy.c
+rmodules_x86_32-y += memmove.c
+else
+rmodules_x86_64-y += memset.c
+rmodules_x86_64-y += memcpy.c
+rmodules_x86_64-y += memmove.c
+endif
+
+endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64

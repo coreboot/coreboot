@@ -28,7 +28,7 @@ ramstage-y += acpi.c
 ramstage-y += port_access.c
 
 romstage-y += raminit.c
-romstage-y += ../../../arch/x86/lib/walkcbfs.S
+romstage-y += ../../../arch/x86/walkcbfs.S
 romstage-y += port_access.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += udelay.c

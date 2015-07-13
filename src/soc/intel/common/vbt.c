@@ -24,6 +24,7 @@
 #include <lib.h>
 #include <soc/intel/common/ramstage.h>
 #include <string.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Locate VBT and pass it to FSP GOP */
 void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params)
@@ -36,12 +37,15 @@ void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params)
 		vbt_data = NULL;
 		printk(BIOS_DEBUG, "S3 resume do not pass VBT to GOP\n");
 	} else {
-		/* Get VBT data */
-		vbt_data = fsp_get_vbt(&vbt_len);
-		if (vbt_data != NULL)
-			printk(BIOS_DEBUG, "Passing VBT to GOP\n");
-		else
-			printk(BIOS_DEBUG, "VBT not found!\n");
+		if (developer_mode_enabled() || recovery_mode_enabled()) {
+			/* Get VBT data */
+			vbt_data = fsp_get_vbt(&vbt_len);
+			if (vbt_data != NULL)
+				printk(BIOS_DEBUG, "Passing VBT to GOP\n");
+			else
+				printk(BIOS_DEBUG, "VBT not found!\n");
+		} else
+			vbt_data = NULL;
 	}
 	params->PcdGraphicsConfigPtr = (u32)vbt_data;
 }

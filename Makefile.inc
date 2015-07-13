@@ -23,7 +23,9 @@ GIT:=$(shell [ -d "$(top)/.git" ] && command -v git)
 # misleadingly named, this is the coreboot version
 export KERNELVERSION := $(strip $(if $(GIT),\
 	$(shell git describe --dirty --always || git describe),\
-	4.0$(KERNELREVISION)))
+	$(if $(wildcard $(top)/.coreboot-version),\
+		$(shell cat $(top)/.coreboot-version),\
+		coreboot-unknown$(KERNELREVISION))))
 
 #######################################################################
 # Basic component discovery

@@ -1,5 +1,6 @@
 .config
 .config.old
+.coreboot-version
 .xcompile
 .ccwrap
 build/

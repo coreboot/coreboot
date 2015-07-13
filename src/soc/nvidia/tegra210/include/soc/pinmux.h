@@ -41,6 +41,11 @@ enum {
 	PINMUX_IO_HV = 1 << 10,
 	PINMUX_OPEN_DRAIN = 1 << 11,
 	PINMUX_SCHMT = 1 << 12,
+
+	PINMUX_DRIVE_1X = 0 << 13,
+	PINMUX_DRIVE_2X = 1 << 13,
+	PINMUX_DRIVE_3X = 2 << 13,
+	PINMUX_DRIVE_4X = 3 << 13,
 };
 
 /* GPIO index constants. */

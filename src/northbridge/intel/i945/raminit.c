@@ -29,6 +29,7 @@
 #include "chip.h"
 #include <cbmem.h>
 #include <device/dram/ddr2.h>
+#include <timestamp.h>
 
 /* Debugging macros. */
 #if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
@@ -2735,6 +2736,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	struct sys_info sysinfo;
 	u8 reg8;
 
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
 	memset(&sysinfo, 0, sizeof(sysinfo));
@@ -2836,4 +2838,5 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 
 	sdram_setup_processor_side();
+	timestamp_add_now(TS_AFTER_INITRAM);
 }

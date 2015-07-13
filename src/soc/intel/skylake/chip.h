@@ -199,9 +199,6 @@ struct soc_intel_skylake_config {
 	/* Integrated Sensor */
 	u8 IshEnable;
 
-	/* SPI related */
-	u8 ShowSpiController;
-
 	u8 PttSwitch;
 	u8 HeciTimeouts;
 	u8 HsioMessaging;

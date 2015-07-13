@@ -111,6 +111,10 @@ void soc_memory_init_params(MEMORY_INIT_UPD *params)
 	params->IoBufferOwnership = config->IoBufferOwnership;
 	params->DspEnable = config->DspEnable;
 	params->XdciEnable = config->XdciEnable;
+
+	/* Show SPI controller if enabled in devicetree.cb */
+	dev = dev_find_slot(0, PCH_DEVFN_SPI);
+	params->ShowSpiController = dev->enabled;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

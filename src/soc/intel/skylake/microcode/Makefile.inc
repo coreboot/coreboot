@@ -1,9 +1,6 @@
 # Add CPU uCode source to list of files to build.
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += microcode_blob.c
 
-# Include path for addition microcode sources.
-INCLUDES += -I$(CONFIG_EXTRA_MICROCODE_INCLUDE_PATH)
-
 # This section overrides the default build process for the microcode to place
 # it at a known location in the CBFS.  This only needs to be enabled if FSP is
 # being used.

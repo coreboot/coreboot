@@ -19,6 +19,6 @@
  */
 
 unsigned int microcode[] = {
-#include "microcode_blob.h"
+#include <microcode/microcode_blob.h>
 };
 

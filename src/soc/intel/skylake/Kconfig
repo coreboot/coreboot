@@ -96,11 +96,6 @@ config DCACHE_RAM_SIZE
 	  The size of the cache-as-ram region required during bootblock
 	  and/or romstage.
 
-config EXTRA_MICROCODE_INCLUDE_PATH
-	string "Include path for extra microcode patches."
-	help
-	  The path to any extra microcode patches from other sources.
-
 config HAVE_IFD_BIN
 	bool "Use Intel Firmware Descriptor from existing binary"
 	default n
@@ -165,10 +160,6 @@ config ME_BIN_PATH
 	string "Path to management engine firmware"
 	depends on HAVE_ME_BIN
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
-
-config MICROCODE_INCLUDE_PATH
-	string
-	default "src/soc/intel/skylake/microcode"
 
 config MMCONF_BASE_ADDRESS
 	hex "MMIO Base Address"

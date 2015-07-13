@@ -6,6 +6,7 @@
 
 #include <console/console.h>
 
+#include <cbmem.h>
 #include <fmap.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,6 +18,8 @@
 /* Currently we only support Google VPD 2.0, which has a fixed offset. */
 enum {
 	GOOGLE_VPD_2_0_OFFSET = 0x600,
+	CROSVPD_CBMEM_MAGIC = 0x43524f53,
+	CROSVPD_CBMEM_VERSION = 0x0001,
 };
 
 struct vpd_gets_arg {
@@ -26,56 +29,121 @@ struct vpd_gets_arg {
 	int matched;
 };
 
-static int cros_vpd_load(uint8_t **vpd_address, int32_t *vpd_size)
+struct vpd_cbmem {
+	uint32_t magic;
+	uint32_t version;
+	uint32_t ro_size;
+	uint32_t rw_size;
+	uint8_t blob[0];
+	/* The blob contains both RO and RW data. It starts with RO (0 ..
+	 * ro_size) and then RW (ro_size .. ro_size+rw_size).
+	 */
+};
+
+/* returns the size of data in a VPD 2.0 formatted fmap region, or 0 */
+static int32_t get_vpd_size(const char *fmap_name, int32_t *base)
 {
-	MAYBE_STATIC int cached = 0;
-	MAYBE_STATIC uint8_t *cached_address = NULL;
-	MAYBE_STATIC int32_t cached_size = 0;
-	MAYBE_STATIC int result = -1;
 	struct google_vpd_info info;
-	int32_t base;
 	struct region_device vpd;
+	int32_t size;
 
-	if (cached) {
-		*vpd_address = cached_address;
-		*vpd_size = cached_size;
-		return result;
+	if (fmap_locate_area_as_rdev(fmap_name, &vpd)) {
+		printk(BIOS_ERR, "%s: No %s FMAP section.\n", __func__,
+			fmap_name);
+		return 0;
 	}
 
-	cached = 1;
-	if (fmap_locate_area_as_rdev("RO_VPD", &vpd)) {
-		printk(BIOS_ERR, "%s: No RO_VPD FMAP section.\n", __func__);
-		return result;
-	}
+	size = region_device_sz(&vpd);
 
-	base = 0;
-	cached_size = region_device_sz(&vpd);
-
-	if ((cached_size < GOOGLE_VPD_2_0_OFFSET + sizeof(info)) ||
+	if ((size < GOOGLE_VPD_2_0_OFFSET + sizeof(info)) ||
 	    rdev_chain(&vpd, &vpd, GOOGLE_VPD_2_0_OFFSET,
-			cached_size - GOOGLE_VPD_2_0_OFFSET)) {
+			size - GOOGLE_VPD_2_0_OFFSET)) {
 		printk(BIOS_ERR, "%s: Too small (%d) for Google VPD 2.0.\n",
-		       __func__, cached_size);
-		return result;
+		       __func__, size);
+		return 0;
 	}
 
 	/* Try if we can find a google_vpd_info, otherwise read whole VPD. */
-	if (rdev_readat(&vpd, &info, base, sizeof(info)) == sizeof(info) &&
+	if (rdev_readat(&vpd, &info, *base, sizeof(info)) == sizeof(info) &&
 	    memcmp(info.header.magic, VPD_INFO_MAGIC, sizeof(info.header.magic))
-	    == 0 && cached_size >= info.size + sizeof(info)) {
-		base += sizeof(info);
-		cached_size = info.size;
+	    == 0 && size >= info.size + sizeof(info)) {
+		*base += sizeof(info);
+		size = info.size;
+	} else {
+		size -= GOOGLE_VPD_2_0_OFFSET;
 	}
 
-	cached_address = rdev_mmap(&vpd, base, cached_size);
-	if (cached_address) {
-		*vpd_address = cached_address;
-		*vpd_size = cached_size;
-		printk(BIOS_DEBUG, "%s: Got VPD: %#x+%#x\n", __func__, base,
-		       cached_size);
-		result = 0;
+	return size;
+}
+
+static void cbmem_add_cros_vpd(int is_recovery)
+{
+	struct region_device vpd;
+	struct vpd_cbmem *cbmem;
+	int32_t ro_vpd_base = 0, rw_vpd_base = 0;
+	int32_t ro_vpd_size, rw_vpd_size;
+
+	ro_vpd_size = get_vpd_size("RO_VPD", &ro_vpd_base);
+	rw_vpd_size = get_vpd_size("RW_VPD", &rw_vpd_base);
+
+	/* no VPD at all? nothing to do then */
+	if ((ro_vpd_size == 0) && (rw_vpd_size == 0))
+		return;
+
+	cbmem = cbmem_add(CBMEM_ID_VPD, sizeof(*cbmem) + ro_vpd_size +
+		rw_vpd_size);
+	if (!cbmem) {
+		printk(BIOS_ERR, "%s: Failed to allocate CBMEM (%u+%u).\n",
+			__func__, ro_vpd_size, rw_vpd_size);
+		return;
 	}
-	return result;
+
+	cbmem->magic = CROSVPD_CBMEM_MAGIC;
+	cbmem->version = CROSVPD_CBMEM_VERSION;
+	cbmem->ro_size = 0;
+	cbmem->rw_size = 0;
+
+	if (ro_vpd_size) {
+		if (fmap_locate_area_as_rdev("RO_VPD", &vpd)) {
+			/* shouldn't happen, but let's be extra defensive */
+			printk(BIOS_ERR, "%s: No RO_VPD FMAP section.\n",
+				__func__);
+			return;
+		}
+		rdev_chain(&vpd, &vpd, GOOGLE_VPD_2_0_OFFSET,
+			region_device_sz(&vpd) - GOOGLE_VPD_2_0_OFFSET);
+
+
+		if (rdev_readat(&vpd, cbmem->blob, ro_vpd_base, ro_vpd_size) ==
+			ro_vpd_size) {
+			cbmem->ro_size = ro_vpd_size;
+		} else {
+			printk(BIOS_ERR,
+				"%s: Reading RO_VPD FMAP section failed.\n",
+				__func__);
+			ro_vpd_size = 0;
+		}
+	}
+
+	if (rw_vpd_size) {
+		if (fmap_locate_area_as_rdev("RW_VPD", &vpd)) {
+			/* shouldn't happen, but let's be extra defensive */
+			printk(BIOS_ERR, "%s: No RW_VPD FMAP section.\n",
+				__func__);
+			return;
+		}
+		rdev_chain(&vpd, &vpd, GOOGLE_VPD_2_0_OFFSET,
+			region_device_sz(&vpd) - GOOGLE_VPD_2_0_OFFSET);
+
+		if (rdev_readat(&vpd, cbmem->blob + ro_vpd_size, rw_vpd_base,
+			rw_vpd_size) == rw_vpd_size) {
+			cbmem->rw_size = rw_vpd_size;
+		} else {
+			printk(BIOS_ERR,
+				"%s: Reading RW_VPD FMAP section failed.\n",
+				__func__);
+		}
+	}
 }
 
 static int vpd_gets_callback(const uint8_t *key, int32_t key_len,
@@ -97,19 +165,18 @@ static int vpd_gets_callback(const uint8_t *key, int32_t key_len,
 
 const void *cros_vpd_find(const char *key, int *size)
 {
-	uint8_t *vpd_address = NULL;
-	int32_t vpd_size = 0;
 	struct vpd_gets_arg arg = {0};
 	int consumed = 0;
+	const struct vpd_cbmem *vpd;
 
-	if (cros_vpd_load(&vpd_address, &vpd_size) != 0) {
+	vpd = cbmem_find(CBMEM_ID_VPD);
+	if (!vpd || !vpd->ro_size)
 		return NULL;
-	}
 
 	arg.key = (const uint8_t *)key;
 	arg.key_len = strlen(key);
 
-	while (VPD_OK == decodeVpdString(vpd_size, vpd_address, &consumed,
+	while (VPD_OK == decodeVpdString(vpd->ro_size, vpd->blob, &consumed,
 					 vpd_gets_callback, &arg)) {
 		/* Iterate until found or no more entries. */
 	}
@@ -141,3 +208,4 @@ char *cros_vpd_gets(const char *key, char *buffer, int size)
 	return buffer;
 }
 
+RAMSTAGE_CBMEM_INIT_HOOK(cbmem_add_cros_vpd)

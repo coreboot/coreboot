@@ -245,6 +245,7 @@ void lb_ramoops(struct lb_header *header);
 #define LB_TAG_MRC_CACHE	0x0018
 #define LB_TAG_ACPI_GNVS	0x0024
 #define LB_TAG_WIFI_CALIBRATION	0x0027
+#define LB_TAG_VPD		0x002c
 struct lb_cbmem_ref {
 	uint32_t tag;
 	uint32_t size;

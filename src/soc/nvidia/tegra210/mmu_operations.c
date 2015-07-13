@@ -43,7 +43,7 @@ static void tegra210_memrange_init(struct memranges *map)
 	memory_in_range_below_4gb(&start,&end);
 
 	/* Device memory below DRAM */
-	memranges_insert(map, 0, start * MiB, devmem);
+	memranges_insert(map, TEGRA_ARM_LOWEST_PERIPH, start * MiB, devmem);
 
 	/* DRAM */
 	memranges_insert(map, start * MiB, (end-start) * MiB, cachedmem);

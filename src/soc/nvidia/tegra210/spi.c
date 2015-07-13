@@ -212,12 +212,6 @@ static struct tegra_spi_channel * const to_tegra_spi(int bus) {
 	return &tegra_spi_channels[bus - 1];
 }
 
-static unsigned int tegra_spi_speed(unsigned int bus)
-{
-	/* FIXME: implement this properly, for now use max value (50MHz) */
-	return 50000000;
-}
-
 int spi_claim_bus(struct spi_slave *slave)
 {
 	struct tegra_spi_regs *regs = to_tegra_spi(slave->bus)->regs;
@@ -329,36 +323,22 @@ static inline unsigned int spi_byte_count(struct tegra_spi_channel *spi)
 		(SPI_STATUS_BLOCK_COUNT << SPI_STATUS_BLOCK_COUNT_SHIFT);
 }
 
-/*
- * This calls udelay() with a calculated value based on the SPI speed and
- * number of bytes remaining to be transferred. It assumes that if the
- * calculated delay period is less than MIN_DELAY_US then it is probably
- * not worth the overhead of yielding.
- */
-#define MIN_DELAY_US 250
-static void spi_delay(struct tegra_spi_channel *spi,
-				unsigned int bytes_remaining)
-{
-	unsigned int ns_per_byte, delay_us;
-
-	ns_per_byte = 1000000000 / (tegra_spi_speed(spi->slave.bus) / 8);
-	delay_us = (ns_per_byte * bytes_remaining) / 1000;
-
-	if (delay_us < MIN_DELAY_US)
-		return;
-
-	udelay(delay_us);
-}
-
 static void tegra_spi_wait(struct tegra_spi_channel *spi)
 {
-	unsigned int count, dma_blk;
+	uint32_t dma_blk_count = 1 + (read32(&spi->regs->dma_blk) &
+				      (SPI_DMA_CTL_BLOCK_SIZE_MASK <<
+				       SPI_DMA_CTL_BLOCK_SIZE_SHIFT));
 
-	dma_blk = 1 + (read32(&spi->regs->dma_blk) &
-		(SPI_DMA_CTL_BLOCK_SIZE_MASK << SPI_DMA_CTL_BLOCK_SIZE_SHIFT));
+	while ((read32(&spi->regs->trans_status) & SPI_STATUS_RDY) !=
+	       SPI_STATUS_RDY)
+		;
 
-	while ((count = spi_byte_count(spi)) != dma_blk)
-		spi_delay(spi, dma_blk - count);
+	/*
+	 * If RDY bit is set, we should never encounter the condition that
+	 * blocks processed is not equal to the number programmed in dma_blk
+	 * register.
+	 */
+	ASSERT(spi_byte_count(spi) == dma_blk_count);
 }
 
 
@@ -367,24 +347,32 @@ static int fifo_error(struct tegra_spi_channel *spi)
 	return read32(&spi->regs->fifo_status) & SPI_FIFO_STATUS_ERR ? 1 : 0;
 }
 
+static void flush_fifos(struct tegra_spi_channel *spi)
+{
+	const uint32_t flush_mask = SPI_FIFO_STATUS_TX_FIFO_FLUSH |
+		SPI_FIFO_STATUS_RX_FIFO_FLUSH;
+
+	uint32_t fifo_status = read32(&spi->regs->fifo_status);
+	fifo_status |= flush_mask;
+	write32(&spi->regs->fifo_status, flush_mask);
+
+	while (read32(&spi->regs->fifo_status) & flush_mask)
+		;
+}
+
 static int tegra_spi_pio_prepare(struct tegra_spi_channel *spi,
 			unsigned int bytes, enum spi_direction dir)
 {
 	u8 *p = spi->out_buf;
 	unsigned int todo = MIN(bytes, SPI_MAX_TRANSFER_BYTES_FIFO);
-	u32 flush_mask, enable_mask;
+	u32 enable_mask;
 
-	if (dir == SPI_SEND) {
-		flush_mask = SPI_FIFO_STATUS_TX_FIFO_FLUSH;
+	flush_fifos(spi);
+
+	if (dir == SPI_SEND)
 		enable_mask = SPI_CMD1_TX_EN;
-	} else {
-		flush_mask = SPI_FIFO_STATUS_RX_FIFO_FLUSH;
+	else
 		enable_mask = SPI_CMD1_RX_EN;
-	}
-
-	setbits_le32(&spi->regs->fifo_status, flush_mask);
-	while (read32(&spi->regs->fifo_status) & flush_mask)
-		;
 
 	/*
 	 * BLOCK_SIZE in SPI_DMA_BLK register applies to both DMA and
@@ -439,24 +427,17 @@ static inline u32 rx_fifo_count(struct tegra_spi_channel *spi)
 static int tegra_spi_pio_finish(struct tegra_spi_channel *spi)
 {
 	u8 *p = spi->in_buf;
-	struct stopwatch sw;
 
 	clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN | SPI_CMD1_TX_EN);
 
-	/*
-	 * Allow some time in case the Rx FIFO does not yet have
-	 * all packets pushed into it. See chrome-os-partner:24215.
-	 */
-	stopwatch_init_usecs_expire(&sw, SPI_FIFO_XFER_TIMEOUT_US);
-	do {
-		if (rx_fifo_count(spi) == spi_byte_count(spi))
-			break;
-	} while (!stopwatch_expired(&sw));
+	ASSERT(rx_fifo_count(spi) == spi_byte_count(spi));
 
-	while (!(read32(&spi->regs->fifo_status) &
-				SPI_FIFO_STATUS_RX_FIFO_EMPTY)) {
-		*p = read8(&spi->regs->rx_fifo);
-		p++;
+	if (p) {
+		while (!(read32(&spi->regs->fifo_status) &
+			 SPI_FIFO_STATUS_RX_FIFO_EMPTY)) {
+			*p = read8(&spi->regs->rx_fifo);
+			p++;
+		}
 	}
 
 	if (fifo_error(spi)) {
@@ -508,6 +489,8 @@ static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
 	todo = MIN(bytes, SPI_MAX_TRANSFER_BYTES_DMA - TEGRA_DMA_ALIGN_BYTES);
 	todo = ALIGN_DOWN(todo, TEGRA_DMA_ALIGN_BYTES);
 	wcount = ALIGN_DOWN(todo - TEGRA_DMA_ALIGN_BYTES, TEGRA_DMA_ALIGN_BYTES);
+
+	flush_fifos(spi);
 
 	if (dir == SPI_SEND) {
 		spi->dma_out = dma_claim();
@@ -605,7 +588,7 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 	if (spi->dma_in) {
 		while ((read32(&spi->dma_in->regs->dma_byte_sta) < todo) ||
 				dma_busy(spi->dma_in))
-			;	/* this shouldn't take long, no udelay */
+			;
 		dma_stop(spi->dma_in);
 		clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
 		/* Disable secure access for the channel. */
@@ -617,7 +600,7 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 	if (spi->dma_out) {
 		while ((read32(&spi->dma_out->regs->dma_byte_sta) < todo) ||
 				dma_busy(spi->dma_out))
-			spi_delay(spi, todo - spi_byte_count(spi));
+			;
 		clrbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
 		dma_stop(spi->dma_out);
 		/* Disable secure access for the channel. */

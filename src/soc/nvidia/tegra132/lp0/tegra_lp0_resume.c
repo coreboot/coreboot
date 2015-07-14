@@ -249,22 +249,22 @@ static inline void __attribute__((always_inline))
 	for (;;);
 }
 
-inline static uint32_t read32(const void *addr)
+static inline uint32_t read32(const void *addr)
 {
 	return *(volatile uint32_t *)addr;
 }
 
-inline static void write32(void *addr, uint32_t val)
+static inline void write32(void *addr, uint32_t val)
 {
 	*(volatile uint32_t *)addr = val;
 }
 
-inline static void setbits32(uint32_t bits, void *addr)
+static inline void setbits32(uint32_t bits, void *addr)
 {
 	write32(addr, read32(addr) | bits);
 }
 
-inline static void clrbits32(uint32_t bits, void *addr)
+static inline void clrbits32(uint32_t bits, void *addr)
 {
 	write32(addr, read32(addr) & ~bits);
 }

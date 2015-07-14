@@ -10,6 +10,7 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 
+romstage-y += flash_controller.c
 romstage-y += gpio.c
 romstage-y += memmap.c
 romstage-y += pch.c

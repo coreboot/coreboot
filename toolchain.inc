@@ -64,7 +64,7 @@ ARCHDIR-mips	:= mips
 
 CFLAGS_arm      += -ffunction-sections -fdata-sections
 
-CFLAGS_arm64    += -ffunction-sections -fdata-sections
+CFLAGS_arm64    += -ffunction-sections -fdata-sections -mgeneral-regs-only
 
 CFLAGS_mips	+= -mips32r2 -G 0  -ffunction-sections -fdata-sections
 CFLAGS_mips	+= -mno-abicalls -fno-pic

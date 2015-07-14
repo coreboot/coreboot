@@ -98,7 +98,7 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 {
 	const char *file_name;
-	uint32_t offset, align, romsize, name_len;
+	uint32_t offset, romsize, name_len;
 	const struct cbfs_header *header;
 	struct cbfs_file file, *file_ptr;
 	struct cbfs_media default_media;
@@ -116,7 +116,6 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 
 	// Logical offset (for source media) of first file.
 	offset = ntohl(header->offset);
-	align = ntohl(header->align);
 	romsize = ntohl(header->romsize);
 
 	// TODO Add a "size" in CBFS header for a platform independent way to
@@ -129,13 +128,14 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	// fine tune the length to handle alignment positioning.
 	// using (bootblock size) % align, to derive the
 	// number of bytes the bootblock is off from the alignment size.
-	if ((ntohl(header->bootblocksize) % align))
-		romsize -= (align - (ntohl(header->bootblocksize) % align));
+	if ((ntohl(header->bootblocksize) % CBFS_ALIGNMENT))
+		romsize -= (CBFS_ALIGNMENT -
+			(ntohl(header->bootblocksize) % CBFS_ALIGNMENT));
 	else
 		romsize -= 1;
 #endif
 
-	DEBUG("CBFS location: 0x%x~0x%x, align: %d\n", offset, romsize, align);
+	DEBUG("CBFS location: 0x%x~0x%x\n", offset, romsize);
 	DEBUG("Looking for '%s' starting from 0x%x.\n", name, offset);
 
 	media->open(media);
@@ -143,9 +143,10 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	       media->read(media, &file, offset, sizeof(file)) == sizeof(file)) {
 		if (memcmp(CBFS_FILE_MAGIC, file.magic,
 			   sizeof(file.magic)) != 0) {
-			uint32_t new_align = align;
-			if (offset % align)
-				new_align += align - (offset % align);
+			uint32_t new_align = CBFS_ALIGNMENT;
+			if (offset % CBFS_ALIGNMENT)
+				new_align += CBFS_ALIGNMENT -
+					(offset % CBFS_ALIGNMENT);
 			ERROR("ERROR: No file header found at 0x%xx - "
 			      "try next aligned address: 0x%x.\n", offset,
 			      offset + new_align);
@@ -179,8 +180,8 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 
 		// Move to next file.
 		offset += ntohl(file.len) + ntohl(file.offset);
-		if (offset % align)
-			offset += align - (offset % align);
+		if (offset % CBFS_ALIGNMENT)
+			offset += CBFS_ALIGNMENT - (offset % CBFS_ALIGNMENT);
 	}
 	media->close(media);
 	LOG("WARNING: '%s' not found.\n", name);

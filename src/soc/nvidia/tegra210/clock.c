@@ -791,6 +791,7 @@ void clock_enable_audio(void)
 	 */
 	clock_enable_clear_reset(CLK_L_I2S1 | CLK_L_I2S2 | CLK_L_I2S3 | CLK_L_SPDIF,
 				 0, 0,
-				 CLK_V_I2S4 | CLK_V_I2S5 | CLK_V_AHUB | CLK_V_APB2APE,
+				 CLK_V_I2S4 | CLK_V_I2S5 | CLK_V_AHUB | CLK_V_APB2APE |
+				 CLK_V_EXTPERIPH1,
 				 0, 0, 0);
 }

@@ -19,6 +19,19 @@
 ## Foundation, Inc.
 ##
 
+ifeq ($(CONFIG_PAYLOAD_ELF),y)
+COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_PAYLOAD_FILE)
+endif
+ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
+COREBOOT_ROM_DEPENDENCIES+=seabios
+endif
+ifeq ($(CONFIG_PAYLOAD_FILO),y)
+COREBOOT_ROM_DEPENDENCIES+=filo
+endif
+ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
+COREBOOT_ROM_DEPENDENCIES+=grub2
+endif
+
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \
 			HOSTCC="$(HOSTCC)" \

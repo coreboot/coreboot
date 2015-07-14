@@ -542,18 +542,6 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 ###########################################################################
 
 COREBOOT_ROM_DEPENDENCIES:=
-ifeq ($(CONFIG_PAYLOAD_ELF),y)
-COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_PAYLOAD_FILE)
-endif
-ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
-COREBOOT_ROM_DEPENDENCIES+=seabios
-endif
-ifeq ($(CONFIG_PAYLOAD_FILO),y)
-COREBOOT_ROM_DEPENDENCIES+=filo
-endif
-ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
-COREBOOT_ROM_DEPENDENCIES+=grub2
-endif
 
 extract_nth=$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-)))
 

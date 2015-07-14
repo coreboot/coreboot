@@ -23,10 +23,12 @@
 #include <console/uart.h>
 #include <ip_checksum.h>
 #include <boot/coreboot_tables.h>
+#include <boot_device.h>
 #include <string.h>
 #include <version.h>
 #include <boardid.h>
 #include <device/device.h>
+#include <fmap.h>
 #include <stdlib.h>
 #include <cbfs.h>
 #include <cbmem.h>
@@ -226,6 +228,36 @@ static void lb_board_id(struct lb_header *header)
 	bid->size = sizeof(*bid);
 	bid->board_id = board_id();
 #endif
+}
+
+static void lb_boot_media_params(struct lb_header *header)
+{
+	struct lb_boot_media_params *bmp;
+	struct cbfs_props props;
+	const struct region_device *boot_dev;
+	struct region_device fmrd;
+
+	boot_device_init();
+
+	if (cbfs_boot_region_properties(&props))
+		return;
+
+	boot_dev = boot_device_ro();
+	if (boot_dev == NULL)
+		return;
+
+	bmp = (struct lb_boot_media_params *)lb_new_record(header);
+	bmp->tag = LB_TAG_BOOT_MEDIA_PARAMS;
+	bmp->size = sizeof(*bmp);
+
+	bmp->cbfs_offset = props.offset;
+	bmp->cbfs_size = props.size;
+	bmp->boot_media_size = region_device_sz(boot_dev);
+
+	bmp->fmap_offset = ~(uint64_t)0;
+	if (find_fmap_directory(&fmrd) == 0) {
+		bmp->fmap_offset = region_device_offset(&fmrd);
+	}
 }
 
 static void lb_ram_code(struct lb_header *header)
@@ -482,6 +514,8 @@ unsigned long write_coreboot_table(
 #if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
 	lb_ramoops(head);
 #endif
+
+	lb_boot_media_params(head);
 
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head);

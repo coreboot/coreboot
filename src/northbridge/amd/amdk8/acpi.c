@@ -282,6 +282,17 @@ static void k8acpi_write_pci_data(int dlen, const char *name, int offset) {
 
 void k8acpi_write_vars(device_t device)
 {
+	/*
+	 * If more than one physical CPU is installed k8acpi_write_vars()
+	 * is called more than once. If we don't prevent it, a SSDT table
+	 * with duplicate variables will cause some ACPI parsers to be
+	 * confused enough to fail.
+	 */
+	static uint8_t ssdt_generated = 0;
+	if (ssdt_generated)
+		return;
+	ssdt_generated = 1;
+
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
 

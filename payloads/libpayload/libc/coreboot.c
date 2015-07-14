@@ -220,6 +220,17 @@ static void cb_parse_spi_flash(void *ptr, struct sysinfo_t *info)
 	info->spi_flash.erase_cmd = flash->erase_cmd;
 }
 
+static void cb_parse_boot_media_params(unsigned char *ptr,
+				       struct sysinfo_t *info)
+{
+	struct cb_boot_media_params *const bmp =
+			(struct cb_boot_media_params *)ptr;
+	info->fmap_offset = bmp->fmap_offset;
+	info->cbfs_offset = bmp->cbfs_offset;
+	info->cbfs_size = bmp->cbfs_size;
+	info->boot_media_size = bmp->boot_media_size;
+}
+
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -371,6 +382,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_MTC:
 			cb_parse_mtc(ptr, info);
+			break;
+		case CB_TAG_BOOT_MEDIA_PARAMS:
+			cb_parse_boot_media_params(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

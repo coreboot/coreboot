@@ -257,6 +257,17 @@ struct cb_spi_flash {
 	uint32_t erase_cmd;
 };
 
+#define CB_TAG_BOOT_MEDIA_PARAMS 0x0030
+struct cb_boot_media_params {
+	uint32_t tag;
+	uint32_t size;
+	/* offsets are relative to start of boot media */
+	uint64_t fmap_offset;
+	uint64_t cbfs_offset;
+	uint64_t cbfs_size;
+	uint64_t boot_media_size;
+};
+
 #define CB_TAG_SERIALNO		0x002a
 #define CB_MAX_SERIALNO_LENGTH	32
 

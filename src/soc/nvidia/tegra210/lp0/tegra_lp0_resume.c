@@ -413,7 +413,7 @@ static inline uint32_t read32(const void *addr)
 	return *(volatile uint32_t *)addr;
 }
 
-static inline void write32(uint32_t val, void *addr)
+static inline void write32(void *addr, uint32_t val)
 {
 	*(volatile uint32_t *)addr = val;
 }

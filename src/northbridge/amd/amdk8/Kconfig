@@ -119,4 +119,12 @@ config IOMMU
 	bool
 	default y
 
+config CBB
+	hex
+	default 0x00
+
+config CDB
+	hex
+	default 0x18
+
 endif #NORTHBRIDGE_AMD_K8

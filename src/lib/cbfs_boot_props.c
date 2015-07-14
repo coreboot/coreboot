@@ -49,13 +49,11 @@ int __attribute__((weak)) cbfs_boot_region_properties(struct cbfs_props *props)
 
 	header.magic = ntohl(header.magic);
 	header.romsize = ntohl(header.romsize);
-	header.align = ntohl(header.align);
 	header.offset = ntohl(header.offset);
 
 	if (header.magic != CBFS_HEADER_MAGIC)
 		return -1;
 
-	props->align = header.align;
 	props->offset = header.offset;
 	props->size = header.romsize;
 	props->size -= props->offset;

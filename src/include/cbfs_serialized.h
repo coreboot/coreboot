@@ -95,11 +95,14 @@ struct cbfs_header {
 	uint32_t version;
 	uint32_t romsize;
 	uint32_t bootblocksize;
-	uint32_t align;
+	uint32_t align; /* fixed to 64 bytes */
 	uint32_t offset;
 	uint32_t architecture;
 	uint32_t pad[1];
 } __attribute__((packed));
+
+/* this used to be flexible, but wasn't ever set to something different. */
+#define CBFS_ALIGNMENT 64
 
 /* "Unknown" refers to CBFS headers version 1,
  * before the architecture was defined (i.e., x86 only).

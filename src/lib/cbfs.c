@@ -57,7 +57,6 @@ int cbfs_boot_locate(struct region_device *fh, const char *name, uint32_t *type)
 		return -1;
 
 	cbfs.rdev = &rdev;
-	cbfs.align = props.align;
 
 	return cbfs_locate(fh, &cbfs, name, type);
 }
@@ -83,11 +82,9 @@ int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
 {
 	size_t offset;
 	const struct region_device *rd;
-	size_t align;
 
 	offset = 0;
 	rd = cbfs->rdev;
-	align = cbfs->align;
 
 	LOG("Locating '%s'\n", name);
 
@@ -107,7 +104,7 @@ int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
 
 		if (memcmp(file.magic, CBFS_FILE_MAGIC, sizeof(file.magic))) {
 			offset++;
-			offset = ALIGN_UP(offset, align);
+			offset = ALIGN_UP(offset, CBFS_ALIGNMENT);
 			continue;
 		}
 
@@ -127,14 +124,14 @@ int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
 		if (!name_match) {
 			DEBUG(" Unmatched '%s' at %zx\n", fname, offset);
 			offset += file.offset + file.len;
-			offset = ALIGN_UP(offset, align);
+			offset = ALIGN_UP(offset, CBFS_ALIGNMENT);
 			continue;
 		}
 
 		if (type != NULL && *type != file.type) {
 			DEBUG(" Unmatched type %x at %zx\n", file.type, offset);
 			offset += file.offset + file.len;
-			offset = ALIGN_UP(offset, align);
+			offset = ALIGN_UP(offset, CBFS_ALIGNMENT);
 			continue;
 		}
 

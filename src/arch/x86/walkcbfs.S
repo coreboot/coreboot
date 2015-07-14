@@ -7,6 +7,9 @@
 #define CBFS_HEADER_ALIGN (CBFS_HEADER_BOOTBLOCKSIZE + 4)
 #define CBFS_HEADER_OFFSET (CBFS_HEADER_ALIGN + 4)
 
+/* we use this instead of CBFS_HEADER_ALIGN because the latter is retired. */
+#define CBFS_ALIGNMENT 64
+
 #define CBFS_FILE_MAGIC 0
 #define CBFS_FILE_LEN (CBFS_FILE_MAGIC + 8)
 #define CBFS_FILE_TYPE (CBFS_FILE_LEN + 4)
@@ -74,13 +77,9 @@ tryharder:
 	mov CBFS_FILE_LEN(%ebx), %edi
 	bswap %edi
 	add %edi, %ecx
-	mov CBFS_HEADER_PTR, %edi
-	mov CBFS_HEADER_ALIGN(%edi), %edi
-	bswap %edi
-	sub $1, %edi
-	add %edi, %ecx
-	not %edi
-	and %edi, %ecx
+	/* round by 64 bytes */
+	add $(CBFS_ALIGNMENT - 1), %ecx
+	and $~(CBFS_ALIGNMENT - 1), %ecx
 
 	/* if oldaddr >= addr, leave */
 	cmp %ebx, %ecx
@@ -106,11 +105,8 @@ out:
 
 
 searchfile:
-	/* if filemagic isn't found, move forward cbfs_header->align bytes */
-	mov CBFS_HEADER_PTR, %edi
-	mov CBFS_HEADER_ALIGN(%edi), %edi
-	bswap %edi
-	add %edi, %ebx
+	/* if filemagic isn't found, move forward 64 bytes */
+	add $CBFS_ALIGNMENT, %ebx
 	jmp check_for_exit
 
 filemagic:

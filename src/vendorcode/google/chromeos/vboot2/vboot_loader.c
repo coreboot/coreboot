@@ -173,7 +173,6 @@ static int vboot_locate_by_multi_cbfs(const struct region_device *fw_main,
 		return -1;
 
 	cbfs.rdev = &rdev;
-	cbfs.align = props.align;
 
 	return cbfs_locate(asset_rdev(asset), &cbfs, asset_name(asset), NULL);
 }

@@ -53,13 +53,11 @@ int cbfs_boot_region_properties(struct cbfs_props *props)
 	header.magic = ntohl(header.magic);
 	header.romsize = ntohl(header.romsize);
 	header.bootblocksize = ntohl(header.bootblocksize);
-	header.align = ntohl(header.align);
 	header.offset = ntohl(header.offset);
 
 	if (header.magic != CBFS_HEADER_MAGIC)
 		return -1;
 
-	props->align = header.align;
 	props->offset = header.offset;
 	if (CONFIG_ROM_SIZE != header.romsize)
 		props->size = CONFIG_ROM_SIZE;
@@ -67,7 +65,7 @@ int cbfs_boot_region_properties(struct cbfs_props *props)
 		props->size = header.romsize;
 	props->size -= props->offset;
 	props->size -= header.bootblocksize;
-	props->size = ALIGN_DOWN(props->size, props->align);
+	props->size = ALIGN_DOWN(props->size, 64);
 
 	printk(BIOS_DEBUG, "CBFS @ %zx size %zx\n", props->offset, props->size);
 

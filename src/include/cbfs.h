@@ -66,13 +66,10 @@ int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
 
 struct cbfsd {
 	const struct region_device *rdev;
-	size_t align;
 };
 
 /* The cbfs_props struct describes the properties associated with a CBFS. */
 struct cbfs_props {
-	/* Each file is aligned. */
-	size_t align;
 	/* CBFS starts at the following offset within the boot region. */
 	size_t offset;
 	/* CBFS size. */

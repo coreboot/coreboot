@@ -372,9 +372,8 @@ static int cbfs_create(void)
 						param.baseaddress_assigned ||
 						param.headeroffset_assigned ||
 						param.cbfsoffset_assigned ||
-							param.alignment ||
 							param.bootblock) {
-			ERROR("Since -M was provided, -m, -s, -b, -o, -H, -a, and -B should be omitted\n");
+			ERROR("Since -M was provided, -m, -s, -b, -o, -H, and -B should be omitted\n");
 			return 1;
 		}
 
@@ -395,7 +394,7 @@ static int cbfs_create(void)
 	}
 
 	if (!param.alignment)
-		param.alignment = 64;	// default CBFS entry alignment
+		param.alignment = CBFS_ALIGNMENT;
 
 	// Set default offsets. x86, as usual, needs to be a special snowflake.
 	if (!param.baseaddress_assigned) {
@@ -430,7 +429,7 @@ static int cbfs_create(void)
 		} else {
 			param.cbfsoffset = align_up(param.headeroffset +
 						    sizeof(struct cbfs_header),
-						    param.alignment);
+						    CBFS_ALIGNMENT);
 			DEBUG("CBFS entries start beind master header (%#x).\n",
 			      param.cbfsoffset);
 		}
@@ -438,7 +437,7 @@ static int cbfs_create(void)
 
 	int ret = cbfs_legacy_image_create(&image,
 					   param.arch,
-					   param.alignment,
+					   CBFS_ALIGNMENT,
 					   &bootblock,
 					   param.baseaddress,
 					   param.headeroffset,
@@ -743,7 +742,7 @@ static const struct command commands[] = {
 	{"add-stage", "H:r:f:n:t:c:b:S:vh?", cbfs_add_stage, true, true},
 	{"add-int", "H:r:i:n:b:vh?", cbfs_add_integer, true, true},
 	{"copy", "H:D:s:h?", cbfs_copy, true, true},
-	{"create", "M:r:s:B:b:H:a:o:m:vh?", cbfs_create, true, true},
+	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
 	{"extract", "H:r:n:f:vh?", cbfs_extract, true, false},
 	{"locate", "H:r:f:n:P:a:Tvh?", cbfs_locate, true, false},
 	{"layout", "wvh?", cbfs_layout, false, false},

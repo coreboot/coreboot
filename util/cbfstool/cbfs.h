@@ -47,12 +47,14 @@
 #define CBFS_HEADER_VERSION2 0x31313132
 #define CBFS_HEADER_VERSION  CBFS_HEADER_VERSION2
 
+#define CBFS_ALIGNMENT 64
+
 struct cbfs_header {
 	uint32_t magic;
 	uint32_t version;
 	uint32_t romsize;
 	uint32_t bootblocksize;
-	uint32_t align;
+	uint32_t align; /* hard coded to 64 byte */
 	uint32_t offset;
 	uint32_t architecture;	/* Version 2 */
 	uint32_t pad[1];

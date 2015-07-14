@@ -573,7 +573,7 @@ prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(FMAPTOOL) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)
 	$(CBFSTOOL) $@.tmp create \
-	-B $(objcbfs)/bootblock.bin -a 64 \
+	-B $(objcbfs)/bootblock.bin \
 	$(CBFSTOOL_PRE1_OPTS)
 	$(prebuild-files) true
 	$(call add-cpu-microcode-to-cbfs,$@.tmp)

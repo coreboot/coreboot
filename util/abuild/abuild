@@ -280,6 +280,12 @@ function build_target
 
  	HOSTCC='gcc'
 
+	if [ -f src/mainboard/${VENDOR}/${MAINBOARD}/abuild.disabled ]; then
+		echo "${VENDOR}/${MAINBOARD} disabled:"
+		cat src/mainboard/${VENDOR}/${MAINBOARD}/abuild.disabled
+		return
+	fi
+
 	if [ "$quiet" == "false" ]; then printf "Building $VENDOR/$MAINBOARD\n"; fi
 	mkdir -p $TARGET/${VENDOR}_${MAINBOARD} $TARGET/abuild
 	ABSPATH=`cd $TARGET/abuild; pwd`

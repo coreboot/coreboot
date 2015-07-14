@@ -1,4 +1,4 @@
-ifeq ($(CONFIG_SOUTHBRIDGE_AMD_RS790),y)
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_RS780),y)
 
 ramstage-y += rs780.c
 ramstage-y += cmn.c

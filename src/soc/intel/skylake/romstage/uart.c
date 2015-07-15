@@ -28,26 +28,9 @@
 
 void pch_uart_init(void)
 {
-	device_t dev;
-	u32 tmp, legacy;
+	device_t dev = PCH_DEV_UART2;
+	u32 tmp;
 	u8 *base = (u8 *)CONFIG_TTYS0_BASE;
-
-	switch (CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER) {
-	case 0:
-		dev = PCH_DEV_UART0;
-		legacy = SIO_PCH_LEGACY_UART0;
-		break;
-	case 1:
-		dev = PCH_DEV_UART1;
-		legacy = SIO_PCH_LEGACY_UART1;
-		break;
-	case 2:
-		dev = PCH_DEV_UART2;
-		legacy = SIO_PCH_LEGACY_UART2;
-		break;
-	default:
-		return;
-	}
 
 	/* Set configured UART base address */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, (u32)base);
@@ -70,6 +53,7 @@ void pch_uart_init(void)
 		(SIO_REG_PPR_CLOCK_M_DIV << 1);
 	write32(base + SIO_REG_PPR_CLOCK, tmp);
 
-	/* Put UART in byte access mode for 16550 compatibility */
-	pcr_andthenor32(PID_SERIALIO, R_PCH_PCR_SERIAL_IO_GPPRVRW7, 0, legacy);
+	/* Put UART2 in byte access mode for 16550 compatibility */
+	pcr_andthenor32(PID_SERIALIO, R_PCH_PCR_SERIAL_IO_GPPRVRW7, 0,
+		SIO_PCH_LEGACY_UART2);
 }

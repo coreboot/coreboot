@@ -17,6 +17,7 @@ config CPU_SPECIFIC_OPTIONS
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	select CACHE_ROM
 	select CAR_MIGRATION
+	select CONSOLE_SERIAL8250MEM
 	select COLLECT_TIMESTAMPS
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	select CPU_MICROCODE_IN_CBFS
@@ -24,6 +25,7 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_HARD_RESET
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_SMI_HANDLER
+	select HAVE_UART_MEMORY_MAPPED
 	select IOAPIC
 	select MMCONF_SUPPORT
 	select MMCONF_SUPPORT_DEFAULT
@@ -160,18 +162,6 @@ config IFD_PLATFORM_SECTION
 	string
 	default ""
 
-config INTEL_PCH_UART_CONSOLE
-	bool "Use Serial IO UART for console"
-	default n
-	select HAVE_UART_MEMORY_MAPPED
-	select CONSOLE_SERIAL8250MEM
-	depends on !CONFIG_DRIVERS_OXFORD_OXPCIE
-
-config INTEL_PCH_UART_CONSOLE_NUMBER
-	hex "Serial IO UART number to use for console"
-	default "0x0"
-	depends on INTEL_PCH_UART_CONSOLE
-
 config ME_BIN_PATH
 	string "Path to management engine firmware"
 	depends on HAVE_ME_BIN
@@ -222,7 +212,6 @@ config SMM_TSEG_SIZE
 config TTYS0_BASE
 	hex
 	default 0xfe034000
-	depends on INTEL_PCH_UART_CONSOLE
 
 config VGA_BIOS_ID
 	string

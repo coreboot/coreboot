@@ -28,18 +28,7 @@
 
 static int pch_uart_is_debug(struct device *dev)
 {
-	if (!IS_ENABLED(CONFIG_INTEL_PCH_UART_CONSOLE))
-		return 0;
-
-	switch (dev->path.pci.devfn) {
-	case PCH_DEVFN_UART0:
-		return CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 0;
-	case PCH_DEVFN_UART1:
-		return CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 1;
-	case PCH_DEVFN_UART2:
-		return CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 2;
-	}
-	return 0;
+	return dev->path.pci.devfn == PCH_DEVFN_UART2;
 }
 
 static void pch_uart_read_resources(struct device *dev)

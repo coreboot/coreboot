@@ -21,7 +21,7 @@
 #include <stdint.h>
 
 /* Functions for PLL setting */
-int sys_pll_setup(u8 divider1, u8 divider2);
+int sys_pll_setup(u8 divider1, u8 divider2, u8 predivider, u32 feedback);
 int mips_pll_setup(u8 divider1, u8 divider2, u8 predivider, u32 feedback);
 
 /* Peripheral divider setting */

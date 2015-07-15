@@ -44,6 +44,13 @@
 #define SYS_PLL_STATUS_ADDR		0xB8144038
 #define SYS_PLL_STATUS_LOCK_MASK	0x00000001
 
+#define SYS_PLL_REFDIV_ADDR		0xB814403C
+#define SYS_PLL_REFDIV_MASK		0x0000003F
+#define SYS_PLL_REFDIV_SHIFT		0
+#define SYS_PLL_FEEDBACK_ADDR		0xB814403C
+#define SYS_PLL_FEEDBACK_MASK		0x0003FFC0
+#define SYS_PLL_FEEDBACK_SHIFT		6
+
 #define MIPS_PLL_POSTDIV_ADDR		0xB8144004
 #define MIPS_PLL_POSTDIV1_MASK		0x001C0000
 #define MIPS_PLL_POSTDIV1_SHIFT		18
@@ -156,13 +163,13 @@ static struct pll_parameters pll_params[] = {
 		.status_addr = SYS_PLL_STATUS_ADDR,
 		.status_lock_mask = SYS_PLL_STATUS_LOCK_MASK,
 		.refdivider = 0, /* Not defined yet */
-		.refdiv_addr = 0, /* Not necessary */
-		.refdiv_shift = 0, /* Not necessary */
-		.refdiv_mask = 0, /* Not necessary */
-		.feedback = 0, /* Not necessary */
-		.feedback_addr = 0, /* Not necessary */
-		.feedback_shift = 0, /* Not necessary */
-		.feedback_mask = 0, /* Not necessary */
+		.refdiv_addr = SYS_PLL_REFDIV_ADDR,
+		.refdiv_shift = SYS_PLL_REFDIV_SHIFT,
+		.refdiv_mask = SYS_PLL_REFDIV_MASK,
+		.feedback = 0, /* Not defined yet */
+		.feedback_addr = SYS_PLL_FEEDBACK_ADDR,
+		.feedback_shift = SYS_PLL_FEEDBACK_SHIFT,
+		.feedback_mask = SYS_PLL_FEEDBACK_MASK
 	},
 
 	[MIPS_PLL] = {
@@ -263,8 +270,10 @@ static int pll_setup(struct pll_parameters *param, u8 divider1, u8 divider2)
 	return CLOCKS_OK;
 }
 
-int sys_pll_setup(u8 divider1, u8 divider2)
+int sys_pll_setup(u8 divider1, u8 divider2, u8 refdivider, u32 feedback)
 {
+	pll_params[SYS_PLL].refdivider = refdivider;
+	pll_params[SYS_PLL].feedback = feedback;
 	return pll_setup(&(pll_params[SYS_PLL]), divider1, divider2);
 }
 

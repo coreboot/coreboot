@@ -172,7 +172,7 @@ static void bootblock_mainboard_init(void)
 {
 	int ret;
 
-	/* System PLL divided by 2 -> 400 MHz */
+	/* System PLL divided by 2 -> 350 MHz */
 	/* The same frequency will be the input frequency for the SPFI block */
 	system_clk_setup(1);
 
@@ -181,8 +181,8 @@ static void bootblock_mainboard_init(void)
 	 * the values set or not by the boot ROM code */
 	mips_clk_setup(0, 0);
 
-	/* Setup system PLL at 800 MHz */
-	ret = sys_pll_setup(2, 1);
+	/* Setup system PLL at 700 MHz */
+	ret = sys_pll_setup(2, 1, 13, 350);
 	if (ret != CLOCKS_OK)
 		return;
 	/* Setup MIPS PLL at 546 MHz */
@@ -193,9 +193,9 @@ static void bootblock_mainboard_init(void)
 	/* Setup SPIM1 MFIOs */
 	spim1_mfio_setup();
 	/* Setup UART1 clock and MFIOs
-	 * System PLL divided by 7 divided by 62 -> 1.8433 Mhz
+	 * System PLL divided by 5 divided by 76 -> 1.8421 Mhz
 	 */
-	uart1_clk_setup(6, 61);
+	uart1_clk_setup(4, 75);
 	uart1_mfio_setup();
 }
 
@@ -213,23 +213,23 @@ static int init_extra_hardware(void)
 	}
 
 	/* Setup USB clock
-	 * System clock divided by 8 -> 50 MHz
+	 * System clock divided by 7 -> 50 MHz
 	 */
-	if (usb_clk_setup(7, 2, 7) != CLOCKS_OK) {
+	if (usb_clk_setup(6, 2, 7) != CLOCKS_OK) {
 		printk(BIOS_ERR, "%s: Failed to set up USB clock.\n",
 			__func__);
 		return -1;
 	}
 
 	/* Setup I2C clocks and MFIOs
-	 * System PLL divided by 4 divided by 3 -> 33.33 MHz
+	 * System clock divided by 4 divided by 3 -> 29.1(6) MHz
 	 */
 	i2c_clk_setup(3, 2, hardware->i2c_interface);
 	i2c_mfio_setup(hardware->i2c_interface);
 
 	/* Ethernet clocks setup: ENET as clock source */
-	eth_clk_setup(0, 7);
-	/* ROM clock setup: system clock divided by 2 -> 200 MHz */
+	eth_clk_setup(0, 6);
+	/* ROM clock setup: system clock divided by 2 -> 175 MHz */
 	/* Hash accelerator is driven from the ROM clock */
 	rom_clk_setup(1);
 

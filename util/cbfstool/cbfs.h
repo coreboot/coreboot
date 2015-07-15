@@ -77,6 +77,7 @@ struct cbfs_file {
 	uint32_t checksum;
 	/* length of header incl. variable data */
 	uint32_t offset;
+	char filename[];
 } __PACKED;
 
 _Static_assert(sizeof(struct cbfs_file) == 24, "cbfs_file size mismatch");
@@ -140,7 +141,6 @@ struct cbfs_payload {
  */
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
-#define CBFS_NAME(_c) (((char *) (_c)) + sizeof(struct cbfs_file))
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 /* cbfs_image.c */
 uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);

@@ -641,7 +641,7 @@ struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name)
 	for (entry = cbfs_find_first_entry(image);
 	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
-		if (strcasecmp(CBFS_NAME(entry), name) == 0) {
+		if (strcasecmp(entry->filename, name) == 0) {
 			DEBUG("cbfs_get_entry: found %s\n", name);
 			return entry;
 		}
@@ -692,13 +692,13 @@ int cbfs_remove_entry(struct cbfs_image *image, const char *name)
 	next = cbfs_find_next_entry(image, entry);
 	assert(next);
 	DEBUG("cbfs_remove_entry: Removed %s @ 0x%x\n",
-	      CBFS_NAME(entry), cbfs_get_entry_addr(image, entry));
+	      entry->filename, cbfs_get_entry_addr(image, entry));
 	entry->type = htonl(CBFS_COMPONENT_DELETED);
 	len = (cbfs_get_entry_addr(image, next) -
 	       cbfs_get_entry_addr(image, entry));
 	entry->offset = htonl(cbfs_calculate_file_header_size(""));
 	entry->len = htonl(len - ntohl(entry->offset));
-	memset(CBFS_NAME(entry), 0, ntohl(entry->offset) - sizeof(*entry));
+	memset(entry->filename, 0, ntohl(entry->offset) - sizeof(*entry));
 	memset(CBFS_SUBHEADER(entry), CBFS_CONTENT_DEFAULT_VALUE,
 	       ntohl(entry->len));
 	return 0;
@@ -787,7 +787,7 @@ static int cbfs_print_decoded_payload_segment_info(
 int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			  void *arg)
 {
-	const char *name = CBFS_NAME(entry);
+	const char *name = entry->filename;
 	struct cbfs_payload_segment *payload;
 	FILE *fp = (FILE *)arg;
 
@@ -1025,8 +1025,8 @@ int cbfs_create_empty_entry(struct cbfs_file *entry,
 	entry->len = htonl(len);
 	entry->checksum = 0;  // TODO Build a checksum algorithm.
 	entry->offset = htonl(cbfs_calculate_file_header_size(name));
-	memset(CBFS_NAME(entry), 0, ntohl(entry->offset) - sizeof(*entry));
-	strcpy(CBFS_NAME(entry), name);
+	memset(entry->filename, 0, ntohl(entry->offset) - sizeof(*entry));
+	strcpy(entry->filename, name);
 	memset(CBFS_SUBHEADER(entry), CBFS_CONTENT_DEFAULT_VALUE, len);
 	return 0;
 }

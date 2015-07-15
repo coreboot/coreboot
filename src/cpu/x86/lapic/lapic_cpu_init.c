@@ -310,7 +310,7 @@ int start_cpu(struct device *cpu)
 				break;
 			}
 			udelay(10);
-	}
+		}
 	}
 	secondary_stack = 0;
 	spin_unlock(&start_cpu_lock);

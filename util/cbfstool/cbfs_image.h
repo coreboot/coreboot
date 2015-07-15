@@ -170,4 +170,18 @@ int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 
 /* Returns the size of a cbfs file header with no extensions */
 size_t cbfs_calculate_file_header_size(const char *name);
+
+/* Given a cbfs_file, return the first file attribute, or NULL. */
+struct cbfs_file_attribute *cbfs_file_first_attr(struct cbfs_file *file);
+
+/* Given a cbfs_file and a cbfs_file_attribute, return the attribute that
+ * follows it, or NULL. */
+struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
+	struct cbfs_file_attribute *attr);
+
+/* Adds to header a new extended attribute tagged 'tag', sized 'size'.
+ * Returns pointer to the new attribute, or NULL on error. */
+struct cbfs_file_attribute *cbfs_add_file_attr(struct cbfs_file *header,
+					       uint32_t tag,
+					       uint32_t size);
 #endif

@@ -21,6 +21,10 @@
 
 #include <stdint.h>
 
+/* cbfstool will fail when trying to build a cbfs_file header that's larger
+ * than MAX_CBFS_FILE_HEADER_BUFFER. 1K should give plenty of room. */
+#define MAX_CBFS_FILE_HEADER_BUFFER 1024
+
 /* create a magic number in host-byte order.
  * b3 is the high order byte.
  * in the coreboot tools, we go with the 32-bit
@@ -77,6 +81,7 @@ struct cbfs_file {
 	/* length of file data */
 	uint32_t len;
 	uint32_t type;
+	/* offset to struct cbfs_file_attribute or 0 */
 	uint32_t attributes_offset;
 	/* length of header incl. variable data */
 	uint32_t offset;
@@ -94,6 +99,11 @@ struct cbfs_file_attribute {
 	uint32_t len;
 	uint8_t data[0];
 } __PACKED;
+
+/* Depending on how the header was initialized, it may be backed with 0x00 or
+ * 0xff. Support both. */
+#define CBFS_FILE_ATTR_TAG_UNUSED 0
+#define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
 
 struct cbfs_stage {
 	uint32_t compression;
@@ -155,6 +165,7 @@ struct cbfs_payload {
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
+
 /* cbfs_image.c */
 uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);
 uint32_t get_cbfs_compression(const char *name, uint32_t unknown);

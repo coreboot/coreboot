@@ -997,11 +997,8 @@ int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry)
 struct cbfs_file *cbfs_create_file_header(int type,
 			    size_t len, const char *name)
 {
-	// assume that there won't be file names of ~1000 bytes
-	const int bufsize = 1024;
-
-	struct cbfs_file *entry = malloc(bufsize);
-	memset(entry, CBFS_CONTENT_DEFAULT_VALUE, bufsize);
+	struct cbfs_file *entry = malloc(MAX_CBFS_FILE_HEADER_BUFFER);
+	memset(entry, CBFS_CONTENT_DEFAULT_VALUE, MAX_CBFS_FILE_HEADER_BUFFER);
 	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
 	entry->type = htonl(type);
 	entry->len = htonl(len);
@@ -1020,6 +1017,86 @@ int cbfs_create_empty_entry(struct cbfs_file *entry, int type,
 	free(tmp);
 	memset(CBFS_SUBHEADER(entry), CBFS_CONTENT_DEFAULT_VALUE, len);
 	return 0;
+}
+
+struct cbfs_file_attribute *cbfs_file_first_attr(struct cbfs_file *file)
+{
+	/* attributes_offset should be 0 when there is no attribute, but all
+	 * values that point into the cbfs_file header are invalid, too. */
+	if (ntohl(file->attributes_offset) <= sizeof(*file))
+		return NULL;
+
+	/* There needs to be enough space for the file header and one
+	 * attribute header for this to make sense. */
+	if (ntohl(file->offset) <=
+		sizeof(*file) + sizeof(struct cbfs_file_attribute))
+		return NULL;
+
+	return (struct cbfs_file_attribute *)
+		(((uint8_t *)file) + ntohl(file->attributes_offset));
+}
+
+struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
+	struct cbfs_file_attribute *attr)
+{
+	/* ex falso sequitur quodlibet */
+	if (attr == NULL)
+		return NULL;
+
+	/* Is there enough space for another attribute? */
+	if ((uint8_t *)attr + ntohl(attr->len) +
+		sizeof(struct cbfs_file_attribute) >=
+		(uint8_t *)file + ntohl(file->offset))
+		return NULL;
+
+	struct cbfs_file_attribute *next = (struct cbfs_file_attribute *)
+		(((uint8_t *)attr) + ntohl(attr->len));
+	/* If any, "unused" attributes must come last. */
+	if (ntohl(next->tag) == CBFS_FILE_ATTR_TAG_UNUSED)
+		return NULL;
+	if (ntohl(next->tag) == CBFS_FILE_ATTR_TAG_UNUSED2)
+		return NULL;
+
+	return next;
+}
+
+struct cbfs_file_attribute *cbfs_add_file_attr(struct cbfs_file *header,
+					       uint32_t tag,
+					       uint32_t size)
+{
+	struct cbfs_file_attribute *attr, *next;
+	next = cbfs_file_first_attr(header);
+	do {
+		attr = next;
+		next = cbfs_file_next_attr(header, attr);
+	} while (next != NULL);
+	uint32_t header_size = ntohl(header->offset) + size;
+	if (header_size > MAX_CBFS_FILE_HEADER_BUFFER) {
+		DEBUG("exceeding allocated space for cbfs_file headers");
+		return NULL;
+	}
+	/* attr points to the last valid attribute now.
+	 * If NULL, we have to create the first one. */
+	if (attr == NULL) {
+		/* New attributes start where the header ends.
+		 * header->offset is later set to accomodate the
+		 * additional structure.
+		 * No endianess translation necessary here, because both
+		 * fields are encoded the same way. */
+		header->attributes_offset = header->offset;
+		attr = (struct cbfs_file_attribute *)
+			(((uint8_t *)header) +
+			ntohl(header->attributes_offset));
+	} else {
+		attr = (struct cbfs_file_attribute *)
+			(((uint8_t *)attr) +
+			ntohl(attr->len));
+	}
+	header->offset = htonl(header_size);
+	memset(attr, CBFS_CONTENT_DEFAULT_VALUE, size);
+	attr->tag = htonl(tag);
+	attr->len = htonl(size);
+	return attr;
 }
 
 /* Finds a place to hold whole data in same memory page. */

@@ -8,6 +8,7 @@ abuild*.xml
 .ccwrap
 build/
 coreboot-builds/
+payloads/external/depthcharge/depthcharge/
 payloads/external/FILO/filo/
 payloads/external/GRUB2/grub2/
 payloads/external/SeaBIOS/seabios/

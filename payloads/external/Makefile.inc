@@ -25,6 +25,10 @@ ifeq ($(CONFIG_PAYLOAD_FILO),y)
 PAYLOAD_CONFIG=payloads/external/FILO/filo/.config
 PAYLOAD_VERSION=payloads/external/FILO/filo/build/version.h
 endif
+ifeq ($(CONFIG_PAYLOAD_DEPTHCHARGE),y)
+PAYLOAD_CONFIG=payloads/external/depthcharge/depthcharge/.config
+#TODO: Figure out version
+endif
 
 cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_config
 payload_config-file := $(PAYLOAD_CONFIG)
@@ -58,6 +62,11 @@ payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(top)/$(DOTCONFIG)
 payloads/external/SeaBIOS/seabios/out/vgabios.bin: seabios
 payloads/external/SeaBIOS/seabios/.config: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
 payloads/external/SeaBIOS/seabios/out/autoversion.h: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
+
+payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(top)/$(DOTCONFIG) $(CBFSTOOL)
+	$(MAKE) -C payloads/external/depthcharge -f Makefile.inc \
+		BOARD=$(call ws_to_under,$(call strip_quotes,$(call tolower,$(CONFIG_MAINBOARD_PART_NUMBER)))) \
+		MFLAGS= MAKEFLAGS=
 
 filo:
 	$(MAKE) -C payloads/external/FILO -f Makefile.inc \

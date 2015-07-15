@@ -1,0 +1,8 @@
+config PAYLOAD_DEPTHCHARGE
+	bool "Depthcharge"
+	depends on CHROMEOS
+	help
+	  Select this option if you want to build a coreboot image
+	  with a depthcharge payload.
+
+	  See http://coreboot.org/Payloads for more information.

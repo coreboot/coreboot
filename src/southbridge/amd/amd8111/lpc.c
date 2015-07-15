@@ -26,7 +26,7 @@ static void enable_hpet(struct device *dev)
 {
 	unsigned long hpet_address;
 
-	pci_write_config32(dev,0xa0, 0xfed00001);
+	pci_write_config32(dev, 0xa0, CONFIG_HPET_ADDRESS|1);
 	hpet_address = pci_read_config32(dev,0xa0)& 0xfffffffe;
 	printk(BIOS_DEBUG, "enabling HPET @0x%lx\n", hpet_address);
 

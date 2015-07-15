@@ -207,7 +207,7 @@ static void ck804_lpc_read_resources(device_t dev)
 
 		res = find_resource(dev, 0x44); /* HPET */
 		if (res) {
-			res->base = 0xfed00000;
+			res->base = CONFIG_HPET_ADDRESS;
 			res->flags |= IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 		}
 	}

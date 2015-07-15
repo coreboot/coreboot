@@ -27,13 +27,19 @@
 #define SYS_PLL_CTRL4_ADDR		0xB8144048
 #define SYS_INTERNAL_PLL_BYPASS_MASK	0x10000000
 #define SYS_PLL_PD_CTRL_ADDR		0xB8144044
-#define SYS_PLL_PD_CTRL_PD_MASK		0x0000003F
+#define SYS_PLL_PD_CTRL_PD_MASK		0x00000039
+#define SYS_PLL_DACPD_ADDR		0xB8144044
+#define SYS_PLL_DACPD_MASK		0x00000002
+#define SYS_PLL_DSMPD_ADDR		0xB8144044
+#define SYS_PLL_DSMPD_MASK		0x00000004
 
 #define MIPS_EXTERN_PLL_BYPASS_MASK	0x00000002
 #define MIPS_PLL_CTRL2_ADDR		0xB8144008
 #define MIPS_INTERNAL_PLL_BYPASS_MASK	0x10000000
 #define MIPS_PLL_PD_CTRL_ADDR		0xB8144004
-#define MIPS_PLL_PD_CTRL_PD_MASK	0x0F000000
+#define MIPS_PLL_PD_CTRL_PD_MASK	0x0D000000
+#define MIPS_PLL_DSMPD_ADDR		0xB8144004
+#define MIPS_PLL_DSMPD_MASK		0x02000000
 
 /* Definitions for PLL dividers */
 #define SYS_PLL_POSTDIV_ADDR		0xB8144040
@@ -126,6 +132,10 @@ struct pll_parameters {
 	u32 internal_bypass_mask;
 	u32 power_down_ctrl_addr;
 	u32 power_down_ctrl_mask;
+	u32 dacpd_addr;
+	u32 dacpd_mask;
+	u32 dsmpd_addr;
+	u32 dsmpd_mask;
 	u32 postdiv_addr;
 	u32 postdiv1_shift;
 	u32 postdiv1_mask;
@@ -155,6 +165,14 @@ static struct pll_parameters pll_params[] = {
 		.internal_bypass_mask = SYS_INTERNAL_PLL_BYPASS_MASK,
 		.power_down_ctrl_addr = SYS_PLL_PD_CTRL_ADDR,
 		.power_down_ctrl_mask = SYS_PLL_PD_CTRL_PD_MASK,
+		/* Noise cancellation */
+		.dacpd_addr = SYS_PLL_DACPD_ADDR,
+		.dacpd_mask = SYS_PLL_DACPD_MASK,
+		.dsmpd_addr = SYS_PLL_DSMPD_ADDR,
+		/* 0 - Integer mode
+		 * SYS_PLL_DSMPD_MASK - Fractional mode
+		 */
+		.dsmpd_mask = 0,
 		.postdiv_addr = SYS_PLL_POSTDIV_ADDR,
 		.postdiv1_shift = SYS_PLL_POSTDIV1_SHIFT,
 		.postdiv1_mask = SYS_PLL_POSTDIV1_MASK,
@@ -178,6 +196,10 @@ static struct pll_parameters pll_params[] = {
 		.internal_bypass_mask = MIPS_INTERNAL_PLL_BYPASS_MASK,
 		.power_down_ctrl_addr = MIPS_PLL_PD_CTRL_ADDR,
 		.power_down_ctrl_mask = MIPS_PLL_PD_CTRL_PD_MASK,
+		.dacpd_addr = 0,
+		.dacpd_mask = 0,
+		.dsmpd_addr = MIPS_PLL_DSMPD_ADDR,
+		.dsmpd_mask = MIPS_PLL_DSMPD_MASK,
 		.postdiv_addr = MIPS_PLL_POSTDIV_ADDR,
 		.postdiv1_shift = MIPS_PLL_POSTDIV1_SHIFT,
 		.postdiv1_mask = MIPS_PLL_POSTDIV1_MASK,
@@ -221,6 +243,20 @@ static int pll_setup(struct pll_parameters *param, u8 divider1, u8 divider2)
 	reg = read32(param->power_down_ctrl_addr);
 	reg &= ~(param->power_down_ctrl_mask);
 	write32(param->power_down_ctrl_addr, reg);
+
+	/* Noise cancellation */
+	if (param->dacpd_addr) {
+		reg = read32(param->dacpd_addr);
+		reg &= ~(param->dacpd_mask);
+		write32(param->dacpd_addr, reg);
+	}
+
+	/* Functional mode */
+	if (param->dsmpd_addr) {
+		reg = read32(param->dsmpd_addr);
+		reg &= ~(param->dsmpd_mask);
+		write32(param->dsmpd_addr, reg);
+	}
 
 	if (param->feedback_addr) {
 		assert(!((param->feedback << param->feedback_shift) &

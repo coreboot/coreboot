@@ -1032,7 +1032,7 @@ int cbfs_create_empty_entry(struct cbfs_file *entry,
 	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
 	entry->type = htonl(CBFS_COMPONENT_NULL);
 	entry->len = htonl(len);
-	entry->checksum = 0;  // TODO Build a checksum algorithm.
+	entry->attributes_offset = 0;
 	entry->offset = htonl(cbfs_calculate_file_header_size(name));
 	memset(entry->filename, 0, ntohl(entry->offset) - sizeof(*entry));
 	strcpy(entry->filename, name);

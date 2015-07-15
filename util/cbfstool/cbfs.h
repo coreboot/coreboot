@@ -77,7 +77,7 @@ struct cbfs_file {
 	/* length of file data */
 	uint32_t len;
 	uint32_t type;
-	uint32_t checksum;
+	uint32_t attributes_offset;
 	/* length of header incl. variable data */
 	uint32_t offset;
 	char filename[];

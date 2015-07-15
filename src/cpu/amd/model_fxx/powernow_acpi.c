@@ -106,7 +106,12 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	u8 index;
 	msr_t msr;
 	u32 fid_multiplier;
-	static struct power_limit_encoding TDP[20] = {
+	static const struct power_limit_encoding TDP[] = {
+		{0x10, 0x1, 0x2, 45}, /* Opteron EE */
+		{0x10, 0x1, 0x6, 68}, /* Opteron HE */
+		{0x10, 0x1, 0xa, 95}, /* Opteron */
+		{0x10, 0x1, 0xc, 119}, /* Opteron SE */
+		{0x10, 0x1, 0xe, 125}, /* Athlon 64 FX-7x */
 		{0x11, 0x0, 0x8, 62},
 		{0x11, 0x1, 0x8, 89},
 		{0x11, 0x1, 0xa, 103},

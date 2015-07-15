@@ -71,11 +71,15 @@ struct cbfs_header {
 
 struct cbfs_file {
 	uint8_t magic[8];
+	/* length of file data */
 	uint32_t len;
 	uint32_t type;
 	uint32_t checksum;
+	/* length of header incl. variable data */
 	uint32_t offset;
 } __PACKED;
+
+_Static_assert(sizeof(struct cbfs_file) == 24, "cbfs_file size mismatch");
 
 struct cbfs_stage {
 	uint32_t compression;

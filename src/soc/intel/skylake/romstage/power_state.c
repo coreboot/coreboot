@@ -74,8 +74,22 @@ static int prev_sleep_state(struct chipset_power_state *ps)
 		outl(ps->pm1_cnt & ~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
 	}
 
-	if (ps->gen_pmcon_b & (PWR_FLR | SUS_PWR_FLR))
-		prev_sleep_state = SLEEP_STATE_S5;
+	/*
+	 * If waking from S3 determine if deep S3 is enabled. If not,
+	 * need to check both deep sleep well and normal suspend well.
+	 * Otherwise just check deep sleep well.
+	 */
+	if (prev_sleep_state == SLEEP_STATE_S3) {
+		/* PWR_FLR represents deep sleep power well loss. */
+		uint32_t mask = PWR_FLR;
+
+		/* If deep s3 isn't enabled check the suspend well too. */
+		if (!deep_s3_enabled())
+			mask |= SUS_PWR_FLR;
+
+		if (ps->gen_pmcon_b & mask)
+			prev_sleep_state = SLEEP_STATE_S5;
+	}
 
 	return prev_sleep_state;
 }

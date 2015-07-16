@@ -21,6 +21,9 @@
 #ifndef _SOC_PM_H_
 #define _SOC_PM_H_
 
+#include <arch/io.h>
+#include <soc/pmc.h>
+
 /* ACPI_BASE_ADDRESS / PMBASE */
 
 #define PM1_STS			0x00
@@ -168,5 +171,13 @@ int acpi_sci_irq(void);
 uint8_t *pmc_mmio_regs(void);
 /* Get base address of TCO I/O registers. */
 uint16_t pmc_tco_regs(void);
+
+static inline int deep_s3_enabled(void)
+{
+	uint32_t deep_s3_pol;
+
+	deep_s3_pol = read32(pmc_mmio_regs() + S3_PWRGATE_POL);
+	return !!(deep_s3_pol & (S3DC_GATE_SUS | S3AC_GATE_SUS));
+}
 
 #endif

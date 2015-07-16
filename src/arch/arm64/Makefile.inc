@@ -192,6 +192,9 @@ endif
 # Build ARM TF in debug mode (with serial output) if coreboot uses serial
 ifeq ($(CONFIG_CONSOLE_SERIAL),y)
 BL31_MAKEARGS += DEBUG=1
+else
+# Turn off NOTICE messages from BL31 if coreboot does not use serial
+BL31_MAKEARGS += LOG_LEVEL=0
 endif # CONFIG_CONSOLE_SERIAL
 
 # Avoid build/release|build/debug distinction by overriding BUILD_PLAT directly

@@ -42,9 +42,6 @@
 #endif
 
 
-#include <arch/early_variables.h>
-struct sys_info sysinfo_car CAR_GLOBAL;
-
 #include "f_pci.c"
 
 

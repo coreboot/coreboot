@@ -2074,7 +2074,11 @@ static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info
 static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall)
 {
 	if(coreid) return; // only do it on core0
-	struct sys_info *sysinfox = (void *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
+	struct sys_info *sysinfox;
+	uintptr_t migrated_base = CONFIG_RAMTOP - car_data_size();
+
+	sysinfox = (void *)(migrated_base + car_object_offset(&sysinfo_car));
+
 	wait_till_sysinfo_in_ram(); // use pci to get it
 
 	if(sysinfox->mem_trained[nodeid] == 0x80) {

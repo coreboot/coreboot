@@ -30,9 +30,6 @@ typedef void (* const car_migration_func_t)(void);
 
 extern car_migration_func_t _car_migrate_start;
 
-extern char _car_data_start[];
-extern char _car_data_end[];
-
 /*
  * The car_migrated global variable determines if the cache-as-ram space has
  * been migrated to real RAM. It does this by assuming the following things:
@@ -117,20 +114,20 @@ void *car_sync_var_ptr(void *var)
 static void do_car_migrate_variables(void)
 {
 	void *migrated_base;
-	size_t car_data_size = &_car_data_end[0] - &_car_data_start[0];
+	size_t car_size = car_data_size();
 
 	/* Check if already migrated. */
 	if (car_migrated)
 		return;
 
-	migrated_base = cbmem_add(CBMEM_ID_CAR_GLOBALS, car_data_size);
+	migrated_base = cbmem_add(CBMEM_ID_CAR_GLOBALS, car_size);
 
 	if (migrated_base == NULL) {
 		printk(BIOS_ERR, "Could not migrate CAR data!\n");
 		return;
 	}
 
-	memcpy(migrated_base, &_car_data_start[0], car_data_size);
+	memcpy(migrated_base, &_car_data_start[0], car_size);
 
 	/* Mark that the data has been moved. */
 	car_migrated = ~0;

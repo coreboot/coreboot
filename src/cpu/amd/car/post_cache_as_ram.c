@@ -3,6 +3,7 @@
  */
 #include <string.h>
 #include <arch/stages.h>
+#include <arch/early_variables.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/car.h>
@@ -22,18 +23,9 @@
 #define print_car_debug(x)
 #endif
 
-extern char _car_data_start[];
-extern char _car_data_end[];
-
-static size_t car_data_size(void)
-{
-	size_t car_size = &_car_data_end[0] - &_car_data_start[0];
-	return ALIGN(car_size, 64);
-}
-
 static size_t backup_size(void)
 {
-	size_t car_size = &_car_data_end[0] - &_car_data_start[0];
+	size_t car_size = car_data_size();
 	return ALIGN(car_size + 1024, 1024);
 }
 

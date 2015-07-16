@@ -95,7 +95,7 @@ static void dump_power_state(struct chipset_power_state *ps)
 	       ps->gpe0_en[0], ps->gpe0_en[1],
 	       ps->gpe0_en[2], ps->gpe0_en[3]);
 
-	printk(BIOS_DEBUG, "GEN_PMCON: %04x %04x\n",
+	printk(BIOS_DEBUG, "GEN_PMCON: %08x %08x\n",
 	       ps->gen_pmcon_a, ps->gen_pmcon_b);
 
 	printk(BIOS_DEBUG, "Previous Sleep State: S%d\n",
@@ -124,8 +124,8 @@ struct chipset_power_state *fill_power_state(void)
 	ps->gpe0_en[2] = inl(ACPI_BASE_ADDRESS + GPE0_EN(2));
 	ps->gpe0_en[3] = inl(ACPI_BASE_ADDRESS + GPE0_EN(3));
 
-	ps->gen_pmcon_a = pci_read_config16(PCH_DEV_PMC, GEN_PMCON_A);
-	ps->gen_pmcon_b = pci_read_config16(PCH_DEV_PMC, GEN_PMCON_B);
+	ps->gen_pmcon_a = pci_read_config32(PCH_DEV_PMC, GEN_PMCON_A);
+	ps->gen_pmcon_b = pci_read_config32(PCH_DEV_PMC, GEN_PMCON_B);
 
 	ps->prev_sleep_state = prev_sleep_state(ps);
 

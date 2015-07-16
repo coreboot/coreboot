@@ -124,8 +124,8 @@ struct chipset_power_state {
 	uint16_t tco2_sts;
 	uint32_t gpe0_sts[4];
 	uint32_t gpe0_en[4];
-	uint16_t gen_pmcon_a;
-	uint16_t gen_pmcon_b;
+	uint32_t gen_pmcon_a;
+	uint32_t gen_pmcon_b;
 	int prev_sleep_state;
 	uint16_t hsio_version;
 	uint16_t hsio_checksum;

@@ -280,7 +280,7 @@ static void dram_find_spds_ddr3(spd_raw_data * spd, dimm_info * dimm,
 			ctrl->auto_self_refresh &= dimm->dimm[channel][slot].flags.asr;
 			ctrl->extended_temperature_range &= dimm->dimm[channel][slot].flags.ext_temp_refresh;
 
-			ctrl->rankmap[channel] = ((1 << dimm->dimm[channel][slot].ranks) - 1) << (2 * slot);
+			ctrl->rankmap[channel] |= ((1 << dimm->dimm[channel][slot].ranks) - 1) << (2 * slot);
 			printk(BIOS_DEBUG, "rankmap[%d] = 0x%x\n", channel, ctrl->rankmap[channel]);
 		}
 		if ((ctrl->rankmap[channel] & 3) && (ctrl->rankmap[channel] & 0xc)

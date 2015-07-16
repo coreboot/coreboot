@@ -138,7 +138,7 @@ static void do_car_migrate_variables(void)
 
 static void car_migrate_variables(int is_recovery)
 {
-	if (!IS_ENABLED(CONFIG_BROKEN_CAR_MIGRATE) && !IS_ENABLED(PLATFORM_USES_FSP1_0))
+	if (!IS_ENABLED(PLATFORM_USES_FSP1_0))
 		do_car_migrate_variables();
 }
 ROMSTAGE_CBMEM_INIT_HOOK(car_migrate_variables)

@@ -53,11 +53,7 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION   *UpdData)
 }
 #else	/* IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_FSP_I89XX) */
 const PLATFORM_CONFIG DefaultPlatformConfig = {
-#if IS_ENABLED(CONFIG_DISABLE_SANDYBRIDGE_HYPERTHREADING)
-	FALSE,  /* Hyperthreading */
-#else
 	TRUE,  /* Hyperthreading */
-#endif
 	FALSE, /* Turbo Mode */
 	FALSE, /* Memory Down */
 #if IS_ENABLED(CONFIG_ENABLE_FSP_FAST_BOOT)

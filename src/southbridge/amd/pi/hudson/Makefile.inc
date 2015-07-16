@@ -68,7 +68,7 @@ endif
 ifneq ($(HUDSON_FWM_INSIDE_CBFS), 1)
 $(warning ##### WARNING: CONFIG_HUDSON_FWM_POSITION ($(HUDSON_FWM_POSITION)) is outside of CBFS area ($(CBFS_BASE_ADDRESS) to 4294967295) ##### )
 endif
-CBFS_HEADER_SIZE=0x40
+CBFS_HEADER_SIZE=0x60
 
 #assume the cbfs header is less than $(CBFS_HEADER_SIZE) bytes.
 ROMSIG_SIZE=4096

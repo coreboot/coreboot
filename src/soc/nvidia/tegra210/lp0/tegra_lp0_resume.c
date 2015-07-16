@@ -146,6 +146,13 @@ enum {
 	CLK_ENB_CSITE = 0x1 << 9
 };
 
+static uint32_t *clk_rst_cpu_softrst_ctrl2_ptr =
+	(void *)(CLK_RST_BASE + 0x388);
+enum {
+	CAR2PMC_CPU_ACK_WIDTH_SHIFT = 0,
+	CAR2PMC_CPU_ACK_WIDTH_MASK = 0xfff << CAR2PMC_CPU_ACK_WIDTH_SHIFT
+};
+
 static uint32_t *clk_rst_clk_enb_v_set_ptr = (void *)(CLK_RST_BASE + 0x440);
 enum {
 	CLK_ENB_CPUG = 0x1 << 0,
@@ -786,6 +793,9 @@ void lp0_resume(void)
 
 	/* Disable PLLX since it isn't used in the kernel as CPU clk source. */
 	clrbits32(PLLX_ENABLE, clk_rst_pllx_base_ptr);
+
+	/* Set CAR2PMC_CPU_ACK_WIDTH to 0 */
+	clrbits32(CAR2PMC_CPU_ACK_WIDTH_MASK, clk_rst_cpu_softrst_ctrl2_ptr);
 
 	/* Clear PMC_SCRATCH190 */
 	clrbits32(1, pmc_scratch190_ptr);

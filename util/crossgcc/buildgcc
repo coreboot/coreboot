@@ -109,7 +109,7 @@ normalize_dirs()
 
 please_install()
 {
-	test -r /etc/os-release && source /etc/os-release
+	test -r /etc/os-release && . /etc/os-release
 	case "$ID_LIKE" in
 	debian) solution="sudo apt-get install $1" ;;
 	suse) solution="sudo zypper install $1" ;;

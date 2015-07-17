@@ -691,25 +691,16 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 
 int cbfs_remove_entry(struct cbfs_image *image, const char *name)
 {
-	struct cbfs_file *entry, *next;
-	size_t len;
+	struct cbfs_file *entry;
 	entry = cbfs_get_entry(image, name);
 	if (!entry) {
 		ERROR("CBFS file %s not found.\n", name);
 		return -1;
 	}
-	next = cbfs_find_next_entry(image, entry);
-	assert(next);
 	DEBUG("cbfs_remove_entry: Removed %s @ 0x%x\n",
 	      entry->filename, cbfs_get_entry_addr(image, entry));
 	entry->type = htonl(CBFS_COMPONENT_DELETED);
-	len = (cbfs_get_entry_addr(image, next) -
-	       cbfs_get_entry_addr(image, entry));
-	entry->offset = htonl(cbfs_calculate_file_header_size(""));
-	entry->len = htonl(len - ntohl(entry->offset));
-	memset(entry->filename, 0, ntohl(entry->offset) - sizeof(*entry));
-	memset(CBFS_SUBHEADER(entry), CBFS_CONTENT_DEFAULT_VALUE,
-	       ntohl(entry->len));
+	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
 	return 0;
 }
 

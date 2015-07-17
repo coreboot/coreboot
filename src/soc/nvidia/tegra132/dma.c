@@ -69,9 +69,21 @@ int dma_busy(struct apb_dma_channel * const channel)
 	 * In continuous mode, the BSY_n bit in APB_DMA_STATUS and
 	 * BSY in APBDMACHAN_CHANNEL_n_STA_0 will remain set as '1' so long
 	 * as the channel is enabled. So for this function we'll use the
-	 * DMA_ACTIVITY bit.
+	 * DMA_ACTIVITY bit in case of continuous mode.
+	 *
+	 * However, for ONCE mode, the BSY_n bit in APB_DMA_STATUS will be used
+	 * to determine end of dma operation.
 	 */
-	return read32(&channel->regs->sta) & APB_STA_DMA_ACTIVITY ? 1 : 0;
+	uint32_t bit;
+
+	if (read32(&channel->regs->csr) & APB_CSR_ONCE)
+		/* Once mode */
+		bit = APB_STA_BSY;
+	else
+		/* Continuous mode */
+		bit = APB_STA_DMA_ACTIVITY;
+
+	return read32(&channel->regs->sta) & bit ? 1 : 0;
 }
 /* claim a DMA channel */
 struct apb_dma_channel * const dma_claim(void)

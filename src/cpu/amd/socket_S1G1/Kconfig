@@ -19,10 +19,6 @@ config DIMM_SUPPORT
 	hex
 	default 0x0204
 
-config CPU_ADDR_BITS
-	int
-	default 40
-
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000

@@ -9,10 +9,6 @@ config SOCKET_SPECIFIC_OPTIONS
 	select CPU_AMD_MODEL_FXX
 	select X86_AMD_FIXED_MTRRS
 
-config CPU_ADDR_BITS
-	int
-	default 40
-
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000

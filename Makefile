@@ -138,7 +138,7 @@ real-all: real-target
 # must come rather early
 .SECONDEXPANSION:
 
-$(obj)/config.h:
+$(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG)
 	$(MAKE) oldconfig
 
 # Add a new class of source/object files to the build system
@@ -218,7 +218,7 @@ define create_cc_template
 # $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
-$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $(obj)/config.h $(4)
+$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $(KCONFIG_AUTOHEADER) $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC_$(1)) -MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@) $(3) -c -o $$$$@ $$$$<
 en$(EMPTY)def

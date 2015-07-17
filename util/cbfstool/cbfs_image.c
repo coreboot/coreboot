@@ -50,9 +50,6 @@
  * (old) cbfstool. */
 #define CBFS_FILENAME_ALIGN	(16)
 
-/* To make CBFS more friendly to ROM, fill -1 (0xFF) instead of zero. */
-#define CBFS_CONTENT_DEFAULT_VALUE	(-1)
-
 /* Type and format */
 
 struct typedesc_t {

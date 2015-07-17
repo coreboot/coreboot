@@ -38,6 +38,9 @@
 #define __PACKED __attribute__((packed))
 #endif
 
+/* To make CBFS more friendly to ROM, fill -1 (0xFF) instead of zero. */
+#define CBFS_CONTENT_DEFAULT_VALUE	(-1)
+
 // Alignment (in bytes) to be used when no master header is present
 #define CBFS_ENTRY_ALIGNMENT 64
 

@@ -30,7 +30,7 @@ config IRQ_SLOT_COUNT
 	default 18
 
 config BOOT_MEDIA_SPI_BUS
-	hex
+	int
 	default 0
 
 config INTEL_PCH_UART_CONSOLE_NUMBER

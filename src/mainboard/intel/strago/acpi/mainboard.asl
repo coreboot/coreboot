@@ -168,45 +168,6 @@ Scope (\_SB.I2C1)
 
 Scope (\_SB.I2C5)
 {
-	Device (ALSI)
-	{
-		/*
-		 * TODO(dlaurie): Need official HID.
-		 *
-		 * The current HID is created from the Intersil PNP
-		 * Vendor ID "LSD" and a shortened device identifier.
-		 */
-		Name (_HID, EisaId ("LSD2918"))
-		Name (_DDN, "Intersil 29018 Ambient Light Sensor")
-		Name (_UID, 1)
-
-		Name (_CRS, ResourceTemplate()
-		{
-			I2cSerialBus (
-				0x44,                     /* SlaveAddress */
-				ControllerInitiated,      /* SlaveMode */
-				400000,                   /* ConnectionSpeed */
-				AddressingMode7Bit,       /* AddressingMode */
-				"\\_SB.I2C5",             /* ResourceSource */
-			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
-			{
-				BOARD_ALS_IRQ
-			}
-		})
-
-		Method (_STA)
-		{
-			If (LEqual (\BDID, BOARD_BCRD2)) {
-				Return (0x0)
-			}
-			If (LEqual (\S5EN, 1)) {
-				Return (0xF)
-			} Else {
-				Return (0x0)
-			}
-		}
-	}
 
 	/* Realtek Audio Codec */
 	Device (RTEK)   /* Audio Codec driver I2C */

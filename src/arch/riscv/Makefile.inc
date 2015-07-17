@@ -42,7 +42,7 @@ $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) \
 		-T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.bootblock.ld --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) \
-		$(LIBGCC_FILE_NAME_bootblock) --end-group
+		$(LIBGCC_FILE_NAME_bootblock) --end-group $(COMPILER_RT_bootblock)
 
 endif
 
@@ -67,7 +67,7 @@ romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 $(objcbfs)/romstage.debug: $$(romstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.romstage.ld --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group
+	$(LD_romstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.romstage.ld --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group $(COMPILER_RT_romstage)
 
 romstage-c-ccopts += $(riscv_flags)
 romstage-S-ccopts += $(riscv_asm_flags)
@@ -105,7 +105,7 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 
 $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.ramstage.ld --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group
+	$(LD_ramstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.ramstage.ld --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group $(COMPILER_RT_ramstage)
 
 ramstage-c-ccopts += $(riscv_flags)
 ramstage-S-ccopts += $(riscv_asm_flags)

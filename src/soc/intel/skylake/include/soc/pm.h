@@ -129,10 +129,9 @@ struct chipset_power_state {
 	uint32_t gpe0_en[4];
 	uint32_t gen_pmcon_a;
 	uint32_t gen_pmcon_b;
-	int prev_sleep_state;
-	uint16_t hsio_version;
-	uint16_t hsio_checksum;
-};
+	uint32_t gblrst_cause[0];
+	uint32_t prev_sleep_state;
+} __attribute__ ((packed));
 
 /* PM1_CNT */
 void enable_pm1_control(uint32_t mask);

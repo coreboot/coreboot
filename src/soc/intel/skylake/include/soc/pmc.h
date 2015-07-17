@@ -57,6 +57,8 @@
 #define  S5AC_GATE_SUS		(1 << 14)
 #define PMSYNC_TPR_CFG		0xc4
 #define  PMSYNC_LOCK		(1 << 31)
+#define GBLRST_CAUSE0		0x124
+#define GBLRST_CAUSE1		0x128
 
 
 /* TCO registers and fields live behind TCOBASE I/O bar in SMBus device. */

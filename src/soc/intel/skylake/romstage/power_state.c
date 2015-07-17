@@ -54,10 +54,10 @@ static void migrate_power_state(int is_recovery)
 ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)
 
 /* Return 0, 3, or 5 to indicate the previous sleep state. */
-static int prev_sleep_state(struct chipset_power_state *ps)
+static uint32_t prev_sleep_state(struct chipset_power_state *ps)
 {
 	/* Default to S0. */
-	int prev_sleep_state = SLEEP_STATE_S0;
+	uint32_t prev_sleep_state = SLEEP_STATE_S0;
 
 	if (ps->pm1_sts & WAK_STS) {
 		switch ((ps->pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
@@ -112,6 +112,9 @@ static void dump_power_state(struct chipset_power_state *ps)
 	printk(BIOS_DEBUG, "GEN_PMCON: %08x %08x\n",
 	       ps->gen_pmcon_a, ps->gen_pmcon_b);
 
+	printk(BIOS_DEBUG, "GBLRST_CAUSE: %08x %08x\n",
+	       ps->gblrst_cause[0], ps->gblrst_cause[1]);
+
 	printk(BIOS_DEBUG, "Previous Sleep State: S%d\n",
 	       ps->prev_sleep_state);
 }
@@ -120,6 +123,7 @@ static void dump_power_state(struct chipset_power_state *ps)
 struct chipset_power_state *fill_power_state(void)
 {
 	uint16_t tcobase;
+	uint8_t *pmc;
 	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
 
 	tcobase = pmc_tco_regs();
@@ -140,6 +144,10 @@ struct chipset_power_state *fill_power_state(void)
 
 	ps->gen_pmcon_a = pci_read_config32(PCH_DEV_PMC, GEN_PMCON_A);
 	ps->gen_pmcon_b = pci_read_config32(PCH_DEV_PMC, GEN_PMCON_B);
+
+	pmc = pmc_mmio_regs();
+	ps->gblrst_cause[0] = read32(pmc + GBLRST_CAUSE0);
+	ps->gblrst_cause[1] = read32(pmc + GBLRST_CAUSE1);
 
 	ps->prev_sleep_state = prev_sleep_state(ps);
 

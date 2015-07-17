@@ -43,7 +43,7 @@ Method (LPD0, 2, Serialized)
 
 	And (SPCS, 0xFFFFFFFC, SPCS)
 	/* Read back after writing */
-	Store (SPCS, Local0) 
+	Store (SPCS, Local0)
 }
 
 /* Put SerialIO device in D3 state */
@@ -688,7 +688,7 @@ Device (PEMC)
 		Method (_RMV, 0x0, NotSerialized)
 		{
 			Return (0)
-		} 
+		}
 	}
 }
 

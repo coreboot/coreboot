@@ -52,8 +52,10 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_lid_switch(void)
 {
+	/* Default to force open */
 	return 1;
 }
+
 /* The dev-switch is virtual */
 int get_developer_mode_switch(void)
 {

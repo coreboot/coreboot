@@ -206,7 +206,7 @@ static const GPIO_INIT_CONFIG GpioTableRvp3[] = {
 	GpioOutDefault, GpioIntLvlEdgDis | GpioIntApic, GpioResetDeep,
 	GpioTermNone}},
 {GPIO_LP_GPP_E3,  {GpioPadModeGpio,    GpioHostOwnGpio, GpioDirInOut,
-	GpioOutLow,	GpioIntLevel | GpioIntDis, GpioResetDeep, 
+	GpioOutLow,	GpioIntLevel | GpioIntDis, GpioResetDeep,
 	GpioTermNone}},
 {GPIO_LP_GPP_E4,  {GpioPadModeNative1, GpioHostOwnGpio, GpioDirNone,
 	GpioOutDefault, GpioIntDis, GpioResetDeep,GpioTermNone}},

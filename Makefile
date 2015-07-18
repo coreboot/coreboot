@@ -57,6 +57,7 @@ export KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
 export KCONFIG_SPLITCONFIG := $(obj)/config
 export KCONFIG_TRISTATE := $(obj)/tristate.conf
 export KCONFIG_NEGATIVES := 1
+export KCONFIG_STRICT := 1
 
 # directory containing the toplevel Makefile.inc
 TOPLEVEL := .

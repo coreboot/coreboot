@@ -33,5 +33,5 @@
 Name(OIPG, Package() {
 	/* No physical recovery button */
 	Package () { 0x0001, 0, 0xFFFFFFFF, "Braswell" },
-	Package () { 0x0003, 1, 0x10016, "Braswell" },
+	Package () { 0x0003, 1, 0x10013, "Braswell" },
 })

@@ -85,7 +85,7 @@ void mec_io_bytes(int write, u16 port, unsigned int length, u8 *buf, u8 *csum)
 	 * Long access cannot be used on misaligned data since reading B0 loads
 	 * the data register and writing B3 flushes it.
 	 */
-	if (port & 0x3)
+	if ((port & 0x3) || (length < 4))
 		access_mode = ACCESS_TYPE_BYTE;
 	else
 		access_mode = ACCESS_TYPE_LONG_AUTO_INCREMENT;

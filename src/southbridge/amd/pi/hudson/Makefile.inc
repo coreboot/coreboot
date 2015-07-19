@@ -60,7 +60,7 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c smi_util.c
 
 HUDSON_FWM_POS_CALC=$(call int-add, $(call int-subtract, 0xffffffff $(call int-multiply, $(CONFIG_COREBOOT_ROMSIZE_KB) 1024)) 0x20000 1)
 HUDSON_FWM_POSITION=$(shell printf %u $(CONFIG_HUDSON_FWM_POSITION))
-HUDSON_FWM_INSIDE_CBFS=$(call int_lt, $(CBFS_BASE_ADDRESS) $(HUDSON_FWM_POSITION))
+HUDSON_FWM_INSIDE_CBFS=$(call int-lt, $(CBFS_BASE_ADDRESS) $(HUDSON_FWM_POSITION))
 
 ifneq ($(HUDSON_FWM_POS_CALC), $(HUDSON_FWM_POSITION))
 $(warning ##### WARNING: CONFIG_HUDSON_FWM_POSITION does not match calculated firmware position $(HUDSON_FWM_POS_CALC) != $(HUDSON_FWM_POSITION) ##### )

@@ -30,7 +30,7 @@
 
 ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01)$(CONFIG_CPU_AMD_PI_00660F01),y)
 # AGESA V5 Files
-AGESA_ROOT = $(call strip_quotes,$(src)/../$(CONFIG_AGESA_BINARY_PI_PATH))
+AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
 
 AGESA_INC = -I$(obj)
 
@@ -134,7 +134,7 @@ ramstage-libs += $(obj)/agesa/libagesa.a
 #######################################################################
 
 cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += AGESA
-AGESA-file := $(CONFIG_AGESA_BINARY_PI_PATH)/$(CONFIG_AGESA_BINARY_PI_FILE)
+AGESA-file := $(CONFIG_AGESA_BINARY_PI_FILE)
 AGESA-type := raw
 AGESA-position := $(CONFIG_AGESA_BINARY_PI_LOCATION)
 

@@ -21,8 +21,6 @@ if CPU_AMD_PI
 
 menu "AMD Platform Initialization"
 
-source src/vendorcode/amd/pi/Kconfig
-
 choice
 	prompt "AGESA source"
 	default CPU_AMD_AGESA_BINARY_PI if CPU_AMD_PI
@@ -50,39 +48,7 @@ config CPU_AMD_AGESA_OPENSOURCE
 endchoice
 
 if CPU_AMD_AGESA_BINARY_PI
-
-config AGESA_BINARY_PI_PATH_DEFAULT_SELECTED
-	bool
-	default n
-
-config AGESA_BINARY_PI_PATH
-	string "AGESA PI directory path"
-	default AGESA_BINARY_PI_PATH_DEFAULT if AGESA_BINARY_PI_PATH_DEFAULT_SELECTED
-	help
-	  Specify where to find the AGESA headers and binary file
-	  for AMD platform initialization.
-
-config AGESA_BINARY_PI_FILE_DEFAULT_SELECTED
-	bool
-	default n
-
-config AGESA_BINARY_PI_FILE
-	string "AGESA PI binary file name"
-	default AGESA_BINARY_PI_FILE_DEFAULT if AGESA_BINARY_PI_FILE_DEFAULT_SELECTED
-	help
-	  Specify the binary file to use for AMD platform initialization.
-
-config AGESA_BINARY_PI_LOCATION_DEFAULT_SELECTED
-	bool
-	default n
-
-config AGESA_BINARY_PI_LOCATION
-	string "AGESA PI binary address in ROM"
-	default AGESA_BINARY_PI_LOCATION_DEFAULT if AGESA_BINARY_PI_FILE_DEFAULT_SELECTED
-	help
-	  Specify the ROM address at which to store the binary Platform
-	  Initialization code.
-
+source src/vendorcode/amd/pi/Kconfig
 endif
 
 endmenu

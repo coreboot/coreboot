@@ -70,6 +70,19 @@ u8 pcr_read8(PCH_SBI_PID pid, u16 offset, u8 *outdata)
 }
 
 /*
+ * After every write one needs to perform a read an innocuous register to
+ * ensure the writes are completed for certain ports. This is done for
+ * all ports so that the callers don't need the per-port knowledge for
+ * each transaction.
+ */
+static inline void complete_write(void)
+{
+	/* Read the general control and function disable register. */
+	const size_t R_PCH_PCR_LPC_GCFD = 0x3418;
+	read32(PCH_PCR_ADDRESS(PID_LPC, R_PCH_PCR_LPC_GCFD));
+}
+
+/*
  * Write PCR register. (This is internal function)
  * It returns PCR register and size in 1/2/4 bytes.
  * The offset should not exceed 0xFFFF and must be aligned with size
@@ -101,7 +114,8 @@ static u8 pch_pcr_write(PCH_SBI_PID pid, u16 offset, u32 size, u32 data)
 	default:
 		break;
 	}
-	read32(PCH_PCR_ADDRESS(PID_LPC, R_PCH_PCR_LPC_GCFD));
+	/* Ensure the writes complete. */
+	complete_write();
 
 	return 0;
 }

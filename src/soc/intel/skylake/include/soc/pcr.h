@@ -16,9 +16,12 @@
 #ifndef _SOC_PCR_H_
 #define _SOC_PCR_H_
 
+/*
+ * Primary to sideband (P2SB) for private configuration registers (PCR).
+ */
+
 /* PCH (SunRisePoint LP) */
 #define PCH_PCR_BASE_ADDRESS	0xFD000000
-#define R_PCH_PCR_LPC_GCFD	0x3418
 
 /* DMI Control Register */
 #define R_PCH_PCR_DMI_DMIC	0x2234

@@ -178,6 +178,9 @@ static void powergate_unused_partitions(void)
 	static const uint32_t partitions[] = {
 		POWER_PARTID_PCX,
 		POWER_PARTID_SAX,
+		POWER_PARTID_XUSBA,
+		POWER_PARTID_XUSBB,
+		POWER_PARTID_XUSBC,
 		POWER_PARTID_NVDEC,
 		POWER_PARTID_NVJPG,
 		POWER_PARTID_DFD,

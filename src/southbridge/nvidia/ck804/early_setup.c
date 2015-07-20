@@ -152,10 +152,24 @@ static void ck804_early_setup(void)
 	RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 9, 0, 0x74), 0xffffffc0, 0x00000000,
 #endif
 
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
+	/*
+	 * Avoid crash (complete with severe memory corruption!) during initial CAR boot
+	 * in ck804_early_setup_x() on Fam10h systems by not touching 0x78.
+	 * Interestingly once the system is fully booted into Linux this can be set, but
+	 * not before!  Apparently something isn't initialized but the amount of effort
+	 * required to fix this is non-negligible and of unknown real-world benefit
+	 */
+#else
 	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0x78), 0xc0ffffff, 0x19000000,
+#endif
 	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0xe0), 0xfffffeff, 0x00000100,
 
 #if CONFIG_CK804_NUM > 1
+	/*
+	 * Avoid touching 0x78 for CONFIG_NORTHBRIDGE_AMD_AMDFAM10 for
+	 * non-primary chain too???
+	 */
 	RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0x78), 0xc0ffffff, 0x20000000,
 	RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0xe0), 0xfffffeff, 0x00000000,
 	RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0xe8), 0xffffff00, 0x000000ff,

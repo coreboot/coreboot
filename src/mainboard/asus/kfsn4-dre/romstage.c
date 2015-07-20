@@ -67,15 +67,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 
-/*
- * Avoid crash (complete with severe memory corruption!) during initial CAR boot
- * in ck804_early_setup_x().
- * Interestingly once the system is fully booted into Linux this can be set, but
- * not before!  Apparently something isn't initialized but the amount of effort
- * required to fix this is non-negligible and of unknown real-world benefit
- */
-#define CK804_SKIP_PCI_REG_78_INIT 1
-
 #define CK804_MB_SETUP \
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+33, ~(0x0f),(0x04 | 0x01),	/* -ENOINFO Proprietary BIOS sets this register; "When in Rome..."*/
 

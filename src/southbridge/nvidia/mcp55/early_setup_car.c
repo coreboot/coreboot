@@ -242,7 +242,17 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0x74), 0xFFFFFFC0, 0x00000000,
 	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0xC0), 0x00000000, 0xCB8410DE,
 	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0xC4), 0xFFFFFFF8, 0x00000007,
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
+	/*
+	 * Avoid crash (complete with severe memory corruption!) during initial CAR boot
+	 * in mcp55_early_setup_x() on Fam10h systems by not touching 0x78.
+	 * Interestingly once the system is fully booted into Linux this can be set, but
+	 * not before!  Apparently something isn't initialized but the amount of effort
+	 * required to fix this is non-negligible and of unknown real-world benefit
+	 */
+#else
 	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xC0FFFFFF, 0x19000000,
+#endif
 
 #if CONFIG_MCP55_USE_AZA
 	RES_PCI_IO, PCI_ADDR(0, 6, 1, 0x40), 0x00000000, 0xCB8410DE,

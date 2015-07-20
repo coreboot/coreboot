@@ -32,5 +32,6 @@
 #define SPD_BUS_DEV_WIDTH	8
 #define SPD_PART_OFF		128
 #define  SPD_PART_LEN		18
+#define SPD_MANU_OFF		148
 
 #endif

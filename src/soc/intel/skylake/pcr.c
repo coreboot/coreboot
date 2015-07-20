@@ -22,15 +22,24 @@
 #include <soc/iomap.h>
 #include <console/console.h>
 
+static inline void *pcr_reg_address(u8 pid, u16 offset)
+{
+	uintptr_t reg_addr;
+
+	/* Create an address based off of port id and offset. */
+	reg_addr = PCH_PCR_BASE_ADDRESS;
+	reg_addr += ((uintptr_t)pid) << PCR_PORTID_SHIFT;
+	reg_addr += ((uintptr_t)offset) << PCR_OFFSET_SHIFT;
+
+	return (void *)reg_addr;
+}
+
 /*
  * Read PCR register. (This is internal function)
  * It returns PCR register and size in 1/2/4 bytes.
  * The offset should not exceed 0xFFFF and must be aligned with size
- *
- * PCH_SBI_PID defines as 8 bit Port ID that will be used when sending
- * transaction to sideband.
  */
-static u8 pch_pcr_read(PCH_SBI_PID pid, u16 offset, u32 size, void *data)
+static int pch_pcr_read(u8 pid, u16 offset, u32 size, void *data)
 {
 	if ((offset & (size - 1)) != 0) {
 		printk(BIOS_DEBUG,
@@ -40,13 +49,13 @@ static u8 pch_pcr_read(PCH_SBI_PID pid, u16 offset, u32 size, void *data)
 	}
 	switch (size) {
 	case 4:
-		*(u32 *) data = read32(PCH_PCR_ADDRESS(pid, offset));
+		*(u32 *) data = read32(pcr_reg_address(pid, offset));
 		break;
 	case 2:
-		*(u16 *) data = read16(PCH_PCR_ADDRESS(pid, offset));
+		*(u16 *) data = read16(pcr_reg_address(pid, offset));
 		break;
 	case 1:
-		*(u8 *) data = read8(PCH_PCR_ADDRESS(pid, offset));
+		*(u8 *) data = read8(pcr_reg_address(pid, offset));
 		break;
 	default:
 		break;
@@ -54,17 +63,17 @@ static u8 pch_pcr_read(PCH_SBI_PID pid, u16 offset, u32 size, void *data)
 	return 0;
 }
 
-u8 pcr_read32(PCH_SBI_PID pid, u16 offset, u32 *outdata)
+int pcr_read32(u8 pid, u16 offset, u32 *outdata)
 {
 	return pch_pcr_read(pid, offset, sizeof(u32), (u32 *)outdata);
 }
 
-u8 pcr_read16(PCH_SBI_PID pid, u16 offset, u16 *outdata)
+int pcr_read16(u8 pid, u16 offset, u16 *outdata)
 {
 	return pch_pcr_read(pid, offset, sizeof(u16), (u32 *)outdata);
 }
 
-u8 pcr_read8(PCH_SBI_PID pid, u16 offset, u8 *outdata)
+int pcr_read8(u8 pid, u16 offset, u8 *outdata)
 {
 	return pch_pcr_read(pid, offset, sizeof(u8), (u32 *)outdata);
 }
@@ -79,18 +88,15 @@ static inline void complete_write(void)
 {
 	/* Read the general control and function disable register. */
 	const size_t R_PCH_PCR_LPC_GCFD = 0x3418;
-	read32(PCH_PCR_ADDRESS(PID_LPC, R_PCH_PCR_LPC_GCFD));
+	read32(pcr_reg_address(PID_LPC, R_PCH_PCR_LPC_GCFD));
 }
 
 /*
  * Write PCR register. (This is internal function)
  * It returns PCR register and size in 1/2/4 bytes.
  * The offset should not exceed 0xFFFF and must be aligned with size
- *
- * PCH_SBI_PID defines as 8 bit Port ID that will be used when sending
- * transaction to sideband.
  */
-static u8 pch_pcr_write(PCH_SBI_PID pid, u16 offset, u32 size, u32 data)
+static int pch_pcr_write(u8 pid, u16 offset, u32 size, u32 data)
 {
 	if ((offset & (size - 1)) != 0) {
 		printk(BIOS_DEBUG,
@@ -103,13 +109,13 @@ static u8 pch_pcr_write(PCH_SBI_PID pid, u16 offset, u32 size, u32 data)
 	 */
 	switch (size) {
 	case 4:
-		write32(PCH_PCR_ADDRESS(pid, offset), (u32) data);
+		write32(pcr_reg_address(pid, offset), (u32) data);
 		break;
 	case 2:
-		write16(PCH_PCR_ADDRESS(pid, offset), (u16) data);
+		write16(pcr_reg_address(pid, offset), (u16) data);
 		break;
 	case 1:
-		write8(PCH_PCR_ADDRESS(pid, offset), (u8) data);
+		write8(pcr_reg_address(pid, offset), (u8) data);
 		break;
 	default:
 		break;
@@ -120,17 +126,17 @@ static u8 pch_pcr_write(PCH_SBI_PID pid, u16 offset, u32 size, u32 data)
 	return 0;
 }
 
-u8 pcr_write32(PCH_SBI_PID pid, u16 offset, u32 indata)
+int pcr_write32(u8 pid, u16 offset, u32 indata)
 {
 	return pch_pcr_write(pid, offset, sizeof(u32), indata);
 }
 
-u8 pcr_write16(PCH_SBI_PID pid, u16 offset, u16 indata)
+int pcr_write16(u8 pid, u16 offset, u16 indata)
 {
 	return pch_pcr_write(pid, offset, sizeof(u16), indata);
 }
 
-u8 pcr_write8(PCH_SBI_PID pid, u16 offset, u8 indata)
+int pcr_write8(u8 pid, u16 offset, u8 indata)
 {
 	return pch_pcr_write(pid, offset, sizeof(u8), indata);
 }
@@ -140,10 +146,10 @@ u8 pcr_write8(PCH_SBI_PID pid, u16 offset, u8 indata)
  * It programs  PCR register and size in 1/2/4 bytes.
  * The offset should not exceed 0xFFFF and must be aligned with size
  *
- * PCH_SBI_PID defines as 8 bit Port ID that will be used when sending
+ * u8 defines as 8 bit Port ID that will be used when sending
  * transaction to sideband.
  */
-static u8 pcr_and_then_or(PCH_SBI_PID pid, u16 offset, u32 size, u32 anddata,
+static int pcr_and_then_or(u8 pid, u16 offset, u32 size, u32 anddata,
 		   u32 ordata)
 {
 	u8 status;
@@ -160,17 +166,17 @@ static u8 pcr_and_then_or(PCH_SBI_PID pid, u16 offset, u32 size, u32 anddata,
 	return status;
 }
 
-u8 pcr_andthenor32(PCH_SBI_PID pid, u16 offset, u32 anddata, u32 ordata)
+int pcr_andthenor32(u8 pid, u16 offset, u32 anddata, u32 ordata)
 {
 	return pcr_and_then_or(pid, offset, sizeof(u32), anddata, ordata);
 }
 
-u8 pcr_andthenor16(PCH_SBI_PID pid, u16 offset, u16 anddata, u16 ordata)
+int pcr_andthenor16(u8 pid, u16 offset, u16 anddata, u16 ordata)
 {
 	return pcr_and_then_or(pid, offset, sizeof(u16), anddata, ordata);
 }
 
-u8 pcr_andthenor8(PCH_SBI_PID pid, u16 offset, u8 anddata, u8 ordata)
+int pcr_andthenor8(u8 pid, u16 offset, u8 anddata, u8 ordata)
 {
 	return pcr_and_then_or(pid, offset, sizeof(u8), anddata, ordata);
 }

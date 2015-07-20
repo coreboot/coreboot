@@ -20,8 +20,9 @@
  * Primary to sideband (P2SB) for private configuration registers (PCR).
  */
 
-/* PCH (SunRisePoint LP) */
-#define PCH_PCR_BASE_ADDRESS	0xFD000000
+/* Port Id lives in bits 23:16 and register offset lives in 15:0 of address. */
+#define PCR_PORTID_SHIFT	16
+#define PCR_OFFSET_SHIFT	0
 
 /* DMI Control Register */
 #define R_PCH_PCR_DMI_DMIC	0x2234
@@ -70,38 +71,30 @@
 #define SIO_PCH_LEGACY_UART2		(1 << 2)
 
 /*
- * Definition for PCR address
- * The PCR address is used to the PCR MMIO programming
+ * P2SB port ids.
  */
-#define PCH_PCR_ADDRESS(pid, offset)	(void *)(\
-	PCH_PCR_BASE_ADDRESS | ((u8)(pid) << 16) | (u16)(offset))
+#define PID_PSTH	0x89
+#define PID_GPIOCOM3	0xAC
+#define PID_GPIOCOM2	0xAD
+#define PID_GPIOCOM1	0xAE
+#define PID_GPIOCOM0	0xAF
+#define PID_LPC		0xC7
+#define PID_ITSS	0xC4
+#define PID_RTC		0xC3
+#define PID_SERIALIO	0xCB
+#define PID_DMI		0xEF
 
-/*
- * Definition for SBI PID
- * The PCH_SBI_PID defines the PID for PCR MMIO programming and
- * PCH SBI programming as well.
- */
-typedef enum {
-	PID_PSTH = 0x89,
-	PID_GPIOCOM3 = 0xAC,
-	PID_GPIOCOM2 = 0xAD,
-	PID_GPIOCOM1 = 0xAE,
-	PID_GPIOCOM0 = 0xAF,
-	PID_LPC = 0xC7,
-	PID_ITSS = 0xC4,
-	PID_RTC = 0xC3,
-	PID_SERIALIO = 0xCB,
-	PID_DMI = 0xEF,
-} PCH_SBI_PID;
-
-u8 pcr_read32(PCH_SBI_PID pid, u16 offset, u32 *outdata);
-u8 pcr_read16(PCH_SBI_PID pid, u16 offset, u16 *outdata);
-u8 pcr_read8(PCH_SBI_PID pid, u16 offset, u8 *outdata);
-u8 pcr_write32(PCH_SBI_PID pid, u16 offset, u32 indata);
-u8 pcr_write16(PCH_SBI_PID pid, u16 offset, u16 indata);
-u8 pcr_write8(PCH_SBI_PID pid, u16 offset, u8 indata);
-u8 pcr_andthenor32(PCH_SBI_PID pid, u16 offset, u32 anddata, u32 ordata);
-u8 pcr_andthenor16(PCH_SBI_PID pid, u16 offset, u16 anddata, u16 ordata);
-u8 pcr_andthenor8(PCH_SBI_PID pid, u16 offset, u8 anddata, u8 ordata);
+#if !defined(__ASSEMBLER__) && !defined(__ACPI__)
+/* All these return 0 on success and < 0 on errror. */
+int pcr_read32(u8 pid, u16 offset, u32 *outdata);
+int pcr_read16(u8 pid, u16 offset, u16 *outdata);
+int pcr_read8(u8 pid, u16 offset, u8 *outdata);
+int pcr_write32(u8 pid, u16 offset, u32 indata);
+int pcr_write16(u8 pid, u16 offset, u16 indata);
+int pcr_write8(u8 pid, u16 offset, u8 indata);
+int pcr_andthenor32(u8 pid, u16 offset, u32 anddata, u32 ordata);
+int pcr_andthenor16(u8 pid, u16 offset, u16 anddata, u16 ordata);
+int pcr_andthenor8(u8 pid, u16 offset, u8 anddata, u8 ordata);
+#endif /* if !defined(__ASSEMBLER__) && !defined(__ACPI__) */
 
 #endif /* _SOC_PCR_H_ */

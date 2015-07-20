@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
+#include <memory_info.h>
 #include <fsp_util.h>
 #include <soc/intel/common/util.h>
 #include <soc/pei_data.h>
@@ -76,6 +77,9 @@ void mainboard_memory_init_params(struct romstage_params *params,
 void mainboard_pre_console_init(struct romstage_params *params);
 void mainboard_romstage_entry(struct romstage_params *params);
 void mainboard_save_dimm_info(struct romstage_params *params);
+void mainboard_add_dimm_info(struct romstage_params *params,
+			     struct memory_info *mem_info,
+			     int channel, int dimm, int index);
 void raminit(struct romstage_params *params);
 void report_memory_config(void);
 void report_platform_info(void);

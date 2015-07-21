@@ -18,6 +18,6 @@
  */
 
 Name (OIPG, Package() {
-	Package () { 0x0001, 0, 0xFFFFFFFF, "INT3437:00" }, // no recovery button
-	Package () { 0x0003, 1, 16, "INT3437:00" }, // firmware write protect
+	Package () { 0x0001, 0, 0xFFFFFFFF, "INT344B:00" }, // no recovery button
+	Package () { 0x0003, 1, 71, "INT344B:00" }, // firmware write protect
 })

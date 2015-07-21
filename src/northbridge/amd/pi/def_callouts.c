@@ -27,9 +27,6 @@
 #include "agesawrapper.h"
 #include "BiosCallOuts.h"
 #include "dimmSpd.h"
-#include <PlatformMemoryConfiguration.h>
-
-const PSO_ENTRY __attribute__((weak)) PlatformMemoryConfiguration[] = { PSO_END };
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {

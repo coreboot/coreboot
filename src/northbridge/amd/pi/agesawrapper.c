@@ -26,9 +26,6 @@
 #include <heapManager.h>
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/BiosCallOuts.h>
-#include <PlatformMemoryConfiguration.h>
-
-extern const PSO_ENTRY PlatformMemoryConfiguration[];
 
 VOID FchInitS3LateRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
@@ -138,18 +135,6 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	AmdCreateStruct (&AmdParamStruct);
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
-
-	/*
-	* A PlatformMemoryConfiguration[] table must be added in the
-	* mainboard folder to any boards that need the memory configuation
-	* settings altered from the standard settings. Examples of boards
-	* requiring this change might be boards with soldered down memory,
-	* or boards that use a non-standard memory clock routing scheme
-	* There are PlatformMemoryConfiguration[] tables in many existing
-	* mainboards that can be used as an example.
-	*/
-	if (PlatformMemoryConfiguration[0] != PSO_END)
-		PostParams->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *)PlatformMemoryConfiguration;
 
 	// Do not use IS_ENABLED here.  CONFIG_GFXUMA should always have a value.  Allow
 	// the compiler to flag the error if CONFIG_GFXUMA is not set.

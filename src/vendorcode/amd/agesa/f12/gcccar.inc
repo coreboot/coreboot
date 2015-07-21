@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -9,10 +9,10 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
- *       its contributors may be used to endorse or promote products derived 
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -23,9 +23,9 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
- 
+
 /******************************************************************************
 * AMD Generic Encapsulated Software Architecture
 *
@@ -37,99 +37,99 @@
 
 .altmacro
 
-BSP_STACK_BASE_ADDR     =       0x30000         /* Base address for primary cores stack   */                             
-BSP_STACK_SIZE          =       0x10000         /* 64KB for BSP core                      */                                               
-CORE0_STACK_BASE_ADDR   =       0x80000         /* Base address for primary cores stack   */                             
-CORE0_STACK_SIZE        =       0x4000          /* 16KB for primary cores                 */                                          
-CORE1_STACK_BASE_ADDR   =       0x40000         /* Base address for AP cores              */                                           
-CORE1_STACK_SIZE        =       0x1000          /* 4KB for each AP cores                  */                                               
-                                                                                                             
-APIC_BASE_ADDRESS       =       0x0000001B                                                                       
-  APIC_BSC              =       8               /* Boot Strap Core  */                                                  
-                                                                                                             
-AMD_MTRR_VARIABLE_BASE0  =      0x0200                                                                          
-AMD_MTRR_VARIABLE_BASE6  =      0x020C                                                                          
-AMD_MTRR_FIX64k_00000    =      0x0250                                                                          
-AMD_MTRR_FIX16k_80000    =      0x0258                                                                          
-AMD_MTRR_FIX16k_A0000    =      0x0259                                                                          
-AMD_MTRR_FIX4k_C0000     =      0x0268                                                                          
-AMD_MTRR_FIX4k_C8000     =      0x0269                                                                          
-AMD_MTRR_FIX4k_D0000     =      0x026A                                                                          
-AMD_MTRR_FIX4k_D8000     =      0x026B                                                                          
-AMD_MTRR_FIX4k_E0000     =      0x026C                                                                          
-AMD_MTRR_FIX4k_E8000     =      0x026D                                                                          
-AMD_MTRR_FIX4k_F0000     =      0x026E                                                                          
-AMD_MTRR_FIX4k_F8000     =      0x026F                                                                          
-                                                                                                             
-AMD_MTRR_DEFTYPE         =      0x02FF                                                                            
-    WB_DRAM_TYPE         =      0x1E             /* MemType - memory type */                                           
-    MTRR_DEF_TYPE_EN     =      11               /* MtrrDefTypeEn - variable and fixed MTRRs default enabled */          
-    MTRR_DEF_TYPE_FIX_EN =      10               /* MtrrDefTypeEn - fixed MTRRs default enabled */                        
-                                                                                                             
-HWCR                     =      0x0C0010015      /* Hardware Configuration                                                                                                                                       */                                             
-    INVD_WBINVD          =      0x04             /* INVD to WBINVD conversion */                                         
-                                                                                                             
-IORR_BASE                =      0x0C0010016      /* IO Range Regusters Base/Mask, 2 pairs */                              
-                                                 /*  uses 16h - 19h                                                                                                                                                             */                                                   
-TOP_MEM                  =      0x0C001001A      /* Top of Memory                                                                                                                                                                                */                                                      
-TOP_MEM2                 =      0x0C001001D      /* Top of Memory2                                                                                                                                                                       */                                                    
-                                                                                                             
-LS_CFG                   =      0x0C0011020      /* Load-Store Configuration                                                                                                                             */                                           
-    DIS_SS               =     28                /* Family 10h,12h,15h:Disable Streng Store functionality */         
-    DIS_STREAM_ST        =     28                /* Family 14h:DisStreamSt - Disable Streaming Store functionality */   
-                                                                                                             
-IC_CFG                   =      0x0C0011021      /* Instruction Cache Config Register  */                                 
-    IC_DIS_SPEC_TLB_RLD  =      9                /*   Disable speculative TLB reloads  */                                 
-    DIS_IND              =      14               /*   Family 10-14h:Disable Indirect Branch Predictor */                  
-    DIS_I_CACHE          =      14               /*   Family 15h:DisICache - Disable Indirect Branch Predictor */         
-                                                                                                             
-DC_CFG                   =      0x0C0011022      /* Data Cache Configuration                                                                                                                                   */                                           
-    DC_DIS_SPEC_TLB_RLD      =  4                /*   Disable speculative TLB reloads */                                  
-    DIS_CLR_WBTOL2_SMC_HIT   =  8                /*   self modifying code check buffer bit */                              
-    DIS_HW_PF                =  13               /*   Hardware prefetches bit                                                                                                                                    */                                          
-                                                                                                             
-DE_CFG                   =      0x0C0011029      /* Decode Configuration */                                               
-    CL_FLUSH_SERIALIZE   =      23               /*   Family 12h,15h: CL Flush Serialization */                           
-                                                                                                             
-BU_CFG2                  =      0x0C001102A      /* Family 10h: Bus Unit Configuration 2 */                           
-CU_CFG2                  =      0x0C001102A      /* Family 15h: Combined Unit Configuration 2 */                           
-    F10_CL_LINES_TO_NB_DIS  =   15               /*   ClLinesToNbDis - allows WP code to be cached in L2 */               
-    IC_DIS_SPEC_TLB_WR      =   35               /*   IcDisSpecTlbWr - ITLB speculative writes */                        
-                                                                                                             
-CU_CFG3                  =      0x0C001102B      /* Combined Unit Configuration 3 */                                      
-    COMBINE_CR0_CD       =      49               /*   Combine CR0.CD for both cores of a compute unit */                  
-                                                                                                             
-                                                                                                             
+BSP_STACK_BASE_ADDR     =       0x30000         /* Base address for primary cores stack   */
+BSP_STACK_SIZE          =       0x10000         /* 64KB for BSP core                      */
+CORE0_STACK_BASE_ADDR   =       0x80000         /* Base address for primary cores stack   */
+CORE0_STACK_SIZE        =       0x4000          /* 16KB for primary cores                 */
+CORE1_STACK_BASE_ADDR   =       0x40000         /* Base address for AP cores              */
+CORE1_STACK_SIZE        =       0x1000          /* 4KB for each AP cores                  */
+
+APIC_BASE_ADDRESS       =       0x0000001B
+  APIC_BSC              =       8               /* Boot Strap Core  */
+
+AMD_MTRR_VARIABLE_BASE0  =      0x0200
+AMD_MTRR_VARIABLE_BASE6  =      0x020C
+AMD_MTRR_FIX64k_00000    =      0x0250
+AMD_MTRR_FIX16k_80000    =      0x0258
+AMD_MTRR_FIX16k_A0000    =      0x0259
+AMD_MTRR_FIX4k_C0000     =      0x0268
+AMD_MTRR_FIX4k_C8000     =      0x0269
+AMD_MTRR_FIX4k_D0000     =      0x026A
+AMD_MTRR_FIX4k_D8000     =      0x026B
+AMD_MTRR_FIX4k_E0000     =      0x026C
+AMD_MTRR_FIX4k_E8000     =      0x026D
+AMD_MTRR_FIX4k_F0000     =      0x026E
+AMD_MTRR_FIX4k_F8000     =      0x026F
+
+AMD_MTRR_DEFTYPE         =      0x02FF
+    WB_DRAM_TYPE         =      0x1E             /* MemType - memory type */
+    MTRR_DEF_TYPE_EN     =      11               /* MtrrDefTypeEn - variable and fixed MTRRs default enabled */
+    MTRR_DEF_TYPE_FIX_EN =      10               /* MtrrDefTypeEn - fixed MTRRs default enabled */
+
+HWCR                     =      0x0C0010015      /* Hardware Configuration                                                                                                                                       */
+    INVD_WBINVD          =      0x04             /* INVD to WBINVD conversion */
+
+IORR_BASE                =      0x0C0010016      /* IO Range Regusters Base/Mask, 2 pairs */
+                                                 /*  uses 16h - 19h                                                                                                                                                             */
+TOP_MEM                  =      0x0C001001A      /* Top of Memory                                                                                                                                                                                */
+TOP_MEM2                 =      0x0C001001D      /* Top of Memory2                                                                                                                                                                       */
+
+LS_CFG                   =      0x0C0011020      /* Load-Store Configuration                                                                                                                             */
+    DIS_SS               =     28                /* Family 10h,12h,15h:Disable Streng Store functionality */
+    DIS_STREAM_ST        =     28                /* Family 14h:DisStreamSt - Disable Streaming Store functionality */
+
+IC_CFG                   =      0x0C0011021      /* Instruction Cache Config Register  */
+    IC_DIS_SPEC_TLB_RLD  =      9                /*   Disable speculative TLB reloads  */
+    DIS_IND              =      14               /*   Family 10-14h:Disable Indirect Branch Predictor */
+    DIS_I_CACHE          =      14               /*   Family 15h:DisICache - Disable Indirect Branch Predictor */
+
+DC_CFG                   =      0x0C0011022      /* Data Cache Configuration                                                                                                                                   */
+    DC_DIS_SPEC_TLB_RLD      =  4                /*   Disable speculative TLB reloads */
+    DIS_CLR_WBTOL2_SMC_HIT   =  8                /*   self modifying code check buffer bit */
+    DIS_HW_PF                =  13               /*   Hardware prefetches bit                                                                                                                                    */
+
+DE_CFG                   =      0x0C0011029      /* Decode Configuration */
+    CL_FLUSH_SERIALIZE   =      23               /*   Family 12h,15h: CL Flush Serialization */
+
+BU_CFG2                  =      0x0C001102A      /* Family 10h: Bus Unit Configuration 2 */
+CU_CFG2                  =      0x0C001102A      /* Family 15h: Combined Unit Configuration 2 */
+    F10_CL_LINES_TO_NB_DIS  =   15               /*   ClLinesToNbDis - allows WP code to be cached in L2 */
+    IC_DIS_SPEC_TLB_WR      =   35               /*   IcDisSpecTlbWr - ITLB speculative writes */
+
+CU_CFG3                  =      0x0C001102B      /* Combined Unit Configuration 3 */
+    COMBINE_CR0_CD       =      49               /*   Combine CR0.CD for both cores of a compute unit */
+
+
 CR0_PE                  = 0           # Protection Enable
 CR0_NW                  = 29          # Not Write-through
 CR0_CD                  = 30          # Cache Disable
 CR0_PG                  = 31          # Paging Enable
-                                                                                                             
-/* CPUID Functions */                                                                                            
-                                                                                                             
-CPUID_MODEL              =      1                                                                                
-AMD_CPUID_FMF            =      0x80000001       /* Family Model Features information */                                  
-AMD_CPUID_APIC           =      0x80000008       /* Long Mode and APIC info., core count */                         
-                                                                                                           
-NB_CFG                   =      0x0C001001F      /* Northbridge Configuration Register */                            
-    INIT_APIC_ID_CPU_ID_LO    = 54               /*  InitApicIdCpuIdLo - is core# in high or low half of APIC ID? */    
-                                                                                                             
-MTRR_SYS_CFG             =      0x0C0010010      /* System Configuration Register */                                      
-  CHX_TO_DIRTY_DIS       =      16               /*   ChxToDirtyDis    Change to dirty disable  */                        
-  SYS_UC_LOCK_EN         =      17               /*   SysUcLockEn      System lock command enable */                    
-  MTRR_FIX_DRAM_EN       =      18               /*   MtrrFixDramEn    MTRR fixed RdDram and WrDram attributes enable */ 
-  MTRR_FIX_DRAM_MOD_EN   =      19               /*   MtrrFixDramModEn MTRR fixed RdDram and WrDram modification enable */ 
-  MTRR_VAR_DRAM_EN       =      20               /*   MtrrVarDramEn    MTRR variable DRAM enable */                     
-  MTRR_TOM2_EN           =      21               /*   MtrrTom2En       MTRR top of memory 2 enable */                    
-                                                                                                             
-PERF_CONTROL3            =      0x0C0010003      /* Performance event control three */                                    
-    PERF_CONTROL3_RESERVE_L  =  0x00200000       /* Preserve the reserved bits */                                   
-    PERF_CONTROL3_RESERVE_H  =  0x0FCF0          /* Preserve the reserved bits */                                    
-    CONFIG_EVENT_L           =  0x0F0E2          /* All cores with level detection */                                    
-    CONFIG_EVENT_H           =  4                /* Increment count by number of event */                                 
-                                                 /* occured in clock cycle */                                 
-    EVENT_ENABLE             =  22               /* Enable the event */ 
-PERF_COUNTER3            =      0x0C0010007      /* Performance event counter three */                                 
+
+/* CPUID Functions */
+
+CPUID_MODEL              =      1
+AMD_CPUID_FMF            =      0x80000001       /* Family Model Features information */
+AMD_CPUID_APIC           =      0x80000008       /* Long Mode and APIC info., core count */
+
+NB_CFG                   =      0x0C001001F      /* Northbridge Configuration Register */
+    INIT_APIC_ID_CPU_ID_LO    = 54               /*  InitApicIdCpuIdLo - is core# in high or low half of APIC ID? */
+
+MTRR_SYS_CFG             =      0x0C0010010      /* System Configuration Register */
+  CHX_TO_DIRTY_DIS       =      16               /*   ChxToDirtyDis    Change to dirty disable  */
+  SYS_UC_LOCK_EN         =      17               /*   SysUcLockEn      System lock command enable */
+  MTRR_FIX_DRAM_EN       =      18               /*   MtrrFixDramEn    MTRR fixed RdDram and WrDram attributes enable */
+  MTRR_FIX_DRAM_MOD_EN   =      19               /*   MtrrFixDramModEn MTRR fixed RdDram and WrDram modification enable */
+  MTRR_VAR_DRAM_EN       =      20               /*   MtrrVarDramEn    MTRR variable DRAM enable */
+  MTRR_TOM2_EN           =      21               /*   MtrrTom2En       MTRR top of memory 2 enable */
+
+PERF_CONTROL3            =      0x0C0010003      /* Performance event control three */
+    PERF_CONTROL3_RESERVE_L  =  0x00200000       /* Preserve the reserved bits */
+    PERF_CONTROL3_RESERVE_H  =  0x0FCF0          /* Preserve the reserved bits */
+    CONFIG_EVENT_L           =  0x0F0E2          /* All cores with level detection */
+    CONFIG_EVENT_H           =  4                /* Increment count by number of event */
+                                                 /* occured in clock cycle */
+    EVENT_ENABLE             =  22               /* Enable the event */
+PERF_COUNTER3            =      0x0C0010007      /* Performance event counter three */
 
 # Local use flags, in upper most byte if ESI
 FLAG_UNKNOWN_FAMILY     = 24          # Signals that the family# of the installed processor is not recognized
@@ -144,28 +144,28 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
  *                      CPU MACROS - PUBLIC
  *
  ****************************************************************************/
-.macro   _WRMSR 
-        .byte 0x0f, 0x30        
+.macro   _WRMSR
+        .byte 0x0f, 0x30
 .endm
 
-.macro  _RDMSR  
-        .byte   0x0F, 0x32      
+.macro  _RDMSR
+        .byte   0x0F, 0x32
 .endm
 
 .macro AMD_CPUID arg0
-  .ifb \arg0                                             
-    mov   $0x1, %eax    
+  .ifb \arg0
+    mov   $0x1, %eax
     .byte 0x0F, 0x0A2                     /* Execute instruction */
-    bswap %eax                          
+    bswap %eax
     xchg  %ah, %al                        /* Ext model in al now */
     rol   $0x08, %eax                     /* Ext model in ah, model in al */
     and   $0x0FFCF, ax                    /* Keep 23:16, 7:6, 3:0 */
   .else
-    mov   \arg0, %eax    
-    .byte 0x0F, 0x0A2   
+    mov   \arg0, %eax
+    .byte 0x0F, 0x0A2
   .endif
 .endm
-  
+
 /****************************************************************************
 *
 * AMD_ENABLE_STACK_FAMILY_HOOK Macro - Stackless
@@ -180,12 +180,12 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
  ****************************************************************************/
 .macro  AMD_ENABLE_STACK_FAMILY_HOOK
 
-    AMD_ENABLE_STACK_FAMILY_HOOK_F10    
-    AMD_ENABLE_STACK_FAMILY_HOOK_F12    
-    AMD_ENABLE_STACK_FAMILY_HOOK_F14    
-    AMD_ENABLE_STACK_FAMILY_HOOK_F15    
+    AMD_ENABLE_STACK_FAMILY_HOOK_F10
+    AMD_ENABLE_STACK_FAMILY_HOOK_F12
+    AMD_ENABLE_STACK_FAMILY_HOOK_F14
+    AMD_ENABLE_STACK_FAMILY_HOOK_F15
 .endm
-  
+
 /****************************************************************************
 *
 * AMD_DISABLE_STACK_FAMILY_HOOK Macro - Stackless
@@ -206,7 +206,7 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
     AMD_DISABLE_STACK_FAMILY_HOOK_F15
 
 .endm
-  
+
 /****************************************************************************
 *
 * GET_NODE_ID_CORE_ID Macro - Stackless
@@ -238,7 +238,7 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
      */
     cmp     $-1, %si                      # Has family (node/core) already been discovered?
     jnz     node_core_exit              # Br if yes
-    
+
    mov     $((1 << FLAG_UNKNOWN_FAMILY)+(1 << FLAG_IS_PRIMARY)), %esi # No, Set error code, Only let BSP continue
 	
     mov     $APIC_BASE_ADDRESS, %ecx      # MSR:0000_001B
@@ -249,7 +249,7 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
 node_core_exit:
 
 .endm
-  
+
 /****************************************************************************
 ##                      Family 10h MACROS
 ##***************************************************************************
@@ -277,7 +277,7 @@ node_core_exit:
 #   * MSRC001_102A[ClLinesToNbDis]=1
 #   * No INVD or WBINVD, no exceptions, page faults or interrupts
 ****************************************************************************/
-.macro AMD_ENABLE_STACK_FAMILY_HOOK_F10 
+.macro AMD_ENABLE_STACK_FAMILY_HOOK_F10
     LOCAL   fam10_enable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
@@ -310,7 +310,7 @@ node_core_exit:
     jc      fam10_skipClearingBit4
     btr     $INVD_WBINVD, %eax             # disable INVD -> WBINVD conversion
     _WRMSR
-    
+
 fam10_skipClearingBit4:
     mov %esi, %eax                         # load core#
     or %al, %al                       # If (BSP)
@@ -333,7 +333,7 @@ fam10_skipClearingBit4:
 
 fam10_enable_stack_hook_exit:
 .endm
-  
+
 /****************************************************************************
 *
 * AMD_DISABLE_STACK_FAMILY_HOOK_F10 Macro - Stackless
@@ -357,7 +357,7 @@ fam10_enable_stack_hook_exit:
 *   * MSRC001_102A[IcDisSpecTlbWr]=0
 *   * MSRC001_102A[ClLinesToNbDis]=0
 *****************************************************************************/
-     
+
 .macro  AMD_DISABLE_STACK_FAMILY_HOOK_F10
     LOCAL   fam10_disable_stack_hook_exit
 
@@ -413,7 +413,7 @@ fam10_enable_stack_hook_exit:
     _WRMSR                              # Disable the event
 
 fam10_disable_stack_hook_exit:
-.endm   
+.endm
 
 /****************************************************************************
 *
@@ -575,7 +575,7 @@ node_core_f10_exit:
     jc      fam12_skipClearingBit4
     btr     $INVD_WBINVD, %eax            # disable INVD -> WBINVD conversion
     _WRMSR
-    
+
 fam12_skipClearingBit4:
     mov     $DE_CFG, %ecx                 # MSR:C001_1029
     _RDMSR
@@ -879,7 +879,7 @@ node_core_f14_exit:
     _RDMSR
     btr     $INVD_WBINVD, %eax            # disable INVD -> WBINVD conversion
     _WRMSR
-    
+
 fam15_skipClearingBit4:
     mov     $LS_CFG, %ecx                 # MSR:C001_1020
     _RDMSR
@@ -1121,7 +1121,7 @@ node_core_f15_shared:
                 #.break .if (ch == bl)   # Does 2nd match MyCore#?
                 cmp     %bl, %ch
                 je      9f
-                jmp     2f   
+                jmp     2f
             #.else                       # No 2nd core
             4:
                 #.break .if (ch == bl)   # Does 1st match MyCore#?
@@ -1226,7 +1226,7 @@ node_core_f15_exit:
 *     | >|MA|IN| B|IO|S |RA|NG|E |  |  |  |  |  |  |< | >|EX|TE|ND|ED| B|IO|S |ZO|NE|  |  |  |  |  |< |
 *     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 *****************************************************************************/
-.macro  AMD_ENABLE_STACK 
+.macro  AMD_ENABLE_STACK
 
 # These are local labels. Declared so linker doesn't cause 'redefined label' errors
     LOCAL   SetupStack
@@ -1294,7 +1294,7 @@ SetupStack:
         #.if (carry?)                    #     Families using shared groups do not need to clear the MTRRs since that is done at power-on reset
             #  Note: Relying on MSRs to be cleared to 0's at reset for families w/shared cores
             # Clear all variable and Fixed MTRRs for non-shared cores
-        jnc 0f    
+        jnc 0f
         mov     $AMD_MTRR_VARIABLE_BASE0, %ecx
         xor     %eax, %eax
         xor     %edx, %edx
@@ -1330,20 +1330,20 @@ SetupStack:
         _WRMSR
         #.endif                          #   End Is_Primary
     #.endif                              # End Stack_ReEntry
-    0:    
+    0:
     # Clear IORRs (C001_0016-19) and TOM2(C001_001D) for all cores
     xor     %eax, %eax
     xor     %edx, %edx
     mov     $IORR_BASE, %ecx              # MSR:C001_0016 - 0019
     #.while (cl != 1Ah)
     jmp  1f
-    2:   
+    2:
         _WRMSR
         inc     %cl
     #.endw
-    1:  
+    1:
     cmp $0x1A, %cl
-    jne  2b   
+    jne  2b
     mov     $TOP_MEM2, %ecx               # MSR:C001_001D
     _WRMSR
 
@@ -1414,7 +1414,7 @@ SetupStack:
         mov     %eax, %ebp
     #.endif
     0:
-        
+
     # Now set the MTRR. Add this to already existing settings (don't clear any MTRR)
     mov     $WB_DRAM_TYPE, %edi           # Load Cache type in 1st slot
     mov     %bh, %cl                      # ShiftCount =  ((slot#   ...
@@ -1570,7 +1570,7 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
 *   Destroyed:
 *       eax, ecx, edx, esp
 *****************************************************************************/
-.macro  AMD_DISABLE_STACK 
+.macro  AMD_DISABLE_STACK
 
     mov     %ebx, %esp                    # Save return address
 

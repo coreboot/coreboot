@@ -49,7 +49,7 @@ static int bus_claimed = 0;
 #define AMD_SB_SPI_TX_LEN	8
 #endif
 
-static u32 spibar;
+static uintptr_t spibar;
 
 static inline uint8_t spi_read(uint8_t reg)
 {

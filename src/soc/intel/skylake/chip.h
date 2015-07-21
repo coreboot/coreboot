@@ -128,7 +128,7 @@ struct soc_intel_skylake_config {
 	int tcc_offset;
 
 	/*
-	 * The following fields come from fsp_vpd.h.
+	 * The following fields come from FspUpdVpd.h.
 	 * These are configuration values that are passed to FSP during
 	 * MemoryInit.
 	 */
@@ -140,6 +140,19 @@ struct soc_intel_skylake_config {
 
 	/* Probeless Trace function */
 	u8 ProbelessTrace;
+
+	/*
+	 * System Agent dynamic frequency configuration
+	 * When enabled memory will be trained at two different frequencies.
+	 * 0 = Disabled
+	 * 1 = FixedLow
+	 * 2 = FixedHigh
+	 * 3 = Enabled
+	*/
+	u8 SaGv;
+
+	/* Enable/disable Rank Margin Tool */
+	u8 Rmt;
 
 	/* Lan */
 	u8 EnableLan;

@@ -81,14 +81,11 @@ void soc_memory_init_params(MEMORY_INIT_UPD *params)
 {
 	const struct device *dev;
 	const struct soc_intel_skylake_config *config;
-	int i;
+
 
 	/* Set the parameters for MemoryInit */
 	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
 	config = dev->chip_info;
-
-	for (i = 0; i < PchSerialIoIndexMax; i++)
-		params->SerialIoDevMode[i] = config->SerialIoDevMode[i];
 
 	memcpy(params->PcieRpEnable, config->PcieRpEnable,
 		sizeof(params->PcieRpEnable));
@@ -104,24 +101,9 @@ void soc_memory_init_params(MEMORY_INIT_UPD *params)
 	params->EnableLan = config->EnableLan;
 	params->EnableSata = config->EnableSata;
 	params->SataMode = config->SataMode;
-	params->SataSalpSupport = config->SataSalpSupport;
-	params->SataPortsEnable[0] = config->SataPortsEnable[0];
-	params->SsicPortEnable = config->SsicPortEnable;
 	params->EnableTraceHub = config->EnableTraceHub;
-	params->SmbusEnable = config->SmbusEnable;
-	params->Cio2Enable = config->Cio2Enable;
-	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
-	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
-	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
-	params->IshEnable = 0;
-	params->EnableAzalia = config->EnableAzalia;
-	params->IoBufferOwnership = config->IoBufferOwnership;
-	params->DspEnable = config->DspEnable;
-	params->XdciEnable = config->XdciEnable;
-
-	/* Show SPI controller if enabled in devicetree.cb */
-	dev = dev_find_slot(0, PCH_DEVFN_SPI);
-	params->ShowSpiController = dev->enabled;
+	params->SaGv = config->SaGv;
+	params->RMT = config->Rmt;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
@@ -248,51 +230,10 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	soc_display_upd_value("IedSize", 4, old->IedSize, new->IedSize);
 	soc_display_upd_value("TsegSize", 4, old->TsegSize, new->TsegSize);
 	soc_display_upd_value("MmioSize", 2, old->MmioSize, new->MmioSize);
-	soc_display_upd_value("ProbelessTrace", 1, old->ProbelessTrace,
-		new->ProbelessTrace);
 	soc_display_upd_value("EnableLan", 1, old->EnableLan, new->EnableLan);
 	soc_display_upd_value("EnableSata", 1, old->EnableSata,
 		new->EnableSata);
 	soc_display_upd_value("SataMode", 1, old->SataMode, new->SataMode);
-	soc_display_upd_value("SataSalpSupport", 1, old->SataSalpSupport,
-		new->SataSalpSupport);
-	soc_display_upd_value("SataPortsEnable[0]", 1, old->SataPortsEnable[0],
-		new->SataPortsEnable[0]);
-	soc_display_upd_value("SataPortsEnable[1]", 1, old->SataPortsEnable[1],
-		new->SataPortsEnable[1]);
-	soc_display_upd_value("SataPortsEnable[2]", 1, old->SataPortsEnable[2],
-		new->SataPortsEnable[2]);
-	soc_display_upd_value("SataPortsEnable[3]", 1, old->SataPortsEnable[3],
-		new->SataPortsEnable[3]);
-	soc_display_upd_value("SataPortsEnable[4]", 1, old->SataPortsEnable[4],
-		new->SataPortsEnable[4]);
-	soc_display_upd_value("SataPortsEnable[5]", 1, old->SataPortsEnable[5],
-		new->SataPortsEnable[5]);
-	soc_display_upd_value("SataPortsEnable[6]", 1, old->SataPortsEnable[6],
-		new->SataPortsEnable[6]);
-	soc_display_upd_value("SataPortsEnable[7]", 1, old->SataPortsEnable[7],
-		new->SataPortsEnable[7]);
-	soc_display_upd_value("SataPortsDevSlp[0]", 1, old->SataPortsDevSlp[0],
-		new->SataPortsDevSlp[0]);
-	soc_display_upd_value("SataPortsDevSlp[1]", 1, old->SataPortsDevSlp[1],
-		new->SataPortsDevSlp[1]);
-	soc_display_upd_value("SataPortsDevSlp[2]", 1, old->SataPortsDevSlp[2],
-		new->SataPortsDevSlp[2]);
-	soc_display_upd_value("SataPortsDevSlp[3]", 1, old->SataPortsDevSlp[3],
-		new->SataPortsDevSlp[3]);
-	soc_display_upd_value("SataPortsDevSlp[4]", 1, old->SataPortsDevSlp[4],
-		new->SataPortsDevSlp[4]);
-	soc_display_upd_value("SataPortsDevSlp[5]", 1, old->SataPortsDevSlp[5],
-		new->SataPortsDevSlp[5]);
-	soc_display_upd_value("SataPortsDevSlp[6]", 1, old->SataPortsDevSlp[6],
-		new->SataPortsDevSlp[6]);
-	soc_display_upd_value("SataPortsDevSlp[7]", 1, old->SataPortsDevSlp[7],
-		new->SataPortsDevSlp[7]);
-	soc_display_upd_value("EnableAzalia", 1, old->EnableAzalia,
-		new->EnableAzalia);
-	soc_display_upd_value("DspEnable", 1, old->DspEnable, new->DspEnable);
-	soc_display_upd_value("IoBufferOwnership", 1, old->IoBufferOwnership,
-		new->IoBufferOwnership);
 	soc_display_upd_value("EnableTraceHub", 1, old->EnableTraceHub,
 		new->EnableTraceHub);
 	soc_display_upd_value("PcieRpEnable[0]", 1, old->PcieRpEnable[0],
@@ -455,123 +396,12 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	soc_display_upd_value("PcieRpClkReqNumber[19]", 1,
 		old->PcieRpClkReqNumber[19],
 		new->PcieRpClkReqNumber[19]);
-	soc_display_upd_value("PortUsb20Enable[0]", 1, old->PortUsb20Enable[0],
-		new->PortUsb20Enable[0]);
-	soc_display_upd_value("PortUsb20Enable[1]", 1, old->PortUsb20Enable[1],
-		new->PortUsb20Enable[1]);
-	soc_display_upd_value("PortUsb20Enable[2]", 1, old->PortUsb20Enable[2],
-		new->PortUsb20Enable[2]);
-	soc_display_upd_value("PortUsb20Enable[3]", 1, old->PortUsb20Enable[3],
-		new->PortUsb20Enable[3]);
-	soc_display_upd_value("PortUsb20Enable[4]", 1, old->PortUsb20Enable[4],
-		new->PortUsb20Enable[4]);
-	soc_display_upd_value("PortUsb20Enable[5]", 1, old->PortUsb20Enable[5],
-		new->PortUsb20Enable[5]);
-	soc_display_upd_value("PortUsb20Enable[6]", 1, old->PortUsb20Enable[6],
-		new->PortUsb20Enable[6]);
-	soc_display_upd_value("PortUsb20Enable[7]", 1, old->PortUsb20Enable[7],
-		new->PortUsb20Enable[7]);
-	soc_display_upd_value("PortUsb20Enable[8]", 1, old->PortUsb20Enable[8],
-		new->PortUsb20Enable[8]);
-	soc_display_upd_value("PortUsb20Enable[9]", 1, old->PortUsb20Enable[9],
-		new->PortUsb20Enable[9]);
-	soc_display_upd_value("PortUsb20Enable[10]", 1,
-		old->PortUsb20Enable[10],
-		new->PortUsb20Enable[10]);
-	soc_display_upd_value("PortUsb20Enable[11]", 1,
-		old->PortUsb20Enable[11],
-		new->PortUsb20Enable[11]);
-	soc_display_upd_value("PortUsb20Enable[12]", 1,
-		old->PortUsb20Enable[12],
-		new->PortUsb20Enable[12]);
-	soc_display_upd_value("PortUsb20Enable[13]", 1,
-		old->PortUsb20Enable[13],
-		new->PortUsb20Enable[13]);
-	soc_display_upd_value("PortUsb20Enable[14]", 1,
-		old->PortUsb20Enable[14],
-		new->PortUsb20Enable[14]);
-	soc_display_upd_value("PortUsb20Enable[15]", 1,
-		old->PortUsb20Enable[15],
-		new->PortUsb20Enable[15]);
-	soc_display_upd_value("PortUsb30Enable[0]", 1, old->PortUsb30Enable[0],
-		new->PortUsb30Enable[0]);
-	soc_display_upd_value("PortUsb30Enable[1]", 1, old->PortUsb30Enable[1],
-		new->PortUsb30Enable[1]);
-	soc_display_upd_value("PortUsb30Enable[2]", 1, old->PortUsb30Enable[2],
-		new->PortUsb30Enable[2]);
-	soc_display_upd_value("PortUsb30Enable[3]", 1, old->PortUsb30Enable[3],
-		new->PortUsb30Enable[3]);
-	soc_display_upd_value("PortUsb30Enable[4]", 1, old->PortUsb30Enable[4],
-		new->PortUsb30Enable[4]);
-	soc_display_upd_value("PortUsb30Enable[5]", 1, old->PortUsb30Enable[5],
-		new->PortUsb30Enable[5]);
-	soc_display_upd_value("PortUsb30Enable[6]", 1, old->PortUsb30Enable[6],
-		new->PortUsb30Enable[6]);
-	soc_display_upd_value("PortUsb30Enable[7]", 1, old->PortUsb30Enable[7],
-		new->PortUsb30Enable[7]);
-	soc_display_upd_value("PortUsb30Enable[8]", 1, old->PortUsb30Enable[8],
-		new->PortUsb30Enable[8]);
-	soc_display_upd_value("PortUsb30Enable[9]", 1, old->PortUsb30Enable[9],
-		new->PortUsb30Enable[9]);
-	soc_display_upd_value("XdciEnable", 1, old->XdciEnable,
-		new->XdciEnable);
-	soc_display_upd_value("SsicPortEnable", 1, old->SsicPortEnable,
-		new->SsicPortEnable);
-	soc_display_upd_value("SmbusEnable", 1, old->SmbusEnable,
-		new->SmbusEnable);
-	soc_display_upd_value("SerialIoDevMode[0]", 1, old->SerialIoDevMode[0],
-		new->SerialIoDevMode[0]);
-	soc_display_upd_value("SerialIoDevMode[1]", 1, old->SerialIoDevMode[1],
-		new->SerialIoDevMode[1]);
-	soc_display_upd_value("SerialIoDevMode[2]", 1, old->SerialIoDevMode[2],
-		new->SerialIoDevMode[2]);
-	soc_display_upd_value("SerialIoDevMode[3]", 1, old->SerialIoDevMode[3],
-		new->SerialIoDevMode[3]);
-	soc_display_upd_value("SerialIoDevMode[4]", 1, old->SerialIoDevMode[4],
-		new->SerialIoDevMode[4]);
-	soc_display_upd_value("SerialIoDevMode[5]", 1, old->SerialIoDevMode[5],
-		new->SerialIoDevMode[5]);
-	soc_display_upd_value("SerialIoDevMode[6]", 1, old->SerialIoDevMode[6],
-		new->SerialIoDevMode[6]);
-	soc_display_upd_value("SerialIoDevMode[7]", 1, old->SerialIoDevMode[7],
-		new->SerialIoDevMode[7]);
-	soc_display_upd_value("SerialIoDevMode[8]", 1, old->SerialIoDevMode[8],
-		new->SerialIoDevMode[8]);
-	soc_display_upd_value("SerialIoDevMode[9]", 1, old->SerialIoDevMode[9],
-		new->SerialIoDevMode[9]);
-	soc_display_upd_value("SerialIoDevMode[10]", 1,
-		old->SerialIoDevMode[10],
-		new->SerialIoDevMode[10]);
-	soc_display_upd_value("Cio2Enable", 1, old->Cio2Enable,
-		new->Cio2Enable);
-	soc_display_upd_value("ScsEmmcEnabled", 1, old->ScsEmmcEnabled,
-		new->ScsEmmcEnabled);
-	soc_display_upd_value("ScsEmmcHs400Enabled", 1,
-		old->ScsEmmcHs400Enabled,
-		new->ScsEmmcHs400Enabled);
-	soc_display_upd_value("ScsSdCardEnabled", 1, old->ScsSdCardEnabled,
-		new->ScsSdCardEnabled);
-	soc_display_upd_value("IshEnable", 1, old->IshEnable, new->IshEnable);
-	soc_display_upd_value("ShowSpiController", 1, old->ShowSpiController,
-		new->ShowSpiController);
-	soc_display_upd_value("PttSwitch", 1, old->PttSwitch, new->PttSwitch);
-	soc_display_upd_value("HeciTimeouts", 1, old->HeciTimeouts,
-		new->HeciTimeouts);
-	soc_display_upd_value("HsioMessaging", 1, old->HsioMessaging,
-		new->HsioMessaging);
-	soc_display_upd_value("Heci3Enabled", 1, old->Heci3Enabled,
-		new->Heci3Enabled);
 	soc_display_upd_value("IgdDvmt50PreAlloc", 1, old->IgdDvmt50PreAlloc,
 		new->IgdDvmt50PreAlloc);
-	soc_display_upd_value("PrimaryDisplay", 1, old->PrimaryDisplay,
-		new->PrimaryDisplay);
 	soc_display_upd_value("InternalGfx", 1, old->InternalGfx,
 		new->InternalGfx);
 	soc_display_upd_value("ApertureSize", 1, old->ApertureSize,
 		new->ApertureSize);
-	soc_display_upd_value("SkipExtGfxScan", 1, old->SkipExtGfxScan,
-		new->SkipExtGfxScan);
-	soc_display_upd_value("ScanExtGfxForLegacyOpRom", 1,
-		old->ScanExtGfxForLegacyOpRom,
-		new->ScanExtGfxForLegacyOpRom);
+	soc_display_upd_value("SaGv", 1, old->SaGv, new->SaGv);
+	soc_display_upd_value("RMT", 1, old->RMT, new->RMT);
 }

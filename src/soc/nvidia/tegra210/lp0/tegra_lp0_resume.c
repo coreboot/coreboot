@@ -194,6 +194,12 @@ enum {
 	CLK_M_DIVISOR_BY_2 = 0x1 << 2
 };
 
+static uint32_t *clk_rst_lvl2_clk_gate_ovra_ptr = (void *)(CLK_RST_BASE + 0xf8);
+static uint32_t *clk_rst_lvl2_clk_gate_ovrb_ptr = (void *)(CLK_RST_BASE + 0xfc);
+static uint32_t *clk_rst_lvl2_clk_gate_ovrc_ptr = (void *)(CLK_RST_BASE + 0x3a0);
+static uint32_t *clk_rst_lvl2_clk_gate_ovrd_ptr = (void *)(CLK_RST_BASE + 0x3a4);
+static uint32_t *clk_rst_lvl2_clk_gate_ovre_ptr = (void *)(CLK_RST_BASE + 0x554);
+
 static uint32_t *clk_rst_clk_out_enb_l_ptr = (void *)(CLK_RST_BASE + 0x10);
 static uint32_t *clk_rst_clk_out_enb_h_ptr = (void *)(CLK_RST_BASE + 0x14);
 static uint32_t *clk_rst_clk_out_enb_u_ptr = (void *)(CLK_RST_BASE + 0x18);
@@ -209,6 +215,14 @@ static uint32_t *clk_rst_clk_enb_v_clr_ptr = (void *)(CLK_RST_BASE + 0x444);
 static uint32_t *clk_rst_clk_enb_w_clr_ptr = (void *)(CLK_RST_BASE + 0x44c);
 static uint32_t *clk_rst_clk_enb_x_clr_ptr = (void *)(CLK_RST_BASE + 0x288);
 static uint32_t *clk_rst_clk_enb_y_clr_ptr = (void *)(CLK_RST_BASE + 0x2a0);
+
+#define MBIST_CLK_ENB_L_0	0x80000130
+#define MBIST_CLK_ENB_H_0	0x020000C1
+#define MBIST_CLK_ENB_U_0	0x01F00200
+#define MBIST_CLK_ENB_V_0	0x80400008
+#define MBIST_CLK_ENB_W_0	0x002000FC
+#define MBIST_CLK_ENB_X_0	0x23004780
+#define MBIST_CLK_ENB_Y_0	0x00000300
 
 static uint32_t *clk_rst_clk_enb_v_ptr = (void *)(CLK_RST_BASE + 0x440);
 enum {
@@ -366,6 +380,11 @@ static uint32_t *pmacro_training_ctrl_0_ptr = (void *)(EMC_BASE + 0xcf8);
 static uint32_t *pmacro_training_ctrl_1_ptr = (void *)(EMC_BASE + 0xcfc);
 enum {
 	TRAINING_E_WRPTR = 0x1 << 3
+};
+
+static uint32_t *fbio_cfg7_ptr = (void *)(EMC_BASE + 0x584);
+enum {
+	CH1_ENABLE = 0x1 << 2
 };
 
 /* I2C5 registers */
@@ -685,6 +704,49 @@ static void set_pmacro_training_wrptr(void)
 	write32(pmacro_cfg_pm_global, ENABLE_CFG_BYTES);
 }
 
+static void mbist_workaround(void)
+{
+	uint32_t clks_to_be_cleared;
+
+	write32(clk_rst_lvl2_clk_gate_ovra_ptr, 0);
+	write32(clk_rst_lvl2_clk_gate_ovrb_ptr, 0);
+	write32(clk_rst_lvl2_clk_gate_ovrc_ptr, 0);
+	write32(clk_rst_lvl2_clk_gate_ovrd_ptr, 0x01000000);	/* QSPI OVR=1 */
+	write32(clk_rst_lvl2_clk_gate_ovre_ptr, 0);
+
+	clks_to_be_cleared = read32(clk_rst_clk_out_enb_l_ptr);
+	clks_to_be_cleared &= ~MBIST_CLK_ENB_L_0;
+	write32(clk_rst_clk_enb_l_clr_ptr, clks_to_be_cleared);
+
+	clks_to_be_cleared = read32(clk_rst_clk_out_enb_h_ptr);
+	clks_to_be_cleared &= ~MBIST_CLK_ENB_H_0;
+	write32(clk_rst_clk_enb_h_clr_ptr, clks_to_be_cleared);
+
+	clks_to_be_cleared = read32(clk_rst_clk_out_enb_u_ptr);
+	clks_to_be_cleared &= ~MBIST_CLK_ENB_U_0;
+	write32(clk_rst_clk_enb_u_clr_ptr, clks_to_be_cleared);
+
+	clks_to_be_cleared = read32(clk_rst_clk_out_enb_v_ptr);
+	clks_to_be_cleared &= ~MBIST_CLK_ENB_V_0;
+	write32(clk_rst_clk_enb_v_clr_ptr, clks_to_be_cleared);
+
+	clks_to_be_cleared = read32(clk_rst_clk_out_enb_w_ptr);
+	clks_to_be_cleared &= ~MBIST_CLK_ENB_W_0;
+	write32(clk_rst_clk_enb_w_clr_ptr, clks_to_be_cleared);
+
+	clks_to_be_cleared = read32(clk_rst_clk_out_enb_x_ptr);
+	clks_to_be_cleared &= ~MBIST_CLK_ENB_X_0;
+	write32(clk_rst_clk_enb_x_clr_ptr, clks_to_be_cleared);
+
+	clks_to_be_cleared = read32(clk_rst_clk_out_enb_y_ptr);
+	clks_to_be_cleared &= ~MBIST_CLK_ENB_Y_0;
+	write32(clk_rst_clk_enb_y_clr_ptr, clks_to_be_cleared);
+
+	if (read32(fbio_cfg7_ptr) & CH1_ENABLE)
+		/* if Dual Channel enable MC1 clock */
+		write32(clk_rst_clk_enb_w_set_ptr, CLK_ENB_MC1);
+}
+
 static void config_mselect(void)
 {
 	/* Set MSELECT clock source to PLL_P with 1:4 divider */
@@ -766,6 +828,9 @@ void lp0_resume(void)
 
 	/* Bad qpop value on cmd pad macros removes clock gating from IB path */
 	set_pmacro_training_wrptr();
+
+	/* Restore CAR CE's, SLCG overrides */
+	mbist_workaround();
 
 	/*
 	 * Find out which CPU (slow or fast) to wake up. The default setting

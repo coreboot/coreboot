@@ -238,6 +238,13 @@ struct soc_intel_skylake_config {
 	u32 GraphicsConfigPtr;
 	u8 Device4Enable;
 	u8 RtcLock;
+	/* GPIO IRQ Route  The valid values is 14 or 15*/
+	u8 GpioIrqSelect;
+	/* SCI IRQ Select  The valid values is 9, 10, 11 and 20 21, 22, 23*/
+	u8 SciIrqSelect;
+	/* TCO IRQ Select  The valid values is 9, 10, 11, 20 21, 22, 23*/
+	u8 TcoIrqSelect;
+	u8 TcoIrqEnable;
 };
 
 typedef struct soc_intel_skylake_config config_t;

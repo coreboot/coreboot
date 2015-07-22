@@ -28,8 +28,15 @@ chip soc/intel/skylake
 	register "gen1_dec" = "0x00fc0801"
 	register "gen2_dec" = "0x00fc0901"
 
+	# Pcie RootPort
+	register "PcieRpEnable[0]" = "1"
+	register "PcieRpEnable[4]" = "1"
+	register "PcieRpClkReqNumber[0]" = "1"
+	register "PcieRpClkReqNumber[4]" = "2"
+
 	# GPE configuration
 	register "gpe0_en_1" = "0x00000000"
+
 	# EC_SCI is GPIO36
 	register "gpe0_en_2" = "0x00000010"
 	register "gpe0_en_3" = "0x00000000"

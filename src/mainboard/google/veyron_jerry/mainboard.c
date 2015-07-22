@@ -158,7 +158,7 @@ void mainboard_power_on_backlight(void)
 		break;
 	default:
 		gpio_output(GPIO(2, B, 4), 1);	/* BL_PWR_EN */
-		mdelay(20);
+		mdelay(120);
 		gpio_output(GPIO(7, A, 0), 1);	/* LCD_BL */
 		mdelay(10);
 		gpio_output(GPIO_BACKLIGHT, 1);	/* BL_EN */

@@ -50,7 +50,8 @@ void soc_pre_console_init(struct romstage_params *params)
 	/* System Agent Early Initialization */
 	systemagent_early_init();
 
-	pch_uart_init();
+	if (IS_ENABLED(CONFIG_CONSOLE_UART8250MEM_32))
+		pch_uart_init();
 }
 
 /* SOC initialization before RAM is enabled */

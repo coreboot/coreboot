@@ -36,7 +36,8 @@ static void pch_uart_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* Set the configured UART base address for the debug port */
-	if (pch_uart_is_debug(dev)) {
+	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL8250MEM_32) &&
+	    pch_uart_is_debug(dev)) {
 		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
 		res->size = 0x1000;
 		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |

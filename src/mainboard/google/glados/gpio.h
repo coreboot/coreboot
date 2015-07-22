@@ -96,7 +96,7 @@ const GPIO_INIT_CONFIG mainboard_gpio_table[] = {
 	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
 /* EC_IN_RW */
 {GPIO_LP_GPP_C6, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
+	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermWpu20K}},
 /* EN_PP3300_KEPLER */
 {GPIO_LP_GPP_C11, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirOut,
 	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermWpd20K}},

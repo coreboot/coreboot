@@ -85,6 +85,16 @@ struct cbfs_file {
 
 _Static_assert(sizeof(struct cbfs_file) == 24, "cbfs_file size mismatch");
 
+/* The common fields of extended cbfs file attributes.
+   Attributes are expected to start with tag/len, then append their
+   specific fields. */
+struct cbfs_file_attribute {
+	uint32_t tag;
+	/* len covers the whole structure, incl. tag and len */
+	uint32_t len;
+	uint8_t data[0];
+} __PACKED;
+
 struct cbfs_stage {
 	uint32_t compression;
 	uint64_t entry;

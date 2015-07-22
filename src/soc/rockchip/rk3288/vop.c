@@ -125,8 +125,8 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 	clrsetbits_le32(&preg->dsp_ctrl0,
 			M_DSP_OUT_MODE | M_DSP_VSYNC_POL | M_DSP_HSYNC_POL,
 			V_DSP_OUT_MODE(15) |
-			V_DSP_HSYNC_POL(!!edid->phsync) |
-			V_DSP_VSYNC_POL(!!edid->pvsync));
+			V_DSP_HSYNC_POL(edid->phsync == '+') |
+			V_DSP_VSYNC_POL(edid->pvsync == '+'));
 
 	write32(&preg->dsp_htotal_hs_end, V_HSYNC(hsync_len) |
 		V_HORPRD(hsync_len + hback_porch + hactive + hfront_porch));

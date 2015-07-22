@@ -494,11 +494,11 @@ static void hdmi_av_composer(const struct edid *edid)
 	/* set up hdmi_fc_invidconf */
 	inv_val = HDMI_FC_INVIDCONF_HDCP_KEEPOUT_INACTIVE;
 
-	inv_val |= (edid->pvsync ?
+	inv_val |= ((edid->pvsync == '+') ?
 		   HDMI_FC_INVIDCONF_VSYNC_IN_POLARITY_ACTIVE_HIGH :
 		   HDMI_FC_INVIDCONF_VSYNC_IN_POLARITY_ACTIVE_LOW);
 
-	inv_val |= (edid->phsync ?
+	inv_val |= ((edid->phsync == '+') ?
 		   HDMI_FC_INVIDCONF_HSYNC_IN_POLARITY_ACTIVE_HIGH :
 		   HDMI_FC_INVIDCONF_HSYNC_IN_POLARITY_ACTIVE_LOW);
 

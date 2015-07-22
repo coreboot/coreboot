@@ -38,8 +38,6 @@
 
 /**
  * Sets vboot_handoff based on the information in vb2_shared_data
- *
- * TODO: Add VBSD_BOOT_FIRMWARE_SW_WP_ENABLED logic
  */
 static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 			       struct vb2_shared_data *vb2_sd)
@@ -63,6 +61,8 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 
 	if (get_write_protect_state())
 		vb_sd->flags |= VBSD_BOOT_FIRMWARE_WP_ENABLED;
+	if (vboot_get_sw_write_protect())
+		vb_sd->flags |= VBSD_BOOT_FIRMWARE_SW_WP_ENABLED;
 
 	if (vb2_sd->recovery_reason) {
 		vb_sd->firmware_index = 0xFF;

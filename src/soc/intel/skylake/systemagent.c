@@ -163,33 +163,6 @@ static void mc_add_fixed_mmio_resources(device_t dev)
 	}
 }
 
-/*
- * Host Memory Map:
- *
- * +--------------------------+ TOUUD
- * |                          |
- * +--------------------------+ 4GiB
- * |     PCI Address Space    |
- * +--------------------------+ TOLUD (also maps into MC address space)
- * |     iGD                  |
- * +--------------------------+ BDSM
- * |     GTT                  |
- * +--------------------------+ BGSM
- * |     TSEG                 |
- * +--------------------------+ TSEGMB
- * |   DMA Protected Region   |
- * +--------------------------+ DPR
- * |     Reserved - FSP       |
- * +--------------------------+ RSVFSP
- * |     Usage DRAM           |
- * +--------------------------+ 0
- *
- * Some of the base registers above can be equal making the size of those
- * regions 0. The reason is because the memory controller internally subtracts
- * the base registers from each other to determine sizes of the regions. In
- * other words, the memory map is in a fixed order no matter what.
- */
-
 struct map_entry {
 	int reg;
 	int is_64_bit;
@@ -313,8 +286,9 @@ static void mc_add_dram_resources(device_t dev)
 	/*
 	 * These are the host memory ranges that should be added:
 	 * - 0 -> 0xa0000: cacheable
-	 * - 0xc0000 -> TSEG : cacheable
-	 * - TESG -> BGSM: cacheable with standard MTRRs and reserved
+	 * - 0xc0000 -> top_of_ram : cacheable
+	 * - top_of_ram -> TSEG - DPR: uncacheable
+	 * - TESG - DPR -> BGSM: cacheable with standard MTRRs and reserved
 	 * - BGSM -> TOLUD: not cacheable with standard MTRRs and reserved
 	 * - 4GiB -> TOUUD: cacheable
 	 *
@@ -347,11 +321,18 @@ static void mc_add_dram_resources(device_t dev)
 	size_k = (0xa0000 >> 10) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* 0xc0000 -> TSEG - DPR */
+	/* 0xc0000 -> top_of_ram */
 	base_k = 0xc0000 >> 10;
-	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
-	size_k -= dpr_size >> 10;
+	size_k = (top_of_32bit_ram() >> 10) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
+
+	/* top_of_ram -> TSEG - DPR */
+	resource = new_resource(dev, index++);
+	resource->base = top_of_32bit_ram();
+	resource->size = mc_values[TSEG_REG] - dpr_size - resource->base;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+			  IORESOURCE_STORED | IORESOURCE_RESERVE |
+			  IORESOURCE_ASSIGNED;
 
 	/* TSEG - DPR -> BGSM */
 	resource = new_resource(dev, index++);

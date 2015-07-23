@@ -120,7 +120,13 @@
 /* Data is passed through bits 31:0 of the data register. */
 #define BIOS_MAILBOX_DATA			0x5da0
 
+/* CPU Trace reserved memory size */
+#define TRACE_MEMORY_SIZE	0x8000000	/* 128MiB */
+
 /* System Agent identification */
 u8 systemagent_revision(void);
+
+/* Top of 32bit usable memory */
+u32 top_of_32bit_ram(void);
 
 #endif

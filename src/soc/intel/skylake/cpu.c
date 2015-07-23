@@ -574,3 +574,16 @@ void soc_init_cpus(device_t dev)
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER))
 		restore_default_smm_area(smm_save_area);
 }
+
+int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
+{
+	msr_t msr;
+	/* If PRMRR/SGX is supported the FIT microcode load will set the msr
+	 * 0x08b with the Patch revision id one less than the id in the
+	 * microcode binary. The PRMRR support is indicated in the MSR
+	 * MTRRCAP[12]. Check for this feature and avoid reloading the
+	 * same microcode during cpu initialization.
+	 */
+	msr = rdmsr(MTRRcap_MSR);
+	return (msr.lo & PRMRR_SUPPORTED) && (current_patch_id == new_patch_id - 1);
+}

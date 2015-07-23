@@ -41,15 +41,22 @@ For details please consult:
 Build Requirements
 ------------------
 
- * gcc / g++
  * make
+ * gcc / g++
+   Because Linux distribution compilers tend to use lots of patches. coreboot
+   does lots of "unusual" things in its build system, some of which break due
+   to those patches, sometimes by gcc aborting, sometimes - and that's worse -
+   by generating broken object code.
+   Two options: use our toolchain (eg. make crosstools-i386) or enable the
+   ANY_TOOLCHAIN Kconfig option if you're feeling lucky (no support in this
+   case).
+ * iasl (for targets with ACPI support)
 
 Optional:
 
  * doxygen (for generating/viewing documentation)
- * iasl (for targets with ACPI support)
  * gdb (for better debugging facilities on some targets)
- * ncurses (for 'make menuconfig')
+ * ncurses (for 'make menuconfig' and 'make nconfig')
  * flex and bison (for regenerating parsers)
 
 

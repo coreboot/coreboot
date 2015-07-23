@@ -219,7 +219,7 @@ void disable_smi(u32 mask)
 void reset_alt_smi_status(void)
 {
 	/*Clear GPIO SMI Status*/
-	clear_all_smi();
+	gpio_clear_all_smi();
 }
 
 /* Print GPIO SMI status bits */
@@ -237,7 +237,7 @@ static u32 print_alt_smi_status(void)
 	};
 
 	printk(BIOS_DEBUG, "ALT_STS: ");
-	get_smi_status(alt_sts);
+	gpio_get_smi_status(alt_sts);
 	/* GPP_A to GPP_E GPIO has Status and Enable functionality*/
 	for (gpio_index = 0; gpio_index < ARRAY_SIZE(gpiowell);
 		gpio_index++) {
@@ -262,7 +262,7 @@ u32 clear_alt_smi_status(void)
 void enable_alt_smi(int gpionum, u32 mask)
 {
 	/*Set GPIO EN Status*/
-	enable_gpio_groupsmi(gpionum, mask);
+	gpio_enable_groupsmi(gpionum, mask);
 }
 
 

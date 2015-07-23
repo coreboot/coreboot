@@ -23,6 +23,23 @@
 
 #include <stdint.h>
 
+/* SOC has 8 GPIO communities GPP A~G, GPD */
+#define GPIO_COMMUNITY_MAX		8
+
+typedef int gpio_t;
+
+/* Clear GPIO SMI Status */
+void gpio_clear_all_smi(void);
+
+/* Get GPIO SMI Status */
+void gpio_get_smi_status(u32 status[GPIO_COMMUNITY_MAX]);
+
+/* Enable GPIO SMI  */
+void gpio_enable_all_smi(void);
+
+/* Enable GPIO individual Group SMI  */
+void gpio_enable_groupsmi(gpio_t gpio_num, u32 mask);
+
 /*
  * GPP_Ax to GPP_Gx;
  * where x=24 [between GPIO Community A to F]
@@ -122,9 +139,6 @@ typedef struct {
 #define V_PCH_GPIO_GPP_F_PAD_MAX	24
 #define V_PCH_GPIO_GPP_G_PAD_MAX	8
 #define V_PCH_GPIO_GPD_PAD_MAX		12
-
-/* SOC has 8 GPIO communities GPP A~G, GPD */
-#define GPIO_COMMUNITY_MAX		8
 
 #define GPIO_GET_GROUP_INDEX(group)	(group & 0xFF)
 #define GPIO_GET_GROUP_INDEX_FROM_PAD(pad)	(\
@@ -294,20 +308,6 @@ typedef enum {
 	GpioResetNormal		= 0x5,	/* GPIO Reset */
 	GpioResetResume		= 0x7	/* Resume Reset */
 } GPIO_RESET_CONFIG;
-
-typedef int gpio_t;
-
-/* Clear GPIO SMI Status */
-void clear_all_smi(void);
-
-/* Get GPIO SMI Status */
-void get_smi_status(u32 status[GPIO_COMMUNITY_MAX]);
-
-/* Enable GPIO SMI  */
-void enable_all_smi(void);
-
-/* Enable GPIO individual Group SMI  */
-void enable_gpio_groupsmi(gpio_t gpio_num, u32 mask);
 
 /*
  * GPIO Electrical Configuration

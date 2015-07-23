@@ -25,8 +25,8 @@
 #include <soc/pm.h>
 
 /* Keep the ordering intact GPP_A ~ G, GPD.
- * As the gpio/smi functions get_smi_status() and
- * enable_gpio_groupsmi() depends on this ordering.
+ * As the gpio/smi functions gpio_get_smi_status() and
+ * gpio_enable_groupsmi() depends on this ordering.
  */
 static const GPIO_GROUP_INFO gpio_group_info[] = {
 	/* GPP_A */
@@ -245,7 +245,7 @@ void gpio_set(gpio_t gpio_num, int value)
 					 WRITE, &outputvalue);
 }
 
-void clear_all_smi(void)
+void gpio_clear_all_smi(void)
 {
 	u32 gpiogroupinfolength;
 	u32 gpioindex = 0;
@@ -264,7 +264,7 @@ void clear_all_smi(void)
 	}
 }
 
-void get_smi_status(u32 status[GPIO_COMMUNITY_MAX])
+void gpio_get_smi_status(u32 status[GPIO_COMMUNITY_MAX])
 {
 	u32 num_of_communities;
 	u32 gpioindex;
@@ -285,7 +285,7 @@ void get_smi_status(u32 status[GPIO_COMMUNITY_MAX])
 	}
 }
 
-void enable_all_smi(void)
+void gpio_enable_all_smi(void)
 {
 	u32 gpiogroupinfolength;
 	u32 gpioindex = 0;
@@ -304,7 +304,7 @@ void enable_all_smi(void)
 	}
 }
 
-void enable_gpio_groupsmi(gpio_t gpio_num, u32 mask)
+void gpio_enable_groupsmi(gpio_t gpio_num, u32 mask)
 {
 	u32 gpioindex = 0;
 	u32 smien = 0;

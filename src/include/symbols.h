@@ -72,6 +72,10 @@ extern u8 _dma_coherent[];
 extern u8 _edma_coherent[];
 #define _dma_coherent_size (_edma_coherent - _dma_coherent)
 
+extern u8 _soc_registers[];
+extern u8 _esoc_registers[];
+#define _soc_registers_size (_esoc_registers - _soc_registers)
+
 extern u8 _framebuffer[];
 extern u8 _eframebuffer[];
 #define _framebuffer_size (_eframebuffer - _framebuffer)

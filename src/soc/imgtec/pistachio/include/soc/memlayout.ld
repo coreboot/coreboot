@@ -29,6 +29,8 @@ SECTIONS
 	POSTRAM_CBFS_CACHE(0x00200000, 512K)
 	RAMSTAGE(0x00280000, 128K)
 
+	/* 0x18100000 -> 0x18540000 */
+	SOC_REGISTERS(0x18100000, 0x440000)
 	/*
 	 * GRAM becomes the SRAM.  Accessed through KSEG0 in the bootblock
 	 * and then through the identity mapping in ROM stage.

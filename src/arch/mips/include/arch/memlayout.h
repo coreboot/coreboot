@@ -26,4 +26,6 @@
 
 #define DMA_COHERENT(addr, size) REGION(dma_coherent, addr, size, 4K)
 
+#define SOC_REGISTERS(addr, size) REGION(soc_registers, addr, size, 4)
+
 #endif /* __ARCH_MEMLAYOUT_H */

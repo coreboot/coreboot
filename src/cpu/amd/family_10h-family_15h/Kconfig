@@ -15,6 +15,12 @@ config CPU_AMD_MODEL_10XXX
 
 if CPU_AMD_MODEL_10XXX
 
+config USE_LARGE_DCACHE
+	bool
+	default y if CPU_AMD_SOCKET_G34_NON_AGESA
+	default y if CPU_AMD_SOCKET_C32_NON_AGESA
+	default n
+
 config NUM_IPI_STARTS
 	int
 	default 1
@@ -37,6 +43,7 @@ config DCACHE_BSP_STACK_SIZE
 
 config DCACHE_BSP_STACK_SLUSH
 	hex
+	default 0x4000 if USE_LARGE_DCACHE
 	default 0x1000
 
 config DCACHE_AP_STACK_SIZE

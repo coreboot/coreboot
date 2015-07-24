@@ -28,7 +28,7 @@ Device (TCHG)
 		Decrement (Local0)
 
 		/* Check if charging is disabled (AC removed) */
-		If (LEqual (\PWRS, Zero)) {
+		If (LEqual (\_SB.PCI0.LPCB.EC0.ACEX, Zero)) {
 			/* Return last power state */
 			Return (Local0)
 		} Else {

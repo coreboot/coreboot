@@ -396,13 +396,15 @@ u32 clear_gpe_status(void)
 		[11] = "PME",
 		[12] = "ME",
 		[13] = "PME_B0",
-		[16] = "GPIO27",
+		[14] = "eSPI",
+		[15] = "GPIO Tier-2",
+		[16] = "LAN_WAKE",
 		[18] = "WADT"
 	};
 
 	print_gpe_gpio(reset_gpe(GPE0_STS(GPE_31_0), GPE0_EN(GPE_31_0)), 0);
 	print_gpe_gpio(reset_gpe(GPE0_STS(GPE_63_32), GPE0_EN(GPE_63_32)), 32);
-	print_gpe_gpio(reset_gpe(GPE0_STS(GPE_94_64), GPE0_EN(GPE_94_64)), 64);
+	print_gpe_gpio(reset_gpe(GPE0_STS(GPE_95_64), GPE0_EN(GPE_95_64)), 64);
 	return print_gpe_status(reset_gpe(GPE0_STS(GPE_STD), GPE0_EN(GPE_STD)),
 				gpe0_sts_3_bits);
 }
@@ -412,7 +414,7 @@ void enable_all_gpe(u32 set1, u32 set2, u32 set3, u32 set4)
 {
 	outl(set1, ACPI_BASE_ADDRESS + GPE0_EN(GPE_31_0));
 	outl(set2, ACPI_BASE_ADDRESS + GPE0_EN(GPE_63_32));
-	outl(set3, ACPI_BASE_ADDRESS + GPE0_EN(GPE_94_64));
+	outl(set3, ACPI_BASE_ADDRESS + GPE0_EN(GPE_95_64));
 	outl(set4, ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
 }
 

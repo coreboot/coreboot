@@ -86,10 +86,12 @@
 #define GPE0_STS(x)		(0x80 + (x * 4))
 #define  GPE_31_0		0	/* 0x80/0x90 = GPE[31:0] */
 #define  GPE_63_32		1	/* 0x84/0x94 = GPE[63:32] */
-#define  GPE_94_64		2	/* 0x88/0x98 = GPE[94:64] */
+#define  GPE_95_64		2	/* 0x88/0x98 = GPE[95:64] */
 #define  GPE_STD		3	/* 0x8c/0x9c = Standard GPE */
 #define   WADT_STS		(1 << 18)
-#define   GP27_STS		(1 << 16)
+#define   LAN_WAK_STS		(1 << 16)
+#define   GPIO_T2_STS		(1 << 15)
+#define   ESPI_STS		(1 << 14)
 #define   PME_B0_STS		(1 << 13)
 #define   ME_SCI_STS		(1 << 12)
 #define   PME_STS		(1 << 11)
@@ -101,7 +103,9 @@
 #define   HOT_PLUG_STS		(1 << 1)
 #define GPE0_EN(x)		(0x90 + (x * 4))
 #define   WADT_EN		(1 << 18)
-#define   GP27_EN		(1 << 16)
+#define   LAN_WAK_EN		(1 << 16)
+#define   GPIO_T2_EN		(1 << 15)
+#define   ESPI_EN		(1 << 14)
 #define   PME_B0_EN		(1 << 13)
 #define   ME_SCI_EN		(1 << 12)
 #define   PME_EN		(1 << 11)
@@ -129,7 +133,7 @@ struct chipset_power_state {
 	uint32_t gpe0_en[4];
 	uint32_t gen_pmcon_a;
 	uint32_t gen_pmcon_b;
-	uint32_t gblrst_cause[0];
+	uint32_t gblrst_cause[2];
 	uint32_t prev_sleep_state;
 } __attribute__ ((packed));
 

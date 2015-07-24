@@ -21,6 +21,7 @@
 
 #include <stdint.h>
 #include <soc/pci_devs.h>
+#include <soc/pmc.h>
 #include <soc/serialio.h>
 
 #ifndef _SOC_CHIP_H_
@@ -111,6 +112,14 @@ struct soc_intel_skylake_config {
 	/* Deep SX enable for both AC and DC */
 	int deep_s3_enable;
 	int deep_s5_enable;
+
+	/*
+	 * Deep Sx Configuration
+	 *  DSX_EN_WAKE_PIN       - Enable WAKE# pin
+	 *  DSX_EN_LAN_WAKE_PIN   - Enable LAN_WAKE# pin
+	 *  DSX_EN_AC_PRESENT_PIN - Enable AC_PRESENT pin
+	 */
+	uint32_t deep_sx_config;
 
 	/* TCC activation offset */
 	int tcc_offset;

@@ -217,6 +217,17 @@ static void config_deep_s3(int on)
 	config_deep_sX(S3_PWRGATE_POL, S3DC_GATE_SUS | S3AC_GATE_SUS, 3, on);
 }
 
+static void config_deep_sx(uint32_t deepsx_config)
+{
+	uint32_t reg;
+	uint8_t *pmcbase = pmc_mmio_regs();
+
+	reg = read32(pmcbase + DSX_CFG);
+	reg &= ~DSX_CFG_MASK;
+	reg |= deepsx_config;
+	write32(pmcbase + DSX_CFG, reg);
+}
+
 static void pmc_init(struct device *dev)
 {
 	config_t *config = dev->chip_info;
@@ -231,6 +242,7 @@ static void pmc_init(struct device *dev)
 
 	config_deep_s3(config->deep_s3_enable);
 	config_deep_s5(config->deep_s5_enable);
+	config_deep_sx(config->deep_sx_config);
 }
 
 static struct device_operations device_ops = {

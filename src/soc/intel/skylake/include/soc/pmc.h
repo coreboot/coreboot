@@ -55,6 +55,11 @@
 #define S5_PWRGATE_POL		0x30
 #define  S5DC_GATE_SUS		(1 << 15)
 #define  S5AC_GATE_SUS		(1 << 14)
+#define DSX_CFG			0x34
+#define  DSX_CFG_MASK		0x7
+#define  DSX_EN_WAKE_PIN	(1 << 2)
+#define  DSX_EN_AC_PRESENT_PIN	(1 << 1)
+#define  DSX_EN_LAN_WAKE_PIN	(1 << 0)
 #define PMSYNC_TPR_CFG		0xc4
 #define  PMSYNC_LOCK		(1 << 31)
 #define GBLRST_CAUSE0		0x124

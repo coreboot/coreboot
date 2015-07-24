@@ -85,6 +85,8 @@
 #define PID_DMI		0xEF
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
+#include <stdint.h>
+
 /* All these return 0 on success and < 0 on errror. */
 int pcr_read32(u8 pid, u16 offset, u32 *outdata);
 int pcr_read16(u8 pid, u16 offset, u16 *outdata);
@@ -95,6 +97,9 @@ int pcr_write8(u8 pid, u16 offset, u8 indata);
 int pcr_andthenor32(u8 pid, u16 offset, u32 anddata, u32 ordata);
 int pcr_andthenor16(u8 pid, u16 offset, u16 anddata, u16 ordata);
 int pcr_andthenor8(u8 pid, u16 offset, u8 anddata, u8 ordata);
+
+/* Get the starting address of the port's registers. */
+uint8_t *pcr_port_regs(u8 pid);
 #endif /* if !defined(__ASSEMBLER__) && !defined(__ACPI__) */
 
 #endif /* _SOC_PCR_H_ */

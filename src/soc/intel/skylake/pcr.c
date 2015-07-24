@@ -34,6 +34,11 @@ static inline void *pcr_reg_address(u8 pid, u16 offset)
 	return (void *)reg_addr;
 }
 
+uint8_t *pcr_port_regs(u8 pid)
+{
+	return pcr_reg_address(pid, 0);
+}
+
 /*
  * Read PCR register. (This is internal function)
  * It returns PCR register and size in 1/2/4 bytes.

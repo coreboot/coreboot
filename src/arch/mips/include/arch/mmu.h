@@ -50,6 +50,6 @@ static inline uint32_t get_tlb_size(void)
 	return tlbsize;
 }
 
-int identity_map(uint32_t start, size_t len);
+int identity_map(uint32_t start, size_t len, uint32_t coherency);
 
 #endif /* __MIPS_ARCH_MMU_H */

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <arch/mmu.h>
 #include <console/console.h>
 #include <stddef.h>
@@ -70,22 +69,23 @@ static uint32_t pick_pagesize(uint32_t start, uint32_t len)
  * Identity map the memory from [start,start+len] in the TLB using the
  * largest suitable page size so as to conserve TLB entries.
  */
-int identity_map(uint32_t start, size_t len)
+int identity_map(uint32_t start, size_t len, uint32_t coherency)
 {
 	uint32_t pgsize, pfn, entryhi, entrylo0, entrylo1;
 
+	coherency &= C0_ENTRYLO_COHERENCY_MASK;
 	while (len > 0) {
 		pgsize = pick_pagesize(start, len);
 		entryhi = start;
 		pfn = start >> 12;
-		entrylo0 = (pfn << C0_ENTRYLO_PFN_SHIFT) | C0_ENTRYLO_WB |
+		entrylo0 = (pfn << C0_ENTRYLO_PFN_SHIFT) | coherency |
 			C0_ENTRYLO_D | C0_ENTRYLO_V | C0_ENTRYLO_G;
 		start += pgsize;
 		len -= MIN(len, pgsize);
 		if (len >= pgsize) {
 			pfn = start >> 12;
 			entrylo1 = (pfn << C0_ENTRYLO_PFN_SHIFT) |
-				C0_ENTRYLO_WB | C0_ENTRYLO_D | C0_ENTRYLO_V |
+				coherency | C0_ENTRYLO_D | C0_ENTRYLO_V |
 				C0_ENTRYLO_G;
 			start += pgsize;
 			len -= MIN(len, pgsize);

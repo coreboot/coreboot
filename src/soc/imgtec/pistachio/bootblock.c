@@ -54,7 +54,7 @@ static void bootblock_mmu_init(void)
 		dram_base += null_guard_size;
 		dram_size -= null_guard_size;
 	}
-
-	assert(!identity_map(dram_base, dram_size));
-	assert(!identity_map((uint32_t)_sram, _sram_size));
+	assert(!identity_map((uint32_t)_sram, _sram_size,
+						C0_ENTRYLO_COHERENCY_WB));
+	assert(!identity_map(dram_base, dram_size, C0_ENTRYLO_COHERENCY_WB));
 }

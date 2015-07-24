@@ -110,10 +110,20 @@ do {									\
 
 
 #define C0_ENTRYLO_PFN_SHIFT 6
-#define C0_ENTRYLO_WB (0x3 << 3) /* Cacheable, write-back, non-coherent */
-#define C0_ENTRYLO_D (0x1 << 2) /* Writeable */
-#define C0_ENTRYLO_V (0x1 << 1) /* Valid */
-#define C0_ENTRYLO_G (0x1 << 0) /* Global */
+
+#define C0_ENTRYLO_COHERENCY_MASK	0x00000038
+#define C0_ENTRYLO_COHERENCY_SHIFT	3
+/* Cacheable, write-back, non-coherent */
+#define C0_ENTRYLO_COHERENCY_WB		(0x3 << C0_ENTRYLO_COHERENCY_SHIFT)
+/* Uncached, non-coherent */
+#define C0_ENTRYLO_COHERENCY_UC		(0x2 << C0_ENTRYLO_COHERENCY_SHIFT)
+
+/* Writeable */
+#define C0_ENTRYLO_D			(0x1 << 2)
+/* Valid */
+#define C0_ENTRYLO_V			(0x1 << 1)
+/* Global */
+#define C0_ENTRYLO_G			(0x1 << 0)
 
 #define C0_PAGEMASK_SHIFT 13
 #define C0_PAGEMASK_MASK 0xffff

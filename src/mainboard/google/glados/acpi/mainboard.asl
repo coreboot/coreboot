@@ -29,6 +29,9 @@ Scope (\_SB)
 		{
 			Return (\_SB.PCI0.LPCB.EC0.LIDS)
 		}
+
+		/* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
+		Name (_PRW, Package(){ 112, 5 }) /* LAN_WAKE_EN */
 	}
 
 	Device (PWRB)

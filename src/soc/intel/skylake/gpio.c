@@ -24,6 +24,201 @@
 #include <soc/iomap.h>
 #include <soc/pm.h>
 
+
+/* There are 4 communities with 8 GPIO groups (GPP_[A:G] and GPD) */
+struct gpio_community {
+	int port_id;
+	/* Inclusive pads within the community. */
+	gpio_t min;
+	gpio_t max;
+};
+
+/* This is ordered to match ACPI and OS driver. */
+static const struct gpio_community communities[] = {
+	{
+		.port_id = PID_GPIOCOM0,
+		.min = GPP_A0,
+		.max = GPP_B23,
+	},
+	{
+		.port_id = PID_GPIOCOM1,
+		.min = GPP_C0,
+		.max = GPP_E23,
+	},
+	{
+		.port_id = PID_GPIOCOM3,
+		.min = GPP_F0,
+		.max = GPP_G7,
+	},
+	{
+		.port_id = PID_GPIOCOM2,
+		.min = GPD0,
+		.max = GPD11,
+	},
+};
+
+static const struct gpio_community *gpio_get_community(gpio_t pad)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(communities); i++) {
+		const struct gpio_community *c = &communities[i];
+
+		if (pad >= c->min && pad <= c->max)
+			return c;
+	}
+
+	return NULL;
+}
+
+static void *gpio_dw_regs(gpio_t pad)
+{
+	const struct gpio_community *comm;
+	uint8_t *regs;
+	size_t pad_relative;
+
+	comm = gpio_get_community(pad);
+
+	if (comm == NULL)
+		return NULL;
+
+	regs = pcr_port_regs(comm->port_id);
+
+	pad_relative = pad - comm->min;
+
+	/* DW0 and DW1 regs are 4 bytes each. */
+	return &regs[PAD_CFG_DW_OFFSET + pad_relative * 8];
+}
+
+static void *gpio_hostsw_reg(gpio_t pad, size_t *bit)
+{
+	const struct gpio_community *comm;
+	uint8_t *regs;
+	size_t pad_relative;
+
+	comm = gpio_get_community(pad);
+
+	if (comm == NULL)
+		return NULL;
+
+	regs = pcr_port_regs(comm->port_id);
+
+	pad_relative = pad - comm->min;
+
+	/* Update the bit for this pad. */
+	*bit = (pad_relative % HOSTSW_OWN_PADS_PER);
+
+	/* HostSw regs are 4 bytes each. */
+	regs = &regs[HOSTSW_OWN_REG_OFFSET];
+	return &regs[(pad_relative / HOSTSW_OWN_PADS_PER) * 4];
+}
+
+static void gpio_handle_pad_mode(const struct pad_config *cfg)
+{
+	size_t bit;
+	uint32_t *hostsw_own_reg;
+	uint32_t reg;
+
+	bit = 0;
+	hostsw_own_reg = gpio_hostsw_reg(cfg->pad, &bit);
+
+	reg = read32(hostsw_own_reg);
+	reg &= ~(1U << bit);
+
+	if ((cfg->attrs & PAD_FIELD(HOSTSW, GPIO)) == PAD_FIELD(HOSTSW, GPIO))
+		reg |= (HOSTSW_GPIO << bit);
+	else
+		reg |= (HOSTSW_ACPI << bit);
+
+	write32(hostsw_own_reg, reg);
+}
+
+static void gpio_configure_pad(const struct pad_config *cfg)
+{
+	uint32_t *dw_regs;
+	uint32_t reg;
+	uint32_t termination;
+	const uint32_t termination_mask = PAD_TERM_MASK << PAD_TERM_SHIFT;
+
+	dw_regs = gpio_dw_regs(cfg->pad);
+
+	if (dw_regs == NULL)
+		return;
+
+	write32(&dw_regs[0], cfg->dw0);
+	reg = read32(&dw_regs[1]);
+	reg &= ~termination_mask;
+	termination = cfg->attrs;
+	termination &= termination_mask;
+	reg |= termination;
+	write32(&dw_regs[1], reg);
+
+	gpio_handle_pad_mode(cfg);
+}
+
+void gpio_configure_pads(const struct pad_config *cfgs, size_t num)
+{
+	size_t i;
+
+	for (i = 0; i < num; i++)
+		gpio_configure_pad(&cfgs[i]);
+}
+
+void gpio_input_pulldown(gpio_t gpio)
+{
+	struct pad_config cfg = PAD_CFG_GPI(gpio, 5K_PD, DEEP);
+	gpio_configure_pad(&cfg);
+}
+
+void gpio_input_pullup(gpio_t gpio)
+{
+	struct pad_config cfg = PAD_CFG_GPI(gpio, 5K_PU, DEEP);
+	gpio_configure_pad(&cfg);
+}
+
+void gpio_input(gpio_t gpio)
+{
+	struct pad_config cfg = PAD_CFG_GPI(gpio, NONE, DEEP);
+	gpio_configure_pad(&cfg);
+}
+
+void gpio_output(gpio_t gpio, int value)
+{
+	struct pad_config cfg = PAD_CFG_GPO(gpio, value, DEEP);
+	gpio_configure_pad(&cfg);
+}
+
+int gpio_get(gpio_t gpio_num)
+{
+	uint32_t *dw_regs;
+	uint32_t reg;
+
+	dw_regs = gpio_dw_regs(gpio_num);
+
+	if (dw_regs == NULL)
+		return -1;
+
+	reg = read32(&dw_regs[0]);
+
+	return (reg >> GPIORXSTATE_SHIFT) & GPIORXSTATE_MASK;
+}
+
+void gpio_set(gpio_t gpio_num, int value)
+{
+	uint32_t *dw_regs;
+	uint32_t reg;
+
+	dw_regs = gpio_dw_regs(gpio_num);
+
+	if (dw_regs == NULL)
+		return;
+
+	reg = read32(&dw_regs[0]);
+	reg |= PAD_FIELD_VAL(GPIOTXSTATE, value);
+	write32(&dw_regs[0], reg);
+	/* GPIO port ids support posted write semantics. */
+}
+
 /* Keep the ordering intact GPP_A ~ G, GPD.
  * As the gpio/smi functions gpio_get_smi_status() and
  * gpio_enable_groupsmi() depends on this ordering.
@@ -85,7 +280,7 @@ static const GPIO_GROUP_INFO gpio_group_info[] = {
 		.smistsoffset = NO_REGISTER_PROPERTY,
 		.smienoffset = NO_REGISTER_PROPERTY,
 	},
-	/* GPP_H */
+	/* GPD */
 	{
 		.community = PID_GPIOCOM2,
 		.padcfgoffset = R_PCH_PCR_GPIO_GPD_PADCFG_OFFSET,
@@ -94,156 +289,6 @@ static const GPIO_GROUP_INFO gpio_group_info[] = {
 		.smienoffset = NO_REGISTER_PROPERTY,
 	},
 };
-
-/*
- * SPT has 7 GPIO communities named as GPP_A to GPP_G.
- * Each community has 24 GPIO PIN.
- * Below formula to calculate GPIO Pin from GPIO PAD.
- * PIN# = GROUP_PAD# + GROUP# * 24
- * ====================================
- * Community || Group#
- * ====================================
- * GPP_A	||	0
- * GPP_B	||	1
- * GPP_C	||	2
- * GPP_D	||	3
- * GPP_E	||	4
- * GPP_F	||	5
- * GPP_G	||	6
- */
-static u32 get_padnumber_from_gpiopad(GPIO_PAD gpiopad)
-{
-	return (u32) GPIO_GET_PAD_NUMBER(gpiopad);
-}
-
-static u32 get_groupindex_from_gpiopad(GPIO_PAD gpiopad)
-{
-	return (u32) GPIO_GET_GROUP_INDEX_FROM_PAD(gpiopad);
-}
-
-static int read_write_gpio_pad_reg(u32 gpiopad, u8 dwreg, u32 mask, int write,
-			    u32 *readwriteval)
-{
-	u32 padcfgreg;
-	u32 gpiogroupinfolength;
-	u32 groupindex;
-	u32 padnumber;
-
-	groupindex = get_groupindex_from_gpiopad(gpiopad);
-	padnumber = get_padnumber_from_gpiopad(gpiopad);
-
-	gpiogroupinfolength = sizeof(gpio_group_info) / sizeof(GPIO_GROUP_INFO);
-
-	/* Check if group argument exceeds GPIO GROUP INFO array */
-	if ((u32) groupindex >= gpiogroupinfolength)
-		return -1;
-	/* Check if legal pin number */
-	if (padnumber >= gpio_group_info[groupindex].padpergroup)
-		return -1;
-	/* Create Pad Configuration register offset */
-	padcfgreg = 0x8 * padnumber + gpio_group_info[groupindex].padcfgoffset;
-	if (dwreg == 1)
-		padcfgreg += 0x4;
-	if (write) {
-		pcr_andthenor32(gpio_group_info[groupindex].community,
-				padcfgreg, (u32) (~mask),
-				(u32) (*readwriteval & mask));
-	} else {
-		pcr_read32(gpio_group_info[groupindex].community, padcfgreg,
-			   readwriteval);
-		*readwriteval &= mask;
-	}
-
-	return 0;
-}
-
-static int convert_gpio_num_to_pad(gpio_t gpionum)
-{
-	int group_pad_num = 0;
-	int gpio_group = 0;
-	u32 gpio_pad = 0;
-
-	group_pad_num = (gpionum % MAX_GPIO_PIN_PER_GROUP);
-	gpio_group = (gpionum / MAX_GPIO_PIN_PER_GROUP);
-
-	switch (gpio_group) {
-	case GPIO_LP_GROUP_A:
-		gpio_pad = GPIO_LP_GROUP_GPP_A;
-		break;
-
-	case GPIO_LP_GROUP_B:
-		gpio_pad = GPIO_LP_GROUP_GPP_B;
-		break;
-
-	case GPIO_LP_GROUP_C:
-		gpio_pad = GPIO_LP_GROUP_GPP_C;
-		break;
-
-	case GPIO_LP_GROUP_D:
-		gpio_pad = GPIO_LP_GROUP_GPP_D;
-		break;
-
-	case GPIO_LP_GROUP_E:
-		gpio_pad = GPIO_LP_GROUP_GPP_E;
-		break;
-
-	case GPIO_LP_GROUP_F:
-		gpio_pad = GPIO_LP_GROUP_GPP_F;
-		break;
-
-	case GPIO_LP_GROUP_G:
-		gpio_pad = GPIO_LP_GROUP_GPP_G;
-		break;
-	default:
-		return -1;
-		break;
-	}
-	gpio_pad = (gpio_pad << GPIO_GROUP_SHIFT) + group_pad_num;
-
-	return gpio_pad;
-}
-
-int gpio_get(gpio_t gpio_num)
-{
-	u32 gpiopad = 0;
-	u32 outputvalue = 0;
-	int status = 0;
-
-	if (gpio_num > MAX_GPIO_NUMBER)
-		return 0;
-
-	gpiopad = convert_gpio_num_to_pad(gpio_num);
-	if (gpiopad < 0)
-		return -1;
-
-	status = read_write_gpio_pad_reg(gpiopad,
-					 0,
-					 B_PCH_GPIO_TX_STATE,
-					 READ, &outputvalue);
-	outputvalue >>= N_PCH_GPIO_TX_STATE;
-	return outputvalue;
-}
-
-void gpio_set(gpio_t gpio_num, int value)
-{
-	int status = 0;
-	u32 gpiopad = 0;
-	u32 outputvalue = 0;
-
-	if (gpio_num > MAX_GPIO_NUMBER)
-		return;
-
-	gpiopad = convert_gpio_num_to_pad(gpio_num);
-	if (gpiopad < 0)
-		return;
-
-	outputvalue = value;
-
-	status = read_write_gpio_pad_reg(gpiopad,
-					 0,
-					 B_PCH_GPIO_TX_STATE,
-					 WRITE, &outputvalue);
-}
 
 void gpio_clear_all_smi(void)
 {

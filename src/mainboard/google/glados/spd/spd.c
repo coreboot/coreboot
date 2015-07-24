@@ -21,10 +21,9 @@
 #include <arch/byteorder.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <gpio.h>
 #include <string.h>
-#include <soc/gpio.h>
 #include <soc/pei_data.h>
-#include <soc/pcr.h>
 #include <soc/romstage.h>
 #include "spd.h"
 
@@ -85,42 +84,16 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	char *spd_file;
 	size_t spd_file_len;
 	int spd_index;
-	int spd_gpio[4];
 
-	/*************************************************************
-	 * FIXME: Remove when real GPIO support is ready.
-	 */
-	GPIO_PAD gpio_set[4] = {
-		GPIO_LP_GPP_C12,	/* PCH_MEM_CONFIG[0] */
-		GPIO_LP_GPP_C13,	/* PCH_MEM_CONFIG[1] */
-		GPIO_LP_GPP_C14,	/* PCH_MEM_CONFIG[2] */
-		GPIO_LP_GPP_C15,	/* PCH_MEM_CONFIG[3] */
+	gpio_t spd_gpios[] = {
+		GPP_C12,	/* PCH_MEM_CONFIG[0] */
+		GPP_C13,	/* PCH_MEM_CONFIG[1] */
+		GPP_C14,	/* PCH_MEM_CONFIG[2] */
+		GPP_C15,	/* PCH_MEM_CONFIG[3] */
 	};
-	int index;
 
-	for (index = 0; index < ARRAY_SIZE(gpio_set); index++) {
-		u32 number = GPIO_GET_PAD_NUMBER(gpio_set[index]);
-		u32 cfgreg = 8 * number + R_PCH_PCR_GPIO_GPP_C_PADCFG_OFFSET;
-		/*
-		 * Set GPIO mode and enable input
-		 * Clear PMODE0 | PMODE1 | GPIORXDIS
-		 */
-		u32 dw0mask = (1 << 10) | (1 << 11) | (1 << 9);
-		u32 dw0reg = 0;
-		pcr_andthenor32(PID_GPIOCOM1, cfgreg, ~dw0mask, dw0reg);
-
-		/* Read current input value */
-		pcr_read32(PID_GPIOCOM1, cfgreg, &dw0reg);
-		spd_gpio[index] = !!(dw0reg & (1 << 1));
-	}
-	/*************************************************************/
-
-	spd_index = (spd_gpio[3] << 3) | (spd_gpio[2] << 2) |
-		(spd_gpio[1] << 1) | spd_gpio[0];
-
-	printk(BIOS_DEBUG,
-	       "SPD: index %d (GPP_C15=%d GPP_C14=%d GPP_C13=%d GPP_C12=%d)\n",
-	       spd_index, spd_gpio[3], spd_gpio[2], spd_gpio[1], spd_gpio[0]);
+	spd_index = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+	printk(BIOS_ERR, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,

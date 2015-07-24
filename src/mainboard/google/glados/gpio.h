@@ -2,7 +2,6 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Google Inc.
- * Copyright (C) 2015 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,293 +22,176 @@
 
 #include <soc/gpio.h>
 
-const GPIO_INIT_CONFIG mainboard_gpio_table[] = {
-/* RCIN# */
-{GPIO_LP_GPP_A0, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* LAD0 */
-{GPIO_LP_GPP_A1, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* LAD1 */
-{GPIO_LP_GPP_A2, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioTermNone}},
-/* LAD2 */
-{GPIO_LP_GPP_A3, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* LAD3 */
-{GPIO_LP_GPP_A4, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* LFRAME# */
-{GPIO_LP_GPP_A5, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SERIRQ */
-{GPIO_LP_GPP_A6, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirNone,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* CLKRUN# */
-{GPIO_LP_GPP_A8, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirNone,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* CLKOUT_LPC0 */
-{GPIO_LP_GPP_A9, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SUSWARN# tied to SUSACK# */
-{GPIO_LP_GPP_A13, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SUS_STAT# TP27 */
-{GPIO_LP_GPP_A13, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SUSACK# tied to SUSWARN# */
-{GPIO_LP_GPP_A15, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_1P8_SEL */
-{GPIO_LP_GPP_A16, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_PWR_EN# */
-{GPIO_LP_GPP_A17, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirNone,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* TRACKPAD_INT_L */
-{GPIO_LP_GPP_B3, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, (GpioIntApic | GpioIntLevel), GpioResetDeep,
-	GpioTermNone}},
-/* SRCCLKREQ1# / WLAN_PCIE_CLKREQ_L */
-{GPIO_LP_GPP_B6, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* SRCCLKREQ2# / KEPLER_PCIE_CLKREQ_L */
-{GPIO_LP_GPP_B7, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* EXT_PWR_GATE# */
-{GPIO_LP_GPP_B11, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* SLP_S0# */
-{GPIO_LP_GPP_B12, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* PLTRST# */
-{GPIO_LP_GPP_B13, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* WLAN_PCIE_WAKE_L */
-{GPIO_LP_GPP_B16, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntEdge, GpioResetDeep, GpioTermNone}},
-/* SMBCLK (XDP) */
-{GPIO_LP_GPP_C0, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SMBDATA (XDP) */
-{GPIO_LP_GPP_C1, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EC_IN_RW */
-{GPIO_LP_GPP_C6, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermWpu20K}},
-/* EN_PP3300_KEPLER */
-{GPIO_LP_GPP_C11, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermWpd20K}},
-/* PCH_MEM_CONFIG[0] */
-{GPIO_LP_GPP_C12, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* PCH_MEM_CONFIG[1] */
-{GPIO_LP_GPP_C13, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* PCH_MEM_CONFIG[2] */
-{GPIO_LP_GPP_C14, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* PCH_MEM_CONFIG[3] */
-{GPIO_LP_GPP_C15, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2C0_SDA */
-{GPIO_LP_GPP_C16, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2C0_SCL */
-{GPIO_LP_GPP_C17, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2C1 SDA */
-{GPIO_LP_GPP_C18, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2C1 SDA */
-{GPIO_LP_GPP_C19, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* UART2_RXD */
-{GPIO_LP_GPP_C20, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* UART2_TXD */
-{GPIO_LP_GPP_C21, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EN_PP3300_DX_TOUCHSCREEN */
-{GPIO_LP_GPP_C22, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermWpd20K}},
-/* PCH_WP */
-{GPIO_LP_GPP_C23, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermWpu20K}},
-/* EN_PP3300_DX_EMMC */
-{GPIO_LP_GPP_D5, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EN_PP1800_DX_EMMC */
-{GPIO_LP_GPP_D6, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* USBA_1_ILIM_SEL_L */
-{GPIO_LP_GPP_D10, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* USBA_2_ILIM_SEL_L */
-{GPIO_LP_GPP_D11, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EN_PP3300_DX_CAM */
-{GPIO_LP_GPP_D12, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* DMIC_CLK1 */
-{GPIO_LP_GPP_D17, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* DMIC_DATA1 */
-{GPIO_LP_GPP_D18, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* DMIC_CLK0 */
-{GPIO_LP_GPP_D19, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* DMIC_DATA0 */
-{GPIO_LP_GPP_D20, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2S_MCLK */
-{GPIO_LP_GPP_D23, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* TPM_PIRQ_L */
-{GPIO_LP_GPP_E0, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntEdge, GpioResetDeep, GpioTermNone}},
-/* TOUCHSCREEN_INT_L */
-{GPIO_LP_GPP_E7, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, (GpioIntApic | GpioIntLevel), GpioResetDeep,
-	GpioTermNone}},
-/* USB2_OC0# */
-{GPIO_LP_GPP_E9, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* USB2_OC1# */
-{GPIO_LP_GPP_E10, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* USB2_OC2# */
-{GPIO_LP_GPP_E11, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* USB2_OC3# */
-{GPIO_LP_GPP_E12, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* DDPB_HPD0 */
-{GPIO_LP_GPP_E13, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* DDPC_HPD1 */
-{GPIO_LP_GPP_E14, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* EC_SMI_L */
-{GPIO_LP_GPP_E15, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntEdge, GpioResetDeep, GpioTermNone}},
-/* EC_SCI_L */
-{GPIO_LP_GPP_E16, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntEdge, GpioResetDeep, GpioTermNone}},
-/* EDP_HPD */
-{GPIO_LP_GPP_E17, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
+static const struct pad_config gpio_table[] = {
+/* RCIN# */		PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),
+/* LAD0 */		PAD_CFG_NF(GPP_A1, NONE, DEEP, NF1),
+/* LAD1 */		PAD_CFG_NF(GPP_A2, NONE, DEEP, NF1),
+/* LAD2 */		PAD_CFG_NF(GPP_A3, NONE, DEEP, NF1),
+/* LAD3 */		PAD_CFG_NF(GPP_A4, NONE, DEEP, NF1),
+/* LFRAME# */		PAD_CFG_NF(GPP_A5, NONE, DEEP, NF1),
+/* SERIRQ */		PAD_CFG_NF(GPP_A6, NONE, DEEP, NF1),
+/* PIRQA# */		/* GPP_A7 */
+/* CLKRUN# */		PAD_CFG_NF(GPP_A8, NONE, DEEP, NF1),
+/* CLKOUT_LPC0 */	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF1),
+/* CLKOUT_LPC1 */	/* GPP_A10 */
+/* PME# */		/* GPP_A11 */
+/* BM_BUSY# */		/* GPP_A12 */
+/* SUSWARN# */		PAD_CFG_NF(GPP_A13, NONE, DEEP, NF1),
+/* SUS_STAT# */		PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
+/* SUSACK# */		PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),
+/* SD_1P8_SEL */	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
+/* SD_PWR_EN# */	PAD_CFG_NF(GPP_A17, NONE, DEEP, NF1),
+/* ISH_GP0 */		/* GPP_A18 */
+/* ISH_GP1 */		/* GPP_A19 */
+/* ISH_GP2 */		/* GPP_A20 */
+/* ISH_GP3 */		/* GPP_A21 */
+/* ISH_GP4 */		/* GPP_A22 */
+/* ISH_GP5 */		/* GPP_A23 */
+/* CORE_VID0 */		/* GPP_B0 */
+/* CORE_VID1 */		/* GPP_B1 */
+/* VRALERT# */		/* GPP_B2 */
+/* CPU_GP2 */		PAD_CFG_GPI_APIC(GPP_B3, NONE, DEEP), /* TRACKPAD */
+/* CPU_GP3 */		/* GPP_B4 */
+/* SRCCLKREQ0# */	/* GPP_B5 */
+/* SRCCLKREQ1# */	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1), /* WLAN */
+/* SRCCLKREQ2# */	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1), /* KEPLER */
+/* SRCCLKREQ3# */	/* GPP_B8 */
+/* SRCCLKREQ4# */	/* GPP_B9 */
+/* SRCCLKREQ5# */	/* GPP_B10 */
+/* EXT_PWR_GATE# */	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),
+/* SLP_S0# */		PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
+/* PLTRST# */		PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
+/* SPKR */		/* GPP_B14 */
+/* GSPI0_CS# */		/* GPP_B15 */
+/* GSPI0_CLK */		PAD_CFG_GPI_APIC(GPP_B16, NONE, DEEP), /* WLAN WAKE */
+/* GSPI0_MISO */	/* GPP_B17 */
+/* GSPI0_MOSI */	/* GPP_B18 */
+/* GSPI1_CS# */		/* GPP_B19 */
+/* GSPI1_CLK */		/* GPP_B20 */
+/* GSPI1_MISO */	/* GPP_B21 */
+/* GSPI1_MOSI */	/* GPP_B22 */
+/* SM1ALERT# */		/* GPP_B23 */
+/* SMBCLK */		PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1), /* XDP */
+/* SMBDATA */		PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1), /* XDP */
+/* SMBALERT# */		/* GPP_C2 */
+/* SML0CLK */		/* GPP_C3 */
+/* SML0DATA */		/* GPP_C4 */
+/* SML0ALERT# */	/* GPP_C5 */
+/* SM1CLK */		PAD_CFG_GPI(GPP_C6, 20K_PU, DEEP), /* EC_IN_RW */
+/* SM1DATA */		/* GPP_C7 */
+/* UART0_RXD */		/* GPP_C8 */
+/* UART0_TXD */		/* GPP_C9 */
+/* UART0_RTS# */	/* GPP_C10 */
+/* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 1, DEEP), /* EN_PP3300_KEPLER */
+/* UART1_RXD */		PAD_CFG_GPI(GPP_C12, NONE, DEEP), /* MEM_CONFIG[0] */
+/* UART1_TXD */		PAD_CFG_GPI(GPP_C13, NONE, DEEP), /* MEM_CONFIG[1] */
+/* UART1_RTS# */	PAD_CFG_GPI(GPP_C14, NONE, DEEP), /* MEM_CONFIG[2] */
+/* UART1_CTS# */	PAD_CFG_GPI(GPP_C15, NONE, DEEP), /* MEM_CONFIG[3] */
+/* I2C0_SDA */		PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1), /* TOUCHSCREEN */
+/* I2C0_SCL */		PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1), /* TOUCHSCREEN */
+/* I2C1_SDA */		PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1), /* TRACKPAD */
+/* I2C1_SCL */		PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1), /* TRACKPAD */
+/* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* SERVO */
+/* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVO */
+/* UART2_RTS# */	PAD_CFG_GPO(GPP_C22, 1, DEEP), /* EN_PP3300_DX_TOUCH */
+/* UART2_CTS# */	PAD_CFG_GPI(GPP_C23, 20K_PU, DEEP), /* PCH_WP */
+			/* GPP_D0 */
+			/* GPP_D1 */
+			/* GPP_D2 */
+			/* GPP_D3 */
+/* FASHTRIG */		/* GPP_D4 */
+/* ISH_I2C0_SDA */	PAD_CFG_GPO(GPP_D5, 1, DEEP), /* EN_PP3300_DX_EMMC */
+/* ISH_I2C0_SCL */	PAD_CFG_GPO(GPP_D6, 1, DEEP), /* EN_PP1800_DX_EMMC */
+/* ISH_I2C1_SDA */	/* GPP_D7 */
+/* ISH_I2C1_SCL */	/* GPP_D8 */
+			/* GPP_D9 */
+			PAD_CFG_GPO(GPP_D10, 1, DEEP), /* USBA_1_ILIM_SEL_L */
+			PAD_CFG_GPO(GPP_D11, 1, DEEP), /* USBA_2_ILIM_SEL_L */
+			PAD_CFG_GPO(GPP_D12, 1, DEEP), /* EN_PP3300_DX_CAM */
+/* ISH_UART0_RXD */	/* GPP_D13 */
+/* ISH_UART0_TXD */	/* GPP_D14 */
+/* ISH_UART0_RTS# */	/* GPP_D15 */
+/* ISH_UART0_CTS# */	/* GPP_D16 */
+/* DMIC_CLK1 */		PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
+/* DMIC_DATA1 */	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
+/* DMIC_CLK0 */		PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
+/* DMIC_DATA0 */	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
+			/* GPP_D21 */
+			/* GPP_D22 */
+/* I2S_MCLK */		PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1),
+/* SATAXPCI0 */		PAD_CFG_GPI_APIC(GPP_E0, NONE, DEEP), /* TPM_PIRQ_L */
+/* SATAXPCIE1 */	/* GPP_E1 */
+/* SATAXPCIE2 */	/* GPP_E2 */
+/* CPU_GP0 */		/* GPP_E3 */
+/* SATA_DEVSLP0 */	/* GPP_E4 */
+/* SATA_DEVSLP1 */	/* GPP_E5 */
+/* SATA_DEVSLP2 */	/* GPP_E6 */
+/* CPU_GP1 */		PAD_CFG_GPI_APIC(GPP_E7, NONE, DEEP), /* TOUCHSCREEN */
+/* SATALED# */		/* GPP_E8 */
+/* USB2_OCO# */		PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
+/* USB2_OC1# */		PAD_CFG_NF(GPP_E10, NONE, DEEP, NF1),
+/* USB2_OC2# */		PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
+/* USB2_OC3# */		PAD_CFG_NF(GPP_E12, NONE, DEEP, NF1),
+/* DDPB_HPD0 */		PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
+/* DDPC_HPD1 */		PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
+/* DDPD_HPD2 */		PAD_CFG_NF(GPP_E15, NONE, DEEP, NF1),
+/* DDPE_HPD3 */		PAD_CFG_NF(GPP_E16, NONE, DEEP, NF1),
+/* EDP_HPD */		PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
+/* DDPB_CTRLCLK */	/* GPP_E18 */
+/* DDPB_CTRLDATA */	/* GPP_E19 */
+/* DDPC_CTRLCLK */	/* GPP_E20 */
+/* DDPC_CTRLDATA */	/* GPP_E21 */
+			/* GPP_E22 */
+			/* GPP_E23 */
 /*
  * The next 4 pads are for bit banging the amplifiers. They are connected
  * together with i2s0 signals. For default behavior of i2s make these
  * gpio inupts.
  */
-/* I2S2_SCLK */
-{GPIO_LP_GPP_F0, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2S2_SFRM */
-{GPIO_LP_GPP_F1, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2S2_TXD */
-{GPIO_LP_GPP_F2, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2S2_RXD */
-{GPIO_LP_GPP_F3, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2C4_SDA */
-{GPIO_LP_GPP_F8, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* I2C4_SCL */
-{GPIO_LP_GPP_F9, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* MIC_INT_L */
-{GPIO_LP_GPP_F10, {GpioPadModeGpio, GpioHostOwnGpio, GpioDirInInv,
-	GpioOutDefault, (GpioIntApic | GpioIntEdge), GpioResetDeep,
-	GpioTermNone}},
-/* EMMC_CMD */
-{GPIO_LP_GPP_F12, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_DATA0 */
-{GPIO_LP_GPP_F13, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_DATA1 */
-{GPIO_LP_GPP_F14, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_DATA2 */
-{GPIO_LP_GPP_F15, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_DATA3 */
-{GPIO_LP_GPP_F16, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_DATA4 */
-{GPIO_LP_GPP_F17, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_DATA5 */
-{GPIO_LP_GPP_F18, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_DATA6 */
-{GPIO_LP_GPP_F19, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_DATA7 */
-{GPIO_LP_GPP_F20, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_RCLK */
-{GPIO_LP_GPP_F21, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_CLK */
-{GPIO_LP_GPP_F22, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* EMMC_CMD */
-{GPIO_LP_GPP_F23, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_CMD */
-{GPIO_LP_GPP_G0, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_DATA0 */
-{GPIO_LP_GPP_G1, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_DATA1 */
-{GPIO_LP_GPP_G2, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_DATA2 */
-{GPIO_LP_GPP_G3, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_DATA3 */
-{GPIO_LP_GPP_G4, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirInOut,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_CD# */
-{GPIO_LP_GPP_G5, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SD_CLK# */
-{GPIO_LP_GPP_G6, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntEdge, GpioResetDeep, GpioTermNone}},
-/* SD_WP# */
-{GPIO_LP_GPP_G7, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntEdge, GpioResetDeep, GpioTermNone}},
-/* ACPRESENT# */
-{GPIO_LP_GPD1, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* EC_PCH_WAKE_L */
-{GPIO_LP_GPD2, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntEdge, GpioResetDeep, GpioTermNone}},
-/* PWRBTN# */
-{GPIO_LP_GPD3, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirIn,
-	GpioOutDefault, GpioIntLevel, GpioResetDeep, GpioTermNone}},
-/* SLP_S3# */
-{GPIO_LP_GPD4, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SLP_S4# */
-{GPIO_LP_GPD5, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutHigh, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SUSCLK */
-{GPIO_LP_GPD8, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutLow, GpioIntDis, GpioResetDeep, GpioTermNone}},
-/* SLP_S5# */
-{GPIO_LP_GPD10, {GpioPadModeNative1, GpioHostOwnGpio, GpioDirOut,
-	GpioOutLow, GpioIntDis, GpioResetDeep, GpioTermNone}},
-{END_OF_GPIO_TABLE,  {GpioPadModeGpio, GpioHostOwnGpio, GpioDirNone,
-	GpioOutDefault, GpioIntDis, GpioResetPwrGood, GpioTermNone}},
+/* I2S2_SCLK */		PAD_CFG_GPI(GPP_F0, NONE, DEEP),
+/* I2S2_SFRM */		PAD_CFG_GPI(GPP_F1, NONE, DEEP),
+/* I2S2_TXD */		PAD_CFG_GPI(GPP_F2, NONE, DEEP),
+/* I2S2_RXD */		PAD_CFG_GPI(GPP_F3, NONE, DEEP),
+/* I2C2_SDA */		/* GPP_F4 */
+/* I2C2_SCL */		/* GPP_F5 */
+/* I2C3_SDA */		/* GPP_F6 */
+/* I2C3_SCL */		/* GPP_F7 */
+/* I2C4_SDA */		PAD_CFG_NF(GPP_F8, NONE, DEEP, NF1), /* Amplifiers */
+/* I2C4_SCL */		PAD_CFG_NF(GPP_F9, NONE, DEEP, NF1), /* Amplifiers */
+/* I2C5_SDA */		PAD_CFG_GPI_APIC(GPP_F10, NONE, DEEP), /* MIC_INT_L */
+/* I2C5_SCL */		/* GPP_F11 */
+/* EMMC_CMD */		PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),
+/* EMMC_DATA0 */	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF1),
+/* EMMC_DATA1 */	PAD_CFG_NF(GPP_F14, NONE, DEEP, NF1),
+/* EMMC_DATA2 */	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF1),
+/* EMMC_DATA3 */	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF1),
+/* EMMC_DATA4 */	PAD_CFG_NF(GPP_F17, NONE, DEEP, NF1),
+/* EMMC_DATA5 */	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF1),
+/* EMMC_DATA6 */	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
+/* EMMC_DATA7 */	PAD_CFG_NF(GPP_F20, NONE, DEEP, NF1),
+/* EMMC_RCLK */		PAD_CFG_NF(GPP_F21, NONE, DEEP, NF1),
+/* EMMC_CLK */		PAD_CFG_NF(GPP_F22, NONE, DEEP, NF1),
+			/* GPP_F23 */
+/* SD_CMD */		PAD_CFG_NF(GPP_G0, NONE, DEEP, NF1),
+/* SD_DATA0 */		PAD_CFG_NF(GPP_G1, NONE, DEEP, NF1),
+/* SD_DATA1 */		PAD_CFG_NF(GPP_G2, NONE, DEEP, NF1),
+/* SD_DATA2 */		PAD_CFG_NF(GPP_G3, NONE, DEEP, NF1),
+/* SD_DATA3 */		PAD_CFG_NF(GPP_G4, NONE, DEEP, NF1),
+/* SD_CD# */		PAD_CFG_NF(GPP_G5, NONE, DEEP, NF1),
+/* SD_CLK */		PAD_CFG_NF(GPP_G6, NONE, DEEP, NF1),
+/* SD_WP */		PAD_CFG_NF(GPP_G7, NONE, DEEP, NF1),
+/* BATLOW# */		/* GPD0 */
+/* ACPRESENT */		PAD_CFG_NF(GPD1, NONE, DEEP, NF1),
+/* LAN_WAKE# */		PAD_CFG_NF(GPD2, NONE, DEEP, NF1), /* EC_PCH_WAKE_L */
+/* PWRBTN# */		PAD_CFG_NF(GPD3, NONE, DEEP, NF1),
+/* SLP_S3# */		PAD_CFG_NF(GPD4, NONE, DEEP, NF1),
+/* SLP_S4# */		PAD_CFG_NF(GPD5, NONE, DEEP, NF1),
+/* SLP_A# */		PAD_CFG_NF(GPD6, NONE, DEEP, NF1),
+			/* GPD7 */
+/* SUSCLK */		PAD_CFG_NF(GPD8, NONE, DEEP, NF1),
+/* SLP_WLAN# */		/* GPD9 */
+/* SLP_S5# */		PAD_CFG_NF(GPD10, NONE, DEEP, NF1),
+/* LANPHYC */		/* GPD11 */
 };
 
 #endif

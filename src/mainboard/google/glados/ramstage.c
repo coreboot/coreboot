@@ -19,9 +19,7 @@
  */
 
 #include <soc/ramstage.h>
-#include "gpio.h"
 
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	params->GpioTablePtr = (UINT32 *)mainboard_gpio_table;
 }

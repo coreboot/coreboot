@@ -38,17 +38,8 @@ static struct device_operations pci_domain_ops = {
 	.ops_pci_bus      = &pci_bus_default_ops,
 };
 
-static void chip_final(device_t dev)
-{
-	/* Notify FSP done device setup */
-	printk(BIOS_DEBUG,
-		"Calling FspNotify(EnumInitPhaseAfterPciEnumeration)\n");
-	fsp_notify(EnumInitPhaseAfterPciEnumeration);
-}
-
 static struct device_operations cpu_bus_ops = {
 	.init             = &soc_init_cpus,
-	.final            = &chip_final,
 };
 
 static void soc_enable(device_t dev)

@@ -174,8 +174,6 @@ wait_for_complete(endpoint_t *ep, uint32_t ch_num)
 				return -HCSTAT_BABBLE;
 			else if (hcint.stall)
 				return -HCSTAT_STALL;
-			else if (hcint.ack)
-				return -HCSTAT_ACK;
 			else if (hcint.nyet)
 				return -HCSTAT_NYET;
 			else
@@ -209,7 +207,7 @@ wait_for_complete(endpoint_t *ep, uint32_t ch_num)
 
 static int
 dwc2_do_xfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
-			  uint32_t ch_num, u8 *data_buf)
+	     uint32_t ch_num, u8 *data_buf, int *short_pkt)
 {
 	uint32_t do_copy;
 	int ret;
@@ -277,6 +275,10 @@ dwc2_do_xfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 
 		if (do_copy && (dir == EPDIR_IN))
 			memcpy(data_buf, aligned_buf, transferred);
+
+		if ((short_pkt != NULL) && (dir == EPDIR_IN))
+			*short_pkt = (ret > 0) ? 1 : 0;
+
 	}
 
 	/* Save data toggle */
@@ -292,7 +294,8 @@ dwc2_do_xfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 
 static int
 dwc2_split_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
-		    uint32_t ch_num, u8 *data_buf, split_info_t *split)
+		    uint32_t ch_num, u8 *data_buf, split_info_t *split,
+		    int *short_pkt)
 {
 	dwc2_reg_t *reg = DWC2_REG(ep->dev->controller);
 	hfnum_t hfnum;
@@ -311,7 +314,7 @@ dwc2_split_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 
 	/* Handle Start-Split */
 	ret = dwc2_do_xfer(ep, dir == EPDIR_IN ? 0 : size, pid, dir, ch_num,
-			   data_buf);
+			   data_buf, NULL);
 	if (ret < 0)
 		goto out;
 
@@ -326,7 +329,7 @@ dwc2_split_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 	/* Handle Complete-Split */
 	do {
 		ret = dwc2_do_xfer(ep, dir == EPDIR_OUT ? 0 : size, ep->toggle,
-				   dir, ch_num, data_buf);
+				   dir, ch_num, data_buf, short_pkt);
 	} while (ret == -HCSTAT_NYET);
 
 	if (dir == EPDIR_IN)
@@ -360,15 +363,17 @@ dwc2_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir, uint32_t ch_num,
 	      u8 *src, uint8_t skip_nak)
 {
 	split_info_t split;
-	int ret, transferred = 0, timeout = 3000;
+	int ret, short_pkt, transferred = 0, timeout = 3000;
 
 	ep->toggle = pid;
 
 	do {
+		short_pkt = 0;
 		if (dwc2_need_split(ep->dev, &split)) {
 nak_retry:
-			ret = dwc2_split_transfer(ep, size, ep->toggle, dir, 0,
-			      src, &split);
+			ret = dwc2_split_transfer(ep, MIN(ep->maxpacketsize,
+			      size), ep->toggle, dir, 0, src, &split,
+			      &short_pkt);
 
 			/*
 			 * dwc2_split_transfer() waits for the next FullSpeed
@@ -380,7 +385,8 @@ nak_retry:
 				goto nak_retry;
 			}
 		} else {
-			ret = dwc2_do_xfer(ep, size, pid, dir, 0, src);
+			ret = dwc2_do_xfer(ep, MIN(DMA_SIZE, size), pid, dir, 0,
+			      src, &short_pkt);
 		}
 
 		if (ret < 0)
@@ -389,7 +395,8 @@ nak_retry:
 		size -= ret;
 		src += ret;
 		transferred += ret;
-	} while (size > 0);
+
+	} while (size > 0 && !short_pkt);
 
 	return transferred;
 }

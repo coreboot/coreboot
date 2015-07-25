@@ -70,6 +70,13 @@ static u16 mctGet_NVbits(u8 index)
 		val = MAX_DIMMS_SUPPORTED;
 		//val = 8;
 		break;
+	case NV_MAX_DIMMS_PER_CH:
+		/* FIXME
+		 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
+		 * For now assume a maximum of 2 DIMMs per channel can be installed
+		 */
+		val = 2;
+		break;
 	case NV_MAX_MEMCLK:
 		/* Maximum platform supported memclk */
 		val =  MEM_MAX_LOAD_FREQ;

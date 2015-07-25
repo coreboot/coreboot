@@ -105,10 +105,6 @@
 
 typedef struct _sMCTStruct
 {
-	u8 PlatMaxTotalDimms;			/* IBV defined total number of DIMMs */
-						/* on a particular node */
-	u8 PlatMaxDimmsDct;			/* IBV defined maximum number of */
-						/* DIMMs on a DCT */
 	void (*AgesaDelay)(u32 delayval);	/* IBV defined Delay Function */
 } sMCTStruct;
 

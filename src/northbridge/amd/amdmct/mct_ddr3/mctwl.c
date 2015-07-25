@@ -27,8 +27,6 @@ void PrepareC_MCT(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat)
 {
 	pDCTstat->C_MCTPtr->AgesaDelay = AgesaDelay;
-	pDCTstat->C_MCTPtr->PlatMaxTotalDimms = mctGet_NVbits(NV_MAX_DIMMS);
-	pDCTstat->C_MCTPtr->PlatMaxDimmsDct = pDCTstat->C_MCTPtr->PlatMaxTotalDimms >> 1;
 }
 
 void PrepareC_DCT(struct MCTStatStruc *pMCTstat,

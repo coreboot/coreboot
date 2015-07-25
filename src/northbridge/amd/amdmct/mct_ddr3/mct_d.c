@@ -809,11 +809,7 @@ static uint32_t fam15h_phy_predriver_clk_calibration_code(struct DCTStatStruc *p
 
 static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCTstat, uint8_t dct)
 {
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	uint8_t package_type;
 	uint32_t calibration_code = 0;
@@ -989,11 +985,7 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 
 static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDCTstat, uint8_t dct)
 {
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	uint8_t package_type;
 	uint32_t calibration_code = 0;
@@ -1171,11 +1163,7 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 
 static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dct)
 {
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	uint8_t package_type;
 	uint32_t slow_access = 0;
@@ -5878,11 +5866,7 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 
 	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	if (is_fam15h()) {
 		/* Obtain number of DIMMs on channel */

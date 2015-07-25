@@ -415,11 +415,7 @@ static uint16_t unbuffered_dimm_nominal_termination_emrs(uint8_t number_of_dimms
 {
 	uint16_t term;
 
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	if (number_of_dimms == 1) {
 		if (MaxDimmsInstallable < 3) {
@@ -448,11 +444,7 @@ static uint16_t unbuffered_dimm_dynamic_termination_emrs(uint8_t number_of_dimms
 {
 	uint16_t term;
 
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	if (number_of_dimms == 1) {
 		if (MaxDimmsInstallable < 3) {

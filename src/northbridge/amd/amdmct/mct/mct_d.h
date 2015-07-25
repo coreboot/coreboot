@@ -687,6 +687,8 @@ struct DCTStatStruc {		/* A per Node structure*/
 					xx0b = disable
 					yy1b = enable with DctSelIntLvAddr set to yyb */
 
+#define NV_MAX_DIMMS_PER_CH	64	/* Maximum number of DIMMs per channel */
+
 /*===============================================================================
 	CBMEM storage
 ===============================================================================*/

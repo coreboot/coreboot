@@ -47,11 +47,7 @@ static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t d
 	else
 		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x7;
 
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	if (is_fam15h()) {
 		if (pDCTstat->Status & (1 << SB_LoadReduced)) {
@@ -180,11 +176,7 @@ static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t 
 	else
 		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x7;
 
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	if (is_fam15h()) {
 		if (pDCTstat->Status & (1 << SB_LoadReduced)) {

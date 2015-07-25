@@ -101,11 +101,7 @@ static uint16_t fam15_receiver_enable_training_seed(struct DCTStatStruc *pDCTsta
 	uint32_t dword;
 	uint16_t seed = 0;
 
-	/* FIXME
-	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
-	 * For now assume a maximum of 2 DIMMs per channel can be installed
-	 */
-	uint8_t MaxDimmsInstallable = 2;
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 	uint8_t channel = dct;
 	if (package_type == PT_GR) {

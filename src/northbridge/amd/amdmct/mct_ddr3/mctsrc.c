@@ -1740,6 +1740,7 @@ static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 	u16 EccDQSLike;
 	u8 EccDQSScale;
 	u32 val, val0, val1;
+	int16_t delay_differential;
 
 	EccDQSLike = pDCTstat->CH_EccDQSLike[Channel];
 	EccDQSScale = pDCTstat->CH_EccDQSScale[Channel];
@@ -1749,14 +1750,22 @@ static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 			u16 *p;
 			p = pDCTstat->CH_D_B_RCVRDLY[Channel][ChipSel>>1];
 
-			/* DQS Delay Value of Data Bytelane
-			 * most like ECC byte lane */
-			val0 = p[EccDQSLike & 0x07];
-			/* DQS Delay Value of Data Bytelane
-			 * 2nd most like ECC byte lane */
-			val1 = p[(EccDQSLike>>8) & 0x07];
+			if (pDCTstat->Status & (1 << SB_Registered)) {
+				val0 = p[0x2];
+				val1 = p[0x3];
 
-			if (!(pDCTstat->Status & (1 << SB_Registered))) {
+				delay_differential = (int16_t)val1 - (int16_t)val0;
+				delay_differential += (int16_t)val1;
+
+				val = delay_differential;
+			} else {
+				/* DQS Delay Value of Data Bytelane
+				 * most like ECC byte lane */
+				val0 = p[EccDQSLike & 0x07];
+				/* DQS Delay Value of Data Bytelane
+				 * 2nd most like ECC byte lane */
+				val1 = p[(EccDQSLike>>8) & 0x07];
+
 				if(val0 > val1) {
 					val = val0 - val1;
 				} else {
@@ -1771,9 +1780,6 @@ static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 				} else {
 					val += val0;
 				}
-			} else {
-				val = val1 - val0;
-				val += val1;
 			}
 
 			pDCTstat->CH_D_BC_RCVRDLY[Channel][ChipSel>>1] = val;

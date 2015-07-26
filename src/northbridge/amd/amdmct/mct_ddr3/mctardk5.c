@@ -17,7 +17,7 @@
 /* AM3/ASB2/C32/G34 DDR3 */
 
 static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
-				u32 *AddrTmgCTL, u32 *ODC_CTL,
+				u32 *ODC_CTL,
 				u8 *CMDmode);
 
 void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
@@ -30,8 +30,13 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
 	} else {
 		Get_ChannelPS_Cfg0_D(pDCTstat->MAdimms[dct], pDCTstat->Speed,
 					pDCTstat->MAload[dct],
-					&(pDCTstat->CH_ADDR_TMG[dct]), &(pDCTstat->CH_ODC_CTL[dct]),
+					&(pDCTstat->CH_ODC_CTL[dct]),
 					&pDCTstat->_2Tmode);
+
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			pDCTstat->_2Tmode = 1;	/* Disable slow access mode */
+		}
+		pDCTstat->CH_ADDR_TMG[dct] = fam10h_address_timing_compensation_code(pDCTstat, dct);
 
 		pDCTstat->CH_ODC_CTL[dct] |= 0x20000000;	/* 60ohms */
 	}
@@ -50,42 +55,25 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
  *    : ODC_CTL    - Output Driver Compensation Control Register Value
  *    : CMDmode    - CMD mode
  */
-static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
-				u32 *AddrTmgCTL, u32 *ODC_CTL,
+static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
+				u32 *ODC_CTL,
 				u8 *CMDmode)
 {
-	*AddrTmgCTL = 0;
 	*ODC_CTL = 0;
 	*CMDmode = 1;
 
-	if(MAAdimms == 1) {
-		if(MAAload >= 16) {
-			if(Speed == 4)
-				*AddrTmgCTL = 0x003B0000;
-			else if (Speed == 5)
-				*AddrTmgCTL = 0x00380000;
-			else if (Speed == 6)
-				*AddrTmgCTL = 0x00360000;
-			else
-				*AddrTmgCTL = 0x00340000;
-		} else {
-			*AddrTmgCTL = 0x00000000;
-		}
+	if (MAAdimms == 1) {
 		*ODC_CTL = 0x00113222;
 		*CMDmode = 1;
 	} else /* if(MAAdimms == 0) */ {
 		if(Speed == 4) {
 			*CMDmode = 1;
-			*AddrTmgCTL = 0x00390039;
 		} else if(Speed == 5) {
 			*CMDmode = 1;
-			*AddrTmgCTL = 0x00350037;
 		} else if(Speed == 6) {
 			*CMDmode = 2;
-			*AddrTmgCTL = 0x00000035;
 		} else {
 			*CMDmode = 2;
-			*AddrTmgCTL = 0x00000033;
 		}
 		*ODC_CTL = 0x00223323;
 	}

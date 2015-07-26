@@ -492,6 +492,8 @@ static u32 mct_MR2(struct MCTStatStruc *pMCTstat,
 		ret |= ((dword >> 10) & 3) << 9;
 	}
 
+	printk(BIOS_SPEW, "Going to send MR2 control word %08x\n", ret);
+
 	return ret;
 }
 
@@ -520,6 +522,8 @@ static u32 mct_MR3(struct MCTStatStruc *pMCTstat,
 		dword = Get_NB32_DCT(dev, dct, 0x84);
 		ret |= (dword >> 24) & 7;
 	}
+
+	printk(BIOS_SPEW, "Going to send MR3 control word %08x\n", ret);
 
 	return ret;
 }
@@ -614,6 +618,8 @@ static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 		if (dword & (1 << 13))
 			ret |= 1 << 12;
 	}
+
+	printk(BIOS_SPEW, "Going to send MR1 control word %08x\n", ret);
 
 	return ret;
 }
@@ -733,6 +739,8 @@ static u32 mct_MR0(struct MCTStatStruc *pMCTstat,
 		just issue DLL reset at first time */
 		ret |= 1 << 8;
 	}
+
+	printk(BIOS_SPEW, "Going to send MR0 control word %08x\n", ret);
 
 	return ret;
 }

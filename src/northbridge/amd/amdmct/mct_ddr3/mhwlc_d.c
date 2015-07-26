@@ -926,7 +926,9 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 		else if ((cs == 4) || (cs == 0))
 			WrLvOdt1 = (dword & 0xf);
 	} else {
-		if (pDCTData->Status[DCT_STATUS_REGISTERED] == 0) {
+		if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
+			WrLvOdt1 = WrLvOdtRegDimm(pMCTData, pDCTData, dimm);
+		} else {
 			if ((pDCTData->DctCSPresent & 0x05) == 0x05) {
 				WrLvOdt1 = 0x03;
 			} else if (bitTest((u32)pDCTData->DctCSPresent,(u8)(dimm*2+1))) {
@@ -934,13 +936,13 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 			} else {
 				WrLvOdt1 = (u8)bitTestSet(WrLvOdt1, dimm);
 			}
-		} else {
-			WrLvOdt1 = WrLvOdtRegDimm(pMCTData, pDCTData, dimm);
 		}
 	}
 
 	set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
 			DRAM_ADD_DCT_PHY_CONTROL_REG, 8, 11, (u32)WrLvOdt1);
+
+	printk(BIOS_SPEW, "Programmed DCT %d write levelling ODT pattern %08x\n", dct, WrLvOdt1);
 
 }
 
@@ -976,7 +978,7 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 	u16 Addl_Data_Offset, Addl_Data_Port;
 	sMCTStruct *pMCTData = pDCTstat->C_MCTPtr;
 	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
-	u16 fam10h_freq_tab[] = {400, 533, 667, 800};
+	uint16_t fam10h_freq_tab[] = {0, 0, 0, 400, 533, 667, 800};
 	uint16_t fam15h_freq_tab[] = {0, 0, 0, 0, 333, 0, 400, 0, 0, 0, 533, 0, 0, 0, 667, 0, 0, 0, 800, 0, 0, 0, 933};
 
 	if (is_fam15h()) {
@@ -1089,21 +1091,18 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 				pDCTData->WLSeedPreGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_PreGross;
 			}
 		} else {
-			if (pDCTData->Status[DCT_STATUS_REGISTERED])
-			{
-				if(pDCTData->RegMan1Present & ((1<<(dimm*2+dct))))
-				{
+			if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
+				uint8_t AddrCmdPrelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
+
+				/* The seed values below assume Pass 1 utilizes a 400MHz clock frequency (DDR3-800) */
+				if (AddrCmdPrelaunch == 0) {
 					Seed_Gross = 0x02;
-					Seed_Fine = 0x16;
-				}
-				else
-				{
+					Seed_Fine = 0x01;
+				} else {
 					Seed_Gross = 0x02;
-					Seed_Fine = 0x00;
+					Seed_Fine = 0x11;
 				}
-			}
-			else
-			{
+			} else {
 				if (MemClkFreq == 6) {
 					/* DDR-800 */
 					Seed_Gross = 0x00;
@@ -1127,6 +1126,7 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 			 */
 			pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
 			pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
+			printk(BIOS_SPEW, "\tLane %02x initial seed: %04x\n", ByteLane, ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f));
 		}
 	} else {
 		/* Pass 2 */
@@ -1178,21 +1178,30 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 
 				pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_PreGross;
 				pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
+
+				printk(BIOS_SPEW, "\tLane %02x new seed: %04x\n", ByteLane, ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f));
 			}
 		} else {
-			u32 RegisterDelay, SeedTotal;
+			uint32_t RegisterDelay;
+			uint32_t SeedTotalPreScaling;
+			uint32_t SeedTotal;
+			uint8_t AddrCmdPrelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
 			for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++)
 			{
-				if (pDCTData->Status[DCT_STATUS_REGISTERED])
-					RegisterDelay = 0x20; /* TODO: ((RCW2 & BIT0) == 0) ? 0x20 : 0x30; */
-				else
+				if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
+					if (AddrCmdPrelaunch == 0)
+						RegisterDelay = 0x20;
+					else
+						RegisterDelay = 0x30;
+				} else {
 					RegisterDelay = 0;
-				SeedTotal = (pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) |
-					(pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] << 5);
+				}
+				SeedTotalPreScaling = ((pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) |
+					(pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] << 5)) - RegisterDelay;
 				/* SeedTotalPreScaling = (the total delay value in F2x[1, 0]9C_x[4A:30] from pass 1 of write levelization
 				training) - RegisterDelay. */
-				SeedTotal = (uint16_t) (RegisterDelay + ((((uint64_t) SeedTotal - RegisterDelay) *
-									fam10h_freq_tab[MemClkFreq-3] * 100) / (fam10h_freq_tab[0] * 100)));
+				SeedTotal = (uint16_t) ((((uint64_t) SeedTotalPreScaling) *
+									fam10h_freq_tab[MemClkFreq] * 100) / (fam10h_freq_tab[3] * 100));
 				Seed_Gross = SeedTotal / 32;
 				Seed_Fine = SeedTotal & 0x1f;
 				if (Seed_Gross == 0)
@@ -1201,8 +1210,20 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 					Seed_Gross = 1;
 				else
 					Seed_Gross = 2;
+
+				/* The BKDG-recommended algorithm causes problems with registered DIMMs on some systems
+				 * due to the long register delays causing premature total delay wrap-around.
+				 * Attempt to work around this...
+				 */
+				SeedTotal = ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f);
+				SeedTotal += RegisterDelay;
+				Seed_Gross = SeedTotal / 32;
+				Seed_Fine = SeedTotal & 0x1f;
+
 				pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
 				pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
+
+				printk(BIOS_SPEW, "\tLane %02x new seed: %04x\n", ByteLane, ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f));
 			}
 		}
 	}
@@ -1379,6 +1400,8 @@ void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 	gross = get_ADD_DCT_Bits(pDCTData, dct, pDCTData->NodeId,
 				FUN_DCT, (u16)addr, grossStartLoc, grossEndLoc);
 
+	printk(BIOS_SPEW, "\tLane %02x raw readback: %04x\n", ByteLane, ((gross & 0x1f) << 5) | (fine & 0x1f));
+
 	if (!is_fam15h()) {
 		/* Adjust seed gross delay overflow (greater than 3):
 		 * - Adjust the trained gross delay to the original seed gross delay.
@@ -1402,4 +1425,5 @@ void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 	}
 	pDCTData->WLFineDelay[index+ByteLane] = (u8)fine;
 	pDCTData->WLGrossDelay[index+ByteLane] = (u8)gross;
+	printk(BIOS_SPEW, "\tLane %02x final adjusted value: %04x\n", ByteLane, ((gross & 0x1f) << 5) | (fine & 0x1f));
 }

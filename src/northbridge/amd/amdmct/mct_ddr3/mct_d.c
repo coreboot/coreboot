@@ -311,6 +311,120 @@ static uint16_t mhz_to_memclk_config(uint16_t freq)
 		return fam10h_mhz_to_memclk_config(freq) + 1;
 }
 
+static uint32_t fam10h_address_timing_compensation_code(struct DCTStatStruc *pDCTstat, uint8_t dct)
+{
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
+
+	uint8_t package_type;
+	uint32_t calibration_code = 0;
+
+	package_type = mctGet_NVbits(NV_PACK_TYPE);
+	uint16_t MemClkFreq = (Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x7) + 1;
+
+	/* Obtain number of DIMMs on channel */
+	uint8_t dimm_count = pDCTstat->MAdimms[dct];
+	uint8_t rank_count_dimm0;
+	uint8_t rank_count_dimm1;
+
+	if (package_type == PT_GR) {
+		/* Socket G34 */
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* RDIMM */
+			/* Fam10h BKDG Rev. 3.62 section 2.8.9.5.8 Tables 60 - 61 */
+			if (MaxDimmsInstallable == 1) {
+				if (MemClkFreq == 0x4) {
+					/* DDR3-800 */
+					calibration_code = 0x00000000;
+				} else if (MemClkFreq == 0x5) {
+					/* DDR3-1066 */
+					calibration_code = 0x003c3c3c;
+				} else if (MemClkFreq == 0x6) {
+					/* DDR3-1333 */
+					calibration_code = 0x003a3a3a;
+				}
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					if (MemClkFreq == 0x4) {
+						/* DDR3-800 */
+						calibration_code = 0x00000000;
+					} else if (MemClkFreq == 0x5) {
+						/* DDR3-1066 */
+						calibration_code = 0x003c3c3c;
+					} else if (MemClkFreq == 0x6) {
+						/* DDR3-1333 */
+						calibration_code = 0x003a3a3a;
+					}
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					if (MemClkFreq == 0x4) {
+						/* DDR3-800 */
+						calibration_code = 0x00000000;
+					} else if (MemClkFreq == 0x5) {
+						/* DDR3-1066 */
+						calibration_code = 0x003a3c3a;
+					} else if (MemClkFreq == 0x6) {
+						/* DDR3-1333 */
+						calibration_code = 0x00383a38;
+					}
+				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
+			}
+		} else {
+			/* UDIMM */
+			/* Fam10h BKDG Rev. 3.62 section 2.8.9.5.8 Table 56 */
+			if (dimm_count == 1) {
+				/* 1 DIMM detected */
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if (MemClkFreq == 0x4) {
+					/* DDR3-800 */
+					if (rank_count_dimm0 == 1)
+						calibration_code = 0x00000000;
+					else
+						calibration_code = 0x003b0000;
+				} else if (MemClkFreq == 0x5) {
+					/* DDR3-1066 */
+					if (rank_count_dimm0 == 1)
+						calibration_code = 0x00000000;
+					else
+						calibration_code = 0x00380000;
+				} else if (MemClkFreq == 0x6) {
+					/* DDR3-1333 */
+					if (rank_count_dimm0 == 1)
+						calibration_code = 0x00000000;
+					else
+						calibration_code = 0x00360000;
+				}
+			} else if (dimm_count == 2) {
+				/* 2 DIMMs detected */
+				rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+				rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if (MemClkFreq == 0x4) {
+					/* DDR3-800 */
+					calibration_code = 0x00390039;
+				} else if (MemClkFreq == 0x5) {
+					/* DDR3-1066 */
+					calibration_code = 0x00350037;
+				} else if (MemClkFreq == 0x6) {
+					/* DDR3-1333 */
+					calibration_code = 0x00000035;
+				}
+			}
+		}
+	} else {
+		/* TODO
+		 * Other socket support unimplemented
+		 */
+	}
+
+	return calibration_code;
+}
+
 static uint32_t fam15h_phy_predriver_calibration_code(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t drive_strength)
 {
 	uint8_t lrdimm = 0;
@@ -1005,7 +1119,7 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 			/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 74 */
 			if (MaxDimmsInstallable == 1) {
 				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
-					/* DDR3-667 - DDR3-800*/
+					/* DDR3-667 - DDR3-800 */
 					calibration_code = 0x00000000;
 				} else if (MemClkFreq == 0xa) {
 					/* DDR3-1066 */
@@ -1021,7 +1135,7 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 				if (dimm_count == 1) {
 					/* 1 DIMM detected */
 					if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
-						/* DDR3-667 - DDR3-800*/
+						/* DDR3-667 - DDR3-800 */
 						calibration_code = 0x00000000;
 					} else if (MemClkFreq == 0xa) {
 						/* DDR3-1066 */
@@ -1036,7 +1150,7 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 				} else if (dimm_count == 2) {
 					/* 2 DIMMs detected */
 					if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
-						/* DDR3-667 - DDR3-800*/
+						/* DDR3-667 - DDR3-800 */
 						calibration_code = 0x00000000;
 					} else if (MemClkFreq == 0xa) {
 						/* DDR3-1066 */
@@ -1314,6 +1428,26 @@ static void read_spd_bytes(struct MCTStatStruc *pMCTstat,
 	}
 }
 
+#ifdef DEBUG_DIMM_SPD
+static void dump_spd_bytes(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, uint8_t dimm)
+{
+	uint16_t byte;
+
+	printk(BIOS_DEBUG, "SPD dump for DIMM %d\n   ", dimm);
+	for (byte = 0; byte < 16; byte++) {
+		printk(BIOS_DEBUG, "%02x ", byte);
+	}
+	for (byte = 0; byte < 256; byte++) {
+		if ((byte & 0xf) == 0x0) {
+			printk(BIOS_DEBUG, "\n%02x ", byte >> 4);
+		}
+		printk(BIOS_DEBUG, "%02x ", pDCTstat->spd_data.spd_bytes[dimm][byte]);
+	}
+	printk(BIOS_DEBUG, "\n");
+}
+#endif
+
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 static void calculate_and_store_spd_hashes(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat)
@@ -1515,12 +1649,14 @@ restartinit:
 		pMCTstat->GStatus |= 1 << GSB_ConfigRestored;
 #endif
 
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
-		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
-			struct DCTStatStruc *pDCTstat;
-			pDCTstat = pDCTstatA + Node;
+		if (is_fam15h()) {
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
+			for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+				struct DCTStatStruc *pDCTstat;
+				pDCTstat = pDCTstatA + Node;
 
-			mct_ForceNBPState0_Dis_Fam15(pMCTstat, pDCTstat);
+				mct_ForceNBPState0_Dis_Fam15(pMCTstat, pDCTstat);
+			}
 		}
 	} else {
 		NodesWmem = 0;
@@ -1682,14 +1818,14 @@ restartinit:
 
 			printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
 			UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
-		}
 
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
-		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
-			struct DCTStatStruc *pDCTstat;
-			pDCTstat = pDCTstatA + Node;
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: mct_ForceNBPState0_Dis_Fam15\n");
+			for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+				struct DCTStatStruc *pDCTstat;
+				pDCTstat = pDCTstatA + Node;
 
-			mct_ForceNBPState0_Dis_Fam15(pMCTstat, pDCTstat);
+				mct_ForceNBPState0_Dis_Fam15(pMCTstat, pDCTstat);
+			}
 		}
 
 		if (is_fam15h()) {
@@ -2727,6 +2863,10 @@ static void DCTFinalInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *p
 		dword = 1 << DisDramInterface;
 		Set_NB32_DCT(pDCTstat->dev_dct, dct, 0x94, dword);
 
+		dword = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x90);
+		dword &= ~(1 << ParEn);
+		Set_NB32_DCT(pDCTstat->dev_dct, dct, 0x90, dword);
+
 		/* To maximize power savings when DisDramInterface=1b,
 		 * all of the MemClkDis bits should also be set.
 		 */
@@ -3610,7 +3750,9 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 		dword++;
 	}
 
-	if (!(Status & (1 << SB_Registered)))
+	if (Status & (1 << SB_Registered))
+		DramConfigLo |= 1 << ParEn;		/* Registered DIMMs */
+	else
 		DramConfigLo |= 1 << UnBuffDimm;	/* Unbuffered DIMMs */
 
 	if (mctGet_NVbits(NV_ECC_CAP))
@@ -4099,6 +4241,9 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 			if (status >= 0) { /* SPD access is ok */
 				pDCTstat->DIMMPresent |= 1 << i;
 				read_spd_bytes(pMCTstat, pDCTstat, i);
+#ifdef DEBUG_DIMM_SPD
+				dump_spd_bytes(pMCTstat, pDCTstat, i);
+#endif
 				crc_status = crcCheck(pDCTstat, i);
 				if (!crc_status) {
 					/* Try again in case there was a transient glitch */
@@ -4398,6 +4543,10 @@ static void mct_initDCT(struct MCTStatStruc *pMCTstat,
 				val = 1 << DisDramInterface;
 				Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x94, val);
 
+				val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x90);
+				val &= ~(1 << ParEn);
+				Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x90, val);
+
 				/* To maximize power savings when DisDramInterface=1b,
 				 * all of the MemClkDis bits should also be set.
 				 */
@@ -4550,8 +4699,9 @@ static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
 	}
 	for (i=i_start; i<i_end; i++) {
 		index_reg = 0x98;
-		Set_NB32_index_wait_DCT(dev, i, index_reg, 0x00, pDCTstat->CH_ODC_CTL[i]); /* Channel A/B Output Driver Compensation Control */
-		Set_NB32_index_wait_DCT(dev, i, index_reg, 0x04, pDCTstat->CH_ADDR_TMG[i]); /* Channel A/B Output Driver Compensation Control */
+		Set_NB32_index_wait_DCT(dev, i, index_reg, 0x00, pDCTstat->CH_ODC_CTL[i]);	/* Channel A/B Output Driver Compensation Control */
+		Set_NB32_index_wait_DCT(dev, i, index_reg, 0x04, pDCTstat->CH_ADDR_TMG[i]);	/* Channel A/B Output Driver Compensation Control */
+		printk(BIOS_SPEW, "Programmed DCT %d timing/termination pattern %08x %08x\n", dct, pDCTstat->CH_ADDR_TMG[i], pDCTstat->CH_ODC_CTL[i]);
 	}
 
 	return pDCTstat->ErrCode;
@@ -4608,11 +4758,19 @@ static u8 mct_SPDCalcWidth(struct MCTStatStruc *pMCTstat,
 		val = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x94);
 		val |= 1 << DisDramInterface;
 		Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x94, val);
+
+		val = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x90);
+		val &= ~(1 << ParEn);
+		Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x90, val);
 	}
 	if (pDCTstat->DIMMValidDCT[1] == 0) {
 		val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x94);
 		val |= 1 << DisDramInterface;
 		Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x94, val);
+
+		val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x90);
+		val &= ~(1 << ParEn);
+		Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x90, val);
 	}
 
 	printk(BIOS_DEBUG, "SPDCalcWidth: Status %x\n", pDCTstat->Status);
@@ -6043,6 +6201,8 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 		dword &= ~(0xf);				/* RdOdtTrnOnDly = read_odt_delay */
 		dword |= (read_odt_delay & 0xf);
 		Set_NB32_DCT(dev, dct, 0x240, dword);
+
+		printk(BIOS_SPEW, "Programmed ODT pattern %08x %08x %08x %08x\n", odt_pattern_0, odt_pattern_1, odt_pattern_2, odt_pattern_3);
 	} else if (pDCTstat->LogicalCPUID & AMD_DR_Dx) {
 		if (pDCTstat->Speed == 3)
 			dword = 0x00000800;
@@ -6178,6 +6338,8 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 			Set_NB32_index_wait_DCT(dev, i, 0xf0, 0x181, odt_pattern_0);
 			Set_NB32_index_wait_DCT(dev, i, 0xf0, 0x182, odt_pattern_3);
 			Set_NB32_index_wait_DCT(dev, i, 0xf0, 0x183, odt_pattern_2);
+
+			printk(BIOS_SPEW, "Programmed ODT pattern %08x %08x %08x %08x\n", odt_pattern_0, odt_pattern_1, odt_pattern_2, odt_pattern_3);
 		}
 	}
 

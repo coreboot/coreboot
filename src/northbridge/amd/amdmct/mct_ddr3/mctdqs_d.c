@@ -237,37 +237,53 @@ static void CalcEccDQSPos_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat,
 				u16 like, u8 scale, u8 ChipSel)
 {
-	u8 DQSDelay0, DQSDelay1;
-	u16 DQSDelay;
+	uint8_t DQSDelay0, DQSDelay1;
+	int16_t delay_differential;
+	uint16_t DQSDelay;
 
 	if (pDCTstat->Status & (1 << SB_Registered)) {
-		return;
-	}
+		pDCTstat->ByteLane = 0x2;
+		GetDQSDatStrucVal_D(pMCTstat, pDCTstat, ChipSel);
+		DQSDelay0 = pDCTstat->DQSDelay;
 
-	pDCTstat->ByteLane = like & 0xff;
-	GetDQSDatStrucVal_D(pMCTstat, pDCTstat, ChipSel);
-	DQSDelay0 = pDCTstat->DQSDelay;
+		pDCTstat->ByteLane = 0x3;
+		GetDQSDatStrucVal_D(pMCTstat, pDCTstat, ChipSel);
+		DQSDelay1 = pDCTstat->DQSDelay;
 
-	pDCTstat->ByteLane = (like >> 8) & 0xff;
-	GetDQSDatStrucVal_D(pMCTstat, pDCTstat, ChipSel);
-	DQSDelay1 = pDCTstat->DQSDelay;
+		if (pDCTstat->Direction == DQS_READDIR) {
+			DQSDelay = DQSDelay1;
+		} else {
+			delay_differential = (int16_t)DQSDelay1 - (int16_t)DQSDelay0;
+			delay_differential += (int16_t)DQSDelay1;
 
-	if (DQSDelay0>DQSDelay1) {
-		DQSDelay = DQSDelay0 - DQSDelay1;
+			DQSDelay = delay_differential;
+		}
 	} else {
-		DQSDelay = DQSDelay1 - DQSDelay0;
-	}
+		pDCTstat->ByteLane = like & 0xff;
+		GetDQSDatStrucVal_D(pMCTstat, pDCTstat, ChipSel);
+		DQSDelay0 = pDCTstat->DQSDelay;
 
-	DQSDelay = DQSDelay * (~scale);
+		pDCTstat->ByteLane = (like >> 8) & 0xff;
+		GetDQSDatStrucVal_D(pMCTstat, pDCTstat, ChipSel);
+		DQSDelay1 = pDCTstat->DQSDelay;
 
-	DQSDelay += 0x80;	/* round it */
+		if (DQSDelay0>DQSDelay1) {
+			DQSDelay = DQSDelay0 - DQSDelay1;
+		} else {
+			DQSDelay = DQSDelay1 - DQSDelay0;
+		}
 
-	DQSDelay >>= 8;		/* 256 */
+		DQSDelay = DQSDelay * (~scale);
 
-	if (DQSDelay0>DQSDelay1) {
-		DQSDelay = DQSDelay1 - DQSDelay;
-	} else {
-		DQSDelay += DQSDelay1;
+		DQSDelay += 0x80;	/* round it */
+
+		DQSDelay >>= 8;		/* 256 */
+
+		if (DQSDelay0>DQSDelay1) {
+			DQSDelay = DQSDelay1 - DQSDelay;
+		} else {
+			DQSDelay += DQSDelay1;
+		}
 	}
 
 	pDCTstat->DQSDelay = (u8)DQSDelay;

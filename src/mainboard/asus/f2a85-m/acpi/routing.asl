@@ -46,6 +46,13 @@
 		/* Bus 0, Dev 7 - PCIe Bridge for x1 PCIe Slot */
 		/* Bus 0, Dev 8 - Southbridge port (normally hidden) */
 
+#if CONFIG_BOARD_ASUS_F2A85_M_PRO
+		Package(){0x000FFFFF, 0, INTA, 0 },
+		Package(){0x000FFFFF, 1, INTB, 0 },
+		Package(){0x000FFFFF, 2, INTC, 0 },
+		Package(){0x000FFFFF, 3, INTD, 0 },
+#endif /* CONFIG_BOARD_ASUS_F2A85_M_PRO */
+
 		/* Bus 0, Dev 20 - F0:SMBus/ACPI,F1:IDE;F2:HDAudio;F3:LPC;F4:PCIBridge;F5:USB */
 		Package(){0x0014FFFF, 0, INTA, 0 },
 		Package(){0x0014FFFF, 1, INTB, 0 },

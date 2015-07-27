@@ -114,7 +114,7 @@ $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-$(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
+$(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(KCONFIG_AUTOHEADER)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d

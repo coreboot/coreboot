@@ -65,6 +65,7 @@ static int is_mrc_cache(struct mrc_data_container *mrc_cache)
 static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
 	size_t region_size = 0;
+	*mrc_region_ptr = NULL;
 
 	if (IS_ENABLED(CONFIG_CHROMEOS)) {
 		struct region_device rdev;

@@ -60,10 +60,4 @@
 #define SMBUS_BASE_ADDRESS	0x0400
 #define SMBUS_BASE_SIZE		0x10
 
-/* Temporary addresses used in romstage */
-#define EARLY_GTT_BAR		0xe0000000
-#define EARLY_XHCI_BAR		0xd7000000
-#define EARLY_UART_BAR		CONFIG_TTYS0_BASE
-#define EARLY_TEMP_MMIO		0xfed08000
-
 #endif

@@ -35,14 +35,5 @@ static void ABI_X86 send_to_console(unsigned char b)
 void soc_fill_pei_data(struct pei_data *pei_data)
 {
 	pei_data->pei_version = PEI_VERSION;
-	pei_data->board_type = BOARD_TYPE_ULT;
-	pei_data->pciexbar = MCFG_BASE_ADDRESS;
-	pei_data->smbusbar = SMBUS_BASE_ADDRESS;
-	pei_data->xhcibar = EARLY_XHCI_BAR;
-	pei_data->gttbar = EARLY_GTT_BAR;
-	pei_data->pmbase = ACPI_BASE_ADDRESS;
-	pei_data->tseg_size = smm_region_size();
-	pei_data->temp_mmio_base = EARLY_TEMP_MMIO;
 	pei_data->tx_byte = &send_to_console;
-	pei_data->ddr_refresh_2x = 1;
 }

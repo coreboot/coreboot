@@ -35,21 +35,13 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-
-	if (!gpio_base)
-		return;
-
-	u32 gp_lvl = inl(gpio_base + GP_LVL);
-
 	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
 	gpios->count = GPIO_COUNT;
 
 	/* Write Protect: GPIO7 */
 	gpios->gpios[0].port = 7;
 	gpios->gpios[0].polarity = ACTIVE_LOW;
-	gpios->gpios[0].value = (gp_lvl >> 7) & 1;
+	gpios->gpios[0].value = !get_write_protect_state();
 	strncpy((char *)gpios->gpios[0].name,"write protect",
 							GPIO_MAX_NAME_LENGTH);
 
@@ -68,7 +60,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Lid Switch: Virtual switch */
 	gpios->gpios[3].port = -1;
 	gpios->gpios[3].polarity = ACTIVE_HIGH;
-	gpios->gpios[3].value = 1; /* Hard-code to open */
+	gpios->gpios[3].value = get_lid_switch();
 	strncpy((char *)gpios->gpios[3].name,"lid", GPIO_MAX_NAME_LENGTH);
 
 	/* Power Button: Virtual switch */
@@ -90,6 +82,30 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	strncpy((char *)gpios->gpios[6].name,"ec_in_rw", GPIO_MAX_NAME_LENGTH);
 }
 #endif
+
+int get_write_protect_state(void)
+{
+	device_t dev;
+#ifdef __PRE_RAM__
+	dev = PCI_DEV(0, 0x1f, 0);
+#else
+	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+#endif
+	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
+
+	if (!gpio_base)
+		return 0;
+
+	u32 gp_lvl = inl(gpio_base + GP_LVL);
+
+	return !((gp_lvl >> 7) & 1);
+}
+
+int get_lid_switch(void)
+{
+	/* hard-code to open */
+	return 1;
+}
 
 /* The dev-switch is virtual on Stout (and so handled elsewhere). */
 int get_developer_mode_switch(void)

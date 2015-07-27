@@ -56,7 +56,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Write Protect: GPIO active Low */
 	gpios->gpios[0].port = WP_GPIO;
 	gpios->gpios[0].polarity = ACTIVE_LOW;
-	gpios->gpios[0].value = get_pch_gpio(WP_GPIO);
+	gpios->gpios[0].value = !get_write_protect_state();
 	strncpy((char *)gpios->gpios[0].name,"write protect",
 							GPIO_MAX_NAME_LENGTH);
 
@@ -74,10 +74,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 							GPIO_MAX_NAME_LENGTH);
 
 	/* lid switch value from EC */
-	lidswitch = (ec_mem_read(EC_HW_GPI_STATUS) >> EC_GPI_LID_STAT_BIT) & 1;
 	gpios->gpios[3].port = -1;
 	gpios->gpios[3].polarity = ACTIVE_HIGH;
-	gpios->gpios[3].value = lidswitch;
+	gpios->gpios[3].value = get_lid_switch();
 	strncpy((char *)gpios->gpios[3].name,"lid", GPIO_MAX_NAME_LENGTH);
 	printk(BIOS_DEBUG,"LID SWITCH FROM EC: %x\n", lidswitch);
 
@@ -124,6 +123,16 @@ int get_pch_gpio(unsigned char gpio_num)
 	}
 
 	return retval;
+}
+
+int get_write_protect_state(void)
+{
+	return !get_pch_gpio(WP_GPIO);
+}
+
+int get_lid_switch(void)
+{
+	return (ec_mem_read(EC_HW_GPI_STATUS) >> EC_GPI_LID_STAT_BIT) & 1;
 }
 
 int get_developer_mode_switch(void)

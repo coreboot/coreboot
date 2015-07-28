@@ -155,6 +155,7 @@ static void sandybridge_setup_graphics(void)
 void sandybridge_early_initialization(int chipset_type)
 {
 	u32 capid0_a;
+	u32 deven;
 	u8 reg8;
 
 	/* Device ID Override Enable should be done very early */
@@ -172,8 +173,9 @@ void sandybridge_early_initialization(int chipset_type)
 	/* Setup all BARs required for early PCIe and raminit */
 	sandybridge_setup_bars();
 
-	/* Device Enable */
-	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, DEVEN_HOST | DEVEN_IGD);
+	/* Device Enable, don't touch PEG bits */
+	deven = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN) | DEVEN_IGD;
+	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, deven);
 
 	sandybridge_setup_graphics();
 }

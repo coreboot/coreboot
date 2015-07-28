@@ -28,6 +28,8 @@
 
 /* The wake gpio is SUS_GPIO[0]. */
 #define WAKE_GPIO_EN SUS_GPIO_EN0
+#define GPIO_SUS7_WAKE_MASK     (1 << 12)
+#define GPIO_SUS1_WAKE_MASK     (1 << 13)
 
 int mainboard_io_trap_handler(int smif)
 {
@@ -96,6 +98,9 @@ void mainboard_smi_gpi(uint32_t alt_gpio_smi)
 
 void mainboard_smi_sleep(uint8_t slp_typ)
 {
+	void		*addr;
+	uint32_t	mask;
+
 	/* Disable USB charging if required */
 	switch (slp_typ) {
 	case 3:
@@ -125,6 +130,16 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
 #endif
+
+		/* Disabling wake from SUS_GPIO1 (TOUCH INT) and
+		 * SUS_GPIO7 (TRACKPAD INT) in North bank as they are not
+		 * valid S5 wake sources
+		 */
+		addr = (void *)(IO_BASE_ADDRESS + COMMUNITY_OFFSET_GPNORTH +
+			GPIO_WAKE_MASK_REG0);
+		mask = ~(GPIO_SUS1_WAKE_MASK | GPIO_SUS7_WAKE_MASK);
+		write32(addr, read32(addr) & mask);
+
 		break;
 	}
 

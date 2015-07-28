@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -501,7 +502,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 u32 NodePresent(u32 Node);
 u32 Get_NB32n(struct DCTStatStruc *pDCTstat, u32 addrx);
 u32 Get_NB32(u32 addr); /* NOTE: extend addr to 32 bit for bus > 0 */
-u32 mctGetLogicalCPUID(u32 Node);
+uint64_t mctGetLogicalCPUID(u32 Node);
 
 void K8FInterleaveBanks(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 

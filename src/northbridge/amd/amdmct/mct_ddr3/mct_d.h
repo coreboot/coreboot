@@ -772,7 +772,7 @@ u8 mct_Get_Start_RcvrEnDly_1Pass(u8 Pass);
 u8 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly, u8 RcvrEnDlyLimit, u8 Channel, u8 Receiver, u8 Pass);
 void CPUMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
-u32 mctGetLogicalCPUID(u32 Node);
+uint64_t mctGetLogicalCPUID(u32 Node);
 u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void TrainReceiverEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u8 Pass);
 void mct_TrainDQSPos_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);

@@ -99,12 +99,6 @@ Device (I2C0)
 			{ LPSS_I2C0_IRQ }
 	})
 
-	/* DMA channels are only used if Serial IO DMA controller is enabled */
-	Name (DBUF, ResourceTemplate ()
-	{
-		FixedDMA (0x18, 4, Width32Bit, DMA1) // Tx
-		FixedDMA (0x19, 5, Width32Bit, DMA2) // Rx
-	})
 	Method (_CRS, 0, NotSerialized)
 	{
 		/* Update BAR0 address and length if set in NVS */
@@ -116,6 +110,7 @@ Device (I2C0)
 		}
 		Return (RBUF)
 	}
+
 	Method (_STA, 0, NotSerialized)
 	{
 		If (LEqual (\S0EN, 0)) {
@@ -155,14 +150,6 @@ Device (I2C1)
 			{ LPSS_I2C1_IRQ }
 	})
 
-	/* DMA channels are only used if
-	 * Serial IO DMA controller is enabled
-	 */
-	Name (DBUF, ResourceTemplate ()
-	{
-		FixedDMA (0x1A, 6, Width32Bit, DMA1) // Tx
-		FixedDMA (0x1B, 7, Width32Bit, DMA2) // Rx
-	})
 	Method (_CRS, 0, NotSerialized)
 	{
 		/* Update BAR0 address and length if set in NVS */
@@ -174,6 +161,7 @@ Device (I2C1)
 		}
 		Return (RBUF)
 	}
+
 	Method (_STA, 0, NotSerialized)
 	{
 		If (LEqual (\S1EN, 0)) {
@@ -212,15 +200,6 @@ Device (I2C2)
 			{ LPSS_I2C2_IRQ }
 	})
 
-	/* DMA channels are only used if
-	 * Serial IO DMA controller is enabled
-	 */
-	Name (DBUF, ResourceTemplate ()
-	{
-		FixedDMA (0x1A, 6, Width32Bit, DMA1)
-		FixedDMA (0x1B, 7, Width32Bit, DMA2)
-	})
-
 	Method (_CRS, 0, NotSerialized)
 	{
 		/* Update BAR0 address and length if set in NVS */
@@ -231,7 +210,6 @@ Device (I2C2)
 			Store (SIO_BAR_LEN, B0LN)
 		}
 
-		/* Check if Serial IO DMA Controller is enabled */
 		Return (RBUF)
 	}
 
@@ -272,15 +250,6 @@ Device (I2C3)
 				{ LPSS_I2C3_IRQ }
 	})
 
-	/* DMA channels are only used if
-	 * Serial IO DMA controller is enabled
-	 */
-	Name (DBUF, ResourceTemplate ()
-	{
-		FixedDMA (0x1A, 6, Width32Bit, DMA1)
-		FixedDMA (0x1B, 7, Width32Bit, DMA2)
-	})
-
 	Method (_CRS, 0, NotSerialized)
 	{
 		/* Update BAR0 address and length if set in NVS */
@@ -291,7 +260,6 @@ Device (I2C3)
 			Store (SIO_BAR_LEN, B0LN)
 		}
 
-	/* Check if Serial IO DMA Controller is enabled */
 		Return (RBUF)
 	}
 
@@ -333,15 +301,6 @@ Device (I2C4)
 			{ LPSS_I2C4_IRQ }
 	})
 
-	/* DMA channels are only used if
-	 * Serial IO DMA controller is enabled
-	 */
-	Name (DBUF, ResourceTemplate ()
-	{
-		FixedDMA (0x1A, 6, Width32Bit, DMA1)
-		FixedDMA (0x1B, 7, Width32Bit, DMA2)
-	})
-
 	Method (_CRS, 0, NotSerialized)
 	{
 		/* Update BAR0 address and length if set in NVS*/
@@ -352,9 +311,9 @@ Device (I2C4)
 			Store (SIO_BAR_LEN, B0LN)
 		}
 
-		/* Check if Serial IO DMA Controller is enabled */
 		Return (RBUF)
 	}
+
 	Method (_STA, 0, NotSerialized)
 	{
 		If (LEqual (\S4EN, 0)) {
@@ -392,15 +351,6 @@ Device (I2C5)
 			{ LPSS_I2C5_IRQ }
 	})
 
-	/* DMA channels are only used if
-	 * Serial IO DMA controller is enabled
-	 */
-	Name (DBUF, ResourceTemplate ()
-	{
-		FixedDMA (0x1A, 6, Width32Bit, DMA1)
-		FixedDMA (0x1B, 7, Width32Bit, DMA2)
-	})
-
 	Method (_CRS, 0, NotSerialized)
 	{
 		/* Update BAR0 address and length if set in NVS */
@@ -409,8 +359,6 @@ Device (I2C5)
 		Store (0xFE02A000, B0AD)
 		Store (SIO_BAR_LEN, B0LN)
 
-
-		/* Check if Serial IO DMA Controller is enabled */
 		Return (RBUF)
 	}
 
@@ -496,12 +444,6 @@ Device (SPI1)
 			{ LPSS_SPI1_IRQ }
 	})
 
-	/* DMA channels are only used if Serial IO DMA controller is enabled */
-	Name (DBUF, ResourceTemplate ()
-	{
-		FixedDMA (0x10, 0, Width32Bit, DMA1) /* Tx */
-		FixedDMA (0x11, 1, Width32Bit, DMA2) /* Rx */
-	})
 	Method (_CRS, 0, NotSerialized)
 	{
 		/* Update BAR0 address and length if set in NVS */

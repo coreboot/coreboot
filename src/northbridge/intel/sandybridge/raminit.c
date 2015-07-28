@@ -234,12 +234,6 @@ static void report_memory_config(void)
 	}
 }
 
-static void post_system_agent_init(void)
-{
-	/* If PCIe init is skipped, set the PEG clock gating */
-	MCHBAR32(0x7010) = MCHBAR32(0x7010) | 0x01;
-}
-
 void read_spd(spd_raw_data * spd, u8 addr)
 {
 	int j;
@@ -3888,7 +3882,6 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 	intel_early_me_init_done(ME_INIT_STATUS_SUCCESS);
 	intel_early_me_status();
 
-	post_system_agent_init();
 	report_memory_config();
 
 	cbmem_was_inited = !cbmem_recovery(s3resume);

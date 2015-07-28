@@ -199,13 +199,6 @@ static void report_memory_config(void)
 	}
 }
 
-static void post_system_agent_init(struct pei_data *pei_data)
-{
-	/* If PCIe init is skipped, set the PEG clock gating */
-	if (!pei_data->pcie_init)
-		MCHBAR32(0x7010) = MCHBAR32(0x7010) | 0x01;
-}
-
 /**
  * Find PEI executable in coreboot filesystem and execute it.
  *
@@ -288,6 +281,5 @@ void sdram_initialize(struct pei_data *pei_data)
 	else
 		intel_early_me_status();
 
-	post_system_agent_init(pei_data);
 	report_memory_config();
 }

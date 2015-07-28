@@ -361,6 +361,51 @@ static void northbridge_dmi_init(struct device *dev)
 	DMIBAR32(0x88) = reg32;
 }
 
+/* Disable unused PEG devices based on devicetree */
+static void disable_peg(void)
+{
+	struct device *dev;
+	u32 reg;
+
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	reg = pci_read_config32(dev, DEVEN);
+
+	dev = dev_find_slot(0, PCI_DEVFN(1, 2));
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling PEG12.\n");
+		reg &= ~DEVEN_PEG12;
+	}
+	dev = dev_find_slot(0, PCI_DEVFN(1, 1));
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling PEG11.\n");
+		reg &= ~DEVEN_PEG11;
+	}
+	dev = dev_find_slot(0, PCI_DEVFN(1, 0));
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling PEG10.\n");
+		reg &= ~DEVEN_PEG10;
+	}
+	dev = dev_find_slot(0, PCI_DEVFN(2, 0));
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling IGD.\n");
+		reg &= ~DEVEN_IGD;
+	}
+	dev = dev_find_slot(0, PCI_DEVFN(6, 0));
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling PEG60.\n");
+		reg &= ~DEVEN_PEG60;
+	}
+
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	pci_write_config32(dev, DEVEN, reg);
+	if (!(reg & (DEVEN_PEG60 | DEVEN_PEG10 | DEVEN_PEG11 | DEVEN_PEG12))) {
+		/* Set the PEG clock gating bit.
+		 * Disables the IO clock on all PEG devices. */
+		MCHBAR32(0x7010) = MCHBAR32(0x7010) | 0x01;
+		printk(BIOS_DEBUG, "Disabling PEG IO clock.\n");
+	}
+}
+
 static void northbridge_init(struct device *dev)
 {
 	u8 bios_reset_cpl;
@@ -411,6 +456,9 @@ static void northbridge_init(struct device *dev)
 
 	/* Set here before graphics PM init */
 	MCHBAR32(0x5500) = 0x00100001;
+
+	/* Turn off unused devices */
+	disable_peg();
 }
 
 static void northbridge_enable(device_t dev)

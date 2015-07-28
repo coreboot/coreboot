@@ -1010,7 +1010,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 void InterleaveChannels_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void mct_BeforeDQSTrain_Samp_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 
-void phyAssistedMemFnceTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
+void phyAssistedMemFnceTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, int16_t Node);
 u8 mct_SaveRcvEnDly_D_1Pass(struct DCTStatStruc *pDCTstat, u8 pass);
 u8 mct_InitReceiver_D(struct DCTStatStruc *pDCTstat, u8 dct);
 void mct_Wait(u32 cycles);

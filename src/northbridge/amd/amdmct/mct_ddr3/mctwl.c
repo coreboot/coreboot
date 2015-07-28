@@ -15,7 +15,7 @@
  */
 
 static void FreqChgCtrlWrd(struct MCTStatStruc *pMCTstat,
-			struct DCTStatStruc *pDCTstat);
+			struct DCTStatStruc *pDCTstat, uint8_t dct);
 
 
 static void AgesaDelay(u32 msec)
@@ -349,10 +349,13 @@ static void ExitSelfRefresh(struct MCTStatStruc *pMCTstat,
 }
 
 void SetTargetFreq(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat)
+					struct DCTStatStruc *pDCTstatA, uint8_t Node)
 {
 	uint32_t dword;
 	uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
+
+	struct DCTStatStruc *pDCTstat;
+	pDCTstat = pDCTstatA + Node;
 
 	if (is_fam15h()) {
 		/* Program F2x[1, 0]90[DisDllShutDownSR]=1. */
@@ -387,7 +390,7 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 		uint8_t dct;
 		for (dct = 0; dct < 2; dct++) {
 			if (pDCTstat->DIMMValidDCT[dct]) {
-				phyAssistedMemFnceTraining(pMCTstat, pDCTstat);
+				phyAssistedMemFnceTraining(pMCTstat, pDCTstatA, Node);
 				InitPhyCompensation(pMCTstat, pDCTstat, dct);
 			}
 		}
@@ -434,7 +437,12 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 		else
 			pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[1];
 
-		FreqChgCtrlWrd(pMCTstat, pDCTstat);
+		if (pDCTstat->DIMMValidDCT[0]) {
+			FreqChgCtrlWrd(pMCTstat, pDCTstat, 0);
+		}
+		if (pDCTstat->DIMMValidDCT[1]) {
+			FreqChgCtrlWrd(pMCTstat, pDCTstat, 1);
+		}
 	}
 }
 

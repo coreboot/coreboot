@@ -115,16 +115,21 @@ typedef struct _sDCTStruct
 	u8 DctTrain;			/* Current DCT being trained */
 	u8 CurrDct;			/* Current DCT number (0 or 1) */
 	u8 DctCSPresent;		/* Current DCT CS mapping */
+	uint8_t WrDqsGrossDlyBaseOffset;
 	int32_t WLSeedGrossDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Seed Gross Delay */
 								/* per byte Lane Per Logical DIMM*/
 	int32_t WLSeedFineDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Seed Fine Delay */
 								/* per byte Lane Per Logical DIMM*/
 	int32_t WLSeedPreGrossDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Seed Pre-Gross Delay */
 								/* per byte Lane Per Logical DIMM*/
-	u8 WLGrossDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Gross Delay */
-							/* per byte Lane Per Logical DIMM*/
-	u8 WLFineDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Fine Delay */
-							/* per byte Lane Per Logical DIMM*/
+	uint8_t WLSeedPreGrossPrevNibble[MAX_BYTE_LANES*MAX_LDIMMS];
+	uint8_t WLSeedGrossPrevNibble[MAX_BYTE_LANES*MAX_LDIMMS];
+	uint8_t WLSeedFinePrevNibble[MAX_BYTE_LANES*MAX_LDIMMS];
+								/* per byte Lane Per Logical DIMM*/
+	u8 WLGrossDelay[MAX_BYTE_LANES*MAX_LDIMMS];		/* Write Levelization Gross Delay */
+								/* per byte Lane Per Logical DIMM*/
+	u8 WLFineDelay[MAX_BYTE_LANES*MAX_LDIMMS];		/* Write Levelization Fine Delay */
+								/* per byte Lane Per Logical DIMM*/
 	u8 WLGrossDelayFirstPass[MAX_BYTE_LANES*MAX_LDIMMS];	/* First-Pass Write Levelization Gross Delay */
 								/* per byte Lane Per Logical DIMM*/
 	u8 WLFineDelayFirstPass[MAX_BYTE_LANES*MAX_LDIMMS];	/* First-Pass Write Levelization Fine Delay */

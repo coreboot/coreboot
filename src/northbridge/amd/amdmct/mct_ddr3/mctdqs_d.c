@@ -1584,6 +1584,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 	for (dct = 0; dct < 2; dct++) {
 		/* Program D18F2x9C_x0D0F_E003_dct[1:0][DisAutoComp, DisablePredriverCal] */
+		/* NOTE: DisablePredriverCal only takes effect when set on DCT 0 */
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fe003);
 		dword &= ~(0x3 << 13);
 		dword |= (0x1 << 13);
@@ -1623,6 +1624,9 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 				rx_en_offset = (initial_phy_phase_delay[lane] + 0x10) % 0x40;
 
 				/* 2.10.5.8.3 (4) */
+#if DQS_TRAIN_DEBUG > 0
+				printk(BIOS_DEBUG, "TrainDQSReceiverEnCyc_D_Fam15 Receiver %d lane %d initial phy delay %04x: iterating from %04x to %04x\n", Receiver, lane, initial_phy_phase_delay[lane], rx_en_offset, 0x3ff);
+#endif
 				for (current_phy_phase_delay[lane] = rx_en_offset; current_phy_phase_delay[lane] < 0x3ff; current_phy_phase_delay[lane] += ren_step) {
 					/* 2.10.5.8.3 (4 A) */
 					write_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);

@@ -1142,8 +1142,10 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t dimm;
 	uint8_t rank;
 	uint8_t lane;
+	uint8_t nibble;
 	uint8_t mem_clk;
 	uint16_t initial_seed;
+	uint8_t train_both_nibbles;
 	uint16_t current_total_delay[MAX_BYTE_LANES];
 	uint16_t dqs_ret_pass1_total_delay[MAX_BYTE_LANES];
 	uint16_t rank0_current_total_delay[MAX_BYTE_LANES];
@@ -1158,6 +1160,11 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 
 	print_debug_dqs("\nTrainRcvEn: Node", pDCTstat->Node_ID, 0);
 	print_debug_dqs("TrainRcvEn: Pass", Pass, 0);
+
+	train_both_nibbles = 0;
+	if (pDCTstat->Dimmx4Present)
+		if (is_fam15h())
+			train_both_nibbles = 1;
 
 	dev = pDCTstat->dev_dct;
 	index_reg = 0x98;
@@ -1241,132 +1248,148 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 			else
 				_2Ranks = 0;
 			for (rank = 0; rank < (_2Ranks + 1); rank++) {
-				/* 2.10.5.8.2 (1)
-				 * Specify the target DIMM to be trained
-				 * Set TrNibbleSel = 0
-				 *
-				 * TODO: Add support for x4 DIMMs
-				 */
-				dword = Get_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008);
-				dword &= ~(0x3 << 4);		/* TrDimmSel */
-				dword |= ((dimm & 0x3) << 4);
-				dword &= ~(0x1 << 2);		/* TrNibbleSel */
-				Set_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008, dword);
-
-				/* 2.10.5.8.2 (2)
-				 * Retrieve gross and fine timing fields from write DQS registers
-				 */
-				read_dqs_write_timing_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
-
-				/* 2.10.5.8.2.1
-				 * Generate the DQS Receiver Enable Training Seed Values
-				 */
-				if (Pass == FirstPass) {
-					initial_seed = fam15_receiver_enable_training_seed(pDCTstat, Channel, dimm, rank, package_type);
-
-					/* Adjust seed for the minimum platform supported frequency */
-					initial_seed = (uint16_t) (((((uint64_t) initial_seed) *
-						fam15h_freq_tab[mem_clk] * 100) / (mctGet_NVbits(NV_MIN_MEMCLK) * 100)));
-
-					for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
-						uint16_t wl_pass1_delay;
-						wl_pass1_delay = current_total_delay[lane];
-
-						seed[lane] = initial_seed + wl_pass1_delay;
-					}
-				} else {
-					uint8_t addr_prelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
-					uint16_t register_delay;
-					int16_t seed_prescaling;
-
-					memcpy(current_total_delay, dqs_ret_pass1_total_delay, sizeof(current_total_delay));
-					if ((pDCTstat->Status & (1 << SB_Registered))) {
-						if (addr_prelaunch)
-							register_delay = 0x30;
-						else
-							register_delay = 0x20;
-					} else if ((pDCTstat->Status & (1 << SB_LoadReduced))) {
-						/* TODO
-						* Load reduced DIMM support unimplemented
-						*/
-						register_delay = 0x0;
-					} else {
-						register_delay = 0x0;
-					}
-
-					for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
-						seed_prescaling = current_total_delay[lane] - register_delay - 0x20;
-						seed[lane] = (uint16_t) (register_delay + ((((uint64_t) seed_prescaling) * fam15h_freq_tab[mem_clk] * 100) / (mctGet_NVbits(NV_MIN_MEMCLK) * 100)));
-					}
-				}
-
-				for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
-					seed_gross[lane] = (seed[lane] >> 5) & 0x1f;
-					seed_fine[lane] = seed[lane] & 0x1f;
-
-					/*if (seed_gross[lane] == 0)
-						seed_pre_gross[lane] = 0;
-					else */if (seed_gross[lane] & 0x1)
-						seed_pre_gross[lane] = 1;
-					else
-						seed_pre_gross[lane] = 2;
-
-					/* Calculate phase recovery delays */
-					phase_recovery_delays[lane] = ((seed_pre_gross[lane] & 0x1f) << 5) | (seed_fine[lane] & 0x1f);
-
-					/* Set the gross delay.
-					 * NOTE: While the BKDG states to only program DqsRcvEnGrossDelay, this appears
-					 * to have been a misprint as DqsRcvEnFineDelay should be set to zero as well.
+				for (nibble = 0; nibble < (train_both_nibbles + 1); nibble++) {
+					/* 2.10.5.8.2 (1)
+					 * Specify the target DIMM and nibble to be trained
 					 */
-					current_total_delay[lane] = ((seed_gross[lane] & 0x1f) << 5);
+					dword = Get_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008);
+					dword &= ~(0x3 << 4);		/* TrDimmSel = dimm */
+					dword |= ((dimm & 0x3) << 4);
+					dword &= ~(0x1 << 2);		/* TrNibbleSel = nibble */
+					dword |= ((nibble & 0x1) << 2);
+					Set_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008, dword);
+
+					/* 2.10.5.8.2 (2)
+					 * Retrieve gross and fine timing fields from write DQS registers
+					 */
+					read_dqs_write_timing_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
+
+					/* 2.10.5.8.2.1
+					 * Generate the DQS Receiver Enable Training Seed Values
+					 */
+					if (Pass == FirstPass) {
+						initial_seed = fam15_receiver_enable_training_seed(pDCTstat, Channel, dimm, rank, package_type);
+
+						/* Adjust seed for the minimum platform supported frequency */
+						initial_seed = (uint16_t) (((((uint64_t) initial_seed) *
+							fam15h_freq_tab[mem_clk] * 100) / (mctGet_NVbits(NV_MIN_MEMCLK) * 100)));
+
+						for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+							uint16_t wl_pass1_delay;
+							wl_pass1_delay = current_total_delay[lane];
+
+							seed[lane] = initial_seed + wl_pass1_delay;
+						}
+					} else {
+						uint8_t addr_prelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
+						uint16_t register_delay;
+						int16_t seed_prescaling;
+
+						memcpy(current_total_delay, dqs_ret_pass1_total_delay, sizeof(current_total_delay));
+						if ((pDCTstat->Status & (1 << SB_Registered))) {
+							if (addr_prelaunch)
+								register_delay = 0x30;
+							else
+								register_delay = 0x20;
+						} else if ((pDCTstat->Status & (1 << SB_LoadReduced))) {
+							/* TODO
+							 * Load reduced DIMM support unimplemented
+							 */
+							register_delay = 0x0;
+						} else {
+							register_delay = 0x0;
+						}
+
+						for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+							seed_prescaling = current_total_delay[lane] - register_delay - 0x20;
+							seed[lane] = (uint16_t) (register_delay + ((((uint64_t) seed_prescaling) * fam15h_freq_tab[mem_clk] * 100) / (mctGet_NVbits(NV_MIN_MEMCLK) * 100)));
+						}
+					}
+
+					for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+						seed_gross[lane] = (seed[lane] >> 5) & 0x1f;
+						seed_fine[lane] = seed[lane] & 0x1f;
+
+						/*if (seed_gross[lane] == 0)
+							seed_pre_gross[lane] = 0;
+						else */if (seed_gross[lane] & 0x1)
+							seed_pre_gross[lane] = 1;
+						else
+							seed_pre_gross[lane] = 2;
+
+						/* Calculate phase recovery delays */
+						phase_recovery_delays[lane] = ((seed_pre_gross[lane] & 0x1f) << 5) | (seed_fine[lane] & 0x1f);
+
+						/* Set the gross delay.
+						* NOTE: While the BKDG states to only program DqsRcvEnGrossDelay, this appears
+						* to have been a misprint as DqsRcvEnFineDelay should be set to zero as well.
+						*/
+						current_total_delay[lane] = ((seed_gross[lane] & 0x1f) << 5);
+					}
+
+					/* 2.10.5.8.2 (2) / 2.10.5.8.2.1 (5 6)
+					 * Program PhRecFineDly and PhRecGrossDly
+					 */
+					write_dram_phase_recovery_control_registers(phase_recovery_delays, dev, Channel, dimm, index_reg);
+
+					/* 2.10.5.8.2 (2) / 2.10.5.8.2.1 (7)
+					 * Program the DQS Receiver Enable delay values for each lane
+					 */
+					write_dqs_receiver_enable_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
+
+					/* 2.10.5.8.2 (3)
+					 * Program DqsRcvTrEn = 1
+					 */
+					dword = Get_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008);
+					dword |= (0x1 << 13);
+					Set_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008, dword);
+
+					/* 2.10.5.8.2 (4)
+					 * Issue 192 read requests to the target rank
+					 */
+					generate_dram_receiver_enable_training_pattern_fam15(pMCTstat, pDCTstat, Channel, Receiver + (rank & 0x1));
+
+					/* 2.10.5.8.2 (5)
+					 * Program DqsRcvTrEn = 0
+					 */
+					dword = Get_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008);
+					dword &= ~(0x1 << 13);
+					Set_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008, dword);
+
+					/* 2.10.5.8.2 (6)
+					 * Read PhRecGrossDly, PhRecFineDly
+					 */
+					read_dram_phase_recovery_control_registers(phase_recovery_delays, dev, Channel, dimm, index_reg);
+
+					/* 2.10.5.8.2 (7)
+					 * Calculate and program the DQS Receiver Enable delay values
+					 */
+					for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+						current_total_delay[lane] = (phase_recovery_delays[lane] & 0x1f);
+						current_total_delay[lane] |= ((seed_gross[lane] + ((phase_recovery_delays[lane] >> 5) & 0x1f) - seed_pre_gross[lane] + 1) << 5);
+						if (nibble == 0) {
+							if (lane == 8)
+								pDCTstat->CH_D_BC_RCVRDLY[Channel][dimm] = current_total_delay[lane];
+							else
+								pDCTstat->CH_D_B_RCVRDLY[Channel][dimm][lane] = current_total_delay[lane];
+						} else {
+							/* 2.10.5.8.2 (1)
+							 * Average the trained values of both nibbles on x4 DIMMs
+							 */
+							if (lane == 8)
+								pDCTstat->CH_D_BC_RCVRDLY[Channel][dimm] = (pDCTstat->CH_D_BC_RCVRDLY[Channel][dimm] + current_total_delay[lane]) / 2;
+							else
+								pDCTstat->CH_D_B_RCVRDLY[Channel][dimm][lane] = (pDCTstat->CH_D_B_RCVRDLY[Channel][dimm][lane] + current_total_delay[lane]) / 2;
+						}
+					}
+
+#if DQS_TRAIN_DEBUG > 1
+					for (lane = 0; lane < 8; lane++)
+						printk(BIOS_DEBUG, "\t\tTrainRcvEn55: Channel: %d dimm: %d nibble: %d lane %d current_total_delay: %04x CH_D_B_RCVRDLY: %04x\n",
+							Channel, dimm, nibble, lane, current_total_delay[lane], pDCTstat->CH_D_B_RCVRDLY[Channel][dimm][lane]);
+#endif
+					write_dqs_receiver_enable_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
 				}
-
-				/* 2.10.5.8.2 (2) / 2.10.5.8.2.1 (5 6)
-				 * Program PhRecFineDly and PhRecGrossDly
-				 */
-				write_dram_phase_recovery_control_registers(phase_recovery_delays, dev, Channel, dimm, index_reg);
-
-				/* 2.10.5.8.2 (2) / 2.10.5.8.2.1 (7)
-				 * Program the DQS Receiver Enable delay values for each lane
-				 */
-				write_dqs_receiver_enable_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
-
-				/* 2.10.5.8.2 (3)
-				 * Program DqsRcvTrEn = 1
-				 */
-				dword = Get_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008);
-				dword |= (0x1 << 13);
-				Set_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008, dword);
-
-				/* 2.10.5.8.2 (4)
-				 * Issue 192 read requests to the target rank
-				 */
-				generate_dram_receiver_enable_training_pattern_fam15(pMCTstat, pDCTstat, Channel, Receiver + (rank & 0x1));
-
-				/* 2.10.5.8.2 (5)
-				 * Program DqsRcvTrEn = 0
-				 */
-				dword = Get_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008);
-				dword &= ~(0x1 << 13);
-				Set_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000008, dword);
-
-				/* 2.10.5.8.2 (6)
-				 * Read PhRecGrossDly, PhRecFineDly
-				 */
-				read_dram_phase_recovery_control_registers(phase_recovery_delays, dev, Channel, dimm, index_reg);
-
-				/* 2.10.5.8.2 (7)
-				 * Calculate and program the DQS Receiver Enable delay values
-				 */
-				for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
-					current_total_delay[lane] = (phase_recovery_delays[lane] & 0x1f);
-					current_total_delay[lane] |= ((seed_gross[lane] + ((phase_recovery_delays[lane] >> 5) & 0x1f) - seed_pre_gross[lane] + 1) << 5);
-					if (lane == 8)
-						pDCTstat->CH_D_BC_RCVRDLY[Channel][dimm] = current_total_delay[lane];
-					else
-						pDCTstat->CH_D_B_RCVRDLY[Channel][dimm][lane] = current_total_delay[lane];
-				}
-				write_dqs_receiver_enable_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
 
 				if (rank == 0) {
 					/* Back up the Rank 0 delays for later use */
@@ -1391,7 +1414,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 
 #if DQS_TRAIN_DEBUG > 0
 			for (lane = 0; lane < 8; lane++)
-				print_debug_dqs_pair("\t\tTrainRcvEn55: Lane ", lane, " current_total_delay ", current_total_delay[lane], 2);
+				print_debug_dqs_pair("\t\tTrainRcvEn56: Lane ", lane, " current_total_delay ", current_total_delay[lane], 2);
 #endif
 		}
 	}
@@ -1811,15 +1834,23 @@ void mctSetEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 }
 
 void phyAssistedMemFnceTraining(struct MCTStatStruc *pMCTstat,
-			struct DCTStatStruc *pDCTstatA)
+			struct DCTStatStruc *pDCTstatA, int16_t single_node_number)
 {
 	u8 Node = 0;
 	struct DCTStatStruc *pDCTstat;
 
 	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 
+	uint8_t start_node = 0;
+	uint8_t end_node = MAX_NODES_SUPPORTED;
+
+	if (single_node_number >= 0) {
+		start_node = single_node_number;
+		end_node = single_node_number;
+	}
+
 	/* FIXME: skip for Ax */
-	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+	for (Node = start_node; Node < end_node; Node++) {
 		pDCTstat = pDCTstatA + Node;
 		if (!pDCTstat->NodePresent)
 			continue;
@@ -1842,6 +1873,8 @@ void phyAssistedMemFnceTraining(struct MCTStatStruc *pMCTstat,
 				for (dct = 0; dct < 2; dct++) {
 					if (!pDCTstat->DIMMValidDCT[dct])
 						continue;
+
+					printk(BIOS_SPEW, "%s: training node %d DCT %d\n", __func__, Node, dct);
 
 					/* Back up D18F2x9C_x0000_0004_dct[1:0] */
 					datc_backup = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x00000004);
@@ -1981,6 +2014,8 @@ void phyAssistedMemFnceTraining(struct MCTStatStruc *pMCTstat,
 
 					/* Restore D18F2x9C_x0000_0004_dct[1:0] */
 					Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x00000004, datc_backup);
+
+					printk(BIOS_SPEW, "%s: done training node %d DCT %d\n", __func__, Node, dct);
 				}
 			} else {
 				fenceDynTraining_D(pMCTstat, pDCTstat, 0);
@@ -1993,7 +2028,7 @@ void phyAssistedMemFnceTraining(struct MCTStatStruc *pMCTstat,
 }
 
 static uint32_t fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
-			struct DCTStatStruc *pDCTstat, u8 dct)
+			struct DCTStatStruc *pDCTstat, uint8_t dct)
 {
 	u16 avRecValue;
 	u32 val;

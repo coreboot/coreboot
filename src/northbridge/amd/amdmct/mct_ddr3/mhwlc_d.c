@@ -31,9 +31,9 @@ u32 swapBankBits(struct DCTStatStruc *pDCTstat, uint8_t dct, uint32_t MRSValue);
 void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
 	u8 dct, u8 dimm, BOOL wl);
 void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, u8 dimm);
-void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, u8 dimm, u8 pass);
+void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t pass, uint8_t nibble);
 void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, u8 targetAddr, uint8_t pass);
-void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, uint8_t pass);
+void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, uint8_t pass, uint8_t nibble);
 
 static int32_t abs(int32_t val) {
 	if (val < 0)
@@ -72,6 +72,8 @@ uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 {
 	u8 ByteLane;
 	u32 Value, Addr;
+	uint8_t nibble = 0;
+	uint8_t train_both_nibbles;
 	u16 Addl_Data_Offset, Addl_Data_Port;
 	sMCTStruct *pMCTData = pDCTstat->C_MCTPtr;
 	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
@@ -84,98 +86,108 @@ uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 			DRAM_ADD_DCT_PHY_CONTROL_REG, TrDimmSelStart,
 			TrDimmSelEnd, (u32)dimm);
 
-	if (is_fam15h()) {
-		/* Set TrNibbleSel = 0
-		 *
-		 * TODO: Add support for x4 DIMMs
+	train_both_nibbles = 0;
+	if (pDCTstat->Dimmx4Present)
+		if (is_fam15h())
+			train_both_nibbles = 1;
+
+	for (nibble = 0; nibble < (train_both_nibbles + 1); nibble++) {
+		printk(BIOS_SPEW, "AgesaHwWlPhase1: training nibble %d\n", nibble);
+
+		if (is_fam15h()) {
+			/* Program F2x[1, 0]9C_x08[WrtLvTrEn]=0 */
+			set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
+					DRAM_ADD_DCT_PHY_CONTROL_REG, WrtLvTrEn, WrtLvTrEn, 0);
+
+			/* Set TrNibbleSel */
+			set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
+					DRAM_ADD_DCT_PHY_CONTROL_REG, 2,
+					2, (uint32_t)nibble);
+		}
+
+		/* 2. Prepare the DIMMs for write levelization using DDR3-defined
+		 * MR commands. */
+		prepareDimms(pMCTstat, pDCTstat, dct, dimm, TRUE);
+
+		/* 3. After the DIMMs are configured, BIOS waits 40 MEMCLKs to
+		 *    satisfy DDR3-defined internal DRAM timing.
 		 */
-		set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
-				DRAM_ADD_DCT_PHY_CONTROL_REG, 2,
-				2, (u32)0);
-	}
+		if (is_fam15h())
+			precise_memclk_delay_fam15(pMCTstat, pDCTstat, dct, 40);
+		else
+			pMCTData->AgesaDelay(40);
 
-	/* 2. Prepare the DIMMs for write levelization using DDR3-defined
-	 * MR commands. */
-	prepareDimms(pMCTstat, pDCTstat, dct, dimm, TRUE);
+		/* 4. Configure the processor's DDR phy for write levelization training: */
+		procConfig(pMCTstat, pDCTstat, dct, dimm, pass, nibble);
 
-	/* 3. After the DIMMs are configured, BIOS waits 40 MEMCLKs to
-	 *    satisfy DDR3-defined internal DRAM timing.
-	 */
-	if (is_fam15h())
-		precise_memclk_delay_fam15(pMCTstat, pDCTstat, dct, 40);
-	else
-		pMCTData->AgesaDelay(40);
-
-	/* 4. Configure the processor's DDR phy for write levelization training: */
-	procConfig(pMCTstat, pDCTstat, dct, dimm, pass);
-
-	/* 5. Begin write levelization training:
-	 *  Program F2x[1, 0]9C_x08[WrtLvTrEn]=1. */
-	if (pDCTData->LogicalCPUID & (AMD_DR_Cx | AMD_DR_Dx | AMD_FAM15_ALL))
-	{
-		set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
-				DRAM_ADD_DCT_PHY_CONTROL_REG, WrtLvTrEn, WrtLvTrEn, 1);
-	}
-	else
-	{
-		/* Broadcast write to all D3Dbyte chipset register offset 0xc
-		 * Set bit 0 (wrTrain)
-		 * Program bit 4 to nibble being trained (only matters for x4dimms)
-		 * retain value of 3:2 (Trdimmsel)
-		 * reset bit 5 (FrzPR)
-		 */
-		if (dct)
+		/* 5. Begin write levelization training:
+		 *  Program F2x[1, 0]9C_x08[WrtLvTrEn]=1. */
+		if (pDCTData->LogicalCPUID & (AMD_DR_Cx | AMD_DR_Dx | AMD_FAM15_ALL))
 		{
-			Addl_Data_Offset=0x198;
-			Addl_Data_Port=0x19C;
+			set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
+					DRAM_ADD_DCT_PHY_CONTROL_REG, WrtLvTrEn, WrtLvTrEn, 1);
 		}
 		else
 		{
-			Addl_Data_Offset=0x98;
-			Addl_Data_Port=0x9C;
+			/* Broadcast write to all D3Dbyte chipset register offset 0xc
+			 * Set bit 0 (wrTrain)
+			 * Program bit 4 to nibble being trained (only matters for x4dimms)
+			 * retain value of 3:2 (Trdimmsel)
+			 * reset bit 5 (FrzPR)
+			 */
+			if (dct)
+			{
+				Addl_Data_Offset=0x198;
+				Addl_Data_Port=0x19C;
+			}
+			else
+			{
+				Addl_Data_Offset=0x98;
+				Addl_Data_Port=0x9C;
+			}
+			Addr=0x0D00000C;
+			AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
+			while ((get_Bits(pDCTData,FUN_DCT,pDCTData->NodeId, FUN_DCT, Addl_Data_Offset,
+					DctAccessDone, DctAccessDone)) == 0);
+			AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
+			Value = bitTestSet(Value, 0);	/* enable WL training */
+			Value = bitTestReset(Value, 4); /* for x8 only */
+			Value = bitTestReset(Value, 5); /* for hardware WL training */
+			AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
+			Addr=0x4D030F0C;
+			AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
+			while ((get_Bits(pDCTData,FUN_DCT,pDCTData->NodeId, FUN_DCT, Addl_Data_Offset,
+					DctAccessDone, DctAccessDone)) == 0);
 		}
-		Addr=0x0D00000C;
-		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
-		while ((get_Bits(pDCTData,FUN_DCT,pDCTData->NodeId, FUN_DCT, Addl_Data_Offset,
-				DctAccessDone, DctAccessDone)) == 0);
-		AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
-		Value = bitTestSet(Value, 0);	/* enable WL training */
-		Value = bitTestReset(Value, 4); /* for x8 only */
-		Value = bitTestReset(Value, 5); /* for hardware WL training */
-		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
-		Addr=0x4D030F0C;
-		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
-		while ((get_Bits(pDCTData,FUN_DCT,pDCTData->NodeId, FUN_DCT, Addl_Data_Offset,
-				DctAccessDone, DctAccessDone)) == 0);
+
+		if (is_fam15h())
+			proc_MFENCE();
+
+		/* Wait 200 MEMCLKs. If executing pass 2, wait 32 MEMCLKs. */
+		if (is_fam15h())
+			precise_memclk_delay_fam15(pMCTstat, pDCTstat, dct, 200);
+		else
+			pMCTData->AgesaDelay(140);
+
+		/* Program F2x[1, 0]9C_x08[WrtLevelTrEn]=0. */
+		set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
+				DRAM_ADD_DCT_PHY_CONTROL_REG, WrtLvTrEn, WrtLvTrEn, 0);
+
+		/* Read from registers F2x[1, 0]9C_x[51:50] and F2x[1, 0]9C_x52
+		 * to get the gross and fine delay settings
+		 * for the target DIMM and save these values. */
+		for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
+			getWLByteDelay(pDCTstat, dct, ByteLane, dimm, pass, nibble);
+		}
+
+		pDCTData->WLCriticalGrossDelayPrevPass = 0x0;
 	}
-
-	if (is_fam15h())
-		proc_MFENCE();
-
-	/* Wait 200 MEMCLKs. If executing pass 2, wait 32 MEMCLKs. */
-	if (is_fam15h())
-		precise_memclk_delay_fam15(pMCTstat, pDCTstat, dct, 200);
-	else
-		pMCTData->AgesaDelay(140);
-
-	/* Program F2x[1, 0]9C_x08[WrtLevelTrEn]=0. */
-	set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
-			DRAM_ADD_DCT_PHY_CONTROL_REG, WrtLvTrEn, WrtLvTrEn, 0);
-
-	/* Read from registers F2x[1, 0]9C_x[51:50] and F2x[1, 0]9C_x52
-	 * to get the gross and fine delay settings
-	 * for the target DIMM and save these values. */
-	for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
-		getWLByteDelay(pDCTstat, dct, ByteLane, dimm, pass);
-	}
-
-	pDCTData->WLCriticalGrossDelayPrevPass = 0x1f;
 
 	return 0;
 }
 
 uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
-		u8 dct, u8 dimm, u8 pass)
+		uint8_t dct, uint8_t dimm, uint8_t pass)
 {
 	u8 ByteLane;
 	uint8_t status = 0;
@@ -185,6 +197,12 @@ uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 		int32_t gross_diff[MAX_BYTE_LANES];
 		int32_t cgd = pDCTData->WLCriticalGrossDelayPrevPass;
 		uint8_t index = (uint8_t)(MAX_BYTE_LANES * dimm);
+
+		printk(BIOS_SPEW, "\toriginal critical gross delay: %d\n", cgd);
+
+		/* FIXME
+		 * For now, disable CGD adjustment as it seems to interfere with registered DIMM training
+		 */
 
 		/* Calculate the Critical Gross Delay */
 		for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
@@ -200,6 +218,8 @@ uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 			if (gross_diff[ByteLane] < cgd)
 				cgd = gross_diff[ByteLane];
 		}
+
+		printk(BIOS_SPEW, "\tnew critical gross delay: %d\n", cgd);
 
 		pDCTData->WLCriticalGrossDelayPrevPass = cgd;
 
@@ -277,7 +297,7 @@ uint8_t AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 				gross_diff[ByteLane] = pDCTData->WLSeedGrossDelay[index+ByteLane] + pDCTData->WLGrossDelay[index+ByteLane];
 				gross_diff[ByteLane] -= pDCTData->WLSeedPreGrossDelay[index+ByteLane];
 
-				/* Prevent underflow in the presence of noise / instability*/
+				/* Prevent underflow in the presence of noise / instability */
 				if (gross_diff[ByteLane] < cgd)
 					gross_diff[ByteLane] = cgd;
 
@@ -285,7 +305,8 @@ uint8_t AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 			}
 		} else {
 			dword = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0xa8);
-			dword &= ~(0x3 << 24);			/* WrDqDqsEarly = 0 */
+			dword &= ~(0x3 << 24);			/* WrDqDqsEarly = pDCTData->WrDqsGrossDlyBaseOffset */
+			dword |= ((pDCTData->WrDqsGrossDlyBaseOffset & 0x3) << 24);
 			Set_NB32_DCT(pDCTstat->dev_dct, dct, 0xa8, dword);
 		}
 	}
@@ -955,7 +976,7 @@ static uint16_t fam15h_next_lowest_memclk_freq(uint16_t memclk_freq)
 #endif
 
 /*-----------------------------------------------------------------------------
- * void procConfig(MCTStruct *MCTData,DCTStruct *DCTData, u8 Dimm, u8 Pass)
+ * void procConfig(MCTStruct *MCTData,DCTStruct *DCTData, u8 Dimm, u8 Pass, u8 Nibble)
  *
  *  Description:
  *       This function programs the ODT values for the NB
@@ -968,13 +989,14 @@ static uint16_t fam15h_next_lowest_memclk_freq(uint16_t memclk_freq)
  *       OUT
  * ----------------------------------------------------------------------------
  */
-void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, u8 dimm, u8 pass)
+void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t pass, uint8_t nibble)
 {
 	u8 ByteLane, MemClkFreq;
 	int32_t Seed_Gross;
 	int32_t Seed_Fine;
 	uint8_t Seed_PreGross;
 	u32 Value, Addr;
+	uint32_t dword;
 	u16 Addl_Data_Offset, Addl_Data_Port;
 	sMCTStruct *pMCTData = pDCTstat->C_MCTPtr;
 	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
@@ -1044,10 +1066,17 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 			uint8_t AddrCmdPrelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
 			uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
 			uint16_t Seed_Total = 0;
+			pDCTData->WrDqsGrossDlyBaseOffset = 0x0;
 			if (package_type == PT_GR) {
 				/* Socket G34: Fam15h BKDG v3.14 Table 96 */
 				if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
+					/* TODO
+					 * Implement mainboard-specific seed and
+					 * WrDqsGrossDly base overrides.
+					 * 0x41 and 0x0 are the "stock" values
+					 */
 					Seed_Total = 0x41;
+					pDCTData->WrDqsGrossDlyBaseOffset = 0x2;
 				} else if (pDCTData->Status[DCT_STATUS_LOAD_REDUCED]) {
 					Seed_Total = 0x0;
 				} else {
@@ -1129,15 +1158,16 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 			printk(BIOS_SPEW, "\tLane %02x initial seed: %04x\n", ByteLane, ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f));
 		}
 	} else {
-		/* Pass 2 */
-		/* From BKDG, Write Leveling Seed Value. */
-		if (is_fam15h()) {
-			uint32_t RegisterDelay;
-			int32_t SeedTotal;
-			int32_t SeedTotalPreScaling;
-			uint8_t AddrCmdPrelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
+		if (nibble == 0) {
+			/* Pass 2 */
+			/* From BKDG, Write Leveling Seed Value. */
+			if (is_fam15h()) {
+				uint32_t RegisterDelay;
+				int32_t SeedTotal[MAX_BYTE_LANES];
+				int32_t SeedTotalPreScaling[MAX_BYTE_LANES];
+				uint32_t WrDqDqsEarly;
+				uint8_t AddrCmdPrelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
 
-			for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
 				if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
 					if (AddrCmdPrelaunch)
 						RegisterDelay = 0x30;
@@ -1146,84 +1176,133 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 				} else {
 					RegisterDelay = 0;
 				}
+
 				/* Retrieve WrDqDqsEarly */
-				AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId), FUN_DCT, 0xa8), 25, 24, &Value);
+				dword = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0xa8);
+				WrDqDqsEarly = (dword >> 24) & 0x3;
 
-				/* Calculate adjusted seed values */
-				SeedTotal = (pDCTData->WLFineDelayPrevPass[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) |
-					((pDCTData->WLGrossDelayPrevPass[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) << 5);
-				SeedTotalPreScaling = (SeedTotal - RegisterDelay - (0x20 * Value));
-				SeedTotal = (int32_t) (RegisterDelay + ((((int64_t) SeedTotalPreScaling) *
-					fam15h_freq_tab[MemClkFreq] * 100) / (fam15h_freq_tab[pDCTData->WLPrevMemclkFreq] * 100)));
+				/* FIXME
+				 * Ignore WrDqDqsEarly for now to work around training issues
+				 */
+				WrDqDqsEarly = 0;
 
-				if (SeedTotal >= 0) {
-					Seed_Gross = SeedTotal / 32;
-					Seed_Fine = SeedTotal % 32;
-				} else {
-					Seed_Gross = (SeedTotal / 32) - 1;
-					Seed_Fine = (SeedTotal % 32) + 32;
+				/* Generate new seed values */
+				for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
+					/* Calculate adjusted seed values */
+					SeedTotal[ByteLane] = (pDCTData->WLFineDelayPrevPass[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) |
+						((pDCTData->WLGrossDelayPrevPass[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) << 5);
+					SeedTotalPreScaling[ByteLane] = (SeedTotal[ByteLane] - RegisterDelay - (0x20 * WrDqDqsEarly));
+					SeedTotal[ByteLane] = (int32_t) (RegisterDelay + ((((int64_t) SeedTotalPreScaling[ByteLane]) *
+						fam15h_freq_tab[MemClkFreq] * 100) / (fam15h_freq_tab[pDCTData->WLPrevMemclkFreq] * 100)));
 				}
 
-				if (Seed_Gross == 0)
-					Seed_PreGross = 0;
-				else if (Seed_Gross & 0x1)
-					Seed_PreGross = 1;
-				else
-					Seed_PreGross = 2;
+				/* Generate register values from seeds */
+				for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
+					printk(BIOS_SPEW, "\tLane %02x scaled delay: %04x\n", ByteLane, SeedTotal[ByteLane]);
 
-				/* Save seed values for later use */
-				pDCTData->WLSeedGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
-				pDCTData->WLSeedFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
-				pDCTData->WLSeedPreGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_PreGross;
+					if (SeedTotal[ByteLane] >= 0) {
+						Seed_Gross = SeedTotal[ByteLane] / 32;
+						Seed_Fine = SeedTotal[ByteLane] % 32;
+					} else {
+						Seed_Gross = (SeedTotal[ByteLane] / 32) - 1;
+						Seed_Fine = (SeedTotal[ByteLane] % 32) + 32;
+					}
 
-				pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_PreGross;
-				pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
+					if (Seed_Gross == 0)
+						Seed_PreGross = 0;
+					else if (Seed_Gross & 0x1)
+						Seed_PreGross = 1;
+					else
+						Seed_PreGross = 2;
 
-				printk(BIOS_SPEW, "\tLane %02x new seed: %04x\n", ByteLane, ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f));
+					/* The BKDG-recommended algorithm causes problems with registered DIMMs on some systems
+					 * due to the long register delays causing premature total delay wrap-around.
+					 * Attempt to work around this...
+					 */
+					Seed_PreGross = Seed_Gross;
+
+					/* Save seed values for later use */
+					pDCTData->WLSeedGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
+					pDCTData->WLSeedFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
+					pDCTData->WLSeedPreGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_PreGross;
+
+					pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_PreGross;
+					pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
+
+					printk(BIOS_SPEW, "\tLane %02x new seed: %04x\n", ByteLane, ((pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f));
+				}
+			} else {
+				uint32_t RegisterDelay;
+				uint32_t SeedTotalPreScaling;
+				uint32_t SeedTotal;
+				uint8_t AddrCmdPrelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
+				for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++)
+				{
+					if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
+						if (AddrCmdPrelaunch == 0)
+							RegisterDelay = 0x20;
+						else
+							RegisterDelay = 0x30;
+					} else {
+						RegisterDelay = 0;
+					}
+					SeedTotalPreScaling = ((pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) |
+						(pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] << 5)) - RegisterDelay;
+					/* SeedTotalPreScaling = (the total delay value in F2x[1, 0]9C_x[4A:30] from pass 1 of write levelization
+					training) - RegisterDelay. */
+					SeedTotal = (uint16_t) ((((uint64_t) SeedTotalPreScaling) *
+										fam10h_freq_tab[MemClkFreq] * 100) / (fam10h_freq_tab[3] * 100));
+					Seed_Gross = SeedTotal / 32;
+					Seed_Fine = SeedTotal & 0x1f;
+					if (Seed_Gross == 0)
+						Seed_Gross = 0;
+					else if (Seed_Gross & 0x1)
+						Seed_Gross = 1;
+					else
+						Seed_Gross = 2;
+
+					/* The BKDG-recommended algorithm causes problems with registered DIMMs on some systems
+					* due to the long register delays causing premature total delay wrap-around.
+					* Attempt to work around this...
+					*/
+					SeedTotal = ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f);
+					SeedTotal += RegisterDelay;
+					Seed_Gross = SeedTotal / 32;
+					Seed_Fine = SeedTotal & 0x1f;
+
+					pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
+					pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
+
+					printk(BIOS_SPEW, "\tLane %02x new seed: %04x\n", ByteLane, ((pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f));
+				}
+			}
+
+			/* Save initial seeds for upper nibble pass */
+			for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
+				pDCTData->WLSeedPreGrossPrevNibble[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLSeedPreGrossDelay[MAX_BYTE_LANES*dimm+ByteLane];
+				pDCTData->WLSeedGrossPrevNibble[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane];
+				pDCTData->WLSeedFinePrevNibble[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane];
 			}
 		} else {
-			uint32_t RegisterDelay;
-			uint32_t SeedTotalPreScaling;
-			uint32_t SeedTotal;
-			uint8_t AddrCmdPrelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
-			for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++)
-			{
-				if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
-					if (AddrCmdPrelaunch == 0)
-						RegisterDelay = 0x20;
-					else
-						RegisterDelay = 0x30;
-				} else {
-					RegisterDelay = 0;
+			/* Restore seed values from lower nibble pass */
+			if (is_fam15h()) {
+				for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
+					pDCTData->WLSeedGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLSeedGrossPrevNibble[MAX_BYTE_LANES*dimm+ByteLane];
+					pDCTData->WLSeedFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLSeedFinePrevNibble[MAX_BYTE_LANES*dimm+ByteLane];
+					pDCTData->WLSeedPreGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLSeedPreGrossPrevNibble[MAX_BYTE_LANES*dimm+ByteLane];
+
+					pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLSeedPreGrossPrevNibble[MAX_BYTE_LANES*dimm+ByteLane];
+					pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLSeedFinePrevNibble[MAX_BYTE_LANES*dimm+ByteLane];
+
+					printk(BIOS_SPEW, "\tLane %02x new seed: %04x\n", ByteLane, ((pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f));
 				}
-				SeedTotalPreScaling = ((pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) |
-					(pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] << 5)) - RegisterDelay;
-				/* SeedTotalPreScaling = (the total delay value in F2x[1, 0]9C_x[4A:30] from pass 1 of write levelization
-				training) - RegisterDelay. */
-				SeedTotal = (uint16_t) ((((uint64_t) SeedTotalPreScaling) *
-									fam10h_freq_tab[MemClkFreq] * 100) / (fam10h_freq_tab[3] * 100));
-				Seed_Gross = SeedTotal / 32;
-				Seed_Fine = SeedTotal & 0x1f;
-				if (Seed_Gross == 0)
-					Seed_Gross = 0;
-				else if (Seed_Gross & 0x1)
-					Seed_Gross = 1;
-				else
-					Seed_Gross = 2;
+			} else {
+				for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++) {
+					pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLSeedGrossPrevNibble[MAX_BYTE_LANES*dimm+ByteLane];
+					pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = pDCTData->WLSeedFinePrevNibble[MAX_BYTE_LANES*dimm+ByteLane];
 
-				/* The BKDG-recommended algorithm causes problems with registered DIMMs on some systems
-				 * due to the long register delays causing premature total delay wrap-around.
-				 * Attempt to work around this...
-				 */
-				SeedTotal = ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f);
-				SeedTotal += RegisterDelay;
-				Seed_Gross = SeedTotal / 32;
-				Seed_Fine = SeedTotal & 0x1f;
-
-				pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
-				pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
-
-				printk(BIOS_SPEW, "\tLane %02x new seed: %04x\n", ByteLane, ((Seed_Gross & 0x1f) << 5) | (Seed_Fine & 0x1f));
+					printk(BIOS_SPEW, "\tLane %02x new seed: %04x\n", ByteLane, ((pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f));
+				}
 			}
 		}
 	}
@@ -1354,7 +1433,7 @@ void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 }
 
 /*-----------------------------------------------------------------------------
- *  void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 Dimm)
+ *  void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 Dimm, u8 Nibble)
  *
  *  Description:
  *       This function reads the write levelization byte delay from the Phase
@@ -1372,7 +1451,7 @@ void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
  *
  *-----------------------------------------------------------------------------
  */
-void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, uint8_t pass)
+void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, uint8_t pass, uint8_t nibble)
 {
 	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
 	u8 fineStartLoc, fineEndLoc, grossStartLoc, grossEndLoc, tempB, tempB1, index;
@@ -1423,7 +1502,16 @@ void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 
 			fine = 0;
 		}
 	}
-	pDCTData->WLFineDelay[index+ByteLane] = (u8)fine;
-	pDCTData->WLGrossDelay[index+ByteLane] = (u8)gross;
-	printk(BIOS_SPEW, "\tLane %02x final adjusted value: %04x\n", ByteLane, ((gross & 0x1f) << 5) | (fine & 0x1f));
+	if (nibble == 0) {
+		pDCTData->WLFineDelay[index+ByteLane] = (uint8_t)fine;
+		pDCTData->WLGrossDelay[index+ByteLane] = (uint8_t)gross;
+	} else {
+		uint32_t WLTotalDelay = ((pDCTData->WLGrossDelay[index+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[index+ByteLane] & 0x1f);
+		WLTotalDelay += ((gross & 0x1f) << 5) | (fine & 0x1f);
+		WLTotalDelay /= 2;
+		pDCTData->WLFineDelay[index+ByteLane] = (uint8_t)(WLTotalDelay & 0x1f);
+		pDCTData->WLGrossDelay[index+ByteLane] = (uint8_t)((WLTotalDelay >> 5) & 0x1f);
+	}
+
+	printk(BIOS_SPEW, "\tLane %02x adjusted value: %04x\n", ByteLane, ((pDCTData->WLGrossDelay[index+ByteLane] & 0x1f) << 5) | (pDCTData->WLFineDelay[index+ByteLane] & 0x1f));
 }

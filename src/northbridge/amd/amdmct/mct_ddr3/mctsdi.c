@@ -441,12 +441,12 @@ static u32 mct_MR2(struct MCTStatStruc *pMCTstat,
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret;
 
+	/* The formula for chip select number is: CS = dimm*2+rank */
+	uint8_t dimm = MrsChipSel / 2;
+	uint8_t rank = MrsChipSel % 2;
+
 	if (is_fam15h()) {
 		uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
-
-		/* The formula for chip select number is: CS = dimm*2+rank */
-		uint8_t dimm = MrsChipSel / 2;
-		uint8_t rank = MrsChipSel % 2;
 
 		/* FIXME: These parameters should be configurable
 		 * For now, err on the side of caution and enable automatic 2x refresh
@@ -492,7 +492,7 @@ static u32 mct_MR2(struct MCTStatStruc *pMCTstat,
 		ret |= ((dword >> 10) & 3) << 9;
 	}
 
-	printk(BIOS_SPEW, "Going to send MR2 control word %08x\n", ret);
+	printk(BIOS_SPEW, "Going to send DCT %d DIMM %d rank %d MR2 control word %08x\n", dct, dimm, rank, ret);
 
 	return ret;
 }
@@ -502,6 +502,10 @@ static u32 mct_MR3(struct MCTStatStruc *pMCTstat,
 {
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret;
+
+	/* The formula for chip select number is: CS = dimm*2+rank */
+	uint8_t dimm = MrsChipSel / 2;
+	uint8_t rank = MrsChipSel % 2;
 
 	if (is_fam15h()) {
 		ret = 0xc0000;
@@ -523,7 +527,7 @@ static u32 mct_MR3(struct MCTStatStruc *pMCTstat,
 		ret |= (dword >> 24) & 7;
 	}
 
-	printk(BIOS_SPEW, "Going to send MR3 control word %08x\n", ret);
+	printk(BIOS_SPEW, "Going to send DCT %d DIMM %d rank %d MR3 control word %08x\n", dct, dimm, rank, ret);
 
 	return ret;
 }
@@ -533,6 +537,10 @@ static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 {
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret;
+
+	/* The formula for chip select number is: CS = dimm*2+rank */
+	uint8_t dimm = MrsChipSel / 2;
+	uint8_t rank = MrsChipSel % 2;
 
 	if (is_fam15h()) {
 		uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
@@ -548,10 +556,6 @@ static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 
 		ret = 0x40000;
 		ret |= (MrsChipSel << 21);
-
-		/* The formula for chip select number is: CS = dimm*2+rank */
-		uint8_t dimm = MrsChipSel / 2;
-		uint8_t rank = MrsChipSel % 2;
 
 		/* Determine if TQDS should be set */
 		if ((pDCTstat->Dimmx8Present & (1 << dimm))
@@ -619,7 +623,7 @@ static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 			ret |= 1 << 12;
 	}
 
-	printk(BIOS_SPEW, "Going to send MR1 control word %08x\n", ret);
+	printk(BIOS_SPEW, "Going to send DCT %d DIMM %d rank %d MR1 control word %08x\n", dct, dimm, rank, ret);
 
 	return ret;
 }
@@ -629,6 +633,10 @@ static u32 mct_MR0(struct MCTStatStruc *pMCTstat,
 {
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret, dword2;
+
+	/* The formula for chip select number is: CS = dimm*2+rank */
+	uint8_t dimm = MrsChipSel / 2;
+	uint8_t rank = MrsChipSel % 2;
 
 	if (is_fam15h()) {
 		ret = 0x00000;
@@ -740,7 +748,7 @@ static u32 mct_MR0(struct MCTStatStruc *pMCTstat,
 		ret |= 1 << 8;
 	}
 
-	printk(BIOS_SPEW, "Going to send MR0 control word %08x\n", ret);
+	printk(BIOS_SPEW, "Going to send DCT %d DIMM %d rank %d MR0 control word %08x\n", dct, dimm, rank, ret);
 
 	return ret;
 }
@@ -806,6 +814,16 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 
 		/* 8.wait 360ns */
 		mct_Wait(80);
+
+		/* Set up address parity */
+		if ((pDCTstat->Status & (1 << SB_Registered))
+			|| (pDCTstat->Status & (1 << SB_LoadReduced))) {
+			if (is_fam15h()) {
+				dword = Get_NB32_DCT(dev, dct, 0x90);
+				dword |= 1 << ParEn;
+				Set_NB32_DCT(dev, dct, 0x90, dword);
+			}
+		}
 
 		/* The following steps are performed with registered DIMMs only and
 		 * must be done for each chip select pair */

@@ -162,7 +162,7 @@ static void mct_EnDllShutdownSR(struct MCTStatStruc *pMCTstat,
 static void ChangeMemClk(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat);
 void SetTargetFreq(struct MCTStatStruc *pMCTstat,
-                                        struct DCTStatStruc *pDCTstat);
+                                        struct DCTStatStruc *pDCTstatA, uint8_t Node);
 
 static u32 mct_MR1Odt_RDimm(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel);
@@ -1410,6 +1410,10 @@ static void precise_memclk_delay_fam15(struct MCTStatStruc *pMCTstat, struct DCT
 
 	memclk_freq = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x1f;
 
+	if (fam15h_freq_tab[memclk_freq] == 0) {
+		printk(BIOS_DEBUG, "ERROR: precise_memclk_delay_fam15 for DCT %d (delay %d clocks) failed to obtain valid memory frequency!"
+			" (pDCTstat: %p pDCTstat->dev_dct: %08x memclk_freq: %02x)\n", dct, clocks, pDCTstat, pDCTstat->dev_dct, memclk_freq);
+	}
 	delay_ns = (((uint64_t)clocks * 1000) / fam15h_freq_tab[memclk_freq]);
 	precise_ndelay_fam15(pMCTstat, delay_ns);
 }
@@ -2327,7 +2331,7 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 	nv_DQSTrainCTL = !allow_config_restore;
 
 	mct_BeforeDQSTrain_D(pMCTstat, pDCTstatA);
-	phyAssistedMemFnceTraining(pMCTstat, pDCTstatA);
+	phyAssistedMemFnceTraining(pMCTstat, pDCTstatA, -1);
 
 	if (is_fam15h()) {
 		uint8_t Node;
@@ -3367,7 +3371,7 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 }
 
 static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, u8 dct)
+				struct DCTStatStruc *pDCTstat, uint8_t dct)
 {
 	/* Initialize  DCT Timing registers as per DIMM SPD.
 	 * For primary timing (T, CL) use best case T value.
@@ -3471,7 +3475,7 @@ static void GetPresetmaxF_D(struct MCTStatStruc *pMCTstat,
 }
 
 static void SPDGetTCL_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, u8 dct)
+				struct DCTStatStruc *pDCTstat, uint8_t dct)
 {
 	/* Find the best T and CL primary timing parameter pair, per Mfg.,
 	 * for the given set of DIMMs, and store into DCTStatStruc
@@ -3750,10 +3754,15 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 		dword++;
 	}
 
-	if (Status & (1 << SB_Registered))
-		DramConfigLo |= 1 << ParEn;		/* Registered DIMMs */
-	else
-		DramConfigLo |= 1 << UnBuffDimm;	/* Unbuffered DIMMs */
+	if (Status & (1 << SB_Registered)) {
+		/* Registered DIMMs */
+		if (!is_fam15h()) {
+			DramConfigLo |= 1 << ParEn;
+		}
+	} else {
+		/* Unbuffered DIMMs */
+		DramConfigLo |= 1 << UnBuffDimm;
+	}
 
 	if (mctGet_NVbits(NV_ECC_CAP))
 		if (Status & (1 << SB_ECCDIMMs))
@@ -3771,10 +3780,11 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	DramConfigHi |= dword - offset;	/* get MemClk encoding */
 	DramConfigHi |= 1 << MemClkFreqVal;
 
-	if (Status & (1 << SB_Registered))
-		if ((pDCTstat->Dimmx4Present != 0) && (pDCTstat->Dimmx8Present != 0))
-			/* set only if x8 Registered DIMMs in System*/
-			DramConfigHi |= 1 << RDqsEn;
+	if (!is_fam15h())
+		if (Status & (1 << SB_Registered))
+			if ((pDCTstat->Dimmx4Present != 0) && (pDCTstat->Dimmx8Present != 0))
+				/* set only if x8 Registered DIMMs in System*/
+				DramConfigHi |= 1 << RDqsEn;
 
 	if (pDCTstat->LogicalCPUID & AMD_FAM15_ALL) {
 		DramConfigLo |= 1 << 25;	/* PendRefPaybackS3En = 1 */
@@ -3786,14 +3796,16 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 			DramConfigHi |= 1 << 16;
 	}
 
-	/* Control Bank Swizzle */
-	if (0) /* call back not needed mctBankSwizzleControl_D()) */
-		DramConfigHi &= ~(1 << BankSwizzleMode);
-	else
-		DramConfigHi |= 1 << BankSwizzleMode; /* recommended setting (default) */
+	if (!is_fam15h()) {
+		/* Control Bank Swizzle */
+		if (0) /* call back not needed mctBankSwizzleControl_D()) */
+			DramConfigHi &= ~(1 << BankSwizzleMode);
+		else
+			DramConfigHi |= 1 << BankSwizzleMode; /* recommended setting (default) */
+	}
 
 	/* Check for Quadrank DIMM presence */
-	if ( pDCTstat->DimmQRPresent != 0) {
+	if (pDCTstat->DimmQRPresent != 0) {
 		byte = mctGet_NVbits(NV_4RANKType);
 		if (byte == 2)
 			DramConfigHi |= 1 << 17;	/* S4 (4-Rank SO-DIMMs) */
@@ -4598,8 +4610,9 @@ static u8 mct_setMode(struct MCTStatStruc *pMCTstat,
 			Set_NB32(pDCTstat->dev_dct, reg, val);
 		}
 		if (byte)	/* NV_Unganged */
-			pDCTstat->ErrStatus &= ~(1 << SB_DimmMismatchO); /* Clear so that there is no DIMM missmatch error */
+			pDCTstat->ErrStatus &= ~(1 << SB_DimmMismatchO); /* Clear so that there is no DIMM mismatch error */
 	}
+
 	return pDCTstat->ErrCode;
 }
 
@@ -4660,6 +4673,8 @@ void Set_NB32_index_wait(u32 dev, u32 index_reg, u32 index, u32 data)
 static u8 mct_BeforePlatformSpec(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct)
 {
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	/* mct_checkForCxDxSupport_D */
 	if (pDCTstat->LogicalCPUID & AMD_DR_GT_Bx) {
 		/* Family 10h Errata 322: Address and Command Fine Delay Values May Be Incorrect */
@@ -4674,6 +4689,9 @@ static u8 mct_BeforePlatformSpec(struct MCTStatStruc *pMCTstat,
 		else
 			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, dct, 0x98, 0x0D02E001, 0x90);
 	}
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
+
 	return pDCTstat->ErrCode;
 }
 
@@ -4683,6 +4701,8 @@ static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
 	/* Get platform specific config/timing values from the interface layer
 	 * and program them into DCT.
 	 */
+
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 
 	u32 dev = pDCTstat->dev_dct;
 	u32 index_reg;
@@ -4704,6 +4724,8 @@ static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
 		printk(BIOS_SPEW, "Programmed DCT %d timing/termination pattern %08x %08x\n", dct, pDCTstat->CH_ADDR_TMG[i], pDCTstat->CH_ODC_CTL[i]);
 	}
 
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
+
 	return pDCTstat->ErrCode;
 }
 
@@ -4715,7 +4737,8 @@ static void mct_SyncDCTsReady(struct DCTStatStruc *pDCTstat)
 	if (pDCTstat->NodePresent) {
 		dev = pDCTstat->dev_dct;
 
-		if ((pDCTstat->DIMMValidDCT[0] ) || (pDCTstat->DIMMValidDCT[1])) {		/* This Node has dram */
+		if ((pDCTstat->DIMMValidDCT[0]) || (pDCTstat->DIMMValidDCT[1])) {
+			/* This Node has DRAM */
 			do {
 				val = Get_NB32(dev, 0x110);
 			} while (!(val & (1 << DramEnabled)));
@@ -5663,57 +5686,56 @@ static void InitDDRPhy(struct MCTStatStruc *pMCTstat,
 	/* Fam15h BKDG v3.14 section 2.10.5.3
 	 * The remainder of the Phy Initialization algorithm picks up in phyAssistedMemFnceTraining
 	 */
-	for (dct = 0; dct < 2; dct++) {
-		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0000000b, 0x80000000);
-		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fe013, 0x00000118);
+	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0000000b, 0x80000000);
+	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fe013, 0x00000118);
 
-		/* Program desired VDDIO level */
-		if (ddr_voltage_index & 0x4) {
-			/* 1.25V */
-			amd_voltage_level_index = 0x2;
-		} else if (ddr_voltage_index & 0x2) {
-			/* 1.35V */
-			amd_voltage_level_index = 0x1;
-		} else if (ddr_voltage_index & 0x1) {
-			/* 1.50V */
-			amd_voltage_level_index = 0x0;
-		}
-
-		/* D18F2x9C_x0D0F_0[F,8:0]1F_dct[1:0][RxVioLvl] */
-		for (index = 0; index < 0x9; index++) {
-			dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f001f | (index << 8));
-			dword &= ~(0x3 << 3);
-			dword |= (amd_voltage_level_index << 3);
-			Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f001f | (index << 8), dword);
-		}
-
-		/* D18F2x9C_x0D0F_[C,8,2][2:0]1F_dct[1:0][RxVioLvl] */
-		for (index = 0; index < 0x3; index++) {
-			dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f201f | (index << 8));
-			dword &= ~(0x3 << 3);
-			dword |= (amd_voltage_level_index << 3);
-			Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f201f | (index << 8), dword);
-		}
-		for (index = 0; index < 0x2; index++) {
-			dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f801f | (index << 8));
-			dword &= ~(0x3 << 3);
-			dword |= (amd_voltage_level_index << 3);
-			Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f801f | (index << 8), dword);
-		}
-		for (index = 0; index < 0x1; index++) {
-			dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc01f | (index << 8));
-			dword &= ~(0x3 << 3);
-			dword |= (amd_voltage_level_index << 3);
-			Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc01f | (index << 8), dword);
-		}
-
-		/* D18F2x9C_x0D0F_4009_dct[1:0][CmpVioLvl, ComparatorAdjust] */
-		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f4009);
-		dword &= ~(0x0000c00c);
-		dword |= (amd_voltage_level_index << 14);
-		dword |= (amd_voltage_level_index << 2);
-		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f4009, dword);
+	/* Program desired VDDIO level */
+	if (ddr_voltage_index & 0x4) {
+		/* 1.25V */
+		amd_voltage_level_index = 0x2;
+	} else if (ddr_voltage_index & 0x2) {
+		/* 1.35V */
+		amd_voltage_level_index = 0x1;
+	} else if (ddr_voltage_index & 0x1) {
+		/* 1.50V */
+		amd_voltage_level_index = 0x0;
 	}
+
+	/* D18F2x9C_x0D0F_0[F,8:0]1F_dct[1:0][RxVioLvl] */
+	for (index = 0; index < 0x9; index++) {
+		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f001f | (index << 8));
+		dword &= ~(0x3 << 3);
+		dword |= (amd_voltage_level_index << 3);
+		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f001f | (index << 8), dword);
+	}
+
+	/* D18F2x9C_x0D0F_[C,8,2][2:0]1F_dct[1:0][RxVioLvl] */
+	for (index = 0; index < 0x3; index++) {
+		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f201f | (index << 8));
+		dword &= ~(0x3 << 3);
+		dword |= (amd_voltage_level_index << 3);
+		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f201f | (index << 8), dword);
+	}
+	for (index = 0; index < 0x2; index++) {
+		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f801f | (index << 8));
+		dword &= ~(0x3 << 3);
+		dword |= (amd_voltage_level_index << 3);
+		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f801f | (index << 8), dword);
+	}
+	for (index = 0; index < 0x1; index++) {
+		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc01f | (index << 8));
+		dword &= ~(0x3 << 3);
+		dword |= (amd_voltage_level_index << 3);
+		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc01f | (index << 8), dword);
+	}
+
+	/* D18F2x9C_x0D0F_4009_dct[1:0][CmpVioLvl, ComparatorAdjust] */
+	/* NOTE: CmpVioLvl and ComparatorAdjust only take effect when set on DCT 0 */
+	dword = Get_NB32_index_wait_DCT(dev, 0, index_reg, 0x0d0f4009);
+	dword &= ~(0x0000c00c);
+	dword |= (amd_voltage_level_index << 14);
+	dword |= (amd_voltage_level_index << 2);
+	Set_NB32_index_wait_DCT(dev, 0, index_reg, 0x0d0f4009, dword);
 
 	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
@@ -5729,17 +5751,23 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 	uint32_t dword;
 	const u8 *p;
 
-	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+	printk(BIOS_DEBUG, "%s: DCT %d: Start\n", __func__, dct);
 
 	if (is_fam15h()) {
 		/* Algorithm detailed in the Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 */
 		uint32_t tx_pre;
 		uint32_t drive_strength;
 
-		/* Program D18F2x9C_x0D0F_E003_dct[1:0][DisAutoComp, DisablePredriverCal] */
+		/* Program D18F2x9C_x0D0F_E003_dct[1:0][DisAutoComp] */
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fe003);
-		dword |= (0x3 << 13);
+		dword |= (0x1 << 14);
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fe003, dword);
+
+		/* Program D18F2x9C_x0D0F_E003_dct[1:0][DisablePredriverCal] */
+		/* NOTE: DisablePredriverCal only takes effect when set on DCT 0 */
+		dword = Get_NB32_index_wait_DCT(dev, 0, index_reg, 0x0d0fe003);
+		dword |= (0x1 << 13);
+		Set_NB32_index_wait_DCT(dev, 0, index_reg, 0x0d0fe003, dword);
 
 		/* Determine TxPreP/TxPreN for data lanes (Stage 1) */
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x00000000);
@@ -5886,12 +5914,14 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0a, dword);
 	}
 
-	printk(BIOS_DEBUG, "%s: Done\n", __func__);
+	printk(BIOS_DEBUG, "%s: DCT %d: Done\n", __func__, dct);
 }
 
 static void mct_EarlyArbEn_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct)
 {
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	if (!is_fam15h()) {
 		u32 reg;
 		u32 val;
@@ -5913,6 +5943,8 @@ static void mct_EarlyArbEn_D(struct MCTStatStruc *pMCTstat,
 
 		Set_NB32_DCT(dev, dct, reg, val);
 	}
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static u8 CheckNBCOFEarlyArbEn(struct MCTStatStruc *pMCTstat,
@@ -6556,6 +6588,8 @@ void mct_SetDramConfigHi_D(struct MCTStatStruc *pMCTstat,
 
 	uint32_t dword;
 
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	if (is_fam15h()) {
 		/* Initial setup for frequency change
 		 * 9C_x0000_0004 must be configured before MemClkFreqVal is set
@@ -6588,6 +6622,8 @@ void mct_SetDramConfigHi_D(struct MCTStatStruc *pMCTstat,
 		mct_Wait(100);
 	}
 
+	printk(BIOS_DEBUG, "mct_SetDramConfigHi_D: DramConfigHi:    %08x\n", DramConfigHi);
+
 	/* Program the DRAM Configuration High register */
 	Set_NB32_DCT(dev, dct, 0x94, DramConfigHi);
 
@@ -6603,6 +6639,8 @@ void mct_SetDramConfigHi_D(struct MCTStatStruc *pMCTstat,
 		dword |= 0x0000000f;
 		Set_NB32_index_wait_DCT(pDCTstat->dev_dct, dct, index_reg, 0x0d0fe006, dword);
 	}
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static void mct_BeforeDQSTrain_D(struct MCTStatStruc *pMCTstat,

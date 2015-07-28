@@ -17,7 +17,7 @@
 static uint8_t AgesaHwWlPhase1(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
 static uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
+					struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t pass);
 static uint8_t AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct, u8 dimm, u8 pass);
 static void EnableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
@@ -129,7 +129,7 @@ static uint8_t PhyWLPass1(struct MCTStatStruc *pMCTstat,
 }
 
 static uint8_t PhyWLPass2(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, u8 dct)
+					struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t final)
 {
 	u8 dimm;
 	u16 DIMMValid;
@@ -183,11 +183,14 @@ static uint16_t fam15h_next_highest_memclk_freq(uint16_t memclk_freq)
  * Algorithm detailed in the Fam10h BKDG Rev. 3.62 section 2.8.9.9.1
  */
 static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, uint8_t Pass)
+					struct DCTStatStruc *pDCTstatA, uint8_t Node, uint8_t Pass)
 {
 	uint8_t status;
 	uint8_t timeout;
 	uint16_t final_target_freq;
+
+	struct DCTStatStruc *pDCTstat;
+	pDCTstat = pDCTstatA + Node;
 
 	pDCTstat->C_MCTPtr  = &(pDCTstat->s_C_MCTPtr);
 	pDCTstat->C_DCTPtr[0] = &(pDCTstat->s_C_DCTPtr[0]);
@@ -236,13 +239,13 @@ static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 					pDCTstat->TargetFreq = fam15h_next_highest_memclk_freq(pDCTstat->Speed);
 				else
 					pDCTstat->TargetFreq = final_target_freq;
-				SetTargetFreq(pMCTstat, pDCTstat);
+				SetTargetFreq(pMCTstat, pDCTstatA, Node);
 				timeout = 0;
 				do {
 					status = 0;
 					timeout++;
-					status |= PhyWLPass2(pMCTstat, pDCTstat, 0);
-					status |= PhyWLPass2(pMCTstat, pDCTstat, 1);
+					status |= PhyWLPass2(pMCTstat, pDCTstat, 0, (pDCTstat->TargetFreq == final_target_freq));
+					status |= PhyWLPass2(pMCTstat, pDCTstat, 1, (pDCTstat->TargetFreq == final_target_freq));
 					if (status)
 						printk(BIOS_INFO,
 							"%s: Retrying write levelling due to invalid value(s) detected in last phase\n",
@@ -286,7 +289,7 @@ void mct_WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 		if (pDCTstat->NodePresent) {
 			mctSMBhub_Init(Node);
 			Clear_OnDimmMirror(pMCTstat, pDCTstat);
-			WriteLevelization_HW(pMCTstat, pDCTstat, Pass);
+			WriteLevelization_HW(pMCTstat, pDCTstatA, Node, Pass);
 			Restore_OnDimmMirror(pMCTstat, pDCTstat);
 		}
 	}

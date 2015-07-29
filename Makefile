@@ -251,6 +251,19 @@ ifndef NOMKDIR
 $(shell mkdir -p $(KCONFIG_SPLITCONFIG) $(objk)/lxdialog $(additional-dirs) $(alldirs))
 endif
 
+$(obj)/project_filelist.txt: all
+	find $(obj) -name "*.d" -exec cat {} \; | \
+	  sed 's/[:\\]/ /g' | sed 's/ /\n/g' | sort | uniq | \
+	  grep -v '\.o$$' > $(obj)/project_filelist.txt
+
+#works with either exuberant ctags or ctags.emacs
+ctags-project: clean-ctags $(obj)/project_filelist.txt
+	cat $(obj)/project_filelist.txt | \
+	  xargs ctags -o tags
+
+cscope-project: clean-cscope $(obj)/project_filelist.txt
+	cat $(obj)/project_filelist.txt | xargs cscope -b
+
 cscope:
 	cscope -bR
 
@@ -274,7 +287,11 @@ clean: clean-for-update clean-target
 clean-cscope:
 	rm -f cscope.out
 
-distclean: clean
+clean-ctags:
+	rm -f tags
+
+distclean: clean clean-ctags clean-cscope
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 
 .PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy doxygen_simple
+.PHONY: ctags-project cscope-project clean-ctags

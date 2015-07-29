@@ -793,6 +793,10 @@ int rk_hdmi_get_edid(struct edid *edid)
 	if (decode_edid(edid_buf, edid_size, edid))
 		hdmi_debug("failed to decode edid.\n");
 
+	/* Try 480p for best compatibility. */
+	if (set_display_mode(edid, EDID_MODE_640x480_60Hz))
+		hdmi_debug("failed to set mode to 640x480@60Hz\n");
+
 	return 0;
 }
 

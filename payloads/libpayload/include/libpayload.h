@@ -44,6 +44,7 @@
 #define _LIBPAYLOAD_H
 
 #include <libpayload-config.h>
+#include <cbgfx.h>
 #include <ctype.h>
 #include <die.h>
 #include <endian.h>

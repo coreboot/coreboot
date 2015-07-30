@@ -19,6 +19,7 @@
  */
 
 #include <arch/io.h>
+#include <console/uart.h>
 #include <device/pci_def.h>
 #include <stdint.h>
 #include <soc/pci_devs.h>
@@ -33,7 +34,7 @@ void pch_uart_init(void)
 {
 	device_t dev = PCH_DEV_UART2;
 	u32 tmp;
-	u8 *base = (u8 *)CONFIG_TTYS0_BASE;
+	u8 *base = (void *)uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 
 	/* Set configured UART2 base address */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, (u32)base);
@@ -49,7 +50,11 @@ void pch_uart_init(void)
 		SIO_REG_PPR_RESETS_IDMA;
 	write32(base + SIO_REG_PPR_RESETS, tmp);
 
-	/* Set M and N divisor inputs and enable clock */
+	/*
+	 * Set M and N divisor inputs and enable clock.
+	 * Main reference frequency to UART is:
+	 *  120MHz * M / N = 120MHz * 48 / 3125 = 1843200Hz
+	 */
 	tmp = read32(base + SIO_REG_PPR_CLOCK);
 	tmp |= SIO_REG_PPR_CLOCK_EN | SIO_REG_PPR_CLOCK_UPDATE |
 		(SIO_REG_PPR_CLOCK_N_DIV << 16) |
@@ -57,7 +62,7 @@ void pch_uart_init(void)
 	write32(base + SIO_REG_PPR_CLOCK, tmp);
 
 	/* Put UART2 in byte access mode for 16550 compatibility */
-	if (!IS_ENABLED(CONFIG_CONSOLE_SERIAL8250MEM_32))
+	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))
 		pcr_andthenor32(PID_SERIALIO,
 		R_PCH_PCR_SERIAL_IO_GPPRVRW7, 0, SIO_PCH_LEGACY_UART2);
 

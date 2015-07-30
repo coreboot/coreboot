@@ -188,12 +188,16 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000
 
-config TTYS0_BASE
-	hex
-	default 0xfe034000
-
 config VGA_BIOS_ID
 	string
 	default "8086,0406"
+
+config UART_DEBUG
+	bool "Enable UART debug port."
+	default y if CONSOLE_SERIAL
+	default n
+	select DRIVERS_UART
+	select DRIVERS_UART_8250MEM
+	select DRIVERS_UART_8250MEM_32
 
 endif

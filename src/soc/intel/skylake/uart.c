@@ -18,11 +18,11 @@
  * Foundation, Inc.
  */
 
-#include <console/uart.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <stdlib.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 
@@ -36,10 +36,11 @@ static void pch_uart_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* Set the configured UART base address for the debug port */
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL8250MEM_32) &&
-	    pch_uart_is_debug(dev)) {
+	if (IS_ENABLED(CONFIG_UART_DEBUG) && pch_uart_is_debug(dev)) {
 		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
-		res->size = 0x1000;
+		/* Need to set the base and size for the resource allocator. */
+		res->base = UART_DEBUG_BASE_ADDRESS;
+		res->size = UART_DEBUG_BASE_SIZE;
 		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
 			IORESOURCE_FIXED;
 	}

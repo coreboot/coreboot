@@ -19,6 +19,7 @@ romstage-y += pei_data.c
 romstage-y += pmutil.c
 romstage-y += smbus_common.c
 romstage-y += tsc_freq.c
+romstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
@@ -46,6 +47,7 @@ ramstage-y += smmrelocate.c
 ramstage-y += systemagent.c
 ramstage-y += tsc_freq.c
 ramstage-y += uart.c
+ramstage-$(CONFIG_UART_DEBUG) += uart_debug.c
 ramstage-y += xhci.c
 
 smm-y += cpu_info.c
@@ -57,6 +59,7 @@ smm-y += pmutil.c
 smm-y += smihandler.c
 smm-$(CONFIG_SPI_FLASH_SMM) += flash_controller.c
 smm-y += tsc_freq.c
+smm-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 CPPFLAGS_common += -I$(src)/arch/x86/include/
 CPPFLAGS_common += -I$(src)/soc/intel/skylake

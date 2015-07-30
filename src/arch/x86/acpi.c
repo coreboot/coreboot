@@ -1052,13 +1052,13 @@ void *acpi_find_wakeup_vector(void)
 		return NULL;
 
 	printk(BIOS_DEBUG, "RSDP found at %p\n", rsdp);
-	rsdt = (acpi_rsdt_t *) rsdp->rsdt_address;
+	rsdt = (acpi_rsdt_t *)(uintptr_t)rsdp->rsdt_address;
 
 	end = (char *)rsdt + rsdt->header.length;
 	printk(BIOS_DEBUG, "RSDT found at %p ends at %p\n", rsdt, end);
 
 	for (i = 0; ((char *)&rsdt->entry[i]) < end; i++) {
-		fadt = (acpi_fadt_t *)rsdt->entry[i];
+		fadt = (acpi_fadt_t *)(uintptr_t)rsdt->entry[i];
 		if (strncmp((char *)fadt, "FACP", 4) == 0)
 			break;
 		fadt = NULL;
@@ -1068,7 +1068,7 @@ void *acpi_find_wakeup_vector(void)
 		return NULL;
 
 	printk(BIOS_DEBUG, "FADT found at %p\n", fadt);
-	facs = (acpi_facs_t *)fadt->firmware_ctrl;
+	facs = (acpi_facs_t *)(uintptr_t)fadt->firmware_ctrl;
 
 	if (facs == NULL) {
 		printk(BIOS_DEBUG, "No FACS found, wake up from S3 not "
@@ -1077,7 +1077,7 @@ void *acpi_find_wakeup_vector(void)
 	}
 
 	printk(BIOS_DEBUG, "FACS found at %p\n", facs);
-	wake_vec = (void *)facs->firmware_waking_vector;
+	wake_vec = (void *)(uintptr_t)facs->firmware_waking_vector;
 	printk(BIOS_DEBUG, "OS waking vector is %p\n", wake_vec);
 
 	return wake_vec;
@@ -1091,7 +1091,7 @@ extern int lowmem_backup_size;
 
 #define WAKEUP_BASE 0x600
 
-void (*acpi_do_wakeup)(u32 vector, u32 backup_source, u32 backup_target,
+void (*acpi_do_wakeup)(uintptr_t vector, u32 backup_source, u32 backup_target,
        u32 backup_size) asmlinkage = (void *)WAKEUP_BASE;
 
 extern unsigned char __wakeup;
@@ -1099,10 +1099,10 @@ extern unsigned int __wakeup_size;
 
 void acpi_jump_to_wakeup(void *vector)
 {
-	u32 acpi_backup_memory = 0;
+	uintptr_t acpi_backup_memory = 0;
 
 	if (HIGH_MEMORY_SAVE && acpi_s3_resume_allowed()) {
-		acpi_backup_memory = (u32)cbmem_find(CBMEM_ID_RESUME);
+		acpi_backup_memory = (uintptr_t)cbmem_find(CBMEM_ID_RESUME);
 
 		if (!acpi_backup_memory) {
 			printk(BIOS_WARNING, "ACPI: Backup memory missing. "
@@ -1125,7 +1125,7 @@ void acpi_jump_to_wakeup(void *vector)
 
 	timestamp_add_now(TS_ACPI_WAKE_JUMP);
 
-	acpi_do_wakeup((u32)vector, acpi_backup_memory, CONFIG_RAMBASE,
+	acpi_do_wakeup((uintptr_t)vector, acpi_backup_memory, CONFIG_RAMBASE,
 		       HIGH_MEMORY_SAVE);
 }
 #endif

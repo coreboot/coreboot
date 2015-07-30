@@ -178,8 +178,16 @@ static void check_for_clean_reset(void)
 		soft_reset();
 }
 
-static int need_microcode_update(void)
+static void patch_microcode(void)
 {
+	const struct microcode *patch;
+	u32 current_rev;
+	msr_t msr;
+
+	patch = intel_microcode_find();
+
+	current_rev = read_microcode_rev();
+
 	/* If PRMRR/SGX is supported the FIT microcode load step will set
 	 * msr 0x08b with the Patch revision id one less than the id in the
 	 * microcode binary. The PRMRR support is indicated in the MSR
@@ -187,24 +195,15 @@ static int need_microcode_update(void)
 	 * same microcode during early cpu initialization.
 	 */
 	msr = rdmsr(MTRRcap_MSR);
-	return (msr.lo & PRMRR_SUPPORTED) && (current_rev != patch->rev - 1);
+	if ((msr.lo & PRMRR_SUPPORTED) && (current_rev != patch->rev - 1))
+		intel_update_microcode_from_cbfs();
 }
 
 static void bootblock_cpu_init(void)
 {
-	const struct microcode *patch;
-	u32 current_rev;
-	msr_t msr;
-
 	/* Set flex ratio and reset if needed */
 	set_flex_ratio_to_tdp_nominal();
 	check_for_clean_reset();
 	enable_rom_caching();
-
-	patch = intel_microcode_find();
-
-	current_rev = read_microcode_rev();
-
-	if (need_microcode_update())
-		intel_update_microcode_from_cbfs();
+	patch_microcode();
 }

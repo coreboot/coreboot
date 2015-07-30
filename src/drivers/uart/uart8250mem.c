@@ -19,9 +19,11 @@
  */
 
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 #include <console/uart.h>
 #include <device/device.h>
 #include <delay.h>
+#include <rules.h>
 #include <stdint.h>
 #include "uart8250reg.h"
 
@@ -146,3 +148,20 @@ void uart_tx_flush(int idx)
 		return;
 	uart8250_mem_tx_flush(base);
 }
+
+#if ENV_RAMSTAGE
+void uart_fill_lb(void *data)
+{
+	struct lb_serial serial;
+	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	serial.baud = default_baudrate();
+	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))
+		serial.regwidth = sizeof(uint32_t);
+	else
+		serial.regwidth = sizeof(uint8_t);
+	lb_add_serial(&serial, data);
+
+	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+}
+#endif

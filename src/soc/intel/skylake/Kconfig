@@ -70,17 +70,6 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "soc/intel/skylake/bootblock/pch.c"
 
-config CBFS_SIZE
-	hex "Size of CBFS filesystem in ROM"
-	default 0x200000
-	help
-	  The firmware image has to store more than just coreboot, including:
-	   - a firmware descriptor
-	   - Intel Management Engine firmware
-	   - MRC cache information
-	  This option allows to limit the size of the CBFS portion in the
-	  firmware image.
-
 config CPU_ADDR_BITS
 	int
 	default 36

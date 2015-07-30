@@ -353,6 +353,7 @@ config CBFS_SIZE
 	  NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE || \
 	  NORTHBRIDGE_INTEL_NEHALEM || SOC_INTEL_BRASWELL || \
 	  SOC_INTEL_BROADWELL
+	default 0x200000 if SOC_INTEL_SKYLAKE
 	default ROM_SIZE
 	help
 	  This is the part of the ROM actually managed by CBFS, located at the

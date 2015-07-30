@@ -41,7 +41,7 @@
 #define OUT
 #define IMAGE_SIGNATURE 'DMA$'
 
-typedef UINTN AGESA_STATUS;
+typedef UINT32 AGESA_STATUS;
 
 
 #define AGESA_SUCCESS       ((AGESA_STATUS) 0x0)

@@ -71,7 +71,7 @@ void
 MemoryCopy (
   IN       unsigned char *Dest,
   IN       unsigned char *Source,
-  IN       unsigned int Size
+  IN       unsigned long Size
   );
 
 //AMD Library Routines (PCILIB.C)

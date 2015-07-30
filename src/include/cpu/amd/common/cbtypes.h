@@ -20,16 +20,20 @@
 #ifndef _CBTYPES_H_
 #define _CBTYPES_H_
 
-typedef signed long long __int64;
+/* Map coreboot stdint types to AGESA types. */
+
+#include <stdint.h>
+
+typedef int64_t __int64;
 typedef void VOID;
-typedef unsigned int UINTN;
-typedef signed char CHAR8;
-typedef unsigned char UINT8;
-typedef unsigned short UINT16;
-typedef unsigned int UINT32;
-typedef signed int INT32;
-typedef unsigned long long UINT64;
-typedef unsigned char BOOLEAN;
+typedef uintptr_t UINTN;
+typedef char CHAR8;
+typedef uint8_t UINT8;
+typedef uint16_t UINT16;
+typedef uint32_t UINT32;
+typedef int32_t INT32;
+typedef uint64_t UINT64;
+typedef uint8_t BOOLEAN;
 
 #define DMSG_SB_TRACE   0x02
 #define TRACE(Arguments)

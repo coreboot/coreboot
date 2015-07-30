@@ -46,6 +46,8 @@
 #ifndef __VENDORCODE_AMD_CIMX_SB800_AMDSBLIB_H__
 #define __VENDORCODE_AMD_CIMX_SB800_AMDSBLIB_H__
 
+#include <cpu/amd/common/cbtypes.h>
+
 //AMDSBLIB Routines
 
 /**
@@ -105,7 +107,7 @@ AGESA_STATUS  AmdSbDispatcher (IN void *pConfig);
  * @param[in] Length - Data length
  *
  */
-void AmdSbCopyMem (IN void* pDest, IN void* pSource, IN unsigned int Length);
+void AmdSbCopyMem (IN void* pDest, IN void* pSource, IN UINTN Length);
 
 
 /* SB800 CIMx and AGESA V5 can share lib functions */

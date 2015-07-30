@@ -278,7 +278,7 @@ sbSmmAcpiOn (
 UINTN
 CallBackToOEM (
   IN       UINT32 Func,
-  IN       UINT32 Data,
+  IN       UINTN  Data,
   IN       AMDSBCFG* pConfig
   )
 {

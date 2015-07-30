@@ -40,6 +40,7 @@
 ;
 ;*********************************************************************************/
 
+#include <cpu/amd/common/cbtypes.h>
 // Southbridge SBMAIN Routines
 
 /**
@@ -127,7 +128,7 @@ void sbSmmAcpiOn (IN AMDSBCFG* pConfig);
  * @param[in] Data    Callback specific data.
  * @param[in] pConfig Southbridge configuration structure pointer.
  */
-unsigned int CallBackToOEM (IN unsigned int Func, IN unsigned int Data, IN AMDSBCFG* pConfig);
+UINTN CallBackToOEM (IN unsigned int Func, IN UINTN Data, IN AMDSBCFG* pConfig);
 
 
 // Southbridge SBPOR Routines

@@ -69,10 +69,10 @@ unsigned char getEfuseByte (IN unsigned char Index);
 AGESA_STATUS  AmdSbDispatcher (IN void *pConfig);
 
 /**< AmdSbCopyMem - Reserved  */
-void AmdSbCopyMem (IN void* pDest, IN void* pSource, IN unsigned int Length);
+void AmdSbCopyMem (IN void* pDest, IN void* pSource, IN UINTN Length);
 
 /**< GetRomSigPtr - Reserved  */
-void* GetRomSigPtr (IN unsigned int* RomSigPtr);
+void* GetRomSigPtr (IN UINTN * RomSigPtr);
 
 /**< RWXhciIndReg - Reserved  */
 void RWXhciIndReg (IN unsigned int Index, IN unsigned int AndMask, IN unsigned int OrMask);

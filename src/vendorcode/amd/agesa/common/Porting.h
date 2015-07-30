@@ -216,6 +216,7 @@
 
 #elif defined __GNUC__
 
+  #include <stdint.h>
   #define IN
   #define OUT
   #define STATIC static
@@ -228,17 +229,20 @@
   #define CALLCONV
   #define _16BYTE_ALIGN __attribute__ ((aligned (16)))
 
+
+    // Create the universal 32, 16, and 8-bit data types
   typedef unsigned char  BOOLEAN;
-  typedef   signed char  INT8;
-  typedef   signed short INT16;
-  typedef   signed long  INT32;
-  typedef          char  CHAR8;
-  typedef unsigned char  UINT8;
-  typedef unsigned short UINT16;
-  typedef unsigned long  UINT32;
-  typedef unsigned long  UINTN;
-  typedef unsigned long  long UINT64;
-  typedef long  long INT64;
+  typedef uintptr_t      UINTN;
+  typedef int64_t        INT64;
+  typedef uint64_t       UINT64;
+  typedef int32_t        INT32;
+  typedef uint32_t       UINT32;
+  typedef int16_t        INT16;
+  typedef uint16_t       UINT16;
+  typedef int8_t         INT8;
+  typedef uint8_t        UINT8;
+  typedef char         CHAR8;
+  typedef unsigned short CHAR16;
   typedef void VOID;
   //typedef unsigned long  size_t;
 

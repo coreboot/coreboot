@@ -135,7 +135,7 @@ void sb700_cimx_config(AMDSBCFG *sb_config)
 #ifndef __PRE_RAM__
 	/* ramstage cimx config here */
 	if (!sb_config->StdHeader.pCallBack) {
-		sb_config->StdHeader.pCallBack = sb700_callout_entry;
+		sb_config->StdHeader.pCallBack = (CIM_HOOK_ENTRY)&sb700_callout_entry;
 	}
 
 	//sb_config->

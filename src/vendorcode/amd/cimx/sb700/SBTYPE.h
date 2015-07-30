@@ -32,7 +32,7 @@
 
 #pragma pack(push,1)
 
-typedef UINT32 (*CIM_HOOK_ENTRY)(UINT32 Param1, UINTN Param2, void* pConfig);
+typedef UINT32 (*CIM_HOOK_ENTRY)(UINT32 Param1, UINT32 Param2, void* pConfig);
 typedef void (*SMM_SERVICE_ROUTINE) (void);
 
 typedef struct _STDCFG{

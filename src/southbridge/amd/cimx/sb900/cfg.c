@@ -213,7 +213,7 @@ void sb900_cimx_config(AMDSBCFG *sb_config)
 	sb_config->GppHardwareDowngrade					= INCHIP_GPP_HARDWARE_DOWNGRADE;// Internal Option
 	sb_config->GppToggleReset						= INCHIP_GPP_TOGGLE_RESET;		// External Option
 	sb_config->sdbEnable							= 0;							// CIMx Internal Used
-	sb_config->TempMMIO								= (typeof(sb_config->TempMMIO))NULL;							// CIMx Internal Used
+	sb_config->TempMMIO								= (UINTN)NULL;							// CIMx Internal Used
 	// sb_config->GecPhyStatus							= INCHIP_GEC_PHY_STATUS;		// Field Retired
 	sb_config->SBGecPwr								= INCHIP_GEC_POWER_POLICY;		// Internal Option
 	sb_config->SBGecDebugBus						= INCHIP_GEC_DEBUGBUS;			// Internal Option

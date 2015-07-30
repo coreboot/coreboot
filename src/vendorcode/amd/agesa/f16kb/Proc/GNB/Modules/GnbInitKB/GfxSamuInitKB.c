@@ -189,8 +189,8 @@ GfxSamuInit (
     // Load boot control structure
     SamuBootControl = (SAMU_BOOT_CONTROL *)AlignedControlXBuffer;
     SamuBootControl->BootControl = 0x3;
-    SamuBootControl->KernelAddrLo = (UINT32) (AlignedPatchYBuffer);
-    SamuBootControl->KernelAddrHi = 0; //(UINT32) ((((UINT64) AlignedPatchYBuffer) >> 32) & 0xFF);
+    SamuBootControl->KernelAddrLo = (UINTN)AlignedPatchYBuffer;
+    SamuBootControl->KernelAddrHi = ((((UINT64)(UINTN)AlignedPatchYBuffer) >> 32) & 0xFF);
     if (SamuUseF1dPatch == TRUE) {
       SamuBootControl->TweakSelect = 0xBB027E1F;
       SamuBootControl->KeySelect = 0x8E174F83;
@@ -209,7 +209,7 @@ GfxSamuInit (
     // Write (physical address of boot control structure)>>8 into SAM_SAB_INIT_TLB_CONFIG (Location X >> 8)
     GMMx22008 = 0x4;
     GnbRegisterWriteKB (GnbHandle, 0x12, 0x22008, &GMMx22008, 0, GnbLibGetHeader (Gfx));
-    GMMx2200C = ((UINT32) ((UINT32) AlignedControlXBuffer)) >> 8;
+    GMMx2200C = ((UINTN) AlignedControlXBuffer) >> 8;
     GnbRegisterWriteKB (GnbHandle, 0x12, 0x2200C, &GMMx2200C, 0, GnbLibGetHeader (Gfx));
 
     // Write 0x0 to SAM_RST_HOST_SOFT_RESET

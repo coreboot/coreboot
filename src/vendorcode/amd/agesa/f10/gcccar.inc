@@ -240,7 +240,7 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
     jnz     node_core_exit              # Br if yes
 
    mov     $((1 << FLAG_UNKNOWN_FAMILY)+(1 << FLAG_IS_PRIMARY)), %esi # No, Set error code, Only let BSP continue
-	
+
     mov     $APIC_BASE_ADDRESS, %ecx      # MSR:0000_001B
     _RDMSR
     bt      $APIC_BSC, %eax               # Is this the BSC?
@@ -965,7 +965,7 @@ fam15_enable_stack_hook_exit:
     btr     $DIS_HW_PF, %eax              # Turn on hardware prefetches
     #.endif                              # End workaround for erratum 498
     0:
-    _WRMSR	
+    _WRMSR
     #--------------------------------------------------------------------------
     # Begin critical sequence in which EAX, BX, ECX, and EDX must be preserved.
     #--------------------------------------------------------------------------
@@ -1609,4 +1609,3 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
     xor     %eax, %eax
 
 .endm
-

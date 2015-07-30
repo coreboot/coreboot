@@ -75,7 +75,7 @@
 
 #define OFF 0
 
-#define PVOID UINT32
+#define PVOID UINTN
 
 #define STRING_TO_UINT32(a, b, c, d) ((UINT32) ((d << 24) | (c << 16) | (b << 8) | a))
 

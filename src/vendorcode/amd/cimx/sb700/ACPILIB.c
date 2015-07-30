@@ -50,21 +50,21 @@ void* ACPI_LocateTable(
 	UINT32 Signature
 )
 {
-	UINT32	i;
-	UINT32* RsdPtr = (UINT32*)0xe0000;
-	UINT32* Rsdt = NULL;
-	DESCRIPTION_HEADER* CurrentTable;
+	UINT32 i;
+	UINT32 *RsdPtr = (UINT32 *)0xe0000;
+	UINT32 *Rsdt = NULL;
+	DESCRIPTION_HEADER *CurrentTable;
 	do{
 //		if (*RsdPtr == ' DSR' && *(RsdPtr+1) == ' RTP'){
 		if ((*RsdPtr == Int32FromChar ('R', 'S', 'D', ' ')) && (*(RsdPtr+1) == Int32FromChar ('R', 'T', 'P', ' '))){
-			Rsdt = (UINT32*)((RSDP*)RsdPtr)->RsdtAddress;
+			Rsdt = (UINT32 *)(uintptr_t)((RSDP *)RsdPtr)->RsdtAddress;
 			break;
 		}
 		RsdPtr+=4;
 	}while (RsdPtr <= (UINT32*)0xffff0);
 	if(Rsdt != NULL && ACPI_GetTableChecksum(Rsdt)==0){
 		for (i = 0;i < (((DESCRIPTION_HEADER*)Rsdt)->Length - sizeof(DESCRIPTION_HEADER))/4;i++){
-			CurrentTable = (DESCRIPTION_HEADER*)*(UINT32*)((UINT8*)Rsdt + sizeof(DESCRIPTION_HEADER) + i*4);
+			CurrentTable = (DESCRIPTION_HEADER*)(uintptr_t)*(UINT32*)((UINT8*)Rsdt + sizeof(DESCRIPTION_HEADER) + i*4);
 			if (CurrentTable->Signature == Signature) return CurrentTable;
 		}
 	}

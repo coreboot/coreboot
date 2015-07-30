@@ -432,7 +432,7 @@ PcieLocateConfigurationData (
     IDS_ERROR_TRAP;
     return AGESA_FATAL;
   }
-  (*Pcie)->StdHeader = /* (PVOID) */ (UINT32)StdHeader;
+  (*Pcie)->StdHeader = /* (PVOID) */ (UINTN)StdHeader;
   PcieUpdateConfigurationData (*Pcie);
   return  AGESA_SUCCESS;
 }

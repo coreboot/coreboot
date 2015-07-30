@@ -840,7 +840,7 @@ typedef enum {                        //vv- for debug reference only
 #define IDS_CALLOUT_POWER_PLAN_INIT               0x8D        ///< The function data of IDS callout function of Override Power Plan Init
 /// Function entry for HDT script to call
 typedef struct _SCRIPT_FUNCTION {
-  UINT32  FuncAddr;       ///< Function address in ROM
+  UINTN   FuncAddr;       ///< Function address in ROM
   CHAR8   FuncName[40];   ///< Function name
 } SCRIPT_FUNCTION;
 

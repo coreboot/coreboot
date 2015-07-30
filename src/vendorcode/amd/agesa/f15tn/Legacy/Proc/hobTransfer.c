@@ -147,7 +147,7 @@ CopyHeapToTempRamAtPost (
       //
       // 0xC0000 ~ 0xFFFFF
       //
-      HeapRamFixMtrr = (UINT32) (AMD_MTRR_FIX4k_C0000 + (((AmdHeapRamAddress >> 16) & 0x3) * 2));
+      HeapRamFixMtrr = (UINT32) (AMD_MTRR_FIX4k_C0000 + ((((UINTN)AmdHeapRamAddress >> 16) & 0x3) * 2));
       MsrData = AMD_MTRR_FIX4K_UC_DRAM;
       LibAmdMsrWrite (HeapRamFixMtrr, &MsrData, StdHeader);
       LibAmdMsrWrite ((HeapRamFixMtrr + 1), &MsrData, StdHeader);
@@ -155,7 +155,7 @@ CopyHeapToTempRamAtPost (
       //
       // 0x80000~0xBFFFF
       //
-      HeapRamFixMtrr = (UINT32) (AMD_MTRR_FIX16k_80000 + ((AmdHeapRamAddress >> 17) & 0x1));
+      HeapRamFixMtrr = (UINT32) (AMD_MTRR_FIX16k_80000 + (((UINTN)AmdHeapRamAddress >> 17) & 0x1));
       MsrData = AMD_MTRR_FIX16K_UC_DRAM;
       LibAmdMsrWrite (HeapRamFixMtrr, &MsrData, StdHeader);
     } else {
@@ -164,7 +164,7 @@ CopyHeapToTempRamAtPost (
       //
       LibAmdMsrRead (AMD_MTRR_FIX64k_00000, &MsrData, StdHeader);
       MsrData = MsrData & (~(0xFF << (8 * ((AmdHeapRamAddress >> 16) & 0x7))));
-      MsrData = MsrData | (AMD_MTRR_FIX64K_UC_DRAM << (8 * ((AmdHeapRamAddress >> 16) & 0x7)));
+      MsrData = MsrData | (AMD_MTRR_FIX64K_UC_DRAM << (8 * (((UINTN)AmdHeapRamAddress >> 16) & 0x7)));
       LibAmdMsrWrite (AMD_MTRR_FIX64k_00000, &MsrData, StdHeader);
     }
 
@@ -208,7 +208,7 @@ CopyHeapToTempRamAtPost (
     TotalSize = sizeof (HEAP_MANAGER);
     SizeOfNodeData = 0;
     AlignTo16ByteInTempMem = 0;
-    BaseAddressInCache = (UINT8 *) (UINT32)StdHeader->HeapBasePtr;
+    BaseAddressInCache = (UINT8 *) (UINTN)StdHeader->HeapBasePtr;
     HeapManagerInCache = (HEAP_MANAGER *) BaseAddressInCache;
     HeapInCacheOffset = HeapManagerInCache->FirstActiveBufferOffset;
     HeapInCache = (BUFFER_NODE *) (BaseAddressInCache + HeapInCacheOffset);
@@ -307,8 +307,8 @@ CopyHeapToMainRamAtPost (
     TotalSize = sizeof (HEAP_MANAGER);
     SizeOfNodeData = 0;
     AlignTo16ByteInMainMem = 0;
-    BaseAddressInTempMem = (UINT8 *)(UINT32) StdHeader->HeapBasePtr;
-    HeapManagerInTempMem = (HEAP_MANAGER *)(UINT32) StdHeader->HeapBasePtr;
+    BaseAddressInTempMem = (UINT8 *)(UINTN) StdHeader->HeapBasePtr;
+    HeapManagerInTempMem = (HEAP_MANAGER *)(UINTN) StdHeader->HeapBasePtr;
     HeapInTempMemOffset = HeapManagerInTempMem->FirstActiveBufferOffset;
     HeapInTempMem = (BUFFER_NODE *) (BaseAddressInTempMem + HeapInTempMemOffset);
 

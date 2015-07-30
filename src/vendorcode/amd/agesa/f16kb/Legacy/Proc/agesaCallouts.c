@@ -436,7 +436,7 @@ AgesaFchOemCallout (
   )
 {
   AGESA_STATUS Status;
-  Status = AmdAgesaCallout(AGESA_FCH_OEM_CALLOUT, (UINT32)FchData, ((FCH_DATA_BLOCK *)FchData)->StdHeader);
+  Status = AmdAgesaCallout(AGESA_FCH_OEM_CALLOUT, (UINTN)FchData, ((FCH_DATA_BLOCK *)FchData)->StdHeader);
   return  Status;
 }
 

@@ -65,6 +65,7 @@ AGESA_INC += -I$(src)/commonlib/include
 
 AGESA_CFLAGS += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss -fno-strict-aliasing
 CFLAGS_x86_32 += $(AGESA_CFLAGS)
+CFLAGS_x86_64 += $(AGESA_CFLAGS)
 
 export AGESA_ROOT := $(AGESA_ROOT)
 export AGESA_INC  := $(AGESA_INC)
@@ -74,6 +75,7 @@ CC_bootblock := $(CC_bootblock) $(AGESA_INC) $(AGESA_CFLAGS)
 CC_romstage := $(CC_romstage) $(AGESA_INC) $(AGESA_CFLAGS)
 CC_ramstage := $(CC_ramstage) $(AGESA_INC) $(AGESA_CFLAGS)
 CC_x86_32 := $(CC_x86_32) $(AGESA_INC) $(AGESA_CFLAGS)
+CC_x86_64 := $(CC_x86_64) $(AGESA_INC) $(AGESA_CFLAGS)
 
 #######################################################################
 
@@ -109,7 +111,12 @@ agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/imc/*.c)
 endif
 
 classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa
+
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,libagesa,x86_32))
+else
+$(eval $(call create_class_compiler,libagesa,x86_64))
+endif
 
 agesa_src_files := $(strip $(sort $(foreach file,$(strip $(agesa_raw_files)),$(call strip_quotes,$(file)))))
 agesa_obj_path := $(strip $(obj)/vendorcode/amd)

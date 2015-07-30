@@ -252,14 +252,14 @@ AmdIdsHdtOutInit (
     HdtoutHeader.DataIndex = 0;
     HdtoutHeader.PrintCtrl = HDTOUT_PRINTCTRL_ON;
     HdtoutHeader.NumBreakpointUnit = 0;
-    HdtoutHeader.FuncListAddr = (UINT32) IDS_FUNCLIST_ADDR;
+    HdtoutHeader.FuncListAddr = (UINTN)IDS_FUNCLIST_ADDR;
     HdtoutHeader.StatusStr[0] = 0;
     HdtoutHeader.OutBufferMode = HDTOUT_BUFFER_MODE_ON;
     HdtoutHeader.EnableMask = 0;
     HdtoutHeader.ConsoleFilter = IDS_DEBUG_PRINT_MASK;
 
     // Trigger HDTOUT breakpoint to get inputs from script
-    IdsOutPort (HDTOUT_INIT, (UINT32) &HdtoutHeader, 0);
+    IdsOutPort (HDTOUT_INIT, (UINTN) &HdtoutHeader, 0);
     // Disable AP HDTOUT if set BspOnlyFlag
     if (HdtoutHeader.BspOnlyFlag == HDTOUT_BSP_ONLY) {
       if (!IsBsp (StdHeader, &IgnoreSts)) {
@@ -299,7 +299,7 @@ AmdIdsHdtOutInit (
     } while ((HdtoutHeader.BufferSize & 0x8000) == 0);
     // If the buffer have been successfully allocated?
     if ((HdtoutHeader.BufferSize & 0x8000) == 0) {
-      LibAmdWriteCpuReg (DR3_REG, (UINT32) AllocHeapParams.BufferPtr);
+      LibAmdWriteCpuReg (DR3_REG, (UINTN)AllocHeapParams.BufferPtr);
       LibAmdMemCopy (AllocHeapParams.BufferPtr, &HdtoutHeader, sizeof (HdtoutHeader) - 2, StdHeader);
     } else {
       /// Clear DR3_REG
@@ -327,7 +327,7 @@ AmdIdsHdtOutBufferFlush (
     if (AmdIdsHdtoutGetHeader (&HdtoutHeaderPtr, StdHeader)) {
       if ((HdtoutHeaderPtr->PrintCtrl == HDTOUT_PRINTCTRL_ON) &&
           (HdtoutHeaderPtr->OutBufferMode == HDTOUT_BUFFER_MODE_ON)) {
-        IdsOutPort (HDTOUT_PRINT, (UINT32) HdtoutHeaderPtr->Data, HdtoutHeaderPtr->DataIndex);
+        IdsOutPort (HDTOUT_PRINT, (UINTN)HdtoutHeaderPtr->Data, HdtoutHeaderPtr->DataIndex);
         HdtoutHeaderPtr->DataIndex = 0;
       }
     }
@@ -355,10 +355,10 @@ AmdIdsHdtOutExitCoreTask (
   if (AmdIdsHdtoutGetHeader (&HdtoutHeaderPtr, StdHeader)) {
     if ((HdtoutHeaderPtr->PrintCtrl == HDTOUT_PRINTCTRL_ON) &&
         (HdtoutHeaderPtr->OutBufferMode == HDTOUT_BUFFER_MODE_ON)) {
-      IdsOutPort (HDTOUT_PRINT, (UINT32) HdtoutHeaderPtr->Data, HdtoutHeaderPtr->DataIndex);
+      IdsOutPort (HDTOUT_PRINT, (UINTN)HdtoutHeaderPtr->Data, HdtoutHeaderPtr->DataIndex);
     }
   }
-  IdsOutPort (HDTOUT_EXIT, (UINT32) HdtoutHeaderPtr, 0);
+  IdsOutPort (HDTOUT_EXIT, (UINTN)HdtoutHeaderPtr, 0);
 
   AmdIdsHdtOutRegisterRestore (StdHeader);
 

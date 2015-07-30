@@ -22,6 +22,11 @@ CPPFLAGS_x86_32 += -I$(src)/southbridge/amd/cimx/sb900
 CPPFLAGS_x86_32 += -I$(src)/include/cpu/amd/common
 CPPFLAGS_x86_32 += -I$(src)/vendorcode/amd/cimx/sb900
 
+CPPFLAGS_x86_64 += -I$(src)/mainboard/$(MAINBOARDDIR)
+CPPFLAGS_x86_64 += -I$(src)/southbridge/amd/cimx/sb900
+CPPFLAGS_x86_64 += -I$(src)/include/cpu/amd/common
+CPPFLAGS_x86_64 += -I$(src)/vendorcode/amd/cimx/sb900
+
 romstage-y += AcpiLib.c
 romstage-y += Azalia.c
 romstage-y += Dispatcher.c

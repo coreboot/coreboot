@@ -355,7 +355,7 @@ typedef struct {
 /// PCIe platform configuration info
 typedef struct {
   PCIe_DESCRIPTOR_HEADER  Header;                       ///< Descrptor Header
-  UINT32                  StdHeader;                    ///< Standard configuration header TODO:Used to be PVOID
+  UINTN                   StdHeader;                    ///< Standard configuration header TODO:Used to be PVOID
   UINT32                  LinkReceiverDetectionPooling; ///< Receiver pooling detection time in us.
   UINT32                  LinkL0Pooling;                ///< Pooling for link to get to L0 in us
   UINT32                  LinkGpioResetAssertionTime;   ///< Gpio reset assertion time in us

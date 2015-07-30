@@ -186,7 +186,7 @@ UINT32	Data
 
 void
 ReadMEM	(
-UINT32	Address,
+UINTN	Address,
 UINT8	OpFlag,
 void*	Value
 )
@@ -201,7 +201,7 @@ void*	Value
 
 void
 WriteMEM	(
-UINT32	Address,
+UINTN	Address,
 UINT8	OpFlag,
 void*	Value
 )
@@ -216,7 +216,7 @@ void*	Value
 
 void
 RWMEM	(
-UINT32	Address,
+UINTN	Address,
 UINT8	OpFlag,
 UINT32	Mask,
 UINT32	Data

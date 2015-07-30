@@ -113,7 +113,7 @@ GfxConfigPostInterface (
       Gfx->GfxControllerMode = GfxControllerLegacyBridgeMode;
       Gfx->GfxPciAddress.AddressValue = MAKE_SBDFO (0, 1, 5, 0, 0);
     }
-    Gfx->StdHeader = /* (PVOID) */(UINT32) StdHeader;
+    Gfx->StdHeader = /* (PVOID) */(UINTN) StdHeader;
     Gfx->GnbHdAudio = PostParamsPtr->PlatformConfig.GnbHdAudio;
     Gfx->AbmSupport = PostParamsPtr->PlatformConfig.AbmSupport;
     Gfx->DynamicRefreshRate = PostParamsPtr->PlatformConfig.DynamicRefreshRate;

@@ -1986,9 +1986,9 @@ SB_MISC_REGF0                   EQU     0F0h
 #define MAX_LT_POLLINGS         0x4000
 
 
-#define ACPIMMIO32(x) (*(unsigned int*)(unsigned int)(x))
-#define ACPIMMIO16(x) (*(unsigned short*)(unsigned int)(x))
-#define ACPIMMIO8(x)  (*(unsigned char*)(unsigned int)(x))
+#define ACPIMMIO32(x) (*(unsigned int*)(uintptr_t)(x))
+#define ACPIMMIO16(x) (*(unsigned short*)(uintptr_t)(x))
+#define ACPIMMIO8(x)  (*(unsigned char*)(uintptr_t)(x))
 
 #ifdef XHCI_SUPPORT
   #define XHCI_ACPI_MMIO_AMD_REG00     0x00

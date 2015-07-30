@@ -434,7 +434,7 @@ AgesaFchOemCallout (
   IN      VOID              *FchData
   )
 {
-  AGESA_STATUS Status;  Status = AmdAgesaCallout(AGESA_FCH_OEM_CALLOUT, (UINT32)FchData, ((FCH_DATA_BLOCK *)FchData)->StdHeader);  return  Status;	//return AGESA_UNSUPPORTED;
+  AGESA_STATUS Status;  Status = AmdAgesaCallout(AGESA_FCH_OEM_CALLOUT, (UINTN)FchData, ((FCH_DATA_BLOCK *)FchData)->StdHeader);  return  Status;	//return AGESA_UNSUPPORTED;
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -454,7 +454,7 @@ excel331  (
 {
   AGESA_STATUS Status;
 
-  Status =  AmdAgesaCallout (0x00028146ul , (UINT32)SocketIdModuleId, MemData);
+  Status =  AmdAgesaCallout (0x00028146ul , SocketIdModuleId, MemData);
 
   return Status;
 }

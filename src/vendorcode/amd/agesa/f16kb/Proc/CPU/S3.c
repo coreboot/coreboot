@@ -215,7 +215,7 @@ SaveDeviceContext (
   UINT64 EndAddress;
   VOID *OrMask;
 
-  StartAddress = (UINT64)(UINT32) DeviceList;
+  StartAddress = (UINTN) DeviceList;
   Device.CommonDeviceHeader = (DEVICE_DESCRIPTOR *) &DeviceList[1];
   OrMask = (UINT8 *) DeviceList + DeviceList->RelativeOrMaskOffset;
 
@@ -279,7 +279,7 @@ SaveDeviceContext (
       break;
     }
   }
-  EndAddress = (UINT64)(UINT32) OrMask;
+  EndAddress = (UINTN) OrMask;
   *ActualBufferSize = (UINT32) (EndAddress - StartAddress);
 }
 

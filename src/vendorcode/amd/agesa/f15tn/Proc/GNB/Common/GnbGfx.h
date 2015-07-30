@@ -125,7 +125,7 @@ typedef enum {
 
 /// Graphics Platform Configuration
 typedef struct {
-  UINT32                       StdHeader;                ///< Standard Header TODO: Used to be PVOID
+  UINTN                       StdHeader;                ///< Standard Header TODO: Used to be PVOID
   PCI_ADDR                    GfxPciAddress;            ///< Graphics PCI Address
   UMA_INFO                    UmaInfo;                  ///< UMA Information
   UINT32                      GmmBase;                  ///< GMM Base

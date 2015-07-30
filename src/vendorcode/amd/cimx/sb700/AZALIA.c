@@ -268,7 +268,7 @@ void configureAzaliaPinCmd (AMDSBCFG* pConfig, UINT32 ddBAR0, UINT8 dbChannelNum
 				if ( ((pConfig->pAzaliaOemFpCodecTableptr) == NULL) || ((pConfig->pAzaliaOemFpCodecTableptr) == 0xFFFFFFFF))
 					tempAzaliaCodecEntryPtr = (CODECENTRY*) FIXUP_PTR(&FrontPanelAzaliaCodecTableList[0]);
 				else
-					tempAzaliaCodecEntryPtr = (CODECENTRY*) pConfig->pAzaliaOemFpCodecTableptr;
+					tempAzaliaCodecEntryPtr = (CODECENTRY*)(uintptr_t) pConfig->pAzaliaOemFpCodecTableptr;
 				configureAzaliaSetConfigD4Dword(tempAzaliaCodecEntryPtr, ddChannelNum, ddBAR0);
 			}
 		}

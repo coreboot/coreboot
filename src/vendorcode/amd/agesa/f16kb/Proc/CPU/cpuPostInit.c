@@ -202,7 +202,7 @@ GetPstateGatherDataAddressAtPost (
 
   AddressValue = P_STATE_DATA_GATHER_TEMP_ADDR;
 
-  *Ptr = (UINT64 *)(UINT32)(AddressValue);
+  *Ptr = (UINT64 *)(UINTN)(AddressValue);
 
   return AGESA_SUCCESS;
 }

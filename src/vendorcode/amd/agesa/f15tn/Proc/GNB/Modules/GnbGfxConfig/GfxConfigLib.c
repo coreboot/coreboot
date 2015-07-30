@@ -183,7 +183,7 @@ GfxLocateConfigData (
     IDS_ERROR_TRAP;
     return  AGESA_FATAL;
   }
-  (*Gfx)->StdHeader = /* (PVOID) */(UINT32) StdHeader;
+  (*Gfx)->StdHeader = /* (PVOID) */(UINTN)StdHeader;
   return AGESA_SUCCESS;
 }
 

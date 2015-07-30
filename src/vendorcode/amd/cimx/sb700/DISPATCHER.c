@@ -89,7 +89,7 @@ void DispatcherEntry(void *pConfig){
 void* LocateImage(UINT32 Signature){
         void    *Result;
         UINT8   *ImagePtr = (UINT8*)(0xffffffff - (IMAGE_ALIGN-1));
-        while   ((UINT32)ImagePtr>=(0xfffffff - (NUM_IMAGE_LOCATION*IMAGE_ALIGN -1))){
+        while   ((UINTN)ImagePtr>=(0xfffffff - (NUM_IMAGE_LOCATION*IMAGE_ALIGN -1))){
                 Result = CheckImage(Signature,(void*)ImagePtr);
                 if (Result != NULL)
                         return Result;
@@ -129,7 +129,7 @@ void saveConfigPointer(AMDSBCFG* pConfig){
         UINT8   dbReg, i;
         UINT32  ddValue;
 
-        ddValue =  ((UINT32) pConfig);
+        ddValue =  ((UINTN) pConfig);
         dbReg = SB_ECMOS_REG08;
 
         for (i=0; i<=3; i++){
@@ -143,7 +143,7 @@ void saveConfigPointer(AMDSBCFG* pConfig){
 
 AMDSBCFG* getConfigPointer(){
         UINT8   dbReg, dbValue, i;
-        UINT32  ddValue=0;
+        UINTN  ddValue=0;
 
         dbReg = SB_ECMOS_REG08;
         for (i=0; i<=3; i++){

@@ -212,7 +212,7 @@ CopyHeapToTempRamAtPost (
     TotalSize = sizeof (HEAP_MANAGER);
     SizeOfNodeData = 0;
     AlignTo16ByteInTempMem = 0;
-    BaseAddressInCache = (UINT8 *)(UINT32) StdHeader->HeapBasePtr;
+    BaseAddressInCache = (UINT8 *)(UINTN) StdHeader->HeapBasePtr;
     HeapManagerInCache = (HEAP_MANAGER *) BaseAddressInCache;
     HeapInCacheOffset = HeapManagerInCache->FirstActiveBufferOffset;
     HeapInCache = (BUFFER_NODE *) (BaseAddressInCache + HeapInCacheOffset);
@@ -315,8 +315,8 @@ CopyHeapToMainRamAtPost (
     TotalSize = sizeof (HEAP_MANAGER);
     SizeOfNodeData = 0;
     AlignTo16ByteInMainMem = 0;
-    BaseAddressInTempMem = (UINT8 *)(UINT32) StdHeader->HeapBasePtr;
-    HeapManagerInTempMem = (HEAP_MANAGER *)(UINT32) StdHeader->HeapBasePtr;
+    BaseAddressInTempMem = (UINT8 *)(UINTN) StdHeader->HeapBasePtr;
+    HeapManagerInTempMem = (HEAP_MANAGER *)(UINTN) StdHeader->HeapBasePtr;
     HeapInTempMemOffset = HeapManagerInTempMem->FirstActiveBufferOffset;
     HeapInTempMem = (BUFFER_NODE *) (BaseAddressInTempMem + HeapInTempMemOffset);
 

@@ -83,8 +83,8 @@ AmdAgesaDispatcher (
   IMAGE_ENTRY ImageEntry;
   MODULE_ENTRY  ModuleEntry;
   DISPATCH_TABLE *Entry;
-  UINT32 ImageStart;
-  UINT32 ImageEnd;
+  UINTN ImageStart;
+  UINTN ImageEnd;
   AMD_IMAGE_HEADER* AltImagePtr;
 
   Status = AGESA_UNSUPPORTED;

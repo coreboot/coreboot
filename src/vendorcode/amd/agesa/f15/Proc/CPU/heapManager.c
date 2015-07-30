@@ -156,7 +156,7 @@ HeapManagerInit (
 
   GetCpuServicesOfCurrentCore ((CONST CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (CONST VOID **) &CacheInfoPtr, &Ignored, StdHeader);
-  HeapBufferPtr = (UINT8 *)(UINT32) StdHeader->HeapBasePtr;
+  HeapBufferPtr = (UINT8 *)(UINTN) StdHeader->HeapBasePtr;
 
   // Check whether the heap manager is already initialized
   LibAmdMsrRead (AMD_MTRR_VARIABLE_HEAP_MASK, &MsrData, StdHeader);
@@ -326,14 +326,14 @@ HeapAllocateBuffer (
   // Check Heap database is valid
   if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
     // The base address in StdHeader is incorrect, get base address by itself
-    BaseAddress = (UINT8 *)(UINT32) HeapGetBaseAddress (StdHeader);
+    BaseAddress = (UINT8 *)(UINTN) HeapGetBaseAddress (StdHeader);
     HeapManager = (HEAP_MANAGER *) BaseAddress;
     if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
       // Heap is not available, ASSERT here
       ASSERT (FALSE);
       return AGESA_ERROR;
     }
-    StdHeader->HeapBasePtr = (UINT64)(UINT32) BaseAddress;
+    StdHeader->HeapBasePtr = (UINTN)BaseAddress;
   }
 
   // Allocate
@@ -471,14 +471,14 @@ HeapDeallocateBuffer (
   // Check Heap database is valid
   if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
     // The base address in StdHeader is incorrect, get base address by itself
-    BaseAddress = (UINT8 *)(UINT32) HeapGetBaseAddress (StdHeader);
+    BaseAddress = (UINT8 *)(UINTN) HeapGetBaseAddress (StdHeader);
     HeapManager = (HEAP_MANAGER *) BaseAddress;
     if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
       // Heap is not available, ASSERT here
       ASSERT (FALSE);
       return AGESA_ERROR;
     }
-    StdHeader->HeapBasePtr = (UINT64)(UINT32) BaseAddress;
+    StdHeader->HeapBasePtr = (UINTN)BaseAddress;
   }
 
   OffsetOfPreviousNode = AMD_HEAP_INVALID_HEAP_OFFSET;
@@ -600,14 +600,14 @@ HeapLocateBuffer (
   // Check Heap database is valid
   if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
     // The base address in StdHeader is incorrect, get base address by itself
-    BaseAddress = (UINT8 *)(UINT32) HeapGetBaseAddress (StdHeader);
+    BaseAddress = (UINT8 *)(UINTN) HeapGetBaseAddress (StdHeader);
     HeapManager = (HEAP_MANAGER *) BaseAddress;
     if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
       // Heap is not available, ASSERT here
       ASSERT (FALSE);
       return AGESA_ERROR;
     }
-    StdHeader->HeapBasePtr = (UINT64)(UINT32) BaseAddress;
+    StdHeader->HeapBasePtr = (UINTN)BaseAddress;
   }
   OffsetOfCurrentNode =  HeapManager->FirstActiveBufferOffset;
   CurrentNode = (BUFFER_NODE *) (BaseAddress + OffsetOfCurrentNode);

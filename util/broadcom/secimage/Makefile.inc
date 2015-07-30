@@ -4,7 +4,7 @@ secimageobj += io.o
 secimageobj += misc.o
 secimageobj += sbi.o
 
-LIBS = -lgmp -lssl -lcrypto
+LIBS = -lssl -lcrypto
 
 additional-dirs += $(objutil)/broadcom/secimage
 

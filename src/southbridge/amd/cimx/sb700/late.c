@@ -234,7 +234,7 @@ static void sb700_enable(device_t dev)
 
 		case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
 			{
-				u32 ioapic_base;
+				uintptr_t ioapic_base;
 				printk(BIOS_DEBUG, "sm_init().\n");
 				ioapic_base = IO_APIC_ADDR;
 				clear_ioapic((void *)ioapic_base);

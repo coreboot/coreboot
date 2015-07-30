@@ -17,6 +17,9 @@
 ## Foundation, Inc.
 ##
 
+# CONFIG_HAVE_INTEL_FIRMWARE protects doing anything to the build.
+subdirs-y += firmware
+
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
 
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += usb_debug.c

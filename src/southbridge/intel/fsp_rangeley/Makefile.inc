@@ -20,8 +20,6 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_FSP_RANGELEY),y)
 
-subdirs-y += ../common/firmware
-
 ramstage-y += soc.c
 ramstage-y += lpc.c
 ramstage-y += sata.c

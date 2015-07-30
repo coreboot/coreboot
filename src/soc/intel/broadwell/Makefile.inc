@@ -8,7 +8,6 @@ subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
-subdirs-y += ../../../southbridge/intel/common/firmware
 
 ramstage-y += acpi.c
 ramstage-y += adsp.c

@@ -19,8 +19,6 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT),y)
 
-subdirs-y += ../common/firmware
-
 ramstage-y += pch.c
 ramstage-y += azalia.c
 ramstage-y += lpc.c

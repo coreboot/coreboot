@@ -30,7 +30,6 @@ subdirs-y += ../../../cpu/x86/cache
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../lib/fsp
 subdirs-y += fsp
-subdirs-y += ../../../southbridge/intel/common/firmware
 
 ramstage-y += memmap.c
 romstage-y += memmap.c

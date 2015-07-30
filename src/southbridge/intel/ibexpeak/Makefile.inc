@@ -19,8 +19,6 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_IBEXPEAK),y)
 
-subdirs-y += ../common/firmware
-
 ramstage-y += ../bd82x6x/pch.c
 ramstage-y += azalia.c
 ramstage-y += lpc.c

@@ -20,8 +20,6 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_FSP_BD82X6X),y)
 
-subdirs-y += ../common/firmware
-
 ramstage-y += pch.c
 ramstage-y += azalia.c
 ramstage-y += lpc.c

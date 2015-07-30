@@ -22,30 +22,33 @@
 
 .section ".text._start", "ax", %progbits
 // Maybe there's a better way.
-.space 0x2000
+.space 0x200
 .globl _start
 _start:
 
 	// pending figuring out this f-ing toolchain. Hardcode what we know works.
-  la sp, 0x4ef0 // .stacktop
-//  la a0, trap_entry
+//  la sp, 0x4ef0 // .stacktop
+//  la sp, 0x40000 // from src/mainboard/emulation/qemu-riscv
+  la sp, 0x7FF00 // stack start + stack size
+
+  // make room for HLS
+  addi sp, sp, -64 // MENTRY_FRAME_SIZE
+
+
+  //poison the stack
+  la t1, 0x40000
+  li t0, 0xdeadbeef
+  sd t0, 0(t1)
+
 //  la gp, _gp
-//  csrw evec, a0
 
   # clear any pending interrupts
+#if __GNUC__ < 5
   csrwi clear_ipi, 0
+#else
+  csrwi sip, 0
+#endif
 
-  li a0, SR_S | SR_PS | SR_EI | SR_S64 | SR_U64
-  or a1, a0, SR_EF | SR_EA
-  csrw status, a1
-  csrr a1, status
-  csrw status, a0
-
-//  and a2, a1, SR_EF
-//  sw a2, have_fp, t0
-
-//  and   a2, a1, SR_EA
-//  sw a2, have_accelerator, t0
   call main
 .=0x4000
 .stack:

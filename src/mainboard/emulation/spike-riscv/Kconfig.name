@@ -1,0 +1,2 @@
+config BOARD_EMULATION_SPIKE_UCB_RISCV
+	bool "SPIKE ucb riscv"

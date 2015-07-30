@@ -61,14 +61,22 @@ $(obj)/cpu/x86/smm/smmstub.o: $$(smmstub-objs)
 	$(CC_smmstub) $(CFLAGS_smmstub) -nostdlib -r -o $@ $^
 
 # Link the SMM stub module with a 0-byte heap.
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 $(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smmstub.elf, $(obj)/cpu/x86/smm/smmstub.o, 0,x86_32))
+else
+$(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smmstub.elf, $(obj)/cpu/x86/smm/smmstub.o, 0,x86_64))
+endif
 
 $(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf.rmod
 	$(OBJCOPY_smmstub) -O binary $< $@
 
 $(obj)/cpu/x86/smm/smmstub.ramstage.manual: $(obj)/cpu/x86/smm/smmstub
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 	cd $(dir $@); $(OBJCOPY_smmstub) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+else
+	cd $(dir $@); $(OBJCOPY_smmstub) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
+endif
 
 # C-based SMM handler.
 

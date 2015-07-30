@@ -109,7 +109,7 @@ static void smi_restore_pci_address(void)
 	outl(pci_orig, 0xcf8);
 }
 
-static inline void *smm_save_state(u32 base, int arch_offset, int node)
+static inline void *smm_save_state(uintptr_t base, int arch_offset, int node)
 {
 	base += SMM_SAVE_STATE_BEGIN(arch_offset) - (node * 0x400);
 	return (void *)base;

@@ -41,7 +41,7 @@ static void sata_init(struct device *dev)
 	#define CFG_CAP_SPM (1<<12)
 
 	volatile u32 *ahci_ptr =
-		(u32*)(pci_read_config32(dev, AHCI_BASE_ADDRESS_REG) & 0xFFFFFF00);
+		(u32*)(uintptr_t)(pci_read_config32(dev, AHCI_BASE_ADDRESS_REG) & 0xFFFFFF00);
 	u32 temp;
 
 	/* unlock the write-protect */

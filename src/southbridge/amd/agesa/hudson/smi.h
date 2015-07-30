@@ -36,22 +36,22 @@ enum smi_lvl {
 
 static inline uint32_t smi_read32(uint8_t offset)
 {
-	return read32((void *)(SMI_BASE + offset));
+	return read32((void *)((uintptr_t)SMI_BASE + offset));
 }
 
 static inline void smi_write32(uint8_t offset, uint32_t value)
 {
-	write32((void *)(SMI_BASE + offset), value);
+	write32((void *)((uintptr_t)SMI_BASE + offset), value);
 }
 
 static inline uint16_t smi_read16(uint8_t offset)
 {
-	return read16((void *)(SMI_BASE + offset));
+	return read16((void *)((uintptr_t)SMI_BASE + offset));
 }
 
 static inline void smi_write16(uint8_t offset, uint16_t value)
 {
-	write16((void *)(SMI_BASE + offset), value);
+	write16((void *)((uintptr_t)SMI_BASE + offset), value);
 }
 
 void hudson_configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);

@@ -47,8 +47,9 @@
 #define REG_NODE_ID_0X60		0x60
 #define REG_UNIT_ID_0X64		0x64
 #define REG_LINK_TRANS_CONTROL_0X68	0x68
-#define REG_LINK_INIT_CONTROL_0X6C	0x6C
+#define REG_LINK_INIT_CONTROL_0X6C	0x6c
 #define REG_HT_CAP_BASE_0X80		0x80
+#define REG_NORTHBRIDGE_CFG_3X8C	0x8c
 #define REG_HT_LINK_RETRY0_0X130	0x130
 #define REG_HT_TRAFFIC_DIST_0X164	0x164
 #define REG_HT_LINK_EXT_CONTROL0_0X170	0x170
@@ -86,6 +87,21 @@
 /***************************************************************************
  ***			FAMILY/NORTHBRIDGE SPECIFIC FUNCTIONS		***
  ***************************************************************************/
+
+static inline uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
 
 /***************************************************************************//**
  *
@@ -215,8 +231,18 @@ static void writeRoutingTable(u8 node, u8 target, u8 link, cNorthBridge *nb)
 
 static void writeNodeID(u8 node, u8 nodeID, cNorthBridge *nb)
 {
-	u32 temp = nodeID;
+	u32 temp;
 	ASSERT((node < nb->maxNodes) && (nodeID < nb->maxNodes));
+	if (is_fam15h()) {
+		temp = 1;
+		AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(node),
+					makePCIBusFromNode(node),
+					makePCIDeviceFromNode(node),
+					CPU_NB_FUNC_03,
+					REG_NORTHBRIDGE_CFG_3X8C),
+					22, 22, &temp);
+	}
+	temp = nodeID;
 	AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(node),
 				makePCIBusFromNode(node),
 				makePCIDeviceFromNode(node),

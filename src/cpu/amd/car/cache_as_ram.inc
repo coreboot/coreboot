@@ -548,8 +548,23 @@ CAR_FAM10_ap:
 	/* Fam10h NB config bit 54 was not set */
 	rolb	%cl, %bl
 roll_cfg:
+	jmp_if_not_fam15h(ap_apicid_ready)
+	cmp	$0x5, %ecx
+	jne	ap_apicid_ready
 
-	/* Calculate stack pointer. */
+	/* This is a multi-node CPU
+	 * Adjust the maximum APIC ID to a more reasonable value
+	 * given that no 32-core Family 15h processors exist
+	 */
+	movl	%ebx, %ecx
+	and	$0x0f, %ecx		/* Get lower 4 bits of CPU number */
+	and	$0x60, %ebx		/* Get node ID */
+	shrl	$0x1, %ebx		/* Shift node ID part of APIC ID down by 1 */
+	or	%ecx, %ebx		/* Recombine node ID and CPU number */
+
+ap_apicid_ready:
+
+	/* Calculate stack pointer using adjusted APIC ID stored in ebx */
 	movl	$CacheSizeAPStack, %eax
 	mull	%ebx
 	movl	$(CacheBase + (CacheSize - (CacheSizeBSPStack + CacheSizeBSPSlush))), %esp

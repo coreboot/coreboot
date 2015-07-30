@@ -5451,6 +5451,7 @@ static void mct_InitialMCT_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc 
 		cpu_divisor = (0x1 << cpu_did);
 		pMCTstat->TSCFreq = (100 * (cpu_fid + 0x10)) / cpu_divisor;
 
+		printk(BIOS_DEBUG, "mct_InitialMCT_D: mct_ForceNBPState0_En_Fam15\n");
 		mct_ForceNBPState0_En_Fam15(pMCTstat, pDCTstat);
 	} else {
 		/* K10 BKDG v3.62 section 2.8.9.2 */

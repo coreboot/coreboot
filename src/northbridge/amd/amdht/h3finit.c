@@ -385,13 +385,49 @@ static u8 convertNodeToLink(u8 srcNode, u8 targetNode, sMainData *pDat)
  */
 static void htDiscoveryFloodFill(sMainData *pDat)
 {
-	u8 currentNode = 0;
-	u8 currentLink;
+	uint8_t currentNode = 0;
+	uint8_t currentLink;
+	uint8_t currentLinkID;
+
+	/* NOTE
+	 * Each node inside a dual node (socket G34) processor must share
+	 * an adjacent node ID.  Alter the link scan order such that the
+	 * other internal node is always scanned first...
+	 */
+	uint8_t currentLinkScanOrder_Default[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+	uint8_t currentLinkScanOrder_G34_Fam10[8] = {1, 0, 2, 3, 4, 5, 6, 7};
+	uint8_t currentLinkScanOrder_G34_Fam15[8] = {2, 0, 1, 3, 4, 5, 6, 7};
+
+	uint8_t fam15h = 0;
+	uint8_t rev_gte_d = 0;
+	uint8_t dual_node = 0;
+	uint32_t f3xe8;
+	uint32_t family;
+	uint32_t model;
+
+	f3xe8 = pci_read_config32(NODE_PCI(0, 3), 0xe8);
+
+	family = model = cpuid_eax(0x80000001);
+	model = ((model & 0xf0000) >> 12) | ((model & 0xf0) >> 4);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f) {
+		/* Family 15h or later */
+		fam15h = 1;
+	}
+
+	if ((model >= 0x8) || fam15h)
+		/* Revision D or later */
+		rev_gte_d = 1;
+
+	if (rev_gte_d)
+		 /* Check for dual node capability */
+		if (f3xe8 & 0x20000000)
+			dual_node = 1;
 
 	/* Entries are always added in pairs, the even indices are the 'source'
 	 * side closest to the BSP, the odd indices are the 'destination' side
 	 */
-
 	while (currentNode <= pDat->NodesDiscovered)
 	{
 		u32 temp;
@@ -419,10 +455,23 @@ static void htDiscoveryFloodFill(sMainData *pDat)
 		/* Enable routing tables on currentNode*/
 		pDat->nb->enableRoutingTables(currentNode, pDat->nb);
 
-		for (currentLink = 0; currentLink < pDat->nb->maxLinks; currentLink++)
+		for (currentLinkID = 0; currentLinkID < pDat->nb->maxLinks; currentLinkID++)
 		{
 			BOOL linkfound;
 			u8 token;
+
+			if (currentLinkID < 8) {
+				if (dual_node) {
+					if (fam15h)
+						currentLink = currentLinkScanOrder_G34_Fam15[currentLinkID];
+					else
+						currentLink = currentLinkScanOrder_G34_Fam10[currentLinkID];
+				} else {
+					currentLink = currentLinkScanOrder_Default[currentLinkID];
+				}
+			} else {
+				currentLink = currentLinkID;
+			}
 
 			if (pDat->HtBlock->AMD_CB_IgnoreLink && pDat->HtBlock->AMD_CB_IgnoreLink(currentNode, currentLink))
 				continue;

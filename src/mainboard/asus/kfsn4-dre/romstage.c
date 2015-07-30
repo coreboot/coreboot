@@ -284,7 +284,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
 		/* Core0 on each node is configured. Now setup any additional cores. */
 		printk(BIOS_DEBUG, "start_other_cores()\n");
-		start_other_cores();
+		start_other_cores(bsp_apicid);
 		post_code(0x37);
 		wait_all_other_cores_started(bsp_apicid);
 	}

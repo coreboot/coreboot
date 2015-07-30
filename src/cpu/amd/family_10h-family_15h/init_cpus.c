@@ -55,6 +55,8 @@ static void set_EnableCf8ExtCfg(void)
 static void set_EnableCf8ExtCfg(void) { }
 #endif
 
+// #define DEBUG_HT_SETUP 1
+// #define FAM10_AP_NODE_SEQUENTIAL_START 1
 
 typedef void (*process_ap_t) (u32 apicid, void *gp);
 
@@ -139,8 +141,8 @@ uint32_t get_boot_apic_id(uint8_t node, uint32_t core) {
 //core range = 1 : core 0 only
 //core range = 2 : cores other than core0
 
-static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
-			void *gp)
+static void for_each_ap(uint32_t bsp_apicid, uint32_t core_range, int8_t node,
+			process_ap_t process_ap, void *gp)
 {
 	// here assume the OS don't change our apicid
 	u32 ap_apicid;
@@ -161,6 +163,9 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 	}
 
 	for (i = 0; i < nodes; i++) {
+		if ((node >= 0) && (i != node))
+			continue;
+
 		cores_found = get_core_num_in_bsp(i);
 
 		u32 jstart, jend;
@@ -276,7 +281,7 @@ void wait_all_other_cores_started(u32 bsp_apicid)
 {
 	// all aps other than core0
 	printk(BIOS_DEBUG, "started ap apicid: ");
-	for_each_ap(bsp_apicid, 2, wait_ap_started, (void *)0);
+	for_each_ap(bsp_apicid, 2, -1, wait_ap_started, (void *)0);
 	printk(BIOS_DEBUG, "\n");
 }
 
@@ -369,8 +374,10 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 	/* NB_CFG MSR is shared between cores, so we need make sure
 	   core0 is done at first --- use wait_all_core0_started  */
 	if (id.coreid == 0) {
-		set_apicid_cpuid_lo();	/* only set it on core0 */
-		set_EnableCf8ExtCfg();	/* only set it on core0 */
+		/* Set InitApicIdCpuIdLo / EnableCf8ExtCfg on core0 only */
+		if (!is_fam15h())
+			set_apicid_cpuid_lo();
+		set_EnableCf8ExtCfg();
 #if CONFIG_ENABLE_APIC_EXT_ID
 		enable_apic_ext_id(id.nodeid);
 #endif
@@ -423,6 +430,7 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 	}
 	// Mark the core as started.
 	lapic_write(LAPIC_MSG_REG, (apicid << 24) | F10_APSTATE_STARTED);
+	printk(BIOS_DEBUG, "CPU APICID %02x start flag set\n", apicid);
 
 	if (apicid != bsp_apicid) {
 		/* Setup each AP's cores MSRs.
@@ -583,6 +591,34 @@ static void setup_remote_node(u8 node)
 	printk(BIOS_DEBUG, " done\n");
 }
 #endif				/* CONFIG_MAX_PHYSICAL_CPUS > 1 */
+
+//it is running on core0 of node0
+static void start_other_cores(uint32_t bsp_apicid)
+{
+	u32 nodes;
+	u32 nodeid;
+
+	// disable multi_core
+	if (read_option(multi_core, 0) != 0)  {
+		printk(BIOS_DEBUG, "Skip additional core init\n");
+		return;
+	}
+
+	nodes = get_nodes();
+
+	for (nodeid = 0; nodeid < nodes; nodeid++) {
+		u32 cores = get_core_num_in_bsp(nodeid);
+		printk(BIOS_DEBUG, "init node: %02x  cores: %02x pass 1\n", nodeid, cores);
+		if (cores > 0) {
+			real_start_other_core(nodeid, cores);
+#ifdef FAM10_AP_NODE_SEQUENTIAL_START
+			printk(BIOS_DEBUG, "waiting for core start on node %d...\n", nodeid);
+			for_each_ap(bsp_apicid, 2, nodeid, wait_ap_started, (void *)0);
+			printk(BIOS_DEBUG, "...started\n");
+#endif
+		}
+	}
+}
 
 static void AMD_Errata281(u8 node, uint64_t revision, u32 platform)
 {
@@ -843,6 +879,10 @@ static void AMD_SetHtPhyRegister(u8 node, u8 link, u8 entry)
 
 	phyBase = ((u32) link << 3) | 0x180;
 
+	/* Determine if link is connected and abort if not */
+	if (!(pci_read_config32(NODE_PCI(node, 0), 0x98 + (link * 0x20)) & 0x1))
+		return;
+
 	/* Get the portal control register's initial value
 	 * and update it to access the desired phy register
 	 */
@@ -1005,10 +1045,11 @@ static void cpuSetAMDPCI(u8 node)
 	 * Hypertransport initialization has taken place.  Also note
 	 * that it is run for the first core on each node
 	 */
-	u8 i, j;
+	uint8_t i;
+	uint8_t j;
 	u32 platform;
 	u32 val;
-	u8 offset;
+	uint8_t offset;
 	uint32_t dword;
 	uint64_t revision;
 
@@ -1034,6 +1075,17 @@ static void cpuSetAMDPCI(u8 node)
 					   fam10_pci_default[i].offset, val);
 		}
 	}
+
+#ifdef DEBUG_HT_SETUP
+	/* Dump link settings */
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			printk(BIOS_DEBUG, "Node %d link %d: type register: %08x control register: %08x extended control sublink 0: %08x 1: %08x\n", i, j,
+				pci_read_config32(NODE_PCI(i, 0), 0x98 + (j * 0x20)), pci_read_config32(NODE_PCI(i, 0), 0x84 + (j * 0x20)),
+				pci_read_config32(NODE_PCI(i, 0), 0x170 + (j * 0x4)), pci_read_config32(NODE_PCI(i, 0), 0x180 + (j * 0x4)));
+		}
+	}
+#endif
 
 	for (i = 0; i < ARRAY_SIZE(fam10_htphy_default); i++) {
 		if ((fam10_htphy_default[i].revision & revision) &&

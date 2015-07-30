@@ -27,21 +27,6 @@
 uint32_t get_boot_apic_id(uint8_t node, uint32_t core);
 uint32_t wait_cpu_state(uint32_t apicid, uint32_t state, uint32_t state2);
 
-static inline uint8_t is_fam15h(void)
-{
-	uint8_t fam15h = 0;
-	uint32_t family;
-
-	family = cpuid_eax(0x80000001);
-	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
-
-	if (family >= 0x6f)
-		/* Family 15h or later */
-		fam15h = 1;
-
-	return fam15h;
-}
-
 static u32 get_core_num_in_bsp(u32 nodeid)
 {
 	u32 dword;
@@ -137,6 +122,7 @@ static void real_start_other_core(uint32_t nodeid, uint32_t cores)
 	}
 }
 
+#if (!IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX))
 //it is running on core0 of node0
 static void start_other_cores(void)
 {
@@ -153,9 +139,10 @@ static void start_other_cores(void)
 
 	for (nodeid = 0; nodeid < nodes; nodeid++) {
 		u32 cores = get_core_num_in_bsp(nodeid);
-		printk(BIOS_DEBUG, "init node: %02x  cores: %02x pass 1 \n", nodeid, cores);
+		printk(BIOS_DEBUG, "init node: %02x  cores: %02x pass 1\n", nodeid, cores);
 		if (cores > 0) {
 			real_start_other_core(nodeid, cores);
 		}
 	}
 }
+#endif

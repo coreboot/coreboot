@@ -629,44 +629,45 @@ static void prep_fid_change(void)
 }
 
 static void waitCurrentPstate(u32 target_pstate) {
-  msr_t initial_msr = rdmsr(TSC_MSR);
-  msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
-  msr_t tsc_msr;
-  u8 timedout ;
+	msr_t initial_msr = rdmsr(TSC_MSR);
+	msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
+	msr_t tsc_msr;
+	u8 timedout ;
 
-  /* paranoia ? I fear when we run fixPsNbVidBeforeWR we can enter a
-   * P1 that is a copy of P0, therefore has the same NB DID but the
-   * TSC will count twice per tick, so we have to wait for twice the
-   * count to achieve the desired timeout. But I'm likely to
-   * misunderstand this...
-   */
-  u32 corrected_timeout = (    (pstate_msr.lo==1)
-			    && (!(rdmsr(0xC0010065).lo & NB_DID_M_ON)) ) ?
-                          WAIT_PSTATE_TIMEOUT*2 : WAIT_PSTATE_TIMEOUT  ;
-  msr_t timeout;
+	/* paranoia ? I fear when we run fixPsNbVidBeforeWR we can enter a
+	* P1 that is a copy of P0, therefore has the same NB DID but the
+	* TSC will count twice per tick, so we have to wait for twice the
+	* count to achieve the desired timeout. But I'm likely to
+	* misunderstand this...
+	*/
+	u32 corrected_timeout = ((pstate_msr.lo==1)
+				&& (!(rdmsr(0xC0010065).lo & NB_DID_M_ON)) ) ?
+				WAIT_PSTATE_TIMEOUT*2 : WAIT_PSTATE_TIMEOUT;
+	msr_t timeout;
 
-  timeout.lo = initial_msr.lo + corrected_timeout ;
-  timeout.hi = initial_msr.hi;
-  if ( (((u32)0xffffffff) - initial_msr.lo) < corrected_timeout ) {
-     timeout.hi++;
-  }
+	timeout.lo = initial_msr.lo + corrected_timeout ;
+	timeout.hi = initial_msr.hi;
+	if ( (((u32)0xffffffff) - initial_msr.lo) < corrected_timeout ) {
+		timeout.hi++;
+	}
 
-  // assuming TSC ticks at 1.25 ns per tick (800 MHz)
-  do {
-      pstate_msr = rdmsr(CUR_PSTATE_MSR);
-      tsc_msr = rdmsr(TSC_MSR);
-      timedout = (tsc_msr.hi > timeout.hi)
-        	|| ((tsc_msr.hi == timeout.hi) && (tsc_msr.lo > timeout.lo ));
-  } while ( (pstate_msr.lo != target_pstate) && (! timedout) ) ;
+	// assuming TSC ticks at 1.25 ns per tick (800 MHz)
+	do {
+		pstate_msr = rdmsr(CUR_PSTATE_MSR);
+		tsc_msr = rdmsr(TSC_MSR);
+		timedout = (tsc_msr.hi > timeout.hi)
+			|| ((tsc_msr.hi == timeout.hi) && (tsc_msr.lo > timeout.lo ));
+	} while ( (pstate_msr.lo != target_pstate) && (! timedout) ) ;
 
-  if (pstate_msr.lo != target_pstate) {
-    msr_t limit_msr = rdmsr(0xc0010061);
-    printk(BIOS_ERR, "*** Time out waiting for P-state %01x. Current P-state %01x P-state current limit MSRC001_0061=%08x %08x\n", target_pstate, pstate_msr.lo, limit_msr.hi, limit_msr.lo);
+	if (pstate_msr.lo != target_pstate) {
+		msr_t limit_msr = rdmsr(0xc0010061);
+		printk(BIOS_ERR, "*** APIC ID %02x: timed out waiting for P-state %01x. Current P-state %01x P-state current limit MSRC001_0061=%08x %08x\n",
+			cpuid_ebx(0x00000001) >> 24, target_pstate, pstate_msr.lo, limit_msr.hi, limit_msr.lo);
 
-    do { // should we just go on instead ?
-      pstate_msr = rdmsr(CUR_PSTATE_MSR);
-    } while ( pstate_msr.lo != target_pstate  ) ;
-  }
+		do { // should we just go on instead ?
+			pstate_msr = rdmsr(CUR_PSTATE_MSR);
+		} while ( pstate_msr.lo != target_pstate  ) ;
+	}
 }
 
 static void set_pstate(u32 nonBoostedPState) {
@@ -1060,13 +1061,13 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	   APs and BSP */
 	ap_apicidx.num = 0;
 
-	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE_RANGE, store_ap_apicid, &ap_apicidx);
+	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE_RANGE, -1, store_ap_apicid, &ap_apicidx);
 
 	for (i = 0; i < ap_apicidx.num; i++) {
 		init_fidvid_bsp_stage1(ap_apicidx.apicid[i], &fv);
 	}
 #else
-	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE0_ONLY, init_fidvid_bsp_stage1, &fv);
+	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE0_ONLY, -1, init_fidvid_bsp_stage1, &fv);
 #endif
 
 	print_debug_fv("common_fid = ", fv.common_fid);

@@ -93,7 +93,18 @@ static void switch_spd_mux(uint8_t channel)
 	pci_write_config8(PCI_DEV(0, 0x14, 0), 0x54, byte);
 }
 
-static const uint8_t spd_addr[] = {
+static const uint8_t spd_addr_fam15[] = {
+	// Socket 0 Node 0 ("Node 0")
+	RC00, DIMM0, DIMM1, 0, 0, DIMM2, DIMM3, 0, 0,
+	// Socket 0 Node 1 ("Node 1")
+	RC00, DIMM4, DIMM5, 0, 0, DIMM6, DIMM7, 0, 0,
+	// Socket 1 Node 0 ("Node 2")
+	RC01, DIMM0, DIMM1, 0, 0, DIMM2, DIMM3, 0, 0,
+	// Socket 1 Node 1 ("Node 3")
+	RC01, DIMM4, DIMM5, 0, 0, DIMM6, DIMM7, 0, 0,
+};
+
+static const uint8_t spd_addr_fam10[] = {
 	// Socket 0 Node 0 ("Node 0")
 	RC00, DIMM0, DIMM1, 0, 0, DIMM2, DIMM3, 0, 0,
 	// Socket 0 Node 1 ("Node 1")
@@ -113,10 +124,10 @@ static void activate_spd_rom(const struct mem_controller *ctrl) {
 		switch_spd_mux(0x2);
 	} else if (ctrl->node_id == 1) {
 		printk(BIOS_DEBUG, "enable_spd_node1()\n");
-		switch_spd_mux((sysinfo->nodes <= 2)?0x2:0x3);
+		switch_spd_mux((is_fam15h() || (sysinfo->nodes <= 2))?0x2:0x3);
 	} else if (ctrl->node_id == 2) {
 		printk(BIOS_DEBUG, "enable_spd_node2()\n");
-		switch_spd_mux((sysinfo->nodes <= 2)?0x3:0x2);
+		switch_spd_mux((is_fam15h() || (sysinfo->nodes <= 2))?0x3:0x2);
 	} else if (ctrl->node_id == 3) {
 		printk(BIOS_DEBUG, "enable_spd_node3()\n");
 		switch_spd_mux(0x3);
@@ -303,18 +314,25 @@ static void execute_memory_test(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
+	uint32_t esp;
+	__asm__ volatile (
+		"movl %%esp, %0"
+		: "=r" (esp)
+		);
+
 	struct sys_info *sysinfo = &sysinfo_car;
 
 	uint32_t bsp_apicid = 0, val;
 	uint8_t byte;
 	msr_t msr;
 
-	timestamp_init(timestamp_get());
-	timestamp_add_now(TS_START_ROMSTAGE);
-
 	int s3resume = acpi_is_wakeup_s3();
 
 	if (!cpu_init_detectedx && boot_cpu()) {
+		/* Initial timestamp */
+		timestamp_init(timestamp_get());
+		timestamp_add_now(TS_START_ROMSTAGE);
+
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		set_bsp_node_CHtExtNodeCfgEn();
@@ -337,6 +355,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		byte &= ~(1 << 0);
 		pci_write_config8(PCI_DEV(0, 0x14, 3), 0x78, byte);
 	}
+
+	printk(BIOS_SPEW, "Initial stack pointer: %08x\n", esp);
 
 	post_code(0x30);
 
@@ -396,7 +416,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
 		/* Core0 on each node is configured. Now setup any additional cores. */
 		printk(BIOS_DEBUG, "start_other_cores()\n");
-		start_other_cores();
+		start_other_cores(bsp_apicid);
 		post_code(0x37);
 		wait_all_other_cores_started(bsp_apicid);
 	}
@@ -454,7 +474,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* It's the time to set ctrl in sysinfo now; */
 	printk(BIOS_DEBUG, "fill_mem_ctrl() detected %d nodes\n", sysinfo->nodes);
-	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
+	if (is_fam15h())
+		fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr_fam15);
+	else
+		fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr_fam10);
 	post_code(0x3D);
 
 #if 0
@@ -526,5 +549,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  */
 BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 {
+	/* Force BUID to 0 */
+	static const u8 swaplist[] = {0, 0, 0xFF, 0, 0xFF};
+	if ((node == 0) && (link == 1)) {	/* BSP SB link */
+		*List = swaplist;
+		return 1;
+	}
+
 	return 0;
 }

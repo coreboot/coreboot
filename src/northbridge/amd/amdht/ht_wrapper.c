@@ -82,22 +82,129 @@ static  u32 get_nodes(void)
 	return nodes;
 }
 
+static const char * event_class_string_decodes[] = {
+	[HT_EVENT_CLASS_CRITICAL] = "CRITICAL",
+	[HT_EVENT_CLASS_ERROR] = "ERROR",
+	[HT_EVENT_CLASS_HW_FAULT] = "HARDWARE FAULT",
+	[HT_EVENT_CLASS_WARNING] = "WARNING",
+	[HT_EVENT_CLASS_INFO] = "INFO"
+};
+
+static const char * event_string_decodes[] = {
+	[HT_EVENT_COH_EVENTS] = "HT_EVENT_COH_EVENTS",
+	[HT_EVENT_COH_NO_TOPOLOGY] = "HT_EVENT_COH_NO_TOPOLOGY",
+	[HT_EVENT_COH_LINK_EXCEED] = "HT_EVENT_COH_LINK_EXCEED",
+	[HT_EVENT_COH_FAMILY_FEUD] = "HT_EVENT_COH_FAMILY_FEUD",
+	[HT_EVENT_COH_NODE_DISCOVERED] = "HT_EVENT_COH_NODE_DISCOVERED",
+	[HT_EVENT_COH_MPCAP_MISMATCH] = "HT_EVENT_COH_MPCAP_MISMATCH",
+	[HT_EVENT_NCOH_EVENTS] = "HT_EVENT_NCOH_EVENTS",
+	[HT_EVENT_NCOH_BUID_EXCEED] = "HT_EVENT_NCOH_BUID_EXCEED",
+	[HT_EVENT_NCOH_LINK_EXCEED] = "HT_EVENT_NCOH_LINK_EXCEED",
+	[HT_EVENT_NCOH_BUS_MAX_EXCEED] = "HT_EVENT_NCOH_BUS_MAX_EXCEED",
+	[HT_EVENT_NCOH_CFG_MAP_EXCEED] = "HT_EVENT_NCOH_CFG_MAP_EXCEED",
+	[HT_EVENT_NCOH_DEVICE_FAILED] = "HT_EVENT_NCOH_DEVICE_FAILED",
+	[HT_EVENT_NCOH_AUTO_DEPTH] = "HT_EVENT_NCOH_AUTO_DEPTH",
+	[HT_EVENT_OPT_EVENTS] = "HT_EVENT_OPT_EVENTS",
+	[HT_EVENT_OPT_REQUIRED_CAP_RETRY] = "HT_EVENT_OPT_REQUIRED_CAP_RETRY",
+	[HT_EVENT_OPT_REQUIRED_CAP_GEN3] = "HT_EVENT_OPT_REQUIRED_CAP_GEN3",
+	[HT_EVENT_HW_EVENTS] = "HT_EVENT_HW_EVENTS",
+	[HT_EVENT_HW_SYNCHFLOOD] = "HT_EVENT_HW_SYNCHFLOOD",
+	[HT_EVENT_HW_HTCRC] = "HT_EVENT_HW_HTCRC"
+};
 
 /**
  * void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
  */
 static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 {
-	u8 i;
+	uint8_t i;
+	uint8_t log_level;
+	uint8_t dump_event_detail;
 
-	printk(BIOS_DEBUG, "AMD_CB_EventNotify()\n");
-	printk(BIOS_DEBUG, " event class: %02x\n event: %04x\n data: ", evtClass, event);
+	printk(BIOS_DEBUG, "AMD_CB_EventNotify(): ");
 
-	for (i = 0; i < *pEventData0; i++) {
-		printk(BIOS_DEBUG, " %02x ", *(pEventData0 + i));
+	/* Decode event */
+	dump_event_detail = 1;
+	switch (evtClass) {
+		case HT_EVENT_CLASS_CRITICAL:
+		case HT_EVENT_CLASS_ERROR:
+		case HT_EVENT_CLASS_HW_FAULT:
+		case HT_EVENT_CLASS_WARNING:
+		case HT_EVENT_CLASS_INFO:
+			log_level = BIOS_DEBUG;
+			printk(log_level, event_class_string_decodes[evtClass]);
+			break;
+		default:
+			log_level = BIOS_DEBUG;
+			printk(log_level, "UNKNOWN");
+			break;
 	}
-	printk(BIOS_DEBUG, "\n");
+	printk(log_level, ": ");
 
+	switch(event) {
+		case HT_EVENT_COH_EVENTS:
+		case HT_EVENT_COH_NO_TOPOLOGY:
+		case HT_EVENT_COH_LINK_EXCEED:
+		case HT_EVENT_COH_FAMILY_FEUD:
+			printk(log_level, event_string_decodes[event]);
+			break;
+		case HT_EVENT_COH_NODE_DISCOVERED:
+			{
+				printk(log_level, "HT_EVENT_COH_NODE_DISCOVERED");
+				sHtEventCohNodeDiscovered *evt = (sHtEventCohNodeDiscovered*)pEventData0;
+				printk(log_level, ": node %d link %d new node: %d",
+					evt->node, evt->link, evt->newNode);
+				dump_event_detail = 0;
+				break;
+			}
+		case HT_EVENT_COH_MPCAP_MISMATCH:
+		case HT_EVENT_NCOH_EVENTS:
+		case HT_EVENT_NCOH_BUID_EXCEED:
+		case HT_EVENT_NCOH_LINK_EXCEED:
+		case HT_EVENT_NCOH_BUS_MAX_EXCEED:
+		case HT_EVENT_NCOH_CFG_MAP_EXCEED:
+			printk(log_level, event_string_decodes[event]);
+			break;
+		case HT_EVENT_NCOH_DEVICE_FAILED:
+			{
+				printk(log_level, event_string_decodes[event]);
+				sHtEventNcohDeviceFailed *evt = (sHtEventNcohDeviceFailed*)pEventData0;
+				printk(log_level, ": node %d link %d depth: %d attemptedBUID: %d",
+					evt->node, evt->link, evt->depth, evt->attemptedBUID);
+				dump_event_detail = 0;
+				break;
+			}
+		case HT_EVENT_NCOH_AUTO_DEPTH:
+			{
+				printk(log_level, event_string_decodes[event]);
+				sHtEventNcohAutoDepth *evt = (sHtEventNcohAutoDepth*)pEventData0;
+				printk(log_level, ": node %d link %d depth: %d",
+					evt->node, evt->link, evt->depth);
+				dump_event_detail = 0;
+				break;
+			}
+		case HT_EVENT_OPT_EVENTS:
+		case HT_EVENT_OPT_REQUIRED_CAP_RETRY:
+		case HT_EVENT_OPT_REQUIRED_CAP_GEN3:
+		case HT_EVENT_HW_EVENTS:
+		case HT_EVENT_HW_SYNCHFLOOD:
+		case HT_EVENT_HW_HTCRC:
+			printk(log_level, event_string_decodes[event]);
+			break;
+		default:
+			printk(log_level, "HT_EVENT_UNKNOWN");
+			break;
+	}
+	printk(log_level, "\n");
+
+	if (dump_event_detail) {
+		printk(BIOS_DEBUG, " event class: %02x\n event: %04x\n data: ", evtClass, event);
+
+		for (i = 0; i < *pEventData0; i++) {
+			printk(BIOS_DEBUG, " %02x ", *(pEventData0 + i));
+		}
+		printk(BIOS_DEBUG, "\n");
+	}
 }
 
 /**
@@ -206,9 +313,10 @@ void amd_ht_fixup(struct sys_info *sysinfo) {
 				for (node = 0; node < node_count; node++) {
 					f3xe8 = pci_read_config32(NODE_PCI(node, 3), 0xe8);
 					uint8_t internal_node_number = ((f3xe8 & 0xc0000000) >> 30);
-					printk(BIOS_DEBUG, "amd_ht_fixup(): node %d (internal node ID %d): disabling defective HT link\n", node, internal_node_number);
+					printk(BIOS_DEBUG, "amd_ht_fixup(): node %d (internal node ID %d): disabling defective HT link", node, internal_node_number);
 					if (internal_node_number == 0) {
 						uint8_t package_link_3_connected = pci_read_config32(NODE_PCI(node, 0), (fam15h)?0x98:0xd8) & 0x1;
+						printk(BIOS_DEBUG, " (L3 connected: %d)\n", package_link_3_connected);
 						if (package_link_3_connected) {
 							/* Set WidthIn and WidthOut to 0 */
 							dword = pci_read_config32(NODE_PCI(node, 0), (fam15h)?0x84:0xc4);
@@ -230,15 +338,21 @@ void amd_ht_fixup(struct sys_info *sysinfo) {
 						}
 					} else if (internal_node_number == 1) {
 						uint8_t package_link_3_connected = pci_read_config32(NODE_PCI(node, 0), (fam15h)?0xf8:0xb8) & 0x1;
+						printk(BIOS_DEBUG, " (L3 connected: %d)\n", package_link_3_connected);
 						if (package_link_3_connected) {
 							/* Set WidthIn and WidthOut to 0 */
 							dword = pci_read_config32(NODE_PCI(node, 0), (fam15h)?0xe4:0xa4);
 							dword &= ~0x77000000;
 							pci_write_config32(NODE_PCI(node, 0), (fam15h)?0xe4:0xa4, dword);
 							/* Set Ganged to 1 */
-							dword = pci_read_config32(NODE_PCI(node, 0), (fam15h)?0x18c:0x174);
+							/* WARNING
+							 * The Family 15h BKDG states that 0x18c should be set,
+							 * however this is in error.  0x17c is the correct control
+							 * register (sublink 0) for these processors...
+							 */
+							dword = pci_read_config32(NODE_PCI(node, 0), (fam15h)?0x17c:0x174);
 							dword |= 0x00000001;
-							pci_write_config32(NODE_PCI(node, 0), (fam15h)?0x18c:0x174, dword);
+							pci_write_config32(NODE_PCI(node, 0), (fam15h)?0x17c:0x174, dword);
 						} else {
 							/* Set ConnDly to 1 */
 							dword = pci_read_config32(NODE_PCI(node, 0), 0x16c);

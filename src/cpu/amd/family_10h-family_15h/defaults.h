@@ -240,17 +240,36 @@ static const struct {
 	{ 0, 0x68, (AMD_DR_B0 | AMD_DR_B1),
 	  AMD_PTYPE_SVR, 0x00200000, 0x00600000 },	/* [22:21] DsNpReqLmt0 = 01b */
 
-	{ 0, 0x84, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
+	{ 0, 0x84, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  0x00002000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
 
-	{ 0, 0xA4, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
+	{ 0, 0xA4, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  0x00002000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
 
-	{ 0, 0xC4, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
+	{ 0, 0xC4, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  0x00002000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
 
-	{ 0, 0xE4, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
+	{ 0, 0xE4, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  0x00002000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
+
+	/* FIXME
+	 * Non-C32 packages only
+	 */
+	{ 0, 0x84, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00000000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
+
+	{ 0, 0xA4, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00000000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
+
+	{ 0, 0xC4, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00000000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
+
+	{ 0, 0xE4, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00000000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
+
+	/* FIXME
+	 * C32 package is not supported at this time
+	 */
 
 	/* Link Global Retry Control Register */
 	{ 0, 0x150, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
@@ -610,38 +629,79 @@ static const struct {
 	{ 0x530A, AMD_DR_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
 	  0x00004400, 0x00006400 },	/* HT_PHY_DLL_REG */
 
-	{ 0xCF, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	{ 0xCF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
 	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
 					   completeness */
 
-	{ 0xDF, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	{ 0xDF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
 	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
 					   completeness */
 
-	{ 0xCF, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
+	{ 0xCF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
 	  0x0000006D, 0x000000FF },	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
 
-	{ 0xDF, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,  HTPHY_LINKTYPE_HT1,
+	{ 0xDF, AMD_FAM10_ALL, AMD_PTYPE_ALL,  HTPHY_LINKTYPE_HT1,
 	  0x0000006D, 0x000000FF }, 	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
 
 	/* Link Phy Receiver Loop Filter Registers */
-	{ 0xD1, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	{ 0xD1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
 	  0x08040000, 0x3FFFC000 },	/* [29:22] LfcMax = 20h,
 					   [21:14] LfcMin = 10h */
 
-	{ 0xC1, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	{ 0xC1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
 	  0x08040000, 0x3FFFC000 },	/* [29:22] LfcMax = 20h,
 					   [21:14] LfcMin = 10h */
 
-	{ 0xD1, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
+	{ 0xD1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
 	  0x04020000, 0x3FFFC000 },	/* [29:22] LfcMax = 10h,
 					   [21:14] LfcMin = 08h */
 
-	{ 0xC1, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
+	{ 0xC1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
 	  0x04020000, 0x3FFFC000 },	/* [29:22] LfcMax = 10h,
 					   [21:14] LfcMin = 08h */
 
-	{ 0xC0, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
+	{ 0xC0, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
 	  0x40040000, 0xe01F0000 },	/* [31:29] RttCtl = 02h,
-								   [20:16] RttIndex = 04h */
+					  [20:16] RttIndex = 04h */
+
+/* FIXME
+ * Causes lockups for some reason when more than one package is installed
+ * Debug and reactivate!
+ */
+// #if 0
+	{ 0xCF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
+					   completeness */
+
+	{ 0xDF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
+					   completeness */
+
+	{ 0xCF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
+	  0x0000006D, 0x000000FF },	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
+
+	{ 0xDF, AMD_FAM15_ALL, AMD_PTYPE_ALL,  HTPHY_LINKTYPE_HT1,
+	  0x0000006D, 0x000000FF }, 	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
+
+	/* Link Phy Receiver Loop Filter Registers */
+	{ 0xD1, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	  0x08040000, 0x3FFFC000 },	/* [29:22] LfcMax = 20h,
+					   [21:14] LfcMin = 10h */
+
+	{ 0xC1, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	  0x08040000, 0x3FFFC000 },	/* [29:22] LfcMax = 20h,
+					   [21:14] LfcMin = 10h */
+
+	{ 0xD1, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
+	  0x04020000, 0x3FFFC000 },	/* [29:22] LfcMax = 10h,
+					   [21:14] LfcMin = 08h */
+
+	{ 0xC1, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
+	  0x04020000, 0x3FFFC000 },	/* [29:22] LfcMax = 10h,
+					   [21:14] LfcMin = 08h */
+
+	{ 0xC0, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
+	  0x40040000, 0xe01F0000 },	/* [31:29] RttCtl = 02h,
+					  [20:16] RttIndex = 04h */
+// #endif
 };

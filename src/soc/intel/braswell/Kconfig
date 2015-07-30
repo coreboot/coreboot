@@ -117,18 +117,6 @@ config RESET_ON_INVALID_RAMSTAGE_CACHE
 	  the system will reset otherwise the ramstage will be reloaded from
 	  cbfs.
 
-config CBFS_SIZE
-	hex "Size of CBFS filesystem in ROM"
-	default 0x100000
-	help
-	  The firmware image has to store a lot more than just coreboot,
-	  including:
-	   - a firmware descriptor
-	   - Intel Management Engine firmware
-	   - MRC cache information
-	  This option allows to limit the size of the CBFS portion in the
-	  firmware image.
-
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock Management Engine section"
 	default n

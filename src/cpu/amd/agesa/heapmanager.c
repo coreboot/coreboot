@@ -379,7 +379,7 @@ static AGESA_STATUS agesa_LocateBuffer(UINT32 Func, UINT32 Data, VOID *ConfigPtr
 
 }
 
-AGESA_STATUS HeapManagerCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS HeapManagerCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	if (Func == AGESA_LOCATE_BUFFER)
 		return agesa_LocateBuffer(Func, Data, ConfigPtr);

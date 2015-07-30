@@ -25,7 +25,7 @@
 #include <stdlib.h>
 
 
-static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -41,7 +41,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 /*  Call the host environment interface to provide a user hook opportunity. */
-static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
   AGESA_STATUS      Status;
   UINTN             FcnData;

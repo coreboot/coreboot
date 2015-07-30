@@ -80,7 +80,7 @@ static void restore_socket(UINT8 original_value)
 }
 #endif
 
-static AGESA_STATUS board_ReadSpd (UINT32 Func,UINT32 Data, VOID *ConfigPtr);
+static AGESA_STATUS board_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -95,7 +95,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 };
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
-static AGESA_STATUS board_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS board_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 #ifdef __PRE_RAM__

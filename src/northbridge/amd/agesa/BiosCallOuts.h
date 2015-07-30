@@ -24,22 +24,22 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_Reset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt);
+AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData, VOID *ConfigPrt);
 
-AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
-AGESA_STATUS HeapManagerCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS HeapManagerCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 typedef struct {
 	UINT32 CalloutName;
-	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
+	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINTN Data, VOID* ConfigPtr);
 } BIOS_CALLOUT_STRUCT;
 
 extern const BIOS_CALLOUT_STRUCT BiosCallouts[];

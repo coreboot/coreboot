@@ -30,7 +30,7 @@
  * Dedicated reset is not needed for the on-board Intel I210 GbE controller.
  */
 
-static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -47,7 +47,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 /*	Call the host environment interface to provide a user hook opportunity. */
-static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	MEM_DATA_STRUCT *MemData = ConfigPtr;
 

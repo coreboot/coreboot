@@ -474,39 +474,16 @@ static void southbridge_smi_monitor(void)
 
 typedef void (*smi_handler_t)(void);
 
-static smi_handler_t southbridge_smi[32] = {
-	NULL,			  /*  [0] reserved */
-	NULL,			  /*  [1] reserved */
-	NULL,			  /*  [2] BIOS_STS */
-	NULL,			  /*  [3] LEGACY_USB_STS */
-	southbridge_smi_sleep,	  /*  [4] SLP_SMI_STS */
-	southbridge_smi_apmc,	  /*  [5] APM_STS */
-	NULL,			  /*  [6] SWSMI_TMR_STS */
-	NULL,			  /*  [7] reserved */
-	southbridge_smi_pm1,	  /*  [8] PM1_STS */
-	southbridge_smi_gpe0,	  /*  [9] GPE0_STS */
-	southbridge_smi_gpi,	  /* [10] GPI_STS */
-	southbridge_smi_mc,	  /* [11] MCSMI_STS */
-	NULL,			  /* [12] DEVMON_STS */
-	southbridge_smi_tco,	  /* [13] TCO_STS */
-	southbridge_smi_periodic, /* [14] PERIODIC_STS */
-	NULL,			  /* [15] SERIRQ_SMI_STS */
-	NULL,			  /* [16] SMBUS_SMI_STS */
-	NULL,			  /* [17] LEGACY_USB2_STS */
-	NULL,			  /* [18] INTEL_USB2_STS */
-	NULL,			  /* [19] reserved */
-	NULL,			  /* [20] PCI_EXP_SMI_STS */
-	southbridge_smi_monitor,  /* [21] MONITOR_STS */
-	NULL,			  /* [22] reserved */
-	NULL,			  /* [23] reserved */
-	NULL,			  /* [24] reserved */
-	NULL,			  /* [25] EL_SMI_STS */
-	NULL,			  /* [26] SPI_STS */
-	NULL,			  /* [27] reserved */
-	NULL,			  /* [28] reserved */
-	NULL,			  /* [29] reserved */
-	NULL,			  /* [30] reserved */
-	NULL			  /* [31] reserved */
+static smi_handler_t southbridge_smi[SMI_STS_BITS] = {
+	[SMI_ON_SLP_EN_STS_BIT] = southbridge_smi_sleep,
+	[APM_STS_BIT] = southbridge_smi_apmc,
+	[PM1_STS_BIT] = southbridge_smi_pm1,
+	[GPE0_STS_BIT] = southbridge_smi_gpe0,
+	[GPIO_STS_BIT] = southbridge_smi_gpi,
+	[MCSMI_STS_BIT] = southbridge_smi_mc,
+	[TCO_STS_BIT] = southbridge_smi_tco,
+	[PERIODIC_STS_BIT] = southbridge_smi_periodic,
+	[MONITOR_STS_BIT] = southbridge_smi_monitor,
 };
 
 /*
@@ -524,7 +501,7 @@ void southbridge_smi_handler(void)
 	smi_sts = clear_smi_status();
 
 	/* Call SMI sub handler for each of the status bits */
-	for (i = 0; i < 31; i++) {
+	for (i = 0; i < ARRAY_SIZE(southbridge_smi); i++) {
 		if (smi_sts & (1 << i)) {
 			if (southbridge_smi[i]) {
 				southbridge_smi[i]();

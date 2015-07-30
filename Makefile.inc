@@ -188,11 +188,13 @@ endef
 
 #######################################################################
 # Add handler to compile ACPI's ASL
+# arg1: base file name
+# arg2: y or n for including in cbfs. defaults to y
 define asl_template
 $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-file = $(obj)/$(1).aml
 $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-type = raw
 $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-compression = none
-cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml
+cbfs-files-$(if $(2),$(2),y) += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml
 $(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) $$(CPPFLAGS_ramstage) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-ramstage-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$@

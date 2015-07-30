@@ -283,7 +283,11 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
 endif
 ifeq ($(CONFIG_HAVE_ACPI_TABLES),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
+ifeq ($(CONFIG_COMPILE_IN_DSDT),y)
+$(eval $(call asl_template,dsdt,n))
+else
 $(eval $(call asl_template,dsdt))
+endif
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/fadt.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
 endif

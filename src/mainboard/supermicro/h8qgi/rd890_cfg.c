@@ -109,7 +109,7 @@ static void nb_platform_config(device_t nb_dev, AMD_NB_CONFIG *NbConfigPtr)
  * @param[in] *config  Northbridge configuration structure pointer.
  *
  */
-static u32 rd890_callout_entry(u32 func, u32 data, void *config)
+static u32 rd890_callout_entry(u32 func, uintptr_t data, void *config)
 {
 	u32 ret = 0;
 #ifndef __PRE_RAM__

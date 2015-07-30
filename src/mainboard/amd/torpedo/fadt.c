@@ -60,8 +60,16 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	memcpy(header->asl_compiler_id, ASLC, 4);
 	header->asl_compiler_revision = 0;
 
-	fadt->firmware_ctrl = (u32) facs;
-	fadt->dsdt = (u32) dsdt;
+	if ((uintptr_t)facs > 0xffffffff)
+		printk(BIOS_DEBUG, "ACPI: FACS lives above 4G\n");
+	else
+		fadt->firmware_ctrl = (uintptr_t)facs;
+
+	if ((uintptr_t)dsdt > 0xffffffff)
+		printk(BIOS_DEBUG, "ACPI: DSDT lives above 4G\n");
+	else
+		fadt->dsdt = (uintptr_t)dsdt;
+
 	/* 3=Workstation,4=Enterprise Server, 7=Performance Server */
 	fadt->preferred_pm_profile = 0x03;
 	fadt->sci_int = 9;
@@ -138,10 +146,10 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->reset_reg.addrh = 0x0;
 
 	fadt->reset_value = 6;
-	fadt->x_firmware_ctl_l = (u32) facs;
-	fadt->x_firmware_ctl_h = 0;
-	fadt->x_dsdt_l = (u32) dsdt;
-	fadt->x_dsdt_h = 0;
+	fadt->x_firmware_ctl_l = ((uintptr_t)facs) & 0xffffffff;
+	fadt->x_firmware_ctl_h = ((uint64_t)(uintptr_t)facs) >> 32;
+	fadt->x_dsdt_l = ((uintptr_t)dsdt) & 0xffffffff;
+	fadt->x_dsdt_h = ((uint64_t)(uintptr_t)dsdt) >> 32;
 
 	fadt->x_pm1a_evt_blk.space_id = 1;
 	fadt->x_pm1a_evt_blk.bit_width = 32;

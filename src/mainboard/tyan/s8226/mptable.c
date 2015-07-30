@@ -59,7 +59,7 @@ static void *smp_write_config_table(void *v)
 	dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	if (dev) {
 		/* Set SP5100 IOAPIC ID */
-		dword = (u32 *)(pci_read_config32(dev, 0x74) & 0xfffffff0);
+		dword = (u32 *)(uintptr_t)(pci_read_config32(dev, 0x74) & 0xfffffff0);
 		smp_write_ioapic(mc, apicid_sp5100, 0x20, dword);
 
 #ifdef UNUSED_CODE
@@ -96,7 +96,7 @@ static void *smp_write_config_table(void *v)
 		dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 		if (dev) {
 			pci_write_config32(dev, 0xF8, 0x1);
-			dword = (u32 *)(pci_read_config32(dev, 0xFC) & 0xfffffff0);
+			dword = (u32 *)(uintptr_t)(pci_read_config32(dev, 0xFC) & 0xfffffff0);
 			smp_write_ioapic(mc, apicid_sr5650, 0x20, dword);
 		}
 

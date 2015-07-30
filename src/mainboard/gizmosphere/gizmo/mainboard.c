@@ -75,17 +75,16 @@ static void mainboard_enable(device_t dev)
 	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGDA, AccWidthUint8, 0xFB, 0x04);
 }
 
-void mainboard_final( void *chip_info );
-void mainboard_final( void *chip_info )
+static void mainboard_final(void *chip_info)
 {
 	device_t ahci_dev;
-	u32 ABAR;
+	uintptr_t ABAR;
 	u8 *memptr;
 
 	ahci_dev = dev_find_slot(0, PCI_DEVFN(0x11, 0));
 	ABAR = pci_read_config32(ahci_dev, 0x24);
 	ABAR &= 0xFFFFFC00;
-	memptr = (u8 *) (ABAR + 0x100 + 0x80 + 0x2C); /* we're on the 2nd port */
+	memptr = (u8 *)(ABAR + 0x100 + 0x80 + 0x2C); /* we're on the 2nd port */
 	*memptr = 0x21; /* force to GEN2 and start re-negotiate */
 	mdelay (1);
 	*memptr = 0x20;

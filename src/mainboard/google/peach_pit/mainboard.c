@@ -47,8 +47,8 @@
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
 
 static struct edid edid = {
-	.ha = 1366,
-	.va = 768,
+	.mode.ha = 1366,
+	.mode.va = 768,
 	.framebuffer_bits_per_pixel = 16,
 	.x_resolution = 1366,
 	.y_resolution = 768,

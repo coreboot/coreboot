@@ -93,15 +93,15 @@ void rk_display_init(device_t dev, u32 lcdbase,
 		return;
 	}
 
-	if (rkclk_configure_vop_dclk(conf->vop_id, edid.pixel_clock * KHz)) {
+	if (rkclk_configure_vop_dclk(conf->vop_id, edid.mode.pixel_clock * KHz)) {
 		printk(BIOS_WARNING, "config vop err\n");
 		return;
 	}
 
 	edid.framebuffer_bits_per_pixel = conf->framebuffer_bits_per_pixel;
-	edid.bytes_per_line = edid.ha * conf->framebuffer_bits_per_pixel / 8;
-	edid.x_resolution = edid.ha;
-	edid.y_resolution = edid.va;
+	edid.bytes_per_line = edid.mode.ha * conf->framebuffer_bits_per_pixel / 8;
+	edid.x_resolution = edid.mode.ha;
+	edid.y_resolution = edid.mode.va;
 	rkvop_mode_set(conf->vop_id, &edid, detected_mode);
 
 	rkvop_enable(conf->vop_id, lcdbase, &edid);

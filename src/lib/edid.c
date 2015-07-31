@@ -445,19 +445,19 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 
 	if (! c->did_detailed_timing){
 		/* Edid contains pixel clock in terms of 10KHz */
-		out->pixel_clock = (x[0] + (x[1] << 8)) * 10;
+		out->mode.pixel_clock = (x[0] + (x[1] << 8)) * 10;
 		extra_info.x_mm = (x[12] + ((x[14] & 0xF0) << 4));
 		extra_info.y_mm = (x[13] + ((x[14] & 0x0F) << 8));
-		out->ha = (x[2] + ((x[4] & 0xF0) << 4));
-		out->hbl = (x[3] + ((x[4] & 0x0F) << 8));
-		out->hso = (x[8] + ((x[11] & 0xC0) << 2));
-		out->hspw = (x[9] + ((x[11] & 0x30) << 4));
-		out->hborder = x[15];
-		out->va = (x[5] + ((x[7] & 0xF0) << 4));
-		out->vbl = (x[6] + ((x[7] & 0x0F) << 8));
-		out->vso = ((x[10] >> 4) + ((x[11] & 0x0C) << 2));
-		out->vspw = ((x[10] & 0x0F) + ((x[11] & 0x03) << 4));
-		out->vborder = x[16];
+		out->mode.ha = (x[2] + ((x[4] & 0xF0) << 4));
+		out->mode.hbl = (x[3] + ((x[4] & 0x0F) << 8));
+		out->mode.hso = (x[8] + ((x[11] & 0xC0) << 2));
+		out->mode.hspw = (x[9] + ((x[11] & 0x30) << 4));
+		out->mode.hborder = x[15];
+		out->mode.va = (x[5] + ((x[7] & 0xF0) << 4));
+		out->mode.vbl = (x[6] + ((x[7] & 0x0F) << 8));
+		out->mode.vso = ((x[10] >> 4) + ((x[11] & 0x0C) << 2));
+		out->mode.vspw = ((x[10] & 0x0F) + ((x[11] & 0x03) << 4));
+		out->mode.vborder = x[16];
 		/* set up some reasonable defaults for payloads.
 		 * We observe that most modern chipsets we work with
 		 * tend to support rgb888 without regard to the
@@ -475,11 +475,11 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 		 */
 		out->framebuffer_bits_per_pixel = 32;
 
-		out->x_resolution = ALIGN(out->ha *
+		out->x_resolution = ALIGN(out->mode.ha *
 					  ((out->framebuffer_bits_per_pixel + 7) / 8),
 					  64) / (out->framebuffer_bits_per_pixel/8);
-		out->y_resolution = out->va;
-		out->bytes_per_line = ALIGN(out->ha *
+		out->y_resolution = out->mode.va;
+		out->bytes_per_line = ALIGN(out->mode.ha *
 					    ((out->framebuffer_bits_per_pixel + 7)/8),
 					    64);
 		printk(BIOS_SPEW, "Did detailed timing\n");
@@ -499,8 +499,8 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 		extra_info.syncmethod = "";
 		break;
 	}
-	out->pvsync = (x[17] & (1 << 2)) ? '+' : '-';
-	out->phsync = (x[17] & (1 << 1)) ? '+' : '-';
+	out->mode.pvsync = (x[17] & (1 << 2)) ? '+' : '-';
+	out->mode.phsync = (x[17] & (1 << 1)) ? '+' : '-';
 	switch (x[17] & 0x61) {
 	case 0x20:
 		extra_info.stereo = "field sequential L/R";
@@ -529,17 +529,18 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 	       "               %04x %04x %04x %04x hborder %x\n"
 	       "               %04x %04x %04x %04x vborder %x\n"
 	       "               %chsync %cvsync%s%s %s\n",
-	       out->pixel_clock,
+	       out->mode.pixel_clock,
 	       extra_info.x_mm,
 	       extra_info.y_mm,
-	       out->ha, out->ha + out->hso, out->ha + out->hso + out->hspw,
-	       out->ha + out->hbl, out->hborder,
-	       out->va, out->va + out->vso, out->va + out->vso + out->vspw,
-	       out->va + out->vbl, out->vborder,
-	       out->phsync, out->pvsync,
+	       out->mode.ha, out->mode.ha + out->mode.hso,
+	       out->mode.ha + out->mode.hso + out->mode.hspw,
+	       out->mode.ha + out->mode.hbl, out->mode.hborder,
+	       out->mode.va, out->mode.va + out->mode.vso,
+	       out->mode.va + out->mode.vso + out->mode.vspw,
+	       out->mode.va + out->mode.vbl, out->mode.vborder,
+	       out->mode.phsync, out->mode.pvsync,
 	       extra_info.syncmethod, x[17] & 0x80 ?" interlaced" : "",
-	       extra_info.stereo
-	);
+	       extra_info.stereo);
 	return 1;
 }
 

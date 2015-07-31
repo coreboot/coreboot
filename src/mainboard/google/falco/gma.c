@@ -234,8 +234,8 @@ int panel_lightup(struct intel_dp *dp, unsigned int init_fb)
 
 	palette();
 
-	pixels = dp->edid.ha * (dp->edid.va-4) * 4;
-	printk(BIOS_SPEW, "ha=%d, va=%d\n",dp->edid.ha, dp->edid.va);
+	pixels = dp->edid.mode.ha * (dp->edid.mode.va-4) * 4;
+	printk(BIOS_SPEW, "ha=%d, va=%d\n",dp->edid.mode.ha, dp->edid.mode.va);
 
 	test_gfx(dp);
 

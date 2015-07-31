@@ -216,22 +216,22 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	u32 hactive = edid.x_resolution;
 	u32 vactive = edid.y_resolution;
-	u32 right_border = edid.hborder;
-	u32 bottom_border = edid.vborder;
-	int hpolarity = (edid.phsync == '-');
-	int vpolarity = (edid.pvsync == '-');
-	u32 vsync = edid.vspw;
-	u32 hsync = edid.hspw;
-	u32 vblank = edid.vbl;
-	u32 hblank = edid.hbl;
-	u32 hfront_porch = edid.hso;
-	u32 vfront_porch = edid.vso;
+	u32 right_border = edid.mode.hborder;
+	u32 bottom_border = edid.mode.vborder;
+	int hpolarity = (edid.mode.phsync == '-');
+	int vpolarity = (edid.mode.pvsync == '-');
+	u32 vsync = edid.mode.vspw;
+	u32 hsync = edid.mode.hspw;
+	u32 vblank = edid.mode.vbl;
+	u32 hblank = edid.mode.hbl;
+	u32 hfront_porch = edid.mode.hso;
+	u32 vfront_porch = edid.mode.vso;
 
 	u32 candp1, candn;
 	u32 best_delta = 0xffffffff;
 
-	u32 target_frequency = info->lvds_dual_channel ? edid.pixel_clock
-		: (2 * edid.pixel_clock);
+	u32 target_frequency = info->lvds_dual_channel ? edid.mode.pixel_clock
+		: (2 * edid.mode.pixel_clock);
 	u32 pixel_p1 = 1;
 	u32 pixel_n = 1;
 	u32 pixel_m1 = 1;
@@ -308,9 +308,9 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	u32 link_m1;
 	u32 link_n1 = 0x00080000;
 
-	link_m1 = ((uint64_t)link_n1 * edid.pixel_clock) / link_frequency;
+	link_m1 = ((uint64_t)link_n1 * edid.mode.pixel_clock) / link_frequency;
 
-	data_m1 = ((uint64_t)data_n1 * 18 * edid.pixel_clock)
+	data_m1 = ((uint64_t)data_n1 * 18 * edid.mode.pixel_clock)
 		/ (link_frequency * 8 * (info->lvds_num_lanes ? : 1));
 
 	printk(BIOS_INFO, "bringing up panel at resolution %d x %d\n",

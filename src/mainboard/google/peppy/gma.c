@@ -151,12 +151,12 @@ static void test_gfx(struct intel_dp *dp)
 	   are made right. Thus, to be used only for testing, not otherwise
 	*/
 
-	for (i = 0; i < (dp->edid.va - 4); i++) {
+	for (i = 0; i < (dp->edid.mode.va - 4); i++) {
 		u32 *l;
 		int j;
 		u32 tcolor = 0x0ff;
-		for (j = 0; j < (dp->edid.ha-4); j++) {
-			if (j == (dp->edid.ha/2)) {
+		for (j = 0; j < (dp->edid.mode.ha-4); j++) {
+			if (j == (dp->edid.mode.ha/2)) {
 				tcolor = 0xff00;
 			}
 			l = (u32*)(dp->graphics + i * dp->stride + j * sizeof(tcolor));
@@ -246,7 +246,7 @@ int panel_lightup(struct intel_dp *dp, unsigned int init_fb)
 	compute_display_params(dp);
 
 	printk(BIOS_SPEW, "pixel_clock is %i, link_clock is %i\n",
-	       dp->edid.pixel_clock, dp->edid.link_clock);
+	       dp->edid.mode.pixel_clock, dp->edid.link_clock);
 
 	intel_ddi_set_pipe_settings(dp);
 
@@ -254,8 +254,8 @@ int panel_lightup(struct intel_dp *dp, unsigned int init_fb)
 
 	palette();
 
-	pixels = dp->edid.ha * (dp->edid.va-4) * 4;
-	printk(BIOS_SPEW, "ha=%d, va=%d\n",dp->edid.ha, dp->edid.va);
+	pixels = dp->edid.mode.ha * (dp->edid.mode.va-4) * 4;
+	printk(BIOS_SPEW, "ha=%d, va=%d\n",dp->edid.mode.ha, dp->edid.mode.va);
 	test_gfx(dp);
 
 	set_vbe_mode_info_valid(&dp->edid, (uintptr_t)dp->graphics);

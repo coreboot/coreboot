@@ -38,6 +38,7 @@
 void compute_display_params(struct intel_dp *dp)
 {
 	struct edid *edid = &(dp->edid);
+	struct edid_mode *mode = &edid->mode;
 
 	/* step 1: get the constants in the dp struct set up. */
 	dp->lane_count = dp->dpcd[DP_MAX_LANE_COUNT]&DP_LANE_COUNT_MASK;
@@ -51,22 +52,22 @@ void compute_display_params(struct intel_dp *dp)
 
 	dp->stride = edid->bytes_per_line;
 
-	dp->htotal = (edid->ha - 1) | ((edid->ha + edid->hbl - 1) << 16);
+	dp->htotal = (mode->ha - 1) | ((mode->ha + mode->hbl - 1) << 16);
 
-	dp->hblank = (edid->ha - 1) | ((edid->ha + edid->hbl - 1) << 16);
+	dp->hblank = (mode->ha - 1) | ((mode->ha + mode->hbl - 1) << 16);
 
-	dp->hsync = (edid->ha + edid->hso - 1) |
-		((edid->ha + edid->hso + edid->hspw - 1) << 16);
+	dp->hsync = (mode->ha + mode->hso - 1) |
+		((mode->ha + mode->hso + mode->hspw - 1) << 16);
 
-	dp->vtotal = (edid->va - 1) | ((edid->va + edid->vbl - 1) << 16);
+	dp->vtotal = (mode->va - 1) | ((mode->va + mode->vbl - 1) << 16);
 
-	dp->vblank = (edid->va - 1) | ((edid->va + edid->vbl - 1) << 16);
+	dp->vblank = (mode->va - 1) | ((mode->va + mode->vbl - 1) << 16);
 
-	dp->vsync = (edid->va + edid->vso - 1) |
-		((edid->va + edid->vso + edid->vspw - 1) << 16);
+	dp->vsync = (mode->va + mode->vso - 1) |
+		((mode->va + mode->vso + mode->vspw - 1) << 16);
 
 	/* PIPEASRC is wid-1 x ht-1 */
-	dp->pipesrc = (edid->ha-1)<<16 | (edid->va-1);
+	dp->pipesrc = (mode->ha-1)<<16 | (mode->va-1);
 
 	dp->pfa_pos = 0;
 
@@ -75,7 +76,7 @@ void compute_display_params(struct intel_dp *dp)
 	if (dp->gen == 6)
 		dp->pfa_ctl |= PF_PIPE_SEL_IVB(dp->pipe);
 
-	dp->pfa_sz = (edid->ha << 16) | (edid->va);
+	dp->pfa_sz = (mode->ha << 16) | (mode->va);
 
 	/* step 3. Call the linux code we pulled in. */
 	dp->flags = intel_ddi_calc_transcoder_flags(edid->panel_bits_per_pixel,
@@ -84,15 +85,15 @@ void compute_display_params(struct intel_dp *dp)
 						    dp->type,
 						    dp->lane_count,
 						    dp->pfa_sz,
-						    dp->edid.phsync == '+'?1:0,
-						    dp->edid.pvsync == '+'?1:0);
+						    mode->phsync == '+'?1:0,
+						    mode->pvsync == '+'?1:0);
 
 	dp->transcoder = intel_ddi_get_transcoder(dp->port,
 						  dp->pipe);
 
 	intel_dp_compute_m_n(edid->panel_bits_per_pixel,
 			     dp->lane_count,
-			     dp->edid.pixel_clock,
+			     dp->edid.mode.pixel_clock,
 			     dp->edid.link_clock,
 			     &dp->m_n);
 

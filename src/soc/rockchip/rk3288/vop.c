@@ -39,12 +39,12 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 {
 	u32 lb_mode;
 	u32 rgb_mode;
-	u32 hactive = edid->ha;
-	u32 vactive = edid->va;
-	u32 hsync_len = edid->hspw;
-	u32 hback_porch = edid->hbl - edid->hso - edid->hspw;
-	u32 vsync_len = edid->vspw;
-	u32 vback_porch = edid->vbl - edid->vso - edid->vspw;
+	u32 hactive = edid->mode.ha;
+	u32 vactive = edid->mode.va;
+	u32 hsync_len = edid->mode.hspw;
+	u32 hback_porch = edid->mode.hbl - edid->mode.hso - edid->mode.hspw;
+	u32 vsync_len = edid->mode.vspw;
+	u32 vback_porch = edid->mode.vbl - edid->mode.vso - edid->mode.vspw;
 	u32 xpos = 0, ypos = 0;
 	struct rk3288_vop_regs *preg = vop_regs[vop_id];
 
@@ -98,14 +98,14 @@ void rkvop_enable(u32 vop_id, u32 fbbase, const struct edid *edid)
 
 void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 {
-	u32 hactive = edid->ha;
-	u32 vactive = edid->va;
-	u32 hfront_porch = edid->hso;
-	u32 hsync_len = edid->hspw;
-	u32 hback_porch = edid->hbl - edid->hso - edid->hspw;
-	u32 vfront_porch = edid->vso;
-	u32 vsync_len = edid->vspw;
-	u32 vback_porch = edid->vbl - edid->vso - edid->vspw;
+	u32 hactive = edid->mode.ha;
+	u32 vactive = edid->mode.va;
+	u32 hfront_porch = edid->mode.hso;
+	u32 hsync_len = edid->mode.hspw;
+	u32 hback_porch = edid->mode.hbl - edid->mode.hso - edid->mode.hspw;
+	u32 vfront_porch = edid->mode.vso;
+	u32 vsync_len = edid->mode.vspw;
+	u32 vback_porch = edid->mode.vbl - edid->mode.vso - edid->mode.vspw;
 	struct rk3288_vop_regs *preg = vop_regs[vop_id];
 
 	switch (mode) {
@@ -125,8 +125,8 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 	clrsetbits_le32(&preg->dsp_ctrl0,
 			M_DSP_OUT_MODE | M_DSP_VSYNC_POL | M_DSP_HSYNC_POL,
 			V_DSP_OUT_MODE(15) |
-			V_DSP_HSYNC_POL(edid->phsync == '+') |
-			V_DSP_VSYNC_POL(edid->pvsync == '+'));
+			V_DSP_HSYNC_POL(edid->mode.phsync == '+') |
+			V_DSP_VSYNC_POL(edid->mode.pvsync == '+'));
 
 	write32(&preg->dsp_htotal_hs_end, V_HSYNC(hsync_len) |
 		V_HORPRD(hsync_len + hback_porch + hactive + hfront_porch));

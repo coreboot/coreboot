@@ -494,11 +494,11 @@ static void hdmi_av_composer(const struct edid *edid)
 	/* set up hdmi_fc_invidconf */
 	inv_val = HDMI_FC_INVIDCONF_HDCP_KEEPOUT_INACTIVE;
 
-	inv_val |= ((edid->pvsync == '+') ?
+	inv_val |= ((edid->mode.pvsync == '+') ?
 		   HDMI_FC_INVIDCONF_VSYNC_IN_POLARITY_ACTIVE_HIGH :
 		   HDMI_FC_INVIDCONF_VSYNC_IN_POLARITY_ACTIVE_LOW);
 
-	inv_val |= ((edid->phsync == '+') ?
+	inv_val |= ((edid->mode.phsync == '+') ?
 		   HDMI_FC_INVIDCONF_HSYNC_IN_POLARITY_ACTIVE_HIGH :
 		   HDMI_FC_INVIDCONF_HSYNC_IN_POLARITY_ACTIVE_LOW);
 
@@ -517,33 +517,33 @@ static void hdmi_av_composer(const struct edid *edid)
 	write32(&hdmi_regs->fc_invidconf, inv_val);
 
 	/* set up horizontal active pixel width */
-	write32(&hdmi_regs->fc_inhactv1, edid->ha >> 8);
-	write32(&hdmi_regs->fc_inhactv0, edid->ha);
+	write32(&hdmi_regs->fc_inhactv1, edid->mode.ha >> 8);
+	write32(&hdmi_regs->fc_inhactv0, edid->mode.ha);
 
 	/* set up vertical active lines */
-	write32(&hdmi_regs->fc_invactv1, edid->va >> 8);
-	write32(&hdmi_regs->fc_invactv0, edid->va);
+	write32(&hdmi_regs->fc_invactv1, edid->mode.va >> 8);
+	write32(&hdmi_regs->fc_invactv0, edid->mode.va);
 
 	/* set up horizontal blanking pixel region width */
-	write32(&hdmi_regs->fc_inhblank1, edid->hbl >> 8);
-	write32(&hdmi_regs->fc_inhblank0, edid->hbl);
+	write32(&hdmi_regs->fc_inhblank1, edid->mode.hbl >> 8);
+	write32(&hdmi_regs->fc_inhblank0, edid->mode.hbl);
 
 	/* set up vertical blanking pixel region width */
-	write32(&hdmi_regs->fc_invblank, edid->vbl);
+	write32(&hdmi_regs->fc_invblank, edid->mode.vbl);
 
 	/* set up hsync active edge delay width (in pixel clks) */
-	write32(&hdmi_regs->fc_hsyncindelay1, edid->hso >> 8);
-	write32(&hdmi_regs->fc_hsyncindelay0, edid->hso);
+	write32(&hdmi_regs->fc_hsyncindelay1, edid->mode.hso >> 8);
+	write32(&hdmi_regs->fc_hsyncindelay0, edid->mode.hso);
 
 	/* set up vsync active edge delay (in lines) */
-	write32(&hdmi_regs->fc_vsyncindelay, edid->vso);
+	write32(&hdmi_regs->fc_vsyncindelay, edid->mode.vso);
 
 	/* set up hsync active pulse width (in pixel clks) */
-	write32(&hdmi_regs->fc_hsyncinwidth1, edid->hspw >> 8);
-	write32(&hdmi_regs->fc_hsyncinwidth0, edid->hspw);
+	write32(&hdmi_regs->fc_hsyncinwidth1, edid->mode.hspw >> 8);
+	write32(&hdmi_regs->fc_hsyncinwidth0, edid->mode.hspw);
 
 	/* set up vsync active edge delay (in lines) */
-	write32(&hdmi_regs->fc_vsyncinwidth, edid->vspw);
+	write32(&hdmi_regs->fc_vsyncinwidth, edid->mode.vspw);
 }
 
 /* hdmi initialization step b.4 */
@@ -613,11 +613,11 @@ static int hdmi_setup(const struct edid *edid)
 	int ret;
 
 	hdmi_debug("hdmi, mode info : clock %d hdis %d vdis %d\n",
-		   edid->pixel_clock, edid->ha, edid->va);
+		   edid->mode.pixel_clock, edid->mode.ha, edid->mode.va);
 
 	hdmi_av_composer(edid);
 
-	ret = hdmi_phy_init(edid->pixel_clock);
+	ret = hdmi_phy_init(edid->mode.pixel_clock);
 	if (ret)
 		return ret;
 
@@ -625,7 +625,7 @@ static int hdmi_setup(const struct edid *edid)
 
 	hdmi_audio_fifo_reset();
 	hdmi_audio_set_format();
-	hdmi_audio_set_samplerate(edid->pixel_clock);
+	hdmi_audio_set_samplerate(edid->mode.pixel_clock);
 
 	hdmi_video_packetize();
 	hdmi_video_csc();

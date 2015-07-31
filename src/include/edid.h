@@ -20,6 +20,31 @@
 #ifndef EDID_H
 #define EDID_H
 
+enum edid_modes {
+	EDID_MODE_AUTO = 0,
+	EDID_MODE_640x480_60Hz,
+};
+
+struct edid_mode {
+	const char *name;
+	unsigned int pixel_clock;
+	unsigned int refresh;
+	unsigned int ha;
+	unsigned int hbl;
+	unsigned int hso;
+	unsigned int hspw;
+	unsigned int hborder;
+	unsigned int va;
+	unsigned int vbl;
+	unsigned int vso;
+	unsigned int vspw;
+	unsigned int vborder;
+	unsigned char phsync;
+	unsigned char pvsync;
+	unsigned int x_mm;
+	unsigned int y_mm;
+};
+
 /* structure for communicating EDID information from a raw EDID block to
  * higher level functions.
  * The size of the data types is not critical, so we leave them as
@@ -49,20 +74,8 @@ struct edid {
 	 */
 	unsigned int panel_bits_per_pixel;
 	/* used to compute timing for graphics chips. */
-	unsigned char phsync;
-	unsigned char pvsync;
-	unsigned int pixel_clock;
+	struct edid_mode mode;
 	unsigned int link_clock;
-	unsigned int ha;
-	unsigned int hbl;
-	unsigned int hso;
-	unsigned int hspw;
-	unsigned int hborder;
-	unsigned int va;
-	unsigned int vbl;
-	unsigned int vso;
-	unsigned int vspw;
-	unsigned int vborder;
 	/* 3 variables needed for coreboot framebuffer.
 	 * In most cases, they are the same as the ha
 	 * and va variables, but not always, as in the

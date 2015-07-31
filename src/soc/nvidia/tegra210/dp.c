@@ -1367,18 +1367,18 @@ static void tegra_dp_update_config(struct tegra_dc_dp_data *dp,
 		return;
 	}
 
-	config->xres = config->display_xres = edid.ha;
-	config->yres = config->display_yres = edid.va;
+	config->xres = config->display_xres = edid.mode.ha;
+	config->yres = config->display_yres = edid.mode.va;
 
-	config->pixel_clock = edid.pixel_clock * 1000;
+	config->pixel_clock = edid.mode.pixel_clock * 1000;
 
-	config->hfront_porch = edid.hso;
-	config->hsync_width = edid.hspw;
-	config->hback_porch = edid.hbl - edid.hso - edid.hspw;
+	config->hfront_porch = edid.mode.hso;
+	config->hsync_width = edid.mode.hspw;
+	config->hback_porch = edid.mode.hbl - edid.mode.hso - edid.mode.hspw;
 
-	config->vfront_porch = edid.vso;
-	config->vsync_width = edid.vspw;
-	config->vback_porch = edid.vbl - edid.vso - edid.vspw;
+	config->vfront_porch = edid.mode.vso;
+	config->vsync_width = edid.mode.vspw;
+	config->vback_porch = edid.mode.vbl - edid.mode.vso - edid.mode.vspw;
 
 	/**
 	 * Note edid->framebuffer_bits_per_pixel is currently hard-coded as 32,

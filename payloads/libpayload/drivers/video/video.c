@@ -162,6 +162,27 @@ void video_console_putchar(unsigned int ch)
 	video_console_fixup_cursor();
 }
 
+void video_printf(int foreground, int background, const char *fmt, ...)
+{
+	int i = 0, len;
+	char str[200];
+
+	va_list ap;
+	va_start(ap, fmt);
+	len = vsnprintf(str, ARRAY_SIZE(str), fmt, ap);
+	va_end(ap);
+	if (len <= 0)
+		return;
+
+	foreground &= 0xf;
+	foreground <<= 8;
+	background &= 0xf;
+	background <<= 12;
+
+	while (str[i])
+		video_console_putchar(str[i++] | foreground | background);
+}
+
 void video_console_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en)
 {
 	*x=0;

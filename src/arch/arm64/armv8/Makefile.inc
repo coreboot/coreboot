@@ -30,6 +30,8 @@ endif
 bootblock-y += cache.c
 bootblock-y += cache_helpers.S
 bootblock-y += cpu.S
+bootblock-y += mmu.c
+
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c
 
 bootblock-generic-ccopts += $(armv8_flags)
@@ -65,6 +67,7 @@ romstage-y += cache.c
 romstage-y += cache_helpers.S
 romstage-y += cpu.S
 romstage-y += exception.c
+romstage-y += mmu.c
 
 romstage-generic-ccopts += $(armv8_flags)
 

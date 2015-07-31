@@ -76,6 +76,8 @@ verstage-y += ../../lib/memset.c
 verstage-y += ../../lib/memcpy.c
 verstage-y += ../../lib/memmove.c
 
+verstage-y += transition.c transition_asm.S
+
 endif # CONFIG_ARCH_VERSTAGE_ARM64
 
 ################################################################################

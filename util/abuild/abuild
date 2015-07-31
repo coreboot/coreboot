@@ -241,7 +241,7 @@ function compile_target
 
 	etime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	duration=$(( $etime - $stime ))
-	junit " <testcase classname='board' name='$VENDOR/$MAINBOARD' time='$duration' >"
+	junit " <testcase classname='board${testclass/#/.}' name='$VENDOR/$MAINBOARD' time='$duration' >"
 
 	if [ $ret -eq 0 ]; then
 		junit "<system-out>"
@@ -479,6 +479,7 @@ chromeos=false
 clean_work=false
 customizing=""
 configoptions=""
+testclass=
 while true ; do
 	case "$1" in
 		-J|--junit)     shift; mode=junit; rm -f $XMLFILE ;;
@@ -538,6 +539,7 @@ while true ; do
 			;;
 		-x|--chromeos)	shift
 			chromeos=true
+			testclass=chromeos
 			customizing="${customizing}, chrome os"
 			configoptions="${configoptions}CONFIG_CHROMEOS=y\n"
 			;;

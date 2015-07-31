@@ -21,11 +21,64 @@
 #include <device/device.h>
 
 #include <gpio.h>
+#include <soc/bl31_plat_params.h>
 #include <soc/mt6391.h>
 #include <soc/mtcmos.h>
 #include <soc/pinmux.h>
 #include <soc/pll.h>
 #include <soc/usb.h>
+
+static void register_da9212_to_bl31(void)
+{
+#if IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE)
+	static struct bl31_da9212_param param_da9212 = {
+		.h = {
+			.type = PARAM_CLUSTER1_DA9212,
+		},
+		.i2c_bus = 1,
+		.ic_en = {
+			.type = PARAM_GPIO_SOC,
+			.polarity = PARAM_GPIO_ACTIVE_HIGH,
+			.index = PAD_UCTS2,
+		},
+		.en_a = {
+			.type = PARAM_GPIO_MT6391,
+			.polarity = PARAM_GPIO_ACTIVE_HIGH,
+			.index = MT6391_KP_ROW4,
+		},
+		.en_b = {
+			.type = PARAM_GPIO_NONE,
+		},
+	};
+	register_bl31_param(&param_da9212.h);
+#endif
+}
+
+static void register_mt6311_to_bl31(void)
+{
+#if IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE)
+	static struct bl31_mt6311_param param_mt6311 = {
+		.h = {
+			.type = PARAM_CLUSTER1_MT6311,
+		},
+		.i2c_bus = 1,
+	};
+	register_bl31_param(&param_mt6311.h);
+#endif
+}
+
+static void configure_bl31(void)
+{
+	switch (board_id()) {
+	case 2:
+		register_da9212_to_bl31();
+		break;
+	default:
+		/* rev-3 and rev-4 use mt6311 as external buck */
+		register_mt6311_to_bl31();
+		break;
+	}
+}
 
 static void configure_audio(void)
 {
@@ -116,6 +169,7 @@ static void mainboard_init(device_t dev)
 	configure_audio();
 	configure_backlight();
 	configure_usb();
+	configure_bl31();
 }
 
 static void mainboard_enable(device_t dev)

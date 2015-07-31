@@ -67,9 +67,37 @@ static void configure_audio(void)
 	mt_pll_set_aud_div(48 * KHz);
 }
 
+/* Setup backlight control pins as output pin and power-off by default */
+static void configure_backlight(void)
+{
+	switch (board_id()) {
+	case 0:
+		gpio_output(PAD_DISP_PWM0, 0); /* DISP_PWM0 */
+		mt6391_gpio_output(MT6391_KP_ROW3, 0); /* PANEL_POWER_EN_6397 */
+		break;
+	case 1:
+	case 2:
+		gpio_output(PAD_DISP_PWM0, 0); /* DISP_PWM0 */
+		gpio_output(PAD_PCM_TX, 0); /* PANEL_POWER_EN */
+		break;
+	case 3:
+		gpio_output(PAD_UCTS2, 0); /* PANEL_LCD_POWER_EN */
+		gpio_output(PAD_DISP_PWM0, 0); /* DISP_PWM0 */
+		gpio_output(PAD_PCM_TX, 0); /* PANEL_POWER_EN */
+		break;
+	case 4:
+	default:
+		gpio_output(PAD_SRCLKENAI, 0); /* PANEL_LCD_POWER_EN */
+		gpio_output(PAD_DISP_PWM0, 0); /* DISP_PWM0 */
+		gpio_output(PAD_PCM_TX, 0); /* PANEL_POWER_EN */
+		break;
+	}
+}
+
 static void mainboard_init(device_t dev)
 {
 	configure_audio();
+	configure_backlight();
 }
 
 static void mainboard_enable(device_t dev)

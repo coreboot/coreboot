@@ -683,5 +683,5 @@ $(obj)/board_id:
 JENKINS_PAYLOAD=none
 what-jenkins-does:
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c 4 -z -p $(JENKINS_PAYLOAD)
-	(cd payloads/libpayload; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
+	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
 	$(MAKE) V=$(V) Q=$(Q) -C util/cbmem junit.xml

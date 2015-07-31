@@ -6,5 +6,6 @@ config CPU_SAMSUNG_EXYNOS5250
 	select HAVE_MONOTONIC_TIMER
 	select GENERIC_UDELAY
 	select HAVE_UART_SPECIAL
+	select BOOTBLOCK_CONSOLE
 	bool
 	default n

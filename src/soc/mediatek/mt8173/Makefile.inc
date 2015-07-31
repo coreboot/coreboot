@@ -26,6 +26,7 @@ bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
 bootblock-y += gpio.c gpio_init.c pmic_wrap.c mt6391.c
+bootblock-y += wdt.c
 
 ################################################################################
 
@@ -46,6 +47,7 @@ ramstage-y += soc.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += gpio.c
+ramstage-y += wdt.c
 
 ################################################################################
 

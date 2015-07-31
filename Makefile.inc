@@ -680,7 +680,7 @@ board_id-type := raw
 $(obj)/board_id:
 	printf $(CONFIG_BOARD_ID_STRING) > $@
 
-JENKINS_PAYLOAD=none
+JENKINS_PAYLOAD?=none
 what-jenkins-does:
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c 4 -z -p $(JENKINS_PAYLOAD)
 	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)

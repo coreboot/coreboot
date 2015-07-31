@@ -17,36 +17,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/io.h>
-#include <bootblock_common.h>
-#include <delay.h>
-#include <soc/gpio.h>
-#include <soc/pericfg.h>
+#ifndef __MAINBOARD_GOOGLE_OAK_GPIO_H__
+#define __MAINBOARD_GOOGLE_OAK_GPIO_H__
 #include <soc/pinmux.h>
 
-#include "gpio.h"
+enum {
+	LID		= PAD_EINT12,
+	/* Write Protect */
+	WRITE_PROTECT	= PAD_EINT4,
+	/* Power button */
+	POWER_BUTTON	= PAD_EINT14,
+	/* EC Interrupt */
+	EC_IRQ          = PAD_EINT0,
+	/* EC in RW signal */
+	EC_IN_RW	= PAD_DAIPCMIN,
+	/* EC AP suspend */
+	EC_SUSPEND_L	= PAD_KPROW1,
+};
 
-static void i2c_set_gpio_pinmux(void)
-{
-	gpio_set_mode(PAD_SDA1, PAD_SDA1_FUNC_SDA1);
-	gpio_set_mode(PAD_SCL1, PAD_SCL1_FUNC_SCL1);
-	gpio_set_mode(PAD_SDA4, PAD_SDA4_FUNC_SDA4);
-	gpio_set_mode(PAD_SCL4, PAD_SCL4_FUNC_SCL4);
-}
+void setup_chromeos_gpios(void);
 
-void bootblock_mainboard_early_init(void)
-{
-	/* Clear UART0 power down signal */
-	clrbits_le32(&mt8173_pericfg->pdn0_set, PERICFG_UART0_PDN);
-}
-
-void bootblock_mainboard_init(void)
-{
-	/* adjust gpio params when external voltage is 1.8V */
-	gpio_init(GPIO_EINT_1P8V);
-
-	/* set i2c related gpio */
-	i2c_set_gpio_pinmux();
-
-	setup_chromeos_gpios();
-}
+#endif /* __MAINBOARD_GOOGLE_OAK_GPIO_H__ */

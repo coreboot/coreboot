@@ -30,6 +30,16 @@ bootblock-y += wdt.c
 
 ################################################################################
 
+verstage-y += spi.c
+
+verstage-$(CONFIG_DRIVERS_UART) += uart.c
+
+verstage-y += timer.c
+verstage-y += wdt.c
+verstage-y += cbfs.c
+
+################################################################################
+
 romstage-y += cbfs.c
 romstage-y += timer.c
 

@@ -64,6 +64,8 @@ ramstage-y += gpio.c
 ramstage-y += wdt.c
 ramstage-y += pll.c
 
+ramstage-y += usb.c
+
 ################################################################################
 
 # Generate the actual coreboot bootblock code

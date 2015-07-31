@@ -27,9 +27,12 @@
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <symbols.h>
+#include <timestamp.h>
 
 void main(void)
 {
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	/* init uart baudrate when pll on */
 	console_init();
 	exception_init();

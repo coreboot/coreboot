@@ -13,24 +13,23 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <soc/mmu_operations.h>
-#include <soc/mt6391.h>
-#include <soc/pll.h>
-#include <soc/wdt.h>
+#ifndef __SOC_MEDIATEK_MT8173_MMU_OPERATIONS_H__
+#define __SOC_MEDIATEK_MT8173_MMU_OPERATIONS_H__
 
-void bootblock_soc_init(void)
-{
-	mt_pll_init();
+#include <arch/mmu.h>
 
-	/* init pmic wrap SPI interface and pmic */
-	mt6391_init();
+enum {
+	DEV_MEM		= MA_DEV | MA_S  | MA_RW,
+	CACHED_MEM	= MA_MEM | MA_NS | MA_RW,
+	SECURE_MEM	= MA_MEM | MA_S  | MA_RW,
+	UNCACHED_MEM	= MA_MEM | MA_NS | MA_RW | MA_MEM_NC,
+};
 
-	/* post init pll */
-	mt_pll_post_init();
+extern unsigned char _sram_l2c[];
+extern unsigned char _esram_l2c[];
+#define _sram_l2c_size (_esram_l2c - _sram_l2c)
 
-	mt8173_mmu_init();
+void mt8173_mmu_init(void);
+void mt8173_mmu_after_dram(void);
 
-	/* init watch dog, will disable AP watch dog */
-	mtk_wdt_init();
-}
+#endif //__SOC_MEDIATEK_MT8173_MMU_OPERATIONS_H__

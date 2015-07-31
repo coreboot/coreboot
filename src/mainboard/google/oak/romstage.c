@@ -16,6 +16,7 @@
 #include <arch/cpu.h>
 #include <arch/exception.h>
 #include <arch/io.h>
+#include <arch/mmu.h>
 
 #include <cbfs.h>
 #include <console/console.h>
@@ -25,6 +26,8 @@
 #include <symbols.h>
 #include <timestamp.h>
 
+#include <soc/mmu_operations.h>
+
 void main(void)
 {
 	timestamp_add_now(TS_START_ROMSTAGE);
@@ -32,6 +35,8 @@ void main(void)
 	/* init uart baudrate when pll on */
 	console_init();
 	exception_init();
+
+	mt8173_mmu_after_dram();
 
 	run_ramstage();
 }

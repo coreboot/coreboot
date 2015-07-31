@@ -30,8 +30,4 @@ $(SIPI_BIN): $(SIPI_RMOD)
 
 $(SIPI_BIN).ramstage.manual: $(SIPI_BIN)
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
-else
-	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
-endif
+	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) $(target-objcopy) $(notdir $@)

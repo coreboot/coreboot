@@ -34,11 +34,7 @@ $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
 # ELF symbol names.
 $(obj)/cpu/x86/smm/smm.ramstage.manual: $(obj)/cpu/x86/smm/smm
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
-else
-	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
-endif
+	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) $(target-objcopy) $(notdir $@)
 
 ifeq ($(CONFIG_SMM_TSEG),y)
 
@@ -68,11 +64,7 @@ $(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf.rmod
 
 $(obj)/cpu/x86/smm/smmstub.ramstage.manual: $(obj)/cpu/x86/smm/smmstub
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-	cd $(dir $@); $(OBJCOPY_smmstub) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
-else
-	cd $(dir $@); $(OBJCOPY_smmstub) -I binary $(notdir $<) -O elf64-x86_64 -B x86_64 $(notdir $@)
-endif
+	cd $(dir $@); $(OBJCOPY_smmstub) -I binary $(notdir $<) $(target-objcopy) $(notdir $@)
 
 # C-based SMM handler.
 

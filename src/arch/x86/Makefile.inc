@@ -251,15 +251,15 @@ endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
-ifeq ($(CONFIG_COMPILE_IN_DSDT),y)
-ramstage-srcs += $(obj)/dsdt.aml
-
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 target-objcopy=-O elf32-i386 -B i386
 endif
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_64),y)
-target-objcopy=-O elf64-x86_64 -B x86_64
+target-objcopy=-O elf64-x86-64 -B i386:x86-64
 endif
+
+ifeq ($(CONFIG_COMPILE_IN_DSDT),y)
+ramstage-srcs += $(obj)/dsdt.aml
 
 define ramstage-objs_aml_template
 $(call src-to-obj,ramstage,$(1).aml): $(1).aml

@@ -270,6 +270,8 @@ CFLAGS_common += -pipe -g -nostdinc
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS_common += -Wstrict-aliasing -Wshadow
+CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
+CFLAGS_common += -ffunction-sections -fdata-sections
 
 ifeq ($(CONFIG_COMPILER_GCC),y)
 # cf. commit f69a99db (coreboot: x86: enable gc-sections)
@@ -279,7 +281,6 @@ endif
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS_common += -Werror
 endif
-CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 ifneq ($(GDB_DEBUG),)
 CFLAGS_common += -Og
 else

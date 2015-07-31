@@ -62,16 +62,11 @@ ARCHDIR-arm64	:= arm64
 ARCHDIR-riscv	:= riscv
 ARCHDIR-mips	:= mips
 
-CFLAGS_arm      += -ffunction-sections -fdata-sections
-
-CFLAGS_arm64    += -ffunction-sections -fdata-sections -mgeneral-regs-only
-
-CFLAGS_mips	+= -mips32r2 -G 0  -ffunction-sections -fdata-sections
-CFLAGS_mips	+= -mno-abicalls -fno-pic
-
-CFLAGS_x86_32 += -ffunction-sections -fdata-sections
-CFLAGS_riscv	+= -ffunction-sections -fdata-sections
-
+CFLAGS_arm      +=
+CFLAGS_arm64    += -mgeneral-regs-only
+CFLAGS_mips	+= -mips32r2 -G 0 -mno-abicalls -fno-pic
+CFLAGS_riscv	+=
+CFLAGS_x86_32	+=
 CFLAGS_x86_64   += -mcmodel=large -mno-red-zone
 
 # Some boards only provide 2K stacks, so storing lots of data there leads to

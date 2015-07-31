@@ -21,6 +21,7 @@
 #include <soc/mt6391.h>
 #include <soc/pericfg.h>
 #include <soc/pinmux.h>
+#include <soc/spi.h>
 
 #include "gpio.h"
 
@@ -45,6 +46,8 @@ void bootblock_mainboard_init(void)
 
 	/* set i2c related gpio */
 	i2c_set_gpio_pinmux();
+
+	mtk_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, SPI_PAD1_MASK, 6*MHz);
 
 	setup_chromeos_gpios();
 

@@ -28,6 +28,8 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
+bootblock-y += pmic_wrap.c
+
 ################################################################################
 
 romstage-y += cbfs.c

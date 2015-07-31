@@ -73,6 +73,11 @@ ramstage-y += rtc.c
 
 ramstage-y += usb.c
 
+ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31_plat_params.c
+
+BL31_MAKEARGS += PLAT=mt8173 MEDIATEK_MEM_CONFIG=SRAM_192K MEDIATEK_DA9212=1 \
+		 MEDIATEK_MT6311=1
+
 ################################################################################
 
 # Generate the actual coreboot bootblock code

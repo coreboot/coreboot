@@ -32,6 +32,34 @@
 
 	.globl __wakeup
 __wakeup:
+#ifdef __x86_64__
+	.intel_syntax noprefix
+	xor     rax,rax
+	mov     ax, ss
+	push    rax
+	mov     rax, rsp
+	add     rax, 8
+	push    rax
+	pushfq
+	push    0x10
+	lea     rax,[rip+3]
+	push    rax
+	iretq
+
+	.code32
+
+	/* disable paging */
+	mov     eax, cr0
+	btc     eax, 31
+	mov     cr0, eax
+
+	/* disable long mode */
+	mov     ecx, 0xC0000080
+	rdmsr
+	btc     eax, 8
+	wrmsr
+	.att_syntax prefix
+#endif
 	/* First prepare the jmp to the resume vector */
 	mov	0x4(%esp), %eax	/* vector */
 	/* last 4 bits of linear addr are taken as offset */

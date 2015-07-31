@@ -280,6 +280,11 @@ function build_target
 
  	HOSTCC='gcc'
 
+	if [ $chromeos = true -a `grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS\>" src/mainboard/${VENDOR}/${MAINBOARD}/Kconfig` -eq 0 ]; then
+		echo "${VENDOR}/${MAINBOARD} doesn't support Chrome OS, skipping."
+		return
+	fi
+
 	if [ -f src/mainboard/${VENDOR}/${MAINBOARD}/abuild.disabled ]; then
 		echo "${VENDOR}/${MAINBOARD} disabled:"
 		cat src/mainboard/${VENDOR}/${MAINBOARD}/abuild.disabled
@@ -413,6 +418,7 @@ Options:\n"
 				  (defaults to $TARGET)
     [-L|--clang]                  Use clang
     [-x|--chromeos]               Build with CHROMEOS enabled
+                                  Skip boards without Chrome OS support
     [--scan-build]                use clang's static analyzer
     [cbroot]			  absolute path to coreboot sources
 				  (defaults to $ROOT)
@@ -469,6 +475,7 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+chromeos=false
 clean_work=false
 customizing=""
 configoptions=""
@@ -530,6 +537,8 @@ while true ; do
 			TARGET=$1; shift
 			;;
 		-x|--chromeos)	shift
+			chromeos=true
+			customizing="${customizing}, chrome os"
 			configoptions="${configoptions}CONFIG_CHROMEOS=y\n"
 			;;
 		--)		shift; break;;

@@ -25,6 +25,7 @@
 #include <soc/mtcmos.h>
 #include <soc/pinmux.h>
 #include <soc/pll.h>
+#include <soc/usb.h>
 
 static void configure_audio(void)
 {
@@ -67,6 +68,14 @@ static void configure_audio(void)
 	mt_pll_set_aud_div(48 * KHz);
 }
 
+static void configure_usb(void)
+{
+	setup_usb_host();
+
+	if (board_id() > 3)
+		gpio_output(PAD_CM2MCLK, 1);
+}
+
 /* Setup backlight control pins as output pin and power-off by default */
 static void configure_backlight(void)
 {
@@ -96,8 +105,14 @@ static void configure_backlight(void)
 
 static void mainboard_init(device_t dev)
 {
+	/* TP_SHIFT_EN: Enables the level shifter for I2C bus 4 (TPAD), which
+	 * also contains the PS8640 eDP brige and the USB hub.
+	 */
+	mt6391_gpio_output(MT6391_KP_ROW2, 1);
+
 	configure_audio();
 	configure_backlight();
+	configure_usb();
 }
 
 static void mainboard_enable(device_t dev)

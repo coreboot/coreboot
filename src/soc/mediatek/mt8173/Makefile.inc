@@ -21,6 +21,7 @@ ifeq ($(CONFIG_SOC_MEDIATEK_MT8173),y)
 
 bootblock-y += bootblock.c
 bootblock-y += cbfs.c
+bootblock-y += pll.c
 bootblock-y += timer.c
 
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)

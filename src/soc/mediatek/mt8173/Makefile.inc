@@ -28,7 +28,7 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
-bootblock-y += pmic_wrap.c
+bootblock-y += gpio.c pmic_wrap.c
 
 ################################################################################
 
@@ -37,6 +37,7 @@ romstage-y += timer.c
 
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += cbmem.c
+romstage-y += gpio.c
 
 ################################################################################
 
@@ -45,6 +46,7 @@ ramstage-y += cbfs.c
 ramstage-y += soc.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
+ramstage-y += gpio.c
 
 ################################################################################
 

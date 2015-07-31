@@ -26,7 +26,7 @@ bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
 bootblock-y += gpio.c gpio_init.c pmic_wrap.c mt6391.c
-bootblock-y += wdt.c
+bootblock-y += wdt.c rtc.c
 bootblock-y += mmu_operations.c
 
 ################################################################################

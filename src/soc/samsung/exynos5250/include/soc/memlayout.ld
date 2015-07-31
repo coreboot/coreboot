@@ -18,6 +18,7 @@
  */
 
 #include <memlayout.h>
+#include <vendorcode/google/chromeos/memlayout.h>
 
 #include <arch/header.ld>
 
@@ -35,7 +36,8 @@ SECTIONS
 	ROMSTAGE(0x2030000, 128K)
 	/* 32K hole */
 	TTB(0x2058000, 16K)
-	PRERAM_CBFS_CACHE(0x205C000, 96K)
+	PRERAM_CBFS_CACHE(0x205C000, 80K)
+	VBOOT2_WORK(0x2070000, 16K)
 	STACK(0x2074000, 16K)
 	SRAM_END(0x2078000)
 

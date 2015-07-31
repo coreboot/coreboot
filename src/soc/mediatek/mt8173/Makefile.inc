@@ -61,6 +61,10 @@ ramstage-y += wdt.c
 
 ################################################################################
 
+# Generate the actual coreboot bootblock code
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
+	./util/mtkheader/gen-bl-img.py mt8173 sf $< $@
+
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8173/include
 
 endif

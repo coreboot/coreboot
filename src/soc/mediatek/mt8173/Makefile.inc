@@ -28,7 +28,7 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
-bootblock-y += gpio.c pmic_wrap.c
+bootblock-y += gpio.c gpio_init.c pmic_wrap.c
 
 ################################################################################
 

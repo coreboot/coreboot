@@ -17,32 +17,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/io.h>
-#include <bootblock_common.h>
-#include <delay.h>
-#include <soc/gpio.h>
-#include <soc/pericfg.h>
-#include <soc/pinmux.h>
+#ifndef __SOC_MEDIATEK_MT8173_MIPI_H__
+#define __SOC_MEDIATEK_MT8173_MIPI_H__
 
-static void i2c_set_gpio_pinmux(void)
-{
-	gpio_set_mode(PAD_SDA1, PAD_SDA1_FUNC_SDA1);
-	gpio_set_mode(PAD_SCL1, PAD_SCL1_FUNC_SCL1);
-	gpio_set_mode(PAD_SDA4, PAD_SDA4_FUNC_SDA4);
-	gpio_set_mode(PAD_SCL4, PAD_SCL4_FUNC_SCL4);
-}
+#include <soc/addressmap.h>
+#include <types.h>
 
-void bootblock_mainboard_early_init(void)
-{
-	/* Clear UART0 power down signal */
-	clrbits_le32(&mt8173_pericfg->pdn0_set, PERICFG_UART0_PDN);
-}
+struct mipi_rx_regs {
+	uint32_t rev0[19];
+	uint32_t mipi_rx_ana4c;
+	uint32_t mipi_rx_ana50;
+	uint32_t rev1;
+};
 
-void bootblock_mainboard_init(void)
-{
-	/* adjust gpio params when external voltage is 1.8V */
-	gpio_init(GPIO_EINT_1P8V);
+check_member(mipi_rx_regs, mipi_rx_ana4c, 0x4c);
+check_member(mipi_rx_regs, rev1, 0x54);
 
-	/* set i2c related gpio */
-	i2c_set_gpio_pinmux();
-}
+static struct mipi_rx_regs *const mt8173_mipi = (void *)(ANA_MIPI_CS1_BASE);
+
+#endif	/* __SOC_MEDIATEK_MT8173_MIPI_H__ */

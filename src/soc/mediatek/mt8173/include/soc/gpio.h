@@ -89,4 +89,6 @@ static struct gpio_regs *const mt8173_gpio = (void *)(GPIO_BASE);
 void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
 		   enum pull_select select);
 void gpio_set_mode(gpio_t gpio, int mode);
+void gpio_init(enum external_power);
+
 #endif /* SOC_MEDIATEK_MT8173_GPIO_H */

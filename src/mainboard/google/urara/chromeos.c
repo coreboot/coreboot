@@ -18,9 +18,15 @@
  */
 
 #include <boot/coreboot_tables.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <gpio.h>
 
+int get_write_protect_state(void)
+{
+	printk(BIOS_ERR, "%s unsupported, but called\n", __func__);
+	return 0;
+}
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

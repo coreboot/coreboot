@@ -18,6 +18,9 @@ bootblock-y += memlayout.ld
 bootblock-y += chromeos.c
 bootblock-y += boardid.c
 
+verstage-y += chromeos.c
+verstage-y += memlayout.ld
+
 romstage-y += chromeos.c
 romstage-y += romstage.c
 romstage-y += memlayout.ld

@@ -1,0 +1,2 @@
+config BOARD_GOOGLE_OAK
+	bool "Oak"

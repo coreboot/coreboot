@@ -1,0 +1,49 @@
+config SOC_MEDIATEK_MT8173
+	bool
+	default n
+	select ARM64_A53_ERRATUM_843419
+	select ARCH_BOOTBLOCK_ARMV8_64
+	select ARCH_RAMSTAGE_ARMV8_64
+	select ARCH_ROMSTAGE_ARMV8_64
+	select ARCH_VERSTAGE_ARMV8_64
+	select BOOTBLOCK_CONSOLE
+	select HAVE_UART_SPECIAL
+	select SPI_ATOMIC_SEQUENCING
+	select HAVE_MONOTONIC_TIMER
+	select GENERIC_UDELAY
+	select HAS_PRECBMEM_TIMESTAMP_REGION
+
+if SOC_MEDIATEK_MT8173
+
+config DEBUG_SOC_DRIVER
+	bool "The top level switch for soc driver debug message"
+	default n
+	select DEBUG_DRAM
+	select DEBUG_I2C
+	select DEBUG_PMIC
+	select DEBUG_PMIC_WRAP
+
+config DEBUG_DRAM
+	bool "Output verbose DRAM related debug message"
+	default n
+	help
+	  This option enables additional DRAM related debug messages.
+
+config DEBUG_I2C
+	bool "Output verbose I2C related debug message"
+	default n
+	help
+	  This option enables I2C related debug message.
+
+config DEBUG_PMIC
+	bool "Output verbose PMIC related debug message"
+	default n
+	help
+	  This option enables PMIC related debug message.
+
+config DEBUG_PMIC_WRAP
+	bool "Output verbose PMIC WRAP related debug message"
+	default n
+	help
+	  This option enables PMIC WRAP related debug message.
+endif

@@ -59,6 +59,19 @@ void mt6391_write(u16 reg, u16 val, u32 mask, u32 shift)
 	return;
 }
 
+static void mt6391_configure_vcama(enum ldo_voltage vsel)
+{
+	/* 2'b00: 1.5V
+	 * 2'b01: 1.8V
+	 * 2'b10: 2.5V
+	 * 2'b11: 2.8V
+	 */
+	mt6391_write(PMIC_RG_ANALDO_CON6, vsel - 2, PMIC_RG_VCAMA_VOSEL_MASK,
+		     PMIC_RG_VCAMA_VOSEL_SHIFT);
+	mt6391_write(PMIC_RG_ANALDO_CON2, 1, PMIC_RG_VCAMA_EN_MASK,
+                     PMIC_RG_VCAMA_EN_SHIFT);
+}
+
 void mt6391_configure_ldo(enum ldo_power ldo, enum ldo_voltage vsel)
 {
 	u16 addr;
@@ -78,6 +91,10 @@ void mt6391_configure_ldo(enum ldo_power ldo, enum ldo_voltage vsel)
 		if (vsel == LDO_2P0)
 			vsel = 7;
 		break;
+	case LDO_VCAMA:
+		assert(vsel > LDO_1P3 && vsel < LDO_3P0);
+		mt6391_configure_vcama(vsel);
+		return;
 	default:
 		break;
 	}

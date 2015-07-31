@@ -18,6 +18,7 @@
  */
 
 #include <memlayout.h>
+#include <vendorcode/google/chromeos/memlayout.h>
 
 #include <arch/header.ld>
 
@@ -39,7 +40,8 @@ SECTIONS
 	 */
 	SRAM_START(0x1a000000)
 	ROMSTAGE(0x1a005000, 40K)
-	PRERAM_CBFS_CACHE(0x1a00f000, 68K)
+	VBOOT2_WORK(0x1a00f000, 12K)
+	PRERAM_CBFS_CACHE(0x1a012000, 56K)
 	SRAM_END(0x1a020000)
 
 	/* Bootblock executes out of KSEG0 and sets up the identity mapping.

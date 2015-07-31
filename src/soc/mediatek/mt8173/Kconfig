@@ -17,6 +17,10 @@ config SOC_MEDIATEK_MT8173
 
 if SOC_MEDIATEK_MT8173
 
+config MEMORY_TEST
+	bool
+	default n
+
 config DEBUG_SOC_DRIVER
 	bool "The top level switch for soc driver debug message"
 	default n

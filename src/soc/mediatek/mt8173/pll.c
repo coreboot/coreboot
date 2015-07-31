@@ -505,3 +505,29 @@ void mt_pll_set_aud_div(u32 rate)
 				7 << 28);
 	}
 }
+
+void mt_mem_pll_config_pre(const struct mt8173_sdram_params *sdram_params)
+{
+	u32 mpll_sdm_pcw_20_0 = 0xF13B1;
+
+	/* disable MPLL for adjusting memory clk frequency */
+	clrbits_le32(&mt8173_apmixed->mpll_con0, BIT(0));
+	/* MPLL configuration: mode selection */
+	setbits_le32(&mt8173_apmixed->mpll_con0, BIT(16));
+	clrbits_le32(&mt8173_apmixed->mpll_con0, 0x7 << 4);
+	clrbits_le32(&mt8173_apmixed->pll_test_con0, 1 << 31);
+	/* set RG_MPLL_SDM_PCW for feedback divide ratio */
+	clrsetbits_le32(&mt8173_apmixed->mpll_con1, 0x1fffff, mpll_sdm_pcw_20_0);
+}
+
+void mt_mem_pll_config_post(void)
+{
+	/* power up sequence starts: enable MPLL */
+	setbits_le32(&mt8173_apmixed->mpll_con0, BIT(0));
+}
+
+void mt_mem_pll_mux(void)
+{
+	/* CLK_CFG_0 */
+	mux_set_sel(&muxes[TOP_MEM_SEL], 1); /* 1: dmpll_ck */
+}

@@ -43,6 +43,7 @@ verstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 ################################################################################
 
 romstage-$(CONFIG_SPI_FLASH) += flash_controller.c
+romstage-y += pll.c
 romstage-y += timer.c
 
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
@@ -50,6 +51,8 @@ romstage-y += cbmem.c
 romstage-y += spi.c
 romstage-y += gpio.c
 romstage-y += pmic_wrap.c mt6391.c
+romstage-y += memory.c
+romstage-y += emi.c dramc_pi_basic_api.c dramc_pi_calibration_api.c
 romstage-y += mmu_operations.c
 romstage-y += rtc.c
 

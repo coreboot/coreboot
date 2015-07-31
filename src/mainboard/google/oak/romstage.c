@@ -19,6 +19,7 @@
 #include <arch/mmu.h>
 
 #include <cbfs.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <delay.h>
 #include <program_loading.h>
@@ -26,6 +27,7 @@
 #include <symbols.h>
 #include <timestamp.h>
 
+#include <soc/emi.h>
 #include <soc/mmu_operations.h>
 #include <soc/rtc.h>
 
@@ -39,7 +41,13 @@ void main(void)
 
 	rtc_boot();
 
+	/* init memory */
+	mt_mem_init(get_sdram_config());
+
 	mt8173_mmu_after_dram();
+
+	/* should be called after memory init */
+	cbmem_initialize_empty();
 
 	run_ramstage();
 }

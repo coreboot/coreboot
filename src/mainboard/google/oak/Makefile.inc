@@ -22,7 +22,7 @@ verstage-y += chromeos.c
 verstage-y += memlayout.ld
 
 romstage-y += chromeos.c
-romstage-y += romstage.c
+romstage-y += romstage.c sdram_configs.c
 romstage-y += memlayout.ld
 romstage-y += boardid.c
 

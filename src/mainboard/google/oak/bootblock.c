@@ -18,9 +18,11 @@
  */
 
 #include <arch/io.h>
+#include <boardid.h>
 #include <bootblock_common.h>
 #include <delay.h>
 #include <soc/gpio.h>
+#include <soc/mt6391.h>
 #include <soc/pericfg.h>
 #include <soc/pinmux.h>
 
@@ -49,4 +51,7 @@ void bootblock_mainboard_init(void)
 	i2c_set_gpio_pinmux();
 
 	setup_chromeos_gpios();
+
+	if (board_id() < 4)
+		mt6391_enable_reset_when_ap_resets();
 }

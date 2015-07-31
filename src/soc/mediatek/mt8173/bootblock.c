@@ -18,11 +18,15 @@
  */
 
 #include <bootblock_common.h>
+#include <soc/mt6391.h>
 #include <soc/pll.h>
 
 void bootblock_soc_init(void)
 {
 	mt_pll_init();
+
+	/* init pmic wrap SPI interface and pmic */
+	mt6391_init();
 
 	/* post init pll */
 	mt_pll_post_init();

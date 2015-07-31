@@ -20,12 +20,15 @@
 bootblock-y += bootblock.c
 bootblock-y += memlayout.ld
 bootblock-y += chromeos.c
+bootblock-y += boardid.c
 
 romstage-y += chromeos.c
 romstage-y += romstage.c
 romstage-y += memlayout.ld
+romstage-y += boardid.c
 
 ramstage-y += mainboard.c
 ramstage-y += chromeos.c
 ramstage-y += memlayout.ld
+ramstage-y += boardid.c
 

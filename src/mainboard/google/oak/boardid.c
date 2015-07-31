@@ -17,33 +17,44 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __MAINBOARD_GOOGLE_OAK_GPIO_H__
-#define __MAINBOARD_GOOGLE_OAK_GPIO_H__
-#include <soc/pinmux.h>
+#include <boardid.h>
+#include <gpio.h>
+#include <console/console.h>
+#include <stdlib.h>
+#include "gpio.h"
 
-enum {
-	LID		= PAD_EINT12,
-	/* Board ID related GPIOS. */
-	BOARD_ID_0	= PAD_RDN3_A,
-	BOARD_ID_1	= PAD_RDP3_A,
-	BOARD_ID_2	= PAD_RDN2_A,
-	/* RAM ID related GPIOS. */
-	RAM_ID_0	= PAD_RDP2_A,
-	RAM_ID_1	= PAD_RCN_A,
-	RAM_ID_2	= PAD_RCP_A,
-	RAM_ID_3	= PAD_RDN1_A,
-	/* Write Protect */
-	WRITE_PROTECT	= PAD_EINT4,
-	/* Power button */
-	POWER_BUTTON	= PAD_EINT14,
-	/* EC Interrupt */
-	EC_IRQ          = PAD_EINT0,
-	/* EC in RW signal */
-	EC_IN_RW	= PAD_DAIPCMIN,
-	/* EC AP suspend */
-	EC_SUSPEND_L	= PAD_KPROW1,
-};
+static int board_id_value = -1;
 
-void setup_chromeos_gpios(void);
+static uint8_t get_board_id(void)
+{
+	uint8_t bid = 0;
+	static gpio_t pins[] = {[2] = BOARD_ID_2, [1] = BOARD_ID_1,
+		[0] = BOARD_ID_0};
 
-#endif /* __MAINBOARD_GOOGLE_OAK_GPIO_H__ */
+	bid = gpio_base2_value(pins, ARRAY_SIZE(pins));
+
+	printk(BIOS_INFO, "Board ID %d\n", bid);
+
+	return bid;
+}
+
+uint8_t board_id(void)
+{
+	if (board_id_value < 0)
+		board_id_value = get_board_id();
+
+	return board_id_value;
+}
+
+uint32_t ram_code(void)
+{
+	uint32_t code;
+	static gpio_t pins[] = {[3] = RAM_ID_3, [2] = RAM_ID_2, [1] = RAM_ID_1,
+		[0] = RAM_ID_0};
+
+	code = gpio_base2_value(pins, ARRAY_SIZE(pins));
+
+	printk(BIOS_INFO, "RAM Config: %u\n", code);
+
+	return code;
+}

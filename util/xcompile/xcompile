@@ -20,7 +20,19 @@
 #
 
 TMPFILE=""
-XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
+XGCCPATH=$1
+
+# libpayload crossgcc path
+if [ -d "`pwd`/../../util/crossgcc/xgcc/bin/" ]
+then
+	XGCCPATH=${XGCCPATH:-"`pwd`/../../util/crossgcc/xgcc/bin/"}
+fi
+
+# coreboot crossgcc path
+if [ -d "`pwd`/util/crossgcc/xgcc/bin/" ]
+then
+	XGCCPATH=${XGCCPATH:-"`pwd`/util/crossgcc/xgcc/bin/"}
+fi
 
 die() {
 	echo "ERROR: $*" >&2

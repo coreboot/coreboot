@@ -106,6 +106,31 @@ void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib)
 					read32(&mc->security_carveout2_bom_hi),
 					region_size_mb);
 		break;
+	case CARVEOUT_NVDEC:
+		/* These carveout regs use 128KB granularity - convert to MB */
+		region_size_mb = DIV_ROUND_UP(read32(&mc->security_carveout1_size_128kb), 8);
+
+		/* BOM address set in nvdec_region_init, below */
+		carveout_from_regs(base_mib, size_mib,
+					read32(&mc->security_carveout1_bom),
+					read32(&mc->security_carveout1_bom_hi),
+					region_size_mb);
+		break;
+	case CARVEOUT_TSEC:
+		/* These carveout regs use 128KB granularity - convert to MB */
+		region_size_mb = DIV_ROUND_UP(read32(&mc->security_carveout4_size_128kb), 8);
+
+		/* BOM address set in tsec_region_init, below.
+		 * Since the TSEC region consumes 2 carveouts, and is
+		 * expected to be split evenly between the two, size_mib
+		 * is doubled here.
+		 */
+		region_size_mb *= 2;
+		carveout_from_regs(base_mib, size_mib,
+					read32(&mc->security_carveout4_bom),
+					read32(&mc->security_carveout4_bom_hi),
+					region_size_mb);
+		break;
 	default:
 		break;
 	}
@@ -182,7 +207,6 @@ static void memory_in_range(uintptr_t *base_mib, uintptr_t *end_mib,
 			continue;
 
 		carveout_range(i, &carveout_base, &carveout_size);
-
 		if (carveout_size == 0)
 			continue;
 
@@ -280,4 +304,46 @@ void gpu_region_init(void)
 
 	/* Set the locked bit. This will lock out any other writes! */
 	setbits_le32(&mc->security_carveout3_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+}
+
+void nvdec_region_init(void)
+{
+	struct tegra_mc_regs * const mc = (void *)(uintptr_t)TEGRA_MC_BASE;
+	uintptr_t nvdec_base_mib = 0, end = 4096;
+	size_t nvdec_size_mib = NVDEC_CARVEOUT_SIZE_MB;
+
+	/* Get memory layout below 4GiB */
+	memory_in_range(&nvdec_base_mib, &end, CARVEOUT_NVDEC);
+	nvdec_base_mib = end - nvdec_size_mib;
+
+	/* Set the carveout1 base address. Everything else has been set in the BCT cfg/inc */
+	write32(&mc->security_carveout1_bom, nvdec_base_mib << 20);
+	write32(&mc->security_carveout1_bom_hi, 0);
+
+	/* Set the locked bit. This will lock out any other writes! */
+	setbits_le32(&mc->security_carveout1_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+}
+
+void tsec_region_init(void)
+{
+	struct tegra_mc_regs * const mc = (void *)(uintptr_t)TEGRA_MC_BASE;
+	uintptr_t tsec_base_mib = 0, end = 4096;
+	size_t tsec_size_mib = TSEC_CARVEOUT_SIZE_MB;
+
+	/* Get memory layout below 4GiB */
+	memory_in_range(&tsec_base_mib, &end, CARVEOUT_TSEC);
+	tsec_base_mib = end - tsec_size_mib;
+
+	/*
+	 * Set the carveout4/5 base address. Everything else has been set in the BCT cfg/inc
+	 * Note that the TSEC range is split evenly between the 2 carveouts (i.e. 1MB each)
+	 */
+	write32(&mc->security_carveout4_bom, tsec_base_mib << 20);
+	write32(&mc->security_carveout4_bom_hi, 0);
+	write32(&mc->security_carveout5_bom, (tsec_base_mib + (TSEC_CARVEOUT_SIZE_MB / 2)) << 20);
+	write32(&mc->security_carveout5_bom_hi, 0);
+
+	/* Set the locked bit. This will lock out any other writes! */
+	setbits_le32(&mc->security_carveout4_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+	setbits_le32(&mc->security_carveout5_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
 }

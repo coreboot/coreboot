@@ -104,7 +104,9 @@ enum {
 	TEGRA_I2C_BASE_COUNT = 6,
 };
 
-#define GPU_CARVEOUT_SIZE_MB            1
+#define GPU_CARVEOUT_SIZE_MB		1
+#define NVDEC_CARVEOUT_SIZE_MB		1
+#define TSEC_CARVEOUT_SIZE_MB		2
 
 /* Return total size of DRAM memory configured on the platform. */
 int sdram_size_mb(void);
@@ -119,6 +121,8 @@ enum {
 	CARVEOUT_MTS,
 	CARVEOUT_VPR,
 	CARVEOUT_GPU,
+	CARVEOUT_NVDEC,
+	CARVEOUT_TSEC,
 	CARVEOUT_NUM,
 };
 
@@ -142,5 +146,7 @@ void mainboard_add_memory_ranges(struct memranges *map);
  */
 void trustzone_region_init(void);
 void gpu_region_init(void);
+void nvdec_region_init(void);
+void tsec_region_init(void);
 
 #endif /* __SOC_NVIDIA_TEGRA210_INCLUDE_SOC_ADDRESS_MAP_H__ */

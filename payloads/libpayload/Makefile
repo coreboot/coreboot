@@ -54,7 +54,7 @@ export CONFIG_ := CONFIG_LP_
 TOPLEVEL := .
 
 CONFIG_LP_SHELL := sh
-KBUILD_DEFCONFIG := configs/defconfig
+KBUILD_DEFCONFIG ?= configs/defconfig
 UNAME_RELEASE := $(shell uname -r)
 DOTCONFIG ?= .config
 KCONFIG_CONFIG = $(DOTCONFIG)

@@ -68,20 +68,43 @@ struct edid_context {
 	int conformant;
 };
 
+/* Stuff that isn't used anywhere but is nice to pretty-print while
+   we're decoding everything else. */
+static struct {
+	char manuf_name[4];
+	unsigned int model;
+	unsigned int serial;
+	unsigned int year;
+	unsigned int week;
+	unsigned int version[2];
+	unsigned int nonconformant;
+	unsigned int type;
+
+	unsigned int x_mm;
+	unsigned int y_mm;
+
+	unsigned int voltage;
+	unsigned int sync;
+
+	const char *syncmethod;
+	const char *range_class;
+	const char *stereo;
+} extra_info;
+
 static int vbe_valid;
 static struct lb_framebuffer edid_fb;
 
-static char *manufacturer_name(struct edid *out, unsigned char *x)
+static char *manufacturer_name(unsigned char *x)
 {
-	out->manuf_name[0] = ((x[0] & 0x7C) >> 2) + '@';
-	out->manuf_name[1] = ((x[0] & 0x03) << 3) + ((x[1] & 0xE0) >> 5) + '@';
-	out->manuf_name[2] = (x[1] & 0x1F) + '@';
-	out->manuf_name[3] = 0;
+	extra_info.manuf_name[0] = ((x[0] & 0x7C) >> 2) + '@';
+	extra_info.manuf_name[1] = ((x[0] & 0x03) << 3) + ((x[1] & 0xE0) >> 5) + '@';
+	extra_info.manuf_name[2] = (x[1] & 0x1F) + '@';
+	extra_info.manuf_name[3] = 0;
 
-	if (isupper(out->manuf_name[0]) &&
-	    isupper(out->manuf_name[1]) &&
-	    isupper(out->manuf_name[2]))
-		return out->manuf_name;
+	if (isupper(extra_info.manuf_name[0]) &&
+	    isupper(extra_info.manuf_name[1]) &&
+	    isupper(extra_info.manuf_name[2]))
+		return extra_info.manuf_name;
 
 	return NULL;
 }
@@ -258,7 +281,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 			int v_max_offset = 0, v_min_offset = 0;
 			int is_cvt = 0;
 			c->has_range_descriptor = 1;
-			out->range_class = "";
+			extra_info.range_class = "";
 			/*
 			 * XXX todo: implement feature flags, vtd blocks
 			 * XXX check: ranges are well-formed; block termination if no vtd
@@ -285,25 +308,25 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 			 */
 			switch (x[10]) {
 			case 0x00: /* default gtf */
-				out->range_class = "GTF";
+				extra_info.range_class = "GTF";
 				break;
 			case 0x01: /* range limits only */
-				out->range_class = "bare limits";
+				extra_info.range_class = "bare limits";
 				if (!c->claims_one_point_four)
 					c->has_valid_range_descriptor = 0;
 				break;
 			case 0x02: /* secondary gtf curve */
-				out->range_class = "GTF with icing";
+				extra_info.range_class = "GTF with icing";
 				break;
 			case 0x04: /* cvt */
-				out->range_class = "CVT";
+				extra_info.range_class = "CVT";
 				is_cvt = 1;
 				if (!c->claims_one_point_four)
 					c->has_valid_range_descriptor = 0;
 				break;
 			default: /* invalid */
 				c->has_valid_range_descriptor = 0;
-				out->range_class = "invalid";
+				extra_info.range_class = "invalid";
 				break;
 			}
 
@@ -312,7 +335,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 			if (x[7] + h_min_offset > x[8] + h_max_offset)
 				c->has_valid_range_descriptor = 0;
 			printk(BIOS_SPEW, "Monitor ranges (%s): %d-%dHz V, %d-%dkHz H",
-			       out->range_class,
+			       extra_info.range_class,
 			       x[5] + v_min_offset, x[6] + v_max_offset,
 			       x[7] + h_min_offset, x[8] + h_max_offset);
 			if (x[9])
@@ -423,8 +446,8 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 	if (! c->did_detailed_timing){
 		/* Edid contains pixel clock in terms of 10KHz */
 		out->pixel_clock = (x[0] + (x[1] << 8)) * 10;
-		out->x_mm = (x[12] + ((x[14] & 0xF0) << 4));
-		out->y_mm = (x[13] + ((x[14] & 0x0F) << 8));
+		extra_info.x_mm = (x[12] + ((x[14] & 0xF0) << 4));
+		extra_info.y_mm = (x[13] + ((x[14] & 0x0F) << 8));
 		out->ha = (x[2] + ((x[4] & 0xF0) << 4));
 		out->hbl = (x[3] + ((x[4] & 0x0F) << 8));
 		out->hso = (x[8] + ((x[11] & 0xC0) << 2));
@@ -464,41 +487,41 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 	c->did_detailed_timing = 1;
 	switch ((x[17] & 0x18) >> 3) {
 	case 0x00:
-		out->syncmethod = " analog composite";
+		extra_info.syncmethod = " analog composite";
 		break;
 	case 0x01:
-		out->syncmethod = " bipolar analog composite";
+		extra_info.syncmethod = " bipolar analog composite";
 		break;
 	case 0x02:
-		out->syncmethod = " digital composite";
+		extra_info.syncmethod = " digital composite";
 		break;
 	case 0x03:
-		out->syncmethod = "";
+		extra_info.syncmethod = "";
 		break;
 	}
 	out->pvsync = (x[17] & (1 << 2)) ? '+' : '-';
 	out->phsync = (x[17] & (1 << 1)) ? '+' : '-';
 	switch (x[17] & 0x61) {
 	case 0x20:
-		out->stereo = "field sequential L/R";
+		extra_info.stereo = "field sequential L/R";
 		break;
 	case 0x40:
-		out->stereo = "field sequential R/L";
+		extra_info.stereo = "field sequential R/L";
 		break;
 	case 0x21:
-		out->stereo = "interleaved right even";
+		extra_info.stereo = "interleaved right even";
 		break;
 	case 0x41:
-		out->stereo = "interleaved left even";
+		extra_info.stereo = "interleaved left even";
 		break;
 	case 0x60:
-		out->stereo = "four way interleaved";
+		extra_info.stereo = "four way interleaved";
 		break;
 	case 0x61:
-		out->stereo = "side by side interleaved";
+		extra_info.stereo = "side by side interleaved";
 		break;
 	default:
-		out->stereo = "";
+		extra_info.stereo = "";
 		break;
 	}
 
@@ -507,16 +530,16 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 	       "               %04x %04x %04x %04x vborder %x\n"
 	       "               %chsync %cvsync%s%s %s\n",
 	       out->pixel_clock,
-	       out->x_mm,
-	       out->y_mm,
+	       extra_info.x_mm,
+	       extra_info.y_mm,
 	       out->ha, out->ha + out->hso, out->ha + out->hso + out->hspw,
 	       out->ha + out->hbl, out->hborder,
 	       out->va, out->va + out->vso, out->va + out->vso + out->vspw,
 	       out->va + out->vbl, out->vborder,
 	       out->phsync, out->pvsync,
-	       out->syncmethod, x[17] & 0x80 ?" interlaced" : "",
-	       out->stereo
-		);
+	       extra_info.syncmethod, x[17] & 0x80 ?" interlaced" : "",
+	       extra_info.stereo
+	);
 	return 1;
 }
 
@@ -983,15 +1006,15 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	}
 
 	memset(out, 0, sizeof(*out));
-	if (manufacturer_name(out, edid + 0x08))
+	if (manufacturer_name(edid + 0x08))
 		c.manufacturer_name_well_formed = 1;
 
-	out->model = (unsigned short)(edid[0x0A] + (edid[0x0B] << 8));
-	out->serial = (unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
+	extra_info.model = (unsigned short)(edid[0x0A] + (edid[0x0B] << 8));
+	extra_info.serial = (unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
 				     + (edid[0x0E] << 16) + (edid[0x0F] << 24));
 
 	printk(BIOS_SPEW, "Manufacturer: %s Model %x Serial Number %u\n",
-	       out->manuf_name,
+	       extra_info.manuf_name,
 	       (unsigned short)(edid[0x0A] + (edid[0x0B] << 8)),
 	       (unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
 			      + (edid[0x0E] << 16) + (edid[0x0F] << 24)));
@@ -1004,24 +1027,24 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				c.has_valid_year = 1;
 				printk(BIOS_SPEW, "Made week %hhd of model year %hhd\n", edid[0x10],
 				       edid[0x11]);
-				out->week = edid[0x10];
-				out->year = edid[0x11];
+				extra_info.week = edid[0x10];
+				extra_info.year = edid[0x11];
 			} else {
 				/* we know it's at least 2013, when this code was written */
 				if (edid[0x11] + 90 <= 2013) {
 					c.has_valid_year = 1;
 					printk(BIOS_SPEW, "Made week %hhd of %d\n",
 					       edid[0x10], edid[0x11] + 1990);
-					out->week = edid[0x10];
-					out->year = edid[0x11] + 1990;
+					extra_info.week = edid[0x10];
+					extra_info.year = edid[0x11] + 1990;
 				}
 			}
 		}
 	}
 
 	printk(BIOS_SPEW, "EDID version: %hhd.%hhd\n", edid[0x12], edid[0x13]);
-	out->version[0] = edid[0x12];
-	out->version[1] = edid[0x13];
+	extra_info.version[0] = edid[0x12];
+	extra_info.version[1] = edid[0x13];
 
 	if (edid[0x12] == 1) {
 		if (edid[0x13] > 4) {
@@ -1068,7 +1091,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			default:
 				   c.nonconformant_digital_display = 1;
 			}
-			out->type = edid[0x14] & 0x0f;
+			extra_info.type = edid[0x14] & 0x0f;
 		} else 	if (c.claims_one_point_two) {
 			conformance_mask = 0x7E;
 			if (edid[0x14] & 0x01) {
@@ -1079,13 +1102,13 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 
 		if (!c.nonconformant_digital_display)
 			c.nonconformant_digital_display = edid[0x14] & conformance_mask;
-		out->nonconformant = c.nonconformant_digital_display;
+		extra_info.nonconformant = c.nonconformant_digital_display;
 	} else {
 		analog = 1;
 		int voltage = (edid[0x14] & 0x60) >> 5;
 		int sync = (edid[0x14] & 0x0F);
-		out->voltage = voltage;
-		out->sync = sync;
+		extra_info.voltage = voltage;
+		extra_info.sync = sync;
 
 		printk(BIOS_SPEW, "Analog display, Input voltage level: %s V\n",
 		       voltage == 3 ? "0.7/0.7" :
@@ -1117,19 +1140,15 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	if (edid[0x15] && edid[0x16]) {
 		printk(BIOS_SPEW, "Maximum image size: %d cm x %d cm\n",
 		       edid[0x15], edid[0x16]);
-		out->xsize_cm = edid[0x15];
-		out->ysize_cm = edid[0x16];
 	} else if (c.claims_one_point_four && (edid[0x15] || edid[0x16])) {
 		if (edid[0x15]) { /* edid[0x15] != 0 && edid[0x16] == 0 */
 			unsigned int ratio = 100000/(edid[0x15] + 99);
 			printk(BIOS_SPEW, "Aspect ratio is %u.%03u (landscape)\n",
 			       ratio / 1000, ratio % 1000);
-			out->aspect_landscape = ratio / 100;
 		} else { /* edid[0x15] == 0 && edid[0x16] != 0 */
 			unsigned int ratio = 100000/(edid[0x16] + 99);
 			printk(BIOS_SPEW, "Aspect ratio is %u.%03u (portrait)\n",
 			       ratio / 1000, ratio % 1000);
-			out->aspect_portrait = ratio / 100;
 		}
 	} else {
 		/* Either or both can be zero for 1.3 and before */

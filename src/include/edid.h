@@ -27,14 +27,6 @@
  */
 
 struct edid {
-	char manuf_name[4];
-	unsigned int model;
-	unsigned int serial;
-	unsigned int year;
-	unsigned int week;
-	unsigned int version[2];
-	unsigned int nonconformant;
-	unsigned int type;
 	/* These next three things used to all be called bpp.
 	 * Merriment ensued. The identifier
 	 * 'bpp' is herewith banished from our
@@ -56,17 +48,9 @@ struct edid {
 	 * all over the place.
 	 */
 	unsigned int panel_bits_per_pixel;
-	unsigned int xres;
-	unsigned int yres;
-	unsigned int voltage;
-	unsigned int sync;
-	unsigned int xsize_cm;
-	unsigned int ysize_cm;
 	/* used to compute timing for graphics chips. */
 	unsigned char phsync;
 	unsigned char pvsync;
-	unsigned int x_mm;
-	unsigned int y_mm;
 	unsigned int pixel_clock;
 	unsigned int link_clock;
 	unsigned int ha;
@@ -87,14 +71,6 @@ struct edid {
 	u32 x_resolution;
 	u32 y_resolution;
 	u32 bytes_per_line;
-	/* it is unlikely we need these things. */
-	/* if one of these is non-zero, use that one. */
-	/* they're aspect * 10 to provide some additional resolution */
-	unsigned int aspect_landscape;
-	unsigned int aspect_portrait;
-	const char *range_class;
-	const char *syncmethod;
-	const char *stereo;
 };
 
 /* Defined in src/lib/edid.c */

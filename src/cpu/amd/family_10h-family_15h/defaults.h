@@ -371,44 +371,140 @@ static const struct {
 					   [2] SyncOnUcEccEn = 1 */
 
 	/* XBAR buffer settings */
-	{ 3, 0x6c, AMD_FAM10_ALL, AMD_PTYPE_ALL,
-	  0x00018052, 0x700780f7 },
+	{ 3, 0x6c, AMD_FAM10_ALL & ~(AMD_DR_Dx), AMD_PTYPE_ALL,
+	  0x00018052, 0x700780f7 },	/* IsocRspDBC = 0x0,
+					   UpRspDBC = 0x1,
+					   DatBuf24 = 0x1,
+					   DnRspDBC = 0x1,
+					   DnReqDBC = 0x1,
+					   UpReqDBC = 0x2 */
+
+	/* XBAR buffer settings */
+	{ 3, 0x6c, AMD_DR_Dx, AMD_PTYPE_ALL,
+	  0x00028052, 0x700780f7 },	/* IsocRspDBC = 0x0,
+					   UpRspDBC = 0x2,
+					   DatBuf24 = 0x1,
+					   DnRspDBC = 0x1,
+					   DnReqDBC = 0x1,
+					   UpReqDBC = 0x2 */
 
 	/* XBAR buffer settings */
 	{ 3, 0x6c, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x10010052, 0x700700f7 },
+	  0x10010052, 0x700700f7 },	/* IsocRspDBC = 0x1,
+					   UpRspDBC = 0x1,
+					   DnRspDBC = 0x1,
+					   DnReqDBC = 0x1,
+					   UpReqDBC = 0x2 */
 
 	/* Errata 281 Workaround */
-	{ 3, 0x6C, ( AMD_DR_B0 | AMD_DR_B1),
+	{ 3, 0x6c, (AMD_DR_B0 | AMD_DR_B1),
 	  AMD_PTYPE_SVR, 0x00010094, 0x700780F7 },
 
-	{ 3, 0x6C, AMD_FAM10_ALL, AMD_PTYPE_UMA,
+	{ 3, 0x6c, AMD_FAM10_ALL, AMD_PTYPE_UMA,
 	  0x60018051, 0x700780F7 },
 
-	{ 3, 0x70, AMD_FAM10_ALL, AMD_PTYPE_ALL,
-	  0x00041153, 0x777777F7 },
+	{ 3, 0x70, AMD_FAM10_ALL & ~(AMD_DR_Dx), AMD_PTYPE_ALL,
+	  0x00041153, 0x777777f7 },	/* IsocRspCBC = 0x0,
+					   IsocPreqCBC = 0x0,
+					   IsocReqCBC = 0x0,
+					   UpRspCBC = 0x4,
+					   DnPreqCBC = 0x1,
+					   UpPreqCBC = 0x1,
+					   DnRspCBC = 0x1,
+					   DnReqCBC = 0x1,
+					   UpReqCBC = 0x3 */
+
+	{ 3, 0x70, AMD_DR_Dx, AMD_PTYPE_ALL,
+	  0x00051153, 0x777777f7 },	/* IsocRspCBC = 0x0,
+					   IsocPreqCBC = 0x0,
+					   IsocReqCBC = 0x0,
+					   UpRspCBC = 0x5,
+					   DnPreqCBC = 0x1,
+					   UpPreqCBC = 0x1,
+					   DnRspCBC = 0x1,
+					   DnReqCBC = 0x1,
+					   UpReqCBC = 0x3 */
 
 	{ 3, 0x70, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x10171155, 0x777777f7 },
+	  0x10171155, 0x777777f7 },	/* IsocRspCBC = 0x1,
+					   IsocPreqCBC = 0x0,
+					   IsocReqCBC = 0x1,
+					   UpRspCBC = 0x7,
+					   DnPreqCBC = 0x1,
+					   UpPreqCBC = 0x1,
+					   DnRspCBC = 0x1,
+					   DnReqCBC = 0x1,
+					   UpReqCBC = 0x5 */
 
 	{ 3, 0x70, AMD_FAM10_ALL, AMD_PTYPE_UMA,
-	  0x61221151, 0x777777F7 },
+	  0x61221151, 0x777777f7 },	/* IsocRspCBC = 0x6,
+					   IsocPreqCBC = 0x1,
+					   IsocReqCBC = 0x2,
+					   UpRspCBC = 0x2,
+					   DnPreqCBC = 0x1,
+					   UpPreqCBC = 0x1,
+					   DnRspCBC = 0x1,
+					   DnReqCBC = 0x1,
+					   UpReqCBC = 0x1 */
+
+	{ 3, 0x74, AMD_FAM10_ALL, ~AMD_PTYPE_UMA,
+	  0x00081111, 0xf7ff7777 },	/* DRReqCBC = 0x0,
+					   IsocPreqCBC = 0x0,
+					   IsocReqCBC = 0x0,
+					   ProbeCBC = 0x8,
+					   DnPreqCBC = 0x1,
+					   UpPreqCBC = 0x1,
+					   DnReqCBC = 0x1,
+					   UpReqCBC = 0x1 */
 
 	{ 3, 0x74, AMD_FAM10_ALL, AMD_PTYPE_UMA,
-	  0x00080101, 0x000F7777 },
+	  0x00480101, 0xf7ff7777 },	/* DRReqCBC = 0x0,
+					   IsocPreqCBC = 0x0,
+					   IsocReqCBC = 0x4,
+					   ProbeCBC = 0x8,
+					   DnPreqCBC = 0x0,
+					   UpPreqCBC = 0x1,
+					   DnReqCBC = 0x0,
+					   UpReqCBC = 0x1 */
 
 	{ 3, 0x74, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x00172111, 0x77ff7777 },
+	  0x00172111, 0xf7ff7777 },	/* DRReqCBC = 0x0,
+					   IsocPreqCBC = 0x0,
+					   IsocReqCBC = 0x1,
+					   ProbeCBC = 0x7,
+					   DnPreqCBC = 0x2,
+					   UpPreqCBC = 0x1,
+					   DnReqCBC = 0x1,
+					   UpReqCBC = 0x1 */
 
-	{ 3, 0x7C, AMD_FAM10_ALL, AMD_PTYPE_ALL,
-	  0x00090914, 0x707FFF1F },
+	{ 3, 0x7c, AMD_FAM10_ALL & ~(AMD_DR_Dx), AMD_PTYPE_ALL,
+	 0x00090914, 0x707fff1f },	/* XBar2SriFreeListCBInc = 0x0,
+					   Sri2XbarFreeRspDBC = 0x0,
+					   Sri2XbarFreeXreqDBC = 0x9,
+					   Sri2XbarFreeRspCBC = 0x0,
+					   Sri2XbarFreeXreqCBC = 0x9,
+					   Xbar2SriFreeListCBC = 0x14 */
+
+	{ 3, 0x7c, AMD_DR_Dx, AMD_PTYPE_ALL,
+	 0x00090a18, 0x707fff1f },	/* XBar2SriFreeListCBInc = 0x0,
+					   Sri2XbarFreeRspDBC = 0x0,
+					   Sri2XbarFreeXreqDBC = 0x9,
+					   Sri2XbarFreeRspCBC = 0x0,
+					   Sri2XbarFreeXreqCBC = 0x9,
+					   Xbar2SriFreeListCBC = 0x14 */
 
 	/* Errata 281 Workaround */
 	{ 3, 0x7C, ( AMD_DR_B0 | AMD_DR_B1),
 	 AMD_PTYPE_SVR, 0x00144514, 0x707FFF1F },
 
-	{ 3, 0x7C, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x040d0f16, 0x07ffff1f },
+	{ 3, 0x7c, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x040d0f16, 0x77ffff1f },	/* XBar2SriFreeListCBInc = 0x0,
+					   SrqExtFreeListBC = 0x8,
+					   Sri2XbarFreeRspDBC = 0x0,
+					   Sri2XbarFreeXreqDBC = 0xd,
+					   Sri2XbarFreeRspCBC = 0x0,
+					   Sri2XbarFreeXreqCBC = 0xf,
+					   Xbar2SriFreeListCBC = 0x16 */
 
 	{ 3, 0x7C, AMD_FAM10_ALL, AMD_PTYPE_UMA,
 	  0x00070814, 0x007FFF1F },
@@ -630,18 +726,16 @@ static const struct {
 	  0x00004400, 0x00006400 },	/* HT_PHY_DLL_REG */
 
 	{ 0xCF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
-	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
-					   completeness */
+	  0x0000005a, 0x000000ff },	/* Use common "safe" setting for K10 */
 
 	{ 0xDF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
-	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
-					   completeness */
+	  0x0000005a, 0x000000ff },	/* Use common "safe" setting for K10 */
 
 	{ 0xCF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
-	  0x0000006D, 0x000000FF },	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
+	  0x0000006d, 0x000000ff },	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
 
 	{ 0xDF, AMD_FAM10_ALL, AMD_PTYPE_ALL,  HTPHY_LINKTYPE_HT1,
-	  0x0000006D, 0x000000FF }, 	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
+	  0x0000006d, 0x000000ff }, 	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
 
 	/* Link Phy Receiver Loop Filter Registers */
 	{ 0xD1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
@@ -664,24 +758,29 @@ static const struct {
 	  0x40040000, 0xe01F0000 },	/* [31:29] RttCtl = 02h,
 					  [20:16] RttIndex = 04h */
 
-/* FIXME
- * Causes lockups for some reason when more than one package is installed
- * Debug and reactivate!
- */
-// #if 0
 	{ 0xCF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
-	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
-					   completeness */
+	  0x00000a2a, 0x000000ff }, 	/* P0RcvRdPtr = 0xa,
+	  				   P0XmtRdPtr = 0x2
+	  				   P1RcvRdPtr = 0xa
+	  				   P1XmtRdPtr = 0x0 */
 
 	{ 0xDF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
-	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
-					   completeness */
+	  0x00000a2a, 0x000000ff }, 	/* P0RcvRdPtr = 0xa,
+	  				   P0XmtRdPtr = 0x2
+	  				   P1RcvRdPtr = 0xa
+	  				   P1XmtRdPtr = 0x0 */
 
 	{ 0xCF, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
-	  0x0000006D, 0x000000FF },	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
+	  0x00000d4d, 0x000000ff }, 	/* P0RcvRdPtr = 0xd,
+	  				   P0XmtRdPtr = 0x4
+	  				   P1RcvRdPtr = 0xd
+	  				   P1XmtRdPtr = 0x0 */
 
 	{ 0xDF, AMD_FAM15_ALL, AMD_PTYPE_ALL,  HTPHY_LINKTYPE_HT1,
-	  0x0000006D, 0x000000FF }, 	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
+	  0x00000d4d, 0x000000ff }, 	/* P0RcvRdPtr = 0xd,
+	  				   P0XmtRdPtr = 0x4
+	  				   P1RcvRdPtr = 0xd
+	  				   P1XmtRdPtr = 0x0 */
 
 	/* Link Phy Receiver Loop Filter Registers */
 	{ 0xD1, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
@@ -702,6 +801,5 @@ static const struct {
 
 	{ 0xC0, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
 	  0x40040000, 0xe01F0000 },	/* [31:29] RttCtl = 02h,
-					  [20:16] RttIndex = 04h */
-// #endif
+					   [20:16] RttIndex = 04h */
 };

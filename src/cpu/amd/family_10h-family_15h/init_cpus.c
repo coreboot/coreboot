@@ -347,9 +347,11 @@ static void STOP_CAR_AND_CPU(uint8_t skip_sharedc_config, uint32_t apicid)
 
 static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 {
-	u32 bsp_apicid = 0;
-	u32 apicid;
+	uint32_t bsp_apicid = 0;
+	uint32_t apicid;
+	uint32_t dword;
 	uint8_t set_mtrrs;
+	uint8_t node_count;
 	struct node_core_id id;
 
 	/* Please refer to the calculations and explaination in cache_as_ram.inc before modifying these values */
@@ -440,6 +442,18 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 		update_microcode(cpuid_eax(1));
 
 		cpuSetAMDMSR(id.nodeid);
+
+		/* Set up HyperTransport probe filter support */
+		if (is_gt_rev_d()) {
+			dword = pci_read_config32(NODE_PCI(id.nodeid, 0), 0x60);
+			node_count = ((dword >> 4) & 0x7) + 1;
+
+			if (node_count > 1) {
+				msr_t msr = rdmsr(BU_CFG2_MSR);
+				msr.hi |= 1 << (42 - 32);
+				wrmsr(BU_CFG2_MSR, msr);
+			}
+		}
 
 #if CONFIG_SET_FIDVID
 #if CONFIG_LOGICAL_CPUS && CONFIG_SET_FIDVID_CORE0_ONLY

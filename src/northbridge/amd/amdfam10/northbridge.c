@@ -26,10 +26,13 @@
 #include <lib.h>
 #include <smbios.h>
 #include <cpu/cpu.h>
+#include <delay.h>
 
 #include <cpu/x86/lapic.h>
+#include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam10_sysconf.h>
+#include <cpu/amd/model_10xxx_msr.h>
 #include <cpu/amd/family_10h-family_15h/ram_calc.h>
 
 #if CONFIG_LOGICAL_CPUS
@@ -1523,7 +1526,7 @@ static void cpu_bus_scan(device_t dev)
 		if(i>=32) {
 			busn--;
 			devn-=32;
-			pbus = pci_domain->link_list->next);
+			pbus = pci_domain->link_list->next;
 		}
 #endif
 
@@ -1643,8 +1646,147 @@ static void cpu_bus_scan(device_t dev)
 	}
 }
 
+static void detect_and_enable_probe_filter(device_t dev)
+{
+	uint32_t dword;
+
+	uint8_t fam15h = 0;
+	uint8_t rev_gte_d = 0;
+	uint8_t dual_node = 0;
+	unsigned nb_cfg_54;
+	uint32_t f3xe8;
+	uint32_t family;
+	uint32_t model;
+
+	family = model = cpuid_eax(0x80000001);
+	model = ((model & 0xf0000) >> 12) | ((model & 0xf0) >> 4);
+
+	if (is_fam15h()) {
+		/* Family 15h or later */
+		fam15h = 1;
+		nb_cfg_54 = 1;
+	}
+
+	if ((model >= 0x8) || fam15h)
+		/* Revision D or later */
+		rev_gte_d = 1;
+
+	if (rev_gte_d)
+		/* Check for dual node capability */
+		if (f3xe8 & 0x20000000)
+			dual_node = 1;
+
+	if (rev_gte_d && (sysconf.nodes > 1)) {
+		/* Enable the probe filter */
+		uint8_t i;
+		uint8_t pfmode = 0x0;
+
+		uint32_t f3x58[MAX_NODES_SUPPORTED];
+		uint32_t f3x5c[MAX_NODES_SUPPORTED];
+
+		printk(BIOS_DEBUG, "Enabling probe filter\n");
+
+		/* Disable L3 and DRAM scrubbers and configure system for probe filter support */
+		for (i = 0; i < sysconf.nodes; i++) {
+			device_t f2x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 2));
+			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+
+			f3x58[i] = pci_read_config32(f3x_dev, 0x58);
+			f3x5c[i] = pci_read_config32(f3x_dev, 0x5c);
+			pci_write_config32(f3x_dev, 0x58, f3x58[i] & ~((0x1f << 24) | 0x1f));
+			pci_write_config32(f3x_dev, 0x5c, f3x5c[i] & ~0x1);
+
+			dword = pci_read_config32(f2x_dev, 0x1b0);
+			dword &= ~(0x7 << 8);	/* CohPrefPrbLmt = 0x0 */
+			pci_write_config32(f2x_dev, 0x1b0, dword);
+
+			msr_t msr = rdmsr_amd(BU_CFG2_MSR);
+			msr.hi |= 1 << (42 - 32);
+			wrmsr_amd(BU_CFG2_MSR, msr);
+
+			if (is_fam15h()) {
+				uint8_t subcache_size = 0x0;
+				uint8_t pref_so_repl = 0x0;
+				uint32_t f3x1c4 = pci_read_config32(f3x_dev, 0x1c4);
+				if ((f3x1c4 & 0xffff) == 0xcccc) {
+					subcache_size = 0x1;
+					pref_so_repl = 0x2;
+					pfmode = 0x3;
+				} else {
+					pfmode = 0x2;
+				}
+
+				dword = pci_read_config32(f3x_dev, 0x1d4);
+				dword |= 0x1 << 29;	/* PFLoIndexHashEn = 0x1 */
+				dword &= ~(0x3 << 20);	/* PFPreferredSORepl = pref_so_repl */
+				dword |= (pref_so_repl & 0x3) << 20;
+				dword |= 0x1 << 17;	/* PFWayHashEn = 0x1 */
+				dword |= 0xf << 12;	/* PFSubCacheEn = 0xf */
+				dword &= ~(0x3 << 10);	/* PFSubCacheSize3 = subcache_size */
+				dword |= (subcache_size & 0x3) << 10;
+				dword &= ~(0x3 << 8);	/* PFSubCacheSize2 = subcache_size */
+				dword |= (subcache_size & 0x3) << 8;
+				dword &= ~(0x3 << 6);	/* PFSubCacheSize1 = subcache_size */
+				dword |= (subcache_size & 0x3) << 6;
+				dword &= ~(0x3 << 4);	/* PFSubCacheSize0 = subcache_size */
+				dword |= (subcache_size & 0x3) << 4;
+				dword &= ~(0x3 << 2);	/* PFWayNum = 0x2 */
+				dword |= 0x2 << 2;
+				pci_write_config32(f3x_dev, 0x1d4, dword);
+			} else {
+				pfmode = 0x2;
+
+				dword = pci_read_config32(f3x_dev, 0x1d4);
+				dword |= 0x1 << 29;	/* PFLoIndexHashEn = 0x1 */
+				dword &= ~(0x3 << 20);	/* PFPreferredSORepl = 0x2 */
+				dword |= 0x2 << 20;
+				dword |= 0xf << 12;	/* PFSubCacheEn = 0xf */
+				dword &= ~(0x3 << 10);	/* PFSubCacheSize3 = 0x0 */
+				dword &= ~(0x3 << 8);	/* PFSubCacheSize2 = 0x0 */
+				dword &= ~(0x3 << 6);	/* PFSubCacheSize1 = 0x0 */
+				dword &= ~(0x3 << 4);	/* PFSubCacheSize0 = 0x0 */
+				dword &= ~(0x3 << 2);	/* PFWayNum = 0x2 */
+				dword |= 0x2 << 2;
+				pci_write_config32(f3x_dev, 0x1d4, dword);
+			}
+		}
+
+		udelay(40);
+
+		disable_cache();
+		wbinvd();
+		for (i = 0; i < sysconf.nodes; i++) {
+			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+
+			dword = pci_read_config32(f3x_dev, 0x1c4);
+			dword |= (0x1 << 31);	/* L3TagInit = 1 */
+			pci_write_config32(f3x_dev, 0x1c4, dword);
+			do {
+			} while (pci_read_config32(f3x_dev, 0x1c4) & (0x1 << 31));
+
+			dword = pci_read_config32(f3x_dev, 0x1d4);
+			dword &= ~0x3;		/* PFMode = pfmode */
+			dword |= pfmode & 0x3;
+			pci_write_config32(f3x_dev, 0x1d4, dword);
+			do {
+			} while (!(pci_read_config32(f3x_dev, 0x1d4) & (0x1 << 19)));
+		}
+		enable_cache();
+
+		/* Reenable L3 and DRAM scrubbers */
+		for (i = 0; i < sysconf.nodes; i++) {
+			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+
+			pci_write_config32(f3x_dev, 0x58, f3x58[i]);
+			pci_write_config32(f3x_dev, 0x5c, f3x5c[i]);
+		}
+
+	}
+}
+
 static void cpu_bus_init(device_t dev)
 {
+	detect_and_enable_probe_filter(dev);
 	initialize_cpus(dev->link_list);
 #if CONFIG_AMD_SB_CIMX
 	sb_After_Pci_Init();

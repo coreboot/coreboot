@@ -103,6 +103,28 @@ static inline uint8_t is_fam15h(void)
 	return fam15h;
 }
 
+static inline uint8_t is_gt_rev_d(void)
+{
+	uint8_t fam15h = 0;
+	uint8_t rev_gte_d = 0;
+	uint32_t family;
+	uint32_t model;
+
+	family = model = cpuid_eax(0x80000001);
+	model = ((model & 0xf0000) >> 12) | ((model & 0xf0) >> 4);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	if ((model >= 0x8) || fam15h)
+		/* Revision D or later */
+		rev_gte_d = 1;
+
+	return rev_gte_d;
+}
+
 /***************************************************************************//**
  *
  * SBDFO

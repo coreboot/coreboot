@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -437,7 +438,6 @@ static void sr5650_por_htiu_index_init(device_t nb_dev)
 	set_htiu_enable_bits(nb_dev, 0x1D, 0x1<<2,  0x1<<2);
 	set_htiu_enable_bits(nb_dev, 0x1D, 0x1<<4,  0x1<<4);
 
-	set_nbcfg_enable_bits(cpu_f0, 0x68, 3 << 21, 0 << 21);
 	axindxc_reg(0x10, 1 << 9, 1 << 9);
 	set_pcie_enable_bits(nb_dev, 0x10 | 5 << 16, 1 << 9, 1 << 9);
 	set_htiu_enable_bits(nb_dev, 0x06, 0x1<<26, 0x1<<26);

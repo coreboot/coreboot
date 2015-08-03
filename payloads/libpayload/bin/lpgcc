@@ -165,10 +165,10 @@ _LDFLAGS="-L$BASE/../lib -L$_LIBDIR $_LDSCRIPT -static"
 
 if [ $DOLINK -eq 0 ]; then
     if [ $DEBUGME -eq 1 ]; then
-    	echo "$DEFAULT_CC $_CFLAGS $CMDLINE"
+	echo "$DEFAULT_CC $CMDLINE $_CFLAGS"
     fi
 
-    $DEFAULT_CC $_CFLAGS $CMDLINE
+    $DEFAULT_CC $CMDLINE $_CFLAGS
 else
     if [ -z "${CONFIG_LP_ARCH_MIPS}" ]; then
         _LIBGCC=`$DEFAULT_CC $_ARCHEXTRA -print-libgcc-file-name`
@@ -182,7 +182,7 @@ else
 	    exit 1
     fi
     if [ $DEBUGME -eq 1 ]; then
-	echo "$DEFAULT_CC $_CFLAGS $_LDFLAGS $HEAD_O $CMDLINE -lpayload $_LIBGCC"
+	echo "$DEFAULT_CC $_LDFLAGS $HEAD_O $CMDLINE $_CFLAGS -lpayload $_LIBGCC"
     fi
 
     # Note: $_ARCHLIBDIR/head.o must be the first object being linked, because it
@@ -190,5 +190,5 @@ else
     # header to be placed below 0x2000 in the resulting image.  See:
     # http://www.gnu.org/software/grub/manual/multiboot/html_node/OS-image-format.html
 
-    $DEFAULT_CC $_CFLAGS $_LDFLAGS $HEAD_O  $CMDLINE -lpayload $_LIBGCC
+    $DEFAULT_CC $_LDFLAGS $HEAD_O $CMDLINE $_CFLAGS -lpayload $_LIBGCC
 fi

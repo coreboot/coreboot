@@ -132,6 +132,50 @@ static void model_10xxx_init(device_t dev)
 	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
 #endif
 
+	/* Set bus unit configuration */
+	if (is_fam15h()) {
+		uint32_t f5x80;
+		uint8_t enabled;
+		uint8_t compute_unit_count = 0;
+		f5x80 = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18 + id.nodeid, 5)), 0x80);
+		enabled = f5x80 & 0xf;
+		if (enabled == 0x1)
+			compute_unit_count = 1;
+		if (enabled == 0x3)
+			compute_unit_count = 2;
+		if (enabled == 0x7)
+			compute_unit_count = 3;
+		if (enabled == 0xf)
+			compute_unit_count = 4;
+		msr = rdmsr(BU_CFG2_MSR);
+		msr.lo &= ~(0x3 << 6);				/* ThrottleNbInterface[1:0] */
+		msr.lo |= (((compute_unit_count - 1) & 0x3) << 6);
+		wrmsr(BU_CFG2_MSR, msr);
+	} else {
+		uint32_t f0x60;
+		uint32_t f0x160;
+		uint8_t core_count = 0;
+		uint8_t node_count = 0;
+		f0x60 = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18 + id.nodeid, 0)), 0x60);
+		core_count = (f0x60 >> 16) & 0x1f;
+		node_count = ((f0x60 >> 4) & 0x7) + 1;
+		if (is_gt_rev_d()) {
+			f0x160 = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18 + id.nodeid, 0)), 0x160);
+			core_count |= ((f0x160 >> 16) & 0x7) << 5;
+		}
+		core_count++;
+		core_count /= node_count;
+		msr = rdmsr(BU_CFG2_MSR);
+		if (is_gt_rev_d()) {
+			msr.hi &= ~(0x3 << (36 - 32));			/* ThrottleNbInterface[3:2] */
+			msr.hi |= ((((core_count - 1) >> 2) & 0x3) << (36 - 32));
+		}
+		msr.lo &= ~(0x3 << 6);				/* ThrottleNbInterface[1:0] */
+		msr.lo |= (((core_count - 1) & 0x3) << 6);
+		msr.lo &= ~(0x1 << 24);				/* WcPlusDis = 0 */
+		wrmsr(BU_CFG2_MSR, msr);
+	}
+
 	/* Disable Cf8ExtCfg */
 	msr = rdmsr(NB_CFG_MSR);
 	msr.hi &= ~(1 << (46 - 32));

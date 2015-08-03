@@ -860,6 +860,7 @@ static u32 AMD_checkLinkType(u8 node, u8 link, u8 regoff)
 		else
 			linktype |= HTPHY_LINKTYPE_UNGANGED;
 	}
+
 	return linktype;
 }
 
@@ -953,26 +954,6 @@ void cpuSetAMDMSR(uint8_t node_id)
 		}
 	}
 	AMD_Errata298();
-
-	if (revision & AMD_FAM15_ALL) {
-		uint32_t f5x80;
-		uint8_t enabled;
-		uint8_t compute_unit_count = 0;
-		f5x80 = pci_read_config32(NODE_PCI(node_id, 5), 0x80);
-		enabled = f5x80 & 0xf;
-		if (enabled == 0x1)
-			compute_unit_count = 1;
-		if (enabled == 0x3)
-			compute_unit_count = 2;
-		if (enabled == 0x7)
-			compute_unit_count = 3;
-		if (enabled == 0xf)
-			compute_unit_count = 4;
-		msr = rdmsr(BU_CFG2);
-		msr.lo &= ~(0x3 << 6);				/* ThrottleNbInterface[1:0] */
-		msr.lo |= (((compute_unit_count - 1) & 0x3) << 6);
-		wrmsr(BU_CFG2, msr);
-	}
 
 	/* Revision C0 and above */
 	if (revision & AMD_OR_C0) {

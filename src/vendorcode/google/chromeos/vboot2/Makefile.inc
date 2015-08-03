@@ -55,10 +55,10 @@ endif
 endif # CONFIG_SEPARATE_VERSTAGE
 
 VB2_LIB = $(obj)/external/vboot_reference/vboot_fw20.a
-VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CPPFLAGS_libverstage)))
+VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%, $(filter-out -I$(obj), $(filter-out -include $(src)/include/kconfig.h, $(CPPFLAGS_libverstage))))
 VBOOT_CFLAGS += $(CFLAGS_libverstage)
 VBOOT_CFLAGS += $(libverstage-c-ccopts)
-VBOOT_CFLAGS += -include $(top)/src/include/kconfig.h -Wno-missing-prototypes
+VBOOT_CFLAGS += -I$(abspath $(obj)) -include $(top)/src/include/kconfig.h -Wno-missing-prototypes
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 
 $(VB2_LIB): $(obj)/config.h
@@ -67,7 +67,7 @@ $(VB2_LIB): $(obj)/config.h
 	CC="$(CC_verstage)" \
 	CFLAGS="$(VBOOT_CFLAGS)" VBOOT2="y" \
 	$(MAKE) -C $(VB_SOURCE) \
-		BUILD=$(top)/$(dir $(VB2_LIB)) \
+		BUILD=$(abspath $(dir $(VB2_LIB))) \
 		V=$(V) \
 		fwlib20
 

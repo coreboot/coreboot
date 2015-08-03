@@ -311,15 +311,15 @@ int
 xhci_wait_for_transfer(xhci_t *const xhci, const int slot_id, const int ep_id)
 {
 	xhci_spew("Waiting for transfer on ID %d EP %d\n", slot_id, ep_id);
-	/* 2s for all types of transfers */ /* TODO: test, wait longer? */
-	unsigned long timeout_us = 2 * 1000 * 1000;
-	int cc = TIMEOUT;
+	/* 3s for all types of transfers */ /* TODO: test, wait longer? */
+	unsigned long timeout_us = 3 * 1000 * 1000;
+	int ret = TIMEOUT;
 	while (xhci_wait_for_event_type(xhci, TRB_EV_TRANSFER, &timeout_us)) {
 		if (TRB_GET(ID, xhci->er.cur) == slot_id &&
 				TRB_GET(EP, xhci->er.cur) == ep_id) {
-			cc = -TRB_GET(CC, xhci->er.cur);
-			if (cc == -CC_SUCCESS || cc == -CC_SHORT_PACKET)
-				cc = TRB_GET(EVTL, xhci->er.cur);
+			ret = -TRB_GET(CC, xhci->er.cur);
+			if (ret == -CC_SUCCESS || ret == -CC_SHORT_PACKET)
+				ret = TRB_GET(EVTL, xhci->er.cur);
 			xhci_advance_event_ring(xhci);
 			break;
 		}
@@ -329,5 +329,5 @@ xhci_wait_for_transfer(xhci_t *const xhci, const int slot_id, const int ep_id)
 	if (!timeout_us)
 		xhci_debug("Warning: Timed out waiting for TRB_EV_TRANSFER.\n");
 	xhci_update_event_dq(xhci);
-	return cc;
+	return ret;
 }

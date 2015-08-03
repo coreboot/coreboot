@@ -46,11 +46,12 @@
 
 #define MASK(startbit, lenbit) (((1<<(lenbit))-1)<<(startbit))
 
-#define TIMEOUT			-1
-#define CONTROLLER_ERROR	-2
-#define COMMUNICATION_ERROR	-3
-#define OUT_OF_MEMORY		-4
-#define DRIVER_ERROR		-5
+/* Make these high enough to not collide with negative XHCI CCs */
+#define TIMEOUT			-65
+#define CONTROLLER_ERROR	-66
+#define COMMUNICATION_ERROR	-67
+#define OUT_OF_MEMORY		-68
+#define DRIVER_ERROR		-69
 
 #define CC_SUCCESS			 1
 #define CC_TRB_ERROR			 5

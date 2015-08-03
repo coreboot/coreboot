@@ -98,7 +98,7 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 		BitDelta = bsf(AddrHiMask) - bsf(AddrLoMask);
 
 		for (ChipSel = 0; ChipSel < MAX_CS_SUPPORTED; ChipSel++) {
-			reg = 0x40+(ChipSel<<2);	/*Dram CS Base 0 */
+			reg = 0x40 + (ChipSel<<2);	/* Dram CS Base 0 */
 			val = Get_NB32_DCT(dev, dct, reg);
 			if (val & 3) {
 				val_lo = val & AddrLoMask;
@@ -114,7 +114,7 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 				if(ChipSel & 1)
 					continue;
 
-				reg = 0x60 + ((ChipSel>>1)<<2); /*Dram CS Mask 0 */
+				reg = 0x60 + ((ChipSel>>1)<<2); /* Dram CS Mask 0 */
 				val = Get_NB32_DCT(dev, dct, reg);
 				val_lo = val & AddrLoMask;
 				val_hi = val & AddrHiMask;

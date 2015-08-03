@@ -373,6 +373,7 @@ static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t highest_rank_count, uint8
 #include "../amdmct/mct_ddr3/mctdqs_d.c"
 #include "../amdmct/mct_ddr3/mctsrc.c"
 #include "../amdmct/mct_ddr3/mctsdi.c"
+#include "../amdmct/mct_ddr3/mctprod.c"
 #include "../amdmct/mct_ddr3/mctproc.c"
 #include "../amdmct/mct_ddr3/mctprob.c"
 #include "../amdmct/mct_ddr3/mcthwl.c"

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,7 +112,7 @@
 /*
  * CPU HT PHY REGISTERS, FIELDS, AND MASKS
  */
-#define HTPHY_OFFSET_MASK		0xE00001FF
+#define HTPHY_OFFSET_MASK		0xE000FFFF
 #define HTPHY_WRITE_CMD			0x40000000
 #define HTPHY_IS_COMPLETE_MASK		0x80000000
 #define HTPHY_DIRECT_MAP		0x20000000

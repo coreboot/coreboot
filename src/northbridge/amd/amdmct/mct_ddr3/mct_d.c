@@ -178,6 +178,7 @@ static void SyncSetting(struct DCTStatStruc *pDCTstat);
 static uint8_t crcCheck(struct DCTStatStruc *pDCTstat, uint8_t dimm);
 static void mct_ExtMCTConfig_Bx(struct DCTStatStruc *pDCTstat);
 static void mct_ExtMCTConfig_Cx(struct DCTStatStruc *pDCTstat);
+static void mct_ExtMCTConfig_Dx(struct DCTStatStruc *pDCTstat);
 
 static void read_dqs_receiver_enable_control_registers(uint16_t* current_total_delay,
 			uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
@@ -2687,13 +2688,11 @@ static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
 	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
 		pDCTstat = pDCTstatA + Node;
 
-		/* Configure and enable prefetchers */
-		if (is_fam15h())
-			dword = 0x0ce00f41;	/* BKDG recommended */
-		else
-			dword = 0x0fe40fc0;	/* BKDG recommended */
-		dword |= MCCH_FlushWrOnStpGnt;	/* Set for S3 */
-		Set_NB32(pDCTstat->dev_dct, 0x11c, dword);
+		/* Enable prefetchers */
+		dword = Get_NB32(pDCTstat->dev_dct, 0x11c);	/* Memory Controller Configuration High */
+		dword &= ~(0x1 << 13);				/* PrefIoDis = 0 */
+		dword &= ~(0x1 << 12);				/* PrefCpuDis = 0 */
+		Set_NB32(pDCTstat->dev_dct, 0x11c, dword);	/* Memory Controller Configuration High */
 	}
 }
 
@@ -4935,31 +4934,33 @@ static void Set_OtherTiming(struct MCTStatStruc *pMCTstat,
 	Get_TrwtTO(pMCTstat, pDCTstat, dct);
 	Get_TrwtWB(pMCTstat, pDCTstat);
 
-	reg = 0x8C;		/* Dram Timing Hi */
-	val = Get_NB32_DCT(dev, dct, reg);
-	val &= 0xffff0300;
-	dword = pDCTstat->TrwtTO;
-	val |= dword << 4;
-	dword = pDCTstat->Twrrd & 3;
-	val |= dword << 10;
-	dword = pDCTstat->Twrwr & 3;
-	val |= dword << 12;
-	dword = pDCTstat->Trdrd & 3;
-	val |= dword << 14;
-	dword = pDCTstat->TrwtWB;
-	val |= dword;
-	Set_NB32_DCT(dev, dct, reg, val);
+	if (!is_fam15h()) {
+		reg = 0x8c;		/* Dram Timing Hi */
+		val = Get_NB32_DCT(dev, dct, reg);
+		val &= 0xffff0300;
+		dword = pDCTstat->TrwtTO;
+		val |= dword << 4;
+		dword = pDCTstat->Twrrd & 3;
+		val |= dword << 10;
+		dword = pDCTstat->Twrwr & 3;
+		val |= dword << 12;
+		dword = (pDCTstat->Trdrd - 0x3) & 3;
+		val |= dword << 14;
+		dword = pDCTstat->TrwtWB;
+		val |= dword;
+		Set_NB32_DCT(dev, dct, reg, val);
 
-	reg = 0x78;
-	val = Get_NB32_DCT(dev, dct, reg);
-	val &= 0xFFFFC0FF;
-	dword = pDCTstat->Twrrd >> 2;
-	val |= dword << 8;
-	dword = pDCTstat->Twrwr >> 2;
-	val |= dword << 10;
-	dword = pDCTstat->Trdrd >> 2;
-	val |= dword << 12;
-	Set_NB32_DCT(dev, dct, reg, val);
+		reg = 0x78;
+		val = Get_NB32_DCT(dev, dct, reg);
+		val &= 0xffffc0ff;
+		dword = pDCTstat->Twrrd >> 2;
+		val |= dword << 8;
+		dword = pDCTstat->Twrwr >> 2;
+		val |= dword << 10;
+		dword = (pDCTstat->Trdrd - 0x3) >> 2;
+		val |= dword << 12;
+		Set_NB32_DCT(dev, dct, reg, val);
+	}
 }
 
 static void Get_Trdrd(struct MCTStatStruc *pMCTstat,
@@ -4970,6 +4971,8 @@ static void Get_Trdrd(struct MCTStatStruc *pMCTstat,
 	Trdrd = ((int8_t)(pDCTstat->DqsRcvEnGrossMax - pDCTstat->DqsRcvEnGrossMin) >> 1) + 1;
 	if (Trdrd > 8)
 		Trdrd = 8;
+	if (Trdrd < 3)
+		Trdrd = 3;
 	pDCTstat->Trdrd = Trdrd;
 }
 
@@ -5280,47 +5283,31 @@ static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
 		if (pDCTstat->NodePresent) {
 			mct_PhyController_Config(pMCTstat, pDCTstat, 0);
 			mct_PhyController_Config(pMCTstat, pDCTstat, 1);
-		}
-		if (!(pDCTstat->LogicalCPUID & AMD_DR_Dx)) { /* mct_checkForDxSupport */
-			mct_ExtMCTConfig_Cx(pDCTstat);
-			mct_ExtMCTConfig_Bx(pDCTstat);
-		} else {	/* For Dx CPU */
-			val = 0x0CE00F00 | 1 << 29/* FlushWrOnStpGnt */;
-			if (!(pDCTstat->GangedMode))
-				val |= 0x20; /* MctWrLimit =  8 for Unganged mode */
-			else
-				val |= 0x40; /* MctWrLimit =  16 for ganged mode */
-			Set_NB32(pDCTstat->dev_dct, 0x11C, val);
 
-			val = Get_NB32(pDCTstat->dev_dct, 0x1B0);
-			val &= 0xFFFFF8C0;
-			val |= 0x101;	/* BKDG recommended settings */
-			val |= 0x0FC00000; /* Agesa V5 */
-			if (!(pDCTstat->GangedMode))
-				val |= 1 << 12;
-			else
-				val &= ~(1 << 12);
-
-			val &= 0x0FFFFFFF;
 			if (!is_fam15h()) {
-				switch (pDCTstat->Speed) {
-				case 4:
-					val |= 0x50000000; /* 5 for DDR800 */
-					break;
-				case 5:
-					val |= 0x60000000; /* 6 for DDR1066 */
-					break;
-				case 6:
-					val |= 0x80000000; /* 8 for DDR800 */
-					break;
-				default:
-					val |= 0x90000000; /* 9 for DDR1600 */
-					break;
-				}
-			}
-			Set_NB32(pDCTstat->dev_dct, 0x1B0, val);
+				/* Family 10h CPUs */
+				mct_ExtMCTConfig_Cx(pDCTstat);
+				mct_ExtMCTConfig_Bx(pDCTstat);
+				mct_ExtMCTConfig_Dx(pDCTstat);
+			} else {
+				/* Family 15h CPUs */
+				val = 0x0ce00f00 | 0x1 << 29;	/* FlushWrOnStpGnt */
+				val |= 0x10 << 2;		/* MctWrLimit = 16 */
+				Set_NB32(pDCTstat->dev_dct, 0x11c, val);
 
-			if (is_fam15h()) {
+				val = Get_NB32(pDCTstat->dev_dct, 0x1b0);
+				val &= ~0x3;			/* AdapPrefMissRatio = 0x1 */
+				val |= 0x1;
+				val &= ~(0x3 << 2);		/* AdapPrefPositiveStep = 0x0 */
+				val &= ~(0x3 << 4);		/* AdapPrefNegativeStep = 0x0 */
+				val &= ~(0x7 << 8);		/* CohPrefPrbLmt = 0x1 */
+				val |= (0x1 << 8);
+				val |= (0x1 << 12);		/* EnSplitDctLimits = 0x1 */
+				val |= (0x7 << 22);		/* PrefFourConf = 0x7 */
+				val |= (0x7 << 25);		/* PrefFiveConf = 0x7 */
+				val &= ~(0xf << 28);		/* DcqBwThrotWm = 0x0 */
+				Set_NB32(pDCTstat->dev_dct, 0x1b0, val);
+
 				uint8_t wm1;
 				uint8_t wm2;
 
@@ -5351,11 +5338,11 @@ static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
 					break;
 				}
 
-				val = Get_NB32(pDCTstat->dev_dct, 0x1B4);
+				val = Get_NB32(pDCTstat->dev_dct, 0x1b4);
 				val &= ~(0x3ff);
 				val |= ((wm2 & 0x1f) << 5);
 				val |= (wm1 & 0x1f);
-				Set_NB32(pDCTstat->dev_dct, 0x1B4, val);
+				Set_NB32(pDCTstat->dev_dct, 0x1b4, val);
 			}
 		}
 	}

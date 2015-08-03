@@ -551,7 +551,8 @@ BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 {
 	/* Force BUID to 0 */
 	static const u8 swaplist[] = {0, 0, 0xFF, 0, 0xFF};
-	if ((node == 0) && (link == 1)) {	/* BSP SB link */
+	if ((is_fam15h() && (node == 0) && (link == 1))			/* Family 15h BSP SB link */
+		|| (!is_fam15h() && (node == 0) && (link == 3))) {	/* Family 10h BSP SB link */
 		*List = swaplist;
 		return 1;
 	}

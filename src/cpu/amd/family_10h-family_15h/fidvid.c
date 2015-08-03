@@ -371,9 +371,9 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	pci_write_config32(dev, 0xd8, dtemp);
 }
 
-static u32 nb_clk_did(int node, u32 cpuRev,u8 procPkg) {
-        u8 link0isGen3 = 0;
-        u8 offset;
+static u32 nb_clk_did(uint8_t node, uint64_t cpuRev, uint8_t procPkg) {
+        uint8_t link0isGen3 = 0;
+        uint8_t offset;
         if (AMD_CpuFindCapability(node, 0, &offset)) {
 	  link0isGen3 = (AMD_checkLinkType(node, 0, offset) & HTPHY_LINKTYPE_HT3 );
 	}
@@ -442,7 +442,7 @@ static u32 power_up_down(int node, u8 procPkg) {
         return dword;
 }
 
-static void config_clk_power_ctrl_reg0(int node, u32 cpuRev, u8 procPkg) {
+static void config_clk_power_ctrl_reg0(uint8_t node, uint64_t cpuRev, uint8_t procPkg) {
        	device_t dev = NODE_PCI(node, 3);
 
 	/* Program fields in Clock Power/Control register0 (F3xD4) */
@@ -456,7 +456,7 @@ static void config_clk_power_ctrl_reg0(int node, u32 cpuRev, u8 procPkg) {
 	 * ClkRampHystCtl=HW default
          * ClkRampHystSel=1111b
 	 */
-        u32 dword= pci_read_config32(dev, 0xd4);
+        uint32_t dword= pci_read_config32(dev, 0xd4);
 	dword &= CPTC0_MASK;
         dword |= NB_CLKDID_ALL | LNK_PLL_LOCK | CLK_RAMP_HYST_SEL_VAL;
         dword |= (nb_clk_did(node,cpuRev,procPkg) <<  NB_CLKDID_SHIFT);
@@ -467,9 +467,9 @@ static void config_clk_power_ctrl_reg0(int node, u32 cpuRev, u8 procPkg) {
 
 }
 
-static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) {
+static void config_power_ctrl_misc_reg(device_t dev, uint64_t cpuRev, uint8_t procPkg) {
 	/* check PVI/SVI */
-	u32 dword = pci_read_config32(dev, 0xa0);
+	uint32_t dword = pci_read_config32(dev, 0xa0);
 
 	/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xA0[VSSlamVidMod] */
 	/* PllLockTime and PsiVidEn set in ruleset in defaults.h */
@@ -500,14 +500,14 @@ static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) {
 	pci_write_config32(dev, 0xa0, dword);
 }
 
-static void config_nb_syn_ptr_adj(device_t dev, u32 cpuRev) {
+static void config_nb_syn_ptr_adj(device_t dev, uint64_t cpuRev) {
 	/* Note the following settings are additional from the ported
 	 * function setFidVidRegs()
 	 */
         /* adjust FIFO between nb and core clocks to max allowed
            values (min latency) */
-	u32 nbPstate = pci_read_config32(dev,0x1f0) & NB_PSTATE_MASK;
-        u8 nbSynPtrAdj;
+	uint32_t nbPstate = pci_read_config32(dev,0x1f0) & NB_PSTATE_MASK;
+        uint8_t nbSynPtrAdj;
 	if ((cpuRev & (AMD_DR_Bx | AMD_DA_Cx | AMD_FAM15_ALL) )
 		|| ((cpuRev & AMD_RB_C3) && (nbPstate != 0))) {
 		nbSynPtrAdj = 5;
@@ -515,14 +515,14 @@ static void config_nb_syn_ptr_adj(device_t dev, u32 cpuRev) {
 		nbSynPtrAdj = 6;
 	}
 
-	u32 dword = pci_read_config32(dev, 0xdc);
+	uint32_t dword = pci_read_config32(dev, 0xdc);
         dword &= ~NB_SYN_PTR_ADJ_MASK;
 	dword |= nbSynPtrAdj << NB_SYN_PTR_ADJ_POS;
         /* NbsynPtrAdj set to 5 or 6 per BKDG (needs reset) */
 	pci_write_config32(dev, 0xdc, dword);
 }
 
-static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg) {
+static void config_acpi_pwr_state_ctrl_regs(device_t dev, uint64_t cpuRev, uint8_t procPkg) {
 	if (is_fam15h()) {
 		/* Family 15h BKDG Rev. 3.14 D18F3x80 recommended settings */
 		pci_write_config32(dev, 0x80, 0xe20be281);
@@ -531,8 +531,8 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg
 		pci_write_config32(dev, 0x84, 0x01e200e2);
 	} else {
 		/* step 1, chapter 2.4.2.6 of AMD Fam 10 BKDG #31116 Rev 3.48 22.4.2010 */
-		u32 dword;
-		u32 c1= 1;
+		uint32_t dword;
+		uint32_t c1= 1;
 		if (cpuRev & (AMD_DR_Bx)) {
 			// will coreboot ever enable cache scrubbing ?
 			// if it does, will it be enough to check the current state
@@ -565,7 +565,7 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg
 		* which is easier
 		*/
 
-		u32 smaf001 = 0xE6;
+		uint32_t smaf001 = 0xE6;
 		if (cpuRev & AMD_DR_Bx ) {
 			smaf001 = 0xA6;
 		} else {
@@ -575,7 +575,7 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg
 			}
 		#endif
 		}
-		u32 fidvidChange = 0;
+		uint32_t fidvidChange = 0;
 		if (((cpuRev & AMD_DA_Cx) && (procPkg & AMD_PKGTYPE_S1gX))
 			|| (cpuRev & AMD_RB_C3) ) {
 				fidvidChange=0x0B;

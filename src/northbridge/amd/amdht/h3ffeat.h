@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +59,7 @@
 #define HTHOST_LINK_CAPABILITY_REG		0x00
 #define HTHOST_LINK_CONTROL_REG		0x04
 #define HTHOST_FREQ_REV_REG			0x08
+#define HTHOST_FREQ_REV_REG_2			0x1c
 	#define HT_HOST_REV_REV3		0x60
 #define HTHOST_FEATURE_CAP_REG			0x0C
 #define HTHOST_BUFFER_COUNT_REG		0x10
@@ -123,10 +125,10 @@ typedef struct
 
 	/* This section is for keeping track of capabilities and possible configurations */
 	BOOL RegangCap;
-	u16 PrvFrequencyCap;
+	uint32_t PrvFrequencyCap;
 	u8 PrvWidthInCap;
 	u8 PrvWidthOutCap;
-	u16 CompositeFrequencyCap;
+	uint32_t CompositeFrequencyCap;
 
 } sPortDescriptor;
 

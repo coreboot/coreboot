@@ -273,7 +273,13 @@ static const struct {
 
 	/* Link Global Retry Control Register */
 	{ 0, 0x150, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
-	  0x00073900, 0x00073F00 },
+	  0x00073900, 0x00073f70 },	/* TotalRetryAttempts = 0x7,
+					   HtRetryCrcDatInsDynEn = 0x1,
+					   HtRetryCrcCmdPackDynEn = 0x1,
+					   HtRetryCrcDatIns = 0x4,
+					   HtRetryCrcCmdPack = 0x1,
+					   ForceErrType = 0x0,
+					   MultRetryErr = 0x0 */
 
 	/*  Errata 351
 	 * System software should program the Link Extended Control Registers[LS2En]

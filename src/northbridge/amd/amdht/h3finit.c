@@ -48,28 +48,32 @@
 #define APIC_Base_BSP	8
 #define APIC_Base	0x1b
 
-#define NVRAM_LIMIT_HT_SPEED_200  0xf
-#define NVRAM_LIMIT_HT_SPEED_300  0xe
-#define NVRAM_LIMIT_HT_SPEED_400  0xd
-#define NVRAM_LIMIT_HT_SPEED_500  0xc
-#define NVRAM_LIMIT_HT_SPEED_600  0xb
-#define NVRAM_LIMIT_HT_SPEED_800  0xa
-#define NVRAM_LIMIT_HT_SPEED_1000 0x9
-#define NVRAM_LIMIT_HT_SPEED_1200 0x8
-#define NVRAM_LIMIT_HT_SPEED_1400 0x7
-#define NVRAM_LIMIT_HT_SPEED_1600 0x6
-#define NVRAM_LIMIT_HT_SPEED_1800 0x5
-#define NVRAM_LIMIT_HT_SPEED_2000 0x4
-#define NVRAM_LIMIT_HT_SPEED_2200 0x3
-#define NVRAM_LIMIT_HT_SPEED_2400 0x2
-#define NVRAM_LIMIT_HT_SPEED_2600 0x1
+#define NVRAM_LIMIT_HT_SPEED_200  0x12
+#define NVRAM_LIMIT_HT_SPEED_300  0x11
+#define NVRAM_LIMIT_HT_SPEED_400  0x10
+#define NVRAM_LIMIT_HT_SPEED_500  0xf
+#define NVRAM_LIMIT_HT_SPEED_600  0xe
+#define NVRAM_LIMIT_HT_SPEED_800  0xd
+#define NVRAM_LIMIT_HT_SPEED_1000 0xc
+#define NVRAM_LIMIT_HT_SPEED_1200 0xb
+#define NVRAM_LIMIT_HT_SPEED_1400 0xa
+#define NVRAM_LIMIT_HT_SPEED_1600 0x9
+#define NVRAM_LIMIT_HT_SPEED_1800 0x8
+#define NVRAM_LIMIT_HT_SPEED_2000 0x7
+#define NVRAM_LIMIT_HT_SPEED_2200 0x6
+#define NVRAM_LIMIT_HT_SPEED_2400 0x5
+#define NVRAM_LIMIT_HT_SPEED_2600 0x4
+#define NVRAM_LIMIT_HT_SPEED_2800 0x3
+#define NVRAM_LIMIT_HT_SPEED_3000 0x2
+#define NVRAM_LIMIT_HT_SPEED_3200 0x1
 #define NVRAM_LIMIT_HT_SPEED_AUTO 0x0
 
-static const uint16_t ht_speed_limit[16] =
-	{0xFFFF, 0x7FFF, 0x3FFF, 0x1FFF,
-	 0x0FFF, 0x07FF, 0x03FF, 0x01FF,
-	 0x00FF, 0x007F, 0x003F, 0x001F,
-	 0x000F, 0x0007, 0x0003, 0x0001};
+static const uint32_t ht_speed_limit[20] =
+	{0xFFFFF, 0xFFFFF, 0x7FFFF, 0x3FFFF,
+	 0x0FFFF, 0x07FFF, 0x03FFF, 0x01FFF,
+	 0x00FFF, 0x007FF, 0x003FF, 0x001FF,
+	 0x000FF, 0x0007F, 0x0003F, 0x0001F,
+	 0x0000F, 0x00007, 0x00003, 0x00001};
 
 static const struct ht_speed_limit_map_t {
 	uint16_t mhz;
@@ -91,9 +95,12 @@ static const struct ht_speed_limit_map_t {
 	{2200, NVRAM_LIMIT_HT_SPEED_2200},
 	{2400, NVRAM_LIMIT_HT_SPEED_2400},
 	{2600, NVRAM_LIMIT_HT_SPEED_2600},
+	{2800, NVRAM_LIMIT_HT_SPEED_2800},
+	{3000, NVRAM_LIMIT_HT_SPEED_3000},
+	{3200, NVRAM_LIMIT_HT_SPEED_3200},
 };
 
-static const uint16_t ht_speed_mhz_to_hw(uint16_t mhz)
+static const uint32_t ht_speed_mhz_to_hw(uint16_t mhz)
 {
 	size_t i;
 	for (i = 0; i < ARRAY_SIZE(ht_speed_limit_map); i++)
@@ -452,7 +459,7 @@ static void htDiscoveryFloodFill(sMainData *pDat)
 		/* Set currentNode's NodeID field to currentNode */
 		pDat->nb->writeNodeID(currentNode, currentNode, pDat->nb);
 
-		/* Enable routing tables on currentNode*/
+		/* Enable routing tables on currentNode */
 		pDat->nb->enableRoutingTables(currentNode, pDat->nb);
 
 		for (currentLinkID = 0; currentLinkID < pDat->nb->maxLinks; currentLinkID++)
@@ -1427,19 +1434,30 @@ static void regangLinks(sMainData *pDat)
 static void selectOptimalWidthAndFrequency(sMainData *pDat)
 {
 	u8 i, j;
-	u32 temp;
-	u16 cbPCBFreqLimit;
-	u16 cbPCBFreqLimit_NVRAM;
+	uint32_t temp;
+	uint32_t cbPCBFreqLimit;
+	uint32_t cbPCBFreqLimit_NVRAM;
 	u8 cbPCBABDownstreamWidth;
 	u8 cbPCBBAUpstreamWidth;
 
-	cbPCBFreqLimit_NVRAM = 0xFFFF;
+	cbPCBFreqLimit_NVRAM = 0xfffff;
 	if (get_option(&temp, "hypertransport_speed_limit") == CB_SUCCESS)
 		cbPCBFreqLimit_NVRAM = ht_speed_limit[temp & 0xf];
 
+	if (!is_fam15h()) {
+		/* FIXME
+		 * By default limit frequency to 2.6 GHz as there are residual
+		 * problems with HT v3.1 implementation on at least some Socket G34
+		 * mainboards / Fam10h CPUs.
+		 * Debug the issues and reenable this...
+		 */
+		if (cbPCBFreqLimit_NVRAM > 0xffff)
+			cbPCBFreqLimit_NVRAM = 0xffff;
+	}
+
 	for (i = 0; i < pDat->TotalLinks*2; i += 2)
 	{
-		cbPCBFreqLimit = 0xFFFF;		// Maximum allowed by autoconfiguration
+		cbPCBFreqLimit = 0xfffff;		// Maximum allowed by autoconfiguration
 		if (pDat->HtBlock->ht_link_configuration)
 			cbPCBFreqLimit = ht_speed_mhz_to_hw(pDat->HtBlock->ht_link_configuration->ht_speed_limit);
 		cbPCBFreqLimit = min(cbPCBFreqLimit, cbPCBFreqLimit_NVRAM);
@@ -1484,17 +1502,18 @@ static void selectOptimalWidthAndFrequency(sMainData *pDat)
 			}
 		}
 
-
 		temp = pDat->PortList[i].PrvFrequencyCap;
 		temp &= pDat->PortList[i+1].PrvFrequencyCap;
 		temp &= cbPCBFreqLimit;
-		pDat->PortList[i].CompositeFrequencyCap = (u16)temp;
-		pDat->PortList[i+1].CompositeFrequencyCap = (u16)temp;
+		pDat->PortList[i].CompositeFrequencyCap = temp;
+		pDat->PortList[i+1].CompositeFrequencyCap = temp;
 
 		ASSERT (temp != 0);
-		for (j = 15; ; j--)
+		for (j = 19; ; j--)
 		{
-			if (temp & ((u32)1 << j))
+			if ((j == 16) || (j == 15))
+				continue;
+			if (temp & ((uint32_t)1 << j))
 				break;
 		}
 
@@ -1638,12 +1657,14 @@ static void hammerSublinkFixup(sMainData *pDat)
 					/*  Remove hiFreq from the list of valid frequencies */
 					temp = temp & ~((uint32)1 << hiFreq);
 					ASSERT (temp != 0);
-					pDat->PortList[hiIndex].CompositeFrequencyCap = (uint16)temp;
-					pDat->PortList[hiIndex+1].CompositeFrequencyCap = (uint16)temp;
+					pDat->PortList[hiIndex].CompositeFrequencyCap = temp;
+					pDat->PortList[hiIndex+1].CompositeFrequencyCap = temp;
 
-					for (k = 15; ; k--)
+					for (k = 19; ; k--)
 					{
-						if (temp & ((u32)1 << k))
+						if ((j == 16) || (j == 15))
+							continue;
+						if (temp & ((uint32_t)1 << k))
 							break;
 					}
 

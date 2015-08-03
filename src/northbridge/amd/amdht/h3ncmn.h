@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,7 +104,7 @@ struct cNorthBridge
 	/* Public Interfaces for northbridge clients, Optimization */
 	u8 (*convertBitsToWidth)(u8 value, cNorthBridge *nb);
 	u8 (*convertWidthToBits)(u8 value, cNorthBridge *nb);
-	u16 (*northBridgeFreqMask)(u8 node, cNorthBridge *nb);
+	uint32_t (*northBridgeFreqMask)(u8 node, cNorthBridge *nb);
 	void (*gatherLinkData)(sMainData *pDat, cNorthBridge *nb);
 	void (*setLinkData)(sMainData *pDat, cNorthBridge *nb);
 

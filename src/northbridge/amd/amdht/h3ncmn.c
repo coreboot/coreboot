@@ -1310,7 +1310,7 @@ static u8 convertWidthToBits(u8 value, cNorthBridge *nb)
  *	@return  Frequency mask
  *
  ******************************************************************************/
-static u16 ht1NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
+static uint32_t ht1NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
 {
 	/* only up to HT1 speeds */
 	return (HT_FREQUENCY_LIMIT_HT1_ONLY);
@@ -1331,26 +1331,43 @@ static u16 ht1NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
  *	@return  = Frequency mask
  *
  ******************************************************************************/
-static u16 fam10NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
+static uint32_t fam10NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
 {
 	u8 nbCOF;
-	u16 supported;
+	uint32_t supported;
 
 	nbCOF = getMinNbCOF();
 	/*
 	 * nbCOF is minimum northbridge speed in hundreds of MHz.
 	 * HT can not go faster than the minimum speed of the northbridge.
 	 */
-	if ((nbCOF >= 6) && (nbCOF <= 26))
+	if ((nbCOF >= 6) && (nbCOF < 10))
 	{
+		/* Generation 1 HT link frequency */
 		/* Convert frequency to bit and all less significant bits,
 		 * by setting next power of 2 and subtracting 1.
 		 */
-		supported = ((u16)1 << ((nbCOF >> 1) + 2)) - 1;
+		supported = ((uint32_t)1 << ((nbCOF >> 1) + 2)) - 1;
 	}
-	else if (nbCOF > 26)
+	else if ((nbCOF >= 10) && (nbCOF <= 32))
 	{
-		supported = HT_FREQUENCY_LIMIT_2600M;
+		/* Generation 3 HT link frequency
+		 * Assume error retry is enabled on all Gen 3 links
+		 */
+		if (is_gt_rev_d()) {
+			nbCOF *= 2;
+			if (nbCOF > 32)
+				nbCOF = 32;
+		}
+
+		/* Convert frequency to bit and all less significant bits,
+		 * by setting next power of 2 and subtracting 1.
+		 */
+		supported = ((uint32_t)1 << ((nbCOF >> 1) + 2)) - 1;
+	}
+	else if (nbCOF > 32)
+	{
+		supported = HT_FREQUENCY_LIMIT_3200M;
 	}
 	/* unlikely cases, but include as a defensive measure, also avoid trick above */
 	else if (nbCOF == 4)
@@ -1405,8 +1422,13 @@ static void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
 			pDat->PortList[i].PrvWidthInCap = convertBitsToWidth((u8)temp, pDat->nb);
 
 			AmdPCIReadBits(linkBase + HTHOST_FREQ_REV_REG, 31, 16, &temp);
-			pDat->PortList[i].PrvFrequencyCap = (u16)temp & 0x7FFF
-				& nb->northBridgeFreqMask(pDat->PortList[i].NodeID, pDat->nb); /*  Mask off bit 15, reserved value */
+			pDat->PortList[i].PrvFrequencyCap = temp & 0x7FFF	/*  Mask off bit 15, reserved value */
+				& nb->northBridgeFreqMask(pDat->PortList[i].NodeID, pDat->nb);
+			if (is_gt_rev_d()) {
+				AmdPCIReadBits(linkBase + HTHOST_FREQ_REV_REG_2, 15, 1, &temp);
+				temp &= 0x7;	/* Mask off reserved values */
+				pDat->PortList[i].PrvFrequencyCap |= (temp << 17);
+			}
 		}
 		else
 		{
@@ -1463,7 +1485,7 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 {
 	u8 i;
 	SBDFO linkBase;
-	u32 temp, widthin, widthout, bits;
+	u32 temp, temp2, frequency_index, widthin, widthout, bits;
 
 	for (i = 0; i < pDat->TotalLinks*2; i++)
 	{
@@ -1524,10 +1546,19 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 		temp = pDat->PortList[i].SelFrequency;
 		if (pDat->PortList[i].Type == PORTLIST_TYPE_CPU)
 		{
-			ASSERT((temp >= HT_FREQUENCY_600M && temp <= HT_FREQUENCY_2600M)
+			ASSERT((temp >= HT_FREQUENCY_600M && temp <= HT_FREQUENCY_3200M)
 				|| (temp == HT_FREQUENCY_200M) || (temp == HT_FREQUENCY_400M));
+			frequency_index = temp;
+			if (temp > 0xf) {
+				temp2 = (temp >> 4) & 0x1;
+				temp &= 0xf;
+			} else {
+				temp2 = 0x0;
+			}
+			if (is_gt_rev_d())
+				AmdPCIWriteBits(linkBase + HTHOST_FREQ_REV_REG_2, 0, 0, &temp2);
 			AmdPCIWriteBits(linkBase + HTHOST_FREQ_REV_REG, 11, 8, &temp);
-			if (temp > HT_FREQUENCY_1000M) /*  Gen1 = 200MHz -> 1000MHz, Gen3 = 1200MHz -> 2600MHz */
+			if (frequency_index > HT_FREQUENCY_1000M) /*  Gen1 = 200MHz -> 1000MHz, Gen3 = 1200MHz -> 3200MHz */
 			{
 				/* Enable  for Gen3 frequencies */
 				temp = 1;
@@ -1537,27 +1568,27 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 				/* Disable  for Gen1 frequencies */
 				temp = 0;
 			}
-				/* HT3 retry mode enable / disable */
-				AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(pDat->PortList[i].NodeID),
-							makePCIBusFromNode(pDat->PortList[i].NodeID),
-							makePCIDeviceFromNode(pDat->PortList[i].NodeID),
-							CPU_HTNB_FUNC_00,
-							REG_HT_LINK_RETRY0_0X130 + 4*pDat->PortList[i].Link),
-							0, 0, &temp);
-				/* and Scrambling enable / disable */
-				AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(pDat->PortList[i].NodeID),
+			/* HT3 retry mode enable / disable */
+			AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(pDat->PortList[i].NodeID),
 						makePCIBusFromNode(pDat->PortList[i].NodeID),
 						makePCIDeviceFromNode(pDat->PortList[i].NodeID),
 						CPU_HTNB_FUNC_00,
-						REG_HT_LINK_EXT_CONTROL0_0X170 + 4*pDat->PortList[i].Link),
-						3, 3, &temp);
+						REG_HT_LINK_RETRY0_0X130 + 4*pDat->PortList[i].Link),
+						0, 0, &temp);
+			/* and Scrambling enable / disable */
+			AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(pDat->PortList[i].NodeID),
+					makePCIBusFromNode(pDat->PortList[i].NodeID),
+					makePCIDeviceFromNode(pDat->PortList[i].NodeID),
+					CPU_HTNB_FUNC_00,
+					REG_HT_LINK_EXT_CONTROL0_0X170 + 4*pDat->PortList[i].Link),
+					3, 3, &temp);
 		}
 		else
 		{
 			SBDFO currentPtr;
 			BOOL isFound;
 
-			ASSERT(temp <= HT_FREQUENCY_2600M);
+			ASSERT(temp <= HT_FREQUENCY_3200M);
 			/* Write the frequency setting */
 			AmdPCIWriteBits(linkBase + HTSLAVE_FREQ_REV_0_REG, 11, 8, &temp);
 
@@ -1718,6 +1749,9 @@ static void fam0fWriteHTLinkCmdBufferAlloc(u8 node, u8 link, u8 req, u8 preq, u8
 	/* Probe Command Buffers */
 	temp = prb;
 	AmdPCIWriteBits(currentPtr, 15, 12, &temp);
+	/* LockBc */
+	temp = 1;
+	AmdPCIWriteBits(currentPtr, 31, 31, &temp);
 }
 #endif /* HT_BUILD_NC_ONLY */
 

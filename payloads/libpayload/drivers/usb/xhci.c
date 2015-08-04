@@ -538,7 +538,7 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 			cur_length = length;
 			packets = 0;
 			length = 0;
-		} else if (!IS_ENABLED(CONFIG_LP_XHCI_MTK_QUIRK)) {
+		} else if (!IS_ENABLED(CONFIG_LP_USB_XHCI_MTK_QUIRK)) {
 			packets -= (residue + cur_length) / mps;
 			residue = (residue + cur_length) % mps;
 			length -= cur_length;
@@ -551,7 +551,7 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 		TRB_SET(TDS, trb, MIN(TRB_MAX_TD_SIZE, packets));
 		TRB_SET(CH, trb, 1);
 
-		if (length && IS_ENABLED(CONFIG_LP_XHCI_MTK_QUIRK)) {
+		if (length && IS_ENABLED(CONFIG_LP_USB_XHCI_MTK_QUIRK)) {
 			/*
 			 * For MTK's xHCI controller, TDS defines a number of
 			 * packets that remain to be transferred for a TD after

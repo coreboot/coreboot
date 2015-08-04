@@ -44,7 +44,7 @@ chip soc/intel/skylake
 	register "IshEnable" = "0"
 	register "XdciEnable" = "0"
 	register "SsicPortEnable" = "0"
-	register "SmbusEnable" = "0"
+	register "SmbusEnable" = "1"
 	register "Cio2Enable" = "0"
 	register "PttSwitch" = "0"
 	register "SkipExtGfxScan" = "1"
@@ -102,7 +102,7 @@ chip soc/intel/skylake
 		end # LPC Interface
 		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 on  end # Intel High Definition Audio
-		device pci 1f.4 off end # SMBus Controller
+		device pci 1f.4 on  end # SMBus Controller
 		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 off end # GbE Controller
 	end

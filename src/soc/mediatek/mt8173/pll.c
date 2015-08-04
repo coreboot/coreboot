@@ -454,3 +454,37 @@ void mt_pll_post_init(void)
 	/* NOTICE: raise Vproc voltage before raise ARMPLL frequency */
 	write32(&mt8173_infracfg->top_ckmuxsel, (1 << 2) | 1);
 }
+
+void mt_pll_set_aud_div(u32 rate)
+{
+	u32 mclk_div;
+	u32 apll_clock = APLL2_CK_HZ;
+	int apll1 = 0;
+
+	if (rate % 11025 == 0) {
+		/* use APLL1 instead */
+		apll1 = 1;
+		apll_clock = APLL1_CK_HZ;
+	}
+	/* I2S1 clock */
+	mclk_div = (apll_clock / 256 / rate) - 1;
+	assert(apll_clock == rate * 256 * (mclk_div + 1));
+
+	if (apll1) {
+		/* mclk */
+		clrbits_le32(&mt8173_topckgen->clk_auddiv_0, 1 << 5);
+		clrsetbits_le32(&mt8173_topckgen->clk_auddiv_1, 0xff << 8,
+				mclk_div << 8);
+		/* bclk */
+		clrsetbits_le32(&mt8173_topckgen->clk_auddiv_0, 0xf << 24,
+				7 << 24);
+	} else {
+		/* mclk */
+		setbits_le32(&mt8173_topckgen->clk_auddiv_0, 1 << 5);
+		clrsetbits_le32(&mt8173_topckgen->clk_auddiv_2, 0xff << 8,
+				mclk_div << 8);
+		/* bclk */
+		clrsetbits_le32(&mt8173_topckgen->clk_auddiv_0, 0xf << 28,
+				7 << 28);
+	}
+}

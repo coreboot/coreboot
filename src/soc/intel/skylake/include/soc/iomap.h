@@ -21,6 +21,9 @@
 #ifndef _SOC_IOMAP_H_
 #define _SOC_IOMAP_H_
 
+/*
+ * Memory-mapped I/O registers.
+ */
 #define MCFG_BASE_ADDRESS	CONFIG_MMCONF_BASE_ADDRESS
 #define MCFG_BASE_SIZE		0x4000000
 
@@ -54,13 +57,20 @@
 #define PCH_PWRM_BASE_ADDRESS	0xfe000000
 #define PCH_PWRM_BASE_SIZE	0x10000
 
+/*
+ * I/O port address space
+ */
+#define SMBUS_BASE_ADDRESS	0x0efa0
+#define SMBUS_BASE_SIZE		0x20
+
 #define ACPI_BASE_ADDRESS	0x1800
 #define ACPI_BASE_SIZE		0x100
 
+/* FIXME: not applicable as there is no I/O space for gpio access. */
 #define GPIO_BASE_ADDRESS	0x1400
 #define GPIO_BASE_SIZE		0x400
 
-#define SMBUS_BASE_ADDRESS	0x0400
-#define SMBUS_BASE_SIZE		0x10
+#define TCO_BASE_ADDDRESS	0x400
+#define TCO_BASE_SIZE		0x20
 
 #endif

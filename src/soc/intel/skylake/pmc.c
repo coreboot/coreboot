@@ -39,12 +39,15 @@
 #endif
 
 static const struct reg_script pch_pmc_misc_init_script[] = {
-	/* Setup SLP signal assertion, SLP_S4=4s, SLP_S3=50ms */
-	REG_PCI_RMW16(GEN_PMCON_B, ~((3 << 4)|(1 << 10)),
-			(1 << 3)|(1 << 11)|(1 << 12)),
+	/* SLP_S4=4s, SLP_S3=50ms, disable SLP_X stretching after SUS loss. */
+	REG_PCI_RMW16(GEN_PMCON_B,
+			~(S4MAW_MASK | SLP_S3_MIN_ASST_WDTH_MASK),
+			S4MAW_4S | SLP_S3_MIN_ASST_WDTH_50MS |
+			DIS_SLP_X_STRCH_SUS_UP),
+	/* Enable SCI and clear SLP requests. */
 	REG_IO_RMW32(ACPI_BASE_ADDRESS + PM1_CNT, ~SLP_TYP, SCI_EN),
 	/* Indicate DRAM init done for MRC */
-	REG_PCI_OR8(GEN_PMCON_A, (1 << 23)),
+	REG_PCI_OR8(GEN_PMCON_A, DISB),
 	REG_SCRIPT_END
 };
 
@@ -237,6 +240,8 @@ static void pmc_init(struct device *dev)
 	/* Initialize power management */
 	pch_power_options();
 
+	/* Note that certain bits may be cleared from running script as
+	 * certain bit fields are write 1 to clear. */
 	reg_script_run_on_dev(dev, pch_pmc_misc_init_script);
 	pch_set_acpi_mode();
 

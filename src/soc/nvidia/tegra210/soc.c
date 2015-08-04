@@ -82,23 +82,6 @@ static struct cpu_control_ops cntrl_ops = {
 };
 
 
-static void lock_down_vpr(void)
-{
-	struct tegra_mc_regs *regs = (void *)(uintptr_t)TEGRA_MC_BASE;
-
-	write32(&regs->video_protect_bom, 0);
-	write32(&regs->video_protect_size_mb, 0);
-
-	write32(&regs->video_protect_gpu_override_0, 1);
-	/*
-	 * Set both _ACCESS bits so that kernel/secure code
-	 * can reconfig VPR careveout as needed from the TrustZone.
-	 */
-
-	write32(&regs->video_protect_reg_ctrl,
-		(MC_VPR_WR_ACCESS_DISABLE | MC_VPR_ALLOW_TZ_WR_ACCESS_ENABLE));
-}
-
 static void soc_init(device_t dev)
 {
 	struct soc_nvidia_tegra210_config *cfg;
@@ -108,9 +91,6 @@ static void soc_init(device_t dev)
 	cfg = dev->chip_info;
 	spintable_init((void *)cfg->spintable_addr);
 	arch_initialize_cpus(dev, &cntrl_ops);
-
-	/* Lock down VPR */
-	lock_down_vpr();
 
 #if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
 	if (vboot_skip_display_init())

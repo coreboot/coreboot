@@ -107,6 +107,7 @@ enum {
 #define GPU_CARVEOUT_SIZE_MB		1
 #define NVDEC_CARVEOUT_SIZE_MB		1
 #define TSEC_CARVEOUT_SIZE_MB		2
+#define VPR_CARVEOUT_SIZE_MB		128
 
 /* Return total size of DRAM memory configured on the platform. */
 int sdram_size_mb(void);
@@ -148,5 +149,6 @@ void trustzone_region_init(void);
 void gpu_region_init(void);
 void nvdec_region_init(void);
 void tsec_region_init(void);
+void vpr_region_init(void);
 
 #endif /* __SOC_NVIDIA_TEGRA210_INCLUDE_SOC_ADDRESS_MAP_H__ */

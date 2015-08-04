@@ -71,6 +71,7 @@ void romstage(void)
 	gpu_region_init();
 	nvdec_region_init();
 	tsec_region_init();
+	vpr_region_init();
 
 	/*
 	 * When romstage is running it's always on the reboot path -- never a

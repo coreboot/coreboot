@@ -91,6 +91,10 @@ void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib)
 					read32(&mc->mts_carveout_size_mb));
 		break;
 	case CARVEOUT_VPR:
+		/*
+		 * A 128MB VPR carveout is felt to be sufficient as per syseng.
+		 * Set it up in vpr_region_init, below.
+		 */
 		carveout_from_regs(base_mib, size_mib,
 					read32(&mc->video_protect_bom),
 					read32(&mc->video_protect_bom_adr_hi),
@@ -346,4 +350,23 @@ void tsec_region_init(void)
 	/* Set the locked bit. This will lock out any other writes! */
 	setbits_le32(&mc->security_carveout4_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
 	setbits_le32(&mc->security_carveout5_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+}
+
+void vpr_region_init(void)
+{
+	struct tegra_mc_regs * const mc = (void *)(uintptr_t)TEGRA_MC_BASE;
+	uintptr_t vpr_base_mib = 0, end = 4096;
+	size_t vpr_size_mib = VPR_CARVEOUT_SIZE_MB;
+
+	/* Get memory layout below 4GiB */
+	memory_in_range(&vpr_base_mib, &end, CARVEOUT_VPR);
+	vpr_base_mib = end - vpr_size_mib;
+
+	/* Set the carveout base address and size */
+	write32(&mc->video_protect_bom, vpr_base_mib << 20);
+	write32(&mc->video_protect_bom_adr_hi, 0);
+	write32(&mc->video_protect_size_mb, vpr_size_mib);
+
+	/* Set the locked bit. This will lock out any other writes! */
+	write32(&mc->video_protect_reg_ctrl, MC_VPR_WR_ACCESS_DISABLE);
 }

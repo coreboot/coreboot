@@ -24,7 +24,7 @@
 #include <stdlib.h>
 
 /* The ROM is memory mapped just below 4GiB. Form a pointer for the base. */
-#define rom_base ((void *)(uintptr_t)(-(int32_t)CONFIG_ROM_SIZE))
+#define rom_base ((void *)(uintptr_t)(0x100000000ULL-CONFIG_ROM_SIZE))
 
 static const struct mem_region_device boot_dev =
 	MEM_REGION_DEV_INIT(rom_base, CONFIG_ROM_SIZE);

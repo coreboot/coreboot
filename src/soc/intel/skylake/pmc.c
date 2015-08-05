@@ -51,23 +51,25 @@ static const struct reg_script pch_pmc_misc_init_script[] = {
 	REG_SCRIPT_END
 };
 
+static const struct reg_script pmc_write1_to_clear_script[] = {
+	REG_PCI_OR32(GEN_PMCON_A, 0),
+	REG_PCI_OR32(GEN_PMCON_B, 0),
+	REG_PCI_OR32(GEN_PMCON_B, 0),
+	REG_RES_OR32(PWRMBASE, GBLRST_CAUSE0, 0),
+	REG_RES_OR32(PWRMBASE, GBLRST_CAUSE1, 0),
+	REG_SCRIPT_END
+};
+
 static void pch_pmc_add_mmio_resources(device_t dev)
 {
 	struct resource *res;
-	const u32 default_decode_base = PCH_PCR_BASE_ADDRESS;
 
-	/*
-	 * Till PCI enumeration happens we need to allocate the PMC base
-	 * statically. Above the PCR base.
-	 */
-	if (PCH_PWRM_BASE_ADDRESS < default_decode_base) {
-		res = new_resource(dev, PWRMBASE);
-		res->base = PCH_PWRM_BASE_ADDRESS;
-		/* 64KB PMC size */
-		res->size = 0x10000;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-				IORESOURCE_FIXED | IORESOURCE_RESERVE;
-	}
+	/* Memory-mmapped I/O registers. */
+	res = new_resource(dev, PWRMBASE);
+	res->base = PCH_PWRM_BASE_ADDRESS;
+	res->size = PCH_PWRM_BASE_SIZE;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+			IORESOURCE_FIXED | IORESOURCE_RESERVE;
 }
 
 static void pch_pmc_add_io_resource(device_t dev, u16 base, u16 size, int index)
@@ -248,6 +250,9 @@ static void pmc_init(struct device *dev)
 	config_deep_s3(config->deep_s3_enable);
 	config_deep_s5(config->deep_s5_enable);
 	config_deep_sx(config->deep_sx_config);
+
+	/* Clear registers that contain write-1-to-clear bits. */
+	reg_script_run_on_dev(dev, pmc_write1_to_clear_script);
 }
 
 static struct device_operations device_ops = {

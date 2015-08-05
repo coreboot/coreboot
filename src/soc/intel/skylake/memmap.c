@@ -61,6 +61,53 @@ void smm_region(void **start, size_t *size)
 	*size = smm_region_size();
 }
 
+/*
+ *        Subregions within SMM
+ *     +-------------------------+ BGSM
+ *     |          IED            | IED_REGION_SIZE
+ *     +-------------------------+
+ *     |  External Stage Cache   | SMM_RESERVED_SIZE
+ *     +-------------------------+
+ *     |      code and data      |
+ *     |         (TSEG)          |
+ *     +-------------------------+ TSEG
+ */
+int smm_subregion(int sub, void **start, size_t *size)
+{
+	uintptr_t sub_base;
+	size_t sub_size;
+	const size_t ied_size = CONFIG_IED_REGION_SIZE;
+	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
+
+	sub_base = smm_region_start();
+	sub_size = smm_region_size();
+
+	switch (sub) {
+	case SMM_SUBREGION_HANDLER:
+		/* Handler starts at the base of TSEG. */
+		sub_size -= ied_size;
+		sub_size -= cache_size;
+		break;
+	case SMM_SUBREGION_CACHE:
+		/* External cache is in the middle of TSEG. */
+		sub_base += sub_size - (ied_size + cache_size);
+		sub_size = cache_size;
+		break;
+	case SMM_SUBREGION_CHIPSET:
+		/* IED is at the top. */
+		sub_base += sub_size - ied_size;
+		sub_size = ied_size;
+		break;
+	default:
+		return -1;
+	}
+
+	*start = (void *)sub_base;
+	*size = sub_size;
+
+	return 0;
+}
+
 void *cbmem_top(void)
 {
 	/*

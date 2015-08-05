@@ -47,6 +47,45 @@ size_t mmap_region_granluarity(void)
 		: 8 << 20;
 }
 
+/*
+ *        Subregions within SMM
+ *     +-------------------------+ BUNIT_SMRRH
+ *     |  External Stage Cache   | SMM_RESERVED_SIZE
+ *     +-------------------------+
+ *     |      code and data      |
+ *     |         (TSEG)          |
+ *     +-------------------------+ BUNIT_SMRRL
+ */
+int smm_subregion(int sub, void **start, size_t *size)
+{
+	uintptr_t sub_base;
+	void *sub_ptr;
+	size_t sub_size;
+	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
+
+	smm_region(&sub_ptr, &sub_size);
+	sub_base = (uintptr_t)sub_ptr;
+
+	switch (sub) {
+	case SMM_SUBREGION_HANDLER:
+		/* Handler starts at the base of TSEG. */
+		sub_size -= cache_size;
+		break;
+	case SMM_SUBREGION_CACHE:
+		/* External cache is in the middle of TSEG. */
+		sub_base += sub_size - cache_size;
+		sub_size = cache_size;
+		break;
+	default:
+		return -1;
+	}
+
+	*start = (void *)sub_base;
+	*size = sub_size;
+
+	return 0;
+}
+
 void *cbmem_top(void)
 {
 	char *smm_base;

@@ -18,22 +18,15 @@
  * Foundation, Inc.
  */
 
-#include <cbmem.h>
+#include <console/console.h>
 #include <soc/intel/common/memmap.h>
-#include <soc/smm.h>
 #include <stage_cache.h>
 
 void stage_cache_external_region(void **base, size_t *size)
 {
-	char *smm_base;
-	size_t smm_size;
-	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
-
-	/*
-	 * The ramstage cache lives in the TSEG region.
-	 * The top of ram is defined to be the TSEG base address.
-	 */
-	smm_region((void **)&smm_base, &smm_size);
-	*size = cache_size;
-	*base = (void *)(&smm_base[smm_size - cache_size]);
+	if (smm_subregion(SMM_SUBREGION_CACHE, base, size)) {
+		printk(BIOS_ERR, "ERROR: No cache SMM subregion.\n");
+		*base = NULL;
+		*size = 0;
+	}
 }

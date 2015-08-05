@@ -36,63 +36,23 @@ __attribute__((weak)) void soc_after_silicon_init(void)
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
-/*
- * SMM Memory Map:
- *
- * +--------------------------+ smm_region_size() ----.
- * |     FSP Cache            |                       |
- * +--------------------------+                       |
- * |     SMM Stage Cache      |                       + CONFIG_SMM_RESERVED_SIZE
- * +--------------------------+  ---------------------'
- * |     SMM Code             |
- * +--------------------------+ smm_base
- *
- */
-
-void stage_cache_external_region(void **base, size_t *size)
-{
-	size_t cache_size;
-	u8 *cache_base;
-
-	/* Determine the location of the ramstage cache */
-	smm_region((void **)&cache_base, &cache_size);
-	*size = CONFIG_SMM_RESERVED_SIZE;
-	*base = &cache_base[cache_size - CONFIG_SMM_RESERVED_SIZE];
-}
-
 /* Display SMM memory map */
 static void smm_memory_map(void)
 {
-	u8 *smm_base;
-	size_t smm_bytes;
-	size_t smm_code_bytes;
-	u8 *ext_cache;
-	size_t ext_cache_bytes;
-	u8 *smm_reserved;
-	size_t smm_reserved_bytes;
+	void *base;
+	size_t size;
+	int i;
 
-	/* Locate the SMM regions */
-	smm_region((void **)&smm_base, &smm_bytes);
-	stage_cache_external_region((void **)&ext_cache, &ext_cache_bytes);
-	smm_code_bytes = ext_cache - smm_base;
-	smm_reserved_bytes = smm_bytes - ext_cache_bytes - smm_code_bytes;
-	smm_reserved = smm_base + smm_bytes - smm_reserved_bytes;
+	printk(BIOS_SPEW, "SMM Memory Map\n");
 
-	/* Display the SMM regions */
-	printk(BIOS_SPEW, "\nLocation          SMM Memory Map        Offset\n");
-	if (smm_reserved_bytes) {
-		printk(BIOS_SPEW, "0x%p +--------------------------+ 0x%08x\n",
-			&smm_reserved[smm_reserved_bytes], (u32)smm_bytes);
-		printk(BIOS_SPEW, "           |   Other reserved region  |\n");
+	smm_region(&base, &size);
+	printk(BIOS_SPEW, "SMRAM       : %p 0x%zx\n", base, size);
+
+	for (i = 0; i < SMM_SUBREGION_NUM; i++) {
+		if (smm_subregion(i, &base, &size))
+			continue;
+		printk(BIOS_SPEW, " Subregion %d: %p 0x%zx\n", i, base, size);
 	}
-	printk(BIOS_SPEW, "0x%p +--------------------------+ 0x%08x\n",
-		smm_reserved, (u32)(smm_reserved - smm_base));
-	printk(BIOS_SPEW, "           |   external cache         |\n");
-	printk(BIOS_SPEW, "0x%p +--------------------------+ 0x%08x\n",
-		ext_cache, (u32)(ext_cache - smm_base));
-	printk(BIOS_SPEW, "           |   SMM code               |\n");
-	printk(BIOS_SPEW, "0x%p +--------------------------+ 0x%08x\n",
-		smm_base, 0);
 }
 
 static void fsp_run_silicon_init(int is_s3_wakeup)

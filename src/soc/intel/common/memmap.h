@@ -28,6 +28,24 @@
  * this value should be set to 8 MiB.
  */
 size_t mmap_region_granluarity(void);
+
+/* Fills in the arguments for the entire SMM region covered by chipset
+ * protections. e.g. TSEG. */
 void smm_region(void **start, size_t *size);
+
+enum {
+	/* SMM handler area. */
+	SMM_SUBREGION_HANDLER,
+	/* SMM cache region. */
+	SMM_SUBREGION_CACHE,
+	/* Chipset specific area. */
+	SMM_SUBREGION_CHIPSET,
+	/* Total sub regions supported. */
+	SMM_SUBREGION_NUM,
+};
+
+/* Fills in the start and size for the requested SMM subregion. Returns
+ * 0 on susccess, < 0 on failure. */
+int smm_subregion(int sub, void **start, size_t *size);
 
 #endif /* _COMMON_MEMMAP_H_ */

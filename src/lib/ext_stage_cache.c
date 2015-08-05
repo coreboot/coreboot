@@ -62,7 +62,7 @@ static void stage_cache_recover(void)
 		printk(BIOS_DEBUG, "Unable to recover external stage cache.\n");
 }
 
-void stage_cache_add(int stage_id, struct prog *stage)
+void stage_cache_add(int stage_id, const struct prog *stage)
 {
 	struct imd *imd;
 	const struct imd_entry *e;

@@ -23,7 +23,7 @@
 #include <string.h>
 
 /* Stage cache uses cbmem. */
-void stage_cache_add(int stage_id, struct prog *stage)
+void stage_cache_add(int stage_id, const struct prog *stage)
 {
 	struct stage_cache *meta;
 	void *c;

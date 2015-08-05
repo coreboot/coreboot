@@ -30,7 +30,7 @@ enum {
 };
 
 /* Cache the loaded stage provided according to the parameters. */
-void stage_cache_add(int stage_id, struct prog *stage);
+void stage_cache_add(int stage_id, const struct prog *stage);
 /* Load the cached stage at given location returning the stage entry point. */
 void stage_cache_load_stage(int stage_id, struct prog *stage);
 /* Fill in parameters for the external stage cache, if utilized. */

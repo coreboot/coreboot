@@ -60,7 +60,8 @@ fail:
 	halt();
 }
 
-void __attribute__((weak)) stage_cache_add(int stage_id, struct prog *stage) {}
+void __attribute__((weak)) stage_cache_add(int stage_id,
+						const struct prog *stage) {}
 void __attribute__((weak)) stage_cache_load_stage(int stage_id,
 							struct prog *stage) {}
 void __attribute__((weak)) ramstage_cache_invalid(void) {}

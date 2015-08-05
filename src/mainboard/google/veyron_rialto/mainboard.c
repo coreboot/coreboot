@@ -72,6 +72,14 @@ static void configure_codec(void)
 	rkclk_configure_i2s(12288000);
 }
 
+static void configure_3g(void)
+{
+	/* Force 3G modem off to avoid confusing the EHCI host and
+	 * causing problems during enumeration/init */
+	gpio_output(GPIO(5, C, 1), 1);	/* 3G_SHUTDOWN */
+	gpio_output(GPIO(4, D, 2), 0);	/* 3G_ON_OFF */
+}
+
 static void mainboard_init(device_t dev)
 {
 	gpio_output(GPIO_RESET, 0);
@@ -79,6 +87,7 @@ static void mainboard_init(device_t dev)
 	configure_usb();
 	configure_emmc();
 	configure_codec();
+	configure_3g();
 	/* No video. */
 
 	elog_init();

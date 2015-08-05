@@ -51,7 +51,6 @@ struct smm_relocation_params {
 	int smm_save_state_in_msrs;
 };
 
-#define smm_region_size mmap_region_granluarity
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 int smm_initialize(void);
 void smm_relocate(void);

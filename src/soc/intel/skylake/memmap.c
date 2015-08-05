@@ -25,6 +25,7 @@
 #include <soc/romstage.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
+#include <stdlib.h>
 
 size_t mmap_region_granluarity(void)
 {
@@ -34,24 +35,30 @@ size_t mmap_region_granluarity(void)
 			return CONFIG_SMM_TSEG_SIZE;
 
 	/* Make it 8MiB by default. */
-	return 8 << 20;
+	return 8*MiB;
 }
 
-static void *smm_region_start(void)
+/* Returns base of requested region encoded in the system agent. */
+static inline uintptr_t system_agent_region_base(size_t reg)
 {
-	/*
-	 * SMM base address matches the top of DPR.  The DPR register has
-	 * 1 MiB alignment and reports the TOP of the DPR range.
-	 */
-	uint32_t smm_base = pci_read_config32(SA_DEV_ROOT, DPR);
-	smm_base = ALIGN_DOWN(smm_base, 1 << 20);
-	return (void *)smm_base;
+	/* All regions concerned for have 1 MiB alignment. */
+	return ALIGN_DOWN(pci_read_config32(SA_DEV_ROOT, reg), 1*MiB);
+}
+
+static inline uintptr_t smm_region_start(void)
+{
+	return system_agent_region_base(TSEG);
+}
+
+static inline size_t smm_region_size(void)
+{
+	return system_agent_region_base(BGSM) - smm_region_start();
 }
 
 void smm_region(void **start, size_t *size)
 {
-	*start = smm_region_start();
-	*size = mmap_region_granluarity();
+	*start = (void *)smm_region_start();
+	*size = smm_region_size();
 }
 
 void *cbmem_top(void)
@@ -84,7 +91,7 @@ void *cbmem_top(void)
 	 *     +-------------------------+
 	 */
 
-	unsigned long top_of_ram = (unsigned long)smm_region_start();
+	uintptr_t top_of_ram = smm_region_start();
 
 	/*
 	 * Subtract DMA Protected Range size if enabled and align to a multiple

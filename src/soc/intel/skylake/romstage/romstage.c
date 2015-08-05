@@ -99,7 +99,7 @@ void soc_memory_init_params(MEMORY_INIT_UPD *params)
 
 	params->MmioSize = 0x800; /* 2GB in MB */
 	params->TsegSize = CONFIG_SMM_TSEG_SIZE;
-	params->IedSize = config->IedSize;
+	params->IedSize = CONFIG_IED_REGION_SIZE;
 	params->ProbelessTrace = config->ProbelessTrace;
 	params->EnableLan = config->EnableLan;
 	params->EnableSata = config->EnableSata;

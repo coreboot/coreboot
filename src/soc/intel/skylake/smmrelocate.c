@@ -196,28 +196,20 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 		write_smrr(relo_params);
 }
 
-static u32 northbridge_get_base_reg(device_t dev, int reg)
-{
-	u32 value;
-
-	value = pci_read_config32(dev, reg);
-	/* Base registers are at 1MiB granularity. */
-	value &= ~((1 << 20) - 1);
-	return value;
-}
-
 static void fill_in_relocation_params(device_t dev,
 				      struct smm_relocation_params *params)
 {
-	u32 tseg_size;
-	u32 tsegmb;
-	u32 bgsm;
+	void *handler_base;
+	size_t handler_size;
+	void *ied_base;
+	size_t ied_size;
+	void *tseg_base;
+	size_t tseg_size;
 	u32 emrr_base;
 	u32 emrr_size;
 	int phys_bits;
 	/* All range registers are aligned to 4KiB */
 	const u32 rmask = ~((1 << 12) - 1);
-	config_t *conf = dev->chip_info;
 
 	/*
 	 * Some of the range registers are dependent on the number of physical
@@ -225,21 +217,15 @@ static void fill_in_relocation_params(device_t dev,
 	 */
 	phys_bits = cpuid_eax(0x80000008) & 0xff;
 
-	/*
-	 * The range bounded by the TSEGMB and BGSM registers encompasses the
-	 * SMRAM range as well as the IED range.
-	 */
-	tsegmb = northbridge_get_base_reg(dev, TSEG);
-	bgsm = northbridge_get_base_reg(dev, BGSM);
-	tseg_size = bgsm - tsegmb;
+	smm_region(&tseg_base, &tseg_size);
+	smm_subregion(SMM_SUBREGION_HANDLER, &handler_base, &handler_size);
+	smm_subregion(SMM_SUBREGION_CHIPSET, &ied_base, &ied_size);
 
-	params->ied_size = conf->IedSize;
-	params->smram_size = tseg_size - params->ied_size;
-	params->smram_base = tsegmb;
-	params->ied_base = tsegmb + params->smram_size;
+	params->smram_size = handler_size;
+	params->smram_base = (uintptr_t)handler_base;
 
-	/* Adjust available SMM handler memory size. */
-	params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
+	params->ied_base = (uintptr_t)ied_base;
+	params->ied_size = ied_size;
 
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
 	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;

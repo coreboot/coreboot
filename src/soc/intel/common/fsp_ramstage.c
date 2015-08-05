@@ -18,15 +18,16 @@
  * Foundation, Inc.
  */
 
+#include <arch/acpi.h>
 #include <cbmem.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <fsp_util.h>
 #include <lib.h>
-#include <romstage_handoff.h>
 #include <soc/intel/common/memmap.h>
 #include <soc/intel/common/ramstage.h>
 #include <stage_cache.h>
+#include <string.h>
 #include <timestamp.h>
 
 /* SOC initialization after FSP silicon init */
@@ -176,7 +177,7 @@ static FSP_INFO_HEADER *soc_restore_support_code(void)
 	return header->fih;
 }
 
-static void fsp_run_silicon_init(struct romstage_handoff *handoff)
+static void fsp_run_silicon_init(int is_s3_wakeup)
 {
 	FSP_INFO_HEADER *fsp_info_header;
 	FSP_SILICON_INIT fsp_silicon_init;
@@ -209,7 +210,7 @@ static void fsp_run_silicon_init(struct romstage_handoff *handoff)
 
 	/* Locate VBT and pass to FSP GOP */
 	if (IS_ENABLED(CONFIG_GOP_SUPPORT))
-		load_vbt(handoff->s3_resume, &silicon_init_params);
+		load_vbt(is_s3_wakeup, &silicon_init_params);
 	mainboard_silicon_init_params(&silicon_init_params);
 
 	/* Display the UPD data */
@@ -305,11 +306,9 @@ static int fsp_find_and_relocate(void)
 
 void intel_silicon_init(void)
 {
-	struct romstage_handoff *handoff;
+	int is_s3_wakeup = acpi_is_wakeup_s3();
 
-	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
-
-	if (handoff != NULL && handoff->s3_resume) {
+	if (is_s3_wakeup) {
 		printk(BIOS_DEBUG, "FSP: Loading binary from cache\n");
 		fsp_update_fih(soc_restore_support_code());
 	} else {
@@ -318,7 +317,7 @@ void intel_silicon_init(void)
 		fsp_cache_save();
 	}
 
-	fsp_run_silicon_init(handoff);
+	fsp_run_silicon_init(is_s3_wakeup);
 }
 
 /* Initialize the UPD parameters for SiliconInit */

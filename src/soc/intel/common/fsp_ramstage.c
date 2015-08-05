@@ -40,9 +40,9 @@ __attribute__((weak)) void soc_after_silicon_init(void)
  * SMM Memory Map:
  *
  * +--------------------------+ smm_region_size() ----.
- * |     FSP Cache            | CONFIG_FSP_CACHE_SIZE |
+ * |     FSP Cache            |                       |
  * +--------------------------+                       |
- * |     SMM Ramstage Cache   |                       + CONFIG_SMM_RESERVED_SIZE
+ * |     SMM Stage Cache      |                       + CONFIG_SMM_RESERVED_SIZE
  * +--------------------------+  ---------------------'
  * |     SMM Code             |
  * +--------------------------+ smm_base
@@ -56,19 +56,8 @@ void stage_cache_external_region(void **base, size_t *size)
 
 	/* Determine the location of the ramstage cache */
 	smm_region((void **)&cache_base, &cache_size);
-	*size = CONFIG_SMM_RESERVED_SIZE - CONFIG_FSP_CACHE_SIZE;
+	*size = CONFIG_SMM_RESERVED_SIZE;
 	*base = &cache_base[cache_size - CONFIG_SMM_RESERVED_SIZE];
-}
-
-static void *smm_fsp_cache_base(size_t *size)
-{
-	size_t cache_size;
-	u8 *cache_base;
-
-	/* Determine the location of the FSP cache */
-	stage_cache_external_region((void **)&cache_base, &cache_size);
-	*size = CONFIG_FSP_CACHE_SIZE;
-	return &cache_base[cache_size];
 }
 
 /* Display SMM memory map */
@@ -77,21 +66,17 @@ static void smm_memory_map(void)
 	u8 *smm_base;
 	size_t smm_bytes;
 	size_t smm_code_bytes;
-	u8 *fsp_cache;
-	size_t fsp_cache_bytes;
-	u8 *ramstage_cache;
-	size_t ramstage_cache_bytes;
+	u8 *ext_cache;
+	size_t ext_cache_bytes;
 	u8 *smm_reserved;
 	size_t smm_reserved_bytes;
 
 	/* Locate the SMM regions */
 	smm_region((void **)&smm_base, &smm_bytes);
-	fsp_cache = smm_fsp_cache_base(&fsp_cache_bytes);
-	stage_cache_external_region((void **)&ramstage_cache, &ramstage_cache_bytes);
-	smm_code_bytes = ramstage_cache - smm_base;
-	smm_reserved = fsp_cache + fsp_cache_bytes;
-	smm_reserved_bytes = smm_bytes - fsp_cache_bytes - ramstage_cache_bytes
-		- smm_code_bytes;
+	stage_cache_external_region((void **)&ext_cache, &ext_cache_bytes);
+	smm_code_bytes = ext_cache - smm_base;
+	smm_reserved_bytes = smm_bytes - ext_cache_bytes - smm_code_bytes;
+	smm_reserved = smm_base + smm_bytes - smm_reserved_bytes;
 
 	/* Display the SMM regions */
 	printk(BIOS_SPEW, "\nLocation          SMM Memory Map        Offset\n");
@@ -102,79 +87,12 @@ static void smm_memory_map(void)
 	}
 	printk(BIOS_SPEW, "0x%p +--------------------------+ 0x%08x\n",
 		smm_reserved, (u32)(smm_reserved - smm_base));
-	printk(BIOS_SPEW, "           |   FSP binary cache       |\n");
+	printk(BIOS_SPEW, "           |   external cache         |\n");
 	printk(BIOS_SPEW, "0x%p +--------------------------+ 0x%08x\n",
-		fsp_cache, (u32)(fsp_cache - smm_base));
-	printk(BIOS_SPEW, "           |   ramstage cache         |\n");
-	printk(BIOS_SPEW, "0x%p +--------------------------+ 0x%08x\n",
-		ramstage_cache, (u32)(ramstage_cache - smm_base));
+		ext_cache, (u32)(ext_cache - smm_base));
 	printk(BIOS_SPEW, "           |   SMM code               |\n");
 	printk(BIOS_SPEW, "0x%p +--------------------------+ 0x%08x\n",
 		smm_base, 0);
-	printk(BIOS_ERR, "\nCONFIG_FSP_CACHE_SIZE: 0x%08x bytes\n\n",
-		CONFIG_FSP_CACHE_SIZE);
-}
-
-struct smm_fsp_cache_header {
-	void *start;
-	size_t size;
-	FSP_INFO_HEADER *fih;
-};
-
-/* SoC implementation for caching support code. */
-static void soc_save_support_code(void *start, size_t size,
-	FSP_INFO_HEADER *fih)
-{
-	u8 *fsp_cache;
-	size_t fsp_cache_length;
-	struct smm_fsp_cache_header *header;
-	size_t smm_fsp_cache_length;
-
-	if (IS_ENABLED(CONFIG_DISPLAY_SMM_MEMORY_MAP))
-		smm_memory_map();
-
-	/* Locate the FSP cache in SMM */
-	fsp_cache = smm_fsp_cache_base(&smm_fsp_cache_length);
-
-	/* Initialize the FSP cache header */
-	header = (struct smm_fsp_cache_header *)fsp_cache;
-	fsp_cache += sizeof(*header);
-	header->start = start;
-	header->size = size;
-	header->fih = fih;
-
-	/* Validate the CONFIG_FSP_CACHE_SIZE value */
-	fsp_cache_length = sizeof(*header) + size;
-	if (smm_fsp_cache_length < fsp_cache_length) {
-		printk(BIOS_ERR, "CONFIG_FSP_CACHE_SIZE < 0x%08x bytes\n",
-			(u32)fsp_cache_length);
-		die("ERROR: Insufficent space to cache FSP binary!\n");
-	}
-
-	/* Copy the FSP binary into the SMM region for safe keeping */
-	memcpy(fsp_cache, start, size);
-}
-
-/* SoC implementation for restoring support code after S3 resume. Returns
- * previously passed fih pointer from soc_save_support_code(). */
-static FSP_INFO_HEADER *soc_restore_support_code(void)
-{
-	u8 *fsp_cache;
-	struct smm_fsp_cache_header *header;
-	size_t smm_fsp_cache_length;
-
-	/* Locate the FSP cache in SMM */
-	fsp_cache = smm_fsp_cache_base(&smm_fsp_cache_length);
-
-	/* Get the FSP cache header */
-	header = (struct smm_fsp_cache_header *)fsp_cache;
-	fsp_cache += sizeof(*header);
-
-	/* Copy the FSP binary from the SMM region back into RAM */
-	memcpy(header->start, fsp_cache, header->size);
-
-	/* Return the FSP_INFO_HEADER address */
-	return header->fih;
 }
 
 static void fsp_run_silicon_init(int is_s3_wakeup)
@@ -261,63 +179,53 @@ static void fsp_run_silicon_init(int is_s3_wakeup)
 	soc_after_silicon_init();
 }
 
-static void fsp_cache_save(void)
+static void fsp_cache_save(struct prog *fsp)
 {
-	const struct cbmem_entry *fsp_entry;
-	FSP_INFO_HEADER *fih;
+	if (IS_ENABLED(CONFIG_DISPLAY_SMM_MEMORY_MAP))
+		smm_memory_map();
 
-	fsp_entry = cbmem_entry_find(CBMEM_ID_REFCODE);
-
-	if (fsp_entry == NULL) {
-		printk(BIOS_ERR, "ERROR: FSP not found in CBMEM.\n");
+	if (prog_entry(fsp) == NULL) {
+		printk(BIOS_ERR, "ERROR: No FSP to save in cache.\n");
 		return;
 	}
 
-	fih = fsp_get_fih();
-
-	if (fih == NULL) {
-		printk(BIOS_ERR, "ERROR: No FIH found.\n");
-		return;
-	}
-
-	soc_save_support_code(cbmem_entry_start(fsp_entry),
-				cbmem_entry_size(fsp_entry), fih);
+	stage_cache_add(STAGE_REFCODE, fsp);
 }
 
-static int fsp_find_and_relocate(void)
+static int fsp_find_and_relocate(struct prog *fsp)
 {
-	struct prog fsp_prog = PROG_INIT(ASSET_REFCODE, "fsp.bin");
 	struct region_device fsp_rdev;
 	uint32_t type = CBFS_TYPE_FSP;
 
-	if (cbfs_boot_locate(&fsp_rdev, prog_name(&fsp_prog), &type)) {
+	if (cbfs_boot_locate(&fsp_rdev, prog_name(fsp), &type)) {
 		printk(BIOS_ERR, "ERROR: Couldn't find fsp.bin in CBFS.\n");
 		return -1;
 	}
 
-	if (fsp_relocate(&fsp_prog, &fsp_rdev)) {
+	if (fsp_relocate(fsp, &fsp_rdev)) {
 		printk(BIOS_ERR, "ERROR: FSP relocation failed.\n");
 		return -1;
 	}
-
-	/* FSP_INFO_HEADER is set as the program entry. */
-	fsp_update_fih(prog_entry(&fsp_prog));
 
 	return 0;
 }
 
 void intel_silicon_init(void)
 {
+	struct prog fsp = PROG_INIT(ASSET_REFCODE, "fsp.bin");
 	int is_s3_wakeup = acpi_is_wakeup_s3();
 
 	if (is_s3_wakeup) {
 		printk(BIOS_DEBUG, "FSP: Loading binary from cache\n");
-		fsp_update_fih(soc_restore_support_code());
+		stage_cache_load_stage(STAGE_REFCODE, &fsp);
 	} else {
-		fsp_find_and_relocate();
+		fsp_find_and_relocate(&fsp);
 		printk(BIOS_DEBUG, "FSP: Saving binary in cache\n");
-		fsp_cache_save();
+		fsp_cache_save(&fsp);
 	}
+
+	/* FSP_INFO_HEADER is set as the program entry. */
+	fsp_update_fih(prog_entry(&fsp));
 
 	fsp_run_silicon_init(is_s3_wakeup);
 }

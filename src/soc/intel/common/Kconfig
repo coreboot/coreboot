@@ -44,15 +44,6 @@ config DISPLAY_SMM_MEMORY_MAP
 	bool "SMM: Display the SMM memory map"
 	default n
 
-config FSP_CACHE_SIZE
-	hex "FSP Cache Size in bytes"
-	default 0
-	help
-	  Size of the region in SMM used to cache the FSP binary. This region
-	  size value is used to split the SMM_RESERVED_SIZE config value
-	  into a region specifically for FSP.  The remaining region is for
-	  ramstage.
-
 config SOC_INTEL_COMMON_FSP_RAM_INIT
 	bool "FSP: Use the common raminit.c module"
 	default n

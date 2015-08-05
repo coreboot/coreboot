@@ -286,20 +286,22 @@ static void fsp_cache_save(void)
 
 static int fsp_find_and_relocate(void)
 {
-	void *fih;
-	void *data;
-	size_t length;
+	struct prog fsp_prog = PROG_INIT(ASSET_REFCODE, "fsp.bin");
+	struct region_device fsp_rdev;
+	uint32_t type = CBFS_TYPE_FSP;
 
-	data = cbfs_boot_map_with_leak("fsp.bin", CBFS_TYPE_FSP, &length);
-
-	if (data == NULL) {
-		printk(BIOS_ERR, "Couldn't find fsp.bin in CBFS.\n");
+	if (cbfs_boot_locate(&fsp_rdev, prog_name(&fsp_prog), &type)) {
+		printk(BIOS_ERR, "ERROR: Couldn't find fsp.bin in CBFS.\n");
 		return -1;
 	}
 
-	fih = fsp_relocate(data, length);
+	if (fsp_relocate(&fsp_prog, &fsp_rdev)) {
+		printk(BIOS_ERR, "ERROR: FSP relocation failed.\n");
+		return -1;
+	}
 
-	fsp_update_fih(fih);
+	/* FSP_INFO_HEADER is set as the program entry. */
+	fsp_update_fih(prog_entry(&fsp_prog));
 
 	return 0;
 }

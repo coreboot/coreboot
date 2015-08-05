@@ -482,15 +482,33 @@ static FSP_INFO_HEADER *fsp_relocate_in_place(void *fsp, size_t size)
 	return relocate_remaining_items(fsp, size, fih_offset);
 }
 
-FSP_INFO_HEADER *fsp_relocate(void *fsp_src, size_t size)
+int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src)
 {
 	void *new_loc;
+	void *fih;
+	size_t size = region_device_sz(fsp_src);
 
 	new_loc = cbmem_add(CBMEM_ID_REFCODE, size);
+
 	if (new_loc == NULL) {
-		printk(BIOS_ERR, "Unable to load FSP into memory.\n");
-		return NULL;
+		printk(BIOS_ERR, "ERROR: Unable to load FSP into memory.\n");
+		return -1;
 	}
-	memcpy(new_loc, fsp_src, size);
-	return fsp_relocate_in_place(new_loc, size);
+
+	if (rdev_readat(fsp_src, new_loc, 0, size) != size) {
+		printk(BIOS_ERR, "ERROR: Can't read FSP's region device.\n");
+		return -1;
+	}
+
+	fih = fsp_relocate_in_place(new_loc, size);
+
+	if (fih == NULL) {
+		printk(BIOS_ERR, "ERROR: FSP relocation faiulre.\n");
+		return -1;
+	}
+
+	prog_set_area(fsp_relocd, new_loc, size);
+	prog_set_entry(fsp_relocd, fih, NULL);
+
+	return 0;
 }

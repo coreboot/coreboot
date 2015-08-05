@@ -24,6 +24,8 @@
 #include <types.h>
 #include <arch/cpu.h>
 #include <fsp_gop.h>
+#include <program_loading.h>
+#include <region.h>
 
 /*
  * The following are functions with prototypes defined in the EDK2 headers. The
@@ -63,10 +65,11 @@ void *get_next_type_guid_hob(UINT16 type, const EFI_GUID *guid,
 void *get_next_resource_hob(const EFI_GUID *guid, const void *hob_start);
 void *get_first_resource_hob(const EFI_GUID *guid);
 /*
- * Relocate FSP entire binary into ram. Returns NULL on error. Otherwise the
- * FSP_INFO_HEADER pointer to the relocated FSP.
+ * Relocate FSP entire binary into ram. Returns < 0 on error, 0 on success.
+ * The FSP source is pointed to by region_device and the relocation information
+ * is encoded in a struct prog with its entry point set to the FSP info header.
  */
-FSP_INFO_HEADER *fsp_relocate(void *fsp_src, size_t size);
+int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src);
 
 /* Additional HOB types not included in the FSP:
  * #define EFI_HOB_TYPE_HANDOFF 0x0001

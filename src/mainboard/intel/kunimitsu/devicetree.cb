@@ -39,7 +39,6 @@ chip soc/intel/skylake
 	register "gpe0_en_4" = "0x00000000"
 
 	# Memory related
-	register "IedSize" = "0x0"
 	register "ProbelessTrace" = "0"
 
 	# Lan

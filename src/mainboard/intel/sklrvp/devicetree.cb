@@ -68,9 +68,6 @@ chip soc/intel/skylake
 	# Enable S0ix
 	register "s0ix_enable" = "0"
 
-	# Memory related
-	register "IedSize" = "0x0"
-
 	# Probeless Trace function
 	register "ProbelessTrace" = "0"
 

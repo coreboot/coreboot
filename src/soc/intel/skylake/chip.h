@@ -132,7 +132,6 @@ struct soc_intel_skylake_config {
 	u64 PlatformMemorySize;
 	u8 SmramMask;
 	u8 MrcFastBoot;
-	u32 IedSize;
 	u32 TsegSize;
 	u16 MmioSize;
 

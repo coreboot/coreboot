@@ -143,6 +143,43 @@ Scope (\_SB.PCI0.I2C4)
 		Name (_DDN, "NAU88L25 Codec")
 		Name (_UID, 1)
 
+		/*
+		 * Add DT style bindings with _DSD
+		 * Device property values are documented in kernel doc
+		 * Documentation/devicetree/bindings/sound/nau8825.txt
+		 */
+		Name (_DSD, Package () {
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				/* Enable jack detection via JKDET pin */
+				Package () {"nuvoton,jkdet-enable", 1},
+				/*
+				 * JKDET pin is pulled up by R389 on board.
+				 * JKDET pin polarity = active low
+				 */
+				Package () {"nuvoton,jkdet-polarity", 1},
+				/* VREF Impedance = 125 kOhm */
+				Package () {"nuvoton,vref-impedance", 2},
+				/* VDDA(1.8) * 1.53 = 2.754 */
+				Package () {"nuvoton,micbias-voltage", 6},
+				/*
+				 * Setup 4 buttons impedance according to
+				 * Android specification
+				 */
+				Package () {"nuvoton,sar-threshold-num", 4},
+				Package () {"nuvoton,sar-threshold",
+					Package () {0xc, 0x1e, 0x38, 0x60}},
+				Package () {"nuvoton,sar-hysteresis", 1},
+				/* VDDA for button impedance measurement */
+				Package () {"nuvoton,sar-voltage", 0},
+				/* 100ms short key press debounce */
+				Package () {"nuvoton,short-key-debounce", 2},
+				/* 2^(7+2) = 512 ms insert/eject debounce */
+				Package () {"nuvoton,jack-insert-debounce", 7},
+				Package () {"nuvoton,jack-eject-debounce", 7},
+			}
+		})
+
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (

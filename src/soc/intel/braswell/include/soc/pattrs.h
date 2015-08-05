@@ -44,7 +44,7 @@ struct pattrs {
 	const void *microcode_patch;
 	int address_bits;
 	int num_cpus;
-	unsigned bclk_khz;
+	unsigned int bclk_khz;
 };
 
 /*

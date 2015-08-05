@@ -26,12 +26,38 @@
 #endif
 #include <stdint.h>
 
+static const unsigned int cpu_bus_clk_freq_table[] = {
+	83333,
+	100000,
+	133333,
+	116666,
+	80000,
+	93333,
+	90000,
+	88900,
+	87500
+};
+
+unsigned int cpu_bus_freq_khz(void)
+{
+	msr_t clk_info = rdmsr(MSR_BSEL_CR_OVERCLOCK_CONTROL);
+	if((clk_info.lo & 0xF)  < (sizeof(cpu_bus_clk_freq_table)/sizeof(unsigned int)))
+	{
+		return(cpu_bus_clk_freq_table[clk_info.lo & 0xF]);
+	}
+	return 0;
+}
+
 unsigned long tsc_freq_mhz(void)
 {
-	msr_t ia_core_ratios;
+	msr_t platform_info;
+	unsigned int bclk_khz = cpu_bus_freq_khz();
 
-	ia_core_ratios = rdmsr(MSR_IACORE_RATIOS);
-	return (BUS_FREQ_KHZ * ((ia_core_ratios.lo >> 16) & 0x3f)) / 1000;
+	if (!bclk_khz)
+		return 0;
+
+	platform_info = rdmsr(MSR_PLATFORM_INFO);
+	return (bclk_khz * ((platform_info.lo >> 8) & 0xff)) / 1000;
 }
 
 #if !ENV_SMM

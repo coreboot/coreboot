@@ -43,6 +43,7 @@
 #define MSR_CPU_THERM_CFG2		0x674
 #define MSR_CPU_THERM_SENS_CFG		0x675
 
-#define BUS_FREQ_KHZ			100000	/* 100 MHz */
+/* Read BCLK from MSR */
+unsigned int cpu_bus_freq_khz(void);
 
 #endif /* _SOC_MSR_H_ */

@@ -94,7 +94,7 @@ cyan='\033[0;36m'
 CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
-UNAME=$(uname)
+UNAME=$(uname | grep -iq cygwin && echo Cygwin || uname)
 
 normalize_dirs()
 {

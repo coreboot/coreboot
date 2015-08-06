@@ -16,13 +16,12 @@
 #include <cpu/cpu.h>
 #include <console/console.h>
 #include <device/device.h>
-
 #include <symbols.h>
 
 static void soc_read_resources(device_t dev)
 {
 	ram_resource(dev, 0, (uintptr_t)_dram / KiB,
-		     CONFIG_DRAM_SIZE_MB * KiB);
+		     CONFIG_DRAM_SIZE_MB * (MiB / KiB));
 }
 
 static void soc_init(device_t dev)

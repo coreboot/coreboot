@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include "secimage.h"
@@ -39,7 +38,6 @@ int ReadBinaryFile(char *fname, uint8_t *buf, int maxlen)
 	return len;
 }
 
-
 /*----------------------------------------------------------------------
  * Name    : FileSizeGet
  * Purpose : Return the size of the file
@@ -55,7 +53,6 @@ size_t FileSizeGet(FILE *file)
 	rewind(file);
 	return (size_t)length;
 }
-
 
 /*----------------------------------------------------------------------
  * Name    : DataRead
@@ -89,7 +86,6 @@ int DataRead(char *filename, uint8_t *buf, int *length)
 	fclose(file);
 	return 0;
 }
-
 
 /*----------------------------------------------------------------------
  * Name    : DataWrite

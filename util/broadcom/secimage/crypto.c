@@ -11,13 +11,11 @@
  * GNU General Public License for more details.
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include "secimage.h"
 #include <openssl/hmac.h>
-
 
 /*----------------------------------------------------------------------
  * Name    : HmacSha256Hash
@@ -32,8 +30,7 @@ int HmacSha256Hash(uint8_t *data, uint32_t len, uint8_t *hash, uint8_t *key)
 	HMAC_CTX_init(&hctx);
 	HMAC_Init_ex(&hctx, key, 32, EVP_sha256(), NULL);
 
-	/*
-	 * FIXME: why we need this? NULL means to use whatever there is?
+	/* FIXME: why we need this? NULL means to use whatever there is?
 	 * if removed, result is different
 	 */
 	HMAC_Init_ex(&hctx, NULL, 0, NULL, NULL);
@@ -43,7 +40,6 @@ int HmacSha256Hash(uint8_t *data, uint32_t len, uint8_t *hash, uint8_t *key)
 	HMAC_CTX_cleanup(&hctx);
 	return 0;
 }
-
 
 /*----------------------------------------------------------------------
  * Name    : AppendHMACSignature

@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-
 #ifndef _SECIMAGE_H_
 #define _SECIMAGE_H_
 

@@ -65,8 +65,8 @@
 		.mr[0] = 0x0,
 		.mr[1] = 0xC3,
 		.mr[2] = 0x6,
-		/* 60Ohms instead of 34.3 due to bad PCB routing on Mickey. */
-		.mr[3] = 0x4
+		/* 40 Ohms instead of 34.3 due to bad PCB routing on Mickey. */
+		.mr[3] = 0x2
 	},
 	.noc_timing = 0x20D266A4,
 	.noc_activate = 0x5B6,

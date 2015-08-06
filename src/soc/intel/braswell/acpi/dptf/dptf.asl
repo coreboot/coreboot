@@ -1,4 +1,3 @@
-
 Device (DPTF)
 {
 	Name (_HID, EISAID ("INT3400"))
@@ -75,7 +74,12 @@ Device (DPTF)
 	#include "charger.asl"
 #endif
 
-        /* Include Network Participants */
+	/* Include Network Participants */
+#ifdef DPTF_ENABLE_WIFI
 	#include "wifi.asl"
+#endif
+
+#ifdef DPTF_ENABLE_WWAN
 	#include "wwan.asl"
+#endif
 }

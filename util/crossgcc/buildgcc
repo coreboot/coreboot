@@ -622,7 +622,7 @@ if [ $UNAME = "Darwin" ]; then
 	if $CC -v 2>&1 | grep -q LLVM; then
 		CC=llvm-gcc
 	fi
-elif [ $UNAME = "Linux" ]; then
+elif [ $UNAME = "Linux" -o $UNAME = "Cygwin" ]; then
 	# gmp is overeager with detecting 64bit CPUs even if they run
 	# a 32bit kernel and userland.
 	if [ "$(uname -m 2>/dev/null)" = "i686" ]; then

@@ -476,10 +476,11 @@ static const struct timestamp_id_to_name {
 	{ TS_FSP_AFTER_FINALIZE, "returning from FspNotify(ReadyToBoot)" }
 };
 
-void timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
+uint64_t timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
 {
 	int i;
 	const char *name;
+	uint64_t step_time;
 
 	name = "<unknown>";
 	for (i = 0; i < ARRAY_SIZE(timestamp_ids); i++) {
@@ -492,12 +493,15 @@ void timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
 	printf("%4d:", id);
 	printf("%-50s", name);
 	print_norm(arch_convert_raw_ts_entry(stamp));
+	step_time = arch_convert_raw_ts_entry(stamp - prev_stamp);
 	if (prev_stamp) {
 		printf(" (");
-		print_norm(arch_convert_raw_ts_entry(stamp - prev_stamp));
+		print_norm(step_time);
 		printf(")");
 	}
 	printf("\n");
+
+	return step_time;
 }
 
 /* dump the timestamp table */
@@ -507,6 +511,7 @@ static void dump_timestamps(void)
 	struct timestamp_table *tst_p;
 	size_t size;
 	uint64_t prev_stamp;
+	uint64_t total_time;
 
 	if (timestamps.tag != LB_TAG_TIMESTAMPS) {
 		fprintf(stderr, "No timestamps found in coreboot table.\n");
@@ -527,15 +532,21 @@ static void dump_timestamps(void)
 	timestamp_print_entry(0,  tst_p->base_time, prev_stamp);
 	prev_stamp = tst_p->base_time;
 
+	total_time = 0;
 	for (i = 0; i < tst_p->num_entries; i++) {
 		uint64_t stamp;
 		const struct timestamp_entry *tse = &tst_p->entries[i];
 
 		/* Make all timestamps absolute. */
 		stamp = tse->entry_stamp + tst_p->base_time;
-		timestamp_print_entry(tse->entry_id, stamp, prev_stamp);
+		total_time += timestamp_print_entry(tse->entry_id,
+							stamp, prev_stamp);
 		prev_stamp = stamp;
 	}
+
+	printf("\nTotal Time: ");
+	print_norm(total_time);
+	printf("\n");
 
 	unmap_memory();
 }

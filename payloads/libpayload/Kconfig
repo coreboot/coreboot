@@ -514,7 +514,7 @@ config USB_XHCI_MTK_QUIRK
 
 config USB_DWC2
 	bool "Support for USB DesignWare HCD controllers"
-	depends on USB && !USB_HID
+	depends on USB
 	help
 	  Select this option if you want to use DesignWare USB 2.0 host controller
 

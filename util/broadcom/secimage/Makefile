@@ -17,7 +17,7 @@ CC = gcc
 RM = rm
 CFLAGS += -Wall -g
 
-LIBS = -lssl -lcrypto
+LIBS = -lssl -lcrypto -lz
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) -o $@ $<

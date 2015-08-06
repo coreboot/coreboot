@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <zlib.h>
 #include "secimage.h"
 
 #define MIN_SIZE	(1024*120)
@@ -150,7 +151,7 @@ int CreateSecureBootImage(int ac, char **av)
 
 		if (!status) {
 			((HEADER *)buf)->Length = sbiLen;
-			((HEADER *)buf)->crc = calc_crc32(0xFFFFFFFF,
+			((HEADER *)buf)->crc = crc32(0xFFFFFFFF,
 							  (uint8_t *)buf, 12);
 
 			printf("Generating Image file %s: %d bytes\n",

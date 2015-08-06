@@ -39,7 +39,6 @@ int DataRead(char *filename, uint8_t *buf, int *length);
 int AppendHMACSignature(uint8_t *data, uint32_t length, char *filename,
 			uint32_t offset);
 int ReadBinaryFile(char *fname, uint8_t *buf, int maxlen);
-uint32_t calc_crc32(uint32_t initval, uint8_t *charArr, uint32_t arraySize);
 void FillHeaderFromConfigFile(char *h, char *ConfigFileName);
 
 #endif /* _SECIMAGE_H_ */

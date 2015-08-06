@@ -161,14 +161,11 @@ endif
 
 # BL31 component is placed towards the end of 32-bit address space. This assumes
 # that TrustZone memory is placed at the end of 32-bit address space. Within the
-# TZ memory, we place TTB at the beginning and then remaining space can be used
-# up by BL31 and secure OS. Calculate TZDRAM_BASE i.e. base of BL31 component
-# by:
+# TZ memory, we place BL31 and BL32(if available) towards the beginning and TTB
+# towards the end. Calculate TZDRAM_BASE i.e. base of BL31 component by:
 #   0x1000 = end of 32-bit address space in MiB
 #   0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB) = start of TZ memory in MiB
-#   0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB) + $(CONFIG_TTB_SIZE_MB)
-#             = skip TTB buffer and get base address of BL31
-BL31_MAKEARGS += TZDRAM_BASE=$$(((0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB) + $(CONFIG_TTB_SIZE_MB)) << 20))
+BL31_MAKEARGS += TZDRAM_BASE=$$(((0x1000 - $(CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB)) << 20))
 BL31_MAKEARGS += PLAT=tegra TARGET_SOC=t210
 
 # MTC fw

@@ -18,6 +18,7 @@
  */
 
 #include <arch/mmu.h>
+#include <assert.h>
 #include <memrange.h>
 #include <soc/addressmap.h>
 #include <soc/mmu_operations.h>
@@ -69,15 +70,43 @@ void tegra210_mmu_init(void)
 {
 	uintptr_t tz_base_mib;
 	size_t tz_size_mib;
+	uintptr_t ttb_base_mib;
 	size_t ttb_size_mib;
 	struct memranges *map = &t210_mmap_ranges;
 
 	tegra210_memrange_init(map);
 	mainboard_add_memory_ranges(map);
-	/* Place page tables at the base of the trust zone region. */
+	/*
+	 * Place page tables at the end of the trust zone region.
+	 * TZDRAM layout is as follows:
+	 *
+	 * +--------------------------+ <----+DRAM_END
+	 * |                          |
+	 * |                          |
+	 * |                          |
+	 * +--------------------------+ <----+0x100000000
+	 * |                          |
+	 * |   coreboot page tables   |
+	 * +--------------------------+
+	 * |                          |
+	 * |        BL32              |
+	 * +--------------------------+
+	 * |                          |
+	 * |        BL31              |
+	 * +--------------------------+ <----+TZDRAM_BASE
+	 * |                          |
+	 * |                          |
+	 * |                          |
+	 * |                          |
+	 * +--------------------------+ <----+DRAM_BASE
+	 *
+	 */
 	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
-	tz_base_mib *= MiB;
+
+	assert(tz_size_mib > CONFIG_TTB_SIZE_MB);
+	ttb_base_mib = (tz_base_mib + tz_size_mib - CONFIG_TTB_SIZE_MB) * MiB;
+
 	ttb_size_mib = CONFIG_TTB_SIZE_MB * MiB;
-	mmu_init(map, (void *)tz_base_mib, ttb_size_mib);
+	mmu_init(map, (void *)ttb_base_mib, ttb_size_mib);
 	mmu_enable();
 }

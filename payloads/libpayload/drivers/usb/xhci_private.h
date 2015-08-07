@@ -348,9 +348,10 @@ typedef struct xhci {
 			struct {
 				unsigned long IST:4;
 				unsigned long ERST_Max:4;
-				unsigned long:18;
+				unsigned long:13;
+				unsigned long Max_Scratchpad_Bufs_Hi:5;
 				unsigned long SPR:1;
-				unsigned long Max_Scratchpad_Bufs:5;
+				unsigned long Max_Scratchpad_Bufs_Lo:5;
 			} __attribute__ ((packed));
 		} __attribute__ ((packed));
 		union {

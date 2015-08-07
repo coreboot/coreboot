@@ -227,7 +227,8 @@ xhci_init (unsigned long physical_bar)
 	 * Let dcbaa[0] point to another array of pointers, sp_ptrs.
 	 * The pointers therein point to scratchpad buffers (pages).
 	 */
-	const size_t max_sp_bufs = xhci->capreg->Max_Scratchpad_Bufs;
+	const size_t max_sp_bufs = xhci->capreg->Max_Scratchpad_Bufs_Hi << 5 |
+				   xhci->capreg->Max_Scratchpad_Bufs_Lo;
 	xhci_debug("max scratchpad bufs: 0x%zx\n", max_sp_bufs);
 	if (max_sp_bufs) {
 		const size_t sp_ptrs_size = max_sp_bufs * sizeof(u64);
@@ -417,7 +418,8 @@ xhci_shutdown(hci_t *const controller)
 #endif
 
 	if (xhci->sp_ptrs) {
-		const size_t max_sp_bufs = xhci->capreg->Max_Scratchpad_Bufs;
+		size_t max_sp_bufs = xhci->capreg->Max_Scratchpad_Bufs_Hi << 5 |
+				     xhci->capreg->Max_Scratchpad_Bufs_Lo;
 		for (i = 0; i < max_sp_bufs; ++i) {
 			if (xhci->sp_ptrs[i])
 				free(phys_to_virt(xhci->sp_ptrs[i]));

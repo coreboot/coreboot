@@ -53,7 +53,7 @@ xhci_rh_port_status_changed(usbdev_t *const dev, const int port)
 
 	const int changed = !!(*portsc & (PORTSC_CSC | PORTSC_PRC));
 	/* always clear all the status change bits */
-	*portsc = (*portsc & PORTSC_RW_MASK) | 0x00ef0000;
+	*portsc = (*portsc & PORTSC_RW_MASK) | 0x00fe0000;
 	return changed;
 }
 

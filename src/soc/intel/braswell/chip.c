@@ -96,7 +96,6 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->PcdEnableHsuart0 = config->PcdEnableHsuart0;
 	params->PcdEnableHsuart1 = config->PcdEnableHsuart1;
 	params->PcdEnableAzalia = config->PcdEnableAzalia;
-	params->AzaliaConfigPtr = config->AzaliaConfigPtr;
 	params->PcdEnableSata = config->PcdEnableSata;
 	params->PcdEnableXhci = config->PcdEnableXhci;
 	params->PcdEnableLpe = config->PcdEnableLpe;
@@ -109,7 +108,8 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->PcdEnableI2C4 = config->PcdEnableI2C4;
 	params->PcdEnableI2C5 = config->PcdEnableI2C5;
 	params->PcdEnableI2C6 = config->PcdEnableI2C6;
-	params->PcdGraphicsConfigPtr = config->PcdGraphicsConfigPtr;
+	params->GraphicsConfigPtr = 0;
+	params->AzaliaConfigPtr = 0;
 	params->PunitPwrConfigDisable = config->PunitPwrConfigDisable;
 	params->ChvSvidConfig = config->ChvSvidConfig;
 	params->DptfDisable = config->DptfDisable;
@@ -171,11 +171,9 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 		new->PcdEnableHsuart1);
 	soc_display_upd_value("PcdEnableAzalia", 1, old->PcdEnableAzalia,
 		new->PcdEnableAzalia);
-	soc_display_upd_value("AzaliaVerbTablePtr", 4,
-		(uint32_t)old->AzaliaVerbTablePtr,
-		(uint32_t)new->AzaliaVerbTablePtr);
-	soc_display_upd_value("AzaliaConfigPtr", 4, old->AzaliaConfigPtr,
-		new->AzaliaConfigPtr);
+	soc_display_upd_value("AzaliaConfigPtr", 4,
+			(uint32_t)old->AzaliaConfigPtr,
+			(uint32_t)new->AzaliaConfigPtr);
 	soc_display_upd_value("PcdEnableSata", 1, old->PcdEnableSata,
 		new->PcdEnableSata);
 	soc_display_upd_value("PcdEnableXhci", 1, old->PcdEnableXhci,
@@ -201,7 +199,7 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	soc_display_upd_value("PcdEnableI2C6", 1, old->PcdEnableI2C6,
 		new->PcdEnableI2C6);
 	soc_display_upd_value("PcdGraphicsConfigPtr", 4,
-		old->PcdGraphicsConfigPtr, new->PcdGraphicsConfigPtr);
+		old->GraphicsConfigPtr, new->GraphicsConfigPtr);
 	soc_display_upd_value("GpioFamilyInitTablePtr", 4,
 		(uint32_t)old->GpioFamilyInitTablePtr,
 		(uint32_t)new->GpioFamilyInitTablePtr);

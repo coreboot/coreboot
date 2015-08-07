@@ -85,7 +85,6 @@ struct soc_intel_braswell_config {
 	UINT8  PcdEnableHsuart0;
 	UINT8  PcdEnableHsuart1;
 	UINT8  PcdEnableAzalia;
-	UINT32 AzaliaConfigPtr;
 	UINT8  PcdEnableSata;
 	UINT8  PcdEnableXhci;
 	UINT8  PcdEnableLpe;
@@ -98,7 +97,6 @@ struct soc_intel_braswell_config {
 	UINT8  PcdEnableI2C4;
 	UINT8  PcdEnableI2C5;
 	UINT8  PcdEnableI2C6;
-	UINT32 PcdGraphicsConfigPtr;
 	UINT8  PunitPwrConfigDisable;
 	UINT8  ChvSvidConfig;
 	UINT8  DptfDisable;

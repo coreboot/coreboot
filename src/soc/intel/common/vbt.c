@@ -47,5 +47,5 @@ void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params)
 		} else
 			vbt_data = NULL;
 	}
-	params->PcdGraphicsConfigPtr = (u32)vbt_data;
+	params->GraphicsConfigPtr = (u32)vbt_data;
 }

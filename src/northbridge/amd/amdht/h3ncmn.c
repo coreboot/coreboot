@@ -1555,6 +1555,10 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 			} else {
 				temp2 = 0x0;
 			}
+			/* NOTE
+			 * The Family 15h BKDG Rev. 3.14 is wrong
+			 * Freq[4] must be set before Freq[3:0], otherwise the register writes will be ignored!
+			 */
 			if (is_gt_rev_d())
 				AmdPCIWriteBits(linkBase + HTHOST_FREQ_REV_REG_2, 0, 0, &temp2);
 			AmdPCIWriteBits(linkBase + HTHOST_FREQ_REV_REG, 11, 8, &temp);

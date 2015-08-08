@@ -604,6 +604,14 @@ static const struct {
 					   [5] DisPciCfgCpuMstAbtRsp = 1,
 					   [1] SyncFloodOnUsPwDataErr = 1 */
 
+	/* NB Configuration 2 */
+	{ 3, 0x188, AMD_DR_GT_B0, AMD_PTYPE_ALL,
+	  0x00000010, 0x00000010 },	/* EnStpGntOnFlushMaskWakeup = 0x1 */
+
+	/* NB Configuration 2 */
+	{ 3, 0x188, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00000200, 0x00000200 },	/* DisL3HiPriFreeListAlloc = 0x1 */
+
 	/* errata 346 - Fam10 C2, C3
 	 *  System software should set F3x188[22] to 1b. */
 	{ 3, 0x188, AMD_DR_Cx, AMD_PTYPE_ALL,

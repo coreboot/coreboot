@@ -25,6 +25,7 @@
 #include <cpu/x86/msr.h>
 #include <soc/intel/common/romstage.h>
 #include <soc/intel/common/memmap.h>
+#include <soc/gpio.h>
 
 struct ied_header {
 	char signature[10];
@@ -50,6 +51,10 @@ struct smm_relocation_params {
 	 */
 	int smm_save_state_in_msrs;
 };
+
+/* Mainboard handler for GPI SMIs*/
+void mainboard_smi_gpi_handler(const struct gpi_status *sts);
+
 
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 int smm_initialize(void);

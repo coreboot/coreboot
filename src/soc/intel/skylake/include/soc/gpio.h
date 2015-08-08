@@ -28,19 +28,22 @@
 #include <stddef.h>
 #include <soc/gpio_fsp.h>
 
-/* SOC has 8 GPIO communities GPP A~G, GPD */
-#define GPIO_COMMUNITY_MAX		8
-
 typedef uint32_t gpio_t;
 
-/* Clear GPIO SMI Status */
-void gpio_clear_all_smi(void);
+/* Structure to represent GPI status for GPE and SMI. Use helper
+ * functions for interrogating particular GPIs. */
+struct gpi_status {
+	uint32_t grp[GPIO_NUM_GROUPS];
+};
 
-/* Get GPIO SMI Status */
-void gpio_get_smi_status(u32 status[GPIO_COMMUNITY_MAX]);
+/*
+ * Clear GPI SMI status and fill in the structure representing enabled
+ * and set status.
+ */
+void gpi_clear_get_smi_status(struct gpi_status *sts);
 
-/* Enable GPIO SMI  */
-void gpio_enable_all_smi(void);
+/* Return 1 if gpio is set in the gpi_status struct. Otherwise 0. */
+int gpi_status_get(const struct gpi_status *sts, gpio_t gpi);
 
 /*
  * Set the GPIO groups for the GPE blocks. The gpe0_route is interpreted

@@ -210,54 +210,6 @@ void disable_smi(u32 mask)
 	outl(smi_en, ACPI_BASE_ADDRESS + SMI_EN);
 }
 
-
-/*
- * ALT_GP_SMI
- */
-
-/* Clear GPIO SMI status and return events that are enabled and active */
-void reset_alt_smi_status(void)
-{
-	/*Clear GPIO SMI Status*/
-	gpio_clear_all_smi();
-}
-
-/* Print GPIO SMI status bits */
-static u32 print_alt_smi_status(void)
-{
-	u32 alt_sts[GPIO_COMMUNITY_MAX];
-	int gpio_index;
-	/* GPIO Communities GPP_A ~ E support SMI */
-	const char gpiowell[] = {
-		[0] = 'A',
-		[1] = 'B',
-		[2] = 'C',
-		[3] = 'D',
-		[4] = 'E'
-	};
-
-	printk(BIOS_DEBUG, "ALT_STS: ");
-	gpio_get_smi_status(alt_sts);
-	/* GPP_A to GPP_E GPIO has Status and Enable functionality*/
-	for (gpio_index = 0; gpio_index < ARRAY_SIZE(gpiowell);
-		gpio_index++) {
-		printk(BIOS_DEBUG, "GPIO Group_%c\n",
-				gpiowell[gpio_index]);
-		print_gpio_status(alt_sts[gpio_index], 0);
-	}
-
-	printk(BIOS_DEBUG, "\n");
-
-	return 0;
-}
-
-/* Print, clear, and return GPIO SMI status */
-u32 clear_alt_smi_status(void)
-{
-	reset_alt_smi_status();
-	return print_alt_smi_status();
-}
-
 /*
  * TCO
  */

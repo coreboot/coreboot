@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <gpio.h>
@@ -57,6 +58,36 @@ static const struct gpio_community communities[] = {
 	},
 };
 
+static const char *gpio_group_names[GPIO_NUM_GROUPS] = {
+	"GPP_A",
+	"GPP_B",
+	"GPP_C",
+	"GPP_D",
+	"GPP_E",
+	"GPP_F",
+	"GPP_G",
+	"GPD",
+};
+
+static inline size_t gpios_in_community(const struct gpio_community *comm)
+{
+	/* max is inclusive */
+	return comm->max - comm->min + 1;
+}
+
+static inline size_t groups_in_community(const struct gpio_community *comm)
+{
+	size_t n = gpios_in_community(comm) + GPIO_MAX_NUM_PER_GROUP - 1;
+	return n / GPIO_MAX_NUM_PER_GROUP;
+}
+
+static inline int gpio_index_gpd(gpio_t gpio)
+{
+	if (gpio >= GPD0 && gpio <= GPD11)
+		return 1;
+	return 0;
+}
+
 static const struct gpio_community *gpio_get_community(gpio_t pad)
 {
 	size_t i;
@@ -69,6 +100,90 @@ static const struct gpio_community *gpio_get_community(gpio_t pad)
 	}
 
 	return NULL;
+}
+
+static size_t community_clr_get_smi_sts(const struct gpio_community *comm,
+					uint32_t *sts)
+{
+	uint8_t *regs;
+	size_t i;
+	uint32_t *gpi_status_reg;
+	uint32_t *gpi_en_reg;
+	const size_t num_grps = groups_in_community(comm);
+
+	/* Not all groups can be routed to SMI. However, the registers
+	 * read as 0. In order to simplify the logic read everything from
+	 * each community. */
+	regs = pcr_port_regs(comm->port_id);
+	gpi_status_reg = (void *)&regs[GPI_SMI_STS_OFFSET];
+	gpi_en_reg = (void *)&regs[GPI_SMI_EN_OFFSET];
+	for (i = 0; i < num_grps; i++) {
+		sts[i] = read32(gpi_status_reg + i) & read32(gpi_en_reg + i);
+		/* Clear the enabled and set status bits. */
+		write32(gpi_status_reg + i, sts[i]);
+	}
+
+	return num_grps;
+}
+
+static void print_gpi_status(uint32_t status, const char *grp_name)
+{
+	int i;
+
+	if (!status)
+		return;
+
+	for (i = 31; i >= 0; i--) {
+		if (status & (1 << i))
+			printk(BIOS_DEBUG, "%s%d ", grp_name, i);
+	}
+}
+
+void gpi_clear_get_smi_status(struct gpi_status *sts)
+{
+	int i;
+	int do_print;
+	size_t sts_index = 0;
+
+	for (i = 0; i < ARRAY_SIZE(communities); i++) {
+		const struct gpio_community *comm = &communities[i];
+		sts_index += community_clr_get_smi_sts(comm,
+						&sts->grp[sts_index]);
+	}
+
+	do_print = 0;
+	for (i = 0; i < ARRAY_SIZE(sts->grp); i++) {
+		if (sts->grp[i] == 0)
+			continue;
+		do_print = 1;
+		break;
+	}
+
+	if (!do_print)
+		return;
+
+	printk(BIOS_DEBUG, "GPI_SMI_STS: ");
+	for (i = 0; i < ARRAY_SIZE(sts->grp); i++)
+		print_gpi_status(sts->grp[i], gpio_group_names[i]);
+	printk(BIOS_DEBUG, "\n");
+}
+
+int gpi_status_get(const struct gpi_status *sts, gpio_t gpi)
+{
+	const uint32_t *gpi_sts;
+
+	/* Check if valid gpi */
+	if (gpio_get_community(gpi) == NULL)
+		return 0;
+
+	/* If not in GPD group the index is a linear function based on
+	 * GPI number and GPIO_MAX_NUM_PER_GROUP. */
+	if (gpio_index_gpd(gpi))
+		gpi_sts = &sts->grp[GPD];
+	else
+		gpi_sts = &sts->grp[gpi / GPIO_MAX_NUM_PER_GROUP];
+
+	return !!(*gpi_sts & (1 << (gpi % GPIO_MAX_NUM_PER_GROUP)));
 }
 
 void gpio_route_gpe(uint16_t gpe0_route)
@@ -271,134 +386,4 @@ void gpio_set(gpio_t gpio_num, int value)
 	reg |= PAD_FIELD_VAL(GPIOTXSTATE, value);
 	write32(&dw_regs[0], reg);
 	/* GPIO port ids support posted write semantics. */
-}
-
-/* Keep the ordering intact GPP_A ~ G, GPD.
- * As the gpio/smi functions gpio_get_smi_status() and
- * gpio_enable_groupsmi() depends on this ordering.
- */
-static const GPIO_GROUP_INFO gpio_group_info[] = {
-	/* GPP_A */
-	{
-		.community = PID_GPIOCOM0,
-		.padcfgoffset = R_PCH_PCR_GPIO_GPP_A_PADCFG_OFFSET,
-		.padpergroup = V_PCH_GPIO_GPP_A_PAD_MAX,
-		.smistsoffset = R_PCH_PCR_GPIO_GPP_A_SMI_STS,
-		.smienoffset = R_PCH_PCR_GPIO_GPP_A_SMI_EN,
-	},
-	/* GPP_B */
-	{
-		.community = PID_GPIOCOM0,
-		.padcfgoffset = R_PCH_PCR_GPIO_GPP_B_PADCFG_OFFSET,
-		.padpergroup = V_PCH_GPIO_GPP_B_PAD_MAX,
-		.smistsoffset = R_PCH_PCR_GPIO_GPP_B_SMI_STS,
-		.smienoffset = R_PCH_PCR_GPIO_GPP_B_SMI_EN,
-	},
-	/* GPP_C */
-	{
-		.community = PID_GPIOCOM1,
-		.padcfgoffset = R_PCH_PCR_GPIO_GPP_C_PADCFG_OFFSET,
-		.padpergroup = V_PCH_GPIO_GPP_C_PAD_MAX,
-		.smistsoffset = R_PCH_PCR_GPIO_GPP_C_SMI_STS,
-		.smienoffset = R_PCH_PCR_GPIO_GPP_C_SMI_EN,
-	},
-	/* GPP_D */
-	{
-		.community = PID_GPIOCOM1,
-		.padcfgoffset = R_PCH_PCR_GPIO_GPP_D_PADCFG_OFFSET,
-		.padpergroup = V_PCH_GPIO_GPP_D_PAD_MAX,
-		.smistsoffset = R_PCH_PCR_GPIO_GPP_D_SMI_STS,
-		.smienoffset = R_PCH_PCR_GPIO_GPP_D_SMI_EN,
-	},
-	/* GPP_E */
-	{
-		.community = PID_GPIOCOM1,
-		.padcfgoffset = R_PCH_PCR_GPIO_GPP_E_PADCFG_OFFSET,
-		.padpergroup = V_PCH_GPIO_GPP_E_PAD_MAX,
-		.smistsoffset = R_PCH_PCR_GPIO_GPP_E_SMI_STS,
-		.smienoffset = R_PCH_PCR_GPIO_GPP_E_SMI_EN,
-	},
-	/* GPP_F */
-	{
-		.community = PID_GPIOCOM3,
-		.padcfgoffset = R_PCH_PCR_GPIO_GPP_F_PADCFG_OFFSET,
-		.padpergroup = V_PCH_GPIO_GPP_F_PAD_MAX,
-		.smistsoffset = NO_REGISTER_PROPERTY,
-		.smienoffset = NO_REGISTER_PROPERTY,
-	},
-	/* GPP_G */
-	{
-		.community = PID_GPIOCOM3,
-		.padcfgoffset = R_PCH_PCR_GPIO_GPP_G_PADCFG_OFFSET,
-		.padpergroup = V_PCH_GPIO_GPP_G_PAD_MAX,
-		.smistsoffset = NO_REGISTER_PROPERTY,
-		.smienoffset = NO_REGISTER_PROPERTY,
-	},
-	/* GPD */
-	{
-		.community = PID_GPIOCOM2,
-		.padcfgoffset = R_PCH_PCR_GPIO_GPD_PADCFG_OFFSET,
-		.padpergroup = V_PCH_GPIO_GPD_PAD_MAX,
-		.smistsoffset = NO_REGISTER_PROPERTY,
-		.smienoffset = NO_REGISTER_PROPERTY,
-	},
-};
-
-void gpio_clear_all_smi(void)
-{
-	u32 gpiogroupinfolength;
-	u32 gpioindex = 0;
-
-	gpiogroupinfolength = sizeof(gpio_group_info) / sizeof(GPIO_GROUP_INFO);
-
-	for (gpioindex = 0; gpioindex < gpiogroupinfolength; gpioindex++) {
-		/*Check if group has GPI SMI register */
-		if (gpio_group_info[gpioindex].smistsoffset ==
-		    NO_REGISTER_PROPERTY)
-			continue;
-		/* Clear all GPI SMI Status bits by writing '1' */
-		pcr_write32(gpio_group_info[gpioindex].community,
-			    gpio_group_info[gpioindex].smistsoffset,
-			    0xFFFFFFFF);
-	}
-}
-
-void gpio_get_smi_status(u32 status[GPIO_COMMUNITY_MAX])
-{
-	u32 num_of_communities;
-	u32 gpioindex;
-	u32 outputvalue = 0;
-
-	num_of_communities = ARRAY_SIZE(gpio_group_info);
-
-	for (gpioindex = 0; gpioindex < num_of_communities; gpioindex++) {
-		/*Check if group has GPI SMI register */
-		if (gpio_group_info[gpioindex].smistsoffset ==
-		    NO_REGISTER_PROPERTY)
-			continue;
-		/* Read SMI status register */
-		pcr_read32(gpio_group_info[gpioindex].community,
-			   gpio_group_info[gpioindex].smistsoffset,
-			   &outputvalue);
-		status[gpioindex] = outputvalue;
-	}
-}
-
-void gpio_enable_all_smi(void)
-{
-	u32 gpiogroupinfolength;
-	u32 gpioindex = 0;
-
-	gpiogroupinfolength = sizeof(gpio_group_info) / sizeof(GPIO_GROUP_INFO);
-
-	for (gpioindex = 0; gpioindex < gpiogroupinfolength; gpioindex++) {
-		/*Check if group has GPI SMI register */
-		if (gpio_group_info[gpioindex].smienoffset ==
-		    NO_REGISTER_PROPERTY)
-			continue;
-		/* Set all GPI SMI Enable bits by writing '1' */
-		pcr_write32(gpio_group_info[gpioindex].community,
-			    gpio_group_info[gpioindex].smienoffset,
-			    0xFFFFFFFF);
-	}
 }

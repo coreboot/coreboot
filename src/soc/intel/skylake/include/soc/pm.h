@@ -174,10 +174,6 @@ uint32_t clear_smi_status(void);
 void enable_smi(uint32_t mask);
 void disable_smi(uint32_t mask);
 
-/* ALT_GP_SMI */
-uint32_t clear_alt_smi_status(void);
-void reset_alt_smi_status(void);
-
 /* TCO */
 uint32_t clear_tco_status(void);
 void enable_tco_sci(void);

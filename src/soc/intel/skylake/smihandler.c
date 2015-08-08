@@ -351,12 +351,18 @@ static void southbridge_smi_gpe0(void)
 	clear_gpe_status();
 }
 
+void __attribute__((weak))
+mainboard_smi_gpi_handler(const struct gpi_status *sts) { }
+
 static void southbridge_smi_gpi(void)
 {
-	mainboard_smi_gpi(clear_alt_smi_status());
+	struct gpi_status smi_sts;
+
+	gpi_clear_get_smi_status(&smi_sts);
+	mainboard_smi_gpi_handler(&smi_sts);
 
 	/* Clear again after mainboard handler */
-	clear_alt_smi_status();
+	gpi_clear_get_smi_status(&smi_sts);
 }
 
 static void southbridge_smi_mc(void)

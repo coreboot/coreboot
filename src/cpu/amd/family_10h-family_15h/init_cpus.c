@@ -844,8 +844,9 @@ static BOOL AMD_CpuFindCapability(u8 node, u8 cap_count, u8 * offset)
  */
 static u32 AMD_checkLinkType(u8 node, u8 link, u8 regoff)
 {
-	u32 val;
-	u32 linktype = 0;
+	uint32_t val;
+	uint32_t val2;
+	uint32_t linktype = 0;
 
 	/* Check connect, init and coherency */
 	val = pci_read_config32(NODE_PCI(node, 0), regoff + 0x18);
@@ -860,8 +861,13 @@ static u32 AMD_checkLinkType(u8 node, u8 link, u8 regoff)
 	if (linktype) {
 		/* Check gen3 */
 		val = pci_read_config32(NODE_PCI(node, 0), regoff + 0x08);
+		val = (val >> 8) & 0xf;
+		if (is_gt_rev_d()) {
+			val2 = pci_read_config32(NODE_PCI(node, 0), regoff + 0x1c);
+			val |= (val2 & 0x1) << 4;
+		}
 
-		if (((val >> 8) & 0x0F) > 6)
+		if (val > 6)
 			linktype |= HTPHY_LINKTYPE_HT3;
 		else
 			linktype |= HTPHY_LINKTYPE_HT1;
@@ -1146,6 +1152,39 @@ static void cpuSetAMDPCI(u8 node)
 		dword = pci_read_config32(NODE_PCI(node, 3), 0xd4);
 		dword |= 0x1 << 13;			/* MTC1eEn = 1 */
 		pci_write_config32(NODE_PCI(node, 3), 0xd4, dword);
+	}
+
+	if (revision & AMD_FAM15_ALL) {
+		uint32_t f5x80;
+		uint8_t cu_enabled;
+		uint8_t compute_unit_count = 0;
+		uint8_t compute_unit_buffer_count;
+
+		/* Determine the number of active compute units on this node */
+		f5x80 = pci_read_config32(NODE_PCI(node, 5), 0x80);
+		cu_enabled = f5x80 & 0xf;
+		if (cu_enabled == 0x1)
+			compute_unit_count = 1;
+		if (cu_enabled == 0x3)
+			compute_unit_count = 2;
+		if (cu_enabled == 0x7)
+			compute_unit_count = 3;
+		if (cu_enabled == 0xf)
+			compute_unit_count = 4;
+
+		if (compute_unit_count == 1)
+			compute_unit_buffer_count = 0x1c;
+		else if (compute_unit_count == 2)
+			compute_unit_buffer_count = 0x18;
+		else if (compute_unit_count == 3)
+			compute_unit_buffer_count = 0x14;
+		else
+			compute_unit_buffer_count = 0x10;
+
+		dword = pci_read_config32(NODE_PCI(node, 3), 0x1a0);
+		dword &= ~(0x1f << 4);			/* L3FreeListCBC = compute_unit_buffer_count */
+		dword |= (compute_unit_buffer_count << 4);
+		pci_write_config32(NODE_PCI(node, 3), 0x1a0, dword);
 	}
 
 	printk(BIOS_DEBUG, " done\n");

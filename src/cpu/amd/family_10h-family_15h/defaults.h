@@ -518,14 +518,14 @@ static const struct {
 	{ 3, 0x140, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  0x00800756, 0x00F3FFFF },
 
-	{ 3, 0x140, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x00a11755, 0x00f3ffff },
-
 	{ 3, 0x140, AMD_FAM10_ALL, AMD_PTYPE_UMA,
 	  0x00C37756, 0x00F3FFFF },
 
 	{ 3, 0x144, AMD_FAM10_ALL, AMD_PTYPE_UMA,
 	  0x00000036, 0x000000FF },
+
+	{ 3, 0x140, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00a11755, 0x00f3ffff },
 
 	/* Errata 281 Workaround */
 	{ 3, 0x144, ( AMD_DR_B0 | AMD_DR_B1),
@@ -537,6 +537,13 @@ static const struct {
 
 	{ 3, 0x148, AMD_FAM10_ALL, AMD_PTYPE_UMA,
 	  0x8000052A, 0xD5FFFFFF },
+
+	/* Core Interface Buffer Count */
+	{ 3, 0x1a0, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00034004, 0x00037007 },	/* CpuToNbFreeBufCnt = 0x3,
+					   L3ToSriReqCBC = 0x4,
+					   L3FreeListCBC = default,
+					   CpuCmdBufCnt = 0x4 */
 
 	/* ACPI Power State Control Reg1 */
 	{ 3, 0x80, AMD_FAM10_ALL, AMD_PTYPE_ALL,

@@ -977,6 +977,52 @@ static void dump_breakdown(unsigned char *edid)
 }
 
 /*
+ * Lookup table of some well-known modes that can be useful in case the
+ * auto-detected mode is unsuitable.
+ * ha = hdisplay;			va = vdisplay;
+ * hbl = htotal - hdisplay;		vbl = vtotal - vdisplay;
+ * hso = hsync_start - hdsiplay;	vso = vsync_start - vdisplay;
+ * hspw = hsync_end - hsync_start;	vspw = vsync_end - vsync_start;
+ */
+static struct edid_mode known_modes[NUM_KNOWN_MODES] = {
+	[EDID_MODE_640x480_60Hz] = {
+		.name = "640x480@60Hz", .pixel_clock = 25175, .refresh = 60,
+		.ha = 640, .hbl = 160, .hso = 16, .hborder = 96,
+		.va = 480, .vbl = 45, .vso = 10, .vspw = 2,
+		.phsync = '-', .pvsync = '-' },
+	[EDID_MODE_720x480_60Hz] = {
+		.name = "720x480@60Hz", .pixel_clock = 27000, .refresh = 60,
+		.ha = 720, .hbl = 78, .hso = 16, .hborder = 62,
+		.va = 480, .vbl = 45, .vso = 9, .vspw = 6,
+		.phsync = '-', .pvsync = '-' },
+	[EDID_MODE_1280x720_60Hz] = {
+		.name = "1280x720@60Hz", .pixel_clock = 74250, .refresh = 60,
+		.ha = 1280, .hbl = 370, .hso = 110, .hborder = 40,
+		.va = 720, .vbl = 30, .vso = 5, .vspw = 20,
+		.phsync = '+', .pvsync = '+' },
+	[EDID_MODE_1920x1080_60Hz] = {
+		.name = "1920x1080@60Hz", .pixel_clock = 148500, .refresh = 60,
+		.ha = 1920, .hbl = 280, .hso = 88, .hborder = 44,
+		.va = 1080, .vbl = 45, .vso = 4, .vspw = 5,
+		.phsync = '+', .pvsync = '+' },
+};
+
+int set_display_mode(struct edid *edid, enum edid_modes mode)
+{
+	if (mode == EDID_MODE_AUTO)
+		return 0;
+
+	if (edid->mode_is_supported[mode]) {
+		printk(BIOS_DEBUG, "Forcing mode %s\n", known_modes[mode].name);
+		edid->mode = known_modes[mode];
+		return 0;
+	}
+
+	printk(BIOS_ERR, "Requested display mode not supported.\n");
+	return -1;
+}
+
+/*
  * Given a raw edid bloc, decode it into a form
  * that other parts of coreboot can use -- mainly
  * graphics bringup functions. The raw block is
@@ -986,7 +1032,7 @@ static void dump_breakdown(unsigned char *edid)
  */
 int decode_edid(unsigned char *edid, int size, struct edid *out)
 {
-	int analog, i;
+	int analog, i, j;
 	struct edid_context c = {
 	    .has_valid_cvt = 1,
 	    .has_valid_dummy_block = 1,
@@ -1210,6 +1256,14 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			printk(BIOS_SPEW, "  %dx%d@%dHz\n", established_timings[i].x,
 			       established_timings[i].y, established_timings[i].refresh);
 		}
+
+		for (j = 0; j < NUM_KNOWN_MODES; j++) {
+			if (known_modes[j].ha == established_timings[i].x &&
+				known_modes[j].va == established_timings[i].y &&
+				known_modes[j].refresh ==  established_timings[i].refresh)
+					out->mode_is_supported[j] = 1;
+		}
+
 	}
 
 	printk(BIOS_SPEW, "Standard timings supported:\n");
@@ -1245,6 +1299,11 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		refresh = 60 + (b2 & 0x3f);
 
 		printk(BIOS_SPEW, "  %dx%d@%dHz\n", x, y, refresh);
+		for (j = 0; j < NUM_KNOWN_MODES; j++) {
+			if (known_modes[j].ha == x && known_modes[j].va == y &&
+					known_modes[j].refresh == refresh)
+				out->mode_is_supported[j] = 1;
+		}
 	}
 
 	/* detailed timings */

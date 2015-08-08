@@ -21,8 +21,13 @@
 #define EDID_H
 
 enum edid_modes {
-	EDID_MODE_AUTO = 0,
 	EDID_MODE_640x480_60Hz,
+	EDID_MODE_720x480_60Hz,
+	EDID_MODE_1280x720_60Hz,
+	EDID_MODE_1920x1080_60Hz,
+	NUM_KNOWN_MODES,
+
+	EDID_MODE_AUTO
 };
 
 struct edid_mode {
@@ -75,6 +80,7 @@ struct edid {
 	unsigned int panel_bits_per_pixel;
 	/* used to compute timing for graphics chips. */
 	struct edid_mode mode;
+	u8 mode_is_supported[NUM_KNOWN_MODES];
 	unsigned int link_clock;
 	/* 3 variables needed for coreboot framebuffer.
 	 * In most cases, they are the same as the ha
@@ -89,5 +95,6 @@ struct edid {
 /* Defined in src/lib/edid.c */
 int decode_edid(unsigned char *edid, int size, struct edid *out);
 void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr);
+int set_display_mode(struct edid *edid, enum edid_modes mode);
 
 #endif /* EDID_H */

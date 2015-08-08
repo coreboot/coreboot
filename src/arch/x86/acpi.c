@@ -815,6 +815,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_write_xsdt(xsdt, oem_id, oem_table_id);
 
 	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
+	current = (ALIGN(current, 64));
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
 	ALIGN_CURRENT;

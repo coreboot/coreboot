@@ -914,6 +914,7 @@ int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 			   unused void *arg)
 {
 	struct cbfs_file *next;
+	uint8_t *name;
 	uint32_t type, addr, last_addr;
 
 	type = ntohl(entry->type);
@@ -921,6 +922,9 @@ int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 		// Ready to be recycled.
 		type = CBFS_COMPONENT_NULL;
 		entry->type = htonl(type);
+		// Place NUL byte as first byte of name to be viewed as "empty".
+		name = (void *)&entry[1];
+		*name = '\0';
 	}
 	if (type != CBFS_COMPONENT_NULL)
 		return 0;

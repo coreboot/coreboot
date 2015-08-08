@@ -882,7 +882,7 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			break;
 
 		case CBFS_COMPONENT_PAYLOAD:
-			payload  = (struct cbfs_payload_segment *)
+			payload = (struct cbfs_payload_segment *)
 					CBFS_SUBHEADER(entry);
 			while (payload) {
 				struct cbfs_payload_segment seg;

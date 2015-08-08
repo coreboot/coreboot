@@ -34,7 +34,7 @@
 
 #include <libpayload-config.h>
 #include <libpayload.h>
-#if IS_ENABLED(CONFIG_LP_ARCH_X86)
+#if IS_ENABLED(CONFIG_LP_ARCH_X86) && IS_ENABLED(CONFIG_LP_NVRAM)
 #include <arch/rdtsc.h>
 #endif
 

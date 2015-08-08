@@ -32,10 +32,11 @@ ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
 COREBOOT_ROM_DEPENDENCIES+=grub2
 endif
 
+SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \
 			HOSTCC="$(HOSTCC)" \
-			CC=$(word 1,$(CC_x86_32)) CFLAGS="$(patsubst $(word 1,$(CC_x86_32))%,,$(CC_x86_32))" \
+			CC=$(word $(SEABIOS_CC_OFFSET),$(CC_x86_32)) CFLAGS="$(patsubst $(word $(SEABIOS_CC_OFFSET),$(CC_x86_32))%,,$(CC_x86_32))" \
 			LD=$(word 1,$(LD_x86_32)) LDFLAGS="$(patsubst $(word 1,$(LD_x86_32))%,,$(LD_x86_32))" \
 			OBJDUMP="$(OBJDUMP_x86_32)" \
 			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \

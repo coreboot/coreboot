@@ -1755,6 +1755,8 @@ static void detect_and_enable_probe_filter(device_t dev)
 
 		disable_cache();
 		wbinvd();
+
+		/* Enable probe filter */
 		for (i = 0; i < sysconf.nodes; i++) {
 			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
 
@@ -1771,6 +1773,25 @@ static void detect_and_enable_probe_filter(device_t dev)
 			do {
 			} while (!(pci_read_config32(f3x_dev, 0x1d4) & (0x1 << 19)));
 		}
+
+		if (is_fam15h()) {
+			printk(BIOS_DEBUG, "Enabling ATM mode\n");
+
+			/* Enable ATM mode */
+			for (i = 0; i < sysconf.nodes; i++) {
+				device_t f0x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
+				device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+
+				dword = pci_read_config32(f0x_dev, 0x68);
+				dword |= (0x1 << 12);	/* ATMModeEn = 1 */
+				pci_write_config32(f0x_dev, 0x68, dword);
+
+				dword = pci_read_config32(f3x_dev, 0x1b8);
+				dword |= (0x1 << 27);	/* L3ATMModeEn = 1 */
+				pci_write_config32(f3x_dev, 0x1b8, dword);
+			}
+		}
+
 		enable_cache();
 
 		/* Reenable L3 and DRAM scrubbers */

@@ -60,10 +60,10 @@ static void nb_control_init(struct device *dev)
 	pci_write_config32(dev, 0xe0, dword);
 
 	/* Configure northbridge P-states */
-	dword = pci_read_config32(dev, 0xe0);
+	dword = pci_read_config32(dev, 0x170);
 	dword &= ~(0x7 << 9);			/* NbPstateThreshold = compute_unit_count */
 	dword |= (compute_unit_count & 0x7) << 9;
-	pci_write_config32(dev, 0xe0, dword);
+	pci_write_config32(dev, 0x170, dword);
 
 	printk(BIOS_DEBUG, "done.\n");
 }

@@ -1054,6 +1054,12 @@ static void cpuSetAMDPCI(u8 node)
 	uint32_t dword;
 	uint64_t revision;
 
+	/* FIXME
+	 * This should be configurable
+	 */
+	uint8_t sockets = 2;
+	uint8_t sockets_populated = 2;
+
 	printk(BIOS_DEBUG, "cpuSetAMDPCI %02d", node);
 
 	revision = mctGetLogicalCPUID(node);
@@ -1160,6 +1166,15 @@ static void cpuSetAMDPCI(u8 node)
 		uint8_t compute_unit_count = 0;
 		uint8_t compute_unit_buffer_count;
 
+		uint32_t f3xe8;
+		uint8_t dual_node = 0;
+
+		f3xe8 = pci_read_config32(NODE_PCI(0, 3), 0xe8);
+
+		/* Check for dual node capability */
+		if (f3xe8 & 0x20000000)
+			dual_node = 1;
+
 		/* Determine the number of active compute units on this node */
 		f5x80 = pci_read_config32(NODE_PCI(node, 5), 0x80);
 		cu_enabled = f5x80 & 0xf;
@@ -1185,6 +1200,295 @@ static void cpuSetAMDPCI(u8 node)
 		dword &= ~(0x1f << 4);			/* L3FreeListCBC = compute_unit_buffer_count */
 		dword |= (compute_unit_buffer_count << 4);
 		pci_write_config32(NODE_PCI(node, 3), 0x1a0, dword);
+
+		/* Set up the Link to XCS Token Counts */
+		uint8_t isoc_rsp_tok_1;
+		uint8_t isoc_preq_tok_1;
+		uint8_t isoc_req_tok_1;
+		uint8_t probe_tok_1;
+		uint8_t rsp_tok_1;
+		uint8_t preq_tok_1;
+		uint8_t req_tok_1;
+		uint8_t isoc_rsp_tok_0;
+		uint8_t isoc_preq_tok_0;
+		uint8_t isoc_req_tok_0;
+		uint8_t free_tokens;
+		uint8_t probe_tok_0;
+		uint8_t rsp_tok_0;
+		uint8_t preq_tok_0;
+		uint8_t req_tok_0;
+
+		uint8_t link;
+		uint8_t ganged;
+		uint8_t iolink;
+		uint8_t probe_filter_enabled = !!dual_node;
+		for (link = 0; link < 4; link++) {
+			if (AMD_CpuFindCapability(node, link, &offset)) {
+				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170) & 0x1);
+				iolink = (AMD_checkLinkType(node, link, offset) & HTPHY_LINKTYPE_NONCOHERENT);
+
+				/* Set defaults */
+				isoc_rsp_tok_1 = 0;
+				isoc_preq_tok_1 = 0;
+				isoc_req_tok_1 = 0;
+				probe_tok_1 = !ganged;
+				rsp_tok_1 = !ganged;
+				preq_tok_1 = !ganged;
+				req_tok_1 = !ganged;
+				isoc_rsp_tok_0 = 0;
+				isoc_preq_tok_0 = 0;
+				isoc_req_tok_0 = 0;
+				free_tokens = 0;
+				probe_tok_0 = ((ganged)?2:1);
+				rsp_tok_0 = ((ganged)?2:1);
+				preq_tok_0 = ((ganged)?2:1);
+				req_tok_0 = ((ganged)?2:1);
+
+				if (!iolink && ganged) {
+					if (!dual_node) {
+						isoc_rsp_tok_1 = 0;
+						isoc_preq_tok_1 = 0;
+						isoc_req_tok_1 = 0;
+						probe_tok_1 = 0;
+						rsp_tok_1 = 0;
+						preq_tok_1 = 0;
+						req_tok_1 = 0;
+						isoc_rsp_tok_0 = 0;
+						isoc_preq_tok_0 = 0;
+						isoc_req_tok_0 = 1;
+						free_tokens = 3;
+						probe_tok_0 = 2;
+						rsp_tok_0 = 2;
+						preq_tok_0 = 2;
+						req_tok_0 = 2;
+					} else {
+						if ((sockets == 1)
+							|| ((sockets == 2) && (sockets_populated == 1))) {
+							isoc_rsp_tok_1 = 0;
+							isoc_preq_tok_1 = 0;
+							isoc_req_tok_1 = 0;
+							probe_tok_1 = 0;
+							rsp_tok_1 = 0;
+							preq_tok_1 = 0;
+							req_tok_1 = 0;
+							isoc_rsp_tok_0 = 0;
+							isoc_preq_tok_0 = 0;
+							isoc_req_tok_0 = 1;
+							free_tokens = 0;
+							probe_tok_0 = 2;
+							rsp_tok_0 = 2;
+							preq_tok_0 = 2;
+							req_tok_0 = 2;
+						} else if (((sockets == 2) && (sockets_populated == 2))
+							|| ((sockets == 4) && (sockets_populated == 2))) {
+							isoc_rsp_tok_1 = 0;
+							isoc_preq_tok_1 = 0;
+							isoc_req_tok_1 = 0;
+							probe_tok_1 = 0;
+							rsp_tok_1 = 0;
+							preq_tok_1 = 0;
+							req_tok_1 = 0;
+							isoc_rsp_tok_0 = 0;
+							isoc_preq_tok_0 = 0;
+							isoc_req_tok_0 = 1;
+							free_tokens = 0;
+							probe_tok_0 = 1;
+							rsp_tok_0 = 2;
+							preq_tok_0 = 2;
+							req_tok_0 = 2;
+						} else if ((sockets == 4) && (sockets_populated == 4)) {
+							isoc_rsp_tok_1 = 0;
+							isoc_preq_tok_1 = 0;
+							isoc_req_tok_1 = 0;
+							probe_tok_1 = 0;
+							rsp_tok_1 = 0;
+							preq_tok_1 = 0;
+							req_tok_1 = 0;
+							isoc_rsp_tok_0 = 0;
+							isoc_preq_tok_0 = 0;
+							isoc_req_tok_0 = 1;
+							free_tokens = 0;
+							probe_tok_0 = 2;
+							rsp_tok_0 = 1;
+							preq_tok_0 = 1;
+							req_tok_0 = 2;
+						}
+					}
+				} else if (!iolink && !ganged) {
+					if ((sockets == 1)
+						|| ((sockets == 2) && (sockets_populated == 1))) {
+						if (probe_filter_enabled) {
+							isoc_rsp_tok_1 = 0;
+							isoc_preq_tok_1 = 0;
+							isoc_req_tok_1 = 0;
+							probe_tok_1 = 1;
+							rsp_tok_1 = 1;
+							preq_tok_1 = 1;
+							req_tok_1 = 1;
+							isoc_rsp_tok_0 = 0;
+							isoc_preq_tok_0 = 0;
+							isoc_req_tok_0 = 1;
+							free_tokens = 0;
+							probe_tok_0 = 1;
+							rsp_tok_0 = 2;
+							preq_tok_0 = 1;
+							req_tok_0 = 1;
+						} else {
+							isoc_rsp_tok_1 = 0;
+							isoc_preq_tok_1 = 0;
+							isoc_req_tok_1 = 0;
+							probe_tok_1 = 1;
+							rsp_tok_1 = 1;
+							preq_tok_1 = 1;
+							req_tok_1 = 1;
+							isoc_rsp_tok_0 = 0;
+							isoc_preq_tok_0 = 0;
+							isoc_req_tok_0 = 1;
+							free_tokens = 0;
+							probe_tok_0 = 1;
+							rsp_tok_0 = 1;
+							preq_tok_0 = 1;
+							req_tok_0 = 1;
+						}
+					} else if ((sockets == 2) && (sockets_populated == 2)) {
+						isoc_rsp_tok_1 = 0;
+						isoc_preq_tok_1 = 0;
+						isoc_req_tok_1 = 1;
+						probe_tok_1 = 1;
+						rsp_tok_1 = 1;
+						preq_tok_1 = 1;
+						req_tok_1 = 1;
+						isoc_rsp_tok_0 = 0;
+						isoc_preq_tok_0 = 0;
+						isoc_req_tok_0 = 1;
+						free_tokens = 2;
+						probe_tok_0 = 1;
+						rsp_tok_0 = 1;
+						preq_tok_0 = 1;
+						req_tok_0 = 1;
+					} else if ((sockets == 4) && (sockets_populated == 2)) {
+						isoc_rsp_tok_1 = 0;
+						isoc_preq_tok_1 = 0;
+						isoc_req_tok_1 = 1;
+						probe_tok_1 = 1;
+						rsp_tok_1 = 1;
+						preq_tok_1 = 1;
+						req_tok_1 = 1;
+						isoc_rsp_tok_0 = 0;
+						isoc_preq_tok_0 = 0;
+						isoc_req_tok_0 = 1;
+						free_tokens = 4;
+						probe_tok_0 = 1;
+						rsp_tok_0 = 1;
+						preq_tok_0 = 1;
+						req_tok_0 = 1;
+					} else if ((sockets == 4) && (sockets_populated == 4)) {
+						isoc_rsp_tok_1 = 0;
+						isoc_preq_tok_1 = 0;
+						isoc_req_tok_1 = 1;
+						probe_tok_1 = 1;
+						rsp_tok_1 = 1;
+						preq_tok_1 = 1;
+						req_tok_1 = 1;
+						isoc_rsp_tok_0 = 0;
+						isoc_preq_tok_0 = 0;
+						isoc_req_tok_0 = 1;
+						free_tokens = 0;
+						probe_tok_0 = 1;
+						rsp_tok_0 = 1;
+						preq_tok_0 = 1;
+						req_tok_0 = 1;
+					}
+				} else if (iolink && ganged) {
+					if (!dual_node) {
+						isoc_rsp_tok_1 = 0;
+						isoc_preq_tok_1 = 0;
+						isoc_req_tok_1 = 0;
+						probe_tok_1 = 0;
+						rsp_tok_1 = 0;
+						preq_tok_1 = 0;
+						req_tok_1 = 0;
+						isoc_rsp_tok_0 = 0;
+						isoc_preq_tok_0 = 0;
+						isoc_req_tok_0 = 1;
+						free_tokens = 3;
+						probe_tok_0 = 0;
+						rsp_tok_0 = 2;
+						preq_tok_0 = 2;
+						req_tok_0 = 2;
+					} else if ((sockets == 1)
+						|| (sockets == 2)
+						|| ((sockets == 4) && (sockets_populated == 2))) {
+						isoc_rsp_tok_1 = 0;
+						isoc_preq_tok_1 = 0;
+						isoc_req_tok_1 = 0;
+						probe_tok_1 = 0;
+						rsp_tok_1 = 0;
+						preq_tok_1 = 0;
+						req_tok_1 = 0;
+						isoc_rsp_tok_0 = 0;
+						isoc_preq_tok_0 = 0;
+						isoc_req_tok_0 = 1;
+						free_tokens = 0;
+						probe_tok_0 = 0;
+						rsp_tok_0 = 2;
+						preq_tok_0 = 2;
+						req_tok_0 = 2;
+					} else if ((sockets == 4) && (sockets_populated == 4)) {
+						isoc_rsp_tok_1 = 0;
+						isoc_preq_tok_1 = 0;
+						isoc_req_tok_1 = 0;
+						probe_tok_1 = 0;
+						rsp_tok_1 = 0;
+						preq_tok_1 = 0;
+						req_tok_1 = 0;
+						isoc_rsp_tok_0 = 0;
+						isoc_preq_tok_0 = 0;
+						isoc_req_tok_0 = 2;
+						free_tokens = 0;
+						probe_tok_0 = 2;
+						rsp_tok_0 = 2;
+						preq_tok_0 = 2;
+						req_tok_0 = 2;
+					}
+				}
+
+				dword = pci_read_config32(NODE_PCI(node, 3), (link << 2) + 0x148);
+				dword &= ~(0x3 << 30);			/* FreeTok[3:2] = free_tokens[3:2] */
+				dword |= (((free_tokens >> 2) & 0x3) << 30);
+				dword &= ~(0x1 << 28);			/* IsocRspTok1 = isoc_rsp_tok_1 */
+				dword |= (((isoc_rsp_tok_1) & 0x1) << 28);
+				dword &= ~(0x1 << 26);			/* IsocPreqTok1 = isoc_preq_tok_1 */
+				dword |= (((isoc_preq_tok_1) & 0x1) << 26);
+				dword &= ~(0x1 << 24);			/* IsocReqTok1 = isoc_req_tok_1 */
+				dword |= (((isoc_req_tok_1) & 0x1) << 24);
+				dword &= ~(0x3 << 22);			/* ProbeTok1 = probe_tok_1 */
+				dword |= (((probe_tok_1) & 0x3) << 22);
+				dword &= ~(0x3 << 20);			/* RspTok1 = rsp_tok_1 */
+				dword |= (((rsp_tok_1) & 0x3) << 20);
+				dword &= ~(0x3 << 18);			/* PReqTok1 = preq_tok_1 */
+				dword |= (((preq_tok_1) & 0x3) << 18);
+				dword &= ~(0x3 << 16);			/* ReqTok1 = req_tok_1 */
+				dword |= (((req_tok_1) & 0x3) << 16);
+				dword &= ~(0x3 << 14);			/* FreeTok[1:0] = free_tokens[1:0] */
+				dword |= (((free_tokens) & 0x3) << 14);
+				dword &= ~(0x3 << 12);			/* IsocRspTok0 = isoc_rsp_tok_0 */
+				dword |= (((isoc_rsp_tok_0) & 0x3) << 12);
+				dword &= ~(0x3 << 10);			/* IsocPreqTok0 = isoc_preq_tok_0 */
+				dword |= (((isoc_preq_tok_0) & 0x3) << 10);
+				dword &= ~(0x3 << 8);			/* IsocReqTok0 = isoc_req_tok_0 */
+				dword |= (((isoc_req_tok_0) & 0x3) << 8);
+				dword &= ~(0x3 << 6);			/* ProbeTok0 = probe_tok_0 */
+				dword |= (((probe_tok_0) & 0x3) << 6);
+				dword &= ~(0x3 << 4);			/* RspTok0 = rsp_tok_0 */
+				dword |= (((rsp_tok_0) & 0x3) << 4);
+				dword &= ~(0x3 << 2);			/* PReqTok0 = preq_tok_0 */
+				dword |= (((preq_tok_0) & 0x3) << 2);
+				dword &= ~(0x3 << 0);			/* ReqTok0 = req_tok_0 */
+				dword |= (((req_tok_0) & 0x3) << 0);
+				pci_write_config32(NODE_PCI(node, 3), (link << 2) + 0x148, dword);
+			}
+		}
 	}
 
 	printk(BIOS_DEBUG, " done\n");

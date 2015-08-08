@@ -71,6 +71,29 @@ static const struct gpio_community *gpio_get_community(gpio_t pad)
 	return NULL;
 }
 
+void gpio_route_gpe(uint16_t gpe0_route)
+{
+	int i;
+	uint32_t misc_cfg;
+	const uint32_t misc_cfg_reg_mask = GPE_DW_MASK;
+
+	misc_cfg = (uint32_t)gpe0_route << GPE_DW_SHIFT;
+	misc_cfg &= misc_cfg_reg_mask;
+
+	for (i = 0; i < ARRAY_SIZE(communities); i++) {
+		uint8_t *regs;
+		uint32_t reg;
+		const struct gpio_community *comm = &communities[i];
+
+		regs = pcr_port_regs(comm->port_id);
+
+		reg = read32(regs + MISCCFG_OFFSET);
+		reg &= ~misc_cfg_reg_mask;
+		reg |= misc_cfg;
+		write32(regs + MISCCFG_OFFSET, reg);
+	}
+}
+
 static void *gpio_dw_regs(gpio_t pad)
 {
 	const struct gpio_community *comm;

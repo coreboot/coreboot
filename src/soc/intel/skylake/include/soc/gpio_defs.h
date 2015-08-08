@@ -21,6 +21,23 @@
 #define _SOC_GPIO_DEFS_H_
 
 /*
+ * There are 8 GPIO groups. GPP_A -> GPP_G and GPD. GPD is the special case
+ * where that group is not so generic. So most of the fixed numbers and macros
+ * are based on the GPP groups. The GPIO groups are accessed through register
+ * blocks called communities.
+ */
+#define GPP_A			0
+#define GPP_B			1
+#define GPP_C			2
+#define GPP_D			3
+#define GPP_E			4
+#define GPP_F			5
+#define GPP_G			6
+#define GPD			7
+#define GPIO_NUM_GROUPS		8
+#define GPIO_MAX_NUM_PER_GROUP	24
+
+/*
  * GPIOs are ordered monotonically increasing to match ACPI/OS driver.
  */
 
@@ -375,6 +392,12 @@
 #define GPD11_IRQ		0x5b
 
 /* Register defines. */
+#define MISCCFG_OFFSET		0x10
+#define  GPIO_DRIVER_IRQ_ROUTE_MASK	8
+#define  GPIO_DRIVER_IRQ_ROUTE_IRQ14	0
+#define  GPIO_DRIVER_IRQ_ROUTE_IRQ15	8
+#define  GPE_DW_SHIFT		8
+#define  GPE_DW_MASK		0xfff00
 #define PAD_OWN_REG_OFFSET	0x20
 #define  PAD_OWN_PADS_PER	8
 #define  PAD_OWN_WIDTH_PER	4
@@ -476,9 +499,9 @@
 #define  PAD_TERM_667_PU	13
 #define  PAD_TERM_NATIVE	15
 
-#define  MISCCFG_OFFSET			0x10
-#define  GPIO_DRIVER_IRQ_ROUTE_MASK	8
-#define  GPIO_DRIVER_IRQ_ROUTE_IRQ14	0
-#define  GPIO_DRIVER_IRQ_ROUTE_IRQ15	8
+#define GPI_GPE_STS_OFFSET	0x140
+#define GPI_GPE_EN_OFFSET	0x160
+#define GPI_SMI_STS_OFFSET	0x180
+#define GPI_SMI_EN_OFFSET	0x1a0
 
 #endif /* _SOC_GPIO_DEFS_H_ */

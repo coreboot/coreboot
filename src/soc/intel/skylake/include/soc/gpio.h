@@ -43,6 +43,15 @@ void gpio_enable_all_smi(void);
 /* Enable GPIO individual Group SMI  */
 void gpio_enable_groupsmi(gpio_t gpio_num, u32 mask);
 
+/*
+ * Set the GPIO groups for the GPE blocks. The gpe0_route is interpreted
+ * as the packed configuration for GPE0_DW[2:0]:
+ *  dw0 = gpe0_route[3:0]
+ *  dw1 = gpe0_route[7:4]
+ *  dw2 = gpe0_route[11:8].
+ */
+void gpio_route_gpe(uint16_t gpe0_route);
+
 /* Configure the pads according to the pad_config array. */
 struct pad_config;
 void gpio_configure_pads(const struct pad_config *cfgs, size_t num);

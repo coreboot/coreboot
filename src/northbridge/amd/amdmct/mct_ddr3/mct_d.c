@@ -32,6 +32,8 @@
  * supported.
  */
 
+// #define DEBUG_DIMM_SPD 1
+
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
 static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
@@ -168,7 +170,8 @@ static u32 mct_MR1Odt_RDimm(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel);
 static u32 mct_DramTermDyn_RDimm(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dimm);
-static u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat, u8 dct, u32 misc2);
+static u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat,
+					uint8_t dct, uint32_t misc2, uint32_t DramControl);
 static void mct_BeforeDQSTrainSamp(struct DCTStatStruc *pDCTstat);
 static void mct_WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA, uint8_t Pass);
@@ -1366,6 +1369,8 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 static void set_2t_configuration(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct)
 {
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	uint32_t dev;
 	uint32_t reg;
 	uint32_t dword;
@@ -1388,6 +1393,8 @@ static void set_2t_configuration(struct MCTStatStruc *pMCTstat,
 	else
 		dword &= ~(0x1 << 20);		/* Clear 2T CMD mode */
 	Set_NB32_DCT(dev, dct, reg, dword);
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 static void precise_ndelay_fam15(struct MCTStatStruc *pMCTstat, uint32_t nanoseconds) {
@@ -2019,6 +2026,8 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		/* Disable training mode */
 		uint8_t lane;
 		uint8_t dimm;
+		uint16_t max_cdd_we_delta;
+		uint16_t cdd_trwtto_we_delta;
 		uint8_t receiver;
 		uint8_t max_lane;
 		uint8_t ecc_enabled;
@@ -2033,20 +2042,36 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		uint16_t twrwrdd;
 		uint16_t cdd_twrwrdd;
 		uint16_t twrrd;
+		uint16_t cdd_twrrd;
+		uint16_t cdd_trwtto;
 		uint16_t trwtto;
 		uint8_t first_dimm;
 		uint16_t delay;
 		uint16_t delay2;
+		uint8_t min_value;
+		uint8_t write_early;
 		uint8_t read_odt_delay;
 		uint8_t write_odt_delay;
+		uint8_t buffer_data_delay;
+		int16_t latency_difference;
 		uint16_t difference;
 		uint16_t current_total_delay_1[MAX_BYTE_LANES];
 		uint16_t current_total_delay_2[MAX_BYTE_LANES];
+		uint8_t ddr_voltage_index;
+		uint8_t max_dimms_installable;
 
 		/* FIXME
 		 * This should be platform configurable
 		 */
 		uint8_t dimm_event_l_pin_support = 0;
+
+		if (pDCTstat->DIMMValidDCT[dct] == 0)
+			ddr_voltage_index = 1;
+		else
+			ddr_voltage_index = dct_ddr_voltage_index(pDCTstat, dct);
+
+		ddr_voltage_index = dct_ddr_voltage_index(pDCTstat, dct);
+		max_dimms_installable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
 		ecc_enabled = !!(pMCTstat->GStatus & 1 << GSB_ECCDIMMs);
 		if (ecc_enabled)
@@ -2080,6 +2105,24 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 			write_odt_delay = delay - 6;
 		else
 			write_odt_delay = 0;
+
+		dword = (Get_NB32_DCT(dev, dct, 0xa8) >> 24) & 0x3;
+		write_early = dword / 2;
+
+		latency_difference = Get_NB32_DCT(dev, dct, 0x200) & 0x1f;
+		dword = Get_NB32_DCT(dev, dct, 0x20c) & 0x1f;
+		latency_difference -= dword;
+
+		if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+			/* LRDIMM */
+
+			/* TODO
+			 * Implement LRDIMM support
+			 * See Fam15h BKDG Rev. 3.14 section 2.10.5.5
+			 */
+		} else {
+			buffer_data_delay = 0;
+		}
 
 		/* TODO:
 		 * Adjust trdrdsddc if four-rank DIMMs are installed per
@@ -2116,7 +2159,7 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		}
 
 		/* Convert the difference to MEMCLKs */
-		cdd_trdrddd = (((cdd_trdrddd >> 5) & 0x1f) + 1) / 2;
+		cdd_trdrddd = (((cdd_trdrddd + (1 << 6) - 1) >> 6) & 0xf);
 
 		/* Calculate Trdrddd */
 		delay = (read_odt_delay + 3) * 2;
@@ -2162,7 +2205,7 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		}
 
 		/* Convert the difference to MEMCLKs */
-		cdd_twrwrdd = (((cdd_twrwrdd >> 5) & 0x1f) + 1) / 2;
+		cdd_twrwrdd = (((cdd_twrwrdd + (1 << 6) - 1) >> 6) & 0xf);
 
 		/* Calculate Twrwrdd */
 		delay = (write_odt_delay + 3) * 2;
@@ -2180,6 +2223,107 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		dword = Get_NB32_DCT(dev, dct, 0x8c);			/* DRAM Timing High */
 		dword &= ~(0x1 << 18);					/* DisAutoRefresh = 0 */
 		Set_NB32_DCT(dev, dct, 0x8c, dword);			/* DRAM Timing High */
+
+		/* Configure power saving options */
+		dword = Get_NB32_DCT(dev, dct, 0xa8);			/* Dram Miscellaneous 2 */
+		dword |= (0x1 << 22);					/* PrtlChPDEnhEn = 0x1 */
+		dword |= (0x1 << 21);					/* AggrPDEn = 0x1 */
+		Set_NB32_DCT(dev, dct, 0xa8, dword);			/* Dram Miscellaneous 2 */
+
+		/* Configure partial power down delay */
+		dword = Get_NB32(dev, 0x244);				/* DRAM Controller Miscellaneous 3 */
+		dword &= ~0xf;						/* PrtlChPDDynDly = 0x2 */
+		dword |= 0x2;
+		Set_NB32(dev, 0x244, dword);				/* DRAM Controller Miscellaneous 3 */
+
+		/* Configure power save delays */
+		delay = 0xa;
+		delay2 = 0x3;
+
+		/* Family 15h BKDG Table 214 */
+		if ((pDCTstat->Status & (1 << SB_Registered))
+			|| (pDCTstat->Status & (1 << SB_LoadReduced))) {
+			if (memclk_index <= 0x6) {
+				if (ddr_voltage_index < 0x4)
+					/* 1.5 or 1.35V */
+					delay2 = 0x3;
+				else
+					/* 1.25V */
+					delay2 = 0x4;
+			}
+			else if ((memclk_index == 0xa)
+				|| (memclk_index == 0xe))
+				delay2 = 0x4;
+			else if (memclk_index == 0x12)
+				delay2 = 0x5;
+			else if (memclk_index == 0x16)
+				delay2 = 0x6;
+		} else {
+			if (memclk_index <= 0x6)
+				delay2 = 0x3;
+			else if ((memclk_index == 0xa)
+				|| (memclk_index == 0xe))
+				delay2 = 0x4;
+			else if (memclk_index == 0x12)
+				delay2 = 0x5;
+			else if (memclk_index == 0x16)
+				delay2 = 0x6;
+		}
+
+		/* Family 15h BKDG Table 215 */
+		if (memclk_index <= 0x6)
+			delay = 0xa;
+		else if (memclk_index == 0xa)
+			delay = 0xd;
+		else if (memclk_index == 0xe)
+			delay = 0x10;
+		else if (memclk_index == 0x12)
+			delay = 0x14;
+		else if (memclk_index == 0x16)
+			delay = 0x17;
+
+		dword = Get_NB32_DCT(dev, dct, 0x248);			/* Dram Power Management 0 */
+		dword &= ~(0x3f << 24);					/* AggrPDDelay = 0x0 */
+		dword &= ~(0x3f << 16);					/* PchgPDEnDelay = 0x1 */
+		dword |= (0x1 << 16);
+		dword &= ~(0x1f << 8);					/* Txpdll = delay */
+		dword |= ((delay & 0x1f) << 8);
+		dword &= ~0xf;						/* Txp = delay2 */
+		dword |= delay2 & 0xf;
+		Set_NB32_DCT(dev, dct, 0x248, dword);			/* Dram Power Management 0 */
+
+		/* Family 15h BKDG Table 216 */
+		if (memclk_index <= 0x6) {
+			delay = 0x5;
+			delay2 = 0x3;
+		}
+		else if (memclk_index == 0xa) {
+			delay = 0x6;
+			delay2 = 0x3;
+		}
+		else if (memclk_index == 0xe) {
+			delay = 0x7;
+			delay2 = 0x4;
+		}
+		else if (memclk_index == 0x12) {
+			delay = 0x8;
+			delay2 = 0x4;
+		}
+		else if (memclk_index == 0x16) {
+			delay = 0xa;
+			delay2 = 0x5;
+		}
+
+		dword = Get_NB32_DCT(dev, dct, 0x24c);			/* Dram Power Management 1 */
+		dword &= ~(0x3f << 24);					/* Tcksrx = delay */
+		dword |= ((delay & 0x3f) << 24);
+		dword &= ~(0x3f << 16);					/* Tcksre = delay */
+		dword |= ((delay & 0x3f) << 16);
+		dword &= ~(0x3f << 8);					/* Tckesr = delay2 + 1 */
+		dword |= (((delay2 + 1) & 0x3f) << 8);
+		dword &= ~0xf;						/* Tpd = delay2 */
+		dword |= delay2 & 0xf;
+		Set_NB32_DCT(dev, dct, 0x24c, dword);			/* Dram Power Management 1 */
 
 		dword = Get_NB32_DCT(dev, dct, 0x94);			/* DRAM Configuration High */
 		dword |= (0xf << 24);					/* DcqBypassMax = 0xf */
@@ -2233,15 +2377,98 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 			}
 		}
 
-		/* TODO
-		 * Calculate Twrrd per section 2.10.5.5.3 of the Family 15h BKDG
-		 */
-		twrrd = 0xb;
+		/* Calculate the Critical Delay Difference for Twrrd */
+		cdd_twrrd = 0;
+		for (receiver = 0; receiver < 8; receiver += 2) {
+			dimm = (receiver >> 1);
 
-		/* TODO
-		 * Calculate TrwtTO per section 2.10.5.5.4 of the Family 15h BKDG
-		 */
-		trwtto = 0x16;
+			if (!mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, dct, receiver))
+				continue;
+
+			read_dqs_write_timing_control_registers(current_total_delay_1, dev, dct, dimm, index_reg);
+			read_dqs_receiver_enable_control_registers(current_total_delay_2, dev, dct, dimm, index_reg);
+
+			for (lane = 0; lane < max_lane; lane++) {
+				if (current_total_delay_1[lane] > current_total_delay_2[lane])
+					difference = current_total_delay_1[lane] - current_total_delay_2[lane];
+				else
+					difference = current_total_delay_2[lane] - current_total_delay_1[lane];
+
+				if (difference > cdd_twrrd)
+					cdd_twrrd = difference;
+			}
+		}
+
+		/* Convert the difference to MEMCLKs */
+		cdd_twrrd = (((cdd_twrrd + (1 << 6) - 1) >> 6) & 0xf);
+
+		/* Fam15h BKDG section 2.10.5.5.3 */
+		if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+			/* LRDIMM */
+
+			/* TODO
+			 * Implement LRDIMM support
+			 * See Fam15h BKDG Rev. 3.14 section 2.10.5.5
+			 */
+			twrrd = 0xb;
+		} else {
+			max_cdd_we_delta = (((int16_t)cdd_twrrd + 1 - ((int16_t)write_early * 2)) + 1) / 2;
+			if (max_cdd_we_delta < 0)
+				max_cdd_we_delta = 0;
+			if (((uint16_t)max_cdd_we_delta) > write_odt_delay)
+				dword = max_cdd_we_delta;
+			else
+				dword = write_odt_delay;
+			dword += 3;
+			if (latency_difference < dword) {
+				dword -= latency_difference;
+				if (dword < 1)
+					twrrd = 1;
+				else
+					twrrd = dword;
+			} else {
+				twrrd = 1;
+			}
+		}
+
+		/* Calculate the Critical Delay Difference for TrwtTO */
+		cdd_trwtto = 0;
+		for (receiver = 0; receiver < 8; receiver += 2) {
+			dimm = (receiver >> 1);
+
+			if (!mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, dct, receiver))
+				continue;
+
+			read_dqs_receiver_enable_control_registers(current_total_delay_1, dev, dct, dimm, index_reg);
+			read_dqs_write_timing_control_registers(current_total_delay_2, dev, dct, dimm, index_reg);
+
+			for (lane = 0; lane < max_lane; lane++) {
+				if (current_total_delay_1[lane] > current_total_delay_2[lane])
+					difference = current_total_delay_1[lane] - current_total_delay_2[lane];
+				else
+					difference = current_total_delay_2[lane] - current_total_delay_1[lane];
+
+				if (difference > cdd_trwtto)
+					cdd_trwtto = difference;
+			}
+		}
+
+		/* Convert the difference to MEMCLKs */
+		cdd_trwtto = (((cdd_trwtto + (1 << 6) - 1) >> 6) & 0xf);
+
+		/* Fam15h BKDG section 2.10.5.5.4 */
+		if (max_dimms_installable == 1)
+			min_value = 0;
+		else
+			min_value = read_odt_delay + buffer_data_delay;
+		cdd_trwtto_we_delta = (((int16_t)cdd_trwtto - 1 + ((int16_t)write_early * 2)) + 1) / 2;
+		cdd_trwtto_we_delta += latency_difference + 3;
+		if (cdd_trwtto_we_delta < 0)
+			cdd_trwtto_we_delta = 0;
+		if ((cdd_trwtto_we_delta) > min_value)
+			trwtto = cdd_trwtto_we_delta;
+		else
+			trwtto = min_value;
 
 		dword = Get_NB32_DCT(dev, dct, 0xa4);			/* DRAM Controller Temperature Throttle */
 		dword &= ~(0x1 << 11);					/* BwCapEn = 0 */
@@ -2252,28 +2479,13 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		dword = Get_NB32_DCT(dev, dct, 0x110);			/* DRAM Controller Select Low */
 		dword &= ~(0x1 << 2);					/* DctSelIntLvEn = interleave_channels */
 		dword |= (interleave_channels & 0x1) << 2;
+		dword |= (0x3 << 6);					/* DctSelIntLvAddr = 0x3 */
 		Set_NB32_DCT(dev, dct, 0x110, dword);			/* DRAM Controller Select Low */
 
 		/* NOTE
 		 * ECC-related setup is performed as part of ECCInit_D and must not be located here,
 		 * otherwise semi-random lockups will occur due to misconfigured scrubbing hardware!
 		 */
-
-		/* FIXME
-		 * The BKDG-recommended settings cause memory corruption on the ASUS KGPE-D16.
-		 * Investigate and fix...
-		 */
-#if 0
-		/* Fam15h BKDG section 2.10.5.5.1 */
-		dword = Get_NB32_DCT(dev, dct, 0x218);			/* DRAM Timing 5 */
-		dword &= ~(0xf << 24);					/* TrdrdSdSc = 0x1 */
-		dword |= (0x1 << 24);
-		dword &= ~(0xf << 16);					/* TrdrdSdDc = trdrdsddc */
-		dword |= ((trdrdsddc & 0xf) << 16);
-		dword &= ~(0xf);					/* TrdrdDd = trdrddd */
-		dword |= (trdrddd & 0xf);
-		Set_NB32_DCT(dev, dct, 0x218, dword);			/* DRAM Timing 5 */
-#endif
 
 		/* Fam15h BKDG section 2.10.5.5.2 */
 		dword = Get_NB32_DCT(dev, dct, 0x214);			/* DRAM Timing 4 */
@@ -2287,8 +2499,14 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 
 		/* Fam15h BKDG section 2.10.5.5.3 */
 		dword = Get_NB32_DCT(dev, dct, 0x218);			/* DRAM Timing 5 */
+		dword &= ~(0xf << 24);					/* TrdrdSdSc = 0x1 */
+		dword |= (0x1 << 24);
+		dword &= ~(0xf << 16);					/* TrdrdSdDc = trdrdsddc */
+		dword |= ((trdrdsddc & 0xf) << 16);
 		dword &= ~(0xf << 8);					/* Twrrd = twrrd */
 		dword |= ((twrrd & 0xf) << 8);
+		dword &= ~(0xf);					/* TrdrdDd = trdrddd */
+		dword |= (trdrddd & 0xf);
 		Set_NB32_DCT(dev, dct, 0x218, dword);			/* DRAM Timing 5 */
 
 		/* Fam15h BKDG section 2.10.5.5.4 */
@@ -2298,12 +2516,6 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		dword &= ~(0x1f << 16);					/* TrwtWB = TrwtTO + 1 */
 		dword |= ((((dword >> 8) & 0x1f) + 1) << 16);
 		Set_NB32_DCT(dev, dct, 0x21c, dword);			/* DRAM Timing 6 */
-
-		/* Configure partial power down delay */
-		dword = Get_NB32(dev, 0x244);				/* DRAM Controller Miscellaneous 3 */
-		dword &= ~0xf;						/* PrtlChPDDynDly = 0x2 */
-		dword |= 0x2;
-		Set_NB32(dev, 0x244, dword);				/* DRAM Controller Miscellaneous 3 */
 
 		/* Enable prefetchers */
 		dword = Get_NB32(dev, 0x11c);				/* Memory Controller Configuration High */
@@ -2392,6 +2604,8 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 		}
 
 		mct_TrainDQSPos_D(pMCTstat, pDCTstatA);
+
+		TrainMaxRdLatency_En_D(pMCTstat, pDCTstatA);
 
 		if (is_fam15h())
 			exit_training_mode_fam15(pMCTstat, pDCTstatA);
@@ -2971,6 +3185,13 @@ static void ClearDCT_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	while(reg < reg_end) {
+		if ((reg & 0xFF) == 0x84) {
+			if (is_fam15h()) {
+				val = Get_NB32_DCT(dev, dct, reg);
+				val &= ~(0x1 << 23);	/* Clear PchgPDModeSel */
+				val &= ~0x3;		/* Clear BurstCtrl */
+			}
+		}
 		if ((reg & 0xFF) == 0x90) {
 			if (pDCTstat->LogicalCPUID & AMD_DR_Dx) {
 				val = Get_NB32_DCT(dev, dct, reg); /* get DRAMConfigLow */
@@ -3089,14 +3310,30 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 
 	/* Convert  DRAM CycleTiming values and store into DCT structure */
 	byte = pDCTstat->DIMMAutoSpeed;
-	if (byte == 7)
-		tCK16x = 20;
-	else if (byte == 6)
-		tCK16x = 24;
-	else if (byte == 5)
-		tCK16x = 30;
-	else
-		tCK16x = 40;
+	if (is_fam15h()) {
+		if (byte == 0x16)
+			tCK16x = 17;
+		else if (byte == 0x12)
+			tCK16x = 20;
+		else if (byte == 0xe)
+			tCK16x = 24;
+		else if (byte == 0xa)
+			tCK16x = 30;
+		else if (byte == 0x6)
+			tCK16x = 40;
+		else
+			tCK16x = 48;
+	}
+	else {
+		if (byte == 7)
+			tCK16x = 20;
+		else if (byte == 6)
+			tCK16x = 24;
+		else if (byte == 5)
+			tCK16x = 30;
+		else
+			tCK16x = 40;
+	}
 
 	/* Notes:
 	 1. All secondary time values given in SPDs are in binary with units of ns.
@@ -3129,7 +3366,7 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 		val = Max_TrpT;
 	pDCTstat->Trp = val;
 
-	/*Trrd*/
+	/* Trrd */
 	pDCTstat->DIMMTrrd = Trrd;
 	val = Trrd / tCK16x;
 	if (Trrd % tCK16x) {	/* round up number of busclocks */
@@ -3247,21 +3484,31 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 
 		dword = Get_NB32_DCT(dev, dct, 0x200);				/* DRAM Timing 0 */
 		dword &= ~(0x3f1f1f1f);
-		dword |= ((pDCTstat->Tras + 0xf) & 0x3f) << 24;			/* Tras */
-		dword |= ((pDCTstat->Trp + 0x5) & 0x1f) << 16;			/* Trp */
-		dword |= ((pDCTstat->Trcd + 0x5) & 0x1f) << 8;			/* Trcd */
+		dword |= (pDCTstat->Tras & 0x3f) << 24;				/* Tras */
+		val = pDCTstat->Trp;
+		val = mct_AdjustSPDTimings(pMCTstat, pDCTstat, val);
+		dword |= (val & 0x1f) << 16;					/* Trp */
+		dword |= (pDCTstat->Trcd & 0x1f) << 8;				/* Trcd */
 		dword |= (pDCTstat->CASL & 0x1f);				/* Tcl */
 		Set_NB32_DCT(dev, dct, 0x200, dword);				/* DRAM Timing 0 */
 
 		dword = Get_NB32_DCT(dev, dct, 0x204);				/* DRAM Timing 1 */
 		dword &= ~(0x0f3f0f3f);
-		dword |= ((pDCTstat->Trtp + 0x4) & 0xf) << 24;			/* Trtp */
-		if (pDCTstat->Tfaw != 0)
-			dword |= ((((pDCTstat->Tfaw - 0x1) * 2) + 0x10) & 0x3f) << 16;	/* FourActWindow */
-		dword |= ((pDCTstat->Trrd + 0x4) & 0xf) << 8;			/* Trrd */
-		dword |= ((pDCTstat->Trc + 0xb) & 0x3f);			/* Trc */
+		dword |= (pDCTstat->Trtp & 0xf) << 24;				/* Trtp */
+		if (pDCTstat->Tfaw != 0) {
+			val = pDCTstat->Tfaw;
+			val = mct_AdjustSPDTimings(pMCTstat, pDCTstat, val);
+			if ((val > 0x5) && (val < 0x2b))
+				dword |= (val & 0x3f) << 16;			/* FourActWindow */
+		}
+		dword |= (pDCTstat->Trrd & 0xf) << 8;				/* Trrd */
+		dword |= (pDCTstat->Trc & 0x3f);				/* Trc */
 		Set_NB32_DCT(dev, dct, 0x204, dword);				/* DRAM Timing 1 */
 
+		/* Trfc0-Trfc3 */
+		for (i=0; i<4; i++)
+			if (pDCTstat->Trfc[i] == 0x0)
+				pDCTstat->Trfc[i] = 0x4;
 		dword = Get_NB32_DCT(dev, dct, 0x208);				/* DRAM Timing 2 */
 		dword &= ~(0x07070707);
 		dword |= (pDCTstat->Trfc[3] & 0x7) << 24;			/* Trfc3 */
@@ -3272,14 +3519,14 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 
 		dword = Get_NB32_DCT(dev, dct, 0x20c);				/* DRAM Timing 3 */
 		dword &= ~(0x00000f00);
-		dword |= ((pDCTstat->Twtr + 0x4) & 0xf) << 8;			/* Twtr */
+		dword |= (pDCTstat->Twtr & 0xf) << 8;				/* Twtr */
 		dword &= ~(0x0000001f);
 		dword |= (Tcwl & 0x1f);						/* Tcwl */
 		Set_NB32_DCT(dev, dct, 0x20c, dword);				/* DRAM Timing 3 */
 
 		dword = Get_NB32_DCT(dev, dct, 0x22c);				/* DRAM Timing 10 */
 		dword &= ~(0x0000001f);
-		dword |= ((pDCTstat->Twr + 0x4) & 0x1f);			/* Twr */
+		dword |= (pDCTstat->Twr & 0x1f);				/* Twr */
 		Set_NB32_DCT(dev, dct, 0x22c, dword);				/* DRAM Timing 10 */
 
 		if (pDCTstat->Speed > mhz_to_memclk_config(mctGet_NVbits(NV_MIN_MEMCLK))) {
@@ -3875,6 +4122,8 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 		}
 	}
 
+	DramConfigMisc2 = mct_SetDramConfigMisc2(pDCTstat, dct, DramConfigMisc2, DramControl);
+
 	printk(BIOS_DEBUG, "AutoConfig_D: DramControl:     %08x\n", DramControl);
 	printk(BIOS_DEBUG, "AutoConfig_D: DramTimingLo:    %08x\n", DramTimingLo);
 	printk(BIOS_DEBUG, "AutoConfig_D: DramConfigMisc:  %08x\n", DramConfigMisc);
@@ -3886,7 +4135,6 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	Set_NB32_DCT(dev, dct, 0x78, DramControl);
 	Set_NB32_DCT(dev, dct, 0x88, DramTimingLo);
 	Set_NB32_DCT(dev, dct, 0xa0, DramConfigMisc);
-	DramConfigMisc2 = mct_SetDramConfigMisc2(pDCTstat, dct, DramConfigMisc2);
 	Set_NB32_DCT(dev, dct, 0xa8, DramConfigMisc2);
 	Set_NB32_DCT(dev, dct, 0x90, DramConfigLo);
 	ProgDramMRSReg_D(pMCTstat, pDCTstat, dct);
@@ -5257,6 +5505,16 @@ static void mct_PhyController_Config(struct MCTStatStruc *pMCTstat,
 	u32 dev = pDCTstat->dev_dct;
 
 	if (pDCTstat->LogicalCPUID & (AMD_DR_DAC2_OR_C3 | AMD_RB_C3 | AMD_FAM15_ALL)) {
+		if (is_fam15h()) {
+			/* Set F2x[1, 0]98_x0D0F0F13 DllDisEarlyU and DllDisEarlyL to save power */
+			for (index = 0; index < 0x9; index++) {
+				dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0013 | (index << 8));
+				dword |= (0x1 << 1);				/* DllDisEarlyU = 1 */
+				dword |= 0x1;					/* DllDisEarlyL = 1 */
+				Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0013 | (index << 8), dword);
+			}
+		}
+
 		if (pDCTstat->Dimmx4Present == 0) {
 			/* Set bit7 RxDqsUDllPowerDown to register F2x[1, 0]98_x0D0F0F13 for
 			 * additional power saving when x4 DIMMs are not present.
@@ -5301,8 +5559,9 @@ static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
 				mct_ExtMCTConfig_Dx(pDCTstat);
 			} else {
 				/* Family 15h CPUs */
-				val = 0x0ce00f00 | 0x1 << 29;	/* FlushWrOnStpGnt */
-				val |= 0x10 << 2;		/* MctWrLimit = 16 */
+				val = 0x0ce00f00;		/* FlushWrOnStpGnt = 0x0 */
+				val |= 0x10 << 2;		/* MctWrLimit = 0x10 */
+				val |= 0x1;			/* DctWrLimit = 0x1 */
 				Set_NB32(pDCTstat->dev_dct, 0x11c, val);
 
 				val = Get_NB32(pDCTstat->dev_dct, 0x1b0);
@@ -6543,8 +6802,8 @@ void ProgDramMRSReg_D(struct MCTStatStruc *pMCTstat,
 
 	dword = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x84);
 	if (is_fam15h()) {
-		dword |= DramMRS;
 		dword &= ~0x00800003;
+		dword |= DramMRS;
 	} else {
 		dword &= ~0x00fc2f8f;
 		dword |= DramMRS;

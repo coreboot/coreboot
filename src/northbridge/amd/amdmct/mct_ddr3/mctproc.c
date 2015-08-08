@@ -15,7 +15,8 @@
  */
 
 /* mct_SetDramConfigMisc2_Cx & mct_SetDramConfigMisc2_Dx */
-u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat, u8 dct, u32 misc2)
+u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat,
+				uint8_t dct, uint32_t misc2, uint32_t DramControl)
 {
 	u32 val;
 
@@ -24,17 +25,47 @@ u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat, u8 dct, u32 misc2)
 	if (pDCTstat->LogicalCPUID & AMD_FAM15_ALL) {
 		uint8_t cs_mux_45;
 		uint8_t cs_mux_67;
+		uint32_t f2x80;
 
-		/* BKDG v3.14 Table 200 / Table 201 */
-		if (MaxDimmsInstallable < 3) {
-			cs_mux_45 = 1;
-			cs_mux_67 = 1;
-		} else {
+		misc2 &= ~(0x1 << 28);			/* FastSelfRefEntryDis = 0x0 */
+		if (MaxDimmsInstallable == 3) {
+			/* FIXME 3 DIMMS per channel unimplemented */
 			cs_mux_45 = 0;
+		} else {
+			uint32_t f2x60 = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x60);
+			f2x80 = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x80);
+			if ((((f2x80 & 0xf) == 0x7) || ((f2x80 & 0xf) == 0x9))
+				&& ((f2x60 & 0x3) == 0x3))
+				cs_mux_45 = 1;
+			else if ((((f2x80 & 0xa) == 0x7) || ((f2x80 & 0xb) == 0x9))
+				&& ((f2x60 & 0x3) > 0x1))
+				cs_mux_45 = 1;
+			else
+				cs_mux_45 = 0;
+		}
+
+		if (MaxDimmsInstallable == 1) {
+			cs_mux_67 = 0;
+		} else if (MaxDimmsInstallable == 2) {
+			uint32_t f2x64 = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x64);
+			f2x80 = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x80);
+			if (((((f2x80 >> 4) & 0xf) == 0x7) || (((f2x80 >> 4) & 0xf) == 0x9))
+				&& ((f2x64 & 0x3) == 0x3))
+				cs_mux_67 = 1;
+			else if (((((f2x80 >> 4) & 0xa) == 0x7) || (((f2x80 >> 4) & 0xb) == 0x9))
+				&& ((f2x64 & 0x3) > 0x1))
+				cs_mux_67 = 1;
+			else
+				cs_mux_67 = 0;
+		} else {
+			/* FIXME 3 DIMMS per channel unimplemented */
 			cs_mux_67 = 0;
 		}
-		misc2 |= (cs_mux_45 & 0x1) << 26;
-		misc2 |= (cs_mux_67 & 0x1) << 27;
+
+		misc2 &= ~(0x1 << 27);		/* CsMux67 = cs_mux_67 */
+		misc2 |= ((cs_mux_67 & 0x1) << 27);
+		misc2 &= ~(0x1 << 26);		/* CsMux45 = cs_mux_45 */
+		misc2 |= ((cs_mux_45 & 0x1) << 26);
 	} else if (pDCTstat->LogicalCPUID & (AMD_DR_Dx | AMD_DR_Cx)) {
 		if (pDCTstat->Status & (1 << SB_Registered)) {
 			misc2 |= 1 << SubMemclkRegDly;
@@ -46,8 +77,8 @@ u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat, u8 dct, u32 misc2)
 
 		if (pDCTstat->LogicalCPUID & AMD_DR_Cx)
 			misc2 |= 1 << OdtSwizzle;
-		val = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x78);
 
+		val = DramControl;
 		val &= 7;
 		val = ((~val) & 0xff) + 1;
 		val += 6;

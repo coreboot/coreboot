@@ -168,6 +168,8 @@ static void EnterSelfRefresh(struct MCTStatStruc *pMCTstat,
 static void ChangeMemClk(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat)
 {
+	printk(BIOS_DEBUG, "%s: Start\n", __func__);
+
 	uint8_t DCT0Present;
 	uint8_t DCT1Present;
 	uint32_t dword;
@@ -309,6 +311,8 @@ static void ChangeMemClk(struct MCTStatStruc *pMCTstat,
 			mct_Wait(15000);	/* Wait for 750us */
 		}
 	}
+
+	printk(BIOS_DEBUG, "%s: Done\n", __func__);
 }
 
 /*

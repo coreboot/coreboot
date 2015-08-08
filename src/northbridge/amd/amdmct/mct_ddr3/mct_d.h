@@ -984,6 +984,7 @@ void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat
 uint64_t mctGetLogicalCPUID(u32 Node);
 u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void TrainReceiverEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u8 Pass);
+void TrainMaxRdLatency_En_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void mct_TrainDQSPos_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void mctSetEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void TrainMaxReadLatency_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);

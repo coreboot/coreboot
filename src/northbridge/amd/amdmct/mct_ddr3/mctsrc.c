@@ -541,9 +541,8 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 	u32 dev;
 	u32 index_reg;
 	u32 ch_start, ch_end, ch;
-	u32 msr;
+	msr_t msr;
 	u32 cr4;
-	u32 lo, hi;
 
 	uint32_t dword;
 	uint8_t dimm;
@@ -594,15 +593,14 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 	cr4 |= (1 << 9);	/* OSFXSR enable SSE2 */
 	write_cr4(cr4);
 
-	msr = HWCR;
-	_RDMSR(msr, &lo, &hi);
+	msr = rdmsr(HWCR);
 	/* FIXME: Why use SSEDIS */
-	if(lo & (1 << 17)) {	/* save the old value */
+	if(msr.lo & (1 << 17)) {	/* save the old value */
 		_Wrap32Dis = 1;
 	}
-	lo |= (1 << 17);	/* HWCR.wrap32dis */
-	lo &= ~(1 << 15);	/* SSEDIS */
-	_WRMSR(msr, lo, hi);	/* Setting wrap32dis allows 64-bit memory references in real mode */
+	msr.lo |= (1 << 17);	/* HWCR.wrap32dis */
+	msr.lo &= ~(1 << 15);	/* SSEDIS */
+	wrmsr(HWCR, msr);	/* Setting wrap32dis allows 64-bit memory references in real mode */
 
 	_DisableDramECC = mct_DisableDimmEccEn_D(pMCTstat, pDCTstat);
 
@@ -935,10 +933,9 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 	}
 
 	if(!_Wrap32Dis) {
-		msr = HWCR;
-		_RDMSR(msr, &lo, &hi);
-		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
-		_WRMSR(msr, lo, hi);
+		msr = rdmsr(HWCR);
+		msr.lo &= ~(1<<17);	/* restore HWCR.wrap32dis */
+		wrmsr(HWCR, msr);
 	}
 	if(!_SSE2){
 		cr4 = read_cr4();
@@ -1420,7 +1417,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	}
 
 	/* Calculate and program MaxRdLatency */
-	Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, Channel);
+	Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, Channel, 0);
 
 	if(_DisableDramECC) {
 		mct_EnableDimmEccEn_D(pMCTstat, pDCTstat, _DisableDramECC);
@@ -1481,6 +1478,199 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	printk(BIOS_DEBUG, "TrainRcvrEn: ErrStatus %x\n", pDCTstat->ErrStatus);
 	printk(BIOS_DEBUG, "TrainRcvrEn: ErrCode %x\n", pDCTstat->ErrCode);
 	printk(BIOS_DEBUG, "TrainRcvrEn: Done\n\n");
+}
+
+static void write_max_read_latency_to_registers(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, uint8_t dct, uint16_t latency)
+{
+	uint32_t dword;
+	uint8_t nb_pstate;
+
+	for (nb_pstate = 0; nb_pstate < 2; nb_pstate++) {
+		dword = Get_NB32_DCT_NBPstate(pDCTstat->dev_dct, dct, nb_pstate, 0x210);
+		dword &= ~(0x3ff << 22);
+		dword |= ((latency & 0x3ff) << 22);
+		Set_NB32_DCT_NBPstate(pDCTstat->dev_dct, dct, nb_pstate, 0x210, dword);
+	}
+}
+
+/* DQS MaxRdLatency Training (Family 15h)
+ * Algorithm detailed in:
+ * The Fam15h BKDG Rev. 3.14 section 2.10.5.8.5.1
+ * This algorithm runs at the highest supported MEMCLK.
+ */
+static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat)
+{
+	u8 Channel;
+	u8 Addl_Index = 0;
+	u8 Receiver;
+	u8 _DisableDramECC = 0, _Wrap32Dis = 0, _SSE2 = 0;
+	u32 Errors;
+
+	u32 dev;
+	u32 index_reg;
+	u32 ch_start, ch_end;
+	u32 msr;
+	u32 cr4;
+	u32 lo, hi;
+
+	uint32_t dword;
+	uint8_t dimm;
+	uint8_t lane;
+	uint8_t mem_clk;
+	uint32_t nb_clk;
+	uint8_t nb_pstate;
+	uint16_t current_total_delay[MAX_BYTE_LANES];
+	uint16_t current_rdqs_total_delay[MAX_BYTE_LANES];
+	uint8_t current_worst_case_total_delay_dimm;
+	uint16_t current_worst_case_total_delay_value;
+
+	uint16_t fam15h_freq_tab[] = {0, 0, 0, 0, 333, 0, 400, 0, 0, 0, 533, 0, 0, 0, 667, 0, 0, 0, 800, 0, 0, 0, 933};
+
+	print_debug_dqs("\nTrainMaxRdLatency: Node", pDCTstat->Node_ID, 0);
+
+	dev = pDCTstat->dev_dct;
+	index_reg = 0x98;
+	ch_start = 0;
+	ch_end = 2;
+
+	cr4 = read_cr4();
+	if(cr4 & ( 1 << 9)) {	/* save the old value */
+		_SSE2 = 1;
+	}
+	cr4 |= (1 << 9);	/* OSFXSR enable SSE2 */
+	write_cr4(cr4);
+
+	msr = HWCR;
+	_RDMSR(msr, &lo, &hi);
+	/* FIXME: Why use SSEDIS */
+	if(lo & (1 << 17)) {	/* save the old value */
+		_Wrap32Dis = 1;
+	}
+	lo |= (1 << 17);	/* HWCR.wrap32dis */
+	lo &= ~(1 << 15);	/* SSEDIS */
+	_WRMSR(msr, lo, hi);	/* Setting wrap32dis allows 64-bit memory references in real mode */
+
+	_DisableDramECC = mct_DisableDimmEccEn_D(pMCTstat, pDCTstat);
+
+	Errors = 0;
+	dev = pDCTstat->dev_dct;
+
+	for (Channel = 0; Channel < 2; Channel++) {
+		print_debug_dqs("\tTrainMaxRdLatency51: Node ", pDCTstat->Node_ID, 1);
+		print_debug_dqs("\tTrainMaxRdLatency51: Channel ", Channel, 1);
+		pDCTstat->Channel = Channel;
+
+		if (pDCTstat->DIMMValidDCT[Channel] == 0)
+			continue;
+
+		mem_clk = Get_NB32_DCT(dev, Channel, 0x94) & 0x1f;
+
+		Receiver = mct_InitReceiver_D(pDCTstat, Channel);
+
+		/* Find DIMM with worst case receiver enable delays */
+		current_worst_case_total_delay_dimm = 0;
+		current_worst_case_total_delay_value = 0;
+
+		/* There are four receiver pairs, loosely associated with chipselects.
+		 * This is essentially looping over each DIMM.
+		 */
+		for (; Receiver < 8; Receiver += 2) {
+			Addl_Index = (Receiver >> 1) * 3 + 0x10;
+			dimm = (Receiver >> 1);
+
+			print_debug_dqs("\t\tTrainMaxRdLatency52: index ", Addl_Index, 2);
+
+			if (!mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, Channel, Receiver)) {
+				continue;
+			}
+
+			/* Retrieve the total delay values from pass 1 of DQS receiver enable training */
+			read_dqs_receiver_enable_control_registers(current_total_delay, dev, Channel, dimm, index_reg);
+			read_read_dqs_timing_control_registers(current_rdqs_total_delay, dev, Channel, dimm, index_reg);
+
+			for (lane = 0; lane < 8; lane++) {
+				current_total_delay[lane] += current_rdqs_total_delay[lane];
+				if (current_total_delay[lane] > current_worst_case_total_delay_value) {
+					current_worst_case_total_delay_dimm = dimm;
+					current_worst_case_total_delay_value = current_total_delay[lane];
+				}
+			}
+
+#if DQS_TRAIN_DEBUG > 0
+			for (lane = 0; lane < 8; lane++)
+				print_debug_dqs_pair("\t\tTrainMaxRdLatency56: Lane ", lane, " current_total_delay ", current_total_delay[lane], 2);
+#endif
+		}
+
+		/* 2.10.5.8.5.1.1 */
+		Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, Channel, 1);
+
+		/* 2.10.5.8.5.1.[2,3]
+		 * Write the DRAM training pattern to the test address
+		 */
+		write_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, Channel, current_worst_case_total_delay_dimm << 1, 0xff);
+
+		/* 2.10.5.8.5.1.4
+		 * Incrementally test each MaxRdLatency candidate
+		 */
+		for (; pDCTstat->CH_MaxRdLat[Channel] < 0x3ff; pDCTstat->CH_MaxRdLat[Channel]++) {
+			write_max_read_latency_to_registers(pMCTstat, pDCTstat, Channel, pDCTstat->CH_MaxRdLat[Channel]);
+			read_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, Channel, current_worst_case_total_delay_dimm << 1, 0xff);
+			dword = Get_NB32_DCT(dev, Channel, 0x268) & 0x3ffff;
+			if (!dword)
+				break;
+			Set_NB32_index_wait_DCT(dev, Channel, index_reg, 0x00000050, 0x13131313);
+		}
+
+		/* 2.10.5.8.5.1.5 */
+		nb_pstate = 0;
+		mem_clk = Get_NB32_DCT(dev, Channel, 0x94) & 0x1f;
+		if (fam15h_freq_tab[mem_clk] == 0) {
+			return;
+		}
+		dword = Get_NB32(pDCTstat->dev_nbctl, (0x160 + (nb_pstate * 4)));		/* Retrieve NbDid, NbFid */
+		nb_clk = (200 * (((dword >> 1) & 0x1f) + 0x4)) / (((dword >> 7) & 0x1)?2:1);
+
+		pDCTstat->CH_MaxRdLat[Channel]++;
+		pDCTstat->CH_MaxRdLat[Channel] += ((((uint64_t)15 * 100000000000ULL) / ((uint64_t)fam15h_freq_tab[mem_clk] * 1000000ULL))
+							 * ((uint64_t)nb_clk * 1000)) / 1000000000ULL;
+
+		write_max_read_latency_to_registers(pMCTstat, pDCTstat, Channel, pDCTstat->CH_MaxRdLat[Channel]);
+	}
+
+	if(_DisableDramECC) {
+		mct_EnableDimmEccEn_D(pMCTstat, pDCTstat, _DisableDramECC);
+	}
+
+	if(!_Wrap32Dis) {
+		msr = HWCR;
+		_RDMSR(msr, &lo, &hi);
+		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
+		_WRMSR(msr, lo, hi);
+	}
+	if(!_SSE2){
+		cr4 = read_cr4();
+		cr4 &= ~(1<<9); 	/* restore cr4.OSFXSR */
+		write_cr4(cr4);
+	}
+
+#if DQS_TRAIN_DEBUG > 0
+	{
+		u8 ChannelDTD;
+		printk(BIOS_DEBUG, "TrainMaxRdLatency: CH_MaxRdLat:\n");
+		for(ChannelDTD = 0; ChannelDTD<2; ChannelDTD++) {
+			printk(BIOS_DEBUG, "Channel:%x: %x\n",
+			       ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD]);
+		}
+	}
+#endif
+
+	printk(BIOS_DEBUG, "TrainMaxRdLatency: Status %x\n", pDCTstat->Status);
+	printk(BIOS_DEBUG, "TrainMaxRdLatency: ErrStatus %x\n", pDCTstat->ErrStatus);
+	printk(BIOS_DEBUG, "TrainMaxRdLatency: ErrCode %x\n", pDCTstat->ErrCode);
+	printk(BIOS_DEBUG, "TrainMaxRdLatency: Done\n\n");
 }
 
 u8 mct_InitReceiver_D(struct DCTStatStruc *pDCTstat, u8 dct)

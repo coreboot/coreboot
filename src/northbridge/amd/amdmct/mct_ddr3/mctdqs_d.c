@@ -20,6 +20,9 @@ static void write_dqs_receiver_enable_control_registers(uint16_t* current_total_
 static void read_read_dqs_timing_control_registers(uint16_t* current_total_delay,
 			uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
 
+static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat);
+
 static void CalcEccDQSPos_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u16 like,
 				u8 scale, u8 ChipSel);
@@ -210,6 +213,27 @@ void TrainReceiverEn_D(struct MCTStatStruc *pMCTstat,
 				Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x78, val);
 			}
 			mct_TrainRcvrEn_D(pMCTstat, pDCTstat, Pass);
+		}
+	}
+}
+
+void TrainMaxRdLatency_En_D(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstatA)
+{
+	uint8_t node;
+	struct DCTStatStruc *pDCTstat;
+
+	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
+		pDCTstat = pDCTstatA + node;
+
+		if (pDCTstat->DCTSysLimit) {
+			if (is_fam15h()) {
+				dqsTrainMaxRdLatency_SW_Fam15(pMCTstat, pDCTstat);
+			} else {
+				/* FIXME
+				 * Implement Family 10h MaxRdLatency training
+				 */
+			}
 		}
 	}
 }
@@ -894,7 +918,7 @@ static void TrainDQSRdWrPos_D_Fam10(struct MCTStatStruc *pMCTstat,
  * Algorithm detailed in the Fam15h BKDG Rev. 3.14 section 2.10.5.8.5
  */
 static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, uint8_t dct)
+				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t calc_min)
 {
 	uint8_t dimm;
 	uint8_t lane;
@@ -938,7 +962,8 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 		p += (9 - dword);
 
 		/* 2.10.5.8.5 (4) */
-		p += 5;
+		if (!calc_min)
+			p += 5;
 
 		/* 2.10.5.8.5 (5) */
 		dword = Get_NB32_DCT(dev, dct, 0xa8);
@@ -965,7 +990,8 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 		p += (max_delay >> 5);
 
 		/* 2.10.5.8.5 (8) */
-		p += 5;
+		if (!calc_min)
+			p += 5;
 
 		/* 2.10.5.8.5 (9) */
 		t += 800;
@@ -976,13 +1002,16 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 		n = (((((uint64_t)p * 1000000000000ULL)/(((uint64_t)fam15h_freq_tab[mem_clk] * 1000000ULL) * 2)) + ((uint64_t)t)) * ((uint64_t)nb_clk * 1000)) / 1000000000ULL;
 
 		/* 2.10.5.8.5 (11) */
-		n -= 1;
+		if (!calc_min)
+			n -= 1;
 
 		/* 2.10.5.8.5 (12) */
-		dword = Get_NB32_DCT_NBPstate(dev, dct, nb_pstate, 0x210);
-		dword &= ~(0x3ff << 22);
-		dword |= (((n - 1) & 0x3ff) << 22);
-		Set_NB32_DCT_NBPstate(dev, dct, nb_pstate, 0x210, dword);
+		if (!calc_min) {
+			dword = Get_NB32_DCT_NBPstate(dev, dct, nb_pstate, 0x210);
+			dword &= ~(0x3ff << 22);
+			dword |= (((n - 1) & 0x3ff) << 22);
+			Set_NB32_DCT_NBPstate(dev, dct, nb_pstate, 0x210, dword);
+		}
 
 		/* Save result for later use */
 		pDCTstat->CH_MaxRdLat[dct] = n - 1;
@@ -1103,6 +1132,9 @@ static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 	} else if (lane < 8) {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
 		Set_NB32_DCT(dev, dct, 0x278, ~(0xff << (lane * 8)));
+	} else if (lane == 0xff) {
+		Set_NB32_DCT(dev, dct, 0x274, ~0xffffffff);
+		Set_NB32_DCT(dev, dct, 0x278, ~0xffffffff);
 	} else {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
 		Set_NB32_DCT(dev, dct, 0x278, ~0x0);
@@ -1110,8 +1142,9 @@ static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 
 	dword = Get_NB32_DCT(dev, dct, 0x27c);
 	dword &= ~(0xff);				/* EccMask = 0 */
-	if ((lane != 8) || (pDCTstat->DimmECCPresent == 0))
-		dword |= 0xff;				/* EccMask = 0xff */
+	if (lane != 0xff)
+		if ((lane != 8) || (pDCTstat->DimmECCPresent == 0))
+			dword |= 0xff;			/* EccMask = 0xff */
 	Set_NB32_DCT(dev, dct, 0x27c, dword);
 
 	dword = Get_NB32_DCT(dev, dct, 0x270);
@@ -1180,6 +1213,9 @@ static void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 	} else if (lane < 8) {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
 		Set_NB32_DCT(dev, dct, 0x278, ~(0xff << (lane * 8)));
+	} else if (lane == 0xff) {
+		Set_NB32_DCT(dev, dct, 0x274, ~0xffffffff);
+		Set_NB32_DCT(dev, dct, 0x278, ~0xffffffff);
 	} else {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
 		Set_NB32_DCT(dev, dct, 0x278, ~0x0);
@@ -1187,8 +1223,9 @@ static void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 
 	dword = Get_NB32_DCT(dev, dct, 0x27c);
 	dword &= ~(0xff);				/* EccMask = 0 */
-	if ((lane != 8) || (pDCTstat->DimmECCPresent == 0))
-		dword |= 0xff;				/* EccMask = 0xff */
+	if (lane != 0xff)
+		if ((lane != 8) || (pDCTstat->DimmECCPresent == 0))
+			dword |= 0xff;			/* EccMask = 0xff */
 	Set_NB32_DCT(dev, dct, 0x27c, dword);
 
 	dword = Get_NB32_DCT(dev, dct, 0x270);
@@ -1274,7 +1311,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint32_t dev = pDCTstat->dev_dct;
 
 	/* Calculate and program MaxRdLatency */
-	Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, dct);
+	Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, dct, 0);
 
 	Errors = 0;
 	dual_rank = 0;
@@ -1632,7 +1669,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 					write_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);
 
 					/* Calculate and program MaxRdLatency */
-					Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, dct);
+					Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, dct, 0);
 
 					/* 2.10.5.8.3 (4 B) */
 					dqs_results_array[current_phy_phase_delay[lane]] = TrainDQSRdWrPos_D_Fam15(pMCTstat, pDCTstat, dct, Receiver, Receiver + 2, lane, lane + 1);

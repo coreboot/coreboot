@@ -1735,6 +1735,16 @@ restartinit:
 					allow_config_restore = 0;
 		}
 
+		/* FIXME
+		 * Stability issues have arisen on multiple Family 15h systems
+		 * when configuration restoration is enabled.  In all cases these
+		 * stability issues resolved by allowing the RAM to go through a
+		 * full training cycle.
+		 *
+		 * Debug and reenable this!
+		 */
+		allow_config_restore = 0;
+
 		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
 			struct DCTStatStruc *pDCTstat;
 			pDCTstat = pDCTstatA + Node;

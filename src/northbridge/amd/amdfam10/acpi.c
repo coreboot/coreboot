@@ -102,7 +102,8 @@ static void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	}
 
 	// need to figure out NV
-	state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1);
+	if (res->index > 0xf)	/* Exclude MMIO resources, e.g. as set in northbridge.c amdfam10_domain_read_resources() */
+		state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1);
 }
 
 static unsigned long acpi_fill_srat(unsigned long current)

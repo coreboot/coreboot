@@ -222,7 +222,8 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->pm1_cnt_len = 2;
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
-	fadt->gpe0_blk_len = 32;
+	/* There are 4 GPE0 STS/EN pairs each 32 bits wide. */
+	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
 	fadt->cst_cnt = 0;

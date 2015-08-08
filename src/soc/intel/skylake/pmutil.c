@@ -258,14 +258,6 @@ u32 clear_alt_smi_status(void)
 	return print_alt_smi_status();
 }
 
-/* Enable GPIO SMI events */
-void enable_alt_smi(int gpionum, u32 mask)
-{
-	/*Set GPIO EN Status*/
-	gpio_enable_groupsmi(gpionum, mask);
-}
-
-
 /*
  * TCO
  */

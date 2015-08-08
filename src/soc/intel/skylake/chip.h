@@ -54,10 +54,6 @@ struct soc_intel_skylake_config {
 	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */
 
-	/* GPIO SMI configuration */
-	uint32_t ec_smi_gpio;
-	uint32_t alt_gp_smi_en;
-
 	/* Generic IO decode ranges */
 	uint32_t gen1_dec;
 	uint32_t gen2_dec;

@@ -49,9 +49,7 @@ chip soc/intel/skylake
 	register "gen1_dec" = "0x00fc0801"
 	register "gen2_dec" = "0x00fc0901"
 
-	# EC_SMI
-	register "ec_smi_gpio" = "34"
-	register "alt_gp_smi_en" = "0x0400"
+	# GPE configuration
 	register "gpe0_en_1" = "0x00000000"
 	# EC_SCI is GPIO36
 	register "gpe0_en_2" = "0x00000010"

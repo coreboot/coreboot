@@ -227,9 +227,6 @@ static void pch_power_options(void)
 
 	/* Set up GPE configuration. */
 	pmc_gpe_init(config);
-
-	/* SMI setup based on device tree configuration */
-	enable_alt_smi(config->ec_smi_gpio, config->alt_gp_smi_en);
 }
 
 static void config_deep_sX(uint32_t offset, uint32_t mask, int sx, int enable)

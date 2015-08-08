@@ -40,9 +40,6 @@ void gpio_get_smi_status(u32 status[GPIO_COMMUNITY_MAX]);
 /* Enable GPIO SMI  */
 void gpio_enable_all_smi(void);
 
-/* Enable GPIO individual Group SMI  */
-void gpio_enable_groupsmi(gpio_t gpio_num, u32 mask);
-
 /*
  * Set the GPIO groups for the GPE blocks. The gpe0_route is interpreted
  * as the packed configuration for GPE0_DW[2:0]:

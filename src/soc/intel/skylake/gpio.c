@@ -371,21 +371,3 @@ void gpio_enable_all_smi(void)
 			    0xFFFFFFFF);
 	}
 }
-
-void gpio_enable_groupsmi(gpio_t gpio_num, u32 mask)
-{
-	u32 gpioindex = 0;
-	u32 smien = 0;
-
-	if (gpio_num > MAX_GPIO_NUMBER)
-		return;
-
-	gpioindex = (gpio_num / MAX_GPIO_PIN_PER_GROUP);
-
-	pcr_read32(gpio_group_info[gpioindex].community,
-		   gpio_group_info[gpioindex].smienoffset, &smien);
-	smien |= mask;
-	/* Set all GPI SMI Enable bits by writing '1' */
-	pcr_write32(gpio_group_info[gpioindex].community,
-		    gpio_group_info[gpioindex].smienoffset, smien);
-}

@@ -21,9 +21,11 @@
 #ifndef _SOC_GPIO_H_
 #define _SOC_GPIO_H_
 
+#include <soc/gpio_defs.h>
+
+#ifndef __ACPI__
 #include <stdint.h>
 #include <stddef.h>
-#include <soc/gpio_defs.h>
 #include <soc/gpio_fsp.h>
 
 /* SOC has 8 GPIO communities GPP A~G, GPD */
@@ -99,7 +101,9 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 		.dw0 = dw0_,						\
 	}
 
-#define _PAD_CFG(pad_, term_, dw0_)	_PAD_CFG_ATTRS(pad_, term_, dw0_, 0)
+/* Default to ACPI owned. Ownership only matters for GPI pads. */
+#define _PAD_CFG(pad_, term_, dw0_) \
+	_PAD_CFG_ATTRS(pad_, term_, dw0_, PAD_FIELD(HOSTSW, ACPI))
 
 /* Native Function - No Rx buffer manipulation */
 #define PAD_CFG_NF(pad_, term_, rst_, func_) \
@@ -131,7 +135,7 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 
 /* General purpose input routed to SMI. This assumes edge triggered events. */
 #define PAD_CFG_GPI_ACPI_SMI(pad_, term_, rst_, inv_) \
-	_PAD_CFG(pad_, term_, \
+	_PAD_CFG_ATTRS(pad_, term_, \
 	_DW0_VALS(rst_, RAW, NO, EDGE, NO, inv_, \
 		NO, NO, YES, NO, GPIO, NO, YES), PAD_FIELD(HOSTSW, ACPI))
 
@@ -151,4 +155,5 @@ struct pad_config {
 	uint32_t dw0;
 };
 
+#endif /* __ACPI__ */
 #endif

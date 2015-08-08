@@ -496,6 +496,9 @@ intel_gma_get_controller_info(void)
 		return NULL;
 	}
 	struct northbridge_intel_i945_config *chip = dev->chip_info;
+	if (!chip) {
+		return NULL;
+	}
 	return &chip->gfx;
 }
 

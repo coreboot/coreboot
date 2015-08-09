@@ -257,6 +257,18 @@ static int dec_checkmarker(void)
 	return 0;
 }
 
+void jpeg_fetch_size(unsigned char *buf, int *width, int *height)
+{
+	datap = buf;
+	getbyte();
+	getbyte();
+	readtables(M_SOF0);
+	getword();
+	getbyte();
+	*height = getword();
+	*width = getword();
+}
+
 int jpeg_check_size(unsigned char *buf, int width, int height)
 {
   	datap = buf;

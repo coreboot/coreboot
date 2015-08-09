@@ -49,6 +49,7 @@ struct jpeg_decdata {
 };
 
 int jpeg_decode(unsigned char *, unsigned char *, int, int, int, struct jpeg_decdata *);
+void jpeg_fetch_size(unsigned char *buf, int *width, int *height);
 int jpeg_check_size(unsigned char *, int, int);
 
 #endif

@@ -953,6 +953,7 @@ void cpuSetAMDMSR(uint8_t node_id)
 	 */
 	msr_t msr;
 	u8 i;
+	uint8_t nvram;
 	u32 platform;
 	uint64_t revision;
 	uint8_t enable_c_states;
@@ -977,6 +978,13 @@ void cpuSetAMDMSR(uint8_t node_id)
 
 	/* Revision C0 and above */
 	if (revision & AMD_OR_C0) {
+		uint8_t enable_experimental_memory_speed_boost;
+
+		/* Check to see if cache partitioning is allowed */
+		enable_experimental_memory_speed_boost = 0;
+		if (get_option(&nvram, "experimental_memory_speed_boost") == CB_SUCCESS)
+			enable_experimental_memory_speed_boost = !!nvram;
+
 		uint32_t f3x1fc = pci_read_config32(NODE_PCI(node_id, 3), 0x1fc);
 		msr = rdmsr(FP_CFG);
 		msr.hi &= ~(0x7 << (42-32));			/* DiDtCfg4 */
@@ -996,11 +1004,15 @@ void cpuSetAMDMSR(uint8_t node_id)
 		msr.lo &= ~(0x1 << 16);				/* DiDtMode */
 		msr.lo |= ((f3x1fc & 0x1) << 16);
 		wrmsr(FP_CFG, msr);
+
+		if (enable_experimental_memory_speed_boost) {
+			msr = rdmsr(BU_CFG3);
+			msr.lo |= (0x3 << 20);			/* PfcStrideMul = 0x3 */
+			wrmsr(BU_CFG3, msr);
+		}
 	}
 
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700) || IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB800)
-	uint8_t nvram;
-
 	if (revision & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
 		/* Set up message triggered C1E */
 		msr = rdmsr(0xc0010055);

@@ -135,9 +135,8 @@ static const struct {
 	  0x00000000, 1 << (42-32)},	/* Bx [PwcDisableWalkerSharing]=1 */
 
 	{ BU_CFG3, AMD_OR_C0, AMD_PTYPE_ALL,
-	  (0x3 << 20) | (0x1 << 22), 0x00000000,
-	  (0x3 << 20) | (0x1 << 22), 0x00000000},	/* C0 or above [PfcDoubleStride]=1,
-	  						   PfcStrideMul]=0x3 */
+	  1 << 22, 0x00000000,
+	  1 << 22, 0x00000000},		/* C0 or above [PfcDoubleStride]=1 */
 
 	{ EX_CFG, AMD_OR_C0, AMD_PTYPE_ALL,
 	  0x00000000, 1 << (54-32),

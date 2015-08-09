@@ -5559,6 +5559,14 @@ static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
 				mct_ExtMCTConfig_Dx(pDCTstat);
 			} else {
 				/* Family 15h CPUs */
+				uint8_t nvram;
+				uint8_t enable_experimental_memory_speed_boost;
+
+				/* Check to see if cache partitioning is allowed */
+				enable_experimental_memory_speed_boost = 0;
+				if (get_option(&nvram, "experimental_memory_speed_boost") == CB_SUCCESS)
+					enable_experimental_memory_speed_boost = !!nvram;
+
 				val = 0x0ce00f00;		/* FlushWrOnStpGnt = 0x0 */
 				val |= 0x10 << 2;		/* MctWrLimit = 0x10 */
 				val |= 0x1;			/* DctWrLimit = 0x1 */
@@ -5572,7 +5580,8 @@ static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
 				val &= ~(0x7 << 8);		/* CohPrefPrbLmt = 0x1 */
 				val |= (0x1 << 8);
 				val |= (0x1 << 12);		/* EnSplitDctLimits = 0x1 */
-				val |= (0x1 << 20);		/* DblPrefEn = 0x1 */
+				if (enable_experimental_memory_speed_boost)
+					val |= (0x1 << 20);	/* DblPrefEn = 0x1 */
 				val |= (0x7 << 22);		/* PrefFourConf = 0x7 */
 				val |= (0x7 << 25);		/* PrefFiveConf = 0x7 */
 				val &= ~(0xf << 28);		/* DcqBwThrotWm = 0x0 */

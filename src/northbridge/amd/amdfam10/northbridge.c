@@ -1650,6 +1650,17 @@ static void detect_and_enable_probe_filter(device_t dev)
 {
 	uint32_t dword;
 
+	uint8_t nvram;
+	uint8_t enable_probe_filter;
+
+	/* Check to see if the probe filter is allowed */
+	enable_probe_filter = 1;
+	if (get_option(&nvram, "probe_filter") == CB_SUCCESS)
+		enable_probe_filter = !!nvram;
+
+	if (!enable_probe_filter)
+		return;
+
 	uint8_t fam15h = 0;
 	uint8_t rev_gte_d = 0;
 	uint8_t dual_node = 0;
@@ -1809,6 +1820,17 @@ static void detect_and_enable_cache_partitioning(device_t dev)
 {
 	uint8_t i;
 	uint32_t dword;
+
+	uint8_t nvram;
+	uint8_t enable_l3_cache_partitioning;
+
+	/* Check to see if cache partitioning is allowed */
+	enable_l3_cache_partitioning = 0;
+	if (get_option(&nvram, "l3_cache_partitioning") == CB_SUCCESS)
+		enable_l3_cache_partitioning = !!nvram;
+
+	if (!enable_l3_cache_partitioning)
+		return;
 
 	if (is_fam15h()) {
 		printk(BIOS_DEBUG, "Enabling L3 cache partitioning\n");

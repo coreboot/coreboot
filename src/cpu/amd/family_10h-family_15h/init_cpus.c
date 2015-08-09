@@ -1489,6 +1489,46 @@ static void cpuSetAMDPCI(u8 node)
 				pci_write_config32(NODE_PCI(node, 3), (link << 2) + 0x148, dword);
 			}
 		}
+
+		/* Set up the SRI to XCS Token Count */
+		uint8_t free_tok;
+		uint8_t up_rsp_tok;
+
+		/* Set defaults */
+		free_tok = 0xa;
+		up_rsp_tok = 0x3;
+
+		if (!dual_node) {
+			free_tok = 0xa;
+			up_rsp_tok = 0x3;
+		} else {
+			if ((sockets == 1)
+				|| ((sockets == 2) && (sockets_populated == 1))) {
+				if (probe_filter_enabled) {
+					free_tok = 0x9;
+					up_rsp_tok = 0x3;
+				} else {
+					free_tok = 0xa;
+					up_rsp_tok = 0x3;
+				}
+			} else if ((sockets == 2) && (sockets_populated == 2)) {
+				free_tok = 0xb;
+				up_rsp_tok = 0x1;
+			} else if ((sockets == 4) && (sockets_populated == 2)) {
+				free_tok = 0xa;
+				up_rsp_tok = 0x3;
+			} else if ((sockets == 4) && (sockets_populated == 4)) {
+				free_tok = 0x9;
+				up_rsp_tok = 0x1;
+			}
+		}
+
+		dword = pci_read_config32(NODE_PCI(node, 3), 0x140);
+		dword &= ~(0xf << 20);			/* FreeTok = free_tok */
+		dword |= ((free_tok & 0xf) << 20);
+		dword &= ~(0x3 << 8);			/* UpRspTok = up_rsp_tok */
+		dword |= ((up_rsp_tok & 0x3) << 8);
+		pci_write_config32(NODE_PCI(node, 3), 0x140, dword);
 	}
 
 	printk(BIOS_DEBUG, " done\n");

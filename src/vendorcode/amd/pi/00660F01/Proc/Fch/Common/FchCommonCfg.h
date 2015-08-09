@@ -986,6 +986,7 @@ typedef struct {
   VOID*                 OemProgrammingTablePtr;         /// Pointer of ACPI OEM table
   UINT8                 SpreadSpectrumOptions;          /// SpreadSpectrumOptions - Spread Spectrum Option
   BOOLEAN               PwrDownDisp2ClkPcieR;           /// Power down DISP2_CLK and PCIE_RCLK_Output for power savings
+  BOOLEAN               NoClearThermalTripSts;          /// Skip clearing ThermalTrip status
 } FCH_ACPI;
 
 

@@ -69,7 +69,11 @@
 // Family 15h equates
 #define AMD_FAMILY_15_CZ  0x0004u
 #define AMD_FAMILY_CZ     (AMD_FAMILY_15_CZ)
-#define AMD_FAMILY_15     AMD_FAMILY_15_CZ
+
+#define AMD_FAMILY_15_ST  0x0008u
+#define AMD_FAMILY_ST     (AMD_FAMILY_15_ST)
+
+#define AMD_FAMILY_15     (AMD_FAMILY_15_CZ | AMD_FAMILY_ST)
 
 // Family Unknown
 #define AMD_FAMILY_UNKNOWN 0x8000u
@@ -81,12 +85,23 @@
   // Family 15h CZ steppings
 #define AMD_F15_CZ_A0    0x0001u
 #define AMD_F15_CZ_A1    0x0002u
+#define AMD_F15_BR_A1    0x0004u
+  // Family 15h ST steppings
+#define AMD_F15_ST_A0    0x0010u
   // Family 15h Unknown stepping
 #define AMD_F15_UNKNOWN  0x8000u
-#define AMD_F15_CZ_Ax    (AMD_F15_CZ_A0 | AMD_F15_CZ_A1)
-#define AMD_F15_CZ_ALL   (AMD_F15_CZ_Ax)
+  // CZ and BR
+#define AMD_F15_BR_Ax    (AMD_F15_BR_A1)
+#define AMD_F15_BR_ALL   (AMD_F15_BR_Ax)
 
-#define AMD_F15_ALL      AMD_F15_CZ_ALL
+#define AMD_F15_CZ_Ax    (AMD_F15_CZ_A0 | AMD_F15_CZ_A1 | AMD_F15_BR_Ax)
+#define AMD_F15_CZ_ALL   (AMD_F15_CZ_Ax | AMD_F15_BR_ALL)
+
+  // ST
+#define AMD_F15_ST_Ax    (AMD_F15_ST_A0)
+#define AMD_F15_ST_ALL   (AMD_F15_ST_Ax)
+
+#define AMD_F15_ALL      (AMD_F15_CZ_ALL | AMD_F15_ST_ALL)
 
 #endif      // _CPU_FAM_REGISTERS_H_
 

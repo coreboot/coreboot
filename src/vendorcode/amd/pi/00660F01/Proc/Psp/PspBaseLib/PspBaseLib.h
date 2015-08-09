@@ -68,6 +68,11 @@
 #define PSP_MAILBOX_BASE            0x70    ///< Mailbox base offset on PCIe BAR
 #define PSP_MAILBOX_STATUS_OFFSET   0x4     ///< Staus Offset
 
+#define PMIO_INDEX_PORT        0xCD6    ///Pmio index port
+#define PMIO_DATA_PORT         0xCD7    ///Pmio data port
+
+#define PMIO_REG62             0x62    ///PMIOx62
+
 //======================================================================================
 //
 // Define Mailbox Status field
@@ -162,7 +167,7 @@ GetPspMboxStatus (
 
 
 BOOLEAN
-PspBarInitEarly (void);
+PspBarInitEarly (VOID);
 
 VOID
 PspLibPciIndirectRead (
@@ -184,4 +189,8 @@ UINT8
 PspLibAccessWidth (
   IN       ACCESS_WIDTH AccessWidth
   );
+
+BOOLEAN
+IsS3Resume (VOID);
+
 #endif // _AMD_LIB_H_

@@ -429,14 +429,14 @@ typedef struct {
 #define CPUID_EXT_FAMILY_MASK    0x0FF00000ul
 
 #define CZ_SOCKET_FP4       0
+#define ST_SOCKET_FP4       0
+#define ST_SOCKET_FT4       3
 #define SOCKET_IGNORE       0xF
 
 #define LAPIC_BASE_ADDR_MASK    0x0000FFFFFFFFF000ull
 #define APIC_EXT_BRDCST_MASK    0x000E0000ul
 #define APIC_ENABLE_BIT         0x00000800ul
-#ifndef LOCAL_APIC_ADDR
 #define LOCAL_APIC_ADDR         0xFEE00000ul
-#endif
 #define INT_CMD_REG_LO          0x300
 #define INT_CMD_REG_HI          0x310
 #define REMOTE_MSG_REG          0x380

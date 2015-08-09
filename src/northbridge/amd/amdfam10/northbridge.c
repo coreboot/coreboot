@@ -1805,9 +1805,103 @@ static void detect_and_enable_probe_filter(device_t dev)
 	}
 }
 
+static void detect_and_enable_cache_partitioning(device_t dev)
+{
+	uint8_t i;
+	uint32_t dword;
+
+	if (is_fam15h()) {
+		printk(BIOS_DEBUG, "Enabling L3 cache partitioning\n");
+
+		uint32_t f5x80;
+		uint8_t cu_enabled;
+		uint8_t compute_unit_count = 0;
+
+		uint32_t f3xe8;
+		uint8_t dual_node = 0;
+
+		for (i = 0; i < sysconf.nodes; i++) {
+			device_t f3x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+			device_t f4x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 4));
+			device_t f5x_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 5));
+
+			f3xe8 = pci_read_config32(f3x_dev, 0xe8);
+
+			/* Check for dual node capability */
+			if (f3xe8 & 0x20000000)
+				dual_node = 1;
+
+			/* Determine the number of active compute units on this node */
+			f5x80 = pci_read_config32(f5x_dev, 0x80);
+			cu_enabled = f5x80 & 0xf;
+			if (cu_enabled == 0x1)
+				compute_unit_count = 1;
+			if (cu_enabled == 0x3)
+				compute_unit_count = 2;
+			if (cu_enabled == 0x7)
+				compute_unit_count = 3;
+			if (cu_enabled == 0xf)
+				compute_unit_count = 4;
+
+			/* Disable BAN mode */
+			dword = pci_read_config32(f3x_dev, 0x1b8);
+			dword &= ~(0x7 << 19);	/* L3BanMode = 0x0 */
+			pci_write_config32(f3x_dev, 0x1b8, dword);
+
+			/* Set up cache mapping */
+			dword = pci_read_config32(f4x_dev, 0x1d4);
+			if (compute_unit_count == 1) {
+				dword |= 0xf;		/* ComputeUnit0SubCacheEn = 0xf */
+			}
+			if (compute_unit_count == 2) {
+				dword &= ~(0xf << 4);	/* ComputeUnit1SubCacheEn = 0xc */
+				dword |= (0xc << 4);
+				dword &= ~0xf;		/* ComputeUnit0SubCacheEn = 0x3 */
+				dword |= 0x3;
+			}
+			if (compute_unit_count == 3) {
+				dword &= ~(0xf << 8);	/* ComputeUnit2SubCacheEn = 0x8 */
+				dword |= (0x8 << 8);
+				dword &= ~(0xf << 4);	/* ComputeUnit1SubCacheEn = 0x4 */
+				dword |= (0x4 << 4);
+				dword &= ~0xf;		/* ComputeUnit0SubCacheEn = 0x3 */
+				dword |= 0x3;
+			}
+			if (compute_unit_count == 4) {
+				dword &= ~(0xf << 12);	/* ComputeUnit3SubCacheEn = 0x8 */
+				dword |= (0x8 << 12);
+				dword &= ~(0xf << 8);	/* ComputeUnit2SubCacheEn = 0x4 */
+				dword |= (0x4 << 8);
+				dword &= ~(0xf << 4);	/* ComputeUnit1SubCacheEn = 0x2 */
+				dword |= (0x2 << 4);
+				dword &= ~0xf;		/* ComputeUnit0SubCacheEn = 0x1 */
+				dword |= 0x1;
+			}
+			pci_write_config32(f4x_dev, 0x1d4, dword);
+
+			/* Enable cache partitioning */
+			pci_write_config32(f4x_dev, 0x1d4, dword);
+			if (compute_unit_count == 1) {
+				dword &= ~(0xf << 26);	/* MaskUpdateForComputeUnit = 0x1 */
+				dword |= (0x1 << 26);
+			} else if (compute_unit_count == 2) {
+				dword &= ~(0xf << 26);	/* MaskUpdateForComputeUnit = 0x3 */
+				dword |= (0x3 << 26);
+			} else if (compute_unit_count == 3) {
+				dword &= ~(0xf << 26);	/* MaskUpdateForComputeUnit = 0x7 */
+				dword |= (0x7 << 26);
+			} else if (compute_unit_count == 4) {
+				dword |= (0xf << 26);	/* MaskUpdateForComputeUnit = 0xf */
+			}
+			pci_write_config32(f4x_dev, 0x1d4, dword);
+		}
+	}
+}
+
 static void cpu_bus_init(device_t dev)
 {
 	detect_and_enable_probe_filter(dev);
+	detect_and_enable_cache_partitioning(dev);
 	initialize_cpus(dev->link_list);
 #if CONFIG_AMD_SB_CIMX
 	sb_After_Pci_Init();

@@ -135,8 +135,9 @@ static const struct {
 	  0x00000000, 1 << (42-32)},	/* Bx [PwcDisableWalkerSharing]=1 */
 
 	{ BU_CFG3, AMD_OR_C0, AMD_PTYPE_ALL,
-	  1 << 22, 0x00000000,
-	  1 << 22, 0x00000000},		/* C0 or above [PfcDoubleStride]=1 */
+	  (0x3 << 20) | (0x1 << 22), 0x00000000,
+	  (0x3 << 20) | (0x1 << 22), 0x00000000},	/* C0 or above [PfcDoubleStride]=1,
+	  						   PfcStrideMul]=0x3 */
 
 	{ EX_CFG, AMD_OR_C0, AMD_PTYPE_ALL,
 	  0x00000000, 1 << (54-32),
@@ -629,6 +630,11 @@ static const struct {
 	 * System software should set F5x88[14] to 1b. */
 	{ 5, 0x88, AMD_OR_B2, AMD_PTYPE_ALL,
 	  1 << 14, 1 << 14 },
+
+	/* L3 Control 2 */
+	{ 3, 0x1b8, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00000090, 0x000001d0 },	/* ImplRdProjDelayThresh = 0x2,
+					   ImplRdAnySubUnavail = 0x1 */
 };
 
 

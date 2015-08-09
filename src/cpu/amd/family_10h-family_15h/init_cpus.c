@@ -1201,6 +1201,133 @@ static void cpuSetAMDPCI(u8 node)
 		dword |= (compute_unit_buffer_count << 4);
 		pci_write_config32(NODE_PCI(node, 3), 0x1a0, dword);
 
+		uint8_t link;
+		uint8_t ganged;
+		uint8_t iolink;
+		uint8_t probe_filter_enabled = !!dual_node;
+
+		/* Set up the Link Base Channel Buffer Count */
+		uint8_t isoc_rsp_data;
+		uint8_t isoc_np_req_data;
+		uint8_t isoc_rsp_cmd;
+		uint8_t isoc_preq;
+		uint8_t isoc_np_req_cmd;
+		uint8_t free_data;
+		uint8_t free_cmd;
+		uint8_t rsp_data;
+		uint8_t np_req_data;
+		uint8_t probe_cmd;
+		uint8_t rsp_cmd;
+		uint8_t preq;
+		uint8_t np_req_cmd;
+
+		/* Common settings for all links and system configurations */
+		isoc_rsp_data = 0;
+		isoc_np_req_data = 0;
+		isoc_rsp_cmd = 0;
+		isoc_preq = 0;
+		isoc_np_req_cmd = 1;
+		free_cmd = 8;
+
+		for (link = 0; link < 4; link++) {
+			if (AMD_CpuFindCapability(node, link, &offset)) {
+				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170) & 0x1);
+				iolink = (AMD_checkLinkType(node, link, offset) & HTPHY_LINKTYPE_NONCOHERENT);
+
+				if (!iolink && ganged) {
+					if (probe_filter_enabled) {
+						free_data = 0;
+						rsp_data = 3;
+						np_req_data = 3;
+						probe_cmd = 4;
+						rsp_cmd = 9;
+						preq = 2;
+						np_req_cmd = 8;
+					} else {
+						free_data = 0;
+						rsp_data = 3;
+						np_req_data = 3;
+						probe_cmd = 8;
+						rsp_cmd = 9;
+						preq = 2;
+						np_req_cmd = 4;
+					}
+				} else if (!iolink && !ganged) {
+					if (probe_filter_enabled) {
+						free_data = 0;
+						rsp_data = 3;
+						np_req_data = 3;
+						probe_cmd = 4;
+						rsp_cmd = 9;
+						preq = 2;
+						np_req_cmd = 8;
+					} else {
+						free_data = 0;
+						rsp_data = 3;
+						np_req_data = 3;
+						probe_cmd = 8;
+						rsp_cmd = 9;
+						preq = 2;
+						np_req_cmd = 4;
+					}
+				} else if (iolink && ganged) {
+					free_data = 0;
+					rsp_data = 1;
+					np_req_data = 0;
+					probe_cmd = 0;
+					rsp_cmd = 2;
+					preq = 7;
+					np_req_cmd = 14;
+				} else {
+					/* FIXME
+					 * This is an educated guess as the BKDG does not specify
+					 * the appropriate buffer counts for this case!
+					 */
+					free_data = 1;
+					rsp_data = 1;
+					np_req_data = 1;
+					probe_cmd = 0;
+					rsp_cmd = 2;
+					preq = 4;
+					np_req_cmd = 12;
+				}
+
+				dword = pci_read_config32(NODE_PCI(node, 0), (link * 0x20) + 0x94);
+				dword &= ~(0x3 << 27);			/* IsocRspData = isoc_rsp_data */
+				dword |= ((isoc_rsp_data & 0x3) << 27);
+				dword &= ~(0x3 << 25);			/* IsocNpReqData = isoc_np_req_data */
+				dword |= ((isoc_np_req_data & 0x3) << 25);
+				dword &= ~(0x7 << 22);			/* IsocRspCmd = isoc_rsp_cmd */
+				dword |= ((isoc_rsp_cmd & 0x7) << 22);
+				dword &= ~(0x7 << 19);			/* IsocPReq = isoc_preq */
+				dword |= ((isoc_preq & 0x7) << 19);
+				dword &= ~(0x7 << 16);			/* IsocNpReqCmd = isoc_np_req_cmd */
+				dword |= ((isoc_np_req_cmd & 0x7) << 16);
+				pci_write_config32(NODE_PCI(node, 0), (link * 0x20) + 0x94, dword);
+
+				dword = pci_read_config32(NODE_PCI(node, 0), (link * 0x20) + 0x90);
+				dword &= ~(0x1 << 31);			/* LockBc = 0x1 */
+				dword |= ((0x1 & 0x1) << 31);
+				dword &= ~(0x7 << 25);			/* FreeData = free_data */
+				dword |= ((free_data & 0x7) << 25);
+				dword &= ~(0x1f << 20);			/* FreeCmd = free_cmd */
+				dword |= ((free_cmd & 0x1f) << 20);
+				dword &= ~(0x3 << 18);			/* RspData = rsp_data */
+				dword |= ((rsp_data & 0x3) << 18);
+				dword &= ~(0x3 << 16);			/* NpReqData = np_req_data */
+				dword |= ((np_req_data & 0x3) << 16);
+				dword &= ~(0xf << 12);			/* ProbeCmd = probe_cmd */
+				dword |= ((probe_cmd & 0xf) << 12);
+				dword &= ~(0xf << 8);			/* RspCmd = rsp_cmd */
+				dword |= ((rsp_cmd & 0xf) << 8);
+				dword &= ~(0x7 << 5);			/* PReq = preq */
+				dword |= ((preq & 0x7) << 5);
+				dword &= ~(0x1f << 0);			/* NpReqCmd = np_req_cmd */
+				dword |= ((np_req_cmd & 0x1f) << 0);
+				pci_write_config32(NODE_PCI(node, 0), (link * 0x20) + 0x90, dword);
+			}
+		}
+
 		/* Set up the Link to XCS Token Counts */
 		uint8_t isoc_rsp_tok_1;
 		uint8_t isoc_preq_tok_1;
@@ -1218,10 +1345,6 @@ static void cpuSetAMDPCI(u8 node)
 		uint8_t preq_tok_0;
 		uint8_t req_tok_0;
 
-		uint8_t link;
-		uint8_t ganged;
-		uint8_t iolink;
-		uint8_t probe_filter_enabled = !!dual_node;
 		for (link = 0; link < 4; link++) {
 			if (AMD_CpuFindCapability(node, link, &offset)) {
 				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170) & 0x1);

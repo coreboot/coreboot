@@ -26,7 +26,9 @@ export LANG=C
 export LC_ALL=C
 export TZ=UTC
 
-if [ -d "${top}/.git" ] && [ -f "$(command -v git)" ]; then
+top=`dirname $0`/../..
+
+if [ -d "${top}/.git" -a -x "$(command -v git)" ]; then
 	GITREV=$(LANG= git log remotes/origin/master -1 --format=format:%h)
 	TIMESOURCE=git
 	DATE=$(git log --pretty=format:%ct -1)

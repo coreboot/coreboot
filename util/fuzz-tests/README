@@ -1,0 +1,11 @@
+Fuzz tests
+==========
+make run (with afl-fuzz installed) takes a real long time and creates test
+cases in jpeg-results/ that crash the jpeg code.
+
+These test cases can then be used to gdb the test app and dig into the
+decoder to fix the issues.
+
+This is mostly a proof of concept because the jpeg code isn't used very often
+(only for splash screens). However there are other regions in coreboot that
+could benefit from similar treatment.

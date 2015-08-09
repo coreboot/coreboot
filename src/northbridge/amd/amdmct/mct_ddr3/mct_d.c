@@ -5313,6 +5313,7 @@ static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
 				val &= ~(0x7 << 8);		/* CohPrefPrbLmt = 0x1 */
 				val |= (0x1 << 8);
 				val |= (0x1 << 12);		/* EnSplitDctLimits = 0x1 */
+				val |= (0x1 << 20);		/* DblPrefEn = 0x1 */
 				val |= (0x7 << 22);		/* PrefFourConf = 0x7 */
 				val |= (0x7 << 25);		/* PrefFiveConf = 0x7 */
 				val &= ~(0xf << 28);		/* DcqBwThrotWm = 0x0 */

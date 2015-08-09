@@ -156,11 +156,37 @@ static void gpio_handle_pad_mode(const struct pad_config *cfg)
 	write32(hostsw_own_reg, reg);
 }
 
+static void gpi_enable_smi(gpio_t pad)
+{
+	const struct gpio_community *comm;
+	uint8_t *regs;
+	uint32_t *gpi_status_reg;
+	uint32_t *gpi_en_reg;
+	size_t group_offset;
+	uint32_t pad_mask;
+
+	comm = gpio_get_community(pad);
+
+	regs = pcr_port_regs(comm->port_id);
+	gpi_status_reg = (void *)&regs[GPI_SMI_STS_OFFSET];
+	gpi_en_reg = (void *)&regs[GPI_SMI_EN_OFFSET];
+
+	/* Offset of SMI STS/EN for this pad's group within the community. */
+	group_offset = (pad - comm->min) / GPIO_MAX_NUM_PER_GROUP;
+
+	/* Clear status then set enable. */
+	pad_mask = 1 << ((pad - comm->min) % GPIO_MAX_NUM_PER_GROUP);
+	write32(&gpi_status_reg[group_offset], pad_mask);
+	write32(&gpi_en_reg[group_offset],
+		read32(&gpi_en_reg[group_offset]) | pad_mask);
+}
+
 static void gpio_configure_pad(const struct pad_config *cfg)
 {
 	uint32_t *dw_regs;
 	uint32_t reg;
 	uint32_t termination;
+	uint32_t dw0;
 	const uint32_t termination_mask = PAD_TERM_MASK << PAD_TERM_SHIFT;
 
 	dw_regs = gpio_dw_regs(cfg->pad);
@@ -168,7 +194,9 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 	if (dw_regs == NULL)
 		return;
 
-	write32(&dw_regs[0], cfg->dw0);
+	dw0 = cfg->dw0;
+
+	write32(&dw_regs[0], dw0);
 	reg = read32(&dw_regs[1]);
 	reg &= ~termination_mask;
 	termination = cfg->attrs;
@@ -177,6 +205,9 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 	write32(&dw_regs[1], reg);
 
 	gpio_handle_pad_mode(cfg);
+
+	if ((dw0 & PAD_FIELD(GPIROUTSMI, MASK)) == PAD_FIELD(GPIROUTSMI, YES))
+		gpi_enable_smi(cfg->pad);
 }
 
 void gpio_configure_pads(const struct pad_config *cfgs, size_t num)

@@ -117,6 +117,8 @@ static void tristate_gpios(uint32_t val)
 			MMC1_D6_MMIO_OFFSET, val);
 	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
 			MMC1_D7_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHEAST_BASE +
+			MMC1_RCLK_OFFSET, val);
 
 	/* Tri-state HDMI */
 	write32((void *)COMMUNITY_GPNORTH_BASE +

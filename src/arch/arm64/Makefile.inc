@@ -86,7 +86,7 @@ ifeq ($(CONFIG_ARCH_VERSTAGE_ARM64),y)
 
 $(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --whole-archive --start-group $(objgenerated)/libverstage.a $$(verstage-objs) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
+	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(verstage-objs)) $(objgenerated)/libverstage.a --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
 
 verstage-y += boot.c
 verstage-y += div0.c

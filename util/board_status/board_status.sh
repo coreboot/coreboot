@@ -38,10 +38,10 @@ test_cmd()
 	fi
 
 	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
-		ssh root@${REMOTE_HOST} which "$2" > /dev/null
+		ssh root@${REMOTE_HOST} command -v "$2" > /dev/null
 		rc=$?
 	else
-		which "$2" >/dev/null
+		command -v "$2" >/dev/null
 		rc=$?
 	fi
 

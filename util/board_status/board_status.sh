@@ -211,7 +211,7 @@ fi
 
 # Results will be placed in a temporary location until we're ready to upload.
 # If the user does not wish to upload, results will remain in /tmp.
-tmpdir=$(mktemp -d --tmpdir coreboot_board_status.XXXXXXXX)
+tmpdir=$(mktemp -d coreboot_board_status.XXXXXXXX)
 
 cbfstool_cmd="build/cbfstool"
 if test ! -x build/cbfstool; then

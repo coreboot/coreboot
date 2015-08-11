@@ -73,7 +73,7 @@ static void mcf3_read_resources(device_t dev)
 	}
 }
 
-static void set_agp_aperture(device_t dev)
+static void set_agp_aperture(device_t dev, uint32_t pci_id)
 {
 	struct resource *resource;
 
@@ -93,7 +93,7 @@ static void set_agp_aperture(device_t dev)
 
 		/* Update the other northbriges */
 		pdev = 0;
-		while((pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1203, pdev))) {
+		while ((pdev = dev_find_device(PCI_VENDOR_ID_AMD, pci_id, pdev))) {
 			/* Store the GART size but don't enable it */
 			pci_write_config32(pdev, 0x90, gart_acr);
 
@@ -109,10 +109,19 @@ static void set_agp_aperture(device_t dev)
 	}
 }
 
-static void mcf3_set_resources(device_t dev)
+static void mcf3_set_resources_fam10h(device_t dev)
 {
 	/* Set the gart apeture */
-	set_agp_aperture(dev);
+	set_agp_aperture(dev, 0x1203);
+
+	/* Set the generic PCI resources */
+	pci_dev_set_resources(dev);
+}
+
+static void mcf3_set_resources_fam15h(device_t dev)
+{
+	/* Set the gart apeture */
+	set_agp_aperture(dev, 0x1603);
 
 	/* Set the generic PCI resources */
 	pci_dev_set_resources(dev);
@@ -151,9 +160,18 @@ static void misc_control_init(struct device *dev)
 }
 
 
-static struct device_operations mcf3_ops  = {
+static struct device_operations mcf3_ops_fam10h  = {
 	.read_resources   = mcf3_read_resources,
-	.set_resources    = mcf3_set_resources,
+	.set_resources    = mcf3_set_resources_fam10h,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = misc_control_init,
+	.scan_bus         = 0,
+	.ops_pci          = 0,
+};
+
+static struct device_operations mcf3_ops_fam15h  = {
+	.read_resources   = mcf3_read_resources,
+	.set_resources    = mcf3_set_resources_fam15h,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = misc_control_init,
 	.scan_bus         = 0,
@@ -161,13 +179,13 @@ static struct device_operations mcf3_ops  = {
 };
 
 static const struct pci_driver mcf3_driver __pci_driver = {
-	.ops    = &mcf3_ops,
+	.ops    = &mcf3_ops_fam10h,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1203,
 };
 
 static const struct pci_driver mcf3_driver_fam15 __pci_driver = {
-	.ops    = &mcf3_ops,
+	.ops    = &mcf3_ops_fam15h,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1603,
 };

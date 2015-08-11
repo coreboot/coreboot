@@ -190,6 +190,11 @@ static int cbfs_add_component(const char *filename,
 	if (cbfs_image_from_buffer(&image, param.image_region, headeroffset))
 		return 1;
 
+	if (cbfs_get_entry(&image, name)) {
+		ERROR("'%s' already in ROM image.\n", name);
+		return 1;
+	}
+
 	struct buffer buffer;
 	if (buffer_from_file(&buffer, filename) != 0) {
 		ERROR("Could not load file '%s'.\n", filename);
@@ -198,12 +203,6 @@ static int cbfs_add_component(const char *filename,
 
 	if (convert && convert(&buffer, &offset) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
-		buffer_delete(&buffer);
-		return 1;
-	}
-
-	if (cbfs_get_entry(&image, name)) {
-		ERROR("'%s' already in ROM image.\n", name);
 		buffer_delete(&buffer);
 		return 1;
 	}

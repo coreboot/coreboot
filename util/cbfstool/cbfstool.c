@@ -201,6 +201,8 @@ static int cbfs_add_component(const char *filename,
 		return 1;
 	}
 
+	uint32_t header_size = cbfs_calculate_file_header_size(name);
+
 	if (convert && convert(&buffer, &offset) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
 		buffer_delete(&buffer);
@@ -211,7 +213,8 @@ static int cbfs_add_component(const char *filename,
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
 
-	if (cbfs_add_entry(&image, &buffer, name, type, offset, 0) != 0) {
+	if (cbfs_add_entry(&image, &buffer, name, type, offset, header_size)
+		!= 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
 		buffer_delete(&buffer);
 		return 1;

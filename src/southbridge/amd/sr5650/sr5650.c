@@ -22,7 +22,9 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
+#include <stdlib.h>
 #include <delay.h>
+#include <option.h>
 #include "sr5650.h"
 #include "cmn.h"
 
@@ -81,6 +83,26 @@ u32 nbpcie_ind_read_index(device_t nb_dev, u32 index)
 void nbpcie_ind_write_index(device_t nb_dev, u32 index, u32 data)
 {
 	nb_write_index((nb_dev), NBPCIE_INDEX, (index), (data));
+}
+
+uint32_t l2cfg_ind_read_index(device_t nb_dev, uint32_t index)
+{
+	return nb_read_index((nb_dev), L2CFG_INDEX, (index));
+}
+
+void l2cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data)
+{
+	nb_write_index((nb_dev), L2CFG_INDEX | (0x1 << 8), (index), (data));
+}
+
+uint32_t l1cfg_ind_read_index(device_t nb_dev, uint32_t index)
+{
+	return nb_read_index((nb_dev), L1CFG_INDEX, (index));
+}
+
+void l1cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data)
+{
+	nb_write_index((nb_dev), L1CFG_INDEX | (0x1 << 31), (index), (data));
 }
 
 /***********************************************************
@@ -282,6 +304,240 @@ u32 get_vid_did(device_t dev)
 	return pci_read_config32(dev, 0);
 }
 
+void detect_and_enable_iommu(device_t iommu_dev) {
+	uint32_t dword;
+	uint8_t l1_target;
+	unsigned char iommu;
+	void * mmio_base;
+
+	iommu = 1;
+	get_option(&iommu, "iommu");
+
+	if (iommu) {
+		printk(BIOS_DEBUG, "Initializing IOMMU\n");
+
+		device_t nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+		if (!nb_dev) {
+			printk(BIOS_WARNING, "Unable to find SR5690 device!  IOMMU NOT initialized\n");
+			return;
+		}
+
+		mmio_base = (void*)(pci_read_config32(iommu_dev, 0x44) & 0xffffc000);
+
+		// if (get_nb_rev(nb_dev) == REV_SR5650_A11) {
+		//	dword = pci_read_config32(iommu_dev, 0x6c);
+		//	dword &= ~(0x1 << 8);
+		//	pci_write_config32(iommu_dev, 0x6c, dword);
+		// }
+
+		dword = pci_read_config32(iommu_dev, 0x50);
+		dword &= ~(0x1 << 22);
+		pci_write_config32(iommu_dev, 0x50, dword);
+
+		dword = pci_read_config32(iommu_dev, 0x44);
+		dword |= 0x1;
+		pci_write_config32(iommu_dev, 0x44, dword);
+
+		write32((void*)(mmio_base + 0x8), 0x0);
+		write32((void*)(mmio_base + 0xc), 0x08000000);
+		write32((void*)(mmio_base + 0x10), 0x0);
+		write32((void*)(mmio_base + 0x2008), 0x0);
+		write32((void*)(mmio_base + 0x2010), 0x0);
+
+		/* IOMMU L1 initialization */
+		for (l1_target = 0; l1_target < 6; l1_target++) {
+			dword = l1cfg_ind_read_index(nb_dev, (l1_target << 16) + 0xc);
+			dword |= (0x7 << 28);
+			l1cfg_ind_write_index(nb_dev, (l1_target << 16) + 0xc, dword);
+
+			dword = l1cfg_ind_read_index(nb_dev, (l1_target << 16) + 0x7);
+			dword |= (0x1 << 5);
+			l1cfg_ind_write_index(nb_dev, (l1_target << 16) + 0x7, dword);
+		}
+
+		/* IOMMU L2 initialization */
+		dword = l2cfg_ind_read_index(nb_dev, 0xc);
+		dword |= (0x7 << 29);
+		l2cfg_ind_write_index(nb_dev, 0xc, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x10);
+		dword &= ~(0x3 << 8);
+		dword |= (0x2 << 8);
+		l2cfg_ind_write_index(nb_dev, 0x10, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x14);
+		dword &= ~(0x3 << 8);
+		dword |= (0x2 << 8);
+		l2cfg_ind_write_index(nb_dev, 0x14, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x18);
+		dword &= ~(0x3 << 8);
+		dword |= (0x2 << 8);
+		l2cfg_ind_write_index(nb_dev, 0x18, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x1c);
+		dword &= ~(0x3 << 8);
+		dword |= (0x2 << 8);
+		l2cfg_ind_write_index(nb_dev, 0x1c, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x50);
+		dword &= ~(0x3 << 8);
+		dword |= (0x2 << 8);
+		l2cfg_ind_write_index(nb_dev, 0x50, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x10);
+		dword |= (0x1 << 4);
+		l2cfg_ind_write_index(nb_dev, 0x10, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x14);
+		dword |= (0x1 << 4);
+		l2cfg_ind_write_index(nb_dev, 0x14, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x18);
+		dword |= (0x1 << 4);
+		l2cfg_ind_write_index(nb_dev, 0x18, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x1c);
+		dword |= (0x1 << 4);
+		l2cfg_ind_write_index(nb_dev, 0x1c, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x50);
+		dword |= (0x1 << 4);
+		l2cfg_ind_write_index(nb_dev, 0x50, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x6);
+		dword |= (0x1 << 7);
+		l2cfg_ind_write_index(nb_dev, 0x6, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x44);
+		dword |= (0x1 << 0);
+		l2cfg_ind_write_index(nb_dev, 0x44, dword);
+
+// 		if (get_nb_rev(nb_dev) == REV_SR5650_A21) {
+			dword = l2cfg_ind_read_index(nb_dev, 0x7);
+			dword |= (0x1 << 1);
+			l2cfg_ind_write_index(nb_dev, 0x7, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x44);
+			dword |= (0x1 << 1);
+			l2cfg_ind_write_index(nb_dev, 0x44, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x7);
+			dword |= (0x1 << 2);
+			l2cfg_ind_write_index(nb_dev, 0x7, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x7);
+			dword |= (0x1 << 3);
+			l2cfg_ind_write_index(nb_dev, 0x7, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x44);
+			dword |= (0x1 << 3);
+			l2cfg_ind_write_index(nb_dev, 0x44, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x7);
+			dword |= (0x1 << 4);
+			l2cfg_ind_write_index(nb_dev, 0x7, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x6);
+			dword |= (0x1 << 5);
+			l2cfg_ind_write_index(nb_dev, 0x6, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x6);
+			dword |= (0x1 << 6);
+			l2cfg_ind_write_index(nb_dev, 0x6, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x7);
+			dword |= (0x1 << 5);
+			l2cfg_ind_write_index(nb_dev, 0x7, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x44);
+			dword |= (0x1 << 4);
+			l2cfg_ind_write_index(nb_dev, 0x44, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x7);
+			dword |= (0x1 << 6);
+			l2cfg_ind_write_index(nb_dev, 0x7, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x7);
+			dword |= (0x1 << 7);
+			l2cfg_ind_write_index(nb_dev, 0x7, dword);
+
+			dword = l2cfg_ind_read_index(nb_dev, 0x6);
+			dword |= (0x1 << 8);
+			l2cfg_ind_write_index(nb_dev, 0x6, dword);
+// 		}
+
+		l2cfg_ind_write_index(nb_dev, 0x52, 0xf0000002);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x80);
+		dword |= (0x1 << 0);
+		l2cfg_ind_write_index(nb_dev, 0x80, dword);
+
+		dword = l2cfg_ind_read_index(nb_dev, 0x30);
+		dword |= (0x1 << 0);
+		l2cfg_ind_write_index(nb_dev, 0x30, dword);
+	}
+}
+
+void sr5650_iommu_read_resources(device_t dev)
+{
+	unsigned char iommu;
+	struct resource *res;
+
+	iommu = 1;
+	get_option(&iommu, "iommu");
+
+	/* Get the normal pci resources of this device */
+	pci_dev_read_resources(dev);
+
+	if (iommu) {
+		/* Request MMIO range allocation */
+		res = new_resource(dev, 0x44);		/* IOMMU */
+		res->base = 0x0;
+		res->size = 0x4000;
+		res->limit = 0xFFFFFFFFUL;		/* res->base + res->size -1; */
+		res->align = 14;			/* 16k alignment */
+		res->gran = 14;
+		res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE;
+	}
+
+	compact_resources(dev);
+}
+
+void sr5650_iommu_set_resources(device_t dev)
+{
+	unsigned char iommu;
+	struct resource *res;
+
+	iommu = 1;
+	get_option(&iommu, "iommu");
+
+	/* Get the normal pci resources of this device */
+	pci_dev_read_resources(dev);
+
+	if (iommu) {
+		/* Get the allocated range */
+		res = find_resource(dev, 0x44);
+
+		if (res->base == 0) {
+			printk(BIOS_WARNING, "Unable to allocate MMIO range to IOMMU\n");
+		}
+
+		/* Assign the range to hardware */
+		pci_write_config32(dev, 0x44, res->base & 0xffffc000);
+		pci_write_config32(dev, 0x48, 0x0);
+	}
+
+	/* Run standard resource set routine */
+	pci_dev_set_resources(dev);
+}
+
+void sr5650_iommu_enable_resources(device_t dev)
+{
+	detect_and_enable_iommu(dev);
+}
+
 void sr5650_nb_pci_table(device_t nb_dev)
 {	/* NBPOR_InitPOR function. */
 	u8 temp8;
@@ -361,13 +617,23 @@ void sr5650_enable(device_t dev)
 	dev_ind = dev->path.pci.devfn >> 3;
 	switch (dev_ind) {
 	case 0:		/* bus0, dev0, fun0; */
-		printk(BIOS_INFO, "Bus-0, Dev-0, Fun-0.\n");
-		enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
+		switch (dev->path.pci.devfn & 0x7) {
+			case 0:
+				printk(BIOS_INFO, "Bus-0, Dev-0, Fun-0.\n");
+				enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
 
-		config_gpp_core(nb_dev, sb_dev);
-		sr5650_gpp_sb_init(nb_dev, sb_dev, 8);
+				config_gpp_core(nb_dev, sb_dev);
+				sr5650_gpp_sb_init(nb_dev, sb_dev, 8);
 
-		sr5650_nb_pci_table(nb_dev);
+				sr5650_nb_pci_table(nb_dev);
+				break;
+			case 1:
+				printk(BIOS_INFO, "Bus-0, Dev-0, Fun-1.\n");
+				break;
+			case 2:
+				printk(BIOS_INFO, "Bus-0, Dev-0, Fun-2.\n");
+				break;
+		}
 		break;
 
 	case 2:		/* bus0, dev2,3 GPP1 */
@@ -433,6 +699,205 @@ void sr5650_enable(device_t dev)
 		udelay(cfg->pcie_settling_time);
 	}
 }
+
+static void add_ivrs_device_entries(struct device *parent, struct device *dev, int depth, int linknum, int8_t *root_level, unsigned long *current, uint16_t *length)
+{
+	uint8_t *p;
+	struct device *sibling;
+	struct bus *link;
+
+	if (!root_level) {
+		root_level = malloc(sizeof(int8_t));
+		*root_level = -1;
+	}
+
+	if (dev->path.type == DEVICE_PATH_PCI) {
+		if ((dev->bus->secondary == 0x0) && (dev->path.pci.devfn == 0x0))
+			*root_level = depth;
+
+		if (*root_level != -1) {
+			if (depth >= *root_level) {
+				if (dev->enabled) {
+					if (depth == *root_level) {
+						if (dev->path.pci.devfn < (0x1 << 3)) {
+							/* SR5690 control device */
+						} else if ((dev->path.pci.devfn >= (0x1 << 3)) && (dev->path.pci.devfn < (0xe << 3))) {
+							/* SR5690 PCIe bridge device */
+						} else {
+							if (dev->path.pci.devfn == (0x14 << 3)) {
+								/* SMBUS controller */
+								p = (uint8_t *) *current;
+								p[0] = 0x2;			/* Entry type */
+								p[1] = dev->path.pci.devfn;	/* Device */
+								p[2] = dev->bus->secondary;	/* Bus */
+								p[3] = 0x97;			/* Data */
+								p[4] = 0x0;			/* Padding */
+								p[5] = 0x0;			/* Padding */
+								p[6] = 0x0;			/* Padding */
+								p[7] = 0x0;			/* Padding */
+								*length += 8;
+								*current += 8;
+							} else {
+								/* Other southbridge device */
+								p = (uint8_t *) *current;
+								p[0] = 0x2;			/* Entry type */
+								p[1] = dev->path.pci.devfn;	/* Device */
+								p[2] = dev->bus->secondary;	/* Bus */
+								p[3] = 0x0;			/* Data */
+								p[4] = 0x0;			/* Padding */
+								p[5] = 0x0;			/* Padding */
+								p[6] = 0x0;			/* Padding */
+								p[7] = 0x0;			/* Padding */
+								*length += 8;
+								*current += 8;
+							}
+						}
+					} else {
+						if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_NORMAL) {
+							/* Device behind bridge */
+							if (pci_find_capability(dev, PCI_CAP_ID_PCIE)) {
+								/* Device is PCIe */
+								p = (uint8_t *) *current;
+								p[0] = 0x2;			/* Entry type */
+								p[1] = dev->path.pci.devfn;	/* Device */
+								p[2] = dev->bus->secondary;	/* Bus */
+								p[3] = 0x0;			/* Data */
+								p[4] = 0x0;			/* Padding */
+								p[5] = 0x0;			/* Padding */
+								p[6] = 0x0;			/* Padding */
+								p[7] = 0x0;			/* Padding */
+								*length += 8;
+								*current += 8;
+							} else {
+								/* Device is legacy PCI or PCI-X */
+								p = (uint8_t *) *current;
+								p[0] = 0x42;			/* Entry type */
+								p[1] = dev->path.pci.devfn;	/* Device */
+								p[2] = dev->bus->secondary;	/* Bus */
+								p[3] = 0x0;			/* Data */
+								p[4] = 0x0;			/* Reserved */
+								p[5] = parent->path.pci.devfn;	/* Device */
+								p[6] = parent->bus->secondary;	/* Bus */
+								p[7] = 0x0;			/* Reserved */
+								*length += 8;
+								*current += 8;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for (link = dev->link_list; link; link = link->next)
+		for (sibling = link->children; sibling; sibling = sibling->sibling)
+			add_ivrs_device_entries(dev, sibling, depth + 1, depth, root_level, current, length);
+
+	free(root_level);
+}
+
+static unsigned long acpi_fill_ivrs(acpi_ivrs_t* ivrs, unsigned long current)
+{
+	uint8_t *p;
+
+	device_t nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	if (!nb_dev) {
+		printk(BIOS_WARNING, "acpi_fill_ivrs: Unable to locate SR5650 device!  IVRS table not generated...\n");
+		return (unsigned long)ivrs;
+	}
+
+	device_t iommu_dev = dev_find_slot(0, PCI_DEVFN(0, 2));
+	if (!iommu_dev) {
+		printk(BIOS_WARNING, "acpi_fill_ivrs: Unable to locate SR5650 IOMMU device!  IVRS table not generated...\n");
+		return (unsigned long)ivrs;
+	}
+
+	ivrs->iv_info = 0x0;
+	ivrs->iv_info |= (0x40 << 15);	/* Maximum supported virtual address size */
+	ivrs->iv_info |= (0x34 << 8);	/* Maximum supported physical address size */
+
+	ivrs->ivhd.type = 0x10;
+	ivrs->ivhd.flags = 0x0e;
+	// if (get_nb_rev(nb_dev) != REV_SR5650_A11) {
+		ivrs->ivhd.flags |= 0x10;				/* Enable ATS support on all revisions except A11 */
+	// }
+	ivrs->ivhd.length = sizeof(struct acpi_ivrs_ivhd);
+	ivrs->ivhd.device_id = 0x2 | (nb_dev->bus->secondary << 8);	/* BDF <bus>:00.2 */
+	ivrs->ivhd.capability_offset = 0x40;				/* Capability block 0x40 (type 0xf, "Secure device") */
+	ivrs->ivhd.iommu_base_low = pci_read_config32(iommu_dev, 0x44) & 0xffffc000;
+	ivrs->ivhd.iommu_base_high = pci_read_config32(iommu_dev, 0x48);
+	ivrs->ivhd.pci_segment_group = 0x0;
+	ivrs->ivhd.iommu_info = 0x0;
+	ivrs->ivhd.iommu_info |= (0x14 << 8);
+	ivrs->ivhd.efr = 0x0;
+
+	/* Describe HPET */
+	p = (uint8_t *)current;
+	p[0] = 0x48;			/* Entry type */
+	p[1] = 0;			/* Device */
+	p[2] = 0;			/* Bus */
+	p[3] = 0xd7;			/* Data */
+	p[4] = 0x0;			/* HPET number */
+	p[5] = 0x14 << 3;		/* HPET device */
+	p[6] = nb_dev->bus->secondary;	/* HPET bus */
+	p[7] = 0x2;			/* Variety */
+	ivrs->ivhd.length += 8;
+	current += 8;
+
+	/* Describe PCI devices */
+	add_ivrs_device_entries(NULL, all_devices, 0, -1, NULL, &current, &ivrs->ivhd.length);
+
+	/* Describe IOAPICs */
+	unsigned long prev_current = current;
+	current = acpi_fill_ivrs_ioapic(ivrs, current);
+	ivrs->ivhd.length += (current - prev_current);
+
+	return current;
+}
+
+unsigned long southbridge_write_acpi_tables(device_t device,
+						unsigned long current,
+						struct acpi_rsdp *rsdp)
+{
+	unsigned char iommu;
+
+	iommu = 1;
+	get_option(&iommu, "iommu");
+
+	if (iommu) {
+		acpi_ivrs_t *ivrs;
+
+		/* IVRS */
+		current = ALIGN(current, 8);
+		printk(BIOS_DEBUG, "ACPI:   * IVRS at %lx\n", current);
+		ivrs = (acpi_ivrs_t *) current;
+		acpi_create_ivrs(ivrs, acpi_fill_ivrs);
+		current += ivrs->header.length;
+		acpi_add_table(rsdp, ivrs);
+	}
+
+	return current;
+}
+
+static struct pci_operations iommu_ops_pci = {
+	.set_subsystem = pci_dev_set_subsystem,
+};
+
+static struct device_operations iommu_ops = {
+	.read_resources = sr5650_iommu_read_resources,
+	.set_resources = sr5650_iommu_set_resources,
+	.enable_resources = sr5650_iommu_enable_resources,
+	.write_acpi_tables = southbridge_write_acpi_tables,
+	.init = 0,
+	.scan_bus = 0,
+	.ops_pci = &iommu_ops_pci,
+};
+
+static const struct pci_driver ht_driver_sr5690 __pci_driver = {
+	.ops = &iommu_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_AMD_SR5650_IOMMU,
+};
 
 struct chip_operations southbridge_amd_sr5650_ops = {
 	CHIP_NAME("ATI SR5650")

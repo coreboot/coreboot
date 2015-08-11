@@ -69,3 +69,40 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	return current;
 }
+
+unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t* ivrs, unsigned long current)
+{
+	uint8_t *p;
+
+	uint32_t apicid_sp5100;
+	uint32_t apicid_sr5650;
+
+	apicid_sp5100 = 0x20;
+	apicid_sr5650 = apicid_sp5100 + 1;
+
+	/* Describe NB IOAPIC */
+	p = (uint8_t *)current;
+	p[0] = 0x48;			/* Entry type */
+	p[1] = 0;			/* Device */
+	p[2] = 0;			/* Bus */
+	p[3] = 0x0;			/* Data */
+	p[4] = apicid_sr5650;		/* IOAPIC ID */
+	p[5] = 0x1;			/* Device 0 Function 1 */
+	p[6] = 0x0;			/* Northbridge bus */
+	p[7] = 0x1;			/* Variety */
+	current += 8;
+
+	/* Describe SB IOAPIC */
+	p = (uint8_t *)current;
+	p[0] = 0x48;			/* Entry type */
+	p[1] = 0;			/* Device */
+	p[2] = 0;			/* Bus */
+	p[3] = 0xd7;			/* Data */
+	p[4] = apicid_sp5100;		/* IOAPIC ID */
+	p[5] = 0x14 << 3;		/* Device 0x14 Function 0 */
+	p[6] = 0x0;			/* Southbridge bus */
+	p[7] = 0x1;			/* Variety */
+	current += 8;
+
+	return current;
+}

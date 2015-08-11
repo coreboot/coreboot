@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +18,7 @@
 #define __SR5650_H__
 
 #include <stdint.h>
+#include <arch/acpi.h>
 #include <device/pci_ids.h>
 #include "chip.h"
 #include "rev.h"
@@ -91,9 +93,16 @@ u32 nbpcie_p_read_index(device_t dev, u32 index);
 void nbpcie_p_write_index(device_t dev, u32 index, u32 data);
 u32 nbpcie_ind_read_index(device_t nb_dev, u32 index);
 void nbpcie_ind_write_index(device_t nb_dev, u32 index, u32 data);
+uint32_t l2cfg_ind_read_index(device_t nb_dev, uint32_t index);
+void l2cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data);
+uint32_t l1cfg_ind_read_index(device_t nb_dev, uint32_t index);
+void l1cfg_ind_write_index(device_t nb_dev, uint32_t index, uint32_t data);
 u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg);
 void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg, u32 mask, u32 val);
 void sr5650_set_tom(device_t nb_dev);
+
+unsigned long southbridge_write_acpi_tables(device_t device, unsigned long current,
+						struct acpi_rsdp *rsdp);
 
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add);
 void enable_pcie_bar3(device_t nb_dev);
@@ -101,6 +110,7 @@ void disable_pcie_bar3(device_t nb_dev);
 
 void enable_sr5650_dev8(void);
 void sr5650_htinit(void);
+void sr5650_htinit_dect_and_enable_isochronous_link(void);
 void sr5650_early_setup(void);
 void sr5650_before_pci_init(void);
 void sr5650_enable(device_t dev);
@@ -114,6 +124,10 @@ void pcie_config_misc_clk(device_t nb_dev);
 void fam10_optimization(void);
 void sr5650_disable_pcie_bridge(void);
 u32 get_vid_did(device_t dev);
+void detect_and_enable_iommu(device_t iommu_dev);
+void sr5650_iommu_read_resources(device_t dev);
+void sr5650_iommu_set_resources(device_t dev);
+void sr5650_iommu_enable_resources(device_t dev);
 void sr5650_nb_pci_table(device_t nb_dev);
 void init_gen2(device_t nb_dev, device_t dev, u8 port);
 void sr56x0_lock_hwinitreg(void);

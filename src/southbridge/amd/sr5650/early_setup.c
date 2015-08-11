@@ -20,6 +20,8 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <option.h>
+#include <reset.h>
 #include "sr5650.h"
 #include "cmn.h"
 
@@ -267,6 +269,34 @@ void sr5650_htinit(void)
 		/* HT Buffer Allocation for Ganged Links!!! */
 #endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 */
 	}
+
+}
+
+/* Must be run immediately after HT setup is complete and first warm reset has occurred (if applicable)
+ * Attempting to switch the NB into isochronous mode before the CPUs have engaged isochronous mode
+ * will cause a system hard lockup...
+ */
+void sr5650_htinit_dect_and_enable_isochronous_link(void)
+{
+	device_t sr5650_f0;
+	unsigned char iommu;
+
+	sr5650_f0 = PCI_DEV(0, 0, 0);
+
+	iommu = 1;
+	get_option(&iommu, "iommu");
+
+	if (iommu) {
+		/* Enable isochronous mode */
+		set_nbcfg_enable_bits(sr5650_f0, 0xc8, 1 << 12, 1 << 12);
+
+		/* Apply pending changes */
+		if (!((pci_read_config32(sr5650_f0, 0xc8) >> 12) & 0x1)) {
+			printk(BIOS_INFO, "...WARM RESET...\n\n\n");
+			soft_reset();
+			die("After soft_reset_x - shouldn't see this message!!!\n");
+		}
+	}
 }
 
 #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 /* save some spaces */
@@ -331,8 +361,21 @@ static void sr5650_por_pcicfg_init(device_t nb_dev)
 *****************************************/
 static void sr5650_por_misc_index_init(device_t nb_dev)
 {
-	/* disable IOMMU */
-	set_nbmisc_enable_bits(nb_dev, 0x75, 0x1, 0x0);
+	unsigned char iommu;
+
+	iommu = 1;
+	get_option(&iommu, "iommu");
+
+	if (iommu) {
+		/* enable IOMMU */
+		printk(BIOS_DEBUG, "Enabling IOMMU\n");
+		set_nbmisc_enable_bits(nb_dev, 0x75, 0x1, 0x1);
+	} else {
+		/* disable IOMMU */
+		printk(BIOS_DEBUG, "Disabling IOMMU\n");
+		set_nbmisc_enable_bits(nb_dev, 0x75, 0x1, 0x0);
+	}
+
 	/* NBMISCIND:0x75[29]= 1 Device ID for hotplug and PME message */
 	set_nbmisc_enable_bits(nb_dev, 0x75, 1 << 29, 1 << 29);
 	set_nbmisc_enable_bits(nb_dev, 0x75, 1 << 9, 1 << 9); /* no doc reference, comply with BTS */
@@ -370,10 +413,11 @@ static void sr5650_por_misc_index_init(device_t nb_dev)
 	 *   HIDE_NB_AGP_CAP  ([0], default=1)HIDE
 	 *   HIDE_P2P_AGP_CAP ([1], default=1)HIDE
 	 *   HIDE_NB_GART_BAR ([2], default=1)HIDE
+	 *   HIDE_MMCFG_BAR   ([3], default=1)SHOW
 	 *   AGPMODE30        ([4], default=0)DISABLE
 	 *   AGP30ENCHANCED   ([5], default=0)DISABLE
 	 *   HIDE_AGP_CAP     ([8], default=1)ENABLE */
-	set_nbmisc_enable_bits(nb_dev, 0x00, 0x0000FFFF, 0 << 0 | 1 << 1 | 1 << 2 | 0 << 6);
+	set_nbmisc_enable_bits(nb_dev, 0x00, 0x0000FFFF, 0 << 0 | 1 << 1 | 1 << 2 | 0 << 3 | 0 << 6);
 
 	/* IOC_LAT_PERF_CNTR_CNTL */
 	set_nbmisc_enable_bits(nb_dev, 0x30, 0xFF, 0x00);

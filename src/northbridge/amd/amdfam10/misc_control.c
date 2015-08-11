@@ -38,7 +38,7 @@
  *
  * @param dev
  *
- * There is only one AGP aperture resource needed. The resoruce is added to
+ * There is only one AGP aperture resource needed. The resource is added to
  * the northbridge of BSP.
  *
  * The same trick can be used to augment legacy VGA resources which can
@@ -50,7 +50,7 @@
 static void mcf3_read_resources(device_t dev)
 {
 	struct resource *resource;
-	unsigned char iommu;
+	unsigned char gart;
 	/* Read the generic PCI resources */
 	pci_dev_read_resources(dev);
 
@@ -59,13 +59,13 @@ static void mcf3_read_resources(device_t dev)
 		return;
 	}
 
-	iommu = 1;
-	get_option(&iommu, "iommu");
+	gart = 1;
+	get_option(&gart, "gart");
 
-	if (iommu) {
+	if (gart) {
 		/* Add a Gart apeture resource */
 		resource = new_resource(dev, 0x94);
-		resource->size = iommu?CONFIG_AGP_APERTURE_SIZE:1;
+		resource->size = gart?CONFIG_AGP_APERTURE_SIZE:1;
 		resource->align = log2(resource->size);
 		resource->gran  = log2(resource->size);
 		resource->limit = 0xffffffff; /* 4G */

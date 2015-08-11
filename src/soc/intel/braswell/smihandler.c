@@ -127,6 +127,12 @@ static void tristate_gpios(uint32_t val)
 			HV_DDI2_DDC_SDA_MMIO_OFFSET, val);
 	write32((void *)COMMUNITY_GPNORTH_BASE +
 			HV_DDI2_DDC_SCL_MMIO_OFFSET, val);
+
+	/* Tri-state CFIO 139 and 140 */
+	write32((void *)COMMUNITY_GPSOUTHWEST_BASE +
+			CFIO_139_MMIO_OFFSET, val);
+	write32((void *)COMMUNITY_GPSOUTHWEST_BASE +
+			CFIO_140_MMIO_OFFSET, val);
 }
 
 

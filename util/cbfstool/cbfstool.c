@@ -150,8 +150,8 @@ static int cbfs_add_integer_component(const char *name,
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
 
-	if (cbfs_add_entry(&image, &buffer, name, CBFS_COMPONENT_RAW, offset) !=
-									0) {
+	if (cbfs_add_entry(&image, &buffer, name, CBFS_COMPONENT_RAW,
+		offset, 0) != 0) {
 		ERROR("Failed to add %llu into ROM image as '%s'.\n",
 					(long long unsigned)u64val, name);
 		goto done;
@@ -211,7 +211,7 @@ static int cbfs_add_component(const char *filename,
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
 
-	if (cbfs_add_entry(&image, &buffer, name, type, offset) != 0) {
+	if (cbfs_add_entry(&image, &buffer, name, type, offset, 0) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
 		buffer_delete(&buffer);
 		return 1;

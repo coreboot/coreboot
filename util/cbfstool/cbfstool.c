@@ -115,7 +115,8 @@ static unsigned convert_to_from_top_aligned(const struct buffer *region,
 	return image_size - region->offset - offset;
 }
 
-typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset);
+typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset,
+	uint32_t *header_size);
 
 static int cbfs_add_integer_component(const char *name,
 			      uint64_t u64val,
@@ -203,7 +204,7 @@ static int cbfs_add_component(const char *filename,
 
 	uint32_t header_size = cbfs_calculate_file_header_size(name);
 
-	if (convert && convert(&buffer, &offset) != 0) {
+	if (convert && convert(&buffer, &offset, &header_size) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
 		buffer_delete(&buffer);
 		return 1;
@@ -224,7 +225,8 @@ static int cbfs_add_component(const char *filename,
 	return 0;
 }
 
-static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset)
+static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
+	unused uint32_t *header_size)
 {
 	struct buffer output;
 	int ret;
@@ -239,7 +241,7 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset)
 }
 
 static int cbfstool_convert_mkpayload(struct buffer *buffer,
-						unused uint32_t *offset)
+	unused uint32_t *offset, unused uint32_t *header_size)
 {
 	struct buffer output;
 	int ret;
@@ -269,7 +271,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 }
 
 static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
-					  unused uint32_t *offset)
+	unused uint32_t *offset, unused uint32_t *header_size)
 {
 	struct buffer output;
 	if (parse_flat_binary_to_payload(buffer, &output,

@@ -140,6 +140,16 @@ static void dwc2_shutdown(hci_t *controller)
 	free(controller);
 }
 
+/* Test root port device connect status */
+static int dwc2_disconnected(hci_t *controller)
+{
+	dwc2_reg_t *reg = DWC2_REG(controller);
+	hprt_t hprt;
+
+	hprt.d32 = readl(&reg->host.hprt);
+	return !(hprt.prtena && hprt.prtconnsts);
+}
+
 /*
  * This function returns the actual transfer length when the transfer succeeded
  * or an error code if the transfer failed
@@ -179,9 +189,11 @@ wait_for_complete(endpoint_t *ep, uint32_t ch_num)
 			else
 				return -HCSTAT_UNKNOW;
 		}
-	} while (timeout--);
 
-	/* Release the channel on timeout */
+		if (dwc2_disconnected(ep->dev->controller))
+			return -HCSTAT_DISCONNECTED;
+	} while (timeout--);
+	/* Release the channel when hit timeout condition */
 	hcchar.d32 = readl(&reg->host.hchn[ch_num].hccharn);
 	if (hcchar.chen) {
 		/*
@@ -310,6 +322,9 @@ dwc2_split_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 	/* Wait for next frame boundary */
 	do {
 		hfnum.d32 = readl(&reg->host.hfnum);
+
+		if (dwc2_disconnected(ep->dev->controller))
+			return -HCSTAT_DISCONNECTED;
 	} while (hfnum.frnum % 8 != 0);
 
 	/* Handle Start-Split */

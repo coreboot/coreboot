@@ -46,9 +46,10 @@ entries
 473          2       e       13       dimm_spd_checksum
 475          1       e       14       probe_filter
 476          1       e       1        l3_cache_partitioning
-477          1       e       1        experimental_memory_speed_boost
-478          1       r       0        allow_spd_nvram_cache_restore
-479          1       e       1        ieee1394_controller
+477          1       e       1        ieee1394_controller
+478          1       e       1        iommu
+479          1       e       1        experimental_memory_speed_boost
+480          1       r       0        allow_spd_nvram_cache_restore
 728        256       h       0        user_data
 984         16       h       0        check_sum
 # Reserve the extended AMD configuration registers

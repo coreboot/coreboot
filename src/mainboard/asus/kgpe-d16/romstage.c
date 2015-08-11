@@ -165,10 +165,23 @@ static void set_ddr3_voltage(uint8_t node, uint8_t index) {
 
 static void set_peripheral_control_lines(void) {
 	uint8_t byte;
+	uint8_t nvram;
+	uint8_t enable_ieee1394;
 
-	/* Enable PCICLK5 (onboard FireWire device) */
-	outb(0x41, 0xcd6);
-	outb(0x02, 0xcd7);
+	enable_ieee1394 = 1;
+
+	if (get_option(&nvram, "ieee1394_controller") == CB_SUCCESS)
+		enable_ieee1394 = nvram & 0x1;
+
+	if (enable_ieee1394) {
+		/* Enable PCICLK5 (onboard FireWire device) */
+		outb(0x41, 0xcd6);
+		outb(0x02, 0xcd7);
+	} else {
+		/* Disable PCICLK5 (onboard FireWire device) */
+		outb(0x41, 0xcd6);
+		outb(0x00, 0xcd7);
+	}
 
 	/* Enable the RTC AltCentury register */
 	outb(0x41, 0xcd6);

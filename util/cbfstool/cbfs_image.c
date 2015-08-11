@@ -112,7 +112,7 @@ int cbfs_parse_comp_algo(const char *name)
 
 /* CBFS image */
 
-static size_t cbfs_calculate_file_header_size(const char *name)
+size_t cbfs_calculate_file_header_size(const char *name)
 {
 	return (sizeof(struct cbfs_file) +
 		align_up(strlen(name) + 1, CBFS_FILENAME_ALIGN));

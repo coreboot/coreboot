@@ -164,4 +164,6 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 			   void *arg);
 
+/* Returns the size of a cbfs file header with no extensions */
+size_t cbfs_calculate_file_header_size(const char *name);
 #endif

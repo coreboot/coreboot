@@ -499,11 +499,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb,ccache,clang Vhcd:p:j:D:tGyC -- "$@")
+	args=$(getopt -l version,help,clean,directory:,platform:,package:,jobs:,destdir:,savetemps,scripting,ccache Vhcd:p:P:j:D:tSy -- "$@")
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vhcd:p:j:D:tGyC $*)
+	args=$(getopt Vhcd:p:P:j:D:tSy $*)
 	set -- $args
 fi
 

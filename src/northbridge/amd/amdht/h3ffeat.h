@@ -75,6 +75,7 @@
 #define HTSLAVE_LINK01_OFFSET			4
 #define HTSLAVE_LINK_CONTROL_0_REG		4
 #define HTSLAVE_FREQ_REV_0_REG			0xC
+#define HTSLAVE_FEATURE_CAP_REG		0x10
 
 /* HT3 gen Capability */
 #define IS_HT_GEN3_CAPABILITY(reg) \
@@ -122,10 +123,12 @@ typedef struct
 	u8 SelWidthIn;
 	u8 SelWidthOut;
 	u8 SelFrequency;
+	uint8_t enable_isochronous_mode;
 
 	/* This section is for keeping track of capabilities and possible configurations */
 	BOOL RegangCap;
 	uint32_t PrvFrequencyCap;
+	uint32_t PrvFeatureCap;
 	u8 PrvWidthInCap;
 	u8 PrvWidthOutCap;
 	uint32_t CompositeFrequencyCap;

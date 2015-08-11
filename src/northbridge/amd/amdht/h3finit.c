@@ -1415,6 +1415,38 @@ static void regangLinks(sMainData *pDat)
 #endif /* HT_BUILD_NC_ONLY */
 }
 
+static void detectIoLinkIsochronousCapable(sMainData *pDat)
+{
+	uint8_t i;
+	unsigned char iommu;
+	uint8_t isochronous_capable = 0;
+
+	iommu = 1;
+	get_option(&iommu, "iommu");
+
+	for (i = 0; i < pDat->TotalLinks*2; i += 2) {
+		if ((pDat->PortList[i].Type == PORTLIST_TYPE_CPU) && (pDat->PortList[i+1].Type == PORTLIST_TYPE_IO)) {
+			if ((pDat->PortList[i].PrvFeatureCap & 0x1) && (pDat->PortList[i+1].PrvFeatureCap & 0x1)) {
+				pDat->PortList[i].enable_isochronous_mode = 1;
+				pDat->PortList[i+1].enable_isochronous_mode = 1;
+				isochronous_capable = 1;
+			} else {
+				pDat->PortList[i].enable_isochronous_mode = 0;
+				pDat->PortList[i+1].enable_isochronous_mode = 0;
+			}
+		}
+	}
+
+	if (isochronous_capable && iommu) {
+		printk(BIOS_DEBUG, "Forcing HT links to isochronous mode due to enabled IOMMU\n");
+		/* Isochronous mode must be set on all links if the IOMMU is enabled */
+		for (i = 0; i < pDat->TotalLinks*2; i += 2) {
+			pDat->PortList[i].enable_isochronous_mode = 1;
+			pDat->PortList[i+1].enable_isochronous_mode = 1;
+		}
+	}
+}
+
 /*----------------------------------------------------------------------------------------
  * void
  * selectOptimalWidthAndFrequency(sMainData *pDat)
@@ -1535,7 +1567,6 @@ static void selectOptimalWidthAndFrequency(sMainData *pDat)
 			temp = cbPCBBAUpstreamWidth;
 		pDat->PortList[i].SelWidthIn = (u8)temp;
 		pDat->PortList[i+1].SelWidthOut = (u8)temp;
-
 	}
 }
 
@@ -1697,6 +1728,8 @@ static void linkOptimization(sMainData *pDat)
 {
 	pDat->nb->gatherLinkData(pDat, pDat->nb);
 	regangLinks(pDat);
+	if (is_fam15h())
+		detectIoLinkIsochronousCapable(pDat);
 	selectOptimalWidthAndFrequency(pDat);
 	hammerSublinkFixup(pDat);
 	pDat->nb->setLinkData(pDat, pDat->nb);

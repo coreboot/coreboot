@@ -1429,12 +1429,15 @@ static void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
 				temp &= 0x7;	/* Mask off reserved values */
 				pDat->PortList[i].PrvFrequencyCap |= (temp << 17);
 			}
+
+			AmdPCIReadBits(linkBase + HTHOST_FEATURE_CAP_REG, 9, 0, &temp);
+			pDat->PortList[i].PrvFeatureCap = (u16)temp;
 		}
 		else
 		{
 			linkBase = pDat->PortList[i].Pointer;
 			if (pDat->PortList[i].Link == 1)
-			 linkBase += HTSLAVE_LINK01_OFFSET;
+				linkBase += HTSLAVE_LINK01_OFFSET;
 
 			AmdPCIReadBits(linkBase + HTSLAVE_LINK_CONTROL_0_REG, 22, 20, &temp);
 			pDat->PortList[i].PrvWidthOutCap = convertBitsToWidth((u8)temp, pDat->nb);
@@ -1444,6 +1447,9 @@ static void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
 
 			AmdPCIReadBits(linkBase + HTSLAVE_FREQ_REV_0_REG, 31, 16, &temp);
 			pDat->PortList[i].PrvFrequencyCap = (u16)temp;
+
+			AmdPCIReadBits(linkBase + HTSLAVE_FEATURE_CAP_REG, 7, 0, &temp);
+			pDat->PortList[i].PrvFeatureCap = (u16)temp;
 
 			if (pDat->HtBlock->AMD_CB_DeviceCapOverride)
 			{
@@ -1461,7 +1467,8 @@ static void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
 					pDat->PortList[i].Link,
 					&(pDat->PortList[i].PrvWidthInCap),
 					&(pDat->PortList[i].PrvWidthOutCap),
-					&(pDat->PortList[i].PrvFrequencyCap));
+					&(pDat->PortList[i].PrvFrequencyCap),
+					&(pDat->PortList[i].PrvFeatureCap));
 			}
 		}
 	}
@@ -1562,6 +1569,16 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 			if (is_gt_rev_d())
 				AmdPCIWriteBits(linkBase + HTHOST_FREQ_REV_REG_2, 0, 0, &temp2);
 			AmdPCIWriteBits(linkBase + HTHOST_FREQ_REV_REG, 11, 8, &temp);
+
+			/* Enable isochronous flow control mode if supported by chipset */
+			if (is_fam15h()) {
+				if (pDat->PortList[i].enable_isochronous_mode)
+					temp = 1;
+				else
+					temp = 0;
+				setHtControlRegisterBits(linkBase + HTHOST_LINK_CONTROL_REG, 12, 12, &temp);
+			}
+
 			if (frequency_index > HT_FREQUENCY_1000M) /*  Gen1 = 200MHz -> 1000MHz, Gen3 = 1200MHz -> 3200MHz */
 			{
 				/* Enable  for Gen3 frequencies */
@@ -1579,6 +1596,7 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 						CPU_HTNB_FUNC_00,
 						REG_HT_LINK_RETRY0_0X130 + 4*pDat->PortList[i].Link),
 						0, 0, &temp);
+
 			/* and Scrambling enable / disable */
 			AmdPCIWriteBits(MAKE_SBDFO(makePCISegmentFromNode(pDat->PortList[i].NodeID),
 					makePCIBusFromNode(pDat->PortList[i].NodeID),
@@ -1615,6 +1633,14 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 			{
 				/* Disabling features if gen 1 */
 				bits = 0;
+			}
+
+			/* Enable isochronous flow control mode if supported by chipset */
+			if (is_fam15h()) {
+				if (pDat->PortList[i].enable_isochronous_mode)
+					temp = 1;
+				else
+					temp = 0;
 			}
 
 			/* Retry Enable */

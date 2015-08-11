@@ -1666,6 +1666,67 @@ static void cpuSetAMDPCI(u8 node)
 		pci_write_config32(NODE_PCI(node, 3), 0x140, dword);
 	}
 
+	uint8_t link;
+	uint8_t isochronous;
+	uint8_t isochronous_link_present;
+
+	/* Set up isochronous buffers if needed */
+	isochronous_link_present = 0;
+	if (revision & AMD_FAM15_ALL) {
+		for (link = 0; link < 4; link++) {
+			if (AMD_CpuFindCapability(node, link, &offset)) {
+				isochronous = (pci_read_config32(NODE_PCI(node, 0), (link * 0x20) + 0x84) >> 12) & 0x1;
+
+				if (isochronous)
+					isochronous_link_present = 1;
+			}
+		}
+	}
+
+	uint8_t free_tok;
+	uint8_t up_rsp_cbc;
+	uint8_t isoc_preq_cbc;
+	uint8_t isoc_preq_tok;
+	uint8_t xbar_to_sri_free_list_cbc;
+	if (isochronous_link_present) {
+		/* Adjust buffer counts */
+		dword = pci_read_config32(NODE_PCI(node, 3), 0x70);
+		isoc_preq_cbc = (dword >> 24) & 0x7;
+		up_rsp_cbc = (dword >> 16) & 0x7;
+		up_rsp_cbc--;
+		isoc_preq_cbc++;
+		dword &= ~(0x7 << 24);			/* IsocPreqCBC = isoc_preq_cbc */
+		dword |= ((isoc_preq_cbc & 0x7) << 24);
+		dword &= ~(0x7 << 16);			/* UpRspCBC = up_rsp_cbc */
+		dword |= ((up_rsp_cbc & 0x7) << 16);
+		pci_write_config32(NODE_PCI(node, 3), 0x70, dword);
+
+		dword = pci_read_config32(NODE_PCI(node, 3), 0x74);
+		isoc_preq_cbc = (dword >> 24) & 0x7;
+		isoc_preq_cbc++;
+		dword &= ~(0x7 << 24);			/* IsocPreqCBC = isoc_preq_cbc */
+		dword |= (isoc_preq_cbc & 0x7) << 24;
+		pci_write_config32(NODE_PCI(node, 3), 0x74, dword);
+
+		dword = pci_read_config32(NODE_PCI(node, 3), 0x7c);
+		xbar_to_sri_free_list_cbc = dword & 0x1f;
+		xbar_to_sri_free_list_cbc--;
+		dword &= ~0x1f;				/* Xbar2SriFreeListCBC = xbar_to_sri_free_list_cbc */
+		dword |= xbar_to_sri_free_list_cbc & 0x1f;
+		pci_write_config32(NODE_PCI(node, 3), 0x7c, dword);
+
+		dword = pci_read_config32(NODE_PCI(node, 3), 0x140);
+		free_tok = (dword >> 20) & 0xf;
+		isoc_preq_tok = (dword >> 14) & 0x3;
+		free_tok--;
+		isoc_preq_tok++;
+		dword &= ~(0xf << 20);			/* FreeTok = free_tok */
+		dword |= ((free_tok & 0xf) << 20);
+		dword &= ~(0x3 << 14);			/* IsocPreqTok = isoc_preq_tok */
+		dword |= ((isoc_preq_tok & 0x3) << 14);
+		pci_write_config32(NODE_PCI(node, 3), 0x140, dword);
+	}
+
 	printk(BIOS_DEBUG, " done\n");
 }
 

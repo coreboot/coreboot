@@ -227,6 +227,7 @@ typedef struct {
 	 *	@param[in,out] u8*  LinkWidthIn  = modify to change the Link Witdh In
 	 *	@param[in,out] u8*  LinkWidthOut  = modify to change the Link Witdh Out
 	 *	@param[in,out] u32* FreqCap = modify to change the link's frequency capability
+	 *	@param[in,out] u32* FeatureCap = modify to change the link's feature capability
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
@@ -241,7 +242,8 @@ typedef struct {
 		u8 Link,
 		u8 *LinkWidthIn,
 		u8 *LinkWidthOut,
-		u32 *FreqCap
+		u32 *FreqCap,
+		u32 *FeatureCap
 	);
 
 	/**----------------------------------------------------------------------------------------

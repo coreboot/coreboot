@@ -39,13 +39,6 @@ HUDSON_FWM_POS_CALC=$(call int-add, $(call int-subtract, 0xffffffff $(call int-m
 HUDSON_FWM_POSITION=$(shell printf %u $(CONFIG_HUDSON_FWM_POSITION))
 HUDSON_FWM_INSIDE_CBFS=$(call int-lt, $(CBFS_BASE_ADDRESS) $(HUDSON_FWM_POSITION))
 
-ifneq ($(HUDSON_FWM_POS_CALC), $(HUDSON_FWM_POSITION))
-$(warning ##### WARNING: CONFIG_HUDSON_FWM_POSITION does not match calculated firmware position $(HUDSON_FWM_POS_CALC) != $(HUDSON_FWM_POSITION) ##### )
-endif
-ifneq ($(HUDSON_FWM_INSIDE_CBFS), 1)
-$(warning ##### WARNING: CONFIG_HUDSON_FWM_POSITION ($(HUDSON_FWM_POSITION)) is outside of CBFS area ($(CBFS_BASE_ADDRESS) to 4294967295) ##### )
-endif
-
 #assume the cbfs header is less than 128 bytes.
 ROMSIG_SIZE=16
 ifeq ($(CONFIG_HUDSON_XHCI_FWM), y)
@@ -88,6 +81,12 @@ $(obj)/coreboot_hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM
 	done > $@
 
 ifeq ($(CONFIG_HUDSON_FWM), y)
+ifneq ($(HUDSON_FWM_POS_CALC), $(HUDSON_FWM_POSITION))
+$(warning ##### WARNING: CONFIG_HUDSON_FWM_POSITION does not match calculated firmware position $(HUDSON_FWM_POS_CALC) != $(HUDSON_FWM_POSITION) ##### )
+endif
+ifneq ($(HUDSON_FWM_INSIDE_CBFS), 1)
+$(warning ##### WARNING: CONFIG_HUDSON_FWM_POSITION ($(HUDSON_FWM_POSITION)) is outside of CBFS area ($(CBFS_BASE_ADDRESS) to 4294967295) ##### )
+endif
 cbfs-files-y += hudson/fwm
 hudson/fwm-file := $(obj)/coreboot_hudson_romsig.bin
 hudson/fwm-position := $(HUDSON_FWM_POSITION)

@@ -30,6 +30,7 @@
 #include <cpu/x86/smm.h>
 #include <soc/intel/common/memmap.h>
 #include <reg_script.h>
+#include <soc/iosf.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>
@@ -86,6 +87,7 @@ void soc_init_cpus(device_t dev)
 	const struct pattrs *pattrs = pattrs_get();
 	struct mp_params mp_params;
 	void *default_smm_area;
+	uint32_t bsmrwac;
 
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));
@@ -103,6 +105,14 @@ void soc_init_cpus(device_t dev)
 	mp_params.microcode_pointer = pattrs->microcode_patch;
 
 	default_smm_area = backup_default_smm_area();
+
+	/*
+	 * Configure the BUNIT to allow dirty cache line evictions in non-SMM
+	 * mode for the lines that were dirtied while in SMM mode. Otherwise
+	 * the writes would be silently dropped.
+	 */
+	bsmrwac = iosf_bunit_read(BUNIT_SMRWAC) | SAI_IA_UNTRUSTED;
+	iosf_bunit_write(BUNIT_SMRWAC, bsmrwac);
 
 	/* Set package MSRs */
 	reg_script_run(package_msr_script);

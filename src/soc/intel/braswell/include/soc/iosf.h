@@ -131,8 +131,14 @@ void reg_script_write_iosf(struct reg_script_context *ctx);
 #define BUNIT_MMCONF_REG	0x27
 #define BUNIT_BMISC		0x28
 /* The SMMRR registers define the SMM region in MiB granularity. */
+#define BUNIT_SMRWAC	0x2d
 #define BUNIT_SMRRL		0x2e
 #define BUNIT_SMRRH		0x2f
+
+/* SA ID bits. */
+#define SAI_IA_UNTRUSTED	(1 << 0)
+#define SAI_IA_SMM			(1 << 2)
+#define SAI_IA_BOOT			(1 << 4)
 
 /*
  * LPSS Registers

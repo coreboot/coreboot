@@ -4,6 +4,7 @@
  * Copyright (C) 2004 SUSE LINUX AG
  * Copyright (C) 2004 Nick Barker
  * Copyright (C) 2008-2009 coresystems GmbH
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * (Written by Stefan Reinauer <stepan@coresystems.de>)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -189,6 +190,32 @@ typedef struct acpi_madt {
 	u32 lapic_addr;			/* Local APIC address */
 	u32 flags;			/* Multiple APIC flags */
 } __attribute__ ((packed)) acpi_madt_t;
+
+typedef struct acpi_ivrs_info {
+} __attribute__ ((packed)) acpi_ivrs_info_t;
+
+/* IVRS IVHD (I/O Virtualization Hardware Definition Block) */
+typedef struct acpi_ivrs_ivhd {
+	uint8_t type;
+	uint8_t flags;
+	uint16_t length;
+	uint16_t device_id;
+	uint16_t capability_offset;
+	uint32_t iommu_base_low;
+	uint32_t iommu_base_high;
+	uint16_t pci_segment_group;
+	uint16_t iommu_info;
+	uint32_t efr;
+	uint8_t entry[0];
+} __attribute__ ((packed)) acpi_ivrs_ivhd_t;
+
+/* IVRS (I/O Virtualization Reporting Structure) */
+typedef struct acpi_ivrs {
+	struct acpi_table_header header;
+	uint32_t iv_info;
+	uint32_t reserved[2];
+	struct acpi_ivrs_ivhd ivhd;
+} __attribute__ ((packed)) acpi_ivrs_t;
 
 enum dev_scope_type {
 	SCOPE_PCI_ENDPOINT = 1,
@@ -498,6 +525,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start);
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
+unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t* ivrs, unsigned long current);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt);
 #if IS_ENABLED(CONFIG_COMMON_FADT)
@@ -535,6 +563,9 @@ void acpi_create_srat(acpi_srat_t *srat,
 
 void acpi_create_slit(acpi_slit_t *slit,
 		      unsigned long (*acpi_fill_slit)(unsigned long current));
+
+void acpi_create_ivrs(acpi_ivrs_t *ivrs,
+		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t* ivrs_struct, unsigned long current));
 
 #if ENV_RAMSTAGE
 void acpi_create_hpet(acpi_hpet_t *hpet);

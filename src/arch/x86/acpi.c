@@ -6,6 +6,7 @@
  *
  * Copyright (C) 2004 SUSE LINUX AG
  * Copyright (C) 2005-2009 coresystems GmbH
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * ACPI FADT, FACS, and DSDT table support added by
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
@@ -529,6 +530,30 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	hpet->min_tick = CONFIG_HPET_MIN_TICKS;
 
 	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
+}
+
+void acpi_create_ivrs(acpi_ivrs_t *ivrs,
+		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t* ivrs_struct, unsigned long current))
+{
+	acpi_header_t *header = &(ivrs->header);
+	unsigned long current = (unsigned long)ivrs + sizeof(acpi_ivrs_t);
+
+	memset((void *)ivrs, 0, sizeof(acpi_ivrs_t));
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "IVRS", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->length = sizeof(acpi_ivrs_t);
+	header->revision = 1; /* ACPI 1.0: N/A, ACPI 2.0/3.0/4.0: 1 */
+
+	current = acpi_fill_ivrs(ivrs, current);
+
+	/* (Re)calculate length and checksum. */
+	header->length = current - (unsigned long)ivrs;
+	header->checksum = acpi_checksum((void *)ivrs, header->length);
 }
 
 unsigned long acpi_write_hpet(device_t device, unsigned long current, acpi_rsdp_t *rsdp)

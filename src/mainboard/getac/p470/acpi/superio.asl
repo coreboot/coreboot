@@ -127,28 +127,23 @@ Device (SIO1)
 				Return(NONE)
 			}
 
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR1._CRS._IOA._MIN, IOLO)
-			CreateByteField(RSRC, 0x03, IOHI) // Why?
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR1._CRS._IOA._MAX, IORL)
-			CreateByteField(RSRC, 0x05, IORH) // Why?
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR1._CRS._IRA._INT, IRQL)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR1._CRS._IOA._MIN, IOMN)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR1._CRS._IOA._MAX, IOMX)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR1._CRS._IRA._INT, IRQ)
 
-			Store (READ(0, 0x24, 0xff), Local0)
-			And (Local0, 0xc0, Local1)
-			ShiftRight(Local1, 0x06, Local1)
+			/* I/O Base */
+			Store (READ(0, 0x24, 0xfe), Local0)
 			ShiftLeft(Local0, 0x02, Local0)
-			Store(Local0, IOLO)
-			Store(Local1, IOHI)
-			Store(IOLO, IORL)
-			Store(IOHI, IORH)
+			Store(Local0, IOMN)
+			Store(Local0, IOMX)
 
 			/* Interrupt */
 			Store(READ(0, 0x28, 0xf0), Local0)
 			ShiftRight(Local0, 4, Local0)
-			ShiftLeft(1, Local0, IRQL)
+			ShiftLeft(1, Local0, IRQ)
 			Return(RSRC)
 		}
 
@@ -282,28 +277,23 @@ Device (SIO1)
 				Return(NONE)
 			}
 
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR2._CRS._IOB._MIN, IOLO)
-			CreateByteField(RSRC, 0x03, IOHI)
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR2._CRS._IOB._MAX, IORL)
-			CreateByteField(RSRC, 0x05, IORH)
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR2._CRS._IRB._INT, IRQL)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR2._CRS._IOB._MIN, IOMN)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR2._CRS._IOB._MAX, IOMX)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR2._CRS._IRB._INT, IRQ)
 
-			Store (READ(0, 0x25, 0xff), Local0)
-			And (Local0, 0xc0, Local1)
-			ShiftRight(Local1, 0x06, Local1)
+			/* I/O Base */
+			Store (READ(0, 0x25, 0xfe), Local0)
 			ShiftLeft(Local0, 0x02, Local0)
-			Store(Local0, IOLO)
-			Store(Local1, IOHI)
-			Store(IOLO, IORL)
-			Store(IOHI, IORH)
+			Store(Local0, IOMN)
+			Store(Local0, IOMX)
 
 			/* Interrupt */
 			Store(READ(0, 0x28, 0x0f), Local0)
 			ShiftRight(Local0, 4, Local0)
-			ShiftLeft(1, Local0, IRQL)
+			ShiftLeft(1, Local0, IRQ)
 			Return(RSRC)
 		}
 
@@ -436,28 +426,23 @@ Device (SIO1)
 				Return(NONE)
 			}
 
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR3._CRS._IOA._MIN, IOLO)
-			CreateByteField(RSRC, 0x03, IOHI) // Why?
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR3._CRS._IOA._MAX, IORL)
-			CreateByteField(RSRC, 0x05, IORH) // Why?
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR3._CRS._IRA._INT, IRQL)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR3._CRS._IOA._MIN, IOMN)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR3._CRS._IOA._MAX, IOMX)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR3._CRS._IRA._INT, IRQ)
 
-			Store (READ(0, 0x1b, 0xff), Local0)
-			And (Local0, 0xc0, Local1)
-			ShiftRight(Local1, 0x06, Local1)
+			/* I/O Base */
+			Store (READ(0, 0x1b, 0xfe), Local0)
 			ShiftLeft(Local0, 0x02, Local0)
-			Store(Local0, IOLO)
-			Store(Local1, IOHI)
-			Store(IOLO, IORL)
-			Store(IOHI, IORH)
+			Store(Local0, IOMN)
+			Store(Local0, IOMX)
 
 			/* Interrupt */
 			Store(READ(0, 0x1d, 0xf0), Local0)
 			ShiftRight(Local0, 4, Local0)
-			ShiftLeft(1, Local0, IRQL)
+			ShiftLeft(1, Local0, IRQ)
 			Return(RSRC)
 		}
 
@@ -588,28 +573,23 @@ Device (SIO1)
 				Return(NONE)
 			}
 
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR4._CRS._IOA._MIN, IOLO)
-			CreateByteField(RSRC, 0x03, IOHI) // Why?
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR4._CRS._IOA._MAX, IORL)
-			CreateByteField(RSRC, 0x05, IORH) // Why?
-			CreateByteField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.UAR4._CRS._IRA._INT, IRQL)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR4._CRS._IOA._MIN, IOMN)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR4._CRS._IOA._MAX, IOMX)
+			CreateWordField(RSRC,
+				\_SB.PCI0.LPCB.SIO1.UAR4._CRS._IRA._INT, IRQ)
 
-			Store (READ(0, 0x1c, 0xff), Local0)
-			And (Local0, 0xc0, Local1)
-			ShiftRight(Local1, 0x06, Local1)
+			/* I/O Base */
+			Store (READ(0, 0x1c, 0xfe), Local0)
 			ShiftLeft(Local0, 0x02, Local0)
-			Store(Local0, IOLO)
-			Store(Local1, IOHI)
-			Store(IOLO, IORL)
-			Store(IOHI, IORH)
+			Store(Local0, IOMN)
+			Store(Local0, IOMX)
 
 			/* Interrupt */
 			Store(READ(0, 0x1d, 0xf0), Local0)
 			ShiftRight(Local0, 4, Local0)
-			ShiftLeft(1, Local0, IRQL)
+			ShiftLeft(1, Local0, IRQ)
 			Return(RSRC)
 		}
 

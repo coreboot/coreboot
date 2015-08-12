@@ -580,6 +580,26 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		if (addr + need_size > addr_next)
 			continue;
 
+		// Test for complicated cases
+		if (content_offset > 0) {
+			if (addr_next < content_offset) {
+				DEBUG("Not for specified offset yet");
+				continue;
+			} else if (addr > content_offset) {
+				DEBUG("Exceed specified content_offset.");
+				break;
+			} else if (addr + header_size > content_offset) {
+				ERROR("Not enough space for header.\n");
+				break;
+			} else if (content_offset + buffer->size > addr_next) {
+				ERROR("Not enough space for content.\n");
+				break;
+			}
+		}
+
+		// TODO there are more few tricky cases that we may
+		// want to fit by altering offset.
+
 		// Can we simply put object here?
 		if (!content_offset || content_offset == addr + header_size) {
 			DEBUG("Filling new entry data (%zd bytes).\n",
@@ -613,27 +633,6 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 			return 0;
 		}
 
-		// We need to put content here, and the case is really
-		// complicated...
-		assert(content_offset);
-		if (content_offset > 0) {
-			if (addr_next < content_offset) {
-				DEBUG("Not for specified offset yet");
-				continue;
-			} else if (addr > content_offset) {
-				DEBUG("Exceed specified content_offset.");
-				break;
-			} else if (addr + header_size > content_offset) {
-				ERROR("Not enough space for header.\n");
-				break;
-			} else if (content_offset + buffer->size > addr_next) {
-				ERROR("Not enough space for content.\n");
-				break;
-			}
-		}
-
-		// TODO there are more few tricky cases that we may
-		// want to fit by altering offset.
 		DEBUG("section 0x%x+0x%x for content_offset 0x%x.\n",
 		      addr, addr_next - addr, content_offset);
 

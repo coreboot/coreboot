@@ -99,6 +99,11 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 /* Removes an entry from CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_remove_entry(struct cbfs_image *image, const char *name);
 
+/* Create a new cbfs file header structure to work with.
+   Returns newly allocated memory that the caller needs to free after use. */
+struct cbfs_file *cbfs_create_file_header(int type, size_t len,
+	const char *name);
+
 /* Initializes a new empty (type = NULL) entry with size and name in CBFS image.
  * Returns 0 on success, otherwise (ex, not found) non-zero. */
 int cbfs_create_empty_entry(struct cbfs_file *entry, int type,

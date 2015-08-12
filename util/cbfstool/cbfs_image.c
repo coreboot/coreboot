@@ -1020,10 +1020,14 @@ int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry)
 						strlen(CBFS_FILE_MAGIC));
 }
 
-int cbfs_create_empty_entry(struct cbfs_file *entry, int type,
+struct cbfs_file *cbfs_create_file_header(int type,
 			    size_t len, const char *name)
 {
-	memset(entry, CBFS_CONTENT_DEFAULT_VALUE, sizeof(*entry));
+	// assume that there won't be file names of ~1000 bytes
+	const int bufsize = 1024;
+
+	struct cbfs_file *entry = malloc(bufsize);
+	memset(entry, CBFS_CONTENT_DEFAULT_VALUE, bufsize);
 	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
 	entry->type = htonl(type);
 	entry->len = htonl(len);
@@ -1031,6 +1035,15 @@ int cbfs_create_empty_entry(struct cbfs_file *entry, int type,
 	entry->offset = htonl(cbfs_calculate_file_header_size(name));
 	memset(entry->filename, 0, ntohl(entry->offset) - sizeof(*entry));
 	strcpy(entry->filename, name);
+	return entry;
+}
+
+int cbfs_create_empty_entry(struct cbfs_file *entry, int type,
+			    size_t len, const char *name)
+{
+	struct cbfs_file *tmp = cbfs_create_file_header(type, len, name);
+	memcpy(entry, tmp, ntohl(tmp->offset));
+	free(tmp);
 	memset(CBFS_SUBHEADER(entry), CBFS_CONTENT_DEFAULT_VALUE, len);
 	return 0;
 }

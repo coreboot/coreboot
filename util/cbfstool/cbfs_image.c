@@ -616,18 +616,20 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		// We need to put content here, and the case is really
 		// complicated...
 		assert(content_offset);
-		if (addr_next < content_offset) {
-			DEBUG("Not for specified offset yet");
-			continue;
-		} else if (addr > content_offset) {
-			DEBUG("Exceed specified content_offset.");
-			break;
-		} else if (addr + header_size > content_offset) {
-			ERROR("Not enough space for header.\n");
-			break;
-		} else if (content_offset + buffer->size > addr_next) {
-			ERROR("Not enough space for content.\n");
-			break;
+		if (content_offset > 0) {
+			if (addr_next < content_offset) {
+				DEBUG("Not for specified offset yet");
+				continue;
+			} else if (addr > content_offset) {
+				DEBUG("Exceed specified content_offset.");
+				break;
+			} else if (addr + header_size > content_offset) {
+				ERROR("Not enough space for header.\n");
+				break;
+			} else if (content_offset + buffer->size > addr_next) {
+				ERROR("Not enough space for content.\n");
+				break;
+			}
 		}
 
 		// TODO there are more few tricky cases that we may

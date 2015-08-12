@@ -99,15 +99,31 @@ static void model_10xxx_init(device_t dev)
 	msr.hi &= ~(1 << (35-32));
 	wrmsr(BU_CFG2_MSR, msr);
 
-	/* Set SMM base address for this CPU */
-	msr = rdmsr(SMM_BASE_MSR);
-	msr.lo = SMM_BASE - (lapicid() * 0x400);
-	wrmsr(SMM_BASE_MSR, msr);
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		printk(BIOS_DEBUG, "Initializing SMM ASeg memory\n");
 
-	/* Enable the SMM memory window */
-	msr = rdmsr(SMM_MASK_MSR);
-	msr.lo |= (1 << 0); /* Enable ASEG SMRAM Range */
-	wrmsr(SMM_MASK_MSR, msr);
+		/* Set SMM base address for this CPU */
+		msr = rdmsr(SMM_BASE_MSR);
+		msr.lo = SMM_BASE - (lapicid() * 0x400);
+		wrmsr(SMM_BASE_MSR, msr);
+
+		/* Enable the SMM memory window */
+		msr = rdmsr(SMM_MASK_MSR);
+		msr.lo |= (1 << 0); /* Enable ASEG SMRAM Range */
+		wrmsr(SMM_MASK_MSR, msr);
+	} else {
+		printk(BIOS_DEBUG, "Disabling SMM ASeg memory\n");
+
+		/* Set SMM base address for this CPU */
+		msr = rdmsr(SMM_BASE_MSR);
+		msr.lo = SMM_BASE - (lapicid() * 0x400);
+		wrmsr(SMM_BASE_MSR, msr);
+
+		/* Disable the SMM memory window */
+		msr.hi = 0x0;
+		msr.lo = 0x0;
+		wrmsr(SMM_MASK_MSR, msr);
+	}
 
 	/* Set SMMLOCK to avoid exploits messing with SMM */
 	msr = rdmsr(HWCR_MSR);

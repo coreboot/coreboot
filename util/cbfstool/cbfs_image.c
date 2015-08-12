@@ -240,7 +240,8 @@ int cbfs_image_create(struct cbfs_image *image, size_t entries_size)
 
 	size_t capacity = entries_size - empty_header_len;
 	LOG("Created CBFS (capacity = %zu bytes)\n", capacity);
-	return cbfs_create_empty_entry(entry_header, capacity, "");
+	return cbfs_create_empty_entry(entry_header, CBFS_COMPONENT_NULL,
+		capacity, "");
 }
 
 int cbfs_legacy_image_create(struct cbfs_image *image,
@@ -436,7 +437,8 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 	if (last_entry_size < 0)
 		WARN("No room to create the last entry!\n")
 	else
-		cbfs_create_empty_entry(dst_entry, last_entry_size, "");
+		cbfs_create_empty_entry(dst_entry, CBFS_COMPONENT_NULL,
+			last_entry_size, "");
 
 	return 0;
 }
@@ -480,14 +482,14 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	if (target - addr > min_entry_size) {
 		DEBUG("|min|...|header|content|... <create new entry>\n");
 		len = target - addr - min_entry_size;
-		cbfs_create_empty_entry(entry, len, "");
+		cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL, len, "");
 		if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
 		entry = cbfs_find_next_entry(image, entry);
 		addr = cbfs_get_entry_addr(image, entry);
 	}
 
 	len = size + (content_offset - addr - header_size);
-	cbfs_create_empty_entry(entry, len, name);
+	cbfs_create_empty_entry(entry, type, len, name);
 	if (len != size) {
 		DEBUG("|..|header|content|... <use offset to create entry>\n");
 		DEBUG("before: offset=0x%x, len=0x%x\n",
@@ -501,7 +503,6 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 
 	// Ready to fill data into entry.
 	assert(ntohl(entry->len) == size);
-	entry->type = htonl(type);
 	DEBUG("content_offset: 0x%x, entry location: %x\n",
 	      content_offset, (int)((char*)CBFS_SUBHEADER(entry) -
 				    image->buffer.data));
@@ -527,7 +528,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	}
 
 	len = addr_next - addr - min_entry_size;
-	cbfs_create_empty_entry(entry, len, "");
+	cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL, len, "");
 	if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
 	return 0;
 }
@@ -583,8 +584,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		if (!content_offset || content_offset == addr + header_size) {
 			DEBUG("Filling new entry data (%zd bytes).\n",
 			      buffer->size);
-			cbfs_create_empty_entry(entry, buffer->size, name);
-			entry->type = htonl(type);
+			cbfs_create_empty_entry(entry, type, buffer->size, name);
 			memcpy(CBFS_SUBHEADER(entry), buffer->data, buffer->size);
 			if (verbose)
 				cbfs_print_entry_info(image, entry, stderr);
@@ -606,7 +606,8 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 			}
 			new_size -= cbfs_calculate_file_header_size("");
 			DEBUG("new size: %d\n", new_size);
-			cbfs_create_empty_entry(entry, new_size, "");
+			cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL,
+				new_size, "");
 			if (verbose)
 				cbfs_print_entry_info(image, entry, stderr);
 			return 0;
@@ -886,7 +887,7 @@ int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 		DEBUG("join_empty_entry: combine 0x%x+0x%x and 0x%x+0x%x.\n",
 		      cbfs_get_entry_addr(image, entry), ntohl(entry->len),
 		      cbfs_get_entry_addr(image, next), ntohl(next->len));
-		cbfs_create_empty_entry(entry,
+		cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL,
 					(last_addr - addr -
 					 cbfs_calculate_file_header_size("")),
 					"");
@@ -1019,12 +1020,12 @@ int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry)
 						strlen(CBFS_FILE_MAGIC));
 }
 
-int cbfs_create_empty_entry(struct cbfs_file *entry,
+int cbfs_create_empty_entry(struct cbfs_file *entry, int type,
 			    size_t len, const char *name)
 {
 	memset(entry, CBFS_CONTENT_DEFAULT_VALUE, sizeof(*entry));
 	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
-	entry->type = htonl(CBFS_COMPONENT_NULL);
+	entry->type = htonl(type);
 	entry->len = htonl(len);
 	entry->attributes_offset = 0;
 	entry->offset = htonl(cbfs_calculate_file_header_size(name));

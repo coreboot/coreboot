@@ -101,7 +101,7 @@ int cbfs_remove_entry(struct cbfs_image *image, const char *name);
 
 /* Initializes a new empty (type = NULL) entry with size and name in CBFS image.
  * Returns 0 on success, otherwise (ex, not found) non-zero. */
-int cbfs_create_empty_entry(struct cbfs_file *entry,
+int cbfs_create_empty_entry(struct cbfs_file *entry, int type,
 			    size_t len, const char *name);
 
 /* Finds a location to put given content by specified criteria:

@@ -546,7 +546,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 	uint32_t entry_type;
 	uint32_t addr, addr_next;
 	struct cbfs_file *entry, *next;
-	uint32_t need_size, new_size;
+	uint32_t need_size;
 
 	if (header_size == 0)
 		header_size = cbfs_calculate_file_header_size(name);
@@ -600,37 +600,10 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		// TODO there are more few tricky cases that we may
 		// want to fit by altering offset.
 
-		// Can we simply put object here?
-		if (!content_offset || content_offset == addr + header_size) {
-			DEBUG("Filling new entry data (%zd bytes).\n",
-			      buffer->size);
-			cbfs_create_empty_entry(entry, type, buffer->size, name);
-			memcpy(CBFS_SUBHEADER(entry), buffer->data, buffer->size);
-			if (verbose)
-				cbfs_print_entry_info(image, entry, stderr);
-
-			// setup new entry
-			DEBUG("Setting new empty entry.\n");
-			entry = cbfs_find_next_entry(image, entry);
-			new_size = (cbfs_get_entry_addr(image, next) -
-				    cbfs_get_entry_addr(image, entry));
-
-			/* Entry was added and no space for new "empty" entry */
-			if (new_size < cbfs_calculate_file_header_size("")) {
-				DEBUG("No need for new \"empty\" entry\n");
-				/* No need to increase the size of the just
-				 * stored file to extend to next file. Alignment
-				 * of next file takes care of this.
-				 */
-				return 0;
-			}
-			new_size -= cbfs_calculate_file_header_size("");
-			DEBUG("new size: %d\n", new_size);
-			cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL,
-				new_size, "");
-			if (verbose)
-				cbfs_print_entry_info(image, entry, stderr);
-			return 0;
+		if (content_offset == 0) {
+			// we tested every condition earlier under which
+			// placing the file there might fail
+			content_offset = addr + header_size;
 		}
 
 		DEBUG("section 0x%x+0x%x for content_offset 0x%x.\n",

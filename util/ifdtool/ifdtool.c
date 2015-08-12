@@ -101,52 +101,55 @@ static void check_ifd_version(char *image, int size)
 
 static region_t get_region(frba_t *frba, int region_type)
 {
+	int base_mask;
+	int limit_mask;
+	uint32_t *flreg;
 	region_t region;
-	region.base = 0, region.limit = 0, region.size = 0;
+
+	if (ifd_version >= IFD_VERSION_2)
+		base_mask = 0x7fff;
+	else
+		base_mask = 0xfff;
+
+	limit_mask = base_mask << 16;
 
 	switch (region_type) {
 	case 0:
-		region.base = (frba->flreg0 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg0 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg0;
 		break;
 	case 1:
-		region.base = (frba->flreg1 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg1 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg1;
 		break;
 	case 2:
-		region.base = (frba->flreg2 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg2 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg2;
 		break;
 	case 3:
-		region.base = (frba->flreg3 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg3 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg3;
 		break;
 	case 4:
-		region.base = (frba->flreg4 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg4 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg4;
 		break;
 	case 5:
-		region.base = (frba->flreg5 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg5 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg5;
 		break;
 	case 6:
-		region.base = (frba->flreg6 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg6 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg6;
 		break;
 	case 7:
-		region.base = (frba->flreg7 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg7 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg7;
 		break;
 	case 8:
-		region.base = (frba->flreg8 & 0x00000fff) << 12;
-		region.limit = ((frba->flreg8 & 0x0fff0000) >> 4) | 0xfff;
+		flreg = &frba->flreg8;
 		break;
 	default:
 		fprintf(stderr, "Invalid region type %d.\n", region_type);
 		exit (EXIT_FAILURE);
 	}
 
+	region.base = (*flreg & base_mask) << 12;
+	region.limit = ((*flreg & limit_mask) >> 4) | 0xfff;
 	region.size = region.limit - region.base + 1;
+
 	if (region.size < 0)
 		region.size = 0;
 

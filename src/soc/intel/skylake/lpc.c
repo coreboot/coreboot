@@ -54,15 +54,16 @@
 static void pch_enable_ioapic(struct device *dev)
 {
 	u32 reg32;
+	/* PCH-LP has 120 redirection entries */
+	const int redir_entries = 120;
 
 	set_ioapic_id((void *)IO_APIC_ADDR, 0x02);
 
 	/* affirm full set of redirection table entries ("write once") */
 	reg32 = io_apic_read((void *)IO_APIC_ADDR, 0x01);
 
-	/* PCH-LP has 39 redirection entries */
 	reg32 &= ~0x00ff0000;
-	reg32 |= 0x00270000;
+	reg32 |= (redir_entries - 1) << 16;
 
 	io_apic_write((void *)IO_APIC_ADDR, 0x01, reg32);
 

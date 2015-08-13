@@ -30,7 +30,7 @@
 	.align bits; \
 	name:
 
-#define ENTRY(name) ENTRY_WITH_ALIGN(name, 0)
+#define ENTRY(name) ENTRY_WITH_ALIGN(name, 2)
 
 #define END(name) \
 	.size name, .-name

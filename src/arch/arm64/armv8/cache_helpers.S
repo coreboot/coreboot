@@ -54,7 +54,7 @@
 	b	do_dcsw_op
 .endm
 
-do_dcsw_op:
+ENTRY(do_dcsw_op)
 	cbz	x3, exit
 	mov	x10, xzr
 	adr	x14, dcsw_loop_table	// compute inner loop address
@@ -92,6 +92,7 @@ level_done:
 	isb
 exit:
 	ret
+ENDPROC(do_dcsw_op)
 
 .macro	dcsw_loop _op
 loop2_\_op:

@@ -211,7 +211,8 @@ fi
 
 # Results will be placed in a temporary location until we're ready to upload.
 # If the user does not wish to upload, results will remain in /tmp.
-tmpdir=$(mktemp -d coreboot_board_status.XXXXXXXX)
+tmpdir=$(mktemp -d --tmpdir coreboot_board_status.XXXXXXXX)
+tmpcfg=$(mktemp coreboot_config.XXXXXX)
 
 cbfstool_cmd="build/cbfstool"
 if test ! -x build/cbfstool; then
@@ -219,8 +220,11 @@ if test ! -x build/cbfstool; then
 fi
 test_cmd $LOCAL "$cbfstool_cmd"
 $cbfstool_cmd build/coreboot.rom extract -n config -f ${tmpdir}/config.txt
-cp ${tmpdir}/config.txt ${tmpdir}/config.short.txt
-yes "" | make DOTCONFIG=${tmpdir}/config.txt oldconfig
+mv ${tmpdir}/config.txt ${tmpdir}/config.short.txt
+cp ${tmpdir}/config.short.txt ${tmpcfg}
+yes "" | make DOTCONFIG=${tmpcfg} oldconfig 2>/dev/null >/dev/null
+mv ${tmpcfg} ${tmpdir}/config.txt
+rm -f ${tmpcfg}.old
 $cbfstool_cmd build/coreboot.rom print > ${tmpdir}/cbfs.txt
 
 # Obtain board and revision info to form the directory structure:

@@ -788,11 +788,10 @@ int rk_hdmi_get_edid(struct edid *edid)
 		edid_size += HDMI_EDID_BLOCK_SIZE;
 	}
 
-	ret = decode_edid(edid_buf, edid_size, edid);
-	if (ret) {
+	/* Assume usage of HDMI implies an external display in which case
+	 * we should be lenient about errors that the EDID decoder finds. */
+	if (decode_edid(edid_buf, edid_size, edid))
 		hdmi_debug("failed to decode edid.\n");
-		return -1;
-	}
 
 	return 0;
 }

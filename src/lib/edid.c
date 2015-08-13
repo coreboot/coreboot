@@ -1001,12 +1001,13 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 
 	dump_breakdown(edid);
 
+	memset(out, 0, sizeof(*out));
+
 	if (!edid || memcmp(edid, "\x00\xFF\xFF\xFF\xFF\xFF\xFF\x00", 8)) {
 		printk(BIOS_SPEW, "No header found\n");
 		return 1;
 	}
 
-	memset(out, 0, sizeof(*out));
 	if (manufacturer_name(edid + 0x08))
 		c.manufacturer_name_well_formed = 1;
 

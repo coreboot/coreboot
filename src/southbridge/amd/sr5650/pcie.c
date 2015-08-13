@@ -850,6 +850,9 @@ void sr56x0_lock_hwinitreg(void)
 
 	/* Lock HWInit Register NBMISCIND:0x0 NBCNTL[7] HWINIT_WR_LOCK */
 	set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 7, 1 << 7);
+
+	/* Hide clock configuration PCI device HIDE_CLKCFG_HEADER */
+	set_nbmisc_enable_bits(nb_dev, 0x00, 0x00000100, 1 << 8);
 }
 
 /*****************************************

@@ -19,8 +19,12 @@
 
 #include <soc/gpio.h>
 
-#define BOARD_TRACKPAD_I2C_ADDR		0x15
-#define BOARD_TRACKPAD_IRQ		GPP_B3_IRQ
+#define BOARD_TOUCHPAD_I2C_ADDR			0x15
+#define BOARD_TOUCHPAD_IRQ			GPP_B3_IRQ
+
+#define BOARD_HP_MIC_CODEC_I2C_ADDR		0x1a
+#define BOARD_LEFT_SPEAKER_AMP_I2C_ADDR		0x34
+#define BOARD_RIGHT_SPEAKER_AMP_I2C_ADDR	0x35
 
 Scope (\_SB)
 {
@@ -68,30 +72,31 @@ Scope (\_SB.PCI0.LPCB)
 	#include <drivers/pc80/tpm/acpi/tpm.asl>
 }
 
-/* Trackpad */
 Scope (\_SB.PCI0.I2C1)
 {
-	Device (ELAN)
+	/* Touchpad */
+	Device (ELTP)
 	{
 		Name (_HID, "ELAN0000")
 		Name (_DDN, "Elan Touchpad")
-		Name (_UID, 3)
+		Name (_UID, 1)
 		Name (_S0W, 4)
-		Name (ISTP, 1) /* TouchPad */
+
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (
-				BOARD_TRACKPAD_I2C_ADDR,	/* SlaveAddress */
-				ControllerInitiated,		/* SlaveMode */
-				400000,				/* ConnectionSpeed */
-				AddressingMode7Bit,		/* AddressingMode */
-				"\\_SB.PCI0.I2C1",		/* ResourceSource */
+				BOARD_TOUCHPAD_I2C_ADDR,
+				ControllerInitiated,
+				400000,
+				AddressingMode7Bit,
+				"\\_SB.PCI0.I2C1",
 			)
 			Interrupt (ResourceConsumer, Edge, ActiveLow)
 			{
-				BOARD_TRACKPAD_IRQ
+				BOARD_TOUCHPAD_IRQ
 			}
 		})
+
 		Method (_STA)
 		{
 			Return (0xF)
@@ -101,7 +106,8 @@ Scope (\_SB.PCI0.I2C1)
 
 Scope (\_SB.PCI0.I2C4)
 {
-	Device (CODC) // Codec for headset
+	/* Headphone Codec */
+	Device (HPMC)
 	{
 		Name (_HID, "10508825")
 		Name (_DDN, "NAU88L25 Codec")
@@ -110,11 +116,11 @@ Scope (\_SB.PCI0.I2C4)
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (
-				0x1A,				/* SlaveAddress */
-				ControllerInitiated,		/* SlaveMode */
-				400000,				/* ConnectionSpeed */
-				AddressingMode7Bit,		/* AddressingMode */
-				"\\_SB.PCI0.I2C4",		/* ResourceSource */
+				BOARD_HP_MIC_CODEC_I2C_ADDR,
+				ControllerInitiated,
+				400000,
+				AddressingMode7Bit,
+				"\\_SB.PCI0.I2C4",
 			)
 		})
 
@@ -124,7 +130,8 @@ Scope (\_SB.PCI0.I2C4)
 		}
 	}
 
-	Device (SPK0) // Left speaker Amp
+	/* Left Speaker Amp */
+	Device (SPKL)
 	{
 		Name (_HID, "INT343B")
 		Name (_DDN, "SSM4567 Speaker Amp")
@@ -133,11 +140,11 @@ Scope (\_SB.PCI0.I2C4)
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (
-				0x34,				/* SlaveAddress */
-				ControllerInitiated,		/* SlaveMode */
-				400000,				/* ConnectionSpeed */
-				AddressingMode7Bit,		/* AddressingMode */
-				"\\_SB.PCI0.I2C4",		/* ResourceSource */
+				BOARD_LEFT_SPEAKER_AMP_I2C_ADDR,
+				ControllerInitiated,
+				400000,
+				AddressingMode7Bit,
+				"\\_SB.PCI0.I2C4",
 			)
 		})
 
@@ -147,7 +154,8 @@ Scope (\_SB.PCI0.I2C4)
 		}
 	}
 
-	Device (SPK1) // Right speaker Amp
+	/* Right Speaker Amp */
+	Device (SPKR)
 	{
 		Name (_HID, "INT343B")
 		Name (_DDN, "SSM4567 Speaker Amp")
@@ -156,11 +164,11 @@ Scope (\_SB.PCI0.I2C4)
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (
-				0x35,				/* SlaveAddress */
-				ControllerInitiated,		/* SlaveMode */
-				400000,				/* ConnectionSpeed */
-				AddressingMode7Bit,		/* AddressingMode */
-				"\\_SB.PCI0.I2C4",		/* ResourceSource */
+				BOARD_RIGHT_SPEAKER_AMP_I2C_ADDR,
+				ControllerInitiated,
+				400000,
+				AddressingMode7Bit,
+				"\\_SB.PCI0.I2C4",
 			)
 		})
 

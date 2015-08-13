@@ -53,6 +53,7 @@ int google_chromeec_kbbacklight(int percent);
 void google_chromeec_post(u8 postcode);
 void google_chromeec_log_events(u32 mask);
 int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len);
+uint8_t google_chromeec_get_switches(void);
 
 /* For MEC, access ranges 0x800 thru 0x9ff using EMI interface instead of LPC */
 #define MEC_EMI_RANGE_START EC_HOST_CMD_REGION0

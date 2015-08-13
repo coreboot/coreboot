@@ -17,8 +17,10 @@
  * Foundation, Inc.
  */
 
+#include <soc/gpio.h>
+
 #define BOARD_TRACKPAD_I2C_ADDR		0x15
-#define BOARD_TRACKPAD_IRQ		0x33
+#define BOARD_TRACKPAD_IRQ		GPP_B3_IRQ
 
 Scope (\_SB)
 {
@@ -31,7 +33,7 @@ Scope (\_SB)
 		}
 
 		/* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
-		Name (_PRW, Package(){ 112, 5 }) /* LAN_WAKE_EN */
+		Name (_PRW, Package(){ GPE0_LAN_WAK, 5 })
 	}
 
 	Device (PWRB)

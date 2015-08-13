@@ -23,11 +23,10 @@
 
 #include <ec/google/chromeec/ec_commands.h>
 #include <soc/gpio.h>
+#include <soc/gpe.h>
 
-/* GPP_E16 is EC_SCI_L, however the EC_SCI_GPI needs to be a bit
- * number relative to the GPE0 block. GPP_E is routed as the dword 2
- * in the GPE0 block. Therefore, 16 + 2 * 32 = 80. */
-#define EC_SCI_GPI	80
+/* GPP_E16 is EC_SCI_L. GPP_E group is routed to dword 2 in the GPE0 block. */
+#define EC_SCI_GPI	GPE0_DW2_16
 #define EC_SMI_GPI	GPP_E15
 
 #define MAINBOARD_EC_SCI_EVENTS \

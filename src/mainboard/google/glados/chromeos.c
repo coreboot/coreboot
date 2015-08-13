@@ -23,9 +23,13 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <rules.h>
+#include <gpio.h>
 #include <soc/gpio.h>
 #include <string.h>
+#include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#include "ec.h"
 
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
@@ -55,20 +59,36 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_lid_switch(void)
 {
-	return 1;
+	/* Read lid switch state from the EC. */
+	return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
 }
-/* The dev-switch is virtual */
+
 int get_developer_mode_switch(void)
 {
+	/* No physical developer mode switch. */
 	return 0;
 }
 
 int get_recovery_mode_switch(void)
 {
-	return 0;
+	/* Check for dedicated recovery switch first. */
+	if (google_chromeec_get_switches() & EC_SWITCH_DEDICATED_RECOVERY)
+		return 1;
+
+	/* Otherwise check if the EC has posted the keyboard recovery event. */
+	return !!(google_chromeec_get_events_b() &
+		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+}
+
+int clear_recovery_mode_switch(void)
+{
+	/* Clear keyboard recovery event. */
+	return google_chromeec_clear_events_b(
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
 int get_write_protect_state(void)
 {
-	return 0;
+	/* Read PCH_WP GPIO. */
+	return gpio_get(GPP_C23);
 }

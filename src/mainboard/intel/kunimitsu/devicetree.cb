@@ -33,6 +33,8 @@ chip soc/intel/skylake
 	register "PcieRpEnable[4]" = "1"
 	register "PcieRpClkReqNumber[0]" = "1"
 	register "PcieRpClkReqNumber[4]" = "2"
+	register "PcieRpClkReqSupport[0]" = "1"
+	register "PcieRpClkReqSupport[4]" = "1"
 
 	# GPE configuration
 	register "gpe0_en_1" = "0x00000000"
@@ -106,15 +108,15 @@ chip soc/intel/skylake
 		device pci 19.0 on  end # UART Controller #2
 		device pci 19.1 on  end # I2C Controller #5
 		device pci 19.2 on  end # I2C Controller #4
-		device pci 1c.0 off end # PCI Express Port 1
+		device pci 1c.0 on  end # PCI Express Port 1
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
 		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 off end # PCI Express Port 5
+		device pci 1c.4 on  end # PCI Express Port 5
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on  end # PCI Express Port 9
+		device pci 1d.0 off end # PCI Express Port 9
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12

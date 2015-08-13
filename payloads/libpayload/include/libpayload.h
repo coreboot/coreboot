@@ -210,7 +210,14 @@ void video_console_set_cursor(unsigned int cursorx, unsigned int cursory);
  * print characters on video console with colors. note that there is a size
  * restriction for the internal buffer. so, output string can be truncated.
  */
-void video_printf(int foreground, int background, const char *fmt, ...);
+enum video_printf_align {
+	VIDEO_PRINTF_ALIGN_KEEP = 0,
+	VIDEO_PRINTF_ALIGN_LEFT,
+	VIDEO_PRINTF_ALIGN_CENTER,
+	VIDEO_PRINTF_ALIGN_RIGHT,
+};
+void video_printf(int foreground, int background, enum video_printf_align align,
+		  const char *fmt, ...);
 /** @} */
 
 /**

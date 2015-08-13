@@ -162,7 +162,8 @@ void video_console_putchar(unsigned int ch)
 	video_console_fixup_cursor();
 }
 
-void video_printf(int foreground, int background, const char *fmt, ...)
+void video_printf(int foreground, int background, enum video_printf_align align,
+		  const char *fmt, ...)
 {
 	int i = 0, len;
 	char str[200];
@@ -173,6 +174,29 @@ void video_printf(int foreground, int background, const char *fmt, ...)
 	va_end(ap);
 	if (len <= 0)
 		return;
+
+	/* vsnprintf can return len larger than size. when it happens,
+	 * only size-1 characters have been actually written. */
+	if (len >= ARRAY_SIZE(str))
+		len = ARRAY_SIZE(str) - 1;
+
+	if (len > console->columns) {
+		cursorx = 0;
+	} else {
+		switch (align) {
+		case VIDEO_PRINTF_ALIGN_LEFT:
+			cursorx = 0;
+			break;
+		case VIDEO_PRINTF_ALIGN_CENTER:
+			cursorx = (console->columns - len) / 2;
+			break;
+		case VIDEO_PRINTF_ALIGN_RIGHT:
+			cursorx = console->columns - len;
+			break;
+		default:
+			break;
+		}
+	}
 
 	foreground &= 0xf;
 	foreground <<= 8;

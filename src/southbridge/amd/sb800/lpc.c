@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +25,6 @@
 #include <arch/io.h>
 #include <arch/acpi.h>
 #include "sb800.h"
-
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-       /* Just a dummy */
-       return current;
-}
 
 static void lpc_init(device_t dev)
 {

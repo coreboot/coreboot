@@ -740,7 +740,10 @@ static void amdfam10_domain_read_resources(device_t dev)
 	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT)) {
 		struct resource *res = new_resource(dev, 0xc0010058);
 		res->base = CONFIG_MMCONF_BASE_ADDRESS;
-		res->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
+		res->size = CONFIG_MMCONF_BUS_NUMBER * 1024 * 1024;	/* Each bus needs 1M */
+		res->align = log2(res->size);
+		res->gran = log2(res->size);
+		res->limit = 0xffffffffffffffffULL;			/* 64-bit location allowed */
 		res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 			IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
 

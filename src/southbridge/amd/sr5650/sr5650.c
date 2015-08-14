@@ -34,6 +34,21 @@
 extern void set_pcie_dereset(void);
 extern void set_pcie_reset(void);
 
+struct resource * sr5650_retrieve_cpu_mmio_resource() {
+	device_t cpu;
+	struct resource *res;
+
+	for (cpu = all_devices; cpu; cpu = cpu->next) {
+		if (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)
+			continue;
+		res = probe_resource(cpu->bus->dev, 0xc0010058);
+		if (res)
+			return res;
+	}
+
+	return NULL;
+}
+
 /* extension registers */
 u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg)
 {
@@ -794,6 +809,22 @@ static void add_ivrs_device_entries(struct device *parent, struct device *dev, i
 			add_ivrs_device_entries(dev, sibling, depth + 1, depth, root_level, current, length);
 
 	free(root_level);
+}
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	struct resource *res;
+	resource_t mmconf_base = EXT_CONF_BASE_ADDRESS;
+
+	if (IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)) {
+        	res = sr5650_retrieve_cpu_mmio_resource();
+        	if (res)
+			mmconf_base = res->base;
+
+		current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current, mmconf_base, 0x0, 0x0, 0x1f);
+	}
+
+	return current;
 }
 
 static unsigned long acpi_fill_ivrs(acpi_ivrs_t* ivrs, unsigned long current)

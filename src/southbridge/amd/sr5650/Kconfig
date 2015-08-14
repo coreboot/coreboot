@@ -15,3 +15,12 @@
 
 config SOUTHBRIDGE_AMD_SR5650
 	bool
+
+if SOUTHBRIDGE_AMD_SR5650
+config EXT_CONF_SUPPORT
+	bool "Enable PCI-E MMCONFIG support"
+	default y
+	help
+	  Select to enable PCI-E MMCONFIG support on the SR5650.
+
+endif

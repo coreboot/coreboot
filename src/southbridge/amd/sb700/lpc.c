@@ -30,12 +30,6 @@
 #include <cpu/amd/powernow.h>
 #include "sb700.h"
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-       /* Just a dummy */
-       return current;
-}
-
 static void lpc_init(device_t dev)
 {
 	u8 byte;

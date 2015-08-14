@@ -15,6 +15,7 @@
 
 #include <console/console.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -348,6 +349,17 @@ void rs780_enable(device_t dev)
 		printk(BIOS_DEBUG, "unknown dev: %s\n", dev_path(dev));
 	}
 }
+
+#if !IS_ENABLED(CONFIG_AMD_SB_CIMX)
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* FIXME
+	 * Leave table blank until proper contents
+	 * are determined.
+	 */
+	return current;
+}
+#endif
 
 struct chip_operations southbridge_amd_rs780_ops = {
 	CHIP_NAME("ATI RS780")

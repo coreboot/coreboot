@@ -131,4 +131,5 @@ void sr5650_iommu_enable_resources(device_t dev);
 void sr5650_nb_pci_table(device_t nb_dev);
 void init_gen2(device_t nb_dev, device_t dev, u8 port);
 void sr56x0_lock_hwinitreg(void);
+struct resource * sr5650_retrieve_cpu_mmio_resource(void);
 #endif /* SR5650_H */

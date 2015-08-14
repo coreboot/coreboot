@@ -22,11 +22,14 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
+#include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <mainboard/intel/kunimitsu/spd/spd.h>
+#include <boardid.h>
+#include <mainboard/intel/kunimitsu/boardid.h>
 
 static void mainboard_print_spd_info(uint8_t spd[])
 {
@@ -84,7 +87,23 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
 	char *spd_file;
 	size_t spd_file_len;
-	int spd_index;
+	int spd_index, sku_id;
+
+	gpio_t spd_gpios[] = {
+		GPP_C12,	/* PCH_MEM_CONFIG[0] */
+		GPP_C13,	/* PCH_MEM_CONFIG[1] */
+		GPP_C14,	/* PCH_MEM_CONFIG[2] */
+		GPP_C15,	/* PCH_MEM_CONFIG[3] */
+	};
+
+	spd_index = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+	/*
+	 * XXX: This is incorrect usage.The Board ID should be the revision ID
+	 *      and not SKU ID but on SCRD it indicates SKU.
+	 */
+	sku_id = board_id();
+	printk(BIOS_ERR, "SPD index %d\n", spd_index);
+	printk(BIOS_ERR, "Board ID %d\n", sku_id);
 
 	/* Load SPD data from CBFS */
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
@@ -96,9 +115,6 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	if (spd_file_len < SPD_LEN)
 		die("Missing SPD data.");
 
-	/* Add board SKU detection here.  Currently we only support one. */
-	spd_index = 0;
-
 	/* Make sure we did not overrun the buffer */
 	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
@@ -108,7 +124,14 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	/* Assume same memory in both channels */
 	spd_index *= SPD_LEN;
 	memcpy(pei_data->spd_data[0][0], spd_file + spd_index, SPD_LEN);
-	memcpy(pei_data->spd_data[1][0], spd_file + spd_index, SPD_LEN);
+	/*
+	 * XXX: This is incorrect usage. mem_cfg should be used here instead of
+	 *	SKU ID. The current implementation of mem_config does not
+	 *	support channel population.
+	 */
+
+	if (sku_id != SCRD_SKU1)
+		memcpy(pei_data->spd_data[1][0], spd_file + spd_index, SPD_LEN);
 
 	/* Make sure a valid SPD was found */
 	if (pei_data->spd_data[0][0][0] == 0)

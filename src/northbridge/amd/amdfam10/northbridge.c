@@ -492,6 +492,7 @@ static void amdfam10_set_resource(device_t dev, struct resource *resource,
 static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct bus *link;
+	struct resource *res;
 
 	/* find out which link the VGA card is connected,
 	 * we only deal with the 'first' vga card */
@@ -516,6 +517,18 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 
 	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link->link_num);
 	set_vga_enable_reg(nodeid, link->link_num);
+
+	/* Redirect VGA memory access to MMIO
+	 * This signals the Family 10h resource parser
+	 * to add a new MMIO mapping to the Range 11
+	 * MMIO control registers (starting at F1x1B8),
+	 * and also reserves the resource in the E820 map.
+	 */
+	res = new_resource(dev, IOINDEX(0x1000 + 0x1b8, link->link_num));
+	res->base = 0xa0000;
+	res->size = 0x20000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	amdfam10_set_resource(dev, res, nodeid);
 }
 
 static void amdfam10_set_resources(device_t dev)

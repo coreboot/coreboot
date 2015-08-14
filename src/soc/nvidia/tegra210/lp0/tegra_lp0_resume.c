@@ -31,7 +31,8 @@ enum {
 	MC_CTLR_BASE = 0x70019000,
 	FUSE_BASE = 0x7000F800,
 	EMC_BASE = 0x7001B000,
-	I2C5_BASE = 0x7000D000
+	I2C5_BASE = 0x7000D000,
+	I2S_BASE = 0x702d1000
 };
 
 /* UP tag registers. */
@@ -704,15 +705,77 @@ static void set_pmacro_training_wrptr(void)
 	write32(pmacro_cfg_pm_global, ENABLE_CFG_BYTES);
 }
 
+static uint32_t *i2s_0_master = (void *)(I2S_BASE + 0x0a0);
+static uint32_t *i2s_1_master = (void *)(I2S_BASE + 0x1a0);
+static uint32_t *i2s_2_master = (void *)(I2S_BASE + 0x2a0);
+static uint32_t *i2s_3_master = (void *)(I2S_BASE + 0x3a0);
+static uint32_t *i2s_4_master = (void *)(I2S_BASE + 0x4a0);
+
+static uint32_t *i2s_0_slcg = (void *)(I2S_BASE + 0x088);
+static uint32_t *i2s_1_slcg = (void *)(I2S_BASE + 0x188);
+static uint32_t *i2s_2_slcg = (void *)(I2S_BASE + 0x288);
+static uint32_t *i2s_3_slcg = (void *)(I2S_BASE + 0x388);
+static uint32_t *i2s_4_slcg = (void *)(I2S_BASE + 0x488);
+
+static uint32_t *clk_rst_ape_clear = (void *)(CLK_RST_BASE + 0x2ac);
+static uint32_t *clk_rst_ape_set = (void *)(CLK_RST_BASE + 0x2a8);
+
 static void mbist_workaround(void)
 {
 	uint32_t clks_to_be_cleared;
+	uint32_t i2s_read;
+
+	write32(clk_rst_ape_clear, 0x40);
+	udelay(2);
+
+	i2s_read = read32(i2s_0_master);
+	i2s_read |= 0x400;
+	write32(i2s_0_master, i2s_read);
+
+	i2s_read = read32(i2s_0_slcg);
+	i2s_read &= ~1;
+	write32(i2s_0_slcg, i2s_read);
+
+	i2s_read = read32(i2s_1_master);
+	i2s_read |= 0x400;
+	write32(i2s_1_master, i2s_read);
+
+	i2s_read = read32(i2s_1_slcg);
+	i2s_read &= ~1;
+	write32(i2s_1_slcg, i2s_read);
+
+	i2s_read = read32(i2s_2_master);
+	i2s_read |= 0x400;
+	write32(i2s_2_master, i2s_read);
+
+	i2s_read = read32(i2s_2_slcg);
+	i2s_read &= ~1;
+	write32(i2s_2_slcg, i2s_read);
+
+	i2s_read = read32(i2s_3_master);
+	i2s_read |= 0x400;
+	write32(i2s_3_master, i2s_read);
+
+	i2s_read = read32(i2s_3_slcg);
+	i2s_read &= ~1;
+	write32(i2s_3_slcg, i2s_read);
+
+	i2s_read = read32(i2s_4_master);
+	i2s_read |= 0x400;
+	write32(i2s_4_master, i2s_read);
+
+	i2s_read = read32(i2s_4_slcg);
+	i2s_read &= ~1;
+	write32(i2s_4_slcg, i2s_read);
+
+	udelay(2);
 
 	write32(clk_rst_lvl2_clk_gate_ovra_ptr, 0);
 	write32(clk_rst_lvl2_clk_gate_ovrb_ptr, 0);
-	write32(clk_rst_lvl2_clk_gate_ovrc_ptr, 0);
+	write32(clk_rst_lvl2_clk_gate_ovrc_ptr, 0x00000002);
 	write32(clk_rst_lvl2_clk_gate_ovrd_ptr, 0x01000000);	/* QSPI OVR=1 */
-	write32(clk_rst_lvl2_clk_gate_ovre_ptr, 0);
+	write32(clk_rst_lvl2_clk_gate_ovre_ptr, 0x00000c00);
+
 
 	clks_to_be_cleared = read32(clk_rst_clk_out_enb_l_ptr);
 	clks_to_be_cleared &= ~MBIST_CLK_ENB_L_0;

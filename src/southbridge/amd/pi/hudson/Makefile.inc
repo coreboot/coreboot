@@ -348,7 +348,7 @@ endif
 	for fwm in 11 4294967295 1 0; do \
 	echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
 	done >> $@_tail.tmp
-	for fwm in  1347637284 0 `ls -l $@_tail.tmp | awk '{printf("%d", $$5/16);}'` 0; do \
+	for fwm in  1347637284 0 `ls -ln $@_tail.tmp | awk '{printf("%d", $$5/16);}'` 0; do \
 		echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
 	done > $@_head.tmp
 	cat $@_head.tmp $@_tail.tmp > $@.tmp
@@ -357,7 +357,7 @@ endif
 
 $(obj)/coreboot_psp_directory_combine_pubkey.bin: $(obj)/coreboot_psp_directory.bin
 	cat  $(obj)/coreboot_psp_directory.bin > $@
-	ls -l $(obj)/coreboot_psp_directory.bin | LC_ALL=C awk '{for (i=0; i<256-$$5; i++) {printf "%c", 255}}' >> $@
+	ls -ln $(obj)/coreboot_psp_directory.bin | LC_ALL=C awk '{for (i=0; i<256-$$5; i++) {printf "%c", 255}}' >> $@
 	cat  $(top)/$(FIRMWARE_LOCATE)/AmdPubKey$(FIRMWARE_TYPE).bin >> $@
 
 cbfs-files-y += apu/pspdir

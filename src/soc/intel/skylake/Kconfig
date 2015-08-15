@@ -195,8 +195,8 @@ config VGA_BIOS_ID
 
 config UART_DEBUG
 	bool "Enable UART debug port."
-	default y if CONSOLE_SERIAL
 	default n
+	select CONSOLE_SERIAL
 	select DRIVERS_UART
 	select DRIVERS_UART_8250MEM
 	select DRIVERS_UART_8250MEM_32

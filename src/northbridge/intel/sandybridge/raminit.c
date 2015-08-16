@@ -3130,6 +3130,8 @@ static void discover_edges_write_real(ramctr_timing * ctrl, int channel,
 				upper[lane] =
 					min(rn.end - ctrl->edge_offset[i], upper[lane]);
 				edges[lane] = (lower[lane] + upper[lane]) / 2;
+				if (rn.all || (lower[lane] > upper[lane]))
+					die("edge write discovery failed");
 
 			}
 		}

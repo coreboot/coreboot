@@ -32,7 +32,8 @@ const char * intr_types[] = {
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
 	[0x40] = "IDE\t", "SATA\t",
 	[0x50] = "GPPInt0\t", "GPPInt1\t", "GPPInt2\t", "GPPInt3\t",
-	[0x75] = NULL
+	[0x62] = "GPIO\t",
+	[0x70] = "I2C0\t", "I2C1\t", "I2C2\t","I2C3\t", "UART0\t", "UART1\t",
 #endif
 };
 

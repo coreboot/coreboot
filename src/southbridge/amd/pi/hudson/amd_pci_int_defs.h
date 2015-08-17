@@ -77,8 +77,14 @@
 #endif
 
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
-#define FCH_INT_TABLE_SIZE 0x75
+#define FCH_INT_TABLE_SIZE 0x76
 #define PIRQ_GPIO	0x62	/* GPIO Controller Interrupt */
+#define PIRQ_I2C0	0x70
+#define PIRQ_I2C1	0x71
+#define PIRQ_I2C2	0x72
+#define PIRQ_I2C3	0x73
+#define PIRQ_UART0	0x74
+#define PIRQ_UART1	0x75
 #endif
 
 #endif /* AMD_PCI_INT_DEFS_H */

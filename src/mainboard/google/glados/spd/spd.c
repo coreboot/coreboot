@@ -25,6 +25,7 @@
 #include <string.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
+#include <mainboard/google/glados/gpio.h>
 #include "spd.h"
 
 static void mainboard_print_spd_info(uint8_t spd[])
@@ -86,10 +87,10 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	int spd_index;
 
 	gpio_t spd_gpios[] = {
-		GPP_C12,	/* PCH_MEM_CONFIG[0] */
-		GPP_C13,	/* PCH_MEM_CONFIG[1] */
-		GPP_C14,	/* PCH_MEM_CONFIG[2] */
-		GPP_C15,	/* PCH_MEM_CONFIG[3] */
+		GPIO_MEM_CONFIG_0,
+		GPIO_MEM_CONFIG_1,
+		GPIO_MEM_CONFIG_2,
+		GPIO_MEM_CONFIG_3,
 	};
 
 	spd_index = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));

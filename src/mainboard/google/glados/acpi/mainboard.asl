@@ -17,15 +17,16 @@
  * Foundation, Inc.
  */
 
-#include <soc/gpio.h>
+#include <mainboard/google/glados/gpio.h>
 
 #define BOARD_TOUCHPAD_I2C_ADDR			0x15
-#define BOARD_TOUCHPAD_IRQ			GPP_B3_IRQ
+#define BOARD_TOUCHPAD_IRQ			TOUCHPAD_INT_L
 
 #define BOARD_TOUCHSCREEN_I2C_ADDR		0x10
-#define BOARD_TOUCHSCREEN_IRQ			GPP_E7_IRQ
+#define BOARD_TOUCHSCREEN_IRQ			TOUCHSCREEN_INT_L
 
 #define BOARD_HP_MIC_CODEC_I2C_ADDR		0x1a
+#define BOARD_HP_MIC_CODEC_IRQ			MIC_INT_L
 #define BOARD_LEFT_SPEAKER_AMP_I2C_ADDR		0x34
 #define BOARD_RIGHT_SPEAKER_AMP_I2C_ADDR	0x35
 
@@ -33,19 +34,18 @@ Scope (\_SB)
 {
 	Device (LID0)
 	{
-		Name (_HID, EisaId("PNP0C0D"))
+		Name (_HID, EisaId ("PNP0C0D"))
 		Method (_LID, 0)
 		{
 			Return (\_SB.PCI0.LPCB.EC0.LIDS)
 		}
 
-		/* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
-		Name (_PRW, Package(){ GPE0_LAN_WAK, 5 })
+		Name (_PRW, Package () { GPE_EC_WAKE, 5 })
 	}
 
 	Device (PWRB)
 	{
-		Name(_HID, EisaId("PNP0C0C"))
+		Name (_HID, EisaId ("PNP0C0C"))
 	}
 
 	/* Keyboard Backlight interface via EC */
@@ -157,6 +157,10 @@ Scope (\_SB.PCI0.I2C4)
 				AddressingMode7Bit,
 				"\\_SB.PCI0.I2C4",
 			)
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
+				BOARD_HP_MIC_CODEC_IRQ
+			}
 		})
 
 		Method (_STA)

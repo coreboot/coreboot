@@ -28,6 +28,7 @@
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <mainboard/google/glados/gpio.h>
 
 #include "ec.h"
 
@@ -90,5 +91,5 @@ int clear_recovery_mode_switch(void)
 int get_write_protect_state(void)
 {
 	/* Read PCH_WP GPIO. */
-	return gpio_get(GPP_C23);
+	return gpio_get(GPIO_PCH_WP);
 }

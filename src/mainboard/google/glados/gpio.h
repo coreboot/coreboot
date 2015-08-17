@@ -20,8 +20,31 @@
 #ifndef MAINBOARD_GPIO_H
 #define MAINBOARD_GPIO_H
 
+#include <soc/gpe.h>
 #include <soc/gpio.h>
 
+/* BIOS Flash Write Protect */
+#define GPIO_PCH_WP		GPP_C23
+
+/* Memory configuration board straps */
+#define GPIO_MEM_CONFIG_0	GPP_C12
+#define GPIO_MEM_CONFIG_1	GPP_C13
+#define GPIO_MEM_CONFIG_2	GPP_C14
+#define GPIO_MEM_CONFIG_3	GPP_C15
+
+/* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
+#define GPE_EC_WAKE		GPE0_LAN_WAK
+
+/* Input device interrupt configuration */
+#define TOUCHPAD_INT_L		GPP_B3_IRQ
+#define TOUCHSCREEN_INT_L	GPP_E7_IRQ
+#define MIC_INT_L		GPP_F10_IRQ
+
+/* GPP_E16 is EC_SCI_L. GPP_E group is routed to dword 2 in the GPE0 block. */
+#define EC_SCI_GPI		GPE0_DW2_16
+#define EC_SMI_GPI		GPP_E15
+
+#ifndef __ACPI__
 static const struct pad_config gpio_table[] = {
 /* RCIN# */		PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),
 /* LAD0 */		PAD_CFG_NF(GPP_A1, NONE, DEEP, NF1),
@@ -193,5 +216,6 @@ static const struct pad_config gpio_table[] = {
 /* SLP_S5# */		PAD_CFG_NF(GPD10, NONE, DEEP, NF1),
 /* LANPHYC */		/* GPD11 */
 };
+#endif
 
 #endif

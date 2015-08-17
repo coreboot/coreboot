@@ -17,11 +17,11 @@
  * Foundation, Inc.
  */
 
-#include <soc/gpio.h>
+#include <mainboard/google/glados/gpio.h>
 
 Name (OIPG, Package () {
 	/* No physical recovery GPIO. */
 	Package () { 0x0001, 0, 0xFFFFFFFF, "INT344B:00" },
 	/* Firmware write protect GPIO. */
-	Package () { 0x0003, 1, GPP_C23, "INT344B:00" },
+	Package () { 0x0003, 1, GPIO_PCH_WP, "INT344B:00" },
 })

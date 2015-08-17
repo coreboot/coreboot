@@ -22,12 +22,6 @@
 #define MAINBOARD_EC_H
 
 #include <ec/google/chromeec/ec_commands.h>
-#include <soc/gpio.h>
-#include <soc/gpe.h>
-
-/* GPP_E16 is EC_SCI_L. GPP_E group is routed to dword 2 in the GPE0 block. */
-#define EC_SCI_GPI	GPE0_DW2_16
-#define EC_SMI_GPI	GPP_E15
 
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\

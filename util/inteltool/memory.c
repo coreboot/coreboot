@@ -194,7 +194,12 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_82830M:
 		printf("This northbridge does not have MCHBAR.\n");
 		return 1;
-	case PCI_DEVICE_ID_INTEL_82X4X:
+	case PCI_DEVICE_ID_INTEL_82XX4X:
+	case PCI_DEVICE_ID_INTEL_82Q45:
+	case PCI_DEVICE_ID_INTEL_82G45:
+	case PCI_DEVICE_ID_INTEL_82G41:
+	case PCI_DEVICE_ID_INTEL_82B43:
+	case PCI_DEVICE_ID_INTEL_82B43_2:
 	case PCI_DEVICE_ID_INTEL_82X38:
 	case PCI_DEVICE_ID_INTEL_32X0:
 		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;

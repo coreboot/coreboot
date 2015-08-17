@@ -121,8 +121,9 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 
 /* General purpose input with no special IRQ routing. */
 #define PAD_CFG_GPI(pad_, term_, rst_) \
-	_PAD_CFG(pad_, term_, \
-	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, NO, NO, NO, NO, NO, GPIO, NO, YES))
+	_PAD_CFG_ATTRS(pad_, term_, \
+	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, NO, NO, NO, NO, NO, GPIO, NO, YES),\
+	PAD_FIELD(HOSTSW, GPIO))
 
 /* General purpose input passed through to IOxAPIC. Assume APIC logic can
  * handle polarity/edge/level constraints. */

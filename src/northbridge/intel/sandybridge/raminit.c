@@ -2262,7 +2262,17 @@ static void discover_timB(ramctr_timing * ctrl, int channel, int slotrank)
 	}
 	FOR_ALL_LANES {
 		struct run rn = get_longest_zero_run(statistics[lane], 128);
-		ctrl->timings[channel][slotrank].lanes[lane].timB = rn.start;
+		if (rn.start < rn.middle) {
+			ctrl->timings[channel][slotrank].lanes[lane].timB = rn.start;
+		} else {
+			/* In this case statistics[lane][7f] and statistics[lane][0] are
+			 * both zero.
+			 * Prefer a smaller value over rn.start to prevent failures in
+			 * the following write tests.
+			 */
+			ctrl->timings[channel][slotrank].lanes[lane].timB = 0;
+		}
+
 		if (rn.all)
 			die("timB discovery failed");
 		printram("Bval: %d, %d, %d, %x\n", channel, slotrank,

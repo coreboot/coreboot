@@ -103,7 +103,12 @@ void soc_memory_init_params(struct romstage_params *params,
 	upd->SataMode = config->SataMode;
 	upd->EnableTraceHub = config->EnableTraceHub;
 	upd->SaGv = config->SaGv;
-	upd->RMT = config->Rmt;
+
+	if (config->Rmt) {
+		upd->RMT = 1;
+		/* Force a full memory train if RMT is enabled */
+		params->pei_data->disable_saved_data = 1;
+	}
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

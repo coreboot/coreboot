@@ -97,6 +97,9 @@ else
 	$< --defconfig=$(KBUILD_DEFCONFIG) $(Kconfig)
 endif
 
+olddefconfig: $(objk)/conf
+	$< --olddefconfig $(Kconfig)
+
 %_defconfig: $(objk)/conf
 	$< --defconfig=configs/$@ $(Kconfig)
 

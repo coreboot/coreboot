@@ -48,6 +48,12 @@ void bootblock_mainboard_init(void)
 	if (rkclk_was_watchdog_reset())
 		reboot_from_watchdog();
 
+	/* Turn on all leds */
+	gpio_output(GPIO(7, A, 0), 1);	/* LED_READY */
+	gpio_output(GPIO(7, B, 5), 1);	/* Ready2_LED */
+	gpio_output(GPIO(7, B, 3), 1);	/* LED_SYNCING */
+	gpio_output(GPIO(7, B, 7), 1);	/* LED_ERROR */
+
 	/* Up VDD_CPU (BUCK1) to 1.4V to support max CPU frequency (1.8GHz). */
 	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
 	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);

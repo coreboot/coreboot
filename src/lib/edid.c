@@ -987,22 +987,22 @@ static void dump_breakdown(unsigned char *edid)
 static struct edid_mode known_modes[NUM_KNOWN_MODES] = {
 	[EDID_MODE_640x480_60Hz] = {
 		.name = "640x480@60Hz", .pixel_clock = 25175, .refresh = 60,
-		.ha = 640, .hbl = 160, .hso = 16, .hborder = 96,
+		.ha = 640, .hbl = 160, .hso = 16, .hspw = 96,
 		.va = 480, .vbl = 45, .vso = 10, .vspw = 2,
 		.phsync = '-', .pvsync = '-' },
 	[EDID_MODE_720x480_60Hz] = {
 		.name = "720x480@60Hz", .pixel_clock = 27000, .refresh = 60,
-		.ha = 720, .hbl = 78, .hso = 16, .hborder = 62,
+		.ha = 720, .hbl = 138, .hso = 16, .hspw = 62,
 		.va = 480, .vbl = 45, .vso = 9, .vspw = 6,
 		.phsync = '-', .pvsync = '-' },
 	[EDID_MODE_1280x720_60Hz] = {
 		.name = "1280x720@60Hz", .pixel_clock = 74250, .refresh = 60,
-		.ha = 1280, .hbl = 370, .hso = 110, .hborder = 40,
+		.ha = 1280, .hbl = 370, .hso = 110, .hspw = 40,
 		.va = 720, .vbl = 30, .vso = 5, .vspw = 20,
 		.phsync = '+', .pvsync = '+' },
 	[EDID_MODE_1920x1080_60Hz] = {
 		.name = "1920x1080@60Hz", .pixel_clock = 148500, .refresh = 60,
-		.ha = 1920, .hbl = 280, .hso = 88, .hborder = 44,
+		.ha = 1920, .hbl = 280, .hso = 88, .hspw = 44,
 		.va = 1080, .vbl = 45, .vso = 4, .vspw = 5,
 		.phsync = '+', .pvsync = '+' },
 };

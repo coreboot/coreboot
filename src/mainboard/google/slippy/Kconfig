@@ -8,7 +8,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select INTEL_LYNXPOINT_LP
 	select BOARD_ROMSIZE_KB_8192
 	select EC_GOOGLE_CHROMEEC
-	select EC_SOFTWARE_SYNC
 	select VIRTUAL_DEV_SWITCH
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
@@ -20,8 +19,11 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select INTEL_DP
 	select INTEL_DDI
 	select INTEL_INT15
+
+config CHROMEOS
 	select CHROMEOS_VBNV_CMOS
 	select LID_SWITCH
+	select EC_SOFTWARE_SYNC
 
 config MAINBOARD_DIR
 	string

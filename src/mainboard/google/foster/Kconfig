@@ -23,7 +23,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_4096
-	select CHROMEOS_VBNV_FLASH
 	select SPI_FLASH
 	select SOC_NVIDIA_TEGRA210
 	select MAINBOARD_HAS_CHROMEOS
@@ -31,6 +30,9 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOOTROM_SDRAM_INIT # use BootRom to config sdram
 	select COMMON_CBFS_SPI_WRAPPER
 	select SPI_FLASH_WINBOND
+
+config CHROMEOS
+	select CHROMEOS_VBNV_FLASH
 
 config MAINBOARD_DIR
 	string

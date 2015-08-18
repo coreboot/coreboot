@@ -23,7 +23,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_2048
-	select CHROMEOS_VBNV_FLASH
 	select COMMON_CBFS_SPI_WRAPPER
 	select HAVE_HARD_RESET
 	select MAINBOARD_HAS_CHROMEOS
@@ -32,6 +31,9 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH_SPANSION
 	select SPI_FLASH_STMICRO # required for the reference board BCM958305K
 	select SPI_ATOMIC_SEQUENCING
+
+config CHROMEOS
+	select CHROMEOS_VBNV_FLASH
 
 config MAINBOARD_DIR
 	string

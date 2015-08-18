@@ -18,6 +18,7 @@
  * Foundation, Inc.
  */
 
+#include <arch/acpi.h>
 #include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -40,6 +41,7 @@ static struct device_operations pci_domain_ops = {
 
 static struct device_operations cpu_bus_ops = {
 	.init             = &soc_init_cpus,
+	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 static void soc_enable(device_t dev)

@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
-#include <arch/acpi.h>
 #include <chip.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
@@ -503,7 +502,6 @@ static struct mp_flight_record mp_steps[] = {
 
 static struct device_operations cpu_dev_ops = {
 	.init = cpu_core_init,
-	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
 static struct cpu_device_id cpu_table[] = {

@@ -127,7 +127,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm1b_cnt_blk.addrh = 0x0;
 
 	fadt->x_pm2_cnt_blk.space_id = 1;
-	fadt->x_pm2_cnt_blk.bit_width = 0;
+	fadt->x_pm2_cnt_blk.bit_width = 8;
 	fadt->x_pm2_cnt_blk.bit_offset = 0;
 	fadt->x_pm2_cnt_blk.resv = 0;
 	fadt->x_pm2_cnt_blk.addrl = ACPI_PMA_CNT_BLK;
@@ -141,7 +141,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
 	fadt->x_gpe0_blk.space_id = 1;
-	fadt->x_gpe0_blk.bit_width = 32;
+	fadt->x_gpe0_blk.bit_width = 64;
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.resv = 0;
 	fadt->x_gpe0_blk.addrl = ACPI_GPE0_BLK;

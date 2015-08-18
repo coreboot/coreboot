@@ -283,7 +283,7 @@ dwc2_do_xfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 
 	if (ret >= 0) {
 		/* Calculate actual transferred length */
-		transferred = (dir == EPDIR_IN) ? inpkt_length - ret : ret;
+		transferred = (dir == EPDIR_IN) ? inpkt_length - ret : size;
 
 		if (do_copy && (dir == EPDIR_IN))
 			memcpy(data_buf, aligned_buf, transferred);

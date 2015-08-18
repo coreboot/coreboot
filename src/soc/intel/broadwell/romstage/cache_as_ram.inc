@@ -153,7 +153,6 @@ clear_mtrrs:
 	wrmsr
 
 	post_code(0x27)
-#if CONFIG_CACHE_MRC_BIN
 	/* Enable caching for ram init code to run faster */
 	movl	$MTRRphysBase_MSR(2), %ecx
 	movl	$(CACHE_MRC_BASE | MTRR_TYPE_WRPROT), %eax
@@ -163,7 +162,6 @@ clear_mtrrs:
 	movl	$(CACHE_MRC_MASK | MTRRphysMaskValid), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
-#endif
 
 	post_code(0x28)
 	/* Enable cache. */
@@ -239,7 +237,6 @@ before_romstage:
 	andl    $~1, %eax
 	wrmsr
 
-#if CONFIG_CACHE_MRC_BIN
 	/* Clear MTRR that was used to cache MRC */
 	xorl	%eax, %eax
 	xorl	%edx, %edx
@@ -247,7 +244,6 @@ before_romstage:
 	wrmsr
 	movl	$MTRRphysMask_MSR(2), %ecx
 	wrmsr
-#endif
 
 	post_code(0x33)
 

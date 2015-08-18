@@ -8,8 +8,4 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 	select MMX
 	select SSE
 
-config CACHE_MRC_BIN
-	bool
-	default n
-
 endif

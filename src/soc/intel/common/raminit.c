@@ -100,7 +100,7 @@ void raminit(struct romstage_params *params)
 	fsp_memory_init_params.HobListPtr = &hob_list_ptr;
 
 	/* Update the UPD data */
-	soc_memory_init_params(&memory_init_params);
+	soc_memory_init_params(params, &memory_init_params);
 	mainboard_memory_init_params(params, &memory_init_params);
 	post_code(0x36);
 
@@ -309,7 +309,9 @@ __attribute__((weak)) void soc_display_memory_init_params(
 }
 
 /* Initialize the UPD parameters for MemoryInit */
-__attribute__((weak)) void soc_memory_init_params(MEMORY_INIT_UPD *params)
+__attribute__((weak)) void soc_memory_init_params(
+	struct romstage_params *params,
+	MEMORY_INIT_UPD *upd)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

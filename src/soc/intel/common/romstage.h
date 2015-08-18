@@ -93,7 +93,8 @@ void soc_after_ram_init(struct romstage_params *params);
 void soc_after_temp_ram_exit(void);
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	MEMORY_INIT_UPD *new);
-void soc_memory_init_params(MEMORY_INIT_UPD *params);
+void soc_memory_init_params(struct romstage_params *params,
+			    MEMORY_INIT_UPD *upd);
 void soc_pre_console_init(struct romstage_params *params);
 void soc_pre_ram_init(struct romstage_params *params);
 void soc_romstage_init(struct romstage_params *params);

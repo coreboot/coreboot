@@ -77,33 +77,33 @@ int vboot_get_sw_write_protect(void)
 #endif
 
 /* UPD parameters to be initialized before MemoryInit */
-void soc_memory_init_params(MEMORY_INIT_UPD *params)
+void soc_memory_init_params(struct romstage_params *params,
+			    MEMORY_INIT_UPD *upd)
 {
 	const struct device *dev;
 	const struct soc_intel_skylake_config *config;
-
 
 	/* Set the parameters for MemoryInit */
 	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
 	config = dev->chip_info;
 
-	memcpy(params->PcieRpEnable, config->PcieRpEnable,
-		sizeof(params->PcieRpEnable));
-	memcpy(params->PcieRpClkReqSupport, config->PcieRpClkReqSupport,
-		sizeof(params->PcieRpClkReqSupport));
-	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
-		sizeof(params->PcieRpClkReqNumber));
+	memcpy(upd->PcieRpEnable, config->PcieRpEnable,
+		sizeof(upd->PcieRpEnable));
+	memcpy(upd->PcieRpClkReqSupport, config->PcieRpClkReqSupport,
+		sizeof(upd->PcieRpClkReqSupport));
+	memcpy(upd->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
+		sizeof(upd->PcieRpClkReqNumber));
 
-	params->MmioSize = 0x800; /* 2GB in MB */
-	params->TsegSize = CONFIG_SMM_TSEG_SIZE;
-	params->IedSize = CONFIG_IED_REGION_SIZE;
-	params->ProbelessTrace = config->ProbelessTrace;
-	params->EnableLan = config->EnableLan;
-	params->EnableSata = config->EnableSata;
-	params->SataMode = config->SataMode;
-	params->EnableTraceHub = config->EnableTraceHub;
-	params->SaGv = config->SaGv;
-	params->RMT = config->Rmt;
+	upd->MmioSize = 0x800; /* 2GB in MB */
+	upd->TsegSize = CONFIG_SMM_TSEG_SIZE;
+	upd->IedSize = CONFIG_IED_REGION_SIZE;
+	upd->ProbelessTrace = config->ProbelessTrace;
+	upd->EnableLan = config->EnableLan;
+	upd->EnableSata = config->EnableSata;
+	upd->SataMode = config->SataMode;
+	upd->EnableTraceHub = config->EnableTraceHub;
+	upd->SaGv = config->SaGv;
+	upd->RMT = config->Rmt;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

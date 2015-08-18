@@ -203,7 +203,8 @@ void soc_after_ram_init(struct romstage_params *params)
 }
 
 /* Initialize the UPD parameters for MemoryInit */
-void soc_memory_init_params(MEMORY_INIT_UPD *params)
+void soc_memory_init_params(struct romstage_params *params,
+			    MEMORY_INIT_UPD *upd)
 {
 	const struct device *dev;
 	const struct soc_intel_braswell_config *config;
@@ -212,16 +213,16 @@ void soc_memory_init_params(MEMORY_INIT_UPD *params)
 	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 	config = dev->chip_info;
 	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit\n");
-	params->PcdMrcInitTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
+	upd->PcdMrcInitTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
 		config->PcdMrcInitTsegSize : 0;
-	params->PcdMrcInitMmioSize = config->PcdMrcInitMmioSize;
-	params->PcdMrcInitSpdAddr1 = config->PcdMrcInitSpdAddr1;
-	params->PcdMrcInitSpdAddr2 = config->PcdMrcInitSpdAddr2;
-	params->PcdIgdDvmt50PreAlloc = config->PcdIgdDvmt50PreAlloc;
-	params->PcdApertureSize = config->PcdApertureSize;
-	params->PcdGttSize = config->PcdGttSize;
-	params->PcdLegacySegDecode = config->PcdLegacySegDecode;
-	params->PcdDvfsEnable = config->PcdDvfsEnable;
+	upd->PcdMrcInitMmioSize = config->PcdMrcInitMmioSize;
+	upd->PcdMrcInitSpdAddr1 = config->PcdMrcInitSpdAddr1;
+	upd->PcdMrcInitSpdAddr2 = config->PcdMrcInitSpdAddr2;
+	upd->PcdIgdDvmt50PreAlloc = config->PcdIgdDvmt50PreAlloc;
+	upd->PcdApertureSize = config->PcdApertureSize;
+	upd->PcdGttSize = config->PcdGttSize;
+	upd->PcdLegacySegDecode = config->PcdLegacySegDecode;
+	upd->PcdDvfsEnable = config->PcdDvfsEnable;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

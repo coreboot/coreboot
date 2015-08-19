@@ -78,7 +78,8 @@ void *memcpy(void *dst, const void *src, size_t n)
 
 static void *default_memmove(void *dst, const void *src, size_t n)
 {
-	size_t i, offs;
+	size_t offs;
+	ssize_t i;
 
 	if (src > dst)
 		return memcpy(dst, src, n);

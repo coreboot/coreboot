@@ -18,11 +18,15 @@
  * Foundation, Inc.
  */
 
+#include <chip.h>
 #include <console/console.h>
 #include <console/streams.h>
+#include <device/device.h>
+#include <device/pci_def.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <soc/iomap.h>
+#include <soc/pci_devs.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/smm.h>
@@ -34,6 +38,16 @@ static void ABI_X86 send_to_console(unsigned char b)
 
 void soc_fill_pei_data(struct pei_data *pei_data)
 {
+	const struct device *dev;
+	const struct soc_intel_skylake_config *config;
+
+	/* Set the parameters for MemoryInit */
+	dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	config = dev->chip_info;
+
 	pei_data->pei_version = PEI_VERSION;
 	pei_data->tx_byte = &send_to_console;
+
+	/* Force a full memory train if RMT is enabled */
+	pei_data->disable_saved_data = config->Rmt;
 }

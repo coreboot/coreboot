@@ -1,0 +1,39 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+## Copyright (C) 2015 Damien Zammit <damien@zamaudio.com>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config NORTHBRIDGE_INTEL_X4X
+	bool
+
+if NORTHBRIDGE_INTEL_X4X
+
+config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select HAVE_DEBUG_RAM_SETUP
+	select MMCONF_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
+	select VGA
+	select INTEL_GMA_ACPI
+	select LATE_CBMEM_INIT
+
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "northbridge/intel/x4x/bootblock.c"
+
+config VGA_BIOS_ID
+	string
+	default "8086,2e32"
+
+endif

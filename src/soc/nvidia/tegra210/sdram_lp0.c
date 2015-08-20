@@ -724,6 +724,7 @@ void sdram_lp0_save_params(const struct sdram_params *sdram)
 	s32(EmcBctSpare5, scratch42);
 	s32(EmcBctSpare4, scratch44);
 	s32(SwizzleRankByteEncode, scratch45);
+	s32(EmcBctSpare2, scratch46);
 	s32(EmcBctSpare1, scratch47);
 	s32(EmcBctSpare0, scratch48);
 	s32(EmcBctSpare9, scratch50);

@@ -48,6 +48,7 @@
 #define EC_SMI_GPI		GPP_E15
 
 #ifndef __ACPI__
+/* Pad configuration in ramstage. */
 static const struct pad_config gpio_table[] = {
 /* RCIN# */		PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),
 /* LAD0 */		PAD_CFG_NF(GPP_A1, NONE, DEEP, NF1),
@@ -219,6 +220,13 @@ static const struct pad_config gpio_table[] = {
 /* SLP_S5# */		PAD_CFG_NF(GPD10, NONE, DEEP, NF1),
 /* LANPHYC */		/* GPD11 */
 };
+
+/* Early pad configuration in romstage. */
+static const struct pad_config early_gpio_table[] = {
+/* SRCCLKREQ2# */	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1), /* KEPLER */
+/* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 1, DEEP), /* EN_PP3300_KEPLER */
+};
+
 #endif
 
 #endif

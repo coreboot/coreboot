@@ -19,7 +19,11 @@
  */
 
 #include <soc/ramstage.h>
+#include "gpio.h"
 
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
 {
+	/* Configure pads prior to SiliconInit() in case there's any
+	 * dependencies during hardware initialization. */
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

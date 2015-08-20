@@ -22,12 +22,9 @@
 #include <device/device.h>
 #include <stdlib.h>
 #include "ec.h"
-#include "gpio.h"
 
 static void mainboard_init(device_t dev)
 {
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
-
 	if (IS_ENABLED(CONFIG_GOOGLE_CHROME_EC))
 		mainboard_ec_init();
 }

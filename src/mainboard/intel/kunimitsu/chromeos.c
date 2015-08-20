@@ -39,6 +39,8 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->count = GPIO_COUNT;
 
 	gpio = gpios->gpios;
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "write protect",
+		     get_write_protect_state());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery",
 		     get_recovery_mode_switch());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer",

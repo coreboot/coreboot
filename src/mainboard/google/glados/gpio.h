@@ -23,6 +23,9 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 
+/* EC in RW */
+#define GPIO_EC_IN_RW		GPP_C6
+
 /* BIOS Flash Write Protect */
 #define GPIO_PCH_WP		GPP_C23
 

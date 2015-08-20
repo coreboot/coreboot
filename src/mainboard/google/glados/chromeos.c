@@ -35,16 +35,11 @@
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 
-#define GPIO_COUNT	6
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct lb_gpio *gpio;
+	struct lb_gpio *start_gpio = gpios->gpios;
+	struct lb_gpio *gpio = start_gpio;
 
-	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
-	gpios->count = GPIO_COUNT;
-
-	gpio = gpios->gpios;
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "write protect",
 		     get_write_protect_state());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery",
@@ -55,6 +50,11 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		     get_lid_switch());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "power", 0);
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", gfx_get_init_done());
+	fill_lb_gpio(gpio++, GPIO_EC_IN_RW, ACTIVE_HIGH, "EC in RW",
+		     gpio_get(GPIO_EC_IN_RW));
+
+	gpios->count = gpio - start_gpio;
+	gpios->size = sizeof(*gpios) + (gpios->count * sizeof(*gpio));
 }
 #endif /* ENV_RAMSTAGE */
 

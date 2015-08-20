@@ -82,6 +82,9 @@ void zconf_nextfiles(const char *name);
 int zconf_lineno(void);
 const char *zconf_curname(void);
 
+/* conf.c */
+extern int kconfig_warnings;
+
 /* confdata.c */
 const char *conf_get_configname(void);
 const char *conf_get_autoconfig_name(void);

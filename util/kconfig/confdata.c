@@ -404,11 +404,7 @@ setsym:
 	if (modules_sym)
 		sym_calc_value(modules_sym);
 
-	name = getenv("KCONFIG_STRICT");
-	if (name && *name && conf_warnings) {
-		fprintf(stderr, "\nERROR: %d warnings encountered, and warnings are errors.\n\n", conf_warnings);
-		return 1;
-	}
+	kconfig_warnings += conf_warnings;
 
 	return 0;
 }

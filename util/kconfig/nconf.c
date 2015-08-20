@@ -646,6 +646,8 @@ static const char *set_config_filename(const char *config_filename)
 static int do_exit(void)
 {
 	int res;
+	char *env;
+
 	if (!conf_get_changed()) {
 		global_exit = 1;
 		return 0;
@@ -659,6 +661,15 @@ static int do_exit(void)
 	if (res == KEY_EXIT) {
 		global_exit = 0;
 		return -1;
+	}
+
+	env = getenv("KCONFIG_STRICT");
+	if (env && *env && kconfig_warnings) {
+		btn_dialog(main_window,
+			_("\nWarnings encountered, and warnings are errors.\n\n"),
+			1,
+			"<OK>");
+		res = 2;
 	}
 
 	/* if we got here, the user really wants to exit */

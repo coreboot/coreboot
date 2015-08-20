@@ -375,6 +375,7 @@ void sym_calc_value(struct symbol *sym)
 					sym->name);
 				expr_fprint(sym->dir_dep.expr, stderr);
 				fprintf(stderr, ")\n");
+				kconfig_warnings++;
 				expr_free(e);
 			}
 			newval.tri = EXPR_OR(newval.tri, sym->rev_dep.tri);

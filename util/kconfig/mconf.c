@@ -952,6 +952,7 @@ static void conf_save(void)
 static int handle_exit(void)
 {
 	int res;
+	char *env;
 
 	save_and_exit = 1;
 	reset_subtitle();
@@ -965,6 +966,13 @@ static int handle_exit(void)
 		res = -1;
 
 	end_dialog(saved_x, saved_y);
+
+	env = getenv("KCONFIG_STRICT");
+	if (env && *env && kconfig_warnings) {
+		fprintf(stderr, _("\n*** ERROR: %d warnings encountered, and "
+			"warnings are errors.\n\n"), kconfig_warnings);
+		res = 2;
+	}
 
 	switch (res) {
 	case 0:

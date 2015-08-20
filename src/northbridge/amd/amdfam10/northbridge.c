@@ -810,6 +810,20 @@ static void amdfam10_domain_read_resources(device_t dev)
 			else
 				qword = 0x1000000;
 
+			/* FIXME
+			 * The BKDG appears to be incorrect as to the location of the CC6 save region
+			 * lower boundary on non-interleaved systems, causing lockups on attempted write
+			 * to the CC6 save region.
+			 *
+			 * For now, work around by allocating the maximum possible CC6 save region size.
+			 *
+			 * Determine if this is a BKDG error or a setup problem and remove this warning!
+			 */
+			qword = (0x1 << 27);
+			max_range_limit = (((uint64_t)(pci_read_config32(get_node_pci(max_node, 1), 0x124) & 0x1fffff)) << 27) - 1;
+
+			printk(BIOS_INFO, "Reserving CC6 save segment base: %08llx size: %08llx\n", (max_range_limit + 1), qword);
+
 			/* Reserve the CC6 save segment */
 			reserved_ram_resource(dev, 8, (max_range_limit + 1) >> 10, qword >> 10);
 		}

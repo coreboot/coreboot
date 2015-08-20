@@ -55,3 +55,12 @@ config ARM64_SECURE_OS_FILE
 	depends on ARM64_USE_SECURE_OS
 	help
 	  Secure OS binary file.
+
+config ARM64_A53_ERRATUM_843419
+	bool
+	default n
+	help
+	  Some early Cortex-A53 revisions had a hardware bug that results in
+	  incorrect address calculations in rare cases. This option enables a
+	  linker workaround to avoid those cases if your toolchain supports it.
+	  Should be selected automatically by SoCs that are affected.

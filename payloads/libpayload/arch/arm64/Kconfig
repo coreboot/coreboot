@@ -33,6 +33,14 @@ config ARCH_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select LITTLE_ENDIAN
 
+config ARM64_A53_ERRATUM_843419
+	bool "Enable Cortex-A53 erratum 843419 linker workaround"
+	default n
+	help
+	  Some early Cortex-A53 revisions had a hardware bug that results in
+	  incorrect address calculations in rare cases. This option enables a
+	  linker workaround to avoid those cases if your toolchain supports it.
+
 config DMA_LIM_EXCL
 	hex "DMA address limit(exclusive) in MiB units"
 	default 0x1000

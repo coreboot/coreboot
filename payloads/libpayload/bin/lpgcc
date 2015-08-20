@@ -181,6 +181,12 @@ else
 	    echo "Could not find head.o"
 	    exit 1
     fi
+
+    if grep -q ARM64_A53_ERRATUM_843419=y $BASE/../libpayload.config &&
+       grep -q fix-cortex-a53-843419 $BASE/../libpayload.xcompile; then
+            _LDFLAGS+=" -Wl,--fix-cortex-a53-843419"
+    fi
+
     if [ $DEBUGME -eq 1 ]; then
 	echo "$DEFAULT_CC $_LDFLAGS $HEAD_O $CMDLINE $_CFLAGS -lpayload $_LIBGCC"
     fi

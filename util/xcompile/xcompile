@@ -87,6 +87,18 @@ testcc() {
 	$1 -nostdlib -Werror $2 -c "$tmp_c" -o "$tmp_o" >/dev/null 2>&1
 }
 
+testld() {
+	local gcc="$1"
+	local cflags="$2"
+	local ld="$3"
+	local ldflags="$4"
+	local tmp_o="$TMPFILE.o"
+	local tmp_elf="$TMPFILE.elf"
+	rm -f "$tmp_elf"
+	testcc $1 $2 &&
+	$3 -nostdlib -static $4 -o "$tmp_elf" "$tmp_o" >/dev/null 2>&1
+}
+
 testas() {
 	local gccprefix="$1"
 	local twidth="$2"
@@ -163,6 +175,11 @@ detect_special_flags() {
 		;;
 	x64)
 		;;
+	arm64)
+		testld "$GCC" "$CFLAGS_GCC" "${GCCPREFIX}ld${LINKER_SUFFIX}" \
+		  "$LDFLAGS --fix-cortex-a53-843419" && \
+		  LDFLAGS_ARM64_A53_ERRATUM_843419+=" --fix-cortex-a53-843419"
+		;;
 	mipsel)
 		testcc "$GCC" "$CFLAGS_GCC -mno-abicalls -fno-pic" && \
 		  CFLAGS_GCC+=" -mno-abicalls -fno-pic"
@@ -203,6 +220,9 @@ endif
 CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
 LD_${TARCH}:=${GCCPREFIX}ld${LINKER_SUFFIX} ${LDFLAGS}
+ifeq (\$(CONFIG_ARM64_A53_ERRATUM_843419)\$(CONFIG_LP_ARM64_A53_ERRATUM_843419),y)
+LD_${TARCH}+=${LDFLAGS_ARM64_A53_ERRATUM_843419}
+endif
 NM_${TARCH}:=${GCCPREFIX}nm
 OBJCOPY_${TARCH}:=${GCCPREFIX}objcopy
 OBJDUMP_${TARCH}:=${GCCPREFIX}objdump

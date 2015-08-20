@@ -1502,6 +1502,11 @@ static void set_up_cc6_storage_fam15(struct MCTStatStruc *pMCTstat,
 	if (pMCTstat->GStatus & (1 << GSB_NodeIntlv))
 		interleaved = 1;
 
+	printk(BIOS_INFO,
+		"%s: Initializing CC6 DRAM storage area for node %d"
+		" (interleaved: %d)\n",
+		 __func__, pDCTstat->Node_ID, interleaved);
+
 	/* Find highest DRAM range (DramLimitAddr) */
 	max_node = 0;
 	max_range = -1;
@@ -1525,12 +1530,22 @@ static void set_up_cc6_storage_fam15(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (max_range >= 0) {
+		printk(BIOS_INFO,
+			"%s:\toriginal (node %d) max_range_limit: %16llx DRAM"
+			" limit: %16llx\n",
+			__func__, max_node, max_range_limit,
+			(((uint64_t)(Get_NB32(pDCTstat->dev_map, 0x124)
+				 & 0x1fffff)) << 27) | 0x7ffffff);
+
 		if (interleaved)
 			/* Move upper limit down by 16M * the number of nodes */
 			max_range_limit -= (0x1000000 * num_nodes);
 		else
 			/* Move upper limit down by 16M */
 			max_range_limit -= 0x1000000;
+
+		printk(BIOS_INFO, "%s:\tnew max_range_limit: %16llx\n",
+			__func__, max_range_limit);
 
 		/* Disable the range */
 		dword = Get_NB32(pDCTstat->dev_map, 0x40 + (max_range * 0x8));
@@ -1566,6 +1581,10 @@ static void set_up_cc6_storage_fam15(struct MCTStatStruc *pMCTstat,
 	dword &= ~(0x3f << 12);				/* CoreSaveStateDestNode = destination_node */
 	dword |= (destination_node & 0x3f) << 12;
 	Set_NB32(pDCTstat->dev_link, 0x128, dword);
+
+	printk(BIOS_INFO, "%s:\tTarget node: %d\n", __func__, destination_node);
+
+	printk(BIOS_INFO, "%s:\tDone\n", __func__);
 }
 
 static void lock_dram_config(struct MCTStatStruc *pMCTstat,

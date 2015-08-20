@@ -4,7 +4,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select BOARD_ROMSIZE_KB_16384
 	select CACHE_ROM
-	select CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
 	select CHROMEOS_VBNV_CMOS
 	select EC_GOOGLE_CHROMEEC

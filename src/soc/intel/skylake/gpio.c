@@ -383,6 +383,7 @@ void gpio_set(gpio_t gpio_num, int value)
 		return;
 
 	reg = read32(&dw_regs[0]);
+	reg &= ~PAD_FIELD(GPIOTXSTATE, MASK);
 	reg |= PAD_FIELD_VAL(GPIOTXSTATE, value);
 	write32(&dw_regs[0], reg);
 	/* GPIO port ids support posted write semantics. */

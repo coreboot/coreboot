@@ -113,11 +113,15 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 	_PAD_CFG(pad_, term_, \
 	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, NO, NO, NO, NO, NO, func_, NO, NO))
 
-/* General purpose output. By default no termination. */
-#define PAD_CFG_GPO(pad_, val_, rst_) \
-	_PAD_CFG(pad_, NONE, \
+/* General purpose output with termination. */
+#define PAD_CFG_TERM_GPO(pad_, val_, term_, rst_) \
+	_PAD_CFG(pad_, term_, \
 	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, NO, NO, NO, NO, NO, GPIO, YES, NO) \
 		| PAD_FIELD_VAL(GPIOTXSTATE, val_))
+
+/* General purpose output. By default no termination. */
+#define PAD_CFG_GPO(pad_, val_, rst_) \
+	PAD_CFG_TERM_GPO(pad_, val_, NONE, rst_)
 
 /* General purpose input with no special IRQ routing. */
 #define PAD_CFG_GPI(pad_, term_, rst_) \

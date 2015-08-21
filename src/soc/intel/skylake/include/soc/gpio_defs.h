@@ -492,6 +492,7 @@
 #define  PAD_TERM_MASK		0xf
 #define  PAD_TERM_NONE		0
 #define  PAD_TERM_5K_PD		2
+#define  PAD_TERM_20K_PD	4
 #define  PAD_TERM_1K_PU		9
 #define  PAD_TERM_2K_PU		11
 #define  PAD_TERM_5K_PU		10

@@ -18,9 +18,7 @@
  * Foundation, Inc.
  */
 
-/* REAKTEK Audio Jack Interrupt */
-#define GPIO_SKL_LP_GPP_E22	0x02040016
-
+#include <soc/gpio.h>
 #include <mainboard/intel/sklrvp/onboard.h>
 
 /*
@@ -138,18 +136,11 @@ Scope (\_SB.PCI0.I2C0)
 			Name (SBFI, ResourceTemplate ()
 			{
 				Interrupt (ResourceConsumer, Level, ActiveLow,
-						ExclusiveAndWake, ,, _Y22)
+						ExclusiveAndWake)
 				{
-					0x00000000,
+					GPP_E22_IRQ
 				}
 			})
-
-			/* _INT: Interrupts */
-			CreateDWordField (SBFI, _Y22._INT, INT2)
-
-			Store (INUM (GPIO_SKL_LP_GPP_E22), INT2)
-
-			Return (ConcatenateResTemplate (RBUF, SBFI))
 		}
 
 		Method (_STA, 0, NotSerialized)

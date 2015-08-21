@@ -74,10 +74,9 @@ static u8 mainboard_smi_ec(void)
 	return cmd;
 }
 
-/* gpi_sts is GPIO 47:32 */
-void mainboard_smi_gpi(u32 gpi_sts)
+void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 {
-	if (gpi_sts & (1 << EC_SMI_GPI)) {
+	if (gpi_status_get(sts, EC_SMI_GPI)) {
 		/* Process all pending events */
 		while (mainboard_smi_ec() != 0)
 			;

@@ -13,11 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#include "gpio.h"
 #include <soc/ramstage.h>
+#include "gpio.h"
 
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	/*update gpio table*/
-	params->GpioTablePtr = (UINT32 *)mainboard_gpio_table;
+	/* Configure pads prior to SiliconInit() in case there's any
+	 * dependencies during hardware initialization. */
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

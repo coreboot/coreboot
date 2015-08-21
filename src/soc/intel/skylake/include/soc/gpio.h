@@ -26,7 +26,6 @@
 #ifndef __ACPI__
 #include <stdint.h>
 #include <stddef.h>
-#include <soc/gpio_fsp.h>
 
 typedef uint32_t gpio_t;
 

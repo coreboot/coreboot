@@ -96,32 +96,30 @@ static void setup_codec_clock(device_t dev)
 	const char *freq_str;
 
 	config = dev->chip_info;
-	switch (config->lpe_codec_clk_freq) {
-	case 19:
-		freq_str = "19.2";
-		reg = CLK_FREQ_19P2MHZ;
+	switch (config->lpe_codec_clk_src) {
+	case LPE_CLK_SRC_XTAL:
+		/* XTAL driven bit2=0 */
+		freq_str = "19.2MHz External Crystal";
+		reg = CLK_SRC_XTAL;
 		break;
-	case 25:
-		freq_str = "25";
-		reg = CLK_FREQ_25MHZ;
+	case LPE_CLK_SRC_PLL:
+		/* PLL driven bit2=1 */
+		freq_str = "19.2MHz PLL";
+		reg = CLK_SRC_PLL;
 		break;
 	default:
-		printk(BIOS_DEBUG, "LPE codec clock not required.\n");
+		reg = CLK_SRC_XTAL;
+		printk(BIOS_DEBUG, "LPE codec clock default to using Crystal\n");
 		return;
 	}
 
 	/* Default to always running. */
 	reg |= CLK_CTL_ON;
 
-	if (config->lpe_codec_clk_num < 0 || config->lpe_codec_clk_num > 5) {
-		printk(BIOS_DEBUG, "Invalid LPE codec clock number.\n");
-		return;
-	}
 
 	printk(BIOS_DEBUG, "LPE Audio codec clock set to %sMHz.\n", freq_str);
 
 	clk_reg = (u32 *) (PMC_BASE_ADDRESS + PLT_CLK_CTL_0);
-	clk_reg += config->lpe_codec_clk_num;
 
 	write32(clk_reg, (read32(clk_reg) & ~0x7) | reg);
 }

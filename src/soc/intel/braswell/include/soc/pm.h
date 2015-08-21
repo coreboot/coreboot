@@ -116,8 +116,8 @@
 #define PLT_CLK_CTL_3	0x6c
 #define PLT_CLK_CTL_4	0x70
 #define PLT_CLK_CTL_5	0x74
-#	define CLK_FREQ_25MHZ	(0x0 << 2)
-#	define CLK_FREQ_19P2MHZ	(0x1 << 2)
+#	define CLK_SRC_XTAL	(0x0 << 2)
+#	define CLK_SRC_PLL	(0x1 << 2)
 #	define CLK_CTL_D3_LPE	(0x0 << 0)
 #	define CLK_CTL_ON	(0x1 << 0)
 #	define CLK_CTL_OFF	(0x2 << 0)

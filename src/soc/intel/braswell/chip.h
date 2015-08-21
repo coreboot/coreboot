@@ -33,6 +33,11 @@
 #define MEM_DDR3	0
 #define MEM_LPDDR3	1
 
+enum lpe_clk_src {
+        LPE_CLK_SRC_XTAL,
+        LPE_CLK_SRC_PLL,
+};
+
 struct soc_intel_braswell_config {
 	uint8_t enable_xdp_tap;
 	uint8_t clkreq_enable;
@@ -41,8 +46,7 @@ struct soc_intel_braswell_config {
 	int disable_slp_x_stretch_sus_fail;
 
 	/* LPE Audio Clock configuration. */
-	int lpe_codec_clk_freq; /* 19 or 25 are valid. */
-	int lpe_codec_clk_num; /* Platform clock pins. [0:5] are valid. */
+	enum lpe_clk_src lpe_codec_clk_src; /* 0=xtal 1=PLL, Both are 19.2Mhz. */
 
 	/* Native SD Card controller - override controller capabilities. */
 	uint32_t sdcard_cap_low;

@@ -33,7 +33,6 @@ void intel_early_me_status(void);
 void enable_smbus(void);
 int smbus_read_byte(unsigned device, unsigned address);
 
-int early_spi_read(u32 offset, u32 size, u8 *buffer);
 int early_spi_read_wpsr(u8 *sr);
 void mainboard_fill_spd_data(struct pei_data *pei_data);
 

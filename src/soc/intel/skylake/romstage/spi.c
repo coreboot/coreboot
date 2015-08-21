@@ -21,26 +21,6 @@
 #include <soc/flash_controller.h>
 #include <soc/romstage.h>
 
-int early_spi_read(u32 offset, u32 size, u8 *buffer)
-{
-	u32 current = 0;
-
-	spi_init();
-	while (size > 0) {
-		u8 count = (size < 64) ? size : 64;
-		/* sending NULL for spiflash struct parameter since we are not
-		 * calling HWSEQ read() call via Probe.
-		 */
-		if (pch_hwseq_read(NULL, offset + current, count,
-				   buffer + current) != 0)
-			return -1;
-		size -= count;
-		current += count;
-	}
-
-	return 0;
-}
-
 /*
  * Minimal set of commands to read WPSR from SPI.
  * Returns 0 on success, < 0 on failure.

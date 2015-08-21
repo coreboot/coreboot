@@ -29,11 +29,22 @@
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
+#include "gpio.h"
 #include "spd/spd.h"
+
+static void early_config_gpio(void)
+{
+	/* This is a hack for FSP because it does things in MemoryInit()
+	 * which it shouldn't be. We have to prepare certain gpios here
+	 * because of the brokenness in FSP. */
+	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
+}
 
 void mainboard_romstage_entry(struct romstage_params *params)
 {
 	post_code(0x31);
+	early_config_gpio();
+
 	/* Fill out PEI DATA */
 	mainboard_fill_pei_data(params->pei_data);
 	mainboard_fill_spd_data(params->pei_data);

@@ -23,6 +23,7 @@ ramstage-y += gpio.c
 ifeq ($(CONFIG_GOP_SUPPORT),n)
 ramstage-y += gfx.c
 endif
+ramstage-y += gpio_support.c
 ramstage-y += hda.c
 ramstage-y += iosf.c
 ramstage-y += lpe.c

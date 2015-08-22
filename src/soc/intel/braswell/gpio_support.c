@@ -12,7 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  */
-
+#include <gpio.h>
 #include <console/console.h>
 #include <soc/gpio.h>
 
@@ -71,10 +71,95 @@ uint32_t *gpio_pad_config_reg(uint8_t community, uint8_t pad)
 	 * Refer to BSW BIOS Writers Guide, Table "Per Pad Memory Space
 	 * Registers Addresses" for the Pad configuration register calculation.
 	 */
-	pad_config_reg = (uint32_t *)(COMMUNITY_BASE(community) + 0x4400 +
-		(0x400 * (fpad >> 8)) + (8 * (fpad & 0xff)));
+	pad_config_reg = (uint32_t *)(COMMUNITY_BASE(community)
+		+ FAMILY_PAD_REGS_OFF + (FAMILY_PAD_REGS_SIZE * (fpad >> 8))
+		+ (GPIO_REGS_SIZE * (fpad & 0xff)));
 
 	return pad_config_reg;
+}
+
+static int gpio_get_community_num(gpio_t gpio_num, int *pad)
+{
+	int comm = 0;
+
+	if (gpio_num >= GP_SW_00 && gpio_num <= GP_SW_97) {
+		comm =  GP_SOUTHWEST;
+		*pad = gpio_num % GP_SOUTHWEST_COUNT;
+	} else if (gpio_num >= GP_NC_00 && gpio_num <= GP_NC_72) {
+		comm =  GP_NORTH;
+		*pad = gpio_num % GP_SOUTHWEST_COUNT;
+	} else if (gpio_num >= GP_E_00 && gpio_num <= GP_E_26) {
+		comm =  GP_EAST;
+		*pad = gpio_num %
+				(GP_SOUTHWEST_COUNT + GP_NORTH_COUNT);
+	} else {
+		comm = GP_SOUTHEAST;
+		*pad = gpio_num % (GP_SOUTHWEST_COUNT +
+					GP_NORTH_COUNT + GP_EAST_COUNT);
+	}
+	return comm;
+}
+
+static void gpio_config_pad(gpio_t gpio_num, const struct soc_gpio_map *cfg)
+{
+	int comm = 0;
+	int pad_num =0;
+	uint32_t *pad_config0_reg;
+	uint32_t *pad_config1_reg;
+	int max_gpio_cnt = GP_SOUTHWEST_COUNT + GP_NORTH_COUNT + GP_EAST_COUNT
+			+ GP_SOUTHEAST_COUNT;
+
+	if(gpio_num > max_gpio_cnt)
+		return;
+	/* Get GPIO Community based on GPIO_NUMBER */
+	comm = gpio_get_community_num(gpio_num, &pad_num);
+	/* CONF0 */
+	pad_config0_reg = gpio_pad_config_reg(comm, pad_num);
+	/* CONF1 */
+	pad_config1_reg = pad_config0_reg + 1;
+
+	write32(pad_config0_reg, cfg->pad_conf0);
+	write32(pad_config1_reg, cfg->pad_conf1);
+}
+
+void gpio_input_pullup(gpio_t gpio_num)
+{
+	struct soc_gpio_map cfg = GPIO_INPUT_PU_20K;
+	gpio_config_pad(gpio_num, &cfg);
+}
+
+void gpio_input_pulldown(gpio_t gpio_num)
+{
+	struct soc_gpio_map cfg = GPIO_INPUT_PD_20K;
+	gpio_config_pad(gpio_num, &cfg);
+}
+
+void gpio_input(gpio_t gpio_num)
+{
+	struct soc_gpio_map cfg = GPIO_INPUT_NO_PULL;
+	gpio_config_pad(gpio_num, &cfg);
+}
+
+int gpio_get(gpio_t gpio_num)
+{
+	int comm = 0;
+	int pad_num =0;
+	uint32_t *pad_config0_reg;
+	u32 pad_value;
+	int max_gpio_cnt = GP_SOUTHWEST_COUNT + GP_NORTH_COUNT + GP_EAST_COUNT
+				+ GP_SOUTHEAST_COUNT;
+
+	if(gpio_num > max_gpio_cnt)
+		return -1;
+
+	/* Get GPIO Community based on GPIO_NUMBER */
+	comm = gpio_get_community_num(gpio_num, &pad_num);
+	/* CONF0 */
+	pad_config0_reg = gpio_pad_config_reg(comm, pad_num);
+
+	pad_value = read32(pad_config0_reg);
+
+	return pad_value & PAD_RX_BIT;
 }
 
 int get_gpio(int community_base, int pad0_offset)

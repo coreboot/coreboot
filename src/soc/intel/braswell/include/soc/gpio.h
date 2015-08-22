@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <soc/gpio_defs.h>
 #include <soc/iomap.h>
 
 #define COMMUNITY_SIZE	0x20000
@@ -232,6 +233,16 @@
 
 #define GPIO_INPUT_PU_20K \
 	{ .pad_conf0 = PAD_PULL_UP_20K | PAD_GPIO_ENABLE \
+		     | PAD_CONFIG0_GPI_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT0 }
+
+#define GPIO_INPUT_PD_5K \
+	{ .pad_conf0 = PAD_PULL_DOWN_5K | PAD_GPIO_ENABLE \
+		     | PAD_CONFIG0_GPI_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT0 }
+
+#define GPIO_INPUT_PD_20K \
+	{ .pad_conf0 = PAD_PULL_DOWN_20K | PAD_GPIO_ENABLE \
 		     | PAD_CONFIG0_GPI_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT0 }
 
@@ -566,6 +577,8 @@ static inline int ssus_get_gpio(int pad)
 static inline void ssus_disable_internal_pull(int pad)
 {
 }
+
+typedef int gpio_t;
 
 int get_gpio(int community_base, int pad0_offset);
 uint16_t gpio_family_number(uint8_t community, uint8_t pad);

@@ -207,7 +207,8 @@ endif
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld --oformat $(romstage-oformat)
-	$(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders && \
+	LANG=C LC_ALL= $(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders 2>&1 | \
+	grep -v "Empty loadable segment detected" && \
 	$(NM_romstage) $(objcbfs)/romstage_null.offenders | grep -q ""; if [ $$? -eq 0 ]; then \
 		echo "Forbidden global variables in romstage:"; \
 		$(NM_romstage) $(objcbfs)/romstage_null.offenders; false; \

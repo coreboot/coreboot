@@ -309,7 +309,7 @@ diff -ru gcc-5.1.0.orig/libsanitizer/sanitizer_common/sanitizer_platform_limits_
  #elif !defined(__sparc__)
    const unsigned struct___old_kernel_stat_sz = 32;
 diff -urN empty/gcc/common/config/riscv/riscv-common.c gcc-5.2.0/gcc/common/config/riscv/riscv-common.c
---- empty/gcc/common/config/riscv/riscv-common.c	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/common/config/riscv/riscv-common.c	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/common/config/riscv/riscv-common.c	2015-07-17 22:36:52.315705931 +0200
 @@ -0,0 +1,140 @@
 +/* Common hooks for RISC-V.
@@ -453,7 +453,7 @@ diff -urN empty/gcc/common/config/riscv/riscv-common.c gcc-5.2.0/gcc/common/conf
 +
 +struct gcc_targetm_common targetm_common = TARGETM_COMMON_INITIALIZER;
 diff -urN empty/gcc/config/riscv/constraints.md gcc-5.2.0/gcc/config/riscv/constraints.md
---- empty/gcc/config/riscv/constraints.md	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/constraints.md	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/constraints.md	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,90 @@
 +;; Constraint definitions for RISC-V target.
@@ -547,7 +547,7 @@ diff -urN empty/gcc/config/riscv/constraints.md gcc-5.2.0/gcc/config/riscv/const
 +  (and (match_code "const_vector")
 +       (match_test "op == CONST0_RTX (mode)")))
 diff -urN empty/gcc/config/riscv/default-32.h gcc-5.2.0/gcc/config/riscv/default-32.h
---- empty/gcc/config/riscv/default-32.h	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/default-32.h	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/default-32.h	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,22 @@
 +/* Definitions of target machine for GCC, for RISC-V,
@@ -573,7 +573,7 @@ diff -urN empty/gcc/config/riscv/default-32.h gcc-5.2.0/gcc/config/riscv/default
 +
 +#define TARGET_64BIT_DEFAULT 0
 diff -urN empty/gcc/config/riscv/elf.h gcc-5.2.0/gcc/config/riscv/elf.h
---- empty/gcc/config/riscv/elf.h	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/elf.h	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/elf.h	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,31 @@
 +/* Target macros for riscv*-elf targets.
@@ -608,7 +608,7 @@ diff -urN empty/gcc/config/riscv/elf.h gcc-5.2.0/gcc/config/riscv/elf.h
 +
 +#define NO_IMPLICIT_EXTERN_C 1
 diff -urN empty/gcc/config/riscv/generic.md gcc-5.2.0/gcc/config/riscv/generic.md
---- empty/gcc/config/riscv/generic.md	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/generic.md	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/generic.md	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,98 @@
 +;; Generic DFA-based pipeline description for RISC-V targets.
@@ -710,7 +710,7 @@ diff -urN empty/gcc/config/riscv/generic.md gcc-5.2.0/gcc/config/riscv/generic.m
 +       (eq_attr "mode" "DF"))
 +  "alu")
 diff -urN empty/gcc/config/riscv/linux.h gcc-5.2.0/gcc/config/riscv/linux.h
---- empty/gcc/config/riscv/linux.h	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/linux.h	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/linux.h	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,60 @@
 +/* Definitions for RISC-V GNU/Linux systems with ELF format.
@@ -774,7 +774,7 @@ diff -urN empty/gcc/config/riscv/linux.h gcc-5.2.0/gcc/config/riscv/linux.h
 +#define ENDFILE_SPEC \
 +   "%{shared|pie:crtendS.o%s;:crtend.o%s} crtn.o%s"
 diff -urN empty/gcc/config/riscv/linux64.h gcc-5.2.0/gcc/config/riscv/linux64.h
---- empty/gcc/config/riscv/linux64.h	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/linux64.h	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/linux64.h	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,43 @@
 +/* Definitions for 64-bit RISC-V GNU/Linux systems with ELF format.
@@ -821,7 +821,7 @@ diff -urN empty/gcc/config/riscv/linux64.h gcc-5.2.0/gcc/config/riscv/linux64.h
 +%{" OPT_ARCH64 ":-melf64lriscv} \
 +%{" OPT_ARCH32 ":-melf32lriscv}"
 diff -urN empty/gcc/config/riscv/opcode-riscv.h gcc-5.2.0/gcc/config/riscv/opcode-riscv.h
---- empty/gcc/config/riscv/opcode-riscv.h	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/opcode-riscv.h	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/opcode-riscv.h	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,149 @@
 +/* RISC-V ISA encoding.
@@ -974,7 +974,7 @@ diff -urN empty/gcc/config/riscv/opcode-riscv.h gcc-5.2.0/gcc/config/riscv/opcod
 +
 +#endif /* _RISCV_H_ */
 diff -urN empty/gcc/config/riscv/peephole.md gcc-5.2.0/gcc/config/riscv/peephole.md
---- empty/gcc/config/riscv/peephole.md	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/peephole.md	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/peephole.md	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,100 @@
 +;;........................
@@ -1078,7 +1078,7 @@ diff -urN empty/gcc/config/riscv/peephole.md gcc-5.2.0/gcc/config/riscv/peephole
 +  "<store>\t%1,%0,%2"
 +  [(set (attr "length") (const_int 8))])
 diff -urN empty/gcc/config/riscv/predicates.md gcc-5.2.0/gcc/config/riscv/predicates.md
---- empty/gcc/config/riscv/predicates.md	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/predicates.md	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/predicates.md	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,187 @@
 +;; Predicate description for RISC-V target.
@@ -1269,7 +1269,7 @@ diff -urN empty/gcc/config/riscv/predicates.md gcc-5.2.0/gcc/config/riscv/predic
 +(define_predicate "fp_unorder_operator"
 +  (match_code "ordered,unordered"))
 diff -urN empty/gcc/config/riscv/riscv-ftypes.def gcc-5.2.0/gcc/config/riscv/riscv-ftypes.def
---- empty/gcc/config/riscv/riscv-ftypes.def	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/riscv-ftypes.def	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/riscv-ftypes.def	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,39 @@
 +/* Definitions of prototypes for RISC-V built-in functions.
@@ -1312,7 +1312,7 @@ diff -urN empty/gcc/config/riscv/riscv-ftypes.def gcc-5.2.0/gcc/config/riscv/ris
 +
 +DEF_RISCV_FTYPE (1, (VOID, VOID))
 diff -urN empty/gcc/config/riscv/riscv-modes.def gcc-5.2.0/gcc/config/riscv/riscv-modes.def
---- empty/gcc/config/riscv/riscv-modes.def	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/riscv-modes.def	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/riscv-modes.def	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,26 @@
 +/* Extra machine modes for RISC-V target.
@@ -1342,7 +1342,7 @@ diff -urN empty/gcc/config/riscv/riscv-modes.def gcc-5.2.0/gcc/config/riscv/risc
 +VECTOR_MODES (INT, 4);        /*       V8QI V4HI V2SI */
 +VECTOR_MODES (FLOAT, 4);      /*            V4HF V2SF */
 diff -urN empty/gcc/config/riscv/riscv-opc.h gcc-5.2.0/gcc/config/riscv/riscv-opc.h
---- empty/gcc/config/riscv/riscv-opc.h	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/riscv-opc.h	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/riscv-opc.h	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,1348 @@
 +/* Automatically generated by parse-opcodes */
@@ -2694,7 +2694,7 @@ diff -urN empty/gcc/config/riscv/riscv-opc.h gcc-5.2.0/gcc/config/riscv/riscv-op
 +DECLARE_CAUSE("mtimeh", CAUSE_MTIMEH)
 +#endif
 diff -urN empty/gcc/config/riscv/riscv-protos.h gcc-5.2.0/gcc/config/riscv/riscv-protos.h
---- empty/gcc/config/riscv/riscv-protos.h	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/riscv-protos.h	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/riscv-protos.h	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,96 @@
 +/* Definition of RISC-V target for GNU compiler.
@@ -2794,7 +2794,7 @@ diff -urN empty/gcc/config/riscv/riscv-protos.h gcc-5.2.0/gcc/config/riscv/riscv
 +
 +#endif /* ! GCC_RISCV_PROTOS_H */
 diff -urN empty/gcc/config/riscv/riscv.c gcc-5.2.0/gcc/config/riscv/riscv.c
---- empty/gcc/config/riscv/riscv.c	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/riscv.c	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/riscv.c	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,4439 @@
 +/* Subroutines used for code generation for RISC-V.
@@ -7237,7 +7237,7 @@ diff -urN empty/gcc/config/riscv/riscv.c gcc-5.2.0/gcc/config/riscv/riscv.c
 +
 +#include "gt-riscv.h"
 diff -urN empty/gcc/config/riscv/riscv.h gcc-5.2.0/gcc/config/riscv/riscv.h
---- empty/gcc/config/riscv/riscv.h	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/riscv.h	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/riscv.h	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,1109 @@
 +/* Definition of RISC-V target for GNU compiler.
@@ -8350,7 +8350,7 @@ diff -urN empty/gcc/config/riscv/riscv.h gcc-5.2.0/gcc/config/riscv/riscv.h
 +#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL) \
 +  (((GLOBAL) ? DW_EH_PE_indirect : 0) | DW_EH_PE_pcrel | DW_EH_PE_sdata4)
 diff -urN empty/gcc/config/riscv/riscv.md gcc-5.2.0/gcc/config/riscv/riscv.md
---- empty/gcc/config/riscv/riscv.md	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/riscv.md	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/riscv.md	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,2448 @@
 +;; Machine description for RISC-V for GNU compiler.
@@ -10802,7 +10802,7 @@ diff -urN empty/gcc/config/riscv/riscv.md gcc-5.2.0/gcc/config/riscv/riscv.md
 +(include "sync.md")
 +(include "peephole.md")
 diff -urN empty/gcc/config/riscv/riscv.opt gcc-5.2.0/gcc/config/riscv/riscv.opt
---- empty/gcc/config/riscv/riscv.opt	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/riscv.opt	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/riscv.opt	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,87 @@
 +; Options for the MIPS port of the compiler
@@ -10893,7 +10893,7 @@ diff -urN empty/gcc/config/riscv/riscv.opt gcc-5.2.0/gcc/config/riscv/riscv.opt
 +Target RejectNegative Joined Var(riscv_cmodel_string)
 +Use given RISC-V code model (medlow or medany)
 diff -urN empty/gcc/config/riscv/sync.md gcc-5.2.0/gcc/config/riscv/sync.md
---- empty/gcc/config/riscv/sync.md	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/sync.md	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/sync.md	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,198 @@
 +;; Machine description for RISC-V atomic operations.
@@ -11095,7 +11095,7 @@ diff -urN empty/gcc/config/riscv/sync.md gcc-5.2.0/gcc/config/riscv/sync.md
 +  DONE;
 +})
 diff -urN empty/gcc/config/riscv/t-elf gcc-5.2.0/gcc/config/riscv/t-elf
---- empty/gcc/config/riscv/t-elf	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/t-elf	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/t-elf	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,4 @@
 +# Build the libraries for both hard and soft floating point
@@ -11103,7 +11103,7 @@ diff -urN empty/gcc/config/riscv/t-elf gcc-5.2.0/gcc/config/riscv/t-elf
 +MULTILIB_OPTIONS = msoft-float m64/m32 mno-atomic
 +MULTILIB_DIRNAMES = soft-float 64 32 no-atomic
 diff -urN empty/gcc/config/riscv/t-linux64 gcc-5.2.0/gcc/config/riscv/t-linux64
---- empty/gcc/config/riscv/t-linux64	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/gcc/config/riscv/t-linux64	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/gcc/config/riscv/t-linux64	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,5 @@
 +# Build the libraries for both hard and soft floating point
@@ -11112,17 +11112,17 @@ diff -urN empty/gcc/config/riscv/t-linux64 gcc-5.2.0/gcc/config/riscv/t-linux64
 +MULTILIB_DIRNAMES = 64 32 soft-float no-atomic
 +MULTILIB_OSDIRNAMES = ../lib ../lib32
 diff -urN empty/libgcc/config/riscv/crti.S gcc-5.2.0/libgcc/config/riscv/crti.S
---- empty/libgcc/config/riscv/crti.S	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/crti.S	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/crti.S	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1 @@
 +/* crti.S is empty because .init_array/.fini_array are used exclusively. */
 diff -urN empty/libgcc/config/riscv/crtn.S gcc-5.2.0/libgcc/config/riscv/crtn.S
---- empty/libgcc/config/riscv/crtn.S	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/crtn.S	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/crtn.S	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1 @@
 +/* crtn.S is empty because .init_array/.fini_array are used exclusively. */
 diff -urN empty/libgcc/config/riscv/div.S gcc-5.2.0/libgcc/config/riscv/div.S
---- empty/libgcc/config/riscv/div.S	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/div.S	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/div.S	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,121 @@
 +  .text
@@ -11247,7 +11247,7 @@ diff -urN empty/libgcc/config/riscv/div.S gcc-5.2.0/libgcc/config/riscv/div.S
 +  ret
 +#endif
 diff -urN empty/libgcc/config/riscv/mul.S gcc-5.2.0/libgcc/config/riscv/mul.S
---- empty/libgcc/config/riscv/mul.S	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/mul.S	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/mul.S	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,21 @@
 +  .text
@@ -11272,7 +11272,7 @@ diff -urN empty/libgcc/config/riscv/mul.S gcc-5.2.0/libgcc/config/riscv/mul.S
 +  bnez   a1, .L1
 +  ret
 diff -urN empty/libgcc/config/riscv/riscv-fp.c gcc-5.2.0/libgcc/config/riscv/riscv-fp.c
---- empty/libgcc/config/riscv/riscv-fp.c	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/riscv-fp.c	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/riscv-fp.c	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,178 @@
 +/* Functions needed for soft-float on riscv-linux.  Based on
@@ -11454,7 +11454,7 @@ diff -urN empty/libgcc/config/riscv/riscv-fp.c gcc-5.2.0/libgcc/config/riscv/ris
 +
 +#endif
 diff -urN empty/libgcc/config/riscv/save-restore.S gcc-5.2.0/libgcc/config/riscv/save-restore.S
---- empty/libgcc/config/riscv/save-restore.S	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/save-restore.S	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/save-restore.S	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,220 @@
 +  .text
@@ -11678,7 +11678,7 @@ diff -urN empty/libgcc/config/riscv/save-restore.S gcc-5.2.0/libgcc/config/riscv
 +
 +#endif
 diff -urN empty/libgcc/config/riscv/t-dpbit gcc-5.2.0/libgcc/config/riscv/t-dpbit
---- empty/libgcc/config/riscv/t-dpbit	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/t-dpbit	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/t-dpbit	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,4 @@
 +LIB2ADD += dp-bit.c
@@ -11686,7 +11686,7 @@ diff -urN empty/libgcc/config/riscv/t-dpbit gcc-5.2.0/libgcc/config/riscv/t-dpbi
 +dp-bit.c: $(srcdir)/fp-bit.c
 +	cat $(srcdir)/fp-bit.c > dp-bit.c
 diff -urN empty/libgcc/config/riscv/t-elf gcc-5.2.0/libgcc/config/riscv/t-elf
---- empty/libgcc/config/riscv/t-elf	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/t-elf	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/t-elf	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,4 @@
 +LIB2ADD += $(srcdir)/config/riscv/riscv-fp.c \
@@ -11694,13 +11694,13 @@ diff -urN empty/libgcc/config/riscv/t-elf gcc-5.2.0/libgcc/config/riscv/t-elf
 +	   $(srcdir)/config/riscv/mul.S \
 +	   $(srcdir)/config/riscv/div.S
 diff -urN empty/libgcc/config/riscv/t-elf32 gcc-5.2.0/libgcc/config/riscv/t-elf32
---- empty/libgcc/config/riscv/t-elf32	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/t-elf32	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/t-elf32	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,2 @@
 +HOST_LIBGCC2_CFLAGS += -m32
 +CRTSTUFF_CFLAGS += -m32
 diff -urN empty/libgcc/config/riscv/t-fpbit gcc-5.2.0/libgcc/config/riscv/t-fpbit
---- empty/libgcc/config/riscv/t-fpbit	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/t-fpbit	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/t-fpbit	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,5 @@
 +LIB2ADD += fp-bit.c
@@ -11709,7 +11709,7 @@ diff -urN empty/libgcc/config/riscv/t-fpbit gcc-5.2.0/libgcc/config/riscv/t-fpbi
 +	echo '#define FLOAT' > fp-bit.c
 +	cat $(srcdir)/fp-bit.c >> fp-bit.c
 diff -urN empty/libgcc/config/riscv/t-tpbit gcc-5.2.0/libgcc/config/riscv/t-tpbit
---- empty/libgcc/config/riscv/t-tpbit	1970-01-01 01:00:00.000000000 +0100
+--- gcc-5.2.0/libgcc/config/riscv/t-tpbit	1970-01-01 01:00:00.000000000 +0100
 +++ gcc-5.2.0/libgcc/config/riscv/t-tpbit	2015-07-17 22:36:52.319705931 +0200
 @@ -0,0 +1,10 @@
 +LIB2ADD += tp-bit.c

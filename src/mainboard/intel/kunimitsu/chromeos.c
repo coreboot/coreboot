@@ -22,10 +22,10 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-
 #include "gpio.h"
 #include "ec.h"
 
@@ -69,7 +69,20 @@ int get_developer_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	return 0;
+	/* Check for dedicated recovery switch first. */
+	if (google_chromeec_get_switches() & EC_SWITCH_DEDICATED_RECOVERY)
+		return 1;
+
+	/* Otherwise check if the EC has posted the keyboard recovery event. */
+	return !!(google_chromeec_get_events_b() &
+		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+}
+
+int clear_recovery_mode_switch(void)
+{
+	/* Clear keyboard recovery event. */
+	return google_chromeec_clear_events_b(
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
 int get_write_protect_state(void)

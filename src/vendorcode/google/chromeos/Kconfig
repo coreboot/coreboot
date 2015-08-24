@@ -166,12 +166,4 @@ config WIPEOUT_SUPPORTED
 source src/vendorcode/google/chromeos/vboot2/Kconfig
 
 endif # CHROMEOS
-if !CHROMEOS
-config VIRTUAL_DEV_SWITCH
-	bool
-	default n
-	depends on MAINBOARD_HAS_CHROMEOS
-	help
-	  Whether this platform has a virtual developer switch.
-endif
 endmenu

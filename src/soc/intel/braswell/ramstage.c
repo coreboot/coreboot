@@ -196,6 +196,7 @@ void soc_init_pre_device(struct soc_intel_braswell_config *config)
 
 	/* Perform silicon specific init. */
 	intel_silicon_init();
+	set_max_freq();
 
 	set_board_id();
 	/* Get GPIO initial states from mainboard */

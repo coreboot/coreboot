@@ -26,13 +26,13 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH
 	select SOC_NVIDIA_TEGRA210
 	select MAINBOARD_HAS_CHROMEOS
-	select VIRTUAL_DEV_SWITCH
 	select BOOTROM_SDRAM_INIT # use BootRom to config sdram
 	select COMMON_CBFS_SPI_WRAPPER
 	select SPI_FLASH_WINBOND
 
 config CHROMEOS
 	select CHROMEOS_VBNV_FLASH
+	select VIRTUAL_DEV_SWITCH
 
 config MAINBOARD_DIR
 	string

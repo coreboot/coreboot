@@ -140,6 +140,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	// the compiler to flag the error if CONFIG_GFXUMA is not set.
 	PostParams->MemConfig.UmaMode = CONFIG_GFXUMA ? UMA_AUTO : UMA_NONE;
 	PostParams->MemConfig.UmaSize = 0;
+	PostParams->MemConfig.BottomIo = (UINT16)(0xD0000000 >> 24);
 	status = AmdInitPost (PostParams);
 	printk(
 			BIOS_SPEW,

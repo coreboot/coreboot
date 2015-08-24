@@ -18,7 +18,11 @@
  * Foundation, Inc.
  */
 
-Name (OIPG, Package() {
-	Package () { 0x0001, 0, 0xFFFFFFFF, "INT3437:00" }, // no recovery button
-	Package () { 0x0003, 1, 16, "INT3437:00" }, // firmware write protect
+#include "../gpio.h"
+
+Name (OIPG, Package () {
+	/* No physical recovery GPIO. */
+	Package () { 0x0001, 0, 0xFFFFFFFF, "INT344B:00" },
+	/* Firmware write protect GPIO. */
+	Package () { 0x0003, 1, GPIO_PCH_WP, "INT344B:00" },
 })

@@ -18,6 +18,8 @@
  * Foundation, Inc.
  */
 
+#include "../gpio.h"
+
 #define BOARD_TRACKPAD_IRQ		0x33
 #define BOARD_TOUCHSCREEN_IRQ		0x1f
 
@@ -36,11 +38,13 @@ Scope (\_SB)
 		{
 			Return (\_SB.PCI0.LPCB.EC0.LIDS)
 		}
+
+		Name (_PRW, Package () { GPE_EC_WAKE, 5 })
 	}
 
 	Device (PWRB)
 	{
-		Name(_HID, EisaId("PNP0C0C"))
+		Name (_HID, EisaId("PNP0C0C"))
 	}
 }
 /*

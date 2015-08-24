@@ -26,6 +26,9 @@
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
+#include "gpio.h"
+#include "ec.h"
+
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 

@@ -22,11 +22,6 @@
 #define MAINBOARD_EC_H
 
 #include <ec/google/chromeec/ec_commands.h>
-#include <soc/gpio.h>
-
-/* GPP_E16 is EC_SCI_L */
-#define EC_SCI_GPI   16 /* TODO: Update this */
-#define EC_SMI_GPI   GPP_E15
 
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\

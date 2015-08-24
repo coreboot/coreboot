@@ -21,8 +21,21 @@
 #ifndef MAINBOARD_GPIO_H
 #define MAINBOARD_GPIO_H
 
+#include <soc/gpe.h>
 #include <soc/gpio.h>
 
+/* EC in RW */
+#define GPIO_EC_IN_RW		GPP_C6
+
+/* BIOS Flash Write Protect */
+#define GPIO_PCH_WP		GPP_C23
+/* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
+#define GPE_EC_WAKE		GPE0_LAN_WAK
+/* GPP_E16 is EC_SCI_L. GPP_E group is routed to dword 2 in the GPE0 block. */
+#define EC_SCI_GPI		GPE0_DW2_16
+#define EC_SMI_GPI		GPP_E15
+
+#ifndef __ACPI__
 /* Pad configuration in ramstage. */
 static const struct pad_config gpio_table[] = {
 /* EC_PCH_RCIN */	PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),
@@ -196,5 +209,7 @@ static const struct pad_config early_gpio_table[] = {
 /* SRCCLKREQ2# */	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1), /* KEPLER */
 /* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 1, DEEP), /* EN_PP3300_KEPLER */
 };
+
+#endif
 
 #endif

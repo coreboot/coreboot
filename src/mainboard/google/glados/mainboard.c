@@ -25,8 +25,7 @@
 
 static void mainboard_init(device_t dev)
 {
-	if (IS_ENABLED(CONFIG_GOOGLE_CHROME_EC))
-		mainboard_ec_init();
+	mainboard_ec_init();
 }
 
 /*

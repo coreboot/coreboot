@@ -487,15 +487,18 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 		addr = cbfs_get_entry_addr(image, entry);
 	}
 
-	len = size + (content_offset - addr - header_size);
+	len = content_offset - addr - header_size;
 	memcpy(entry, header_data, header_size);
-	if (len != size) {
+	if (len != 0) {
+		/* the header moved backwards a bit to accomodate cbfs_file
+		 * alignment requirements, so patch up ->offset to still point
+		 * to file data.
+		 */
 		DEBUG("|..|header|content|... <use offset to create entry>\n");
 		DEBUG("before: offset=0x%x, len=0x%x\n",
 		      ntohl(entry->offset), ntohl(entry->len));
 		// TODO reset expanded name buffer to 0xFF.
-		entry->offset = htonl(ntohl(entry->offset) + (len - size));
-		entry->len = htonl(size);
+		entry->offset = htonl(ntohl(entry->offset) + len);
 		DEBUG("after: offset=0x%x, len=0x%x\n",
 		      ntohl(entry->offset), ntohl(entry->len));
 	}

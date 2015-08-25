@@ -174,6 +174,18 @@ searchtool()
 	false
 }
 
+check_sum() {
+	test -z "$CHECKSUM" || \
+	test "$(cat sum/$1.cksum 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@')" = \
+	"$($CHECKSUM tarballs/$1 2>/dev/null | sed -e 's@.*\([0-9a-f]\{40,\}\).*@\1@')"
+}
+
+compute_sum() {
+	test ! -f sum/$1.cksum && test -f tarballs/$1 && \
+	(test -z "$CHECKSUM" || $CHECKSUM tarballs/$1 > sum/$1.cksum ) && \
+	printf "(checksum created. ${RED}Note. Please upload sum/$1.cksum if the corresponding archive is upgraded.)${NC}"
+}
+
 download() {
 	package=$1
 	archive="$(eval echo \$$package"_ARCHIVE")"
@@ -181,21 +193,13 @@ download() {
 	FILE=$(basename $archive)
 	printf " * $FILE "
 
-	test -f tarballs/$FILE && \
-		( test -z "$CHECKSUM" || \
-		  test "$(cat sum/$FILE.cksum 2>/dev/null | \
-				sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,')" = \
-			"$($CHECKSUM tarballs/$FILE 2>/dev/null | \
-				sed -e 's,.*\([0-9a-f]\{40\}\).*,\1,')" ) && \
-			printf "(cached)" || (
+	test -f tarballs/$FILE && check_sum $FILE && printf "(cached)" || (
 		printf "(downloading from $archive)"
 		rm -f tarballs/$FILE
 		cd tarballs
 		wget --no-check-certificate -q $archive
 		cd ..
-		test ! -f sum/$FILE.cksum && test -f tarballs/$FILE && \
-			(test -z "$CHECKSUM" || $CHECKSUM tarballs/$FILE > sum/$FILE.cksum ) && \
-			printf "(checksum created. ${RED}Note. Please upload sum/$FILE.cksum if the corresponding archive is upgraded.${NC})"
+		compute_sum $FILE
 	)
 	if [ ! -f tarballs/$FILE ]; then
 		printf "\n${RED}Failed to download $FILE.${NC}\n"

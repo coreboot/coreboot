@@ -123,6 +123,7 @@ static int cbfs_add_integer_component(const char *name,
 			      uint32_t offset,
 			      uint32_t headeroffset) {
 	struct cbfs_image image;
+	struct cbfs_file *header = NULL;
 	struct buffer buffer;
 	int i, ret = 1;
 
@@ -151,8 +152,11 @@ static int cbfs_add_integer_component(const char *name,
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
 
+	header = cbfs_create_file_header(CBFS_COMPONENT_RAW,
+		buffer.size, name);
+	uint32_t header_size = cbfs_calculate_file_header_size(name);
 	if (cbfs_add_entry(&image, &buffer, name, CBFS_COMPONENT_RAW,
-		offset, 0) != 0) {
+		offset, header, header_size) != 0) {
 		ERROR("Failed to add %llu into ROM image as '%s'.\n",
 					(long long unsigned)u64val, name);
 		goto done;
@@ -161,6 +165,7 @@ static int cbfs_add_integer_component(const char *name,
 	ret = 0;
 
 done:
+	free(header);
 	buffer_delete(&buffer);
 	return ret;
 }
@@ -202,9 +207,11 @@ static int cbfs_add_component(const char *filename,
 		return 1;
 	}
 
+	struct cbfs_file *header =
+		cbfs_create_file_header(type, buffer.size, name);
 	uint32_t header_size = cbfs_calculate_file_header_size(name);
 
-	if (convert && convert(&buffer, &offset, NULL) != 0) {
+	if (convert && convert(&buffer, &offset, header) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
 		buffer_delete(&buffer);
 		return 1;
@@ -214,13 +221,16 @@ static int cbfs_add_component(const char *filename,
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
 
-	if (cbfs_add_entry(&image, &buffer, name, type, offset, header_size)
+	if (cbfs_add_entry(&image, &buffer, name, type, offset,
+			   header, header_size)
 		!= 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
+		free(header);
 		buffer_delete(&buffer);
 		return 1;
 	}
 
+	free(header);
 	buffer_delete(&buffer);
 	return 0;
 }

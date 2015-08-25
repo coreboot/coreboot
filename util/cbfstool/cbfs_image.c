@@ -533,12 +533,13 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		   const char *name, uint32_t type, uint32_t content_offset,
-		   uint32_t header_size)
+		   void *header, uint32_t header_size)
 {
 	assert(image);
 	assert(buffer);
 	assert(buffer->data);
 	assert(name);
+	type = type;
 	assert(!IS_TOP_ALIGNED_ADDRESS(content_offset));
 
 	uint32_t entry_type;
@@ -607,16 +608,11 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		DEBUG("section 0x%x+0x%x for content_offset 0x%x.\n",
 		      addr, addr_next - addr, content_offset);
 
-		struct cbfs_file *header =
-			cbfs_create_file_header(type, buffer->size, name);
-
 		if (cbfs_add_entry_at(image, entry,
 				      buffer->data, content_offset, header,
 				      header_size) == 0) {
-			free(header);
 			return 0;
 		}
-		free(header);
 		break;
 	}
 

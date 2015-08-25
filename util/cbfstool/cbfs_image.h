@@ -94,7 +94,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
  * Returns 0 on success, otherwise non-zero. */
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		   const char *name, uint32_t type, uint32_t content_offset,
-		   uint32_t header_size);
+		   void *header, uint32_t header_size);
 
 /* Removes an entry from CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_remove_entry(struct cbfs_image *image, const char *name);

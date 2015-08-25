@@ -457,8 +457,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 			     struct cbfs_file *entry,
 			     const void *data,
 			     uint32_t content_offset,
-			     const struct cbfs_file *header,
-			     uint32_t header_size)
+			     const struct cbfs_file *header)
 {
 	struct cbfs_file *next = cbfs_find_next_entry(image, entry);
 	uint32_t addr = cbfs_get_entry_addr(image, entry),
@@ -467,6 +466,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	uint32_t len, header_offset;
 	uint32_t align = image->has_header ? image->header.align :
 							CBFS_ENTRY_ALIGNMENT;
+	uint32_t header_size = ntohl(header->offset);
 
 	header_offset = content_offset - header_size;
 	if (header_offset % align)
@@ -605,9 +605,8 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		DEBUG("section 0x%x+0x%x for content_offset 0x%x.\n",
 		      addr, addr_next - addr, content_offset);
 
-		if (cbfs_add_entry_at(image, entry,
-				      buffer->data, content_offset, header,
-				      header_size) == 0) {
+		if (cbfs_add_entry_at(image, entry, buffer->data,
+				      content_offset, header) == 0) {
 			return 0;
 		}
 		break;

@@ -31,7 +31,7 @@ romstage-y += thermal.c
 romstage-y += igd.c
 romstage-y += pm.c
 romstage-y += ram_calc.c
-romstage-$(CONFIG_IOMMU) += iommu.c
+romstage-y += iommu.c
 
 ramstage-y += acpi.c
 

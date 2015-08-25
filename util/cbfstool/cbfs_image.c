@@ -466,22 +466,22 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	uint32_t addr = cbfs_get_entry_addr(image, entry),
 		 addr_next = cbfs_get_entry_addr(image, next);
 	uint32_t min_entry_size = cbfs_calculate_file_header_size("");
-	uint32_t len, target;
+	uint32_t len, header_offset;
 	uint32_t align = image->has_header ? image->header.align :
 							CBFS_ENTRY_ALIGNMENT;
 
-	target = content_offset - header_size;
-	if (target % align)
-		target -= target % align;
-	if (target < addr) {
+	header_offset = content_offset - header_size;
+	if (header_offset % align)
+		header_offset -= header_offset % align;
+	if (header_offset < addr) {
 		ERROR("No space to hold cbfs_file header.");
 		return -1;
 	}
 
 	// Process buffer BEFORE content_offset.
-	if (target - addr > min_entry_size) {
+	if (header_offset - addr > min_entry_size) {
 		DEBUG("|min|...|header|content|... <create new entry>\n");
-		len = target - addr - min_entry_size;
+		len = header_offset - addr - min_entry_size;
 		cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL, len, "");
 		if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
 		entry = cbfs_find_next_entry(image, entry);

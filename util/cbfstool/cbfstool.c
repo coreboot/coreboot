@@ -154,9 +154,7 @@ static int cbfs_add_integer_component(const char *name,
 
 	header = cbfs_create_file_header(CBFS_COMPONENT_RAW,
 		buffer.size, name);
-	uint32_t header_size = cbfs_calculate_file_header_size(name);
-	if (cbfs_add_entry(&image, &buffer,
-		offset, header, header_size) != 0) {
+	if (cbfs_add_entry(&image, &buffer, offset, header) != 0) {
 		ERROR("Failed to add %llu into ROM image as '%s'.\n",
 					(long long unsigned)u64val, name);
 		goto done;
@@ -209,7 +207,6 @@ static int cbfs_add_component(const char *filename,
 
 	struct cbfs_file *header =
 		cbfs_create_file_header(type, buffer.size, name);
-	uint32_t header_size = cbfs_calculate_file_header_size(name);
 
 	if (convert && convert(&buffer, &offset, header) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
@@ -221,9 +218,7 @@ static int cbfs_add_component(const char *filename,
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
 
-	if (cbfs_add_entry(&image, &buffer, offset,
-			   header, header_size)
-		!= 0) {
+	if (cbfs_add_entry(&image, &buffer, offset, header) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
 		free(header);
 		buffer_delete(&buffer);

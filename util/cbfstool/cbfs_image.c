@@ -533,7 +533,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		   uint32_t content_offset,
-		   struct cbfs_file *header, uint32_t header_size)
+		   struct cbfs_file *header)
 {
 	assert(image);
 	assert(buffer);
@@ -546,6 +546,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 	uint32_t addr, addr_next;
 	struct cbfs_file *entry, *next;
 	uint32_t need_size;
+	uint32_t header_size = ntohl(header->offset);
 
 	need_size = header_size + buffer->size;
 	DEBUG("cbfs_add_entry('%s'@0x%x) => need_size = %u+%zu=%u\n",

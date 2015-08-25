@@ -93,8 +93,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
  * Never pass this function a top-aligned address: convert it to an offset.
  * Returns 0 on success, otherwise non-zero. */
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
-		   uint32_t content_offset,
-		   struct cbfs_file *header, uint32_t header_size);
+		   uint32_t content_offset, struct cbfs_file *header);
 
 /* Removes an entry from CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_remove_entry(struct cbfs_image *image, const char *name);

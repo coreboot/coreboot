@@ -495,12 +495,10 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 		 * to file data.
 		 */
 		DEBUG("|..|header|content|... <use offset to create entry>\n");
-		DEBUG("before: offset=0x%x, len=0x%x\n",
-		      ntohl(entry->offset), ntohl(entry->len));
+		DEBUG("before: offset=0x%x\n", ntohl(entry->offset));
 		// TODO reset expanded name buffer to 0xFF.
 		entry->offset = htonl(ntohl(entry->offset) + len);
-		DEBUG("after: offset=0x%x, len=0x%x\n",
-		      ntohl(entry->offset), ntohl(entry->len));
+		DEBUG("after: offset=0x%x\n", ntohl(entry->len));
 	}
 
 	// Ready to fill data into entry.

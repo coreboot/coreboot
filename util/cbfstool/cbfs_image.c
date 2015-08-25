@@ -455,7 +455,6 @@ int cbfs_image_delete(struct cbfs_image *image)
 /* Tries to add an entry with its data (CBFS_SUBHEADER) at given offset. */
 static int cbfs_add_entry_at(struct cbfs_image *image,
 			     struct cbfs_file *entry,
-			     uint32_t size,
 			     const void *data,
 			     uint32_t content_offset,
 			     const void *header_data,
@@ -502,13 +501,12 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	}
 
 	// Ready to fill data into entry.
-	assert(ntohl(entry->len) == size);
 	DEBUG("content_offset: 0x%x, entry location: %x\n",
 	      content_offset, (int)((char*)CBFS_SUBHEADER(entry) -
 				    image->buffer.data));
 	assert((char*)CBFS_SUBHEADER(entry) - image->buffer.data ==
 	       (ptrdiff_t)content_offset);
-	memcpy(CBFS_SUBHEADER(entry), data, size);
+	memcpy(CBFS_SUBHEADER(entry), data, ntohl(entry->len));
 	if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
 
 	// Process buffer AFTER entry.
@@ -612,7 +610,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		struct cbfs_file *header =
 			cbfs_create_file_header(type, buffer->size, name);
 
-		if (cbfs_add_entry_at(image, entry, buffer->size,
+		if (cbfs_add_entry_at(image, entry,
 				      buffer->data, content_offset, header,
 				      header_size) == 0) {
 			free(header);

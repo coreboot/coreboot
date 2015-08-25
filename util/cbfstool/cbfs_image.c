@@ -456,8 +456,6 @@ int cbfs_image_delete(struct cbfs_image *image)
 static int cbfs_add_entry_at(struct cbfs_image *image,
 			     struct cbfs_file *entry,
 			     uint32_t size,
-			     const char *name unused,
-			     uint32_t type unused,
 			     const void *data,
 			     uint32_t content_offset,
 			     const void *header_data,
@@ -613,7 +611,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		struct cbfs_file *header =
 			cbfs_create_file_header(type, buffer->size, name);
 
-		if (cbfs_add_entry_at(image, entry, buffer->size, name, type,
+		if (cbfs_add_entry_at(image, entry, buffer->size,
 				      buffer->data, content_offset, header,
 				      header_size) == 0) {
 			free(header);

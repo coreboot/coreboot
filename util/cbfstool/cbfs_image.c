@@ -456,10 +456,11 @@ int cbfs_image_delete(struct cbfs_image *image)
 static int cbfs_add_entry_at(struct cbfs_image *image,
 			     struct cbfs_file *entry,
 			     uint32_t size,
-			     const char *name,
-			     uint32_t type,
+			     const char *name unused,
+			     uint32_t type unused,
 			     const void *data,
 			     uint32_t content_offset,
+			     const void *header_data,
 			     uint32_t header_size)
 {
 	struct cbfs_file *next = cbfs_find_next_entry(image, entry);
@@ -489,7 +490,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	}
 
 	len = size + (content_offset - addr - header_size);
-	cbfs_create_empty_entry(entry, type, len, name);
+	memcpy(entry, header_data, header_size);
 	if (len != size) {
 		DEBUG("|..|header|content|... <use offset to create entry>\n");
 		DEBUG("before: offset=0x%x, len=0x%x\n",
@@ -609,11 +610,16 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		DEBUG("section 0x%x+0x%x for content_offset 0x%x.\n",
 		      addr, addr_next - addr, content_offset);
 
+		struct cbfs_file *header =
+			cbfs_create_file_header(type, buffer->size, name);
+
 		if (cbfs_add_entry_at(image, entry, buffer->size, name, type,
-				      buffer->data, content_offset,
+				      buffer->data, content_offset, header,
 				      header_size) == 0) {
+			free(header);
 			return 0;
 		}
+		free(header);
 		break;
 	}
 

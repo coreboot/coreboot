@@ -457,7 +457,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 			     struct cbfs_file *entry,
 			     const void *data,
 			     uint32_t content_offset,
-			     const void *header_data,
+			     const struct cbfs_file *header,
 			     uint32_t header_size)
 {
 	struct cbfs_file *next = cbfs_find_next_entry(image, entry);
@@ -487,7 +487,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	}
 
 	len = content_offset - addr - header_size;
-	memcpy(entry, header_data, header_size);
+	memcpy(entry, header, header_size);
 	if (len != 0) {
 		/* the header moved backwards a bit to accomodate cbfs_file
 		 * alignment requirements, so patch up ->offset to still point
@@ -533,14 +533,14 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 
 int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		   uint32_t content_offset,
-		   void *header, uint32_t header_size)
+		   struct cbfs_file *header, uint32_t header_size)
 {
 	assert(image);
 	assert(buffer);
 	assert(buffer->data);
 	assert(!IS_TOP_ALIGNED_ADDRESS(content_offset));
 
-	const char *name = ((struct cbfs_file *)header)->filename;
+	const char *name = header->filename;
 
 	uint32_t entry_type;
 	uint32_t addr, addr_next;

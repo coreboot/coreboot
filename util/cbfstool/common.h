@@ -146,10 +146,24 @@ void buffer_delete(struct buffer *buffer);
 const char *arch_to_string(uint32_t a);
 uint32_t string_to_arch(const char *arch_string);
 
-typedef int (*comp_func_ptr) (char *, int, char *, int *);
+/* Compress in_len bytes from in, storing the result at out, returning the
+ * resulting length in out_len.
+ * Returns 0 on error,
+ *         != 0 otherwise, depending on the compressing function.
+ */
+typedef int (*comp_func_ptr) (char *in, int in_len, char *out, int *out_len);
+
+/* Decompress in_len bytes from in, storing the result at out, up to out_len
+ * bytes.
+ * Returns 0 on error,
+ *         != 0 otherwise, depending on the decompressing function.
+ */
+typedef int (*decomp_func_ptr) (char *in, int in_len, char *out, int out_len);
+
 enum comp_algo { CBFS_COMPRESS_NONE = 0, CBFS_COMPRESS_LZMA = 1 };
 
 comp_func_ptr compression_function(enum comp_algo algo);
+decomp_func_ptr decompression_function(enum comp_algo algo);
 
 uint64_t intfiletype(const char *name);
 

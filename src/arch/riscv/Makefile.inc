@@ -31,6 +31,7 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 bootblock-y = bootblock.S stages.c
 bootblock-y += trap_util.S
 bootblock-y += trap_handler.c
+bootblock-y += virtual_memory.c
 bootblock-y += boot.c
 bootblock-y += rom_media.c
 bootblock-y += \
@@ -85,6 +86,8 @@ endif
 ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 
 ramstage-y =
+ramstage-y += trap_handler.c
+ramstage-y += virtual_memory.c
 ramstage-y += rom_media.c
 ramstage-y += stages.c
 ramstage-y += misc.c

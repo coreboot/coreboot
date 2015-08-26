@@ -3,7 +3,6 @@
 #ifndef _RISCV_ATOMIC_H
 #define _RISCV_ATOMIC_H
 
-//#include "config.h"
 #include <arch/encoding.h>
 
 #define disable_irqsave() clear_csr(sstatus, SSTATUS_IE)

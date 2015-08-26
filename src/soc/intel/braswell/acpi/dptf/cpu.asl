@@ -1,3 +1,51 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2015 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc.
+ */
+
+#ifndef DPTF_CPU_PASSIVE
+#define DPTF_CPU_PASSIVE	80
+#endif
+
+#ifndef DPTF_CPU_CRITICAL
+#define DPTF_CPU_CRITICAL	90
+#endif
+
+#ifndef DPTF_CPU_ACTIVE_AC0
+#define DPTF_CPU_ACTIVE_AC0	90
+#endif
+
+#ifndef DPTF_CPU_ACTIVE_AC1
+#define DPTF_CPU_ACTIVE_AC1	80
+#endif
+
+#ifndef DPTF_CPU_ACTIVE_AC2
+#define DPTF_CPU_ACTIVE_AC2	70
+#endif
+
+#ifndef DPTF_CPU_ACTIVE_AC3
+#define DPTF_CPU_ACTIVE_AC3	60
+#endif
+
+#ifndef DPTF_CPU_ACTIVE_AC4
+#define DPTF_CPU_ACTIVE_AC4	50
+#endif
+
 External (\_PR.CP00._TSS, MethodObj)
 External (\_PR.CP00._TPC, MethodObj)
 External (\_PR.CP00._PTC, PkgObj)
@@ -127,52 +175,39 @@ Device (B0DB)
 	{
 		Return (\_SB.MPPC)
 	}
-#ifdef DPTF_CPU_CRITICAL
+
 	Method (_CRT)
 	{
 		Return (\_SB.DPTF.CTOK(DPTF_CPU_CRITICAL))
 	}
-#endif
 
-#ifdef DPTF_CPU_PASSIVE
 	Method (_PSV)
 	{
 		Return (\_SB.DPTF.CTOK(DPTF_CPU_PASSIVE))
 	}
-#endif
 
-#ifdef DPTF_CPU_ACTIVE_AC0
 	Method (_AC0)
 	{
 		Return (\_SB.DPTF.CTOK(DPTF_CPU_ACTIVE_AC0))
 	}
-#endif
 
-#ifdef DPTF_CPU_ACTIVE_AC1
 	Method (_AC1)
 	{
 		Return (\_SB.DPTF.CTOK(DPTF_CPU_ACTIVE_AC1))
 	}
-#endif
 
-#ifdef DPTF_CPU_ACTIVE_AC2
 	Method (_AC2)
 	{
 		Return (\_SB.DPTF.CTOK(DPTF_CPU_ACTIVE_AC2))
 	}
-#endif
 
-#ifdef DPTF_CPU_ACTIVE_AC3
 	Method (_AC3)
 	{
 		Return (\_SB.DPTF.CTOK(DPTF_CPU_ACTIVE_AC3))
 	}
-#endif
 
-#ifdef DPTF_CPU_ACTIVE_AC4
 	Method (_AC4)
 	{
 		Return (\_SB.DPTF.CTOK(DPTF_CPU_ACTIVE_AC4))
 	}
-#endif
 }

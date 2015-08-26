@@ -27,9 +27,9 @@
 
 int print_gfx(struct pci_dev *gfx)
 {
-	u64 mmio_phys;
-	u8 *mmio;
-	u32 i;
+	uint64_t mmio_phys;
+	uint8_t *mmio;
+	uint32_t i;
 	if (!gfx) {
 		printf ("No IGD found\n");
 		return 0;

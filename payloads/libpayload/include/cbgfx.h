@@ -11,13 +11,15 @@
 /*
  * API error codes
  */
-#define CBGFX_SUCCESS		0
+#define CBGFX_SUCCESS			0
 /* unknown error */
-#define CBGFX_ERROR_UNKNOWN	1
+#define CBGFX_ERROR_UNKNOWN		1
 /* failed to initialize cbgfx library */
-#define CBGFX_ERROR_INIT	2
+#define CBGFX_ERROR_INIT		2
+/* drawing beyond screen boundary */
+#define CBGFX_ERROR_SCREEN_BOUNDARY	3
 /* drawing beyond canvas boundary */
-#define CBGFX_ERROR_BOUNDARY	3
+#define CBGFX_ERROR_CANVAS_BOUNDARY	4
 /* bitmap error: signature mismatch */
 #define CBGFX_ERROR_BITMAP_SIGNATURE	0x10
 /* bitmap error: unsupported format */
@@ -27,15 +29,30 @@
 /* bitmap error: scaling out of range */
 #define CBGFX_ERROR_SCALE_OUT_OF_RANGE	0x13
 
+struct fraction {
+	int32_t nume;
+	int32_t deno;
+};
+
+struct scale {
+	struct fraction x;
+	struct fraction y;
+};
+
 struct vector {
 	union {
-		uint32_t x;
-		uint32_t width;
+		int32_t x;
+		int32_t width;
 	};
 	union {
-		uint32_t y;
-		uint32_t height;
+		int32_t y;
+		int32_t height;
 	};
+};
+
+struct rect {
+	struct vector offset;
+	struct vector size;
 };
 
 struct rgb_color {
@@ -59,16 +76,14 @@ struct rgb_color {
 /*
  * draw a box filled with a color on screen
  *
- * top_left_rel: coordinate of top left corner of the box, relative to canvas.
- * (0 - CANVAS_SCALE).
- * size_rel: width and height of the box, relative to canvas. (0 - CANVAS_SCALE)
+ * box: .offset points the coordinate of the top left corner and .size specifies
+ * width and height of the box. Both are relative to the canvas size thus scale
+ * from 0 to CANVAS_SCALE (0 to 100%).
  * rgb: RGB color of the box.
  *
  * return: CBGFX_* error codes
  */
-int draw_box(const struct vector *top_left_rel,
-	     const struct vector *size_rel,
-	     const struct rgb_color *rgb);
+int draw_box(const struct rect *box, const struct rgb_color *rgb);
 
 /*
  * Clear the canvas
@@ -79,8 +94,11 @@ int clear_canvas(struct rgb_color *rgb);
  * Draw a bitmap image on screen.
  *
  * top_left_rel: coordinate of the top left corner of the image relative to the
- * canvas (0 - CANVAS_SCALE).
- * scale_rel: scale factor relative to the canvas width (0 - CANVAS_SCALE).
+ * canvas (0 - CANVAS_SCALE). If scale_rel is zero, this is treated as absolute
+ * coordinate.
+ * scale_rel: scale factor relative to the canvas width (0 - CANVAS_SCALE). If
+ * this is zero, scaling is turned off and the image is rendered with the
+ * original size.
  * bitmap: pointer to the bitmap data, starting from the file header.
  * size: size of the bitmap data
  *

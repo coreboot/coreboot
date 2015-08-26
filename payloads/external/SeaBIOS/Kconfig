@@ -18,7 +18,6 @@ endchoice
 config SEABIOS_PS2_TIMEOUT
 	prompt "PS/2 keyboard controller initialization timeout (milliseconds)"
 	default 0
-	depends on EXPERT
 	int
 	help
 	  Some PS/2 keyboard controllers don't respond to commands immediately

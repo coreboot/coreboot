@@ -22,14 +22,6 @@ mainmenu "coreboot configuration"
 
 menu "General setup"
 
-config EXPERT
-	bool "Expert mode"
-	help
-	  This allows you to select certain advanced configuration options.
-
-	  Warning: Only enable this option if you really know what you are
-	  doing! You have been warned!
-
 config LOCALVERSION
 	string "Local version string"
 	help
@@ -111,7 +103,6 @@ config CCACHE
 config FMD_GENPARSER
 	bool "Generate flashmap descriptor parser using flex and bison"
 	default n
-	depends on EXPERT
 	help
 	  Enable this option if you are working on the flashmap descriptor
 	  parser and made changes to fmd_scanner.l or fmd_parser.y.
@@ -121,7 +112,6 @@ config FMD_GENPARSER
 config SCONFIG_GENPARSER
 	bool "Generate SCONFIG parser using flex and bison"
 	default n
-	depends on EXPERT
 	help
 	  Enable this option if you are working on the sconfig device tree
 	  parser and made changes to sconfig.l or sconfig.y.
@@ -283,7 +273,6 @@ config BOOTBLOCK_SOURCE
 config SKIP_MAX_REBOOT_CNT_CLEAR
 	bool "Do not clear reboot count after successful boot"
 	default n
-	depends on EXPERT
 	help
 	  Do not clear the reboot count immediately after successful boot.
 	  Set to allow the payload to control normal/fallback image recovery.

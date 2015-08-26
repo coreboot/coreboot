@@ -120,7 +120,7 @@ config SVI_HIGH_FREQ
 
 menu "HyperTransport setup"
 	#could be implemented for K8 (NORTHBRIDGE_AMD_AMDK8)
-	depends on (NORTHBRIDGE_AMD_AMDFAM10) && EXPERT
+	depends on (NORTHBRIDGE_AMD_AMDFAM10)
 
 choice
 	prompt "HyperTransport downlink width"

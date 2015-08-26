@@ -645,8 +645,12 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	    entry_name, cbfs_get_entry_addr(image, entry),
 	    get_cbfs_entry_type_name(ntohl(entry->type)), ntohl(entry->len));
 
-	if (ntohl(entry->type) != CBFS_COMPONENT_RAW) {
-		WARN("Only 'raw' files are safe to extract.\n");
+	if (ntohl(entry->type) == CBFS_COMPONENT_STAGE) {
+		WARN("Stages are extracted in SELF format.\n");
+	}
+
+	if (ntohl(entry->type) == CBFS_COMPONENT_PAYLOAD) {
+		WARN("Payloads are extracted in SELF format.\n");
 	}
 
 	buffer.data = CBFS_SUBHEADER(entry);

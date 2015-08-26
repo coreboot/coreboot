@@ -178,6 +178,26 @@ static void cbfs_decode_payload_segment(struct cbfs_payload_segment *output,
 	assert(seg.size == 0);
 }
 
+static int cbfs_file_get_compression_info(struct cbfs_file *entry,
+	uint32_t *decompressed_size)
+{
+	unsigned int compression = CBFS_COMPRESS_NONE;
+	*decompressed_size = ntohl(entry->len);
+	for (struct cbfs_file_attribute *attr = cbfs_file_first_attr(entry);
+	     attr != NULL;
+	     attr = cbfs_file_next_attr(entry, attr)) {
+		if (ntohl(attr->tag) == CBFS_FILE_ATTR_TAG_COMPRESSION) {
+			struct cbfs_file_attr_compression *ac =
+				(struct cbfs_file_attr_compression *)attr;
+			compression = ntohl(ac->compression);
+			if (decompressed_size)
+				*decompressed_size =
+					ntohl(ac->decompressed_size);
+		}
+	}
+	return compression;
+}
+
 void cbfs_get_header(struct cbfs_header *header, void *src)
 {
 	struct buffer outheader;
@@ -777,18 +797,9 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 	if (!fp)
 		fp = stdout;
 
-	unsigned int compression = CBFS_COMPRESS_NONE;
 	unsigned int decompressed_size = 0;
-	for (struct cbfs_file_attribute *attr = cbfs_file_first_attr(entry);
-	     attr != NULL;
-	     attr = cbfs_file_next_attr(entry, attr)) {
-		if (ntohl(attr->tag) == CBFS_FILE_ATTR_TAG_COMPRESSION) {
-			struct cbfs_file_attr_compression *ac =
-				(struct cbfs_file_attr_compression *)attr;
-			compression = ntohl(ac->compression);
-			decompressed_size = ntohl(ac->decompressed_size);
-		}
-	}
+	unsigned int compression = cbfs_file_get_compression_info(entry,
+		&decompressed_size);
 
 	if (compression == CBFS_COMPRESS_NONE) {
 		fprintf(fp, "%-30s 0x%-8x %-12s %d\n",

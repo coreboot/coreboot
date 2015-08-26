@@ -777,11 +777,36 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 	if (!fp)
 		fp = stdout;
 
-	fprintf(fp, "%-30s 0x%-8x %-12s %d\n",
-		*name ? name : "(empty)",
-		cbfs_get_entry_addr(image, entry),
-		get_cbfs_entry_type_name(ntohl(entry->type)),
-		ntohl(entry->len));
+	unsigned int compression = CBFS_COMPRESS_NONE;
+	unsigned int decompressed_size = 0;
+	for (struct cbfs_file_attribute *attr = cbfs_file_first_attr(entry);
+	     attr != NULL;
+	     attr = cbfs_file_next_attr(entry, attr)) {
+		if (ntohl(attr->tag) == CBFS_FILE_ATTR_TAG_COMPRESSION) {
+			struct cbfs_file_attr_compression *ac =
+				(struct cbfs_file_attr_compression *)attr;
+			compression = ntohl(ac->compression);
+			decompressed_size = ntohl(ac->decompressed_size);
+		}
+	}
+
+	if (compression == CBFS_COMPRESS_NONE) {
+		fprintf(fp, "%-30s 0x%-8x %-12s %d\n",
+			*name ? name : "(empty)",
+			cbfs_get_entry_addr(image, entry),
+			get_cbfs_entry_type_name(ntohl(entry->type)),
+			ntohl(entry->len));
+	} else {
+		fprintf(fp, "%-30s 0x%-8x %-12s %d (%d after %s decompression)\n",
+			*name ? name : "(empty)",
+			cbfs_get_entry_addr(image, entry),
+			get_cbfs_entry_type_name(ntohl(entry->type)),
+			ntohl(entry->len),
+			decompressed_size,
+			lookup_name_by_type(types_cbfs_compression,
+				compression, "(unknown)")
+			);
+	}
 
 	if (!verbose)
 		return 0;

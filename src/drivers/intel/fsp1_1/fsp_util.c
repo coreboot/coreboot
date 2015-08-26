@@ -25,7 +25,7 @@
 #include <timestamp.h>
 
 /* Locate the FSP binary in the coreboot filesystem */
-FSP_INFO_HEADER *find_fsp(void)
+FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address)
 {
 	union {
 		EFI_FFS_FILE_HEADER *ffh;
@@ -47,7 +47,7 @@ FSP_INFO_HEADER *find_fsp(void)
 
 	for (;;) {
 		/* Get the FSP binary base address in CBFS */
-		fsp_ptr.u8 = (u8 *)CONFIG_FSP_LOC;
+		fsp_ptr.u32 = fsp_base_address;
 
 		/* Check the FV signature, _FVH */
 		if (fsp_ptr.fvh->Signature != 0x4856465F) {
@@ -81,7 +81,7 @@ FSP_INFO_HEADER *find_fsp(void)
 		fsp_ptr.u8 += sizeof(EFI_RAW_SECTION);
 
 		/* Verify that the FSP base address.*/
-		if (fsp_ptr.fih->ImageBase != CONFIG_FSP_LOC) {
+		if (fsp_ptr.fih->ImageBase != fsp_base_address) {
 			fsp_ptr.u8 = (u8 *)ERROR_IMAGEBASE_MISMATCH;
 			break;
 		}
@@ -150,7 +150,7 @@ void fsp_notify(u32 phase)
 
 	fsp_header_ptr = fsp_get_fih();
 	if (fsp_header_ptr == NULL) {
-		fsp_header_ptr = (void *)find_fsp();
+		fsp_header_ptr = (void *)find_fsp(CONFIG_FSP_LOC);
 		if ((u32)fsp_header_ptr < 0xff) {
 			/* output something in case there is no serial */
 			post_code(0x4F);

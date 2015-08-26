@@ -342,6 +342,7 @@ halt3:
 	.align 4
 fake_fsp_stack:
 	.long	find_fsp_ret
+	.long	CONFIG_FSP_LOC		/* FSP base address */
 
 CAR_init_params:
 	.long	CONFIG_CPU_MICROCODE_CBFS_LOC		/* Microcode Location */

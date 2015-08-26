@@ -42,7 +42,7 @@
 #include <soc/chipset_fsp_util.h>
 
 /* find_fsp() should only be called from assembly code. */
-FSP_INFO_HEADER *find_fsp(void);
+FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address);
 /* Set FSP's runtime information. */
 void fsp_set_runtime(FSP_INFO_HEADER *fih, void *hob_list);
 /* Use a new FSP_INFO_HEADER at runtime. */

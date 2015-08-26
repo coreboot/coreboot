@@ -661,9 +661,20 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 		ERROR("File not found: %s\n", entry_name);
 		return -1;
 	}
+
+	unsigned int decompressed_size = 0;
+	unsigned int compression = cbfs_file_get_compression_info(entry,
+		&decompressed_size);
+
+	decomp_func_ptr decompress = decompression_function(compression);
+	if (!decompress) {
+		ERROR("looking up decompression routine failed\n");
+		return -1;
+	}
+
 	LOG("Found file %.30s at 0x%x, type %.12s, size %d\n",
 	    entry_name, cbfs_get_entry_addr(image, entry),
-	    get_cbfs_entry_type_name(ntohl(entry->type)), ntohl(entry->len));
+	    get_cbfs_entry_type_name(ntohl(entry->type)), decompressed_size);
 
 	if (ntohl(entry->type) == CBFS_COMPONENT_STAGE) {
 		WARN("Stages are extracted in SELF format.\n");
@@ -673,8 +684,13 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 		WARN("Payloads are extracted in SELF format.\n");
 	}
 
-	buffer.data = CBFS_SUBHEADER(entry);
-	buffer.size = ntohl(entry->len);
+	buffer.data = malloc(decompressed_size);
+	buffer.size = decompressed_size;
+	if (decompress(CBFS_SUBHEADER(entry), ntohl(entry->len),
+		buffer.data, buffer.size)) {
+		ERROR("decompression failed for %s\n", entry_name);
+		return -1;
+	}
 	buffer.name = strdup("(cbfs_export_entry)");
 	if (buffer_write_file(&buffer, filename) != 0) {
 		ERROR("Failed to write %s into %s.\n",
@@ -682,6 +698,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 		free(buffer.name);
 		return -1;
 	}
+	free(buffer.data);
 	free(buffer.name);
 	INFO("Successfully dumped the file to: %s\n", filename);
 	return 0;

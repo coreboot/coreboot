@@ -29,6 +29,8 @@ riscv_asm_flags =
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 
 bootblock-y = bootblock.S stages.c
+bootblock-y += trap_util.S
+bootblock-y += trap_handler.c
 bootblock-y += boot.c
 bootblock-y += rom_media.c
 bootblock-y += \

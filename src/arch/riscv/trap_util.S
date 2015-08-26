@@ -121,7 +121,7 @@ supervisor_trap_entry:
 trap_entry:
   csrw mscratch, sp
   1:addi sp,sp,-320
-  save_tf_
+  save_tf
   move  a0,sp
   jal trap_handler
   .global supervisor_call_return

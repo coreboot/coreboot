@@ -20,12 +20,10 @@
 #define min(a,b) MIN((a),(b))
 #define max(a,b) MAX((a),(b))
 
-#if !defined(__PRE_RAM__)
 void *memalign(size_t boundary, size_t size);
 void *malloc(size_t size);
 /* We never free memory */
 static inline void free(void *ptr) {}
-#endif
 
 #ifndef __ROMCC__
 static inline unsigned long div_round_up(unsigned int n, unsigned int d)

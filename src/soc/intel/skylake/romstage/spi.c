@@ -18,7 +18,7 @@
  * Foundation, Inc.
  */
 
-#include <flash_controller.h>
+#include <soc/flash_controller.h>
 #include <soc/romstage.h>
 
 int early_spi_read(u32 offset, u32 size, u8 *buffer)

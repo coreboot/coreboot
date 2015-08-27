@@ -17,8 +17,8 @@
  * Foundation, Inc.,
  */
 
-#ifndef _FLASH_CONTROLLER__H_
-#define _FLASH_CONTROLLER__H_
+#ifndef _SOC_FLASH_CONTROLLER__H_
+#define _SOC_FLASH_CONTROLLER__H_
 
 #include <rules.h>
 #include <arch/io.h>
@@ -173,4 +173,4 @@ enum {
 	HSFC_FCYCLE_SHIFT =	1,
 	HSFC_FDBC_SHIFT =	8,
 };
-#endif	/* _FLASH_CONTROLLER__H_ */
+#endif	/* _SOC_FLASH_CONTROLLER__H_ */

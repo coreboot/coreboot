@@ -23,9 +23,9 @@
 #include <bootstate.h>
 #include <delay.h>
 #include <device/pci_ids.h>
-#include <flash_controller.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
+#include <soc/flash_controller.h>
 #include <soc/pci_devs.h>
 #include <soc/spi.h>
 

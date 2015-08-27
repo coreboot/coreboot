@@ -3068,6 +3068,23 @@ static void DCTInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTst
 		printk(BIOS_DEBUG, "\t\tDCTInit_D: mct_SPDCalcWidth Done\n");
 		if (AutoCycTiming_D(pMCTstat, pDCTstat, dct) < SC_StopError) {
 			printk(BIOS_DEBUG, "\t\tDCTInit_D: AutoCycTiming_D Done\n");
+
+			/* SkewMemClk must be set before MemClkFreqVal is set
+			 * This relies on DCTInit_D being called for DCT 1 after
+			 * it has already been called for DCT 0...
+			 */
+			if (is_fam15h()) {
+				/* Set memory clock skew if needed */
+				if (dct == 1) {
+					if (!pDCTstat->stopDCT[0]) {
+						printk(BIOS_DEBUG, "\t\tDCTInit_D: enabling intra-channel clock skew\n");
+						dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 0x0d0fe00a);
+						dword |= (0x1 << 4);				/* SkewMemClk = 1 */
+						Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 0x0d0fe00a, dword);
+					}
+				}
+			}
+
 			if (AutoConfig_D(pMCTstat, pDCTstat, dct) < SC_StopError) {
 				printk(BIOS_DEBUG, "\t\tDCTInit_D: AutoConfig_D Done\n");
 				if (PlatformSpec_D(pMCTstat, pDCTstat, dct) < SC_StopError) {
@@ -3077,8 +3094,6 @@ static void DCTInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTst
 			}
 		}
 	}
-
-
 }
 
 static void DCTFinalInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct)
@@ -3086,17 +3101,6 @@ static void DCTFinalInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *p
 	uint32_t dword;
 
 	/* Finalize DRAM init on a single node */
-	if (is_fam15h()) {
-		/* Set memory clock skew if needed */
-		if (dct == 0) {
-			if (!pDCTstat->stopDCT[0] && !pDCTstat->stopDCT[1]) {
-				dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, dct, 0x98, 0x0d0fe00a);
-				dword |= (0x1 << 4);				/* SkewMemClk = 1 */
-				Set_NB32_index_wait_DCT(pDCTstat->dev_dct, dct, 0x98, 0x0d0fe00a, dword);
-			}
-		}
-	}
-
 	if (!pDCTstat->stopDCT[dct]) {
 		if (!(pMCTstat->GStatus & (1 << GSB_EnDIMMSpareNW))) {
 			printk(BIOS_DEBUG, "\t\tDCTFinalInit_D: StartupDCT_D Start\n");
@@ -3299,28 +3303,28 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 			if (Twtr < val)
 				Twtr = val;
 
-			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tRAS_tRC] & 0xFF;
+			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tRAS_tRC] & 0xff;
 			val >>= 4;
 			val <<= 8;
-			val |= pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRCmin] & 0xFF;
+			val |= pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRCmin] & 0xff;
 			val *= MTB16x;
 			if (Trc < val)
 				Trc = val;
 
-			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Density] & 0xF;
+			byte = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Density] & 0xf;
 			if (Trfc[LDIMM] < byte)
 				Trfc[LDIMM] = byte;
 
-			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tRAS_tRC] & 0xF;
+			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tRAS_tRC] & 0xf;
 			val <<= 8;
-			val |= (pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRASmin] & 0xFF);
+			val |= (pDCTstat->spd_data.spd_bytes[dct + i][SPD_tRASmin] & 0xff);
 			val *= MTB16x;
 			if (Tras < val)
 				Tras = val;
 
-			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tFAW] & 0xF;
+			val = pDCTstat->spd_data.spd_bytes[dct + i][SPD_Upper_tFAW] & 0xf;
 			val <<= 8;
-			val |= pDCTstat->spd_data.spd_bytes[dct + i][SPD_tFAWmin] & 0xFF;
+			val |= pDCTstat->spd_data.spd_bytes[dct + i][SPD_tFAWmin] & 0xff;
 			val *= MTB16x;
 			if (Tfaw < val)
 				Tfaw = val;
@@ -3527,7 +3531,7 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 		/* Trfc0-Trfc3 */
 		for (i=0; i<4; i++)
 			if (pDCTstat->Trfc[i] == 0x0)
-				pDCTstat->Trfc[i] = 0x4;
+				pDCTstat->Trfc[i] = 0x1;
 		dword = Get_NB32_DCT(dev, dct, 0x208);				/* DRAM Timing 2 */
 		dword &= ~(0x07070707);
 		dword |= (pDCTstat->Trfc[3] & 0x7) << 24;			/* Trfc3 */

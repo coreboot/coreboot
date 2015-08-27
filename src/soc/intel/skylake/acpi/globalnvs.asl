@@ -63,19 +63,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	CBMC,	32,	// 0x1c - 0x1f - Coreboot Memory Console
 	PM1I,	64,	// 0x20 - 0x27 - PM1 wake status bit
 	GPEI,	64,	// 0x28 - 0x2f - GPE wake status bit
-	RPA1,	32,	// 0x30 - 0x33 - Root port address 1
-	RPA2,	32,	// 0x34 - 0x37 - Root port address 2
-	RPA3,	32,	// 0x38 - 0x3b - Root port address 3
-	RPA4,	32,	// 0x3c - 0x3f - Root port address 4
-	RPA5,	32,	// 0x40 - 0x43 - Root port address 5
-	RPA6,	32,	// 0x44 - 0x47 - Root port address 6
-	RPA7,	32,	// 0x48 - 0x4b - Root port address 7
-	RPA8,	32,	// 0x4c - 0x4f - Root port address 8
-	RPA9,	32,	// 0x50 - 0x53 - Root port address 9
-	RPAA,	32,	// 0x54 - 0x57 - Root port address 10
-	RPAB,	32,	// 0x58 - 0x5b - Root port address 11
-	RPAC,	32,	// 0x5c - 0x5f - Root port address 12
-	DPTE,	8,	// 0x60 - Enable DPTF
+	DPTE,	8,	// 0x30 - Enable DPTF
 
 	/* ChromeOS specific */
 	Offset (0x100),

@@ -47,6 +47,8 @@ DefinitionBlock(
 		{
 			#include <northbridge/intel/gm45/acpi/gm45.asl>
 			#include <southbridge/intel/i82801ix/acpi/ich9.asl>
+
+			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
 

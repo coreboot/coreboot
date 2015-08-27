@@ -135,6 +135,8 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 
 	DSDTPCI0Includes = append(DSDTPCI0Includes, DSDTInclude{
 		File: "northbridge/intel/sandybridge/acpi/sandybridge.asl",
+	}, DSDTInclude{
+		File: "drivers/intel/gma/acpi/default_brightness_levels.asl",
 	})
 }
 

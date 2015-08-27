@@ -38,6 +38,6 @@ Device (GFX0)
 		BCLM, 16
 	}
 
-#include "brightness_levels.asl"
+#include "configure_brightness_levels.asl"
 #include "common.asl"
 }

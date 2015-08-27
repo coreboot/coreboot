@@ -47,8 +47,6 @@ static const struct reg_script pch_pmc_misc_init_script[] = {
 			DIS_SLP_X_STRCH_SUS_UP),
 	/* Enable SCI and clear SLP requests. */
 	REG_IO_RMW32(ACPI_BASE_ADDRESS + PM1_CNT, ~SLP_TYP, SCI_EN),
-	/* Indicate DRAM init done for MRC */
-	REG_PCI_OR32(GEN_PMCON_A, DISB),
 	REG_SCRIPT_END
 };
 

@@ -78,9 +78,10 @@
 #define PID_GPIOCOM2	0xAD
 #define PID_GPIOCOM1	0xAE
 #define PID_GPIOCOM0	0xAF
-#define PID_LPC		0xC7
-#define PID_ITSS	0xC4
+#define PID_SCS		0xC0
 #define PID_RTC		0xC3
+#define PID_ITSS	0xC4
+#define PID_LPC		0xC7
 #define PID_SERIALIO	0xCB
 #define PID_DMI		0xEF
 

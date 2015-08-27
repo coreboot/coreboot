@@ -69,9 +69,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 
-	/* Device specific */
-	Offset (0x1000),
-	#include "device_nvs.asl"
 }
 
 /* Set flag to enable USB charging in S5 */

@@ -159,6 +159,8 @@ static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t d
 		}
 	}
 
+	printk(BIOS_INFO, "DIMM %d RttWr: %01x\n", dimm, term);
+
 	return term;
 }
 
@@ -358,6 +360,7 @@ static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t 
 		}
 	}
 
+	printk(BIOS_INFO, "DIMM %d RttNom: %01x\n", dimm, term);
 	return term;
 }
 

@@ -47,7 +47,6 @@
 #include "smbus.asl"
 
 
-#include "itss.asl"
 /* USB XHCI 0:14.0 */
 #include "xhci.asl"
 

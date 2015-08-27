@@ -232,7 +232,7 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 	for (MrsChipSel = 0; MrsChipSel < 8; MrsChipSel ++, MrsChipSel ++) {
 		if (pDCTstat->CSPresent & (1 << MrsChipSel)) {
 			val = Get_NB32_DCT(dev, dct, 0xa8);
-			val &= ~(0xf << 8);
+			val &= ~(0xff << 8);
 
 			switch (MrsChipSel) {
 				case 0:
@@ -279,7 +279,7 @@ void FreqChgCtrlWrd(struct MCTStatStruc *pMCTstat,
 			/* 2. Program F2x[1, 0]A8[CtrlWordCS]=bit mask for target chip selects. */
 			val = Get_NB32_DCT(dev, dct, 0xa8);
 			val &= ~(0xff << 8);
-			val |= (0x3 << (MrsChipSel & 0xfe)) << 8;
+			val |= (0x3 << (MrsChipSel & ~0x1)) << 8;
 			Set_NB32_DCT(dev, dct, 0xa8, val);
 
 			/* Resend control word 10 */

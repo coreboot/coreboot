@@ -37,6 +37,8 @@
 /* PCIE Ports */
 #include "pcie.asl"
 
+/* PCR Access */
+#include "pcr.asl"
 
 /* Serial IO */
 #include "serialio.asl"

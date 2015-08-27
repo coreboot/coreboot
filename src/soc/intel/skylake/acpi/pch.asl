@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
- * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Google Inc.
  * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,38 +20,34 @@
  */
 
 #include <soc/iomap.h>
+#include <soc/irq.h>
+#include <soc/gpio_defs.h>
+#include <soc/gpe.h>
+#include <soc/pcr.h>
 
-Scope (\)
-{
-	/* IO-Trap at 0x800.
-	 * This is the ACPI->SMI communication interface.
-	 */
-	OperationRegion (IO_T, SystemIO, 0x800, 0x10)
-	Field (IO_T, ByteAcc, NoLock, Preserve)
-	{
-		Offset (0x8),
-		TRP0, 8		/* IO-Trap at 0x808 */
-	}
-}
+/* GPIO Controller */
+#include "gpio.asl"
 
-/* PCI Express Ports 0:1c.x */
-#include "pcie.asl"
+/* Interrupt Routing */
+#include "irqlinks.asl"
 
-/* USB XHCI 0:14.0 */
-#include "xhci.asl"
-
-/* LPC Bridge 0:1f.0 */
+/* LPC 0:1f.0 */
 #include "lpc.asl"
 
-/* SMBus 0:1f.3 */
-#include "smbus.asl"
+/* PCIE Ports */
+#include "pcie.asl"
+
 
 /* Serial IO */
 #include "serialio.asl"
 
-/* Interrupt Routing */
+/* SMBus 0:1f.3 */
+#include "smbus.asl"
+
+
 #include "itss.asl"
-#include "irqlinks.asl"
+/* USB XHCI 0:14.0 */
+#include "xhci.asl"
 
 Method (_OSC, 4)
 {

@@ -18,10 +18,6 @@
  * Foundation, Inc.
  */
 
-#include <soc/irq.h>
-#include <soc/iomap.h>
-#include <soc/pcr.h>
-#include <soc/gpio_defs.h>
 
 /* PCR Register Access Methods PCR Dword Read arg0: PID arg1: Offset */
 Method (PCRR, 2, Serialized)

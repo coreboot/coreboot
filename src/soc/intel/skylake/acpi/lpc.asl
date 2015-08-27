@@ -19,7 +19,6 @@
  * Foundation, Inc.
  */
 
-#include <soc/iomap.h>
 
 // Intel LPC Bus Device  - 0:1f.0
 
@@ -169,8 +168,6 @@ Device (LPCB)
 		})
 	}
 
-	#include "gpio.asl"
-	#include "irqlinks.asl"
 	#include <acpi/ec.asl>
 	#include <acpi/superio.asl>
 }

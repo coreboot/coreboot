@@ -46,6 +46,8 @@
 /* SMBus 0:1f.3 */
 #include "smbus.asl"
 
+/* Storage Controllers */
+#include "scs.asl"
 
 /* USB XHCI 0:14.0 */
 #include "xhci.asl"

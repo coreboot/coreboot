@@ -618,32 +618,3 @@ Device (UAR2)
 		^^LPD3 (\SAB1, \SAEN)
 	}
 }
-
-
-Device (PEMC)
-{
-	Name (_ADR, 0x001E0004)
-	Device (CARD)
-	{
-		Name (_ADR, 0x00000008)
-		Method (_RMV, 0x0, NotSerialized)
-		{
-			Return (0)
-		}
-	}
-}
-
-/* SD controller */
-Device (PSDC)
-{
-	Name (_ADR, 0x001E0006)
-	Device (CARD)
-	{
-		Name (_ADR, 0x00000008)
-		Method (_RMV, 0x0, NotSerialized)
-		{
-			Return (1)
-		}
-	}
-}
-

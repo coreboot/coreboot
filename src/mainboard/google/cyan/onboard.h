@@ -78,3 +78,7 @@
 #define BOARD_PRE_EVT		0x01
 #define BOARD_EVT		0x02
 #endif
+
+#define DPTF_CPU_PASSIVE	88
+#define DPTF_CPU_CRITICAL	90
+

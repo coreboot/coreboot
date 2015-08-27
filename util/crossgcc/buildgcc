@@ -280,6 +280,7 @@ cleanup()
 	for package in $PACKAGES; do
 		rm -rf build-${TARGETARCH}-$package $(eval echo \$$package"_DIR")
 	done
+	rm -f getopt
 	printf "${green}ok${NC}\n"
 }
 

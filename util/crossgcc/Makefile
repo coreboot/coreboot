@@ -76,6 +76,7 @@ clean_tempfiles:
 	rm -rf llvm-* clang-tools-* cfe-* compiler-rt-*
 	rm -rf acpica-*
 	rm -rf gdb-*
+	rm -f  getopt
 
 clean: clean_tempfiles
 	rm -rf xgcc

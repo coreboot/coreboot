@@ -121,22 +121,31 @@ static void writel_(u32 b, void *addr)
 	pci_write_config32(dev, reg, val)
 #endif /* ENV_SMM */
 
-#define HSFC_FCYCLE		(0x3 << HSFC_FCYCLE_SHIFT)
+#define HSFC_FCYCLE_MASK	(0xf << HSFC_FCYCLE_SHIFT)
+#define HSFC_FCYCLE_RD		(0x0 << HSFC_FCYCLE_SHIFT)
 #define HSFC_FCYCLE_WR		(0x2 << HSFC_FCYCLE_SHIFT)
+#define HSFC_FCYCLE_4KE		(0x3 << HSFC_FCYCLE_SHIFT)
+#define HSFC_FCYCLE_64KE	(0x4 << HSFC_FCYCLE_SHIFT)
+#define HSFC_FCYCLE_SFDP	(0x5 << HSFC_FCYCLE_SHIFT)
+#define HSFC_FCYCLE_JEDECID	(0x6 << HSFC_FCYCLE_SHIFT)
+#define HSFC_FCYCLE_WS		(0x7 << HSFC_FCYCLE_SHIFT)
 #define HSFC_FCYCLE_RS		(0x8 << HSFC_FCYCLE_SHIFT)
-#define HSFC_FDBC		(0x3f << HSFC_FDBC_SHIFT)
+#define HSFC_FDBC_MASK		(0x3f << HSFC_FDBC_SHIFT)
 
 #define SPI_READ_STATUS_LENGTH 1 /* Read Status Register 1 */
 
 #define WPSR_MASK_SRP0_BIT 0x80
+
+#define SPI_FDATA_REGS 16
+#define SPI_FDATA_BYTES (SPI_FDATA_REGS * sizeof(uint32_t))
 
 typedef struct pch_spi_regs {
 	uint32_t bfpr;
 	uint16_t hsfs;
 	uint16_t hsfc;
 	uint32_t faddr;
-	uint32_t _reserved0;
-	uint32_t fdata[16];
+	uint32_t dlock;
+	uint32_t fdata[SPI_FDATA_REGS];
 	uint32_t frap;
 	uint32_t freg[6];
 	uint32_t _reserved1[6];

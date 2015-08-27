@@ -1320,9 +1320,9 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 		Receiver = receiver_start;
 
 	/* There are four receiver pairs, loosely associated with chipselects.
-	 * This is essentially looping over each DIMM.
+	 * This is essentially looping over each rank within each DIMM.
 	 */
-	for (; Receiver < receiver_end; Receiver += 2) {
+	for (; Receiver < receiver_end; Receiver++) {
 		dimm = (Receiver >> 1);
 		if ((Receiver & 0x1) == 0) {
 			/* Even rank of DIMM */
@@ -1336,18 +1336,27 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 			continue;
 		}
 
+#if DQS_TRAIN_DEBUG > 0
+		printk(BIOS_DEBUG, "TrainDQSRdWrPos: Training DQS read/write position for receiver %d (DIMM %d)\n", Receiver, dimm);
+#endif
+
 		/* Initialize variables */
 		for (lane = lane_start; lane < lane_end; lane++) {
 			passing_dqs_delay_found[lane] = 0;
 		}
-		memset(dqs_results_array, 0, sizeof(dqs_results_array));
+		if ((Receiver & 0x1) == 0) {
+			/* Even rank of DIMM */
+			memset(dqs_results_array, 0, sizeof(dqs_results_array));
 
-		/* Read initial read / write DQS delays */
-		read_dqs_write_timing_control_registers(initial_write_dqs_delay, dev, dct, dimm, index_reg);
-		read_dqs_read_data_timing_registers(initial_read_dqs_delay, dev, dct, dimm, index_reg);
+			/* Read initial read / write DQS delays */
+			read_dqs_write_timing_control_registers(initial_write_dqs_delay, dev, dct, dimm, index_reg);
+			read_dqs_read_data_timing_registers(initial_read_dqs_delay, dev, dct, dimm, index_reg);
 
-		/* Read current settings of other (previously trained) lanes */
-		read_dqs_write_data_timing_registers(initial_write_data_timing, dev, dct, dimm, index_reg);
+			/* Read current settings of other (previously trained) lanes */
+			read_dqs_write_data_timing_registers(initial_write_data_timing, dev, dct, dimm, index_reg);
+		}
+
+		/* Initialize iterators */
 		memcpy(current_write_data_delay, initial_write_data_timing, sizeof(current_write_data_delay));
 
 		for (lane = lane_start; lane < lane_end; lane++) {

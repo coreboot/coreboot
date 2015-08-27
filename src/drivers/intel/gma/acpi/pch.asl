@@ -34,8 +34,6 @@ Device (GFX0)
 	{
 		Offset (0x48254),
 		BCLV, 16,
-		Offset (0xc8250),
-		CR1, 32,
 		Offset (0xc8256),
 		BCLM, 16
 	}

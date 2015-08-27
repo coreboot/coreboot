@@ -32,8 +32,6 @@ Device (GFX0)
 	OperationRegion (GFRG, SystemMemory, And (BAR0, 0xfffffffffffffff0), 0x400000)
 	Field (GFRG, DWordAcc, NoLock, Preserve)
 	{
-		Offset (0x61250),
-		CR1, 32,
 		Offset (0x61254),
 		BCLV, 16,
 		BCLM, 16,

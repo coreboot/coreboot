@@ -1300,7 +1300,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint16_t current_read_dqs_delay[MAX_BYTE_LANES];
 	uint16_t current_write_dqs_delay[MAX_BYTE_LANES];
 	uint8_t passing_dqs_delay_found[MAX_BYTE_LANES];
-	uint8_t dqs_results_array[2][(lane_end - lane_start)][32][32];		/* [rank][lane][write step][read step] */
+	uint8_t dqs_results_array[2][(lane_end - lane_start)][32][48];		/* [rank][lane][write step][read step + 16] */
 
 	uint8_t last_pos = 0;
 	uint8_t cur_count = 0;
@@ -1400,16 +1400,24 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 					 */
 					dword = Get_NB32_DCT(dev, dct, 0x268) & 0x3ffff;
 					if (dword & (0x3 << (lane * 2)))
-						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][current_read_dqs_delay[lane] >> 1] = 0;	/* Fail */
+						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 0;	/* Fail */
 					else
-						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][current_read_dqs_delay[lane] >> 1] = 1;	/* Pass */
+						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 1;	/* Pass */
+					if ((current_read_dqs_delay[lane] >> 1) >= (32 - 16)) {
+						/* Check antiphase results */
+						dword = Get_NB32_DCT(dev, dct, 0x26c) & 0x3ffff;
+						if (dword & (0x3 << (lane * 2)))
+							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][16 - (32 - (current_read_dqs_delay[lane] >> 1))] = 0;	/* Fail */
+						else
+							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][16 - (32 - (current_read_dqs_delay[lane] >> 1))] = 1;	/* Pass */
+					}
 				}
 			}
 
 			if (dual_rank && (Receiver & 0x1)) {
 				/* Overlay the previous rank test results with the current rank */
 				for (write_iter = 0; write_iter < 32; write_iter++) {
-					for (read_iter = 0; read_iter < 32; read_iter++) {
+					for (read_iter = 0; read_iter < 48; read_iter++) {
 						if ((dqs_results_array[0][lane - lane_start][write_iter][read_iter])
 							&& (dqs_results_array[1][lane - lane_start][write_iter][read_iter]))
 							dqs_results_array[1][lane - lane_start][write_iter][read_iter] = 1;
@@ -1427,8 +1435,8 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 			best_pos = 0;
 			best_count = 0;
 			for (write_iter = 0; write_iter < 32; write_iter++) {
-				for (read_iter = 0; read_iter < 32; read_iter++) {
-					if ((dqs_results_array[Receiver & 0x1][lane - lane_start][write_iter][read_iter]) && (read_iter < 31)) {
+				for (read_iter = 0; read_iter < 48; read_iter++) {
+					if ((dqs_results_array[Receiver & 0x1][lane - lane_start][write_iter][read_iter]) && (read_iter < 47)) {
 						/* Pass */
 						cur_count++;
 					} else {
@@ -1438,18 +1446,28 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 							best_pos = last_pos;
 						}
 						cur_count = 0;
-						last_pos = read_iter;
+						last_pos = read_iter + 1;
 					}
 				}
 				last_pos = 0;
 			}
 
 			if (best_count > 2) {
+				uint16_t region_center = (best_pos + (best_count / 2));
+
+				if (region_center < 16) {
+					printk(BIOS_WARNING, "TrainDQSRdWrPos: negative DQS recovery delay detected!"
+							"  Attempting to continue but your system may be unstable...\n");
+					region_center = 0;
+				} else {
+					region_center -= 16;
+				}
+
 				/* Restore current settings of other (previously trained) lanes to the active array */
 				memcpy(current_read_dqs_delay, initial_read_dqs_delay, sizeof(current_read_dqs_delay));
 
 				/* Program the Read DQS Timing Control register with the center of the passing window */
-				current_read_dqs_delay[lane] = ((best_pos << 1) + ((best_count << 1) / 2));
+				current_read_dqs_delay[lane] = region_center << 1;
 				passing_dqs_delay_found[lane] = 1;
 
 				/* Commit the current Read DQS Timing Control settings to the hardware registers */
@@ -1460,6 +1478,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 142 largest read passing region ", best_count, 4);
 				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 143 largest read passing region start ", best_pos, 4);
+				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 144 largest read passing region center (raw hardware value) ", region_center, 4);
 			} else {
 				/* Reprogram the Read DQS Timing Control register with the original settings */
 				write_dqs_read_data_timing_registers(initial_read_dqs_delay, dev, dct, dimm, index_reg);
@@ -1472,7 +1491,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 			cur_count = 0;
 			best_pos = 0;
 			best_count = 0;
-			for (read_iter = 0; read_iter < 32; read_iter++) {
+			for (read_iter = 0; read_iter < 48; read_iter++) {
 				for (write_iter = 0; write_iter < 32; write_iter++) {
 					if ((dqs_results_array[Receiver & 0x1][lane - lane_start][write_iter][read_iter]) && (write_iter < 31)) {
 						/* Pass */
@@ -1484,7 +1503,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 							best_pos = last_pos;
 						}
 						cur_count = 0;
-						last_pos = write_iter;
+						last_pos = write_iter + 1;
 					}
 				}
 				last_pos = 0;
@@ -1507,8 +1526,8 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				/* Save the final Write Data Timing settings for later use */
 				pDCTstat->CH_D_DIR_B_DQS[dct][Receiver >> 1][DQS_WRITEDIR][lane] = current_write_dqs_delay[lane];
 
-				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 144 largest write passing region ", best_count, 4);
-				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 145 largest write passing region start ", best_pos, 4);
+				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 145 largest write passing region ", best_count, 4);
+				print_debug_dqs("\t\t\t\tTrainDQSRdWrPos: 146 largest write passing region start ", best_pos, 4);
 			} else {
 				/* Reprogram the Write DQS Timing Control register with the original settings */
 				write_dqs_write_data_timing_registers(current_write_dqs_delay, dev, dct, dimm, index_reg);
@@ -1517,12 +1536,16 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 #ifdef PRINT_PASS_FAIL_BITMAPS
 		for (lane = lane_start; lane < lane_end; lane++) {
-			for (read_iter = 0; read_iter < 32; read_iter++) {
-				for (write_iter = 0; write_iter < 32; write_iter++) {
-					if (dqs_results_array[Receiver & 0x1][lane - lane_start][write_iter][read_iter])
+			for (write_iter = 0; write_iter < 32; write_iter++) {
+				for (read_iter = 0; read_iter < 48; read_iter++) {
+					if (dqs_results_array[Receiver & 0x1][lane - lane_start][write_iter][read_iter]) {
 						printk(BIOS_DEBUG, "+");
-					else
-						printk(BIOS_DEBUG, ".");
+					} else {
+						if (read_iter < 16)
+							printk(BIOS_DEBUG, "°");
+						else
+							printk(BIOS_DEBUG, ".");
+					}
 				}
 				printk(BIOS_DEBUG, "\n");
 			}

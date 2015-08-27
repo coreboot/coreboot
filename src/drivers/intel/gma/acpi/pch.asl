@@ -74,5 +74,5 @@ Device (GFX0)
 		ShiftRight (Local0, 4, Local0)
 		Return (Local0)
 	}
-#include <drivers/intel/gma/igd.asl>
+#include "common.asl"
 }

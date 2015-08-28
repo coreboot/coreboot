@@ -40,6 +40,9 @@
 /* PCR Access */
 #include "pcr.asl"
 
+/* PMC 0:1f.2 */
+#include "pmc.asl"
+
 /* Serial IO */
 #include "serialio.asl"
 

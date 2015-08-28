@@ -323,8 +323,10 @@ dwc2_split_transfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 	do {
 		hfnum.d32 = readl(&reg->host.hfnum);
 
-		if (dwc2_disconnected(ep->dev->controller))
-			return -HCSTAT_DISCONNECTED;
+		if (dwc2_disconnected(ep->dev->controller)) {
+			ret = -HCSTAT_DISCONNECTED;
+			goto out;
+		}
 	} while (hfnum.frnum % 8 != 0);
 
 	/* Handle Start-Split */

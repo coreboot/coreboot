@@ -13,6 +13,7 @@ subdirs-y += ../../../cpu/x86/tsc
 romstage-y += flash_controller.c
 romstage-y += gpio.c
 romstage-y += memmap.c
+romstage-y += monotonic_timer.c
 romstage-y += pch.c
 romstage-y += pcr.c
 romstage-y += pei_data.c

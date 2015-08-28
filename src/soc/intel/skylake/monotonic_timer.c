@@ -23,12 +23,6 @@
 #include <timer.h>
 #include <soc/msr.h>
 
-static struct monotonic_counter {
-	int initialized;
-	struct mono_time time;
-	uint32_t last_value;
-} mono_counter;
-
 static inline uint32_t read_counter_msr(void)
 {
 	/*
@@ -44,23 +38,6 @@ static inline uint32_t read_counter_msr(void)
 
 void timer_monotonic_get(struct mono_time *mt)
 {
-	uint32_t current_tick;
-	uint32_t usecs_elapsed;
-
-	if (!mono_counter.initialized) {
-		mono_counter.last_value = read_counter_msr();
-		mono_counter.initialized = 1;
-	}
-
-	current_tick = read_counter_msr();
-	usecs_elapsed = (current_tick - mono_counter.last_value) / 24;
-
-	/* Update current time and tick values only if a full tick occurred. */
-	if (usecs_elapsed) {
-		mono_time_add_usecs(&mono_counter.time, usecs_elapsed);
-		mono_counter.last_value = current_tick;
-	}
-
-	/* Save result. */
-	*mt = mono_counter.time;
+	/* Always increases. Don't normalize to 0 between stages. */
+	mono_time_set_usecs(mt, read_counter_msr() / 24);
 }

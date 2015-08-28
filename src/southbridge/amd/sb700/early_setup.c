@@ -427,10 +427,10 @@ static void sb700_devices_por_init(void)
 
 	/* Configure HPET Counter CLK period */
 	byte = pci_read_config8(dev, 0x43);
-	byte &= 0xF7;	/* unhide HPET regs */
+	byte &= 0xF7;						/* Unhide HPET regs */
 	pci_write_config8(dev, 0x43, byte);
-	pci_write_config32(dev, 0x34, 0x0429B17E ); /* Counter CLK period */
-	byte |= 0x08;	/* hide HPET regs */
+	pci_write_config32(dev, 0x34, 0x0429b17e);		/* Counter CLK period */
+	byte |= 0x08;						/* Hide HPET regs */
 	pci_write_config8(dev, 0x43, byte);
 
 	/* Features Enable */
@@ -661,6 +661,14 @@ static void sb700_pmio_por_init(void)
 	byte = pmio_read(0xbb);
 	byte |= 0xc0;
 	pmio_write(0xbb, byte);
+
+#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+	/* Work around system clock drift issues */
+	byte = pmio_read(0xd4);
+	byte |= 0x1 << 6;	/* Enable alternate 14MHz clock source */
+	byte |= 0x1 << 7;	/* Disable 25MHz oscillator buffer */
+	pmio_write(0xd4, byte);
+#endif
 }
 
 /*

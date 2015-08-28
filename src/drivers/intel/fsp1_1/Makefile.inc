@@ -18,7 +18,6 @@
 # Foundation, Inc.
 #
 
-romstage-$(CONFIG_GOP_SUPPORT) += fsp_gop.c
 romstage-y += fsp_util.c
 romstage-y += hob.c
 

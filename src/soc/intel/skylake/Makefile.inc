@@ -3,7 +3,6 @@ ifeq ($(CONFIG_SOC_INTEL_SKYLAKE),y)
 subdirs-y += bootblock
 subdirs-y += microcode
 subdirs-y += romstage
-subdirs-y += ../common
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../cpu/x86/lapic

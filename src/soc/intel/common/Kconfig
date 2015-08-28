@@ -18,7 +18,7 @@ if CACHE_MRC_SETTINGS
 config MRC_SETTINGS_CACHE_BASE
 	hex
 	depends on !USE_FMAP
-	default 0xffb00000
+	default 0xfffe0000
 
 config MRC_SETTINGS_CACHE_SIZE
 	hex

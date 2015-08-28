@@ -17,7 +17,10 @@
 ## Foundation, Inc.
 ##
 
-if BOARD_GOOGLE_VEYRON_JERRY
+config BOARD_GOOGLE_VEYRON # dummy option to be selected by variant boards
+	def_bool n
+
+if BOARD_GOOGLE_VEYRON
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -43,11 +46,11 @@ config CHROMEOS
 
 config MAINBOARD_DIR
 	string
-	default google/veyron_jerry
+	default google/veyron
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Veyron_Jerry"
+	default "Veyron"
 
 config MAINBOARD_VENDOR
 	string
@@ -82,4 +85,4 @@ config PMIC_BUS
 	int
 	default 0
 
-endif #  BOARD_GOOGLE_VEYRON_JERRY
+endif #  BOARD_GOOGLE_VEYRON

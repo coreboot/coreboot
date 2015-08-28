@@ -1,0 +1,39 @@
+config BOARD_GOOGLE_VEYRON_GUS
+	bool "Veyron_Gus"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_JAQ
+	bool "Veyron_Jaq"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_JERRY
+	bool "Veyron_Jerry"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_MIGHTY
+	bool "Veyron_Mighty"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_MINNIE
+	bool "Veyron_Minnie"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_NICKY
+	bool "Veyron_Nicky"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_PINKY
+	bool "Veyron_Pinky"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_SHARK
+	bool "Veyron_Shark"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_SPEEDY
+	bool "Veyron_Speedy"
+	select BOARD_GOOGLE_VEYRON
+
+config BOARD_GOOGLE_VEYRON_THEA
+	bool "Veyron_Thea"
+	select BOARD_GOOGLE_VEYRON

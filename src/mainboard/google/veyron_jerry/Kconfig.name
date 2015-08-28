@@ -1,2 +1,0 @@
-config BOARD_GOOGLE_VEYRON_JERRY
-	bool "Veyron_Jerry"

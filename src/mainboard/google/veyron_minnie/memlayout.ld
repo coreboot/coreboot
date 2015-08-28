@@ -1,1 +1,0 @@
-#include <soc/memlayout.ld>

@@ -1,2 +1,0 @@
-config BOARD_GOOGLE_VEYRON_MINNIE
-	bool "Veyron_Minnie"

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
- * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Google Inc.
  * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,121 +24,73 @@
 #define BASE_32GB	0x800000000
 #define SIZE_16GB	0x400000000
 
-Name (_HID, EISAID ("PNP0A08"))	// PCIe
-Name (_CID, EISAID ("PNP0A03"))	// PCI
+Name (_HID, EISAID ("PNP0A08"))	/* PCIe */
+Name (_CID, EISAID ("PNP0A03"))	/* PCI */
 
 Name (_ADR, 0)
 Name (_BBN, 0)
 
 Device (MCHC)
 {
-	Name (_ADR, 0x00000000)	// 0:0.0
+	Name (_ADR, 0x00000000)
 
 	OperationRegion (MCHP, PCI_Config, 0x00, 0x100)
 	Field (MCHP, DWordAcc, NoLock, Preserve)
 	{
-		Offset(0x40),	// EPBAR (0:0:0:40)
-		EPEN, 1,		// Enable
-			, 11,
-		EPBR, 20,		// EPBAR [31:12]
+		Offset(0x40),	/* EPBAR (0:0:0:40) */
+		EPEN, 1,	/* Enable */
+		, 11,
+		EPBR, 20,	/* EPBAR [31:12] */
 
-		Offset(0x48),	// MCHBAR (0:0:0:48)
-		MHEN, 1,		// Enable
-			, 14,
-		MHBR, 17,	// MCHBAR [31:15]
+		Offset(0x48),	/* MCHBAR (0:0:0:48) */
+		MHEN, 1,	/* Enable */
+		, 14,
+		MHBR, 17,	/* MCHBAR [31:15] */
 
-		Offset(0x54),	// DEVEN (0:0:0:54)
-		D0EN, 1,		// DEV0 Enable
-		D1F2, 1,		// DEV1 FUN2 Enable
-		D1F1, 1,		// DEV1 FUN1 Enable
-		D1F0, 1,		// DEV1 FUN0 Enable
+		Offset(0x60),	/* PCIEXBAR (0:0:0:60) */
+		PXEN, 1,	/* Enable */
+		PXSZ, 2,	/* PCI Express Size */
+		, 23,
+		PXBR, 6,	/* PCI Express BAR [31:26] */
 
-		Offset(0x60),	// PCIEXBAR (0:0:0:60)
-		PXEN, 1,		// Enable
-		PXSZ, 2,		// PCI Express Size
-			, 23,
-		PXBR, 6,		// PCI Express BAR [31:26]
+		Offset(0x68),	/* DMIBAR (0:0:0:68) */
+		DIEN, 1,	/* Enable */
+		, 11,
+		DIBR, 20,	/* DMIBAR [31:12] */
 
-		Offset(0x68),	// DMIBAR (0:0:0:68)
-		DIEN, 1,		// Enable
-			, 11,
-		DIBR, 20,		// DMIBAR [31:12]
-
-		Offset (0x70),	// ME Base Address
+		Offset (0x70),	/* ME Base Address */
 		MEBA, 64,
 
-		Offset(0x80),	// PAM0 Register (0:0:0:80)
-		PMLK, 1,		// PAM Lock bit.
-			, 3,
-		PM0H, 2,		// PAM 0, High Nibble
-			, 2,
-
-		Offset(0x81),	// PAM1 Register (0:0:0:81)
-		PM1L, 2,		// PAM1, Low  Nibble
-			, 2,
-		PM1H, 2,		// PAM1, High Nibble
-			, 2,
-
-		Offset(0x82),	// PAM2 Register (0:0:0:82)
-		PM2L, 2,		// PAM2, Low  Nibble
-			, 2,
-		PM2H, 2,		// PAM2, High Nibble
-			, 2,
-
-		Offset(0x83),	// PAM3 Register (0:0:0:83)
-		PM3L, 2,		// PAM3, Low  Nibble
-			, 2,
-		PM3H, 2,		// PAM3, High Nibble
-			, 2,
-
-		Offset(0x84),	// PAM4 Register (0:0:0:84)
-		PM4L, 2,		// PAM4, Low  Nibble
-			, 2,
-		PM4H, 2,		// PAM4, High Nibble
-			, 2,
-
-		Offset(0x85),	// PAM5 Register (0:0:0:85)
-		PM5L, 2,		// PAM5, Low  Nibble
-			, 2,
-		PM5H, 2,		// PAM5, High Nibble
-			, 2,
-
-		Offset(0x86),	// PAM6 Register (0:0:0:86)
-		PM6L, 2,		// PAM6, Low  Nibble
-			, 2,
-		PM6H, 2,		// PAM6, High Nibble
-			, 2,
-
-		Offset (0xa0),	// Top of Used Memory
+		Offset (0xa0),	/* Top of Used Memory */
 		TOM, 64,
 
-		Offset (0xa8),	// Top of Upper Used Memory
+		Offset (0xa8),	/* Top of Upper Used Memory */
 		TUUD, 64,
 
-		Offset (0xbc),	// Top of Low Used Memory
+		Offset (0xbc),	/* Top of Low Used Memory */
 		TLUD, 32,
 	}
 }
 
-// Current Resource Settings
-
 Method (_CRS, 0, Serialized)
 {
-	Name (MCRS, ResourceTemplate()
+	Name (MCRS, ResourceTemplate ()
 	{
 		/* Bus Numbers */
 		WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
 				0x0000, 0x0000, 0x00ff, 0x0000, 0x0100,,, PB00)
 
 		/* IO Region 0 */
-		DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
+		DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode,
+				EntireRange,
 				0x0000, 0x0000, 0x0cf7, 0x0000, 0x0cf8,,, PI00)
 
 		/* PCI Config Space */
 		Io (Decode16, 0x0cf8, 0x0cf8, 0x0001, 0x0008)
 
 		/* IO Region 1 */
-		DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
+		DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode,
+				EntireRange,
 				0x0000, 0x0d00, 0xffff, 0x0000, 0xf300,,, PI01)
 
 		/* VGA memory (0xa0000-0xbffff) */
@@ -278,13 +230,10 @@ Method (_CRS, 0, Serialized)
 
 	Store (^MCHC.TUUD, Local0)
 
-	If (LLessEqual (Local0, BASE_32GB))
-	{
+	If (LLessEqual (Local0, BASE_32GB)) {
 		Store (BASE_32GB, MMIN)
 		Store (SIZE_16GB, MLEN)
-	}
-	else
-	{
+	} Else {
 		Store (0, MMIN)
 		Store (0, MLEN)
 	}
@@ -300,50 +249,45 @@ Name (PC_L, 0) /* to store PCIe BAR Length */
 Name (DM_B, 0) /* to store DMI BAR */
 
 /* Get MCH BAR */
-Method (GMHB,0,Serialized)
+Method (GMHB, 0, Serialized)
 {
-	if (LEqual (MH_B,0))
-	{
+	If (LEqual (MH_B, 0)) {
 		ShiftLeft (\_SB.PCI0.MCHC.MHBR, 15, MH_B)
 	}
 	Return (MH_B)
 }
 
 /* Get EP BAR */
-Method (GEPB,0,Serialized)
+Method (GEPB, 0, Serialized)
 {
-	if (LEqual (EP_B,0))
-	{
+	If (LEqual (EP_B, 0)) {
 		ShiftLeft (\_SB.PCI0.MCHC.EPBR, 12, EP_B)
 	}
 	Return (EP_B)
 }
 
 /* Get PCIe BAR */
-Method (GPCB,0,Serialized)
+Method (GPCB, 0, Serialized)
 {
-	if (LEqual (PC_B,0))
-	{
+	If (LEqual (PC_B, 0)) {
 		ShiftLeft (\_SB.PCI0.MCHC.PXBR, 26, PC_B)
 	}
 	Return (PC_B)
 }
 
 /* Get PCIe Length */
-Method (GPCL,0,Serialized)
+Method (GPCL, 0, Serialized)
 {
-	if (LEqual (PC_L,0))
-	{
+	If (LEqual (PC_L, 0)) {
 		ShiftRight (0x10000000, \_SB.PCI0.MCHC.PXSZ, PC_L)
 	}
 	Return (PC_L)
 }
 
 /* Get DMI BAR */
-Method (GDMB,0,Serialized)
+Method (GDMB, 0, Serialized)
 {
-	if (LEqual (DM_B,0))
-	{
+	If (LEqual (DM_B, 0)) {
 		ShiftLeft (\_SB.PCI0.MCHC.DIBR, 12, DM_B)
 	}
 	Return (DM_B)
@@ -352,10 +296,10 @@ Method (GDMB,0,Serialized)
 /* PCI Device Resource Consumption */
 Device (PDRC)
 {
-	Name (_HID, EISAID("PNP0C02"))
+	Name (_HID, EISAID ("PNP0C02"))
 	Name (_UID, 1)
 
-	Name (BUF0,ResourceTemplate()
+	Name (BUF0, ResourceTemplate ()
 	{
 		/* MCH BAR _BAS will be updated in _CRS below according to
 		 * B0:D0:F0:Reg.48h
@@ -398,8 +342,8 @@ Device (PDRC)
 		/* Local APIC range(0xFEE0_0000 to 0xFEEF_FFFF) */
 		Memory32Fixed (ReadOnly, 0xFEE00000, 0x100000, LIOH)
 
-		/* Reserve HPET address decode range */
-		Memory32Fixed (ReadWrite, 0, 0, HPET)
+		/* HPET address decode range */
+		Memory32Fixed (ReadWrite, HPET_BASE_ADDRESS, 0x400)
 
 		/* Debug Base Address
 		 * Base Address for ACPI debug output memory buffer
@@ -407,28 +351,22 @@ Device (PDRC)
 		Memory32Fixed (ReadWrite, 0, 0, DBAD)
 	})
 
-	// Current Resource Settings
 	Method (_CRS, 0, Serialized)
 	{
 		CreateDwordField (BUF0, ^MCHB._BAS, MBR0)
-		Store (\_SB.PCI0.GMHB(), MBR0)
+		Store (\_SB.PCI0.GMHB (), MBR0)
 
 		CreateDwordField (BUF0, ^DMIB._BAS, DBR0)
-		Store (\_SB.PCI0.GDMB(), DBR0)
+		Store (\_SB.PCI0.GDMB (), DBR0)
 
 		CreateDwordField (BUF0, ^EGPB._BAS, EBR0)
-		Store (\_SB.PCI0.GEPB(), EBR0)
+		Store (\_SB.PCI0.GEPB (), EBR0)
 
 		CreateDwordField (BUF0, ^PCIX._BAS, XBR0)
-		Store (\_SB.PCI0.GPCB(), XBR0)
+		Store (\_SB.PCI0.GPCB (), XBR0)
 
 		CreateDwordField (BUF0, ^PCIX._LEN, XSZ0)
-		Store (\_SB.PCI0.GPCL(),  XSZ0)
-
-		CreateDwordField (BUF0, ^HPET._BAS, HBAS)
-		CreateDwordField (BUF0, ^HPET._LEN, HLEN)
-		Store (0xfed00000, HBAS)
-		Store (0x400, HLEN)
+		Store (\_SB.PCI0.GPCL (), XSZ0)
 
 		Return (BUF0)
 	}

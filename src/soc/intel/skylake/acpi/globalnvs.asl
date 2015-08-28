@@ -68,7 +68,18 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	/* ChromeOS specific */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
+}
 
+/* Set flag to enable USB charging in S3 */
+Method (S3UE)
+{
+	Store (One, \S3U0)
+}
+
+/* Set flag to disable USB charging in S3 */
+Method (S3UD)
+{
+	Store (Zero, \S3U0)
 }
 
 /* Set flag to enable USB charging in S5 */

@@ -921,7 +921,7 @@ void prepareDimms(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat,
  *       OUT
  * ----------------------------------------------------------------------------
  */
-void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, u8 dimm)
+void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm)
 {
 	sMCTStruct *pMCTData = pDCTstat->C_MCTPtr;
 	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
@@ -929,6 +929,10 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 	u8 WrLvOdt1=0;
 
 	if (is_fam15h()) {
+		/* On Family15h processors, the value for the specific CS being targetted
+		 * is taken from F2x238 / F2x23C as appropriate, then loaded into F2x9C_x0000_0008
+		 */
+
 		/* Convert DIMM number to CS */
 		uint32_t dword;
 		uint8_t cs;
@@ -963,7 +967,7 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 	set_DCT_ADDR_Bits(pDCTData, dct, pDCTData->NodeId, FUN_DCT,
 			DRAM_ADD_DCT_PHY_CONTROL_REG, 8, 11, (u32)WrLvOdt1);
 
-	printk(BIOS_SPEW, "Programmed DCT %d write levelling ODT pattern %08x\n", dct, WrLvOdt1);
+	printk(BIOS_SPEW, "Programmed DCT %d write levelling ODT pattern %08x from DIMM %d data\n", dct, WrLvOdt1, dimm);
 
 }
 

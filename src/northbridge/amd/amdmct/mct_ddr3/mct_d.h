@@ -578,7 +578,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	uint8_t NbPstateThreshold;
 	uint8_t NbPstateHi;
 
-/* New for LB Support */
+	/* New for LB Support */
 	u8 NodePresent;
 	u32 dev_host;
 	u32 dev_map;
@@ -588,9 +588,9 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u32 dev_nbctl;
 	u8 TargetFreq;
 	u8 TargetCASL;
-	u8 CtrlWrd3;
-	u8 CtrlWrd4;
-	u8 CtrlWrd5;
+	uint32_t CtrlWrd3;
+	uint32_t CtrlWrd4;
+	uint32_t CtrlWrd5;
 	u8 DqsRdWrPos_Saved;
 	u8 DqsRcvEnGrossMax;
 	u8 DqsRcvEnGrossMin;

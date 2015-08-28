@@ -841,6 +841,10 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 			 */
 	}
 
+	pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[dct];
+	if (pDCTstat->GangedMode & 1)
+		pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[0];
+
 	/* The following steps are performed once for unbuffered DIMMs and once for each
 	 * chip select on registered DIMMs: */
 	for (MrsChipSel = 0; MrsChipSel < 8; MrsChipSel++) {

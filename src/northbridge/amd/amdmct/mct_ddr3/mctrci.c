@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-static uint8_t fam15h_rdimm_rc2_control_code(struct DCTStatStruc *pDCTstat, uint8_t dct)
+static uint8_t fam15h_rdimm_rc2_ibt_code(struct DCTStatStruc *pDCTstat, uint8_t dct)
 {
 	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
@@ -157,7 +157,7 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 			val = 0xc; /* if single rank, set DBA1 and DBA0 */
 	} else if (CtrlWordNum == 2) {
 		if (is_fam15h()) {
-			val = fam15h_rdimm_rc2_control_code(pDCTstat, dct);
+			val = (fam15h_rdimm_rc2_ibt_code(pDCTstat, dct) & 0x1) << 2;
 		} else {
 			if (package_type == PT_GR) {
 				/* Socket G34 */
@@ -174,10 +174,14 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 	} else if (CtrlWordNum == 5) {
 		val = (pDCTstat->CtrlWrd5 >> (DimmNum << 2)) & 0xff;
 	} else if (CtrlWordNum == 8) {
-		if (package_type == PT_GR) {
-			/* Socket G34 */
-			if (MaxDimmsInstallable == 2) {
-				val = 0x0;
+		if (is_fam15h()) {
+			val = (fam15h_rdimm_rc2_ibt_code(pDCTstat, dct) & 0xe) >> 1;
+		} else {
+			if (package_type == PT_GR) {
+				/* Socket G34 */
+				if (MaxDimmsInstallable == 2) {
+					val = 0x0;
+				}
 			}
 		}
 	} else if (CtrlWordNum == 9) {
@@ -229,7 +233,11 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 
 	mct_Wait(1200);
 
-	for (MrsChipSel = 0; MrsChipSel < 8; MrsChipSel ++, MrsChipSel ++) {
+	pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[dct];
+	if (pDCTstat->GangedMode & 1)
+		pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[0];
+
+	for (MrsChipSel = 0; MrsChipSel < 8; MrsChipSel += 2) {
 		if (pDCTstat->CSPresent & (1 << MrsChipSel)) {
 			val = Get_NB32_DCT(dev, dct, 0xa8);
 			val &= ~(0xff << 8);
@@ -271,6 +279,10 @@ void FreqChgCtrlWrd(struct MCTStatStruc *pMCTstat,
 	u32 dev = pDCTstat->dev_dct;
 	u32 val;
 	uint16_t mem_freq;
+
+	pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[dct];
+	if (pDCTstat->GangedMode & 1)
+		pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[0];
 
 	pDCTstat->DIMMAutoSpeed = pDCTstat->TargetFreq;
 	mem_freq = memclk_to_freq(pDCTstat->TargetFreq);

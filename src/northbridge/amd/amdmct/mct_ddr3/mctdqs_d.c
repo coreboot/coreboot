@@ -1017,7 +1017,7 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 		pDCTstat->CH_MaxRdLat[dct] = n - 1;
 
 #if DQS_TRAIN_DEBUG > 0
-	printk(BIOS_DEBUG, "%s: CH_MaxRdLat[%d]: %03x\n", __func__, dct, pDCTstat->CH_MaxRdLat[dct]);
+		printk(BIOS_DEBUG, "%s: CH_MaxRdLat[%d]: %03x\n", __func__, dct, pDCTstat->CH_MaxRdLat[dct]);
 #endif
 	}
 

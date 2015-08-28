@@ -1366,6 +1366,224 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 	return slow_access;
 }
 
+static uint8_t fam15h_odt_tristate_enable_code(struct DCTStatStruc *pDCTstat, uint8_t dct)
+{
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
+
+	uint8_t package_type;
+	uint8_t odt_tristate_code = 0;
+
+	package_type = mctGet_NVbits(NV_PACK_TYPE);
+
+	/* Obtain number of DIMMs on channel */
+	uint8_t dimm_count = pDCTstat->MAdimms[dct];
+	uint8_t rank_count_dimm0;
+	uint8_t rank_count_dimm1;
+
+	if (package_type == PT_GR) {
+		/* Socket G34 */
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* RDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.10.1 Table 104 */
+			if (MaxDimmsInstallable == 1) {
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if (rank_count_dimm0 == 1)
+					odt_tristate_code = 0xe;
+				else
+					odt_tristate_code = 0xa;
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if (rank_count_dimm1 == 1)
+						odt_tristate_code = 0xd;
+					else
+						odt_tristate_code = 0x5;
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 1))
+						odt_tristate_code = 0xc;
+					else if ((rank_count_dimm0 == 1) && (rank_count_dimm1 >= 2))
+						odt_tristate_code = 0x4;
+					else if ((rank_count_dimm0 >= 2) && (rank_count_dimm1 == 1))
+						odt_tristate_code = 0x8;
+					else
+						odt_tristate_code = 0x0;
+				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
+			}
+		} else if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+			/* LRDIMM */
+
+			/* TODO
+			 * Implement LRDIMM support
+			 * See Fam15h BKDG Rev. 3.14 section 2.10.5.10.1 Table 105
+			 */
+		} else {
+			/* UDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.10.1 Table 103 */
+			if (MaxDimmsInstallable == 1) {
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if (rank_count_dimm0 == 1)
+					odt_tristate_code = 0xe;
+				else
+					odt_tristate_code = 0xa;
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if (rank_count_dimm0 == 1)
+						odt_tristate_code = 0xd;
+					else
+						odt_tristate_code = 0x5;
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 1))
+						odt_tristate_code = 0xc;
+					else if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 2))
+						odt_tristate_code = 0x4;
+					else if ((rank_count_dimm0 == 2) && (rank_count_dimm1 == 1))
+						odt_tristate_code = 0x8;
+					else
+						odt_tristate_code = 0x0;
+				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
+			}
+		}
+	} else {
+		/* TODO
+		 * Other socket support unimplemented
+		 */
+	}
+
+	return odt_tristate_code;
+}
+
+static uint8_t fam15h_cs_tristate_enable_code(struct DCTStatStruc *pDCTstat, uint8_t dct)
+{
+	uint8_t MaxDimmsInstallable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
+
+	uint8_t package_type;
+	uint8_t cs_tristate_code = 0;
+
+	package_type = mctGet_NVbits(NV_PACK_TYPE);
+
+	/* Obtain number of DIMMs on channel */
+	uint8_t dimm_count = pDCTstat->MAdimms[dct];
+	uint8_t rank_count_dimm0;
+	uint8_t rank_count_dimm1;
+
+	if (package_type == PT_GR) {
+		/* Socket G34 */
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* RDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.10.1 Table 104 */
+			if (MaxDimmsInstallable == 1) {
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if (rank_count_dimm0 < 4)
+					cs_tristate_code = 0xfc;
+				else
+					cs_tristate_code = 0xcc;
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if (rank_count_dimm1 < 4)
+						cs_tristate_code = 0xf3;
+					else
+						cs_tristate_code = 0x33;
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if ((rank_count_dimm0 < 4) && (rank_count_dimm1 < 4))
+						cs_tristate_code = 0xf0;
+					else if ((rank_count_dimm0 < 4) && (rank_count_dimm1 == 4))
+						cs_tristate_code = 0x30;
+					else if ((rank_count_dimm0 == 4) && (rank_count_dimm1 < 4))
+						cs_tristate_code = 0xc0;
+					else
+						cs_tristate_code = 0x0;
+				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
+			}
+		} else if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+			/* LRDIMM */
+
+			/* TODO
+			 * Implement LRDIMM support
+			 * See Fam15h BKDG Rev. 3.14 section 2.10.5.10.1 Table 105
+			 */
+		} else {
+			/* UDIMM */
+			/* Fam15h BKDG Rev. 3.14 section 2.10.5.10.1 Table 103 */
+			if (MaxDimmsInstallable == 1) {
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if (rank_count_dimm0 == 1)
+					cs_tristate_code = 0xfe;
+				else
+					cs_tristate_code = 0xfc;
+			} else if (MaxDimmsInstallable == 2) {
+				if (dimm_count == 1) {
+					/* 1 DIMM detected */
+					rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if (rank_count_dimm0 == 1)
+						cs_tristate_code = 0xfb;
+					else
+						cs_tristate_code = 0xf3;
+				} else if (dimm_count == 2) {
+					/* 2 DIMMs detected */
+					rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+					rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+					if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 1))
+						cs_tristate_code = 0xfa;
+					else if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 2))
+						cs_tristate_code = 0xf2;
+					else if ((rank_count_dimm0 == 2) && (rank_count_dimm1 == 1))
+						cs_tristate_code = 0xf8;
+					else
+						cs_tristate_code = 0xf0;
+				}
+			} else if (MaxDimmsInstallable == 3) {
+				/* TODO
+				 * 3 DIMM/channel support unimplemented
+				 */
+			}
+		}
+	} else {
+		/* TODO
+		 * Other socket support unimplemented
+		 */
+	}
+
+	return cs_tristate_code;
+}
+
 static void set_2t_configuration(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct)
 {
@@ -2315,20 +2533,16 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		if (memclk_index <= 0x6) {
 			delay = 0x5;
 			delay2 = 0x3;
-		}
-		else if (memclk_index == 0xa) {
+		} else if (memclk_index == 0xa) {
 			delay = 0x6;
 			delay2 = 0x3;
-		}
-		else if (memclk_index == 0xe) {
+		} else if (memclk_index == 0xe) {
 			delay = 0x7;
 			delay2 = 0x4;
-		}
-		else if (memclk_index == 0x12) {
+		} else if (memclk_index == 0x12) {
 			delay = 0x8;
 			delay2 = 0x4;
-		}
-		else if (memclk_index == 0x16) {
+		} else if (memclk_index == 0x16) {
 			delay = 0xa;
 			delay2 = 0x5;
 		}
@@ -3346,8 +3560,7 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 			tCK16x = 40;
 		else
 			tCK16x = 48;
-	}
-	else {
+	} else {
 		if (byte == 7)
 			tCK16x = 20;
 		else if (byte == 6)
@@ -4674,13 +4887,13 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 					else
 						pDCTstat->RegMan1Present |= 1 << i;
 				}
-				/* Get Control word values for RC3. We dont need it. */
+				/* Get control word value for RC3 */
 				byte = pDCTstat->spd_data.spd_bytes[i][70];
-				pDCTstat->CtrlWrd3 |= (byte >> 4) << (i << 2); /* C3 = SPD byte 70 [7:4] */
-				/* Get Control word values for RC4, and RC5 */
+				pDCTstat->CtrlWrd3 |= ((byte >> 4) & 0xf) << (i << 2);	/* RC3 = SPD byte 70 [7:4] */
+				/* Get control word values for RC4 and RC5 */
 				byte = pDCTstat->spd_data.spd_bytes[i][71];
-				pDCTstat->CtrlWrd4 |= (byte & 0xFF) << (i << 2); /* RC4 = SPD byte 71 [3:0] */
-				pDCTstat->CtrlWrd5 |= (byte >> 4) << (i << 2); /* RC5 = SPD byte 71 [7:4] */
+				pDCTstat->CtrlWrd4 |= (byte & 0xf) << (i << 2);		/* RC4 = SPD byte 71 [3:0] */
+				pDCTstat->CtrlWrd5 |= ((byte >> 4) & 0xf) << (i << 2);	/* RC5 = SPD byte 71 [7:4] */
 			}
 		}
 	}
@@ -5866,23 +6079,27 @@ static void SetCSTriState(struct MCTStatStruc *pMCTstat,
 	u32 val;
 	u32 dev = pDCTstat->dev_dct;
 	u32 index_reg = 0x98;
-	u32 index;
 	u16 word;
 
-	/* Tri-state unused chipselects when motherboard
-	   termination is available */
+	if (is_fam15h()) {
+		word = fam15h_cs_tristate_enable_code(pDCTstat, dct);
+	} else {
+		/* Tri-state unused chipselects when motherboard
+		termination is available */
 
-	/* FIXME: skip for Ax */
+		/* FIXME: skip for Ax */
 
-	word = pDCTstat->CSPresent;
-	if (pDCTstat->Status & (1 << SB_Registered)) {
-		word |= (word & 0x55) << 1;
+		word = pDCTstat->CSPresent;
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			word |= (word & 0x55) << 1;
+		}
+		word = (~word) & 0xff;
 	}
-	word = (~word) & 0xFF;
-	index  = 0x0c;
-	val = Get_NB32_index_wait_DCT(dev, dct, index_reg, index);
+
+	val = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0000000c);
+	val &= ~0xff;
 	val |= word;
-	Set_NB32_index_wait_DCT(dev, dct, index_reg, index, val);
+	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0000000c, val);
 }
 
 static void SetCKETriState(struct MCTStatStruc *pMCTstat,
@@ -5891,7 +6108,6 @@ static void SetCKETriState(struct MCTStatStruc *pMCTstat,
 	u32 val;
 	u32 dev;
 	u32 index_reg = 0x98;
-	u32 index;
 	u16 word;
 
 	/* Tri-state unused CKEs when motherboard termination is available */
@@ -5901,15 +6117,13 @@ static void SetCKETriState(struct MCTStatStruc *pMCTstat,
 	dev = pDCTstat->dev_dct;
 	word = pDCTstat->CSPresent;
 
-	index  = 0x0c;
-	val = Get_NB32_index_wait_DCT(dev, dct, index_reg, index);
+	val = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0000000c);
+	val &= ~(0x3 << 12);
 	if ((word & 0x55) == 0)
 		val |= 1 << 12;
-
-	if ((word & 0xAA) == 0)
+	if ((word & 0xaa) == 0)
 		val |= 1 << 13;
-
-	Set_NB32_index_wait_DCT(dev, dct, index_reg, index, val);
+	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0000000c, val);
 }
 
 static void SetODTTriState(struct MCTStatStruc *pMCTstat,
@@ -5919,42 +6133,44 @@ static void SetODTTriState(struct MCTStatStruc *pMCTstat,
 	u32 dev;
 	u32 index_reg = 0x98;
 	u8 cs;
-	u32 index;
 	u8 odt;
 	u8 max_dimms;
 
-	/* FIXME: skip for Ax */
-
 	dev = pDCTstat->dev_dct;
 
-	/* Tri-state unused ODTs when motherboard termination is available */
-	max_dimms = (u8) mctGet_NVbits(NV_MAX_DIMMS);
-	odt = 0x0F;	/* ODT tri-state setting */
+	if (is_fam15h()) {
+		odt = fam15h_odt_tristate_enable_code(pDCTstat, dct);
+	} else {
+		/* FIXME: skip for Ax */
 
-	if (pDCTstat->Status & (1 <<SB_Registered)) {
-		for (cs = 0; cs < 8; cs += 2) {
-			if (pDCTstat->CSPresent & (1 << cs)) {
-				odt &= ~(1 << (cs / 2));
-				if (mctGet_NVbits(NV_4RANKType) != 0) { /* quad-rank capable platform */
-					if (pDCTstat->CSPresent & (1 << (cs + 1)))
-						odt &= ~(4 << (cs / 2));
+		/* Tri-state unused ODTs when motherboard termination is available */
+		max_dimms = (u8) mctGet_NVbits(NV_MAX_DIMMS);
+		odt = 0x0f;	/* ODT tri-state setting */
+
+		if (pDCTstat->Status & (1 <<SB_Registered)) {
+			for (cs = 0; cs < 8; cs += 2) {
+				if (pDCTstat->CSPresent & (1 << cs)) {
+					odt &= ~(1 << (cs / 2));
+					if (mctGet_NVbits(NV_4RANKType) != 0) { /* quad-rank capable platform */
+						if (pDCTstat->CSPresent & (1 << (cs + 1)))
+							odt &= ~(4 << (cs / 2));
+					}
 				}
 			}
+		} else {		/* AM3 package */
+			val = ~(pDCTstat->CSPresent);
+			odt = val & 9;	/* swap bits 1 and 2 */
+			if (val & (1 << 1))
+				odt |= 1 << 2;
+			if (val & (1 << 2))
+				odt |= 1 << 1;
 		}
-	} else {		/* AM3 package */
-		val = ~(pDCTstat->CSPresent);
-		odt = val & 9;	/* swap bits 1 and 2 */
-		if (val & (1 << 1))
-			odt |= 1 << 2;
-		if (val & (1 << 2))
-			odt |= 1 << 1;
 	}
 
-	index  = 0x0C;
-	val = Get_NB32_index_wait_DCT(dev, dct, index_reg, index);
-	val |= ((odt & 0xFF) << 8);	/* set bits 11:8 ODTTriState[3:0] */
-	Set_NB32_index_wait_DCT(dev, dct, index_reg, index, val);
-
+	val = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0000000c);
+	val &= ~(0xf << 8);		/* ODTTri = odt */
+	val |= (odt & 0xf) << 8;
+	Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0000000c, val);
 }
 
 /* Family 15h */
@@ -6524,7 +6740,7 @@ static void mct_ProgramODT_D(struct MCTStatStruc *pMCTstat,
 		dword |= (read_odt_delay & 0xf);
 		Set_NB32_DCT(dev, dct, 0x240, dword);
 
-		printk(BIOS_SPEW, "Programmed ODT pattern %08x %08x %08x %08x\n", odt_pattern_0, odt_pattern_1, odt_pattern_2, odt_pattern_3);
+		printk(BIOS_SPEW, "Programmed DCT %d ODT pattern %08x %08x %08x %08x\n", dct, odt_pattern_0, odt_pattern_1, odt_pattern_2, odt_pattern_3);
 	} else if (pDCTstat->LogicalCPUID & AMD_DR_Dx) {
 		if (pDCTstat->Speed == 3)
 			dword = 0x00000800;

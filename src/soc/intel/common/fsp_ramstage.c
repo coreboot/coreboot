@@ -55,6 +55,44 @@ static void smm_memory_map(void)
 	}
 }
 
+static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
+{
+	const EFI_GUID graphics_info_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
+	int missing_hob = 0;
+	void *hob_list_ptr = get_hob_list();
+
+	if (!IS_ENABLED(CONFIG_DISPLAY_HOBS))
+		return;
+
+	/* Verify the HOBs */
+	if (hob_list_ptr == NULL) {
+		printk(BIOS_INFO, "ERROR - HOB pointer is NULL!\n");
+		return;
+	}
+
+	print_hob_type_structure(0, hob_list_ptr);
+
+	/*
+	 * Verify that FSP is generating the required HOBs:
+	 *	7.1: FSP_BOOTLOADER_TEMP_MEMORY_HOB only produced for FSP 1.0
+	 *	7.2: FSP_RESERVED_MEMORY_RESOURCE_HOB verified by raminit
+	 *	7.3: FSP_NON_VOLATILE_STORAGE_HOB verified by raminit
+	 *	7.4: FSP_BOOTLOADER_TOLUM_HOB verified by raminit
+	 *	7.5: EFI_PEI_GRAPHICS_INFO_HOB verified below,
+	 *	     if the ImageAttribute bit is set
+	 *	FSP_SMBIOS_MEMORY_INFO HOB verified by raminit
+	 */
+	if ((fsp_info_header->ImageAttribute & GRAPHICS_SUPPORT_BIT) &&
+		!get_next_guid_hob(&graphics_info_guid, hob_list_ptr)) {
+		printk(BIOS_INFO, "7.5: EFI_PEI_GRAPHICS_INFO_HOB missing!\n");
+		missing_hob = 1;
+	}
+
+	if (missing_hob)
+		printk(BIOS_INFO,
+		       "ERROR - Missing one or more required FSP HOBs!\n");
+}
+
 static void fsp_run_silicon_init(int is_s3_wakeup)
 {
 	FSP_INFO_HEADER *fsp_info_header;
@@ -107,35 +145,7 @@ static void fsp_run_silicon_init(int is_s3_wakeup)
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
 
-#if IS_ENABLED(CONFIG_DISPLAY_HOBS)
-	/* Verify the HOBs */
-	const EFI_GUID graphics_info_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
-	void *hob_list_ptr = get_hob_list();
-	int missing_hob = 0;
-
-	if (hob_list_ptr == NULL)
-		die("ERROR - HOB pointer is NULL!\n");
-	print_hob_type_structure(0, hob_list_ptr);
-
-	/*
-	 * Verify that FSP is generating the required HOBs:
-	 *	7.1: FSP_BOOTLOADER_TEMP_MEMORY_HOB only produced for FSP 1.0
-	 *	7.2: FSP_RESERVED_MEMORY_RESOURCE_HOB verified by raminit
-	 *	7.3: FSP_NON_VOLATILE_STORAGE_HOB verified by raminit
-	 *	7.4: FSP_BOOTLOADER_TOLUM_HOB verified by raminit
-	 *	7.5: EFI_PEI_GRAPHICS_INFO_HOB verified below,
-	 *	     if the ImageAttribute bit is set
-	 *	FSP_SMBIOS_MEMORY_INFO HOB verified by raminit
-	 */
-	if ((fsp_info_header->ImageAttribute & GRAPHICS_SUPPORT_BIT) &&
-		!get_next_guid_hob(&graphics_info_guid, hob_list_ptr)) {
-		printk(BIOS_ERR, "7.5: EFI_PEI_GRAPHICS_INFO_HOB missing!\n");
-		missing_hob = 1;
-	}
-	if (missing_hob)
-		die("ERROR - Missing one or more required FSP HOBs!\n");
-#endif
-
+	display_hob_info(fsp_info_header);
 	soc_after_silicon_init();
 }
 

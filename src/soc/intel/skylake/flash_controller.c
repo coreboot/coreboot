@@ -454,3 +454,15 @@ static struct spi_flash *spi_flash_hwseq_probe(struct spi_slave *spi)
 }
 #endif
 
+#if ENV_RAMSTAGE
+/*
+ * spi_init() needs run unconditionally in every boot (including resume) to
+ * allow write protect to be disabled for eventlog and firmware updates.
+ */
+static void spi_init_cb(void *unused)
+{
+	spi_init();
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, spi_init_cb, NULL);
+#endif

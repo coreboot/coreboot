@@ -41,11 +41,6 @@
 /* Include the EDK2 headers */
 #include <soc/chipset_fsp_util.h>
 
-#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
-int save_mrc_data(void *hob_start);
-void * find_and_set_fastboot_cache(void);
-#endif
-
 /* find_fsp() should only be called from assembly code. */
 FSP_INFO_HEADER *find_fsp(void);
 /* Set FSP's runtime information. */
@@ -85,23 +80,6 @@ int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src);
  */
 #define EFI_HOB_TYPE_HANDOFF		0x0001
 #define EFI_HOB_TYPE_MEMORY_POOL	0x0007
-
-#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
-#define MRC_DATA_ALIGN			0x1000
-#define MRC_DATA_SIGNATURE		(('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
-
-struct mrc_data_container {
-	u32	mrc_signature;	// "MRCD"
-	u32	mrc_data_size;	// Actual total size of this structure
-	u32	mrc_checksum;	// IP style checksum
-	u32	reserved;	// For header alignment
-	u8	mrc_data[0];	// Variable size, platform/run time dependent.
-} __attribute__ ((packed));
-
-struct mrc_data_container *find_current_mrc_cache(void);
-void update_mrc_cache(void *unused);
-
-#endif	/* CONFIG_ENABLE_MRC_CACHE */
 
 /* The offset in bytes from the start of the info structure */
 #define FSP_IMAGE_SIG_LOC			0

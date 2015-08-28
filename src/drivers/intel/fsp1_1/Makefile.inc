@@ -18,12 +18,10 @@
 # Foundation, Inc.
 #
 
-romstage-$(CONFIG_ENABLE_MRC_CACHE) += fastboot_cache.c
 romstage-$(CONFIG_GOP_SUPPORT) += fsp_gop.c
 romstage-y += fsp_util.c
 romstage-y += hob.c
 
-ramstage-$(CONFIG_ENABLE_MRC_CACHE) += fastboot_cache.c
 ramstage-$(CONFIG_GOP_SUPPORT) += fsp_gop.c
 ramstage-y += fsp_relocate.c
 ramstage-y += fsp_util.c
@@ -46,18 +44,4 @@ cbfs-files-y += fsp.bin
 fsp.bin-file := $(call strip_quotes,$(CONFIG_FSP_FILE))
 fsp.bin-position := $(CONFIG_FSP_LOC)
 fsp.bin-type := fsp
-endif
-
-
-# Create and add the MRC cache to the cbfs image
-ifeq ($(CONFIG_ENABLE_MRC_CACHE_FILE),y)
-$(obj)/mrc.cache:
-	dd if=/dev/zero count=1 \
-	bs=$(shell printf "%d" $(CONFIG_MRC_CACHE_SIZE) ) | \
-	tr '\000' '\377' > $@
-
-cbfs-files-y += mrc.cache
-mrc.cache-file := $(call strip_quotes,$(CONFIG_MRC_CACHE_FILE))
-mrc.cache-position := $(CONFIG_MRC_CACHE_LOC)
-mrc.cache-type := mrc_cache
 endif

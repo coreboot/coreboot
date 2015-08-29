@@ -324,6 +324,18 @@ void initialize_romstage_console_lock(void)
 	car_get_var(printk_spinlock) = SPIN_LOCK_UNLOCKED;
 }
 
+static spinlock_t nvram_cbfs_spinlock CAR_GLOBAL;
+
+spinlock_t* romstage_nvram_cbfs_lock(void)
+{
+	return car_get_var_ptr(&nvram_cbfs_spinlock);
+}
+
+void initialize_romstage_nvram_cbfs_lock(void)
+{
+	car_get_var(nvram_cbfs_spinlock) = SPIN_LOCK_UNLOCKED;
+}
+
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	uint32_t esp;
@@ -350,8 +362,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		timestamp_init(timestamp_get());
 		timestamp_add_now(TS_START_ROMSTAGE);
 
-		/* Initialize the printk spinlock */
+		/* Initialize the printk and nvram CBFS spinlocks */
 		initialize_romstage_console_lock();
+		initialize_romstage_nvram_cbfs_lock();
 
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */

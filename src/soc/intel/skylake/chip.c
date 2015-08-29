@@ -26,6 +26,7 @@
 #include <fsp_util.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <string.h>
 
 static void pci_domain_set_resources(device_t dev)
 {
@@ -69,18 +70,15 @@ struct chip_operations soc_intel_skylake_ops = {
 /* UPD parameters to be initialized before SiliconInit */
 void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	const struct device *dev;
-	const struct soc_intel_skylake_config *config;
-	int i;
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	const struct soc_intel_skylake_config *config = dev->chip_info;
 
-	/* Set the parameters for SiliconInit */
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
-	if (!dev || !dev->chip_info)
-		return;
-	config = dev->chip_info;
-
-	for (i = 0; i < PchSerialIoIndexMax; i++)
-		params->SerialIoDevMode[i] = config->SerialIoDevMode[i];
+	memcpy(params->SerialIoDevMode, config->SerialIoDevMode,
+	       sizeof(params->SerialIoDevMode));
+	memcpy(params->PortUsb20Enable, config->PortUsb20Enable,
+	       sizeof(params->PortUsb20Enable));
+	memcpy(params->PortUsb30Enable, config->PortUsb30Enable,
+	       sizeof(params->PortUsb30Enable));
 
 	params->SataSalpSupport = config->SataSalpSupport;
 	params->SataPortsEnable[0] = config->SataPortsEnable[0];

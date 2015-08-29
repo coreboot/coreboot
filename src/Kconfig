@@ -480,6 +480,14 @@ config HAVE_ROMSTAGE_CONSOLE_SPINLOCK
 	bool
 	default n
 
+config HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK
+	bool
+	default n
+	help
+	  This should be enabled on certain plaforms, such as the AMD
+	  SR565x, that cannot handle concurrent CBFS accesses from
+	  multiple APs during early startup.
+
 config HAVE_MONOTONIC_TIMER
 	def_bool n
 	help

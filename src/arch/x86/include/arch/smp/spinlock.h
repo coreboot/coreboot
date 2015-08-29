@@ -1,7 +1,7 @@
 #ifndef ARCH_SMP_SPINLOCK_H
 #define ARCH_SMP_SPINLOCK_H
 
-#if !defined(__PRE_RAM__) || IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
+#if !defined(__PRE_RAM__) || IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK) || IS_ENABLED(CONFIG_HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK)
 
 /*
  * Your basic SMP spinlocks, allowing only a single CPU anywhere
@@ -14,6 +14,8 @@ typedef struct {
 #ifdef __PRE_RAM__
 spinlock_t *romstage_console_lock(void);
 void initialize_romstage_console_lock(void);
+spinlock_t* romstage_nvram_cbfs_lock(void);
+void initialize_romstage_nvram_cbfs_lock(void);
 #endif
 
 #define SPIN_LOCK_UNLOCKED (spinlock_t) { 1 }

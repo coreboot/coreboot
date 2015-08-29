@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2014 The Chromium OS Authors. All rights reserved.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +34,16 @@
 #define LB_CKS_LOC		0
 #endif
 
+#include <smp/spinlock.h>
+
+#if (defined(__PRE_RAM__) &&	\
+IS_ENABLED(CONFIG_HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK))
+	#define LOCK_NVRAM_CBFS_SPINLOCK spin_lock(romstage_nvram_cbfs_lock());
+	#define UNLOCK_NVRAM_CBFS_SPINLOCK spin_unlock(romstage_nvram_cbfs_lock());
+#else
+	#define LOCK_NVRAM_CBFS_SPINLOCK
+	#define UNLOCK_NVRAM_CBFS_SPINLOCK
+#endif
 
 static void cmos_reset_date(void)
 {
@@ -204,6 +215,8 @@ enum cb_err get_option(void *dest, const char *name)
 	if (!IS_ENABLED(CONFIG_USE_OPTION_TABLE))
 		return CB_CMOS_OTABLE_DISABLED;
 
+	LOCK_NVRAM_CBFS_SPINLOCK
+
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
@@ -213,6 +226,8 @@ enum cb_err get_option(void *dest, const char *name)
 	if (!ct) {
 		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
 						"Options are disabled\n");
+
+		UNLOCK_NVRAM_CBFS_SPINLOCK
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
 	ce = (struct cmos_entries*)((unsigned char *)ct + ct->header_length);
@@ -225,13 +240,19 @@ enum cb_err get_option(void *dest, const char *name)
 	}
 	if (!found) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
+		UNLOCK_NVRAM_CBFS_SPINLOCK
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
-	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS)
+	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS) {
+		UNLOCK_NVRAM_CBFS_SPINLOCK
 		return CB_CMOS_ACCESS_ERROR;
-	if (!cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC))
+	}
+	if (!cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC)) {
+		UNLOCK_NVRAM_CBFS_SPINLOCK
 		return CB_CMOS_CHECKSUM_INVALID;
+	}
+	UNLOCK_NVRAM_CBFS_SPINLOCK
 	return CB_SUCCESS;
 }
 

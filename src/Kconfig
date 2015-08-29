@@ -489,6 +489,10 @@ config HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK
 	  SR565x, that cannot handle concurrent CBFS accesses from
 	  multiple APs during early startup.
 
+config HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK
+	bool
+	default n
+
 config HAVE_MONOTONIC_TIMER
 	def_bool n
 	help

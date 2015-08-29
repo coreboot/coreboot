@@ -20,6 +20,7 @@
 #include <cpu/amd/microcode.h>
 #include <cbfs.h>
 #include <arch/io.h>
+#include <smp/spinlock.h>
 
 #define UCODE_DEBUG(fmt, args...)	\
 	do { printk(BIOS_DEBUG, "[microcode] "fmt, ##args); } while(0)
@@ -197,14 +198,30 @@ void amd_update_microcode_from_cbfs(uint32_t equivalent_processor_rev_id)
 			return;
 		}
 
+#ifdef __PRE_RAM__
+#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
+		spin_lock(romstage_microcode_cbfs_lock());
+#endif
+#endif
+
 		ucode = cbfs_boot_map_with_leak(microcode_cbfs_file[i],
 						CBFS_TYPE_MICROCODE, &ucode_len);
 		if (!ucode) {
 			UCODE_DEBUG("microcode file not found. Skipping updates.\n");
-
+#ifdef __PRE_RAM__
+#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
+			spin_unlock(romstage_microcode_cbfs_lock());
+#endif
+#endif
 			return;
 		}
 
 		amd_update_microcode(ucode, ucode_len, equivalent_processor_rev_id);
+
+#ifdef __PRE_RAM__
+#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
+		spin_unlock(romstage_microcode_cbfs_lock());
+#endif
+#endif
 	}
 }

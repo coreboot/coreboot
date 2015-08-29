@@ -15,6 +15,18 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoPci, \
 	}"
 
+	register "PortUsb20Enable[0]" = "1"	/* Type-C Port 1 */
+	register "PortUsb20Enable[1]" = "1"	/* Type-C Port 2 */
+	register "PortUsb20Enable[2]" = "1"	/* Bluetooth */
+	register "PortUsb20Enable[4]" = "1"	/* Type-A Port (card) */
+	register "PortUsb20Enable[6]" = "1"	/* Camera */
+	register "PortUsb20Enable[8]" = "1"	/* Type-A Port (board) */
+
+	register "PortUsb30Enable[0]" = "1"	/* Type-C Port 1 */
+	register "PortUsb30Enable[1]" = "1"	/* Type-C Port 2 */
+	register "PortUsb30Enable[2]" = "1"	/* Type-A Port (card) */
+	register "PortUsb30Enable[3]" = "1"	/* Type-A Port (board) */
+
 	register "pirqa_routing" = "0x8b"
 	register "pirqb_routing" = "0x8a"
 	register "pirqc_routing" = "0x8b"

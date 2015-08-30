@@ -36,6 +36,13 @@ FSP_INFO_HEADER *find_fsp(void)
 		u8 *u8;
 		u32 u32;
 	} fsp_ptr;
+	static const union {
+		char str_id[8];
+		u32 int_id[2];
+	} fsp_id = {
+		.str_id = CONFIG_FSP_IMAGE_ID_STRING
+	};
+
 	u32 *image_id;
 
 	for (;;) {
@@ -87,8 +94,8 @@ FSP_INFO_HEADER *find_fsp(void)
 
 		/* Verify the FSP ID */
 		image_id = (u32 *)&fsp_ptr.fih->ImageId[0];
-		if ((image_id[0] != CONFIG_FSP_IMAGE_ID_DWORD0)
-			|| (image_id[1] != CONFIG_FSP_IMAGE_ID_DWORD1))
+		if ((image_id[0] != fsp_id.int_id[0])
+			|| (image_id[1] != fsp_id.int_id[1]))
 			fsp_ptr.u8 = (u8 *)ERROR_FSP_SIG_MISMATCH;
 		break;
 	}

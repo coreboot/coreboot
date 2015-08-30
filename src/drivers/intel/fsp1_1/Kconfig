@@ -63,17 +63,11 @@ config FSP_FILE
 	help
 	  The path and filename of the Intel FSP binary for this platform.
 
-config FSP_IMAGE_ID_DWORD0
-	hex "First 4 bytes of 8 byte platform string"
+config FSP_IMAGE_ID_STRING
+	string "8 byte platform string identifying the FSP platform"
 	help
-	  The first four bytes of the eight byte platform specific string
-	  used to identify the FSP binary that should be used.
-
-config FSP_IMAGE_ID_DWORD1
-	hex "Second 4 bytes of 8 byte platform string"
-	help
-	  The second four bytes of the eight byte platform specific string
-	  used to identify the FSP binary that should be used.
+	  8 ASCII character byte signature string that will help match the FSP
+	  binary to a supported hardware configuration.
 
 config FSP_INCLUDE_PATH
 	string "Path for FSP specific include files"

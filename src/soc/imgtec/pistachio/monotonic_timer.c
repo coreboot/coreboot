@@ -53,10 +53,5 @@ static int get_count_mhz_freq(void)
 
 void timer_monotonic_get(struct mono_time *mt)
 {
-	mt->microseconds = (long)timestamp_get();
-}
-
-uint64_t timestamp_get(void)
-{
-	return read_c0_count()/get_count_mhz_freq();
+	mono_time_set_usecs(mt, read_c0_count() / get_count_mhz_freq());
 }

@@ -51,7 +51,7 @@ FSP_INFO_HEADER *find_fsp(void)
 		/* Locate the file header which follows the FV header. */
 		fsp_ptr.u8 += fsp_ptr.fvh->ExtHeaderOffset;
 		fsp_ptr.u8 += fsp_ptr.fveh->ExtHeaderSize;
-		fsp_ptr.u8 = (u8 *)((fsp_ptr.u32 + 7) & 0xFFFFFFF8);
+		fsp_ptr.u8 = (u8 *)ALIGN_UP(fsp_ptr.u32, 8);
 
 		/* Check the FFS GUID */
 		if ((((u32 *)&fsp_ptr.ffh->Name)[0] != 0x912740BE)

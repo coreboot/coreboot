@@ -38,10 +38,6 @@ FSP_INFO_HEADER *find_fsp(void)
 	} fsp_ptr;
 	u32 *image_id;
 
-#ifndef CONFIG_FSP_LOC
-#error "CONFIG_FSP_LOC must be set."
-#endif
-
 	for (;;) {
 		/* Get the FSP binary base address in CBFS */
 		fsp_ptr.u8 = (u8 *)CONFIG_FSP_LOC;

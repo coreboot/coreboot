@@ -33,24 +33,6 @@
 #include <cpu/x86/post_code.h>
 #include <cbmem.h>
 
-#ifndef CONFIG_FSP_LOC
-# error "CONFIG_FSP_LOC must be set."
-#endif
-
-#ifndef CONFIG_POST_IO
-# error "CONFIG_POST_IO must be set."
-#endif
-
-#if IS_ENABLED(CONFIG_POST_IO)
-# ifndef CONFIG_POST_IO_PORT
-#  error "CONFIG_POST_IO_PORT must be set."
-# endif
-#endif
-
-#ifndef CONFIG_CPU_MICROCODE_CBFS_LOC
-# error "CONFIG_CPU_MICROCODE_CBFS_LOC must be set."
-#endif
-
 #define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
 
 	/*

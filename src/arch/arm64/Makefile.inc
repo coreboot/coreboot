@@ -64,7 +64,6 @@ bootblock-y += cpu-stubs.c
 bootblock-y += stages.c
 bootblock-y += eabi_compat.c
 bootblock-y += transition.c transition_asm.S
-bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 bootblock-y += memset.S
 bootblock-y += memcpy.S
@@ -95,7 +94,6 @@ verstage-y += ../../lib/memset.c
 verstage-y += ../../lib/memcpy.c
 verstage-y += ../../lib/memmove.c
 verstage-y += stages.c
-verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 endif # CONFIG_ARCH_VERSTAGE_ARM64
 
@@ -115,7 +113,6 @@ romstage-y += eabi_compat.c
 romstage-y += memset.S
 romstage-y += memcpy.S
 romstage-y += memmove.S
-romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-y += transition.c transition_asm.S
 
 rmodules_arm64-y += memset.S
@@ -168,8 +165,6 @@ secmon-y += ../../lib/malloc.c
 secmon-y += memset.S
 secmon-y += memmove.S
 secmon-y += memcpy.S
-
-ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 

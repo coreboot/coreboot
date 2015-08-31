@@ -193,16 +193,20 @@ download() {
 	FILE=$(basename $archive)
 	printf " * $FILE "
 
-	test -f tarballs/$FILE && check_sum $FILE && printf "(cached)" || (
+	if test -f tarballs/$FILE && check_sum $FILE ; then
+		printf "(cached)"
+	else
 		printf "(downloading from $archive)"
 		rm -f tarballs/$FILE
 		cd tarballs
 		wget --no-check-certificate -q $archive
+		wgetret=$?
 		cd ..
 		compute_sum $FILE
-	)
+	fi
+
 	if [ ! -f tarballs/$FILE ]; then
-		printf "\n${RED}Failed to download $FILE.${NC}\n"
+		printf "\n${RED}Failed to download $FILE. Wget returns $wgetret. See 'man wget'.${NC}\n"
 		exit 1
 	fi
 	printf "\n"

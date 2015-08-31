@@ -481,19 +481,42 @@ static const struct timestamp_id_to_name {
 	{ TS_FSP_AFTER_FINALIZE, "returning from FspNotify(ReadyToBoot)" }
 };
 
-uint64_t timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
+static const char *timestamp_name(uint32_t id)
 {
 	int i;
+
+	for (i = 0; i < ARRAY_SIZE(timestamp_ids); i++) {
+		if (timestamp_ids[i].id == id)
+			return timestamp_ids[i].name;
+	}
+	return "<unknown>";
+}
+
+static uint64_t timestamp_print_parseable_entry(uint32_t id, uint64_t stamp,
+						uint64_t prev_stamp)
+{
 	const char *name;
 	uint64_t step_time;
 
-	name = "<unknown>";
-	for (i = 0; i < ARRAY_SIZE(timestamp_ids); i++) {
-		if (timestamp_ids[i].id == id) {
-			name = timestamp_ids[i].name;
-			break;
-		}
-	}
+	name = timestamp_name(id);
+
+	step_time = arch_convert_raw_ts_entry(stamp - prev_stamp);
+
+	/* ID<tab>absolute time<tab>relative time<tab>description */
+	printf("%d\t", id);
+	printf("%llu\t", (long long)arch_convert_raw_ts_entry(stamp));
+	printf("%llu\t", (long long)step_time);
+	printf("%s\n", name);
+
+	return step_time;
+}
+
+uint64_t timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
+{
+	const char *name;
+	uint64_t step_time;
+
+	name = timestamp_name(id);
 
 	printf("%4d:", id);
 	printf("%-50s", name);
@@ -510,7 +533,7 @@ uint64_t timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
 }
 
 /* dump the timestamp table */
-static void dump_timestamps(void)
+static void dump_timestamps(int mach_readable)
 {
 	int i;
 	struct timestamp_table *tst_p;
@@ -528,7 +551,8 @@ static void dump_timestamps(void)
 
 	timestamp_set_tick_freq(tst_p->tick_freq_mhz);
 
-	printf("%d entries total:\n\n", tst_p->num_entries);
+	if (!mach_readable)
+		printf("%d entries total:\n\n", tst_p->num_entries);
 	size += tst_p->num_entries * sizeof(tst_p->entries[0]);
 
 	unmap_memory();
@@ -536,7 +560,11 @@ static void dump_timestamps(void)
 
 	/* Report the base time within the table. */
 	prev_stamp = 0;
-	timestamp_print_entry(0,  tst_p->base_time, prev_stamp);
+	if (mach_readable)
+		timestamp_print_parseable_entry(0,  tst_p->base_time,
+						prev_stamp);
+	else
+		timestamp_print_entry(0,  tst_p->base_time, prev_stamp);
 	prev_stamp = tst_p->base_time;
 
 	total_time = 0;
@@ -546,14 +574,21 @@ static void dump_timestamps(void)
 
 		/* Make all timestamps absolute. */
 		stamp = tse->entry_stamp + tst_p->base_time;
-		total_time += timestamp_print_entry(tse->entry_id,
+		if (mach_readable)
+			total_time +=
+				timestamp_print_parseable_entry(tse->entry_id,
+							stamp, prev_stamp);
+		else
+			total_time += timestamp_print_entry(tse->entry_id,
 							stamp, prev_stamp);
 		prev_stamp = stamp;
 	}
 
-	printf("\nTotal Time: ");
-	print_norm(total_time);
-	printf("\n");
+	if (!mach_readable) {
+		printf("\nTotal Time: ");
+		print_norm(total_time);
+		printf("\n");
+	}
 
 	unmap_memory();
 }
@@ -918,13 +953,14 @@ static void print_version(void)
 
 static void print_usage(const char *name)
 {
-	printf("usage: %s [-cCltxVvh?]\n", name);
+	printf("usage: %s [-cCltTxVvh?]\n", name);
 	printf("\n"
 	     "   -c | --console:                   print cbmem console\n"
 	     "   -C | --coverage:                  dump coverage information\n"
 	     "   -l | --list:                      print cbmem table of contents\n"
 	     "   -x | --hexdump:                   print hexdump of cbmem area\n"
 	     "   -t | --timestamps:                print timestamp information\n"
+	     "   -T | --parseable-timestamps:      print parseable timestamps\n"
 	     "   -V | --verbose:                   verbose (debugging) output\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n"
@@ -1055,6 +1091,7 @@ int main(int argc, char** argv)
 	int print_list = 0;
 	int print_hexdump = 0;
 	int print_timestamps = 0;
+	int machine_readable_timestamps = 0;
 
 	int opt, option_index = 0;
 	static struct option long_options[] = {
@@ -1062,13 +1099,14 @@ int main(int argc, char** argv)
 		{"coverage", 0, 0, 'C'},
 		{"list", 0, 0, 'l'},
 		{"timestamps", 0, 0, 't'},
+		{"parseable-timestamps", 0, 0, 'T'},
 		{"hexdump", 0, 0, 'x'},
 		{"verbose", 0, 0, 'V'},
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "cCltxVvh?",
+	while ((opt = getopt_long(argc, argv, "cCltTxVvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
@@ -1089,6 +1127,11 @@ int main(int argc, char** argv)
 			break;
 		case 't':
 			print_timestamps = 1;
+			print_defaults = 0;
+			break;
+		case 'T':
+			print_timestamps = 1;
+			machine_readable_timestamps = 1;
 			print_defaults = 0;
 			break;
 		case 'V':
@@ -1190,7 +1233,7 @@ int main(int argc, char** argv)
 		dump_cbmem_hex();
 
 	if (print_defaults || print_timestamps)
-		dump_timestamps();
+		dump_timestamps(machine_readable_timestamps);
 
 	close(mem_fd);
 	return 0;

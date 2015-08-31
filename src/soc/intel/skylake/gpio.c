@@ -25,6 +25,7 @@
 #include <soc/iomap.h>
 #include <soc/pm.h>
 
+static const int gpio_debug = 0;
 
 /* There are 4 communities with 8 GPIO groups (GPP_[A:G] and GPD) */
 struct gpio_community {
@@ -323,6 +324,11 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 
 	if ((dw0 & PAD_FIELD(GPIROUTSMI, MASK)) == PAD_FIELD(GPIROUTSMI, YES))
 		gpi_enable_smi(cfg->pad);
+
+	if(gpio_debug)
+		printk(BIOS_DEBUG,
+			"Write Pad: Base(%p) - conf0 = %x conf1= %x pad # = %d\n",
+			&dw_regs[0], dw0, reg, cfg->pad);
 }
 
 void gpio_configure_pads(const struct pad_config *cfgs, size_t num)

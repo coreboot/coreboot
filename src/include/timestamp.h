@@ -29,7 +29,8 @@ struct timestamp_entry {
 
 struct timestamp_table {
 	uint64_t	base_time;
-	uint32_t	max_entries;
+	uint16_t	max_entries;
+	uint16_t	tick_freq_mhz;
 	uint32_t	num_entries;
 	struct timestamp_entry entries[0]; /* Variable number of entries */
 } __attribute__((packed));
@@ -114,5 +115,7 @@ void timestamp_add_now(enum timestamp_id id);
 /* Implemented by the architecture code */
 uint64_t timestamp_get(void);
 uint64_t get_initial_timestamp(void);
+/* Returns timestamp tick frequency in MHz. */
+int timestamp_tick_freq_mhz(void);
 
 #endif

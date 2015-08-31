@@ -278,6 +278,10 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 	if (ts_cbmem_table->base_time == 0)
 		ts_cbmem_table->base_time = ts_cache_table->base_time;
 
+	/* Seed the timestamp tick frequency in ramstage. */
+	if (ENV_RAMSTAGE)
+		ts_cbmem_table->tick_freq_mhz = timestamp_tick_freq_mhz();
+
 	/* Cache no longer required. */
 	ts_cache_table->num_entries = 0;
 	ts_cache->cache_state = TIMESTAMP_CACHE_NOT_NEEDED;
@@ -298,4 +302,10 @@ uint64_t  __attribute__((weak)) timestamp_get(void)
 	timer_monotonic_get(&t2);
 
 	return mono_time_diff_microseconds(&t1, &t2);
+}
+
+/* Like timestamp_get() above this matches up with microsecond granularity. */
+int __attribute__((weak)) timestamp_tick_freq_mhz(void)
+{
+	return 1;
 }

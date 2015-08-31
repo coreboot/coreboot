@@ -60,8 +60,7 @@ static inline uint64_t tsc_to_uint64(tsc_t tstamp)
 }
 #endif
 
-#if CONFIG_TSC_CONSTANT_RATE
+/* Provided by CPU/chipset code for the TSC rate in MHz. */
 unsigned long tsc_freq_mhz(void);
-#endif
 
 #endif /* CPU_X86_TSC_H */

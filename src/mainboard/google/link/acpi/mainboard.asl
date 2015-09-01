@@ -85,23 +85,4 @@ Scope (\_SB) {
 			VendorShort (ADDR) {0x4a}
 		})
 	}
-
-	// Keyboard Backlight interface via EC
-	Device (KBLT) {
-		Name (_HID, EisaId("GGL0002"))
-		Name (_UID, 1)
-		Name (_ADR, 0)
-
-		// Read current backlight value
-		Method (KBQC, 0)
-		{
-			Return (\_SB.PCI0.LPCB.EC0.KBLV)
-		}
-
-		// Write new backlight value
-		Method (KBCM, 1)
-		{
-			Store (Arg0, \_SB.PCI0.LPCB.EC0.KBLV)
-		}
-	}
 }

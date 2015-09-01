@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,26 @@
  * Foundation, Inc.
  */
 
-/* mainboard configuration */
-#include <mainboard/google/samus/ec.h>
+Scope (\_SB)
+{
+	/*
+	 * Chrome EC Keyboard Backlight interface
+	 */
+	Device (KBLT)
+	{
+		Name (_HID, "GOOG0002")
+		Name (_UID, 1)
 
-/* Enable EC backed ALS device in ACPI */
-#define EC_ENABLE_ALS_DEVICE
+		/* Read current backlight value */
+		Method (KBQC, 0, NotSerialized)
+		{
+			Return (\_SB.PCI0.LPCB.EC0.KBLV)
+		}
 
-/* Enable EC backed Keyboard Backlight in ACPI */
-#define EC_ENABLE_KEYBOARD_BACKLIGHT
-
-/* Enable EC backed PD MCU device in ACPI */
-#define EC_ENABLE_PD_MCU_DEVICE
-
-/* ACPI code for EC functions */
-#include <ec/google/chromeec/acpi/ec.asl>
+		/* Write new backlight value */
+		Method (KBCM, 1, NotSerialized)
+		{
+			Store (Arg0, \_SB.PCI0.LPCB.EC0.KBLV)
+		}
+	}
+}

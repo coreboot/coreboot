@@ -420,6 +420,10 @@ Device (EC0)
 	#include "als.asl"
 #endif
 
+#ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
+       #include "keyboard_backlight.asl"
+#endif
+
 #ifdef EC_ENABLE_PD_MCU_DEVICE
 	#include "pd.asl"
 #endif

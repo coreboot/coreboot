@@ -88,7 +88,9 @@ struct cbfs_file {
 	char filename[];
 } __PACKED;
 
+#if defined __GNUC__ && (__GNUC__ * 100 + __GNUC_MINOR__) >= 405
 _Static_assert(sizeof(struct cbfs_file) == 24, "cbfs_file size mismatch");
+#endif
 
 /* The common fields of extended cbfs file attributes.
    Attributes are expected to start with tag/len, then append their

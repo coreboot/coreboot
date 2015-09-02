@@ -168,6 +168,8 @@ struct cbfs_payload {
 #define CBFS_COMPONENT_MICROCODE  0x53
 #define CBFS_COMPONENT_FSP        0x60
 #define CBFS_COMPONENT_MRC        0x61
+#define CBFS_COMPONENT_MMA	  0x62
+#define CBFS_COMPONENT_EFI	  0x63
 #define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
 #define CBFS_COMPONENT_SPD          0xab
 #define CBFS_COMPONENT_MRC_CACHE    0xac
@@ -207,6 +209,8 @@ static struct typedesc_t filetypes[] unused = {
 	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos_layout"},
 	{CBFS_COMPONENT_SPD, "spd"},
 	{CBFS_COMPONENT_MRC_CACHE, "mrc_cache"},
+	{CBFS_COMPONENT_MMA, "mma"},
+	{CBFS_COMPONENT_EFI, "efi"},
 	{CBFS_COMPONENT_DELETED, "deleted"},
 	{CBFS_COMPONENT_NULL, "null"}
 };

@@ -30,10 +30,6 @@ hwinfo.hex-file := hwinfo.hex
 hwinfo.hex-type := raw
 hwinfo.hex-align := 0x1000
 
-cbfs-files-y += version.hex
-version.hex-file := version.hex
-version.hex-type := raw
-
 cbfs-files-y += hwinfo10.hex
 hwinfo10.hex-file := hwinfo10.hex
 hwinfo10.hex-type := raw

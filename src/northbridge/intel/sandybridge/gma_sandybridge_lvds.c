@@ -128,6 +128,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	int i;
 	u8 edid_data[128];
 	struct edid edid;
+	struct edid_mode *mode;
 	u32 hactive, vactive, right_border, bottom_border;
 	int hpolarity, vpolarity;
 	u32 vsync, hsync, vblank, hblank, hfront_porch, vfront_porch;
@@ -184,27 +185,27 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	power_port(mmio);
 
 	intel_gmbus_read_edid(mmio + PCH_GMBUS0, 3, 0x50, edid_data, 128);
-	decode_edid(edid_data,
-		    sizeof(edid_data), &edid);
+	decode_edid(edid_data, sizeof(edid_data), &edid);
+	mode = &edid.mode;
 
 	/* Disable screen memory to prevent garbage from appearing.  */
 	vga_sr_write(1, vga_sr_read(1) | 0x20);
 
 	hactive = edid.x_resolution;
 	vactive = edid.y_resolution;
-	right_border = edid.hborder;
-	bottom_border = edid.vborder;
-	hpolarity = (edid.phsync == '-');
-	vpolarity = (edid.pvsync == '-');
-	vsync = edid.vspw;
-	hsync = edid.hspw;
-	vblank = edid.vbl;
-	hblank = edid.hbl;
-	hfront_porch = edid.hso;
-	vfront_porch = edid.vso;
+	right_border = mode->hborder;
+	bottom_border = mode->vborder;
+	hpolarity = (mode->phsync == '-');
+	vpolarity = (mode->pvsync == '-');
+	vsync = mode->vspw;
+	hsync = mode->hspw;
+	vblank = mode->vbl;
+	hblank = mode->hbl;
+	hfront_porch = mode->hso;
+	vfront_porch = mode->vso;
 
-	target_frequency = info->lvds_dual_channel ? edid.pixel_clock
-		: (2 * edid.pixel_clock);
+	target_frequency = info->lvds_dual_channel ? mode->pixel_clock
+		: (2 * mode->pixel_clock);
 #if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	vga_textmode_init();
 #else
@@ -272,8 +273,8 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 		return 0;
 	}
 
-	link_m1 = ((uint64_t)link_n1 * edid.pixel_clock) / link_frequency;
-	data_m1 = ((uint64_t)data_n1 * 18 * edid.pixel_clock)
+	link_m1 = ((uint64_t)link_n1 * mode->pixel_clock) / link_frequency;
+	data_m1 = ((uint64_t)data_n1 * 18 * mode->pixel_clock)
 		/ (link_frequency * 8 * (info->lvds_num_lanes ? : 4));
 
 	printk(BIOS_INFO, "bringing up panel at resolution %d x %d\n",

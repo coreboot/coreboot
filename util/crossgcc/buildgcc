@@ -165,24 +165,26 @@ searchtool()
 			fi
 		fi
 	fi
-	if [ "$(echo $1 | cut -b -3)" = "sha" ]; then
-		if [ $UNAME = "FreeBSD" ]; then
-			if [ -x "$(which sha1 2>/dev/null)" ]; then
-				echo sha1
-				return
-			fi
-		fi
-		if [ $UNAME = "NetBSD" ]; then
-			if [ -x "$(which cksum 2>/dev/null)" ]; then
-				echo cksum -a $(echo $1 | sed -e 's,sum,,')
-				return
-			fi
-		fi
-		if [ $UNAME = "Darwin" ]; then
-			if [ -x "$(which openssl 2>/dev/null)" ]; then
-				echo openssl $(echo $1 | sed -e 's,sum,,')
-				return
-			fi
+	if echo $1 | grep -q "sum" ; then
+		algor=$(echo $1 | sed -e 's,sum,,')
+		if [ -x "$(which $1 2>/dev/null)" ]; then
+			#xxxsum [file]
+			echo $1
+			return
+		elif [ -x "$(which $algor 2>/dev/null)" ]; then
+			#xxx [file]
+			echo $algor
+			return
+		elif [ -x "$(which openssl 2>/dev/null)" ]; then
+			#openssl xxx [file]
+			echo openssl $algor
+			return
+		elif [ -x "$(which cksum 2>/dev/null)" ]; then
+			#cksum -a xxx [file]
+			#cksum has special options in NetBSD. Actually, NetBSD will use the second case above.
+			echo "buildgcc" | cksum -a $algor > /dev/null 2>/dev/null && \
+			echo cksum -a $algor
+			return
 		fi
 	fi
 
@@ -790,7 +792,8 @@ TAR=$(searchtool tar) || exit $?
 PATCH=$(searchtool patch) || exit $?
 MAKE=$(searchtool make) || exit $?
 SHA1SUM=$(searchtool sha1sum)
-SHA512SUM=$(searchtool sha512sum)
+#SHA512SUM=$(searchtool sha512sum)
+#MD5SUM=$(searchtool md5sum)
 CHECKSUM=$SHA1SUM
 LBZIP2=$(searchtool lbzip2 "" nofail)
 PIGZ=$(searchtool pigz "" nofail)

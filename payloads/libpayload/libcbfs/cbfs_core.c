@@ -47,6 +47,7 @@
 
 #include <cbfs.h>
 #include <string.h>
+#include <sysinfo.h>
 
 /* returns a pointer to CBFS master header, or CBFS_HEADER_INVALID_ADDRESS
  *  on failure */
@@ -94,12 +95,50 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 	return header;
 }
 
+static int get_cbfs_range(uint32_t *offset, uint32_t *cbfs_end,
+			  struct cbfs_media *media)
+{
+	const struct cbfs_header *header;
+
+	if (lib_sysinfo.cbfs_offset && lib_sysinfo.cbfs_size) {
+		*offset = lib_sysinfo.cbfs_offset;
+		*cbfs_end = *offset + lib_sysinfo.cbfs_size;
+		return 0;
+	}
+
+	/*
+	 * If sysinfo doesn't have offset or size, we read them from
+	 * a master header.
+	 */
+	DEBUG("CBFS offset & size not found in sysinfo\n");
+	header = cbfs_get_header(media);
+	if (header == CBFS_HEADER_INVALID_ADDRESS)
+		return -1;
+	// Logical offset (for source media) of first file.
+	*offset = ntohl(header->offset);
+	*cbfs_end = ntohl(header->romsize);
+#if IS_ENABLED(CONFIG_LP_ARCH_X86)
+	// resolve actual length of ROM used for CBFS components
+	// the bootblock size was not taken into account
+	*cbfs_end -= ntohl(header->bootblocksize);
+
+	// fine tune the length to handle alignment positioning.
+	// using (bootblock size) % align, to derive the
+	// number of bytes the bootblock is off from the alignment size.
+	if ((ntohl(header->bootblocksize) % CBFS_ALIGNMENT))
+		*cbfs_end -= (CBFS_ALIGNMENT -
+			(ntohl(header->bootblocksize) % CBFS_ALIGNMENT));
+	else
+		*cbfs_end -= 1;
+#endif
+	return 0;
+}
+
 /* public API starts here*/
 struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 {
 	const char *vardata;
-	uint32_t offset, romsize, vardata_len;
-	const struct cbfs_header *header;
+	uint32_t offset, cbfs_end, vardata_len;
 	struct cbfs_file file, *file_ptr;
 	struct cbfs_media default_media;
 
@@ -111,35 +150,16 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 		}
 	}
 
-	if (CBFS_HEADER_INVALID_ADDRESS == (header = cbfs_get_header(media)))
+	if (get_cbfs_range(&offset, &cbfs_end, media)) {
+		ERROR("Failed to find cbfs range\n");
 		return NULL;
+	}
 
-	// Logical offset (for source media) of first file.
-	offset = ntohl(header->offset);
-	romsize = ntohl(header->romsize);
-
-	// TODO Add a "size" in CBFS header for a platform independent way to
-	// determine the end of CBFS data.
-#if IS_ENABLED(CONFIG_LP_ARCH_X86)
-	// resolve actual length of ROM used for CBFS components
-	// the bootblock size was not taken into account
-	romsize -= ntohl(header->bootblocksize);
-
-	// fine tune the length to handle alignment positioning.
-	// using (bootblock size) % align, to derive the
-	// number of bytes the bootblock is off from the alignment size.
-	if ((ntohl(header->bootblocksize) % CBFS_ALIGNMENT))
-		romsize -= (CBFS_ALIGNMENT -
-			(ntohl(header->bootblocksize) % CBFS_ALIGNMENT));
-	else
-		romsize -= 1;
-#endif
-
-	DEBUG("CBFS location: 0x%x~0x%x\n", offset, romsize);
+	DEBUG("CBFS location: 0x%x~0x%x\n", offset, cbfs_end);
 	DEBUG("Looking for '%s' starting from 0x%x.\n", name, offset);
 
 	media->open(media);
-	while (offset < romsize &&
+	while (offset < cbfs_end &&
 	       media->read(media, &file, offset, sizeof(file)) == sizeof(file)) {
 		if (memcmp(CBFS_FILE_MAGIC, file.magic,
 			   sizeof(file.magic)) != 0) {

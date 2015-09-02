@@ -22,6 +22,7 @@
 #include <arch/cache.h>
 #include <arch/spintable.h>
 #include <cpu/cpu.h>
+#include <bootmode.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -35,7 +36,6 @@
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <string.h>
 #include <timer.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/sdram.h>
 #include <soc/sdram_configs.h>
 
@@ -92,12 +92,13 @@ static void soc_init(device_t dev)
 	spintable_init((void *)cfg->spintable_addr);
 	arch_initialize_cpus(dev, &cntrl_ops);
 
-#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
-	if (vboot_skip_display_init())
-		printk(BIOS_INFO, "Skipping display init.\n");
-	else
+	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+		return;
+
+	if (display_init_required())
 		display_startup(dev);
-#endif
+	else
+		printk(BIOS_INFO, "Skipping display init.\n");
 }
 
 static void soc_noop(device_t dev)

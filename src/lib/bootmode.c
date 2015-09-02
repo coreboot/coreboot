@@ -19,9 +19,7 @@
 
 #include <rules.h>
 #include <bootmode.h>
-#if CONFIG_CHROMEOS || CONFIG_VBOOT_VERIFY_FIRMWARE
 #include <vendorcode/google/chromeos/chromeos.h>
-#endif
 
 #if CONFIG_BOOTMODE_STRAPS
 int developer_mode_enabled(void)
@@ -78,3 +76,13 @@ void gfx_set_init_done(int done)
 	gfx_init_done = done;
 }
 #endif
+
+int display_init_required(void)
+{
+	/* For Chrome OS always honor vboot_skip_display_init(). */
+	if (IS_ENABLED(CONFIG_CHROMEOS))
+		return !vboot_skip_display_init();
+
+	/* By default always initialize display. */
+	return 1;
+}

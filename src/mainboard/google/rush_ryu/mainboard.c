@@ -19,6 +19,7 @@
 
 #include <arch/mmu.h>
 #include <boardid.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <cbmem.h>
 #include <delay.h>
@@ -281,7 +282,7 @@ static void mainboard_init(device_t dev)
 	soc_configure_pads(lcd_gpio_padcfgs, ARRAY_SIZE(lcd_gpio_padcfgs));
 
 	/* if panel needs to bringup */
-	if (!vboot_skip_display_init())
+	if (display_init_required())
 		configure_display_blocks();
 }
 

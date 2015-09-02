@@ -20,7 +20,9 @@
 
 #include <arch/io.h>
 #include <arch/mmu.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/i2c.h>
 #include <soc/addressmap.h>
@@ -35,12 +37,6 @@
 #include <soc/mtc.h>
 #include <soc/pmc.h>
 #include <soc/power.h>
-
-#if IS_ENABLED(CONFIG_CHROMEOS)
-#include <vendorcode/google/chromeos/vboot_handoff.h>
-#include <vendorcode/google/chromeos/vboot2/misc.h>
-#endif
-#include <delay.h>
 
 #include "gpio.h"
 #include "pmic.h"
@@ -202,9 +198,7 @@ static void mainboard_init(device_t dev)
 	setup_audio();
 
 	/* if panel needs to bringup */
-#if IS_ENABLED(CONFIG_CHROMEOS)
-	if (!vboot_skip_display_init())
-#endif
+	if (display_init_required())
 		configure_display_blocks();
 
 	powergate_unused_partitions();

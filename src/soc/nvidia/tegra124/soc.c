@@ -20,13 +20,13 @@
  */
 
 #include <arch/io.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/display.h>
 #include <soc/sdram.h>
 #include <symbols.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "chip.h"
 
@@ -53,10 +53,10 @@ static void soc_enable(device_t dev)
 
 static void soc_init(device_t dev)
 {
-	if (vboot_skip_display_init())
-		printk(BIOS_INFO, "Skipping display init.\n");
-	else
+	if (display_init_required())
 		display_startup(dev);
+	else
+		printk(BIOS_INFO, "Skipping display init.\n");
 	printk(BIOS_INFO, "CPU: Tegra124\n");
 }
 

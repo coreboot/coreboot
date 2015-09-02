@@ -30,6 +30,8 @@ int get_wipeout_mode_switch(void);
 int get_lid_switch(void);
 
 
+/* Return 1 if display initialization is required. 0 if not. */
+int display_init_required(void);
 int gfx_get_init_done(void);
 void gfx_set_init_done(int done);
 

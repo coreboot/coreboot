@@ -18,7 +18,9 @@
  */
 
 #include <arch/mmu.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <delay.h>
 #include <device/device.h>
 #include <memrange.h>
 #include <soc/addressmap.h>
@@ -31,9 +33,6 @@
 #include <soc/spi.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/display.h>
-
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <delay.h>
 
 static const struct pad_config sdmmc3_pad[] = {
 	/* MMC3(SDCARD) */
@@ -184,7 +183,7 @@ static void mainboard_init(device_t dev)
 	i2c_init(I2C1_BUS);		/* for max98090 codec */
 
 	/* if panel needs to bringup */
-	if (!vboot_skip_display_init())
+	if (display_init_required())
 		configure_display_blocks();
 }
 

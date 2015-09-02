@@ -128,7 +128,7 @@ static struct mrc_data_container *find_current_mrc_cache_local
 /* SPI code needs malloc/free.
  * Also unknown if writing flash from XIP-flash code is a good idea
  */
-#if !defined(__PRE_RAM__)
+
 /* find the first empty block in the MRC cache area.
  * If there's none, return NULL.
  *
@@ -229,7 +229,6 @@ static void update_mrc_cache(void *unused)
 }
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, update_mrc_cache, NULL);
-#endif
 
 struct mrc_data_container *find_current_mrc_cache(void)
 {

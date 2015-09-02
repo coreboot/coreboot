@@ -18,11 +18,13 @@
  */
 
 #include <string.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <fmap.h>
 #include <ip_checksum.h>
 #include "mrc_cache.h"
+#include "nvm.h"
 
 #define MRC_DATA_ALIGN           0x1000
 #define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
@@ -154,12 +156,6 @@ int mrc_cache_get_current(const struct mrc_saved_data **cache)
 	return __mrc_cache_get_current(&region, cache);
 }
 
-#if ENV_ROMSTAGE
-
-/*
- * romstage code
- */
-
 /* Fill in mrc_saved_data structure with payload. */
 static void mrc_cache_fill(struct mrc_saved_data *cache, void *data,
                            size_t size)
@@ -196,15 +192,6 @@ int mrc_cache_stash_data(void *data, size_t size)
 
 	return 0;
 }
-
-#else
-
-/*
- * ramstage code
- */
-
-#include <bootstate.h>
-#include "nvm.h"
 
 static int mrc_slot_valid(const struct mrc_data_region *region,
                           const struct mrc_saved_data *slot,
@@ -330,5 +317,3 @@ static void update_mrc_cache(void *unused)
 }
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, update_mrc_cache, NULL);
-
-#endif /* ENV_ROMSTAGE */

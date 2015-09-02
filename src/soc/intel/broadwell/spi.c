@@ -312,14 +312,12 @@ void spi_init(void)
 	pci_write_config_byte(dev, 0xdc, bios_cntl | 0x1);
 }
 
-#if ENV_RAMSTAGE
 static void spi_init_cb(void *unused)
 {
 	spi_init();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, spi_init_cb, NULL);
-#endif
 
 int spi_claim_bus(struct spi_slave *slave)
 {

@@ -134,8 +134,6 @@ void print_fsp_info(FSP_INFO_HEADER *fsp_header)
 #endif
 }
 
-#if ENV_RAMSTAGE
-
 void fsp_notify(u32 phase)
 {
 	FSP_NOTIFY_PHASE notify_phase_proc;
@@ -188,8 +186,6 @@ BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT,
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,
 	fsp_notify_boot_state_callback,
 	(void *)EnumInitPhaseReadyToBoot);
-
-#endif	/* ENV_RAMSTAGE */
 
 struct fsp_runtime {
 	uint32_t fih;

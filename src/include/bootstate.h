@@ -19,8 +19,7 @@
 #ifndef BOOTSTATE_H
 #define BOOTSTATE_H
 
-#if !defined(__SMM__) && !defined(__PRE_RAM__)
-
+#include <rules.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -173,8 +172,10 @@ int boot_state_unblock(boot_state_t state, boot_state_sequence_t seq);
 void boot_state_current_block(void);
 void boot_state_current_unblock(void);
 
+#if ENV_RAMSTAGE
 /* Entry into the boot state machine. */
 void main(void);
+#endif
 
 /* In order to schedule boot state callbacks at compile-time specify the
  * entries in an array using the BOOT_STATE_INIT_ENTRIES and
@@ -185,7 +186,11 @@ struct boot_state_init_entry {
 	struct boot_state_callback bscb;
 };
 
+#if ENV_RAMSTAGE
 #define BOOT_STATE_INIT_ATTR  __attribute__ ((used,section (".bs_init")))
+#else
+#define BOOT_STATE_INIT_ATTR  __attribute__ ((unused))
+#endif
 
 #define BOOT_STATE_INIT_ENTRY(state_, when_, func_, arg_)		\
 	static struct boot_state_init_entry func_ ##_## state_ ##_## when_ = \
@@ -198,5 +203,4 @@ struct boot_state_init_entry {
 		bsie_ ## func_ ##_## state_ ##_## when_ BOOT_STATE_INIT_ATTR = \
 		& func_ ##_## state_ ##_## when_;
 
-#endif
 #endif /* BOOTSTATE_H */

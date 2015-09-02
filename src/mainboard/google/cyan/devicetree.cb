@@ -94,7 +94,7 @@ chip soc/intel/braswell
 					# EDS Table 24-4, Figure 24-5
 		device pci 00.0 on end	# 8086 2280 - SoC transaction router
 		device pci 02.0 on end	# 8086 22b0/22b1 - B1/C0 stepping Graphics and Display
-		device pci 03.0 on end	# 8086 22b8 - Camera and Image Processor
+		device pci 03.0 off end	# 8086 22b8 - Camera and Image Processor
 		device pci 0b.0 on end	# 8086 22dc - ?
 		device pci 10.0 on end	# 8086 2294 - MMC Port
 		device pci 11.0 off end	# 8086 0F15 - SDIO Port
@@ -111,20 +111,20 @@ chip soc/intel/braswell
 		device pci 18.5 off end	# 8086 22c5 -   I2C Port 5
 		device pci 18.6 on end	# 8086 22c6 -   I2C Port 6
 		device pci 18.7 off end	# 8086 22c7 -   I2C Port 7
-		device pci 1a.0 on end	# 8086 0F18 - Trusted Execution Engine
-		device pci 1b.0 on end	# 8086 0F04 - HD Audio
-		device pci 1c.0 on end	# 8086 0000 - PCIe Root Port 1
+		device pci 1a.0 off end	# 8086 0F18 - Trusted Execution Engine
+		device pci 1b.0 on end	# 8086 2284 - HD Audio
+		device pci 1c.0 on end	# 8086 22c8 - PCIe Root Port 1
 		device pci 1c.1 on end	# 8086 0000 - PCIe Root Port 2
-		device pci 1c.2 on end	# 8086 0000 - PCIe Root Port 3
-		device pci 1c.3 on end	# 8086 0000 - PCIe Root Port 4
+		device pci 1c.2 on end	# 8086 22cc - PCIe Root Port 3
+		device pci 1c.3 off end	# 8086 0000 - PCIe Root Port 4
 		device pci 1e.0 on end	# 8086 2286 - SIO - DMA
 		device pci 1e.1 off end	# 8086 0F08 -   PWM 1
 		device pci 1e.2 off end	# 8086 0F09 -   PWM 2
 		device pci 1e.3 on end	# 8086 228a -   HSUART 1
-		device pci 1e.4 on end	# 8086 228c -   HSUART 2
+		device pci 1e.4 off end	# 8086 228c -   HSUART 2
 		device pci 1e.5 on end	# 8086 228e -   SPI 1
-		device pci 1e.6 on end	# 8086 2290 -   SPI 2
-		device pci 1e.7 on end	# 8086 22ac -   SPI 3
+		device pci 1e.6 off end	# 8086 2290 -   SPI 2
+		device pci 1e.7 off end	# 8086 22ac -   SPI 3
 		device pci 1f.0 on	# 8086 229c - LPC bridge
 			chip drivers/pc80/tpm
 				# Rising edge interrupt

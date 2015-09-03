@@ -21,6 +21,6 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I5000),y)
 
 ramstage-y += northbridge.c
 romstage-y += raminit.c
-cpu_incs += src/northbridge/intel/i5000/halt_second_bsp.S
+cpu_incs-y += src/northbridge/intel/i5000/halt_second_bsp.S
 
 endif

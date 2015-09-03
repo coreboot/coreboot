@@ -147,7 +147,6 @@ ifeq ($(CONFIG_SSE),y)
 crt0s += $(src)/cpu/x86/sse_enable.inc
 endif
 
-crt0s += $(cpu_incs)
 crt0s += $(cpu_incs-y)
 
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc

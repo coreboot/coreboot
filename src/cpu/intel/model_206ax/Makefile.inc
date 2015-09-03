@@ -8,4 +8,4 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
 
-cpu_incs += $(src)/cpu/intel/model_206ax/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/intel/model_206ax/cache_as_ram.inc

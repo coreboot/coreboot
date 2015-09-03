@@ -9,4 +9,4 @@ subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 
-cpu_incs += $(src)/cpu/intel/car/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/intel/car/cache_as_ram.inc

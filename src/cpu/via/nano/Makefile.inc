@@ -30,4 +30,4 @@ ramstage-y += update_ucode.c
 # the rest of coreboot.
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += microcode_blob.c
 
-cpu_incs += $(src)/cpu/via/car/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/via/car/cache_as_ram.inc

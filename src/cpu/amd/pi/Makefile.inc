@@ -25,7 +25,7 @@ romstage-y += s3_resume.c
 ramstage-y += s3_resume.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 
-cpu_incs += $(src)/cpu/amd/pi/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/amd/pi/cache_as_ram.inc
 
 romstage-y += heapmanager.c
 ramstage-y += heapmanager.c

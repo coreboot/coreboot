@@ -7,4 +7,4 @@ subdirs-y += ../../intel/microcode
 
 ramstage-y += c7_init.c
 
-cpu_incs += $(src)/cpu/via/car/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/via/car/cache_as_ram.inc

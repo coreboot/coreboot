@@ -27,7 +27,7 @@ subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY16_KB) += family16kb
 romstage-y += s3_resume.c
 ramstage-y += s3_mtrr.c
 
-cpu_incs += $(src)/cpu/amd/agesa/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/amd/agesa/cache_as_ram.inc
 
 romstage-y += heapmanager.c
 ramstage-y += heapmanager.c

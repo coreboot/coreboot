@@ -1,4 +1,4 @@
-cpu_incs += $(src)/soc/intel/broadwell/romstage/cache_as_ram.inc
+cpu_incs-y += $(src)/soc/intel/broadwell/romstage/cache_as_ram.inc
 
 romstage-y += cpu.c
 romstage-y += pch.c

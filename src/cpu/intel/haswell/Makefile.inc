@@ -16,7 +16,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
 smm-y += monotonic_timer.c
 
-cpu_incs += $(src)/cpu/intel/haswell/cache_as_ram.inc
+cpu_incs-y += $(src)/cpu/intel/haswell/cache_as_ram.inc
 
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr

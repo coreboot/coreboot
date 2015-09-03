@@ -4,10 +4,18 @@ config SOUTHBRIDGE_SIS_SIS966
 	select HAVE_USBDEBUG
 	select HAVE_HARD_RESET
 
+if SOUTHBRIDGE_SIS_SIS966
+
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
-	default "southbridge/sis/sis966/bootblock.c" if SOUTHBRIDGE_SIS_SIS966
+	default "southbridge/sis/sis966/bootblock.c"
 
 config EHCI_BAR
 	hex
-	default 0xfef00000 if SOUTHBRIDGE_SIS_SIS966
+	default 0xfef00000
+
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "southbridge/sis/sis966/romstrap.inc"
+
+endif

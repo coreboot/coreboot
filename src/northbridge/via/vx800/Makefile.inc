@@ -25,7 +25,6 @@ ramstage-y += vga.c
 ramstage-y += lpc.c
 ramstage-y += ide.c
 
-chipset_bootblock_inc += $(src)/northbridge/via/vx800/romstrap.inc
 bootblock-y += romstrap.ld
 
 endif

@@ -198,4 +198,8 @@ config ME_BIN_PATH
 	depends on HAVE_ME_BIN
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
 
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "soc/intel/braswell/bootblock/timestamp.inc"
+
 endif

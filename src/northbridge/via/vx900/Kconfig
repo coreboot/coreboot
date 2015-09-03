@@ -42,4 +42,8 @@ config VGA_BIOS_ID
 	string
 	default "1106,7122"
 
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "northbridge/via/vx900/romstrap.inc"
+
 endif

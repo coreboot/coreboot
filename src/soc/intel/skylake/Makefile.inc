@@ -1,6 +1,5 @@
 ifeq ($(CONFIG_SOC_INTEL_SKYLAKE),y)
 
-subdirs-y += bootblock
 subdirs-y += microcode
 subdirs-y += romstage
 subdirs-y += ../../../cpu/intel/microcode

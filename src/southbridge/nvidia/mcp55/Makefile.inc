@@ -24,7 +24,6 @@ ifeq ($(CONFIG_MCP55_USE_AZA),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 endif
 
-chipset_bootblock_inc += $(src)/southbridge/nvidia/mcp55/romstrap.inc
 bootblock-y += romstrap.ld
 
 endif

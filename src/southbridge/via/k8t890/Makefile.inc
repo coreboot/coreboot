@@ -10,7 +10,6 @@ ramstage-y += traf_ctrl.c
 ramstage-y += error.c
 ramstage-y += chrome.c
 
-chipset_bootblock_inc += $(src)/southbridge/via/k8t890/romstrap.inc
 bootblock-y += romstrap.ld
 
 endif

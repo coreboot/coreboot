@@ -272,4 +272,8 @@ config LOCK_MANAGEMENT_ENGINE
 
 	  If unsure, say N.
 
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "soc/intel/broadwell/bootblock/timestamp.inc"
+
 endif

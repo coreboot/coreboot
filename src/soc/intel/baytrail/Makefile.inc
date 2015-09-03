@@ -1,6 +1,5 @@
 ifeq ($(CONFIG_SOC_INTEL_BAYTRAIL),y)
 
-subdirs-y += bootblock
 subdirs-y += microcode
 subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/lapic

@@ -41,4 +41,9 @@ config CK804_NUM
 config HPET_MIN_TICKS
 	hex
 	default 0xfa
+
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "southbridge/nvidia/ck804/romstrap.inc"
+
 endif

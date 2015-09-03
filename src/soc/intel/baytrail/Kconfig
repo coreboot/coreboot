@@ -171,4 +171,8 @@ config REFCODE_BLOB_FILE
 
 endif # HAVE_REFCODE_BLOB
 
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "soc/intel/baytrail/bootblock/timestamp.inc"
+
 endif

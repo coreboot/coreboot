@@ -42,4 +42,8 @@ config MCP55_PCI_E_X_3
 	int
 	default 4
 
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "southbridge/nvidia/mcp55/romstrap.inc"
+
 endif

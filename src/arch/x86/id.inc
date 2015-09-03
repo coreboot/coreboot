@@ -1,3 +1,5 @@
+#include <build.h>
+
 	.section ".id", "a", @progbits
 
 	.globl __id_start

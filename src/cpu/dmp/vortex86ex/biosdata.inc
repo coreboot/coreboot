@@ -37,7 +37,7 @@
 
 	.section ".dmp_kbd_fw_part1", "a", @progbits
 
-	#include "src/cpu/dmp/vortex86ex/dmp_kbd_fw_part1.inc"
+	#include "dmp_kbd_fw_part1.inc"
 
 .previous
 

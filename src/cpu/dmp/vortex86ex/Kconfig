@@ -77,4 +77,8 @@ config PLL_500_375_33
 
 endchoice
 
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "cpu/dmp/vortex86ex/chipset_bootblock.inc"
+
 endif

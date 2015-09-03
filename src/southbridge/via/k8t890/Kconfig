@@ -51,4 +51,8 @@ config VIDEO_MB
 	default -1  if K8M890_VIDEO_MB_CMOS
 	depends on SOUTHBRIDGE_VIA_K8M890_VGA_EN
 
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "southbridge/via/k8t890/romstrap.inc"
+
 endif # SOUTHBRIDGE_K8T890

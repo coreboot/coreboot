@@ -200,4 +200,8 @@ config UART_DEBUG
 	select DRIVERS_UART_8250MEM
 	select DRIVERS_UART_8250MEM_32
 
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "soc/intel/skylake/bootblock/timestamp.inc"
+
 endif

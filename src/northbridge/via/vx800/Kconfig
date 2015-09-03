@@ -3,3 +3,11 @@ config NORTHBRIDGE_VIA_VX800
 	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_DEBUG_SMBUS
 	select LATE_CBMEM_INIT
+
+if NORTHBRIDGE_VIA_VX800
+
+config CHIPSET_BOOTBLOCK_INCLUDE
+	string
+	default "northbridge/via/vx800/romstrap.inc"
+
+endif

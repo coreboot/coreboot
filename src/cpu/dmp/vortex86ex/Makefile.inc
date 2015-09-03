@@ -23,8 +23,6 @@ subdirs-y += ../../x86/lapic
 subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 
-chipset_bootblock_inc += $(src)/cpu/dmp/vortex86ex/biosdata.inc
-chipset_bootblock_inc += $(src)/cpu/dmp/vortex86ex/biosdata_ex.inc
 bootblock-y += biosdata.ld
 bootblock-y += biosdata_ex.ld
 

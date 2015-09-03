@@ -46,7 +46,6 @@ ramstage-y += lpc.c
 ramstage-y += ./../../../drivers/pc80/vga/vga_io.c
 
 
-chipset_bootblock_inc += $(src)/northbridge/via/vx900/romstrap.inc
 bootblock-y += romstrap.ld
 
 endif

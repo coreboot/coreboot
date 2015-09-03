@@ -67,52 +67,28 @@ CBFS_BASE_ADDRESS=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_CBFS_
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 
-bootblock-srcs += $(src)/arch/x86/failover.ld
-bootblock-srcs += $(src)/cpu/x86/16bit/entry16.ld
-bootblock-srcs += $(src)/cpu/x86/16bit/reset16.ld
-bootblock-srcs += $(src)/arch/x86/id.ld
-ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
-bootblock-srcs += $(src)/cpu/intel/fit/fit.ld
-endif
+# Add the assembly file that pulls in the rest of the dependencies in
+# the right order. Make sure the auto generated bootblock.inc is a proper
+# dependency. Make the same true for the linker sript.
+bootblock-y += bootblock.S
+$(obj)/arch/x86/bootblock.bootblock.o: $(objgenerated)/bootblock.inc
 
-# TODO: Why can't this use the real bootblock-y += xxx.S mechanism instead?
-bootblock_inc = $(src)/arch/x86/prologue.inc
-bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
-bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
-bootblock_inc += $(src)/cpu/x86/32bit/entry32.inc
-bootblock_inc += $(src)/arch/x86/id.inc
-ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
-bootblock_inc += $(src)/cpu/intel/fit/fit.inc
-endif
-bootblock_inc += $(chipset_bootblock_inc)
-
-ifeq ($(CONFIG_SSE),y)
-bootblock_inc += $(src)/cpu/x86/sse_enable.inc
-endif
-bootblock_inc += $(objgenerated)/bootblock.inc
-bootblock_inc += $(src)/arch/x86/walkcbfs.S
+bootblock-y += bootblock.ld
+$(obj)/arch/x86/bootblock.bootblock.ld: $(objgenerated)/bootblock.ld
 
 bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 ifeq ($(CONFIG_SSE),y)
 bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 endif
 
-$(objgenerated)/bootblock.ld: $$(filter %.ld,$$(bootblock-objs))
+# This is a hack in case there are no per chipset linker files.
+$(objgenerated)/empty:
+	touch $@
+
+$(objgenerated)/bootblock.ld: $$(filter-out $(obj)/arch/x86/bootblock.bootblock.ld, $$(filter %.ld,$$(bootblock-objs))) $(objgenerated)/empty
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	cat $^ >> $@.tmp
 	mv $@.tmp $@
-
-$(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	printf '$(foreach crt0,$(bootblock_inc),#include "$(crt0)"\n)' > $@
-
-$(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(CFLAGS_bootblock) -c -o $@ $<  > $(basename $@).disasm
-
-$(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(KCONFIG_AUTOHEADER)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
@@ -120,12 +96,12 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOU
 		$< > $(objgenerated)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS_bootblock) $< -o $@
 
-$(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
+$(objcbfs)/bootblock.debug: $(obj)/arch/x86/bootblock.bootblock.o $(obj)/arch/x86/bootblock.bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
-	$(LD_bootblock) -m elf_i386 --oformat elf32-i386 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
+	$(LD_bootblock) -m elf_i386 --oformat elf32-i386 -static -o $@ -L$(obj) $< -T $(obj)/arch/x86/bootblock.bootblock.ld
 else
-	$(LD_bootblock) -m elf_x86_64 --oformat elf64-x86-64 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
+	$(LD_bootblock) -m elf_x86_64 --oformat elf64-x86-64 -static -o $@ -L$(obj) $< -T $(obj)/arch/x86/bootblock.bootblock.ld
 endif
 
 

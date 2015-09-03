@@ -39,5 +39,13 @@ struct vboot_components {
 /* The following functions return 0 on success, < 0 on error. */
 int vboot_named_region_device(const char *name, struct region_device *rdev);
 int vboot_region_device(const struct region *reg, struct region_device *rdev);
+int vboot_get_handoff_info(void **addr, uint32_t *size);
+
+/* The following functions return 1 for true and 0 for false. */
+int vboot_skip_display_init(void);
+int vboot_enable_recovery(void);
+int vboot_enable_developer(void);
+
+void vboot_reboot(void);
 
 #endif /* VBOOT_COMMON_H */

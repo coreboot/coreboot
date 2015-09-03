@@ -55,6 +55,33 @@ int vboot_get_handoff_info(void **addr, uint32_t *size)
 	return 0;
 }
 
+static int vboot_handoff_flag(uint32_t flag)
+{
+	struct vboot_handoff *vbho;
+
+	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+
+	if (vbho == NULL)
+		return 0;
+
+	return !!(vbho->init_params.out_flags & flag);
+}
+
+int vboot_skip_display_init(void)
+{
+	return !vboot_handoff_flag(VB_INIT_OUT_ENABLE_DISPLAY);
+}
+
+int vboot_enable_developer(void)
+{
+	return vboot_handoff_flag(VB_INIT_OUT_ENABLE_DEVELOPER);
+}
+
+int vboot_enable_recovery(void)
+{
+	return vboot_handoff_flag(VB_INIT_OUT_ENABLE_RECOVERY);
+}
+
 void vboot_reboot(void)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))

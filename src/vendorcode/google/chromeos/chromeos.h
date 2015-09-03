@@ -45,28 +45,13 @@ void elog_add_boot_reason(void);
 /* functions implemented in watchdog.c */
 void elog_add_watchdog_reset(void);
 void reboot_from_watchdog(void);
-
-int vboot_enable_developer(void);
-int vboot_enable_recovery(void);
-int vboot_skip_display_init(void);
 #else
 static inline void elog_add_boot_reason(void) { return; }
 static inline void elog_add_watchdog_reset(void) { return; }
 static inline void reboot_from_watchdog(void) { return; }
-static inline int vboot_skip_display_init(void) { return 0; }
 #endif /* CONFIG_CHROMEOS */
 
 struct romstage_handoff;
-
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
-/* Returns 0 on success < 0 on error. */
-int vboot_get_handoff_info(void **addr, uint32_t *size);
-#else /* CONFIG_VBOOT_VERIFY_FIRMWARE */
-static inline int vboot_get_handoff_info(void **addr, uint32_t *size)
-{
-	return -1;
-}
-#endif /* CONFIG_VBOOT_VERIFY_FIRMWARE */
 
 #include "gnvs.h"
 struct device;
@@ -84,6 +69,5 @@ static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
 
 void cbmem_add_vpd_calibration_data(void);
-void vboot_reboot(void);
 
 #endif /* __CHROMEOS_H__ */

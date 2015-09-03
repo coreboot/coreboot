@@ -58,10 +58,9 @@ int vboot_get_handoff_info(void **addr, uint32_t *size)
 static int vboot_handoff_flag(uint32_t flag)
 {
 	struct vboot_handoff *vbho;
+	uint32_t size;
 
-	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-
-	if (vbho == NULL)
+	if (vboot_get_handoff_info((void **)&vbho, &size))
 		return 0;
 
 	return !!(vbho->init_params.out_flags & flag);

@@ -125,13 +125,19 @@ endif
 
 crt0s += $(cpu_incs-y)
 
+ifneq ($(CONFIG_ROMCC),y)
+
+romstage-srcs += $(src)/mainboard/$(MAINBOARDDIR)/romstage.c
+
+else # CONFIG_ROMCC == y
+
+# This order matters. The mainboards requiring ROMCC need their mainboard
+# code to follow the prior crt0s files for program flow control. The
+# romstage.inc from the MAINBOARDDIR is implicitly main() for romstage
+# because of the instruction sequen fall-through.
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
-
-ifeq ($(CONFIG_ROMCC),y)
 crt0s += $(src)/arch/x86/crt0_romcc_epilogue.inc
-endif
 
-ifeq ($(CONFIG_ROMCC),y)
 ifeq ($(CONFIG_MMX),y)
 	ifeq ($(CONFIG_SSE),y)
 		ROMCCFLAGS := -mcpu=p4 -O2 # MMX, SSE
@@ -156,17 +162,7 @@ $(objcbfs)/romstage%.elf: $(objcbfs)/romstage%.debug
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	printf "    ROMCC      romstage.inc\n"
 	$(ROMCC) -c -S $(ROMCCFLAGS) -D__ROMSTAGE__ -D__PRE_RAM__ -I. $(CPPFLAGS_romstage) $< -o $@
-else
 
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
-	@printf "    CC         romstage.inc\n"
-	$(CC_romstage) $(CPPFLAGS_romstage) $(CFLAGS_romstage) -MMD -D__ROMSTAGE__ -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
-
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
-	@printf "    POST       romstage.inc\n"
-	sed -e 's/\.rodata/.rom.data/g' -e 's/\^\.text/.section .rom.text/g' \
-		-e 's/\^\.section \.text/.section .rom.text/g' $^ > $@.tmp
-	mv $@.tmp $@
 endif
 
 romstage-srcs += $(objgenerated)/crt0.S

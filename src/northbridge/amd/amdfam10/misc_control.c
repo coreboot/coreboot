@@ -75,6 +75,7 @@ static void mcf3_read_resources(device_t dev)
 
 static void set_agp_aperture(device_t dev, uint32_t pci_id)
 {
+	uint32_t dword;
 	struct resource *resource;
 
 	resource = probe_resource(dev, 0x94);
@@ -105,6 +106,11 @@ static void set_agp_aperture(device_t dev, uint32_t pci_id)
 
 			/* Report the resource has been stored... */
 			report_resource_stored(pdev, resource, " <gart>");
+
+			/* Errata 540 workaround */
+			dword = pci_read_config32(pdev, 0x90);
+			dword |= 0x1 << 6;			/* DisGartTblWlkPrb = 0x1 */
+			pci_write_config32(pdev, 0x90, dword);
 		}
 	}
 }

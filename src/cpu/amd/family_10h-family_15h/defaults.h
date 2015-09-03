@@ -162,6 +162,14 @@ static const struct {
 	  0x0000000C, 0x00000000,
 	  0x0000000C, 0x00000000},	/* Cx and Dx multiple-link processor */
 
+	{ OSVW_ID_Length, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00000005, 0x00000000,
+	  0x0000ffff, 0x00000000},	/* OSVW_ID_Length = 0x5 */
+
+	{ OSVW_Status, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00000010, 0x00000000,
+	  0xffffffff, 0x00000000},	/* OsvwId4 = 0x1 */
+
 	{ BU_CFG2, AMD_DR_Dx, AMD_PTYPE_ALL,
 	  0x00000000, 1 << (50-32),
 	  0x00000000, 1 << (50-32)},	/* D0 or Above, RdMmExtCfgQwEn*/
@@ -620,6 +628,10 @@ static const struct {
 	/* L3 Control Register */
 	{ 3, 0x1b8, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
 	  0x00001000, 0x00001000 },	/* [12] = L3PrivReplEn */
+
+	/* Errata 504 workaround */
+	{ 3, 0x1b8, AMD_FAM15_ALL, AMD_PTYPE_ALL,
+	  0x00040000, 0x00040000 },	/* [18] = 1b */
 
 	/* IBS Control Register */
 	{ 3, 0x1cc, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,

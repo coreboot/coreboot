@@ -42,13 +42,13 @@ SECTIONS
 		 * ramstage with the rmodule linker. Any changes made in
 		 * ramstage.ld should be made here as well. */
 		. = ALIGN(8);
-		pci_drivers = . ;
+		_pci_drivers = . ;
 		KEEP(*(.rodata.pci_driver));
-		epci_drivers = . ;
+		_epci_drivers = . ;
 		. = ALIGN(8);
-		cpu_drivers = . ;
+		_cpu_drivers = . ;
 		KEEP(*(.rodata.cpu_driver));
-		ecpu_drivers = . ;
+		_ecpu_drivers = . ;
 		. = ALIGN(8);
 		_bs_init_begin = .;
 		KEEP(*(.bs_init));

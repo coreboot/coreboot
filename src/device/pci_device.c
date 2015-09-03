@@ -850,7 +850,7 @@ static void set_pci_ops(struct device *dev)
 	 * Look through the list of setup drivers and find one for
 	 * this PCI device.
 	 */
-	for (driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
+	for (driver = &_pci_drivers[0]; driver != &_epci_drivers[0]; driver++) {
 		if ((driver->vendor == dev->vendor) &&
 		    device_id_match(driver, dev->device)) {
 			dev->ops = (struct device_operations *)driver->ops;

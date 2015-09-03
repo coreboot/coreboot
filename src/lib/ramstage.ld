@@ -53,12 +53,12 @@
 	/* If any changes are made to the driver start/symbols or the
 	 * section names the equivalent changes need to made to
 	 * rmodule.ld. */
-	pci_drivers = . ;
+	_pci_drivers = . ;
 	KEEP(*(.rodata.pci_driver));
-	epci_drivers = . ;
-	cpu_drivers = . ;
+	_epci_drivers = . ;
+	_cpu_drivers = . ;
 	KEEP(*(.rodata.cpu_driver));
-	ecpu_drivers = . ;
+	_ecpu_drivers = . ;
 	_bs_init_begin = .;
 	KEEP(*(.bs_init));
 	LONG(0);

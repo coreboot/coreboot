@@ -192,7 +192,7 @@ static void identify_cpu(struct device *cpu)
 struct cpu_driver *find_cpu_driver(struct device *cpu)
 {
 	struct cpu_driver *driver;
-	for (driver = cpu_drivers; driver < ecpu_drivers; driver++) {
+	for (driver = _cpu_drivers; driver < _ecpu_drivers; driver++) {
 		struct cpu_device_id *id;
 		for (id = driver->id_table;
 		     id->vendor != X86_VENDOR_INVALID; id++) {

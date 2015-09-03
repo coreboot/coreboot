@@ -42,7 +42,7 @@ static struct cpu_driver *locate_cpu_driver(uint32_t midr)
 {
 	struct cpu_driver *cur;
 
-	for (cur = cpu_drivers; cur != ecpu_drivers; cur++) {
+	for (cur = _cpu_drivers; cur != _ecpu_drivers; cur++) {
 		const struct cpu_device_id *id_table = cur->id_table;
 
 		for (; id_table->midr != CPU_ID_END; id_table++) {

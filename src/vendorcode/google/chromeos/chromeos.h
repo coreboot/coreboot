@@ -68,8 +68,6 @@ static inline int vboot_get_handoff_info(void **addr, uint32_t *size)
 }
 #endif /* CONFIG_VBOOT_VERIFY_FIRMWARE */
 
-int vboot_get_sw_write_protect(void);
-
 #include "gnvs.h"
 struct device;
 

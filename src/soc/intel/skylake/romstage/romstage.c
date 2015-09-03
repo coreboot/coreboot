@@ -68,15 +68,13 @@ void soc_romstage_init(struct romstage_params *params)
 	pch_early_init();
 }
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
-int vboot_get_sw_write_protect(void)
+int get_sw_write_protect_state(void)
 {
 	u8 status;
 
 	/* Return unprotected status if status read fails. */
 	return early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80);
 }
-#endif
 
 /* UPD parameters to be initialized before MemoryInit */
 void soc_memory_init_params(struct romstage_params *params,

@@ -65,7 +65,7 @@ void __attribute__((weak)) save_chromeos_gpios(void)
 	// Can be implemented by a mainboard
 }
 
-int __attribute__((weak)) vboot_get_sw_write_protect(void)
+int __attribute__((weak)) get_sw_write_protect_state(void)
 {
 	// Can be implemented by a platform / mainboard
 	return 0;

@@ -757,6 +757,63 @@ static void dump_cbmem_hex(void)
 	hexdump(unpack_lb64(cbmem.start), unpack_lb64(cbmem.size));
 }
 
+void rawdump(uint64_t base, uint64_t size)
+{
+	int i;
+	uint8_t *m;
+
+	m = map_memory_size((intptr_t)base, size, 1);
+	if (!m) {
+		fprintf(stderr, "Failed to map memory");
+		return;
+	}
+
+	for (i = 0 ; i < size; i++)
+		printf("%c", m[i]);
+	unmap_memory();
+}
+
+static void dump_cbmem_raw(unsigned int id)
+{
+	uint8_t *table;
+	size_t offset;
+	uint64_t base = 0;
+	uint64_t size = 0;
+
+	table = map_lbtable();
+
+	if (table == NULL)
+		return;
+
+	offset = 0;
+
+	while (offset < lbtable_size) {
+		struct lb_record *lbr;
+		struct lb_cbmem_entry *lbe;
+
+		lbr = (void *)(table + offset);
+		offset += lbr->size;
+
+		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
+			continue;
+
+		lbe = (void *)lbr;
+		if (lbe->id == id) {
+			debug("found id for raw dump %0x", lbe->id);
+			base = lbe->address;
+			size = lbe->entry_size;
+			break;
+		}
+	}
+
+	unmap_lbtable();
+
+	if (!base)
+		fprintf(stderr, "id %0x not found in cbtable\n", id);
+	else
+		rawdump(base, size);
+}
+
 struct cbmem_id_to_name {
 	uint32_t id;
 	const char *name;
@@ -780,7 +837,7 @@ void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
 	if (name == NULL)
 		printf("%08x ", id);
 	else
-		printf("%s", name);
+		printf("%s\t%08x", name, id);
 	printf("  %08" PRIx64 " ", base);
 	printf("  %08" PRIx64 "\n", size);
 }
@@ -797,7 +854,7 @@ static void dump_cbmem_toc(void)
 		return;
 
 	printf("CBMEM table of contents:\n");
-	printf("    ID           START      LENGTH\n");
+	printf("    NAME          ID           START      LENGTH\n");
 
 	i = 0;
 	offset = 0;
@@ -925,6 +982,7 @@ static void print_usage(const char *name)
 	     "   -C | --coverage:                  dump coverage information\n"
 	     "   -l | --list:                      print cbmem table of contents\n"
 	     "   -x | --hexdump:                   print hexdump of cbmem area\n"
+	     "   -r | --rawdump ID:                print rawdump of specific ID (in hex) of cbtable\n"
 	     "   -t | --timestamps:                print timestamp information\n"
 	     "   -T | --parseable-timestamps:      print parseable timestamps\n"
 	     "   -V | --verbose:                   verbose (debugging) output\n"
@@ -1056,8 +1114,10 @@ int main(int argc, char** argv)
 	int print_coverage = 0;
 	int print_list = 0;
 	int print_hexdump = 0;
+	int print_rawdump = 0;
 	int print_timestamps = 0;
 	int machine_readable_timestamps = 0;
+	unsigned int rawdump_id = 0;
 
 	int opt, option_index = 0;
 	static struct option long_options[] = {
@@ -1067,12 +1127,13 @@ int main(int argc, char** argv)
 		{"timestamps", 0, 0, 't'},
 		{"parseable-timestamps", 0, 0, 'T'},
 		{"hexdump", 0, 0, 'x'},
+		{"rawdump", required_argument, 0, 'r'},
 		{"verbose", 0, 0, 'V'},
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "cCltTxVvh?",
+	while ((opt = getopt_long(argc, argv, "cCltTxVvh?r:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
@@ -1090,6 +1151,11 @@ int main(int argc, char** argv)
 		case 'x':
 			print_hexdump = 1;
 			print_defaults = 0;
+			break;
+		case 'r':
+			print_rawdump = 1;
+			print_defaults = 0;
+			rawdump_id = strtoul(optarg, NULL, 16);
 			break;
 		case 't':
 			print_timestamps = 1;
@@ -1197,6 +1263,9 @@ int main(int argc, char** argv)
 
 	if (print_hexdump)
 		dump_cbmem_hex();
+
+	if (print_rawdump)
+		dump_cbmem_raw(rawdump_id);
 
 	if (print_defaults || print_timestamps)
 		dump_timestamps(machine_readable_timestamps);

@@ -38,6 +38,11 @@ Method (TEVT, 1, NotSerialized)
 		Notify (^TSR2, 0x90)
 	}
 #endif
+#ifdef DPTF_TSR3_SENSOR_ID
+	If (LEqual (Local0, DPTF_TSR3_SENSOR_ID)) {
+		Notify (^TSR3, 0x90)
+	}
+#endif
 }
 
 /* Thermal device initialization - Disable Aux Trip Points */
@@ -51,6 +56,9 @@ Method (TINI)
 #endif
 #ifdef DPTF_TSR2_SENSOR_ID
 	^TSR2.PATD ()
+#endif
+#ifdef DPTF_TSR3_SENSOR_ID
+	^TSR3.PATD ()
 #endif
 }
 
@@ -198,6 +206,62 @@ Device (TSR2)
 	Method (_CRT)
 	{
 		Return (CTOK (DPTF_TSR2_CRITICAL))
+	}
+
+	Name (PATC, 2)
+
+	/* Set Aux Trip Point */
+	Method (PAT0, 1, Serialized)
+	{
+		\_SB.PCI0.LPCB.EC0.PAT0 (TMPI, Arg0)
+	}
+
+	/* Set Aux Trip Point */
+	Method (PAT1, 1, Serialized)
+	{
+		\_SB.PCI0.LPCB.EC0.PAT1 (TMPI, Arg0)
+	}
+
+	/* Disable Aux Trip Point */
+	Method (PATD, 0, Serialized)
+	{
+		\_SB.PCI0.LPCB.EC0.PATD (TMPI)
+	}
+}
+#endif
+
+#ifdef DPTF_TSR3_SENSOR_ID
+Device (TSR3)
+{
+	Name (_HID, EISAID ("INT3403"))
+	Name (_UID, 4)
+	Name (PTYP, 0x03)
+	Name (TMPI, DPTF_TSR3_SENSOR_ID)
+	Name (_STR, Unicode (DPTF_TSR3_SENSOR_NAME))
+	Name (GTSH, 20) /* 2 degree hysteresis */
+
+	Method (_STA)
+	{
+		If (LEqual (\DPTE, One)) {
+			Return (0xF)
+		} Else {
+			Return (0x0)
+		}
+	}
+
+	Method (_TMP, 0, Serialized)
+	{
+		Return (\_SB.PCI0.LPCB.EC0.TSRD (TMPI))
+	}
+
+	Method (_PSV)
+	{
+		Return (CTOK (DPTF_TSR3_PASSIVE))
+	}
+
+	Method (_CRT)
+	{
+		Return (CTOK (DPTF_TSR3_CRITICAL))
 	}
 
 	Name (PATC, 2)

@@ -50,6 +50,7 @@ External (\_PR.CPU0._TSS, MethodObj)
 External (\_PR.CPU0._TPC, MethodObj)
 External (\_PR.CPU0._PTC, PkgObj)
 External (\_PR.CPU0._TSD, PkgObj)
+External (\_SB.MPDL, IntObj)
 
 Device (B0D4)
 {
@@ -146,12 +147,12 @@ Device (B0D4)
 	{
 		If (CondRefOf (\_PR.CP00._PSS)) {
 			Return (\_PR.CP00._PSS)
-			} Else {
-				Return (Package ()
-				{
-					Package () { 0, 0, 0, 0, 0, 0 }
-				})
-			}
+		} Else {
+			Return (Package ()
+			{
+				Package () { 0, 0, 0, 0, 0, 0 }
+			})
+		}
 	}
 
 

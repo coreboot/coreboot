@@ -25,7 +25,7 @@
 #include <string.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
-#include <mainboard/google/glados/gpio.h>
+#include "../gpio.h"
 #include "spd.h"
 
 static void mainboard_print_spd_info(uint8_t spd[])

@@ -17,7 +17,7 @@
  * Foundation, Inc.
  */
 
-#include <mainboard/google/glados/gpio.h>
+#include "../gpio.h"
 
 #define BOARD_TOUCHPAD_I2C_ADDR			0x15
 #define BOARD_TOUCHPAD_IRQ			TOUCHPAD_INT_L
@@ -67,7 +67,7 @@ Scope (\_SB.PCI0.I2C0)
 		Name (_UID, 1)
 		Name (_S0W, 4)
 
-		Name (_CRS, ResourceTemplate()
+		Name (_CRS, ResourceTemplate ()
 		{
 			I2cSerialBus (
 				BOARD_TOUCHSCREEN_I2C_ADDR,
@@ -99,7 +99,7 @@ Scope (\_SB.PCI0.I2C1)
 		Name (_UID, 1)
 		Name (_S0W, 4)
 
-		Name (_CRS, ResourceTemplate()
+		Name (_CRS, ResourceTemplate ()
 		{
 			I2cSerialBus (
 				BOARD_TOUCHPAD_I2C_ADDR,

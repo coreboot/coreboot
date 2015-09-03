@@ -17,7 +17,7 @@
  * Foundation, Inc.
  */
 
-#include <mainboard/google/glados/gpio.h>
+#include "../gpio.h"
 
 Name (OIPG, Package () {
 	/* No physical recovery GPIO. */

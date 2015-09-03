@@ -28,8 +28,8 @@
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <mainboard/google/glados/gpio.h>
 
+#include "gpio.h"
 #include "ec.h"
 
 #if ENV_RAMSTAGE

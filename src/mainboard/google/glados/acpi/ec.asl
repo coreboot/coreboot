@@ -18,8 +18,8 @@
  */
 
 /* mainboard configuration */
-#include <mainboard/google/glados/ec.h>
-#include <mainboard/google/glados/gpio.h>
+#include "../ec.h"
+#include "../gpio.h"
 
 /* Enable EC backed Keyboard Backlight in ACPI */
 #define EC_ENABLE_KEYBOARD_BACKLIGHT

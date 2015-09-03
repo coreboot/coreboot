@@ -43,6 +43,9 @@ DefinitionBlock(
 			#include <soc/intel/skylake/acpi/systemagent.asl>
 			#include <soc/intel/skylake/acpi/pch.asl>
 		}
+
+		// Dynamic Platform Thermal Framework
+		#include "acpi/dptf.asl"
 	}
 
 	// Chrome OS specific

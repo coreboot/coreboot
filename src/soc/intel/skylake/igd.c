@@ -26,21 +26,15 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <stdlib.h>
-#include <string.h>
-#include <reg_script.h>
 #include <drivers/intel/gma/i915_reg.h>
 #include <soc/cpu.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
+#include <stdlib.h>
+#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#define GT_RETRY		1000
-#define GT_CDCLK_337		0
-#define GT_CDCLK_450		1
-#define GT_CDCLK_540		2
-#define GT_CDCLK_675		3
 u32 map_oprom_vendev(u32 vendev)
 {
 	return SA_IGD_OPROM_VENDEV;
@@ -80,16 +74,16 @@ static void igd_init(struct device *dev)
 		return;
 
 	/* Wait for any configured pre-graphics delay */
-	if (acpi_slp_type != SLEEP_STATE_S3) {
+	if (!acpi_is_wakeup_s3()) {
 #if IS_ENABLED(CONFIG_CHROMEOS)
-	if (developer_mode_enabled() || recovery_mode_enabled() ||
-	    vboot_wants_oprom())
-		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
+		if (developer_mode_enabled() || recovery_mode_enabled() ||
+		    vboot_wants_oprom())
+			mdelay(CONFIG_PRE_GRAPHICS_DELAY);
 #else
-	mdelay(CONFIG_PRE_GRAPHICS_DELAY);
+		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
 #endif
-
 	}
+
 	/* Initialize PCI device, load/execute BIOS Option ROM */
 	pci_dev_init(dev);
 
@@ -105,7 +99,7 @@ static void igd_init(struct device *dev)
 		gtt_write(DDI_BUF_CTL_A, DDI_BUF_IS_IDLE | DDI_A_4_LANES |
 			  DDI_INIT_DISPLAY_DETECTED);
 	}
-#endif /* CONFIG_CHROMEOS */
+#endif
 }
 
 static struct device_operations igd_ops = {

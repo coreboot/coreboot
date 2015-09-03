@@ -1610,14 +1610,14 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 		/* 2.10.5.8.5.1.[2,3]
 		 * Write the DRAM training pattern to the test address
 		 */
-		write_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, Channel, current_worst_case_total_delay_dimm << 1, 0xff);
+		write_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, Channel, current_worst_case_total_delay_dimm << 1, 0xff, 0);
 
 		/* 2.10.5.8.5.1.4
 		 * Incrementally test each MaxRdLatency candidate
 		 */
 		for (; pDCTstat->CH_MaxRdLat[Channel] < 0x3ff; pDCTstat->CH_MaxRdLat[Channel]++) {
 			write_max_read_latency_to_registers(pMCTstat, pDCTstat, Channel, pDCTstat->CH_MaxRdLat[Channel]);
-			read_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, Channel, current_worst_case_total_delay_dimm << 1, 0xff);
+			read_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, Channel, current_worst_case_total_delay_dimm << 1, 0xff, 0);
 			dword = Get_NB32_DCT(dev, Channel, 0x268) & 0x3ffff;
 			if (!dword)
 				break;

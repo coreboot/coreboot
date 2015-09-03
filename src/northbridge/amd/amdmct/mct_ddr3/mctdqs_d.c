@@ -1117,7 +1117,7 @@ static void stop_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 }
 
 static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t Receiver, uint8_t lane)
+				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t Receiver, uint8_t lane, uint8_t stop_on_error)
 {
 	uint32_t dword;
 	uint32_t dev = pDCTstat->dev_dct;
@@ -1129,23 +1129,34 @@ static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 	if (lane < 4) {
 		Set_NB32_DCT(dev, dct, 0x274, ~(0xff << (lane * 8)));
 		Set_NB32_DCT(dev, dct, 0x278, ~0x0);
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword |= 0xff;				/* EccMask = 0xff */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else if (lane < 8) {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
 		Set_NB32_DCT(dev, dct, 0x278, ~(0xff << (lane * 8)));
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword |= 0xff;				/* EccMask = 0xff */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
+	} else if (lane == 8) {
+		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
+		Set_NB32_DCT(dev, dct, 0x278, ~0x0);
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword &= ~(0xff);			/* EccMask = 0x0 */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else if (lane == 0xff) {
 		Set_NB32_DCT(dev, dct, 0x274, ~0xffffffff);
 		Set_NB32_DCT(dev, dct, 0x278, ~0xffffffff);
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword &= ~(0xff);			/* EccMask = 0x0 */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
 		Set_NB32_DCT(dev, dct, 0x278, ~0x0);
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword |= 0xff;				/* EccMask = 0xff */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	}
-
-	dword = Get_NB32_DCT(dev, dct, 0x27c);
-	dword &= ~(0xff);				/* EccMask = 0 */
-	if (lane != 0xff)
-		if ((lane != 8) || (pDCTstat->DimmECCPresent == 0))
-			dword |= 0xff;			/* EccMask = 0xff */
-	Set_NB32_DCT(dev, dct, 0x27c, dword);
 
 	dword = Get_NB32_DCT(dev, dct, 0x270);
 	dword &= ~(0x7ffff);				/* DataPrbsSeed = 55555 */
@@ -1178,7 +1189,8 @@ static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 
 	dword = Get_NB32_DCT(dev, dct, 0x250);
 	dword |= (0x1 << 3);				/* ResetAllErr = 1 */
-	dword &= ~(0x1 << 4);				/* StopOnErr = 0 */
+	dword &= ~(0x1 << 4);				/* StopOnErr = stop_on_error */
+	dword |= (stop_on_error & 0x1) << 4;
 	dword &= ~(0x3 << 8);				/* CmdTgt = 1 (Alternate between Target A and Target B) */
 	dword |= (0x1 << 8);
 	dword &= ~(0x7 << 5);				/* CmdType = 0 (Read) */
@@ -1198,7 +1210,7 @@ static void read_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 }
 
 static void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t Receiver, uint8_t lane)
+				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t Receiver, uint8_t lane, uint8_t stop_on_error)
 {
 	uint32_t dword;
 	uint32_t dev = pDCTstat->dev_dct;
@@ -1210,23 +1222,34 @@ static void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 	if (lane < 4) {
 		Set_NB32_DCT(dev, dct, 0x274, ~(0xff << (lane * 8)));
 		Set_NB32_DCT(dev, dct, 0x278, ~0x0);
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword |= 0xff;				/* EccMask = 0xff */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else if (lane < 8) {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
 		Set_NB32_DCT(dev, dct, 0x278, ~(0xff << (lane * 8)));
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword |= 0xff;				/* EccMask = 0xff */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
+	} else if (lane == 8) {
+		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
+		Set_NB32_DCT(dev, dct, 0x278, ~0x0);
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword &= ~(0xff);			/* EccMask = 0x0 */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else if (lane == 0xff) {
 		Set_NB32_DCT(dev, dct, 0x274, ~0xffffffff);
 		Set_NB32_DCT(dev, dct, 0x278, ~0xffffffff);
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword &= ~(0xff);			/* EccMask = 0x0 */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	} else {
 		Set_NB32_DCT(dev, dct, 0x274, ~0x0);
 		Set_NB32_DCT(dev, dct, 0x278, ~0x0);
+		dword = Get_NB32_DCT(dev, dct, 0x27c);
+		dword |= 0xff;				/* EccMask = 0xff */
+		Set_NB32_DCT(dev, dct, 0x27c, dword);
 	}
-
-	dword = Get_NB32_DCT(dev, dct, 0x27c);
-	dword &= ~(0xff);				/* EccMask = 0 */
-	if (lane != 0xff)
-		if ((lane != 8) || (pDCTstat->DimmECCPresent == 0))
-			dword |= 0xff;			/* EccMask = 0xff */
-	Set_NB32_DCT(dev, dct, 0x27c, dword);
 
 	dword = Get_NB32_DCT(dev, dct, 0x270);
 	dword &= ~(0x7ffff);				/* DataPrbsSeed = 55555 */
@@ -1259,7 +1282,8 @@ static void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 
 	dword = Get_NB32_DCT(dev, dct, 0x250);
 	dword |= (0x1 << 3);				/* ResetAllErr = 1 */
-	dword &= ~(0x1 << 4);				/* StopOnErr = 0 */
+	dword &= ~(0x1 << 4);				/* StopOnErr = stop_on_error */
+	dword |= (stop_on_error & 0x1) << 4;
 	dword &= ~(0x3 << 8);				/* CmdTgt = 1 (Alternate between Target A and Target B) */
 	dword |= (0x1 << 8);
 	dword &= ~(0x7 << 5);				/* CmdType = 1 (Write) */
@@ -1293,6 +1317,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t dual_rank;
 	uint8_t write_iter;
 	uint8_t read_iter;
+	uint8_t check_antiphase;
 	uint16_t initial_write_dqs_delay[MAX_BYTE_LANES];
 	uint16_t initial_read_dqs_delay[MAX_BYTE_LANES];
 	uint16_t initial_write_data_timing[MAX_BYTE_LANES];
@@ -1374,7 +1399,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				/* 2.10.5.8.4 (2 B)
 				 * Write the DRAM training pattern to the test address
 				 */
-				write_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, dct, Receiver, lane);
+				write_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, dct, Receiver, lane, 0);
 
 				/* Read current settings of other (previously trained) lanes */
 				read_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
@@ -1385,6 +1410,12 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 				for (current_read_dqs_delay[lane] = 0; current_read_dqs_delay[lane] < 0x40; current_read_dqs_delay[lane] += 2) {
 					print_debug_dqs("\t\t\t\t\tTrainDQSRdWrPos: 161 current_read_dqs_delay[lane] ", current_read_dqs_delay[lane], 6);
 
+					if ((current_read_dqs_delay[lane] >> 1) >= (32 - 16)) {
+						check_antiphase = 1;
+					} else {
+						check_antiphase = 0;
+					}
+
 					/* 2.10.5.8.4 (2 A i)
 					 * Commit the current Read DQS Timing Control settings to the hardware registers
 					 */
@@ -1393,7 +1424,16 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 					/* 2.10.5.8.4 (2 A ii)
 					 * Read the DRAM training pattern from the test address
 					 */
-					read_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, dct, Receiver, lane);
+					read_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, dct, Receiver, lane, ((check_antiphase == 0)?1:0));
+
+					if (check_antiphase == 0) {
+						/* Check for early abort before analyzing per-nibble status */
+						dword = Get_NB32_DCT(dev, dct, 0x264) & 0x1ffffff;
+						if (dword != 0) {
+							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 0;	/* Fail */
+							continue;
+						}
+					}
 
 					/* 2.10.5.8.4 (2 A iii)
 					 * Record pass / fail status
@@ -1403,7 +1443,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 0;	/* Fail */
 					else
 						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 1;	/* Pass */
-					if ((current_read_dqs_delay[lane] >> 1) >= (32 - 16)) {
+					if (check_antiphase == 1) {
 						/* Check antiphase results */
 						dword = Get_NB32_DCT(dev, dct, 0x26c) & 0x3ffff;
 						if (dword & (0x3 << (lane * 2)))
@@ -1626,7 +1666,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint16_t current_phy_phase_delay[MAX_BYTE_LANES];
 	uint8_t dqs_results_array[1024];
 
-	uint16_t ren_step = 0x40;
+ 	uint16_t ren_step = 0x40;
 	uint32_t index_reg = 0x98;
 	uint32_t dev = pDCTstat->dev_dct;
 

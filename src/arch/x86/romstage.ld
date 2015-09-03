@@ -26,17 +26,15 @@ SECTIONS
 	.rom . : {
 		_rom = .;
 		*(.rom.text);
-		*(.rom.text.*);
+		*(.rom.data);
 		*(.text);
 		*(.text.*);
-		*(.rom.data);
 		. = ALIGN(4);
 		_cbmem_init_hooks = .;
 		KEEP(*(.rodata.cbmem_init_hooks));
 		_ecbmem_init_hooks = .;
 		*(.rodata);
 		*(.rodata.*);
-		*(.rom.data.*);
 		. = ALIGN(16);
 		_erom = .;
 	}

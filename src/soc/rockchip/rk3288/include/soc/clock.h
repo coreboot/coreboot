@@ -24,10 +24,14 @@
 
 #define OSC_HZ		(24*MHz)
 
-#define APLL_HZ		(1800*MHz)
 #define GPLL_HZ		(594*MHz)
 #define CPLL_HZ		(384*MHz)
 #define NPLL_HZ		(384*MHz)
+
+enum apll_frequencies {
+	APLL_1800_MHZ,
+	APLL_1392_MHZ,
+};
 
 /* The SRAM is clocked off aclk_bus, so we want to max it out for boot speed. */
 #define PD_BUS_ACLK_HZ	(297000*KHz)
@@ -44,7 +48,7 @@ void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy);
 void rkclk_ddr_phy_ctl_reset(u32 ch, u32 n);
 void rkclk_configure_ddr(unsigned int hz);
 void rkclk_configure_i2s(unsigned int hz);
-void rkclk_configure_cpu(void);
+void rkclk_configure_cpu(enum apll_frequencies apll_freq);
 void rkclk_configure_crypto(unsigned int hz);
 void rkclk_configure_tsadc(unsigned int hz);
 void rkclk_configure_vop_aclk(u32 vop_id, u32 aclk_hz);

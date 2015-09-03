@@ -73,9 +73,16 @@ static struct rk3288_cru_reg * const cru_ptr = (void *)CRU_BASE;
 		       "divisors on line " STRINGIFY(__LINE__));
 
 /* Keep divisors as low as possible to reduce jitter and power usage. */
-static const struct pll_div apll_init_cfg = PLL_DIVISORS(APLL_HZ, 1, 1);
 static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 2);
 static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 1, 2);
+
+/* See linux/drivers/clk/rockchip/clk-rk3288.c for more APLL combinations */
+static const struct pll_div apll_1800_cfg = PLL_DIVISORS(1800*MHz, 1, 1);
+static const struct pll_div apll_1392_cfg = PLL_DIVISORS(1392*MHz, 1, 1);
+static const struct pll_div *apll_cfgs[] = {
+	[APLL_1800_MHZ] = &apll_1800_cfg,
+	[APLL_1392_MHZ] = &apll_1392_cfg,
+};
 
 /*******************PLL CON0 BITS***************************/
 #define PLL_OD_MSK	(0x0F)
@@ -314,13 +321,13 @@ void rkclk_init(void)
 
 }
 
-void rkclk_configure_cpu(void)
+void rkclk_configure_cpu(enum apll_frequencies apll_freq)
 {
 	/* pll enter slow-mode */
 	write32(&cru_ptr->cru_mode_con,
 		RK_CLRSETBITS(APLL_MODE_MSK, APLL_MODE_SLOW));
 
-	rkclk_set_pll(&cru_ptr->cru_apll_con[0], &apll_init_cfg);
+	rkclk_set_pll(&cru_ptr->cru_apll_con[0], apll_cfgs[apll_freq]);
 
 	/* waiting for pll lock */
 	while (1) {

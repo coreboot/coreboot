@@ -45,24 +45,6 @@ chip soc/intel/skylake
 	register "pirqg_routing" = "0x80"
 	register "pirqh_routing" = "0x80"
 
-	# EC range is 0x800-0x9ff
-	register "gen1_dec" = "0x00fc0801"
-	register "gen2_dec" = "0x00fc0901"
-
-	# GPE configuration
-	register "gpe0_en_1" = "0x00000000"
-	# EC_SCI is GPIO36
-	register "gpe0_en_2" = "0x00000010"
-	register "gpe0_en_3" = "0x00000000"
-	register "gpe0_en_4" = "0x00000000"
-
-	# Force enable ASPM for PCIe Port 3
-	register "pcie_port_force_aspm" = "0x04"
-	register "pcie_port_coalesce" = "1"
-
-	# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
-	register "icc_clock_disable" = "0x013b0000"
-
 	# Enable S0ix
 	register "s0ix_enable" = "0"
 
@@ -113,25 +95,24 @@ chip soc/intel/skylake
 		device lapic 0 on end
 	end
 	device domain 0 on
-					# Refered from SKL EDS Vol 1 : Page No: 31-32
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 14.0 on  end # USB 3.0 xHCI Controller
-		device pci 14.1 off end # USB Device Controller (OTG)
+		device pci 14.0 on  end # USB xHCI
+		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
-		device pci 15.0 on  end # I2C Controller #0
-		device pci 15.1 on  end # I2C Controller #1
-		device pci 15.2 on  end # I2C Controller #2
-		device pci 15.3 on  end # I2C Controller #3
+		device pci 15.0 on  end # I2C #0
+		device pci 15.1 on  end # I2C #1
+		device pci 15.2 on  end # I2C #2
+		device pci 15.3 on  end # I2C #3
 		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE Redirection (IDE-R)
-		device pci 16.3 off end # Management Engine Keyboard and Text (KT) Redirection
-		device pci 16.4 off end # Management Engine Intel MEI #3
-		device pci 17.0 off end # SATA Controller
-		device pci 19.0 on  end # UART Controller #2
-		device pci 19.1 on  end # I2C Controller #5
-		device pci 19.2 on  end # I2C Controller #4
+		device pci 16.2 off end # Management Engine IDE-R
+		device pci 16.3 off end # Management Engine KT-Redirection
+		device pci 16.4 off end # Management Engine Interface 3
+		device pci 17.0 off end # SATA
+		device pci 19.0 on  end # UART #2
+		device pci 19.1 on  end # I2C #5
+		device pci 19.2 on  end # I2C #4
 		device pci 1c.0 off end # PCI Express Port 1
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
@@ -146,14 +127,16 @@ chip soc/intel/skylake
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 on  end # UART #1
-		device pci 1e.2 on  end # SPI #0
+		device pci 1e.2 on  end # GSPI #0
+		device pci 1e.3 on  end # GSPI #1
 		device pci 1e.4 on  end # eMMC
 		device pci 1e.5 off end # SDIO
 		device pci 1e.6 on  end # SDCard
-		device pci 1f.0 on  end # LPC Interface (eSPI Enable Strap = 0) eSPI Interface (eSPI Enable Strap = 1)
-		device pci 1f.3 on  end # Intel High Definition Audio (Intel HD Audio) (Audio, Voice, Speech)
-		device pci 1f.4 off end # SMBus Controller
-		device pci 1f.5 on  end # SPI
-		device pci 1f.6 off end # GbE Controller
+		device pci 1f.0 on  end # LPC Interface
+		device pci 1f.2 on  end # Power Management Controller
+		device pci 1f.3 on  end # Intel HDA
+		device pci 1f.4 off end # SMBus
+		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.6 off end # GbE
 	end
 end

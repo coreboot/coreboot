@@ -22,9 +22,11 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <gpio.h>
-#include <string.h>
+#include <soc/gpio.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
+#include <string.h>
+
 #include "../gpio.h"
 #include "spd.h"
 
@@ -94,7 +96,7 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	};
 
 	spd_index = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
-	printk(BIOS_ERR, "SPD index %d\n", spd_index);
+	printk(BIOS_INFO, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,

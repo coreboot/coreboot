@@ -24,6 +24,7 @@
 #include <memory_info.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
+#include <soc/gpio.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>

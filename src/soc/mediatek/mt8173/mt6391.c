@@ -16,11 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+#include <arch/io.h>
 #include <assert.h>
 #include <console/console.h>
 #include <delay.h>
+#include <soc/addressmap.h>
 #include <soc/mt6391.h>
 #include <soc/pmic_wrap.h>
+#include <types.h>
 
 #if CONFIG_DEBUG_PMIC
 #define DEBUG_PMIC(level, x...)		printk(level, x)
@@ -431,4 +434,160 @@ void mt6391_init(void)
 
 	/* Adjust default BUCK voltage from eFuse */
 	mt6391_default_buck_voltage();
+}
+
+/* API of GPIO in PMIC MT6391 */
+enum {
+	MAX_GPIO_REG_BITS = 16,
+	MAX_GPIO_MODE_PER_REG = 5,
+	GPIO_MODE_BITS = 3,
+	GPIO_PORT_OFFSET = 3,
+	GPIO_SET_OFFSET = 2,
+	GPIO_RST_OFFSET = 4,
+	MAX_MT6391_GPIO = 40
+};
+
+enum {
+	MT6391_GPIO_DIRECTION_IN = 0,
+	MT6391_GPIO_DIRECTION_OUT = 1,
+};
+
+enum {
+	MT6391_GPIO_MODE = 0,
+};
+
+static void pos_bit_calc(u32 pin, u16 *pos, u16 *bit)
+{
+	*pos = (pin / MAX_GPIO_REG_BITS) << GPIO_PORT_OFFSET;
+	*bit = pin % MAX_GPIO_REG_BITS;
+}
+
+static void pos_bit_calc_mode(u32 pin, u16 *pos, u16 *bit)
+{
+	*pos = (pin / MAX_GPIO_MODE_PER_REG) << GPIO_PORT_OFFSET;
+	*bit = (pin % MAX_GPIO_MODE_PER_REG) * GPIO_MODE_BITS;
+}
+
+static s32 mt6391_gpio_set_dir(u32 pin, u32 dir)
+{
+	u16 pos;
+	u16 bit;
+	u16 reg;
+
+	assert(pin <= MAX_MT6391_GPIO);
+
+	pos_bit_calc(pin, &pos, &bit);
+
+	if (dir == MT6391_GPIO_DIRECTION_IN)
+		reg = MT6391_GPIO_DIR_BASE + pos + GPIO_RST_OFFSET;
+	else
+		reg = MT6391_GPIO_DIR_BASE + pos + GPIO_SET_OFFSET;
+
+	if (pwrap_write(reg, 1L << bit) != 0)
+		return -1;
+
+	return 0;
+}
+
+void mt6391_gpio_set_pull(u32 pin, enum mt6391_pull_enable enable,
+			  enum mt6391_pull_select select)
+{
+	u16 pos;
+	u16 bit;
+	u16 en_reg, sel_reg;
+
+	assert(pin <= MAX_MT6391_GPIO);
+
+	pos_bit_calc(pin, &pos, &bit);
+
+	if (enable == MT6391_GPIO_PULL_DISABLE) {
+		en_reg = MT6391_GPIO_PULLEN_BASE + pos + GPIO_RST_OFFSET;
+	} else {
+		en_reg = MT6391_GPIO_PULLEN_BASE + pos + GPIO_SET_OFFSET;
+		sel_reg = (select == MT6391_GPIO_PULL_DOWN) ?
+			  (MT6391_GPIO_PULLSEL_BASE + pos + GPIO_RST_OFFSET) :
+			  (MT6391_GPIO_PULLSEL_BASE + pos + GPIO_SET_OFFSET);
+		pwrap_write(sel_reg, 1L << bit);
+	}
+	pwrap_write(en_reg, 1L << bit);
+}
+
+int mt6391_gpio_get(u32 pin)
+{
+	u16 pos;
+	u16 bit;
+	u16 reg;
+	u16 data;
+
+	assert(pin <= MAX_MT6391_GPIO);
+
+	pos_bit_calc(pin, &pos, &bit);
+
+	reg = MT6391_GPIO_DIN_BASE + pos;
+	pwrap_read(reg, &data);
+
+	return (data & (1L << bit)) ? 1 : 0;
+}
+
+void mt6391_gpio_set(u32 pin, int output)
+{
+	u16 pos;
+	u16 bit;
+	u16 reg;
+
+	assert(pin <= MAX_MT6391_GPIO);
+
+	pos_bit_calc(pin, &pos, &bit);
+
+	if (output == 0)
+		reg = MT6391_GPIO_DOUT_BASE + pos + GPIO_RST_OFFSET;
+	else
+		reg = MT6391_GPIO_DOUT_BASE + pos + GPIO_SET_OFFSET;
+
+	pwrap_write(reg, 1L << bit);
+}
+
+void mt6391_gpio_set_mode(u32 pin, int mode)
+{
+	u16 pos;
+	u16 bit;
+	u16 mask = (1L << GPIO_MODE_BITS) - 1;
+
+	assert(pin <= MAX_MT6391_GPIO);
+
+	pos_bit_calc_mode(pin, &pos, &bit);
+	mt6391_write(MT6391_GPIO_MODE_BASE + pos, mode, mask, bit);
+}
+
+void mt6391_gpio_input_pulldown(u32 gpio)
+{
+	mt6391_gpio_set_pull(gpio, MT6391_GPIO_PULL_ENABLE,
+			     MT6391_GPIO_PULL_DOWN);
+	mt6391_gpio_set_dir(gpio, MT6391_GPIO_DIRECTION_IN);
+	mt6391_gpio_set_mode(gpio, MT6391_GPIO_MODE);
+}
+
+void mt6391_gpio_input_pullup(u32 gpio)
+{
+	mt6391_gpio_set_pull(gpio, MT6391_GPIO_PULL_ENABLE,
+			     MT6391_GPIO_PULL_UP);
+	mt6391_gpio_set_dir(gpio, MT6391_GPIO_DIRECTION_IN);
+	mt6391_gpio_set_mode(gpio, MT6391_GPIO_MODE);
+}
+
+void mt6391_gpio_input(u32 gpio)
+{
+	mt6391_gpio_set_pull(gpio, MT6391_GPIO_PULL_DISABLE,
+			     MT6391_GPIO_PULL_DOWN);
+	mt6391_gpio_set_dir(gpio, MT6391_GPIO_DIRECTION_IN);
+	mt6391_gpio_set_mode(gpio, MT6391_GPIO_MODE);
+}
+
+void mt6391_gpio_output(u32 gpio, int value)
+{
+	mt6391_gpio_set_pull(gpio, MT6391_GPIO_PULL_DISABLE,
+			     MT6391_GPIO_PULL_DOWN);
+	mt6391_gpio_set(gpio, value);
+	mt6391_gpio_set_dir(gpio, MT6391_GPIO_DIRECTION_OUT);
+	mt6391_gpio_set_mode(gpio, MT6391_GPIO_MODE);
 }

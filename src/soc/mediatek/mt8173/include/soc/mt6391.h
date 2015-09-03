@@ -308,4 +308,39 @@ void mt6391_write(u16 reg, u16 val, u32 mask, u32 shift);
 void mt6391_enable_reset_when_ap_resets(void);
 void mt6391_init(void);
 
+/*
+ * PMIC GPIO REGISTER DEFINITION
+ */
+enum {
+	MT6391_GPIO_DIR_BASE = 0xC000,
+	MT6391_GPIO_PULLEN_BASE = 0xC020,
+	MT6391_GPIO_PULLSEL_BASE = 0xC040,
+	MT6391_GPIO_DOUT_BASE = 0xC080,
+	MT6391_GPIO_DIN_BASE = 0xC0A0,
+	MT6391_GPIO_MODE_BASE = 0xC0C0,
+};
+
+enum mt6391_pull_enable {
+	MT6391_GPIO_PULL_DISABLE = 0,
+	MT6391_GPIO_PULL_ENABLE = 1,
+};
+
+enum mt6391_pull_select {
+	MT6391_GPIO_PULL_DOWN = 0,
+	MT6391_GPIO_PULL_UP = 1,
+};
+
+/*
+ * PMIC GPIO Exported Function
+ */
+int mt6391_gpio_get(u32 gpio);
+void mt6391_gpio_set(u32 gpio, int value);
+void mt6391_gpio_input_pulldown(u32 gpio);
+void mt6391_gpio_input_pullup(u32 gpio);
+void mt6391_gpio_input(u32 gpio);
+void mt6391_gpio_output(u32 gpio, int value);
+void mt6391_gpio_set_pull(u32 gpio, enum mt6391_pull_enable enable,
+			  enum mt6391_pull_select select);
+void mt6391_gpio_set_mode(u32 gpio, int mode);
+
 #endif /* __SOC_MEDIATEK_MT8173_MT6391_H__ */

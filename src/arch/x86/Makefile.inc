@@ -113,17 +113,23 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
-crt0s = $(src)/arch/x86/prologue.inc
 romstage-srcs += $(src)/arch/x86/romstage.ld
-crt0s += $(src)/cpu/x86/32bit/entry32.inc
 romstage-srcs += $(src)/cpu/x86/32bit/entry32.ld
 
-crt0s += $(src)/cpu/x86/fpu_enable.inc
-ifeq ($(CONFIG_SSE),y)
-crt0s += $(src)/cpu/x86/sse_enable.inc
-endif
+# Chipset specific assembly stubs in the romstage program flow. Certain
+# boards have more than one assembly stub so collect those and put them
+# into a single generated file.
+crt0s = $(cpu_incs-y)
 
-crt0s += $(cpu_incs-y)
+$(objgenerated)/romstage.inc: $$(crt0s)
+	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	printf '$(foreach crt0,$(crt0s),#include "$(crt0)"\n)' > $@
+
+# Add the assembly file that pulls in the rest of the dependencies in
+# the right order. Make sure the auto generated romstage.inc is a proper
+# dependency.
+romstage-y += romstage.S
+$(obj)/arch/x86/romstage.romstage.o: $(objgenerated)/romstage.inc
 
 ifneq ($(CONFIG_ROMCC),y)
 
@@ -164,8 +170,6 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/
 	$(ROMCC) -c -S $(ROMCCFLAGS) -D__ROMSTAGE__ -D__PRE_RAM__ -I. $(CPPFLAGS_romstage) $< -o $@
 
 endif
-
-romstage-srcs += $(objgenerated)/crt0.S
 
 romstage-libs ?=
 
@@ -208,10 +212,6 @@ $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -T -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -P $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
 	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
 	mv $@.tmp $@
-
-$(objgenerated)/crt0.S: $$(crt0s)
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	printf '$(foreach crt0,$(crt0s),#include "$(crt0)"\n)' > $@
 
 # Compiling crt0 with -g seems to trigger https://sourceware.org/bugzilla/show_bug.cgi?id=6428
 romstage-S-ccopts += -I. -g0

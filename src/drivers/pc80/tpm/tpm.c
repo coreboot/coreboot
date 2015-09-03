@@ -410,7 +410,7 @@ static u32 tis_probe(void)
 		break;
 	}
 	/* this will have to be converted into debug printout */
-	printf("Found TPM %s by %s\n", device_name, vendor_name);
+	printk(BIOS_INFO, "Found TPM %s by %s\n", device_name, vendor_name);
 	return 0;
 }
 

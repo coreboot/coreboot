@@ -322,6 +322,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	struct sys_info *sysinfo = &sysinfo_car;
 
+	/* Limit the maximum HT speed to 2.6GHz to prevent lockups
+	 * due to HT CPU <--> CPU wiring not being validated to 3.2GHz
+	 */
+	sysinfo->ht_link_cfg.ht_speed_limit = 2600;
+
 	uint32_t bsp_apicid = 0, val;
 	uint8_t byte;
 	msr_t msr;

@@ -60,23 +60,6 @@ struct soc_intel_skylake_config {
 	uint32_t gen3_dec;
 	uint32_t gen4_dec;
 
-	/* Enable linear PCIe Root Port function numbers starting at zero */
-	uint8_t pcie_port_coalesce;
-
-	/* Force root port ASPM configuration with port bitmap */
-	uint8_t pcie_port_force_aspm;
-
-	/* Enable ADSP power gating features */
-	uint8_t adsp_d3_pg_enable;
-	uint8_t adsp_sram_pg_enable;
-
-	/*
-	 * Clock Disable Map:
-	 * [21:16] = CLKOUT_PCIE# 5-0
-	 *    [24] = CLKOUT_ITPXDP
-	 */
-	uint32_t icc_clock_disable;
-
 	/*
 	 * Digital Port Hotplug Enable:
 	 *  0x04 = Enabled, 2ms short pulse
@@ -99,15 +82,6 @@ struct soc_intel_skylake_config {
 	/* Panel backlight settings */
 	u32 gpu_cpu_backlight;
 	u32 gpu_pch_backlight;
-
-	/*
-	 * Graphics CD Clock Frequency
-	 * 0 = 337.5MHz
-	 * 1 = 450MHz
-	 * 2 = 540MHz
-	 * 3 = 675MHz
-	 */
-	int cdclk;
 
 	/* Enable S0iX support */
 	int s0ix_enable;
@@ -167,6 +141,13 @@ struct soc_intel_skylake_config {
 	/* Audio related */
 	u8 EnableAzalia;
 	u8 DspEnable;
+
+	/*
+	 * I/O Buffer Ownership:
+	 * 0: HD-A Link
+	 * 1 Shared, HD-A Link and I2S Port
+	 * 3: I2S Ports
+	 */
 	u8 IoBufferOwnership;
 
 	/* Trace Hub function */

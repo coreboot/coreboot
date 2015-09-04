@@ -25,6 +25,7 @@
 #include <arch/cbfs.h>
 #include <arch/stages.h>
 #include <arch/early_variables.h>
+#include <boardid.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
@@ -100,6 +101,13 @@ asmlinkage void *romstage_main(unsigned int bist,
 
 	/* Perform SOC specific initialization. */
 	soc_romstage_init(&params);
+
+	/*
+	 * Read and print board version.  Done after SOC romstage
+	 * in case PCH needs to be configured to talk to the EC.
+	 */
+	if (IS_ENABLED(CONFIG_BOARD_ID_AUTO))
+		printk(BIOS_INFO, "MLB: board version %d\n", board_id());
 
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&params);

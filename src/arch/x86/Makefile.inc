@@ -113,8 +113,7 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
-romstage-srcs += $(src)/arch/x86/romstage.ld
-romstage-srcs += $(src)/cpu/x86/32bit/entry32.ld
+romstage-y += romstage.ld
 
 # Chipset specific assembly stubs in the romstage program flow. Certain
 # boards have more than one assembly stub so collect those and put them
@@ -193,11 +192,11 @@ $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(roms
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld --oformat $(romstage-oformat)
 
-$(objgenerated)/romstage_null.ld: $$(filter %.ld,$$(romstage-objs))
+$(objgenerated)/romstage_null.ld: $(obj)/arch/x86/romstage.romstage.ld
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
-	cat $^ >> $@.tmp
+	cat $< >> $@.tmp
 	mv $@.tmp $@
 
 $(objgenerated)/romstage.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt

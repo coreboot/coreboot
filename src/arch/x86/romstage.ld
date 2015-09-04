@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006 Advanced Micro Devices, Inc.
  * Copyright (C) 2008-2010 coresystems GmbH
+ * Copyright 2015 Google Inc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,52 +19,25 @@
  * Foundation, Inc.
  */
 
-TARGET(binary)
+#include <memlayout.h>
+#include <arch/header.ld>
+
 SECTIONS
 {
-	. = ROMSTAGE_BASE;
-
-	.rom . : {
-		_rom = .;
-		*(.rom.text);
-		*(.rom.data);
-		*(.text);
-		*(.text.*);
-		. = ALIGN(4);
-		_cbmem_init_hooks = .;
-		KEEP(*(.rodata.cbmem_init_hooks));
-		_ecbmem_init_hooks = .;
-		*(.rodata);
-		*(.rodata.*);
-		. = ALIGN(16);
-		_erom = .;
-	}
-
-	/DISCARD/ : {
-		*(.comment)
-		*(.note)
-		*(.comment.*)
-		*(.note.*)
-		*(.eh_frame);
-	}
+	/* The 1M size is not allocated. It's just for basic size checking. */
+	ROMSTAGE(ROMSTAGE_BASE, 1M)
 
 	. = CONFIG_DCACHE_RAM_BASE;
 	.car.data . (NOLOAD) : {
 		_car_data_start = .;
 #if IS_ENABLED(CONFIG_HAS_PRECBMEM_TIMESTAMP_REGION)
-		_timestamp = .;
-		. = . + 0x100;
-		_etimestamp = .;
+		TIMESTAMP(., 0x100)
 #endif
 		*(.car.global_data);
+		. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 		_car_data_end = .;
-		/* The preram cbmem console area comes last to take advantage
-		 * of a zero-sized array to hold the memconsole contents.
-		 * However, collisions within the cache-as-ram region cannot be
-		 * statically checked because the cache-as-ram region usage is
-		 * cpu/chipset dependent. */
-		_preram_cbmem_console = .;
-		_epreram_cbmem_console = . + (CONFIG_LATE_CBMEM_INIT ? 0 : 0xc00);
+
+		PRERAM_CBMEM_CONSOLE(., (CONFIG_LATE_CBMEM_INIT ? 0 : 0xc00))
 	}
 
 	/* Global variables are not allowed in romstage

@@ -169,6 +169,9 @@ static int get_cores_per_package(void)
 
 void acpi_init_gnvs(global_nvs_t *gnvs)
 {
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	const struct soc_intel_skylake_config *config = dev->chip_info;
+
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;
 
@@ -189,6 +192,9 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 #endif
 	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 #endif
+
+	/* Enable DPTF based on mainboard configuration */
+	gnvs->dpte = config->dptf_enable;
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)

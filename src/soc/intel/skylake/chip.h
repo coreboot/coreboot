@@ -86,6 +86,9 @@ struct soc_intel_skylake_config {
 	/* Enable S0iX support */
 	int s0ix_enable;
 
+	/* Enable DPTF support */
+	int dptf_enable;
+
 	/* Deep SX enable for both AC and DC */
 	int deep_s3_enable;
 	int deep_s5_enable;

@@ -163,9 +163,14 @@ void google_chromeec_check_ec_image(int expected_type)
 /* Check for recovery mode and ensure EC is in RO */
 void google_chromeec_early_init(void)
 {
-	/* If in recovery ensure EC is running RO firmware. */
-	if (recovery_mode_enabled()) {
-		google_chromeec_check_ec_image(EC_IMAGE_RO);
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		/* Check USB PD chip state first */
+		if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_PD))
+			google_chromeec_early_pd_init();
+
+		/* If in recovery ensure EC is running RO firmware. */
+		if (recovery_mode_enabled())
+			google_chromeec_check_ec_image(EC_IMAGE_RO);
 	}
 }
 

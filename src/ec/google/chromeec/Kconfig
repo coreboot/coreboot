@@ -47,6 +47,12 @@ config EC_GOOGLE_CHROMEEC_MEC
 	help
 	  Microchip EC variant for LPC register access.
 
+config EC_GOOGLE_CHROMEEC_PD
+	depends on EC_GOOGLE_CHROMEEC
+	def_bool n
+	help
+	  Indicates that Google's Chrome USB PD chip is present.
+
 config EC_GOOGLE_CHROMEEC_SPI
 	depends on EC_GOOGLE_CHROMEEC
 	def_bool n

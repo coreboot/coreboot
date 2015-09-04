@@ -332,8 +332,8 @@ static void cirrus_init(struct device *dev)
 
 
 	struct edid edid;
-	edid.ha = width;
-	edid.va = height;
+	edid.mode.ha = width;
+	edid.mode.va = height;
 	edid.x_resolution = width;
 	edid.y_resolution = height;
 	edid.bytes_per_line = width * 4;

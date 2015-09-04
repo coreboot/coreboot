@@ -109,8 +109,8 @@ static void bochs_init(struct device *dev)
 	outb(0x20, 0x3c0); /* disable blanking */
 
 	/* setup coreboot framebuffer */
-	edid.ha = width;
-	edid.va = height;
+	edid.mode.ha = width;
+	edid.mode.va = height;
 	edid.x_resolution = width;
 	edid.y_resolution = height;
 	edid.bytes_per_line = width * 4;

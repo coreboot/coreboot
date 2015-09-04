@@ -22,11 +22,13 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <ec/google/chromeec/ec.h>
+#include <rules.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <string.h>
+#include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
 #include "gpio.h"
 #include "ec.h"
 

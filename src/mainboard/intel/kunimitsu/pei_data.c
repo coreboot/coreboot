@@ -25,24 +25,22 @@
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	/* DQ byte map for kunimitsu board */
+	/* DQ byte map */
 	const u8 dq_map[2][12] = {
-		  {0x0F, 0xF0 , 0x00, 0xF0 , 0x0F, 0xF0 ,
-		   0x0F, 0x00 , 0xFF, 0x00 , 0xFF, 0x00},
-		  {0x0F, 0xF0 , 0x00, 0xF0 , 0x0F, 0xF0 ,
-		   0x0F, 0x00 , 0xFF, 0x00 , 0xFF, 0x00} };
-	/* DQS CPU<>DRAM map for kunimitsu board */
+		  { 0x0F, 0xF0, 0x00, 0xF0, 0x0F, 0xF0 ,
+		    0x0F, 0x00, 0xFF, 0x00, 0xFF, 0x00 },
+		  { 0x0F, 0xF0, 0x00, 0xF0, 0x0F, 0xF0 ,
+		    0x0F, 0x00, 0xFF, 0x00, 0xFF, 0x00 } };
+	/* DQS CPU<>DRAM map */
 	const u8 dqs_map[2][8] = {
-		{0, 1, 3, 2, 6, 5, 4, 7},
-		{2, 3, 0, 1, 6, 7, 4, 5} };
+		{ 0, 1, 3, 2, 6, 5, 4, 7 },
+		{ 2, 3, 0, 1, 6, 7, 4, 5 } };
 
-	/* Rcomp resistor*/
-	const u16 RcompResistor[3] = {200, 81, 162 };
+	/* Rcomp resistor */
+	const u16 RcompResistor[3] = { 200, 81, 162 };
 
-	/* Rcomp target*/
-	const u16 RcompTarget[5]   = {100, 40, 40, 23, 40};
-
-	pei_data->ec_present = 1;
+	/* Rcomp target */
+	const u16 RcompTarget[5] = { 100, 40, 40, 23, 40 };
 
 	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
 	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));

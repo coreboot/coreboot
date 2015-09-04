@@ -18,8 +18,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _MAINBOARD_SPD_H_
-#define _MAINBOARD_SPD_H_
+#ifndef MAINBOARD_SPD_H
+#define MAINBOARD_SPD_H
 
 #define SPD_LEN			256
 
@@ -32,6 +32,6 @@
 #define SPD_BUS_DEV_WIDTH	8
 #define SPD_PART_OFF		128
 #define  SPD_PART_LEN		18
+#define SPD_MANU_OFF		148
 
-
-#endif /* _MAINBOARD_SPD_H_ */
+#endif

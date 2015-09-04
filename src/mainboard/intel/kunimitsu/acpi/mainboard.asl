@@ -20,20 +20,22 @@
 
 #include "../gpio.h"
 
-#define BOARD_TRACKPAD_IRQ		0x33
-#define BOARD_TOUCHSCREEN_IRQ		0x1f
+#define BOARD_TOUCHPAD_I2C_ADDR			0x15
+#define BOARD_TOUCHPAD_IRQ			TOUCHPAD_INT_L
 
-#define BOARD_TRACKPAD_I2C_ADDR		0x15
-#define BOARD_TOUCHSCREEN_I2C_ADDR	0x10
-#define BOARD_LEFT_SSM4567_I2C_ADDR	0x34
-#define BOARD_RIGHT_SSM4567_I2C_ADDR	0x35
-#define BOARD_AUDIO_CODEC_I2C_ADDR	0x1A
+#define BOARD_TOUCHSCREEN_I2C_ADDR		0x10
+#define BOARD_TOUCHSCREEN_IRQ			TOUCHSCREEN_INT_L
+
+#define BOARD_HP_MIC_CODEC_I2C_ADDR		0x1a
+#define BOARD_HP_MIC_CODEC_IRQ			MIC_INT_L
+#define BOARD_LEFT_SPEAKER_AMP_I2C_ADDR		0x34
+#define BOARD_RIGHT_SPEAKER_AMP_I2C_ADDR	0x35
 
 Scope (\_SB)
 {
 	Device (LID0)
 	{
-		Name (_HID, EisaId("PNP0C0D"))
+		Name (_HID, EisaId ("PNP0C0D"))
 		Method (_LID, 0)
 		{
 			Return (\_SB.PCI0.LPCB.EC0.LIDS)
@@ -44,9 +46,10 @@ Scope (\_SB)
 
 	Device (PWRB)
 	{
-		Name (_HID, EisaId("PNP0C0C"))
+		Name (_HID, EisaId ("PNP0C0C"))
 	}
 }
+
 /*
  * LPC Trusted Platform Module
  */
@@ -57,13 +60,15 @@ Scope (\_SB.PCI0.LPCB)
 
 Scope (\_SB.PCI0.I2C0)
 {
-	Device (ETSA)
+	/* Touchscreen */
+	Device (ELTS)
 	{
 		Name (_HID, "ELAN0001")
-		Name (_DDN, "ELAN Touchscreen")
-		Name (_UID, 5)
-		Name (ISTP, 0) /* TouchScreen */
-		Name (_CRS, ResourceTemplate()
+		Name (_DDN, "Elan Touchscreen")
+		Name (_UID, 1)
+		Name (_S0W, 4)
+
+		Name (_CRS, ResourceTemplate ()
 		{
 			I2cSerialBus (
 				BOARD_TOUCHSCREEN_I2C_ADDR,
@@ -72,11 +77,13 @@ Scope (\_SB.PCI0.I2C0)
 				AddressingMode7Bit,
 				"\\_SB.PCI0.I2C0",
 			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow) {
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
 				BOARD_TOUCHSCREEN_IRQ
 			}
 		})
-		Method (_STA, 0, NotSerialized)
+
+		Method (_STA)
 		{
 			Return (0xF)
 		}
@@ -85,18 +92,18 @@ Scope (\_SB.PCI0.I2C0)
 
 Scope (\_SB.PCI0.I2C1)
 {
-	Device (ELAN)
+	/* Touchpad */
+	Device (ELTP)
 	{
 		Name (_HID, "ELAN0000")
 		Name (_DDN, "Elan Touchpad")
-		Name (_UID, 3)
-		/* Allow device to power off in S0 */
+		Name (_UID, 1)
 		Name (_S0W, 4)
-		Name (ISTP, 1) /* TouchPad */
-		Name (_CRS, ResourceTemplate()
+
+		Name (_CRS, ResourceTemplate ()
 		{
 			I2cSerialBus (
-				BOARD_TRACKPAD_I2C_ADDR,
+				BOARD_TOUCHPAD_I2C_ADDR,
 				ControllerInitiated,
 				400000,
 				AddressingMode7Bit,
@@ -104,9 +111,10 @@ Scope (\_SB.PCI0.I2C1)
 			)
 			Interrupt (ResourceConsumer, Edge, ActiveLow)
 			{
-				BOARD_TRACKPAD_IRQ
+				BOARD_TOUCHPAD_IRQ
 			}
 		})
+
 		Method (_STA)
 		{
 			Return (0xF)
@@ -116,68 +124,45 @@ Scope (\_SB.PCI0.I2C1)
 
 Scope (\_SB.PCI0.I2C4)
 {
-	// LEFT SSM4567 I2c ADDR 0x34
-	Device (LSPK)
-	{
-		Name (_HID, "INT343B")
-		Name (_CID, "INT343B")
-		Name (_DDN, "Intel(R) Smart Sound Technology Audio Codec")
-		Name (_UID, 1)
-
-		Name (_CRS, ResourceTemplate()
-		{
-			I2cSerialBus (
-				BOARD_LEFT_SSM4567_I2C_ADDR,
-				ControllerInitiated,
-				400000,
-				AddressingMode7Bit,
-				"\\_SB.PCI0.I2C4",
-			)
-		})
-
-		Method (_STA, 0, NotSerialized)
-		{
-			Return (0xF) // I2S Codec ADI LEFT SSM4567 Enabled
-		}
-	} // Device (LSPK)
-
-	// RIGHT SSM4567 I2C ADDR 0x35
-	Device (RSPK)
-	{
-		Name (_HID, "INT343B")
-		Name (_CID, "INT343B")
-		Name (_DDN, "Intel(R) Smart Sound Technology Audio Codec")
-		Name (_UID, 2)
-
-		Name (_CRS, ResourceTemplate()
-		{
-			I2cSerialBus (
-				BOARD_RIGHT_SSM4567_I2C_ADDR,
-				ControllerInitiated,
-				400000,
-				AddressingMode7Bit,
-				"\\_SB.PCI0.I2C4",
-			)
-		})
-
-		Method (_STA, 0, NotSerialized)
-		{
-			Return (0xF) // I2S Codec ADI RIGHT SSM4567 Enabled
-		}
-	} // Device (RSPK)
-
-	// Nuvoton NAU88L25 (I2SC = 2)
-	Device (HDAC)
+	/* Headphone Codec */
+	Device (HPMC)
 	{
 		Name (_HID, "10508825")
-		Name (_CID, "10508825")
-		Name (_DDN, "Intel(R) Smart Sound Technology Audio Codec")
+		Name (_DDN, "NAU88L25 Codec")
 		Name (_UID, 1)
 
 		Name (_CRS, ResourceTemplate()
 		{
 			I2cSerialBus (
-				BOARD_AUDIO_CODEC_I2C_ADDR,
+				BOARD_HP_MIC_CODEC_I2C_ADDR,
+				ControllerInitiated,
+				400000,
+				AddressingMode7Bit,
+				"\\_SB.PCI0.I2C4",
+			)
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
+				BOARD_HP_MIC_CODEC_IRQ
+			}
+		})
+
+		Method (_STA)
+		{
+			Return (0xF)
+		}
+	}
+
+	/* Left Speaker Amp */
+	Device (SPKL)
+	{
+		Name (_HID, "INT343B")
+		Name (_DDN, "SSM4567 Speaker Amp")
+		Name (_UID, 0)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				BOARD_LEFT_SPEAKER_AMP_I2C_ADDR,
 				ControllerInitiated,
 				400000,
 				AddressingMode7Bit,
@@ -185,11 +170,33 @@ Scope (\_SB.PCI0.I2C4)
 			)
 		})
 
-		Method (_STA, 0, NotSerialized)
+		Method (_STA)
 		{
-			Return (0xF) // I2S Codec  Enabled
+			Return (0xF)
 		}
-	} // Device (HDAC)
+	}
+
+	/* Right Speaker Amp */
+	Device (SPKR)
+	{
+		Name (_HID, "INT343B")
+		Name (_DDN, "SSM4567 Speaker Amp")
+		Name (_UID, 1)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				BOARD_RIGHT_SPEAKER_AMP_I2C_ADDR,
+				ControllerInitiated,
+				400000,
+				AddressingMode7Bit,
+				"\\_SB.PCI0.I2C4",
+			)
+		})
+
+		Method (_STA)
+		{
+			Return (0xF)
+		}
+	}
 }
-
-

@@ -29,8 +29,21 @@
 
 /* BIOS Flash Write Protect */
 #define GPIO_PCH_WP		GPP_C23
+
+/* Memory configuration board straps */
+#define GPIO_MEM_CONFIG_0	GPP_C12
+#define GPIO_MEM_CONFIG_1	GPP_C13
+#define GPIO_MEM_CONFIG_2	GPP_C14
+#define GPIO_MEM_CONFIG_3	GPP_C15
+
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE		GPE0_LAN_WAK
+
+/* Input device interrupt configuration */
+#define TOUCHPAD_INT_L		GPP_B3_IRQ
+#define TOUCHSCREEN_INT_L	GPP_E7_IRQ
+#define MIC_INT_L		GPP_F10_IRQ
+
 /* GPP_E16 is EC_SCI_L. GPP_E group is routed to dword 2 in the GPE0 block. */
 #define EC_SCI_GPI		GPE0_DW2_16
 #define EC_SMI_GPI		GPP_E15

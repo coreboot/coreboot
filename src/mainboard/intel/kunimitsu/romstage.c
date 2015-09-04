@@ -21,13 +21,12 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <memory_info.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/cpu.h>
 #include <soc/gpio.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
-#include <soc/pm.h>
 #include <soc/romstage.h>
 #include "gpio.h"
 #include "spd/spd.h"
@@ -45,7 +44,6 @@ void mainboard_romstage_entry(struct romstage_params *params)
 	/* Ensure the EC and PD are in the right mode for recovery */
 	google_chromeec_early_init();
 
-	post_code(0x31);
 	early_config_gpio();
 
 	/* Fill out PEI DATA */
@@ -55,23 +53,14 @@ void mainboard_romstage_entry(struct romstage_params *params)
 	romstage_common(params);
 }
 
-void mainboard_memory_init_params(
-	struct romstage_params *params,
-	MEMORY_INIT_UPD *memory_params)
+void mainboard_memory_init_params(struct romstage_params *params,
+				  MEMORY_INIT_UPD *memory_params)
 {
 	if (params->pei_data->spd_data[0][0][0] != 0) {
 		memory_params->MemorySpdPtr00 =
 				(UINT32)(params->pei_data->spd_data[0][0]);
 		memory_params->MemorySpdPtr10 =
 				(UINT32)(params->pei_data->spd_data[1][0]);
-		printk(BIOS_SPEW, "0x%08x: SpdDataBuffer_0_0\n",
-				memory_params->MemorySpdPtr00);
-		printk(BIOS_SPEW, "0x%08x: SpdDataBuffer_0_1\n",
-				memory_params->MemorySpdPtr01);
-		printk(BIOS_SPEW, "0x%08x: SpdDataBuffer_1_0\n",
-				memory_params->MemorySpdPtr10);
-		printk(BIOS_SPEW, "0x%08x: SpdDataBuffer_1_1\n",
-				memory_params->MemorySpdPtr11);
 	}
 	memcpy(memory_params->DqByteMapCh0, params->pei_data->dq_map[0],
 			sizeof(params->pei_data->dq_map[0]));
@@ -87,4 +76,19 @@ void mainboard_memory_init_params(
 			sizeof(params->pei_data->RcompTarget));
 	memory_params->MemorySpdDataLen = SPD_LEN;
 	memory_params->DqPinsInterleaved = FALSE;
+}
+
+void mainboard_add_dimm_info(struct romstage_params *params,
+			     struct memory_info *mem_info,
+			     int channel, int dimm, int index)
+{
+	/* Set the manufacturer */
+	memcpy(&mem_info->dimm[index].mod_id,
+	       &params->pei_data->spd_data[channel][dimm][SPD_MANU_OFF],
+	       sizeof(mem_info->dimm[index].mod_id));
+
+	/* Set the module part number */
+	memcpy(mem_info->dimm[index].module_part_number,
+	       &params->pei_data->spd_data[channel][dimm][SPD_PART_OFF],
+	       sizeof(mem_info->dimm[index].module_part_number));
 }

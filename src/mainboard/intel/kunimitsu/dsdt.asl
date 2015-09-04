@@ -43,7 +43,8 @@ DefinitionBlock(
 			#include <soc/intel/skylake/acpi/systemagent.asl>
 			#include <soc/intel/skylake/acpi/pch.asl>
 		}
-		// Thermal handler
+
+		// Dynamic Platform Thermal Framework
 		#include "acpi/dptf.asl"
 	}
 

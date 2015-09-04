@@ -19,17 +19,18 @@
  */
 
 #include <arch/byteorder.h>
+#include <boardid.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <string.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
-#include <ec/google/chromeec/ec.h>
-#include <mainboard/intel/kunimitsu/spd/spd.h>
-#include <boardid.h>
-#include <mainboard/intel/kunimitsu/boardid.h>
+#include <string.h>
+
+#include "../boardid.h"
+#include "../gpio.h"
+#include "spd.h"
 
 static void mainboard_print_spd_info(uint8_t spd[])
 {
@@ -90,10 +91,10 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	int spd_index, sku_id;
 
 	gpio_t spd_gpios[] = {
-		GPP_C12,	/* PCH_MEM_CONFIG[0] */
-		GPP_C13,	/* PCH_MEM_CONFIG[1] */
-		GPP_C14,	/* PCH_MEM_CONFIG[2] */
-		GPP_C15,	/* PCH_MEM_CONFIG[3] */
+		GPIO_MEM_CONFIG_0,
+		GPIO_MEM_CONFIG_1,
+		GPIO_MEM_CONFIG_2,
+		GPIO_MEM_CONFIG_3,
 	};
 
 	spd_index = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
@@ -102,8 +103,8 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	 *      and not SKU ID but on SCRD it indicates SKU.
 	 */
 	sku_id = board_id();
-	printk(BIOS_ERR, "SPD index %d\n", spd_index);
-	printk(BIOS_ERR, "Board ID %d\n", sku_id);
+	printk(BIOS_INFO, "SPD index %d\n", spd_index);
+	printk(BIOS_INFO, "Board ID %d\n", sku_id);
 
 	/* Load SPD data from CBFS */
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,

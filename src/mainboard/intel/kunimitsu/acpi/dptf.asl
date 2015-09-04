@@ -18,7 +18,6 @@
  * Foundation, Inc.
  */
 
-/* CPU */
 #define DPTF_CPU_PASSIVE        80
 #define DPTF_CPU_CRITICAL       90
 #define DPTF_CPU_ACTIVE_AC0     90
@@ -52,9 +51,6 @@ Name (CHPS, Package () {
 	Package () { 0, 0, 0, 0, 8, 0x200, "mA", 0 },	/* 0.5A */
 	Package () { 0, 0, 0, 0, 0, 0x000, "mA", 0 },	/* 0.0A */
 })
-
-/* Mainboard specific _PDL is 1GHz */
-Name (MPDL, 8)
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */

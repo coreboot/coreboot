@@ -25,11 +25,9 @@
 
 void mainboard_ec_init(void)
 {
-	printk(BIOS_DEBUG, "mainboard_ec_init\n");
-	post_code(0xf0);
+	printk(BIOS_DEBUG, "mainboard: EC init\n");
 
-	/* Restore SCI event mask on resume. */
-	if (acpi_slp_type == 3) {
+	if (acpi_is_wakeup_s3()) {
 		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
 					   MAINBOARD_EC_S3_WAKE_EVENTS);
 
@@ -39,10 +37,8 @@ void mainboard_ec_init(void)
 		/* Clear pending events */
 		while (google_chromeec_get_event() != 0)
 			;
-		/*
-		 * Set SCI mask.OS may not generate SMI event to set
-		 * this on S3 resume.
-		 */
+
+		/* Restore SCI event mask */
 		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
 	} else {
 		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
@@ -51,5 +47,4 @@ void mainboard_ec_init(void)
 
 	/* Clear wake event mask */
 	google_chromeec_set_wake_mask(0);
-	post_code(0xf1);
 }

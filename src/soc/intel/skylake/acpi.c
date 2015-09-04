@@ -22,6 +22,7 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <chip.h>
@@ -167,7 +168,7 @@ static int get_cores_per_package(void)
 	return cores;
 }
 
-void acpi_init_gnvs(global_nvs_t *gnvs)
+static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
 	const struct soc_intel_skylake_config *config = dev->chip_info;
@@ -202,6 +203,18 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
 					     MCFG_BASE_ADDRESS, 0, 0, 255);
 	return current;
+}
+
+unsigned long acpi_fill_madt(unsigned long current)
+{
+	/* Local APICs */
+	current = acpi_create_madt_lapics(current);
+
+	/* IOAPIC */
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
+				2, IO_APIC_ADDR, 0);
+
+	return acpi_madt_irq_overrides(current);
 }
 
 void acpi_fill_in_fadt(acpi_fadt_t *fadt)
@@ -550,7 +563,6 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 
 	ssdt2 = (acpi_header_t *)current;
 	memset(ssdt2, 0, sizeof(acpi_header_t));
-	acpi_create_serialio_ssdt(ssdt2);
 	if (ssdt2->length) {
 		current += ssdt2->length;
 		acpi_add_table(rsdp, ssdt2);
@@ -580,6 +592,7 @@ void southcluster_inject_dsdt(device_t device)
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
+		acpi_mainboard_gnvs(gnvs);
 		acpi_save_gnvs((unsigned long)gnvs);
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
@@ -591,6 +604,6 @@ void southcluster_inject_dsdt(device_t device)
 	}
 }
 
-__attribute__((weak)) void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
+__attribute__((weak)) void acpi_mainboard_gnvs(global_nvs_t *gnvs)
 {
 }

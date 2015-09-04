@@ -22,9 +22,36 @@
 #ifndef __MEMLAYOUT_H
 #define __MEMLAYOUT_H
 
+#include <rules.h>
 #include <arch/memlayout.h>
 
+/* Macros that the architecture can override. */
+#ifndef ARCH_POINTER_ALIGN_SIZE
+#define ARCH_POINTER_ALIGN_SIZE 8
+#endif
+
+#ifndef ARCH_CACHELINE_ALIGN_SIZE
+#define ARCH_CACHELINE_ALIGN_SIZE 64
+#endif
+
+/* Default to data as well as bss. */
+#ifndef ARCH_STAGE_HAS_DATA_SECTION
+#define ARCH_STAGE_HAS_DATA_SECTION 1
+#endif
+
+#ifndef ARCH_STAGE_HAS_BSS_SECTION
+#define ARCH_STAGE_HAS_BSS_SECTION 1
+#endif
+
+/* Default is that currently ramstage and smm only has a heap. */
+#ifndef ARCH_STAGE_HAS_HEAP_SECTION
+#define ARCH_STAGE_HAS_HEAP_SECTION (ENV_RAMSTAGE || ENV_SMM)
+#endif
+
 #define STR(x) #x
+
+#define ALIGN_COUNTER(align) \
+	. = ALIGN(align);
 
 #define SET_COUNTER(name, addr) \
 	_ = ASSERT(. <= addr, STR(name overlaps the previous region!)); \
@@ -58,7 +85,7 @@
 
 /* TODO: This only works if you never access CBFS in romstage before RAM is up!
  * If you need to change that assumption, you have some work ahead of you... */
-#if defined(__PRE_RAM__) && !defined(__ROMSTAGE__)
+#if defined(__PRE_RAM__) && !ENV_ROMSTAGE
 	#define PRERAM_CBFS_CACHE(addr, size) CBFS_CACHE(addr, size)
 	#define POSTRAM_CBFS_CACHE(addr, size) \
 		REGION(unused_cbfs_cache, addr, size, 4)
@@ -93,12 +120,12 @@
 		. += sz;
 #endif
 
-#ifdef __RAMSTAGE__
+#if ENV_RAMSTAGE
 	#define RAMSTAGE(addr, sz) \
 		SET_COUNTER(ramstage, addr) \
-		_ = ASSERT(_eramstage - _ramstage <= sz, \
+		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Ramstage exceeded its allotted size! (sz))); \
-		INCLUDE "lib/ramstage.ramstage.ld"
+		INCLUDE "lib/program.ramstage.ld"
 #else
 	#define RAMSTAGE(addr, sz) \
 		SET_COUNTER(ramstage, addr) \

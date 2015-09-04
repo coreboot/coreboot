@@ -197,7 +197,8 @@ ifneq ($(CONFIG_ARCH_X86),y)
 bootblock-y += bootblock.ld
 romstage-y += romstage.ld
 endif
-ramstage-y += ramstage.ld
+
+ramstage-y += program.ld
 
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c

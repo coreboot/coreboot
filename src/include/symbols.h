@@ -53,20 +53,7 @@ extern u8 _payload[];
 extern u8 _epayload[];
 #define _payload_size (_epayload - _payload)
 
-/* Careful: _e<stage> and _<stage>_size only defined for the current stage! */
-extern u8 _bootblock[];
-extern u8 _ebootblock[];
-#define _bootblock_size (_ebootblock - _bootblock)
-
-extern u8 _romstage[];
-extern u8 _eromstage[];
-#define _romstage_size (_eromstage - _romstage)
-
-extern u8 _ramstage[];
-extern u8 _eramstage[];
-#define _ramstage_size (_eramstage - _ramstage)
-
-/* "program" always refers to the current execution unit, except for x86 ROM. */
+/* "program" always refers to the current execution unit. */
 extern u8 _program[];
 extern u8 _eprogram[];
 #define _program_size (_eprogram - _program)

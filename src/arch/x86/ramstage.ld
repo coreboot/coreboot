@@ -19,7 +19,7 @@ SECTIONS
 {
 	. = CONFIG_RAMBASE;
 
-	INCLUDE "lib/ramstage.ramstage.ld"
+	INCLUDE "lib/program.ramstage.ld"
 
 	_ = ASSERT( ( _eprogram < (CONFIG_RAMTOP)) , "Please increase CONFIG_RAMTOP");
 }

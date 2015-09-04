@@ -295,7 +295,7 @@ $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 
 else
 
-ramstage-srcs += $(src)/arch/x86/ramstage.ld
+ramstage-y += ramstage.ld
 
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(obj)/arch/x86/ramstage.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

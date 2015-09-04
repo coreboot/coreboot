@@ -1,8 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright(C) 2013 Google Inc.
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015 Google Inc.
+ * Copyright (C) 2015 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>
 
-
 uint8_t board_id(void)
 {
 	MAYBE_STATIC int id = -1;
@@ -31,4 +30,3 @@ uint8_t board_id(void)
 
 	return id;
 }
-

@@ -20,14 +20,17 @@
 
 subdirs-y += spd
 
+romstage-y += boardid.c
 romstage-y += pei_data.c
 
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
+
+ramstage-y += boardid.c
 ramstage-y += mainboard.c
 ramstage-y += pei_data.c
 ramstage-y += ramstage.c
-ramstage-y += boardid.c
-romstage-y += boardid.c
+
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c

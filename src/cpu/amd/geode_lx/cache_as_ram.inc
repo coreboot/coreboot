@@ -186,6 +186,7 @@ DCacheSetupGood:
 
 	/* Call romstage.c main function */
 	call	main
+.global done_cache_as_ram_main
 done_cache_as_ram_main:
 
 	/* We now run over the stack-in-cache,

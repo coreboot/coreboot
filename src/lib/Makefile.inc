@@ -194,8 +194,8 @@ secmon-y += halt.c
 ifneq ($(CONFIG_ARCH_X86),y)
 # X86 bootblock and romstage use custom ldscripts that are all glued together,
 # so we need to exclude it here or it would pick these up as well
-bootblock-y += bootblock.ld
-romstage-y += romstage.ld
+bootblock-y += program.ld
+romstage-y += program.ld
 endif
 
 ramstage-y += program.ld

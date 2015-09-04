@@ -96,24 +96,24 @@
 #endif
 
 /* Careful: 'INCLUDE <filename>' must always be at the end of the output line */
-#ifdef __BOOTBLOCK__
+#if ENV_BOOTBLOCK
 	#define BOOTBLOCK(addr, sz) \
 		SET_COUNTER(bootblock, addr) \
-		_ = ASSERT(_ebootblock - _bootblock <= sz, \
+		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Bootblock exceeded its allotted size! (sz))); \
-		INCLUDE "lib/bootblock.bootblock.ld"
+		INCLUDE "lib/program.bootblock.ld"
 #else
 	#define BOOTBLOCK(addr, sz) \
 		SET_COUNTER(bootblock, addr) \
 		. += sz;
 #endif
 
-#ifdef __ROMSTAGE__
+#if ENV_ROMSTAGE
 	#define ROMSTAGE(addr, sz) \
 		SET_COUNTER(romstage, addr) \
-		_ = ASSERT(_eromstage - _romstage <= sz, \
+		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Romstage exceeded its allotted size! (sz))); \
-		INCLUDE "lib/romstage.romstage.ld"
+		INCLUDE "lib/program.romstage.ld"
 #else
 	#define ROMSTAGE(addr, sz) \
 		SET_COUNTER(romstage, addr) \

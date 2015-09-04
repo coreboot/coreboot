@@ -63,10 +63,24 @@
 #define ENV_SECMON 0
 #define ENV_VERSTAGE 1
 
-#else
+#elif defined(__RAMSTAGE__)
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 1
+#define ENV_SMM 0
+#define ENV_SECMON 0
+#define ENV_VERSTAGE 0
+
+#else
+/*
+ * Default case of nothing set for random blob generation using
+ * create_class_compiler that isn't bound to a stage. Also AGESA
+ * apparently builds things compeletely separate from coreboot's
+ * build infrastructure -- hardcoding its own rules.
+ */
+#define ENV_BOOTBLOCK 0
+#define ENV_ROMSTAGE 0
+#define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SECMON 0
 #define ENV_VERSTAGE 0

@@ -19,6 +19,7 @@
  * TODO: Make this CAR-friendly in case we use it on x86 some day.
  */
 
+#include <assert.h>
 #include <console/console.h>
 #include <spi_flash.h>
 #include <string.h>
@@ -111,6 +112,23 @@ static int init_vbnv(void)
 	return 0;
 }
 
+static void vbnv_is_erasable(void)
+{
+	/*
+	 * We check whether the region is aligned or not in advance to ensure
+	 * we can erase the region when it's all used up.
+	 *
+	 * The region offset & size are determined by fmap.dts yet the check can
+	 * be confidently done only by the spi flash driver. We use the same
+	 * check as the one used by spi_flash_cmd_erase, which happens to be
+	 * common to all the spi flash parts we support.
+	 *
+	 * TODO: Check by calling can_erase implemented by each spi flash driver
+	 */
+	assert(!(region_device_offset(&nvram_region) % spi_flash->sector_size));
+	assert(!(region_device_sz(&nvram_region) % spi_flash->sector_size));
+}
+
 static int vbnv_flash_probe(void)
 {
 	if (!spi_flash) {
@@ -119,6 +137,11 @@ static int vbnv_flash_probe(void)
 			printk(BIOS_ERR, "failed to probe spi flash\n");
 			return 1;
 		}
+		/*
+		 * Called here instead of init_vbnv to reduce impact on boot
+		 * speed.
+		 */
+		vbnv_is_erasable();
 	}
 	return 0;
 }

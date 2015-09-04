@@ -42,6 +42,9 @@ static void early_config_gpio(void)
 
 void mainboard_romstage_entry(struct romstage_params *params)
 {
+	/* Ensure the EC and PD are in the right mode for recovery */
+	google_chromeec_early_init();
+
 	post_code(0x31);
 	early_config_gpio();
 

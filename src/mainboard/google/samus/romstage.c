@@ -45,7 +45,6 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	printk(BIOS_INFO, "MLB: board version %s\n", samus_board_version());
 
 	/* Ensure the EC and PD are in the right mode for recovery */
-	google_chromeec_early_pd_init();
 	google_chromeec_early_init();
 
 	/* Initialize GPIOs */

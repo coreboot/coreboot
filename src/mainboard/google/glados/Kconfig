@@ -2,6 +2,7 @@ if BOARD_GOOGLE_GLADOS
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
+	select BOARD_ID_AUTO
 	select BOARD_ROMSIZE_KB_16384
 	select CACHE_ROM
 	select EC_GOOGLE_CHROMEEC

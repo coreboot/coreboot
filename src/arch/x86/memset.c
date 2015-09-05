@@ -2,9 +2,6 @@
  * Copyright (C) 1991,1992,1993,1997,1998,2003, 2005 Free Software Foundation, Inc.
  * This file is part of the GNU C Library.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of

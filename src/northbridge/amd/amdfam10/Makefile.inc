@@ -15,4 +15,17 @@ ramstage-y += get_pci1234.c
 # Call show_all_routes() anywhere amdfam10.h is included.
 #ramstage-y += util.c
 
+# Reserve 2x CONFIG_S3_DATA_SIZE to allow for random file placement
+# (not respecting erase sector boundaries) within CBFS
+$(obj)/coreboot_s3nv.rom: $(obj)/config.h
+	echo "    S3 NVRAM   $(CONFIG_S3_DATA_POS) (S3 storage area)"
+	# force C locale, so cygwin awk doesn't try to interpret the 0xff below as UTF-8 (or worse)
+	printf %d $(CONFIG_S3_DATA_SIZE) | LC_ALL=C awk '{for (i=0; i<$$1*2; i++) {printf "%c", 255}}' > $@.tmp
+	mv $@.tmp $@
+
+cbfs-files-$(CONFIG_HAVE_ACPI_RESUME) += s3nv
+s3nv-file := $(obj)/coreboot_s3nv.rom
+s3nv-align := $(CONFIG_S3_DATA_SIZE)
+s3nv-type := raw
+
 endif

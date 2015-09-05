@@ -108,6 +108,10 @@ static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t registered, uint16_t freq
 #include "../amdmct/mct_ddr3/mct_d.h"
 #include "../amdmct/mct_ddr3/mct_d_gcc.h"
 
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#include "../amdmct/mct_ddr3/s3utils.c"
+#endif
+
 #include "../amdmct/wrappers/mcti_d.c"
 #include "../amdmct/mct_ddr3/mct_d.c"
 
@@ -246,32 +250,34 @@ static void amdmct_cbmem_store_info(struct sys_info *sysinfo)
 	size_t i;
 	struct DCTStatStruc *pDCTstatA = NULL;
 
-	/* Allocate memory */
-	struct amdmct_memory_info* mem_info;
-	mem_info = cbmem_add(CBMEM_ID_AMDMCT_MEMINFO, sizeof(struct amdmct_memory_info));
-	if (!mem_info)
-		return;
+	if (!acpi_is_wakeup_s3()) {
+		/* Allocate memory */
+		struct amdmct_memory_info *mem_info;
+		mem_info = cbmem_add(CBMEM_ID_AMDMCT_MEMINFO, sizeof(struct amdmct_memory_info));
+		if (!mem_info)
+			return;
 
-	printk(BIOS_DEBUG, "%s: Storing AMDMCT configuration in CBMEM\n", __func__);
+		printk(BIOS_DEBUG, "%s: Storing AMDMCT configuration in CBMEM\n", __func__);
 
-	/* Initialize memory */
-	memset(mem_info, 0,  sizeof(struct amdmct_memory_info));
+		/* Initialize memory */
+		memset(mem_info, 0,  sizeof(struct amdmct_memory_info));
 
-	/* Copy data */
-	memcpy(&mem_info->mct_stat, &(sysinfo->MCTstat), sizeof(struct MCTStatStruc));
-	for (i = 0; i < MAX_NODES_SUPPORTED; i++) {
-		pDCTstatA = sysinfo->DCTstatA + i;
-		memcpy(&mem_info->dct_stat[i], pDCTstatA, sizeof(struct DCTStatStruc));
-	}
-	mem_info->ecc_enabled = mctGet_NVbits(NV_ECC_CAP);
-	mem_info->ecc_scrub_rate = mctGet_NVbits(NV_DramBKScrub);
+		/* Copy data */
+		memcpy(&mem_info->mct_stat, &sysinfo->MCTstat, sizeof(struct MCTStatStruc));
+		for (i = 0; i < MAX_NODES_SUPPORTED; i++) {
+			pDCTstatA = sysinfo->DCTstatA + i;
+			memcpy(&mem_info->dct_stat[i], pDCTstatA, sizeof(struct DCTStatStruc));
+		}
+		mem_info->ecc_enabled = mctGet_NVbits(NV_ECC_CAP);
+		mem_info->ecc_scrub_rate = mctGet_NVbits(NV_DramBKScrub);
 
-	/* Zero out invalid/unused pointers */
+		/* Zero out invalid/unused pointers */
 #if IS_ENABLED(CONFIG_DIMM_DDR3)
-	for (i = 0; i < MAX_NODES_SUPPORTED; i++) {
-		mem_info->dct_stat[i].C_MCTPtr = NULL;
-		mem_info->dct_stat[i].C_DCTPtr[0] = NULL;
-		mem_info->dct_stat[i].C_DCTPtr[1] = NULL;
-	}
+		for (i = 0; i < MAX_NODES_SUPPORTED; i++) {
+			mem_info->dct_stat[i].C_MCTPtr = NULL;
+			mem_info->dct_stat[i].C_DCTPtr[0] = NULL;
+			mem_info->dct_stat[i].C_DCTPtr[1] = NULL;
+		}
 #endif
+	}
 }

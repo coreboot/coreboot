@@ -93,6 +93,16 @@ if DIMM_FBDIMM
 		default 0x0110
 endif
 
+config S3_DATA_SIZE
+	int
+	default 16384
+	depends on (HAVE_ACPI_RESUME)
+
+config S3_DATA_POS
+	int
+	default 0
+	depends on (HAVE_ACPI_RESUME)
+
 if DIMM_DDR2
 	if DIMM_REGISTERED
 	config DIMM_SUPPORT

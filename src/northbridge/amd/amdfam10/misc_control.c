@@ -47,7 +47,7 @@
  * The same trick can be used to augment legacy VGA resources which can
  * be detect by generic pci reousrce allocator for VGA devices.
  * BAD: it is more tricky than I think, the resource allocation code is
- * implemented in a way to NOT DOING legacy VGA resource allcation on
+ * implemented in a way to NOT DOING legacy VGA resource allocation on
  * purpose :-(.
  */
 static void mcf3_read_resources(device_t dev)

@@ -83,6 +83,10 @@ config DIMM_REGISTERED
 	bool
 	default n
 
+config DIMM_VOLTAGE_SET_SUPPORT
+	bool
+	default n
+
 if DIMM_FBDIMM
 	config DIMM_SUPPORT
 		hex

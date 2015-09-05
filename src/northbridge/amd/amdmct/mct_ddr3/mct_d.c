@@ -336,6 +336,11 @@ restartinit:
 			goto fatalexit;
 		}
 
+#if IS_ENABLED(DIMM_VOLTAGE_SET_SUPPORT)
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: DIMMSetVoltage\n");
+		DIMMSetVoltages(pMCTstat, pDCTstatA);	/* Set the DIMM voltages (mainboard specific) */
+#endif
+
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: SyncDCTsReady_D\n");
 		SyncDCTsReady_D(pMCTstat, pDCTstatA);	/* Make sure DCTs are ready for accesses.*/
 
@@ -2128,6 +2133,9 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 					pDCTstat->DimmBanks[i] = 1ULL << (((mctRead_SPD(smbaddr, SPD_Density) & 0x70) >> 4) + 3);
 					pDCTstat->DimmWidth[i] = 1ULL << ((mctRead_SPD(smbaddr, SPD_BusWidth) & 0x7) + 3);
 				}
+				/* Check supported voltage(s) */
+				pDCTstat->DimmSupportedVoltages[i] = mctRead_SPD(smbaddr, SPD_Voltage) & 0x7;
+				pDCTstat->DimmSupportedVoltages[i] ^= 0x1;	/* Invert LSB to convert from SPD format to internal bitmap format */
 				/* Check module type */
 				byte = mctRead_SPD(smbaddr, SPD_DIMMTYPE) & 0x7;
 				if (byte == JED_RDIMM || byte == JED_MiniRDIMM) {

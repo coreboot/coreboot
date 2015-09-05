@@ -303,8 +303,7 @@ void northbridge_acpi_write_vars(device_t device)
 	} else {
 		if((sysconf.pci1234[0] >> 12) & 0xff) { //sb chain on  other than bus 0
 			CBST = (u8) (0x0f);
-		}
-		else {
+		} else {
 			CBST = (u8) (0x00);
 		}
 	}

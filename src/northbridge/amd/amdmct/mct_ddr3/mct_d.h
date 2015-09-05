@@ -202,6 +202,7 @@
 	#define JED_MiniRDIMM	0x5	/* Mini-RDIMM */
 #define SPD_Density	4		/* Bank address bits,SDRAM capacity */
 #define SPD_Addressing	5		/* Row/Column address bits */
+#define SPD_Voltage	6		/* Supported voltage bitfield */
 #define SPD_Organization	7		/* rank#,Device width */
 #define SPD_BusWidth	8		/* ECC, Bus width */
 	#define JED_ECC		8	/* ECC capability */
@@ -581,6 +582,10 @@ struct DCTStatStruc {		/* A per Node structure*/
 	struct _sDCTStruct s_C_DCTPtr[2];
 	/* struct _sDCTStruct s_C_DCT1Ptr[8]; */
 
+	/* DIMM supported voltage bitmap ([2:0]: 1.25V, 1.35V, 1.5V) */
+	uint8_t DimmSupportedVoltages[MAX_DIMMS_SUPPORTED];
+	uint32_t DimmConfiguredVoltage[MAX_DIMMS_SUPPORTED];	/* mV */
+
 	uint8_t DimmRows[MAX_DIMMS_SUPPORTED];
 	uint8_t DimmCols[MAX_DIMMS_SUPPORTED];
 	uint8_t DimmRanks[MAX_DIMMS_SUPPORTED];
@@ -901,6 +906,7 @@ u32 procOdtWorkaround(struct DCTStatStruc *pDCTstat, u32 dct, u32 val);
 void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct);
 void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node);
 void mctSMBhub_Init(u32 node);
+void DIMMSetVoltages(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 int mctRead_SPD(u32 smaddr, u32 reg);
 void InterleaveNodes_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void InterleaveChannels_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);

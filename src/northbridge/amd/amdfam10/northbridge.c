@@ -1063,6 +1063,36 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 					snprintf(string_buffer, sizeof (string_buffer), "%08X", mem_info->dct_stat[node].DimmSerialNumber[slot]);
 					t->serial_number = smbios_add_string(t->eos, string_buffer);
 				}
+				if (IS_ENABLED(CONFIG_DIMM_DDR2)) {
+					/* JEDEC specifies 1.8V only, so assume that the memory is configured for 1.8V */
+					t->minimum_voltage = 1800;
+					t->maximum_voltage = 1800;
+					t->configured_voltage = 1800;
+				} else if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
+					/* Find the maximum and minimum supported voltages */
+					uint8_t supported_voltages = mem_info->dct_stat[node].DimmSupportedVoltages[slot];
+					if (supported_voltages & 0x8)
+						t->minimum_voltage = 1150;
+					else if (supported_voltages & 0x4)
+						t->minimum_voltage = 1250;
+					else if (supported_voltages & 0x2)
+						t->minimum_voltage = 1350;
+					else if (supported_voltages & 0x1)
+						t->minimum_voltage = 1500;
+
+					if (supported_voltages & 0x1)
+						t->maximum_voltage = 1500;
+					else if (supported_voltages & 0x2)
+						t->maximum_voltage = 1350;
+					else if (supported_voltages & 0x4)
+						t->maximum_voltage = 1250;
+					else if (supported_voltages & 0x8)
+						t->maximum_voltage = 1150;
+
+					t->configured_voltage = mem_info->dct_stat[node].DimmConfiguredVoltage[slot];
+#endif
+				}
 				t->memory_error_information_handle = 0xFFFE;	/* no error information handle available */
 				single_len = t->length + smbios_string_table_len(t->eos);
 				len += single_len;

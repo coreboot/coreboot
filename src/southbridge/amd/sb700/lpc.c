@@ -61,10 +61,12 @@ static void lpc_init(device_t dev)
 	isa_dma_init();
 #endif
 
-	/* Enable DMA transaction on the LPC bus */
-	byte = pci_read_config8(dev, 0x40);
-	byte |= (1 << 2);
-	pci_write_config8(dev, 0x40, byte);
+	if (!IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
+		/* Enable DMA transaction on the LPC bus */
+		byte = pci_read_config8(dev, 0x40);
+		byte |= (1 << 2);
+		pci_write_config8(dev, 0x40, byte);
+	}
 
 	/* Disable the timeout mechanism on LPC */
 	byte = pci_read_config8(dev, 0x48);
@@ -85,11 +87,13 @@ static void lpc_init(device_t dev)
 	cmos_check_update_date();
 }
 
+#if (!IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(ACPI_PM1_CNT_BLK);
 	return ((tmp & (7 << 10)) >> 10);
 }
+#endif
 
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 void backup_top_of_ram(uint64_t ramtop)

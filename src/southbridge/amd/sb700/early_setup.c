@@ -474,8 +474,10 @@ static void sb700_devices_por_init(void)
 	/* LPC Device, BDF:0-20-3 */
 	printk(BIOS_INFO, "sb700_devices_por_init(): LPC Device, BDF:0-20-3\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
-	/* DMA enable */
-	pci_write_config8(dev, 0x40, 0x04);
+	if (!IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
+		/* DMA enable */
+		pci_write_config8(dev, 0x40, 0x04);
+	}
 
 	/* IO Port Decode Enable */
 	pci_write_config8(dev, 0x44, 0xFF);
@@ -618,6 +620,17 @@ static void sb700_pmio_por_init(void)
 	byte = pmio_read(0xB2);
 	byte |= 1 << 0;
 	pmio_write(0xB2, byte);
+
+	// FIXME: Enabling this causes boot to hang while initializing processors.
+// 	/* Enable automatic C1e state switch */
+// 	byte = pmio_read(0xc9);
+// 	byte |= 0x11;
+// 	pmio_write(0xc9, byte);
+
+	/* Enable precision HPET clock and automatic C state switch */
+	byte = pmio_read(0xbb);
+	byte |= 0xc0;
+	pmio_write(0xbb, byte);
 }
 
 /*
@@ -653,10 +666,12 @@ static void sb700_pci_cfg(void)
 	 * mentioned in RPR. But I keep them. The registers and the
 	 * comments are compatible. */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
-	/* Enabling LPC DMA function. */
-	byte = pci_read_config8(dev, 0x40);
-	byte |= (1 << 2);
-	pci_write_config8(dev, 0x40, byte);
+	if (!IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
+		/* Enabling LPC DMA function. */
+		byte = pci_read_config8(dev, 0x40);
+		byte |= (1 << 2);
+		pci_write_config8(dev, 0x40, byte);
+	}
 	/* Disabling LPC TimeOut. 0x48[7] clear. */
 	byte = pci_read_config8(dev, 0x48);
 	byte &= 0x7f;
@@ -744,6 +759,18 @@ int acpi_get_sleep_type(void)
 	u16 tmp;
 	tmp = inw(ACPI_PM1_CNT_BLK);
 	return ((tmp & (7 << 10)) >> 10);
+}
+
+void set_lpc_sticky_ctl(bool enable)
+{
+	uint8_t byte;
+
+	byte = pmio_read(0xbb);
+	if (enable)
+		byte |= 0x20;
+	else
+		byte &= ~0x20;
+	pmio_write(0xbb, byte);
 }
 
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)

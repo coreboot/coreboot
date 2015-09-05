@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,32 +96,30 @@ void nbpcie_ind_write_index(device_t nb_dev, u32 index, u32 data)
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 {
 	/* K8 Function1 is address map */
-	device_t k8_f1;
-	device_t np = dev_find_slot(0, PCI_DEVFN(0x19, 1));
-	u16 node;
+	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 
-	for (node = 0; node < CONFIG_MAX_PHYSICAL_CPUS; node++) {
-		k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18 + node, 1));
-		if (!k8_f1) {
-			break;
-		}
+	if (in_out) {
+		u32 dword, sblk;
 
-		if (in_out) {
-			/* Fill MMIO limit/base pair. */
-			pci_write_config32(k8_f1, 0xbc,
-					   (((pcie_base_add + 0x10000000 -
-					      1) >> 8) & 0xffffff00) | 0x8 | (np ? 2 << 4 : 0 << 4));
-			pci_write_config32(k8_f1, 0xb8, (pcie_base_add >> 8) | 0x3);
-			pci_write_config32(k8_f1, 0xb4,
-					   ((mmio_base_add + 0x10000000 -
-					     1) >> 8) | (np ? 2 << 4 : 0 << 4));
-			pci_write_config32(k8_f1, 0xb0, (mmio_base_add >> 8) | 0x3);
-		} else {
-			pci_write_config32(k8_f1, 0xb8, 0);
-			pci_write_config32(k8_f1, 0xbc, 0);
-			pci_write_config32(k8_f1, 0xb0, 0);
-			pci_write_config32(k8_f1, 0xb4, 0);
-		}
+		/* Get SBLink value (HyperTransport I/O Hub Link ID). */
+		dword = pci_read_config32(k8_f0, 0x64);
+		sblk = (dword >> 8) & 0x3;
+
+		/* Fill MMIO limit/base pair. */
+		pci_write_config32(k8_f1, 0xbc,
+				   (((pcie_base_add + 0x10000000 -
+				     1) >> 8) & 0xffffff00) | 0x80 | (sblk << 4));
+		pci_write_config32(k8_f1, 0xb8, (pcie_base_add >> 8) | 0x3);
+		pci_write_config32(k8_f1, 0xb4,
+				   (((mmio_base_add + 0x10000000 -
+				     1) >> 8) & 0xffffff00) | (sblk << 4));
+		pci_write_config32(k8_f1, 0xb0, (mmio_base_add >> 8) | 0x3);
+	} else {
+		pci_write_config32(k8_f1, 0xb8, 0);
+		pci_write_config32(k8_f1, 0xbc, 0);
+		pci_write_config32(k8_f1, 0xb0, 0);
+		pci_write_config32(k8_f1, 0xb4, 0);
 	}
 }
 

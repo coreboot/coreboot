@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -504,7 +505,8 @@ void sr5650_early_setup(void)
 	/*ATINB_PrepareInit */
 	get_cpu_rev();
 
-	switch (get_nb_rev(nb_dev)) {	/* PCIEMiscInit */
+	uint8_t revno = get_nb_rev(nb_dev);
+	switch (revno) {	/* PCIEMiscInit */
 	case REV_SR5650_A11:
 		printk(BIOS_INFO, "NB Revision is A11.\n");
 		break;
@@ -513,6 +515,9 @@ void sr5650_early_setup(void)
 		break;
 	case REV_SR5650_A21:
 		printk(BIOS_INFO, "NB Revision is A21.\n");
+		break;
+	default:
+		printk(BIOS_INFO, "NB Revision is %02x (Unrecognized).\n", revno);
 		break;
 	}
 

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +62,10 @@ static void ValidatePortEn(device_t nb_dev)
 *****************************************************************/
 static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 {
+	printk(BIOS_DEBUG, "PciePowerOffGppPorts() port %d\n", port);
 	u32 reg;
 	u16 state_save;
+	uint8_t i;
 	struct southbridge_amd_sr5650_config *cfg =
 		(struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
 	u16 state = cfg->port_enable;
@@ -72,6 +75,28 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 	state = ~state;
 	state &= (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7);
 	state_save = state << 17;
+	/* Disable ports any that failed training */
+	for (i = 9; i <= 13; i++) {
+		if (!(AtiPcieCfg.PortDetect & 1 << i)) {
+			if ((port >= 9) && (port <= 13)) {
+				state |= (1 << (port + 7));
+			}
+			if (port == 9)
+				state_save |= 1 << 25;
+			if (port == 10)
+				state_save |= 1 << 26;
+			if (port == 11)
+				state_save |= 1 << 6;
+			if (port == 12)
+				state_save |= 1 << 7;
+
+			if (port == 13) {
+				reg = nbmisc_read_index(nb_dev, 0x2a);
+				reg |= 1 << 4;
+				nbmisc_write_index(nb_dev, 0x2a, reg);
+			}
+		}
+	}
 	state &= !(AtiPcieCfg.PortHp);
 	reg = nbmisc_read_index(nb_dev, 0x0c);
 	reg |= state;
@@ -483,6 +508,8 @@ static void EnableLclkGating(device_t dev)
 *****************************************/
 void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 {
+	uint8_t training_ok = 1;
+
 	u32 gpp_sb_sel = 0;
 	struct southbridge_amd_sr5650_config *cfg =
 	    (struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
@@ -744,6 +771,12 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 					port, hw_port, res);
 				if (res) {
 					AtiPcieCfg.PortDetect |= 1 << port;
+				} else {
+					/* If the training failed the disable the bridge to prevent subsequent
+					 * lockup on bridge configuration register read during the PCI bus scan
+					 */
+					training_ok = 0;
+					dev->enabled = 0;
 				}
 			}
 		}
@@ -790,8 +823,8 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	 * wait dev 0x6B bit3 clear
 	 */
 
-	if (port == 8){
-		PciePowerOffGppPorts(nb_dev, dev, port); /* , This should be run for all ports that are not hotplug and don't detect devices */
+	if ((port == 8) || (!training_ok)) {
+		PciePowerOffGppPorts(nb_dev, dev, port);	/* This is run for all ports that are not hotplug and don't detect devices */
 	}
 }
 

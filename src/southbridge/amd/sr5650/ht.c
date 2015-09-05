@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +56,7 @@ static const apic_device_info default_apic_device_info_t [] = {
 	[13] = {4,     ABCD,       30}    /* Dev13 Grp4 [Int - 16..19] */
 };
 
-/* Their name are quite regular. So I undefine them. */
+/* These define names are common, so undefine them to avoid potential issues in other code */
 #undef ABCD
 #undef BCDA
 #undef CDAB

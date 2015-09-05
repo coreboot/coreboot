@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2012 Google Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,8 +104,7 @@ static void unmap_memory(void)
 	if (size_to_mib(mapped_size) == 0) {
 		debug("Unmapping %zuMB of virtual memory at %p.\n",
 		      size_to_mib(mapped_size), mapped_virtual);
-	}
-	else {
+	} else {
 		debug("Unmapping %zuMB of virtual memory at %p.\n",
 		      size_to_mib(mapped_size), mapped_virtual);
 	}
@@ -113,7 +113,7 @@ static void unmap_memory(void)
 	mapped_size = 0;
 }
 
-static void *map_memory_size(u64 physical, size_t size)
+static void *map_memory_size(u64 physical, size_t size, uint8_t abort_on_failure)
 {
 	void *v;
 	off_t p;
@@ -131,8 +131,7 @@ static void *map_memory_size(u64 physical, size_t size)
 	if (size_to_mib(size) == 0) {
 		debug("Mapping %zuB of physical memory at 0x%jx (requested 0x%jx).\n",
 		      size, (intmax_t)p, (intmax_t)physical);
-	}
-	else {
+	} else {
 		debug("Mapping %zuMB of physical memory at 0x%jx (requested 0x%jx).\n",
 		      size_to_mib(size), (intmax_t)p, (intmax_t)physical);
 	}
@@ -153,9 +152,13 @@ static void *map_memory_size(u64 physical, size_t size)
 	}
 
 	if (v == MAP_FAILED) {
-		fprintf(stderr, "Failed to mmap /dev/mem: %s\n",
-			strerror(errno));
-		exit(1);
+		if (abort_on_failure) {
+			fprintf(stderr, "Failed to mmap /dev/mem: %s\n",
+				strerror(errno));
+			exit(1);
+		} else {
+			return 0;
+		}
 	}
 
 	/* Remember what we actually mapped ... */
@@ -173,7 +176,7 @@ static void *map_memory_size(u64 physical, size_t size)
 
 static void *map_memory(u64 physical)
 {
-	return map_memory_size(physical, MAP_BYTES);
+	return map_memory_size(physical, MAP_BYTES, 1);
 }
 
 /*
@@ -210,14 +213,16 @@ static struct lb_cbmem_ref parse_cbmem_ref(struct lb_cbmem_ref *cbmem_ref)
 	return ret;
 }
 
-static int parse_cbtable(u64 address, size_t table_size)
+static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failure)
 {
-	int i, found = 0;
+	int i, found, ret = 0;
 	void *buf;
 
 	debug("Looking for coreboot table at %" PRIx64 " %zd bytes.\n",
 		address, table_size);
-	buf = map_memory_size(address, table_size);
+	buf = map_memory_size(address, table_size, abort_on_failure);
+	if (!buf)
+		return -2;
 
 	/* look at every 16 bytes within 4K of the base */
 
@@ -283,7 +288,17 @@ static int parse_cbtable(u64 address, size_t table_size)
 					*(struct lb_forward *) lbr_p;
 				debug("    Found forwarding entry.\n");
 				unmap_memory();
-				return parse_cbtable(lbf_p.forward, table_size);
+				ret = parse_cbtable(lbf_p.forward, table_size, 0);
+				if (ret == -2) {
+					/* try again with a smaller memory mapping request */
+					ret = parse_cbtable(lbf_p.forward, table_size / 2, 1);
+					if (ret == -2)
+						exit(1);
+					else
+						return ret;
+				} else {
+					return ret;
+				}
 			}
 			default:
 				break;
@@ -544,7 +559,7 @@ static void dump_timestamps(int mach_readable)
 	}
 
 	size = sizeof(*tst_p);
-	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size);
+	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size, 1);
 
 	timestamp_set_tick_freq(tst_p->tick_freq_mhz);
 
@@ -553,7 +568,7 @@ static void dump_timestamps(int mach_readable)
 	size += tst_p->num_entries * sizeof(tst_p->entries[0]);
 
 	unmap_memory();
-	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size);
+	tst_p = map_memory_size((unsigned long)timestamps.cbmem_addr, size, 1);
 
 	/* Report the base time within the table. */
 	prev_stamp = 0;
@@ -604,7 +619,7 @@ static void dump_console(void)
 	}
 
 	console_p = map_memory_size((unsigned long)console.cbmem_addr,
-					2 * sizeof(uint32_t));
+					2 * sizeof(uint32_t), 1);
 	/* The in-memory format of the console area is:
 	 *  u32  size
 	 *  u32  cursor
@@ -626,7 +641,7 @@ static void dump_console(void)
 	}
 
 	console_p = map_memory_size((unsigned long)console.cbmem_addr,
-	                            size + sizeof(size) + sizeof(cursor));
+	                            size + sizeof(size) + sizeof(cursor), 1);
 	memcpy(console_c, console_p + 8, size);
 	console_c[size] = 0;
 	console_c[cursor] = 0;
@@ -647,7 +662,7 @@ static void hexdump(unsigned long memory, int length)
 	uint8_t *m;
 	int all_zero = 0;
 
-	m = map_memory_size((intptr_t)memory, length);
+	m = map_memory_size((intptr_t)memory, length, 1);
 
 	if (length > MAP_BYTES) {
 		printf("Truncating hex dump from %d to %d bytes\n\n",
@@ -803,7 +818,7 @@ static void dump_cbmem_toc(void)
 
 	start = unpack_lb64(cbmem.start);
 
-	cbmem_area = map_memory_size(start, unpack_lb64(cbmem.size));
+	cbmem_area = map_memory_size(start, unpack_lb64(cbmem.size), 1);
 	entries = (struct cbmem_entry *)cbmem_area;
 
 	if (entries[0].magic == CBMEM_MAGIC) {
@@ -814,12 +829,12 @@ static void dump_cbmem_toc(void)
 		rootptr -= sizeof(struct cbmem_root_pointer);
 		unmap_memory();
 		struct cbmem_root_pointer *r =
-			map_memory_size(rootptr, sizeof(*r));
+			map_memory_size(rootptr, sizeof(*r), 1);
 		if (r->magic == CBMEM_POINTER_MAGIC) {
 			struct cbmem_root *root;
 			uint64_t rootaddr = rootptr + r->root_offset;
 			unmap_memory();
-			root = map_memory_size(rootaddr, ROOT_MIN_SIZE);
+			root = map_memory_size(rootaddr, ROOT_MIN_SIZE, 1);
 			dump_dynamic_cbmem_toc(root);
 		} else
 			fprintf(stderr, "No valid coreboot CBMEM root pointer found.\n");
@@ -1205,14 +1220,14 @@ int main(int argc, char** argv)
 		dtbuffer++;
 	}
 
-	parse_cbtable(baseaddr, cb_table_size);
+	parse_cbtable(baseaddr, cb_table_size, 1);
 #else
 	int j;
 	static const int possible_base_addresses[] = { 0, 0xf0000 };
 
 	/* Find and parse coreboot table */
 	for (j = 0; j < ARRAY_SIZE(possible_base_addresses); j++) {
-		if (parse_cbtable(possible_base_addresses[j], MAP_BYTES))
+		if (parse_cbtable(possible_base_addresses[j], MAP_BYTES, 1))
 			break;
 	}
 #endif

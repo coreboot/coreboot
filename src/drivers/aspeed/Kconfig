@@ -1,0 +1,2 @@
+source src/drivers/aspeed/common/Kconfig
+source src/drivers/aspeed/ast2050/Kconfig

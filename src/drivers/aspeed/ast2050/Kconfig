@@ -1,0 +1,14 @@
+config DRIVERS_ASPEED_AST2050
+	bool
+
+if DRIVERS_ASPEED_AST2050
+
+config DEVICE_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select DRIVERS_ASPEED_AST_COMMON
+
+config NATIVE_VGA_INIT_USE_EDID
+	bool
+	default n
+
+endif # DRIVERS_ASPEED_AST2050

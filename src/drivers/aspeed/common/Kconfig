@@ -1,0 +1,10 @@
+config DRIVERS_ASPEED_AST_COMMON
+	bool
+
+if !MAINBOARD_DO_NATIVE_VGA_INIT
+
+config DEVICE_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select VGA
+
+endif # MAINBOARD_DO_NATIVE_VGA_INIT

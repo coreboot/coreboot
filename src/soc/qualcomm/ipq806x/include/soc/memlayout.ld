@@ -19,7 +19,6 @@
  */
 
 #include <memlayout.h>
-#include <vendorcode/google/chromeos/memlayout.h>
 
 #include <arch/header.ld>
 

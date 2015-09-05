@@ -42,8 +42,6 @@ romstage-y += vboot_handoff.c common.c
 
 ramstage-y += common.c
 
-verstage-y += verstage.ld
-
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
 VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-verstage-y))
 else

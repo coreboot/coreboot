@@ -199,6 +199,7 @@ endif
 
 romstage-y += program.ld
 ramstage-y += program.ld
+verstage-y += program.ld
 
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c

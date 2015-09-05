@@ -132,4 +132,31 @@
 		. += sz;
 #endif
 
+/* Careful: required work buffer size depends on RW properties such as key size
+ * and algorithm -- what works for you might stop working after an update. Do
+ * NOT lower the asserted minimum without consulting vboot devs (rspangler)! */
+#define VBOOT2_WORK(addr, size) \
+	REGION(vboot2_work, addr, size, 16) \
+	_ = ASSERT(size >= 12K, "vboot2 work buffer must be at least 12K!");
+
+#if ENV_VERSTAGE
+	#define VERSTAGE(addr, sz) \
+		SET_COUNTER(verstage, addr) \
+		_ = ASSERT(_eprogram - _program <= sz, \
+			STR(Verstage exceeded its allotted size! (sz))); \
+		INCLUDE "lib/program.verstage.ld"
+
+	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) VERSTAGE(addr, size)
+#else
+	#define VERSTAGE(addr, sz) \
+		SET_COUNTER(verstage, addr) \
+		. += sz;
+
+	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) ROMSTAGE(addr, size)
+#endif
+
+#define WATCHDOG_TOMBSTONE(addr, size) \
+	REGION(watchdog_tombstone, addr, size, 4) \
+	_ = ASSERT(size == 4, "watchdog tombstones should be exactly 4 byte!");
+
 #endif /* __MEMLAYOUT_H */

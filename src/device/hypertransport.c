@@ -8,6 +8,7 @@
  * Copyright (C) 2005-2006 Tyan
  * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
  * Copyright (C) 2005-2006 Stefan Reinauer <stepan@openbios.org>
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -262,6 +263,8 @@ static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned min_d
 	device_t old_devices, dev, func, last_func = 0;
 	struct ht_link prev;
 	int ht_dev_num = 0;
+
+	printk(BIOS_SPEW, "%s for bus %02x\n", __func__, bus->secondary);
 
 	min_unitid = (offset_unitid) ? CONFIG_HT_CHAIN_UNITID_BASE : 1;
 

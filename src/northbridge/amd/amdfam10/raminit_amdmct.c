@@ -42,28 +42,57 @@ static  void print_tf(const char *func, const char *strval)
 #endif
 }
 
-static uint16_t mct_MaxLoadFreq(uint8_t count, uint16_t freq)
+static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t registered, uint16_t freq)
 {
 	/* Return limited maximum RAM frequency */
 	if (IS_ENABLED(CONFIG_DIMM_DDR2)) {
-		if (IS_ENABLED(CONFIG_DIMM_REGISTERED)) {
+		if (IS_ENABLED(CONFIG_DIMM_REGISTERED) && registered) {
 			/* K10 BKDG Rev. 3.62 Table 53 */
 			if (count > 2) {
 				/* Limit to DDR2-533 */
 				if (freq > 266) {
 					freq = 266;
-					print_tf(__func__, ": More than 2 DIMMs on channel; limiting to DDR2-533\n");
+					print_tf(__func__, ": More than 2 registered DIMMs on channel; limiting to DDR2-533\n");
 				}
 			}
-		}
-		else {
+		} else {
 			/* K10 BKDG Rev. 3.62 Table 52 */
 			if (count > 1) {
 				/* Limit to DDR2-800 */
 				if (freq > 400) {
 					freq = 400;
-					print_tf(__func__, ": More than 1 DIMM on channel; limiting to DDR2-800\n");
+					print_tf(__func__, ": More than 1 unbuffered DIMM on channel; limiting to DDR2-800\n");
 				}
+			}
+		}
+	} else if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+		if (IS_ENABLED(CONFIG_DIMM_REGISTERED) && registered) {
+			/* K10 BKDG Rev. 3.62 Table 34 */
+			if (count > 2) {
+				/* Limit to DDR3-800 */
+				if (freq > 400) {
+					freq = 400;
+					print_tf(__func__, ": More than 2 registered DIMMs on channel; limiting to DDR3-800\n");
+				}
+			} else if (count == 2) {
+				/* Limit to DDR3-1066 */
+				if (freq > 533) {
+					freq = 533;
+					print_tf(__func__, ": 2 registered DIMMs on channel; limiting to DDR3-1066\n");
+				}
+			} else {
+				/* Limit to DDR3-1333 */
+				if (freq > 666) {
+					freq = 666;
+					print_tf(__func__, ": 1 registered DIMM on channel; limiting to DDR3-1333\n");
+				}
+			}
+		} else {
+			/* K10 BKDG Rev. 3.62 Table 33 */
+			/* Limit to DDR3-1333 */
+			if (freq > 666) {
+				freq = 666;
+				print_tf(__func__, ": unbuffered DIMMs on channel; limiting to DDR3-1333\n");
 			}
 		}
 	}
@@ -117,6 +146,9 @@ static uint16_t mct_MaxLoadFreq(uint8_t count, uint16_t freq)
 #include "../amdmct/mct_ddr3/mctardk5.c"
 //C32
 #elif CONFIG_CPU_SOCKET_TYPE == 0x14
+#include "../amdmct/mct_ddr3/mctardk5.c"
+//G34
+#elif CONFIG_CPU_SOCKET_TYPE == 0x15
 #include "../amdmct/mct_ddr3/mctardk5.c"
 #endif
 

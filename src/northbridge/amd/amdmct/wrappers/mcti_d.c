@@ -301,6 +301,8 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 	/* Determine the number of installed DIMMs */
 	int ch1_count = 0;
 	int ch2_count = 0;
+	uint8_t ch1_registered = 0;
+	uint8_t ch2_registered = 0;
 	int i;
 	for (i = 0; i < 15; i = i + 2) {
 		if (pDCTstat->DIMMValid & (1 << i))
@@ -308,13 +310,19 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 		if (pDCTstat->DIMMValid & (1 << (i + 1)))
 			ch2_count++;
 	}
+	for (i = 0; i < MAX_DIMMS_SUPPORTED; i = i + 2) {
+		if (pDCTstat->DimmRegistered[i])
+			ch1_registered = 1;
+		if (pDCTstat->DimmRegistered[i + 1])
+			ch2_registered = 1;
+	}
 	if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)) {
 		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 1: %d DIMM(s) detected\n", ch1_count);
 		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 2: %d DIMM(s) detected\n", ch2_count);
 	}
 
 	/* Set limits if needed */
-	pDCTstat->PresetmaxFreq = mct_MaxLoadFreq(max(ch1_count, ch2_count), pDCTstat->PresetmaxFreq);
+	pDCTstat->PresetmaxFreq = mct_MaxLoadFreq(max(ch1_count, ch2_count), (ch1_registered || ch2_registered), pDCTstat->PresetmaxFreq);
 }
 
 #ifdef UNUSED_CODE

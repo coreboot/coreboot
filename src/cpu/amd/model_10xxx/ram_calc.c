@@ -26,6 +26,7 @@
 
 #include "ram_calc.h"
 
+#if !IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 uint64_t get_uma_memory_size(uint64_t topmem)
 {
 	uint64_t uma_size = 0;
@@ -50,3 +51,4 @@ void *cbmem_top(void)
 
 	return (void *) topmem - get_uma_memory_size(topmem);
 }
+#endif

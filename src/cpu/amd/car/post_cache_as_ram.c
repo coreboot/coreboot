@@ -1,4 +1,5 @@
-/* 2005.6 by yhlu
+/* Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * 2005.6 by yhlu
  * 2006.3 yhlu add copy data from CAR to ram
  */
 #include <string.h>
@@ -44,6 +45,15 @@ static void memset_(void *d, int val, size_t len)
 	printk(BIOS_SPEW, " Fill [%08x-%08x] ... ", (u32) d, (u32) (d + len - 1));
 #endif
 	memset(d, val, len);
+}
+
+static int memcmp_(void *d, const void *s, size_t len)
+{
+#if PRINTK_IN_CAR
+	printk(BIOS_SPEW, " Compare [%08x-%08x] with [%08x - %08x] ... ",
+		(u32) s, (u32) (s + len - 1), (u32) d, (u32) (d + len - 1));
+#endif
+	return memcmp(d, s, len);
 }
 
 static void prepare_romstage_ramstack(void *resume_backup_memory)
@@ -110,6 +120,12 @@ void post_cache_as_ram(void)
 	memcpy_(migrated_car, &_car_data_start[0], car_size);
 	print_car_debug("Done\n");
 
+	print_car_debug("Verifying data integrity in RAM... ");
+	if (memcmp_(migrated_car, &_car_data_start[0], car_size) == 0)
+		print_car_debug("Done\n");
+	else
+		print_car_debug("FAILED\n");
+
 	/* New stack grows right below migrated_car. */
 	print_car_debug("Switching to use RAM as stack... ");
 	cache_as_ram_switch_stack(migrated_car);
@@ -128,6 +144,7 @@ void cache_as_ram_new_stack (void)
 	disable_cache_as_ram_bsp();
 
 	disable_cache();
+	/* Enable cached access to RAM in the range 1M to CONFIG_RAMTOP */
 	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 	enable_cache();
 

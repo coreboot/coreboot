@@ -187,6 +187,43 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	}
 }
 
+static void amd_g34_fixup(struct bus *link, device_t dev)
+{
+	uint32_t nodeid = amdfam10_nodeid(dev);
+	uint8_t rev_gte_d = 0;
+	uint8_t dual_node = 0;
+	uint32_t f3xe8;
+
+	if (cpuid_eax(0x80000001) >= 0x8)
+		/* Revision D or later */
+		rev_gte_d = 1;
+
+	if (rev_gte_d) {
+		f3xe8 = pci_read_config32(get_node_pci(0, 3), 0xe8);
+
+		/* Check for dual node capability */
+		if (f3xe8 & 0x20000000)
+			dual_node = 1;
+
+		if (dual_node) {
+			/* Each G34 processor contains a defective HT link.
+			* See the BKDG Rev 3.62 section 2.7.1.5 for details.
+			*/
+			f3xe8 = pci_read_config32(get_node_pci(nodeid, 3), 0xe8);
+			uint8_t internal_node_number = ((f3xe8 & 0xc0000000) >> 30);
+			if (internal_node_number == 0) {
+				/* Node 0 */
+				if (link->link_num == 6)	/* Link 2 Sublink 1 */
+					printk(BIOS_DEBUG, "amdfam10_scan_chain(): node %d (internal node ID %d): skipping defective HT link\n", nodeid, internal_node_number);
+			} else {
+				/* Node 1 */
+				if (link->link_num == 5)	/* Link 1 Sublink 1 */
+					printk(BIOS_DEBUG, "amdfam10_scan_chain(): node %d (internal node ID %d): skipping defective HT link\n", nodeid, internal_node_number);
+			}
+		}
+	}
+}
+
 static void amdfam10_scan_chain(struct bus *link)
 {
 		unsigned int next_unitid;
@@ -277,8 +314,11 @@ static void amdfam10_scan_chains(device_t dev)
 	trim_ht_chain(dev);
 
 	for (link = dev->link_list; link; link = link->next) {
-		if (link->ht_link_up)
+		if (link->ht_link_up) {
+			if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX))
+				amd_g34_fixup(link, dev);
 			amdfam10_scan_chain(link);
+		}
 	}
 }
 
@@ -323,8 +363,7 @@ static struct resource *amdfam10_find_iopair(device_t dev, unsigned nodeid, unsi
 		if (result == 1) {
 			/* I have been allocated this one */
 			break;
-		}
-		else if (result > 1) {
+		} else if (result > 1) {
 			/* I have a free register pair */
 			free_reg = reg;
 		}
@@ -357,8 +396,7 @@ static struct resource *amdfam10_find_mempair(device_t dev, u32 nodeid, u32 link
 		if (result == 1) {
 			/* I have been allocated this one */
 			break;
-		}
-		else if (result > 1) {
+		} else if (result > 1) {
 			/* I have a free register pair */
 			free_reg = reg;
 		}
@@ -473,8 +511,7 @@ static void amdfam10_set_resource(device_t dev, struct resource *resource,
 
 		set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
 		store_conf_io_addr(nodeid, link_num, reg, (resource->index >> 24), rbase>>8, rend>>8);
-	}
-	else if (resource->flags & IORESOURCE_MEM) {
+	} else if (resource->flags & IORESOURCE_MEM) {
 		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, sysconf.nodes) ;// [39:8]
 		store_conf_mmio_addr(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8);
 	}
@@ -799,8 +836,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 			}
 			if ((basek + sizek) <= 4*1024*1024) {
 				sizek = 0;
-			}
-			else {
+			} else {
 				basek = 4*1024*1024;
 				sizek -= (4*1024*1024 - mmio_basek);
 			}
@@ -977,8 +1013,7 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 				if (dimm_size_bytes > 0x800000000) {
 					t->size = 0x7FFF;
 					t->extended_size = dimm_size_bytes;
-				}
-				else {
+				} else {
 					t->size = dimm_size_bytes / (1024*1024);
 					t->size &= (~0x8000);	/* size specified in megabytes */
 				}
@@ -1005,8 +1040,7 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 				t->part_number = smbios_add_string(t->eos, mem_info->dct_stat[node].DimmPartNumber[slot]);
 				if (mem_info->dct_stat[node].DimmSerialNumber[slot] == 0) {
 					t->serial_number = smbios_add_string(t->eos, "None");
-				}
-				else {
+				} else {
 					snprintf(string_buffer, sizeof (string_buffer), "%08X", mem_info->dct_stat[node].DimmSerialNumber[slot]);
 					t->serial_number = smbios_add_string(t->eos, string_buffer);
 				}
@@ -1108,8 +1142,7 @@ static void add_more_links(device_t dev, unsigned total_links)
 			memset(link, 0, links*sizeof(*link));
 			last->next = link;
 		}
-	}
-	else {
+	} else {
 		link = malloc(total_links*sizeof(*link));
 		memset(link, 0, total_links*sizeof(*link));
 		dev->link_list = link;
@@ -1244,6 +1277,10 @@ static void cpu_bus_scan(device_t dev)
 		unsigned busn, devn;
 		struct bus *pbus;
 
+		uint8_t rev_gte_d = 0;
+		uint8_t dual_node = 0;
+		uint32_t f3xe8;
+
 		busn = CONFIG_CBB;
 		devn = CONFIG_CDB+i;
 		pbus = dev_mc->bus;
@@ -1268,6 +1305,7 @@ static void cpu_bus_scan(device_t dev)
 			}
 		}
 
+
 		/* Ok, We need to set the links for that device.
 		 * otherwise the device under it will not be scanned
 		 */
@@ -1278,6 +1316,17 @@ static void cpu_bus_scan(device_t dev)
 		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 4));
 		if (cdb_dev)
 			add_more_links(cdb_dev, 4);
+
+		f3xe8 = pci_read_config32(get_node_pci(0, 3), 0xe8);
+
+		if (cpuid_eax(0x80000001) >= 0x8)
+			/* Revision D or later */
+			rev_gte_d = 1;
+
+		if (rev_gte_d)
+			/* Check for dual node capability */
+			if (f3xe8 & 0x20000000)
+				dual_node = 1;
 
 		cores_found = 0; // one core
 		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));
@@ -1290,6 +1339,9 @@ static void cpu_bus_scan(device_t dev)
 			printk(BIOS_DEBUG, "  %s siblings=%d\n", dev_path(cdb_dev), cores_found);
 		}
 
+		if (siblings > cores_found)
+			siblings = cores_found;
+
 		u32 jj;
 		if(disable_siblings) {
 			jj = 0;
@@ -1299,7 +1351,20 @@ static void cpu_bus_scan(device_t dev)
 		}
 
 		for (j = 0; j <=jj; j++ ) {
-			u32 apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
+			u32 apic_id;
+
+			if (dual_node) {
+				apic_id = 0;
+				if (nb_cfg_54) {
+					apic_id |= ((i >> 1) & 0x3) << 4;			/* Node ID */
+					apic_id |= ((i & 0x1) * (siblings + 1)) + j;		/* Core ID */
+				} else {
+					apic_id |= i & 0x3;					/* Node ID */
+					apic_id |= (((i & 0x1) * (siblings + 1)) + j) << 4;	/* Core ID */
+				}
+			} else {
+				apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
+			}
 
 #if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET>0)
 			if(sysconf.enabled_apic_ext_id) {
@@ -1311,7 +1376,7 @@ static void cpu_bus_scan(device_t dev)
 			device_t cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
 			if (cpu)
 				amd_cpu_topology(cpu, i, j);
-		} //j
+		}
 	}
 }
 
@@ -1356,8 +1421,7 @@ static void root_complex_enable_dev(struct device *dev)
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
-	}
-	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	}
 }

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +68,9 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 	u32 nb_cfg_54;
 	int i, j;
 	u32 ApicIdCoreIdSize;
+	uint8_t rev_gte_d = 0;
+	uint8_t dual_node = 0;
+	uint32_t f3xe8;
 
 	/* get_nodes define in ht_wrapper.c */
 	nodes = get_nodes();
@@ -81,6 +85,16 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 	/* Assume that all node are same stepping, otherwise we can use use
 	   nb_cfg_54 from bsp for all nodes */
 	nb_cfg_54 = read_nb_cfg_54();
+	f3xe8 = pci_read_config32(NODE_PCI(0, 3), 0xe8);
+
+	if (cpuid_eax(0x80000001) >= 0x8)
+		/* Revision D or later */
+		rev_gte_d = 1;
+
+	if (rev_gte_d)
+		 /* Check for dual node capability */
+		if (f3xe8 & 0x20000000)
+			dual_node = 1;
 
 	ApicIdCoreIdSize = (cpuid_ecx(0x80000008) >> 12 & 0xf);
 	if (ApicIdCoreIdSize) {
@@ -91,6 +105,8 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 
 	for (i = 0; i < nodes; i++) {
 		cores_found = get_core_num_in_bsp(i);
+		if (siblings > cores_found)
+			siblings = cores_found;
 
 		u32 jstart, jend;
 
@@ -107,9 +123,21 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 		}
 
 		for (j = jstart; j <= jend; j++) {
-			ap_apicid =
-			    i * (nb_cfg_54 ? (siblings + 1) : 1) +
-			    j * (nb_cfg_54 ? 1 : 64);
+			if (dual_node) {
+				ap_apicid = 0;
+				if (nb_cfg_54) {
+					ap_apicid |= ((i >> 1) & 0x3) << 4;			/* Node ID */
+					ap_apicid |= ((i & 0x1) * (siblings + 1)) + j;		/* Core ID */
+				} else {
+					ap_apicid |= i & 0x3;					/* Node ID */
+					ap_apicid |= (((i & 0x1) * (siblings + 1)) + j) << 4;	/* Core ID */
+				}
+			} else {
+				ap_apicid =
+				i * (nb_cfg_54 ? (siblings + 1) : 1) +
+				j * (nb_cfg_54 ? 1 : 64);
+			}
+
 
 #if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET > 0)
 #if !CONFIG_LIFT_BSP_APIC_ID

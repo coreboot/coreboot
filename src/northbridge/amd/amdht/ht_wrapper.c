@@ -22,6 +22,8 @@
 #include <console/console.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
 
+#include "ht_wrapper.h"
+
 /*----------------------------------------------------------------------------
  *			TYPEDEFS, DEFINITIONS AND MACROS
  *
@@ -113,6 +115,20 @@ void getAmdTopolist(u8 ***p)
 	*p = (u8 **)amd_topo_list;
 }
 
+/**
+ * BOOL AMD_CB_IgnoreLink(u8 Node, u8 Link)
+ * Description:
+ *	This routine is used to ignore connected yet faulty HT links,
+ *	such as those present in a G34 processor package.
+ *
+ * Parameters:
+ *	@param[in]  node   = The node on which this chain is located
+ *	@param[in]  link   = The link on the host for this chain
+ */
+static BOOL AMD_CB_IgnoreLink (u8 node, u8 link)
+{
+	return 0;
+}
 
 /**
  * void amd_ht_init(struct sys_info *sysinfo)
@@ -128,7 +144,7 @@ static void amd_ht_init(struct sys_info *sysinfo)
 		0,	// u8 AutoBusStart;
 		32,	// u8 AutoBusMax;
 		6,	// u8 AutoBusIncrement;
-		NULL,	// BOOL (*AMD_CB_IgnoreLink)();
+		AMD_CB_IgnoreLink,		// BOOL (*AMD_CB_IgnoreLink)();
 		NULL,	// BOOL (*AMD_CB_OverrideBusNumbers)();
 		AMD_CB_ManualBUIDSwapList,	// BOOL (*AMD_CB_ManualBUIDSwapList)();
 		NULL,	// void (*AMD_CB_DeviceCapOverride)();
@@ -146,6 +162,93 @@ static void amd_ht_init(struct sys_info *sysinfo)
 	printk(BIOS_DEBUG, "Enter amd_ht_init()\n");
 	amdHtInitialize(&ht_wrapper);
 	printk(BIOS_DEBUG, "Exit amd_ht_init()\n");
+}
 
+/**
+ * void amd_ht_fixup(struct sys_info *sysinfo)
+ *
+ *  AMD HT fixup
+ *
+ */
+void amd_ht_fixup(struct sys_info *sysinfo) {
+	printk(BIOS_DEBUG, "amd_ht_fixup()\n");
+	if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX)) {
+		uint8_t rev_gte_d = 0;
+		uint8_t dual_node = 0;
+		uint32_t f3xe8;
+		uint32_t family;
+		uint32_t model;
 
+		family = model = cpuid_eax(0x80000001);
+		model = ((model & 0xf0000) >> 16) | ((model & 0xf0) >> 4);
+
+		if (model >= 0x8)
+			/* Revision D or later */
+			rev_gte_d = 1;
+
+		if (rev_gte_d) {
+			f3xe8 = pci_read_config32(NODE_PCI(0, 3), 0xe8);
+
+			/* Check for dual node capability */
+			if (f3xe8 & 0x20000000)
+				dual_node = 1;
+
+			if (dual_node) {
+				/* Each G34 processor contains a defective HT link.
+				* See the BKDG Rev 3.62 section 2.7.1.5 for details.
+				*/
+				uint8_t node;
+				uint8_t node_count = get_nodes();
+				uint32_t dword;
+				for (node = 0; node < node_count; node++) {
+					f3xe8 = pci_read_config32(NODE_PCI(node, 3), 0xe8);
+					uint8_t internal_node_number = ((f3xe8 & 0xc0000000) >> 30);
+					printk(BIOS_DEBUG, "amd_ht_fixup(): node %d (internal node ID %d): disabling defective HT link\n", node, internal_node_number);
+					if (internal_node_number == 0) {
+						uint8_t package_link_3_connected = pci_read_config32(NODE_PCI(node, 0), 0xd8) & 0x1;
+						if (package_link_3_connected) {
+							/* Set WidthIn and WidthOut to 0 */
+							dword = pci_read_config32(NODE_PCI(node, 0), 0xc4);
+							dword &= ~0x77000000;
+							pci_write_config32(NODE_PCI(node, 0), 0xc4, dword);
+							/* Set Ganged to 1 */
+							dword = pci_read_config32(NODE_PCI(node, 0), 0x178);
+							dword |= 0x00000001;
+							pci_write_config32(NODE_PCI(node, 0), 0x178, dword);
+						} else {
+							/* Set ConnDly to 1 */
+							dword = pci_read_config32(NODE_PCI(node, 0), 0x16c);
+							dword |= 0x00000100;
+							pci_write_config32(NODE_PCI(node, 0), 0x16c, dword);
+							/* Set TransOff and EndOfChain to 1 */
+							dword = pci_read_config32(NODE_PCI(node, 4), 0xc4);
+							dword |= 0x000000c0;
+							pci_write_config32(NODE_PCI(node, 4), 0xc4, dword);
+						}
+					} else if (internal_node_number == 1) {
+						uint8_t package_link_3_connected = pci_read_config32(NODE_PCI(node, 0), 0xb8) & 0x1;
+						if (package_link_3_connected) {
+							/* Set WidthIn and WidthOut to 0 */
+							dword = pci_read_config32(NODE_PCI(node, 0), 0xa4);
+							dword &= ~0x77000000;
+							pci_write_config32(NODE_PCI(node, 0), 0xa4, dword);
+							/* Set Ganged to 1 */
+							dword = pci_read_config32(NODE_PCI(node, 0), 0x174);
+							dword |= 0x00000001;
+							pci_write_config32(NODE_PCI(node, 0), 0x174, dword);
+						} else {
+							/* Set ConnDly to 1 */
+							dword = pci_read_config32(NODE_PCI(node, 0), 0x16c);
+							dword |= 0x00000100;
+							pci_write_config32(NODE_PCI(node, 0), 0x16c, dword);
+							/* Set TransOff and EndOfChain to 1 */
+							dword = pci_read_config32(NODE_PCI(node, 4), 0xa4);
+							dword |= 0x000000c0;
+							pci_write_config32(NODE_PCI(node, 4), 0xa4, dword);
+						}
+					}
+				}
+			}
+		}
+	}
 }

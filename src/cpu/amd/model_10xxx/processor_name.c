@@ -157,6 +157,24 @@ static const struct str_s String2_socket_AM2[] = {
 	{0, 0, 0, NULL}
 };
 
+static const struct str_s String1_socket_G34[] = {
+	{0x00, 0x07, 0x00, "AMD Opteron(tm) Processor 61"},
+	{0x00, 0x0B, 0x00, "AMD Opteron(tm) Processor 61"},
+	{0x01, 0x07, 0x01, "Embedded AMD Opteron(tm) Processor "},
+	{0, 0, 0, NULL}
+};
+
+static const struct str_s String2_socket_G34[] = {
+	{0x00, 0x07, 0x00, " HE"},
+	{0x00, 0x07, 0x01, " SE"},
+	{0x00, 0x0B, 0x00, " HE"},
+	{0x00, 0x0B, 0x01, " SE"},
+	{0x00, 0x0B, 0x0F, ""},
+	{0x01, 0x07, 0x01, " QS"},
+	{0x01, 0x07, 0x02, " KS"},
+	{0, 0, 0, NULL}
+};
+
 static const struct str_s String1_socket_C32[] = {
 	{0x00, 0x03, 0x00, "AMD Opteron(tm) Processor 41"},
 	{0x00, 0x05, 0x00, "AMD Opteron(tm) Processor 41"},
@@ -239,6 +257,11 @@ int init_processor_name(void)
 	case 1:		/* AM2 */
 		str = String1_socket_AM2;
 		str2 = String2_socket_AM2;
+		break;
+	case 3:		/* G34 */
+		str = String1_socket_G34;
+		str2 = String2_socket_G34;
+		str2_checkNC = 0;
 		break;
 	case 5:		/* C32 */
 		str = String1_socket_C32;

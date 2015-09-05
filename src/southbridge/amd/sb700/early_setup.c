@@ -439,6 +439,14 @@ static void sb700_devices_por_init(void)
 	/*pci_write_config8(dev, 0x79, 0x4F); */
 	pci_write_config8(dev, 0x78, 0xFF);
 
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
+		printk(BIOS_DEBUG, "%s: Disabling ISA DMA support\n", __func__);
+		/* Disable LPC ISA DMA Capability */
+		byte = pci_read_config8(dev, 0x78);
+		byte &= ~(1 << 0);
+		pci_write_config8(dev, 0x78, byte);
+	}
+
 	/* Set smbus iospace enable, I don't know why write 0x04 into reg5 that is reserved */
 	pci_write_config16(dev, 0x4, 0x0407);
 

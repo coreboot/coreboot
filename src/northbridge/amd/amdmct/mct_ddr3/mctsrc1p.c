@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,17 +37,12 @@ u32 SetupDqsPattern_1PassB(u8 pass)
 	return (u32) TestPattern0_D;
 }
 
-u8  mct_Get_Start_RcvrEnDly_1Pass(u8 pass)
-{
-	return 0;
-}
-
-static u8 mct_Average_RcvrEnDly_1Pass(struct DCTStatStruc *pDCTstat, u8 Channel, u8 Receiver,
+static u16 mct_Average_RcvrEnDly_1Pass(struct DCTStatStruc *pDCTstat, u8 Channel, u8 Receiver,
 					u8 Pass)
 {
-	u8 i, MaxValue;
-	u8 *p;
-	u8 val;
+	u16 i, MaxValue;
+	u16 *p;
+	u16 val;
 
 	MaxValue = 0;
 	p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver >> 1];
@@ -76,8 +72,8 @@ u8 mct_SaveRcvEnDly_D_1Pass(struct DCTStatStruc *pDCTstat, u8 pass)
 	return ret;
 }
 
-u8 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
-				u8 RcvrEnDly, u8 RcvrEnDlyLimit,
+u16 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
+				u16 RcvrEnDly, u16 RcvrEnDlyLimit,
 				u8 Channel, u8 Receiver, u8 Pass)
 
 {

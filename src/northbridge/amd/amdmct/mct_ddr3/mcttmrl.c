@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -191,10 +192,10 @@ static void maxRdLatencyTrain_D(struct MCTStatStruc *pMCTstat,
 
 #if DQS_TRAIN_DEBUG > 0
 	{
-		u8 Channel;
+		u8 ChannelDTD;
 		printk(BIOS_DEBUG, "maxRdLatencyTrain: CH_MaxRdLat:\n");
-		for(Channel = 0; Channel<2; Channel++) {
-			printk(BIOS_DEBUG, "Channel: %02x: %02x\n", Channel, pDCTstat->CH_MaxRdLat[Channel]);
+		for(ChannelDTD = 0; ChannelDTD<2; ChannelDTD++) {
+			printk(BIOS_DEBUG, "Channel: %02x: %02x\n", ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD]);
 		}
 	}
 #endif

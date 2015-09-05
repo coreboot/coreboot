@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,10 +104,10 @@ static void proc_CLFLUSH(u32 addr_hi)
 
 	__asm__ volatile (
 		/* clflush fs:[eax] */
-		"outb %%al, $0xed\n\t"	/* _EXECFENCE */
-		 "clflush %%fs:(%0)\n\t"
+		"outb	%%al, $0xed\n\t"	/* _EXECFENCE */
+		"clflush	%%fs:(%0)\n\t"
 		"mfence\n\t"
-		 ::"a" (addr_hi<<8)
+		::"a" (addr_hi<<8)
 	);
 }
 
@@ -138,6 +139,24 @@ static u32 read32_fs(u32 addr_lo)
 		"movl %%fs:(%1), %0\n\t"
 		:"=b"(value): "a" (addr_lo)
 	);
+	return value;
+}
+
+static uint64_t read64_fs(uint32_t addr_lo)
+{
+	uint64_t value = 0;
+	uint32_t value_lo;
+	uint32_t value_hi;
+
+	__asm__ volatile (
+		"outb %%al, $0xed\n\t"  /* _EXECFENCE */
+		"mfence\n\t"
+		"movl %%fs:(%2), %0\n\t"
+		"movl %%fs:(%3), %1\n\t"
+		:"=c"(value_lo), "=d"(value_hi): "a" (addr_lo), "b" (addr_lo + 4) : "memory"
+	);
+	value |= value_lo;
+	value |= ((uint64_t)value_hi) << 32;
 	return value;
 }
 
@@ -208,68 +227,6 @@ static __attribute__((noinline)) void FlushDQSTestPattern_L18(u32 addr_lo)
 		    "d" (addr_lo +128+16*64), "a"(addr_lo+128),
 		    "D"(addr_lo+128+4*64)
 	);
-}
-
-static void ReadL18TestPattern(u32 addr_lo)
-{
-	/* set fs and use fs prefix to access the mem */
-	__asm__ volatile (
-		"outb %%al, $0xed\n\t"			/* _EXECFENCE */
-		"movl %%fs:-128(%%esi), %%eax\n\t" 	/* TestAddr cache line */
-		"movl %%fs:-64(%%esi), %%eax\n\t"	/* +1 */
-		"movl %%fs:(%%esi), %%eax\n\t"		/* +2 */
-		"movl %%fs:64(%%esi), %%eax\n\t"	/* +3 */
-
-		"movl %%fs:-128(%%edi), %%eax\n\t"	/* +4 */
-		"movl %%fs:-64(%%edi), %%eax\n\t"	/* +5 */
-		"movl %%fs:(%%edi), %%eax\n\t"		/* +6 */
-		"movl %%fs:64(%%edi), %%eax\n\t"	/* +7 */
-
-		"movl %%fs:-128(%%ebx), %%eax\n\t"	/* +8 */
-		"movl %%fs:-64(%%ebx), %%eax\n\t"	/* +9 */
-		"movl %%fs:(%%ebx), %%eax\n\t"		/* +10 */
-		"movl %%fs:64(%%ebx), %%eax\n\t"	/* +11 */
-
-		"movl %%fs:-128(%%ecx), %%eax\n\t"	/* +12 */
-		"movl %%fs:-64(%%ecx), %%eax\n\t"	/* +13 */
-		"movl %%fs:(%%ecx), %%eax\n\t"		/* +14 */
-		"movl %%fs:64(%%ecx), %%eax\n\t"	/* +15 */
-
-		"movl %%fs:-128(%%edx), %%eax\n\t"	/* +16 */
-		"movl %%fs:-64(%%edx), %%eax\n\t"	/* +17 */
-		"mfence\n\t"
-
-		 :: "a"(0), "b" (addr_lo+128+8*64), "c" (addr_lo+128+12*64),
-		    "d" (addr_lo +128+16*64), "S"(addr_lo+128),
-		    "D"(addr_lo+128+4*64)
-	);
-
-}
-
-static void ReadL9TestPattern(u32 addr_lo)
-{
-
-	/* set fs and use fs prefix to access the mem */
-	__asm__ volatile (
-		"outb %%al, $0xed\n\t"			/* _EXECFENCE */
-
-		"movl %%fs:-128(%%ecx), %%eax\n\t"	/* TestAddr cache line */
-		"movl %%fs:-64(%%ecx), %%eax\n\t"	/* +1 */
-		"movl %%fs:(%%ecx), %%eax\n\t"		/* +2 */
-		"movl %%fs:64(%%ecx), %%eax\n\t"	/* +3 */
-
-		"movl %%fs:-128(%%edx), %%eax\n\t"	/* +4 */
-		"movl %%fs:-64(%%edx), %%eax\n\t"	/* +5 */
-		"movl %%fs:(%%edx), %%eax\n\t"		/* +6 */
-		"movl %%fs:64(%%edx), %%eax\n\t"	/* +7 */
-
-		"movl %%fs:-128(%%ebx), %%eax\n\t"	/* +8 */
-		"mfence\n\t"
-
-		 :: "a"(0), "b" (addr_lo+128+8*64), "c"(addr_lo+128),
-		    "d"(addr_lo+128+4*64)
-	);
-
 }
 
 static void ReadMaxRdLat1CLTestPattern_D(u32 addr)

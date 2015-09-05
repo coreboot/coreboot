@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,6 +173,7 @@ static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 			ret |= 1 << 11;
 	}
 
+	/* program MrsAddress[12]=QOFF: based on F2x[1,0]84[Qoff] */
 	if (dword & (1 << 13))
 		ret |= 1 << 12;
 
@@ -199,7 +201,8 @@ static u32 mct_MR0(struct MCTStatStruc *pMCTstat,
 	/* program MrsAddress[6:4,2]=read CAS latency
 	   (CL):based on F2x[1,0]88[Tcl] */
 	dword2 = Get_NB32(dev, reg_off + 0x88);
-	ret |= (dword2 & 0xF) << 4; /* F2x88[3:0] to MrsAddress[6:4,2]=xxx0b */
+	ret |= (dword2 & 0x7) << 4;		/* F2x88[2:0] to MrsAddress[6:4] */
+	ret |= ((dword2 & 0x8) >> 3) << 2;	/* F2x88[3] to MrsAddress[2] */
 
 	/* program MrsAddress[12]=0 (PPD):slow exit */
 	if (dword & (1 << 23))

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,15 +75,15 @@ u8 mct_Get_Start_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
 	return RcvrEnDly;
 }
 
-u8 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
-				u8 RcvrEnDly, u8 RcvrEnDlyLimit,
+u16 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat,
+				u16 RcvrEnDly, u16 RcvrEnDlyLimit,
 				u8 Channel, u8 Receiver, u8 Pass)
 {
 	u8 i;
-	u8 *p;
-	u8 *p_1;
-	u8 val;
-	u8 val_1;
+	u16 *p;
+	u16 *p_1;
+	u16 val;
+	u16 val_1;
 	u8 valid = 1;
 	u8 bn;
 

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,25 +25,13 @@
 
 static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Pass);
-static u8 mct_SavePassRcvEnDly_D(struct DCTStatStruc *pDCTstat,
-					u8 rcvrEnDly, u8 Channel,
-					u8 receiver, u8 Pass);
-static u8 mct_CompareTestPatternQW0_D(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat,
-					u32 addr, u8 channel,
-					u8 pattern, u8 Pass);
 static void mct_InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
 					 struct DCTStatStruc *pDCTstat);
 static void InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Channel);
 static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Channel);
-static void mct_SetFinalRcvrEnDly_D(struct DCTStatStruc *pDCTstat,
-				u8 RcvrEnDly, u8 where,
-				u8 Channel, u8 Receiver,
-				u32 dev, u32 index_reg,
-				u8 Addl_Index, u8 Pass);
-static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u8 DQSRcvEnDly);
+static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u16 DQSRcvEnDly);
 static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 dct);
 static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat);
@@ -50,16 +39,16 @@ static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat);
 /* Warning:  These must be located so they do not cross a logical 16-bit
    segment boundary! */
 static const u32 TestPattern0_D[] = {
-	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
-	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
-	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
-	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
+	0x55555555, 0x55555555, 0x55555555, 0x55555555,
+	0x55555555, 0x55555555, 0x55555555, 0x55555555,
+	0x55555555, 0x55555555, 0x55555555, 0x55555555,
+	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 };
 static const u32 TestPattern1_D[] = {
-	0x55555555, 0x55555555, 0x55555555, 0x55555555,
-	0x55555555, 0x55555555, 0x55555555, 0x55555555,
-	0x55555555, 0x55555555, 0x55555555, 0x55555555,
-	0x55555555, 0x55555555, 0x55555555, 0x55555555,
+	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
+	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
+	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
+	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 };
 static const u32 TestPattern2_D[] = {
 	0x12345678, 0x87654321, 0x23456789, 0x98765432,
@@ -104,16 +93,87 @@ void mct_TrainRcvrEn_D(struct MCTStatStruc *pMCTstat,
 		dqsTrainRcvrEn_SW(pMCTstat, pDCTstat, Pass);
 }
 
+static void read_dqs_write_timing_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dimm, uint32_t index_reg)
+{
+	uint8_t lane;
+	uint32_t dword;
+
+	for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+		uint32_t wdt_reg;
+		if ((lane == 0) || (lane == 1))
+			wdt_reg = 0x30;
+		if ((lane == 2) || (lane == 3))
+			wdt_reg = 0x31;
+		if ((lane == 4) || (lane == 5))
+			wdt_reg = 0x40;
+		if ((lane == 6) || (lane == 7))
+			wdt_reg = 0x41;
+		if (lane == 8)
+			wdt_reg = 0x32;
+		wdt_reg += dimm * 3;
+		dword = Get_NB32_index_wait(dev, index_reg, wdt_reg);
+		if ((lane == 7) || (lane == 5) || (lane == 3) || (lane == 1))
+			current_total_delay[lane] = (dword & 0x00ff0000) >> 16;
+		if ((lane == 8) || (lane == 6) || (lane == 4) || (lane == 2) || (lane == 0))
+			current_total_delay[lane] = dword & 0x000000ff;
+	}
+}
+
+static void write_dqs_receiver_enable_control_registers(uint16_t* current_total_delay, uint32_t dev, uint8_t dimm, uint32_t index_reg)
+{
+	uint8_t lane;
+	uint32_t dword;
+
+	for (lane = 0; lane < 8; lane++) {
+		uint32_t ret_reg;
+		if ((lane == 0) || (lane == 1))
+			ret_reg = 0x10;
+		if ((lane == 2) || (lane == 3))
+			ret_reg = 0x11;
+		if ((lane == 4) || (lane == 5))
+			ret_reg = 0x20;
+		if ((lane == 6) || (lane == 7))
+			ret_reg = 0x21;
+		ret_reg += dimm * 3;
+		dword = Get_NB32_index_wait(dev, index_reg, ret_reg);
+		if ((lane == 7) || (lane == 5) || (lane == 3) || (lane == 1)) {
+			dword &= ~(0x1ff << 16);
+			dword |= (current_total_delay[lane] & 0x1ff) << 16;
+		}
+		if ((lane == 6) || (lane == 4) || (lane == 2) || (lane == 0)) {
+			dword &= ~0x1ff;
+			dword |= current_total_delay[lane] & 0x1ff;
+		}
+		Set_NB32_index_wait(dev, index_reg, ret_reg, dword);
+	}
+}
+
+static uint32_t convert_testaddr_and_channel_to_address(struct DCTStatStruc *pDCTstat, uint32_t testaddr, uint8_t channel)
+{
+	SetUpperFSbase(testaddr);
+	testaddr <<= 8;
+
+	if((pDCTstat->Status & (1<<SB_128bitmode)) && channel ) {
+		testaddr += 8;	/* second channel */
+	}
+
+	return testaddr;
+}
+
+/* DQS Receiver Enable Training
+ * Algorithm detailed in the Fam10h BKDG Rev. 3.62 section 2.8.9.9.2
+ */
 static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Pass)
 {
-	u8 Channel, RcvrEnDly, RcvrEnDlyRmin;
-	u8 Test0, Test1, CurrTest, CurrTestSide0, CurrTestSide1;
-	u8 CTLRMaxDelay, _2Ranks, PatternA, PatternB;
+	u8 Channel;
+	u8 _2Ranks;
 	u8 Addl_Index = 0;
 	u8 Receiver;
 	u8 _DisableDramECC = 0, _Wrap32Dis = 0, _SSE2 = 0;
-	u8 RcvrEnDlyLimit, Final_Value, MaxDelay_CH[2];
+	u8 Final_Value;
+	u16 CTLRMaxDelay;
+	u16 MaxDelay_CH[2];
 	u32 TestAddr0, TestAddr1, TestAddr0B, TestAddr1B;
 	u32 PatternBuffer[64+4]; /* FIXME: need increase 8? */
 	u32 Errors;
@@ -127,9 +187,20 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 	u32 cr4;
 	u32 lo, hi;
 
+	uint32_t dword;
+	uint8_t rank;
+	uint8_t lane;
+	uint16_t current_total_delay[MAX_BYTE_LANES];
+	uint16_t candidate_total_delay[8];
+	uint8_t data_test_pass_sr[2][8];	/* [rank][lane] */
+	uint8_t data_test_pass[8];		/* [lane] */
+	uint8_t data_test_pass_prev[8];		/* [lane] */
+	uint8_t window_det_toggle[8];
+	uint8_t trained[8];
+	uint64_t result_qword1;
+	uint64_t result_qword2;
+
 	u8 valid;
-	u32 tmp;
-	u8 LastTest;
 
 	print_debug_dqs("\nTrainRcvEn: Node", pDCTstat->Node_ID, 0);
 	print_debug_dqs("TrainRcvEn: Pass", Pass, 0);
@@ -181,33 +252,103 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 
 	Errors = 0;
 	dev = pDCTstat->dev_dct;
-	CTLRMaxDelay = 0;
 
 	for (Channel = 0; Channel < 2; Channel++) {
 		print_debug_dqs("\tTrainRcvEn51: Node ", pDCTstat->Node_ID, 1);
 		print_debug_dqs("\tTrainRcvEn51: Channel ", Channel, 1);
 		pDCTstat->Channel = Channel;
 
+		CTLRMaxDelay = 0;
 		MaxDelay_CH[Channel] = 0;
 		index_reg = 0x98 + 0x100 * Channel;
 
 		Receiver = mct_InitReceiver_D(pDCTstat, Channel);
-		/* There are four receiver pairs, loosely associated with chipselects. */
+		/* There are four receiver pairs, loosely associated with chipselects.
+		 * This is essentially looping over each DIMM.
+		 */
 		for (; Receiver < 8; Receiver += 2) {
 			Addl_Index = (Receiver >> 1) * 3 + 0x10;
-			LastTest = DQS_FAIL;
-
-			/* mct_ModifyIndex_D */
-			RcvrEnDlyRmin = RcvrEnDlyLimit = 0xff;
 
 			print_debug_dqs("\t\tTrainRcvEnd52: index ", Addl_Index, 2);
 
-			if(!mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, Channel, Receiver)) {
+			if (!mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, Channel, Receiver)) {
 				continue;
 			}
 
+			/* Clear data structures */
+			for (lane = 0; lane < 8; lane++) {
+				data_test_pass_prev[lane] = 0;
+				trained[lane] = 0;
+			}
+
+			/* 2.8.9.9.2 (1, 6)
+			 * Retrieve gross and fine timing fields from write DQS registers
+			 */
+			read_dqs_write_timing_control_registers(current_total_delay, dev, (Receiver >> 1), index_reg);
+
+			/* 2.8.9.9.2 (1)
+			 * Program the Write Data Timing and Write ECC Timing register to
+			 * the values stored in the DQS Write Timing Control register
+			 * for each lane
+			 */
+			for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+				uint32_t wdt_reg;
+
+				/* Calculate Write Data Timing register location */
+				if ((lane == 0) || (lane == 1) || (lane == 2) || (lane == 3))
+					wdt_reg = 0x1;
+				if ((lane == 4) || (lane == 5) || (lane == 6) || (lane == 7))
+					wdt_reg = 0x2;
+				if (lane == 8)
+					wdt_reg = 0x3;
+				wdt_reg |= ((Receiver / 2) << 8);
+
+				/* Set Write Data Timing register values */
+				dword = Get_NB32_index_wait(dev, index_reg, wdt_reg);
+				if ((lane == 7) || (lane == 3)) {
+					dword &= ~(0x7f << 24);
+					dword |= (current_total_delay[lane] & 0x7f) << 24;
+				}
+				if ((lane == 6) || (lane == 2)) {
+					dword &= ~(0x7f << 16);
+					dword |= (current_total_delay[lane] & 0x7f) << 16;
+				}
+				if ((lane == 5) || (lane == 1)) {
+					dword &= ~(0x7f << 8);
+					dword |= (current_total_delay[lane] & 0x7f) << 8;
+				}
+				if ((lane == 8) || (lane == 4) || (lane == 0)) {
+					dword &= ~0x7f;
+					dword |= current_total_delay[lane] & 0x7f;
+				}
+				Set_NB32_index_wait(dev, index_reg, wdt_reg, dword);
+			}
+
+			/* 2.8.9.9.2 (2)
+			 * Program the Read DQS Timing Control and the Read DQS ECC Timing Control registers
+			 * to 1/2 MEMCLK for all lanes
+			 */
+			for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+				uint32_t rdt_reg;
+				if ((lane == 0) || (lane == 1) || (lane == 2) || (lane == 3))
+					rdt_reg = 0x5;
+				if ((lane == 4) || (lane == 5) || (lane == 6) || (lane == 7))
+					rdt_reg = 0x6;
+				if (lane == 8)
+					rdt_reg = 0x7;
+				rdt_reg |= ((Receiver / 2) << 8);
+				if (lane == 8)
+					dword = 0x0000003f;
+				else
+					dword = 0x3f3f3f3f;
+				Set_NB32_index_wait(dev, index_reg, rdt_reg, dword);
+			}
+
+			/* 2.8.9.9.2 (3)
+			 * Select two test addresses for each rank present
+			 */
 			TestAddr0 = mct_GetRcvrSysAddr_D(pMCTstat, pDCTstat, Channel, Receiver, &valid);
-			if(!valid) {	/* Address not supported on current CS */
+			if (!valid) {	/* Address not supported on current CS */
 				continue;
 			}
 
@@ -229,171 +370,214 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 			print_debug_dqs("\t\tTrainRcvEn53: TestAddr1 ", TestAddr1, 2);
 			print_debug_dqs("\t\tTrainRcvEn53: TestAddr1B ", TestAddr1B, 2);
 
-			/*
-			 * Get starting RcvrEnDly value
+			/* 2.8.9.9.2 (4, 5)
+			 * Write 1 cache line of the appropriate test pattern to each test addresse
 			 */
-			RcvrEnDly = mct_Get_Start_RcvrEnDly_1Pass(Pass);
-
-			/* mct_GetInitFlag_D*/
-			if (Pass == FirstPass) {
-				pDCTstat->DqsRcvEn_Pass = 0;
-			} else {
-				pDCTstat->DqsRcvEn_Pass=0xFF;
+			mct_Write1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0, 0); /* rank 0 of DIMM, testpattern 0 */
+			mct_Write1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0B, 1); /* rank 0 of DIMM, testpattern 1 */
+			if (_2Ranks) {
+				mct_Write1LTestPattern_D(pMCTstat, pDCTstat, TestAddr1, 0); /*rank 1 of DIMM, testpattern 0 */
+				mct_Write1LTestPattern_D(pMCTstat, pDCTstat, TestAddr1B, 1); /*rank 1 of DIMM, testpattern 1 */
 			}
-			pDCTstat->DqsRcvEn_Saved = 0;
 
+#if DQS_TRAIN_DEBUG > 0
+			for (lane = 0; lane < 8; lane++) {
+				print_debug_dqs("\t\tTrainRcvEn54: lane: ", lane, 2);
+				print_debug_dqs("\t\tTrainRcvEn54: current_total_delay ", current_total_delay[lane], 2);
+			}
+#endif
 
-			while(RcvrEnDly < RcvrEnDlyLimit) {	/* sweep Delay value here */
-				print_debug_dqs("\t\t\tTrainRcvEn541: RcvrEnDly ", RcvrEnDly, 3);
+			/* 2.8.9.9.2 (6)
+			 * Write gross and fine timing fields to read DQS registers
+			 */
+			write_dqs_receiver_enable_control_registers(current_total_delay, dev, (Receiver >> 1), index_reg);
 
-				/* callback not required
-				if(mct_AdjustDelay_D(pDCTstat, RcvrEnDly))
-					goto skipDly;
+			/* 2.8.9.9.2 (7)
+			 * Loop over all delay values up to 1 MEMCLK (0x40 delay steps) from the initial delay values
+			 *
+			 * FIXME
+			 * It is not clear if training should be discontinued if any test failures occur in the first
+			 * 1 MEMCLK window, or if it should be discontinued if no successes occur in the first 1 MEMCLK
+			 * window.  Therefore, loop over up to 2 MEMCLK (0x80 delay steps) to be on the safe side.
+			 */
+			uint16_t current_delay_step;
+
+			for (current_delay_step = 0; current_delay_step < 0x80; current_delay_step++) {
+				print_debug_dqs("\t\t\tTrainRcvEn541: current_delay_step ", current_delay_step, 3);
+
+				/* 2.8.9.9.2 (7 D)
+				* Terminate if all lanes are trained
 				*/
+				uint8_t all_lanes_trained = 1;
+				for (lane = 0; lane < 8; lane++)
+					if (!trained[lane])
+						all_lanes_trained = 0;
 
-				/* Odd steps get another pattern such that even
-				 and odd steps alternate. The pointers to the
-				 patterns will be swaped at the end of the loop
-				 so that they correspond. */
-				if(RcvrEnDly & 1) {
-					PatternA = 1;
-					PatternB = 0;
-				} else {
-					/* Even step */
-					PatternA = 0;
-					PatternB = 1;
-				}
+				if (all_lanes_trained)
+					break;
 
-				mct_Write1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0, PatternA); /* rank 0 of DIMM, testpattern 0 */
-				mct_Write1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0B, PatternB); /* rank 0 of DIMM, testpattern 1 */
-				if(_2Ranks) {
-					mct_Write1LTestPattern_D(pMCTstat, pDCTstat, TestAddr1, PatternA); /*rank 1 of DIMM, testpattern 0 */
-					mct_Write1LTestPattern_D(pMCTstat, pDCTstat, TestAddr1B, PatternB); /*rank 1 of DIMM, testpattern 1 */
-				}
+				/* 2.8.9.9.2 (7 A)
+				* Loop over all ranks
+				*/
+				for (rank = 0; rank < (_2Ranks + 1); rank++) {
+					/* 2.8.9.9.2 (7 A a-d)
+					 * Read the first test address of the current rank
+					 * Store the first data beat for analysis
+					 * Reset read pointer in the DRAM controller FIFO
+					 * Read the second test address of the current rank
+					 * Store the first data beat for analysis
+					 * Reset read pointer in the DRAM controller FIFO
+					 */
+					if (rank & 1) {
+						/* 2.8.9.9.2 (7 D)
+						 * Invert read instructions to alternate data read order on the bus
+						 */
+						proc_IOCLFLUSH_D((rank == 0)?TestAddr0B:TestAddr1B);
+						result_qword2 = read64_fs(convert_testaddr_and_channel_to_address(pDCTstat, (rank == 0)?TestAddr0B:TestAddr1B, Channel));
+						write_dqs_receiver_enable_control_registers(current_total_delay, dev, (Receiver >> 1), index_reg);
+						proc_IOCLFLUSH_D((rank == 0)?TestAddr0:TestAddr1);
+						result_qword1 = read64_fs(convert_testaddr_and_channel_to_address(pDCTstat, (rank == 0)?TestAddr0:TestAddr1, Channel));
+						write_dqs_receiver_enable_control_registers(current_total_delay, dev, (Receiver >> 1), index_reg);
+					} else {
+						proc_IOCLFLUSH_D((rank == 0)?TestAddr0:TestAddr1);
+						result_qword1 = read64_fs(convert_testaddr_and_channel_to_address(pDCTstat, (rank == 0)?TestAddr0:TestAddr1, Channel));
+						write_dqs_receiver_enable_control_registers(current_total_delay, dev, (Receiver >> 1), index_reg);
+						proc_IOCLFLUSH_D((rank == 0)?TestAddr0B:TestAddr1B);
+						result_qword2 = read64_fs(convert_testaddr_and_channel_to_address(pDCTstat, (rank == 0)?TestAddr0B:TestAddr1B, Channel));
+						write_dqs_receiver_enable_control_registers(current_total_delay, dev, (Receiver >> 1), index_reg);
+					}
+					/* 2.8.9.9.2 (7 A e)
+					 * Compare both read patterns and flag passing ranks/lanes
+					 */
+					uint8_t result_lane_byte1;
+					uint8_t result_lane_byte2;
+					for (lane = 0; lane < 8; lane++) {
+						if (trained[lane] == 1) {
+#if DQS_TRAIN_DEBUG > 0
+							print_debug_dqs("\t\t\t\t\t\t\t\t lane already trained: ", lane, 4);
+#endif
+							continue;
+						}
 
-				mct_SetRcvrEnDly_D(pDCTstat, RcvrEnDly, 0, Channel, Receiver, dev, index_reg, Addl_Index, Pass);
-
-				CurrTest = DQS_FAIL;
-				CurrTestSide0 = DQS_FAIL;
-				CurrTestSide1 = DQS_FAIL;
-
-				mct_Read1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0);	/*cache fills */
-				Test0 = mct_CompareTestPatternQW0_D(pMCTstat, pDCTstat, TestAddr0, Channel, PatternA, Pass);/* ROM vs cache compare */
-				proc_IOCLFLUSH_D(TestAddr0);
-				ResetDCTWrPtr_D(dev, index_reg, Addl_Index);
-
-				print_debug_dqs("\t\t\tTrainRcvEn542: Test0 result ", Test0, 3);
-
-				/* != 0x00 mean pass */
-
-				if(Test0 == DQS_PASS) {
-					mct_Read1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0B);	/*cache fills */
-					/* ROM vs cache compare */
-					Test1 = mct_CompareTestPatternQW0_D(pMCTstat, pDCTstat, TestAddr0B, Channel, PatternB, Pass);
-					proc_IOCLFLUSH_D(TestAddr0B);
-					ResetDCTWrPtr_D(dev, index_reg, Addl_Index);
-
-					print_debug_dqs("\t\t\tTrainRcvEn543: Test1 result ", Test1, 3);
-
-					if(Test1 == DQS_PASS) {
-						CurrTestSide0 = DQS_PASS;
+						result_lane_byte1 = (result_qword1 >> (lane * 8)) & 0xff;
+						result_lane_byte2 = (result_qword2 >> (lane * 8)) & 0xff;
+						if ((result_lane_byte1 == 0x55) && (result_lane_byte2 == 0xaa))
+							data_test_pass_sr[rank][lane] = 1;
+						else
+							data_test_pass_sr[rank][lane] = 0;
+#if DQS_TRAIN_DEBUG > 0
+						print_debug_dqs_pair("\t\t\t\t\t\t\t\t ", 0x55, "  |  ", result_lane_byte1, 4);
+						print_debug_dqs_pair("\t\t\t\t\t\t\t\t ", 0xaa, "  |  ", result_lane_byte2, 4);
+#endif
 					}
 				}
-				if(_2Ranks) {
-					mct_Read1LTestPattern_D(pMCTstat, pDCTstat, TestAddr1);	/*cache fills */
-					/* ROM vs cache compare */
-					Test0 = mct_CompareTestPatternQW0_D(pMCTstat, pDCTstat, TestAddr1, Channel, PatternA, Pass);
-					proc_IOCLFLUSH_D(TestAddr1);
-					ResetDCTWrPtr_D(dev, index_reg, Addl_Index);
 
-					print_debug_dqs("\t\t\tTrainRcvEn544: Test0 result ", Test0, 3);
+				/* 2.8.9.9.2 (7 B)
+				 * If DIMM is dual rank, only use delays that pass testing for both ranks
+				 */
+				for (lane = 0; lane < 8; lane++) {
+					if (_2Ranks) {
+						if ((data_test_pass_sr[0][lane]) && (data_test_pass_sr[1][lane]))
+							data_test_pass[lane] = 1;
+						else
+							data_test_pass[lane] = 0;
+					} else {
+						data_test_pass[lane] = data_test_pass_sr[0][lane];
+					}
+				}
 
-					if(Test0 == DQS_PASS) {
-						mct_Read1LTestPattern_D(pMCTstat, pDCTstat, TestAddr1B);	/*cache fills */
-						/* ROM vs cache compare */
-						Test1 = mct_CompareTestPatternQW0_D(pMCTstat, pDCTstat, TestAddr1B, Channel, PatternB, Pass);
-						proc_IOCLFLUSH_D(TestAddr1B);
-						ResetDCTWrPtr_D(dev, index_reg, Addl_Index);
+				/* 2.8.9.9.2 (7 E)
+				 * For each lane, update the DQS receiver delay setting in support of next iteration
+				 */
+				for (lane = 0; lane < 8; lane++) {
+					if (trained[lane] == 1)
+						continue;
 
-						print_debug_dqs("\t\t\tTrainRcvEn545: Test1 result ", Test1, 3);
-						if(Test1 == DQS_PASS) {
-							CurrTestSide1 = DQS_PASS;
+					/* 2.8.9.9.2 (7 C a)
+					 * Save the total delay of the first success after a failure for later use
+					 */
+					if ((data_test_pass[lane] == 1) && (data_test_pass_prev[lane] == 0)) {
+						candidate_total_delay[lane] = current_total_delay[lane];
+						window_det_toggle[lane] = 0;
+					}
+
+					/* 2.8.9.9.2 (7 C b)
+					 * If the current delay failed testing add 1/8 UI to the current delay
+					 */
+					if (data_test_pass[lane] == 0)
+						current_total_delay[lane] += 0x4;
+
+					/* 2.8.9.9.2 (7 C c)
+					 * If the current delay passed testing alternately add either 1/32 UI or 1/4 UI to the current delay
+					 * If 1.25 UI of delay have been added with no failures the lane is considered trained
+					 */
+					if (data_test_pass[lane] == 1) {
+						/* See if lane is trained */
+						if ((current_total_delay[lane] - candidate_total_delay[lane]) >= 0x28) {
+							trained[lane] = 1;
+
+							/* Calculate and set final lane delay value
+							 * The final delay is the candidate delay + 7/8 UI
+							 */
+							current_total_delay[lane] = candidate_total_delay[lane] + 0x1c;
+						} else {
+							if (window_det_toggle[lane] == 0) {
+								current_total_delay[lane] += 0x1;
+								window_det_toggle[lane] = 1;
+							} else {
+								current_total_delay[lane] += 0x8;
+								window_det_toggle[lane] = 0;
+							}
 						}
 					}
 				}
 
-				if(_2Ranks) {
-					if ((CurrTestSide0 == DQS_PASS) && (CurrTestSide1 == DQS_PASS)) {
-						CurrTest = DQS_PASS;
-					}
-				} else if (CurrTestSide0 == DQS_PASS) {
-					CurrTest = DQS_PASS;
+				/* Update delays in hardware */
+				write_dqs_receiver_enable_control_registers(current_total_delay, dev, (Receiver >> 1), index_reg);
+
+				/* Save previous results for comparison in the next iteration */
+				for (lane = 0; lane < 8; lane++)
+					data_test_pass_prev[lane] = data_test_pass[lane];
+			}
+
+#if DQS_TRAIN_DEBUG > 0
+			for (lane = 0; lane < 8; lane++)
+				print_debug_dqs_pair("\t\tTrainRcvEn55: Lane ", lane, " current_total_delay ", current_total_delay[lane], 2);
+#endif
+
+			/* Find highest delay value and save for later use */
+			for (lane = 0; lane < 8; lane++)
+				if (current_total_delay[lane] > CTLRMaxDelay)
+					CTLRMaxDelay = current_total_delay[lane];
+
+			/* See if any lanes failed training, and set error flags appropriately
+			 * For all trained lanes, save delay values for later use
+			 */
+			for (lane = 0; lane < 8; lane++) {
+				if (trained[lane]) {
+                        		pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver >> 1][lane] = current_total_delay[lane];
+				} else {
+					printk(BIOS_WARNING, "TrainRcvrEn: WARNING: Lane %d of receiver %d on channel %d failed training!\n", lane, Receiver, Channel);
+
+					/* Set error flags */
+					pDCTstat->ErrStatus |= 1 << SB_NORCVREN;
+					Errors |= 1 << SB_NORCVREN;
+					pDCTstat->ErrCode = SC_FatalErr;
+					pDCTstat->CSTrainFail |= 1 << Receiver;
+					pDCTstat->DimmTrainFail |= 1 << (Receiver + Channel);
 				}
-
-				/* record first pass DqsRcvEn to stack */
-				valid = mct_SavePassRcvEnDly_D(pDCTstat, RcvrEnDly, Channel, Receiver, Pass);
-
-				/* Break(1:RevF,2:DR) or not(0) FIXME: This comment deosn't make sense */
-				if(valid == 2 || (LastTest == DQS_FAIL && valid == 1)) {
-					RcvrEnDlyRmin = RcvrEnDly;
-					break;
-				}
-
-				LastTest = CurrTest;
-
-				/* swap the rank 0 pointers */
-				tmp = TestAddr0;
-				TestAddr0 = TestAddr0B;
-				TestAddr0B = tmp;
-
-				/* swap the rank 1 pointers */
-				tmp = TestAddr1;
-				TestAddr1 = TestAddr1B;
-				TestAddr1B = tmp;
-
-				print_debug_dqs("\t\t\tTrainRcvEn56: RcvrEnDly ", RcvrEnDly, 3);
-
-				RcvrEnDly++;
-
-			}	/* while RcvrEnDly */
-
-			print_debug_dqs("\t\tTrainRcvEn61: RcvrEnDly ", RcvrEnDly, 2);
-			print_debug_dqs("\t\tTrainRcvEn61: RcvrEnDlyRmin ", RcvrEnDlyRmin, 3);
-			print_debug_dqs("\t\tTrainRcvEn61: RcvrEnDlyLimit ", RcvrEnDlyLimit, 3);
-			if(RcvrEnDlyRmin == RcvrEnDlyLimit) {
-				/* no passing window */
-				pDCTstat->ErrStatus |= 1 << SB_NORCVREN;
-				Errors |= 1 << SB_NORCVREN;
-				pDCTstat->ErrCode = SC_FatalErr;
 			}
 
-			if(RcvrEnDly > (RcvrEnDlyLimit - 1)) {
-				/* passing window too narrow, too far delayed*/
-				pDCTstat->ErrStatus |= 1 << SB_SmallRCVR;
-				Errors |= 1 << SB_SmallRCVR;
-				pDCTstat->ErrCode = SC_FatalErr;
-				RcvrEnDly = RcvrEnDlyLimit - 1;
-				pDCTstat->CSTrainFail |= 1 << Receiver;
-				pDCTstat->DimmTrainFail |= 1 << (Receiver + Channel);
-			}
+			/* 2.8.9.9.2 (8)
+			 * Flush the receiver FIFO
+			 * Write one full cache line of non-0x55/0xaa data to one of the test addresses, then read it back to flush the FIFO
+			 */
 
-			/* CHB_D0_B0_RCVRDLY set in mct_Average_RcvrEnDly_Pass */
-			mct_Average_RcvrEnDly_Pass(pDCTstat, RcvrEnDly, RcvrEnDlyLimit, Channel, Receiver, Pass);
-
-			mct_SetFinalRcvrEnDly_D(pDCTstat, RcvrEnDly, Final_Value, Channel, Receiver, dev, index_reg, Addl_Index, Pass);
-
-			if(pDCTstat->ErrStatus & (1 << SB_SmallRCVR)) {
-				Errors |= 1 << SB_SmallRCVR;
-			}
-
-			RcvrEnDly += Pass1MemClkDly;
-			if(RcvrEnDly > CTLRMaxDelay) {
-				CTLRMaxDelay = RcvrEnDly;
-			}
-
-		}	/* while Receiver */
+			WriteLNTestPattern(TestAddr0 << 8, (uint8_t *)TestPattern2_D, 1);
+			mct_Read1LTestPattern_D(pMCTstat, pDCTstat, TestAddr0);
+		}
 		MaxDelay_CH[Channel] = CTLRMaxDelay;
-	}	/* for Channel */
+	}
 
 	CTLRMaxDelay = MaxDelay_CH[0];
 	if (MaxDelay_CH[1] > CTLRMaxDelay)
@@ -428,31 +612,31 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 
 #if DQS_TRAIN_DEBUG > 0
 	{
-		u8 Channel;
+		u8 ChannelDTD;
 		printk(BIOS_DEBUG, "TrainRcvrEn: CH_MaxRdLat:\n");
-		for(Channel = 0; Channel<2; Channel++) {
+		for(ChannelDTD = 0; ChannelDTD<2; ChannelDTD++) {
 			printk(BIOS_DEBUG, "Channel:%x: %x\n",
-			       Channel, pDCTstat->CH_MaxRdLat[Channel]);
+			       ChannelDTD, pDCTstat->CH_MaxRdLat[ChannelDTD]);
 		}
 	}
 #endif
 
 #if DQS_TRAIN_DEBUG > 0
 	{
-		u8 val;
-		u8 Channel, Receiver;
+		u16 valDTD;
+		u8 ChannelDTD, ReceiverDTD;
 		u8 i;
-		u8 *p;
+		u16 *p;
 
 		printk(BIOS_DEBUG, "TrainRcvrEn: CH_D_B_RCVRDLY:\n");
-		for(Channel = 0; Channel < 2; Channel++) {
-			printk(BIOS_DEBUG, "Channel:%x\n", Channel);
-			for(Receiver = 0; Receiver<8; Receiver+=2) {
-				printk(BIOS_DEBUG, "\t\tReceiver:%x:", Receiver);
-				p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver>>1];
+		for(ChannelDTD = 0; ChannelDTD < 2; ChannelDTD++) {
+			printk(BIOS_DEBUG, "Channel:%x\n", ChannelDTD);
+			for(ReceiverDTD = 0; ReceiverDTD<8; ReceiverDTD+=2) {
+				printk(BIOS_DEBUG, "\t\tReceiver:%x:", ReceiverDTD);
+				p = pDCTstat->CH_D_B_RCVRDLY[ChannelDTD][ReceiverDTD>>1];
 				for (i=0;i<8; i++) {
-					val  = p[i];
-					printk(BIOS_DEBUG, "%x ", val);
+					valDTD = p[i];
+					printk(BIOS_DEBUG, " %03x", valDTD);
 				}
 				printk(BIOS_DEBUG, "\n");
 			}
@@ -473,15 +657,6 @@ u8 mct_InitReceiver_D(struct DCTStatStruc *pDCTstat, u8 dct)
 	} else {
 		return 0;
 	}
-}
-
-static void mct_SetFinalRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly, u8 where, u8 Channel, u8 Receiver, u32 dev, u32 index_reg, u8 Addl_Index, u8 Pass/*, u8 *p*/)
-{
-	/*
-	 * Program final DqsRcvEnDly to additional index for DQS receiver
-	 *  enabled delay
-	 */
-	mct_SetRcvrEnDly_D(pDCTstat, RcvrEnDly, where, Channel, Receiver, dev, index_reg, Addl_Index, Pass);
 }
 
 static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat)
@@ -514,17 +689,20 @@ static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat)
  * Function only used once so it was inlined.
  */
 
-void mct_SetRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly,
+/* Set F2x[1, 0]9C_x[2B:10] DRAM DQS Receiver Enable Timing Control Registers
+ * See BKDG Rev. 3.62 page 268 for more information
+ */
+void mct_SetRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u16 RcvrEnDly,
 			u8 FinalValue, u8 Channel, u8 Receiver, u32 dev,
 			u32 index_reg, u8 Addl_Index, u8 Pass)
 {
 	u32 index;
 	u8 i;
-	u8 *p;
+	u16 *p;
 	u32 val;
 
-	if(RcvrEnDly == 0xFE) {
-		/*set the boudary flag */
+	if(RcvrEnDly == 0x1fe) {
+		/*set the boundary flag */
 		pDCTstat->Status |= 1 << SB_DQSRcvLimit;
 	}
 
@@ -543,27 +721,57 @@ void mct_SetRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly,
 		val = Get_NB32_index_wait(dev, index_reg, index);
 		if(i & 1) {
 			/* odd byte lane */
-			val &= ~(0xFF << 16);
-			val |= (RcvrEnDly << 16);
+			val &= ~(0x1ff << 16);
+			val |= ((RcvrEnDly & 0x1ff) << 16);
 		} else {
 			/* even byte lane */
-			val &= ~0xFF;
-			val |= RcvrEnDly;
+			val &= ~0x1ff;
+			val |= (RcvrEnDly & 0x1ff);
 		}
 		Set_NB32_index_wait(dev, index_reg, index, val);
 	}
 
 }
 
-static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u8 DQSRcvEnDly)
+/* Calculate MaxRdLatency
+ * Algorithm detailed in the Fam10h BKDG Rev. 3.62 section 2.8.9.9.5
+ */
+static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u16 DQSRcvEnDly)
 {
 	u32 dev;
 	u32 reg;
-	u16 SubTotal;
+	u32 SubTotal;
 	u32 index_reg;
 	u32 reg_off;
 	u32 val;
-	u32 valx;
+
+	uint8_t cpu_val_n;
+	uint8_t cpu_val_p;
+
+	u16 freq_tab[] = {400, 533, 667, 800};
+
+	/* Set up processor-dependent values */
+	if (pDCTstat->LogicalCPUID & AMD_DR_Dx) {
+		/* Revision D and above */
+		cpu_val_n = 4;
+		cpu_val_p = 29;
+	} else if (pDCTstat->LogicalCPUID & AMD_DR_Cx) {
+		/* Revision C */
+		uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
+		if ((package_type == PT_L1)		/* Socket F (1207) */
+			|| (package_type == PT_M2)	/* Socket AM3 */
+			|| (package_type == PT_S1)) {	/* Socket S1g<x> */
+			cpu_val_n = 10;
+			cpu_val_p = 11;
+		} else {
+			cpu_val_n = 4;
+			cpu_val_p = 29;
+		}
+	} else {
+		/* Revision B and below */
+		cpu_val_n = 10;
+		cpu_val_p = 11;
+	}
 
 	if(pDCTstat->GangedMode)
 		Channel = 0;
@@ -598,49 +806,32 @@ static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u8 DQ
 	val = Get_NB32(dev, 0x78 + reg_off);
 	SubTotal += 8 - (val & 0x0f);
 
-	/* Convert bits 7-5 (also referred to as the course delay) of
+	/* Convert bits 7-5 (also referred to as the coarse delay) of
 	 * the current (or worst case) DQS receiver enable delay to
 	 * 1/2 MEMCLKs units, rounding up, and add this to the sub-total.
 	 */
-	SubTotal += DQSRcvEnDly >> 5;	/*BOZO-no rounding up */
+	SubTotal += DQSRcvEnDly >> 5;	/* Retrieve gross delay portion of value */
 
-	/* Add 5.5 to the sub-total. 5.5 represents part of the
+	/* Add "P" to the sub-total. "P" represents part of the
 	 * processor specific constant delay value in the DRAM
 	 * clock domain.
 	 */
 	SubTotal <<= 1;		/*scale 1/2 MemClk to 1/4 MemClk */
-	SubTotal += 11;		/*add 5.5 1/2MemClk */
+	SubTotal += cpu_val_p;	/*add "P" 1/2MemClk */
+	SubTotal >>= 1;		/*scale 1/4 MemClk back to 1/2 MemClk */
 
 	/* Convert the sub-total (in 1/2 MEMCLKs) to northbridge
-	 * clocks (NCLKs) as follows (assuming DDR400 and assuming
-	 * that no P-state or link speed changes have occurred).
+	 * clocks (NCLKs)
 	 */
+	SubTotal *= 200 * ((Get_NB32(pDCTstat->dev_nbmisc, 0xd4) & 0x1f) + 4);
+	SubTotal /= freq_tab[((Get_NB32(pDCTstat->dev_dct, 0x94 + reg_off) & 0x7) - 3)];
+	SubTotal = (SubTotal + (2 - 1)) / 2;	/* Round up */
 
-	/* New formula:
-	 * SubTotal *= 3*(Fn2xD4[NBFid]+4)/(3+Fn2x94[MemClkFreq])/2 */
-	val = Get_NB32(dev, 0x94 + reg_off);
-
-	/* SubTotal div 4 to scale 1/4 MemClk back to MemClk */
-	val &= 7;
-	if (val >= 3) {
-		val <<= 1;
-	} else
-		val += 3;
-	valx = val << 2;
-
-	val = Get_NB32(pDCTstat->dev_nbmisc, 0xD4);
-	SubTotal *= ((val & 0x1f) + 4 ) * 3;
-
-	SubTotal /= valx;
-	if (SubTotal % valx) {	/* round up */
-		SubTotal++;
-	}
-
-	/* Add 5 NCLKs to the sub-total. 5 represents part of the
+	/* Add "N" NCLKs to the sub-total. "N" represents part of the
 	 * processor specific constant value in the northbridge
 	 * clock domain.
 	 */
-	SubTotal += 5;
+	SubTotal += (cpu_val_n) / 2;
 
 	pDCTstat->CH_MaxRdLat[Channel] = SubTotal;
 	if(pDCTstat->GangedMode) {
@@ -657,143 +848,6 @@ static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u8 DQ
 
 	/* program MaxRdLatency to correspond with current delay */
 	Set_NB32(dev, reg, val);
-}
-
-static u8 mct_SavePassRcvEnDly_D(struct DCTStatStruc *pDCTstat,
-			u8 rcvrEnDly, u8 Channel,
-			u8 receiver, u8 Pass)
-{
-	u8 i;
-	u8 mask_Saved, mask_Pass;
-	u8 *p;
-
-	/* calculate dimm offset
-	 * not needed for CH_D_B_RCVRDLY array
-	 */
-
-	/* cmp if there has new DqsRcvEnDly to be recorded */
-	mask_Pass = pDCTstat->DqsRcvEn_Pass;
-
-	if(Pass == SecondPass) {
-		mask_Pass = ~mask_Pass;
-	}
-
-	mask_Saved = pDCTstat->DqsRcvEn_Saved;
-	if(mask_Pass != mask_Saved) {
-
-		/* find desired stack offset according to channel/dimm/byte */
-		if(Pass == SecondPass) {
-			/* FIXME: SecondPass is never used for Barcelona p = pDCTstat->CH_D_B_RCVRDLY_1[Channel][receiver>>1]; */
-			p = 0; /* Keep the compiler happy. */
-		} else {
-			mask_Saved &= mask_Pass;
-			p = pDCTstat->CH_D_B_RCVRDLY[Channel][receiver>>1];
-		}
-		for(i=0; i < 8; i++) {
-			/* cmp per byte lane */
-			if(mask_Pass & (1 << i)) {
-				if(!(mask_Saved & (1 << i))) {
-					/* save RcvEnDly to stack, according to
-					the related Dimm/byte lane */
-					p[i] = (u8)rcvrEnDly;
-					mask_Saved |= 1 << i;
-				}
-			}
-		}
-		pDCTstat->DqsRcvEn_Saved = mask_Saved;
-	}
-	return mct_SaveRcvEnDly_D_1Pass(pDCTstat, Pass);
-}
-
-static u8 mct_CompareTestPatternQW0_D(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat,
-					u32 addr, u8 channel,
-					u8 pattern, u8 Pass)
-{
-	/* Compare only the first beat of data.  Since target addrs are cache
-	 * line aligned, the Channel parameter is used to determine which
-	 * cache QW to compare.
-	 */
-
-	u8 *test_buf;
-	u8 i;
-	u8 result;
-	u8 value;
-
-	if(Pass == FirstPass) {
-		if(pattern==1) {
-			test_buf = (u8 *)TestPattern1_D;
-		} else {
-			test_buf = (u8 *)TestPattern0_D;
-		}
-	} else {		/* Second Pass */
-		test_buf = (u8 *)TestPattern2_D;
-	}
-
-	SetUpperFSbase(addr);
-	addr <<= 8;
-
-	if((pDCTstat->Status & (1<<SB_128bitmode)) && channel ) {
-		addr += 8;	/* second channel */
-		test_buf += 8;
-	}
-
-	print_debug_dqs_pair("\t\t\t\t\t\t  test_buf = ", (u32)test_buf, "  |  addr_lo = ", addr,  4);
-	for (i=0; i<8; i++, addr ++) {
-		value = read32_fs(addr);
-		print_debug_dqs_pair("\t\t\t\t\t\t\t\t ", test_buf[i], "  |  ", value, 4);
-
-		if (value == test_buf[i]) {
-			pDCTstat->DqsRcvEn_Pass |= (1<<i);
-		} else {
-			pDCTstat->DqsRcvEn_Pass &= ~(1<<i);
-		}
-	}
-
-	result = DQS_FAIL;
-
-	if (Pass == FirstPass) {
-		/* if first pass, at least one byte lane pass
-		 * ,then DQS_PASS=1 and will set to related reg.
-		 */
-		if(pDCTstat->DqsRcvEn_Pass != 0) {
-			result = DQS_PASS;
-		} else {
-			result = DQS_FAIL;
-		}
-
-	} else {
-		/* if second pass, at least one byte lane fail
-		 * ,then DQS_FAIL=1 and will set to related reg.
-		 */
-		if(pDCTstat->DqsRcvEn_Pass != 0xFF) {
-			result = DQS_FAIL;
-		} else {
-			result = DQS_PASS;
-		}
-	}
-
-	/* if second pass, we can't find the fail until FFh,
-	 * then let it fail to save the final delay
-	 */
-	if((Pass == SecondPass) && (pDCTstat->Status & (1 << SB_DQSRcvLimit))) {
-		result = DQS_FAIL;
-		pDCTstat->DqsRcvEn_Pass = 0;
-	}
-
-	/* second pass needs to be inverted
-	 * FIXME? this could be inverted in the above code to start with...
-	 */
-	if(Pass == SecondPass) {
-		if (result == DQS_PASS) {
-			result = DQS_FAIL;
-		} else if (result == DQS_FAIL) { /* FIXME: doesn't need to be else if */
-			result = DQS_PASS;
-		}
-	}
-
-
-	return result;
 }
 
 static void mct_InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
@@ -854,7 +908,7 @@ void SetEccDQSRcvrEn_D(struct DCTStatStruc *pDCTstat, u8 Channel)
 	u32 index_reg;
 	u32 index;
 	u8 ChipSel;
-	u8 *p;
+	u16 *p;
 	u32 val;
 
 	dev = pDCTstat->dev_dct;
@@ -884,7 +938,7 @@ static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 
 	for (ChipSel = 0; ChipSel < MAX_CS_SUPPORTED; ChipSel += 2) {
 		if(mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, Channel, ChipSel)) {
-			u8 *p;
+			u16 *p;
 			p = pDCTstat->CH_D_B_RCVRDLY[Channel][ChipSel>>1];
 
 			/* DQS Delay Value of Data Bytelane
@@ -920,6 +974,10 @@ static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 	SetEccDQSRcvrEn_D(pDCTstat, Channel);
 }
 
+/* 2.8.9.9.4
+ * ECC Byte Lane Training
+ * DQS Receiver Enable Delay
+ */
 void mctSetEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA)
 {
@@ -1017,7 +1075,9 @@ static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 		avRecValue -= 3;
 	else
 	*/
-	if (pDCTstat->LogicalCPUID & AMD_DR_Cx)
+	if (pDCTstat->LogicalCPUID & AMD_DR_Dx)
+		avRecValue -= 8;
+	else if (pDCTstat->LogicalCPUID & AMD_DR_Cx)
 		avRecValue -= 8;
 	else if (pDCTstat->LogicalCPUID & AMD_DR_Bx)
 		avRecValue -= 8;

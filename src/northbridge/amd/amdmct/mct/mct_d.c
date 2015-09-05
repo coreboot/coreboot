@@ -542,7 +542,6 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 		pDCTstat = pDCTstatA + Node;
 		devx = pDCTstat->dev_map;
 		DramSelBaseAddr = 0;
-		pDCTstat = pDCTstatA + Node;
 		if (!pDCTstat->GangedMode) {
 			DramSelBaseAddr = pDCTstat->NodeSysLimit - pDCTstat->DCTSysLimit;
 			/*In unganged mode, we must add DCT0 and DCT1 to DCTSysLimit */

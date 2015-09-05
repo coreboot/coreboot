@@ -26,7 +26,6 @@ static  void print_tx(const char *strval, u32 val)
 	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 #endif
 }
-#endif
 
 static  void print_t(const char *strval)
 {
@@ -34,6 +33,7 @@ static  void print_t(const char *strval)
 	printk(BIOS_DEBUG, "%s", strval);
 #endif
 }
+#endif
 
 static  void print_tf(const char *func, const char *strval)
 {

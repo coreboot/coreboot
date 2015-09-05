@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,7 +141,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (DoIntlv) {
-		MCTMemClr_D(pMCTstat,pDCTstatA);
+		MCTMemClr_D(pMCTstat, pDCTstatA);
 		/* Program Interleaving enabled on Node 0 map only.*/
 		MemSize0 <<= bsf(Nodes);	/* MemSize=MemSize*2 (or 4, or 8) */
 		Dct0MemSize <<= bsf(Nodes);

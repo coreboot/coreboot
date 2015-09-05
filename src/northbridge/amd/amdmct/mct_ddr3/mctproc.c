@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,10 +37,10 @@ u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat, u8 dct, u32 misc2)
 		val = Get_NB32(pDCTstat->dev_dct, dct * 0x100 + 0x78);
 
 		val &= 7;
-		val = ((~val) & 0xFF) + 1;
+		val = ((~val) & 0xff) + 1;
 		val += 6;
-		val &= 0xFF;
-		misc2 &= 0xFFF8FFFF;
+		val &= 0x7;
+		misc2 &= 0xfff8ffff;
 		misc2 |= val << 16;	/* DataTxFifoWrDly */
 		if (pDCTstat->LogicalCPUID & AMD_DR_Dx)
 			misc2 |= 1 << 7; /* ProgOdtEn */
@@ -52,11 +53,13 @@ void mct_ExtMCTConfig_Cx(struct DCTStatStruc *pDCTstat)
 	u32 val;
 
 	if (pDCTstat->LogicalCPUID & (AMD_DR_Cx)) {
-		Set_NB32(pDCTstat->dev_dct, 0x11C, 0x0CE00FC0 | 1 << 29/* FlushWrOnStpGnt */);
+		/* Revision C */
+		Set_NB32(pDCTstat->dev_dct, 0x11c, 0x0ce00fc0 | 1 << 29/* FlushWrOnStpGnt */);
 
-		val = Get_NB32(pDCTstat->dev_dct, 0x1B0);
-		val &= 0xFFFFF8C0;
+		val = Get_NB32(pDCTstat->dev_dct, 0x1b0);
+		val &= ~0x73f;
 		val |= 0x101;	/* BKDG recommended settings */
-		Set_NB32(pDCTstat->dev_dct, 0x1B0, val);
+
+		Set_NB32(pDCTstat->dev_dct, 0x1b0, val);
 	}
 }

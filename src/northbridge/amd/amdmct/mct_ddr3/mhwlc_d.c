@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,6 +236,65 @@ u32 swapBankBits(sDCTStruct *pDCTData, u32 MRSValue)
 	return MRSValue;
 }
 
+static uint16_t unbuffered_dimm_nominal_termination_emrs(uint8_t number_of_dimms, uint8_t frequency_index, uint8_t rank_count, uint8_t rank)
+{
+	uint16_t term;
+
+	/* FIXME
+	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
+	 * For now assume a maximum of 2 DIMMs per channel can be installed
+	 */
+	uint8_t MaxDimmsInstallable = 2;
+
+	if (number_of_dimms == 1) {
+		if (MaxDimmsInstallable < 3) {
+			term = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
+		} else {
+			if (rank_count == 1) {
+				term = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
+			} else {
+				if (rank == 0)
+					term = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
+				else
+					term = 0x00;	/* Rtt_Nom=OFF */
+			}
+		}
+	} else {
+		if (frequency_index < 5)
+			term = 0x0044;	/* Rtt_Nom=RZQ/6=40 Ohm */
+		else
+			term = 0x0204;	/* Rtt_Nom=RZQ/8=30 Ohm */
+	}
+
+	return term;
+}
+
+static uint16_t unbuffered_dimm_dynamic_termination_emrs(uint8_t number_of_dimms, uint8_t frequency_index, uint8_t rank_count, uint8_t rank)
+{
+	uint16_t term;
+
+	/* FIXME
+	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
+	 * For now assume a maximum of 2 DIMMs per channel can be installed
+	 */
+	uint8_t MaxDimmsInstallable = 2;
+
+	if (number_of_dimms == 1) {
+		if (MaxDimmsInstallable < 3) {
+			term = 0x00;	/* Rtt_WR=off */
+		} else {
+			if (rank_count == 1)
+				term = 0x00;	/* Rtt_WR=off */
+			else
+				term = 0x200;	/* Rtt_WR=RZQ/4=60 Ohm */
+		}
+	} else {
+		term = 0x400;	/* Rtt_WR=RZQ/2=120 Ohm */
+	}
+
+	return term;
+}
+
 /*-----------------------------------------------------------------------------
  *  void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *DCTData, u8 Dimm, BOOL WL)
  *
@@ -295,48 +355,23 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 		if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
 			tempW1 = RttNomTargetRegDimm(pMCTData, pDCTData, dimm, wl, MemClkFreq, rank);
 		} else {
-			if (wl)
-			{
-				if (pDCTData->MaxDimmsInstalled == 1)
-				{
-					if ((pDCTData->DimmRanks[dimm] == 2) && (rank == 0))
-					{
-						tempW1 = 0x00;	/* Rtt_Nom=OFF */
-					}
+			if (wl) {
+				if (rank == 0) {
+					/* Get Rtt_WR for the current DIMM and rank */
+					uint16_t dynamic_term = unbuffered_dimm_dynamic_termination_emrs(pDCTData->MaxDimmsInstalled, MemClkFreq, pDCTData->DimmRanks[dimm], rank);
+
+					/* Convert dynamic termination code to corresponding nominal termination code */
+					if (dynamic_term == 0x200)
+						tempW1 = 0x04;
+					else if (dynamic_term == 0x400)
+						tempW1 = 0x40;
 					else
-					{
-						tempW1 = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
-					}
+						tempW1 = 0x0;
+				} else {
+					tempW1 = unbuffered_dimm_nominal_termination_emrs(pDCTData->MaxDimmsInstalled, MemClkFreq, pDCTData->DimmRanks[dimm], rank);
 				}
-				else	/* 2 Dimms or more per channel */
-				{
-					if ((pDCTData->DimmRanks[dimm] == 2) && (rank == 1))
-					{
-						tempW1 = 0x00;	/* Rtt_Nom=OFF */
-					}
-					else
-					{
-						if (MemClkFreq == 6) {
-							tempW1 = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
-						} else {
-							tempW1 = 0x40;/* Rtt_Nom=RZQ/2=120 Ohm */
-						}
-					}
-				}
-			}
-			else {	/* 1 or 4 Dimms per channel */
-				if ((pDCTData->MaxDimmsInstalled == 1) || (pDCTData->MaxDimmsInstalled == 4))
-				{
-					tempW1 = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
-				}
-				else	/* 2 or 3 Dimms per channel */
-				{
-					if (MemClkFreq < 5) {
-						tempW1 = 0x0044;	/* Rtt_Nom=RZQ/6=40 Ohm */
-					} else {
-						tempW1 = 0x0204;	/* Rtt_Nom=RZQ/8=30 Ohm */
-					}
-				}
+			} else {
+				tempW1 = unbuffered_dimm_nominal_termination_emrs(pDCTData->MaxDimmsInstalled, MemClkFreq, pDCTData->DimmRanks[dimm], rank);
 			}
 		}
 		tempW=tempW|tempW1;
@@ -353,20 +388,22 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 			else
 			{
 				/* Disable the output drivers of all other ranks for
-				 * the target DIMM. */
+				 * the target DIMM.
+				 */
 				tempW = bitTestSet(tempW1, Qoff);
 			}
 		}
-		/* program MrsAddress[5,1]=output driver impedance control (DIC):
-		 * based on F2x[1,0]84[DrvImpCtrl] */
+		/* Program MrsAddress[5,1]=output driver impedance control (DIC):
+		 * based on F2x[1,0]84[DrvImpCtrl]
+		 */
 		tempW1 = get_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
 				FUN_DCT, DRAM_MRS_REGISTER, DrvImpCtrlStart, DrvImpCtrlEnd);
-		if (bitTest(tempW1,1))
-		{tempW = bitTestSet(tempW, 5);}
-		if (bitTest(tempW1,0))
-		{tempW = bitTestSet(tempW, 1);}
+		if (bitTest(tempW1, 1))
+			tempW = bitTestSet(tempW, 5);
+		if (bitTest(tempW1, 0))
+			tempW = bitTestSet(tempW, 1);
 
-		tempW = swapAddrBits_wl(pDCTData,tempW);
+		tempW = swapAddrBits_wl(pDCTData, tempW);
 
 		set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 			DRAM_INIT, MrsAddressStart, MrsAddressEnd, tempW);
@@ -404,29 +441,10 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 		if ((pDCTData->LogicalCPUID & AMD_DR_Bx) && (pDCTData->Status[DCT_STATUS_REGISTERED]))
 			tempW+=0x8;
 		/* determine Rtt_WR for WL & Normal mode */
-		if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
+		if (pDCTData->Status[DCT_STATUS_REGISTERED])
 			tempW1 = RttWrRegDimm(pMCTData, pDCTData, dimm, wl, MemClkFreq, rank);
-		} else {
-			if (wl)
-			{
-				tempW1 = 0x00;	/* Rtt_WR=off */
-			}
-			else
-			{
-				if (pDCTData->MaxDimmsInstalled == 1)
-				{
-					tempW1 = 0x00;	/* Rtt_WR=off */
-				}
-				else
-				{
-					if (MemClkFreq == 6) {
-						tempW1 = 0x200;	/* Rtt_WR=RZQ/4=60 Ohm */
-					} else {
-						tempW1 = 0x400;	/* Rtt_WR=RZQ/2 */
-					}
-				}
-			}
-		}
+		else
+			tempW1 = unbuffered_dimm_dynamic_termination_emrs(pDCTData->MaxDimmsInstalled, MemClkFreq, pDCTData->DimmRanks[dimm], rank);
 		tempW=tempW|tempW1;
 		tempW = swapAddrBits_wl(pDCTData,tempW);
 		set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
@@ -483,38 +501,10 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 					}
 
 					/* determine Rtt_Nom for WL & Normal mode */
-					if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
+					if (pDCTData->Status[DCT_STATUS_REGISTERED])
 						tempW1 = RttNomNonTargetRegDimm(pMCTData, pDCTData, currDimm, wl, MemClkFreq, rank);
-					} else {
-						if (wl)
-						{
-							if ((pDCTData->DimmRanks[currDimm] == 2) && (rank == 1))
-							{
-								tempW1 = 0x00;	/* Rtt_Nom=OFF */
-							}
-							else
-							{
-								if (MemClkFreq < 5) {
-									tempW1 = 0x0044;/* Rtt_Nom=RZQ/6=40 Ohm */
-								} else {
-									tempW1 = 0x0204;/* Rtt_Nom=RZQ/8=30 Ohm */
-								}
-							}
-						}
-						else {	/* 1 or 4 Dimms per channel */
-							if (pDCTData->MaxDimmsInstalled == 4)
-							{
-								tempW1 = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
-							}
-							else {	/* 2 or 3 Dimms per channel */
-								if (MemClkFreq < 5) {
-									tempW1 = 0x0044;	/* Rtt_Nom=RZQ/6=40 Ohm */
-								} else {
-									tempW1 = 0x0204;	/* Rtt_Nom=RZQ/8=30 Ohm */
-								}
-							}
-						}
-					}
+					else
+						tempW1 = unbuffered_dimm_nominal_termination_emrs(pDCTData->MaxDimmsInstalled, MemClkFreq, pDCTData->DimmRanks[currDimm], rank);
 					tempW=tempW|tempW1;
 					/* program MrsAddress[5,1]=output driver impedance control (DIC):
 					 * based on F2x[1,0]84[DrvImpCtrl] */
@@ -560,22 +550,10 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 					if ((pDCTData->LogicalCPUID & AMD_DR_Bx) && (pDCTData->Status[DCT_STATUS_REGISTERED]))
 						tempW+=0x8;
 					/* determine Rtt_WR for WL & Normal mode */
-					if (pDCTData->Status[DCT_STATUS_REGISTERED]) {
+					if (pDCTData->Status[DCT_STATUS_REGISTERED])
 						tempW1 = RttWrRegDimm(pMCTData, pDCTData, currDimm, wl, MemClkFreq, rank);
-					} else {
-						if (wl)
-						{
-							tempW1 = 0x00;	/* Rtt_WR=off */
-						}
-						else
-						{
-							if (MemClkFreq == 6) {
-								tempW1 = 0x200;	/* Rtt_WR=RZQ/4=60 Ohm */
-							} else {
-								tempW1 = 0x400;	/* Rtt_WR=RZQ/2 */
-							}
-						}
-					}
+					else
+						tempW1 = unbuffered_dimm_dynamic_termination_emrs(pDCTData->MaxDimmsInstalled, MemClkFreq, pDCTData->DimmRanks[currDimm], rank);
 					tempW=tempW|tempW1;
 					tempW = swapAddrBits_wl(pDCTData,tempW);
 					set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
@@ -646,9 +624,14 @@ void programODT(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm)
  */
 void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 {
-	u8 ByteLane, Seed_Gross, Seed_Fine;
+	u8 ByteLane, Seed_Gross, Seed_Fine, MemClkFreq;
 	u32 Value, Addr;
 	u16 Addl_Data_Offset, Addl_Data_Port;
+	u16 freq_tab[] = {400, 533, 667, 800};
+
+	/* MemClkFreq: 3: 400MHz; 4: 533MHz; 5: 667MHz; 6: 800MHz */
+	MemClkFreq = get_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
+				FUN_DCT, DRAM_CONFIG_HIGH, 0, 2);
 
 	/* Program F2x[1, 0]9C_x08[WrLvOdt[3:0]] to the proper ODT settings for the
 	 * current memory subsystem configuration.
@@ -656,12 +639,13 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 	programODT(pMCTData, pDCTData, dimm);
 
 	/* Program F2x[1,0]9C_x08[WrLvOdtEn]=1 */
-	if (pDCTData->LogicalCPUID & (AMD_DR_Cx | AMD_DR_Dx))
+	if (pDCTData->LogicalCPUID & (AMD_DR_Cx | AMD_DR_Dx)) {
 		set_DCT_ADDR_Bits(pDCTData, pDCTData->DctTrain, pDCTData->NodeId, FUN_DCT,
 				DRAM_ADD_DCT_PHY_CONTROL_REG, WrLvOdtEn, WrLvOdtEn, (u32)1);
+	}
 	else
 	{
-		/* Program WrLvOdtEn=1 through set bit 12 of D3CSODT reg offset 0 for Rev.B*/
+		/* Program WrLvOdtEn=1 through set bit 12 of D3CSODT reg offset 0 for Rev.B */
 		if (pDCTData->DctTrain)
 		{
 			Addl_Data_Offset=0x198;
@@ -687,7 +671,6 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 
 	/* Wait 10 MEMCLKs to allow for ODT signal settling. */
 	pMCTData->AgesaDelay(10);
-	ByteLane = 0;
 	if (pass == 1)
 	{
 		if (pDCTData->Status[DCT_STATUS_REGISTERED])
@@ -705,10 +688,17 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 		}
 		else
 		{
-			Seed_Gross = 0x00;
-			Seed_Fine = 0x1A;
+			if (MemClkFreq == 6) {
+				/* DDR-800 */
+				Seed_Gross = 0x00;
+				Seed_Fine = 0x1a;
+			} else {
+				/* Use settings for DDR-400 (interpolated from BKDG) */
+				Seed_Gross = 0x00;
+				Seed_Fine = 0x0d;
+			}
 		}
-		while(ByteLane < MAX_BYTE_LANES)
+		for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++)
 		{
 			/* Program an initialization value to registers F2x[1, 0]9C_x[51:50] and
 			 * F2x[1, 0]9C_x52 to set the gross and fine delay for all the byte lane fields
@@ -720,35 +710,32 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 			 */
 			pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
 			pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
-			ByteLane++;
 		}
-	} else if (pDCTData->Status[DCT_STATUS_REGISTERED]) {		/* For Pass 2 */
+	} else { 		/* Pass 2 */
 		/* From BKDG, Write Leveling Seed Value. */
-		/* TODO: The unbuffered DIMMs are unstable on the code below. So temporarily it is
-		 * only for registered DIMMs. */
 		u32 RegisterDelay, SeedTotal;
-		u8 MemClkFreq;
-		u16 freq_tab[] = {400, 533, 667, 800};
-		while(ByteLane < MAX_BYTE_LANES)
+		for (ByteLane = 0; ByteLane < MAX_BYTE_LANES; ByteLane++)
 		{
-			MemClkFreq = get_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
-					      FUN_DCT, DRAM_CONFIG_HIGH, 0, 2);
 			if (pDCTData->Status[DCT_STATUS_REGISTERED])
 				RegisterDelay = 0x20; /* TODO: ((RCW2 & BIT0) == 0) ? 0x20 : 0x30; */
 			else
 				RegisterDelay = 0;
-			SeedTotal = (pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1F) |
-				pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] << 5;
+			SeedTotal = (pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1f) |
+				(pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] << 5);
 			/* SeedTotalPreScaling = (the total delay value in F2x[1, 0]9C_x[4A:30] from pass 1 of write levelization
 			   training) - RegisterDelay. */
-			/* MemClkFreq: 3: 400MHz; 4: 533MHz; 5: 667MHz; 6: 800MHz */
-			SeedTotal = (u16) (RegisterDelay + ((((u32) SeedTotal - RegisterDelay) *
-							     freq_tab[MemClkFreq-3]) / 400));
-			Seed_Gross = (SeedTotal & 0x20) != 0 ? 1 : 2;
-			Seed_Fine = SeedTotal & 0x1F;
+			SeedTotal = (uint16_t) (RegisterDelay + ((((uint64_t) SeedTotal - RegisterDelay) *
+								freq_tab[MemClkFreq-3] * 100) / (freq_tab[0] * 100)));
+			Seed_Gross = SeedTotal / 32;
+			Seed_Fine = SeedTotal & 0x1f;
+			if (Seed_Gross == 0)
+				Seed_Gross = 0;
+			else if (Seed_Gross & 0x1)
+				Seed_Gross = 1;
+			else
+				Seed_Gross = 2;
 			pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
 			pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
-			ByteLane ++;
 		}
 	}
 

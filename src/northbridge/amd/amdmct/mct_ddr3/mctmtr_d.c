@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -201,12 +202,13 @@ static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType)
 
 void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 {
-/* UMA memory size may need splitting the MTRR configuration into two
-  Before training use NB_BottomIO or the physical memory size to set the MTRRs.
-  After training, add UMAMemTyping function to reconfigure the MTRRs based on
-  NV_BottomUMA (for UMA systems only).
-  This two-step process allows all memory to be cached for training
-*/
+	/* UMA memory size may need splitting the MTRR configuration into two
+	 * Before training use NB_BottomIO or the physical memory size to set the MTRRs.
+	 * After training, add UMAMemTyping function to reconfigure the MTRRs based on
+	 * NV_BottomUMA (for UMA systems only).
+	 * This two-step process allows all memory to be cached for training
+	 */
+
 	u32 Bottom32bIO, Cache32bTOP;
 	u32 val;
 	u32 addr;

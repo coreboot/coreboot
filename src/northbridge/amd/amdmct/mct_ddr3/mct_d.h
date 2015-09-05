@@ -499,7 +499,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 		/* CHB DIMM0 Byte 0 - 7  TxDqs */
 		/* CHB DIMM1 Byte 0 - 7  TxDqs */
 		/* CHB DIMM1 Byte 0 - 7  TxDqs */
-	u8 CH_D_B_RCVRDLY[2][4][8];	/* [A/B] [DIMM0-3] [DQS] */
+	u16 CH_D_B_RCVRDLY[2][4][8];	/* [A/B] [DIMM0-3] [DQS] */
 		/* CHA DIMM 0 Receiver Enable Delay*/
 		/* CHA DIMM 1 Receiver Enable Delay*/
 		/* CHA DIMM 2 Receiver Enable Delay*/
@@ -509,7 +509,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 		/* CHB DIMM 1 Receiver Enable Delay*/
 		/* CHB DIMM 2 Receiver Enable Delay*/
 		/* CHB DIMM 3 Receiver Enable Delay*/
-	u8 CH_D_BC_RCVRDLY[2][4];
+	u16 CH_D_BC_RCVRDLY[2][4];
 		/* CHA DIMM 0 - 4 Check Byte Receiver Enable Delay*/
 		/* CHB DIMM 0 - 4 Check Byte Receiver Enable Delay*/
 	u8 DIMMValidDCT[2];	/* DIMM# in DCT0*/
@@ -769,7 +769,7 @@ u8 mct_checkNumberOfDqsRcvEn_1Pass(u8 pass);
 u32 SetupDqsPattern_1PassA(u8 Pass);
 u32 SetupDqsPattern_1PassB(u8 Pass);
 u8 mct_Get_Start_RcvrEnDly_1Pass(u8 Pass);
-u8 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly, u8 RcvrEnDlyLimit, u8 Channel, u8 Receiver, u8 Pass);
+u16 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat, u16 RcvrEnDly, u16 RcvrEnDlyLimit, u8 Channel, u8 Receiver, u8 Pass);
 void CPUMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 uint64_t mctGetLogicalCPUID(u32 Node);
@@ -779,7 +779,7 @@ void mct_TrainDQSPos_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 void mctSetEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void TrainMaxReadLatency_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void mct_EndDQSTraining_D(struct MCTStatStruc *pMCTstat,struct DCTStatStruc *pDCTstatA);
-void mct_SetRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly, u8 FinalValue, u8 Channel, u8 Receiver, u32 dev, u32 index_reg, u8 Addl_Index, u8 Pass);
+void mct_SetRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u16 RcvrEnDly, u8 FinalValue, u8 Channel, u8 Receiver, u32 dev, u32 index_reg, u8 Addl_Index, u8 Pass);
 void SetEccDQSRcvrEn_D(struct DCTStatStruc *pDCTstat, u8 Channel);
 void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u32 dct);
 void InterleaveBanks_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct);

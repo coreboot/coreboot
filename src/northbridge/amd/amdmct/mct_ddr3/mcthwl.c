@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +26,6 @@ static void EnableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStr
 static void DisableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 static void PrepareC_MCT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 static void PrepareC_DCT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct);
-static void MultiplyDelay(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct);
 static void Restore_OnDimmMirror(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 static void Clear_OnDimmMirror(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 
@@ -154,7 +154,6 @@ static void PhyWLPass2(struct MCTStatStruc *pMCTstat,
 		Clear_OnDimmMirror(pMCTstat, pDCTstat);
 		SetDllSpeedUp_D(pMCTstat, pDCTstat, dct);
 		DisableAutoRefresh_D(pMCTstat, pDCTstat);
-		MultiplyDelay(pMCTstat, pDCTstat, dct);
 		for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm ++) {
 			if (DIMMValid & (1 << (dimm << 1)))
 				AgesaHwWlPhase1(pDCTstat->C_MCTPtr, pDCTstat->C_DCTPtr[dct], dimm, SecondPass);
@@ -162,6 +161,9 @@ static void PhyWLPass2(struct MCTStatStruc *pMCTstat,
 	}
 }
 
+/* Write Levelization Training
+ * Algorithm detailed in the Fam10h BKDG Rev. 3.62 section 2.8.9.9.1
+ */
 static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat)
 {

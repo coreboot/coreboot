@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,9 +59,9 @@ void PrepareC_DCT(struct MCTStatStruc *pMCTstat,
 	pDCTstat->C_DCTPtr[dct]->LogicalCPUID = pDCTstat->LogicalCPUID;
 
 	for (dimm = 0; dimm < MAX_DIMMS; dimm++) {
-		if (DimmValid & (1 << dimm))
+		if (DimmValid & (1 << (dimm << 1)))
 			pDCTstat->C_DCTPtr[dct]->DimmPresent[dimm] = 1;
-		if (Dimmx8Present & (1 << dimm))
+		if (Dimmx8Present & (1 << (dimm << 1)))
 			pDCTstat->C_DCTPtr[dct]->DimmX8Present[dimm] = 1;
 	}
 
@@ -88,9 +89,9 @@ void PrepareC_DCT(struct MCTStatStruc *pMCTstat,
 		u8  DimmRanks;
 		if (DimmValid & (1 << (dimm << 1))) {
 			DimmRanks = 1;
-			if (pDCTstat->DimmDRPresent & (1 << (dimm+dct)))
+			if (pDCTstat->DimmDRPresent & (1 << ((dimm << 1) + dct)))
 				DimmRanks = 2;
-			else if (pDCTstat->DimmQRPresent & (1 << (dimm+dct)))
+			else if (pDCTstat->DimmQRPresent & (1 << ((dimm << 1) + dct)))
 				DimmRanks = 4;
 		} else
 			DimmRanks = 0;
@@ -249,35 +250,6 @@ static void ChangeMemClk(struct MCTStatStruc *pMCTstat,
 	}
 }
 
-/* Multiply the previously saved delay values in Pass 1, step #5 by
-   (target frequency)/400 to find the gross and fine delay initialization
-   values at the target frequency.
- */
-void MultiplyDelay(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, u8 dct)
-{
-	u16 index;
-	u8 Multiplier;
-	u8 gross, fine;
-	u16 total;
-
-	Multiplier = pDCTstat->TargetFreq;
-
-	for (index=0; index < MAX_BYTE_LANES*MAX_LDIMMS; index ++) {
-		gross = pDCTstat->C_DCTPtr[dct]->WLGrossDelay[index];
-		fine = pDCTstat->C_DCTPtr[dct]->WLFineDelay[index];
-
-		total = gross << 5 | fine;
-		total *= Multiplier;
-		if (total % 3)
-			total = total / 3 + 1;
-		else
-			total = total / 3;
-		pDCTstat->C_DCTPtr[dct]->WLGrossDelay[index] = (total & 0xFF) >> 5;
-		pDCTstat->C_DCTPtr[dct]->WLFineDelay[index] = total & 0x1F;
-	}
-}
-
 /*
  * the DRAM controller to bring the DRAMs out of self refresh mode.
  */
@@ -352,9 +324,9 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 
 		if (!DCT1Present)
 			pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[0];
-		else if (pDCTstat->GangedMode) {
+		else if (pDCTstat->GangedMode)
 			pDCTstat->CSPresent = 0;
-		} else
+		else
 			pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[1];
 
 		FreqChgCtrlWrd(pMCTstat, pDCTstat);

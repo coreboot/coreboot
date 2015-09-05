@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +18,7 @@
  * Foundation, Inc.
  */
 
-/* The socket type F (1207), Fr2, G (1207) are not tested.
+/* The socket type Fr2, G (1207) are not tested.
  */
 
 static void Get_ChannelPS_Cfg0_D(u8 MAAdimms, u8 Speed, u8 MAAload,
@@ -79,8 +80,7 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 			else
 				*AddrTmgCTL = 0x00353935;
 		}
-	}
-	else {
+	} else {
 		if(Speed == 4) {
 			*AddrTmgCTL = 0x00000000;
 			if (MAAdimms == 3)

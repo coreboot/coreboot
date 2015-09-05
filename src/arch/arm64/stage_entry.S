@@ -136,12 +136,12 @@ ENDPROC(arm64_c_environment)
 	2002:
 .endm
 
-ENTRY(__rmodule_entry)
+ENTRY(_start)
 	split_bsp_path
 	/* Save the arguments to secmon in x25 */
 	mov	x25, x0
 	b	arm64_c_environment
-ENDPROC(__rmodule_entry)
+ENDPROC(_start)
 
 /*
  * Setup SCTLR so that:

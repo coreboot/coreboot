@@ -20,9 +20,9 @@ $(SIPI_DOTO): $(dir $(SIPI_ELF))sipi_vector.rmodules_$(ARCH-ramstage-y).o
 	$(CC_rmodules_$(ARCH-ramstage-y)) $(CFLAGS_rmodules_$(ARCH-ramstage-y)) -nostdlib -r -o $@ $^
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0,x86_32))
+$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_DOTO), 0,x86_32))
 else
-$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0,x86_64))
+$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_DOTO), 0,x86_64))
 endif
 
 $(SIPI_BIN): $(SIPI_RMOD)

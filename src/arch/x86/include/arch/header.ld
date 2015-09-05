@@ -24,7 +24,7 @@ PHDRS
 	to_load PT_LOAD;
 }
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE || ENV_RMODULE
 ENTRY(_start)
 #elif ENV_ROMSTAGE
 ENTRY(protected_start)

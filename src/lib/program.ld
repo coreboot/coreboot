@@ -38,14 +38,14 @@
 	*(.text);
 	*(.text.*);
 
-#if ENV_RAMSTAGE || ENV_ROMSTAGE
+#if ENV_RAMSTAGE || ENV_ROMSTAGE || ENV_RMODULE
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_cbmem_init_hooks = .;
 	KEEP(*(.rodata.cbmem_init_hooks));
 	_ecbmem_init_hooks = .;
 #endif
 
-#if ENV_RAMSTAGE
+#if ENV_RAMSTAGE || ENV_RMODULE
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_pci_drivers = .;
 	KEEP(*(.rodata.pci_driver));
@@ -79,13 +79,20 @@
 .data : {
 	. = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);
 	_data = .;
+
+#if ENV_RMODULE
+	_rmodule_params = .;
+	KEEP(*(.module_parameters));
+	_ermodule_params = .;
+#endif
+
 	*(.data);
 	*(.data.*);
 
 #ifdef __PRE_RAM__
 	PROVIDE(_preram_cbmem_console = .);
 	PROVIDE(_epreram_cbmem_console = _preram_cbmem_console);
-#elif ENV_RAMSTAGE
+#elif ENV_RAMSTAGE || ENV_RMODULE
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bs_init_begin = .;
 	KEEP(*(.bs_init));
@@ -116,7 +123,7 @@
 .heap : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_heap = .;
-	. += CONFIG_HEAP_SIZE;
+	. += (ENV_RMODULE ? __heap_size : CONFIG_HEAP_SIZE);
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_eheap = .;
 }

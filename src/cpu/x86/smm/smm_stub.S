@@ -59,10 +59,8 @@ fallback_stack_top:
 
 .text
 .code16
-.global smm_handler_start
-.global __rmodule_entry
-__rmodule_entry:
-smm_handler_start:
+.global _start
+_start:
 	movl	$(smm_relocate_gdt), %ebx
 	data32	lgdt (%ebx)
 

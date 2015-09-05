@@ -56,10 +56,8 @@ ap_count:
 
 .text
 .code16
-.global ap_start
-.global __rmodule_entry
-__rmodule_entry:
-ap_start:
+.global _start
+_start:
 	cli
 	xorl	%eax, %eax
 	movl	%eax, %cr3    /* Invalidate TLB*/
@@ -74,9 +72,9 @@ ap_start:
 
 	/* The gdtaddr needs to be releative to the data segment in order
 	 * to properly dereference it. The .text section comes first in an
-	 * rmodule so ap_start can be used as a proxy for the load address. */
+	 * rmodule so _start can be used as a proxy for the load address. */
 	movl	$(gdtaddr), %ebx
-	sub	$(ap_start), %ebx
+	sub	$(_start), %ebx
 
 	data32 lgdt (%ebx)
 

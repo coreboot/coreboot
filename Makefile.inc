@@ -72,6 +72,9 @@ classes-y := ramstage romstage bootblock smm smmstub cpu_microcode libverstage v
 # Add dynamic classes for rmodules
 $(foreach supported_arch,$(ARCH_SUPPORTED), \
 	    $(eval $(call define_class,rmodules_$(supported_arch),$(supported_arch))))
+# Provide a macro to determine environment for free standing rmodules.
+$(foreach supported_arch,$(ARCH_SUPPORTED), \
+	$(eval rmodules_$(supported_arch)-generic-ccopts += -D__RMODULE__))
 
 #######################################################################
 # Helper functions for math and various file placement matters.

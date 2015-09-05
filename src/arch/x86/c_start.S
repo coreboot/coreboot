@@ -23,8 +23,6 @@ thread_stacks:
 	.code32
 #endif
 	.globl _start
-	.globl __rmodule_entry
-__rmodule_entry:
 _start:
 	cli
 	lgdt	%cs:gdtaddr

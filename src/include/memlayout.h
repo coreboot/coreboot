@@ -43,9 +43,9 @@
 #define ARCH_STAGE_HAS_BSS_SECTION 1
 #endif
 
-/* Default is that currently ramstage and smm only has a heap. */
+/* Default is that currently ramstage, smm, and rmodules have a heap. */
 #ifndef ARCH_STAGE_HAS_HEAP_SECTION
-#define ARCH_STAGE_HAS_HEAP_SECTION (ENV_RAMSTAGE || ENV_SMM)
+#define ARCH_STAGE_HAS_HEAP_SECTION (ENV_RAMSTAGE || ENV_SMM || ENV_RMODULE)
 #endif
 
 #define STR(x) #x

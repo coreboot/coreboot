@@ -402,11 +402,11 @@ static int populate_program_info(struct rmod_context *ctx)
 		break;
 	}
 
-	if (populate_sym(ctx, "_module_params_begin", &ctx->parameters_begin,
+	if (populate_sym(ctx, "_rmodule_params", &ctx->parameters_begin,
 	                 nsyms, strtab))
 		return -1;
 
-	if (populate_sym(ctx, "_module_params_end", &ctx->parameters_end,
+	if (populate_sym(ctx, "_ermodule_params", &ctx->parameters_end,
 	                 nsyms, strtab))
 		return -1;
 
@@ -416,8 +416,8 @@ static int populate_program_info(struct rmod_context *ctx)
 	if (populate_sym(ctx, "_ebss", &ctx->bss_end, nsyms, strtab))
 		return -1;
 
-	if (populate_sym(ctx, "__rmodule_entry", &ctx->entry, nsyms, strtab))
-		return -1;
+	/* Honor the entry point within the ELF header. */
+	ctx->entry = ehdr->e_entry;
 
 	/* Link address is the virtual address of the program segment. */
 	ctx->link_addr = ctx->phdr->p_vaddr;

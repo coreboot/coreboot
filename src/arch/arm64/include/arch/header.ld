@@ -17,6 +17,8 @@
  * Foundation, Inc.
  */
 
+#include <rules.h>
+
 /* We use ELF as output format. So that we can debug the code in some form. */
 OUTPUT_FORMAT("elf64-littleaarch64", "elf64-littleaarch64", "elf64-littleaarch64")
 OUTPUT_ARCH(aarch64)
@@ -26,7 +28,13 @@ PHDRS
 	to_load PT_LOAD;
 }
 
-#ifdef __BOOTBLOCK__
+#if ENV_BOOTBLOCK
 TARGET(binary)
 #endif
+
+/* secmon uses rmodules */
+#if ENV_RMODULE
+ENTRY(_start)
+#else
 ENTRY(stage_entry)
+#endif

@@ -113,7 +113,7 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
-romstage-y += romstage.ld
+romstage-y += memlayout.ld
 
 # Chipset specific assembly stubs in the romstage program flow. Certain
 # boards have more than one assembly stub so collect those and put them
@@ -192,7 +192,7 @@ $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(roms
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld --oformat $(romstage-oformat)
 
-$(objgenerated)/romstage_null.ld: $(obj)/arch/x86/romstage.romstage.ld
+$(objgenerated)/romstage_null.ld: $(obj)/arch/x86/memlayout.romstage.ld
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
@@ -294,11 +294,11 @@ $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 
 else
 
-ramstage-y += ramstage.ld
+ramstage-y += memlayout.ld
 
-$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(obj)/arch/x86/ramstage.ramstage.ld
+$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(obj)/arch/x86/memlayout.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) $(CPPFLAGS) --gc-sections -o $@ -L$(obj) $< -T $(obj)/arch/x86/ramstage.ramstage.ld
+	$(LD_ramstage) $(CPPFLAGS) --gc-sections -o $@ -L$(obj) $< -T $(obj)/arch/x86/memlayout.ramstage.ld
 
 endif
 

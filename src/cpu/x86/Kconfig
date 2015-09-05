@@ -89,6 +89,13 @@ config SMM_MODULE_HEAP_SIZE
 	  This option determines the size of the heap within the SMM handler
 	  modules.
 
+config SMM_LAPIC_REMAP_MITIGATION
+	bool
+	default y if NORTHBRIDGE_INTEL_I945
+	default y if NORTHBRIDGE_INTEL_GM45
+	default y if NORTHBRIDGE_INTEL_NEHALEM
+	default n
+
 config X86_AMD_FIXED_MTRRS
 	bool
 	default n

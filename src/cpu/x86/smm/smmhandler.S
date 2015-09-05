@@ -25,6 +25,10 @@
  * to 64k if we can though.
  */
 
+#include <kconfig.h>
+#include <config.h>
+#define LAPIC_BASE_MSR 0x1b
+
 /*
  * +--------------------------------+ 0xaffff
  * |  Save State Map Node 0         |
@@ -74,8 +78,43 @@
  *
  * All the bad magic is not all that bad after all.
  */
+#define SMM_START 0xa0000
+#define SMM_END   0xb0000
+#if SMM_END <= SMM_START
+#error invalid SMM configuration
+#endif
 .global smm_handler_start
 smm_handler_start:
+#if IS_ENABLED(CONFIG_SMM_LAPIC_REMAP_MITIGATION)
+	/* Check if the LAPIC register block overlaps with SMM.
+	 * This block needs to work without data accesses because they
+	 * may be routed into the LAPIC register block.
+	 * Code accesses, on the other hand, are never routed to LAPIC,
+	 * which is what makes this work in the first place.
+	 */
+	mov	$LAPIC_BASE_MSR, %ecx
+	rdmsr
+	and	$(~0xfff), %eax
+	sub	$(SMM_START), %eax
+	cmp	$(SMM_END - SMM_START), %eax
+	ja	untampered_lapic
+1:
+	/* emit "Crash" on serial */
+	mov	$(CONFIG_TTYS0_BASE), %dx
+	mov	$'C', %al
+	out	%al, (%dx)
+	mov	$'r', %al
+	out	%al, (%dx)
+	mov	$'a', %al
+	out	%al, (%dx)
+	mov	$'s', %al
+	out	%al, (%dx)
+	mov	$'h', %al
+	out	%al, (%dx)
+	/* now crash for real */
+	ud2
+untampered_lapic:
+#endif
 	movw    $(smm_gdtptr16 - smm_handler_start + SMM_HANDLER_OFFSET), %bx
 	data32  lgdt %cs:(%bx)
 

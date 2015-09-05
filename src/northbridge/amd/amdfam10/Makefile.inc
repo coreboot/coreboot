@@ -28,4 +28,6 @@ s3nv-file := $(obj)/coreboot_s3nv.rom
 s3nv-align := $(CONFIG_S3_DATA_SIZE)
 s3nv-type := raw
 
+ramstage-$(CONFIG_DIMM_DDR3) += ../amdmct/mct_ddr3/s3utils.c
+
 endif

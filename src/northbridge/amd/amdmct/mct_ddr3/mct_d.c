@@ -282,91 +282,101 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	u8 Node, NodesWmem;
 	u32 node_sys_base;
 
+	uint8_t s3resume = acpi_is_wakeup_s3();
+
 restartinit:
 	mctInitMemGPIOs_A_D();		/* Set any required GPIOs*/
-	NodesWmem = 0;
-	node_sys_base = 0;
-	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
-		struct DCTStatStruc *pDCTstat;
-		pDCTstat = pDCTstatA + Node;
+	if (s3resume) {
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: Restoring DCT configuration from NVRAM\n");
+		restore_mct_information_from_nvram();
+#endif
+	} else {
+		NodesWmem = 0;
+		node_sys_base = 0;
+		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+			struct DCTStatStruc *pDCTstat;
+			pDCTstat = pDCTstatA + Node;
 
-		/* Zero out data structures to avoid false detection of DIMMs */
-		memset(pDCTstat, 0, sizeof(struct DCTStatStruc));
+			/* Zero out data structures to avoid false detection of DIMMs */
+			memset(pDCTstat, 0, sizeof(struct DCTStatStruc));
 
-		/* Initialize data structures */
-		pDCTstat->Node_ID = Node;
-		pDCTstat->dev_host = PA_HOST(Node);
-		pDCTstat->dev_map = PA_MAP(Node);
-		pDCTstat->dev_dct = PA_DCT(Node);
-		pDCTstat->dev_nbmisc = PA_NBMISC(Node);
-		pDCTstat->NodeSysBase = node_sys_base;
+			/* Initialize data structures */
+			pDCTstat->Node_ID = Node;
+			pDCTstat->dev_host = PA_HOST(Node);
+			pDCTstat->dev_map = PA_MAP(Node);
+			pDCTstat->dev_dct = PA_DCT(Node);
+			pDCTstat->dev_nbmisc = PA_NBMISC(Node);
+			pDCTstat->NodeSysBase = node_sys_base;
 
-		printk(BIOS_DEBUG, "%s: mct_init Node %d\n", __func__, Node);
-		mct_init(pMCTstat, pDCTstat);
-		mctNodeIDDebugPort_D();
-		pDCTstat->NodePresent = NodePresent_D(Node);
-		if (pDCTstat->NodePresent) {		/* See if Node is there*/
-			printk(BIOS_DEBUG, "%s: clear_legacy_Mode\n", __func__);
-			clear_legacy_Mode(pMCTstat, pDCTstat);
-			pDCTstat->LogicalCPUID = mctGetLogicalCPUID_D(Node);
+			printk(BIOS_DEBUG, "%s: mct_init Node %d\n", __func__, Node);
+			mct_init(pMCTstat, pDCTstat);
+			mctNodeIDDebugPort_D();
+			pDCTstat->NodePresent = NodePresent_D(Node);
+			if (pDCTstat->NodePresent) {		/* See if Node is there*/
+				printk(BIOS_DEBUG, "%s: clear_legacy_Mode\n", __func__);
+				clear_legacy_Mode(pMCTstat, pDCTstat);
+				pDCTstat->LogicalCPUID = mctGetLogicalCPUID_D(Node);
 
-			printk(BIOS_DEBUG, "%s: mct_InitialMCT_D\n", __func__);
-			mct_InitialMCT_D(pMCTstat, pDCTstat);
+				printk(BIOS_DEBUG, "%s: mct_InitialMCT_D\n", __func__);
+				mct_InitialMCT_D(pMCTstat, pDCTstat);
 
-			printk(BIOS_DEBUG, "%s: mctSMBhub_Init\n", __func__);
-			mctSMBhub_Init(Node);		/* Switch SMBUS crossbar to proper node*/
+				printk(BIOS_DEBUG, "%s: mctSMBhub_Init\n", __func__);
+				mctSMBhub_Init(Node);		/* Switch SMBUS crossbar to proper node*/
 
-			printk(BIOS_DEBUG, "%s: mct_initDCT\n", __func__);
-			mct_initDCT(pMCTstat, pDCTstat);
-			if (pDCTstat->ErrCode == SC_FatalErr) {
-				goto fatalexit;		/* any fatal errors?*/
-			} else if (pDCTstat->ErrCode < SC_StopError) {
-				NodesWmem++;
-			}
-		}	/* if Node present */
-		node_sys_base = pDCTstat->NodeSysBase;
-		node_sys_base += (pDCTstat->NodeSysLimit + 2) & ~0x0F;
+				printk(BIOS_DEBUG, "%s: mct_initDCT\n", __func__);
+				mct_initDCT(pMCTstat, pDCTstat);
+				if (pDCTstat->ErrCode == SC_FatalErr) {
+					goto fatalexit;		/* any fatal errors?*/
+				} else if (pDCTstat->ErrCode < SC_StopError) {
+					NodesWmem++;
+				}
+			}	/* if Node present */
+			node_sys_base = pDCTstat->NodeSysBase;
+			node_sys_base += (pDCTstat->NodeSysLimit + 2) & ~0x0F;
+		}
+		if (NodesWmem == 0) {
+			printk(BIOS_DEBUG, "No Nodes?!\n");
+			goto fatalexit;
+		}
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: SyncDCTsReady_D\n");
+		SyncDCTsReady_D(pMCTstat, pDCTstatA);	/* Make sure DCTs are ready for accesses.*/
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: HTMemMapInit_D\n");
+		HTMemMapInit_D(pMCTstat, pDCTstatA);	/* Map local memory into system address space.*/
+		mctHookAfterHTMap();
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: CPUMemTyping_D\n");
+		CPUMemTyping_D(pMCTstat, pDCTstatA);	/* Map dram into WB/UC CPU cacheability */
+		mctHookAfterCPU();			/* Setup external northbridge(s) */
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: DQSTiming_D\n");
+		DQSTiming_D(pMCTstat, pDCTstatA);	/* Get Receiver Enable and DQS signal timing*/
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
+		UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: :OtherTiming\n");
+		mct_OtherTiming(pMCTstat, pDCTstatA);
+
+
+		if (ReconfigureDIMMspare_D(pMCTstat, pDCTstatA)) { /* RESET# if 1st pass of DIMM spare enabled*/
+			goto restartinit;
+		}
+
+		InterleaveNodes_D(pMCTstat, pDCTstatA);
+		InterleaveChannels_D(pMCTstat, pDCTstatA);
+
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D: ECCInit_D\n");
+		if (ECCInit_D(pMCTstat, pDCTstatA)) {		/* Setup ECC control and ECC check-bits*/
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
+			MCTMemClr_D(pMCTstat,pDCTstatA);
+		}
+
+		mct_FinalMCT_D(pMCTstat, pDCTstatA);
+		printk(BIOS_DEBUG, "mctAutoInitMCT_D Done: Global Status: %x\n", pMCTstat->GStatus);
 	}
-	if (NodesWmem == 0) {
-		printk(BIOS_DEBUG, "No Nodes?!\n");
-		goto fatalexit;
-	}
-
-	printk(BIOS_DEBUG, "mctAutoInitMCT_D: SyncDCTsReady_D\n");
-	SyncDCTsReady_D(pMCTstat, pDCTstatA);	/* Make sure DCTs are ready for accesses.*/
-
-	printk(BIOS_DEBUG, "mctAutoInitMCT_D: HTMemMapInit_D\n");
-	HTMemMapInit_D(pMCTstat, pDCTstatA);	/* Map local memory into system address space.*/
-	mctHookAfterHTMap();
-
-	printk(BIOS_DEBUG, "mctAutoInitMCT_D: CPUMemTyping_D\n");
-	CPUMemTyping_D(pMCTstat, pDCTstatA);	/* Map dram into WB/UC CPU cacheability */
-	mctHookAfterCPU();			/* Setup external northbridge(s) */
-
-	printk(BIOS_DEBUG, "mctAutoInitMCT_D: DQSTiming_D\n");
-	DQSTiming_D(pMCTstat, pDCTstatA);	/* Get Receiver Enable and DQS signal timing*/
-
-	printk(BIOS_DEBUG, "mctAutoInitMCT_D: UMAMemTyping_D\n");
-	UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
-
-	printk(BIOS_DEBUG, "mctAutoInitMCT_D: :OtherTiming\n");
-	mct_OtherTiming(pMCTstat, pDCTstatA);
-
-	if (ReconfigureDIMMspare_D(pMCTstat, pDCTstatA)) { /* RESET# if 1st pass of DIMM spare enabled*/
-		goto restartinit;
-	}
-
-	InterleaveNodes_D(pMCTstat, pDCTstatA);
-	InterleaveChannels_D(pMCTstat, pDCTstatA);
-
-	printk(BIOS_DEBUG, "mctAutoInitMCT_D: ECCInit_D\n");
-	if (ECCInit_D(pMCTstat, pDCTstatA)) {		/* Setup ECC control and ECC check-bits*/
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
-		MCTMemClr_D(pMCTstat,pDCTstatA);
-	}
-
-	mct_FinalMCT_D(pMCTstat, pDCTstatA);
-	printk(BIOS_DEBUG, "mctAutoInitMCT_D Done: Global Status: %x\n", pMCTstat->GStatus);
 
 	return;
 

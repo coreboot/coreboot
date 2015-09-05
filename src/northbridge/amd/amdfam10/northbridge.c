@@ -54,6 +54,10 @@
 #include <sb_cimx.h>
 #endif
 
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#include "../amdmct/mct_ddr3/s3utils.h"
+#endif
+
 struct amdfam10_sysconf_t sysconf;
 
 #define FX_DEVS NODE_NUMS
@@ -1413,6 +1417,10 @@ static void root_complex_enable_dev(struct device *dev)
 	/* Do not delay UMA setup, as a device on the PCI bus may evaluate
 	   the global uma_memory variables already in its enable function. */
 	if (!done) {
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && IS_ENABLED(CONFIG_DIMM_DDR3)
+		save_mct_information_to_nvram();
+#endif
+
 		setup_bsp_ramtop();
 		setup_uma_memory();
 		done = 1;

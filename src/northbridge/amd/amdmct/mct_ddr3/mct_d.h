@@ -24,6 +24,8 @@
 #ifndef MCT_D_H
 #define MCT_D_H
 
+#include <cpu/x86/msr.h>
+
 /*===========================================================================
 	CPU - K8/FAM10
 ===========================================================================*/
@@ -594,6 +596,116 @@ struct DCTStatStruc {		/* A per Node structure*/
 	char DimmPartNumber[MAX_DIMMS_SUPPORTED][SPD_PARTN_LENGTH];
 	uint16_t DimmRevisionNumber[MAX_DIMMS_SUPPORTED];
 	uint32_t DimmSerialNumber[MAX_DIMMS_SUPPORTED];
+} __attribute__((packed));
+
+struct amd_s3_persistent_mct_channel_data {
+	/* Stage 1 (1 dword) */
+	uint32_t f2x110;
+
+	/* Stage 2 (88 dwords) */
+	uint32_t f1x40;
+	uint32_t f1x44;
+	uint32_t f1x48;
+	uint32_t f1x4c;
+	uint32_t f1x50;
+	uint32_t f1x54;
+	uint32_t f1x58;
+	uint32_t f1x5c;
+	uint32_t f1x60;
+	uint32_t f1x64;
+	uint32_t f1x68;
+	uint32_t f1x6c;
+	uint32_t f1x70;
+	uint32_t f1x74;
+	uint32_t f1x78;
+	uint32_t f1x7c;
+	uint32_t f1xf0;
+	uint32_t f1x120;
+	uint32_t f1x124;
+	uint32_t f2x10c;
+	uint32_t f2x114;
+	uint32_t f2x118;
+	uint32_t f2x11c;
+	uint32_t f2x1b0;
+	uint32_t f3x44;
+	uint64_t msr0000020[16];
+	uint64_t msr00000250;
+	uint64_t msr00000258;
+	uint64_t msr0000026[8];
+	uint64_t msr000002ff;
+	uint64_t msrc0010010;
+	uint64_t msrc001001a;
+	uint64_t msrc001001d;
+	uint64_t msrc001001f;
+
+	/* Stage 3 (21 dwords) */
+	uint32_t f2x40;
+	uint32_t f2x44;
+	uint32_t f2x48;
+	uint32_t f2x4c;
+	uint32_t f2x50;
+	uint32_t f2x54;
+	uint32_t f2x58;
+	uint32_t f2x5c;
+	uint32_t f2x60;
+	uint32_t f2x64;
+	uint32_t f2x68;
+	uint32_t f2x6c;
+	uint32_t f2x78;
+	uint32_t f2x7c;
+	uint32_t f2x80;
+	uint32_t f2x84;
+	uint32_t f2x88;
+	uint32_t f2x8c;
+	uint32_t f2x90;
+	uint32_t f2xa4;
+	uint32_t f2xa8;
+
+	/* Stage 4 (1 dword) */
+	uint32_t f2x94;
+
+	/* Stage 6 (33 dwords) */
+	uint32_t f2x9cx0d0f0_f_8_0_0_8_4_0[9][3];	/* [lane][setting] */
+	uint32_t f2x9cx00;
+	uint32_t f2x9cx0a;
+	uint32_t f2x9cx0c;
+
+	/* Stage 7 (1 dword) */
+	uint32_t f2x9cx04;
+
+	/* Stage 9 (2 dwords) */
+	uint32_t f2x9cx0d0fe006;
+	uint32_t f2x9cx0d0fe007;
+
+	/* Stage 10 (78 dwords) */
+	uint32_t f2x9cx10[12];
+	uint32_t f2x9cx20[12];
+	uint32_t f2x9cx3_0_0_3_1[4][3];		/* [dimm][setting] */
+	uint32_t f2x9cx3_0_0_7_5[4][3];		/* [dimm][setting] */
+	uint32_t f2x9cx0d;
+	uint32_t f2x9cx0d0f0_f_0_13[9];		/* [lane] */
+	uint32_t f2x9cx0d0f0_f_0_30[9];		/* [lane] */
+	uint32_t f2x9cx0d0f2_f_0_30[4];		/* [pad select] */
+	uint32_t f2x9cx0d0f8_8_4_0[2][3];	/* [offset][pad select] */
+	uint32_t f2x9cx0d0f812f;
+
+	/* Stage 11 (24 dwords) */
+	uint32_t f2x9cx30[12];
+	uint32_t f2x9cx40[12];
+
+	/* Other (1 dword) */
+	uint32_t f3x58;
+
+	/* TOTAL: 250 dwords */
+} __attribute__((packed));
+
+struct amd_s3_persistent_node_data {
+	uint32_t node_present;
+	struct amd_s3_persistent_mct_channel_data channel[2];
+} __attribute__((packed));
+
+struct amd_s3_persistent_data {
+	struct amd_s3_persistent_node_data node[MAX_NODES_SUPPORTED];
 } __attribute__((packed));
 
 /*===============================================================================

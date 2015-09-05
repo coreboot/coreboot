@@ -1,4 +1,5 @@
 /* Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2012 ChromeOS Authors
  * 2005.6 by yhlu
  * 2006.3 yhlu add copy data from CAR to ram
  */
@@ -9,6 +10,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/car.h>
 #include <arch/acpi.h>
+#include <romstage_handoff.h>
 #include "cbmem.h"
 #include "cpu/amd/car/disable_cache_as_ram.c"
 
@@ -95,6 +97,13 @@ void post_cache_as_ram(void)
 {
 	void *resume_backup_memory = NULL;
 
+	struct romstage_handoff *handoff;
+	handoff = romstage_handoff_find_or_add();
+	if (handoff != NULL)
+		handoff->s3_resume = acpi_is_wakeup_s3();
+	else
+		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+
 	int s3resume = acpi_is_wakeup_s3();
 	if (s3resume) {
 		cbmem_recovery(s3resume);
@@ -140,6 +149,7 @@ void cache_as_ram_new_stack (void)
 
 	if (acpi_is_wakeup_s3()) {
 		resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+		print_car_debug("Resume backup memory location: %p\n", resume_backup_memory);
 	}
 	prepare_ramstage_region(resume_backup_memory);
 

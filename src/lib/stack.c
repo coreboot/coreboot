@@ -18,6 +18,7 @@ it with the version available from LANL.
  */
 /* Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
  * rminnich@lanl.gov
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  */
 
 #include <assert.h>
@@ -33,9 +34,9 @@ int checkstack(void *top_of_stack, int core)
 	u32 *stack = (u32 *) (top_of_stack - stack_size);
 
 	if (stack[0] != 0xDEADBEEF){
-		printk(BIOS_ERR, "Stack overrun on CPU%d. "
+		printk(BIOS_ERR, "Stack overrun on CPU%d (address %p overwritten). "
 			"Increase stack from current %zu bytes\n",
-			core, stack_size);
+			core, stack, stack_size);
 		BUG();
 		return -1;
 	}

@@ -218,9 +218,12 @@ define rmodule_link
 $(strip $(1)): $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) $(obj)/lib/rmodule.rmodules_$(4).ld | $$(RMODTOOL)
 	$$(LD_rmodules_$(4)) $$(LDFLAGS_rmodules_$(4)) $(RMODULE_LDFLAGS) -T $(obj)/lib/rmodule.rmodules_$(4).ld --defsym=__heap_size=$(strip $(3)) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --end-group
 	$$(NM_rmodules_$(4)) -n $$@ > $$(basename $$@).map
-
-$(strip $(1)).rmod: $(strip $(1))
-	$$(RMODTOOL) -i $$^ -o $$@
 endef
 
 endif
+
+$(objcbfs)/%.debug.rmod: $(objcbfs)/%.debug | $(RMODTOOL)
+	$(RMODTOOL) -i $< -o $@
+
+$(obj)/%.elf.rmod: $(obj)/%.elf | $(RMODTOOL)
+	$(RMODTOOL) -i $< -o $@

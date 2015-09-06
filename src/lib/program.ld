@@ -38,14 +38,14 @@
 	*(.text);
 	*(.text.*);
 
-#if ENV_RAMSTAGE || ENV_ROMSTAGE || ENV_RMODULE
+#if ENV_RAMSTAGE || ENV_ROMSTAGE
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_cbmem_init_hooks = .;
 	KEEP(*(.rodata.cbmem_init_hooks));
 	_ecbmem_init_hooks = .;
 #endif
 
-#if ENV_RAMSTAGE || ENV_RMODULE
+#if ENV_RAMSTAGE
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_pci_drivers = .;
 	KEEP(*(.rodata.pci_driver));
@@ -92,7 +92,7 @@
 #ifdef __PRE_RAM__
 	PROVIDE(_preram_cbmem_console = .);
 	PROVIDE(_epreram_cbmem_console = _preram_cbmem_console);
-#elif ENV_RAMSTAGE || ENV_RMODULE
+#elif ENV_RAMSTAGE
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bs_init_begin = .;
 	KEEP(*(.bs_init));

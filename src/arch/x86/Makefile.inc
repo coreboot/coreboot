@@ -282,25 +282,17 @@ ramstage-libs ?=
 
 ifeq ($(CONFIG_RELOCATABLE_RAMSTAGE),y)
 
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-$(eval $(call rmodule_link,$(objcbfs)/ramstage.debug, $(objgenerated)/ramstage.o, $(CONFIG_HEAP_SIZE),x86_32))
-else
-$(eval $(call rmodule_link,$(objcbfs)/ramstage.debug, $(objgenerated)/ramstage.o, $(CONFIG_HEAP_SIZE),x86_64))
-endif
-
 # The rmodule_link defintion creates an elf file with .rmod extension.
 $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 	cp $< $@
 
-else
+endif
 
 ramstage-y += memlayout.ld
 
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(obj)/arch/x86/memlayout.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(LD_ramstage) $(CPPFLAGS) $(LDFLAGS_ramstage) -o $@ -L$(obj) $< -T $(obj)/arch/x86/memlayout.ramstage.ld
-
-endif
 
 $(objgenerated)/ramstage.o: $$(ramstage-objs) $(COMPILER_RT_ramstage) $$(ramstage-libs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

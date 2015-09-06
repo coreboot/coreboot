@@ -344,7 +344,7 @@ static int collect_relocations(struct rmod_context *ctx)
 
 static int
 populate_sym(struct rmod_context *ctx, const char *sym_name, Elf64_Addr *addr,
-             int nsyms, const char *strtab)
+             int nsyms, const char *strtab, int optional)
 {
 	int i;
 	Elf64_Sym *syms;
@@ -360,6 +360,13 @@ populate_sym(struct rmod_context *ctx, const char *sym_name, Elf64_Addr *addr,
 		*addr = syms[i].st_value;
 		return 0;
 	}
+
+	if (optional) {
+		DEBUG("optional symbol '%s' not found.\n", sym_name);
+		*addr = 0;
+		return 0;
+	}
+
 	ERROR("symbol '%s' not found.\n", sym_name);
 	return -1;
 }
@@ -403,17 +410,17 @@ static int populate_program_info(struct rmod_context *ctx)
 	}
 
 	if (populate_sym(ctx, "_rmodule_params", &ctx->parameters_begin,
-	                 nsyms, strtab))
+	                 nsyms, strtab, 1))
 		return -1;
 
 	if (populate_sym(ctx, "_ermodule_params", &ctx->parameters_end,
-	                 nsyms, strtab))
+	                 nsyms, strtab, 1))
 		return -1;
 
-	if (populate_sym(ctx, "_bss", &ctx->bss_begin, nsyms, strtab))
+	if (populate_sym(ctx, "_bss", &ctx->bss_begin, nsyms, strtab, 0))
 		return -1;
 
-	if (populate_sym(ctx, "_ebss", &ctx->bss_end, nsyms, strtab))
+	if (populate_sym(ctx, "_ebss", &ctx->bss_end, nsyms, strtab, 0))
 		return -1;
 
 	/* Honor the entry point within the ELF header. */

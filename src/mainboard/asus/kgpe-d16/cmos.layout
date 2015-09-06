@@ -26,8 +26,8 @@ entries
 401          1       e       1        interleave_chip_selects
 402          1       e       1        interleave_nodes
 403          1       e       1        interleave_memory_channels
-404          2       e       8        max_mem_clock
-406          1       e       2        multi_core
+404          4       e       8        max_mem_clock
+408          1       e       2        multi_core
 412          4       e       6        debug_level
 440          4       e       9        slow_cpu
 444          1       e       1        nmi
@@ -37,6 +37,7 @@ entries
 457          1       e       1        ECC_redirection
 458          4       e       11       hypertransport_speed_limit
 462          2       e       12       minimum_memory_voltage
+464          1       e       2        compute_unit_siblings
 477          1       e       1        ieee1394_controller
 728        256       h       0        user_data
 984         16       h       0        check_sum
@@ -74,10 +75,12 @@ enumerations
 6     6     Information
 6     7     Debug
 6     8     Spew
-8     0     DDR3-1600
-8     1     DDR3-1333
-8     2     DDR3-1066
-8     3     DDR3-800
+8     0     DDR3-1866
+8     1     DDR3-1600
+8     2     DDR3-1333
+8     3     DDR3-1066
+8     4     DDR3-800
+8     5     DDR3-667
 9     0     off
 9     1     87.5%
 9     2     75.0%

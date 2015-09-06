@@ -220,21 +220,25 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 			device pci 18.2 on end
 			device pci 18.3 on end
 			device pci 18.4 on end
+			device pci 18.5 on end
 			device pci 19.0 on end		# Socket 0 node 1
 			device pci 19.1 on end
 			device pci 19.2 on end
 			device pci 19.3 on end
 			device pci 19.4 on end
+			device pci 19.5 on end
 			device pci 1a.0 on end		# Socket 1 node 0
 			device pci 1a.1 on end
 			device pci 1a.2 on end
 			device pci 1a.3 on end
 			device pci 1a.4 on end
+			device pci 1a.5 on end
 			device pci 1b.0 on end		# Socket 1 node 1
 			device pci 1b.1 on end
 			device pci 1b.2 on end
 			device pci 1b.3 on end
 			device pci 1b.4 on end
+			device pci 1b.5 on end
 		end
 	end
 end

@@ -38,6 +38,7 @@
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct5572d/nct5572d.h>
 #include <cpu/x86/bist.h>
+#include <smp/spinlock.h>
 // #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sb700/smbus.h>
@@ -206,20 +207,20 @@ void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
 		if (pDCTstat->NodePresent && (node % 2)) {
 			/* Set voltages */
 			if (node_allowed_voltages & 0x8) {
-				set_voltage = 1150;
+				set_voltage = 0x8;
 				set_ddr3_voltage(socket, 3);
 			} else if (node_allowed_voltages & 0x4) {
-				set_voltage = 1250;
+				set_voltage = 0x4;
 				set_ddr3_voltage(socket, 2);
 			} else if (node_allowed_voltages & 0x2) {
-				set_voltage = 1350;
+				set_voltage = 0x2;
 				set_ddr3_voltage(socket, 1);
 			} else {
-				set_voltage = 1500;
+				set_voltage = 0x1;
 				set_ddr3_voltage(socket, 0);
 			}
 
-			/* Save final DIMM voltages for SMBIOS use */
+			/* Save final DIMM voltages for MCT and SMBIOS use */
 			if (pDCTstat->NodePresent) {
 				for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
 					pDCTstat->DimmConfiguredVoltage[dimm] = set_voltage;
@@ -233,6 +234,9 @@ void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
 			}
 		}
 	}
+
+	/* Allow the DDR supply voltages to settle */
+	udelay(100000);
 }
 
 static void set_peripheral_control_lines(void) {
@@ -372,7 +376,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_mb_resource_map();
 	post_code(0x36);
 
-	/* wait for all the APs core0 started by finalize_node_setup. */
+	/* Wait for all the APs core0 started by finalize_node_setup. */
 	/* FIXME: A bunch of cores are going to start output to serial at once.
 	 * It would be nice to fix up prink spinlocks for ROM XIP mode.
 	 * I think it could be done by putting the spinlock flag in the cache
@@ -384,6 +388,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sr5650_early_setup();
 	sb7xx_51xx_early_setup();
 
+	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
+		/* Core0 on each node is configured. Now setup any additional cores. */
+		printk(BIOS_DEBUG, "start_other_cores()\n");
+		start_other_cores();
+		post_code(0x37);
+		wait_all_other_cores_started(bsp_apicid);
+	}
+
 	if (IS_ENABLED(CONFIG_SET_FIDVID)) {
 		msr = rdmsr(0xc0010071);
 		printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
@@ -393,11 +405,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		post_code(0x39);
 
+		#if IS_ENABLED(CONFIG_SET_FIDVID)
 		if (!warm_reset_detect(0)) {			// BSP is node 0
 			init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
 		} else {
 			init_fidvid_stage2(bsp_apicid, 0);	// BSP is node 0
 		}
+		#endif
 
 		post_code(0x3A);
 
@@ -406,21 +420,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	}
 
-	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
-		/* Core0 on each node is configured. Now setup any additional cores. */
-		printk(BIOS_DEBUG, "start_other_cores()\n");
-		start_other_cores();
-		post_code(0x37);
-		wait_all_other_cores_started(bsp_apicid);
-	}
-
 	post_code(0x38);
 
 	init_timer(); // Need to use TMICT to synconize FID/VID
 
 	sr5650_htinit();
 
-	/* Reset for HT, FIDVID, PLL and errata changes to take affect. */
+	/* Reset for HT, FIDVID, PLL and errata changes to take effect. */
 	if (!warm_reset_detect(0)) {
 		printk(BIOS_INFO, "...WARM RESET...\n\n\n");
 		soft_reset();

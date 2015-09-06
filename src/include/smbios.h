@@ -409,9 +409,11 @@ struct smbios_type17 {
 	u8 asset_tag;
 	u8 part_number;
 	u8 attributes;
-	u16 extended_size;
+	u32 extended_size;
 	u16 clock_speed;
-
+	u16 minimum_voltage;
+	u16 maximum_voltage;
+	u16 configured_voltage;
 	char eos[2];
 } __attribute__((packed));
 

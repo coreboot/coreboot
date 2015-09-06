@@ -187,6 +187,16 @@ compute_sum() {
 	printf "(checksum created. ${RED}Note. Please upload sum/$1.cksum if the corresponding archive is upgraded.)${NC}"
 }
 
+download_showing_percentage() {
+	url=$1
+	printf " ..${red}  0%%"
+	wget --no-check-certificate $url 2>&1 | while read line; do
+		printf "${red}"
+		echo $line | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
+		printf "${NC}"
+	done
+}
+
 download() {
 	package=$1
 	archive="$(eval echo \$$package"_ARCHIVE")"
@@ -200,14 +210,13 @@ download() {
 		printf "(downloading from $archive)"
 		rm -f tarballs/$FILE
 		cd tarballs
-		wget --no-check-certificate -q $archive
-		wgetret=$?
+		download_showing_percentage $archive
 		cd ..
 		compute_sum $FILE
 	fi
 
 	if [ ! -f tarballs/$FILE ]; then
-		printf "\n${RED}Failed to download $FILE. Wget returns $wgetret. See 'man wget'.${NC}\n"
+		printf "\n${RED}Failed to download $FILE.${NC}\n"
 		exit 1
 	fi
 	printf "\n"

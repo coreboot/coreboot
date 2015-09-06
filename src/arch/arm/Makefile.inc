@@ -63,7 +63,7 @@ bootblock-y += clock.c
 
 $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.bootblock.ld --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group
+	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.bootblock.ld --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM
 
@@ -75,7 +75,7 @@ ifeq ($(CONFIG_ARCH_VERSTAGE_ARM),y)
 
 $(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld --whole-archive --start-group $(filter-out %.ld,$(verstage-objs)) $(objgenerated)/libverstage.a --end-group
+	$(LD_verstage) $(LDFLAGS_verstage) -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld --whole-archive --start-group $(filter-out %.ld,$(verstage-objs)) $(objgenerated)/libverstage.a --end-group
 
 verstage-y += boot.c
 verstage-y += div0.c
@@ -110,7 +110,7 @@ VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm.o
 
 $(objcbfs)/romstage.debug: $$(romstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) -nostdlib --gc-sections -static -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.romstage.ld --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group
+	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.romstage.ld --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group
 
 endif # CONFIG_ARCH_ROMSTAGE_ARM
 
@@ -139,6 +139,6 @@ ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
 $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) -nostdlib --gc-sections -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.ramstage.ld --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group
+	$(LD_ramstage) $(LDFLAGS_ramstage) -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.ramstage.ld --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group
 
 endif # CONFIG_ARCH_RAMSTAGE_ARM

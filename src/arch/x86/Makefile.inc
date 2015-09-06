@@ -180,7 +180,7 @@ endif
 
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld --oformat $(romstage-oformat)
+	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld --oformat $(romstage-oformat)
 	LANG=C LC_ALL= $(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders 2>&1 | \
 	grep -v "Empty loadable segment detected" && \
 	$(NM_romstage) $(objcbfs)/romstage_null.offenders | grep -q ""; if [ $$? -eq 0 ]; then \
@@ -190,7 +190,7 @@ $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.
 
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) --gc-sections -nostdlib -nostartfiles -static -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld --oformat $(romstage-oformat)
+	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld --oformat $(romstage-oformat)
 
 $(objgenerated)/romstage_null.ld: $(obj)/arch/x86/memlayout.romstage.ld
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
@@ -298,7 +298,7 @@ ramstage-y += memlayout.ld
 
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(obj)/arch/x86/memlayout.ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) $(CPPFLAGS) --gc-sections -o $@ -L$(obj) $< -T $(obj)/arch/x86/memlayout.ramstage.ld
+	$(LD_ramstage) $(CPPFLAGS) $(LDFLAGS_ramstage) -o $@ -L$(obj) $< -T $(obj)/arch/x86/memlayout.ramstage.ld
 
 endif
 

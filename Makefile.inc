@@ -278,6 +278,8 @@ CFLAGS_common += -Wstrict-aliasing -Wshadow
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections
 
+LDFLAGS_common := --gc-sections -nostdlib -nostartfiles -static --emit-relocs
+
 ifeq ($(CONFIG_COMPILER_GCC),y)
 # cf. commit f69a99db (coreboot: x86: enable gc-sections)
 CFLAGS_common += -Wno-unused-but-set-variable

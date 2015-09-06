@@ -84,7 +84,7 @@ $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf.rmod
 else # CONFIG_SMM_TSEG
 
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld
-	$(LD_smm) -nostdlib -nostartfiles --gc-sections -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/cpu/x86/smm/smm.o
+	$(LD_smm) $(LDFLAGS_smm) -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/cpu/x86/smm/smm.o
 	$(NM_smm) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
 	$(OBJCOPY_smm) -O binary $(obj)/cpu/x86/smm/smm.elf $@
 

@@ -205,7 +205,7 @@ ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c
 
-RMODULE_LDFLAGS  := -nostartfiles --gc-sections --emit-relocs -z defs -Bsymbolic
+RMODULE_LDFLAGS  := -z defs -Bsymbolic
 
 # rmodule_link_rules is a function that should be called with:
 # (1) the object name to link
@@ -216,7 +216,7 @@ RMODULE_LDFLAGS  := -nostartfiles --gc-sections --emit-relocs -z defs -Bsymbolic
 # rmdoule is named $(1).rmod
 define rmodule_link
 $(strip $(1)): $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) $(obj)/lib/rmodule.rmodules_$(4).ld | $$(RMODTOOL)
-	$$(LD_rmodules_$(4)) $(RMODULE_LDFLAGS) -T $(obj)/lib/rmodule.rmodules_$(4).ld --defsym=__heap_size=$(strip $(3)) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --end-group
+	$$(LD_rmodules_$(4)) $$(LDFLAGS_rmodules_$(4)) $(RMODULE_LDFLAGS) -T $(obj)/lib/rmodule.rmodules_$(4).ld --defsym=__heap_size=$(strip $(3)) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --end-group
 	$$(NM_rmodules_$(4)) -n $$@ > $$(basename $$@).map
 
 $(strip $(1)).rmod: $(strip $(1))

@@ -284,5 +284,6 @@ enum {
 void mt_pll_post_init(void);
 void mt_pll_init(void);
 void mt_pll_set_aud_div(u32 rate);
+void mt_pll_enable_ssusb_clk(void);
 
 #endif /* SOC_MEDIATEK_MT8173_PLL_H */

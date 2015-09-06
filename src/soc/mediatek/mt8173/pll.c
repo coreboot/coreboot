@@ -443,6 +443,23 @@ void mt_pll_init(void)
 		(1 << 4) | (1 << 2) | (1 << 0));
 }
 
+/* Turn on ADA_SSUSB_XTAL_CK 26MHz */
+void mt_pll_enable_ssusb_clk(void)
+{
+	/* set  RG_LTECLKSQ_EN */
+	setbits_le32(&mt8173_apmixed->ap_pll_con0, 0x1);
+	udelay(100); /* wait for PLL stable */
+
+	/* set RG_LTECLKSQ_LPF_EN & DA_REF2USB_TX_EN */
+	setbits_le32(&mt8173_apmixed->ap_pll_con0, 0x1 << 1);
+	setbits_le32(&mt8173_apmixed->ap_pll_con2, 0x1);
+	udelay(100); /* wait for PLL stable */
+
+	/* set DA_REF2USB_TX_LPF_EN & DA_REF2USB_TX_OUT_EN */
+	setbits_le32(&mt8173_apmixed->ap_pll_con2, (0x1 << 2) | (0x1 << 1));
+}
+
+
 /* after pmic_init */
 void mt_pll_post_init(void)
 {

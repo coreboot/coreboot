@@ -5,6 +5,7 @@
  * Copyright (C) 2001 Ronald G. Minnich
  * Copyright (C) 2005 Yinghai Lu
  * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -490,6 +491,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		}
 	}
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
+	checkstack(_estack, 0);
 	for(i = 1; i <= last_cpu_index; i++)
 		checkstack((void *)stacks[i] + CONFIG_STACK_SIZE, i);
 }

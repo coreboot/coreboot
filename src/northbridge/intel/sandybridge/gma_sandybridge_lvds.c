@@ -33,8 +33,6 @@
 #include <device/pci_def.h>
 #include <device/pci_rom.h>
 
-#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
-
 static void train_link(u8 *mmio)
 {
 	/* Clear interrupts. */
@@ -145,6 +143,9 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	u32 link_m1;
 	u32 link_n1 = 0x00080000;
 
+	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+		return 0;
+
 	write32(mmio + 0x00070080, 0x00000000);
 	write32(mmio + DSPCNTR(0), 0x00000000);
 	write32(mmio + 0x00071180, 0x00000000);
@@ -206,34 +207,34 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	target_frequency = info->lvds_dual_channel ? mode->pixel_clock
 		: (2 * mode->pixel_clock);
-#if !IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	vga_textmode_init();
-#else
-	vga_sr_write(1, 1);
-	vga_sr_write(0x2, 0xf);
-	vga_sr_write(0x3, 0x0);
-	vga_sr_write(0x4, 0xe);
-	vga_gr_write(0, 0x0);
-	vga_gr_write(1, 0x0);
-	vga_gr_write(2, 0x0);
-	vga_gr_write(3, 0x0);
-	vga_gr_write(4, 0x0);
-	vga_gr_write(5, 0x0);
-	vga_gr_write(6, 0x5);
-	vga_gr_write(7, 0xf);
-	vga_gr_write(0x10, 0x1);
-	vga_gr_write(0x11, 0);
 
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		vga_sr_write(1, 1);
+		vga_sr_write(0x2, 0xf);
+		vga_sr_write(0x3, 0x0);
+		vga_sr_write(0x4, 0xe);
+		vga_gr_write(0, 0x0);
+		vga_gr_write(1, 0x0);
+		vga_gr_write(2, 0x0);
+		vga_gr_write(3, 0x0);
+		vga_gr_write(4, 0x0);
+		vga_gr_write(5, 0x0);
+		vga_gr_write(6, 0x5);
+		vga_gr_write(7, 0xf);
+		vga_gr_write(0x10, 0x1);
+		vga_gr_write(0x11, 0);
 
-	edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
+		edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
 
-	write32(mmio + DSPCNTR(0), DISPPLANE_BGRX888);
-	write32(mmio + DSPADDR(0), 0);
-	write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
-	write32(mmio + DSPSURF(0), 0);
-	for (i = 0; i < 0x100; i++)
-		write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
-#endif
+		write32(mmio + DSPCNTR(0), DISPPLANE_BGRX888);
+		write32(mmio + DSPADDR(0), 0);
+		write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
+		write32(mmio + DSPSURF(0), 0);
+		for (i = 0; i < 0x100; i++)
+			write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
+	} else {
+		vga_textmode_init();
+	}
 
 	/* Find suitable divisors.  */
 	for (candp1 = 1; candp1 <= 8; candp1++) {
@@ -368,15 +369,15 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
 
 	write32(mmio + PF_WIN_POS(0), 0);
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(mmio + PIPESRC(0), ((hactive - 1) << 16) | (vactive - 1));
-	write32(mmio + PF_CTL(0),0);
-	write32(mmio + PF_WIN_SZ(0), 0);
-#else
-	write32(mmio + PIPESRC(0), (639 << 16) | 399);
-	write32(mmio + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
-	write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		write32(mmio + PIPESRC(0), ((hactive - 1) << 16) | (vactive - 1));
+		write32(mmio + PF_CTL(0),0);
+		write32(mmio + PF_WIN_SZ(0), 0);
+	} else {
+		write32(mmio + PIPESRC(0), (639 << 16) | 399);
+		write32(mmio + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
+		write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
+	}
 
 	mdelay(1);
 
@@ -395,17 +396,17 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(mmio + CPU_VGACNTRL, 0x20298e | VGA_DISP_DISABLE);
-#else
-	write32(mmio + CPU_VGACNTRL, 0x20298e);
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE))
+		write32(mmio + CPU_VGACNTRL, 0x20298e | VGA_DISP_DISABLE);
+	else
+		write32(mmio + CPU_VGACNTRL, 0x20298e);
+
 	train_link(mmio);
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
-	mdelay(1);
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
+		mdelay(1);
+	}
 
 	write32(mmio + TRANS_HTOTAL(0),
 		((hactive + right_border + hblank - 1) << 16)
@@ -430,11 +431,12 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + 0x00060100, 0xb01c4000);
 	write32(mmio + 0x000f000c, 0x801a2350);
 	mdelay(1);
-	write32(mmio + TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-		| TRANS_STATE_MASK
-#endif
-		);
+
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE))
+		write32(mmio + TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC
+					   | TRANS_STATE_MASK);
+	else
+		write32(mmio + TRANSCONF(0), TRANS_ENABLE | TRANS_6BPC);
 
 	write32(mmio + PCH_LVDS,
 		LVDS_PORT_ENABLE
@@ -468,10 +470,11 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	memset ((void *) lfb, 0, edid.x_resolution * edid.y_resolution * 4);
-	set_vbe_mode_info_valid(&edid, lfb);
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		memset ((void *) lfb, 0, edid.x_resolution
+					* edid.y_resolution * 4);
+		set_vbe_mode_info_valid(&edid, lfb);
+	}
 
 	/* Linux relies on VBT for panel info.  */
 	generate_fake_intel_oprom(info, dev_find_slot(0, PCI_DEVFN(2, 0)),
@@ -479,5 +482,3 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	return 1;
 }
-
-#endif

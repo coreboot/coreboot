@@ -577,29 +577,29 @@ static void gma_func0_init(struct device *dev)
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
-#if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	/* PCI Init, will run VBIOS */
-	pci_dev_init(dev);
-#endif
+	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+		/* PCI Init, will run VBIOS */
+		pci_dev_init(dev);
 
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
 
-#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	/* This should probably run before post VBIOS init. */
-	printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
-	u8 *mmiobase;
-	u32 iobase, physbase, graphics_base;
-	struct northbridge_intel_sandybridge_config *conf = dev->chip_info;
-	iobase = dev->resource_list[2].base;
-	mmiobase = res2mmio(&dev->resource_list[0], 0, 0);
-	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-	graphics_base = dev->resource_list[1].base;
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		/* This should probably run before post VBIOS init. */
+		printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
+		u8 *mmiobase;
+		u32 iobase, physbase, graphics_base;
+		struct northbridge_intel_sandybridge_config *conf = dev->chip_info;
+		iobase = dev->resource_list[2].base;
+		mmiobase = res2mmio(&dev->resource_list[0], 0, 0);
+		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+		graphics_base = dev->resource_list[1].base;
 
-	int lightup_ok = i915lightup_sandy(&conf->gfx, physbase, iobase, mmiobase, graphics_base);
-	if (lightup_ok)
-		gfx_set_init_done(1);
-#endif
+		int lightup_ok = i915lightup_sandy(&conf->gfx, physbase, iobase,
+						   mmiobase, graphics_base);
+		if (lightup_ok)
+			gfx_set_init_done(1);
+	}
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

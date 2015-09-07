@@ -1244,7 +1244,7 @@ static void cpuSetAMDPCI(u8 node)
 		for (link = 0; link < 4; link++) {
 			if (AMD_CpuFindCapability(node, link, &offset)) {
 				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170) & 0x1);
-				iolink = (AMD_checkLinkType(node, link, offset) & HTPHY_LINKTYPE_NONCOHERENT);
+				iolink = !!(AMD_checkLinkType(node, link, offset) & HTPHY_LINKTYPE_NONCOHERENT);
 
 				if (!iolink && ganged) {
 					if (probe_filter_enabled) {
@@ -1360,7 +1360,7 @@ static void cpuSetAMDPCI(u8 node)
 		for (link = 0; link < 4; link++) {
 			if (AMD_CpuFindCapability(node, link, &offset)) {
 				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170) & 0x1);
-				iolink = (AMD_checkLinkType(node, link, offset) & HTPHY_LINKTYPE_NONCOHERENT);
+				iolink = !!(AMD_checkLinkType(node, link, offset) & HTPHY_LINKTYPE_NONCOHERENT);
 
 				/* Set defaults */
 				isoc_rsp_tok_1 = 0;

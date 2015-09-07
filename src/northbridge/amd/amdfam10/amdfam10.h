@@ -1005,7 +1005,7 @@ struct nodes_info_t {
 } __attribute__((packed));
 
 struct ht_link_config {
-	uint8_t ht_speed_limit; // Speed in MHz; 0 for autodetect (default)
+	uint32_t ht_speed_limit; // Speed in MHz; 0 for autodetect (default)
 };
 
 /* be careful with the alignment of sysinfo, bacause sysinfo may be shared by coreboot_car and ramstage stage. and ramstage may be running at 64bit later.*/

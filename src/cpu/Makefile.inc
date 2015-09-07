@@ -18,8 +18,6 @@ $(eval $(call create_class_compiler,cpu_microcode,x86_64))
 ## Rules for building the microcode blob in CBFS
 ################################################################################
 
-cpu_ucode_cbfs_name = cpu_microcode_blob.bin
-
 # External microcode file, or are we generating one ?
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL), y)
 cpu_ucode_cbfs_file = $(call strip_quotes,$(CONFIG_CPU_MICROCODE_FILE))
@@ -29,12 +27,6 @@ endif
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE), y)
 cpu_ucode_cbfs_file = $(obj)/cpu_microcode_blob.bin
 cbfs_include_ucode = y
-endif
-
-ifeq ($(CONFIG_PLATFORM_USES_FSP1_0), y)
-cpu_ucode_cbfs_offset = "-b $(CONFIG_CPU_MICROCODE_CBFS_LOC)"
-else
-cpu_ucode_cbfs_offset = "-b"
 endif
 
 # In case we have more than one "source" (cough) files containing microcode, we
@@ -52,10 +44,12 @@ $(obj)/cpu_microcode_blob.bin: $(obj)/cpu_microcode_blob.o
 	@printf "    MICROCODE  $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY_cpu_microcode) -j .data -O binary $< $@
 
-ifeq ($(cbfs_include_ucode),y)
-# Add CPU microcode to specified rom image $(1)
-add-cpu-microcode-to-cbfs = \
-	$(CBFSTOOL) $(1) locate -f $(cpu_ucode_cbfs_file) -n $(cpu_ucode_cbfs_name) -a 16 | xargs $(CBFSTOOL) $(1) add -n $(cpu_ucode_cbfs_name) -f $(cpu_ucode_cbfs_file) -t 0x53 $(cpu_ucode_cbfs_offset)
+cbfs-files-$(cbfs_include_ucode) += cpu_microcode_blob.bin
+cpu_microcode_blob.bin-file := $(cpu_ucode_cbfs_file)
+cpu_microcode_blob.bin-type := microcode
+
+ifneq ($(CONFIG_CPU_MICROCODE_CBFS_LOC),)
+cpu_microcode_blob.bin-position := $(CONFIG_CPU_MICROCODE_CBFS_LOC)
 else
-add-cpu-microcode-to-cbfs = true
+cpu_microcode_blob.bin-align := 16
 endif

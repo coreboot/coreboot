@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1389,6 +1390,75 @@ static uint32_t fam10NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
 
 /***************************************************************************//**
  *
+ * static u16
+ * fam15NorthBridgeFreqMask(u8 NodeID, cNorthBridge *nb)
+ *
+ *  Description:
+ *	Return a mask that eliminates HT frequencies that cannot be used due to a slow
+ *	northbridge frequency.
+ *
+ *  Parameters:
+ *	@param[in]  node     = Result could (later) be for a specific node
+ *	@param[in]  *nb      = this northbridge
+ *	@return  = Frequency mask
+ *
+ ******************************************************************************/
+static uint32_t fam15NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
+{
+	u8 nbCOF;
+	uint32_t supported;
+
+	nbCOF = getMinNbCOF();
+	/*
+	 * nbCOF is minimum northbridge speed in hundreds of MHz.
+	 * HT can not go faster than the minimum speed of the northbridge.
+	 */
+	if ((nbCOF >= 6) && (nbCOF < 10))
+	{
+		/* Generation 1 HT link frequency */
+		/* Convert frequency to bit and all less significant bits,
+		 * by setting next power of 2 and subtracting 1.
+		 */
+		supported = ((uint32_t)1 << ((nbCOF >> 1) + 2)) - 1;
+	}
+	else if ((nbCOF >= 10) && (nbCOF <= 32))
+	{
+		/* Generation 3 HT link frequency
+		 * Assume error retry is enabled on all Gen 3 links
+		 */
+		nbCOF *= 2;
+		if (nbCOF > 32)
+			nbCOF = 32;
+
+		/* Convert frequency to bit and all less significant bits,
+		 * by setting next power of 2 and subtracting 1.
+		 */
+		supported = ((uint32_t)1 << ((nbCOF >> 1) + 2)) - 1;
+	}
+	else if (nbCOF > 32)
+	{
+		supported = HT_FREQUENCY_LIMIT_3200M;
+	}
+	/* unlikely cases, but include as a defensive measure, also avoid trick above */
+	else if (nbCOF == 4)
+	{
+		supported = HT_FREQUENCY_LIMIT_400M;
+	}
+	else if (nbCOF == 2)
+	{
+		supported = HT_FREQUENCY_LIMIT_200M;
+	}
+	else
+	{
+		STOP_HERE;
+		supported = HT_FREQUENCY_LIMIT_200M;
+	}
+
+	return (fixEarlySampleFreqCapability(supported));
+}
+
+/***************************************************************************//**
+ *
  * static void
  * gatherLinkData(sMainData *pDat, cNorthBridge *nb)
  *
@@ -2266,6 +2336,26 @@ static void fam10BufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 	}
 }
 
+/***************************************************************************//**
+ *
+ * static void
+ * fam15BufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
+ *
+ *  Description:
+ *	 Buffer tunings are inherently northbridge specific. Check for specific configs
+ *	 which require adjustments and apply any standard workarounds to this node.
+ *
+ *  Parameters:
+ *	@param[in] node       = the node to tune
+ *	@param[in] *pDat  = global state
+ *	@param[in] nb = this northbridge
+ *
+ ******************************************************************************/
+static void fam15BufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
+{
+	/* Buffer count setup on Family 15h is currently handled in cpuSetAMDPCI */
+}
+
 /*
  * North Bridge 'constructor'.
  *
@@ -2324,11 +2414,11 @@ void newNorthBridge(u8 node, cNorthBridge *nb)
 		ht3SetCFGAddrMap,
 		convertBitsToWidth,
 		convertWidthToBits,
-		fam10NorthBridgeFreqMask,
+		fam15NorthBridgeFreqMask,
 		gatherLinkData,
 		setLinkData,
 		ht3WriteTrafficDistribution,
-		fam10BufferOptimizations,
+		fam15BufferOptimizations,
 		0x00000001,
 		0x00000200,
 		18,

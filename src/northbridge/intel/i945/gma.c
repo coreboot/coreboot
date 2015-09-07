@@ -85,6 +85,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 			  void *pmmio, unsigned int pgfx)
 {
 	struct edid edid;
+	struct edid_mode *mode;
 	u8 edid_data[128];
 	unsigned long temp;
 	int hpolarity, vpolarity;
@@ -107,19 +108,20 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 
 	intel_gmbus_read_edid(pmmio + GMBUS0, 3, 0x50, edid_data, 128);
 	decode_edid(edid_data, sizeof(edid_data), &edid);
+	mode = &edid.mode;
 
-	hpolarity = (edid.phsync == '-');
-	vpolarity = (edid.pvsync == '-');
+	hpolarity = (mode->phsync == '-');
+	vpolarity = (mode->pvsync == '-');
 	hactive = edid.x_resolution;
 	vactive = edid.y_resolution;
-	right_border = edid.hborder;
-	bottom_border = edid.vborder;
-	vblank = edid.vbl;
-	hblank = edid.hbl;
-	vsync = edid.vspw;
-	hsync = edid.hspw;
-	hfront_porch = edid.hso;
-	vfront_porch = edid.vso;
+	right_border = mode->hborder;
+	bottom_border = mode->vborder;
+	vblank = mode->vbl;
+	hblank = mode->hbl;
+	vsync = mode->vspw;
+	hsync = mode->hspw;
+	hfront_porch = mode->hso;
+	vfront_porch = mode->vso;
 
 	for (i = 0; i < 2; i++)
 		for (j = 0; j < 0x100; j++)
@@ -160,8 +162,8 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	write32(pmmio + PORT_HOTPLUG_EN, conf->gpu_hotplug);
 	write32(pmmio + INSTPM, 0x08000000 | INSTPM_AGPBUSY_DIS);
 
-	target_frequency = conf->gpu_lvds_is_dual_channel ? edid.pixel_clock
-		: (2 * edid.pixel_clock);
+	target_frequency = conf->gpu_lvds_is_dual_channel ? mode->pixel_clock
+		: (2 * mode->pixel_clock);
 
 	/* Find suitable divisors.  */
 	for (candp1 = 1; candp1 <= 8; candp1++) {

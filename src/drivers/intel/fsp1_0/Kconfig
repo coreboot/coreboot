@@ -82,17 +82,6 @@ config MRC_CACHE_SIZE
 	  should be a full sector of the flash ROM chip and nothing else should
 	  be included in CBFS in any sector that the fast boot cache data is in.
 
-config MRC_CACHE_LOC
-	hex "Fast Boot Data Cache location in CBFS"
-	default 0xfff50000
-	depends on ENABLE_MRC_CACHE
-	help
-	  The location in CBFS for the MRC data to be cached.
-
-	  WARNING: This should be on a sector boundary of the BIOS ROM chip
-	  and nothing else should be included in that sector, or IT WILL BE
-	  ERASED.
-
 config VIRTUAL_ROM_SIZE
 	hex "Virtual ROM Size"
 	default ROM_SIZE

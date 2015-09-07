@@ -50,7 +50,7 @@ $(obj)/mrc.cache: $(obj)/config.h
 
 cbfs-files-y += mrc.cache
 mrc.cache-file := $(obj)/mrc.cache
-mrc.cache-position := 0xfffe0000
+mrc.cache-align := 0x10000
 mrc.cache-type := mrc_cache
 endif
 

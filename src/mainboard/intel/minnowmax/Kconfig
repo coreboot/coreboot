@@ -49,11 +49,6 @@ config FSP_FILE
 	string
 	default "../intel/fsp/baytrail/BAYTRAIL_FSP.fd"
 
-config MRC_CACHE_LOC
-	hex
-	default 0xfff80000
-	depends on ENABLE_FSP_FAST_BOOT
-
 config CBFS_SIZE
 	hex
 	default 0x00300000

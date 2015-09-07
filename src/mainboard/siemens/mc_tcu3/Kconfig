@@ -49,11 +49,6 @@ config CACHE_ROM_SIZE_OVERRIDE
 	hex
 	default 0x1000000
 
-config MRC_CACHE_LOC
-	hex
-	default 0xfff80000
-	depends on ENABLE_FSP_FAST_BOOT
-
 config CBFS_SIZE
 	hex
 	default 0x00e00000

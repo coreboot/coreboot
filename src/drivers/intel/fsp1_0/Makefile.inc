@@ -42,6 +42,6 @@ $(obj)/mrc.cache:
 
 cbfs-files-y += mrc.cache
 mrc.cache-file := $(obj)/mrc.cache
-mrc.cache-position := $(CONFIG_MRC_CACHE_LOC)
+mrc.cache-align := 0x10000
 mrc.cache-type := mrc_cache
 endif

@@ -59,11 +59,7 @@ $(obj)/mrc.cache: $(obj)/config.h
 
 cbfs-files-y += mrc.cache
 mrc.cache-file := $(obj)/mrc.cache
-mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) := 0xfffd0000
-mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) := 0xfffd0000
-mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) := 0xfffe0000
-mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) := 0xfffe0000
-mrc.cache-position := $(mrc-cache-position-y)
+mrc.cache-align := 0x10000
 mrc.cache-type := mrc_cache
 endif
 

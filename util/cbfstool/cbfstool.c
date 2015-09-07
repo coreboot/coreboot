@@ -328,8 +328,65 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 	return 0;
 }
 
+static int do_cbfs_locate(int32_t *cbfs_addr)
+{
+	if (!param.filename) {
+		ERROR("You need to specify -f/--filename.\n");
+		return 1;
+	}
+
+	if (!param.name) {
+		ERROR("You need to specify -n/--name.\n");
+		return 1;
+	}
+
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset))
+		return 1;
+
+	if (cbfs_get_entry(&image, param.name))
+		WARN("'%s' already in CBFS.\n", param.name);
+
+	struct buffer buffer;
+	if (buffer_from_file(&buffer, param.filename) != 0) {
+		ERROR("Cannot load %s.\n", param.filename);
+		return 1;
+	}
+
+	int32_t address = cbfs_locate_entry(&image, param.name, buffer.size,
+				    param.pagesize, param.alignment);
+	buffer_delete(&buffer);
+
+	if (address == -1) {
+		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
+		      param.name, param.pagesize, param.alignment);
+		return 1;
+	}
+
+	if (param.top_aligned)
+		address = -convert_to_from_top_aligned(param.image_region,
+								address);
+
+	*cbfs_addr = address;
+	return 0;
+}
+
 static int cbfs_add(void)
 {
+	int32_t address;
+
+	if (param.alignment && param.baseaddress) {
+		ERROR("Cannot specify both alignment and base address\n");
+		return 1;
+	}
+
+	if (param.alignment) {
+		if (do_cbfs_locate(&address))
+			return 1;
+		param.baseaddress = address;
+	}
+
 	return cbfs_add_component(param.filename,
 				  param.name,
 				  param.type,
@@ -494,43 +551,10 @@ static int cbfs_create(void)
 
 static int cbfs_locate(void)
 {
-	if (!param.filename) {
-		ERROR("You need to specify -f/--filename.\n");
+	int32_t address;
+
+	if (do_cbfs_locate(&address) != 0)
 		return 1;
-	}
-
-	if (!param.name) {
-		ERROR("You need to specify -n/--name.\n");
-		return 1;
-	}
-
-	struct cbfs_image image;
-	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset))
-		return 1;
-
-	if (cbfs_get_entry(&image, param.name))
-		WARN("'%s' already in CBFS.\n", param.name);
-
-	struct buffer buffer;
-	if (buffer_from_file(&buffer, param.filename) != 0) {
-		ERROR("Cannot load %s.\n", param.filename);
-		return 1;
-	}
-
-	int32_t address = cbfs_locate_entry(&image, param.name, buffer.size,
-				    param.pagesize, param.alignment);
-	buffer_delete(&buffer);
-
-	if (address == -1) {
-		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
-		      param.name, param.pagesize, param.alignment);
-		return 1;
-	}
-
-	if (param.top_aligned)
-		address = -convert_to_from_top_aligned(param.image_region,
-								address);
 
 	printf("0x%x\n", address);
 	return 0;
@@ -781,7 +805,7 @@ static bool cbfs_is_legacy_format(struct buffer *buffer)
 }
 
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:c:b:vh?", cbfs_add, true, true},
+	{"add", "H:r:f:n:t:c:b:a:vh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:vh?", cbfs_add_flat_binary, true,
 									true},
 	{"add-payload", "H:r:f:n:t:c:b:C:I:vh?", cbfs_add_payload, true, true},
@@ -896,7 +920,7 @@ static void usage(char *name)
 	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE \\\n"
-	     "        [-c compression] [-b base-address]                   "
+	     "        [-c compression] [-b base-address | -a alignment]    "
 			"Add a component\n"
 	     " add-payload [-r image,regions] -f FILE -n NAME \\\n"
 	     "        [-c compression] [-b base-address]                   "

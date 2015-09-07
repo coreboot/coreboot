@@ -184,17 +184,14 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	 * not correctly configured
 	 */
 	busses = pci_read_config32(link->dev, link->cap + 0x14);
-	busses &= 0xff000000;
+	busses &= ~(0xff << 8);
 	busses |= parent->secondary & 0xff;
-	if (mode == HT_ROUTE_CLOSE) {
-		busses |= 0xfeff << 8;
-	} else if (mode == HT_ROUTE_SCAN) {
+	if (mode == HT_ROUTE_CLOSE)
+		busses |= 0xff << 8;
+	else if (mode == HT_ROUTE_SCAN)
 		busses |= ((u32) link->secondary & 0xff) << 8;
-		busses |= 0xfc << 16;
-	} else if (mode == HT_ROUTE_FINAL) {
+	else if (mode == HT_ROUTE_FINAL)
 		busses |= ((u32) link->secondary & 0xff) << 8;
-		busses |= ((u32) link->subordinate & 0xff) << 16;
-	}
 	pci_write_config32(link->dev, link->cap + 0x14, busses);
 
 	if (mode == HT_ROUTE_FINAL) {

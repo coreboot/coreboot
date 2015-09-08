@@ -27,7 +27,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
 #include <cpu/x86/bist.h>

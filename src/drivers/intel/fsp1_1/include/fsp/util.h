@@ -26,7 +26,7 @@
 #include <fsp/soc_binding.h>
 #include <fsp/gop.h>
 #include <program_loading.h>
-#include <region.h>
+#include <commonlib/region.h>
 
 /* find_fsp() should only be called from assembly code. */
 FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address);

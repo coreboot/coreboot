@@ -20,7 +20,7 @@
 #define VBOOT_COMMON_H
 
 #include <stdint.h>
-#include <region.h>
+#include <commonlib/region.h>
 
 /* The FW areas consist of multiple components. At the beginning of
  * each area is the number of total compoments as well as the size and

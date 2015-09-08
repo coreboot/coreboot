@@ -24,7 +24,7 @@
 
 #include <cpu/amd/common/cbtypes.h>
 #include <console/console.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #ifdef NULL
 #undef NULL
 #endif

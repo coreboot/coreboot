@@ -42,7 +42,7 @@
 #include <spd.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdfam10/debug.c"
 #include <superio/winbond/common/winbond.h>

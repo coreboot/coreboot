@@ -20,7 +20,7 @@
 #ifndef _BOOT_DEVICE_H_
 #define _BOOT_DEVICE_H_
 
-#include <region.h>
+#include <commonlib/region.h>
 
 /* Return the region_device for the read-only boot device. */
 const struct region_device *boot_device_ro(void);

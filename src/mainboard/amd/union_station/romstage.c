@@ -28,7 +28,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>

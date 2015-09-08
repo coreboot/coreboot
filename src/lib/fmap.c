@@ -20,7 +20,7 @@
 #include <boot_device.h>
 #include <console/console.h>
 #include <fmap.h>
-#include <fmap_serialized.h>
+#include <commonlib/fmap_serialized.h>
 #include <stddef.h>
 #include <string.h>
 

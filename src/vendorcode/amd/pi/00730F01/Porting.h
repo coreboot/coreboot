@@ -280,7 +280,7 @@
 #include <assert.h>
 #include <config.h>
 #include <console/console.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 
 #ifndef NULL
   #define NULL              ((void *)0)

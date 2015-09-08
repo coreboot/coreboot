@@ -33,8 +33,6 @@ bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-$(CONFIG_I2C_TPM) += delay.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
-bootblock-y += mem_pool.c
-bootblock-y += region.c
 bootblock-y += boot_device.c
 bootblock-y += fmap.c
 
@@ -49,7 +47,6 @@ verstage-y += cbfs_boot_props.c
 verstage-y += libgcc.c
 verstage-y += memcmp.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
-verstage-y += region.c
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
@@ -62,7 +59,6 @@ endif
 
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
-verstage-y += mem_pool.c
 
 romstage-y += assets.c
 romstage-y += prog_loaders.c
@@ -155,15 +151,10 @@ ramstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
 endif
 
-romstage-y += mem_pool.c
-ramstage-y += mem_pool.c
 
-romstage-y += region.c
-ramstage-y += region.c
 romstage-y += boot_device.c
 ramstage-y += boot_device.c
 
-smm-y += region.c
 smm-y += boot_device.c
 smm-y += fmap.c
 smm-y += cbfs.c memcmp.c

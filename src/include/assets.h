@@ -19,7 +19,7 @@
 #ifndef ASSETS_H
 #define ASSETS_H
 
-#include <region.h>
+#include <commonlib/region.h>
 
 /* An asset represents data used to boot the system. It can be found within
  * CBFS or some other mechanism. While CBFS can be a source of an asset, note

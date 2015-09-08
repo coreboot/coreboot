@@ -50,7 +50,7 @@
 #include "amdlib.h"
 #include "cbfs.h"
 #include <console/console.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 
 // TODO Add a kconfig option to name the AGESA ROM file in CBFS
 #define CONFIG_CBFS_AGESA_NAME "AGESA"

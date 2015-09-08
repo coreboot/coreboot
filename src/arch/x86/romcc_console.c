@@ -20,7 +20,7 @@
 #include <build.h>
 #include <console/streams.h>
 #include <console/early_print.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 
 /* Include the sources. */
 #if CONFIG_CONSOLE_SERIAL && CONFIG_DRIVERS_UART_8250IO

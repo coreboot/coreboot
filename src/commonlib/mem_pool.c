@@ -17,7 +17,7 @@
  * Foundation, Inc.
  */
 
-#include <mem_pool.h>
+#include <commonlib/mem_pool.h>
 #include <stdlib.h>
 
 void *mem_pool_alloc(struct mem_pool *mp, size_t sz)

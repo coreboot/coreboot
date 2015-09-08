@@ -24,7 +24,7 @@
 
 #include <console/console.h>
 #include <console/streams.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 
 /* While in romstage, console loglevel is built-time constant.
  * With ROMCC we inline this test with help from preprocessor.

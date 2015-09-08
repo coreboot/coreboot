@@ -40,7 +40,7 @@
 #include <lib.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"

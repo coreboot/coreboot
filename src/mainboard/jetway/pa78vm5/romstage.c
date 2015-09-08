@@ -41,7 +41,7 @@
 #include <lib.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f71863fg/f71863fg.h>

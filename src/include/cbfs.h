@@ -20,9 +20,9 @@
 #ifndef _CBFS_H_
 #define _CBFS_H_
 
-#include <cbfs_serialized.h>
+#include <commonlib/cbfs_serialized.h>
+#include <commonlib/region.h>
 #include <program_loading.h>
-#include <region.h>
 
 /*
  * CBFS operations consist of the following concepts:

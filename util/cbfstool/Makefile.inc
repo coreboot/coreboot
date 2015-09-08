@@ -50,6 +50,7 @@ TOOLCPPFLAGS += -D_XOPEN_SOURCE=700 # strdup() from string.h
 TOOLCPPFLAGS += -I$(top)/util/cbfstool/flashmap
 TOOLCPPFLAGS += -I$(top)/util/cbfstool
 TOOLCPPFLAGS += -I$(objutil)/cbfstool
+TOOLCPPFLAGS += -I$(src)/commonlib/include
 TOOLLDFLAGS ?=
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)

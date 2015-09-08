@@ -22,7 +22,7 @@
 
 #include "elfparsing.h"
 #include "rmodule.h"
-#include "../../src/include/rmodule-defs.h"
+#include <commonlib/rmodule-defs.h>
 
 /*
  * Architecture specific support operations.

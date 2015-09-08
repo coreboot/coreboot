@@ -21,7 +21,7 @@
 #ifndef _CBMEM_H_
 #define _CBMEM_H_
 
-#include <cbmem_id.h>
+#include <commonlib/cbmem_id.h>
 #include <rules.h>
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \

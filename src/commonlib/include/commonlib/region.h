@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <mem_pool.h>
+#include <commonlib/mem_pool.h>
 
 /*
  * Region support.

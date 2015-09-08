@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <rules.h>
 #include <console/post_codes.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 
 #ifndef __ROMCC__
 struct console_driver {

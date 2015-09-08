@@ -54,7 +54,7 @@ PHONY+= clean-abuild coreboot lint lint-stable build-dirs
 
 #######################################################################
 # root source directories of coreboot
-subdirs-y := src/lib src/console src/device src/acpi
+subdirs-y := src/lib src/commonlib/ src/console src/device src/acpi
 subdirs-y += src/ec/acpi $(wildcard src/ec/*/*) $(wildcard src/southbridge/*/*)
 subdirs-y += $(wildcard src/soc/*/*) $(wildcard src/northbridge/*/*)
 subdirs-y += src/superio $(wildcard src/drivers/*) src/cpu src/vendorcode
@@ -267,7 +267,7 @@ ifneq ($(CONFIG_LOCALVERSION),"")
 export COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
 endif
 
-CPPFLAGS_common := -Isrc -Isrc/include -I$(obj)
+CPPFLAGS_common := -Isrc -Isrc/include -Isrc/commonlib/include -I$(obj)
 CPPFLAGS_common += -Isrc/device/oprom/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
 

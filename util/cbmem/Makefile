@@ -22,7 +22,7 @@ ROOT = ../../src
 CC     ?= $(CROSS_COMPILE)gcc
 CFLAGS ?= -O2
 CFLAGS += -Wall -Werror
-CPPFLAGS += -iquote $(ROOT)/include -iquote $(ROOT)/src/arch/x86
+CPPFLAGS += -I $(ROOT)/commonlib/include
 
 OBJS = $(PROGRAM).o
 

@@ -17,7 +17,7 @@
  * Foundation, Inc.
  */
 
-#include <region.h>
+#include <commonlib/region.h>
 #include <string.h>
 
 static inline size_t region_end(const struct region *r)

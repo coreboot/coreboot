@@ -40,7 +40,7 @@
 #include <lib.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>

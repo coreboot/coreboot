@@ -24,7 +24,7 @@
 #include "sb_cimx.h"
 #include "sb700_cfg.h"                /*sb700_cimx_config*/
 #include <console/console.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include "smbus.h"
 
 /**

@@ -35,7 +35,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>

@@ -21,7 +21,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <endian.h>
-#include <region.h>
+#include <commonlib/region.h>
 
 /* This function is marked as weak to allow a particular platform to
  * override the logic. This implementation should work for most devices. */

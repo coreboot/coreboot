@@ -26,7 +26,7 @@
 #include "SbPlatform.h"
 #include "sb_cimx.h"
 #include <console/console.h>
-#include <console/loglevel.h>
+#include <commonlib/loglevel.h>
 #include "smbus.h"
 
 /**

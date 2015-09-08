@@ -1,6 +1,8 @@
 #ifndef STDDEF_H
 #define STDDEF_H
 
+#include <commonlib/helpers.h>
+
 typedef long ptrdiff_t;
 #ifndef __SIZE_TYPE__
 #define __SIZE_TYPE__ unsigned long
@@ -18,38 +20,6 @@ typedef int wchar_t;
 typedef unsigned int wint_t;
 
 #define NULL ((void *)0)
-
-/* Standard units. */
-#define KiB (1<<10)
-#define MiB (1<<20)
-#define GiB (1<<30)
-/* Could we ever run into this one? I hope we get this much memory! */
-#define TiB (1<<40)
-
-#define KHz (1000)
-#define MHz (1000 * KHz)
-#define GHz (1000 * MHz)
-
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-
-#if !defined(__clang__)
-#define check_member(structure, member, offset) _Static_assert( \
-	offsetof(struct structure, member) == offset, \
-	"`struct " #structure "` offset for `" #member "` is not " #offset )
-#else
-#define check_member(structure, member, offset)
-#endif
-
-/**
- * container_of - cast a member of a structure out to the containing structure
- * @param ptr:    the pointer to the member.
- * @param type:   the type of the container struct this is embedded in.
- * @param member: the name of the member within the struct.
- *
- */
-#define container_of(ptr, type, member) ({			\
-	const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
-	(type *)( (char *)__mptr - offsetof(type,member) );})
 
 #ifdef __PRE_RAM__
 #define ROMSTAGE_CONST const

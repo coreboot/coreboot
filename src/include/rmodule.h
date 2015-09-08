@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
-#include <rmodule-defs.h>
+#include <commonlib/rmodule-defs.h>
 
 enum {
 	RMODULE_TYPE_SMM,

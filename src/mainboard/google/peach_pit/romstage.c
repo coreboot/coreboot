@@ -24,11 +24,11 @@
 #include <boot_device.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <commonlib/region.h>
 #include <console/console.h>
 #include <device/i2c.h>
 #include <drivers/maxim/max77802/max77802.h>
 #include <program_loading.h>
-#include <region.h>
 #include <soc/clk.h>
 #include <soc/cpu.h>
 #include <soc/dmc.h>

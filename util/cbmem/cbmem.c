@@ -34,6 +34,9 @@
 #include <sys/mman.h>
 #include <libgen.h>
 #include <assert.h>
+#include <commonlib/cbmem_id.h>
+#include <commonlib/timestamp_serialized.h>
+#include <commonlib/coreboot_tables.h>
 
 #ifdef __OpenBSD__
 #include <sys/param.h>
@@ -42,17 +45,11 @@
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #define MAP_BYTES (1024*1024)
-#define IS_ENABLED(x) (defined (x) && (x))
-
-#include "boot/coreboot_tables.h"
 
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
-
-#include "cbmem_id.h"
-#include "timestamp.h"
 
 #define CBMEM_VERSION "1.1"
 

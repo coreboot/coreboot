@@ -24,39 +24,6 @@
 #include "rmodule.h"
 #include "../../src/include/rmodule-defs.h"
 
-struct rmod_context;
-
-struct arch_ops {
-	int arch;
-	/* Determine if relocation is a valid type for the architecture. */
-	int (*valid_type)(Elf64_Rela *rel);
-	/* Determine if relocation should be emitted. */
-	int (*should_emit)(Elf64_Rela *rel);
-};
-
-struct rmod_context {
-	/* Ops to process relocations. */
-	struct arch_ops *ops;
-
-	/* endian conversion ops */
-	struct xdr *xdr;
-
-	/* Parsed ELF sturcture. */
-	struct parsed_elf pelf;
-	/* Program segment. */
-	Elf64_Phdr *phdr;
-
-	/* Collection of relocation addresses fixup in the module. */
-	Elf64_Xword nrelocs;
-	Elf64_Addr *emitted_relocs;
-
-	/* The following fields are addresses within the linked program.  */
-	Elf64_Addr parameters_begin;
-	Elf64_Addr parameters_end;
-	Elf64_Addr bss_begin;
-	Elf64_Addr bss_end;
-};
-
 /*
  * Architecture specific support operations.
  */
@@ -130,7 +97,7 @@ static int should_emit_aarch64(Elf64_Rela *rel)
 	return (type == R_AARCH64_ABS64);
 }
 
-static struct arch_ops reloc_ops[] = {
+static const struct arch_ops reloc_ops[] = {
 	{
 		.arch = EM_386,
 		.valid_type = valid_reloc_386,
@@ -152,7 +119,8 @@ static struct arch_ops reloc_ops[] = {
  * Relocation processing loops.
  */
 
-static int for_each_reloc(struct rmod_context *ctx, int do_emit)
+static int for_each_reloc(struct rmod_context *ctx, struct reloc_filter *f,
+				int do_emit)
 {
 	Elf64_Half i;
 	struct parsed_elf *pelf = &ctx->pelf;
@@ -173,6 +141,7 @@ static int for_each_reloc(struct rmod_context *ctx, int do_emit)
 		nrelocs = shdr->sh_size / shdr->sh_entsize;
 
 		for (j = 0; j < nrelocs; j++) {
+			int filter_emit = 1;
 			Elf64_Rela *r = &relocs[j];
 
 			if (!ctx->ops->valid_type(r)) {
@@ -181,7 +150,15 @@ static int for_each_reloc(struct rmod_context *ctx, int do_emit)
 				return -1;
 			}
 
-			if (ctx->ops->should_emit(r)) {
+			/* Allow the provided filter to have precedence. */
+			if (f != NULL) {
+				filter_emit = f->filter(f, r);
+
+				if (filter_emit < 0)
+					return filter_emit;
+			}
+
+			if (filter_emit && ctx->ops->should_emit(r)) {
 				int n = ctx->nrelocs;
 				if (do_emit)
 					ctx->emitted_relocs[n] = r->r_offset;
@@ -303,7 +280,8 @@ static int vaddr_cmp(const void *a, const void *b)
 	return 0;
 }
 
-static int collect_relocations(struct rmod_context *ctx)
+int rmodule_collect_relocations(struct rmod_context *ctx,
+				struct reloc_filter *f)
 {
 	Elf64_Xword nrelocs;
 
@@ -312,7 +290,7 @@ static int collect_relocations(struct rmod_context *ctx)
 	 * apply to the program. Count the number relocations. Then collect
 	 * them into the allocated buffer.
 	 */
-	if (for_each_reloc(ctx, 0))
+	if (for_each_reloc(ctx, f, 0))
 		return -1;
 
 	nrelocs = ctx->nrelocs;
@@ -324,7 +302,7 @@ static int collect_relocations(struct rmod_context *ctx)
 	ctx->nrelocs = 0;
 	ctx->emitted_relocs = calloc(nrelocs, sizeof(Elf64_Addr));
 	/* Write out the relocations into the emitted_relocs array. */
-	if (for_each_reloc(ctx, 1))
+	if (for_each_reloc(ctx, f, 1))
 		return -1;
 
 	if (ctx->nrelocs != nrelocs) {
@@ -618,7 +596,7 @@ out:
 	return ret;
 }
 
-static int rmodule_init(struct rmod_context *ctx, const struct buffer *elfin)
+int rmodule_init(struct rmod_context *ctx, const struct buffer *elfin)
 {
 	struct parsed_elf *pelf;
 	int i;
@@ -670,7 +648,7 @@ out:
 	return ret;
 }
 
-static void rmodule_cleanup(struct rmod_context *ctx)
+void rmodule_cleanup(struct rmod_context *ctx)
 {
 	free(ctx->emitted_relocs);
 	parsed_elf_destroy(&ctx->pelf);
@@ -684,7 +662,7 @@ int rmodule_create(const struct buffer *elfin, struct buffer *elfout)
 	if (rmodule_init(&ctx, elfin))
 		goto out;
 
-	if (collect_relocations(&ctx))
+	if (rmodule_collect_relocations(&ctx, NULL))
 		goto out;
 
 	if (populate_rmodule_info(&ctx))

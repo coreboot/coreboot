@@ -207,9 +207,15 @@ $(objgenerated)/romstage.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xi
 	sed -e '/^ROMSTAGE_BASE/d' $(objgenerated)/romstage_null.ld >> $@.tmp
 	mv $@.tmp $@
 
+# Use a '-a 64' option to cbfstool locate to provide a minimum alignment
+# requirement for the overall romstage. While the first object within
+# romstage could have a 4 byte minimum alignment that doesn't mean the linker
+# won't decide the entire section should be aligned to a larger value. In the
+# future cbfstool should add XIP files proper and honor the alignment
+# requirements of the program segment.
 $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	rm -f $@
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -T -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -P $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -T -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -P $(CONFIG_XIP_ROM_SIZE) -a 64 > $@.tmp \
 	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
 	mv $@.tmp $@
 

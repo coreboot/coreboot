@@ -831,28 +831,19 @@ void setWLByteDelay(sDCTStruct *pDCTData, u8 ByteLane, u8 dimm, u8 targetAddr)
 
 		tempB = 0;
 		offsetAddr = (u8)(3 * dimm);
-		if (ByteLane < 2)
-		{
+		if (ByteLane < 2) {
 			tempB = (u8)(16 * ByteLane);
 			addr = DRAM_CONT_ADD_DQS_TIMING_CTRL_BL_01;
-		}
-		else if (ByteLane <4)
-		{
+		} else if (ByteLane <4) {
 			tempB = (u8)(16 * ByteLane);
 			addr = DRAM_CONT_ADD_DQS_TIMING_CTRL_BL_01 + 1;
-		}
-		else if (ByteLane <6)
-		{
+		} else if (ByteLane <6) {
 			tempB = (u8)(16 * ByteLane);
 			addr = DRAM_CONT_ADD_DQS_TIMING_CTRL_BL_45;
-		}
-		else if (ByteLane <8)
-		{
+		} else if (ByteLane <8) {
 			tempB = (u8)(16 * ByteLane);
 			addr = DRAM_CONT_ADD_DQS_TIMING_CTRL_BL_45 + 1;
-		}
-		else
-		{
+		} else {
 			tempB = 0;
 			addr = DRAM_CONT_ADD_DQS_TIMING_CTRL_BL_01 + 2;
 		}
@@ -896,19 +887,14 @@ void getWLByteDelay(sDCTStruct *pDCTData, u8 ByteLane, u8 dimm)
 	u32 addr, fine, gross;
 	tempB = 0;
 	index = (u8)(MAX_BYTE_LANES*dimm);
-	if (ByteLane < 4)
-	{
+	if (ByteLane < 4) {
 		tempB = (u8)(8 * ByteLane);
 		addr = DRAM_CONT_ADD_PHASE_REC_CTRL_LOW;
-	}
-	else if (ByteLane < 8)
-	{
+	} else if (ByteLane < 8) {
 		tempB1 = (u8)(ByteLane - 4);
 		tempB = (u8)(8 * tempB1);
 		addr = DRAM_CONT_ADD_PHASE_REC_CTRL_HIGH;
-	}
-	else
-	{
+	} else {
 		tempB = 0;
 		addr = DRAM_CONT_ADD_ECC_PHASE_REC_CTRL;
 	}
@@ -924,16 +910,13 @@ void getWLByteDelay(sDCTStruct *pDCTData, u8 ByteLane, u8 dimm)
 	/* Adjust seed gross delay overflow (greater than 3):
 	 * - Adjust the trained gross delay to the original seed gross delay.
 	 */
-	if(pDCTData->WLGrossDelay[index+ByteLane] >= 3)
-	{
+	if (pDCTData->WLGrossDelay[index+ByteLane] >= 3) {
 		gross += pDCTData->WLGrossDelay[index+ByteLane];
 		if(pDCTData->WLGrossDelay[index+ByteLane] & 1)
 			gross -= 1;
 		else
 			gross -= 2;
-	}
-	else if((pDCTData->WLGrossDelay[index+ByteLane] == 0) && (gross == 3))
-	{
+	} else if ((pDCTData->WLGrossDelay[index+ByteLane] == 0) && (gross == 3)) {
 		/* If seed gross delay is 0 but PRE result gross delay is 3, it is negative.
 		 * We will then round the negative number to 0.
 		 */

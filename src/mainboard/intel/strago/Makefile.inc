@@ -14,8 +14,6 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += spd
-
 romstage-y += boardid.c
 romstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += chromeos.c
 romstage-$(CONFIG_ENABLE_BUILTIN_COM1) += com_init.c

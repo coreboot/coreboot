@@ -21,12 +21,6 @@ config CHROMEOS
 	select VBOOT_DYNAMIC_WORK_BUFFER
 	select VIRTUAL_DEV_SWITCH
 
-config DISPLAY_SPD_DATA
-	bool "Display Memory Serial Presence Detect Data"
-	default n
-	help
-	  When enabled displays the memory configuration data.
-
 config DYNAMIC_VNN_SUPPORT
 	bool "Enables support for Dynamic VNN"
 	default n

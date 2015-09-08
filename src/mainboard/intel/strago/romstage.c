@@ -25,32 +25,8 @@
 #include "onboard.h"
 #include <boardid.h>
 
-/* All FSP specific code goes in this block */
-void mainboard_romstage_entry(struct romstage_params *rp)
-{
-	struct pei_data *ps = rp->pei_data;
-
-	mainboard_fill_spd_data(ps);
-
-	/* Call back into chipset code with platform values updated. */
-	romstage_common(rp);
-}
-
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params)
 {
-	int id;
-	id = board_id();
-	if (id == BOARD_BCRD2) {
-		memory_params->PcdMemoryTypeEnable = MEM_LPDDR3;
-		memory_params->PcdDvfsEnable = 0;
-	} else {
-		memory_params->PcdMemoryTypeEnable = MEM_DDR3;
-		memory_params->PcdMemorySpdPtr =
-					(u32)params->pei_data->spd_data_ch0;
-		memory_params->PcdMemChannel0Config =
-					params->pei_data->spd_ch0_config;
-		memory_params->PcdMemChannel1Config =
-					params->pei_data->spd_ch1_config;
-	}
+	memory_params->PcdMemoryTypeEnable = MEM_LPDDR3;
 }

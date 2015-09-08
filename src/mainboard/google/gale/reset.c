@@ -21,4 +21,5 @@
 
 void hard_reset(void)
 {
+	write32(GCNT_PSHOLD, 0);
 }

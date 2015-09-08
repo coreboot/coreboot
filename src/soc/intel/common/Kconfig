@@ -69,4 +69,8 @@ config ROMSTAGE_RAM_STACK_SIZE
 	default 0x5000
 	depends on SOC_INTEL_COMMON_STACK
 
+config SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
+	bool
+	default n
+
 endif # SOC_INTEL_COMMON

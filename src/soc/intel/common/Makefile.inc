@@ -16,6 +16,7 @@ ramstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_STAGE_CACHE) += stage_cache.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += util.c
 ramstage-$(CONFIG_GOP_SUPPORT) += vbt.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_ACPI_WAKE_SOURCE) += acpi_wake_source.c
 
 # Create and add the MRC cache to the cbfs image
 ifneq ($(CONFIG_CHROMEOS),y)

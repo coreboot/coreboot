@@ -94,6 +94,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->DspEnable = config->DspEnable;
 	params->XdciEnable = config->XdciEnable;
 	params->Device4Enable = config->Device4Enable;
+	params->RtcLock = config->RtcLock;
 
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
@@ -265,6 +266,8 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 		params->HsioMessaging);
 	soc_display_upd_value("Heci3Enabled", 1, original->Heci3Enabled,
 		params->Heci3Enabled);
+	soc_display_upd_value("RtcLock", 1, original->RtcLock,
+		params->RtcLock);
 }
 
 static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

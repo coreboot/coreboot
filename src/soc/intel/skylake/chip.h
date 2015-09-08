@@ -229,6 +229,7 @@ struct soc_intel_skylake_config {
 	u32 LogoSize;
 	u32 GraphicsConfigPtr;
 	u8 Device4Enable;
+	u8 RtcLock;
 };
 
 typedef struct soc_intel_skylake_config config_t;

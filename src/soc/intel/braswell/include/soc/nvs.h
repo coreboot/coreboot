@@ -46,8 +46,9 @@ typedef struct {
 	u8	tlvl; /* 0x13 - Throttle Level */
 	u8	ppcm; /* 0x14 - Maximum P-state usable by OS */
 	u32	pm1i; /* 0x15 - System Wake Source - PM1 Index */
-	u8	bdid; /* 0x19 - Board ID */
-	u8	rsvd1[6];
+	u32	gpei; /* 0x19 - GPE Wake Source */
+	u8	bdid; /* 0x1d - Board ID */
+	u8	rsvd1[2];
 
 	/* Device Config */
 	u8	s5u0; /* 0x20 - Enable USB0 in S5 */

@@ -39,6 +39,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
+#include <soc/intel/common/acpi.h>
 #include <soc/intel/common/ramstage.h>
 #include <boardid.h>
 #include <stdlib.h>
@@ -142,30 +143,18 @@ static inline void set_acpi_sleep_type(int val)
 #endif
 }
 
-/* Save bit index for first enabled event in PM1_STS for \_SB._SWS */
-static void s3_save_acpi_wake_source(global_nvs_t *gnvs)
+/* Save wake source information for calculating ACPI _SWS values */
+int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 {
 	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
-	uint16_t pm1;
+	static uint32_t gpe0_sts;
 
-	if (!ps)
-		return;
+	*pm1 = ps->pm1_sts & ps->pm1_en;
 
-	pm1 = ps->pm1_sts & ps->pm1_en;
+	gpe0_sts = ps->gpe0_sts & ps->gpe0_en;
+	*gpe0 = &gpe0_sts;
 
-	/* Scan for first set bit in PM1 */
-	for (gnvs->pm1i = 0; gnvs->pm1i < 16; gnvs->pm1i++) {
-		if (pm1 & 1)
-			break;
-		pm1 >>= 1;
-	}
-
-	/* If unable to determine then return -1 */
-	if (gnvs->pm1i >= 16)
-		gnvs->pm1i = -1;
-
-	printk(BIOS_DEBUG, "ACPI System Wake Source is PM1 Index %d\n",
-	       gnvs->pm1i);
+	return 1;
 }
 
 static void s3_resume_prepare(void)
@@ -184,8 +173,6 @@ static void s3_resume_prepare(void)
 	}
 
 	set_acpi_sleep_type(3);
-
-	s3_save_acpi_wake_source(gnvs);
 }
 
 static void set_board_id(void)

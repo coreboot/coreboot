@@ -53,7 +53,8 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TLVL,	 8,	/* 0x13 - Throttle Level */
 	PPCM,	 8,	/* 0x14 - Maximum P-state usable by OS */
 	PM1I,	 32,	/* 0x15 - System Wake Source - PM1 Index */
-	BDID,	 8,	/* 0x19 - Board ID */
+	GPEI,	 32,	/* 0x19 - GPE Wake Source */
+	BDID,	 8,	/* 0x1d - Board ID */
 
 	/* Device Config */
 	Offset (0x20),

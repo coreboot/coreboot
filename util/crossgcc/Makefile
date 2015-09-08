@@ -19,7 +19,8 @@ build_tools_without_gdb: build_gcc build_iasl
 ### targets to do buildgcc builds
 
 build_gcc:
-	bash ./buildgcc -p $(BUILD_PLATFORM) $(if $(BUILDJOBS),-j $(BUILDJOBS)) $(BUILDGCC_OPTIONS)
+	bash ./buildgcc -p $(BUILD_PLATFORM) $(if $(BUILDJOBS),-j $(BUILDJOBS)) $(BUILDGCC_OPTIONS) \
+			$(if $(BUILD_LANGUAGES),-l $(BUILD_LANGUAGES))
 
 build_gdb:
 	bash ./buildgcc -p $(BUILD_PLATFORM) -P gdb $(if $(BUILDJOBS),-j $(BUILDJOBS)) $(BUILDGCC_OPTIONS)

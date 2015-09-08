@@ -29,6 +29,7 @@ CROSSGCC_VERSION="1.32"
 PACKAGE=GCC
 TARGETDIR=$(pwd)/xgcc
 TARGETARCH=i386-elf
+LANGUAGES=c
 DESTDIR=
 SAVETEMPS=0
 SKIPPYTHON=1
@@ -310,6 +311,8 @@ myhelp()
 	printf "GCC specific options:\n"
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
 	printf "                                  (defaults to $TARGETARCH)\n"
+	printf "    [-l|--languages <languages>]  comma separated list of target languages\n"
+	printf "                                  (defaults to $LANGUAGES)\n"
 	printf "GDB specific options:\n"
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
 	printf "                                  (defaults to $TARGETARCH)\n"
@@ -416,7 +419,7 @@ build_GCC() {
 		--enable-lto --enable-plugins --enable-gold --enable-ld=default \
 		--disable-libssp --disable-bootstrap --disable-nls \
 		--disable-libquadmath --without-headers \
-		${GCC_OPTIONS} --enable-languages="c" \
+		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
@@ -508,11 +511,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,help,clean,directory:,platform:,package:,jobs:,destdir:,savetemps,scripting,ccache Vhcd:p:P:j:D:tSy -- "$@")
+	args=$(getopt -l version,help,clean,directory:,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache Vhcd:p:l:P:j:D:tSy -- "$@")
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vhcd:p:P:j:D:tSy $*)
+	args=$(getopt Vhcd:p:l:P:j:D:tSy $*)
 	set -- $args
 fi
 
@@ -529,6 +532,7 @@ while true ; do
 		-t|--savetemps)	shift; SAVETEMPS=1;;
 		-d|--directory)	shift; TARGETDIR="$1"; shift;;
 		-p|--platform)	shift; TARGETARCH="$1"; shift;;
+		-l|--languages)	shift; LANGUAGES="$1"; shift;;
 		-D|--destdir)	shift; DESTDIR="$1"; shift;;
 		-j|--jobs)	shift; JOBS="-j $1"; shift;;
 		-P|--package)   shift; PACKAGE="$1"; shift;;

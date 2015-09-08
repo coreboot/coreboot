@@ -50,14 +50,11 @@ struct rmod_context {
 	Elf64_Xword nrelocs;
 	Elf64_Addr *emitted_relocs;
 
-	/* The following fields are addresses within the linked program. */
-	Elf64_Addr link_addr;
-	Elf64_Addr entry;
+	/* The following fields are addresses within the linked program.  */
 	Elf64_Addr parameters_begin;
 	Elf64_Addr parameters_end;
 	Elf64_Addr bss_begin;
 	Elf64_Addr bss_end;
-	Elf64_Xword size;
 };
 
 /*
@@ -371,7 +368,7 @@ populate_sym(struct rmod_context *ctx, const char *sym_name, Elf64_Addr *addr,
 	return -1;
 }
 
-static int populate_program_info(struct rmod_context *ctx)
+static int populate_rmodule_info(struct rmod_context *ctx)
 {
 	int i;
 	const char *strtab;
@@ -422,15 +419,6 @@ static int populate_program_info(struct rmod_context *ctx)
 
 	if (populate_sym(ctx, "_ebss", &ctx->bss_end, nsyms, strtab, 0))
 		return -1;
-
-	/* Honor the entry point within the ELF header. */
-	ctx->entry = ehdr->e_entry;
-
-	/* Link address is the virtual address of the program segment. */
-	ctx->link_addr = ctx->phdr->p_vaddr;
-
-	/* The program size is the memsz of the program segment. */
-	ctx->size = ctx->phdr->p_memsz;
 
 	return 0;
 }
@@ -516,7 +504,6 @@ write_elf(const struct rmod_context *ctx, const struct buffer *in,
 
 	/* Create ELF writer with modified entry point. */
 	memcpy(&ehdr, &ctx->pelf.ehdr, sizeof(ehdr));
-	ehdr.e_entry = ctx->entry;
 	ew = elf_writer_init(&ehdr);
 
 	if (ew == NULL) {
@@ -544,11 +531,11 @@ write_elf(const struct rmod_context *ctx, const struct buffer *in,
 		loc += ctx->nrelocs * sizeof(Elf32_Addr);
 	ctx->xdr->put32(&rmod_header, loc);
 	/* module_link_start_address */
-	ctx->xdr->put32(&rmod_header, ctx->link_addr);
+	ctx->xdr->put32(&rmod_header, ctx->phdr->p_vaddr);
 	/* module_program_size */
-	ctx->xdr->put32(&rmod_header, ctx->size);
+	ctx->xdr->put32(&rmod_header, ctx->phdr->p_memsz);
 	/* module_entry_point */
-	ctx->xdr->put32(&rmod_header, ctx->entry);
+	ctx->xdr->put32(&rmod_header, ctx->pelf.ehdr.e_entry);
 	/* parameters_begin */
 	ctx->xdr->put32(&rmod_header, ctx->parameters_begin);
 	/* parameters_end */
@@ -631,16 +618,15 @@ out:
 	return ret;
 }
 
-int rmodule_create(const struct buffer *elfin, struct buffer *elfout)
+static int rmodule_init(struct rmod_context *ctx, const struct buffer *elfin)
 {
-	struct rmod_context ctx;
 	struct parsed_elf *pelf;
 	int i;
 	int ret;
 
 	ret = -1;
-	memset(&ctx, 0, sizeof(ctx));
-	pelf = &ctx.pelf;
+	memset(ctx, 0, sizeof(*ctx));
+	pelf = &ctx->pelf;
 
 	if (parse_elf(elfin, pelf, ELF_PARSE_ALL)) {
 		ERROR("Couldn't parse ELF!\n");
@@ -656,32 +642,52 @@ int rmodule_create(const struct buffer *elfin, struct buffer *elfout)
 	/* Determine if architecture is supported. */
 	for (i = 0; i < ARRAY_SIZE(reloc_ops); i++) {
 		if (reloc_ops[i].arch == pelf->ehdr.e_machine) {
-			ctx.ops = &reloc_ops[i];
+			ctx->ops = &reloc_ops[i];
 			break;
 		}
 	}
 
-	if (ctx.ops == NULL) {
+	if (ctx->ops == NULL) {
 		ERROR("ELF is unsupported arch: %u.\n", pelf->ehdr.e_machine);
 		goto out;
 	}
 
 	/* Set the endian ops. */
-	if (ctx.pelf.ehdr.e_ident[EI_DATA] == ELFDATA2MSB)
-		ctx.xdr = &xdr_be;
+	if (ctx->pelf.ehdr.e_ident[EI_DATA] == ELFDATA2MSB)
+		ctx->xdr = &xdr_be;
 	else
-		ctx.xdr = &xdr_le;
+		ctx->xdr = &xdr_le;
 
-	if (find_program_segment(&ctx))
+	if (find_program_segment(ctx))
 		goto out;
 
-	if (filter_relocation_sections(&ctx))
+	if (filter_relocation_sections(ctx))
+		goto out;
+
+	ret = 0;
+
+out:
+	return ret;
+}
+
+static void rmodule_cleanup(struct rmod_context *ctx)
+{
+	free(ctx->emitted_relocs);
+	parsed_elf_destroy(&ctx->pelf);
+}
+
+int rmodule_create(const struct buffer *elfin, struct buffer *elfout)
+{
+	struct rmod_context ctx;
+	int ret = -1;
+
+	if (rmodule_init(&ctx, elfin))
 		goto out;
 
 	if (collect_relocations(&ctx))
 		goto out;
 
-	if (populate_program_info(&ctx))
+	if (populate_rmodule_info(&ctx))
 		goto out;
 
 	if (write_elf(&ctx, elfin, elfout))
@@ -690,7 +696,6 @@ int rmodule_create(const struct buffer *elfin, struct buffer *elfout)
 	ret = 0;
 
 out:
-	free(ctx.emitted_relocs);
-	parsed_elf_destroy(pelf);
+	rmodule_cleanup(&ctx);
 	return ret;
 }

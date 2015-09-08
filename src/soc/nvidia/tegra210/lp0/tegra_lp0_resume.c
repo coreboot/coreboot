@@ -30,6 +30,8 @@ enum {
 	PMC_CTLR_BASE = 0x7000e400,
 	MC_CTLR_BASE = 0x70019000,
 	FUSE_BASE = 0x7000F800,
+	TEGRA_SDMMC1_BASE = 0x700b0000,
+	TEGRA_SDMMC3_BASE = 0x700b0400,
 	EMC_BASE = 0x7001B000,
 	I2C5_BASE = 0x7000D000,
 	I2S_BASE = 0x702d1000
@@ -78,6 +80,8 @@ static uint32_t *clk_rst_rst_devices_l_ptr = (void *)(CLK_RST_BASE + 0x4);
 enum {
 	SWR_TRIG_SYS_RST = 0x1 << 2
 };
+
+static uint32_t *clk_rst_rst_devices_u_ptr = (void *)(CLK_RST_BASE + 0xc);
 
 static uint32_t *clk_rst_cclkg_burst_policy_ptr = (void *)(CLK_RST_BASE + 0x368);
 enum {
@@ -810,6 +814,49 @@ static void mbist_workaround(void)
 		write32(clk_rst_clk_enb_w_set_ptr, CLK_ENB_MC1);
 }
 
+static uint32_t *sdmmc1_vendor_io_trim = (void *)(TEGRA_SDMMC1_BASE + 0x1ac);
+static uint32_t *sdmmc3_vendor_io_trim = (void *)(TEGRA_SDMMC3_BASE + 0x1ac);
+static uint32_t *sdmmc1_comppadctrl = (void *)(TEGRA_SDMMC1_BASE + 0x1e0);
+static uint32_t *sdmmc3_comppadctrl = (void *)(TEGRA_SDMMC3_BASE + 0x1e0);
+
+enum {
+	SDMMC1_DEV_L = 0x1 << 14,
+	SDMMC3_DEV_U = 0x1 << 5,
+	PAD_E_INPUT_COMPPADCTRL = 0x1 << 31,
+	SEL_VREG_VENDOR_IO_TRIM = 0x1 << 2
+};
+
+static void low_power_sdmmc_pads(void)
+{
+	/* Enable SDMMC1 clock */
+	setbits32(SDMMC1_DEV_L, clk_rst_clk_out_enb_l_ptr);
+	udelay(2);
+	/* Unreset SDMMC1 */
+	clrbits32(SDMMC1_DEV_L, clk_rst_rst_devices_l_ptr);
+
+	/* Clear SEL_VREG bit and PAD_E_INPUT bit of SDMMC1 */
+	clrbits32(SEL_VREG_VENDOR_IO_TRIM, sdmmc1_vendor_io_trim);
+	clrbits32(PAD_E_INPUT_COMPPADCTRL, sdmmc1_comppadctrl);
+	/* Read the last accessed SDMMC1 register then disable SDMMC1 clock */
+	read32(sdmmc1_comppadctrl);
+	/* Disable SDMMC1 clock, but keep SDMMC1 un-reset */
+	clrbits32(SDMMC1_DEV_L, clk_rst_clk_out_enb_l_ptr);
+
+	/* Enable SDMMC3 clock */
+	setbits32(SDMMC3_DEV_U, clk_rst_clk_out_enb_u_ptr);
+	udelay(2);
+	/* Unreset SDMMC3 */
+	clrbits32(SDMMC3_DEV_U, clk_rst_rst_devices_u_ptr);
+
+	/* Clear SEL_VREG bit and PAD_E_INPUT bit of SDMMC3 */
+	clrbits32(SEL_VREG_VENDOR_IO_TRIM, sdmmc3_vendor_io_trim);
+	clrbits32(PAD_E_INPUT_COMPPADCTRL, sdmmc3_comppadctrl);
+	/* Read the last accessed SDMMC3 register then disable SDMMC3 clock */
+	read32(sdmmc3_comppadctrl);
+	/* Disable SDMMC3 clock, but keep SDMMC3 un-reset */
+	clrbits32(SDMMC3_DEV_U, clk_rst_clk_out_enb_u_ptr);
+}
+
 static void config_mselect(void)
 {
 	/* Set MSELECT clock source to PLL_P with 1:4 divider */
@@ -894,6 +941,9 @@ void lp0_resume(void)
 
 	/* Restore CAR CE's, SLCG overrides */
 	mbist_workaround();
+
+	/* Configure unused SDMMC1/3 pads for low power leakage */
+	low_power_sdmmc_pads();
 
 	/*
 	 * Find out which CPU (slow or fast) to wake up. The default setting

@@ -37,6 +37,7 @@
 #include <cpu/intel/turbo.h>
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/gnvs.h>
+#include <soc/intel/common/acpi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
@@ -602,6 +603,26 @@ void southcluster_inject_dsdt(device_t device)
 		acpigen_write_name_dword("NVSA", (u32) gnvs);
 		acpigen_pop_len();
 	}
+}
+
+/* Save wake source information for calculating ACPI _SWS values */
+int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
+{
+	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	static uint32_t gpe0_sts[GPE0_REG_MAX];
+	uint32_t pm1_en;
+	int i;
+
+	/* PM1_EN state is lost in Deep S3 so enable basic wake events */
+	pm1_en = ps->pm1_en | PCIEXPWAK_STS | RTC_STS | PWRBTN_STS | BM_STS;
+	*pm1 = ps->pm1_sts & pm1_en;
+
+	/* Mask off GPE0 status bits that are not enabled */
+	*gpe0 = &gpe0_sts[0];
+	for (i = 0; i < GPE0_REG_MAX; i++)
+		gpe0_sts[i] = ps->gpe0_sts[i] & ps->gpe0_en[i];
+
+	return GPE0_REG_MAX;
 }
 
 __attribute__((weak)) void acpi_mainboard_gnvs(global_nvs_t *gnvs)

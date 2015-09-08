@@ -375,7 +375,7 @@ static u32 nb_clk_did(uint8_t node, uint64_t cpuRev, uint8_t procPkg) {
         uint8_t link0isGen3 = 0;
         uint8_t offset;
         if (AMD_CpuFindCapability(node, 0, &offset)) {
-	  link0isGen3 = (AMD_checkLinkType(node, 0, offset) & HTPHY_LINKTYPE_HT3 );
+	  link0isGen3 = (AMD_checkLinkType(node, offset) & HTPHY_LINKTYPE_HT3 );
 	}
         /* FIXME: NB_CLKDID should be 101b for AMD_DA_C2 in package
            S1g3 in link Gen3 mode, but I don't know how to tell

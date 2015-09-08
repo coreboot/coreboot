@@ -842,7 +842,7 @@ static BOOL AMD_CpuFindCapability(u8 node, u8 cap_count, u8 * offset)
  *
  * Returns the link characteristic mask.
  */
-static u32 AMD_checkLinkType(u8 node, u8 link, u8 regoff)
+static u32 AMD_checkLinkType(u8 node, u8 regoff)
 {
 	uint32_t val;
 	uint32_t val2;
@@ -873,7 +873,7 @@ static u32 AMD_checkLinkType(u8 node, u8 link, u8 regoff)
 			linktype |= HTPHY_LINKTYPE_HT1;
 
 		/* Check ganged */
-		val = pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170);
+		val = pci_read_config32(NODE_PCI(node, 0), (((regoff - 0x80) / 0x20) << 2) + 0x170);
 
 		if (val & 1)
 			linktype |= HTPHY_LINKTYPE_GANGED;
@@ -1116,7 +1116,7 @@ static void cpuSetAMDPCI(u8 node)
 			 */
 			for (j = 0; j < 4; j++) {
 				if (AMD_CpuFindCapability(node, j, &offset)) {
-					if (AMD_checkLinkType(node, j, offset)
+					if (AMD_checkLinkType(node, offset)
 					    & fam10_htphy_default[i].linktype) {
 						AMD_SetHtPhyRegister(node, j,
 								     i);
@@ -1214,6 +1214,7 @@ static void cpuSetAMDPCI(u8 node)
 		pci_write_config32(NODE_PCI(node, 3), 0x1a0, dword);
 
 		uint8_t link;
+		uint8_t link_real;
 		uint8_t ganged;
 		uint8_t iolink;
 		uint8_t probe_filter_enabled = !!dual_node;
@@ -1243,8 +1244,9 @@ static void cpuSetAMDPCI(u8 node)
 
 		for (link = 0; link < 4; link++) {
 			if (AMD_CpuFindCapability(node, link, &offset)) {
-				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170) & 0x1);
-				iolink = !!(AMD_checkLinkType(node, link, offset) & HTPHY_LINKTYPE_NONCOHERENT);
+				link_real = (offset - 0x80) / 0x20;
+				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link_real << 2) + 0x170) & 0x1);
+				iolink = !!(AMD_checkLinkType(node, offset) & HTPHY_LINKTYPE_NONCOHERENT);
 
 				if (!iolink && ganged) {
 					if (probe_filter_enabled) {
@@ -1304,7 +1306,7 @@ static void cpuSetAMDPCI(u8 node)
 					np_req_cmd = 12;
 				}
 
-				dword = pci_read_config32(NODE_PCI(node, 0), (link * 0x20) + 0x94);
+				dword = pci_read_config32(NODE_PCI(node, 0), (link_real * 0x20) + 0x94);
 				dword &= ~(0x3 << 27);			/* IsocRspData = isoc_rsp_data */
 				dword |= ((isoc_rsp_data & 0x3) << 27);
 				dword &= ~(0x3 << 25);			/* IsocNpReqData = isoc_np_req_data */
@@ -1315,9 +1317,9 @@ static void cpuSetAMDPCI(u8 node)
 				dword |= ((isoc_preq & 0x7) << 19);
 				dword &= ~(0x7 << 16);			/* IsocNpReqCmd = isoc_np_req_cmd */
 				dword |= ((isoc_np_req_cmd & 0x7) << 16);
-				pci_write_config32(NODE_PCI(node, 0), (link * 0x20) + 0x94, dword);
+				pci_write_config32(NODE_PCI(node, 0), (link_real * 0x20) + 0x94, dword);
 
-				dword = pci_read_config32(NODE_PCI(node, 0), (link * 0x20) + 0x90);
+				dword = pci_read_config32(NODE_PCI(node, 0), (link_real * 0x20) + 0x90);
 				dword &= ~(0x1 << 31);			/* LockBc = 0x1 */
 				dword |= ((0x1 & 0x1) << 31);
 				dword &= ~(0x7 << 25);			/* FreeData = free_data */
@@ -1336,7 +1338,7 @@ static void cpuSetAMDPCI(u8 node)
 				dword |= ((preq & 0x7) << 5);
 				dword &= ~(0x1f << 0);			/* NpReqCmd = np_req_cmd */
 				dword |= ((np_req_cmd & 0x1f) << 0);
-				pci_write_config32(NODE_PCI(node, 0), (link * 0x20) + 0x90, dword);
+				pci_write_config32(NODE_PCI(node, 0), (link_real * 0x20) + 0x90, dword);
 			}
 		}
 
@@ -1359,8 +1361,9 @@ static void cpuSetAMDPCI(u8 node)
 
 		for (link = 0; link < 4; link++) {
 			if (AMD_CpuFindCapability(node, link, &offset)) {
-				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170) & 0x1);
-				iolink = !!(AMD_checkLinkType(node, link, offset) & HTPHY_LINKTYPE_NONCOHERENT);
+				link_real = (offset - 0x80) / 0x20;
+				ganged = !!(pci_read_config32(NODE_PCI(node, 0), (link_real << 2) + 0x170) & 0x1);
+				iolink = !!(AMD_checkLinkType(node, offset) & HTPHY_LINKTYPE_NONCOHERENT);
 
 				/* Set defaults */
 				isoc_rsp_tok_1 = 0;
@@ -1588,7 +1591,7 @@ static void cpuSetAMDPCI(u8 node)
 					}
 				}
 
-				dword = pci_read_config32(NODE_PCI(node, 3), (link << 2) + 0x148);
+				dword = pci_read_config32(NODE_PCI(node, 3), (link_real << 2) + 0x148);
 				dword &= ~(0x3 << 30);			/* FreeTok[3:2] = free_tokens[3:2] */
 				dword |= (((free_tokens >> 2) & 0x3) << 30);
 				dword &= ~(0x1 << 28);			/* IsocRspTok1 = isoc_rsp_tok_1 */
@@ -1621,7 +1624,7 @@ static void cpuSetAMDPCI(u8 node)
 				dword |= (((preq_tok_0) & 0x3) << 2);
 				dword &= ~(0x3 << 0);			/* ReqTok0 = req_tok_0 */
 				dword |= (((req_tok_0) & 0x3) << 0);
-				pci_write_config32(NODE_PCI(node, 3), (link << 2) + 0x148, dword);
+				pci_write_config32(NODE_PCI(node, 3), (link_real << 2) + 0x148, dword);
 			}
 		}
 
@@ -1667,6 +1670,7 @@ static void cpuSetAMDPCI(u8 node)
 	}
 
 	uint8_t link;
+	uint8_t link_real;
 	uint8_t isochronous;
 	uint8_t isochronous_link_present;
 
@@ -1675,7 +1679,8 @@ static void cpuSetAMDPCI(u8 node)
 	if (revision & AMD_FAM15_ALL) {
 		for (link = 0; link < 4; link++) {
 			if (AMD_CpuFindCapability(node, link, &offset)) {
-				isochronous = (pci_read_config32(NODE_PCI(node, 0), (link * 0x20) + 0x84) >> 12) & 0x1;
+				link_real = (offset - 0x80) / 0x20;
+				isochronous = (pci_read_config32(NODE_PCI(node, 0), (link_real * 0x20) + 0x84) >> 12) & 0x1;
 
 				if (isochronous)
 					isochronous_link_present = 1;

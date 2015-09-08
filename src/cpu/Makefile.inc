@@ -13,7 +13,6 @@ subdirs-y += x86
 subdirs-$(CONFIG_CPU_QEMU_X86) += qemu-x86
 
 $(eval $(call create_class_compiler,cpu_microcode,x86_32))
-$(eval $(call create_class_compiler,cpu_microcode,x86_64))
 ################################################################################
 ## Rules for building the microcode blob in CBFS
 ################################################################################

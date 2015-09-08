@@ -39,12 +39,15 @@
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE		GPE0_LAN_WAK
 
+/* GPP_B16 is WLAN_WAKE. GPP_B group is routed to DW0 in the GPE0 block */
+#define GPE_WLAN_WAKE		GPE0_DW0_16
+
 /* Input device interrupt configuration */
 #define TOUCHPAD_INT_L		GPP_B3_IRQ
 #define TOUCHSCREEN_INT_L	GPP_E7_IRQ
 #define MIC_INT_L		GPP_F10_IRQ
 
-/* GPP_E16 is EC_SCI_L. GPP_E group is routed to dword 2 in the GPE0 block. */
+/* GPP_E16 is EC_SCI_L. GPP_E group is routed to DW2 in the GPE0 block */
 #define EC_SCI_GPI		GPE0_DW2_16
 #define EC_SMI_GPI		GPP_E15
 
@@ -91,7 +94,7 @@ static const struct pad_config gpio_table[] = {
 /* PCH_PLT_RST */	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 /* GPP_B_14_SPKR */	PAD_CFG_GPI(GPP_B14, NONE, DEEP),
 /* GSPI0_CS# */		/* GPP_B15 */
-/* WLAN_PCIE_WAKE */	PAD_CFG_GPI(GPP_B16, NONE, DEEP),
+/* WLAN_PCIE_WAKE */	PAD_CFG_GPI_ACPI_SCI(GPP_B16, NONE, DEEP, YES),
 /* SSD_PCIE_WAKE */	PAD_CFG_GPI(GPP_B17, NONE, DEEP),
 /* GSPI0_MOSI */	/* GPP_B18 */
 /* CCODEC_SPI_CS */	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF1),

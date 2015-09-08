@@ -425,6 +425,11 @@ build_GCC() {
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		|| touch .failed
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc || touch .failed
+
+	if [ "$(echo ${LANGUAGES} | grep -c '\<ada\>')" -gt 0 ]; then
+		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" -Cgcc/ cross-gnattools || touch .failed
+	fi
+
 	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
 
 	if [ "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then

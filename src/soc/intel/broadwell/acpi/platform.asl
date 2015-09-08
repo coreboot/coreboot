@@ -18,6 +18,9 @@
  * Foundation, Inc.
  */
 
+/* Enable ACPI _SWS methods */
+#include <soc/intel/common/acpi/acpi_wake_source.asl>
+
 /* The APM port can be used for generating software SMIs */
 
 OperationRegion (APMP, SystemIO, 0xb2, 2)
@@ -70,22 +73,4 @@ Method (_PTS, 1)
 Method (_WAK, 1)
 {
 	Return (Package (){ 0, 0 })
-}
-
-Scope (\_SB)
-{
-	Method (_SWS)
-	{
-		/* Index into PM1 for device that caused wake */
-		Return (\PM1I)
-	}
-}
-
-Scope (\_GPE)
-{
-	Method (_SWS)
-	{
-		/* Index into GPE for device that caused wake */
-		Return (\GPEI)
-	}
 }

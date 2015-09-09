@@ -40,7 +40,7 @@ fi
 
 our_date() {
 case $(uname) in
-NetBSD|OpenBSD|DragonFly|FreeBSD)
+NetBSD|OpenBSD|DragonFly|FreeBSD|Darwin)
 	date -r $1 $2
 	;;
 *)

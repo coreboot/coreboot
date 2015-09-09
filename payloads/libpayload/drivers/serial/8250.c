@@ -67,6 +67,7 @@ static void serial_hardware_init(int speed, int word_bits,
 {
 	unsigned char reg;
 
+#if !IS_ENABLED(CONFIG_LP_PL011_SERIAL_CONSOLE)
 	/* Disable interrupts. */
 	serial_write_reg(0, 0x01);
 
@@ -85,6 +86,7 @@ static void serial_hardware_init(int speed, int word_bits,
 	/* Restore the previous value of the divisor.
 	 * And set 8 bits per character */
 	serial_write_reg((reg & ~0x80) | 3, 0x03);
+#endif
 }
 #endif
 
@@ -139,7 +141,9 @@ void serial_putchar(unsigned int c)
 {
 	if (!serial_hardware_is_present)
 		return;
+#if !IS_ENABLED(CONFIG_LP_PL011_SERIAL_CONSOLE)
 	while ((serial_read_reg(0x05) & 0x20) == 0) ;
+#endif
 	serial_write_reg(c, 0x00);
 	if (c == '\n')
 		serial_putchar('\r');

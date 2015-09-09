@@ -196,7 +196,7 @@ endif
 # must come rather early
 .SECONDEXPANSION:
 
-$(obj)/config.h:
+$(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG)
 	$(MAKE) oldconfig
 
 # Add a new class of source/object files to the build system

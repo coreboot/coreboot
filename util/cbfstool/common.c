@@ -177,28 +177,6 @@ const char *arch_to_string(uint32_t a)
 	return ret;
 }
 
-static struct filetypes_t {
-	uint32_t type;
-	const char *name;
-} filetypes[] = {
-	{CBFS_COMPONENT_STAGE, "stage"},
-	{CBFS_COMPONENT_PAYLOAD, "payload"},
-	{CBFS_COMPONENT_OPTIONROM, "optionrom"},
-	{CBFS_COMPONENT_BOOTSPLASH, "bootsplash"},
-	{CBFS_COMPONENT_RAW, "raw"},
-	{CBFS_COMPONENT_VSA, "vsa"},
-	{CBFS_COMPONENT_MBI, "mbi"},
-	{CBFS_COMPONENT_MICROCODE, "microcode"},
-	{CBFS_COMPONENT_FSP, "fsp"},
-	{CBFS_COMPONENT_MRC, "mrc"},
-	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos default"},
-	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos layout"},
-	{CBFS_COMPONENT_SPD, "spd"},
-	{CBFS_COMPONENT_MRC_CACHE, "mrc_cache"},
-	{CBFS_COMPONENT_DELETED, "deleted"},
-	{CBFS_COMPONENT_NULL, "null"}
-};
-
 void print_supported_filetypes(void)
 {
 	int i, number = ARRAY_SIZE(filetypes);
@@ -213,7 +191,7 @@ void print_supported_filetypes(void)
 uint64_t intfiletype(const char *name)
 {
 	size_t i;
-	for (i = 0; i < (sizeof(filetypes) / sizeof(struct filetypes_t)); i++)
+	for (i = 0; i < (sizeof(filetypes) / sizeof(struct typedesc_t)); i++)
 		if (strcmp(filetypes[i].name, name) == 0)
 			return filetypes[i].type;
 	return -1;

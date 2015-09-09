@@ -175,6 +175,30 @@ struct cbfs_payload {
  */
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
+struct typedesc_t {
+	uint32_t type;
+	const char *name;
+};
+
+static struct typedesc_t filetypes[] unused = {
+	{CBFS_COMPONENT_STAGE, "stage"},
+	{CBFS_COMPONENT_PAYLOAD, "payload"},
+	{CBFS_COMPONENT_OPTIONROM, "optionrom"},
+	{CBFS_COMPONENT_BOOTSPLASH, "bootsplash"},
+	{CBFS_COMPONENT_RAW, "raw"},
+	{CBFS_COMPONENT_VSA, "vsa"},
+	{CBFS_COMPONENT_MBI, "mbi"},
+	{CBFS_COMPONENT_MICROCODE, "microcode"},
+	{CBFS_COMPONENT_FSP, "fsp"},
+	{CBFS_COMPONENT_MRC, "mrc"},
+	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos_default"},
+	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos_layout"},
+	{CBFS_COMPONENT_SPD, "spd"},
+	{CBFS_COMPONENT_MRC_CACHE, "mrc_cache"},
+	{CBFS_COMPONENT_DELETED, "deleted"},
+	{CBFS_COMPONENT_NULL, "null"}
+};
+
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 
 /* cbfs_image.c */

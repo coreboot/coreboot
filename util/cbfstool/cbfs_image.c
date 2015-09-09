@@ -52,31 +52,6 @@
 
 /* Type and format */
 
-struct typedesc_t {
-	uint32_t type;
-	const char *name;
-};
-
-static const struct typedesc_t types_cbfs_entry[] = {
-	{CBFS_COMPONENT_STAGE, "stage"},
-	{CBFS_COMPONENT_PAYLOAD, "payload"},
-	{CBFS_COMPONENT_OPTIONROM, "optionrom"},
-	{CBFS_COMPONENT_BOOTSPLASH, "bootsplash"},
-	{CBFS_COMPONENT_RAW, "raw"},
-	{CBFS_COMPONENT_VSA, "vsa"},
-	{CBFS_COMPONENT_MBI, "mbi"},
-	{CBFS_COMPONENT_MICROCODE, "microcode"},
-	{CBFS_COMPONENT_FSP, "fsp"},
-	{CBFS_COMPONENT_MRC, "mrc"},
-	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos_default"},
-	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos_layout"},
-	{CBFS_COMPONENT_SPD, "spd"},
-	{CBFS_COMPONENT_MRC_CACHE, "mrc_cache"},
-	{CBFS_COMPONENT_DELETED, "deleted"},
-	{CBFS_COMPONENT_NULL, "null"},
-	{0, NULL}
-};
-
 static const struct typedesc_t types_cbfs_compression[] = {
 	{CBFS_COMPRESS_NONE, "none"},
 	{CBFS_COMPRESS_LZMA, "LZMA"},
@@ -102,7 +77,7 @@ static int lookup_type_by_name(const struct typedesc_t *desc, const char *name)
 
 static const char *get_cbfs_entry_type_name(uint32_t type)
 {
-	return lookup_name_by_type(types_cbfs_entry, type, "(unknown)");
+	return lookup_name_by_type(filetypes, type, "(unknown)");
 }
 
 int cbfs_parse_comp_algo(const char *name)

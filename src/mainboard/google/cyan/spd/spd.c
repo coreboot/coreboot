@@ -162,6 +162,9 @@ static void set_dimm_info(uint32_t chips, uint8_t *spd, struct dimm_info *dimm)
 	case 8:
 		log2_chips = 3;
 		break;
+
+	default:
+		log2_chips = 0;
 	}
 	dimm->bus_width = (uint8_t)(log2_chips + (spd[7] & 7) + 2 - 3);
 }

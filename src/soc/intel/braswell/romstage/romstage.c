@@ -200,6 +200,14 @@ void soc_memory_init_params(struct romstage_params *params,
 
 	/* Set the parameters for MemoryInit */
 	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
+
+	if (!dev) {
+		printk(BIOS_ERR,
+			"Error! Device (PCI:0:%02x.%01x) not found, "
+			"soc_memory_init_params!\n", LPC_DEV, LPC_FUNC);
+		return;
+	}
+
 	config = dev->chip_info;
 	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit\n");
 	upd->PcdMrcInitTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?

@@ -87,8 +87,6 @@ static void mainboard_init(device_t dev)
 	 setup_usb();
 	 assert_sw_reset();
 	 setup_tpm();
-	 /* Functionally a 0-cost no-op if NAND is not present */
-	 board_nand_init();
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Copy WIFI calibration data into CBMEM. */

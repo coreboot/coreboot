@@ -172,6 +172,4 @@ static inline int gmac_cfg_is_valid(ipq_gmac_board_cfg_t *cfg)
 unsigned int get_board_index(unsigned machid);
 void ipq_configure_gpio(const gpio_func_data_t *gpio, unsigned count);
 
-void board_nand_init(void);
-
 #endif	/* _IPQ40XX_CDP_H_ */

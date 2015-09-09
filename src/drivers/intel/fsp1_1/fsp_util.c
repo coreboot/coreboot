@@ -21,7 +21,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include "fsp_util.h"
+#include <fsp/util.h>
 #include <timestamp.h>
 
 /* Locate the FSP binary in the coreboot filesystem */

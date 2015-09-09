@@ -2,7 +2,6 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2015 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +17,25 @@
  * Foundation, Inc.
  */
 
-#ifndef _INTEL_COMMON_RAMSTAGE_H_
-#define _INTEL_COMMON_RAMSTAGE_H_
+#ifndef _FSP1_1_API_H_
+#define _FSP1_1_API_H_
 
-#include <fsp/util.h>
-#include <soc/intel/common/util.h>
-#include <stdint.h>
+#define FSP_SIG		0x48505346	/* 'FSPH' */
 
-/* Perform Intel silicon init. */
-void intel_silicon_init(void);
-/* Called after the silicon init code has run. */
-void soc_after_silicon_init(void);
-/* Initialize UPD data before SiliconInit call. */
-void soc_silicon_init_params(SILICON_INIT_UPD *params);
-void mainboard_silicon_init_params(SILICON_INIT_UPD *params);
-void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
-	SILICON_INIT_UPD *new);
-void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params);
+/* All the FSP headers need to have UEFI types provided before inclusion. */
+#include <fsp/uefi_binding.h>
 
-#endif /* _INTEL_COMMON_RAMSTAGE_H_ */
+/*
+ * Intel's code does not have a handle on changing global packing state.
+ * Therefore, one needs to protect against packing policies that are set
+ * globally for a compliation unit just by including a header file.
+ */
+#pragma pack(push)
+
+#include <vendorcode/intel/fsp/fsp1_1/IntelFspPkg/Include/FspApi.h>
+#include <vendorcode/intel/fsp/fsp1_1/IntelFspPkg/Include/FspInfoHeader.h>
+
+/* Restore original packing policy. */
+#pragma pack(pop)
+
+#endif

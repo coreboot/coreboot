@@ -17,8 +17,8 @@
  * Foundation, Inc.
  */
 
-#ifndef _FSP_GOP_H_
-#define _FSP_GOP_H_
+#ifndef _FSP1_1_GOP_H_
+#define _FSP1_1_GOP_H_
 
 /* GOP support */
 #if IS_ENABLED(CONFIG_GOP_SUPPORT)

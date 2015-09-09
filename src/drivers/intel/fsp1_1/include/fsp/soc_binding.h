@@ -2,7 +2,6 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2015 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +17,27 @@
  * Foundation, Inc.
  */
 
-#ifndef _INTEL_COMMON_RAMSTAGE_H_
-#define _INTEL_COMMON_RAMSTAGE_H_
+#ifndef _FSP1_1_SOC_BINDING_H_
+#define _FSP1_1_SOC_BINDING_H_
 
-#include <fsp/util.h>
-#include <soc/intel/common/util.h>
-#include <stdint.h>
+/* All the FSP headers need to have UEFI types provided before inclusion. */
+#include <fsp/uefi_binding.h>
 
-/* Perform Intel silicon init. */
-void intel_silicon_init(void);
-/* Called after the silicon init code has run. */
-void soc_after_silicon_init(void);
-/* Initialize UPD data before SiliconInit call. */
-void soc_silicon_init_params(SILICON_INIT_UPD *params);
-void mainboard_silicon_init_params(SILICON_INIT_UPD *params);
-void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
-	SILICON_INIT_UPD *new);
-void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params);
+/*
+ * Intel's code does not have a handle on changing global packing state.
+ * Therefore, one needs to protect against packing policies that are set
+ * globally for a compliation unit just by including a header file.
+ */
+#pragma pack(push)
 
-#endif /* _INTEL_COMMON_RAMSTAGE_H_ */
+/*
+ * This file is found by way of the Kconfig FSP_INCLUDE_PATH option. It is
+ * a per implementation specific header. i.e. different FSP implementations
+ * for different chipsets.
+ */
+#include <FspUpdVpd.h>
+
+/* Restore original packing policy. */
+#pragma pack(pop)
+
+#endif

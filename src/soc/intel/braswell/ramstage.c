@@ -29,7 +29,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <romstage_handoff.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>

@@ -27,7 +27,7 @@
 #define _SOC_CHIP_H_
 
 #include <stdint.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <soc/pci_devs.h>
 
 #define SVID_CONFIG1		1

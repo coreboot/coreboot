@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <soc/pei_data.h>
 #include <soc/pm.h>
 #include <soc/intel/common/romstage.h>

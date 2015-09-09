@@ -23,7 +23,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <string.h>

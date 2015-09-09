@@ -19,11 +19,10 @@
 
 #include <console/console.h>
 #include <cbmem.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <uefi_types.h>
 
 #define FSP_DBG_LVL BIOS_NEVER
 

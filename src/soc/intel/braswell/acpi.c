@@ -35,7 +35,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <ec/google/chromeec/ec.h>
-#include <fsp_gop.h>
+#include <fsp/gop.h>
 #include <rules.h>
 #include <soc/acpi.h>
 #include <soc/gfx.h>

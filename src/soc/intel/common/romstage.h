@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <memory_info.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <soc/intel/common/util.h>
 #include <soc/pei_data.h>
 #include <soc/pm.h>		/* chip_power_state */

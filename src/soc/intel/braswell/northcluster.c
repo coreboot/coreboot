@@ -25,7 +25,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <soc/intel/common/memmap.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>

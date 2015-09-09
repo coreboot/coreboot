@@ -23,7 +23,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include "fsp_util.h"
+#include <fsp/util.h>
 #include <ip_checksum.h>
 #include <lib.h> // hexdump
 #include <string.h>

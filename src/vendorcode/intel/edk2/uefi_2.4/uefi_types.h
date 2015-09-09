@@ -37,15 +37,15 @@ are permitted provided that the following conditions are met:
 #define __APPLE__ 0
 #include <stdlib.h>
 #include <Uefi/UefiBaseType.h>
-#include <MdePkg/Include/Pi/PiBootMode.h>
-#include <MdePkg/Include/Pi/PiFirmwareFile.h>
-#include <MdePkg/Include/Pi/PiFirmwareVolume.h>
-#include <MdePkg/Include/Uefi/UefiMultiPhase.h>
-#include <MdePkg/Include/Pi/PiHob.h>
-#include <MdePkg/Include/Protocol/GraphicsOutput.h>
-#include <MdePkg/Include/Library/HobLib.h>
-#include <MdePkg/Include/Guid/FirmwareFileSystem2.h>
-#include <MdePkg/Include/IndustryStandard/PeImage.h>
+#include <Pi/PiBootMode.h>
+#include <Pi/PiFirmwareFile.h>
+#include <Pi/PiFirmwareVolume.h>
+#include <Uefi/UefiMultiPhase.h>
+#include <Pi/PiHob.h>
+#include <Protocol/GraphicsOutput.h>
+#include <Library/HobLib.h>
+#include <Guid/FirmwareFileSystem2.h>
+#include <IndustryStandard/PeImage.h>
 
 ///
 /// For GNU assembly code, .global or .globl can declare global symbols.

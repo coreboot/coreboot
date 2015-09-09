@@ -22,7 +22,7 @@
 #include <cbmem.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <lib.h>
 #include <soc/intel/common/memmap.h>
 #include <soc/intel/common/ramstage.h>

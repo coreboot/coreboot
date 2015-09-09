@@ -40,7 +40,7 @@
 #include <timestamp.h>
 #include <reset.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <fsp_util.h>
+#include <fsp/util.h>
 #include <soc/intel/common/mrc_cache.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>

@@ -18,28 +18,15 @@
  * Foundation, Inc.
  */
 
-#ifndef FSP_UTIL_H
-#define FSP_UTIL_H
+#ifndef FSP1_1_UTIL_H
+#define FSP1_1_UTIL_H
 
-#include <types.h>
-#include <arch/cpu.h>
-#include <fsp_gop.h>
+#include <fsp/api.h>
+/* Current users expect to get the SoC's FSP definitions by including util.h. */
+#include <fsp/soc_binding.h>
+#include <fsp/gop.h>
 #include <program_loading.h>
 #include <region.h>
-
-/*
- * The following are functions with prototypes defined in the EDK2 headers. The
- * EDK2 headers are included with chipset_fsp_util.h.  Define the following
- * names to reduce the use of CamelCase in the other source files.
- */
-#define GetHobList	get_hob_list
-#define GetNextHob	get_next_hob
-#define GetFirstHob	get_first_hob
-#define GetNextGuidHob	get_next_guid_hob
-#define GetFirstGuidHob	get_first_guid_hob
-
-/* Include the EDK2 headers */
-#include <soc/chipset_fsp_util.h>
 
 /* find_fsp() should only be called from assembly code. */
 FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address);
@@ -88,8 +75,6 @@ int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src);
 #define FSP_IMAGE_ATTRIBUTE_LOC			32
 #define  GRAPHICS_SUPPORT_BIT			(1 << 0)
 
-#define FSP_SIG					0x48505346	/* 'FSPH' */
-
 #define ERROR_NO_FV_SIG				1
 #define ERROR_NO_FFS_GUID			2
 #define ERROR_NO_INFO_HEADER			3
@@ -101,4 +86,11 @@ int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src);
 extern void *FspHobListPtr;
 #endif
 
-#endif	/* FSP_UTIL_H */
+/* TODO: Remove the EFI types and decorations from coreboot implementations. */
+VOID * EFIAPI get_hob_list(VOID);
+VOID * EFIAPI get_next_hob(UINT16 type, CONST VOID *hob_start);
+VOID * EFIAPI get_first_hob(UINT16 type);
+VOID * EFIAPI get_next_guid_hob(CONST EFI_GUID * guid, CONST VOID *hob_start);
+VOID * EFIAPI get_first_guid_hob(CONST EFI_GUID * guid);
+
+#endif	/* FSP1_1_UTIL_H */

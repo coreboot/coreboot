@@ -25,3 +25,13 @@ ramstage-y += $(FSP_C_INPUTS)
 
 CFLAGS_x86_32 += -Isrc/vendorcode/intel/$(FSP_PATH)/include
 endif
+
+ifeq ($(CONFIG_UEFI_2_4_BINDING),y)
+# ProccessorBind.h provided in Ia32 directory. Types are derived from ia32.
+# It's possible to provide our own ProcessorBind.h using posix types. However,
+# ProcessorBind.h isn't just about types. There's compiler definitions as well
+# as ABI enforcement. Luckily long is not used in Ia32/ProcessorBind.h for
+# a fixed width type.
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include/Ia32
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
+endif

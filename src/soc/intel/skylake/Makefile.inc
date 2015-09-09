@@ -61,18 +61,11 @@ smm-$(CONFIG_SPI_FLASH_SMM) += flash_controller.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_UART_DEBUG) += uart_debug.c
 
-CPPFLAGS_common += -I$(src)/arch/x86/include/
 CPPFLAGS_common += -I$(src)/soc/intel/skylake
 CPPFLAGS_common += -I$(src)/soc/intel/skylake/include
 
+# Currently used for microcode path.
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)
-
-CPPFLAGS_common += -I$(src)/drivers/intel/fsp1_1
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1
-CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4
-CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
-CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include/Ia32
-CPPFLAGS_common += -I$(CONFIG_FSP_INCLUDE_PATH)
 
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware

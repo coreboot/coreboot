@@ -51,18 +51,10 @@ smm-y += smihandler.c
 smm-y += spi.c
 smm-y += tsc_freq.c
 
-CPPFLAGS_common += -I$(src)/arch/x86/include/
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/include
 
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)
-
-CPPFLAGS_common += -I$(src)/drivers/intel/fsp1_1
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1
-CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4
-CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
-CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include/Ia32
-CPPFLAGS_common += -I$(CONFIG_FSP_INCLUDE_PATH)
 
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware

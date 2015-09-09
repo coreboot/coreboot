@@ -26,7 +26,9 @@ ramstage-y += fsp_relocate.c
 ramstage-y += fsp_util.c
 ramstage-y += hob.c
 
-CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1
+CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include
+# Where FspUpdVpd.h can be picked up from.
+CPPFLAGS_common += -I$(CONFIG_FSP_INCLUDE_PATH)
 
 cpu_incs-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += $(src)/drivers/intel/fsp1_1/cache_as_ram.inc
 

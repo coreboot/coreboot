@@ -19,7 +19,7 @@
 
 #include <cbfs.h>
 #include <console/console.h>
-#include "fsp_util.h"
+#include <fsp/util.h>
 #include <lib.h>
 
 /* Reading VBT table from flash */

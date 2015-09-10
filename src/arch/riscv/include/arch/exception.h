@@ -55,7 +55,7 @@ static inline void exception_init(void)
 
 void trap_handler(trapframe* tf);
 void handle_supervisor_call(trapframe* tf);
-//void handleMisalignedLoad(trapframe *tf);
+void handleMisalignedLoad(trapframe *tf);
 void handle_misaligned_store(trapframe *tf);
 
 #endif

@@ -20,7 +20,6 @@
 
 ifeq ($(CONFIG_SOC_INTEL_FSP_BAYTRAIL),y)
 
-subdirs-y += microcode
 subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
@@ -58,6 +57,8 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smm.c
 
 ramstage-y += placeholders.c
 ramstage-y += i2c.c
+
+cpu_microcode_bins += 3rdparty/blobs/soc/intel/baytrail/microcode.bin
 
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/fsp

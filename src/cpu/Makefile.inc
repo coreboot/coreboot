@@ -28,20 +28,17 @@ cpu_ucode_cbfs_file = $(obj)/cpu_microcode_blob.bin
 cbfs_include_ucode = y
 endif
 
-# In case we have more than one "source" (cough) files containing microcode, we
-# link them together in one large blob, so that we get all the microcode updates
-# in one file. This makes it easier for objcopy in the final step.
-# The --entry=0 is just here to suppress the LD warning. It does not affect the
-# final microcode file.
-$(obj)/cpu_microcode_blob.o: $$(cpu_microcode-objs)
-	@printf "    LD         $(subst $(obj)/,,$(@))\n"
-	$(LD_cpu_microcode) -static --entry=0 $+ -o $@
-
-# We have a lot of useless data in the large blob, and we are only interested in
-# the data section, so we only copy that part to the final microcode file
-$(obj)/cpu_microcode_blob.bin: $(obj)/cpu_microcode_blob.o
+# We just mash all microcode binaries together into one binary to rule them all.
+# This approach assumes that the microcode binaries are properly padded, and
+# their headers specify the correct size. This works fairly well on isolatied
+# updates, such as Intel and some AMD microcode, but won't work very well if the
+# updates are wrapped in a container, like AMD's microcode update container. If
+# there is only one microcode binary (i.e. one container), then we don't have
+# this issue, and this rule will continue to work.
+$(obj)/cpu_microcode_blob.bin: $$(cpu_microcode_bins)
 	@printf "    MICROCODE  $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY_cpu_microcode) -j .data -O binary $< $@
+	@echo $(cpu_microcode_bins)
+	cat $+ > $@
 
 cbfs-files-$(cbfs_include_ucode) += cpu_microcode_blob.bin
 cpu_microcode_blob.bin-file := $(cpu_ucode_cbfs_file)

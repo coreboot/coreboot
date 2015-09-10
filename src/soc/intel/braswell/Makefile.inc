@@ -1,6 +1,5 @@
 ifeq ($(CONFIG_SOC_INTEL_BRASWELL),y)
 
-subdirs-y += microcode
 subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
@@ -50,6 +49,8 @@ smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += spi.c
 smm-y += tsc_freq.c
+
+# cpu_microcode_bins += ???
 
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/include

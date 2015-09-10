@@ -8,4 +8,4 @@ ramstage-y += ram_calc.c
 ramstage-y += monotonic_timer.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += powernow_acpi.c
 
-cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += microcode_blob.c
+cpu_microcode_bins += 3rdparty/blobs/cpu/amd/model_10xxx/microcode.bin

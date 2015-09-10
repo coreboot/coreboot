@@ -6,4 +6,4 @@ ramstage-y += model_fxx_update_microcode.c
 ramstage-y += processor_name.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += powernow_acpi.c
 
-cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += microcode_blob.c
+cpu_microcode_bins += 3rdparty/blobs/cpu/amd/model_fxx/microcode.bin

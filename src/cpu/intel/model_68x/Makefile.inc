@@ -21,4 +21,4 @@
 ramstage-y += model_68x_init.c
 subdirs-y += ../../x86/name
 
-cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += microcode_blob.c
+cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_68x/microcode.bin

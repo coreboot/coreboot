@@ -10,8 +10,6 @@ ramstage-y += monotonic_timer.c
 
 romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 
-cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
-
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
 smm-y += monotonic_timer.c
@@ -25,3 +23,6 @@ subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 subdirs-y += ../turbo
+
+cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_306cx/microcode.bin
+cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_4065x/microcode.bin

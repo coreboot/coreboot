@@ -26,8 +26,6 @@ subdirs-y += ../../x86/smm
 ramstage-y += nano_init.c
 ramstage-y += update_ucode.c
 
-# This microcode is included as a separate CBFS file. It is never linked in to
-# the rest of coreboot.
-cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += microcode_blob.c
+cpu_microcode_bins += 3rdparty/blobs/cpu/via/nano/microcode.bin
 
 cpu_incs-y += $(src)/cpu/via/car/cache_as_ram.inc

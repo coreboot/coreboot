@@ -59,9 +59,4 @@ config CPU_MICROCODE_CBFS_LOC
 	depends on SUPPORT_CPU_UCODE_IN_CBFS
 	default 0xfff70000
 
-config MICROCODE_INCLUDE_PATH
-	string "Location of the intel microcode patches"
-	default "../intel/cpu/ivybridge/microcode" if CPU_INTEL_FSP_MODEL_306AX
-	default "../intel/cpu/sandybridge/microcode" if CPU_INTEL_FSP_MODEL_206AX
-
 endif

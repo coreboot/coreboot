@@ -1,6 +1,5 @@
 ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
 
-subdirs-y += microcode
 subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
@@ -72,6 +71,8 @@ ramstage-y += usbdebug.c
 romstage-y += usbdebug.c
 smm-y      += usbdebug.c
 endif
+
+cpu_microcode_bins += 3rdparty/blobs/soc/intel/broadwell/microcode.bin
 
 CPPFLAGS_common += -Isrc/soc/intel/broadwell/include
 

@@ -1,6 +1,5 @@
 ifeq ($(CONFIG_SOC_INTEL_BAYTRAIL),y)
 
-subdirs-y += microcode
 subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
@@ -52,6 +51,8 @@ ramstage-y += hda.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c
+
+cpu_microcode_bins += 3rdparty/blobs/soc/intel/baytrail/microcode.bin
 
 CPPFLAGS_common += -Isrc/soc/intel/baytrail/include
 

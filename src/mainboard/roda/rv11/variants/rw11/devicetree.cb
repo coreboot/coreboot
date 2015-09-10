@@ -1,0 +1,178 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2016 secunet Security Networks AG
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+chip northbridge/intel/sandybridge
+	# IGD Displays
+	register "gfx.ndid" = "4"
+	register "gfx.did" = "{ 0x80000400, 0x80000300, 0x80000301, 0x80000100, }"
+
+	# Enable Panel as eDP and configure power delays
+	register "gpu_panel_port_select" = "1"			# eDP_A
+	register "gpu_panel_power_cycle_delay" = "6"		# 500ms
+	register "gpu_panel_power_up_delay" = "2000"		# 200ms
+	register "gpu_panel_power_down_delay" = "500"		# 50ms
+	register "gpu_panel_power_backlight_on_delay" = "1"	# 100us as recommended by PRM
+	register "gpu_panel_power_backlight_off_delay" = "2000"	# 200ms
+
+	# Set backlight PWM values for eDP
+	register "gpu_cpu_backlight" = "0x00000ac8"
+	register "gpu_pch_backlight" = "0x13120000"
+
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_rPGA989
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_206ax
+			# Magic APIC ID to locate this chip
+			device lapic 0xACAC off end
+
+			register "c1_acpower" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "c2_acpower" = "4"	# ACPI(C2) = MWAIT(C6)
+			register "c3_acpower" = "0"
+
+			register "c1_battery" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "c2_battery" = "4"	# ACPI(C2) = MWAIT(C6)
+			register "c3_battery" = "0"
+		end
+	end
+
+	device domain 0 on
+		device pci 00.0 on end # host bridge
+		device pci 02.0 on end # vga controller
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			# LPC i/o generic decodes
+			register "gen1_dec" = "0x003c0a01" # ITE environment controller
+			register "gen2_dec" = "0x000403e9" # additional com port
+			register "gen3_dec" = "0x000402e9" # additional com port
+
+			# Enable both SATA ports 0, 1
+			register "sata_port_map" = "0x03"
+			# Set max SATA speed to 6.0 Gb/s (should be the default, anyway)
+			register "sata_interface_speed_support" = "0x3"
+
+			# Route GPI7 (EC SCI) as SCI
+			register "gpi7_routing" = "2"
+
+			# Enable GPE17 (GPI7) and TCO SCI
+			register "gpe0_en" = "0x00800040"
+
+			# Disable root port coalescing
+			register "pcie_port_coalesce" = "0"
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 1, 1 }"
+
+			register "p_cnt_throttling_supported" = "1"
+
+			register "xhci_overcurrent_mapping"	= "0x00000c03"
+			register "xhci_switchable_ports"	= "0x0f"
+			register "superspeed_capable_ports"	= "0x0f"
+
+			register "spi_uvscc" = "0x2005"
+			register "spi_lvscc" = "0x2005"
+
+			device pci 14.0 on end # USB 3.0 Controller
+			device pci 16.0 on end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 19.0 on end # Intel Gigabit Ethernet
+			device pci 1a.0 on end # USB2 EHCI #2
+			device pci 1b.0 on # High Definition Audio
+				subsystemid 0x1a86 0x4352
+			end
+
+			# Disabling 1c.0 might break IRQ settings as it enables port coalescing
+			device pci 1c.0 on end # PCIe Port #1
+			device pci 1c.1 on end # PCIe Port #2
+			device pci 1c.2 on end # PCIe Port #3
+			device pci 1c.3 on end # PCIe Port #4
+			device pci 1c.4 on end # PCIe Port #5
+			device pci 1c.5 on end # PCIe Port #6
+			device pci 1c.6 on end # PCIe Port #7
+			device pci 1c.7 on end # PCIe Port #8
+
+			device pci 1d.0 on end # USB2 EHCI #1
+			device pci 1e.0 off end # PCI bridge
+			device pci 1f.0 on # LPC bridge
+				chip ec/roda/it8518
+					register "cpuhot_limit" = "100"
+					# 60h/64h KBC
+					device pnp ff.0 on # dummy address
+					end
+				end
+				chip superio/ite/it8783ef
+					register "TMPIN1"		= "THERMAL_RESISTOR"
+					register "TMPIN2"		= "THERMAL_RESISTOR"
+					register "ec.vin_mask"          = "VIN_ALL"
+					register "FAN1.mode"		= "FAN_SMART_AUTOMATIC"
+					register "FAN1.smart.tmpin"	= " 1"
+					register "FAN1.smart.tmp_off"	= "60"
+					register "FAN1.smart.tmp_start"	= "64"
+					register "FAN1.smart.tmp_delta"	= " 2"
+					register "FAN1.smart.pwm_start"	= "30"
+					register "FAN1.smart.slope"	= "64"
+					register "FAN2.mode"		= "FAN_SMART_AUTOMATIC"
+					register "FAN2.smart.tmpin"	= " 1"
+					register "FAN2.smart.tmp_off"	= "60"
+					register "FAN2.smart.tmp_start"	= "64"
+					register "FAN2.smart.tmp_delta"	= " 2"
+					register "FAN2.smart.pwm_start"	= "30"
+					register "FAN2.smart.slope"	= "64"
+					register "FAN3.mode"		= "FAN_MODE_OFF"
+					device pnp 2e.0 off end	# Floppy
+					device pnp 2e.1 on	# COM 1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.2 on	# COM 2
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.3 on	# Printer Port
+						io 0x60 = 0x378
+						io 0x62 = 0x000
+						irq 0x70 = 7
+						drq 0x74 = 4
+						irq 0xf0 = 0x00
+					end
+					device pnp 2e.4 on	# Environment Controller
+						io 0x60 = 0xa30
+						io 0x62 = 0xa20
+						irq 0x70 = 0
+						irq 0xf0 = 0x80
+					end
+					device pnp 2e.5 off end	# Keyboard
+					device pnp 2e.6 off end	# Mouse
+					device pnp 2e.7 off end	# GPIO
+					device pnp 2e.8 on	# COM 3
+						io 0x60 = 0x3e8
+						irq 0x70 = 4
+					end
+					device pnp 2e.9 on	# COM 4
+						io 0x60 = 0x2e8
+						irq 0x70 = 3
+					end
+					device pnp 2e.a off end	# COM 5
+					device pnp 2e.b off end	# COM 6
+					device pnp 2e.c off end	# CIR
+				end
+			end # LPC bridge
+			device pci 1f.2 on end # SATA Controller 1
+			device pci 1f.3 on end # SMBus
+			device pci 1f.5 off end # SATA Controller 2
+			device pci 1f.6 off end # Thermal
+		end
+	end
+end

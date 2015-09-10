@@ -1,0 +1,132 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2008 coresystems GmbH
+## Copyright (C) 2015 secunet Security Networks AG
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+# -----------------------------------------------------------------
+entries
+
+# -----------------------------------------------------------------
+# Status Register A
+# -----------------------------------------------------------------
+# Status Register B
+# -----------------------------------------------------------------
+# Status Register C
+#96           4       r       0        status_c_rsvd
+#100          1       r       0        uf_flag
+#101          1       r       0        af_flag
+#102          1       r       0        pf_flag
+#103          1       r       0        irqf_flag
+# -----------------------------------------------------------------
+# Status Register D
+#104          7       r       0        status_d_rsvd
+#111          1       r       0        valid_cmos_ram
+# -----------------------------------------------------------------
+# Diagnostic Status Register
+#112          8       r       0        diag_rsvd1
+
+# -----------------------------------------------------------------
+0          120       r       0        reserved_memory
+#120        264       r       0        unused
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384          1       e       3        boot_option
+385          3       r       0        reserved
+388          4       h       0        reboot_counter
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+392          3       e       4        baud_rate
+395          4       e       5        debug_level
+#399          1       r       0        unused
+
+# coreboot config options: cpu
+400          1       e       2        hyper_threading
+401          3       e       9        gfx_uma_size
+
+#404          4       r       0        unused
+
+# coreboot config options: southbridge
+408          1       e       1        nmi
+#409          2       r       0        unused
+411          1       e       8        sata_mode
+#412          4       r       0        unused
+
+# coreboot config options: bootloader
+416        424       s       0        boot_devices
+840          8       h       0        boot_default
+848          1       e       7        cmos_defaults_loaded
+#851          5       r       0        unused
+
+# coreboot config options: mainboard specific options
+#856         40       r       0        unused
+
+# SandyBridge MRC Scrambler Seed values
+896         32        r       0        mrc_scrambler_seed
+928         32        r       0        mrc_scrambler_seed_s3
+960         16        r       0        mrc_scrambler_seed_chk
+#976          8        r       0        unused
+
+# coreboot config options: check sums
+984         16       h       0        check_sum
+#1000        24       r       0        amd_reserved
+
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID value   text
+1     0     Disable
+1     1     Enable
+2     0     Enable
+2     1     Disable
+3     0     Fallback
+3     1     Normal
+4     0     115200
+4     1     57600
+4     2     38400
+4     3     19200
+4     4     9600
+4     5     4800
+4     6     2400
+4     7     1200
+5     1     Emergency
+5     2     Alert
+5     3     Critical
+5     4     Error
+5     5     Warning
+5     6     Notice
+5     7     Info
+5     8     Debug
+5     9     Spew
+6     0     Disable
+6     1     Enable
+6     2     Keep
+7     0     No
+7     1     Yes
+8     0     AHCI
+8     1     Compatible
+9     0     32M
+9     1     64M
+9     2     96M
+9     3     128M
+9     4     160M
+9     5     192M
+9     6     224M
+
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 895 984

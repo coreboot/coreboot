@@ -534,6 +534,9 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define TCO1_STS	0x64
 #define   DMISCI_STS	(1 << 9)
 #define TCO2_STS	0x66
+#define TCO1_CNT	0x68
+#define   TCO_LOCK	(1 << 12)
+#define TCO2_CNT	0x6a
 
 /*
  * SPI Opcode Menu setup for SPIBAR lockdown

@@ -16,11 +16,15 @@
 
 #include <arch/io.h>
 #include <console/post_codes.h>
+#include <cpu/x86/smm.h>
 #include "pch.h"
 #include <spi-generic.h>
 
 void intel_pch_finalize_smm(void)
 {
+	u16 tco1_cnt;
+	u16 pmbase;
+
 	if (CONFIG_LOCK_SPI_ON_RESUME_RO || CONFIG_LOCK_SPI_ON_RESUME_NO_ACCESS) {
 		/* Copy flash regions from FREG0-4 to PR0-4
 		   and enable write protection bit31 */
@@ -65,6 +69,12 @@ void intel_pch_finalize_smm(void)
 	RCBA32(0x21a4) = RCBA32(0x21a4);
 	pci_write_config32(PCI_DEV(0, 27, 0), 0x74,
 		    pci_read_config32(PCI_DEV(0, 27, 0), 0x74));
+
+	/* TCO_Lock */
+	pmbase = smm_get_pmbase();
+	tco1_cnt = inw(pmbase + TCO1_CNT);
+	tco1_cnt |= TCO_LOCK;
+	outw(tco1_cnt, pmbase + TCO1_CNT);
 
 	/* Indicate finalize step with post code */
 	outb(POST_OS_BOOT, 0x80);

@@ -19,6 +19,7 @@
  * Foundation, Inc.
  */
 
+#include <endian.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -202,6 +203,76 @@ static int cbfs_add_integer_component(const char *name,
 					(long long unsigned)u64val, name);
 		goto done;
 	}
+
+	ret = 0;
+
+done:
+	free(header);
+	buffer_delete(&buffer);
+	return ret;
+}
+
+static int cbfs_add_master_header(void)
+{
+	const char * const name = "cbfs master header";
+	struct cbfs_image image;
+	struct cbfs_file *header = NULL;
+	struct buffer buffer;
+	int ret = 1;
+
+	if (cbfs_image_from_buffer(&image, param.image_region,
+		param.headeroffset)) {
+		ERROR("Selected image region is not a CBFS.\n");
+		return 1;
+	}
+
+	if (cbfs_get_entry(&image, name)) {
+		ERROR("'%s' already in ROM image.\n", name);
+		return 1;
+	}
+
+	if (buffer_create(&buffer, sizeof(struct cbfs_header), name) != 0)
+		return 1;
+
+	struct cbfs_header *h = (struct cbfs_header *)buffer.data;
+	h->magic = htonl(CBFS_HEADER_MAGIC);
+	h->version = htonl(CBFS_HEADER_VERSION);
+	h->romsize = htonl(param.image_region->size);
+	/* The 4 bytes are left out for two reasons:
+	 * 1. the cbfs master header pointer resides there
+	 * 2. some cbfs implementations assume that an image that resides
+	 *    below 4GB has a bootblock and get confused when the end of the
+	 *    image is at 4GB == 0.
+	 */
+	h->bootblocksize = htonl(4);
+	h->align = htonl(CBFS_ENTRY_ALIGNMENT);
+	/* offset relative to romsize above, which covers precisely the CBFS
+	 * region.
+	 */
+	h->offset = htonl(0);
+	h->architecture = htonl(CBFS_ARCHITECTURE_UNKNOWN);
+
+	header = cbfs_create_file_header(CBFS_COMPONENT_CBFSHEADER,
+		buffer_size(&buffer), name);
+	if (cbfs_add_entry(&image, &buffer, 0, header) != 0) {
+		ERROR("Failed to add cbfs master header into ROM image.\n");
+		goto done;
+	}
+
+	struct cbfs_file *entry;
+	if ((entry = cbfs_get_entry(&image, name)) == NULL) {
+		ERROR("'%s' not in ROM image?!?\n", name);
+		goto done;
+	}
+
+	uint32_t header_offset = CBFS_SUBHEADER(entry) -
+		buffer_get(&image.buffer);
+	header_offset = -(buffer_size(&image.buffer) - header_offset);
+
+	// TODO: when we have a BE target, we'll need to store this as BE
+	*(uint32_t *)(buffer_get(&image.buffer) +
+		buffer_size(&image.buffer) - 4) =
+		htole32(header_offset);
 
 	ret = 0;
 
@@ -831,6 +902,7 @@ static const struct command commands[] = {
 	{"add-payload", "H:r:f:n:t:c:b:C:I:vh?", cbfs_add_payload, true, true},
 	{"add-stage", "a:H:r:f:n:t:c:b:P:S:yvh?", cbfs_add_stage, true, true},
 	{"add-int", "H:r:i:n:b:vh?", cbfs_add_integer, true, true},
+	{"add-master-header", "H:r:vh?", cbfs_add_master_header, true, true},
 	{"copy", "H:D:s:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
 	{"extract", "H:r:n:f:vh?", cbfs_extract, true, false},
@@ -956,6 +1028,8 @@ static void usage(char *name)
 			"Add a 32bit flat mode binary\n"
 	     " add-int [-r image,regions] -i INTEGER -n NAME [-b base]     "
 			"Add a raw 64-bit integer value\n"
+	     " add-master-header [-r image,regions]                        "
+			"Add a legacy CBFS master header\n"
 	     " remove [-r image,regions] -n NAME                           "
 			"Remove a component\n"
 	     " copy -D new_header_offset -s region size \\\n"

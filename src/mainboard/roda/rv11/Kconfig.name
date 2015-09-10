@@ -1,0 +1,5 @@
+config BOARD_RODA_RV11
+	bool "Lizard RV11"
+
+config BOARD_RODA_RW11
+	bool "Lizard RW11"

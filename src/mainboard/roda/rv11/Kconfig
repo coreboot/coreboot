@@ -1,0 +1,74 @@
+if BOARD_RODA_RV11 || BOARD_RODA_RW11
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SYSTEM_TYPE_LAPTOP
+	select CPU_INTEL_SOCKET_RPGA989
+	select NORTHBRIDGE_INTEL_IVYBRIDGE
+	select SOUTHBRIDGE_INTEL_C216
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_RESUME
+	select ENABLE_VMX
+	select EC_RODA_IT8518
+	select SERIRQ_CONTINUOUS_MODE
+	select MAINBOARD_HAS_LIBGFXINIT
+	select SUPERIO_ITE_IT8783EF if BOARD_RODA_RW11
+
+config MAINBOARD_DIR
+	string
+	default "roda/rv11"
+
+config VARIANT_DIR
+	string
+	default "rv11" if BOARD_RODA_RV11
+	default "rw11" if BOARD_RODA_RW11
+
+config DEVICETREE
+	string
+	default "variants/rv11/devicetree.cb" if BOARD_RODA_RV11
+	default "variants/rw11/devicetree.cb" if BOARD_RODA_RW11
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Lizard RW11" if BOARD_RODA_RW11
+	default "Lizard RV11"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf8000000 if USE_NATIVE_RAMINIT
+
+config MAX_CPUS
+	int
+	default 8
+
+config MAINBOARD_VENDOR
+	string
+	default "Roda"
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config HAVE_GBE_BIN
+	bool
+	default n
+
+config IFD_BIOS_SECTION
+	string
+	default "0x00d80000:0x00ffffff"
+
+config IFD_ME_SECTION
+	string
+	default "0x00003000:0x00d7ffff"
+
+config IFD_GBE_SECTION
+	string
+	default "0x00001000:0x00002fff"
+
+endif # BOARD_RODA_RV11 || BOARD_RODA_RW11

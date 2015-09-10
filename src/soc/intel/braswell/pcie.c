@@ -39,91 +39,10 @@ static inline int is_first_port(device_t dev)
 	return root_port_offset(dev) == PCIE_PORT1_FUNC;
 }
 
-static const struct reg_script init_static_before_exit_latency[] = {
-	/* Disable optimized buffer flush fill and latency tolerant reporting */
-	REG_PCI_RMW32(DCAP2, ~(OBFFS | LTRMS), 0),
-	REG_PCI_RMW32(DSTS2, ~(OBFFEN | LTRME), 0),
-	/* Set maximum payload size. */
-	REG_PCI_RMW32(DCAP, ~MPS_MASK, 0),
-	/*
-	 * Disable transmit datapath flush timer, clear transmit config change
-	 * wait time, clear sideband interface idle counter.
-	 */
-	REG_PCI_RMW32(PHYCTL2_IOSFBCTL, ~(TDFT | TXCFGCHWAIT | SIID), 0),
-	REG_SCRIPT_END,
-};
-
-static const struct reg_script init_static_after_exit_latency[] = {
-	/* Set common clock configuration. */
-	REG_PCI_OR16(LCTL, CCC),
-	/* Set NFTS to 0x743a361b */
-	REG_PCI_WRITE32(NFTS, 0x743a361b),
-	/* Set common clock latency to 0x3 */
-	REG_PCI_RMW32(MPC, ~CCEL_MASK, (0x3 << CCEL_SHIFT)),
-	/* Set relay timer policy. */
-	REG_PCI_RMW32(RTP, 0xff000000, 0x854c74),
-	/* Set IOSF packet fast transmit mode and link speed training policy. */
-	REG_PCI_OR16(MPC2, IPF | LSTP),
-	/*
-	 * Channel configuration - enable upstream posted split, set non-posted
-	 * and posted request size
-	 */
-	REG_PCI_RMW32(CHCFG, ~UPSD, UNRS | UPRS),
-	/* Completion status replay enable and set TLP grant count */
-	REG_PCI_RMW32(CFG2, ~(LATGC_MASK), CSREN | (3 << LATGC_SHIFT)),
-	/* Assume no IOAPIC behind root port -- disable EOI forwarding. */
-	REG_PCI_OR16(MPC2, EOIFD),
-	/* Expose AER */
-	REG_PCI_RMW32(AERCH, ~0, (1 << 16) | (1 << 0)),
-	/* set completion timeout to 160ms to 170ms */
-	REG_PCI_RMW16(DSTS2, ~CTD, 0x6),
-	/* Enable AER */
-	REG_PCI_OR16(DCTL_DSTS, URE | FEE | NFE | CEE),
-	/* Read and write back capabaility registers. */
-	REG_PCI_OR32(0x34, 0),
-	REG_PCI_OR32(0x80, 0),
-	/* Retrain the link. */
-	REG_PCI_OR16(LCTL, RL),
-	REG_SCRIPT_END,
-};
-
 static void pcie_init(device_t dev)
 {
-	struct reg_script init_script[] = {
-		REG_SCRIPT_NEXT(init_static_before_exit_latency),
-		/*
-		 * Exit latency configuration based on
-		 * PHYCTL2_IOSFBCTL[PLL_OFF_EN] set in root port 1
-		 */
-		REG_PCI_RMW32(LCAP, ~L1EXIT_MASK,
-			2 << (L1EXIT_MASK + pll_en_off)),
-		REG_SCRIPT_NEXT(init_static_after_exit_latency),
-		/* Disable hot plug, set power to 10W, set slot number. */
-		REG_PCI_RMW32(SLCAP, ~(HPC | HPS),
-			(1 << SLS_SHIFT) | (100 << SLV_SHIFT) |
-			(root_port_offset(dev) << SLN_SHIFT)),
-		/* Dynamic clock gating. */
-		REG_PCI_OR32(RPPGEN, RPDLCGEN | RPDBCGEN | RPSCGEN),
-		REG_PCI_OR32(PWRCTL, RPL1SQPOL | RPDTSQPOL),
-		REG_PCI_OR32(PCIEDBG, SPCE),
-		REG_SCRIPT_END,
-	};
-
 	printk(BIOS_SPEW, "%s/%s ( %s )\n",
 			__FILE__, __func__, dev_name(dev));
-
-	reg_script_run_on_dev(dev, init_script);
-
-	if (is_first_port(dev)) {
-		struct soc_intel_braswell_config *config = dev->chip_info;
-		uint32_t reg = pci_read_config32(dev, RPPGEN);
-		reg |= SRDLCGEN | SRDBCGEN;
-
-		if (config && config->clkreq_enable)
-			reg |= LCLKREQEN | BBCLKREQEN;
-
-		pci_write_config32(dev, RPPGEN, reg);
-	}
 }
 
 static const struct reg_script no_dev_behind_port[] = {

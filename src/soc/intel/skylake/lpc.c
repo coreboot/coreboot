@@ -153,6 +153,8 @@ static const struct reg_script pch_misc_init_script[] = {
 #if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
 	REG_PCI_RMW8(SERIRQ_CNTL, ~(1 << 6), 0),
 #endif
+	/* Enable CLKRUN_EN for power gating LPC */
+	REG_PCI_OR8(PCCTL, (CLKRUN_EN)),
 	REG_SCRIPT_END
 };
 

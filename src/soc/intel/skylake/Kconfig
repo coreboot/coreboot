@@ -119,7 +119,7 @@ config SERIAL_CPU_INIT
 
 config SERIRQ_CONTINUOUS_MODE
 	bool
-	default y
+	default n
 	help
 	  If you set this option to y, the serial IRQ machine will be
 	  operated in continuous mode.

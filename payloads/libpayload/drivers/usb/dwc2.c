@@ -274,6 +274,9 @@ dwc2_do_xfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 	if (do_copy && (dir == EPDIR_OUT))
 		memcpy(aligned_buf, data_buf, size);
 
+	if (dwc2_disconnected(ep->dev->controller))
+		return -HCSTAT_DISCONNECTED;
+
 	writel(hctsiz.d32, &reg->host.hchn[ch_num].hctsizn);
 	writel((uint32_t)virt_to_bus(aligned_buf),
 		&reg->host.hchn[ch_num].hcdman);

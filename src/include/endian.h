@@ -88,4 +88,70 @@
 #define clrbits_8(addr, clear) clrsetbits_8(addr, clear, 0)
 #define setbits_8(addr, set) setbits_8(addr, 0, set)
 
+#ifndef __ROMCC__
+/*
+ * Portable (API) endian support that can be used in code that is shared
+ * with userspace (man 3 endian) tools.
+ */
+static inline uint16_t htobe16(uint16_t host_16bits)
+{
+	return cpu_to_be16(host_16bits);
+}
+
+static inline uint16_t htole16(uint16_t host_16bits)
+{
+	return cpu_to_le16(host_16bits);
+}
+
+static inline uint16_t be16toh(uint16_t big_endian_16bits)
+{
+	return be16_to_cpu(big_endian_16bits);
+}
+
+static inline uint16_t le16toh(uint16_t little_endian_16bits)
+{
+	return le16_to_cpu(little_endian_16bits);
+}
+
+static inline uint32_t htobe32(uint32_t host_32bits)
+{
+	return cpu_to_be32(host_32bits);
+}
+
+static inline uint32_t htole32(uint32_t host_32bits)
+{
+	return cpu_to_le32(host_32bits);
+}
+
+static inline uint32_t be32toh(uint32_t big_endian_32bits)
+{
+	return be32_to_cpu(big_endian_32bits);
+}
+
+static inline uint32_t le32toh(uint32_t little_endian_32bits)
+{
+	return le32_to_cpu(little_endian_32bits);
+}
+
+static inline uint64_t htobe64(uint64_t host_64bits)
+{
+	return cpu_to_be64(host_64bits);
+}
+
+static inline uint64_t htole64(uint64_t host_64bits)
+{
+	return cpu_to_le64(host_64bits);
+}
+
+static inline uint64_t be64toh(uint64_t big_endian_64bits)
+{
+	return be64_to_cpu(big_endian_64bits);
+}
+
+static inline uint64_t le64toh(uint64_t little_endian_64bits)
+{
+	return le16_to_cpu(little_endian_64bits);
+}
+#endif
+
 #endif

@@ -42,7 +42,7 @@ static const struct region_name region_names[MAX_REGIONS] = {
 	{ "Reserved", "res1" },
 	{ "Reserved", "res2" },
 	{ "Reserved", "res3" },
-	{ "EC" "ec" },
+	{ "EC", "ec" },
 };
 
 static fdbar_t *find_fd(char *image, int size)
@@ -727,6 +727,9 @@ static void set_em100_mode(char *filename, char *image, int size)
 		freq = SPI_FREQUENCY_20MHZ;
 		break;
 	case IFD_VERSION_2:
+		freq = SPI_FREQUENCY_17MHZ;
+		break;
+	default:
 		freq = SPI_FREQUENCY_17MHZ;
 		break;
 	}

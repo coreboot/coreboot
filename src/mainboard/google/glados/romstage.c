@@ -21,7 +21,6 @@
 
 #include <cbfs.h>
 #include <console/console.h>
-#include <memory_info.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
@@ -76,19 +75,4 @@ void mainboard_memory_init_params(struct romstage_params *params,
 			sizeof(params->pei_data->RcompTarget));
 	memory_params->MemorySpdDataLen = SPD_LEN;
 	memory_params->DqPinsInterleaved = FALSE;
-}
-
-void mainboard_add_dimm_info(struct romstage_params *params,
-			     struct memory_info *mem_info,
-			     int channel, int dimm, int index)
-{
-	/* Set the manufacturer */
-	memcpy(&mem_info->dimm[index].mod_id,
-	       &params->pei_data->spd_data[channel][dimm][SPD_MANU_OFF],
-	       sizeof(mem_info->dimm[index].mod_id));
-
-	/* Set the module part number */
-	memcpy(mem_info->dimm[index].module_part_number,
-	       &params->pei_data->spd_data[channel][dimm][SPD_PART_OFF],
-	       sizeof(mem_info->dimm[index].module_part_number));
 }

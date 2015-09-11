@@ -23,8 +23,11 @@
 
 /* First we place the code and read only data (typically const declared).
  * This could theoretically be placed in rom.
+ * The '.' in '.text . : {' is actually significant to prevent missing some
+ * SoC's entry points due to artificial alignment restrictions, see
+ * https://sourceware.org/binutils/docs/ld/Output-Section-Address.html
  */
-.text : {
+.text . : {
 	_program = .;
 	_text = .;
 	/*
@@ -35,6 +38,7 @@
 	*(.rom.data);
 	*(.text._start);
 	*(.text.stage_entry);
+	KEEP(*(.id));
 	*(.text);
 	*(.text.*);
 
@@ -64,7 +68,7 @@
 } : to_load
 
 #if ENV_RAMSTAGE && IS_ENABLED(CONFIG_COVERAGE)
-.ctors : {
+.ctors . : {
 	. = ALIGN(0x100)
 	__CTOR_LIST__ = .;
 	KEEP(*(.ctors));
@@ -76,7 +80,7 @@
 
 /* Include data, bss, and heap in that order. Not defined for all stages. */
 #if ARCH_STAGE_HAS_DATA_SECTION
-.data : {
+.data . : {
 	. = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);
 	_data = .;
 
@@ -107,7 +111,14 @@
 #endif
 
 #if ARCH_STAGE_HAS_BSS_SECTION
-.bss : {
+#if ENV_BOOTBLOCK
+/* Bootblocks are not CBFS stages, so they cannot communicate the amount of
+ * (memsz - filesz) bytes the loader needs to clear for them. Therefore we merge
+ * the BSS into the .data section so those zeroes get loaded explicitly. */
+.data . : {
+#else
+.bss . : {
+#endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;
 	*(.bss)
@@ -120,7 +131,7 @@
 #endif
 
 #if ARCH_STAGE_HAS_HEAP_SECTION
-.heap : {
+.heap . : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_heap = .;
 	. += (ENV_RMODULE ? __heap_size : CONFIG_HEAP_SIZE);

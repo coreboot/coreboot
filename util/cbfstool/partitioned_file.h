@@ -28,15 +28,6 @@
 
 typedef struct partitioned_file partitioned_file_t;
 
-/** @return Whether the specific existing file should be opened in flat mode. */
-typedef bool (*partitioned_file_flat_decider_t)(struct buffer *buffer);
-
-/** Pass to partitioned_file_reopen() to force opening as a partitioned file. */
-#define partitioned_file_open_as_partitioned NULL
-
-/** Pass to partitioned_file_reopen() to force opening as a flat file. */
-extern const partitioned_file_flat_decider_t partitioned_file_open_as_flat;
-
 /**
  * Create a new filesystem-backed flat buffer.
  * This backwards-compatibility function creates a new in-memory buffer and
@@ -76,22 +67,17 @@ partitioned_file_t *partitioned_file_create(const char *filename,
 
 /**
  * Read a file back in from the disk.
- * An in-memory buffer is created and populated with the file's contents. If
- * flat_override is NULL and the image contains an FMAP, it will be opened as a
- * full partitioned file; otherwise, it will be opened as a flat file as if it
- * had been created by partitioned_file_create_flat(). This selection behavior
- * is extensible: if a flat_override function is provided, it is invoked before
- * searching for an FMAP, and has the option of explicitly instructing the
- * module to open the image as a flat file based on its contents.
+ * An in-memory buffer is created and populated with the file's
+ * contents. If the image contains an FMAP, it will be opened as a
+ * full partitioned file; otherwise, it will be opened as a flat file as
+ * if it had been created by partitioned_file_create_flat().
  * The partitioned_file_t returned from this function is separately owned by the
  * caller, and must later be passed to partitioned_file_close();
  *
  * @param filename      Name of the file to read in
- * @param flat_override Callback that can decide to open it as flat, or NULL
  * @return              Caller-owned partitioned file, or NULL on error
  */
-partitioned_file_t *partitioned_file_reopen(const char *filename,
-				partitioned_file_flat_decider_t flat_override);
+partitioned_file_t *partitioned_file_reopen(const char *filename);
 
 /**
  * Write a buffer's contents to its original region within a segmented file.

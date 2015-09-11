@@ -165,19 +165,13 @@ partitioned_file_t *partitioned_file_create(const char *filename,
 	return file;
 }
 
-partitioned_file_t *partitioned_file_reopen(const char *filename,
-				partitioned_file_flat_decider_t flat_override)
+partitioned_file_t *partitioned_file_reopen(const char *filename)
 {
 	assert(filename);
 
 	partitioned_file_t *file = reopen_flat_file(filename);
 	if (!file)
 		return NULL;
-
-	if (flat_override && flat_override(&file->buffer)) {
-		INFO("Opening image as a flat file in response to explicit request\n");
-		return file;
-	}
 
 	long fmap_region_offset = fmap_find((const uint8_t *)file->buffer.data,
 							file->buffer.size);
@@ -365,10 +359,3 @@ static bool select_parents_of(const struct fmap_area *parent, const void *arg)
 }
 const partitioned_file_fmap_selector_t partitioned_file_fmap_select_parents_of =
 							select_parents_of;
-
-static bool open_as_flat(unused struct buffer *buffer)
-{
-	return true;
-}
-const partitioned_file_flat_decider_t partitioned_file_open_as_flat =
-								open_as_flat;

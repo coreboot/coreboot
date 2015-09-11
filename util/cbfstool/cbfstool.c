@@ -881,12 +881,6 @@ static int cbfs_copy(void)
 	return cbfs_copy_instance(&image, param.copyoffset, param.size);
 }
 
-static bool cbfs_is_legacy_format(struct buffer *buffer)
-{
-	// Legacy CBFSes are those containing the deprecated CBFS master header.
-	return cbfs_find_header(buffer->data, buffer->size, -1);
-}
-
 static const struct command commands[] = {
 	{"add", "H:r:f:n:t:c:b:a:vh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:vh?", cbfs_add_flat_binary, true,
@@ -1250,8 +1244,7 @@ int main(int argc, char **argv)
 			}
 		} else {
 			param.image_file =
-				partitioned_file_reopen(image_name,
-							cbfs_is_legacy_format);
+				partitioned_file_reopen(image_name);
 		}
 		if (!param.image_file)
 			return 1;

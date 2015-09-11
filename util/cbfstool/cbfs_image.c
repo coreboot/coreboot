@@ -343,20 +343,22 @@ int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
 	buffer_clone(&out->buffer, in);
 	out->has_header = false;
 
+	if (cbfs_is_valid_cbfs(out)) {
+		return 0;
+	}
+
 	void *header_loc = cbfs_find_header(in->data, in->size, offset);
 	if (header_loc) {
 		cbfs_get_header(&out->header, header_loc);
 		out->has_header = true;
 		cbfs_fix_legacy_size(out, header_loc);
+		return 0;
 	} else if (offset != ~0u) {
 		ERROR("The -H switch is only valid on legacy images having CBFS master headers.\n");
 		return 1;
-	} else if (!cbfs_is_valid_cbfs(out)) {
-		ERROR("Selected image region is not a valid CBFS.\n");
-		return 1;
 	}
-
-	return 0;
+	ERROR("Selected image region is not a valid CBFS.\n");
+	return 1;
 }
 
 int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,

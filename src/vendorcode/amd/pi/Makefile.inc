@@ -86,7 +86,7 @@ define create_agesa_cp_template
 $(agesa_src_path)/$(notdir $2): $2 $(agesa_src_path)
 	@printf "    AGESA      Copying $$(notdir $2) => $$(@D)\n"
 	if [ ! -r $(agesa_src_path)/$(notdir $2) ]; then                   \
-		cp -uf $2 $$(@D);                                                     \
+		cp -f $2 $$(@D);                                           \
 	fi
 
 $(agesa_obj_path)/$1.libagesa.o: $(agesa_src_path)/$(notdir $2) $(obj)/config.h $(src)/include/kconfig.h $(agesa_obj_path)

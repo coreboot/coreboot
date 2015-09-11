@@ -190,7 +190,7 @@ $(objcbfs)/romstage.debug: $$(romstage-objs) $$(romstage-libs)
 	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(obj)/arch/x86/memlayout.romstage.ld --oformat $(romstage-oformat)
 	LANG=C LC_ALL= $(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders 2>&1 | \
 	grep -v "Empty loadable segment detected" && \
-	$(NM_romstage) $(objcbfs)/romstage_null.offenders | grep -q ""; if [ $$? -eq 0 ]; then \
+	if [ -n "`$(NM_romstage) $(objcbfs)/romstage_null.offenders 2>/dev/null`" ]; then \
 		echo "Forbidden global variables in romstage:"; \
 		$(NM_romstage) $(objcbfs)/romstage_null.offenders; false; \
 		else true; fi

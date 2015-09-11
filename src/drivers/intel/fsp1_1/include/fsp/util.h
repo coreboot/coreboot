@@ -53,6 +53,12 @@ void *get_first_resource_hob(const EFI_GUID *guid);
  */
 int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src);
 
+/*
+ * Relocate FSP held within buffer defined by size to new_addr. Returns < 0
+ * on error, offset to FSP_INFO_HEADER on success.
+ */
+ssize_t fsp1_1_relocate(uintptr_t new_addr, void *fsp, size_t size);
+
 /* Additional HOB types not included in the FSP:
  * #define EFI_HOB_TYPE_HANDOFF 0x0001
  * #define EFI_HOB_TYPE_MEMORY_ALLOCATION 0x0002

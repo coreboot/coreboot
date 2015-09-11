@@ -23,6 +23,7 @@ romstage-y += hob.c
 
 ramstage-$(CONFIG_GOP_SUPPORT) += fsp_gop.c
 ramstage-y += fsp_relocate.c
+ramstage-y += fsp1_1_relocate.c
 ramstage-y += fsp_util.c
 ramstage-y += hob.c
 

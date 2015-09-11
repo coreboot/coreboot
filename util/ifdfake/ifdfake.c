@@ -91,24 +91,39 @@ static void write_image(const region_t regions[], const char *const image)
 static int parse_region(const char *_arg, region_t *const region)
 {
 	char *const start = strdup(_arg);
+	int size_spec = 0;
+	unsigned long first, second;
 	if (!start) {
 		fprintf(stderr, "Out of memory.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	char *const colon = strchr(start, ':');
+	char *colon = strchr(start, ':');
 	if (!colon) {
-		free(start);
-		return -1;
+		colon = strchr(start, '+');
+		if (!colon) {
+			free(start);
+			return -1;
+		}
+		size_spec = 1;
 	}
 	*colon = '\0';
 
 	char *const end = colon + 1;
 
 	errno = 0;
-	region->base = strtoul(start, NULL, 0);
-	region->limit = strtoul(end, NULL, 0);
-	region->size = region->limit - region->base + 1;
+	first = strtoul(start, NULL, 0);
+	second = strtoul(end, NULL, 0);
+
+	if (size_spec) {
+		region->base = first;
+		region->size = second;
+		region->limit = region->base + region->size - 1;
+	} else {
+		region->base = first;
+		region->limit = second;
+		region->size = region->limit - region->base + 1;
+	}
 
 	free(start);
 	if (errno) {

@@ -82,7 +82,7 @@ static size_t reloc_offset(uint16_t reloc_entry)
 	return reloc_entry & ((1 << 12) - 1);
 }
 
-static int te_relocate_in_place(void *te, size_t size)
+static int te_relocate(uintptr_t new_addr, void *te, size_t size)
 {
 	EFI_TE_IMAGE_HEADER *teih;
 	EFI_IMAGE_DATA_DIRECTORY *relocd;
@@ -115,11 +115,11 @@ static int te_relocate_in_place(void *te, size_t size)
 	te_base = te;
 	te_base -= fixup_offset;
 
-	adj = (uintptr_t)te - (teih->ImageBase + fixup_offset);
+	adj = new_addr - (teih->ImageBase + fixup_offset);
 
 	printk(FSP_DBG_LVL, "TE Image %p -> %p adjust value: %x\n",
 		(void *)(uintptr_t)(teih->ImageBase + fixup_offset),
-		te, adj);
+		(void *)new_addr, adj);
 
 	/* Adjust ImageBase for consistency. */
 	teih->ImageBase = (uint32_t)(teih->ImageBase + adj);
@@ -266,7 +266,8 @@ static int relocate_patch_table(void *fsp, size_t size, size_t offset,
 	return 0;
 }
 
-static void *relocate_remaining_items(void *fsp, size_t size, size_t fih_offset)
+static ssize_t relocate_remaining_items(void *fsp, size_t size,
+					uintptr_t new_addr, size_t fih_offset)
 {
 	EFI_FFS_FILE_HEADER *ffsfh;
 	EFI_COMMON_SECTION_HEADER *csh;
@@ -278,7 +279,7 @@ static void *relocate_remaining_items(void *fsp, size_t size, size_t fih_offset)
 
 	if (fih_offset == 0) {
 		printk(BIOS_ERR, "FSP_INFO_HEADER offset is 0.\n");
-		return NULL;
+		return -1;
 	}
 
 	/* FSP_INFO_HEADER at first file in FV within first RAW section. */
@@ -290,22 +291,22 @@ static void *relocate_remaining_items(void *fsp, size_t size, size_t fih_offset)
 
 	if (memcmp(&ffsfh->Name, &fih_guid, sizeof(fih_guid))) {
 		printk(BIOS_ERR, "Bad FIH GUID.\n");
-		return NULL;
+		return -1;
 	}
 
 	if (csh->Type != EFI_SECTION_RAW) {
 		printk(BIOS_ERR, "FIH file should have raw section: %x\n",
 			csh->Type);
-		return NULL;
+		return -1;
 	}
 
 	if (fih->Signature != FSP_SIG) {
 		printk(BIOS_ERR, "Unexpected FIH signature: %08x\n",
 			fih->Signature);
-		return NULL;
+		return -1;
 	}
 
-	adjustment = (intptr_t)fsp - fih->ImageBase;
+	adjustment = (intptr_t)new_addr - fih->ImageBase;
 
 	/* Update ImageBase to reflect FSP's new home. */
 	fih->ImageBase += adjustment;
@@ -330,18 +331,18 @@ static void *relocate_remaining_items(void *fsp, size_t size, size_t fih_offset)
 
 		if (relocate_patch_table(fsp, size, offset, adjustment)) {
 			printk(BIOS_ERR, "FSPP relocation failed.\n");
-			return NULL;
+			return -1;
 		}
 
-		return fih;
+		return fih_offset;
 	}
 
 	printk(BIOS_ERR, "Could not find the FSP patch table.\n");
-	return NULL;
+	return -1;
 }
 
-static ssize_t relocate_fvh(void *fsp, size_t fsp_size, size_t fvh_offset,
-				size_t *fih_offset)
+static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
+				size_t fvh_offset, size_t *fih_offset)
 {
 	EFI_FIRMWARE_VOLUME_HEADER *fvh;
 	EFI_FFS_FILE_HEADER *ffsfh;
@@ -431,14 +432,24 @@ static ssize_t relocate_fvh(void *fsp, size_t fsp_size, size_t fvh_offset,
 				return -1;
 			}
 
+			/*
+			 * The entire FSP 1.1 image can be thought of as one
+			 * program with a single link address even though there
+			 * are multiple TEs linked separately. The reason is
+			 * that each TE is linked for XIP. So in order to
+			 * relocate the TE properly we need to form the
+			 * relocated address based on the TE offset within
+			 * FSP proper.
+			 */
 			if (csh->Type == EFI_SECTION_TE) {
 				void *te;
 				size_t te_offset = offset + data_offset;
+				uintptr_t te_addr = new_addr + te_offset;
 
 				printk(FSP_DBG_LVL, "TE image at offset %zx\n",
 					te_offset);
 				te = relative_offset(fsp, te_offset);
-				te_relocate_in_place(te, data_size);
+				te_relocate(te_addr, te, data_size);
 			}
 
 			offset += data_size + data_offset;
@@ -451,7 +462,7 @@ static ssize_t relocate_fvh(void *fsp, size_t fsp_size, size_t fvh_offset,
 	return fvh->FvLength;
 }
 
-static FSP_INFO_HEADER *fsp_relocate_in_place(void *fsp, size_t size)
+static ssize_t fsp1_1_relocate(uintptr_t new_addr, void *fsp, size_t size)
 {
 	size_t offset;
 	size_t fih_offset;
@@ -464,27 +475,30 @@ static FSP_INFO_HEADER *fsp_relocate_in_place(void *fsp, size_t size)
 		/* Relocate each FV within the FSP region. The FSP_INFO_HEADER
 		 * should only be located in the first FV. */
 		if (offset == 0)
-			nparsed = relocate_fvh(fsp, size, offset, &fih_offset);
+			nparsed = relocate_fvh(new_addr, fsp, size, offset,
+						&fih_offset);
 		else
-			nparsed = relocate_fvh(fsp, size, offset, NULL);
+			nparsed = relocate_fvh(new_addr, fsp, size, offset,
+						NULL);
 
 		/* FV should be larger than 0 or failed to parse. */
 		if (nparsed <= 0) {
 			printk(BIOS_ERR, "FV @ offset %zx relocation failed\n",
 				offset);
-			return NULL;
+			return -1;
 		}
 
 		offset += nparsed;
 	}
 
-	return relocate_remaining_items(fsp, size, fih_offset);
+	return relocate_remaining_items(fsp, size, new_addr, fih_offset);
 }
 
 int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src)
 {
 	void *new_loc;
 	void *fih;
+	ssize_t fih_offset;
 	size_t size = region_device_sz(fsp_src);
 
 	new_loc = cbmem_add(CBMEM_ID_REFCODE, size);
@@ -499,12 +513,14 @@ int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src)
 		return -1;
 	}
 
-	fih = fsp_relocate_in_place(new_loc, size);
+	fih_offset = fsp1_1_relocate((uintptr_t)new_loc, new_loc, size);
 
-	if (fih == NULL) {
+	if (fih_offset <= 0) {
 		printk(BIOS_ERR, "ERROR: FSP relocation faiulre.\n");
 		return -1;
 	}
+
+	fih = relative_offset(new_loc, fih_offset);
 
 	prog_set_area(fsp_relocd, new_loc, size);
 	prog_set_entry(fsp_relocd, fih, NULL);

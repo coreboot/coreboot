@@ -150,7 +150,7 @@ static inline uint64_t be64toh(uint64_t big_endian_64bits)
 
 static inline uint64_t le64toh(uint64_t little_endian_64bits)
 {
-	return le16_to_cpu(little_endian_64bits);
+	return le64_to_cpu(little_endian_64bits);
 }
 #endif
 

@@ -35,12 +35,21 @@
 #define CPU_BCLK		100
 
 /* Latency times in units of 1024ns. */
-#define C_STATE_LATENCY_CONTROL_0_LIMIT 0x42
-#define C_STATE_LATENCY_CONTROL_1_LIMIT 0x73
-#define C_STATE_LATENCY_CONTROL_2_LIMIT 0x91
-#define C_STATE_LATENCY_CONTROL_3_LIMIT 0xe4
-#define C_STATE_LATENCY_CONTROL_4_LIMIT 0x145
-#define C_STATE_LATENCY_CONTROL_5_LIMIT 0x1ef
+#define C_STATE_LATENCY_CONTROL_0_LIMIT	0x4e
+#define C_STATE_LATENCY_CONTROL_1_LIMIT	0x76
+#define C_STATE_LATENCY_CONTROL_2_LIMIT	0x94
+#define C_STATE_LATENCY_CONTROL_3_LIMIT	0xfa
+#define C_STATE_LATENCY_CONTROL_4_LIMIT	0x14c
+#define C_STATE_LATENCY_CONTROL_5_LIMIT	0x3f2
+
+/* Power in units of mW */
+#define C1_POWER	0x3e8
+#define C3_POWER	0x1f4
+#define C6_POWER	0x15e
+#define C7_POWER	0xc8
+#define C8_POWER	0xc8
+#define C9_POWER	0xc8
+#define C10_POWER	0xc8
 
 #define C_STATE_LATENCY_MICRO_SECONDS(limit, base) \
 	(((1 << ((base)*5)) * (limit)) / 1000)

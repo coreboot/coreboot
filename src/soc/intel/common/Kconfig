@@ -48,4 +48,15 @@ config SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	bool
 	default n
 
+config MMA
+        bool "enable MMA (Memory Margin Analysis) support"
+        default n
+        help
+         Set this option to y to enable MMA (Memory Margin Analysis) support
+
+config MMA_BLOBS_PATH
+        string "Path to MMA blobs"
+        depends on MMA
+        default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/mma"
+
 endif # SOC_INTEL_COMMON

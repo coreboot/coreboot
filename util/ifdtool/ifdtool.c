@@ -443,36 +443,50 @@ static void dump_fpsba(fpsba_t * fpsba)
 
 static void decode_flmstr(uint32_t flmstr)
 {
+	int wr_shift, rd_shift;
+	if (ifd_version >= IFD_VERSION_2) {
+		wr_shift = FLMSTR_WR_SHIFT_V2;
+		rd_shift = FLMSTR_RD_SHIFT_V2;
+	} else {
+		wr_shift = FLMSTR_WR_SHIFT_V1;
+		rd_shift = FLMSTR_RD_SHIFT_V1;
+	}
+
+	/* EC region access only available on v2+ */
 	if (ifd_version >= IFD_VERSION_2)
 		printf("  EC Region Write Access:            %s\n",
-		       (flmstr & (1 << 29)) ? "enabled" : "disabled");
+		       (flmstr & (1 << (wr_shift + 8))) ?
+		       "enabled" : "disabled");
 	printf("  Platform Data Region Write Access: %s\n",
-		(flmstr & (1 << 28)) ? "enabled" : "disabled");
+		(flmstr & (1 << (wr_shift + 4))) ? "enabled" : "disabled");
 	printf("  GbE Region Write Access:           %s\n",
-		(flmstr & (1 << 27)) ? "enabled" : "disabled");
+		(flmstr & (1 << (wr_shift + 3))) ? "enabled" : "disabled");
 	printf("  Intel ME Region Write Access:      %s\n",
-		(flmstr & (1 << 26)) ? "enabled" : "disabled");
+		(flmstr & (1 << (wr_shift + 2))) ? "enabled" : "disabled");
 	printf("  Host CPU/BIOS Region Write Access: %s\n",
-		(flmstr & (1 << 25)) ? "enabled" : "disabled");
+		(flmstr & (1 << (wr_shift + 1))) ? "enabled" : "disabled");
 	printf("  Flash Descriptor Write Access:     %s\n",
-		(flmstr & (1 << 24)) ? "enabled" : "disabled");
+		(flmstr & (1 << wr_shift)) ? "enabled" : "disabled");
 
 	if (ifd_version >= IFD_VERSION_2)
 		printf("  EC Region Read Access:             %s\n",
-		       (flmstr & (1 << 21)) ? "enabled" : "disabled");
+		       (flmstr & (1 << (rd_shift + 8))) ?
+		       "enabled" : "disabled");
 	printf("  Platform Data Region Read Access:  %s\n",
-		(flmstr & (1 << 20)) ? "enabled" : "disabled");
+		(flmstr & (1 << (rd_shift + 4))) ? "enabled" : "disabled");
 	printf("  GbE Region Read Access:            %s\n",
-		(flmstr & (1 << 19)) ? "enabled" : "disabled");
+		(flmstr & (1 << (rd_shift + 3))) ? "enabled" : "disabled");
 	printf("  Intel ME Region Read Access:       %s\n",
-		(flmstr & (1 << 18)) ? "enabled" : "disabled");
+		(flmstr & (1 << (rd_shift + 2))) ? "enabled" : "disabled");
 	printf("  Host CPU/BIOS Region Read Access:  %s\n",
-		(flmstr & (1 << 17)) ? "enabled" : "disabled");
+		(flmstr & (1 << (rd_shift + 1))) ? "enabled" : "disabled");
 	printf("  Flash Descriptor Read Access:      %s\n",
-		(flmstr & (1 << 16)) ? "enabled" : "disabled");
+		(flmstr & (1 << rd_shift)) ? "enabled" : "disabled");
 
-	printf("  Requester ID:                      0x%04x\n\n",
-		flmstr & 0xffff);
+	/* Requestor ID doesn't exist for ifd 2 */
+	if (ifd_version < IFD_VERSION_2)
+		printf("  Requester ID:                      0x%04x\n\n",
+			flmstr & 0xffff);
 }
 
 static void dump_fmba(fmba_t * fmba)
@@ -740,14 +754,43 @@ static void set_em100_mode(char *filename, char *image, int size)
 
 static void lock_descriptor(char *filename, char *image, int size)
 {
+	int wr_shift, rd_shift;
 	fdbar_t *fdb = find_fd(image, size);
 	fmba_t *fmba = (fmba_t *) (image + (((fdb->flmap1) & 0xff) << 4));
 	/* TODO: Dynamically take Platform Data Region and GbE Region
 	 * into regard.
 	 */
-	fmba->flmstr1 = 0x0a0b0000;
-	fmba->flmstr2 = 0x0c0d0000;
-	fmba->flmstr3 = 0x08080118;
+
+	if (ifd_version >= IFD_VERSION_2) {
+		wr_shift = FLMSTR_WR_SHIFT_V2;
+		rd_shift = FLMSTR_RD_SHIFT_V2;
+
+		/* Clear non-reserved bits */
+		fmba->flmstr1 &= 0xff;
+		fmba->flmstr2 &= 0xff;
+		fmba->flmstr3 &= 0xff;
+	} else {
+		wr_shift = FLMSTR_WR_SHIFT_V1;
+		rd_shift = FLMSTR_RD_SHIFT_V1;
+
+		fmba->flmstr1 = 0;
+		fmba->flmstr2 = 0;
+		/* Requestor ID */
+		fmba->flmstr3 = 0x118;
+	}
+
+	/* CPU/BIOS can read descriptor, BIOS, and GbE. */
+	fmba->flmstr1 |= 0xb << rd_shift;
+	/* CPU/BIOS can write BIOS and GbE. */
+	fmba->flmstr1 |= 0xa << wr_shift;
+	/* ME can read descriptor, ME, and GbE. */
+	fmba->flmstr2 |= 0xd << rd_shift;
+	/* ME can write ME and GbE. */
+	fmba->flmstr2 |= 0xc << wr_shift;
+	/* GbE can write only GbE. */
+	fmba->flmstr3 |= 0x8 << rd_shift;
+	/* GbE can read only GbE. */
+	fmba->flmstr3 |= 0x8 << wr_shift;
 
 	write_image(filename, image, size);
 }
@@ -756,9 +799,17 @@ static void unlock_descriptor(char *filename, char *image, int size)
 {
 	fdbar_t *fdb = find_fd(image, size);
 	fmba_t *fmba = (fmba_t *) (image + (((fdb->flmap1) & 0xff) << 4));
-	fmba->flmstr1 = 0xffff0000;
-	fmba->flmstr2 = 0xffff0000;
-	fmba->flmstr3 = 0x08080118;
+
+	if (ifd_version >= IFD_VERSION_2) {
+		/* Access bits for each region are read: 19:8 write: 31:20 */
+		fmba->flmstr1 = 0xffffff00 | (fmba->flmstr1 & 0xff);
+		fmba->flmstr2 = 0xffffff00 | (fmba->flmstr2 & 0xff);
+		fmba->flmstr3 = 0xffffff00 | (fmba->flmstr3 & 0xff);
+	} else {
+		fmba->flmstr1 = 0xffff0000;
+		fmba->flmstr2 = 0xffff0000;
+		fmba->flmstr3 = 0x08080118;
+	}
 
 	write_image(filename, image, size);
 }

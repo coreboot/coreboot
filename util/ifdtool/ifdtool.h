@@ -101,6 +101,15 @@ typedef struct {
 	uint32_t pchstrp17;
 } __attribute__((packed)) fpsba_t;
 
+/*
+ * WR / RD bits start at different locations within the flmstr regs, but
+ * otherwise have identical meaning.
+ */
+#define FLMSTR_WR_SHIFT_V1 24
+#define FLMSTR_WR_SHIFT_V2 20
+#define FLMSTR_RD_SHIFT_V1 16
+#define FLMSTR_RD_SHIFT_V2 8
+
 // master
 typedef struct {
 	uint32_t flmstr1;

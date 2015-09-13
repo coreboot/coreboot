@@ -840,4 +840,12 @@ static const struct {
 	{ 0xC0, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
 	  0x40040000, 0xe01F0000 },	/* [31:29] RttCtl = 02h,
 					   [20:16] RttIndex = 04h */
+
+	{ 0xc4, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	  0x00013480, 0x0003fc80 },	/* [17:10] DCV = 0x4d,
+					       [7] DfeEn = 0x1 */
+
+	{ 0xd4, AMD_FAM15_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
+	  0x00013480, 0x0003fc80 },     /* [17:10] DCV = 0x4d,
+					       [7] DfeEn = 0x1 */
 };

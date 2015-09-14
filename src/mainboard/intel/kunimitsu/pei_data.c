@@ -22,6 +22,11 @@
 #include <string.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
+#include "boardid.h"
+
+/* PCH_MEM_CFG[3:0] */
+#define MAX_MEMORY_CONFIG	0x10
+#define RCOMP_TARGET_PARAMS	0x5
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
@@ -40,12 +45,19 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	const u16 RcompResistor[3] = { 200, 81, 162 };
 
 	/* Rcomp target */
-	const u16 RcompTarget[5] = { 100, 40, 40, 23, 40 };
+	static const u16 RcompTarget[MAX_MEMORY_CONFIG][RCOMP_TARGET_PARAMS] = {
+		{ 100, 40, 40, 23, 40 },
+		{ 100, 40, 40, 23, 40 },
+		{ 100, 40, 40, 23, 40 },
+		/*Strengthen the Rcomp Target Ctrl for 8GB K4E6E304EE -EGCF*/
+		{ 100, 40, 40, 21, 40 }, };
+
 
 	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
 	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));
 	memcpy(pei_data->RcompResistor, RcompResistor,
 		 sizeof(RcompResistor));
-	memcpy(pei_data->RcompTarget, RcompTarget,
-		 sizeof(RcompTarget));
+	memcpy(pei_data->RcompTarget, &RcompTarget[pei_data->mem_cfg_id][0],
+		 sizeof(RcompTarget[pei_data->mem_cfg_id]));
+
 }

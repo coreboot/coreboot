@@ -23,7 +23,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
@@ -40,11 +40,21 @@ static void early_config_gpio(void)
 
 void mainboard_romstage_entry(struct romstage_params *params)
 {
+	/* PCH_MEM_CFG[3:0] */
+	gpio_t spd_gpios[] = {
+		GPIO_MEM_CONFIG_0,
+		GPIO_MEM_CONFIG_1,
+		GPIO_MEM_CONFIG_2,
+		GPIO_MEM_CONFIG_3,
+	};
+
 	/* Ensure the EC and PD are in the right mode for recovery */
 	google_chromeec_early_init();
 
 	early_config_gpio();
 
+	params->pei_data->mem_cfg_id = gpio_base2_value(spd_gpios,
+							ARRAY_SIZE(spd_gpios));
 	/* Fill out PEI DATA */
 	mainboard_fill_pei_data(params->pei_data);
 	mainboard_fill_spd_data(params->pei_data);

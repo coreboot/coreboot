@@ -91,6 +91,7 @@ struct pei_data {
 	/* Data from MRC that should be saved to flash */
 	void *data_to_save;
 	int data_to_save_size;
+	int mem_cfg_id;
 } __attribute__((packed));
 
 typedef struct pei_data PEI_DATA;

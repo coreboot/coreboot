@@ -46,14 +46,14 @@ int is_big_endian(void)
 
 static off_t get_file_size(FILE *f)
 {
-	struct stat s;
-	int fd = fileno(f);
-	if (fd == -1) return -1;
-	if (fstat(fd, &s) == -1) return -1;
-	return s.st_size;
+	off_t fsize;
+	fseek(f, 0, SEEK_END);
+	fsize = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	return fsize;
 }
-/* Buffer and file I/O */
 
+/* Buffer and file I/O */
 int buffer_create(struct buffer *buffer, size_t size, const char *name)
 {
 	buffer->name = strdup(name);

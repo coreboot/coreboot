@@ -328,7 +328,7 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 	return 0;
 }
 
-static int do_cbfs_locate(int32_t *cbfs_addr)
+static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
 {
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
@@ -354,8 +354,11 @@ static int do_cbfs_locate(int32_t *cbfs_addr)
 		return 1;
 	}
 
-	int32_t address = cbfs_locate_entry(&image, param.name, buffer.size,
-				    param.pagesize, param.alignment);
+	/* Include cbfs_file size along with space for with name. */
+	metadata_size += cbfs_calculate_file_header_size(param.name);
+
+	int32_t address = cbfs_locate_entry(&image, buffer.size, param.pagesize,
+						param.alignment, metadata_size);
 	buffer_delete(&buffer);
 
 	if (address == -1) {
@@ -372,6 +375,16 @@ static int do_cbfs_locate(int32_t *cbfs_addr)
 	return 0;
 }
 
+static size_t cbfs_default_metadata_size(void)
+{
+	/* TODO Old cbfstool always assume input is a stage file (and adding
+	 * sizeof(cbfs_stage) for header. We should fix that by adding "-t"
+	 * (type) param in future. For right now, we assume cbfs_stage is the
+	 * largest structure and add it into header size. */
+	assert(sizeof(struct cbfs_stage) >= sizeof(struct cbfs_payload));
+	return sizeof(struct cbfs_stage);
+}
+
 static int cbfs_add(void)
 {
 	int32_t address;
@@ -382,7 +395,7 @@ static int cbfs_add(void)
 	}
 
 	if (param.alignment) {
-		if (do_cbfs_locate(&address))
+		if (do_cbfs_locate(&address, cbfs_default_metadata_size()))
 			return 1;
 		param.baseaddress = address;
 	}
@@ -553,7 +566,7 @@ static int cbfs_locate(void)
 {
 	int32_t address;
 
-	if (do_cbfs_locate(&address) != 0)
+	if (do_cbfs_locate(&address, cbfs_default_metadata_size()) != 0)
 		return 1;
 
 	printf("0x%x\n", address);

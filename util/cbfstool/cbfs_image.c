@@ -1136,20 +1136,20 @@ static int is_in_same_page(uint32_t start, uint32_t size, uint32_t page)
 }
 
 /* Tests if data can fit in a range by given offset:
- *  start ->| header_len | offset (+ size) |<- end
+ *  start ->| metadata_size | offset (+ size) |<- end
  */
-static int is_in_range(uint32_t start, uint32_t end, uint32_t header_len,
-		       uint32_t offset, uint32_t size)
+static int is_in_range(size_t start, size_t end, size_t metadata_size,
+		       size_t offset, size_t size)
 {
-	return (offset >= start + header_len && offset + size <= end);
+	return (offset >= start + metadata_size && offset + size <= end);
 }
 
-int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
-			  uint32_t size, uint32_t page_size, uint32_t align)
+int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
+			  size_t page_size, size_t align, size_t metadata_size)
 {
 	struct cbfs_file *entry;
 	size_t need_len;
-	uint32_t addr, addr_next, addr2, addr3, offset, header_len;
+	size_t addr, addr_next, addr2, addr3, offset;
 
 	/* Default values: allow fitting anywhere in ROM. */
 	if (!page_size)
@@ -1159,23 +1159,16 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
 		align = 1;
 
 	if (size > page_size)
-		ERROR("Input file size (%d) greater than page size (%d).\n",
+		ERROR("Input file size (%zd) greater than page size (%zd).\n",
 		      size, page_size);
 
-	uint32_t image_align = image->has_header ? image->header.align :
+	size_t image_align = image->has_header ? image->header.align :
 							CBFS_ENTRY_ALIGNMENT;
 	if (page_size % image_align)
-		WARN("%s: Page size (%#x) not aligned with CBFS image (%#x).\n",
+		WARN("%s: Page size (%#zx) not aligned with CBFS image (%#zx).\n",
 		     __func__, page_size, image_align);
 
-	/* TODO Old cbfstool always assume input is a stage file (and adding
-	 * sizeof(cbfs_stage) for header. We should fix that by adding "-t"
-	 * (type) param in future. For right now, we assume cbfs_stage is the
-	 * largest structure and add it into header size. */
-	assert(sizeof(struct cbfs_stage) >= sizeof(struct cbfs_payload));
-	header_len = (cbfs_calculate_file_header_size(name) +
-		      sizeof(struct cbfs_stage));
-	need_len = header_len + size;
+	need_len = metadata_size + size;
 
 	// Merge empty entries to build get max available space.
 	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
@@ -1215,26 +1208,26 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
 		if (addr_next - addr < need_len)
 			continue;
 
-		offset = align_up(addr + header_len, align);
+		offset = align_up(addr + metadata_size, align);
 		if (is_in_same_page(offset, size, page_size) &&
-		    is_in_range(addr, addr_next, header_len, offset, size)) {
+		    is_in_range(addr, addr_next, metadata_size, offset, size)) {
 			DEBUG("cbfs_locate_entry: FIT (PAGE1).");
 			return offset;
 		}
 
 		addr2 = align_up(addr, page_size);
 		offset = align_up(addr2, align);
-		if (is_in_range(addr, addr_next, header_len, offset, size)) {
+		if (is_in_range(addr, addr_next, metadata_size, offset, size)) {
 			DEBUG("cbfs_locate_entry: OVERLAP (PAGE2).");
 			return offset;
 		}
 
-		/* Assume page_size >= header_len so adding one page will
+		/* Assume page_size >= metadata_size so adding one page will
 		 * definitely provide the space for header. */
-		assert(page_size >= header_len);
+		assert(page_size >= metadata_size);
 		addr3 = addr2 + page_size;
 		offset = align_up(addr3, align);
-		if (is_in_range(addr, addr_next, header_len, offset, size)) {
+		if (is_in_range(addr, addr_next, metadata_size, offset, size)) {
 			DEBUG("cbfs_locate_entry: OVERLAP+ (PAGE3).");
 			return offset;
 		}

@@ -112,8 +112,8 @@ int cbfs_create_empty_entry(struct cbfs_file *entry, int type,
  *  "page_size" limits the content to fit on same memory page, and
  *  "align" specifies starting address alignment.
  * Returns a valid offset, or -1 on failure. */
-int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
-			  uint32_t size, uint32_t page_size, uint32_t align);
+int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
+			  size_t page_size, size_t align, size_t metadata_size);
 
 /* Callback function used by cbfs_walk.
  * Returns 0 on success, or non-zero to stop further iteration. */

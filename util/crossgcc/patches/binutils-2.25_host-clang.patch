@@ -1,0 +1,18 @@
+This is a known issue on GNU mail list. Please refer
+the link below.
+https://sourceware.org/bugzilla/show_bug.cgi?id=17473
+
+--- binutils-2.25/gold/binary.cc	2014-10-14 00:32:04.000000000 -0700
++++ binutils-2.25.patched/gold/binary.cc	2015-09-15 07:02:40.000000000 -0700
+@@ -24,10 +24,10 @@
+ 
+ #include <cerrno>
+ #include <cstring>
++#include "stringpool.h"
+ #include "safe-ctype.h"
+ 
+ #include "elfcpp.h"
+-#include "stringpool.h"
+ #include "fileread.h"
+ #include "output.h"
+ #include "binary.h"

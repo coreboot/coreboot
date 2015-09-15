@@ -660,7 +660,9 @@ if [ "$target" != "" ]; then
 		build_target $VENDOR $MAINBOARD $CONFIG
 		test_target $VENDOR $MAINBOARD
 		remove_target $VENDOR $MAINBOARD
-		test "$mode" != "text" && cat $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml >> $REAL_XMLFILE
+		test "$mode" != "text" && \
+		test -f $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml && \
+		cat $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml >> $REAL_XMLFILE
 		XMLFILE=$REAL_XMLFILE
 	fi
 else

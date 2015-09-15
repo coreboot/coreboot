@@ -54,8 +54,15 @@ mbi.bin-type := mbi
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 CBFSTOOL_PRE1_OPTS = -m x86 -s $(CONFIG_ROM_SIZE) \
 		     -o $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
+# Use a '-a 64' option to cbfstool locate to provide a minimum alignment
+# requirement for the overall romstage. While the first object within
+# romstage could have a 4 byte minimum alignment that doesn't mean the linker
+# won't decide the entire section should be aligned to a larger value. In the
+# future cbfstool should add XIP files proper and honor the alignment
+# requirements of the program segment.
+#
 # Make sure that segment for .car.data is ignored while adding romstage.
-CBFSTOOL_PRE_OPTS  = -b $(shell cat $(objcbfs)/base_xip.txt) -S ".car.data"
+CBFSTOOL_PRE_OPTS  = -a 64 --xip -S ".car.data" -P $(CONFIG_XIP_ROM_SIZE)
 endif
 
 ## Calculate the base address of CBFS for later comparisons
@@ -178,45 +185,15 @@ else
 romstage-oformat=elf64-x86-64
 endif
 
-$(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld $$(romstage-libs)
+$(objcbfs)/romstage.debug: $$(romstage-objs) $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage_null.ld --oformat $(romstage-oformat)
+	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(obj)/arch/x86/memlayout.romstage.ld --oformat $(romstage-oformat)
 	LANG=C LC_ALL= $(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders 2>&1 | \
 	grep -v "Empty loadable segment detected" && \
 	$(NM_romstage) $(objcbfs)/romstage_null.offenders | grep -q ""; if [ $$? -eq 0 ]; then \
 		echo "Forbidden global variables in romstage:"; \
 		$(NM_romstage) $(objcbfs)/romstage_null.offenders; false; \
 		else true; fi
-
-$(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld $$(romstage-libs)
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(objgenerated)/romstage.ld --oformat $(romstage-oformat)
-
-$(objgenerated)/romstage_null.ld: $(obj)/arch/x86/memlayout.romstage.ld
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	rm -f $@
-	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
-	cat $< >> $@.tmp
-	mv $@.tmp $@
-
-$(objgenerated)/romstage.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	rm -f $@
-	sed -e 's/^/ROMSTAGE_BASE = /g' -e 's/$$/;/g' $(objcbfs)/base_xip.txt > $@.tmp
-	sed -e '/^ROMSTAGE_BASE/d' $(objgenerated)/romstage_null.ld >> $@.tmp
-	mv $@.tmp $@
-
-# Use a '-a 64' option to cbfstool locate to provide a minimum alignment
-# requirement for the overall romstage. While the first object within
-# romstage could have a 4 byte minimum alignment that doesn't mean the linker
-# won't decide the entire section should be aligned to a larger value. In the
-# future cbfstool should add XIP files proper and honor the alignment
-# requirements of the program segment.
-$(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
-	rm -f $@
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -T -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -P $(CONFIG_XIP_ROM_SIZE) -a 64 > $@.tmp \
-	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
-	mv $@.tmp $@
 
 # Compiling crt0 with -g seems to trigger https://sourceware.org/bugzilla/show_bug.cgi?id=6428
 romstage-S-ccopts += -I. -g0

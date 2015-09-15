@@ -56,6 +56,8 @@
 
 #define BLOCK_ACCESS               (1 << 10)
 
+#define BLOCK_XN                   (1UL << 54)
+
 #define BLOCK_SH_SHIFT                 (8)
 #define BLOCK_SH_NON_SHAREABLE         (0 << BLOCK_SH_SHIFT)
 #define BLOCK_SH_UNPREDICTABLE         (1 << BLOCK_SH_SHIFT)

@@ -76,6 +76,7 @@ static uint64_t get_block_attr(unsigned long tag)
 			attr |= BLOCK_INDEX_MEM_NORMAL << BLOCK_INDEX_SHIFT;
 	} else {
 		attr |= BLOCK_INDEX_MEM_DEV_NGNRNE << BLOCK_INDEX_SHIFT;
+		attr |= BLOCK_XN;
 	}
 
 	return attr;

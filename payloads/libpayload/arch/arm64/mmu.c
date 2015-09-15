@@ -91,6 +91,7 @@ static uint64_t get_block_attr(unsigned long tag)
 		break;
 	case TYPE_DEV_MEM:
 		attr |= BLOCK_INDEX_MEM_DEV_NGNRNE << BLOCK_INDEX_SHIFT;
+		attr |= BLOCK_XN;
 		break;
 	case TYPE_DMA_MEM:
 		attr |= BLOCK_INDEX_MEM_NORMAL_NC << BLOCK_INDEX_SHIFT;

@@ -602,7 +602,32 @@ build_all_targets()
 		rm -rf ${scanbuild_out}
 		BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
 	fi
-	$BUILDPREFIX $MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils tools || exit 1
+	mkdir -p $TARGET/abuild
+	local ABSPATH=`cd $TARGET/abuild; pwd`
+	local XMLFILE=$ABSPATH/__util.xml
+	local stime=`perl -e 'print time();' 2>/dev/null || date +%s`
+	$BUILDPREFIX $MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils tools > $TARGET/sharedutils/make.log 2>&1
+	local ret=$?
+	local etime=`perl -e 'print time();' 2>/dev/null || date +%s`
+	local duration=$(( $etime - $stime ))
+
+	junit " <testcase classname='util' name='all' time='$duration' >"
+	if [ $ret -eq 0 ]; then
+		junit "<system-out>"
+		junitfile $TARGET/sharedutils/make.log
+		junit "</system-out>"
+		junit "</testcase>"
+	else
+		junit "<failure type='BuildFailed'>"
+		junitfile $TARGET/sharedutils/make.log
+		junit "</failure>"
+		junit "</testcase>"
+		return
+	fi
+	if [ $ret -eq 1 ]; then
+		return
+	fi
+
 	if [ "$scanbuild" = "true" ]; then
 		mv ${scanbuild_out}tmp/* ${scanbuild_out}
 		rmdir ${scanbuild_out}tmp

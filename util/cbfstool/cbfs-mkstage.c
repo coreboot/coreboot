@@ -28,6 +28,7 @@
 #include "elfparsing.h"
 #include "common.h"
 #include "cbfs.h"
+#include "rmodule.h"
 
 /* Checks if program segment contains the ignored section */
 static int is_phdr_ignored(Elf64_Phdr *phdr, Elf64_Shdr *shdr)
@@ -88,6 +89,21 @@ static Elf64_Shdr *find_ignored_section_header(struct parsed_elf *pelf,
 
 	/* No section matches ignore string */
 	return NULL;
+}
+
+static void fill_cbfs_stage(struct buffer *outheader, enum comp_algo algo,
+				uint64_t entry, uint64_t loadaddr,
+				uint32_t filesize, uint32_t memsize)
+{
+	/* N.B. The original plan was that SELF data was B.E.
+	 * but: this is all L.E.
+	 * Maybe we should just change the spec.
+	 */
+	xdr_le.put32(outheader, algo);
+	xdr_le.put64(outheader, entry);
+	xdr_le.put64(outheader, loadaddr);
+	xdr_le.put32(outheader, filesize);
+	xdr_le.put32(outheader, memsize);
 }
 
 /* returns size of result, or -1 if error.
@@ -262,18 +278,12 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	/* Set up for output marshaling. */
 	outheader.data = output->data;
 	outheader.size = 0;
-	/* N.B. The original plan was that SELF data was B.E.
-	 * but: this is all L.E.
-	 * Maybe we should just change the spec.
-	 */
-	xdr_le.put32(&outheader, algo);
+
 	/* Coreboot expects entry point to be physical address. Thus, adjust the
 	 * entry point accordingly.
 	 */
-	xdr_le.put64(&outheader, ehdr->e_entry + virt_to_phys);
-	xdr_le.put64(&outheader, data_start);
-	xdr_le.put32(&outheader, outlen);
-	xdr_le.put32(&outheader, mem_end - data_start);
+	fill_cbfs_stage(&outheader, algo, ehdr->e_entry + virt_to_phys,
+			data_start, outlen, mem_end - data_start);
 
 	if (*location)
 		*location -= sizeof(struct cbfs_stage);
@@ -282,5 +292,146 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 
 err:
 	parsed_elf_destroy(&pelf);
+	return ret;
+}
+
+struct xip_context {
+	struct rmod_context rmodctx;
+	size_t ignored_section_idx;
+	Elf64_Shdr *ignored_section;
+};
+
+static int rmod_filter(struct reloc_filter *f, const Elf64_Rela *r)
+{
+	size_t symbol_index;
+	int reloc_type;
+	struct parsed_elf *pelf;
+	Elf64_Sym *sym;
+	struct xip_context *xipctx;
+
+	xipctx = f->context;
+	pelf = &xipctx->rmodctx.pelf;
+
+	/* Allow everything through if there isn't an ignored section. */
+	if (xipctx->ignored_section == NULL)
+		return 1;
+
+	reloc_type = ELF64_R_TYPE(r->r_info);
+	symbol_index = ELF64_R_SYM(r->r_info);
+	sym = &pelf->syms[symbol_index];
+
+	/* Nothing to filter. Relocation is not being applied to the
+	 * ignored section. */
+	if (sym->st_shndx != xipctx->ignored_section_idx)
+		return 1;
+
+	/* If there is any relocation to the ignored section that isn't
+	 * absolute fail as current assumptions are that all relocations
+	 * are absolute. */
+	if (reloc_type != R_386_32) {
+		ERROR("Invalid reloc to ignored section: %x\n", reloc_type);
+		return -1;
+	}
+
+	/* Relocation referencing ignored section. Don't emit it. */
+	return 0;
+}
+
+int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
+				uint32_t *location, const char *ignore_section)
+{
+	struct xip_context xipctx;
+	struct rmod_context *rmodctx;
+	struct reloc_filter filter;
+	struct parsed_elf *pelf;
+	size_t output_sz;
+	uint32_t adjustment;
+	struct buffer binput;
+	struct buffer boutput;
+	Elf64_Xword i;
+	int ret = -1;
+
+	xipctx.ignored_section_idx = 0;
+	rmodctx = &xipctx.rmodctx;
+	pelf = &rmodctx->pelf;
+
+	if (rmodule_init(rmodctx, input))
+		return -1;
+
+	/* Only support x86 XIP currently. */
+	if (rmodctx->pelf.ehdr.e_machine != EM_386) {
+		ERROR("Only support XIP stages for x86\n");
+		goto out;
+	}
+
+	xipctx.ignored_section =
+		find_ignored_section_header(pelf, ignore_section);
+
+	if (xipctx.ignored_section != NULL)
+		xipctx.ignored_section_idx =
+			xipctx.ignored_section - pelf->shdr;
+
+	filter.filter = rmod_filter;
+	filter.context = &xipctx;
+
+	if (rmodule_collect_relocations(rmodctx, &filter))
+		goto out;
+
+	output_sz = sizeof(struct cbfs_stage) + pelf->phdr->p_filesz;
+	if (buffer_create(output, output_sz, input->name) != 0) {
+		ERROR("Unable to allocate memory: %m\n");
+		goto out;
+	}
+	buffer_clone(&boutput, output);
+	memset(buffer_get(&boutput), 0, output_sz);
+	buffer_set_size(&boutput, 0);
+
+	/* Single loadable segment. The entire segment moves to final
+	 * location from based on virtual address of loadable segment. */
+	adjustment = *location - pelf->phdr->p_vaddr;
+	DEBUG("Relocation adjustment: %08x\n", adjustment);
+
+	fill_cbfs_stage(&boutput, CBFS_COMPRESS_NONE,
+			(uint32_t)pelf->ehdr.e_entry + adjustment,
+			(uint32_t)pelf->phdr->p_vaddr + adjustment,
+			pelf->phdr->p_filesz, pelf->phdr->p_memsz);
+	/* Need an adjustable buffer. */
+	buffer_clone(&binput, input);
+	buffer_seek(&binput, pelf->phdr->p_offset);
+	bputs(&boutput, buffer_get(&binput), pelf->phdr->p_filesz);
+
+	buffer_clone(&boutput, output);
+	buffer_seek(&boutput, sizeof(struct cbfs_stage));
+
+	/* Make adjustments to all the relocations within the program. */
+	for (i = 0; i < rmodctx->nrelocs; i++) {
+		size_t reloc_offset;
+		uint32_t val;
+		struct buffer in, out;
+
+		/* The relocations represent in-program addresses of the
+		 * linked program. Obtain the offset into the program to do
+		 * the adjustment. */
+		reloc_offset = rmodctx->emitted_relocs[i] - pelf->phdr->p_vaddr;
+
+		buffer_clone(&out, &boutput);
+		buffer_seek(&out, reloc_offset);
+		buffer_clone(&in, &out);
+		/* Appease around xdr semantics: xdr decrements buffer
+		 * size when get()ing and appends to size when put()ing. */
+		buffer_set_size(&out, 0);
+
+		val = xdr_le.get32(&in);
+		DEBUG("reloc %zx %08x -> %08x\n", reloc_offset, val,
+			val + adjustment);
+		xdr_le.put32(&out, val + adjustment);
+	}
+
+	/* Need to back up the location to include cbfs stage metadata. */
+	*location -= sizeof(struct cbfs_stage);
+	ret = 0;
+
+out:
+	rmodule_cleanup(rmodctx);
 	return ret;
 }

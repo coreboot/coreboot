@@ -74,6 +74,7 @@ static struct param {
 	bool fill_partial_upward;
 	bool fill_partial_downward;
 	bool show_immutable;
+	bool stage_xip;
 	int fit_empty_entries;
 	enum comp_algo compression;
 	/* for linux payloads */
@@ -113,6 +114,53 @@ static unsigned convert_to_from_top_aligned(const struct buffer *region,
 
 	size_t image_size = partitioned_file_total_size(param.image_file);
 	return image_size - region->offset - offset;
+}
+
+static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
+{
+	if (!param.filename) {
+		ERROR("You need to specify -f/--filename.\n");
+		return 1;
+	}
+
+	if (!param.name) {
+		ERROR("You need to specify -n/--name.\n");
+		return 1;
+	}
+
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset))
+		return 1;
+
+	if (cbfs_get_entry(&image, param.name))
+		WARN("'%s' already in CBFS.\n", param.name);
+
+	struct buffer buffer;
+	if (buffer_from_file(&buffer, param.filename) != 0) {
+		ERROR("Cannot load %s.\n", param.filename);
+		return 1;
+	}
+
+	/* Include cbfs_file size along with space for with name. */
+	metadata_size += cbfs_calculate_file_header_size(param.name);
+
+	int32_t address = cbfs_locate_entry(&image, buffer.size, param.pagesize,
+						param.alignment, metadata_size);
+	buffer_delete(&buffer);
+
+	if (address == -1) {
+		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
+		      param.name, param.pagesize, param.alignment);
+		return 1;
+	}
+
+	if (param.top_aligned)
+		address = -convert_to_from_top_aligned(param.image_region,
+								address);
+
+	*cbfs_addr = address;
+	return 0;
 }
 
 typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset,
@@ -269,8 +317,26 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 {
 	struct buffer output;
 	int ret;
-	ret = parse_elf_to_stage(buffer, &output, param.compression, offset,
-							param.ignore_section);
+
+	if (param.stage_xip) {
+		int32_t address;
+
+		if (do_cbfs_locate(&address, sizeof(struct cbfs_stage)))  {
+			ERROR("Could not find location for XIP stage.\n");
+			return 1;
+		}
+
+		/* Pass in a top aligned address. */
+		address = -convert_to_from_top_aligned(param.image_region,
+								address);
+		*offset = address;
+
+		ret = parse_elf_to_xip_stage(buffer, &output, offset,
+						param.ignore_section);
+	} else
+		ret = parse_elf_to_stage(buffer, &output, param.compression,
+					 offset, param.ignore_section);
+
 	if (ret != 0)
 		return -1;
 	buffer_delete(buffer);
@@ -328,53 +394,6 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 	return 0;
 }
 
-static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
-{
-	if (!param.filename) {
-		ERROR("You need to specify -f/--filename.\n");
-		return 1;
-	}
-
-	if (!param.name) {
-		ERROR("You need to specify -n/--name.\n");
-		return 1;
-	}
-
-	struct cbfs_image image;
-	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset))
-		return 1;
-
-	if (cbfs_get_entry(&image, param.name))
-		WARN("'%s' already in CBFS.\n", param.name);
-
-	struct buffer buffer;
-	if (buffer_from_file(&buffer, param.filename) != 0) {
-		ERROR("Cannot load %s.\n", param.filename);
-		return 1;
-	}
-
-	/* Include cbfs_file size along with space for with name. */
-	metadata_size += cbfs_calculate_file_header_size(param.name);
-
-	int32_t address = cbfs_locate_entry(&image, buffer.size, param.pagesize,
-						param.alignment, metadata_size);
-	buffer_delete(&buffer);
-
-	if (address == -1) {
-		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
-		      param.name, param.pagesize, param.alignment);
-		return 1;
-	}
-
-	if (param.top_aligned)
-		address = -convert_to_from_top_aligned(param.image_region,
-								address);
-
-	*cbfs_addr = address;
-	return 0;
-}
-
 static size_t cbfs_default_metadata_size(void)
 {
 	/* TODO Old cbfstool always assume input is a stage file (and adding
@@ -410,6 +429,18 @@ static int cbfs_add(void)
 
 static int cbfs_add_stage(void)
 {
+	if (param.stage_xip) {
+		if (param.baseaddress_assigned) {
+			ERROR("Cannot specify base address for XIP.\n");
+			return 1;
+		}
+
+		if (param.compression != CBFS_COMPRESS_NONE) {
+			ERROR("Cannot specify compression for XIP.\n");
+			return 1;
+		}
+	}
+
 	return cbfs_add_component(param.filename,
 				  param.name,
 				  CBFS_COMPONENT_STAGE,
@@ -822,7 +853,7 @@ static const struct command commands[] = {
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:vh?", cbfs_add_flat_binary, true,
 									true},
 	{"add-payload", "H:r:f:n:t:c:b:C:I:vh?", cbfs_add_payload, true, true},
-	{"add-stage", "H:r:f:n:t:c:b:S:vh?", cbfs_add_stage, true, true},
+	{"add-stage", "a:H:r:f:n:t:c:b:P:S:yvh?", cbfs_add_stage, true, true},
 	{"add-int", "H:r:i:n:b:vh?", cbfs_add_integer, true, true},
 	{"copy", "H:D:s:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
@@ -865,6 +896,7 @@ static struct option long_options[] = {
 	{"type",          required_argument, 0, 't' },
 	{"verbose",       no_argument,       0, 'v' },
 	{"with-readonly", no_argument,       0, 'w' },
+	{"xip",           no_argument,       0, 'y' },
 	{NULL,            0,                 0,  0  }
 };
 
@@ -941,6 +973,7 @@ static void usage(char *name)
 	     "        (linux specific: [-C cmdline] [-I initrd])\n"
 	     " add-stage [-r image,regions] -f FILE -n NAME \\\n"
 	     "        [-c compression] [-b base] [-S section-to-ignore]    "
+	     "        [-a alignment] [-y|--xip] [-P page-size]"
 			"Add a stage to the ROM\n"
 	     " add-flat-binary [-r image,regions] -f FILE -n NAME \\\n"
 	     "        -l load-address -e entry-point [-c compression] \\\n"
@@ -1149,6 +1182,9 @@ int main(int argc, char **argv)
 				break;
 			case 'S':
 				param.ignore_section = optarg;
+				break;
+			case 'y':
+				param.stage_xip = true;
 				break;
 			case 'h':
 			case '?':

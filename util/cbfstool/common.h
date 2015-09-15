@@ -184,6 +184,9 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 		       enum comp_algo algo, uint32_t *location,
 		       const char *ignore_section);
+/* location is TOP aligned. */
+int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
+				uint32_t *location, const char *ignore_section);
 
 void print_supported_filetypes(void);
 

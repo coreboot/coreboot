@@ -15,6 +15,7 @@ CBFSTOOL_BINARY:=$(obj)/cbfstool
 CBFSTOOL_COMMON:=common.o cbfs_image.o compress.o fit.o
 CBFSTOOL_COMMON+=elfheaders.o cbfs-mkstage.o cbfs-mkpayload.o xdr.o
 CBFSTOOL_COMMON+=partitioned_file.o linux_trampoline.o cbfs-payload-linux.o
+CBFSTOOL_COMMON+=rmodule.o
 # LZMA
 CBFSTOOL_COMMON+=lzma/lzma.o
 CBFSTOOL_COMMON+=lzma/C/LzFind.o  lzma/C/LzmaDec.o  lzma/C/LzmaEnc.o

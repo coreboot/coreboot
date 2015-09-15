@@ -6,6 +6,7 @@ cbfsobj += cbfs_image.o
 cbfsobj += cbfs-mkstage.o
 cbfsobj += cbfs-mkpayload.o
 cbfsobj += elfheaders.o
+cbfsobj += rmodule.o
 cbfsobj += xdr.o
 cbfsobj += fit.o
 cbfsobj += partitioned_file.o

@@ -1,8 +1,8 @@
-diff -ur binutils-2.23.2/bfd/Makefile.in binutils-2.23.2.patched/bfd/Makefile.in
---- binutils-2.23.2/bfd/Makefile.in	2012-10-22 14:33:51.000000000 +0200
-+++ binutils-2.25/bfd/Makefile.in	2012-10-24 15:33:04.442080163 +0200
-@@ -323,7 +323,7 @@
- RELEASE = y
+diff -ur binutils-2.25/bfd/Makefile.in binutils-2.25.patched/bfd/Makefile.in
+--- binutils-2.25/bfd/Makefile.in	2015-09-15 06:25:42.000000000 -0700
++++ binutils-2.25.patched/bfd/Makefile.in	2015-09-15 05:51:01.000000000 -0700
+@@ -339,7 +339,7 @@
+ ACLOCAL_AMFLAGS = -I . -I .. -I ../config
  INCDIR = $(srcdir)/../include
  CSEARCH = -I. -I$(srcdir) -I$(INCDIR)
 -SUBDIRS = doc po

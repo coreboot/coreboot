@@ -65,6 +65,7 @@ ramstage-y += pmic_wrap.c mt6391.c
 ramstage-y += gpio.c
 ramstage-y += wdt.c
 ramstage-y += pll.c
+ramstage-y += rtc.c
 
 ramstage-y += usb.c
 

@@ -479,7 +479,8 @@ chromeos=false
 clean_work=false
 customizing=""
 configoptions=""
-testclass=
+# testclass needs to be undefined if not used for variable expansion to work
+unset testclass
 while true ; do
 	case "$1" in
 		-J|--junit)     shift; mode=junit; rm -f $XMLFILE ;;

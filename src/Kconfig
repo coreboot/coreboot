@@ -376,6 +376,14 @@ config CBFS_SIZE
 
 endmenu
 
+config FMDFILE
+	string "fmap description file in fmd format"
+	default ""
+	help
+	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
+	  but in some cases more complex setups are required.
+	  When an fmd is specified, it overrides the default format.
+
 config SYSTEM_TYPE_LAPTOP
 	default n
 	bool

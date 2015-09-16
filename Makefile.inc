@@ -18,6 +18,7 @@ GIT:=$(shell [ -d "$(top)/.git" ] && command -v git)
 #######################################################################
 # normalize Kconfig variables in a central place
 CONFIG_CBFS_PREFIX:=$(call strip_quotes,$(CONFIG_CBFS_PREFIX))
+CONFIG_FMDFILE:=$(call strip_quotes,$(CONFIG_FMDFILE))
 
 #######################################################################
 # misleadingly named, this is the coreboot version
@@ -619,10 +620,92 @@ prebuild-files = \
 	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
-$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(FMAPTOOL) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)
-	$(CBFSTOOL) $@.tmp create \
-	-B $(objcbfs)/bootblock.bin \
-	$(CBFSTOOL_PRE1_OPTS)
+ifeq ($(CONFIG_FMDFILE),)
+# For a description of the flash layout described by these variables, check
+# the $(DEFAULT_FLASHMAP) .fmd files.
+ifeq ($(CONFIG_ARCH_X86),y)
+DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default-x86.fmd
+# entire flash
+FMAP_ROM_ADDR := $(call int-subtract, 0x100000000 $(CONFIG_ROM_SIZE))
+FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)
+# entire "BIOS" region (everything directly of concern to the host system)
+# relative to ROM_BASE
+FMAP_BIOS_BASE := $(call int-subtract, $(CONFIG_ROM_SIZE) $(CONFIG_CBFS_SIZE))
+FMAP_BIOS_SIZE := $(CONFIG_CBFS_SIZE)
+# position and size of flashmap, relative to BIOS_BASE
+FMAP_FMAP_BASE := 0
+FMAP_FMAP_SIZE := 0x100
+# position and size of CBFS, relative to BIOS_BASE
+FMAP_CBFS_BASE := $(FMAP_FMAP_SIZE)
+FMAP_CBFS_SIZE := $(call int-subtract, $(FMAP_BIOS_SIZE) $(FMAP_FMAP_SIZE))
+else
+DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default.fmd
+# entire flash
+FMAP_ROM_ADDR := 0
+FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)
+# entire "BIOS" region (everything directly of concern to the host system)
+# relative to ROM_BASE
+FMAP_BIOS_BASE := 0
+FMAP_BIOS_SIZE := $(CONFIG_CBFS_SIZE)
+# position and size of flashmap, relative to BIOS_BASE
+FMAP_FMAP_BASE := 0x20000
+FMAP_FMAP_SIZE := 0x100
+# position and size of CBFS, relative to BIOS_BASE
+FMAP_CBFS_BASE := $(call int-add,$(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
+endif
+
+$(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP)
+	sed -e "s,##ROM_BASE##,$(FMAP_ROM_ADDR)," \
+	    -e "s,##ROM_SIZE##,$(FMAP_ROM_SIZE)," \
+	    -e "s,##BIOS_BASE##,$(FMAP_BIOS_BASE)," \
+	    -e "s,##BIOS_SIZE##,$(FMAP_BIOS_SIZE)," \
+	    -e "s,##FMAP_BASE##,$(FMAP_FMAP_BASE)," \
+	    -e "s,##FMAP_SIZE##,$(FMAP_FMAP_SIZE)," \
+	    -e "s,##CBFS_BASE##,$(FMAP_CBFS_BASE)," \
+	    -e "s,##CBFS_SIZE##,$(FMAP_CBFS_SIZE)," \
+		$(DEFAULT_FLASHMAP) > $@.tmp
+	mv $@.tmp $@
+else
+$(obj)/fmap.fmd: $(CONFIG_FMDFILE)
+	cp $< $@
+endif
+
+# generated at the same time as fmap.fmap
+$(obj)/fmap.h: $(obj)/fmap.fmap
+
+$(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
+	$(FMAPTOOL) -h $(obj)/fmap.h $< $@
+
+$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap
+	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap
+ifeq ($(CONFIG_ARCH_X86),y)
+	$(CBFSTOOL) $@.tmp add \
+		-f $(objcbfs)/bootblock.bin \
+		-n bootblock \
+		-t bootblock \
+		-b -$(call file-size,$(objcbfs)/bootblock.bin)
+else
+	# don't add bootblock to cbfs yet, it's just a waste of space
+	true $(CBFSTOOL) $@.tmp add \
+		-f $(objcbfs)/bootblock.bin \
+		-n bootblock \
+		-t bootblock \
+		-b 0
+	$(CBFSTOOL) $@.tmp write -u \
+		-r BOOTBLOCK \
+		-f $(objcbfs)/bootblock.bin
+	# make space for the CBFS master header pointer. "ptr_" is just
+	# arbitrary 4 bytes that will be overwritten by add-master-header.
+	printf "ptr_" > $@.tmp.2
+	$(CBFSTOOL) $@.tmp add \
+		-f $@.tmp.2 \
+		-n "header pointer" \
+		-t "cbfs header" \
+		-b -4
+	rm -f $@.tmp.2
+endif
+	$(CBFSTOOL) $@.tmp add-master-header
 	$(prebuild-files) true
 	mv $@.tmp $@
 else

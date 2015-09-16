@@ -23,6 +23,7 @@ subdirs-y += spd
 romstage-y += boardid.c
 romstage-y += pei_data.c
 
+verstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 

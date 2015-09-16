@@ -81,7 +81,7 @@ config DCACHE_RAM_BASE
 
 config DCACHE_RAM_SIZE
 	hex "Length in bytes of cache-as-RAM"
-	default 0x4000
+	default 0x10000
 	help
 	  The size of the cache-as-ram region required during bootblock
 	  and/or romstage.

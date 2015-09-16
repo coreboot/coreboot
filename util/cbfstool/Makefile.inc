@@ -48,7 +48,7 @@ rmodobj += common.o
 rmodobj += elfheaders.o
 rmodobj += xdr.o
 
-TOOLCFLAGS ?= -std=c99 -Werror -Wall -Wextra
+TOOLCFLAGS ?= -Werror -Wall -Wextra
 TOOLCFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
 TOOLCFLAGS += -Wstrict-prototypes -Wwrite-strings
 TOOLCPPFLAGS ?= -D_DEFAULT_SOURCE # memccpy() from string.h
@@ -70,6 +70,12 @@ HOSTCFLAGS += -fms-extensions
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLCFLAGS += -mno-ms-bitfields
+endif
+ifeq ($(shell uname -o 2>/dev/null), Cygwin)
+TOOLCFLAGS+=-std=gnu99
+TOOLCPPFLAGS+=-D_GNU_SOURCE
+else
+TOOLCFLAGS+=-std=c99
 endif
 
 $(objutil)/cbfstool/%.o: $(objutil)/cbfstool/%.c

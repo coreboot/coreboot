@@ -53,7 +53,7 @@ TOOLCPPFLAGS += -I$(objutil)/cbfstool
 TOOLLDFLAGS ?=
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
-TOOLFLAGS+=-mno-ms-bitfields
+TOOLCFLAGS += -mno-ms-bitfields
 endif
 
 $(objutil)/cbfstool/%.o: $(objutil)/cbfstool/%.c

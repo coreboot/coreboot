@@ -70,7 +70,6 @@ static struct param {
 	uint32_t cbfsoffset;
 	uint32_t cbfsoffset_assigned;
 	uint32_t arch;
-	bool top_aligned;
 	bool fill_partial_upward;
 	bool fill_partial_downward;
 	bool show_immutable;
@@ -154,10 +153,6 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
 		      param.name, param.pagesize, param.alignment);
 		return 1;
 	}
-
-	if (param.top_aligned)
-		address = -convert_to_from_top_aligned(param.image_region,
-								address);
 
 	*cbfs_addr = address;
 	return 0;
@@ -394,16 +389,6 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 	return 0;
 }
 
-static size_t cbfs_default_metadata_size(void)
-{
-	/* TODO Old cbfstool always assume input is a stage file (and adding
-	 * sizeof(cbfs_stage) for header. We should fix that by adding "-t"
-	 * (type) param in future. For right now, we assume cbfs_stage is the
-	 * largest structure and add it into header size. */
-	assert(sizeof(struct cbfs_stage) >= sizeof(struct cbfs_payload));
-	return sizeof(struct cbfs_stage);
-}
-
 static int cbfs_add(void)
 {
 	int32_t address;
@@ -414,7 +399,9 @@ static int cbfs_add(void)
 	}
 
 	if (param.alignment) {
-		if (do_cbfs_locate(&address, cbfs_default_metadata_size()))
+		/* CBFS compression file attribute is unconditionally added. */
+		size_t metadata_sz = sizeof(struct cbfs_file_attr_compression);
+		if (do_cbfs_locate(&address, metadata_sz))
 			return 1;
 		param.baseaddress = address;
 	}
@@ -591,17 +578,6 @@ static int cbfs_create(void)
 					   param.cbfsoffset);
 	buffer_delete(&bootblock);
 	return ret;
-}
-
-static int cbfs_locate(void)
-{
-	int32_t address;
-
-	if (do_cbfs_locate(&address, cbfs_default_metadata_size()) != 0)
-		return 1;
-
-	printf("0x%x\n", address);
-	return 0;
 }
 
 static int cbfs_layout(void)
@@ -858,7 +834,6 @@ static const struct command commands[] = {
 	{"copy", "H:D:s:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
 	{"extract", "H:r:n:f:vh?", cbfs_extract, true, false},
-	{"locate", "H:r:f:n:P:a:Tvh?", cbfs_locate, true, false},
 	{"layout", "wvh?", cbfs_layout, false, false},
 	{"print", "H:r:vh?", cbfs_print, true, false},
 	{"read", "r:f:vh?", cbfs_read, true, false},
@@ -1152,9 +1127,6 @@ int main(int argc, char **argv)
 				break;
 			case 'i':
 				param.u64val = strtoull(optarg, NULL, 0);
-				break;
-			case 'T':
-				param.top_aligned = true;
 				break;
 			case 'u':
 				param.fill_partial_upward = true;

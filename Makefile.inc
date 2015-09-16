@@ -562,8 +562,7 @@ cbfs-add-cmd = \
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuild-files = \
 	       $(foreach file,$(cbfs-files), \
-	       $(if $(call extract_nth,6,$(file)),$(CBFSTOOL) $@.tmp locate -f $(call extract_nth,1,$(file)) -n $(call extract_nth,2,$(file)) -a $(call extract_nth,6,$(file))|xargs -i \
-	       $(cbfs-add-cmd) -b {} &&,\
+	       $(if $(call extract_nth,6,$(file)),$(cbfs-add-cmd) -a $(call extract_nth,6,$(file)) &&, \
 	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
@@ -580,8 +579,7 @@ prebuild-files = \
 	$(foreach file,$(cbfs-files), \
 	       $(if $(filter $(call strip_quotes, $(CONFIG_CBFS_PREFIX))/%,\
 	           $(call extract_nth,2,$(file))), \
-	       $(if $(call extract_nth,6,$(file)),$(CBFSTOOL) $@.tmp locate -f $(call extract_nth,1,$(file)) -n $(call extract_nth,2,$(file)) -a $(call extract_nth,6,$(file))|xargs -i \
-	       $(cbfs-add-cmd) -b {} &&,\
+	       $(if $(call extract_nth,6,$(file)),$(cbfs-add-cmd) -a $(call extract_nth,6,$(file)) &&,\
 	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&)))
 
 .PHONY: $(obj)/coreboot.pre1

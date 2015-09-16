@@ -85,4 +85,9 @@ config PMIC_BUS
 	int
 	default 0
 
+config CBFS_SIZE
+	hex
+	default 0x100000 if CHROMEOS
+	default ROM_SIZE
+
 endif #  BOARD_GOOGLE_VEYRON

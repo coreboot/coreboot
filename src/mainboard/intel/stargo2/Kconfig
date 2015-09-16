@@ -1,0 +1,43 @@
+if BOARD_INTEL_STARGO2
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_INTEL_SOCKET_BGA1284
+	select NORTHBRIDGE_INTEL_FSP_IVYBRIDGE
+	select SOUTHBRIDGE_INTEL_FSP_I89XX
+	select BOARD_ROMSIZE_KB_4096
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select MMCONF_SUPPORT
+	select SUPERIO_WINBOND_WPCD376I
+	select SUPERIO_INTEL_I8900
+	select SERIRQ_CONTINUOUS_MODE
+	select ENABLE_VMX
+
+config MAINBOARD_DIR
+	string
+	default intel/stargo2
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Stargo2"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf8000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 16
+
+
+config VGA_BIOS
+	bool
+	default n
+
+
+endif # BOARD_INTEL_STARGO2

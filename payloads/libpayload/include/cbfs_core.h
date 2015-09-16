@@ -132,9 +132,33 @@ struct cbfs_file {
 	char magic[8];
 	uint32_t len;
 	uint32_t type;
-	uint32_t checksum;
+	uint32_t attributes_offset;
 	uint32_t offset;
+	char filename[];
 } __attribute__((packed));
+
+/* Depending on how the header was initialized, it may be backed with 0x00 or
+ * 0xff. Support both. */
+#define CBFS_FILE_ATTR_TAG_UNUSED 0
+#define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
+
+/* The common fields of extended cbfs file attributes.
+   Attributes are expected to start with tag/len, then append their
+   specific fields. */
+struct cbfs_file_attribute {
+	uint32_t tag;
+	/* len covers the whole structure, incl. tag and len */
+	uint32_t len;
+	uint8_t data[0];
+} __attribute__((packed));
+
+/* Given a cbfs_file, return the first file attribute, or NULL. */
+struct cbfs_file_attribute *cbfs_file_first_attr(struct cbfs_file *file);
+
+/* Given a cbfs_file and a cbfs_file_attribute, return the attribute that
+ * follows it, or NULL. */
+struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
+	struct cbfs_file_attribute *attr);
 
 /*** Component sub-headers ***/
 

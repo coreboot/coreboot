@@ -213,6 +213,47 @@ void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 	return (void *)CBFS_SUBHEADER(file);
 }
 
+struct cbfs_file_attribute *cbfs_file_first_attr(struct cbfs_file *file)
+{
+	/* attributes_offset should be 0 when there is no attribute, but all
+	 * values that point into the cbfs_file header are invalid, too. */
+	if (ntohl(file->attributes_offset) <= sizeof(*file))
+		return NULL;
+
+	/* There needs to be enough space for the file header and one
+	 * attribute header for this to make sense. */
+	if (ntohl(file->offset) <=
+		sizeof(*file) + sizeof(struct cbfs_file_attribute))
+		return NULL;
+
+	return (struct cbfs_file_attribute *)
+		(((uint8_t *)file) + ntohl(file->attributes_offset));
+}
+
+struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
+	struct cbfs_file_attribute *attr)
+{
+	/* ex falso sequitur quodlibet */
+	if (attr == NULL)
+		return NULL;
+
+	/* Is there enough space for another attribute? */
+	if ((uint8_t *)attr + ntohl(attr->len) +
+		sizeof(struct cbfs_file_attribute) >=
+		(uint8_t *)file + ntohl(file->offset))
+		return NULL;
+
+	struct cbfs_file_attribute *next = (struct cbfs_file_attribute *)
+		(((uint8_t *)attr) + ntohl(attr->len));
+	/* If any, "unused" attributes must come last. */
+	if (ntohl(next->tag) == CBFS_FILE_ATTR_TAG_UNUSED)
+		return NULL;
+	if (ntohl(next->tag) == CBFS_FILE_ATTR_TAG_UNUSED2)
+		return NULL;
+
+	return next;
+}
+
 int cbfs_decompress(int algo, void *src, void *dst, int len)
 {
 	switch (algo) {

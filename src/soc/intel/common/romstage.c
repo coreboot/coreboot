@@ -32,6 +32,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #include <elog.h>
+#include <fsp/util.h>
 #include <memory_info.h>
 #include <reset.h>
 #include <romstage_handoff.h>
@@ -48,22 +49,22 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* Entry from cache-as-ram.inc. */
-asmlinkage void *romstage_main(unsigned int bist,
-				uint32_t tsc_low, uint32_t tsc_high,
-				void *chipset_context)
+asmlinkage void *romstage_main(struct cache_as_ram_params *car_params)
 {
 	void *top_of_stack;
 	struct pei_data pei_data;
+	struct fsp_car_context *fsp_car_context;
 	struct romstage_params params = {
-		.bist = bist,
+		.bist = car_params->bist,
 		.pei_data = &pei_data,
-		.chipset_context = chipset_context,
+		.chipset_context = car_params->chipset_context,
 	};
 
+	fsp_car_context = car_params->chipset_context;
 	post_code(0x30);
 
 	/* Save timestamp data */
-	timestamp_init((((uint64_t)tsc_high) << 32) | (uint64_t)tsc_low);
+	timestamp_init(car_params->tsc);
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	memset(&pei_data, 0, sizeof(pei_data));
@@ -76,9 +77,8 @@ asmlinkage void *romstage_main(unsigned int bist,
 	console_init();
 
 	/* Display parameters */
-	printk(BIOS_SPEW, "bist: 0x%08x\n", bist);
-	printk(BIOS_SPEW, "tsc_low: 0x%08x\n", tsc_low);
-	printk(BIOS_SPEW, "tsc_hi: 0x%08x\n", tsc_high);
+	printk(BIOS_SPEW, "bist: 0x%08x\n", car_params->bist);
+	printk(BIOS_SPEW, "tsc: 0x%016llx\n", car_params->tsc);
 	printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",
 		CONFIG_MMCONF_BASE_ADDRESS);
 	printk(BIOS_INFO, "Using: %s\n",
@@ -88,7 +88,17 @@ asmlinkage void *romstage_main(unsigned int bist,
 
 	/* Display FSP banner */
 	printk(BIOS_DEBUG, "FSP TempRamInit successful\n");
-	print_fsp_info(params.chipset_context);
+	print_fsp_info(fsp_car_context->fih);
+
+	if (fsp_car_context->bootloader_car_start != CONFIG_DCACHE_RAM_BASE ||
+	    fsp_car_context->bootloader_car_end !=
+			(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)) {
+		printk(BIOS_INFO, "CAR mismatch: %08x--%08x vs %08lx--%08lx\n",
+			CONFIG_DCACHE_RAM_BASE,
+			CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE,
+			(long)fsp_car_context->bootloader_car_start,
+			(long)fsp_car_context->bootloader_car_end);
+	}
 
 	/* Get power state */
 	params.power_state = fill_power_state();

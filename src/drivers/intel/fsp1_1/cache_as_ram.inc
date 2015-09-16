@@ -115,53 +115,46 @@ CAR_init_done:
 	/* Setup bootloader stack */
 	movl	%edx, %esp
 
-	/* Save BIST value */
-	movd	%edi, %mm2
-
 	/*
 	 * ebp:  FSP_INFO_HEADER address
 	 * ecx:  Temp RAM base
 	 * edx:  Temp RAM top
+	 * edi:  BIST value
 	 * esp:  Top of stack in temp RAM
 	 * mm0:  low 32-bits of TSC value
 	 * mm1:  high 32-bits of TSC value
-	 * mm2:  BIST value
 	 */
+
+	/* Create fsp_car_context on stack. */
+	pushl	%edx	/* bootloader CAR end */
+	pushl	%ecx	/* bootloader CAR begin */
+	pushl	%ebp	/* FSP_INFO_HEADER */
+	/* Create cache_as_ram_params on stack */
+	pushl	%esp	/* chipset_context -> fsp_car_context */
+	pushl	%edi	/* bist */
+	movd	%mm1, %eax
+	pushl	%eax	/* tsc[63:32] */
+	movd	%mm0, %eax
+	pushl	%eax 	/* tsc[31:0] */
+	pushl	%esp	/* pointer to cache_as_ram_params */
+
+	/* Save FSP_INFO_HEADER location in ebx */
+	mov	%ebp, %ebx
 
 	/* Coreboot assumes stack/heap region will be zero */
 	cld
 	movl	%ecx, %edi
 	neg	%ecx
-	add	%edx, %ecx
+	/* Only clear up to current stack value. */
+	add	%esp, %ecx
 	shrl	$2, %ecx
 	xorl	%eax, %eax
 	rep	stosl
 
-	/* Save FSP_INFO_HEADER location in ebx */
-	mov	%ebp, %ebx
-
-	/*
-	 * ebx:  FSP_INFO_HEADER address
-	 * esi:  Temp RAM base
-	 * esp:  Top of stack in temp RAM
-	 * mm0:  low 32-bits of TSC value
-	 * mm1:  high 32-bits of TSC value
-	 * mm2:  BIST value
-	 */
-
-	/* Frame for romstage_main(bist, tsc_low, tsc_hi, fih) */
-	pushl	%ebx
-	movd	%mm1, %eax
-	pushl	%eax
-	movd	%mm0, %eax
-	pushl	%eax
-	movd	%mm2, %eax
-	pushl	%eax
-
 before_romstage:
 	post_code(0x23)
 
-	/* Call romstage.c main function. */
+	/* Call romstage_main(struct cache_as_ram_params *) */
 	call	romstage_main
 
 	/*

@@ -29,6 +29,12 @@
 #include <soc/pei_data.h>
 #include <soc/pm.h>		/* chip_power_state */
 
+struct cache_as_ram_params {
+	uint64_t tsc;
+	uint32_t bist;
+	void *chipset_context;
+};
+
 struct romstage_params {
 	unsigned long bist;
 	struct chipset_power_state *power_state;
@@ -85,8 +91,7 @@ void report_memory_config(void);
 void report_platform_info(void);
 asmlinkage void romstage_after_car(void *chipset_context);
 void romstage_common(struct romstage_params *params);
-asmlinkage void *romstage_main(unsigned int bist, uint32_t tsc_lo,
-			       uint32_t tsc_high, void *chipset_context);
+asmlinkage void *romstage_main(struct cache_as_ram_params *car_params);
 void *setup_stack_and_mtrrs(void);
 void set_max_freq(void);
 void soc_after_ram_init(struct romstage_params *params);

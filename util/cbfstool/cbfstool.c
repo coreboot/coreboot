@@ -1219,10 +1219,10 @@ int main(int argc, char **argv)
 				break;
 			case 's':
 				param.size = strtoul(optarg, &suffix, 0);
-				if (tolower(suffix[0])=='k') {
+				if (tolower((int)suffix[0])=='k') {
 					param.size *= 1024;
 				}
-				if (tolower(suffix[0])=='m') {
+				if (tolower((int)suffix[0])=='m') {
 					param.size *= 1024 * 1024;
 				}
 				break;

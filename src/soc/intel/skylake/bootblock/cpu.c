@@ -27,6 +27,7 @@
 #include <arch/io.h>
 #include <cpu/intel/microcode/microcode.c>
 #include <reset.h>
+#include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/spi.h>
@@ -78,7 +79,7 @@ static void bootblock_mdelay(int ms)
 static void set_pch_cpu_strap(u8 flex_ratio)
 {
 	device_t dev = PCH_DEV_SPI;
-	uint8_t *spibar = (void *)TEMP_SPI_BAR;
+	uint8_t *spibar = (void *)SPI_BASE_ADDRESS;
 	u32 ssl, ssms, soft_reset_data;
 	u8 pcireg;
 
@@ -89,14 +90,15 @@ static void set_pch_cpu_strap(u8 flex_ratio)
 	pci_write_config8(dev, PCI_COMMAND, pcireg);
 
 	/* Program Temporary BAR for SPI */
-	pci_write_config32(dev, PCH_SPI_BASE_ADDRESS, TEMP_SPI_BAR);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0,
+		SPI_BASE_ADDRESS | PCI_BASE_ADDRESS_SPACE_MEMORY);
 
 	/* Enable Bus Master and MMIO Space */
 	pcireg = pci_read_config8(dev, PCI_COMMAND);
 	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config8(dev, PCI_COMMAND, pcireg);
 
-	/* Set Strap Lock Disable*/
+	/* Set Strap Lock Disable */
 	ssl = read32(spibar + SPIBAR_RESET_LOCK);
 	ssl |= SPIBAR_RESET_LOCK_DISABLE;
 	write32(spibar + SPIBAR_RESET_LOCK, ssl);
@@ -114,7 +116,7 @@ static void set_pch_cpu_strap(u8 flex_ratio)
 	ssms |= SPIBAR_RESET_CTRL_SSMC;
 	write32(spibar + SPIBAR_RESET_CTRL, ssms);
 
-	/* Set Strap Lock Enable*/
+	/* Set Strap Lock Enable */
 	ssl = read32(spibar + SPIBAR_RESET_LOCK);
 	ssl |= SPIBAR_RESET_LOCK_ENABLE;
 	write32(spibar + SPIBAR_RESET_LOCK, ssl);

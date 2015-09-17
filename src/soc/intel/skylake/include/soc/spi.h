@@ -26,12 +26,7 @@
  * should support most common flash chips.
  */
 #define SPIDVID_OFFSET	0x0
-/* Temporay SPI BASE ADDRESS */
-#define TEMP_SPI_BAR	0xFE010000
-/* SPI BASE ADDRESS Register */
-#define B_PCH_SPI_BAR0_MASK	0x0FFF
-#define PCH_SPI_BASE_ADDRESS	0x10
-#define  SPIBAR_MEMBAR_MASK	0xFFFFF000
+
 /* Reigsters within the SPIBAR */
 #define SPIBAR_SSFC		0xA1
 

@@ -120,11 +120,6 @@ static void set_pch_cpu_strap(u8 flex_ratio)
 	ssl = read32(spibar + SPIBAR_RESET_LOCK);
 	ssl |= SPIBAR_RESET_LOCK_ENABLE;
 	write32(spibar + SPIBAR_RESET_LOCK, ssl);
-
-	/* Disable SPI Controller MMIO space */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
 }
 
 static void set_flex_ratio_to_tdp_nominal(void)

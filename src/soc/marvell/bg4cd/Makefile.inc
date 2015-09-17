@@ -45,9 +45,6 @@ ramstage-$(CONFIG_SPI_FLASH) += spi.c
 
 CPPFLAGS_common += -Isrc/soc/marvell/bg4cd/include/
 
-$(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
-	cp $< $@
-
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
 	@mkdir -p $(dir $@)

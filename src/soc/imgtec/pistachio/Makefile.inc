@@ -46,14 +46,8 @@ romstage-y += monotonic_timer.c
 
 CPPFLAGS_common += -Isrc/soc/imgtec/pistachio/include/
 
-# Generate the actual coreboot bootblock code
-$(objcbfs)/bootblock.raw: $(objcbfs)/bootblock.elf
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY_bootblock) -O binary $< $@.tmp
-	@mv $@.tmp $@
-
 # Create a complete bootblock which will start up the system
-$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw $(BIMGTOOL)
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(BIMGTOOL)
 	@printf "    BIMGTOOL   $(subst $(obj)/,,$(@))\n"
 	$(BIMGTOOL) $< $@ $(call loadaddr,bootblock)
 

@@ -48,9 +48,6 @@ rmodules_$(ARCH-ROMSTAGE-y)-y += timer.c
 
 CPPFLAGS_common += -Isrc/soc/samsung/exynos5420/include/
 
-$(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
-	cp $< $@
-
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "    BL1, CKSUM $(subst $(obj)/,,$(@))\n"
 	util/exynos/variable_cksum.py $< $<.cksum

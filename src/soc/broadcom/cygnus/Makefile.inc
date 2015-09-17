@@ -62,10 +62,6 @@ ramstage-y += usb.c
 
 CPPFLAGS_common += -Isrc/soc/broadcom/cygnus/include/
 
-$(objcbfs)/bootblock.tmp: $(objcbfs)/bootblock.elf
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY_bootblock) -O binary $< $@
-
 ifneq ($(V),1)
 redirect := > /dev/null
 endif
@@ -96,7 +92,7 @@ endif
 #   SLEEP		1
 #   DEEP_SLEEP		2
 #   EXCEPTION		4
-$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.tmp \
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin \
 		$(objutil)/broadcom/secimage/secimage \
 		util/broadcom/unauth.cfg \
 		util/broadcom/khmacsha256

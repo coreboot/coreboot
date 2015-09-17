@@ -531,10 +531,19 @@ find-substr = $(word 1,$(subst _, ,$(1)))
 # and remove .x the next time and finally return romstage
 find-class = $(if $(filter $(1),$(basename $(1))),$(if $(CC_$(1)), $(1), $(call find-substr,$(1))),$(call find-class,$(basename $(1))))
 
-$(objcbfs)/%.bin: $(objcbfs)/%.elf
-	$(eval class := $(call find-class,$(@F)))
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY_$(class)) -O binary $< $@
+# Bootblocks are not CBFS stages. coreboot is currently expecting the bss to
+# be cleared by the loader of the stage. For ARM SoCs that means one needs to
+# include the bss section in the binary so the BootROM clears the bss on
+# loading of the bootblock stage. Achieve this by marking the bss section
+# loadable,allocatable, and data. Do the same for the .data section in case
+# it's marked as NOBITS.
+$(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.elf
+	@printf "    OBJCOPY    $(notdir $(@))\n"
+	$(OBJCOPY_bootblock) --set-section-flags .bss=load,alloc,data --set-section-flags .data=load,alloc,data $< $<.tmp
+	$(OBJCOPY_bootblock) -O binary $<.tmp $@
+
+$(objcbfs)/%.bin: $(objcbfs)/%.raw.bin
+	cp $< $@
 
 $(objcbfs)/%.elf: $(objcbfs)/%.debug
 	$(eval class := $(call find-class,$(@F)))

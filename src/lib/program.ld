@@ -111,14 +111,7 @@
 #endif
 
 #if ARCH_STAGE_HAS_BSS_SECTION
-#if ENV_BOOTBLOCK
-/* Bootblocks are not CBFS stages, so they cannot communicate the amount of
- * (memsz - filesz) bytes the loader needs to clear for them. Therefore we merge
- * the BSS into the .data section so those zeroes get loaded explicitly. */
-.data . : {
-#else
 .bss . : {
-#endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;
 	*(.bss)

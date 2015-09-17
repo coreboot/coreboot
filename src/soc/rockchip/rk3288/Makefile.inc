@@ -75,9 +75,6 @@ ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 CPPFLAGS_common += -Isrc/soc/rockchip/rk3288/include/
 
-$(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
-	cp $< $@
-
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
 	@mkdir -p $(dir $@)

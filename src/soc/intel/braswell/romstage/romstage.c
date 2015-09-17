@@ -170,7 +170,7 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 }
 
 /* SOC initialization before the console is enabled */
-void soc_pre_console_init(struct romstage_params *params)
+void soc_pre_console_init(void)
 {
 	/* Early chipset initialization */
 	program_base_addresses();

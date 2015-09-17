@@ -80,7 +80,7 @@ struct romstage_params {
 void mainboard_check_ec_image(struct romstage_params *params);
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params);
-void mainboard_pre_console_init(struct romstage_params *params);
+void mainboard_pre_console_init(void);
 void mainboard_romstage_entry(struct romstage_params *params);
 void mainboard_save_dimm_info(struct romstage_params *params);
 void mainboard_add_dimm_info(struct romstage_params *params,
@@ -100,7 +100,7 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	MEMORY_INIT_UPD *new);
 void soc_memory_init_params(struct romstage_params *params,
 			    MEMORY_INIT_UPD *upd);
-void soc_pre_console_init(struct romstage_params *params);
+void soc_pre_console_init(void);
 void soc_pre_ram_init(struct romstage_params *params);
 void soc_romstage_init(struct romstage_params *params);
 

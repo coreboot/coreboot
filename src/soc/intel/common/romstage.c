@@ -70,8 +70,8 @@ asmlinkage void *romstage_main(struct cache_as_ram_params *car_params)
 	memset(&pei_data, 0, sizeof(pei_data));
 
 	/* Call into pre-console init code. */
-	soc_pre_console_init(&params);
-	mainboard_pre_console_init(&params);
+	soc_pre_console_init();
+	mainboard_pre_console_init();
 
 	/* Start console drivers */
 	console_init();
@@ -245,8 +245,7 @@ __attribute__((weak)) void mainboard_check_ec_image(
 }
 
 /* Board initialization before the console is enabled */
-__attribute__((weak)) void mainboard_pre_console_init(
-	struct romstage_params *params)
+__attribute__((weak)) void mainboard_pre_console_init(void)
 {
 }
 
@@ -469,9 +468,8 @@ __attribute__((weak)) void soc_after_temp_ram_exit(void)
 }
 
 /* SOC initialization before the console is enabled */
-__attribute__((weak)) void soc_pre_console_init(struct romstage_params *params)
+__attribute__((weak)) void soc_pre_console_init(void)
 {
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
 /* SOC initialization before RAM is enabled */

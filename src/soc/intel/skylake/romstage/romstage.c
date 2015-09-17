@@ -47,7 +47,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* SOC initialization before the console is enabled */
-void soc_pre_console_init(struct romstage_params *params)
+void soc_pre_console_init(void)
 {
 	/* System Agent Early Initialization */
 	systemagent_early_init();

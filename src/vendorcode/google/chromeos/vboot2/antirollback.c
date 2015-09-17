@@ -257,6 +257,7 @@ uint32_t setup_tpm(struct vb2_context *ctx)
 		 * reset.  We do a hard reset to get around this.
 		 */
 		VBDEBUG("TPM: soft reset detected\n", result);
+		ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
 		return TPM_E_MUST_REBOOT;
 	} else if (result != TPM_SUCCESS) {
 		VBDEBUG("TPM: tlcl_startup returned %08x\n", result);
@@ -304,6 +305,7 @@ uint32_t setup_tpm(struct vb2_context *ctx)
 		RETURN_ON_FAILURE(tlcl_set_enable());
 		RETURN_ON_FAILURE(tlcl_set_deactivated(0));
 		VBDEBUG("TPM: Must reboot to re-enable\n");
+		ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
 		return TPM_E_MUST_REBOOT;
 	}
 

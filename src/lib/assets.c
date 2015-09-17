@@ -31,7 +31,14 @@
 #if DEFAULT_CBFS_PROVIDER_PRESENT
 static int cbfs_boot_asset_locate(struct asset *asset)
 {
-	return cbfs_boot_locate(&asset->rdev, asset->name, NULL);
+	struct cbfsf file;
+
+	if (cbfs_boot_locate(&file, asset_name(asset), NULL))
+		return -1;
+
+	cbfs_file_data(asset_rdev(asset), &file);
+
+	return 0;
 }
 
 static const struct asset_provider cbfs_default_provider = {

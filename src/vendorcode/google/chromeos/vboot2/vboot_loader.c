@@ -73,6 +73,7 @@ static int vboot_active(struct asset *asset)
 	if (run_verification) {
 		verstage_main();
 	} else if (verstage_should_load()) {
+		struct cbfsf file;
 		struct prog verstage =
 			PROG_INIT(ASSET_VERSTAGE,
 				CONFIG_CBFS_PREFIX "/verstage");
@@ -80,9 +81,12 @@ static int vboot_active(struct asset *asset)
 		printk(BIOS_DEBUG, "VBOOT: Loading verstage.\n");
 
 		/* load verstage from RO */
-		if (cbfs_boot_locate(prog_rdev(&verstage),
-						prog_name(&verstage), NULL) ||
-		    cbfs_prog_stage_load(&verstage))
+		if (cbfs_boot_locate(&file, prog_name(&verstage), NULL))
+			die("failed to load verstage");
+
+		cbfs_file_data(prog_rdev(&verstage), &file);
+
+		if (cbfs_prog_stage_load(&verstage))
 			die("failed to load verstage");
 
 		/* verify and select a slot */
@@ -162,9 +166,14 @@ static int vboot_locate_by_components(const struct region_device *fw_main,
 static int vboot_locate_by_multi_cbfs(const struct region_device *fw_main,
 					struct asset *asset)
 {
-	struct cbfsd cbfs;
-	cbfs.rdev = fw_main;
-	return cbfs_locate(asset_rdev(asset), &cbfs, asset_name(asset), NULL);
+	struct cbfsf file;
+
+	if (cbfs_locate(&file, fw_main, asset_name(asset), NULL))
+		return -1;
+
+	cbfs_file_data(asset_rdev(asset), &file);
+
+	return 0;
 }
 
 static int vboot_asset_locate(const struct region_device *fw_main,

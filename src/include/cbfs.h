@@ -30,8 +30,8 @@
  * - cbfsd which is a descriptor for representing a cbfs instance
  */
 
-/* Descriptor for cbfs lookup operations. */
-struct cbfsd;
+/* Object representing cbfs files. */
+struct cbfsf;
 
 /***********************************************
  * Perform CBFS operations on the boot device. *
@@ -43,8 +43,7 @@ void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device);
  * failure. */
 void *cbfs_boot_load_stage_by_name(const char *name);
 /* Locate file by name and optional type. Return 0 on success. < 0 on error. */
-int cbfs_boot_locate(struct region_device *fh, const char *name,
-			uint32_t *type);
+int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type);
 /* Map file into memory leaking the mapping. Only should be used when
  * leaking mappings are a no-op. Returns NULL on error, else returns
  * the mapping and sets the size of the file. */
@@ -55,7 +54,7 @@ int cbfs_prog_stage_load(struct prog *prog);
 
 /* Locate file by name and optional type. Returns 0 on succcess else < 0 on
  * error.*/
-int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
+int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
 		const char *name, uint32_t *type);
 
 /*****************************************************************
@@ -64,9 +63,16 @@ int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
  * API.                                                          *
  *****************************************************************/
 
-struct cbfsd {
-	const struct region_device *rdev;
+struct cbfsf {
+	struct region_device metadata;
+	struct region_device data;
 };
+
+static inline void cbfs_file_data(struct region_device *data,
+					const struct cbfsf *file)
+{
+	rdev_chain(data, &file->data, 0, region_device_sz(&file->data));
+}
 
 /* The cbfs_props struct describes the properties associated with a CBFS. */
 struct cbfs_props {

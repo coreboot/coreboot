@@ -35,9 +35,8 @@
 #define DEBUG(x...)
 #endif
 
-int cbfs_boot_locate(struct region_device *fh, const char *name, uint32_t *type)
+int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 {
-	struct cbfsd cbfs;
 	struct region_device rdev;
 	const struct region_device *boot_dev;
 	struct cbfs_props props;
@@ -56,35 +55,29 @@ int cbfs_boot_locate(struct region_device *fh, const char *name, uint32_t *type)
 	if (rdev_chain(&rdev, boot_dev, props.offset, props.size))
 		return -1;
 
-	cbfs.rdev = &rdev;
-
-	return cbfs_locate(fh, &cbfs, name, type);
+	return cbfs_locate(fh, &rdev, name, type);
 }
 
 void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size)
 {
-	struct region_device fh;
+	struct cbfsf fh;
 	size_t fsize;
 
 	if (cbfs_boot_locate(&fh, name, &type))
 		return NULL;
 
-	fsize = region_device_sz(&fh);
+	fsize = region_device_sz(&fh.data);
 
 	if (size != NULL)
 		*size = fsize;
 
-	return rdev_mmap(&fh, 0, fsize);
+	return rdev_mmap(&fh.data, 0, fsize);
 }
 
-int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
+int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
 		const char *name, uint32_t *type)
 {
-	size_t offset;
-	const struct region_device *rd;
-
-	offset = 0;
-	rd = cbfs->rdev;
+	size_t offset = 0;
 
 	LOG("Locating '%s'\n", name);
 
@@ -99,7 +92,7 @@ int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
 		DEBUG("Checking offset %zx\n", offset);
 
 		/* Can't read file. Nothing else to do but bail out. */
-		if (rdev_readat(rd, &file, offset, fsz) != fsz)
+		if (rdev_readat(cbfs, &file, offset, fsz) != fsz)
 			break;
 
 		if (memcmp(file.magic, CBFS_FILE_MAGIC, sizeof(file.magic))) {
@@ -113,13 +106,13 @@ int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
 		file.offset = ntohl(file.offset);
 
 		/* See if names match. */
-		fname = rdev_mmap(rd, offset + fsz, file.offset - fsz);
+		fname = rdev_mmap(cbfs, offset + fsz, file.offset - fsz);
 
 		if (fname == NULL)
 			break;
 
 		name_match = !strcmp(fname, name);
-		rdev_munmap(rd, fname);
+		rdev_munmap(cbfs, fname);
 
 		if (!name_match) {
 			DEBUG(" Unmatched '%s' at %zx\n", fname, offset);
@@ -136,11 +129,13 @@ int cbfs_locate(struct region_device *fh, const struct cbfsd *cbfs,
 		}
 
 		LOG("Found @ offset %zx size %x\n", offset, file.len);
-		/* File and type match. Create a chained region_device to
-		 * represent the cbfs file. */
+		/* File and type match. Keep track of both the metadata and
+		 * the data for the file. */
+		if (rdev_chain(&fh->metadata, cbfs, offset, file.offset))
+			break;
 		offset += file.offset;
 		datasz = file.len;
-		if (rdev_chain(fh, rd, offset, datasz))
+		if (rdev_chain(&fh->data, cbfs, offset, datasz))
 			break;
 
 		/* Success. */
@@ -185,11 +180,15 @@ void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
 
 void *cbfs_boot_load_stage_by_name(const char *name)
 {
+	struct cbfsf fh;
 	struct prog stage = PROG_INIT(ASSET_UNKNOWN, name);
 	uint32_t type = CBFS_TYPE_STAGE;
 
-	if (cbfs_boot_locate(&stage.asset.rdev, name, &type))
+	if (cbfs_boot_locate(&fh, name, &type))
 		return NULL;
+
+	/* Chain data portion in the prog. */
+	cbfs_file_data(prog_rdev(&stage), &fh);
 
 	if (cbfs_prog_stage_load(&stage))
 		return NULL;
@@ -204,7 +203,7 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	void *entry;
 	size_t fsize;
 	size_t foffset;
-	const struct region_device *fh = &pstage->asset.rdev;
+	const struct region_device *fh = prog_rdev(pstage);
 
 	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
 		return 0;

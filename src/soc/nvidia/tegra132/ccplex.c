@@ -77,6 +77,7 @@ int ccplex_load_mts(void)
 {
 	ssize_t nread;
 	struct stopwatch sw;
+	struct cbfsf mts_file;
 	struct region_device fh;
 
 	/*
@@ -87,10 +88,12 @@ int ccplex_load_mts(void)
 	void * const mts = (void *)(uintptr_t)MTS_LOAD_ADDRESS;
 
 	stopwatch_init(&sw);
-	if (cbfs_boot_locate(&fh, MTS_FILE_NAME, NULL)) {
+	if (cbfs_boot_locate(&mts_file, MTS_FILE_NAME, NULL)) {
 		printk(BIOS_DEBUG, "MTS file not found: %s\n", MTS_FILE_NAME);
 		return -1;
 	}
+
+	cbfs_file_data(&fh, &mts_file);
 
 	/* Read MTS file into the carveout region. */
 	nread = rdev_readat(&fh, mts, 0, region_device_sz(&fh));

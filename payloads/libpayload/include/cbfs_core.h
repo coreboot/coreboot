@@ -170,6 +170,11 @@ struct cbfs_file_attribute *cbfs_file_first_attr(struct cbfs_file *file);
 struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
 	struct cbfs_file_attribute *attr);
 
+/* Given a cbfs_file and an attribute tag, return the first instance of the
+ * attribute or NULL if none found. */
+struct cbfs_file_attribute *cbfs_file_find_attr(struct cbfs_file *file,
+	uint32_t tag);
+
 /*** Component sub-headers ***/
 
 /* Following are component sub-headers for the "standard"

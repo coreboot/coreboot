@@ -212,12 +212,8 @@ void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 
 	void *file_content = (void *)CBFS_SUBHEADER(file);
 
-	struct cbfs_file_attribute *attr = cbfs_file_first_attr(file);
-	while (attr) {
-		if (ntohl(attr->tag) == CBFS_FILE_ATTR_TAG_COMPRESSION)
-			break;
-		attr = cbfs_file_next_attr(file, attr);
-	}
+	struct cbfs_file_attribute *attr =
+		cbfs_file_find_attr(file, CBFS_FILE_ATTR_TAG_COMPRESSION);
 
 	int compression_algo = CBFS_COMPRESS_NONE;
 	if (attr) {
@@ -283,6 +279,19 @@ struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
 		return NULL;
 
 	return next;
+}
+
+struct cbfs_file_attribute *cbfs_file_find_attr(struct cbfs_file *file,
+	uint32_t tag)
+{
+	struct cbfs_file_attribute *attr = cbfs_file_first_attr(file);
+	while (attr) {
+		if (ntohl(attr->tag) == tag)
+			break;
+		attr = cbfs_file_next_attr(file, attr);
+	}
+	return attr;
+
 }
 
 int cbfs_decompress(int algo, void *src, void *dst, int len)

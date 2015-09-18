@@ -111,7 +111,7 @@ testas() {
 		2>/dev/null || return 1
 
 	# Check output content type.
-	local obj_type="$(LANG=C LC_ALL= ${gccprefix}objdump -p $obj_file)"
+	local obj_type="$(LANG=C LC_ALL= ${gccprefix}objdump -p $obj_file 2>/dev/null)"
 	local obj_arch="$(expr "$obj_type" : '.*format \(.[a-z0-9-]*\)')"
 	[ "$obj_arch" = "$full_arch" ] || return 1
 

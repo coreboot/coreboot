@@ -31,6 +31,7 @@
 enum apll_frequencies {
 	APLL_1800_MHZ,
 	APLL_1392_MHZ,
+	APLL_600_MHZ,
 };
 
 /* The SRAM is clocked off aclk_bus, so we want to max it out for boot speed. */

@@ -79,9 +79,11 @@ static const struct pll_div cpll_init_cfg = PLL_DIVISORS(CPLL_HZ, 1, 2);
 /* See linux/drivers/clk/rockchip/clk-rk3288.c for more APLL combinations */
 static const struct pll_div apll_1800_cfg = PLL_DIVISORS(1800*MHz, 1, 1);
 static const struct pll_div apll_1392_cfg = PLL_DIVISORS(1392*MHz, 1, 1);
+static const struct pll_div apll_600_cfg = PLL_DIVISORS(600*MHz, 1, 2);
 static const struct pll_div *apll_cfgs[] = {
 	[APLL_1800_MHZ] = &apll_1800_cfg,
 	[APLL_1392_MHZ] = &apll_1392_cfg,
+	[APLL_600_MHZ] = &apll_600_cfg,
 };
 
 /*******************PLL CON0 BITS***************************/

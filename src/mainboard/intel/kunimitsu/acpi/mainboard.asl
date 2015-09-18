@@ -44,6 +44,45 @@ Scope (\_SB)
 	{
 		Name (_HID, EisaId ("PNP0C0C"))
 	}
+
+	Device (MAXM)
+	{
+		Name (_HID, "MX98357A")
+		Name (_DDN, "Maxim Integrated 98357A Amplifier")
+		Name (_UID, 1)
+		Name (_CRS, ResourceTemplate()
+		{
+			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+				IoRestrictionOutputOnly,
+				"\\_SB.PCI0.GPIO", 0x00, ResourceConsumer,,)
+			{
+				AUDIO_DB_ID
+			}
+		})
+		Name (_DSD, Package ()
+		{
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () {
+					/*
+					 * Create a named GPIO
+					 * "sdmode-gpio" for the
+					 * kernel codec driver
+					 * to use.
+					 */
+
+					"sdmode-gpio", Package () {
+								^MAXM, 0, 0, 0
+							}
+				},
+			}
+		})
+
+		Method (_STA)
+		{
+			Return (0xF)
+		}
+	}
 }
 
 /*

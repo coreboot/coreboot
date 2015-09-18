@@ -50,6 +50,14 @@
 #define EC_SCI_GPI		GPE0_DW2_16
 #define EC_SMI_GPI		GPP_E15
 
+/*
+ * GPP_E3 is AUDIO_DB_ID.
+ * It is a dual purpose GPIO, used for Audio Daughter
+ * Board Identification & to control the shutdown mode pin
+ * of the Maxim amp.
+ */
+#define AUDIO_DB_ID		GPP_E3
+
 #ifndef __ACPI__
 /* Pad configuration in ramstage. */
 static const struct pad_config gpio_table[] = {

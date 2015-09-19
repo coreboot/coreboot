@@ -838,16 +838,9 @@ static int cbfs_update_fit(void)
 		return 1;
 	}
 
-	// Decide which region to read/write the FIT table from/to.
 	struct buffer bootblock;
-	if (partitioned_file_is_partitioned(param.image_file)) {
-		if (!partitioned_file_read_region(&bootblock, param.image_file,
-							SECTION_WITH_FIT_TABLE))
-			return 1;
-	} else {
-		// In legacy images, the bootblock is part of the CBFS.
-		buffer_clone(&bootblock, param.image_region);
-	}
+	// The bootblock is part of the CBFS on x86
+	buffer_clone(&bootblock, param.image_region);
 
 	struct cbfs_image image;
 	if (cbfs_image_from_buffer(&image, param.image_region,

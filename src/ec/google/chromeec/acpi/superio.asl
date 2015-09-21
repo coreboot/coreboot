@@ -155,7 +155,7 @@ Device (SIO) {
 #ifdef SIO_EC_PS2K_IRQ
 			SIO_EC_PS2K_IRQ
 #else
-			IRQNoFlags () {1}
+			IRQ (Edge, ActiveHigh, ExclusiveAndWake) {1}
 #endif
 		})
 
@@ -167,7 +167,7 @@ Device (SIO) {
 #ifdef SIO_EC_PS2K_IRQ
 				SIO_EC_PS2K_IRQ
 #else
-				IRQNoFlags () {1}
+				IRQ (Edge, ActiveHigh, ExclusiveAndWake) {1}
 #endif
 			}
 			EndDependentFn ()

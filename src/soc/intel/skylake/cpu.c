@@ -102,118 +102,6 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x11] = 128,
 };
 
-/*
- * The core 100MHz BLCK is disabled in deeper c-states. One needs to calibrate
- * the 100MHz BCLCK against the 24MHz BLCK to restore the clocks properly
- * when a core is woken up.
- */
-static int pcode_ready(void)
-{
-	int wait_count;
-	const int delay_step = 10;
-
-	wait_count = 0;
-	do {
-		if (!(MCHBAR32(BIOS_MAILBOX_INTERFACE) & MAILBOX_RUN_BUSY))
-			return 0;
-		wait_count += delay_step;
-		udelay(delay_step);
-	} while (wait_count < 1000);
-
-	return -1;
-}
-
-static void calibrate_24mhz_bclk(void)
-{
-	int err_code;
-
-	if (pcode_ready() < 0) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on wait ready.\n");
-		return;
-	}
-
-	/* A non-zero value initiates the PCODE calibration. */
-	MCHBAR32(BIOS_MAILBOX_DATA) = ~0;
-	MCHBAR32(BIOS_MAILBOX_INTERFACE) =
-		MAILBOX_RUN_BUSY | MAILBOX_BIOS_CMD_FSM_MEASURE_INTVL;
-
-	if (pcode_ready() < 0) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on completion.\n");
-		return;
-	}
-
-	err_code = MCHBAR32(BIOS_MAILBOX_INTERFACE) & 0xff;
-
-	printk(BIOS_DEBUG, "PCODE: 24MHz BLCK calibration response: %d\n",
-	       err_code);
-
-	/* Read the calibrated value. */
-	MCHBAR32(BIOS_MAILBOX_INTERFACE) =
-		MAILBOX_RUN_BUSY | MAILBOX_BIOS_CMD_READ_CALIBRATION;
-
-	if (pcode_ready() < 0) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on read.\n");
-		return;
-	}
-
-	printk(BIOS_DEBUG, "PCODE: 24MHz BLCK calibration value: 0x%08x\n",
-	       MCHBAR32(BIOS_MAILBOX_DATA));
-}
-
-static void initialize_vr_config(void)
-{
-	msr_t msr;
-
-	printk(BIOS_DEBUG, "Initializing VR config.\n");
-
-	/*  Configure VR_CURRENT_CONFIG. */
-	msr = rdmsr(MSR_VR_CURRENT_CONFIG);
-	/*
-	 * Preserve bits 63 and 62. Bit 62 is PSI4 enable, but it is only valid
-	 * on ULT systems.
-	 */
-	msr.hi &= 0xc0000000;
-	msr.hi |= (0x01 << (52 - 32)); /* PSI3 threshold -  1A. */
-	msr.hi |= (0x05 << (42 - 32)); /* PSI2 threshold -  5A. */
-	msr.hi |= (0x14 << (32 - 32)); /* PSI1 threshold - 20A. */
-	msr.hi |= (1 <<  (62 - 32)); /* Enable PSI4 */
-	/* Leave the max instantaneous current limit (12:0) to default. */
-	wrmsr(MSR_VR_CURRENT_CONFIG, msr);
-
-	/*  Configure VR_MISC_CONFIG MSR. */
-	msr = rdmsr(MSR_VR_MISC_CONFIG);
-	/* Set the IOUT_SLOPE scalar applied to dIout in U10.1.9 format. */
-	msr.hi &= ~(0x3ff << (40 - 32));
-	msr.hi |= (0x200 << (40 - 32)); /* 1.0 */
-	/* Set IOUT_OFFSET to 0. */
-	msr.hi &= ~0xff;
-	/* Set exit ramp rate to fast. */
-	msr.hi |= (1 << (50 - 32));
-	/* Set entry ramp rate to slow. */
-	msr.hi &= ~(1 << (51 - 32));
-	/* Enable decay mode on C-state entry. */
-	msr.hi |= (1 << (52 - 32));
-	/* Set the slow ramp rate to be fast ramp rate / 4 */
-	msr.hi &= ~(0x3 << (53 - 32));
-	msr.hi |= (0x01 << (53 - 32));
-	/* Set MIN_VID (31:24) to allow CPU to have full control. */
-	msr.lo &= ~0xff000000;
-	wrmsr(MSR_VR_MISC_CONFIG, msr);
-
-	/*  Configure VR_MISC_CONFIG2 MSR. */
-	msr = rdmsr(MSR_VR_MISC_CONFIG2);
-	msr.lo &= ~0xffff;
-	/*
-	 * Allow CPU to control minimum voltage completely (15:8) and
-	 * set the fast ramp voltage in 10mV steps.
-	 */
-	if (cpu_family_model() == SKYLAKE_FAMILY_ULT)
-		msr.lo |= 0x006a; /* 1.56V */
-	else
-		msr.lo |= 0x006f; /* 1.60V */
-	wrmsr(MSR_VR_MISC_CONFIG2, msr);
-}
-
 int cpu_config_tdp_levels(void)
 {
 	msr_t platform_info;
@@ -427,9 +315,6 @@ static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 	x86_setup_fixed_mtrrs();
 	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
 	x86_mtrr_check();
-
-	initialize_vr_config();
-	calibrate_24mhz_bclk();
 }
 
 /* All CPUs including BSP will run the following function. */

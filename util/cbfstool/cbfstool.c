@@ -19,7 +19,6 @@
  * Foundation, Inc.
  */
 
-#include <endian.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -272,7 +271,7 @@ static int cbfs_add_master_header(void)
 	// TODO: when we have a BE target, we'll need to store this as BE
 	*(uint32_t *)(buffer_get(&image.buffer) +
 		buffer_size(&image.buffer) - 4) =
-		htole32(header_offset);
+		swab32(htonl(header_offset));
 
 	ret = 0;
 

@@ -194,6 +194,22 @@ int clear_canvas(struct rgb_color *rgb)
 	return draw_box(&box, rgb);
 }
 
+int clear_screen(struct rgb_color *rgb)
+{
+	uint32_t color;
+	struct vector p;
+
+	if (cbgfx_init())
+		return CBGFX_ERROR_INIT;
+
+	color = calculate_color(rgb);
+	for (p.y = 0; p.y < screen.size.height; p.y++)
+		for (p.x = 0; p.x < screen.size.width; p.x++)
+			set_pixel(&p, color);
+
+	return CBGFX_SUCCESS;
+}
+
 /*
  * This check guarantees we will not try to read outside pixel data.
  */

@@ -91,6 +91,11 @@ int draw_box(const struct rect *box, const struct rgb_color *rgb);
 int clear_canvas(struct rgb_color *rgb);
 
 /*
+ * Clear the screen
+ */
+int clear_screen(struct rgb_color *rgb);
+
+/*
  * Draw a bitmap image on screen.
  *
  * top_left_rel: coordinate of the top left corner of the image relative to the

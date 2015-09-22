@@ -566,7 +566,9 @@ cbfs-add-cmd = \
 	       $(CBFSTOOL) $@.tmp \
 	       add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage)$(if $(filter payload,$(call extract_nth,3,$(file))),-payload) \
 	       -f $(call extract_nth,1,$(file)) \
-	       -n $(call extract_nth,2,$(file)) $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file)))
+	       -n $(call extract_nth,2,$(file)) \
+	       $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
+	       $(if $(call extract_nth,4,$(file)),-c $(call extract_nth,4,$(file)))
 
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuild-files = \

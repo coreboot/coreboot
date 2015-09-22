@@ -69,6 +69,8 @@ uint32_t iosf_port58_read(int reg);
 void iosf_port58_write(int reg, uint32_t val);
 uint32_t iosf_scc_read(int reg);
 void iosf_scc_write(int reg, uint32_t val);
+uint32_t iosf_usbphy_read(int reg);
+void iosf_usbphy_write(int reg, uint32_t val);
 
 #if ENV_RAMSTAGE
 uint64_t reg_script_read_iosf(struct reg_script_context *ctx);
@@ -91,6 +93,7 @@ void reg_script_write_iosf(struct reg_script_context *ctx);
 #define IOSF_PORT_0x5a		0x5a
 #define IOSF_PORT_USHPHY	0x61 /* USB XHCI PHY */
 #define IOSF_PORT_SCC		0x63 /* Storage Control Cluster */
+#define IOSF_PORT_USBPHY	0x43 /* USB PHY */
 #define IOSF_PORT_LPSS		0xa0 /* LPSS - Low Power Subsystem */
 #define IOSF_PORT_0xa2		0xa2
 #define IOSF_PORT_SSUS		0xa8 /* SUS */
@@ -109,6 +112,8 @@ void reg_script_write_iosf(struct reg_script_context *ctx);
 #define IOSF_OP_WRITE_0x58	(IOSF_OP_READ_0x58 | 1)
 #define IOSF_OP_READ_SCC        0x06
 #define IOSF_OP_WRITE_SCC       (IOSF_OP_READ_SCC | 1)
+#define IOSF_OP_READ_USBPHY     0x06
+#define IOSF_OP_WRITE_USBPHY    (IOSF_OP_READ_USBPHY | 1)
 
 /*
  * BUNIT Registers.
@@ -174,6 +179,11 @@ void reg_script_write_iosf(struct reg_script_context *ctx);
 #define LPE_PCICFGCTR1			0x0500
 # define LPE_PCICFGCTR1_PCI_CFG_DIS		(1 << 0)
 # define LPE_PCICFGCTR1_ACPI_INT_EN		(1 << 1)
+
+/*
+ * USBPHY Registers
+ */
+#define USBPHY_COMPBG			0x7f04
 
 /*
  * IO Sideband Function

@@ -122,6 +122,15 @@ void iosf_scc_write(int reg, uint32_t val)
 	return iosf_write_port(IOSF_WRITE(SCC), reg, val);
 }
 
+uint32_t iosf_usbphy_read(int reg)
+{
+	return iosf_read_port(IOSF_READ(USBPHY), reg);
+}
+
+void iosf_usbphy_write(int reg, uint32_t val)
+{
+	return iosf_write_port(IOSF_WRITE(USBPHY), reg, val);
+}
 
 #if ENV_RAMSTAGE
 uint64_t reg_script_read_iosf(struct reg_script_context *ctx)
@@ -140,6 +149,8 @@ uint64_t reg_script_read_iosf(struct reg_script_context *ctx)
 		return iosf_port58_read(step->reg);
 	case IOSF_PORT_SCC:
 		return iosf_scc_read(step->reg);
+	case IOSF_PORT_USBPHY:
+		return iosf_usbphy_read(step->reg);
 	default:
 		printk(BIOS_DEBUG, "No read support for IOSF port 0x%x.\n",
 		       step->id);
@@ -169,7 +180,9 @@ void reg_script_write_iosf(struct reg_script_context *ctx)
 	case IOSF_PORT_SCC:
 		iosf_scc_write(step->reg, step->value);
 		break;
-
+	case IOSF_PORT_USBPHY:
+		iosf_usbphy_write(step->reg, step->value);
+		break;
 	default:
 		printk(BIOS_DEBUG, "No write support for IOSF port 0x%x.\n",
 		       step->id);

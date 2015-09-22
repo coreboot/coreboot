@@ -47,7 +47,7 @@ Device (TPM)
 		Memory32Fixed (ReadWrite, CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000)
 	})
 
-	Method (_CRS, 0, NotSerialized)
+	Method (_CRS, 0, Serialized)
 	{
 		OperationRegion (TREG, SystemMemory,
 				 CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000)

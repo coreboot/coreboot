@@ -86,7 +86,7 @@ Device (EC0)
 		}
 	}
 
-	Method (_CRS, 0, NotSerialized)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()
 		{
@@ -257,7 +257,7 @@ Device (EC0)
 	Method (_Q12, 0, NotSerialized)
 	{
 		Store ("EC: THROTTLE START", Debug)
-		If (CondRefOf (\_TZ.THRT, Local0)) {
+		If (CondRefOf (\_TZ.THRT)) {
 			\_TZ.THRT (1)
 		}
 	}
@@ -266,7 +266,7 @@ Device (EC0)
 	Method (_Q13, 0, NotSerialized)
 	{
 		Store ("EC: THROTTLE STOP", Debug)
-		If (CondRefOf (\_TZ.THRT, Local0)) {
+		If (CondRefOf (\_TZ.THRT)) {
 			\_TZ.THRT (0)
 		}
 	}
@@ -309,7 +309,7 @@ Device (EC0)
 		Store (ToInteger (Arg0), ^PATI)
 
 		/* Temperature is passed in 1/10 Kelvin */
-		Divide (ToInteger (Arg1), 10, Local0, Local1)
+		Divide (ToInteger (Arg1), 10, , Local1)
 
 		/* Adjust by EC temperature offset */
 		Subtract (Local1, ^TOFS, ^PATT)
@@ -336,7 +336,7 @@ Device (EC0)
 		Store (ToInteger (Arg0), ^PATI)
 
 		/* Temperature is passed in 1/10 Kelvin */
-		Divide (ToInteger (Arg1), 10, Local0, Local1)
+		Divide (ToInteger (Arg1), 10, , Local1)
 
 		/* Adjust by EC temperature offset */
 		Subtract (Local1, ^TOFS, ^PATT)
@@ -385,7 +385,7 @@ Device (EC0)
 		/* When sensor ID returns 0xFF then no more events */
 		While (LNotEqual (Local0, EC_TEMP_SENSOR_NOT_PRESENT))
 		{
-			If (CondRefOf (\_SB.DPTF.TEVT, Local1)) {
+			If (CondRefOf (\_SB.DPTF.TEVT)) {
 				\_SB.DPTF.TEVT (Local0)
 			}
 

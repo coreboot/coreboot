@@ -110,11 +110,11 @@ Device (BAT0)
 		Store (Local0, Index (PBIF, 1))
 
 		// Design Capacity of Warning
-		Divide (Multiply (Local0, DWRN), 100, Local1, Local2)
+		Divide (Multiply (Local0, DWRN), 100, , Local2)
 		Store (Local2, Index (PBIF, 5))
 
 		// Design Capacity of Low
-		Divide (Multiply (Local0, DLOW), 100, Local1, Local2)
+		Divide (Multiply (Local0, DLOW), 100, , Local2)
 		Store (Local2, Index (PBIF, 6))
 
 		// Get battery info from mainboard
@@ -138,11 +138,11 @@ Device (BAT0)
 		Store (Local0, Index (PBIX, 2))
 
 		// Design Capacity of Warning
-		Divide (Multiply (Local0, DWRN), 100, Local1, Local2)
+		Divide (Multiply (Local0, DWRN), 100, , Local2)
 		Store (Local2, Index (PBIX, 6))
 
 		// Design Capacity of Low
-		Divide (Multiply (Local0, DLOW), 100, Local1, Local2)
+		Divide (Multiply (Local0, DLOW), 100, , Local2)
 		Store (Local2, Index (PBIX, 7))
 
 		// Cycle Count

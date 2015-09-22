@@ -66,7 +66,7 @@ Scope (\_SB.PCI0.RP01)
 	Device (WLAN)
 	{
 		Name (_ADR, 0x00000000)
-		Name (_DDR, "Wireless LAN")
+		Name (_DDN, "Wireless LAN")
 		Name (_PRW, Package () { GPE_WLAN_WAKE, 3 })
 	}
 }

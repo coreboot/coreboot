@@ -34,49 +34,40 @@
 
 static inline uint8_t read8(const void *addr)
 {
-	uint8_t val;
-
 	dmb();
-	asm volatile ("ldrb %0, [%1]" : "=r" (val) : "r" (addr) : "memory");
-	return val;
+	return *(volatile uint8_t *)__builtin_assume_aligned(addr, sizeof(uint8_t));
 }
 
 static inline uint16_t read16(const void *addr)
 {
-	uint16_t val;
-
 	dmb();
-	asm volatile ("ldrh %0, [%1]" : "=r" (val) : "r" (addr) : "memory");
-	return val;
+	return *(volatile uint16_t *)__builtin_assume_aligned(addr, sizeof(uint16_t));
 }
 
 static inline uint32_t read32(const void *addr)
 {
-	uint32_t val;
-
 	dmb();
-	asm volatile ("ldr %0, [%1]" : "=r" (val) : "r" (addr) : "memory");
-	return val;
+	return *(volatile uint32_t *)__builtin_assume_aligned(addr, sizeof(uint32_t));
 }
 
 static inline void write8(void *addr, uint8_t val)
 {
 	dmb();
-	asm volatile ("strb %0, [%1]" : : "r" (val), "r" (addr) : "memory");
+	*(volatile uint8_t *)__builtin_assume_aligned(addr, sizeof(uint8_t)) = val;
 	dmb();
 }
 
 static inline void write16(void *addr, uint16_t val)
 {
 	dmb();
-	asm volatile ("strh %0, [%1]" : : "r" (val), "r" (addr) : "memory");
+	*(volatile uint16_t *)__builtin_assume_aligned(addr, sizeof(uint16_t)) = val;
 	dmb();
 }
 
 static inline void write32(void *addr, uint32_t val)
 {
 	dmb();
-	asm volatile ("str %0, [%1]" : : "r" (val), "r" (addr) : "memory");
+	*(volatile uint32_t *)__builtin_assume_aligned(addr, sizeof(uint32_t)) = val;
 	dmb();
 }
 

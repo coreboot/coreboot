@@ -14,3 +14,4 @@
 ##
 
 subdirs-y += i3100
+subdirs-y += i8900

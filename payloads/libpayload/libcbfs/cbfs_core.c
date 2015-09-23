@@ -220,7 +220,8 @@ void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 		struct cbfs_file_attr_compression *comp =
 			(struct cbfs_file_attr_compression *)attr;
 		compression_algo = ntohl(comp->compression);
-		DEBUG("File '%s' is compressed (alg=%d)\n", compression_algo);
+		DEBUG("File '%s' is compressed (alg=%d)\n",
+		      name, compression_algo);
 		*sz = ntohl(comp->decompressed_size);
 	}
 

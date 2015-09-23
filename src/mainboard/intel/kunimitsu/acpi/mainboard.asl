@@ -143,6 +143,44 @@ Scope (\_SB.PCI0.I2C4)
 		Name (_HID, "10508825")
 		Name (_DDN, "NAU88L25 Codec")
 		Name (_UID, 1)
+		Name (_DSD, Package () {
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+			/* Enable jack detection via JKDET pin */
+			Package () { "nuvoton,jkdet-enable", 1 },
+			/*
+			 * JKDET pin is pulled up by R389 on board.
+			 * JKDET pin polarity = active low
+			 */
+			Package () { "nuvoton,jkdet-pull-enable", 1 },
+			Package () { "nuvoton,jkdet-pull-up", 1 },
+			Package () { "nuvoton,jkdet-polarity", 1 },
+			/* VDDA(1.8) * 1.53 = 2.754 */
+			Package () { "nuvoton,micbias-voltage", 6 },
+			/* VREF Impedance = 125 kOhm */
+			Package () { "nuvoton,vref-impedance", 2 },
+			/*
+			 * Setup 4 buttons impedance according to
+			 * Android specification
+			 */
+			Package () { "nuvoton,sar-threshold-num", 4 },
+			Package () { "nuvoton,sar-threshold",
+				Package() { 0x0a, 0x14, 0x26, 0x73 } },
+			/*
+			 * Coeff 0-15 used to adjust threshold level
+			 * 0 for low resist range
+			 */
+			Package () { "nuvoton,sar-hysteresis", 0 },
+			/* SAR tracking gain based on 2.754 micbias-voltage */
+			Package () { "nuvoton,sar-voltage", 6 },
+			/* 100ms short key press debounce */
+			Package () { "nuvoton,short-key-debounce", 3 },
+			/* 2^(7+2) = 512 ms insert/eject debounce */
+			Package () { "nuvoton,jack-insert-debounce", 7 },
+			/* debounce not needed for eject normally */
+			Package () { "nuvoton,jack-eject-debounce", 0 },
+			}
+		})
 
 		Name (_CRS, ResourceTemplate()
 		{
@@ -153,7 +191,7 @@ Scope (\_SB.PCI0.I2C4)
 				AddressingMode7Bit,
 				"\\_SB.PCI0.I2C4",
 			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			Interrupt (ResourceConsumer, Level, ActiveLow)
 			{
 				BOARD_HP_MIC_CODEC_IRQ
 			}

@@ -243,11 +243,20 @@ static int check_bound(const struct vector *image,
 	return within_box(&p, &bound) < 0;
 }
 
+static uint32_t bli(uint32_t q00, uint32_t q10, uint32_t q01, uint32_t q11,
+		    struct fraction *tx, struct fraction *ty)
+{
+	uint32_t r0 = (tx->nume * q10 + (tx->deno - tx->nume) * q00) / tx->deno;
+	uint32_t r1 = (tx->nume * q11 + (tx->deno - tx->nume) * q01) / tx->deno;
+	uint32_t p = (ty->nume * r1 + (ty->deno - ty->nume) * r0) / ty->deno;
+	return p;
+}
+
 static int draw_bitmap_v3(const struct vector *top_left,
 			  const struct scale *scale,
 			  const struct vector *image,
 			  const struct bitmap_header_v3 *header,
-			  const struct bitmap_palette_element_v3 *palette,
+			  const struct bitmap_palette_element_v3 *pal,
 			  const uint8_t *pixel_array)
 {
 	const int bpp = header->bits_per_pixel;
@@ -292,26 +301,50 @@ static int draw_bitmap_v3(const struct vector *top_left,
 		dir = -1;
 	}
 	/*
-	 * Plot pixels scaled by the nearest neighbor interpolation. We scan
+	 * Plot pixels scaled by the bilinear interpolation. We scan
 	 * over the image on canvas (using d) and find the corresponding pixel
 	 * in the bitmap data (using s).
 	 */
-	struct vector s, d;
+	struct vector s0, s1, d;
+	struct fraction tx, ty;
 	for (d.y = 0; d.y < image->height; d.y++, p.y += dir) {
-		s.y = d.y * scale->y.deno / scale->y.nume;
-		const uint8_t *data = pixel_array + s.y * y_stride;
+		s0.y = d.y * scale->y.deno / scale->y.nume;
+		s1.y = s0.y;
+		if (s0.y + 1 < ABS(header->height))
+			s1.y++;
+		ty.deno = scale->y.nume;
+		ty.nume = (d.y * scale->y.deno) % scale->y.nume;
+		const uint8_t *data0 = pixel_array + s0.y * y_stride;
+		const uint8_t *data1 = pixel_array + s1.y * y_stride;
 		p.x = top_left->x;
 		for (d.x = 0; d.x < image->width; d.x++, p.x++) {
-			s.x = d.x * scale->x.deno / scale->x.nume;
-			uint8_t index = data[s.x];
-			if (index >= header->colors_used) {
+			s0.x = d.x * scale->x.deno / scale->x.nume;
+			s1.x = s0.x;
+			if (s1.x + 1 < header->width)
+				s1.x++;
+			tx.deno = scale->x.nume;
+			tx.nume = (d.x * scale->x.deno) % scale->x.nume;
+			uint8_t c00 = data0[s0.x];
+			uint8_t c10 = data0[s1.x];
+			uint8_t c01 = data1[s0.x];
+			uint8_t c11 = data1[s1.x];
+			if (c00 >= header->colors_used
+					|| c10 >= header->colors_used
+					|| c01 >= header->colors_used
+					|| c11 >= header->colors_used) {
 				LOG("Color index exceeds palette boundary\n");
 				return CBGFX_ERROR_BITMAP_DATA;
 			}
 			const struct rgb_color rgb = {
-				.red = palette[index].red,
-				.green = palette[index].green,
-				.blue = palette[index].blue,
+				.red = bli(pal[c00].red, pal[c10].red,
+					   pal[c01].red, pal[c11].red,
+					   &tx, &ty),
+				.green = bli(pal[c00].green, pal[c10].green,
+					     pal[c01].green, pal[c11].green,
+					     &tx, &ty),
+				.blue = bli(pal[c00].blue, pal[c10].blue,
+					    pal[c01].blue, pal[c11].blue,
+					    &tx, &ty),
 			};
 			set_pixel(&p, calculate_color(&rgb));
 		}

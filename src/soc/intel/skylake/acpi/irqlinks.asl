@@ -19,9 +19,19 @@
  * Foundation, Inc.
  */
 
-/* PIRQ routing control is in PCR ITSS region */
+/*
+ * PIRQ routing control is in PCR ITSS region.
+ *
+ * Due to what appears to be an ACPI interpreter bug we do not use
+ * the PCRB() method here as it may not be defined yet because the method
+ * definiton depends on the order of the include files in pch.asl.
+ *
+ * https://bugs.acpica.org/show_bug.cgi?id=1201
+ */
 OperationRegion (ITSS, SystemMemory,
-		 Add (PCRB (PID_ITSS), R_PCH_PCR_ITSS_PIRQA_ROUT), 8)
+		 Add (R_PCH_PCR_ITSS_PIRQA_ROUT,
+		      Add (PCH_PCR_BASE_ADDRESS,
+		           ShiftLeft (PID_ITSS, PCR_PORTID_SHIFT))), 8)
 Field (ITSS, ByteAcc, NoLock, Preserve)
 {
 	PIRA, 8,	/* PIRQA Routing Control */

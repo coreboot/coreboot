@@ -250,8 +250,6 @@ void romstage_common(struct romstage_params *params)
 
 void asmlinkage romstage_after_car(void)
 {
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 	/* Load the ramstage. */
 	copy_and_run();
 	while (1);

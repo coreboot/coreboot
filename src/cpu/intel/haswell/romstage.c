@@ -274,7 +274,6 @@ void romstage_common(const struct romstage_params *params)
 	if (CONFIG_LPC_TPM) {
 		init_tpm(wake_from_s3);
 	}
-	timestamp_add_now(TS_END_ROMSTAGE);
 }
 
 static inline void prepare_for_resume(struct romstage_handoff *handoff)

@@ -310,6 +310,4 @@ void main(unsigned long bist)
 #if CONFIG_LPC_TPM
 	init_tpm(s3resume);
 #endif
-
-	timestamp_add_now(TS_END_ROMSTAGE);
 }

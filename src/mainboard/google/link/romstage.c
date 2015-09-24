@@ -247,6 +247,4 @@ void main(unsigned long bist)
 	if (CONFIG_LPC_TPM) {
 		init_tpm(boot_mode == 2);
 	}
-
-	timestamp_add_now(TS_END_ROMSTAGE);
 }

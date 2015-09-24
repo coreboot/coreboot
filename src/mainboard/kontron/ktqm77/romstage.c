@@ -243,5 +243,4 @@ void main(unsigned long bist)
 	northbridge_romstage_finalize(boot_mode==2);
 
 	post_code(0x3f);
-	timestamp_add_now(TS_END_ROMSTAGE);
 }

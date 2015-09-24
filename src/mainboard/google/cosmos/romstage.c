@@ -53,7 +53,5 @@ void main(void)
 
 	cbmem_initialize_empty();
 
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 	run_ramstage();
 }

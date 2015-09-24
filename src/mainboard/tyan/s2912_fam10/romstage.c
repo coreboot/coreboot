@@ -239,8 +239,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	amdmct_cbmem_store_info(sysinfo);
 
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.
 }

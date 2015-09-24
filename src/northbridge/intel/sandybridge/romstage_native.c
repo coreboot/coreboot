@@ -135,5 +135,4 @@ void main(unsigned long bist)
 #endif
 
 	post_code(0x3f);
-	timestamp_add_now(TS_END_ROMSTAGE);
 }

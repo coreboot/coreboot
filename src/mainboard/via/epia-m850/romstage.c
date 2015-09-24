@@ -96,7 +96,6 @@ void main(unsigned long bist)
 #if CONFIG_EARLY_CBMEM_INIT
 	cbmem_recovery(0);
 #endif
-	timestamp_add_now(TS_END_ROMSTAGE);
 	/* FIXME: See if this is needed or take this out please */
 	/* Disable Memcard and SDIO */
 	pci_mod_config8(LPC, 0x51, 0, (1 << 7) | (1 << 4));

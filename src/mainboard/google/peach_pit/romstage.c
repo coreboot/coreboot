@@ -278,7 +278,5 @@ void main(void)
 
 	simple_spi_test();
 
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 	run_ramstage();
 }

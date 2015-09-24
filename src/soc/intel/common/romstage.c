@@ -207,8 +207,6 @@ asmlinkage void romstage_after_car(void *chipset_context)
 	soc_after_temp_ram_exit();
 	soc_display_mtrrs();
 
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 	/* Load the ramstage. */
 	copy_and_run();
 	die("ERROR - Failed to load ramstage!");

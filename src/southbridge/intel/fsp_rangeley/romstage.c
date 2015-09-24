@@ -130,8 +130,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	*(u32*)cbmem_hob_ptr = (u32)hob_list_ptr;
 	post_code(0x4e);
 
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 	post_code(0x4f);
 
 	/* Load the ramstage. */

@@ -297,6 +297,4 @@ void main(unsigned long bist)
 		quick_ram_check();
 	}
 #endif
-
-	timestamp_add_now(TS_END_ROMSTAGE);
 }

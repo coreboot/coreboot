@@ -96,6 +96,8 @@ void run_ramstage(void)
 	struct prog ramstage =
 		PROG_INIT(ASSET_RAMSTAGE, CONFIG_CBFS_PREFIX "/ramstage");
 
+	timestamp_add_now(TS_END_ROMSTAGE);
+
 	/* Only x86 systems currently take the same firmware path on resume. */
 	if (IS_ENABLED(CONFIG_ARCH_X86) && IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
 		run_ramstage_from_resume(romstage_handoff_find_or_add(),

@@ -267,8 +267,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 	post_code(0x4f);
 
 	/* Load the ramstage. */

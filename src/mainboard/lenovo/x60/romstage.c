@@ -284,7 +284,4 @@ void main(unsigned long bist)
 
 	/* Initialize the internal PCIe links before we go into stage2 */
 	i945_late_initialization(s3resume);
-
-	timestamp_add_now(TS_END_ROMSTAGE);
-
 }

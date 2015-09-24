@@ -22,15 +22,29 @@
 /* This file is included inside a SECTIONS block */
 . = CONFIG_DCACHE_RAM_BASE;
 .car.data . (NOLOAD) : {
+	/* The pre-ram cbmem console as well as the timestamp region are fixed
+	 * in size. Therefore place them at the beginning .car.data section
+	 * so that multiple stages (romstage and verstage) have a consistent
+	 * link address of these shared objects. */
+	PRERAM_CBMEM_CONSOLE(., (CONFIG_LATE_CBMEM_INIT ? 0 : 0xc00))
 	_car_data_start = .;
+	/* The timestamp implementation relies on this storage to be around
+	 * after migration. One of the fields indicates not to use it as the
+	 * backing store once cbmem comes online. Therefore, this data needs
+	 * to reside in the migrated area (between _car_data_start and
+	 * _car_data_end). */
 #if IS_ENABLED(CONFIG_HAS_PRECBMEM_TIMESTAMP_REGION)
 	TIMESTAMP(., 0x100)
 #endif
+	/* _car_global_start and _car_global_end provide symbols to per-stage
+	 * variables that are not shared like the timestamp and the pre-ram
+	 * cbmem console. This is useful for clearing this area on a per-stage
+	 * basis when more than one stage uses cache-as-ram for CAR_GLOBALs. */
+	_car_global_start = .;
 	*(.car.global_data);
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+	_car_global_end = .;
 	_car_data_end = .;
-
-	PRERAM_CBMEM_CONSOLE(., (CONFIG_LATE_CBMEM_INIT ? 0 : 0xc00))
 }
 
 /* Global variables are not allowed in romstage
@@ -48,4 +62,4 @@
 	*(.sbss.*)
 }
 
-_bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) + 0xc00 <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
+_bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");

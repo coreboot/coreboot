@@ -24,16 +24,11 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <memory_info.h>
+#include <fsp/car.h>
 #include <fsp/util.h>
 #include <soc/intel/common/util.h>
 #include <soc/pei_data.h>
 #include <soc/pm.h>		/* chip_power_state */
-
-struct cache_as_ram_params {
-	uint64_t tsc;
-	uint32_t bist;
-	void *chipset_context;
-};
 
 struct romstage_params {
 	unsigned long bist;
@@ -80,7 +75,6 @@ struct romstage_params {
 void mainboard_check_ec_image(struct romstage_params *params);
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params);
-void mainboard_pre_console_init(void);
 void mainboard_romstage_entry(struct romstage_params *params);
 void mainboard_save_dimm_info(struct romstage_params *params);
 void mainboard_add_dimm_info(struct romstage_params *params,
@@ -88,18 +82,14 @@ void mainboard_add_dimm_info(struct romstage_params *params,
 			     int channel, int dimm, int index);
 void raminit(struct romstage_params *params);
 void report_memory_config(void);
-asmlinkage void romstage_after_car(void *chipset_context);
 void romstage_common(struct romstage_params *params);
-asmlinkage void *romstage_main(struct cache_as_ram_params *car_params);
+asmlinkage void *romstage_main(FSP_INFO_HEADER *fih);
 void *setup_stack_and_mtrrs(void);
 void soc_after_ram_init(struct romstage_params *params);
-void soc_after_temp_ram_exit(void);
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	MEMORY_INIT_UPD *new);
 void soc_memory_init_params(struct romstage_params *params,
 			    MEMORY_INIT_UPD *upd);
-void soc_pre_console_init(void);
 void soc_pre_ram_init(struct romstage_params *params);
-void soc_romstage_init(struct romstage_params *params);
 
 #endif /* _COMMON_ROMSTAGE_H_ */

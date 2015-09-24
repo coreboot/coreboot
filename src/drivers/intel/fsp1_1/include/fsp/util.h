@@ -28,13 +28,6 @@
 #include <program_loading.h>
 #include <commonlib/region.h>
 
-/* cache-as-ram context for FSP 1.1. */
-struct fsp_car_context {
-	FSP_INFO_HEADER *fih;
-	uintptr_t bootloader_car_start;
-	uintptr_t bootloader_car_end;
-};
-
 /* find_fsp() should only be called from assembly code. */
 FSP_INFO_HEADER *find_fsp(uintptr_t fsp_base_address);
 /* Set FSP's runtime information. */

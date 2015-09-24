@@ -48,37 +48,22 @@
 #include <tpm.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* Entry from cache-as-ram.inc. */
-asmlinkage void *romstage_main(struct cache_as_ram_params *car_params)
+asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 {
 	void *top_of_stack;
 	struct pei_data pei_data;
-	struct fsp_car_context *fsp_car_context;
 	struct romstage_params params = {
-		.bist = car_params->bist,
 		.pei_data = &pei_data,
-		.chipset_context = car_params->chipset_context,
+		.chipset_context = fih,
 	};
 
-	fsp_car_context = car_params->chipset_context;
 	post_code(0x30);
 
-	/* Save timestamp data */
-	timestamp_init(car_params->tsc);
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	memset(&pei_data, 0, sizeof(pei_data));
 
-	/* Call into pre-console init code. */
-	soc_pre_console_init();
-	mainboard_pre_console_init();
-
-	/* Start console drivers */
-	console_init();
-
 	/* Display parameters */
-	printk(BIOS_SPEW, "bist: 0x%08x\n", car_params->bist);
-	printk(BIOS_SPEW, "tsc: 0x%016llx\n", car_params->tsc);
 	printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",
 		CONFIG_MMCONF_BASE_ADDRESS);
 	printk(BIOS_INFO, "Using: %s\n",
@@ -87,24 +72,10 @@ asmlinkage void *romstage_main(struct cache_as_ram_params *car_params)
 		"No Memory Support"));
 
 	/* Display FSP banner */
-	printk(BIOS_DEBUG, "FSP TempRamInit successful\n");
-	print_fsp_info(fsp_car_context->fih);
-
-	if (fsp_car_context->bootloader_car_start != CONFIG_DCACHE_RAM_BASE ||
-	    fsp_car_context->bootloader_car_end !=
-			(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)) {
-		printk(BIOS_INFO, "CAR mismatch: %08x--%08x vs %08lx--%08lx\n",
-			CONFIG_DCACHE_RAM_BASE,
-			CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE,
-			(long)fsp_car_context->bootloader_car_start,
-			(long)fsp_car_context->bootloader_car_end);
-	}
+	print_fsp_info(fih);
 
 	/* Get power state */
 	params.power_state = fill_power_state();
-
-	/* Perform SOC specific initialization. */
-	soc_romstage_init(&params);
 
 	/*
 	 * Read and print board version.  Done after SOC romstage
@@ -123,6 +94,11 @@ asmlinkage void *romstage_main(struct cache_as_ram_params *car_params)
 	printk(BIOS_DEBUG, "Calling FspTempRamExit API\n");
 	timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_START);
 	return top_of_stack;
+}
+
+void *cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
+{
+	return romstage_main(fih);
 }
 
 /* Entry from the mainboard. */
@@ -204,13 +180,8 @@ void romstage_common(struct romstage_params *params)
 		init_tpm(params->power_state->prev_sleep_state == SLEEP_STATE_S3);
 }
 
-asmlinkage void romstage_after_car(void *chipset_context)
+void after_cache_as_ram_stage(void)
 {
-	timestamp_add_now(TS_FSP_TEMP_RAM_EXIT_END);
-	printk(BIOS_DEBUG, "FspTempRamExit returned successfully\n");
-	soc_after_temp_ram_exit();
-	soc_display_mtrrs();
-
 	/* Load the ramstage. */
 	copy_and_run();
 	die("ERROR - Failed to load ramstage!");
@@ -236,11 +207,6 @@ __attribute__((weak)) void mainboard_check_ec_image(
 		google_chromeec_check_ec_image(EC_IMAGE_RO);
 	}
 #endif
-}
-
-/* Board initialization before the console is enabled */
-__attribute__((weak)) void mainboard_pre_console_init(void)
-{
 }
 
 /* Board initialization before and after RAM is enabled */
@@ -443,29 +409,8 @@ __attribute__((weak)) void soc_after_ram_init(struct romstage_params *params)
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
-/* SOC initialization after temporary RAM is disabled */
-__attribute__((weak)) void soc_after_temp_ram_exit(void)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-
-/* SOC initialization before the console is enabled */
-__attribute__((weak)) void soc_pre_console_init(void)
-{
-}
-
 /* SOC initialization before RAM is enabled */
 __attribute__((weak)) void soc_pre_ram_init(struct romstage_params *params)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-
-/* SOC initialization after console is enabled */
-__attribute__((weak)) void soc_romstage_init(struct romstage_params *params)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	/* Ensure the EC is in the right mode for recovery */
-	google_chromeec_early_init();
-#endif
 }

@@ -18,6 +18,7 @@
 # Foundation, Inc.
 #
 
+romstage-y += car.c
 romstage-y += fsp_util.c
 romstage-y += hob.c
 

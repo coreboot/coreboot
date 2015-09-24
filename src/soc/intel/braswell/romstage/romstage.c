@@ -31,10 +31,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-#include <ec/google/chromeec/ec.h>
-#include <ec/google/chromeec/ec_commands.h>
-#endif
 #include <elog.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
@@ -170,7 +166,7 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 }
 
 /* SOC initialization before the console is enabled */
-void soc_pre_console_init(void)
+void car_soc_pre_console_init(void)
 {
 	/* Early chipset initialization */
 	program_base_addresses();
@@ -178,16 +174,12 @@ void soc_pre_console_init(void)
 }
 
 /* SOC initialization after console is enabled */
-void soc_romstage_init(struct romstage_params *params)
+void car_soc_post_console_init(void)
 {
 	/* Continue chipset initialization */
 	set_max_freq();
 	spi_init();
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
-	/* Ensure the EC is in the right mode for recovery */
-	google_chromeec_early_init();
-#endif
 	lpc_init();
 }
 

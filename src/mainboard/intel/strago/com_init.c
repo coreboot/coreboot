@@ -33,7 +33,7 @@
 
 	/* family number in high byte and inner pad number in lowest byte */
 
-void mainboard_pre_console_init(void)
+void car_mainboard_pre_console_init(void)
 {
 	uint32_t reg;
 	uint32_t *pad_config_reg;

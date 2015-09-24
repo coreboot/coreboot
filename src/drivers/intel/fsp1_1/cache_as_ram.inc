@@ -28,10 +28,6 @@
  * performs the final stage of initialization.
  */
 
-#include <cpu/x86/mtrr.h>
-#include <cpu/x86/cache.h>
-#include <cpu/x86/post_code.h>
-#include <cbmem.h>
 
 #define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
 
@@ -125,12 +121,10 @@ CAR_init_done:
 	 * mm1:  high 32-bits of TSC value
 	 */
 
-	/* Create fsp_car_context on stack. */
+	/* Create cache_as_ram_params on stack */
 	pushl	%edx	/* bootloader CAR end */
 	pushl	%ecx	/* bootloader CAR begin */
 	pushl	%ebp	/* FSP_INFO_HEADER */
-	/* Create cache_as_ram_params on stack */
-	pushl	%esp	/* chipset_context -> fsp_car_context */
 	pushl	%edi	/* bist */
 	movd	%mm1, %eax
 	pushl	%eax	/* tsc[63:32] */
@@ -154,122 +148,10 @@ CAR_init_done:
 before_romstage:
 	post_code(0x23)
 
-	/* Call romstage_main(struct cache_as_ram_params *) */
-	call	romstage_main
+	/* Call cache_as_ram_main(struct cache_as_ram_params *) */
+	call	cache_as_ram_main
 
-	/*
-	 * eax:  New stack address
-	 * ebx:  FSP_INFO_HEADER address
-	 */
-
-	/* Switch to the stack in RAM */
-	movl	%eax, %esp
-
-	/* Calculate TempRamExit entry into FSP */
-	movl	%ebx, %ebp
-	mov	0x40(%ebp), %eax
-	add	0x1c(%ebp), %eax
-
-	/* Build the call frame */
-	pushl	$0
-
-	/* Call TempRamExit */
-	call	*%eax
-	add	$4, %esp
-	cmp	$0, %eax
-	jne	halt3
-
-	/* Display the MTRRs */
-	call	soc_display_mtrrs
-
-	/*
-	 * The stack contents are initialized in src/soc/intel/common/stack.c
-	 * to be the following:
-	 *
-	 *		*
-	 *		*
-	 *		*
-	 *  +36: MTRR mask 1 63:32
-	 *  +32: MTRR mask 1 31:0
-	 *  +28: MTRR base 1 63:32
-	 *  +24: MTRR base 1 31:0
-	 *  +20: MTRR mask 0 63:32
-	 *  +16: MTRR mask 0 31:0
-	 *  +12: MTRR base 0 63:32
-	 *   +8: MTRR base 0 31:0
-	 *   +4: Number of MTRRs to setup (described above)
-	 *   +0: Number of variable MTRRs to clear
-	 */
-
-	/* Clear all of the variable MTRRs. */
-	popl	%ebx
-	movl	$MTRRphysBase_MSR(0), %ecx
-	clr	%eax
-	clr	%edx
-
-1:
-	testl	%ebx, %ebx
-	jz	1f
-	wrmsr			/* Write MTRR base. */
-	inc	%ecx
-	wrmsr			/* Write MTRR mask. */
-	inc	%ecx
-	dec	%ebx
-	jmp	1b
-
-1:
-	/* Get number of MTRRs. */
-	popl	%ebx
-	movl	$MTRRphysBase_MSR(0), %ecx
-2:
-	testl	%ebx, %ebx
-	jz	2f
-
-	/* Low 32 bits of MTRR base. */
-	popl	%eax
-	/* Upper 32 bits of MTRR base. */
-	popl	%edx
-	/* Write MTRR base. */
-	wrmsr
-	inc	%ecx
-	/* Low 32 bits of MTRR mask. */
-	popl	%eax
-	/* Upper 32 bits of MTRR mask. */
-	popl	%edx
-	/* Write MTRR mask. */
-	wrmsr
-	inc	%ecx
-
-	dec	%ebx
-	jmp	2b
-2:
-	post_code(0x39)
-
-	/* And enable cache again after setting MTRRs. */
-	movl	%cr0, %eax
-	andl	$~(CR0_CacheDisable | CR0_NoWriteThrough), %eax
-	movl	%eax, %cr0
-
-	post_code(0x3a)
-
-	/* Enable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
-	rdmsr
-	orl	$MTRRdefTypeEn, %eax
-	wrmsr
-
-	post_code(0x3b)
-
-	/* Invalidate the cache again. */
-	invd
-
-	post_code(0x3c)
-
-__main:
-	post_code(POST_PREPARE_RAMSTAGE)
-	cld			/* Clear direction flag. */
-	call	romstage_after_car
-
+#include "after_raminit.S"
 
 	movb	$0x69, %ah
 	jmp	.Lhlt
@@ -303,17 +185,6 @@ halt2:
 	 */
 	movb	$0xBB, %ah
 	jmp	.Lhlt
-
-halt3:
-	/*
-	 * Failures for post code BC - failed in TempRamExit
-	 *
-	 * 0x00 - FSP_SUCCESS: Temp RAM Exit completed successfully.
-	 * 0x02 - FSP_INVALID_PARAMETER: Input parameters are invalid.
-	 * 0x03 - FSP_UNSUPPORTED: The FSP calling conditions were not met.
-	 * 0x07 - FSP_DEVICE_ERROR: Temp RAM Exit failed.
-	 */
-	movb	$0xBC, %ah
 
 .Lhlt:
 	xchg	%al, %ah

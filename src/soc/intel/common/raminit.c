@@ -57,7 +57,6 @@ void raminit(struct romstage_params *params)
 	unsigned long int data;
 	EFI_PEI_HOB_POINTERS hob_ptr;
 #endif
-	struct fsp_car_context *fsp_car_context;
 
 	/*
 	 * Find and copy the UPD region to the stack so the platform can modify
@@ -69,8 +68,7 @@ void raminit(struct romstage_params *params)
 	 * region in the FSP binary.
 	 */
 	post_code(0x34);
-	fsp_car_context = params->chipset_context;
-	fsp_header = fsp_car_context->fih;
+	fsp_header = params->chipset_context;
 	vpd_ptr = (VPD_DATA_REGION *)(fsp_header->CfgRegionOffset +
 					fsp_header->ImageBase);
 	printk(BIOS_DEBUG, "VPD Data: 0x%p\n", vpd_ptr);

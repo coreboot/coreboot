@@ -24,7 +24,7 @@
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 
-void mainboard_pre_console_init(void)
+void car_mainboard_pre_console_init(void)
 {
 	uint32_t reg;
 	uint32_t *pad_config_reg;

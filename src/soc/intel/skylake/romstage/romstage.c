@@ -46,8 +46,15 @@
 #include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* SOC initialization before the console is enabled */
-void soc_pre_console_init(void)
+/* SOC initialization before RAM is enabled */
+void soc_pre_ram_init(struct romstage_params *params)
+{
+	/* Prepare to initialize memory */
+	soc_fill_pei_data(params->pei_data);
+}
+
+/* SOC initialization before the console is enabled. */
+void car_soc_pre_console_init(void)
 {
 	/* System Agent Early Initialization */
 	systemagent_early_init();
@@ -56,14 +63,7 @@ void soc_pre_console_init(void)
 		pch_uart_init();
 }
 
-/* SOC initialization before RAM is enabled */
-void soc_pre_ram_init(struct romstage_params *params)
-{
-	/* Prepare to initialize memory */
-	soc_fill_pei_data(params->pei_data);
-}
-
-void soc_romstage_init(struct romstage_params *params)
+void car_soc_post_console_init(void)
 {
 	report_platform_info();
 	set_max_freq();

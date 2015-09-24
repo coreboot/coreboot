@@ -32,7 +32,7 @@ Method (PCRB, 1, NotSerialized)
  * Arg0 - PCR Port ID
  * Arg1 - Register Offset
  */
-Method (PCRR, 2, NotSerialized)
+Method (PCRR, 2, Serialized)
 {
 	OperationRegion (PCRD, SystemMemory, Add (PCRB (Arg0), Arg1), 4)
 	Field (PCRD, DWordAcc, NoLock, Preserve)

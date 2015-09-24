@@ -79,7 +79,8 @@ Device (XHCI)
 
 		/* If device is in D3, set back to D0 */
 		If (LEqual (^D0D3, 3)) {
-			Store (Zero, ^D0D3)
+			Store (Zero, Local0)
+			Store (Local0, ^D0D3)
 			Store (^D0D3, Local0)
 		}
 
@@ -122,7 +123,8 @@ Device (XHCI)
 
 		/* If device is in D3, set back to D0 */
 		If (LEqual (^D0D3, 3)) {
-			Store (Zero, ^D0D3)
+			Store (Zero, Local0)
+			Store (Local0, ^D0D3)
 			Store (^D0D3, Local0)
 		}
 
@@ -130,7 +132,8 @@ Device (XHCI)
 		Store (3, ^UPSW)
 
 		/* Now put device in D3 */
-		Store (3, ^D0D3)
+		Store (3, Local0)
+		Store (Local0, ^D0D3)
 		Store (^D0D3, Local0)
 
 		/*

@@ -37,7 +37,7 @@ Device (EMMC)
 
 	Method (_PS0, 0, Serialized)
 	{
-		/* Disable Power Good */
+		/* Disable Power Gate */
 		Store (0, ^PGEN)
 
 		/* Clear bits 31, 6, 2, 0 */
@@ -48,17 +48,19 @@ Device (EMMC)
 		^^PCRO (PID_SCS, 0x600, 0x80000045)
 
 		/* Set Power State to D0 */
-		Store (0, ^D0D3)
+		Store (Zero, Local0)
+		Store (Local0, ^D0D3)
 		Store (^D0D3, Local0)
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		/* Enable Power Good */
+		/* Enable Power Gate */
 		Store (1, ^PGEN)
 
 		/* Set Power State to D0 */
-		Store (3, ^D0D3)
+		Store (3, Local0)
+		Store (Local0, ^D0D3)
 		Store (^D0D3, Local0)
 	}
 
@@ -89,7 +91,7 @@ Device (SDXC)
 
 	Method (_PS0, 0, Serialized)
 	{
-		/* Disable Power Good */
+		/* Disable Power Gate */
 		Store (0, ^PGEN)
 
 		/* Clear bits 8, 7, 2, 0 */
@@ -100,17 +102,19 @@ Device (SDXC)
 		^^PCRO (PID_SCS, 0x600, 0x00000185)
 
 		/* Set Power State to D0 */
-		Store (0, ^D0D3)
+		Store (Zero, Local0)
+		Store (Local0, ^D0D3)
 		Store (^D0D3, Local0)
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		/* Enable Power Good */
+		/* Enable Power Gate */
 		Store (1, ^PGEN)
 
 		/* Set Power State to D0 */
-		Store (3, ^D0D3)
+		Store (3, Local0)
+		Store (Local0, ^D0D3)
 		Store (^D0D3, Local0)
 	}
 

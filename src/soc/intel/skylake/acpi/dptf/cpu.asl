@@ -46,10 +46,11 @@
 #define DPTF_CPU_ACTIVE_AC4     50
 #endif
 
-External (\_PR.CPU0._TSS, MethodObj)
-External (\_PR.CPU0._TPC, MethodObj)
-External (\_PR.CPU0._PTC, PkgObj)
-External (\_PR.CPU0._TSD, PkgObj)
+External (\_PR.CP00._PSS, PkgObj)
+External (\_PR.CP00._TSS, PkgObj)
+External (\_PR.CP00._TPC, MethodObj)
+External (\_PR.CP00._PTC, PkgObj)
+External (\_PR.CP00._TSD, PkgObj)
 External (\_SB.MPDL, IntObj)
 
 Device (B0D4)
@@ -71,8 +72,8 @@ Device (B0D4)
 
 	Method (_TSS)
 	{
-		If (CondRefOf (\_PR.CPU0._TSS)) {
-			Return (\_PR.CPU0._TSS)
+		If (CondRefOf (\_PR.CP00._TSS)) {
+			Return (\_PR.CP00._TSS)
 		} Else {
 			Return (Package ()
 			{
@@ -83,8 +84,8 @@ Device (B0D4)
 
 	Method (_TPC)
 	{
-		If (CondRefOf (\_PR.CPU0._TPC)) {
-			Return (\_PR.CPU0._TPC)
+		If (CondRefOf (\_PR.CP00._TPC)) {
+			Return (\_PR.CP00._TPC)
 		} Else {
 			Return (0)
 		}
@@ -92,8 +93,8 @@ Device (B0D4)
 
 	Method (_PTC)
 	{
-		If (CondRefOf (\_PR.CPU0._PTC)) {
-			Return (\_PR.CPU0._PTC)
+		If (CondRefOf (\_PR.CP00._PTC)) {
+			Return (\_PR.CP00._PTC)
 		} Else {
 			Return (Package ()
 			{
@@ -105,8 +106,8 @@ Device (B0D4)
 
 	Method (_TSD)
 	{
-		If (CondRefOf (\_PR.CPU0._TSD)) {
-			Return (\_PR.CPU0._TSD)
+		If (CondRefOf (\_PR.CP00._TSD)) {
+			Return (\_PR.CP00._TSD)
 		} Else {
 			Return (Package ()
 			{
@@ -117,8 +118,8 @@ Device (B0D4)
 
 	Method (_TDL)
 	{
-		If (CondRefOf (\_PR.CPU0._TSS)) {
-			Store (SizeOf (\_PR.CPU0._TSS ()), Local0)
+		If (CondRefOf (\_PR.CP00._TSS)) {
+			Store (SizeOf (\_PR.CP00._TSS), Local0)
 			Decrement (Local0)
 			Return (Local0)
 		} Else {

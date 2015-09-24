@@ -5,6 +5,7 @@
  */
 
 #include <libpayload.h>
+#include <cbfs.h>
 #include <sysinfo.h>
 #include "bitmap.h"
 
@@ -143,6 +144,20 @@ static int cbgfx_init(void)
 	    canvas.size.width, canvas.size.height, canvas.offset.x);
 
 	return 0;
+}
+
+void *load_bitmap(const char *name, size_t *size)
+{
+	static struct cbfs_media media;
+	static int cbfs_media_initialized = 0;
+	if (!cbfs_media_initialized) {
+		if (init_default_cbfs_media(&media)) {
+			printf("Failed to initialize default media\n");
+			return NULL;
+		}
+	}
+	cbfs_media_initialized = 1;
+	return cbfs_get_file_content(&media, name, CBFS_TYPE_RAW, size);
 }
 
 int draw_box(const struct rect *box, const struct rgb_color *rgb)

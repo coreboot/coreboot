@@ -149,19 +149,36 @@ get_status (usbdev_t *dev, int intf, int rtype, int len, void *data)
 	return dev->controller->control (dev, IN, sizeof (dr), &dr, len, data);
 }
 
+/*
+ * Certain Lexar / Micron USB 2.0 disks will fail the get_descriptor(DT_CFG)
+ * call due to timing issues. Work around this by making extra attempts on
+ * failure.
+ */
+#define GET_DESCRIPTOR_TRIES 3
+
 int
-get_descriptor (usbdev_t *dev, int rtype, int descType, int descIdx,
+get_descriptor(usbdev_t *dev, int rtype, int desc_type, int desc_idx,
 		void *data, size_t len)
 {
 	dev_req_t dr;
+	int fail_tries = 0;
+	int ret = 0;
 
-	dr.bmRequestType = rtype;
-	dr.bRequest = GET_DESCRIPTOR;
-	dr.wValue = descType << 8 | descIdx;
-	dr.wIndex = 0;
-	dr.wLength = len;
+	while (fail_tries++ < GET_DESCRIPTOR_TRIES) {
+		dr.bmRequestType = rtype;
+		dr.bRequest = GET_DESCRIPTOR;
+		dr.wValue = desc_type << 8 | desc_idx;
+		dr.wIndex = 0;
+		dr.wLength = len;
 
-	return dev->controller->control (dev, IN, sizeof (dr), &dr, len, data);
+		ret = dev->controller->control(dev, IN,
+				sizeof(dr), &dr, len, data);
+		if (ret)
+			udelay(10);
+		else
+			return 0;
+	}
+	return ret;
 }
 
 int

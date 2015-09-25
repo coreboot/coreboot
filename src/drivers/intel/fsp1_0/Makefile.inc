@@ -23,8 +23,15 @@ romstage-y += fsp_util.c hob.c
 ramstage-$(CONFIG_ENABLE_MRC_CACHE) += fastboot_cache.c
 romstage-$(CONFIG_ENABLE_MRC_CACHE) += fastboot_cache.c
 
-CPPFLAGS_common += -Isrc/drivers/intel/fsp1_0
+CPPFLAGS_common += -Isrc/drivers/intel/fsp1_0 -I$(objgenerated)
 
+ifneq ($(cpu_microcode-objs),)
+$(objgenerated)/microcode_size.h: $(obj)/cpu_microcode_blob.bin
+	printf "#define MICROCODE_REGION_LENGTH $(call file-size,$<)" > $@.tmp \
+	&& cmp $@.tmp $@ 2>/dev/null || mv $@.tmp $@
+
+cpu_incs-$(CONFIG_PLATFORM_USES_FSP1_0) += $(objgenerated)/microcode_size.h
+endif
 cpu_incs-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += $(src)/drivers/intel/fsp1_0/cache_as_ram.inc
 
 ifeq ($(CONFIG_HAVE_FSP_BIN),y)
@@ -45,3 +52,4 @@ mrc.cache-file := $(obj)/mrc.cache
 mrc.cache-align := 0x10000
 mrc.cache-type := mrc_cache
 endif
+

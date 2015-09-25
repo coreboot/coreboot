@@ -91,6 +91,14 @@ static void mainboard_init(device_t dev)
 	elog_init();
 	elog_add_watchdog_reset();
 	elog_add_boot_reason();
+
+	/* If recovery mode is detected, reduce frequency and voltage to reduce
+	 * heat in case machine is left unattended. chrome-os-partner:41201. */
+	if (recovery_mode_enabled())  {
+		printk(BIOS_DEBUG, "Reducing APLL freq for recovery mode.\n");
+		rkclk_configure_cpu(APLL_600_MHZ);
+		rk808_configure_buck(1, 900);
+	}
 }
 
 static void mainboard_enable(device_t dev)

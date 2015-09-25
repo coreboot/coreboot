@@ -55,8 +55,10 @@
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 #define DEFAULT_RCBABASE	((u8 *)0xfed1c000)
 
-#if CONFIG_SOUTHBRIDGE_INTEL_FSP_BD82X6X
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_FSP_BD82X6X)
 #include <southbridge/intel/fsp_bd82x6x/pch.h>
+#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_FSP_I89XX)
+#include <southbridge/intel/fsp_i89xx/pch.h>
 #endif
 
 /* Everything below this line is ignored in the DSDT */

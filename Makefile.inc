@@ -661,7 +661,7 @@ ifeq ($(CONFIG_CPU_MICROCODE_ADDED_DURING_BUILD),y)
 endif
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
-	@printf "    CONFIG      $(PAYLOAD_CONFIG)\n"
+	@printf "    CONFIG     $(PAYLOAD_CONFIG)\n"
 	if [ -f "$(PAYLOAD_CONFIG)" ]; then \
 		$(CBFSTOOL) $@.tmp add -f  "$(PAYLOAD_CONFIG)" -n payload_config -t raw; \
 	fi

@@ -63,9 +63,7 @@ void bootblock_mainboard_init(void)
 	/* Slowly raise to max CPU voltage to prevent overshoot */
 	rk808_configure_buck(1, 1200);
 	udelay(175);/* Must wait for voltage to stabilize,2mV/us */
-	rk808_configure_buck(1, 1400);
-	udelay(100);/* Must wait for voltage to stabilize,2mV/us */
-	rkclk_configure_cpu(APLL_1392_MHZ);
+	rkclk_configure_cpu(APLL_1416_MHZ);
 
 	/* i2c1 for tpm */
 	write32(&rk3288_grf->iomux_i2c1, IOMUX_I2C1);

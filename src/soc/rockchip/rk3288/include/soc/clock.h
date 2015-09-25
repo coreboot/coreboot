@@ -30,6 +30,7 @@
 
 enum apll_frequencies {
 	APLL_1800_MHZ,
+	APLL_1416_MHZ,
 	APLL_1392_MHZ,
 	APLL_600_MHZ,
 };

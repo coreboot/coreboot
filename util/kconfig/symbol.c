@@ -7,7 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
+#ifndef __MINGW32__
 #include <sys/utsname.h>
+#endif
 
 #include "lkc.h"
 
@@ -45,19 +47,27 @@ static void sym_add_default(struct symbol *sym, const char *def)
 void sym_init(void)
 {
 	struct symbol *sym;
+#ifndef __MINGW32__
 	struct utsname uts;
+#endif
 	static bool inited = false;
 
 	if (inited)
 		return;
 	inited = true;
 
+#ifndef __MINGW32__
 	uname(&uts);
+#endif
 
 	sym = sym_lookup("UNAME_RELEASE", 0);
 	sym->type = S_STRING;
 	sym->flags |= SYMBOL_AUTO;
+#ifndef __MINGW32__
 	sym_add_default(sym, uts.release);
+#else
+	sym_add_default(sym, "mingw-unknown");
+#endif
 }
 
 enum symbol_type sym_get_type(struct symbol *sym)

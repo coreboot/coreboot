@@ -143,9 +143,9 @@ choice
 	depends on CURSES
 
 config TINYCURSES
-	bool "Tinycurses"
+	bool "TinyCurses"
 	help
-	  Tinycurses was the first curses implementation for libpayload.
+	  TinyCurses was the first curses implementation for libpayload.
 	  It features low memory consumption, static allocation of larger
 	  data structures (so few or no memory allocation calls) and a
 	  reduced feature set.

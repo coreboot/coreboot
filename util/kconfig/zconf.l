@@ -339,7 +339,7 @@ void zconf_nextfile(const char *name)
 
 void zconf_nextfiles(const char *wildcard)
 {
-	glob_t g;
+	glob_t g = {0};
 	char **w;
 	int i;
 

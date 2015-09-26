@@ -27,6 +27,10 @@ static int conf_lineno, conf_warnings, conf_unsaved;
 
 const char conf_defname[] = "arch/$ARCH/defconfig";
 
+#ifdef __MINGW32__
+#define mkdir(_n,_p) mkdir((_n))
+#endif
+
 static void conf_warning(const char *fmt, ...)
 {
 	va_list ap;

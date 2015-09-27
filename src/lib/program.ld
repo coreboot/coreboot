@@ -69,7 +69,7 @@
 
 #if ENV_RAMSTAGE && IS_ENABLED(CONFIG_COVERAGE)
 .ctors . : {
-	. = ALIGN(0x100)
+	. = ALIGN(0x100);
 	__CTOR_LIST__ = .;
 	KEEP(*(.ctors));
 	LONG(0);

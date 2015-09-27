@@ -1,0 +1,46 @@
+entries
+
+# <start-bit> <bit-length> <config> <config-id> <parameter-name>
+0             384          r        0           reserved_memory
+384           4            r        0           reboot_bits
+388           1            e        2           last_boot
+# leave 3 bits to make checksummed area start byte-aligned
+392           1            e        2           boot_option
+393           1            e        1           multi_core
+394           3            e        3           baud_rate
+397           4            e        4           debug_level
+# leave 7 bits to make checksummed area end byte-aligned
+408           16           h        0           check_sum
+
+enumerations
+
+#<config-id>  <value>  <label>
+## for multi_core
+1             0        Enable
+1             1        Disable
+## for last_boot, boot_option
+2             0        Fallback
+2             1        Normal
+## for baud_rate
+3             0        115200
+3             1        57600
+3             2        38400
+3             3        19200
+3             4        9600
+3             5        4800
+3             6        2400
+3             7        1200
+## for debug_level
+4             0        Emerg
+4             1        Alert
+4             2        Crit
+4             3        Err
+4             4        Warning
+4             5        Notice
+4             6        Info
+4             7        Debug
+4             8        Spew
+
+checksums
+
+checksum 392 407 408

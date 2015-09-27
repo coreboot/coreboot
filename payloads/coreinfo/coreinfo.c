@@ -301,6 +301,9 @@ int main(void)
 
 	loop();
 
+	/* reboot */
+	outb(0x6, 0xcf9);
+	halt();
 	return 0;
 }
 

@@ -104,6 +104,22 @@ static void vbnv_setup(void)
 	car_set_var(vbnv_initialized, 1);
 }
 
+void set_recovery_mode_into_vbnv(int recovery_reason)
+{
+	uint8_t vbnv_copy[CONFIG_VBNV_SIZE];
+	uint8_t crc_val;
+
+	read_vbnv(vbnv_copy);
+
+	vbnv_copy[RECOVERY_OFFSET] = recovery_reason;
+
+	crc_val = crc8(vbnv_copy, CRC_OFFSET);
+
+	vbnv_copy[CRC_OFFSET] = crc_val;
+
+	save_vbnv(vbnv_copy);
+}
+
 int get_recovery_mode_from_vbnv(void)
 {
 	if (!is_vbnv_initialized())

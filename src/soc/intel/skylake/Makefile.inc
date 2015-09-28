@@ -37,6 +37,7 @@ ramstage-y += cpu_info.c
 ramstage-y += elog.c
 ramstage-y += finalize.c
 ramstage-y += flash_controller.c
+ramstage-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += fsp_reset.c
 ramstage-y += gpio.c
 ramstage-y += igd.c
 ramstage-y += lpc.c

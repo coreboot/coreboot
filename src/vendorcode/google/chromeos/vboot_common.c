@@ -77,6 +77,21 @@ int vboot_enable_recovery(void)
 	return vboot_handoff_flag(VB_INIT_OUT_ENABLE_RECOVERY);
 }
 
+int vboot_recovery_reason(void)
+{
+	struct vboot_handoff *vbho;
+	VbSharedDataHeader *sd;
+
+	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+
+	if (vbho == NULL)
+		return 0;
+
+	sd = (VbSharedDataHeader *)vbho->shared_data;
+
+	return sd->recovery_reason;
+}
+
 void vboot_reboot(void)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))

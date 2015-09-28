@@ -42,6 +42,8 @@ int vboot_skip_display_init(void);
 int vboot_enable_recovery(void);
 int vboot_enable_developer(void);
 
+int vboot_recovery_reason(void);
+
 void vboot_reboot(void);
 
 /* Main logic for verified boot. verstage() is the stage entry point

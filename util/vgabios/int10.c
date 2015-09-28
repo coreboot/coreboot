@@ -1,9 +1,7 @@
 #include <stdio.h>
-#include "test.h"
-#include "pci.h"
+#include <stdtypes.h>
+#include "testbios.h"
 
-void x86emu_dump_xregs(void);
-extern ptr current;
 extern int verbose;
 
 
@@ -16,7 +14,7 @@ extern int verbose;
  * arise.  What are "Not Implemented" throughout are video memory accesses.
  * Also, very little input validity checking is done here.
  */
-int int42_handler()
+int int42_handler(void)
 {
 #if 0
 	if (verbose && X86_AH != 0x0e) {

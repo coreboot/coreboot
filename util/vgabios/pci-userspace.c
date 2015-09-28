@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include <pci/pci.h>
-#include "pci.h"
+#include "pci-userspace.h"
 
 #ifdef PCI_LIB_VERSION
 #define LIBPCI_CHECK_VERSION(major,minor,micro) \

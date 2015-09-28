@@ -1,11 +1,20 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/xf86x86emu.h,v 1.2 2001/01/06 20:19:13 tsi Exp $ */
-/*
+/* Derived from:
  *                   XFree86 int10 module
  *   execute BIOS int 10h calls in x86 real mode environment
  *                 Copyright 1999 Egbert Eich
  */
-#ifndef XF86X86EMU_H_
-#define XF86X86EMU_H_
+
+#ifndef __TESTBIOS_H__
+#define __TESTBIOS_H__
+
+void x86emu_dump_xregs(void);
+int int15_handler(void);
+int int16_handler(void);
+int int1A_handler(void);
+int int42_handler(void);
+int intE6_handler(void);
+
+#include <stdtypes.h>
 #include <x86emu/x86emu.h>
 
 #define M _X86EMU_env

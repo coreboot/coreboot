@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "test.h"
+#include <stdtypes.h>
+#include "testbios.h"
 #include "pci-userspace.h"
 
 #define DEBUG_INT1A
@@ -8,13 +9,11 @@
 #define DEVICE_NOT_FOUND        0x86
 #define BAD_REGISTER_NUMBER     0x87
 
-void x86emu_dump_xregs(void);
 extern int verbose;
 
-
-int int1A_handler()
+int int1A_handler(void)
 {
-	PCITAG tag;
+	PCITAG tag = NULL;
 	pciVideoPtr pvp = NULL;
 
 	if (verbose) {
@@ -40,7 +39,7 @@ int int1A_handler()
 		if (X86_DX == pvp->vendor_id && X86_CX == pvp->device_id && X86_ESI == 0) {
 			X86_EAX = X86_AL | (SUCCESSFUL << 8);
 			X86_EFLAGS &= ~((unsigned long) 0x01);	/* clear carry flag */
-			X86_EBX = pciSlotBX(pvp);
+			X86_EBX = pciSlotBX(tag); // XXX used to be pvp, but both are NULL
 		}
 #ifdef SHOW_ALL_DEVICES
 		else if ((pvp = xf86FindPciDeviceVendor(X86_EDX, X86_ECX, X86_ESI, pvp))) {

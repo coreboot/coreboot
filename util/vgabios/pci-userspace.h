@@ -1,9 +1,13 @@
-#include "pci.h"
+#ifndef __PCI_USERSPACE_H__
+#define __PCI_USERSPACE_H__
+
+#include <pci/pci.h>
 
 typedef unsigned long pciaddr_t;
 typedef u8 byte;
 typedef u16 word;
 
+#if 0
 struct pci_dev {
 	struct pci_dev *next;	/* Next device in the chain */
 	word bus;		/* Higher byte can select host bridges */
@@ -32,7 +36,7 @@ struct pci_filter {
 	int bus, slot, func;	/* -1 = ANY */
 	int vendor, device;
 };
-
+#endif
 
 #define PCITAG struct pci_filter *
 #define pciVideoPtr struct pci_dev *
@@ -44,7 +48,8 @@ int pciExit(void);
 
 
 PCITAG findPci(unsigned short bx);
-u32 pciSlotBX(pciVideoPtr pvp);
+//u32 pciSlotBX(pciVideoPtr pvp);
+u32 pciSlotBX(PCITAG tag);
 
 void pciWriteLong(PCITAG tag, u32 idx, u32 data);
 void pciWriteWord(PCITAG tag, u32 idx, u16 data);
@@ -53,3 +58,5 @@ void pciWriteByte(PCITAG tag, u32 idx, u8 data);
 u32 pciReadLong(PCITAG tag, u32 idx);
 u16 pciReadWord(PCITAG tag, u32 idx);
 u8 pciReadByte(PCITAG tag, u32 idx);
+
+#endif

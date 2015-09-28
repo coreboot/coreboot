@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include "testbios.h"
 
-int intE6_handler()
+int intE6_handler(void)
 {
 #if 0
 	pciVideoPtr pvp;
@@ -14,5 +15,6 @@ int intE6_handler()
 	X86_ES = 0;		/* standard pc es */
 #endif
 	printf("intE6 not supported right now.\n");
+	x86emu_dump_xregs();
 	return 1;
 }

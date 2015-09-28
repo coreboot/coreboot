@@ -6,26 +6,18 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <string.h>
+#include <stdarg.h>
 
+#include <stdtypes.h>
 #define die(x) { perror(x); exit(1); }
 #define warn(x) { perror(x);  }
 
 #include <x86emu/x86emu.h>
+#include <console/console.h>
 #include "helper_exec.h"
-#include "test.h"
+#include "testbios.h"
 #include "pci-userspace.h"
-
-void x86emu_dump_xregs(void);
-int int15_handler(void);
-int int16_handler(void);
-int int1A_handler(void);
-#ifndef _PC
-int int42_handler(void);
-#endif
-int intE6_handler(void);
-
-void pushw(u16 val);
-
+int X86EMU_set_debug(int debug);
 unsigned short get_device(char *arg_val);
 
 extern int teststart, testend;
@@ -39,7 +31,7 @@ int verbose = 0;
 
 /* Interrupt multiplexer */
 
-void do_int(int num)
+static void do_int(int num)
 {
 	int ret = 0;
 
@@ -84,7 +76,7 @@ void do_int(int num)
 	}
 }
 
-unsigned char *mapitin(char *file, off_t where, size_t size)
+static unsigned char *mapitin(char *file, off_t where, size_t size)
 {
 	void *z;
 
@@ -101,21 +93,13 @@ unsigned char *mapitin(char *file, off_t where, size_t size)
 
 }
 
-u8 x_inb(u16 port);
-u16 x_inw(u16 port);
-void x_outb(u16 port, u8 val);
-void x_outw(u16 port, u16 val);
-u32 x_inl(u16 port);
-void x_outl(u16 port, u32 val);
-
-
 X86EMU_pioFuncs myfuncs = {
 	x_inb, x_inw, x_inl,
 	x_outb, x_outw, x_outl
 };
 
 
-void usage(char *name)
+static void usage(char *name)
 {
 	printf
 	    ("Usage: %s [-c codesegment] [-s size] [-b base] [-i ip] [-t] <filename> ... \n",
@@ -129,7 +113,7 @@ int main(int argc, char **argv)
 	int i, c, trace = 0;
 	unsigned char *cp;
 	char *filename;
-	size_t size = 0;
+	ssize_t size = 0;
 	int base = 0;
 	int have_size = 0, have_base = 0, have_ip = 0, have_cs = 0;
 	int have_devfn = 0;
@@ -138,9 +122,6 @@ int main(int argc, char **argv)
 	unsigned char *fsegptr;
 	unsigned short initialip = 0, initialcs = 0, devfn = 0;
 	X86EMU_intrFuncs intFuncs[256];
-	void X86EMU_setMemBase(void *base, size_t size);
-	void x86emu_dump_xregs(void);
-	int X86EMU_set_debug(int debug);
 	int debugflag = 0;
 
 	const char *optstring = "vh?b:i:c:s:tpd:";
@@ -192,7 +173,6 @@ int main(int argc, char **argv)
 			have_size = 1;
 			break;
 		case 'p':
-			printf("Parsing rom images not implemented.\n");
 			parse_rom = 1;
 			break;
 		case 'f':
@@ -249,6 +229,9 @@ int main(int argc, char **argv)
 		    ("No initial instruction pointer specified. defaulting to 0x0003\n");
 		initialip = 0x0003;
 	}
+
+	if (parse_rom)
+		printf("Parsing rom images not implemented.\n");
 
 	//printf("Point 1 int%x vector at %x\n", 0x42, getIntVect(0x42));
 
@@ -314,7 +297,7 @@ int main(int argc, char **argv)
 		for (i = 0; i < 0x10000; i++)
 			wrb(0xf0000 + i, fsegptr[i]);
 	} else {
-		char *date = "01/01/99";
+		const char *date = "01/01/99";
 		for (i = i; date[i]; i++)
 			wrb(0xffff5 + i, date[i]);
 		wrb(0xffff7, '/');
@@ -390,4 +373,17 @@ unsigned short get_device(char *arg_val)
 
 
 	return devfn;
+}
+
+int printk(int msg_level, const char *fmt, ...)
+{
+	va_list args;
+	int i;
+
+	printf ("<%d> ", msg_level);
+	va_start(args, fmt);
+	i = vprintf(fmt, args);
+	va_end(args);
+
+	return i;
 }

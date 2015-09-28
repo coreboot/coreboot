@@ -6,35 +6,57 @@
 # /usr/lib/...
 #
 
-CC       =  gcc
-CFLAGS   = -O2 -g -fomit-frame-pointer
+TOP     ?= ../..
+
+CC      ?=  gcc
+CFLAGS  ?= -O2 -g -fomit-frame-pointer
+
 CFLAGS  += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS  += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS  += -Wstrict-aliasing -Wshadow -Wextra
+CFLAGS  += -Wwrite-strings -Wredundant-decls -Wstrict-aliasing -Wshadow -Wextra
 
-INCLUDES = -Iinclude -I../../src/device/oprom/include/ -I../../src --include include/stdtypes.h
+# TODO check host architecture
+CBCFLAGS  = -DCONFIG_ARCH_X86=1 -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-parameter
 
-INTOBJS  = int10.o int15.o int16.o int1a.o inte6.o
-X86EMUOBJS  = sys.o decode.o ops.o ops2.o prim_ops.o fpu.o debug.o
-OBJS  =  testbios.o helper_exec.o helper_mem.o $(INTOBJS) $(X86EMUOBJS)
+INCLUDES  = -Iinclude -I$(TOP)/src/device/oprom/include/
+CBINCLUDES = -I$(TOP)/src --include include/stdtypes.h
+CBINCLUDES += --include $(TOP)/src/commonlib/include/commonlib/loglevel.h
+CBINCLUDES += -include stdio.h
 
-# user space pci is the only option right now.
-OBJS += pci-userspace.o
+SOURCE  = int10.c int15.c int16.c int1a.c inte6.c testbios.c
+SOURCE += helper_exec.c helper_mem.c pci-userspace.c
+
+X86EMU  = sys.c decode.c ops.c ops2.c prim_ops.c fpu.c debug.c
+X86EMU_DIR = $(TOP)/src/device/oprom/x86emu
+X86EMU_SOURCE = $(addprefix $(X86EMU_DIR)/, $(X86EMU))
+OBJECTS:=$(SOURCE:.c=.o) $(X86EMU:.c=.o)
 
 LIBS=-lpci
 
-all: testbios
+all: dep testbios
 
-testbios: $(OBJS)
+testbios: $(OBJECTS)
+	printf "    LINK  $(notdir $@)\n"
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
-helper_exec.o: helper_exec.c test.h
+dep: $(SOURCE) $(X86EMU_SOURCE) Makefile
+	$(CC) $(CFLAGS) $(INCLUDES) -MM $(SOURCE) > .dependencies
+	$(CC) $(CFLAGS) $(INCLUDES) $(CBCFLAGS) $(CBINCLUDES) -MM $(X86EMU_SOURCE) >> .dependencies
 
 clean:
 	rm -f *.o *~ testbios
 
-%.o: ../../src/device/oprom/x86emu/%.c
-	$(CC) $(CFLAGS) $(INCLUDES) -include stdio.h -c -o $@ $^
+distclean: clean
+	rm -f .dependencies
+
+%.o: $(X86EMU_DIR)/%.c
+	printf "    CC    (x86emu) $(notdir $<)\n"
+	$(CC) $(CFLAGS) $(CBCFLAGS) $(INCLUDES) $(CBINCLUDES) -c -o $@ $<
 
 %.o: %.c
+	printf "    CC    $(notdir $<)\n"
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+.PHONY: all clean distclean
+.SILENT:
+
+-include .dependencies

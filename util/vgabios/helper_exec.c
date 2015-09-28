@@ -14,21 +14,13 @@
  * in xf86EnableIO(). Otherwise we won't trap
  * on PIO.
  */
-#include <x86emu/x86emu.h>
-#include "helper_exec.h"
-#include "test.h"
 #include <sys/io.h>
 #include <sys/time.h>
 #include <stdio.h>
-
-
-int port_rep_inb(u16 port, u32 base, int d_f, u32 count);
-u8 x_inb(u16 port);
-u16 x_inw(u16 port);
-void x_outb(u16 port, u8 val);
-void x_outw(u16 port, u16 val);
-u32 x_inl(u16 port);
-void x_outl(u16 port, u32 val);
+#include <stdtypes.h>
+#include <x86emu/x86emu.h>
+#include "helper_exec.h"
+#include "testbios.h"
 
 /* general software interrupt handler */
 u32 getIntVect(int num)
@@ -58,6 +50,8 @@ int run_bios_int(int num)
 
 	return 1;
 }
+
+#if 0
 
 int port_rep_inb(u16 port, u32 base, int d_f, u32 count)
 {
@@ -125,6 +119,8 @@ int port_rep_outl(u16 port, u32 base, int d_f, u32 count)
 	return dst - base;
 }
 
+#endif
+
 u8 x_inb(u16 port)
 {
 	u8 val;
@@ -175,6 +171,7 @@ void x_outl(u16 port, u32 val)
 	outl(val, port);
 }
 
+#if 0
 u8 Mem_rb(int addr)
 {
 	return (*current->mem->rb) (current, addr);
@@ -204,6 +201,7 @@ void Mem_wl(int addr, u32 val)
 {
 	(*current->mem->wl) (current, addr, val);
 }
+#endif
 
 void getsecs(unsigned long *sec, unsigned long *usec)
 {

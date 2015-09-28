@@ -24,6 +24,7 @@
 #include <console/streams.h>
 #include <console/uart.h>
 #include <console/usb.h>
+#include <console/spi.h>
 #include <rules.h>
 
 void console_hw_init(void)
@@ -35,6 +36,7 @@ void console_hw_init(void)
 	__uart_init();
 	__ne2k_init();
 	__usbdebug_init();
+	__spiconsole_init();
 }
 
 void console_tx_byte(unsigned char byte)
@@ -54,6 +56,7 @@ void console_tx_byte(unsigned char byte)
 	__uart_tx_byte(byte);
 	__ne2k_tx_byte(byte);
 	__usb_tx_byte(byte);
+	__spiconsole_tx_byte(byte);
 }
 
 void console_tx_flush(void)

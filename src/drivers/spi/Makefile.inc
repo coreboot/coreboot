@@ -1,5 +1,10 @@
 # SPI flash driver interface
 
+ifeq ($(CONFIG_SPI_CONSOLE),y)
+ramstage-y += spiconsole.c
+smm-$(CONFIG_DEBUG_SMI) += spiconsole.c
+endif
+
 ifeq ($(CONFIG_COMMON_CBFS_SPI_WRAPPER),y)
 bootblock-y += spi_flash.c
 bootblock-$(CONFIG_SPI_FLASH_EON) += eon.c

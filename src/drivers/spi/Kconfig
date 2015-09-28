@@ -137,3 +137,7 @@ config SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B
 	  to the chip on MOSI and data is received on both MOSI and MISO.
 
 endif # SPI_FLASH
+
+config HAVE_SPI_CONSOLE_SUPPORT
+	def_bool n
+

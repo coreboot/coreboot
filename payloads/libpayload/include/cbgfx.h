@@ -16,10 +16,10 @@
 #define CBGFX_ERROR_UNKNOWN		1
 /* failed to initialize cbgfx library */
 #define CBGFX_ERROR_INIT		2
-/* drawing beyond screen boundary */
-#define CBGFX_ERROR_SCREEN_BOUNDARY	3
-/* drawing beyond canvas boundary */
-#define CBGFX_ERROR_CANVAS_BOUNDARY	4
+/* drawing beyond screen or canvas boundary */
+#define CBGFX_ERROR_BOUNDARY		3
+/* invalid parameter */
+#define CBGFX_ERROR_INVALID_PARAMETER	4
 /* bitmap error: signature mismatch */
 #define CBGFX_ERROR_BITMAP_SIGNATURE	0x10
 /* bitmap error: unsupported format */
@@ -73,7 +73,7 @@ struct rgb_color {
  * y values increasing towards bottom of screen.
  */
 
-/*
+/**
  * Load a bitmap file from cbfs
  *
  * Memory is allocated automatically and it's caller's responsibility to free it
@@ -85,7 +85,7 @@ struct rgb_color {
  */
 void *load_bitmap(const char *name, size_t *size);
 
-/*
+/**
  * draw a box filled with a color on screen
  *
  * box: .offset points the coordinate of the top left corner and .size specifies
@@ -97,29 +97,55 @@ void *load_bitmap(const char *name, size_t *size);
  */
 int draw_box(const struct rect *box, const struct rgb_color *rgb);
 
-/*
+/**
  * Clear the canvas
  */
-int clear_canvas(struct rgb_color *rgb);
+int clear_canvas(const struct rgb_color *rgb);
 
-/*
+/**
  * Clear the screen
  */
-int clear_screen(struct rgb_color *rgb);
+int clear_screen(const struct rgb_color *rgb);
 
-/*
- * Draw a bitmap image on screen.
+/**
+ * Draw a bitmap image using position and size relative to the canvas
  *
- * top_left_rel: coordinate of the top left corner of the image relative to the
- * canvas (0 - CANVAS_SCALE). If scale_rel is zero, this is treated as absolute
- * coordinate.
- * scale_rel: scale factor relative to the canvas width (0 - CANVAS_SCALE). If
- * this is zero, scaling is turned off and the image is rendered with the
- * original size.
- * bitmap: pointer to the bitmap data, starting from the file header.
- * size: size of the bitmap data
+ * @param[in] bitmap	Pointer to the bitmap data, starting from file header
+ * @param[in] size	Size of the bitmap data
+ * @param[in] pos_rel	Coordinate of the pivot relative to the canvas
+ * @param[in] pivot	Pivot position. Use PIVOT_H_* and PIVOT_V_* flags.
+ * @param[in] dim_rel	Width and height of the image relative to the canvas
+ *                      width and height. They must not exceed 1 (=100%). If one
+ *                      is zero, it's derived from the other to keep the aspect
+ *                      ratio.
  *
- * return: CBGFX_* error codes
+ * @return CBGFX_* error codes
+ *
+ * 'Pivot' is a point of the image based on which the image is positioned.
+ * For example, if a pivot is set to PIVOT_H_CENTER|PIVOT_V_CENTER, the image is
+ * positioned so that pos_rel matches the center of the image.
  */
-int draw_bitmap(const struct vector *top_left_rel,
-		size_t scale_rel, const void *bitmap, size_t size);
+int draw_bitmap(const void *bitmap, size_t size,
+		const struct scale *pos_rel, uint8_t pivot,
+		const struct scale *dim_rel);
+
+/* Pivot flags. See the draw_bitmap description. */
+#define PIVOT_H_LEFT	(1 << 0)
+#define PIVOT_H_CENTER	(1 << 1)
+#define PIVOT_H_RIGHT	(1 << 2)
+#define PIVOT_V_TOP	(1 << 3)
+#define PIVOT_V_CENTER	(1 << 4)
+#define PIVOT_V_BOTTOM	(1 << 5)
+
+/**
+ * Draw a bitmap image at screen coordinate with no scaling
+ *
+ * @param[in] bitmap	Pointer to the bitmap data, starting from file header
+ * @param[in] size	Size of the bitmap data
+ * @param[in] pos       Screen coordinate of upper left corner of the image.
+ *
+ * @return CBGFX_* error codes
+ */
+int draw_bitmap_direct(const void *bitmap, size_t size,
+		       const struct vector *pos);
+

@@ -1,0 +1,25 @@
+coreboot is changing all the time and the patches are reabsed when pushed to
+community, so it is a little difficult to provide stable Bettong code.
+From now on, AMD provides source code which is validated by QA team.
+The code is pushed to github https://github.com/BTDC/coreboot
+The version is identified by a tag. All the changes will be pushed to coreboot
+community.
+
+=====
+Version: TCMEF1F0        Release Date: 09/29/2015
+
+Changes from last version:
+1. Fix external graphics issue.
+2. Add board ID support.
+3. Support DDR4.
+4. Support SD 2.0.
+5. Fix Windows 7 S4 issue.
+6. Add GPIO, I2C and UART support.
+7. Fix the interrupt routine.
+8. Restruct PCI interrupt table (C00/C01).
+9. Fix DSDT issue.
+10. Fix the PCIe lane map.
+11. Lower the TOM to give more MMIO space.
+12. Add USB device.
+13. Set the USB3 port as unremoveable.
+14. Update AGESA to CarrizoPI 1.1.0.1.

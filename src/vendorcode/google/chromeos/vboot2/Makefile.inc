@@ -31,8 +31,9 @@ romstage-y += ../vboot_common.c
 ramstage-y += ../vboot_common.c
 
 bootblock-y += common.c
-libverstage-y += verstage.c
+libverstage-y += vboot_logic.c
 verstage-y += common.c
+verstage-y += verstage.c
 ifeq (${CONFIG_VBOOT2_MOCK_SECDATA},y)
 libverstage-y += secdata_mock.c
 else

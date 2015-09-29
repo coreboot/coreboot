@@ -23,7 +23,6 @@
 #include "../vboot_common.h"
 
 void vboot_fill_handoff(void);
-void verstage_main(void);
 void *vboot_load_stage(int stage_index,
 		       struct region *fw_main,
 		       struct vboot_components *fw_info);

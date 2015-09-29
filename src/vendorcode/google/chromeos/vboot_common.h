@@ -48,4 +48,10 @@ int vboot_enable_developer(void);
 
 void vboot_reboot(void);
 
+/* Main logic for verified boot. verstage() is the stage entry point
+ * while the verstage_main() is just the core logic. */
+void verstage_main(void);
+void verstage_mainboard_init(void);
+void verstage(void);
+
 #endif /* VBOOT_COMMON_H */

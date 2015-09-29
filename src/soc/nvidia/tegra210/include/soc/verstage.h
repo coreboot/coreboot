@@ -20,6 +20,6 @@
 #ifndef __SOC_NVIDIA_TEGRA210_SOC_VERSTAGE_H__
 #define __SOC_NVIDIA_TEGRA210_SOC_VERSTAGE_H__
 
-void verstage_mainboard_init(void);
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #endif /* __SOC_NVIDIA_TEGRA210_SOC_VERSTAGE_H__ */

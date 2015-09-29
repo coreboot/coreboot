@@ -19,6 +19,7 @@ ifeq ($(CONFIG_AZALIA_PLUGIN_SUPPORT),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 endif
 
+verstage-y += device_romstage.c
 romstage-y += device_romstage.c
 romstage-$(CONFIG_PCI) += pci_early.c
 

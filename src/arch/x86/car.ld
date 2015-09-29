@@ -22,6 +22,11 @@
 /* This file is included inside a SECTIONS block */
 . = CONFIG_DCACHE_RAM_BASE;
 .car.data . (NOLOAD) : {
+	/* Vboot work buffer is completely volatile outside of verstage and
+	 * romstage. Appropriate code needs to handle the transition. */
+#if IS_ENABLED(CONFIG_SEPARATE_VERSTAGE)
+	VBOOT2_WORK(., 16K)
+#endif
 	/* The pre-ram cbmem console as well as the timestamp region are fixed
 	 * in size. Therefore place them at the beginning .car.data section
 	 * so that multiple stages (romstage and verstage) have a consistent

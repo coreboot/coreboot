@@ -145,6 +145,9 @@ $(1)-y += memlayout.ld
 $(1)-y += assembly_entry.S
 $$(obj)/arch/x86/assembly_entry.$(1).o: $(objgenerated)/assembly.inc
 
+# The '.' include path is needed for the generated assembly.inc file.
+$(1)-S-ccopts += -I.
+
 $$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
 	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
 	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $$(obj)/arch/x86/memlayout.$(1).ld --oformat $(2)
@@ -155,6 +158,35 @@ $$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
 		$$(NM_$(1)) $$(objcbfs)/$(1)_null.offenders; false; \
 		else true; fi
 endef
+
+###############################################################################
+# verstage
+###############################################################################
+
+ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
+
+verstage-y += boot.c
+
+verstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
+verstage-y += memset.c
+verstage-y += memcpy.c
+verstage-y += memmove.c
+verstage-y += mmap_boot.c
+
+verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+
+verstage-libs += $(objgenerated)/libverstage.a
+
+ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32),y)
+$(eval $(call early_x86_stage,verstage,elf32-i386))
+else
+$(eval $(call early_x86_stage,verstage,elf64-x86-64))
+endif
+
+# Verstage on x86 expected to be xip.
+CBFSTOOL_VERSTAGE_OPTS  = -a 64 --xip -S ".car.data"
+
+endif # CONFIG_ARCH_VERSTAGE_X86_32 / CONFIG_ARCH_VERSTAGE_X86_64
 
 ###############################################################################
 # romstage
@@ -211,7 +243,7 @@ $(eval $(call early_x86_stage,romstage,elf64-x86-64))
 endif
 
 # Compiling crt0 with -g seems to trigger https://sourceware.org/bugzilla/show_bug.cgi?id=6428
-romstage-S-ccopts += -I. -g0
+romstage-S-ccopts += -g0
 
 endif # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 

@@ -10,6 +10,7 @@ verstage-y += init.c
 verstage-y += printk.c
 verstage-y += vtxprintf.c
 verstage-y += console.c
+verstage-y += post.c
 verstage-y += die.c
 
 romstage-y += vtxprintf.c printk.c

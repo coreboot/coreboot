@@ -11,12 +11,14 @@ smm-$(CONFIG_DEBUG_SMI) += util.c
 # be located in the soc/ or cpu/ directories instead of here.
 
 ifeq ($(CONFIG_DRIVERS_UART_8250IO),y)
+verstage-y += uart8250io.c
 romstage-y += uart8250io.c
 ramstage-y += uart8250io.c
 smm-$(CONFIG_DEBUG_SMI) += uart8250io.c
 endif
 
 ifeq ($(CONFIG_DRIVERS_UART_8250MEM),y)
+verstage-y += uart8250mem.c
 romstage-y += uart8250mem.c
 ramstage-y += uart8250mem.c
 smm-$(CONFIG_DEBUG_SMI) += uart8250mem.c

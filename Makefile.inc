@@ -377,6 +377,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 
 ramstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 romstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
+verstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
 $(obj)/%.ramstage.o $(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

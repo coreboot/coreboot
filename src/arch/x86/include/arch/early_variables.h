@@ -21,6 +21,7 @@
 #define ARCH_EARLY_VARIABLES_H
 
 #include <stdlib.h>
+#include <rules.h>
 
 #if defined(__PRE_RAM__) && IS_ENABLED(CONFIG_CACHE_AS_RAM)
 asm(".section .car.global_data,\"w\",@nobits");
@@ -31,11 +32,27 @@ asm(".previous");
 #define CAR_GLOBAL __attribute__((used,section(".car.global_data#")))
 #endif /* __clang__ */
 
+/*
+ * On x86 verstage, all CAR_GLOBAL variables are accessed unconditionally
+ * because cbmem is never initialized until romstage when dram comes up.
+ */
+#if ENV_VERSTAGE
+static inline void *car_get_var_ptr(void *var)
+{
+	return var;
+}
+
+static inline void *car_sync_var_ptr(void *var)
+{
+	return var;
+}
+#else
 /* Get the correct pointer for the CAR global variable. */
 void *car_get_var_ptr(void *var);
 
 /* Get and update a CAR_GLOBAL pointing elsewhere in car.global_data*/
 void *car_sync_var_ptr(void *var);
+#endif /* ENV_VERSTAGE */
 
 /* Get and set a primitive type global variable. */
 #define car_get_var(var) \

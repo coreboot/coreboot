@@ -22,8 +22,8 @@
 
 #include <rules.h>
 
-#if ENV_ROMSTAGE
-/* No .data or .bss in romstage. Cache as ram is handled separately. */
+#if ENV_ROMSTAGE || ENV_VERSTAGE
+/* No .data or .bss sections. Cache as ram is handled separately. */
 #define ARCH_STAGE_HAS_DATA_SECTION 0
 #define ARCH_STAGE_HAS_BSS_SECTION 0
 #endif

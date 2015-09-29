@@ -16,3 +16,8 @@ verstage-y += cbfs.c
 romstage-y += cbfs.c
 ramstage-y += cbfs.c
 smm-y += cbfs.c
+
+bootblock-y += lz4_wrapper.c
+verstage-y += lz4_wrapper.c
+romstage-y += lz4_wrapper.c
+ramstage-y += lz4_wrapper.c

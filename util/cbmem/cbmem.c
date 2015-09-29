@@ -500,6 +500,8 @@ static const struct timestamp_id_to_name {
 	{ TS_END_COPYROM,	"finished loading romstage" },
 	{ TS_START_ULZMA,	"starting LZMA decompress (ignore for x86)" },
 	{ TS_END_ULZMA,		"finished LZMA decompress (ignore for x86)" },
+	{ TS_START_ULZ4F,	"starting LZ4 decompress (ignore for x86)" },
+	{ TS_END_ULZ4F,		"finished LZ4 decompress (ignore for x86)" },
 	{ TS_DEVICE_ENUMERATE,	"device enumeration" },
 	{ TS_DEVICE_CONFIGURE,	"device configuration" },
 	{ TS_DEVICE_ENABLE,	"device enable" },

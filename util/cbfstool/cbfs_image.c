@@ -54,7 +54,8 @@
 static const struct typedesc_t types_cbfs_compression[] = {
 	{CBFS_COMPRESS_NONE, "none"},
 	{CBFS_COMPRESS_LZMA, "LZMA"},
-	{0, NULL}
+	{CBFS_COMPRESS_LZ4, "LZ4"},
+	{0, NULL},
 };
 
 static const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t type,

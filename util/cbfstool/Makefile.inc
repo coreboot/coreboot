@@ -2,19 +2,21 @@ cbfsobj :=
 cbfsobj += cbfstool.o
 cbfsobj += common.o
 cbfsobj += compress.o
-cbfsobj += cbfs.o
 cbfsobj += cbfs_hash.o
 cbfsobj += cbfs_image.o
 cbfsobj += cbfs-mkstage.o
 cbfsobj += cbfs-mkpayload.o
 cbfsobj += elfheaders.o
-cbfsobj += mem_pool.o
-cbfsobj += region.o
 cbfsobj += rmodule.o
 cbfsobj += xdr.o
 cbfsobj += fit.o
 cbfsobj += partitioned_file.o
+# COMMONLIB
+cbfsobj += cbfs.o
 cbfsobj += fsp1_1_relocate.o
+cbfsobj += lz4_wrapper.o
+cbfsobj += mem_pool.o
+cbfsobj += region.o
 # LZMA
 cbfsobj += lzma.o
 cbfsobj += LzFind.o
@@ -25,6 +27,11 @@ cbfsobj += 2sha_utility.o
 cbfsobj += 2sha1.o
 cbfsobj += 2sha256.o
 cbfsobj += 2sha512.o
+# LZ4
+cbfsobj += lz4.o
+cbfsobj += lz4hc.o
+cbfsobj += lz4frame.o
+cbfsobj += xxhash.o
 # FMAP
 cbfsobj += fmap.o
 cbfsobj += kv_pair.o
@@ -110,6 +117,10 @@ $(objutil)/cbfstool/%.o: $(top)/src/commonlib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
+$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lz4/lib/%.c
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+
 $(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
@@ -137,6 +148,8 @@ $(objutil)/cbfstool/2sha1.o: TOOLCFLAGS += -Wno-cast-qual
 $(objutil)/cbfstool/region.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 $(objutil)/cbfstool/cbfs.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 $(objutil)/cbfstool/mem_pool.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
+# Tolerate lz4 warnings
+$(objutil)/cbfstool/lz4.o: TOOLCFLAGS += -Wno-missing-prototypes
 
 $(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_parser.h
 $(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_scanner.h

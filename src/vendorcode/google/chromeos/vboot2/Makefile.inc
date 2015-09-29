@@ -72,6 +72,7 @@ ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
 cbfs-files-$(CONFIG_SEPARATE_VERSTAGE) += $(CONFIG_CBFS_PREFIX)/verstage
 $(CONFIG_CBFS_PREFIX)/verstage-file := $(objcbfs)/verstage.elf
 $(CONFIG_CBFS_PREFIX)/verstage-type := stage
+$(CONFIG_CBFS_PREFIX)/verstage-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 # Verstage on x86 expected to be xip.
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 $(CONFIG_CBFS_PREFIX)/verstage-options := -a 64 --xip -S ".car.data"

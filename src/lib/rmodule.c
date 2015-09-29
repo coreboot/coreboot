@@ -259,8 +259,6 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 	struct cbfs_stage stage;
 	void *rmod_loc;
 	struct region_device *fh;
-	const int use_lzma = ENV_RAMSTAGE
-		|| (ENV_ROMSTAGE && IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE));
 
 	if (rsl->prog == NULL || prog_name(rsl->prog) == NULL)
 		return -1;
@@ -284,24 +282,8 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 	printk(BIOS_INFO, "Decompressing stage %s @ 0x%p (%d bytes)\n",
 	       prog_name(rsl->prog), rmod_loc, stage.memlen);
 
-	if (stage.compression == CBFS_COMPRESS_NONE) {
-		if (rdev_readat(fh, rmod_loc, sizeof(stage), stage.len) !=
-		    stage.len)
-			return -1;
-	} else if (use_lzma && (stage.compression == CBFS_COMPRESS_LZMA)) {
-		size_t fsize;
-		void *map = rdev_mmap(fh, sizeof(stage), stage.len);
-
-		if (map == NULL)
-			return -1;
-
-		fsize = ulzman(map, stage.len, rmod_loc, stage.memlen);
-
-		rdev_munmap(fh, map);
-
-		if (!fsize)
-			return -1;
-	} else
+	if (!cbfs_load_and_decompress(fh, sizeof(stage), stage.len, rmod_loc,
+				      stage.memlen, stage.compression))
 		return -1;
 
 	if (rmodule_parse(rmod_loc, &rmod_stage))

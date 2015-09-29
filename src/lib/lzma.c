@@ -29,8 +29,6 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 	MAYBE_STATIC unsigned char scratchpad[15980];
 	const unsigned char *cp;
 
-	/* Note: these timestamps aren't useful for memory-mapped media (x86) */
-	timestamp_add_now(TS_START_ULZMA);
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
 	/* The outSize in LZMA stream is a 64bit integer stored in little-endian
 	 * (ref: lzma.cc@LZMACompress: put_64). To prevent accessing by
@@ -55,7 +53,6 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 		printk(BIOS_WARNING, "lzma: Decoding error = %d\n", res);
 		return 0;
 	}
-	timestamp_add_now(TS_END_ULZMA);
 	return outProcessed;
 }
 

@@ -19,9 +19,11 @@
 #include <stdlib.h>
 #include <boot_device.h>
 #include <cbfs.h>
+#include <commonlib/compression.h>
 #include <endian.h>
 #include <lib.h>
 #include <symbols.h>
+#include <timestamp.h>
 
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
@@ -68,13 +70,57 @@ void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size)
 	return rdev_mmap(&fh.data, 0, fsize);
 }
 
-static size_t inflate(void *src, void *dst)
+size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
+	size_t in_size, void *buffer, size_t buffer_size, uint32_t compression)
 {
-	if (ENV_BOOTBLOCK || ENV_VERSTAGE)
+	size_t out_size;
+
+	switch (compression) {
+	case CBFS_COMPRESS_NONE:
+		if (rdev_readat(rdev, buffer, offset, in_size) != in_size)
+			return 0;
+		return in_size;
+
+	case CBFS_COMPRESS_LZ4:
+		if ((ENV_BOOTBLOCK || ENV_VERSTAGE) &&
+		    !IS_ENABLED(CONFIG_COMPRESS_PRERAM_STAGES))
+			return 0;
+
+		/* Load the compressed image to the end of the available memory
+		 * area for in-place decompression. It is the responsibility of
+		 * the caller to ensure that buffer_size is large enough
+		 * (see compression.h, guaranteed by cbfstool for stages). */
+		void *compr_start = buffer + buffer_size - in_size;
+		if (rdev_readat(rdev, compr_start, offset, in_size) != in_size)
+			return 0;
+
+		timestamp_add_now(TS_START_ULZ4F);
+		out_size = ulz4fn(compr_start, in_size, buffer, buffer_size);
+		timestamp_add_now(TS_END_ULZ4F);
+		return out_size;
+
+	case CBFS_COMPRESS_LZMA:
+		if (ENV_BOOTBLOCK || ENV_VERSTAGE)
+			return 0;
+		if (ENV_ROMSTAGE && !IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE))
+			return 0;
+
+		void *map = rdev_mmap(rdev, offset, in_size);
+		if (map == NULL)
+			return 0;
+
+		/* Note: timestamp not useful for memory-mapped media (x86) */
+		timestamp_add_now(TS_START_ULZMA);
+		out_size = ulzman(map, in_size, buffer, buffer_size);
+		timestamp_add_now(TS_END_ULZMA);
+
+		rdev_munmap(rdev, map);
+
+		return out_size;
+
+	default:
 		return 0;
-	if (ENV_ROMSTAGE && !IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE))
-		return 0;
-	return ulzma(src, dst);
+	}
 }
 
 static inline int tohex4(unsigned int c)
@@ -152,22 +198,9 @@ int cbfs_prog_stage_load(struct prog *pstage)
 			goto out;
 	}
 
-	if (stage.compression == CBFS_COMPRESS_NONE) {
-		if (rdev_readat(fh, load, foffset, fsize) != fsize)
-			return -1;
-	} else if (stage.compression == CBFS_COMPRESS_LZMA) {
-		void *map = rdev_mmap(fh, foffset, fsize);
-
-		if (map == NULL)
-			return -1;
-
-		fsize = inflate(map, load);
-
-		rdev_munmap(fh, map);
-
-		if (!fsize)
-			return -1;
-	} else
+	fsize = cbfs_load_and_decompress(fh, foffset, fsize, load,
+					 stage.memlen, stage.compression);
+	if (!fsize)
 		return -1;
 
 	/* Clear area not covered by file. */

@@ -308,6 +308,11 @@ ifeq ($(CONFIG_COMPRESSED_PAYLOAD_LZMA),y)
 CBFS_PAYLOAD_COMPRESS_FLAG:=LZMA
 endif
 
+CBFS_PRERAM_COMPRESS_FLAG:=none
+ifeq ($(CONFIG_COMPRESS_PRERAM_STAGES),y)
+CBFS_PRERAM_COMPRESS_FLAG:=LZ4
+endif
+
 ifneq ($(CONFIG_LOCALVERSION),"")
 export COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
 endif
@@ -773,7 +778,7 @@ endif
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/romstage
 $(CONFIG_CBFS_PREFIX)/romstage-file := $(objcbfs)/romstage.elf
 $(CONFIG_CBFS_PREFIX)/romstage-type := stage
-$(CONFIG_CBFS_PREFIX)/romstage-compression := none
+$(CONFIG_CBFS_PREFIX)/romstage-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options := -b 0
 endif

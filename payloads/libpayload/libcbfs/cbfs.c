@@ -35,11 +35,16 @@
 #  include <lzma.h>
 #  define CBFS_CORE_WITH_LZMA
 # endif
+# if IS_ENABLED(CONFIG_LP_LZ4)
+#  include <lz4.h>
+#  define CBFS_CORE_WITH_LZ4
+# endif
 # define CBFS_MINI_BUILD
 #elif defined(__SMM__)
 # define CBFS_MINI_BUILD
 #else
 # define CBFS_CORE_WITH_LZMA
+# define CBFS_CORE_WITH_LZ4
 # include <lib.h>
 #endif
 

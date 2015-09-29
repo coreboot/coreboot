@@ -29,32 +29,40 @@
  * SUCH DAMAGE.
  */
 
-#include <endian.h>
-#include <libpayload.h>
-#include <lz4.h>
+#include <commonlib/compression.h>
+#include <commonlib/endian.h>
+#include <commonlib/helpers.h>
+#include <stdint.h>
+#include <string.h>
 
 /* LZ4 comes with its own supposedly portable memory access functions, but they
- * seem to be very inefficient in practice (at least on ARM64). Since libpayload
+ * seem to be very inefficient in practice (at least on ARM64). Since coreboot
  * knows about endinaness and allows some basic assumptions (such as unaligned
  * access support), we can easily write the ones we need ourselves. */
 static uint16_t LZ4_readLE16(const void *src)
 {
-	return le16toh(*(uint16_t *)src);
+	return read_le16(src);
 }
 static void LZ4_copy8(void *dst, const void *src)
 {
 /* ARM32 needs to be a special snowflake to prevent GCC from coalescing the
  * access into LDRD/STRD (which don't support unaligned accesses). */
-#ifdef __arm__
-	uint32_t x0, x1;
-	asm volatile (
-		"ldr %[x0], [%[src]]\n\t"
-		"ldr %[x1], [%[src], #4]\n\t"
-		"str %[x0], [%[dst]]\n\t"
-		"str %[x1], [%[dst], #4]\n\t"
-		: [x0]"=r"(x0), [x1]"=r"(x1)
-		: [src]"r"(src), [dst]"r"(dst)
-		: "memory" );
+#ifdef __arm__	/* ARMv < 6 doesn't support unaligned accesses at all. */
+	#if defined(__COREBOOT_ARM_ARCH__) && __COREBOOT_ARM_ARCH__ < 6
+		int i;
+		for (i = 0; i < 8; i++)
+			((uint8_t *)dst)[i] = ((uint8_t *)src)[i];
+	#else
+		uint32_t x0, x1;
+		asm volatile (
+			"ldr %[x0], [%[src]]\n\t"
+			"ldr %[x1], [%[src], #4]\n\t"
+			"str %[x0], [%[dst]]\n\t"
+			"str %[x1], [%[dst], #4]\n\t"
+			: [x0]"=r"(x0), [x1]"=r"(x1)
+			: [src]"r"(src), [dst]"r"(dst)
+			: "memory" );
+	#endif
 #else
 	*(uint64_t *)dst = *(const uint64_t *)src;
 #endif
@@ -126,7 +134,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 			return 0;	/* input overrun */
 
 		/* We assume there's always only a single, standard frame. */
-		if (le32toh(h->magic) != LZ4F_MAGICNUMBER || h->version != 1)
+		if (read_le32(&h->magic) != LZ4F_MAGICNUMBER || h->version != 1)
 			return 0;	/* unknown format */
 		if (h->reserved0 || h->reserved1 || h->reserved2)
 			return 0;	/* reserved must be zero */
@@ -141,7 +149,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 	}
 
 	while (1) {
-		struct lz4_block_header b = { .raw = le32toh(*(uint32_t *)in) };
+		struct lz4_block_header b = { .raw = read_le32(in) };
 		in += sizeof(struct lz4_block_header);
 
 		if ((size_t)(in - src) + b.size > srcn)

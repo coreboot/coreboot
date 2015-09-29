@@ -165,7 +165,11 @@ typedef int (*comp_func_ptr) (char *in, int in_len, char *out, int *out_len);
 typedef int (*decomp_func_ptr) (char *in, int in_len, char *out, int out_len,
 				size_t *actual_size);
 
-enum comp_algo { CBFS_COMPRESS_NONE = 0, CBFS_COMPRESS_LZMA = 1 };
+enum comp_algo {
+	CBFS_COMPRESS_NONE = 0,
+	CBFS_COMPRESS_LZMA = 1,
+	CBFS_COMPRESS_LZ4 = 2,
+};
 
 comp_func_ptr compression_function(enum comp_algo algo);
 decomp_func_ptr decompression_function(enum comp_algo algo);

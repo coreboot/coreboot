@@ -26,6 +26,8 @@
 #include "cbfs.h"
 #include "rmodule.h"
 
+#include <commonlib/compression.h>
+
 /* Checks if program segment contains the ignored section */
 static int is_phdr_ignored(Elf64_Phdr *phdr, Elf64_Shdr *shdr)
 {
@@ -267,8 +269,44 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 		     "- disabled.\n");
 		memcpy(output->data + sizeof(struct cbfs_stage),
 		       buffer, data_end - data_start);
+		outlen = data_end - data_start;
 		algo = CBFS_COMPRESS_NONE;
 	}
+
+	/* Check for enough BSS scratch space to decompress LZ4 in-place. */
+	if (algo == CBFS_COMPRESS_LZ4) {
+		size_t result;
+		size_t memlen = mem_end - data_start;
+		size_t compressed_size = outlen;
+		char *compare_buffer = malloc(memlen);
+		char *start = compare_buffer + memlen - compressed_size;
+
+		if (compare_buffer == NULL) {
+			ERROR("Can't allocate memory!\n");
+			free(buffer);
+			goto err;
+		}
+
+		memcpy(start, output->data + sizeof(struct cbfs_stage),
+		       compressed_size);
+		result = ulz4fn(start, compressed_size, compare_buffer, memlen);
+
+		if (result == 0) {
+			ERROR("Not enough scratch space to decompress LZ4 in-place -- increase BSS size or disable compression!\n");
+			free(compare_buffer);
+			free(buffer);
+			goto err;
+		}
+		if (result != data_end - data_start ||
+		    memcmp(compare_buffer, buffer, data_end - data_start)) {
+			ERROR("LZ4 compression BUG! Report to mailing list.\n");
+			free(compare_buffer);
+			free(buffer);
+			goto err;
+		}
+		free(compare_buffer);
+	}
+
 	free(buffer);
 
 	/* Set up for output marshaling. */

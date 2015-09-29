@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/compression.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <endian.h>
@@ -25,6 +26,7 @@
 #include <lib.h>
 #include <bootmem.h>
 #include <program_loading.h>
+#include <timestamp.h>
 
 static const unsigned long lb_start = (unsigned long)&_program;
 static const unsigned long lb_end = (unsigned long)&_eprogram;
@@ -386,7 +388,18 @@ static int load_self_segments(
 			switch(ptr->compression) {
 				case CBFS_COMPRESS_LZMA: {
 					printk(BIOS_DEBUG, "using LZMA\n");
+					timestamp_add_now(TS_START_ULZMA);
 					len = ulzman(src, len, dest, memsz);
+					timestamp_add_now(TS_END_ULZMA);
+					if (!len) /* Decompression Error. */
+						return 0;
+					break;
+				}
+				case CBFS_COMPRESS_LZ4: {
+					printk(BIOS_DEBUG, "using LZ4\n");
+					timestamp_add_now(TS_START_ULZ4F);
+					len = ulz4fn(src, len, dest, memsz);
+					timestamp_add_now(TS_END_ULZ4F);
 					if (!len) /* Decompression Error. */
 						return 0;
 					break;

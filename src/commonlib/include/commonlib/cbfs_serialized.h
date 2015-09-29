@@ -56,6 +56,7 @@
 
 #define CBFS_COMPRESS_NONE  0
 #define CBFS_COMPRESS_LZMA  1
+#define CBFS_COMPRESS_LZ4   2
 
 /** These are standard component types for well known
     components (i.e - those that coreboot needs to consume.

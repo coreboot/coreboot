@@ -34,6 +34,9 @@
  * CBFS_CORE_WITH_LZMA (must be #define)
  *      if defined, ulzma() must exist for decompression of data streams
  *
+ * CBFS_CORE_WITH_LZ4 (must be #define)
+ *      if defined, ulz4f() must exist for decompression of data streams
+ *
  * ERROR(x...)
  *      print an error message x (in printf format)
  *
@@ -329,6 +332,10 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 #ifdef CBFS_CORE_WITH_LZMA
 		case CBFS_COMPRESS_LZMA:
 			return ulzma(src, dst);
+#endif
+#ifdef CBFS_CORE_WITH_LZ4
+		case CBFS_COMPRESS_LZ4:
+			return ulz4f(src, dst);
 #endif
 		default:
 			ERROR("tried to decompress %d bytes with algorithm #%x,"

@@ -156,6 +156,17 @@ config COMPRESS_RAMSTAGE
 	  that decompression might slow down booting if the boot flash
 	  is connected through a slow link (i.e. SPI).
 
+config COMPRESS_PRERAM_STAGES
+	bool "Compress romstage and verstage with LZ4"
+	default y if !ARCH_X86
+	default n
+	help
+	  Compress romstage and (if it exists) verstage with LZ4 to save flash
+	  space and speed up boot, since the time for reading the image from SPI
+	  (and in the vboot case verifying it) is usually much greater than the
+	  time spent decompressing. Doesn't work for XIP stages (assume all
+	  ARCH_X86 for now) for obvious reasons.
+
 config INCLUDE_CONFIG_FILE
 	bool "Include the coreboot .config file into the ROM image"
 	default y

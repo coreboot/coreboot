@@ -18,6 +18,7 @@
 
 # regex list of files and directories to exclude from the search
 HEADER_EXCLUDED="\
+^src/lib/gnat/|\
 ^src/vendorcode/|\
 ^util/kconfig/|\
 \<COPYING\>|\

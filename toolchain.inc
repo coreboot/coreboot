@@ -105,6 +105,11 @@ set_stage_toolchain= \
 		echo CONFIG_ARCH_$(call map_stage,$(1))_$(arch) | \
 		tr '[:lower:]' '[:upper:]')) := $(arch)))
 
+# standard-archs: Tell which architectures are used by the standard stages.
+standard-archs = $(sort $(foreach stagearch, \
+			  $(patsubst %,ARCH-%-y,$(COREBOOT_STANDARD_STAGES)), \
+			  $($(stagearch))))
+
 # create_class_compiler: Used to create compiler tool set for
 # special classes
 # @1: special class
@@ -123,7 +128,7 @@ OBJDUMP_$(1) := $(OBJDUMP_$(2))
 STRIP_$(1) := $(STRIP_$(2))
 READELF_$(1) := $(READELF_$(2))
 CFLAGS_$(1) = $$(CFLAGS_common) $$(CFLAGS_$(2))
-ADAFLAGS_$(1) = $$(ADAFLAGS_common) $$(ADAFLAGS_$(2))
+ADAFLAGS_$(1) = --RTS=$$(obj)/libgnat-$(2)/ $$(ADAFLAGS_common) $$(ADAFLAGS_$(2))
 CPPFLAGS_$(1) = $$(CPPFLAGS_common) $$(CPPFLAGS_$(2)) -D__ARCH_$(2)__
 COMPILER_RT_$(1) := $$(COMPILER_RT_$(2))
 COMPILER_RT_FLAGS_$(1) := $$(COMPILER_RT_FLAGS_$(2))

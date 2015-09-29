@@ -17,11 +17,26 @@
  * Foundation, Inc.
  */
 
+#include <arch/early_variables.h>
+#include <assets.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <fsp/car.h>
+#include <fsp/util.h>
 #include <soc/intel/common/util.h>
 #include <timestamp.h>
+
+FSP_INFO_HEADER *fih_car CAR_GLOBAL;
+
+/* Save FSP_INFO_HEADER for TempRamExit() call in assembly. */
+static inline void set_fih_car(FSP_INFO_HEADER *fih)
+{
+	/* This variable is written in the raw form because it's only
+	 * ever accessed in code that that has the cache-as-ram enabled. The
+	 * assembly routine which tears down cache-as-ram utilizes this
+	 * variable for determining where to find FSP. */
+	fih_car = fih;
+}
 
 asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 {
@@ -52,11 +67,36 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 	car_mainboard_post_console_init();
 
 	/* Ensure the EC is in the right mode for recovery */
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC) &&
+	    !IS_ENABLED(CONFIG_SEPARATE_VERSTAGE))
 		google_chromeec_early_init();
+
+	set_fih_car(car_params->fih);
 
 	/* Return new stack value in ram back to assembly stub. */
 	return cache_as_ram_stage_main(car_params->fih);
+}
+
+/* Entry point taken when romstage is called after a separate verstage. */
+asmlinkage void *romstage_after_verstage(void)
+{
+	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
+	 * is still enabled. We can directly access work buffer here. */
+	FSP_INFO_HEADER *fih;
+	struct asset fsp = ASSET_INIT(ASSET_REFCODE, "fsp.bin");
+
+	console_init();
+
+	if (asset_locate(&fsp)) {
+		fih = NULL;
+		printk(BIOS_ERR, "Unable to locate %s\n", asset_name(&fsp));
+	} else
+		fih = find_fsp((uintptr_t)asset_mmap(&fsp));
+
+	set_fih_car(fih);
+
+	/* Return new stack value in ram back to assembly stub. */
+	return cache_as_ram_stage_main(fih);
 }
 
 asmlinkage void after_cache_as_ram(void *chipset_context)

@@ -24,19 +24,19 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
+.extern fih_car
 /*
  * This is the common entry point after DRAM has been initialized.
  */
 	/*
 	 * eax:  New stack address
-	 * ebx:  FSP_INFO_HEADER address
 	 */
 
 	/* Switch to the stack in RAM */
 	movl	%eax, %esp
 
 	/* Calculate TempRamExit entry into FSP */
-	movl	%ebx, %ebp
+	movl	fih_car, %ebp
 	mov	0x40(%ebp), %eax
 	add	0x1c(%ebp), %eax
 

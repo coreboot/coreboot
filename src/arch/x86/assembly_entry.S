@@ -29,9 +29,9 @@
 #endif
 
 /*
- * The romstage.inc is generated based on the requirements of the mainboard.
+ * The assembly.inc is generated based on the requirements of the mainboard.
  * For example, for ROMCC boards the MAINBOARDDIR/romstage.c would be
  * processed by ROMCC and added. In non-ROMCC boards the chipsets'
  * cache-as-ram setup files would be here.
  */
-#include <generated/romstage.inc>
+#include <generated/assembly.inc>

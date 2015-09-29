@@ -115,27 +115,44 @@ endif
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ###############################################################################
-# romstage
+# common support for early assembly includes
 ###############################################################################
-
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
-
-romstage-y += memlayout.ld
 
 # Chipset specific assembly stubs in the romstage program flow. Certain
 # boards have more than one assembly stub so collect those and put them
 # into a single generated file.
 crt0s = $(cpu_incs-y)
 
-$(objgenerated)/romstage.inc: $$(crt0s)
+$(objgenerated)/assembly.inc: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(crt0s),#include "$(crt0)"\n)' > $@
 
+define early_x86_stage
+# $1 stage name
+# $2 oformat
+$(1)-y += memlayout.ld
 # Add the assembly file that pulls in the rest of the dependencies in
-# the right order. Make sure the auto generated romstage.inc is a proper
+# the right order. Make sure the auto generated assembly.inc is a proper
 # dependency.
-romstage-y += romstage.S
-$(obj)/arch/x86/romstage.romstage.o: $(objgenerated)/romstage.inc
+$(1)-y += assembly_entry.S
+$$(obj)/arch/x86/assembly_entry.$(1).o: $(objgenerated)/assembly.inc
+
+$$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
+	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
+	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $$(obj)/arch/x86/memlayout.$(1).ld --oformat $(2)
+	LANG=C LC_ALL= $$(OBJCOPY_$(1)) --only-section .illegal_globals $$(@) $$(objcbfs)/$(1)_null.offenders 2>&1 | \
+	grep -v "Empty loadable segment detected" && \
+	$$(NM_$(1)) $$(objcbfs)/$(1)_null.offenders | grep -q ""; if [ $$$$? -eq 0 ]; then \
+		echo "Forbidden global variables in "$(1)":"; \
+		$$(NM_$(1)) $$(objcbfs)/$(1)_null.offenders; false; \
+		else true; fi
+endef
+
+###############################################################################
+# romstage
+###############################################################################
+
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
 ifneq ($(CONFIG_ROMCC),y)
 
@@ -180,20 +197,10 @@ endif
 romstage-libs ?=
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
-romstage-oformat=elf32-i386
+$(eval $(call early_x86_stage,romstage,elf32-i386))
 else
-romstage-oformat=elf64-x86-64
+$(eval $(call early_x86_stage,romstage,elf64-x86-64))
 endif
-
-$(objcbfs)/romstage.debug: $$(romstage-objs) $$(romstage-libs)
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_romstage) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) $(romstage-libs) --no-whole-archive $(COMPILER_RT_romstage) --end-group -T $(obj)/arch/x86/memlayout.romstage.ld --oformat $(romstage-oformat)
-	LANG=C LC_ALL= $(OBJCOPY_romstage) --only-section .illegal_globals $(@) $(objcbfs)/romstage_null.offenders 2>&1 | \
-	grep -v "Empty loadable segment detected" && \
-	if [ -n "`$(NM_romstage) $(objcbfs)/romstage_null.offenders 2>/dev/null`" ]; then \
-		echo "Forbidden global variables in romstage:"; \
-		$(NM_romstage) $(objcbfs)/romstage_null.offenders; false; \
-		else true; fi
 
 # Compiling crt0 with -g seems to trigger https://sourceware.org/bugzilla/show_bug.cgi?id=6428
 romstage-S-ccopts += -I. -g0

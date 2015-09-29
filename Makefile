@@ -325,6 +325,7 @@ $$(obj)/$(1)/b__$(1).adb: $$$$(filter-out $$(obj)/$(1)/b__$(1).ali,$$$$($(1)-ali
 	# path components) so just cd there.
 	cd $$(dir $$@) && \
 		$$(GNATBIND_$(1)) -a -n \
+			--RTS=$$(absobj)/libgnat-$$(ARCH-$(1)-y)/ \
 			-L$(1)_ada -o $$(notdir $$@) \
 			$$(subst $$(dir $$@),,$$^)
 $$(obj)/$(1)/b__$(1).o: $$(obj)/$(1)/b__$(1).adb
@@ -334,7 +335,7 @@ $(1)-objs += $$(obj)/$(1)/b__$(1).o
 $($(1)-alis): %.ali: %.o
 endef
 
-$(eval $(foreach class,$(classes), \
+$(eval $(foreach class,$(filter-out libgnat-%,$(classes)), \
 	$(if $($(class)-alis),$(call gnatbind_template,$(class)))))
 
 DEPENDENCIES += $(addsuffix .d,$(basename $(allobjs)))

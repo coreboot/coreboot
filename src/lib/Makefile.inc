@@ -13,6 +13,7 @@
 # GNU General Public License for more details.
 #
 subdirs-y += loaders
+subdirs-y += gnat
 
 
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)

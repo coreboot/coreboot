@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008-2009 coresystems GmbH
+ * Copyright (C) 2014 Vladimir Serbinenko
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -22,35 +22,56 @@
 #include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
+#include "northbridge/intel/sandybridge/sandybridge.h" /* For DEFAULT_RCBABASE.  */
 #include "pch.h"
 
-#define PCH_EHCI1_TEMP_BAR0 0xe8000000
-#define PCH_EHCI2_TEMP_BAR0 0xe8000400
-
-/*
- * Setup USB controller MMIO BAR to prevent the
- * reference code from resetting the controller.
- *
- * The BAR will be re-assigned during device
- * enumeration so these are only temporary.
- */
-void enable_usb_bar(void)
+void
+early_usb_init (const struct southbridge_usb_port *portmap)
 {
-	device_t usb0 = PCH_EHCI1_DEV;
-	device_t usb1 = PCH_EHCI2_DEV;
-	u32 cmd;
+	u32 reg32;
+	const u32 rcba_dump[8] = {
+		/* 3560 */ 0x024c8001, 0x000024a3, 0x00040002, 0x01000050,
+		/* 3570 */ 0x02000772, 0x16000f9f, 0x1800ff4f, 0x0001d630,
+	};
+	const u32 currents[] = { 0x20000153, 0x20000f57, 0x2000055b, 0x20000f51, 0x2000094a, 0x2000035f };
+	int i;
+	/* Activate PMBAR.  */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE + 4, 0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
 
-	/* USB Controller 1 */
-	pci_write_config32(usb0, PCI_BASE_ADDRESS_0,
-			   PCH_EHCI1_TEMP_BAR0);
-	cmd = pci_read_config32(usb0, PCI_COMMAND);
-	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config32(usb0, PCI_COMMAND, cmd);
+	/* Unlock registers.  */
+	outw (inw (DEFAULT_PMBASE | 0x003c) | 2, DEFAULT_PMBASE | 0x003c);
+	for (i = 0; i < 14; i++)
+		write32 (DEFAULT_RCBABASE + (0x3500 + 4 * i),
+			 currents[portmap[i].current]);
+	for (i = 0; i < 10; i++)
+		write32 (DEFAULT_RCBABASE + (0x3538 + 4 * i), 0);
 
-	/* USB Controller 2 */
-	pci_write_config32(usb1, PCI_BASE_ADDRESS_0,
-			   PCH_EHCI2_TEMP_BAR0);
-	cmd = pci_read_config32(usb1, PCI_COMMAND);
-	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config32(usb1, PCI_COMMAND, cmd);
+	for (i = 0; i < 8; i++)
+		write32 (DEFAULT_RCBABASE + (0x3560 + 4 * i), rcba_dump[i]);
+	for (i = 0; i < 8; i++)
+		write32 (DEFAULT_RCBABASE + (0x3580 + 4 * i), 0);
+	reg32 = 0;
+	for (i = 0; i < 14; i++)
+		if (!portmap[i].enabled)
+			reg32 |= (1 << i);
+	write32 (DEFAULT_RCBABASE + USBPDO, reg32);
+	reg32 = 0;
+	for (i = 0; i < 8; i++)
+		if (portmap[i].enabled && portmap[i].oc_pin >= 0)
+			reg32 |= (1 << (i + 8 * portmap[i].oc_pin));
+	write32 (DEFAULT_RCBABASE + USBOCM1, reg32);
+	reg32 = 0;
+	for (i = 8; i < 14; i++)
+		if (portmap[i].enabled && portmap[i].oc_pin >= 4)
+			reg32 |= (1 << (i - 8 + 8 * (portmap[i].oc_pin - 4)));
+	write32 (DEFAULT_RCBABASE + USBOCM2, reg32);
+	for (i = 0; i < 22; i++)
+		write32 (DEFAULT_RCBABASE + (0x35a8 + 4 * i), 0);
+
+	pcie_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
+
+	/* Relock registers.  */
+	outw (0x0000, DEFAULT_PMBASE | 0x003c);
 }

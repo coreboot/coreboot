@@ -17,7 +17,7 @@
 # Foundation, Inc.
 #
 
-ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE)$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE),y)
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_MRC)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_MRC),y)
 
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
@@ -29,14 +29,14 @@ ramstage-y += acpi.c
 ramstage-y += mrccache.c
 
 romstage-y += ram_calc.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_MRC) += raminit_mrc.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_MRC) += raminit_mrc.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += raminit.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += romstage.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += ../../../device/dram/ddr3.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += raminit.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += raminit_native.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += romstage_native.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += ../../../device/dram/ddr3.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) += raminit_native.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) += romstage_native.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_NATIVE) += ../../../device/dram/ddr3.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += romstage.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += ../../../device/dram/ddr3.c
 romstage-y += mrccache.c
 romstage-y += early_init.c
 romstage-y += report_platform.c

@@ -124,7 +124,7 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	KconfigBool["VGA"] = true
 	KconfigBool["INTEL_EDID"] = true
 	KconfigBool["CPU_INTEL_SOCKET_RPGA989"] = true
-	KconfigBool["NORTHBRIDGE_INTEL_"+i.variant+"BRIDGE_NATIVE"] = true
+	KconfigBool["NORTHBRIDGE_INTEL_"+i.variant+"BRIDGE"] = true
 	KconfigBool["INTEL_INT15"] = true
 	KconfigBool["HAVE_ACPI_TABLES"] = true
 	KconfigBool["HAVE_ACPI_RESUME"] = true

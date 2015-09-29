@@ -69,4 +69,7 @@
 
 #define BCRD2_PMIC_I2C_BUS		0x01
 
+#define DPTF_CPU_PASSIVE	88
+#define DPTF_CPU_CRITICAL	90
+
 #endif

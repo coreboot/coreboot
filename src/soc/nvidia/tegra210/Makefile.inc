@@ -23,7 +23,6 @@ ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
-verstage-y += verstage.c
 verstage-y += dma.c
 verstage-y += monotonic_timer.c
 verstage-y += spi.c

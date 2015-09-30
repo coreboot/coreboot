@@ -65,6 +65,8 @@ void soc_pre_ram_init(struct romstage_params *params)
 
 void soc_romstage_init(struct romstage_params *params)
 {
+	report_platform_info();
+	set_max_freq();
 	pch_early_init();
 }
 

@@ -88,12 +88,10 @@ void mainboard_add_dimm_info(struct romstage_params *params,
 			     int channel, int dimm, int index);
 void raminit(struct romstage_params *params);
 void report_memory_config(void);
-void report_platform_info(void);
 asmlinkage void romstage_after_car(void *chipset_context);
 void romstage_common(struct romstage_params *params);
 asmlinkage void *romstage_main(struct cache_as_ram_params *car_params);
 void *setup_stack_and_mtrrs(void);
-void set_max_freq(void);
 void soc_after_ram_init(struct romstage_params *params);
 void soc_after_temp_ram_exit(void);
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

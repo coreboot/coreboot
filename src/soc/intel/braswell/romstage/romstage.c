@@ -181,6 +181,7 @@ void soc_pre_console_init(void)
 void soc_romstage_init(struct romstage_params *params)
 {
 	/* Continue chipset initialization */
+	set_max_freq();
 	spi_init();
 
 #if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)

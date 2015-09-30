@@ -103,12 +103,6 @@ asmlinkage void *romstage_main(struct cache_as_ram_params *car_params)
 	/* Get power state */
 	params.power_state = fill_power_state();
 
-	/* Print useful platform information */
-	report_platform_info();
-
-	/* Set CPU frequency to maximum */
-	set_max_freq();
-
 	/* Perform SOC specific initialization. */
 	soc_romstage_init(&params);
 
@@ -435,24 +429,12 @@ __attribute__((weak)) void report_memory_config(void)
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
-/* Display the platform configuration */
-__attribute__((weak)) void report_platform_info(void)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-
 /* Choose top of stack and setup MTRRs */
 __attribute__((weak)) void *setup_stack_and_mtrrs(void)
 {
 	printk(BIOS_ERR, "WEAK: %s/%s called\n", __FILE__, __func__);
 	die("ERROR - Must specify top of stack!\n");
 	return NULL;
-}
-
-/* Speed up the CPU to the maximum frequency */
-__attribute__((weak)) void set_max_freq(void)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
 /* SOC initialization after RAM is enabled */

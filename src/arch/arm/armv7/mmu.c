@@ -97,13 +97,17 @@ typedef uint64_t pte_t;
 typedef uint32_t pte_t;
 #endif	/* CONFIG_ARM_LPAE */
 
+/* We set the first PTE to a sentinel value that cannot occur naturally (has
+ * attributes set but bits [1:0] are 0 -> unmapped) to mark unused subtables. */
+#define ATTR_UNUSED	0xBADbA6E0
+#define SUBTABLE_PTES	(1 << (BLOCK_SHIFT - PAGE_SHIFT))
+
 /*
  * mask/shift/size for pages and blocks
  */
 #define PAGE_SHIFT	12
 #define PAGE_SIZE	(1UL << PAGE_SHIFT)
 #define BLOCK_SIZE	(1UL << BLOCK_SHIFT)
-#define SUBTABLE_SIZE	((1 << (BLOCK_SHIFT - PAGE_SHIFT)) * sizeof(pte_t))
 
 /*
  * MAIR Index
@@ -113,7 +117,6 @@ typedef uint32_t pte_t;
 #define MAIR_INDX_WB	2
 
 static pte_t *const ttb_buff = (void *)_ttb;
-static int used_tables = 0;
 
 /* Not all boards want to use subtables and declare them in memlayout.ld. This
  * outputs two 0x00000000 symbols if they don't, making _ttb_subtables_size 0.
@@ -156,12 +159,17 @@ static void mmu_fill_table(pte_t *table, u32 start_idx, u32 end_idx,
 
 static pte_t *mmu_create_subtable(pte_t *pgd_entry)
 {
-	if (used_tables >= _ttb_subtables_size / SUBTABLE_SIZE)
-		die("Not enough room for another sub-pagetable!");
+	pte_t *table = (pte_t *)_ttb_subtables;
+
+	/* Find unused subtable (first PTE == ATTR_UNUSED). */
+	while (table[0] != ATTR_UNUSED) {
+		table += SUBTABLE_PTES;
+		if ((pte_t *)_ettb_subtables - table <= 0)
+			die("Not enough room for another sub-pagetable!");
+	}
 
 	/* We assume that *pgd_entry must already be a valid block mapping. */
 	uintptr_t start_addr = (uintptr_t)(*pgd_entry & BLOCK_MASK);
-	pte_t *table = (void *)(_ttb_subtables + used_tables++ * SUBTABLE_SIZE);
 	printk(BIOS_DEBUG, "Creating new subtable @%p for [%#.8x:%#.8lx)\n",
 	       table, start_addr, start_addr + BLOCK_SIZE);
 
@@ -172,8 +180,7 @@ static pte_t *mmu_create_subtable(pte_t *pgd_entry)
 		attr = ((attr & ~(1 << 4)) | (1 << 0));
 	if (attr & ATTR_BLOCK)
 		attr = (attr & ~ATTR_BLOCK) | ATTR_PAGE;
-	mmu_fill_table(table, 0, SUBTABLE_SIZE / sizeof(pte_t),
-		       start_addr, PAGE_SHIFT, attr);
+	mmu_fill_table(table, 0, SUBTABLE_PTES, start_addr, PAGE_SHIFT, attr);
 
 	/* Replace old entry in upper level table to point at subtable. */
 	*pgd_entry = (pte_t)(uintptr_t)table | ATTR_NEXTLEVEL;
@@ -265,6 +272,11 @@ void mmu_config_range(u32 start_mb, u32 size_mb, enum dcache_policy policy)
  */
 void mmu_init(void)
 {
+	/* Initially mark all subtables as unused (first PTE == ATTR_UNUSED). */
+	pte_t *table = (pte_t *)_ttb_subtables;
+	for (; (pte_t *)_ettb_subtables - table > 0; table += SUBTABLE_PTES)
+		table[0] = ATTR_UNUSED;
+
         if (CONFIG_ARM_LPAE) {
                 pte_t *const pgd_buff = (pte_t*)(_ttb + 16*KiB);
                 pte_t *pmd = ttb_buff;

@@ -384,7 +384,8 @@ void tlb_invalidate_all(void);
  * Generalized setup/init functions
  */
 
-/* mmu initialization (set page table address, set permissions, etc) */
+/* MMU initialization (set page table base, permissions, initialize subtable
+ * buffer, etc.). Must only be called ONCE PER BOOT, before any mappings. */
 void mmu_init(void);
 
 enum dcache_policy {

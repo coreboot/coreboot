@@ -57,8 +57,8 @@ static int verbose = 0;
 /* File handle used to access /dev/mem */
 static int mem_fd;
 
-/* IMD root pointer location */
-static uint64_t rootptr = 0;
+static uint64_t lbtable_address;
+static size_t lbtable_size;
 
 /*
  * calculate ip checksum (16 bit quantities) on a passed in buffer. In case
@@ -170,9 +170,57 @@ static void *map_memory_size(u64 physical, size_t size, uint8_t abort_on_failure
 	return v;
 }
 
-static void *map_memory(u64 physical)
+static void *map_lbtable(void)
 {
-	return map_memory_size(physical, MAP_BYTES, 1);
+	if (lbtable_address == 0 || lbtable_size == 0) {
+		fprintf(stderr, "No coreboot table area found!\n");
+		return NULL;
+	}
+
+	return map_memory_size(lbtable_address, lbtable_size, 1);
+}
+
+static void unmap_lbtable(void)
+{
+	unmap_memory();
+}
+
+/* Find the first cbmem entry filling in the details. */
+static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
+{
+	uint8_t *table;
+	size_t offset;
+	int ret = -1;
+
+	table = map_lbtable();
+
+	if (table == NULL)
+		return -1;
+
+	offset = 0;
+
+	while (offset < lbtable_size) {
+		struct lb_record *lbr;
+		struct lb_cbmem_entry *lbe;
+
+		lbr = (void *)(table + offset);
+		offset += lbr->size;
+
+		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
+			continue;
+
+		lbe = (void *)lbr;
+		if (lbe->id != id)
+			continue;
+
+		*addr = lbe->address;
+		*size = lbe->entry_size;
+		ret = 0;
+		break;
+	}
+
+	unmap_lbtable();
+	return ret;
 }
 
 /*
@@ -244,6 +292,11 @@ static int parse_cbtable(u64 address, size_t table_size, uint8_t abort_on_failur
 
 		found = 1;
 		debug("Found!\n");
+
+		/* Keep reference to lbtable. */
+		lbtable_address = address;
+		lbtable_address += ((uint8_t *)lbtable - (uint8_t *)lbh);
+		lbtable_size = lbh->table_bytes;
 
 		for (j = 0; j < lbh->table_bytes; j += lbr_p->size) {
 			lbr_p = (struct lb_record*) ((char *)lbtable + j);
@@ -706,44 +759,6 @@ static void dump_cbmem_hex(void)
 	hexdump(unpack_lb64(cbmem.start), unpack_lb64(cbmem.size));
 }
 
-/* The root region is at least DYN_CBMEM_ALIGN_SIZE . */
-#define DYN_CBMEM_ALIGN_SIZE (4096)
-#define ROOT_MIN_SIZE DYN_CBMEM_ALIGN_SIZE
-#define CBMEM_POINTER_MAGIC 0xc0389481
-#define CBMEM_ENTRY_MAGIC ~(CBMEM_POINTER_MAGIC)
-
-struct cbmem_root_pointer {
-	uint32_t magic;
-	/* Relative to upper limit/offset. */
-	int32_t root_offset;
-} __attribute__((packed));
-
-struct dynamic_cbmem_entry {
-	uint32_t magic;
-	int32_t start_offset;
-	uint32_t size;
-	uint32_t id;
-} __attribute__((packed));
-
-struct cbmem_root {
-	uint32_t max_entries;
-	uint32_t num_entries;
-	uint32_t flags;
-	uint32_t entry_align;
-	int32_t max_offset;
-	struct dynamic_cbmem_entry entries[0];
-} __attribute__((packed));
-
-#define CBMEM_MAGIC 0x434f5245
-#define MAX_CBMEM_ENTRIES 16
-
-struct cbmem_entry {
-	uint32_t magic;
-	uint32_t id;
-	uint64_t base;
-	uint64_t size;
-} __attribute__((packed));
-
 struct cbmem_id_to_name {
 	uint32_t id;
 	const char *name;
@@ -772,74 +787,39 @@ void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
 	printf("  %08" PRIx64 "\n", size);
 }
 
-static void dump_static_cbmem_toc(struct cbmem_entry *entries)
-{
-	int i;
-
-	printf("CBMEM table of contents:\n");
-	printf("    ID           START      LENGTH\n");
-
-	for (i=0; i<MAX_CBMEM_ENTRIES; i++) {
-		if (entries[i].magic != CBMEM_MAGIC)
-			break;
-		cbmem_print_entry(i, entries[i].id,
-				entries[i].base, entries[i].size);
-	}
-}
-
-static void dump_dynamic_cbmem_toc(struct cbmem_root *root)
-{
-	int i;
-	debug("CBMEM: max_entries=%d num_entries=%d flags=0x%x, entry_align=0x%x, max_offset=%d\n\n",
-		root->max_entries, root->num_entries, root->flags, root->entry_align, root->max_offset);
-
-	printf("CBMEM table of contents:\n");
-	printf("    ID           START      LENGTH\n");
-
-	for (i = 0; i < root->num_entries; i++) {
-		if(root->entries[i].magic != CBMEM_ENTRY_MAGIC)
-			break;
-		cbmem_print_entry(i, root->entries[i].id,
-			rootptr + root->entries[i].start_offset, root->entries[i].size);
-	}
-}
-
 static void dump_cbmem_toc(void)
 {
-	uint64_t start;
-	void *cbmem_area;
-	struct cbmem_entry *entries;
+	int i;
+	uint8_t *table;
+	size_t offset;
 
-	if (cbmem.type != LB_MEM_TABLE) {
-		fprintf(stderr, "No coreboot CBMEM area found!\n");
+	table = map_lbtable();
+
+	if (table == NULL)
 		return;
+
+	printf("CBMEM table of contents:\n");
+	printf("    ID           START      LENGTH\n");
+
+	i = 0;
+	offset = 0;
+
+	while (offset < lbtable_size) {
+		struct lb_record *lbr;
+		struct lb_cbmem_entry *lbe;
+
+		lbr = (void *)(table + offset);
+		offset += lbr->size;
+
+		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
+			continue;
+
+		lbe = (void *)lbr;
+		cbmem_print_entry(i, lbe->id, lbe->address, lbe->entry_size);
+		i++;
 	}
 
-	start = unpack_lb64(cbmem.start);
-
-	cbmem_area = map_memory_size(start, unpack_lb64(cbmem.size), 1);
-	entries = (struct cbmem_entry *)cbmem_area;
-
-	if (entries[0].magic == CBMEM_MAGIC) {
-		dump_static_cbmem_toc(entries);
-	} else {
-		rootptr = unpack_lb64(cbmem.start) + unpack_lb64(cbmem.size);
-		rootptr &= ~(DYN_CBMEM_ALIGN_SIZE - 1);
-		rootptr -= sizeof(struct cbmem_root_pointer);
-		unmap_memory();
-		struct cbmem_root_pointer *r =
-			map_memory_size(rootptr, sizeof(*r), 1);
-		if (r->magic == CBMEM_POINTER_MAGIC) {
-			struct cbmem_root *root;
-			uint64_t rootaddr = rootptr + r->root_offset;
-			unmap_memory();
-			root = map_memory_size(rootaddr, ROOT_MIN_SIZE, 1);
-			dump_dynamic_cbmem_toc(root);
-		} else
-			fprintf(stderr, "No valid coreboot CBMEM root pointer found.\n");
-	}
-
-	unmap_memory();
+	unmap_lbtable();
 }
 
 #define COVERAGE_MAGIC 0x584d4153
@@ -871,42 +851,19 @@ static int mkpath(char *path, mode_t mode)
 
 static void dump_coverage(void)
 {
-	int i, found = 0;
 	uint64_t start;
-	struct cbmem_entry *entries;
+	size_t size;
 	void *coverage;
 	unsigned long phys_offset;
 #define phys_to_virt(x) ((void *)(unsigned long)(x) + phys_offset)
 
-	if (cbmem.type != LB_MEM_TABLE) {
-		fprintf(stderr, "No coreboot table area found!\n");
+	if (find_cbmem_entry(CBMEM_ID_COVERAGE, &start, &size)) {
+		fprintf(stderr, "No coverage information found\n");
 		return;
 	}
 
-	start = unpack_lb64(cbmem.start);
-
-	entries = (struct cbmem_entry *)map_memory(start);
-
-	for (i=0; i<MAX_CBMEM_ENTRIES; i++) {
-		if (entries[i].magic != CBMEM_MAGIC)
-			break;
-		if (entries[i].id == CBMEM_ID_COVERAGE) {
-			found = 1;
-			break;
-		}
-	}
-
-	if (!found) {
-		unmap_memory();
-		fprintf(stderr, "No coverage information found in"
-			" CBMEM area.\n");
-		return;
-	}
-
-	start = entries[i].base;
-	unmap_memory();
 	/* Map coverage area */
-	coverage = map_memory(start);
+	coverage = map_memory_size(start, size, 1);
 	phys_offset = (unsigned long)coverage - (unsigned long)start;
 
 	printf("Dumping coverage data...\n");

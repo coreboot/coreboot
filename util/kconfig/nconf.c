@@ -13,6 +13,8 @@
 #include "nconf.h"
 #include <ctype.h>
 
+int kconfig_warnings = 0;
+
 static const char nconf_global_help[] = N_(
 "Help windows\n"
 "------------\n"

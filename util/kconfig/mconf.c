@@ -22,6 +22,8 @@
 #include "lkc.h"
 #include "lxdialog/dialog.h"
 
+int kconfig_warnings = 0;
+
 static const char mconf_readme[] = N_(
 "Overview\n"
 "--------\n"

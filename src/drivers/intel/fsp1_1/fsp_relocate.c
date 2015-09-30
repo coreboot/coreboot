@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <cbmem.h>
+#include <commonlib/fsp1_1.h>
 #include <fsp/util.h>
 
 int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src)

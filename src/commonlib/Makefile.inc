@@ -8,3 +8,5 @@ verstage-y += region.c
 romstage-y += region.c
 ramstage-y += region.c
 smm-y += region.c
+
+ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += fsp1_1_relocate.c

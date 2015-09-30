@@ -22,6 +22,8 @@
 #define FSPE_HEADER_REVISION_1  1
 #define FSPP_HEADER_REVISION_1  1
 
+#define FSP_SIG		0x48505346	/* 'FSPH' */
+
 ///
 /// Fixed FSP header offset in the FSP image
 ///

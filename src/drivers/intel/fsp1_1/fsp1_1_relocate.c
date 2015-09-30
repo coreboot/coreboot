@@ -18,9 +18,9 @@
  */
 
 #include <console/console.h>
-#include <endian.h>
-#include <fsp/api.h>
-#include <fsp/util.h>
+#include <commonlib/endian.h>
+#include <commonlib/fsp1_1.h>
+#include <commonlib/helpers.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -37,11 +37,11 @@
 /* Return 0 if equal. Non-zero if not equal. */
 static int guid_compare(const EFI_GUID *le_guid, const EFI_GUID *native_guid)
 {
-	if (le32toh(le_guid->Data1) != native_guid->Data1)
+	if (read_le32(&le_guid->Data1) != native_guid->Data1)
 		return 1;
-	if (le16toh(le_guid->Data2) != native_guid->Data2)
+	if (read_le16(&le_guid->Data2) != native_guid->Data2)
 		return 1;
-	if (le16toh(le_guid->Data3) != native_guid->Data3)
+	if (read_le16(&le_guid->Data3) != native_guid->Data3)
 		return 1;
 	return memcmp(le_guid->Data4, native_guid->Data4,
 			ARRAY_SIZE(le_guid->Data4));
@@ -109,7 +109,7 @@ static size_t reloc_offset(uint16_t reloc_entry)
 	return reloc_entry & ((1 << 12) - 1);
 }
 
-static int te_relocate(uintptr_t new_addr, void *te, size_t size)
+static int te_relocate(uintptr_t new_addr, void *te)
 {
 	EFI_TE_IMAGE_HEADER *teih;
 	EFI_IMAGE_DATA_DIRECTORY *relocd;
@@ -124,9 +124,9 @@ static int te_relocate(uintptr_t new_addr, void *te, size_t size)
 
 	teih = te;
 
-	if (le16toh(teih->Signature) != EFI_TE_IMAGE_HEADER_SIGNATURE) {
+	if (read_le16(&teih->Signature) != EFI_TE_IMAGE_HEADER_SIGNATURE) {
 		printk(BIOS_ERR, "TE Signature mismatch: %x vs %x\n",
-			le16toh(teih->Signature),
+			read_le16(&teih->Signature),
 			EFI_TE_IMAGE_HEADER_SIGNATURE);
 		return -1;
 	}
@@ -138,21 +138,21 @@ static int te_relocate(uintptr_t new_addr, void *te, size_t size)
 	 * from the encoded offets.  Similarly, the linked address of the
 	 * program is found by adding the fixup_offset to the ImageBase.
 	 */
-	fixup_offset = le16toh(teih->StrippedSize);
+	fixup_offset = read_le16(&teih->StrippedSize);
 	fixup_offset -= sizeof(EFI_TE_IMAGE_HEADER);
 	/* Keep track of a base that is correctly adjusted so that offsets
 	 * can be used directly. */
 	te_base = te;
 	te_base -= fixup_offset;
 
-	image_base = le64toh(teih->ImageBase);
+	image_base = read_le64(&teih->ImageBase);
 	adj = new_addr - (image_base + fixup_offset);
 
 	printk(FSP_DBG_LVL, "TE Image %p -> %p adjust value: %x\n",
 		(void *)image_base, (void *)new_addr, adj);
 
 	/* Adjust ImageBase for consistency. */
-	teih->ImageBase = htole32(image_base + adj);
+	write_le64(&teih->ImageBase, (uint32_t)(image_base + adj));
 
 	relocd = &teih->DataDirectory[EFI_TE_IMAGE_DIRECTORY_ENTRY_BASERELOC];
 
@@ -160,19 +160,19 @@ static int te_relocate(uintptr_t new_addr, void *te, size_t size)
 	/* Though the field name is VirtualAddress it's actually relative to
 	 * the beginning of the image which is linked at ImageBase. */
 	relocb = relative_offset(te,
-			le32toh(relocd->VirtualAddress) - fixup_offset);
-	while (relocd_offset < relocd->Size) {
-		size_t rva_offset = le32toh(relocb->VirtualAddress);
+			read_le32(&relocd->VirtualAddress) - fixup_offset);
+	while (relocd_offset < read_le32(&relocd->Size)) {
+		size_t rva_offset = read_le32(&relocb->VirtualAddress);
 
 		printk(FSP_DBG_LVL, "Relocs for RVA offset %zx\n", rva_offset);
-		num_relocs = le32toh(relocb->SizeOfBlock) - sizeof(*relocb);
+		num_relocs = read_le32(&relocb->SizeOfBlock) - sizeof(*relocb);
 		num_relocs /= sizeof(uint16_t);
 		reloc = relative_offset(relocb, sizeof(*relocb));
 
 		printk(FSP_DBG_LVL, "Num relocs in block: %zx\n", num_relocs);
 
 		while (num_relocs > 0) {
-			uint16_t reloc_val = le16toh(*reloc);
+			uint16_t reloc_val = read_le16(reloc);
 			int type = reloc_type(reloc_val);
 			size_t offset = reloc_offset(reloc_val);
 
@@ -185,11 +185,11 @@ static int te_relocate(uintptr_t new_addr, void *te, size_t size)
 
 				offset += rva_offset;
 				reloc_addr = (void *)&te_base[offset];
-				val = le32toh(*reloc_addr);
+				val = read_le32(reloc_addr);
 
 				printk(FSP_DBG_LVL, "Adjusting %p %x -> %x\n",
 					reloc_addr, val, val + adj);
-				*reloc_addr = htole32(val + adj);
+				write_le32(reloc_addr, val + adj);
 			} else if (type != EFI_IMAGE_REL_BASED_ABSOLUTE) {
 				printk(BIOS_ERR, "Unknown reloc type: %x\n",
 					type);
@@ -200,9 +200,10 @@ static int te_relocate(uintptr_t new_addr, void *te, size_t size)
 		}
 
 		/* Track consumption of relocation directory contents. */
-		relocd_offset += le32toh(relocb->SizeOfBlock);
+		relocd_offset += read_le32(&relocb->SizeOfBlock);
 		/* Get next relocation block to process. */
-		relocb = relative_offset(relocb, le32toh(relocb->SizeOfBlock));
+		relocb = relative_offset(relocb,
+					read_le32(&relocb->SizeOfBlock));
 	}
 
 	return 0;
@@ -214,9 +215,9 @@ static size_t csh_size(const EFI_COMMON_SECTION_HEADER *csh)
 
 	/* Unpack the array into a type that can be used. */
 	size = 0;
-	size |= le8toh(csh->Size[0]) << 0;
-	size |= le8toh(csh->Size[1]) << 8;
-	size |= le8toh(csh->Size[2]) << 16;
+	size |= read_le8(&csh->Size[0]) << 0;
+	size |= read_le8(&csh->Size[1]) << 8;
+	size |= read_le8(&csh->Size[2]) << 16;
 
 	return size;
 }
@@ -234,7 +235,7 @@ static size_t section_data_size(const EFI_COMMON_SECTION_HEADER *csh)
 	size_t section_size;
 
 	if (csh_size(csh) == 0x00ffffff)
-		section_size = le32toh(SECTION2_SIZE(csh));
+		section_size = read_le32(&SECTION2_SIZE(csh));
 	else
 		section_size = csh_size(csh);
 
@@ -254,11 +255,11 @@ static size_t ffs_file_size(const EFI_FFS_FILE_HEADER *ffsfh)
 	size_t size;
 
 	if (IS_FFS_FILE2(ffsfh))
-		size = le32toh(FFS_FILE2_SIZE(ffsfh));
+		size = read_le32(&FFS_FILE2_SIZE(ffsfh));
 	else {
-		size = le8toh(ffsfh->Size[0]) << 0;
-		size |= le8toh(ffsfh->Size[1]) << 8;
-		size |= le8toh(ffsfh->Size[2]) << 16;
+		size = read_le8(&ffsfh->Size[0]) << 0;
+		size |= read_le8(&ffsfh->Size[1]) << 8;
+		size |= read_le8(&ffsfh->Size[2]) << 16;
 	}
 	return size;
 }
@@ -273,33 +274,33 @@ static int relocate_patch_table(void *fsp, size_t size, size_t offset,
 	table = relative_offset(fsp, offset);
 
 	if ((offset + sizeof(*table) > size) ||
-	    (le16toh(table->header_length) + offset) > size) {
+	    (read_le16(&table->header_length) + offset) > size) {
 		printk(BIOS_ERR, "FSPP not entirely contained in region.\n");
 		return -1;
 	}
 
-	num_entries = le32toh(table->patch_entry_num);
+	num_entries = read_le32(&table->patch_entry_num);
 	printk(FSP_DBG_LVL, "FSPP relocs: %zx\n", num_entries);
 
-	for (num = 0; num < table->patch_entry_num; num++) {
+	for (num = 0; num < num_entries; num++) {
 		uint32_t *reloc;
 		uint32_t reloc_val;
 
 		reloc = fspp_reloc(fsp, size,
-				le32toh(table->patch_entries[num]));
+				read_le32(&table->patch_entries[num]));
 
 		if (reloc == NULL) {
 			printk(BIOS_ERR, "Ignoring FSPP entry: %x\n",
-				le32toh(table->patch_entries[num]));
+				read_le32(&table->patch_entries[num]));
 			continue;
 		}
 
-		reloc_val = le32toh(*reloc);
+		reloc_val = read_le32(reloc);
 		printk(FSP_DBG_LVL, "Adjusting %p %x -> %x\n",
 			reloc, reloc_val,
 			(unsigned int)(reloc_val + adjustment));
 
-		*reloc = htole32(reloc_val + adjustment);
+		write_le32(reloc, reloc_val + adjustment);
 	}
 
 	return 0;
@@ -333,28 +334,28 @@ static ssize_t relocate_remaining_items(void *fsp, size_t size,
 		return -1;
 	}
 
-	if (le8toh(csh->Type) != EFI_SECTION_RAW) {
+	if (read_le8(&csh->Type) != EFI_SECTION_RAW) {
 		printk(BIOS_ERR, "FIH file should have raw section: %x\n",
-			csh->Type);
+			read_le8(&csh->Type));
 		return -1;
 	}
 
-	if (le32toh(fih->Signature) != FSP_SIG) {
+	if (read_le32(&fih->Signature) != FSP_SIG) {
 		printk(BIOS_ERR, "Unexpected FIH signature: %08x\n",
-			le32toh(fih->Signature));
+			read_le32(&fih->Signature));
 		return -1;
 	}
 
-	adjustment = (intptr_t)new_addr - le32toh(fih->ImageBase);
+	adjustment = (intptr_t)new_addr - read_le32(&fih->ImageBase);
 
 	/* Update ImageBase to reflect FSP's new home. */
-	fih->ImageBase = htole32(adjustment + le32toh(fih->ImageBase));
+	write_le32(&fih->ImageBase, adjustment + read_le32(&fih->ImageBase));
 
 	/* Need to find patch table and adjust each entry. The tables
 	 * following FSP_INFO_HEADER have a 32-bit signature and header
 	 * length. The patch table is denoted as having a 'FSPP' signature;
 	 * the table format doesn't follow the other tables. */
-	offset = fih_offset + le32toh(fih->HeaderLength);
+	offset = fih_offset + read_le32(&fih->HeaderLength);
 	while (offset + 2 * sizeof(uint32_t) <= size) {
 		uint32_t *table_headers;
 
@@ -363,8 +364,8 @@ static ssize_t relocate_remaining_items(void *fsp, size_t size,
 		printk(FSP_DBG_LVL, "Checking offset %zx for 'FSPP'\n",
 			offset);
 
-		if (le32toh(table_headers[0]) != FSPP_SIG) {
-			offset += le32toh(table_headers[1]);
+		if (read_le32(&table_headers[0]) != FSPP_SIG) {
+			offset += read_le32(&table_headers[1]);
 			continue;
 		}
 
@@ -394,15 +395,15 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 	offset = fvh_offset;
 	fvh = relative_offset(fsp, offset);
 
-	if (le32toh(fvh->Signature) != EFI_FVH_SIGNATURE)
+	if (read_le32(&fvh->Signature) != EFI_FVH_SIGNATURE)
 		return -1;
 
-	fv_length = le64toh(fvh->FvLength);
+	fv_length = read_le64(&fvh->FvLength);
 
 	printk(FSP_DBG_LVL, "FVH length: %zx Offset: %zx Mapping length: %zx\n",
 		fv_length, offset, fsp_size);
 
-	if (fvh->FvLength + offset > fsp_size)
+	if (fv_length + offset > fsp_size)
 		return -1;
 
 	/* Parse only this FV. However, the algorithm uses offsets into the
@@ -414,19 +415,19 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 		return -1;
 	}
 
-	if (le16toh(fvh->ExtHeaderOffset) != 0) {
+	if (read_le16(&fvh->ExtHeaderOffset) != 0) {
 		EFI_FIRMWARE_VOLUME_EXT_HEADER *fveh;
 
-		offset += le16toh(fvh->ExtHeaderOffset);
+		offset += read_le16(&fvh->ExtHeaderOffset);
 		fveh = relative_offset(fsp, offset);
 		printk(FSP_DBG_LVL, "Extended Header Offset: %zx Size: %zx\n",
-			(size_t)le16toh(fvh->ExtHeaderOffset),
-			(size_t)le32toh(fveh->ExtHeaderSize));
-		offset += le32toh(fveh->ExtHeaderSize);
+			(size_t)read_le16(&fvh->ExtHeaderOffset),
+			(size_t)read_le32(&fveh->ExtHeaderSize));
+		offset += read_le32(&fveh->ExtHeaderSize);
 		/* FFS files are 8 byte aligned after extended header. */
 		offset = ALIGN_UP(offset, 8);
 	} else {
-		offset += le16toh(fvh->HeaderLength);
+		offset += read_le16(&fvh->HeaderLength);
 	}
 
 	file_offset = offset;
@@ -440,12 +441,12 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 
 		ffsfh = relative_offset(fsp, file_offset);
 
-		printk(FSP_DBG_LVL, "file type = %x\n", le8toh(ffsfh->Type));
+		printk(FSP_DBG_LVL, "file type = %x\n", read_le8(&ffsfh->Type));
 		printk(FSP_DBG_LVL, "file attribs = %x\n",
-			le8toh(ffsfh->Attributes));
+			read_le8(&ffsfh->Attributes));
 
 		/* Exit FV relocation when empty space found */
-		if (le8toh(ffsfh->Type) == EFI_FV_FILETYPE_FFS_MAX)
+		if (read_le8(&ffsfh->Type) == EFI_FV_FILETYPE_FFS_MAX)
 			break;
 
 		/* Next file on 8 byte alignment. */
@@ -453,7 +454,7 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 		file_offset = ALIGN_UP(file_offset, 8);
 
 		/* Padding files have no section information. */
-		if (le8toh(ffsfh->Type) == EFI_FV_FILETYPE_FFS_PAD)
+		if (read_le8(&ffsfh->Type) == EFI_FV_FILETYPE_FFS_PAD)
 			continue;
 
 		offset += file_section_offset(ffsfh);
@@ -466,7 +467,7 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 
 			printk(FSP_DBG_LVL, "section offset: %zx\n", offset);
 			printk(FSP_DBG_LVL, "section type: %x\n",
-				le8toh(csh->Type));
+				read_le8(&csh->Type));
 
 			data_size = section_data_size(csh);
 			data_offset = section_data_offset(csh);
@@ -485,7 +486,7 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 			 * relocated address based on the TE offset within
 			 * FSP proper.
 			 */
-			if (le8toh(csh->Type) == EFI_SECTION_TE) {
+			if (read_le8(&csh->Type) == EFI_SECTION_TE) {
 				void *te;
 				size_t te_offset = offset + data_offset;
 				uintptr_t te_addr = new_addr + te_offset;
@@ -493,7 +494,7 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 				printk(FSP_DBG_LVL, "TE image at offset %zx\n",
 					te_offset);
 				te = relative_offset(fsp, te_offset);
-				te_relocate(te_addr, te, data_size);
+				te_relocate(te_addr, te);
 			}
 
 			offset += data_size + data_offset;

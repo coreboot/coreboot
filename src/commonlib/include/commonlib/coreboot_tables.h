@@ -308,6 +308,19 @@ struct lb_boot_media_params {
 	uint64_t boot_media_size;
 };
 
+/*
+ * There can be more than one of these records as there is one per cbmem entry.
+ */
+#define LB_TAG_CBMEM_ENTRY 0x0031
+struct lb_cbmem_entry {
+	uint32_t tag;
+	uint32_t size;
+
+	uint64_t address;
+	uint32_t entry_size;
+	uint32_t id;
+};
+
 #define LB_TAG_SERIALNO		0x002a
 #define MAX_SERIALNO_LENGTH	32
 

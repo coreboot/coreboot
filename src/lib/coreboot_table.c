@@ -538,6 +538,9 @@ unsigned long write_coreboot_table(
 
 	lb_boot_media_params(head);
 
+	/* Add all cbmem entries into the coreboot tables. */
+	cbmem_add_records_to_cbtable(head);
+
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head);
 }

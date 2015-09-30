@@ -623,6 +623,11 @@ void *imd_entry_at(const struct imd *imd, const struct imd_entry *entry)
 	return imdr_entry_at(imdr, entry);
 }
 
+uint32_t imd_entry_id(const struct imd *imd, const struct imd_entry *entry)
+{
+	return entry->id;
+}
+
 int imd_entry_remove(const struct imd *imd, const struct imd_entry *entry)
 {
 	struct imd_root *r;
@@ -697,4 +702,43 @@ int imd_print_entries(const struct imd *imd, const struct imd_lookup *lookup,
 	}
 
 	return 0;
+}
+
+int imd_cursor_init(const struct imd *imd, struct imd_cursor *cursor)
+{
+	if (imd == NULL || cursor == NULL)
+		return -1;
+
+	memset(cursor, 0, sizeof(*cursor));
+
+	cursor->imdr[0] = &imd->lg;
+	cursor->imdr[1] = &imd->sm;
+
+	return 0;
+}
+
+const struct imd_entry *imd_cursor_next(struct imd_cursor *cursor)
+{
+	struct imd_root *r;
+	const struct imd_entry *e;
+
+	if (cursor->current_imdr >= ARRAY_SIZE(cursor->imdr))
+		return NULL;
+
+	r = imdr_root(cursor->imdr[cursor->current_imdr]);
+
+	if (r == NULL)
+		return NULL;
+
+	if (cursor->current_entry >= r->num_entries) {
+		/* Try next imdr. */
+		cursor->current_imdr++;
+		cursor->current_entry = 0;
+		return imd_cursor_next(cursor);
+	}
+
+	e = &r->entries[cursor->current_entry];
+	cursor->current_entry++;
+
+	return e;
 }

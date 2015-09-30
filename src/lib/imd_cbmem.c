@@ -263,7 +263,6 @@ void *cbmem_entry_start(const struct cbmem_entry *entry)
 	return imd_entry_at(imd, cbmem_to_imd(entry));
 }
 
-#if ENV_RAMSTAGE
 void cbmem_add_bootmem(void)
 {
 	void *base = NULL;
@@ -273,10 +272,50 @@ void cbmem_add_bootmem(void)
 	bootmem_add_range((uintptr_t)base, size, LB_MEM_TABLE);
 }
 
+#if ENV_RAMSTAGE
+/*
+ * -fdata-sections doesn't work so well on read only strings. They all
+ * get put in the same section even though those strings may never be
+ * referenced in the final binary.
+ */
 void cbmem_list(void)
 {
 	static const struct imd_lookup lookup[] = { CBMEM_ID_TO_NAME_TABLE };
 
 	imd_print_entries(cbmem_get_imd(), lookup, ARRAY_SIZE(lookup));
 }
-#endif /* __PRE_RAM__ */
+#endif
+
+void cbmem_add_records_to_cbtable(struct lb_header *header)
+{
+	struct imd_cursor cursor;
+	struct imd *imd;
+
+	imd = cbmem_get_imd();
+
+	if (imd_cursor_init(imd, &cursor))
+		return;
+
+	while (1) {
+		const struct imd_entry *e;
+		struct lb_cbmem_entry *lbe;
+		uint32_t id;
+
+		e = imd_cursor_next(&cursor);
+
+		if (e == NULL)
+			break;
+
+		id = imd_entry_id(imd, e);
+		/* Don't add these metadata entries. */
+		if (id == CBMEM_ID_IMD_ROOT || id == CBMEM_ID_IMD_SMALL)
+			continue;
+
+		lbe = (struct lb_cbmem_entry *)lb_new_record(header);
+		lbe->tag = LB_TAG_CBMEM_ENTRY;
+		lbe->size = sizeof(*lbe);
+		lbe->address = (uintptr_t)imd_entry_at(imd, e);
+		lbe->entry_size = imd_entry_size(imd, e);
+		lbe->id = id;
+	}
+}

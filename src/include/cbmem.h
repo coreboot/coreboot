@@ -37,6 +37,7 @@
 #ifndef __ASSEMBLER__
 #include <stddef.h>
 #include <stdint.h>
+#include <boot/coreboot_tables.h>
 
 struct cbmem_entry;
 
@@ -114,12 +115,11 @@ typedef void (* const cbmem_init_hook_t)(int is_recovery);
 void cbmem_run_init_hooks(int is_recovery);
 void cbmem_fail_resume(void);
 
-#ifndef __PRE_RAM__
 /* Ramstage only functions. */
 /* Add the cbmem memory used to the memory map at boot. */
 void cbmem_add_bootmem(void);
 void cbmem_list(void);
-#endif /* __PRE_RAM__ */
+void cbmem_add_records_to_cbtable(struct lb_header *header);
 
 #if ENV_RAMSTAGE
 #define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) static cbmem_init_hook_t \

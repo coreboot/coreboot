@@ -120,6 +120,9 @@ size_t imd_entry_size(const struct imd *imd, const struct imd_entry *entry);
 /* Returns pointer to region described by entry or NULL on failure. */
 void *imd_entry_at(const struct imd *imd, const struct imd_entry *entry);
 
+/* Returns id for the imd entry. */
+uint32_t imd_entry_id(const struct imd *imd, const struct imd_entry *entry);
+
 /* Attempt to remove entry from imd. */
 int imd_entry_remove(const struct imd *imd, const struct imd_entry *entry);
 
@@ -132,6 +135,13 @@ struct imd_lookup {
 int imd_print_entries(const struct imd *imd, const struct imd_lookup *lookup,
 			size_t size);
 
+struct imd_cursor;
+/* Initialize an imd_cursor object to walk the IMD entries. */
+int imd_cursor_init(const struct imd *imd, struct imd_cursor *cursor);
+
+/* Retrieve the next imd entry the cursor is referencing. Returns NULL when
+ * no more entries exist. */
+const struct imd_entry *imd_cursor_next(struct imd_cursor *cursor);
 
 /*
  * The struct imd is a handle for working with an in-memory directory.
@@ -146,6 +156,12 @@ struct imdr {
 struct imd {
 	struct imdr lg;
 	struct imdr sm;
+};
+
+struct imd_cursor {
+	size_t current_imdr;
+	size_t current_entry;
+	const struct imdr *imdr[2];
 };
 
 #endif /* _IMD_H_ */

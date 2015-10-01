@@ -27,6 +27,7 @@
 #include <soc/early_configs.h>
 #include <stdlib.h>
 #include <symbols.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 static void enable_cache(void)
 {
@@ -40,27 +41,17 @@ static void enable_cache(void)
 	dcache_mmu_enable();
 }
 
-/* Do the minimum to run vboot at full speed */
-static void soc_init(void)
+void verstage_mainboard_init(void)
 {
+	/* Do the minimum to run vboot at full speed */
 	configure_l2_cache();
-	console_init();
-	exception_init();
 	enable_cache();
-}
-
-static void verstage(void)
-{
-	soc_init();
 	early_mainboard_init();
-	run_romstage();
 }
 
 void main(void)
 {
 	asm volatile ("bl arm_init_caches"
 		      : : : "r0", "r1", "r2", "r3", "r4", "r5", "ip");
-
 	verstage();
-	hlt();
 }

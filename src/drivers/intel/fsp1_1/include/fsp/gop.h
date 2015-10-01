@@ -23,11 +23,9 @@
 /* GOP support */
 #if IS_ENABLED(CONFIG_GOP_SUPPORT)
 
-#include <boot/coreboot_tables.h>
 #include <soc/intel/common/gma.h>
 
 const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len);
-void fsp_gop_framebuffer(struct lb_header *header);
 
 #endif /* CONFIG_GOP_SUPPORT */
 #endif /* _FSP_GOP_H_ */

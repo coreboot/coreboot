@@ -17,6 +17,7 @@
  * Foundation, Inc.
  */
 
+#include <boot/coreboot_tables.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <fsp/util.h>
@@ -61,7 +62,7 @@ const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len)
 	return vbt.data;
 }
 
-void fsp_gop_framebuffer(struct lb_header *header)
+void lb_framebuffer(struct lb_header *header)
 {
 	struct lb_framebuffer *framebuffer;
 	framebuffer = (struct lb_framebuffer *)lb_new_record(header);

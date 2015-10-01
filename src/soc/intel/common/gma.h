@@ -23,6 +23,12 @@
 
 #include <types.h>
 
+/* IGD PCI Configuration register */
+#define ASLS		0xfc		/* OpRegion Base */
+#define SWSCI		0xe8		/* SWSCI Register */
+#define GSSCIE		(1 << 0)	/* SCI Event trigger */
+#define SMISCISEL	(1 << 15)	/* Select SMI or SCI event source */
+
 /* mailbox 0: header */
 typedef struct {
 	u8	signature[16];

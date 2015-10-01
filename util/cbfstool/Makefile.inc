@@ -10,6 +10,7 @@ cbfsobj += rmodule.o
 cbfsobj += xdr.o
 cbfsobj += fit.o
 cbfsobj += partitioned_file.o
+cbfsobj += fsp1_1_relocate.o
 # LZMA
 cbfsobj += lzma.o
 cbfsobj += LzFind.o
@@ -59,6 +60,11 @@ TOOLCPPFLAGS += -I$(top)/src/commonlib/include
 TOOLCPPFLAGS += -DNEED_VB2_SHA_LIBRARY
 TOOLCPPFLAGS += -I$(top)/3rdparty/vboot/firmware/include
 TOOLCPPFLAGS += -I$(top)/3rdparty/vboot/firmware/2lib/include
+# UEFI header file support. It's not pretty, but that's what we currently
+# have right now.
+TOOLCPPFLAGS += -I$(top)/src
+TOOLCPPFLAGS += -I$(top)/src/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
+
 TOOLLDFLAGS ?=
 HOSTCFLAGS += -fms-extensions
 
@@ -87,6 +93,10 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/3rdparty/vboot/firmware/2lib/%.c
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+
+$(objutil)/cbfstool/%.o: $(top)/src/commonlib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 

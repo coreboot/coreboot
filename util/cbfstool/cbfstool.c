@@ -32,6 +32,7 @@
 #include "cbfs_sections.h"
 #include "fit.h"
 #include "partitioned_file.h"
+#include <commonlib/fsp1_1.h>
 
 #define SECTION_WITH_FIT_TABLE	"BOOTBLOCK"
 
@@ -387,6 +388,38 @@ static int cbfstool_convert_raw(struct buffer *buffer,
 	return 0;
 }
 
+static int cbfstool_convert_fsp(struct buffer *buffer,
+				uint32_t *offset, struct cbfs_file *header)
+{
+	uint32_t address;
+	struct buffer fsp;
+
+	address = *offset;
+
+	/* Ensure the address is a memory mapped one. */
+	if (!IS_TOP_ALIGNED_ADDRESS(address))
+		address = -convert_to_from_top_aligned(param.image_region,
+								address);
+
+	/* Create a copy of the buffer to attempt relocation. */
+	if (buffer_create(&fsp, buffer_size(buffer), "fsp"))
+		return -1;
+
+	memcpy(buffer_get(&fsp), buffer_get(buffer), buffer_size(buffer));
+
+	/* Replace the buffer contents w/ the relocated ones on success. */
+	if (fsp1_1_relocate(address, buffer_get(&fsp), buffer_size(&fsp)) > 0) {
+		buffer_delete(buffer);
+		buffer_clone(buffer, &fsp);
+	} else {
+		buffer_delete(&fsp);
+		WARN("FSP was not a 1.1 variant.\n");
+	}
+
+	/* Let the raw path handle all the cbfs metadata logic. */
+	return cbfstool_convert_raw(buffer, offset, header);
+}
+
 static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 	struct cbfs_file *header)
 {
@@ -472,10 +505,21 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 static int cbfs_add(void)
 {
 	int32_t address;
+	convert_buffer_t convert;
 
 	if (param.alignment && param.baseaddress) {
 		ERROR("Cannot specify both alignment and base address\n");
 		return 1;
+	}
+
+	convert = cbfstool_convert_raw;
+
+	/* Set the alignment to 4KiB minimum for FSP blobs when no base address
+	 * is provided so that relocation can occur. */
+	if (param.type == CBFS_COMPONENT_FSP) {
+	 	if (!param.baseaddress_assigned)
+			param.alignment = 4*1024;
+		convert = cbfstool_convert_fsp;
 	}
 
 	if (param.alignment) {
@@ -491,7 +535,7 @@ static int cbfs_add(void)
 				  param.type,
 				  param.baseaddress,
 				  param.headeroffset,
-				  cbfstool_convert_raw);
+				  convert);
 }
 
 static int cbfs_add_stage(void)

@@ -148,3 +148,22 @@ int draw_bitmap(const void *bitmap, size_t size,
  */
 int draw_bitmap_direct(const void *bitmap, size_t size,
 		       const struct vector *top_left);
+
+/**
+ * Get width and height of projected image
+ *
+ * @param[in] bitmap	Pointer to the bitmap data, starting from file header
+ * @param[in] sz	Size of the bitmap data
+ * @param[i/o] dim_rel	Width and height of the image relative to the canvas
+ *                      width and height. They must not exceed 1 (=100%).
+ *                      On return, it contains automatically calculated width
+ *                      and/or height.
+ *
+ * @return CBGFX_* error codes
+ *
+ * It returns the width and height of the projected image. If the input height
+ * is zero, it's derived from the input width to keep the aspect ratio, and vice
+ * versa. If both are zero, the width and the height which can project the image
+ * in the original size are returned.
+ */
+int get_bitmap_dimension(const void *bitmap, size_t sz, struct scale *dim_rel);

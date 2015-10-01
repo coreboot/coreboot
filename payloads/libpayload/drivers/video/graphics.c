@@ -611,3 +611,34 @@ int draw_bitmap_direct(const void *bitmap, size_t size,
 	return draw_bitmap_v3(top_left, &scale, &dim, &dim,
 			      &header, palette, pixel_array);
 }
+
+int get_bitmap_dimension(const void *bitmap, size_t sz, struct scale *dim_rel)
+{
+	struct bitmap_header_v3 header;
+	const struct bitmap_palette_element_v3 *palette;
+	const uint8_t *pixel_array;
+	struct vector dim, dim_org;
+	int rv;
+
+	if (cbgfx_init())
+		return CBGFX_ERROR_INIT;
+
+	/* Only v3 is supported now */
+	rv = parse_bitmap_header_v3(bitmap, sz,
+				    &header, &palette, &pixel_array, &dim_org);
+	if (rv)
+		return rv;
+
+	/* Calculate height and width of the image */
+	rv = calculate_dimension(&dim_org, dim_rel, &dim);
+	if (rv)
+		return rv;
+
+	/* Calculate size relative to the canvas */
+	dim_rel->x.n = dim.width;
+	dim_rel->x.d = canvas.size.width;
+	dim_rel->y.n = dim.height;
+	dim_rel->y.d = canvas.size.height;
+
+	return CBGFX_SUCCESS;
+}

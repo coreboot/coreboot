@@ -480,6 +480,21 @@ static void pch_decode_init(struct device *dev)
 	pci_write_config32(dev, LPC_GEN4_DEC, config->gen4_dec);
 }
 
+static void pch_spi_init(const struct device *const dev)
+{
+	const config_t *const config = dev->chip_info;
+
+	printk(BIOS_DEBUG, "pch_spi_init\n");
+
+	if (config->spi_uvscc)
+		RCBA32(0x3800 + 0xc8) = config->spi_uvscc;
+	if (config->spi_lvscc)
+		RCBA32(0x3800 + 0xc4) = config->spi_lvscc;
+
+	if (config->spi_uvscc || config->spi_lvscc)
+		RCBA32_OR(0x3800 + 0xc4, 1 << 23); /* lock both UVSCC + LVSCC */
+}
+
 static void lpc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "pch: lpc_init\n");
@@ -536,6 +551,8 @@ static void lpc_init(struct device *dev)
 	pch_set_acpi_mode();
 
 	pch_fixups(dev);
+
+	pch_spi_init(dev);
 }
 
 static void pch_lpc_read_resources(device_t dev)

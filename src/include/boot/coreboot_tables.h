@@ -19,6 +19,9 @@ void lb_add_console(uint16_t consoletype, void *data);
 /* Define this in mainboard.c to add board-specific table entries. */
 void lb_board(struct lb_header *header);
 
+/* Define this in soc or fsp driver to add specific table entries. */
+void lb_framebuffer(struct lb_header *header);
+
 /*
  * Function to retrieve MAC address(es) from the VPD and store them in the
  * coreboot table.

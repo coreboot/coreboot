@@ -133,7 +133,7 @@ void lb_add_console(uint16_t consoletype, void *data)
 	console->type = consoletype;
 }
 
-static void lb_framebuffer(struct lb_header *header)
+void __attribute__((weak)) lb_framebuffer(struct lb_header *header)
 {
 #if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE || CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);

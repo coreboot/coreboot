@@ -45,10 +45,10 @@ static void set_var_mtrr(
 	msr_t basem, maskm;
 	basem.lo = base | type;
 	basem.hi = 0;
-	wrmsr(MTRRphysBase_MSR(reg), basem);
-	maskm.lo = ~(size - 1) | MTRRphysMaskValid;
+	wrmsr(MTRR_PHYS_BASE(reg), basem);
+	maskm.lo = ~(size - 1) | MTRR_PHYS_MASK_VALID;
 	maskm.hi = (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1;
-	wrmsr(MTRRphysMask_MSR(reg), maskm);
+	wrmsr(MTRR_PHYS_MASK(reg), maskm);
 }
 
 static void enable_rom_caching(void)
@@ -62,7 +62,7 @@ static void enable_rom_caching(void)
 	/* Enable Variable MTRRs */
 	msr.hi = 0x00000000;
 	msr.lo = 0x00000800;
-	wrmsr(MTRRdefType_MSR, msr);
+	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 }
 
 static void bootblock_mdelay(int ms)
@@ -164,14 +164,14 @@ static void set_flex_ratio_to_tdp_nominal(void)
 static void check_for_clean_reset(void)
 {
 	msr_t msr;
-	msr = rdmsr(MTRRdefType_MSR);
+	msr = rdmsr(MTRR_DEF_TYPE_MSR);
 
 	/*
 	 * Use the MTRR default type MSR as a proxy for detecting INIT#.
 	 * Reset the system if any known bits are set in that MSR. That is
 	 * an indication of the CPU not being properly reset.
 	 */
-	if (msr.lo & (MTRRdefTypeEn | MTRRdefTypeFixEn))
+	if (msr.lo & (MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN))
 		soft_reset();
 }
 
@@ -191,7 +191,7 @@ static void patch_microcode(void)
 	 * MTRRCAP[12]. Check for this feature and avoid reloading the
 	 * same microcode during early cpu initialization.
 	 */
-	msr = rdmsr(MTRRcap_MSR);
+	msr = rdmsr(MTRR_CAP_MSR);
 	if ((msr.lo & PRMRR_SUPPORTED) && (current_rev != patch->rev - 1))
 		intel_update_microcode_from_cbfs();
 }

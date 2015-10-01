@@ -39,7 +39,7 @@ void smm_init(void)
 
 	/* Back up MSRs for later restore */
 	syscfg_orig = rdmsr(SYSCFG_MSR);
-	mtrr_aseg_orig = rdmsr(MTRRfix16K_A0000_MSR);
+	mtrr_aseg_orig = rdmsr(MTRR_FIX_16K_A0000);
 
 	/* MTRR changes don't like an enabled cache */
 	disable_cache();
@@ -57,7 +57,7 @@ void smm_init(void)
 	/* set DRAM access to 0xa0000 */
 	msr.lo = 0x18181818;
 	msr.hi = 0x18181818;
-	wrmsr(MTRRfix16K_A0000_MSR, msr);
+	wrmsr(MTRR_FIX_16K_A0000, msr);
 
 	/* enable the extended features */
 	msr = syscfg_orig;
@@ -73,7 +73,7 @@ void smm_init(void)
 
 	/* Restore SYSCFG and MTRR */
 	wrmsr(SYSCFG_MSR, syscfg_orig);
-	wrmsr(MTRRfix16K_A0000_MSR, mtrr_aseg_orig);
+	wrmsr(MTRR_FIX_16K_A0000, mtrr_aseg_orig);
 	enable_cache();
 
 	/* CPU MSR are set in CPU init */

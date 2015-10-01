@@ -77,10 +77,10 @@ uint32_t soc_get_variable_mtrr_count(uint64_t *msr)
 		msr_t s;
 	} mttrcap;
 
-	mttrcap.s = rdmsr(MTRRcap_MSR);
+	mttrcap.s = rdmsr(MTRR_CAP_MSR);
 	if (msr != NULL)
 		*msr = mttrcap.u64;
-	return mttrcap.u64 & MTRRcapVcnt;
+	return mttrcap.u64 & MTRR_CAP_VCNT;
 }
 
 static const char *soc_display_mtrr_type(uint32_t type)
@@ -105,13 +105,13 @@ static void soc_display_mtrr_fixed_types(uint64_t msr,
 	uint32_t next_type;
 	uint32_t type;
 
-	type = msr & MTRRdefTypeType;
+	type = msr & MTRR_DEF_TYPE_MASK;
 	base_address = starting_address;
 	next_address = base_address;
 	for (index = 0; index < 64; index += 8) {
 		next_address = starting_address + (memory_size *
 			((index >> 3) + 1));
-		next_type = (msr >> index) & MTRRdefTypeType;
+		next_type = (msr >> index) & MTRR_DEF_TYPE_MASK;
 		if (next_type != type) {
 			printk(BIOS_DEBUG, "    0x%08x - 0x%08x: %s\n",
 				base_address, next_address - 1,
@@ -159,7 +159,7 @@ static void soc_display_64k_mtrr(void)
 		msr_t s;
 	} msr;
 
-	msr.s = rdmsr(MTRRfix64K_00000_MSR);
+	msr.s = rdmsr(MTRR_FIX_64K_00000);
 	printk(BIOS_DEBUG, "0x%016llx: IA32_MTRR_FIX64K_00000\n", msr.u64);
 	soc_display_mtrr_fixed_types(msr.u64, 0, 0x10000);
 }
@@ -173,9 +173,9 @@ static uint32_t soc_display_mtrrcap(void)
 	printk(BIOS_DEBUG,
 		"0x%016llx: IA32_MTRRCAP: %s%s%s%d variable MTRRs\n",
 		msr,
-		(msr & MTRRcapSmrr) ? "SMRR, " : "",
-		(msr & MTRRcapWc) ? "WC, " : "",
-		(msr & MTRRcapFix) ? "FIX, " : "",
+		(msr & MTRR_CAP_SMRR) ? "SMRR, " : "",
+		(msr & MTRR_CAP_WC) ? "WC, " : "",
+		(msr & MTRR_CAP_FIX) ? "FIX, " : "",
 		variable_mtrrs);
 	return variable_mtrrs;
 }
@@ -187,12 +187,12 @@ static void soc_display_mtrr_def_type(void)
 		msr_t s;
 	} msr;
 
-	msr.s = rdmsr(MTRRdefType_MSR);
+	msr.s = rdmsr(MTRR_DEF_TYPE_MSR);
 	printk(BIOS_DEBUG, "0x%016llx: IA32_MTRR_DEF_TYPE:%s%s %s\n",
 		msr.u64,
-		(msr.u64 & MTRRdefTypeEn) ? " E," : "",
-		(msr.u64 & MTRRdefTypeFixEn) ? " FE," : "",
-		soc_display_mtrr_type((uint32_t)(msr.u64 & MTRRdefTypeType)));
+		(msr.u64 & MTRR_DEF_TYPE_EN) ? " E," : "",
+		(msr.u64 & MTRR_DEF_TYPE_FIX_EN) ? " FE," : "",
+		soc_display_mtrr_type((uint32_t)(msr.u64 & MTRR_DEF_TYPE_MASK)));
 }
 
 static void soc_display_variable_mtrr(uint32_t msr_reg, int index,
@@ -212,13 +212,13 @@ static void soc_display_variable_mtrr(uint32_t msr_reg, int index,
 
 	msr_a.s = rdmsr(msr_reg);
 	msr_m.s = rdmsr(msr_reg + 1);
-	if (msr_m.u64 & MTRRphysMaskValid) {
+	if (msr_m.u64 & MTRR_PHYS_MASK_VALID) {
 		base_address = (msr_a.u64 & 0xfffffffffffff000ULL)
 			& address_mask;
 		printk(BIOS_DEBUG,
 			"0x%016llx: PHYBASE%d: Address = 0x%016llx, %s\n",
 			msr_a.u64, index, base_address,
-			soc_display_mtrr_type(msr_a.u64 & MTRRdefTypeType));
+			soc_display_mtrr_type(msr_a.u64 & MTRR_DEF_TYPE_MASK));
 		mask = (msr_m.u64 & 0xfffffffffffff000ULL) & address_mask;
 		length = (~mask & address_mask) + 1;
 		printk(BIOS_DEBUG,
@@ -243,32 +243,32 @@ asmlinkage void soc_display_mtrrs(void)
 		variable_mtrrs = soc_display_mtrrcap();
 		soc_display_mtrr_def_type();
 		soc_display_64k_mtrr();
-		soc_display_16k_mtrr(MTRRfix16K_80000_MSR, 0x80000,
+		soc_display_16k_mtrr(MTRR_FIX_16K_80000, 0x80000,
 			"IA32_MTRR_FIX16K_80000");
-		soc_display_16k_mtrr(MTRRfix16K_A0000_MSR, 0xa0000,
+		soc_display_16k_mtrr(MTRR_FIX_16K_A0000, 0xa0000,
 			"IA32_MTRR_FIX16K_A0000");
-		soc_display_4k_mtrr(MTRRfix4K_C0000_MSR, 0xc0000,
+		soc_display_4k_mtrr(MTRR_FIX_4K_C0000, 0xc0000,
 			"IA32_MTRR_FIX4K_C0000");
-		soc_display_4k_mtrr(MTRRfix4K_C8000_MSR, 0xc8000,
+		soc_display_4k_mtrr(MTRR_FIX_4K_C8000, 0xc8000,
 			"IA32_MTRR_FIX4K_C8000");
-		soc_display_4k_mtrr(MTRRfix4K_D0000_MSR, 0xd0000,
+		soc_display_4k_mtrr(MTRR_FIX_4K_D0000, 0xd0000,
 			"IA32_MTRR_FIX4K_D0000");
-		soc_display_4k_mtrr(MTRRfix4K_D8000_MSR, 0xd8000,
+		soc_display_4k_mtrr(MTRR_FIX_4K_D8000, 0xd8000,
 			"IA32_MTRR_FIX4K_D8000");
-		soc_display_4k_mtrr(MTRRfix4K_E0000_MSR, 0xe0000,
+		soc_display_4k_mtrr(MTRR_FIX_4K_E0000, 0xe0000,
 			"IA32_MTRR_FIX4K_E0000");
-		soc_display_4k_mtrr(MTRRfix4K_E8000_MSR, 0xe8000,
+		soc_display_4k_mtrr(MTRR_FIX_4K_E8000, 0xe8000,
 			"IA32_MTRR_FIX4K_E8000");
-		soc_display_4k_mtrr(MTRRfix4K_F0000_MSR, 0xf0000,
+		soc_display_4k_mtrr(MTRR_FIX_4K_F0000, 0xf0000,
 			"IA32_MTRR_FIX4K_F0000");
-		soc_display_4k_mtrr(MTRRfix4K_F8000_MSR, 0xf8000,
+		soc_display_4k_mtrr(MTRR_FIX_4K_F8000, 0xf8000,
 			"IA32_MTRR_FIX4K_F8000");
 		address_bits = cpu_phys_address_size();
 		address_mask = (1ULL << address_bits) - 1;
 
 		/* Display the variable MTRRs */
 		for (i = 0; i < variable_mtrrs; i++)
-			soc_display_variable_mtrr(MTRRphysBase_MSR(i), i,
+			soc_display_variable_mtrr(MTRR_PHYS_BASE(i), i,
 				address_mask);
 	}
 }

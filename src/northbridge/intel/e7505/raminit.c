@@ -986,10 +986,10 @@ static inline void __attribute__((always_inline))
 		 */
 
 		/* Disable and invalidate all cache. */
-		msr_t xip_mtrr = rdmsr(MTRRphysMask_MSR(1));
-		xip_mtrr.lo &= ~MTRRphysMaskValid;
+		msr_t xip_mtrr = rdmsr(MTRR_PHYS_MASK(1));
+		xip_mtrr.lo &= ~MTRR_PHYS_MASK_VALID;
 		invd();
-		wrmsr(MTRRphysMask_MSR(1), xip_mtrr);
+		wrmsr(MTRR_PHYS_MASK(1), xip_mtrr);
 		invd();
 
 		RAM_DEBUG_MESSAGE("ECC state initialized.\n");

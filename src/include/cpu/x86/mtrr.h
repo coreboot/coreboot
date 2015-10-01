@@ -2,49 +2,46 @@
 #define CPU_X86_MTRR_H
 
 /*  These are the region types  */
-#define MTRR_TYPE_UNCACHEABLE 0
-#define MTRR_TYPE_WRCOMB     1
-/*#define MTRR_TYPE_         2*/
-/*#define MTRR_TYPE_         3*/
-#define MTRR_TYPE_WRTHROUGH  4
-#define MTRR_TYPE_WRPROT     5
-#define MTRR_TYPE_WRBACK     6
-#define MTRR_NUM_TYPES       7
+#define MTRR_TYPE_UNCACHEABLE		0
+#define MTRR_TYPE_WRCOMB		1
+#define MTRR_TYPE_WRTHROUGH		4
+#define MTRR_TYPE_WRPROT		5
+#define MTRR_TYPE_WRBACK		6
+#define MTRR_NUM_TYPES			7
 
-#define MTRRcap_MSR     0x0fe
+#define MTRR_CAP_MSR			0x0fe
 
-#define MTRRcapSmrr		(1 << 11)
-#define MTRRcapWc		(1 << 10)
-#define MTRRcapFix		(1 << 8)
-#define MTRRcapVcnt		0xff
+#define MTRR_CAP_SMRR			(1 << 11)
+#define MTRR_CAP_WC			(1 << 10)
+#define MTRR_CAP_FIX			(1 << 8)
+#define MTRR_CAP_VCNT			0xff
 
-#define MTRRdefType_MSR 0x2ff
+#define MTRR_DEF_TYPE_MSR		0x2ff
+#define MTRR_DEF_TYPE_MASK		0xff
+#define MTRR_DEF_TYPE_EN		(1 << 11)
+#define MTRR_DEF_TYPE_FIX_EN		(1 << 10)
 
-#define MTRRdefTypeEn		(1 << 11)
-#define MTRRdefTypeFixEn	(1 << 10)
-#define MTRRdefTypeType		0xff
 
-#define SMRRphysBase_MSR 0x1f2
-#define SMRRphysMask_MSR 0x1f3
+#define SMRR_PHYS_BASE			0x1f2
+#define SMRR_PHYS_MASK			0x1f3
 
-#define MTRRphysBase_MSR(reg) (0x200 + 2 * (reg))
-#define MTRRphysMask_MSR(reg) (0x200 + 2 * (reg) + 1)
+#define MTRR_PHYS_BASE(reg) 		(0x200 + 2 * (reg))
+#define MTRR_PHYS_MASK(reg) 		(MTRR_PHYS_BASE(reg) + 1)
+#define  MTRR_PHYS_MASK_VALID		(1 << 11)
 
-#define MTRRphysMaskValid	(1 << 11)
-
-#define NUM_FIXED_RANGES 88
-#define RANGES_PER_FIXED_MTRR 8
-#define MTRRfix64K_00000_MSR 0x250
-#define MTRRfix16K_80000_MSR 0x258
-#define MTRRfix16K_A0000_MSR 0x259
-#define MTRRfix4K_C0000_MSR 0x268
-#define MTRRfix4K_C8000_MSR 0x269
-#define MTRRfix4K_D0000_MSR 0x26a
-#define MTRRfix4K_D8000_MSR 0x26b
-#define MTRRfix4K_E0000_MSR 0x26c
-#define MTRRfix4K_E8000_MSR 0x26d
-#define MTRRfix4K_F0000_MSR 0x26e
-#define MTRRfix4K_F8000_MSR 0x26f
+#define NUM_FIXED_RANGES 		88
+#define RANGES_PER_FIXED_MTRR 		8
+#define MTRR_FIX_64K_00000		0x250
+#define MTRR_FIX_16K_80000		0x258
+#define MTRR_FIX_16K_A0000		0x259
+#define MTRR_FIX_4K_C0000		0x268
+#define MTRR_FIX_4K_C8000		0x269
+#define MTRR_FIX_4K_D0000		0x26a
+#define MTRR_FIX_4K_D8000		0x26b
+#define MTRR_FIX_4K_E0000		0x26c
+#define MTRR_FIX_4K_E8000		0x26d
+#define MTRR_FIX_4K_F0000		0x26e
+#define MTRR_FIX_4K_F8000		0x26f
 
 #if !defined (__ASSEMBLER__) && !defined(__PRE_RAM__)
 

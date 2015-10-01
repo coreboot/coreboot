@@ -33,15 +33,15 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 
 	msr.lo = 0;
 	msr.hi = 0;
-	wrmsr(MTRRfix4K_C8000_MSR, msr);
+	wrmsr(MTRR_FIX_4K_C8000, msr);
 #if CONFIG_DCACHE_RAM_SIZE > 0x8000
-	wrmsr(MTRRfix4K_C0000_MSR, msr);
+	wrmsr(MTRR_FIX_4K_C0000, msr);
 #endif
 #if CONFIG_DCACHE_RAM_SIZE > 0x10000
-	wrmsr(MTRRfix4K_D0000_MSR, msr);
+	wrmsr(MTRR_FIX_4K_D0000, msr);
 #endif
 #if CONFIG_DCACHE_RAM_SIZE > 0x18000
-	wrmsr(MTRRfix4K_D8000_MSR, msr);
+	wrmsr(MTRR_FIX_4K_D8000, msr);
 #endif
 	/* disable fixed mtrr from now on, it will be enabled by ramstage again*/
 
@@ -53,7 +53,7 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 	msr.hi = 0;
 	msr.lo = (1 << 11);
 
-	wrmsr(MTRRdefType_MSR, msr);
+	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 
 	enable_cache();
 }

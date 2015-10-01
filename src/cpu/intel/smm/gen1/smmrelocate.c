@@ -63,8 +63,8 @@ static inline void write_smrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
 	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
-	wrmsr(SMRRphysBase_MSR, relo_params->smrr_base);
-	wrmsr(SMRRphysMask_MSR, relo_params->smrr_mask);
+	wrmsr(SMRR_PHYS_BASE, relo_params->smrr_base);
+	wrmsr(SMRR_PHYS_MASK, relo_params->smrr_mask);
 }
 
 /* The relocation work is actually performed in SMM context, but the code
@@ -109,7 +109,7 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 	       save_state->smbase, save_state->iedbase, save_state);
 
 	/* Write SMRR MSRs based on indicated support. */
-	mtrr_cap = rdmsr(MTRRcap_MSR);
+	mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	if (mtrr_cap.lo & SMRR_SUPPORTED)
 		write_smrr(relo_params);
 
@@ -142,7 +142,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
 	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;
 	params->smrr_base.hi = 0;
-	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRRphysMaskValid;
+	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRR_PHYS_MASK_VALID;
 	params->smrr_mask.hi = 0;
 }
 

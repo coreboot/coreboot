@@ -1634,13 +1634,13 @@ static void set_var_mtrr_dqs(
 		zero.lo = zero.hi = 0;
 		/* The invalid bit is kept in the mask, so we simply clear the
 		   relevant mask register to disable a range. */
-		wrmsr (MTRRphysMask_MSR(reg), zero);
+		wrmsr (MTRR_PHYS_MASK(reg), zero);
 	} else {
 		/* Bit 32-35 of MTRRphysMask should be set to 1 */
 		base.lo |= type;
 		mask.lo |= 0x800;
-		wrmsr (MTRRphysBase_MSR(reg), base);
-		wrmsr (MTRRphysMask_MSR(reg), mask);
+		wrmsr (MTRR_PHYS_BASE(reg), base);
+		wrmsr (MTRR_PHYS_MASK(reg), mask);
 	}
 }
 

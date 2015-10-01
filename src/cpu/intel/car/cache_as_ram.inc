@@ -54,7 +54,7 @@ CacheAsRam:
 	 */
 	xorl	%eax, %eax
 	xorl	%edx, %edx
-	movl	$MTRRfix64K_00000_MSR, %ecx
+	movl	$MTRR_FIX_64K_00000, %ecx
 	wrmsr
 
 	/*
@@ -102,16 +102,16 @@ SIPI_Delay:
 
 	/* Wait for the Logical AP to complete initialization. */
 LogicalAP_SIPINotdone:
-	movl	$MTRRfix64K_00000_MSR, %ecx
+	movl	$MTRR_FIX_64K_00000, %ecx
 	rdmsr
 	orl	%eax, %eax
 	jz	LogicalAP_SIPINotdone
 
 NotHtProcessor:
 	/* Set the default memory type and enable fixed and variable MTRRs. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$(MTRRdefTypeEn | MTRRdefTypeFixEn), %eax
+	movl	$(MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN), %eax
 	wrmsr
 
 	/* Clear all MTRRs. */
@@ -131,35 +131,35 @@ clear_fixed_var_mtrr:
 
 all_mtrr_msrs:
 	/* fixed MTRR MSRs */
-	.long	MTRRfix64K_00000_MSR
-	.long	MTRRfix16K_80000_MSR
-	.long	MTRRfix16K_A0000_MSR
-	.long	MTRRfix4K_C0000_MSR
-	.long	MTRRfix4K_C8000_MSR
-	.long	MTRRfix4K_D0000_MSR
-	.long	MTRRfix4K_D8000_MSR
-	.long	MTRRfix4K_E0000_MSR
-	.long	MTRRfix4K_E8000_MSR
-	.long	MTRRfix4K_F0000_MSR
-	.long	MTRRfix4K_F8000_MSR
+	.long	MTRR_FIX_64K_00000
+	.long	MTRR_FIX_16K_80000
+	.long	MTRR_FIX_16K_A0000
+	.long	MTRR_FIX_4K_C0000
+	.long	MTRR_FIX_4K_C8000
+	.long	MTRR_FIX_4K_D0000
+	.long	MTRR_FIX_4K_D8000
+	.long	MTRR_FIX_4K_E0000
+	.long	MTRR_FIX_4K_E8000
+	.long	MTRR_FIX_4K_F0000
+	.long	MTRR_FIX_4K_F8000
 
 	/* var MTRR MSRs */
-	.long	MTRRphysBase_MSR(0)
-	.long	MTRRphysMask_MSR(0)
-	.long	MTRRphysBase_MSR(1)
-	.long	MTRRphysMask_MSR(1)
-	.long	MTRRphysBase_MSR(2)
-	.long	MTRRphysMask_MSR(2)
-	.long	MTRRphysBase_MSR(3)
-	.long	MTRRphysMask_MSR(3)
-	.long	MTRRphysBase_MSR(4)
-	.long	MTRRphysMask_MSR(4)
-	.long	MTRRphysBase_MSR(5)
-	.long	MTRRphysMask_MSR(5)
-	.long	MTRRphysBase_MSR(6)
-	.long	MTRRphysMask_MSR(6)
-	.long	MTRRphysBase_MSR(7)
-	.long	MTRRphysMask_MSR(7)
+	.long	MTRR_PHYS_BASE(0)
+	.long	MTRR_PHYS_MASK(0)
+	.long	MTRR_PHYS_BASE(1)
+	.long	MTRR_PHYS_MASK(1)
+	.long	MTRR_PHYS_BASE(2)
+	.long	MTRR_PHYS_MASK(2)
+	.long	MTRR_PHYS_BASE(3)
+	.long	MTRR_PHYS_MASK(3)
+	.long	MTRR_PHYS_BASE(4)
+	.long	MTRR_PHYS_MASK(4)
+	.long	MTRR_PHYS_BASE(5)
+	.long	MTRR_PHYS_MASK(5)
+	.long	MTRR_PHYS_BASE(6)
+	.long	MTRR_PHYS_MASK(6)
+	.long	MTRR_PHYS_BASE(7)
+	.long	MTRR_PHYS_MASK(7)
 
 	.long	0x000 /* NULL, end of table */
 
@@ -219,13 +219,13 @@ clear_fixed_var_mtrr_out:
 
 #if CacheSize > 0x8000
 	/* Enable caching for 32K-64K using fixed MTRR. */
-	movl	$MTRRfix4K_C0000_MSR, %ecx
+	movl	$MTRR_FIX_4K_C0000, %ecx
 	simplemask CacheSize, 0x8000
 	wrmsr
 #endif
 
 	/* Enable caching for 0-32K using fixed MTRR. */
-	movl	$MTRRfix4K_C8000_MSR, %ecx
+	movl	$MTRR_FIX_4K_C8000, %ecx
 	simplemask CacheSize, 0
 	wrmsr
 
@@ -235,7 +235,7 @@ clear_fixed_var_mtrr_out:
 	 * Enable write base caching so we can do execute in place (XIP)
 	 * on the flash ROM.
 	 */
-	movl	$MTRRphysBase_MSR(1), %ecx
+	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
@@ -246,9 +246,9 @@ clear_fixed_var_mtrr_out:
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
-	movl	$MTRRphysMask_MSR(1), %ecx
+	movl	$MTRR_PHYS_MASK(1), %ecx
 	movl	$0x0000000f, %edx
-	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE */
 
@@ -332,13 +332,13 @@ lout:
 	movl	%eax, %cr0
 
 	/* Clear sth. */
-	movl	$MTRRfix4K_C8000_MSR, %ecx
+	movl	$MTRR_FIX_4K_C8000, %ecx
 	xorl	%edx, %edx
 	xorl	%eax, %eax
 	wrmsr
 
 #if CONFIG_DCACHE_RAM_SIZE > 0x8000
-	movl	$MTRRfix4K_C0000_MSR, %ecx
+	movl	$MTRR_FIX_4K_C0000, %ecx
 	wrmsr
 #endif
 
@@ -346,9 +346,9 @@ lout:
 	 * Set the default memory type and disable fixed
 	 * and enable variable MTRRs.
 	 */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$MTRRdefTypeEn, %eax /* Enable variable and disable fixed MTRRs. */
+	movl	$MTRR_DEF_TYPE_EN, %eax /* Enable variable and disable fixed MTRRs. */
 	wrmsr
 
 	/* Enable cache. */

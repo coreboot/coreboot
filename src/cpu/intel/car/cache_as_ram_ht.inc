@@ -61,7 +61,7 @@ clear_mtrrs:
 	post_code(0x21)
 
 	/* Configure the default memory type to uncacheable. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
 	andl	$(~0x00000cff), %eax
 	wrmsr
@@ -95,9 +95,9 @@ addrsize_no_MSR:
 	 */
 addrsize_set_high:
 	xorl	%eax, %eax
-	movl	$MTRRphysMask_MSR(0), %ecx
+	movl	$MTRR_PHYS_MASK(0), %ecx
 	wrmsr
-	movl	$MTRRphysMask_MSR(1), %ecx
+	movl	$MTRR_PHYS_MASK(1), %ecx
 	wrmsr
 	movl	$LAPIC_BASE_MSR, %ecx
 	not	%edx
@@ -188,7 +188,7 @@ hyper_threading_cpu:
 	post_code(0x26)
 
 	/* Wait for sibling CPU to start. */
-1:	movl	$(MTRRphysBase_MSR(0)), %ecx
+1:	movl	$(MTRR_PHYS_BASE(0)), %ecx
 	rdmsr
 	andl	%eax, %eax
 	jnz	sipi_complete
@@ -211,7 +211,7 @@ ap_init:
 	post_code(0x28)
 
 	/* MTRR registers are shared between HT siblings. */
-	movl	$(MTRRphysBase_MSR(0)), %ecx
+	movl	$(MTRR_PHYS_BASE(0)), %ecx
 	movl	$(1<<12), %eax
 	xorl	%edx, %edx
 	wrmsr
@@ -230,21 +230,21 @@ sipi_complete:
 	post_code(0x2a)
 
 	/* Set Cache-as-RAM base address. */
-	movl	$(MTRRphysBase_MSR(0)), %ecx
+	movl	$(MTRR_PHYS_BASE(0)), %ecx
 	movl	$(CACHE_AS_RAM_BASE | MTRR_TYPE_WRBACK), %eax
 	xorl	%edx, %edx
 	wrmsr
 
 	/* Set Cache-as-RAM mask. */
-	movl	$(MTRRphysMask_MSR(0)), %ecx
+	movl	$(MTRR_PHYS_MASK(0)), %ecx
 	rdmsr
-	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
 	/* Enable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	orl	$MTRRdefTypeEn, %eax
+	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
 	post_code(0x2b)
@@ -308,7 +308,7 @@ no_msr_11e:
 
 #if CONFIG_XIP_ROM_SIZE
 	/* Enable cache for our code in Flash because we do XIP here */
-	movl	$MTRRphysBase_MSR(1), %ecx
+	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
@@ -319,9 +319,9 @@ no_msr_11e:
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
-	movl	$MTRRphysMask_MSR(1), %ecx
+	movl	$MTRR_PHYS_MASK(1), %ecx
 	rdmsr
-	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE */
 
@@ -356,9 +356,9 @@ no_msr_11e:
 	post_code(0x34)
 
 	/* Disable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	andl	$(~MTRRdefTypeEn), %eax
+	andl	$(~MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
 	post_code(0x35)
@@ -382,24 +382,24 @@ no_msr_11e:
 	post_code(0x38)
 
 	/* Enable Write Back and Speculative Reads for low RAM. */
-	movl	$MTRRphysBase_MSR(0), %ecx
+	movl	$MTRR_PHYS_BASE(0), %ecx
 	movl	$(0x00000000 | MTRR_TYPE_WRBACK), %eax
 	xorl	%edx, %edx
 	wrmsr
-	movl	$MTRRphysMask_MSR(0), %ecx
+	movl	$MTRR_PHYS_MASK(0), %ecx
 	rdmsr
-	movl	$(~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
 #if CACHE_ROM_SIZE
 	/* Enable caching and Speculative Reads for Flash ROM device. */
-	movl	$MTRRphysBase_MSR(1), %ecx
+	movl	$MTRR_PHYS_BASE(1), %ecx
 	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
 	xorl	%edx, %edx
 	wrmsr
-	movl	$MTRRphysMask_MSR(1), %ecx
+	movl	$MTRR_PHYS_MASK(1), %ecx
 	rdmsr
-	movl	$(~(CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CACHE_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 #endif
 
@@ -413,9 +413,9 @@ no_msr_11e:
 	post_code(0x3a)
 
 	/* Enable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	orl	$MTRRdefTypeEn, %eax
+	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
 	post_code(0x3b)

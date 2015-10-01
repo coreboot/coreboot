@@ -179,10 +179,10 @@ static void setup_default_sipi_vector_params(struct sipi_params *sp)
 
 #define NUM_FIXED_MTRRS 11
 static const unsigned int fixed_mtrrs[NUM_FIXED_MTRRS] = {
-	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
-	MTRRfix4K_C0000_MSR, MTRRfix4K_C8000_MSR, MTRRfix4K_D0000_MSR,
-	MTRRfix4K_D8000_MSR, MTRRfix4K_E0000_MSR, MTRRfix4K_E8000_MSR,
-	MTRRfix4K_F0000_MSR, MTRRfix4K_F8000_MSR,
+	MTRR_FIX_64K_00000, MTRR_FIX_16K_80000, MTRR_FIX_16K_A0000,
+	MTRR_FIX_4K_C0000, MTRR_FIX_4K_C8000, MTRR_FIX_4K_D0000,
+	MTRR_FIX_4K_D8000, MTRR_FIX_4K_E0000, MTRR_FIX_4K_E8000,
+	MTRR_FIX_4K_F0000, MTRR_FIX_4K_F8000,
 };
 
 static inline struct saved_msr *save_msr(int index, struct saved_msr *entry)
@@ -208,7 +208,7 @@ static int save_bsp_msrs(char *start, int size)
 	msr_t msr;
 
 	/* Determine number of MTRRs need to be saved. */
-	msr = rdmsr(MTRRcap_MSR);
+	msr = rdmsr(MTRR_CAP_MSR);
 	num_var_mtrrs = msr.lo & 0xff;
 
 	/* 2 * num_var_mtrrs for base and mask. +1 for IA32_MTRR_DEF_TYPE. */
@@ -225,11 +225,11 @@ static int save_bsp_msrs(char *start, int size)
 	}
 
 	for (i = 0; i < num_var_mtrrs; i++) {
-		msr_entry = save_msr(MTRRphysBase_MSR(i), msr_entry);
-		msr_entry = save_msr(MTRRphysMask_MSR(i), msr_entry);
+		msr_entry = save_msr(MTRR_PHYS_BASE(i), msr_entry);
+		msr_entry = save_msr(MTRR_PHYS_MASK(i), msr_entry);
 	}
 
-	msr_entry = save_msr(MTRRdefType_MSR, msr_entry);
+	msr_entry = save_msr(MTRR_DEF_TYPE_MSR, msr_entry);
 
 	return msr_count;
 }

@@ -76,9 +76,9 @@ cache_as_ram_setup:
 	cvtsd2si %xmm3, %ebx
 
 	/* Check if cpu_init_detected. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	andl	$MTRRdefTypeEn, %eax
+	andl	$MTRR_DEF_TYPE_EN, %eax
 	movl	%eax, %ebx	/* We store the status. */
 
 	jmp_if_k8(CAR_FAM10_out_post_errata)
@@ -270,27 +270,27 @@ clear_fixed_var_mtrr_out:
 
 #if CacheSize > 0x8000
 	/* Enable caching for 32K-64K using fixed MTRR. */
-	movl	$MTRRfix4K_C0000_MSR, %ecx
+	movl	$MTRR_FIX_4K_C0000, %ecx
 	simplemask CacheSize, 0x8000
 	wrmsr
 #endif
 
 #if CacheSize > 0x10000
 	/* Enable caching for 64K-96K using fixed MTRR. */
-	movl	$MTRRfix4K_D0000_MSR, %ecx
+	movl	$MTRR_FIX_4K_D0000, %ecx
 	simplemask CacheSize, 0x10000
 	wrmsr
 #endif
 
 #if CacheSize > 0x18000
 	/* Enable caching for 96K-128K using fixed MTRR. */
-	movl	$MTRRfix4K_D8000_MSR, %ecx
+	movl	$MTRR_FIX_4K_D8000, %ecx
 	simplemask CacheSize, 0x18000
 	wrmsr
 #endif
 
 	/* Enable caching for 0-32K using fixed MTRR. */
-	movl	$MTRRfix4K_C8000_MSR, %ecx
+	movl	$MTRR_FIX_4K_C8000, %ecx
 	simplemask CacheSize, 0
 	wrmsr
 
@@ -305,7 +305,7 @@ clear_fixed_var_mtrr_out:
 	/* Enable write base caching so we can do execute in place (XIP)
 	 * on the flash ROM.
 	 */
-	movl	$MTRRphysBase_MSR(1), %ecx
+	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
@@ -316,19 +316,19 @@ clear_fixed_var_mtrr_out:
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
-	movl	$MTRRphysMask_MSR(1), %ecx
+	movl	$MTRR_PHYS_MASK(1), %ecx
 	movl	$0xff, %edx /* (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1 for K8 (CONFIG_CPU_ADDR_BITS = 40) */
 	jmp_if_k8(wbcache_post_fam10_setup)
 	movl	$0xffff, %edx /* (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1 for FAM10 (CONFIG_CPU_ADDR_BITS = 48) */
 wbcache_post_fam10_setup:
-	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE */
 
 	/* Set the default memory type and enable fixed and variable MTRRs. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$(MTRRdefTypeEn | MTRRdefTypeFixEn), %eax
+	movl	$(MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN), %eax
 	wrmsr
 
 	/* Enable the MTRRs and IORRs in SYSCFG. */
@@ -462,35 +462,35 @@ cache_as_ram_switch_stack:
 
 all_mtrr_msrs:
 	/* fixed MTRR MSRs */
-	.long	MTRRfix64K_00000_MSR
-	.long	MTRRfix16K_80000_MSR
-	.long	MTRRfix16K_A0000_MSR
-	.long	MTRRfix4K_C0000_MSR
-	.long	MTRRfix4K_C8000_MSR
-	.long	MTRRfix4K_D0000_MSR
-	.long	MTRRfix4K_D8000_MSR
-	.long	MTRRfix4K_E0000_MSR
-	.long	MTRRfix4K_E8000_MSR
-	.long	MTRRfix4K_F0000_MSR
-	.long	MTRRfix4K_F8000_MSR
+	.long	MTRR_FIX_64K_00000
+	.long	MTRR_FIX_16K_80000
+	.long	MTRR_FIX_16K_A0000
+	.long	MTRR_FIX_4K_C0000
+	.long	MTRR_FIX_4K_C8000
+	.long	MTRR_FIX_4K_D0000
+	.long	MTRR_FIX_4K_D8000
+	.long	MTRR_FIX_4K_E0000
+	.long	MTRR_FIX_4K_E8000
+	.long	MTRR_FIX_4K_F0000
+	.long	MTRR_FIX_4K_F8000
 
 	/* var MTRR MSRs */
-	.long	MTRRphysBase_MSR(0)
-	.long	MTRRphysMask_MSR(0)
-	.long	MTRRphysBase_MSR(1)
-	.long	MTRRphysMask_MSR(1)
-	.long	MTRRphysBase_MSR(2)
-	.long	MTRRphysMask_MSR(2)
-	.long	MTRRphysBase_MSR(3)
-	.long	MTRRphysMask_MSR(3)
-	.long	MTRRphysBase_MSR(4)
-	.long	MTRRphysMask_MSR(4)
-	.long	MTRRphysBase_MSR(5)
-	.long	MTRRphysMask_MSR(5)
-	.long	MTRRphysBase_MSR(6)
-	.long	MTRRphysMask_MSR(6)
-	.long	MTRRphysBase_MSR(7)
-	.long	MTRRphysMask_MSR(7)
+	.long	MTRR_PHYS_BASE(0)
+	.long	MTRR_PHYS_MASK(0)
+	.long	MTRR_PHYS_BASE(1)
+	.long	MTRR_PHYS_MASK(1)
+	.long	MTRR_PHYS_BASE(2)
+	.long	MTRR_PHYS_MASK(2)
+	.long	MTRR_PHYS_BASE(3)
+	.long	MTRR_PHYS_MASK(3)
+	.long	MTRR_PHYS_BASE(4)
+	.long	MTRR_PHYS_MASK(4)
+	.long	MTRR_PHYS_BASE(5)
+	.long	MTRR_PHYS_MASK(5)
+	.long	MTRR_PHYS_BASE(6)
+	.long	MTRR_PHYS_MASK(6)
+	.long	MTRR_PHYS_BASE(7)
+	.long	MTRR_PHYS_MASK(7)
 
 	/* Variable IORR MTRR MSRs */
 	.long	IORRBase_MSR(0)

@@ -64,7 +64,7 @@ static void detect_var_mtrrs(void)
 {
 	msr_t msr;
 
-	msr = rdmsr(MTRRcap_MSR);
+	msr = rdmsr(MTRR_CAP_MSR);
 
 	total_mtrrs = msr.lo & 0xff;
 
@@ -81,19 +81,19 @@ void enable_fixed_mtrr(void)
 {
 	msr_t msr;
 
-	msr = rdmsr(MTRRdefType_MSR);
-	msr.lo |= MTRRdefTypeEn | MTRRdefTypeFixEn;
-	wrmsr(MTRRdefType_MSR, msr);
+	msr = rdmsr(MTRR_DEF_TYPE_MSR);
+	msr.lo |= MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN;
+	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 }
 
 static void enable_var_mtrr(unsigned char deftype)
 {
 	msr_t msr;
 
-	msr = rdmsr(MTRRdefType_MSR);
+	msr = rdmsr(MTRR_DEF_TYPE_MSR);
 	msr.lo &= ~0xff;
-	msr.lo |= MTRRdefTypeEn | deftype;
-	wrmsr(MTRRdefType_MSR, msr);
+	msr.lo |= MTRR_DEF_TYPE_EN | deftype;
+	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 }
 
 /* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
@@ -250,11 +250,11 @@ static uint8_t fixed_mtrr_types[NUM_FIXED_RANGES];
 /* Fixed MTRR descriptors. */
 static const struct fixed_mtrr_desc fixed_mtrr_desc[] = {
 	{ PHYS_TO_RANGE_ADDR(0x000000), PHYS_TO_RANGE_ADDR(0x080000),
-	  PHYS_TO_RANGE_ADDR(64 * 1024), 0, MTRRfix64K_00000_MSR },
+	  PHYS_TO_RANGE_ADDR(64 * 1024), 0, MTRR_FIX_64K_00000 },
 	{ PHYS_TO_RANGE_ADDR(0x080000), PHYS_TO_RANGE_ADDR(0x0C0000),
-	  PHYS_TO_RANGE_ADDR(16 * 1024), 8, MTRRfix16K_80000_MSR },
+	  PHYS_TO_RANGE_ADDR(16 * 1024), 8, MTRR_FIX_16K_80000 },
 	{ PHYS_TO_RANGE_ADDR(0x0C0000), PHYS_TO_RANGE_ADDR(0x100000),
-	  PHYS_TO_RANGE_ADDR(4 * 1024), 24, MTRRfix4K_C0000_MSR },
+	  PHYS_TO_RANGE_ADDR(4 * 1024), 24, MTRR_FIX_4K_C0000 },
 };
 
 static void calc_fixed_mtrrs(void)
@@ -410,9 +410,9 @@ static void clear_var_mtrr(int index)
 {
 	msr_t msr_val;
 
-	msr_val = rdmsr(MTRRphysMask_MSR(index));
-	msr_val.lo &= ~MTRRphysMaskValid;
-	wrmsr(MTRRphysMask_MSR(index), msr_val);
+	msr_val = rdmsr(MTRR_PHYS_MASK(index));
+	msr_val.lo &= ~MTRR_PHYS_MASK_VALID;
+	wrmsr(MTRR_PHYS_MASK(index), msr_val);
 }
 
 static void prep_var_mtrr(struct var_mtrr_state *var_state,
@@ -453,7 +453,7 @@ static void prep_var_mtrr(struct var_mtrr_state *var_state,
 	regs->base.hi = rbase >> 32;
 
 	regs->mask.lo = rsize;
-	regs->mask.lo |= MTRRphysMaskValid;
+	regs->mask.lo |= MTRR_PHYS_MASK_VALID;
 	regs->mask.hi = rsize >> 32;
 }
 
@@ -772,8 +772,8 @@ static void commit_var_mtrrs(const struct var_mtrr_solution *sol)
 	/* Write out the variable MTRRs. */
 	disable_cache();
 	for (i = 0; i < sol->num_used; i++) {
-		wrmsr(MTRRphysBase_MSR(i), sol->regs[i].base);
-		wrmsr(MTRRphysMask_MSR(i), sol->regs[i].mask);
+		wrmsr(MTRR_PHYS_BASE(i), sol->regs[i].base);
+		wrmsr(MTRR_PHYS_MASK(i), sol->regs[i].mask);
 	}
 	/* Clear the ones that are unused. */
 	for (; i < total_mtrrs; i++)
@@ -818,16 +818,16 @@ void x86_mtrr_check(void)
 	msr_t msr;
 	printk(BIOS_DEBUG, "\nMTRR check\n");
 
-	msr = rdmsr(MTRRdefType_MSR);
+	msr = rdmsr(MTRR_DEF_TYPE_MSR);
 
 	printk(BIOS_DEBUG, "Fixed MTRRs   : ");
-	if (msr.lo & MTRRdefTypeFixEn)
+	if (msr.lo & MTRR_DEF_TYPE_FIX_EN)
 		printk(BIOS_DEBUG, "Enabled\n");
 	else
 		printk(BIOS_DEBUG, "Disabled\n");
 
 	printk(BIOS_DEBUG, "Variable MTRRs: ");
-	if (msr.lo & MTRRdefTypeEn)
+	if (msr.lo & MTRR_DEF_TYPE_EN)
 		printk(BIOS_DEBUG, "Enabled\n");
 	else
 		printk(BIOS_DEBUG, "Disabled\n");

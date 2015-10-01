@@ -105,12 +105,12 @@ static void save_mtrr_state(struct mtrr_state *state)
 {
 	int i;
 	for (i = 0; i < MTRR_COUNT; i++) {
-		state->mtrrs[i].base = rdmsr(MTRRphysBase_MSR(i));
-		state->mtrrs[i].mask = rdmsr(MTRRphysMask_MSR(i));
+		state->mtrrs[i].base = rdmsr(MTRR_PHYS_BASE(i));
+		state->mtrrs[i].mask = rdmsr(MTRR_PHYS_MASK(i));
 	}
 	state->top_mem = rdmsr(TOP_MEM);
 	state->top_mem2 = rdmsr(TOP_MEM2);
-	state->def_type = rdmsr(MTRRdefType_MSR);
+	state->def_type = rdmsr(MTRR_DEF_TYPE_MSR);
 }
 
 static void restore_mtrr_state(struct mtrr_state *state)
@@ -119,12 +119,12 @@ static void restore_mtrr_state(struct mtrr_state *state)
 	disable_cache();
 
 	for (i = 0; i < MTRR_COUNT; i++) {
-		wrmsr(MTRRphysBase_MSR(i), state->mtrrs[i].base);
-		wrmsr(MTRRphysMask_MSR(i), state->mtrrs[i].mask);
+		wrmsr(MTRR_PHYS_BASE(i), state->mtrrs[i].base);
+		wrmsr(MTRR_PHYS_MASK(i), state->mtrrs[i].mask);
 	}
 	wrmsr(TOP_MEM, state->top_mem);
 	wrmsr(TOP_MEM2, state->top_mem2);
-	wrmsr(MTRRdefType_MSR, state->def_type);
+	wrmsr(MTRR_DEF_TYPE_MSR, state->def_type);
 
 	enable_cache();
 }
@@ -158,22 +158,22 @@ static void set_init_ecc_mtrrs(void)
 	for (i = 0; i < MTRR_COUNT; i++) {
 		msr_t zero;
 		zero.lo = zero.hi = 0;
-		wrmsr(MTRRphysBase_MSR(i), zero);
-		wrmsr(MTRRphysMask_MSR(i), zero);
+		wrmsr(MTRR_PHYS_BASE(i), zero);
+		wrmsr(MTRR_PHYS_MASK(i), zero);
 	}
 
 	/* Write back cache the first 1MB */
 	msr.hi = 0x00000000;
 	msr.lo = 0x00000000 | MTRR_TYPE_WRBACK;
-	wrmsr(MTRRphysBase_MSR(0), msr);
+	wrmsr(MTRR_PHYS_BASE(0), msr);
 	msr.hi = 0x000000ff;
 	msr.lo = ~((CONFIG_RAMTOP) - 1) | 0x800;
-	wrmsr(MTRRphysMask_MSR(0), msr);
+	wrmsr(MTRR_PHYS_MASK(0), msr);
 
 	/* Set the default type to write combining */
 	msr.hi = 0x00000000;
 	msr.lo = 0xc00 | MTRR_TYPE_WRCOMB;
-	wrmsr(MTRRdefType_MSR, msr);
+	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 
 	/* Set TOP_MEM to 4G */
 	msr.hi = 0x00000001;

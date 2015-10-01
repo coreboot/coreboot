@@ -102,7 +102,7 @@
 #define SMBASE_MSR			0xc20
 #define IEDBASE_MSR			0xc22
 
-/* MTRRcap_MSR bits */
+/* MTRR_CAP_MSR bits */
 #define SMRR_SUPPORTED (1<<11)
 #define EMRR_SUPPORTED (1<<12)
 

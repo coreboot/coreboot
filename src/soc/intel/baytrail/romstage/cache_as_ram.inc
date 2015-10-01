@@ -60,7 +60,7 @@ wait_for_sipi:
 	post_code(0x21)
 	/* Configure the default memory type to uncacheable as well as disable
 	 * fixed and variable range mtrrs. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
 	andl	$(~0x00000cff), %eax
 	wrmsr
@@ -95,34 +95,34 @@ wait_for_sipi:
 
 	post_code(0x23)
 	/* Set Cache-as-RAM base address. */
-	movl	$(MTRRphysBase_MSR(0)), %ecx
+	movl	$(MTRR_PHYS_BASE(0)), %ecx
 	movl	$(CACHE_AS_RAM_BASE | MTRR_TYPE_WRBACK), %eax
 	xorl	%edx, %edx
 	wrmsr
 
 	post_code(0x24)
 	/* Set Cache-as-RAM mask. */
-	movl	$(MTRRphysMask_MSR(0)), %ecx
-	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRRphysMaskValid), %eax
+	movl	$(MTRR_PHYS_MASK(0)), %ecx
+	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	post_code(0x25)
 	/* Set code caching up for romstage. */
-	movl	$(MTRRphysBase_MSR(1)), %ecx
+	movl	$(MTRR_PHYS_BASE(1)), %ecx
 	movl	$(CODE_CACHE_BASE | MTRR_TYPE_WRPROT), %eax
 	xorl	%edx, %edx
 	wrmsr
 
-	movl	$(MTRRphysMask_MSR(1)), %ecx
-	movl	$(CODE_CACHE_MASK | MTRRphysMaskValid), %eax
+	movl	$(MTRR_PHYS_MASK(1)), %ecx
+	movl	$(CODE_CACHE_MASK | MTRR_PHYS_MASK_VALID), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	/* Enable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	orl	$MTRRdefTypeEn, %eax
+	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
 	post_code(0x26)
@@ -198,9 +198,9 @@ before_romstage:
 	post_code(0x2c)
 
 	/* Disable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	andl	$(~MTRRdefTypeEn), %eax
+	andl	$(~MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
 	invd
@@ -225,7 +225,7 @@ before_romstage:
 
 	/* Get number of MTRRs. */
 	popl	%ebx
-	movl	$MTRRphysBase_MSR(0), %ecx
+	movl	$MTRR_PHYS_BASE(0), %ecx
 1:
 	testl	%ebx, %ebx
 	jz	1f
@@ -258,9 +258,9 @@ before_romstage:
 	post_code(0x30)
 
 	/* Enable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	orl	$MTRRdefTypeEn, %eax
+	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
 	post_code(0x31)

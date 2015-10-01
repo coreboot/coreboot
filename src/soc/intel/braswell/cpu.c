@@ -206,10 +206,10 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 	/* Set up SMRR. */
 	smrr.lo = relo_attrs.smrr_base;
 	smrr.hi = 0;
-	wrmsr(SMRRphysBase_MSR, smrr);
+	wrmsr(SMRR_PHYS_BASE, smrr);
 	smrr.lo = relo_attrs.smrr_mask;
 	smrr.hi = 0;
-	wrmsr(SMRRphysMask_MSR, smrr);
+	wrmsr(SMRR_PHYS_MASK, smrr);
 
 	/*
 	 * The relocated handler runs with all CPUs concurrently. Therefore
@@ -284,7 +284,7 @@ static int smm_load_handlers(void)
 	relo_attrs.smbase = (uint32_t)smm_base;
 	relo_attrs.smrr_base = relo_attrs.smbase | MTRR_TYPE_WRBACK;
 	relo_attrs.smrr_mask = ~(smm_size - 1) & rmask;
-	relo_attrs.smrr_mask |= MTRRphysMaskValid;
+	relo_attrs.smrr_mask |= MTRR_PHYS_MASK_VALID;
 
 	/* Install handlers. */
 	if (install_relocation_handler(pattrs->num_cpus) < 0) {

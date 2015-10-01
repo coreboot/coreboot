@@ -81,15 +81,15 @@ static void set_resume_cache(void)
 	/* Enable caching for 0 - coreboot ram using variable mtrr */
 	msr.lo = 0 | MTRR_TYPE_WRBACK;
 	msr.hi = 0;
-	wrmsr(MTRRphysBase_MSR(0), msr);
-	msr.lo = ~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid;
+	wrmsr(MTRR_PHYS_BASE(0), msr);
+	msr.lo = ~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID;
 	msr.hi = (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1;
-	wrmsr(MTRRphysMask_MSR(0), msr);
+	wrmsr(MTRR_PHYS_MASK(0), msr);
 
 	/* Set the default memory type and disable fixed and enable variable MTRRs */
 	msr.hi = 0;
 	msr.lo = (1 << 11);
-	wrmsr(MTRRdefType_MSR, msr);
+	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 
 	enable_cache();
 }

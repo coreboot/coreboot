@@ -95,7 +95,7 @@ void *setup_stack_and_mtrrs(void)
 
 	/* Cache RAM as WB from 0 -> CONFIG_RAMTOP. */
 	slot = stack_push32(slot, mtrr_mask_upper); /* upper mask */
-	slot = stack_push32(slot, ~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid);
+	slot = stack_push32(slot, ~(CONFIG_RAMTOP - 1) | MTRR_PHYS_MASK_VALID);
 	slot = stack_push32(slot, 0); /* upper base */
 	slot = stack_push32(slot, 0 | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
@@ -133,7 +133,7 @@ void *setup_stack_and_mtrrs(void)
 	 * of the FSP reserved memory region.
 	 */
 	slot = stack_push32(slot, mtrr_mask_upper); /* upper mask */
-	slot = stack_push32(slot, ~(alignment - 1) | MTRRphysMaskValid);
+	slot = stack_push32(slot, ~(alignment - 1) | MTRR_PHYS_MASK_VALID);
 	slot = stack_push32(slot, 0); /* upper base */
 	slot = stack_push32(slot, aligned_ram | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
@@ -152,7 +152,7 @@ void *setup_stack_and_mtrrs(void)
 	smm_region(&smm_base, &smm_size);
 	tseg_base = (uint32_t)smm_base;
 	slot = stack_push32(slot, mtrr_mask_upper); /* upper mask */
-	slot = stack_push32(slot, ~(alignment - 1) | MTRRphysMaskValid);
+	slot = stack_push32(slot, ~(alignment - 1) | MTRR_PHYS_MASK_VALID);
 	slot = stack_push32(slot, 0); /* upper base */
 	slot = stack_push32(slot, tseg_base | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
@@ -160,7 +160,7 @@ void *setup_stack_and_mtrrs(void)
 
 	/* Cache the ROM as WP just below 4GiB. */
 	slot = stack_push32(slot, mtrr_mask_upper); /* upper mask */
-	slot = stack_push32(slot, ~(CONFIG_ROM_SIZE - 1) | MTRRphysMaskValid);
+	slot = stack_push32(slot, ~(CONFIG_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID);
 	slot = stack_push32(slot, 0); /* upper base */
 	slot = stack_push32(slot, ~(CONFIG_ROM_SIZE - 1) | MTRR_TYPE_WRPROT);
 	num_mtrrs++;

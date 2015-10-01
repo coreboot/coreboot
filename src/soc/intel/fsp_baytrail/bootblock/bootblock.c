@@ -52,10 +52,10 @@ static void set_var_mtrr(int reg, uint32_t base, uint32_t size, int type)
 	msr_t basem, maskm;
 	basem.lo = base | type;
 	basem.hi = 0;
-	wrmsr(MTRRphysBase_MSR(reg), basem);
-	maskm.lo = ~(size - 1) | MTRRphysMaskValid;
+	wrmsr(MTRR_PHYS_BASE(reg), basem);
+	maskm.lo = ~(size - 1) | MTRR_PHYS_MASK_VALID;
 	maskm.hi = (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1;
-	wrmsr(MTRRphysMask_MSR(reg), maskm);
+	wrmsr(MTRR_PHYS_MASK(reg), maskm);
 }
 
 /*
@@ -80,7 +80,7 @@ static void enable_rom_caching(void)
 	/* Enable Variable MTRRs */
 	msr.hi = 0x00000000;
 	msr.lo = 0x00000800;
-	wrmsr(MTRRdefType_MSR, msr);
+	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 }
 
 static void setup_mmconfig(void)

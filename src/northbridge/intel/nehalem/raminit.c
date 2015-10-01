@@ -2066,8 +2066,8 @@ static void disable_cache(void)
 {
 	msr_t msr = {.lo = 0, .hi = 0 };
 
-	wrmsr(MTRRphysBase_MSR(3), msr);
-	wrmsr(MTRRphysMask_MSR(3), msr);
+	wrmsr(MTRR_PHYS_BASE(3), msr);
+	wrmsr(MTRR_PHYS_MASK(3), msr);
 }
 
 static void enable_cache(unsigned int base, unsigned int size)
@@ -2075,11 +2075,11 @@ static void enable_cache(unsigned int base, unsigned int size)
 	msr_t msr;
 	msr.lo = base | MTRR_TYPE_WRPROT;
 	msr.hi = 0;
-	wrmsr(MTRRphysBase_MSR(3), msr);
-	msr.lo = ((~(ALIGN_DOWN(size + 4096, 4096) - 1) | MTRRdefTypeEn)
+	wrmsr(MTRR_PHYS_BASE(3), msr);
+	msr.lo = ((~(ALIGN_DOWN(size + 4096, 4096) - 1) | MTRR_DEF_TYPE_EN)
 		  & 0xffffffff);
 	msr.hi = 0x0000000f;
-	wrmsr(MTRRphysMask_MSR(3), msr);
+	wrmsr(MTRR_PHYS_MASK(3), msr);
 }
 
 static void flush_cache(u32 start, u32 size)
@@ -4017,7 +4017,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	write_mchbar8(0x2ca8, read_mchbar8(0x2ca8) & 0xfc);
 #if !REAL
-	rdmsr (MTRRphysMask_MSR (3));
+	rdmsr (MTRR_PHYS_MASK (3));
 #endif
 
 	collect_system_info(&info);

@@ -84,7 +84,7 @@
 
 	/* Clear all of the variable MTRRs. */
 	popl	%ebx
-	movl	$MTRRphysBase_MSR(0), %ecx
+	movl	$MTRR_PHYS_BASE(0), %ecx
 	clr	%eax
 	clr	%edx
 
@@ -101,7 +101,7 @@
 1:
 	/* Get number of MTRRs. */
 	popl	%ebx
-	movl	$MTRRphysBase_MSR(0), %ecx
+	movl	$MTRR_PHYS_BASE(0), %ecx
 2:
 	testl	%ebx, %ebx
 	jz	2f
@@ -134,9 +134,9 @@
 	post_code(0x3a)
 
 	/* Enable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
-	orl	$MTRRdefTypeEn, %eax
+	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
 	post_code(0x3b)

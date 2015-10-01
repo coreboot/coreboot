@@ -65,6 +65,13 @@ config RETURN_FROM_VERSTAGE
 	  reused by the succeeding stage. This is useful if a ram space is too
 	  small to fit both the verstage and the succeeding stage.
 
+config CHIPSET_PROVIDES_VERSTAGE_MAIN_SYMBOL
+	bool "The chipset provides the main() entry point for verstage"
+	default n
+	depends on SEPARATE_VERSTAGE
+	help
+	  The chipset code provides their own main() entry point.
+
 # These VBOOT_X_INDEX are the position of X in FW_MAIN_A/B region. The index
 # table is created by cros_bundle_firmware at build time based on the positions
 # of the blobs listed in fmap.dts and stored at the top of FW_MAIN_A/B region.

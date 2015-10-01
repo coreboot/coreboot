@@ -42,5 +42,7 @@ void verstage(void)
 	}
 }
 
+#if !IS_ENABLED(CONFIG_CHIPSET_PROVIDES_VERSTAGE_MAIN_SYMBOL)
 /* This is for boards that rely on main() for an entry point of a stage. */
 void main(void) __attribute__((alias ("verstage")));
+#endif

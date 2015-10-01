@@ -402,5 +402,14 @@ uint8_t uart_rx_byte(int idx)
 /* TODO: Implement function */
 void uart_fill_lb(void *data)
 {
+	struct lb_serial serial;
+
+	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial.baseaddr = (uint32_t)UART1_DM_BASE;
+	serial.baud = default_baudrate();
+	serial.regwidth = 1;
+
+	lb_add_serial(&serial, data);
+	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
 }
 #endif

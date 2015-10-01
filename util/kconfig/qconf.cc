@@ -54,6 +54,8 @@
 # define _ qgettext
 #endif
 
+int kconfig_warnings = 0;
+
 static QApplication *configApp;
 static ConfigSettings *configSettings;
 

@@ -76,6 +76,7 @@ static struct param {
 	bool stage_xip;
 	int fit_empty_entries;
 	enum comp_algo compression;
+	enum vb2_hash_algorithm hash;
 	/* for linux payloads */
 	char *initrd;
 	char *cmdline;
@@ -83,6 +84,7 @@ static struct param {
 	/* All variables not listed are initialized as zero. */
 	.arch = CBFS_ARCHITECTURE_UNKNOWN,
 	.compression = CBFS_COMPRESS_NONE,
+	.hash = VB2_HASH_INVALID,
 	.headeroffset = ~0,
 	.region_name = SECTION_NAME_PRIMARY_CBFS,
 };
@@ -326,6 +328,14 @@ static int cbfs_add_component(const char *filename,
 		buffer_delete(&buffer);
 		return 1;
 	}
+
+	if (param.hash != VB2_HASH_INVALID)
+		if (cbfs_add_file_hash(header, &buffer, param.hash) == -1) {
+			ERROR("couldn't add hash for '%s'\n", name);
+			free(header);
+			buffer_delete(&buffer);
+			return 1;
+		}
 
 	if (IS_TOP_ALIGNED_ADDRESS(offset))
 		offset = convert_to_from_top_aligned(param.image_region,
@@ -882,11 +892,11 @@ static int cbfs_copy(void)
 }
 
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:c:b:a:vh?", cbfs_add, true, true},
-	{"add-flat-binary", "H:r:f:n:l:e:c:b:vh?", cbfs_add_flat_binary, true,
+	{"add", "H:r:f:n:t:c:b:a:vA:h?", cbfs_add, true, true},
+	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:h?", cbfs_add_flat_binary, true,
 									true},
-	{"add-payload", "H:r:f:n:t:c:b:C:I:vh?", cbfs_add_payload, true, true},
-	{"add-stage", "a:H:r:f:n:t:c:b:P:S:yvh?", cbfs_add_stage, true, true},
+	{"add-payload", "H:r:f:n:t:c:b:C:I:vA:h?", cbfs_add_payload, true, true},
+	{"add-stage", "a:H:r:f:n:t:c:b:P:S:yvA:h?", cbfs_add_stage, true, true},
 	{"add-int", "H:r:i:n:b:vh?", cbfs_add_integer, true, true},
 	{"add-master-header", "H:r:vh?", cbfs_add_master_header, true, true},
 	{"copy", "H:D:s:h?", cbfs_copy, true, true},
@@ -914,6 +924,7 @@ static struct option long_options[] = {
 	{"fill-upward",   no_argument,       0, 'u' },
 	{"flashmap",      required_argument, 0, 'M' },
 	{"fmap-regions",  required_argument, 0, 'r' },
+	{"hash-algorithm",required_argument, 0, 'A' },
 	{"header-offset", required_argument, 0, 'H' },
 	{"help",          no_argument,       0, 'h' },
 	{"ignore-sec",    required_argument, 0, 'S' },
@@ -997,18 +1008,18 @@ static void usage(char *name)
 	     "  -v               Provide verbose output\n"
 	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"
-	     " add [-r image,regions] -f FILE -n NAME -t TYPE \\\n"
+	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
 	     "        [-c compression] [-b base-address | -a alignment]    "
 			"Add a component\n"
-	     " add-payload [-r image,regions] -f FILE -n NAME \\\n"
+	     " add-payload [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base-address]                   "
 			"Add a payload to the ROM\n"
 	     "        (linux specific: [-C cmdline] [-I initrd])\n"
-	     " add-stage [-r image,regions] -f FILE -n NAME \\\n"
+	     " add-stage [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base] [-S section-to-ignore]    "
 	     "        [-a alignment] [-y|--xip] [-P page-size]"
 			"Add a stage to the ROM\n"
-	     " add-flat-binary [-r image,regions] -f FILE -n NAME \\\n"
+	     " add-flat-binary [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        -l load-address -e entry-point [-c compression] \\\n"
 	     "        [-b base]                                            "
 			"Add a 32bit flat mode binary\n"
@@ -1130,6 +1141,17 @@ int main(int argc, char **argv)
 				else
 					WARN("Unknown compression '%s' ignored.\n",
 									optarg);
+				break;
+			}
+			case 'A': {
+				int algo = cbfs_parse_hash_algo(optarg);
+				if (algo >= 0)
+					param.hash = algo;
+				else {
+					ERROR("Unknown hash algorithm '%s'.\n",
+						optarg);
+					return 1;
+				}
 				break;
 			}
 			case 'M':

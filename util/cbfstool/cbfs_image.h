@@ -36,6 +36,10 @@ struct cbfs_image {
  * enum comp_algo if it's supported, or a number < 0 otherwise. */
 int cbfs_parse_comp_algo(const char *name);
 
+/* Given the string name of a hash algorithm, return the corresponding
+ * id if it's supported, or a number < 0 otherwise. */
+int cbfs_parse_hash_algo(const char *name);
+
 /* Given a pointer, serialize the header from host-native byte format
  * to cbfs format, i.e. big-endian. */
 void cbfs_put_header(void *dest, const struct cbfs_header *header);
@@ -184,4 +188,10 @@ struct cbfs_file_attribute *cbfs_file_next_attr(struct cbfs_file *file,
 struct cbfs_file_attribute *cbfs_add_file_attr(struct cbfs_file *header,
 					       uint32_t tag,
 					       uint32_t size);
+
+/* Adds an extended attribute to header, containing a hash of buffer's data of
+ * the type specified by hash_type.
+ * Returns 0 on success, -1 on error. */
+int cbfs_add_file_hash(struct cbfs_file *header, struct buffer *buffer,
+	enum vb2_hash_algorithm hash_type);
 #endif

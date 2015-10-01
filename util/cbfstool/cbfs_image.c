@@ -85,6 +85,16 @@ int cbfs_parse_comp_algo(const char *name)
 	return lookup_type_by_name(types_cbfs_compression, name);
 }
 
+static const char *get_hash_attr_name(uint16_t hash_type)
+{
+	return lookup_name_by_type(types_cbfs_hash, hash_type, "(invalid)");
+}
+
+int cbfs_parse_hash_algo(const char *name)
+{
+	return lookup_type_by_name(types_cbfs_hash, name);
+}
+
 /* CBFS image */
 
 size_t cbfs_calculate_file_header_size(const char *name)
@@ -171,6 +181,24 @@ static int cbfs_file_get_compression_info(struct cbfs_file *entry,
 		}
 	}
 	return compression;
+}
+
+static struct cbfs_file_attr_hash *cbfs_file_get_next_hash(
+	struct cbfs_file *entry, struct cbfs_file_attr_hash *cur)
+{
+	struct cbfs_file_attribute *attr = (struct cbfs_file_attribute *)cur;
+	if (attr == NULL) {
+		attr = cbfs_file_first_attr(entry);
+		if (attr == NULL)
+			return NULL;
+		if (ntohl(attr->tag) == CBFS_FILE_ATTR_TAG_HASH)
+			return (struct cbfs_file_attr_hash *)attr;
+	}
+	while ((attr = cbfs_file_next_attr(entry, attr)) != NULL) {
+		if (ntohl(attr->tag) == CBFS_FILE_ATTR_TAG_HASH)
+			return (struct cbfs_file_attr_hash *)attr;
+	};
+	return NULL;
 }
 
 void cbfs_get_header(struct cbfs_header *header, void *src)
@@ -813,6 +841,31 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			);
 	}
 
+	struct cbfs_file_attr_hash *hash = NULL;
+	while ((hash = cbfs_file_get_next_hash(entry, hash)) != NULL) {
+		unsigned int hash_type = ntohl(hash->hash_type);
+		if (hash_type > CBFS_NUM_SUPPORTED_HASHES) {
+			fprintf(fp, "invalid hash type %d\n", hash_type);
+			break;
+		}
+		size_t hash_len = widths_cbfs_hash[hash_type];
+		char *hash_str = bintohex(hash->hash_data, hash_len);
+		uint8_t local_hash[hash_len];
+		if (vb2_digest_buffer(CBFS_SUBHEADER(entry),
+			ntohl(entry->len), hash_type, local_hash,
+			hash_len) != VB2_SUCCESS) {
+			fprintf(fp, "failed to hash '%s'\n", name);
+			break;
+		}
+		int valid = memcmp(local_hash, hash->hash_data, hash_len) == 0;
+		const char *valid_str = valid ? "valid" : "invalid";
+
+		fprintf(fp, "    hash %s:%s %s\n",
+			get_hash_attr_name(hash_type),
+			hash_str, valid_str);
+		free(hash_str);
+	}
+
 	if (!verbose)
 		return 0;
 
@@ -1127,6 +1180,32 @@ struct cbfs_file_attribute *cbfs_add_file_attr(struct cbfs_file *header,
 	attr->tag = htonl(tag);
 	attr->len = htonl(size);
 	return attr;
+}
+
+int cbfs_add_file_hash(struct cbfs_file *header, struct buffer *buffer,
+	enum vb2_hash_algorithm hash_type)
+{
+	if (hash_type >= CBFS_NUM_SUPPORTED_HASHES)
+		return -1;
+
+	unsigned hash_size = widths_cbfs_hash[hash_type];
+	if (hash_size == 0)
+		return -1;
+
+	struct cbfs_file_attr_hash *attrs =
+		(struct cbfs_file_attr_hash *)cbfs_add_file_attr(header,
+			CBFS_FILE_ATTR_TAG_HASH,
+			sizeof(struct cbfs_file_attr_hash) + hash_size);
+
+	if (attrs == NULL)
+		return -1;
+
+	attrs->hash_type = htonl(hash_type);
+	if (vb2_digest_buffer(buffer_get(buffer), buffer_size(buffer),
+		hash_type, attrs->hash_data, hash_size) != VB2_SUCCESS)
+		return -1;
+
+	return 0;
 }
 
 /* Finds a place to hold whole data in same memory page. */

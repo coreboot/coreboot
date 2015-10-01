@@ -19,7 +19,10 @@
 #ifndef __CBFS_H
 #define __CBFS_H
 
+#include "common.h"
 #include <stdint.h>
+
+#include <vb2_api.h>
 
 /* cbfstool will fail when trying to build a cbfs_file header that's larger
  * than MAX_CBFS_FILE_HEADER_BUFFER. 1K should give plenty of room. */
@@ -107,6 +110,7 @@ struct cbfs_file_attribute {
 #define CBFS_FILE_ATTR_TAG_UNUSED 0
 #define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
 #define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
+#define CBFS_FILE_ATTR_TAG_HASH 0x68736148
 
 struct cbfs_file_attr_compression {
 	uint32_t tag;
@@ -114,6 +118,14 @@ struct cbfs_file_attr_compression {
 	/* whole file compression format. 0 if no compression. */
 	uint32_t compression;
 	uint32_t decompressed_size;
+} __PACKED;
+
+struct cbfs_file_attr_hash {
+	uint32_t tag;
+	uint32_t len;
+	uint32_t hash_type;
+	/* hash_data is len - sizeof(struct) bytes */
+	uint8_t  hash_data[];
 } __PACKED;
 
 struct cbfs_stage {
@@ -202,6 +214,23 @@ static struct typedesc_t filetypes[] unused = {
 	{CBFS_COMPONENT_DELETED, "deleted"},
 	{CBFS_COMPONENT_NULL, "null"}
 };
+
+static const struct typedesc_t types_cbfs_hash[] unused = {
+	{VB2_HASH_INVALID, "none"},
+	{VB2_HASH_SHA1, "sha1"},
+	{VB2_HASH_SHA256, "sha256"},
+	{VB2_HASH_SHA512, "sha512"},
+	{0, NULL}
+};
+
+static size_t widths_cbfs_hash[] unused = {
+	[VB2_HASH_INVALID] = 0,
+	[VB2_HASH_SHA1] = 20,
+	[VB2_HASH_SHA256] = 32,
+	[VB2_HASH_SHA512] = 64,
+};
+
+#define CBFS_NUM_SUPPORTED_HASHES ARRAY_SIZE(widths_cbfs_hash)
 
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 

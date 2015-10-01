@@ -196,3 +196,20 @@ uint64_t intfiletype(const char *name)
 			return filetypes[i].type;
 	return -1;
 }
+
+char *bintohex(uint8_t *data, size_t len)
+{
+	static const char translate[16] = "0123456789abcdef";
+
+	char *result = malloc(len * 2 + 1);
+	if (result == NULL)
+		return NULL;
+
+	result[len*2] = '\0';
+	unsigned int i;
+	for (i = 0; i < len; i++) {
+		result[i*2] = translate[(data[i] >> 4) & 0xf];
+		result[i*2+1] = translate[data[i] & 0xf];
+	}
+	return result;
+}

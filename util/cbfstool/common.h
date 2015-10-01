@@ -210,4 +210,11 @@ extern struct xdr xdr_le, xdr_be;
 size_t bgets(struct buffer *input, void *output, size_t len);
 size_t bputs(struct buffer *b, const void *data, size_t len);
 
+/* Returns a 0-terminated string containing a hex representation of
+ * len bytes starting at data.
+ * The string is malloc'd and it's the caller's responsibility to free
+ * the memory.
+ * On error, bintohex returns NULL.
+ */
+char *bintohex(uint8_t *data, size_t len);
 #endif

@@ -60,6 +60,7 @@ TOOLCPPFLAGS += -DNEED_VB2_SHA_LIBRARY
 TOOLCPPFLAGS += -I$(top)/3rdparty/vboot/firmware/include
 TOOLCPPFLAGS += -I$(top)/3rdparty/vboot/firmware/2lib/include
 TOOLLDFLAGS ?=
+HOSTCFLAGS += -fms-extensions
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLCFLAGS += -mno-ms-bitfields

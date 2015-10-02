@@ -20,16 +20,16 @@
 SECTIONS {
 	. = 0xfffffd00;
 	.a9123_crossbar_config (.): {
-		*(.a9123_crossbar_config)
+		KEEP(*(.a9123_crossbar_config))
 	}
 
 	. = 0xffffffb6;
 	.a9123_strap_1 (.): {
-		*(.a9123_strap_1)
+		KEEP(*(.a9123_strap_1))
 	}
 
 	. = 0xffffffbb;
 	.a9123_strap_2 (.): {
-		*(.a9123_strap_2)
+		KEEP(*(.a9123_strap_2))
 	}
 }

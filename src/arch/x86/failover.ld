@@ -18,6 +18,8 @@
  * Foundation, Inc.
  */
 
+ENTRY(reset_vector)
+
 MEMORY {
 	rom : ORIGIN = 0xffff0000, LENGTH = 64K
 }

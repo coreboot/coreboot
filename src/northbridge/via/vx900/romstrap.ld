@@ -22,6 +22,6 @@
 SECTIONS {
 	. = (0x100000000 - 0x2c) - (__romstrap_end - __romstrap_start);
 	.romstrap (.): {
-		*(.romstrap)
+		KEEP(*(.romstrap))
 	}
 }

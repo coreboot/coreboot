@@ -106,9 +106,9 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOU
 $(objcbfs)/bootblock.debug: $(obj)/arch/x86/bootblock.bootblock.o $(obj)/arch/x86/bootblock.bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
-	$(LD_bootblock) -m elf_i386 --oformat elf32-i386 -static -o $@ -L$(obj) $< -T $(obj)/arch/x86/bootblock.bootblock.ld
+	$(LD_bootblock) $(LDFLAGS_common) -m elf_i386 --oformat elf32-i386 -static -o $@ -L$(obj) $< -T $(obj)/arch/x86/bootblock.bootblock.ld
 else
-	$(LD_bootblock) -m elf_x86_64 --oformat elf64-x86-64 -static -o $@ -L$(obj) $< -T $(obj)/arch/x86/bootblock.bootblock.ld
+	$(LD_bootblock) $(LDFLAGS_common) -m elf_x86_64 --oformat elf64-x86-64 -static -o $@ -L$(obj) $< -T $(obj)/arch/x86/bootblock.bootblock.ld
 endif
 
 

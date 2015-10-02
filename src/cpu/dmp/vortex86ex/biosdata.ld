@@ -29,56 +29,56 @@ SECTIONS {
 
 	. = 0xffffbc00;
 	.dmp_reserved (.): {
-		*(.dmp_reserved)
+		KEEP(*(.dmp_reserved))
 	}
 
 	. = 0xffffc000;
 	.dmp_kbd_fw_part2 (.): {
-		*(.dmp_kbd_fw_part2)
+		KEEP(*(.dmp_kbd_fw_part2))
 	}
 
 	. = 0xffffd000;
 	.dmp_mtbf_low_cnt (.): {
-		*(.dmp_mtbf_low_cnt)
+		KEEP(*(.dmp_mtbf_low_cnt))
 	}
 
 	. = 0xffffe000;
 	.dmp_kbd_fw_part1 (.): {
-		*(.dmp_kbd_fw_part1)
+		KEEP(*(.dmp_kbd_fw_part1))
 	}
 
 	. = 0xfffff000;
 	.dmp_spi_flash_disk_driver (.): {
-		*(.dmp_spi_flash_disk_driver)
+		KEEP(*(.dmp_spi_flash_disk_driver))
 	}
 
 	. = 0xfffff800;
 	.dmp_frontdoor (.): {
-		*(.dmp_frontdoor)
+		KEEP(*(.dmp_frontdoor))
 	}
 
 	. = 0xfffffe00;
 	.dmp_isoinfo (.): {
-		*(.dmp_isoinfo)
+		KEEP(*(.dmp_isoinfo))
 	}
 
 	. = 0xffffffa0;
 	.dmp_isodata_checksum (.): {
-		*(.dmp_isodata_checksum)
+		KEEP(*(.dmp_isodata_checksum))
 	}
 
 	. = 0xffffffb0;
 	.dmp_mac (.): {
-		*(.dmp_mac)
+		KEEP(*(.dmp_mac))
 	}
 
 	. = 0xffffffb8;
 	.dmp_mtbf_limit (.): {
-		*(.dmp_mtbf_limit)
+		KEEP(*(.dmp_mtbf_limit))
 	}
 
 	. = 0xffffffc0;
 	.dmp_isodata (.): {
-		*(.dmp_isodata)
+		KEEP(*(.dmp_isodata))
 	}
 }

@@ -18,6 +18,9 @@
 
 #define CBFS_FILE_STRUCTSIZE (CBFS_FILE_OFFSET + 4)
 
+.section .text
+.global walkcbfs_asm
+
 /*
  * input %esi: filename
  * input %esp: return address (not pointer to return address!)

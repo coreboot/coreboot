@@ -47,5 +47,3 @@
  * needs to come after bootblock.inc.
  */
 #include <generated/bootblock.inc>
-
-#include <arch/x86/walkcbfs.S>

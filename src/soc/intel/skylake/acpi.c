@@ -21,6 +21,7 @@
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
@@ -29,14 +30,10 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
-#include <types.h>
-#include <string.h>
-#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/intel/turbo.h>
 #include <ec/google/chromeec/ec.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/intel/common/acpi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
@@ -45,6 +42,9 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <string.h>
+#include <types.h>
+#include <vendorcode/google/chromeos/gnvs.h>
 
 /*
  * List of suported C-states in this processor.
@@ -541,8 +541,6 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-#define ALIGN_CURRENT current = (ALIGN(current, 16))
-
 unsigned long southcluster_write_acpi_tables(device_t device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
@@ -551,16 +549,6 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 
 	current = acpi_write_hpet(device, current, rsdp);
 	ALIGN_CURRENT;
-
-#if CONFIG_GOP_SUPPORT
-	igd_opregion_t *opregion;
-
-	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
-	opregion = (igd_opregion_t *)current;
-	init_igd_opregion(opregion);
-	current += sizeof(igd_opregion_t);
-	ALIGN_CURRENT;
-#endif
 
 	ssdt2 = (acpi_header_t *)current;
 	memset(ssdt2, 0, sizeof(acpi_header_t));

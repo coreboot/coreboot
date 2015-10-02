@@ -30,6 +30,8 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
+
 void acpi_fill_in_fadt(acpi_fadt_t *fadt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 void acpi_mainboard_gnvs(global_nvs_t *gnvs);

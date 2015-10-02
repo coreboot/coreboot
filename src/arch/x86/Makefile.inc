@@ -107,9 +107,6 @@ bootblock-y += memcpy.c
 bootblock-y += memset.c
 bootblock-y += mmap_boot.c
 
-# Add the assembly file that pulls in the rest of the dependencies in
-# the right order. Make sure the auto generated bootblock.inc is a proper
-# dependency. Make the same true for the linker sript.
 bootblock-y += id.S
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
@@ -132,9 +129,12 @@ else
 LDFLAGS_bootblock += -m elf_x86_64 --oformat elf64-x86-64
 endif
 
-bootblock-y += bootblock.S
+# Add the assembly file that pulls in the rest of the dependencies in
+# the right order. Make sure the auto generated bootblock.inc is a proper
+# dependency. Make the same true for the linker sript.
+bootblock-y += bootblock_romcc.S
 bootblock-y += walkcbfs.S
-$(call src-to-obj,bootblock,$(dir)/bootblock.S): $(objgenerated)/bootblock.inc
+$(call src-to-obj,bootblock,$(dir)/bootblock_romcc.S): $(objgenerated)/bootblock.inc
 
 bootblock-y += bootblock.ld
 $(call src-to-obj,bootblock,$(dir)/bootblock.ld): $(objgenerated)/bootblock.ld

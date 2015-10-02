@@ -13,9 +13,22 @@
  * GNU General Public License for more details.
  */
 
-/* This file assembles the bootblock program by the order of the includes. Thus,
+/*
+ * This is the original bootblock used by coreboot on x86 systems. It contains
+ * a monolithic code flow, assembled from the following stages:
+ *     - reset16.inc: the reset vector
+ *     - entry16.inc: protected mode setup
+ *     - entry32.inc: segment descriptor setup
+ *     - CONFIG_CHIPSET_BOOTBLOCK_INCLUDE: chipset-specific initialization
+ *     - generated/bootblock.inc: ROMCC part of the bootblock
+ *
+ * This is used on platforms which do not select C_ENVIRONMENT_BOOTBLOCK, and it
+ * tries to do the absolute minimum before walking CBFS and jumping to romstage.
+ *
+ * This file assembles the bootblock program by the order of the includes. Thus,
  * it's extremely important that one pays very careful attention to the order
- * of the includes. */
+ * of the includes.
+ */
 
 #include <arch/x86/prologue.inc>
 #include <cpu/x86/16bit/entry16.inc>

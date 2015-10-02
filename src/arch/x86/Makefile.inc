@@ -74,6 +74,13 @@ CBFS_BASE_ADDRESS=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_CBFS_
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 
+# x86-specific linker flags
+ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
+LDFLAGS_bootblock += -m elf_i386 --oformat elf32-i386
+else
+LDFLAGS_bootblock += -m elf_x86_64 --oformat elf64-x86-64
+endif
+
 # Add the assembly file that pulls in the rest of the dependencies in
 # the right order. Make sure the auto generated bootblock.inc is a proper
 # dependency. Make the same true for the linker sript.
@@ -105,11 +112,8 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOU
 
 $(objcbfs)/bootblock.debug: $(obj)/arch/x86/bootblock.bootblock.o $(obj)/arch/x86/bootblock.bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
-	$(LD_bootblock) $(LDFLAGS_common) -m elf_i386 --oformat elf32-i386 -static -o $@ -L$(obj) $< -T $(obj)/arch/x86/bootblock.bootblock.ld
-else
-	$(LD_bootblock) $(LDFLAGS_common) -m elf_x86_64 --oformat elf64-x86-64 -static -o $@ -L$(obj) $< -T $(obj)/arch/x86/bootblock.bootblock.ld
-endif
+	$(LD_bootblock) $(LDFLAGS_bootblock) -static -o $@ -L$(obj) $< \
+		-T $(obj)/arch/x86/bootblock.bootblock.ld
 
 
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64

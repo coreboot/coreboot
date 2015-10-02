@@ -207,14 +207,12 @@ void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 		return NULL;
 	}
 
-	if (sz)
-		*sz = ntohl(file->len);
-
 	void *file_content = (void *)CBFS_SUBHEADER(file);
 
 	struct cbfs_file_attribute *attr =
 		cbfs_file_find_attr(file, CBFS_FILE_ATTR_TAG_COMPRESSION);
 
+	size_t final_size = ntohl(file->len);
 	int compression_algo = CBFS_COMPRESS_NONE;
 	if (attr) {
 		struct cbfs_file_attr_compression *comp =
@@ -222,15 +220,18 @@ void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 		compression_algo = ntohl(comp->compression);
 		DEBUG("File '%s' is compressed (alg=%d)\n",
 		      name, compression_algo);
-		*sz = ntohl(comp->decompressed_size);
+		final_size = ntohl(comp->decompressed_size);
 	}
 
-	void *dst = malloc(*sz);
+	void *dst = malloc(final_size);
 	if (dst == NULL)
 		goto err;
 
-	if (!cbfs_decompress(compression_algo, file_content, dst, *sz))
+	if (!cbfs_decompress(compression_algo, file_content, dst, final_size))
 		goto err;
+
+	if (sz)
+		*sz = final_size;
 
 	media->unmap(media, file);
 	return dst;

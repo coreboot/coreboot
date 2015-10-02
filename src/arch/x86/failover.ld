@@ -43,6 +43,9 @@ SECTIONS
 		*(.rom.text);
 		*(.rom.data);
 		*(.rom.data.*);
+		*(.text);
+		*(.text.*);
+		*(.rodata);
 		*(.rodata.*);
 		_erom = .;
 	} >rom = 0xff
@@ -65,6 +68,7 @@ SECTIONS
 		*(.note)
 		*(.comment.*)
 		*(.note.*)
+		*(.eh_frame)
 		*(.iplt)
 		*(.rel.*)
 		*(.igot.*)

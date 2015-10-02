@@ -110,9 +110,11 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOU
 		$< > $(objgenerated)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS_bootblock) $< -o $@
 
-$(objcbfs)/bootblock.debug: $(obj)/arch/x86/bootblock.bootblock.o $(obj)/arch/x86/bootblock.bootblock.ld
+# $(obj)/arch/x86/bootblock.bootblock.ld is part of $(bootblock-objs)
+$(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) $(LDFLAGS_bootblock) -static -o $@ -L$(obj) $< \
+	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) \
+		$(filter-out %.ld,$(bootblock-objs)) \
 		-T $(obj)/arch/x86/bootblock.bootblock.ld
 
 

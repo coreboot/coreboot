@@ -23,6 +23,7 @@ config ARCH_BOOTBLOCK_MIPS
 	default n
 	select ARCH_MIPS
 	select BOOTBLOCK_CUSTOM
+	select C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_MIPS
 	bool

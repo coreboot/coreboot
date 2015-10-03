@@ -271,6 +271,12 @@ config BOOTBLOCK_SOURCE
 	default "bootblock_simple.c" if BOOTBLOCK_SIMPLE
 	default "bootblock_normal.c" if BOOTBLOCK_NORMAL
 
+# To be selected by arch or platform if a C environment is available during the
+# bootblock. Normally this signifies availability of RW memory (e.g. SRAM).
+config C_ENVIRONMENT_BOOTBLOCK
+       bool
+       default n
+
 config SKIP_MAX_REBOOT_CNT_CLEAR
 	bool "Do not clear reboot count after successful boot"
 	default n

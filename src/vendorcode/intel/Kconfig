@@ -20,7 +20,6 @@
 config FSP_VENDORCODE_HEADER_PATH
 	string
 	default "fsp1_0/baytrail" if SOC_INTEL_FSP_BAYTRAIL
-	default "fsp1_0/rangeley" if CPU_INTEL_FSP_MODEL_406DX
 
 config UEFI_2_4_BINDING
 	def_bool n

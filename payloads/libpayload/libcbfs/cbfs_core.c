@@ -191,6 +191,16 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 			    int type, size_t *sz)
 {
+	struct cbfs_media default_media;
+
+	if (media == CBFS_DEFAULT_MEDIA) {
+		media = &default_media;
+		if (init_default_cbfs_media(media) != 0) {
+			ERROR("Failed to initialize default media.\n");
+			return NULL;
+		}
+	}
+
 	struct cbfs_file *file = cbfs_get_file(media, name);
 
 	if (sz)

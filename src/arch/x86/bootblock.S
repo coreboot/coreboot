@@ -25,11 +25,6 @@
 #include <cpu/x86/16bit/entry16.inc>
 #include <cpu/x86/16bit/reset16.inc>
 #include <cpu/x86/32bit/entry32.inc>
-#include <arch/x86/id.inc>
-
-#if IS_ENABLED(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE)
-#include <cpu/intel/fit/fit.inc>
-#endif
 
 #ifdef CONFIG_CHIPSET_BOOTBLOCK_INCLUDE
 #include CONFIG_CHIPSET_BOOTBLOCK_INCLUDE

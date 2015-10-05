@@ -84,6 +84,7 @@ endif
 # Add the assembly file that pulls in the rest of the dependencies in
 # the right order. Make sure the auto generated bootblock.inc is a proper
 # dependency. Make the same true for the linker sript.
+bootblock-y += id.S
 bootblock-y += bootblock.S
 bootblock-y += walkcbfs.S
 $(obj)/arch/x86/bootblock.bootblock.o: $(objgenerated)/bootblock.inc

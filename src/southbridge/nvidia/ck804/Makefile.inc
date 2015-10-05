@@ -22,5 +22,6 @@ ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-y += early_smbus.c
 
 bootblock-y += romstrap.ld
+bootblock-y += romstrap.S
 
 endif

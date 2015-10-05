@@ -21,5 +21,7 @@ subdirs-y += ../../x86/smm
 
 bootblock-y += biosdata.ld
 bootblock-y += biosdata_ex.ld
+bootblock-y += biosdata.S
+bootblock-y += biosdata_ex.S
 
 ROMCCFLAGS := -mcpu=i386 -O2

@@ -14,8 +14,4 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config CHIPSET_BOOTBLOCK_INCLUDE
-	string
-	default "southbridge/sis/sis966/romstrap.inc"
-
 endif

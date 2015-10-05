@@ -25,5 +25,6 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 endif
 
 bootblock-y += romstrap.ld
+bootblock-y += romstrap.S
 
 endif

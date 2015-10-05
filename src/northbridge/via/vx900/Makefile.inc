@@ -44,5 +44,6 @@ ramstage-y += ./../../../drivers/pc80/vga/vga_io.c
 
 
 bootblock-y += romstrap.ld
+bootblock-y += romstrap.S
 
 endif

@@ -22,5 +22,6 @@ ramstage-y += lpc.c
 ramstage-y += ide.c
 
 bootblock-y += romstrap.ld
+bootblock-y += romstrap.S
 
 endif

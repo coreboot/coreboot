@@ -11,5 +11,6 @@ ramstage-y += error.c
 ramstage-y += chrome.c
 
 bootblock-y += romstrap.ld
+bootblock-y += romstrap.S
 
 endif

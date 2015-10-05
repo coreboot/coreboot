@@ -80,11 +80,28 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	memcpy(params->PortUsb30Enable, config->PortUsb30Enable,
 	       sizeof(params->PortUsb30Enable));
 
+	memcpy(params->Usb2AfePetxiset, config->Usb2AfePetxiset,
+			sizeof(params->Usb2AfePetxiset));
+	memcpy(params->Usb2AfeTxiset, config->Usb2AfeTxiset,
+			sizeof(params->Usb2AfeTxiset));
+	memcpy(params->Usb2AfePredeemp, config->Usb2AfePredeemp,
+			sizeof(params->Usb2AfePredeemp));
+	memcpy(params->Usb2AfePehalfbit, config->Usb2AfePehalfbit,
+			sizeof(params->Usb2AfePehalfbit));
+
+	memcpy(params->Usb3HsioTxDeEmphEnable, config->Usb3HsioTxDeEmphEnable,
+			sizeof(params->Usb3HsioTxDeEmphEnable));
+	memcpy(params->Usb3HsioTxDeEmph, config->Usb3HsioTxDeEmph,
+			sizeof(params->Usb3HsioTxDeEmph));
+	memcpy(params->Usb3HsioTxDownscaleAmpEnable, config->Usb3HsioTxDownscaleAmpEnable,
+			sizeof(params->Usb3HsioTxDownscaleAmpEnable));
+	memcpy(params->Usb3HsioTxDownscaleAmp, config->Usb3HsioTxDownscaleAmp,
+			sizeof(params->Usb3HsioTxDownscaleAmp));
+
 	params->SataSalpSupport = config->SataSalpSupport;
 	params->SataPortsEnable[0] = config->SataPortsEnable[0];
 	params->SsicPortEnable = config->SsicPortEnable;
 	params->SmbusEnable = config->SmbusEnable;
-	params->Cio2Enable = config->Cio2Enable;
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
 	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
@@ -95,6 +112,8 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->XdciEnable = config->XdciEnable;
 	params->Device4Enable = config->Device4Enable;
 	params->RtcLock = config->RtcLock;
+	params->EnableSata = config->EnableSata;
+	params->SataMode = config->SataMode;
 
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
@@ -124,9 +143,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 	soc_display_upd_value("TurboMode", 1,
 		(uint32_t)original->TurboMode,
 		(uint32_t)params->TurboMode);
-	soc_display_upd_value("GpioTablePtr", 4,
-		(uint32_t)original->GpioTablePtr,
-		(uint32_t)params->GpioTablePtr);
 	soc_display_upd_value("Device4Enable", 1,
 		original->Device4Enable,
 		params->Device4Enable);
@@ -250,8 +266,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 		original->SerialIoDevMode[9], params->SerialIoDevMode[9]);
 	soc_display_upd_value("SerialIoDevMode[10]", 1,
 		original->SerialIoDevMode[10], params->SerialIoDevMode[10]);
-	soc_display_upd_value("Cio2Enable", 1, original->Cio2Enable,
-		params->Cio2Enable);
 	soc_display_upd_value("ScsEmmcEnabled", 1, original->ScsEmmcEnabled,
 		params->ScsEmmcEnabled);
 	soc_display_upd_value("ScsEmmcHs400Enabled", 1,
@@ -268,6 +282,10 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 		params->Heci3Enabled);
 	soc_display_upd_value("RtcLock", 1, original->RtcLock,
 		params->RtcLock);
+	soc_display_upd_value("EnableSata", 1, original->EnableSata,
+		params->EnableSata);
+	soc_display_upd_value("SataMode", 1, original->SataMode,
+		params->SataMode);
 }
 
 static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

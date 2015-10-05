@@ -101,11 +101,10 @@ void soc_memory_init_params(struct romstage_params *params,
 	upd->IedSize = CONFIG_IED_REGION_SIZE;
 	upd->ProbelessTrace = config->ProbelessTrace;
 	upd->EnableLan = config->EnableLan;
-	upd->EnableSata = config->EnableSata;
-	upd->SataMode = config->SataMode;
 	upd->EnableTraceHub = config->EnableTraceHub;
 	upd->SaGv = config->SaGv;
 	upd->RMT = config->Rmt;
+	upd->Cio2Enable = config->Cio2Enable;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
@@ -233,9 +232,6 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	soc_display_upd_value("TsegSize", 4, old->TsegSize, new->TsegSize);
 	soc_display_upd_value("MmioSize", 2, old->MmioSize, new->MmioSize);
 	soc_display_upd_value("EnableLan", 1, old->EnableLan, new->EnableLan);
-	soc_display_upd_value("EnableSata", 1, old->EnableSata,
-		new->EnableSata);
-	soc_display_upd_value("SataMode", 1, old->SataMode, new->SataMode);
 	soc_display_upd_value("EnableTraceHub", 1, old->EnableTraceHub,
 		new->EnableTraceHub);
 	soc_display_upd_value("PcieRpEnable[0]", 1, old->PcieRpEnable[0],
@@ -406,6 +402,7 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 		new->ApertureSize);
 	soc_display_upd_value("SaGv", 1, old->SaGv, new->SaGv);
 	soc_display_upd_value("RMT", 1, old->RMT, new->RMT);
+	soc_display_upd_value("Cio2Enable", 1, old->Cio2Enable, new->Cio2Enable);
 }
 
 /* SOC initialization after RAM is enabled. */

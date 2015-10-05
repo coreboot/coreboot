@@ -33,7 +33,8 @@ typedef enum {
 	PchSerialIoAcpi,
 	PchSerialIoPci,
 	PchSerialIoAcpiHidden,
-	PchSerialIoLegacyUart
+	PchSerialIoLegacyUart,
+	PchSerialIoSkipInit
 } PCH_SERIAL_IO_MODE;
 
 typedef enum {

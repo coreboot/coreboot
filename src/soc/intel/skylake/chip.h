@@ -166,6 +166,14 @@ struct soc_intel_skylake_config {
 	u8 PortUsb30Enable[10];
 	u8 XdciEnable;
 	u8 SsicPortEnable;
+	u8 Usb2AfePetxiset[16];
+	u8 Usb2AfeTxiset[16];
+	u8 Usb2AfePredeemp[16];
+	u8 Usb2AfePehalfbit[16];
+	u8 Usb3HsioTxDeEmphEnable[10];
+	u8 Usb3HsioTxDeEmph[10];
+	u8 Usb3HsioTxDownscaleAmpEnable[10];
+	u8 Usb3HsioTxDownscaleAmp[10];
 
 	/* SMBus */
 	u8 SmbusEnable;

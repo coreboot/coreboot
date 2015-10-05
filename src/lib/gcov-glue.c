@@ -38,6 +38,8 @@ typedef struct file {
 
 #define COVERAGE_SIZE (32*1024)
 
+#define COVERAGE_MAGIC 0x584d41534
+
 static FILE *current_file = NULL;
 static FILE *previous_file = NULL;
 
@@ -56,7 +58,7 @@ static FILE *fopen(const char *path, const char *mode)
 
 	// TODO check if we're at the end of the CBMEM region (ENOMEM)
 	if (current_file) {
-		current_file->magic = 0x584d4153;
+		current_file->magic = COVERAGE_MAGIC;
 		current_file->next = NULL;
 		if (previous_file)
 			previous_file->next = current_file;

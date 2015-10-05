@@ -132,7 +132,7 @@ static const struct soc_gpio_map  gpsw_gpio_map[] = {
 	GPIO_OUT_HIGH, /* 75 SATA_GP0 */
 	GPIO_NC,
 	/* 76 GPI SATA_GP1 */
-	Native_M1, /* 77 SATA_LEDN */
+	GPIO_INPUT_PU_20K, /* 77 SATA_LEDN , EC_IN_RW */
 	GPIO_NC, /* 80 SATA_GP3 */
 	Native_M1, /* 81 NFC_DEV_WAKE , MF_SMB_CLK */
 	GPIO_INPUT_NO_PULL, /* 80 SATA_GP3,RAMID0 */

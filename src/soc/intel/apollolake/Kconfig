@@ -1,0 +1,39 @@
+config SOC_INTEL_APOLLOLAKE
+	bool
+	help
+	  Intel Apollolake support
+
+if SOC_INTEL_APOLLOLAKE
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_RAMSTAGE_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_VERSTAGE_X86_32
+	# CPU specific options
+	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	select IOAPIC
+	select SMP
+	select SSE2
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	# Misc options
+	select COLLECT_TIMESTAMPS
+	select HAVE_INTEL_FIRMWARE
+	select MMCONF_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
+	select PARALLEL_MP
+	select PCIEXP_ASPM
+	select PCIEXP_COMMON_CLOCK
+	select PCIEXP_CLK_PM
+	select PCIEXP_L1_SUB_STATE
+	select REG_SCRIPT
+	select RELOCATABLE_RAMSTAGE	# Build fails if this is not selected
+	select SOC_INTEL_COMMON
+	select UDELAY_TSC
+
+config CPU_ADDR_BITS
+	int
+	default 36
+
+endif

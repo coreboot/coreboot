@@ -163,17 +163,7 @@ static int vboot_locate_by_multi_cbfs(const struct region_device *fw_main,
 					struct asset *asset)
 {
 	struct cbfsd cbfs;
-	struct region_device rdev;
-	struct cbfs_props props;
-
-	if (cbfs_boot_region_properties(&props))
-		return -1;
-
-	if (rdev_chain(&rdev, fw_main, props.offset, props.size))
-		return -1;
-
-	cbfs.rdev = &rdev;
-
+	cbfs.rdev = fw_main;
 	return cbfs_locate(asset_rdev(asset), &cbfs, asset_name(asset), NULL);
 }
 

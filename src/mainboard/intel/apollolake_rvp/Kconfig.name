@@ -1,0 +1,5 @@
+config BOARD_INTEL_APOLLOLAKE_RVP1
+	bool "Apollolake DDR3 RVP1"
+
+config BOARD_INTEL_APOLLOLAKE_RVP2
+	bool "Apollolake LPDDR3 RVP2"

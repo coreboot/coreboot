@@ -1,0 +1,20 @@
+if BOARD_INTEL_APOLLOLAKE_RVP1 || BOARD_INTEL_APOLLOLAKE_RVP2
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_APOLLOLAKE
+	select BOARD_ROMSIZE_KB_8192
+
+config MAINBOARD_DIR
+	string
+	default intel/apollolake_rvp
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Apollolake RVP"
+
+config MAINBOARD_VENDOR
+	string
+	default "Intel"
+
+endif

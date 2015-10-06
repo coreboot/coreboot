@@ -209,22 +209,6 @@ static uint32_t extend_pcrs(struct vb2_context *ctx)
 	       tpm_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
 }
 
-static void init_vb2_working_data(void)
-{
-	struct vb2_working_data *wd;
-	size_t work_size;
-
-	work_size = vb2_working_data_size();
-	wd = vboot_get_working_data();
-	memset(wd, 0, work_size);
-	/*
-	 * vboot prefers 16-byte alignment. This takes away 16 bytes
-	 * from the VBOOT2_WORK region, but the vboot devs said that's okay.
-	 */
-	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 16);
-	wd->buffer_size = work_size - wd->buffer_offset;
-}
-
 /**
  * Verify and select the firmware in the RW image
  *
@@ -235,16 +219,12 @@ void verstage_main(void)
 {
 	struct vb2_context ctx;
 	struct region_device fw_main;
-	struct vb2_working_data *wd;
 	int rv;
-	init_vb2_working_data();
-	wd = vboot_get_working_data();
+
 	timestamp_add_now(TS_START_VBOOT);
 
 	/* Set up context and work buffer */
-	memset(&ctx, 0, sizeof(ctx));
-	ctx.workbuf = vboot_get_work_buffer(wd);
-	ctx.workbuf_size = wd->buffer_size;
+	vb2_init_work_context(&ctx);
 
 	/* Read nvdata from a non-volatile storage */
 	read_vbnv(ctx.nvdata);
@@ -347,6 +327,6 @@ void verstage_main(void)
 	}
 
 	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
-	vb2_set_selected_region(wd, &fw_main);
+	vb2_set_selected_region(&fw_main);
 	timestamp_add_now(TS_END_VBOOT);
 }

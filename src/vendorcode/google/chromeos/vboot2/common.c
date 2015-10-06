@@ -21,14 +21,30 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <reset.h>
+#include <string.h>
+#include <vb2_api.h>
 #include "../chromeos.h"
 #include "../symbols.h"
 #include "../vboot_handoff.h"
 #include "misc.h"
 
+/*
+ * this is placed at the start of the vboot work buffer. selected_region is used
+ * for the verstage to return the location of the selected slot. buffer is used
+ * by the vboot2 core. Keep the struct cpu architecture agnostic as it crosses
+ * stage boundaries.
+ */
+struct vb2_working_data {
+	uint32_t selected_region_offset;
+	uint32_t selected_region_size;
+	/* offset of the buffer from the start of this struct */
+	uint32_t buffer_offset;
+	uint32_t buffer_size;
+};
+
 static const size_t vb_work_buf_size = 16 * KiB;
 
-struct vb2_working_data * const vboot_get_working_data(void)
+static struct vb2_working_data * const vboot_get_working_data(void)
 {
 	if (IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER))
 		/* cbmem_add() does a cbmem_find() first. */
@@ -37,7 +53,7 @@ struct vb2_working_data * const vboot_get_working_data(void)
 		return (struct vb2_working_data *)_vboot2_work;
 }
 
-size_t vb2_working_data_size(void)
+static size_t vb2_working_data_size(void)
 {
 	if (IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER))
 		return vb_work_buf_size;
@@ -45,7 +61,60 @@ size_t vb2_working_data_size(void)
 		return _vboot2_work_size;
 }
 
-void *vboot_get_work_buffer(struct vb2_working_data *wd)
+void vb2_init_work_context(struct vb2_context *ctx)
 {
+	struct vb2_working_data *wd;
+	size_t work_size;
+
+	/* First initialize the working data region. */
+	work_size = vb2_working_data_size();
+	wd = vboot_get_working_data();
+	memset(wd, 0, work_size);
+
+	/*
+	 * vboot prefers 16-byte alignment. This takes away 16 bytes
+	 * from the VBOOT2_WORK region, but the vboot devs said that's okay.
+	 */
+	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 16);
+	wd->buffer_size = work_size - wd->buffer_offset;
+
+	/* Initialize the vb2_context. */
+	memset(ctx, 0, sizeof(*ctx));
+	ctx->workbuf = (void *)vb2_get_shared_data();
+	ctx->workbuf_size = wd->buffer_size;
+
+}
+
+struct vb2_shared_data *vb2_get_shared_data(void)
+{
+	struct vb2_working_data *wd = vboot_get_working_data();
 	return (void *)((uintptr_t)wd + wd->buffer_offset);
+}
+
+int vb2_get_selected_region(struct region_device *rdev)
+{
+	const struct vb2_working_data *wd = vboot_get_working_data();
+	struct region reg = {
+		.offset = wd->selected_region_offset,
+		.size = wd->selected_region_size,
+	};
+	return vboot_region_device(&reg, rdev);
+}
+
+void vb2_set_selected_region(struct region_device *rdev)
+{
+	struct vb2_working_data *wd = vboot_get_working_data();
+	wd->selected_region_offset = region_device_offset(rdev);
+	wd->selected_region_size = region_device_sz(rdev);
+}
+
+int vboot_is_slot_selected(void)
+{
+	const struct vb2_working_data *wd = vboot_get_working_data();
+	return wd->selected_region_size > 0;
+}
+
+int vboot_is_readonly_path(void)
+{
+	return !vboot_is_slot_selected();
 }

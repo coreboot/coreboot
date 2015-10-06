@@ -130,9 +130,8 @@ void vboot_fill_handoff(void)
 	struct region_device fw_main;
 	struct vboot_components *fw_info;
 	size_t metadata_sz;
-	struct vb2_working_data *wd = vboot_get_working_data();
 
-	sd = vboot_get_work_buffer(wd);
+	sd = vb2_get_shared_data();
 	sd->workbuf_hash_offset = 0;
 	sd->workbuf_hash_size = 0;
 
@@ -149,10 +148,10 @@ void vboot_fill_handoff(void)
 	fill_vboot_handoff(vh, sd);
 
 	/* Nothing left to do in readonly path. */
-	if (vboot_is_readonly_path(wd))
+	if (vboot_is_readonly_path())
 		return;
 
-	if (vb2_get_selected_region(wd, &fw_main))
+	if (vb2_get_selected_region(&fw_main))
 		die("No component metadata.\n");
 
 	metadata_sz = sizeof(*fw_info);

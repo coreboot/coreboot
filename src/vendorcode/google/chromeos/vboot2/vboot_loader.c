@@ -65,7 +65,6 @@ static int verstage_should_load(void)
 
 static int vboot_active(struct asset *asset)
 {
-	struct vb2_working_data *wd;
 	int run_verification;
 
 	run_verification = verification_should_run();
@@ -104,12 +103,7 @@ static int vboot_active(struct asset *asset)
 	if (ENV_ROMSTAGE)
 		vboot_fill_handoff();
 
-	wd = vboot_get_working_data();
-
-	if (vboot_is_slot_selected(wd))
-		return 1;
-
-	return 0;
+	return vboot_is_slot_selected();
 }
 
 static int vboot_locate_by_components(const struct region_device *fw_main,
@@ -189,7 +183,6 @@ static int vboot_asset_locate(const struct region_device *fw_main,
  * means we are taking vboot paths. */
 static int vboot_locate(struct asset *asset)
 {
-	struct vb2_working_data *wd;
 	struct region_device fw_main;
 
 	/* Code size optimization. We'd never actually get called under the
@@ -198,8 +191,7 @@ static int vboot_locate(struct asset *asset)
 	if (verstage_should_load() && !IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE))
 		return 0;
 
-	wd = vboot_get_working_data();
-	if (vb2_get_selected_region(wd, &fw_main))
+	if (vb2_get_selected_region(&fw_main))
 		die("failed to reference selected region\n");
 
 	return vboot_asset_locate(&fw_main, asset);

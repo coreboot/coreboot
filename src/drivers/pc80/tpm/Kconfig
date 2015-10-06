@@ -23,6 +23,14 @@ config TPM_TIS_BASE_ADDRESS
 	  Interface Specification 1.2 and should not be changed unless
 	  the TPM being used does not conform to TPM TIS 1.2.
 
+config TPM_PIRQ
+	hex
+	default 0
+	depends on LPC_TPM
+	help
+	  This can be used to specify a PIRQ to use instead of SERIRQ,
+	  which is needed for SPI TPM interrupt support on x86.
+
 config TPM_INIT_FAILURE_IS_FATAL
 	bool
 	default n

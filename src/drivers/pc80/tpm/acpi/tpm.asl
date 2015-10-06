@@ -63,15 +63,29 @@ Device (TPM)
 			IVEC, 4,  /* SERIRQ vector */
 		}
 
-		If (LGreater (IVEC, 0)) {
-			/* Update interrupt vector */
-			CreateField (^IBUF, ^TIRQ._INT, 32, TVEC)
-			Store (IVEC, TVEC)
+		CreateField (^IBUF, ^TIRQ._INT, 32, TVEC)
+		CreateBitField (^IBUF, ^TIRQ._HE, TTYP)
+		CreateBitField (^IBUF, ^TIRQ._LL, TPOL)
+		CreateBitField (^IBUF, ^TIRQ._SHR, TSHR)
 
-			/* Update interrupt type and polarity */
-			CreateBitField (^IBUF, ^TIRQ._HE, TTYP)
-			CreateBitField (^IBUF, ^TIRQ._LL, TPOL)
-			CreateBitField (^IBUF, ^TIRQ._SHR, TSHR)
+		If (LGreater (CONFIG_TPM_PIRQ, 0)) {
+			/*
+			 * PIRQ: Update interrupt vector with configured PIRQ
+			 */
+			Store (CONFIG_TPM_PIRQ, TVEC)
+
+			/* Active-Low Level-Triggered Shared */
+			Store (One, TPOL)
+			Store (Zero, TTYP)
+			Store (One, TSHR)
+
+			/* Merge IRQ with base address */
+			Return (ConcatenateResTemplate (RBUF, IBUF))
+		} ElseIf (LGreater (IVEC, 0)) {
+			/*
+			 * SERIRQ: Update interrupt vector based on TPM register
+			 */
+			Store (IVEC, TVEC)
 
 			If (LEqual (ITPL, 0x0)) {
 				/* Active-High Level-Triggered Shared */

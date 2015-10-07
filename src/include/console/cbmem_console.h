@@ -26,8 +26,10 @@ void cbmemc_init(void);
 void cbmemc_tx_byte(unsigned char data);
 
 #define __CBMEM_CONSOLE_ENABLE__	CONFIG_CONSOLE_CBMEM && \
-	(ENV_RAMSTAGE || (IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) && \
-	(ENV_ROMSTAGE || (ENV_BOOTBLOCK && CONFIG_BOOTBLOCK_CONSOLE))))
+	(ENV_RAMSTAGE || ENV_VERSTAGE || \
+		(IS_ENABLED(CONFIG_EARLY_CBMEM_INIT) && \
+		 (ENV_ROMSTAGE || (ENV_BOOTBLOCK && CONFIG_BOOTBLOCK_CONSOLE)))\
+	)
 
 #if __CBMEM_CONSOLE_ENABLE__
 static inline void __cbmemc_init(void)	{ cbmemc_init(); }

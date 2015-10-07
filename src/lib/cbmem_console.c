@@ -105,12 +105,28 @@ static inline void init_console_ptr(void *storage, u32 total_space, int flags)
 void cbmemc_init(void)
 {
 #ifdef __PRE_RAM__
-	int flags = CBMEMC_RESET;
+	int flags = 0;
 
-	/* Do not clear output from bootblock. */
-	if (ENV_ROMSTAGE && !IS_ENABLED(CONFIG_CACHE_AS_RAM))
-		if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
-			flags = 0;
+	/* If in bootblock always initialize the console first. */
+	if (ENV_BOOTBLOCK)
+		flags = CBMEMC_RESET;
+	else if (ENV_ROMSTAGE) {
+		/* Initialize console for the first time in romstage when
+		 * there's no prior stage that initialized it first. */
+		if (!IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) &&
+		    !IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+			flags = CBMEMC_RESET;
+	} else if (ENV_VERSTAGE) {
+		/*
+		 * Initialize console for the first time in verstage when
+		 * there is no console in bootblock. Otherwise honor the
+		 * bootblock console when verstage comes right after
+		 * bootblock.
+		 */
+		if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) &&
+		    !IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+			flags = CBMEMC_RESET;
+	}
 
 	init_console_ptr(_preram_cbmem_console,
 			_preram_cbmem_console_size, flags);

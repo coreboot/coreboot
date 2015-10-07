@@ -18,6 +18,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	# Misc options
+	select C_ENVIRONMENT_BOOTBLOCK
 	select COLLECT_TIMESTAMPS
 	select HAVE_INTEL_FIRMWARE
 	select MMCONF_SUPPORT
@@ -31,6 +32,32 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_RAMSTAGE	# Build fails if this is not selected
 	select SOC_INTEL_COMMON
 	select UDELAY_TSC
+
+config MMCONF_BASE_ADDRESS
+	hex "PCI MMIO Base Address"
+	default 0xe0000000
+
+config IOSF_BASE_ADDRESS
+	hex "MMIO Base Address of sideband bus"
+	default 0xd0000000
+
+config DCACHE_RAM_BASE
+	hex "Base address of cache-as-RAM"
+	default 0xfef00000
+
+config DCACHE_RAM_SIZE
+	hex "Length in bytes of cache-as-RAM"
+	default 0x80000
+	help
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage.
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x4000
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages.
 
 config CPU_ADDR_BITS
 	int

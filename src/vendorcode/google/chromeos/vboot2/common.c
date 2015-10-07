@@ -28,6 +28,11 @@
 #include "../vboot_handoff.h"
 #include "misc.h"
 
+struct selected_region {
+	uint32_t offset;
+	uint32_t size;
+};
+
 /*
  * this is placed at the start of the vboot work buffer. selected_region is used
  * for the verstage to return the location of the selected slot. buffer is used
@@ -35,8 +40,7 @@
  * stage boundaries.
  */
 struct vb2_working_data {
-	uint32_t selected_region_offset;
-	uint32_t selected_region_size;
+	struct selected_region selected_region;
 	/* offset of the buffer from the start of this struct */
 	uint32_t buffer_offset;
 	uint32_t buffer_size;
@@ -59,6 +63,30 @@ static size_t vb2_working_data_size(void)
 		return vb_work_buf_size;
 	else
 		return _vboot2_work_size;
+}
+
+static struct selected_region *vb2_selected_region(void)
+{
+	struct selected_region *sel_reg = NULL;
+
+	/* Ramstage always uses cbmem as a source of truth. */
+	if (ENV_RAMSTAGE)
+		sel_reg = cbmem_find(CBMEM_ID_VBOOT_SEL_REG);
+	else if (ENV_ROMSTAGE) {
+		/* Try cbmem first. Fall back on working data if not found. */
+		sel_reg = cbmem_find(CBMEM_ID_VBOOT_SEL_REG);
+
+		if (sel_reg == NULL) {
+			struct vb2_working_data *wd = vboot_get_working_data();
+			sel_reg = &wd->selected_region;
+		}
+	} else {
+		/* Stages such as bootblock and verstage use working data. */
+		struct vb2_working_data *wd = vboot_get_working_data();
+		sel_reg = &wd->selected_region;
+	}
+
+	return sel_reg;
 }
 
 void vb2_init_work_context(struct vb2_context *ctx)
@@ -93,28 +121,57 @@ struct vb2_shared_data *vb2_get_shared_data(void)
 
 int vb2_get_selected_region(struct region_device *rdev)
 {
-	const struct vb2_working_data *wd = vboot_get_working_data();
-	struct region reg = {
-		.offset = wd->selected_region_offset,
-		.size = wd->selected_region_size,
+	const struct selected_region *reg = vb2_selected_region();
+	struct region region = {
+		.offset = reg->offset,
+		.size = reg->size,
 	};
-	return vboot_region_device(&reg, rdev);
+	return vboot_region_device(&region, rdev);
 }
 
 void vb2_set_selected_region(struct region_device *rdev)
 {
-	struct vb2_working_data *wd = vboot_get_working_data();
-	wd->selected_region_offset = region_device_offset(rdev);
-	wd->selected_region_size = region_device_sz(rdev);
+	struct selected_region *reg = vb2_selected_region();
+	reg->offset = region_device_offset(rdev);
+	reg->size = region_device_sz(rdev);
 }
 
 int vboot_is_slot_selected(void)
 {
-	const struct vb2_working_data *wd = vboot_get_working_data();
-	return wd->selected_region_size > 0;
+	const struct selected_region *reg = vb2_selected_region();
+	return reg->size > 0;
 }
 
 int vboot_is_readonly_path(void)
 {
 	return !vboot_is_slot_selected();
 }
+
+void vb2_store_selected_region(void)
+{
+	const struct vb2_working_data *wd;
+	struct selected_region *sel_reg;
+
+	/* Always use the working data in this path since it's the object
+	 * which has the result.. */
+	wd = vboot_get_working_data();
+
+	sel_reg = cbmem_add(CBMEM_ID_VBOOT_SEL_REG, sizeof(*sel_reg));
+
+	sel_reg->offset = wd->selected_region.offset;
+	sel_reg->size = wd->selected_region.size;
+}
+
+/*
+ * For platforms that employ VBOOT_DYNAMIC_WORK_BUFFER, the vboot
+ * verification doesn't happen until after cbmem is brought online.
+ * Therefore, the selected region contents would not be initialized
+ * so don't automatically add results when cbmem comes online.
+ */
+#if !IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER)
+static void vb2_store_selected_region_cbmem(int unused)
+{
+	vb2_store_selected_region();
+}
+ROMSTAGE_CBMEM_INIT_HOOK(vb2_store_selected_region_cbmem)
+#endif

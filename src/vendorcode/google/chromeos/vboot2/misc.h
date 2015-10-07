@@ -39,4 +39,7 @@ void vb2_set_selected_region(struct region_device *rdev);
 int vboot_is_slot_selected(void);
 int vboot_is_readonly_path(void);
 
+/* Store the selected region in cbmem for later use. */
+void vb2_store_selected_region(void);
+
 #endif /* __CHROMEOS_VBOOT2_MISC_H__ */

@@ -171,3 +171,17 @@ void vboot_fill_handoff(void)
 
 	rdev_munmap(&fw_main, fw_info);
 }
+
+/*
+ * For platforms that employ VBOOT_DYNAMIC_WORK_BUFFER, the vboot
+ * verification doesn't happen until after cbmem is brought online.
+ * Therefore, the vboot results would not be initialized so don't
+ * automatically add results when cbmem comes online.
+ */
+#if !IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER)
+static void vb2_fill_handoff_cbmem(int unused)
+{
+	vboot_fill_handoff();
+}
+ROMSTAGE_CBMEM_INIT_HOOK(vb2_fill_handoff_cbmem)
+#endif

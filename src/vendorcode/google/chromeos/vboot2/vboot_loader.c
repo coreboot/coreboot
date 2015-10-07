@@ -98,10 +98,18 @@ static int vboot_active(struct asset *asset)
 			return 0;
 	}
 
-	/* Fill in vboot handoff structure before moving to ramstage so all
-	 * downstream users have access to vboot results. */
-	if (ENV_ROMSTAGE)
+	/*
+	 * Fill in vboot cbmem objects before moving to ramstage so all
+	 * downstream users have access to vboot results. This path only
+	 * applies to platforms employing VBOOT_DYNAMIC_WORK_BUFFER because
+	 * cbmem comes online prior to vboot verification taking place. For
+	 * other platforms the vboot cbmem objects are initialized when
+	 * cbmem comes online.
+	 */
+	if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_VBOOT_DYNAMIC_WORK_BUFFER)) {
+		vb2_store_selected_region();
 		vboot_fill_handoff();
+	}
 
 	return vboot_is_slot_selected();
 }

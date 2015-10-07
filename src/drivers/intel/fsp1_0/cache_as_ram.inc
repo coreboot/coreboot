@@ -51,8 +51,8 @@ find_fsp_ret:
 	/* Save the FSP location */
 	mov   %eax,   %ebp
 	cmp   $CONFIG_FSP_LOC, %eax
-	je    find_fsp_ok
-	add   $0xb0, %eax
+	jae   find_fsp_ok
+	mov   $0xb0, %eax
 	jmp   .Lhlt
 
 find_fsp_ok:

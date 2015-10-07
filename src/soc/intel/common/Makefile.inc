@@ -1,5 +1,7 @@
 ifeq ($(CONFIG_SOC_INTEL_COMMON),y)
 
+verstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c
+
 romstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_FSP_RAM_INIT) += raminit.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_RESET) += reset.c

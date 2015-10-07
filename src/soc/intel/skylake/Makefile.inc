@@ -8,6 +8,15 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 
+verstage-y += gpio.c
+verstage-y += memmap.c
+verstage-y += monotonic_timer.c
+verstage-y += pch.c
+verstage-y += pmutil.c
+verstage-y += pcr.c
+verstage-y += tsc_freq.c
+verstage-$(CONFIG_UART_DEBUG) += uart_debug.c
+
 romstage-y += flash_controller.c
 romstage-y += gpio.c
 romstage-y += memmap.c

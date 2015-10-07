@@ -1,3 +1,12 @@
+verstage-y += cpu.c
+verstage-y += pch.c
+verstage-y += report_platform.c
+verstage-y += romstage.c
+verstage-y += smbus.c
+verstage-y += spi.c
+verstage-y += systemagent.c
+verstage-y += uart.c
+
 romstage-y += cpu.c
 romstage-y += pch.c
 romstage-y += power_state.c

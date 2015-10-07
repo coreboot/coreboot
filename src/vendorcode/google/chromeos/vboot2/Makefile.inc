@@ -73,10 +73,7 @@ $(VB2_LIB): $(obj)/config.h
 libverstage-srcs += $(VB2_LIB)
 
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
-cbfs-files-y += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage
-$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-file = $(objcbfs)/verstage.elf
-$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-type = stage
-$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/verstage-compression = none
+VERSTAGE_FILE = $(objcbfs)/verstage.elf
 else
 ifeq ($(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),y)
 bootblock-srcs += $(objgenerated)/libverstage.a

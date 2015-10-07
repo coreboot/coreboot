@@ -89,12 +89,12 @@ static int is_valid_fmap(const struct fmap *fmap)
 	while (i < FMAP_STRLEN) {
 		if (fmap->name[i] == 0)
 			break;
-		if (!isalnum(fmap->name[i]))
+		if (!isgraph(fmap->name[i]))
 			return 0;
 		if (i == FMAP_STRLEN - 1) {
-			/* name is specified to be null terminated. We didn't
-			 * break in the 0 test, we didn't fail on the alnum
-			 * test, so we're seeing FMAP_STRLEN alphanumerical
+			/* name is specified to be null terminated single-word string
+			 * without spaces. We did not break in the 0 test, we know it
+			 * is a printable spaceless string but we're seeing FMAP_STRLEN
 			 * symbols, which is one too many.
 			 */
 			 return 0;

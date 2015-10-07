@@ -220,6 +220,16 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	load = (void *)(uintptr_t)stage.load;
 	entry = (void *)(uintptr_t)stage.entry;
 
+	/* Hacky way to not load programs over read only media. The stages
+	 * that would hit this path initialize themselves. */
+	if (ENV_VERSTAGE && IS_ENABLED(CONFIG_ARCH_X86) &&
+	    IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED)) {
+		void *mapping = rdev_mmap(fh, foffset, fsize);
+		rdev_munmap(fh, mapping);
+		if (mapping == load)
+			goto out;
+	}
+
 	if (stage.compression == CBFS_COMPRESS_NONE) {
 		if (rdev_readat(fh, load, foffset, fsize) != fsize)
 			return -1;
@@ -242,6 +252,8 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	memset(&load[fsize], 0, stage.memlen - fsize);
 
 	arch_segment_loaded((uintptr_t)load, stage.memlen, SEG_FINAL);
+
+out:
 	prog_set_area(pstage, load, stage.memlen);
 	prog_set_entry(pstage, entry, NULL);
 

@@ -100,15 +100,15 @@ static const struct pad_config gpio_table[] = {
 /* GSPI1_CLK */		/* GPP_B20 */
 /* GSPI1_MISO */	/* GPP_B21 */
 /* GSPI1_MOSI */	/* GPP_B22 */
-/* SM1ALERT# */		/* GPP_B23 */
+/* SM1ALERT# */		PAD_CFG_GPO(GPP_B23, 0, DEEP),
 /* SMBCLK */		PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1), /* XDP */
 /* SMBDATA */		PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1), /* XDP */
 /* SMBALERT# */		/* GPP_C2 */
-/* SML0CLK */		/* GPP_C3 */
-/* SML0DATA */		/* GPP_C4 */
-/* SML0ALERT# */	/* GPP_C5 */
+/* SML0CLK */		PAD_CFG_GPI(GPP_C3, NONE, DEEP),
+/* SML0DATA */		PAD_CFG_GPI(GPP_C4, NONE, DEEP),
+/* SML0ALERT# */	PAD_CFG_GPO(GPP_C5, 0, DEEP),
 /* SM1CLK */		PAD_CFG_GPI(GPP_C6, 20K_PU, DEEP), /* EC_IN_RW */
-/* SM1DATA */		/* GPP_C7 */
+/* SM1DATA */		PAD_CFG_GPI(GPP_C7, NONE, DEEP),
 /* UART0_RXD */		/* GPP_C8 */
 /* UART0_TXD */		/* GPP_C9 */
 /* UART0_RTS# */	/* GPP_C10 */

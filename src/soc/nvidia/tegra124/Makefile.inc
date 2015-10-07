@@ -68,7 +68,6 @@ ramstage-y += ../tegra/usb.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 rmodules_$(ARCH-romstage-y)-y += monotonic_timer.c
-VBOOT_STUB_DEPS += $(obj)/soc/nvidia/tegra124/monotonic_timer.rmodules_$(ARCH-romstage-y).o
 
 CPPFLAGS_common += -Isrc/soc/nvidia/tegra124/include/
 

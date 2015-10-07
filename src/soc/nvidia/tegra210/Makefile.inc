@@ -112,7 +112,6 @@ secmon-y += uart.c
 secmon-y += gic.c
 
 rmodules_arm-y += monotonic_timer.c
-VBOOT_STUB_DEPS += $(obj)/soc/nvidia/tegra210/monotonic_timer.rmodules_arm.o
 
 CPPFLAGS_common += -Isrc/soc/nvidia/tegra210/include/
 

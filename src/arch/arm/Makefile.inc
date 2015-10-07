@@ -106,8 +106,6 @@ rmodules_arm-y += memcpy.S
 rmodules_arm-y += memmove.S
 rmodules_arm-y += eabi_compat.c
 
-VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm.o
-
 $(objcbfs)/romstage.debug: $$(romstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.romstage.ld --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group

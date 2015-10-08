@@ -16,7 +16,7 @@
 #ifndef __ARCH_ARM64_MMU_H__
 #define __ARCH_ARM64_MMU_H__
 
-#include <memrange.h>
+#include <types.h>
 
 /* Memory attributes for mmap regions
  * These attributes act as tag values for memrange regions
@@ -43,6 +43,7 @@
 #define BLOCK_DESC                 0x1
 #define TABLE_DESC                 0x3
 #define PAGE_DESC                  0x3
+#define DESC_MASK                  0x3
 
 /* Block descriptor */
 #define BLOCK_NS                   (1 << 5)
@@ -60,6 +61,11 @@
 #define BLOCK_SH_OUTER_SHAREABLE       (2 << BLOCK_SH_SHIFT)
 #define BLOCK_SH_INNER_SHAREABLE       (3 << BLOCK_SH_SHIFT)
 
+/* Sentinel descriptor to mark first PTE of an unused table. It must be a value
+ * that cannot occur naturally as part of a page table. (Bits [1:0] = 0b00 makes
+ * this an unmapped page, but some page attribute bits are still set.) */
+#define UNUSED_DESC                0x6EbAAD0BBADbA6E0
+
 /* XLAT Table Init Attributes */
 
 #define VA_START                   0x0
@@ -67,7 +73,7 @@
 /* Granule size of 4KB is being used */
 #define GRANULE_SIZE_SHIFT         12
 #define GRANULE_SIZE               (1 << GRANULE_SIZE_SHIFT)
-#define XLAT_TABLE_MASK            (~(0UL) << GRANULE_SIZE_SHIFT)
+#define XLAT_ADDR_MASK             ((1UL << BITS_PER_VA) - GRANULE_SIZE)
 #define GRANULE_SIZE_MASK          ((1 << GRANULE_SIZE_SHIFT) - 1)
 
 #define BITS_RESOLVED_PER_LVL   (GRANULE_SIZE_SHIFT - 3)
@@ -142,11 +148,13 @@
 #define TCR_TBI_USED               (0x0 << TCR_TBI_SHIFT)
 #define TCR_TBI_IGNORED            (0x1 << TCR_TBI_SHIFT)
 
-/* Initialize the MMU TTB tables provide the range sequence and ttb buffer. */
-void mmu_init(struct memranges *ranges, uint64_t *ttb, uint64_t ttb_size);
-/* Enable the mmu based on previous mmu_init(). */
-void mmu_enable(void);
+/* Initialize MMU registers and page table memory region. */
+void mmu_init(void);
 /* Change a memory type for a range of bytes at runtime. */
 void mmu_config_range(void *start, size_t size, uint64_t tag);
+/* Enable the MMU (need previous mmu_init() and configured ranges!). */
+void mmu_enable(void);
+/* Disable the MMU (which also disables dcache but not icache). */
+void mmu_disable(void);
 
 #endif // __ARCH_ARM64_MMU_H__

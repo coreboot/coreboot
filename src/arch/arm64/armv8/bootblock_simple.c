@@ -36,7 +36,7 @@ void main(void)
 {
 	/* Globally disable MMU, caches, and branch prediction (these should
 	 * be disabled by default on reset) */
-	dcache_mmu_disable();
+	mmu_disable();
 
 	/*
 	 * Re-enable icache and branch prediction. MMU and dcache will be

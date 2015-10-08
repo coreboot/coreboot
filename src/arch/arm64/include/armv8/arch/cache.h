@@ -77,12 +77,6 @@ void flush_dcache_louis(int op_type);
 /* returns number of bytes per cache line */
 unsigned int dcache_line_bytes(void);
 
-/* dcache and MMU disable */
-void dcache_mmu_disable(void);
-
-/* dcache and MMU enable */
-void dcache_mmu_enable(void);
-
 /* perform all icache/dcache maintenance needed after loading new code */
 void cache_sync_instructions(void);
 

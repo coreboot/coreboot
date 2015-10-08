@@ -15,16 +15,13 @@
 
 #include <arch/mmu.h>
 #include <assert.h>
-#include <memrange.h>
 #include <soc/addressmap.h>
 #include <soc/mmu_operations.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <symbols.h>
 
-/* This structure keeps track of all the mmap memory ranges for t210 */
-static struct memranges t210_mmap_ranges;
-
-static void tegra210_memrange_init(struct memranges *map)
+static void tegra210_mmu_config(void)
 {
 	uint64_t start,end;
 	const unsigned long devmem = MA_DEV | MA_S | MA_RW;
@@ -35,45 +32,39 @@ static void tegra210_memrange_init(struct memranges *map)
 
 	print_carveouts();
 
-	memranges_init_empty(map);
-
 	memory_in_range_below_4gb(&start,&end);
 
 	/* Device memory below DRAM */
-	memranges_insert(map, TEGRA_ARM_LOWEST_PERIPH, start * MiB, devmem);
+	mmu_config_range((void *)TEGRA_ARM_LOWEST_PERIPH, start * MiB, devmem);
 
 	/* DRAM */
-	memranges_insert(map, start * MiB, (end-start) * MiB, cachedmem);
+	mmu_config_range((void *)(start * MiB), (end-start) * MiB, cachedmem);
 
 	memory_in_range_above_4gb(&start,&end);
 
-	memranges_insert(map, start * MiB, (end-start) * MiB, cachedmem);
+	mmu_config_range((void *)(start * MiB), (end-start) * MiB, cachedmem);
 
 	/* SRAM */
-	memranges_insert(map, TEGRA_SRAM_BASE, TEGRA_SRAM_SIZE, cachedmem);
+	mmu_config_range(_sram, _sram_size, cachedmem);
 
 	/* Add TZ carveout. */
 	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
-	memranges_insert(map, tz_base_mib * MiB, tz_size_mib * MiB, secure_mem);
-}
 
-void __attribute__((weak)) mainboard_add_memory_ranges(struct memranges *map)
-{
-	/* Don't add any ranges by default. */
+	mmu_config_range((void *)(tz_base_mib * MiB),
+			 tz_size_mib * MiB, secure_mem);
 }
 
 void tegra210_mmu_init(void)
 {
 	uintptr_t tz_base_mib;
 	size_t tz_size_mib;
-	uintptr_t ttb_base_mib;
-	size_t ttb_size_mib;
-	struct memranges *map = &t210_mmap_ranges;
 
-	tegra210_memrange_init(map);
-	mainboard_add_memory_ranges(map);
+	mmu_init();
+	tegra210_mmu_config();
 	/*
-	 * Place page tables at the end of the trust zone region.
+	 * Page tables are at the end of the trust zone region, but we should
+	 * double-check that memlayout and addressmap.c are in sync.
+	 *
 	 * TZDRAM layout is as follows:
 	 *
 	 * +--------------------------+ <----+DRAM_END
@@ -98,11 +89,8 @@ void tegra210_mmu_init(void)
 	 *
 	 */
 	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
+	assert((uintptr_t)_ttb + _ttb_size == (tz_base_mib + tz_size_mib) * MiB
+		&& _ttb_size <= tz_size_mib * MiB);
 
-	assert(tz_size_mib > CONFIG_TTB_SIZE_MB);
-	ttb_base_mib = (tz_base_mib + tz_size_mib - CONFIG_TTB_SIZE_MB) * MiB;
-
-	ttb_size_mib = CONFIG_TTB_SIZE_MB * MiB;
-	mmu_init(map, (void *)ttb_base_mib, ttb_size_mib);
 	mmu_enable();
 }

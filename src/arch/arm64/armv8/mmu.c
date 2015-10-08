@@ -31,18 +31,18 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <symbols.h>
 
 #include <console/console.h>
-#include <memrange.h>
 #include <arch/mmu.h>
 #include <arch/lib_helpers.h>
 #include <arch/cache.h>
+#include <arch/cache_helpers.h>
 
-/* Maximum number of XLAT Tables available based on ttb buffer size */
-static unsigned int max_tables;
-/* Address of ttb buffer */
-static uint64_t *xlat_addr;
-static int free_idx;
+/* This just caches the next free table slot (okay to do since they fill up from
+ * bottom to top and can never be freed up again). It will reset to its initial
+ * value on stage transition, so we still need to check it for UNUSED_DESC. */
+static uint64_t *next_free_table = (void *)_ttb;
 
 static void print_tag(int level, uint64_t tag)
 {
@@ -82,48 +82,37 @@ static uint64_t get_block_attr(unsigned long tag)
 	return attr;
 }
 
-/* Func : table_desc_valid
- * Desc : Check if a table entry contains valid desc
- */
-static uint64_t table_desc_valid(uint64_t desc)
-{
-	return((desc & TABLE_DESC) == TABLE_DESC);
-}
-
 /* Func : setup_new_table
  * Desc : Get next free table from TTB and set it up to match old parent entry.
  */
 static uint64_t *setup_new_table(uint64_t desc, size_t xlat_size)
 {
-	uint64_t *new, *entry;
+	while (next_free_table[0] != UNUSED_DESC) {
+		next_free_table += GRANULE_SIZE/sizeof(*next_free_table);
+		if (_ettb - (u8 *)next_free_table <= 0)
+			die("Ran out of page table space!");
+	}
 
-	assert(free_idx < max_tables);
-
-	new = (uint64_t*)((unsigned char *)xlat_addr + free_idx * GRANULE_SIZE);
-	free_idx++;
+	void *frame_base = (void *)(desc & XLAT_ADDR_MASK);
+	printk(BIOS_DEBUG, "Backing address range [%p:%p) with new page"
+	       " table @%p\n", frame_base, frame_base +
+	       (xlat_size << BITS_RESOLVED_PER_LVL), next_free_table);
 
 	if (!desc) {
-		memset(new, 0, GRANULE_SIZE);
+		memset(next_free_table, 0, GRANULE_SIZE);
 	} else {
 		/* Can reuse old parent entry, but may need to adjust type. */
 		if (xlat_size == L3_XLAT_SIZE)
 			desc |= PAGE_DESC;
 
-		for (entry = new; (u8 *)entry < (u8 *)new + GRANULE_SIZE;
-		     entry++, desc += xlat_size)
-			*entry = desc;
+		int i = 0;
+		for (; i < GRANULE_SIZE/sizeof(*next_free_table); i++) {
+			next_free_table[i] = desc;
+			desc += xlat_size;
+		}
 	}
 
-	return new;
-}
-
-/* Func : get_table_from_desc
- * Desc : Get next level table address from table descriptor
- */
-static uint64_t *get_table_from_desc(uint64_t desc)
-{
-	uint64_t *ptr = (uint64_t*)(desc & XLAT_TABLE_MASK);
-	return ptr;
+	return next_free_table;
 }
 
 /* Func: get_next_level_table
@@ -134,12 +123,12 @@ static uint64_t *get_next_level_table(uint64_t *ptr, size_t xlat_size)
 {
 	uint64_t desc = *ptr;
 
-	if (!table_desc_valid(desc)) {
+	if ((desc & DESC_MASK) != TABLE_DESC) {
 		uint64_t *new_table = setup_new_table(desc, xlat_size);
 		desc = ((uint64_t)new_table) | TABLE_DESC;
 		*ptr = desc;
 	}
-	return get_table_from_desc(desc);
+	return (uint64_t *)(desc & XLAT_ADDR_MASK);
 }
 
 /* Func : init_xlat_table
@@ -156,7 +145,7 @@ static uint64_t init_xlat_table(uint64_t base_addr,
 	uint64_t l1_index = (base_addr & L1_ADDR_MASK) >> L1_ADDR_SHIFT;
 	uint64_t l2_index = (base_addr & L2_ADDR_MASK) >> L2_ADDR_SHIFT;
 	uint64_t l3_index = (base_addr & L3_ADDR_MASK) >> L3_ADDR_SHIFT;
-	uint64_t *table = xlat_addr;
+	uint64_t *table = (uint64_t *)_ttb;
 	uint64_t desc;
 	uint64_t attr = get_block_attr(tag);
 
@@ -221,11 +210,9 @@ void mmu_config_range(void *start, size_t size, uint64_t tag)
 	uint64_t base_addr = (uintptr_t)start;
 	uint64_t temp_size = size;
 
-	if (!IS_ENABLED(CONFIG_SMP)) {
-		printk(BIOS_INFO, "Mapping address range [%p:%p) as ",
-		       start, start + size);
-		print_tag(BIOS_INFO, tag);
-	}
+	printk(BIOS_INFO, "Mapping address range [%p:%p) as ",
+	       start, start + size);
+	print_tag(BIOS_INFO, tag);
 
 	sanity_check(base_addr, temp_size);
 
@@ -241,56 +228,50 @@ void mmu_config_range(void *start, size_t size, uint64_t tag)
 }
 
 /* Func : mmu_init
- * Desc : Initialize mmu based on the mmap_ranges passed. ttb_buffer is used as
- * the base address for xlat tables. ttb_size defines the max number of tables
- * that can be used
+ * Desc : Initialize MMU registers and page table memory region. This must be
+ * called exactly ONCE PER BOOT before trying to configure any mappings.
  */
-void mmu_init(struct memranges *mmap_ranges,
-	      uint64_t *ttb_buffer,
-	      uint64_t ttb_size)
+void mmu_init(void)
 {
-	struct range_entry *mmap_entry;
+	/* Initially mark all table slots unused (first PTE == UNUSED_DESC). */
+	uint64_t *table = (uint64_t *)_ttb;
+	for (; _ettb - (u8 *)table > 0; table += GRANULE_SIZE/sizeof(*table))
+		table[0] = UNUSED_DESC;
 
-	sanity_check((uint64_t)ttb_buffer, ttb_size);
+	/* Initialize the root table (L1) to be completely unmapped. */
+	uint64_t *root = setup_new_table(INVALID_DESC, L1_XLAT_SIZE);
+	assert((u8 *)root == _ttb);
 
-	memset((void*)ttb_buffer, 0, GRANULE_SIZE);
-	max_tables = (ttb_size >> GRANULE_SIZE_SHIFT);
-	xlat_addr = ttb_buffer;
-	free_idx = 1;
-
-	if (mmap_ranges)
-		memranges_each_entry(mmap_entry, mmap_ranges) {
-			mmu_config_range((void *)range_entry_base(mmap_entry),
-					 range_entry_size(mmap_entry),
-					 range_entry_tag(mmap_entry));
-		}
-}
-
-void mmu_enable(void)
-{
-	uint32_t sctlr;
+	/* Initialize TTBR */
+	raw_write_ttbr0_el3((uintptr_t)root);
 
 	/* Initialize MAIR indices */
 	raw_write_mair_el3(MAIR_ATTRIBUTES);
-
-	/* Invalidate TLBs */
-	tlbiall_el3();
 
 	/* Initialize TCR flags */
 	raw_write_tcr_el3(TCR_TOSZ | TCR_IRGN0_NM_WBWAC | TCR_ORGN0_NM_WBWAC |
 			  TCR_SH0_IS | TCR_TG0_4KB | TCR_PS_64GB |
 			  TCR_TBI_USED);
+}
 
-	/* Initialize TTBR */
-	raw_write_ttbr0_el3((uintptr_t)xlat_addr);
-
-	/* Ensure system register writes are committed before enabling MMU */
-	isb();
-
-	/* Enable MMU */
-	sctlr = raw_read_sctlr_el3();
+void mmu_enable(void)
+{
+	uint32_t sctlr = raw_read_sctlr_el3();
 	sctlr |= SCTLR_C | SCTLR_M | SCTLR_I;
 	raw_write_sctlr_el3(sctlr);
+	isb();
+}
 
+/*
+ * CAUTION: This implementation assumes that coreboot never uses non-identity
+ * page tables for pages containing executed code. If you ever want to violate
+ * this assumption, have fun figuring out the associated problems on your own.
+ */
+void mmu_disable(void)
+{
+	flush_dcache_all(DCCISW);
+	uint32_t sctlr = raw_read_sctlr_el3();
+	sctlr &= ~(SCTLR_C | SCTLR_M);
+	raw_write_sctlr_el3(sctlr);
 	isb();
 }

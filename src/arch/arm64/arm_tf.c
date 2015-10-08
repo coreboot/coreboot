@@ -15,6 +15,7 @@
 
 #include <arch/cache.h>
 #include <arch/lib_helpers.h>
+#include <arch/mmu.h>
 #include <arch/transition.h>
 #include <arm_tf.h>
 #include <assert.h>
@@ -83,7 +84,7 @@ void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 
 	dcache_clean_by_mva(&bl31_params, sizeof(bl31_params));
 	dcache_clean_by_mva(&bl33_ep_info, sizeof(bl33_ep_info));
-	dcache_mmu_disable();
+	mmu_disable();
 	bl31_entry(&bl31_params, bl31_plat_params);
 	die("BL31 returned!");
 }

@@ -129,13 +129,6 @@ void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib);
 void print_carveouts(void);
 
 /*
- * Add any board-specific memory ranges to the address map when executing
- * on aarchv8 core.
- */
-struct memranges;
-void mainboard_add_memory_ranges(struct memranges *map);
-
-/*
  * There are complications accessing the Trust Zone carveout region. The
  * AVP cannot access these registers and the CPU can't access this register
  * as a non-secure access. When the page tables live in non-secure memory

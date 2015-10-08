@@ -119,36 +119,11 @@ void dcache_invalidate_by_mva(void const *addr, size_t len)
 	dcache_op_va(addr, len, OP_DCIVAC);
 }
 
-/*
- * CAUTION: This implementation assumes that coreboot never uses non-identity
- * page tables for pages containing executed code. If you ever want to violate
- * this assumption, have fun figuring out the associated problems on your own.
- */
-void dcache_mmu_disable(void)
-{
-	uint32_t sctlr;
-
-	flush_dcache_all(DCCISW);
-	sctlr = raw_read_sctlr_current();
-	sctlr &= ~(SCTLR_C | SCTLR_M);
-	raw_write_sctlr_current(sctlr);
-}
-
-void dcache_mmu_enable(void)
-{
-	uint32_t sctlr;
-
-	sctlr = raw_read_sctlr_current();
-	sctlr |= SCTLR_C | SCTLR_M;
-	raw_write_sctlr_current(sctlr);
-}
-
 void cache_sync_instructions(void)
 {
 	flush_dcache_all(DCCISW); /* includes trailing DSB (in assembly) */
 	icache_invalidate_all(); /* includdes leading DSB and trailing ISB. */
 }
-
 
 /*
  * For each segment of a program loaded this function is called

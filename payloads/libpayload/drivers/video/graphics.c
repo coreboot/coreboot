@@ -45,18 +45,26 @@ static void add_vectors(struct vector *out,
 	out->y = v1->y + v2->y;
 }
 
+static int is_valid_fraction(const struct fraction *f)
+{
+	return f->d != 0;
+}
+
 /*
  * Transform a vector:
  * 	x' = x * a_x + offset_x
  * 	y' = y * a_y + offset_y
  */
-static void transform_vector(struct vector *out,
-			     const struct vector *in,
-			     const struct scale *a,
-			     const struct vector *offset)
+static int transform_vector(struct vector *out,
+			    const struct vector *in,
+			    const struct scale *a,
+			    const struct vector *offset)
 {
-	out->x = a->x.nume * in->x / a->x.deno + offset->x;
-	out->y = a->y.nume * in->y / a->y.deno + offset->y;
+	if (!is_valid_fraction(&a->x) || !is_valid_fraction(&a->y))
+		return CBGFX_ERROR_INVALID_PARAMETER;
+	out->x = a->x.n * in->x / a->x.d + offset->x;
+	out->y = a->y.n * in->y / a->y.d + offset->y;
+	return CBGFX_SUCCESS;
 }
 
 /*
@@ -162,12 +170,12 @@ int draw_box(const struct rect *box, const struct rgb_color *rgb)
 	struct vector p, t;
 	const uint32_t color = calculate_color(rgb);
 	const struct scale top_left_s = {
-		.x = { .nume = box->offset.x, .deno = CANVAS_SCALE, },
-		.y = { .nume = box->offset.y, .deno = CANVAS_SCALE, }
+		.x = { .n = box->offset.x, .d = CANVAS_SCALE, },
+		.y = { .n = box->offset.y, .d = CANVAS_SCALE, }
 	};
 	const struct scale size_s = {
-		.x = { .nume = box->size.x, .deno = CANVAS_SCALE, },
-		.y = { .nume = box->size.y, .deno = CANVAS_SCALE, }
+		.x = { .n = box->size.x, .d = CANVAS_SCALE, },
+		.y = { .n = box->size.y, .d = CANVAS_SCALE, }
 	};
 
 	if (cbgfx_init())
@@ -220,33 +228,25 @@ int clear_screen(const struct rgb_color *rgb)
 	return CBGFX_SUCCESS;
 }
 
-static int check_pixel_boundary(const struct vector *image,
-				const struct bitmap_header_v3 *header,
-				const struct scale *scale)
-{
-	struct vector p = {
-		.x = (image->width - 1) * scale->x.deno / scale->x.nume,
-		.y = (image->height -1) * scale->y.deno / scale->y.nume,
-	};
-	struct rect bound = {
-		.offset = vzero,
-		.size = { .width = header->width, .height = header->height, },
-	};
-	return within_box(&p, &bound) < 0;
-}
-
+/*
+ * Bi-linear Interpolation
+ *
+ * It estimates the value of a middle point (tx, ty) using the values from four
+ * adjacent points (q00, q01, q10, q11).
+ */
 static uint32_t bli(uint32_t q00, uint32_t q10, uint32_t q01, uint32_t q11,
 		    struct fraction *tx, struct fraction *ty)
 {
-	uint32_t r0 = (tx->nume * q10 + (tx->deno - tx->nume) * q00) / tx->deno;
-	uint32_t r1 = (tx->nume * q11 + (tx->deno - tx->nume) * q01) / tx->deno;
-	uint32_t p = (ty->nume * r1 + (ty->deno - ty->nume) * r0) / ty->deno;
+	uint32_t r0 = (tx->n * q10 + (tx->d - tx->n) * q00) / tx->d;
+	uint32_t r1 = (tx->n * q11 + (tx->d - tx->n) * q01) / tx->d;
+	uint32_t p = (ty->n * r1 + (ty->d - ty->n) * r0) / ty->d;
 	return p;
 }
 
 static int draw_bitmap_v3(const struct vector *top_left,
 			  const struct scale *scale,
-			  const struct vector *image,
+			  const struct vector *dim,
+			  const struct vector *dim_org,
 			  const struct bitmap_header_v3 *header,
 			  const struct bitmap_palette_element_v3 *pal,
 			  const uint8_t *pixel_array)
@@ -267,16 +267,12 @@ static int draw_bitmap_v3(const struct vector *top_left,
 		LOG("Unsupported bits per pixel: %d\n", bpp);
 		return CBGFX_ERROR_BITMAP_FORMAT;
 	}
-	if (scale->x.nume == 0 || scale->y.nume == 0) {
+	if (scale->x.n == 0 || scale->y.n == 0) {
 		LOG("Scaling out of range\n");
 		return CBGFX_ERROR_SCALE_OUT_OF_RANGE;
 	}
 
-	/* This check guarantees we will not try to read outside pixel data. */
-	if (check_pixel_boundary(image, header, scale))
-		return CBGFX_ERROR_SCALE_OUT_OF_RANGE;
-
-	const int32_t y_stride = ROUNDUP(header->width * bpp / 8, 4);
+	const int32_t y_stride = ROUNDUP(dim_org->width * bpp / 8, 4);
 	/*
 	 * header->height can be positive or negative.
 	 *
@@ -290,33 +286,39 @@ static int draw_bitmap_v3(const struct vector *top_left,
 	if (header->height < 0) {
 		dir = 1;
 	} else {
-		p.y += image->height - 1;
+		p.y += dim->height - 1;
 		dir = -1;
 	}
 	/*
-	 * Plot pixels scaled by the bilinear interpolation. We scan
-	 * over the image on canvas (using d) and find the corresponding pixel
-	 * in the bitmap data (using s).
+	 * Plot pixels scaled by the bilinear interpolation. We scan over the
+	 * image on canvas (using d) and find the corresponding pixel in the
+	 * bitmap data (using s0, s1).
+	 *
+	 * When d hits the right bottom corner, s0 also hits the right bottom
+	 * corner of the pixel array because that's how scale->x and scale->y
+	 * have been set. Since the pixel array size is already validated in
+	 * parse_bitmap_header_v3, s0 is guranteed not to exceed pixel array
+	 * boundary.
 	 */
 	struct vector s0, s1, d;
 	struct fraction tx, ty;
-	for (d.y = 0; d.y < image->height; d.y++, p.y += dir) {
-		s0.y = d.y * scale->y.deno / scale->y.nume;
+	for (d.y = 0; d.y < dim->height; d.y++, p.y += dir) {
+		s0.y = d.y * scale->y.d / scale->y.n;
 		s1.y = s0.y;
-		if (s0.y + 1 < ABS(header->height))
+		if (s0.y + 1 < dim_org->height)
 			s1.y++;
-		ty.deno = scale->y.nume;
-		ty.nume = (d.y * scale->y.deno) % scale->y.nume;
+		ty.d = scale->y.n;
+		ty.n = (d.y * scale->y.d) % scale->y.n;
 		const uint8_t *data0 = pixel_array + s0.y * y_stride;
 		const uint8_t *data1 = pixel_array + s1.y * y_stride;
 		p.x = top_left->x;
-		for (d.x = 0; d.x < image->width; d.x++, p.x++) {
-			s0.x = d.x * scale->x.deno / scale->x.nume;
+		for (d.x = 0; d.x < dim->width; d.x++, p.x++) {
+			s0.x = d.x * scale->x.d / scale->x.n;
 			s1.x = s0.x;
-			if (s1.x + 1 < header->width)
+			if (s1.x + 1 < dim_org->width)
 				s1.x++;
-			tx.deno = scale->x.nume;
-			tx.nume = (d.x * scale->x.deno) % scale->x.nume;
+			tx.d = scale->x.n;
+			tx.n = (d.x * scale->x.d) % scale->x.n;
 			uint8_t c00 = data0[s0.x];
 			uint8_t c10 = data0[s1.x];
 			uint8_t c01 = data1[s0.x];
@@ -370,18 +372,27 @@ static int get_bitmap_file_header(const void *bitmap, size_t size,
 	return CBGFX_SUCCESS;
 }
 
-static int parse_bitmap_header_v3(const uint8_t *bitmap,
-			const struct bitmap_file_header *file_header,
+static int parse_bitmap_header_v3(
+			const uint8_t *bitmap,
+			size_t size,
 			/* ^--- IN / OUT ---v */
 			struct bitmap_header_v3 *header,
 			const struct bitmap_palette_element_v3 **palette,
-			const uint8_t **pixel_array)
+			const uint8_t **pixel_array,
+			struct vector *dim_org)
 {
+	struct bitmap_file_header file_header;
 	struct bitmap_header_v3 *h;
+	int rv;
+
+	rv = get_bitmap_file_header(bitmap, size, &file_header);
+	if (rv)
+		return rv;
+
 	size_t header_offset = sizeof(struct bitmap_file_header);
 	size_t header_size = sizeof(struct bitmap_header_v3);
 	size_t palette_offset = header_offset + header_size;
-	size_t file_size = file_header->file_size;
+	size_t file_size = file_header.file_size;
 
 	h = (struct bitmap_header_v3 *)(bitmap + header_offset);
 	header->header_size = le32toh(h->header_size);
@@ -389,15 +400,23 @@ static int parse_bitmap_header_v3(const uint8_t *bitmap,
 		LOG("Unsupported bitmap format\n");
 		return CBGFX_ERROR_BITMAP_FORMAT;
 	}
+
 	header->width = le32toh(h->width);
 	header->height = le32toh(h->height);
+	if (header->width == 0 || header->height == 0) {
+		LOG("Invalid image width or height\n");
+		return CBGFX_ERROR_BITMAP_DATA;
+	}
+	dim_org->width = header->width;
+	dim_org->height = ABS(header->height);
+
 	header->bits_per_pixel = le16toh(h->bits_per_pixel);
 	header->compression = le32toh(h->compression);
 	header->size = le32toh(h->size);
 	header->colors_used = le32toh(h->colors_used);
 	size_t palette_size = header->colors_used
 			* sizeof(struct bitmap_palette_element_v3);
-	size_t pixel_offset = file_header->bitmap_offset;
+	size_t pixel_offset = file_header.bitmap_offset;
 	if (pixel_offset > file_size) {
 		LOG("Bitmap pixel data exceeds buffer boundary\n");
 		return CBGFX_ERROR_BITMAP_DATA;
@@ -410,8 +429,8 @@ static int parse_bitmap_header_v3(const uint8_t *bitmap,
 			palette_offset);
 
 	size_t pixel_size = header->size;
-	if (pixel_size != header->height *
-		ROUNDUP(header->width * header->bits_per_pixel / 8, 4)) {
+	if (pixel_size != dim_org->height *
+		ROUNDUP(dim_org->width * header->bits_per_pixel / 8, 4)) {
 		LOG("Bitmap pixel array size does not match expected size\n");
 		return CBGFX_ERROR_BITMAP_DATA;
 	}
@@ -424,58 +443,51 @@ static int parse_bitmap_header_v3(const uint8_t *bitmap,
 	return CBGFX_SUCCESS;
 }
 
-static int calculate_scale(const struct bitmap_header_v3 *header,
-			   const struct scale *dim_rel,
-			   struct scale *scale)
+/*
+ * This calculates the dimension of the image projected on the canvas from the
+ * dimension relative to the canvas size. If either width or height is zero, it
+ * is derived from the other (non-zero) value to keep the aspect ratio.
+ */
+static int calculate_dimension(const struct vector *dim_org,
+			       const struct scale *dim_rel,
+			       struct vector *dim)
 {
-	if (dim_rel->x.nume == 0 && dim_rel->y.nume == 0)
+	if (dim_rel->x.n == 0 && dim_rel->y.n == 0)
 		return CBGFX_ERROR_INVALID_PARAMETER;
 
-	if (dim_rel->x.nume > dim_rel->x.deno
-			|| dim_rel->y.nume > dim_rel->y.deno)
+	if (dim_rel->x.n > dim_rel->x.d || dim_rel->y.n > dim_rel->y.d)
 		return CBGFX_ERROR_INVALID_PARAMETER;
 
-	if (dim_rel->x.nume > 0) {
-		scale->x.nume = dim_rel->x.nume * canvas.size.width;
-		scale->x.deno = header->width * dim_rel->x.deno;
+	if (dim_rel->x.n > 0) {
+		if (!is_valid_fraction(&dim_rel->x))
+			return CBGFX_ERROR_INVALID_PARAMETER;
+		dim->width = canvas.size.width  * dim_rel->x.n / dim_rel->x.d;
 	}
-	if (dim_rel->y.nume > 0) {
-		scale->y.nume = dim_rel->y.nume * canvas.size.height;
-		scale->y.deno = header->height * dim_rel->y.deno;
-	}
-
-	if (dim_rel->y.nume == 0) {
-		scale->y.nume = scale->x.nume;
-		scale->y.deno = scale->x.deno;
-	}
-	if (dim_rel->x.nume == 0) {
-		scale->x.nume = scale->y.nume;
-		scale->x.deno = scale->y.deno;
+	if (dim_rel->y.n > 0) {
+		if (!is_valid_fraction(&dim_rel->y))
+			return CBGFX_ERROR_INVALID_PARAMETER;
+		dim->height = canvas.size.height * dim_rel->y.n / dim_rel->y.d;
 	}
 
-	if (scale->x.deno == 0 || scale->y.deno == 0)
-		return CBGFX_ERROR_INVALID_PARAMETER;
+	/* Derive height from width using aspect ratio */
+	if (dim_rel->y.n == 0)
+		dim->height = dim->width * dim_org->height / dim_org->width;
+	/* Derive width from height using aspect ratio */
+	if (dim_rel->x.n == 0)
+		dim->width = dim->height * dim_org->width / dim_org->height;
 
 	return CBGFX_SUCCESS;
-}
-
-static void calculate_dimention(const struct bitmap_header_v3 *header,
-				const struct scale *scale,
-				struct vector *dim)
-{
-	dim->width = header->width;
-	dim->height = ABS(header->height);
-	transform_vector(dim, dim, scale, &vzero);
 }
 
 static int caclcuate_position(const struct vector *dim,
 			      const struct scale *pos_rel, uint8_t pivot,
 			      struct vector *top_left)
 {
-	if (pos_rel->x.deno == 0 || pos_rel->y.deno == 0)
-		return CBGFX_ERROR_INVALID_PARAMETER;
+	int rv;
 
-	transform_vector(top_left, &canvas.size, pos_rel, &canvas.offset);
+	rv = transform_vector(top_left, &canvas.size, pos_rel, &canvas.offset);
+	if (rv)
+		return rv;
 
 	switch (pivot & PIVOT_H_MASK) {
 	case PIVOT_H_LEFT:
@@ -506,28 +518,6 @@ static int caclcuate_position(const struct vector *dim,
 	return CBGFX_SUCCESS;
 }
 
-static int setup_image(const struct bitmap_header_v3 *header,
-		       const struct scale *dim_rel,
-		       const struct scale *pos_rel, uint8_t pivot,
-		       /* ^--- IN / OUT ---v */
-		       struct scale *scale,
-		       struct vector *dim,
-		       struct vector *top_left)
-{
-	int rv;
-
-	/* Calculate self-scale (scale relative to image size) */
-	rv = calculate_scale(header, dim_rel, scale);
-	if (rv)
-		return rv;
-
-	/* Calculate height and width of the image */
-	calculate_dimention(header, scale, dim);
-
-	/* Calculate coordinate */
-	return caclcuate_position(dim, pos_rel, pivot, top_left);
-}
-
 static int check_boundary(const struct vector *top_left,
 			  const struct vector *dim,
 			  const struct rect *bound)
@@ -541,67 +531,83 @@ static int check_boundary(const struct vector *top_left,
 	return CBGFX_SUCCESS;
 }
 
-static int do_draw_bitmap(const void *bitmap, size_t size,
-			  const struct scale *pos_rel, const uint8_t pivot,
-			  const struct vector *position,
-			  const struct scale *dim_rel)
+int draw_bitmap(const void *bitmap, size_t size,
+		const struct scale *pos_rel, uint8_t pivot,
+		const struct scale *dim_rel)
 {
-	struct bitmap_file_header file_header;
 	struct bitmap_header_v3 header;
 	const struct bitmap_palette_element_v3 *palette;
 	const uint8_t *pixel_array;
-	struct vector top_left, dim;
+	struct vector top_left, dim, dim_org;
 	struct scale scale;
 	int rv;
 
 	if (cbgfx_init())
 		return CBGFX_ERROR_INIT;
 
-	rv = get_bitmap_file_header(bitmap, size, &file_header);
-	if (rv)
-		return rv;
-
 	/* only v3 is supported now */
-	rv = parse_bitmap_header_v3(bitmap, &file_header,
-				    &header, &palette, &pixel_array);
+	rv = parse_bitmap_header_v3(bitmap, size,
+				    &header, &palette, &pixel_array, &dim_org);
 	if (rv)
 		return rv;
 
-	/* Calculate image scale, dimention, and position */
-	if (position) {
-		scale.x.nume = 1;
-		scale.x.deno = 1;
-		scale.y.nume = 1;
-		scale.y.deno = 1;
-		calculate_dimention(&header, &scale, &dim);
-		add_vectors(&top_left, position, &vzero);
-		rv = check_boundary(&top_left, &dim, &screen);
-	} else {
-		rv = setup_image(&header, dim_rel, pos_rel, pivot,
-				 &scale, &dim, &top_left);
-		if (rv)
-			return rv;
-		rv = check_boundary(&top_left, &dim, &canvas);
-	}
+	/* Calculate height and width of the image */
+	rv = calculate_dimension(&dim_org, dim_rel, &dim);
+	if (rv)
+		return rv;
+
+	/* Calculate self scale */
+	scale.x.n = dim.width;
+	scale.x.d = dim_org.width;
+	scale.y.n = dim.height;
+	scale.y.d = dim_org.height;
+
+	/* Calculate coordinate */
+	rv = caclcuate_position(&dim, pos_rel, pivot, &top_left);
+	if (rv)
+		return rv;
+
+	rv = check_boundary(&top_left, &dim, &canvas);
 	if (rv) {
-		LOG("Bitmap image exceeds screen or canvas boundary\n");
+		LOG("Bitmap image exceeds canvas boundary\n");
 		return rv;
 	}
 
-	return draw_bitmap_v3(&top_left, &scale, &dim,
+	return draw_bitmap_v3(&top_left, &scale, &dim, &dim_org,
 			      &header, palette, pixel_array);
 }
 
-int draw_bitmap(const void *bitmap, size_t size,
-		const struct scale *pos_rel, uint8_t pivot,
-		const struct scale *dim_rel)
-{
-	return do_draw_bitmap(bitmap, size, pos_rel, pivot, NULL, dim_rel);
-}
-
 int draw_bitmap_direct(const void *bitmap, size_t size,
-		       const struct vector *position)
+		       const struct vector *top_left)
 {
-	return do_draw_bitmap(bitmap, size, NULL, 0, position, NULL);
-}
+	struct bitmap_header_v3 header;
+	const struct bitmap_palette_element_v3 *palette;
+	const uint8_t *pixel_array;
+	struct vector dim;
+	struct scale scale;
+	int rv;
 
+	if (cbgfx_init())
+		return CBGFX_ERROR_INIT;
+
+	/* only v3 is supported now */
+	rv = parse_bitmap_header_v3(bitmap, size,
+				    &header, &palette, &pixel_array, &dim);
+	if (rv)
+		return rv;
+
+	/* Calculate self scale */
+	scale.x.n = 1;
+	scale.x.d = 1;
+	scale.y.n = 1;
+	scale.y.d = 1;
+
+	rv = check_boundary(top_left, &dim, &screen);
+	if (rv) {
+		LOG("Bitmap image exceeds screen boundary\n");
+		return rv;
+	}
+
+	return draw_bitmap_v3(top_left, &scale, &dim, &dim,
+			      &header, palette, pixel_array);
+}

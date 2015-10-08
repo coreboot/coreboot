@@ -30,8 +30,8 @@
 #define CBGFX_ERROR_SCALE_OUT_OF_RANGE	0x13
 
 struct fraction {
-	int32_t nume;
-	int32_t deno;
+	int32_t n;
+	int32_t d;
 };
 
 struct scale {
@@ -147,5 +147,4 @@ int draw_bitmap(const void *bitmap, size_t size,
  * @return CBGFX_* error codes
  */
 int draw_bitmap_direct(const void *bitmap, size_t size,
-		       const struct vector *pos);
-
+		       const struct vector *top_left);

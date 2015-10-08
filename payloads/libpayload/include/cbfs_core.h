@@ -143,6 +143,7 @@ struct cbfs_file {
 #define CBFS_FILE_ATTR_TAG_UNUSED 0
 #define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
 #define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
+#define CBFS_FILE_ATTR_TAG_HASH 0x68736148
 
 /* The common fields of extended cbfs file attributes.
    Attributes are expected to start with tag/len, then append their
@@ -161,6 +162,14 @@ struct cbfs_file_attr_compression {
 	uint32_t compression;
 	uint32_t decompressed_size;
 } __attribute__((packed));
+
+struct cbfs_file_attr_hash {
+	uint32_t tag;
+	uint32_t len;
+	uint32_t hash_type;
+	/* hash_data is len - sizeof(struct) bytes */
+	uint8_t  hash_data[];
+} __PACKED;
 
 /* Given a cbfs_file, return the first file attribute, or NULL. */
 struct cbfs_file_attribute *cbfs_file_first_attr(struct cbfs_file *file);

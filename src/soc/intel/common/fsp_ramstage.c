@@ -164,15 +164,12 @@ static void fsp_cache_save(struct prog *fsp)
 
 static int fsp_find_and_relocate(struct prog *fsp)
 {
-	struct cbfsf fsp_file;
-	uint32_t type = CBFS_TYPE_FSP;
-
-	if (cbfs_boot_locate(&fsp_file, prog_name(fsp), &type)) {
-		printk(BIOS_ERR, "ERROR: Couldn't find fsp.bin in CBFS.\n");
+	if (prog_locate(fsp)) {
+		printk(BIOS_ERR, "ERROR: Couldn't find %s\n", prog_name(fsp));
 		return -1;
 	}
 
-	if (fsp_relocate(fsp, &fsp_file.data)) {
+	if (fsp_relocate(fsp, prog_rdev(fsp))) {
 		printk(BIOS_ERR, "ERROR: FSP relocation failed.\n");
 		return -1;
 	}

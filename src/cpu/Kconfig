@@ -153,6 +153,14 @@ config CPU_MICROCODE_CBFS_NONE
 
 endchoice
 
+config CPU_MICROCODE_MULTIPLE_FILES
+	bool
+	default n
+	depends on CPU_MICROCODE_CBFS_GENERATE
+	help
+	  Select this option to install separate microcode container files into
+	  CBFS instead of using the traditional monolithic microcode file format.
+
 config CPU_MICROCODE_FILE
 	  string "Path and filename of CPU microcode"
 	  depends on CPU_MICROCODE_CBFS_EXTERNAL

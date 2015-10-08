@@ -24,8 +24,10 @@ cbfs_include_ucode = y
 endif
 
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE), y)
+ifneq ($(CONFIG_CPU_MICROCODE_MULTIPLE_FILES), y)
 cpu_ucode_cbfs_file = $(obj)/cpu_microcode_blob.bin
 cbfs_include_ucode = y
+endif
 endif
 
 # We just mash all microcode binaries together into one binary to rule them all.

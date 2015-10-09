@@ -13,6 +13,7 @@ chip soc/intel/braswell
 	register "PcdApertureSize" = "2"
 	register "PcdGttSize" = "1"
 	register "PcdDvfsEnable" = "1"
+	register "PcdCaMirrorEn" = "0"
 
 	############################################################
 	# Set the parameters for SiliconInit

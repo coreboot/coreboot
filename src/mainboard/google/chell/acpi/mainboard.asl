@@ -21,6 +21,7 @@
 
 #define BOARD_TOUCHPAD_I2C_ADDR			0x15
 #define BOARD_TOUCHPAD_IRQ			TOUCHPAD_INT_L
+#define BOARD_TOUCHPAD_WAKE			GPE_TOUCHPAD_WAKE
 
 #define BOARD_TOUCHSCREEN_I2C_ADDR		0x10
 #define BOARD_TOUCHSCREEN_IRQ			TOUCHSCREEN_INT_L
@@ -111,6 +112,7 @@ Scope (\_SB.PCI0.I2C1)
 		Name (_DDN, "Elan Touchpad")
 		Name (_UID, 1)
 		Name (_S0W, 4)
+		Name (_PRW, Package () { BOARD_TOUCHPAD_WAKE, 3 })
 
 		Name (_CRS, ResourceTemplate ()
 		{

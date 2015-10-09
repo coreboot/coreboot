@@ -24,9 +24,8 @@ armv4_flags = -marm -march=armv4t -I$(src)/arch/arm/include/armv4/ \
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV4),y)
 
-ifneq ($(CONFIG_ARM_BOOTBLOCK_CUSTOM),y)
+ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.S
-bootblock-y += bootblock_simple.c
 endif
 
 bootblock-y += cache.c

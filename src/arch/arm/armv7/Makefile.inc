@@ -31,9 +31,8 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV7),y)
 bootblock-c-ccopts += $(armv7-a_flags)
 bootblock-S-ccopts += $(armv7-a_asm_flags)
 
-ifneq ($(CONFIG_ARM_BOOTBLOCK_CUSTOM),y)
+ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.S
-bootblock-$(CONFIG_BOOTBLOCK_SIMPLE) += bootblock_simple.c
 endif
 
 bootblock-y += cache.c
@@ -46,9 +45,8 @@ else ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV7_M),y)
 bootblock-c-ccopts += $(armv7-m_flags)
 bootblock-S-ccopts += $(armv7-m_asm_flags)
 
-ifneq ($(CONFIG_ARM_BOOTBLOCK_CUSTOM),y)
+ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock_m.S
-bootblock-y += bootblock_simple.c
 endif
 bootblock-y += exception_m.c
 bootblock-y += cache_m.c

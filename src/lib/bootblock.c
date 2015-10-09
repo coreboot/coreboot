@@ -15,12 +15,10 @@
  */
 
 #include <arch/exception.h>
-#include <arch/stages.h>
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <delay.h>
 #include <program_loading.h>
-#include <smp/node.h>
 #include <timestamp.h>
 
 __attribute__((weak)) void bootblock_mainboard_early_init(void) { /* no-op */ }
@@ -35,10 +33,10 @@ void main(void)
 
 	bootblock_mainboard_early_init();
 
-#if CONFIG_BOOTBLOCK_CONSOLE
-	console_init();
-	exception_init();
-#endif
+	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) {
+		console_init();
+		exception_init();
+	}
 
 	bootblock_soc_init();
 	bootblock_mainboard_init();

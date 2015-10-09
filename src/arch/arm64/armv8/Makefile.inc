@@ -26,10 +26,6 @@ armv8_asm_flags = $(armv8_flags)
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV8_64),y)
 
-ifneq ($(CONFIG_ARM64_BOOTBLOCK_CUSTOM),y)
-bootblock-y += bootblock.S
-bootblock-y += bootblock_simple.c
-endif
 bootblock-y += cache.c
 bootblock-y += cache_helpers.S
 bootblock-y += cpu.S
@@ -37,6 +33,11 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception.c
 
 bootblock-c-ccopts += $(armv8_flags)
 bootblock-S-ccopts += $(armv8_asm_flags)
+
+# Required to access unaligned timestamp struct members before MMU is active
+# (TODO: Maybe use explicit unaligned accesses in timestamp code instead, or
+# evaluate redesigning timestamp data structures to avoid misaligned members.)
+bootblock-c-ccopts += -mstrict-align
 
 endif
 

@@ -13,12 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __ARCH_BOOTBLOCK_COMMON_H
-#define __ARCH_BOOTBLOCK_COMMON_H
+#ifndef __BOOTBLOCK_COMMON_H
+#define __BOOTBLOCK_COMMON_H
 
 /* These are defined as weak no-ops that can be overridden by mainboard/SoC. */
 void bootblock_mainboard_early_init(void);
 void bootblock_mainboard_init(void);
 void bootblock_soc_init(void);
 
-#endif	/* __ARCH_BOOTBLOCK_COMMON_H */
+#endif	/* __BOOTBLOCK_COMMON_H */

@@ -2,6 +2,7 @@ config SOC_NVIDIA_TEGRA132
 	bool
 	default n
 	select ARCH_BOOTBLOCK_ARMV4
+	select BOOTBLOCK_CUSTOM
 	select ARCH_VERSTAGE_ARMV4
 	select ARCH_ROMSTAGE_ARMV4
 	select ARCH_RAMSTAGE_ARMV8_64
@@ -11,7 +12,6 @@ config SOC_NVIDIA_TEGRA132
 	select GENERIC_UDELAY
 	select HAVE_HARD_RESET
 	select HAVE_UART_SPECIAL
-	select ARM_BOOTBLOCK_CUSTOM
 	select GENERIC_GPIO_LIB
 	select HAS_PRECBMEM_TIMESTAMP_REGION
 
@@ -30,14 +30,6 @@ config MAINBOARD_DO_SOR_INIT
 	default n
 	help
 	  Initialize dp display
-
-config BOOTBLOCK_CPU_INIT
-	string
-	default "soc/nvidia/tegra132/bootblock.c"
-	help
-	  CPU/SoC-specific bootblock code. This is useful if the
-	  bootblock must load microcode or copy data from ROM before
-	  searching for the bootblock.
 
 config MAX_CPUS
 	int

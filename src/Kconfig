@@ -248,6 +248,7 @@ config FLASHMAP_OFFSET
 	help
 	  Offset of flash map in firmware image
 
+# TODO: This doesn't belong here, move to src/arch/x86/Kconfig
 choice
 	prompt "Bootblock behaviour"
 	default BOOTBLOCK_SIMPLE
@@ -259,6 +260,12 @@ config BOOTBLOCK_NORMAL
 	bool "Switch to normal if CMOS says so"
 
 endchoice
+
+# To be selected by arch, SoC or mainboard if it does not want use the normal
+# src/lib/bootblock.c#main() C entry point.
+config BOOTBLOCK_CUSTOM
+	bool
+	default n
 
 config BOOTBLOCK_SOURCE
 	string

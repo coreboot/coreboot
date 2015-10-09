@@ -1,5 +1,5 @@
 #include <smp/node.h>
-#include <bootblock_common.h>
+#include <arch/bootblock_common.h>
 #include <halt.h>
 
 static void main(unsigned long bist)

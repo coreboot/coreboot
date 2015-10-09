@@ -2,6 +2,7 @@ config SOC_NVIDIA_TEGRA124
 	bool
 	default n
 	select ARCH_BOOTBLOCK_ARMV4
+	select BOOTBLOCK_CUSTOM
 	select ARCH_VERSTAGE_ARMV7
 	select ARCH_ROMSTAGE_ARMV7
 	select ARCH_RAMSTAGE_ARMV7
@@ -10,19 +11,10 @@ config SOC_NVIDIA_TEGRA124
 	select HAVE_MONOTONIC_TIMER
 	select GENERIC_UDELAY
 	select BOOTBLOCK_CONSOLE
-	select ARM_BOOTBLOCK_CUSTOM
 	select ARM_LPAE
 	select GENERIC_GPIO_LIB
 
 if SOC_NVIDIA_TEGRA124
-
-config BOOTBLOCK_CPU_INIT
-	string
-	default "soc/nvidia/tegra124/bootblock.c"
-	help
-	  CPU/SoC-specific bootblock code. This is useful if the
-	  bootblock must load microcode or copy data from ROM before
-	  searching for the bootblock.
 
 config TEGRA124_MODEL_TD570D
 	bool "TD570D"

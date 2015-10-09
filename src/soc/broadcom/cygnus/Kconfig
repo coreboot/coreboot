@@ -33,10 +33,6 @@ config CHROMEOS
 	select SEPARATE_VERSTAGE
 	select RETURN_FROM_VERSTAGE
 
-config BOOTBLOCK_CPU_INIT
-	string
-	default "soc/broadcom/cygnus/bootblock.c"
-
 config CONSOLE_SERIAL_UART_ADDRESS
 	hex
 	depends on DRIVERS_UART

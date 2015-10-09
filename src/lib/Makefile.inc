@@ -14,6 +14,11 @@
 #
 subdirs-y += loaders
 
+
+ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
+bootblock-y += bootblock.c
+endif
+
 bootblock-y += assets.c
 bootblock-y += prog_loaders.c
 bootblock-y += prog_ops.c

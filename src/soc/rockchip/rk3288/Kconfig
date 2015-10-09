@@ -36,10 +36,6 @@ config CHROMEOS
 	select SEPARATE_VERSTAGE
 	select RETURN_FROM_VERSTAGE
 
-config BOOTBLOCK_CPU_INIT
-	string
-	default "soc/rockchip/rk3288/bootblock.c"
-
 config PMIC_BUS
 	int
 	default -1

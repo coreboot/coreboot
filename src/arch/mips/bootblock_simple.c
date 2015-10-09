@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
+#include <arch/bootblock_common.h>
 #include <console/console.h>
 #include <halt.h>
 #include <program_loading.h>

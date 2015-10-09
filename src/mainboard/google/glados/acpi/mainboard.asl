@@ -189,7 +189,7 @@ Scope (\_SB.PCI0.I2C4)
 				AddressingMode7Bit,
 				"\\_SB.PCI0.I2C4",
 			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			Interrupt (ResourceConsumer, Level, ActiveLow)
 			{
 				BOARD_HP_MIC_CODEC_IRQ
 			}

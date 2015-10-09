@@ -65,6 +65,43 @@ chip soc/intel/skylake
 	register "PortUsb30Enable[2]" = "1"	# Type-A Port 1
 	register "PortUsb30Enable[3]" = "1"	# Type-A Port 2
 
+	# USB Per Port HS Preemphasis Bias
+	register "Usb2AfePetxiset" = "{ 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, \
+					0x07, 0x07, 0x07, 0x07, 0x07, 0x07, \
+					0x07, 0x07, 0x07, 0x07 }"
+
+	# USB Per Port HS Transmitter Bias
+	register "Usb2AfeTxiset" = "{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
+				      0x00, 0x00, 0x05, 0x00, 0x00, 0x00, \
+				      0x00, 0x00, 0x00, 0x00 }"
+
+	# USB Per Port HS Transmitter Emphasis
+	register "Usb2AfePredeemp" = "{ 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, \
+					0x02, 0x02, 0x02, 0x02, 0x03, 0x03, \
+					0x03, 0x03, 0x03, 0x03 }"
+
+	# USB Per Port Half Bit Pre-emphasis
+	register "Usb2AfePehalfbit" = "{ 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, \
+					 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, \
+					 0x00, 0x00, 0x00, 0x00 }"
+
+	# Enable the write to USB 3.0 TX Output -3.5dB De-Emphasis Adjustment
+	register "Usb3HsioTxDeEmphEnable" = "{ 0x00, 0x00, 0x00, 0x00, 0x00, \
+					       0x00, 0x00, 0x00, 0x00, 0x00 }"
+
+	# USB 3.0 TX Output -3.5dB De-Emphasis Adjustment Setting
+	register "Usb3HsioTxDeEmph" = "{ 0x00, 0x00, 0x00, 0x00, 0x00, \
+					 0x00, 0x00, 0x00, 0x00, 0x00 }"
+
+	# Enable the write to USB 3.0 TX Output Downscale Amplitude Adjustment
+	register "Usb3HsioTxDownscaleAmpEnable" = "{ 0x00, 0x00, 0x00, 0x00, \
+						     0x00, 0x00, 0x00, 0x00, \
+						     0x00, 0x00 }"
+
+	# USB 3.0 TX Output Downscale Amplitude Adjustment
+	register "Usb3HsioTxDownscaleAmp" = "{ 0x00, 0x00, 0x00, 0x00, 0x00, \
+					       0x00, 0x00, 0x00, 0x00, 0x00 }"
+
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{ \
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
@@ -77,7 +114,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexUart0] = PchSerialIoPci, \
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoPci, \
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
 	}"
 
 	device cpu_cluster 0 on

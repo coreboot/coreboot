@@ -41,6 +41,38 @@
 /* FIXME: no ECC support.  */
 /* FIXME: no support for 3-channel chipsets.  */
 
+/*
+ * Register description:
+ * Intel provides a command queue of depth four.
+ * Every command is configured by using multiple registers.
+ * On executing the command queue you have to provide the depth used.
+ *
+ * Known registers:
+ * Channel X = [0, 1]
+ * Command queue index Y = [0, 1, 2, 3]
+ *
+ * DEFAULT_MCHBAR + 0x4220 + 0x400 * X + 4 * Y: command io register
+ *  Controls the DRAM command signals
+ *  Bit 0: !RAS
+ *  Bit 1: !CAS
+ *  Bit 2: !WE
+ *
+ * DEFAULT_MCHBAR + 0x4200 + 0x400 * X + 4 * Y: addr bankslot io register
+ *  Controls the address, bank address and slotrank signals
+ *  Bit 0-15 : Address
+ *  Bit 20-22: Bank Address
+ *  Bit 24-25: slotrank
+ *
+ * DEFAULT_MCHBAR + 0x4230 + 0x400 * X + 4 * Y: idle register
+ *  Controls the idle time after issuing this DRAM command
+ *  Bit 16-32: number of clock-cylces to idle
+ *
+ * DEFAULT_MCHBAR + 0x4284 + 0x400 * channel: execute command queue
+ *  Starts to execute all queued commands
+ *  Bit 0    : start DRAM command execution
+ *  Bit 16-20: (number of queued commands - 1) * 4
+ */
+
 #define BASEFREQ 133
 #define tDLLK 512
 
@@ -1115,6 +1147,7 @@ static void write_reset(ramctr_timing * ctrl)
 	/* choose a populated rank.  */
 	slotrank = (ctrl->rankmap[channel] & 1) ? 0 : 2;
 
+	/* DRAM command ZQCS */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f003);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x80c01);
 
@@ -1225,18 +1258,21 @@ static void write_mrreg(ramctr_timing * ctrl, int channel, int slotrank,
 
 	printram("MRd: %x <= %x\n", reg, val);
 
+	/* DRAM command MRS */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f000);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x41001);
 	write32(DEFAULT_MCHBAR + 0x4200 + 0x400 * channel,
 		(slotrank << 24) | (reg << 20) | val | 0x60000);
 	write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+	/* DRAM command MRS */
 	write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f000);
 	write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel, 0x41001);
 	write32(DEFAULT_MCHBAR + 0x4204 + 0x400 * channel,
 		(slotrank << 24) | (reg << 20) | val | 0x60000);
 	write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0);
 
+	/* DRAM command MRS */
 	write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel, 0x0f000);
 	write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
 		0x1001 | (ctrl->tMOD << 16));
@@ -1250,6 +1286,8 @@ static u32 make_mr0(ramctr_timing * ctrl, u8 rank)
 {
 	u16 mr0reg, mch_cas, mch_wr;
 	static const u8 mch_wr_t[12] = { 1, 2, 3, 4, 0, 5, 0, 6, 0, 7, 0, 0 };
+
+	/* DLL Reset - self clearing - set after CLK frequency has been changed */
 	mr0reg = 0x100;
 
 	// Convert CAS to MCH register friendly
@@ -1266,7 +1304,8 @@ static u32 make_mr0(ramctr_timing * ctrl, u8 rank)
 	mr0reg = (mr0reg & ~0x4) | (mch_cas & 0x1);
 	mr0reg = (mr0reg & ~0x70) | ((mch_cas & 0xe) << 3);
 	mr0reg = (mr0reg & ~0xe00) | (mch_wr << 9);
-	// Fast (desktop) 0x1 or slow (mobile) 0x0
+
+	// Precharge PD - Fast (desktop) 0x1 or slow (mobile) 0x0 - mostly power-saving feature
 	mr0reg = (mr0reg & ~0x1000) | (!ctrl->mobile << 12);
 	return mr0reg;
 }
@@ -1381,14 +1420,19 @@ static void dram_mrscommands(ramctr_timing * ctrl)
 		printram("done\n");
 	}
 
+	/* DRAM command NOP */
 	write32(DEFAULT_MCHBAR + 0x4e20, 0x7);
 	write32(DEFAULT_MCHBAR + 0x4e30, 0xf1001);
 	write32(DEFAULT_MCHBAR + 0x4e00, 0x60002);
 	write32(DEFAULT_MCHBAR + 0x4e10, 0);
+
+	/* DRAM command ZQCL */
 	write32(DEFAULT_MCHBAR + 0x4e24, 0x1f003);
 	write32(DEFAULT_MCHBAR + 0x4e34, 0x1901001);
 	write32(DEFAULT_MCHBAR + 0x4e04, 0x60400);
 	write32(DEFAULT_MCHBAR + 0x4e14, 0x288);
+
+	/* execute command queue on all channels ? */
 	write32(DEFAULT_MCHBAR + 0x4e84, 0x40004);
 
 	// Drain
@@ -1413,6 +1457,7 @@ static void dram_mrscommands(ramctr_timing * ctrl)
 		// Drain
 		wait_428c(channel);
 
+		/* DRAM command ZQCS */
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f003);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x659001);
 		write32(DEFAULT_MCHBAR + 0x4200 + 0x400 * channel,
@@ -1589,6 +1634,10 @@ static void test_timA(ramctr_timing * ctrl, int channel, int slotrank)
 {
 	wait_428c(channel);
 
+	/* DRAM command MRS
+	 * write MR3 MPR enable
+	 * in this mode only RD and RDA are allowed
+	 * all reads return a predefined pattern */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f000);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 		(0xc01 | (ctrl->tMOD << 16)));
@@ -1596,11 +1645,13 @@ static void test_timA(ramctr_timing * ctrl, int channel, int slotrank)
 		(slotrank << 24) | 0x360004);
 	write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+	/* DRAM command RD */
 	write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f105);
 	write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel, 0x4040c01);
 	write32(DEFAULT_MCHBAR + 0x4204 + 0x400 * channel, (slotrank << 24));
 	write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0);
 
+	/* DRAM command RD */
 	write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel, 0x1f105);
 	write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
 		0x100f | ((ctrl->CAS + 36) << 16));
@@ -1608,6 +1659,8 @@ static void test_timA(ramctr_timing * ctrl, int channel, int slotrank)
 		(slotrank << 24) | 0x60000);
 	write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0);
 
+	/* DRAM command MRS
+	 * write MR3 MPR disable */
 	write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel, 0x1f000);
 	write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
 		(0xc01 | (ctrl->tMOD << 16)));
@@ -1839,6 +1892,23 @@ static void post_timA_change(ramctr_timing * ctrl, int channel, int slotrank,
 	printram("4028 += %d;\n", shift_402x);
 }
 
+/* Compensate the skew between DQS and DQs.
+ * To ease PCB design a small skew between Data Strobe signals and
+ * Data Signals is allowed.
+ * The controller has to measure and compensate this skew for every byte-lane.
+ * By delaying either all DQs signals or DQS signal, a full phase
+ * shift can be introduced.
+ * It is assumed that one byte-lane's DQs signals have the same routing delay.
+ *
+ * To measure the actual skew, the DRAM is placed in "read leveling" mode.
+ * In read leveling mode the DRAM-chip outputs an alternating periodic pattern.
+ * The memory controller iterates over all possible values to do a full phase shift
+ * and issues read commands.
+ * With DQS and DQs in phase the data read is expected to alternate on every byte:
+ * 0xFF 0x00 0xFF ...
+ * Once the controller has detected this pattern a bit in the result register is
+ * set for the current phase shift.
+ */
 static void read_training(ramctr_timing * ctrl)
 {
 	int channel, slotrank, lane;
@@ -1850,6 +1920,8 @@ static void read_training(ramctr_timing * ctrl)
 		struct timA_minmax mnmx;
 
 		 wait_428c(channel);
+
+		 /* DRAM command PREA */
 		 write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f002);
 		 write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 			 0xc01 | (ctrl->tRP << 16));
@@ -1925,12 +1997,11 @@ static void read_training(ramctr_timing * ctrl)
 
 		write32(DEFAULT_MCHBAR + 0x3400, 0);
 
+		/* toggle IO reset bit */
 		r32 = read32(DEFAULT_MCHBAR + 0x5030);
 		write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
 		udelay(1);
-
 		write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-
 		udelay(1);
 	}
 
@@ -1954,6 +2025,7 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 
 	wait_428c(channel);
 
+	/* DRAM command ACT */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f006);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 		(max((ctrl->tFAW >> 2) + 1, ctrl->tRRD) << 10)
@@ -1964,17 +2036,20 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 
 	write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0x244);
 
+	/* DRAM command NOP */
 	write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f207);
 	write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel, 0x8041001);
 	write32(DEFAULT_MCHBAR + 0x4204 + 0x400 * channel,
 		(slotrank << 24) | 8);
 	write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0x3e0);
 
+	/* DRAM command WR */
 	write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel, 0x1f201);
 	write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel, 0x80411f4);
 	write32(DEFAULT_MCHBAR + 0x4208 + 0x400 * channel, (slotrank << 24));
 	write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0x242);
 
+	/* DRAM command NOP */
 	write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel, 0x1f207);
 	write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
 		0x8000c01 | ((ctrl->CWL + ctrl->tWTR + 5) << 16));
@@ -1986,6 +2061,7 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 
 	wait_428c(channel);
 
+	/* DRAM command PREA */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f002);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 		0xc01 | (ctrl->tRP << 16));
@@ -1993,6 +2069,7 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 		(slotrank << 24) | 0x60400);
 	write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0x240);
 
+	/* DRAM command ACT */
 	write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f006);
 	write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
 		(max(ctrl->tRRD, (ctrl->tFAW >> 2) + 1) << 10)
@@ -2003,12 +2080,14 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 
 	write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0x244);
 
+	/* DRAM command RD */
 	write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel, 0x1f105);
 	write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
 		0x40011f4 | (max(ctrl->tRTP, 8) << 16));
 	write32(DEFAULT_MCHBAR + 0x4208 + 0x400 * channel, (slotrank << 24));
 	write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0x242);
 
+	/* DRAM command PREA */
 	write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel, 0x1f002);
 	write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
 		0xc01 | (ctrl->tRP << 16));
@@ -2027,6 +2106,7 @@ static void discover_timC(ramctr_timing * ctrl, int channel, int slotrank)
 
 	wait_428c(channel);
 
+	/* DRAM command PREA */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f002);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 		0xc01 | (ctrl->tRP << 16));
@@ -2117,6 +2197,10 @@ static void precharge(ramctr_timing * ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_428c(channel);
 
+			/* DRAM command MRS
+			 * write MR3 MPR enable
+			 * in this mode only RD and RDA are allowed
+			 * all reads return a predefined pattern */
 			write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel,
 				0x1f000);
 			write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
@@ -2125,6 +2209,7 @@ static void precharge(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x360004);
 			write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+			/* DRAM command RD */
 			write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel,
 				0x1f105);
 			write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
@@ -2133,6 +2218,7 @@ static void precharge(ramctr_timing * ctrl)
 				(slotrank << 24) | 0);
 			write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0);
 
+			/* DRAM command RD */
 			write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel,
 				0x1f105);
 			write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
@@ -2141,6 +2227,8 @@ static void precharge(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x60000);
 			write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0);
 
+			/* DRAM command MRS
+			 * write MR3 MPR disable */
 			write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel,
 				0x1f000);
 			write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
@@ -2165,7 +2253,10 @@ static void precharge(ramctr_timing * ctrl)
 
 		FOR_ALL_POPULATED_RANKS {
 			wait_428c(channel);
-
+			/* DRAM command MRS
+			 * write MR3 MPR enable
+			 * in this mode only RD and RDA are allowed
+			 * all reads return a predefined pattern */
 			write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel,
 				0x1f000);
 			write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
@@ -2174,6 +2265,7 @@ static void precharge(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x360004);
 			write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+			/* DRAM command RD */
 			write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel,
 				0x1f105);
 			write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
@@ -2182,6 +2274,7 @@ static void precharge(ramctr_timing * ctrl)
 				(slotrank << 24) | 0);
 			write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0);
 
+			/* DRAM command RD */
 			write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel,
 				0x1f105);
 			write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
@@ -2190,6 +2283,8 @@ static void precharge(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x60000);
 			write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0);
 
+			/* DRAM command MRS
+			 * write MR3 MPR disable */
 			write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel,
 				0x1f000);
 			write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
@@ -2208,10 +2303,12 @@ static void precharge(ramctr_timing * ctrl)
 
 static void test_timB(ramctr_timing * ctrl, int channel, int slotrank)
 {
+	/* enable DQs on this slotrank */
 	write_mrreg(ctrl, channel, slotrank, 1,
 		    0x80 | make_mr1(ctrl, slotrank));
 
 	wait_428c(channel);
+	/* DRAM command NOP */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f207);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 		0x8000c01 | ((ctrl->CWL + ctrl->tWLO) << 16));
@@ -2219,6 +2316,7 @@ static void test_timB(ramctr_timing * ctrl, int channel, int slotrank)
 		8 | (slotrank << 24));
 	write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+	/* DRAM command NOP */
 	write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f107);
 	write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
 		0x4000c01 | ((ctrl->CAS + 38) << 16));
@@ -2229,6 +2327,7 @@ static void test_timB(ramctr_timing * ctrl, int channel, int slotrank)
 	write32(DEFAULT_MCHBAR + 0x400 * channel + 0x4284, 0x40001);
 	wait_428c(channel);
 
+	/* disable DQs on this slotrank */
 	write_mrreg(ctrl, channel, slotrank, 1,
 		    0x1080 | make_mr1(ctrl, slotrank));
 }
@@ -2316,6 +2415,7 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 
 		wait_428c(channel);
 
+		/* DRAM command ACT */
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f006);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 			0xc01 | (ctrl->tRCD << 16));
@@ -2323,18 +2423,21 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 			(slotrank << 24) | 0x60000);
 		write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+		/* DRAM command NOP */
 		write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f207);
 		write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel, 0x8040c01);
 		write32(DEFAULT_MCHBAR + 0x4204 + 0x400 * channel,
 			(slotrank << 24) | 0x8);
 		write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0x3e0);
 
+		/* DRAM command WR */
 		write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel, 0x1f201);
 		write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel, 0x8041003);
 		write32(DEFAULT_MCHBAR + 0x4208 + 0x400 * channel,
 			(slotrank << 24));
 		write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0x3e2);
 
+		/* DRAM command NOP */
 		write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel, 0x1f207);
 		write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
 			0x8000c01 | ((ctrl->CWL + ctrl->tWTR + 5) << 16));
@@ -2346,6 +2449,7 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 
 		wait_428c(channel);
 
+		/* DRAM command PREA */
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f002);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 			0xc01 | ((ctrl->tRP) << 16));
@@ -2353,6 +2457,7 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 			(slotrank << 24) | 0x60400);
 		write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0x240);
 
+		/* DRAM command ACT */
 		write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f006);
 		write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
 			0xc01 | ((ctrl->tRCD) << 16));
@@ -2360,6 +2465,7 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 			(slotrank << 24) | 0x60000);
 		write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0);
 
+		/* DRAM command RD */
 		write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel, 0x3f105);
 		write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
 			0x4000c01 |
@@ -2402,6 +2508,7 @@ static void write_op(ramctr_timing * ctrl, int channel)
 	/* choose an existing rank.  */
 	slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
+	/* DRAM command ACT */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f003);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x41001);
 
@@ -2414,6 +2521,18 @@ static void write_op(ramctr_timing * ctrl, int channel)
 	wait_428c(channel);
 }
 
+/* Compensate the skew between CMD/ADDR/CLK and DQ/DQS lanes.
+ * DDR3 adopted the fly-by topology. The data and strobes signals reach
+ * the chips at different times with respect to command, address and
+ * clock signals.
+ * By delaying either all DQ/DQs or all CMD/ADDR/CLK signals, a full phase
+ * shift can be introduced.
+ * It is assumed that the CLK/ADDR/CMD signals have the same routing delay.
+ *
+ * To find the required phase shift the DRAM is placed in "write leveling" mode.
+ * In this mode the DRAM-chip samples the CLK on every DQS edge and feeds back the
+ * sampled value on the data lanes (DQs).
+ */
 static void write_training(ramctr_timing * ctrl)
 {
 	int channel, slotrank, lane;
@@ -2430,11 +2549,16 @@ static void write_training(ramctr_timing * ctrl)
 			read32(DEFAULT_MCHBAR + 0x4020 +
 			       0x400 * channel) | 0x200000);
 	}
+
+	/* refresh disable */
 	write32(DEFAULT_MCHBAR + 0x5030, read32(DEFAULT_MCHBAR + 0x5030) & ~8);
 	FOR_ALL_POPULATED_CHANNELS {
 		write_op(ctrl, channel);
 	}
 
+	/* enable write leveling on all ranks
+	 * disable all DQ outputs
+	 * only NOP is allowed in this mode */
 	FOR_ALL_CHANNELS
 	    FOR_ALL_POPULATED_RANKS
 		write_mrreg(ctrl, channel, slotrank, 1,
@@ -2442,17 +2566,18 @@ static void write_training(ramctr_timing * ctrl)
 
 	write32(DEFAULT_MCHBAR + 0x3400, 0x108052);
 
+	/* toggle IO reset bit */
 	r32 = read32(DEFAULT_MCHBAR + 0x5030);
 	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
 	udelay(1);
-
 	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-
 	udelay(1);
 
+	/* set any valid value for timB, it gets corrected later */
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS
 		discover_timB(ctrl, channel, slotrank);
 
+	/* disable write leveling on all ranks */
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS
 		write_mrreg(ctrl, channel,
 			    slotrank, 1, make_mr1(ctrl, slotrank));
@@ -2462,6 +2587,7 @@ static void write_training(ramctr_timing * ctrl)
 	FOR_ALL_POPULATED_CHANNELS
 		wait_428c(channel);
 
+	/* refresh enable */
 	write32(DEFAULT_MCHBAR + 0x5030, read32(DEFAULT_MCHBAR + 0x5030) | 8);
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -2471,6 +2597,7 @@ static void write_training(ramctr_timing * ctrl)
 		read32(DEFAULT_MCHBAR + 0x428c + 0x400 * channel);
 		wait_428c(channel);
 
+		/* DRAM command ZQCS */
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f003);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x659001);
 		write32(DEFAULT_MCHBAR + 0x4200 + 0x400 * channel, 0x60000);
@@ -2480,12 +2607,11 @@ static void write_training(ramctr_timing * ctrl)
 		wait_428c(channel);
 	}
 
+	/* toggle IO reset bit */
 	r32 = read32(DEFAULT_MCHBAR + 0x5030);
 	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
 	udelay(1);
-
 	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-
 	udelay(1);
 
 	printram("CPE\n");
@@ -2509,6 +2635,7 @@ static void write_training(ramctr_timing * ctrl)
 	FOR_ALL_POPULATED_CHANNELS
 		program_timings(ctrl, channel);
 
+	/* measure and adjust timB timings */
 	adjust_high_timB(ctrl);
 
 	FOR_ALL_POPULATED_CHANNELS
@@ -2542,7 +2669,7 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 		write32(DEFAULT_MCHBAR + 0x4288 + 0x400 * channel, 0x1f);
 
 		wait_428c(channel);
-
+		/* DRAM command ACT */
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f006);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 			((max(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)) << 10)
@@ -2552,7 +2679,7 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 			(slotrank << 24) | ctr | 0x60000);
 
 		write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0x244);
-
+		/* DRAM command WR */
 		write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f201);
 		write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
 			0x8001020 | ((ctrl->CWL + ctrl->tWTR + 8) << 16));
@@ -2561,6 +2688,7 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 		write32(DEFAULT_MCHBAR + 0x4244 + 0x400 * channel, 0x389abcd);
 		write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0x20e42);
 
+		/* DRAM command RD */
 		write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel, 0x1f105);
 		write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
 			0x4001020 | (max(ctrl->tRTP, 8) << 16));
@@ -2569,6 +2697,7 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 		write32(DEFAULT_MCHBAR + 0x4248 + 0x400 * channel, 0x389abcd);
 		write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0x20e42);
 
+		/* DRAM command PRE */
 		write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel, 0x1f002);
 		write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel, 0xf1001);
 		write32(DEFAULT_MCHBAR + 0x420c + 0x400 * channel,
@@ -2639,6 +2768,7 @@ static void reprogram_320c(ramctr_timing * ctrl)
 		/* choose an existing rank.  */
 		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
+		/* DRAM command ZQCS */
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f003);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x41001);
 
@@ -2653,6 +2783,8 @@ static void reprogram_320c(ramctr_timing * ctrl)
 			read32(DEFAULT_MCHBAR + 0x4020 +
 			       0x400 * channel) | 0x200000);
 	}
+
+	/* refresh disable */
 	write32(DEFAULT_MCHBAR + 0x5030, read32(DEFAULT_MCHBAR + 0x5030) & ~8);
 	FOR_ALL_POPULATED_CHANNELS {
 		wait_428c(channel);
@@ -2660,6 +2792,7 @@ static void reprogram_320c(ramctr_timing * ctrl)
 		/* choose an existing rank.  */
 		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
+		/* DRAM command ZQCS */
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f003);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x41001);
 
@@ -2677,12 +2810,11 @@ static void reprogram_320c(ramctr_timing * ctrl)
 	/* mrs commands. */
 	dram_mrscommands(ctrl);
 
+	/* toggle IO reset bit */
 	r32 = read32(DEFAULT_MCHBAR + 0x5030);
 	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
 	udelay(1);
-
 	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-
 	udelay(1);
 }
 
@@ -2760,6 +2892,9 @@ static int try_cmd_stretch(ramctr_timing * ctrl, int cmd_stretch)
 	return 1;
 }
 
+/* Adjust CMD phase shift and try multiple command rates.
+ * A command rate of 2T doubles the time needed for address and
+ * command decode. */
 static void command_training(ramctr_timing * ctrl)
 {
 	int channel;
@@ -2805,7 +2940,10 @@ static void discover_edges_real(ramctr_timing * ctrl, int channel, int slotrank,
 		}
 
 		wait_428c(channel);
-
+		/* DRAM command MRS
+		 * write MR3 MPR enable
+		 * in this mode only RD and RDA are allowed
+		 * all reads return a predefined pattern */
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f000);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 			(0xc01 | (ctrl->tMOD << 16)));
@@ -2813,12 +2951,14 @@ static void discover_edges_real(ramctr_timing * ctrl, int channel, int slotrank,
 			(slotrank << 24) | 0x360004);
 		write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+		/* DRAM command RD */
 		write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f105);
 		write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel, 0x40411f4);
 		write32(DEFAULT_MCHBAR + 0x4204 + 0x400 * channel,
 			(slotrank << 24));
 		write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0);
 
+		/* DRAM command RD */
 		write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel, 0x1f105);
 		write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
 			0x1001 | ((ctrl->CAS + 8) << 16));
@@ -2826,6 +2966,8 @@ static void discover_edges_real(ramctr_timing * ctrl, int channel, int slotrank,
 			(slotrank << 24) | 0x60000);
 		write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0);
 
+		/* DRAM command MRS
+		 * MR3 disable MPR */
 		write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel, 0x1f000);
 		write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
 			(0xc01 | (ctrl->tMOD << 16)));
@@ -2863,12 +3005,11 @@ static void discover_edges(ramctr_timing * ctrl)
 
 	write32(DEFAULT_MCHBAR + 0x3400, 0);
 
+	/* toggle IO reset bit */
 	r32 = read32(DEFAULT_MCHBAR + 0x5030);
 	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
 	udelay(1);
-
 	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-
 	udelay(1);
 
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
@@ -2896,6 +3037,11 @@ static void discover_edges(ramctr_timing * ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_428c(channel);
 
+			/* DRAM command MRS
+			 * MR3 enable MPR
+			 * write MR3 MPR enable
+			 * in this mode only RD and RDA are allowed
+			 * all reads return a predefined pattern */
 			write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel,
 				0x1f000);
 			write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
@@ -2904,6 +3050,7 @@ static void discover_edges(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x360004);
 			write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+			/* DRAM command RD */
 			write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel,
 				0x1f105);
 			write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
@@ -2912,6 +3059,7 @@ static void discover_edges(ramctr_timing * ctrl)
 				(slotrank << 24) | 0);
 			write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0);
 
+			/* DRAM command RD */
 			write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel,
 				0x1f105);
 			write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
@@ -2920,6 +3068,8 @@ static void discover_edges(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x60000);
 			write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0);
 
+			/* DRAM command MRS
+			 * MR3 disable MPR */
 			write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel,
 				0x1f000);
 			write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
@@ -2932,6 +3082,8 @@ static void discover_edges(ramctr_timing * ctrl)
 
 			wait_428c(channel);
 		}
+
+		/* XXX: check any measured value ? */
 
 		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
 			ctrl->timings[channel][slotrank].lanes[lane].falling =
@@ -2945,6 +3097,11 @@ static void discover_edges(ramctr_timing * ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_428c(channel);
 
+			/* DRAM command MRS
+			 * MR3 enable MPR
+			 * write MR3 MPR enable
+			 * in this mode only RD and RDA are allowed
+			 * all reads return a predefined pattern */
 			write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel,
 				0x1f000);
 			write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
@@ -2953,6 +3110,7 @@ static void discover_edges(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x360004);
 			write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0);
 
+			/* DRAM command RD */
 			write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel,
 				0x1f105);
 			write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
@@ -2961,6 +3119,7 @@ static void discover_edges(ramctr_timing * ctrl)
 				(slotrank << 24) | 0);
 			write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel, 0);
 
+			/* DRAM command RD */
 			write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel,
 				0x1f105);
 			write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
@@ -2969,6 +3128,8 @@ static void discover_edges(ramctr_timing * ctrl)
 				(slotrank << 24) | 0x60000);
 			write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel, 0);
 
+			/* DRAM command MRS
+			 * MR3 disable MPR */
 			write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel,
 				0x1f000);
 			write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
@@ -2981,6 +3142,8 @@ static void discover_edges(ramctr_timing * ctrl)
 				0xc0001);
 			wait_428c(channel);
 		}
+
+		/* XXX: check any measured value ? */
 
 		FOR_ALL_LANES {
 			write32(DEFAULT_MCHBAR + 0x4080 + 0x400 * channel +
@@ -3071,6 +3234,7 @@ static void discover_edges_write_real(ramctr_timing * ctrl, int channel,
 				}
 				wait_428c(channel);
 
+				/* DRAM command ACT */
 				write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel,
 					0x1f006);
 				write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
@@ -3082,6 +3246,7 @@ static void discover_edges_write_real(ramctr_timing * ctrl, int channel,
 				write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel,
 					0x240);
 
+				/* DRAM command WR */
 				write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel,
 					0x1f201);
 				write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
@@ -3092,6 +3257,7 @@ static void discover_edges_write_real(ramctr_timing * ctrl, int channel,
 				write32(DEFAULT_MCHBAR + 0x4214 + 0x400 * channel,
 					0x242);
 
+				/* DRAM command RD */
 				write32(DEFAULT_MCHBAR + 0x4228 + 0x400 * channel,
 					0x1f105);
 				write32(DEFAULT_MCHBAR + 0x4238 + 0x400 * channel,
@@ -3101,6 +3267,7 @@ static void discover_edges_write_real(ramctr_timing * ctrl, int channel,
 				write32(DEFAULT_MCHBAR + 0x4218 + 0x400 * channel,
 					0x242);
 
+				/* DRAM command PRE */
 				write32(DEFAULT_MCHBAR + 0x422c + 0x400 * channel,
 					0x1f002);
 				write32(DEFAULT_MCHBAR + 0x423c + 0x400 * channel,
@@ -3189,6 +3356,7 @@ static void discover_edges_write(ramctr_timing * ctrl)
 static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	wait_428c(channel);
+	/* DRAM command ACT */
 	write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x1f006);
 	write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel,
 		(max((ctrl->tFAW >> 2) + 1, ctrl->tRRD)
@@ -3197,6 +3365,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 		(slotrank << 24) | 0x60000);
 	write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0x244);
 
+	/* DRAM command WR */
 	write32(DEFAULT_MCHBAR + 0x4224 + 0x400 * channel, 0x1f201);
 	write32(DEFAULT_MCHBAR + 0x4234 + 0x400 * channel,
 		0x80011e0 |
@@ -3206,6 +3375,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 	write32(DEFAULT_MCHBAR + 0x4214 +
 		0x400 * channel, 0x242);
 
+	/* DRAM command RD */
 	write32(DEFAULT_MCHBAR + 0x4228 +
 		0x400 * channel, 0x1f105);
 	write32(DEFAULT_MCHBAR + 0x4238 +
@@ -3216,6 +3386,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 	write32(DEFAULT_MCHBAR + 0x4218 +
 		0x400 * channel, 0x242);
 
+	/* DRAM command PRE */
 	write32(DEFAULT_MCHBAR + 0x422c +
 		0x400 * channel, 0x1f002);
 	write32(DEFAULT_MCHBAR + 0x423c +
@@ -3377,21 +3548,25 @@ static void channel_test(ramctr_timing * ctrl)
 			write32(DEFAULT_MCHBAR + (0x4d40 + 4 * lane), 0);
 		}
 		wait_428c(channel);
+		/* DRAM command ACT */
 		write32(DEFAULT_MCHBAR + 0x4220 + (channel << 10), 0x0001f006);
 		write32(DEFAULT_MCHBAR + 0x4230 + (channel << 10), 0x0028a004);
 		write32(DEFAULT_MCHBAR + 0x4200 + (channel << 10),
 			0x00060000 | (slotrank << 24));
 		write32(DEFAULT_MCHBAR + 0x4210 + (channel << 10), 0x00000244);
+		/* DRAM command WR */
 		write32(DEFAULT_MCHBAR + 0x4224 + (channel << 10), 0x0001f201);
 		write32(DEFAULT_MCHBAR + 0x4234 + (channel << 10), 0x08281064);
 		write32(DEFAULT_MCHBAR + 0x4204 + (channel << 10),
 			0x00000000 | (slotrank << 24));
 		write32(DEFAULT_MCHBAR + 0x4214 + (channel << 10), 0x00000242);
+		/* DRAM command RD */
 		write32(DEFAULT_MCHBAR + 0x4228 + (channel << 10), 0x0001f105);
 		write32(DEFAULT_MCHBAR + 0x4238 + (channel << 10), 0x04281064);
 		write32(DEFAULT_MCHBAR + 0x4208 + (channel << 10),
 			0x00000000 | (slotrank << 24));
 		write32(DEFAULT_MCHBAR + 0x4218 + (channel << 10), 0x00000242);
+		/* DRAM command PRE */
 		write32(DEFAULT_MCHBAR + 0x422c + (channel << 10), 0x0001f002);
 		write32(DEFAULT_MCHBAR + 0x423c + (channel << 10), 0x00280c01);
 		write32(DEFAULT_MCHBAR + 0x420c + (channel << 10),

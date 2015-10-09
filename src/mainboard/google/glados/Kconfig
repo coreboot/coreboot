@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_OPTION_TABLE
 	select HAVE_SMI_HANDLER
 	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_LPC_TPM
 	select MARK_GRAPHICS_MEM_WRCOMB
 	select MMCONF_SUPPORT
 	select MONOTONIC_TIMER_MSR
@@ -47,6 +48,10 @@ config MAINBOARD_PART_NUMBER
 config MAX_CPUS
 	int
 	default 8
+
+config TPM_PIRQ
+	hex
+	default 0x18  # GPP_E0_IRQ
 
 config VBOOT_RAMSTAGE_INDEX
 	hex

@@ -75,6 +75,7 @@ struct soc_intel_braswell_config {
 	UINT8  PcdGttSize;
 	UINT8  PcdLegacySegDecode;
 	UINT8  PcdDvfsEnable;
+	UINT8  PcdCaMirrorEn; /* Command Address Mirroring Enabled */
 
 	/*
 	 * The following fields come from fsp_vpd.h .aka. VpdHeader.h.

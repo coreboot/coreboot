@@ -212,6 +212,7 @@ void soc_memory_init_params(struct romstage_params *params,
 	upd->PcdGttSize = config->PcdGttSize;
 	upd->PcdLegacySegDecode = config->PcdLegacySegDecode;
 	upd->PcdDvfsEnable = config->PcdDvfsEnable;
+	upd->PcdCaMirrorEn = config->PcdCaMirrorEn;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

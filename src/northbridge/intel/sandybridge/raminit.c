@@ -220,6 +220,15 @@ static void sfence(void)
 	asm volatile ("sfence");
 }
 
+static void toggle_io_reset(void) {
+	/* toggle IO reset bit */
+	u32 r32 = read32(DEFAULT_MCHBAR + 0x5030);
+	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
+	udelay(1);
+	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
+	udelay(1);
+}
+
 /*
  * Dump in the log memory controller configuration as read from the memory
  * controller registers.
@@ -1914,7 +1923,6 @@ static void read_training(ramctr_timing * ctrl)
 	int channel, slotrank, lane;
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		u32 r32;
 		int all_high, some_high;
 		int upperA[NUM_LANES];
 		struct timA_minmax mnmx;
@@ -1997,12 +2005,7 @@ static void read_training(ramctr_timing * ctrl)
 
 		write32(DEFAULT_MCHBAR + 0x3400, 0);
 
-		/* toggle IO reset bit */
-		r32 = read32(DEFAULT_MCHBAR + 0x5030);
-		write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
-		udelay(1);
-		write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-		udelay(1);
+		toggle_io_reset();
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -2536,7 +2539,6 @@ static void write_op(ramctr_timing * ctrl, int channel)
 static void write_training(ramctr_timing * ctrl)
 {
 	int channel, slotrank, lane;
-	u32 r32;
 
 	FOR_ALL_POPULATED_CHANNELS
 	    write32(DEFAULT_MCHBAR + 0x4008 + 0x400 * channel,
@@ -2566,12 +2568,7 @@ static void write_training(ramctr_timing * ctrl)
 
 	write32(DEFAULT_MCHBAR + 0x3400, 0x108052);
 
-	/* toggle IO reset bit */
-	r32 = read32(DEFAULT_MCHBAR + 0x5030);
-	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
-	udelay(1);
-	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-	udelay(1);
+	toggle_io_reset();
 
 	/* set any valid value for timB, it gets corrected later */
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS
@@ -2607,12 +2604,7 @@ static void write_training(ramctr_timing * ctrl)
 		wait_428c(channel);
 	}
 
-	/* toggle IO reset bit */
-	r32 = read32(DEFAULT_MCHBAR + 0x5030);
-	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
-	udelay(1);
-	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-	udelay(1);
+	toggle_io_reset();
 
 	printram("CPE\n");
 	precharge(ctrl);
@@ -2760,7 +2752,6 @@ static void fill_pattern5(ramctr_timing * ctrl, int channel, int patno)
 static void reprogram_320c(ramctr_timing * ctrl)
 {
 	int channel, slotrank;
-	u32 r32;
 
 	FOR_ALL_POPULATED_CHANNELS {
 		wait_428c(channel);
@@ -2810,12 +2801,7 @@ static void reprogram_320c(ramctr_timing * ctrl)
 	/* mrs commands. */
 	dram_mrscommands(ctrl);
 
-	/* toggle IO reset bit */
-	r32 = read32(DEFAULT_MCHBAR + 0x5030);
-	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
-	udelay(1);
-	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-	udelay(1);
+	toggle_io_reset();
 }
 
 #define MIN_C320C_LEN 13
@@ -3001,16 +2987,10 @@ static void discover_edges(ramctr_timing * ctrl)
 	int falling_edges[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	int rising_edges[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	int channel, slotrank, lane;
-	u32 r32;
 
 	write32(DEFAULT_MCHBAR + 0x3400, 0);
 
-	/* toggle IO reset bit */
-	r32 = read32(DEFAULT_MCHBAR + 0x5030);
-	write32(DEFAULT_MCHBAR + 0x5030, r32 | 0x20);
-	udelay(1);
-	write32(DEFAULT_MCHBAR + 0x5030, r32 & ~0x20);
-	udelay(1);
+	toggle_io_reset();
 
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
 		write32(DEFAULT_MCHBAR + 4 * lane +

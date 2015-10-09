@@ -1,0 +1,2 @@
+Successful builds for this board require the Skylake FSP binary and header files
+along with the Skylake microcode files from Intel.

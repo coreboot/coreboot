@@ -52,7 +52,7 @@ entries
 395          4       e       6        debug_level
 #399          1       r       0        unused
 
-400          8       h       0        volume
+#400         8       r       0        reserved for century byte
 
 # coreboot config options: southbridge
 408          1       e       1        nmi
@@ -77,7 +77,9 @@ entries
 
 # coreboot config options: northbridge
 432          3       e       11       gfx_uma_size
-#435          549     r       0        unused
+#435         5       r       0        unused
+
+440          8       h       0        volume
 
 # SandyBridge MRC Scrambler Seed values
 896          32      r       0        mrc_scrambler_seed

@@ -52,9 +52,7 @@ entries
 395          4       e       6        debug_level
 #399          1       r       0        unused
 
-# coreboot config options: cpu
-400          1       e       2        hyper_threading
-#401          7       r       0        unused
+#400         8       r       0        reserved for century byte
 
 # coreboot config options: southbridge
 408          1       e       1        nmi
@@ -66,7 +64,11 @@ entries
 928          8       h       0        boot_default
 936          1       e       8        cmos_defaults_loaded
 937          1       e       1        lpt
-#938         46       r       0        unused
+#938         7       r       0        unused
+
+# coreboot config options: cpu
+944          1       e       2        hyper_threading
+#945         7       r       0        unused
 
 # coreboot config options: check sums
 984         16       h       0        check_sum

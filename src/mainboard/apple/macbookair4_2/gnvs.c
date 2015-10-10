@@ -1,6 +1,5 @@
 #include <southbridge/intel/bd82x6x/nvs.h>
 
-/* FIXME: check this function.  */
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	/* Disable USB ports in S3 by default */

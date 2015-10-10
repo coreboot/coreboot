@@ -1,7 +1,7 @@
-chip northbridge/intel/sandybridge # FIXME: check gfx.ndid and gfx.did
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+chip northbridge/intel/sandybridge
+	register "gfx.did" = "{ 0x80000410, 0x80000320, 0x80000410, 0x80000410, 0x00000005 }"
 	register "gfx.link_frequency_270_mhz" = "0"
-	register "gfx.ndid" = "3"
+	register "gfx.ndid" = "2"
 	register "gfx.use_spread_spectrum_clock" = "1"
 	register "gpu_cpu_backlight" = "0x00001312"
 	register "gpu_dp_b_hotplug" = "4"
@@ -19,7 +19,7 @@ chip northbridge/intel/sandybridge # FIXME: check gfx.ndid and gfx.did
 			device lapic 0x0 on
 			end
 		end
-		chip cpu/intel/model_206ax # FIXME: check all registers
+		chip cpu/intel/model_206ax
 			register "c1_acpower" = "1"
 			register "c1_battery" = "1"
 			register "c2_acpower" = "3"

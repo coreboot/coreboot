@@ -1,4 +1,6 @@
 Category: laptop
 ROM protocol: SPI
 Flashrom support: n
-FIXME: put ROM package, ROM socketed, Release year
+ROM package: WSON-8
+ROM socketed: n
+Release year: 2011

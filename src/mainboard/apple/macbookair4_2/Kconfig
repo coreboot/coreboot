@@ -52,7 +52,7 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
 
-config DRAM_RESET_GATE_GPIO # FIXME: check this
+config DRAM_RESET_GATE_GPIO
 	int
 	default 60
 

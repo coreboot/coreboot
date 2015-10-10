@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <errno.h>
 #include "inteltool.h"
 
 extern volatile uint8_t *mchbar;
@@ -69,7 +70,7 @@ static u16 spd_ddr3_calc_crc(u8 * spd)
 	return crc;
 }
 
-void ivybridge_dump_timings(void)
+void ivybridge_dump_timings(const char *dump_spd_file)
 {
 	u32 mr0[2];
 	u32 mr1[2];
@@ -362,8 +363,20 @@ void ivybridge_dump_timings(void)
 
 	printf("/* SPD matching current mode:  */\n");
 
+	FILE *dump_spd = 0;
+
+	if (dump_spd_file) {
+		dump_spd = fopen (dump_spd_file, "wb");
+		if (!dump_spd) {
+			fprintf (stderr, "Couldn't open file %s: %s\n", dump_spd_file,
+				 strerror (errno));
+			exit (1);
+		}
+	}
+
 	for (channel = 0; channel < 2; channel++)
 		for (slot = 0; slot < 2; slot++)
+		{
 			if (slots[channel][slot].size_mb) {
 				int i;
 
@@ -377,6 +390,20 @@ void ivybridge_dump_timings(void)
 						printf("\n");
 				}
 				printf("\n");
+
+				if (dump_spd) {
+					fwrite(spd[channel][slot], 1, 256, dump_spd);
+				}
+			} else {
+				if (dump_spd) {
+					char zero[256];
+					memset (zero, 0, 256);
+					fwrite(zero, 1, 256, dump_spd);
+				}
 			}
+		}
+	if (dump_spd) {
+		fclose (dump_spd);
+	}
 
 }

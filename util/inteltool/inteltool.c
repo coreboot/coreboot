@@ -228,6 +228,7 @@ void print_usage(const char *name)
 	     "   -r | --rcba:                      dump southbridge RCBA registers\n"
 	     "   -p | --pmbase:                    dump southbridge Power Management registers\n\n"
 	     "   -m | --mchbar:                    dump northbridge Memory Controller registers\n"
+	     "   -S FILE | --spd=FILE:             generate spd.bin equivalent to current timings\n"
 	     "   -e | --epbar:                     dump northbridge EPBAR registers\n"
 	     "   -d | --dmibar:                    dump northbridge DMIBAR registers\n"
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
@@ -242,6 +243,7 @@ int main(int argc, char *argv[])
 {
 	struct pci_access *pacc;
 	struct pci_dev *sb = NULL, *nb, *gfx = NULL, *dev;
+	const char *dump_spd_file = 0;
 	int i, opt, option_index = 0;
 	unsigned int id;
 
@@ -267,17 +269,22 @@ int main(int argc, char *argv[])
 		{"msrs", 0, 0, 'M'},
 		{"ambs", 0, 0, 'A'},
 		{"spi", 0, 0, 's'},
+		{"spd", 0, 0, 'S'},
 		{"all", 0, 0, 'a'},
 		{"gfx", 0, 0, 'f'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsf",
+	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAsfS:",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
 			print_version();
 			exit(0);
+			break;
+		case 'S':
+			dump_spd_file = optarg;
+			dump_mchbar = 1;
 			break;
 		case 'g':
 			dump_gpios = 1;
@@ -467,7 +474,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (dump_mchbar) {
-		print_mchbar(nb, pacc);
+		print_mchbar(nb, pacc, dump_spd_file);
 		printf("\n\n");
 	}
 

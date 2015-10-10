@@ -111,7 +111,7 @@ static void dump_timings (void)
 /*
  * (G)MCH MMIO Config Space
  */
-int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
+int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_spd_file)
 {
 	int i, size = (16 * 1024);
 	uint64_t mchbar_phys;
@@ -265,7 +265,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_M:
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_E3:
 	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_015c:
-		ivybridge_dump_timings();
+		ivybridge_dump_timings(dump_spd_file);
 		break;
 	}
 	unmap_physical((void *)mchbar, size);

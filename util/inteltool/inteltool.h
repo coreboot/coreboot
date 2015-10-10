@@ -204,7 +204,7 @@ void unmap_physical(void *virt_addr, size_t len);
 
 unsigned int cpuid(unsigned int op);
 int print_intel_core_msrs(void);
-int print_mchbar(struct pci_dev *nb, struct pci_access *pacc);
+int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_spd_file);
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc);
 int print_rcba(struct pci_dev *sb);
 int print_gpios(struct pci_dev *sb, int show_all, int show_diffs);
@@ -214,4 +214,4 @@ int print_pciexbar(struct pci_dev *nb);
 int print_ambs(struct pci_dev *nb, struct pci_access *pacc);
 int print_spi(struct pci_dev *sb);
 int print_gfx(struct pci_dev *gfx);
-void ivybridge_dump_timings(void);
+void ivybridge_dump_timings(const char *dump_spd_file);

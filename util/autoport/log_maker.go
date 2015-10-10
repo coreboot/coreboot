@@ -52,7 +52,7 @@ func MakeLogs(outDir string) {
 	RunAndSave(outDir+"/acpidump.log", "acpidump")
 	/* FIXME:XX */
 	RunAndSave(outDir+"/inteltool.log", "../inteltool/inteltool", "-a")
-	RunAndSave(outDir+"/ectool.log", "../ectool/ectool", "-a")
+	RunAndSave(outDir+"/ectool.log", "../ectool/ectool")
 
 	SysDir := "/sys/class/sound/card0/"
 	files, _ := ioutil.ReadDir(SysDir)

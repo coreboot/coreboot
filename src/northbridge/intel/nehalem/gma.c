@@ -722,7 +722,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	hfront_porch = mode->hso;
 	vfront_porch = mode->vso;
 
-	target_frequency = info->gfx.lvds_dual_channel ? mode->pixel_clock
+	target_frequency = mode->lvds_dual_channel ? mode->pixel_clock
 		: (2 * mode->pixel_clock);
 	vga_textmode_init();
 #if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
@@ -807,7 +807,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	printk(BIOS_DEBUG, (info->gfx.use_spread_spectrum_clock
 			    ? "Spread spectrum clock\n" : "DREF clock\n"));
 	printk(BIOS_DEBUG,
-	       info->gfx.lvds_dual_channel ? "Dual channel\n" : "Single channel\n");
+	       mode->lvds_dual_channel ? "Dual channel\n" : "Single channel\n");
 	printk(BIOS_DEBUG, "Polarities %d, %d\n",
 	       hpolarity, vpolarity);
 	printk(BIOS_DEBUG, "Data M1=%d, N1=%d\n",
@@ -824,7 +824,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 
 	write32(mmio + PCH_LVDS,
 		(hpolarity << 20) | (vpolarity << 21)
-		| (info->gfx.lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);
@@ -839,7 +839,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 		| ((pixel_m1 - 2) << 8) | pixel_m2);
 	write32(mmio + _PCH_DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
-		| (info->gfx.lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (0x10000 << (pixel_p1 - 1))
 		| ((info->gfx.use_spread_spectrum_clock ? 3 : 0) << 13)
@@ -847,7 +847,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	mdelay(1);
 	write32(mmio + _PCH_DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
-		| (info->gfx.lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (0x10000 << (pixel_p1 - 1))
 		| ((info->gfx.use_spread_spectrum_clock ? 3 : 0) << 13)
@@ -858,7 +858,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 
 	write32(mmio + PCH_LVDS,
 		(hpolarity << 20) | (vpolarity << 21)
-		| (info->gfx.lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);
@@ -955,7 +955,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 	write32(mmio + PCH_LVDS,
 		LVDS_PORT_ENABLE
 		| (hpolarity << 20) | (vpolarity << 21)
-		| (info->gfx.lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);

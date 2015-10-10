@@ -446,6 +446,21 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 	if (! c->did_detailed_timing){
 		/* Edid contains pixel clock in terms of 10KHz */
 		out->mode.pixel_clock = (x[0] + (x[1] << 8)) * 10;
+		/*
+		  LVDS supports following pixel clocks
+		  25000...112000 kHz: single channel
+		  80000...224000 kHz: dual channel
+		  There is some overlap in theoretically supported
+		  pixel clock between single-channel and dual-channel.
+		  In practice with current panels all panels
+		  <= 75200 kHz: single channel
+		  >= 97750 kHz: dual channel
+		  We have no samples between those values, so put a
+		  threshold at 95000 kHz. If we get anything over
+		  95000 kHz with single channel, we can make this
+		  more sofisticated but it's currently not needed.
+		 */
+		out->mode.lvds_dual_channel = (out->mode.pixel_clock >= 95000);
 		extra_info.x_mm = (x[12] + ((x[14] & 0xF0) << 4));
 		extra_info.y_mm = (x[13] + ((x[14] & 0x0F) << 8));
 		out->mode.ha = (x[2] + ((x[4] & 0xF0) << 4));

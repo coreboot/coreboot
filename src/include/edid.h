@@ -33,6 +33,7 @@ enum edid_modes {
 struct edid_mode {
 	const char *name;
 	unsigned int pixel_clock;
+	int lvds_dual_channel;
 	unsigned int refresh;
 	unsigned int ha;
 	unsigned int hbl;

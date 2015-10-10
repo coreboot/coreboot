@@ -205,7 +205,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	hfront_porch = mode->hso;
 	vfront_porch = mode->vso;
 
-	target_frequency = info->lvds_dual_channel ? mode->pixel_clock
+	target_frequency = mode->lvds_dual_channel ? mode->pixel_clock
 		: (2 * mode->pixel_clock);
 
 	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
@@ -291,7 +291,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	printk(BIOS_DEBUG, (info->use_spread_spectrum_clock
 			    ? "Spread spectrum clock\n" : "DREF clock\n"));
 	printk(BIOS_DEBUG,
-	       info->lvds_dual_channel ? "Dual channel\n" : "Single channel\n");
+	       mode->lvds_dual_channel ? "Dual channel\n" : "Single channel\n");
 	printk(BIOS_DEBUG, "Polarities %d, %d\n",
 	       hpolarity, vpolarity);
 	printk(BIOS_DEBUG, "Data M1=%d, N1=%d\n",
@@ -308,7 +308,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	write32(mmio + PCH_LVDS,
 		(hpolarity << 20) | (vpolarity << 21)
-		| (info->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);
@@ -324,7 +324,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + PCH_DPLL_SEL, 8);
 	write32(mmio + _PCH_DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
-		| (info->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (0x10000 << (pixel_p1 - 1))
 		| ((info->use_spread_spectrum_clock ? 3 : 0) << 13)
@@ -332,7 +332,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	mdelay(1);
 	write32(mmio + _PCH_DPLL(0),
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
-		| (info->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (0x10000 << (pixel_p1 - 1))
 		| ((info->use_spread_spectrum_clock ? 3 : 0) << 13)
@@ -343,7 +343,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	write32(mmio + PCH_LVDS,
 		(hpolarity << 20) | (vpolarity << 21)
-		| (info->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);
@@ -441,7 +441,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	write32(mmio + PCH_LVDS,
 		LVDS_PORT_ENABLE
 		| (hpolarity << 20) | (vpolarity << 21)
-		| (info->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_DETECTED);

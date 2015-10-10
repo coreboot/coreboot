@@ -162,7 +162,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	write32(pmmio + PORT_HOTPLUG_EN, conf->gpu_hotplug);
 	write32(pmmio + INSTPM, 0x08000000 | INSTPM_AGPBUSY_DIS);
 
-	target_frequency = conf->gpu_lvds_is_dual_channel ? mode->pixel_clock
+	target_frequency = mode->lvds_dual_channel ? mode->pixel_clock
 		: (2 * mode->pixel_clock);
 
 	/* Find suitable divisors.  */
@@ -212,7 +212,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	printk(BIOS_DEBUG, (conf->gpu_lvds_use_spread_spectrum_clock
 			    ? "Spread spectrum clock\n"
 			    : "DREF clock\n"));
-	printk(BIOS_DEBUG, (conf->gpu_lvds_is_dual_channel
+	printk(BIOS_DEBUG, (mode->lvds_dual_channel
 			    ? "Dual channel\n"
 			    : "Single channel\n"));
 	printk(BIOS_DEBUG, "Polarities %d, %d\n",
@@ -251,7 +251,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	write32(pmmio + DPLL(1),
 		DPLL_VGA_MODE_DIS |
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
-		| (conf->gpu_lvds_is_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| (conf->gpu_lvds_use_spread_spectrum_clock
 		   ? DPLL_INTEGRATED_CLOCK_VLV | DPLL_INTEGRATED_CRI_CLK_VLV
@@ -262,7 +262,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	write32(pmmio + DPLL(1),
 		DPLL_VGA_MODE_DIS |
 		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
-		| (conf->gpu_lvds_is_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		| (mode->lvds_dual_channel ? DPLLB_LVDS_P2_CLOCK_DIV_7
 		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
 		| ((conf->gpu_lvds_use_spread_spectrum_clock ? 3 : 0) << 13)
 		| (pixel_p1 << 16)
@@ -318,7 +318,7 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	write32(pmmio + PIPECONF(1), PIPECONF_ENABLE);
 	write32(pmmio + LVDS, LVDS_ON
 		| (hpolarity << 20) | (vpolarity << 21)
-		| (conf->gpu_lvds_is_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
+		| (mode->lvds_dual_channel ? LVDS_CLOCK_B_POWERUP_ALL
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_CLOCK_A_POWERUP_ALL
 		| LVDS_PIPE(1));

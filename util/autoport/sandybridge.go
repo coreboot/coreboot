@@ -54,7 +54,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 			"gpu_cpu_backlight":                   FormatHex32(inteltool.IGD[0x48254]),
 			"gpu_pch_backlight":                   FormatHex32((inteltool.IGD[0xc8254] >> 16) * 0x10001),
 			"gfx.use_spread_spectrum_clock":       FormatBool((inteltool.IGD[0xc6200]>>12)&1 != 0),
-			"gfx.lvds_dual_channel":               FormatBool(dualChannel),
 			"gfx.lvds_num_lanes":                  FormatInt32(num_lanes),
 			"gfx.link_frequency_270_mhz":          FormatBool(link_frequency > 200000),
 			/* FIXME:XX hardcoded.  */

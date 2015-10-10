@@ -26,7 +26,6 @@ chip northbridge/intel/i945
 
 	register "gpu_hotplug" = "0x00000220"
 	register "gpu_lvds_use_spread_spectrum_clock" = "1"
-	register "gpu_lvds_is_dual_channel" = "0"
 	register "gpu_backlight" = "0x1290128"
 
 	device cpu_cluster 0 on

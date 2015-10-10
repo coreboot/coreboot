@@ -288,7 +288,6 @@ u32 gtt_read(u32 reg);
 struct i915_gpu_controller_info
 {
 	int use_spread_spectrum_clock;
-	int lvds_dual_channel;
 	int link_frequency_270_mhz;
 	int lvds_num_lanes;
 	u32 backlight;

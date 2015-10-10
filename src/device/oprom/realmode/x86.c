@@ -316,6 +316,18 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 	framebuffer->reserved_mask_pos = mode_info.vesa.reserved_mask_pos;
 	framebuffer->reserved_mask_size = mode_info.vesa.reserved_mask_size;
 }
+
+#else
+
+int vbe_mode_info_valid(void)
+{
+	return 0;
+}
+
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+{
+}
+
 #endif
 
 void run_bios(struct device *dev, unsigned long addr)

@@ -31,7 +31,7 @@ static void ide_init(struct device *dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
-	printk(BIOS_DEBUG, "i82801gx_ide: initializing... ");
+	printk(BIOS_DEBUG, "i82801gx_ide: initializing...");
 	if (config == NULL) {
 		printk(BIOS_ERR, "\ni82801gx_ide: Not mentioned in devicetree.cb!\n");
 		// Trying to set somewhat safe defaults instead of bailing out.
@@ -57,7 +57,7 @@ static void ide_init(struct device *dev)
 		ideTimingConfig |= (3 << 8); // RCT = 1 clock
 		ideTimingConfig |= (1 << 1); // IE0
 		ideTimingConfig |= (1 << 0); // TIME0
-		printk(BIOS_DEBUG, "IDE0 ");
+		printk(BIOS_DEBUG, " IDE0");
 	}
 	pci_write_config16(dev, IDE_TIM_PRI, ideTimingConfig);
 
@@ -71,7 +71,7 @@ static void ide_init(struct device *dev)
 		ideTimingConfig |= (3 << 8); // RCT = 1 clock
 		ideTimingConfig |= (1 << 1); // IE0
 		ideTimingConfig |= (1 << 0); // TIME0
-		printk(BIOS_DEBUG, "IDE1 ");
+		printk(BIOS_DEBUG, " IDE1");
 	}
 	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);
 

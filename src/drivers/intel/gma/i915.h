@@ -289,7 +289,6 @@ struct i915_gpu_controller_info
 {
 	int use_spread_spectrum_clock;
 	int link_frequency_270_mhz;
-	int lvds_num_lanes;
 	u32 backlight;
 	int ndid;
 	u32 did[5];

@@ -39,7 +39,6 @@ chip northbridge/intel/nehalem
 	register "gpu_pch_backlight" = "0x061a061a"
 	register "gfx.use_spread_spectrum_clock" = "1"
 	register "gfx.link_frequency_270_mhz" = "1"
-	register "gfx.lvds_num_lanes" = "4"
 
 	chip ec/lenovo/pmh7
 		device pnp ff.1 on # dummy

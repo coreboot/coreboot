@@ -16,13 +16,9 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	pchLVDS := inteltool.IGD[0xe1180]
 	dualChannel := pchLVDS&(3<<2) == (3 << 2)
 	pipe := (pchLVDS >> 30) & 1
-	data_m1 := inteltool.IGD[0x60030+0x1000*pipe] & 0xffffff
-	data_n1 := inteltool.IGD[0x60034+0x1000*pipe]
 	link_m1 := inteltool.IGD[0x60040+0x1000*pipe]
 	link_n1 := inteltool.IGD[0x60044+0x1000*pipe]
-	data_factor := float32(data_m1) / float32(data_n1)
 	link_factor := float32(link_m1) / float32(link_n1)
-	num_lanes := uint32((link_factor/data_factor)*18.0/8.0 + 0.5)
 	fp0 := inteltool.IGD[0xc6040+8*pipe]
 	dpll := inteltool.IGD[0xc6014+4*pipe]
 	pixel_m2 := fp0 & 0xff
@@ -54,7 +50,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 			"gpu_cpu_backlight":                   FormatHex32(inteltool.IGD[0x48254]),
 			"gpu_pch_backlight":                   FormatHex32((inteltool.IGD[0xc8254] >> 16) * 0x10001),
 			"gfx.use_spread_spectrum_clock":       FormatBool((inteltool.IGD[0xc6200]>>12)&1 != 0),
-			"gfx.lvds_num_lanes":                  FormatInt32(num_lanes),
 			"gfx.link_frequency_270_mhz":          FormatBool(link_frequency > 200000),
 			/* FIXME:XX hardcoded.  */
 			"gfx.ndid": "3",

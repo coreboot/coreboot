@@ -792,7 +792,7 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 
 	link_m1 = ((uint64_t)link_n1 * mode->pixel_clock) / link_frequency;
 	data_m1 = ((uint64_t)data_n1 * 18 * mode->pixel_clock)
-		/ (link_frequency * 8 * (info->gfx.lvds_num_lanes ? : 4));
+		/ (link_frequency * 8 * 4);
 
 	printk(BIOS_INFO, "bringing up panel at resolution %d x %d\n",
 	       hactive, vactive);

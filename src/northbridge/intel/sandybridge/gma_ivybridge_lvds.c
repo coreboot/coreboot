@@ -313,7 +313,7 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 	link_m1 = ((uint64_t)link_n1 * edid.mode.pixel_clock) / link_frequency;
 
 	data_m1 = ((uint64_t)data_n1 * 18 * edid.mode.pixel_clock)
-		/ (link_frequency * 8 * (info->lvds_num_lanes ? : 1));
+		/ (link_frequency * 8);
 
 	printk(BIOS_INFO, "bringing up panel at resolution %d x %d\n",
 	       hactive, vactive);

@@ -180,6 +180,7 @@ config INCLUDE_CONFIG_FILE
 
 config COLLECT_TIMESTAMPS
 	bool "Create a table of timestamps collected during boot"
+	default y if ARCH_X86
 	help
 	  Make coreboot create a table of timer-ID/timer-value pairs to
 	  allow measuring time spent at different phases of the boot process.

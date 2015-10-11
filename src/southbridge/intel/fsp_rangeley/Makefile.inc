@@ -1,7 +1,8 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2013 Sage Electronic Engineering, LLC.
+## Copyright (C) 2010 Google Inc.
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,10 +18,21 @@
 ## Foundation, Inc.
 ##
 
-config FSP_VENDORCODE_HEADER_PATH
-	string
-	default "fsp1_0/baytrail" if SOC_INTEL_FSP_BAYTRAIL
-	default "fsp1_0/rangeley" if CPU_INTEL_FSP_MODEL_406DX
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_FSP_RANGELEY),y)
 
-config UEFI_2_4_BINDING
-	def_bool n
+ramstage-y += soc.c
+ramstage-y += lpc.c
+ramstage-y += sata.c
+ramstage-y += reset.c
+ramstage-y += watchdog.c
+ramstage-y += spi.c
+ramstage-y += smbus.c
+ramstage-y += acpi.c
+
+romstage-y += early_usb.c early_smbus.c gpio.c reset.c early_spi.c early_init.c
+romstage-y += romstage.c
+
+romstage-$(CONFIG_USBDEBUG) += usb_debug.c
+ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
+
+endif

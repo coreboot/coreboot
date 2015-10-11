@@ -317,6 +317,10 @@ EOF
 			        cpu_nice="Intel® 4th Gen (Haswell) Core i3/i5/i7"
 			        socket_nice="?"
 				;;
+			INTEL_FSP_RANGELEY)
+			        cpu_nice="Intel® Atom Rangeley (FSP)"
+			        socket_nice="?"
+				;;
 			INTEL_SOCKET_RPGA989|INTEL_SOCKET_LGA1155|INTEL_SOCKET_RPGA988B)
 			        socket_nice="`echo $socket | sed 's,INTEL_SOCKET_,Socket ,g'`"
 				case $northbridge in

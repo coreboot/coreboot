@@ -1,0 +1,92 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2010 Google Inc.
+## Copyright (C) 2013 Sage Electronic Engineering, LLC.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc.
+##
+
+config NORTHBRIDGE_INTEL_FSP_RANGELEY
+	bool
+	select CPU_INTEL_FSP_MODEL_406DX
+
+if NORTHBRIDGE_INTEL_FSP_RANGELEY
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+
+choice
+	prompt "Set TSEG Size"
+	default SET_TSEG_1MB if SET_DEFAULT_TSEG_1MB
+	default SET_TSEG_2MB if SET_DEFAULT_TSEG_2MB
+	default SET_TSEG_4MB if SET_DEFAULT_TSEG_4MB
+	default SET_TSEG_8MB if SET_DEFAULT_TSEG_8MB
+
+config SET_TSEG_1MB
+	bool "1 MB"
+	help
+	  Set the TSEG area to 1 MB.
+
+config SET_TSEG_2MB
+	bool "2 MB"
+	help
+	  Set the TSEG area to 2 MB.
+
+config SET_TSEG_4MB
+	bool "4 MB"
+	help
+	  Set the TSEG area to 4 MB.
+
+config SET_TSEG_8MB
+	bool "8 MB"
+	help
+	  Set the TSEG area to 8 MB.
+endchoice
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x200000 if SET_TSEG_2MB
+	default 0x400000 if SET_TSEG_4MB
+	default 0x800000 if SET_TSEG_8MB
+	default 0x100000 # SET_TSEG_1MB
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x200000 if SET_TSEG_2MB
+	default 0x400000 if SET_TSEG_4MB
+	default 0x800000 if SET_TSEG_8MB
+	default 0x100000 # SET_TSEG_1MB
+
+config SET_DEFAULT_TSEG_1MB
+	bool
+	default n
+
+config SET_DEFAULT_TSEG_2MB
+	bool
+	default n
+
+config SET_DEFAULT_TSEG_4MB
+	bool
+	default n
+
+config SET_DEFAULT_TSEG_8MB
+	bool
+	default n
+
+# Rangeley Specific FSP Kconfig
+source src/northbridge/intel/fsp_rangeley/fsp/Kconfig
+
+endif # NORTHBRIDGE_INTEL_FSP_RANGELEY

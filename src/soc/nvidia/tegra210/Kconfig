@@ -121,7 +121,6 @@ config SEC_COMPONENT_SIZE_MB
 config PLLX_KHZ
 	int
 	default 700000
-endif
 
 config HAVE_MTC
 	bool "Add external Memory controller Training Code binary"
@@ -153,3 +152,4 @@ config MTC_ADDRESS
 
 endif # HAVE_MTC
 
+endif # SOC_NVIDIA_TEGRA210

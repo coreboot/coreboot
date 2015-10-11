@@ -1,0 +1,62 @@
+if BOARD_INTEL_COUGAR_CANYON2
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_INTEL_SOCKET_RPGA989
+	select NORTHBRIDGE_INTEL_FSP_IVYBRIDGE
+	select SOUTHBRIDGE_INTEL_FSP_BD82X6X
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select MMCONF_SUPPORT
+	select SUPERIO_SMSC_SIO1007
+	select ENABLE_VMX
+	select INTEL_INT15
+	select VGA
+
+config MAINBOARD_DIR
+	string
+	default intel/cougar_canyon2
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Cougar Canyon 2"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf8000000	# set to match FSP
+
+config MAX_CPUS
+	int
+	default 16
+
+config SMBIOS_SYSTEM_ENCLOSURE_TYPE
+	hex
+	default 0x09	# This is a mobile platform
+
+config UDELAY_LAPIC_FIXED_FSB
+	int
+	default 100
+
+config VIRTUAL_ROM_SIZE
+	hex
+	default 0x1000000
+
+if HAVE_FSP_BIN
+
+config VGA_BIOS
+	bool
+	default y
+
+config VGA_BIOS_FILE
+	string
+	default "../intel/mainboard/intel/cougar_canyon2/vbios/snm_2170.dat"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0166"
+
+
+endif # HAVE_FSP_BIN
+
+endif # BOARD_INTEL_COUGAR_CANYON2

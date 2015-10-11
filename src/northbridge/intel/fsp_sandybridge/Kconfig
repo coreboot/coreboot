@@ -1,0 +1,46 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2010 Google Inc.
+## Copyright (C) 2013 Sage Electronic Engineering, LLC.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc.
+##
+
+config NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE
+	bool
+	select CPU_INTEL_FSP_MODEL_206AX
+	select INTEL_GMA_ACPI
+
+config NORTHBRIDGE_INTEL_FSP_IVYBRIDGE
+	bool
+	select CPU_INTEL_FSP_MODEL_306AX
+	select INTEL_GMA_ACPI
+
+if NORTHBRIDGE_INTEL_FSP_IVYBRIDGE || NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE
+
+config VGA_BIOS_ID
+	string
+	default "8086,0106"
+	help
+	  This is the default PCI ID for the sandybridge/ivybridge graphics
+	  devices.  This string names the vbios ROM in cbfs.  The following
+	  PCI IDs will be remapped to load this ROM:
+	  0x80860102, 0x8086010a, 0x80860112, 0x80860116
+	  0x80860122, 0x80860126, 0x80860166
+
+# Ivybridge Specific FSP Kconfig
+source src/northbridge/intel/fsp_sandybridge/fsp/Kconfig
+
+endif # NORTHBRIDGE_INTEL_FSP_IVYBRIDGE || NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE

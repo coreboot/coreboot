@@ -155,11 +155,18 @@ ENTRY(exc_exit)
 	eret
 ENDPROC(exc_exit)
 
-/* exc_set_vbar: Initialize the exception entry address in vbar */
-ENTRY(exc_set_vbar)
+/*
+ * exception_init_asm: Initialize VBAR and point SP_EL3 to exception stack.
+ * x0 = end of exception stack
+ */
+ENTRY(exception_init_asm)
+	msr	SPSel, #SPSR_USE_H
+	mov	sp, x0
+	msr	SPSel, #SPSR_USE_L
+
 	adr	x0, exc_vectors
 	write_current vbar, x0, x1
 	dsb	sy
 	isb
 	ret
-ENDPROC(exc_set_vbar)
+ENDPROC(exception_init_asm)

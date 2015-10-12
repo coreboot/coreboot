@@ -33,16 +33,6 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 CBFSTOOL_PRE1_OPTS = -m arm64 -s $(CONFIG_CBFS_SIZE)
 endif
 
-ifeq ($(CONFIG_ARCH_ARM64),y)
-stages_c = $(src)/arch/arm64/stages.c
-stages_o = $(obj)/arch/arm64/stages.o
-
-$(stages_o): $(stages_c) $(obj)/config.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_arm) -I. $(CPPFLAGS_arm) -c -o $@ $< -marm
-
-endif
-
 ################################################################################
 # bootblock
 ################################################################################
@@ -55,9 +45,7 @@ $(obj)/arch/arm64/id.bootblock.o: $(obj)/build.h
 
 bootblock-y += boot.c
 bootblock-y += c_entry.c
-bootblock-y += stage_entry.S
 bootblock-y += cpu-stubs.c
-bootblock-y += stages.c
 bootblock-y += eabi_compat.c
 bootblock-y += transition.c transition_asm.S
 
@@ -89,7 +77,6 @@ verstage-y += eabi_compat.c
 verstage-y += ../../lib/memset.c
 verstage-y += ../../lib/memcpy.c
 verstage-y += ../../lib/memmove.c
-verstage-y += stages.c
 
 endif # CONFIG_ARCH_VERSTAGE_ARM64
 
@@ -101,9 +88,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 
 romstage-y += boot.c
 romstage-y += c_entry.c
-romstage-y += stage_entry.S
 romstage-y += cpu-stubs.c
-romstage-y += stages.c
 romstage-y += div0.c
 romstage-y += eabi_compat.c
 romstage-y += memset.S
@@ -129,7 +114,6 @@ endif # CONFIG_ARCH_ROMSTAGE_ARM64
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
 
 ramstage-y += c_entry.c
-ramstage-y += stages.c
 ramstage-y += div0.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
@@ -137,10 +121,14 @@ ramstage-y += tables.c
 ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
-ramstage-y += stage_entry.S
 ramstage-y += cpu-stubs.c
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += arm_tf.c
 ramstage-y += transition.c transition_asm.S
+
+# TODO: Replace this with a simpler ramstage entry point in soc/nvidia/tegra*
+ifeq ($(CONFIG_SOC_NVIDIA_TEGRA132)$(CONFIG_SOC_NVIDIA_TEGRA210),y)
+ramstage-y += stage_entry.S
+endif
 
 rmodules_arm64-y += memset.S
 rmodules_arm64-y += memcpy.S

@@ -22,6 +22,11 @@ if SOC_NVIDIA_TEGRA210
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_NON_ACPI
 
+# TODO: Remove after replacing arch/arm64/stage_entry.S
+config STACK_SIZE
+	hex
+	default 0x1000
+
 config MAINBOARD_DO_DSI_INIT
 	bool "Use dsi graphics interface"
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT

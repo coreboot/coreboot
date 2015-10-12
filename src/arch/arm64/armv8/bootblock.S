@@ -1,7 +1,7 @@
 /*
  * Early initialization code for aarch64 (a.k.a. armv8)
  *
- * Copyright 2013  Google Inc.
+ * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -14,21 +14,23 @@
  * GNU General Public License for more details.
  */
 
-	.section ".id", "a", %progbits
+#include <arch/asm.h>
 
-	.globl __id_start
-__id_start:
-ver:
-	.asciz COREBOOT_VERSION
-vendor:
-	.asciz CONFIG_MAINBOARD_VENDOR
-part:
-	.asciz CONFIG_MAINBOARD_PART_NUMBER
-.long __id_end - ver  /* Reverse offset to the vendor id */
-.long __id_end - vendor  /* Reverse offset to the vendor id */
-.long __id_end - part    /* Reverse offset to the part number */
-.long CONFIG_ROM_SIZE    /* Size of this romimage */
-	.globl __id_end
+ENTRY(_start)
+	/* Initialize PSTATE, SCTLR and caches to clean state. */
+	bl	arm64_init_cpu
 
-__id_end:
-.previous
+	/* Initialize stack with sentinel value to later check overflow. */
+	ldr	x0, =_stack
+	ldr	x1, =_estack
+	ldr	x2, =0xdeadbeefdeadbeef
+stack_init_loop:
+	stp	x2, x2, [x0], #16
+	cmp	x0, x1
+	bne	stack_init_loop
+
+	/* Leave a line of beef dead for easier visibility in stack dumps. */
+	sub	sp, x0, #16
+
+	bl	main
+ENDPROC(_start)

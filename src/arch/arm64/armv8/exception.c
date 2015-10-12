@@ -36,6 +36,8 @@
 #include <console/console.h>
 #include <arch/lib_helpers.h>
 
+uint8_t exception_stack[0x200] __attribute__((aligned(16)));
+
 static const char *exception_names[NUM_EXC_VIDS] = {
 	[EXC_VID_CUR_SP_EL0_SYNC] = "_sync_sp_el0",
 	[EXC_VID_CUR_SP_EL0_IRQ] = "_irq_sp_el0",
@@ -193,19 +195,17 @@ static uint64_t test_exception(void)
 	return 0;
 }
 
-void exception_hwinit(void)
-{
-	exc_set_vbar();
-}
-
 void exception_init(void)
 {
-	/* Load the exception table. */
-	exception_hwinit();
+	/* Load the exception table and initialize SP_EL3. */
+	exception_init_asm(exception_stack + ARRAY_SIZE(exception_stack));
 
 	printk(BIOS_DEBUG, "ARM64: Exception handlers installed.\n");
 
-	printk(BIOS_DEBUG, "ARM64: Testing exception\n");
-	test_exception();
-	printk(BIOS_DEBUG, "ARM64: Done test exception\n");
+	/* Only spend time testing on debug builds that are trying to detect more errors. */
+	if (IS_ENABLED(CONFIG_FATAL_ASSERTS)) {
+		printk(BIOS_DEBUG, "ARM64: Testing exception\n");
+		test_exception();
+		printk(BIOS_DEBUG, "ARM64: Done test exception\n");
+	}
 }

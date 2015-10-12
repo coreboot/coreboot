@@ -22,13 +22,13 @@
 	REGION(ttb, addr, size, 4K) \
 	_ = ASSERT(size % 4K == 0, "TTB size must be divisible by 4K!");
 
-/* ARM64 stacks need 16-byte alignment. The ramstage will set up its own stacks
- * in BSS, so this is only used for the SRAM stages. */
-#ifdef __PRE_RAM__
+/* ARM64 stacks need 16-byte alignment. */
+#if !(IS_ENABLED(CONFIG_SOC_NVIDIA_TEGRA132) || \
+      IS_ENABLED(CONFIG_SOC_NVIDIA_TEGRA210))
 #define STACK(addr, size) \
 	REGION(stack, addr, size, 16) \
 	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.inc");
-#else
+#else	/* Hack around old Tegra stage_entry.S implementation. TODO: remove */
 #define STACK(addr, size) REGION(preram_stack, addr, size, 16)
 #endif
 

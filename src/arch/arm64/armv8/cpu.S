@@ -19,27 +19,40 @@
 
 /*
  * Bring an ARMv8 processor we just gained control of (e.g. from IROM) into a
- * known state regarding caches/SCTLR. Completely cleans and invalidates
+ * known state regarding caches/SCTLR/PSTATE. Completely cleans and invalidates
  * icache/dcache, disables MMU and dcache (if active), and enables unaligned
- * accesses, icache and branch prediction (if inactive). Clobbers x4 and x5.
+ * accesses, icache and branch prediction (if inactive). Clobbers R22 and R23.
  */
-ENTRY(arm_init_caches)
-	/* w4: SCTLR, return address: x8 (stay valid for the whole function) */
-	mov	x8, x30
-	/* XXX: Assume that we always start running at EL3 */
-	mrs	x4, sctlr_el3
+ENTRY(arm64_init_cpu)
+	/* Initialize PSTATE (unmask all exceptions, select SP_EL0). */
+	msr	SPSel, #0
+	msr	DAIFClr, #0xf
 
-	/* FIXME: How to enable branch prediction on ARMv8? */
+	/* TODO: This is where we'd put non-boot CPUs into WFI if needed. */
+
+	/* x22: SCTLR, return address: x23 (callee-saved by subroutine) */
+	mov	x23, x30
+	/* TODO: Assert that we always start running at EL3 */
+	mrs	x22, sctlr_el3
+
+	/* Activate ICache (12) already for speed during cache flush below. */
+	orr	x22, x22, #(1 << 12)
+	msr	sctlr_el3, x22
+	isb
 
 	/* Flush and invalidate dcache */
 	mov	x0, #DCCISW
 	bl	flush_dcache_all
 
 	/* Deactivate MMU (0), Alignment Check (1) and DCache (2) */
-	and	x4, x4, # ~(1 << 0) & ~(1 << 1) & ~(1 << 2)
-	/* Activate ICache (12) already for speed */
-	orr	x4, x4, #(1 << 12)
-	msr	sctlr_el3, x4
+	and	x22, x22, # ~(1 << 0) & ~(1 << 1) & ~(1 << 2)
+	/* Activate Stack Alignment (3) because why not */
+	orr	x22, x22, #(1 << 3)
+	/* Set to little-endian (25) */
+	and	x22, x22, # ~(1 << 25)
+	/* Deactivate write-xor-execute enforcement (19) */
+	and	x22, x22, # ~(1 << 19)
+	msr	sctlr_el3, x22
 
 	/* Invalidate icache and TLB for good measure */
 	ic	iallu
@@ -47,26 +60,5 @@ ENTRY(arm_init_caches)
 	dsb	sy
 	isb
 
-	ret	x8
-ENDPROC(arm_init_caches)
-
-/* Based on u-boot transition.S */
-ENTRY(switch_el3_to_el2)
-	mov	x0, #0x5b1	/* Non-secure EL0/EL1 | HVC | 64bit EL2 */
-	msr	scr_el3, x0
-	msr	cptr_el3, xzr	/* Disable coprocessor traps to EL3 */
-	mov	x0, #0x33ff
-	msr	cptr_el2, x0	/* Disable coprocessor traps to EL2 */
-
-	/* Return to the EL2_SP2 mode from EL3 */
-	mov	x0, sp
-	msr	sp_el2, x0	/* Migrate SP */
-	mrs	x0, vbar_el3
-	msr	vbar_el2, x0	/* Migrate VBAR */
-	mrs	x0, sctlr_el3
-	msr	sctlr_el2, x0	/* Migrate SCTLR */
-	mov	x0, #0x3c9
-	msr	spsr_el3, x0	/* EL2_SP2 | D | A | I | F */
-	msr	elr_el3, x30
-	eret
-ENDPROC(switch_el3_to_el2)
+	ret	x23
+ENDPROC(arm64_init_cpu)

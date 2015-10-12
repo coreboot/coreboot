@@ -71,3 +71,11 @@ void arch_prog_run(struct prog *prog)
 
 	doit(prog_entry_arg(prog));
 }
+
+#if !IS_ENABLED(CONFIG_SOC_NVIDIA_TEGRA132)
+/* Generic stage entry point. Can be overridden by board/SoC if needed. */
+__attribute__((weak)) void stage_entry(void)
+{
+	main();
+}
+#endif

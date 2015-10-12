@@ -33,8 +33,10 @@
 #include <arch/transition.h>
 
 /* Initialize the exception handling on the current CPU. */
-void exception_hwinit(void);
 void exception_init(void);
+
+/* Initialize VBAR and SP_EL3. */
+void exception_init_asm(void *exception_stack_end);
 
 /*
  * Order matters for handling return values. The larger the value the higher

@@ -437,8 +437,8 @@ config HEAP_SIZE
 
 config STACK_SIZE
 	hex
-	default 0x0 if (ARCH_RAMSTAGE_ARM || ARCH_RAMSTAGE_MIPS || ARCH_RAMSTAGE_RISCV)
-	default 0x1000
+	default 0x1000 if ARCH_X86
+	default 0x0
 
 config MAX_CPUS
 	int

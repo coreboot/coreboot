@@ -34,12 +34,15 @@ DefinitionBlock(
 
 	// global NVS and variables
 	#include <southbridge/intel/i82801ix/acpi/globalnvs.asl>
+	#include <southbridge/intel/common/acpi/platform.asl>
 
 	// General Purpose Events
 	#include "acpi/gpe.asl"
 
 	// mainboard specific devices
 	#include "acpi/mainboard.asl"
+
+	#include <cpu/intel/common/acpi/cpu.asl>
 
 	// Thermal Zone
 	#include "acpi/thermal.asl"

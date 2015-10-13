@@ -18,7 +18,13 @@
 #set -x # uncomment for debug
 
 usage () {
-	printf "Usage: %s <lint|lint-stable>\n" "$0"
+	printf "Usage: %s <lint|lint-stable> [--junit]\n" "$0"
+}
+
+junit_write () {
+	if [ "$JUNIT" -eq 1 ]; then
+		echo "$1" >> "$XMLFILE"
+	fi
 }
 
 if [ -z "$1" ] || [ "$1" != "lint" ] && [ "$1" != "lint-stable" ]; then
@@ -27,24 +33,39 @@ if [ -z "$1" ] || [ "$1" != "lint" ] && [ "$1" != "lint-stable" ]; then
 fi
 
 LINTLOG=`mktemp .tmpconfig.lintXXXXX`;
+XMLFILE="$(dirname $0)/junit.xml"
 FAILED=0;
 
+if [ "$2" = "--junit" ]; then
+	JUNIT=1
+	echo '<?xml version="1.0" encoding="utf-8"?>' > "$XMLFILE"
+	junit_write '<testsuite>'
+else
+	JUNIT=0
+fi
 for script in util/lint/${1}-*; do
 	echo
 	echo "$(basename $script)"
 	grep "^# DESCR:" $script | sed "s,.*DESCR: *,,"
 	echo "========"
+	junit_write "	<testcase classname='lint' name='$(basename $script)'>"
 	$script > $LINTLOG
 	if [ `cat $LINTLOG | wc -l` -eq 0 ]; then
 		echo "success"
+		junit_write "		<system-out><![CDATA[success]]></system-out>"
 	else
 		echo "test failed:"
 		cat $LINTLOG
+		junit_write "		<failure type='testFailed'><![CDATA["
+		junit_write "$(cat $LINTLOG)"
+		junit_write "]]></failure>"
 		rm -f $LINTLOG
 		FAILED=$(( $FAILED + 1 ))
 	fi
 	echo "========"
+	junit_write '	</testcase>'
 done
 
 test $FAILED -eq 0 || { echo "ERROR: $FAILED test(s) failed."; rm -f $LINTLOG && exit 1; };
 rm -f $LINTLOG
+junit_write '</testsuite>'

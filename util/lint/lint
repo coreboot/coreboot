@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# This file is part of the coreboot project.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc.
+#
+#set -x # uncomment for debug
+
+usage () {
+	printf "Usage: %s <lint|lint-stable>\n" "$0"
+}
+
+if [ -z "$1" ] || [ "$1" != "lint" ] && [ "$1" != "lint-stable" ]; then
+	usage
+	exit 1
+fi
+
+LINTLOG=`mktemp .tmpconfig.lintXXXXX`;
+FAILED=0;
+
+for script in util/lint/${1}-*; do
+	echo
+	echo "$(basename $script)"
+	grep "^# DESCR:" $script | sed "s,.*DESCR: *,,"
+	echo "========"
+	$script > $LINTLOG
+	if [ `cat $LINTLOG | wc -l` -eq 0 ]; then
+		echo "success"
+	else
+		echo "test failed:"
+		cat $LINTLOG
+		rm -f $LINTLOG
+		FAILED=$(( $FAILED + 1 ))
+	fi
+	echo "========"
+done
+
+test $FAILED -eq 0 || { echo "ERROR: $FAILED test(s) failed."; rm -f $LINTLOG && exit 1; };
+rm -f $LINTLOG

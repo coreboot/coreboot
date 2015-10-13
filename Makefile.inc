@@ -424,24 +424,7 @@ update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
 
 lint lint-stable:
-	FAILED=0; LINTLOG=`mktemp .tmpconfig.lintXXXXX`; \
-	for script in util/lint/$@-*; do \
-		echo; echo `basename $$script`; \
-		grep "^# DESCR:" $$script | sed "s,.*DESCR: *,," ; \
-		echo ========; \
-		$$script > $$LINTLOG; \
-		if [ `cat $$LINTLOG | wc -l` -eq 0 ]; then \
-			printf "success\n\n"; \
-		else \
-			echo test failed: ; \
-			cat $$LINTLOG; \
-			rm -f $$LINTLOG; \
-			FAILED=$$(( $$FAILED + 1 )); \
-		fi; \
-		echo ========; \
-	done; \
-	test $$FAILED -eq 0 || { echo "ERROR: $$FAILED test(s) failed."; rm -f $$LINTLOG && exit 1; }; \
-	rm -f $$LINTLOG
+	util/lint/lint $@
 
 gitconfig:
 	[ -d .git ]

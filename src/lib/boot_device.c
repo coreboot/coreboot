@@ -29,6 +29,9 @@ int boot_device_ro_subregion(const struct region *sub,
 {
 	const struct region_device *boot_dev;
 
+	/* Ensure boot device has been initialized at least once. */
+	boot_device_init();
+
 	boot_dev = boot_device_ro();
 
 	if (boot_dev == NULL)

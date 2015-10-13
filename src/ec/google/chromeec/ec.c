@@ -242,7 +242,7 @@ int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len)
 	if (len != EC_VBNV_BLOCK_SIZE)
 		return -1;
 
- retry:
+retry:
 	cec_cmd.cmd_code = EC_CMD_VBNV_CONTEXT;
 	cec_cmd.cmd_version = EC_VER_VBNV_CONTEXT;
 	cec_cmd.cmd_data_in = &cmd_vbnvcontext;

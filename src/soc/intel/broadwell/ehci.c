@@ -23,6 +23,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ehci.h>
 #include <arch/io.h>
 #include <soc/ehci.h>
 #include <soc/pch.h>
@@ -48,28 +49,6 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned devic
 	pci_write_config8(dev, 0x80, access_cntl);
 }
 
-static void usb_ehci_set_resources(struct device *dev)
-{
-#if CONFIG_USBDEBUG
-	struct resource *res;
-	u32 base;
-	u32 usb_debug;
-
-	usb_debug = get_ehci_debug();
-	set_ehci_debug(0);
-#endif
-	pci_dev_set_resources(dev);
-
-#if CONFIG_USBDEBUG
-	res = find_resource(dev, 0x10);
-	set_ehci_debug(usb_debug);
-	if (!res) return;
-	base = res->base;
-	set_ehci_base(base);
-	report_resource_stored(dev, res, "");
-#endif
-}
-
 static void ehci_enable(struct device *dev)
 {
 	if (CONFIG_USBDEBUG)
@@ -83,8 +62,8 @@ static struct pci_operations ehci_ops_pci = {
 };
 
 static struct device_operations usb_ehci_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &usb_ehci_set_resources,
+	.read_resources		= &pci_ehci_read_resources,
+	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.ops_pci		= &ehci_ops_pci,
 	.enable			= &ehci_enable,

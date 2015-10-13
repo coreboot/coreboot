@@ -66,12 +66,6 @@ smm-y      += xhci.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
-ifeq ($(CONFIG_USBDEBUG),y)
-ramstage-y += usbdebug.c
-romstage-y += usbdebug.c
-smm-y      += usbdebug.c
-endif
-
 cpu_microcode_bins += 3rdparty/blobs/soc/intel/broadwell/microcode.bin
 
 CPPFLAGS_common += -Isrc/soc/intel/broadwell/include

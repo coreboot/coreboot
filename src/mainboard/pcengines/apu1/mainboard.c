@@ -158,6 +158,28 @@ static void config_gpio_mux(void)
 		gpio->enabled = CONFIG_APU1_PINMUX_GPIO1;
 }
 
+static void pnp_raw_resource(struct device *dev, u8 reg, u8 val)
+{
+	struct resource *res;
+	res = new_resource(dev, reg);
+	res->base = val;
+	res->size = 0;
+	res->flags |= IORESOURCE_IRQ | IORESOURCE_ASSIGNED;
+}
+
+static void config_addon_uart(void)
+{
+	struct device *uart;
+
+	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
+	if (uart && uart->enabled && CONFIG_UART_C_RS485)
+		pnp_raw_resource(uart, 0xf2, 0x12);
+
+	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
+	if (uart && uart->enabled && CONFIG_UART_D_RS485)
+		pnp_raw_resource(uart, 0xf2, 0x12);
+}
+
 /**
  * TODO
  * SB CIMx callback
@@ -182,6 +204,7 @@ static void mainboard_enable(device_t dev)
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	config_gpio_mux();
+	config_addon_uart();
 
 	/* Power off unused clock pins of GPP PCIe devices */
 	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);

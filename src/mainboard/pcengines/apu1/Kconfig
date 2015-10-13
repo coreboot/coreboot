@@ -95,6 +95,9 @@ config APU1_PINMUX_UART_C
 
 endchoice
 
+config UART_C_RS485
+	bool "UART C drives RTS# in RS485 mode" if APU1_PINMUX_UART_C
+
 choice
 	prompt "J19 pins 11-20"
 	default APU1_PINMUX_OFF_D
@@ -109,5 +112,8 @@ config APU1_PINMUX_UART_D
 	bool "UART 0x2e8"
 
 endchoice
+
+config UART_D_RS485
+	bool "UART D drives RTS# in RS485 mode" if APU1_PINMUX_UART_D
 
 endif # BOARD_PCENGINES_APU1

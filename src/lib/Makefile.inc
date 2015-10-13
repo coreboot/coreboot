@@ -28,7 +28,10 @@ bootblock-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 bootblock-y += libgcc.c
 bootblock-$(CONFIG_GENERIC_UDELAY) += timer.c
 
+ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+endif
+
 bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 bootblock-$(CONFIG_I2C_TPM) += delay.c
 bootblock-y += memchr.c

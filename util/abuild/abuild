@@ -16,8 +16,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="May 21, 2014"
-ABUILD_VERSION="0.9.3"
+ABUILD_DATE="Oct 13, 2015"
+ABUILD_VERSION="0.9.4"
 
 TOP=$PWD
 
@@ -419,6 +419,7 @@ Options:\n"
     [-L|--clang]                  Use clang
     [-x|--chromeos]               Build with CHROMEOS enabled
                                   Skip boards without Chrome OS support
+    [-X|--xmlfile <name>]         set JUnit XML log file filename
     [--scan-build]                use clang's static analyzer
     [cbroot]			  absolute path to coreboot sources
 				  (defaults to $ROOT)
@@ -462,11 +463,11 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,quiet,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos -o Vvqhat:p:Tc:sJCl:rP:uyBLzo:x -- "$@"` || exit 1
+	args=`getopt -l version,verbose,quiet,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile: -o Vvqhat:p:Tc:sJCl:rP:uyBLzo:xX: -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvqhat:p:Tc:sJCl:rP:uyBLzo:x $*`
+	args=`getopt Vvqhat:p:Tc:sJCl:rP:uyBLzo:xX: $*`
 	set -- $args
 fi
 
@@ -544,6 +545,7 @@ while true ; do
 			customizing="${customizing}, chrome os"
 			configoptions="${configoptions}CONFIG_CHROMEOS=y\n"
 			;;
+		-X|--xmlfile)	shift; XMLFILE=$1; REAL_XMLFILE=$1; shift;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;

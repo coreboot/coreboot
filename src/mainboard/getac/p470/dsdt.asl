@@ -30,7 +30,7 @@ DefinitionBlock(
 	0x20090419	// OEM revision
 )
 {
-	#include <southbridge/intel/i82801gx/acpi/platform.asl>
+	#include <southbridge/intel/common/acpi/platform.asl>
 
 	// Some generic macros
 	#include "acpi/platform.asl"

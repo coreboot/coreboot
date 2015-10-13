@@ -31,7 +31,7 @@ DefinitionBlock(
 
 	// global NVS and variables
 	#include <southbridge/intel/i82801gx/acpi/globalnvs.asl>
-	#include <southbridge/intel/i82801gx/acpi/platform.asl>
+	#include <southbridge/intel/common/acpi/platform.asl>
 
 	// General Purpose Events
 	//#include "acpi/gpe.asl"

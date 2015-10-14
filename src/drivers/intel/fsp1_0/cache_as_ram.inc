@@ -18,15 +18,10 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
-#include <microcode_size.h>
 #include <cbmem.h>
 
 #ifndef CONFIG_FSP_LOC
 # error "CONFIG_FSP_LOC must be set."
-#endif
-
-#ifndef CONFIG_CPU_MICROCODE_CBFS_LOC
-# error "CONFIG_CPU_MICROCODE_CBFS_LOC must be set."
 #endif
 
 	cmp   $0, %eax
@@ -120,11 +115,14 @@ fake_fsp_stack:
 	.long  find_fsp_ret
 
 CAR_init_params:
-	.long  CONFIG_CPU_MICROCODE_CBFS_LOC
-	.long  MICROCODE_REGION_LENGTH
+	.long  dummy_microcode
+	.long  0
 	.long  0xFFFFFFFF - CACHE_ROM_SIZE + 1	/* Firmware Location */
 	.long  CACHE_ROM_SIZE	/* Total Firmware Length */
 
 CAR_init_stack:
 	.long  CAR_init_done
 	.long  CAR_init_params
+
+dummy_microcode:
+	.long  0

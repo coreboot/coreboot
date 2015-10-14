@@ -137,6 +137,7 @@ ramstage-y += imd_cbmem.c
 romstage-y += imd.c
 ramstage-y += imd.c
 
+bootblock-y += hexdump.c
 ramstage-y += hexdump.c
 romstage-y += hexdump.c
 

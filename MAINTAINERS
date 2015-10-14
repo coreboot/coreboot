@@ -154,14 +154,21 @@ F:	src/mainboard/intel/cougar_canyon2/
 F:	src/mainboard/intel/stargo2/
 
 INTEL MINNOWBOARD MAX MAINBOARD
+M:	Huang Jin <huang.jin@intel.com>
+M:	York Yang <york.yang@intel.com>
 M:	Martin Roth <gaumless@gmail.com>
-S:	Maintained
+S:	Supported
 F:	src/mainboard/intel/minnowmax/
 
-INTEL FSP BAYTRAIL CHIP
+INTEL FSP BAYTRAIL CHIP & CRBs
+M:	Huang Jin <huang.jin@intel.com>
+M:	York Yang <york.yang@intel.com>
 M:	Martin Roth <gaumless@gmail.com>
-S:	Odd Fixes
+S:	Supported
 F:	src/soc/intel/fsp_baytrail/
+F:	src/vendorcode/intel/fsp1_0/baytrail/
+F:	src/mainboard/intel/bakersport_fsp/
+F:	src/mainboard/intel/bayleybay_fsp/
 
 FSP 1.0 RANGELEY & CRB
 M:	David Guckian <david.guckian@intel.com>
@@ -179,10 +186,11 @@ S:	Supported
 F:	src/mainboard/intel/littleplains/
 
 INTEL FSP 1.0
+M:	Huang Jin <huang.jin@intel.com>
+M:	York Yang <york.yang@intel.com>
 M:	Martin Roth <gaumless@gmail.com>
-S:	Odd Fixes
+S:	Supported
 F:	src/drivers/intel/fsp1_0/
-F:	src/vendorcode/intel/fsp1_0/
 
 INTEL FSP 1.1
 M:	Lee Leahy <leroy.p.leahy@intel.com>

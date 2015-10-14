@@ -30,6 +30,8 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <cpu/amd/agesa/s3_resume.h>
 #include <cpu/amd/mtrr.h>
+#include <smbios.h>
+#include <string.h>
 #include "SBPLATFORM.h"
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <northbridge/amd/agesa/family14/pci_devs.h>
@@ -187,6 +189,37 @@ static void mainboard_enable(device_t dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
+}
+
+/*
+ * We will stuff a modified version of the first NICs (BDF 1:0.0) MAC address
+ * into the smbios serial number location.
+ */
+const char *smbios_mainboard_serial_number(void)
+{
+	static char serial[10];
+	device_t nic_dev;
+	uintptr_t bar18;
+	u32 mac_addr = 0;
+	int i;
+
+	nic_dev = dev_find_slot(1, PCI_DEVFN(0, 0));
+	if ((serial[0] != 0) || !nic_dev)
+		return serial;
+
+	/* Read in the last 3 bytes of NIC's MAC address. */
+	bar18 = pci_read_config32(nic_dev, 0x18);
+	bar18 &= 0xFFFFFC00;
+	for (i = 3; i < 6; i++) {
+		mac_addr <<= 8;
+		mac_addr |= read8((u8 *)bar18 + i);
+	}
+	mac_addr &= 0x00FFFFFF;
+	mac_addr /= 4;
+	mac_addr -= 64;
+
+	snprintf(serial, sizeof(serial), "%d", mac_addr);
+	return serial;
 }
 
 static void mainboard_final(void *chip_info)

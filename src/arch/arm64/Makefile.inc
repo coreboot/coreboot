@@ -151,14 +151,6 @@ rmodules_arm64-y += memcpy.S
 rmodules_arm64-y += memmove.S
 rmodules_arm64-y += eabi_compat.c
 
-secmon-y += stage_entry.S
-secmon-y += cpu-stubs.c
-secmon-y += startup.c
-secmon-y += ../../lib/malloc.c
-secmon-y += memset.S
-secmon-y += memmove.S
-secmon-y += memcpy.S
-
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
 # Build the ramstage

@@ -63,7 +63,7 @@ subdirs-y += site-local
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage bootblock smm smmstub cpu_microcode libverstage verstage secmon
+classes-y := ramstage romstage bootblock smm smmstub cpu_microcode libverstage verstage
 
 # Add dynamic classes for rmodules
 $(foreach supported_arch,$(ARCH_SUPPORTED), \

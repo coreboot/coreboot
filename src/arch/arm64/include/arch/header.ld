@@ -28,7 +28,6 @@ PHDRS
 TARGET(binary)
 #endif
 
-/* secmon uses rmodules */
 #if ENV_RMODULE
 ENTRY(_start)
 #else

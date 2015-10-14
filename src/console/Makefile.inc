@@ -21,7 +21,3 @@ romstage-y += die.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c printk.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += init.c console.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += die.c
-
-secmon-y += vtxprintf.c printk.c
-secmon-y += init.c console.c
-secmon-y += die.c

@@ -98,18 +98,8 @@ ramstage-y += ramstage.c
 ramstage-y += mmu_operations.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += ../tegra/usb.c
-ramstage-$(CONFIG_ARM64_USE_SECURE_MONITOR) += secmon.c
 ramstage-$(CONFIG_HAVE_MTC) += mtc.c
 ramstage-y += stage_entry.S
-
-secmon-y += cpu.c
-secmon-y += cpu_lib.S
-secmon-y += flow_ctrl.c
-secmon-y += power.c
-secmon-y += psci.c
-secmon-y += stage_entry.S
-secmon-y += uart.c
-secmon-y += gic.c
 
 rmodules_arm-y += monotonic_timer.c
 

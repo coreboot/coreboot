@@ -15,7 +15,6 @@
 
 #include <arch/cache.h>
 #include <arch/lib_helpers.h>
-#include <arch/secmon.h>
 #include <arch/stages.h>
 #include <arch/spintable.h>
 #include <arch/transition.h>
@@ -37,8 +36,6 @@ static void run_payload(struct prog *prog)
 
 	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		arm_tf_run_bl31((u64)doit, (u64)arg, payload_spsr);
-	else if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_MONITOR))
-		secmon_run(doit, arg);
 	else {
 		uint8_t current_el = get_current_el();
 

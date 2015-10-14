@@ -53,8 +53,6 @@ void console_init(void)
 		      "ramstage"
 #elif ENV_VERSTAGE
 		      "verstage"
-#elif ENV_SECMON
-		      "secmon"
 #else
 		      "UNKNOWN"
 #endif

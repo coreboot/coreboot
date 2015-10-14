@@ -84,7 +84,7 @@ ENDPROC(cpu_get_exception_stack)
  */
 /*
  * IMPORTANT: Ensure x25 is not corrupted because it saves the argument to
- * secmon
+ * any rmodules.
  */
 ENTRY(arm64_c_environment)
 	bl	smp_processor_id	/* x0 = cpu */
@@ -134,7 +134,7 @@ ENDPROC(arm64_c_environment)
 
 ENTRY(_start)
 	split_bsp_path
-	/* Save the arguments to secmon in x25 */
+	/* Save any arguments to current rmodule in x25 */
 	mov	x25, x0
 	b	arm64_c_environment
 ENDPROC(_start)

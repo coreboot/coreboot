@@ -3,7 +3,6 @@ ifeq ($(CONFIG_DRIVERS_UART),y)
 romstage-y += util.c
 ramstage-y += util.c
 bootblock-y += util.c
-secmon-y += util.c
 verstage-y += util.c
 smm-$(CONFIG_DEBUG_SMI) += util.c
 

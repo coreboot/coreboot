@@ -43,11 +43,6 @@ static void enable_cpu_power_partitions(void)
 	power_ungate_partition(POWER_PARTID_CRAIL);
 	power_ungate_partition(POWER_PARTID_C0NC);
 	power_ungate_partition(POWER_PARTID_CE0);
-	if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_MONITOR)) {
-		power_ungate_partition(POWER_PARTID_CE1);
-		power_ungate_partition(POWER_PARTID_CE2);
-		power_ungate_partition(POWER_PARTID_CE3);
-	}
 
 	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE)) {
 		/*

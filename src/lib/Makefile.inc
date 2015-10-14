@@ -164,14 +164,12 @@ bootblock-y += version.c
 romstage-y += version.c
 ramstage-y += version.c
 smm-y += version.c
-secmon-y += version.c
 verstage-y += version.c
 
 $(obj)/lib/version.bootblock.o : $(obj)/build.h
 $(obj)/lib/version.romstage.o : $(obj)/build.h
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
 $(obj)/lib/version.smm.o : $(obj)/build.h
-$(obj)/lib/version.secmon.o : $(obj)/build.h
 $(obj)/lib/version.verstage.o : $(obj)/build.h
 
 romstage-y += bootmode.c
@@ -181,7 +179,6 @@ bootblock-y += halt.c
 romstage-y += halt.c
 ramstage-y += halt.c
 smm-y += halt.c
-secmon-y += halt.c
 
 ifneq ($(CONFIG_ARCH_X86),y)
 # X86 bootblock uses custom ldscripts that are all glued together,

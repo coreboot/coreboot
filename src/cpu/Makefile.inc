@@ -17,17 +17,8 @@ $(eval $(call create_class_compiler,cpu_microcode,x86_32))
 ## Rules for building the microcode blob in CBFS
 ################################################################################
 
-# External microcode file, or are we generating one ?
-ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL), y)
-cpu_ucode_cbfs_file = $(call strip_quotes,$(CONFIG_CPU_MICROCODE_FILE))
-cbfs_include_ucode = y
-endif
-
-ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE), y)
 ifneq ($(CONFIG_CPU_MICROCODE_MULTIPLE_FILES), y)
-cpu_ucode_cbfs_file = $(obj)/cpu_microcode_blob.bin
-cbfs_include_ucode = y
-endif
+cbfs-files-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += cpu_microcode_blob.bin
 endif
 
 # We just mash all microcode binaries together into one binary to rule them all.
@@ -42,8 +33,7 @@ $(obj)/cpu_microcode_blob.bin: $$(cpu_microcode_bins)
 	@echo $(cpu_microcode_bins)
 	cat /dev/null $+ > $@
 
-cbfs-files-$(cbfs_include_ucode) += cpu_microcode_blob.bin
-cpu_microcode_blob.bin-file := $(cpu_ucode_cbfs_file)
+cpu_microcode_blob.bin-file := $(obj)/cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type := microcode
 
 ifneq ($(CONFIG_CPU_MICROCODE_CBFS_LOC),)

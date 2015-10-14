@@ -127,7 +127,8 @@
 # 24 Minimum Refresh Recovery Delay Time (tRFCmin), LSB
 # 25 Minimum Refresh Recovery Delay Time (tRFCmin), MSB
 #    0x500 = 160ns - for 2 Gigabit chips
-00 05
+#    0x820 = 260ns - for 4 Gigabit chips
+20 08
 
 # 26 Minimum Internal Write to Read Command Delay Time (tWTRmin)
 #    0x3c = 7.5 ns - All DDR3 SDRAM speed bins

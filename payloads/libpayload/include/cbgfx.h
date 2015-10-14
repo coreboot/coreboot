@@ -74,18 +74,6 @@ struct rgb_color {
  */
 
 /**
- * Load a bitmap file from cbfs
- *
- * Memory is allocated automatically and it's caller's responsibility to free it
- *
- * name: name of the bitmap file
- * size: (OUT) size of the image
- *
- * return: pointer to the image data in memory or NULL on error
- */
-void *load_bitmap(const char *name, size_t *size);
-
-/**
  * draw a box filled with a color on screen
  *
  * box: .offset points the coordinate of the top left corner and .size specifies

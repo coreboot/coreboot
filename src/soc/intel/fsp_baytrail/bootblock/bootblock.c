@@ -18,6 +18,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/intel/microcode/microcode.c>
 #include <baytrail/iosf.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/spi.h>
@@ -112,8 +113,10 @@ static void set_up_lpc_pads(void)
 
 static void bootblock_cpu_init(void)
 {
-
 	check_for_warm_reset();
+
+	/* Load microcode before any caching. */
+	intel_update_microcode_from_cbfs();
 
 	/* Allow memory-mapped PCI config access. */
 	setup_mmconfig();

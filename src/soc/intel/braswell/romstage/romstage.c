@@ -223,28 +223,28 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 {
 	/* Display the parameters for MemoryInit */
 	printk(BIOS_SPEW, "UPD values for MemoryInit:\n");
-	soc_display_upd_value("PcdMrcInitTsegSize", 2,
+	fsp_display_upd_value("PcdMrcInitTsegSize", 2,
 		old->PcdMrcInitTsegSize, new->PcdMrcInitTsegSize);
-	soc_display_upd_value("PcdMrcInitMmioSize", 2,
+	fsp_display_upd_value("PcdMrcInitMmioSize", 2,
 		old->PcdMrcInitMmioSize, new->PcdMrcInitMmioSize);
-	soc_display_upd_value("PcdMrcInitSpdAddr1", 1,
+	fsp_display_upd_value("PcdMrcInitSpdAddr1", 1,
 		old->PcdMrcInitSpdAddr1, new->PcdMrcInitSpdAddr1);
-	soc_display_upd_value("PcdMrcInitSpdAddr2", 1,
+	fsp_display_upd_value("PcdMrcInitSpdAddr2", 1,
 		old->PcdMrcInitSpdAddr2, new->PcdMrcInitSpdAddr2);
-	soc_display_upd_value("PcdMemChannel0Config", 1,
+	fsp_display_upd_value("PcdMemChannel0Config", 1,
 		old->PcdMemChannel0Config, new->PcdMemChannel0Config);
-	soc_display_upd_value("PcdMemChannel1Config", 1,
+	fsp_display_upd_value("PcdMemChannel1Config", 1,
 		old->PcdMemChannel1Config, new->PcdMemChannel1Config);
-	soc_display_upd_value("PcdMemorySpdPtr", 4,
+	fsp_display_upd_value("PcdMemorySpdPtr", 4,
 		old->PcdMemorySpdPtr, new->PcdMemorySpdPtr);
-	soc_display_upd_value("PcdIgdDvmt50PreAlloc", 1,
+	fsp_display_upd_value("PcdIgdDvmt50PreAlloc", 1,
 		old->PcdIgdDvmt50PreAlloc, new->PcdIgdDvmt50PreAlloc);
-	soc_display_upd_value("PcdApertureSize", 1,
+	fsp_display_upd_value("PcdApertureSize", 1,
 		old->PcdApertureSize, new->PcdApertureSize);
-	soc_display_upd_value("PcdGttSize", 1,
+	fsp_display_upd_value("PcdGttSize", 1,
 		old->PcdGttSize, new->PcdGttSize);
-	soc_display_upd_value("PcdLegacySegDecode", 1,
+	fsp_display_upd_value("PcdLegacySegDecode", 1,
 		old->PcdLegacySegDecode, new->PcdLegacySegDecode);
-	soc_display_upd_value("PcdDvfsEnable", 1,
+	fsp_display_upd_value("PcdDvfsEnable", 1,
 		old->PcdDvfsEnable, new->PcdDvfsEnable);
 }

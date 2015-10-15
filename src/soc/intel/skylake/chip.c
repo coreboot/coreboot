@@ -368,204 +368,204 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 {
 	/* Display the parameters for SiliconInit */
 	printk(BIOS_SPEW, "UPD values for SiliconInit:\n");
-	soc_display_upd_value("LogoPtr", 4,
+	fsp_display_upd_value("LogoPtr", 4,
 			(uint32_t)original->LogoPtr,
 			(uint32_t)params->LogoPtr);
-	soc_display_upd_value("LogoSize", 4,
+	fsp_display_upd_value("LogoSize", 4,
 		(uint32_t)original->LogoSize,
 		(uint32_t)params->LogoSize);
-	soc_display_upd_value("GraphicsConfigPtr", 4,
+	fsp_display_upd_value("GraphicsConfigPtr", 4,
 		(uint32_t)original->GraphicsConfigPtr,
 		(uint32_t)params->GraphicsConfigPtr);
-	soc_display_upd_value("MicrocodeRegionBase", 4,
+	fsp_display_upd_value("MicrocodeRegionBase", 4,
 		(uint32_t)original->MicrocodeRegionBase,
 		(uint32_t)params->MicrocodeRegionBase);
-	soc_display_upd_value("MicrocodeRegionSize", 4,
+	fsp_display_upd_value("MicrocodeRegionSize", 4,
 		(uint32_t)original->MicrocodeRegionSize,
 		(uint32_t)params->MicrocodeRegionSize);
-	soc_display_upd_value("TurboMode", 1,
+	fsp_display_upd_value("TurboMode", 1,
 		(uint32_t)original->TurboMode,
 		(uint32_t)params->TurboMode);
-	soc_display_upd_value("Device4Enable", 1,
+	fsp_display_upd_value("Device4Enable", 1,
 		original->Device4Enable,
 		params->Device4Enable);
-	soc_display_upd_value("SataSalpSupport", 1, original->SataSalpSupport,
+	fsp_display_upd_value("SataSalpSupport", 1, original->SataSalpSupport,
 		params->SataSalpSupport);
-	soc_display_upd_value("SataPortsEnable[0]", 1,
+	fsp_display_upd_value("SataPortsEnable[0]", 1,
 		original->SataPortsEnable[0], params->SataPortsEnable[0]);
-	soc_display_upd_value("SataPortsEnable[1]", 1,
+	fsp_display_upd_value("SataPortsEnable[1]", 1,
 		original->SataPortsEnable[1], params->SataPortsEnable[1]);
-	soc_display_upd_value("SataPortsEnable[2]", 1,
+	fsp_display_upd_value("SataPortsEnable[2]", 1,
 		original->SataPortsEnable[2], params->SataPortsEnable[2]);
-	soc_display_upd_value("SataPortsEnable[3]", 1,
+	fsp_display_upd_value("SataPortsEnable[3]", 1,
 		original->SataPortsEnable[3], params->SataPortsEnable[3]);
-	soc_display_upd_value("SataPortsEnable[4]", 1,
+	fsp_display_upd_value("SataPortsEnable[4]", 1,
 		original->SataPortsEnable[4], params->SataPortsEnable[4]);
-	soc_display_upd_value("SataPortsEnable[5]", 1,
+	fsp_display_upd_value("SataPortsEnable[5]", 1,
 		original->SataPortsEnable[5], params->SataPortsEnable[5]);
-	soc_display_upd_value("SataPortsEnable[6]", 1,
+	fsp_display_upd_value("SataPortsEnable[6]", 1,
 		original->SataPortsEnable[6], params->SataPortsEnable[6]);
-	soc_display_upd_value("SataPortsEnable[7]", 1,
+	fsp_display_upd_value("SataPortsEnable[7]", 1,
 		original->SataPortsEnable[7], params->SataPortsEnable[7]);
-	soc_display_upd_value("SataPortsDevSlp[0]", 1,
+	fsp_display_upd_value("SataPortsDevSlp[0]", 1,
 		original->SataPortsDevSlp[0], params->SataPortsDevSlp[0]);
-	soc_display_upd_value("SataPortsDevSlp[1]", 1,
+	fsp_display_upd_value("SataPortsDevSlp[1]", 1,
 		original->SataPortsDevSlp[1], params->SataPortsDevSlp[1]);
-	soc_display_upd_value("SataPortsDevSlp[2]", 1,
+	fsp_display_upd_value("SataPortsDevSlp[2]", 1,
 		original->SataPortsDevSlp[2], params->SataPortsDevSlp[2]);
-	soc_display_upd_value("SataPortsDevSlp[3]", 1,
+	fsp_display_upd_value("SataPortsDevSlp[3]", 1,
 		original->SataPortsDevSlp[3], params->SataPortsDevSlp[3]);
-	soc_display_upd_value("SataPortsDevSlp[4]", 1,
+	fsp_display_upd_value("SataPortsDevSlp[4]", 1,
 		original->SataPortsDevSlp[4], params->SataPortsDevSlp[4]);
-	soc_display_upd_value("SataPortsDevSlp[5]", 1,
+	fsp_display_upd_value("SataPortsDevSlp[5]", 1,
 		original->SataPortsDevSlp[5], params->SataPortsDevSlp[5]);
-	soc_display_upd_value("SataPortsDevSlp[6]", 1,
+	fsp_display_upd_value("SataPortsDevSlp[6]", 1,
 		original->SataPortsDevSlp[6], params->SataPortsDevSlp[6]);
-	soc_display_upd_value("SataPortsDevSlp[7]", 1,
+	fsp_display_upd_value("SataPortsDevSlp[7]", 1,
 		original->SataPortsDevSlp[7], params->SataPortsDevSlp[7]);
-	soc_display_upd_value("EnableAzalia", 1,
+	fsp_display_upd_value("EnableAzalia", 1,
 		original->EnableAzalia,	params->EnableAzalia);
-	soc_display_upd_value("DspEnable", 1, original->DspEnable,
+	fsp_display_upd_value("DspEnable", 1, original->DspEnable,
 		params->DspEnable);
-	soc_display_upd_value("IoBufferOwnership", 1,
+	fsp_display_upd_value("IoBufferOwnership", 1,
 		original->IoBufferOwnership, params->IoBufferOwnership);
-	soc_display_upd_value("PortUsb20Enable[0]", 1,
+	fsp_display_upd_value("PortUsb20Enable[0]", 1,
 		original->PortUsb20Enable[0], params->PortUsb20Enable[0]);
-	soc_display_upd_value("PortUsb20Enable[1]", 1,
+	fsp_display_upd_value("PortUsb20Enable[1]", 1,
 		original->PortUsb20Enable[1], params->PortUsb20Enable[1]);
-	soc_display_upd_value("PortUsb20Enable[2]", 1,
+	fsp_display_upd_value("PortUsb20Enable[2]", 1,
 		original->PortUsb20Enable[2], params->PortUsb20Enable[2]);
-	soc_display_upd_value("PortUsb20Enable[3]", 1,
+	fsp_display_upd_value("PortUsb20Enable[3]", 1,
 		original->PortUsb20Enable[3], params->PortUsb20Enable[3]);
-	soc_display_upd_value("PortUsb20Enable[4]", 1,
+	fsp_display_upd_value("PortUsb20Enable[4]", 1,
 		original->PortUsb20Enable[4], params->PortUsb20Enable[4]);
-	soc_display_upd_value("PortUsb20Enable[5]", 1,
+	fsp_display_upd_value("PortUsb20Enable[5]", 1,
 		original->PortUsb20Enable[5], params->PortUsb20Enable[5]);
-	soc_display_upd_value("PortUsb20Enable[6]", 1,
+	fsp_display_upd_value("PortUsb20Enable[6]", 1,
 		original->PortUsb20Enable[6], params->PortUsb20Enable[6]);
-	soc_display_upd_value("PortUsb20Enable[7]", 1,
+	fsp_display_upd_value("PortUsb20Enable[7]", 1,
 		original->PortUsb20Enable[7], params->PortUsb20Enable[7]);
-	soc_display_upd_value("PortUsb20Enable[8]", 1,
+	fsp_display_upd_value("PortUsb20Enable[8]", 1,
 		original->PortUsb20Enable[8], params->PortUsb20Enable[8]);
-	soc_display_upd_value("PortUsb20Enable[9]", 1,
+	fsp_display_upd_value("PortUsb20Enable[9]", 1,
 		original->PortUsb20Enable[9], params->PortUsb20Enable[9]);
-	soc_display_upd_value("PortUsb20Enable[10]", 1,
+	fsp_display_upd_value("PortUsb20Enable[10]", 1,
 		original->PortUsb20Enable[10], params->PortUsb20Enable[10]);
-	soc_display_upd_value("PortUsb20Enable[11]", 1,
+	fsp_display_upd_value("PortUsb20Enable[11]", 1,
 		original->PortUsb20Enable[11], params->PortUsb20Enable[11]);
-	soc_display_upd_value("PortUsb20Enable[12]", 1,
+	fsp_display_upd_value("PortUsb20Enable[12]", 1,
 		original->PortUsb20Enable[12], params->PortUsb20Enable[12]);
-	soc_display_upd_value("PortUsb20Enable[13]", 1,
+	fsp_display_upd_value("PortUsb20Enable[13]", 1,
 		original->PortUsb20Enable[13], params->PortUsb20Enable[13]);
-	soc_display_upd_value("PortUsb20Enable[14]", 1,
+	fsp_display_upd_value("PortUsb20Enable[14]", 1,
 		original->PortUsb20Enable[14], params->PortUsb20Enable[14]);
-	soc_display_upd_value("PortUsb20Enable[15]", 1,
+	fsp_display_upd_value("PortUsb20Enable[15]", 1,
 		original->PortUsb20Enable[15], params->PortUsb20Enable[15]);
-	soc_display_upd_value("PortUsb30Enable[0]", 1,
+	fsp_display_upd_value("PortUsb30Enable[0]", 1,
 		original->PortUsb30Enable[0], params->PortUsb30Enable[0]);
-	soc_display_upd_value("PortUsb30Enable[1]", 1,
+	fsp_display_upd_value("PortUsb30Enable[1]", 1,
 		original->PortUsb30Enable[1], params->PortUsb30Enable[1]);
-	soc_display_upd_value("PortUsb30Enable[2]", 1,
+	fsp_display_upd_value("PortUsb30Enable[2]", 1,
 		original->PortUsb30Enable[2], params->PortUsb30Enable[2]);
-	soc_display_upd_value("PortUsb30Enable[3]", 1,
+	fsp_display_upd_value("PortUsb30Enable[3]", 1,
 		original->PortUsb30Enable[3], params->PortUsb30Enable[3]);
-	soc_display_upd_value("PortUsb30Enable[4]", 1,
+	fsp_display_upd_value("PortUsb30Enable[4]", 1,
 		original->PortUsb30Enable[4], params->PortUsb30Enable[4]);
-	soc_display_upd_value("PortUsb30Enable[5]", 1,
+	fsp_display_upd_value("PortUsb30Enable[5]", 1,
 		original->PortUsb30Enable[5], params->PortUsb30Enable[5]);
-	soc_display_upd_value("PortUsb30Enable[6]", 1,
+	fsp_display_upd_value("PortUsb30Enable[6]", 1,
 		original->PortUsb30Enable[6], params->PortUsb30Enable[6]);
-	soc_display_upd_value("PortUsb30Enable[7]", 1,
+	fsp_display_upd_value("PortUsb30Enable[7]", 1,
 		original->PortUsb30Enable[7], params->PortUsb30Enable[7]);
-	soc_display_upd_value("PortUsb30Enable[8]", 1,
+	fsp_display_upd_value("PortUsb30Enable[8]", 1,
 		original->PortUsb30Enable[8], params->PortUsb30Enable[8]);
-	soc_display_upd_value("PortUsb30Enable[9]", 1,
+	fsp_display_upd_value("PortUsb30Enable[9]", 1,
 		original->PortUsb30Enable[9], params->PortUsb30Enable[9]);
-	soc_display_upd_value("XdciEnable", 1, original->XdciEnable,
+	fsp_display_upd_value("XdciEnable", 1, original->XdciEnable,
 		params->XdciEnable);
-	soc_display_upd_value("SsicPortEnable", 1, original->SsicPortEnable,
+	fsp_display_upd_value("SsicPortEnable", 1, original->SsicPortEnable,
 		params->SsicPortEnable);
-	soc_display_upd_value("SmbusEnable", 1, original->SmbusEnable,
+	fsp_display_upd_value("SmbusEnable", 1, original->SmbusEnable,
 		params->SmbusEnable);
-	soc_display_upd_value("SerialIoDevMode[0]", 1,
+	fsp_display_upd_value("SerialIoDevMode[0]", 1,
 		original->SerialIoDevMode[0], params->SerialIoDevMode[0]);
-	soc_display_upd_value("SerialIoDevMode[1]", 1,
+	fsp_display_upd_value("SerialIoDevMode[1]", 1,
 		original->SerialIoDevMode[1], params->SerialIoDevMode[1]);
-	soc_display_upd_value("SerialIoDevMode[2]", 1,
+	fsp_display_upd_value("SerialIoDevMode[2]", 1,
 		original->SerialIoDevMode[2], params->SerialIoDevMode[2]);
-	soc_display_upd_value("SerialIoDevMode[3]", 1,
+	fsp_display_upd_value("SerialIoDevMode[3]", 1,
 		original->SerialIoDevMode[3], params->SerialIoDevMode[3]);
-	soc_display_upd_value("SerialIoDevMode[4]", 1,
+	fsp_display_upd_value("SerialIoDevMode[4]", 1,
 		original->SerialIoDevMode[4], params->SerialIoDevMode[4]);
-	soc_display_upd_value("SerialIoDevMode[5]", 1,
+	fsp_display_upd_value("SerialIoDevMode[5]", 1,
 		original->SerialIoDevMode[5], params->SerialIoDevMode[5]);
-	soc_display_upd_value("SerialIoDevMode[6]", 1,
+	fsp_display_upd_value("SerialIoDevMode[6]", 1,
 		original->SerialIoDevMode[6], params->SerialIoDevMode[6]);
-	soc_display_upd_value("SerialIoDevMode[7]", 1,
+	fsp_display_upd_value("SerialIoDevMode[7]", 1,
 		original->SerialIoDevMode[7], params->SerialIoDevMode[7]);
-	soc_display_upd_value("SerialIoDevMode[8]", 1,
+	fsp_display_upd_value("SerialIoDevMode[8]", 1,
 		original->SerialIoDevMode[8], params->SerialIoDevMode[8]);
-	soc_display_upd_value("SerialIoDevMode[9]", 1,
+	fsp_display_upd_value("SerialIoDevMode[9]", 1,
 		original->SerialIoDevMode[9], params->SerialIoDevMode[9]);
-	soc_display_upd_value("SerialIoDevMode[10]", 1,
+	fsp_display_upd_value("SerialIoDevMode[10]", 1,
 		original->SerialIoDevMode[10], params->SerialIoDevMode[10]);
-	soc_display_upd_value("ScsEmmcEnabled", 1, original->ScsEmmcEnabled,
+	fsp_display_upd_value("ScsEmmcEnabled", 1, original->ScsEmmcEnabled,
 		params->ScsEmmcEnabled);
-	soc_display_upd_value("ScsEmmcHs400Enabled", 1,
+	fsp_display_upd_value("ScsEmmcHs400Enabled", 1,
 		original->ScsEmmcHs400Enabled, params->ScsEmmcHs400Enabled);
-	soc_display_upd_value("ScsSdCardEnabled", 1, original->ScsSdCardEnabled,
+	fsp_display_upd_value("ScsSdCardEnabled", 1, original->ScsSdCardEnabled,
 		params->ScsSdCardEnabled);
-	soc_display_upd_value("IshEnable", 1, original->IshEnable,
+	fsp_display_upd_value("IshEnable", 1, original->IshEnable,
 		params->IshEnable);
-	soc_display_upd_value("ShowSpiController", 1,
+	fsp_display_upd_value("ShowSpiController", 1,
 		original->ShowSpiController, params->ShowSpiController);
-	soc_display_upd_value("HsioMessaging", 1, original->HsioMessaging,
+	fsp_display_upd_value("HsioMessaging", 1, original->HsioMessaging,
 		params->HsioMessaging);
-	soc_display_upd_value("Heci3Enabled", 1, original->Heci3Enabled,
+	fsp_display_upd_value("Heci3Enabled", 1, original->Heci3Enabled,
 		params->Heci3Enabled);
-	soc_display_upd_value("RtcLock", 1, original->RtcLock,
+	fsp_display_upd_value("RtcLock", 1, original->RtcLock,
 		params->RtcLock);
-	soc_display_upd_value("EnableSata", 1, original->EnableSata,
+	fsp_display_upd_value("EnableSata", 1, original->EnableSata,
 		params->EnableSata);
-	soc_display_upd_value("SataMode", 1, original->SataMode,
+	fsp_display_upd_value("SataMode", 1, original->SataMode,
 		params->SataMode);
-	soc_display_upd_value("NumOfDevIntConfig", 1,
+	fsp_display_upd_value("NumOfDevIntConfig", 1,
 		original->NumOfDevIntConfig,
 		params->NumOfDevIntConfig);
-	soc_display_upd_value("PxRcConfig[PARC]", 1,
+	fsp_display_upd_value("PxRcConfig[PARC]", 1,
 		original->PxRcConfig[PCH_PARC],
 		params->PxRcConfig[PCH_PARC]);
-	soc_display_upd_value("PxRcConfig[PBRC]", 1,
+	fsp_display_upd_value("PxRcConfig[PBRC]", 1,
 		original->PxRcConfig[PCH_PBRC],
 		params->PxRcConfig[PCH_PBRC]);
-	soc_display_upd_value("PxRcConfig[PCRC]", 1,
+	fsp_display_upd_value("PxRcConfig[PCRC]", 1,
 		original->PxRcConfig[PCH_PCRC],
 		params->PxRcConfig[PCH_PCRC]);
-	soc_display_upd_value("PxRcConfig[PDRC]", 1,
+	fsp_display_upd_value("PxRcConfig[PDRC]", 1,
 		original->PxRcConfig[PCH_PDRC],
 		params->PxRcConfig[PCH_PDRC]);
-	soc_display_upd_value("PxRcConfig[PERC]", 1,
+	fsp_display_upd_value("PxRcConfig[PERC]", 1,
 		original->PxRcConfig[PCH_PERC],
 		params->PxRcConfig[PCH_PERC]);
-	soc_display_upd_value("PxRcConfig[PFRC]", 1,
+	fsp_display_upd_value("PxRcConfig[PFRC]", 1,
 		original->PxRcConfig[PCH_PFRC],
 		params->PxRcConfig[PCH_PFRC]);
-	soc_display_upd_value("PxRcConfig[PGRC]", 1,
+	fsp_display_upd_value("PxRcConfig[PGRC]", 1,
 		original->PxRcConfig[PCH_PGRC],
 		params->PxRcConfig[PCH_PGRC]);
-	soc_display_upd_value("PxRcConfig[PHRC]", 1,
+	fsp_display_upd_value("PxRcConfig[PHRC]", 1,
 		original->PxRcConfig[PCH_PHRC],
 		params->PxRcConfig[PCH_PHRC]);
-	soc_display_upd_value("GpioIrqRoute", 1,
+	fsp_display_upd_value("GpioIrqRoute", 1,
 		original->GpioIrqRoute,
 		params->GpioIrqRoute);
-	soc_display_upd_value("SciIrqSelect", 1,
+	fsp_display_upd_value("SciIrqSelect", 1,
 		original->SciIrqSelect,
 		params->SciIrqSelect);
-	soc_display_upd_value("TcoIrqSelect", 1,
+	fsp_display_upd_value("TcoIrqSelect", 1,
 		original->TcoIrqSelect,
 		params->TcoIrqSelect);
-	soc_display_upd_value("TcoIrqEnable", 1,
+	fsp_display_upd_value("TcoIrqEnable", 1,
 		original->TcoIrqEnable,
 		params->TcoIrqEnable);
 }

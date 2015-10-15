@@ -163,158 +163,158 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 {
 	/* Display the parameters for SiliconInit */
 	printk(BIOS_SPEW, "UPD values for SiliconInit:\n");
-	soc_display_upd_value("PcdSdcardMode", 1, old->PcdSdcardMode,
+	fsp_display_upd_value("PcdSdcardMode", 1, old->PcdSdcardMode,
 		new->PcdSdcardMode);
-	soc_display_upd_value("PcdEnableHsuart0", 1, old->PcdEnableHsuart0,
+	fsp_display_upd_value("PcdEnableHsuart0", 1, old->PcdEnableHsuart0,
 		new->PcdEnableHsuart0);
-	soc_display_upd_value("PcdEnableHsuart1", 1, old->PcdEnableHsuart1,
+	fsp_display_upd_value("PcdEnableHsuart1", 1, old->PcdEnableHsuart1,
 		new->PcdEnableHsuart1);
-	soc_display_upd_value("PcdEnableAzalia", 1, old->PcdEnableAzalia,
+	fsp_display_upd_value("PcdEnableAzalia", 1, old->PcdEnableAzalia,
 		new->PcdEnableAzalia);
-	soc_display_upd_value("AzaliaConfigPtr", 4,
+	fsp_display_upd_value("AzaliaConfigPtr", 4,
 			(uint32_t)old->AzaliaConfigPtr,
 			(uint32_t)new->AzaliaConfigPtr);
-	soc_display_upd_value("PcdEnableSata", 1, old->PcdEnableSata,
+	fsp_display_upd_value("PcdEnableSata", 1, old->PcdEnableSata,
 		new->PcdEnableSata);
-	soc_display_upd_value("PcdEnableXhci", 1, old->PcdEnableXhci,
+	fsp_display_upd_value("PcdEnableXhci", 1, old->PcdEnableXhci,
 		new->PcdEnableXhci);
-	soc_display_upd_value("PcdEnableLpe", 1, old->PcdEnableLpe,
+	fsp_display_upd_value("PcdEnableLpe", 1, old->PcdEnableLpe,
 		new->PcdEnableLpe);
-	soc_display_upd_value("PcdEnableDma0", 1, old->PcdEnableDma0,
+	fsp_display_upd_value("PcdEnableDma0", 1, old->PcdEnableDma0,
 		new->PcdEnableDma0);
-	soc_display_upd_value("PcdEnableDma1", 1, old->PcdEnableDma1,
+	fsp_display_upd_value("PcdEnableDma1", 1, old->PcdEnableDma1,
 		new->PcdEnableDma1);
-	soc_display_upd_value("PcdEnableI2C0", 1, old->PcdEnableI2C0,
+	fsp_display_upd_value("PcdEnableI2C0", 1, old->PcdEnableI2C0,
 		new->PcdEnableI2C0);
-	soc_display_upd_value("PcdEnableI2C1", 1, old->PcdEnableI2C1,
+	fsp_display_upd_value("PcdEnableI2C1", 1, old->PcdEnableI2C1,
 		new->PcdEnableI2C1);
-	soc_display_upd_value("PcdEnableI2C2", 1, old->PcdEnableI2C2,
+	fsp_display_upd_value("PcdEnableI2C2", 1, old->PcdEnableI2C2,
 		new->PcdEnableI2C2);
-	soc_display_upd_value("PcdEnableI2C3", 1, old->PcdEnableI2C3,
+	fsp_display_upd_value("PcdEnableI2C3", 1, old->PcdEnableI2C3,
 		new->PcdEnableI2C3);
-	soc_display_upd_value("PcdEnableI2C4", 1, old->PcdEnableI2C4,
+	fsp_display_upd_value("PcdEnableI2C4", 1, old->PcdEnableI2C4,
 		new->PcdEnableI2C4);
-	soc_display_upd_value("PcdEnableI2C5", 1, old->PcdEnableI2C5,
+	fsp_display_upd_value("PcdEnableI2C5", 1, old->PcdEnableI2C5,
 		new->PcdEnableI2C5);
-	soc_display_upd_value("PcdEnableI2C6", 1, old->PcdEnableI2C6,
+	fsp_display_upd_value("PcdEnableI2C6", 1, old->PcdEnableI2C6,
 		new->PcdEnableI2C6);
-	soc_display_upd_value("PcdGraphicsConfigPtr", 4,
+	fsp_display_upd_value("PcdGraphicsConfigPtr", 4,
 		old->GraphicsConfigPtr, new->GraphicsConfigPtr);
-	soc_display_upd_value("GpioFamilyInitTablePtr", 4,
+	fsp_display_upd_value("GpioFamilyInitTablePtr", 4,
 		(uint32_t)old->GpioFamilyInitTablePtr,
 		(uint32_t)new->GpioFamilyInitTablePtr);
-	soc_display_upd_value("GpioPadInitTablePtr", 4,
+	fsp_display_upd_value("GpioPadInitTablePtr", 4,
 		(uint32_t)old->GpioPadInitTablePtr,
 		(uint32_t)new->GpioPadInitTablePtr);
-	soc_display_upd_value("PunitPwrConfigDisable", 1,
+	fsp_display_upd_value("PunitPwrConfigDisable", 1,
 		old->PunitPwrConfigDisable,
 		new->PunitPwrConfigDisable);
-	soc_display_upd_value("ChvSvidConfig", 1, old->ChvSvidConfig,
+	fsp_display_upd_value("ChvSvidConfig", 1, old->ChvSvidConfig,
 		new->ChvSvidConfig);
-	soc_display_upd_value("DptfDisable", 1, old->DptfDisable,
+	fsp_display_upd_value("DptfDisable", 1, old->DptfDisable,
 		new->DptfDisable);
-	soc_display_upd_value("PcdEmmcMode", 1, old->PcdEmmcMode,
+	fsp_display_upd_value("PcdEmmcMode", 1, old->PcdEmmcMode,
 		new->PcdEmmcMode);
-	soc_display_upd_value("PcdUsb3ClkSsc", 1, old->PcdUsb3ClkSsc,
+	fsp_display_upd_value("PcdUsb3ClkSsc", 1, old->PcdUsb3ClkSsc,
 		new->PcdUsb3ClkSsc);
-	soc_display_upd_value("PcdDispClkSsc", 1, old->PcdDispClkSsc,
+	fsp_display_upd_value("PcdDispClkSsc", 1, old->PcdDispClkSsc,
 		new->PcdDispClkSsc);
-	soc_display_upd_value("PcdSataClkSsc", 1, old->PcdSataClkSsc,
+	fsp_display_upd_value("PcdSataClkSsc", 1, old->PcdSataClkSsc,
 		new->PcdSataClkSsc);
-	soc_display_upd_value("Usb2Port0PerPortPeTxiSet", 1,
+	fsp_display_upd_value("Usb2Port0PerPortPeTxiSet", 1,
 		old->Usb2Port0PerPortPeTxiSet,
 		new->Usb2Port0PerPortPeTxiSet);
-	soc_display_upd_value("Usb2Port0PerPortTxiSet", 1,
+	fsp_display_upd_value("Usb2Port0PerPortTxiSet", 1,
 		old->Usb2Port0PerPortTxiSet,
 		new->Usb2Port0PerPortTxiSet);
-	soc_display_upd_value("Usb2Port0IUsbTxEmphasisEn", 1,
+	fsp_display_upd_value("Usb2Port0IUsbTxEmphasisEn", 1,
 		old->Usb2Port0IUsbTxEmphasisEn,
 		new->Usb2Port0IUsbTxEmphasisEn);
-	soc_display_upd_value("Usb2Port0PerPortTxPeHalf", 1,
+	fsp_display_upd_value("Usb2Port0PerPortTxPeHalf", 1,
 		old->Usb2Port0PerPortTxPeHalf,
 		new->Usb2Port0PerPortTxPeHalf);
-	soc_display_upd_value("Usb2Port1PerPortPeTxiSet", 1,
+	fsp_display_upd_value("Usb2Port1PerPortPeTxiSet", 1,
 		old->Usb2Port1PerPortPeTxiSet,
 		new->Usb2Port1PerPortPeTxiSet);
-	soc_display_upd_value("Usb2Port1PerPortTxiSet", 1,
+	fsp_display_upd_value("Usb2Port1PerPortTxiSet", 1,
 		old->Usb2Port1PerPortTxiSet,
 		new->Usb2Port1PerPortTxiSet);
-	soc_display_upd_value("Usb2Port1IUsbTxEmphasisEn", 1,
+	fsp_display_upd_value("Usb2Port1IUsbTxEmphasisEn", 1,
 		old->Usb2Port1IUsbTxEmphasisEn,
 		new->Usb2Port1IUsbTxEmphasisEn);
-	soc_display_upd_value("Usb2Port1PerPortTxPeHalf", 1,
+	fsp_display_upd_value("Usb2Port1PerPortTxPeHalf", 1,
 		old->Usb2Port1PerPortTxPeHalf,
 		new->Usb2Port1PerPortTxPeHalf);
-	soc_display_upd_value("Usb2Port2PerPortPeTxiSet", 1,
+	fsp_display_upd_value("Usb2Port2PerPortPeTxiSet", 1,
 		old->Usb2Port2PerPortPeTxiSet,
 		new->Usb2Port2PerPortPeTxiSet);
-	soc_display_upd_value("Usb2Port2PerPortTxiSet", 1,
+	fsp_display_upd_value("Usb2Port2PerPortTxiSet", 1,
 		old->Usb2Port2PerPortTxiSet,
 		new->Usb2Port2PerPortTxiSet);
-	soc_display_upd_value("Usb2Port2IUsbTxEmphasisEn", 1,
+	fsp_display_upd_value("Usb2Port2IUsbTxEmphasisEn", 1,
 		old->Usb2Port2IUsbTxEmphasisEn,
 		new->Usb2Port2IUsbTxEmphasisEn);
-	soc_display_upd_value("Usb2Port2PerPortTxPeHalf", 1,
+	fsp_display_upd_value("Usb2Port2PerPortTxPeHalf", 1,
 		old->Usb2Port2PerPortTxPeHalf,
 		new->Usb2Port2PerPortTxPeHalf);
-	soc_display_upd_value("Usb2Port3PerPortPeTxiSet", 1,
+	fsp_display_upd_value("Usb2Port3PerPortPeTxiSet", 1,
 		old->Usb2Port3PerPortPeTxiSet,
 		new->Usb2Port3PerPortPeTxiSet);
-	soc_display_upd_value("Usb2Port3PerPortTxiSet", 1,
+	fsp_display_upd_value("Usb2Port3PerPortTxiSet", 1,
 		old->Usb2Port3PerPortTxiSet,
 		new->Usb2Port3PerPortTxiSet);
-	soc_display_upd_value("Usb2Port3IUsbTxEmphasisEn", 1,
+	fsp_display_upd_value("Usb2Port3IUsbTxEmphasisEn", 1,
 		old->Usb2Port3IUsbTxEmphasisEn,
 		new->Usb2Port3IUsbTxEmphasisEn);
-	soc_display_upd_value("Usb2Port3PerPortTxPeHalf", 1,
+	fsp_display_upd_value("Usb2Port3PerPortTxPeHalf", 1,
 		old->Usb2Port3PerPortTxPeHalf,
 		new->Usb2Port3PerPortTxPeHalf);
-	soc_display_upd_value("Usb2Port4PerPortPeTxiSet", 1,
+	fsp_display_upd_value("Usb2Port4PerPortPeTxiSet", 1,
 		old->Usb2Port4PerPortPeTxiSet,
 		new->Usb2Port4PerPortPeTxiSet);
-	soc_display_upd_value("Usb2Port4PerPortTxiSet", 1,
+	fsp_display_upd_value("Usb2Port4PerPortTxiSet", 1,
 		old->Usb2Port4PerPortTxiSet,
 		new->Usb2Port4PerPortTxiSet);
-	soc_display_upd_value("Usb2Port4IUsbTxEmphasisEn", 1,
+	fsp_display_upd_value("Usb2Port4IUsbTxEmphasisEn", 1,
 		old->Usb2Port4IUsbTxEmphasisEn,
 		new->Usb2Port4IUsbTxEmphasisEn);
-	soc_display_upd_value("Usb2Port4PerPortTxPeHalf", 1,
+	fsp_display_upd_value("Usb2Port4PerPortTxPeHalf", 1,
 		old->Usb2Port4PerPortTxPeHalf,
 		new->Usb2Port4PerPortTxPeHalf);
-	soc_display_upd_value("Usb3Lane0Ow2tapgen2deemph3p5", 1,
+	fsp_display_upd_value("Usb3Lane0Ow2tapgen2deemph3p5", 1,
 		old->Usb3Lane0Ow2tapgen2deemph3p5,
 		new->Usb3Lane0Ow2tapgen2deemph3p5);
-	soc_display_upd_value("Usb3Lane1Ow2tapgen2deemph3p5", 1,
+	fsp_display_upd_value("Usb3Lane1Ow2tapgen2deemph3p5", 1,
 		old->Usb3Lane1Ow2tapgen2deemph3p5,
 		new->Usb3Lane1Ow2tapgen2deemph3p5);
-	soc_display_upd_value("Usb3Lane2Ow2tapgen2deemph3p5", 1,
+	fsp_display_upd_value("Usb3Lane2Ow2tapgen2deemph3p5", 1,
 		old->Usb3Lane2Ow2tapgen2deemph3p5,
 		new->Usb3Lane2Ow2tapgen2deemph3p5);
-	soc_display_upd_value("Usb3Lane3Ow2tapgen2deemph3p5", 1,
+	fsp_display_upd_value("Usb3Lane3Ow2tapgen2deemph3p5", 1,
 		old->Usb3Lane3Ow2tapgen2deemph3p5,
 		new->Usb3Lane3Ow2tapgen2deemph3p5);
-	soc_display_upd_value("PcdSataInterfaceSpeed", 1,
+	fsp_display_upd_value("PcdSataInterfaceSpeed", 1,
 		old->PcdSataInterfaceSpeed,
 		new->PcdSataInterfaceSpeed);
-	soc_display_upd_value("PcdPchUsbSsicPort", 1,
+	fsp_display_upd_value("PcdPchUsbSsicPort", 1,
 		old->PcdPchUsbSsicPort, new->PcdPchUsbSsicPort);
-	soc_display_upd_value("PcdPchUsbHsicPort", 1,
+	fsp_display_upd_value("PcdPchUsbHsicPort", 1,
 		old->PcdPchUsbHsicPort, new->PcdPchUsbHsicPort);
-	soc_display_upd_value("PcdPcieRootPortSpeed", 1,
+	fsp_display_upd_value("PcdPcieRootPortSpeed", 1,
 		old->PcdPcieRootPortSpeed, new->PcdPcieRootPortSpeed);
-	soc_display_upd_value("PcdPchSsicEnable", 1, old->PcdPchSsicEnable,
+	fsp_display_upd_value("PcdPchSsicEnable", 1, old->PcdPchSsicEnable,
 		new->PcdPchSsicEnable);
-	soc_display_upd_value("PcdLogoPtr", 4, old->PcdLogoPtr,
+	fsp_display_upd_value("PcdLogoPtr", 4, old->PcdLogoPtr,
 		new->PcdLogoPtr);
-	soc_display_upd_value("PcdLogoSize", 4, old->PcdLogoSize,
+	fsp_display_upd_value("PcdLogoSize", 4, old->PcdLogoSize,
 		new->PcdLogoSize);
-	soc_display_upd_value("PcdRtcLock", 1, old->PcdRtcLock,
+	fsp_display_upd_value("PcdRtcLock", 1, old->PcdRtcLock,
 		new->PcdRtcLock);
-	soc_display_upd_value("PMIC_I2CBus", 1,
+	fsp_display_upd_value("PMIC_I2CBus", 1,
 		old->PMIC_I2CBus, new->PMIC_I2CBus);
-	soc_display_upd_value("ISPEnable", 1,
+	fsp_display_upd_value("ISPEnable", 1,
 		old->ISPEnable, new->ISPEnable);
-	soc_display_upd_value("ISPPciDevConfig", 1,
+	fsp_display_upd_value("ISPPciDevConfig", 1,
 		old->ISPPciDevConfig, new->ISPPciDevConfig);
 }
 

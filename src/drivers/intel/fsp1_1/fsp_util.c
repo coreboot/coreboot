@@ -249,7 +249,7 @@ void fsp_update_fih(FSP_INFO_HEADER *fih)
 	fspr->fih = (uintptr_t)fih;
 }
 
-void soc_display_upd_value(const char *name, uint32_t size, uint64_t old,
+void fsp_display_upd_value(const char *name, uint32_t size, uint64_t old,
 	uint64_t new)
 {
 	if (old == new) {

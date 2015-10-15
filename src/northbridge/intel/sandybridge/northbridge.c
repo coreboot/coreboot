@@ -194,6 +194,7 @@ static void pci_domain_set_resources(device_t dev)
 
 	printk(BIOS_DEBUG, "MEBASE 0x%llx\n", me_base);
 
+	uma_memory_base = tolud;
 	tomk = tolud >> 10;
 	if (me_base == tolud) {
 		/* ME is from MEBASE-TOM */

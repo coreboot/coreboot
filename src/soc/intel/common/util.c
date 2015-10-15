@@ -24,52 +24,6 @@
 #include <soc/intel/common/util.h>
 #include <stddef.h>
 
-void soc_display_upd_value(const char *name, uint32_t size, uint64_t old,
-	uint64_t new)
-{
-	if (old == new) {
-		switch (size) {
-		case 1:
-			printk(BIOS_SPEW, "  0x%02llx: %s\n", new, name);
-			break;
-
-		case 2:
-			printk(BIOS_SPEW, "  0x%04llx: %s\n", new, name);
-			break;
-
-		case 4:
-			printk(BIOS_SPEW, "  0x%08llx: %s\n", new, name);
-			break;
-
-		case 8:
-			printk(BIOS_SPEW, "  0x%016llx: %s\n", new, name);
-			break;
-		}
-	} else {
-		switch (size) {
-		case 1:
-			printk(BIOS_SPEW, "  0x%02llx --> 0x%02llx: %s\n", old,
-				new, name);
-			break;
-
-		case 2:
-			printk(BIOS_SPEW, "  0x%04llx --> 0x%04llx: %s\n", old,
-				new, name);
-			break;
-
-		case 4:
-			printk(BIOS_SPEW, "  0x%08llx --> 0x%08llx: %s\n", old,
-				new, name);
-			break;
-
-		case 8:
-			printk(BIOS_SPEW, "  0x%016llx --> 0x%016llx: %s\n",
-				old, new, name);
-			break;
-		}
-	}
-}
-
 uint32_t soc_get_variable_mtrr_count(uint64_t *msr)
 {
 	union {

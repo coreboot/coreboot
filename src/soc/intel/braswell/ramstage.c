@@ -40,7 +40,6 @@
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/intel/common/acpi.h>
-#include <soc/intel/common/ramstage.h>
 #include <boardid.h>
 #include <stdlib.h>
 

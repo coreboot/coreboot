@@ -23,7 +23,7 @@
 
 #include <chip.h>
 #include <device/device.h>
-#include <soc/intel/common/ramstage.h>
+#include <fsp/ramstage.h>
 
 /*
  * The soc_init_pre_device() function is called prior to device

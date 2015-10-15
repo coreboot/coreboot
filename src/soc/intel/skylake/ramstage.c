@@ -19,7 +19,6 @@
  */
 
 #include <soc/ramstage.h>
-#include <soc/intel/common/ramstage.h>
 
 void soc_init_pre_device(void *chip_info)
 {

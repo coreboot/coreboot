@@ -19,7 +19,7 @@
  */
 
 #include <console/console.h>
-#include <soc/intel/common/memmap.h>
+#include <fsp/memmap.h>
 #include <stage_cache.h>
 
 void stage_cache_external_region(void **base, size_t *size)

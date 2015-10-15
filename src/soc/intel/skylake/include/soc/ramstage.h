@@ -23,7 +23,7 @@
 
 #include <chip.h>
 #include <device/device.h>
-#include <soc/intel/common/ramstage.h>
+#include <fsp/ramstage.h>
 
 void pch_enable_dev(device_t dev);
 void soc_init_pre_device(void *chip_info);

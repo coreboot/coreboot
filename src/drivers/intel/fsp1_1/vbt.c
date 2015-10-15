@@ -20,9 +20,9 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <fsp/ramstage.h>
 #include <fsp/util.h>
 #include <lib.h>
-#include <soc/intel/common/ramstage.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

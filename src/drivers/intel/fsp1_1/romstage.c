@@ -66,10 +66,7 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 	/* Display parameters */
 	printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",
 		CONFIG_MMCONF_BASE_ADDRESS);
-	printk(BIOS_INFO, "Using: %s\n",
-		IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1) ? "FSP 1.1" :
-		(IS_ENABLED(CONFIG_HAVE_MRC) ? "MRC" :
-		"No Memory Support"));
+	printk(BIOS_INFO, "Using FSP 1.1");
 
 	/* Display FSP banner */
 	print_fsp_info(fih);

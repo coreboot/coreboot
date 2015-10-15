@@ -23,8 +23,8 @@
 
 #include <stdint.h>
 #include <cpu/x86/msr.h>
-#include <soc/intel/common/romstage.h>
-#include <soc/intel/common/memmap.h>
+#include <fsp/memmap.h>
+#include <fsp/romstage.h>
 #include <soc/gpio.h>
 
 struct ied_header {

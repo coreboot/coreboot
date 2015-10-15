@@ -40,34 +40,9 @@ config DISPLAY_SMM_MEMORY_MAP
 	bool "SMM: Display the SMM memory map"
 	default n
 
-config SOC_INTEL_COMMON_FSP_RAM_INIT
-	bool "FSP: Use the common raminit.c module"
-	default n
-	depends on PLATFORM_USES_FSP1_1
-
-config SOC_INTEL_COMMON_FSP_ROMSTAGE
-	bool
-	default n
-	depends on PLATFORM_USES_FSP1_1
-
 config SOC_INTEL_COMMON_RESET
 	bool
 	default n
-
-config SOC_INTEL_COMMON_STACK
-	bool
-	default n
-	depends on PLATFORM_USES_FSP1_1
-
-config SOC_INTEL_COMMON_STAGE_CACHE
-	bool
-	default n
-	depends on PLATFORM_USES_FSP1_1
-
-config ROMSTAGE_RAM_STACK_SIZE
-	hex "Size of the romstage RAM stack in bytes"
-	default 0x5000
-	depends on SOC_INTEL_COMMON_STACK
 
 config SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	bool

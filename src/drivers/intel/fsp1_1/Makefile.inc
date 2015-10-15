@@ -25,12 +25,19 @@ verstage-y += verstage.c
 romstage-y += car.c
 romstage-y += fsp_util.c
 romstage-y += hob.c
+romstage-$(CONFIG_FSP_RAM_INIT) += raminit.c
+romstage-$(CONFIG_FSP_ROMSTAGE) += romstage.c
 romstage-$(CONFIG_SEPARATE_VERSTAGE) += romstage_after_verstage.S
+romstage-$(CONFIG_FSP_STACK) += stack.c
+romstage-$(CONFIG_FSP_STAGE_CACHE) += stage_cache.c
 
 ramstage-$(CONFIG_GOP_SUPPORT) += fsp_gop.c
 ramstage-y += fsp_relocate.c
 ramstage-y += fsp_util.c
 ramstage-y += hob.c
+ramstage-y += ramstage.c
+ramstage-$(CONFIG_FSP_STAGE_CACHE) += stage_cache.c
+ramstage-$(CONFIG_GOP_SUPPORT) += vbt.c
 
 CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include
 # Where FspUpdVpd.h can be picked up from.

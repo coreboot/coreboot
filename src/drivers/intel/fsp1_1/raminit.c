@@ -19,10 +19,10 @@
 
 #include <cbmem.h>
 #include <console/console.h>
+#include <fsp/memmap.h>
 #include <fsp/util.h>
 #include <lib.h> /* hexdump */
 #include <reset.h>
-#include <soc/intel/common/memmap.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
 #include <string.h>

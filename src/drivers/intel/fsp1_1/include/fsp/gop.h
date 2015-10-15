@@ -23,7 +23,7 @@
 /* GOP support */
 #if IS_ENABLED(CONFIG_GOP_SUPPORT)
 
-#include <soc/intel/common/gma.h>
+#include <fsp/gma.h>
 
 const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len);
 

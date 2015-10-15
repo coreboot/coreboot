@@ -21,7 +21,7 @@
 #ifndef _SOC_ROMSTAGE_H_
 #define _SOC_ROMSTAGE_H_
 
-#include <soc/intel/common/romstage.h>
+#include <fsp/romstage.h>
 
 struct chipset_power_state;
 struct chipset_power_state *fill_power_state(void);

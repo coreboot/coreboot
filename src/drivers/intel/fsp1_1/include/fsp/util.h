@@ -46,6 +46,8 @@ void *get_next_type_guid_hob(UINT16 type, const EFI_GUID *guid,
 	const void *hob_start);
 void *get_next_resource_hob(const EFI_GUID *guid, const void *hob_start);
 void *get_first_resource_hob(const EFI_GUID *guid);
+void soc_display_upd_value(const char *name, uint32_t size, uint64_t old,
+	uint64_t new);
 /*
  * Relocate FSP entire binary into ram. Returns < 0 on error, 0 on success.
  * The FSP source is pointed to by region_device and the relocation information

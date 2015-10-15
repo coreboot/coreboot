@@ -21,10 +21,10 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
-#include "memmap.h"
-#include "romstage.h"
+#include <fsp/memmap.h>
+#include <fsp/romstage.h>
+#include <fsp/stack.h>
 #include <soc/intel/common/util.h>
-#include "stack.h"
 #include <stdlib.h>
 
 const unsigned long romstage_ram_stack_size = CONFIG_ROMSTAGE_RAM_STACK_SIZE;

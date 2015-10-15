@@ -28,11 +28,6 @@ config ARM64_BOOTBLOCK_CUSTOM
 	bool
 	default n
 
-config ARM64_USE_SPINTABLE
-	bool
-	default n
-	depends on ARCH_RAMSTAGE_ARM64
-
 config ARM64_USE_ARM_TRUSTED_FIRMWARE
 	bool
 	default n

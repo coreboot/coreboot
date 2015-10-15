@@ -16,7 +16,6 @@
 #include <arch/cache.h>
 #include <arch/lib_helpers.h>
 #include <arch/stages.h>
-#include <arch/spintable.h>
 #include <arch/transition.h>
 #include <arm_tf.h>
 #include <cbmem.h>
@@ -38,10 +37,6 @@ static void run_payload(struct prog *prog)
 		arm_tf_run_bl31((u64)doit, (u64)arg, payload_spsr);
 	else {
 		uint8_t current_el = get_current_el();
-
-		/* Start the other CPUs spinning. */
-		if (IS_ENABLED(CONFIG_ARM64_USE_SPINTABLE))
-			spintable_start();
 
 		cache_sync_instructions();
 

@@ -14,8 +14,6 @@
 ##
 
 chip soc/nvidia/tegra210
-	register  "spintable_addr" = "0x80000008"
-
 	device cpu_cluster 0 on
 		device cpu 0 on end
 	end

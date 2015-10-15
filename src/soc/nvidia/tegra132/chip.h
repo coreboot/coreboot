@@ -20,9 +20,6 @@
 #include <soc/nvidia/tegra/dc.h>
 
 struct soc_nvidia_tegra132_config {
-	/* Address to monitor if spintable employed. */
-	uintptr_t spintable_addr;
-
 	/*
 	 * panel resolution
 	 *  The two parameters below provides dc about panel spec.

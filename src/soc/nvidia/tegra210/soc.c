@@ -16,7 +16,6 @@
 
 #include <arch/io.h>
 #include <arch/cache.h>
-#include <arch/spintable.h>
 #include <cpu/cpu.h>
 #include <bootmode.h>
 #include <bootstate.h>
@@ -80,12 +79,8 @@ static struct cpu_control_ops cntrl_ops = {
 
 static void soc_init(device_t dev)
 {
-	struct soc_nvidia_tegra210_config *cfg;
-
 	clock_init_arm_generic_timer();
 
-	cfg = dev->chip_info;
-	spintable_init((void *)cfg->spintable_addr);
 	arch_initialize_cpus(dev, &cntrl_ops);
 
 	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))

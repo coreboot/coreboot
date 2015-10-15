@@ -142,7 +142,6 @@ ramstage-y += memcpy.S
 ramstage-y += memmove.S
 ramstage-y += stage_entry.S
 ramstage-y += cpu-stubs.c
-ramstage-$(CONFIG_ARM64_USE_SPINTABLE) += spintable.c spintable_asm.S
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += arm_tf.c
 ramstage-y += transition.c transition_asm.S
 

@@ -1,0 +1,2 @@
+config BOARD_GOOGLE_AURON_PAINE
+	bool "Auron_Paine"

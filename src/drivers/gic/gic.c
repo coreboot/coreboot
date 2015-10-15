@@ -17,6 +17,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <gic.h>
+#include <stddef.h>
 #include "gic.h"
 
 enum {

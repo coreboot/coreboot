@@ -19,6 +19,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/mmu_operations.h>
+#include <soc/mtc.h>
 
 void arm64_arch_timer_init(void)
 {
@@ -54,4 +55,9 @@ void arm64_soc_init(void)
 	trustzone_region_init();
 
 	tegra210_mmu_init();
+
+	clock_init_arm_generic_timer();
+
+	if (tegra210_run_mtc() != 0)
+		printk(BIOS_ERR, "MTC: No training data.\n");
 }

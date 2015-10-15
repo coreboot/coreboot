@@ -131,7 +131,6 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
 ramstage-y += c_entry.c
 ramstage-y += stages.c
 ramstage-y += div0.c
-ramstage-y += cpu_ramstage.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
 ramstage-y += tables.c

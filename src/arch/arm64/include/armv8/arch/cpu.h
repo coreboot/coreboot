@@ -18,36 +18,6 @@
 
 #define asmlinkage
 
-#if !defined(__PRE_RAM__)
-#include <arch/barrier.h>
-#include <arch/mpidr.h>
-#include <device/device.h>
-
-enum {
-	CPU_ID_END = 0x00000000,
-};
-
-struct cpu_device_id {
-	uint32_t midr;
-};
-
-struct cpu_driver {
-	/* This is excessive as init() is the only one called. */
-	struct device_operations *ops;
-	const struct cpu_device_id *id_table;
-};
-
-struct cpu_info {
-	device_t cpu;
-	unsigned int id;
-	uint64_t mpidr;
-};
-
-/* Initialize CPU0 under the DEVICE_PATH_CPU_CLUSTER cluster. */
-void arch_initialize_cpu(device_t cluster);
-
-#endif /* !__PRE_RAM__ */
-
 static inline unsigned int smp_processor_id(void) { return 0; }
 
 /*
@@ -62,5 +32,9 @@ void arm64_cpu_startup(void);
  * ARM arch timer.
  */
 void arm64_arch_timer_init(void);
+
+#if !defined(__PRE_RAM__)
+struct cpu_driver { };
+#endif
 
 #endif /* __ARCH_CPU_H__ */

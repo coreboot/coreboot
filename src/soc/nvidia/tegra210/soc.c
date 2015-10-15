@@ -27,7 +27,6 @@
 #include <soc/clock.h>
 #include <soc/cpu.h>
 #include <soc/mc.h>
-#include <soc/mtc.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <string.h>
 #include <timer.h>
@@ -58,11 +57,18 @@ static void soc_read_resources(device_t dev)
 	ram_resource(dev, index++, begin * KiB, size * KiB);
 }
 
-static void soc_init(device_t dev)
-{
-	clock_init_arm_generic_timer();
+static struct device_operations soc_ops = {
+	.read_resources   = soc_read_resources,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = DEVICE_NOOP,
+	.scan_bus         = NULL,
+};
 
-	arch_initialize_cpu(dev);
+static void enable_tegra210_dev(device_t dev)
+{
+	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+		dev->ops = &soc_ops;
 
 	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
 		return;
@@ -71,24 +77,6 @@ static void soc_init(device_t dev)
 		display_startup(dev);
 	else
 		printk(BIOS_INFO, "Skipping display init.\n");
-}
-
-static void soc_noop(device_t dev)
-{
-}
-
-static struct device_operations soc_ops = {
-	.read_resources   = soc_read_resources,
-	.set_resources    = soc_noop,
-	.enable_resources = soc_noop,
-	.init             = soc_init,
-	.scan_bus         = NULL,
-};
-
-static void enable_tegra210_dev(device_t dev)
-{
-	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
-		dev->ops = &soc_ops;
 }
 
 static void tegra210_init(void *chip_info)
@@ -109,26 +97,6 @@ struct chip_operations soc_nvidia_tegra210_ops = {
 	CHIP_NAME("SOC Nvidia Tegra210")
 	.init = tegra210_init,
 	.enable_dev = enable_tegra210_dev,
-};
-
-static void tegra210_cpu_init(device_t cpu)
-{
-	if (tegra210_run_mtc() != 0)
-		printk(BIOS_ERR, "MTC: No training data.\n");
-}
-
-static const struct cpu_device_id ids[] = {
-	{ 0x411fd071 },
-	{ CPU_ID_END },
-};
-
-static struct device_operations cpu_dev_ops = {
-	.init = tegra210_cpu_init,
-};
-
-static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
-	.id_table = ids,
 };
 
 static void enable_plld(void *unused)

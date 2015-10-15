@@ -15,7 +15,6 @@
 
 chip soc/nvidia/tegra132
 	device cpu_cluster 0 on
-		device cpu 0 on end
 	end
 
 	register "display_controller" = "TEGRA_ARM_DISPLAYA"

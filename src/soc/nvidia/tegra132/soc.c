@@ -26,7 +26,6 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/cpu.h>
-#include <soc/mc.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <string.h>
 #include <timer.h>
@@ -55,23 +54,18 @@ static void soc_read_resources(device_t dev)
 	ram_resource(dev, index++, begin * KiB, size * KiB);
 }
 
-static void lock_down_vpr(void)
+static struct device_operations soc_ops = {
+	.read_resources   = soc_read_resources,
+	.set_resources    = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
+	.init             = DEVICE_NOOP,
+	.scan_bus         = NULL,
+};
+
+static void enable_tegra132_dev(device_t dev)
 {
-	struct tegra_mc_regs *regs = (void *)(uintptr_t)TEGRA_MC_BASE;
-
-	write32(&regs->video_protect_bom, 0);
-	write32(&regs->video_protect_size_mb, 0);
-	write32(&regs->video_protect_reg_ctrl, 1);
-}
-
-static void soc_init(device_t dev)
-{
-	clock_init_arm_generic_timer();
-
-	arch_initialize_cpu(dev);
-
-	/* Lock down VPR */
-	lock_down_vpr();
+	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+		dev->ops = &soc_ops;
 
 	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
 		return;
@@ -80,20 +74,6 @@ static void soc_init(device_t dev)
 		display_startup(dev);
 	else
 		printk(BIOS_INFO, "Skipping display init.\n");
-}
-
-static struct device_operations soc_ops = {
-	.read_resources   = soc_read_resources,
-	.set_resources    = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
-	.init             = soc_init,
-	.scan_bus         = NULL,
-};
-
-static void enable_tegra132_dev(device_t dev)
-{
-	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
-		dev->ops = &soc_ops;
 }
 
 static void tegra132_init(void *chip_info)
@@ -112,24 +92,6 @@ struct chip_operations soc_nvidia_tegra132_ops = {
 	CHIP_NAME("SOC Nvidia Tegra132")
 	.init = tegra132_init,
 	.enable_dev = enable_tegra132_dev,
-};
-
-static void tegra132_cpu_init(device_t cpu)
-{
-}
-
-static const struct cpu_device_id ids[] = {
-	{ 0x4e0f0000 },
-	{ CPU_ID_END },
-};
-
-static struct device_operations cpu_dev_ops = {
-	.init = tegra132_cpu_init,
-};
-
-static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
-	.id_table = ids,
 };
 
 static void enable_plld(void *unused)

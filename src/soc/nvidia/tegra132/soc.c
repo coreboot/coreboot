@@ -55,25 +55,6 @@ static void soc_read_resources(device_t dev)
 	ram_resource(dev, index++, begin * KiB, size * KiB);
 }
 
-static size_t cntrl_total_cpus(void)
-{
-	return CONFIG_MAX_CPUS;
-}
-
-static int cntrl_start_cpu(unsigned int id, void (*entry)(void))
-{
-	if (id != 1)
-		return -1;
-	start_cpu(1, entry);
-	return 0;
-}
-
-static struct cpu_control_ops cntrl_ops = {
-	.total_cpus = cntrl_total_cpus,
-	.start_cpu = cntrl_start_cpu,
-};
-
-
 static void lock_down_vpr(void)
 {
 	struct tegra_mc_regs *regs = (void *)(uintptr_t)TEGRA_MC_BASE;
@@ -87,7 +68,7 @@ static void soc_init(device_t dev)
 {
 	clock_init_arm_generic_timer();
 
-	arch_initialize_cpus(dev, &cntrl_ops);
+	arch_initialize_cpu(dev);
 
 	/* Lock down VPR */
 	lock_down_vpr();

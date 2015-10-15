@@ -16,22 +16,10 @@
 #ifndef ARCH_CPU_INTERNAL_H
 #define ARCH_CPU_INTERNAL_H
 
-/*
- * Do the necessary work to prepare for secondary CPUs coming up. The
- * SoC will call this function before bringing up the other CPUs. The
- * entry point for the seoncdary CPUs is returned.
- */
-void *prepare_secondary_cpu_startup(void);
+/* Return the top of the stack for the cpu. */
+void *cpu_get_stack(void);
 
-/*
- * Code path for the non-BSP CPUs. This is an internal function used.
- */
-void arch_secondary_cpu_init(void);
-
-/* Return the top of the stack for the specified cpu. */
-void *cpu_get_stack(unsigned int cpu);
-
-/* Return the top of the exception stack for the specified cpu. */
-void *cpu_get_exception_stack(unsigned int cpu);
+/* Return the top of the exception stack for the cpu. */
+void *cpu_get_exception_stack(void);
 
 #endif /* ARCH_CPU_INTERNAL_H */

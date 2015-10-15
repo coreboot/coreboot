@@ -61,7 +61,6 @@ ramstage-y += 32bit_reset.S
 ramstage-y += addressmap.c
 ramstage-y += cbmem.c
 ramstage-y += cpu.c
-ramstage-y += cpu_lib.S
 ramstage-y += clock.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += dc.c
 ramstage-$(CONFIG_MAINBOARD_DO_DSI_INIT) += dsi.c

@@ -24,6 +24,8 @@
 #include <timer.h>
 #include "cpu-internal.h"
 
+static struct cpu_info cpu_info;
+
 void __attribute__((weak)) arm64_arch_timer_init(void)
 {
 	/* Default weak implementation does nothing. */
@@ -102,9 +104,9 @@ static void el3_init(void)
 	isb();
 }
 
-static void init_this_cpu(void *arg)
+static void init_this_cpu(void)
 {
-	struct cpu_info *ci = arg;
+	struct cpu_info *ci = &cpu_info;
 	device_t dev = ci->cpu;
 
 	cpu_set_device_operations(dev);
@@ -156,14 +158,14 @@ static void init_cpu_info(struct bus *bus)
 			continue;
 
 		/* IDs are currently mapped 1:1 with logical CPU numbers. */
-		if (id >= CONFIG_MAX_CPUS) {
+		if (id != 0) {
 			printk(BIOS_WARNING,
 				"CPU id %x too large. Disabling.\n", id);
 			cpu_disable_dev(cur);
 			continue;
 		}
 
-		ci = cpu_info_for_cpu(id);
+		ci = &cpu_info;
 		if (ci->cpu != NULL) {
 			printk(BIOS_WARNING,
 				"Duplicate ID %x in device tree.\n", id);
@@ -175,12 +177,8 @@ static void init_cpu_info(struct bus *bus)
 	}
 }
 
-void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops)
+void arch_initialize_cpu(device_t cluster)
 {
-	size_t max_cpus;
-	size_t i;
-	struct cpu_info *ci;
-	void (*entry)(void);
 	struct bus *bus;
 
 	if (cluster->path.type != DEVICE_PATH_CPU_CLUSTER) {
@@ -196,83 +194,11 @@ void arch_initialize_cpus(device_t cluster, struct cpu_control_ops *cntrl_ops)
 	if (bus == NULL)
 		return;
 
-	/*
-	 * el3_init must be performed prior to prepare_secondary_cpu_startup.
-	 * This is important since el3_init initializes SCR values on BSP CPU
-	 * and then prepare_secondary_cpu_startup reads the initialized SCR
-	 * value and saves it for use by non-BSP CPUs.
-	 */
 	el3_init();
-	/* Mark current cpu online. */
-	cpu_mark_online(cpu_info());
-	entry = prepare_secondary_cpu_startup();
 
 	/* Initialize the cpu_info structures. */
 	init_cpu_info(bus);
-	max_cpus = cntrl_ops->total_cpus();
 
-	if (max_cpus > CONFIG_MAX_CPUS) {
-		printk(BIOS_WARNING,
-			"max_cpus (%zu) exceeds CONFIG_MAX_CPUS (%zu).\n",
-			max_cpus, (size_t)CONFIG_MAX_CPUS);
-		max_cpus = CONFIG_MAX_CPUS;
-	}
-
-	for (i = 0; i < max_cpus; i++) {
-		device_t dev;
-		struct cpu_action action;
-		struct stopwatch sw;
-
-		ci = cpu_info_for_cpu(i);
-		dev = ci->cpu;
-
-		/* Disregard CPUs not in device tree. */
-		if (dev == NULL)
-			continue;
-
-		/* Skip disabled CPUs. */
-		if (!dev->enabled)
-			continue;
-
-		if (!cpu_online(ci)) {
-			/* Start the CPU. */
-			printk(BIOS_DEBUG, "Starting CPU%x\n", ci->id);
-
-			if (cntrl_ops->start_cpu(ci->id, entry)) {
-				printk(BIOS_ERR,
-					"Failed to start CPU%x\n", ci->id);
-				continue;
-			}
-			stopwatch_init_msecs_expire(&sw, 1000);
-			/* Wait for CPU to come online. */
-			while (!stopwatch_expired(&sw)) {
-				if (!cpu_online(ci))
-					continue;
-				printk(BIOS_DEBUG,
-					"CPU%x online in %ld usecs.\n",
-					ci->id, stopwatch_duration_usecs(&sw));
-				break;
-			}
-		}
-
-		if (!cpu_online(ci)) {
-			printk(BIOS_DEBUG,
-				"CPU%x failed to come online in %ld usecs.\n",
-				ci->id, stopwatch_duration_usecs(&sw));
-			continue;
-		}
-
-		/* Send it the init action. */
-		action.run = init_this_cpu;
-		action.arg = ci;
-		arch_run_on_cpu(ci->id, &action);
-	}
-}
-
-void arch_secondary_cpu_init(void)
-{
-	/* Mark this CPU online. */
-	cpu_mark_online(cpu_info());
-
-	arch_cpu_wait_for_action();
+	/* Send it the init action. */
+	init_this_cpu();
 }

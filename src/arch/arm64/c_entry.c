@@ -17,7 +17,6 @@
 #include <arch/cpu.h>
 #include <arch/mmu.h>
 #include <arch/stages.h>
-#include <arch/startup.h>
 #include "cpu-internal.h"
 
 void __attribute__((weak)) arm64_soc_init(void)
@@ -32,7 +31,7 @@ static void seed_stack(void)
 	int i;
 	int size;
 
-	stack_begin = cpu_get_stack(smp_processor_id());
+	stack_begin = cpu_get_stack();
 	stack_begin -= CONFIG_STACK_SIZE;
 	slot = (void *)stack_begin;
 
@@ -45,21 +44,10 @@ static void seed_stack(void)
 
 static void arm64_init(void)
 {
-	cpu_set_bsp();
 	seed_stack();
 	arm64_soc_init();
 	main();
 }
 
-/*
- * This variable holds entry point for CPUs starting up. The first
- * element is the BSP path, and the second is the non-BSP path.
- */
-void (*c_entry[2])(void) = { &arm64_init, &arch_secondary_cpu_init };
-
-void *prepare_secondary_cpu_startup(void)
-{
-	startup_save_cpu_data();
-
-	return secondary_entry_point(&arm64_cpu_startup_resume);
-}
+/* This variable holds entry point for CPU starting up. */
+void (*c_entry)(void) = &arm64_init;

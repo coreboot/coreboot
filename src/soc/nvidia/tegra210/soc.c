@@ -58,30 +58,11 @@ static void soc_read_resources(device_t dev)
 	ram_resource(dev, index++, begin * KiB, size * KiB);
 }
 
-static size_t cntrl_total_cpus(void)
-{
-	return CONFIG_MAX_CPUS;
-}
-
-static int cntrl_start_cpu(unsigned int id, void (*entry)(void))
-{
-	if (id >= CONFIG_MAX_CPUS)
-		return -1;
-	start_cpu(id, entry);
-	return 0;
-}
-
-static struct cpu_control_ops cntrl_ops = {
-	.total_cpus = cntrl_total_cpus,
-	.start_cpu = cntrl_start_cpu,
-};
-
-
 static void soc_init(device_t dev)
 {
 	clock_init_arm_generic_timer();
 
-	arch_initialize_cpus(dev, &cntrl_ops);
+	arch_initialize_cpu(dev);
 
 	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
 		return;
@@ -132,9 +113,8 @@ struct chip_operations soc_nvidia_tegra210_ops = {
 
 static void tegra210_cpu_init(device_t cpu)
 {
-	if (cpu_is_bsp())
-		if (tegra210_run_mtc() != 0)
-			printk(BIOS_ERR, "MTC: No training data.\n");
+	if (tegra210_run_mtc() != 0)
+		printk(BIOS_ERR, "MTC: No training data.\n");
 }
 
 static const struct cpu_device_id ids[] = {

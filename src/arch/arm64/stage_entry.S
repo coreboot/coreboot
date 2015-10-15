@@ -15,51 +15,41 @@
 
 /*
  * ======================== stage_entry.S =====================================
- * This file acts as an entry point to the different stages of arm64 as well as
- * for the secure monitor. They share the same process of setting up stacks and
- * jumping to c code. It is important to save x25 from corruption as it contains
- * the argument for secure monitor.
+ * This file acts as an entry point to the different stages of arm64. They share
+ * the same process of setting up stacks and jumping to c code. It is important
+ * to save x25 from corruption as it contains the argument for rmodule.
  * =============================================================================
  */
 
 #include <arch/asm.h>
 #define __ASSEMBLY__
 #include <arch/lib_helpers.h>
-#include <arch/startup.h>
 
 #define STACK_SZ CONFIG_STACK_SIZE
 #define EXCEPTION_STACK_SZ CONFIG_STACK_SIZE
 
 /*
- * The stacks for each of the armv8 cores grows down from _estack. It is sized
- * according to MAX_CPUS. Additionally provide exception stacks for each CPU.
+ * Stack for armv8 CPU grows down from _estack. Additionally, provide exception
+ * stack for the CPU.
  */
 .section .bss, "aw", @nobits
-
-.global _arm64_startup_data
-.balign 8
-_arm64_startup_data:
-.space NUM_ELEMENTS*PER_ELEMENT_SIZE_BYTES
 
 .global _stack
 .global _estack
 .balign STACK_SZ
 _stack:
-.space CONFIG_MAX_CPUS*STACK_SZ
+.space STACK_SZ
 _estack:
 
 .global _stack_exceptions
 .global _estack_exceptions
 .balign EXCEPTION_STACK_SZ
 _stack_exceptions:
-.space CONFIG_MAX_CPUS*EXCEPTION_STACK_SZ
+.space EXCEPTION_STACK_SZ
 _estack_exceptions:
 
 ENTRY(cpu_get_stack)
-	mov	x1, #STACK_SZ
-	mul	x0, x0, x1
-	ldr	x1, 1f
-	sub	x0, x1, x0
+	ldr	x0, 1f
 	ret
 .align 3
 1:
@@ -67,10 +57,7 @@ ENTRY(cpu_get_stack)
 ENDPROC(cpu_get_stack)
 
 ENTRY(cpu_get_exception_stack)
-	mov	x1, #EXCEPTION_STACK_SZ
-	mul	x0, x0, x1
-	ldr	x1, 1f
-	sub	x0, x1, x0
+	ldr	x0, 1f
 	ret
 .align 3
 1:
@@ -87,11 +74,7 @@ ENDPROC(cpu_get_exception_stack)
  * any rmodules.
  */
 ENTRY(arm64_c_environment)
-	bl	smp_processor_id	/* x0 = cpu */
-	mov	x24, x0
-
-
-	/* Set the exception stack for this cpu. */
+	/* Set the exception stack for the cpu. */
 	bl	cpu_get_exception_stack
 	msr	SPSel, #1
 	isb
@@ -101,16 +84,12 @@ ENTRY(arm64_c_environment)
 	msr	SPSel, #0
 	isb
 
-	/* Set stack for this cpu. */
-	mov	x0, x24		/* x0 = cpu */
+	/* Set the non-exception stack for the cpu. */
 	bl	cpu_get_stack
 	mov	sp, x0
 
 	/* Get entry point by dereferencing c_entry. */
 	ldr	x1, 1f
-	/* Retrieve entry in c_entry array using  x26 as the index. */
-	adds	x1, x1, x26, lsl #3
-	ldr	x1, [x1]
 	/* Move back the arguments from x25 to x0 */
 	mov     x0, x25
 	br	x1
@@ -119,21 +98,7 @@ ENTRY(arm64_c_environment)
 	.quad	c_entry
 ENDPROC(arm64_c_environment)
 
-/* The first 2 instructions are for BSP and secondary CPUs,
- * respectively. x26 holds the index into c_entry array. */
-.macro split_bsp_path
-	b	2000f
-	b	2001f
-	2000:
-	mov	x26, #0
-	b	2002f
-	2001:
-	mov	x26, #1
-	2002:
-.endm
-
 ENTRY(_start)
-	split_bsp_path
 	/* Save any arguments to current rmodule in x25 */
 	mov	x25, x0
 	b	arm64_c_environment
@@ -153,76 +118,11 @@ ENDPROC(_start)
 	write_current sctlr, x0, x1
 .endm
 
-/*
- * This macro assumes x2 has base address and returns value read in x0
- * x1 is used as temporary register.
- */
-.macro get_element_addr index
-	add x1, x2, #(\index * PER_ELEMENT_SIZE_BYTES)
-	ldr x0, [x1]
-.endm
-
-/*
- * Uses following registers:
- * x0 = reading stored value
- * x1 = temp reg
- * x2 = base address of saved data region
- */
-.macro startup_restore
-	adr x2, _arm64_startup_data
-
-	get_element_addr MAIR_INDEX
-	write_current mair, x0, x1
-
-	get_element_addr TCR_INDEX
-	write_current tcr, x0, x1
-
-	get_element_addr TTBR0_INDEX
-	write_current ttbr0, x0, x1
-
-	get_element_addr SCR_INDEX
-	write_el3 scr, x0, x1
-
-	get_element_addr VBAR_INDEX
-	write_current vbar, x0, x1
-
-	get_element_addr CNTFRQ_INDEX
-	write_el0 cntfrq, x0, x1
-
-	get_element_addr CPTR_INDEX
-	write_el3 cptr, x0, x1
-
-	get_element_addr CPACR_INDEX
-	write_el1 cpacr, x0, x1
-
-	dsb sy
-	isb
-
-	tlbiall_current x1
-	read_current x0, sctlr
-	orr	x0, x0, #(1 << 12)	/* Enable Instruction Cache */
-	orr	x0, x0, #(1 << 2)	/* Enable Data/Unified Cache */
-	orr	x0, x0, #(1 << 0)	/* Enable MMU */
-	write_current sctlr, x0, x1
-
-	dsb sy
-	isb
-.endm
-
 CPU_RESET_ENTRY(arm64_cpu_startup)
-	split_bsp_path
 	bl arm64_cpu_early_setup
 	setup_sctlr
 	b	arm64_c_environment
 ENDPROC(arm64_cpu_startup)
-
-CPU_RESET_ENTRY(arm64_cpu_startup_resume)
-	split_bsp_path
-	bl arm64_cpu_early_setup
-	setup_sctlr
-	startup_restore
-	b	arm64_c_environment
-ENDPROC(arm64_cpu_startup_resume)
 
 /*
  * stage_entry is defined as a weak symbol to allow SoCs/CPUs to define a custom

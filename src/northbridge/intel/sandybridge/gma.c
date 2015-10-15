@@ -634,6 +634,19 @@ static void gma_ssdt(device_t device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
+/* called by pci set_vga_bridge function */
+static void gma_func0_disable(struct device *dev)
+{
+	u16 reg16;
+	device_t dev_host = dev_find_slot(0, PCI_DEVFN(0,0));
+
+	reg16 = pci_read_config16(dev_host, GGC);
+	reg16 |= (1 << 1); /* disable VGA decode */
+	pci_write_config16(dev_host, GGC, reg16);
+
+	dev->enabled = 0;
+}
+
 static struct pci_operations gma_pci_ops = {
 	.set_subsystem    = gma_set_subsystem,
 };
@@ -646,6 +659,7 @@ static struct device_operations gma_func0_ops = {
 	.init			= gma_func0_init,
 	.scan_bus		= 0,
 	.enable			= 0,
+	.disable		= gma_func0_disable,
 	.ops_pci		= &gma_pci_ops,
 };
 

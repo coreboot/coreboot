@@ -20,18 +20,6 @@
 
 static inline unsigned int smp_processor_id(void) { return 0; }
 
-/*
- * The arm64_cpu_startup() initializes CPU's exception stack and regular
- * stack as well initializing the C environment for the processor. Finally it
- * calls into c_entry.
- */
-void arm64_cpu_startup(void);
-
-/*
- * The arm64_arch_timer_init() initializes the CPU's cntfrq register of
- * ARM arch timer.
- */
-void arm64_arch_timer_init(void);
 
 #if !defined(__PRE_RAM__)
 struct cpu_driver { };

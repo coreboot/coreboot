@@ -14,6 +14,7 @@
  */
 
 #include <arch/stages.h>
+#include <gic.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/mc.h>
@@ -28,8 +29,14 @@ static void lock_down_vpr(void)
 	write32(&regs->video_protect_reg_ctrl, 1);
 }
 
-void arm64_soc_init(void)
+/* Tegra-specific entry point, called from assembly in stage_entry.S */
+void ramstage_entry(void);
+void ramstage_entry(void)
 {
+	/* TODO: Is this still needed? */
+	gic_init();
+
+	/* TODO: Move TrustZone setup to BL31? */
 	trustzone_region_init();
 
 	tegra132_mmu_init();
@@ -40,4 +47,7 @@ void arm64_soc_init(void)
 
 	/* Lock down VPR */
 	lock_down_vpr();
+
+	/* Jump to boot state machine in common code. */
+	main();
 }

@@ -13,9 +13,12 @@
  * GNU General Public License for more details.
  */
 
-void arm64_cpu_early_setup(void);
+#include <arch/asm.h>
 
-void __attribute__((weak)) arm64_cpu_early_setup(void)
-{
-	/* Default empty implementation */
-}
+ENTRY(stage_entry)
+	/* Initialize PSTATE, SCTLR and caches to clean state, set up stack. */
+	bl	arm64_init_cpu
+
+	/* Jump to Tegra-specific C entry point. */
+	bl	ramstage_entry
+ENDPROC(stage_entry)

@@ -82,10 +82,10 @@
 
 ENTRY(stage_entry)
 	t210_a57_fixup
-	b	arm64_cpu_startup
-ENDPROC(stage_entry)
 
-ENTRY(tegra210_reset_handler)
-	t210_a57_fixup
-	b	arm64_cpu_startup_resume
-ENDPROC(tegra210_reset_handler)
+	/* Initialize PSTATE, SCTLR and caches to clean state, set up stack. */
+	bl	arm64_init_cpu
+
+	/* Jump to Tegra-specific C entry point. */
+	bl	ramstage_entry
+ENDPROC(stage_entry)

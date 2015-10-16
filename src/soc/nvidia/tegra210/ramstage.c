@@ -16,12 +16,13 @@
 #include <arch/clock.h>
 #include <arch/cpu.h>
 #include <arch/stages.h>
+#include <gic.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/mmu_operations.h>
 #include <soc/mtc.h>
 
-void arm64_arch_timer_init(void)
+static void arm64_arch_timer_init(void)
 {
 	uint32_t freq = clock_get_osc_khz() * 1000;
 	// Set the cntfrq register.
@@ -47,11 +48,20 @@ static void mselect_enable_wrap(void)
 	write32((void *)TEGRA_MSELECT_CONFIG, reg);
 }
 
-void arm64_soc_init(void)
+/* Tegra-specific entry point, called from assembly in stage_entry.S */
+void ramstage_entry(void);
+void ramstage_entry(void)
 {
+	/* TODO: Is this still needed? */
+	gic_init();
+
+	/* TODO: Move arch timer setup to BL31? */
+	arm64_arch_timer_init();
+
 	/* Enable WRAP to INCR burst type conversion in MSELECT */
 	mselect_enable_wrap();
 
+	/* TODO: Move TrustZone setup to BL31? */
 	trustzone_region_init();
 
 	tegra210_mmu_init();
@@ -60,4 +70,7 @@ void arm64_soc_init(void)
 
 	if (tegra210_run_mtc() != 0)
 		printk(BIOS_ERR, "MTC: No training data.\n");
+
+	/* Jump to boot state machine in common code. */
+	main();
 }

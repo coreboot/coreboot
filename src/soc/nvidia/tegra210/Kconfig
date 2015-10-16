@@ -6,7 +6,6 @@ config SOC_NVIDIA_TEGRA210
 	select ARCH_VERSTAGE_ARMV4
 	select ARCH_ROMSTAGE_ARMV4
 	select ARCH_RAMSTAGE_ARMV8_64
-	select ARCH_ARM64_CPU_CORTEX_A57
 	select BOOTBLOCK_CONSOLE
 	select GIC
 	select HAVE_MONOTONIC_TIMER
@@ -22,11 +21,6 @@ if SOC_NVIDIA_TEGRA210
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_NON_ACPI
 
-# TODO: Remove after replacing arch/arm64/stage_entry.S
-config STACK_SIZE
-	hex
-	default 0x1000
-
 config MAINBOARD_DO_DSI_INIT
 	bool "Use dsi graphics interface"
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
@@ -40,10 +34,6 @@ config MAINBOARD_DO_SOR_INIT
 	default n
 	help
 	  Initialize dp display
-
-config MAX_CPUS
-	int
-	default 4
 
 choice CONSOLE_SERIAL_TEGRA210_UART_CHOICES
 	prompt "Serial Console UART"

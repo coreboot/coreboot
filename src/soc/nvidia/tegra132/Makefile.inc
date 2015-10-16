@@ -90,6 +90,7 @@ ramstage-y += ramstage.c
 ramstage-y += mmu_operations.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += ../tegra/usb.c
+ramstage-y += stage_entry.S
 
 modules_arm-y += monotonic_timer.c
 

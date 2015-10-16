@@ -24,9 +24,4 @@ void stage_entry(void);
 void stage_exit(void *);
 void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size);
 
-/* This function is called upon initial entry of each stage. It is called prior
- * to main(). That means all of the common infrastructure will most likely not
- * be available to be used (such as console). */
-void arm64_soc_init(void);
-
 #endif

@@ -16,21 +16,14 @@
 
 #include <arch/asm.h>
 
+/* NOTE: When making changes to general ARM64 initialization, keep in mind that
+ * there are other CPU entry points, using BOOTBLOCK_CUSTOM or entering the CPU
+ * in a later stage (like Tegra). Changes should generally be put into
+ * arm64_cpu_init so they can be shared between those instances. */
+
 ENTRY(_start)
-	/* Initialize PSTATE, SCTLR and caches to clean state. */
+	/* Initialize PSTATE, SCTLR and caches to clean state, set up stack. */
 	bl	arm64_init_cpu
-
-	/* Initialize stack with sentinel value to later check overflow. */
-	ldr	x0, =_stack
-	ldr	x1, =_estack
-	ldr	x2, =0xdeadbeefdeadbeef
-stack_init_loop:
-	stp	x2, x2, [x0], #16
-	cmp	x0, x1
-	bne	stack_init_loop
-
-	/* Leave a line of beef dead for easier visibility in stack dumps. */
-	sub	sp, x0, #16
 
 	bl	main
 ENDPROC(_start)

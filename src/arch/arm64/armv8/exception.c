@@ -166,7 +166,6 @@ void exc_dispatch(struct exc_state *state, uint64_t idx)
 	exc_exit(&state->regs);
 }
 
-
 static int test_exception_handler(struct exc_state *state, uint64_t vector_id)
 {
 	/* Update instruction pointer to next instrution. */

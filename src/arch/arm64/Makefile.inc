@@ -23,7 +23,7 @@
 # Take care of subdirectories
 ################################################################################
 
-subdirs-y += armv8/ cpu/
+subdirs-y += armv8/
 
 ################################################################################
 # ARM specific options
@@ -44,8 +44,6 @@ bootblock-y += id.S
 $(obj)/arch/arm64/id.bootblock.o: $(obj)/build.h
 
 bootblock-y += boot.c
-bootblock-y += c_entry.c
-bootblock-y += cpu-stubs.c
 bootblock-y += eabi_compat.c
 bootblock-y += transition.c transition_asm.S
 
@@ -87,8 +85,6 @@ endif # CONFIG_ARCH_VERSTAGE_ARM64
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 
 romstage-y += boot.c
-romstage-y += c_entry.c
-romstage-y += cpu-stubs.c
 romstage-y += div0.c
 romstage-y += eabi_compat.c
 romstage-y += memset.S
@@ -113,7 +109,6 @@ endif # CONFIG_ARCH_ROMSTAGE_ARM64
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
 
-ramstage-y += c_entry.c
 ramstage-y += div0.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
@@ -121,14 +116,8 @@ ramstage-y += tables.c
 ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
-ramstage-y += cpu-stubs.c
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += arm_tf.c
 ramstage-y += transition.c transition_asm.S
-
-# TODO: Replace this with a simpler ramstage entry point in soc/nvidia/tegra*
-ifeq ($(CONFIG_SOC_NVIDIA_TEGRA132)$(CONFIG_SOC_NVIDIA_TEGRA210),y)
-ramstage-y += stage_entry.S
-endif
 
 rmodules_arm64-y += memset.S
 rmodules_arm64-y += memcpy.S

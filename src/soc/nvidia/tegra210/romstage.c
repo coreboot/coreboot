@@ -19,6 +19,7 @@
 #include <cbmem.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
+#include <lib.h>
 #include <program_loading.h>
 #include <soc/addressmap.h>
 #include <soc/ccplex.h>
@@ -27,6 +28,7 @@
 #include <soc/sdram_configs.h>
 #include <soc/romstage.h>
 #include <soc/nvidia/tegra/apbmisc.h>
+#include <symbols.h>
 #include <timer.h>
 #include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -86,6 +88,9 @@ void romstage(void)
 
 void platform_prog_run(struct prog *prog)
 {
+	/* We'll switch to a new stack, so validate our old one here. */
+	checkstack(_estack, 0);
+
 	ccplex_cpu_start(prog_entry(prog));
 
 	clock_halt_avp();

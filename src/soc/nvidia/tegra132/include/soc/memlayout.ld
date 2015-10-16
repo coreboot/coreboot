@@ -14,6 +14,7 @@
  */
 
 #include <memlayout.h>
+#include <rules.h>
 
 #include <arch/header.ld>
 
@@ -29,7 +30,11 @@ SECTIONS
 	SRAM_START(0x40000000)
 	PRERAM_CBMEM_CONSOLE(0x40000000, 8K)
 	PRERAM_CBFS_CACHE(0x40002000, 84K)
-	STACK(0x40017000, 14K)
+#if ENV_ARM64
+	STACK(0x40017000, 8K)
+#else	/* AVP gets a separate stack to avoid any chance of handoff races. */
+	STACK(0x40019000, 6K)
+#endif
 	TIMESTAMP(0x4001A800, 2K)
 	BOOTBLOCK(0x4001B800, 22K)
 	ROMSTAGE(0x40021000, 124K)

@@ -17,11 +17,6 @@ config SOC_NVIDIA_TEGRA132
 
 if SOC_NVIDIA_TEGRA132
 
-# TODO: Remove after replacing arch/arm64/stage_entry.S
-config STACK_SIZE
-	hex
-	default 0x1000
-
 config MAINBOARD_DO_DSI_INIT
 	bool "Use dsi graphics interface"
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
@@ -35,10 +30,6 @@ config MAINBOARD_DO_SOR_INIT
 	default n
 	help
 	  Initialize dp display
-
-config MAX_CPUS
-	int
-	default 2
 
 config MTS_DIRECTORY
 	string "Directory where MTS microcode files are located"

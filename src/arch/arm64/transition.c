@@ -13,8 +13,10 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cache.h>
 #include <arch/lib_helpers.h>
 #include <arch/transition.h>
+#include <assert.h>
 #include <console/console.h>
 
 /* Litte-endian, No XN-forced, Instr cache disabled,
@@ -66,8 +68,6 @@ void transition_with_entry(void *entry, void *arg, struct exc_state *exc_state)
 
 void transition(struct exc_state *exc_state)
 {
-	uint32_t scr_mask;
-	uint64_t hcr_mask;
 	uint64_t sctlr;
 	uint32_t current_el = get_current_el();
 
@@ -89,23 +89,27 @@ void transition(struct exc_state *exc_state)
 
 	if (elx->spsr & SPSR_ERET_32)
 		die("ARM64 Error: Do not support eret to Aarch32\n");
-	else {
-		scr_mask = SCR_LOWER_AARCH64;
-		hcr_mask = HCR_LOWER_AARCH64;
-	}
 
-	/* SCR: Write to SCR if current EL is EL3 */
-	if (current_el == EL3) {
-		uint32_t scr = raw_read_scr_el3();
-		scr |= scr_mask;
-		raw_write_scr_el3(scr);
-	}
-	/* HCR: Write to HCR if current EL is EL2 */
-	else if (current_el == EL2) {
-		uint64_t hcr = raw_read_hcr_el2();
-		hcr |= hcr_mask;
-		raw_write_hcr_el2(hcr);
-	}
+	/* Most parts of coreboot currently don't support EL2 anyway. */
+	assert(current_el == EL3);
+
+	/* Initialize SCR with defaults for running without secure monitor. */
+	raw_write_scr_el3(SCR_TWE_DISABLE |	/* don't trap WFE */
+			  SCR_TWI_DISABLE |	/* don't trap WFI */
+			  SCR_ST_ENABLE |	/* allow secure timer access */
+			  SCR_LOWER_AARCH64 |	/* lower level is AArch64 */
+			  SCR_SIF_DISABLE |	/* disable secure ins. fetch */
+			  SCR_HVC_ENABLE |	/* allow HVC instruction */
+			  SCR_SMD_ENABLE |	/* disable SMC instruction */
+			  SCR_RES1 |		/* reserved-1 bits */
+			  SCR_EA_DISABLE |	/* disable ext. abort trap */
+			  SCR_FIQ_DISABLE |	/* disable FIQ trap to EL3 */
+			  SCR_IRQ_DISABLE |	/* disable IRQ trap to EL3 */
+			  SCR_NS_ENABLE);	/* lower level is non-secure */
+
+	/* Initialize CPTR to not trap anything to EL3. */
+	raw_write_cptr_el3(CPTR_EL3_TCPAC_DISABLE | CPTR_EL3_TTA_DISABLE |
+			   CPTR_EL3_TFP_DISABLE);
 
 	/* ELR/SPSR: Write entry point and processor state of program */
 	raw_write_elr_current(elx->elr);
@@ -118,6 +122,7 @@ void transition(struct exc_state *exc_state)
 
 	/* SP_ELx: Initialize stack pointer */
 	raw_write_sp_elx(elx->sp_elx, elx_el);
+	isb();
 
 	/* Eret to the entry point */
 	trans_switch(regs);

@@ -58,10 +58,10 @@
 #define SCR_EA_MASK          (1 << SCR_EA_SHIFT)
 #define SCR_EA_ENABLE        (1 << SCR_EA_SHIFT)
 #define SCR_EA_DISABLE       (0 << SCR_EA_SHIFT)
-#define SCR_SMC_SHIFT        7
-#define SCR_SMC_MASK         (1 << SCR_SMC_SHIFT)
-#define SCR_SMC_DISABLE      (1 << SCR_SMC_SHIFT)
-#define SCR_SMC_ENABLE       (0 << SCR_SMC_SHIFT)
+#define SCR_SMD_SHIFT        7
+#define SCR_SMD_MASK         (1 << SCR_SMD_SHIFT)
+#define SCR_SMD_DISABLE      (1 << SCR_SMD_SHIFT)
+#define SCR_SMD_ENABLE       (0 << SCR_SMD_SHIFT)
 #define SCR_HVC_SHIFT        8
 #define SCR_HVC_MASK         (1 << SCR_HVC_SHIFT)
 #define SCR_HVC_DISABLE      (0 << SCR_HVC_SHIFT)

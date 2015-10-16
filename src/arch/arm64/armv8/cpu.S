@@ -21,7 +21,8 @@
  * Bring an ARMv8 processor we just gained control of (e.g. from IROM) into a
  * known state regarding caches/SCTLR/PSTATE. Completely cleans and invalidates
  * icache/dcache, disables MMU and dcache (if active), and enables unaligned
- * accesses, icache and branch prediction (if inactive). Clobbers R22 and R23.
+ * accesses, icache and branch prediction (if inactive). Seeds the stack and
+ * initializes SP_EL0. Clobbers R22 and R23.
  */
 ENTRY(arm64_init_cpu)
 	/* Initialize PSTATE (unmask all exceptions, select SP_EL0). */
@@ -59,6 +60,18 @@ ENTRY(arm64_init_cpu)
 	tlbi	alle3
 	dsb	sy
 	isb
+
+	/* Initialize stack with sentinel value to later check overflow. */
+	ldr	x2, =0xdeadbeefdeadbeef
+	ldr	x0, =_stack
+	ldr	x1, =_estack
+1:
+	stp	x2, x2, [x0], #16
+	cmp	x0, x1
+	bne	1b
+
+	/* Leave a line of beef dead for easier visibility in stack dumps. */
+	sub	sp, x0, #16
 
 	ret	x23
 ENDPROC(arm64_init_cpu)

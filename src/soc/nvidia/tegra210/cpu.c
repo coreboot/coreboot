@@ -23,7 +23,7 @@
 
 static void enable_core_clocks(int cpu)
 {
-	const uint32_t cpu_clocks[CONFIG_MAX_CPUS] = {
+	const uint32_t cpu_clocks[] = {
 		[0] = CRC_RST_CPUG_CLR_CPU0 | CRC_RST_CPUG_CLR_DBG0 |
 		CRC_RST_CPUG_CLR_CORE0 | CRC_RST_CPUG_CLR_CX0,
 		[1] = CRC_RST_CPUG_CLR_CPU1 | CRC_RST_CPUG_CLR_DBG1 |

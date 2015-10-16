@@ -21,21 +21,25 @@ usage () {
 	printf "Usage: %s <lint|lint-stable> [--junit]\n" "$0"
 }
 
+#write to the junit xml file if --junit was specified
 junit_write () {
 	if [ "$JUNIT" -eq 1 ]; then
 		echo "$1" >> "$XMLFILE"
 	fi
 }
 
+#verify the first command line parameter
 if [ -z "$1" ] || [ "$1" != "lint" ] && [ "$1" != "lint-stable" ]; then
 	usage
 	exit 1
 fi
 
-LINTLOG=`mktemp .tmpconfig.lintXXXXX`;
-XMLFILE="$(dirname $0)/junit.xml"
+LINTLOG=$(mktemp .tmpconfig.lintXXXXX);
+XMLFILE="$(dirname "$0")/junit.xml"
 FAILED=0;
 
+#check optional second command line parameter.
+#TODO: Add real command line handling if anything more is added
 if [ "$2" = "--junit" ]; then
 	JUNIT=1
 	echo '<?xml version="1.0" encoding="utf-8"?>' > "$XMLFILE"
@@ -43,29 +47,32 @@ if [ "$2" = "--junit" ]; then
 else
 	JUNIT=0
 fi
-for script in util/lint/${1}-*; do
-	echo
-	echo "$(basename $script)"
-	grep "^# DESCR:" $script | sed "s,.*DESCR: *,,"
+
+#run all scripts of the requested type
+for script in "$(dirname "$0")/${1}-"*; do
+	printf "\n%s\n" "$(basename "$script")"
+	grep "^# DESCR:" "$script" | sed "s,.*DESCR: *,,"
 	echo "========"
-	junit_write "	<testcase classname='lint' name='$(basename $script)'>"
-	$script > $LINTLOG
-	if [ `cat $LINTLOG | wc -l` -eq 0 ]; then
+	junit_write "	<testcase classname='lint' name='$(basename "$script")'>"
+	$script > "$LINTLOG"
+
+	#if the lint script gives any output, that's a failure
+	if [ "$(wc -l < "$LINTLOG")" -eq 0 ]; then
 		echo "success"
 		junit_write "		<system-out><![CDATA[success]]></system-out>"
 	else
 		echo "test failed:"
-		cat $LINTLOG
+		cat "$LINTLOG"
 		junit_write "		<failure type='testFailed'><![CDATA["
-		junit_write "$(cat $LINTLOG)"
+		junit_write "$(cat "$LINTLOG")"
 		junit_write "]]></failure>"
-		rm -f $LINTLOG
-		FAILED=$(( $FAILED + 1 ))
+		rm -f "$LINTLOG"
+		FAILED=$(( FAILED + 1 ))
 	fi
 	echo "========"
 	junit_write '	</testcase>'
 done
 
-test $FAILED -eq 0 || { echo "ERROR: $FAILED test(s) failed."; rm -f $LINTLOG && exit 1; };
-rm -f $LINTLOG
+test $FAILED -eq 0 || { echo "ERROR: $FAILED test(s) failed."; rm -f "$LINTLOG" && exit 1; };
+rm -f "$LINTLOG"
 junit_write '</testsuite>'

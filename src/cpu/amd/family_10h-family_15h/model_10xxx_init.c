@@ -35,6 +35,23 @@
 
 #define MCI_STATUS 0x401
 
+static inline uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
+
+static volatile uint8_t fam15h_startup_flags[MAX_NODES_SUPPORTED][MAX_CORES_SUPPORTED] = {{ 0 }};
+
 static void model_10xxx_init(device_t dev)
 {
 	u8 i;
@@ -43,13 +60,44 @@ static void model_10xxx_init(device_t dev)
 #if CONFIG_LOGICAL_CPUS
 	u32 siblings;
 #endif
+	uint8_t delay_start;
 
 	id = get_node_core_id(read_nb_cfg_54());	/* nb_cfg_54 can not be set */
 	printk(BIOS_DEBUG, "nodeid = %02d, coreid = %02d\n", id.nodeid, id.coreid);
 
+	if (is_fam15h())
+		delay_start = !!(id.coreid & 0x1);
+	else
+		delay_start = 0;
+
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
-	amd_setup_mtrrs();
+
+	if (!delay_start) {
+		/* Initialize all variable MTRRs except the first pair.
+		 * This prevents Linux from having to correct an inconsistent
+		 * MTRR setup, which would crash Family 15h CPUs due to the
+		 * compute unit structure sharing MTRR MSRs between AP cores.
+		 */
+		msr.hi = 0x00000000;
+		msr.lo = 0x00000000;
+
+		disable_cache();
+
+		for (i = 0x2; i < 0x10; i++) {
+ 			wrmsr(0x00000200 | i, msr);
+ 		}
+
+ 		enable_cache();
+
+		/* Set up other MTRRs */
+		amd_setup_mtrrs();
+	} else {
+		while (!fam15h_startup_flags[id.nodeid][id.coreid - 1]) {
+			/* Wait for CU first core startup */
+		}
+	}
+
 	x86_mtrr_check();
 
 	disable_cache();
@@ -84,17 +132,24 @@ static void model_10xxx_init(device_t dev)
 	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
 #endif
 
-	/* DisableCf8ExtCfg */
+	/* Disable Cf8ExtCfg */
 	msr = rdmsr(NB_CFG_MSR);
 	msr.hi &= ~(1 << (46 - 32));
 	wrmsr(NB_CFG_MSR, msr);
 
-	msr = rdmsr(BU_CFG2_MSR);
-	/* Clear ClLinesToNbDis */
-	msr.lo &= ~(1 << 15);
-	/* Clear bit 35 as per Erratum 343 */
-	msr.hi &= ~(1 << (35-32));
-	wrmsr(BU_CFG2_MSR, msr);
+	if (is_fam15h()) {
+		msr = rdmsr(BU_CFG3_MSR);
+		/* Set CombineCr0Cd */
+		msr.hi |= (1 << (49-32));
+		wrmsr(BU_CFG3_MSR, msr);
+	} else {
+		msr = rdmsr(BU_CFG2_MSR);
+		/* Clear ClLinesToNbDis */
+		msr.lo &= ~(1 << 15);
+		/* Clear bit 35 as per Erratum 343 */
+		msr.hi &= ~(1 << (35-32));
+		wrmsr(BU_CFG2_MSR, msr);
+	}
 
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
 		printk(BIOS_DEBUG, "Initializing SMM ASeg memory\n");
@@ -127,6 +182,7 @@ static void model_10xxx_init(device_t dev)
 	msr.lo |= (1 << 0);
 	wrmsr(HWCR_MSR, msr);
 
+	fam15h_startup_flags[id.nodeid][id.coreid] = 1;
 }
 
 static struct device_operations cpu_dev_ops = {
@@ -143,15 +199,17 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x100f22 },
 	{ X86_VENDOR_AMD, 0x100f23 },
 	{ X86_VENDOR_AMD, 0x100f40 },		/* RB-C0 */
-	{ X86_VENDOR_AMD, 0x100F42 },           /* RB-C2 */
-	{ X86_VENDOR_AMD, 0x100F43 },           /* RB-C3 */
-	{ X86_VENDOR_AMD, 0x100F52 },           /* BL-C2 */
-	{ X86_VENDOR_AMD, 0x100F62 },           /* DA-C2 */
-	{ X86_VENDOR_AMD, 0x100F63 },           /* DA-C3 */
-	{ X86_VENDOR_AMD, 0x100F80 },           /* HY-D0 */
-	{ X86_VENDOR_AMD, 0x100F81 },           /* HY-D1 */
-	{ X86_VENDOR_AMD, 0x100F91 },           /* HY-D1 */
-	{ X86_VENDOR_AMD, 0x100FA0 },           /* PH-E0 */
+	{ X86_VENDOR_AMD, 0x100f42 },           /* RB-C2 */
+	{ X86_VENDOR_AMD, 0x100f43 },           /* RB-C3 */
+	{ X86_VENDOR_AMD, 0x100f52 },           /* BL-C2 */
+	{ X86_VENDOR_AMD, 0x100f62 },           /* DA-C2 */
+	{ X86_VENDOR_AMD, 0x100f63 },           /* DA-C3 */
+	{ X86_VENDOR_AMD, 0x100f80 },           /* HY-D0 */
+	{ X86_VENDOR_AMD, 0x100f81 },           /* HY-D1 */
+	{ X86_VENDOR_AMD, 0x100f91 },           /* HY-D1 */
+	{ X86_VENDOR_AMD, 0x100fa0 },           /* PH-E0 */
+	{ X86_VENDOR_AMD, 0x600f12 },           /* OR-B2 */
+	{ X86_VENDOR_AMD, 0x600f20 },           /* OR-C0 */
 	{ 0, 0 },
 };
 

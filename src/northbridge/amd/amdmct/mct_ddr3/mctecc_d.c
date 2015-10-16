@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,19 +88,21 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 
 	/* Construct these booleans, based on setup options, for easy handling
 	later in this procedure */
-	OB_NBECC = mctGet_NVbits(NV_NBECC);	/* MCA ECC (MCE) enable bit */
+	OB_NBECC = mctGet_NVbits(NV_NBECC);			/* MCA ECC (MCE) enable bit */
 
-	OB_ECCRedir =  mctGet_NVbits(NV_ECCRedir);	/* ECC Redirection */
+	OB_ECCRedir =  mctGet_NVbits(NV_ECCRedir);		/* ECC Redirection */
 
-	OB_ChipKill = mctGet_NVbits(NV_ChipKill); 	/* ECC Chip-kill mode */
+	OB_ChipKill = mctGet_NVbits(NV_ChipKill); 		/* ECC Chip-kill mode */
+	OF_ScrubCTL = 0;					/* Scrub CTL for Dcache, L2, and dram */
 
-	OF_ScrubCTL = 0;		/* Scrub CTL for Dcache, L2, and dram */
-	nvbits = mctGet_NVbits(NV_DCBKScrub);
-	/* mct_AdjustScrub_D(pDCTstatA, &nvbits); */ /* Need not adjust */
-	OF_ScrubCTL |= (u32) nvbits << 16;
+	if (!is_fam15h()) {
+		nvbits = mctGet_NVbits(NV_DCBKScrub);
+		/* mct_AdjustScrub_D(pDCTstatA, &nvbits); */ 	/* Need not adjust */
+		OF_ScrubCTL |= (u32) nvbits << 16;
 
-	nvbits = mctGet_NVbits(NV_L2BKScrub);
-	OF_ScrubCTL |= (u32) nvbits << 8;
+		nvbits = mctGet_NVbits(NV_L2BKScrub);
+		OF_ScrubCTL |= (u32) nvbits << 8;
+	}
 
 	nvbits = mctGet_NVbits(NV_DramBKScrub);
 	OF_ScrubCTL |= nvbits;
@@ -127,7 +130,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 							pDCTstat->ErrStatus |= (1 << SB_DramECCDis);
 						}
 						AllECC = 0;
-						LDramECC =0;
+						LDramECC = 0;
 					}
 				} else {
 					AllECC = 0;
@@ -136,7 +139,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 					if (OB_NBECC) {
 						mct_EnableDatIntlv_D(pMCTstat, pDCTstat);
 						dev = pDCTstat->dev_nbmisc;
-						reg =0x44;	/* MCA NB Configuration */
+						reg = 0x44;	/* MCA NB Configuration */
 						val = Get_NB32(dev, reg);
 						val |= 1 << 22;	/* EccEn */
 						Set_NB32(dev, reg, val);
@@ -173,6 +176,10 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 			/*WE/RE is checked because memory config may have been */
 			if((val & 3)==3) {	/* Node has dram populated */
 				if (isDramECCEn_D(pDCTstat)) {	/* if ECC is enabled on this dram */
+					if (is_fam15h()) {
+						/* Erratum 505 */
+						fam15h_switch_dct(pDCTstat->dev_map, 0);
+					}
 					dev = pDCTstat->dev_nbmisc;
 					val = curBase << 8;
 					if(OB_ECCRedir) {
@@ -183,16 +190,18 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 					Set_NB32(dev, 0x60, val); /* Dram Scrub Addr High */
 					Set_NB32(dev, 0x58, OF_ScrubCTL);	/*Scrub Control */
 
-					/* Divisor should not be set deeper than
-					 * divide by 16 when Dcache scrubber or
-					 * L2 scrubber is enabled.
-					 */
-					if ((OF_ScrubCTL & (0x1F << 16)) || (OF_ScrubCTL & (0x1F << 8))) {
-						val = Get_NB32(dev, 0x84);
-						if ((val & 0xE0000000) > 0x80000000) {	/* Get F3x84h[31:29]ClkDivisor for C1 */
-							val &= 0x1FFFFFFF;	/* If ClkDivisor is deeper than divide-by-16 */
-							val |= 0x80000000;	/* set it to divide-by-16 */
-							Set_NB32(dev, 0x84, val);
+					if (!is_fam15h()) {
+						/* Divisor should not be set deeper than
+						 * divide by 16 when Dcache scrubber or
+						 * L2 scrubber is enabled.
+						 */
+						if ((OF_ScrubCTL & (0x1F << 16)) || (OF_ScrubCTL & (0x1F << 8))) {
+							val = Get_NB32(dev, 0x84);
+							if ((val & 0xE0000000) > 0x80000000) {	/* Get F3x84h[31:29]ClkDivisor for C1 */
+								val &= 0x1FFFFFFF;	/* If ClkDivisor is deeper than divide-by-16 */
+								val |= 0x80000000;	/* set it to divide-by-16 */
+								Set_NB32(dev, 0x84, val);
+							}
 						}
 					}
 				}	/* this node has ECC enabled dram */
@@ -263,8 +272,8 @@ static u8 isDramECCEn_D(struct DCTStatStruc *pDCTstat)
 	}
 	for(i=0; i<ch_end; i++) {
 		if(pDCTstat->DIMMValidDCT[i] > 0){
-			reg = 0x90 + i * 0x100;		/* Dram Config Low */
-			val = Get_NB32(dev, reg);
+			reg = 0x90;		/* Dram Config Low */
+			val = Get_NB32_DCT(dev, i, reg);
 			if(val & (1<<DimmEcEn)) {
 				/* set local flag 'dram ecc capable' */
 				isDimmECCEn = 1;

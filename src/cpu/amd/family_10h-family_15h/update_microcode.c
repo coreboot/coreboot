@@ -24,6 +24,7 @@ struct id_mapping {
 
 static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 	static const struct id_mapping id_mapping_table[] = {
+		/* Family 10h */
 		{ 0x100f00, 0x1000 },
 		{ 0x100f01, 0x1000 },
 		{ 0x100f02, 0x1000 },
@@ -38,7 +39,12 @@ static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 		{ 0x100f62, 0x1062 }, /* DA-C2 */
 		{ 0x100f63, 0x1043 }, /* DA-C3 */
 		{ 0x100f81, 0x1081 }, /* HY-D1 */
+		{ 0x100f91, 0x1081 }, /* HY-D1 */
 		{ 0x100fa0, 0x10A0 }, /* PH-E0 */
+
+		/* Family 15h */
+		{ 0x600f12, 0x6012 }, /* OR-B2 */
+		{ 0x600f20, 0x6020 }, /* OR-C0 */
 
 		/* Array terminator */
 		{ 0xffffff, 0x0000 },

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +30,8 @@
 #define C_MAX_DIMMS 4		/* Maximum Number of DIMMs on each DCT */
 
 /* STATUS Definition */
-#define DCT_STATUS_REGISTERED 3	/* Registered DIMMs support */
+#define DCT_STATUS_REGISTERED 3		/* Registered DIMMs support */
+#define DCT_STATUS_LOAD_REDUCED 4	/* Load-Reduced DIMMs support */
 #define DCT_STATUS_OnDimmMirror 24	/* OnDimmMirror support */
 
 /* PCI Defintions */
@@ -74,12 +76,18 @@
 #define SendMrsCmd 26
 #define Qoff 12
 #define MRS_Level 7
-#define MrsAddressStart 0
-#define MrsAddressEnd 15
-#define MrsBankStart 16
-#define MrsBankEnd 18
-#define MrsChipSelStart 20
-#define MrsChipSelEnd 22
+#define MrsAddressStartFam10 0
+#define MrsAddressEndFam10 15
+#define MrsAddressStartFam15 0
+#define MrsAddressEndFam15 17
+#define MrsBankStartFam10 16
+#define MrsBankEndFam10 18
+#define MrsBankStartFam15 18
+#define MrsBankEndFam15 20
+#define MrsChipSelStartFam10 20
+#define MrsChipSelEndFam10 22
+#define MrsChipSelStartFam15 21
+#define MrsChipSelEndFam15 23
 #define ASR 18
 #define SRT 19
 #define DramTermDynStart 10
@@ -111,10 +119,32 @@ typedef struct _sDCTStruct
 	u8 DctTrain;			/* Current DCT being trained */
 	u8 CurrDct;			/* Current DCT number (0 or 1) */
 	u8 DctCSPresent;		/* Current DCT CS mapping */
+	int32_t WLSeedGrossDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Seed Gross Delay */
+								/* per byte Lane Per Logical DIMM*/
+	int32_t WLSeedFineDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Seed Fine Delay */
+								/* per byte Lane Per Logical DIMM*/
+	int32_t WLSeedPreGrossDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Seed Pre-Gross Delay */
+								/* per byte Lane Per Logical DIMM*/
 	u8 WLGrossDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Gross Delay */
 							/* per byte Lane Per Logical DIMM*/
 	u8 WLFineDelay[MAX_BYTE_LANES*MAX_LDIMMS];	/* Write Levelization Fine Delay */
 							/* per byte Lane Per Logical DIMM*/
+	u8 WLGrossDelayFirstPass[MAX_BYTE_LANES*MAX_LDIMMS];	/* First-Pass Write Levelization Gross Delay */
+								/* per byte Lane Per Logical DIMM*/
+	u8 WLFineDelayFirstPass[MAX_BYTE_LANES*MAX_LDIMMS];	/* First-Pass Write Levelization Fine Delay */
+								/* per byte Lane Per Logical DIMM*/
+	u8 WLGrossDelayPrevPass[MAX_BYTE_LANES*MAX_LDIMMS];	/* Previous Pass Write Levelization Gross Delay */
+								/* per byte Lane Per Logical DIMM*/
+	u8 WLFineDelayPrevPass[MAX_BYTE_LANES*MAX_LDIMMS];	/* Previous Pass Write Levelization Fine Delay */
+								/* per byte Lane Per Logical DIMM*/
+	u8 WLGrossDelayFinalPass[MAX_BYTE_LANES*MAX_LDIMMS];	/* Final-Pass Write Levelization Gross Delay */
+								/* per byte Lane Per Logical DIMM*/
+	u8 WLFineDelayFinalPass[MAX_BYTE_LANES*MAX_LDIMMS];	/* Final-Pass Write Levelization Fine Delay */
+								/* per byte Lane Per Logical DIMM*/
+	int32_t WLCriticalGrossDelayFirstPass;
+	int32_t WLCriticalGrossDelayPrevPass;
+	int32_t WLCriticalGrossDelayFinalPass;
+	uint16_t WLPrevMemclkFreq;
 	u16 RegMan1Present;
 	u8 DimmPresent[MAX_TOTAL_DIMMS];/* Indicates which DIMMs are present */
 					/* from Total Number of DIMMs(per Node)*/
@@ -128,7 +158,7 @@ typedef struct _sDCTStruct
 					/* per byte lane */
 	u8 MaxDimmsInstalled;		/* Max Dimms Installed for current DCT */
 	u8 DimmRanks[MAX_TOTAL_DIMMS];	/* Total Number of Ranks(per Dimm) */
-	u32 LogicalCPUID;
+	uint64_t LogicalCPUID;
 	u8 WLPass;
 } sDCTStruct;
 

@@ -430,7 +430,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 		/* CH A byte lane 0 - 7 maximum filtered window  passing DQS delay value*/
 		/* CH B byte lane 0 - 7 minimum filtered window  passing DQS delay value*/
 		/* CH B byte lane 0 - 7 maximum filtered window  passing DQS delay value*/
-	u32 LogicalCPUID;	/* The logical CPUID of the node*/
+	uint64_t LogicalCPUID;	/* The logical CPUID of the node*/
 	u16 HostBiosSrvc1;	/* Word sized general purpose field for use by host BIOS.  Scratch space.*/
 	u32 HostBiosSrvc2;	/* Dword sized general purpose field for use by host BIOS.  Scratch space.*/
 	u16 DimmQRPresent;	/* QuadRank DIMM present?*/
@@ -525,7 +525,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	uint8_t DimmRegistered[MAX_DIMMS_SUPPORTED];
 
 	uint64_t DimmManufacturerID[MAX_DIMMS_SUPPORTED];
-	char DimmPartNumber[MAX_DIMMS_SUPPORTED][SPD_PARTN_LENGTH];
+	char DimmPartNumber[MAX_DIMMS_SUPPORTED][SPD_PARTN_LENGTH+1];
 	uint16_t DimmRevisionNumber[MAX_DIMMS_SUPPORTED];
 	uint32_t DimmSerialNumber[MAX_DIMMS_SUPPORTED];
 } __attribute__((packed));
@@ -594,17 +594,18 @@ struct DCTStatStruc {		/* A per Node structure*/
 					    266=266MHz (DDR533)
 					    333=333MHz (DDR667)
 					    400=400MHz (DDR800)*/
-#define NV_ECC_CAP		4	/* Bus ECC capable (1-bits)
+#define NV_MIN_MEMCLK		4	/* Minimum platform demonstrated Memclock (10-bits) */
+#define NV_ECC_CAP		5	/* Bus ECC capable (1-bits)
 					    0=Platform not capable
 					    1=Platform is capable*/
-#define NV_4RANKType		5	/* Quad Rank DIMM slot type (2-bits)
+#define NV_4RANKType		6	/* Quad Rank DIMM slot type (2-bits)
 					    0=Normal
 					    1=R4 (4-Rank Registered DIMMs in AMD server configuration)
 					    2=S4 (Unbuffered SO-DIMMs)*/
-#define NV_BYPMAX		6	/* Value to set DcqBypassMax field (See Function 2, Offset 94h, [27:24] of BKDG for field definition).
+#define NV_BYPMAX		7	/* Value to set DcqBypassMax field (See Function 2, Offset 94h, [27:24] of BKDG for field definition).
 					    4=4 times bypass (normal for non-UMA systems)
 					    7=7 times bypass (normal for UMA systems)*/
-#define NV_RDWRQBYP		7	/* Value to set RdWrQByp field (See Function 2, Offset A0h, [3:2] of BKDG for field definition).
+#define NV_RDWRQBYP		8	/* Value to set RdWrQByp field (See Function 2, Offset A0h, [3:2] of BKDG for field definition).
 					    2=8 times (normal for non-UMA systems)
 					    3=16 times (normal for UMA systems)*/
 
@@ -667,8 +668,9 @@ struct DCTStatStruc {		/* A per Node structure*/
 #define NV_ECCRedir		54	/* Dram ECC Redirection enable*/
 #define NV_DramBKScrub		55	/* Dram ECC Background Scrubber CTL*/
 #define NV_L2BKScrub		56	/* L2 ECC Background Scrubber CTL*/
-#define NV_DCBKScrub		57	/* DCache ECC Background Scrubber CTL*/
-#define NV_CS_SpareCTL		58	/* Chip Select Spare Control bit 0:
+#define NV_L3BKScrub		57	/* L3 ECC Background Scrubber CTL*/
+#define NV_DCBKScrub		58	/* DCache ECC Background Scrubber CTL*/
+#define NV_CS_SpareCTL		59	/* Chip Select Spare Control bit 0:
 					       0=disable Spare
 					       1=enable Spare */
 					/* Chip Select Spare Control bit 1-4:
@@ -708,7 +710,7 @@ u8 mct_Get_Start_RcvrEnDly_1Pass(u8 Pass);
 u8 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly, u8 RcvrEnDlyLimit, u8 Channel, u8 Receiver, u8 Pass);
 void CPUMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
-u32 mctGetLogicalCPUID(u32 Node);
+uint64_t mctGetLogicalCPUID(u32 Node);
 u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void TrainReceiverEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u8 Pass);
 void mct_TrainDQSPos_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);

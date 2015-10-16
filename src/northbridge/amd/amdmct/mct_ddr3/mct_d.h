@@ -72,6 +72,8 @@
 /* #define PA_EXT_DCTADDL (((00 << 3)+5) << 8) */	/*Node x DCT function, Additional Registers PCI Address bits [15:0]*/
 
 #define PA_NBMISC(Node)	((((0x18+Node) << 3)+3) << 12)	/*Node 0 Misc PCI Address bits [15:0]*/
+#define PA_LINK(Node)	((((0x18+Node) << 3)+4) << 12)	/*Node 0 Link Control bits [15:0]*/
+#define PA_NBCTL(Node)	((((0x18+Node) << 3)+5) << 12)	/*Node 0 NB Control PCI Address bits [15:0]*/
 /* #define PA_NBDEVOP	(((00 << 3)+3) << 8) */  /*Node 0 Misc PCI Address bits [15:0]*/
 
 #define DCC_EN		1		/* X:2:0x94[19]*/
@@ -125,7 +127,7 @@
 #define X4Dimm			12	/* func 2, offset 90h, bit 12*/
 #define UnBuffDimm		16	/* func 2, offset 90h, bit 16*/
 #define DimmEcEn		19	/* func 2, offset 90h, bit 19*/
-#define MemClkFreqVal		3	/* func 2, offset 94h, bit 3*/
+#define MemClkFreqVal		((is_fam15h())?7:3)	/* func 2, offset 94h, bit 3 or 7*/
 #define RDqsEn			12	/* func 2, offset 94h, bit 12*/
 #define DisDramInterface	14	/* func 2, offset 94h, bit 14*/
 #define PowerDownEn      	15	/* func 2, offset 94h, bit 15*/
@@ -200,6 +202,7 @@
 	#define JED_PROBEMSK	0x40	/*Analysis Probe installed*/
 	#define JED_RDIMM	0x1	/* RDIMM */
 	#define JED_MiniRDIMM	0x5	/* Mini-RDIMM */
+	#define JED_LRDIMM	0xb	/* Load-reduced DIMM */
 #define SPD_Density	4		/* Bank address bits,SDRAM capacity */
 #define SPD_Addressing	5		/* Row/Column address bits */
 #define SPD_Voltage	6		/* Supported voltage bitfield */
@@ -293,6 +296,7 @@ struct MCTStatStruc {
 				      of sub 4GB dram hole for HW remapping.*/
 	u32 Sub4GCacheTop;	/* If not zero, the 32-bit top of cacheable memory.*/
 	u32 SysLimit;		/* LIMIT[39:8] (system address)*/
+	uint32_t TSCFreq;
 } __attribute__((packed));
 
 /*=============================================================================
@@ -316,7 +320,8 @@ struct MCTStatStruc {
 
 struct DCTStatStruc {		/* A per Node structure*/
 /* DCTStatStruct_F -  start */
-	u8 Node_ID;		/* Node ID of current controller*/
+	u8 Node_ID;		/* Node ID of current controller */
+	uint8_t stopDCT;	/* Set if the DCT will be stopped */
 	u8 ErrCode;		/* Current error condition of Node
 		0= no error
 		1= Variance Error, DCT is running but not in an optimal configuration.
@@ -460,7 +465,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 		/* CH A byte lane 0 - 7 maximum filtered window  passing DQS delay value*/
 		/* CH B byte lane 0 - 7 minimum filtered window  passing DQS delay value*/
 		/* CH B byte lane 0 - 7 maximum filtered window  passing DQS delay value*/
-	u32 LogicalCPUID;	/* The logical CPUID of the node*/
+	uint64_t LogicalCPUID;	/* The logical CPUID of the node*/
 	u16 HostBiosSrvc1;	/* Word sized general purpose field for use by host BIOS.  Scratch space.*/
 	u32 HostBiosSrvc2;	/* Dword sized general purpose field for use by host BIOS.  Scratch space.*/
 	u16 DimmQRPresent;	/* QuadRank DIMM present?*/
@@ -554,12 +559,20 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u8 ClToNB_flag;	/* is used to restore ClLinesToNbDis bit after memory */
 	u32 NodeSysBase;	/* for channel interleave usage */
 
+	/* Fam15h specific backup variables */
+	uint8_t SwNbPstateLoDis;
+	uint8_t NbPstateDisOnP0;
+	uint8_t NbPstateThreshold;
+	uint8_t NbPstateHi;
+
 /* New for LB Support */
 	u8 NodePresent;
 	u32 dev_host;
 	u32 dev_map;
 	u32 dev_dct;
 	u32 dev_nbmisc;
+	u32 dev_link;
+	u32 dev_nbctl;
 	u8 TargetFreq;
 	u8 TargetCASL;
 	u8 CtrlWrd3;
@@ -592,9 +605,10 @@ struct DCTStatStruc {		/* A per Node structure*/
 	uint8_t DimmBanks[MAX_DIMMS_SUPPORTED];
 	uint8_t DimmWidth[MAX_DIMMS_SUPPORTED];
 	uint8_t DimmRegistered[MAX_DIMMS_SUPPORTED];
+	uint8_t DimmLoadReduced[MAX_DIMMS_SUPPORTED];
 
 	uint64_t DimmManufacturerID[MAX_DIMMS_SUPPORTED];
-	char DimmPartNumber[MAX_DIMMS_SUPPORTED][SPD_PARTN_LENGTH];
+	char DimmPartNumber[MAX_DIMMS_SUPPORTED][SPD_PARTN_LENGTH+1];
 	uint16_t DimmRevisionNumber[MAX_DIMMS_SUPPORTED];
 	uint32_t DimmSerialNumber[MAX_DIMMS_SUPPORTED];
 } __attribute__((packed));
@@ -697,7 +711,64 @@ struct amd_s3_persistent_mct_channel_data {
 	/* Other (1 dword) */
 	uint32_t f3x58;
 
-	/* TOTAL: 250 dwords */
+	/* Family 15h-specific registers (90 dwords) */
+	uint32_t f2x200;
+	uint32_t f2x204;
+	uint32_t f2x208;
+	uint32_t f2x20c;
+	uint32_t f2x210[4];			/* [nb pstate] */
+	uint32_t f2x214;
+	uint32_t f2x218;
+	uint32_t f2x21c;
+	uint32_t f2x22c;
+	uint32_t f2x230;
+	uint32_t f2x234;
+	uint32_t f2x238;
+	uint32_t f2x23c;
+	uint32_t f2x240;
+	uint32_t f2x9cx0d0fe003;
+	uint32_t f2x9cx0d0fe013;
+	uint32_t f2x9cx0d0f0_8_0_1f[9];		/* [lane]*/
+	uint32_t f2x9cx0d0f201f;
+	uint32_t f2x9cx0d0f211f;
+	uint32_t f2x9cx0d0f221f;
+	uint32_t f2x9cx0d0f801f;
+	uint32_t f2x9cx0d0f811f;
+	uint32_t f2x9cx0d0f821f;
+	uint32_t f2x9cx0d0fc01f;
+	uint32_t f2x9cx0d0fc11f;
+	uint32_t f2x9cx0d0fc21f;
+	uint32_t f2x9cx0d0f4009;
+	uint32_t f2x9cx0d0f0_8_0_02[9];		/* [lane]*/
+	uint32_t f2x9cx0d0f0_8_0_06[9];		/* [lane]*/
+	uint32_t f2x9cx0d0f0_8_0_0a[9];		/* [lane]*/
+	uint32_t f2x9cx0d0f2002;
+	uint32_t f2x9cx0d0f2102;
+	uint32_t f2x9cx0d0f2202;
+	uint32_t f2x9cx0d0f8002;
+	uint32_t f2x9cx0d0f8006;
+	uint32_t f2x9cx0d0f800a;
+	uint32_t f2x9cx0d0f8102;
+	uint32_t f2x9cx0d0f8106;
+	uint32_t f2x9cx0d0f810a;
+	uint32_t f2x9cx0d0fc002;
+	uint32_t f2x9cx0d0fc006;
+	uint32_t f2x9cx0d0fc00a;
+	uint32_t f2x9cx0d0fc00e;
+	uint32_t f2x9cx0d0fc012;
+	uint32_t f2x9cx0d0f2031;
+	uint32_t f2x9cx0d0f2131;
+	uint32_t f2x9cx0d0f2231;
+	uint32_t f2x9cx0d0f8031;
+	uint32_t f2x9cx0d0f8131;
+	uint32_t f2x9cx0d0f8231;
+	uint32_t f2x9cx0d0fc031;
+	uint32_t f2x9cx0d0fc131;
+	uint32_t f2x9cx0d0fc231;
+	uint32_t f2x9cx0d0f0_0_f_31[9];		/* [lane] */
+	uint32_t f2x9cx0d0f8021;
+
+	/* TOTAL: 340 dwords */
 } __attribute__((packed));
 
 struct amd_s3_persistent_node_data {
@@ -742,18 +813,19 @@ struct amd_s3_persistent_data {
 	Local Configuration Status (DCTStatStruc.Status[31:0])
 ===============================================================================*/
 #define SB_Registered		0	/* All DIMMs are Registered*/
-#define SB_ECCDIMMs		1	/* All banks ECC capable*/
-#define SB_PARDIMMs		2	/* All banks Addr/CMD Parity capable*/
-#define SB_DiagClks		3	/* Jedec ALL slots clock enable diag mode*/
-#define SB_128bitmode		4	/* DCT in 128-bit mode operation*/
-#define SB_64MuxedMode		5	/* DCT in 64-bit mux'ed mode.*/
-#define SB_2TMode		6	/* 2T CMD timing mode is enabled.*/
-#define SB_SWNodeHole		7	/* Remapping of Node Base on this Node to create a gap.*/
-#define SB_HWHole		8	/* Memory Hole created on this Node using HW remapping.*/
-#define SB_Over400MHz		9	/* DCT freq >= 400MHz flag*/
-#define SB_DQSPos_Pass2	10	/* Using for TrainDQSPos DIMM0/1, when freq>=400MHz*/
-#define SB_DQSRcvLimit		11	/* Using for DQSRcvEnTrain to know we have reached to upper bound.*/
-#define SB_ExtConfig		12	/* Indicator the default setting for extend PCI configuration support*/
+#define SB_LoadReduced		1	/* All DIMMs are Load-Reduced*/
+#define SB_ECCDIMMs		2	/* All banks ECC capable*/
+#define SB_PARDIMMs		3	/* All banks Addr/CMD Parity capable*/
+#define SB_DiagClks		4	/* Jedec ALL slots clock enable diag mode*/
+#define SB_128bitmode		5	/* DCT in 128-bit mode operation*/
+#define SB_64MuxedMode		6	/* DCT in 64-bit mux'ed mode.*/
+#define SB_2TMode		7	/* 2T CMD timing mode is enabled.*/
+#define SB_SWNodeHole		8	/* Remapping of Node Base on this Node to create a gap.*/
+#define SB_HWHole		9	/* Memory Hole created on this Node using HW remapping.*/
+#define SB_Over400MHz		10	/* DCT freq >= 400MHz flag*/
+#define SB_DQSPos_Pass2		11	/* Using for TrainDQSPos DIMM0/1, when freq>=400MHz*/
+#define SB_DQSRcvLimit		12	/* Using for DQSRcvEnTrain to know we have reached to upper bound.*/
+#define SB_ExtConfig		13	/* Indicator the default setting for extend PCI configuration support*/
 
 
 /*===============================================================================
@@ -771,17 +843,18 @@ struct amd_s3_persistent_data {
 					    266=266MHz (DDR533)
 					    333=333MHz (DDR667)
 					    400=400MHz (DDR800)*/
-#define NV_ECC_CAP		4	/* Bus ECC capable (1-bits)
+#define NV_MIN_MEMCLK		4	/* Minimum platform demonstrated Memclock (10-bits) */
+#define NV_ECC_CAP		5	/* Bus ECC capable (1-bits)
 					    0=Platform not capable
 					    1=Platform is capable*/
-#define NV_4RANKType		5	/* Quad Rank DIMM slot type (2-bits)
+#define NV_4RANKType		6	/* Quad Rank DIMM slot type (2-bits)
 					    0=Normal
 					    1=R4 (4-Rank Registered DIMMs in AMD server configuration)
 					    2=S4 (Unbuffered SO-DIMMs)*/
-#define NV_BYPMAX		6	/* Value to set DcqBypassMax field (See Function 2, Offset 94h, [27:24] of BKDG for field definition).
+#define NV_BYPMAX		7	/* Value to set DcqBypassMax field (See Function 2, Offset 94h, [27:24] of BKDG for field definition).
 					    4=4 times bypass (normal for non-UMA systems)
 					    7=7 times bypass (normal for UMA systems)*/
-#define NV_RDWRQBYP		7	/* Value to set RdWrQByp field (See Function 2, Offset A0h, [3:2] of BKDG for field definition).
+#define NV_RDWRQBYP		8	/* Value to set RdWrQByp field (See Function 2, Offset A0h, [3:2] of BKDG for field definition).
 					    2=8 times (normal for non-UMA systems)
 					    3=16 times (normal for UMA systems)*/
 
@@ -844,8 +917,9 @@ struct amd_s3_persistent_data {
 #define NV_ECCRedir		54	/* Dram ECC Redirection enable*/
 #define NV_DramBKScrub		55	/* Dram ECC Background Scrubber CTL*/
 #define NV_L2BKScrub		56	/* L2 ECC Background Scrubber CTL*/
-#define NV_DCBKScrub		57	/* DCache ECC Background Scrubber CTL*/
-#define NV_CS_SpareCTL		58	/* Chip Select Spare Control bit 0:
+#define NV_L3BKScrub		57	/* L3 ECC Background Scrubber CTL*/
+#define NV_DCBKScrub		58	/* DCache ECC Background Scrubber CTL*/
+#define NV_CS_SpareCTL		59	/* Chip Select Spare Control bit 0:
 					       0=disable Spare
 					       1=enable Spare */
 					/* Chip Select Spare Control bit 1-4:
@@ -896,10 +970,12 @@ void mct_SetRcvrEnDly_D(struct DCTStatStruc *pDCTstat, u16 RcvrEnDly, u8 FinalVa
 void SetEccDQSRcvrEn_D(struct DCTStatStruc *pDCTstat, u8 Channel);
 void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u32 dct);
 void InterleaveBanks_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct);
-void mct_SetDramConfigHi_D(struct DCTStatStruc *pDCTstat, u32 dct, u32 DramConfigHi);
+void mct_SetDramConfigHi_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u32 dct, u32 DramConfigHi);
 void mct_DramInit_Hw_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 dct);
 void mct_SetClToNB_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 void mct_SetWbEnhWsbDis_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+void mct_ForceNBPState0_En_Fam15(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+void mct_ForceNBPState0_Dis_Fam15(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 void mct_TrainRcvrEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 Pass);
 void mct_EnableDimmEccEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 _DisableDramECC);
 u32 procOdtWorkaround(struct DCTStatStruc *pDCTstat, u32 dct, u32 val);

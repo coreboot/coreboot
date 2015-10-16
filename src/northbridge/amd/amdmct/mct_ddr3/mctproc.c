@@ -30,7 +30,7 @@ u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat, u8 dct, u32 misc2)
 
 		if (pDCTstat->LogicalCPUID & AMD_DR_Cx)
 			misc2 |= 1 << OdtSwizzle;
-		val = Get_NB32(pDCTstat->dev_dct, dct * 0x100 + 0x78);
+		val = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x78);
 
 		val &= 7;
 		val = ((~val) & 0xff) + 1;

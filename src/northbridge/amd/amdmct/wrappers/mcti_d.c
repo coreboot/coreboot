@@ -40,7 +40,7 @@
 #define MINIMUM_DRAM_BELOW_4G 0x1000000
 
 static const uint16_t ddr2_limits[4] = {400, 333, 266, 200};
-static const uint16_t ddr3_limits[4] = {800, 666, 533, 400};
+static const uint16_t ddr3_limits[16] = {933, 800, 666, 533, 400, 333, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 static u16 mctGet_NVbits(u8 index)
 {
@@ -77,11 +77,18 @@ static u16 mctGet_NVbits(u8 index)
 		if (get_option(&nvram, "max_mem_clock") == CB_SUCCESS) {
 			int limit = val;
 			if (IS_ENABLED(CONFIG_DIMM_DDR3))
-				limit = ddr3_limits[nvram & 3];
+				limit = ddr3_limits[nvram & 0xf];
 			else if (IS_ENABLED(CONFIG_DIMM_DDR2))
-				limit = ddr2_limits[nvram & 3];
+				limit = ddr2_limits[nvram & 0x3];
 			val = min(limit, val);
 		}
+		break;
+	case NV_MIN_MEMCLK:
+		/* Minimum platform supported memclk */
+		if (is_fam15h())
+			val =  MEM_MIN_PLATFORM_FREQ_FAM15;
+		else
+			val =  MEM_MIN_PLATFORM_FREQ_FAM10;
 		break;
 	case NV_ECC_CAP:
 #if SYSTEM_TYPE == SERVER
@@ -250,6 +257,9 @@ static u16 mctGet_NVbits(u8 index)
 	case NV_L2BKScrub:
 		val = 0;	/* Disabled - See L2Scrub in BKDG */
 		break;
+	case NV_L3BKScrub:
+		val = 0;	/* Disabled - See L3Scrub in BKDG */
+		break;
 	case NV_DCBKScrub:
 		val = 0;	/* Disabled - See DcacheScrub in BKDG */
 		break;
@@ -299,6 +309,9 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 	int ch2_count = 0;
 	uint8_t ch1_registered = 0;
 	uint8_t ch2_registered = 0;
+	uint8_t ch1_voltage = 0;
+	uint8_t ch2_voltage = 0;
+	uint8_t highest_rank_count[2];
 	int i;
 	for (i = 0; i < 15; i = i + 2) {
 		if (pDCTstat->DIMMValid & (1 << i))
@@ -317,8 +330,28 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 2: %d DIMM(s) detected\n", ch2_count);
 	}
 
+#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+	uint8_t dimm;
+
+	for (i = 0; i < 15; i = i + 2) {
+		if (pDCTstat->DIMMValid & (1 << i))
+			ch1_voltage |= pDCTstat->DimmConfiguredVoltage[i];
+		if (pDCTstat->DIMMValid & (1 << (i + 1)))
+			ch2_voltage |= pDCTstat->DimmConfiguredVoltage[i + 1];
+	}
+
+	for (i = 0; i < 2; i++) {
+		sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[i];
+		highest_rank_count[i] = 0x0;
+		for (dimm = 0; dimm < 8; dimm++) {
+			if (pDCTData->DimmRanks[dimm] > highest_rank_count[i])
+				highest_rank_count[i] = pDCTData->DimmRanks[dimm];
+		}
+	}
+#endif
+
 	/* Set limits if needed */
-	pDCTstat->PresetmaxFreq = mct_MaxLoadFreq(max(ch1_count, ch2_count), (ch1_registered || ch2_registered), pDCTstat->PresetmaxFreq);
+	pDCTstat->PresetmaxFreq = mct_MaxLoadFreq(max(ch1_count, ch2_count), max(highest_rank_count[0], highest_rank_count[1]), (ch1_registered || ch2_registered), (ch1_voltage | ch2_voltage), pDCTstat->PresetmaxFreq);
 }
 
 #ifdef UNUSED_CODE
@@ -482,7 +515,7 @@ static void mctHookAfterAnyTraining(void)
 {
 }
 
-static u32 mctGetLogicalCPUID_D(u8 node)
+static uint64_t mctGetLogicalCPUID_D(u8 node)
 {
 	return mctGetLogicalCPUID(node);
 }

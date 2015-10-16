@@ -16,33 +16,35 @@
 /* FIXME: this file should be moved to include/cpu/amd/amddefs.h */
 
 /* Public Revisions - USE THESE VERSIONS TO MAKE COMPARE WITH CPULOGICALID RETURN VALUE*/
-#define	AMD_SAFEMODE	0x80000000	/* Unknown future revision - SAFE MODE */
-#define	AMD_NPT_F0	0x00000001	/* F0 stepping */
-#define	AMD_NPT_F1	0x00000002	/* F1 stepping */
-#define	AMD_NPT_F2C	0x00000004
-#define	AMD_NPT_F2D	0x00000008
-#define	AMD_NPT_F2E	0x00000010	/* F2 stepping E */
-#define	AMD_NPT_F2G	0x00000020	/* F2 stepping G */
-#define	AMD_NPT_F2J	0x00000040
-#define	AMD_NPT_F2K	0x00000080
-#define	AMD_NPT_F3L	0x00000100	/* F3 Stepping */
-#define	AMD_NPT_G0A	0x00000200	/* G0 stepping */
-#define	AMD_NPT_G1B	0x00000400	/* G1 stepping */
-#define	AMD_DR_A0A	0x00010000	/* Barcelona A0 */
-#define	AMD_DR_A1B	0x00020000	/* Barcelona A1 */
-#define	AMD_DR_A2	0x00040000	/* Barcelona A2 */
-#define	AMD_DR_B0	0x00080000	/* Barcelona B0 */
-#define	AMD_DR_B1	0x00100000	/* Barcelona B1 */
-#define	AMD_DR_B2	0x00200000	/* Barcelona B2 */
-#define	AMD_DR_BA	0x00400000	/* Barcelona BA */
-#define	AMD_DR_B3	0x00800000	/* Barcelona B3 */
-#define	AMD_RB_C2	0x01000000	/* Shanghai C2 */
-#define	AMD_DA_C2	0x02000000	/* XXXX C2 */
-#define	AMD_HY_D0	0x04000000	/* Istanbul D0 */
-#define	AMD_RB_C3	0x08000000	/* ??? C3 */
-#define	AMD_DA_C3	0x10000000	/* XXXX C3 */
-#define	AMD_HY_D1	0x20000000	/* Istanbul D1 */
-#define	AMD_PH_E0	0x40000000	/* Phenom II X4 X6 */
+#define	AMD_SAFEMODE	0x8000000000000000	/* Unknown future revision - SAFE MODE */
+#define	AMD_NPT_F0	0x0000000000000001	/* F0 stepping */
+#define	AMD_NPT_F1	0x0000000000000002	/* F1 stepping */
+#define	AMD_NPT_F2C	0x0000000000000004
+#define	AMD_NPT_F2D	0x0000000000000008
+#define	AMD_NPT_F2E	0x0000000000000010	/* F2 stepping E */
+#define	AMD_NPT_F2G	0x0000000000000020	/* F2 stepping G */
+#define	AMD_NPT_F2J	0x0000000000000040
+#define	AMD_NPT_F2K	0x0000000000000080
+#define	AMD_NPT_F3L	0x0000000000000100	/* F3 Stepping */
+#define	AMD_NPT_G0A	0x0000000000000200	/* G0 stepping */
+#define	AMD_NPT_G1B	0x0000000000000400	/* G1 stepping */
+#define	AMD_DR_A0A	0x0000000000010000	/* Barcelona A0 */
+#define	AMD_DR_A1B	0x0000000000020000	/* Barcelona A1 */
+#define	AMD_DR_A2	0x0000000000040000	/* Barcelona A2 */
+#define	AMD_DR_B0	0x0000000000080000	/* Barcelona B0 */
+#define	AMD_DR_B1	0x0000000000100000	/* Barcelona B1 */
+#define	AMD_DR_B2	0x0000000000200000	/* Barcelona B2 */
+#define	AMD_DR_BA	0x0000000000400000	/* Barcelona BA */
+#define	AMD_DR_B3	0x0000000000800000	/* Barcelona B3 */
+#define	AMD_RB_C2	0x0000000001000000	/* Shanghai C2 */
+#define	AMD_DA_C2	0x0000000002000000	/* XXXX C2 */
+#define	AMD_HY_D0	0x0000000004000000	/* Istanbul D0 */
+#define	AMD_RB_C3	0x0000000008000000	/* ??? C3 */
+#define	AMD_DA_C3	0x0000000010000000	/* XXXX C3 */
+#define	AMD_HY_D1	0x0000000020000000	/* Istanbul D1 */
+#define	AMD_PH_E0	0x0000000040000000	/* Phenom II X4 X6 */
+#define	AMD_OR_B2	0x0000000080000000	/* Interlagos */
+#define	AMD_OR_C0	0x0000000100000000	/* Abu Dhabi */
 
 /*
  * Groups - Create as many as you wish, from the above public values
@@ -72,6 +74,7 @@
 #define	AMD_DRBH_Cx	(AMD_DR_Cx | AMD_HY_D0 )
 #define	AMD_DRBA23_RBC2	(AMD_DR_BA | AMD_DR_B2 | AMD_DR_B3 | AMD_RB_C2 )
 #define	AMD_DR_DAC2_OR_C3	(AMD_DA_C2 | AMD_DA_C3 | AMD_RB_C3)
+#define	AMD_FAM15_ALL	(AMD_OR_B2 | AMD_OR_C0)
 
 /*
  *  Public Platforms - USE THESE VERSIONS TO MAKE COMPARE WITH CPUPLATFORMTYPE RETURN VALUE
@@ -118,23 +121,34 @@
  */
 #define CPUID_EXT_PM		0x80000007
 #define CPUID_MODEL		1
-#define MCG_CAP		0x00000179
+#define MCG_CAP			0x00000179
 	#define MCG_CTL_P	8
-#define MC0_CTL		0x00000400
-#define MC0_STA		MC0_CTL + 1
-#define FS_Base		0xC0000100
+#define MC0_CTL			0x00000400
+#define MC0_STA			(MC0_CTL + 1)
+#define MC4_MISC0		0x00000413
+#define MC4_MISC1		0xC0000408
+#define MC4_MISC2		0xC0000409
+#define FS_Base			0xC0000100
 #define SYSCFG			0xC0010010
 #define HWCR			0xC0010015
 #define NB_CFG			0xC001001F
 #define FidVidStatus		0xC0010042
+#define MC1_CTL_MASK		0xC0010045
 #define MC4_CTL_MASK		0xC0010048
 #define OSVW_ID_Length		0xC0010140
 #define OSVW_Status		0xC0010141
 #define CPUIDFEATURES		0xC0011004
 #define LS_CFG			0xC0011020
+#define IC_CFG			0xC0011021
 #define DC_CFG			0xC0011022
 #define BU_CFG			0xC0011023
-#define BU_CFG2		0xC001102A
+#define FP_CFG			0xC0011028
+#define DE_CFG			0xC0011029
+#define BU_CFG2			0xC001102A
+#define BU_CFG3			0xC001102B
+#define EX_CFG			0xC001102C
+#define LS_CFG2			0xC001102D
+#define IBS_OP_DATA3		0xC0011037
 
 /*
  * Processor package types

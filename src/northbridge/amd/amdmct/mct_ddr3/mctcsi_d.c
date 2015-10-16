@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +32,6 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 
 	u32 dev;
 	u32 reg;
-	u32 reg_off;
 	u32 val;
 	u32 val_lo, val_hi;
 
@@ -40,16 +40,15 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 	EnChipSels = 0;
 
 	dev = pDCTstat->dev_dct;
-	reg_off = 0x100 * dct;
 
 	ChipSel = 0;		/* Find out if current configuration is capable */
 	while (DoIntlv && (ChipSel < MAX_CS_SUPPORTED)) {
-		reg = 0x40+(ChipSel<<2) + reg_off;	/* Dram CS Base 0 */
-		val = Get_NB32(dev, reg);
+		reg = 0x40+(ChipSel<<2);	/* Dram CS Base 0 */
+		val = Get_NB32_DCT(dev, dct, reg);
 		if ( val & (1<<CSEnable)) {
 			EnChipSels++;
-			reg = 0x60+((ChipSel>>1)<<2)+reg_off; /*Dram CS Mask 0 */
-			val = Get_NB32(dev, reg);
+			reg = 0x60+((ChipSel>>1)<<2); /*Dram CS Mask 0 */
+			val = Get_NB32_DCT(dev, dct, reg);
 			val >>= 19;
 			val &= 0x3ff;
 			val++;
@@ -59,8 +58,8 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 				/*If mask sizes not same then skip */
 				if (val != MemSize)
 					break;
-			reg = 0x80 + reg_off;		/*Dram Bank Addressing */
-			val = Get_NB32(dev, reg);
+			reg = 0x80;		/*Dram Bank Addressing */
+			val = Get_NB32_DCT(dev, dct, reg);
 			val >>= (ChipSel>>1)<<2;
 			val &= 0x0f;
 			if(EnChipSels == 1)
@@ -99,8 +98,8 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 		BitDelta = bsf(AddrHiMask) - bsf(AddrLoMask);
 
 		for (ChipSel = 0; ChipSel < MAX_CS_SUPPORTED; ChipSel++) {
-			reg = 0x40+(ChipSel<<2) + reg_off;	/*Dram CS Base 0 */
-			val = Get_NB32(dev, reg);
+			reg = 0x40+(ChipSel<<2);	/*Dram CS Base 0 */
+			val = Get_NB32_DCT(dev, dct, reg);
 			if (val & 3) {
 				val_lo = val & AddrLoMask;
 				val_hi = val & AddrHiMask;
@@ -110,13 +109,13 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 				val_hi >>= BitDelta;
 				val |= val_lo;
 				val |= val_hi;
-				Set_NB32(dev, reg, val);
+				Set_NB32_DCT(dev, dct, reg, val);
 
 				if(ChipSel & 1)
 					continue;
 
-				reg = 0x60 + ((ChipSel>>1)<<2) + reg_off; /*Dram CS Mask 0 */
-				val = Get_NB32(dev, reg);
+				reg = 0x60 + ((ChipSel>>1)<<2); /*Dram CS Mask 0 */
+				val = Get_NB32_DCT(dev, dct, reg);
 				val_lo = val & AddrLoMask;
 				val_hi = val & AddrHiMask;
 				val &= AddrLoMaskN;
@@ -125,7 +124,7 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 				val_hi >>= BitDelta;
 				val |= val_lo;
 				val |= val_hi;
-				Set_NB32(dev, reg, val);
+				Set_NB32_DCT(dev, dct, reg, val);
 			}
 		}
 	}	/* DoIntlv */

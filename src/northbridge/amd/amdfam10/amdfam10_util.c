@@ -30,14 +30,14 @@ u32 Get_NB32(u32 dev, u32 reg)
 }
 #endif
 
-u32 mctGetLogicalCPUID(u32 Node)
+uint64_t mctGetLogicalCPUID(u32 Node)
 {
 	/* Converts the CPUID to a logical ID MASK that is used to check
 	 CPU version support versions */
 	u32 dev;
 	u32 val, valx;
 	u32 family, model, stepping;
-	u32 ret;
+	uint64_t ret;
 
 	if (Node == 0xFF) { /* current node */
 		val = cpuid_eax(0x80000001);
@@ -96,9 +96,16 @@ u32 mctGetLogicalCPUID(u32 Node)
 	case 0x100a0:
 		ret = AMD_PH_E0;
 		break;
+	case 0x15012:
+	case 0x1501f:
+		ret = AMD_OR_B2;
+		break;
+	case 0x15020:
+		ret = AMD_OR_C0;
+		break;
 	default:
 		/* FIXME: mabe we should die() here. */
-		printk(BIOS_ERR, "FIXME! CPU Version unknown or not supported! \n");
+		printk(BIOS_ERR, "FIXME! CPU Version unknown or not supported! %08x\n", valx);
 		ret = 0;
 	}
 

@@ -2185,6 +2185,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 							pDCTstat->DimmManufacturerID[i] |= ((uint64_t)mctRead_SPD(smbaddr, SPD_MANID_START + k)) << (k * 8);
 						for (k = 0; k < SPD_PARTN_LENGTH; k++)
 							pDCTstat->DimmPartNumber[i][k] = mctRead_SPD(smbaddr, SPD_PARTN_START + k);
+						pDCTstat->DimmPartNumber[i][SPD_PARTN_LENGTH] = 0;
 						pDCTstat->DimmRevisionNumber[i] = 0;
 						for (k = 0; k < 2; k++)
 							pDCTstat->DimmRevisionNumber[i] |= ((uint16_t)mctRead_SPD(smbaddr, SPD_REVNO_START + k)) << (k * 8);
@@ -2202,8 +2203,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 					if (byte & JED_REGADCMSK) {
 						RegDIMMPresent |= 1 << i;
 						pDCTstat->DimmRegistered[i] = 1;
-					}
-					else {
+					} else {
 						pDCTstat->DimmRegistered[i] = 0;
 					}
 					/* Check ECC capable */

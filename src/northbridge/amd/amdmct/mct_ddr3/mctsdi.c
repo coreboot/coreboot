@@ -14,17 +14,182 @@
  * GNU General Public License for more details.
  */
 
+static uint8_t fam15_dimm_dic(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
+{
+	uint8_t dic;
+
+	/* Calculate DIC based on recommendations in MR1_dct[1:0] */
+	if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+		/* TODO
+		* LRDIMM unimplemented
+		*/
+		dic = 0x0;
+	} else {
+		dic = 0x1;
+	}
+
+	return dic;
+}
+
+static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
+{
+	uint8_t term = 0;
+	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
+	uint8_t number_of_dimms = pDCTData->MaxDimmsInstalled;
+	uint8_t frequency_index;
+	uint8_t rank_count = pDCTData->DimmRanks[dimm];
+
+	if (is_fam15h())
+		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x1f;
+	else
+		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x7;
+
+	/* FIXME
+	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
+	 * For now assume a maximum of 2 DIMMs per channel can be installed
+	 */
+	uint8_t MaxDimmsInstallable = 2;
+
+	if (is_fam15h()) {
+		if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* TODO
+			 * RDIMM unimplemented
+			 */
+		} else {
+			if (package_type == PT_GR) {
+				/* Socket G34: Fam15h BKDG v3.14 Table 56 */
+				if (MaxDimmsInstallable == 1) {
+					term = 0x0;
+				} else if (MaxDimmsInstallable == 2) {
+					if ((number_of_dimms == 2) && (frequency_index == 0x12)) {
+						term = 0x1;
+					} else if (number_of_dimms == 1) {
+						term = 0x0;
+					} else {
+						term = 0x2;
+					}
+				} else if (MaxDimmsInstallable == 3) {
+					if (number_of_dimms == 1) {
+						if (frequency_index <= 0xa) {
+							term = 0x2;
+						} else {
+							if (rank_count < 3) {
+								term = 0x1;
+							} else {
+								term = 0x2;
+							}
+						}
+					} else if (number_of_dimms == 2) {
+						term = 0x2;
+					}
+				}
+			} else {
+				/* TODO
+				* Other sockets unimplemented
+				*/
+			}
+		}
+	}
+
+	return term;
+}
+
+static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t rank, uint8_t package_type)
+{
+	uint8_t term = 0;
+	sDCTStruct *pDCTData = pDCTstat->C_DCTPtr[dct];
+	uint8_t number_of_dimms = pDCTData->MaxDimmsInstalled;
+	uint8_t frequency_index;
+
+	if (is_fam15h())
+		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x1f;
+	else
+		frequency_index = Get_NB32_DCT(pDCTstat->dev_dct, dct, 0x94) & 0x7;
+
+	/* FIXME
+	 * Mainboards need to be able to specify the maximum number of DIMMs installable per channel
+	 * For now assume a maximum of 2 DIMMs per channel can be installed
+	 */
+	uint8_t MaxDimmsInstallable = 2;
+
+	if (is_fam15h()) {
+		if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+			/* TODO
+			 * LRDIMM unimplemented
+			 */
+		} else if (pDCTstat->Status & (1 << SB_Registered)) {
+			/* TODO
+			 * RDIMM unimplemented
+			 */
+		} else {
+			if (package_type == PT_GR) {
+				/* Socket G34: Fam15h BKDG v3.14 Table 56 */
+				if (MaxDimmsInstallable == 1) {
+					if ((frequency_index == 0x4) || (frequency_index == 0x6))
+						term = 0x2;
+					else if ((frequency_index == 0xa) || (frequency_index == 0xe))
+						term = 0x1;
+					else
+						term = 0x3;
+				}
+				if (MaxDimmsInstallable == 2) {
+					if (number_of_dimms == 1) {
+						if (frequency_index <= 0x6) {
+							term = 0x2;
+						} else if (frequency_index <= 0xe) {
+							term = 0x1;
+						} else {
+							term = 0x3;
+						}
+					} else {
+						if (frequency_index <= 0xa) {
+							term = 0x3;
+						} else if (frequency_index <= 0xe) {
+							term = 0x5;
+						} else {
+							term = 0x4;
+						}
+					}
+				} else if (MaxDimmsInstallable == 3) {
+					if (number_of_dimms == 1) {
+						term = 0x0;
+					} else if (number_of_dimms == 2) {
+						if (frequency_index <= 0xa) {
+							if (rank == 1) {
+								term = 0x0;
+							} else {
+								term = 0x3;
+							}
+						} else if (frequency_index <= 0xe) {
+							if (rank == 1) {
+								term = 0x0;
+							} else {
+								term = 0x5;
+							}
+						}
+					}
+				}
+			} else {
+				/* TODO
+				 * Other sockets unimplemented
+				 */
+			}
+		}
+	}
+
+	return term;
+}
+
 static void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct);
 
 static void mct_DCTAccessDone(struct DCTStatStruc *pDCTstat, u8 dct)
 {
-	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 	u32 val;
 
 	do {
-		val = Get_NB32(dev, reg_off + 0x98);
+		val = Get_NB32_DCT(dev, dct, 0x98);
 	} while (!(val & (1 << DctAccessDone)));
 }
 
@@ -50,9 +215,15 @@ static u32 swapAddrBits(struct DCTStatStruc *pDCTstat, u32 MR_register_setting, 
 			if (MR_register_setting & (1 << 6)) ret |= 1 << 5;
 			if (MR_register_setting & (1 << 7)) ret |= 1 << 8;
 			if (MR_register_setting & (1 << 8)) ret |= 1 << 7;
-			if (MR_register_setting & (1 << 16)) ret |= 1 << 17;
-			if (MR_register_setting & (1 << 17)) ret |= 1 << 16;
-			MR_register_setting &= ~0x301f8;
+			if (is_fam15h()) {
+				if (MR_register_setting & (1 << 18)) ret |= 1 << 19;
+				if (MR_register_setting & (1 << 19)) ret |= 1 << 18;
+				MR_register_setting &= ~0x000c01f8;
+			} else {
+				if (MR_register_setting & (1 << 16)) ret |= 1 << 17;
+				if (MR_register_setting & (1 << 17)) ret |= 1 << 16;
+				MR_register_setting &= ~0x000301f8;
+			}
 			MR_register_setting |= ret;
 		}
 	}
@@ -61,47 +232,76 @@ static u32 swapAddrBits(struct DCTStatStruc *pDCTstat, u32 MR_register_setting, 
 
 static void mct_SendMrsCmd(struct DCTStatStruc *pDCTstat, u8 dct, u32 EMRS)
 {
-	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 	u32 val;
 
-	val = Get_NB32(dev, reg_off + 0x7C);
-	val &= ~0xFFFFFF;
+	val = Get_NB32_DCT(dev, dct, 0x7c);
+	val &= ~0x00ffffff;
 	val |= EMRS;
 	val |= 1 << SendMrsCmd;
-	Set_NB32(dev, reg_off + 0x7C, val);
+	Set_NB32_DCT(dev, dct, 0x7c, val);
 
 	do {
-		val = Get_NB32(dev, reg_off + 0x7C);
+		val = Get_NB32_DCT(dev, dct, 0x7c);
 	} while (val & (1 << SendMrsCmd));
 }
 
 static u32 mct_MR2(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
 {
-	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret;
 
-	ret = 0x20000;
-	ret |= MrsChipSel;
+	if (is_fam15h()) {
+		uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
 
-	/* program MrsAddress[5:3]=CAS write latency (CWL):
-	 * based on F2x[1,0]84[Tcwl] */
-	dword = Get_NB32(dev, reg_off + 0x84);
-	dword = mct_AdjustSPDTimings(pMCTstat, pDCTstat, dword);
+		/* The formula for chip select number is: CS = dimm*2+rank */
+		uint8_t dimm = MrsChipSel / 2;
+		uint8_t rank = MrsChipSel % 2;
 
-	ret |= ((dword >> 20) & 7) << 3;
+		/* FIXME: These parameters should be configurable
+		 * For now, err on the side of caution and enable automatic 2x refresh
+		 * when the DDR temperature rises above the internal limits
+		 */
+		uint8_t force_2x_self_refresh = 0;	/* ASR */
+		uint8_t auto_2x_self_refresh = 1;	/* SRT */
 
-	/* program MrsAddress[6]=auto self refresh method (ASR):
-	   based on F2x[1,0]84[ASR]
-	   program MrsAddress[7]=self refresh temperature range (SRT):
-	   based on F2x[1,0]84[ASR and SRT] */
-	ret |= ((dword >> 18) & 3) << 6;
+		ret = 0x80000;
+		ret |= (MrsChipSel << 21);
 
-	/* program MrsAddress[10:9]=dynamic termination during writes (RTT_WR)
-	   based on F2x[1,0]84[DramTermDyn] */
-	ret |= ((dword >> 10) & 3) << 9;
+		/* Set self refresh parameters */
+		ret |= (force_2x_self_refresh << 6);
+		ret |= (auto_2x_self_refresh << 7);
+
+		/* Obtain Tcwl, adjust, and set CWL with the adjusted value */
+		dword = Get_NB32_DCT(dev, dct, 0x20c) & 0x1f;
+		ret |= ((dword - 5) << 3);
+
+		/* Obtain and set RttWr */
+		ret |= (fam15_rttwr(pDCTstat, dct, dimm, rank, package_type) << 9);
+	} else {
+		ret = 0x20000;
+		ret |= (MrsChipSel << 20);
+
+		/* program MrsAddress[5:3]=CAS write latency (CWL):
+		 * based on F2x[1,0]84[Tcwl] */
+		dword = Get_NB32_DCT(dev, dct, 0x84);
+		dword = mct_AdjustSPDTimings(pMCTstat, pDCTstat, dword);
+
+		ret |= ((dword >> 20) & 7) << 3;
+
+		/* program MrsAddress[6]=auto self refresh method (ASR):
+		 * based on F2x[1,0]84[ASR]
+		 * program MrsAddress[7]=self refresh temperature range (SRT):
+		 * based on F2x[1,0]84[ASR and SRT]
+		 */
+		ret |= ((dword >> 18) & 3) << 6;
+
+		/* program MrsAddress[10:9]=dynamic termination during writes (RTT_WR)
+		 * based on F2x[1,0]84[DramTermDyn]
+		 */
+		ret |= ((dword >> 10) & 3) << 9;
+	}
 
 	return ret;
 }
@@ -109,20 +309,28 @@ static u32 mct_MR2(struct MCTStatStruc *pMCTstat,
 static u32 mct_MR3(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
 {
-	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret;
 
-	ret = 0x30000;
-	ret |= MrsChipSel;
+	if (is_fam15h()) {
+		ret = 0xc0000;
+		ret |= (MrsChipSel << 21);
 
-	/* program MrsAddress[1:0]=multi purpose register address location
-	   (MPR Location):based on F2x[1,0]84[MprLoc]
-	   program MrsAddress[2]=multi purpose register
-	   (MPR):based on F2x[1,0]84[MprEn]
-	*/
-	dword = Get_NB32(dev, reg_off + 0x84);
-	ret |= (dword >> 24) & 7;
+		/* Program MPR and MPRLoc to 0 */
+		// ret |= 0x0;		/* MPR */
+		// ret |= (0x0 << 2);	/* MPRLoc */
+	} else {
+		ret = 0x30000;
+		ret |= (MrsChipSel << 20);
+
+		/* program MrsAddress[1:0]=multi purpose register address location
+		 * (MPR Location):based on F2x[1,0]84[MprLoc]
+		 * program MrsAddress[2]=multi purpose register
+		 * (MPR):based on F2x[1,0]84[MprEn]
+		 */
+		dword = Get_NB32_DCT(dev, dct, 0x84);
+		ret |= (dword >> 24) & 7;
+	}
 
 	return ret;
 }
@@ -130,48 +338,93 @@ static u32 mct_MR3(struct MCTStatStruc *pMCTstat,
 static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
 {
-	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret;
 
-	ret = 0x10000;
-	ret |= MrsChipSel;
+	if (is_fam15h()) {
+		uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
 
-	/* program MrsAddress[5,1]=output driver impedance control (DIC):
-	 * based on F2x[1,0]84[DrvImpCtrl] */
-	dword = Get_NB32(dev, reg_off + 0x84);
-	if (dword & (1 << 3))
-		ret |= 1 << 5;
-	if (dword & (1 << 2))
-		ret |= 1 << 1;
+		/* Set defaults */
+		uint8_t qoff = 0;	/* Enable output buffers */
+		uint8_t wrlvl = 0;	/* Disable write levelling */
+		uint8_t tqds = 0;
+		uint8_t rttnom = 0;
+		uint8_t dic = 0;
+		uint8_t additive_latency = 0;
+		uint8_t dll_enable = 0;
 
-	/* program MrsAddress[9,6,2]=nominal termination resistance of ODT (RTT):
-	   based on F2x[1,0]84[DramTerm] */
-	if (!(pDCTstat->Status & (1 << SB_Registered))) {
-		if (dword & (1 << 9))
-			ret |= 1 << 9;
-		if (dword & (1 << 8))
-			ret |= 1 << 6;
-		if (dword & (1 << 7))
-			ret |= 1 << 2;
+		ret = 0x40000;
+		ret |= (MrsChipSel << 21);
+
+		/* The formula for chip select number is: CS = dimm*2+rank */
+		uint8_t dimm = MrsChipSel / 2;
+		uint8_t rank = MrsChipSel % 2;
+
+		/* Determine if TQDS should be set */
+		if ((pDCTstat->Dimmx8Present & (1 << dimm))
+			&& (((dimm & 0x1)?(pDCTstat->Dimmx4Present&0x55):(pDCTstat->Dimmx4Present&0xaa)) != 0x0)
+			&& (pDCTstat->Status & (1 << SB_LoadReduced)))
+			tqds = 1;
+
+		/* Obtain RttNom */
+		rttnom = fam15_rttnom(pDCTstat, dct, dimm, rank, package_type);
+
+		/* Obtain DIC */
+		dic = fam15_dimm_dic(pDCTstat, dct, dimm, rank, package_type);
+
+		/* Load data into MRS word */
+		ret |= (qoff & 0x1) << 12;
+		ret |= (tqds & 0x1) << 11;
+		ret |= ((rttnom & 0x4) >> 2) << 9;
+		ret |= ((rttnom & 0x2) >> 1) << 6;
+		ret |= ((rttnom & 0x1) >> 0) << 2;
+		ret |= (wrlvl & 0x1) << 7;
+		ret |= ((dic & 0x2) >> 1) << 5;
+		ret |= ((dic & 0x1) >> 0) << 1;
+		ret |= (additive_latency & 0x3) << 3;
+		ret |= (dll_enable & 0x1);
 	} else {
-		ret |= mct_MR1Odt_RDimm(pMCTstat, pDCTstat, dct, MrsChipSel);
-	}
+		ret = 0x10000;
+		ret |= (MrsChipSel << 20);
 
-	/* program MrsAddress[11]=TDQS: based on F2x[1,0]94[RDqsEn] */
-	if (Get_NB32(dev, reg_off + 0x94) & (1 << RDqsEn)) {
-		u8 bit;
-		/* Set TDQS=1b for x8 DIMM, TDQS=0b for x4 DIMM, when mixed x8 & x4 */
-		bit = (ret >> 21) << 1;
-		if ((dct & 1) != 0)
-			bit ++;
-		if (pDCTstat->Dimmx8Present & (1 << bit))
-			ret |= 1 << 11;
-	}
+		/* program MrsAddress[5,1]=output driver impedance control (DIC):
+		 * based on F2x[1,0]84[DrvImpCtrl]
+		 */
+		dword = Get_NB32_DCT(dev, dct, 0x84);
+		if (dword & (1 << 3))
+			ret |= 1 << 5;
+		if (dword & (1 << 2))
+			ret |= 1 << 1;
 
-	/* program MrsAddress[12]=QOFF: based on F2x[1,0]84[Qoff] */
-	if (dword & (1 << 13))
-		ret |= 1 << 12;
+		/* program MrsAddress[9,6,2]=nominal termination resistance of ODT (RTT):
+		 * based on F2x[1,0]84[DramTerm]
+		 */
+		if (!(pDCTstat->Status & (1 << SB_Registered))) {
+			if (dword & (1 << 9))
+				ret |= 1 << 9;
+			if (dword & (1 << 8))
+				ret |= 1 << 6;
+			if (dword & (1 << 7))
+				ret |= 1 << 2;
+		} else {
+			ret |= mct_MR1Odt_RDimm(pMCTstat, pDCTstat, dct, MrsChipSel);
+		}
+
+		/* program MrsAddress[11]=TDQS: based on F2x[1,0]94[RDqsEn] */
+		if (Get_NB32_DCT(dev, dct, 0x94) & (1 << RDqsEn)) {
+			u8 bit;
+			/* Set TDQS=1b for x8 DIMM, TDQS=0b for x4 DIMM, when mixed x8 & x4 */
+			bit = (ret >> 21) << 1;
+			if ((dct & 1) != 0)
+				bit ++;
+			if (pDCTstat->Dimmx8Present & (1 << bit))
+				ret |= 1 << 11;
+		}
+
+		/* program MrsAddress[12]=QOFF: based on F2x[1,0]84[Qoff] */
+		if (dword & (1 << 13))
+			ret |= 1 << 12;
+	}
 
 	return ret;
 }
@@ -179,60 +432,139 @@ static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 static u32 mct_MR0(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel)
 {
-	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword, ret, dword2;
 
-	ret = 0x00000;
-	ret |= MrsChipSel;
+	if (is_fam15h()) {
+		ret = 0x00000;
+		ret |= (MrsChipSel << 21);
 
-	/* program MrsAddress[1:0]=burst length and control method
-	   (BL):based on F2x[1,0]84[BurstCtrl] */
-	dword = Get_NB32(dev, reg_off + 0x84);
-	ret |= dword & 3;
+		/* Set defaults */
+		uint8_t ppd = 0;
+		uint8_t wr_ap = 0;
+		uint8_t dll_reset = 1;
+		uint8_t test_mode = 0;
+		uint8_t cas_latency = 0;
+		uint8_t read_burst_type = 1;
+		uint8_t burst_length = 0;
 
-	/* program MrsAddress[3]=1 (BT):interleaved */
-	ret |= 1 << 3;
+		/* Obtain PchgPDModeSel */
+		dword = Get_NB32_DCT(dev, dct, 0x84);
+		ppd = (dword >> 23) & 0x1;
 
-	/* program MrsAddress[6:4,2]=read CAS latency
-	   (CL):based on F2x[1,0]88[Tcl] */
-	dword2 = Get_NB32(dev, reg_off + 0x88);
-	ret |= (dword2 & 0x7) << 4;		/* F2x88[2:0] to MrsAddress[6:4] */
-	ret |= ((dword2 & 0x8) >> 3) << 2;	/* F2x88[3] to MrsAddress[2] */
+		/* Obtain Twr */
+		dword = Get_NB32_DCT(dev, dct, 0x22c) & 0x1f;
 
-	/* program MrsAddress[12]=0 (PPD):slow exit */
-	if (dword & (1 << 23))
-		ret |= 1 << 12;
+		/* Calculate wr_ap (Fam15h BKDG v3.14 Table 82) */
+		if (dword == 0x10)
+			wr_ap = 0x0;
+		else if (dword == 0x5)
+			wr_ap = 0x1;
+		else if (dword == 0x6)
+			wr_ap = 0x2;
+		else if (dword == 0x7)
+			wr_ap = 0x3;
+		else if (dword == 0x8)
+			wr_ap = 0x4;
+		else if (dword == 0xa)
+			wr_ap = 0x5;
+		else if (dword == 0xc)
+			wr_ap = 0x6;
+		else if (dword == 0xe)
+			wr_ap = 0x7;
 
-	/* program MrsAddress[11:9]=write recovery for auto-precharge
-	   (WR):based on F2x[1,0]84[Twr] */
-	ret |= ((dword >> 4) & 7) << 9;
+		/* Obtain Tcl */
+		dword = Get_NB32_DCT(dev, dct, 0x200) & 0x1f;
 
-	/* program MrsAddress[8]=1 (DLL):DLL reset
-	   just issue DLL reset at first time */
-	ret |= 1 << 8;
+		/* Calculate cas_latency (Fam15h BKDG v3.14 Table 83) */
+		if (dword == 0x5)
+			cas_latency = 0x2;
+		else if (dword == 0x6)
+			cas_latency = 0x4;
+		else if (dword == 0x7)
+			cas_latency = 0x6;
+		else if (dword == 0x8)
+			cas_latency = 0x8;
+		else if (dword == 0x9)
+			cas_latency = 0xa;
+		else if (dword == 0xa)
+			cas_latency = 0xc;
+		else if (dword == 0xb)
+			cas_latency = 0xe;
+		else if (dword == 0xc)
+			cas_latency = 0x1;
+		else if (dword == 0xd)
+			cas_latency = 0x3;
+		else if (dword == 0xe)
+			cas_latency = 0x5;
+		else if (dword == 0xf)
+			cas_latency = 0x7;
+		else if (dword == 0x10)
+			cas_latency = 0x9;
+
+		/* Obtain BurstCtrl */
+		burst_length = Get_NB32_DCT(dev, dct, 0x84) & 0x3;
+
+		/* Load data into MRS word */
+		ret |= (ppd & 0x1) << 12;
+		ret |= (wr_ap & 0x3) << 9;
+		ret |= (dll_reset & 0x1) << 8;
+		ret |= (test_mode & 0x1) << 7;
+		ret |= ((cas_latency & 0xe) >> 1) << 4;
+		ret |= ((cas_latency & 0x1) >> 0) << 2;
+		ret |= (read_burst_type & 0x1) << 3;
+		ret |= (burst_length & 0x3);
+	} else {
+		ret = 0x00000;
+		ret |= (MrsChipSel << 20);
+
+		/* program MrsAddress[1:0]=burst length and control method
+		(BL):based on F2x[1,0]84[BurstCtrl] */
+		dword = Get_NB32_DCT(dev, dct, 0x84);
+		ret |= dword & 3;
+
+		/* program MrsAddress[3]=1 (BT):interleaved */
+		ret |= 1 << 3;
+
+		/* program MrsAddress[6:4,2]=read CAS latency
+		(CL):based on F2x[1,0]88[Tcl] */
+		dword2 = Get_NB32_DCT(dev, dct, 0x88);
+		ret |= (dword2 & 0x7) << 4;		/* F2x88[2:0] to MrsAddress[6:4] */
+		ret |= ((dword2 & 0x8) >> 3) << 2;	/* F2x88[3] to MrsAddress[2] */
+
+		/* program MrsAddress[12]=0 (PPD):slow exit */
+		if (dword & (1 << 23))
+			ret |= 1 << 12;
+
+		/* program MrsAddress[11:9]=write recovery for auto-precharge
+		(WR):based on F2x[1,0]84[Twr] */
+		ret |= ((dword >> 4) & 7) << 9;
+
+		/* program MrsAddress[8]=1 (DLL):DLL reset
+		just issue DLL reset at first time */
+		ret |= 1 << 8;
+	}
 
 	return ret;
 }
 
 static void mct_SendZQCmd(struct DCTStatStruc *pDCTstat, u8 dct)
 {
-	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 	u32 dword;
 
 	/*1.Program MrsAddress[10]=1
 	  2.Set SendZQCmd=1
 	 */
-	dword = Get_NB32(dev, reg_off + 0x7C);
+	dword = Get_NB32_DCT(dev, dct, 0x7C);
 	dword &= ~0xFFFFFF;
 	dword |= 1 << 10;
 	dword |= 1 << SendZQCmd;
-	Set_NB32(dev, reg_off + 0x7C, dword);
+	Set_NB32_DCT(dev, dct, 0x7C, dword);
 
 	/* Wait for SendZQCmd=0 */
 	do {
-		dword = Get_NB32(dev, reg_off + 0x7C);
+		dword = Get_NB32_DCT(dev, dct, 0x7C);
 	} while (dword & (1 << SendZQCmd));
 
 	/* 4.Wait 512 MEMCLKs */
@@ -244,31 +576,30 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 {
 	u8 MrsChipSel;
 	u32 dword;
-	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 
-	if (pDCTstat->DIMMAutoSpeed == 4) {
+	if (pDCTstat->DIMMAutoSpeed == mhz_to_memclk_config(mctGet_NVbits(NV_MIN_MEMCLK))) {
 		/* 3.Program F2x[1,0]7C[EnDramInit]=1 */
-		dword = Get_NB32(dev, reg_off + 0x7C);
+		dword = Get_NB32_DCT(dev, dct, 0x7c);
 		dword |= 1 << EnDramInit;
-		Set_NB32(dev, reg_off + 0x7C, dword);
+		Set_NB32_DCT(dev, dct, 0x7c, dword);
 		mct_DCTAccessDone(pDCTstat, dct);
 
 		/* 4.wait 200us */
 		mct_Wait(40000);
 
-		/* 5.On revision C processors, program F2x[1, 0]7C[DeassertMemRstX] = 1. */
-		dword = Get_NB32(dev, reg_off + 0x7C);
+		/* 5.Program F2x[1, 0]7C[DeassertMemRstX] = 1. */
+		dword = Get_NB32_DCT(dev, dct, 0x7c);
 		dword |= 1 << DeassertMemRstX;
-		Set_NB32(dev, reg_off + 0x7C, dword);
+		Set_NB32_DCT(dev, dct, 0x7c, dword);
 
 		/* 6.wait 500us */
 		mct_Wait(200000);
 
 		/* 7.Program F2x[1,0]7C[AssertCke]=1 */
-		dword = Get_NB32(dev, reg_off + 0x7C);
+		dword = Get_NB32_DCT(dev, dct, 0x7c);
 		dword |= 1 << AssertCke;
-		Set_NB32(dev, reg_off + 0x7C, dword);
+		Set_NB32_DCT(dev, dct, 0x7c, dword);
 
 		/* 8.wait 360ns */
 		mct_Wait(80);
@@ -277,6 +608,13 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 		 * must be done for each chip select pair */
 		if (pDCTstat->Status & (1 << SB_Registered))
 			mct_DramControlReg_Init_D(pMCTstat, pDCTstat, dct);
+
+		/* The following steps are performed with load reduced DIMMs only and
+		 * must be done for each DIMM */
+		// if (pDCTstat->Status & (1 << SB_LoadReduced))
+			/* TODO
+			 * Implement LRDIMM configuration
+			 */
 	}
 
 	/* The following steps are performed once for unbuffered DIMMs and once for each
@@ -285,23 +623,23 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 		if (pDCTstat->CSPresent & (1 << MrsChipSel)) {
 			u32 EMRS;
 			/* 13.Send EMRS(2) */
-			EMRS = mct_MR2(pMCTstat, pDCTstat, dct, MrsChipSel << 20);
+			EMRS = mct_MR2(pMCTstat, pDCTstat, dct, MrsChipSel);
 			EMRS = swapAddrBits(pDCTstat, EMRS, MrsChipSel, dct);
 			mct_SendMrsCmd(pDCTstat, dct, EMRS);
 			/* 14.Send EMRS(3). Ordinarily at this time, MrsAddress[2:0]=000b */
-			EMRS= mct_MR3(pMCTstat, pDCTstat, dct, MrsChipSel << 20);
+			EMRS= mct_MR3(pMCTstat, pDCTstat, dct, MrsChipSel);
 			EMRS = swapAddrBits(pDCTstat, EMRS, MrsChipSel, dct);
 			mct_SendMrsCmd(pDCTstat, dct, EMRS);
 			/* 15.Send EMRS(1) */
-			EMRS= mct_MR1(pMCTstat, pDCTstat, dct, MrsChipSel << 20);
+			EMRS= mct_MR1(pMCTstat, pDCTstat, dct, MrsChipSel);
 			EMRS = swapAddrBits(pDCTstat, EMRS, MrsChipSel, dct);
 			mct_SendMrsCmd(pDCTstat, dct, EMRS);
 			/* 16.Send MRS with MrsAddress[8]=1(reset the DLL) */
-			EMRS= mct_MR0(pMCTstat, pDCTstat, dct, MrsChipSel << 20);
+			EMRS= mct_MR0(pMCTstat, pDCTstat, dct, MrsChipSel);
 			EMRS = swapAddrBits(pDCTstat, EMRS, MrsChipSel, dct);
 			mct_SendMrsCmd(pDCTstat, dct, EMRS);
 
-			if (pDCTstat->DIMMAutoSpeed == 4)
+			if (pDCTstat->DIMMAutoSpeed == mhz_to_memclk_config(mctGet_NVbits(NV_MIN_MEMCLK)))
 				if (!(pDCTstat->Status & (1 << SB_Registered)))
 					break; /* For UDIMM, only send MR commands once per channel */
 		}
@@ -310,16 +648,15 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 				MrsChipSel ++;
 	}
 
-	mct_Wait(100000);
-
-	if (pDCTstat->DIMMAutoSpeed == 4) {
+	if (pDCTstat->DIMMAutoSpeed == mhz_to_memclk_config(mctGet_NVbits(NV_MIN_MEMCLK))) {
 		/* 17.Send two ZQCL commands */
 		mct_SendZQCmd(pDCTstat, dct);
 		mct_SendZQCmd(pDCTstat, dct);
+
 		/* 18.Program F2x[1,0]7C[EnDramInit]=0 */
-		dword = Get_NB32(dev, reg_off + 0x7C);
+		dword = Get_NB32_DCT(dev, dct, 0x7C);
 		dword &= ~(1 << EnDramInit);
-		Set_NB32(dev, reg_off + 0x7C, dword);
+		Set_NB32_DCT(dev, dct, 0x7C, dword);
 		mct_DCTAccessDone(pDCTstat, dct);
 	}
 }

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,10 +59,15 @@ UPDATE AS NEEDED
 #endif
 
 #ifndef MEM_MAX_LOAD_FREQ
-#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
- #define MEM_MAX_LOAD_FREQ		800
-#else
- #define MEM_MAX_LOAD_FREQ		400
+#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 	/* AMD_FAM10_DDR3 */
+ #define MEM_MAX_LOAD_FREQ			933
+ #define MEM_MIN_PLATFORM_FREQ_FAM10		400
+ #define MEM_MIN_PLATFORM_FREQ_FAM15		333
+#else						 /* AMD_FAM10_DDR2 */
+ #define MEM_MAX_LOAD_FREQ			400
+ #define MEM_MIN_PLATFORM_FREQ_FAM10		200
+ /* DDR2 not available on Family 15h */
+ #define MEM_MIN_PLATFORM_FREQ_FAM15		0
 #endif
 #endif
 

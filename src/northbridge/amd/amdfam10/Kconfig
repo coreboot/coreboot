@@ -95,7 +95,7 @@ endif
 
 config S3_DATA_SIZE
 	int
-	default 16384
+	default 32768
 	depends on (HAVE_ACPI_RESUME)
 
 config S3_DATA_POS

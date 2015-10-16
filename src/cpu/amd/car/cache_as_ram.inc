@@ -28,19 +28,24 @@
 #define CacheSizeAPStack	CONFIG_DCACHE_AP_STACK_SIZE
 
 #define MSR_MCFG_BASE		0xC0010058
-#define MSR_FAM10		0xC001102A
+#define MSR_BU_CFG2		0xC001102A
 
 #define jmp_if_not_k8(x)	comisd	%xmm2, %xmm1; jae x
 #define jmp_if_k8(x)		comisd	%xmm2, %xmm1; jb x
+#define jmp_if_not_fam15h(x)	comisd	%xmm3, %xmm1; jb x
+#define jmp_if_fam15h(x)	comisd	%xmm3, %xmm1; jae x
 
 #define CPUID_MASK		0x0ff00f00
 #define CPUID_VAL_FAM10_ROTATED	0x0f000010
+#define CPUID_VAL_FAM15_ROTATED	0x0f000060
 
 /*
  * XMM map:
  *   xmm1: CPU family
  *   xmm2: Fam10h comparison value
- *   xmm3: Backup EBX
+ *   xmm3: Fam15h comparison value
+ *   xmm4: Backup EBX
+ *   xmm5: Coreboot init detect
  */
 
 	/* Save the BIST result. */
@@ -60,7 +65,7 @@ cache_as_ram_setup:
 	movl	%eax, %cr4
 
 	/* Figure out the CPU family. */
-	cvtsi2sd %ebx, %xmm3
+	cvtsi2sd %ebx, %xmm4
 	movl	$0x01, %eax
 	cpuid
 	/* Base family is bits 8..11, extended family is bits 20..27. */
@@ -70,13 +75,16 @@ cache_as_ram_setup:
 	cvtsi2sd %eax, %xmm1
 	movl	$CPUID_VAL_FAM10_ROTATED, %eax
 	cvtsi2sd %eax, %xmm2
-	cvtsd2si %xmm3, %ebx
+	movl	$CPUID_VAL_FAM15_ROTATED, %eax
+	cvtsi2sd %eax, %xmm3
+	cvtsd2si %xmm4, %ebx
 
 	/* Check if cpu_init_detected. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
 	andl	$MTRR_DEF_TYPE_EN, %eax
 	movl	%eax, %ebx	/* We store the status. */
+	cvtsi2sd %ebx, %xmm5
 
 	jmp_if_k8(CAR_FAM10_out_post_errata)
 
@@ -117,20 +125,23 @@ cache_as_ram_setup:
 
 CAR_FAM10_out:
 
+	jmp_if_fam15h(CAR_FAM10_errata_applied)
 	/*
 	 * Errata 193: Disable clean copybacks to L3 cache to allow cached ROM.
 	 * Re-enable it in after RAM is initialized and before CAR is disabled.
 	 */
-	movl	$MSR_FAM10, %ecx
+	movl	$MSR_BU_CFG2, %ecx
 	rdmsr
-	bts	$15, %eax
+	bts	$15, %eax	/* Set bit 15 in EDX:EAX (bit 15 in EAX). */
 	wrmsr
 
 	/* Erratum 343, RevGuide for Fam10h, Pub#41322 Rev. 3.33 */
-	movl	$MSR_FAM10, %ecx
+	movl	$MSR_BU_CFG2, %ecx
 	rdmsr
 	bts	$35-32, %edx	/* Set bit 35 in EDX:EAX (bit 3 in EDX). */
 	wrmsr
+
+CAR_FAM10_errata_applied:
 
 #if CONFIG_MMCONF_SUPPORT
    #if (CONFIG_MMCONF_BASE_ADDRESS > 0xFFFFFFFF)
@@ -165,6 +176,63 @@ CAR_FAM10_out:
 #endif
 
 CAR_FAM10_out_post_errata:
+
+	/* Fam15h APIC IDs do not depend on NB config bit 54 */
+	jmp_if_not_fam15h(skip_nb54_set)
+	movl	$0xc001001f, %ecx	/* NB_CFG_MSR */
+	rdmsr
+	bts	$(54 - 32), %edx	/* Set NB config bit 54 */
+	wrmsr
+
+skip_nb54_set:
+	/* On Fam15h CPUs each compute unit's MTRRs are shared between two cores */
+	jmp_if_not_fam15h(skip_cu_check)
+
+	/* Get the initial APIC ID. */
+	movl	$1, %eax
+	cpuid
+	movl	%ebx, %eax
+
+	/* Restore init detect */
+	cvtsd2si %xmm5, %ebx
+
+	/* Determine if this is the second core to start in a compute unit; if so, wait for first core start, clear init detect and skip MTRR init */
+	bt	$24, %eax
+	jnc	skip_cu_check		/* First core in the compute unit jumps to skip_cu_check */
+
+	/* Determine if this is the second core to start in a compute unit; if so, clear init detect and skip MTRR init */
+	/* Busywait until the first core sets up the MTRRs */
+check_init_detect_1:
+	/* Check if cpu_init_detected. */
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
+	rdmsr
+	andl	$MTRR_DEF_TYPE_EN, %eax
+	cmp	$0x00000000, %eax
+	je	check_init_detect_1	/* First core has not yet started */
+
+check_init_detect_2:
+	movl	$SYSCFG_MSR, %ecx
+	rdmsr
+	andl	$(SYSCFG_MSR_MtrrFixDramEn | SYSCFG_MSR_MtrrVarDramEn), %eax
+	cmp	$0x00000000, %eax
+	je	check_init_detect_2	/* First core has not yet started */
+
+	/* First core has now started */
+	movl	$0x00000000, %ebx	/* Clear init detect flag */
+	cvtsi2sd %ebx, %xmm5
+	jmp	fam10_mtrr_setup_complete
+
+skip_cu_check:
+
+	jmp_if_not_fam15h(CAR_FAM15_errata_applied)
+
+	/* Erratum 714, RevGuide for Fam15h, Pub#48063 Rev. 3.24 */
+	movl	$MSR_BU_CFG2, %ecx
+	rdmsr
+	bts	$8, %eax	/* Set bit 8 in EDX:EAX (bit 8 in EAX). */
+	wrmsr
+
+CAR_FAM15_errata_applied:
 
 	/* Set MtrrFixDramModEn for clear fixed MTRR. */
 enable_fixed_mtrr_dram_modify:
@@ -334,7 +402,41 @@ wbcache_post_fam10_setup:
 	orl	$(SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn), %eax
 	wrmsr
 
+fam10_mtrr_setup_complete:
 	post_code(0xa1)
+
+	/* Disable conversion of INVD to WBINVD (INVDWBINVD = 0) */
+	mov	$0xc0010015, %ecx
+	rdmsr
+	btr	$4, %eax
+	wrmsr
+
+jmp_if_not_fam15h(fam15_car_msr_setup_complete)
+	/* Disable streaming store (DisSS = 1) */
+	mov	$0xc0011020, %ecx
+	rdmsr
+	bts	$28, %eax
+	wrmsr
+
+	/* Disable speculative ITLB reloads (DisSpecTlbRld = 1) */
+	mov	$0xc0011021, %ecx
+	rdmsr
+	bts	$9, %eax
+	wrmsr
+
+	/* Disable speculative DTLB reloads (DisSpecTlbRld = 1) and set DisHwPf = 1 */
+	mov	$0xc0011022, %ecx
+	rdmsr
+	bts	$4, %eax
+	bts	$13, %eax
+	wrmsr
+
+	/* Disable CR0 combining (CombineCr0Cd = 0) */
+	mov	$0xc001102b, %ecx
+	rdmsr
+	btr	$49-32, %edx
+	wrmsr
+fam15_car_msr_setup_complete:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
@@ -416,9 +518,6 @@ CAR_FAM10_ap:
 	 * to reverse it.
 	 */
 
-	/* Store our init detected. */
-	movl	%ebx, %esi
-
 	/* Get the coreid bits at first. */
 	movl	$0x80000008, %eax
 	cpuid
@@ -437,6 +536,8 @@ CAR_FAM10_ap:
 	movl	%edi, %ecx		/* CoreID bits */
 	bt	$(54 - 32), %edx
 	jc	roll_cfg
+
+	/* Fam10h NB config bit 54 was not set */
 	rolb	%cl, %bl
 roll_cfg:
 
@@ -446,8 +547,8 @@ roll_cfg:
 	movl	$(CacheBase + (CacheSize - (CacheSizeBSPStack + CacheSizeBSPSlush))), %esp
 	subl	%eax, %esp
 
-	/* Retrive init detected. */
-	movl	%esi, %ebx
+	/* Restore init detect */
+	cvtsd2si %xmm5, %ebx
 
 	post_code(0xa4)
 
@@ -460,6 +561,8 @@ CAR_FAM10_ap_out:
 	andl	$~(3 << 9), %eax
 	movl	%eax, %cr4
 
+	post_code(0xa6)
+
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
@@ -467,6 +570,9 @@ CAR_FAM10_ap_out:
 	movl	%esp, %ebp
 	pushl	%ebx		/* Init detected. */
 	pushl	%eax		/* BIST */
+
+	post_code(0xa7)
+
 	call	cache_as_ram_main
 
 	/* We will not go back. */

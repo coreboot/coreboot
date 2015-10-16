@@ -17,8 +17,14 @@
 u8 mct_checkNumberOfDqsRcvEn_1Pass(u8 pass)
 {
 	u8 ret = 1;
-	if (pass == SecondPass)
-		ret = 0;
+
+	if (is_fam15h()) {
+		/* Fam15h needs two passes */
+		ret = 1;
+	} else {
+		if (pass == SecondPass)
+			ret = 0;
+	}
 
 	return ret;
 }

@@ -199,7 +199,7 @@ static void enable_apic_ext_id(u32 node)
 
 static void STOP_CAR_AND_CPU(void)
 {
-	disable_cache_as_ram();	// inline
+	disable_cache_as_ram(0);	// inline
 	/* stop all cores except node0/core0 the bsp .... */
 	stop_this_cpu();
 }

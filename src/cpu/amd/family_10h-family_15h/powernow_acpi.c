@@ -70,8 +70,7 @@ static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_p
 		/* Revision C or greater single-link processor */
 		cpuid1 = cpuid(0x80000008);
 		acpigen_write_PSD_package(0, (cpuid1.ecx & 0xff) + 1, SW_ALL);
-	}
-	else {
+	} else {
 		/* Find the local APIC ID for the specified core ID */
 		struct device* cpu;
 		int cpu_index = 0;
@@ -95,7 +94,9 @@ static void write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u32 *pstate_p
 }
 
 /*
-* For details of this algorithm, please refer to the BDKG 3.62 page 69
+* For details of this algorithm, please refer to:
+* Family 10h BDKG 3.62 page 69
+* Family 15h BDKG 3.14 page 74
 *
 * WARNING: The core count algorithm below assumes that all processors
 * are identical, with the same number of active cores.  While the BKDG
@@ -145,6 +146,13 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	uint8_t node_count;
 	uint8_t cores_per_node;
 	uint8_t total_core_count;
+	uint8_t fam15h;
+	uint8_t fam10h_rev_e = 0;
+
+	/* Detect Revision E processors via method used in fidvid.c */
+	if ((cpuid_edx(0x80000007) & CPB_MASK)
+		&&  ((cpuid_ecx(0x80000008) & NC_MASK) == 5))
+			fam10h_rev_e = 1;
 
 	/*
 	 * Based on the CPU socket type,cmp_cap and pwr_lmt , get the power limit.
@@ -152,11 +160,17 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	 * cmp_cap : 0x0 SingleCore ; 0x1 DualCore ; 0x2 TripleCore ; 0x3 QuadCore ; 0x4 QuintupleCore ; 0x5 HexCore
 	 */
 	printk(BIOS_INFO, "Pstates algorithm ...\n");
+	fam15h = !!(mctGetLogicalCPUID(0) & AMD_FAM15_ALL);
 	/* Get number of cores */
-	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8);
-	cmp_cap = (dtemp & 0x3000) >> 12;
-	if (mctGetLogicalCPUID(0) & AMD_FAM10_REV_D)	/* revision D */
-		cmp_cap |= (dtemp & 0x8000) >> 13;
+	if (fam15h) {
+		cmp_cap = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 5)), 0x84) & 0xff;
+	} else {
+		dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xe8);
+		cmp_cap = (dtemp & 0x3000) >> 12;
+		if (mctGetLogicalCPUID(0) & (AMD_FAM10_REV_D | AMD_FAM15_ALL))	/* revision D or higher */
+			cmp_cap |= (dtemp & 0x8000) >> 13;
+	}
+
 	/* Get number of nodes */
 	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 0)), 0x60);
 	node_count = ((dtemp & 0x70) >> 4) + 1;
@@ -164,6 +178,14 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	/* Compute total number of cores installed in system */
 	total_core_count = cores_per_node * node_count;
+
+	/* Get number of boost states */
+	uint8_t boost_count = 0;
+	dtemp = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 4)), 0x15c);
+	if (fam10h_rev_e)
+		boost_count = (dtemp >> 2) & 0x1;
+	else if (mctGetLogicalCPUID(0) & AMD_FAM15_ALL)
+		boost_count = (dtemp >> 2) & 0x7;
 
 	Pstate_num = 0;
 
@@ -201,7 +223,7 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	/* Get PSmax's index */
 	msr = rdmsr(0xC0010061);
-	Pstate_max = (uint8_t) ((msr.lo >> PS_MAX_VAL_SHFT) & BIT_MASK_3);
+	Pstate_max = (uint8_t) ((msr.lo >> PS_MAX_VAL_SHFT) & ((fam15h)?BIT_MASK_7:BIT_MASK_3));
 
 	/* Determine if all enabled Pstates have the same fidvid */
 	uint8_t i;
@@ -215,10 +237,14 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		}
 	}
 
+	/* Family 15h uses slightly different PSmax numbering */
+	if (fam15h)
+		Pstate_max++;
+
 	/* Populate tables with all Pstate information */
 	for (Pstate_num = 0; Pstate_num < Pstate_max; Pstate_num++) {
 		/* Get power state information */
-		msr = rdmsr(0xC0010064 + Pstate_num);
+		msr = rdmsr(0xC0010064 + Pstate_num + boost_count);
 		cpufid = (msr.lo & 0x3f);
 		cpudid = (msr.lo & 0x1c0) >> 6;
 		cpuvid = (msr.lo & 0xfe00) >> 9;
@@ -228,12 +254,10 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		if (pviModeFlag) {
 			if (cpuvid >= 0x20) {
 				core_voltage = 7625 - (((cpuvid - 0x20) * 10000) / 80);
-			}
-			else {
+			} else {
 				core_voltage = 15500 - ((cpuvid * 10000) / 40);
 			}
-		}
-		else {
+		} else {
 			cpuvid = cpuvid & 0x7f;
 			if (cpuvid >= 0x7c)
 				core_voltage = 0;

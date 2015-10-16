@@ -79,6 +79,12 @@ void PrepareC_DCT(struct MCTStatStruc *pMCTstat,
 		pDCTstat->C_DCTPtr[dct]->Status[DCT_STATUS_REGISTERED] = 0;
 	}
 
+	if (pDCTstat->Status & (1 << SB_LoadReduced)) {
+		pDCTstat->C_DCTPtr[dct]->Status[DCT_STATUS_LOAD_REDUCED] = 1;
+	} else {
+		pDCTstat->C_DCTPtr[dct]->Status[DCT_STATUS_LOAD_REDUCED] = 0;
+	}
+
 	pDCTstat->C_DCTPtr[dct]->RegMan1Present = pDCTstat->RegMan1Present;
 
 	for (dimm = 0; dimm < MAX_TOTAL_DIMMS; dimm++) {
@@ -99,13 +105,13 @@ void EnableZQcalibration(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDC
 {
 	u32 val;
 
-	val = Get_NB32(pDCTstat->dev_dct, 0x94);
+	val = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x94);
 	val |= 1 << 11;
-	Set_NB32(pDCTstat->dev_dct, 0x94, val);
+	Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x94, val);
 
-	val = Get_NB32(pDCTstat->dev_dct, 0x94 + 0x100);
+	val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x94);
 	val |= 1 << 11;
-	Set_NB32(pDCTstat->dev_dct, 0x94 + 0x100, val);
+	Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x94, val);
 }
 
 void DisableZQcalibration(struct MCTStatStruc *pMCTstat,
@@ -113,15 +119,15 @@ void DisableZQcalibration(struct MCTStatStruc *pMCTstat,
 {
 	u32 val;
 
-	val = Get_NB32(pDCTstat->dev_dct, 0x94);
+	val = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x94);
 	val &= ~(1 << 11);
 	val &= ~(1 << 10);
-	Set_NB32(pDCTstat->dev_dct, 0x94, val);
+	Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x94, val);
 
-	val = Get_NB32(pDCTstat->dev_dct, 0x94 + 0x100);
+	val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x94);
 	val &= ~(1 << 11);
 	val &= ~(1 << 10);
-	Set_NB32(pDCTstat->dev_dct, 0x94 + 0x100, val);
+	Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x94, val);
 }
 
 static void EnterSelfRefresh(struct MCTStatStruc *pMCTstat,
@@ -138,23 +144,23 @@ static void EnterSelfRefresh(struct MCTStatStruc *pMCTstat,
 
 	/* Program F2x[1, 0]90[EnterSelfRefresh]=1. */
 	if (DCT0Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x90);
+		val = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x90);
 		val |= 1 << EnterSelfRef;
-		Set_NB32(pDCTstat->dev_dct, 0x90, val);
+		Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x90, val);
 	}
 	if (DCT1Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x90 + 0x100);
+		val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x90);
 		val |= 1 << EnterSelfRef;
-		Set_NB32(pDCTstat->dev_dct, 0x90 + 0x100, val);
+		Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x90, val);
 	}
 	/* Wait until the hardware resets F2x[1, 0]90[EnterSelfRefresh]=0. */
 	if (DCT0Present)
 		do {
-			val = Get_NB32(pDCTstat->dev_dct, 0x90);
+			val = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x90);
 		} while (val & (1 <<EnterSelfRef));
 	if (DCT1Present)
 		do {
-			val = Get_NB32(pDCTstat->dev_dct, 0x90 + 0x100);
+			val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x90);
 		} while (val & (1 <<EnterSelfRef));
 }
 
@@ -164,8 +170,11 @@ static void EnterSelfRefresh(struct MCTStatStruc *pMCTstat,
 static void ChangeMemClk(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat)
 {
-	u8 DCT0Present, DCT1Present;
-	u32 val;
+	uint8_t DCT0Present;
+	uint8_t DCT1Present;
+	uint32_t dword;
+	uint32_t mask;
+	uint32_t offset;
 
 	DCT0Present = pDCTstat->DIMMValidDCT[0];
 	if (pDCTstat->GangedMode)
@@ -173,76 +182,134 @@ static void ChangeMemClk(struct MCTStatStruc *pMCTstat,
 	else
 		DCT1Present = pDCTstat->DIMMValidDCT[1];
 
-	/* Program F2x[1, 0]90[EnterSelfRefresh]=1. */
-	if (DCT0Present) {
-		val = Get_NB32_index_wait(pDCTstat->dev_dct, 0x98, 8);
-		val |= 1 << DisAutoComp;
-		Set_NB32_index_wait(pDCTstat->dev_dct, 0x98, 8, val);
-	}
-	if (DCT1Present) {
-		val = Get_NB32_index_wait(pDCTstat->dev_dct, 0x98 + 0x100, 8);
-		val |= 1 << DisAutoComp;
-		Set_NB32_index_wait(pDCTstat->dev_dct, 0x98 + 0x100, 8, val);
+	if (is_fam15h()) {
+		/* Program D18F2x9C_x0D0F_E006_dct[1:0][PllLockTime] = 0x190 */
+		if (DCT0Present) {
+			dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 0x0d0fe006);
+			dword &= ~(0x0000ffff);
+			dword |= 0x00000190;
+			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 0x0d0fe006, dword);
+		}
+		if (DCT1Present) {
+			dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 1, 0x98, 0x0d0fe006);
+			dword &= ~(0x0000ffff);
+			dword |= 0x00000190;
+			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 1, 0x98, 0x0d0fe006, dword);
+		}
+	} else {
+		/* Program F2x[1, 0]9C[DisAutoComp]=1. */
+		if (DCT0Present) {
+			dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 8);
+			dword |= 1 << DisAutoComp;
+			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 8, dword);
+			mct_Wait(100);	/* Wait for 5us */
+		}
+		if (DCT1Present) {
+			dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 1, 0x98, 8);
+			dword |= 1 << DisAutoComp;
+			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 1, 0x98, 8, dword);
+			mct_Wait(100);	/* Wait for 5us */
+		}
 	}
 
 	/* Program F2x[1, 0]94[MemClkFreqVal] = 0. */
 	if (DCT0Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x94);
-		val &= ~(1 << MemClkFreqVal);
-		Set_NB32(pDCTstat->dev_dct, 0x94, val);
+		dword = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x94);
+		dword &= ~(1 << MemClkFreqVal);
+		Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x94, dword);
 	}
 	if (DCT1Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x94 + 0x100);
-		val &= ~(1 << MemClkFreqVal);
-		Set_NB32(pDCTstat->dev_dct, 0x94 + 0x100, val);
+		dword = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x94);
+		dword &= ~(1 << MemClkFreqVal);
+		Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x94, dword);
 	}
 
 	/* Program F2x[1, 0]94[MemClkFreq] to specify the target MEMCLK frequency. */
+	if (is_fam15h()) {
+		offset = 0x0;
+		mask = 0x1f;
+	} else {
+		offset = 0x1;
+		mask = 0x7;
+	}
 	if (DCT0Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x94);
-		val &= 0xFFFFFFF8;
-		val |= pDCTstat->TargetFreq - 1;
-		Set_NB32(pDCTstat->dev_dct, 0x94, val);
+		dword = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x94);
+		dword &= ~mask;
+		dword |= (pDCTstat->TargetFreq - offset) & mask;
+		Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x94, dword);
 	}
 	if (DCT1Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x94 + 0x100);
-		val &= 0xFFFFFFF8;
-		val |= pDCTstat->TargetFreq - 1;
-		Set_NB32(pDCTstat->dev_dct, 0x94 + 0x100, val);
+		dword = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x94);
+		dword &= ~mask;
+		dword |= (pDCTstat->TargetFreq - offset) & mask;
+		Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x94, dword);
+	}
+
+	if (is_fam15h()) {
+		if (DCT0Present) {
+			mctGet_PS_Cfg_D(pMCTstat, pDCTstat, 0);
+			set_2t_configuration(pMCTstat, pDCTstat, 0);
+			mct_BeforePlatformSpec(pMCTstat, pDCTstat, 0);
+			mct_PlatformSpec(pMCTstat, pDCTstat, 0);
+		}
+		if (DCT1Present) {
+			mctGet_PS_Cfg_D(pMCTstat, pDCTstat, 1);
+			set_2t_configuration(pMCTstat, pDCTstat, 1);
+			mct_BeforePlatformSpec(pMCTstat, pDCTstat, 1);
+			mct_PlatformSpec(pMCTstat, pDCTstat, 1);
+		}
 	}
 
 	/* Program F2x[1, 0]94[MemClkFreqVal] = 1. */
 	if (DCT0Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x94);
-		val |= 1 << MemClkFreqVal;
-		Set_NB32(pDCTstat->dev_dct, 0x94, val);
+		dword = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x94);
+		dword |= 1 << MemClkFreqVal;
+		Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x94, dword);
 	}
 	if (DCT1Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x94 + 0x100);
-		val |= 1 << MemClkFreqVal;
-		Set_NB32(pDCTstat->dev_dct, 0x94 + 0x100, val);
+		dword = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x94);
+		dword |= 1 << MemClkFreqVal;
+		Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x94, dword);
 	}
 
 	/* Wait until F2x[1, 0]94[FreqChgInProg]=0. */
 	if (DCT0Present)
 		do {
-			val = Get_NB32(pDCTstat->dev_dct, 0x94);
-		} while (val & (1 << FreqChgInProg));
+			dword = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x94);
+		} while (dword & (1 << FreqChgInProg));
 	if (DCT1Present)
 		do {
-			val = Get_NB32(pDCTstat->dev_dct, 0x94 + 0x100);
-		} while (val & (1 << FreqChgInProg));
+			dword = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x94);
+		} while (dword & (1 << FreqChgInProg));
 
-	/* Program F2x[1, 0]94[MemClkFreqVal] = 0. */
-	if (DCT0Present) {
-		val = Get_NB32_index_wait(pDCTstat->dev_dct, 0x98, 8);
-		val &= ~(1 << DisAutoComp);
-		Set_NB32_index_wait(pDCTstat->dev_dct, 0x98, 8, val);
-	}
-	if (DCT1Present) {
-		val = Get_NB32_index_wait(pDCTstat->dev_dct, 0x98 + 0x100, 8);
-		val &= ~(1 << DisAutoComp);
-		Set_NB32_index_wait(pDCTstat->dev_dct, 0x98 + 0x100, 8, val);
+	if (is_fam15h()) {
+		/* Program D18F2x9C_x0D0F_E006_dct[1:0][PllLockTime] = 0xf */
+		if (DCT0Present) {
+			dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 0x0d0fe006);
+			dword &= ~(0x0000ffff);
+			dword |= 0x0000000f;
+			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 0x0d0fe006, dword);
+		}
+		if (DCT1Present) {
+			dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 1, 0x98, 0x0d0fe006);
+			dword &= ~(0x0000ffff);
+			dword |= 0x0000000f;
+			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 1, 0x98, 0x0d0fe006, dword);
+		}
+	} else {
+		/* Program F2x[1, 0]9C[DisAutoComp] = 0. */
+		if (DCT0Present) {
+			dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 8);
+			dword &= ~(1 << DisAutoComp);
+			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 0, 0x98, 8, dword);
+			mct_Wait(15000);	/* Wait for 750us */
+		}
+		if (DCT1Present) {
+			dword = Get_NB32_index_wait_DCT(pDCTstat->dev_dct, 1, 0x98, 8);
+			dword &= ~(1 << DisAutoComp);
+			Set_NB32_index_wait_DCT(pDCTstat->dev_dct, 1, 0x98, 8, dword);
+			mct_Wait(15000);	/* Wait for 750us */
+		}
 	}
 }
 
@@ -263,29 +330,46 @@ static void ExitSelfRefresh(struct MCTStatStruc *pMCTstat,
 
 	/* Program F2x[1, 0]90[ExitSelfRef]=1 for both DCTs. */
 	if (DCT0Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x90);
+		val = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x90);
 		val |= 1 << ExitSelfRef;
-		Set_NB32(pDCTstat->dev_dct, 0x90, val);
+		Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x90, val);
 	}
 	if (DCT1Present) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x90 + 0x100);
+		val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x90);
 		val |= 1 << ExitSelfRef;
-		Set_NB32(pDCTstat->dev_dct, 0x90 + 0x100, val);
+		Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x90, val);
 	}
 	/* Wait until the hardware resets F2x[1, 0]90[ExitSelfRef]=0. */
 	if (DCT0Present)
 		do {
-			val = Get_NB32(pDCTstat->dev_dct, 0x90);
+			val = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x90);
 		} while (val & (1 << ExitSelfRef));
 	if (DCT1Present)
 		do {
-			val = Get_NB32(pDCTstat->dev_dct, 0x90 + 0x100);
+			val = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x90);
 		} while (val & (1 << ExitSelfRef));
 }
 
 void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat)
 {
+	uint32_t dword;
+	uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
+
+	if (is_fam15h()) {
+		/* Program F2x[1, 0]90[DisDllShutDownSR]=1. */
+		if (pDCTstat->DIMMValidDCT[0]) {
+			dword = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x90);
+			dword |= (0x1 << 27);
+			Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x90, dword);
+		}
+		if (pDCTstat->DIMMValidDCT[1]) {
+			dword = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x90);
+			dword |= (0x1 << 27);
+			Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x90, dword);
+		}
+	}
+
 	/* Program F2x[1,0]90[EnterSelfRefresh]=1.
 	 * Wait until the hardware resets F2x[1,0]90[EnterSelfRefresh]=0.
 	 */
@@ -301,10 +385,37 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 	 */
 	ChangeMemClk(pMCTstat, pDCTstat);
 
+	if (is_fam15h()) {
+		uint8_t dct;
+		for (dct = 0; dct < 2; dct++) {
+			if (pDCTstat->DIMMValidDCT[dct]) {
+				phyAssistedMemFnceTraining(pMCTstat, pDCTstat);
+				InitPhyCompensation(pMCTstat, pDCTstat, dct);
+			}
+		}
+	}
+
 	/* Program F2x[1,0]90[ExitSelfRef]=1 for both DCTs.
 	 * Wait until the hardware resets F2x[1, 0]90[ExitSelfRef]=0.
 	 */
 	ExitSelfRefresh(pMCTstat, pDCTstat);
+
+	if (is_fam15h()) {
+		if ((package_type == PT_C3) || (package_type == PT_GR)) {
+			/* Socket C32 or G34 */
+			/* Program F2x[1, 0]90[DisDllShutDownSR]=0. */
+			if (pDCTstat->DIMMValidDCT[0]) {
+				dword = Get_NB32_DCT(pDCTstat->dev_dct, 0, 0x90);
+				dword &= ~(0x1 << 27);
+				Set_NB32_DCT(pDCTstat->dev_dct, 0, 0x90, dword);
+			}
+			if (pDCTstat->DIMMValidDCT[1]) {
+				dword = Get_NB32_DCT(pDCTstat->dev_dct, 1, 0x90);
+				dword &= ~(0x1 << 27);
+				Set_NB32_DCT(pDCTstat->dev_dct, 1, 0x90, dword);
+			}
+		}
+	}
 
 	/* wait for 500 MCLKs after ExitSelfRef, 500*2.5ns=1250ns */
 	mct_Wait(250);
@@ -332,13 +443,13 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 static void Modify_OnDimmMirror(struct DCTStatStruc *pDCTstat, u8 dct, u8 set)
 {
 	u32 val;
-	u32 reg_off = dct * 0x100 + 0x44;
-	while (reg_off < (dct * 0x100 + 0x60)) {
-		val = Get_NB32(pDCTstat->dev_dct, reg_off);
+	u32 reg = 0x44;
+	while (reg < 0x60) {
+		val = Get_NB32_DCT(pDCTstat->dev_dct, dct, reg);
 		if (val & (1 << CSEnable))
 			set ? (val |= 1 << onDimmMirror) : (val &= ~(1<<onDimmMirror));
-		Set_NB32(pDCTstat->dev_dct, reg_off, val);
-		reg_off += 8;
+		Set_NB32_DCT(pDCTstat->dev_dct, dct, reg, val);
+		reg += 8;
 	}
 }
 

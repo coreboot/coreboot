@@ -84,18 +84,19 @@ static void prepare_ramstage_region(void *resume_backup_memory)
 static void vErrata343(void)
 {
 #ifdef BU_CFG2_MSR
-    msr_t msr;
-    unsigned int uiMask = 0xFFFFFFF7;
+	msr_t msr;
+	unsigned int uiMask = 0xFFFFFFF7;
 
-    msr = rdmsr(BU_CFG2_MSR);
-    msr.hi &= uiMask; // set bit 35 to 0
-    wrmsr(BU_CFG2_MSR, msr);
+	msr = rdmsr(BU_CFG2_MSR);
+	msr.hi &= uiMask;	// IcDisSpecTlbWr (bit 35) = 0
+	wrmsr(BU_CFG2_MSR, msr);
 #endif
 }
 
 void post_cache_as_ram(void)
 {
 	void *resume_backup_memory = NULL;
+	uint32_t family = amd_fam1x_cpu_family();
 
 	struct romstage_handoff *handoff;
 	handoff = romstage_handoff_find_or_add();
@@ -112,7 +113,10 @@ void post_cache_as_ram(void)
 	prepare_romstage_ramstack(resume_backup_memory);
 
 	/* from here don't store more data in CAR */
-	vErrata343();
+	if (family < 0x6f) {
+		/* Family 10h or earlier */
+		vErrata343();
+	}
 
 	size_t car_size = car_data_size();
 	void *migrated_car = (void *)(CONFIG_RAMTOP - car_size);

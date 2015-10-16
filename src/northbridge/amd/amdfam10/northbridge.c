@@ -77,6 +77,21 @@ device_t get_node_pci(u32 nodeid, u32 fn)
 #endif
 }
 
+static inline uint8_t is_fam15h(void)
+{
+	uint8_t fam15h = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
+
+	return fam15h;
+}
+
 static void get_fx_devs(void)
 {
 	int i;
@@ -198,7 +213,7 @@ static void amd_g34_fixup(struct bus *link, device_t dev)
 		/* Revision D or later */
 		rev_gte_d = 1;
 
-	if (rev_gte_d) {
+	if (rev_gte_d || is_fam15h()) {
 		f3xe8 = pci_read_config32(get_node_pci(0, 3), 0xe8);
 
 		/* Check for dual node capability */
@@ -211,6 +226,15 @@ static void amd_g34_fixup(struct bus *link, device_t dev)
 			*/
 			f3xe8 = pci_read_config32(get_node_pci(nodeid, 3), 0xe8);
 			uint8_t internal_node_number = ((f3xe8 & 0xc0000000) >> 30);
+			uint8_t defective_link_number_1;
+			uint8_t defective_link_number_2;
+			if (is_fam15h()) {
+				defective_link_number_1 = 4;	/* Link 0 Sublink 1 */
+				defective_link_number_2 = 7;	/* Link 3 Sublink 1 */
+			} else {
+				defective_link_number_1 = 6;	/* Link 2 Sublink 1 */
+				defective_link_number_2 = 5;	/* Link 1 Sublink 1 */
+			}
 			if (internal_node_number == 0) {
 				/* Node 0 */
 				if (link->link_num == 6)	/* Link 2 Sublink 1 */
@@ -309,6 +333,46 @@ static void trim_ht_chain(struct device *dev)
 static void amdfam10_scan_chains(device_t dev)
 {
 	struct bus *link;
+
+#if CONFIG_CPU_AMD_SOCKET_G34_NON_AGESA
+	if (is_fam15h()) {
+		uint8_t current_link_number = 0;
+
+		for (link = dev->link_list; link; link = link->next) {
+			/* The following links have changed position in Fam15h G34 processors:
+			 * Fam10  Fam15
+			 * Node 0
+			 * L3 --> L1
+			 * L0 --> L3
+			 * L1 --> L2
+			 * L2 --> L0
+			 * Node 1
+			 * L0 --> L0
+			 * L1 --> L3
+			 * L2 --> L1
+			 * L3 --> L2
+			 */
+			if (link->link_num == 0)
+				link->link_num = 3;
+			else if (link->link_num == 1)
+				link->link_num = 2;
+			else if (link->link_num == 2)
+				link->link_num = 0;
+			else if (link->link_num == 3)
+				link->link_num = 1;
+			else if (link->link_num == 5)
+				link->link_num = 7;
+			else if (link->link_num == 6)
+				link->link_num = 5;
+			else if (link->link_num == 7)
+				link->link_num = 6;
+
+			current_link_number++;
+			if (current_link_number > 3)
+				current_link_number = 0;
+		}
+	}
+#endif
 
 	/* Do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0 */
 	trim_ht_chain(dev);
@@ -616,13 +680,21 @@ static const struct pci_driver mcf0_driver __pci_driver = {
 	.device = 0x1200,
 };
 
+
 static void amdfam10_nb_init(void *chip_info)
 {
 	relocate_sb_ht_chain();
 }
 
+static const struct pci_driver mcf0_driver_fam15 __pci_driver = {
+	.ops	= &northbridge_operations,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x1600,
+};
+
+
 struct chip_operations northbridge_amd_amdfam10_ops = {
-	CHIP_NAME("AMD FAM10 Northbridge")
+	CHIP_NAME("AMD Family 10h/15h Northbridge")
 	.enable_dev = 0,
 	.init = amdfam10_nb_init,
 };
@@ -946,38 +1018,61 @@ static int amdfam10_get_smbios_data16(int* count, int handle, unsigned long *cur
 
 static uint16_t amdmct_mct_speed_enum_to_mhz(uint8_t speed)
 {
-	if (IS_ENABLED(CONFIG_DIMM_DDR2)) {
-		switch (speed) {
-			case 1:
-				return 200;
-			case 2:
-				return 266;
-			case 3:
-				return 333;
-			case 4:
-				return 400;
-			case 5:
-				return 533;
-			default:
-				return 0;
-		}
-	} else if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
-		switch (speed) {
-			case 3:
-				return 333;
-			case 4:
-				return 400;
-			case 5:
-				return 533;
-			case 6:
-				return 667;
-			case 7:
-				return 800;
-			default:
-				return 0;
+	if (is_fam15h()) {
+		if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+			switch (speed) {
+				case 0x4:
+					return 333;
+				case 0x6:
+					return 400;
+				case 0xa:
+					return 533;
+				case 0xe:
+					return 667;
+				case 0x12:
+					return 800;
+				case 0x16:
+					return 933;
+				default:
+					return 0;
+			}
+		} else {
+			return 0;
 		}
 	} else {
-		return 0;
+		if (IS_ENABLED(CONFIG_DIMM_DDR2)) {
+			switch (speed) {
+				case 1:
+					return 200;
+				case 2:
+					return 266;
+				case 3:
+					return 333;
+				case 4:
+					return 400;
+				case 5:
+					return 533;
+				default:
+					return 0;
+			}
+		} else if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+			switch (speed) {
+				case 3:
+					return 333;
+				case 4:
+					return 400;
+				case 5:
+					return 533;
+				case 6:
+					return 667;
+				case 7:
+					return 800;
+				default:
+					return 0;
+			}
+		} else {
+			return 0;
+		}
 	}
 }
 
@@ -1072,6 +1167,8 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 #if IS_ENABLED(CONFIG_DIMM_DDR3)
 					/* Find the maximum and minimum supported voltages */
 					uint8_t supported_voltages = mem_info->dct_stat[node].DimmSupportedVoltages[slot];
+					uint8_t configured_voltage = mem_info->dct_stat[node].DimmConfiguredVoltage[slot];
+
 					if (supported_voltages & 0x8)
 						t->minimum_voltage = 1150;
 					else if (supported_voltages & 0x4)
@@ -1090,7 +1187,14 @@ static int amdfam10_get_smbios_data17(int* count, int handle, int parent_handle,
 					else if (supported_voltages & 0x8)
 						t->maximum_voltage = 1150;
 
-					t->configured_voltage = mem_info->dct_stat[node].DimmConfiguredVoltage[slot];
+					if (configured_voltage & 0x8)
+						t->configured_voltage = 1150;
+					else if (configured_voltage & 0x4)
+						t->configured_voltage = 1250;
+					else if (configured_voltage & 0x2)
+						t->configured_voltage = 1350;
+					else if (configured_voltage & 0x1)
+						t->configured_voltage = 1500;
 #endif
 				}
 				t->memory_error_information_handle = 0xFFFE;	/* no error information handle available */
@@ -1229,12 +1333,14 @@ static void cpu_bus_scan(device_t dev)
 #if CONFIG_CBB
 	device_t pci_domain;
 #endif
+	int nvram = 0;
 	int i,j;
 	int nodes;
 	unsigned nb_cfg_54;
 	unsigned siblings;
 	int cores_found;
 	int disable_siblings;
+	uint8_t disable_cu_siblings = 0;
 	unsigned ApicIdCoreIdSize;
 
 	nb_cfg_54 = 0;
@@ -1321,14 +1427,23 @@ static void cpu_bus_scan(device_t dev)
 	/* Always use the devicetree node with lapic_id 0 for BSP. */
 	remap_bsp_lapic(cpu_bus);
 
+	if (get_option(&nvram, "compute_unit_siblings") == CB_SUCCESS)
+		disable_cu_siblings = !!nvram;
+
+	if (disable_cu_siblings)
+		printk(BIOS_DEBUG, "Disabling siblings on each compute unit as requested\n");
+
 	for(i = 0; i < nodes; i++) {
 		device_t cdb_dev;
 		unsigned busn, devn;
 		struct bus *pbus;
 
+		uint8_t fam15h = 0;
 		uint8_t rev_gte_d = 0;
 		uint8_t dual_node = 0;
 		uint32_t f3xe8;
+		uint32_t family;
+		uint32_t model;
 
 		busn = CONFIG_CBB;
 		devn = CONFIG_CDB+i;
@@ -1368,7 +1483,16 @@ static void cpu_bus_scan(device_t dev)
 
 		f3xe8 = pci_read_config32(get_node_pci(0, 3), 0xe8);
 
-		if (cpuid_eax(0x80000001) >= 0x8)
+		family = model = cpuid_eax(0x80000001);
+		model = ((model & 0xf0000) >> 12) | ((model & 0xf0) >> 4);
+
+		if (is_fam15h()) {
+			/* Family 15h or later */
+			fam15h = 1;
+			nb_cfg_54 = 1;
+		}
+
+		if ((model >= 0x8) || fam15h)
 			/* Revision D or later */
 			rev_gte_d = 1;
 
@@ -1378,13 +1502,20 @@ static void cpu_bus_scan(device_t dev)
 				dual_node = 1;
 
 		cores_found = 0; // one core
-		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));
+		if (fam15h)
+			cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 5));
+		else
+			cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));
 		int enable_node = cdb_dev && cdb_dev->enabled;
 		if (enable_node) {
-			j = pci_read_config32(cdb_dev, 0xe8);
-			cores_found = (j >> 12) & 3; // dev is func 3
-			if (siblings > 3)
-				cores_found |= (j >> 13) & 4;
+			if (fam15h) {
+				cores_found = pci_read_config32(cdb_dev, 0x84) & 0xff;
+			} else {
+				j = pci_read_config32(cdb_dev, 0xe8);
+				cores_found = (j >> 12) & 3; // dev is func 3
+				if (siblings > 3)
+					cores_found |= (j >> 13) & 4;
+			}
 			printk(BIOS_DEBUG, "  %s siblings=%d\n", dev_path(cdb_dev), cores_found);
 		}
 
@@ -1404,15 +1535,24 @@ static void cpu_bus_scan(device_t dev)
 
 			if (dual_node) {
 				apic_id = 0;
-				if (nb_cfg_54) {
-					apic_id |= ((i >> 1) & 0x3) << 4;			/* Node ID */
+				if (fam15h) {
+					apic_id |= ((i >> 1) & 0x3) << 5;			/* Node ID */
 					apic_id |= ((i & 0x1) * (siblings + 1)) + j;		/* Core ID */
 				} else {
-					apic_id |= i & 0x3;					/* Node ID */
-					apic_id |= (((i & 0x1) * (siblings + 1)) + j) << 4;	/* Core ID */
+					if (nb_cfg_54) {
+						apic_id |= ((i >> 1) & 0x3) << 4;			/* Node ID */
+						apic_id |= ((i & 0x1) * (siblings + 1)) + j;		/* Core ID */
+					} else {
+						apic_id |= i & 0x3;					/* Node ID */
+						apic_id |= (((i & 0x1) * (siblings + 1)) + j) << 4;	/* Core ID */
+					}
 				}
 			} else {
-				apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
+				if (fam15h) {
+					apic_id = (i * (siblings + 1)) + j;
+				} else {
+					apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
+				}
 			}
 
 #if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET>0)
@@ -1422,6 +1562,9 @@ static void cpu_bus_scan(device_t dev)
 				}
 			}
 #endif
+			if (disable_cu_siblings && (j & 0x1))
+				continue;
+
 			device_t cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
 			if (cpu)
 				amd_cpu_topology(cpu, i, j);
@@ -1480,6 +1623,6 @@ static void root_complex_enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_amd_amdfam10_root_complex_ops = {
-	CHIP_NAME("AMD FAM10 Root Complex")
+	CHIP_NAME("AMD Family 10h/15h Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };

@@ -958,8 +958,11 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #define LAPIC_MSG_REG 0x380
 #define F10_APSTATE_STARTED 0x13  // start of AP execution
-#define F10_APSTATE_STOPPED 0x14  // allow AP to stop
+#define F10_APSTATE_ASLEEP  0x14  // AP sleeping
+#define F10_APSTATE_STOPPED 0x15  // allow AP to stop
 #define F10_APSTATE_RESET   0x01  // waiting for warm reset
+
+#define MAX_CORES_SUPPORTED 128
 
 #include "nums.h"
 
@@ -1034,7 +1037,6 @@ struct sys_info {
 
 	struct MCTStatStruc MCTstat;
 	struct DCTStatStruc DCTstatA[NODE_NUMS];
-
 } __attribute__((packed));
 
 #ifdef __PRE_RAM__

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +20,6 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 	u8 Dimms, DimmNum, MaxDimm, Speed;
 	u32 val;
 	u32 dct = 0;
-	u32 reg_off = 0;
 
 	DimmNum = (MrsChipSel >> 20) & 0xFE;
 
@@ -37,7 +37,6 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 		dct = 1;
 		DimmNum ++;
 	}
-	reg_off = 0x100 * dct;
 	Dimms = pDCTstat->MAdimms[dct];
 
 	val = 0;
@@ -91,21 +90,21 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 static void mct_SendCtrlWrd(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u32 val)
 {
-	u32 reg_off = 0;
+	uint8_t dct = 0;
 	u32 dev = pDCTstat->dev_dct;
 
 	if (pDCTstat->CSPresent_DCT[0] > 0) {
-		reg_off = 0;
+		dct = 0;
 	} else if (pDCTstat->CSPresent_DCT[1] > 0 ){
-		reg_off = 0x100;
+		dct = 1;
 	}
 
-	val |= Get_NB32(dev, reg_off + 0x7C) & ~0xFFFFFF;
+	val |= Get_NB32_DCT(dev, dct, 0x7C) & ~0xFFFFFF;
 	val |= 1 << SendControlWord;
-	Set_NB32(dev, reg_off + 0x7C, val);
+	Set_NB32_DCT(dev, dct, 0x7C, val);
 
 	do {
-		val = Get_NB32(dev, reg_off + 0x7C);
+		val = Get_NB32_DCT(dev, dct, 0x7C);
 	} while (val & (1 << SendControlWord));
 }
 
@@ -115,7 +114,6 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 	u8 MrsChipSel;
 	u32 dev = pDCTstat->dev_dct;
 	u32 val, cw;
-	u32 reg_off = 0x100 * dct;
 
 	mct_Wait(1600);
 
@@ -123,7 +121,7 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 
 	for (MrsChipSel = 0; MrsChipSel < 8; MrsChipSel ++, MrsChipSel ++) {
 		if (pDCTstat->CSPresent & (1 << MrsChipSel)) {
-			val = Get_NB32(dev, reg_off + 0xA8);
+			val = Get_NB32_DCT(dev, dct, 0xa8);
 			val &= ~(0xF << 8);
 
 			switch (MrsChipSel) {
@@ -140,7 +138,7 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 			case 7:
 				val |= (3 << 6) << 8;
 			}
-			Set_NB32(dev, reg_off + 0xA8 , val);
+			Set_NB32_DCT(dev, dct, 0xa8, val);
 
 			for (cw=0; cw <=15; cw ++) {
 				mct_Wait(1600);
@@ -167,10 +165,10 @@ void FreqChgCtrlWrd(struct MCTStatStruc *pMCTstat,
 	for (MrsChipSel=0; MrsChipSel < 8; MrsChipSel++, MrsChipSel++) {
 		if (pDCTstat->CSPresent & (1 << MrsChipSel)) {
 			/* 2. Program F2x[1, 0]A8[CtrlWordCS]=bit mask for target chip selects. */
-			val = Get_NB32(dev, 0xA8); /* TODO: dct * 0x100 + 0xA8 */
+			val = Get_NB32_DCT(dev, 0, 0xA8); /* TODO: dct 0 / 1 select */
 			val &= ~(0xFF << 8);
 			val |= (0x3 << (MrsChipSel & 0xFE)) << 8;
-			Set_NB32(dev, 0xA8, val); /* TODO: dct * 0x100 + 0xA8 */
+			Set_NB32_DCT(dev, 0, 0xA8, val); /* TODO: dct 0 / 1 select */
 
 			/* Resend control word 10 */
 			mct_Wait(1600);

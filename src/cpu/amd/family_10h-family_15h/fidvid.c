@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +40,7 @@ Fam10 Bios and Kernel Development Guide #31116, rev 3.48, April 22, 2010
 
 3.-  2.4.2.7 dualPlaneOnly(dev)
 
-4.-  2.4.2.8 applyBoostFIDOffset(dev)
+4.-  2.4.2.8 applyBoostFIDOffset(dev, nodeid)
 
 5.-  enableNbPState1(dev)
 
@@ -138,25 +139,33 @@ static void enable_fid_change(u8 fid)
 	}
 }
 
-static void applyBoostFIDOffset(  device_t dev ) {
-  // BKDG 2.4.2.8
-  // revision E only, but E is apparently not supported yet, therefore untested
-  if ((cpuid_edx(0x80000007) & CPB_MASK)
-      &&  ((cpuid_ecx(0x80000008) & NC_MASK) ==5) ) {
-      u32 core =  get_node_core_id_x().coreid;
-      u32 asymetricBoostThisCore = ((pci_read_config32(dev, 0x10C) >> (core*2))) & 3;
-      msr_t msr =  rdmsr(PS_REG_BASE);
-      u32 cpuFid = msr.lo & PS_CPU_FID_MASK;
-      cpuFid = cpuFid + asymetricBoostThisCore;
-      msr.lo &=   ~PS_CPU_FID_MASK;
-      msr.lo |= cpuFid ;
-      wrmsr(PS_REG_BASE , msr);
-
-  }
+static void applyBoostFIDOffset(device_t dev, uint32_t nodeid) {
+	// BKDG 2.4.2.8
+	// Fam10h revision E only, but E is apparently not supported yet, therefore untested
+	if ((cpuid_edx(0x80000007) & CPB_MASK)
+		&&  ((cpuid_ecx(0x80000008) & NC_MASK) == 5) ) {
+		u32 core =  get_node_core_id_x().coreid;
+		u32 asymetricBoostThisCore = ((pci_read_config32(dev, 0x10C) >> (core*2))) & 3;
+		msr_t msr =  rdmsr(PS_REG_BASE);
+		u32 cpuFid = msr.lo & PS_CPU_FID_MASK;
+		cpuFid = cpuFid + asymetricBoostThisCore;
+		msr.lo &=   ~PS_CPU_FID_MASK;
+		msr.lo |= cpuFid ;
+		wrmsr(PS_REG_BASE , msr);
+	} else if (is_fam15h()) {
+		uint32_t dword = pci_read_config32(NODE_PCI(nodeid, 4), 0x15c);
+		uint8_t boost_count = (dword >> 2) & 0x7;
+		if (boost_count > 0) {
+			/* Enable boost */
+			dword &= ~0x3;
+			dword |= 0x1;
+			pci_write_config32(NODE_PCI(nodeid, 4), 0x15c, dword);
+		}
+	}
 }
 
 static void enableNbPState1( device_t dev ) {
-  u32 cpuRev =  mctGetLogicalCPUID(0xFF);
+  uint64_t cpuRev =  mctGetLogicalCPUID(0xFF);
   if (cpuRev & AMD_FAM10_C3) {
     u32 nbPState = (pci_read_config32(dev, 0x1F0) & NB_PSTATE_MASK);
     if ( nbPState){
@@ -198,7 +207,7 @@ static u8 setPStateMaxVal( device_t dev ) {
 static void dualPlaneOnly(  device_t dev ) {
   // BKDG 2.4.2.7
 
-  u32 cpuRev =  mctGetLogicalCPUID(0xFF);
+  uint64_t cpuRev =  mctGetLogicalCPUID(0xFF);
   if ((mctGetProcessorPackageType() ==  AMD_PKGTYPE_AM3_2r2)
       && (cpuRev & AMD_DR_Cx)) { // should be rev C or rev E but there's no constant for E
     if ( (pci_read_config32(dev, 0x1FC) & DUAL_PLANE_ONLY_MASK)
@@ -278,12 +287,16 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	 */
 
 	/* Determine if this is a PVI or SVI system */
-	dtemp = pci_read_config32(dev, 0xA0);
-
-	if (dtemp & PVI_MODE)
-		pviModeFlag = 1;
-	else
+	if (is_fam15h()) {
 		pviModeFlag = 0;
+	} else {
+		dtemp = pci_read_config32(dev, 0xa0);
+
+		if (dtemp & PVI_MODE)
+			pviModeFlag = 1;
+		else
+			pviModeFlag = 0;
+	}
 
 	/* Get P0's voltage */
         /* MSRC001_00[68:64] are not programmed yet when called from
@@ -510,59 +523,67 @@ static void config_nb_syn_ptr_adj(device_t dev, u32 cpuRev) {
 }
 
 static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg) {
-                /* step 1, chapter 2.4.2.6 of AMD Fam 10 BKDG #31116 Rev 3.48 22.4.2010 */
-        u32 dword;
-	u32 c1= 1;
-        if (cpuRev & (AMD_DR_Bx)) {
-            // will coreboot ever enable cache scrubbing ?
-            // if it does, will it be enough to check the current state
-            // or should we configure for what we'll set up later ?
-            dword = pci_read_config32(dev, 0x58);
-            u32 scrubbingCache = dword &
-	                        ( (0x1F << 16) // DCacheScrub
-		 	          | (0x1F << 8) ); // L2Scrub
- 	    if (scrubbingCache) {
-	        c1 = 0x80;
-	    } else {
-	        c1 = 0xA0;
-	    }
-	} else { // rev C or later
-	    // same doubt as cache scrubbing: ok to check current state ?
-            dword = pci_read_config32(dev, 0xDC);
-            u32 cacheFlushOnHalt = dword & (7 << 16);
-            if (!cacheFlushOnHalt) {
-       	       c1 = 0x80;
-       	    }
-       	}
-       	dword = (c1 << 24) | (0xE641E6);
-	pci_write_config32(dev, 0x84, dword);
+	if (is_fam15h()) {
+		/* Family 15h BKDG Rev. 3.14 D18F3x80 recommended settings */
+		pci_write_config32(dev, 0x80, 0xe20be281);
 
+		/* Family 15h BKDG Rev. 3.14 D18F3x84 recommended settings */
+		pci_write_config32(dev, 0x84, 0x01e200e2);
+	} else {
+		/* step 1, chapter 2.4.2.6 of AMD Fam 10 BKDG #31116 Rev 3.48 22.4.2010 */
+		u32 dword;
+		u32 c1= 1;
+		if (cpuRev & (AMD_DR_Bx)) {
+			// will coreboot ever enable cache scrubbing ?
+			// if it does, will it be enough to check the current state
+			// or should we configure for what we'll set up later ?
+			dword = pci_read_config32(dev, 0x58);
+			u32 scrubbingCache = dword &
+						( (0x1F << 16) // DCacheScrub
+						| (0x1F << 8) ); // L2Scrub
+			if (scrubbingCache) {
+				c1 = 0x80;
+			} else {
+				c1 = 0xA0;
+			}
+		} else { // rev C or later
+			// same doubt as cache scrubbing: ok to check current state ?
+			dword = pci_read_config32(dev, 0xDC);
+			u32 cacheFlushOnHalt = dword & (7 << 16);
+			if (!cacheFlushOnHalt) {
+				c1 = 0x80;
+			}
+		}
+		dword = (c1 << 24) | (0xE641E6);
+		pci_write_config32(dev, 0x84, dword);
 
-        /* FIXME: BKDG Table 100 says if the link is at a Gen1
-frequency and the chipset does not support a 10us minimum LDTSTOP
-assertion time, then { If ASB2 && SVI then smaf001 = F6h else
-smaf001=87h. } else ...  I hardly know what it means or how to check
-it from here, so I bluntly assume it is false and code here the else,
-which is easier  */
+		/* FIXME: BKDG Table 100 says if the link is at a Gen1
+		* frequency and the chipset does not support a 10us minimum LDTSTOP
+		* assertion time, then { If ASB2 && SVI then smaf001 = F6h else
+		* smaf001=87h. } else ...  I hardly know what it means or how to check
+		* it from here, so I bluntly assume it is false and code here the else,
+		* which is easier
+		*/
 
-        u32 smaf001 = 0xE6;
-        if (cpuRev & AMD_DR_Bx ) {
-	    smaf001 = 0xA6;
-        } else {
-            #if CONFIG_SVI_HIGH_FREQ
-                if (cpuRev & (AMD_RB_C3 | AMD_DA_C3)) {
-		       smaf001 = 0xF6;
-                }
-            #endif
-        }
-        u32 fidvidChange = 0;
-        if (((cpuRev & AMD_DA_Cx) && (procPkg & AMD_PKGTYPE_S1gX))
-		    || (cpuRev & AMD_RB_C3) ) {
-                       fidvidChange=0x0B;
-        }
-	dword = (0xE6 << 24) | (fidvidChange << 16)
-                        | (smaf001 << 8) | 0x81;
-	pci_write_config32(dev, 0x80, dword);
+		u32 smaf001 = 0xE6;
+		if (cpuRev & AMD_DR_Bx ) {
+			smaf001 = 0xA6;
+		} else {
+		#if CONFIG_SVI_HIGH_FREQ
+			if (cpuRev & (AMD_RB_C3 | AMD_DA_C3)) {
+				smaf001 = 0xF6;
+			}
+		#endif
+		}
+		u32 fidvidChange = 0;
+		if (((cpuRev & AMD_DA_Cx) && (procPkg & AMD_PKGTYPE_S1gX))
+			|| (cpuRev & AMD_RB_C3) ) {
+				fidvidChange=0x0B;
+		}
+		dword = (0xE6 << 24) | (fidvidChange << 16)
+				| (smaf001 << 8) | 0x81;
+		pci_write_config32(dev, 0x80, dword);
+	}
 }
 
 static void prep_fid_change(void)
@@ -579,7 +600,7 @@ static void prep_fid_change(void)
 	for (i = 0; i < nodes; i++) {
 		printk(BIOS_DEBUG, "Prep FID/VID Node:%02x\n", i);
 		dev = NODE_PCI(i, 3);
-                u32 cpuRev = mctGetLogicalCPUID(0xFF) ;
+                uint64_t cpuRev = mctGetLogicalCPUID(0xFF) ;
 	        u8 procPkg =  mctGetProcessorPackageType();
 
 		setVSRamp(dev);
@@ -607,7 +628,7 @@ static void prep_fid_change(void)
 	}
 }
 
-static void waitCurrentPstate(u32 target_pstate){
+static void waitCurrentPstate(u32 target_pstate) {
   msr_t initial_msr = rdmsr(TSC_MSR);
   msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
   msr_t tsc_msr;
@@ -640,7 +661,7 @@ static void waitCurrentPstate(u32 target_pstate){
 
   if (pstate_msr.lo != target_pstate) {
     msr_t limit_msr = rdmsr(0xc0010061);
-    printk(BIOS_ERR, "*** Time out waiting for P-state %01x. Current P-state %01x P-state current limit MSRC001_0061=%02x\n", target_pstate, pstate_msr.lo, limit_msr.lo);
+    printk(BIOS_ERR, "*** Time out waiting for P-state %01x. Current P-state %01x P-state current limit MSRC001_0061=%08x %08x\n", target_pstate, pstate_msr.lo, limit_msr.hi, limit_msr.lo);
 
     do { // should we just go on instead ?
       pstate_msr = rdmsr(CUR_PSTATE_MSR);
@@ -650,6 +671,7 @@ static void waitCurrentPstate(u32 target_pstate){
 
 static void set_pstate(u32 nonBoostedPState) {
   	msr_t msr;
+  	uint8_t skip_wait;
 
 	// Transition P0 for calling core.
 	msr = rdmsr(0xC0010062);
@@ -657,12 +679,21 @@ static void set_pstate(u32 nonBoostedPState) {
 	msr.lo = nonBoostedPState;
 	wrmsr(0xC0010062, msr);
 
-	/* Wait for P0 to set. */
-        waitCurrentPstate(nonBoostedPState);
+	if (is_fam15h()) {
+		/* Do not wait for the first (even) set of cores to transition on Family 15h systems */
+		if ((cpuid_ebx(0x00000001) & 0x01000000))
+			skip_wait = 0;
+		else
+			skip_wait = 1;
+	} else {
+		skip_wait = 0;
+	}
+
+	if (!skip_wait) {
+		/* Wait for core to transition to P0 */
+        	waitCurrentPstate(nonBoostedPState);
+	}
 }
-
-
-
 
 static void UpdateSinglePlaneNbVid(void)
 {
@@ -752,11 +783,14 @@ static u32 needs_NB_COF_VID_update(void)
 	u8 nodes;
 	u8 i;
 
+	if (is_fam15h())
+		return 0;
+
 	/* If any node has nb_cof_vid_update set all nodes need an update. */
 	nodes = get_nodes();
 	nb_cof_vid_update = 0;
 	for (i = 0; i < nodes; i++) {
-                u32 cpuRev = mctGetLogicalCPUID(i) ;
+                uint64_t cpuRev = mctGetLogicalCPUID(i);
                 u32 nbCofVidUpdateDefined = (cpuRev & (AMD_FAM10_LT_D));
 		if (nbCofVidUpdateDefined
                     && (pci_read_config32(NODE_PCI(i, 3), 0x1FC)
@@ -780,9 +814,11 @@ static u32 init_fidvid_core(u32 nodeid, u32 coreid)
 	/* Steps 1-6 of BIOS NB COF and VID Configuration
 	 * for SVI and Single-Plane PVI Systems. BKDG 2.4.2.9 #31116 rev 3.48
 	 */
-
 	dev = NODE_PCI(nodeid, 3);
-	pvimode = pci_read_config32(dev, PW_CTL_MISC) & PVI_MODE;
+	if (is_fam15h())
+		pvimode = 0;
+	else
+		pvimode = pci_read_config32(dev, PW_CTL_MISC) & PVI_MODE;
 	reg1fc = pci_read_config32(dev, 0x1FC);
 
 	if (nb_cof_vid_update) {
@@ -794,7 +830,7 @@ static u32 init_fidvid_core(u32 nodeid, u32 coreid)
 			fid_max = fid_max +  ((reg1fc &  DUAL_PLANE_NB_FID_OFF_MASK ) >>  DUAL_PLANE_NB_FID_SHIFT );
 		}
 		/* write newNbVid to P-state Reg's NbVid always if NbVidUpdatedAll=1 */
-		fixPsNbVidBeforeWR(vid_max, coreid,dev,pvimode);
+		fixPsNbVidBeforeWR(vid_max, coreid, dev, pvimode);
 
 		/* fid setup is handled by the BSP at the end. */
 
@@ -814,7 +850,7 @@ static void init_fidvid_ap(u32 apicid, u32 nodeid, u32 coreid)
 
 	printk(BIOS_DEBUG, "FIDVID on AP: %02x\n", apicid);
 
-        send = init_fidvid_core(nodeid,coreid);
+        send = init_fidvid_core(nodeid, coreid);
 	send |= (apicid << 24);	// ap apicid
 
 	// Send signal to BSP about this AP max fid
@@ -856,7 +892,8 @@ static void init_fidvid_bsp_stage1(u32 ap_apicid, void *gp)
 	while (--loop > 0) {
 		if (lapic_remote_read(ap_apicid, LAPIC_MSG_REG, &readback) != 0)
 			continue;
-		if ((readback & 0x3f) == F10_APSTATE_RESET) {
+		if (((readback & 0x3f) == F10_APSTATE_RESET)
+			|| (is_fam15h() && ((readback & 0x3f) == F10_APSTATE_ASLEEP))) {
 			timeout = 0;
 			break;	/* target ap is in stage 1 */
 		}
@@ -944,7 +981,10 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 	/* If any node has nb_cof_vid_update set all nodes need an update. */
 
 	dev = NODE_PCI(nodeid, 3);
-	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
+	if (is_fam15h())
+		pvimode = 0;
+	else
+		pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
 	reg1fc = pci_read_config32(dev, 0x1FC);
 	nbvid = (reg1fc >> 7) & 0x7F;
 	NbVidUpdateAll = (reg1fc >> 1) & 1;
@@ -965,15 +1005,17 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 	pci_write_config32(dev, 0xA0, dtemp);
 
         dualPlaneOnly(dev);
-        applyBoostFIDOffset(dev);
+        applyBoostFIDOffset(dev, nodeid);
         enableNbPState1(dev);
 
 	finalPstateChange();
 
-	/* Set TSC to tick at the P0 ndfid rate */
-	msr = rdmsr(HWCR);
-	msr.lo |= 1 << 24;
-	wrmsr(HWCR, msr);
+	if (!is_fam15h()) {
+		/* Set TSC to tick at the P0 ndfid rate */
+		msr = rdmsr(HWCR);
+		msr.lo |= 1 << 24;
+		wrmsr(HWCR, msr);
+	}
 }
 
 
@@ -1007,8 +1049,7 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	/* Steps 1-6 of BIOS NB COF and VID Configuration
 	 * for SVI and Single-Plane PVI Systems.
 	 */
-
-	fv.common_fid = init_fidvid_core(0,0);
+	fv.common_fid = init_fidvid_core(0, 0);
 
 	print_debug_fv("BSP fid = ", fv.common_fid);
 

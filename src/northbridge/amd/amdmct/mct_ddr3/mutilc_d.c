@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,24 +131,48 @@ static u32 get_Bits(sDCTStruct *pDCTData,
 		u16 offset, u8 low, u8 high)
 {
 	u32 temp;
+	uint32_t dword;
+
 	/* ASSERT(node < MAX_NODES); */
 	if (dct == BOTH_DCTS)
 	{
 		/* Registers exist on DCT0 only */
+		if (is_fam15h())
+		{
+			/* Select DCT 0 */
+			AmdMemPCIRead(MAKE_SBDFO(0,0,24+node,1,0x10c), &dword);
+			dword &= ~0x1;
+			AmdMemPCIWrite(MAKE_SBDFO(0,0,24+node,1,0x10c), &dword);
+		}
+
 		AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
 	}
 	else
 	{
-		if (dct == 1)
+		if (is_fam15h())
 		{
-			/* Write to dct 1 */
-			offset += 0x100;
+			/* Select DCT */
+			AmdMemPCIRead(MAKE_SBDFO(0,0,24+node,1,0x10c), &dword);
+			dword &= ~0x1;
+			dword |= (dct & 0x1);
+			AmdMemPCIWrite(MAKE_SBDFO(0,0,24+node,1,0x10c), &dword);
+
+			/* Read from the selected DCT */
 			AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
 		}
 		else
 		{
-			/* Write to dct 0 */
-			AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
+			if (dct == 1)
+			{
+				/* Read from dct 1 */
+				offset += 0x100;
+				AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
+			}
+			else
+			{
+				/* Read from dct 0 */
+				AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
+			}
 		}
 	}
 	return temp;
@@ -180,25 +205,49 @@ static void set_Bits(sDCTStruct *pDCTData,
 		u16 offset, u8 low, u8 high, u32 value)
 {
 	u32 temp;
+	uint32_t dword;
+
 	temp = value;
 
 	if (dct == BOTH_DCTS)
 	{
 		/* Registers exist on DCT0 only */
+		if (is_fam15h())
+		{
+			/* Select DCT 0 */
+			AmdMemPCIRead(MAKE_SBDFO(0,0,24+node,1,0x10c), &dword);
+			dword &= ~0x1;
+			AmdMemPCIWrite(MAKE_SBDFO(0,0,24+node,1,0x10c), &dword);
+		}
+
 		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
 	}
 	else
 	{
-		if (dct == 1)
+		if (is_fam15h())
 		{
-			/* Write to dct 1 */
-			offset += 0x100;
+			/* Select DCT */
+			AmdMemPCIRead(MAKE_SBDFO(0,0,24+node,1,0x10c), &dword);
+			dword &= ~0x1;
+			dword |= (dct & 0x1);
+			AmdMemPCIWrite(MAKE_SBDFO(0,0,24+node,1,0x10c), &dword);
+
+			/* Write to the selected DCT */
 			AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
 		}
 		else
 		{
-			/* Write to dct 0 */
-			AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
+			if (dct == 1)
+			{
+				/* Write to dct 1 */
+				offset += 0x100;
+				AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
+			}
+			else
+			{
+				/* Write to dct 0 */
+				AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+node,func,offset), high, low, &temp);
+			}
 		}
 	}
 }

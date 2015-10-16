@@ -214,12 +214,12 @@ static void mct_setMaxRdLatTrnVal_D(struct DCTStatStruc *pDCTstat,
 	}
 
 	dev = pDCTstat->dev_dct;
-	reg = 0x78 + Channel * 0x100;
-	val = Get_NB32(dev, reg);
+	reg = 0x78;
+	val = Get_NB32_DCT(dev, Channel, reg);
 	val &= ~(0x3ff<<22);
 	val |= MaxRdLatVal<<22;
 	/* program MaxRdLatency to correspond with current delay */
-	Set_NB32(dev, reg, val);
+	Set_NB32_DCT(dev, Channel, reg, val);
 }
 
 static u8 CompareMaxRdLatTestPattern_D(u32 pattern_buf, u32 addr)
@@ -316,30 +316,28 @@ u8 mct_GetStartMaxRdLat_D(struct MCTStatStruc *pMCTstat,
 	u32 valx;
 	u32 valxx;
 	u32 index_reg;
-	u32 reg_off;
 	u32 dev;
 
 	if(pDCTstat->GangedMode)
 		Channel =  0;
 
-	index_reg = 0x98 + 0x100 * Channel;
+	index_reg = 0x98;
 
-	reg_off = 0x100 * Channel;
 	dev = pDCTstat->dev_dct;
 
 	/* Multiply the CAS Latency by two to get a number of 1/2 MEMCLKs units.*/
-	val = Get_NB32(dev, 0x88 + reg_off);
+	val = Get_NB32_DCT(dev, Channel, 0x88);
 	SubTotal = ((val & 0x0f) + 1) << 1;	/* SubTotal is 1/2 Memclk unit */
 
 	/* If registered DIMMs are being used then add 1 MEMCLK to the sub-total*/
-	val = Get_NB32(dev, 0x90 + reg_off);
+	val = Get_NB32_DCT(dev, Channel, 0x90);
 	if(!(val & (1 << UnBuffDimm)))
 		SubTotal += 2;
 
 	/*If the address prelaunch is setup for 1/2 MEMCLKs then add 1,
 	 *  else add 2 to the sub-total. if (AddrCmdSetup || CsOdtSetup
 	 *  || CkeSetup) then K := K + 2; */
-	val = Get_NB32_index_wait(dev, index_reg, 0x04);
+	val = Get_NB32_index_wait_DCT(dev, Channel, index_reg, 0x04);
 	if(!(val & 0x00202020))
 		SubTotal += 1;
 	else
@@ -347,7 +345,7 @@ u8 mct_GetStartMaxRdLat_D(struct MCTStatStruc *pMCTstat,
 
 	/* If the F2x[1, 0]78[RdPtrInit] field is 4, 5, 6 or 7 MEMCLKs,
 	 *  then add 4, 3, 2, or 1 MEMCLKs, respectively to the sub-total. */
-	val = Get_NB32(dev, 0x78 + reg_off);
+	val = Get_NB32_DCT(dev, Channel, 0x78);
 	SubTotal += 8 - (val & 0x0f);
 
 	/* Convert bits 7-5 (also referred to as the course delay) of the current
@@ -363,7 +361,7 @@ u8 mct_GetStartMaxRdLat_D(struct MCTStatStruc *pMCTstat,
 
 	/*New formula:
 	SubTotal *= 3*(Fn2xD4[NBFid]+4)/(3+Fn2x94[MemClkFreq])/2 */
-	val = Get_NB32(dev, 0x94 + reg_off);
+	val = Get_NB32_DCT(dev, Channel, 0x94);
 	/* SubTotal div 4 to scale 1/4 MemClk back to MemClk */
 	val &= 7;
 	if (val >= 3) {

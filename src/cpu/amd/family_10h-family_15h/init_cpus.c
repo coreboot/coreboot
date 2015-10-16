@@ -26,9 +26,12 @@
 #include <northbridge/amd/amdfam10/raminit_amdmct.c>
 #include <reset.h>
 
+#if IS_ENABLED(CONFIG_SET_FIDVID)
 static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);
-void cpuSetAMDMSR(void);
+#endif
+
+void cpuSetAMDMSR(uint8_t node_id);
 
 #if CONFIG_PCI_IO_CFG_EXT
 static void set_EnableCf8ExtCfg(void)
@@ -47,43 +50,38 @@ static void set_EnableCf8ExtCfg(void) { }
 
 typedef void (*process_ap_t) (u32 apicid, void *gp);
 
-//core_range = 0 : all cores
-//core range = 1 : core 0 only
-//core range = 2 : cores other than core0
+uint32_t get_boot_apic_id(uint8_t node, uint32_t core) {
+	uint32_t ap_apicid;
 
-static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
-			void *gp)
-{
-	// here assume the OS don't change our apicid
-	u32 ap_apicid;
+	uint32_t nb_cfg_54;
+	uint32_t siblings;
+	uint32_t cores_found;
 
-	u32 nodes;
-	u32 siblings;
-	u32 disable_siblings;
-	u32 cores_found;
-	u32 nb_cfg_54;
-	int i, j;
-	u32 ApicIdCoreIdSize;
+	uint8_t fam15h = 0;
 	uint8_t rev_gte_d = 0;
 	uint8_t dual_node = 0;
 	uint32_t f3xe8;
+	uint32_t family;
+	uint32_t model;
 
-	/* get_nodes define in ht_wrapper.c */
-	nodes = get_nodes();
-
-	if (!CONFIG_LOGICAL_CPUS ||
-	    read_option(multi_core, 0) != 0) {	// 0 means multi core
-		disable_siblings = 1;
-	} else {
-		disable_siblings = 0;
-	}
+	uint32_t ApicIdCoreIdSize;
 
 	/* Assume that all node are same stepping, otherwise we can use use
 	   nb_cfg_54 from bsp for all nodes */
 	nb_cfg_54 = read_nb_cfg_54();
 	f3xe8 = pci_read_config32(NODE_PCI(0, 3), 0xe8);
 
-	if (cpuid_eax(0x80000001) >= 0x8)
+	family = model = cpuid_eax(0x80000001);
+	model = ((model & 0xf0000) >> 12) | ((model & 0xf0) >> 4);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
+
+	if (family >= 0x6f) {
+		/* Family 15h or later */
+		fam15h = 1;
+		nb_cfg_54 = 1;
+	}
+
+	if ((model >= 0x8) || fam15h)
 		/* Revision D or later */
 		rev_gte_d = 1;
 
@@ -99,10 +97,63 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 		siblings = 3;	//quad core
 	}
 
+	cores_found = get_core_num_in_bsp(node);
+	if (siblings > cores_found)
+		siblings = cores_found;
+
+	if (dual_node) {
+		ap_apicid = 0;
+		if (fam15h) {
+			ap_apicid |= ((node >> 1) & 0x3) << 5;			/* Node ID */
+			ap_apicid |= ((node & 0x1) * (siblings + 1)) + core;	/* Core ID */
+		} else {
+			if (nb_cfg_54) {
+				ap_apicid |= ((node >> 1) & 0x3) << 4;			/* Node ID */
+				ap_apicid |= ((node & 0x1) * (siblings + 1)) + core;	/* Core ID */
+			} else {
+				ap_apicid |= node & 0x3;					/* Node ID */
+				ap_apicid |= (((node & 0x1) * (siblings + 1)) + core) << 4;	/* Core ID */
+			}
+		}
+	} else {
+		if (fam15h) {
+			ap_apicid = (node * (siblings + 1)) + core;
+		} else {
+			ap_apicid = node * (nb_cfg_54 ? (siblings + 1) : 1) +
+					core * (nb_cfg_54 ? 1 : 64);
+		}
+	}
+
+	return ap_apicid;
+}
+
+//core_range = 0 : all cores
+//core range = 1 : core 0 only
+//core range = 2 : cores other than core0
+
+static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
+			void *gp)
+{
+	// here assume the OS don't change our apicid
+	u32 ap_apicid;
+
+	u32 nodes;
+	u32 disable_siblings;
+	u32 cores_found;
+	int i, j;
+
+	/* get_nodes define in ht_wrapper.c */
+	nodes = get_nodes();
+
+	if (!CONFIG_LOGICAL_CPUS ||
+	    read_option(multi_core, 0) != 0) {	// 0 means multi core
+		disable_siblings = 1;
+	} else {
+		disable_siblings = 0;
+	}
+
 	for (i = 0; i < nodes; i++) {
 		cores_found = get_core_num_in_bsp(i);
-		if (siblings > cores_found)
-			siblings = cores_found;
 
 		u32 jstart, jend;
 
@@ -119,21 +170,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 		}
 
 		for (j = jstart; j <= jend; j++) {
-			if (dual_node) {
-				ap_apicid = 0;
-				if (nb_cfg_54) {
-					ap_apicid |= ((i >> 1) & 0x3) << 4;			/* Node ID */
-					ap_apicid |= ((i & 0x1) * (siblings + 1)) + j;		/* Core ID */
-				} else {
-					ap_apicid |= i & 0x3;					/* Node ID */
-					ap_apicid |= (((i & 0x1) * (siblings + 1)) + j) << 4;	/* Core ID */
-				}
-			} else {
-				ap_apicid =
-				i * (nb_cfg_54 ? (siblings + 1) : 1) +
-				j * (nb_cfg_54 ? 1 : 64);
-			}
-
+			ap_apicid = get_boot_apic_id(i, j);
 
 #if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET > 0)
 #if !CONFIG_LIFT_BSP_APIC_ID
@@ -193,7 +230,7 @@ void print_apicid_nodeid_coreid(u32 apicid, struct node_core_id id,
 	       apicid, id.nodeid, id.coreid);
 }
 
-static u32 wait_cpu_state(u32 apicid, u32 state)
+uint32_t wait_cpu_state(uint32_t apicid, uint32_t state, uint32_t state2)
 {
 	u32 readback = 0;
 	u32 timeout = 1;
@@ -201,7 +238,7 @@ static u32 wait_cpu_state(u32 apicid, u32 state)
 	while (--loop > 0) {
 		if (lapic_remote_read(apicid, LAPIC_MSG_REG, &readback) != 0)
 			continue;
-		if ((readback & 0x3f) == state || (readback & 0x3f) == F10_APSTATE_RESET) {
+		if ((readback & 0x3f) == state || (readback & 0x3f) == state2 || (readback & 0x3f) == F10_APSTATE_RESET) {
 			timeout = 0;
 			break;	//target cpu is in stage started
 		}
@@ -218,7 +255,7 @@ static u32 wait_cpu_state(u32 apicid, u32 state)
 static void wait_ap_started(u32 ap_apicid, void *gp)
 {
 	u32 timeout;
-	timeout = wait_cpu_state(ap_apicid, F10_APSTATE_STARTED);
+	timeout = wait_cpu_state(ap_apicid, F10_APSTATE_STARTED, F10_APSTATE_ASLEEP);
 	printk(BIOS_DEBUG, "* AP %02x", ap_apicid);
 	if (timeout) {
 		printk(BIOS_DEBUG, " timed out:%08x\n", timeout);
@@ -254,16 +291,27 @@ static void enable_apic_ext_id(u32 node)
 	pci_write_config32(NODE_HT(node), 0x68, val);
 }
 
-static void STOP_CAR_AND_CPU(void)
+static void STOP_CAR_AND_CPU(uint8_t skip_sharedc_config, uint32_t apicid)
 {
 	msr_t msr;
+	uint32_t family;
 
-	/* Disable L2 IC to L3 connection (Only for CAR) */
-	msr = rdmsr(BU_CFG2);
-	msr.lo &= ~(1 << ClLinesToNbDis);
-	wrmsr(BU_CFG2, msr);
+	family = amd_fam1x_cpu_family();		// inline
 
-	disable_cache_as_ram();	// inline
+	if (family < 0x6f) {
+		/* Family 10h or earlier */
+
+		/* Disable L2 IC to L3 connection (Only for CAR) */
+		msr = rdmsr(BU_CFG2);
+		msr.lo &= ~(1 << ClLinesToNbDis);
+		wrmsr(BU_CFG2, msr);
+	}
+
+	disable_cache_as_ram(skip_sharedc_config);	// inline
+
+	/* Mark the core as sleeping */
+	lapic_write(LAPIC_MSG_REG, (apicid << 24) | F10_APSTATE_ASLEEP);
+
 	/* stop all cores except node0/core0 the bsp .... */
 	stop_this_cpu();
 }
@@ -272,6 +320,7 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 {
 	u32 bsp_apicid = 0;
 	u32 apicid;
+	uint8_t set_mtrrs;
 	struct node_core_id id;
 
 	/* Please refer to the calculations and explaination in cache_as_ram.inc before modifying these values */
@@ -358,7 +407,7 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 		 */
 		update_microcode(cpuid_eax(1));
 
-		cpuSetAMDMSR();
+		cpuSetAMDMSR(id.nodeid);
 
 #if CONFIG_SET_FIDVID
 #if CONFIG_LOGICAL_CPUS && CONFIG_SET_FIDVID_CORE0_ONLY
@@ -381,10 +430,29 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 		}
 #endif
 
-		/* AP is ready, configure MTRRs and go to sleep */
-		set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
+		if (is_fam15h()) {
+			/* core 1 on node 0 is special; to avoid corrupting the
+			 * BSP do not alter MTRRs on that core */
+			if (apicid == 1)
+				set_mtrrs = 0;
+			else
+				set_mtrrs = !!(apicid & 0x1);
+		} else {
+			set_mtrrs = 1;
+		}
 
-		STOP_CAR_AND_CPU();
+		/* AP is ready, configure MTRRs and go to sleep */
+		if (set_mtrrs)
+			set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
+
+		printk(BIOS_DEBUG, "Disabling CAR on AP %02x\n", apicid);
+		if (is_fam15h()) {
+			/* Only modify the MSRs on the odd cores (the last cores to finish booting) */
+			STOP_CAR_AND_CPU(!set_mtrrs, apicid);
+		} else {
+			/* Modify MSRs on all cores */
+			STOP_CAR_AND_CPU(0, apicid);
+		}
 
 		printk(BIOS_DEBUG,
 		       "\nAP %02x should be halted but you are reading this....\n",
@@ -492,7 +560,7 @@ static void setup_remote_node(u8 node)
 }
 #endif				/* CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
-static void AMD_Errata281(u8 node, u32 revision, u32 platform)
+static void AMD_Errata281(u8 node, uint64_t revision, u32 platform)
 {
 	/* Workaround for Transaction Scheduling Conflict in
 	 * Northbridge Cross Bar.  Implement XCS Token adjustment
@@ -790,7 +858,7 @@ static void AMD_SetHtPhyRegister(u8 node, u8 link, u8 entry)
 	} while (!(val & HTPHY_IS_COMPLETE_MASK));
 }
 
-void cpuSetAMDMSR(void)
+void cpuSetAMDMSR(uint8_t node_id)
 {
 	/* This routine loads the CPU with default settings in fam10_msr_default
 	 * table . It must be run after Cache-As-RAM has been enabled, and
@@ -800,7 +868,8 @@ void cpuSetAMDMSR(void)
 	 */
 	msr_t msr;
 	u8 i;
-	u32 revision, platform;
+	u32 platform;
+	uint64_t revision;
 
 	printk(BIOS_DEBUG, "cpuSetAMDMSR ");
 
@@ -820,6 +889,49 @@ void cpuSetAMDMSR(void)
 	}
 	AMD_Errata298();
 
+	if (revision & AMD_FAM15_ALL) {
+		uint32_t f5x80;
+		uint8_t enabled;
+		uint8_t compute_unit_count = 0;
+		f5x80 = pci_read_config32(NODE_PCI(node_id, 5), 0x80);
+		enabled = f5x80 & 0xf;
+		if (enabled == 0x1)
+			compute_unit_count = 1;
+		if (enabled == 0x3)
+			compute_unit_count = 2;
+		if (enabled == 0x7)
+			compute_unit_count = 3;
+		if (enabled == 0xf)
+			compute_unit_count = 4;
+		msr = rdmsr(BU_CFG2);
+		msr.lo &= ~(0x3 << 6);				/* ThrottleNbInterface[1:0] */
+		msr.lo |= (((compute_unit_count - 1) & 0x3) << 6);
+		wrmsr(BU_CFG2, msr);
+	}
+
+	/* Revision C0 and above */
+	if (revision & AMD_OR_C0) {
+		uint32_t f3x1fc = pci_read_config32(NODE_PCI(node_id, 3), 0x1fc);
+		msr = rdmsr(FP_CFG);
+		msr.hi &= ~(0x7 << (42-32));			/* DiDtCfg4 */
+		msr.hi |= (((f3x1fc >> 17) & 0x7) << (42-32));
+		msr.hi &= ~(0x1 << (41-32));			/* DiDtCfg5 */
+		msr.hi |= (((f3x1fc >> 22) & 0x1) << (41-32));
+		msr.hi &= ~(0x1 << (40-32));			/* DiDtCfg3 */
+		msr.hi |= (((f3x1fc >> 16) & 0x1) << (40-32));
+		msr.hi &= ~(0x7 << (32-32));			/* DiDtCfg1 (1) */
+		msr.hi |= (((f3x1fc >> 11) & 0x7) << (32-32));
+		msr.lo &= ~(0x1f << 27);			/* DiDtCfg1 (2) */
+		msr.lo |= (((f3x1fc >> 6) & 0x1f) << 27);
+		msr.lo &= ~(0x3 << 25);				/* DiDtCfg2 */
+		msr.lo |= (((f3x1fc >> 14) & 0x3) << 25);
+		msr.lo &= ~(0x1f << 18);			/* DiDtCfg0 */
+		msr.lo |= (((f3x1fc >> 1) & 0x1f) << 18);
+		msr.lo &= ~(0x1 << 16);				/* DiDtMode */
+		msr.lo |= ((f3x1fc & 0x1) << 16);
+		wrmsr(FP_CFG, msr);
+	}
+
 	printk(BIOS_DEBUG, " done\n");
 }
 
@@ -831,9 +943,10 @@ static void cpuSetAMDPCI(u8 node)
 	 * that it is run for the first core on each node
 	 */
 	u8 i, j;
-	u32 revision, platform;
+	u32 platform;
 	u32 val;
 	u8 offset;
+	uint64_t revision;
 
 	printk(BIOS_DEBUG, "cpuSetAMDPCI %02d", node);
 
@@ -895,6 +1008,7 @@ static void cpuSetAMDPCI(u8 node)
 }
 
 #ifdef UNUSED_CODE
+/* Clearing the MCA registers is apparently handled in the ramstage CPU Function 3 driver */
 static void cpuInitializeMCA(void)
 {
 	/* Clears Machine Check Architecture (MCA) registers, which power on

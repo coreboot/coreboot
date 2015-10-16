@@ -29,6 +29,10 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
 #include <cpu/amd/model_10xxx_rev.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pnp.h>
+#include <device/pci_ops.h>
 
 /* The maximum length of CPU names is 48 bytes, including the final NULL byte.
  * If you change these names your BIOS will _NOT_ pass the AMD validation and
@@ -208,104 +212,138 @@ static int strcpymax(char *dst, const char *src, int buflen)
 	return i;
 }
 
+#define NAME_STRING_MAXLEN 48
 
 int init_processor_name(void)
 {
-	/* variable names taken from fam10 revision guide for clarity */
-	u32 BrandId;	/* CPUID Fn8000_0001_EBX */
-	u8 String1;	/* BrandID[14:11] */
-	u8 String2;	/* BrandID[3:0] */
-	u8 Model;	/* BrandID[10:4] */
-	u8 Pg;		/* BrandID[15] */
-	u8 PkgTyp;	/* BrandID[31:28] */
-	u8 NC;		/* CPUID Fn8000_0008_ECX */
-	const char *processor_name_string = unknown;
-	char program_string[48];
-	u32 *p_program_string = (u32 *)program_string;
 	msr_t msr;
-	int i, j = 0, str2_checkNC = 1;
-	const struct str_s *str, *str2;
+	ssize_t i;
+	char program_string[NAME_STRING_MAXLEN];
+	u32 *p_program_string = (u32 *)program_string;
+	uint8_t fam15h = 0;
+	uint32_t family;
 
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0xf00000) >> 16) | ((family & 0xf00) >> 8);
 
-	/* Find out which CPU brand it is */
-	BrandId = cpuid_ebx(0x80000001);
-	String1 = (u8)((BrandId >> 11) & 0x0F);
-	String2 = (u8)((BrandId >> 0) & 0x0F);
-	Model = (u8)((BrandId >> 4) & 0x7F);
-	Pg = (u8)((BrandId >> 15) & 0x01);
-	PkgTyp = (u8)((BrandId >> 28) & 0x0F);
-	NC = (u8)(cpuid_ecx(0x80000008) & 0xFF);
+	if (family >= 0x6f)
+		/* Family 15h or later */
+		fam15h = 1;
 
 	/* null the string */
 	memset(program_string, 0, sizeof(program_string));
 
-	if (!Model) {
-		processor_name_string = Pg ? thermal : sample;
-		goto done;
-	}
+	if (fam15h) {
+		/* Family 15h or later */
+		uint32_t dword;
+		device_t cpu_fn5_dev = dev_find_slot(0, PCI_DEVFN(0x18, 5));
+		pci_write_config32(cpu_fn5_dev, 0x194, 0);
+		dword = pci_read_config32(cpu_fn5_dev, 0x198);
+		if (dword == 0) {
+			strcpymax(program_string, sample, sizeof(program_string));
+		} else {
+			/* Assemble the string from PCI configuration register contents */
+			for (i = 0; i < 12; i++) {
+				pci_write_config32(cpu_fn5_dev, 0x194, i);
+				p_program_string[i] = pci_read_config32(cpu_fn5_dev, 0x198);
+			}
 
-	switch (PkgTyp) {
-	case 0:		/* F1207 */
-		str = String1_socket_F;
-		str2 = String2_socket_F;
-		str2_checkNC = 0;
-		break;
-	case 1:		/* AM2 */
-		str = String1_socket_AM2;
-		str2 = String2_socket_AM2;
-		break;
-	case 3:		/* G34 */
-		str = String1_socket_G34;
-		str2 = String2_socket_G34;
-		str2_checkNC = 0;
-		break;
-	case 5:		/* C32 */
-		str = String1_socket_C32;
-		str2 = String2_socket_C32;
-		break;
-	default:
-		goto done;
-	}
-
-	/* String1 */
-	for (i = 0; str[i].value; i++) {
-		if ((str[i].Pg == Pg) &&
-		    (str[i].NC == NC) &&
-		    (str[i].String == String1)) {
-			processor_name_string = str[i].value;
-			break;
+			/* Correctly place the null terminator */
+			for (i = (NAME_STRING_MAXLEN - 2); i > 0; i--) {
+				if (program_string[i] != 0x20)
+					break;
+			}
+			program_string[i + 1] = 0;
 		}
-	}
+	} else {
+		/* variable names taken from fam10 revision guide for clarity */
+		u32 BrandId;	/* CPUID Fn8000_0001_EBX */
+		u8 String1;	/* BrandID[14:11] */
+		u8 String2;	/* BrandID[3:0] */
+		u8 Model;	/* BrandID[10:4] */
+		u8 Pg;		/* BrandID[15] */
+		u8 PkgTyp;	/* BrandID[31:28] */
+		u8 NC;		/* CPUID Fn8000_0008_ECX */
+		const char *processor_name_string = unknown;
+		int j = 0, str2_checkNC = 1;
+		const struct str_s *str, *str2;
 
-	if (!str[i].value)
-		goto done;
+		/* Find out which CPU brand it is */
+		BrandId = cpuid_ebx(0x80000001);
+		String1 = (u8)((BrandId >> 11) & 0x0F);
+		String2 = (u8)((BrandId >> 0) & 0x0F);
+		Model = (u8)((BrandId >> 4) & 0x7F);
+		Pg = (u8)((BrandId >> 15) & 0x01);
+		PkgTyp = (u8)((BrandId >> 28) & 0x0F);
+		NC = (u8)(cpuid_ecx(0x80000008) & 0xFF);
 
-	j = strcpymax(program_string, processor_name_string,
-		      sizeof(program_string));
-
-	/* Translate Model from 01-99 to ASCII and put it on the end.
-	 * Numbers less than 10 should include a leading zero, e.g., 09.*/
-	if (Model < 100 && j < sizeof(program_string) - 2) {
-		program_string[j++] = (Model / 10) + '0';
-		program_string[j++] = (Model % 10) + '0';
-	}
-
-	processor_name_string = unknown2;
-
-	/* String 2 */
-	for(i = 0; str2[i].value; i++) {
-		if ((str2[i].Pg == Pg) &&
-		    ((str2[i].NC == NC) || !str2_checkNC) &&
-		    (str2[i].String == String2)) {
-			processor_name_string = str2[i].value;
-			break;
+		if (!Model) {
+			processor_name_string = Pg ? thermal : sample;
+			goto done;
 		}
+
+		switch (PkgTyp) {
+		case 0:		/* F1207 */
+			str = String1_socket_F;
+			str2 = String2_socket_F;
+			str2_checkNC = 0;
+			break;
+		case 1:		/* AM2 */
+			str = String1_socket_AM2;
+			str2 = String2_socket_AM2;
+			break;
+		case 3:		/* G34 */
+			str = String1_socket_G34;
+			str2 = String2_socket_G34;
+			str2_checkNC = 0;
+			break;
+		case 5:		/* C32 */
+			str = String1_socket_C32;
+			str2 = String2_socket_C32;
+			break;
+		default:
+			goto done;
+		}
+
+		/* String1 */
+		for (i = 0; str[i].value; i++) {
+			if ((str[i].Pg == Pg) &&
+			(str[i].NC == NC) &&
+			(str[i].String == String1)) {
+				processor_name_string = str[i].value;
+				break;
+			}
+		}
+
+		if (!str[i].value)
+			goto done;
+
+		j = strcpymax(program_string, processor_name_string,
+			sizeof(program_string));
+
+		/* Translate Model from 01-99 to ASCII and put it on the end.
+		* Numbers less than 10 should include a leading zero, e.g., 09.*/
+		if (Model < 100 && j < sizeof(program_string) - 2) {
+			program_string[j++] = (Model / 10) + '0';
+			program_string[j++] = (Model % 10) + '0';
+		}
+
+		processor_name_string = unknown2;
+
+		/* String 2 */
+		for(i = 0; str2[i].value; i++) {
+			if ((str2[i].Pg == Pg) &&
+			((str2[i].NC == NC) || !str2_checkNC) &&
+			(str2[i].String == String2)) {
+				processor_name_string = str2[i].value;
+				break;
+			}
+		}
+
+	done:
+		strcpymax(&program_string[j], processor_name_string,
+			sizeof(program_string) - j);
 	}
-
-
-done:
-	strcpymax(&program_string[j], processor_name_string,
-		  sizeof(program_string) - j);
 
 	printk(BIOS_DEBUG, "CPU model: %s\n", program_string);
 

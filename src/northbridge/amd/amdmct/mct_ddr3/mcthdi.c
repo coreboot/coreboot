@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +22,8 @@ void mct_DramInit_Hw_D(struct MCTStatStruc *pMCTstat,
 	u32 dev = pDCTstat->dev_dct;
 
 	/*flag for selecting HW/SW DRAM Init HW DRAM Init */
-	reg = 0x90 + 0x100 * dct; /*DRAM Configuration Low */
-	val = Get_NB32(dev, reg);
+	reg = 0x90; /*DRAM Configuration Low */
+	val = Get_NB32_DCT(dev, dct, reg);
 	val |= (1<<InitDram);
-	Set_NB32(dev, reg, val);
+	Set_NB32_DCT(dev, dct, reg, val);
 }

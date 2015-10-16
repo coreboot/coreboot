@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +29,13 @@
 #define IC_CFG_MSR			0xC0011021
 #define DC_CFG_MSR			0xC0011022
 #define BU_CFG_MSR			0xC0011023
+#define FP_CFG_MSR			0xC0011028
+#define DE_CFG_MSR			0xC0011029
 #define BU_CFG2_MSR			0xC001102A
+#define BU_CFG3_MSR			0xC001102B
+#define EX_CFG_MSR			0xC001102C
+#define LS_CFG2_MSR			0xC001102D
+#define IBS_OP_DATA3_MSR		0xC0011037
 
 #define CPU_ID_FEATURES_MSR		0xC0011004
 #define CPU_ID_HYPER_EXT_FEATURES	0xC001100d

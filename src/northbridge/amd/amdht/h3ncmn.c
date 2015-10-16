@@ -39,6 +39,7 @@
 #define CPU_HTNB_FUNC_04		4
 #define CPU_ADDR_FUNC_01		1
 #define CPU_NB_FUNC_03			3
+#define CPU_NB_FUNC_05			5
 
 /* Function 0 registers */
 #define REG_ROUTE0_0X40		0x40
@@ -66,6 +67,7 @@
 #define REG_NB_CPUID_3XFC		0xFC
 #define REG_NB_LINK_XCS_TOKEN0_3X148	0x148
 #define REG_NB_DOWNCORE_3X190		0x190
+#define REG_NB_CAPABILITY_5X84		0x84
 
 /* Function 4 registers */
 
@@ -551,15 +553,66 @@ static u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
 				15, 12, &temp);
 
 	/* bits[15,13,12] specify the cores */
-	/* Support Downcoring */
 	temp = ((temp & 8) >> 1) + (temp & 3);
 	cores = temp + 1;
+
+	/* Support Downcoring */
 	AmdPCIReadBits (MAKE_SBDFO(makePCISegmentFromNode(node),
 					makePCIBusFromNode(node),
 					makePCIDeviceFromNode(node),
 					CPU_NB_FUNC_03,
 					REG_NB_DOWNCORE_3X190),
 					3, 0, &leveling);
+	for (i=0; i<cores; i++)
+	{
+		if (leveling & ((u32) 1 << i))
+		{
+			temp--;
+		}
+	}
+	return (u8)(temp+1);
+}
+
+/***************************************************************************//**
+ *
+ * static u8
+ * fam15GetNumCoresOnNode(u8 node, cNorthBridge *nb)
+ *
+ *  Description:
+ *	Return the number of cores (1 based count) on node.
+ *
+ *  Parameters:
+ *	@param[in]  node      = the node that will be examined
+ *	@param[in] *nb = this northbridge
+ *	@return    = the number of cores
+ *
+ *
+ */
+static u8 fam15GetNumCoresOnNode(u8 node, cNorthBridge *nb)
+{
+	u32 temp, leveling, cores;
+	u8 i;
+
+	ASSERT((node < nb->maxNodes));
+	/* Read CmpCap [7:0] */
+	AmdPCIReadBits(MAKE_SBDFO(makePCISegmentFromNode(node),
+				makePCIBusFromNode(node),
+				makePCIDeviceFromNode(node),
+				CPU_NB_FUNC_05,
+				REG_NB_CAPABILITY_5X84),
+				7, 0, &temp);
+
+	/* bits[7:0] specify the cores */
+	temp = temp & 0xff;
+	cores = temp + 1;
+
+	/* Support Downcoring */
+	AmdPCIReadBits (MAKE_SBDFO(makePCISegmentFromNode(node),
+					makePCIBusFromNode(node),
+					makePCIDeviceFromNode(node),
+					CPU_NB_FUNC_03,
+					REG_NB_DOWNCORE_3X190),
+					31, 0, &leveling);
 	for (i=0; i<cores; i++)
 	{
 		if (leveling & ((u32) 1 << i))
@@ -835,6 +888,69 @@ static BOOL fam10IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
 	else
 	{
 		maxNodes = 8;
+	}
+
+	if (pDat->sysMpCap > maxNodes)
+	{
+		pDat->sysMpCap = maxNodes;
+	}
+	/* Note since sysMpCap is one based and NodesDiscovered is zero based, equal is false */
+	return (pDat->sysMpCap > pDat->NodesDiscovered);
+#else
+	return 1;
+#endif
+}
+
+/***************************************************************************//**
+ *
+ * static BOOL
+ * fam15IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
+ *
+ *  Description:
+ *	Get node capability and update the minimum supported system capability.
+ *	Return whether the current configuration exceeds the capability.
+ *
+ *  Parameters:
+ *	@param[in]  node   = the node
+ *	@param[in,out] *pDat = sysMpCap (updated) and NodesDiscovered
+ *	@param[in] *nb   = this northbridge
+ *	@return             true: system is capable of current config.
+ *			   false: system is not capable of current config.
+ *
+ * ---------------------------------------------------------------------------------------
+ */
+static BOOL fam15IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
+{
+#ifndef HT_BUILD_NC_ONLY
+	u32 temp;
+	u8 maxNodes;
+
+	ASSERT(node < nb->maxNodes);
+
+	AmdPCIReadBits(MAKE_SBDFO(makePCISegmentFromNode(node),
+				makePCIBusFromNode(node),
+				makePCIDeviceFromNode(node),
+				CPU_NB_FUNC_03,
+				REG_NB_CAPABILITY_3XE8),
+				18, 16, &temp);
+
+	if (temp != 0)
+	{
+		maxNodes = (1 << (~temp & 0x3));  /* That is, 1, 2, 4, or 8 */
+	}
+	else
+	{
+		/* Check if CPU package is dual node */
+		AmdPCIReadBits(MAKE_SBDFO(makePCISegmentFromNode(node),
+					makePCIBusFromNode(node),
+					makePCIDeviceFromNode(node),
+					CPU_NB_FUNC_03,
+					REG_NB_CAPABILITY_3XE8),
+					29, 29, &temp);
+		if (temp)
+			maxNodes = 4;
+		else
+			maxNodes = 8;
 	}
 
 	if (pDat->sysMpCap > maxNodes)
@@ -2064,6 +2180,49 @@ void newNorthBridge(u8 node, cNorthBridge *nb)
 	u32 match;
 	u32 extFam, baseFam, model;
 
+	cNorthBridge fam15 =
+	{
+#ifdef HT_BUILD_NC_ONLY
+		8,
+		1,
+		12,
+#else
+		8,
+		8,
+		64,
+#endif /* HT_BUILD_NC_ONLY*/
+		writeRoutingTable,
+		writeNodeID,
+		readDefLnk,
+		enableRoutingTables,
+		verifyLinkIsCoherent,
+		readTrueLinkFailStatus,
+		readToken,
+		writeToken,
+		fam15GetNumCoresOnNode,
+		setTotalNodesAndCores,
+		limitNodes,
+		writeFullRoutingTable,
+		isCompatible,
+		fam15IsCapable,
+		(void (*)(u8, u8, cNorthBridge*))commonVoid,
+		(BOOL (*)(u8, u8, sMainData*, cNorthBridge*))commonReturnFalse,
+		readSbLink,
+		verifyLinkIsNonCoherent,
+		ht3SetCFGAddrMap,
+		convertBitsToWidth,
+		convertWidthToBits,
+		fam10NorthBridgeFreqMask,
+		gatherLinkData,
+		setLinkData,
+		ht3WriteTrafficDistribution,
+		fam10BufferOptimizations,
+		0x00000001,
+		0x00000200,
+		18,
+		0x00000f06
+	};
+
 	cNorthBridge fam10 =
 	{
 #ifdef HT_BUILD_NC_ONLY
@@ -2171,8 +2330,14 @@ void newNorthBridge(u8 node, cNorthBridge *nb)
 			7, 4, &model);
 	match = (u32)((baseFam << 8) | extFam);
 
-	/* Test each in turn looking for a match.	Init the struct if found */
-	if (match == fam10.compatibleKey)
+	/* Test each in turn looking for a match.
+	 * Initialize the struct if found.
+	 */
+	if (match == fam15.compatibleKey)
+	{
+		Amdmemcpy((void *)nb, (const void *)&fam15, (u32) sizeof(cNorthBridge));
+	}
+	else if (match == fam10.compatibleKey)
 	{
 		Amdmemcpy((void *)nb, (const void *)&fam10, (u32) sizeof(cNorthBridge));
 	}

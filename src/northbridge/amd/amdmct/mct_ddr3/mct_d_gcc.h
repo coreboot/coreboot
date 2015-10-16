@@ -94,6 +94,15 @@ static u32 bsf(u32 x)
 
 u32 SetUpperFSbase(u32 addr_hi);
 
+static void proc_MFENCE(void)
+{
+	__asm__ volatile (
+		"outb %%al, $0xed\n\t"  /* _EXECFENCE */
+		"mfence\n\t"
+		:::"memory"
+	);
+}
+
 static void proc_CLFLUSH(u32 addr_hi)
 {
 	SetUpperFSbase(addr_hi);

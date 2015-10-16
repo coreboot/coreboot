@@ -2,6 +2,8 @@ ifeq ($(CONFIG_NORTHBRIDGE_AMD_AMDFAM10),y)
 
 ramstage-y += northbridge.c
 ramstage-y += misc_control.c
+ramstage-y += link_control.c
+ramstage-y += nb_control.c
 romstage-y += amdfam10_util.c
 ramstage-y += amdfam10_util.c
 

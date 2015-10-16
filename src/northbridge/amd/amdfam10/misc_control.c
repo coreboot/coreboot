@@ -4,6 +4,7 @@
  * Copyright (C) 2003 by Eric Biederman
  * Copyright (C) Stefan Reinauer
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,4 +148,10 @@ static const struct pci_driver mcf3_driver __pci_driver = {
 	.ops    = &mcf3_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1203,
+};
+
+static const struct pci_driver mcf3_driver_fam15 __pci_driver = {
+	.ops    = &mcf3_ops,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x1603,
 };

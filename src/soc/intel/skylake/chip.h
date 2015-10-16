@@ -28,6 +28,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
+#include <soc/usb.h>
 
 struct soc_intel_skylake_config {
 	/*
@@ -162,18 +163,10 @@ struct soc_intel_skylake_config {
 	u8 PcieRpClkReqNumber[20];
 
 	/* USB related */
-	u8 PortUsb20Enable[16];
-	u8 PortUsb30Enable[10];
+	struct usb2_port_config usb2_ports[16];
+	struct usb3_port_config usb3_ports[10];
 	u8 XdciEnable;
 	u8 SsicPortEnable;
-	u8 Usb2AfePetxiset[16];
-	u8 Usb2AfeTxiset[16];
-	u8 Usb2AfePredeemp[16];
-	u8 Usb2AfePehalfbit[16];
-	u8 Usb3HsioTxDeEmphEnable[10];
-	u8 Usb3HsioTxDeEmph[10];
-	u8 Usb3HsioTxDownscaleAmpEnable[10];
-	u8 Usb3HsioTxDownscaleAmp[10];
 
 	/* SMBus */
 	u8 SmbusEnable;

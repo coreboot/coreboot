@@ -275,28 +275,33 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 
 	memcpy(params->SerialIoDevMode, config->SerialIoDevMode,
 	       sizeof(params->SerialIoDevMode));
-	memcpy(params->PortUsb20Enable, config->PortUsb20Enable,
-	       sizeof(params->PortUsb20Enable));
-	memcpy(params->PortUsb30Enable, config->PortUsb30Enable,
-	       sizeof(params->PortUsb30Enable));
 
-	memcpy(params->Usb2AfePetxiset, config->Usb2AfePetxiset,
-			sizeof(params->Usb2AfePetxiset));
-	memcpy(params->Usb2AfeTxiset, config->Usb2AfeTxiset,
-			sizeof(params->Usb2AfeTxiset));
-	memcpy(params->Usb2AfePredeemp, config->Usb2AfePredeemp,
-			sizeof(params->Usb2AfePredeemp));
-	memcpy(params->Usb2AfePehalfbit, config->Usb2AfePehalfbit,
-			sizeof(params->Usb2AfePehalfbit));
+	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
+		params->PortUsb20Enable[i] =
+			config->usb2_ports[i].enable;
+		params->Usb2AfePetxiset[i] =
+			config->usb2_ports[i].pre_emp_bias;
+		params->Usb2AfeTxiset[i] =
+			config->usb2_ports[i].tx_bias;
+		params->Usb2AfePredeemp[i] =
+			config->usb2_ports[i].tx_emp_enable;
+		params->Usb2AfePehalfbit[i] =
+			config->usb2_ports[i].pre_emp_bit;
+	}
 
-	memcpy(params->Usb3HsioTxDeEmphEnable, config->Usb3HsioTxDeEmphEnable,
-			sizeof(params->Usb3HsioTxDeEmphEnable));
-	memcpy(params->Usb3HsioTxDeEmph, config->Usb3HsioTxDeEmph,
-			sizeof(params->Usb3HsioTxDeEmph));
-	memcpy(params->Usb3HsioTxDownscaleAmpEnable, config->Usb3HsioTxDownscaleAmpEnable,
-			sizeof(params->Usb3HsioTxDownscaleAmpEnable));
-	memcpy(params->Usb3HsioTxDownscaleAmp, config->Usb3HsioTxDownscaleAmp,
-			sizeof(params->Usb3HsioTxDownscaleAmp));
+	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
+		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
+		if (config->usb3_ports[i].tx_de_emp) {
+			params->Usb3HsioTxDeEmphEnable[i] = 1;
+			params->Usb3HsioTxDeEmph[i] =
+				config->usb3_ports[i].tx_de_emp;
+		}
+		if (config->usb3_ports[i].tx_downscale_amp) {
+			params->Usb3HsioTxDownscaleAmpEnable[i] = 1;
+			params->Usb3HsioTxDownscaleAmp[i] =
+				config->usb3_ports[i].tx_downscale_amp;
+		}
+	}
 
 	params->SataSalpSupport = config->SataSalpSupport;
 	params->SataPortsEnable[0] = config->SataPortsEnable[0];

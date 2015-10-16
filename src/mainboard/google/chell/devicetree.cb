@@ -53,54 +53,17 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[0]" = "1"
 	register "PcieRpClkReqNumber[4]" = "2"
 
-	register "PortUsb20Enable[0]" = "1"	# Type-C Port 1
-	register "PortUsb20Enable[1]" = "1"	# Type-A Port
-	register "PortUsb20Enable[2]" = "1"	# Camera
-	register "PortUsb20Enable[3]" = "1"	# Bluetooth
-	register "PortUsb20Enable[4]" = "1"	# SD
-	register "PortUsb20Enable[5]" = "1"	# Type-C Port 2
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C"  # Type-C Port 1
+	register "usb2_ports[1]" = "USB2_PORT_MID"     # Type-A Port
+	register "usb2_ports[2]" = "USB2_PORT_FLEX"    # Camera
+	register "usb2_ports[3]" = "USB2_PORT_MID"     # Bluetooth
+	register "usb2_ports[4]" = "USB2_PORT_MID"     # SD
+	register "usb2_ports[5]" = "USB2_PORT_TYPE_C"  # Type-C Port 2
 
-	register "PortUsb30Enable[0]" = "1"	# Type-C Port 1
-	register "PortUsb30Enable[1]" = "1"	# Type-C Port 2
-	register "PortUsb30Enable[2]" = "1"	# Type-A Port
-	register "PortUsb30Enable[3]" = "1"	# SD
-
-	# USB Per Port HS Preemphasis Bias
-	register "Usb2AfePetxiset" = "{ 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, \
-					0x07, 0x07, 0x07, 0x07, 0x07, 0x07, \
-					0x07, 0x07, 0x07, 0x07 }"
-
-	# USB Per Port HS Transmitter Bias
-	register "Usb2AfeTxiset" = "{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
-				      0x00, 0x00, 0x05, 0x00, 0x00, 0x00, \
-				      0x00, 0x00, 0x00, 0x00 }"
-
-	# USB Per Port HS Transmitter Emphasis
-	register "Usb2AfePredeemp" = "{ 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, \
-					0x02, 0x02, 0x02, 0x02, 0x03, 0x03, \
-					0x03, 0x03, 0x03, 0x03 }"
-
-	# USB Per Port Half Bit Pre-emphasis
-	register "Usb2AfePehalfbit" = "{ 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, \
-					 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, \
-					 0x00, 0x00, 0x00, 0x00 }"
-
-	# Enable the write to USB 3.0 TX Output -3.5dB De-Emphasis Adjustment
-	register "Usb3HsioTxDeEmphEnable" = "{ 0x00, 0x00, 0x00, 0x00, 0x00, \
-					       0x00, 0x00, 0x00, 0x00, 0x00 }"
-
-	# USB 3.0 TX Output -3.5dB De-Emphasis Adjustment Setting
-	register "Usb3HsioTxDeEmph" = "{ 0x00, 0x00, 0x00, 0x00, 0x00, \
-					 0x00, 0x00, 0x00, 0x00, 0x00 }"
-
-	# Enable the write to USB 3.0 TX Output Downscale Amplitude Adjustment
-	register "Usb3HsioTxDownscaleAmpEnable" = "{ 0x00, 0x00, 0x00, 0x00, \
-						     0x00, 0x00, 0x00, 0x00, \
-						     0x00, 0x00 }"
-
-	# USB 3.0 TX Output Downscale Amplitude Adjustment
-	register "Usb3HsioTxDownscaleAmp" = "{ 0x00, 0x00, 0x00, 0x00, 0x00, \
-					       0x00, 0x00, 0x00, 0x00, 0x00 }"
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT" # Type-C Port 1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT" # Type-C Port 2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT" # Type-A Port
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT" # SD
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{ \

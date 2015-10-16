@@ -1,4 +1,4 @@
-subdirs-y += ../model_10xxx
+subdirs-y += ../family_10h-family_15h
 subdirs-y += ../quadcore
 subdirs-y += ../mtrr
 subdirs-y += ../microcode

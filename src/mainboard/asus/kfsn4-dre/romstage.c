@@ -70,7 +70,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "southbridge/nvidia/ck804/early_setup_car.c"
 #include <cpu/amd/microcode.h>
 
-#include "cpu/amd/model_10xxx/init_cpus.c"
+#include "cpu/amd/family_10h-family_15h/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
 #define GPIO3_DEV PNP_DEV(0x2e, W83627THG_GPIO3)

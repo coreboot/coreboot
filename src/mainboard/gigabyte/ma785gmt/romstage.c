@@ -60,7 +60,7 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/quadcore/quadcore.c"
 #include <cpu/amd/microcode.h>
 
-#include "cpu/amd/model_10xxx/init_cpus.c"
+#include "cpu/amd/family_10h-family_15h/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include <spd.h>
 

@@ -116,22 +116,6 @@ config DISPLAY_UPD_DATA
 	  Display the user specified product data prior to memory
 	  initialization.
 
-config FSP_RAM_INIT
-	bool
-	default n
-
-config FSP_ROMSTAGE
-	bool
-	default n
-
-config FSP_STACK
-	bool
-	default n
-
-config FSP_STAGE_CACHE
-	bool
-	default n
-
 config FSP_USES_UPD
 	bool
 	default n
@@ -146,7 +130,6 @@ config GOP_SUPPORT
 config ROMSTAGE_RAM_STACK_SIZE
 	hex "Size of the romstage RAM stack in bytes"
 	default 0x5000
-	depends on FSP_STACK
 
 config USE_GENERIC_FSP_CAR_INC
 	bool

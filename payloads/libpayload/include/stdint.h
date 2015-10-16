@@ -38,6 +38,7 @@ typedef unsigned long long uintmax_t;
 typedef unsigned long uintptr_t;
 typedef long intptr_t;
 
+typedef long ptrdiff_t;
 
 #define INT8_MAX	(127)
 #define INT16_MAX	(32767)

@@ -1,0 +1,80 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2015 MediaTek Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef __SOC_MEDIATEK_MT8173_FLASH_CONTROLLER_H__
+#define __SOC_MEDIATEK_MT8173_FLASH_CONTROLLER_H__
+
+#include <cbfs.h>
+#include <spi-generic.h>
+#include <stdint.h>
+#include <soc/addressmap.h>
+
+enum {
+	SFLASH_POLLINGREG_US	  = 500000,
+	SFLASH_WRBUF_SIZE	  = 128,
+	SFLASHNAME_LENGTH	  = 16,
+	SFLASH_WRITE_IN_PROGRESS  = 1,
+	SFLASH_COMMAND_ENABLE	  = 0x30,
+
+	/* NOR flash controller commands */
+	SFLASH_RD_TRIGGER	  = 1 << 0,
+	SFLASH_READSTATUS	  = 1 << 1,
+	SFLASH_PRG_CMD		  = 1 << 2,
+	SFLASH_WR_TRIGGER	  = 1 << 4,
+	SFLASH_WRITESTATUS	  = 1 << 5,
+	SFLASH_AUTOINC		  = 1 << 7,
+	/* NOR flash commands */
+	SFLASH_OP_WREN		  = 0x6,
+	SECTOR_ERASE_CMD	  = 0x20,
+	SFLASH_UNPROTECTED	  = 0x0
+};
+
+/* register Offset */
+struct mt8173_nor_regs {
+	u32 cmd;
+	u32 cnt;
+	u32 rdsr;
+	u32 rdata;
+	u32 radr[3];
+	u32 wdata;
+	u32 prgdata[6];
+	u32 shreg[10];
+	u32 cfg[2];
+	u32 shreg10;
+	u32 status[5];
+	u32 timing;
+	u32 flash_cfg;
+	u32 reserved2[3];
+	u32 sf_time;
+	u32 reserved3;
+	u32 diff_addr;
+	u32 del_sel[2];
+	u32 intrstus;
+	u32 intren;
+	u32 pp_ctl;
+	u32 cfg3;
+	u32 chksum_ctl;
+	u32 chksum;
+	u32 aaicmd;
+	u32 wrprot;
+	u32 radr3;
+	u32 read_dual;
+	u32 delsel[3];
+};
+check_member(mt8173_nor_regs, delsel[2], 0xD8);
+static struct mt8173_nor_regs * const mt8173_nor = (void *)SFLASH_REG_BASE;
+
+struct spi_flash *mt8173_nor_flash_probe(struct spi_slave *spi);
+#endif /* __SOC_MEDIATEK_MT8173_FLASH_CONTROLLER_H__ */

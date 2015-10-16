@@ -33,6 +33,34 @@ static void i2c_set_gpio_pinmux(void)
 	gpio_set_mode(PAD_SCL4, PAD_SCL4_FUNC_SCL4);
 }
 
+static void nor_set_gpio_pinmux(void)
+{
+	/* Set driving strength of EINT4~EINT9 to 8mA
+	 * 0: 2mA
+	 * 1: 4mA
+	 * 2: 8mA
+	 * 3: 16mA
+	 */
+	/* EINT4: 0x10005B20[14:13] */
+	clrsetbits_le16(&mt8173_gpio->drv_mode[2].val, 0xf << 12, 2 << 13);
+	/* EINT5~EINT9: 0x10005B30[2:1] */
+	clrsetbits_le16(&mt8173_gpio->drv_mode[3].val, 0xf << 0, 2 << 1),
+
+	gpio_set_pull(PAD_EINT4, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+	gpio_set_pull(PAD_EINT5, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+	gpio_set_pull(PAD_EINT6, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+	gpio_set_pull(PAD_EINT7, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+	gpio_set_pull(PAD_EINT8, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+	gpio_set_pull(PAD_EINT9, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+
+	gpio_set_mode(PAD_EINT4, PAD_EINT4_FUNC_SFWP_B);
+	gpio_set_mode(PAD_EINT5, PAD_EINT5_FUNC_SFOUT);
+	gpio_set_mode(PAD_EINT6, PAD_EINT6_FUNC_SFCS0);
+	gpio_set_mode(PAD_EINT7, PAD_EINT7_FUNC_SFHOLD);
+	gpio_set_mode(PAD_EINT8, PAD_EINT8_FUNC_SFIN);
+	gpio_set_mode(PAD_EINT9, PAD_EINT9_FUNC_SFCK);
+}
+
 void bootblock_mainboard_early_init(void)
 {
 	/* Clear UART0 power down signal */
@@ -46,6 +74,9 @@ void bootblock_mainboard_init(void)
 
 	/* set i2c related gpio */
 	i2c_set_gpio_pinmux();
+
+	/* set nor related GPIO */
+	nor_set_gpio_pinmux();
 
 	mtk_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, SPI_PAD1_MASK, 6*MHz);
 

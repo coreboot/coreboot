@@ -23,6 +23,7 @@
 #include <string.h>
 #include <timer.h>
 #include <soc/addressmap.h>
+#include <soc/flash_controller.h>
 #include <soc/gpio.h>
 #include <soc/pinmux.h>
 #include <soc/pll.h>
@@ -161,6 +162,7 @@ static void mtk_spi_dump_data(const char *name, const uint8_t *data,
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	struct mtk_spi_bus *eslave;
+	static struct spi_slave slave;
 
 	switch (bus) {
 	case CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS:
@@ -168,6 +170,12 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 		assert(read32(&eslave->regs->spi_cfg0_reg) != 0);
 		spi_sw_reset(eslave->regs);
 		return &eslave->slave;
+	case CONFIG_BOOT_MEDIA_SPI_BUS:
+		slave.bus = bus;
+		slave.cs = cs;
+		slave.force_programmer_specific = 1;
+		slave.programmer_specific_probe = &mt8173_nor_flash_probe;
+		return &slave;
 	default:
 		die ("wrong bus number.\n");
 	};

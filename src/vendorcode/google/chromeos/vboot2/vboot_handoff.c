@@ -151,6 +151,9 @@ void vboot_fill_handoff(void)
 	if (vboot_is_readonly_path())
 		return;
 
+	if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES))
+		return;
+
 	if (vb2_get_selected_region(&fw_main))
 		die("No component metadata.\n");
 

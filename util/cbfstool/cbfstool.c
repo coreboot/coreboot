@@ -913,7 +913,7 @@ static int cbfs_update_fit(void)
 static int cbfs_copy(void)
 {
 	if (!param.copyoffset_assigned) {
-		ERROR("You need to specify -D/--copy_offset.\n");
+		ERROR("You need to specify -D/--copy-offset.\n");
 		return 1;
 	}
 

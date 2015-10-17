@@ -62,11 +62,11 @@ static void mainboard_enable(device_t dev)
 	/* enable GPP CLK0 thru CLK1 */
 	/* disable GPP CLK2 thru SLT_GFX_CLK */
 	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
-	*(misc_mem_clk_cntrl + 0) = 0xFF;
-	*(misc_mem_clk_cntrl + 1) = 0x00;
-	*(misc_mem_clk_cntrl + 2) = 0x00;
-	*(misc_mem_clk_cntrl + 3) = 0x00;
-	*(misc_mem_clk_cntrl + 4) = 0x00;
+	write8(misc_mem_clk_cntrl + 0, 0xFF);
+	write8(misc_mem_clk_cntrl + 1, 0x00);
+	write8(misc_mem_clk_cntrl + 2, 0x00);
+	write8(misc_mem_clk_cntrl + 3, 0x00);
+	write8(misc_mem_clk_cntrl + 4, 0x00);
 
 	/*
 	 * Force the onboard SATA port to GEN2 speed.

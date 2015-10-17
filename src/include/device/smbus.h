@@ -47,4 +47,9 @@ int smbus_process_call(device_t dev, u8 cmd, u16 data);
 int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer);
 int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer);
 
+#if IS_ENABLED(CONFIG_SMBUS_HAS_AUX_CHANNELS)
+void smbus_switch_to_channel(uint8_t channel_number);
+uint8_t smbus_get_current_channel(void);
+#endif
+
 #endif /* DEVICE_SMBUS_H */

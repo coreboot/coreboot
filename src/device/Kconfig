@@ -192,6 +192,10 @@ config MULTIPLE_VGA_ADAPTERS
 	bool
 	default n
 
+config SMBUS_HAS_AUX_CHANNELS
+	bool
+	default n
+
 config SPD_CACHE
 	bool
 	default n

@@ -27,6 +27,7 @@ config SOUTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select IOAPIC
 	select HAVE_USBDEBUG_OPTIONS
 	select HAVE_HARD_RESET
+	select SMBUS_HAS_AUX_CHANNELS
 
 # Set for southbridge SP5100 which also uses SB700 driver
 config SOUTHBRIDGE_AMD_SUBTYPE_SP5100

@@ -22,6 +22,11 @@
 
 #include "smbus.h"
 
+extern uint8_t amd_sb700_aux_smbus;
+
+void smbus_switch_to_channel(uint8_t channel_number);
+uint8_t smbus_get_current_channel(void);
+
 void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val)
 {
 	u32 tmp;
@@ -214,6 +219,16 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val)
 	}
 
 	return 0;
+}
+
+void smbus_switch_to_channel(uint8_t channel_number)
+{
+	amd_sb700_aux_smbus = !!channel_number;
+}
+
+uint8_t smbus_get_current_channel(void)
+{
+	return amd_sb700_aux_smbus;
 }
 
 #endif

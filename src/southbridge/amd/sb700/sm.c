@@ -40,6 +40,11 @@
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
+#define PRIMARY_SMBUS_RESOURCE_NUMBER 0x90
+#define AUXILIARY_SMBUS_RESOURCE_NUMBER 0x58
+
+uint8_t amd_sb700_aux_smbus = 0;
+
 /*
 * SB700 enables all USB controllers by default in SMBUS Control.
 * SB700 enables SATA by default in SMBUS Control.
@@ -312,7 +317,10 @@ static int lsmbus_recv_byte(device_t dev)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-	res = find_resource(pbus->dev, 0x90);
+	if (!amd_sb700_aux_smbus)
+		res = find_resource(pbus->dev, PRIMARY_SMBUS_RESOURCE_NUMBER);
+	else
+		res = find_resource(pbus->dev, AUXILIARY_SMBUS_RESOURCE_NUMBER);
 
 	return do_smbus_recv_byte(res->base, device);
 }
@@ -326,7 +334,10 @@ static int lsmbus_send_byte(device_t dev, u8 val)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-	res = find_resource(pbus->dev, 0x90);
+	if (!amd_sb700_aux_smbus)
+		res = find_resource(pbus->dev, PRIMARY_SMBUS_RESOURCE_NUMBER);
+	else
+		res = find_resource(pbus->dev, AUXILIARY_SMBUS_RESOURCE_NUMBER);
 
 	return do_smbus_send_byte(res->base, device, val);
 }
@@ -340,7 +351,10 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-	res = find_resource(pbus->dev, 0x90);
+	if (!amd_sb700_aux_smbus)
+		res = find_resource(pbus->dev, PRIMARY_SMBUS_RESOURCE_NUMBER);
+	else
+		res = find_resource(pbus->dev, AUXILIARY_SMBUS_RESOURCE_NUMBER);
 
 	return do_smbus_read_byte(res->base, device, address);
 }
@@ -354,7 +368,10 @@ static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-	res = find_resource(pbus->dev, 0x90);
+	if (!amd_sb700_aux_smbus)
+		res = find_resource(pbus->dev, PRIMARY_SMBUS_RESOURCE_NUMBER);
+	else
+		res = find_resource(pbus->dev, AUXILIARY_SMBUS_RESOURCE_NUMBER);
 
 	return do_smbus_write_byte(res->base, device, address, val);
 }
@@ -393,9 +410,18 @@ static void sb700_sm_read_resources(device_t dev)
 
 	/* dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER; */
 
-	/* smbus */
-	res = new_resource(dev, 0x90);
-	res->base  = 0xB00;
+	/* primary smbus */
+	res = new_resource(dev, PRIMARY_SMBUS_RESOURCE_NUMBER);
+	res->base  = SMBUS_IO_BASE;
+	res->size = 0x10;
+	res->limit = 0xFFFFUL;	/* res->base + res->size -1; */
+	res->align = 8;
+	res->gran = 8;
+	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
+
+	/* auxiliary smbus */
+	res = new_resource(dev, AUXILIARY_SMBUS_RESOURCE_NUMBER);
+	res->base  = SMBUS_AUX_IO_BASE;
 	res->size = 0x10;
 	res->limit = 0xFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;
@@ -439,8 +465,11 @@ static void sb700_sm_set_resources(struct device *dev)
 	pci_write_config8(dev, 0x65, byte);
 	/* TODO: End of test hpet */
 
-	res = find_resource(dev, 0x90);
-	pci_write_config32(dev, 0x90, res->base | 1);
+	res = find_resource(dev, PRIMARY_SMBUS_RESOURCE_NUMBER);
+	pci_write_config32(dev, PRIMARY_SMBUS_RESOURCE_NUMBER, res->base | 1);
+
+	res = find_resource(dev, AUXILIARY_SMBUS_RESOURCE_NUMBER);
+	pci_write_config32(dev, AUXILIARY_SMBUS_RESOURCE_NUMBER, res->base | 1);
 }
 
 static struct pci_operations lops_pci = {

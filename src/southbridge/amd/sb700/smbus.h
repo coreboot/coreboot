@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +25,8 @@
 #include "stddef.h"
 #include <arch/io.h>
 
-#define SMBUS_IO_BASE 0x6000	/* Is it a temporary SMBus I/O base address? */
-				/*SIZE 0x40 */
+#define SMBUS_IO_BASE 0xb00
+#define SMBUS_AUX_IO_BASE 0xb20
 
 #define SMBHSTSTAT 0x0
 #define SMBSLVSTAT 0x1

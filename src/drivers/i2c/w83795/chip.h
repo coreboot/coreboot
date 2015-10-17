@@ -139,4 +139,11 @@ struct drivers_i2c_w83795_config {
 	uint8_t fan6_duty;			/* % of full speed (0-100) */
 	uint8_t fan7_duty;			/* % of full speed (0-100) */
 	uint8_t fan8_duty;			/* % of full speed (0-100) */
+
+	uint8_t smbus_aux;			/* 0   == device located on primary SMBUS,
+						 * 1   == device located on first auxiliary
+						 *        SMBUS channel,
+						 * <n> == device located on <n> auxiliary
+						 *        SMBUS channel
+						 */
 };

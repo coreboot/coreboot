@@ -146,7 +146,18 @@ static void w83795_init(struct device *dev, w83795_fan_mode_t mode, u8 dts_src)
 	uint8_t val;
 	uint16_t limit_value;
 
+#if IS_ENABLED(CONFIG_SMBUS_HAS_AUX_CHANNELS)
+	uint8_t smbus_aux_channel_prev = smbus_get_current_channel();
+	smbus_switch_to_channel(config->smbus_aux);
+	printk(BIOS_DEBUG, "Set SMBUS controller to channel %d\n", config->smbus_aux);
+#endif
+
 	if (smbus_read_byte(dev, 0x00) < 0) {
+#if IS_ENABLED(CONFIG_SMBUS_HAS_AUX_CHANNELS)
+		/* Restore SMBUS channel setting */
+		smbus_switch_to_channel(smbus_aux_channel_prev);
+		printk(BIOS_DEBUG, "Set SMBUS controller to channel %d\n", smbus_aux_channel_prev);
+#endif
 		printk(BIOS_ERR, "W83795G/ADG Nuvoton H/W Monitor not found\n");
 		return;
 	}
@@ -338,6 +349,12 @@ static void w83795_init(struct device *dev, w83795_fan_mode_t mode, u8 dts_src)
 	val = w83795_read(dev, W83795_REG_CONFIG);
 	val |= W83795_REG_CONFIG_START;
 	w83795_write(dev, W83795_REG_CONFIG, val);
+
+#if IS_ENABLED(CONFIG_SMBUS_HAS_AUX_CHANNELS)
+	/* Restore SMBUS channel setting */
+	smbus_switch_to_channel(smbus_aux_channel_prev);
+	printk(BIOS_DEBUG, "Set SMBUS controller to channel %d\n", smbus_aux_channel_prev);
+#endif
 }
 
 static void w83795_hwm_init(struct device *dev)

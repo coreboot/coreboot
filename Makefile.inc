@@ -699,7 +699,10 @@ junit.xml:
 	echo "</testsuite>" >> $@.tmp
 	mv $@.tmp "util/$(UTIL)/$@"
 
-TOOLLIST=cbmem nvramtool inteltool
+TOOLLIST= \
+	cbmem \
+	inteltool \
+	nvramtool
 JENKINS_PAYLOAD?=none
 CPUS?=4
 what-jenkins-does:

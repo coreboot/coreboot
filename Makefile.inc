@@ -703,6 +703,7 @@ TOOLLIST= \
 	cbmem \
 	ectool \
 	inteltool \
+	intelvbttool \
 	nvramtool \
 	superiotool \
 	viatool

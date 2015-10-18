@@ -153,8 +153,8 @@ static void enable_port(u8 *mmio)
 	read32(mmio + 0xc4000);
 }
 
-int i915lightup_sandy(const struct i915_gpu_controller_info *info,
-		      u32 physbase, u16 piobase, u8 *mmio, u32 lfb)
+int i915lightup_ivy(const struct i915_gpu_controller_info *info,
+		u32 physbase, u16 piobase, u8 *mmio, u32 lfb)
 {
 	int i;
 	u8 edid_data[128];

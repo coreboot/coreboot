@@ -24,6 +24,7 @@
 #include <drivers/intel/gma/i915.h>
 #include "gma.h"
 #include "chip.h"
+#include "sandybridge.h"
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 #include <device/pci_def.h>
@@ -141,6 +142,10 @@ int i915lightup_sandy(const struct i915_gpu_controller_info *info,
 
 	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
 		return 0;
+
+	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_IVB) {
+		return i915lightup_ivy(info, physbase, piobase, mmio, lfb);
+	}
 
 	write32(mmio + 0x00070080, 0x00000000);
 	write32(mmio + DSPCNTR(0), 0x00000000);

@@ -29,6 +29,11 @@ Device (DPTF)
 
 		/* DPPM Cooling Policy */
 		ToUUID ("16CAF1B7-DD38-40ED-B1C1-1B8A1913D531"),
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+		/* DPPM Active Policy */
+		ToUUID ("3A95C389-E4B8-4629-A526-C52C88626BAE"),
+#endif
 	})
 
 	Method (_STA)
@@ -71,6 +76,14 @@ Device (DPTF)
 		Return (\_SB.DTRT)
 	}
 
+#ifdef DPTF_ENABLE_FAN_CONTROL
+	/* _ART : Active Cooling Relationship Table */
+	Method (_ART)
+	{
+		Return (\_SB.DART)
+	}
+#endif
+
 	/* Convert from Degrees C to 1/10 Kelvin for ACPI */
 	Method (CTOK, 1) {
 		/* 10th of Degrees C */
@@ -88,6 +101,11 @@ Device (DPTF)
 #ifdef DPTF_ENABLE_CHARGER
 	/* Include Charger Participant */
 	#include "charger.asl"
+#endif
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+	/* Include Fan Participant */
+	#include "fan.asl"
 #endif
 
 }

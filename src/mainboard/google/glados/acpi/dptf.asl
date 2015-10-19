@@ -45,6 +45,9 @@
 /* SKL-Y EC already has a custom charge profile based on temperature. */
 #undef DPTF_ENABLE_CHARGER
 
+/* SKL-Y is Fanless design. */
+#undef DPTF_ENABLE_FAN_CONTROL
+
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
 	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },

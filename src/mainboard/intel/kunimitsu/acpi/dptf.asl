@@ -38,6 +38,7 @@
 #define DPTF_TSR2_CRITICAL	70
 
 #define DPTF_ENABLE_CHARGER
+#define DPTF_ENABLE_FAN_CONTROL
 
 /* Charger performance states, board-specific values from charger and EC */
 Name (CHPS, Package () {
@@ -47,6 +48,42 @@ Name (CHPS, Package () {
 	Package () { 0, 0, 0, 0, 8, 0x200, "mA", 0 },	/* 0.5A */
 	Package () { 0, 0, 0, 0, 0, 0x000, "mA", 0 },	/* 0.0A */
 })
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+/* DFPS: Fan Performance States */
+Name (DFPS, Package () {
+	0,	// Revision
+	/*
+	 * TODO : Need to update this Table after characterization.
+	 *	  These are initial reference values.
+	 */
+	/* Control, Trip Point, Speed, NoiseLevel, Power */
+	Package () {100,	0xFFFFFFFF,	4986,	220,	2200},
+	Package () {90,		0xFFFFFFFF,	4804,	180,	1800},
+	Package () {80,		0xFFFFFFFF,	4512,	145,	1450},
+	Package () {70,		0xFFFFFFFF,	4204,	115,	1150},
+	Package () {60,		0xFFFFFFFF,	3838,	90,	900},
+	Package () {50,		0xFFFFFFFF,	3402,	65,	650},
+	Package () {40,		0xFFFFFFFF,	2904,	45,	450},
+	Package () {30,		0xFFFFFFFF,	2337,	30,	300},
+	Package () {20,		0xFFFFFFFF,	1608,	15,	150},
+	Package () {10,		0xFFFFFFFF,	800,	10,	100},
+	Package () {0,		0xFFFFFFFF,	0,	0,	50}
+})
+
+Name (DART, Package () {
+	/* Fan effect on CPU */
+	0,	// Revision
+	Package () {
+		/*
+		 * Source, Target, Weight, AC0, AC1, AC2, AC3, AC4, AC5, AC6,
+		 *	AC7, AC8, AC9
+		 */
+		\_SB.DPTF.TFN1, \_SB.PCI0.B0D4, 100, 100, 90, 80, 70, 60, 0, 0,
+			0, 0, 0
+	}
+})
+#endif
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */

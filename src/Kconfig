@@ -50,7 +50,6 @@ config COMMON_CBFS_SPI_WRAPPER
 config MULTIPLE_CBFS_INSTANCES
 	bool "Multiple CBFS instances in the bootrom"
 	default n
-	depends on !ARCH_X86
 	help
 	  Account for the firmware image containing more than one CBFS
 	  instance. Locations of instances are known at build time and are

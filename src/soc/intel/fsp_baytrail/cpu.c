@@ -76,11 +76,11 @@ void baytrail_init_cpus(device_t dev)
 	setup_lapic();
 
 	mp_params.num_cpus = pattrs->num_cpus,
-	mp_params.parallel_microcode_load = 0,
+	mp_params.parallel_microcode_load = 1,
 	mp_params.adjust_apic_id = adjust_apic_id;
 	mp_params.flight_plan = &mp_steps[0];
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
-	mp_params.microcode_pointer = 0;
+	mp_params.microcode_pointer = pattrs->microcode_patch;
 
 	if (mp_init(cpu_bus, &mp_params)) {
 		printk(BIOS_ERR, "MP initialization failure.\n");

@@ -89,6 +89,7 @@ static void fill_in_pattrs(void)
 		attrs->stepping += STEP_A0;
 	}
 
+	attrs->microcode_patch = intel_microcode_find();
 	attrs->address_bits = cpuid_eax(0x80000008) & 0xff;
 	detect_num_cpus(attrs);
 

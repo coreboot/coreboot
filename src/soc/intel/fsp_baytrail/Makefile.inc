@@ -22,6 +22,7 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/x86/cache
+subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../lib/fsp
 subdirs-y += fsp

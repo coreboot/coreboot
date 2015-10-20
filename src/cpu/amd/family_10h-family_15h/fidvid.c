@@ -856,7 +856,7 @@ static void init_fidvid_bsp_stage1(u32 ap_apicid, void *gp)
 	while (--loop > 0) {
 		if (lapic_remote_read(ap_apicid, LAPIC_MSG_REG, &readback) != 0)
 			continue;
-		if ((readback & 0x3f) == 1) {
+		if ((readback & 0x3f) == F10_APSTATE_RESET) {
 			timeout = 0;
 			break;	/* target ap is in stage 1 */
 		}

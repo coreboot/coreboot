@@ -909,6 +909,9 @@ int reset_bus(struct bus *bus)
 static void scan_bus(struct device *busdev)
 {
 	int do_scan_bus;
+	struct stopwatch sw;
+
+	stopwatch_init(&sw);
 
 	if (!busdev->enabled)
 		return;
@@ -931,6 +934,9 @@ static void scan_bus(struct device *busdev)
 			}
 		}
 	}
+
+	printk(BIOS_DEBUG, "%s: scanning of bus %s took %ld usecs\n",
+		__func__, dev_path(busdev), stopwatch_duration_usecs(&sw));
 }
 
 void scan_bridges(struct bus *bus)

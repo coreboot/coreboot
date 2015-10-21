@@ -62,7 +62,7 @@ typedef struct {
 typedef struct {
 	u8 bus;
 	u8 devfn;
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
 	struct device* dev;
 #else
 	u64 puid;

@@ -16,7 +16,7 @@
 #include <timer.h>
 #include <types.h>
 
-#if CONFIG_X86EMU_DEBUG_TIMINGS
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_TIMINGS)
 extern struct mono_time zero;
 #endif
 extern u32 debug_flags;
@@ -70,7 +70,7 @@ static inline void set_ci(void) {};
 // set to enable tracing of JMPs in x86emu
 #define DEBUG_JMP 0x2000
 
-#if CONFIG_X86EMU_DEBUG
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
 
 #define CHECK_DBG(_flag) if (debug_flags & _flag)
 
@@ -78,7 +78,7 @@ static inline void set_ci(void) {};
 // prints the CS:IP before the printout, NOTE: actually its CS:IP of the _next_ instruction
 // to be executed, since the x86emu advances CS:IP _before_ actually executing an instruction
 
-#if CONFIG_X86EMU_DEBUG_TIMINGS
+#if IS_ENABLED(CONFIG_X86EMU_DEBUG_TIMINGS)
 #define DEBUG_PRINTF_CS_IP(_x...) DEBUG_PRINTF("[%08lx]%x:%x ", (current_time_from(&zero)).microseconds, M.x86.R_CS, M.x86.R_IP); DEBUG_PRINTF(_x);
 #else
 #define DEBUG_PRINTF_CS_IP(_x...) DEBUG_PRINTF("%x:%x ", M.x86.R_CS, M.x86.R_IP); DEBUG_PRINTF(_x);

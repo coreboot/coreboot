@@ -682,14 +682,18 @@ $(obj)/board_id:
 	printf $(CONFIG_BOARD_ID_STRING) > $@
 
 junit.xml:
+	echo "Building $(UTIL)"
 	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
-	$(MAKE) -C "util/$(UTIL)" distclean > /dev/null 2>&1
 	echo "<testcase classname='$(UTIL)' name='$(UTIL)'>" >> $@.tmp
-	$(MAKE) -C "util/$(UTIL)" >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
+	-$(MAKE) -j $(CPUS) -C "util/$(UTIL)" clean distclean > $@.tmp.2 2>&1
+	$(MAKE) -j $(CPUS) -C "util/$(UTIL)" >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
+	cat $@.tmp.2; \
 	if [ "$$type" = "failure" ]; then \
 		echo "<failure type='buildFailed'>" >> $@.tmp; \
+		echo "Building $(UTIL) Failed"; \
 	else \
 		echo "<$$type>" >> $@.tmp; \
+		echo "Building $(UTIL) Succeeded"; \
 	fi; \
 	echo '<![CDATA[' >> $@.tmp; \
 	cat $@.tmp.2 >> $@.tmp; \
@@ -698,6 +702,7 @@ junit.xml:
 	echo "</testcase>" >> $@.tmp
 	echo "</testsuite>" >> $@.tmp
 	mv $@.tmp "util/$(UTIL)/$@"
+	echo
 
 TOOLLIST= \
 	cbmem \
@@ -710,4 +715,4 @@ what-jenkins-does:
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -B -J $(if $(JENKINS_NOCCACHE),,-y) -c $(CPUS) -z -p $(JENKINS_PAYLOAD)
 	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
-	$(foreach tool, $(TOOLLIST), $(MAKE) V=$(V) Q=$(Q) UTIL="$(tool)" MFLAGS= MAKEFLAGS= junit.xml; )
+	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) UTIL="$(tool)" MFLAGS= MAKEFLAGS= junit.xml; )

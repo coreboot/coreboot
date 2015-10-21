@@ -170,7 +170,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 				break;
 			}
 			clr_ci();
-			my_wrb((u32)mem_img + i, c);
+			my_wrb((uintptr_t)mem_img + i, c);
 		}
 #endif
 		copy_count++;

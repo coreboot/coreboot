@@ -211,6 +211,12 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 			resource->gran += 1;
 		}
 		resource->limit = limit = moving | (resource->size - 1);
+
+		if (pci_base_address_is_memory_space(attr)) {
+			/* Page-align to allow individual mapping of devices. */
+			if (resource->align < 12)
+				resource->align = 12;
+		}
 	}
 
 	/*

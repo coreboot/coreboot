@@ -45,7 +45,7 @@ $(PROGRAM): $(OBJS)
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
 
 clean:
-	rm -f $(PROGRAM) *.o *~
+	rm -f $(PROGRAM) *.o *~ junit.xml
 
 distclean: clean
 	rm -f .dependencies

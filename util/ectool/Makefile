@@ -38,7 +38,11 @@ install: $(PROGRAM)
 	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
 
 clean:
-	rm *.o $(PROGRAM)
+	rm -f *.o $(PROGRAM) junit.xml
+
+distclean: clean
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $^ -I. -o $@
+
+.PHONY: all install clean distclean

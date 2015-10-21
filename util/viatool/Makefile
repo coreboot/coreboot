@@ -55,6 +55,7 @@ clean:
 	rm -f $(PROGRAM) $(OBJS)
 	# Remove backup files created by some editors
 	find ./ |grep *~ |xargs rm -f
+	rm -f junit.xml
 
 distclean: clean
 	rm -f .dependencies

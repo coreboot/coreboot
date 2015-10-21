@@ -73,6 +73,8 @@ install: $(PROGRAM)
 	$(INSTALL) -p -m644 $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
 
 clean:
-	rm -f $(PROGRAM) *.o
+	rm -f $(PROGRAM) *.o junit.xml
 
-.PHONY: all install clean
+distclean: clean
+
+.PHONY: all install clean distclean

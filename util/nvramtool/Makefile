@@ -54,7 +54,7 @@ $(PROGRAM): $(OBJS)
 	$(STRIP) $(STRIP_ARGS) $(PROGRAM)
 
 clean:
-	rm -f $(PROGRAM) $(OBJS)
+	rm -f $(PROGRAM) $(OBJS) junit.xml
 
 distclean: clean
 	rm -f .dependencies

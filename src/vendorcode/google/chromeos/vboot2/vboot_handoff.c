@@ -66,7 +66,7 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 
 	if (vb2_sd->recovery_reason) {
 		vb_sd->firmware_index = 0xFF;
-		if (vb2_sd->recovery_reason == VB2_RECOVERY_RO_MANUAL)
+		if (vb2_sd->flags & VB2_SD_FLAG_MANUAL_RECOVERY)
 			vb_sd->flags |= VBSD_BOOT_REC_SWITCH_ON;
 		*oflags |= VB_INIT_OUT_ENABLE_RECOVERY;
 		*oflags |= VB_INIT_OUT_CLEAR_RAM;

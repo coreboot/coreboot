@@ -64,7 +64,7 @@ trivial patch so apply some common sense.
 
 Descriptions of section entries:
 
-	M: Mail patches to: FullName <address@domain>
+	M: Maintainer: FullName <address@domain>
 	R: Designated reviewer: FullName <address@domain>
 	   These reviewers should be CCed on patches.
 	L: Mailing list that is relevant to this area
@@ -122,17 +122,17 @@ Maintainers List (try to look for most precise areas first)
 RISC-V ARCHITECTURE
 M:	Ronald Minnich <rminnich@gmail.com>
 S:	Maintained
-F:	src/arch/riscv
-F:	src/mainboard/emulation/qemu-riscv
+F:	src/arch/riscv/
+F:	src/mainboard/emulation/qemu-riscv/
 
 GOOGLE PANTHER MAINBOARD
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 S:	Supported
-F:	src/mainboard/google/panther
+F:	src/mainboard/google/panther/
 
 ATI MACH64 Driver
 S:	Orphan
-F:	drivers/ati/mach64
+F:	drivers/ati/mach64/
 
 LINT SCRIPTS
 M:	Patrick Georgi <patrick@georgi-clan.de>
@@ -144,8 +144,8 @@ M:	Patrick Georgi <patrick@georgi-clan.de>
 S:	Supported
 F:	Makefile
 F:	*.inc
-F:	util/kconfig
-F:	util/sconfig
+F:	util/kconfig/
+F:	util/sconfig/
 
 THE REST
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>

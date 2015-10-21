@@ -438,6 +438,11 @@ static void northbridge_init(struct device *dev)
 	}
 	MCHBAR32(0x5f10) = bridge_type;
 
+	/* Turn off unused devices. Has to be done before
+	 * setting BIOS_RESET_CPL.
+	 */
+	disable_peg();
+
 	/*
 	 * Set bit 0 of BIOS_RESET_CPL to indicate to the CPU
 	 * that BIOS has initialized memory and power management
@@ -463,9 +468,6 @@ static void northbridge_init(struct device *dev)
 
 	/* Set here before graphics PM init */
 	MCHBAR32(0x5500) = 0x00100001;
-
-	/* Turn off unused devices */
-	disable_peg();
 }
 
 static void northbridge_enable(device_t dev)

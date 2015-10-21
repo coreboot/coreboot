@@ -1,31 +1,30 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2016 Google Inc
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 #include <stdio.h>
+#include <pci/pci.h>
 #include "pci-userspace.h"
-
-#ifdef PCI_LIB_VERSION
-#define LIBPCI_CHECK_VERSION(major,minor,micro) \
-    ((((major) << 16) | ((minor) << 8) | (micro)) <= PCI_LIB_VERSION)
-#else
-#define LIBPCI_CHECK_VERSION(major,minor,micro) \
- ( (LIBPCI_MAJOR_VERSION > (major)) || \
-   (LIBPCI_MAJOR_VERSION == (major) && LIBPCI_MINOR_VERSION > (minor)) || \
- (LIBPCI_MAJOR_VERSION == (major) && LIBPCI_MINOR_VERSION == (minor)) && \
- LIBPCI_MICRO_VERSION >= (micro) )
-#endif
-
-#define PCITAG struct pci_filter *
 
 #define DEBUG_PCI 1
 
-struct pci_access *pacc;
-struct pci_dev *dev;
+static struct pci_access *pacc;
 
-struct pci_filter ltag;
-
-
-int pciNumBuses = 0;
-
-int pciInit(void)
+int pci_initialize(void)
 {
+	struct pci_dev *dev;
+
 	pacc = pci_alloc();
 
 	pci_init(pacc);
@@ -36,133 +35,80 @@ int pciInit(void)
 	return 0;
 }
 
-int pciExit(void)
+int pci_exit(void)
 {
 	pci_cleanup(pacc);
 	return 0;
 }
 
-PCITAG findPci(unsigned short bx)
-{
-	PCITAG tag = &ltag;
-
-	int bus = (bx >> 8) & 0xFF;
-	int slot = (bx >> 3) & 0x1F;
-	int func = bx & 0x7;
-
-	tag->bus = bus;
-	tag->slot = slot;
-	tag->func = func;
-
-#if LIBPCI_CHECK_VERSION(2,1,99)
-	if (pci_get_dev(pacc, 0, bus, slot, func))
-#else
-	if (pci_get_dev(pacc, bus, slot, func))
-#endif
-		return tag;
-
-	return NULL;
-}
-
-u32 pciSlotBX(PCITAG tag)
-{
-	return (tag->bus << 8) | (tag->slot << 3) | (tag->func);
-}
-
-u8 pciReadByte(PCITAG tag, u32 idx)
+u8 pci_read_config8(struct device *dev, unsigned int where)
 {
 	struct pci_dev *d;
-#if LIBPCI_CHECK_VERSION(2,1,99)
-	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
-#else
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
-#endif
-		return pci_read_byte(d, idx);
+	if ((d = pci_get_dev(pacc, 0, dev->busno, dev->slot, dev->func)))
+		return pci_read_byte(d, where);
 #ifdef DEBUG_PCI
 	printf("PCI: device not found while read byte (%x:%x.%x)\n",
-	       tag->bus, tag->slot, tag->func);
+	       dev->busno, dev->slot, dev->func);
 #endif
 	return 0;
 }
 
-u16 pciReadWord(PCITAG tag, u32 idx)
+u16 pci_read_config16(struct device *dev, unsigned int where)
 {
 	struct pci_dev *d;
-#if LIBPCI_CHECK_VERSION(2,1,99)
-	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
-#else
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
-#endif
-		return pci_read_word(d, idx);
+	if ((d = pci_get_dev(pacc, 0, dev->busno, dev->slot, dev->func)))
+		return pci_read_word(d, where);
 #ifdef DEBUG_PCI
 	printf("PCI: device not found while read word (%x:%x.%x)\n",
-	       tag->bus, tag->slot, tag->func);
+	       dev->busno, dev->slot, dev->func);
 #endif
 	return 0;
 }
 
-u32 pciReadLong(PCITAG tag, u32 idx)
+u32 pci_read_config32(struct device *dev, unsigned int where)
 {
 	struct pci_dev *d;
-#if LIBPCI_CHECK_VERSION(2,1,99)
-	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
-#else
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
-#endif
-		return pci_read_long(d, idx);
+	if ((d = pci_get_dev(pacc, 0, dev->busno, dev->slot, dev->func)))
+		return pci_read_long(d, where);
 #ifdef DEBUG_PCI
-	printf("PCI: device not found while read long (%x:%x.%x)\n",
-	       tag->bus, tag->slot, tag->func);
+	printf("PCI: device not found while read dword (%x:%x.%x)\n",
+	       dev->busno, dev->slot, dev->func);
 #endif
 	return 0;
 }
 
-
-void pciWriteLong(PCITAG tag, u32 idx, u32 data)
+void pci_write_config8(struct device *dev, unsigned int where, u8 val)
 {
 	struct pci_dev *d;
-#if LIBPCI_CHECK_VERSION(2,1,99)
-	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
-#else
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
-#endif
-		pci_write_long(d, idx, data);
+	if ((d = pci_get_dev(pacc, 0, dev->busno, dev->slot, dev->func)))
+		pci_write_byte(d, where, val);
 #ifdef DEBUG_PCI
 	else
-		printf("PCI: device not found while write long (%x:%x.%x)\n",
-		       tag->bus, tag->slot, tag->func);
+		printf("PCI: device not found while write byte (%x:%x.%x)\n",
+		       dev->busno, dev->slot, dev->func);
 #endif
 }
 
-void pciWriteWord(PCITAG tag, u32 idx, u16 data)
+void pci_write_config16(struct device *dev, unsigned int where, u16 val)
 {
 	struct pci_dev *d;
-#if LIBPCI_CHECK_VERSION(2,1,99)
-	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
-#else
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
-#endif
-		pci_write_word(d, idx, data);
+	if ((d = pci_get_dev(pacc, 0, dev->busno, dev->slot, dev->func)))
+		pci_write_word(d, where, val);
 #ifdef DEBUG_PCI
 	else
 		printf("PCI: device not found while write word (%x:%x.%x)\n",
-		       tag->bus, tag->slot, tag->func);
+		       dev->busno, dev->slot, dev->func);
 #endif
-
 }
 
-void pciWriteByte(PCITAG tag, u32 idx, u8 data)
+void pci_write_config32(struct device *dev, unsigned int where, u32 val)
 {
 	struct pci_dev *d;
-#if LIBPCI_CHECK_VERSION(2,1,99)
-	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
-#else
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
-#endif
-		pci_write_long(d, idx, data);
+	if ((d = pci_get_dev(pacc, 0, dev->busno, dev->slot, dev->func)))
+		pci_write_long(d, where, val);
 #ifdef DEBUG_PCI
 	else
-		printf("PCI: device not found while write long (%x:%x.%x)\n",
-		       tag->bus, tag->slot, tag->func);
+		printf("PCI: device not found while write dword (%x:%x.%x)\n",
+		       dev->busno, dev->slot, dev->func);
 #endif
 }

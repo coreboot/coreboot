@@ -1,18 +1,20 @@
-/* Derived from:
- *                   XFree86 int10 module
- *   execute BIOS int 10h calls in x86 real mode environment
- *                 Copyright 1999 Egbert Eich
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 1999 Egbert Eich
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #ifndef __TESTBIOS_H__
 #define __TESTBIOS_H__
-
-void x86emu_dump_xregs(void);
-int int15_handler(void);
-int int16_handler(void);
-int int1A_handler(void);
-int int42_handler(void);
-int intE6_handler(void);
 
 #include <stdtypes.h>
 #include <x86emu/x86emu.h>
@@ -56,43 +58,5 @@ int intE6_handler(void);
 #define X86_BH M.x86.R_BH
 #define X86_CH M.x86.R_CH
 #define X86_DH M.x86.R_DH
-
-
-/* int10 info structure */
-typedef struct {
-	u16 BIOSseg;
-	u16 inb40time;
-	struct _mem *mem;
-	int num;
-	int ax;
-	int bx;
-	int cx;
-	int dx;
-	int si;
-	int di;
-	int es;
-	int bp;
-	int flags;
-	int stackseg;
-} _ptr, *ptr;
-
-typedef struct _mem {
-	u8(*rb) (ptr, int);
-	u16(*rw) (ptr, int);
-	u32(*rl) (ptr, int);
-	void (*wb) (ptr, int, u8);
-	void (*ww) (ptr, int, u16);
-	void (*wl) (ptr, int, u32);
-} mem;
-
-#define MEM_WB(where, what) wrb(where,what)
-#define MEM_WW(where, what) wrw(where, what)
-#define MEM_WL(where, what) wrl(where, what)
-
-#define MEM_RB(where) rdb(where)
-#define MEM_RW(where) rdw(where)
-#define MEM_RL(where) rdl(where)
-
-extern ptr current;
 
 #endif

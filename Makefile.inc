@@ -706,8 +706,11 @@ junit.xml:
 
 TOOLLIST= \
 	cbmem \
+	ectool \
 	inteltool \
-	nvramtool
+	nvramtool \
+	superiotool \
+	viatool
 JENKINS_PAYLOAD?=none
 CPUS?=4
 what-jenkins-does:

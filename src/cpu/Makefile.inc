@@ -40,7 +40,7 @@ endif
 $(obj)/cpu_microcode_blob.bin: $$(cpu_microcode_bins)
 	@printf "    MICROCODE  $(subst $(obj)/,,$(@))\n"
 	@echo $(cpu_microcode_bins)
-	cat $+ > $@
+	cat /dev/null $+ > $@
 
 cbfs-files-$(cbfs_include_ucode) += cpu_microcode_blob.bin
 cpu_microcode_blob.bin-file := $(cpu_ucode_cbfs_file)

@@ -54,6 +54,9 @@
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 #define DEFAULT_RCBABASE	((u8 *)0xfed1c000)
 
+#define IOMMU_BASE1		0xfed90000ULL
+#define IOMMU_BASE2		0xfed91000ULL
+
 #include <southbridge/intel/bd82x6x/pch.h>
 
 /* Everything below this line is ignored in the DSDT */
@@ -199,6 +202,7 @@ void intel_sandybridge_finalize_smm(void);
 #else /* !__SMM__ */
 int bridge_silicon_revision(void);
 void sandybridge_early_initialization(int chipset_type);
+void sandybridge_init_iommu(void);
 void sandybridge_late_initialization(void);
 void northbridge_romstage_finalize(int s3resume);
 

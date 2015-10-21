@@ -169,6 +169,9 @@ void sandybridge_early_initialization(int chipset_type)
 	/* Setup all BARs required for early PCIe and raminit */
 	sandybridge_setup_bars();
 
+	/* Setup IOMMU BARs */
+	sandybridge_init_iommu();
+
 	/* Device Enable, don't touch PEG bits */
 	deven = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN) | DEVEN_IGD;
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, deven);

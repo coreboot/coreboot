@@ -34,6 +34,7 @@ romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += raminit.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += romstage.c
 romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += ../../../device/dram/ddr3.c
 romstage-y += mrccache.c
+romstage-y += iommu.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
 romstage-y += ../../../arch/x86/walkcbfs.S

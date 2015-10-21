@@ -127,6 +127,13 @@ static void add_fixed_resources(struct device *dev, int index)
 	/* Required for SandyBridge sighting 3715511 */
 	bad_ram_resource(dev, index++, 0x20000000 >> 10, 0x00200000 >> 10);
 	bad_ram_resource(dev, index++, 0x40000000 >> 10, 0x00200000 >> 10);
+
+	/* Reserve IOMMU BARs */
+	const u32 capid0_a = pci_read_config32(dev, 0xe4);
+	if (!(capid0_a & (1 << 23))) {
+		mmio_resource(dev, index++, IOMMU_BASE1 >> 10, 4);
+		mmio_resource(dev, index++, IOMMU_BASE2 >> 10, 4);
+	}
 }
 
 static void pci_domain_set_resources(device_t dev)

@@ -176,10 +176,10 @@ dumpHID(void)
 	u64 hid;
 	//HID1 = 1009
 	__asm__ __volatile__("mfspr %0, 1009":"=r"(hid));
-	printf("HID1: %016llx\n", hid);
+	printf("HID1: %016llx\n", (unsigned long long)hid);
 	//HID4 = 1012
 	__asm__ __volatile__("mfspr %0, 1012":"=r"(hid));
-	printf("HID4: %016llx\n", hid);
+	printf("HID4: %016llx\n", (unsigned long long)hid);
 }
 
 #endif

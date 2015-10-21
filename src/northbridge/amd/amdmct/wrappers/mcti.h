@@ -47,7 +47,11 @@ UPDATE AS NEEDED
 #endif
 
 #ifndef MAX_DIMMS_SUPPORTED
-#define MAX_DIMMS_SUPPORTED		8
+#if IS_ENABLED(CONFIG_DIMM_DDR3)
+ #define MAX_DIMMS_SUPPORTED		6
+#else
+ #define MAX_DIMMS_SUPPORTED		8
+#endif
 #endif
 
 #ifndef MAX_CS_SUPPORTED

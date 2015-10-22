@@ -19,12 +19,7 @@
  */
 
 #define DPTF_CPU_PASSIVE        80
-#define DPTF_CPU_CRITICAL       90
-#define DPTF_CPU_ACTIVE_AC0     90
-#define DPTF_CPU_ACTIVE_AC1     80
-#define DPTF_CPU_ACTIVE_AC2     70
-#define DPTF_CPU_ACTIVE_AC3     60
-#define DPTF_CPU_ACTIVE_AC4     50
+#define DPTF_CPU_CRITICAL       99
 
 #define DPTF_TSR0_SENSOR_ID	1
 #define DPTF_TSR0_SENSOR_NAME	"Ambient"

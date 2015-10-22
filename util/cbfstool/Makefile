@@ -1,6 +1,5 @@
 top ?= $(abspath ../..)
 objutil ?= $(top)/util
-obj ?= $(objutil)/cbfsutil
 
 CONFIG_FMD_GENPARSER := y
 

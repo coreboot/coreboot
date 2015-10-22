@@ -29,8 +29,17 @@ struct bus *get_pbus_smbus(device_t dev)
 {
 	struct bus *pbus = dev->bus;
 
-	while (pbus && pbus->dev && !ops_smbus_bus(pbus))
-		pbus = pbus->dev->bus;
+	while (pbus && pbus->dev && !ops_smbus_bus(pbus)) {
+		if (pbus->dev->bus != pbus) {
+			pbus = pbus->dev->bus;
+		}
+		else {
+			printk(BIOS_WARNING,
+				"%s Find SMBus bus operations: unable to proceed\n",
+				dev_path(dev));
+			break;
+		}
+	}
 
 	if (!pbus || !pbus->dev || !pbus->dev->ops
 	    || !pbus->dev->ops->ops_smbus_bus) {

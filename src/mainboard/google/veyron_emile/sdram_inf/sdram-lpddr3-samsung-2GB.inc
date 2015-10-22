@@ -65,8 +65,7 @@
 		.mr[0] = 0x0,
 		.mr[1] = 0xC3,
 		.mr[2] = 0x6,
-		/* 40 Ohms instead of 34.3 due to bad PCB routing on Emile. */
-		.mr[3] = 0x2
+		.mr[3] = 0x1
 	},
 	.noc_timing = 0x20D266A4,
 	.noc_activate = 0x5B6,
@@ -75,5 +74,5 @@
 	.dramtype = LPDDR3,
 	.num_channels = 2,
 	.stride = 9,
-	.odt = 1,
+	.odt = 0,
 },

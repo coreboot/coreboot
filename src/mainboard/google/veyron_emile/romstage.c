@@ -85,6 +85,9 @@ void main(void)
 	configure_l2ctlr();
 	tsadc_init();
 
+	/* Need to power cycle SD card to ensure it is properly reset. */
+	sdmmc_power_off();
+
 	/* vdd_log 1200mv is enough for ddr run 666Mhz */
 	regulate_vdd_log(1200);
 

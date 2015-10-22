@@ -41,9 +41,27 @@
 
 #include "board.h"
 
+static void enable_5v_drv(void)
+{
+	gpio_output(GPIO(7, A, 3), 1);		/* 5v_drv enable */
+}
+
+static void configure_sdmmc(void)
+{
+	write32(&rk3288_grf->iomux_sdmmc0, IOMUX_SDMMC0);
+
+	/* use sdmmc0 io, disable JTAG function */
+	write32(&rk3288_grf->soc_con0, RK_CLRBITS(1 << 12));
+
+	sdmmc_power_on();
+
+	gpio_input(GPIO(7, A, 5));	/* SDMMC_DET_L */
+}
+
 static void configure_usb(void)
 {
-	gpio_output(GPIO(0, B, 4), 1);		/* USB2_PWR_EN */
+	gpio_output(GPIO(2, B, 2), 1);		/* USB3_PWR_EN */
+	gpio_output(GPIO(2, B, 3), 1);		/* USB2_PWR_EN */
 }
 
 static void configure_emmc(void)
@@ -83,14 +101,16 @@ static void configure_hdmi(void)
 	write32(&rk3288_grf->iomux_i2c5sda, IOMUX_HDMI_EDP_I2C_SDA);
 	write32(&rk3288_grf->iomux_i2c5scl, IOMUX_HDMI_EDP_I2C_SCL);
 
-	gpio_output(GPIO(7, B, 3), 1);	/* POWER_HDMI_ON */
+	gpio_output(GPIO(7, A, 2), 1);	/* POWER_HDMI_ON */
 }
 
 static void mainboard_init(device_t dev)
 {
 	gpio_output(GPIO_RESET, 0);
 
+	enable_5v_drv();
 	configure_usb();
+	configure_sdmmc();
 	configure_emmc();
 	configure_i2s();
 	configure_vop();
@@ -99,14 +119,6 @@ static void mainboard_init(device_t dev)
 	elog_init();
 	elog_add_watchdog_reset();
 	elog_add_boot_reason();
-
-	/* If recovery mode is detected, reduce frequency and voltage to reduce
-	 * heat in case machine is left unattended. chrome-os-partner:41201. */
-	if (recovery_mode_enabled())  {
-		printk(BIOS_DEBUG, "Reducing APLL freq for recovery mode.\n");
-		rkclk_configure_cpu(APLL_600_MHZ);
-		rk808_configure_buck(1, 900);
-	}
 }
 
 static void mainboard_enable(device_t dev)

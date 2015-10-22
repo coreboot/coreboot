@@ -14,19 +14,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc.
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __MAINBOARD_GOOGLE_VEYRON_EMILE_BOARD_H
-#define __MAINBOARD_GOOGLE_VEYRON_EMILE_BOARD_H
+#include "board.h"
 
-#include <boardid.h>
-#include <gpio.h>
+#include <soc/rk808.h>
 
-#define GPIO_RESET	GPIO(0, B, 5)
+static void sdmmc_power(int enable)
+{
+	rk808_configure_ldo(4, enable ? 3300 : 0); /* VCC33_SD_LDO */
+	rk808_configure_ldo(5, enable ? 3300 : 0); /* VCCIO_SD */
+}
 
-void sdmmc_power_off(void);
-void sdmmc_power_on(void);
-void setup_chromeos_gpios(void);
+void sdmmc_power_off(void)
+{
+	sdmmc_power(0);
+}
 
-#endif	/* __MAINBOARD_GOOGLE_VEYRON_EMILE_BOARD_H */
+void sdmmc_power_on(void)
+{
+	sdmmc_power(1);
+}

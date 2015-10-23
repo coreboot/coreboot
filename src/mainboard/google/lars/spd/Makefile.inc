@@ -22,10 +22,10 @@ romstage-y += spd.c
 
 SPD_BIN = $(obj)/spd.bin
 
-SPD_SOURCES  = hynix_dimm_H9CCNNN8JTALAR-NUD-1G-1866    # 0b0000
-SPD_SOURCES += hynix_dimm_H9CCNNNBLTALAR-NUD-2G-1866    # 0b0001
-SPD_SOURCES += samsung_dimm_K4E8E304EE-EGCF-1G-1866     # 0b0010
-SPD_SOURCES += samsung_dimm_K4E6E304EE-EGCF-2G-1866     # 0b0011
+SPD_SOURCES  = hynix_dimm_H9CCNNN8JTBLAR-NUD-1G-1866    # 0b0000
+SPD_SOURCES += hynix_dimm_H9CCNNNBLTBLAR-NUD-2G-1866    # 0b0001
+SPD_SOURCES += samsung_dimm_K4E8E324EB-EGCF-1G-1866     # 0b0010
+SPD_SOURCES += samsung_dimm_K4E6E304EB-EGCF-2G-1866     # 0b0011
 SPD_SOURCES += empty                                    # 0b0100
 SPD_SOURCES += empty                                    # 0b0101
 SPD_SOURCES += empty                                    # 0b0110

@@ -100,7 +100,8 @@ static int get_cbfs_range(uint32_t *offset, uint32_t *cbfs_end,
 {
 	const struct cbfs_header *header;
 
-	if (lib_sysinfo.cbfs_offset && lib_sysinfo.cbfs_size) {
+	if (media == CBFS_DEFAULT_MEDIA &&
+		lib_sysinfo.cbfs_offset && lib_sysinfo.cbfs_size) {
 		*offset = lib_sysinfo.cbfs_offset;
 		*cbfs_end = *offset + lib_sysinfo.cbfs_size;
 		return 0;

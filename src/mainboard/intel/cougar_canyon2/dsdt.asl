@@ -45,6 +45,7 @@ DefinitionBlock(
 		{
 			#include <northbridge/intel/fsp_sandybridge/acpi/sandybridge.asl>
 			#include <southbridge/intel/fsp_bd82x6x/acpi/pch.asl>
+			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
 

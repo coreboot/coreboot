@@ -657,6 +657,73 @@ struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name)
 	return NULL;
 }
 
+static int cbfs_stage_decompress(struct buffer *buff)
+{
+	struct buffer reader;
+	struct buffer writer;
+	struct cbfs_stage metadata;
+	char *orig_buffer;
+	char *new_buffer;
+	size_t new_buff_sz;
+	decomp_func_ptr decompress;
+
+	buffer_clone(&reader, buff);
+
+	/* The stage metadata is in little endian. */
+	metadata.compression = xdr_le.get32(&reader);
+	metadata.entry = xdr_le.get64(&reader);
+	metadata.load = xdr_le.get64(&reader);
+	metadata.len = xdr_le.get32(&reader);
+	metadata.memlen = xdr_le.get32(&reader);
+
+	if (metadata.compression == CBFS_COMPRESS_NONE)
+		return 0;
+
+	decompress = decompression_function(metadata.compression);
+	if (decompress == NULL)
+		return -1;
+
+	orig_buffer = buffer_get(buff);
+
+	/* This can be too big of a buffer needed, but there's no current
+	 * field indicating decompressed size of data. */
+	new_buff_sz = metadata.memlen + sizeof(struct cbfs_stage);
+	new_buffer = calloc(1, new_buff_sz);
+
+	if (decompress(orig_buffer + sizeof(struct cbfs_stage),
+			(int)(buffer_size(buff) - sizeof(struct cbfs_stage)),
+			new_buffer + sizeof(struct cbfs_stage),
+			(int)(new_buff_sz - sizeof(struct cbfs_stage)),
+			&new_buff_sz)) {
+		ERROR("Couldn't decompress stage.\n");
+		free(new_buffer);
+		return -1;
+	}
+
+	/* Include correct size for full stage info. */
+	new_buff_sz += sizeof(struct cbfs_stage);
+	buffer_init(buff, buff->name, new_buffer, new_buff_sz);
+	buffer_clone(&writer, buff);
+	/* Set size to 0 to please xdr. */
+	buffer_set_size(&writer, 0);
+
+	/* True decompressed size is just the data size -- no metadata. */
+	metadata.len = new_buff_sz - sizeof(struct cbfs_stage);
+	/* Stage is not compressed. */
+	metadata.compression = CBFS_COMPRESS_NONE;
+
+	/* Write back out the stage metadata. */
+	xdr_le.put32(&writer, metadata.compression);
+	xdr_le.put32(&writer, metadata.entry);
+	xdr_le.put32(&writer, metadata.load);
+	xdr_le.put32(&writer, metadata.len);
+	xdr_le.put32(&writer, metadata.memlen);
+
+	free(orig_buffer);
+
+	return 0;
+}
+
 int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 		      const char *filename)
 {
@@ -689,22 +756,40 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 		WARN("Payloads are extracted in SELF format.\n");
 	}
 
+	buffer_init(&buffer, strdup("(cbfs_export_entry)"), NULL, 0);
+
 	buffer.data = malloc(decompressed_size);
 	buffer.size = decompressed_size;
 	if (decompress(CBFS_SUBHEADER(entry), ntohl(entry->len),
 		buffer.data, buffer.size, NULL)) {
 		ERROR("decompression failed for %s\n", entry_name);
+		buffer_delete(&buffer);
 		return -1;
 	}
-	buffer.name = strdup("(cbfs_export_entry)");
+
+	/*
+	 * The stage metadata is never compressed proper for cbfs_stage
+	 * files. The contents of the stage data can be though. Therefore
+	 * one has to do a second pass for stages to potentially decompress
+	 * the stage data to make it more meaningful.
+	 */
+	if (ntohl(entry->type) == CBFS_COMPONENT_STAGE) {
+		if (cbfs_stage_decompress(&buffer)) {
+			ERROR("Failed to write %s into %s.\n",
+			      entry_name, filename);
+			buffer_delete(&buffer);
+			return -1;
+		}
+	}
+
 	if (buffer_write_file(&buffer, filename) != 0) {
 		ERROR("Failed to write %s into %s.\n",
 		      entry_name, filename);
-		free(buffer.name);
+		buffer_delete(&buffer);
 		return -1;
 	}
-	free(buffer.data);
-	free(buffer.name);
+
+	buffer_delete(&buffer);
 	INFO("Successfully dumped the file to: %s\n", filename);
 	return 0;
 }

@@ -81,6 +81,7 @@ static inline void buffer_init(struct buffer *b, char *name, void *data,
 	b->name = name;
 	b->data = data;
 	b->size = size;
+	b->offset = 0;
 }
 
 /* Splice a buffer into another buffer. Note that it's up to the caller to

@@ -152,7 +152,8 @@ int do_lzma_compress(char *in, int in_len, char *out, int *out_len)
 	return 0;
 }
 
-int do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len)
+int do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len,
+			size_t *actual_size)
 {
 	if (src_len <= LZMA_PROPS_SIZE + 8) {
 		ERROR("LZMA: Input length is too small.\n");
@@ -183,6 +184,9 @@ int do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len)
 		ERROR("Error while decompressing.\n");
 		return -1;
 	}
+
+	if (actual_size != NULL)
+		*actual_size = destlen;
 
 	return 0;
 }

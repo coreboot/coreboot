@@ -31,9 +31,10 @@ static int lzma_compress(char *in, int in_len, char *out, int *out_len)
 	return do_lzma_compress(in, in_len, out, out_len);
 }
 
-static int lzma_decompress(char *in, int in_len, char *out, unused int out_len)
+static int lzma_decompress(char *in, int in_len, char *out, unused int out_len,
+				size_t *actual_size)
 {
-	return do_lzma_uncompress(out, out_len, in, in_len);
+	return do_lzma_uncompress(out, out_len, in, in_len, actual_size);
 }
 static int none_compress(char *in, int in_len, char *out, int *out_len)
 {
@@ -42,9 +43,12 @@ static int none_compress(char *in, int in_len, char *out, int *out_len)
 	return 0;
 }
 
-static int none_decompress(char *in, int in_len, char *out, unused int out_len)
+static int none_decompress(char *in, int in_len, char *out, unused int out_len,
+				size_t *actual_size)
 {
 	memcpy(out, in, in_len);
+	if (actual_size != NULL)
+		*actual_size = in_len;
 	return 0;
 }
 

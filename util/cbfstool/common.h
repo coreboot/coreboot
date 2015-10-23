@@ -153,7 +153,8 @@ typedef int (*comp_func_ptr) (char *in, int in_len, char *out, int *out_len);
  * Returns 0 on error,
  *         != 0 otherwise, depending on the decompressing function.
  */
-typedef int (*decomp_func_ptr) (char *in, int in_len, char *out, int out_len);
+typedef int (*decomp_func_ptr) (char *in, int in_len, char *out, int out_len,
+				size_t *actual_size);
 
 enum comp_algo { CBFS_COMPRESS_NONE = 0, CBFS_COMPRESS_LZMA = 1 };
 
@@ -187,7 +188,8 @@ void print_supported_filetypes(void);
 
 /* lzma/lzma.c */
 int do_lzma_compress(char *in, int in_len, char *out, int *out_len);
-int do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len);
+int do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len,
+			size_t *actual_size);
 
 /* xdr.c */
 struct xdr {

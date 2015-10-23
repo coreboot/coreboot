@@ -692,7 +692,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	buffer.data = malloc(decompressed_size);
 	buffer.size = decompressed_size;
 	if (decompress(CBFS_SUBHEADER(entry), ntohl(entry->len),
-		buffer.data, buffer.size)) {
+		buffer.data, buffer.size, NULL)) {
 		ERROR("decompression failed for %s\n", entry_name);
 		return -1;
 	}

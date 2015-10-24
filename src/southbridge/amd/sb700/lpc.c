@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +45,8 @@ static void lpc_init(device_t dev)
 	u8 byte;
 	u32 dword;
 	device_t sm_dev;
+
+	printk(BIOS_SPEW, "%s\n", __func__);
 
 	/* Enable the LPC Controller */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));

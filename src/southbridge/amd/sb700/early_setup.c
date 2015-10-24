@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -394,6 +395,15 @@ static void sb700_devices_por_init(void)
 	byte = pci_read_config8(dev, 0xd2);
 	byte |= (1 << 0);
 	pci_write_config8(dev, 0xd2, byte);
+
+	/* set auxiliary smbus iobase and enable controller */
+	pci_write_config32(dev, 0x58, SMBUS_AUX_IO_BASE | 1);
+
+	if (inb(SMBUS_IO_BASE) == 0xff)
+		printk(BIOS_INFO, "%s: Primary SMBUS controller I/O not found\n", __func__);
+
+	if (inb(SMBUS_AUX_IO_BASE) == 0xff)
+		printk(BIOS_INFO, "%s: Secondary SMBUS controller I/O not found\n", __func__);
 
 	/* KB2RstEnable */
 	pci_write_config8(dev, 0x40, 0x44);

@@ -62,11 +62,9 @@ static void sm_init(device_t dev)
 	printk(BIOS_INFO, "sm_init().\n");
 
 	rev = get_sb700_revision(dev);
-	ioapic_base = (void *)(pci_read_config32(dev, 0x74) & (0xffffffe0));	/* some like mem resource, but does not have  enable bit */
-	/* Don't rename APIC ID */
-	/* TODO: We should call setup_ioapic() here. But kernel hangs if cpu is K8.
-	 * We need to check out why and change back. */
-	clear_ioapic(ioapic_base);
+	/* This works in a similar fashion to a memory resource, but without an enable bit */
+	ioapic_base = (void *)(pci_read_config32(dev, 0x74) & (0xffffffe0));
+	setup_ioapic(ioapic_base, 0); /* Don't rename IOAPIC ID. */
 
 	/* 2.10 Interrupt Routing/Filtering */
 	dword = pci_read_config8(dev, 0x62);
@@ -298,6 +296,10 @@ static void sm_init(device_t dev)
 	byte &= ~(1 << 1);
 	pm_iowrite(0x59, byte);
 
+	/* Enable SCI as irq9. */
+	outb(0x4, 0xC00);
+	outb(0x9, 0xC01);
+
 	printk(BIOS_INFO, "sm_init() end\n");
 
 	/* Enable NbSb virtual channel */
@@ -388,7 +390,7 @@ static void sb700_sm_read_resources(device_t dev)
 	struct resource *res;
 
 	/* Get the normal pci resources of this device */
-	/* pci_dev_read_resources(dev); */
+	pci_dev_read_resources(dev);
 
 	/* apic */
 	res = new_resource(dev, 0x74);

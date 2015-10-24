@@ -31,20 +31,20 @@ static size_t backup_size(void)
 static void memcpy_(void *d, const void *s, size_t len)
 {
 	print_car_debug(" Copy [%08x-%08x] to [%08x - %08x] ... ",
-		(u32) s, (u32) (s + len - 1), (u32) d, (u32) (d + len - 1));
+		(uint32_t) s, (uint32_t) (s + len - 1), (uint32_t) d, (uint32_t) (d + len - 1));
 	memcpy(d, s, len);
 }
 
 static void memset_(void *d, int val, size_t len)
 {
-	print_car_debug(" Fill [%08x-%08x] ... ", (u32) d, (u32) (d + len - 1));
+	print_car_debug(" Fill [%08x-%08x] ... ", (uint32_t) d, (uint32_t) (d + len - 1));
 	memset(d, val, len);
 }
 
 static int memcmp_(void *d, const void *s, size_t len)
 {
 	print_car_debug(" Compare [%08x-%08x] with [%08x - %08x] ... ",
-		(u32) s, (u32) (s + len - 1), (u32) d, (u32) (d + len - 1));
+		(uint32_t) s, (uint32_t) (s + len - 1), (uint32_t) d, (uint32_t) (d + len - 1));
 	return memcmp(d, s, len);
 }
 
@@ -129,7 +129,7 @@ void cache_as_ram_new_stack (void)
 {
 	void *resume_backup_memory = NULL;
 
-	print_car_debug("Top about %08x ... Done\n", (u32) &resume_backup_memory);
+	print_car_debug("Top about %08x ... Done\n", (uint32_t) &resume_backup_memory);
 	print_car_debug("Disabling cache as ram now\n");
 	disable_cache_as_ram_bsp();
 

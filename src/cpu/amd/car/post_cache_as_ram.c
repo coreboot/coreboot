@@ -16,12 +16,10 @@
 	#error "You need to set CONFIG_RAMTOP greater than 1M"
 #endif
 
-#define PRINTK_IN_CAR	1
-
-#if PRINTK_IN_CAR
-#define print_car_debug(x) printk(BIOS_DEBUG, x)
+#if IS_ENABLED(CONFIG_DEBUG_CAR)
+#define print_car_debug(format, arg...) printk(BIOS_DEBUG, "%s: " format, __func__, ##arg)
 #else
-#define print_car_debug(x)
+#define print_car_debug(format, arg...)
 #endif
 
 static size_t backup_size(void)
@@ -32,27 +30,21 @@ static size_t backup_size(void)
 
 static void memcpy_(void *d, const void *s, size_t len)
 {
-#if PRINTK_IN_CAR
-	printk(BIOS_SPEW, " Copy [%08x-%08x] to [%08x - %08x] ... ",
+	print_car_debug(" Copy [%08x-%08x] to [%08x - %08x] ... ",
 		(u32) s, (u32) (s + len - 1), (u32) d, (u32) (d + len - 1));
-#endif
 	memcpy(d, s, len);
 }
 
 static void memset_(void *d, int val, size_t len)
 {
-#if PRINTK_IN_CAR
-	printk(BIOS_SPEW, " Fill [%08x-%08x] ... ", (u32) d, (u32) (d + len - 1));
-#endif
+	print_car_debug(" Fill [%08x-%08x] ... ", (u32) d, (u32) (d + len - 1));
 	memset(d, val, len);
 }
 
 static int memcmp_(void *d, const void *s, size_t len)
 {
-#if PRINTK_IN_CAR
-	printk(BIOS_SPEW, " Compare [%08x-%08x] with [%08x - %08x] ... ",
+	print_car_debug(" Compare [%08x-%08x] with [%08x - %08x] ... ",
 		(u32) s, (u32) (s + len - 1), (u32) d, (u32) (d + len - 1));
-#endif
 	return memcmp(d, s, len);
 }
 
@@ -137,9 +129,7 @@ void cache_as_ram_new_stack (void)
 {
 	void *resume_backup_memory = NULL;
 
-#if PRINTK_IN_CAR
-	printk(BIOS_DEBUG, "Top about %08x ... Done\n", (u32) &resume_backup_memory);
-#endif
+	print_car_debug("Top about %08x ... Done\n", (u32) &resume_backup_memory);
 	print_car_debug("Disabling cache as ram now\n");
 	disable_cache_as_ram_bsp();
 

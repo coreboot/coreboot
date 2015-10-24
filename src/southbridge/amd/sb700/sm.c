@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,17 +34,26 @@
 
 #define NMI_OFF 0
 
-#define MAINBOARD_POWER_OFF 0
-#define MAINBOARD_POWER_ON 1
-
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
-
 #define PRIMARY_SMBUS_RESOURCE_NUMBER 0x90
 #define AUXILIARY_SMBUS_RESOURCE_NUMBER 0x58
 
 uint8_t amd_sb700_aux_smbus = 0;
+
+enum power_mode {
+	POWER_MODE_OFF = 0,
+	POWER_MODE_ON = 1,
+	POWER_MODE_LAST = 2,
+};
+
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL POWER_MODE_ON
+#endif
+
+static const char* power_mode_names[] = {
+	[POWER_MODE_OFF] = "off",
+	[POWER_MODE_ON] = "on",
+	[POWER_MODE_LAST] = "last",
+};
 
 /*
 * SB700 enables all USB controllers by default in SMBUS Control.
@@ -56,7 +66,7 @@ static void sm_init(device_t dev)
 	u8 rev;
 	u32 dword;
 	void *ioapic_base;
-	u32 on;
+	uint32_t power_state;
 	u32 nmi_option;
 
 	printk(BIOS_INFO, "sm_init().\n");
@@ -126,16 +136,23 @@ static void sm_init(device_t dev)
 	pm_iowrite(0x53, byte);
 
 	/* power after power fail */
-	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
-	get_option(&on, "power_on_after_fail");
+	power_state = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	get_option(&power_state, "power_on_after_fail");
+	if (power_state > 2) {
+		printk(BIOS_WARNING, "Invalid power_on_after_fail setting, using default\n");
+		power_state = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	}
 	byte = pm_ioread(0x74);
 	byte &= ~0x03;
-	if (on) {
-		byte |= 2;
-	}
+	if (power_state == POWER_MODE_OFF)
+		byte |= 0x0;
+	else if (power_state == POWER_MODE_ON)
+		byte |= 0x1;
+	else if (power_state == POWER_MODE_LAST)
+		byte |= 0x2;
 	byte |= 1 << 2;
 	pm_iowrite(0x74, byte);
-	printk(BIOS_INFO, "set power %s after power fail\n", on ? "on" : "off");
+	printk(BIOS_INFO, "set power \"%s\" after power fail\n", power_mode_names[power_state]);
 
 	byte = pm_ioread(0x68);
 	byte &= ~(1 << 1);

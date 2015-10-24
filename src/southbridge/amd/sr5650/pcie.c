@@ -269,7 +269,7 @@ static void switching_gpp3a_configurations(device_t nb_dev, device_t sb_dev)
 *****************************************************************/
 void enable_pcie_bar3(device_t nb_dev)
 {
-	printk(BIOS_DEBUG, "enable_pcie_bar3()\n");
+	printk(BIOS_DEBUG, "%s\n", __func__);
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 1 << 30);	/* Enables writes to the BAR3 register. */
 	set_nbcfg_enable_bits(nb_dev, 0x84, 7 << 16, 0 << 16);
 
@@ -285,7 +285,7 @@ void enable_pcie_bar3(device_t nb_dev)
 *****************************************************************/
 void disable_pcie_bar3(device_t nb_dev)
 {
-	printk(BIOS_DEBUG, "disable_pcie_bar3()\n");
+	printk(BIOS_DEBUG, "%s\n", __func__);
 	pci_write_config32(nb_dev, 0x1C, 0);	/* clear BAR3 address */
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 0 << 30);	/* Disable writes to the BAR3. */
 	ProgK8TempMmioBase(0, EXT_CONF_BASE_ADDRESS, TEMP_MMIO_BASE_ADDRESS);
@@ -514,7 +514,7 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	struct southbridge_amd_sr5650_config *cfg =
 	    (struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
 
-	printk(BIOS_DEBUG, "gpp_sb_init nb_dev=0x%p, dev=0x%p, port=0x%x\n", nb_dev, dev, port);
+	printk(BIOS_DEBUG, "%s: nb_dev=0x%p, dev=0x%p, port=0x%x\n", __func__, nb_dev, dev, port);
 	switch (port) {
 	case 2:
 	case 3:
@@ -767,8 +767,8 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 			PcieReleasePortTraining(nb_dev, dev, hw_port);
 			if (!(AtiPcieCfg.Config & PCIE_GPP_COMPLIANCE)) {
 				u8 res = PcieTrainPort(nb_dev, dev, hw_port);
-				printk(BIOS_DEBUG, "PcieTrainPort port=0x%x hw_port=0x%x result=%d\n",
-					port, hw_port, res);
+				printk(BIOS_DEBUG, "%s: port=0x%x hw_port=0x%x result=%d\n",
+					__func__, port, hw_port, res);
 				if (res) {
 					AtiPcieCfg.PortDetect |= 1 << port;
 				} else {

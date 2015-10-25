@@ -520,26 +520,28 @@ static void sb700_devices_por_init(void)
 	if (!sata_ahci_mode){
 #if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
 		/* SP5100 default SATA mode is RAID5 MODE */
-		dev = pci_locate_device(PCI_ID(0x1002, 0x4393), 0);
+		dev = pci_locate_device(PCI_ID(0x1002, 0x4392), 0);
 
-		/* Set SATA Operation Mode, Set to IDE mode */
-		byte = pci_read_config8(dev, 0x40);
-		byte |= (1 << 0);
-		pci_write_config8(dev, 0x40, byte);
+		if (dev != PCI_DEV_INVALID) {
+			/* Set SATA Operation Mode, Set to IDE mode */
+			byte = pci_read_config8(dev, 0x40);
+			byte |= (1 << 0);
+			pci_write_config8(dev, 0x40, byte);
 
-		dword = 0x01018f00;
-		pci_write_config32(dev, 0x8, dword);
+			dword = 0x01018f00;
+			pci_write_config32(dev, 0x8, dword);
 
-		/* set SATA Device ID writable */
-		dword = pci_read_config32(dev, 0x40);
-		dword &= ~(1 << 24);
-		pci_write_config32(dev, 0x40, dword);
+			/* set SATA Device ID writable */
+			dword = pci_read_config32(dev, 0x40);
+			dword &= ~(1 << 24);
+			pci_write_config32(dev, 0x40, dword);
 
-		/* set Device ID consistent with IDE emulation mode configuration */
-		pci_write_config32(dev, 0x0, 0x43901002);
+			/* set Device ID consistent with IDE emulation mode configuration */
+			pci_write_config32(dev, 0x0, 0x43901002);
 
-		/* rpr v2.13 4.17 Reset CPU on Sync Flood */
-		abcfg_reg(0x10050, 1 << 2, 1 << 2);
+			/* rpr v2.13 4.17 Reset CPU on Sync Flood */
+			abcfg_reg(0x10050, 1 << 2, 1 << 2);
+		}
 #endif
 	}
 

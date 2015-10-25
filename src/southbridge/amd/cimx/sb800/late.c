@@ -268,6 +268,7 @@ static void sb800_init(void *chip_info)
 	sb_config->StdHeader.CALLBACK.CalloutPtr = sb800_callout_entry;
 	sb800_cimx_config(sb_config);
 
+	/* Initially enable all GPP ports 0 to 3 */
 	abcfg_reg(0xc0, 0x01FF, 0x0F4);
 }
 

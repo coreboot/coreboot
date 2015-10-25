@@ -426,6 +426,8 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 {
 	device_t child;
 
+	pciexp_tune_dev(bus->dev);
+
 	pci_scan_bus(bus, min_devfn, max_devfn);
 
 	for (child = bus->children; child; child = child->sibling) {

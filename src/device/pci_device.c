@@ -1180,6 +1180,7 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 	if (state == PCI_ROUTE_CLOSE) {
 		buses |= 0xfeff << 8;
 	} else if (state == PCI_ROUTE_SCAN) {
+		buses |= parent->secondary & 0xff;
 		buses |= ((u32) link->secondary & 0xff) << 8;
 		buses |= 0xff << 16; /* MAX PCI_BUS number here */
 	} else if (state == PCI_ROUTE_FINAL) {

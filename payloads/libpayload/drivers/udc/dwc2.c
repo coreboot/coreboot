@@ -519,8 +519,8 @@ static void complete_ep_transfer(struct usbdev_ctrl *this, int endpoint,
 
 	if (endpoint == 0 && job->xfered_length == 0)
 		dwc2_enqueue_packet(this, 0, 0, p->setup_buf, 8, 0, 0);
-
-	start_ep_transfer(p, endpoint, in_dir);
+	else
+		start_ep_transfer(p, endpoint, in_dir);
 }
 
 static void dwc2_outep_intr(struct usbdev_ctrl *this, dwc2_ep_t *ep)

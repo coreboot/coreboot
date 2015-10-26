@@ -436,18 +436,43 @@ void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current)
 	drhd->length = current - base;
 }
 
-unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 segment,
-	u8 dev, u8 fn)
+static unsigned long acpi_create_dmar_drhd_ds(unsigned long current,
+	enum dev_scope_type type, u8 enumeration_id, u8 bus, u8 dev, u8 fn)
 {
+	/* we don't support longer paths yet */
+	const size_t dev_scope_length = sizeof(dev_scope_t) + 2;
+
 	dev_scope_t *ds = (dev_scope_t *)current;
-	memset(ds, 0, sizeof(*ds));
-	ds->type = SCOPE_PCI_ENDPOINT;
-	ds->length = sizeof(*ds) + 2; /* we don't support longer paths yet */
-	ds->start_bus = segment;
-	ds->path[0].dev = dev;
-	ds->path[0].fn = fn;
+	memset(ds, 0, dev_scope_length);
+	ds->type	= type;
+	ds->length	= dev_scope_length;
+	ds->enumeration	= enumeration_id;
+	ds->start_bus	= bus;
+	ds->path[0].dev	= dev;
+	ds->path[0].fn	= fn;
 
 	return ds->length;
+}
+
+unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 bus,
+	u8 dev, u8 fn)
+{
+	return acpi_create_dmar_drhd_ds(current,
+			SCOPE_PCI_ENDPOINT, 0, bus, dev, fn);
+}
+
+unsigned long acpi_create_dmar_drhd_ds_ioapic(unsigned long current,
+	u8 enumeration_id, u8 bus, u8 dev, u8 fn)
+{
+	return acpi_create_dmar_drhd_ds(current,
+			SCOPE_IOAPIC, enumeration_id, bus, dev, fn);
+}
+
+unsigned long acpi_create_dmar_drhd_ds_msi_hpet(unsigned long current,
+	u8 enumeration_id, u8 bus, u8 dev, u8 fn)
+{
+	return acpi_create_dmar_drhd_ds(current,
+			SCOPE_MSI_HPET, enumeration_id, bus, dev, fn);
 }
 
 /* http://h21007.www2.hp.com/portal/download/files/unprot/Itanium/slit.pdf */

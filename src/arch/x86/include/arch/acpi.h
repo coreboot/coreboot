@@ -553,8 +553,14 @@ void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
 				    u16 segment, u32 bar);
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
-unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 segment,
-					   u8 dev, u8 fn);
+unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current,
+					   u8 bus, u8 dev, u8 fn);
+unsigned long acpi_create_dmar_drhd_ds_ioapic(unsigned long current,
+					      u8 enumeration_id,
+					      u8 bus, u8 dev, u8 fn);
+unsigned long acpi_create_dmar_drhd_ds_msi_hpet(unsigned long current,
+						u8 enumeration_id,
+						u8 bus, u8 dev, u8 fn);
 void acpi_write_hest(acpi_hest_t *hest,
 		     unsigned long (*acpi_fill_hest)(acpi_hest_t *hest));
 

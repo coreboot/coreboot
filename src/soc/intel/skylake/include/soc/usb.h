@@ -65,6 +65,15 @@ struct usb2_port_config {
  * - Internal device down
  */
 
+/* Max TX and Pre-emp settings */
+#define USB2_PORT_MAX { \
+	.enable        = 1, \
+	.tx_bias       = USB2_BIAS_56MV, \
+	.tx_emp_enable = USB2_PRE_EMP_ON, \
+	.pre_emp_bias  = USB2_BIAS_56MV, \
+	.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP, \
+}
+
 /* 11.5"-12" */
 #define USB2_PORT_LONG { \
 	.enable        = 1, \
@@ -140,10 +149,10 @@ struct usb2_port_config {
 /* 2:1 Detachable, 2"-4" on tablet + 2"-4" on base */
 #define USB2_PORT_DETACHABLE_TABLET { \
 	.enable        = 1, \
-	.tx_bias       = USB2_BIAS_17MV, \
-	.tx_emp_enable = USB2_PRE_EMP_ON | USB2_DE_EMP_ON, \
-	.pre_emp_bias  = USB2_BIAS_45MV, \
-	.pre_emp_bit   = USB2_FULL_BIT_PRE_EMP, \
+	.tx_bias       = USB2_BIAS_56MV, \
+	.tx_emp_enable = USB2_PRE_EMP_ON, \
+	.pre_emp_bias  = USB2_BIAS_56MV, \
+	.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP, \
 }
 
 struct usb3_port_config {

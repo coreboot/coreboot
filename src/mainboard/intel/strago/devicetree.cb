@@ -34,7 +34,7 @@ chip soc/intel/braswell
 	register "PcdEnableI2C5" = "1"
 	register "PcdEnableI2C6" = "1"
 	register "PunitPwrConfigDisable" = "0"	# Enable SVID
-	register "ChvSvidConfig" = "SVID_CONFIG1"
+	register "ChvSvidConfig" = "SVID_PMIC_CONFIG"
 	register "PcdEmmcMode" = "PCH_ACPI_MODE"
 	register "PcdUsb3ClkSsc" = "1"
 	register "PcdDispClkSsc" = "1"

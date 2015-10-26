@@ -317,14 +317,14 @@ static int find_tx_fifo(struct usbdev_ctrl *this, uint32_t mps)
 	dwc2_pdata_t *p = DWC2_PDATA(this);
 	uint32_t fifo_index = 0;
 	uint32_t fifo_size = UINT_MAX;
-	gnptxfsiz_t gnptxfsiz;
+	gtxfsiz_t gtxfsiz;
 	int i, val;
 
 	for (i = 1; i < MAX_EPS_CHANNELS - 1; i++) {
 		if (p->fifo_map & (1<<i))
 			continue;
-		gnptxfsiz.d32 = readl(&p->regs->core.dptxfsiz_dieptxf[i]);
-		val = gnptxfsiz.nptxfdep * 4;
+		gtxfsiz.d32 = readl(&p->regs->core.dptxfsiz_dieptxf[i]);
+		val = gtxfsiz.txfdep * 4;
 
 		if (val < mps)
 			continue;

@@ -62,6 +62,8 @@
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 
+#include <rules.h>
+
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 
 #define EPBAR		0x40
@@ -214,6 +216,13 @@ void dump_spd_registers(void);
 void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
 #endif /* !__SMM__ */
+
+#if ENV_RAMSTAGE
+#include <device/device.h>
+
+struct acpi_rsdp;
+unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
+#endif
 
 
 #define MRC_DATA_ALIGN           0x1000

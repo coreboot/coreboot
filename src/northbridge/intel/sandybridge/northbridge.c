@@ -268,6 +268,7 @@ static struct device_operations pci_domain_ops = {
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
+	.write_acpi_tables = northbridge_write_acpi_tables,
 };
 
 static void mc_read_resources(device_t dev)

@@ -28,6 +28,7 @@
 #include "sandybridge.h"
 #include <cbmem.h>
 #include <drivers/intel/gma/intel_bios.h>
+#include <southbridge/intel/bd82x6x/pch.h>
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -206,4 +207,53 @@ void *igd_make_opregion(void)
 	if (opregion)
 		init_igd_opregion(opregion);
 	return opregion;
+}
+
+static unsigned long acpi_fill_dmar(unsigned long current)
+{
+	const struct device *const igfx = dev_find_slot(0, PCI_DEVFN(2, 0));
+
+	if (igfx && igfx->enabled) {
+		const unsigned long tmp = current;
+		current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE1);
+		current += acpi_create_dmar_drhd_ds_pci(current, 0, 2, 0);
+		current += acpi_create_dmar_drhd_ds_pci(current, 0, 2, 1);
+		acpi_dmar_drhd_fixup(tmp, current);
+	}
+
+	const unsigned long tmp = current;
+	current += acpi_create_dmar_drhd(current,
+			DRHD_INCLUDE_PCI_ALL, 0, IOMMU_BASE2);
+	current += acpi_create_dmar_drhd_ds_ioapic(current,
+			2, PCH_IOAPIC_PCI_BUS, PCH_IOAPIC_PCI_SLOT, 0);
+	size_t i;
+	for (i = 0; i < 8; ++i)
+		current += acpi_create_dmar_drhd_ds_msi_hpet(current,
+				0, PCH_HPET_PCI_BUS, PCH_HPET_PCI_SLOT, i);
+	acpi_dmar_drhd_fixup(tmp, current);
+
+	return current;
+}
+
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
+unsigned long northbridge_write_acpi_tables(struct device *const dev,
+					    unsigned long current,
+					    struct acpi_rsdp *const rsdp)
+{
+	const u32 capid0_a = pci_read_config32(dev, 0xe4);
+	if (capid0_a & (1 << 23))
+		return current;
+
+	printk(BIOS_DEBUG, "ACPI:     * DMAR\n");
+	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
+	acpi_create_dmar(dmar, DMAR_INTR_REMAP, acpi_fill_dmar);
+	current += dmar->header.length;
+	ALIGN_CURRENT;
+	acpi_add_table(rsdp, dmar);
+
+	ALIGN_CURRENT;
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+
+	return current;
 }

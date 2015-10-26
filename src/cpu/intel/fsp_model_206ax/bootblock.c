@@ -24,8 +24,10 @@
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
 
+#include <cpu/intel/microcode/microcode.c>
 #include "model_206ax.h"
 
 static void bootblock_cpu_init(void)
 {
+	intel_update_microcode_from_cbfs();
 }

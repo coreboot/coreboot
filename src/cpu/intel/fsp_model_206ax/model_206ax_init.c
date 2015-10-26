@@ -27,6 +27,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
@@ -373,6 +374,8 @@ static void model_206ax_init(struct device *cpu)
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
+
+	intel_update_microcode_from_cbfs();
 
 	/* Clear out pending MCEs */
 	configure_mca();

@@ -37,7 +37,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SSE2
 	select UDELAY_LAPIC
 	select SMM_TSEG
-	select SUPPORT_CPU_UCODE_IN_CBFS if HAVE_FSP_BIN
+	select SUPPORT_CPU_UCODE_IN_CBFS
 	select PARALLEL_CPU_INIT
 	select TSC_SYNC_MFENCE
 	select LAPIC_MONOTONIC_TIMER
@@ -53,10 +53,5 @@ config SMM_TSEG_SIZE
 config ENABLE_VMX
 	bool "Enable VMX for virtualization"
 	default n
-
-config CPU_MICROCODE_CBFS_LOC
-	hex
-	depends on SUPPORT_CPU_UCODE_IN_CBFS
-	default 0xfff70000
 
 endif

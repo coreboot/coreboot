@@ -14,6 +14,37 @@
  * GNU General Public License for more details.
  */
 
+/* The below definitions are used for customization
+ * Some boards/devices may need different data hold time
+ */
+#ifndef BOARD_I2C1_DATA_HOLD_TIME
+#define BOARD_I2C1_DATA_HOLD_TIME 6
+#endif
+
+#ifndef BOARD_I2C2_DATA_HOLD_TIME
+#define BOARD_I2C2_DATA_HOLD_TIME 6
+#endif
+
+#ifndef BOARD_I2C3_DATA_HOLD_TIME
+#define BOARD_I2C3_DATA_HOLD_TIME 6
+#endif
+
+#ifndef BOARD_I2C4_DATA_HOLD_TIME
+#define BOARD_I2C4_DATA_HOLD_TIME 6
+#endif
+
+#ifndef BOARD_I2C5_DATA_HOLD_TIME
+#define BOARD_I2C5_DATA_HOLD_TIME 6
+#endif
+
+#ifndef BOARD_I2C6_DATA_HOLD_TIME
+#define BOARD_I2C6_DATA_HOLD_TIME 6
+#endif
+
+#ifndef BOARD_I2C7_DATA_HOLD_TIME
+#define BOARD_I2C7_DATA_HOLD_TIME 6
+#endif
+
 Device (SDM1)
 {
 	Name (_HID, "INTL9C60")
@@ -85,10 +116,10 @@ Device (I2C1)
 	Name (_DDN, "I2C Controller #1")
 
 	/* Standard Mode: HCNT, LCNT, SDA Hold Time */
-	Name (SSCN, Package () { 0x200, 0x200, 0x6 })
+	Name (SSCN, Package () { 0x200, 0x200, BOARD_I2C1_DATA_HOLD_TIME })
 
 	/* Fast Mode: HCNT, LCNT, SDA Hold Time */
-	Name (FMCN, Package () { 0x55, 0x99, 0x6 })
+	Name (FMCN, Package () { 0x55, 0x99, BOARD_I2C1_DATA_HOLD_TIME })
 
 	Name (RBUF, ResourceTemplate()
 	{
@@ -144,10 +175,10 @@ Device (I2C2)
 	Name (_DDN, "I2C Controller #2")
 
 	/* Standard Mode: HCNT, LCNT, SDA Hold Time */
-	Name (SSCN, Package () { 0x200, 0x200, 0x6 })
+	Name (SSCN, Package () { 0x200, 0x200, BOARD_I2C2_DATA_HOLD_TIME })
 
 	/* Fast Mode: HCNT, LCNT, SDA Hold Time */
-	Name (FMCN, Package () { 0x55, 0x99, 0x6 })
+	Name (FMCN, Package () { 0x55, 0x99, BOARD_I2C2_DATA_HOLD_TIME })
 
 	Name (RBUF, ResourceTemplate()
 	{
@@ -203,10 +234,10 @@ Device (I2C3)
 	Name (_DDN, "I2C Controller #3")
 
 	/* Standard Mode: HCNT, LCNT, SDA Hold Time */
-	Name (SSCN, Package () { 0x200, 0x200, 0x6 })
+	Name (SSCN, Package () { 0x200, 0x200, BOARD_I2C3_DATA_HOLD_TIME })
 
 	/* Fast Mode: HCNT, LCNT, SDA Hold Time */
-	Name (FMCN, Package () { 0x55, 0x99, 0x6 })
+	Name (FMCN, Package () { 0x55, 0x99, BOARD_I2C3_DATA_HOLD_TIME })
 
 	Name (RBUF, ResourceTemplate()
 	{
@@ -262,10 +293,10 @@ Device (I2C4)
 	Name (_DDN, "I2C Controller #4")
 
 	/* Standard Mode: HCNT, LCNT, SDA Hold Time */
-	Name (SSCN, Package () { 0x200, 0x200, 0x6 })
+	Name (SSCN, Package () { 0x200, 0x200, BOARD_I2C4_DATA_HOLD_TIME })
 
 	/* Fast Mode: HCNT, LCNT, SDA Hold Time */
-	Name (FMCN, Package () { 0x55, 0x99, 0x6 })
+	Name (FMCN, Package () { 0x55, 0x99, BOARD_I2C4_DATA_HOLD_TIME })
 
 	Name (RBUF, ResourceTemplate()
 	{
@@ -321,10 +352,10 @@ Device (I2C5)
 	Name (_DDN, "I2C Controller #5")
 
 	/* Standard Mode: HCNT, LCNT, SDA Hold Time */
-	Name (SSCN, Package () { 0x200, 0x200, 0x6 })
+	Name (SSCN, Package () { 0x200, 0x200, BOARD_I2C5_DATA_HOLD_TIME })
 
 	/* Fast Mode: HCNT, LCNT, SDA Hold Time */
-	Name (FMCN, Package () { 0x55, 0x99, 0x6 })
+	Name (FMCN, Package () { 0x55, 0x99, BOARD_I2C5_DATA_HOLD_TIME })
 
 	Name (RBUF, ResourceTemplate()
 	{
@@ -380,10 +411,10 @@ Device (I2C6)
 	Name (_DDN, "I2C Controller #6")
 
 	/* Standard Mode: HCNT, LCNT, SDA Hold Time */
-	Name (SSCN, Package () { 0x200, 0x200, 0x6 })
+	Name (SSCN, Package () { 0x200, 0x200, BOARD_I2C6_DATA_HOLD_TIME })
 
 	/* Fast Mode: HCNT, LCNT, SDA Hold Time */
-	Name (FMCN, Package () { 0x55, 0x99, 0x6 })
+	Name (FMCN, Package () { 0x55, 0x99, BOARD_I2C6_DATA_HOLD_TIME })
 
 	Name (RBUF, ResourceTemplate()
 	{
@@ -439,10 +470,10 @@ Device (I2C7)
 	Name (_DDN, "I2C Controller #7")
 
 	/* Standard Mode: HCNT, LCNT, SDA Hold Time */
-	Name (SSCN, Package () { 0x200, 0x200, 0x6 })
+	Name (SSCN, Package () { 0x200, 0x200, BOARD_I2C7_DATA_HOLD_TIME })
 
 	/* Fast Mode: HCNT, LCNT, SDA Hold Time */
-	Name (FMCN, Package () { 0x55, 0x99, 0x6 })
+	Name (FMCN, Package () { 0x55, 0x99, BOARD_I2C7_DATA_HOLD_TIME })
 
 	Name (RBUF, ResourceTemplate()
 	{

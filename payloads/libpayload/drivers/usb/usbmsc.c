@@ -660,6 +660,9 @@ usb_msc_init (usbdev_t *dev)
 		MSC_INST (dev)->bulk_in->endpoint,
 		MSC_INST (dev)->bulk_out->endpoint);
 
+	/* Some sticks need a little more time to get ready after SET_CONFIG. */
+	udelay(50);
+
 	initialize_luns (dev);
 	usb_debug ("  has %d luns\n", MSC_INST (dev)->num_luns);
 

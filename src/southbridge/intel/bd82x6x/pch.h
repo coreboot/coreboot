@@ -120,6 +120,10 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define PCH_XHCI_DEV		PCI_DEV(0, 0x14, 0)
 #define PCH_ME_DEV		PCI_DEV(0, 0x16, 0)
 #define PCH_PCIE_DEV_SLOT	28
+#define PCH_IOAPIC_PCI_BUS	250
+#define PCH_IOAPIC_PCI_SLOT	31
+#define PCH_HPET_PCI_BUS	250
+#define PCH_HPET_PCI_SLOT	15
 
 /* PCI Configuration Space (D31:F0): LPC */
 #define PCH_LPC_DEV		PCI_DEV(0, 0x1f, 0)
@@ -158,6 +162,9 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define PIRQF_ROUT		0x69
 #define PIRQG_ROUT		0x6A
 #define PIRQH_ROUT		0x6B
+
+#define LPC_IBDF		0x6C /* I/O APIC bus/dev/fn */
+#define LPC_HnBDF(n)		(0x70 + n * 2) /* HPET n bus/dev/fn */
 
 #define LPC_IO_DEC		0x80 /* IO Decode Ranges Register */
 #define LPC_EN			0x82 /* LPC IF Enables Register */

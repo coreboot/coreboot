@@ -389,7 +389,7 @@ void acpi_create_srat(acpi_srat_t *srat,
 	header->checksum = acpi_checksum((void *)srat, header->length);
 }
 
-void acpi_create_dmar(acpi_dmar_t *dmar,
+void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar) (unsigned long))
 {
 	acpi_header_t *header = &(dmar->header);
@@ -407,7 +407,7 @@ void acpi_create_dmar(acpi_dmar_t *dmar,
 	header->revision = 1;
 
 	dmar->host_address_width = 40 - 1; /* FIXME: == MTRR size? */
-	dmar->flags = 0;
+	dmar->flags = flags;
 
 	current = acpi_fill_dmar(current);
 

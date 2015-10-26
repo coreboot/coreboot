@@ -220,6 +220,11 @@ enum {
 	DRHD_INCLUDE_PCI_ALL = 1
 };
 
+enum dmar_flags {
+	DMAR_INTR_REMAP		= 1,
+	DMAR_X2APIC_OPT_OUT	= 2,
+};
+
 typedef struct dmar_entry {
 	u16 type;
 	u16 length;
@@ -543,7 +548,7 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 
 void acpi_create_facs(acpi_facs_t *facs);
 
-void acpi_create_dmar(acpi_dmar_t *dmar,
+void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar) (unsigned long));
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
 				    u16 segment, u32 bar);

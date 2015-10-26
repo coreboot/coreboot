@@ -563,7 +563,7 @@ static void dwc2_outep_intr(struct usbdev_ctrl *this, dwc2_ep_t *ep)
 		usb_debug("DEPINT_SETUP\n");
 		writel(DXEPINT_SETUP, &ep->ep_regs->depint);
 #ifdef USB_DEBUG
-		hexdump((unsigned int)p->setup_buf, sizeof(dev_req_t));
+		hexdump(p->setup_buf, sizeof(dev_req_t));
 #endif
 		SIMPLEQ_REMOVE_HEAD(&p->eps[0][0].job_queue, queue);
 		p->eps[0][0].busy = 0;

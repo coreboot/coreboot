@@ -83,6 +83,16 @@ config RAMBASE
 	hex
 	default 0x100000
 
+# Traditionally BIOS region on SPI flash boot media was memory mapped right below
+# 4G and it was the last region in the IFD. This way translation between CPU
+# address space to flash address was trivial. However some IFDs on newer SoCs
+# have BIOS region sandwiched between descriptor and other regions. Turning off
+# this option enables soc code to provide custom mmap_boot.c which can be used to
+# implement complex translation.
+config X86_TOP4G_BOOTMEDIA_MAP
+	bool
+	default y
+
 # This is something you almost certainly don't want to mess with.
 # How many SIPIs do we send when starting up APs and cores?
 # The answer in 2000 or so was '2'. Nowadays, on many systems,

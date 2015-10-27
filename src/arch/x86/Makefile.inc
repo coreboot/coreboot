@@ -105,7 +105,7 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 bootblock-y += boot.c
 bootblock-y += memcpy.c
 bootblock-y += memset.c
-bootblock-y += mmap_boot.c
+bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
 bootblock-y += id.S
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
@@ -354,7 +354,7 @@ romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
 romstage-y += memset.c
 romstage-y += memcpy.c
 romstage-y += memmove.c
-romstage-y += mmap_boot.c
+romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
@@ -384,7 +384,7 @@ ramstage-y += memset.c
 ramstage-y += memcpy.c
 ramstage-y += memmove.c
 ramstage-y += ebda.c
-ramstage-y += mmap_boot.c
+ramstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
@@ -392,7 +392,7 @@ ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 smm-y += memset.c
 smm-y += memcpy.c
 smm-y += memmove.c
-smm-y += mmap_boot.c
+smm-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 rmodules_x86_32-y += memset.c

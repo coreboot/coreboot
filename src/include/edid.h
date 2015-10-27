@@ -87,6 +87,8 @@ struct edid {
 	u32 x_resolution;
 	u32 y_resolution;
 	u32 bytes_per_line;
+
+	int hdmi_monitor_detected;
 };
 
 /* Defined in src/lib/edid.c */

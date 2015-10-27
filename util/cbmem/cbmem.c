@@ -422,6 +422,8 @@ enum additional_timestamp_id {
 
 	TS_VB_SELECT_AND_LOAD_KERNEL = 1020,
 
+	TS_VB_EC_VBOOT_DONE = 1030,
+
 	TS_CROSSYSTEM_DATA = 1100,
 	TS_START_KERNEL = 1101
 };
@@ -476,6 +478,7 @@ static const struct timestamp_id_to_name {
 	{ TS_RO_VB_SELECT_AND_LOAD_KERNEL,	"RO vboot select&load kernel" },
 	{ TS_RW_VB_SELECT_AND_LOAD_KERNEL,	"RW vboot select&load kernel" },
 	{ TS_VB_SELECT_AND_LOAD_KERNEL,		"vboot select&load kernel" },
+	{ TS_VB_EC_VBOOT_DONE,			"finished EC verification" },
 	{ TS_CROSSYSTEM_DATA,	"crossystem data" },
 	{ TS_START_KERNEL,	"start kernel" },
 

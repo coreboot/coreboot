@@ -90,7 +90,7 @@ struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name);
 /* Exports an entry to external file.
  * Returns 0 on success, otherwise (ex, not found) non-zero. */
 int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
-		      const char *filename);
+		      const char *filename, uint32_t arch);
 
 /* Adds an entry to CBFS image by given name and type. If content_offset is
  * non-zero, try to align "content" (CBFS_SUBHEADER(p)) at content_offset.

@@ -795,7 +795,8 @@ static int cbfs_extract(void)
 							param.headeroffset))
 		return 1;
 
-	return cbfs_export_entry(&image, param.name, param.filename);
+	return cbfs_export_entry(&image, param.name, param.filename,
+				param.arch);
 }
 
 static int cbfs_write(void)
@@ -945,7 +946,7 @@ static const struct command commands[] = {
 	{"add-master-header", "H:r:vh?", cbfs_add_master_header, true, true},
 	{"copy", "H:D:s:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
-	{"extract", "H:r:n:f:vh?", cbfs_extract, true, false},
+	{"extract", "H:r:m:n:f:vh?", cbfs_extract, true, false},
 	{"layout", "wvh?", cbfs_layout, false, false},
 	{"print", "H:r:vh?", cbfs_print, true, false},
 	{"read", "r:f:vh?", cbfs_read, true, false},
@@ -1088,7 +1089,7 @@ static void usage(char *name)
 			"List mutable (or, with -w, readable) image regions\n"
 	     " print [-r image,regions]                                    "
 			"Show the contents of the ROM\n"
-	     " extract [-r image,regions] -n NAME -f FILE                  "
+	     " extract [-r image,regions] [-m ARCH] -n NAME -f FILE        "
 			"Extracts a raw payload from ROM\n"
 	     " write -r image,regions -f file [-u | -d]                    "
 			"Write file into same-size [or larger] raw region\n"

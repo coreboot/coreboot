@@ -725,7 +725,7 @@ static int cbfs_stage_decompress(struct buffer *buff)
 }
 
 int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
-		      const char *filename)
+		      const char *filename, unused uint32_t arch)
 {
 	struct cbfs_file *entry = cbfs_get_entry(image, entry_name);
 	struct buffer buffer;

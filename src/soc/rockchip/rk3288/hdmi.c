@@ -488,7 +488,6 @@ static int hdmi_phy_init(u32 mpixelclock)
 static void hdmi_av_composer(const struct edid *edid)
 {
 	u8 mdataenablepolarity = 1;
-	u8 mdvi = 0;
 	u8 inv_val;
 
 	/* set up hdmi_fc_invidconf */
@@ -506,9 +505,9 @@ static void hdmi_av_composer(const struct edid *edid)
 		   HDMI_FC_INVIDCONF_DE_IN_POLARITY_ACTIVE_HIGH :
 		   HDMI_FC_INVIDCONF_DE_IN_POLARITY_ACTIVE_LOW);
 
-	inv_val |= (mdvi ?
-		   HDMI_FC_INVIDCONF_DVI_MODEZ_DVI_MODE :
-		   HDMI_FC_INVIDCONF_DVI_MODEZ_HDMI_MODE);
+	inv_val |= (edid->hdmi_monitor_detected ?
+		   HDMI_FC_INVIDCONF_DVI_MODEZ_HDMI_MODE :
+		   HDMI_FC_INVIDCONF_DVI_MODEZ_DVI_MODE);
 
 	inv_val |= HDMI_FC_INVIDCONF_R_V_BLANK_IN_OSC_ACTIVE_LOW;
 

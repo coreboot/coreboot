@@ -1,38 +1,48 @@
 # if no architecture is specified, set a default
 BUILD_PLATFORM ?= i386-elf
 
-all:
-	$(MAKE) BUILDGCC_OPTIONS=-t build-i386 build-x64 build-armv7a build-mips build-riscv build-aarch64 \
-	        build_clang
-	$(MAKE) clean_tempfiles
+# For the toolchain builds, use CPUS=x to use multiple processors to build
+# use KEEP_SOURCES=1 to keep temporary files after the build
+# use BUILDGCC_OPTIONS= to set any other crossgcc command line options
+# Example: BUILDGCC_OPTIONS=-c to remove temporary files before build
+
+all all_with_gdb:
+	$(MAKE) build-i386
+	$(MAKE) SKIP_IASL=1 \
+		 build-x64 build-armv7a build-mips build-riscv build-aarch64 \
+		 build_clang
 
 all_without_gdb:
-	$(MAKE) BUILDGCC_OPTIONS=-t build-i386-without-gdb build-x64-without-gdb build-armv7a-without-gdb \
-	        build-mips-without-gdb build-riscv-without-gdb build-aarch64-without-gdb build_clang
-	$(MAKE) clean_tempfiles
+	$(MAKE) SKIP_GDB=1 build-i386
+	$(MAKE) SKIP_IASL=1 SKIP_GDB=1 \
+		 build-x64 build-armv7a build-mips build-riscv build-aarch64 \
+		 build_clang
 
 build_tools: build_gcc build_iasl build_gdb
-
-build_tools_without_gdb: build_gcc build_iasl
 
 ###########################################################
 ### targets to do buildgcc builds
 
 build_gcc:
-	bash ./buildgcc -p $(BUILD_PLATFORM) $(if $(CPUS),-j $(CPUS)) $(BUILDGCC_OPTIONS) \
+	bash ./buildgcc -p $(BUILD_PLATFORM) $(if $(CPUS),-j $(CPUS)) $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS) \
 			$(if $(BUILD_LANGUAGES),-l $(BUILD_LANGUAGES))
 
 build_gdb:
-	bash ./buildgcc -p $(BUILD_PLATFORM) -P gdb $(if $(CPUS),-j $(CPUS)) $(BUILDGCC_OPTIONS)
+ifeq ($(SKIP_GDB),)
+	bash ./buildgcc -p $(BUILD_PLATFORM) -P gdb $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS)
+endif
 
 build_iasl:
-	bash ./buildgcc -P iasl $(if $(CPUS),-j $(CPUS)) $(BUILDGCC_OPTIONS)
+ifeq ($(SKIP_IASL),)
+	bash ./buildgcc -P iasl $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS)
+endif
 
 build_clang:
-	bash ./buildgcc -P clang $(if $(CPUS),-j $(CPUS)) $(BUILDGCC_OPTIONS)
+ifeq ($(SKIP_CLANG),)
+	bash ./buildgcc -P clang $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS)
+endif
 
 ###########################################################
-### Build with GDB ###
 build-i386:
 	@$(MAKE) build_tools BUILD_PLATFORM=i386-elf
 
@@ -51,26 +61,6 @@ build-mips:
 build-riscv:
 	@$(MAKE) build_tools BUILD_PLATFORM=riscv-elf
 
-###########################################################
-### Build without GDB
-build-i386-without-gdb:
-	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=i386-elf
-
-build-x64-without-gdb:
-	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=x86_64-elf
-
-build-armv7a-without-gdb:
-	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=armv7a-eabi
-
-build-aarch64-without-gdb:
-	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=aarch64-elf
-
-build-mips-without-gdb:
-	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=mipsel-elf
-
-build-riscv-without-gdb:
-	@$(MAKE) build_tools_without_gdb BUILD_PLATFORM=riscv-elf
-
 clean_tempfiles:
 	rm -rf build-*
 	rm -rf binutils-* gcc-* gmp-* libelf-* mpc-* mpfr-*
@@ -85,7 +75,7 @@ clean: clean_tempfiles
 distclean: clean
 	rm -rf tarballs
 
-.PHONY: build_gcc build_iasl build_gdb build_tools build_tools_without_gdb \
-	build-i386-without-gdb build-x64-without-gdb build-armv7a-without-gdb \
-	build-aarch64-without-gdb build-mips-without-gdb build-riscv-without-gdb \
-	all build clean distclean clean_tempfiles all_without_gdb
+.PHONY: build_gcc build_iasl build_gdb build_clang \
+	all all_with_gdb all_without_gdb build_tools \
+	build-i386 build-x64 build-armv7a build-aarch64 build-mips build-riscv \
+	clean distclean clean_tempfiles

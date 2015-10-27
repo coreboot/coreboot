@@ -442,28 +442,33 @@ gitconfig:
 	git config remote.origin.push HEAD:refs/for/master
 	(git config --global user.name >/dev/null && git config --global user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
 
-crossgcc: crossgcc-i386 crossgcc-x64 crossgcc-arm crossgcc-aarch64 crossgcc-mips crossgcc-riscv
+# For the toolchain builds, use CPUS=x to use multiple processors to build
+# use BUILDGCC_OPTIONS= to set any crossgcc command line options
+# Example: BUILDGCC_OPTIONS='-t' will keep temporary files after build
+crossgcc:
+	$(MAKE) -C util/crossgcc all_without_gdb SKIP_CLANG=1
 
 .PHONY: crossgcc-i386 crossgcc-x64 crossgcc-arm crossgcc-aarch64 crossgcc-mips crossgcc-riscv
 crossgcc-i386: clean-for-update
-	$(MAKE) -C util/crossgcc build-i386-without-gdb
+	$(MAKE) -C util/crossgcc build-i386 SKIP_GDB=1
 
 crossgcc-x64: clean-for-update
-	$(MAKE) -C util/crossgcc build-x64-without-gdb
+	$(MAKE) -C util/crossgcc build-x64 SKIP_GDB=1
 
 crossgcc-arm: clean-for-update
-	$(MAKE) -C util/crossgcc build-armv7a-without-gdb
+	$(MAKE) -C util/crossgcc build-armv7a SKIP_GDB=1
 
 crossgcc-aarch64: clean-for-update
-	$(MAKE) -C util/crossgcc build-aarch64-without-gdb
+	$(MAKE) -C util/crossgcc build-aarch64 SKIP_GDB=1
 
 crossgcc-mips: clean-for-update
-	$(MAKE) -C util/crossgcc build-mips-without-gdb
+	$(MAKE) -C util/crossgcc build-mips SKIP_GDB=1
 
 crossgcc-riscv: clean-for-update
-	$(MAKE) -C util/crossgcc build-riscv-without-gdb
+	$(MAKE) -C util/crossgcc build-riscv SKIP_GDB=1
 
-crosstools: crosstools-i386 crosstools-x64 crosstools-arm crosstools-aarch64 crosstools-mips crosstools-riscv
+crosstools:
+	$(MAKE) -C util/crossgcc all_with_gdb SKIP_CLANG=1
 
 .PHONY: crosstools-i386 crosstools-x64 crosstools-arm crosstools-aarch64 crosstools-mips crosstools-riscv
 crosstools-i386: clean-for-update

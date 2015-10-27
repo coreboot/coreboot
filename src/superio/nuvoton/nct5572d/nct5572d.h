@@ -18,6 +18,8 @@
 #define SUPERIO_NUVOTON_NCT5572D
 
 /* Logical Device Numbers (LDN). */
+#define NCT5572D_FDC		0x00
+#define NCT5572D_PP		0x01
 #define NCT5572D_SP1		0x02 /* Com1 */
 #define NCT5572D_IR		0x03
 #define NCT5572D_KBC		0x05
@@ -35,8 +37,10 @@
 /* virtual LDN for GPIO */
 #define NCT5572D_GPIO2		((0 << 8) | NCT5572D_GPIO235_V)
 #define NCT5572D_GPIO3		((1 << 8) | NCT5572D_GPIO235_V)
+#define NCT5572D_GPIO4		((2 << 8) | NCT5572D_GPIO235_V)
 #define NCT5572D_GPIO5		((3 << 8) | NCT5572D_GPIO235_V)
 #define NCT5572D_GPIO6		((1 << 8) | NCT5572D_GPIO689_V)
+#define NCT5572D_GPIO7		((2 << 8) | NCT5572D_GPIO689_V)
 #define NCT5572D_GPIO8		((3 << 8) | NCT5572D_GPIO689_V)
 #define NCT5572D_GPIO9		((4 << 8) | NCT5572D_GPIO689_V)
 

@@ -76,6 +76,8 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
+	{ &ops, NCT5572D_FDC}, /* no pins, removed from datasheet */
+	{ &ops, NCT5572D_PP}, /* no pins, removed from datasheet */
 	{ &ops, NCT5572D_SP1, PNP_IO0 | PNP_IRQ0, {0x0FF8, 0}, },
 	{ &ops, NCT5572D_IR, PNP_IO0 | PNP_IRQ0, {0x0FF8, 0}, },
 	{ &ops, NCT5572D_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x0FFF, 0}, {0x0FFF, 4}, },
@@ -89,8 +91,10 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, NCT5572D_GPIO_PP_OD},
 	{ &ops, NCT5572D_GPIO2},
 	{ &ops, NCT5572D_GPIO3},
+	{ &ops, NCT5572D_GPIO4}, /* no pins, removed from datasheet */
 	{ &ops, NCT5572D_GPIO5},
 	{ &ops, NCT5572D_GPIO6},
+	{ &ops, NCT5572D_GPIO7}, /* no pins, removed from datasheet */
 	{ &ops, NCT5572D_GPIO8},
 	{ &ops, NCT5572D_GPIO9},
 };

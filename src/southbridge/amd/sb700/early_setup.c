@@ -621,11 +621,7 @@ static void sb700_pmio_por_init(void)
 	byte |= 1 << 0;
 	pmio_write(0xB2, byte);
 
-	// FIXME: Enabling this causes boot to hang while initializing processors.
-// 	/* Enable automatic C1e state switch */
-// 	byte = pmio_read(0xc9);
-// 	byte |= 0x11;
-// 	pmio_write(0xc9, byte);
+	/* NOTE: Enabling automatic C1e state switch caused failures when initializing processors */
 
 	/* Enable precision HPET clock and automatic C state switch */
 	byte = pmio_read(0xbb);

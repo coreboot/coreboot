@@ -87,13 +87,11 @@ static void lpc_init(device_t dev)
 	cmos_check_update_date();
 }
 
-#if (!IS_ENABLED(CONFIG_EARLY_CBMEM_INIT))
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(ACPI_PM1_CNT_BLK);
 	return ((tmp & (7 << 10)) >> 10);
 }
-#endif
 
 #if IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 void backup_top_of_ram(uint64_t ramtop)

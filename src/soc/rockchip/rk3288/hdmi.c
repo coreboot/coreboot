@@ -738,6 +738,8 @@ static int hdmi_read_edid(int block, u8 *buff)
 	write32(&hdmi_regs->i2cm_segptr, block >> 1);
 
 	while (trytime--) {
+		edid_read_err = 0;
+
 		for (n = 0; n < HDMI_EDID_BLOCK_SIZE/8; n++) {
 			write32(&hdmi_regs->i2cmess, shift + 8 * n);
 
@@ -764,8 +766,6 @@ static int hdmi_read_edid(int block, u8 *buff)
 
 		if (!edid_read_err)
 			break;
-
-		edid_read_err = 0;
 	}
 
 	return edid_read_err;

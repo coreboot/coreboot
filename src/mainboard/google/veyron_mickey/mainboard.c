@@ -75,10 +75,6 @@ static void configure_vop(void)
 
 static void configure_hdmi(void)
 {
-	/* HDMI I2C */
-	write32(&rk3288_grf->iomux_i2c5sda, IOMUX_HDMI_EDP_I2C_SDA);
-	write32(&rk3288_grf->iomux_i2c5scl, IOMUX_HDMI_EDP_I2C_SCL);
-
 	gpio_output(GPIO(7, B, 3), 1);	/* POWER_HDMI_ON */
 }
 

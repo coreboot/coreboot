@@ -82,10 +82,6 @@ static void configure_hdmi(void)
 
 	/* set POWER_HDMI_ON */
 	gpio_output(GPIO(7, A, 2), 1);
-
-	/* HDMI I2C */
-	write32(&rk3288_grf->iomux_i2c5sda, IOMUX_HDMI_EDP_I2C_SDA);
-	write32(&rk3288_grf->iomux_i2c5scl, IOMUX_HDMI_EDP_I2C_SCL);
 }
 
 static void mainboard_init(device_t dev)

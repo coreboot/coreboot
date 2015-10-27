@@ -15,6 +15,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <edid.h>
+#include <gpio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -774,7 +775,22 @@ int rk_hdmi_get_edid(struct edid *edid)
 {
 	u8 edid_buf[HDMI_EDID_BLOCK_SIZE * 2];
 	u32 edid_size = HDMI_EDID_BLOCK_SIZE;
+	gpio_t hdmi_i2c_sda = GPIO(7, C, 3);
+	gpio_t hdmi_i2c_scl = GPIO(7, C, 4);
 	int ret;
+
+	/* If SDA is low, try to clock once to fix it */
+	gpio_input_pullup(hdmi_i2c_sda);
+	if (gpio_get(hdmi_i2c_sda) == 0) {
+		gpio_output(hdmi_i2c_scl, 0);
+		udelay(1000);
+		gpio_input_pullup(hdmi_i2c_scl);
+		udelay(1000);
+	}
+
+	/* HDMI I2C */
+	write32(&rk3288_grf->iomux_i2c5sda, IOMUX_HDMI_EDP_I2C_SDA);
+	write32(&rk3288_grf->iomux_i2c5scl, IOMUX_HDMI_EDP_I2C_SCL);
 
 	ret = hdmi_read_edid(0, edid_buf);
 	if (ret) {

@@ -24,9 +24,7 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <stdint.h>
-#if CONFIG_LOGICAL_CPUS
 #include <cpu/amd/multicore.h>
-#endif
 
 #include <cpu/amd/amdfam10_sysconf.h>
 
@@ -132,11 +130,10 @@ void get_bus_conf(void)
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-#if CONFIG_LOGICAL_CPUS
-	apicid_base = get_apicid_base(3);
-#else
-	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
-#endif
+	if (IS_ENABLED(CONFIG_LOGICAL_CPUS))
+		apicid_base = get_apicid_base(3);
+	else
+		apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 	m->apicid_mcp55 = apicid_base+0;
 	m->apicid_8132_1 = apicid_base+1;
 	m->apicid_8132_2 = apicid_base+2;

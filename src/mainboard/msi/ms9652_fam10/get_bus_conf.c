@@ -24,9 +24,7 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <stdint.h>
-#if CONFIG_LOGICAL_CPUS
 #include <cpu/amd/multicore.h>
-#endif
 
 #include <cpu/amd/amdfam10_sysconf.h>
 
@@ -116,12 +114,12 @@ void get_bus_conf(void)
 		}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-#if CONFIG_LOGICAL_CPUS
-	apicid_base = get_apicid_base(1);
-	printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS==1: apicid_base: %08x\n", apicid_base);
-#else
-	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
-	printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS==0: apicid_base: %08x\n", apicid_base);
-#endif
+	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
+		apicid_base = get_apicid_base(1);
+		printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS==1: apicid_base: %08x\n", apicid_base);
+	} else {
+		apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
+		printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS==0: apicid_base: %08x\n", apicid_base);
+	}
 	m->apicid_mcp55 = apicid_base+0;
 }

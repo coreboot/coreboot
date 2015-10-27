@@ -17,6 +17,7 @@
 #include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/stages.h>
 #include <device/pnp_def.h>
@@ -33,6 +34,7 @@
 #include <cpu/x86/lapic.h>
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
+#include <cpu/amd/agesa/s3_resume.h>
 
 
 #define SERIAL_DEV PNP_DEV(0x2e, NCT5572D_SP1)
@@ -77,12 +79,26 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x39);
 	agesawrapper_amdinitearly();
 
-	post_code(0x40);
-	agesawrapper_amdinitpost();
+	int s3resume = acpi_is_wakeup_s3();
+	if (!s3resume) {
+		post_code(0x40);
+		agesawrapper_amdinitpost();
 
-	post_code(0x41);
-	agesawrapper_amdinitenv();
-	amd_initenv();
+		post_code(0x42);
+		agesawrapper_amdinitenv();
+		amd_initenv();
+
+	} else { 			/* S3 detect */
+		printk(BIOS_INFO, "S3 detected\n");
+
+		post_code(0x60);
+		agesawrapper_amdinitresume();
+
+		agesawrapper_amds3laterestore();
+
+		post_code(0x61);
+		prepare_for_resume();
+	}
 
 	post_code(0x50);
 	copy_and_run();

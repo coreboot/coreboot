@@ -115,7 +115,7 @@
 #define AGESA_ENTRY_INIT_LATE                     TRUE
 #define AGESA_ENTRY_INIT_S3SAVE                   TRUE
 #define AGESA_ENTRY_INIT_RESUME                   TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE             FALSE
+#define AGESA_ENTRY_INIT_LATE_RESTORE             TRUE
 #define AGESA_ENTRY_INIT_GENERAL_SERVICES         FALSE
 
 /*
@@ -187,7 +187,7 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 //#define BLDCFG_USE_HT_ASSIST                    TRUE
 //#define BLDCFG_USE_ATM_MODE                     TRUE
 //#define BLDCFG_PLATFORM_CONTROL_FLOW_MODE       Nfcm
-#define BLDCFG_S3_LATE_RESTORE                    FALSE
+#define BLDCFG_S3_LATE_RESTORE                    TRUE
 //#define BLDCFG_USE_32_BYTE_REFRESH              FALSE
 //#define BLDCFG_USE_VARIABLE_MCT_ISOC_PRIORITY   FALSE
 //#define BLDCFG_PLATFORM_POWER_POLICY_MODE       Performance

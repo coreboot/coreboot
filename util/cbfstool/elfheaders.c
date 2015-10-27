@@ -635,6 +635,30 @@ elf_headers(const struct buffer *pinput,
  * +------------------+
  */
 
+void elf_init_eheader(Elf64_Ehdr *ehdr, int machine, int nbits, int endian)
+{
+	memset(ehdr, 0, sizeof(*ehdr));
+	ehdr->e_ident[EI_MAG0] = ELFMAG0;
+	ehdr->e_ident[EI_MAG1] = ELFMAG1;
+	ehdr->e_ident[EI_MAG2] = ELFMAG2;
+	ehdr->e_ident[EI_MAG3] = ELFMAG3;
+	ehdr->e_ident[EI_CLASS] = nbits;
+	ehdr->e_ident[EI_DATA] = endian;
+	ehdr->e_ident[EI_VERSION] = EV_CURRENT;
+	ehdr->e_type = ET_EXEC;
+	ehdr->e_machine = machine;
+	ehdr->e_version = EV_CURRENT;
+	if (nbits == ELFCLASS64) {
+		ehdr->e_ehsize = sizeof(Elf64_Ehdr);
+		ehdr->e_phentsize = sizeof(Elf64_Phdr);
+		ehdr->e_shentsize = sizeof(Elf64_Shdr);
+	} else {
+		ehdr->e_ehsize = sizeof(Elf32_Ehdr);
+		ehdr->e_phentsize = sizeof(Elf32_Phdr);
+		ehdr->e_shentsize = sizeof(Elf32_Shdr);
+	}
+}
+
 /* Arbitray maximum number of sections. */
 #define MAX_SECTIONS 16
 struct elf_writer_section {

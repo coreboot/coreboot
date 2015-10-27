@@ -77,6 +77,17 @@ elf_headers(const struct buffer *pinput,
 struct elf_writer;
 
 /*
+ * Initialize a 64-bit ELF header provided the inputs. While the structure
+ * is a 64-bit header one can specify a 32-bit machine. The 64-bit version
+ * is just used as a common structure. If one wants to specify the entry
+ * point, for example, the caller can set it after filling in the common
+ * bits. The machine, nbits, and endian values should be from the ELF
+ * definitions (e.g. EM_386, ELFCLASS32, and ELFDATA2LSB) found in elf.h
+ * with no endian conversion required.
+ */
+void elf_init_eheader(Elf64_Ehdr *ehdr, int machine, int nbits, int endian);
+
+/*
  * Initialize a new ELF writer. Deafult machine type, endianness, etc is
  * copied from the passed in Elf64_Ehdr. Returns NULL on failure, valid
  * pointer on success.

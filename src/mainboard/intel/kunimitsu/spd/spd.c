@@ -15,14 +15,12 @@
  */
 
 #include <arch/byteorder.h>
-#include <boardid.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
 #include <string.h>
 
-#include "../boardid.h"
 #include "spd.h"
 
 static void mainboard_print_spd_info(uint8_t spd[])
@@ -81,17 +79,11 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
 	char *spd_file;
 	size_t spd_file_len;
-	int spd_index, sku_id;
+	int spd_index, spd_span;
 
 
 	spd_index = pei_data->mem_cfg_id;
-	/*
-	 * XXX: This is incorrect usage.The Board ID should be the revision ID
-	 *      and not SKU ID but on SCRD it indicates SKU.
-	 */
-	sku_id = board_id();
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);
-	printk(BIOS_INFO, "Board ID %d\n", sku_id);
 
 	/* Load SPD data from CBFS */
 	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
@@ -110,16 +102,14 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	}
 
 	/* Assume same memory in both channels */
-	spd_index *= SPD_LEN;
-	memcpy(pei_data->spd_data[0][0], spd_file + spd_index, SPD_LEN);
-	/*
-	 * XXX: This is incorrect usage. mem_cfg should be used here instead of
-	 *	SKU ID. The current implementation of mem_config does not
-	 *	support channel population.
-	 */
+	spd_span = spd_index * SPD_LEN;
+	memcpy(pei_data->spd_data[0][0], spd_file + spd_span, SPD_LEN);
 
-	if (sku_id != SCRD_SKU1)
-		memcpy(pei_data->spd_data[1][0], spd_file + spd_index, SPD_LEN);
+	if (spd_index != HYNIX_SINGLE_CHAN && spd_index != SAMSUNG_SINGLE_CHAN
+		&& spd_index != MIC_SINGLE_CHAN) {
+		memcpy(pei_data->spd_data[1][0], spd_file + spd_span, SPD_LEN);
+		printk(BIOS_INFO, "Dual channel SPD detected writing second channel\n");
+	}
 
 	/* Make sure a valid SPD was found */
 	if (pei_data->spd_data[0][0][0] == 0)

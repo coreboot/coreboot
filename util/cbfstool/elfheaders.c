@@ -841,6 +841,78 @@ phdr_write(struct elf_writer *ew, struct buffer *m, Elf64_Phdr *phdr)
 
 }
 
+static int section_consecutive(struct elf_writer *ew, Elf64_Half secidx)
+{
+	Elf64_Half i;
+	struct elf_writer_section *prev_alloc = NULL;
+
+	if (secidx == 0)
+		return 0;
+
+	for (i = 0; i < secidx; i++) {
+		if (ew->sections[i].shdr.sh_flags & SHF_ALLOC)
+			prev_alloc = &ew->sections[i];
+	}
+
+	if (prev_alloc == NULL)
+		return 0;
+
+	if (prev_alloc->shdr.sh_addr + prev_alloc->shdr.sh_size ==
+	    ew->sections[secidx].shdr.sh_addr)
+		return 1;
+
+	return 0;
+}
+
+static void write_phdrs(struct elf_writer *ew, struct buffer *phdrs)
+{
+	Elf64_Half i;
+	Elf64_Phdr phdr;
+	size_t num_written = 0;
+
+	for (i = 0; i < ew->num_secs; i++) {
+		struct elf_writer_section *sec = &ew->sections[i];
+
+		if (!(sec->shdr.sh_flags & SHF_ALLOC))
+			continue;
+
+		if (!section_consecutive(ew, i)) {
+			/* Write out previously set phdr. */
+			if (num_written != 0) {
+				phdr_write(ew, phdrs, &phdr);
+				num_written++;
+			}
+			phdr.p_type = PT_LOAD;
+			phdr.p_offset = sec->shdr.sh_offset;
+			phdr.p_vaddr = sec->shdr.sh_addr;
+			phdr.p_paddr = sec->shdr.sh_addr;
+			phdr.p_filesz = buffer_size(&sec->content);
+			phdr.p_memsz = sec->shdr.sh_size;
+			phdr.p_flags = 0;
+			if (sec->shdr.sh_flags & SHF_EXECINSTR)
+				phdr.p_flags |= PF_X | PF_R;
+			if (sec->shdr.sh_flags & SHF_WRITE)
+				phdr.p_flags |= PF_W;
+			phdr.p_align = sec->shdr.sh_addralign;
+		} else {
+			/* Accumulate file size and memsize. The assumption
+			 * is that each section is either NOBITS or full
+			 * (sh_size == file size). This is standard in that
+			 * an ELF section doesn't have a file size component. */
+			if (sec->shdr.sh_flags & SHF_EXECINSTR)
+				phdr.p_flags |= PF_X | PF_R;
+			if (sec->shdr.sh_flags & SHF_WRITE)
+				phdr.p_flags |= PF_W;
+			phdr.p_filesz += buffer_size(&sec->content);
+			phdr.p_memsz += sec->shdr.sh_size;
+		}
+	}
+
+	/* Write out the last phdr. */
+	if (num_written != ew->ehdr.e_phnum)
+		phdr_write(ew, phdrs, &phdr);
+}
+
 /*
  * Serialize the ELF file to the output buffer. Return < 0 on error,
  * 0 on success.
@@ -866,8 +938,10 @@ int elf_writer_serialize(struct elf_writer *ew, struct buffer *out)
 	for (i = 0; i < ew->num_secs; i++) {
 		struct elf_writer_section *sec = &ew->sections[i];
 
-		if (sec->shdr.sh_flags & SHF_ALLOC)
-			ew->ehdr.e_phnum++;
+		if (sec->shdr.sh_flags & SHF_ALLOC) {
+			if (!section_consecutive(ew, i))
+				ew->ehdr.e_phnum++;
+		}
 
 		program_size += buffer_size(&sec->content);
 
@@ -924,7 +998,6 @@ int elf_writer_serialize(struct elf_writer *ew, struct buffer *out)
 	 * program headers. */
 	ew->xdr->put8(strtab, 0);
 	for (i = 0; i < ew->num_secs; i++) {
-		Elf64_Phdr phdr;
 		struct elf_writer_section *sec = &ew->sections[i];
 
 		/* Update section offsets. Be sure to not update SHT_NULL. */
@@ -944,21 +1017,9 @@ int elf_writer_serialize(struct elf_writer *ew, struct buffer *out)
 
 		bputs(&data, buffer_get(&sec->content),
 		      buffer_size(&sec->content));
-
-		phdr.p_type = PT_LOAD;
-		phdr.p_offset = sec->shdr.sh_offset;
-		phdr.p_vaddr = sec->shdr.sh_addr;
-		phdr.p_paddr = sec->shdr.sh_addr;
-		phdr.p_filesz = buffer_size(&sec->content);
-		phdr.p_memsz = sec->shdr.sh_size;
-		phdr.p_flags = 0;
-		if (sec->shdr.sh_flags & SHF_EXECINSTR)
-			phdr.p_flags |= PF_X | PF_R;
-		if (sec->shdr.sh_flags & SHF_WRITE)
-			phdr.p_flags |= PF_W;
-		phdr.p_align = sec->shdr.sh_addralign;
-		phdr_write(ew, &phdrs, &phdr);
 	}
+
+	write_phdrs(ew, &phdrs);
 
 	return 0;
 }

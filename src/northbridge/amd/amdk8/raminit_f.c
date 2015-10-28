@@ -1397,6 +1397,7 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
 		if (device) {
 			byte = spd_read_byte(ctrl->channel0[i], SPD_MEM_TYPE);  /* Type */
 			if (byte == SPD_MEM_TYPE_SDRAM_DDR2) {
+				printk_raminit("\tDIMM detected\n");
 				dimm_mask |= (1 << i);
 			}
 		}
@@ -1405,6 +1406,7 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
 		if (device) {
 			byte = spd_read_byte(ctrl->channel1[i], SPD_MEM_TYPE);
 			if (byte == SPD_MEM_TYPE_SDRAM_DDR2) {
+				printk_raminit("\tDIMM detected\n");
 				dimm_mask |= (1 << (i + DIMM_SOCKETS));
 			}
 		}

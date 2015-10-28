@@ -91,6 +91,8 @@ static struct {
 	const char *stereo;
 } extra_info;
 
+static struct edid tmp_edid;
+
 static int vbe_valid;
 static struct lb_framebuffer edid_fb;
 
@@ -197,9 +199,10 @@ extract_string(unsigned char *x, int *valid_termination, int len)
 
 /* 1 means valid data */
 static int
-detailed_block(struct edid *out, unsigned char *x, int in_extension,
+detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 	       struct edid_context *c)
 {
+	struct edid *out = &tmp_edid;
 	int i;
 #if 1
 	printk(BIOS_SPEW, "Hex of detail: ");
@@ -207,6 +210,9 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 		printk(BIOS_SPEW, "%02x", x[i]);
 	printk(BIOS_SPEW, "\n");
 #endif
+
+	/* Result might already have some valid fields like mode_is_supported */
+	*out = *result_edid;
 
 	if (x[0] == 0 && x[1] == 0) {
 		/* Monitor descriptor block, not detailed timing descriptor. */
@@ -443,63 +449,59 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 		c->has_valid_descriptor_ordering = 0;
 	}
 
-	if (! c->did_detailed_timing){
-		/* Edid contains pixel clock in terms of 10KHz */
-		out->mode.pixel_clock = (x[0] + (x[1] << 8)) * 10;
-		/*
-		  LVDS supports following pixel clocks
-		  25000...112000 kHz: single channel
-		  80000...224000 kHz: dual channel
-		  There is some overlap in theoretically supported
-		  pixel clock between single-channel and dual-channel.
-		  In practice with current panels all panels
-		  <= 75200 kHz: single channel
-		  >= 97750 kHz: dual channel
-		  We have no samples between those values, so put a
-		  threshold at 95000 kHz. If we get anything over
-		  95000 kHz with single channel, we can make this
-		  more sofisticated but it's currently not needed.
-		 */
-		out->mode.lvds_dual_channel = (out->mode.pixel_clock >= 95000);
-		extra_info.x_mm = (x[12] + ((x[14] & 0xF0) << 4));
-		extra_info.y_mm = (x[13] + ((x[14] & 0x0F) << 8));
-		out->mode.ha = (x[2] + ((x[4] & 0xF0) << 4));
-		out->mode.hbl = (x[3] + ((x[4] & 0x0F) << 8));
-		out->mode.hso = (x[8] + ((x[11] & 0xC0) << 2));
-		out->mode.hspw = (x[9] + ((x[11] & 0x30) << 4));
-		out->mode.hborder = x[15];
-		out->mode.va = (x[5] + ((x[7] & 0xF0) << 4));
-		out->mode.vbl = (x[6] + ((x[7] & 0x0F) << 8));
-		out->mode.vso = ((x[10] >> 4) + ((x[11] & 0x0C) << 2));
-		out->mode.vspw = ((x[10] & 0x0F) + ((x[11] & 0x03) << 4));
-		out->mode.vborder = x[16];
-		/* set up some reasonable defaults for payloads.
-		 * We observe that most modern chipsets we work with
-		 * tend to support rgb888 without regard to the
-		 * panel bits per color or other settings. The rgb888
-		 * is a convenient layout for software because
-		 * it avoids the messy bit stuffing of rgb565 or rgb444.
-		 * It makes a reasonable trade of memory for speed.
-		 * So, set up the default for
-		 * 32 bits per pixel
-		 * rgb888 (i.e. no alpha, but pixels on 32-bit boundaries)
-		 * The mainboard can modify these if needed, though
-		 * we have yet to see a case where that will happen.
-		 * The existing ARM mainboards don't even call this function
-		 * so this will not affect them.
-		 */
-		out->framebuffer_bits_per_pixel = 32;
+	/* Edid contains pixel clock in terms of 10KHz */
+	out->mode.pixel_clock = (x[0] + (x[1] << 8)) * 10;
+	/*
+	  LVDS supports following pixel clocks
+	  25000...112000 kHz: single channel
+	  80000...224000 kHz: dual channel
+	  There is some overlap in theoretically supported
+	  pixel clock between single-channel and dual-channel.
+	  In practice with current panels all panels
+	  <= 75200 kHz: single channel
+	  >= 97750 kHz: dual channel
+	  We have no samples between those values, so put a
+	  threshold at 95000 kHz. If we get anything over
+	  95000 kHz with single channel, we can make this
+	  more sofisticated but it's currently not needed.
+	 */
+	out->mode.lvds_dual_channel = (out->mode.pixel_clock >= 95000);
+	extra_info.x_mm = (x[12] + ((x[14] & 0xF0) << 4));
+	extra_info.y_mm = (x[13] + ((x[14] & 0x0F) << 8));
+	out->mode.ha = (x[2] + ((x[4] & 0xF0) << 4));
+	out->mode.hbl = (x[3] + ((x[4] & 0x0F) << 8));
+	out->mode.hso = (x[8] + ((x[11] & 0xC0) << 2));
+	out->mode.hspw = (x[9] + ((x[11] & 0x30) << 4));
+	out->mode.hborder = x[15];
+	out->mode.va = (x[5] + ((x[7] & 0xF0) << 4));
+	out->mode.vbl = (x[6] + ((x[7] & 0x0F) << 8));
+	out->mode.vso = ((x[10] >> 4) + ((x[11] & 0x0C) << 2));
+	out->mode.vspw = ((x[10] & 0x0F) + ((x[11] & 0x03) << 4));
+	out->mode.vborder = x[16];
+	/* set up some reasonable defaults for payloads.
+	 * We observe that most modern chipsets we work with
+	 * tend to support rgb888 without regard to the
+	 * panel bits per color or other settings. The rgb888
+	 * is a convenient layout for software because
+	 * it avoids the messy bit stuffing of rgb565 or rgb444.
+	 * It makes a reasonable trade of memory for speed.
+	 * So, set up the default for
+	 * 32 bits per pixel
+	 * rgb888 (i.e. no alpha, but pixels on 32-bit boundaries)
+	 * The mainboard can modify these if needed, though
+	 * we have yet to see a case where that will happen.
+	 * The existing ARM mainboards don't even call this function
+	 * so this will not affect them.
+	 */
+	out->framebuffer_bits_per_pixel = 32;
 
-		out->x_resolution = ALIGN(out->mode.ha *
-					  ((out->framebuffer_bits_per_pixel + 7) / 8),
-					  64) / (out->framebuffer_bits_per_pixel/8);
-		out->y_resolution = out->mode.va;
-		out->bytes_per_line = ALIGN(out->mode.ha *
-					    ((out->framebuffer_bits_per_pixel + 7)/8),
-					    64);
-		printk(BIOS_SPEW, "Did detailed timing\n");
-	}
-	c->did_detailed_timing = 1;
+	out->x_resolution = ALIGN(out->mode.ha *
+				  ((out->framebuffer_bits_per_pixel + 7) / 8),
+				  64) / (out->framebuffer_bits_per_pixel/8);
+	out->y_resolution = out->mode.va;
+	out->bytes_per_line = ALIGN(out->mode.ha *
+				    ((out->framebuffer_bits_per_pixel + 7)/8),
+				    64);
 	switch ((x[17] & 0x18) >> 3) {
 	case 0x00:
 		extra_info.syncmethod = " analog composite";
@@ -556,6 +558,13 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 	       out->mode.phsync, out->mode.pvsync,
 	       extra_info.syncmethod, x[17] & 0x80 ?" interlaced" : "",
 	       extra_info.stereo);
+
+	if (! c->did_detailed_timing) {
+		printk(BIOS_SPEW, "Did detailed timing\n");
+		c->did_detailed_timing = 1;
+		*result_edid = *out;
+	}
+
 	return 1;
 }
 

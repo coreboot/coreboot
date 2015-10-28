@@ -81,9 +81,16 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
-// Disabled until it's actually used:
-// #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/early_ht.c"
+
+/* FIXME
+ * Dummy method to allow build
+ * Determine if this board / CPU should support
+ * FID/VID and implement proper support if so
+ */
+#if IS_ENABLED(CONFIG_SET_FIDVID)
+void init_fidvid_ap(u32 bsp_apicid, u32 apicid) { }
+#endif
 
 static void sio_setup(void)
 {

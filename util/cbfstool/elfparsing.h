@@ -109,6 +109,17 @@ void elf_writer_destroy(struct elf_writer *ew);
 int elf_writer_add_section(struct elf_writer *ew, const Elf64_Shdr *shdr,
                            struct buffer *contents, const char *name);
 
+/* Add an absolute symbol to the ELF file returning < 0 on error, index of
+ * symbol otherwise. */
+int elf_writer_add_symbol(struct elf_writer *ew, const char *name,
+				const char *section_name,
+				Elf64_Addr value, Elf64_Word size,
+				int binding, int type);
+
+/* Add an absolute relocation referencing the provided symbol name. Returns < 0
+ * on error, 0 on success. */
+int elf_writer_add_rel(struct elf_writer *ew, const char *sym, Elf64_Addr addr);
+
 /*
  * Serialize the ELF file to the output buffer. Return < 0 on error,
  * 0 on success.

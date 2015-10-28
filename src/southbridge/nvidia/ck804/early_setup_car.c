@@ -142,7 +142,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		CK804_MB_SETUP
 #endif
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10) || (IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDK8) && IS_ENABLED(CONFIG_CPU_AMD_SOCKET_F))
 		/*
 		 * Avoid crash (complete with severe memory corruption!) during initial CAR boot
 		 * in ck804_early_setup_x() on Fam10h systems by not touching 0x78.
@@ -351,8 +351,11 @@ static int ck804_early_setup_x(void)
 		}
 	}
 
+	printk(BIOS_DEBUG, "ck804_early_set_port(%d, %d, %d)\n", ck804_num, busn[0], io_base[0]);
 	ck804_early_set_port(ck804_num, busn, io_base);
+	printk(BIOS_DEBUG, "ck804_early_setup(%d, %d, %d)\n", ck804_num, busn[0], io_base[0]);
 	ck804_early_setup(ck804_num, busn, io_base);
+	printk(BIOS_DEBUG, "ck804_early_clear_port(%d, %d, %d)\n", ck804_num, busn[0], io_base[0]);
 	ck804_early_clear_port(ck804_num, busn, io_base);
 
 	return set_ht_link_ck804(4);

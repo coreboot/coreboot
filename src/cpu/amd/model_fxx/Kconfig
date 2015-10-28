@@ -30,8 +30,8 @@ config LIFT_BSP_APIC_ID
 
 config SET_FIDVID
 	bool
-	default n
 	default y if K8_REV_F_SUPPORT
+	default n
 
 config HW_SCRUBBER
 	bool

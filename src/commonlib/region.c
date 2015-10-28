@@ -194,3 +194,56 @@ int mmap_helper_rdev_munmap(const struct region_device *rd, void *mapping)
 
 	return 0;
 }
+
+static void *xlate_mmap(const struct region_device *rd, size_t offset,
+			size_t size)
+{
+	const struct xlate_region_device *xldev;
+	struct region req = {
+		.offset = offset,
+		.size = size,
+	};
+
+	xldev = container_of(rd, typeof(*xldev), rdev);
+
+	if (!is_subregion(&xldev->sub_region, &req))
+		return NULL;
+
+	offset -= region_offset(&xldev->sub_region);
+
+	return rdev_mmap(xldev->access_dev, offset, size);
+}
+
+static int xlate_munmap(const struct region_device *rd, void *mapping)
+{
+	const struct xlate_region_device *xldev;
+
+	xldev = container_of(rd, typeof(*xldev), rdev);
+
+	return rdev_munmap(xldev->access_dev, mapping);
+}
+
+static ssize_t xlate_readat(const struct region_device *rd, void *b,
+				size_t offset, size_t size)
+{
+	struct region req = {
+		.offset = offset,
+		.size = size,
+	};
+	const struct xlate_region_device *xldev;
+
+	xldev = container_of(rd, typeof(*xldev), rdev);
+
+	if (!is_subregion(&xldev->sub_region, &req))
+		return -1;
+
+	offset -= region_offset(&xldev->sub_region);
+
+	return rdev_readat(xldev->access_dev, b, offset, size);
+}
+
+const struct region_device_ops xlate_rdev_ops = {
+	.mmap = xlate_mmap,
+	.munmap = xlate_munmap,
+	.readat = xlate_readat,
+};

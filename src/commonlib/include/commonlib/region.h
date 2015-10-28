@@ -154,4 +154,27 @@ void mmap_helper_device_init(struct mmap_helper_region_device *mdev,
 void *mmap_helper_rdev_mmap(const struct region_device *, size_t, size_t);
 int mmap_helper_rdev_munmap(const struct region_device *, void *);
 
+/* A translated region device provides the ability to publish a region device
+ * in one address space and use an access mechansim within another address
+ * space. The sub region is the window within the 1st address space and
+ * the request is modified prior to accessing the second address space
+ * provided by access_dev. */
+struct xlate_region_device {
+	const struct region_device *access_dev;
+	struct region sub_region;
+	struct region_device rdev;
+};
+
+extern const struct region_device_ops xlate_rdev_ops;
+
+#define XLATE_REGION_INIT(access_dev_, sub_offset_, sub_size_, parent_sz_) \
+	{								\
+		.access_dev = access_dev_,				\
+		.sub_region = {						\
+			.offset = (sub_offset_),			\
+			.size = (sub_size_),				\
+		},							\
+		.rdev = REGION_DEV_INIT(&xlate_rdev_ops, 0,  (parent_sz_)),\
+	}
+
 #endif /* _REGION_H_ */

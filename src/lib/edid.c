@@ -1003,7 +1003,7 @@ static void dump_breakdown(unsigned char *edid)
  */
 static struct edid_mode known_modes[NUM_KNOWN_MODES] = {
 	[EDID_MODE_640x480_60Hz] = {
-		.name = "640x480@60Hz", .pixel_clock = 25175, .refresh = 60,
+		.name = "640x480@60Hz", .pixel_clock = 25200, .refresh = 60,
 		.ha = 640, .hbl = 160, .hso = 16, .hspw = 96,
 		.va = 480, .vbl = 45, .vso = 10, .vspw = 2,
 		.phsync = '-', .pvsync = '-' },

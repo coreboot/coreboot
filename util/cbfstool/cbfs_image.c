@@ -27,6 +27,7 @@
 
 #include "common.h"
 #include "cbfs_image.h"
+#include "elfparsing.h"
 
 /* Even though the file-adding functions---cbfs_add_entry() and
  * cbfs_add_entry_at()---perform their sizing checks against the beginning of
@@ -657,11 +658,9 @@ struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name)
 	return NULL;
 }
 
-static int cbfs_stage_decompress(struct buffer *buff)
+static int cbfs_stage_decompress(struct cbfs_stage *stage, struct buffer *buff)
 {
 	struct buffer reader;
-	struct buffer writer;
-	struct cbfs_stage metadata;
 	char *orig_buffer;
 	char *new_buffer;
 	size_t new_buff_sz;
@@ -670,16 +669,27 @@ static int cbfs_stage_decompress(struct buffer *buff)
 	buffer_clone(&reader, buff);
 
 	/* The stage metadata is in little endian. */
-	metadata.compression = xdr_le.get32(&reader);
-	metadata.entry = xdr_le.get64(&reader);
-	metadata.load = xdr_le.get64(&reader);
-	metadata.len = xdr_le.get32(&reader);
-	metadata.memlen = xdr_le.get32(&reader);
+	stage->compression = xdr_le.get32(&reader);
+	stage->entry = xdr_le.get64(&reader);
+	stage->load = xdr_le.get64(&reader);
+	stage->len = xdr_le.get32(&reader);
+	stage->memlen = xdr_le.get32(&reader);
 
-	if (metadata.compression == CBFS_COMPRESS_NONE)
+	/* Create a buffer just with the uncompressed program now that the
+	 * struct cbfs_stage has been peeled off. */
+	if (stage->compression == CBFS_COMPRESS_NONE) {
+		new_buff_sz = buffer_size(buff) - sizeof(struct cbfs_stage);
+
+		orig_buffer = buffer_get(buff);
+		new_buffer = calloc(1, new_buff_sz);
+		memcpy(new_buffer, orig_buffer + sizeof(struct cbfs_stage),
+			new_buff_sz);
+		buffer_init(buff, buff->name, new_buffer, new_buff_sz);
+		free(orig_buffer);
 		return 0;
+	}
 
-	decompress = decompression_function(metadata.compression);
+	decompress = decompression_function(stage->compression);
 	if (decompress == NULL)
 		return -1;
 
@@ -687,45 +697,142 @@ static int cbfs_stage_decompress(struct buffer *buff)
 
 	/* This can be too big of a buffer needed, but there's no current
 	 * field indicating decompressed size of data. */
-	new_buff_sz = metadata.memlen + sizeof(struct cbfs_stage);
+	new_buff_sz = stage->memlen;
 	new_buffer = calloc(1, new_buff_sz);
 
 	if (decompress(orig_buffer + sizeof(struct cbfs_stage),
 			(int)(buffer_size(buff) - sizeof(struct cbfs_stage)),
-			new_buffer + sizeof(struct cbfs_stage),
-			(int)(new_buff_sz - sizeof(struct cbfs_stage)),
-			&new_buff_sz)) {
+			new_buffer, (int)new_buff_sz, &new_buff_sz)) {
 		ERROR("Couldn't decompress stage.\n");
 		free(new_buffer);
 		return -1;
 	}
 
 	/* Include correct size for full stage info. */
-	new_buff_sz += sizeof(struct cbfs_stage);
 	buffer_init(buff, buff->name, new_buffer, new_buff_sz);
-	buffer_clone(&writer, buff);
-	/* Set size to 0 to please xdr. */
-	buffer_set_size(&writer, 0);
 
 	/* True decompressed size is just the data size -- no metadata. */
-	metadata.len = new_buff_sz - sizeof(struct cbfs_stage);
+	stage->len = new_buff_sz;
 	/* Stage is not compressed. */
-	metadata.compression = CBFS_COMPRESS_NONE;
-
-	/* Write back out the stage metadata. */
-	xdr_le.put32(&writer, metadata.compression);
-	xdr_le.put32(&writer, metadata.entry);
-	xdr_le.put32(&writer, metadata.load);
-	xdr_le.put32(&writer, metadata.len);
-	xdr_le.put32(&writer, metadata.memlen);
+	stage->compression = CBFS_COMPRESS_NONE;
 
 	free(orig_buffer);
 
 	return 0;
 }
 
+static int init_elf_from_arch(Elf64_Ehdr *ehdr, uint32_t cbfs_arch)
+{
+	int endian;
+	int nbits;
+	int machine;
+
+	switch (cbfs_arch) {
+	case CBFS_ARCHITECTURE_X86:
+		endian = ELFDATA2LSB;
+		nbits = ELFCLASS32;
+		machine = EM_386;
+		break;
+	case CBFS_ARCHITECTURE_ARM:
+		endian = ELFDATA2LSB;
+		nbits = ELFCLASS32;
+		machine = EM_ARM;
+		break;
+	case CBFS_ARCHITECTURE_AARCH64:
+		endian = ELFDATA2LSB;
+		nbits = ELFCLASS64;
+		machine = EM_AARCH64;
+		break;
+	case CBFS_ARCHITECTURE_MIPS:
+		endian = ELFDATA2LSB;
+		nbits = ELFCLASS32;
+		machine = EM_MIPS;
+		break;
+	case CBFS_ARCHITECTURE_RISCV:
+		endian = ELFDATA2LSB;
+		nbits = ELFCLASS32;
+		machine = EM_RISCV;
+		break;
+	default:
+		ERROR("Unsupported arch: %x\n", cbfs_arch);
+		return -1;
+	}
+
+	elf_init_eheader(ehdr, machine, nbits, endian);
+	return 0;
+}
+
+static int cbfs_stage_make_elf(struct buffer *buff, uint32_t arch)
+{
+	Elf64_Ehdr ehdr;
+	Elf64_Shdr shdr;
+	struct cbfs_stage stage;
+	struct elf_writer *ew;
+	struct buffer elf_out;
+	size_t empty_sz;
+
+	if (cbfs_stage_decompress(&stage, buff)) {
+		ERROR("Failed to decompress stage.\n");
+		return -1;
+	}
+
+	if (init_elf_from_arch(&ehdr, arch))
+		return -1;
+
+	ehdr.e_entry = stage.entry;
+
+	ew = elf_writer_init(&ehdr);
+	if (ew == NULL) {
+		ERROR("Unable to init ELF writer.\n");
+		return -1;
+	}
+
+	memset(&shdr, 0, sizeof(shdr));
+	shdr.sh_type = SHT_PROGBITS;
+	shdr.sh_flags = SHF_WRITE | SHF_ALLOC | SHF_EXECINSTR;
+	shdr.sh_addr = stage.load;
+	shdr.sh_size = stage.len;
+	empty_sz = stage.memlen - stage.len;
+
+	if (elf_writer_add_section(ew, &shdr, buff, ".program")) {
+		ERROR("Unable to add ELF section: .program\n");
+		elf_writer_destroy(ew);
+		return -1;
+	}
+
+	if (empty_sz != 0) {
+		struct buffer b;
+
+		buffer_init(&b, NULL, NULL, 0);
+		memset(&shdr, 0, sizeof(shdr));
+		shdr.sh_type = SHT_NOBITS;
+		shdr.sh_flags = SHF_WRITE | SHF_ALLOC;
+		shdr.sh_addr = stage.load + stage.len;
+		shdr.sh_size = empty_sz;
+		if (elf_writer_add_section(ew, &shdr, &b, ".empty")) {
+			ERROR("Unable to add ELF section: .empty\n");
+			elf_writer_destroy(ew);
+			return -1;
+		}
+	}
+
+	if (elf_writer_serialize(ew, &elf_out)) {
+		ERROR("Unable to create ELF file from stage.\n");
+		elf_writer_destroy(ew);
+		return -1;
+	}
+
+	/* Flip buffer with the created ELF one. */
+	buffer_delete(buff);
+	*buff = elf_out;
+
+	elf_writer_destroy(ew);
+
+	return 0;
+}
+
 int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
-		      const char *filename, unused uint32_t arch)
+		      const char *filename, uint32_t arch)
 {
 	struct cbfs_file *entry = cbfs_get_entry(image, entry_name);
 	struct buffer buffer;
@@ -747,10 +854,6 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	LOG("Found file %.30s at 0x%x, type %.12s, size %d\n",
 	    entry_name, cbfs_get_entry_addr(image, entry),
 	    get_cbfs_entry_type_name(ntohl(entry->type)), decompressed_size);
-
-	if (ntohl(entry->type) == CBFS_COMPONENT_STAGE) {
-		WARN("Stages are extracted in SELF format.\n");
-	}
 
 	if (ntohl(entry->type) == CBFS_COMPONENT_PAYLOAD) {
 		WARN("Payloads are extracted in SELF format.\n");
@@ -774,9 +877,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	 * the stage data to make it more meaningful.
 	 */
 	if (ntohl(entry->type) == CBFS_COMPONENT_STAGE) {
-		if (cbfs_stage_decompress(&buffer)) {
-			ERROR("Failed to write %s into %s.\n",
-			      entry_name, filename);
+		if (cbfs_stage_make_elf(&buffer, arch)) {
 			buffer_delete(&buffer);
 			return -1;
 		}

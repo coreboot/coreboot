@@ -1272,13 +1272,13 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		if (edid[0x23 + i / 8] & (1 << (7 - i % 8))) {
 			printk(BIOS_SPEW, "  %dx%d@%dHz\n", established_timings[i].x,
 			       established_timings[i].y, established_timings[i].refresh);
-		}
 
-		for (j = 0; j < NUM_KNOWN_MODES; j++) {
-			if (known_modes[j].ha == established_timings[i].x &&
-				known_modes[j].va == established_timings[i].y &&
-				known_modes[j].refresh ==  established_timings[i].refresh)
+			for (j = 0; j < NUM_KNOWN_MODES; j++) {
+				if (known_modes[j].ha == established_timings[i].x &&
+				    known_modes[j].va == established_timings[i].y &&
+				    known_modes[j].refresh ==  established_timings[i].refresh)
 					out->mode_is_supported[j] = 1;
+			}
 		}
 
 	}

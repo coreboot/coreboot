@@ -250,17 +250,17 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			Pstate_vid[1] = Pstate_vid[0] + 0x1;
 			Pstate_volt[1] = 1550 - Pstate_vid[1] * 25;
 			Pstate_power[1] =
-			    (unsigned long long)Pstate_power[0] *
-			    Pstate_feq[1] * Pstate_volt[1] * Pstate_volt[1] /
-			    (Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
+			    ((unsigned long long)Pstate_power[0] *
+			    Pstate_feq[1] * Pstate_volt[1] * Pstate_volt[1]) /
+			    ((unsigned long long)Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
 		}
 		if (((Pstate_vid[0] & 0x1) == 0) && ((Pstate_vid[0] - 0x1) < Min_vid)) {	/* even value */
 			Pstate_vid[1] = Pstate_vid[0] + PstateStep_coef;
 			Pstate_volt[1] = 1550 - Pstate_vid[1] * 25;
 			Pstate_power[1] =
-			    (unsigned long long)Pstate_power[0] *
-			    Pstate_feq[1] * Pstate_volt[1] * Pstate_volt[1] /
-			    (Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
+			    ((unsigned long long)Pstate_power[0] *
+			    Pstate_feq[1] * Pstate_volt[1] * Pstate_volt[1]) /
+			    ((unsigned long long)Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
 		}
 		Pstate_num++;
 	}
@@ -274,17 +274,17 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			Pstate_vid[1] = Pstate_vid[0] + 0x1;
 			Pstate_volt[1] = 1550 - Pstate_vid[1] * 25;
 			Pstate_power[1] =
-			    (unsigned long long)Pstate_power[0] *
-			    Pstate_feq[1] * Pstate_volt[1] * Pstate_volt[1] /
-			    (Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
+			    ((unsigned long long)Pstate_power[0] *
+			    Pstate_feq[1] * Pstate_volt[1] * Pstate_volt[1]) /
+			    ((unsigned long long)Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
 		}
 		if (((Pstate_vid[0] & 0x1) == 0) && ((Pstate_vid[0] - 0x1) < Min_vid)) {	/* even value */
 			Pstate_vid[1] = Pstate_vid[0] + PstateStep_coef;
 			Pstate_volt[1] = 1550 - Pstate_vid[1] * 25;
 			Pstate_power[1] =
-			    (unsigned long long)Pstate_power[0] *
-			    Pstate_feq[1] * Pstate_volt[1] * Pstate_volt[1] /
-			    (Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
+			    ((unsigned long long)Pstate_power[0] *
+			    Pstate_feq[1] * Pstate_volt[1] * Pstate_volt[1]) /
+			    ((unsigned long long)Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
 		}
 
 		Pstate_num++;
@@ -309,11 +309,9 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			Pstate_volt[Pstate_num] =
 			    1550 - Pstate_vid[Pstate_num] * 25;
 			Pstate_power[Pstate_num] =
-			    (unsigned long long)Pstate_power[0] *
-			    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] *
-			    Pstate_volt[Pstate_num] / (Pstate_feq[0] *
-						       Pstate_volt[0] *
-						       Pstate_volt[0]);
+			    ((unsigned long long)Pstate_power[0] *
+			    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] * Pstate_volt[Pstate_num]) /
+			    ((unsigned long long)Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
 		}
 		Pstate_num++;
 	}
@@ -327,10 +325,9 @@ nointpstatesup:
 		Pstate_vid[Pstate_num] = Min_vid;
 		Pstate_volt[Pstate_num] = 1550 - Pstate_vid[Pstate_num] * 25;
 		Pstate_power[Pstate_num] =
-		    (unsigned long long)Pstate_power[0] *
-		    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] *
-		    Pstate_volt[Pstate_num] / (Pstate_feq[0] * Pstate_volt[0] *
-					       Pstate_volt[0]);
+		    ((unsigned long long)Pstate_power[0] *
+		    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] * Pstate_volt[Pstate_num]) /
+		    ((unsigned long long)Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
 		Pstate_num++;
 	} else {
 		Pstate_fid[Pstate_num] = Start_fid;
@@ -339,10 +336,9 @@ nointpstatesup:
 		Pstate_vid[Pstate_num] = Min_vid;
 		Pstate_volt[Pstate_num] = 1550 - Pstate_vid[Pstate_num] * 25;
 		Pstate_power[Pstate_num] =
-		    (unsigned long long)Pstate_power[0] *
-		    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] *
-		    Pstate_volt[Pstate_num] / (Pstate_feq[0] * Pstate_volt[0] *
-					       Pstate_volt[0]);
+		    ((unsigned long long)Pstate_power[0] *
+		    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] * Pstate_volt[Pstate_num]) /
+		    ((unsigned long long)Pstate_feq[0] * Pstate_volt[0] * Pstate_volt[0]);
 		Pstate_num++;
 	}
 

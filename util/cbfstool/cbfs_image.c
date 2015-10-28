@@ -28,6 +28,7 @@
 #include "common.h"
 #include "cbfs_image.h"
 #include "elfparsing.h"
+#include "rmodule.h"
 
 /* Even though the file-adding functions---cbfs_add_entry() and
  * cbfs_add_entry_at()---perform their sizing checks against the beginning of
@@ -770,6 +771,7 @@ static int cbfs_stage_make_elf(struct buffer *buff, uint32_t arch)
 	struct elf_writer *ew;
 	struct buffer elf_out;
 	size_t empty_sz;
+	int rmod_ret;
 
 	if (cbfs_stage_decompress(&stage, buff)) {
 		ERROR("Failed to decompress stage.\n");
@@ -780,6 +782,17 @@ static int cbfs_stage_make_elf(struct buffer *buff, uint32_t arch)
 		return -1;
 
 	ehdr.e_entry = stage.entry;
+
+	/* Attempt rmodule translation first. */
+	rmod_ret = rmodule_stage_to_elf(&ehdr, buff);
+
+	if (rmod_ret < 0) {
+		ERROR("rmodule parsing failed\n");
+		return -1;
+	} else if (rmod_ret == 0)
+		return 0;
+
+	/* Rmodule couldn't do anything with the data. Continue on with SELF. */
 
 	ew = elf_writer_init(&ehdr);
 	if (ew == NULL) {

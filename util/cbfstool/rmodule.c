@@ -677,3 +677,173 @@ out:
 	rmodule_cleanup(&ctx);
 	return ret;
 }
+
+static void rmod_deserialize(struct rmodule_header *rmod, struct buffer *buff,
+				struct xdr *xdr)
+{
+	rmod->magic = xdr->get16(buff);
+	rmod->version = xdr->get8(buff);
+	rmod->type = xdr->get8(buff);
+	rmod->payload_begin_offset = xdr->get32(buff);
+	rmod->payload_end_offset = xdr->get32(buff);
+	rmod->relocations_begin_offset = xdr->get32(buff);
+	rmod->relocations_end_offset = xdr->get32(buff);
+	rmod->module_link_start_address = xdr->get32(buff);
+	rmod->module_program_size = xdr->get32(buff);
+	rmod->module_entry_point = xdr->get32(buff);
+	rmod->parameters_begin = xdr->get32(buff);
+	rmod->parameters_end = xdr->get32(buff);
+	rmod->bss_begin = xdr->get32(buff);
+	rmod->bss_end = xdr->get32(buff);
+	rmod->padding[0] = xdr->get32(buff);
+	rmod->padding[1] = xdr->get32(buff);
+	rmod->padding[2] = xdr->get32(buff);
+	rmod->padding[3] = xdr->get32(buff);
+}
+
+int rmodule_stage_to_elf(Elf64_Ehdr *ehdr, struct buffer *buff)
+{
+	struct buffer reader;
+	struct buffer elf_out;
+	struct rmodule_header rmod;
+	struct xdr *xdr;
+	struct elf_writer *ew;
+	Elf64_Shdr shdr;
+	int bit64;
+	size_t payload_sz;
+	const char *section_name = ".program";
+	const size_t input_sz = buffer_size(buff);
+
+	buffer_clone(&reader, buff);
+
+	xdr = (ehdr->e_ident[EI_DATA] == ELFDATA2MSB) ? &xdr_be : &xdr_le;
+	bit64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
+
+	rmod_deserialize(&rmod, &reader, xdr);
+
+	/* Indicate that file is not an rmodule if initial checks fail. */
+	if (rmod.magic != RMODULE_MAGIC)
+		return 1;
+	if (rmod.version != RMODULE_VERSION_1)
+		return 1;
+
+	if (rmod.payload_begin_offset > input_sz ||
+	    rmod.payload_end_offset > input_sz ||
+	    rmod.relocations_begin_offset > input_sz ||
+	    rmod.relocations_end_offset > input_sz) {
+		ERROR("Rmodule fields out of bounds.\n");
+		return -1;
+	}
+
+	ehdr->e_entry = rmod.module_entry_point;
+	ew = elf_writer_init(ehdr);
+
+	if (ew == NULL)
+		return -1;
+
+	payload_sz = rmod.payload_end_offset - rmod.payload_begin_offset;
+	memset(&shdr, 0, sizeof(shdr));
+	shdr.sh_type = SHT_PROGBITS;
+	shdr.sh_flags = SHF_WRITE | SHF_ALLOC | SHF_EXECINSTR;
+	shdr.sh_addr = rmod.module_link_start_address;
+	shdr.sh_size = payload_sz;
+	buffer_splice(&reader, buff, rmod.payload_begin_offset, payload_sz);
+
+	if (elf_writer_add_section(ew, &shdr, &reader, section_name)) {
+		ERROR("Unable to add ELF section: %s\n", section_name);
+		elf_writer_destroy(ew);
+		return -1;
+	}
+
+	if (payload_sz != rmod.module_program_size) {
+		struct buffer b;
+
+		buffer_init(&b, NULL, NULL, 0);
+		memset(&shdr, 0, sizeof(shdr));
+		shdr.sh_type = SHT_NOBITS;
+		shdr.sh_flags = SHF_WRITE | SHF_ALLOC;
+		shdr.sh_addr = rmod.module_link_start_address + payload_sz;
+		shdr.sh_size = rmod.module_program_size - payload_sz;
+		if (elf_writer_add_section(ew, &shdr, &b, ".empty")) {
+			ERROR("Unable to add ELF section: .empty\n");
+			elf_writer_destroy(ew);
+			return -1;
+		}
+	}
+
+	/* Provide a section symbol so the relcoations can reference that. */
+	if (elf_writer_add_symbol(ew, section_name, section_name, shdr.sh_addr,
+					0, STB_LOCAL, STT_SECTION)) {
+		ERROR("Unable to add section symbol to ELF.\n");
+		elf_writer_destroy(ew);
+		return -1;
+	}
+
+	/* Add symbols for the parameters if they are non-zero. */
+	if (rmod.parameters_begin != rmod.parameters_end) {
+		int ret = 0;
+
+		ret |= elf_writer_add_symbol(ew, "_rmodule_params",
+						section_name,
+						rmod.parameters_begin, 0,
+						STB_GLOBAL, STT_NOTYPE);
+		ret |= elf_writer_add_symbol(ew, "_ermodule_params",
+						section_name,
+						rmod.parameters_end, 0,
+						STB_GLOBAL, STT_NOTYPE);
+
+		if (ret != 0) {
+			ERROR("Unable to add module params symbols to ELF\n");
+			elf_writer_destroy(ew);
+			return -1;
+		}
+	}
+
+	if (elf_writer_add_symbol(ew, "_bss", section_name, rmod.bss_begin, 0,
+					STB_GLOBAL, STT_NOTYPE) ||
+	    elf_writer_add_symbol(ew, "_ebss", section_name, rmod.bss_end, 0,
+					STB_GLOBAL, STT_NOTYPE)) {
+		ERROR("Unable to add bss symbols to ELF\n");
+		elf_writer_destroy(ew);
+		return -1;
+	}
+
+	ssize_t relocs_sz = rmod.relocations_end_offset;
+	relocs_sz -= rmod.relocations_begin_offset;
+	buffer_splice(&reader, buff, rmod.relocations_begin_offset, relocs_sz);
+	while (relocs_sz > 0) {
+		Elf64_Addr addr;
+
+		if (bit64) {
+			relocs_sz -= sizeof(Elf64_Addr);
+			addr = xdr->get64(&reader);
+		} else {
+			relocs_sz -= sizeof(Elf32_Addr);
+			addr = xdr->get32(&reader);
+		}
+
+		/* Skip any relocations that are below the link address. */
+		if (addr < rmod.module_link_start_address)
+			continue;
+
+		if (elf_writer_add_rel(ew, section_name, addr)) {
+			ERROR("Relocation addition failure.\n");
+			elf_writer_destroy(ew);
+			return -1;
+		}
+	}
+
+	if (elf_writer_serialize(ew, &elf_out)) {
+		ERROR("ELF writer serialize failure.\n");
+		elf_writer_destroy(ew);
+		return -1;
+	}
+
+	elf_writer_destroy(ew);
+
+	/* Flip buffer with the created ELF one. */
+	buffer_delete(buff);
+	*buff = elf_out;
+
+	return 0;
+}

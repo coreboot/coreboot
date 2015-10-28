@@ -88,4 +88,11 @@ int rmodule_collect_relocations(struct rmod_context *c, struct reloc_filter *f);
 /* Clean up the memory consumed by the rmdoule context. */
 void rmodule_cleanup(struct rmod_context *ctx);
 
+/*
+ * Create an ELF file from the passed in rmodule in the buffer. The buffer
+ * contents will be replaced with an ELF file. Returns 1 if buff doesn't
+ * contain an rmodule and < 0 on failure, 0 on success.
+ */
+int rmodule_stage_to_elf(Elf64_Ehdr *ehdr, struct buffer *buff);
+
 #endif /* TOOL_RMODULE_H */

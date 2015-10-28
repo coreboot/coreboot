@@ -35,4 +35,8 @@
 #define CK804B_SYSCTRL_IO_BASE (SYSCTRL_IO_BASE + 0x8000)
 #endif
 
+#ifdef __PRE_RAM__
+void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
+#endif
+
 #endif

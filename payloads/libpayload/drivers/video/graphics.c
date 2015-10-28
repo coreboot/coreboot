@@ -488,7 +488,7 @@ static int calculate_dimension(const struct vector *dim_org,
 	return CBGFX_SUCCESS;
 }
 
-static int caclcuate_position(const struct vector *dim,
+static int calculate_position(const struct vector *dim,
 			      const struct scale *pos_rel, uint8_t pivot,
 			      struct vector *top_left)
 {
@@ -572,7 +572,7 @@ int draw_bitmap(const void *bitmap, size_t size,
 	scale.y.d = dim_org.height;
 
 	/* Calculate coordinate */
-	rv = caclcuate_position(&dim, pos_rel, pivot, &top_left);
+	rv = calculate_position(&dim, pos_rel, pivot, &top_left);
 	if (rv)
 		return rv;
 

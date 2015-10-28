@@ -110,7 +110,7 @@ static char *manufacturer_name(unsigned char *x)
 }
 
 static int
-detailed_cvt_descriptor(struct edid *out, unsigned char *x, int first)
+detailed_cvt_descriptor(unsigned char *x, int first)
 {
 	const unsigned char empty[3] = { 0, 0, 0 };
 	const char *names[] = { "50", "60", "75", "85" };
@@ -253,7 +253,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension,
 				return 0;
 			}
 			for (i = 0; i < 4; i++)
-				valid_cvt &= detailed_cvt_descriptor(out, x + 6 + (i * 3), (i == 0));
+				valid_cvt &= detailed_cvt_descriptor(x + 6 + (i * 3), (i == 0));
 			c->has_valid_cvt &= valid_cvt;
 			return 1;
 		}

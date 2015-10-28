@@ -30,10 +30,10 @@ chip northbridge/amd/agesa/family14/root_complex
 				chip northbridge/amd/agesa/family14 # PCI side of HT root complex
 					device pci 0.0 on end # Root Complex
 					device pci 1.0 off end # Internal Graphics P2P bridge 0x980[2456]
-					device pci 4.0 on end # PCIE P2P bridge on-board NIC
-					device pci 5.0 on end # PCIE P2P bridge
-					device pci 6.0 on end # PCIE P2P bridge PCIe slot
-					device pci 7.0 on end # PCIE P2P bridge
+					device pci 4.0 on end # PCIE P2P bridge on-board NIC 3
+					device pci 5.0 on end # PCIE P2P bridge on-board NIC 2
+					device pci 6.0 on end # PCIE P2P bridge on-board NIC 1
+					device pci 7.0 on end # PCIE P2P bridge miniPCIe slot 1
 					device pci 8.0 on end # NB/SB Link P2P bridge
 				end # agesa northbridge
 
@@ -77,10 +77,10 @@ chip northbridge/amd/agesa/family14/root_complex
 						device pnp 2e.e off end
 					end
 					end #LPC
-					device pci 14.4 on end # PCIB 0x4384
+					device pci 14.4 on end # PCIB 0x4384 always active; pins remapped to gpio by disconnect_pcib = 1
 					device pci 14.5 off end # OHCI FS/LS USB
 					#device pci 14.6 off end # Hudson-E1 GbE MAC: Broadcom BCM5785 (14E4:1699)
-					device pci 15.0 on end # PCIe PortA
+					device pci 15.0 on end # PCIe PortA miniPCIe slot 2
 					device pci 15.1 off end # PCIe PortB
 					device pci 15.2 off end # PCIe PortC
 					device pci 15.3 off end # PCIe PortD

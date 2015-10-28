@@ -139,6 +139,7 @@ struct soc_intel_braswell_config {
 	UINT8  PMIC_I2CBus;
 	UINT8  ISPEnable;
 	UINT8  ISPPciDevConfig;
+	UINT8  PcdSdDetectChk; /*Enable\Disable SD Card Detect Simulation*/
 };
 
 extern struct chip_operations soc_intel_braswell_ops;

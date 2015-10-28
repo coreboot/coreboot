@@ -54,7 +54,12 @@ static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 	#endif
 
 	#if CONFIG_K8_REV_F_SUPPORT
-		/* FIXME */
+		/* FIXME
+		 * Microcode files for CPU revision 0xf do
+		 * not seem to be available...
+		 */
+		{ 0x40f10, 0x0410 },
+		{ 0x40f13, 0x0410 },
 	#endif
 
 		/* Array terminator */

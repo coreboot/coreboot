@@ -1,4 +1,0 @@
-config SOUTHBRIDGE_INTEL_ESB6300
-	bool
-	select IOAPIC
-	select HAVE_HARD_RESET

@@ -20,7 +20,6 @@
 ## include generic ite pre-ram stage driver
 romstage-$(CONFIG_SUPERIO_ITE_COMMON_ROMSTAGE) += common/early_serial.c
 
-subdirs-y += it8661f
 subdirs-y += it8671f
 subdirs-y += it8712f
 subdirs-y += it8716f

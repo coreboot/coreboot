@@ -212,8 +212,8 @@ fake_fsp_stack:
 CAR_init_params:
 	.long	CONFIG_CPU_MICROCODE_CBFS_LOC		/* Microcode Location */
 	.long	CONFIG_CPU_MICROCODE_CBFS_LEN		/* Microcode Length */
-	.long	0xFFFFFFFF - CONFIG_CBFS_SIZE + 1	/* Firmware Location */
-	.long	CONFIG_CBFS_SIZE				/* Total Firmware Length */
+	.long	0xFFFFFFFF - CONFIG_ROM_SIZE + 1	/* Firmware Location */
+	.long	CONFIG_ROM_SIZE				/* Total Firmware Length */
 
 CAR_init_stack:
 	.long	CAR_init_done

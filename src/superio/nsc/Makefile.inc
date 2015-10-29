@@ -17,7 +17,6 @@
 ## Foundation, Inc.
 ##
 
-subdirs-y += pc8374
 subdirs-y += pc87309
 subdirs-y += pc87360
 subdirs-y += pc87366

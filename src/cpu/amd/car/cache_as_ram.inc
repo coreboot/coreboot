@@ -34,6 +34,7 @@
 #define MSR_MCFG_BASE		0xC0010058
 #define MSR_FAM10		0xC001102A
 
+#define jmp_if_not_k8(x)	comisd	%xmm2, %xmm1; jae x
 #define jmp_if_k8(x)		comisd	%xmm2, %xmm1; jb x
 
 #define CPUID_MASK		0x0ff00f00
@@ -344,6 +345,19 @@ wbcache_post_fam10_setup:
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
+	jmp_if_not_k8(CAR_skip_k8_errata_part1)
+
+	/* Set DisFillP on BSP. */
+	movl	$0x8000c068, %eax
+	movw	$0xcf8, %dx
+	outl	%eax, %dx
+	addw	$4, %dx
+	inl	%dx, %eax
+	bts	$10, %eax
+	outl	%eax, %dx
+
+CAR_skip_k8_errata_part1:
+
 	jmp_if_k8(fam10_end_part1)
 
 	/* So we need to check if it is BSP. */
@@ -366,6 +380,19 @@ fam10_end_part1:
 	movl	$(CacheSize >> 2), %ecx
 	xorl	%eax, %eax
 	rep	stosl
+
+	jmp_if_not_k8(CAR_skip_k8_errata_part2)
+
+	/* Clear DisFillP on BSP. */
+	movl	$0x8000c068, %eax
+	movw	$0xcf8, %dx
+	outl	%eax, %dx
+	addw	$4, %dx
+	inl	%dx, %eax
+	btr	$10, %eax
+	outl	%eax, %dx
+
+CAR_skip_k8_errata_part2:
 
 	/* Set up the stack pointer. */
 	movl	$(CacheBase + CacheSize), %eax

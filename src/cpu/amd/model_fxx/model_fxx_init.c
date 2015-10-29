@@ -460,6 +460,18 @@ static void model_fxx_init(device_t dev)
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
+
+	/* Initialize all variable MTRRs except the first pair */
+	msr.hi = 0x00000000;
+	msr.lo = 0x00000000;
+
+	disable_cache();
+
+	for (i = 0x2; i < 0x10; i++) {
+		wrmsr(0x00000200 | i, msr);
+	}
+
+	enable_cache();
 	amd_setup_mtrrs();
 	x86_mtrr_check();
 

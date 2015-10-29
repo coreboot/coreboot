@@ -504,6 +504,7 @@ static void model_fxx_init(device_t dev)
 		msr.hi |= 1 << (33 - 32);
 		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
+	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
 #endif
 
 	id = get_node_core_id(read_nb_cfg_54());	// pre e0 nb_cfg_54 can not be set

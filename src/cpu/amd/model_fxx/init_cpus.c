@@ -188,6 +188,15 @@ void allow_all_aps_stop(u32 bsp_apicid)
 	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | 0x44);
 }
 
+static void enable_apic_ext_id(u32 node)
+{
+	u32 val;
+
+	val = pci_read_config32(NODE_HT(node), 0x68);
+	val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
+	pci_write_config32(NODE_HT(node), 0x68, val);
+}
+
 static void STOP_CAR_AND_CPU(void)
 {
 	disable_cache_as_ram();	// inline
@@ -205,6 +214,19 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	u32 apicid;
 	struct node_core_id id;
 
+#if IS_ENABLED(CONFIG_RAMINIT_SYSINFO)
+	/* Please refer to the calculations and explaination in cache_as_ram.inc before modifying these values */
+	uint32_t max_ap_stack_region_size = CONFIG_MAX_CPUS * CONFIG_DCACHE_AP_STACK_SIZE;
+	uint32_t max_bsp_stack_region_size = CONFIG_DCACHE_BSP_STACK_SIZE + CONFIG_DCACHE_BSP_STACK_SLUSH;
+	uint32_t bsp_stack_region_upper_boundary = CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE;
+	uint32_t bsp_stack_region_lower_boundary = bsp_stack_region_upper_boundary - max_bsp_stack_region_size;
+	void * lower_stack_region_boundary = (void*)(bsp_stack_region_lower_boundary - max_ap_stack_region_size);
+	if (((void*)(sysinfo + 1)) > lower_stack_region_boundary)
+		printk(BIOS_WARNING,
+			"sysinfo extends into stack region (sysinfo range: [%p,%p] lower stack region boundary: %p)\n",
+			sysinfo, sysinfo + 1, lower_stack_region_boundary);
+#endif
+
 	/*
 	 * already set early mtrr in cache_as_ram.inc
 	 */
@@ -217,9 +239,8 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	   core0 is done at first --- use wait_all_core0_started  */
 	if (id.coreid == 0) {
 		set_apicid_cpuid_lo();	/* only set it on core0 */
-#if CONFIG_ENABLE_APIC_EXT_ID
-		enable_apic_ext_id(id.nodeid);
-#endif
+		if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID))
+			enable_apic_ext_id(id.nodeid);
 	}
 
 	enable_lapic();
@@ -249,7 +270,6 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	/* get the apicid, it may be lifted already */
 	apicid = lapicid();
 
-#if 0
 	// show our apicid, nodeid, and coreid
 	if (id.coreid == 0) {
 		if (id.nodeid != 0)	//all core0 except bsp
@@ -257,7 +277,6 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	} else {		//all other cores
 		print_apicid_nodeid_coreid(apicid, id, " corex: ");
 	}
-#endif
 
 	if (cpu_init_detectedx) {
 		print_apicid_nodeid_coreid(apicid, id,

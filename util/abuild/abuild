@@ -42,8 +42,6 @@ fi
 # Lines of error context to be printed in FAILURE case
 CONTEXT=6
 
-TESTSUBMISSION="http://qa.coreboot.org/deployment/send.php"
-
 # Configure-only mode
 configureonly=0
 
@@ -320,43 +318,6 @@ function build_target
 	junit "</testcase>"
 }
 
-function test_target
-{
-	VENDOR=$1
-	MAINBOARD=$2
-
-	if [ "$hwtest" != "true" ]; then
-		return 0
-	fi
-
-	# image does not exist. we silently skip the patch.
-	if [ ! -r "$TARGET/${VENDOR}_${MAINBOARD}/coreboot.rom" ]; then
-		return 0
-	fi
-
-	which curl &> /dev/null
-	if [ $? != 0 ]; then
-		printf "curl is not installed but required for test submission.  skipping test.\n\n"
-		return 0
-	fi
-
-	CURR=`pwd`
-	if [ -r "$TARGET/${VENDOR}_${MAINBOARD}/tested" ]; then
-		printf "Testing image for board $VENDOR $MAINBOARD skipped (previously submitted).\n\n"
-		return 0
-	fi
-	# touch $TARGET/${VENDOR}_${MAINBOARD}/tested
-
-	printf "Submitting image for board $VENDOR $MAINBOARD to test system...\n"
-
-	curl -f -F "romfile=@$TARGET/${VENDOR}_${MAINBOARD}/coreboot.rom" \
-		-F "mode=abuild" -F "mainboard=${VENDOR}_${MAINBOARD}" -F "submit=Upload" \
-        	"http://qa.coreboot.org/deployment/send.php"
-
-	printf "\n"
-	return 0
-}
-
 function remove_target
 {
 	if [ "$remove" != "true" ]; then
@@ -455,11 +416,11 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,quiet,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile: -o Vvqhat:p:Tc:sJCl:rP:uyBLzo:xX: -- "$@"` || exit 1
+	args=`getopt -l version,verbose,quiet,help,all,target:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir:,chromeos,xmlfile: -o Vvqhat:p:c:sJCl:rP:uyBLzo:xX: -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvqhat:p:Tc:sJCl:rP:uyBLzo:xX: $*`
+	args=`getopt Vvqhat:p:c:sJCl:rP:uyBLzo:xX: $*`
 	set -- $args
 fi
 
@@ -485,7 +446,6 @@ while true ; do
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;
 		-p|--payloads)  shift; payloads="$1"; shift;;
-		-T|--test)      shift; hwtest=true;;
 		-c|--cpus)	shift
 			export MAKEFLAGS="-j $1"
 			cpus=$1
@@ -576,7 +536,6 @@ build_all_targets()
 	for VENDOR in $( vendors ); do
 		for MAINBOARD in $( mainboards $VENDOR ); do
 			build_target $VENDOR $MAINBOARD
-			test_target $VENDOR $MAINBOARD
 			remove_target $VENDOR $MAINBOARD
 		done
 	done
@@ -651,7 +610,6 @@ if [ "$target" != "" ]; then
 		failed=1
 	else
 		build_target $VENDOR $MAINBOARD
-		test_target $VENDOR $MAINBOARD
 		remove_target $VENDOR $MAINBOARD
 		test "$mode" != "text" && \
 		test -f $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml && \

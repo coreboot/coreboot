@@ -134,7 +134,6 @@ function create_config
 {
 	VENDOR=$1
 	MAINBOARD=$2
-	CONFIG=$3
 
 	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
 
@@ -158,30 +157,25 @@ function create_config
 	mkdir -p ${build_dir}
 	mkdir -p $TARGET/sharedutils
 
-	if [ "$CONFIG" != "" ]; then
-		printf "  Using existing configuration $CONFIG ... "
-		cp src/mainboard/$VENDOR/$MAINBOARD/$CONFIG ${build_dir}/config.build
-	else
-		if [ "$quiet" == "false" ]; then printf "  Creating config file for $VENDOR/$MAINBOARD... \n"; fi
-		grep "if[\t ]*VENDOR" src/mainboard/$VENDOR/$MAINBOARD/../Kconfig | \
-			sed "s,^.*\(VENDOR_.*\)[^A-Z0-9_]*,CONFIG_\1=y," > ${build_dir}/config.build
-		grep "if[\t ]*BOARD" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
-			sed "s,^.*\(BOARD_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${build_dir}/config.build
-		grep "select[\t ]*ARCH" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
-			sed "s,^.*\(ARCH_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${build_dir}/config.build
-		echo "CONFIG_MAINBOARD_DIR=\"$VENDOR/$MAINBOARD\"" >> ${build_dir}/config.build
-		if [ "$PAYLOAD" = "none" ]; then
-			echo "CONFIG_PAYLOAD_NONE=y" >> ${build_dir}/config.build
-		elif [ "$PAYLOAD" != "/dev/null" ]; then
-			echo "# CONFIG_PAYLOAD_NONE is not set" >> ${build_dir}/config.build
-			echo "# CONFIG_PAYLOAD_SEABIOS is not set" >> ${build_dir}/config.build
-			echo "CONFIG_PAYLOAD_ELF=y" >> ${build_dir}/config.build
-			echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"" >> ${build_dir}/config.build
-		fi
-
-		if [ "$quiet" == "false" ]; then printf "    $VENDOR/$MAINBOARD ($customizing)\n"; fi
-		printf "$configoptions" >> ${build_dir}/config.build
+	if [ "$quiet" == "false" ]; then printf "  Creating config file for $VENDOR/$MAINBOARD... \n"; fi
+	grep "if[\t ]*VENDOR" src/mainboard/$VENDOR/$MAINBOARD/../Kconfig | \
+		sed "s,^.*\(VENDOR_.*\)[^A-Z0-9_]*,CONFIG_\1=y," > ${build_dir}/config.build
+	grep "if[\t ]*BOARD" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
+		sed "s,^.*\(BOARD_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${build_dir}/config.build
+	grep "select[\t ]*ARCH" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
+		sed "s,^.*\(ARCH_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${build_dir}/config.build
+	echo "CONFIG_MAINBOARD_DIR=\"$VENDOR/$MAINBOARD\"" >> ${build_dir}/config.build
+	if [ "$PAYLOAD" = "none" ]; then
+		echo "CONFIG_PAYLOAD_NONE=y" >> ${build_dir}/config.build
+	elif [ "$PAYLOAD" != "/dev/null" ]; then
+		echo "# CONFIG_PAYLOAD_NONE is not set" >> ${build_dir}/config.build
+		echo "# CONFIG_PAYLOAD_SEABIOS is not set" >> ${build_dir}/config.build
+		echo "CONFIG_PAYLOAD_ELF=y" >> ${build_dir}/config.build
+		echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"" >> ${build_dir}/config.build
 	fi
+
+	if [ "$quiet" == "false" ]; then printf "    $VENDOR/$MAINBOARD ($customizing)\n"; fi
+	printf "$configoptions" >> ${build_dir}/config.build
 
 	yes "" 2>/dev/null | $MAKE oldconfig $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	ret=$?
@@ -200,9 +194,8 @@ function create_buildenv
 {
 	VENDOR=$1
 	MAINBOARD=$2
-	CONFIG=$3
 
-	create_config $VENDOR $MAINBOARD $CONFIG
+	create_config $VENDOR $MAINBOARD
 	ret=$?
 
 	# Allow simple "make" in the target directory
@@ -270,7 +263,6 @@ function build_target
 {
 	VENDOR=$1
 	MAINBOARD=$2
-	CONFIG=$3
 
 	if [ "`cat $TARGET/${VENDOR}_${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
 		"$buildall" = "false" ]; then
@@ -298,7 +290,7 @@ function build_target
 
 
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
-	create_buildenv $VENDOR $MAINBOARD $CONFIG
+	create_buildenv $VENDOR $MAINBOARD
 
 	required_arches=`egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" $TARGET/${VENDOR}_${MAINBOARD}/config.build | \
 			sed "s,^CONFIG_ARCH_[^_]*_\([^=]*\)=.*$,\1," |sort -u |tr 'A-Z\n\r' 'a-z  '`
@@ -654,12 +646,11 @@ if [ "$target" != "" ]; then
 	# build a single board
 	VENDOR=`printf $target|cut -f1 -d/`
 	MAINBOARD=`printf $target|cut -f2 -d/`
-	CONFIG=`printf $target|cut -f3 -d/`
 	if [ ! -r $ROOT/src/mainboard/$target ]; then
 		printf "No such target: $target\n"
 		failed=1
 	else
-		build_target $VENDOR $MAINBOARD $CONFIG
+		build_target $VENDOR $MAINBOARD
 		test_target $VENDOR $MAINBOARD
 		remove_target $VENDOR $MAINBOARD
 		test "$mode" != "text" && \

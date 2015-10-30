@@ -216,43 +216,42 @@ function create_buildenv
 
 function compile_target
 {
-	VENDOR=$1
-	MAINBOARD=$2
+	local MAINBOARD=$1
 
-	if [ "$quiet" == "false" ]; then printf "  Compiling $VENDOR/$MAINBOARD image$cpuconfig...\n"; fi
+	if [ "$quiet" == "false" ]; then printf "  Compiling $MAINBOARD image$cpuconfig...\n"; fi
 
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
-	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
+	build_dir=$TARGET/${MAINBOARD}
 	eval $BUILDPREFIX $MAKE $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils \
 		&> ${build_dir}/make.log
 	ret=$?
 	cp .xcompile ${build_dir}/xcompile.build
-	cd $TARGET/${VENDOR}_${MAINBOARD}
+	cd $TARGET/${MAINBOARD}
 
 	etime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	duration=$(( $etime - $stime ))
-	junit " <testcase classname='board${testclass/#/.}' name='$VENDOR/$MAINBOARD' time='$duration' >"
+	junit " <testcase classname='board${testclass/#/.}' name='$MAINBOARD' time='$duration' >"
 
 	if [ $ret -eq 0 ]; then
 		junit "<system-out>"
 		junitfile make.log
 		junit "</system-out>"
 		printf "ok\n" > compile.status
-		printf "$VENDOR/$MAINBOARD built successfully. (took ${duration}s)\n"
+		printf "$MAINBOARD built successfully. (took ${duration}s)\n"
 	else
 		ret=1
 		junit "<failure type='BuildFailed'>"
 		junitfile make.log
 		junit "</failure>"
 		printf "failed\n" > compile.status
-		printf "$VENDOR/$MAINBOARD build FAILED after ${duration}s!\nLog excerpt:\n"
+		printf "$MAINBOARD build FAILED after ${duration}s!\nLog excerpt:\n"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
 		failed=1
 	fi
 	cd $CURR
 	if [ $clean_work = "true" ]; then
-		rm -rf $TARGET/${VENDOR}_${MAINBOARD}
+		rm -rf $TARGET/${MAINBOARD}
 	fi
 	return $ret
 }
@@ -305,7 +304,7 @@ function build_target
 			rm -rf ${scanbuild_out}
 			BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
 		fi
-		compile_target $VENDOR $MAINBOARD
+		compile_target ${VENDOR}_${MAINBOARD}
 		if [ "$scanbuild" = "true" ]; then
 			mv ${scanbuild_out}tmp/* ${scanbuild_out}
 			rmdir ${scanbuild_out}tmp

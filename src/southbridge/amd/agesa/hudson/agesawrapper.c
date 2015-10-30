@@ -49,7 +49,7 @@ AGESA_STATUS agesawrapper_fchs3earlyrestore (void)
 	StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
 	StdHeader.HeapBasePtr = (uintptr_t) GetHeapBase() + 0x10;
 	StdHeader.AltImageBasePtr = 0;
-	StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	StdHeader.CalloutPtr = &GetBiosCallout;
 	StdHeader.Func = 0;
 	StdHeader.ImageBasePtr = 0;
 
@@ -69,7 +69,7 @@ AGESA_STATUS agesawrapper_fchs3laterestore (void)
 	StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
 	StdHeader.HeapBasePtr = (uintptr_t) GetHeapBase() + 0x10;
 	StdHeader.AltImageBasePtr = 0;
-	StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	StdHeader.CalloutPtr = &GetBiosCallout;
 	StdHeader.Func = 0;
 	StdHeader.ImageBasePtr = 0;
 

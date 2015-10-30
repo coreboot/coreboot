@@ -41,7 +41,7 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AmdParamStruct.NewStructSize = sizeof(AMD_RESET_PARAMS);
 	AmdParamStruct.NewStructPtr = &AmdResetParams;
 	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
@@ -65,7 +65,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
 	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct(&AmdParamStruct);
@@ -94,7 +94,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
 	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
@@ -127,7 +127,7 @@ AGESA_STATUS agesawrapper_amdinitresume(void)
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESUME;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
 	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct(&AmdParamStruct);
@@ -157,7 +157,7 @@ AGESA_STATUS agesawrapper_amdinitenv(void)
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
 	AmdParamStruct.AllocationMethod = PostMemDram;
 	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct(&AmdParamStruct);
@@ -183,7 +183,7 @@ AGESA_STATUS agesawrapper_amds3laterestore(void)
 	AmdInterfaceParams.AllocationMethod = ByHost;
 	AmdInterfaceParams.AgesaFunctionName = AMD_S3LATE_RESTORE;
 	AmdInterfaceParams.NewStructPtr = &AmdS3LateParams;
-	AmdInterfaceParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdInterfaceParams.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdS3LateParamsPtr = &AmdS3LateParams;
 	AmdInterfaceParams.NewStructSize = sizeof(AMD_S3LATE_PARAMS);
 
@@ -216,7 +216,7 @@ AGESA_STATUS agesawrapper_amdinitmid(void)
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
 	AmdParamStruct.AllocationMethod = PostMemDram;
 	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
@@ -244,7 +244,7 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 
 	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
 	AmdInterfaceParams.StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
-	AmdInterfaceParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdInterfaceParams.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdInterfaceParams.AllocationMethod = PostMemDram;
 	AmdInterfaceParams.AgesaFunctionName = AMD_S3_SAVE;
 	AmdInterfaceParams.StdHeader.AltImageBasePtr = 0;
@@ -278,7 +278,7 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
 	AmdParamStruct.AllocationMethod = PostMemDram;
 	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
-	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	AmdParamStruct.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
@@ -338,7 +338,7 @@ AGESA_STATUS agesawrapper_amdlaterunaptask(UINT32 Func, UINT32 Data, VOID * Conf
 	memset(&ApExeParams, 0, sizeof(AP_EXE_PARAMS));
 
 	ApExeParams.StdHeader.AltImageBasePtr = 0;
-	ApExeParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) & GetBiosCallout;
+	ApExeParams.StdHeader.CalloutPtr = &GetBiosCallout;
 	ApExeParams.StdHeader.Func = 0;
 	ApExeParams.StdHeader.ImageBasePtr = 0;
 	ApExeParams.FunctionNumber = Func;

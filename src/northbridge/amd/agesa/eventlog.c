@@ -712,7 +712,7 @@ static void amd_readeventlog(AMD_CONFIG_PARAMS *StdHeader)
 	memset(&AmdEventParams, 0, sizeof(EVENT_PARAMS));
 
 	AmdEventParams.StdHeader.AltImageBasePtr = 0;
-	AmdEventParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	AmdEventParams.StdHeader.CalloutPtr = &GetBiosCallout;
 	AmdEventParams.StdHeader.Func = 0;
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
 	AmdEventParams.StdHeader.HeapStatus = StdHeader->HeapStatus;

@@ -222,7 +222,7 @@ void rd890_cimx_config(AMD_NB_CONFIG_BLOCK *pConfig, NB_CONFIG *nbConfig, HT_CON
 	pConfig->NumberOfNorthbridges = MAX_NB_COUNT - 1; /* Support limited to primary NB only located at 0:0:0 */
 	//pConfig->StandardHeader.ImageBasePtr = CIMX_B2_IMAGE_BASE_ADDRESS;
 	pConfig->StandardHeader.PcieBasePtr = (VOID *)PCIEX_BASE_ADDRESS;
-	pConfig->StandardHeader.CalloutPtr = (CALLOUT_ENTRY)&rd890_callout_entry;
+	pConfig->StandardHeader.CalloutPtr = &rd890_callout_entry;
 
 	/*
 	 * PCI Address to Access NB. Depends on HT topology and configuration for multi NB platform.

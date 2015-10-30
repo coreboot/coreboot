@@ -26,6 +26,8 @@
 VOID FchInitS3LateRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 
+void __attribute__((weak)) OemPostParams(AMD_POST_PARAMS *PostParams) {}
+
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
 #ifndef __PRE_RAM__
@@ -131,6 +133,8 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 
 	AmdCreateStruct (&AmdParamStruct);
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
+
+	OemPostParams(PostParams);
 
 	// Do not use IS_ENABLED here.  CONFIG_GFXUMA should always have a value.  Allow
 	// the compiler to flag the error if CONFIG_GFXUMA is not set.

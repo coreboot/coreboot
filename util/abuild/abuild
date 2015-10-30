@@ -551,25 +551,25 @@ if [ "$cpus" != "1" ]; then
 	if [ "$cpus" = "max" ]; then
 		cpus=32
 	fi
-	if [ "$target" = "" ]; then
-		# Test if xargs supports the non-standard -P flag
-		# FIXME: disabled until we managed to eliminate all the make(1) quirks
-		echo | xargs -P ${cpus:-0} -n 1 echo 2>/dev/null >/dev/null && USE_XARGS=1
-	fi
+	# Test if xargs supports the non-standard -P flag
+	# FIXME: disabled until we managed to eliminate all the make(1) quirks
+	echo | xargs -P ${cpus:-0} -n 1 echo 2>/dev/null >/dev/null && USE_XARGS=1
 fi
 
 if [ "$USE_XARGS" = "0" ]; then
 test "$MAKEFLAGS" == "" && test "$cpus" != "" && export MAKEFLAGS="-j $cpus"
-build_all_targets()
+build_targets()
 {
-	for MAINBOARD in $( get_mainboards ); do
-		build_target $MAINBOARD
+	local targets=${*-$(get_mainboards)}
+	for MAINBOARD in $targets; do
+		build_target ${MAINBOARD}
 		remove_target ${MAINBOARD}
 	done
 }
 else
-build_all_targets()
+build_targets()
 {
+	local targets=${*-$(get_mainboards)}
 	# seed shared utils
 	TMPCFG=`mktemp`
 	printf "$configoptions" > $TMPCFG
@@ -613,7 +613,7 @@ build_all_targets()
 		rmdir ${scanbuild_out}tmp
 	fi
 	rm -rf $TARGET/temp $TMPCFG
-	get_mainboards | xargs -P ${cpus:-0} -n 1 $0 $cmdline -t
+	echo $targets | xargs -P ${cpus:-0} -n 1 $0 $cmdline -t
 }
 fi
 
@@ -632,7 +632,9 @@ if [ "$target" != "" ]; then
 		exit 1
 	fi
 	build_srcdir=$(mainboard_directory ${MAINBOARD})
-	if [ ! -r $ROOT/src/mainboard/${build_srcdir} ]; then
+	if [ "$(echo ${MAINBOARD} | wc -w)" -gt 1 ]; then
+		build_targets ${MAINBOARD}
+	elif [ ! -r $ROOT/src/mainboard/${build_srcdir} ]; then
 		printf "No such target: ${MAINBOARD}\n"
 		exit 1
 	else
@@ -644,7 +646,7 @@ if [ "$target" != "" ]; then
 		XMLFILE=$REAL_XMLFILE
 	fi
 else
-	build_all_targets
+	build_targets
 	rm -f $REAL_XMLFILE
 	XMLFILE=$REAL_XMLFILE
 	junit '<?xml version="1.0" encoding="utf-8"?>'

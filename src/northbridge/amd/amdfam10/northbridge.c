@@ -946,19 +946,38 @@ static int amdfam10_get_smbios_data16(int* count, int handle, unsigned long *cur
 
 static uint16_t amdmct_mct_speed_enum_to_mhz(uint8_t speed)
 {
-	switch (speed) {
-		case 1:
-			return 200;
-		case 2:
-			return 266;
-		case 3:
-			return 333;
-		case 4:
-			return 400;
-		case 5:
-			return 533;
-		default:
-			return 0;
+	if (IS_ENABLED(CONFIG_DIMM_DDR2)) {
+		switch (speed) {
+			case 1:
+				return 200;
+			case 2:
+				return 266;
+			case 3:
+				return 333;
+			case 4:
+				return 400;
+			case 5:
+				return 533;
+			default:
+				return 0;
+		}
+	} else if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+		switch (speed) {
+			case 3:
+				return 333;
+			case 4:
+				return 400;
+			case 5:
+				return 533;
+			case 6:
+				return 667;
+			case 7:
+				return 800;
+			default:
+				return 0;
+		}
+	} else {
+		return 0;
 	}
 }
 

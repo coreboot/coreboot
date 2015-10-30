@@ -57,7 +57,7 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 typedef struct {
 	UINT32 CalloutName;
-	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
+	CALLOUT_ENTRY CalloutPtr;
 } BIOS_CALLOUT_STRUCT;
 
 extern const BIOS_CALLOUT_STRUCT BiosCallouts[];

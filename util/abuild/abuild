@@ -110,79 +110,111 @@ function junitfile
 	} >> $XMLFILE
 }
 
-
-function vendors
+# Return mainboard descriptors.
+# By default all mainboards are listed, but when passing a two-level path
+# below src/mainboard, such as emulation/qemu-i440fx, or emulation/*, it
+# returns all board descriptors in that hierarchy.
+function get_mainboards
 {
-	# make this a function so we can easily select
-	# without breaking readability
-	ls -1 $ROOT/src/mainboard/*/Kconfig 2>/dev/null | sed "s:^$ROOT/src/mainboard/\(.*\)/Kconfig$:\1:"
+	local search_space=${1-*/*}
+	grep -h "^[[:space:]]*config\>[[:space:]]*\<BOARD_" \
+		${ROOT}/src/mainboard/${search_space}/Kconfig.name | \
+		sed "s,^.*\<BOARD_\([A-Z0-9_]*\)\>.*$,\1,"
 }
 
-function mainboards
+# Given a mainboard descriptor, return its directory below src/mainboard
+function mainboard_directory
 {
-	# make this a function so we can easily select
-	# without breaking readability
+	local MAINBOARD=$1
 
-	VENDOR=$1
+	grep -l "^[[:space:]]*config\>[[:space:]]*\<BOARD_${MAINBOARD}\>" \
+		${ROOT}/src/mainboard/*/*/Kconfig.name | \
+		sed "s:^$ROOT/src/mainboard/\(.*\)/Kconfig.name$:\1:"
+}
 
-	ls -1 $ROOT/src/mainboard/$VENDOR/*/Kconfig 2>/dev/null | sed "s:^$ROOT/src/mainboard/$VENDOR/\(.*\)/Kconfig$:\1:"
+# Given a mainboard descriptor, return its vendor (CONFIG_VENDOR_*)
+function mainboard_vendor
+{
+	local MAINBOARD=$1
+
+	local kconfig_file=$( \
+	grep -l "^[[:space:]]*config\>[[:space:]]*\<BOARD_${MAINBOARD}\>" \
+		${ROOT}/src/mainboard/*/*/Kconfig.name | \
+		sed "s:^\(${ROOT}/src/mainboard/.*\)/.*/\(Kconfig.name\)$:\1/\2:" )
+	if [ ! -f "$kconfig_file" ]; then
+		exit 1
+	fi
+	grep "^[[:space:]]*config\>[[:space:]]*\<VENDOR_" $kconfig_file | \
+		sed "s,^.*\<VENDOR_\([A-Z0-9_]*\)\>.*$,\1,"
+}
+
+# Accepts directory names (eg. emulation/qemu-i440fx) and mainboard
+# descriptors (eg. EMULATION_QEMU_X86_I440F} and returns the latter
+# format.
+# If a directory contains multiple boards, returns them all.
+function normalize_target
+{
+	if [ -r ${ROOT}/src/mainboard/$1/Kconfig.name ]; then
+		get_mainboards $1
+	elif [ -n "$(mainboard_directory $1)" ]; then
+		echo $1
+	fi
 }
 
 function create_config
 {
-	VENDOR=$1
-	MAINBOARD=$2
+	local MAINBOARD=$1
 
-	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
+	local build_dir=$TARGET/${MAINBOARD}
+	local config_file=${build_dir}/config.build
+	local board_srcdir=$(mainboard_directory ${MAINBOARD})
 
         # get a working payload for the board if we have one.
         # the --payload option expects a directory containing
 	# a shell script payload.sh
-	#   Usage: payload.sh [VENDOR] [DEVICE]
+	#   Usage: payload.sh [BOARD]
 	# the script returns an absolute path to the payload binary.
 
 	if [ -f $payloads/payload.sh ]; then
-		PAYLOAD=`sh $payloads/payload.sh $VENDOR $MAINBOARD`
+		local PAYLOAD=`sh $payloads/payload.sh $MAINBOARD`
 		if [ $? -gt 0 ]; then
 			echo "problem with payload"
 			exit 1
 		fi
 		if [ "$quiet" == "false" ]; then printf "Using payload $PAYLOAD\n"; fi
 	elif [ "$payloads" = "none" ]; then
-		PAYLOAD=none
+		local PAYLOAD=none
 	fi
 
 	mkdir -p ${build_dir}
 	mkdir -p $TARGET/sharedutils
 
-	if [ "$quiet" == "false" ]; then printf "  Creating config file for $VENDOR/$MAINBOARD... \n"; fi
-	grep "if[\t ]*VENDOR" src/mainboard/$VENDOR/$MAINBOARD/../Kconfig | \
-		sed "s,^.*\(VENDOR_.*\)[^A-Z0-9_]*,CONFIG_\1=y," > ${build_dir}/config.build
-	grep "if[\t ]*BOARD" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
-		sed "s,^.*\(BOARD_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${build_dir}/config.build
-	grep "select[\t ]*ARCH" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
-		sed "s,^.*\(ARCH_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${build_dir}/config.build
-	echo "CONFIG_MAINBOARD_DIR=\"$VENDOR/$MAINBOARD\"" >> ${build_dir}/config.build
+	if [ "$quiet" == "false" ]; then printf "  Creating config file for $MAINBOARD... \n"; fi
+	printf "CONFIG_VENDOR_$(mainboard_vendor ${MAINBOARD})=y\n" > ${config_file}
+	printf "CONFIG_BOARD_${MAINBOARD}=y\n" >> ${config_file}
+	grep "select[\t ]*ARCH" ${ROOT}/src/mainboard/${board_srcdir}/Kconfig | \
+		sed "s,^.*\(ARCH_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${config_file}
+	printf "CONFIG_MAINBOARD_DIR=\"${board_srcdir}\"\n" >> ${config_file}
 	if [ "$PAYLOAD" = "none" ]; then
-		echo "CONFIG_PAYLOAD_NONE=y" >> ${build_dir}/config.build
+		printf "CONFIG_PAYLOAD_NONE=y\n" >> ${config_file}
 	elif [ "$PAYLOAD" != "/dev/null" ]; then
-		echo "# CONFIG_PAYLOAD_NONE is not set" >> ${build_dir}/config.build
-		echo "# CONFIG_PAYLOAD_SEABIOS is not set" >> ${build_dir}/config.build
-		echo "CONFIG_PAYLOAD_ELF=y" >> ${build_dir}/config.build
-		echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"" >> ${build_dir}/config.build
+		printf "# CONFIG_PAYLOAD_NONE is not set\n" >> ${config_file}
+		printf "# CONFIG_PAYLOAD_SEABIOS is not set\n" >> ${config_file}
+		printf "CONFIG_PAYLOAD_ELF=y\n" >> ${config_file}
+		printf "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"\n" >> ${config_file}
 	fi
 
-	if [ "$quiet" == "false" ]; then printf "    $VENDOR/$MAINBOARD ($customizing)\n"; fi
-	printf "$configoptions" >> ${build_dir}/config.build
+	if [ "$quiet" == "false" ]; then printf "    $MAINBOARD ($customizing)\n"; fi
+	printf "$configoptions" >> ${config_file}
 
-	yes "" 2>/dev/null | $MAKE oldconfig $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
+	yes "" 2>/dev/null | $MAKE oldconfig $silent DOTCONFIG=${config_file} obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	ret=$?
 	if [ $ret -eq 0 ]; then
-		if [ "$quiet" == "false" ]; then printf "  $VENDOR/$MAINBOARD config created.\n"; fi
+		if [ "$quiet" == "false" ]; then printf "  $MAINBOARD config created.\n"; fi
 		return 0
 	else
 		# Does this ever happen?
-		if [ "$quiet" == "false" ]; then printf "$VENDOR/$MAINBOARD config creation FAILED!\nLog excerpt:\n"; fi
+		if [ "$quiet" == "false" ]; then printf "$MAINBOARD config creation FAILED!\nLog excerpt:\n"; fi
 		tail -n $CONTEXT $build_dir/config.log 2> /dev/null || tail -$CONTEXT $build_dir/config.log
 		return 1
 	fi
@@ -190,18 +222,17 @@ function create_config
 
 function create_buildenv
 {
-	VENDOR=$1
-	MAINBOARD=$2
+	local MAINBOARD=$1
 
-	create_config $VENDOR $MAINBOARD
+	create_config $MAINBOARD
 	ret=$?
 
 	# Allow simple "make" in the target directory
-	MAKEFILE=$TARGET/${VENDOR}_${MAINBOARD}/Makefile
+	local MAKEFILE=$TARGET/${MAINBOARD}/Makefile
 	echo "# autogenerated" > $MAKEFILE
 	echo "TOP=$ROOT" >> $MAKEFILE
 	echo "BUILD=$TARGET" >> $MAKEFILE
-	echo "OBJ=\$(BUILD)/${VENDOR}_${MAINBOARD}" >> $MAKEFILE
+	echo "OBJ=\$(BUILD)/${MAINBOARD}" >> $MAKEFILE
 	echo "OBJUTIL=\$(BUILD)/sharedutils" >> $MAKEFILE
 	echo "all:" >> $MAKEFILE
 	echo "	@cp -a config.h config.h.bak" >> $MAKEFILE
@@ -258,53 +289,53 @@ function compile_target
 
 function build_target
 {
-	VENDOR=$1
-	MAINBOARD=$2
+	local MAINBOARD=$1
+	local board_srcdir=$(mainboard_directory ${MAINBOARD})
 
-	if [ "`cat $TARGET/${VENDOR}_${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
+	if [ "`cat $TARGET/${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
 		"$buildall" = "false" ]; then
-		printf "Skipping $VENDOR/$MAINBOARD; (already successful)\n"
+		printf "Skipping $MAINBOARD; (already successful)\n"
 		return
 	fi
 
  	HOSTCC='gcc'
 
-	if [ $chromeos = true -a `grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS\>" src/mainboard/${VENDOR}/${MAINBOARD}/Kconfig` -eq 0 ]; then
-		echo "${VENDOR}/${MAINBOARD} doesn't support Chrome OS, skipping."
+	if [ $chromeos = true -a `grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS\>" ${ROOT}/src/mainboard/${board_srcdir}/Kconfig` -eq 0 ]; then
+		echo "${MAINBOARD} doesn't support Chrome OS, skipping."
 		return
 	fi
 
-	if [ -f src/mainboard/${VENDOR}/${MAINBOARD}/abuild.disabled ]; then
-		echo "${VENDOR}/${MAINBOARD} disabled:"
-		cat src/mainboard/${VENDOR}/${MAINBOARD}/abuild.disabled
+	if [ -f src/mainboard/${board_srcdir}/abuild.disabled ]; then
+		echo "${MAINBOARD} disabled:"
+		cat src/mainboard/${board_srcdir}/abuild.disabled
 		return
 	fi
 
-	if [ "$quiet" == "false" ]; then printf "Building $VENDOR/$MAINBOARD\n"; fi
-	mkdir -p $TARGET/${VENDOR}_${MAINBOARD} $TARGET/abuild
+	if [ "$quiet" == "false" ]; then printf "Building $MAINBOARD\n"; fi
+	mkdir -p $TARGET/${MAINBOARD} $TARGET/abuild
 	ABSPATH=`cd $TARGET/abuild; pwd`
-	XMLFILE=$ABSPATH/${VENDOR}_${MAINBOARD}.xml
+	XMLFILE=$ABSPATH/${MAINBOARD}.xml
 
 
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
-	create_buildenv $VENDOR $MAINBOARD
+	create_buildenv $MAINBOARD
 
-	required_arches=`egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" $TARGET/${VENDOR}_${MAINBOARD}/config.build | \
+	required_arches=`egrep "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" $TARGET/${MAINBOARD}/config.build | \
 			sed "s,^CONFIG_ARCH_[^_]*_\([^=]*\)=.*$,\1," |sort -u |tr 'A-Z\n\r' 'a-z  '`
 	missing_arches=`printf 'include .xcompile\nall: ; @echo $(foreach arch,'"$required_arches"',$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))' | make --no-print-directory -f -`
 	if [ -n "$missing_arches" ]; then
-		printf "skipping $VENDOR/$MAINBOARD because we're missing compilers for ($missing_arches)\n"
+		printf "skipping $MAINBOARD because we're missing compilers for ($missing_arches)\n"
 		return
 	fi
 
 	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
 		BUILDPREFIX=
 		if [ "$scanbuild" = "true" ]; then
-			scanbuild_out=$TARGET/${VENDOR}_${MAINBOARD}-scanbuild
+			scanbuild_out=$TARGET/${MAINBOARD}-scanbuild
 			rm -rf ${scanbuild_out}
 			BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
 		fi
-		compile_target ${VENDOR}_${MAINBOARD}
+		compile_target ${MAINBOARD}
 		if [ "$scanbuild" = "true" ]; then
 			mv ${scanbuild_out}tmp/* ${scanbuild_out}
 			rmdir ${scanbuild_out}tmp
@@ -531,11 +562,9 @@ if [ "$USE_XARGS" = "0" ]; then
 test "$MAKEFLAGS" == "" && test "$cpus" != "" && export MAKEFLAGS="-j $cpus"
 build_all_targets()
 {
-	for VENDOR in $( vendors ); do
-		for MAINBOARD in $( mainboards $VENDOR ); do
-			build_target $VENDOR $MAINBOARD
-			remove_target ${VENDOR}_${MAINBOARD}
-		done
+	for MAINBOARD in $( get_mainboards ); do
+		build_target $MAINBOARD
+		remove_target ${MAINBOARD}
 	done
 }
 else
@@ -584,11 +613,7 @@ build_all_targets()
 		rmdir ${scanbuild_out}tmp
 	fi
 	rm -rf $TARGET/temp $TMPCFG
-	for VENDOR in $( vendors ); do
-		for MAINBOARD in $( mainboards $VENDOR ); do
-			echo $VENDOR/$MAINBOARD
-		done
-	done | xargs -P ${cpus:-0} -n 1 $0 $cmdline -t
+	get_mainboards | xargs -P ${cpus:-0} -n 1 $0 $cmdline -t
 }
 fi
 
@@ -601,17 +626,21 @@ junit '<testsuite>'
 
 if [ "$target" != "" ]; then
 	# build a single board
-	VENDOR=`printf $target|cut -f1 -d/`
-	MAINBOARD=`printf $target|cut -f2 -d/`
-	if [ ! -r $ROOT/src/mainboard/$target ]; then
+	MAINBOARD=$(normalize_target ${target})
+	if [ -z "${MAINBOARD}" ]; then
 		printf "No such target: $target\n"
-		failed=1
+		exit 1
+	fi
+	build_srcdir=$(mainboard_directory ${MAINBOARD})
+	if [ ! -r $ROOT/src/mainboard/${build_srcdir} ]; then
+		printf "No such target: ${MAINBOARD}\n"
+		exit 1
 	else
-		build_target $VENDOR $MAINBOARD
-		remove_target ${VENDOR}_${MAINBOARD}
+		build_target ${MAINBOARD}
+		remove_target ${MAINBOARD}
 		test "$mode" != "text" && \
-		test -f $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml && \
-		cat $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml >> $REAL_XMLFILE
+		test -f $TARGET/abuild/${MAINBOARD}.xml && \
+		cat $TARGET/abuild/${MAINBOARD}.xml >> $REAL_XMLFILE
 		XMLFILE=$REAL_XMLFILE
 	fi
 else

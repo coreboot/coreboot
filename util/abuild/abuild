@@ -324,17 +324,16 @@ function remove_target
 		return 0
 	fi
 
-	VENDOR=$1
-	MAINBOARD=$2
+	local MAINBOARD=$1
 
 	# Save the generated coreboot.rom file of each board.
-	if [ -r "$TARGET/${VENDOR}_${MAINBOARD}/coreboot.rom" ]; then
-		cp $TARGET/${VENDOR}_${MAINBOARD}/coreboot.rom \
-		   ${VENDOR}_${MAINBOARD}_coreboot.rom
+	if [ -r "$TARGET/${MAINBOARD}/coreboot.rom" ]; then
+		cp $TARGET/${MAINBOARD}/coreboot.rom \
+		   ${MAINBOARD}_coreboot.rom
 	fi
 
-	printf "Removing build dir for board $VENDOR $MAINBOARD...\n"
-	rm -rf $TARGET/${VENDOR}_${MAINBOARD}
+	printf "Removing build dir for board $MAINBOARD...\n"
+	rm -rf $TARGET/${MAINBOARD}
 
 	return 0
 }
@@ -536,7 +535,7 @@ build_all_targets()
 	for VENDOR in $( vendors ); do
 		for MAINBOARD in $( mainboards $VENDOR ); do
 			build_target $VENDOR $MAINBOARD
-			remove_target $VENDOR $MAINBOARD
+			remove_target ${VENDOR}_${MAINBOARD}
 		done
 	done
 }
@@ -610,7 +609,7 @@ if [ "$target" != "" ]; then
 		failed=1
 	else
 		build_target $VENDOR $MAINBOARD
-		remove_target $VENDOR $MAINBOARD
+		remove_target ${VENDOR}_${MAINBOARD}
 		test "$mode" != "text" && \
 		test -f $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml && \
 		cat $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml >> $REAL_XMLFILE

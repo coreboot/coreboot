@@ -14,7 +14,7 @@
  */
 
 #include <cpu/x86/mtrr.h>
-#include <northbridge/amd/agesa/agesawrapper.h>
+#include <northbridge/amd/pi/agesawrapper.h>
 #include "amdlib.h"
 
 void amd_initcpuio(void)

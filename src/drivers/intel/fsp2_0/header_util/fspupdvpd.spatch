@@ -1,0 +1,187 @@
+/*
+ * Semantic patch for fspupdvpd_sanitize.sh. Please call the script directly.
+ *
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2015 Intel Corp.
+ * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This semantic patch is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+@ kill_pragma_pack @
+@@
+- #pragma pack(...)
+
+/*
+ * Convert named typedef'd structs
+ * Example : typedef struct name {} name_t; -> struct name {};
+ */
+@ named_struct @
+identifier i;
+type t;
+@@
+typedef struct i { ... } t;
+
+/* Make typename usable as identifier */
+@ script:python named_struct_type @
+t << named_struct.t;
+i;
+@@
+coccinelle.i = t.rstrip('_t')
+
+
+@ convert_named_struct_decls @
+type named_struct.t;
+identifier named_struct_type.i;
+identifier g;
+@@
+- typedef struct g {
++ struct i {
+...
+}
+- t
+;
+
+/* Replace type with struct */
+@ named_typedef_to_struct @
+type named_struct.t;
+identifier named_struct_type.i;
+@@
+- t
++ struct i
+
+
+/*
+ * Convert unnamed typedef'd structs
+ * Example : typedef struct {} name_t; -> struct name {};
+ */
+@ unnamed_struct @
+type t;
+@@
+typedef struct { ... } t;
+
+/* Make typename usable as identifier */
+@ script:python unnamed_struct_type @
+t << unnamed_struct.t;
+i;
+@@
+coccinelle.i = t.rstrip('_t')
+
+@ convert_unnamed_struct_decls @
+type unnamed_struct.t;
+identifier unnamed_struct_type.i;
+@@
+-typedef struct {
++struct i {
+        ...
+}
+- t
+;
+
+/*
+ * Convert unnamed typedef'd enums
+ */
+@ unnamed_enum @
+type t;
+@@
+typedef enum { ... } t;
+
+/* Make typename usable as identifier */
+@ script:python unnamed_enum_type @
+t << unnamed_enum.t;
+i;
+@@
+coccinelle.i = t.rstrip('_t')
+
+@ convert_unnamed_enum_decls @
+type unnamed_enum.t;
+identifier unnamed_enum_type.i;
+@@
+-typedef enum {
++enum i {
+        ...
+}
+- t
+;
+
+/* Replace type with struct */
+@ unnamed_typedef_to_struct @
+type unnamed_struct.t;
+identifier unnamed_struct_type.i;
+@@
+-t
++struct i
+
+/*
+ * Pack _ALL_ structs
+ */
+@ pack_structs @
+identifier s;
+@@
+
+struct s {
+...
+}
++ __attribute__((packed))
+;
+
+/*
+ * BIGINT to stdint
+ */
+@ uint8_t @
+typedef UINT8;
+typedef uint8_t;
+@@
+- UINT8
++ uint8_t
+
+@ uint16_t @
+typedef UINT16;
+typedef uint16_t;
+@@
+- UINT16
++ uint16_t
+
+@ uint32_t @
+typedef UINT32;
+typedef uint32_t;
+@@
+- UINT32
++ uint32_t
+
+@ uint64_t @
+typedef UINT64;
+typedef uint64_t;
+@@
+- UINT64
++ uint64_t
+
+@ bool @
+typedef BOOLEAN;
+typedef bool;
+@@
+- BOOLEAN
++ bool
+
+@ wchar_t @
+typedef CHAR16;
+typedef wchar_t;
+@@
+- CHAR16
++ wchar_t
+
+/* This rule can't be named "void" */
+@ replace_uppercase_void @
+typedef VOID;
+@@
+- VOID
++ void

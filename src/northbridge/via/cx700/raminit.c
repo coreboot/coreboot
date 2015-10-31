@@ -1250,14 +1250,14 @@ static void sdram_enable(const struct mem_controller *ctrl)
 		}
 	}
 
-#ifdef MEM_WIDTH_32BIT_MODE
-	/****************************************************************/
-	/*                      Set Dram 32bit Mode                     */
-	/****************************************************************/
-	reg8 = pci_read_config8(MEMCTRL, 0x6c);
-	reg8 |= 0x20;
-	pci_write_config(MEMCTRL, 0x6c, reg8);
-#endif
+	if (IS_ENABLED(MEM_WIDTH_32BIT_MODE)) {
+		/********************************************************/
+		/*                  Set Dram 32bit Mode                 */
+		/********************************************************/
+		reg8 = pci_read_config8(MEMCTRL, 0x6c);
+		reg8 |= 0x20;
+		pci_write_config8(MEMCTRL, 0x6c, reg8);
+	}
 
 	/****************************************************************/
 	/* Find the DQSI Low/High bound and save it to Scratch register */

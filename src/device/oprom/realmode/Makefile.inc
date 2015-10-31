@@ -12,10 +12,6 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc.
-##
 
 ramstage-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86.c
 ramstage-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86_asm.S

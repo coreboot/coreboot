@@ -12,10 +12,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc.
-//
 DefinitionBlock ("SSDT4.aml", "SSDT", 1, "AMD-FAM10", "AMDACPI", 100925440)
 {
 	Scope (_SB)

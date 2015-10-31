@@ -13,10 +13,6 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc.
-##
 ################################################################################
 
 libgcc_files = ashldi3.S lib1funcs.S lshrdi3.S muldi3.S ucmpdi2.S uldivmod.S

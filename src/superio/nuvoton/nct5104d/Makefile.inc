@@ -13,10 +13,6 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc.
-##
 
 ramstage-$(CONFIG_SUPERIO_NUVOTON_NCT5104D) += superio.c
 romstage-$(CONFIG_SUPERIO_NUVOTON_NCT5104D) += early_init.c

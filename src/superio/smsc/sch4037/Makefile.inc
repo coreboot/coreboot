@@ -12,10 +12,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc.
-#
 
 romstage-$(CONFIG_SUPERIO_SMSC_SCH4037) += sch4037_early_init.c
 ramstage-$(CONFIG_SUPERIO_SMSC_SCH4037) += superio.c

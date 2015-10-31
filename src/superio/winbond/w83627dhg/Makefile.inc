@@ -14,10 +14,6 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc.
-##
 
 romstage-$(CONFIG_SUPERIO_WINBOND_W83627DHG) += early_serial.c
 ramstage-$(CONFIG_SUPERIO_WINBOND_W83627DHG) += superio.c

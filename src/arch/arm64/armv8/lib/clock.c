@@ -13,10 +13,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc.
- *
  * clock.c: Functions for accessing clock and timer related registers
  * Reference: ARM Architecture Reference Manual, ARMv8-A edition
  */

@@ -12,10 +12,6 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc.
-##
 
 # TODO fill with Versatile Express board data in QEMU.
 chip soc/rockchip/rk3288

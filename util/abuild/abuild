@@ -118,7 +118,7 @@ function get_mainboards
 {
 	local search_space=${1-*/*}
 	grep -h "^[[:space:]]*config\>[[:space:]]*\<BOARD_" \
-		${ROOT}/src/mainboard/${search_space}/Kconfig.name | \
+		${ROOT}/src/mainboard/${search_space}/Kconfig.name 2>/dev/null | \
 		sed "s,^.*\<BOARD_\([A-Z0-9_]*\)\>.*$,\1,"
 }
 
@@ -154,11 +154,21 @@ function mainboard_vendor
 # If a directory contains multiple boards, returns them all.
 function normalize_target
 {
-	if [ -r ${ROOT}/src/mainboard/$1/Kconfig.name ]; then
-		get_mainboards $1
-	elif [ -n "$(mainboard_directory $1)" ]; then
-		echo $1
+	local targets=$(get_mainboards $1)
+	if [ -n "$targets" ]; then
+		echo $targets
+		return
 	fi
+
+	local targets=$(echo $1 | tr ',' ' ')
+	for i in $targets; do
+		if [ -n "$(mainboard_directory $i)" ]; then
+			echo $i
+		else
+			echo "$i is not a valid target" >&2
+			exit 1
+		fi
+	done
 }
 
 function create_config

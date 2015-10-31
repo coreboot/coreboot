@@ -328,6 +328,17 @@ xhci_reset(hci_t *const controller)
 	xhci_stop(controller);
 
 	xhci->opreg->usbcmd |= USBCMD_HCRST;
+
+	/* Existing Intel xHCI controllers require a delay of 1 ms,
+	 * after setting the CMD_RESET bit, and before accessing any
+	 * HC registers. This allows the HC to complete the
+	 * reset operation and be ready for HC register access.
+	 * Without this delay, the subsequent HC register access,
+	 * may result in a system hang very rarely.
+	 */
+	if (IS_ENABLED(CONFIG_LP_ARCH_X86))
+		mdelay(1);
+
 	xhci_debug("Resetting controller... ");
 	if (!xhci_handshake(&xhci->opreg->usbcmd, USBCMD_HCRST, 0, 1000000L))
 		usb_debug("timeout!\n");

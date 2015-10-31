@@ -100,6 +100,10 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	u8 cmp_cap, pwr_lmt;
 	u32 power_limit = 0;
 	u8 index;
+	uint8_t node_count;
+	uint8_t cores_per_node;
+	uint32_t total_core_count;
+	uint32_t dword;
 	msr_t msr;
 	u32 fid_multiplier;
 	static const struct power_limit_encoding TDP[] = {
@@ -156,9 +160,18 @@ static void pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	 * cmp_cap : 0x0 SingleCore ; 0x1 DualCore
 	 */
 	printk(BIOS_INFO, "Pstates Algorithm ...\n");
-	cmp_cap =
-	    (pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8) &
-	     0x3000) >> 12;
+
+	/* Get number of cores */
+	dword = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xe8);
+	cmp_cap = (dword & 0x3000) >> 12;
+	/* Get number of nodes */
+	dword = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x18, 0)), 0x60);
+	node_count = ((dword & 0x70) >> 4) + 1;
+	cores_per_node = cmp_cap + 1;
+
+	/* Compute total number of cores installed in system */
+	total_core_count = cores_per_node * node_count;
+
 	cpuid1 = cpuid(0x80000001);
 	pwr_lmt = ((cpuid1.ebx & 0x1C0) >> 5) | ((cpuid1.ebx & 0x4000) >> 14);
 	for (index = 0; index < ARRAY_SIZE(TDP); index++)
@@ -360,7 +373,7 @@ write_pstates:
 		  (0x0 << 18) | /* MVS */
 		  (0x5 << 11); /* VST */
 
-	for (index = 0; index < (cmp_cap + 1); index++) {
+	for (index = 0; index < total_core_count; index++) {
 		write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
 				Pstate_fid, Pstate_power, index,
 				pcontrol_blk, plen, onlyBSP, control);

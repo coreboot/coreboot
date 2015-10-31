@@ -70,6 +70,6 @@ extern const struct OEM_HOOK OemCustomize;
 /* For suspend-to-ram support. */
 AGESA_STATUS OemInitResume(AMD_RESUME_PARAMS *ResumeParams);
 AGESA_STATUS OemS3LateRestore(AMD_S3LATE_PARAMS *S3LateParams);
-AGESA_STATUS OemS3Save(void *vS3SaveParams);
+AGESA_STATUS OemS3Save(AMD_S3SAVE_PARAMS *S3SaveParams);
 
 #endif /* _AGESAWRAPPER_H_ */

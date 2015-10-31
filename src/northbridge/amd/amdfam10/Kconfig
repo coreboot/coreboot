@@ -95,8 +95,8 @@ config S3_DATA_SIZE
 	depends on (HAVE_ACPI_RESUME)
 
 config S3_DATA_POS
-	int
-	default 0
+	hex
+	default 0x0
 	depends on (HAVE_ACPI_RESUME)
 
 if DIMM_DDR2

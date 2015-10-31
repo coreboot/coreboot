@@ -35,8 +35,6 @@
 #define HOSTCTRL		PCI_DEV(0, 0, 2)
 #define MEMCTRL			PCI_DEV(0, 0, 3)
 
-#define OHM_150 1
-
 #ifdef	MEM_WIDTH_32BIT_MODE
 #define SDRAM1X_RA_14		30
 #define SDRAM1X_RA_13		29

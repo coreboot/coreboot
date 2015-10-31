@@ -315,6 +315,7 @@ function build_target
 	mkdir -p $TARGET/${MAINBOARD} $TARGET/abuild
 	ABSPATH=`cd $TARGET/abuild; pwd`
 	XMLFILE=$ABSPATH/${MAINBOARD}.xml
+	rm -f ${XMLFILE}
 
 
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
@@ -585,6 +586,7 @@ build_targets()
 	mkdir -p $TARGET/abuild
 	local ABSPATH=`cd $TARGET/abuild; pwd`
 	local XMLFILE=$ABSPATH/__util.xml
+	rm -f ${XMLFILE}
 	local stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	$BUILDPREFIX $MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils tools > $TARGET/sharedutils/make.log 2>&1
 	local ret=$?

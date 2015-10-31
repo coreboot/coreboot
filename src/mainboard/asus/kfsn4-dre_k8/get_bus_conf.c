@@ -44,9 +44,9 @@ unsigned apicid_ck804;
 
 /* Here you only need to set value in pci1234 for HT-IO that could be
 installed or not You may need to preset pci1234 for HTIO board, please
-refer to src/northbridge/amd/amdfam10/get_pci1234.c for detail */
+refer to src/northbridge/amd/amdk8/get_pci1234.c for detail */
 static u32 pci1234x[] = {
-	0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc, 0x0000ffc,
+	0x0000ff0, 0x0000ff0, 0x0000ff0,
 };
 
 
@@ -54,7 +54,7 @@ static u32 pci1234x[] = {
 in chain, assume every chain only have 4 ht device at most */
 
 static unsigned hcdnx[] = {
-	0x20202020, 0x20202020, 0x20202020, 0x20202020, 0x20202020, 0x20202020,
+	0x20202020, 0x20202020, 0x20202020,
 };
 
 static unsigned get_bus_conf_done = 0;

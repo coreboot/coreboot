@@ -180,11 +180,14 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
 					register "sata1_enable" = "1"
 				end
 			end
+			device pci 18.0 on end		# Link 2 == LDT 2
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end
 			device pci 18.4 on end
-			device pci 19.0 on end
+			device pci 19.0 on end		# Link 0 == LDT 0
+			device pci 19.0 on end		# Link 1 == LDT 1
+			device pci 19.0 on end		# Link 2 == LDT 2
 			device pci 19.1 on end
 			device pci 19.2 on end
 			device pci 19.3 on end

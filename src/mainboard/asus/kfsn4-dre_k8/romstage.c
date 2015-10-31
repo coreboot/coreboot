@@ -66,6 +66,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include <spd.h>
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"
+#include "northbridge/amd/amdk8/early_ht.c"
 
 #define CK804_MB_SETUP \
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+33, ~(0x0f),(0x04 | 0x01),	/* -ENOINFO Proprietary BIOS sets this register; "When in Rome..."*/
@@ -199,7 +200,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo = &sysinfo_car;
 
-	u32 bsp_apicid = 0, val, wants_reset, needs_reset;
+	uint32_t bsp_apicid = 0;
+	uint32_t dword;
+	uint8_t needs_reset = 0;
 #if IS_ENABLED(CONFIG_SET_FIDVID)
 	struct cpuid_result cpuid1;
 #endif
@@ -207,8 +210,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	timestamp_init(timestamp_get());
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	if (!cpu_init_detectedx && boot_cpu())
+	if (!cpu_init_detectedx && boot_cpu()) {
+		/* Nothing special needs to be done to find bus 0 */
+		/* Allow the HT devices to be found */
+		enumerate_ht_chain();
 		sio_setup();
+	}
 
 	post_code(0x30);
 
@@ -226,8 +233,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	val = cpuid_eax(1);
-	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
+	dword = cpuid_eax(1);
+	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", dword);
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 	printk(BIOS_DEBUG, "bsp_apicid = %02x\n", bsp_apicid);
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
@@ -240,19 +247,21 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain();
 	post_code(0x35);
 
-	/* Setup any mainboard PCI settings etc. */
-	setup_mb_resource_map();
-	post_code(0x36);
-
 	/* Wait for all base cores to start */
 	wait_all_core0_started();
+	post_code(0x36);
+
+	/* Setup any mainboard PCI settings etc. */
+	setup_mb_resource_map();
+	post_code(0x37);
 
 	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
 		/* Core0 on each node is configured. Now setup any additional cores. */
 		printk(BIOS_DEBUG, "start_other_cores()\n");
 		start_other_cores();
-		post_code(0x37);
+		post_code(0x38);
 		wait_all_other_cores_started(bsp_apicid);
+		post_code(0x39);
 	}
 
 	ht_setup_chains_x(sysinfo);
@@ -280,27 +289,25 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 #endif
 
+	init_timer(); /* Need to use TMICT to synchronize FID/VID. */
+
 	printk(BIOS_DEBUG, "set_ck804_base_unit_id()\n");
 	ck804_control(ctrl_conf_fix_pci_numbering, ARRAY_SIZE(ctrl_conf_fix_pci_numbering), CK804_BOARD_BOOT_BASE_UNIT_UID);
 
-	post_code(0x38);
-
-	printk(BIOS_DEBUG, "ck804_early_setup_x()\n");
-	wants_reset = ck804_early_setup_x();
+	post_code(0x3a);
 
 	printk(BIOS_DEBUG, "optimize_link_coherent_ht()\n");
 	needs_reset = optimize_link_coherent_ht();
 	printk(BIOS_DEBUG, "optimize_link_incoherent_ht()\n");
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
+	printk(BIOS_DEBUG, "ck804_early_setup_x()\n");
+	needs_reset |= ck804_early_setup_x();
 
         /* FIDVID change will issue one LDTSTOP and the HT change will be effective too */
         if (needs_reset) {
                 printk(BIOS_INFO, "ht reset -\n");
                 soft_reset();
         }
-
-	if (wants_reset)
-		printk(BIOS_DEBUG, "ck804_early_setup_x wanted additional reset!\n");
 
 	post_code(0x3b);
 

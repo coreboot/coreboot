@@ -1287,7 +1287,7 @@ int elf_writer_add_symbol(struct elf_writer *ew, const char *name,
 				Elf64_Addr value, Elf64_Word size,
 				int binding, int type)
 {
-	int index;
+	int i;
 	Elf64_Sym sym = {
 		.st_value = value,
 		.st_size = size,
@@ -1299,15 +1299,15 @@ int elf_writer_add_symbol(struct elf_writer *ew, const char *name,
 		return -1;
 	}
 
-	index = elf_writer_add_string(ew, name);
-	if (index < 0)
+	i = elf_writer_add_string(ew, name);
+	if (i < 0)
 		return -1;
-	sym.st_name = index;
+	sym.st_name = i;
 
-	index = elf_writer_section_index(ew, section_name);
-	if (index < 0)
+	i = elf_writer_section_index(ew, section_name);
+	if (i < 0)
 		return -1;
-	sym.st_shndx = index;
+	sym.st_shndx = i;
 
 	ew->symtab.syms[ew->symtab.num_entries++] = sym;
 
@@ -1316,16 +1316,16 @@ int elf_writer_add_symbol(struct elf_writer *ew, const char *name,
 
 static int elf_sym_index(struct elf_writer *ew, const char *sym)
 {
-	int index;
+	int j;
 	size_t i;
 	Elf64_Word st_name;
 
 	/* Determine index of symbol in the string table. */
-	index = elf_writer_add_string(ew, sym);
-	if (index < 0)
+	j = elf_writer_add_string(ew, sym);
+	if (j < 0)
 		return -1;
 
-	st_name = index;
+	st_name = j;
 
 	for (i = 0; i < ew->symtab.num_entries; i++)
 		if (ew->symtab.syms[i].st_name == st_name)

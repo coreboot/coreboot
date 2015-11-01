@@ -41,12 +41,24 @@ static int cmos_chksum_valid(void)
 #endif
 }
 
-
-static inline __attribute__((unused)) int last_boot_normal(void)
+static inline __attribute__((unused)) int boot_count(uint8_t rtc_byte)
 {
-	unsigned char byte;
-	byte = cmos_read(RTC_BOOT_BYTE);
-	return (byte & (1 << 1));
+	return rtc_byte >> 4;
+}
+
+static inline __attribute__((unused)) uint8_t increment_boot_count(uint8_t rtc_byte)
+{
+	return rtc_byte + (1 << 4);
+}
+
+static inline __attribute__((unused)) uint8_t boot_set_fallback(uint8_t rtc_byte)
+{
+	return rtc_byte & ~RTC_BOOT_NORMAL;
+}
+
+static inline __attribute__((unused)) int boot_use_normal(uint8_t rtc_byte)
+{
+	return rtc_byte & RTC_BOOT_NORMAL;
 }
 
 static inline __attribute__((unused)) int do_normal_boot(void)
@@ -54,42 +66,32 @@ static inline __attribute__((unused)) int do_normal_boot(void)
 	unsigned char byte;
 
 	if (cmos_error() || !cmos_chksum_valid()) {
-		/* There are no impossible values, no checksums so just
-		 * trust whatever value we have in the the cmos,
-		 * but clear the fallback bit.
+		/* Invalid CMOS checksum detected!
+		 * Force fallback boot...
 		 */
 		byte = cmos_read(RTC_BOOT_BYTE);
-		byte &= 0x0c;
-		byte |= CONFIG_MAX_REBOOT_CNT << 4;
+		byte &= boot_set_fallback(byte) & 0x0f;
+		byte |= 0xf << 4;
 		cmos_write(byte, RTC_BOOT_BYTE);
 	}
 
 	/* The RTC_BOOT_BYTE is now o.k. see where to go. */
 	byte = cmos_read(RTC_BOOT_BYTE);
 
-	if (!IS_ENABLED(CONFIG_SKIP_MAX_REBOOT_CNT_CLEAR))
-		/* Are we in normal mode? */
-		if (byte & 1)
-			byte &= 0x0f; /* yes, clear the boot count */
-
-	/* Properly set the last boot flag */
-	byte &= 0xfc;
-	if ((byte >> 4) < CONFIG_MAX_REBOOT_CNT) {
-		byte |= (1<<1);
-	}
-
-	/* Are we already at the max count? */
-	if ((byte >> 4) < CONFIG_MAX_REBOOT_CNT) {
-		byte += 1 << 4; /* No, add 1 to the count */
-	}
-	else {
-		byte &= 0xfc;	/* Yes, put in fallback mode */
+	/* Are we attempting to boot normally? */
+	if (boot_use_normal(byte)) {
+		/* Are we already at the max count? */
+		if (boot_count(byte) < CONFIG_MAX_REBOOT_CNT)
+			byte = increment_boot_count(byte);
+		else
+			byte = boot_set_fallback(byte);
 	}
 
 	/* Save the boot byte */
 	cmos_write(byte, RTC_BOOT_BYTE);
 
-	return (byte & (1<<1));
+	/* Return selected code path for this boot attempt */
+	return boot_use_normal(byte);
 }
 
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)

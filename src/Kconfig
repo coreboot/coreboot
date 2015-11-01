@@ -268,9 +268,12 @@ config BOOTBLOCK_SOURCE
 config SKIP_MAX_REBOOT_CNT_CLEAR
 	bool "Do not clear reboot count after successful boot"
 	default n
+	depends on BOOTBLOCK_NORMAL
 	help
 	  Do not clear the reboot count immediately after successful boot.
 	  Set to allow the payload to control normal/fallback image recovery.
+	  Note that it is the responsibility of the payload to reset the
+	  normal boot bit to 1 after each successsful boot.
 
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"

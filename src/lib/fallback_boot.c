@@ -8,23 +8,28 @@
 
 static void set_boot_successful(void)
 {
-	/* Remember I successfully booted by setting
-	 * the initial boot direction
-	 * to the direction that I booted.
-	 */
-	unsigned char index, byte;
+	uint8_t index, byte;
+
 	index = inb(RTC_PORT(0)) & 0x80;
 	index |= RTC_BOOT_BYTE;
 	outb(index, RTC_PORT(0));
 
 	byte = inb(RTC_PORT(1));
-	byte &= 0xfe;
-	byte |= (byte & (1 << 1)) >> 1;
 
-	/* If we are in normal mode set the boot count to 0 */
-	if (!IS_ENABLED(CONFIG_SKIP_MAX_REBOOT_CNT_CLEAR))
-		if(byte & 1)
+	if (IS_ENABLED(CONFIG_SKIP_MAX_REBOOT_CNT_CLEAR)) {
+		/* Set the fallback boot bit to allow for recovery if
+		 * the payload fails to boot.
+		 * It is the responsibility of the payload to reset
+		 * the normal boot bit to 1 if desired
+		 */
+		byte &= ~RTC_BOOT_NORMAL;
+	} else {
+		/* If we are in normal mode set the boot count to 0 */
+		if (byte & RTC_BOOT_NORMAL)
 			byte &= 0x0f;
+
+	}
+
 	outb(byte, RTC_PORT(1));
 }
 #else

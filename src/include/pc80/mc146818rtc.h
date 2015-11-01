@@ -25,6 +25,8 @@
  **********************************************************************/
 #define RTC_FREQ_SELECT	RTC_REG_A
 
+#define RTC_BOOT_NORMAL		0x1
+
 /* update-in-progress  - set to "1" 244 microsecs before RTC goes off the bus,
  * reset after update (may take 1.984ms @ 32768Hz RefClock) is complete,
  * totaling to a max high interval of 2.228 ms.

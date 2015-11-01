@@ -32,6 +32,7 @@ void i2c_clk_setup(u8 divider1, u16 divider2, u8 interface);
 int usb_clk_setup(u8 divider, u8 refclksel, u8 fsel);
 void rom_clk_setup(u8 divider);
 void eth_clk_setup(u8 mux, u8 divider);
+void setup_clk_gate_defaults(void);
 enum {
 	CLOCKS_OK = 0,
 	PLL_TIMEOUT = -1,

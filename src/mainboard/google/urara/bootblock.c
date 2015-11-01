@@ -190,6 +190,14 @@ static void bootblock_mainboard_init(void)
 	if (ret != CLOCKS_OK)
 		return;
 
+	/*
+	 * Move peripheral clock control from RPU to MIPS.
+	 * The RPU gate register is not managed in Linux so disable its default
+	 * values and assign MIPS gate register the default values.
+	 * *Note*: All unused clocks will be gated by Linux
+	 */
+	setup_clk_gate_defaults();
+
 	/* Setup SPIM1 MFIOs */
 	spim1_mfio_setup();
 	/* Setup UART1 clock and MFIOs

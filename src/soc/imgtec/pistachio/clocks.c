@@ -82,6 +82,12 @@
 #define MIPSCLKOUT_CTRL_ADDR		0xB8144208
 #define MIPSCLKOUT_MASK			0x000000FF
 
+/* Peripheral Clock gate reg */
+#define MIPS_CLOCK_GATE_ADDR		0xB8144900
+#define RPU_CLOCK_GATE_ADDR		0xB8144904
+#define MIPS_CLOCK_GATE_ALL_ON		0x3fff
+#define RPU_CLOCK_GATE_ALL_OFF		0x0
+
 /* Definitions for USB clock setup */
 #define USBPHYCLKOUT_CTRL_ADDR		0xB814422C
 #define USBPHYCLKOUT_MASK		0X0000003F
@@ -498,4 +504,10 @@ void eth_clk_setup(u8 mux, u8 divider)
 		reg |= ENETCLKMUX_MASK;
 		write32(PISTACHIO_CLOCK_SWITCH, reg);
 	}
+}
+
+void setup_clk_gate_defaults(void)
+{
+	write32(MIPS_CLOCK_GATE_ADDR, MIPS_CLOCK_GATE_ALL_ON);
+	write32(RPU_CLOCK_GATE_ADDR, RPU_CLOCK_GATE_ALL_OFF);
 }

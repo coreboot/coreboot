@@ -28,7 +28,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
-#include <cpu/amd/amdfam10_sysconf.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
 extern unsigned char bus_isa;
 extern unsigned char bus_ck804[6];

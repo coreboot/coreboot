@@ -27,7 +27,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-#include <cpu/amd/amdfam10_sysconf.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
 extern unsigned char bus_ck804[6];
 extern unsigned apicid_ck804;

@@ -19,7 +19,7 @@
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
-#include <cpu/amd/amdfam10_sysconf.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
 /* APIC */
 unsigned long acpi_fill_madt(unsigned long current)

@@ -39,7 +39,7 @@ SECTIONS
 	ROMSTAGE(0x1a005000, 40K)
 	VBOOT2_WORK(0x1a00f000, 12K)
 	PRERAM_CBFS_CACHE(0x1a012000, 56K)
-	SRAM_END(0x1a020000)
+	SRAM_END(0x1a066000)
 
 	/* Bootblock executes out of KSEG0 and sets up the identity mapping.
 	 * This is identical to SRAM above, and thus also limited 64K and

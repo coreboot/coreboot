@@ -112,7 +112,9 @@ void print_fsp_info(FSP_INFO_HEADER *fsp_header)
 			fsp_header->ImageId[6], fsp_header->ImageId[7]);
 	printk(BIOS_INFO, "FSP Header Version: %d\n",
 			fsp_header->HeaderRevision);
-	printk(BIOS_INFO, "FSP Revision: %d.%d\n",
+	printk(BIOS_INFO, "FSP Revision: %d.%d.%d.%d\n",
+			(u8)((fsp_header->ImageRevision >> 24) & 0xff),
+			(u8)((fsp_header->ImageRevision >> 16) & 0xff),
 			(u8)((fsp_header->ImageRevision >> 8) & 0xff),
 			(u8)(fsp_header->ImageRevision  & 0xff));
 #if IS_ENABLED(CONFIG_DISPLAY_FSP_ENTRY_POINTS)

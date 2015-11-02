@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ *               2013 - 2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +17,7 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include <northbridge/amd/pi/BiosCallOuts.h>
+#include <device/azalia.h>
 #include "Ids.h"
 #include "heapManager.h"
 #include "FchPlatform.h"
@@ -33,7 +35,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
-	{AGESA_READ_SPD,                 agesa_ReadSpd },
+	{AGESA_READ_SPD,                 agesa_ReadSpd_from_cbfs },
 	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
@@ -49,26 +51,41 @@ const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
  * Realtek ALC272 CODEC Verb Table
  */
 static const CODEC_ENTRY Alc272_VerbTbl[] = {
-	{0x11, 0x411111F0}, //        - SPDIF_OUT2
-	{0x12, 0x411111F0}, //        - DMIC_1/2
-	{0x13, 0x411111F0}, //        - DMIC_3/4
-	{0x14, 0x411111F0}, // Port D - LOUT1
-	{0x15, 0x411111F0}, // Port A - LOUT2
-	{0x16, 0x411111F0}, //
-	{0x17, 0x411111F0}, // Port H - MONO
-	{0x18, 0x01a19840}, // Port B - MIC1
-	{0x19, 0x411111F0}, // Port F - MIC2
-	{0x1a, 0x01813030}, // Port C - LINE1
-	{0x1b, 0x411111F0}, // Port E - LINE2
-	{0x1d, 0x40251E05}, //        - PCBEEP
-	{0x1e, 0x01441120}, //        - SPDIF_OUT1
-	{0x21, 0x01214010}, // Port I - HPOUT
-	{0xff, 0xffffffff}
+	{ 0x11, 0x411111F0 },               /*        - S/PDIF Output 2         */
+	{ 0x12, 0x411111F0 },               /*        - Digital Mic 1/2 [GPIO0] */
+	{ 0x13, 0x411111F0 },               /*        - Digital Mic 3/4 [GPIO1] */
+	{ 0x14, 0x411111F0 },               /* Port D - Front Panel headphone   */
+	{ 0x15, 0x411111F0 },               /* Port A - Surround                */
+	{ 0x17, 0x411111F0 },               /* Port H - Mono                    */
+	{ 0x18,                             /* Port B - MIC - combo jack        */
+			(AZALIA_PINCFG_PORT_JACK << 30)
+			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_REAR) << 24)
+			| (AZALIA_PINCFG_DEVICE_MICROPHONE << 20)
+			| (AZALIA_PINCFG_CONN_MINI_HEADPHONE_JACK << 16)
+			| (AZALIA_PINCFG_COLOR_BLACK << 12)
+			| (4 << 4)
+			| (0 << 0)
+	},
+	{ 0x19, 0x411111F0 },               /* Port F - Front Panel Mic        */
+	{ 0x1A, 0x411111F0 },               /* Port C - LINE1      */
+	{ 0x1B, 0x411111F0 },               /* Port E - Front Panel line-out   */
+	{ 0x1D, 0x40130605 },               /*        - PCBEEP     */
+	{ 0x1E, 0x411111F0 },               /*        - SPDIF_OUT1 */
+	{ 0x21,                             /* Port I - HPout - combo jack     */
+			(AZALIA_PINCFG_PORT_JACK << 30)
+			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_REAR) << 24)
+			| (AZALIA_PINCFG_DEVICE_HP_OUT << 20)
+			| (AZALIA_PINCFG_CONN_MINI_HEADPHONE_JACK << 16)
+			| (AZALIA_PINCFG_COLOR_BLACK << 12)
+			| (4 << 4)
+			| (0 << 0)
+	},
+	{ 0xFF, 0xFFFFFFFF },
 };
 
 static const CODEC_TBL_LIST CodecTableList[] =
 {
-	{0x10ec0272, (CODEC_ENTRY*)&Alc272_VerbTbl[0]},
+	{0x10ec0272, Alc272_VerbTbl},
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
 };
 
@@ -141,40 +158,40 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	/* Thermal Zone Parameter */
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg1 = 0x00;    /* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg2 = 0x3d;    //BIT0 | BIT2 | BIT5;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg3 = 0x4e;    //6 | BIT3;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg2 = 0x00;    //BIT0 | BIT2 | BIT5;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg3 = 0x00;    //6 | BIT3;
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg4 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x04;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x9a;    /* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg7 = 0x01;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0x01;    /* PWM steping rate in unit of PWM level percentage */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0x00;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x00;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x98;    /* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg7 = 2;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0;       /* PWM steping rate in unit of PWM level percentage */
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0;
 
 	/* IMC Fan Policy temperature thresholds */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg1 = 0x00;    /* Zone */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0x46;    /*AC0 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0x3c;    /*AC1 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0x32;    /*AC2 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0xff;    /*AC3 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0xff;    /*AC4 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0xff;    /*AC5 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg8 = 0xff;    /*AC6 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg9 = 0xff;    /*AC7 lowest threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegA = 0x4b;    /*critical threshold* in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0;       /*AC0 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0;       /*AC1 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0;       /*AC2 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0;       /*AC3 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0;       /*AC4 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0;       /*AC5 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg8 = 0;       /*AC6 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg9 = 0;       /*AC7 lowest threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegA = 0;       /*critical threshold* in Celsius, 0xFF is not define */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegB = 0x00;
 
 	/* IMC Fan Policy PWM Settings */
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg1 = 0x00;    /* Zone */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg2 = 0x5a;    /* AL0 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg3 = 0x46;    /* AL1 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg4 = 0x28;    /* AL2 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg5 = 0xff;    /* AL3 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg6 = 0xff;    /* AL4 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg7 = 0xff;    /* AL5 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg8 = 0xff;    /* AL6 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg9 = 0xff;    /* AL7 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg2 = 0;       /* AL0 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg3 = 0;       /* AL1 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg4 = 0;       /* AL2 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg5 = 0x00;    /* AL3 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg6 = 0x00;    /* AL4 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg7 = 0x00;    /* AL5 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg8 = 0x00;    /* AL6 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg9 = 0x00;    /* AL7 percentage */
 
 	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg1 = 0x01;    /* Zone */
@@ -273,7 +290,14 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
 		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&CodecTableList[0]);
+		FchParams->Azalia.AzaliaPinCfg = TRUE;
+		FchParams->Azalia.AzaliaConfig = (const AZALIA_PIN){
+			.AzaliaSdin0 = (CONFIG_AZ_PIN>>0) & 0x03,
+			.AzaliaSdin1 = (CONFIG_AZ_PIN>>2) & 0x03,
+			.AzaliaSdin2 = (CONFIG_AZ_PIN>>4) & 0x03,
+			.AzaliaSdin3 = (CONFIG_AZ_PIN>>6) & 0x03
+		};
+		FchParams->Azalia.AzaliaOemCodecTablePtr = CodecTableList;
 		/* Azalia Controller Front Panel OEM Table Pointer */
 
 		/* Fan Control */

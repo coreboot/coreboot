@@ -68,16 +68,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
 
-	/*
-	 * This refers to LpcClkDrvSth settling time.  Without this setting, processor
-	 * initialization is slow or incorrect, so this wait has been replicated from
-	 * earlier development boards.
-	 */
-	{
-		int i;
-		for(i = 0; i < 200000; i++) inb(0xCD6);
-	}
-
 	post_code(0x37);
 	AGESAWRAPPER(amdinitreset);
 

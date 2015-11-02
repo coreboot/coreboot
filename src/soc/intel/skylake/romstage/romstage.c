@@ -85,22 +85,13 @@ void soc_memory_init_params(struct romstage_params *params,
 	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
 	config = dev->chip_info;
 
-	memcpy(upd->PcieRpEnable, config->PcieRpEnable,
-		sizeof(upd->PcieRpEnable));
-	memcpy(upd->PcieRpClkReqSupport, config->PcieRpClkReqSupport,
-		sizeof(upd->PcieRpClkReqSupport));
-	memcpy(upd->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
-		sizeof(upd->PcieRpClkReqNumber));
-
 	upd->MmioSize = 0x800; /* 2GB in MB */
 	upd->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	upd->IedSize = CONFIG_IED_REGION_SIZE;
 	upd->ProbelessTrace = config->ProbelessTrace;
-	upd->EnableLan = config->EnableLan;
 	upd->EnableTraceHub = config->EnableTraceHub;
 	upd->SaGv = config->SaGv;
 	upd->RMT = config->Rmt;
-	upd->Cio2Enable = config->Cio2Enable;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
@@ -227,169 +218,8 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	fsp_display_upd_value("IedSize", 4, old->IedSize, new->IedSize);
 	fsp_display_upd_value("TsegSize", 4, old->TsegSize, new->TsegSize);
 	fsp_display_upd_value("MmioSize", 2, old->MmioSize, new->MmioSize);
-	fsp_display_upd_value("EnableLan", 1, old->EnableLan, new->EnableLan);
 	fsp_display_upd_value("EnableTraceHub", 1, old->EnableTraceHub,
 		new->EnableTraceHub);
-	fsp_display_upd_value("PcieRpEnable[0]", 1, old->PcieRpEnable[0],
-		new->PcieRpEnable[0]);
-	fsp_display_upd_value("PcieRpEnable[1]", 1, old->PcieRpEnable[1],
-		new->PcieRpEnable[1]);
-	fsp_display_upd_value("PcieRpEnable[2]", 1, old->PcieRpEnable[2],
-		new->PcieRpEnable[2]);
-	fsp_display_upd_value("PcieRpEnable[3]", 1, old->PcieRpEnable[3],
-		new->PcieRpEnable[3]);
-	fsp_display_upd_value("PcieRpEnable[4]", 1, old->PcieRpEnable[4],
-		new->PcieRpEnable[4]);
-	fsp_display_upd_value("PcieRpEnable[5]", 1, old->PcieRpEnable[5],
-		new->PcieRpEnable[5]);
-	fsp_display_upd_value("PcieRpEnable[6]", 1, old->PcieRpEnable[6],
-		new->PcieRpEnable[6]);
-	fsp_display_upd_value("PcieRpEnable[7]", 1, old->PcieRpEnable[7],
-		new->PcieRpEnable[7]);
-	fsp_display_upd_value("PcieRpEnable[8]", 1, old->PcieRpEnable[8],
-		new->PcieRpEnable[8]);
-	fsp_display_upd_value("PcieRpEnable[9]", 1, old->PcieRpEnable[9],
-		new->PcieRpEnable[9]);
-	fsp_display_upd_value("PcieRpEnable[10]", 1, old->PcieRpEnable[10],
-		new->PcieRpEnable[10]);
-	fsp_display_upd_value("PcieRpEnable[11]", 1, old->PcieRpEnable[11],
-		new->PcieRpEnable[11]);
-	fsp_display_upd_value("PcieRpEnable[12]", 1, old->PcieRpEnable[12],
-		new->PcieRpEnable[12]);
-	fsp_display_upd_value("PcieRpEnable[13]", 1, old->PcieRpEnable[13],
-		new->PcieRpEnable[13]);
-	fsp_display_upd_value("PcieRpEnable[14]", 1, old->PcieRpEnable[14],
-		new->PcieRpEnable[14]);
-	fsp_display_upd_value("PcieRpEnable[15]", 1, old->PcieRpEnable[15],
-		new->PcieRpEnable[15]);
-	fsp_display_upd_value("PcieRpEnable[16]", 1, old->PcieRpEnable[16],
-		new->PcieRpEnable[16]);
-	fsp_display_upd_value("PcieRpEnable[17]", 1, old->PcieRpEnable[17],
-		new->PcieRpEnable[17]);
-	fsp_display_upd_value("PcieRpEnable[18]", 1, old->PcieRpEnable[18],
-		new->PcieRpEnable[18]);
-	fsp_display_upd_value("PcieRpEnable[19]", 1, old->PcieRpEnable[19],
-		new->PcieRpEnable[19]);
-	fsp_display_upd_value("PcieRpClkReqSupport[0]", 1,
-		old->PcieRpClkReqSupport[0],
-		new->PcieRpClkReqSupport[0]);
-	fsp_display_upd_value("PcieRpClkReqSupport[1]", 1,
-		old->PcieRpClkReqSupport[1],
-		new->PcieRpClkReqSupport[1]);
-	fsp_display_upd_value("PcieRpClkReqSupport[2]", 1,
-		old->PcieRpClkReqSupport[2],
-		new->PcieRpClkReqSupport[2]);
-	fsp_display_upd_value("PcieRpClkReqSupport[3]", 1,
-		old->PcieRpClkReqSupport[3],
-		new->PcieRpClkReqSupport[3]);
-	fsp_display_upd_value("PcieRpClkReqSupport[4]", 1,
-		old->PcieRpClkReqSupport[4],
-		new->PcieRpClkReqSupport[4]);
-	fsp_display_upd_value("PcieRpClkReqSupport[5]", 1,
-		old->PcieRpClkReqSupport[5],
-		new->PcieRpClkReqSupport[5]);
-	fsp_display_upd_value("PcieRpClkReqSupport[6]", 1,
-		old->PcieRpClkReqSupport[6],
-		new->PcieRpClkReqSupport[6]);
-	fsp_display_upd_value("PcieRpClkReqSupport[7]", 1,
-		old->PcieRpClkReqSupport[7],
-		new->PcieRpClkReqSupport[7]);
-	fsp_display_upd_value("PcieRpClkReqSupport[8]", 1,
-		old->PcieRpClkReqSupport[8],
-		new->PcieRpClkReqSupport[8]);
-	fsp_display_upd_value("PcieRpClkReqSupport[9]", 1,
-		old->PcieRpClkReqSupport[9],
-		new->PcieRpClkReqSupport[9]);
-	fsp_display_upd_value("PcieRpClkReqSupport[10]", 1,
-		old->PcieRpClkReqSupport[10],
-		new->PcieRpClkReqSupport[10]);
-	fsp_display_upd_value("PcieRpClkReqSupport[11]", 1,
-		old->PcieRpClkReqSupport[11],
-		new->PcieRpClkReqSupport[11]);
-	fsp_display_upd_value("PcieRpClkReqSupport[12]", 1,
-		old->PcieRpClkReqSupport[12],
-		new->PcieRpClkReqSupport[12]);
-	fsp_display_upd_value("PcieRpClkReqSupport[13]", 1,
-		old->PcieRpClkReqSupport[13],
-		new->PcieRpClkReqSupport[13]);
-	fsp_display_upd_value("PcieRpClkReqSupport[14]", 1,
-		old->PcieRpClkReqSupport[14],
-		new->PcieRpClkReqSupport[14]);
-	fsp_display_upd_value("PcieRpClkReqSupport[15]", 1,
-		old->PcieRpClkReqSupport[15],
-		new->PcieRpClkReqSupport[15]);
-	fsp_display_upd_value("PcieRpClkReqSupport[16]", 1,
-		old->PcieRpClkReqSupport[16],
-		new->PcieRpClkReqSupport[16]);
-	fsp_display_upd_value("PcieRpClkReqSupport[17]", 1,
-		old->PcieRpClkReqSupport[17],
-		new->PcieRpClkReqSupport[17]);
-	fsp_display_upd_value("PcieRpClkReqSupport[18]", 1,
-		old->PcieRpClkReqSupport[18],
-		new->PcieRpClkReqSupport[18]);
-	fsp_display_upd_value("PcieRpClkReqSupport[19]", 1,
-		old->PcieRpClkReqSupport[19],
-		new->PcieRpClkReqSupport[19]);
-	fsp_display_upd_value("PcieRpClkReqNumber[0]", 1,
-		old->PcieRpClkReqNumber[0],
-		new->PcieRpClkReqNumber[0]);
-	fsp_display_upd_value("PcieRpClkReqNumber[1]", 1,
-		old->PcieRpClkReqNumber[1],
-		new->PcieRpClkReqNumber[1]);
-	fsp_display_upd_value("PcieRpClkReqNumber[2]", 1,
-		old->PcieRpClkReqNumber[2],
-		new->PcieRpClkReqNumber[2]);
-	fsp_display_upd_value("PcieRpClkReqNumber[3]", 1,
-		old->PcieRpClkReqNumber[3],
-		new->PcieRpClkReqNumber[3]);
-	fsp_display_upd_value("PcieRpClkReqNumber[4]", 1,
-		old->PcieRpClkReqNumber[4],
-		new->PcieRpClkReqNumber[4]);
-	fsp_display_upd_value("PcieRpClkReqNumber[5]", 1,
-		old->PcieRpClkReqNumber[5],
-		new->PcieRpClkReqNumber[5]);
-	fsp_display_upd_value("PcieRpClkReqNumber[6]", 1,
-		old->PcieRpClkReqNumber[6],
-		new->PcieRpClkReqNumber[6]);
-	fsp_display_upd_value("PcieRpClkReqNumber[7]", 1,
-		old->PcieRpClkReqNumber[7],
-		new->PcieRpClkReqNumber[7]);
-	fsp_display_upd_value("PcieRpClkReqNumber[8]", 1,
-		old->PcieRpClkReqNumber[8],
-		new->PcieRpClkReqNumber[8]);
-	fsp_display_upd_value("PcieRpClkReqNumber[9]", 1,
-		old->PcieRpClkReqNumber[9],
-		new->PcieRpClkReqNumber[9]);
-	fsp_display_upd_value("PcieRpClkReqNumber[10]", 1,
-		old->PcieRpClkReqNumber[10],
-		new->PcieRpClkReqNumber[10]);
-	fsp_display_upd_value("PcieRpClkReqNumber[11]", 1,
-		old->PcieRpClkReqNumber[11],
-		new->PcieRpClkReqNumber[11]);
-	fsp_display_upd_value("PcieRpClkReqNumber[12]", 1,
-		old->PcieRpClkReqNumber[12],
-		new->PcieRpClkReqNumber[12]);
-	fsp_display_upd_value("PcieRpClkReqNumber[13]", 1,
-		old->PcieRpClkReqNumber[13],
-		new->PcieRpClkReqNumber[13]);
-	fsp_display_upd_value("PcieRpClkReqNumber[14]", 1,
-		old->PcieRpClkReqNumber[14],
-		new->PcieRpClkReqNumber[14]);
-	fsp_display_upd_value("PcieRpClkReqNumber[15]", 1,
-		old->PcieRpClkReqNumber[15],
-		new->PcieRpClkReqNumber[15]);
-	fsp_display_upd_value("PcieRpClkReqNumber[16]", 1,
-		old->PcieRpClkReqNumber[16],
-		new->PcieRpClkReqNumber[16]);
-	fsp_display_upd_value("PcieRpClkReqNumber[17]", 1,
-		old->PcieRpClkReqNumber[17],
-		new->PcieRpClkReqNumber[17]);
-	fsp_display_upd_value("PcieRpClkReqNumber[18]", 1,
-		old->PcieRpClkReqNumber[18],
-		new->PcieRpClkReqNumber[18]);
-	fsp_display_upd_value("PcieRpClkReqNumber[19]", 1,
-		old->PcieRpClkReqNumber[19],
-		new->PcieRpClkReqNumber[19]);
 	fsp_display_upd_value("IgdDvmt50PreAlloc", 1, old->IgdDvmt50PreAlloc,
 		new->IgdDvmt50PreAlloc);
 	fsp_display_upd_value("InternalGfx", 1, old->InternalGfx,
@@ -398,7 +228,6 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 		new->ApertureSize);
 	fsp_display_upd_value("SaGv", 1, old->SaGv, new->SaGv);
 	fsp_display_upd_value("RMT", 1, old->RMT, new->RMT);
-	fsp_display_upd_value("Cio2Enable", 1, old->Cio2Enable, new->Cio2Enable);
 }
 
 /* SOC initialization after RAM is enabled. */

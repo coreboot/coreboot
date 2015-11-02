@@ -299,6 +299,15 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 		}
 	}
 
+	memcpy(params->PcieRpEnable, config->PcieRpEnable,
+			sizeof(params->PcieRpEnable));
+	memcpy(params->PcieRpClkReqSupport, config->PcieRpClkReqSupport,
+			sizeof(params->PcieRpClkReqSupport));
+	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
+			sizeof(params->PcieRpClkReqNumber));
+
+	params->EnableLan = config->EnableLan;
+	params->Cio2Enable = config->Cio2Enable;
 	params->SataSalpSupport = config->SataSalpSupport;
 	params->SataPortsEnable[0] = config->SataPortsEnable[0];
 	params->SsicPortEnable = config->SsicPortEnable;
@@ -390,6 +399,170 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 	fsp_display_upd_value("Device4Enable", 1,
 		original->Device4Enable,
 		params->Device4Enable);
+	fsp_display_upd_value("PcieRpEnable[0]", 1, original->PcieRpEnable[0],
+		params->PcieRpEnable[0]);
+	fsp_display_upd_value("PcieRpEnable[1]", 1, original->PcieRpEnable[1],
+		params->PcieRpEnable[1]);
+	fsp_display_upd_value("PcieRpEnable[2]", 1, original->PcieRpEnable[2],
+		params->PcieRpEnable[2]);
+	fsp_display_upd_value("PcieRpEnable[3]", 1, original->PcieRpEnable[3],
+		params->PcieRpEnable[3]);
+	fsp_display_upd_value("PcieRpEnable[4]", 1, original->PcieRpEnable[4],
+		params->PcieRpEnable[4]);
+	fsp_display_upd_value("PcieRpEnable[5]", 1, original->PcieRpEnable[5],
+		params->PcieRpEnable[5]);
+	fsp_display_upd_value("PcieRpEnable[6]", 1, original->PcieRpEnable[6],
+		params->PcieRpEnable[6]);
+	fsp_display_upd_value("PcieRpEnable[7]", 1, original->PcieRpEnable[7],
+		params->PcieRpEnable[7]);
+	fsp_display_upd_value("PcieRpEnable[8]", 1, original->PcieRpEnable[8],
+		params->PcieRpEnable[8]);
+	fsp_display_upd_value("PcieRpEnable[9]", 1, original->PcieRpEnable[9],
+		params->PcieRpEnable[9]);
+	fsp_display_upd_value("PcieRpEnable[10]", 1, original->PcieRpEnable[10],
+		params->PcieRpEnable[10]);
+	fsp_display_upd_value("PcieRpEnable[11]", 1, original->PcieRpEnable[11],
+		params->PcieRpEnable[11]);
+	fsp_display_upd_value("PcieRpEnable[12]", 1, original->PcieRpEnable[12],
+		params->PcieRpEnable[12]);
+	fsp_display_upd_value("PcieRpEnable[13]", 1, original->PcieRpEnable[13],
+		params->PcieRpEnable[13]);
+	fsp_display_upd_value("PcieRpEnable[14]", 1, original->PcieRpEnable[14],
+		params->PcieRpEnable[14]);
+	fsp_display_upd_value("PcieRpEnable[15]", 1, original->PcieRpEnable[15],
+		params->PcieRpEnable[15]);
+	fsp_display_upd_value("PcieRpEnable[16]", 1, original->PcieRpEnable[16],
+		params->PcieRpEnable[16]);
+	fsp_display_upd_value("PcieRpEnable[17]", 1, original->PcieRpEnable[17],
+		params->PcieRpEnable[17]);
+	fsp_display_upd_value("PcieRpEnable[18]", 1, original->PcieRpEnable[18],
+		params->PcieRpEnable[18]);
+	fsp_display_upd_value("PcieRpEnable[19]", 1, original->PcieRpEnable[19],
+		params->PcieRpEnable[19]);
+	fsp_display_upd_value("PcieRpClkReqSupport[0]", 1,
+		original->PcieRpClkReqSupport[0],
+		params->PcieRpClkReqSupport[0]);
+	fsp_display_upd_value("PcieRpClkReqSupport[1]", 1,
+		original->PcieRpClkReqSupport[1],
+		params->PcieRpClkReqSupport[1]);
+	fsp_display_upd_value("PcieRpClkReqSupport[2]", 1,
+		original->PcieRpClkReqSupport[2],
+		params->PcieRpClkReqSupport[2]);
+	fsp_display_upd_value("PcieRpClkReqSupport[3]", 1,
+		original->PcieRpClkReqSupport[3],
+		params->PcieRpClkReqSupport[3]);
+	fsp_display_upd_value("PcieRpClkReqSupport[4]", 1,
+		original->PcieRpClkReqSupport[4],
+		params->PcieRpClkReqSupport[4]);
+	fsp_display_upd_value("PcieRpClkReqSupport[5]", 1,
+		original->PcieRpClkReqSupport[5],
+		params->PcieRpClkReqSupport[5]);
+	fsp_display_upd_value("PcieRpClkReqSupport[6]", 1,
+		original->PcieRpClkReqSupport[6],
+		params->PcieRpClkReqSupport[6]);
+	fsp_display_upd_value("PcieRpClkReqSupport[7]", 1,
+		original->PcieRpClkReqSupport[7],
+		params->PcieRpClkReqSupport[7]);
+	fsp_display_upd_value("PcieRpClkReqSupport[8]", 1,
+		original->PcieRpClkReqSupport[8],
+		params->PcieRpClkReqSupport[8]);
+	fsp_display_upd_value("PcieRpClkReqSupport[9]", 1,
+		original->PcieRpClkReqSupport[9],
+		params->PcieRpClkReqSupport[9]);
+	fsp_display_upd_value("PcieRpClkReqSupport[10]", 1,
+		original->PcieRpClkReqSupport[10],
+		params->PcieRpClkReqSupport[10]);
+	fsp_display_upd_value("PcieRpClkReqSupport[11]", 1,
+		original->PcieRpClkReqSupport[11],
+		params->PcieRpClkReqSupport[11]);
+	fsp_display_upd_value("PcieRpClkReqSupport[12]", 1,
+		original->PcieRpClkReqSupport[12],
+		params->PcieRpClkReqSupport[12]);
+	fsp_display_upd_value("PcieRpClkReqSupport[13]", 1,
+		original->PcieRpClkReqSupport[13],
+		params->PcieRpClkReqSupport[13]);
+	fsp_display_upd_value("PcieRpClkReqSupport[14]", 1,
+		original->PcieRpClkReqSupport[14],
+		params->PcieRpClkReqSupport[14]);
+	fsp_display_upd_value("PcieRpClkReqSupport[15]", 1,
+		original->PcieRpClkReqSupport[15],
+		params->PcieRpClkReqSupport[15]);
+	fsp_display_upd_value("PcieRpClkReqSupport[16]", 1,
+		original->PcieRpClkReqSupport[16],
+		params->PcieRpClkReqSupport[16]);
+	fsp_display_upd_value("PcieRpClkReqSupport[17]", 1,
+		original->PcieRpClkReqSupport[17],
+		params->PcieRpClkReqSupport[17]);
+	fsp_display_upd_value("PcieRpClkReqSupport[18]", 1,
+		original->PcieRpClkReqSupport[18],
+		params->PcieRpClkReqSupport[18]);
+	fsp_display_upd_value("PcieRpClkReqSupport[19]", 1,
+		original->PcieRpClkReqSupport[19],
+		params->PcieRpClkReqSupport[19]);
+	fsp_display_upd_value("PcieRpClkReqNumber[0]", 1,
+		original->PcieRpClkReqNumber[0],
+		params->PcieRpClkReqNumber[0]);
+	fsp_display_upd_value("PcieRpClkReqNumber[1]", 1,
+		original->PcieRpClkReqNumber[1],
+		params->PcieRpClkReqNumber[1]);
+	fsp_display_upd_value("PcieRpClkReqNumber[2]", 1,
+		original->PcieRpClkReqNumber[2],
+		params->PcieRpClkReqNumber[2]);
+	fsp_display_upd_value("PcieRpClkReqNumber[3]", 1,
+		original->PcieRpClkReqNumber[3],
+		params->PcieRpClkReqNumber[3]);
+	fsp_display_upd_value("PcieRpClkReqNumber[4]", 1,
+		original->PcieRpClkReqNumber[4],
+		params->PcieRpClkReqNumber[4]);
+	fsp_display_upd_value("PcieRpClkReqNumber[5]", 1,
+		original->PcieRpClkReqNumber[5],
+		params->PcieRpClkReqNumber[5]);
+	fsp_display_upd_value("PcieRpClkReqNumber[6]", 1,
+		original->PcieRpClkReqNumber[6],
+		params->PcieRpClkReqNumber[6]);
+	fsp_display_upd_value("PcieRpClkReqNumber[7]", 1,
+		original->PcieRpClkReqNumber[7],
+		params->PcieRpClkReqNumber[7]);
+	fsp_display_upd_value("PcieRpClkReqNumber[8]", 1,
+		original->PcieRpClkReqNumber[8],
+		params->PcieRpClkReqNumber[8]);
+	fsp_display_upd_value("PcieRpClkReqNumber[9]", 1,
+		original->PcieRpClkReqNumber[9],
+		params->PcieRpClkReqNumber[9]);
+	fsp_display_upd_value("PcieRpClkReqNumber[10]", 1,
+		original->PcieRpClkReqNumber[10],
+		params->PcieRpClkReqNumber[10]);
+	fsp_display_upd_value("PcieRpClkReqNumber[11]", 1,
+		original->PcieRpClkReqNumber[11],
+		params->PcieRpClkReqNumber[11]);
+	fsp_display_upd_value("PcieRpClkReqNumber[12]", 1,
+		original->PcieRpClkReqNumber[12],
+		params->PcieRpClkReqNumber[12]);
+	fsp_display_upd_value("PcieRpClkReqNumber[13]", 1,
+		original->PcieRpClkReqNumber[13],
+		params->PcieRpClkReqNumber[13]);
+	fsp_display_upd_value("PcieRpClkReqNumber[14]", 1,
+		original->PcieRpClkReqNumber[14],
+		params->PcieRpClkReqNumber[14]);
+	fsp_display_upd_value("PcieRpClkReqNumber[15]", 1,
+		original->PcieRpClkReqNumber[15],
+		params->PcieRpClkReqNumber[15]);
+	fsp_display_upd_value("PcieRpClkReqNumber[16]", 1,
+		original->PcieRpClkReqNumber[16],
+		params->PcieRpClkReqNumber[16]);
+	fsp_display_upd_value("PcieRpClkReqNumber[17]", 1,
+		original->PcieRpClkReqNumber[17],
+		params->PcieRpClkReqNumber[17]);
+	fsp_display_upd_value("PcieRpClkReqNumber[18]", 1,
+		original->PcieRpClkReqNumber[18],
+		params->PcieRpClkReqNumber[18]);
+	fsp_display_upd_value("PcieRpClkReqNumber[19]", 1,
+		original->PcieRpClkReqNumber[19],
+		params->PcieRpClkReqNumber[19]);
+	fsp_display_upd_value("EnableLan", 1, original->EnableLan,
+		params->EnableLan);
+	fsp_display_upd_value("Cio2Enable", 1, original->Cio2Enable,
+		params->Cio2Enable);
 	fsp_display_upd_value("SataSalpSupport", 1, original->SataSalpSupport,
 		params->SataSalpSupport);
 	fsp_display_upd_value("SataPortsEnable[0]", 1,

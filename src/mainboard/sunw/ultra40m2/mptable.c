@@ -130,7 +130,7 @@ static void *smp_write_config_table(void *v)
 		dev = dev_find_slot(m->bus_mcp55, PCI_DEVFN(sbdn + 6 , 0));
 		if (dev && dev->enabled) {
 			for (i = 0; i < 4; i++)
-				apicpin[i] = 0x10 + (2+i)%4;
+				apicpin[i] = 0x10 + i%4;
 			smp_write_intsrc_pci_bridge(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, dev, m->apicid_mcp55, apicpin);
 		}
 	}

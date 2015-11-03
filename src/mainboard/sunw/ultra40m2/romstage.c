@@ -32,14 +32,13 @@
 #include "lib/delay.c"
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdk8/reset_test.c"
-#include <superio/winbond/common/winbond.h>
-#include <superio/winbond/w83627ehg/w83627ehg.h>
+#include <superio/smsc/dme1737/dme1737.h>
 #include <cpu/x86/bist.h>
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, DME1737_SP1)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
@@ -57,13 +56,11 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 
+#define NMI_SC 0x0061
+#define PCI_SERR_EN 0x04
+
 #define MCP55_MB_SETUP \
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+37, 0x00, 0x44,/* GPIO38 PCI_REQ3 */ \
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+38, 0x00, 0x44,/* GPIO39 PCI_GNT3 */ \
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+39, 0x00, 0x44,/* GPIO40 PCI_GNT2 */ \
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+40, 0x00, 0x44,/* GPIO41 PCI_REQ2 */ \
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+59, 0x00, 0x60,/* GPIP60 FANCTL0 */ \
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+60, 0x00, 0x60,/* GPIO61 FANCTL1 */
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+61, 0x00, 0x05,/* GPIO62: enable/not-disable on-board TSB43AB22A Firewire */
 
 #include <southbridge/nvidia/mcp55/early_setup_ss.h>
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
@@ -114,13 +111,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
-	pnp_enter_ext_func_mode(SERIAL_DEV);
-	pnp_write_config(SERIAL_DEV, 0x24, 0);
-	pnp_exit_ext_func_mode(SERIAL_DEV);
-
 	setup_mb_resource_map();
 
-	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	dme1737_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	/* Halt if there was a built in self test failure */
@@ -168,6 +161,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset |= optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 	needs_reset |= mcp55_early_setup_x();
+
+	/* mask NMI from constantly-asserted-on-this-board SERR# */
+	outb((inb(NMI_SC) & 0x0f) | PCI_SERR_EN, NMI_SC);
 
 	// fidvid change will issue one LDTSTOP and the HT change will be effective too
 	if (needs_reset) {

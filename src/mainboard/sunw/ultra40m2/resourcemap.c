@@ -194,7 +194,7 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the end of PCI I/O region n
 		 * [31:25] Reserved
 		 */
-//		PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x00007000,
+//		PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x00007010,
 //		PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x01fff020, // need to talk to ANALOG of second CK804 to release PCI E reset
 		PCI_ADDR(0, 0x18, 1, 0xD4), 0xFE000FC8, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xDC), 0xFE000FC8, 0x00000000,
@@ -265,7 +265,7 @@ static void setup_mb_resource_map(void)
 		 * [31:24] Bus Number Limit i
 		 *	   This field defines the highest bus number in configuration region i
 		 */
-//		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x3f000003, /* link 0 of cpu 0 --> Nvidia MCP55 Pro */
+//		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x3f000103, /* link 1 of cpu 0 --> Nvidia MCP55 Pro */
 //		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x7f400203, /* link 2 of cpu 0 --> nvidia io55 */
 		PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,

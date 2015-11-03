@@ -19,18 +19,18 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10ec0880,	// Codec Vendor / Device ID: Realtek ALC880
+	0x10ec0885,	// Codec Vendor / Device ID: Realtek ALC889A
 	0x00000000,	// Subsystem ID
 	0x0000000d,	// Number of jacks
 
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x0000e601 */
-	AZALIA_SUBVENDOR(0x0, 0x0000e601),
+	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x108ee601 */
+	AZALIA_SUBVENDOR(0x0, 0x108ee601),
 
 	/* NID 0x14, FRONT-OUT-L/R */
-	AZALIA_PIN_CFG(0x0, 0x14, 0x01014410),
+	AZALIA_PIN_CFG(0x0, 0x14, 0x01014010),
 
 	/* NID 0x15, SURR-OUT-L/R */
-	AZALIA_PIN_CFG(0x0, 0x15, 0x01011412),
+	AZALIA_PIN_CFG(0x0, 0x15, 0x01011012),
 
 	/* NID 0x16, CEN/LFE-OUT */
 	AZALIA_PIN_CFG(0x0, 0x16, 0x01016011),
@@ -39,28 +39,28 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0x0, 0x17, 0x01012014),
 
 	/* NID 0x18, MIC1-L/R, VREFO */
-	AZALIA_PIN_CFG(0x0, 0x18, 0x01a19c30),
+	AZALIA_PIN_CFG(0x0, 0x18, 0x01a19840),
 
 	/* NID 0x19, MIC2-L/R, VREFO */
-	AZALIA_PIN_CFG(0x0, 0x19, 0x02a19c40),
+	AZALIA_PIN_CFG(0x0, 0x19, 0x02a19850),
 
 	/* NID 0x1a, LINE1-L/R, VREFO */
-	AZALIA_PIN_CFG(0x0, 0x1a, 0x01813431),
+	AZALIA_PIN_CFG(0x0, 0x1a, 0x01813041),
 
 	/* NID 0x1b, LINE2-L/R, VREFO */
-	AZALIA_PIN_CFG(0x0, 0x1b, 0x0221441f),
+	AZALIA_PIN_CFG(0x0, 0x1b, 0x02214020),
 
 	/* NID 0x1c, CD-L/R / GND */
-	AZALIA_PIN_CFG(0x0, 0x1c, 0x411111f0),
+	AZALIA_PIN_CFG(0x0, 0x1c, 0x9933014f),
 
 	/* NID 0x1d, PCBEEP */
-	AZALIA_PIN_CFG(0x0, 0x1d, 0x9983013e),
+	AZALIA_PIN_CFG(0x0, 0x1d, 0x99830142),
 
 	/* NID 0x1e, S/PDIF-OUT */
-	AZALIA_PIN_CFG(0x0, 0x1e, 0x01454120),
+	AZALIA_PIN_CFG(0x0, 0x1e, 0x014b4130),
 
 	/* NID 0x1f, S/PDIF-IN */
-	AZALIA_PIN_CFG(0x0, 0x1f, 0x01c59150),
+	AZALIA_PIN_CFG(0x0, 0x1f, 0x01cb9160),
 };
 
 const u32 pc_beep_verbs[0] = {};

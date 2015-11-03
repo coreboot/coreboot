@@ -141,6 +141,7 @@ Scope (\_SB.PCI0.I2C4)
 		Name (_HID, "10508825")
 		Name (_DDN, "NAU88L25 Codec")
 		Name (_UID, 1)
+		Name (_S0W, 4)
 		Name (_DSD, Package () {
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 			Package () {

@@ -27,7 +27,7 @@ static void main(unsigned long bist)
 		 * Do not add any other CMOS access in the
 		 * bootblock for AP CPUs.
 		 */
-		boot_mode = last_boot_normal();
+		boot_mode = boot_use_normal(cmos_read(RTC_BOOT_BYTE));
 	}
 
 	char *filenames = (char *)walkcbfs("coreboot-stages");

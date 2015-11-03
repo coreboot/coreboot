@@ -75,12 +75,12 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
             #chip drivers/generic/generic	# PCA9556 GPIO on HDD backplanes (address conflict!)
             #  device i2c 18 on end
             #end
-            #chip drivers/generic/generic	# EMC6D103 HWM (for CPUs)
-            #  device i2c 2d on end
-            #end
-            #chip drivers/generic/generic	# DME1737 HWM
-            #  device i2c 2e on end
-            #end
+            chip drivers/generic/generic	# EMC6D103 HWM (for CPUs)
+              device i2c 2d on end
+            end
+            chip drivers/generic/generic	# DME1737 HWM
+              device i2c 2e on end
+            end
             #chip drivers/generic/generic	# HDD 4-7 backplane FRU 24C64 EEPROM
             #  device i2c 51 on end
             #end

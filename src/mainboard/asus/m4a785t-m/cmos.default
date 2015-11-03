@@ -1,5 +1,4 @@
 boot_option=Fallback
-last_boot=Fallback
 ECC_memory=Enable
 baud_rate=115200
 hw_scrubber=Enable

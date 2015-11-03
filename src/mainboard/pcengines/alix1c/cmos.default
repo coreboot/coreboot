@@ -1,5 +1,4 @@
 boot_option=Fallback
-last_boot=Fallback
 ECC_memory=Disable
 baud_rate=115200
 power_on_after_fail=Disable

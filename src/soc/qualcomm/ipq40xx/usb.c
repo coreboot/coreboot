@@ -20,203 +20,275 @@
 #include <soc/iomap.h>
 #include <soc/usb.h>
 
-#define CRPORT_TX_OVRD_DRV_LO	0x1002
-#define CRPORT_RX_OVRD_IN_HI	0x1006
-#define CRPORT_TX_ALT_BLOCK	0x102d
+/**
+ *  USB Hardware registers
+ */
+#define PHY_CTRL0_ADDR	0x000
+#define PHY_CTRL1_ADDR	0x004
+#define PHY_CTRL2_ADDR	0x008
+#define PHY_CTRL3_ADDR	0x00C
+#define PHY_CTRL4_ADDR	0x010
+#define PHY_MISC_ADDR	0x024
+#define PHY_IPG_ADDR	0x030
 
-static u32 * const tcsr_usb_sel = (void *)0x1a4000b0;
+#define PHY_CTRL0_VAL	0xA4600015
+#define PHY_CTRL1_VAL	0x09500000
+#define PHY_CTRL2_VAL	0x00058180
+#define PHY_CTRL3_VAL	0x6DB6DCD6
+#define PHY_CTRL4_VAL	0x836DB6DB
+#define PHY_MISC_VAL	0x3803FB0C
+#define PHY_IPG_VAL	0x47323232
 
-struct usb_qc_phy {
-	u32 ipcat;
-	u32 ctrl;
-	u32 general_cfg;
-	u32 ram1;
-	u32 hs_phy_ctrl;
-	u32 param_ovrd;
-	u32 chrg_det_ctrl;
-	u32 chrg_det_output;
-	u32 alt_irq_en;
-	u32 hs_phy_irq_stat;
-	u32 cgctl;
-	u32 dbg_bus;
-	u32 ss_phy_ctrl;
-	u32 ss_phy_param1;
-	u32 ss_phy_param2;
-	u32 crport_data_in;
-	u32 crport_data_out;
-	u32 crport_cap_addr;
-	u32 crport_cap_data;
-	u32 crport_ack_read;
-	u32 crport_ack_write;
-};
-check_member(usb_qc_phy, crport_ack_write, 0x50);
+#define	USB_HOST3_PHY_BASE		((void *)0x8a00000)
+#define	USB_HOST3_BALDUR_PHY_BASE	((void *)0xa6000)
+#define	GCC_USB3_RST_CTRL		((void *)0x0181E038)
 
-static struct usb_qc_phy * const usb_host1_phy = (void *)USB_HOST1_PHY_BASE;
-static struct usb_qc_phy * const usb_host2_phy = (void *)USB_HOST2_PHY_BASE;
+#define DWC3_GCTL			0xc110
+#define DWC3_GUSB3PIPECTL(n)		(0xc2c0 + (n * 0x04))
+#define DWC3_GUSB2PHYCFG(n)		(0xc200 + (n * 0x04))
 
-struct usb_dwc3 {
-	u32 sbuscfg0;
-	u32 sbuscfg1;
-	u32 txthrcfg;
-	u32 rxthrcfg;
-	u32 ctl;
-	u32 evten;
-	u32 sts;
-	u8 reserved0[4];
-	u32 snpsid;
-	u32 gpio;
-	u32 uid;
-	u32 uctl;
-	u64 buserraddr;
-	u64 prtbimap;
-	u8 reserved1[32];
-	u32 dbgfifospace;
-	u32 dbgltssm;
-	u32 dbglnmcc;
-	u32 dbgbmu;
-	u32 dbglspmux;
-	u32 dbglsp;
-	u32 dbgepinfo0;
-	u32 dbgepinfo1;
-	u64 prtbimap_hs;
-	u64 prtbimap_fs;
-	u8 reserved2[112];
-	u32 usb2phycfg;
-	u8 reserved3[60];
-	u32 usb2i2cctl;
-	u8 reserved4[60];
-	u32 usb2phyacc;
-	u8 reserved5[60];
-	u32 usb3pipectl;
-	u8 reserved6[60];
-};
-check_member(usb_dwc3, usb3pipectl, 0x1c0);
+/* Global USB3 PIPE Control Register */
+#define DWC3_GUSB3PIPECTL_PHYSOFTRST	(1 << 31)
+#define DWC3_GUSB3PIPECTL_SUSPHY	(1 << 17)
+#define DWC3_GCTL_CORESOFTRESET		(1 << 11)
+#define DWC3_GCTL_PRTCAPDIR(n)		((n) << 12)
+#define DWC3_GCTL_PRTCAP_OTG		3
+#define DWC3_DCTL_CSFTRST		(1 << 30)
+#define DWC3_GSNPSID			0xc120
+#define DWC3_DCTL			0xc704
 
-static struct usb_dwc3 * const usb_host1_dwc3 = (void *)USB_HOST1_DWC3_BASE;
-static struct usb_dwc3 * const usb_host2_dwc3 = (void *)USB_HOST2_DWC3_BASE;
 
-static void setup_dwc3(struct usb_dwc3 *dwc3)
+/* Global USB2 PHY Configuration Register */
+#define DWC3_GUSB2PHYCFG_PHYSOFTRST	(1 << 31)
+#define DWC3_GUSB2PHYCFG_SUSPHY		(1 << 6)
+#define DWC3_GSNPSID_MASK		0xffff0000
+#define DWC3_GEVTEN			0xc114
+
+
+#define DWC3_GCTL_SCALEDOWN(n)		((n) << 4)
+#define DWC3_GCTL_SCALEDOWN_MASK	DWC3_GCTL_SCALEDOWN(3)
+#define DWC3_GCTL_DISSCRAMBLE		(1 << 3)
+#define DWC3_GCTL_DSBLCLKGTNG		(1 << 0)
+#define DWC3_GCTL_U2RSTECN		(1 << 16)
+#define DWC3_REVISION_190A		0x5533190a
+
+#define USB30_HS_PHY_CTRL		0x00000010
+#define SW_SESSVLD			(0x01 << 0x1C)
+#define UTMI_OTG_VBUS_VALID		(0x01 << 0x14)
+
+#define USB30_SS_PHY_CTRL		0x00000030
+#define LANE0_PWR_PRESENT		(0x01 << 0x18)
+
+static void setup_dwc3(void);
+
+/**
+ * Write register.
+ *
+ * @base - PHY base virtual address.
+ * @offset - register offset.
+ * @val - value to write.
+ */
+static inline void qscratch_write(void *base, u32 offset, u32 val)
 {
-	write32(&dwc3->usb3pipectl,
-		0x1 << 31 |	/* assert PHY soft reset */
-		0x1 << 25 |	/* (default) U1/U2 exit fail -> recovery? */
-		0x1 << 24 |	/* (default) activate PHY low power states */
-		0x1 << 19 |	/* (default) PHY low power delay value */
-		0x1 << 18 |	/* (default) activate PHY low power delay */
-		0x1 <<  1 |	/* (default) Tx deemphasis value */
-		0x1 <<  0);	/* (default) elastic buffer mode */
-
-	write32(&dwc3->usb2phycfg,
-		0x1 << 31 |	/* assert PHY soft reset */
-		0x9 << 10 |	/* (default) PHY clock turnaround 8-bit UTMI+ */
-		0x1 <<  8 |	/* (default) enable PHY sleep in L1 */
-		0x1 <<  6);	/* (default) enable PHY suspend */
-
-	write32(&dwc3->ctl,
-		0x2 << 19 |	/* (default) suspend clock scaling */
-		0x1 << 16 |	/* retry SS three times before HS downgrade */
-		0x1 << 12 |	/* port capability HOST */
-		0x1 << 11 |	/* assert core soft reset */
-		0x1 << 10 |	/* (default) sync ITP to refclk */
-		0x1 <<  2);	/* U2 exit after 8us LFPS (instead of 248ns) */
-
-	write32(&dwc3->uctl,
-		0x32 << 22 |	/* (default) reference clock period in ns */
-		 0x1 << 15 |	/* (default) XHCI compliant device addressing */
-		0x10 << 0); 	/* (default) devices time out after 32us */
-
-	udelay(5);
-
-	clrbits_le32(&dwc3->ctl, 0x1 << 11);	/* deassert core soft reset */
-	clrbits_le32(&dwc3->usb2phycfg, 0x1 << 31);	/* PHY soft reset */
-	clrbits_le32(&dwc3->usb3pipectl, 0x1 << 31);	/* PHY soft reset */
+	write32(base + offset, val);
 }
 
-static void setup_phy(struct usb_qc_phy *phy)
+/**
+ * Write register and read back masked value to confirm it is written
+ *
+ * @base - base virtual address.
+ * @offset - register offset.
+ * @mask - register bitmask specifying what should be updated
+ * @val - value to write.
+ */
+static inline void qscratch_write_readback(void *base, u32 offset,
+						const u32 mask, u32 val)
 {
-	write32(&phy->ss_phy_ctrl,
-		0x1 << 24 |	/* Indicate VBUS power present */
-		0x1 <<  8 |	/* Enable USB3 ref clock to prescaler */
-		0x1 <<  7 |	/* assert SS PHY reset */
-		0x19 << 0);	/* (default) reference clock multiplier */
+	u32 write_val, tmp = read32(base + offset);
 
-	write32(&phy->hs_phy_ctrl,
-		0x1 << 26 |	/* (default) unclamp DPSE/DMSE VLS */
-		0x1 << 25 |	/* (default) select freeclk for utmi_clk */
-		0x1 << 24 |	/* (default) unclamp DMSE VLS */
-		0x1 << 21 |	/* (default) enable UTMI clock */
-		0x1 << 20 |	/* set OTG VBUS as valid */
-		0x1 << 18 |	/* use ref clock from core */
-		0x1 << 17 |	/* (default) unclamp DPSE VLS */
-		0x1 << 11 |	/* force xo/bias/pll to stay on in suspend */
-		0x1 <<  9 | 	/* (default) unclamp IDHV */
-		0x1 <<  8 |	/* (default) unclamp VLS (again???) */
-		0x1 <<  7 |	/* (default) unclamp HV VLS */
-		0x7 <<  4 |	/* select frequency (no idea which one) */
-		0x1 <<  1);	/* (default) "retention enable" */
+	tmp &= ~mask;       /* retain other bits */
+	write_val = tmp | val;
 
-	write32(&phy->ss_phy_param1,
-		0x6e << 20 |	/* full TX swing amplitude */
-		0x20 << 14 |	/* (default) 6dB TX deemphasis */
-		0x17 <<  8 |	/* 3.5dB TX deemphasis */
-		 0x9 <<  3);	/* (default) LoS detector level */
+	write32(base + offset, write_val);
 
-	write32(&phy->general_cfg, 0x1 << 2);	/* set XHCI 1.00 compliance */
+	/* Read back to see if val was written */
+	tmp = read32(base + offset);
+	tmp &= mask;        /* clear other bits */
 
-	udelay(5);
-	clrbits_le32(&phy->ss_phy_ctrl, 0x1 << 7); /* deassert SS PHY reset */
+	if (tmp != val) {
+		printk(BIOS_INFO, "write: %x to QSCRATCH: %x FAILED\n",
+			val, offset);
+	}
 }
 
-static void crport_handshake(void *capture_reg, void *acknowledge_bit, u32 data)
+static void dwc3_ipq40xx_enable_vbus_valid(void)
 {
-	int usec = 100;
+	/* Enable VBUS valid for HS PHY*/
+	qscratch_write_readback((void *)0x8af8800, USB30_HS_PHY_CTRL,
+				SW_SESSVLD, SW_SESSVLD);
+	qscratch_write_readback((void *)0x8af8800, USB30_HS_PHY_CTRL,
+				UTMI_OTG_VBUS_VALID, UTMI_OTG_VBUS_VALID);
 
-	if (capture_reg)
-		write32(capture_reg, data);
-
-	write32(acknowledge_bit, 0x1 << 0);
-	while (read32(acknowledge_bit) && --usec)
-		udelay(1);
-
-	if (!usec)
-		printk(BIOS_ERR, "CRPORT handshake timed out (0x%08x)\n", data);
+	/* Enable VBUS valid for SS PHY*/
+	qscratch_write_readback((void *)0x8af8800, USB30_SS_PHY_CTRL,
+				LANE0_PWR_PRESENT, LANE0_PWR_PRESENT);
 }
 
-static void crport_write(struct usb_qc_phy *phy, u16 addr, u16 data)
+static void qcom_baldur_hs_phy_init(void)
 {
-	crport_handshake(&phy->crport_data_in, &phy->crport_cap_addr, addr);
-	crport_handshake(&phy->crport_data_in, &phy->crport_cap_data, data);
-	crport_handshake(NULL, &phy->crport_ack_write, 0);
+	u32 reg;
+
+	/* assert HS PHY POR reset */
+	reg = read32(GCC_USB3_RST_CTRL);
+	reg = reg | 0x10;
+	write32(GCC_USB3_RST_CTRL, reg);
+	mdelay(10);
+
+	/* assert HS PHY SRIF reset */
+	reg = read32(GCC_USB3_RST_CTRL);
+	reg = reg | 0x4;
+	write32(GCC_USB3_RST_CTRL, reg);
+	mdelay(10);
+
+	/* deassert HS PHY SRIF reset and program HS PHY registers */
+	reg = read32(GCC_USB3_RST_CTRL);
+	reg = reg & ~0x4;
+	write32(GCC_USB3_RST_CTRL, reg);
+
+	mdelay(10);
+
+	/* perform PHY register writes */
+	write32(USB_HOST3_BALDUR_PHY_BASE + PHY_CTRL0_ADDR, PHY_CTRL0_VAL);
+	write32(USB_HOST3_BALDUR_PHY_BASE + PHY_CTRL1_ADDR, PHY_CTRL1_VAL);
+	write32(USB_HOST3_BALDUR_PHY_BASE + PHY_CTRL2_ADDR, PHY_CTRL2_VAL);
+	write32(USB_HOST3_BALDUR_PHY_BASE + PHY_CTRL3_ADDR, PHY_CTRL3_VAL);
+	write32(USB_HOST3_BALDUR_PHY_BASE + PHY_CTRL4_ADDR, PHY_CTRL4_VAL);
+	write32(USB_HOST3_BALDUR_PHY_BASE + PHY_MISC_ADDR, PHY_MISC_VAL);
+	write32(USB_HOST3_BALDUR_PHY_BASE + PHY_IPG_ADDR, PHY_IPG_VAL);
+
+	mdelay(10);
+
+	/* de-assert USB3 HS PHY POR reset */
+	reg = read32(GCC_USB3_RST_CTRL);
+	reg = reg & ~0x10;
+	write32(GCC_USB3_RST_CTRL, reg);
 }
 
-static void tune_phy(struct usb_qc_phy *phy)
+static void qcom_uni_ss_phy_init(void)
 {
-	crport_write(phy, CRPORT_RX_OVRD_IN_HI,
-		      0x1 << 11 |	/* Set RX_EQ override? */
-		      0x4 <<  8 |	/* Set RX_EQ to 4? */
-		      0x1 <<  7);	/* Enable RX_EQ override */
-	crport_write(phy, CRPORT_TX_OVRD_DRV_LO,
-		      0x1 << 14 |	/* Enable amplitude (override?) */
-		     0x17 <<  7 |	/* Set TX deemphasis to 23 */
-		     0x6e <<  0);	/* Set amplitude to 110 */
-	crport_write(phy, CRPORT_TX_ALT_BLOCK,
-		      0x1 <<  7);	/* ALT block? ("partial RX reset") */
+	u32 reg;
+
+	/* assert SS PHY POR reset */
+	reg = read32(GCC_USB3_RST_CTRL);
+	reg = reg | 0x20;
+	write32(GCC_USB3_RST_CTRL, reg);
+
+	mdelay(100);
+
+	/* deassert SS PHY POR reset */
+	reg = read32(GCC_USB3_RST_CTRL);
+	reg = reg  & ~0x20;
+	write32(GCC_USB3_RST_CTRL, reg);
+}
+
+void setup_dwc3(void)
+{
+	u32 reg;
+	u32 revision;
+
+	revision = read32(USB_HOST3_PHY_BASE + DWC3_GSNPSID);
+	/* This should read as U3 followed by revision number */
+	if ((revision & DWC3_GSNPSID_MASK) != 0x55330000)
+		printk(BIOS_INFO, "Error in reading Version\n");
+
+	printk(BIOS_INFO, "Version = %x\n", revision);
+
+	/* issue device SoftReset too */
+	write32(USB_HOST3_PHY_BASE + DWC3_DCTL, DWC3_DCTL_CSFTRST);
+	do {
+		reg = read32(USB_HOST3_PHY_BASE + DWC3_DCTL);
+		if (!(reg & DWC3_DCTL_CSFTRST))
+			break;
+
+		udelay(10);
+	} while (true);
+	printk(BIOS_INFO, "software reset done\n");
+
+	/* Before Resetting PHY, put Core in Reset */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GCTL);
+	reg |= DWC3_GCTL_CORESOFTRESET;
+	write32(USB_HOST3_PHY_BASE + DWC3_GCTL, reg);
+
+	/* Assert USB3 PHY reset */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GUSB3PIPECTL(0));
+	reg |= DWC3_GUSB3PIPECTL_PHYSOFTRST;
+	write32(USB_HOST3_PHY_BASE + DWC3_GUSB3PIPECTL(0), reg);
+
+	/* Assert USB2 PHY reset */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GUSB2PHYCFG(0));
+	reg |= DWC3_GUSB2PHYCFG_PHYSOFTRST;
+	write32(USB_HOST3_PHY_BASE + DWC3_GUSB2PHYCFG(0), reg);
+
+	qcom_baldur_hs_phy_init();
+	qcom_uni_ss_phy_init();
+	mdelay(100);
+
+	/* Clear USB3 PHY reset */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GUSB3PIPECTL(0));
+	reg &= ~DWC3_GUSB3PIPECTL_PHYSOFTRST;
+	write32(USB_HOST3_PHY_BASE + DWC3_GUSB3PIPECTL(0), reg);
+
+	/* Clear USB2 PHY reset */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GUSB2PHYCFG(0));
+	reg &= ~DWC3_GUSB2PHYCFG_PHYSOFTRST;
+	write32(USB_HOST3_PHY_BASE + DWC3_GUSB2PHYCFG(0), reg);
+
+	mdelay(100);
+
+	/* After PHYs are stable we can take Core out of reset state */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GCTL);
+	reg &= ~DWC3_GCTL_CORESOFTRESET;
+	write32(USB_HOST3_PHY_BASE + DWC3_GCTL, reg);
+
+#if 0
+	/* Enable Suspend USB2.0 HS/FS/LS PHY (SusPHY) */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GUSB2PHYCFG(0));
+	reg |= DWC3_GUSB2PHYCFG_SUSPHY;
+	write32(USB_HOST3_PHY_BASE + DWC3_GUSB2PHYCFG(0), reg);
+
+	/* Enable Suspend USB3.0 SS PHY (Suspend_en) */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GUSB3PIPECTL(0));
+	reg |= DWC3_GUSB3PIPECTL_SUSPHY;
+	write32(USB_HOST3_PHY_BASE + DWC3_GUSB3PIPECTL(0), reg);
+#endif
+
+	/* configure controller in Host mode */
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GCTL);
+	reg &= ~(DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_OTG));
+	reg |= DWC3_GCTL_PRTCAPDIR(0x1); /* host mode */
+	write32(USB_HOST3_PHY_BASE + DWC3_GCTL, reg);
+	printk(BIOS_INFO, "USB Host mode reg = %x\n", reg);
+
+	reg = read32(USB_HOST3_PHY_BASE + DWC3_GCTL);
+	reg &= ~DWC3_GCTL_SCALEDOWN_MASK;
+	reg &= ~DWC3_GCTL_DISSCRAMBLE;
+
+	reg &= ~DWC3_GCTL_DSBLCLKGTNG;
+	/*
+	 * WORKAROUND: DWC3 revisions <1.90a have a bug
+	 * where the device can fail to connect at SuperSpeed
+	 * and falls back to high-speed mode which causes
+	 * the device to enter a Connect/Disconnect loop
+	 */
+	if (revision < DWC3_REVISION_190A)
+		reg |= DWC3_GCTL_U2RSTECN;
+
+	write32(USB_HOST3_PHY_BASE + DWC3_GCTL, reg);
 }
 
 void setup_usb_host1(void)
 {
-	printk(BIOS_INFO, "Setting up USB HOST1 controller...\n");
-	setbits_le32(tcsr_usb_sel, 1 << 0);	/* Select DWC3 controller */
-	setup_phy(usb_host1_phy);
-	setup_dwc3(usb_host1_dwc3);
-	tune_phy(usb_host1_phy);
-}
-
-void setup_usb_host2(void)
-{
-	printk(BIOS_INFO, "Setting up USB HOST2 controller...\n");
-	setbits_le32(tcsr_usb_sel, 1 << 1);	/* Select DWC3 controller */
-	setup_phy(usb_host2_phy);
-	setup_dwc3(usb_host2_dwc3);
-	tune_phy(usb_host2_phy);
+	printk(BIOS_INFO, "Setting up USB HOST1 controller.\n");
+	setup_dwc3();
+	dwc3_ipq40xx_enable_vbus_valid();
 }

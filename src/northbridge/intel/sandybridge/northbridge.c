@@ -124,9 +124,11 @@ static void add_fixed_resources(struct device *dev, int index)
 			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
 
-	/* Required for SandyBridge sighting 3715511 */
-	bad_ram_resource(dev, index++, 0x20000000 >> 10, 0x00200000 >> 10);
-	bad_ram_resource(dev, index++, 0x40000000 >> 10, 0x00200000 >> 10);
+	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
+		/* Required for SandyBridge sighting 3715511 */
+		bad_ram_resource(dev, index++, 0x20000000 >> 10, 0x00200000 >> 10);
+		bad_ram_resource(dev, index++, 0x40000000 >> 10, 0x00200000 >> 10);
+	}
 
 	/* Reserve IOMMU BARs */
 	const u32 capid0_a = pci_read_config32(dev, 0xe4);

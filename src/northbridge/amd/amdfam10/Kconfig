@@ -178,4 +178,8 @@ endchoice
 
 endmenu
 
+config MAX_REBOOT_CNT
+	int
+	default 6
+
 endif # NORTHBRIDGE_AMD_AMDFAM10

@@ -1,0 +1,264 @@
+#!/bin/bash
+#
+# This file is part of the coreboot project.
+#
+# Copyright 2015 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+#set -x # uncomment for debug
+
+TOP=$(pwd)
+MAIN_LOGFILE="${TOP}/relnotes.txt"
+
+#check for tools
+( git --version && cloc --version ) > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+	echo "ERROR: cloc or git is not installed.  Exiting"
+	exit 1
+fi
+
+#verify that the repo is clean before losing state.
+git diff-index --quiet --cached HEAD
+if [ $? -ne 0 ] || [ "$(git diff --shortstat 2> /dev/null | tail -n1)" != "" ]; then
+	echo "ERROR: repo is not clean.  Exiting."
+	exit 1
+fi
+
+#verify command line arguments
+if [ -z "$1" ] || [ -z "$2" ]; then
+echo
+echo "Usage: $0 <old_version> <new_version>"
+echo "Old version should be a tag (4.1), a branch (origin/4.1), or a commit id"
+echo "New version can be 'HEAD' a branch (origin/master) a tag (4.2), or a commit id"
+echo "Example: \"$0 origin/4.1 4.2\""
+echo
+exit 1
+else
+	OLD_COREBOOT_VERSION="$1"
+	NEW_COREBOOT_VERSION="$2"
+fi
+
+#Figure out which logfile we're writing to.
+if [ -f "$MAIN_LOGFILE" ]; then
+	LOGFILE="$(mktemp "LOGFILE.XXXX")"
+	LOGFILE="${TOP}/$LOGFILE"
+	UPDATE_MAIN_LOGFILE=1
+else
+	LOGFILE="$MAIN_LOGFILE"
+fi
+
+#print and log the versions
+log_versions() {
+	echo "Log of commit $1 to commit $2"
+	echo "Log of commit $1 to commit $2" >> "$LOGFILE"
+	echo "Total commits: $(git log "${1}..${2}" | grep -c '^commit ' )"
+	echo "Total commits: $(git log "${1}..${2}" | grep -c '^commit ' )" >> "$LOGFILE"
+	echo
+}
+
+#get the first commit id in the current tree
+get_latest_commit_id() {
+	pushd "$1" > /dev/null
+	git log | grep '^commit ' | head -1 | sed 's/commit //'
+	popd > /dev/null
+}
+
+#main get log function
+_get_log() {
+	local oldver="$1"
+	local newver="$2"
+	local title="$3"
+	local paths="$4"
+
+	#Leave ${paths} unquoted
+	git log --abbrev-commit --pretty=oneline "${oldver}..${newver}" -- ${paths} | \
+	sort -t ' ' -k 2 | \
+	uniq
+}
+
+#output to a new log, then compare to the first logfile, and only output
+#non duplicated lines to the final file.
+get_log_dedupe() {
+	local title="$1"
+	local paths="$2"
+	dedupe_tmpfile="$(mktemp "LOGFILE.XXXX")"
+
+	local log=$(_get_log "$OLD_COREBOOT_VERSION" "$NEW_COREBOOT_VERSION" "$title" "$paths")
+
+	echo "$log" > "$dedupe_tmpfile"
+
+	log=$(grep -Fxv -f "$LOGFILE" "$dedupe_tmpfile")
+	local commits=$(echo "$log" | wc -l)
+
+	if [ -n "$log" ]; then
+		printf "%s\n%s\n\n" "$title ($commits commits)" "$log" >> "$LOGFILE"
+	fi
+
+	rm "$dedupe_tmpfile"
+}
+
+# get logs for the submodules
+get_log_submodule() {
+	local old_version="$1"
+	local new_version="$2"
+	local submodule_dir="$3"
+
+	printf "Submodule %s\n" "$submodule_dir"
+	printf "commit %s to commit %s\n\n" "$old_version" "$new_version"
+
+	pushd "${TOP}/$submodule_dir" > /dev/null
+	local log=$(_get_log "$old_version" "$new_version" "$submodule_dir" ".")
+	local commits=$(echo "$log" | wc -l)
+
+	if [ -n "$log" ]; then
+		printf "%s\n%s\n\n" "$submodule_dir ($commits commits)" "$log" >> "$LOGFILE"
+	fi
+
+	popd > /dev/null
+}
+
+#make sure things get cleaned up if ctl-c is pressed while the old version
+#is checked out and files are renamed.  This can be a real mess to clean
+#up manually.
+version_ctrl_c() {
+	printf "\n** Trapped CTRL-C\n Cleaning up and exiting."
+	find 'src' -name 'gnumakefile' -exec rename 's/gnumakefile/Makefile\.inc/' {} \;
+	git checkout origin/master  > /dev/null 2>&1
+	git submodule update --init --checkout  > /dev/null 2>&1
+	rm -f "$mainboard_list_old" "$mainboard_list_new"
+	rm "$LOGFILE"
+	exit 1;
+}
+
+trap version_ctrl_c SIGINT
+
+mainboard_list_new="$(mktemp "LOGFILE.XXXX")"
+mainboard_list_old="$(mktemp "LOGFILE.XXXX")"
+
+#check out old version and get information
+printf -- "Finding old submodule versions...\n"
+git checkout "$OLD_COREBOOT_VERSION" > /dev/null 2>&1
+git submodule update --init --checkout  > /dev/null 2>&1
+BLOBS_OLD_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/blobs")
+VBOOT_OLD_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/vboot")
+ARM_OLD_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/arm-trusted-firmware")
+NVIDIA_OLD_VERSION=$(get_latest_commit_id "${TOP}/util/nvidia/cbootimage")
+find 'src/mainboard' -name 'Kconfig.name' | sed 's|/Kconfig.name||' | sed 's|src/mainboard/|- |' | grep '/' | sort > "$mainboard_list_old"
+#because cloc works on extensions, and .inc identifies as pascal, rename Makefile.inc, then remap the other .inc files to c
+printf "Calculating old SLOC\n"
+find 'src' -name 'Makefile.inc' -exec rename 's/Makefile\.inc/gnumakefile/' {} \;
+OLD_SLOC=$(cloc --progress-rate=0 --quiet --script-lang="Bourne Shell",bash --force-lang=c,inc --exclude-dir=vendorcode src)
+find 'src' -name 'gnumakefile' -exec rename 's/gnumakefile/Makefile\.inc/' {} \;
+
+#check out new version and get information
+printf -- "\nFinding new submodule versions...\n"
+git checkout "$NEW_COREBOOT_VERSION"  > /dev/null 2>&1
+git submodule update --init --checkout  > /dev/null 2>&1
+BLOBS_NEW_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/blobs")
+VBOOT_NEW_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/vboot")
+ARM_NEW_VERSION=$(get_latest_commit_id "${TOP}/3rdparty/arm-trusted-firmware")
+NVIDIA_NEW_VERSION=$(get_latest_commit_id "${TOP}/util/nvidia/cbootimage")
+find 'src/mainboard' -name 'Kconfig.name' | sed 's|/Kconfig.name||' | sed 's|src/mainboard/|- |' | grep '/' | sort > "$mainboard_list_new"
+printf "Calculating new SLOC\n"
+find 'src' -name 'Makefile.inc' -exec rename 's/Makefile\.inc/gnumakefile/' {} \;
+NEW_SLOC=$(cloc --progress-rate=0 --quiet --script-lang="Bourne Shell",bash --force-lang=c,inc --exclude-dir=vendorcode src)
+find 'src' -name 'gnumakefile' -exec rename 's/gnumakefile/Makefile\.inc/' {} \;
+
+new_mainboards=$(grep -Fxv -f "$mainboard_list_old" "$mainboard_list_new")
+removed_mainboards=$(grep -Fxv -f "$mainboard_list_new" "$mainboard_list_old")
+
+git checkout origin/master  > /dev/null 2>&1
+git submodule update --init --checkout  > /dev/null 2>&1
+rm -f "$mainboard_list_old" "$mainboard_list_new"
+trap "" SIGINT
+
+#start outputting to logfile
+echo "Generating release notes from version ${OLD_COREBOOT_VERSION} to ${NEW_COREBOOT_VERSION}"
+echo; echo "Main coreboot repo"
+echo "Main coreboot repo" >> "$LOGFILE"
+echo "------------------" >> "$LOGFILE"
+log_versions "$(git log --pretty=%H "${OLD_COREBOOT_VERSION}..${NEW_COREBOOT_VERSION}" | tail -1)" "$(git log --pretty=%H "${OLD_COREBOOT_VERSION}..${NEW_COREBOOT_VERSION}" | head -1 )"
+
+NOW=$(date -u)
+( echo "$NOW"; echo ) >> "$LOGFILE"
+
+#first get things that are generally outside the mainboards and architectures
+get_log_dedupe "Build system" 	"Makefile Makefile.inc toolchain.inc src/Kconfig src/cpu/Makefile.inc"
+get_log_dedupe "Utilities" 	"util/"
+get_log_dedupe "Documentation"	"Documentation/ README"
+get_log_dedupe "Payloads"	"payloads/"
+get_log_dedupe "Vendorcode"	"src/vendorcode/"
+
+# get mainboards 2nd so that changes that are mainboard specific don't get
+# grabbed by the architectures
+get_log_dedupe "Mainboards"	"src/mainboard/"
+
+#Get architectures 3rd so separate the various pieces out
+get_log_dedupe "ARM"	"$(for codedir in $(grep -rl "_ARM" --include=Kconfig | grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ) ; do dirname "$codedir"; done | grep -v '^src$')"
+get_log_dedupe "RISC-V"	"$(for codedir in $(grep -rl "_RISCV" --include=Kconfig | grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ) ; do dirname "$codedir"; done | grep -v '^src$')"
+get_log_dedupe "X86"	"src/arch/x86 src/cpu/x86 src/cpu/intel src/soc/intel src/cpu/amd src/northbridge/intel src/northbridge/amd src/southbridge/intel src/southbridge/amd src/drivers/intel/fsp1_0 src/drivers/intel/fsp1_1 src/include/amd src/include/intel src/include/x86 src/include/pc80"
+get_log_dedupe "MIPS"	"$(for codedir in $(grep -rl "_MIPS" --include=Kconfig | grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ) ; do dirname "$codedir"; done | grep -v '^src$')"
+
+#4th, get all the rest of the specific areas
+get_log_dedupe "ACPI"		"src/acpi/"
+get_log_dedupe "Console"	"src/console/ src/include/console"
+get_log_dedupe "SuperIO"	"src/superio/ src/include/superio"
+get_log_dedupe "EC "		"src/ec"
+get_log_dedupe "Drivers" 	"src/drivers/"
+get_log_dedupe "Devices" 	"src/device/ src/include/device"
+get_log_dedupe "Lib" 		"src/lib/"
+get_log_dedupe "Commonlib"	"src/commonlib/"
+get_log_dedupe "Include"	"src/include/"
+
+#Last, get anything that was missed above
+get_log_dedupe "MISC" "."
+
+if [ -n "$new_mainboards" ]; then
+	printf "Added %s mainboards:\n-------------------\n%s\n\n" "$(echo "$new_mainboards" | wc -l)" "$new_mainboards"  >> "$LOGFILE"
+fi
+
+if [ -n "$removed_mainboards" ]; then
+	printf "Removed %s mainboards:\n---------------------\n%s\n\n" "$(echo "$removed_mainboards" | wc -l)" "$removed_mainboards"  >> "$LOGFILE"
+fi
+
+# log submodules
+printf "Submodules\n----------\n" >> "$LOGFILE"
+get_log_submodule "$BLOBS_OLD_VERSION"	"$BLOBS_NEW_VERSION" "3rdparty/blobs"
+get_log_submodule "$ARM_OLD_VERSION"	"$ARM_NEW_VERSION" "3rdparty/arm-trusted-firmware"
+get_log_submodule "$VBOOT_OLD_VERSION"	"$VBOOT_NEW_VERSION" "3rdparty/vboot"
+get_log_submodule "$NVIDIA_OLD_VERSION"	"$NVIDIA_NEW_VERSION" "util/nvidia/cbootimage"
+
+printf "\ncoreboot statistics\n-------------------\n" >> "$LOGFILE"
+NEW_AUTHORS=$(git log --pretty=%an "${OLD_COREBOOT_VERSION}" | sort | uniq > before_names.txt && git log --pretty=%an | sort | uniq > after_names.txt && grep -Fxv -c -f before_names.txt after_names.txt && rm before_names.txt after_names.txt)
+TOTAL_COMMITS=$(git log --pretty=oneline "${1}..${2}" | wc -l)
+printf -- "- Total commits: %s\n" "$TOTAL_COMMITS" >> "$LOGFILE"
+
+#TODO: Fix days between releases - between two branches or tags works well, between individual patches works poorly, as we get the creation date of the patch, not the merge date.
+#DAYS_BETWEEN_RELEASES=$(( ( $(date -ud "$(git show "$NEW_COREBOOT_VERSION" | grep -m 1 '^Date: ' | sed 's/Date:[[:space:]]*//' | sed 's/[+-].*//g')" +'%s') - $(date -ud "$(git show "$OLD_COREBOOT_VERSION" | grep -m 1 '^Date: ' | sed 's/Date:[[:space:]]*//' | sed 's/[+-].*//g')" +'%s') ) /60/60/24 ))
+#AVERAGE_COMMITS=$((TOTAL_COMMITS / DAYS_BETWEEN_RELEASES))
+#printf "- Average daily commits: %s\n" "$AVERAGE_COMMITS"
+
+printf -- "- New authors: %s\n" "$NEW_AUTHORS"  >> "$LOGFILE"
+printf -- "- Total authors: %s\n" "$(git log "${OLD_COREBOOT_VERSION}..${NEW_COREBOOT_VERSION}" | grep -e '^Author:' | sed 's/.*Author: //' | sed 's/ <.*.>//' | sort | uniq | wc -l)" >> "$LOGFILE"
+printf -- "- Reviewers on submitted patches: %s\n" "$(git log "${OLD_COREBOOT_VERSION}..${NEW_COREBOOT_VERSION}" | grep -e '^ *Reviewed-by: ' | sed 's/.*Reviewed-by: //' | sed 's/ <.*.>//' | sort | uniq | wc -l)" >> "$LOGFILE"
+
+printf "\nOld SLOC (%s)\n%s" "$NOW" "$OLD_SLOC" >> "$LOGFILE"
+printf "\nNew SLOC (%s)\n%s" "$NOW" "$NEW_SLOC" >> "$LOGFILE"
+
+# Add the collected data to the top of the existing logfile for parsing
+if [ -n "$UPDATE_MAIN_LOGFILE" ]; then
+	tmpfile="$(mktemp "LOGFILE.XXXX")"
+	grep -Fxv -f "$MAIN_LOGFILE" "$LOGFILE" > "$tmpfile"
+	printf "\n\n" >> "$tmpfile"
+	cat "$MAIN_LOGFILE" >> "$tmpfile"
+	mv "$tmpfile" "$MAIN_LOGFILE"
+	rm -f "$LOGFILE"
+fi

@@ -57,7 +57,7 @@ config VBOOT_REFCODE_INDEX
 	hex
 	default 0x3
 
-if !CONFIG_GOP_SUPPORT
+if !GOP_SUPPORT
 config VGA_BIOS_FILE
 	string
 	default "3rdparty/blobs/mainboard/intel/strago/vgabios_c0.bin" if C0_DISP_SUPPORT

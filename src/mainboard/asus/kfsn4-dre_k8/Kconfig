@@ -98,4 +98,8 @@ config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 	bool
 	default y
 
+config MAX_REBOOT_CNT
+	int
+	default 10
+
 endif # BOARD_ASUS_KFSN4_DRE_K8

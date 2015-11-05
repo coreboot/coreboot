@@ -1389,7 +1389,9 @@ struct cbfs_file_attribute *cbfs_add_file_attr(struct cbfs_file *header,
 int cbfs_add_file_hash(struct cbfs_file *header, struct buffer *buffer,
 	enum vb2_hash_algorithm hash_type)
 {
-	if (hash_type >= CBFS_NUM_SUPPORTED_HASHES)
+	uint32_t hash_index = hash_type;
+
+	if (hash_index >= CBFS_NUM_SUPPORTED_HASHES)
 		return -1;
 
 	unsigned hash_size = widths_cbfs_hash[hash_type];

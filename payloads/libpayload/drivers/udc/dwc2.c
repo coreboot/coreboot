@@ -920,6 +920,7 @@ struct usbdev_ctrl *dwc2_udc_init(device_descriptor_t *dd)
 
 	ctrl->poll = dwc2_check_irq;
 	ctrl->add_gadget = udc_add_gadget;
+	ctrl->add_strings = udc_add_strings;
 	ctrl->enqueue_packet = dwc2_enqueue_packet;
 	ctrl->force_shutdown = dwc2_force_shutdown;
 	ctrl->shutdown = dwc2_shutdown;

@@ -94,3 +94,38 @@ Device(PBR8) {
 		Return (PS8)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR8 */
+
+/* GFX 1 */
+Device(PBR9) {
+	Name(_ADR, 0x00030002)
+} /* end PBR8 */
+
+/* GFX 2 */
+Device(PBRA) {
+	Name(_ADR, 0x00030003)
+	Name(_PRW, Package() {0x18, 4})
+	Method(_PRT,0) {
+		If(PMOD){ Return(APSA) }	/* APIC mode */
+		Return (PSA)			/* PIC Mode */
+	} /* end _PRT */
+} /* end PBR8 */
+
+/* GFX 3 */
+Device(PBRB) {
+	Name(_ADR, 0x00030004)
+	Name(_PRW, Package() {0x18, 4})
+	Method(_PRT,0) {
+		If(PMOD){ Return(APSB) }	/* APIC mode */
+		Return (PSB)			/* PIC Mode */
+	} /* end _PRT */
+} /* end PBR8 */
+
+/* GFX 4 */
+Device(PBRC) {
+	Name(_ADR, 0x00030005)
+	Name(_PRW, Package() {0x18, 4})
+	Method(_PRT,0) {
+		If(PMOD){ Return(APSC) }	/* APIC mode */
+		Return (PSC)			/* PIC Mode */
+	} /* end _PRT */
+} /* end PBR8 */

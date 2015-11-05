@@ -105,12 +105,9 @@ Name(APR0, Package(){
 	Package(){0x0013FFFF, 0, 0, 18 },
 	Package(){0x0013FFFF, 1, 0, 17 },
 
-	Package(){0x0016FFFF, 0, 0, 18 },
-	Package(){0x0016FFFF, 1, 0, 17 },
-
 	/* Bus 0, Dev 10 - USB: XHCI func 0, 1 */
-	Package(){0x0010FFFF, 0, 0, 0x12},
-	Package(){0x0010FFFF, 1, 0, 0x11},
+	Package(){0x0010FFFF, 0, 0, 18},
+	Package(){0x0010FFFF, 1, 0, 17},
 
 	/* Bus 0, Dev 17 - SATA controller */
 	Package(){0x0011FFFF, 0, 0, 19 },
@@ -144,10 +141,10 @@ Name(PS4, Package(){
 })
 Name(APS4, Package(){
 	/* PCIe slot - Hooked to PCIe slot 4 */
-	Package(){0x0000FFFF, 0, 0, 16 },
-	Package(){0x0000FFFF, 1, 0, 17 },
-	Package(){0x0000FFFF, 2, 0, 18 },
-	Package(){0x0000FFFF, 3, 0, 19 },
+	Package(){0x0000FFFF, 0, 0, 24 },
+	Package(){0x0000FFFF, 1, 0, 25 },
+	Package(){0x0000FFFF, 2, 0, 26 },
+	Package(){0x0000FFFF, 3, 0, 27 },
 })
 
 /* GPP 0 */
@@ -158,10 +155,10 @@ Name(PS5, Package(){
 	Package(){0x0000FFFF, 3, INTA, 0 },
 })
 Name(APS5, Package(){
-	Package(){0x0000FFFF, 0, 0, 17 },
-	Package(){0x0000FFFF, 1, 0, 18 },
-	Package(){0x0000FFFF, 2, 0, 19 },
-	Package(){0x0000FFFF, 3, 0, 16 },
+	Package(){0x0000FFFF, 0, 0, 28 },
+	Package(){0x0000FFFF, 1, 0, 29 },
+	Package(){0x0000FFFF, 2, 0, 30 },
+	Package(){0x0000FFFF, 3, 0, 31 },
 })
 
 /* GPP 1 */
@@ -172,10 +169,10 @@ Name(PS6, Package(){
 	Package(){0x0000FFFF, 3, INTB, 0 },
 })
 Name(APS6, Package(){
-	Package(){0x0000FFFF, 0, 0, 18 },
-	Package(){0x0000FFFF, 1, 0, 19 },
-	Package(){0x0000FFFF, 2, 0, 16 },
-	Package(){0x0000FFFF, 3, 0, 17 },
+	Package(){0x0000FFFF, 0, 0, 32 },
+	Package(){0x0000FFFF, 1, 0, 33 },
+	Package(){0x0000FFFF, 2, 0, 34 },
+	Package(){0x0000FFFF, 3, 0, 35 },
 })
 
 /* GPP 2 */
@@ -186,10 +183,10 @@ Name(PS7, Package(){
 	Package(){0x0000FFFF, 3, INTC, 0 },
 })
 Name(APS7, Package(){
-	Package(){0x0000FFFF, 0, 0, 19 },
-	Package(){0x0000FFFF, 1, 0, 16 },
-	Package(){0x0000FFFF, 2, 0, 17 },
-	Package(){0x0000FFFF, 3, 0, 18 },
+	Package(){0x0000FFFF, 0, 0, 36 },
+	Package(){0x0000FFFF, 1, 0, 37 },
+	Package(){0x0000FFFF, 2, 0, 38 },
+	Package(){0x0000FFFF, 3, 0, 39 },
 })
 
 /* GPP 3 */
@@ -200,9 +197,50 @@ Name(PS8, Package(){
 	Package(){0x0000FFFF, 3, INTD, 0 },
 })
 Name(APS8, Package(){
-	Package(){0x0000FFFF, 0, 0, 16 },
-	Package(){0x0000FFFF, 1, 0, 17 },
-	Package(){0x0000FFFF, 2, 0, 18 },
-	Package(){0x0000FFFF, 3, 0, 18 },
+	Package(){0x0000FFFF, 0, 0, 40 },
+	Package(){0x0000FFFF, 1, 0, 41 },
+	Package(){0x0000FFFF, 2, 0, 42 },
+	Package(){0x0000FFFF, 3, 0, 43 },
 })
 
+/* GFX 2 */
+Name(PSA, Package(){
+	Package(){0x0000FFFF, 0, INTA, 0 },
+	Package(){0x0000FFFF, 1, INTB, 0 },
+	Package(){0x0000FFFF, 2, INTC, 0 },
+	Package(){0x0000FFFF, 3, INTD, 0 },
+})
+Name(APSA, Package(){
+	Package(){0x0000FFFF, 0, 0, 52 },
+	Package(){0x0000FFFF, 1, 0, 53 },
+	Package(){0x0000FFFF, 2, 0, 54 },
+	Package(){0x0000FFFF, 3, 0, 55 },
+})
+
+/* GFX 3 */
+Name(PSB, Package(){
+	Package(){0x0000FFFF, 0, INTA, 0 },
+	Package(){0x0000FFFF, 1, INTB, 0 },
+	Package(){0x0000FFFF, 2, INTC, 0 },
+	Package(){0x0000FFFF, 3, INTD, 0 },
+})
+Name(APSB, Package(){
+	Package(){0x0000FFFF, 0, 0, 27 },
+	Package(){0x0000FFFF, 1, 0, 24 },
+	Package(){0x0000FFFF, 2, 0, 25 },
+	Package(){0x0000FFFF, 3, 0, 26 },
+})
+
+/* GFX 4 */
+Name(PSC, Package(){
+	Package(){0x0000FFFF, 0, INTA, 0 },
+	Package(){0x0000FFFF, 1, INTB, 0 },
+	Package(){0x0000FFFF, 2, INTC, 0 },
+	Package(){0x0000FFFF, 3, INTD, 0 },
+})
+Name(APSC, Package(){
+	Package(){0x0000FFFF, 0, 0, 31 },
+	Package(){0x0000FFFF, 1, 0, 28 },
+	Package(){0x0000FFFF, 2, 0, 29 },
+	Package(){0x0000FFFF, 3, 0, 30 },
+})

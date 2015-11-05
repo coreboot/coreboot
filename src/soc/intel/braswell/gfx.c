@@ -75,28 +75,8 @@ static void gfx_init(device_t dev)
 	gfx_post_vbios_init(dev);
 }
 
-static void gfx_read_resources(device_t dev)
-{
-	printk(BIOS_SPEW, "%s/%s ( %s )\n",
-			__FILE__, __func__, dev_name(dev));
-
-	pci_dev_read_resources(dev);
-
-#if IS_ENABLED(CONFIG_MARK_GRAPHICS_MEM_WRCOMB)
-	struct resource *res;
-
-	/* Set the graphics memory to write combining. */
-	res = find_resource(dev, PCI_BASE_ADDRESS_2);
-	if (res == NULL) {
-		printk(BIOS_DEBUG, "GFX: memory resource not found.\n");
-		return;
-	}
-	res->flags |= IORESOURCE_WRCOMB;
-#endif
-}
-
 static struct device_operations gfx_device_ops = {
-	.read_resources		= gfx_read_resources,
+	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gfx_init,

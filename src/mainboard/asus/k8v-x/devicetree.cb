@@ -5,7 +5,7 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
     end
   end
   device domain 0 on			# PCI domain
-    subsystemid 0x1043 0 inherit
+    subsystemid 0x1043 0x80ed inherit
     chip northbridge/amd/amdk8			# mc0
       device pci 18.0 on			# Northbridge
         # Devices on link 0, link 0 == LDT 0
@@ -33,8 +33,18 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           register "enable_aol_2_smb_slave" = "1"
           register "enable_gpo5" = "1"
           register "gpio15_12_dir_output" = "1"
-          device pci 0.0 on end			# HT
+          device pci 0.0 on                     # HT
+		subsystemid 0x1043 0x80a3
+	  end
+	  device pci a.0 on                     # GbE
+		subsystemid 0x1043 0x811a
+	  end
+	  device pci f.0 on end			# SATA
           device pci f.1 on end			# IDE
+          device pci 10.0 on end		# USB1
+          device pci 10.1 on end		# USB1
+          device pci 10.2 on end		# USB1
+          device pci 10.3 on end		# USB1
           device pci 10.4 on end		# USB2
           device pci 11.0 on			# LPC
             chip drivers/generic/generic	# DIMM 0-0-0
@@ -86,6 +96,10 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
               end
             end
           end
+	  device pci 11.5 on			# AC97 Audio
+		subsystemid 0x1043 0x80b0
+	  end
+	  device pci 11.6 on end		# AC97 Modem
           device pci 12.0 off end		# VIA LAN (off, other chip used)
         end
         chip southbridge/via/k8t890		# "Southbridge" K8T890

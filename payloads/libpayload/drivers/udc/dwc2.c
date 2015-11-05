@@ -695,7 +695,12 @@ static void dwc2_shutdown(struct usbdev_ctrl *this)
 	int i, j;
 	int is_empty = 0;
 
-	while (!is_empty) {
+	uint64_t shutdown_timer_us = timer_us(0);
+	/* Wait up to 3 seconds for packets to be flushed out. */
+	uint64_t shutdown_timeout_us = 3 * 1000 * 1000UL;
+
+	while ((!is_empty) &&
+	       (timer_us(shutdown_timer_us) < shutdown_timeout_us)) {
 		is_empty = 1;
 		this->poll(this);
 		for (i = 0; i < 16; i++)
@@ -703,6 +708,9 @@ static void dwc2_shutdown(struct usbdev_ctrl *this)
 				if (!SIMPLEQ_EMPTY(&p->eps[i][j].job_queue))
 					is_empty = 0;
 	}
+
+	if (timer_us(shutdown_timer_us) >= shutdown_timeout_us)
+		usb_debug("Error: Failed to empty queues.. timeout\n");
 
 	dwc2_force_shutdown(this);
 }

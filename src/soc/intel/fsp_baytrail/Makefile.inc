@@ -55,8 +55,6 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smm.c
 ramstage-y += placeholders.c
 ramstage-y += i2c.c
 
-cpu_microcode_bins += 3rdparty/blobs/soc/intel/baytrail/microcode.bin
-
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/fsp
 

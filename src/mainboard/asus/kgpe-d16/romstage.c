@@ -312,6 +312,18 @@ static void execute_memory_test(void)
 }
 #endif
 
+static spinlock_t printk_spinlock CAR_GLOBAL;
+
+spinlock_t* romstage_console_lock(void)
+{
+	return car_get_var_ptr(&printk_spinlock);
+}
+
+void initialize_romstage_console_lock(void)
+{
+	car_get_var(printk_spinlock) = SPIN_LOCK_UNLOCKED;
+}
+
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	uint32_t esp;
@@ -337,6 +349,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Initial timestamp */
 		timestamp_init(timestamp_get());
 		timestamp_add_now(TS_START_ROMSTAGE);
+
+		/* Initialize the printk spinlock */
+		initialize_romstage_console_lock();
 
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
@@ -407,11 +422,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x36);
 
 	/* Wait for all the APs core0 started by finalize_node_setup. */
-	/* FIXME: A bunch of cores are going to start output to serial at once.
-	 * It would be nice to fix up prink spinlocks for ROM XIP mode.
-	 * I think it could be done by putting the spinlock flag in the cache
-	 * of the BSP located right after sysinfo.
-	 */
 	wait_all_core0_started();
 
 	/* run _early_setup before soft-reset. */

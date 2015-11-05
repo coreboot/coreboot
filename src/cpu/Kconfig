@@ -67,8 +67,16 @@ config SUPPORT_CPU_UCODE_IN_CBFS
 	bool
 	default n
 
+config USES_MICROCODE_HEADER_FILES
+	def_bool n
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	help
+	  This is selected by a board or chipset to set the default for the
+	  microcode source choice to a list of external microcode headers
+
 choice
 	prompt "Include CPU microcode in CBFS" if ARCH_X86
+	default CPU_MICROCODE_CBFS_EXTERNAL_HEADER if USES_MICROCODE_HEADER_FILES
 	default CPU_MICROCODE_CBFS_GENERATE if SUPPORT_CPU_UCODE_IN_CBFS && USE_BLOBS
 	default CPU_MICROCODE_CBFS_NONE if !SUPPORT_CPU_UCODE_IN_CBFS
 
@@ -83,6 +91,22 @@ config CPU_MICROCODE_CBFS_GENERATE
 	  time with cbfstool, if desired.
 
 	  If unsure, select this option.
+
+config CPU_MICROCODE_CBFS_EXTERNAL_HEADER
+	bool "Include external microcode header files"
+	help
+	  Select this option if you want to include external c header files
+	  containing the CPU microcode. This will be included as a separate
+	  file in CBFS.
+
+	  A word of caution: only select this option if you are sure the
+	  microcode that you have is newer than the microcode shipping with
+	  coreboot.
+
+	  The microcode file may be removed from the ROM image at a later
+	  time with cbfstool, if desired.
+
+	  If unsure, select "Generate from tree"
 
 config CPU_MICROCODE_CBFS_NONE
 	bool "Do not include microcode updates"
@@ -135,3 +159,10 @@ config CPU_MICROCODE_MULTIPLE_FILES
 	help
 	  Select this option to install separate microcode container files into
 	  CBFS instead of using the traditional monolithic microcode file format.
+
+config CPU_MICROCODE_HEADER_FILES
+	string "List of space separated microcode header files with the path"
+	depends on CPU_MICROCODE_CBFS_EXTERNAL_HEADER
+	help
+	  A list of one or more microcode header files with path from the
+	  coreboot directory.  These should be separated by spaces.

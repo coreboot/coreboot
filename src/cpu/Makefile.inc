@@ -21,6 +21,15 @@ ifneq ($(CONFIG_CPU_MICROCODE_MULTIPLE_FILES), y)
 cbfs-files-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += cpu_microcode_blob.bin
 endif
 
+ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
+cbfs-files-y  += cpu_microcode_blob.bin
+cpu_microcode_blob.bin-file = $(objgenerated)/microcode.bin
+
+$(objgenerated)/microcode.bin:
+	echo "   util/scripts/ucode_h_to_bin.sh $(objgenerated)/microcode.bin \"$(CONFIG_CPU_MICROCODE_HEADER_FILES)\""
+	util/scripts/ucode_h_to_bin.sh $(objgenerated)/microcode.bin $(CONFIG_CPU_MICROCODE_HEADER_FILES)
+endif
+
 # We just mash all microcode binaries together into one binary to rule them all.
 # This approach assumes that the microcode binaries are properly padded, and
 # their headers specify the correct size. This works fairly well on isolatied
@@ -33,7 +42,7 @@ $(obj)/cpu_microcode_blob.bin: $$(cpu_microcode_bins)
 	@echo $(cpu_microcode_bins)
 	cat /dev/null $+ > $@
 
-cpu_microcode_blob.bin-file := $(obj)/cpu_microcode_blob.bin
+cpu_microcode_blob.bin-file ?= $(obj)/cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type := microcode
 
 ifneq ($(CONFIG_CPU_MICROCODE_CBFS_LOC),)

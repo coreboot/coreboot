@@ -33,6 +33,9 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_MFENCE
 	select LAPIC_MONOTONIC_TIMER
 
+	# Microcode header files are delivered in FSP package
+	select USES_MICROCODE_HEADER_FILES if HAVE_FSP_BIN
+
 choice
 	prompt "Rangeley CPU Stepping"
 	default FSP_MODEL_406DX_B0
@@ -53,16 +56,9 @@ config ENABLE_VMX
 	bool "Enable VMX for virtualization"
 	default n
 
-config HAVE_CPU_MICROCODE_FILE
-	bool "Add microcode file"
-	help
-	  The microcode binary
-
-config CPU_MICROCODE_FILE
-	  string "Path and filename of CPU microcode"
-	  default "microcode.bin"
-	  depends on HAVE_CPU_MICROCODE_FILE
-	  help
-	    The path and filename of the file containing the CPU microcode.
+#set up microcode for rangeley POSTGOLD4 release
+config CPU_MICROCODE_HEADER_FILES
+	string
+	default "../intel/cpu/rangeley/microcode/microcode-m01406d000e.h ../intel/cpu/rangeley/microcode/microcode-m01406d8128.h"
 
 endif #CPU_INTEL_FSP_MODEL_406DX

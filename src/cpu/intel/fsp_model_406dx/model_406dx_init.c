@@ -170,7 +170,8 @@ static void model_406dx_init(struct device *cpu)
 	x86_enable_cache();
 
 	/* Load microcode */
-	intel_update_microcode_from_cbfs();
+	if (IS_ENABLED(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS))
+		intel_update_microcode_from_cbfs();
 
 	/* Clear out pending MCEs */
 	configure_mca();

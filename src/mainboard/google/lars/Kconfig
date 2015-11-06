@@ -42,6 +42,10 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Lars"
 
+config MAINBOARD_FAMILY
+	string
+	default "Intel_Kunimitsu"
+
 config MAX_CPUS
 	int
 	default 8

@@ -43,6 +43,10 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Glados"
 
+config MAINBOARD_FAMILY
+	string
+	default "Google_Glados"
+
 config MAX_CPUS
 	int
 	default 8

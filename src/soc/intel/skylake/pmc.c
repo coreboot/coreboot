@@ -139,6 +139,9 @@ static void pch_rtc_init(void)
 		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 	}
 
+	/* Ensure the date is set including century byte. */
+	cmos_check_update_date();
+
 #if IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS)
 	pch_cmos_init_preserve(rtc_failed);
 #else

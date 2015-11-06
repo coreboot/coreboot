@@ -63,6 +63,8 @@
 #define PSP_PCI_EXTRAPCIHDR_REG     0x48    ///< Extra PCI Header Ctr
 #define PSP_PCI_HTMSICAP_REG        0x5C    ///<  HT MSI Capability
 
+#define PSP_MSR_PRIVATE_BLOCK_BAR   0xC00110A2 ///< PSP Private Block Base Address (PSP_ADDR)
+
 #define D8F0x44_PmNxtPtrW_MASK                                  0xff
 
 #define PSP_MAILBOX_BASE            0x70    ///< Mailbox base offset on PCIe BAR

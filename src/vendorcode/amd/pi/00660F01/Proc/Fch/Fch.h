@@ -2007,8 +2007,9 @@ FCH_MISC_REGF0                   EQU     0F0h
 #define FCH_PMIOxC0_S5ResetStatus          0xFED803C0ul         // S5ResetStatus
 #define FCH_PMIOxC0_S5ResetStatus_ThermalTrip        (1 << 0)
 #define FCH_PMIOxC0_S5ResetStatus_FourSecondPwrBtn   (1 << 1)
-#define FCH_PMIOxC0_S5ResetStatus_S_Status        (0x3ff | (1 << 20))
+#define FCH_PMIOxC0_S5ResetStatus_S_Status        (0x3fe | (1 << 20))
 #define FCH_PMIOxC0_S5ResetStatus_All_Status        0x3FFF03FFul
+#define FCH_PMIOxC0_S5ResetStatus_Clr_Status        0x3FFF03FEul
 
 #define FCH_PMxC8_Misc          0xFED803C8ul         // Misc
 #define FCH_PMxC8_Misc_UseAcpiStraps          (1 << 4)
@@ -2020,6 +2021,8 @@ FCH_MISC_REGF0                   EQU     0F0h
 //    offset : 0x0E00
 //
 #define FCH_MISCx28_ClkDrvStr2          0xFED80E28ul         // ClkDrvStr2
+#define FCH_MISCx28_ClkDrvStr2_USB2_RefClk_Pwdn   (1 << 30)
+#define FCH_MISCx28_ClkDrvStr2_USB3_RefClk_Pwdn   (1 << 31)
 
 #define FCH_MISCx40_MiscClkCntl1          0xFED80E40ul         // MiscClkCntl1
 #define FCH_MISCx40_MiscClkCntl1_CG1PLL_FBDIV_Test          (1 << 26)
@@ -2038,7 +2041,8 @@ FCH_MISC_REGF0                   EQU     0F0h
 //    offset : 0x1C00
 //
 #define FCH_XHC_PMx00_Configure0             0xFED81C00ul        //
-#define FCH_XHC_PMx00_Configure0_XHC_SMIB_EN BIT21
+#define FCH_XHC_PMx00_Configure0_U3P_D3Cold_PWRDN     BIT15
+#define FCH_XHC_PMx00_Configure0_XHC_SMIB_EN          BIT21
 #define FCH_XHC_PMx10_Xhc_Memory_Configure             0xFED81C10ul        //
 #define FCH_XHC_PMx18_Usb20_Link_Status             0xFED81C18ul        //
 #define FCH_XHC_PMx20_Usb20_Wake_Control             0xFED81C20ul        //
@@ -2057,9 +2061,12 @@ FCH_MISC_REGF0                   EQU     0F0h
 #define FCH_AOACx40_D3_CONTROL             0xFED81E40ul        //
 #define FCH_AOACx41_D3_STATUS              0xFED81E40ul        //
 #define FCH_AOACx5E_SATA_D3_CONTROL             0xFED81E5Eul        //
+#define FCH_AOACx64_EHCI_D3_CONTROL             0xFED81E64ul        //
+#define FCH_AOACx65_EHCI_D3_STATE               0xFED81E65ul        //
 #define FCH_AOACx6E_USB3_D3_CONTROL             0xFED81E6Eul        //
-#define FCH_AOACx70_SD_D3_CONTROL             0xFED81E70ul        //
-#define FCH_AOACx7A_IMC_D3_CONTROL             0xFED81E7Aul        //
+#define FCH_AOACx6F_USB3_D3_STATE               0xFED81E6Ful        //
+#define FCH_AOACx70_SD_D3_CONTROL               0xFED81E70ul        //
+#define FCH_AOACx7A_IMC_D3_CONTROL              0xFED81E7Aul        //
 #define FCH_AOACx88Shadow_Register_SRAM_Addr            0xFED81E88ul        //
 #define FCH_AOACx8CShadow_Register_SRAM_Data            0xFED81E8Cul        //
 #define FCH_AOACx94S013_CONTROL            0xFED81E94ul        //
@@ -2070,6 +2077,9 @@ FCH_MISC_REGF0                   EQU     0F0h
 #define FCH_AOACx9C_Shadow_Timer_Control_ShadowAcpiTimerEn            (1 << 1)        //
 
 #define FCH_AOACxA0_PwrGood_Control            0xFED81EA0ul        //
+#define FCH_AOACxA0_PwrGood_Control_XhcPwrGood            (1 << 3)        //
+#define FCH_AOACxA0_PwrGood_Control_SwUsb3SlpShutdown     (1 << 29)        //
+#define FCH_AOACxA0_PwrGood_Control_SwUsb2S5RstB          (1 << 30)        //
 
 #define FCH_AOAC_REG00           0x00         // PerfMonControl
 #define FCH_AOAC_REG04           0x04         // PerfMonTimeLimit

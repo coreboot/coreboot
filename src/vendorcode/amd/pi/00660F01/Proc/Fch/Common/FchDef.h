@@ -340,6 +340,8 @@ VOID  FchInitEnvLpcProgram   (IN VOID  *FchDataPtr);
 ///
 VOID  FchSpiUnlock       (IN VOID  *FchDataPtr);
 VOID  FchSpiLock         (IN VOID  *FchDataPtr);
+VOID  FchUsb3D3ColdCallback     (IN VOID  *FchDataPtr);
+VOID  FchUsb3D0Callback         (IN VOID  *FchDataPtr);
 
 /*--------------------------- Documentation Pages ---------------------------*/
 VOID  FchStall (IN UINT32 uSec, IN AMD_CONFIG_PARAMS *StdHeader);

@@ -183,6 +183,18 @@ static void mainboard_enable(device_t dev)
 
 	config_gpio_mux();
 
+	/* Power off unused clock pins of GPP PCIe devices */
+	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
+	/* GPP CLK0-2 are connected to the 3 ethernet chips
+	 * GPP CLK3-4 are connected to the miniPCIe slots */
+	write8(misc_mem_clk_cntrl + 0, 0xFF);
+	write8(misc_mem_clk_cntrl + 1, 0xFF);
+	/* GPP CLK5 is only connected to test pads -> disable */
+	write8(misc_mem_clk_cntrl + 2, 0x0F);
+	/* disable unconnected GPP CLK6-8 and SLT_GFX_CLK */
+	write8(misc_mem_clk_cntrl + 3, 0x00);
+	write8(misc_mem_clk_cntrl + 4, 0x00);
+
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
 }

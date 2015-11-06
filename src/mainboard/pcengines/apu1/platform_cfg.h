@@ -69,12 +69,12 @@
  *   0 - disable
  *   1 - enable
  *  PCI SLOT 0 define at BIT0
- *  PCI SLOT 1 define at BIT1
+ *  PCI SLOT 1 define at BIT1 -> connected to LPC devices
  *  PCI SLOT 2 define at BIT2
  *  PCI SLOT 3 define at BIT3
  *  PCI SLOT 4 define at BIT4
  */
-#define PCI_CLOCK_CTRL			0x1F
+#define PCI_CLOCK_CTRL			0x02
 
 /**
  * @def SATA_CONTROLLER

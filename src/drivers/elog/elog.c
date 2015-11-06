@@ -635,8 +635,7 @@ static void elog_fill_timestamp(struct event_header *event)
 	event->hour = bin2bcd(time.hour);
 	event->day = bin2bcd(time.mday);
 	event->month = bin2bcd(time.mon);
-	event->year = bin2bcd(time.year) & 0xff;
-
+	event->year = bin2bcd(time.year % 100);
 
 	/* Basic sanity check of expected ranges */
 	if (event->month > 0x12 || event->day > 0x31 || event->hour > 0x23 ||

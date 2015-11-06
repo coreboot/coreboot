@@ -89,6 +89,11 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		FchParams_env->Usb.USB30PortInit = 8; /* 8: If USB3 port is unremoveable. */
 
 		/* sata configuration */
+		/* SD configuration */
+		/* Rev F has an on-board eMMC, which only supports SD 2.0 */
+		if (board_id() == 'F') {
+			FchParams_env->Sd.SdConfig = SdVer2;
+		}
 	}
 	printk(BIOS_DEBUG, "Done\n");
 

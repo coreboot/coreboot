@@ -336,7 +336,9 @@ void setup_soc_gpios(struct soc_gpio_config *config);
 /* This function is weak and can be overridden by a mainboard function. */
 struct soc_gpio_config* mainboard_get_gpios(void);
 uint8_t read_score_gpio(uint8_t gpio_num);
+void write_score_gpio(uint8_t gpio_num, uint8_t val);
 uint8_t read_ssus_gpio(uint8_t gpio_num);
+void write_ssus_gpio(uint8_t gpio_num, uint8_t val);
 void configure_ssus_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val);
 void configure_score_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val);
 
@@ -396,6 +398,22 @@ static inline int ssus_get_gpio(int pad)
 	uint32_t *val_addr = ssus_pconf0(pad) + (PAD_VAL_REG/sizeof(uint32_t));
 
 	return read32(val_addr) & PAD_VAL_HIGH;
+}
+
+/* These functions require that the output pad is configured as an output */
+/* GPIO and is mapped to memory space and not IO space. */
+static inline void score_set_gpio(int pad, int val)
+{
+	uint32_t *val_addr = score_pconf0(pad) + (PAD_VAL_REG/sizeof(uint32_t));
+
+	write32(val_addr, ((read32(val_addr) & ~0x1) | val));
+}
+
+static inline void ssus_set_gpio(int pad, int val)
+{
+	uint32_t *val_addr = ssus_pconf0(pad) + (PAD_VAL_REG/sizeof(uint32_t));
+
+	write32(val_addr, ((read32(val_addr) & ~0x1) | val));
 }
 
 static inline void ssus_disable_internal_pull(int pad)

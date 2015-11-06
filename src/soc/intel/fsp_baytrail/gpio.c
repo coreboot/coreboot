@@ -266,6 +266,18 @@ uint8_t read_score_gpio(uint8_t gpio_num)
 	return retval;
 }
 
+/** \brief sets an output SCORE GPIO to desired value
+ *
+ * @param gpio_num The GPIO number being read
+ * @param val The value this output must be set to (0 or 1)
+ * @return void
+ */
+void write_score_gpio(uint8_t gpio_num, uint8_t val)
+{
+	if (gpio_num < GPSCORE_COUNT)
+		score_set_gpio(gpscore_gpio_to_pad[gpio_num], val);
+}
+
 /** \brief returns the input / output value from an SSUS GPIO
  *
  * @param gpio_num The GPIO number being read
@@ -278,6 +290,18 @@ uint8_t read_ssus_gpio(uint8_t gpio_num)
 		retval = ssus_get_gpio(gpssus_gpio_to_pad[gpio_num]);
 
 	return retval;
+}
+
+/** \brief sets an output SSUS GPIO to desired value
+ *
+ * @param gpio_num The GPIO number being read
+ * @param val The value this output must be set to (0 or 1)
+ * @return void
+ */
+void write_ssus_gpio(uint8_t gpio_num, uint8_t val)
+{
+	if (gpio_num < GPSSUS_COUNT)
+		ssus_set_gpio(gpssus_gpio_to_pad[gpio_num], val);
 }
 
 /** \brief Sets up the function, pulls, and Input/Output of a Baytrail

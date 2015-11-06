@@ -82,6 +82,7 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
               device pnp 2e.b on		# Hardware monitor
                 io 0x60 = 0x290
                 irq 0x70 = 0
+                irq 0x24 = 0x28			# Global CR24 change bit3: MEMW# Enable
               end
             end
           end

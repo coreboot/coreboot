@@ -202,8 +202,7 @@
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, }
 
-
-#define GPIO_OUT_LOW \
+#define GPIO_OUT_LOW_LEGACY \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_LOW, \
@@ -212,11 +211,29 @@
 	  .gp_lvl    = GPIO_LEVEL_LOW, \
 	  .is_gpio   = 1 }
 
-#define GPIO_OUT_HIGH \
+#define GPIO_OUT_HIGH_LEGACY \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_HIGH, \
 	  .use_sel   = GPIO_USE_LEGACY, \
+	  .io_sel    = GPIO_DIR_OUTPUT, \
+	  .gp_lvl    = GPIO_LEVEL_HIGH, \
+	  .is_gpio   = 1 }
+
+#define GPIO_OUT_LOW \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_LOW, \
+	  .use_sel   = GPIO_USE_MMIO, \
+	  .io_sel    = GPIO_DIR_OUTPUT, \
+	  .gp_lvl    = GPIO_LEVEL_LOW, \
+	  .is_gpio   = 1 }
+
+#define GPIO_OUT_HIGH \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_HIGH, \
+	  .use_sel   = GPIO_USE_MMIO, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
 	  .gp_lvl    = GPIO_LEVEL_HIGH, \
 	  .is_gpio   = 1 }

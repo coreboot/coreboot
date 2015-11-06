@@ -43,12 +43,6 @@ static int guid_compare(const EFI_GUID *le_guid, const EFI_GUID *native_guid)
 			ARRAY_SIZE(le_guid->Data4));
 }
 
-/* Provide this for symmetry when accessing UEFI fields. */
-static inline uint8_t le8toh(uint8_t byte)
-{
-	return byte;
-}
-
 static const EFI_GUID ffs2_guid = EFI_FIRMWARE_FILE_SYSTEM2_GUID;
 static const EFI_GUID fih_guid = FSP_INFO_HEADER_GUID;
 

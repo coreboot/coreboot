@@ -23,6 +23,7 @@ SPD_SOURCES = samsung_dimm_K4E8E304EE-EGCF      # 0b0000
 SPD_SOURCES += samsung_dimm_K4E6E304EE-EGCF     # 0b0001
 SPD_SOURCES += hynix_dimm_H9CCNNN8GTMLAR        # 0b0010
 SPD_SOURCES += hynix_dimm_H9CCNNNBJTMLAR        # 0b0011
+SPD_SOURCES += hynix_dimm_H9CCNNNCLTMLAR        # 0b0100
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
 

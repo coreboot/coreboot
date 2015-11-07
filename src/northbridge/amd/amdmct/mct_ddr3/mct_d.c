@@ -361,8 +361,7 @@ static uint32_t fam15h_phy_predriver_calibration_code(struct DCTStatStruc *pDCTs
 					else if (drive_strength == 0x3)
 						calibration_code = 0xfff;
 				}
-			}
-			else if (ddr_voltage_index & 0x2) {
+			} else if (ddr_voltage_index & 0x2) {
 				/* 1.35V */
 				/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 42 */
 				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
@@ -396,8 +395,7 @@ static uint32_t fam15h_phy_predriver_calibration_code(struct DCTStatStruc *pDCTs
 					else if (drive_strength == 0x3)
 						calibration_code = 0xdb6;
 				}
-			}
-			else if (ddr_voltage_index & 0x1) {
+			} else if (ddr_voltage_index & 0x1) {
 				/* 1.5V */
 				/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 41 */
 				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
@@ -432,8 +430,7 @@ static uint32_t fam15h_phy_predriver_calibration_code(struct DCTStatStruc *pDCTs
 						calibration_code = 0xb6d;
 				}
 			}
-		}
-		else if (package_type == PT_C3) {
+		} else if (package_type == PT_C3) {
 			/* Socket C32 */
 			if (ddr_voltage_index & 0x4) {
 				/* 1.25V */
@@ -479,8 +476,7 @@ static uint32_t fam15h_phy_predriver_calibration_code(struct DCTStatStruc *pDCTs
 					else if (drive_strength == 0x3)
 						calibration_code = 0xfff;
 				}
-			}
-			else if (ddr_voltage_index & 0x2) {
+			} else if (ddr_voltage_index & 0x2) {
 				/* 1.35V */
 				/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 45 */
 				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
@@ -524,8 +520,7 @@ static uint32_t fam15h_phy_predriver_calibration_code(struct DCTStatStruc *pDCTs
 					else if (drive_strength == 0x3)
 						calibration_code = 0xdb6;
 				}
-			}
-			else if (ddr_voltage_index & 0x1) {
+			} else if (ddr_voltage_index & 0x1) {
 				/* 1.5V */
 				/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 44 */
 				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
@@ -625,8 +620,7 @@ static uint32_t fam15h_phy_predriver_cmd_addr_calibration_code(struct DCTStatStr
 			else if (drive_strength == 0x3)
 				calibration_code = 0xb64;
 		}
-	}
-	else if (ddr_voltage_index & 0x2) {
+	} else if (ddr_voltage_index & 0x2) {
 		/* 1.35V */
 		/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 51 */
 		if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
@@ -660,8 +654,7 @@ static uint32_t fam15h_phy_predriver_cmd_addr_calibration_code(struct DCTStatStr
 			else if (drive_strength == 0x3)
 				calibration_code = 0x924;
 		}
-	}
-	else if (ddr_voltage_index & 0x1) {
+	} else if (ddr_voltage_index & 0x1) {
 		/* 1.5V */
 		/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 50 */
 		if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
@@ -742,8 +735,7 @@ static uint32_t fam15h_phy_predriver_clk_calibration_code(struct DCTStatStruc *p
 			else if (drive_strength == 0x3)
 				calibration_code = 0xff6;
 		}
-	}
-	else if (ddr_voltage_index & 0x2) {
+	} else if (ddr_voltage_index & 0x2) {
 		/* 1.35V */
 		/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 54 */
 		if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
@@ -777,8 +769,7 @@ static uint32_t fam15h_phy_predriver_clk_calibration_code(struct DCTStatStruc *p
 			else if (drive_strength == 0x3)
 				calibration_code = 0xdad;
 		}
-	}
-	else if (ddr_voltage_index & 0x1) {
+	} else if (ddr_voltage_index & 0x1) {
 		/* 1.5V */
 		/* Fam15h BKDG Rev. 3.14 section 2.10.5.3.4 Table 53 */
 		if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
@@ -847,16 +838,13 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 			else if (MemClkFreq == 0x6) {
 				/* DDR3-800 */
 				calibration_code = 0x10112222;
-			}
-			else if (MemClkFreq == 0xa) {
+			} else if (MemClkFreq == 0xa) {
 				/* DDR3-1066 */
 				calibration_code = 0x20112222;
-			}
-			else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
+			} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
 				/* DDR3-1333 - DDR3-1600 */
 				calibration_code = 0x30112222;
-			}
-			else if (MemClkFreq == 0x16) {
+			} else if (MemClkFreq == 0x16) {
 				/* DDR3-1866 */
 				calibration_code = 0x30332222;
 			}
@@ -866,16 +854,13 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 				if (MemClkFreq == 0x4) {
 					/* DDR3-667 */
 					calibration_code = 0x00112222;
-				}
-				else if (MemClkFreq == 0x6) {
+				} else if (MemClkFreq == 0x6) {
 					/* DDR3-800 */
 					calibration_code = 0x10112222;
-				}
-				else if (MemClkFreq == 0xa) {
+				} else if (MemClkFreq == 0xa) {
 					/* DDR3-1066 */
 					calibration_code = 0x20112222;
-				}
-				else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
+				} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
 					/* DDR3-1333 - DDR3-1600 */
 					calibration_code = 0x30112222;
 				}
@@ -887,20 +872,16 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 				if (MemClkFreq == 0x4) {
 					/* DDR3-667 */
 					calibration_code = 0x10222222;
-				}
-				else if (MemClkFreq == 0x6) {
+				} else if (MemClkFreq == 0x6) {
 					/* DDR3-800 */
 					calibration_code = 0x20222222;
-				}
-				else if (MemClkFreq == 0xa) {
+				} else if (MemClkFreq == 0xa) {
 					/* DDR3-1066 */
 					calibration_code = 0x30222222;
-				}
-				else if (MemClkFreq == 0xe) {
+				} else if (MemClkFreq == 0xe) {
 					/* DDR3-1333 */
 					calibration_code = 0x30222222;
-				}
- 				else if (MemClkFreq == 0x12) {
+				} else if (MemClkFreq == 0x12) {
  					/* DDR3-1600 */
  					if ((rank_count_dimm0 == 1) && (rank_count_dimm1 == 1))
  						calibration_code = 0x30222222;
@@ -1087,8 +1068,7 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 					|| (MemClkFreq == 0xa) | (MemClkFreq == 0xe)) {
 					/* DDR3-667 - DDR3-1333 */
 					slow_access = 0;
-				}
-				else if (MemClkFreq == 0x12) {
+				} else if (MemClkFreq == 0x12) {
 					/* DDR3-1600 */
 					if (rank_count_dimm0 == 1)
 						slow_access = 0;
@@ -1104,8 +1084,7 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 					|| (MemClkFreq == 0xa)) {
 					/* DDR3-667 - DDR3-1066 */
 					slow_access = 0;
-				}
-				else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
+				} else if ((MemClkFreq == 0xe) || (MemClkFreq == 0x12)) {
 					/* DDR3-1333 - DDR3-1600 */
 					slow_access = 1;
 				}

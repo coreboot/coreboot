@@ -535,6 +535,9 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 	unsigned i;
 #endif
 
+	if ((cpuid_edx(0x80000007) & 0x06) != 0x06)
+		return; /* FID/VID change not supported */
+
 	msr_t msr;
 	msr = rdmsr(0xc0010042);
 	fid_max = ((msr.lo >> 16) & 0x3f);	/* max fid */

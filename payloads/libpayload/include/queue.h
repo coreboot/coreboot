@@ -268,6 +268,9 @@ struct {								\
 #define	SIMPLEQ_END(head)	    NULL
 #define	SIMPLEQ_EMPTY(head)	    (SIMPLEQ_FIRST(head) == SIMPLEQ_END(head))
 #define	SIMPLEQ_NEXT(elm, field)    ((elm)->field.sqe_next)
+#define	SIMPLEQ_TAIL_NEXT(head)     ((head)->sqh_last)
+#define	SIMPLEQ_SINGLETON(head, field)				\
+	(&SIMPLEQ_NEXT(SIMPLEQ_FIRST(head), field) == SIMPLEQ_TAIL_NEXT(head))
 
 #define SIMPLEQ_FOREACH(var, head, field)				\
 	for((var) = SIMPLEQ_FIRST(head);				\

@@ -704,9 +704,21 @@ static void dwc2_shutdown(struct usbdev_ctrl *this)
 		is_empty = 1;
 		this->poll(this);
 		for (i = 0; i < 16; i++)
-			for (j = 0; j < 2; j++)
+			for (j = 0; j < 2; j++) {
+				/*
+				 * EP0-OUT needs to always have an active packet
+				 * for proper operation of control packet
+				 * flow. Thus, ignore if only 1 packet is
+				 * present in EP0-OUT.
+				 */
+				if ((i == 0) && (j == 0) &&
+				    SIMPLEQ_SINGLETON(&p->eps[0][0].job_queue,
+						      queue))
+					continue;
+
 				if (!SIMPLEQ_EMPTY(&p->eps[i][j].job_queue))
 					is_empty = 0;
+			}
 	}
 
 	if (timer_us(shutdown_timer_us) >= shutdown_timeout_us)

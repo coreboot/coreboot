@@ -58,4 +58,16 @@ config CPU_MICROCODE_CBFS_LOC
 	depends on SUPPORT_CPU_UCODE_IN_CBFS
 	default 0xfff60040
 
+config HAVE_CPU_MICROCODE_FILE
+	bool "Add microcode file"
+	help
+	  The microcode binary
+
+config CPU_MICROCODE_FILE
+	  string "Path and filename of CPU microcode"
+	  default "microcode.bin"
+	  depends on HAVE_CPU_MICROCODE_FILE
+	  help
+	    The path and filename of the file containing the CPU microcode.
+
 endif #CPU_INTEL_FSP_MODEL_406DX

@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <cpu/x86/cache.h>
+#include <cpu/intel/microcode/microcode.c>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
@@ -86,6 +87,10 @@ static void bootblock_cpu_init(void)
 {
 	/* Check for Warm Reset */
 	check_for_warm_reset();
+
+	/* Load microcode before any caching. */
+	intel_update_microcode_from_cbfs();
+
 	enable_rom_caching();
 	set_no_evict_mode_msr();
 }

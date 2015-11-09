@@ -18,7 +18,6 @@
 #include <arch/cpu.h>
 #include <string.h>
 
-
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_FSP_BD82X6X)
 #include <southbridge/intel/fsp_bd82x6x/pch.h>
 #elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_FSP_I89XX)

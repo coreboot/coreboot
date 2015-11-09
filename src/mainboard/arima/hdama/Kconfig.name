@@ -1,2 +1,0 @@
-config BOARD_ARIMA_HDAMA
-	bool "HDAMA"

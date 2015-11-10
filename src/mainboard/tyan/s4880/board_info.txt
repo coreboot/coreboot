@@ -1,4 +1,0 @@
-Board name: Thunder K8QS (S4880)
-Category: server
-Board URL: http://www.tyan.com/archive/products/html/thunderk8qs.html
-Release year: 2004

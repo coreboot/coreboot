@@ -1,2 +1,0 @@
-config BOARD_TYAN_S2891
-	bool "S2891 (Thunder K8SRE)"

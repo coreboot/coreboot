@@ -83,12 +83,18 @@
 #define PID_GPIOCOM2	0xAD
 #define PID_GPIOCOM1	0xAE
 #define PID_GPIOCOM0	0xAF
+#define PID_PSF1	0xBA
 #define PID_SCS		0xC0
 #define PID_RTC		0xC3
 #define PID_ITSS	0xC4
 #define PID_LPC		0xC7
 #define PID_SERIALIO	0xCB
 #define PID_DMI		0xEF
+
+#define PCH_PCR_PSFX_T0_SHDW_PCIEN		0x1C
+
+#define PCH_PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
+#define PSF_BASE_ADDRESS			0xA00
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 #include <stdint.h>

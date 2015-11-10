@@ -127,6 +127,7 @@
 
 #define PCH_DEV_SLOT_LPC	0x1f
 #define  PCH_DEVFN_LPC		_PCH_DEVFN(LPC, 0)
+#define  PCH_DEVFN_P2SB         _PCH_DEVFN(LPC, 1)
 #define  PCH_DEVFN_PMC		_PCH_DEVFN(LPC, 2)
 #define  PCH_DEVFN_HDA		_PCH_DEVFN(LPC, 3)
 #define  PCH_DEVFN_SMBUS	_PCH_DEVFN(LPC, 4)
@@ -134,6 +135,7 @@
 #define  PCH_DEVFN_GBE		_PCH_DEVFN(LPC, 6)
 #define  PCH_DEVFN_TRACEHUB		_PCH_DEVFN(LPC, 7)
 #define  PCH_DEV_LPC		_PCH_DEV(LPC, 0)
+#define  PCH_DEV_P2SB		_PCH_DEV(LPC, 1)
 #define  PCH_DEV_PMC		_PCH_DEV(LPC, 2)
 #define  PCH_DEV_HDA		_PCH_DEV(LPC, 3)
 #define  PCH_DEV_SMBUS		_PCH_DEV(LPC, 4)

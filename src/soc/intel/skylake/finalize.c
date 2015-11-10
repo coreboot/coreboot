@@ -31,6 +31,55 @@
 #include <soc/spi.h>
 #include <soc/systemagent.h>
 #include <device/pci.h>
+#include <chip.h>
+
+#define PCH_P2SB_EPMASK0		0xB0
+#define PCH_P2SB_EPMASK(mask_number) 	PCH_P2SB_EPMASK0 + (mask_number * 4)
+
+#define PCH_P2SB_E0			0xE0
+
+static void pch_configure_endpoints(device_t dev, int epmask_id, uint32_t mask)
+{
+	uint32_t reg32;
+
+	reg32 = pci_read_config32(dev, PCH_P2SB_EPMASK(epmask_id));
+	pci_write_config32(dev, PCH_P2SB_EPMASK(epmask_id), reg32 | mask);
+}
+
+static void pch_disable_heci(void)
+{
+	device_t dev;
+	u8 reg8;
+	uint32_t mask;
+
+	dev = PCH_DEV_P2SB;
+
+	/*
+	 * if p2sb device 1f.1 is not present or hidden in devicetree
+	 * p2sb device becomes NULL
+	 */
+	if (!dev)
+		return;
+
+	/* unhide p2sb device */
+	pci_write_config8(dev, PCH_P2SB_E0 + 1, 0);
+
+	/* disable heci */
+	pcr_andthenor32(PID_PSF1, PSF_BASE_ADDRESS + PCH_PCR_PSFX_T0_SHDW_PCIEN,
+				~0, PCH_PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
+
+	/* Remove the host accessing right to PSF register range. */
+	/* Set p2sb PCI offset EPMASK5 C4h [29, 28, 27, 26] to [1, 1, 1, 1] */
+	mask = (1 << 29) | (1 << 28) | (1 << 27)  | (1 << 26);
+	pch_configure_endpoints(dev, 5, mask);
+
+	/* Set the "Endpoint Mask Lock!", P2SB PCI offset E2h bit[1] to 1. */
+	reg8 = pci_read_config8(dev, PCH_P2SB_E0 + 2);
+	pci_write_config8(dev, PCH_P2SB_E0 + 2, reg8 | (1 << 1));
+
+	/* hide p2sb device */
+	pci_write_config8(dev, PCH_P2SB_E0 + 1, 1);
+}
 
 static void pch_finalize_script(void)
 {
@@ -40,6 +89,7 @@ static void pch_finalize_script(void)
 	u16 tcobase;
 	u16 tcocnt;
 	uint8_t *pmcbase;
+	config_t *config;
 	u32 pmsyncreg;
 
 	/* Set SPI opcode menu */
@@ -69,6 +119,11 @@ static void pch_finalize_script(void)
 	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
 	pmsyncreg |= PMSYNC_LOCK;
 	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
+
+	/* we should disable Heci1 based on the devicetree policy */
+	config = dev->chip_info;
+	if (config->HeciEnabled == 0)
+		pch_disable_heci();
 }
 
 static void soc_lockdown(void)

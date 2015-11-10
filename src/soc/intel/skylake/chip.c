@@ -347,6 +347,18 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 
 	params->SkipMpInit = config->SkipMpInit;
 
+	/*
+	 * To disable Heci, the Psf needs to be left unlocked
+	 * by FSP after end of post sequence. Based on the devicetree
+	 * setting, we set the appropriate PsfUnlock policy in Fsp,
+	 * do the changes and then lock it back in Coreboot
+	 *
+	 */
+	if (config->HeciEnabled == 0)
+		params->PsfUnlock = 1;
+	else
+		params->PsfUnlock = 0;
+
 	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++) {
 		params->VrConfigEnable[i] =
 			config->domain_vr_config[i].vr_config_enable;

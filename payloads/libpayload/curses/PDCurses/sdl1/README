@@ -9,7 +9,7 @@ Building
 
 . On *nix (including Linux and Mac OS X), run "make" in the sdl1
   directory. There is no configure script (yet?) for this port. This
-  assumes a working sdl-config, and GNU make. It builds the library 
+  assumes a working sdl-config, and GNU make. It builds the library
   libpdcurses.a (dynamic lib not implemented).
 
   With MinGW, run "make -f Makefile.mng". This assumes SDL is installed
@@ -17,7 +17,7 @@ Building
   parameters "DLL=Y" and "DEBUG=Y", as with the console version. (Wide-
   character support is not yet implemented for SDL.) Both makefiles
   recognize the optional PDCURSES_SRCDIR environment variable, as with
-  the console ports. Makefile.mng builds libpdcurses.a, along with 
+  the console ports. Makefile.mng builds libpdcurses.a, along with
   pdcurses.dll, if specified.
 
 

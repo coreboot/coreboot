@@ -15,7 +15,7 @@ AC_CANONICAL_SYSTEM([])
 mymakefile="Makefile"
 on_qnx=no
 case "$target" in
-	*hp-hpux*) 
+	*hp-hpux*)
 		SYS_DEFS="-D_HPUX_SOURCE"
 		;;
 	*ibm-aix*)

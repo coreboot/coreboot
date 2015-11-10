@@ -23,16 +23,16 @@ convenient order.  Once all data have been added, the routine
 refresh() is called.  The package then determines what changes have
 been made which affect the screen.  The screen contents are then
 changed to reflect those characters now in the window, using a
-sequence of operations optimized for the type of terminal in use. 
+sequence of operations optimized for the type of terminal in use.
 
 At a higher level routines combining the actions of move() and addch()
 are defined, as are routines to add whole strings and to perform
-format conversions in the manner of printf(). 
+format conversions in the manner of printf().
 
 Interfaces are also defined to erase the entire window and to specify
 the attributes of individual characters in the window.  Attributes
 such as inverse video, underline and blink can be used on a
-per-character basis. 
+per-character basis.
 
 New windows can be created by allowing the application to build
 several images of the screen and display the appropriate one very
@@ -41,18 +41,18 @@ each routine that manipulates the default window, stdscr, there is a
 corresponding routine prefixed with w to manipulate the contents of a
 specified window; for example, move() and wmove().  In fact, move(...)
 is functionally equivalent to wmove( stdscr, ...).  This is similar to
-the interface offered by printf(...) and fprintf(stdout, ...). 
+the interface offered by printf(...) and fprintf(stdout, ...).
 
 Windows do not have to correspond to the entire screen.  It is
 possible to create smaller windows, and also to indicate that the
 window is only partially visible on the screen.  Furthermore, large
 windows or pads, which are bigger than the actual screen size, may be
-created. 
+created.
 
 Interfaces are also defined to allow input character manipulation and
 to disable and enable many input attributes: character echo, single
 character input with or without signal processing (cbreak or raw
-modes), carriage returns mapping to newlines, screen scrolling, etc. 
+modes), carriage returns mapping to newlines, screen scrolling, etc.
 
 
 Data Types and the <curses.h> Header
@@ -60,14 +60,14 @@ Data Types and the <curses.h> Header
 
 The data types supported by curses are described in this section.
 
-As the library supports a procedural interface to the data types, actual 
-structure contents are not described.  All curses data are manipulated 
+As the library supports a procedural interface to the data types, actual
+structure contents are not described.  All curses data are manipulated
 using the routines provided.
 
 
 THE <curses.h> HEADER
 
-The <curses.h> header defines various constants and declares the data 
+The <curses.h> header defines various constants and declares the data
 types that are available to the application.
 
 
@@ -82,8 +82,8 @@ The following data types are declared:
 	cchar_t		the wide-character equivalent of chtype
 	attr_t		for WA_-style attributes
 
-The actual WINDOW and SCREEN objects used to store information are 
-created by the corresponding routines and a pointer to them is provided.  
+The actual WINDOW and SCREEN objects used to store information are
+created by the corresponding routines and a pointer to them is provided.
 All manipulation is through that pointer.
 
 
@@ -93,15 +93,15 @@ The following variables are defined:
 
 	LINES		number of lines on terminal screen
 	COLS		number of columns on terminal screen
-	stdscr		pointer to the default screen window    
+	stdscr		pointer to the default screen window
 	curscr		pointer to the current screen image
 	SP		pointer to the current SCREEN struct
 	Mouse_status	status of the mouse
 	COLORS		number of colors available
 	COLOR_PAIRS	number of color pairs available
 	TABSIZE		size of one TAB block
-	acs_map[]	alternate character set map  
-	ttytype[]	terminal name/description    
+	acs_map[]	alternate character set map
+	ttytype[]	terminal name/description
 
 
 CONSTANTS
@@ -118,7 +118,7 @@ GENERAL
 
 VIDEO ATTRIBUTES
 
-Normally, attributes are a property of the character. 
+Normally, attributes are a property of the character.
 
 For chtype:
 
@@ -129,7 +129,7 @@ For chtype:
 	A_INVIS		invisible
 	A_ITALIC	italic
 	A_LEFTLINE	line along the left edge
-	A_PROTECT 	protected (?) -- PDCurses renders this as a 
+	A_PROTECT 	protected (?) -- PDCurses renders this as a
 			combination of the *LINE attributes
 	A_REVERSE	reverse video
 	A_RIGHTLINE	line along the right edge
@@ -140,8 +140,8 @@ For chtype:
 	A_CHARTEXT	bit-mask to extract a character
 	A_COLOR		bit-mask to extract a color-pair
 
-Not all attributes will work on all terminals. A_RIGHTLINE, A_LEFTLINE 
-and A_ITALIC are specific to PDCurses. A_INVIS and A_ITALIC are given 
+Not all attributes will work on all terminals. A_RIGHTLINE, A_LEFTLINE
+and A_ITALIC are specific to PDCurses. A_INVIS and A_ITALIC are given
 the same value in PDCurses.
 
 For attr_t:
@@ -158,14 +158,14 @@ For attr_t:
 	WA_STANDOUT	same as A_STANDOUT
 	WA_UNDERLINE	same as A_UNDERLINE
 
-Note that while A_LEFTLINE and A_RIGHTLINE are PDCurses-specific, 
-WA_LEFT and WA_RIGHT are standard. The following are also defined, for 
-compatibility, but currently have no effect in PDCurses: WA_HORIZONTAL, 
+Note that while A_LEFTLINE and A_RIGHTLINE are PDCurses-specific,
+WA_LEFT and WA_RIGHT are standard. The following are also defined, for
+compatibility, but currently have no effect in PDCurses: WA_HORIZONTAL,
 WA_LOW, WA_TOP, WA_VERTICAL.
 
 THE ALTERNATE CHARACTER SET
 
-For use in chtypes and with related functions. These are a portable way 
+For use in chtypes and with related functions. These are a portable way
 to represent graphics characters on different terminals.
 
 VT100-compatible symbols -- box characters:
@@ -200,7 +200,7 @@ for optimum portability:
 	ACS_RARROW	right arrow
 	ACS_DARROW	down arrow
 	ACS_UARROW	up arrow
-	ACS_BOARD	checkerboard -- lighter (less dense) than 
+	ACS_BOARD	checkerboard -- lighter (less dense) than
 			ACS_CKBOARD
 	ACS_LANTERN	lantern symbol
 	ACS_BLOCK	solid block
@@ -230,7 +230,7 @@ Box character aliases:
 	ACS_SBSB	same as ACS_VLINE
 	ACS_SSSS	same as ACS_PLUS
 
-For cchar_t and wide-character functions, WACS_ equivalents are also 
+For cchar_t and wide-character functions, WACS_ equivalents are also
 defined.
 
 COLORS
@@ -246,7 +246,7 @@ For use with init_pair(), color_set(), etc.:
 	COLOR_YELLOW
 	COLOR_WHITE
 
-Use these instead of numeric values. The definition of the colors 
+Use these instead of numeric values. The definition of the colors
 depends on the implementation of curses.
 
 
@@ -354,19 +354,19 @@ The virtual keypad is arranged like this:
 	left	B2	right
 	C1	down	C3
 
-This list is incomplete -- see curses.h for the full list, and use the 
-testcurs demo to see what values are actually returned. The above are 
-just the keys required by X/Open. In particular, PDCurses defines many 
+This list is incomplete -- see curses.h for the full list, and use the
+testcurs demo to see what values are actually returned. The above are
+just the keys required by X/Open. In particular, PDCurses defines many
 CTL_ and ALT_ combinations; these are not portable.
 
 
 FUNCTIONS
 
-The following table lists each curses routine and the name of the manual 
+The following table lists each curses routine and the name of the manual
 page on which it is described.
 
-Functions from the X/Open curses standard -- complete, except for 
-getch() and ungetch(), which are implemented as macros for DOS 
+Functions from the X/Open curses standard -- complete, except for
+getch() and ungetch(), which are implemented as macros for DOS
 compatibility:
 
    Curses Function        Manual Page Name
@@ -649,9 +649,9 @@ compatibility:
 	wtouchln		touch
 	wvline			border
 
-Wide-character functions from the X/Open standard -- these are only 
-available when PDCurses is built with PDC_WIDE defined, and the 
-prototypes are only available from curses.h when PDC_WIDE is defined 
+Wide-character functions from the X/Open standard -- these are only
+available when PDCurses is built with PDC_WIDE defined, and the
+prototypes are only available from curses.h when PDC_WIDE is defined
 before its inclusion in your app:
 
 	addnwstr		addstr
@@ -781,7 +781,7 @@ Functions from ncurses:
 	wenclose		mouse
 	wmouse_trafo		mouse
 
-PDCurses-specific functions -- avoid these in code that's intended to be 
+PDCurses-specific functions -- avoid these in code that's intended to be
 portable:
 
 	addrawch		addch

@@ -16,8 +16,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Prefix: %base
 
 %description
-PDCurses for X11 is an implementation of the curses library that lets 
-you build text-mode curses programs as native X11 applications. For more 
+PDCurses for X11 is an implementation of the curses library that lets
+you build text-mode curses programs as native X11 applications. For more
 information, visit http://pdcurses.sourceforge.net/
 
 %prep
@@ -25,7 +25,7 @@ information, visit http://pdcurses.sourceforge.net/
 
 %build
 ./configure --prefix=%{base}
-make 
+make
 
 %install
 make DESTDIR=$RPM_BUILD_ROOT install

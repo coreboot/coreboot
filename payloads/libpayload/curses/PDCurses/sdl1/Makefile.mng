@@ -60,9 +60,9 @@ demos:	$(DEMOS)
 pdcurses.dll: $(DEFFILE)
 
 $(DEFFILE): $(DEFDEPS)
-	echo LIBRARY pdcurses > $@        
-	echo EXPORTS >> $@        
-	type $(BASEDEF) >> $@ 
+	echo LIBRARY pdcurses > $@
+	echo EXPORTS >> $@
+	type $(BASEDEF) >> $@
 	echo pdc_screen >> $@
 	echo pdc_font >> $@
 	echo pdc_icon >> $@

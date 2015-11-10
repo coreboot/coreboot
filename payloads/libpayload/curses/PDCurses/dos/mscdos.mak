@@ -26,7 +26,7 @@ CC		= cl
 
 !ifdef DEBUG
 CFLAGS		= /Od /Zi /DPDCDEBUG
-LDFLAGS		= /CO /NOE /SE:160 
+LDFLAGS		= /CO /NOE /SE:160
 !else
 CFLAGS		= /Ox
 LDFLAGS		= /NOE /SE:160

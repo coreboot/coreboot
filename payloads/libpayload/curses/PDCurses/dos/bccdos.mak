@@ -20,9 +20,9 @@ PDCURSES_SRCDIR = ..
 osdir		= $(PDCURSES_SRCDIR)\dos
 
 !ifdef DEBUG
-CFLAGS		= -N -v -y -DPDCDEBUG 
+CFLAGS		= -N -v -y -DPDCDEBUG
 !else
-CFLAGS		= -O 
+CFLAGS		= -O
 !endif
 
 CPPFLAGS	= -I$(PDCURSES_SRCDIR)

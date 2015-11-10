@@ -1,7 +1,7 @@
 PDCurses for Win32
 ==================
 
-This directory contains PDCurses source code files specific to Win32 
+This directory contains PDCurses source code files specific to Win32
 console mode (Win9x/Me/NT/2k/XP/Vista).
 
 
@@ -38,7 +38,7 @@ Building
   for convenience; both panel and curses functions are in the main
   library.
 
-  You can also give the optional parameter "WIDE=Y", to build the 
+  You can also give the optional parameter "WIDE=Y", to build the
   library with wide-character (Unicode) support:
 
 	make -f mingwin32.mak WIDE=Y
@@ -47,9 +47,9 @@ Building
   unless you also link with the Microsoft Layer for Unicode (not
   tested).
 
-  Another option, "UTF8=Y", makes PDCurses ignore the system locale, and 
-  treat all narrow-character strings as UTF-8. This option has no effect 
-  unless WIDE=Y is also set. Use it to get around the poor support for 
+  Another option, "UTF8=Y", makes PDCurses ignore the system locale, and
+  treat all narrow-character strings as UTF-8. This option has no effect
+  unless WIDE=Y is also set. Use it to get around the poor support for
   UTF-8 in the Win32 console:
 
 	make -f mingwin32.mak WIDE=Y UTF8=Y

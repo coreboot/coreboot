@@ -31,7 +31,7 @@ Building
   library, provided for convenience; both panel and curses functions are
   in the main library.
 
-  You can also use the optional parameter "DLL=Y" with EMX, to build the 
+  You can also use the optional parameter "DLL=Y" with EMX, to build the
   library as a DLL:
 
 	make -f gccos2.mak DLL=Y

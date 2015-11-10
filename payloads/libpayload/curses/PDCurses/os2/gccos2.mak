@@ -31,7 +31,7 @@ ifeq ($(EMXVIDEO),Y)
 	BINDFLAGS = -acm
 else
 	CCLIBS =
-	BINDFLAGS = 
+	BINDFLAGS =
 endif
 
 ifeq ($(DEBUG),Y)
@@ -52,7 +52,7 @@ DLLTARGET	= pdcurses.dll
 DLLFLAGS 	= -Zdll -Zcrtdll -Zomf
 
 LINK		= gcc
-EMXBIND		= emxbind 
+EMXBIND		= emxbind
 EMXOMF		= emxomf
 
 LIBEXE		= ar

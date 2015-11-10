@@ -26,13 +26,13 @@ CPPFLAGS	= @DEFS@ -DXCURSES @SYS_DEFS@ -I$(PDCURSES_SRCDIR)
 BUILD		= @CC@ -c $(CFLAGS) $(CPPFLAGS) @MH_XINC_DIR@
 
 LINK		= @CC@
-LDFLAGS		= 
+LDFLAGS		=
 
 LIBCURSES	= libXCurses.a
 
 all :	$(LIBCURSES)
 
-install : 
+install :
 	echo Does nothing at the moment
 
 clean :

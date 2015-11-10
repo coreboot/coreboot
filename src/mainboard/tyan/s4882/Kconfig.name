@@ -1,2 +1,0 @@
-config BOARD_TYAN_S4882
-	bool "S4882 (Thunder K8QS Pro)"

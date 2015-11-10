@@ -1,4 +1,0 @@
-Board name: Thunder K8S (S2880)
-Category: server
-Board URL: http://www.tyan.com/archive/products/html/thunderk8s.html
-Release year: 2003

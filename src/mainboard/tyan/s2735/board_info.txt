@@ -1,4 +1,0 @@
-Board name: Tiger i7501R (S2735)
-Category: server
-Board URL: http://www.tyan.com/archive/products/html/tigeri7501r.html
-Release year: 2003

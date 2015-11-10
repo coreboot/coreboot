@@ -173,7 +173,7 @@ void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
 	uint8_t node;
 	uint8_t socket;
 	uint8_t allowed_voltages = 0xf;	/* The mainboard VRMs allow 1.15V, 1.25V, 1.35V, and 1.5V */
-	uint8_t node_allowed_voltages;
+	uint8_t socket_allowed_voltages = allowed_voltages;
 	uint32_t set_voltage = 0;
 
 	if (get_option(&nvram, "minimum_memory_voltage") == CB_SUCCESS) {
@@ -193,26 +193,31 @@ void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
 
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 		socket = node / 2;
-		node_allowed_voltages = allowed_voltages;
 		struct DCTStatStruc *pDCTstat;
 		pDCTstat = pDCTstatA + node;
+
+		/* reset socket_allowed_voltages before processing each socket */
+		if (!(node % 2))
+			socket_allowed_voltages = allowed_voltages;
+
 		if (pDCTstat->NodePresent) {
 			for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
 				if (pDCTstat->DIMMValid & (1 << dimm)) {
-					node_allowed_voltages &= pDCTstat->DimmSupportedVoltages[dimm];
+					socket_allowed_voltages &= pDCTstat->DimmSupportedVoltages[dimm];
 				}
 			}
 		}
 
+		/* set voltage per socket after processing last contained node */
 		if (pDCTstat->NodePresent && (node % 2)) {
 			/* Set voltages */
-			if (node_allowed_voltages & 0x8) {
+			if (socket_allowed_voltages & 0x8) {
 				set_voltage = 0x8;
 				set_ddr3_voltage(socket, 3);
-			} else if (node_allowed_voltages & 0x4) {
+			} else if (socket_allowed_voltages & 0x4) {
 				set_voltage = 0x4;
 				set_ddr3_voltage(socket, 2);
-			} else if (node_allowed_voltages & 0x2) {
+			} else if (socket_allowed_voltages & 0x2) {
 				set_voltage = 0x2;
 				set_ddr3_voltage(socket, 1);
 			} else {

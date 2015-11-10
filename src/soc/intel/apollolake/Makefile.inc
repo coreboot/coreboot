@@ -25,6 +25,8 @@ romstage-y += memmap.c
 romstage-y += mmap_boot.c
 
 smm-y += placeholders.c
+
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c
 ramstage-y += chip.c
 ramstage-y += placeholders.c

@@ -124,6 +124,8 @@ Scope (\_SB.PCI0.I2C1)
 			}
 		})
 
+		Name (_PRW, Package() { GPE_TOUCHPAD_WAKE, 0x3 })
+
 		Method (_STA)
 		{
 			Return (0xF)

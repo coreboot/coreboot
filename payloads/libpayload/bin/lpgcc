@@ -147,7 +147,7 @@ done
 _CFLAGS="$_ARCHEXTRA -nostdinc -nostdlib -I$BASE/../build -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
 
 if [ "$CONFIG_LP_PDCURSES" = y ]; then
-  _CFLAGS="$_CFLAGS -I$BASE/../curses/PDCurses-3.4"
+  _CFLAGS="$_CFLAGS -I$BASE/../curses/PDCurses"
 fi
 
 if [ "$CONFIG_LP_TINYCURSES" = y ]; then

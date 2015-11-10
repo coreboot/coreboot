@@ -38,7 +38,7 @@ libcurses-$(CONFIG_LP_TINYCURSES) += colors.c
 includes-$(CONFIG_LP_TINYCURSES) += curses.h
 
 ifeq ($(CONFIG_LP_PDCURSES),y)
-PDCURSES := PDCurses-3.4
+PDCURSES := PDCurses
 INCLUDES += -D_LP64=0 -Icurses/$(PDCURSES) -Icurses/pdcurses-backend -Icurses/menu -Icurses/form
 endif
 

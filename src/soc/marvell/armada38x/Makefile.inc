@@ -2,6 +2,7 @@ ifeq ($(CONFIG_SOC_MARVELL_ARMADA38X),y)
 
 bootblock-y += bootblock.c
 bootblock-y += bootblock_asm.S
+bootblock-y += spi.c
 bootblock-y += monotonic_timer.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
@@ -9,11 +10,14 @@ endif
 
 verstage-$(CONFIG_DRIVERS_UART) += uart.c
 verstage-y += monotonic_timer.c
+verstage-y += spi.c
 
+romstage-y += spi.c
 romstage-y += cbmem.c
 romstage-y += monotonic_timer.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
+ramstage-y += spi.c
 ramstage-y += cbmem.c
 ramstage-y += monotonic_timer.c
 ramstage-y += soc.c

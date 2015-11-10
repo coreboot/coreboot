@@ -13,9 +13,12 @@
  * GNU General Public License for more details.
  */
 
+#include <device/pci_def.h>
+#include <device/device.h>
 #include "AGESA.h"
 #include "amdlib.h"
 #include <northbridge/amd/pi/BiosCallOuts.h>
+#include <northbridge/amd/pi/00660F01/chip.h>
 #include "Ids.h"
 #include "OptionsIds.h"
 #include "heapManager.h"
@@ -27,18 +30,20 @@
 #include "hudson.h"
 #include <stdlib.h>
 #include "BiosCallOuts.h"
+#include "northbridge/amd/pi/dimmSpd.h"
 #include "northbridge/amd/pi/agesawrapper.h"
 #include <PlatformMemoryConfiguration.h>
 #include <boardid.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
+static AGESA_STATUS board_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
-	{AGESA_READ_SPD,                 agesa_ReadSpd },
+	{AGESA_READ_SPD,                 board_ReadSpd },
 	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
@@ -100,7 +105,43 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-/* NOTE: Only for Bettong. */
+static AGESA_STATUS board_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+#ifdef __PRE_RAM__
+	int spdAddress;
+	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
+
+	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	ROMSTAGE_CONST struct northbridge_amd_pi_00660F01_config *config = dev->chip_info;
+	UINT8 spdAddrLookup_rev_F [2][2][4]= {
+		{ {0xA0, 0xA2}, {0xA4, 0xAC}, }, /* socket 0 - Channel 0 & 1 - 8-bit SPD addresses */
+		{ {0x00, 0x00}, {0x00, 0x00}, }, /* socket 1 - Channel 0 & 1 - 8-bit SPD addresses */
+	};
+
+	if ((dev == 0) || (config == 0))
+		return AGESA_ERROR;
+	if (info->SocketId >= ARRAY_SIZE(config->spdAddrLookup))
+		return AGESA_ERROR;
+	if (info->MemChannelId >= ARRAY_SIZE(config->spdAddrLookup[0]))
+		return AGESA_ERROR;
+	if (info->DimmId >= ARRAY_SIZE(config->spdAddrLookup[0][0]))
+		return AGESA_ERROR;
+	if (board_id() == 'F')
+		spdAddress = spdAddrLookup_rev_F
+			[info->SocketId] [info->MemChannelId] [info->DimmId];
+	else
+		spdAddress = config->spdAddrLookup
+			[info->SocketId] [info->MemChannelId] [info->DimmId];
+
+	if (spdAddress == 0)
+		return AGESA_ERROR;
+	int err = hudson_readSpd(spdAddress, (void *) info->Buffer, 128);
+	if (err)
+		return AGESA_ERROR;
+#endif
+	return AGESA_SUCCESS;
+}
+
 #ifdef __PRE_RAM__
 
 const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {

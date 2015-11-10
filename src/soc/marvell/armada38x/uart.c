@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <soc/common.h>
+#include <soc/clock.h>
 
 struct armada38x_uart {
 	union {
@@ -94,7 +95,7 @@ static int armada38x_uart_tst_byte(struct armada38x_uart *uart_ptr)
 
 unsigned int uart_platform_refclk(void)
 {
-	return MV_BOARD_TCLK_250MHZ;
+	return mv_tclk_get();
 }
 
 uintptr_t uart_platform_base(int idx)

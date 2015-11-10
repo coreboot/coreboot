@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <soc/common.h>
+#include <soc/clock.h>
 
 /******************************************************************************
 base type define
@@ -352,7 +353,7 @@ int mv_spi_sys_init(unsigned char spi_id,
 	MV_SPI_HAL_DATA hal_data;
 
 	hal_data.ctrl_model = MV_6810_DEV_ID;
-	hal_data.tclk = MV_BOARD_TCLK_250MHZ;
+	hal_data.tclk = mv_tclk_get();
 
 	return mv_spi_init(spi_id, cs_id, serial_baud_rate, &hal_data);
 }

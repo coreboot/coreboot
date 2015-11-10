@@ -54,6 +54,7 @@ libc-$(CONFIG_LP_TIMER_RK) += timer/rktimer.c
 libc-$(CONFIG_LP_TIMER_BG4CD) += timer/bg4cd.c
 libc-$(CONFIG_LP_TIMER_IMG_PISTACHIO) += timer/img_pistachio.c
 libc-$(CONFIG_LP_TIMER_CYGNUS) += timer/cygnus.c
+libc-$(CONFIG_LP_TIMER_ARMADA38X) += timer/armada38x.c
 
 # Video console drivers
 libc-$(CONFIG_LP_VIDEO_CONSOLE) += video/video.c

@@ -1,2 +1,0 @@
-config BOARD_TYAN_S2850
-	bool "S2850 (Tomcat K8S)"

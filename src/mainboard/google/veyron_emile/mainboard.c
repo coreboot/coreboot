@@ -139,6 +139,11 @@ void lb_board(struct lb_header *header)
 	dma->size = sizeof(*dma);
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = _dma_coherent_size;
+
+	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+		/* Retrieve the MAC addr which would pass to DTS. */
+		lb_table_add_macs_from_vpd(header);
+	}
 }
 
 void mainboard_power_on_backlight(void)

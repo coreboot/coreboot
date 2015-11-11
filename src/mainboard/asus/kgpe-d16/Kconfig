@@ -80,6 +80,10 @@ config IRQ_SLOT_COUNT
 	int
 	default 13
 
+config SOUTHBRIDGE_AMD_SB700_SATA_PORT_COUNT_BITFIELD
+	hex
+	default 0x3f
+
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y

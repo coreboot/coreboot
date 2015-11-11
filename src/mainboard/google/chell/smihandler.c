@@ -19,6 +19,7 @@
 #include <cpu/x86/smm.h>
 #include <elog.h>
 #include <ec/google/chromeec/ec.h>
+#include <gpio.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
@@ -80,9 +81,8 @@ void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 	}
 }
 
-void mainboard_smi_sleep(u8 slp_typ)
+static void google_ec_smi_sleep(u8 slp_typ)
 {
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
 	switch (slp_typ) {
 	case 3:
 		/* Enable wake events */
@@ -101,7 +101,31 @@ void mainboard_smi_sleep(u8 slp_typ)
 	/* Clear pending events that may trigger immediate wake */
 	while (google_chromeec_get_event() != 0)
 		;
-#endif
+}
+
+static void mainboard_gpio_smi_sleep(u8 slp_typ)
+{
+	int i;
+
+	/* Power down the rails on any sleep type. */
+	gpio_t active_high_signals[] = {
+		EN_PP3300_KEPLER,
+		EN_PP3300_DX_TOUCH,
+		EN_PP3300_DX_EMMC,
+		EN_PP1800_DX_EMMC,
+		EN_PP3300_DX_CAM,
+	};
+
+	for (i = 0; i < ARRAY_SIZE(active_high_signals); i++)
+		gpio_set(active_high_signals[i], 0);
+}
+
+void mainboard_smi_sleep(u8 slp_typ)
+{
+	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+		google_ec_smi_sleep(slp_typ);
+
+	mainboard_gpio_smi_sleep(slp_typ);
 }
 
 int mainboard_smi_apmc(u8 apmc)

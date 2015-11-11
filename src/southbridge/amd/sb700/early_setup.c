@@ -18,6 +18,7 @@
 #define _SB700_EARLY_SETUP_C_
 
 #include <stdint.h>
+#include <option.h>
 #include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <arch/io.h>

@@ -120,6 +120,14 @@ static inline bool buffer_check_magic(const struct buffer *b, const char *magic,
 					memcmp(b->data, magic, magic_len) == 0;
 }
 
+/* Returns the start of the underlying buffer, with the offset undone */
+static inline void *buffer_get_original_backing(const struct buffer *b)
+{
+	if (!b)
+		return NULL;
+	return b->data - b->offset;
+}
+
 /* Creates an empty memory buffer with given size.
  * Returns 0 on success, otherwise non-zero. */
 int buffer_create(struct buffer *buffer, size_t size, const char *name);

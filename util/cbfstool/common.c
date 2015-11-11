@@ -115,7 +115,7 @@ void buffer_delete(struct buffer *buffer)
 		buffer->name = NULL;
 	}
 	if (buffer->data) {
-		free(buffer->data - buffer->offset);
+		free(buffer_get_original_backing(buffer));
 		buffer->data = NULL;
 	}
 	buffer->offset = 0;

@@ -46,6 +46,13 @@
 #define EC_SCI_GPI		GPE0_DW2_16
 #define EC_SMI_GPI		GPP_E15
 
+/* Power rail control signals. */
+#define EN_PP3300_KEPLER	GPP_C11
+#define EN_PP3300_DX_TOUCH	GPP_C22
+#define EN_PP3300_DX_EMMC	GPP_D5
+#define EN_PP1800_DX_EMMC	GPP_D6
+#define EN_PP3300_DX_CAM	GPP_D12
+
 #ifndef __ACPI__
 /* Pad configuration in ramstage. */
 static const struct pad_config gpio_table[] = {

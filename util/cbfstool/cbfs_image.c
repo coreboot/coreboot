@@ -1168,12 +1168,11 @@ int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback,
 	return count;
 }
 
-static int cbfs_header_valid(struct cbfs_header *header, size_t size)
+static int cbfs_header_valid(struct cbfs_header *header)
 {
 	if ((ntohl(header->magic) == CBFS_HEADER_MAGIC) &&
 	    ((ntohl(header->version) == CBFS_HEADER_VERSION1) ||
 	     (ntohl(header->version) == CBFS_HEADER_VERSION2)) &&
-	    (ntohl(header->romsize) <= size) &&
 	    (ntohl(header->offset) < ntohl(header->romsize)))
 		return 1;
 	return 0;
@@ -1190,7 +1189,7 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size,
 	if (forced_offset < (size - sizeof(struct cbfs_header))) {
 		/* Check if the forced header is valid. */
 		header = (struct cbfs_header *)(data + forced_offset);
-		if (cbfs_header_valid(header, size))
+		if (cbfs_header_valid(header))
 			return header;
 		return NULL;
 	}
@@ -1202,7 +1201,7 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size,
 	      (size_t)rel_offset, (size_t)-rel_offset, offset);
 
 	if (offset >= size - sizeof(*header) ||
-	    !cbfs_header_valid((struct cbfs_header *)(data + offset), size)) {
+	    !cbfs_header_valid((struct cbfs_header *)(data + offset))) {
 		// Some use cases append non-CBFS data to the end of the ROM.
 		DEBUG("relative offset seems wrong, scanning whole image...\n");
 		offset = 0;
@@ -1210,7 +1209,7 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size,
 
 	for (; offset + sizeof(*header) < size; offset++) {
 		header = (struct cbfs_header *)(data + offset);
-		if (!cbfs_header_valid(header, size))
+		if (!cbfs_header_valid(header))
 			continue;
 		if (!found++)
 			result = header;
@@ -1228,9 +1227,15 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size,
 struct cbfs_file *cbfs_find_first_entry(struct cbfs_image *image)
 {
 	assert(image);
-	return image->has_header ? (struct cbfs_file *)(image->buffer.data +
-						   image->header.offset) :
-				   (struct cbfs_file *)image->buffer.data;
+	if (image->has_header)
+		/* header.offset is relative to start of flash, not
+		 * start of region, so use it with the full image.
+		 */
+		return (struct cbfs_file *)
+			(buffer_get_original_backing(&image->buffer) +
+			image->header.offset);
+	else
+		return (struct cbfs_file *)buffer_get(&image->buffer);
 }
 
 struct cbfs_file *cbfs_find_next_entry(struct cbfs_image *image,

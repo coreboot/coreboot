@@ -40,8 +40,6 @@ dep:
 install: $(PROGRAM)
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/bin
-	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
-	$(INSTALL) $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
 
 .PHONY: all clean distclean dep
 

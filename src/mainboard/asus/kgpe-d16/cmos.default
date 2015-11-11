@@ -18,6 +18,7 @@ interleave_memory_channels = Enable
 cpu_c_states = Enable
 cpu_cc6_state = Enable
 sata_ahci_mode = Enable
+sata_alpm = Disable
 maximum_p_state_limit = 0xf
 ieee1394_controller = Enable
 power_on_after_fail = On

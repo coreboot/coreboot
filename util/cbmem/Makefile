@@ -13,11 +13,13 @@
 ## GNU General Public License for more details.
 ##
 
-PROGRAM = cbmem
-ROOT = ../../src
-CC     ?= $(CROSS_COMPILE)gcc
-CFLAGS ?= -O2
-CFLAGS += -Wall -Werror
+PROGRAM   = cbmem
+ROOT      = ../../src
+CC       ?= $(CROSS_COMPILE)gcc
+INSTALL  ?= /usr/bin/install
+PREFIX   ?= /usr/local
+CFLAGS   ?= -O2
+CFLAGS   += -Wall -Werror
 CPPFLAGS += -I $(ROOT)/commonlib/include
 
 OBJS = $(PROGRAM).o
@@ -28,6 +30,10 @@ $(PROGRAM): $(OBJS)
 
 clean:
 	rm -f $(PROGRAM) *.o *~ junit.xml
+
+install: $(PROGRAM)
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/sbin/
+	$(INSTALL) cbmem $(DESTDIR)$(PREFIX)/sbin/
 
 distclean: clean
 	rm -f .dependencies

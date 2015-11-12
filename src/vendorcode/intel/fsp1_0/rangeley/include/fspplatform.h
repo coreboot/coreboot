@@ -1,6 +1,6 @@
 /**
 
-Copyright (C) 2013, Intel Corporation
+Copyright (C) 2013 - 2015, Intel Corporation
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -74,6 +74,7 @@ typedef struct {
   UINT8  tRTPmin;                        // 27  Minimum Internal Read to Precharge Command Delay Time (tRTPmin)
   UINT8  UpperNibbleFortFAW;             // 28  Upper Nibble for tFAW
   UINT8  tFAWmin;                        // 29  Minimum Four Activate Window Delay Time (tFAWmin)
+  UINT8  SdramThermalRefreshOption;      // 31  SdramThermalRefreshOption
   UINT8  ModuleThermalSensor;            // 32  ModuleThermalSensor
   UINT8  SDRAMDeviceType;                // 33  SDRAM Device Type
   UINT8  tCKminFine;                     // 34  Fine Offset for SDRAM Minimum Cycle Time (tCKmin)

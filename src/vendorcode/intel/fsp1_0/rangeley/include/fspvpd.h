@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (C) 2013-2014 Intel Corporation
+Copyright (C) 2015, Intel Corporation
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -50,7 +50,8 @@ typedef struct _UPD_DATA_REGION {
   UINT8                       PcdSpdBaseAddress_0_1;         /* Offset 0x0026 */
   UINT8                       PcdSpdBaseAddress_1_0;         /* Offset 0x0027 */
   UINT8                       PcdSpdBaseAddress_1_1;         /* Offset 0x0028 */
-  UINT8                       UnusedUpdSpace1[7];            /* Offset 0x0029 */
+  UINT8                       PcdExtendedTemperatureEnable;  /* Offset 0x0029 */
+  UINT8                       UnusedUpdSpace1[6];            /* Offset 0x002A */
   UINT8                       PcdEnableLan;                  /* Offset 0x0030 */
   UINT8                       PcdEnableSata2;                /* Offset 0x0031 */
   UINT8                       PcdEnableSata3;                /* Offset 0x0032 */
@@ -65,13 +66,14 @@ typedef struct _UPD_DATA_REGION {
   UINT8                       PcdPrintDebugMessages;         /* Offset 0x0040 */
   UINT8                       PcdFastboot;                   /* Offset 0x0041 */
   UINT8                       PcdEccSupport;                 /* Offset 0x0042 */
-  UINT8                       PcdCustomerRevision[32];       /* Offset 0x0043 */
-  UINT8                       UnusedUpdSpace3[13];           /* Offset 0x0063 */
+  UINT8                       PcdSerialPortBaudRate;         /* Offset 0x0043 */
+  UINT8                       PcdCustomerRevision[32];       /* Offset 0x0044 */
+  UINT8                       UnusedUpdSpace3[12];           /* Offset 0x0064 */
   UINT16                      PcdRegionTerminator;           /* Offset 0x0070 */
 } UPD_DATA_REGION;
 
 #define VPD_IMAGE_ID    0x562D474E524E5641        /* 'AVNRNG-V' */
-#define VPD_IMAGE_REV   0x00000102
+#define VPD_IMAGE_REV   0x00000140
 
 typedef struct _VPD_DATA_REGION {
   UINT64                      PcdVpdRegionSign;              /* Offset 0x0000 */

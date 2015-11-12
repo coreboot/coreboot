@@ -2408,9 +2408,12 @@ static void DCTMemClr_Sync_D(struct MCTStatStruc *pMCTstat,
 		} while (!(val & (1 << Dr_MemClrStatus)));
 	}
 
-	val = 0x0FE40FC0;		/* BKDG recommended */
+	if (is_fam15h())
+		val = 0x0ce00f41;	/* BKDG recommended */
+	else
+		val = 0x0fe40fc0;	/* BKDG recommended */
 	val |= MCCH_FlushWrOnStpGnt;	/* Set for S3 */
-	Set_NB32(dev, 0x11C, val);
+	Set_NB32(dev, 0x11c, val);
 }
 
 static u8 NodePresent_D(u8 Node)

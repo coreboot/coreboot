@@ -186,7 +186,7 @@ void main(unsigned long bist)
 
 	init_iommu();
 
-	cbmem_initted = !cbmem_recovery(0);
+	cbmem_initted = !cbmem_recovery(s3resume);
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.

@@ -36,8 +36,9 @@ _start:
 	cli
 	/* Save the BIST result */
 	movl	%eax, %ebp
-
+#if !IS_ENABLED(CONFIG_NO_EARLY_BOOTBLOCK_POSTCODES)
 	post_code(POST_RESET_VECTOR_CORRECT)
+#endif
 
 	/* IMMEDIATELY invalidate the translation lookaside buffer (TLB) before
 	 * executing any further code. Even though paging is disabled we

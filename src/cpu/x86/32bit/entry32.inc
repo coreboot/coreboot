@@ -56,7 +56,9 @@ __protected_start:
 	/* Save the BIST value */
 	movl	%eax, %ebp
 
+#if !IS_ENABLED(CONFIG_NO_EARLY_BOOTBLOCK_POSTCODES)
 	post_code(POST_ENTER_PROTECTED_MODE)
+#endif
 
 	movw	$ROM_DATA_SEG, %ax
 	movw	%ax, %ds

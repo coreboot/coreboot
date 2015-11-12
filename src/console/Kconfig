@@ -350,4 +350,13 @@ config POST_IO_PORT
 	  depending on the presence of coprocessors/microcontrollers or if the
 	  platform does not support IO in the conventional x86 manner.
 
+config NO_EARLY_BOOTBLOCK_POSTCODES
+	def_bool n
+	help
+	  Some chipsets require that the routing for the port 80h POST
+	  code be configured before any POST codes are sent out.
+	  This can be done in the boot block, but there are a couple of
+	  POST codes that go out before the chipset's bootblock initialization
+	  can happen.  This option suppresses those POST codes.
+
 endmenu

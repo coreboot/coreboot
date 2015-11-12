@@ -34,6 +34,7 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select SPI_FLASH
 	select COMMON_FADT
 	select HAVE_INTEL_FIRMWARE
+	select NO_EARLY_BOOTBLOCK_POSTCODES
 
 config EHCI_BAR
 	hex

@@ -141,7 +141,7 @@ static const struct pad_config gpio_table[] = {
 /* ISH_I2C1_SDA */	/* GPP_D7 */
 /* ISH_I2C1_SCL */	/* GPP_D8 */
 /* ISH_SPI_CS# */	/* GPP_D9 */
-/* ISH_SPI_CLK */	PAD_CFG_GPO(GPP_D10, 1, DEEP), /* USBA_1_ILIM_SEL_L */
+/* ISH_SPI_CLK */	PAD_CFG_GPO(GPP_D10, 0, DEEP), /* USBA_1_ILIM_SEL_L */
 /* ISH_SPI_MISO */	/* GPP_D11 */
 /* ISH_SPI_MOSI */	PAD_CFG_GPO(GPP_D12, 1, DEEP), /* EN_PP3300_DX_CAM */
 /* ISH_UART0_RXD */	/* GPP_D13 */

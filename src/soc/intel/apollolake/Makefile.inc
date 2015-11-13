@@ -34,6 +34,7 @@ ramstage-y += chip.c
 ramstage-y += placeholders.c
 ramstage-y += gpio.c
 ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
+ramstage-y += lpc.c
 ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
 ramstage-y += uart.c

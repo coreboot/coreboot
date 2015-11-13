@@ -22,6 +22,7 @@
 #include <boot_device.h>
 #include <spi_flash.h>
 #include <symbols.h>
+#include <cbmem.h>
 
 static struct spi_flash *spi_flash_info;
 
@@ -41,6 +42,12 @@ static const struct region_device_ops spi_ops = {
 
 static struct mmap_helper_region_device mdev =
 	MMAP_HELPER_REGION_INIT(&spi_ops, 0, CONFIG_ROM_SIZE);
+
+static void initialize_mdev(int unused)
+{
+	mmap_helper_device_init(&mdev, _dram_cbfs_cache, _dram_cbfs_cache_size);
+}
+ROMSTAGE_CBMEM_INIT_HOOK(initialize_mdev);
 
 void boot_device_init(void)
 {

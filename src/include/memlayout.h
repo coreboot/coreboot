@@ -79,9 +79,11 @@
 /* Use either CBFS_CACHE (unified) or both (PRERAM|POSTRAM)_CBFS_CACHE */
 #define CBFS_CACHE(addr, size) REGION(cbfs_cache, addr, size, 4)
 
-/* TODO: This only works if you never access CBFS in romstage before RAM is up!
- * If you need to change that assumption, you have some work ahead of you... */
-#if defined(__PRE_RAM__) && !ENV_ROMSTAGE
+#if ENV_ROMSTAGE
+	#define PRERAM_CBFS_CACHE(addr, size) CBFS_CACHE(addr, size)
+	#define POSTRAM_CBFS_CACHE(addr, size) \
+		REGION(dram_cbfs_cache, addr, size, 4)
+#elif defined(__PRE_RAM__)
 	#define PRERAM_CBFS_CACHE(addr, size) CBFS_CACHE(addr, size)
 	#define POSTRAM_CBFS_CACHE(addr, size) \
 		REGION(unused_cbfs_cache, addr, size, 4)

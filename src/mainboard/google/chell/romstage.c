@@ -39,6 +39,10 @@ void mainboard_romstage_entry(struct romstage_params *params)
 	/* Ensure the EC and PD are in the right mode for recovery */
 	google_chromeec_early_init();
 
+	/* Turn on keyboard backlight to indicate we are booting */
+	if (params->power_state->prev_sleep_state != SLEEP_STATE_S3)
+		google_chromeec_kbbacklight(100);
+
 	early_config_gpio();
 
 	/* Fill out PEI DATA */

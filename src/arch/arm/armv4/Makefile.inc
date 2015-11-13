@@ -30,8 +30,7 @@ endif
 
 bootblock-y += cache.c
 
-bootblock-c-ccopts += $(armv4_flags)
-bootblock-S-ccopts += $(armv4_flags)
+bootblock-generic-ccopts += $(armv4_flags)
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARMV4
 
@@ -40,10 +39,8 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARMV4
 ################################################################################
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV4),y)
-libverstage-c-ccopts += $(armv4_flags)
-libverstage-S-ccopts += $(armv4_flags)
-verstage-c-ccopts += $(armv4_flags)
-verstage-S-ccopts += $(armv4_flags)
+libverstage-generic-ccopts += $(armv4_flags)
+verstage-generic-ccopts += $(armv4_flags)
 
 verstage-y += cache.c
 endif # CONFIG_ARCH_VERSTAGE_ARMV4
@@ -55,12 +52,10 @@ endif # CONFIG_ARCH_VERSTAGE_ARMV4
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV4),y)
 
 
-romstage-c-ccopts += $(armv4_flags)
-romstage-S-ccopts += $(armv4_flags)
+romstage-generic-ccopts += $(armv4_flags)
 romstage-y += cache.c
 
-rmodules_arm-c-ccopts += $(armv4_flags)
-rmodules_arm-S-ccopts += $(armv4_flags)
+rmodules_arm-generic-ccopts += $(armv4_flags)
 
 endif # CONFIG_ARCH_ROMSTAGE_ARMV4
 
@@ -70,7 +65,6 @@ endif # CONFIG_ARCH_ROMSTAGE_ARMV4
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV4),y)
 
-ramstage-c-ccopts += $(armv4_flags)
-ramstage-S-ccopts += $(armv4_flags)
+ramstage-generic-ccopts += $(armv4_flags)
 
 endif # CONFIG_ARCH_RAMSTAGE_ARMV4

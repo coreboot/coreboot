@@ -94,4 +94,104 @@
 #define __SIMPLE_DEVICE__
 #endif
 
+/* Define helpers about the current architecture, based on toolchain.inc. */
+
+#if defined(__ARCH_arm__)
+#define ENV_ARM 1
+#define ENV_ARM64 0
+#if __COREBOOT_ARM_ARCH__ == 4
+#define ENV_ARMV4 1
+#define ENV_ARMV7 0
+#elif __COREBOOT_ARM_ARCH__ == 7
+#define ENV_ARMV4 0
+#define ENV_ARMV7 1
+#else
+#define ENV_ARMV4 0
+#define ENV_ARMV7 0
+#endif
+#define ENV_ARMV8 0
+#define ENV_MIPS 0
+#define ENV_RISCV 0
+#define ENV_X86 0
+#define ENV_X86_32 0
+#define ENV_X86_64 0
+
+#elif defined(__ARCH_arm64__)
+#define ENV_ARM 0
+#define ENV_ARM64 1
+#define ENV_ARMV4 0
+#define ENV_ARMV7 0
+#if __COREBOOT_ARM_ARCH__ == 8
+#define ENV_ARMV8 1
+#else
+#define ENV_ARMV8 0
+#endif
+#define ENV_MIPS 0
+#define ENV_RISCV 0
+#define ENV_X86 0
+#define ENV_X86_32 0
+#define ENV_X86_64 0
+
+#elif defined(__ARCH_mips__)
+#define ENV_ARM 0
+#define ENV_ARM64 0
+#define ENV_ARMV4 0
+#define ENV_ARMV7 0
+#define ENV_ARMV8 0
+#define ENV_MIPS 1
+#define ENV_RISCV 0
+#define ENV_X86 0
+#define ENV_X86_32 0
+#define ENV_X86_64 0
+
+#elif defined(__ARCH_riscv__)
+#define ENV_ARM 0
+#define ENV_ARM64 0
+#define ENV_ARMV4 0
+#define ENV_ARMV7 0
+#define ENV_ARMV8 0
+#define ENV_MIPS 0
+#define ENV_RISCV 1
+#define ENV_X86 0
+#define ENV_X86_32 0
+#define ENV_X86_64 0
+
+#elif defined(__ARCH_x86_32__)
+#define ENV_ARM 0
+#define ENV_ARM64 0
+#define ENV_ARMV4 0
+#define ENV_ARMV7 0
+#define ENV_ARMV8 0
+#define ENV_MIPS 0
+#define ENV_RISCV 0
+#define ENV_X86 1
+#define ENV_X86_32 1
+#define ENV_X86_64 0
+
+#elif defined(__ARCH_x86_64__)
+#define ENV_ARM 0
+#define ENV_ARM64 0
+#define ENV_ARMV4 0
+#define ENV_ARMV7 0
+#define ENV_ARMV8 0
+#define ENV_MIPS 0
+#define ENV_RISCV 0
+#define ENV_X86 1
+#define ENV_X86_32 0
+#define ENV_X86_64 1
+
+#else
+#define ENV_ARM 0
+#define ENV_ARM64 0
+#define ENV_ARMV4 0
+#define ENV_ARMV7 0
+#define ENV_ARMV8 0
+#define ENV_MIPS 0
+#define ENV_RISCV 0
+#define ENV_X86 0
+#define ENV_X86_32 0
+#define ENV_X86_64 0
+
+#endif
+
 #endif /* _RULES_H */

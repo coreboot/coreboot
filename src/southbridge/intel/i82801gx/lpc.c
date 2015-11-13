@@ -697,30 +697,18 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-/* 82801GH (ICH7 DH) */
-static const struct pci_driver ich7_dh_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27b0,
+/* 27b0: 82801GH (ICH7 DH) */
+/* 27b8: 82801GB/GR (ICH7/ICH7R) */
+/* 27b9: 82801GBM/GU (ICH7-M/ICH7-U) */
+/* 27bc: 82NM10 (NM10) */
+/* 27bd: 82801GHM (ICH7-M DH) */
+
+static const unsigned short pci_device_ids[] = {
+	0x27b0, 0x27b8, 0x27b9, 0x27bc, 0x27bd, 0
 };
 
-/* 82801GB/GR (ICH7/ICH7R) */
-static const struct pci_driver ich7_ich7r_lpc __pci_driver = {
+static const struct pci_driver ich7_lpc __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27b8,
-};
-
-/* 82801GBM/GU (ICH7-M/ICH7-U) */
-static const struct pci_driver ich7m_ich7u_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27b9,
-};
-
-/* 82801GHM (ICH7-M DH) */
-static const struct pci_driver ich7m_dh_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27bd,
+	.devices = pci_device_ids,
 };

@@ -14,45 +14,83 @@
  * GNU General Public License for more details.
  */
 
-/* Use simple device model for this file even in ramstage */
 #define __SIMPLE_DEVICE__
 
 #include <arch/io.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <console/console.h>
 #include <cbmem.h>
 #include <northbridge/intel/pineview/pineview.h>
 
-static void *find_ramtop(void)
+u8 decode_pciebar(u32 *const base, u32 *const len)
 {
-	uint32_t tom;
+	*base = 0;
+	*len = 0;
+	const pci_devfn_t dev = PCI_DEV(0,0,0);
+	u32 pciexbar = 0;
+	u32 pciexbar_reg;
+	u32 reg32;
+	int max_buses;
+	const struct {
+		u16 num_buses;
+		u32 addr_mask;
+	} busmask[] = {
+		{256, 0xf0000000},
+		{128, 0xf8000000},
+		{64,  0xfc000000},
+		{0,   0},
+	};
 
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)) {
-		/* IGD enabled, get top of Memory from BSM register */
-		tom = pci_read_config32(PCI_DEV(0,2,0), BSM);
-	} else
-		tom = (pci_read_config8(PCI_DEV(0,0,0), TOLUD) & 0xf7) << 24;
+	if (!dev)
+		return 0;
 
-	/* if TSEG enabled subtract size */
-	switch(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAM) & 0x07) {
-	case 0x01:
-		/* 1MB TSEG */
-		tom -= 0x100000;
-		break;
-	case 0x03:
-		/* 2MB TSEG */
-		tom -= 0x200000;
-		break;
-	case 0x05:
-		/* 8MB TSEG */
-		tom -= 0x800000;
-		break;
-	default:
-		/* TSEG either disabled or invalid */
-		break;
+	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
+
+	// MMCFG not supported or not enabled.
+	if (!(pciexbar_reg & (1 << 0))) {
+		printk(BIOS_WARNING, "WARNING: MMCONF not set\n");
+		return 0;
 	}
-	return (void *)tom;
+
+	reg32 = (pciexbar_reg >> 1) & 3;
+	pciexbar = pciexbar_reg & busmask[reg32].addr_mask;
+	max_buses = busmask[reg32].num_buses;
+
+	if (!pciexbar) {
+		printk(BIOS_WARNING, "WARNING: pciexbar invalid\n");
+		return 0;
+	}
+
+	*base = pciexbar;
+	*len = max_buses << 20;
+	return 1;
 }
 
-void *cbmem_top(void)
+/** Decodes used Graphics Mode Select (GMS) to kilobytes. */
+u32 decode_igd_memory_size(const u32 gms)
 {
-	return find_ramtop();
+	const u32 gmssize[] = {
+		0, 1, 4, 8, 16, 32, 48, 64, 128, 256
+	};
+
+	if (gms > 9) {
+		printk(BIOS_DEBUG, "Bad Graphics Mode Select (GMS) value.\n");
+		return 0;
+	}
+	return gmssize[gms] << 10;
+}
+
+/** Decodes used Graphics Stolen Memory (GSM) to kilobytes. */
+u32 decode_igd_gtt_size(const u32 gsm)
+{
+	const u8 gsmsize[] = {
+		0, 1, 0, 0,
+	};
+
+	if (gsm > 3) {
+		printk(BIOS_DEBUG, "Bad Graphics Stolen Memory (GSM) value.\n");
+		return 0;
+	}
+	return (u32)(gsmsize[gsm] << 10);
 }

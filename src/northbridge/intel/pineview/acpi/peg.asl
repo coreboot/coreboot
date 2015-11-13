@@ -2,7 +2,6 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
- * Copyright (C) 2015  Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,25 +14,28 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
-#include <arch/acpi.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <northbridge/intel/pineview/pineview.h>
-#include <types.h>
-
-unsigned long acpi_fill_mcfg(unsigned long current)
+Device (PEGP)
 {
-	u32 length = 0;
-	u32 pciexbar = 0;
-	int max_buses;
+	Name (_ADR, 0x00010000)
 
-	if (!decode_pciebar(&pciexbar, &length))
-		return current;
+	// PCI Interrupt Routing.
+	Method (_PRT)
+	{
+		If (PICM) {
+			Return (Package() {
+				Package() { 0x0000ffff, 0, 0, 16 },
+				Package() { 0x0000ffff, 1, 0, 17 },
+				Package() { 0x0000ffff, 2, 0, 18 },
+				Package() { 0x0000ffff, 3, 0, 19 }
+			})
+		} Else {
+			Return (Package() {
+				Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+				Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
+				Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+				Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 }
+			})
+		}
 
-	max_buses = length >> 20;
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
-			pciexbar, 0x0, 0x0, max_buses - 1);
-
-	return current;
+	}
 }

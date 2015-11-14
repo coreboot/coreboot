@@ -15,9 +15,6 @@
 
 #include "coreinfo.h"
 
-#define SCREEN_Y 25
-#define SCREEN_X 80
-
 #define KEY_ESC 27
 
 extern struct coreinfo_module cpuinfo_module;

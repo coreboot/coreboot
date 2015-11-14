@@ -32,4 +32,7 @@ extern void docpuid(int, unsigned long *, unsigned long *, unsigned long *,
 
 void print_module_title(WINDOW *win, const char *title);
 
+#define SCREEN_Y 25
+#define SCREEN_X 80
+
 #endif

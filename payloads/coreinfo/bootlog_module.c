@@ -17,33 +17,134 @@
 
 #if IS_ENABLED(CONFIG_MODULE_BOOTLOG)
 
-#define CONFIG_COREBOOT_PRINTK_BUFFER_ADDR 0x90000
-#define CONFIG_COREBOOT_PRINTK_BUFFER_SIZE 65536
+#define LINES_SHOWN 19
+#define TAB_WIDTH 2
 
-static char *buf;
-static s32 cursor = 0;
-static s32 cursor_max;
+
+/* Globals that are used for tracking screen state */
+static char *g_buf = NULL;
+static s32 g_line = 0;
+static s32 g_lines_count = 0;
+static s32 g_max_cursor_line = 0;
+
+
+/* Copied from libpayload/drivers/cbmem_console.c */
+struct cbmem_console {
+	u32 size;
+	u32 cursor;
+	u8 body[0];
+} __attribute__ ((__packed__));
+
+
+static u32 char_width(char c, u32 cursor, u32 screen_width)
+{
+	if (c == '\n') {
+		return screen_width - (cursor % screen_width);
+	} else if (c == '\t') {
+		return TAB_WIDTH;
+	} else if (isprint(c)) {
+		return 1;
+	}
+
+	return 0;
+}
+
+static u32 calculate_chars_count(char *str, u32 str_len, u32 screen_width, u32 screen_height)
+{
+	u32 i, count = 0;
+
+	for (i = 0; i < str_len; i++) {
+		count += char_width(str[i], count, screen_width);
+	}
+
+	/* Ensure that 'count' can occupy at least the whole screen */
+	if (count < screen_width * screen_height) {
+		count = screen_width * screen_height;
+	}
+
+	/* Pad to line end */
+	if (count % screen_width != 0) {
+		count += screen_width - (count % screen_width);
+	}
+
+	return count;
+}
+
+/*
+ * This method takes an input buffer and sanitizes it for display, which means:
+ *  - '\n' is converted to spaces until end of line
+ *  - Tabs are converted to spaces of size TAB_WIDTH
+ *  - Only printable characters are preserved
+ */
+static int sanitize_buffer_for_display(char *str, u32 str_len, char *out, u32 out_len, u32 screen_width)
+{
+	u32 cursor = 0;
+	u32 i;
+
+	for (i = 0; i < str_len && cursor < out_len; i++) {
+		u32 width = char_width(str[i], cursor, screen_width);
+		if (width == 1) {
+			out[cursor++] = str[i];
+		} else if (width > 1) {
+			while (width-- && cursor < out_len) {
+				out[cursor++] = ' ';
+			}
+		}
+	}
+
+	/* Fill the rest of the out buffer with spaces */
+	while (cursor < out_len) {
+		out[cursor++] = ' ';
+	}
+
+	return 0;
+}
 
 static int bootlog_module_init(void)
 {
-	int i;
-	volatile unsigned long *ptr =
-		(void *)(CONFIG_COREBOOT_PRINTK_BUFFER_ADDR + 16); /* FIXME */
-
-	buf = malloc(CONFIG_COREBOOT_PRINTK_BUFFER_SIZE);
-	if (!buf) {
-		/* TODO */
+	/* Make sure that lib_sysinfo is initialized */
+	int ret = lib_get_sysinfo();
+	if (ret) {
+		return -1;
 	}
 
-	memcpy(buf, (char *)ptr, CONFIG_COREBOOT_PRINTK_BUFFER_SIZE);
-
-	cursor_max = CONFIG_COREBOOT_PRINTK_BUFFER_SIZE;
-	for (i = 0; i < 20; i++) {
-		do {
-			cursor_max--;
-		} while (*(buf + cursor_max) != '\n');
+	struct cbmem_console *console = lib_sysinfo.cbmem_cons;
+	if (console == NULL) {
+		return -1;
 	}
-	cursor_max++;	/* Stay _behind_ the newline. */
+	/* Extract console information */
+	char *buffer = (char *)(&(console->body));
+	u32 buffer_size = console->size;
+	u32 cursor = console->cursor;
+
+	/* The cursor may be bigger than buffer size when the buffer is full */
+	if (cursor >= buffer_size) {
+		cursor = buffer_size - 1;
+	}
+
+	/* Calculate how much characters will be displayed on screen */
+	u32 chars_count = calculate_chars_count(buffer, cursor + 1, SCREEN_X, LINES_SHOWN);
+
+	/* Sanity check, chars_count must be padded to full line */
+	if (chars_count % SCREEN_X != 0) {
+		return -2;
+	}
+
+	g_lines_count = chars_count / SCREEN_X;
+	g_max_cursor_line = MAX(g_lines_count - 1 - LINES_SHOWN, 0);
+
+	g_buf = malloc(chars_count);
+	if (!g_buf) {
+		return -3;
+	}
+
+	if (sanitize_buffer_for_display(buffer, cursor + 1,
+									g_buf, chars_count,
+									SCREEN_X) < 0) {
+		free(g_buf);
+		g_buf = NULL;
+		return -4;
+	}
 
 	/* TODO: Maybe a _cleanup hook where we call free()? */
 
@@ -52,74 +153,52 @@ static int bootlog_module_init(void)
 
 static int bootlog_module_redraw(WINDOW *win)
 {
-	int x = 0, y = 0;
-	char *tmp = buf + cursor;
-
 	print_module_title(win, "Coreboot Bootlog");
 
-	/* FIXME: Handle lines longer than 80 characters. */
-	while (y <= 18) {
-		mvwaddch(win, y + 2, x, isprint(*tmp) ? *tmp : ' ');
-		x++;
-		tmp++;
-		if (*tmp == '\n') {
-			y++;
-			x = 0;
-			tmp++;		/* Skip the newline. */
+	if (!g_buf) {
+		return -1;
+	}
+
+	int x = 0, y = 0;
+	char *tmp = g_buf + g_line * SCREEN_X;
+
+	for (y = 0; y < LINES_SHOWN; y++) {
+		for (x = 0; x < SCREEN_X; x++) {
+			mvwaddch(win, y + 2, x, *tmp);
+			tmp++;
 		}
+
 	}
 
 	return 0;
 }
 
-/* TODO: Simplify code. */
 static int bootlog_module_handle(int key)
 {
-	int i;
+	if (!g_buf) {
+		return 0;
+	}
 
 	switch (key) {
 	case KEY_DOWN:
-		if (cursor == cursor_max)
-			return 0;
-		while (*(buf + cursor) != '\n')
-			cursor++;
-		cursor++;	/* Skip the newline. */
+		g_line++;
 		break;
 	case KEY_UP:
-		if (cursor == 0)
-			return 0;
-		cursor--;	/* Skip the newline. */
-		do {
-			cursor--;
-		} while (*(buf + cursor) != '\n');
-		cursor++;	/* Stay _behind_ the newline. */
+		g_line--;
 		break;
-	case KEY_NPAGE:
-		if (cursor == cursor_max)
-			return 0;
-		for (i = 0; i < 20; i++) {
-			while (*(buf + cursor) != '\n')
-				cursor++;
-			cursor++;	/* Skip the newline. */
-		}
+	case KEY_NPAGE: /* Page up */
+		g_line -= LINES_SHOWN;
 		break;
-	case KEY_PPAGE:
-		if (cursor == 0)
-			return 0;
-		for (i = 0; i < 20; i++) {
-			do {
-				cursor--;
-			} while (*(buf + cursor) != '\n');
-		}
-		cursor++;	/* Stay _behind_ the newline. */
+	case KEY_PPAGE: /* Page down */
+		g_line += LINES_SHOWN;
 		break;
 	}
 
-	if (cursor > cursor_max)
-		cursor = cursor_max;
+	if (g_line < 0)
+		g_line = 0;
 
-	if (cursor < 0)
-		cursor = 0;
+	if (g_line > g_max_cursor_line)
+		g_line = g_max_cursor_line;
 
 	return 1;
 }

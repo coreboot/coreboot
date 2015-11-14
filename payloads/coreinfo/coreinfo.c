@@ -294,6 +294,7 @@ int main(void)
 
 	noecho(); /* don't let curses echo keyboard chars */
 	keypad(stdscr, TRUE); /* allow KEY_F(n) keys to be seen */
+	curs_set(0); /* Hide blinking cursor */
 
 	loop();
 

@@ -22,6 +22,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include "model_406dx.h"
@@ -167,6 +168,9 @@ static void model_406dx_init(struct device *cpu)
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
+
+	/* Load microcode */
+	intel_update_microcode_from_cbfs();
 
 	/* Clear out pending MCEs */
 	configure_mca();

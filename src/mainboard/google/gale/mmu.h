@@ -16,6 +16,8 @@ extern u8 _wifi_imem_0[];	/* Linker script supplied */
 extern u8 _ewifi_imem_0[];
 extern u8 _wifi_imem_1[];
 extern u8 _ewifi_imem_1[];
+extern u8 _oc_imem[];
+extern u8 _eoc_imem[];
 
 enum dram_state {
 	DRAM_INITIALIZED = 0,

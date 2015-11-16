@@ -20,6 +20,9 @@
 #define WIFI_IMEM_1_START	((uintptr_t)_wifi_imem_1 / KiB)
 #define WIFI_IMEM_1_END		((uintptr_t)_ewifi_imem_1 / KiB)
 
+#define OC_IMEM_START		((uintptr_t)_oc_imem / KiB)
+#define OC_IMEM_END		((uintptr_t)_eoc_imem / KiB)
+
 #define DRAM_START		((uintptr_t)_dram / MiB)
 #define DRAM_SIZE		(CONFIG_DRAM_SIZE_MB)
 #define DRAM_END		(DRAM_START + DRAM_SIZE)
@@ -59,6 +62,10 @@ void setup_mmu(enum dram_state dram)
 
 	mmu_config_range_kb(WIFI_IMEM_1_START,
 				WIFI_IMEM_1_END - WIFI_IMEM_1_START,
+				DCACHE_WRITEBACK);
+
+	mmu_config_range_kb(OC_IMEM_START,
+				OC_IMEM_END - OC_IMEM_START,
 				DCACHE_WRITEBACK);
 
 	/* Map DRAM memory */

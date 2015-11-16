@@ -90,27 +90,43 @@ static const char * event_class_string_decodes[] = {
 	[HT_EVENT_CLASS_INFO] = "INFO"
 };
 
-static const char * event_string_decodes[] = {
-	[HT_EVENT_COH_EVENTS] = "HT_EVENT_COH_EVENTS",
-	[HT_EVENT_COH_NO_TOPOLOGY] = "HT_EVENT_COH_NO_TOPOLOGY",
-	[HT_EVENT_COH_LINK_EXCEED] = "HT_EVENT_COH_LINK_EXCEED",
-	[HT_EVENT_COH_FAMILY_FEUD] = "HT_EVENT_COH_FAMILY_FEUD",
-	[HT_EVENT_COH_NODE_DISCOVERED] = "HT_EVENT_COH_NODE_DISCOVERED",
-	[HT_EVENT_COH_MPCAP_MISMATCH] = "HT_EVENT_COH_MPCAP_MISMATCH",
-	[HT_EVENT_NCOH_EVENTS] = "HT_EVENT_NCOH_EVENTS",
-	[HT_EVENT_NCOH_BUID_EXCEED] = "HT_EVENT_NCOH_BUID_EXCEED",
-	[HT_EVENT_NCOH_LINK_EXCEED] = "HT_EVENT_NCOH_LINK_EXCEED",
-	[HT_EVENT_NCOH_BUS_MAX_EXCEED] = "HT_EVENT_NCOH_BUS_MAX_EXCEED",
-	[HT_EVENT_NCOH_CFG_MAP_EXCEED] = "HT_EVENT_NCOH_CFG_MAP_EXCEED",
-	[HT_EVENT_NCOH_DEVICE_FAILED] = "HT_EVENT_NCOH_DEVICE_FAILED",
-	[HT_EVENT_NCOH_AUTO_DEPTH] = "HT_EVENT_NCOH_AUTO_DEPTH",
-	[HT_EVENT_OPT_EVENTS] = "HT_EVENT_OPT_EVENTS",
-	[HT_EVENT_OPT_REQUIRED_CAP_RETRY] = "HT_EVENT_OPT_REQUIRED_CAP_RETRY",
-	[HT_EVENT_OPT_REQUIRED_CAP_GEN3] = "HT_EVENT_OPT_REQUIRED_CAP_GEN3",
-	[HT_EVENT_HW_EVENTS] = "HT_EVENT_HW_EVENTS",
-	[HT_EVENT_HW_SYNCHFLOOD] = "HT_EVENT_HW_SYNCHFLOOD",
-	[HT_EVENT_HW_HTCRC] = "HT_EVENT_HW_HTCRC"
+typedef struct {
+	uint32_t code;
+	const char * string;
+} event_string_decode_t;
+
+static const event_string_decode_t event_string_decodes[] = {
+	{ HT_EVENT_COH_EVENTS, "HT_EVENT_COH_EVENTS" },
+	{ HT_EVENT_COH_NO_TOPOLOGY, "HT_EVENT_COH_NO_TOPOLOGY" },
+	{ HT_EVENT_COH_LINK_EXCEED, "HT_EVENT_COH_LINK_EXCEED" },
+	{ HT_EVENT_COH_FAMILY_FEUD, "HT_EVENT_COH_FAMILY_FEUD" },
+	{ HT_EVENT_COH_NODE_DISCOVERED, "HT_EVENT_COH_NODE_DISCOVERED" },
+	{ HT_EVENT_COH_MPCAP_MISMATCH, "HT_EVENT_COH_MPCAP_MISMATCH" },
+	{ HT_EVENT_NCOH_EVENTS, "HT_EVENT_NCOH_EVENTS" },
+	{ HT_EVENT_NCOH_BUID_EXCEED, "HT_EVENT_NCOH_BUID_EXCEED" },
+	{ HT_EVENT_NCOH_LINK_EXCEED, "HT_EVENT_NCOH_LINK_EXCEED" },
+	{ HT_EVENT_NCOH_BUS_MAX_EXCEED, "HT_EVENT_NCOH_BUS_MAX_EXCEED" },
+	{ HT_EVENT_NCOH_CFG_MAP_EXCEED, "HT_EVENT_NCOH_CFG_MAP_EXCEED" },
+	{ HT_EVENT_NCOH_DEVICE_FAILED, "HT_EVENT_NCOH_DEVICE_FAILED" },
+	{ HT_EVENT_NCOH_AUTO_DEPTH, "HT_EVENT_NCOH_AUTO_DEPTH" },
+	{ HT_EVENT_OPT_EVENTS, "HT_EVENT_OPT_EVENTS" },
+	{ HT_EVENT_OPT_REQUIRED_CAP_RETRY, "HT_EVENT_OPT_REQUIRED_CAP_RETRY" },
+	{ HT_EVENT_OPT_REQUIRED_CAP_GEN3, "HT_EVENT_OPT_REQUIRED_CAP_GEN3" },
+	{ HT_EVENT_HW_EVENTS, "HT_EVENT_HW_EVENTS" },
+	{ HT_EVENT_HW_SYNCHFLOOD, "HT_EVENT_HW_SYNCHFLOOD" },
+	{ HT_EVENT_HW_HTCRC, "HT_EVENT_HW_HTCRC" }
 };
+
+static const char * event_string_decode(uint32_t event) {
+	uint32_t i;
+	for (i = 0; i < ARRAY_SIZE(event_string_decodes); i++)
+		if (event_string_decodes[i].code == event)
+			break;
+	if (i == ARRAY_SIZE(event_string_decodes))
+		return "ERROR: Unmatched event code! "
+			"Did you forget to update event_string_decodes[]?";
+	return event_string_decodes[i].string;
+}
 
 /**
  * void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
@@ -146,7 +162,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 		case HT_EVENT_COH_NO_TOPOLOGY:
 		case HT_EVENT_COH_LINK_EXCEED:
 		case HT_EVENT_COH_FAMILY_FEUD:
-			printk(log_level, event_string_decodes[event]);
+			printk(log_level, event_string_decode(event));
 			break;
 		case HT_EVENT_COH_NODE_DISCOVERED:
 			{
@@ -163,11 +179,11 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 		case HT_EVENT_NCOH_LINK_EXCEED:
 		case HT_EVENT_NCOH_BUS_MAX_EXCEED:
 		case HT_EVENT_NCOH_CFG_MAP_EXCEED:
-			printk(log_level, event_string_decodes[event]);
+			printk(log_level, event_string_decode(event));
 			break;
 		case HT_EVENT_NCOH_DEVICE_FAILED:
 			{
-				printk(log_level, event_string_decodes[event]);
+				printk(log_level, event_string_decode(event));
 				sHtEventNcohDeviceFailed *evt = (sHtEventNcohDeviceFailed*)pEventData0;
 				printk(log_level, ": node %d link %d depth: %d attemptedBUID: %d",
 					evt->node, evt->link, evt->depth, evt->attemptedBUID);
@@ -176,7 +192,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 			}
 		case HT_EVENT_NCOH_AUTO_DEPTH:
 			{
-				printk(log_level, event_string_decodes[event]);
+				printk(log_level, event_string_decode(event));
 				sHtEventNcohAutoDepth *evt = (sHtEventNcohAutoDepth*)pEventData0;
 				printk(log_level, ": node %d link %d depth: %d",
 					evt->node, evt->link, evt->depth);
@@ -189,7 +205,7 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
 		case HT_EVENT_HW_EVENTS:
 		case HT_EVENT_HW_SYNCHFLOOD:
 		case HT_EVENT_HW_HTCRC:
-			printk(log_level, event_string_decodes[event]);
+			printk(log_level, event_string_decode(event));
 			break;
 		default:
 			printk(log_level, "HT_EVENT_UNKNOWN");

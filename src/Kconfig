@@ -613,6 +613,12 @@ config COMMON_FADT
 	bool
 	default n
 
+config ACPI_NHLT
+	bool
+	default n
+	help
+	  Build support for NHLT (non HD Audio) ACPI table generation.
+
 #These Options are here to avoid "undefined" warnings.
 #The actual selection and help texts are in the following menu.
 

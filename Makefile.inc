@@ -290,7 +290,7 @@ CFLAGS_common += -Os
 endif
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
-		   $(objutil)/ifdfake $(objutil)/options $(objutil)/fletcher \
+		   $(objutil)/ifdfake $(objutil)/options $(objutil)/amdfwtool \
 		   $(objutil)/cbootimage $(objutil)/bimgtool
 
 #######################################################################
@@ -348,10 +348,10 @@ $(IFDFAKE): $(top)/util/ifdfake/ifdfake.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 
-FLETCHER:=$(objutil)/fletcher/fletcher
-$(FLETCHER): $(top)/util/fletcher/fletcher.c
+AMDFWTOOL:=$(objutil)/amdfwtool/amdfwtool
+$(AMDFWTOOL): $(top)/util/amdfwtool/amdfwtool.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
-	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
+	$(HOSTCC) $(HOSTCFLAGS) -DCONFIG_ROM_SIZE=$(CONFIG_ROM_SIZE) -o $@ $<
 
 CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
 

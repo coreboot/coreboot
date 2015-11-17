@@ -49,23 +49,43 @@ HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
 LIBCONFIG_PATH := ../libpayload
 LIBPAYLOAD_DIR := build/libpayload
-LPCC := $(LIBPAYLOAD_DIR)/libpayload/bin/lpgcc
-LPAS := $(LIBPAYLOAD_DIR)/libpayload/bin/lpas
 HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/libpayload/lib/libpayload.a)
 LIB_CONFIG ?= defconfig
 OBJCOPY ?= objcopy
 
 INCLUDES = -I$(obj) -include $(LIBPAYLOAD_DIR)/libpayload/include/kconfig.h
-CFLAGS := -Wall -Werror -Os -fno-builtin $(INCLUDES)
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 	  nvram_module.o bootlog_module.o ramdump_module.o lar_module.o \
 	  multiboot_module.o cbfs_module.o coreinfo.o
 OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS))
 TARGET  = $(obj)/coreinfo.elf
 
+all: real-all
+
+# in addition to the dependency below, create the file if it doesn't exist
+# to silence warnings about a file that would be generated anyway.
+$(if $(wildcard .xcompile),,$(eval $(shell ../../util/xcompile/xcompile $(XGCCPATH) > .xcompile || rm -f .xcompile)))
+.xcompile: ../../util/xcompile/xcompile
+	$< $(XGCCPATH) > $@.tmp
+	\mv -f $@.tmp $@ 2> /dev/null || rm -f $@.tmp $@
+
+CONFIG_COMPILER_GCC := y
+ARCH-y     := x86_32
+
+include .xcompile
+
+CC := $(CC_$(ARCH-y))
+AS := $(AS_$(ARCH-y))
+OBJCOPY := $(OBJCOPY_$(ARCH-y))
+
+LPCC := CC=$(CC) $(LIBPAYLOAD_DIR)/libpayload/bin/lpgcc
+LPAS := AS=$(AS) $(LIBPAYLOAD_DIR)/libpayload/bin/lpas
+
+CFLAGS += -Wall -Werror -Os -fno-builtin $(CFLAGS_$(ARCH-y)) $(INCLUDES)
+
 ifneq ($(strip $(HAVE_DOTCONFIG)),)
 include $(src)/.config
-all: $(TARGET)
+real-all: $(TARGET)
 
 $(TARGET): $(src)/.config $(obj)/config.h $(OBJS) libpayload
 	printf "    LPCC       $(subst $(shell pwd)/,,$(@)) (LINK)\n"
@@ -83,7 +103,7 @@ $(obj)/%.o: $(src)/%.c libpayload
 	$(LPCC) $(CFLAGS) -c -o $@ $<
 
 else
-all: config
+real-all: config
 endif
 
 ifneq ($(strip $(HAVE_LIBPAYLOAD)),)
@@ -92,9 +112,9 @@ libpayload:
 else
 libpayload:
 	printf "Building libpayload @ $(LIBCONFIG_PATH).\n"
-	make -C $(LIBCONFIG_PATH) distclean
-	make -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
-	make -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
+	$(MAKE) -C $(LIBCONFIG_PATH) distclean
+	$(MAKE) -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
+	$(MAKE) -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
 endif
 
 $(obj)/config.h:

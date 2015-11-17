@@ -1,12 +1,12 @@
 PROGRAM = archive
-CC ?= gcc
+HOSTCC ?= gcc
 
 SRCS = $(PROGRAM).c
 
 all: $(PROGRAM)
 
 $(PROGRAM): $(SRCS)
-	$(CC) -o $@ $^
+	$(HOSTCC) -o $@ $^
 
 clean:
 	rm -f $(PROGRAM) *.o

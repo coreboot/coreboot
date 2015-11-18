@@ -69,6 +69,9 @@ DefinitionBlock (
 		/* Describe PCI INT[A-H] for the Southbridge */
 		#include <southbridge/amd/pi/hudson/acpi/pci_int.asl>
 
+		/* Describe the devices in the Southbridge */
+		#include "acpi/carrizo_fch.asl"
+
 	} /* End \_SB scope */
 
 	/* Describe SMBUS for the Southbridge */

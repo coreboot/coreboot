@@ -73,6 +73,7 @@ smm-$(CONFIG_UART_DEBUG) += uart_debug.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/skylake
 CPPFLAGS_common += -I$(src)/soc/intel/skylake/include
+CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/skylake
 
 # Currently used for microcode path.
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)

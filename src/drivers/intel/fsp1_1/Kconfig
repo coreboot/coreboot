@@ -66,11 +66,6 @@ config FSP_IMAGE_ID_STRING
 	  8 ASCII character byte signature string that will help match the FSP
 	  binary to a supported hardware configuration.
 
-config FSP_INCLUDE_PATH
-	string "Path for FSP specific include files"
-	help
-	  The path and filename of the Intel FSP binary for this platform.
-
 config FSP_LOC
 	hex "Intel FSP Binary location in CBFS"
 	help

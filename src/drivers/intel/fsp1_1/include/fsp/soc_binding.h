@@ -27,7 +27,7 @@
 #pragma pack(push)
 
 /*
- * This file is found by way of the Kconfig FSP_INCLUDE_PATH option. It is
+ * This file is found in the soc / chipset directory. It is
  * a per implementation specific header. i.e. different FSP implementations
  * for different chipsets.
  */

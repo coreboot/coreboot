@@ -40,8 +40,6 @@ config HAVE_FSP_BIN
 	  Note: Without this binary, coreboot builds relying on the FSP
 	  will not boot
 
-if HAVE_FSP_BIN
-
 config CPU_MICROCODE_CBFS_LEN
 	hex "Microcode update region length in bytes"
 	default 0
@@ -62,18 +60,18 @@ config FSP_FILE
 
 config FSP_IMAGE_ID_STRING
 	string "8 byte platform string identifying the FSP platform"
+	default "$XXXFSP$"
 	help
 	  8 ASCII character byte signature string that will help match the FSP
 	  binary to a supported hardware configuration.
 
 config FSP_LOC
 	hex "Intel FSP Binary location in CBFS"
+	default 0xffee0000
 	help
 	  The location in CBFS that the FSP is located. This must match the
 	  value that is set in the FSP binary.  If the FSP needs to be moved,
 	  rebase the FSP with Intel's BCT (tool).
-
-endif #HAVE_FSP_BIN
 
 config DISPLAY_FAST_BOOT_DATA
 	bool "Display fast boot data"

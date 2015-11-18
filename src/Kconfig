@@ -1046,7 +1046,7 @@ config TRACE
 	  If enabled, every function will print information to console once
 	  the function is entered. The syntax is ~0xaaaabbbb(0xccccdddd)
 	  the 0xaaaabbbb is the actual function and 0xccccdddd is EIP
-	  of calling function. Please note some printk releated functions
+	  of calling function. Please note some printk related functions
 	  are omitted from trace to have good looking console dumps.
 
 config DEBUG_COVERAGE

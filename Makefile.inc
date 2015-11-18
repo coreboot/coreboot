@@ -446,6 +446,17 @@ gitconfig:
 	git config remote.origin.push HEAD:refs/for/master
 	(git config --global user.name >/dev/null && git config --global user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
 
+help::
+	@echo  '*** Toolchain ***'
+	@echo  '  crossgcc        - Build coreboot cross-compilers for all platforms'
+	@echo  '  crosstools      - Build coreboot cross-compiler and GDB for all platforms'
+	@echo  '  crossgcc-clean  - Remove all built coreboot cross-compilers'
+	@echo  '  crossgcc-ARCH   - Build cross-compiler for specific architecture'
+	@echo  '  crosstools-ARCH - Build cross-compiler with GDB for specific architecture'
+	@echo  '  ARCH can be "i386", "x64", "arm", "aarch64", "mips", or "riscv"'
+	@echo  '  Use "make [target] CPUS=#" to build toolchain using multiple cores'
+	@echo
+
 # For the toolchain builds, use CPUS=x to use multiple processors to build
 # use BUILDGCC_OPTIONS= to set any crossgcc command line options
 # Example: BUILDGCC_OPTIONS='-t' will keep temporary files after build

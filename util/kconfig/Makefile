@@ -104,22 +104,24 @@ olddefconfig: $(objk)/conf
 	$< --defconfig=configs/$@ $(Kconfig)
 
 # Help text used by make help
-help:
+help::
+	@echo  '*** Kconfig Help ***'
 	@echo  '  config	  - Update current config utilising a line-oriented program'
 	@echo  '  nconfig         - Update current config utilising a ncurses menu based program'
 	@echo  '  menuconfig	  - Update current config utilising a menu based program'
 	@echo  '  xconfig	  - Update current config utilising a QT based front-end'
 	@echo  '  gconfig	  - Update current config utilising a GTK based front-end'
 	@echo  '  oldconfig	  - Update current config utilising a provided .config as base'
-	@echo  '  localmodconfig  - Update current config disabling modules not loaded'
-	@echo  '  localyesconfig  - Update current config converting local mods to core'
+	#@echo  '  localmodconfig  - Update current config disabling modules not loaded'
+	#@echo  '  localyesconfig  - Update current config converting local mods to core'
 	@echo  '  silentoldconfig - Same as oldconfig, but quietly, additionally update deps'
 	@echo  '  defconfig	  - New config with default answer to all options'
 	@echo  '  savedefconfig   - Save current config as ./defconfig (minimal config)'
-	@echo  '  allnoconfig	  - New config where all options are answered with no'
-	@echo  '  allyesconfig	  - New config where all options are accepted with yes'
-	@echo  '  allmodconfig	  - New config selecting modules when possible'
-	@echo  '  randconfig	  - New config with random answer to all options'
+	#@echo  '  allnoconfig	  - New config where all options are answered with no'
+	#@echo  '  allyesconfig	  - New config where all options are accepted with yes'
+	#@echo  '  allmodconfig	  - New config selecting modules when possible'
+	#@echo  '  randconfig	  - New config with random answer to all options'
+	@echo
 
 # lxdialog stuff
 check-lxdialog  := $(srck)/lxdialog/check-lxdialog.sh

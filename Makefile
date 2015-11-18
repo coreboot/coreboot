@@ -93,6 +93,21 @@ DOXYGEN_OUTPUT_DIR := doxygen
 
 all: real-all
 
+help::
+	@echo  '*** coreboot platform ***'
+	@echo  '  Use "make [target] V=1" for extra build debug information'
+	@echo  '  all                   - Build coreboot'
+	@echo  '  clean                 - Remove coreboot build artifacts'
+	@echo  '  distclean             - Remove build artifacts and config files'
+	@echo  '  doxygen               - Build doxygen documentation for coreboot'
+	@echo  '  what-jenkins-does     - Run platform build tests (Use CPUS=# for more cores)'
+	@echo  '  printall              - print makefile info for debugging'
+	@echo  '  lint / lint-stable    - run coreboot lint tools (all / minimal)'
+	@echo  '  gitconfig             - set up git to subnit patches to coreboot'
+	@echo  '  ctags / ctags-project - make ctags file for all of coreboot or current board'
+	@echo  '  cscope / cscope-project - make cscope.out file for coreboot or current board'
+	@echo
+
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
 include $(srck)/Makefile

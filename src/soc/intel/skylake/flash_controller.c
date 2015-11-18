@@ -61,18 +61,18 @@ static int wait_for_completion(pch_spi_regs * const regs, int timeout_ms,
 
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 
-	while (!(timeout = stopwatch_expired(&sw))) {
+	do {
 		hsfs = spi_read_hsfs(regs);
 
 		if ((hsfs & (HSFS_FDONE | HSFS_FCERR)))
 			break;
-	}
+	} while (!(timeout = stopwatch_expired(&sw)));
 
 	if (timeout) {
 		addr = spi_read_faddr(regs);
 		hsfc = spi_read_hsfc(regs);
 		printk(BIOS_ERR, "%ld ms Transaction timeout between offset "
-			"0x%08x and 0x%08x (= 0x%08x + %zd) HSFC=%x HSFS=%x!\n",
+			"0x%08x and 0x%08zx (= 0x%08x + %zd) HSFC=%x HSFS=%x!\n",
 			stopwatch_duration_msecs(&sw), addr, addr + len - 1,
 			addr, len - 1, hsfc, hsfs);
 		return 1;
@@ -82,7 +82,7 @@ static int wait_for_completion(pch_spi_regs * const regs, int timeout_ms,
 		addr = spi_read_faddr(regs);
 		hsfc = spi_read_hsfc(regs);
 		printk(BIOS_ERR, "Transaction error between offset 0x%08x and "
-		       "0x%08x (= 0x%08x + %zd) HSFC=%x HSFS=%x!\n",
+		       "0x%08zx (= 0x%08x + %zd) HSFC=%x HSFS=%x!\n",
 		       addr, addr + len - 1, addr, len - 1,
 		       hsfc, hsfs);
 		return 1;

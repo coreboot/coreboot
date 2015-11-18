@@ -86,10 +86,6 @@ config VGA_BIOS_ID
 	  This is the default PCI ID for the Bay Trail graphics
 	  devices.  This string names the vbios ROM in cbfs.
 
-config CPU_MICROCODE_CBFS_LOC
-	hex
-	default 0xfff10040
-
 config ENABLE_BUILTIN_COM1
 	bool "Enable built-in legacy Serial Port"
 	help

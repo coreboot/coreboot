@@ -53,11 +53,6 @@ config ENABLE_VMX
 	bool "Enable VMX for virtualization"
 	default n
 
-config CPU_MICROCODE_CBFS_LOC
-	hex
-	depends on SUPPORT_CPU_UCODE_IN_CBFS
-	default 0xfff60040
-
 config HAVE_CPU_MICROCODE_FILE
 	bool "Add microcode file"
 	help

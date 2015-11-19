@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "73"
-#define RELEASE_DATE "08 May 2013"
+#define VERSION_MINOR "80"
+#define RELEASE_DATE "18 November 2015"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -1538,13 +1538,14 @@ static int append_string(size_t *max, const char ***vec, const char *str,
 }
 
 static void arg_error(char *fmt, ...);
+static void arg_warning(char *fmt, ...);
 static const char *identifier(const char *str, const char *end);
 
 static int append_include_path(struct compiler_state *compiler, const char *str)
 {
 	int result;
 	if (!exists(str, ".")) {
-		arg_error("Nonexistent include path: `%s'\n",
+		arg_warning("Warning: Nonexistent include path: `%s'\n",
 			str);
 	}
 	result = append_string(&compiler->include_path_count,
@@ -25081,6 +25082,15 @@ static void arg_error(char *fmt, ...)
 	va_end(args);
 	usage();
 	exit(1);
+}
+
+static void arg_warning(char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
 }
 
 int main(int argc, char **argv)

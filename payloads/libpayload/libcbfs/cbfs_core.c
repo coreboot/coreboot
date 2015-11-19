@@ -107,11 +107,8 @@ static int get_cbfs_range(uint32_t *offset, uint32_t *cbfs_end,
 		return 0;
 	}
 
-	/*
-	 * If sysinfo doesn't have offset or size, we read them from
-	 * a master header.
-	 */
-	DEBUG("CBFS offset & size not found in sysinfo\n");
+	/* read offset and size from cbfs master header */
+	DEBUG("Read CBFS offset & size from master header\n");
 	header = cbfs_get_header(media);
 	if (header == CBFS_HEADER_INVALID_ADDRESS)
 		return -1;
@@ -143,17 +140,17 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	struct cbfs_file file, *file_ptr;
 	struct cbfs_media default_media;
 
+	if (get_cbfs_range(&offset, &cbfs_end, media)) {
+		ERROR("Failed to find cbfs range\n");
+		return NULL;
+	}
+
 	if (media == CBFS_DEFAULT_MEDIA) {
 		media = &default_media;
 		if (init_default_cbfs_media(media) != 0) {
 			ERROR("Failed to initialize default media.\n");
 			return NULL;
 		}
-	}
-
-	if (get_cbfs_range(&offset, &cbfs_end, media)) {
-		ERROR("Failed to find cbfs range\n");
-		return NULL;
 	}
 
 	DEBUG("CBFS location: 0x%x~0x%x\n", offset, cbfs_end);
@@ -212,25 +209,23 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 			    int type, size_t *sz)
 {
-	struct cbfs_media default_media;
-
-	if (media == CBFS_DEFAULT_MEDIA) {
-		media = &default_media;
-		if (init_default_cbfs_media(media) != 0) {
-			ERROR("Failed to initialize default media.\n");
-			return NULL;
-		}
-	}
-
+	/*
+	 * get file (possibly compressed) data. we pass through 'media' to
+	 * cbfs_get_file (don't call init_default_cbfs_media) here so that
+	 * cbfs_get_file can see whether the call is for CBFS_DEFAULT_MEDIA
+	 * or not. Therefore, we don't (can't) unmap the file but it's caused
+	 * by a pre-existing inherent problem with cbfs_get_file (and all
+	 * callers are suffering from it).
+	 */
 	struct cbfs_file *file = cbfs_get_file(media, name);
-
-	if (sz)
-		*sz = 0;
 
 	if (file == NULL) {
 		ERROR("Could not find file '%s'.\n", name);
 		return NULL;
 	}
+
+	if (sz)
+		*sz = 0;
 
 	if (ntohl(file->type) != type) {
 		ERROR("File '%s' is of type %x, but we requested %x.\n", name,
@@ -264,11 +259,9 @@ void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 	if (sz)
 		*sz = final_size;
 
-	media->unmap(media, file);
 	return dst;
 
 err:
-	media->unmap(media, file);
 	free(dst);
 	return NULL;
 }

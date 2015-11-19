@@ -10,6 +10,7 @@ EXIT_SUCCESS=0
 EXIT_FAILURE=1
 
 # Stuff from command-line switches
+COREBOOT_IMAGE="build/coreboot.rom"
 REMOTE_HOST=""
 CLOBBER_OUTPUT=0
 UPLOAD_RESULTS=0
@@ -174,6 +175,8 @@ Options
         Show this message.
     -C
         Clobber temporary output when finished. Useful for debugging.
+    -i  <image>
+        Path to coreboot image (Default is $COREBOOT_IMAGE).
     -r  <host>
         Obtain machine information from remote host (using ssh).
     -s  </dev/xxx>
@@ -185,7 +188,7 @@ Options
 "
 }
 
-while getopts "Chr:s:S:u" opt; do
+while getopts "Chi:r:s:S:u" opt; do
 	case "$opt" in
 		h)
 			show_help
@@ -193,6 +196,9 @@ while getopts "Chr:s:S:u" opt; do
 			;;
 		C)
 			CLOBBER_OUTPUT=1
+			;;
+		i)
+			COREBOOT_IMAGE="$OPTARG"
 			;;
 		r)
 			REMOTE_HOST="$OPTARG"
@@ -239,24 +245,24 @@ fi
 test_cmd $LOCAL "$cbfstool_cmd"
 
 tmpcfg=$(mktemp coreboot_config.XXXXXX)
-echo "Extracting config.txt from build/coreboot.rom"
-$cbfstool_cmd build/coreboot.rom extract -n config -f "${tmpdir}/config.txt" >/dev/null 2>&1
+echo "Extracting config.txt from $COREBOOT_IMAGE"
+$cbfstool_cmd "$COREBOOT_IMAGE" extract -n config -f "${tmpdir}/config.txt" >/dev/null 2>&1
 mv "${tmpdir}/config.txt" "${tmpdir}/config.short.txt"
 cp "${tmpdir}/config.short.txt" "${tmpcfg}"
 yes "" | make "DOTCONFIG=${tmpcfg}" oldconfig 2>/dev/null >/dev/null
 mv "${tmpcfg}" "${tmpdir}/config.txt"
 rm -f "${tmpcfg}.old"
-$cbfstool_cmd build/coreboot.rom print > "${tmpdir}/cbfs.txt"
-rom_contents=$($cbfstool_cmd build/coreboot.rom print 2>&1)
+$cbfstool_cmd "$COREBOOT_IMAGE" print > "${tmpdir}/cbfs.txt"
+rom_contents=$($cbfstool_cmd "$COREBOOT_IMAGE" print 2>&1)
 if [ -n "$(echo $rom_contents | grep payload_config)" ]; then
-	echo "Extracting payload_config from build/coreboot.rom"
-	$cbfstool_cmd build/coreboot.rom extract -n payload_config -f "${tmpdir}/payload_config.txt" >/dev/null 2>&1
+	echo "Extracting payload_config from $COREBOOT_IMAGE"
+	$cbfstool_cmd "$COREBOOT_IMAGE" extract -n payload_config -f "${tmpdir}/payload_config.txt" >/dev/null 2>&1
 fi
 if [ -n "$(echo $rom_contents | grep payload_version)" ]; then
-	echo "Extracting payload_version from build/coreboot.rom"
-	$cbfstool_cmd build/coreboot.rom extract -n payload_version -f "${tmpdir}/payload_version.txt" >/dev/null 2>&1
+	echo "Extracting payload_version from $COREBOOT_IMAGE"
+	$cbfstool_cmd "$COREBOOT_IMAGE" extract -n payload_version -f "${tmpdir}/payload_version.txt" >/dev/null 2>&1
 fi
-md5sum -b build/coreboot.rom > "${tmpdir}/rom_checksum.txt"
+md5sum -b "$COREBOOT_IMAGE" > "${tmpdir}/rom_checksum.txt"
 
 if test $do_clean_cbfstool -eq 1; then
 	make -C util/cbfstool clean

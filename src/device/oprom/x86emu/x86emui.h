@@ -48,7 +48,7 @@
  * dramatically in this case).
  */
 
-#if	defined(__cplusplus) && !defined(_NO_INLINE)
+#if	defined(__cplusplus)
 #define	_INLINE	inline
 #else
 #define	_INLINE static

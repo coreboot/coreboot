@@ -35,6 +35,7 @@
 $(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile || rm -f .xcompile)))
 
 .xcompile: util/xcompile/xcompile
+	rm -f $@
 	$< $(XGCCPATH) > $@.tmp
 	\mv -f $@.tmp $@ 2> /dev/null
 
@@ -120,7 +121,13 @@ else
 
 include $(HAVE_DOTCONFIG)
 
-include .xcompile
+-include .xcompile
+
+ifneq ($(XCOMPILE_COMPLETE),1)
+$(shell rm -f .xcompile)
+$(error .xcompile deleted because it's invalid. \
+	Restarting the build should fix that, or explain the problem)
+endif
 
 ifneq ($(CONFIG_MMX),y)
 CFLAGS_x86_32 += -mno-mmx

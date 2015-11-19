@@ -355,3 +355,4 @@ for architecture in $SUPPORTED_ARCHITECTURES; do
 		report_arch_toolchain
 	fi
 done
+echo XCOMPILE_COMPLETE:=1

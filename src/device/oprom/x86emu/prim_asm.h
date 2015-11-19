@@ -39,7 +39,6 @@
 *				platform.
 *
 ****************************************************************************/
-/* $XFree86: xc/extras/x86emu/src/x86emu/x86emu/prim_asm.h,v 1.3 2000/04/19 15:48:15 tsi Exp $ */
 
 #ifndef	__X86EMU_PRIM_ASM_H
 #define	__X86EMU_PRIM_ASM_H

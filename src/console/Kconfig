@@ -43,6 +43,9 @@ if CONSOLE_SERIAL
 config UART_FOR_CONSOLE
 	int "Index for UART port to use for console"
 	default 0
+	help
+	  Select an I/O port to use for serial console:
+	    0 = 0x3f8, 1 = 0x2f8, 2 = 0x3e8, 3 = 0x2e8
 
 # FIXME: Early programming in romstage is incorrect as we should
 # program different LDN to actually change the physical port.
@@ -55,6 +58,15 @@ config TTYS0_BASE
 	default 0x2e8 if UART_FOR_CONSOLE = 3
 	help
 	  Map the COM port number to the respective I/O port.
+
+comment "Serial port base address = 0x3f8"
+depends on UART_FOR_CONSOLE = 0
+comment "Serial port base address = 0x2f8"
+depends on UART_FOR_CONSOLE = 1
+comment "Serial port base address = 0x3e8"
+depends on UART_FOR_CONSOLE = 2
+comment "Serial port base address = 0x2e8"
+depends on UART_FOR_CONSOLE = 3
 
 choice
 	prompt "Baud rate"

@@ -32,7 +32,7 @@
 
 # in addition to the dependency below, create the file if it doesn't exist
 # to silence stupid warnings about a file that would be generated anyway.
-$(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
+$(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile || rm -f .xcompile)))
 
 .xcompile: util/xcompile/xcompile
 	$< $(XGCCPATH) > $@.tmp

@@ -82,6 +82,7 @@
 	{ CBMEM_ID_FSP_RESERVED_MEMORY, "FSP MEMORY " }, \
 	{ CBMEM_ID_FSP_RUNTIME,		"FSP RUNTIME" }, \
 	{ CBMEM_ID_GDT,			"GDT        " }, \
+	{ CBMEM_ID_HOB_POINTER,		"HOB        " }, \
 	{ CBMEM_ID_IMD_ROOT,		"IMD ROOT   " }, \
 	{ CBMEM_ID_IMD_SMALL,		"IMD SMALL  " }, \
 	{ CBMEM_ID_MEMINFO,		"MEM INFO   " }, \

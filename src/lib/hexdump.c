@@ -30,21 +30,28 @@ void hexdump(const void *memory, size_t length)
 
 	for (i = 0; i < length; i += 16) {
 		int j;
+		int left = MIN(length - i, 16);
 
-		all_zero++;
-		for (j = 0; j < 16; j++) {
-			if (m[i + j] != 0) {
-				all_zero = 0;
-				break;
+		if (left < 16) {
+			all_zero = 0;
+		} else {
+			all_zero++;
+			for (j = 0; j < 16; j++) {
+				if (m[i + j] != 0) {
+					all_zero = 0;
+					break;
+				}
 			}
 		}
 
 		if (all_zero < 2) {
 			printk(BIOS_DEBUG, "%p:", memory + i);
-			for (j = 0; j < 16; j++)
+			for (j = 0; j < left; j++)
 				printk(BIOS_DEBUG, " %02x", m[i + j]);
+			for (j = left; j < 16; j++)
+				printk(BIOS_DEBUG, "   ");
 			printk(BIOS_DEBUG, "  ");
-			for (j = 0; j < 16; j++)
+			for (j = 0; j < left; j++)
 				printk(BIOS_DEBUG, "%c",
 				       isprint(m[i + j]) ? m[i + j] : '.');
 			printk(BIOS_DEBUG, "\n");

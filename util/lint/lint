@@ -69,6 +69,6 @@ for script in "$(dirname "$0")/${1}-"*; do
 	junit_write '	</testcase>'
 done
 
-test $FAILED -eq 0 || { echo "ERROR: $FAILED test(s) failed."; rm -f "$LINTLOG" && exit 1; };
 rm -f "$LINTLOG"
 junit_write '</testsuite>'
+test $FAILED -eq 0 || { echo "ERROR: $FAILED test(s) failed."; exit 1; };

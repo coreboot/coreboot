@@ -218,13 +218,27 @@ fi
 # Results will be placed in a temporary location until we're ready to upload.
 # If the user does not wish to upload, results will remain in /tmp.
 tmpdir=$(mktemp -d --tmpdir coreboot_board_status.XXXXXXXX)
-tmpcfg=$(mktemp coreboot_config.XXXXXX)
 
+# Obtain coreboot config by running cbfstool on the ROM image. cbfstool may
+# already exist in build/ or util/cbfstool/, but if not then we'll build it
+# now and clean it when we're done.
 cbfstool_cmd="build/cbfstool"
-if test ! -x build/cbfstool; then
-	make -C util/cbfstool/ && cp util/cbfstool/cbfstool build/cbfstool
+do_clean_cbfstool=0
+if [ ! -x $cbfstool_cmd ]; then
+	cbfstool_cmd="util/cbfstool/cbfstool"
+	if [ -e $cbfstool_cmd ]; then
+		if test ! -x $cbfstool_cmd; then
+			echo "Cannot execute $cbfstool_cmd."
+			exit $EXIT_FAILURE
+		fi
+	else
+		make -C util/cbfstool/
+		do_clean_cbfstool=1
+	fi
 fi
 test_cmd $LOCAL "$cbfstool_cmd"
+
+tmpcfg=$(mktemp coreboot_config.XXXXXX)
 echo "Extracting config.txt from build/coreboot.rom"
 $cbfstool_cmd build/coreboot.rom extract -n config -f "${tmpdir}/config.txt" >/dev/null 2>&1
 mv "${tmpdir}/config.txt" "${tmpdir}/config.short.txt"
@@ -243,6 +257,10 @@ if [ -n "$(echo $rom_contents | grep payload_version)" ]; then
 	$cbfstool_cmd build/coreboot.rom extract -n payload_version -f "${tmpdir}/payload_version.txt" >/dev/null 2>&1
 fi
 md5sum -b build/coreboot.rom > "${tmpdir}/rom_checksum.txt"
+
+if test $do_clean_cbfstool -eq 1; then
+	make -C util/cbfstool clean
+fi
 
 # Obtain board and revision info to form the directory structure:
 # <vendor>/<board>/<revision>/<timestamp>

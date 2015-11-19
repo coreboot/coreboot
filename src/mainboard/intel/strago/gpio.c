@@ -154,16 +154,15 @@ static const struct soc_gpio_map  gpsw_gpio_map[] = {
 
 /* North Community */
 static const struct soc_gpio_map  gpn_gpio_map[] = {
-	Native_M5, /* 00 GPIO_DFX0 */
-	Native_M5, /* 01 GPIO_DFX3 */
-	Native_M1, /* 02 GPIO_DFX7 */
-	Native_M5, /* 03 GPIO_DFX1 */
-	Native_M1, /* 04 GPIO_DFX5 */
-	Native_M1, /* 05 GPIO_DFX4 */
-	GPI(trig_edge_low, L5, NA, non_maskable, en_rx_data, NA, NA),
-	/* 06 GPIO_DFX8 */
-	Native_M5, /* 07 GPIO_DFX2 */
-	Native_M8, /* 08 GPIO_DFX6 */
+	GPIO_NC, /* 00 GPIO_DFX0 */
+	GPIO_NC, /* 01 GPIO_DFX3 */
+	GPIO_NC, /* 02 GPIO_DFX7 */
+	GPIO_NC, /* 03 GPIO_DFX1 */
+	GPIO_NC, /* 04 GPIO_DFX5 */
+	GPIO_NC, /* 05 GPIO_DFX4 */
+	GPIO_NC, /* 06 GPIO_DFX8 */
+	GPIO_NC, /* 07 GPIO_DFX2 */
+	GPIO_NC, /* 08 GPIO_DFX6 */
 	GPI(trig_edge_low, L8, NA, non_maskable, en_edge_rx_data ,
 	UNMASK_WAKE, SCI), /* 15 GPIO_SUS0 */
 	GPO_FUNC(NA, NA), /* 16 SEC_GPIO_SUS10 */
@@ -174,9 +173,7 @@ static const struct soc_gpio_map  gpn_gpio_map[] = {
 	GPI(trig_edge_low, L3, P_1K_H, non_maskable, NA, UNMASK_WAKE, NA),
 	/* 19 GPIO_SUS1 */
 	GPIO_NC, /* 20 GPIO_SUS5 */
-	GPI(trig_edge_high, L2, P_20K_H, non_maskable,
-			en_edge_rx_data, NA , NA),
-	/* 21 SEC_GPIO_SUS11 */
+	GPIO_NC, /* 21 SEC_GPIO_SUS11 */
 	GPIO_NC, /* 22 GPIO_SUS4 */
 	GPIO_NC,
 	/* 23 SEC_GPIO_SUS8 */

@@ -234,6 +234,96 @@ struct soc_intel_skylake_config {
 	/* TCO IRQ Select  The valid values is 9, 10, 11, 20 21, 22, 23*/
 	u8 TcoIrqSelect;
 	u8 TcoIrqEnable;
+	/* Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.*/
+	u8 LockDownConfigGlobalSmi;
+	/*
+	 * Enable BIOS Interface Lock Down bit to prevent writes to the Backup
+	 * Control Register. Top Swap bit and the General Control and Status
+	 * Registers Boot BIOS Straps.
+	 */
+	u8 LockDownConfigBiosInterface;
+	/*
+	 * Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh
+	 * in the upper and and lower 128-byte bank of RTC RAM.
+	 */
+	u8 LockDownConfigRtcLock;
+	/*
+	 * When enabled, the BIOS Region can only be modified from SMM after
+	 * EndOfDxe protocol is installed
+	 */
+	u8 LockDownConfigBiosLock;
+	/*
+	 * Enable InSMM.STS (EISS) in SPI If this bit is set, then WPD must be a
+	 * '1' and InSMM.STS must be '1' also in order to write to BIOS regions of
+	 * SPI Flash. If this bit is clear, then the InSMM.STS is a don't care. The
+	 * BIOS must set the EISS bit while BIOS Guard support is enabled.
+	 */
+	u8 LockDownConfigSpiEiss;
+	/* Subsystem Vendor ID of the PCH devices*/
+	u16 PchConfigSubSystemVendorId;
+	/* Subsystem ID of the PCH devices*/
+	u16 PchConfigSubSystemId;
+	/*
+	 * Corresponds to the "WOL Enable Override" bit in the General PM
+	 * Configuration B (GEN_PMCON_B) register
+	 */
+	u8 WakeConfigWolEnableOverride;
+	/* Determine if enable PCIe to wake from deep Sx*/
+	u8 WakeConfigPcieWakeFromDeepSx;
+	/* Deep Sx Policy. Values 0: PchDeepSxPolDisable,
+	 * 1: PchDpS5BatteryEn, 2: PchDpS5AlwaysEn, 3: PchDpS4S5BatteryEn,
+	 * 4: PchDpS4S5AlwaysEn, 5: PchDpS3S4S5BatteryEn, 6: PchDpS3S4S5AlwaysEn
+	 */
+	u8 PmConfigDeepSxPol;
+	/*
+	 * SLP_S3 Minimum Assertion Width Policy. Values 0: PchSlpS360us,
+	 * 1: PchSlpS31ms, 2: PchSlpS350ms, 3: PchSlpS32s.
+	 */
+	u8 PmConfigSlpS3MinAssert;
+	/*
+	 * SLP_S4 Minimum Assertion Width Policy. Values 0: PchSlpS4PchTime,
+	 * 1: PchSlpS41s, 2: PchSlpS42s, 3: PchSlpS43s, 4: PchSlpS44s.
+	 */
+	u8 PmConfigSlpS4MinAssert;
+	/*
+	 * SLP_SUS Minimum Assertion Width Policy. Values 0: PchSlpSus0ms,
+	 * 1: PchSlpSus500ms, 2: PchSlpSus1s, 3: PchSlpSus4s.
+	 */
+	u8 PmConfigSlpSusMinAssert;
+	/*
+	 * SLP_A Minimum Assertion Width Policy. Values 0: PchSlpA0ms,
+	 * 1: PchSlpA4s, 2: PchSlpA98ms, 3: PchSlpA2s.
+	 */
+	u8 PmConfigSlpAMinAssert;
+	/*
+	 * This member describes whether or not the PCI ClockRun feature of PCH
+	 * should be enabled. Values 0: Disabled, 1: Enabled
+	 */
+	u8 PmConfigPciClockRun;
+	/*
+	 * SLP_X Stretching After SUS Well Power Up. Values 0: Disabled, 1: Enabled
+	 */
+	u8 PmConfigSlpStrchSusUp;
+	/*
+	 * PCH power button override period.
+	 * Values: 0x0 - 4s, 0x1 - 6s, 0x2 - 8s, 0x3 - 10s, 0x4 - 12s, 0x5 - 14s
+	 */
+	u8 PmConfigPwrBtnOverridePeriod;
+	/*
+	 * Reset Power Cycle Duration could be customized in the unit of second.
+	 * PCH HW default is 4 seconds, and range is 1~4 seconds.
+	 * Values: 0x0 - 0s, 0x1 - 1s, 0x2 - 2s, 0x3 - 3s, 0x4 - 4s
+	 */
+	u8 PmConfigPwrCycDur;
+	/* Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled.*/
+	u8 SerialIrqConfigSirqEnable;
+	/* Serial IRQ Mode Select. Values: 0: PchQuietMode, 1: PchContinuousMode.*/
+	u8 SerialIrqConfigSirqMode;
+	/*
+	 * Start Frame Pulse Width.
+	 * Values: 0: PchSfpw4Clk, 1: PchSfpw6Clk, 2; PchSfpw8Clk.
+	 */
+	u8 SerialIrqConfigStartFramePulse;
 };
 
 typedef struct soc_intel_skylake_config config_t;

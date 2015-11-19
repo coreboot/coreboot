@@ -31,11 +31,16 @@
 #define R_PCH_PCR_DMI_LPCLGIR2	0x2734
 #define R_PCH_PCR_DMI_LPCLGIR3	0x2738
 #define R_PCH_PCR_DMI_LPCLGIR4	0x273c
+#define R_PCH_PCR_DMI_GCS	0x274C
+#define B_PCH_PCR_DMI_GCS_BILD  (1 << 0)
 #define R_PCH_PCR_DMI_LPCIOD	0x2770
 #define R_PCH_PCR_DMI_LPCIOE	0x2774
 
 /* RTC configuration */
 #define R_PCH_PCR_RTC_CONF	0x3400
+#define B_PCH_PCR_RTC_CONF_UCMOS_LOCK             (1 << 4)
+#define B_PCH_PCR_RTC_CONF_LCMOS_LOCK             (1 << 3)
+#define B_PCH_PCR_RTC_CONF_RESERVED               (1 << 31)
 #define B_PCH_PCR_RTC_CONF_UCMOS_EN	0x4
 
 /* ITSS PCRs*/

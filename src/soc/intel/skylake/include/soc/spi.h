@@ -114,8 +114,11 @@
 #define  FLCOMP_C0DEN_32MB	6
 
 #define SPIBAR_BIOS_CNTL	0xDC
-#define  SPIBAR_BC_WPD		(1 << 0)
+#define  SPIBAR_BC_BILD		(1 << 7)
 #define  SPIBAR_BC_EISS		(1 << 5)
+#define  SPIBAR_BC_LE           (1 << 2)
+#define  SPIBAR_BC_WPD		(1 << 0)
+
 
 void *get_spi_bar(void);
 #endif

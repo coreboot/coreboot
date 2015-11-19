@@ -321,9 +321,29 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->DspEnable = config->DspEnable;
 	params->XdciEnable = config->XdciEnable;
 	params->Device4Enable = config->Device4Enable;
-	params->RtcLock = config->RtcLock;
 	params->EnableSata = config->EnableSata;
 	params->SataMode = config->SataMode;
+	params->LockDownConfigGlobalSmi = config->LockDownConfigGlobalSmi;
+	params->LockDownConfigBiosInterface = config->LockDownConfigBiosInterface;
+	params->LockDownConfigRtcLock = config->LockDownConfigRtcLock;
+	params->LockDownConfigBiosLock = config->LockDownConfigBiosLock;
+	params->LockDownConfigSpiEiss = config->LockDownConfigSpiEiss;
+	params->PchConfigSubSystemVendorId = config->PchConfigSubSystemVendorId;
+	params->PchConfigSubSystemId = config->PchConfigSubSystemId;
+	params->WakeConfigWolEnableOverride = config->WakeConfigWolEnableOverride;
+	params->WakeConfigPcieWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
+	params->PmConfigDeepSxPol = config->PmConfigDeepSxPol;
+	params->PmConfigSlpS3MinAssert = config->PmConfigSlpS3MinAssert;
+	params->PmConfigSlpS4MinAssert = config->PmConfigSlpS4MinAssert;
+	params->PmConfigSlpSusMinAssert = config->PmConfigSlpSusMinAssert;
+	params->PmConfigSlpAMinAssert = config->PmConfigSlpAMinAssert;
+	params->PmConfigPciClockRun = config->PmConfigPciClockRun;
+	params->PmConfigSlpStrchSusUp = config->PmConfigSlpStrchSusUp;
+	params->PmConfigPwrBtnOverridePeriod = config->PmConfigPwrBtnOverridePeriod;
+	params->PmConfigPwrCycDur = config->PmConfigPwrCycDur;
+	params->SerialIrqConfigSirqEnable = config->SerialIrqConfigSirqEnable;
+	params->SerialIrqConfigSirqMode = config->SerialIrqConfigSirqMode;
+	params->SerialIrqConfigStartFramePulse = config->SerialIrqConfigStartFramePulse;
 
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
@@ -697,8 +717,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 		params->HsioMessaging);
 	fsp_display_upd_value("Heci3Enabled", 1, original->Heci3Enabled,
 		params->Heci3Enabled);
-	fsp_display_upd_value("RtcLock", 1, original->RtcLock,
-		params->RtcLock);
 	fsp_display_upd_value("EnableSata", 1, original->EnableSata,
 		params->EnableSata);
 	fsp_display_upd_value("SataMode", 1, original->SataMode,
@@ -742,6 +760,71 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 	fsp_display_upd_value("TcoIrqEnable", 1,
 		original->TcoIrqEnable,
 		params->TcoIrqEnable);
+
+	fsp_display_upd_value("LockDownConfigGlobalSmi", 1,
+		original->LockDownConfigGlobalSmi,
+		params->LockDownConfigGlobalSmi);
+	fsp_display_upd_value("LockDownConfigBiosInterface", 1,
+		original->LockDownConfigBiosInterface,
+		params->LockDownConfigBiosInterface);
+	fsp_display_upd_value("LockDownConfigRtcLock", 1,
+		original->LockDownConfigRtcLock,
+		params->LockDownConfigRtcLock);
+	fsp_display_upd_value("LockDownConfigBiosLock", 1,
+		original->LockDownConfigBiosLock,
+		params->LockDownConfigBiosLock);
+	fsp_display_upd_value("LockDownConfigSpiEiss", 1,
+		original->LockDownConfigSpiEiss,
+		params->LockDownConfigSpiEiss);
+	fsp_display_upd_value("PchConfigSubSystemVendorId", 1,
+		original->PchConfigSubSystemVendorId,
+		params->PchConfigSubSystemVendorId);
+	fsp_display_upd_value("PchConfigSubSystemId", 1,
+		original->PchConfigSubSystemId,
+		params->PchConfigSubSystemId);
+	fsp_display_upd_value("WakeConfigWolEnableOverride", 1,
+		original->WakeConfigWolEnableOverride,
+		params->WakeConfigWolEnableOverride);
+	fsp_display_upd_value("WakeConfigPcieWakeFromDeepSx", 1,
+		original->WakeConfigPcieWakeFromDeepSx,
+		params->WakeConfigPcieWakeFromDeepSx);
+	fsp_display_upd_value("PmConfigDeepSxPol", 1,
+		original->PmConfigDeepSxPol,
+		params->PmConfigDeepSxPol);
+	fsp_display_upd_value("PmConfigSlpS3MinAssert", 1,
+		original->PmConfigSlpS3MinAssert,
+		params->PmConfigSlpS3MinAssert);
+	fsp_display_upd_value("PmConfigSlpS4MinAssert", 1,
+		original->PmConfigSlpS4MinAssert,
+		params->PmConfigSlpS4MinAssert);
+	fsp_display_upd_value("PmConfigSlpSusMinAssert", 1,
+		original->PmConfigSlpSusMinAssert,
+		params->PmConfigSlpSusMinAssert);
+	fsp_display_upd_value("PmConfigSlpAMinAssert", 1,
+		original->PmConfigSlpAMinAssert,
+		params->PmConfigSlpAMinAssert);
+	fsp_display_upd_value("PmConfigPciClockRun", 1,
+		original->PmConfigPciClockRun,
+		params->PmConfigPciClockRun);
+	fsp_display_upd_value("PmConfigSlpStrchSusUp", 1,
+		original->PmConfigSlpStrchSusUp,
+		params->PmConfigSlpStrchSusUp);
+	fsp_display_upd_value("PmConfigPwrBtnOverridePeriod", 1,
+		original->PmConfigPwrBtnOverridePeriod,
+		params->PmConfigPwrBtnOverridePeriod);
+	fsp_display_upd_value("PmConfigPwrCycDur", 1,
+		original->PmConfigPwrCycDur,
+		params->PmConfigPwrCycDur);
+	fsp_display_upd_value("SerialIrqConfigSirqEnable", 1,
+		original->SerialIrqConfigSirqEnable,
+		params->SerialIrqConfigSirqEnable);
+	fsp_display_upd_value("SerialIrqConfigSirqMode", 1,
+		original->SerialIrqConfigSirqMode,
+		params->SerialIrqConfigSirqMode);
+	fsp_display_upd_value("SerialIrqConfigStartFramePulse", 1,
+		original->SerialIrqConfigStartFramePulse,
+		params->SerialIrqConfigStartFramePulse);
+
 }
 
 static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

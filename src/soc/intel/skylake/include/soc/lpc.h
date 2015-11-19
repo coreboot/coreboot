@@ -50,6 +50,9 @@
 #define LPC_GEN4_DEC		0x90 /* LPC IF Generic Decode Range 4 */
 #define LGMR			0x98 /* LPC Generic Memory Range */
 #define BIOS_CNTL		0xdc
+#define  LPC_BC_BILD		(1 << 7) /* BILD */
+#define  LPC_BC_LE		(1 << 2) /* LE */
+#define  LPC_BC_EISS		(1 << 5) /* EISS */
 #define PCCTL			0xE0 /* PCI Clock Control */
 #define CLKRUN_EN		(1 << 0)
 #endif

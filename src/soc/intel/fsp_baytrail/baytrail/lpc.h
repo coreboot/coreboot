@@ -86,6 +86,8 @@
 #define RID_A_STEPPING_START 1
 #define RID_B_STEPPING_START 5
 #define RID_C_STEPPING_START 0xe
+#define RID_D_STEPPING_START 0x11
+
 enum baytrail_stepping {
 	STEP_A0,
 	STEP_A1,
@@ -94,6 +96,7 @@ enum baytrail_stepping {
 	STEP_B2,
 	STEP_B3,
 	STEP_C0,
+	STEP_D0,
 };
 
 /* Registers behind the RCBA_BASE_ADDRESS bar. */

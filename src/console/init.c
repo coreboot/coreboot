@@ -43,18 +43,6 @@ void console_init(void)
 
 	console_hw_init();
 
-	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s %s starting...\n",
-		      coreboot_version, coreboot_extra_version, coreboot_build,
-#if ENV_BOOTBLOCK
-		      "bootblock"
-#elif ENV_ROMSTAGE
-		      "romstage"
-#elif ENV_RAMSTAGE
-		      "ramstage"
-#elif ENV_VERSTAGE
-		      "verstage"
-#else
-		      "UNKNOWN"
-#endif
-		      );
+	printk(BIOS_INFO, "\n\ncoreboot-%s%s %s " ENV_STRING " starting...\n",
+	       coreboot_version, coreboot_extra_version, coreboot_build);
 }

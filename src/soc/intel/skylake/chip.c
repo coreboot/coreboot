@@ -345,6 +345,8 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SerialIrqConfigSirqMode = config->SerialIrqConfigSirqMode;
 	params->SerialIrqConfigStartFramePulse = config->SerialIrqConfigStartFramePulse;
 
+	params->SkipMpInit = config->SkipMpInit;
+
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
 	params->ShowSpiController = dev->enabled;

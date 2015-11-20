@@ -22,7 +22,7 @@
  *  +------------+---------------+
  *  EC ROM should be 64K aligned.
  *
- *  PSP directory
+ *  PSP directory (Where "PSPDIR ADDR" points)
  *  +------------+---------------+----------------+------------+
  *  | 'PSP$'     | Fletcher      |    Count       | Reserved   |
  *  +------------+---------------+----------------+------------+
@@ -40,8 +40,21 @@
  *  |                                                          |
  *  |                                                          |
  *  +------------+---------------+----------------+------------+
+ *
+ *  PSP2 directory
+ *  +------------+---------------+----------------+------------+
+ *  | 'PSP2'     | Fletcher      |    Count       | Reserved   |
+ *  +------------+---------------+----------------+------------+
+ *  |     1      | PSP ID        |   PSPDIR ADDR  |            | 2nd PSP directory
+ *  +------------+---------------+----------------+------------+
+ *  |     2      | PSP ID        |   PSPDIR ADDR  |            | 3rd PSP directory
+ *  +------------+---------------+----------------+------------+
+ *  |                                                          |
+ *  |        Other PSP                                         |
+ *  |                                                          |
+ *  +------------+---------------+----------------+------------+
+ *
  */
-
 
 #include <fcntl.h>
 #include <errno.h>
@@ -194,7 +207,7 @@ amd_fw_entry amd_fw_table[] = {
 
 void fill_psp_head(uint32_t *pspdir, int count)
 {
-	pspdir[0] = 1347637284;	/* 'PSP$' */
+	pspdir[0] = 0x50535024;	/* 'PSP$' */
 	pspdir[2] = count;		/* size */
 	pspdir[3] = 0;
 	pspdir[1] = fletcher32((uint16_t *)&pspdir[1], (count *16 + 16)/2 - 2);
@@ -345,6 +358,8 @@ int main(int argc, char **argv)
 	int c, count, pspflag = 0;
 #if PSP2
 	int psp2flag = 0;
+	int psp2count;
+	uint32_t *psp2dir;
 #endif
 	void *rom = NULL;
 	uint32_t current;
@@ -511,16 +526,32 @@ int main(int argc, char **argv)
 
 #if PSP2
 		if (psp2flag == 1) {
-			current = ALIGN(current, 0x10000);
-			pspdir = rom + current;
+			current = ALIGN(current, 0x10000); /* PSP2 dir */
+			psp2dir = rom + current;
 			amd_romsig[5] = current + ROM_BASE_ADDRESS;
-			current += 0x200;	/* Conservative size of pspdir */
+			current += 0x100;	/* Add conservative size of psp2dir. */
 
+			/* TODO: remove the hardcode. */
+			psp2count = 1;		/* Start from 1. */
+			/* for (; psp2count <= PSP2COUNT; psp2count++, current=ALIGN(current, 0x100)) { */
+			psp2dir[psp2count*4 + 0] = psp2count;		/* PSP Number */
+			psp2dir[psp2count*4 + 1] = 0x10220B00; /* TODO: PSP ID. Documentation is needed. */
+			psp2dir[psp2count*4 + 2] = current + ROM_BASE_ADDRESS;
+			pspdir = rom + current;
+			psp2dir[psp2count*4 + 3] = 0;
+
+			current += 0x200;	/* Add conservative size of pspdir. Start of PSP entries. */
 			for (count = 0; count < sizeof(amd_psp2_fw_table) / sizeof(amd_fw_entry); count ++) {
 				current = integerate_one_psp(rom, current, pspdir, count);
 			}
-
 			fill_psp_head(pspdir, count);
+			/* } */ /* End of loop */
+
+			/* fill the PSP2 head */
+			psp2dir[0] = 0x50535032;  /* 'PSP2' */
+			psp2dir[2] = psp2count;		  /* Count */
+			psp2dir[3] = 0;
+			psp2dir[1] = fletcher32((uint16_t *)&psp2dir[1], (psp2count*16 + 16)/2 - 2);
 		}
 #endif
 	}

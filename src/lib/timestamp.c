@@ -152,14 +152,15 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 {
 	struct timestamp_entry *tse;
 
-	if (ts_table->num_entries == ts_table->max_entries) {
-		printk(BIOS_ERR, "ERROR: Timestamp table full\n");
+	if (ts_table->num_entries >= ts_table->max_entries)
 		return;
-	}
 
 	tse = &ts_table->entries[ts_table->num_entries++];
 	tse->entry_id = id;
 	tse->entry_stamp = ts_time - ts_table->base_time;
+
+	if (ts_table->num_entries == ts_table->max_entries)
+		printk(BIOS_ERR, "ERROR: Timestamp table full\n");
 }
 
 void timestamp_add(enum timestamp_id id, uint64_t ts_time)

@@ -41,5 +41,4 @@ config HAVE_ME_BIN
 # TODO: Remove this when platform ASL is fixed
 config IASL_WARNINGS_ARE_ERRORS
 	def_bool n
-
-endif # BOARD_INTEL_BAYLEYBAY
+endif # BOARD_GOOGLE_RAMBI

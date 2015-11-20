@@ -149,7 +149,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 							register "vsen5_low_limit_mv" = "1150"		# VSEN5 (Node 0 HT link voltage) low limit to 1.15V
 							register "vsen6_high_limit_mv" = "1250"		# VSEN6 (Node 1 HT link voltage) high limit to 1.25V
 							register "vsen6_low_limit_mv" = "1150"		# VSEN6 (Node 1 HT link voltage) low limit to 1.15V
-							register "vsen7_high_limit_mv" = "1150"		# VSEN7 (Northbridge core voltage) high limit to 1.15V
+							register "vsen7_high_limit_mv" = "1250"		# VSEN7 (Northbridge core voltage) high limit to 1.25V
 							register "vsen7_low_limit_mv" = "1050"		# VSEN7 (Northbridge core voltage) low limit to 1.05V
 							register "vsen8_high_limit_mv" = "1900"		# VSEN8 (+1.8V) high limit to 1.9V
 							register "vsen8_low_limit_mv" = "1700"		# VSEN8 (+1.8V) low limit to 1.7V

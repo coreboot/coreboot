@@ -347,6 +347,29 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 
 	params->SkipMpInit = config->SkipMpInit;
 
+	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++) {
+		params->VrConfigEnable[i] =
+			config->domain_vr_config[i].vr_config_enable;
+		params->Psi1Threshold[i] =
+			config->domain_vr_config[i].psi1threshold;
+		params->Psi2Threshold[i] =
+			config->domain_vr_config[i].psi2threshold;
+		params->Psi3Threshold[i] =
+			config->domain_vr_config[i].psi3threshold;
+		params->Psi3Enable[i] =
+			config->domain_vr_config[i].psi3enable;
+		params->Psi4Enable[i] =
+			config->domain_vr_config[i].psi4enable;
+		params->ImonSlope[i] =
+			config->domain_vr_config[i].imon_slope;
+		params->ImonOffset[i] =
+			config->domain_vr_config[i].imon_offset;
+		params->IccMax[i] =
+			config->domain_vr_config[i].icc_max;
+		params->VrVoltageLimit[i] =
+			config->domain_vr_config[i].voltage_limit;
+	}
+
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);
 	params->ShowSpiController = dev->enabled;
@@ -762,7 +785,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 	fsp_display_upd_value("TcoIrqEnable", 1,
 		original->TcoIrqEnable,
 		params->TcoIrqEnable);
-
 	fsp_display_upd_value("LockDownConfigGlobalSmi", 1,
 		original->LockDownConfigGlobalSmi,
 		params->LockDownConfigGlobalSmi);
@@ -827,6 +849,156 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 		original->SerialIrqConfigStartFramePulse,
 		params->SerialIrqConfigStartFramePulse);
 
+	fsp_display_upd_value("Psi1Threshold[0]", 1,
+		original->Psi1Threshold[0],
+		params->Psi1Threshold[0]);
+	fsp_display_upd_value("Psi1Threshold[1]", 1,
+		original->Psi1Threshold[1],
+		params->Psi1Threshold[1]);
+	fsp_display_upd_value("Psi1Threshold[2]", 1,
+		original->Psi1Threshold[2],
+		params->Psi1Threshold[2]);
+	fsp_display_upd_value("Psi1Threshold[3]", 1,
+		original->Psi1Threshold[3],
+		params->Psi1Threshold[3]);
+	fsp_display_upd_value("Psi1Threshold[4]", 1,
+		original->Psi1Threshold[4],
+		params->Psi1Threshold[4]);
+	fsp_display_upd_value("Psi2Threshold[0]", 1,
+		original->Psi2Threshold[0],
+		params->Psi2Threshold[0]);
+	fsp_display_upd_value("Psi2Threshold[1]", 1,
+		original->Psi2Threshold[1],
+		params->Psi2Threshold[1]);
+	fsp_display_upd_value("Psi2Threshold[2]", 1,
+		original->Psi2Threshold[2],
+		params->Psi2Threshold[2]);
+	fsp_display_upd_value("Psi2Threshold[3]", 1,
+		original->Psi2Threshold[3],
+		params->Psi2Threshold[3]);
+	fsp_display_upd_value("Psi2Threshold[4]", 1,
+		original->Psi2Threshold[4],
+		params->Psi2Threshold[4]);
+	fsp_display_upd_value("Psi3Threshold[0]", 1,
+		original->Psi3Threshold[0],
+		params->Psi3Threshold[0]);
+	fsp_display_upd_value("Psi3Threshold[1]", 1,
+		original->Psi3Threshold[1],
+		params->Psi3Threshold[1]);
+	fsp_display_upd_value("Psi3Threshold[2]", 1,
+		original->Psi3Threshold[2],
+		params->Psi3Threshold[2]);
+	fsp_display_upd_value("Psi3Threshold[3]", 1,
+		original->Psi3Threshold[3],
+		params->Psi3Threshold[3]);
+	fsp_display_upd_value("Psi3Threshold[4]", 1,
+		original->Psi3Threshold[4],
+		params->Psi3Threshold[4]);
+	fsp_display_upd_value("Psi3Enable[0]", 1,
+		original->Psi3Enable[0],
+		params->Psi3Enable[0]);
+	fsp_display_upd_value("Psi3Enable[1]", 1,
+		original->Psi3Enable[1],
+		params->Psi3Enable[1]);
+	fsp_display_upd_value("Psi3Enable[2]", 1,
+		original->Psi3Enable[2],
+		params->Psi3Enable[2]);
+	fsp_display_upd_value("Psi3Enable[3]", 1,
+		original->Psi3Enable[3],
+		params->Psi3Enable[3]);
+	fsp_display_upd_value("Psi3Enable[4]", 1,
+		original->Psi3Enable[4],
+		params->Psi3Enable[4]);
+	fsp_display_upd_value("Psi4Enable[0]", 1,
+		original->Psi4Enable[0],
+		params->Psi4Enable[0]);
+	fsp_display_upd_value("Psi4Enable[1]", 1,
+		original->Psi4Enable[1],
+		params->Psi4Enable[1]);
+	fsp_display_upd_value("Psi4Enable[2]", 1,
+		original->Psi4Enable[2],
+		params->Psi4Enable[2]);
+	fsp_display_upd_value("Psi4Enable[3]", 1,
+		original->Psi4Enable[3],
+		params->Psi4Enable[3]);
+	fsp_display_upd_value("Psi4Enable[4]", 1,
+		original->Psi4Enable[4],
+		params->Psi4Enable[4]);
+	fsp_display_upd_value("ImonSlope[0]", 1,
+		original->ImonSlope[0],
+		params->ImonSlope[0]);
+	fsp_display_upd_value("ImonSlope[1]", 1,
+		original->ImonSlope[1],
+		params->ImonSlope[1]);
+	fsp_display_upd_value("ImonSlope[2]", 1,
+		original->ImonSlope[2],
+		params->ImonSlope[2]);
+	fsp_display_upd_value("ImonSlope[3]", 1,
+		original->ImonSlope[3],
+		params->ImonSlope[3]);
+	fsp_display_upd_value("ImonSlope[4]", 1,
+		original->ImonSlope[4],
+		params->ImonSlope[4]);
+	fsp_display_upd_value("ImonOffse[0]t", 1,
+		original->ImonOffset[0],
+		params->ImonOffset[0]);
+	fsp_display_upd_value("ImonOffse[1]t", 1,
+		original->ImonOffset[1],
+		params->ImonOffset[1]);
+	fsp_display_upd_value("ImonOffse[2]t", 1,
+		original->ImonOffset[2],
+		params->ImonOffset[2]);
+	fsp_display_upd_value("ImonOffse[3]t", 1,
+		original->ImonOffset[3],
+		params->ImonOffset[3]);
+	fsp_display_upd_value("ImonOffse[4]t", 1,
+		original->ImonOffset[4],
+		params->ImonOffset[4]);
+	fsp_display_upd_value("IccMax[0]", 1,
+		original->IccMax[0],
+		params->IccMax[0]);
+	fsp_display_upd_value("IccMax[1]", 1,
+		original->IccMax[1],
+		params->IccMax[1]);
+	fsp_display_upd_value("IccMax[2]", 1,
+		original->IccMax[2],
+		params->IccMax[2]);
+	fsp_display_upd_value("IccMax[3]", 1,
+		original->IccMax[3],
+		params->IccMax[3]);
+	fsp_display_upd_value("IccMax[4]", 1,
+		original->IccMax[4],
+		params->IccMax[4]);
+	fsp_display_upd_value("VrVoltageLimit[0]", 1,
+		original->VrVoltageLimit[0],
+		params->VrVoltageLimit[0]);
+	fsp_display_upd_value("VrVoltageLimit[1]", 1,
+		original->VrVoltageLimit[1],
+		params->VrVoltageLimit[1]);
+	fsp_display_upd_value("VrVoltageLimit[2]", 1,
+		original->VrVoltageLimit[2],
+		params->VrVoltageLimit[2]);
+	fsp_display_upd_value("VrVoltageLimit[3]", 1,
+		original->VrVoltageLimit[3],
+		params->VrVoltageLimit[3]);
+	fsp_display_upd_value("VrVoltageLimit[4]", 1,
+		original->VrVoltageLimit[4],
+		params->VrVoltageLimit[4]);
+	fsp_display_upd_value("VrConfigEnable[0]", 1,
+		original->VrConfigEnable[0],
+		params->VrConfigEnable[0]);
+	fsp_display_upd_value("VrConfigEnable[1]", 1,
+		original->VrConfigEnable[1],
+		params->VrConfigEnable[1]);
+	fsp_display_upd_value("VrConfigEnable[2]", 1,
+		original->VrConfigEnable[2],
+		params->VrConfigEnable[2]);
+	fsp_display_upd_value("VrConfigEnable[3]", 1,
+		original->VrConfigEnable[3],
+		params->VrConfigEnable[3]);
+	fsp_display_upd_value("VrConfigEnable[4]", 1,
+		original->VrConfigEnable[4],
+		params->VrConfigEnable[4]);
 }
 
 static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

@@ -25,6 +25,7 @@
 #include <soc/pmc.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>
+#include <soc/vr_config.h>
 
 struct soc_intel_skylake_config {
 	/*
@@ -325,6 +326,11 @@ struct soc_intel_skylake_config {
 	 */
 	u8 SerialIrqConfigStartFramePulse;
 	u8 SkipMpInit;
+	/* VrConfig Settings for 5 domains
+	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
+	 * 3 = GT unsliced,  4 = GT sliced
+	 */
+	struct vr_config domain_vr_config[NUM_VR_DOMAINS];
 };
 
 typedef struct soc_intel_skylake_config config_t;

@@ -387,8 +387,7 @@ int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
 	return 1;
 }
 
-int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
-			size_t copy_size)
+int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 {
 	assert(image);
 	if (!cbfs_is_legacy_cbfs(image))
@@ -399,37 +398,23 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 	size_t align, entry_offset;
 	ssize_t last_entry_size;
 
-	size_t cbfs_offset, cbfs_end;
-	size_t copy_end = copy_offset + copy_size;
+	size_t copy_end = buffer_size(dst);
 
 	align = image->header.align;
 
-	cbfs_offset = image->header.offset;
-	cbfs_end = image->header.romsize;
-
-	if (copy_end > image->buffer.size) {
-		ERROR("Copy offset out of range: [%zx:%zx)\n",
-			copy_offset, copy_end);
-		return 1;
-	}
-
-	/* Range check requested copy region with source cbfs. */
-	if ((copy_offset >= cbfs_offset && copy_offset < cbfs_end) ||
-	    (copy_end >= cbfs_offset && copy_end <= cbfs_end)) {
-		ERROR("New image would overlap old one.\n");
-		return 1;
-	}
-
 	/* This will work, let's create a copy. */
-	copy_header = (struct cbfs_header *)(image->buffer.data + copy_offset);
+	copy_header = (struct cbfs_header *)buffer_get(dst);
 	cbfs_put_header(copy_header, &image->header);
 
 	copy_header->bootblocksize = 0;
-	/* Romsize is a misnomer. It's the absolute limit of cbfs content.*/
-	copy_header->romsize = htonl(copy_end);
-	entry_offset = align_up(copy_offset + sizeof(*copy_header), align);
-	copy_header->offset = htonl(entry_offset);
-	dst_entry = (struct cbfs_file *)(image->buffer.data + entry_offset);
+	/* FIXME: romsize and offset have a full-flash interpretation even
+	 * though they don't need to and should be region-relative (where
+	 * region is sufficiently specified by the master header pointer.
+	 * But that's for a later change. */
+	copy_header->romsize = htonl(dst->offset + buffer_size(dst));
+	entry_offset = align_up(sizeof(*copy_header), align);
+	copy_header->offset = htonl(dst->offset + entry_offset);
+	dst_entry = (struct cbfs_file *)(buffer_get(dst) + entry_offset);
 
 	/* Copy non-empty files */
 	for (src_entry = cbfs_find_first_entry(image);
@@ -446,7 +431,7 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 		dst_entry = (struct cbfs_file *)(
 			(uintptr_t)dst_entry + align_up(entry_size, align));
 
-		if ((size_t)((char *)dst_entry - image->buffer.data) >=
+		if ((size_t)((void *)dst_entry - buffer_get(dst)) >=
 								copy_end) {
 			ERROR("Ran out of room in copy region.\n");
 			return 1;
@@ -454,7 +439,7 @@ int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
 	}
 
 	/* Last entry size is all the room above it. */
-	last_entry_size = copy_end - ((char *)dst_entry - image->buffer.data)
+	last_entry_size = copy_end - ((void *)dst_entry - buffer_get(dst))
 		- cbfs_calculate_file_header_size("");
 
 	if (last_entry_size < 0)

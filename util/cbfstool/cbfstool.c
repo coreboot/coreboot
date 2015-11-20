@@ -917,27 +917,34 @@ static int cbfs_update_fit(void)
 
 static int cbfs_copy(void)
 {
-	if (!param.copyoffset_assigned) {
-		ERROR("You need to specify -D/--copy-offset.\n");
-		return 1;
-	}
+	/* always a valid source region */
+	struct cbfs_image src_image;
 
-	if (!param.size) {
-		ERROR("You need to specify -s/--size.\n");
-		return 1;
-	}
-
-	struct cbfs_image image;
-	if (cbfs_image_from_buffer(&image, param.image_region,
+	if (cbfs_image_from_buffer(&src_image, param.image_region,
 							param.headeroffset))
 		return 1;
 
-	if (!cbfs_is_legacy_cbfs(&image)) {
+	struct buffer dst_buffer;
+
+	if (cbfs_is_legacy_cbfs(&src_image)) {
+		if (!param.copyoffset_assigned) {
+			ERROR("You need to specify -D/--copy-offset.\n");
+			return 1;
+		}
+
+		if (!param.size) {
+			ERROR("You need to specify -s/--size.\n");
+			return 1;
+		}
+
+		buffer_splice(&dst_buffer, param.image_region,
+			param.copyoffset, param.size);
+	} else {
 		ERROR("This operation is only valid on legacy images having CBFS master headers\n");
 		return 1;
 	}
 
-	return cbfs_copy_instance(&image, param.copyoffset, param.size);
+	return cbfs_copy_instance(&src_image, &dst_buffer);
 }
 
 static const struct command commands[] = {

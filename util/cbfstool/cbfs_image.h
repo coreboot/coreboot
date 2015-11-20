@@ -74,8 +74,7 @@ int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
 
 /* Create a duplicate CBFS image. Returns 0 on success, otherwise non-zero.
  * Will not succeed on new-style images without a master header. */
-int cbfs_copy_instance(struct cbfs_image *image, size_t copy_offset,
-			size_t copy_size);
+int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst);
 
 /* Releases the CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_delete(struct cbfs_image *image);

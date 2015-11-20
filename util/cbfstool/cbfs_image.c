@@ -523,6 +523,11 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	}
 
 	len = addr_next - addr - min_entry_size;
+	/* keep space for master header pointer */
+	if ((void *)entry + min_entry_size + len > buffer_get(&image->buffer) +
+		buffer_size(&image->buffer) - sizeof(int32_t)) {
+		len -= sizeof(int32_t);
+	}
 	cbfs_create_empty_entry(entry, CBFS_COMPONENT_NULL, len, "");
 	if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
 	return 0;

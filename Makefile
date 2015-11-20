@@ -38,6 +38,7 @@ $(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > 
 	rm -f $@
 	$< $(XGCCPATH) > $@.tmp
 	\mv -f $@.tmp $@ 2> /dev/null
+	rm -f $@.tmp
 
 export top := $(CURDIR)
 export src := src

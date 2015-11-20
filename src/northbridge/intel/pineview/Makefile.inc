@@ -21,6 +21,7 @@ ramstage-y += northbridge.c
 ramstage-y += acpi.c
 
 romstage-y += ram_calc.c
+romstage-y += raminit.c
 romstage-y += early_init.c
 
 endif

@@ -1,0 +1,2 @@
+config BOARD_INTEL_LITTLEPLAINS
+	bool "Little Plains"

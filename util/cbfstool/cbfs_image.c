@@ -390,31 +390,16 @@ int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
 int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 {
 	assert(image);
-	if (!cbfs_is_legacy_cbfs(image))
-		return -1;
 
 	struct cbfs_file *src_entry, *dst_entry;
-	struct cbfs_header *copy_header;
-	size_t align, entry_offset;
+	size_t align;
 	ssize_t last_entry_size;
 
 	size_t copy_end = buffer_size(dst);
 
-	align = image->header.align;
+	align = CBFS_ENTRY_ALIGNMENT;
 
-	/* This will work, let's create a copy. */
-	copy_header = (struct cbfs_header *)buffer_get(dst);
-	cbfs_put_header(copy_header, &image->header);
-
-	copy_header->bootblocksize = 0;
-	/* FIXME: romsize and offset have a full-flash interpretation even
-	 * though they don't need to and should be region-relative (where
-	 * region is sufficiently specified by the master header pointer.
-	 * But that's for a later change. */
-	copy_header->romsize = htonl(dst->offset + buffer_size(dst));
-	entry_offset = align_up(sizeof(*copy_header), align);
-	copy_header->offset = htonl(dst->offset + entry_offset);
-	dst_entry = (struct cbfs_file *)(buffer_get(dst) + entry_offset);
+	dst_entry = (struct cbfs_file *)buffer_get(dst);
 
 	/* Copy non-empty files */
 	for (src_entry = cbfs_find_first_entry(image);
@@ -423,6 +408,7 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 		size_t entry_size;
 
 		if ((src_entry->type == htonl(CBFS_COMPONENT_NULL)) ||
+		    (src_entry->type == htonl(CBFS_COMPONENT_CBFSHEADER)) ||
 		    (src_entry->type == htonl(CBFS_COMPONENT_DELETED)))
 			continue;
 
@@ -438,9 +424,12 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 		}
 	}
 
-	/* Last entry size is all the room above it. */
+	/* Last entry size is all the room above it, except for top 4 bytes
+	 * which may be used by the master header pointer. This messes with
+	 * the ability to stash something "top-aligned" into the region, but
+	 * keeps things simpler. */
 	last_entry_size = copy_end - ((void *)dst_entry - buffer_get(dst))
-		- cbfs_calculate_file_header_size("");
+		- cbfs_calculate_file_header_size("") - sizeof(int32_t);
 
 	if (last_entry_size < 0)
 		WARN("No room to create the last entry!\n")

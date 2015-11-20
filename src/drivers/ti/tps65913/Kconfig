@@ -26,7 +26,9 @@ config DRIVERS_TI_TPS65913_RTC
 config DRIVERS_TI_TPS65913_RTC_BUS
 	int "TI TPS65913 RTC bus"
 	depends on DRIVERS_TI_TPS65913_RTC
+	default 0
 
 config DRIVERS_TI_TPS65913_RTC_ADDR
 	hex "TI TPS65913 RTC chip address"
 	depends on DRIVERS_TI_TPS65913_RTC
+	default 0x00

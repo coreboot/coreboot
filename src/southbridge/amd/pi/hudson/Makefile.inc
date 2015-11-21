@@ -50,6 +50,11 @@ romstage-y += imc.c
 ramstage-y += imc.c
 endif
 
+ifeq ($(CONFIG_HUDSON_UART), y)
+romstage-y += uart.c
+ramstage-y += uart.c
+endif
+
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c smi_util.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c smi_util.c
 

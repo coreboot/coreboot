@@ -227,3 +227,19 @@ config AZ_PIN
 	  bit 5,4 - pin 2
 	  bit 7,6 - pin 3
 endif
+
+config HUDSON_UART
+	bool "UART controller on Kern."
+	default n
+	depends on SOUTHBRIDGE_AMD_PI_KERN
+	select DRIVERS_UART_8250MEM
+	select DRIVERS_UART_8250MEM_32
+	select NO_UART_ON_SUPERIO
+	help
+	  There are two UART controllers in Kern.
+	  The UART registers are memory-mapped. UART
+	  controller 0 registers range from FEDC_6000h
+	  to FEDC_6FFFh. UART controller 1 registers
+	  range from FEDC_8000h to FEDC_8FFFh.
+
+

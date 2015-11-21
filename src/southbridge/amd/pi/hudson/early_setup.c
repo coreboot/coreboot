@@ -26,6 +26,37 @@
 #include "hudson.h"
 #include "pci_devs.h"
 
+#if IS_ENABLED(CONFIG_HUDSON_UART)
+
+#include <cpu/x86/msr.h>
+#include <delay.h>
+#include <Fch/Fch.h>
+
+void configure_hudson_uart(void)
+{
+	msr_t msr;
+	u8 byte;
+
+	msr = rdmsr(0x1B);
+	msr.lo |= 1 << 11;
+	wrmsr(0x1B, msr);
+	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * 2);
+	byte |= 1 << 3;
+	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * 2, byte);
+	byte = read8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62);
+	byte |= 1 << 3;
+	write8((void *)ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62, byte);
+	write8((void *)FCH_IOMUXx89_UART0_RTS_L_EGPIO137, 0);
+	write8((void *)FCH_IOMUXx8A_UART0_TXD_EGPIO138, 0);
+	write8((void *)FCH_IOMUXx8E_UART1_RTS_L_EGPIO142, 0);
+	write8((void *)FCH_IOMUXx8F_UART1_TXD_EGPIO143, 0);
+
+	udelay(2000);
+	write8((void *)0xFEDC6000 + 0x2000 * CONFIG_UART_FOR_CONSOLE + 0x88, 0x01); /* reset UART */
+}
+
+#endif
+
 void hudson_pci_port80(void)
 {
 	u8 byte;

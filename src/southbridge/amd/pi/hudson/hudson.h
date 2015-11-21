@@ -112,6 +112,9 @@ void hudson_clk_output_48Mhz(void);
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
+#if IS_ENABLED(CONFIG_HUDSON_UART)
+void configure_hudson_uart(void);
+#endif
 
 #else
 void hudson_enable(device_t dev);

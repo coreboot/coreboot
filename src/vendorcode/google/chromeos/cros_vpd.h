@@ -7,6 +7,8 @@
 #ifndef __CROS_VPD_H__
 #define __CROS_VPD_H__
 
+#define CROS_VPD_WIFI_DOMAINKEY "regions"
+
 /*
  * Reads VPD string value by key.
  *

@@ -160,6 +160,12 @@ config WIPEOUT_SUPPORTED
 	  signal the application the need for factory reset (a.k.a. wipe
 	  out) of the device
 
+config HAVE_REGULATORY_DOMAIN
+	bool "Add regulatory domain methods"
+	default n
+	help
+	 This option is needed to add ACPI regulatory domain methods
+
 source src/vendorcode/google/chromeos/vboot2/Kconfig
 
 endif # CHROMEOS

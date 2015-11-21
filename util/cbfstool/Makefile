@@ -17,4 +17,6 @@ clean:
 	$(RM) $(objutil)/cbfstool/fmaptool $(fmapobj)
 	$(RM) $(objutil)/cbfstool/rmodtool $(rmodobj)
 
+.SILENT:
+
 include Makefile.inc

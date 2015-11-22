@@ -32,7 +32,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam10_sysconf.h>
-#include <cpu/amd/model_10xxx_msr.h>
+#include <cpu/amd/msr.h>
 #include <cpu/amd/family_10h-family_15h/ram_calc.h>
 
 #if CONFIG_LOGICAL_CPUS

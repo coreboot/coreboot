@@ -26,7 +26,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <cpu/amd/multicore.h>
-#include <cpu/amd/model_fxx_msr.h>
+#include <cpu/amd/msr.h>
 
 #if CONFIG_WAIT_BEFORE_CPUS_INIT
 void cpus_ready_for_init(void)

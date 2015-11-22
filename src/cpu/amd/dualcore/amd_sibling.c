@@ -9,7 +9,7 @@
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/amd/model_fxx_msr.h>
+#include <cpu/amd/msr.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include <cpu/amd/amdk8_sysconf.h>
 

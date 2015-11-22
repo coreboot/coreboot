@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef CPU_AMD_MODEL_10XXX_MSR_H
-#define CPU_AMD_MODEL_10XXX_MSR_H
+#ifndef CPU_AMD_MSR_H
+#define CPU_AMD_MSR_H
 
 #include <cpu/x86/msr.h>
 
@@ -42,4 +42,4 @@
 #define LOGICAL_CPUS_NUM_MSR		0xC001100d
 #define CPU_ID_EXT_FEATURES_MSR		0xC0011005
 
-#endif /* CPU_AMD_MODEL_10XXX_MSR_H */
+#endif /* CPU_AMD_MSR_H */

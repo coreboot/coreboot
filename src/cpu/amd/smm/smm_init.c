@@ -21,7 +21,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
-#include <cpu/amd/model_fxx_msr.h>
+#include <cpu/amd/msr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <string.h>

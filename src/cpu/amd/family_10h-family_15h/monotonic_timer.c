@@ -21,7 +21,7 @@
 #include <device/pci_ids.h>
 
 #include <northbridge/amd/amdht/AsPsDefs.h>
-#include <cpu/amd/model_10xxx_msr.h>
+#include <cpu/amd/msr.h>
 
 static struct monotonic_counter {
 	int initialized;

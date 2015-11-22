@@ -35,7 +35,7 @@ chip soc/intel/skylake
 	register "SmbusEnable" = "1"
 	register "Cio2Enable" = "0"
 	register "ScsEmmcEnabled" = "1"
-	register "ScsEmmcHs400Enabled" = "1"
+	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "2"
 	register "IshEnable" = "0"
 	register "PttSwitch" = "0"
@@ -43,18 +43,15 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
 
-	# Enable Root port 1 and 5.
+	# Enable Root port 1.
 	register "PcieRpEnable[0]" = "1"
-	register "PcieRpEnable[4]" = "1"
 	# Enable CLKREQ#
 	register "PcieRpClkReqSupport[0]" = "1"
-	register "PcieRpClkReqSupport[4]" = "1"
-	# RP 1 uses SRCCLKREQ1# while RP 5 uses SRCCLKREQ2#
+	# RP 1 uses SRCCLKREQ1#
 	register "PcieRpClkReqNumber[0]" = "1"
-	register "PcieRpClkReqNumber[4]" = "2"
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C"  # Type-C Port 1
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C"  # Type-C Port 2
+	register "usb2_ports[0]" = "USB2_PORT_LONG"    # Type-C Port 1
+	register "usb2_ports[1]" = "USB2_PORT_LONG"    # Type-C Port 2
 	register "usb2_ports[2]" = "USB2_PORT_MID"     # Bluetooth
 	register "usb2_ports[4]" = "USB2_PORT_MID"     # Type-A Port
 	register "usb2_ports[6]" = "USB2_PORT_FLEX"    # Camera
@@ -106,7 +103,7 @@ chip soc/intel/skylake
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
 		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 on  end # PCI Express Port 5
+		device pci 1c.4 off end # PCI Express Port 5
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8

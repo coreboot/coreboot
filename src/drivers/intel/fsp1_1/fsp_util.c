@@ -161,8 +161,13 @@ void fsp_notify(u32 phase)
 		fsp_header_ptr->NotifyPhaseEntryOffset);
 	notify_phase_params.Phase = phase;
 
-	timestamp_add_now(phase == EnumInitPhaseReadyToBoot ?
-		TS_FSP_BEFORE_FINALIZE : TS_FSP_BEFORE_ENUMERATE);
+	if (phase == EnumInitPhaseReadyToBoot) {
+		timestamp_add_now(TS_FSP_BEFORE_ENUMERATE);
+		post_code(POST_FSP_NOTIFY_BEFORE_ENUMERATE);
+	} else {
+		timestamp_add_now(TS_FSP_BEFORE_FINALIZE);
+		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
+	}
 
 	status = notify_phase_proc(&notify_phase_params);
 

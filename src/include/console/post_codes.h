@@ -203,6 +203,48 @@
 #define POST_BS_PAYLOAD_BOOT			0x7b
 
 /**
+ * \brief Before calling FSP TempRamInit
+ *
+ * Going to call into FSP binary for TempRamInit phase
+ */
+#define POST_FSP_TEMP_RAM_INIT			0x90
+
+/**
+ * \brief Before calling FSP TempRamExit
+ *
+ * Going to call into FSP binary for TempRamExit phase
+ */
+#define POST_FSP_TEMP_RAM_EXIT			0x91
+
+/**
+ * \brief Before calling FSP MemoryInit
+ *
+ * Going to call into FSP binary for MemoryInit phase
+ */
+#define POST_FSP_MEMORY_INIT			0x92
+
+/**
+ * \brief Before calling FSP SiliconInit
+ *
+ * Going to call into FSP binary for SiliconInit phase
+ */
+#define POST_FSP_SILICON_INIT			0x93
+
+/**
+ * \brief Before calling FSP Notify before resource allocation
+ *
+ * Going to call into FSP binary for Notify phase
+ */
+#define POST_FSP_NOTIFY_BEFORE_ENUMERATE	0x94
+
+/**
+ * \brief Before calling FSP Notify before finalize
+ *
+ * Going to call into FSP binary for Notify phase
+ */
+#define POST_FSP_NOTIFY_BEFORE_FINALIZE		0x95
+
+/**
  * \brief Entry into elf boot
  *
  * This POST code is called right before invoking jmp_to_elf_entry()

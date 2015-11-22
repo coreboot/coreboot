@@ -47,7 +47,7 @@ find_fsp_ret:
 	jmp   .Lhlt
 
 find_fsp_ok:
-	post_code(0x22)
+	post_code(POST_FSP_TEMP_RAM_INIT)
 
 	/* Calculate entry into FSP */
 	mov   0x30(%ebp), %eax	/* Load TempRamInitEntry */

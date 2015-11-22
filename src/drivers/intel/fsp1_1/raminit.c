@@ -122,6 +122,7 @@ void raminit(struct romstage_params *params)
 		fsp_memory_init_params.HobListPtr);
 
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
+	post_code(POST_FSP_MEMORY_INIT);
 	status = fsp_memory_init(&fsp_memory_init_params);
 	post_code(0x37);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);

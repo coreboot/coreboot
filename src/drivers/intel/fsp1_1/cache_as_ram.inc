@@ -65,7 +65,7 @@ find_fsp_ret:
 	cmp	$CONFIG_FSP_LOC, %eax
 	jbe	halt1
 
-	post_code(0x22)
+	post_code(POST_FSP_TEMP_RAM_INIT)
 
 	/* Calculate entry into FSP */
 	mov	0x30(%ebp), %eax	/* Load TempRamInitEntry */

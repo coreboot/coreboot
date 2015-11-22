@@ -31,6 +31,8 @@
 	/* Switch to the stack in RAM */
 	movl	%eax, %esp
 
+	post_code(POST_FSP_TEMP_RAM_EXIT)
+
 	/* Calculate TempRamExit entry into FSP */
 	movl	fih_car, %ebp
 	mov	0x40(%ebp), %eax

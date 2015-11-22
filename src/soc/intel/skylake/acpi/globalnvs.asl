@@ -61,6 +61,8 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PM1I,	64,	// 0x20 - 0x27 - PM1 wake status bit
 	GPEI,	64,	// 0x28 - 0x2f - GPE wake status bit
 	DPTE,	8,	// 0x30 - Enable DPTF
+	NHLA,	64,	// 0x31 - NHLT Address
+	NHLL,	32,	// 0x39 - NHLT Length
 
 	/* ChromeOS specific */
 	Offset (0x100),

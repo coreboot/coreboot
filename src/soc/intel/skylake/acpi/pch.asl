@@ -30,6 +30,9 @@
 /* LPC 0:1f.0 */
 #include "lpc.asl"
 
+/* PCH HDA */
+#include "pch_hda.asl"
+
 /* PCIE Ports */
 #include "pcie.asl"
 

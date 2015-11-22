@@ -51,8 +51,9 @@ typedef struct {
 	u64	pm1i; /* 0x20 - 0x27 - PM1 wake status bit */
 	u64	gpei; /* 0x28 - 0x2f - GPE wake status bit */
 	u8	dpte; /* 0x30 - Enable DPTF */
-
-	u8	unused[207];
+	u64	nhla; /* 0x31 - NHLT Address */
+	u32	nhll; /* 0x39 - NHLT Length */
+	u8	unused[195];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

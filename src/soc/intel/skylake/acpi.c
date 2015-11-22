@@ -541,26 +541,8 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
-	acpi_header_t *ssdt2;
-
 	current = acpi_write_hpet(device, current, rsdp);
 	ALIGN_CURRENT;
-
-	ssdt2 = (acpi_header_t *)current;
-	memset(ssdt2, 0, sizeof(acpi_header_t));
-	if (ssdt2->length) {
-		current += ssdt2->length;
-		acpi_add_table(rsdp, ssdt2);
-		printk(BIOS_DEBUG, "ACPI:     * SSDT2 @ %p Length %x\n",ssdt2,
-		       ssdt2->length);
-		ALIGN_CURRENT;
-	} else {
-		ssdt2 = NULL;
-		printk(BIOS_DEBUG, "ACPI:     * SSDT2 not generated.\n");
-	}
-
-	printk(BIOS_DEBUG, "current = %lx\n", current);
-
 	return current;
 }
 

@@ -115,7 +115,7 @@ static const struct pad_config gpio_table[] = {
 /* UART0_RXD */		/* GPP_C8 */
 /* UART0_TXD */		/* GPP_C9 */
 /* UART0_RTS# */	/* GPP_C10 */
-/* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 1, DEEP), /* EN_PP3300_KEPLER */
+/* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 0, DEEP), /* EN_PP3300_KEPLER */
 /* UART1_RXD */		PAD_CFG_GPI(GPP_C12, NONE, DEEP), /* MEM_CONFIG[0] */
 /* UART1_TXD */		PAD_CFG_GPI(GPP_C13, NONE, DEEP), /* MEM_CONFIG[1] */
 /* UART1_RTS# */	PAD_CFG_GPI(GPP_C14, NONE, DEEP), /* MEM_CONFIG[2] */
@@ -230,7 +230,7 @@ static const struct pad_config gpio_table[] = {
 /* Early pad configuration in romstage. */
 static const struct pad_config early_gpio_table[] = {
 /* SRCCLKREQ2# */	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1), /* KEPLER */
-/* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 1, DEEP), /* EN_PP3300_KEPLER */
+/* UART0_CTS# */	PAD_CFG_GPO(GPP_C11, 0, DEEP), /* EN_PP3300_KEPLER */
 };
 
 #endif

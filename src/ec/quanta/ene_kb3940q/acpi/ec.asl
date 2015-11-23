@@ -116,7 +116,7 @@ Device (EC0)
 		BCNT, 8,        // SMBus Block Count                    ; E4h
 	}
 
-	Method (_CRS, 0, NotSerialized)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()
 		{

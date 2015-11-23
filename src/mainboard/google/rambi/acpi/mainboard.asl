@@ -52,10 +52,13 @@ Scope (\_SB)
 
 		Method (_CRS)
 		{
-			/* Only return interrupt if I2C1 is PCI mode */
+			/* Return interrupt if I2C1 is PCI mode */
 			If (LEqual (\S1EN, 0)) {
 				Return (^RBUF)
 			}
+
+			/* Return empty resource template otherwise */
+			Return (ResourceTemplate() {})
 		}
 	}
 
@@ -76,10 +79,13 @@ Scope (\_SB)
 
 		Method (_CRS)
 		{
-			/* Only return interrupt if I2C6 is PCI mode */
+			/* Return interrupt if I2C6 is PCI mode */
 			If (LEqual (\S6EN, 0)) {
 				Return (^RBUF)
 			}
+
+			/* Return empty resource template otherwise */
+			Return (ResourceTemplate() {})
 		}
 	}
 }

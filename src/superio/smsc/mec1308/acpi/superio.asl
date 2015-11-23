@@ -16,6 +16,7 @@
 // Scope is \_SB.PCI0.LPCB
 
 Device (SIO) {
+	Name (_ADR, 0x2E)
 	OperationRegion (SIOA, SystemIO, 0x2E, 0x02)
 	Field (SIOA, ByteAcc, NoLock, Preserve)
 	{
@@ -245,12 +246,12 @@ Device (SIO) {
 
 		Name (_CRS, ResourceTemplate()
 		{
-			FixedIO (SIO_SMBX_IO0, 0x34)
+			IO (Decode16, SIO_SMBX_IO0, SIO_SMBX_IO0 + 0x34, 0x01, 0x34)
 		})
 
 		Name (_PRS, ResourceTemplate()
 		{
-			FixedIO (SIO_SMBX_IO0, 0x34)
+			IO (Decode16, SIO_SMBX_IO0, SIO_SMBX_IO0 + 0x34, 0x01, 0x34)
 		})
 	}
 #endif

@@ -55,7 +55,7 @@ Method(SHYB, 1) {
 	}
 }
 
-Method (ATPX, 2, NotSerialized) {
+Method (ATPX, 2, Serialized) {
 	/* Create local variables */
 	Name (ATPR, Buffer (0x08) {
 		0x0, 0x0, 0x0, 0x0,
@@ -94,4 +94,5 @@ Method (ATPX, 2, NotSerialized) {
 			SHYB(0x00)
 		}
 	}
+	Return(Zero)
 }

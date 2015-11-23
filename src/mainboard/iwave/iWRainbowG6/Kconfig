@@ -28,10 +28,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 10
 
-# TODO: Remove this when platform ASL is fixed
-config IASL_WARNINGS_ARE_ERRORS
-	def_bool n
-
 # This mainboard might have a higher clocked UART or might not be able to run
 # serial output at 115200 baud
 

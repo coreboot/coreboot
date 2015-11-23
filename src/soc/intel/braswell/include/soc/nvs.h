@@ -44,7 +44,7 @@ typedef struct {
 	u32	pm1i; /* 0x15 - System Wake Source - PM1 Index */
 	u32	gpei; /* 0x19 - GPE Wake Source */
 	u8	bdid; /* 0x1d - Board ID */
-	u8	rsvd1[2];
+	u16     cid1; /* 0x1a - Wifi Country Identifier */
 
 	/* Device Config */
 	u8	s5u0; /* 0x20 - Enable USB0 in S5 */

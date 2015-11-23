@@ -44,6 +44,7 @@
 #include <string.h>
 #include <types.h>
 #include <vendorcode/google/chromeos/gnvs.h>
+#include <wrdd.h>
 
 #define MWAIT_RES(state, sub_state)                         \
 	{                                                   \
@@ -523,6 +524,13 @@ void southcluster_inject_dsdt(device_t device)
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
+		/* Fill in the Wifi Region id */
+		if (IS_ENABLED(CONFIG_HAVE_REGULATORY_DOMAIN)) {
+			gnvs->cid1 = wifi_regulatory_domain();
+		} else {
+
+			gnvs->cid1 = WRDD_DEFAULT_REGULATORY_DOMAIN;
+		}
 		acpi_save_gnvs((unsigned long)gnvs);
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);

@@ -50,8 +50,4 @@ config MAX_CPUS
 	int
 	default 4
 
-# TODO: Remove this when platform ASL is fixed
-config IASL_WARNINGS_ARE_ERRORS
-	def_bool n
-
 endif # BOARD_INTEL_D945GCLF

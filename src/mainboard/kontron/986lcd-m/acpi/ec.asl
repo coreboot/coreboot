@@ -18,7 +18,13 @@ Device(EC0)
 	Name (_HID, EISAID("PNP0C09"))
 	Name (_UID, 1)
 
-	Method (_CRS, 0)
+	// _REG method requires that an operation region is defined.
+	OperationRegion (ERAM, EmbeddedControl, 0x00, 0xff)
+	Field (ERAM, ByteAcc, Lock, Preserve)
+	{
+	}
+
+	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()
 		{

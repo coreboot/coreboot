@@ -1,3 +1,6 @@
+payloads/libpayload/install/
+junit.xml
+abuild*.xml
 .config
 .config.old
 .coreboot-version
@@ -64,6 +67,7 @@ tarballs/
 
 util/*/.dependencies
 util/*/.test
+util/amdfwtool/amdfwtool
 util/board_status/board-status
 util/cbfstool/cbfstool
 util/cbfstool/fmaptool
@@ -78,6 +82,7 @@ util/ifdtool/ifdtool
 util/ifdfake/ifdfake
 util/inteltool/.dependencies
 util/inteltool/inteltool
+util/intelvbttool/intelvbttool
 util/k8resdump/k8resdump
 util/lbtdump/lbtdump
 util/mptable/mptable

@@ -300,6 +300,7 @@ Device(EC)
 		       Add (Local0, 0x5000, Local0)
 		       Return (Local0)
 		    }
+		    Return (Zero)
 	       }
 	       /* Report event  */
 	       Method (RHK, 1, NotSerialized) {

@@ -49,8 +49,4 @@ config CPU_ADDR_BITS
 	int
 	default 36
 
-# TODO: Remove this when platform ASL is fixed
-config IASL_WARNINGS_ARE_ERRORS
-	def_bool n
-
 endif

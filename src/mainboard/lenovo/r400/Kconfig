@@ -4,8 +4,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkPad R400"
 
-# TODO: Remove this when platform ASL is fixed
-config IASL_WARNINGS_ARE_ERRORS
-	def_bool n
-
 endif

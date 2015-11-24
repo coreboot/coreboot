@@ -77,6 +77,51 @@ static uint8_t fam15h_rdimm_rc2_ibt_code(struct DCTStatStruc *pDCTstat, uint8_t 
 			 * 3 DIMM/channel support unimplemented
 			 */
 		}
+	} else if (package_type == PT_C3) {
+		/* Socket C32 */
+		/* Fam15h BKDG Rev. 3.14 section 2.10.5.7.1.2.1 Table 86 */
+		if (MaxDimmsInstallable == 1) {
+			if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+				/* DDR3-667 - DDR3-800 */
+				control_code = 0x1;
+			} else if ((MemClkFreq == 0xa) || (MemClkFreq == 0xe)) {
+				/* DDR3-1066 - DDR3-1333 */
+				if (num_registers == 1) {
+					control_code = 0x0;
+				} else {
+					control_code = 0x1;
+				}
+			} else if ((MemClkFreq == 0x12) || (MemClkFreq == 0x16)) {
+				/* DDR3-1600 - DDR3-1866 */
+				control_code = 0x0;
+			}
+		} else if (MaxDimmsInstallable == 2) {
+			if (dimm_count == 1) {
+				/* 1 DIMM detected */
+				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+					/* DDR3-667 - DDR3-800 */
+					control_code = 0x1;
+				} else if ((MemClkFreq >= 0xa) && (MemClkFreq <= 0x12)) {
+					/* DDR3-1066 - DDR3-1600 */
+					if (num_registers == 1) {
+						control_code = 0x0;
+					} else {
+						control_code = 0x1;
+					}
+				}
+			} else if (dimm_count == 2) {
+				/* 2 DIMMs detected */
+				if (num_registers == 1) {
+					control_code = 0x1;
+				} else {
+					control_code = 0x8;
+				}
+			}
+		} else if (MaxDimmsInstallable == 3) {
+			/* TODO
+			 * 3 DIMM/channel support unimplemented
+			 */
+		}
 	} else {
 		/* TODO
 		 * Other socket support unimplemented
@@ -166,6 +211,13 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 						val = 0x4;
 				}
 			}
+			else if (package_type == PT_C3) {
+				/* Socket C32 */
+				if (MaxDimmsInstallable == 2) {
+					if (Dimms > 1)
+						val = 0x4;
+				}
+			}
 		}
 	} else if (CtrlWordNum == 3) {
 		val = (pDCTstat->CtrlWrd3 >> (DimmNum << 2)) & 0xff;
@@ -179,6 +231,12 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 		} else {
 			if (package_type == PT_GR) {
 				/* Socket G34 */
+				if (MaxDimmsInstallable == 2) {
+					val = 0x0;
+				}
+			}
+			else if (package_type == PT_C3) {
+				/* Socket C32 */
 				if (MaxDimmsInstallable == 2) {
 					val = 0x0;
 				}

@@ -987,6 +987,7 @@ void cpuSetAMDMSR(uint8_t node_id)
 	u32 platform;
 	uint64_t revision;
 	uint8_t enable_c_states;
+	uint8_t enable_cpb;
 
 	printk(BIOS_DEBUG, "cpuSetAMDMSR ");
 
@@ -1077,6 +1078,19 @@ void cpuSetAMDMSR(uint8_t node_id)
 #else
 	enable_c_states = 0;
 #endif
+
+	if (revision & AMD_FAM15_ALL) {
+		enable_cpb = 1;
+		if (get_option(&nvram, "cpu_core_boost") == CB_SUCCESS)
+			enable_cpb = !!nvram;
+
+		if (!enable_cpb) {
+			/* Disable Core Performance Boost */
+			msr = rdmsr(0xc0010015);
+			msr.lo |= (0x1 << 25);		/* CpbDis = 1 */
+			wrmsr(0xc0010015, msr);
+		}
+	}
 
 	printk(BIOS_DEBUG, " done\n");
 }

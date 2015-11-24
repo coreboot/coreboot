@@ -308,9 +308,11 @@ static void sm_init(device_t dev)
 		dword |= 0x1;
 		pci_write_config32(dev, SB_MMIO_CFG_REG, dword);
 	}
-	//ACPI_DISABLE_TIMER_IRQ_ENHANCEMENT_FOR_8254_TIMER
  	byte = pci_read_config8(dev, 0xAE);
-	byte |= 1 << 5;
+ 	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID))
+ 		byte |= 1 << 4;
+	byte |= 1 << 5;	/* ACPI_DISABLE_TIMER_IRQ_ENHANCEMENT_FOR_8254_TIMER */
+	byte |= 1 << 6;	/* Enable arbiter between APIC and PIC interrupts */
  	pci_write_config8(dev, 0xAE, byte);
 
 	/* 4.11:Programming Cycle Delay for AB and BIF Clock Gating */

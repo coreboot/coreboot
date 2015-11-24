@@ -49,8 +49,4 @@ config VGA_BIOS_FILE
 	string
 	default "amipci_01.20"
 
-# TODO: Remove this when platform ASL is fixed
-config IASL_WARNINGS_ARE_ERRORS
-	def_bool n
-
 endif # BOARD_IBASE_MB899

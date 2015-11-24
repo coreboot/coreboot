@@ -6828,7 +6828,7 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 		/* Program TxPreP/TxPreN for data lanes (Stage 1) */
 		for (index = 0; index < 0x9; index++) {
 			dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0006 | (index << 8));
-			dword &= ~(0xfff);
+			dword &= ~(0xffff);
 			dword |= tx_pre;
 			Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0006 | (index << 8), dword);
 		}
@@ -6841,13 +6841,13 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 		/* Program TxPreP/TxPreN for data lanes (Stage 2) */
 		for (index = 0; index < 0x9; index++) {
 			dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f000a | (index << 8));
-			dword &= ~(0xfff);
+			dword &= ~(0xffff);
 			dword |= tx_pre;
 			Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f000a | (index << 8), dword);
 		}
 		for (index = 0; index < 0x9; index++) {
 			dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0002 | (index << 8));
-			dword &= ~(0xfff);
+			dword &= ~(0xffff);
 			dword |= (0x8000 | tx_pre);
 			Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0002 | (index << 8), dword);
 		}
@@ -6859,15 +6859,15 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 
 		/* Program TxPreP/TxPreN for command/address lines (Stage 1) */
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f8006);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= tx_pre;
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f8006, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f800a);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= tx_pre;
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f800a, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f8002);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= (0x8000 | tx_pre);
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f8002, dword);
 
@@ -6878,31 +6878,31 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 
 		/* Program TxPreP/TxPreN for command/address lines (Stage 2) */
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f8106);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= tx_pre;
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f8106, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f810a);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= tx_pre;
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f810a, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc006);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= tx_pre;
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc006, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc00a);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= tx_pre;
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc00a, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc00e);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= tx_pre;
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc00e, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc012);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= tx_pre;
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc012, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f8102);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= (0x8000 | tx_pre);
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f8102, dword);
 
@@ -6913,7 +6913,7 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 
 		/* Program TxPreP/TxPreN for command/address lines (Stage 3) */
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc002);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= (0x8000 | tx_pre);
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0fc002, dword);
 
@@ -6924,17 +6924,32 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 
 		/* Program TxPreP/TxPreN for clock lines */
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f2002);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= (0x8000 | tx_pre);
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f2002, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f2102);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= (0x8000 | tx_pre);
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f2102, dword);
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f2202);
-		dword &= ~(0xfff);
+		dword &= ~(0xffff);
 		dword |= (0x8000 | tx_pre);
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f2202, dword);
+
+		/* Be extra safe and wait for the predriver calibration to be applied
+		 * to the hardware.  The BKDG does not require this, but it does take
+		 * some time for the data to propagate, so it's probably a good idea.
+		 */
+		uint8_t predriver_cal_pending = 1;
+		printk(BIOS_DEBUG, "Waiting for predriver calibration to be applied...");
+		while (predriver_cal_pending) {
+			predriver_cal_pending = 0;
+			for (index = 0; index < 0x9; index++) {
+				if (Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0002 | (index << 8)) & 0x8000)
+					predriver_cal_pending = 1;
+			}
+		}
+		printk(BIOS_DEBUG, "done!\n");
 	} else {
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x00);
 		dword = 0;

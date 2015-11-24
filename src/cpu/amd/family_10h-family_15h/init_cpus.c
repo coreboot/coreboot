@@ -356,6 +356,7 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 	uint32_t dword;
 	uint8_t set_mtrrs;
 	uint8_t node_count;
+	uint8_t fam15_bsp_core1_apicid;
 	struct node_core_id id;
 
 	/* Please refer to the calculations and explaination in cache_as_ram.inc before modifying these values */
@@ -483,7 +484,12 @@ static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 		if (is_fam15h()) {
 			/* core 1 on node 0 is special; to avoid corrupting the
 			 * BSP do not alter MTRRs on that core */
-			if (apicid == 1)
+			if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
+				fam15_bsp_core1_apicid = CONFIG_APIC_ID_OFFSET + 1;
+			else
+				fam15_bsp_core1_apicid = 1;
+
+			if (apicid == fam15_bsp_core1_apicid)
 				set_mtrrs = 0;
 			else
 				set_mtrrs = !!(apicid & 0x1);

@@ -48,7 +48,7 @@ config DCACHE_BSP_STACK_SLUSH
 
 config DCACHE_AP_STACK_SIZE
 	hex
-	default 0x400
+	default 0x500
 
 config UDELAY_IO
 	bool

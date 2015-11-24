@@ -451,10 +451,10 @@ $(obj)/config.h: $(objutil)/kconfig/conf
 #######################################################################
 # needed objects that every mainboard uses
 # Creation of these is architecture and mainboard independent
-$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(objutil)/sconfig/sconfig
+$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/$(call strip_quotes, $(CONFIG_DEVICETREE)) $(objutil)/sconfig/sconfig
 	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
+	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR) $(call strip_quotes, $(CONFIG_DEVICETREE))
 
 ramstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 romstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c

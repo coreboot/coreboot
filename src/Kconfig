@@ -358,6 +358,17 @@ config BOARD_ID_STRING
 	  This string is placed in the 'board_id' CBFS file for indicating
 	  board type.
 
+config DEVICETREE
+	string
+	default "devicetree.cb"
+	help
+	  This symbol allows mainboards to select a different file under their
+	  mainboard directory for the devicetree.cb file.  This allows the board
+	  variants that need different devicetrees to be in the same directory.
+
+	  Examples: "devicetree.variant.cb"
+	            "variant/devicetree.cb"
+
 config RAM_CODE_SUPPORT
 	bool
 	default n

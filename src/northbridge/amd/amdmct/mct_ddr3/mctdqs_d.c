@@ -1428,8 +1428,9 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 					if (check_antiphase == 0) {
 						/* Check for early abort before analyzing per-nibble status */
-						dword = Get_NB32_DCT(dev, dct, 0x264) & 0x1ffffff;
-						if (dword != 0) {
+						dword = Get_NB32_DCT(dev, dct, 0x264);
+						if ((dword & 0x1ffffff) != 0) {
+							print_debug_dqs("\t\t\t\t\tTrainDQSRdWrPos: 162 early abort: F2x264 ", dword, 6);
 							dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 0;	/* Fail */
 							continue;
 						}
@@ -1439,6 +1440,7 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 					 * Record pass / fail status
 					 */
 					dword = Get_NB32_DCT(dev, dct, 0x268) & 0x3ffff;
+					print_debug_dqs("\t\t\t\t\tTrainDQSRdWrPos: 163 read results: F2x268 ", dword, 6);
 					if (dword & (0x3 << (lane * 2)))
 						dqs_results_array[Receiver & 0x1][lane - lane_start][current_write_data_delay[lane] - initial_write_dqs_delay[lane]][(current_read_dqs_delay[lane] >> 1) + 16] = 0;	/* Fail */
 					else
@@ -1737,6 +1739,10 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 				printk(BIOS_DEBUG, "TrainDQSReceiverEnCyc_D_Fam15 Receiver %d lane %d initial phy delay %04x: iterating from %04x to %04x\n", Receiver, lane, initial_phy_phase_delay[lane], rx_en_offset, 0x3ff);
 #endif
 				for (current_phy_phase_delay[lane] = rx_en_offset; current_phy_phase_delay[lane] < 0x3ff; current_phy_phase_delay[lane] += ren_step) {
+#if DQS_TRAIN_DEBUG > 0
+					printk(BIOS_DEBUG, "%s: Receiver %d lane %d current phy delay: %04x\n", __func__, Receiver, lane, current_phy_phase_delay[lane]);
+#endif
+
 					/* 2.10.5.8.3 (4 A) */
 					write_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);
 

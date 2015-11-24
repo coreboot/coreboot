@@ -228,6 +228,8 @@ static uint16_t fam15_receiver_enable_training_seed(struct DCTStatStruc *pDCTsta
 		}
 	}
 
+	printk(BIOS_DEBUG, "%s: using seed: %04x\n", __func__, seed);
+
 	return seed;
 }
 

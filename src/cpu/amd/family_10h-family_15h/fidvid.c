@@ -390,56 +390,60 @@ static u32 nb_clk_did(uint8_t node, uint64_t cpuRev, uint8_t procPkg) {
 
 
 static u32 power_up_down(int node, u8 procPkg) {
-       u32 dword=0;
-        /* from CPU rev guide #41322 rev 3.74 June 2010 Table 26 */
-        u8 singleLinkFlag = ((procPkg == AMD_PKGTYPE_AM3_2r2)
-                             || (procPkg == AMD_PKGTYPE_S1gX)
-                             || (procPkg == AMD_PKGTYPE_ASB2));
+	uint32_t dword=0;
+	/* from CPU rev guide #41322 rev 3.74 June 2010 Table 26 */
+	u8 singleLinkFlag = ((procPkg == AMD_PKGTYPE_AM3_2r2)
+			|| (procPkg == AMD_PKGTYPE_S1gX)
+			|| (procPkg == AMD_PKGTYPE_ASB2));
 
-        if (singleLinkFlag) {
-	  /*
-           * PowerStepUp=01000b - 50nS
-	   * PowerStepDown=01000b - 50ns
-	   */
-	  dword |= PW_STP_UP50 | PW_STP_DN50;
-	} else {
-          u32 dispRefModeEn = (pci_read_config32(NODE_PCI(node,0),0x68) >> 24) & 1;
-          u32 isocEn = 0;
-          int j;
-	  for(j=0 ; (j<4) && (!isocEn) ; j++ ) {
-	    u8 offset;
-	    if (AMD_CpuFindCapability(node, j, &offset)) {
-	      isocEn = (pci_read_config32(NODE_PCI(node,0),offset+4) >>12) & 1;
-	    }
-          }
-
-          if (dispRefModeEn || isocEn) {
-        	dword |= PW_STP_UP50 | PW_STP_DN50 ;
-          } else {
-		/* get number of cores for PowerStepUp & PowerStepDown in server
-		   1 core - 400nS  - 0000b
-		   2 cores - 200nS - 0010b
-		   3 cores - 133nS -> 100nS - 0011b
-		   4 cores - 100nS - 0011b
+	if (singleLinkFlag) {
+		/*
+		 * PowerStepUp=01000b - 50nS
+		 * PowerStepDown=01000b - 50ns
 		 */
-		switch (get_core_num_in_bsp(node)) {
-		case 0:
-			dword |= PW_STP_UP400 | PW_STP_DN400;
-			break;
-		case 1:
-		case 2:
-			dword |= PW_STP_UP200 | PW_STP_DN200;
-			break;
-		case 3:
-			dword |= PW_STP_UP100 | PW_STP_DN100;
-			break;
-		default:
-			dword |= PW_STP_UP100 | PW_STP_DN100;
-			break;
+		dword |= PW_STP_UP50 | PW_STP_DN50;
+	} else {
+		uint32_t dispRefModeEn = (pci_read_config32(NODE_PCI(node,0),0x68) >> 24) & 1;
+		uint32_t isocEn = 0;
+		int j;
+		for (j=0 ; (j<4) && (!isocEn) ; j++ ) {
+			u8 offset;
+			if (AMD_CpuFindCapability(node, j, &offset)) {
+				isocEn = (pci_read_config32(NODE_PCI(node,0),offset+4) >>12) & 1;
+			}
 		}
-	  }
+
+		if (is_fam15h()) {
+			/* Family 15h always uses 100ns for multilink processors */
+			dword |= PW_STP_UP100 | PW_STP_DN100;
+		} else if (dispRefModeEn || isocEn) {
+			dword |= PW_STP_UP50 | PW_STP_DN50 ;
+		} else {
+			/* get number of cores for PowerStepUp & PowerStepDown in server
+			 * 1 core - 400nS  - 0000b
+			 * 2 cores - 200nS - 0010b
+			 * 3 cores - 133nS -> 100nS - 0011b
+			 * 4 cores - 100nS - 0011b
+			 */
+			switch (get_core_num_in_bsp(node)) {
+			case 0:
+				dword |= PW_STP_UP400 | PW_STP_DN400;
+				break;
+			case 1:
+			case 2:
+				dword |= PW_STP_UP200 | PW_STP_DN200;
+				break;
+			case 3:
+				dword |= PW_STP_UP100 | PW_STP_DN100;
+				break;
+			default:
+				dword |= PW_STP_UP100 | PW_STP_DN100;
+				break;
+			}
+		}
 	}
-        return dword;
+
+	return dword;
 }
 
 static void config_clk_power_ctrl_reg0(uint8_t node, uint64_t cpuRev, uint8_t procPkg) {
@@ -538,7 +542,7 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev, uint64_t cpuRev, uint8
 			// if it does, will it be enough to check the current state
 			// or should we configure for what we'll set up later ?
 			dword = pci_read_config32(dev, 0x58);
-			u32 scrubbingCache = dword &
+			uint32_t scrubbingCache = dword &
 						( (0x1F << 16) // DCacheScrub
 						| (0x1F << 8) ); // L2Scrub
 			if (scrubbingCache) {
@@ -549,7 +553,7 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev, uint64_t cpuRev, uint8
 		} else { // rev C or later
 			// same doubt as cache scrubbing: ok to check current state ?
 			dword = pci_read_config32(dev, 0xdc);
-			u32 cacheFlushOnHalt = dword & (7 << 16);
+			uint32_t cacheFlushOnHalt = dword & (7 << 16);
 			if (!cacheFlushOnHalt) {
 				c1 = 0x80;
 			}

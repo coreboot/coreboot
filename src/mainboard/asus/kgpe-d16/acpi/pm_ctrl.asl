@@ -218,7 +218,7 @@ Method(\_WAK, 1) {
 
 	/* Set up LEDs */
 	/* Set power LED to steady on */
-	Store(0x3, BLNK)
+	Store(0x0, BLNK)
 
 	/* Configure SuperIO for wake */
 	/* Access SuperIO ACPI device */
@@ -290,11 +290,6 @@ Method(\_PTS, 1) {
 	{
 		/* Set suspend LED to 0.25Hz toggle pulse with 50% duty cycle */
 		Store(0x2, BLNK)
-	}
-	if (LEqual(Arg0, 0x3))	/* Power state S3 requested */
-	{
-		/* Set suspend LED to 0.25Hz toggle pulse with 25% duty cycle */
-		Store(0x1, BLNK)
 	}
 
 	/* Configure SuperIO for sleep */

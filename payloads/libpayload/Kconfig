@@ -200,18 +200,12 @@ config SERIAL_CONSOLE
 	default y
 
 config 8250_SERIAL_CONSOLE
-	bool "8250, 16450, 16550, 16550A compatible serial port driver"
+	bool "8250-compatible serial port driver (including IO and MMIO)"
 	depends on SERIAL_CONSOLE
-	default y if ARCH_X86
-	default n if !ARCH_X86
+	default y
 
 config S5P_SERIAL_CONSOLE
 	bool "Exynos SOC, S5P compatible serial port driver"
-	depends on SERIAL_CONSOLE
-	default n
-
-config 8250_MMIO32_SERIAL_CONSOLE
-	bool "Memory-mapped 8250-compatible serial port driver with 32-bit regs"
 	depends on SERIAL_CONSOLE
 	default n
 

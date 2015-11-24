@@ -515,6 +515,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x3B);
 
+	/* Wait for all APs to be stopped, otherwise ram initialization may hang */
+	if (IS_ENABLED(CONFIG_LOGICAL_CPUS))
+		wait_all_other_cores_stopped(bsp_apicid);
+
 	/* It's the time to set ctrl in sysinfo now; */
 	printk(BIOS_DEBUG, "fill_mem_ctrl() detected %d nodes\n", sysinfo->nodes);
 	if (is_fam15h())

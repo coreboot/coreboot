@@ -184,7 +184,7 @@ static void sc_init(device_t dev)
 {
 	int i;
 	u8 *pr_base = (u8 *)(ILB_BASE_ADDRESS + 0x08);
-	u16 *ir_base = (u16 *)ILB_BASE_ADDRESS + 0x20;
+	u16 *ir_base = (u16 *)(ILB_BASE_ADDRESS + 0x20);
 	u32 *gen_pmcon1 = (u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1);
 	u32 *actl = (u32 *)(ILB_BASE_ADDRESS + ACTL);
 	const struct baytrail_irq_route *ir = &global_baytrail_irq_route;

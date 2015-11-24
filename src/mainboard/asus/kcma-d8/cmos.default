@@ -23,7 +23,6 @@ sata_alpm = Disable
 maximum_p_state_limit = 0xf
 probe_filter = Auto
 l3_cache_partitioning = Disable
-ieee1394_controller = Enable
 gart = Enable
 experimental_memory_speed_boost = Disable
 power_on_after_fail = On

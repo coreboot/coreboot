@@ -132,7 +132,6 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((10)<<2)|(0)), apicid_sr5650, 30);	/* Device 10 (LNKG, APIC pin 30) */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((11)<<2)|(0)), apicid_sr5650, 30);	/* Device 11 (LNKG, APIC pin 30) */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((12)<<2)|(0)), apicid_sr5650, 30);	/* Device 12 (LNKG, APIC pin 30) */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((13)<<2)|(0)), apicid_sr5650, 30);	/* Device 13 (LNKG, APIC pin 30)) */
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
 	if (dev && dev->enabled) {
@@ -164,11 +163,6 @@ static void *smp_write_config_table(void *v)
 		uint8_t bus_pci = dev->link_list->secondary;
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0xc)|(0)), apicid_sr5650, 0);	/* card behind dev12 */
 	}
-	dev = dev_find_slot(0, PCI_DEVFN(0xd, 0));
-	if (dev && dev->enabled) {
-		uint8_t bus_pci = dev->link_list->secondary;
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_pci, (((0)<<0xd)|(0)), apicid_sr5650, 0);	/* card behind dev13 */
-	}
 
 	/* PCI interrupts are level triggered, and are
 	 * associated with a specific bus/device/function tuple.
@@ -195,23 +189,29 @@ static void *smp_write_config_table(void *v)
 	if (dev && dev->enabled) {
 		u8 bus_pci = dev->link_list->secondary;
 
-		/* PCI_SLOT 0. */
-		PCI_INT(bus_pci, 0x1, 0x0, 0x15);
-		PCI_INT(bus_pci, 0x1, 0x1, 0x16);
-		PCI_INT(bus_pci, 0x1, 0x2, 0x17);
-		PCI_INT(bus_pci, 0x1, 0x3, 0x14);
+		/* PCI_SLOT 0 */
+		PCI_INT(bus_pci, 0x1, 0x0, 0x14);
+		PCI_INT(bus_pci, 0x1, 0x1, 0x15);
+		PCI_INT(bus_pci, 0x1, 0x2, 0x16);
+		PCI_INT(bus_pci, 0x1, 0x3, 0x17);
 
-		/* PCI_SLOT 1. */
-		PCI_INT(bus_pci, 0x2, 0x0, 0x14);
-		PCI_INT(bus_pci, 0x2, 0x1, 0x15);
-		PCI_INT(bus_pci, 0x2, 0x2, 0x16);
-		PCI_INT(bus_pci, 0x2, 0x3, 0x17);
+		/* PCI_SLOT 1 */
+		PCI_INT(bus_pci, 0x2, 0x0, 0x15);
+		PCI_INT(bus_pci, 0x2, 0x1, 0x16);
+		PCI_INT(bus_pci, 0x2, 0x2, 0x17);
+		PCI_INT(bus_pci, 0x2, 0x3, 0x14);
 
-		/* PCI_SLOT 2. */
+		/* PCI_SLOT 2 */
 		PCI_INT(bus_pci, 0x3, 0x0, 0x16);
 		PCI_INT(bus_pci, 0x3, 0x1, 0x17);
 		PCI_INT(bus_pci, 0x3, 0x2, 0x14);
 		PCI_INT(bus_pci, 0x3, 0x3, 0x15);
+
+		/* VGA */
+		PCI_INT(bus_pci, 0x5, 0x0, 0x17);
+		PCI_INT(bus_pci, 0x5, 0x1, 0x14);
+		PCI_INT(bus_pci, 0x5, 0x2, 0x15);
+		PCI_INT(bus_pci, 0x5, 0x3, 0x16);
 	}
 
 	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */

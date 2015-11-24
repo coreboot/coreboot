@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Raptor Engineering
  * Copyright (C) 2005 - 2012 Advanced Micro Devices, Inc.
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2004 Nick Barker <Nick.Barker9@btinternet.com>
@@ -116,8 +116,6 @@ DefinitionBlock (
 			Notify (\_SB.PCI0.NICA, 0x02)		/* NOTIFY_DEVICE_WAKE */
 			Notify (\_SB.PCI0.NICB, 0x02)		/* NOTIFY_DEVICE_WAKE */
 			Notify (\_SB.PCI0.PCE4, 0x02)		/* NOTIFY_DEVICE_WAKE */
-			Notify (\_SB.PCI0.PCE5, 0x02)		/* NOTIFY_DEVICE_WAKE */
-			Notify (\_SB.PCI0.PCE3, 0x02)		/* NOTIFY_DEVICE_WAKE */
 		}
 
 	} 	/* End Scope GPE */
@@ -125,13 +123,13 @@ DefinitionBlock (
 	/* Root of the bus hierarchy */
 	Scope (\_SB)
 	{
-		/* Top southbridge PCI device (SR5690 + SP5100) */
+		/* Top southbridge PCI device (SR5670 + SP5100) */
 		Device (PCI0)
 		{
 			/* BUS0 root bus */
 
-			Name (_HID, EisaId ("PNP0A08"))         /* PCI-e root bus (SR5690) */
-			Name (_CID, EisaId ("PNP0A03"))         /* PCI root bus (SP5100) */
+			Name (_HID, EisaId ("PNP0A08"))		/* PCI-e root bus (SR5670) */
+			Name (_CID, EisaId ("PNP0A03"))		/* PCI root bus (SP5100) */
 			Name (_ADR, 0x00180001)
 			Name (_UID, 0x00)
 
@@ -162,7 +160,7 @@ DefinitionBlock (
 			/* PCI Routing Tables */
 			Name (PR00, Package () {
 				/* PIC */
-				/* Top southbridge device (SR5690) */
+				/* Top southbridge device (SR5670) */
 				/* HT Link */
 				Package (0x04) { 0x0000FFFF, 0x00, LNKA, 0x00 },
 
@@ -177,12 +175,6 @@ DefinitionBlock (
 
 				/* PCI-E Slot 4 (Bridge) */
 				Package (0x04) { 0x000BFFFF, 0x00, LNKG, 0x00 },
-
-				/* PCI-E Slot 5 (Bridge) */
-				Package (0x04) { 0x000CFFFF, 0x00, LNKG, 0x00 },
-
-				/* PCI-E Slot 3 (Bridge) */
-				Package (0x04) { 0x000DFFFF, 0x00, LNKG, 0x00 },
 
 				/* Bottom southbridge device (SP5100) */
 				/* SATA 0 */
@@ -200,7 +192,7 @@ DefinitionBlock (
 				Package (0x04) { 0x0013FFFF, 0x02, LNKA, 0x00 },
 				Package (0x04) { 0x0013FFFF, 0x03, LNKB, 0x00 },
 
-				/* SMBUS / IDE / LPC / VGA / FireWire / PCI Slot 0 */
+				/* SMBUS / IDE / LPC / VGA / PCI Slots 0 - 2 */
 				Package (0x04) { 0x0014FFFF, 0x00, LNKA, 0x00 },
 				Package (0x04) { 0x0014FFFF, 0x01, LNKB, 0x00 },
 				Package (0x04) { 0x0014FFFF, 0x02, LNKC, 0x00 },
@@ -209,7 +201,7 @@ DefinitionBlock (
 
 			Name (AR00, Package () {
 				/* APIC */
-				/* Top southbridge device (SR5690) */
+				/* Top southbridge device (SR5670) */
 				/* HT Link */
 				Package (0x04) { 0x0000FFFF, 0x00, 0x00, 55 },
 
@@ -224,12 +216,6 @@ DefinitionBlock (
 
 				/* PCI-E Slot 4 (Bridge) */
 				Package (0x04) { 0x000BFFFF, 0x00, 0x00, 54 },
-
-				/* PCI-E Slot 5 (Bridge) */
-				Package (0x04) { 0x000CFFFF, 0x00, 0x00, 54 },
-
-				/* PCI-E Slot 3 (Bridge) */
-				Package (0x04) { 0x000DFFFF, 0x00, 0x00, 54 },
 
 				/* Bottom southbridge device (SP5100) */
 				/* SATA 0 */
@@ -247,7 +233,7 @@ DefinitionBlock (
 				Package (0x04) { 0x0013FFFF, 0x02, 0x00, 16 },
 				Package (0x04) { 0x0013FFFF, 0x03, 0x00, 17 },
 
-				/* SMBUS / IDE / LPC / VGA / FireWire / PCI Slot 0 */
+				/* SMBUS / IDE / LPC / VGA / PCI Slots 0 - 2 */
 				Package (0x04) { 0x0014FFFF, 0x00, 0x00, 16 },
 				Package (0x04) { 0x0014FFFF, 0x01, 0x00, 17 },
 				Package (0x04) { 0x0014FFFF, 0x02, 0x00, 18 },
@@ -256,22 +242,36 @@ DefinitionBlock (
 
 			Name (PR01, Package () {
 				/* PIC */
-				Package (0x04) { 0x1FFFF, 0x00, LNKF, 0x00 },
-				Package (0x04) { 0x2FFFF, 0x00, LNKE, 0x00 },
+				Package (0x04) { 0x1FFFF, 0x00, LNKE, 0x00 },
+				Package (0x04) { 0x1FFFF, 0x01, LNKF, 0x00 },
+				Package (0x04) { 0x1FFFF, 0x02, LNKG, 0x00 },
+				Package (0x04) { 0x1FFFF, 0x03, LNKH, 0x00 },
+				Package (0x04) { 0x2FFFF, 0x00, LNKF, 0x00 },
+				Package (0x04) { 0x2FFFF, 0x01, LNKG, 0x00 },
+				Package (0x04) { 0x2FFFF, 0x02, LNKH, 0x00 },
+				Package (0x04) { 0x2FFFF, 0x03, LNKE, 0x00 },
 				Package (0x04) { 0x3FFFF, 0x00, LNKG, 0x00 },
 				Package (0x04) { 0x3FFFF, 0x01, LNKH, 0x00 },
 				Package (0x04) { 0x3FFFF, 0x02, LNKE, 0x00 },
 				Package (0x04) { 0x3FFFF, 0x03, LNKF, 0x00 },
+				Package (0x04) { 0x5FFFF, 0x00, LNKH, 0x00 },
 			})
 
 			Name (AR01, Package () {
 				/* APIC */
-				Package (0x04) { 0x1FFFF, 0x00, 0x00, 21 },
-				Package (0x04) { 0x2FFFF, 0x00, 0x00, 20 },
+				Package (0x04) { 0x1FFFF, 0x00, 0x00, 20 },
+				Package (0x04) { 0x1FFFF, 0x01, 0x00, 21 },
+				Package (0x04) { 0x1FFFF, 0x02, 0x00, 22 },
+				Package (0x04) { 0x1FFFF, 0x03, 0x00, 23 },
+				Package (0x04) { 0x2FFFF, 0x00, 0x00, 21 },
+				Package (0x04) { 0x2FFFF, 0x01, 0x00, 22 },
+				Package (0x04) { 0x2FFFF, 0x02, 0x00, 23 },
+				Package (0x04) { 0x2FFFF, 0x03, 0x00, 20 },
 				Package (0x04) { 0x3FFFF, 0x00, 0x00, 22 },
 				Package (0x04) { 0x3FFFF, 0x01, 0x00, 23 },
 				Package (0x04) { 0x3FFFF, 0x02, 0x00, 20 },
 				Package (0x04) { 0x3FFFF, 0x03, 0x00, 21 },
+				Package (0x04) { 0x5FFFF, 0x00, 0x00, 23 },
 			})
 
 			Name (PR02, Package () {
@@ -726,46 +726,6 @@ DefinitionBlock (
 						Return (AR06)
 					} Else {
 						Return (PR06)
-					}
-				}
-				Device (SLT1)
-				{
-					Name (_ADR, 0xFFFF)			// _ADR: Address
-					Name(_PRW, Package () {0x0B, 0x04})	// Wake from S1-S4
-				}
-			}
-
-			/* 6:00.0 PCIe x16 */
-			Device (PCE5)
-			{
-				Name (_ADR, 0x000C0000)			// _ADR: Address
-				Name(_PRW, Package () {0x11, 0x04})	// Wake from S1-S4
-				Method (_PRT, 0, NotSerialized)		// _PRT: PCI Routing Table
-				{
-					If (PICM) {
-						Return (AR07)
-					} Else {
-						Return (PR07)
-					}
-				}
-				Device (SLT1)
-				{
-					Name (_ADR, 0xFFFF)			// _ADR: Address
-					Name(_PRW, Package () {0x0B, 0x04})	// Wake from S1-S4
-				}
-			}
-
-			/* 7:00.0 PCIe x16 */
-			Device (PCE3)
-			{
-				Name (_ADR, 0x000D0000)			// _ADR: Address
-				Name(_PRW, Package () {0x11, 0x04})	// Wake from S1-S4
-				Method (_PRT, 0, NotSerialized)		// _PRT: PCI Routing Table
-				{
-					If (PICM) {
-						Return (AR08)
-					} Else {
-						Return (PR08)
 					}
 				}
 				Device (SLT1)

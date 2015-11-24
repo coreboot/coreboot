@@ -7,11 +7,10 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 	device domain 0 on			# PCI domain
 		subsystemid 0x1043 0x8163 inherit
 		chip northbridge/amd/amdfam10		# Northbridge / RAM controller
-			register "maximum_memory_capacity" = "0x4000000000"	# 256GB
+			register "maximum_memory_capacity" = "0x2000000000"	# 128GB
 			device pci 18.0 on end		# Link 0 == LDT 0
 			device pci 18.0 on end		# Link 1 == LDT 1
-			device pci 18.0 on end		# Link 2 == LDT 2
-			device pci 18.0 on		# Link 3 == LDT 3 [SB on link 3]
+			device pci 18.0 on		# Link 2 == LDT 2 [SB on link 2]
 				chip southbridge/amd/sr5650		# Primary southbridge
 					device pci 0.0 on end			# HT Root Complex 0x9600
 					device pci 0.1 on end			# CLKCONFIG
@@ -36,16 +35,10 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 					device pci b.0 on			# Bridge (GPP2 Port0)
 						# Slot				# PCI E 4
 					end
-					device pci c.0 on			# Bridge (GPP2 Port1)
-						# Slot				# PCI E 5
-					end
-					device pci d.0 on			# Bridge (GPP3b Port0)
-						# Slot				# PCI E 3
-					end
 					register "gpp1_configuration" = "0"	# Configuration 16:0 default
 					register "gpp2_configuration" = "1"	# Configuration 8:8
 					register "gpp3a_configuration" = "2"	# Configuration 4:1:1:0:0:0
-					register "port_enable" = "0x3f1c"	# Enable all ports except 0, 1, 5, 6, and 7
+					register "port_enable" = "0x0f1c"	# Enable all ports except 0, 1, 5, 6, and 7
 					register "pcie_settling_time" = "1000000"	# Allow PIKE to be detected / configured
 				end
 				chip southbridge/amd/sb700		# Secondary southbridge
@@ -150,7 +143,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 							register "vsen5_low_limit_mv" = "1150"		# VSEN5 (Node 0 HT link voltage) low limit to 1.15V
 							register "vsen6_high_limit_mv" = "1250"		# VSEN6 (Node 1 HT link voltage) high limit to 1.25V
 							register "vsen6_low_limit_mv" = "1150"		# VSEN6 (Node 1 HT link voltage) low limit to 1.15V
-							register "vsen7_high_limit_mv" = "1250"		# VSEN7 (Northbridge core voltage) high limit to 1.25V
+							register "vsen7_high_limit_mv" = "1150"		# VSEN7 (Northbridge core voltage) high limit to 1.15V
 							register "vsen7_low_limit_mv" = "1050"		# VSEN7 (Northbridge core voltage) low limit to 1.05V
 							register "vsen8_high_limit_mv" = "1900"		# VSEN8 (+1.8V) high limit to 1.9V
 							register "vsen8_low_limit_mv" = "1700"		# VSEN8 (+1.8V) low limit to 1.7V
@@ -216,11 +209,16 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 						end
 					end
 					device pci 14.4 on			# Bridge
-						device pci 1.0 on end		# VGA
-						device pci 2.0 on end		# FireWire
-						device pci 3.0 on		# Slot
+						device pci 1.0 on		# Slot
 							# Slot			# PCI 0
 						end
+						device pci 2.0 on		# Slot
+							# Slot			# PCI 1
+						end
+						device pci 3.0 on		# Slot
+							# Slot			# PCI 2
+						end
+						device pci 5.0 on end		# VGA
 					end
 					device pci 14.5 on end			# USB OHCI2 0x4399
 				end
@@ -230,24 +228,12 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 			device pci 18.3 on end
 			device pci 18.4 on end
 			device pci 18.5 on end
-			device pci 19.0 on end		# Socket 0 node 1
+			device pci 19.0 on end		# Socket 1 node 0
 			device pci 19.1 on end
 			device pci 19.2 on end
 			device pci 19.3 on end
 			device pci 19.4 on end
 			device pci 19.5 on end
-			device pci 1a.0 on end		# Socket 1 node 0
-			device pci 1a.1 on end
-			device pci 1a.2 on end
-			device pci 1a.3 on end
-			device pci 1a.4 on end
-			device pci 1a.5 on end
-			device pci 1b.0 on end		# Socket 1 node 1
-			device pci 1b.1 on end
-			device pci 1b.2 on end
-			device pci 1b.3 on end
-			device pci 1b.4 on end
-			device pci 1b.5 on end
 		end
 	end
 end

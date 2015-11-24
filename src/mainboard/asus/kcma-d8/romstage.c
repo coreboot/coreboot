@@ -96,28 +96,26 @@ static void switch_spd_mux(uint8_t channel)
 static const uint8_t spd_addr_fam15[] = {
 	// Socket 0 Node 0 ("Node 0")
 	RC00, DIMM0, DIMM1, 0, 0, DIMM2, DIMM3, 0, 0,
-	// Socket 0 Node 1 ("Node 1")
-	RC00, DIMM4, DIMM5, 0, 0, DIMM6, DIMM7, 0, 0,
-	// Socket 1 Node 0 ("Node 2")
+	// Socket 1 Node 0 ("Node 1")
 	RC01, DIMM0, DIMM1, 0, 0, DIMM2, DIMM3, 0, 0,
-	// Socket 1 Node 1 ("Node 3")
-	RC01, DIMM4, DIMM5, 0, 0, DIMM6, DIMM7, 0, 0,
 };
 
 static const uint8_t spd_addr_fam10[] = {
 	// Socket 0 Node 0 ("Node 0")
 	RC00, DIMM0, DIMM1, 0, 0, DIMM2, DIMM3, 0, 0,
-	// Socket 0 Node 1 ("Node 1")
-	RC00, DIMM4, DIMM5, 0, 0, DIMM6, DIMM7, 0, 0,
-	// Socket 1 Node 1 ("Node 2")
-	RC01, DIMM4, DIMM5, 0, 0, DIMM6, DIMM7, 0, 0,
-	// Socket 1 Node 0 ("Node 3")
+	// Socket 1 Node 0 ("Node 1")
 	RC01, DIMM0, DIMM1, 0, 0, DIMM2, DIMM3, 0, 0,
 };
 
 static void activate_spd_rom(const struct mem_controller *ctrl) {
-	/* Nothing needs to be done as there is no SPD mux on this board */
 	printk(BIOS_DEBUG, "activate_spd_rom() for node %02x\n", ctrl->node_id);
+	if (ctrl->node_id == 0) {
+		printk(BIOS_DEBUG, "enable_spd_node0()\n");
+		switch_spd_mux(0x2);
+	} else if (ctrl->node_id == 1) {
+		printk(BIOS_DEBUG, "enable_spd_node1()\n");
+		switch_spd_mux(0x3);
+	}
 }
 
 /* Voltages are specified by index
@@ -189,13 +187,12 @@ void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
 	}
 
 	for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
-		socket = node / 2;
+		socket = node;
 		struct DCTStatStruc *pDCTstat;
 		pDCTstat = pDCTstatA + node;
 
 		/* reset socket_allowed_voltages before processing each socket */
-		if (!(node % 2))
-			socket_allowed_voltages = allowed_voltages;
+		socket_allowed_voltages = allowed_voltages;
 
 		if (pDCTstat->NodePresent) {
 			for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
@@ -203,10 +200,7 @@ void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
 					socket_allowed_voltages &= pDCTstat->DimmSupportedVoltages[dimm];
 				}
 			}
-		}
 
-		/* set voltage per socket after processing last contained node */
-		if (pDCTstat->NodePresent && (node % 2)) {
 			/* Set voltages */
 			if (socket_allowed_voltages & 0x8) {
 				set_voltage = 0x8;
@@ -223,16 +217,8 @@ void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
 			}
 
 			/* Save final DIMM voltages for MCT and SMBIOS use */
-			if (pDCTstat->NodePresent) {
-				for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
-					pDCTstat->DimmConfiguredVoltage[dimm] = set_voltage;
-				}
-			}
-			pDCTstat = pDCTstatA + (node - 1);
-			if (pDCTstat->NodePresent) {
-				for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
-					pDCTstat->DimmConfiguredVoltage[dimm] = set_voltage;
-				}
+			for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
+				pDCTstat->DimmConfiguredVoltage[dimm] = set_voltage;
 			}
 		}
 	}
@@ -243,23 +229,10 @@ void DIMMSetVoltages(struct MCTStatStruc *pMCTstat,
 
 static void set_peripheral_control_lines(void) {
 	uint8_t byte;
-	uint8_t nvram;
-	uint8_t enable_ieee1394;
 
-	enable_ieee1394 = 1;
-
-	if (get_option(&nvram, "ieee1394_controller") == CB_SUCCESS)
-		enable_ieee1394 = nvram & 0x1;
-
-	if (enable_ieee1394) {
-		/* Enable PCICLK5 (onboard FireWire device) */
-		outb(0x41, 0xcd6);
-		outb(0x02, 0xcd7);
-	} else {
-		/* Disable PCICLK5 (onboard FireWire device) */
-		outb(0x41, 0xcd6);
-		outb(0x00, 0xcd7);
-	}
+	/* Enable PCICLK5 */
+	outb(0x41, 0xcd6);
+	outb(0x02, 0xcd7);
 
 	/* Enable the RTC AltCentury register */
 	outb(0x41, 0xcd6);
@@ -584,8 +557,7 @@ BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 {
 	/* Force BUID to 0 */
 	static const u8 swaplist[] = {0, 0, 0xFF, 0, 0xFF};
-	if ((is_fam15h() && (node == 0) && (link == 1))			/* Family 15h BSP SB link */
-		|| (!is_fam15h() && (node == 0) && (link == 3))) {	/* Family 10h BSP SB link */
+	if ((node == 0) && (link == 2)) {	/* BSP SB link */
 		*List = swaplist;
 		return 1;
 	}

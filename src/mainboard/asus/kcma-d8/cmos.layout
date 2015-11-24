@@ -46,7 +46,6 @@ entries
 473          2       e       13       dimm_spd_checksum
 475          1       e       14       probe_filter
 476          1       e       1        l3_cache_partitioning
-477          1       e       1        ieee1394_controller
 478          1       e       1        iommu
 479          1       e       1        cpu_core_boost
 480          1       e       1        experimental_memory_speed_boost

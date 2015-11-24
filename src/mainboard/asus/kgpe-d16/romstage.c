@@ -35,8 +35,8 @@
 #include <delay.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
-#include <superio/nuvoton/common/nuvoton.h>
-#include <superio/nuvoton/nct5572d/nct5572d.h>
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83667hg-a/w83667hg-a.h>
 #include <cpu/x86/bist.h>
 #include <smp/spinlock.h>
 // #include "northbridge/amd/amdk8/incoherent_ht.c"
@@ -46,7 +46,7 @@
 #include "northbridge/amd/amdfam10/debug.c"
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 
-#define SERIAL_DEV PNP_DEV(0x2e, NCT5572D_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, W83667HG_A_SP1)
 
 static void activate_spd_rom(const struct mem_controller *ctrl);
 
@@ -393,7 +393,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb7xx_51xx_pci_port80();
 
 		/* Initialize early serial */
-		nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+		winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 
 		/* Disable LPC legacy DMA support to prevent lockup */

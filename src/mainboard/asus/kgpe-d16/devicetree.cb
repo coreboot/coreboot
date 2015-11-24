@@ -177,34 +177,42 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 					device pci 14.1 on end			# IDE 0x439c
 					device pci 14.2 on end			# HDA 0x4383 (ASUS MIO add-on card)
 					device pci 14.3 on			# LPC 0x439d (SMBUS primary controller)
-						chip superio/nuvoton/nct5572d	# Super I/O
-							device pnp 2e.0 off end	# FDC; Not available on the KGPE-D16
-							device pnp 2e.1 off end	# LPT1; Not available on the KGPE-D16
-							device pnp 2e.2 on #  Com1
+						chip superio/winbond/w83667hg-a	# Super I/O
+							device pnp 2e.0 off end		# FDC; Not available on the KGPE-D16
+							device pnp 2e.1 off end		# LPT1; Not available on the KGPE-D16
+							device pnp 2e.2 on 		# COM1
 								io 0x60 = 0x3f8
 								irq 0x70 = 4
 							end
-							device pnp 2e.3 off end	# IR: Not available on the KGPE-D16
-							device pnp 2e.5 on	# PS/2 keyboard & mouse
+							device pnp 2e.3 on		# COM2
+								io 0x60 = 0x2f8
+								irq 0x70 = 3
+							end
+							device pnp 2e.5 on		# PS/2 keyboard & mouse
 								io 0x60 = 0x60
 								io 0x62 = 0x64
 								irq 0x70 = 1
 								irq 0x72 = 12
 							end
-							device pnp 2e.6 off end	# CIR: Not available on the KGPE-D16
-							device pnp 2e.7 off end	# GIPO689
-							device pnp 2e.8 off end	# WDT
-							device pnp 2e.9 off end	# GPIO235
-							device pnp 2e.a on end	# ACPI
-							device pnp 2e.b on	# HW Monitor
+							device pnp 2e.106 off end	# SPI: Not available on the KGPE-D16
+							device pnp 2e.107 off end	# GIPO6
+							device pnp 2e.207 off end	# GIPO7
+							device pnp 2e.307 off end	# GIPO8
+							device pnp 2e.407 off end	# GIPO9
+							device pnp 2e.8 off end		# WDT
+							device pnp 2e.108 off end	# GPIO 1
+							device pnp 2e.9 off end		# GPIO2
+							device pnp 2e.109 off end	# GPIO3
+							device pnp 2e.209 off end	# GPIO4
+							device pnp 2e.309 off end	# GPIO5
+							device pnp 2e.a on end		# ACPI
+							device pnp 2e.b on		# HW Monitor
 								io 0x60 = 0x290
-								io 0x62 = 0x0000 #  SB-TSI currently not implemented
 								irq 0x70 = 5
 							end
-							device pnp 2e.c off end	# PECI
-							device pnp 2e.d off end	# SUSLED
-							device pnp 2e.e off end	# CIRWKUP
-							device pnp 2e.f off end	# GPIO_PP_OD
+							device pnp 2e.c off end		# PECI
+							device pnp 2e.d off end		# VID_BUSSEL
+							device pnp 2e.f off end		# GPIO_PP_OD
 						end
 					end
 					device pci 14.4 on			# Bridge

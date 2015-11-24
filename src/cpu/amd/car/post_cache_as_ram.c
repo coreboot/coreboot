@@ -79,18 +79,18 @@ static void prepare_ramstage_region(void *resume_backup_memory)
 	print_car_debug(" Done\n");
 }
 
-/* Disable Erratum 343 Workaround, see RevGuide for Fam10h, Pub#41322 Rev 3.33 */
+/* Disable Erratum 343 Workaround, see RevGuide for Fam10h, Pub#41322 Rev 3.33
+ * and RevGuide for Fam12h, Pub#44739 Rev 3.10
+ */
 
 static void vErrata343(void)
 {
-#ifdef BU_CFG2_MSR
 	msr_t msr;
 	unsigned int uiMask = 0xFFFFFFF7;
 
 	msr = rdmsr(BU_CFG2_MSR);
 	msr.hi &= uiMask;	// IcDisSpecTlbWr (bit 35) = 0
 	wrmsr(BU_CFG2_MSR, msr);
-#endif
 }
 
 void post_cache_as_ram(void)
@@ -121,8 +121,8 @@ void post_cache_as_ram(void)
 	prepare_romstage_ramstack(resume_backup_memory);
 
 	/* from here don't store more data in CAR */
-	if (family < 0x6f) {
-		/* Family 10h or earlier */
+	if (family >= 0x1f && family <= 0x3f) {
+		/* Family 10h and 12h, 11h until shown otherwise */
 		vErrata343();
 	}
 

@@ -180,68 +180,243 @@ static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t highest_rank_count, uint8
 		}
 
 		if (is_fam15h()) {
-			if (IS_ENABLED(CONFIG_DIMM_REGISTERED) && registered) {
-				/* Fam15h BKDG Rev. 3.14 Table 27 */
-				if (voltage & 0x4) {
-					/* 1.25V */
-					if (count > 1) {
-						if (highest_rank_count > 1) {
-							/* Limit to DDR3-1066 */
-							if (freq > 533) {
-								freq = 533;
-								printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1066\n", __func__, voltage_index_to_mv(voltage));
+			if (CONFIG_CPU_SOCKET_TYPE == 0x15) {
+				/* Socket G34 */
+				if (IS_ENABLED(CONFIG_DIMM_REGISTERED) && registered) {
+					/* Fam15h BKDG Rev. 3.14 Table 27 */
+					if (voltage & 0x4) {
+						/* 1.25V */
+						if (count > 1) {
+							if (highest_rank_count > 1) {
+								/* Limit to DDR3-1066 */
+								if (freq > 533) {
+									freq = 533;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1066\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else {
+								/* Limit to DDR3-1333 */
+								if (freq > 666) {
+									freq = 666;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+								}
 							}
 						} else {
 							/* Limit to DDR3-1333 */
 							if (freq > 666) {
 								freq = 666;
-								printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+								printk(BIOS_DEBUG, "%s: 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
 							}
 						}
-					} else {
-						/* Limit to DDR3-1333 */
-						if (freq > 666) {
-							freq = 666;
-							printk(BIOS_DEBUG, "%s: 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+					} else if (voltage & 0x2) {
+						/* 1.35V */
+						if (count > 1) {
+							/* Limit to DDR3-1333 */
+							if (freq > 666) {
+								freq = 666;
+								printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+							}
+						} else {
+							/* Limit to DDR3-1600 */
+							if (freq > 800) {
+								freq = 800;
+								printk(BIOS_DEBUG, "%s: 1 registered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+							}
+						}
+					} else if (voltage & 0x1) {
+						/* 1.50V */
+						if (count > 1) {
+							/* Limit to DDR3-1600 */
+							if (freq > 800) {
+								freq = 800;
+								printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+							}
+						} else {
+							/* Limit to DDR3-1866 */
+							if (freq > 933) {
+								freq = 933;
+								printk(BIOS_DEBUG, "%s: 1 registered DIMM on %dmV channel; limiting to DDR3-1866\n", __func__, voltage_index_to_mv(voltage));
+							}
 						}
 					}
-				} else if (voltage & 0x2) {
-					/* 1.35V */
-					if (count > 1) {
-						/* Limit to DDR3-1333 */
-						if (freq > 666) {
-							freq = 666;
-							printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+				} else {
+					/* Fam15h BKDG Rev. 3.14 Table 26 */
+					if (voltage & 0x4) {
+						/* 1.25V */
+						if (count > 1) {
+							if (highest_rank_count > 1) {
+								/* Limit to DDR3-1066 */
+								if (freq > 533) {
+									freq = 533;
+									printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1066\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else {
+								/* Limit to DDR3-1333 */
+								if (freq > 666) {
+									freq = 666;
+									printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+								}
+							}
+						} else {
+							/* Limit to DDR3-1333 */
+							if (freq > 666) {
+								freq = 666;
+								printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+							}
 						}
-					} else {
-						/* Limit to DDR3-1600 */
-						if (freq > 800) {
-							freq = 800;
-							printk(BIOS_DEBUG, "%s: 1 registered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+					} else if (voltage & 0x2) {
+						/* 1.35V */
+						if (MaxDimmsInstallable > 1) {
+							/* Limit to DDR3-1333 */
+							if (freq > 666) {
+								freq = 666;
+								printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+							}
+						} else {
+							/* Limit to DDR3-1600 */
+							if (freq > 800) {
+								freq = 800;
+								printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+							}
 						}
-					}
-				} else if (voltage & 0x1) {
-					/* 1.50V */
-					if (count > 1) {
-						/* Limit to DDR3-1600 */
-						if (freq > 800) {
-							freq = 800;
-							printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
-						}
-					} else {
-						/* Limit to DDR3-1866 */
-						if (freq > 933) {
-							freq = 933;
-							printk(BIOS_DEBUG, "%s: 1 registered DIMM on %dmV channel; limiting to DDR3-1866\n", __func__, voltage_index_to_mv(voltage));
+					} else if (voltage & 0x1) {
+						if (MaxDimmsInstallable == 1) {
+							if (count > 1) {
+								/* Limit to DDR3-1600 */
+								if (freq > 800) {
+									freq = 800;
+									printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else {
+								/* Limit to DDR3-1866 */
+								if (freq > 933) {
+									freq = 933;
+									printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1866\n", __func__, voltage_index_to_mv(voltage));
+								}
+							}
+						} else {
+							if (count > 1) {
+								if (highest_rank_count > 1) {
+									/* Limit to DDR3-1333 */
+									if (freq > 666) {
+										freq = 666;
+										printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+									}
+								} else {
+									/* Limit to DDR3-1600 */
+									if (freq > 800) {
+										freq = 800;
+										printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+									}
+								}
+							} else {
+								/* Limit to DDR3-1600 */
+								if (freq > 800) {
+									freq = 800;
+									printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+								}
+							}
 						}
 					}
 				}
-			} else {
-				/* Fam15h BKDG Rev. 3.14 Table 26 */
-				if (voltage & 0x4) {
-					/* 1.25V */
-					if (count > 1) {
-						if (highest_rank_count > 1) {
+			} else if (CONFIG_CPU_SOCKET_TYPE == 0x14) {
+				/* Socket C32 */
+				if (IS_ENABLED(CONFIG_DIMM_REGISTERED) && registered) {
+					/* Fam15h BKDG Rev. 3.14 Table 30 */
+					if (voltage & 0x4) {
+						/* 1.25V */
+						if (count > 1) {
+							if (highest_rank_count > 2) {
+								/* Limit to DDR3-800 */
+								if (freq > 400) {
+									freq = 400;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-800\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else {
+								/* Limit to DDR3-1333 */
+								if (freq > 666) {
+									freq = 666;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+								}
+							}
+						} else {
+							/* Limit to DDR3-1333 */
+							if (freq > 666) {
+								freq = 666;
+								printk(BIOS_DEBUG, "%s: 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+							}
+						}
+					} else if (voltage & 0x2) {
+						/* 1.35V */
+						if (count > 1) {
+							if (highest_rank_count > 2) {
+								/* Limit to DDR3-800 */
+								if (freq > 400) {
+									freq = 400;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-800\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else if (highest_rank_count > 1) {
+								/* Limit to DDR3-1066 */
+								if (freq > 533) {
+									freq = 533;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1066\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else {
+								/* Limit to DDR3-1333 */
+								if (freq > 666) {
+									freq = 666;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+								}
+							}
+						} else {
+							/* Limit to DDR3-1600 */
+							if (freq > 800) {
+								freq = 800;
+								printk(BIOS_DEBUG, "%s: 1 registered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+							}
+						}
+					} else if (voltage & 0x1) {
+						/* 1.50V */
+						if (count > 1) {
+							if (highest_rank_count > 2) {
+								/* Limit to DDR3-800 */
+								if (freq > 400) {
+									freq = 400;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-800\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else if (highest_rank_count > 1) {
+								/* Limit to DDR3-1066 */
+								if (freq > 533) {
+									freq = 533;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1066\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else {
+								/* Limit to DDR3-1333 */
+								if (freq > 666) {
+									freq = 666;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+								}
+							}
+						} else {
+							if (highest_rank_count > 2) {
+								/* Limit to DDR3-1333 */
+								if (freq > 666) {
+									freq = 666;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else {
+								/* Limit to DDR3-1600 */
+								if (freq > 800) {
+									freq = 800;
+									printk(BIOS_DEBUG, "%s: More than 1 registered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+								}
+							}
+						}
+					}
+				} else {
+					/* Fam15h BKDG Rev. 3.14 Table 29 */
+					if (voltage & 0x4) {
+						/* 1.25V */
+						if (count > 1) {
 							/* Limit to DDR3-1066 */
 							if (freq > 533) {
 								freq = 533;
@@ -251,70 +426,67 @@ static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t highest_rank_count, uint8
 							/* Limit to DDR3-1333 */
 							if (freq > 666) {
 								freq = 666;
-								printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+								printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
 							}
 						}
-					} else {
-						/* Limit to DDR3-1333 */
-						if (freq > 666) {
-							freq = 666;
-							printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
-						}
-					}
-				} else if (voltage & 0x2) {
-					/* 1.35V */
-					if (MaxDimmsInstallable > 1) {
-						/* Limit to DDR3-1333 */
-						if (freq > 666) {
-							freq = 666;
-							printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
-						}
-					} else {
-						/* Limit to DDR3-1600 */
-						if (freq > 800) {
-							freq = 800;
-							printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
-						}
-					}
-				} else if (voltage & 0x1) {
-					if (MaxDimmsInstallable == 1) {
-						if (count > 1) {
-							/* Limit to DDR3-1600 */
-							if (freq > 800) {
-								freq = 800;
-								printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
-							}
-						} else {
-							/* Limit to DDR3-1866 */
-							if (freq > 933) {
-								freq = 933;
-								printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1866\n", __func__, voltage_index_to_mv(voltage));
-							}
-						}
-					} else {
+					} else if (voltage & 0x2) {
 						if (count > 1) {
 							if (highest_rank_count > 1) {
+								/* Limit to DDR3-1066 */
+								if (freq > 533) {
+									freq = 533;
+									printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1066\n", __func__, voltage_index_to_mv(voltage));
+								}
+							} else {
 								/* Limit to DDR3-1333 */
 								if (freq > 666) {
 									freq = 666;
 									printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
 								}
-							} else {
-								/* Limit to DDR3-1600 */
-								if (freq > 800) {
-									freq = 800;
-									printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
-								}
 							}
 						} else {
+							/* Limit to DDR3-1333 */
+							if (freq > 666) {
+								freq = 666;
+								printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+							}
+						}
+					} else if (voltage & 0x1) {
+						if (MaxDimmsInstallable == 1) {
 							/* Limit to DDR3-1600 */
 							if (freq > 800) {
 								freq = 800;
 								printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
 							}
+						} else {
+							if (count > 1) {
+								if (highest_rank_count > 1) {
+									/* Limit to DDR3-1066 */
+									if (freq > 533) {
+										freq = 533;
+										printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1066\n", __func__, voltage_index_to_mv(voltage));
+									}
+								} else {
+									/* Limit to DDR3-1333 */
+									if (freq > 666) {
+										freq = 666;
+										printk(BIOS_DEBUG, "%s: More than 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1333\n", __func__, voltage_index_to_mv(voltage));
+									}
+								}
+							} else {
+								/* Limit to DDR3-1600 */
+								if (freq > 800) {
+									freq = 800;
+									printk(BIOS_DEBUG, "%s: 1 unbuffered DIMM on %dmV channel; limiting to DDR3-1600\n", __func__, voltage_index_to_mv(voltage));
+								}
+							}
 						}
 					}
 				}
+			} else {
+				/* TODO
+				 * Other socket support unimplemented
+				 */
 			}
 		} else {
 			if (IS_ENABLED(CONFIG_DIMM_REGISTERED) && registered) {

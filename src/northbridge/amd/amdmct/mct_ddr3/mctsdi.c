@@ -967,7 +967,7 @@ static u32 mct_MR0(struct MCTStatStruc *pMCTstat,
 
 		/* Load data into MRS word */
 		ret |= (ppd & 0x1) << 12;
-		ret |= (wr_ap & 0x3) << 9;
+		ret |= (wr_ap & 0x7) << 9;
 		ret |= (dll_reset & 0x1) << 8;
 		ret |= (test_mode & 0x1) << 7;
 		ret |= ((cas_latency & 0xe) >> 1) << 4;

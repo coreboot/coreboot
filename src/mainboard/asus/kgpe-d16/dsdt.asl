@@ -562,7 +562,7 @@ DefinitionBlock (
 					})
 				}
 
-				#include "../../../drivers/pc80/ps2_controller.asl"
+				#include "../../../superio/winbond/w83667hg-a/ps2_controller.asl"
 
 				/* UART 1 */
 				Device (URT1)

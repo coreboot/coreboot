@@ -66,6 +66,7 @@ static void sm_init(device_t dev)
 	u32 dword;
 	void *ioapic_base;
 	uint32_t power_state;
+	uint32_t enable_legacy_usb;
 	u32 nmi_option;
 
 	printk(BIOS_INFO, "sm_init().\n");
@@ -75,10 +76,23 @@ static void sm_init(device_t dev)
 	ioapic_base = (void *)(pci_read_config32(dev, 0x74) & (0xffffffe0));
 	setup_ioapic(ioapic_base, 0); /* Don't rename IOAPIC ID. */
 
+	enable_legacy_usb = 1;
+	get_option(&enable_legacy_usb, "enable_legacy_usb");
+
 	/* 2.10 Interrupt Routing/Filtering */
-	dword = pci_read_config8(dev, 0x62);
-	dword |= 3;
-	pci_write_config8(dev, 0x62, dword);
+	byte = pci_read_config8(dev, 0x62);
+	if (enable_legacy_usb)
+		byte |= 0x3;
+	else
+		byte &= ~0x3;
+	pci_write_config8(dev, 0x62, byte);
+
+	byte = pci_read_config8(dev, 0x67);
+	if (enable_legacy_usb)
+		byte |= 0x1 << 7;
+	else
+		byte &= ~(0x1 << 7);
+	pci_write_config8(dev, 0x67, byte);
 
 	/* Delay back to back interrupts to the CPU. */
 	dword = pci_read_config16(dev, 0x64);

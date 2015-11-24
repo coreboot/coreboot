@@ -15,6 +15,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 				chip southbridge/amd/sr5650		# Primary southbridge
 					device pci 0.0 on end			# HT Root Complex 0x9600
 					device pci 0.1 on end			# CLKCONFIG
+					device pci 0.2 on end			# IOMMU
 					device pci 2.0 on			# PCIE P2P bridge 0x9603 (GPP1 Port0)
 						# Slot				# PCI E 1 / PCI E 2
 					end

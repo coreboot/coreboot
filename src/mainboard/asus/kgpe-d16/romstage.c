@@ -458,6 +458,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		die("After soft_reset_x - shouldn't see this message!!!\n");
 	}
 
+	sr5650_htinit_dect_and_enable_isochronous_link();
+
 	/* Set default DDR memory voltage
 	 * This will be overridden later during RAM initialization
 	 */

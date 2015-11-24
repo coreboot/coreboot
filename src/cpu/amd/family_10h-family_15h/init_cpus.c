@@ -127,12 +127,16 @@ uint32_t get_boot_apic_id(uint8_t node, uint32_t core) {
 		}
 	} else {
 		if (fam15h) {
-			ap_apicid = (node * (siblings + 1)) + core;
+			ap_apicid = 0;
+			ap_apicid |= (node & 0x7) << 4;	/* Node ID */
+			ap_apicid |= core & 0xf;	/* Core ID */
 		} else {
 			ap_apicid = node * (nb_cfg_54 ? (siblings + 1) : 1) +
 					core * (nb_cfg_54 ? 1 : 64);
 		}
 	}
+
+	printk(BIOS_DEBUG, "%s: using %d as APIC ID for node %d, core %d\n", __func__, ap_apicid, node, core);
 
 	return ap_apicid;
 }

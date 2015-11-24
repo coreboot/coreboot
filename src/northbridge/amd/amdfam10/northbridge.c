@@ -1637,7 +1637,9 @@ static void cpu_bus_scan(device_t dev)
 				}
 			} else {
 				if (fam15h) {
-					apic_id = (i * (siblings + 1)) + j;
+					apic_id = 0;
+					apic_id |= (i & 0x7) << 4;	/* Node ID */
+					apic_id |= j & 0xf;		/* Core ID */
 				} else {
 					apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
 				}

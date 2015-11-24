@@ -270,6 +270,10 @@ static const struct {
 					   ForceErrType = 0x0,
 					   MultRetryErr = 0x0 */
 
+	/* Errata 600 */
+	{ 0, 0x150, AMD_OR_B2, AMD_PTYPE_ALL,
+	  0x00000000, 0x00000e00 },	/* HtRetryCrcDatIns = 0x0 */
+
 	/*  Errata 351
 	 * System software should program the Link Extended Control Registers[LS2En]
 	 * (F0x[18C:170][8]) to 0b for all links. System software should also

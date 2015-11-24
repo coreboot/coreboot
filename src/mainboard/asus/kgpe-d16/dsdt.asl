@@ -33,7 +33,7 @@
 DefinitionBlock (
         "DSDT.AML",	/* Output filename */
         "DSDT",		/* Signature */
-        0x02,		/* DSDT Revision, needs to be 2 for 64bit */
+        0x03,		/* DSDT Revision, needs to be 2 or higher for 64bit */
         "ASUS  ",	/* OEMID */
         "COREBOOT",	/* TABLE ID */
         0x00000001	/* OEM Revision */
@@ -47,9 +47,8 @@ DefinitionBlock (
 	Name(OSV, Ones)	/* Assume nothing */
 	Name(PICM, One)	/* Assume APIC */
 
-	/* HPET control */
-	Name (SHPB, 0xFED00000)
-	Name (SHPL, 0x1000)
+	/* HPET enable */
+	Name (HPTE, 0x1)
 
 	/* Define power states */
 	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })	/* Normal operation */
@@ -126,12 +125,13 @@ DefinitionBlock (
 	/* Root of the bus hierarchy */
 	Scope (\_SB)
 	{
-		/* Top southbridge PCI device (SR5690) */
+		/* Top southbridge PCI device (SR5690 + SP5100) */
 		Device (PCI0)
 		{
 			/* BUS0 root bus */
 
-			Name (_HID, EisaId ("PNP0A03"))
+			Name (_HID, EisaId ("PNP0A08"))         /* PCI-e root bus (SR5690) */
+			Name (_CID, EisaId ("PNP0A03"))         /* PCI root bus (SP5100) */
 			Name (_ADR, 0x00180001)
 			Name (_UID, 0x00)
 
@@ -490,6 +490,78 @@ DefinitionBlock (
 				Name (_HID, EisaId ("PNP0A05"))
 				Name (_ADR, 0x00140003)
 
+				/* Real Time Clock Device */
+				Device(RTC0) {
+					Name(_HID, EISAID("PNP0B00"))   /* AT Real Time Clock (not PIIX4 compatible) */
+					Name(BUF0, ResourceTemplate() {
+						IO(Decode16, 0x0070, 0x0070, 0x01, 0x02)
+					})
+					Name(BUF1, ResourceTemplate() {
+						IRQNoFlags() { 8 }
+						IO(Decode16, 0x0070, 0x0070, 0x01, 0x02)
+					})
+					Method(_CRS, 0) {
+						If(HPTE) {
+							Return(BUF0)
+						}
+						Return(BUF1)
+					}
+				}
+
+				Device(TMR) {   /* Timer */
+					Name(_HID,EISAID("PNP0100"))    /* System Timer */
+					Name(BUF0, ResourceTemplate() {
+						IO(Decode16, 0x0040, 0x0040, 0x01, 0x04)
+					})
+					Name(BUF1, ResourceTemplate() {
+						IRQNoFlags() { 0 }
+						IO(Decode16, 0x0040, 0x0040, 0x01, 0x04)
+					})
+					Method(_CRS, 0) {
+						If(HPTE) {
+							Return(BUF0)
+						}
+						Return(BUF1)
+					}
+				}
+
+				Device(SPKR) {  /* Speaker */
+					Name(_HID,EISAID("PNP0800"))    /* AT style speaker */
+					Name(_CRS, ResourceTemplate() {
+						IO(Decode16, 0x0061, 0x0061, 0, 1)
+					})
+				}
+
+				Device(PIC) {
+					Name(_HID,EISAID("PNP0000"))    /* AT Interrupt Controller */
+					Name(_CRS, ResourceTemplate() {
+						IRQNoFlags() { 2 }
+						IO(Decode16,0x0020, 0x0020, 0, 2)
+						IO(Decode16,0x00A0, 0x00A0, 0, 2)
+					})
+				}
+
+				Device(MAD) { /* 8257 DMA */
+					Name(_HID,EISAID("PNP0200"))    /* Hardware Device ID */
+					Name(_CRS, ResourceTemplate() {
+						DMA(Compatibility,BusMaster,Transfer8){4}
+						IO(Decode16, 0x0000, 0x0000, 0x10, 0x10)
+						IO(Decode16, 0x0081, 0x0081, 0x01, 0x03)
+						IO(Decode16, 0x0087, 0x0087, 0x01, 0x01)
+						IO(Decode16, 0x0089, 0x0089, 0x01, 0x03)
+						IO(Decode16, 0x008F, 0x008F, 0x01, 0x01)
+						IO(Decode16, 0x00C0, 0x00C0, 0x10, 0x20)
+					}) /* End Name(_SB.PCI0.LpcIsaBr.MAD._CRS) */
+				}
+
+				Device(COPR) {
+					Name(_HID,EISAID("PNP0C04"))    /* Math Coprocessor */
+					Name(_CRS, ResourceTemplate() {
+						IO(Decode16, 0x00F0, 0x00F0, 0, 0x10)
+						IRQNoFlags(){13}
+					})
+				}
+
 				#include "../../../drivers/pc80/ps2_controller.asl"
 
 				/* UART 1 */
@@ -515,34 +587,27 @@ DefinitionBlock (
 						})
 					}
 				}
+			}
 
-				/* High Precision Event Timer */
-				Device (HPET)
+			/* High Precision Event Timer */
+			Device (HPET)
+			{
+				Name (_HID, EisaId ("PNP0103"))
+				Name (CRS, ResourceTemplate ()
 				{
-					Name (_HID, EisaId ("PNP0103"))
-					Name (CRS, ResourceTemplate ()
-					{
-						Memory32Fixed (ReadOnly,
-						0x00000000,
-						0x00001000,
-						_Y02)
-						IRQNoFlags () {0}
-						IRQNoFlags () {8}
-					})
-					Method (_STA, 0, NotSerialized)
-					{
+					Memory32Fixed(ReadOnly, 0xFED00000, 0x00000400)
+				})
+				Method (_STA, 0)
+				{
+					If(HPTE) {
 						Return (0x0F)
 					}
-					Method (_CRS, 0, NotSerialized)
-					{
-						CreateDWordField (CRS, \_SB.PCI0.LPC.HPET._Y02._BAS, HPT1)
-						CreateDWordField (CRS, \_SB.PCI0.LPC.HPET._Y02._LEN, HPT2)
-						Store (SHPB, HPT1)
-						Store (SHPL, HPT2)
-						Return (CRS)
-					}
-
+					Return (0x0)
 				}
+                                Method(_CRS, 0)
+                                {
+                                        Return(CRS)
+                                }
 			}
 
 			/* 0:14.4 PCI Bridge */

@@ -1158,14 +1158,22 @@ DefinitionBlock (
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 
 			/* Operating System Capabilities Method */
-			Method(_OSC,4)
-			{	/* Check for proper PCI/PCIe UUID */
-				If(LEqual(Arg0,ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+			Method (_OSC, 4)
+			{
+				/* Check for PCI/PCI-X/PCIe GUID */
+				If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
 				{
 					/* Let OS control everything */
 					Return (Arg3)
 				}
-			}
+				Else
+				{
+					/* Unrecognized UUID, so set bit 2 of Arg3 to 1 */
+					CreateDWordField (Arg3, 0, CDW1)
+					Or (CDW1, 4, CDW1)
+					Return (Arg3)
+				}
+			} /* End _OSC */
 
 			Method(_BBN, 0) { /* Bus number = 0 */
 				Return(0)

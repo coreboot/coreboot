@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,24 @@
 
 #include <cpu/amd/amdfam10_sysconf.h>
 
+/* Free irqs are 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, and 15 */
+#define IRQBM ((1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<9)|(1<<10)|(1<<11)|(1<<12)|(1<<14)|(1<<15))
+
+#define LNKA 1
+#define LNKB 2
+#define LNKC 3
+#define LNKD 4
+
+/*
+ * For simplicity map LNK[E-H] to LNK[A-D].
+ * This also means we are 82C596 compatible.
+ * Needs 0:11.0 0x46[4] set to 0.
+ */
+#define LNKE 1
+#define LNKF 2
+#define LNKG 3
+#define LNKH 4
+
 static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 			    u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
 			    u8 link2, u16 bitmap2, u8 link3, u16 bitmap3,
@@ -42,9 +60,10 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 	pirq_info->rfu = rfu;
 }
 extern u8 bus_isa;
-extern u8 bus_rs780[8];
+extern u8 bus_sr5650[14];
 extern u8 bus_sp5100[2];
-extern unsigned long sbdn_sp5100;
+extern u32 sbdn_sp5100;
+extern u32 sbdn_sr5650;
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
@@ -71,6 +90,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq->signature = PIRQ_SIGNATURE;
 	pirq->version = PIRQ_VERSION;
 
+	/* Where the interrupt router resides */
 	pirq->rtr_bus = bus_sp5100[0];
 	pirq->rtr_devfn = PCI_DEVFN(0x14, 4);
 
@@ -88,8 +108,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	/* pci bridge */
 	write_pirq_info(pirq_info, bus_sp5100[0], ((sbdn_sp5100 + 0x14) << 3) | 4,
-			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0,
-			0);
+			LNKA, IRQBM, LNKB, IRQBM, LNKC, IRQBM, LNKD, IRQBM, 0, 0);
 	pirq_info++;
 	slot_num++;
 
@@ -103,7 +122,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		pirq->checksum = sum;
 	}
 
-	printk(BIOS_INFO, "write_pirq_routing_table done.\n");
+	printk(BIOS_INFO, "done.\n");
 
 	return (unsigned long)pirq_info;
 }

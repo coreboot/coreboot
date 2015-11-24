@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2015 Raptor Engineering
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,10 @@ static void *smp_write_config_table(void *v)
 
 	get_bus_conf();
 
-	apicid_sp5100 = 0x20;
+	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
+		apicid_sp5100 = 0x0;
+	else
+		apicid_sp5100 = 0x20;
 	apicid_sr5650 = apicid_sp5100 + 1;
 
 	mptable_write_buses(mc, NULL, &bus_isa);
@@ -122,13 +125,14 @@ static void *smp_write_config_table(void *v)
 	mptable_add_isa_interrupts(mc, bus_isa, apicid_sp5100, 0);
 
 	/* SR5650 devices */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((2)<<2)|(0)), apicid_sr5650, 28);	/* Device 2 (LNKE) */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((4)<<2)|(0)), apicid_sr5650, 28);	/* Device 4 (LNKF) */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((9)<<2)|(0)), apicid_sr5650, 29);	/* Device 9 (LNKG) */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((10)<<2)|(0)), apicid_sr5650, 30);	/* Device 10 (LNKG) */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((11)<<2)|(0)), apicid_sr5650, 30);	/* Device 11 (LNKG) */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((12)<<2)|(0)), apicid_sr5650, 30);	/* Device 12 (LNKG) */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((13)<<2)|(0)), apicid_sr5650, 30);	/* Device 13 (LNKG) */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((0)<<2)|(2)), apicid_sr5650, 31);	/* Device 0 Function 2 (LNKA, APIC pin 31) */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((2)<<2)|(0)), apicid_sr5650, 28);	/* Device 2 (LNKE, APIC pin 28) */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((4)<<2)|(0)), apicid_sr5650, 28);	/* Device 4 (LNKF, APIC pin 28) */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((9)<<2)|(0)), apicid_sr5650, 29);	/* Device 9 (LNKG, APIC pin 29) */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((10)<<2)|(0)), apicid_sr5650, 30);	/* Device 10 (LNKG, APIC pin 30) */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((11)<<2)|(0)), apicid_sr5650, 30);	/* Device 11 (LNKG, APIC pin 30) */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((12)<<2)|(0)), apicid_sr5650, 30);	/* Device 12 (LNKG, APIC pin 30) */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((13)<<2)|(0)), apicid_sr5650, 30);	/* Device 13 (LNKG, APIC pin 30)) */
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x2, 0));
 	if (dev && dev->enabled) {

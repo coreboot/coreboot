@@ -36,7 +36,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
 
-	apicid_sp5100 = 0x20;
+	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
+		apicid_sp5100 = 0x0;
+	else
+		apicid_sp5100 = 0x20;
 	apicid_sr5650 = apicid_sp5100 + 1;
 
 	/* Write SB700 IOAPIC, only one */
@@ -56,15 +59,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-						current, 0, 9, 9, 0xF);
-	/* 0: mean bus 0--->ISA */
-	/* 0: PIC 0 */
-	/* 2: APIC 2 */
-	/* 5 mean: 0101 --> Edge-triggered, Active high */
+						current, 0, 9, 9, 0xf);
 
 	/* create all subtables for processors */
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 0, 5, 1);
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 1, 5, 1);
+	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 0xff, 0, 1);
 	/* 1: LINT1 connect to NMI */
 
 	return current;
@@ -77,7 +75,10 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t* ivrs, unsigned long current)
 	uint32_t apicid_sp5100;
 	uint32_t apicid_sr5650;
 
-	apicid_sp5100 = 0x20;
+	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
+		apicid_sp5100 = 0x0;
+	else
+		apicid_sp5100 = 0x20;
 	apicid_sr5650 = apicid_sp5100 + 1;
 
 	/* Describe NB IOAPIC */

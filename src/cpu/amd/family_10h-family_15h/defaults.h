@@ -260,25 +260,6 @@ static const struct {
 	{ 0, 0xE4, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  0x00002000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
 
-	/* FIXME
-	 * Non-C32 packages only
-	 */
-	{ 0, 0x84, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x00000000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
-
-	{ 0, 0xA4, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x00000000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
-
-	{ 0, 0xC4, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x00000000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
-
-	{ 0, 0xE4, AMD_FAM15_ALL, AMD_PTYPE_ALL,
-	  0x00000000, 0x00002000 },	/* [13] LdtStopTriEn = 1 */
-
-	/* FIXME
-	 * C32 package is not supported at this time
-	 */
-
 	/* Link Global Retry Control Register */
 	{ 0, 0x150, (AMD_FAM10_ALL | AMD_FAM15_ALL), AMD_PTYPE_ALL,
 	  0x00073900, 0x00073f70 },	/* TotalRetryAttempts = 0x7,

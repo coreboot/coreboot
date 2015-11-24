@@ -1095,6 +1095,45 @@ static void cpuSetAMDPCI(u8 node)
 		}
 	}
 
+	if (is_fam15h()) {
+		if (CONFIG_CPU_SOCKET_TYPE == 0x14) {
+			/* Socket C32 */
+			dword = pci_read_config32(NODE_PCI(node, 0), 0x84);
+			dword |= 0x1 << 13;			/* LdtStopTriEn = 1 */
+			pci_write_config32(NODE_PCI(node, 0), 0x84, dword);
+
+			dword = pci_read_config32(NODE_PCI(node, 0), 0xa4);
+			dword |= 0x1 << 13;			/* LdtStopTriEn = 1 */
+			pci_write_config32(NODE_PCI(node, 0), 0xa4, dword);
+
+			dword = pci_read_config32(NODE_PCI(node, 0), 0xc4);
+			dword |= 0x1 << 13;			/* LdtStopTriEn = 1 */
+			pci_write_config32(NODE_PCI(node, 0), 0xc4, dword);
+
+			dword = pci_read_config32(NODE_PCI(node, 0), 0xe4);
+			dword |= 0x1 << 13;			/* LdtStopTriEn = 1 */
+			pci_write_config32(NODE_PCI(node, 0), 0xe4, dword);
+		}
+		else {
+			/* Other socket (G34, etc.) */
+			dword = pci_read_config32(NODE_PCI(node, 0), 0x84);
+			dword &= ~(0x1 << 13);			/* LdtStopTriEn = 0 */
+			pci_write_config32(NODE_PCI(node, 0), 0x84, dword);
+
+			dword = pci_read_config32(NODE_PCI(node, 0), 0xa4);
+			dword &= ~(0x1 << 13);			/* LdtStopTriEn = 0 */
+			pci_write_config32(NODE_PCI(node, 0), 0xa4, dword);
+
+			dword = pci_read_config32(NODE_PCI(node, 0), 0xc4);
+			dword &= ~(0x1 << 13);			/* LdtStopTriEn = 0 */
+			pci_write_config32(NODE_PCI(node, 0), 0xc4, dword);
+
+			dword = pci_read_config32(NODE_PCI(node, 0), 0xe4);
+			dword &= ~(0x1 << 13);			/* LdtStopTriEn = 0 */
+			pci_write_config32(NODE_PCI(node, 0), 0xe4, dword);
+		}
+	}
+
 #ifdef DEBUG_HT_SETUP
 	/* Dump link settings */
 	for (i = 0; i < 4; i++) {

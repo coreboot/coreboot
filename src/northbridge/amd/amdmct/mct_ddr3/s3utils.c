@@ -454,6 +454,9 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data* persistent_da
 					data->f2x9cx0d0f0_0_f_31[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f0031 | (i << 8));
 
 				data->f2x9cx0d0f8021 = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f8021);
+
+				if (channel == 1)
+					data->f2x9cx0d0fe00a = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0fe00a);
 			}
 
 			/* Stage 4 */
@@ -796,6 +799,9 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data* persiste
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f0031 | (i << 8), data->f2x9cx0d0f0_0_f_31[i]);
 
 				write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0f8021, data->f2x9cx0d0f8021);
+
+				if (channel == 1)
+					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x0d0fe00a, data->f2x9cx0d0fe00a);
 			}
 		}
 	}

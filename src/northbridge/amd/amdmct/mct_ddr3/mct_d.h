@@ -729,7 +729,7 @@ struct amd_s3_persistent_mct_channel_data {
 	uint32_t f3x5c;
 	uint32_t f3x60;
 
-	/* Family 15h-specific registers (90 dwords) */
+	/* Family 15h-specific registers (91 dwords) */
 	uint32_t f2x200;
 	uint32_t f2x204;
 	uint32_t f2x208;
@@ -785,8 +785,9 @@ struct amd_s3_persistent_mct_channel_data {
 	uint32_t f2x9cx0d0fc231;
 	uint32_t f2x9cx0d0f0_0_f_31[9];		/* [lane] */
 	uint32_t f2x9cx0d0f8021;
+	uint32_t f2x9cx0d0fe00a;
 
-	/* TOTAL: 342 dwords */
+	/* TOTAL: 343 dwords */
 } __attribute__((packed));
 
 struct amd_s3_persistent_node_data {

@@ -35,7 +35,7 @@ chip soc/intel/skylake
 	register "SmbusEnable" = "1"
 	register "Cio2Enable" = "0"
 	register "ScsEmmcEnabled" = "1"
-	register "ScsEmmcHs400Enabled" = "1"
+	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "2"
 	register "IshEnable" = "0"
 	register "PttSwitch" = "0"

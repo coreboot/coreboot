@@ -551,7 +551,7 @@ static void inherit_subsystem_ids(FILE *file, struct device *dev)
 
 static void usage(void)
 {
-	printf("usage: sconfig vendor/mainboard outputdir [-{s|b|k} outputfile]\n");
+	printf("usage: sconfig vendor/mainboard outputdir devicetree [-{s|b|k} outputfile]\n");
 	printf("\t-s file\tcreate ramstage static device map\n");
 	printf("\t-b file\tcreate bootblock init_mainboard()\n");
 	printf("\t-k file\tcreate Kconfig devicetree section\n");
@@ -559,27 +559,39 @@ static void usage(void)
 	exit (1);
 }
 
+enum {
+	VENDOR_MAINBOARD_ARG = 1,
+	OUTPUTDIR_ARG,
+	DEVICEFILE_ARG,
+	OUTPUTTYPE_ARG,
+	OUTPUTFILE_ARG
+};
+
+#define MIN_ARGS		4
+#define MAX_ARGS		6
 
 int main(int argc, char** argv) {
-	if (argc != 3 && argc != 5)
+	if (argc != MIN_ARGS && argc != MAX_ARGS)
 		usage();
 
-	char *mainboard=argv[1];
-	char *outputdir=argv[2];
-	char *devtree=malloc(strlen(mainboard)+30);
-	sprintf(devtree, "src/mainboard/%s/devicetree.cb", mainboard);
+	char *mainboard = argv[VENDOR_MAINBOARD_ARG];
+	char *outputdir = argv[OUTPUTDIR_ARG];
+	char *devfile = argv[DEVICEFILE_ARG];
+	char *devtree = malloc(strlen(mainboard) + strlen(devfile) + 30);
+	sprintf(devtree, "src/mainboard/%s/%s", mainboard, devfile);
 	char *outputc;
 
-	if (argc == 3) {
+	if (argc == MIN_ARGS) {
 		scan_mode = STATIC_MODE;
 		outputc=malloc(strlen(outputdir)+20);
 		sprintf(outputc, "%s/static.c", outputdir);
-	} else if (argc == 5) {
-		if ((argv[3][0] != '-') || (argv[3][2] == 0)) {
+	} else if (argc == MAX_ARGS) {
+		if ((argv[OUTPUTTYPE_ARG][0] != '-') ||
+			(argv[OUTPUTTYPE_ARG][2] == 0)) {
 			usage();
 		}
 
-		switch (argv[3][1]) {
+		switch (argv[OUTPUTTYPE_ARG][1]) {
 		case 's':
 			scan_mode = STATIC_MODE;
 			break;
@@ -593,7 +605,7 @@ int main(int argc, char** argv) {
 			usage();
 			break;
 		}
-		char *outputfile=argv[4];
+		char *outputfile = argv[OUTPUTFILE_ARG];
 
 		outputc=malloc(strlen(outputdir)+strlen(outputfile)+2);
 		sprintf(outputc, "%s/%s", outputdir, outputfile);

@@ -11,6 +11,7 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_RAMSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_VERSTAGE_X86_32
+	select ACPI_NHLT
 	select BACKUP_DEFAULT_SMM_REGION
 	select CACHE_MRC_SETTINGS
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM if RELOCATABLE_RAMSTAGE
@@ -138,5 +139,35 @@ config UART_DEBUG
 config CHIPSET_BOOTBLOCK_INCLUDE
 	string
 	default "soc/intel/skylake/bootblock/timestamp.inc"
+
+config NHLT_DMIC_2CH
+	bool
+	default n
+	help
+	  Include DSP firmware settings for 2 channel DMIC array.
+
+config NHLT_DMIC_4CH
+	bool
+	default n
+	help
+	  Include DSP firmware settings for 4 channel DMIC array.
+
+config NHLT_NAU88L25
+	bool
+	default n
+	help
+	  Include DSP firmware settings for nau88l25 headset codec.
+
+config NHLT_MAX98357
+	bool
+	default n
+	help
+	  Include DSP firmware settings for max98357 amplifier.
+
+config NHLT_SSM4567
+	bool
+	default n
+	help
+	  Include DSP firmware settings for ssm4567 smart amplifier.
 
 endif

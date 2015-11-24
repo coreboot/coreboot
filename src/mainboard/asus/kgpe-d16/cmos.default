@@ -17,6 +17,7 @@ interleave_nodes = Disable
 interleave_memory_channels = Enable
 cpu_c_states = Enable
 cpu_cc6_state = Enable
+cpu_core_boost = Enable
 sata_ahci_mode = Enable
 sata_alpm = Disable
 maximum_p_state_limit = 0xf

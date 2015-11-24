@@ -41,9 +41,9 @@ extern u8 _stack[];
 extern u8 _estack[];
 #define _stack_size (_estack - _stack)
 
-extern u8 _dram_cbfs_cache[];
-extern u8 _edram_cbfs_cache[];
-#define _dram_cbfs_cache_size (_edram_cbfs_cache - _dram_cbfs_cache)
+extern u8 _postram_cbfs_cache[];
+extern u8 _epostram_cbfs_cache[];
+#define _postram_cbfs_cache_size (_epostram_cbfs_cache - _postram_cbfs_cache)
 
 extern u8 _cbfs_cache[];
 extern u8 _ecbfs_cache[];

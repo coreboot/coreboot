@@ -82,7 +82,7 @@
 #if ENV_ROMSTAGE
 	#define PRERAM_CBFS_CACHE(addr, size) CBFS_CACHE(addr, size)
 	#define POSTRAM_CBFS_CACHE(addr, size) \
-		REGION(dram_cbfs_cache, addr, size, 4)
+		REGION(postram_cbfs_cache, addr, size, 4)
 #elif defined(__PRE_RAM__)
 	#define PRERAM_CBFS_CACHE(addr, size) CBFS_CACHE(addr, size)
 	#define POSTRAM_CBFS_CACHE(addr, size) \

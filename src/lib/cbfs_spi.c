@@ -45,7 +45,14 @@ static struct mmap_helper_region_device mdev =
 
 static void initialize_mdev(int unused)
 {
-	mmap_helper_device_init(&mdev, _dram_cbfs_cache, _dram_cbfs_cache_size);
+	/*
+	 * Call boot_device_init() to ensure spi_flash is initialized before
+	 * backing mdev with postram cache. This prevents the mdev backing from
+	 * being overwritten if spi_flash was not accessed before dram was up.
+	 */
+	boot_device_init();
+	mmap_helper_device_init(&mdev, _postram_cbfs_cache,
+				_postram_cbfs_cache_size);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(initialize_mdev);
 

@@ -92,8 +92,8 @@ DefinitionBlock (
 		/*  Keyboard controller PME#  */
 		Method(_L08) {
 			/* Level-Triggered GPE */
-			Notify(\_SB.PCI0.LPC.KBD, 0x02)		/* NOTIFY_DEVICE_WAKE */
-			Notify(\_SB.PCI0.LPC.MOU, 0x02)		/* NOTIFY_DEVICE_WAKE */
+			Notify(\_SB.PCI0.LPC.PS2K, 0x02)	/* NOTIFY_DEVICE_WAKE */
+			Notify(\_SB.PCI0.LPC.PS2M, 0x02)	/* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PWRB, 0x02)			/* NOTIFY_DEVICE_WAKE */
 		}
 
@@ -490,44 +490,7 @@ DefinitionBlock (
 				Name (_HID, EisaId ("PNP0A05"))
 				Name (_ADR, 0x00140003)
 
-				/* PS/2 keyboard (seems to be important for WinXP install) */
-				Device (KBD)
-				{
-					Name (_HID, EisaId ("PNP0303"))
-					Name (_CID, EisaId ("PNP030B"))
-					Method (_STA, 0, NotSerialized)
-					{
-						Return (0x0f)
-					}
-					Method (_CRS, 0, Serialized)
-					{
-						Name (TMP, ResourceTemplate () {
-							IO (Decode16, 0x0060, 0x0060, 0x01, 0x01)
-							IO (Decode16, 0x0064, 0x0064, 0x01, 0x01)
-							IRQNoFlags () {1}
-						})
-						Return (TMP)
-					}
-				}
-
-				/* PS/2 mouse */
-				Device (MOU)
-				{
-					Name (_HID, EisaId ("PNP0F03"))
-					Name (_CID, EisaId ("PNP0F13"))
-					Method (_STA, 0, NotSerialized)
-					{
-						Return (0x0f)
-					}
-					Method (_CRS, 0, Serialized)
-					{
-						Name (TMP, ResourceTemplate () {
-							IRQNoFlags () {12}
-						})
-						Return (TMP)
-					}
-				}
-
+				#include "../../../drivers/pc80/ps2_controller.asl"
 
 				/* UART 1 */
 				Device (URT1)

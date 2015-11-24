@@ -217,8 +217,8 @@
 #define SPD_CASHigh		15
 #define SPD_tAAmin		16
 
-#define SPD_DEVATTRIB	22
-#define SPD_EDCTYPE	11
+#define SPD_DEVATTRIB		22
+#define SPD_EDCTYPE		11
 	#define JED_ADRCPAR	0x04
 
 #define SPD_tWRmin		17
@@ -232,6 +232,7 @@
 #define SPD_tRTPmin		27
 #define SPD_Upper_tFAW		28
 #define SPD_tFAWmin		29
+#define SPD_Thermal		31
 
 #define SPD_RefRawCard		62
 #define SPD_AddressMirror	63

@@ -3993,6 +3993,7 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 	u32 DramTimingLo, DramTimingHi;
 	u8 tCK16x;
 	u16 Twtr;
+	uint8_t Etr[2];
 	u8 LDIMM;
 	u8 MTB16x;
 	u8 byte;
@@ -4011,6 +4012,8 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 	Trc = 0;
 	Twr = 0;
 	Twtr = 0;
+	for (i=0; i < 2; i++)
+		Etr[i] = 0;
 	for (i=0; i < 4; i++)
 		Trfc[i] = 0;
 	Tfaw = 0;
@@ -4077,6 +4080,10 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 			val *= MTB16x;
 			if (Tfaw < val)
 				Tfaw = val;
+
+			/* Determine if the DIMMs on this channel support 95°C ETR */
+			if (pDCTstat->spd_data.spd_bytes[dct + i][SPD_Thermal] & 0x1)
+				Etr[dct] = 1;
 		}	/* Dimm Present */
 	}
 
@@ -4248,7 +4255,10 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 		dev = pDCTstat->dev_dct;
 
 		dword = Get_NB32_DCT(dev, dct, 0x8c);				/* DRAM Timing High */
-		val = 2;							/* Tref = 7.8us */
+		if (Etr[dct])
+			val = 3;						/* Tref = 3.9us */
+		else
+			val = 2;						/* Tref = 7.8us */
 		dword &= ~(0x3 << 16);
 		dword |= (val & 0x3) << 16;
 		Set_NB32_DCT(dev, dct, 0x8c, dword);				/* DRAM Timing High */

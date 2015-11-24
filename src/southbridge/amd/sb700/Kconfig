@@ -50,4 +50,8 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
+config HPET_MIN_TICKS
+	hex
+	default 0x14
+
 endif # SOUTHBRIDGE_AMD_SB700

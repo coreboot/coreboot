@@ -541,6 +541,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	raminit_amdmct(sysinfo);
 	timestamp_add_now(TS_AFTER_INITRAM);
 
+#ifdef TEST_MEMORY
+	execute_memory_test();
+#endif
+
 #if !IS_ENABLED(CONFIG_LATE_CBMEM_INIT)
 	if (s3resume)
 		cbmem_initialize();
@@ -564,10 +568,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pci_write_config16(PCI_DEV(0, 0x14, 0), 0x5a, 0x0ff0);
 
 	timestamp_add_now(TS_END_ROMSTAGE);
-
-#ifdef TEST_MEMORY
-	execute_memory_test();
-#endif
 
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.

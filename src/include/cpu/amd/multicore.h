@@ -35,6 +35,7 @@ void amd_sibling_init(struct device *cpu);
 void wait_all_core0_started(void);
 void wait_all_other_cores_started(u32 bsp_apicid);
 void wait_all_aps_started(u32 bsp_apicid);
+void wait_all_other_cores_stopped(uint32_t bsp_apicid);
 void allow_all_aps_stop(u32 bsp_apicid);
 #endif
 u32 get_initial_apicid(void);

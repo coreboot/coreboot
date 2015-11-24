@@ -299,6 +299,26 @@ void allow_all_aps_stop(u32 bsp_apicid)
 	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | F10_APSTATE_STOPPED);
 }
 
+static void wait_ap_stopped(u32 ap_apicid, void *gp)
+{
+	u32 timeout;
+	timeout = wait_cpu_state(ap_apicid, F10_APSTATE_ASLEEP, F10_APSTATE_ASLEEP);
+	printk(BIOS_DEBUG, "* AP %02x", ap_apicid);
+	if (timeout) {
+		printk(BIOS_DEBUG, " timed out:%08x\n", timeout);
+	} else {
+		printk(BIOS_DEBUG, "stopped\n");
+	}
+}
+
+void wait_all_other_cores_stopped(u32 bsp_apicid)
+{
+	// all aps other than core0
+	printk(BIOS_DEBUG, "stopped ap apicid: ");
+	for_each_ap(bsp_apicid, 2, -1, wait_ap_stopped, (void *)0);
+	printk(BIOS_DEBUG, "\n");
+}
+
 static void enable_apic_ext_id(u32 node)
 {
 	u32 val;

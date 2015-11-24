@@ -254,6 +254,10 @@ static uint8_t dct_ddr_voltage_index(struct DCTStatStruc *pDCTstat, uint8_t dct)
 	uint8_t dimm;
 	uint8_t ddr_voltage_index = 0;
 
+	/* If no DIMMs are present on this DCT, report 1.5V operation and skip checking the hardware */
+	if (pDCTstat->DIMMValidDCT[dct] == 0)
+		return 0x1;
+
 	/* Find current DDR supply voltage for this DCT */
 	for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
 		if (pDCTstat->DIMMValidDCT[dct] & (1 << dimm))
@@ -2409,6 +2413,7 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 */
 	u8 Node, NodesWmem;
 	u32 node_sys_base;
+	uint8_t dimm;
 	uint8_t nvram;
 	uint8_t enable_cc6;
 	uint8_t allow_config_restore;
@@ -2498,10 +2503,25 @@ restartinit:
 		nvram = 0;
 		set_option("allow_spd_nvram_cache_restore", &nvram);
 
-#if IS_ENABLED(DIMM_VOLTAGE_SET_SUPPORT)
+#if IS_ENABLED(CONFIG_DIMM_VOLTAGE_SET_SUPPORT)
 		printk(BIOS_DEBUG, "%s: DIMMSetVoltage\n", __func__);
 		DIMMSetVoltages(pMCTstat, pDCTstatA);	/* Set the DIMM voltages (mainboard specific) */
 #endif
+		if (!IS_ENABLED(CONFIG_DIMM_VOLTAGE_SET_SUPPORT)) {
+			/* Assume 1.5V operation */
+			for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+				struct DCTStatStruc *pDCTstat;
+				pDCTstat = pDCTstatA + Node;
+
+				if (!pDCTstat->NodePresent)
+					continue;
+
+				for (dimm = 0; dimm < MAX_DIMMS_SUPPORTED; dimm++) {
+					if (pDCTstat->DIMMValid & (1 << dimm))
+						pDCTstat->DimmConfiguredVoltage[dimm] = 0x1;
+				}
+			}
+		}
 
 		/* If DIMM configuration has not changed since last boot restore training values */
 		allow_config_restore = 1;

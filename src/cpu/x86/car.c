@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <arch/early_variables.h>
+#include <symbols.h>
 
 #if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
 #include <drivers/intel/fsp1_0/fsp_util.h>
@@ -63,14 +64,15 @@ void *car_get_var_ptr(void *var)
 #if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
 	migrated_base=(char *)find_saved_temp_mem(
 			*(void **)CBMEM_FSP_HOB_PTR);
+	/* FSP 1.0 migrates the entire DCACHE RAM */
+	offset = (char *)var - (char *)CONFIG_DCACHE_RAM_BASE;
 #else
 	migrated_base = cbmem_find(CBMEM_ID_CAR_GLOBALS);
+	offset = (char *)var - (char *)_car_start;
 #endif
 
 	if (migrated_base == NULL)
 		die( "CAR: Could not find migration base!\n");
-
-	offset = (char *)var - (char *)_car_start;
 
 	return &migrated_base[offset];
 }
@@ -89,15 +91,19 @@ void *car_sync_var_ptr(void *var)
 	if (mig_var == var)
 		return mig_var;
 
+	/*
+	 * Migrate the cbmem console pointer for FSP 1.0 platforms. Otherwise,
+	 * keep console buffer in CAR until cbmemc_reinit() moves it.
+	 */
+	if (*mig_var == _preram_cbmem_console) {
+		if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0))
+			*mig_var += (char *)mig_var - (char *)var;
+		return mig_var;
+	}
+
 	/* It's already pointing outside car.global_data. */
 	if (*mig_var < _car_start || *mig_var > _car_end)
 		return mig_var;
-
-#if !IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
-	/* Keep console buffer in CAR until cbmemc_reinit() moves it. */
-	if (*mig_var == _car_end)
-		return mig_var;
-#endif
 
 	/* Move the pointer by the same amount the variable storing it was
 	 * moved by.

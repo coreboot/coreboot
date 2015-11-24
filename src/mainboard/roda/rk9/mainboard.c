@@ -46,7 +46,7 @@ static void mainboard_enable(device_t dev)
 
 	/* We have no driver for the embedded controller since the firmware
 	   does most of the job. Hence, initialize keyboards here. */
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 }
 
 struct chip_operations mainboard_ops = {

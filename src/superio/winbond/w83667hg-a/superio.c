@@ -23,6 +23,7 @@
 #include <pc80/keyboard.h>
 #include <pc80/mc146818rtc.h>
 #include <stdlib.h>
+#include <arch/acpi.h>
 #include <superio/conf_mode.h>
 
 #include "w83667hg-a.h"
@@ -38,6 +39,7 @@ static void w83667hg_a_init(struct device *dev)
 {
 	uint8_t byte;
 	uint8_t power_status;
+	uint8_t mouse_detected;
 
 	if (!dev->enabled)
 		return;
@@ -45,7 +47,23 @@ static void w83667hg_a_init(struct device *dev)
 	switch(dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case W83667HG_A_KBC:
-		pc_keyboard_init();
+		/* Enable mouse controller */
+		pnp_enter_conf_mode_8787(dev);
+		byte = pnp_read_config(dev, 0x2a);
+		byte &= ~(0x1 << 1);
+		pnp_write_config(dev, 0x2a, byte);
+		pnp_exit_conf_mode_aa(dev);
+
+		mouse_detected = pc_keyboard_init(PROBE_AUX_DEVICE);
+
+		if (!mouse_detected && !acpi_is_wakeup_s3()) {
+			/* Disable mouse controller */
+			pnp_enter_conf_mode_8787(dev);
+			byte = pnp_read_config(dev, 0x2a);
+			byte |= 0x1 << 1;
+			pnp_write_config(dev, 0x2a, byte);
+			pnp_exit_conf_mode_aa(dev);
+		}
 		break;
 	case W83667HG_A_ACPI:
 		/* Set power state after power fail */

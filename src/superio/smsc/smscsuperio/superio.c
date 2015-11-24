@@ -163,7 +163,7 @@ static void smsc_init(struct device *dev)
 	/* A Super I/O was found, so initialize the respective device. */
 	ld = dev->path.pnp.device;
 	if (ld == logical_device_table[i].devs[LD_KBC]) {
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 	}
 }
 

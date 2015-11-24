@@ -41,7 +41,7 @@ static void init(device_t dev)
 		break;
 
 	case WPCD376I_KBCK:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	}
 }

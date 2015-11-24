@@ -31,7 +31,7 @@ static void init(struct device *dev)
 		break;
 	case SIO10N268_KBDC:
 		/* TODO: This is still hardcoded. */
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	// [..] The rest: TODO
 	}

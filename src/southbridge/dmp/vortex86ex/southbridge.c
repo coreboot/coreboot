@@ -607,7 +607,7 @@ static void southbridge_init(struct device *dev)
 		retries--;
 	}
 	post_code(POST_DMP_KBD_IS_READY);
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 }
 
 static struct device_operations vortex_sb_ops = {

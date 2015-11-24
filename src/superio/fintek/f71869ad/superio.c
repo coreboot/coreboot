@@ -34,7 +34,7 @@ static void f71869ad_init(struct device *dev)
 	switch(dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case F71869AD_KBC:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	case F71869AD_HWM:
 		f71869ad_multifunc_init(dev);

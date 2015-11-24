@@ -35,7 +35,7 @@ static void init(struct device *dev)
 	case IT8721F_EC: /* TODO. */
 		break;
 	case IT8721F_KBCK:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	case IT8721F_KBCM: /* TODO. */
 		break;

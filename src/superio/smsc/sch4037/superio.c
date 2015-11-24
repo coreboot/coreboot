@@ -33,7 +33,7 @@ static void sch4037_init(struct device *dev)
 
 	switch(dev->path.pnp.device) {
 		case SCH4037_KBC:
-			pc_keyboard_init();
+			pc_keyboard_init(NO_AUX_DEVICE);
 			break;
 	}
 }

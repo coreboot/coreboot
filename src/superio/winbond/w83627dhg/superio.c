@@ -43,7 +43,7 @@ static void w83627dhg_init(struct device *dev)
 		w83627dhg_enable_UR2(dev);
 		break;
 	case W83627DHG_KBC:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	}
 }

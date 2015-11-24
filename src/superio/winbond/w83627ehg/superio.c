@@ -85,7 +85,7 @@ static void w83627ehg_init(struct device *dev)
 
 	switch(dev->path.pnp.device) {
 	case W83627EHG_KBC:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	case W83627EHG_HWM:
 		res0 = find_resource(dev, PNP_IDX_IO0);

@@ -34,7 +34,7 @@ static void f81866d_init(struct device *dev)
 	switch (dev->path.pnp.device) {
 	/* TODO: Might potentially need extra code for serial, wdt etc. */
 	case F81866D_KBC:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	case F81866D_HWM:
 		// Fixing temp sensor read out and init Fan control

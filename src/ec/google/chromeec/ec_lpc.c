@@ -403,7 +403,7 @@ static void lpc_ec_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 	google_chromeec_init();
 }
 

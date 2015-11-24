@@ -39,7 +39,7 @@ static void qemu_nb_init(device_t dev)
 	/* This sneaked in here, because Qemu does not
 	 * emulate a SuperIO chip
 	 */
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 
 	/* setup IRQ routing */
 	for (i = 0; i < 32; i++)

@@ -625,7 +625,7 @@ static void init_keyboard(struct device *dev)
 {
 	u8 regval = pci_read_config8(dev, 0x51);
 	if (regval & 0x1)
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 }
 
 static void southbridge_init_common(struct device *dev)

@@ -60,7 +60,7 @@ static void it8716f_init(struct device *dev)
 		init_ec(res0->base + EC_INDEX_PORT);
 		break;
 	case IT8716F_KBCK:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	}
 }

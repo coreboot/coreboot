@@ -79,7 +79,7 @@ static void w83627uhg_init(struct device *dev)
 		set_uart_clock_source(dev, 0);
 		break;
 	case W83627UHG_KBC:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	}
 }

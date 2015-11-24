@@ -121,7 +121,7 @@ static void mainboard_enable(device_t dev)
 
 	/* This sneaked in here, because EasyNote has no SuperIO chip.
 	 */
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 }
 
 struct chip_operations mainboard_ops = {

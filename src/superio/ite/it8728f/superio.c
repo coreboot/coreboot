@@ -38,7 +38,7 @@ static void it8728f_init(struct device *dev)
 		break;
 	case IT8728F_KBCK:
 		set_kbc_ps2_mode();
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	}
 }

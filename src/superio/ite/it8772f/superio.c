@@ -246,7 +246,7 @@ static void it8772f_init(struct device *dev)
 	case IT8772F_KBCK:
 		if (!conf->skip_keyboard) {
 			set_kbc_ps2_mode();
-			pc_keyboard_init();
+			pc_keyboard_init(NO_AUX_DEVICE);
 		}
 		break;
 	case IT8772F_KBCM:

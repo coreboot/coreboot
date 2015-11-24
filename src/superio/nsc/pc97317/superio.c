@@ -33,7 +33,7 @@ static void init(struct device *dev)
 		pnp_set_enable(dev, 0);		   /* Disable keyboard */
 		pnp_write_config(dev, 0xf0, 0x40); /* Set KBC clock to 8 MHz. */
 		pnp_set_enable(dev, 1);		   /* Enable keyboard */
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	default:
 		break;

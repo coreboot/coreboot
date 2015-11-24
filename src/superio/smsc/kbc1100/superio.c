@@ -68,7 +68,7 @@ static void kbc1100_init(struct device *dev)
   case KBC1100_KBC:
     res0 = find_resource(dev, PNP_IDX_IO0);
     res1 = find_resource(dev, PNP_IDX_IO1);
-    pc_keyboard_init();
+    pc_keyboard_init(NO_AUX_DEVICE);
     break;
   }
 }

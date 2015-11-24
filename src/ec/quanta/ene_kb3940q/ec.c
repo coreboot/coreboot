@@ -142,7 +142,7 @@ static void ene_kb3940q_init(struct device *dev)
 		return;
 
 	printk(BIOS_DEBUG, "Quanta EnE KB3940Q: Initializing keyboard.\n");
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 
 	ene_kb3940q_log_events();
 }

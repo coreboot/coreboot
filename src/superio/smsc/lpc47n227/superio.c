@@ -131,7 +131,7 @@ static void lpc47n227_init(struct device *dev)
 	switch (dev->path.pnp.device) {
 	case LPC47N227_KBDC:
 		printk(BIOS_DEBUG, "LPC47N227: Initializing keyboard.\n");
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	}
 }

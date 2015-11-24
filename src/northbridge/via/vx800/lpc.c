@@ -322,7 +322,7 @@ static void southbridge_init(struct device *dev)
 	setup_i8259();		// make sure interupt controller is configured before keyboard init
 
 	/* turn on keyboard and RTC, no need to visit this reg twice */
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 
 	printk(BIOS_DEBUG, "ps2 usb lid, you  set who can wakeup system from s3 sleep\n");
 	S3_ps2_kb_ms_wakeup(dev);

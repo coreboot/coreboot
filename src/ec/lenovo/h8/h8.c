@@ -175,7 +175,7 @@ static void h8_smbios_strings(struct device *dev, struct smbios_type11 *t)
 
 static void h8_init(device_t dev)
 {
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 }
 
 struct device_operations h8_dev_ops = {

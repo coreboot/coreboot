@@ -31,7 +31,7 @@ static void init(struct device *dev)
 
 	switch(dev->path.pnp.device) {
 	case WPCM450_KBCK:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	}
 }

@@ -91,7 +91,7 @@ static void lpc_init(device_t dev)
 	int nmi_option;
 
 	printk(BIOS_DEBUG, "LPC_INIT -------->\n");
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 
 	lpc_usb_legacy_init(dev);
 	lpc_common_init(dev);

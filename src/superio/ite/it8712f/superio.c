@@ -39,7 +39,7 @@ static void it8712f_init(struct device *dev)
 		break;
 	case IT8712F_KBCK:
 		set_kbc_ps2_mode();
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	case IT8712F_KBCM: /* TODO. */
 		break;

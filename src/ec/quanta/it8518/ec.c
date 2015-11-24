@@ -157,7 +157,7 @@ static void it8518_init(struct device *dev)
 		return;
 
 	printk(BIOS_DEBUG, "Quanta IT8518: Initializing keyboard.\n");
-	pc_keyboard_init();
+	pc_keyboard_init(NO_AUX_DEVICE);
 }
 
 static struct device_operations ops = {

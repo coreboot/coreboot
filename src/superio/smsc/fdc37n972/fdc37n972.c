@@ -31,7 +31,7 @@ static void init(struct device *dev)
 	case FDC37N972_PP: /* TODO. */
 		break;
 	case FDC37N972_KBDC:
-		pc_keyboard_init();
+		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	// [..] The rest: TODO
 	}

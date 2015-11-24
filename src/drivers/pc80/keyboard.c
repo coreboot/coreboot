@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Raptor Engineering
  * Copyright (C) 2009 coresystems GmbH
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
  * Copyright (C) 2003 Ollie Lo <ollielo@hotmail.com>
@@ -32,6 +33,8 @@
 // Keyboard Controller Commands
 #define KBC_CMD_READ_COMMAND	0x20	// Read command byte
 #define KBC_CMD_WRITE_COMMAND	0x60	// Write command byte
+#define KBC_CMD_AUX_ENABLE	0xA8	// Auxiliary Interface enable
+#define KBC_CMD_AUX_TEST	0xA9	// Auxiliary Interface test
 #define KBC_CMD_SELF_TEST	0xAA	// Controller self-test
 #define KBC_CMD_KBD_TEST	0xAB	// Keyboard Interface test
 
@@ -106,9 +109,14 @@ static int kbc_cleanup_buffers(void)
 	return !!timeout;
 }
 
-static enum cb_err kbc_self_test(void)
+static enum cb_err kbc_self_test(uint8_t probe_aux, uint8_t *aux_probe_result)
 {
-	u8 self_test;
+	uint8_t self_test;
+	uint8_t byte;
+
+	/* Set initial aux probe output value */
+	if (aux_probe_result)
+		*aux_probe_result = 0;
 
 	/* Clean up any junk that might have been in the KBC.
 	 * Both input and output buffers must be empty.
@@ -154,6 +162,48 @@ static enum cb_err kbc_self_test(void)
 		return CB_KBD_INTERFACE_FAILURE;
 	}
 
+	if (probe_aux) {
+		/* aux interface detect */
+		outb(KBC_CMD_AUX_ENABLE, KBD_COMMAND);
+		if (!kbc_input_buffer_empty()) {
+			printk(BIOS_ERR, "Timeout waiting for controller during aux enable.\n");
+			return CB_KBD_CONTROLLER_FAILURE;
+		}
+		outb(KBC_CMD_READ_COMMAND, KBD_COMMAND);
+		if (!kbc_output_buffer_full()) {
+			printk(BIOS_ERR, "Timeout waiting for controller during aux probe.\n");
+			return CB_KBD_CONTROLLER_FAILURE;
+		}
+
+		byte = inb(KBD_DATA);
+		if (!(byte & (0x1 << 5))) {
+			printk(BIOS_DEBUG, "PS/2 auxiliary channel detected...\n");
+
+			/* auxiliary interface test */
+			outb(KBC_CMD_AUX_TEST, KBD_COMMAND);
+
+			if (!kbc_output_buffer_full()) {
+				printk(BIOS_ERR, "Auxiliary channel probe timed out.\n");
+				goto aux_failure;
+			}
+
+			/* read test result, 0x00 should be returned in case of no failures */
+			self_test = inb(KBD_DATA);
+
+			if (self_test != 0x00) {
+				printk(BIOS_ERR, "No device detected on auxiliary channel: 0x%x\n",
+				self_test);
+				goto aux_failure;
+			}
+
+			printk(BIOS_DEBUG, "PS/2 device detected on auxiliary channel\n");
+			if (aux_probe_result)
+				*aux_probe_result = 1;
+		}
+	}
+
+aux_failure:
+
 	return CB_SUCCESS;
 }
 
@@ -187,53 +237,54 @@ static u8 send_keyboard(u8 command)
 	return regval;
 }
 
-void pc_keyboard_init(void)
+uint8_t pc_keyboard_init(uint8_t probe_aux)
 {
 	u8 retries;
 	u8 regval;
 	enum cb_err err;
+	uint8_t aux_dev_detected;
 
 	if (!CONFIG_DRIVERS_PS2_KEYBOARD)
-		return;
+		return 0;
 
 	if (acpi_is_wakeup_s3())
-		return;
+		return 0;
 
 	printk(BIOS_DEBUG, "Keyboard init...\n");
 
 	/* Run a keyboard controller self-test */
-	err = kbc_self_test();
+	err = kbc_self_test(probe_aux, &aux_dev_detected);
 	/* Ignore iterface failure as it's non-fatal.  */
 	if (err != CB_SUCCESS && err != CB_KBD_INTERFACE_FAILURE)
-		return;
+		return 0;
 
 	/* Enable keyboard interface - No IRQ */
 	if (!kbc_input_buffer_empty())
-		return;
+		return 0;
 	outb(0x60, KBD_COMMAND);
 	if (!kbc_input_buffer_empty())
-		return;
+		return 0;
 	outb(0x20, KBD_DATA);	/* send cmd: enable keyboard */
 	if (!kbc_input_buffer_empty()) {
 		printk(BIOS_INFO, "Timeout while enabling keyboard\n");
-		return;
+		return 0;
 	}
 
 	/* clean up any junk that might have been in the keyboard */
 	if (!kbc_cleanup_buffers())
-		return;
+		return 0;
 
 	/* reset keyboard and self test (keyboard side) */
 	regval = send_keyboard(0xFF);
 	if (regval == KBD_REPLY_RESEND) {
 		/* keeps sending RESENDs, probably no keyboard. */
 		printk(BIOS_INFO, "No PS/2 keyboard detected.\n");
-		return;
+		return 0;
 	}
 
 	if (regval != KBD_REPLY_ACK) {
 		printk(BIOS_ERR, "Keyboard reset failed ACK: 0x%x\n", regval);
-		return;
+		return 0;
 	}
 
 	/* the reset command takes some time, so wait a little longer */
@@ -241,14 +292,14 @@ void pc_keyboard_init(void)
 
 	if (!kbc_output_buffer_full()) {
 		printk(BIOS_ERR, "Timeout waiting for keyboard after reset.\n");
-		return;
+		return 0;
 	}
 
 	regval = inb(KBD_DATA);
 	if (regval != 0xAA) {
 		printk(BIOS_ERR, "Keyboard reset selftest failed: 0x%x\n",
 		       regval);
-		return;
+		return 0;
 	}
 
 	/*
@@ -260,7 +311,7 @@ void pc_keyboard_init(void)
 	regval = send_keyboard(0xF5);
 	if (regval != KBD_REPLY_ACK) {
 		printk(BIOS_ERR, "Keyboard disable failed ACK: 0x%x\n", regval);
-		return;
+		return 0;
 	}
 
 	/* Set scancode command */
@@ -268,34 +319,38 @@ void pc_keyboard_init(void)
 	if (regval != KBD_REPLY_ACK) {
 		printk(BIOS_ERR, "Keyboard set scancode cmd failed ACK: 0x%x\n",
 		       regval);
-		return;
+		return 0;
 	}
 	/* Set scancode mode 2 */
 	regval = send_keyboard(0x02);
 	if (regval != KBD_REPLY_ACK) {
 		printk(BIOS_ERR,
 		       "Keyboard set scancode mode failed ACK: 0x%x\n", regval);
-		return;
+		return 0;
 	}
 
 	/* All is well - enable keyboard interface */
 	if (!kbc_input_buffer_empty())
-		return;
+		return 0;
 	outb(0x60, KBD_COMMAND);
 	if (!kbc_input_buffer_empty())
-		return;
+		return 0;
 	outb(0x65, KBD_DATA);	/* send cmd: enable keyboard and IRQ 1 */
 	if (!kbc_input_buffer_empty()) {
 		printk(BIOS_ERR, "Timeout during keyboard enable\n");
-		return;
+		return 0;
 	}
 
 	/* enable the keyboard */
 	regval = send_keyboard(0xF4);
 	if (regval != KBD_REPLY_ACK) {
 		printk(BIOS_ERR, "Keyboard enable failed ACK: 0x%x\n", regval);
-		return;
+		return 0;
 	}
+
+	printk(BIOS_DEBUG, "PS/2 keyboard initialized on primary channel\n");
+
+	return aux_dev_detected;
 }
 
 /*
@@ -308,7 +363,7 @@ void set_kbc_ps2_mode(void)
 	enum cb_err err;
 
 	/* Run a keyboard controller self-test */
-	err = kbc_self_test();
+	err = kbc_self_test(0, NULL);
 	/* Ignore iterface failure as it's non-fatal.  */
 	if (err != CB_SUCCESS && err != CB_KBD_INTERFACE_FAILURE)
 		return;

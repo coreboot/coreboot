@@ -640,7 +640,6 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $$(
 # file (filled with \377 = 0xff) and copy the CBFS image over it.
 	dd if=/dev/zero bs=$(call _toint,$(CONFIG_ROM_SIZE)) count=1 2> /dev/null | tr '\000' '\377' > $@.tmp
 	dd if=$(obj)/coreboot.pre of=$@.tmp bs=8192 conv=notrunc 2> /dev/null
-	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/ramstage.elf -n $(CONFIG_CBFS_PREFIX)/ramstage -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    none (as specified by user)\n"
 endif
@@ -654,10 +653,6 @@ ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
 	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_PS2_TIMEOUT) -n etc/ps2-keyboard-spinup
 endif
 endif
-ifeq ($(CONFIG_SEABIOS_VGA_COREBOOT),y)
-	@printf "    SeaBIOS    Adding generated legacy VGA option rom.\n"
-	$(CBFSTOOL) $@.tmp add -f $(CONFIG_PAYLOAD_VGABIOS_FILE) -n vgaroms/seavgabios.bin -t raw
-endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"
 	if [ -f $(DOTCONFIG) ]; then \
@@ -667,27 +662,11 @@ ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    REVISION   build.h\n"
 	if [ -f $(obj)/build.h ]; then $(CBFSTOOL) $@.tmp add -f $(obj)/build.h -n revision -t raw; fi
 endif
-ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
-	$(CBFSTOOL) $@.tmp add-stage -f $(REFCODE_BLOB) -n $(CONFIG_CBFS_PREFIX)/refcode -c $(CBFS_COMPRESS_FLAG)
-endif
-ifeq ($(CONFIG_PXE_ROM),y)
-	$(CBFSTOOL) $@.tmp add -f $(CONFIG_PXE_ROM_FILE) -n pci$(CONFIG_PXE_ROM_ID).rom -t raw
-endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE),y)
 	@printf "    UPDATE-FIT \n"
 	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
 endif
-endif
-ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
-	@printf "    CONFIG     $(PAYLOAD_CONFIG)\n"
-	if [ -f "$(PAYLOAD_CONFIG)" ]; then \
-		$(CBFSTOOL) $@.tmp add -f  "$(PAYLOAD_CONFIG)" -n payload_config -t raw; \
-	fi
-	@printf "    REVISION   $(PAYLOAD_VERSION)\n"
-	if [ -f "$(PAYLOAD_VERSION)" ]; then \
-		$(CBFSTOOL) $@.tmp add -f "$(PAYLOAD_VERSION)" -n payload_revision -t raw; \
-	fi
 endif
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
 	$(CBFSTOOL) $@.tmp add-stage -f $(VERSTAGE_FILE) -n $(CONFIG_CBFS_PREFIX)/verstage $(CBFSTOOL_VERSTAGE_OPTS)
@@ -699,6 +678,32 @@ ifeq ($(CONFIG_IASL_WARNINGS_ARE_ERRORS),)
 	@printf "\n***** WARNING: IASL warnings as errors is disabled!  *****\n"
 	@printf "*****          Please fix the ASL for this platform. *****\n\n"
 endif
+
+cbfs-files-y += $(CONFIG_CBFS_PREFIX)/ramstage
+$(CONFIG_CBFS_PREFIX)/ramstage-file := $(objcbfs)/ramstage.elf
+$(CONFIG_CBFS_PREFIX)/ramstage-type := stage
+$(CONFIG_CBFS_PREFIX)/ramstage-compression := $(CBFS_COMPRESS_FLAG)
+
+cbfs-files-$(CONFIG_HAVE_REFCODE_BLOB) += $(CONFIG_CBFS_PREFIX)/refcode
+$(CONFIG_CBFS_PREFIX)/refcode-file := $(REFCODE_BLOB)
+$(CONFIG_CBFS_PREFIX)/refcode-type := stage
+$(CONFIG_CBFS_PREFIX)/refcode-compression := $(CBFS_COMPRESS_FLAG)
+
+cbfs-files-$(CONFIG_SEABIOS_VGA_COREBOOT) += vgaroms/seavgabios.bin
+vgaroms/seavgabios.bin-file := $(CONFIG_PAYLOAD_VGABIOS_FILE)
+vgaroms/seavgabios.bin-type := raw
+
+cbfs-files-$(CONFIG_PXE_ROM) += pci$(CONFIG_PXE_ROM_ID).rom
+pci$(CONFIG_PXE_ROM_ID).rom-file := $(CONFIG_PXE_ROM_FILE)
+pci$(CONFIG_PXE_ROM_ID).rom-type := raw
+
+cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_config
+payload_config-file := $(PAYLOAD_CONFIG)
+payload_config-type := raw
+
+cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_revision
+payload_revision-file := $(PAYLOAD_VERSION)
+payload_revision-type := raw
 
 cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash.jpg
 bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))

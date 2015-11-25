@@ -224,6 +224,17 @@ cbfs-files-processor-vsa= \
 		$(LD_ramstage) -m elf_i386 -e 0x60020 --section-start .data=0x60000 $(2).tmp -o $(2))
 
 #######################################################################
+# Reduce a .config file to its minimal representation
+# arg1: input
+# arg2: output
+cbfs-files-processor-defconfig= \
+	$(eval $(2): $(1) ; \
+		printf "    CREATE     $(2) (from $(1))\n"; \
+		echo "\# This image was built using git revision" `git rev-parse HEAD` > $(2).tmp && \
+		$(MAKE) DOTCONFIG=$(1) DEFCONFIG=$(2).tmp savedefconfig && \
+		\mv -f $(2).tmp $(2))
+
+#######################################################################
 # Add handler for arbitrary files in CBFS
 $(call add-special-class,cbfs-files)
 cbfs-files-handler= \
@@ -657,15 +668,6 @@ ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
 	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_PS2_TIMEOUT) -n etc/ps2-keyboard-spinup
 endif
 endif
-ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
-	@printf "    CONFIG     $(DOTCONFIG)\n"
-	if [ -f $(DOTCONFIG) ]; then \
-	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp && \
-	$(MAKE) DOTCONFIG=$(DOTCONFIG) DEFCONFIG=$(obj)/config.tmp savedefconfig && \
-	$(CBFSTOOL) $@.tmp add -f $(obj)/config.tmp -n config -t raw; rm -f $(obj)/config.tmp ; fi
-	@printf "    REVISION   build.h\n"
-	if [ -f $(obj)/build.h ]; then $(CBFSTOOL) $@.tmp add -f $(obj)/build.h -n revision -t raw; fi
-endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE),y)
 	@printf "    UPDATE-FIT \n"
@@ -700,6 +702,14 @@ vgaroms/seavgabios.bin-type := raw
 cbfs-files-$(CONFIG_PXE_ROM) += pci$(CONFIG_PXE_ROM_ID).rom
 pci$(CONFIG_PXE_ROM_ID).rom-file := $(CONFIG_PXE_ROM_FILE)
 pci$(CONFIG_PXE_ROM_ID).rom-type := raw
+
+cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += config
+config-file := $(DOTCONFIG):defconfig
+config-type := raw
+
+cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += revision
+revision-file := $(obj)/build.h
+revision-type := raw
 
 cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_config
 payload_config-file := $(PAYLOAD_CONFIG)

@@ -225,9 +225,11 @@ $(call add-special-class,cbfs-files)
 cbfs-files-handler= \
 		$(eval tmp-cbfs-method:=$(word 2, $(subst :, ,$($(2)-file)))) \
 		$(eval $(2)-file:=$(call strip_quotes,$(word 1, $(subst :, ,$($(2)-file))))) \
-		$(if $(wildcard $(1)$($(2)-file)), \
-			$(eval tmp-cbfs-file:= $(wildcard $(1)$($(2)-file))), \
-			$(eval tmp-cbfs-file:= $($(2)-file))) \
+		$(eval tmp-cbfs-file:= ) \
+		$(if $($(2)-file), \
+			$(if $(wildcard $(1)$($(2)-file)), \
+				$(eval tmp-cbfs-file:= $(wildcard $(1)$($(2)-file))), \
+				$(eval tmp-cbfs-file:= $($(2)-file)))) \
 		$(if $(strip $($(2)-required)), \
 			$(if $(wildcard $(tmp-cbfs-file)),, \
 				$(info This build configuration requires $($(2)-required)) \
@@ -247,7 +249,8 @@ cbfs-files-handler= \
 			$(eval tmp-old-cbfs-file:=$(tmp-cbfs-file)) \
 			$(eval tmp-cbfs-file:=$(shell mkdir -p $(obj)/mainboard/$(MAINBOARDDIR); mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
 			$(call cbfs-files-processor-$(tmp-cbfs-method),$(tmp-old-cbfs-file),$(tmp-cbfs-file))) \
-		$(eval cbfs-files-$(_cbfs-bucket) += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align))\
+		$(if $(tmp-cbfs-file), \
+			$(eval cbfs-files-$(_cbfs-bucket) += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align))) \
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \
 		$(eval $(2)-compression:=) \

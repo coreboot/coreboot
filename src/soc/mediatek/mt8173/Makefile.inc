@@ -26,7 +26,7 @@ bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
 bootblock-y += gpio.c gpio_init.c pmic_wrap.c mt6391.c
-bootblock-y += wdt.c rtc.c
+bootblock-y += wdt.c
 bootblock-y += mmu_operations.c
 
 ################################################################################
@@ -49,7 +49,9 @@ romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += cbmem.c
 romstage-y += spi.c
 romstage-y += gpio.c
+romstage-y += pmic_wrap.c mt6391.c
 romstage-y += mmu_operations.c
+romstage-y += rtc.c
 
 ################################################################################
 

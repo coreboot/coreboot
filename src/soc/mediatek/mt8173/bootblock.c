@@ -17,7 +17,6 @@
 #include <soc/mmu_operations.h>
 #include <soc/mt6391.h>
 #include <soc/pll.h>
-#include <soc/rtc.h>
 #include <soc/wdt.h>
 
 void bootblock_soc_init(void)
@@ -34,6 +33,4 @@ void bootblock_soc_init(void)
 
 	/* init watch dog, will disable AP watch dog */
 	mtk_wdt_init();
-
-	rtc_boot();
 }

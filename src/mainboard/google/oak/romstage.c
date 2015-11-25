@@ -27,6 +27,7 @@
 #include <timestamp.h>
 
 #include <soc/mmu_operations.h>
+#include <soc/rtc.h>
 
 void main(void)
 {
@@ -35,6 +36,8 @@ void main(void)
 	/* init uart baudrate when pll on */
 	console_init();
 	exception_init();
+
+	rtc_boot();
 
 	mt8173_mmu_after_dram();
 

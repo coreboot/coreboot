@@ -238,11 +238,16 @@ cbfs-files-handler= \
 				$(info ERROR: It is not allowed to specify both alignment and position for $($(2)-file)) \
 				$(eval FAILBUILD:=1) \
 			)) \
+		$(eval _cbfs-bucket:=regular ) \
+		$(if $(strip $($(2)-position)), \
+			$(eval _cbfs-bucket:=fixed)) \
+		$(if $(strip $($(2)-align)), \
+			$(eval _cbfs-bucket:=aligned)) \
 		$(if $(tmp-cbfs-method), \
 			$(eval tmp-old-cbfs-file:=$(tmp-cbfs-file)) \
 			$(eval tmp-cbfs-file:=$(shell mkdir -p $(obj)/mainboard/$(MAINBOARDDIR); mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
 			$(call cbfs-files-processor-$(tmp-cbfs-method),$(tmp-old-cbfs-file),$(tmp-cbfs-file))) \
-		$(eval cbfs-files += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align))\
+		$(eval cbfs-files-$(_cbfs-bucket) += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align))\
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \
 		$(eval $(2)-compression:=) \
@@ -580,6 +585,7 @@ cbfs-add-cmd = \
 	       $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
 	       $(if $(call extract_nth,4,$(file)),-c $(call extract_nth,4,$(file)))
 
+cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuild-files = \
 	       $(foreach file,$(cbfs-files), \

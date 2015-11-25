@@ -31,62 +31,53 @@
 
 static void setup_usb(void)
 {
-#if !CONFIG_BOARD_VARIANT_AP148
-	gpio_tlmm_config_set(USB_ENABLE_GPIO, FUNC_SEL_GPIO,
-			     GPIO_PULL_UP, GPIO_10MA, GPIO_ENABLE);
-	gpio_set(USB_ENABLE_GPIO, 1);
-#endif
 	usb_clock_config();
 
 	setup_usb_host1();
 }
 
-#define TPM_RESET_GPIO 22
-static void setup_tpm(void)
+#define TPM_RESET_GPIO		19
+static void ipq_setup_tpm(void)
 {
-	if (board_id() != BOARD_ID_PROTO_0)
-		return; /* Only proto0 have TPM reset connected to GPIO22 */
-
-	gpio_tlmm_config_set(TPM_RESET_GPIO, FUNC_SEL_GPIO, GPIO_PULL_UP,
-			     GPIO_4MA, GPIO_ENABLE);
-	/*
-	 * Generate a reset pulse. The spec calls for 80 us minimum, let's
-	 * make it twice as long. If the output was driven low originally, the
-	 * reset pulse will be even longer.
-	 */
+#ifdef CONFIG_I2C_TPM
+	gpio_tlmm_config_set(TPM_RESET_GPIO, FUNC_SEL_GPIO,
+			     GPIO_PULL_UP, GPIO_6MA, 1);
 	gpio_set(TPM_RESET_GPIO, 0);
-	udelay(160);
+	udelay(100);
 	gpio_set(TPM_RESET_GPIO, 1);
-}
-
-#define SW_RESET_GPIO 26
-static void assert_sw_reset(void)
-{
-	if (board_id() == BOARD_ID_PROTO_0)
-		return;
 
 	/*
-	 * only proto0.2 and later care about this. We want to keep the
-	 * ethernet switch in reset, otherwise it comes up in default
-	 * (bridging) mode.
+	 * ----- Per the SLB 9615XQ1.2 spec -----
+	 *
+	 * 4.7.1 Reset Timing
+	 *
+	 * The TPM_ACCESS_x.tpmEstablishment bit has the correct value
+	 * and the TPM_ACCESS_x.tpmRegValidSts bit is typically set
+	 * within 8ms after RESET# is deasserted.
+	 *
+	 * The TPM is ready to receive a command after less than 30 ms.
+	 *
+	 * --------------------------------------
+	 *
+	 * I'm assuming this means "wait for 30ms"
+	 *
+	 * If we don't wait here, subsequent QUP I2C accesses
+	 * to the TPM either fail or timeout.
 	 */
-	gpio_tlmm_config_set(SW_RESET_GPIO, FUNC_SEL_GPIO,
-			     GPIO_PULL_UP, GPIO_4MA, GPIO_ENABLE);
+	mdelay(30);
 
-	gpio_set(SW_RESET_GPIO, 1);
+#endif /* CONFIG_I2C_TPM */
 }
 
 static void mainboard_init(device_t dev)
 {
-	 /* disable mmu and d-cache before setting up secure world.*/
-	 dcache_mmu_disable();
-	 start_tzbsp();
-	 /* Setup mmu and d-cache again as non secure entries. */
-	 setup_mmu(DRAM_INITIALIZED);
-	 start_rpm();
-	 setup_usb();
-	 assert_sw_reset();
-	 setup_tpm();
+	/* disable mmu and d-cache before setting up secure world.*/
+	dcache_mmu_disable();
+	start_tzbsp();
+	/* Setup mmu and d-cache again as non secure entries. */
+	setup_mmu(DRAM_INITIALIZED);
+	setup_usb();
+	ipq_setup_tpm();
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
 	/* Copy WIFI calibration data into CBMEM. */
@@ -99,7 +90,7 @@ static void mainboard_init(device_t dev)
 	 *
 	 * 48000 * 2 * 16 * 4 = 6144000
 	 */
-	audio_clock_config(6144000);
+	//audio_clock_config(6144000);
 }
 
 static void mainboard_enable(device_t dev)

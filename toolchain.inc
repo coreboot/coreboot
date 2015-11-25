@@ -155,10 +155,16 @@ ifeq ($(CONFIG_COMPILER_GCC),y)
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
 $(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
 	$(if $(shell $(CC_$(arch)) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" || echo not-coreboot), \
-		$(eval COMPILERFAIL:=1)$(warning Please use the coreboot toolchain for '$(arch)' (or prove that your toolchain works))))
+		$(eval COMPILERFAIL:=1)$(warning Please use the coreboot toolchain for '$(arch)')))
 endif
 endif
 endif
 ifeq ($(COMPILERFAIL),1)
-$(error consider building our compilers: make crossgcc)
+$(warning )
+$(warning To build the entire coreboot toolchain: make crossgcc)
+$(warning For more toolchain build targets: make help_toolchain)
+$(warning )
+$(warning *** To try to use your own toolchain, run 'make menuconfig', then select the)
+$(warning *** config option: General setup -> Allow building with any toolchain)
+$(error Note that this is NOT supported.  Using it means you're on your own)
 endif

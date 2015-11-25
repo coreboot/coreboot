@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="July 17th, 2015"
-CROSSGCC_VERSION="1.32"
+CROSSGCC_DATE="November 25th, 2015"
+CROSSGCC_VERSION="1.33"
 
 # default settings
 PACKAGE=GCC
@@ -307,6 +307,7 @@ myhelp()
 	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
 	printf "    [-y|--ccache]                 Use ccache when building cross compiler\n"
 	printf "    [-j|--jobs <num>]             run <num> jobs in parallel in make\n"
+	printf "    [-s]--supported <tool>        print supported version of a tool"
 	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
 	printf "                                  (defaults to $TARGETDIR)\n\n"
 	printf "    [-D|--destdir <dest dir>]     destination directory to install cross compiler to\n"
@@ -326,9 +327,13 @@ myhelp()
 	printf "    x86_64 i386-elf i386-mingw32 mipsel-elf riscv-elf arm aarch64\n\n"
 }
 
+printversion() {
+	printf "${blue}Welcome to the ${red}coreboot${blue} cross toolchain builder v$CROSSGCC_VERSION ($CROSSGCC_DATE)${NC}\n\n"
+}
+
 myversion()
 {
-	# version tag is always printed, so just print the license here
+	printversion
 
 	cat << EOF
 Copyright (C) 2008-2010 by coresystems GmbH
@@ -511,7 +516,23 @@ build_LLVM() {
 	done
 }
 
-printf "${blue}Welcome to the ${red}coreboot${blue} cross toolchain builder v$CROSSGCC_VERSION ($CROSSGCC_DATE)${NC}\n\n"
+print_stable() {
+	case "$PRINTSTABLE" in
+		AUTOCONF|autoconf)  printf "%s\n" "$GCC_AUTOCONF_VERSION";;
+		BINUTILS|binutils)  printf "%s\n" "$BINUTILS_VERSION";;
+		CLANG|clang)  printf "%s\n" "$CLANG_VERSION";;
+		EXPAT|expat)  printf "%s\n" "$EXPAT_VERSION";;
+		GCC|gcc)  printf "%s\n" "$GCC_VERSION";;
+		GDB|gdb)  printf "%s\n" "$GDB_VERSION";;
+		GMP|gmp)   printf "%s\n" "$GMP_VERSION";;
+		IASL|iasl) printf "%s\n" "$IASL_VERSION";;
+		LIBELF|libelf)  printf "%s\n" "$LIBELF_VERSION";;
+		MPC|mpc)  printf "%s\n" "$MPC_VERSION";;
+		MPFR|mpfr)  printf "%s\n" "$MPFR_VERSION";;
+		PYTHON|python)  printf "%s\n" "$PYTHON_VERSION";;
+		*) printf "Unknown tool %s\n" "$PRINTSTABLE";;
+	esac
+}
 
 # Look if we have getopt. If not, build it.
 export PATH=$PATH:.
@@ -521,11 +542,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,help,clean,directory:,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache Vhcd:p:l:P:j:D:tSy -- "$@")
+	args=$(getopt -l version,help,clean,directory:,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported: Vhcd:p:l:P:j:D:tSys: -- "$@")
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vhcd:p:l:P:j:D:tSy $*)
+	args=$(getopt Vhcd:p:l:P:j:D:tSys: $*)
 	set -- $args
 fi
 
@@ -548,11 +569,20 @@ while true ; do
 		-P|--package)   shift; PACKAGE="$1"; shift;;
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
+		-s|--supported) shift; PRINTSTABLE="$1"; shift;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;
 	esac
 done
+
+if [ -n "$PRINTSTABLE" ]; then
+	print_stable
+	exit 0
+fi
+
+#print toolchain builder version string as the header
+printversion
 
 case "$TARGETARCH" in
 	x86_64-elf)	;;

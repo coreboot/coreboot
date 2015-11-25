@@ -104,8 +104,8 @@ olddefconfig: $(objk)/conf
 	$< --defconfig=configs/$@ $(Kconfig)
 
 # Help text used by make help
-help::
-	@echo  '*** Kconfig Help ***'
+help_kconfig help::
+	@echo  '*** Kconfig Targets ***'
 	@echo  '  config	  - Update current config utilising a line-oriented program'
 	@echo  '  nconfig         - Update current config utilising a ncurses menu based program'
 	@echo  '  menuconfig	  - Update current config utilising a menu based program'

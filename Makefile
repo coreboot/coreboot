@@ -121,7 +121,7 @@ ifeq ($(strip $(HAVE_DOTCONFIG)),)
 NOCOMPILE:=1
 endif
 ifneq ($(MAKECMDGOALS),)
-ifneq ($(filter %config %clean cross% clang iasl lint% what-jenkins-does,$(MAKECMDGOALS)),)
+ifneq ($(filter %config %clean cross% clang iasl lint% help% what-jenkins-does,$(MAKECMDGOALS)),)
 NOCOMPILE:=1
 endif
 ifeq ($(MAKECMDGOALS), %clean)

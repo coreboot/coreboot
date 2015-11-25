@@ -451,6 +451,8 @@ help::
 	@echo  '  crossgcc        - Build coreboot cross-compilers for all platforms'
 	@echo  '  crosstools      - Build coreboot cross-compiler and GDB for all platforms'
 	@echo  '  crossgcc-clean  - Remove all built coreboot cross-compilers'
+	@echo  '  iasl            - Build coreboot IASL compiler (built by all cross targets)'
+	@echo  '  clang           - Build coreboot clang compiler'
 	@echo  '  crossgcc-ARCH   - Build cross-compiler for specific architecture'
 	@echo  '  crosstools-ARCH - Build cross-compiler with GDB for specific architecture'
 	@echo  '  ARCH can be "i386", "x64", "arm", "aarch64", "mips", or "riscv"'
@@ -463,7 +465,11 @@ help::
 crossgcc:
 	$(MAKE) -C util/crossgcc all_without_gdb SKIP_CLANG=1
 
-.PHONY: crossgcc-i386 crossgcc-x64 crossgcc-arm crossgcc-aarch64 crossgcc-mips crossgcc-riscv
+.PHONY: crossgcc crossgcc-i386 crossgcc-x64 crossgcc-arm crossgcc-aarch64 \
+	crossgcc-mips crossgcc-riscv crossgcc-clean iasl clang tools \
+	crosstools-i386 crosstools-x64 crosstools-arm crosstools-aarch64 \
+	crosstools-mips crosstools-riscv
+
 crossgcc-i386: clean-for-update
 	$(MAKE) -C util/crossgcc build-i386 SKIP_GDB=1
 
@@ -485,7 +491,12 @@ crossgcc-riscv: clean-for-update
 crosstools:
 	$(MAKE) -C util/crossgcc all_with_gdb SKIP_CLANG=1
 
-.PHONY: crosstools-i386 crosstools-x64 crosstools-arm crosstools-aarch64 crosstools-mips crosstools-riscv
+iasl:
+	$(MAKE) -C util/crossgcc build_iasl
+
+clang:
+	$(MAKE) -C util/crossgcc build_clang
+
 crosstools-i386: clean-for-update
 	$(MAKE) -C util/crossgcc build-i386
 

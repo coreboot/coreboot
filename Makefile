@@ -93,8 +93,8 @@ DOXYGEN_OUTPUT_DIR := doxygen
 
 all: real-all
 
-help::
-	@echo  '*** coreboot platform ***'
+help_coreboot help::
+	@echo  '*** coreboot platform targets ***'
 	@echo  '  Use "make [target] V=1" for extra build debug information'
 	@echo  '  all                   - Build coreboot'
 	@echo  '  clean                 - Remove coreboot build artifacts'
@@ -121,7 +121,7 @@ ifeq ($(strip $(HAVE_DOTCONFIG)),)
 NOCOMPILE:=1
 endif
 ifneq ($(MAKECMDGOALS),)
-ifneq ($(filter %config %clean cross% lint% what-jenkins-does,$(MAKECMDGOALS)),)
+ifneq ($(filter %config %clean cross% clang iasl lint% what-jenkins-does,$(MAKECMDGOALS)),)
 NOCOMPILE:=1
 endif
 ifeq ($(MAKECMDGOALS), %clean)

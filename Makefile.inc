@@ -269,12 +269,13 @@ cbfs-files-handler= \
 			$(eval tmp-cbfs-file:=$(shell mkdir -p $(obj)/mainboard/$(MAINBOARDDIR); mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
 			$(call cbfs-files-processor-$(tmp-cbfs-method),$(tmp-old-cbfs-file),$(tmp-cbfs-file))) \
 		$(if $(tmp-cbfs-file), \
-			$(eval cbfs-files-$(_cbfs-bucket) += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align))) \
+			$(eval cbfs-files-$(_cbfs-bucket) += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align)|$($(2)-options))) \
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \
 		$(eval $(2)-compression:=) \
 		$(eval $(2)-position:=) \
 		$(eval $(2)-required:=) \
+		$(eval $(2)-options:=) \
 		$(eval $(2)-align:=)
 
 #######################################################################
@@ -605,7 +606,8 @@ cbfs-add-cmd = \
 	       -f $(call extract_nth,1,$(file)) \
 	       -n $(call extract_nth,2,$(file)) \
 	       $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
-	       $(if $(call extract_nth,4,$(file)),-c $(call extract_nth,4,$(file)))
+	       $(if $(call extract_nth,4,$(file)),-c $(call extract_nth,4,$(file))) \
+	       $(call extract_nth,7,$(file))
 
 cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
 ifneq ($(CONFIG_UPDATE_IMAGE),y)

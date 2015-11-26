@@ -50,15 +50,6 @@ mbi.bin-type := mbi
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 CBFSTOOL_PRE1_OPTS = -m x86 -s $(CONFIG_ROM_SIZE) \
 		     -o $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
-# Use a '-a 64' option to cbfstool locate to provide a minimum alignment
-# requirement for the overall romstage. While the first object within
-# romstage could have a 4 byte minimum alignment that doesn't mean the linker
-# won't decide the entire section should be aligned to a larger value. In the
-# future cbfstool should add XIP files proper and honor the alignment
-# requirements of the program segment.
-#
-# Make sure that segment for .car.data is ignored while adding romstage.
-CBFSTOOL_PRE_OPTS  = -a 64 --xip -S ".car.data" -P $(CONFIG_XIP_ROM_SIZE)
 endif
 
 ## Calculate the base address of CBFS for later comparisons
@@ -180,9 +171,6 @@ $(eval $(call early_x86_stage,verstage,elf32-i386))
 else
 $(eval $(call early_x86_stage,verstage,elf64-x86-64))
 endif
-
-# Verstage on x86 expected to be xip.
-CBFSTOOL_VERSTAGE_OPTS  = -a 64 --xip -S ".car.data"
 
 endif # CONFIG_ARCH_VERSTAGE_X86_32 / CONFIG_ARCH_VERSTAGE_X86_64
 

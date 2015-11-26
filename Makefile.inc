@@ -654,19 +654,12 @@ $(REFCODE_BLOB): $(RMODTOOL)
 	$(RMODTOOL) -i $(CONFIG_REFCODE_BLOB_FILE) -o $@
 endif
 
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $$(call strip_quotes,$$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $(REFCODE_BLOB) $$(VERSTAGE_FILE)
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $$(call strip_quotes,$$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $(REFCODE_BLOB)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 # The full ROM may be larger than the CBFS part, so create an empty
 # file (filled with \377 = 0xff) and copy the CBFS image over it.
 	dd if=/dev/zero bs=$(call _toint,$(CONFIG_ROM_SIZE)) count=1 2> /dev/null | tr '\000' '\377' > $@.tmp
 	dd if=$(obj)/coreboot.pre of=$@.tmp bs=8192 conv=notrunc 2> /dev/null
-ifeq ($(CONFIG_PAYLOAD_NONE),y)
-	@printf "    PAYLOAD    none (as specified by user)\n"
-endif
-ifneq ($(CONFIG_PAYLOAD_FILE),)
-	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG) $(ADDITIONAL_PAYLOAD_CONFIG)
-endif
 ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),)
 ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
 	@printf "    SeaBIOS    Wait up to $(CONFIG_SEABIOS_PS2_TIMEOUT) ms for PS/2 keyboard controller initialization\n"
@@ -679,9 +672,6 @@ ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE),y)
 	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
 endif
 endif
-ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
-	$(CBFSTOOL) $@.tmp add-stage -f $(VERSTAGE_FILE) -n $(CONFIG_CBFS_PREFIX)/verstage $(CBFSTOOL_VERSTAGE_OPTS)
-endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print
@@ -690,10 +680,36 @@ ifeq ($(CONFIG_IASL_WARNINGS_ARE_ERRORS),)
 	@printf "*****          Please fix the ASL for this platform. *****\n\n"
 endif
 
+cbfs-files-y += $(CONFIG_CBFS_PREFIX)/romstage
+$(CONFIG_CBFS_PREFIX)/romstage-file := $(objcbfs)/romstage.elf
+$(CONFIG_CBFS_PREFIX)/romstage-type := stage
+$(CONFIG_CBFS_PREFIX)/romstage-compression := none
+ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
+$(CONFIG_CBFS_PREFIX)/romstage-options := -b 0
+endif
+ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
+# Use a 64 byte alignment to provide a minimum alignment
+# requirement for the overall romstage. While the first object within
+# romstage could have a 4 byte minimum alignment that doesn't mean the linker
+# won't decide the entire section should be aligned to a larger value. In the
+# future cbfstool should add XIP files proper and honor the alignment
+# requirements of the program segment.
+#
+# Make sure that segment for .car.data is ignored while adding romstage.
+$(CONFIG_CBFS_PREFIX)/romstage-align := 64
+$(CONFIG_CBFS_PREFIX)/romstage-options := --xip -S .car.data -P $(CONFIG_XIP_ROM_SIZE)
+endif
+
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/ramstage
 $(CONFIG_CBFS_PREFIX)/ramstage-file := $(objcbfs)/ramstage.elf
 $(CONFIG_CBFS_PREFIX)/ramstage-type := stage
 $(CONFIG_CBFS_PREFIX)/ramstage-compression := $(CBFS_COMPRESS_FLAG)
+
+cbfs-files-y += $(CONFIG_CBFS_PREFIX)/payload
+$(CONFIG_CBFS_PREFIX)/payload-file := $(CONFIG_PAYLOAD_FILE)
+$(CONFIG_CBFS_PREFIX)/payload-type := payload
+$(CONFIG_CBFS_PREFIX)/payload-compression := $(CBFS_PAYLOAD_COMPRESS_FLAG)
+$(CONFIG_CBFS_PREFIX)/payload-options := $(ADDITIONAL_PAYLOAD_CONFIG)
 
 cbfs-files-$(CONFIG_HAVE_REFCODE_BLOB) += $(CONFIG_CBFS_PREFIX)/refcode
 $(CONFIG_CBFS_PREFIX)/refcode-file := $(REFCODE_BLOB)
@@ -731,10 +747,6 @@ bootsplash.jpg-type := bootsplash
 $(obj)/coreboot.pre: $(objcbfs)/romstage.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
-	$(CBFSTOOL) $@.tmp add-stage \
-		-f $(objcbfs)/romstage.elf \
-		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
-		$(CBFSTOOL_PRE_OPTS)
 	mv $@.tmp $@
 
 cbfs-files-$(CONFIG_BOARD_ID_MANUAL) += board_id

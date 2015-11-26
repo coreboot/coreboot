@@ -23,7 +23,6 @@
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
 CBFSTOOL_PRE1_OPTS = -m arm -s $(CONFIG_CBFS_SIZE)
-CBFSTOOL_PRE_OPTS = -b 0
 endif
 
 ifeq ($(CONFIG_ARCH_ARM),y)

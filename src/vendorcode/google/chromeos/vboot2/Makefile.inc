@@ -69,7 +69,15 @@ $(VB2_LIB): $(obj)/config.h
 libverstage-srcs += $(VB2_LIB)
 
 ifeq ($(CONFIG_SEPARATE_VERSTAGE),y)
-VERSTAGE_FILE = $(objcbfs)/verstage.elf
+cbfs-files-$(CONFIG_SEPARATE_VERSTAGE) += $(CONFIG_CBFS_PREFIX)/verstage
+$(CONFIG_CBFS_PREFIX)/verstage-file := $(objcbfs)/verstage.elf
+$(CONFIG_CBFS_PREFIX)/verstage-type := stage
+# Verstage on x86 expected to be xip.
+ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
+$(CONFIG_CBFS_PREFIX)/verstage-options := -a 64 --xip -S ".car.data"
+
+endif
+
 else
 ifeq ($(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),y)
 bootblock-srcs += $(objgenerated)/libverstage.a

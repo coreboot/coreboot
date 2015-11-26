@@ -601,6 +601,7 @@ COREBOOT_ROM_DEPENDENCIES:=
 extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-))))
 
 cbfs-add-cmd = \
+               printf "    CBFS       $(call extract_nth,2,$(file))\n"; \
 	       $(CBFSTOOL) $@.tmp \
 	       add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage)$(if $(filter payload,$(call extract_nth,3,$(file))),-payload) \
 	       -f $(call extract_nth,1,$(file)) \

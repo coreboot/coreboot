@@ -269,7 +269,7 @@ cbfs-files-handler= \
 			$(eval tmp-cbfs-file:=$(shell mkdir -p $(obj)/mainboard/$(MAINBOARDDIR); mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
 			$(call cbfs-files-processor-$(tmp-cbfs-method),$(tmp-old-cbfs-file),$(tmp-cbfs-file))) \
 		$(if $(tmp-cbfs-file), \
-			$(eval cbfs-files-$(_cbfs-bucket) += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align)|$($(2)-options))) \
+			$(eval cbfs-files-$(_cbfs-bucket) += $(subst $(spc),*,$(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$(strip $($(2)-position))|$($(2)-align)|$($(2)-options)))) \
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \
 		$(eval $(2)-compression:=) \
@@ -598,7 +598,7 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 
 COREBOOT_ROM_DEPENDENCIES:=
 
-extract_nth=$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-)))
+extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-))))
 
 cbfs-add-cmd = \
 	       $(CBFSTOOL) $@.tmp \

@@ -23,6 +23,9 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
+	// Include mainboard configuration
+	#include <acpi/mainboard.asl>
+
 	// Include debug methods
 	#include <arch/x86/acpi/debug.asl>
 

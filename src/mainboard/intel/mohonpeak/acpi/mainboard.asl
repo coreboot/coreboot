@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+// #define ACPI_INCLUDE_PMIO 1 /* uncomment to enable PMIO block in soc.asl */
+// #define ACPI_INCLUDE_GPIO 1 /* uncomment to enable GPIO block in soc.asl */
+
 Device (PWRB)
 {
 	Name(_HID, EisaId("PNP0C0C"))

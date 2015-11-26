@@ -30,7 +30,7 @@ Scope(\)
 		TRP0, 8		// IO-Trap at 0x808
 	}
 
-#if IS_ENABLED(CONFIG_ACPI_INCLUDE_PMIO)
+#ifdef ACPI_INCLUDE_PMIO
 	// PCH Power Management Registers, located at PMBASE (0x1f.0 0x40.l)
 	OperationRegion(PMIO, SystemIO, DEFAULT_ABASE, 0x80)
 	Field(PMIO, ByteAcc, NoLock, Preserve)
@@ -77,7 +77,7 @@ Scope(\)
 	}
 #endif
 
-#if IS_ENABLED(CONFIG_ACPI_INCLUDE_GPIO)
+#ifdef ACPI_INCLUDE_GPIO
 	// GPIO IO mapped registers (0x1f.0 reg 0x48.l)
 	OperationRegion(GPIO, SystemIO, DEFAULT_GPIOBASE, 0x6c)
 	Field(GPIO, ByteAcc, NoLock, Preserve)

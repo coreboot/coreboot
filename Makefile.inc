@@ -617,7 +617,7 @@ prebuild-files = \
 	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
-$(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(FMAPTOOL) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)
+$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(FMAPTOOL) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)
 	$(CBFSTOOL) $@.tmp create \
 	-B $(objcbfs)/bootblock.bin \
 	$(CBFSTOOL_PRE1_OPTS)
@@ -632,8 +632,8 @@ prebuild-files = \
 	       $(if $(call extract_nth,6,$(file)),$(cbfs-add-cmd) -a $(call extract_nth,6,$(file)) &&,\
 	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
 
-.PHONY: $(obj)/coreboot.pre1
-$(obj)/coreboot.pre1: $$(prebuilt-files) $(CBFSTOOL)
+.PHONY: $(obj)/coreboot.pre
+$(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)
 	mv $(obj)/coreboot.rom $@.tmp
 	$(prebuild-files) true
 	mv $@.tmp $@
@@ -743,11 +743,6 @@ payload_revision-type := raw
 cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash.jpg
 bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash.jpg-type := bootsplash
-
-$(obj)/coreboot.pre: $(objcbfs)/romstage.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
-	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
-	cp $(obj)/coreboot.pre1 $@.tmp
-	mv $@.tmp $@
 
 cbfs-files-$(CONFIG_BOARD_ID_MANUAL) += board_id
 board_id-file := $(obj)/board_id

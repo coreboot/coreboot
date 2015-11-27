@@ -232,10 +232,13 @@ cbfs-files-processor-vsa= \
 # arg1: input
 # arg2: output
 cbfs-files-processor-defconfig= \
-	$(eval $(2): $(1) ; \
+	$(eval $(2): $(1) $(obj)/build.h; \
 		printf "    CREATE     $(2) (from $(1))\n"; \
-		echo "\# This image was built using git revision" `git rev-parse HEAD` > $(2).tmp && \
-		$(MAKE) DOTCONFIG=$(1) DEFCONFIG=$(2).tmp savedefconfig && \
+		printf "\# This image was built using coreboot " > $(2).tmp && \
+		grep "\<COREBOOT_VERSION\>" $(obj)/build.h |cut -d\" -f2 >> $(2).tmp && \
+		$(MAKE) DOTCONFIG=$(1) DEFCONFIG=$(2).tmp2 savedefconfig && \
+		cat $(2).tmp2 >> $(2).tmp && \
+		rm -f $(2).tmp2 && \
 		\mv -f $(2).tmp $(2))
 
 #######################################################################

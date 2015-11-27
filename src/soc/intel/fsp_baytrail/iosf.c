@@ -18,9 +18,6 @@
 #include <baytrail/iosf.h>
 
 #if !defined(__PRE_RAM__)
-#ifndef CONFIG_MMCONF_BASE_ADDRESS
-#error CONFIG_MMCONF_BASE_ADDRESS must be set.
-#endif
 #define IOSF_PCI_BASE (CONFIG_MMCONF_BASE_ADDRESS + (IOSF_PCI_DEV << 12))
 
 static inline void write_iosf_reg(int reg, uint32_t value)

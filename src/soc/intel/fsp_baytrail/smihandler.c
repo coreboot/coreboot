@@ -177,9 +177,6 @@ static void southbridge_smi_sleep(void)
  */
 static em64t100_smm_state_save_area_t *smi_apmc_find_state_save(uint8_t cmd)
 {
-#ifndef CONFIG_MAX_CPUS
-#error CONFIG_MAX_CPUS must be set.
-#endif
 	em64t100_smm_state_save_area_t *state;
 	int node;
 

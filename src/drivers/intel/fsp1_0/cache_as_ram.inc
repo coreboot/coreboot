@@ -20,10 +20,6 @@
 #include <cpu/x86/post_code.h>
 #include <cbmem.h>
 
-#ifndef CONFIG_FSP_LOC
-# error "CONFIG_FSP_LOC must be set."
-#endif
-
 	cmp   $0, %eax
 	je    cache_as_ram
 	mov   $0xa0, %eax

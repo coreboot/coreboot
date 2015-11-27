@@ -93,10 +93,6 @@
 	#define TRY_HIGH_FIRST 0
 #endif
 
-#ifndef CONFIG_K8_HT_FREQ_1G_SUPPORT
-	#define CONFIG_K8_HT_FREQ_1G_SUPPORT 0
-#endif
-
 #ifndef K8_HT_CHECK_PENDING_LINK
 	#if CONFIG_MAX_PHYSICAL_CPUS >= 4
 		#define K8_HT_CHECK_PENDING_LINK 1
@@ -108,11 +104,6 @@
 #ifndef CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
 	#define CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED 0
 #endif
-
-#ifndef CONFIG_ENABLE_APIC_EXT_ID
-	#define CONFIG_ENABLE_APIC_EXT_ID 0
-#endif
-
 
 static inline void print_linkn (const char *strval, uint8_t byteval)
 {

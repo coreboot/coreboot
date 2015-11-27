@@ -147,9 +147,6 @@ static void adjust_apic_id_map(struct smm_loader_params *smm_params)
 
 static void asmlinkage cpu_smm_do_relocation(void *arg)
 {
-#ifndef CONFIG_MAX_CPUS
-#error CONFIG_MAX_CPUS must be set.
-#endif
 	msr_t smrr;
 	em64t100_smm_state_save_area_t *smm_state;
         const struct smm_module_params *p;
@@ -204,9 +201,6 @@ static int install_relocation_handler(int num_cpus)
 
 static int install_permanent_handler(int num_cpus)
 {
-#ifndef CONFIG_SMM_RESERVED_SIZE
-#error CONFIG_SMM_RESERVED_SIZE must be set.
-#endif
 	/* There are num_cpus concurrent stacks and num_cpus concurrent save
 	 * state areas. Lastly, set the stack size to the save state size. */
 	int save_state_size = sizeof(em64t100_smm_state_save_area_t);

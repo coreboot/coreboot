@@ -115,10 +115,6 @@ volatile u8 * find_fsp ()
 	volatile u8 *fsp_ptr;
 #endif 	/* __PRE_RAM__ */
 
-#ifndef CONFIG_FSP_LOC
-#error "CONFIG_FSP_LOC must be set."
-#endif
-
 	/* The FSP is stored in CBFS */
 	fsp_ptr = (u8 *) CONFIG_FSP_LOC;
 

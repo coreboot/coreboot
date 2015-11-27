@@ -27,10 +27,6 @@
 #include <lib.h> // hexdump
 #include "fsp_util.h"
 
-#ifndef CONFIG_VIRTUAL_ROM_SIZE
-#error "CONFIG_VIRTUAL_ROM_SIZE must be set."
-#endif
-
 /* convert a pointer to flash area into the offset inside the flash */
 static inline u32 to_flash_offset(void *p) {
 	return ((u32)p + CONFIG_VIRTUAL_ROM_SIZE);

@@ -46,9 +46,6 @@ static int nvm_init(void)
 /* Convert memory mapped pointer to flash offset. */
 static inline uint32_t to_flash_offset(void *p)
 {
-#ifndef CONFIG_ROM_SIZE
-#error CONFIG_ROM_SIZE must be set.
-#endif
 	return CONFIG_ROM_SIZE + (uintptr_t)p;
 }
 

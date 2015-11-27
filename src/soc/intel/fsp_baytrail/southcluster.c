@@ -57,9 +57,6 @@ add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
 
 static void sc_add_mmio_resources(device_t dev)
 {
-#ifndef CONFIG_VIRTUAL_ROM_SIZE
-#error CONFIG_VIRTUAL_ROM_SIZE must be set.
-#endif
 	add_mmio_resource(dev, 0xfeb, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE);
 	add_mmio_resource(dev, PBASE, PMC_BASE_ADDRESS, PMC_BASE_SIZE);
 	add_mmio_resource(dev, IOBASE, IO_BASE_ADDRESS, IO_BASE_SIZE);

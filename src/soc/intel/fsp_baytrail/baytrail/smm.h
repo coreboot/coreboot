@@ -22,10 +22,6 @@
  * clobbered by the arch/x86/Kconfig if they have the same name. */
 static inline int smm_region_size(void)
 {
-#ifndef CONFIG_SMM_TSEG_SIZE
-#error CONFIG_SMM_TSEG_SIZE must be set.
-#endif
-
 	/* Make it 8MiB by default. */
 	if (CONFIG_SMM_TSEG_SIZE == 0)
 		return (8 << 20);

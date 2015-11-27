@@ -49,11 +49,6 @@
 
 /* coreboot wrapper for TPM driver (end) */
 
-#ifndef CONFIG_TPM_TIS_BASE_ADDRESS
-/* Base TPM address standard for x86 systems */
-#define CONFIG_TPM_TIS_BASE_ADDRESS        0xfed40000
-#endif
-
 /* the macro accepts the locality value, but only locality 0 is operational */
 #define TIS_REG(LOCALITY, REG) \
     (void *)(CONFIG_TPM_TIS_BASE_ADDRESS + (LOCALITY << 12) + REG)

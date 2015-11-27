@@ -24,10 +24,6 @@
 #include "../chip.h"
 #include <reset.h>
 
-#ifndef CONFIG_ENABLE_FSP_FAST_BOOT
-# error "CONFIG_ENABLE_FSP_FAST_BOOT must be set."
-#endif
-
 #ifdef __PRE_RAM__
 
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_FSP_I89XX)

@@ -5,9 +5,6 @@
 #include "option_table.h"
 #endif
 
-#ifndef CONFIG_MAX_REBOOT_CNT
-#error "CONFIG_MAX_REBOOT_CNT not defined"
-#endif
 #if  CONFIG_MAX_REBOOT_CNT > 15
 #error "CONFIG_MAX_REBOOT_CNT too high"
 #endif

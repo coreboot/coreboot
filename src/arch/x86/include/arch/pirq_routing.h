@@ -43,10 +43,6 @@ struct irq_info {
 	u8 rfu;
 } __attribute__((packed));
 
-#ifndef CONFIG_IRQ_SLOT_COUNT
-#warning "IRQ_SLOT_COUNT is not defined in Kconfig. PIRQ won't work correctly."
-#endif
-
 struct irq_routing_table {
 	u32 signature;		/* PIRQ_SIGNATURE should be here */
 	u16 version;		/* PIRQ_VERSION */

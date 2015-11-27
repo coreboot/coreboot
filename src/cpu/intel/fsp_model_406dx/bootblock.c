@@ -45,10 +45,6 @@ static void check_for_warm_reset(void)
 
 static void set_var_mtrr(int reg, uint32_t base, uint32_t size, int type)
 {
-#ifndef CONFIG_CPU_ADDR_BITS
-#error "CONFIG_CPU_ADDR_BITS must be set."
-#endif
-
 	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
 	msr_t basem, maskm;
 	basem.lo = base | type;

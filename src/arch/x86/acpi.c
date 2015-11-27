@@ -38,11 +38,6 @@
 #include <timestamp.h>
 #include <romstage_handoff.h>
 
-/* FIXME: Kconfig doesn't support overridable defaults :-( */
-#ifndef CONFIG_HPET_MIN_TICKS
-#define CONFIG_HPET_MIN_TICKS 0x1000
-#endif
-
 u8 acpi_checksum(u8 *table, u32 length)
 {
 	u8 ret = 0;

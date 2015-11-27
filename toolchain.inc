@@ -151,17 +151,24 @@ ifneq ($(NOCOMPILE),1)
 # only run if we're doing a build (not for tests, kconfig, ...), using gcc
 # rationale: gcc versions by Linux distributions tend to be quite messed up
 COMPILERFAIL:=0
+IASLFAIL:=0
 ifeq ($(CONFIG_COMPILER_GCC),y)
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
 $(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
 	$(if $(shell $(CC_$(arch)) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" || echo not-coreboot), \
 		$(eval COMPILERFAIL:=1)$(warning Please use the coreboot toolchain for '$(arch)')))
+#if iasl doesn't match the current coreboot version, fail the test
+$(if $(shell $(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || echo not-coreboot), \
+	$(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1)$(warning Please use the coreboot toolchain version of iasl - $(shell util/crossgcc/buildgcc -s iasl)))
 endif
 endif
 endif
 ifeq ($(COMPILERFAIL),1)
 $(warning )
 $(warning To build the entire coreboot toolchain: make crossgcc)
+ifeq ($(IASLFAIL),1)
+$(warning To build just IASL: make iasl)
+endif
 $(warning For more toolchain build targets: make help_toolchain)
 $(warning )
 $(warning *** To try to use your own toolchain, run 'make menuconfig', then select the)

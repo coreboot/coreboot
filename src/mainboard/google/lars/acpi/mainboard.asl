@@ -44,6 +44,46 @@ Scope (\_SB)
 	{
 		Name (_HID, EisaId ("PNP0C0C"))
 	}
+
+	Device (MAXM)
+	{
+		Name (_HID, "MX98357A")
+		Name (_DDN, "Maxim Integrated 98357A Amplifier")
+		Name (_UID, 1)
+		Name (_CRS, ResourceTemplate()
+		{
+			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+				IoRestrictionNone,
+				"\\_SB.PCI0.GPIO", 0x00, ResourceConsumer,,)
+			{
+				GPIO_SPEAKER_MAXIM_AMP_SDMODE,
+			}
+		})
+		Name (_DSD, Package ()
+		{
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package ()
+			{
+				Package () {
+					/*
+					 * Create a named GPIO
+					 * "sdmode-gpio" for the
+					 * kernel codec driver
+					 * to use.
+					 */
+
+					"sdmode-gpio", Package () {
+								^MAXM, 0, 0, 0
+							}
+				},
+			}
+		})
+
+		Method (_STA)
+		{
+			Return (0xF)
+		}
+	}
 }
 
 /*
@@ -194,54 +234,6 @@ Scope (\_SB.PCI0.I2C4)
 			{
 				BOARD_HP_MIC_CODEC_IRQ
 			}
-		})
-
-		Method (_STA)
-		{
-			Return (0xF)
-		}
-	}
-
-	/* Left Speaker Amp */
-	Device (SPKL)
-	{
-		Name (_HID, "INT343B")
-		Name (_DDN, "SSM4567 Speaker Amp")
-		Name (_UID, 0)
-
-		Name (_CRS, ResourceTemplate()
-		{
-			I2cSerialBus (
-				BOARD_LEFT_SPEAKER_AMP_I2C_ADDR,
-				ControllerInitiated,
-				400000,
-				AddressingMode7Bit,
-				"\\_SB.PCI0.I2C4",
-			)
-		})
-
-		Method (_STA)
-		{
-			Return (0xF)
-		}
-	}
-
-	/* Right Speaker Amp */
-	Device (SPKR)
-	{
-		Name (_HID, "INT343B")
-		Name (_DDN, "SSM4567 Speaker Amp")
-		Name (_UID, 1)
-
-		Name (_CRS, ResourceTemplate()
-		{
-			I2cSerialBus (
-				BOARD_RIGHT_SPEAKER_AMP_I2C_ADDR,
-				ControllerInitiated,
-				400000,
-				AddressingMode7Bit,
-				"\\_SB.PCI0.I2C4",
-			)
 		})
 
 		Method (_STA)

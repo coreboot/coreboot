@@ -20,6 +20,9 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 
+/* MAX98357A SD_MODE */
+#define GPIO_SPEAKER_MAXIM_AMP_SDMODE	GPP_B2
+
 /* EC in RW */
 #define GPIO_EC_IN_RW		GPP_C6
 

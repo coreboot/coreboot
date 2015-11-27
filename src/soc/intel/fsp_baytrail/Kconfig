@@ -35,7 +35,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_MP
 	select REG_SCRIPT
 	select SMM_TSEG
-	select BAYTRAIL_SMM
 	select SMP
 	select SPI_FLASH
 	select SSE2

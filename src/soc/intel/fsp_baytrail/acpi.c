@@ -22,6 +22,7 @@
 #include <arch/acpigen.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/smm.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <arch/smp/mpspec.h>
@@ -208,18 +209,10 @@ void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	/* System Management */
 	fadt->sci_int = acpi_sci_irq();
-#if IS_ENABLED(CONFIG_BAYTRAIL_SMM)
+
 	fadt->smi_cmd = APM_CNT;
 	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-#else
-	fadt->smi_cmd = 0x00;		/* disable SMM */
-	fadt->acpi_enable = 0x00;	/* unused if SMI_CMD = 0 */
-	fadt->acpi_disable = 0x00;	/* unused if SMI_CMD = 0 */
-
-	/* Enable ACPI */
-	outl(inl(pmbase + 4) | 0x01, pmbase + 4);
-#endif
 
 	/* Power Control */
 	fadt->s4bios_req = 0x00;

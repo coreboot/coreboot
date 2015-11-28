@@ -137,7 +137,7 @@ sub check_for_ifdef {
             my $symbol = $3;
 
             if ((exists $symbols{$symbol}) && ($symbols{$symbol}{type} ne "string")) {
-                    show_error("#ifdef 'CONFIG_$symbol' used in $file at line $lineno.  Symbols of type '$symbols{$symbol}{type}' are always defined.");
+                    show_error("#ifdef 'CONFIG_$symbol' used at $file:$lineno.  Symbols of type '$symbols{$symbol}{type}' are always defined.");
             }
         }
     }
@@ -154,7 +154,7 @@ sub check_for_ifdef {
             next if ( $line =~ /^([^:]+):(\d+):.+defined\s*\(\s*CONFIG_$symbol.*(&&|\|\|)\s*!?\s*\(?\s*CONFIG_$symbol/ );
 
             if ((exists $symbols{$symbol}) && ($symbols{$symbol}{type} ne "string")) {
-                show_error("defined 'CONFIG_$symbol' used in $file at line $lineno.  Symbols of type '$symbols{$symbol}{type}' are always defined.");
+                show_error("defined 'CONFIG_$symbol' used at $file:$lineno.  Symbols of type '$symbols{$symbol}{type}' are always defined.");
             }
         }
     }
@@ -177,9 +177,9 @@ sub check_for_def {
             my $symbol = $3;
 
             if ((exists $symbols{$symbol})) {
-                show_warning("#define of symbol 'CONFIG_$symbol' used in $file at line $lineno.");
+                show_warning("#define of symbol 'CONFIG_$symbol' used at $file:$lineno.");
             } else {
-                show_warning("#define 'CONFIG_$symbol' used in $file at line $lineno.  Other #defines should not look like Kconfig symbols.");
+                show_warning("#define 'CONFIG_$symbol' used at $file:$lineno.  Other #defines should not look like Kconfig symbols.");
 	    }
         }
     }
@@ -239,7 +239,7 @@ sub check_defaults {
                 if ($default_set) {
                     my $filename = $symbols{$sym}{$sym_num}{file};
                     my $line_no  = $symbols{$sym}{$sym_num}{default}{$def_num}{default_line_no};
-                    show_warning("Default for '$sym' referenced in $filename at line $line_no will never be set - overridden by default set in $default_filename at line $default_line_no");
+                    show_warning("Default for '$sym' referenced at $filename:$line_no will never be set - overridden by default set at $default_filename:$default_line_no");
                 }
                 else {
                     #if no default is set, see if this is a default with no dependencies
@@ -272,7 +272,7 @@ sub check_referenced_symbols {
         for ( my $i = 0 ; $i <= $referenced_symbols{$key}{count} ; $i++ ) {
             my $filename = $referenced_symbols{$key}{$i}{filename};
             my $line_no  = $referenced_symbols{$key}{$i}{line_no};
-            show_error("Undefined Symbol '$key' used in $filename at line $line_no.");
+            show_error("Undefined Symbol '$key' used at $filename:$line_no.");
         }
     }
 }
@@ -334,7 +334,7 @@ sub check_used_symbols {
         for ( my $i = 0 ; $i <= $symbols{$key}{count} ; $i++ ) {
             my $filename = $symbols{$key}{$i}{file};
             my $line_no  = $symbols{$key}{$i}{line_no};
-            show_warning("Unused symbol '$key' referenced in $filename at line $line_no.");
+            show_warning("Unused symbol '$key' referenced at $filename:$line_no.");
         }
     }
 }
@@ -448,12 +448,12 @@ sub build_and_parse_kconfig_tree {
         elsif ( $line =~ /^\s*endchoice/ ) {
             $inside_config = "";
             if ( !$inside_choice ) {
-                show_error("'endchoice' keyword not within a choice block in $filename at line $line_no.");
+                show_error("'endchoice' keyword not within a choice block at $filename:$line_no.");
             }
 
             $inside_choice = "";
             if ( $configs_inside_choice == 0 ) {
-                show_error("choice block has no symbols in $filename at line $line_no.");
+                show_error("choice block has no symbols at $filename:$line_no.");
             }
             $configs_inside_choice = 0;
         }
@@ -461,10 +461,10 @@ sub build_and_parse_kconfig_tree {
         # [optional]
         elsif ( $line =~ /^\s*optional/ ) {
             if ($inside_config) {
-                show_error("Keyword 'optional' appears inside config for  '$inside_config' in $filename at line $line_no.  This is not valid.");
+                show_error("Keyword 'optional' appears inside config for '$inside_config' at $filename:$line_no.  This is not valid.");
             }
             if ( !$inside_choice ) {
-                show_error("Keyword 'optional' appears outside of a choice block in $filename at line $line_no.  This is not valid.");
+                show_error("Keyword 'optional' appears outside of a choice block at $filename:$line_no.  This is not valid.");
             }
         }
 
@@ -518,7 +518,7 @@ sub build_and_parse_kconfig_tree {
         # select <symbol> [if <expr>]
         elsif ( $line =~ /^\s*select/ ) {
             unless ($inside_config) {
-                show_error("Keyword 'select' appears outside of config in $filename at line $line_no.  This is not valid.");
+                show_error("Keyword 'select' appears outside of config at $filename:$line_no.  This is not valid.");
             }
 
             if ( $line =~ /^\s*select\s+(.*)$/ ) {
@@ -545,7 +545,7 @@ sub build_and_parse_kconfig_tree {
             # do nothing
         }
         else {
-            show_error("$line  ($filename line $line_no unrecognized)");
+            show_error("$line  ($filename:$line_no unrecognized)");
         }
 
         push @wholeconfig, @parseline;
@@ -628,10 +628,9 @@ sub handle_range {
         if ( exists( $symbols{$inside_config}{range1} ) ) {
             if ( ( $symbols{$inside_config}{range1} != $range1 ) || ( $symbols{$inside_config}{range2} != $range2 ) ) {
                 if ($show_note_output) {
-                    print "#!!!!! Note: Config '$inside_config' range entry $range1 $range2 at $filename line $line_no does";
+                    print "#!!!!! Note: Config '$inside_config' range entry $range1 $range2 at $filename:$line_no does";
                     print " not match the previously defined range $symbols{$inside_config}{range1} $symbols{$inside_config}{range2}";
-                    print " defined in $symbols{$inside_config}{range_file} on line";
-                    print " $symbols{$inside_config}{range_line_no}.\n";
+                    print " defined at $symbols{$inside_config}{range_file}:$symbols{$inside_config}{range_line_no}.\n";
                 }
             }
         }
@@ -643,7 +642,7 @@ sub handle_range {
         }
     }
     else {
-        show_error("Range entry in $filename line $line_no is not inside a config block.");
+        show_error("Range entry at $filename:$line_no is not inside a config block.");
     }
 }
 
@@ -673,7 +672,7 @@ sub handle_default {
         handle_expressions( $default, $inside_config, $filename, $line_no );
     }
     else {
-        show_error("$name entry in $filename line $line_no is not inside a config or choice block.");
+        show_error("$name entry at $filename:$line_no is not inside a config or choice block.");
     }
 }
 
@@ -804,7 +803,7 @@ sub add_referenced_symbol {
                 $line =~ /^(\s+)/;    #find the indentation level.
                 $help_whitespace = $1;
                 if ( !$help_whitespace ) {
-                    show_warning("$filename line $line_no help text starts with no whitespace.");
+                    show_warning("$filename:$line_no - help text starts with no whitespace.");
                     return $inside_help;
                 }
             }
@@ -826,7 +825,7 @@ sub add_referenced_symbol {
             $inside_help = $line_no;
             if ( ( !$inside_config ) && ( !$inside_choice ) ) {
                 if ($show_note_output) {
-                    print "# Note: $filename line $line_no help is not inside a config or choice block.\n";
+                    print "# Note: $filename:$line_no help is not inside a config or choice block.\n";
                 }
             }
             elsif ($inside_config) {
@@ -852,7 +851,7 @@ sub handle_type {
     if ($inside_config) {
         if ( exists( $symbols{$inside_config}{type} ) ) {
             if ( $symbols{$inside_config}{type} !~ /$type/ ) {
-                show_error("Config '$inside_config' type entry $type at $filename line $line_no does not match $symbols{$inside_config}{type} defined in $symbols{$inside_config}{type_file} on line $symbols{$inside_config}{type_line_no}.");
+                show_error("Config '$inside_config' type entry $type at $filename:$line_no does not match $symbols{$inside_config}{type} defined at $symbols{$inside_config}{type_file}:$symbols{$inside_config}{type_line_no}.");
             }
         }
         else {
@@ -862,7 +861,7 @@ sub handle_type {
         }
     }
     else {
-        show_error("Type entry in $filename line $line_no is not inside a config block.");
+        show_error("Type entry at $filename:$line_no is not inside a config block.");
     }
 }
 
@@ -882,7 +881,7 @@ sub handle_prompt {
             }
 
             if ( !defined @$menu_array_ref[0] ) {
-                show_error("Symbol  '$inside_config' with prompt '$prompt' appears outside of a menu in $filename at line $line_no.");
+                show_error("Symbol  '$inside_config' with prompt '$prompt' appears outside of a menu at $filename:$line_no.");
             }
 
             my $sym_num = $symbols{$inside_config}{count};
@@ -902,7 +901,7 @@ sub handle_prompt {
         #do nothing
     }
     else {
-        show_error("$name entry in $filename line $line_no is not inside a config or choice block.");
+        show_error("$name entry at $filename:$line_no is not inside a config or choice block.");
     }
 }
 
@@ -915,12 +914,12 @@ sub simple_line_checks {
 
     #check for spaces instead of tabs
     if ( $line =~ /^ +/ ) {
-        show_error("$filename line $line_no starts with a space.");
+        show_error("$filename:$line_no starts with a space.");
     }
 
     #verify a linefeed at the end of the line
     if ( $line !~ /.*\n/ ) {
-        show_error("$filename line $line_no does not end with linefeed.  This can cause the line to not be recognized by the Kconfig parser.\n#($line)");
+        show_error("$filename:$line_no does not end with linefeed.  This can cause the line to not be recognized by the Kconfig parser.\n#($line)");
         $line =~ s/\s*$//;
     }
     else {
@@ -968,7 +967,7 @@ sub load_kconfig_file {
 
         #throw a warning if the file has already been loaded.
         if ( exists $loaded_files{$input_file} ) {
-            show_warning("'$input_file' sourced in '$loadfile' at line $loadline was already loaded by $loaded_files{$input_file}");
+            show_warning("'$input_file' sourced at $loadfile:$loadline was already loaded by $loaded_files{$input_file}");
         }
 
         #load the file's contents and mark the file as loaded for checking later
@@ -980,7 +979,7 @@ sub load_kconfig_file {
 
     # if the file isn't being loaded from a glob, it should exist.
     elsif ( $expanded == 0 ) {
-        show_warning("Could not find file '$input_file' sourced in $loadfile at line $loadline");
+        show_warning("Could not find file '$input_file' sourced at $loadfile:$loadline");
     }
 
     my $line_in_file = 0;

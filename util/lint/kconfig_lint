@@ -191,25 +191,31 @@ sub check_for_def {
 # this seems like a bad plan.  Using it on strings is dead out.
 #-------------------------------------------------------------------------------
 sub check_is_enabled {
-    my @is_enabled_symbols = `grep -Grn 'IS_ENABLED\\s*(\\s*CONFIG_' -- "$root_dir"`;
+    my @is_enabled_symbols = @collected_symbols;
 
     #sort through symbols found by grep and store them in a hash for easy access
     while ( my $line = shift @is_enabled_symbols ) {
-        if ( $line =~ /^([^:]+):(\d+):.+IS_ENABLED\s*\(\s*CONFIG_(\w+)/ ) {
+        if ( $line =~ /^([^:]+):(\d+):(.+IS_ENABLED.*)/ ) {
             my $file = $1;
             my $lineno = $2;
-            my $symbol = $3;
-
-            #make sure that
-            if (exists $symbols{$symbol}) {
-                if ($symbols{$symbol}{type} ne "bool") {
-                    show_error("IS_ENABLED(CONFIG_$symbol) used in $file at line $lineno.  IS_ENABLED is only valid for type 'bool', not '$symbols{$symbol}{type}'.");
-                }
-            } else {
-                show_error("IS_ENABLED() used on unknown value CONFIG_$symbol in $file at line $lineno.");
+            $line = $3;
+             if ( $line !~ /(.*)IS_ENABLED\s*\(\s*CONFIG_(\w+)(.*)/ ){
+                show_warning("# uninterpreted IS_ENABLED at $file:$lineno: $line");
+                next;
             }
-        } else {
-            show_error("# uninterpreted IS_ENABLED line: $line");
+            while ( $line =~ /(.*)IS_ENABLED\s*\(\s*CONFIG_(\w+)(.*)/ ) {
+                my $symbol = $2;
+                $line = $1.$3;
+
+                #make sure that
+                if (exists $symbols{$symbol}) {
+                    if ($symbols{$symbol}{type} ne "bool") {
+                        show_error("IS_ENABLED(CONFIG_$symbol) used at $file:$lineno.  IS_ENABLED is only valid for type 'bool', not '$symbols{$symbol}{type}'.");
+                    }
+                } else {
+                    show_error("IS_ENABLED() used on unknown value CONFIG_$symbol at $file:$lineno.");
+                }
+            }
         }
     }
 }

@@ -54,9 +54,17 @@ config SEABIOS_VGA_COREBOOT
 	bool
 	help
 	  Coreboot can initialize the GPU of some mainboards.
-	  
+
 	  After initializing the GPU, the information about it can be passed to the payload.
 	  Provide an option rom that implements this legacy VGA BIOS compatibility requirement.
+
+config PAYLOAD_CONFIGFILE
+	string "SeaBIOS config file"
+	default ""
+	help
+	  This option allows a platform to set Kconfig options for a basic
+	  SeaBIOS payload.  In general, if the option is used, the default
+	  would be "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios"
 
 config PAYLOAD_FILE
 	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"

@@ -41,6 +41,14 @@ ifeq ($(CONFIG_SEABIOS_VGA_COREBOOT),y)
 	echo "CONFIG_VGA_COREBOOT=y" >> seabios/.config
 	echo "CONFIG_BUILD_VGABIOS=y" >> seabios/.config
 endif
+ifneq ($(CONFIG_PAYLOAD_CONFIGFILE),)
+ifneq ("$(wildcard $(CONFIG_PAYLOAD_CONFIGFILE))","")
+	cat $(CONFIG_PAYLOAD_CONFIGFILE) >> seabios/.config
+else
+	echo "Error: File $(CONFIG_PAYLOAD_CONFIGFILE) does not exist"
+	false
+endif
+endif
 	# This shows how to force a previously set .config option *off*
 	#echo "# CONFIG_SMBIOS is not set" >> seabios/.config
 	$(MAKE) -C seabios olddefconfig OUT=out/

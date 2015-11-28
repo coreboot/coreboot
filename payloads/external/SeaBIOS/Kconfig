@@ -35,18 +35,6 @@ config SEABIOS_THREAD_OPTIONROMS
 	  variations during option ROM code execution. It is not
 	  known if all option ROMs will behave properly with this option.
 
-config SEABIOS_MALLOC_UPPERMEMORY
-	bool
-	default y
-	help
-	  Use the "Upper Memory Block" area (0xc0000-0xf0000) for internal
-	  "low memory" allocations.  If this is not selected, the memory is
-	  instead allocated from the "9-segment" (0x90000-0xa0000).
-	  This is not typically needed, but may be required on some platforms
-	  to allow USB and SATA buffers to be written correctly by the
-	  hardware.  In general, if this is desired, the option will be
-	  set to 'N' by the chipset Kconfig.
-
 config SEABIOS_VGA_COREBOOT
 	prompt "Include generated option rom that implements legacy VGA BIOS compatibility"
 	default n

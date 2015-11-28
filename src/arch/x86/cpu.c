@@ -234,6 +234,9 @@ void cpu_initialize(unsigned int index)
 		die("CPU: missing cpu device structure");
 	}
 
+	if (cpu->initialized)
+		return;
+
 	post_log_path(cpu);
 
 	/* Find what type of cpu we are dealing with */

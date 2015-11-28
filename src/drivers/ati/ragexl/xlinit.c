@@ -210,7 +210,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 	union aty_pll pll;
 	const struct xl_card_cfg_t * card = &card_cfg[xl_card];
 
-	aty_st_8(CONFIG_STAT0, 0x85, info);
+	aty_st_8(CFG_STAT0, 0x85, info);
 	mdelay(10);
 
 	/*
@@ -269,7 +269,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 	aty_st_le32(BUS_CNTL, card->bus_cntl | 0x08000000, info);
 
 	aty_st_le32(CRTC_GEN_CNTL, 0x04000200, info);
-	aty_st_le16(CONFIG_STAT0, 0x0020, info);
+	aty_st_le16(CFG_STAT0, 0x0020, info);
 	aty_st_le32(MEM_CNTL, 0x10151A33, info);
 	aty_st_le32(EXT_MEM_CNTL, 0xE0000C01, info);
 	aty_st_le16(CRTC_GEN_CNTL+2, 0x0000, info);
@@ -292,7 +292,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 		aty_st_lcd(lcd_tbl[i].lcd_reg, lcd_tbl[i].val, info);
 	}
 
-	aty_st_le16(CONFIG_STAT0, 0x00A4, info);
+	aty_st_le16(CFG_STAT0, 0x00A4, info);
 	mdelay(10);
 
 	aty_st_8(BUS_CNTL+1, 0xA0, info);
@@ -330,7 +330,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 	aty_st_le32(MEM_CNTL, card->mem_cntl, info);
 	aty_st_le32(EXT_MEM_CNTL, card->ext_mem_cntl, info);
 
-	aty_st_8(CONFIG_STAT0, 0xA0 | card->mem_type, info);
+	aty_st_8(CFG_STAT0, 0xA0 | card->mem_type, info);
 
 	aty_st_pll(PLL_YCLK_CNTL, 0x01, info);
 	mdelay(15);
@@ -348,12 +348,12 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 	// disable extended register block
 	aty_st_8(BUS_CNTL+3, 0x73, info);
 
-	aty_st_8(CONFIG_STAT0, 0x80 | card->mem_type, info);
+	aty_st_8(CFG_STAT0, 0x80 | card->mem_type, info);
 
 	// disable display requests, disable CRTC
 	aty_st_8(CRTC_GEN_CNTL+3, 0x04, info);
 	// disable mapping registers in VGA aperture
-	aty_st_8(CONFIG_CNTL, aty_ld_8(CONFIG_CNTL, info) & ~0x04, info);
+	aty_st_8(CFG_CNTL, aty_ld_8(CFG_CNTL, info) & ~0x04, info);
 	mdelay(50);
 	// enable display requests, enable CRTC
 	aty_st_8(CRTC_GEN_CNTL+3, 0x02, info);
@@ -556,7 +556,7 @@ static void ati_ragexl_init(struct device *dev)
 	printk(BIOS_DEBUG, "ati_regbase = 0x%p, frame_buffer = 0x%08x\n", info->ati_regbase, info->frame_buffer);
 #endif
 
-    	chip_id = aty_ld_le32(CONFIG_CHIP_ID, info);
+    	chip_id = aty_ld_le32(CFG_CHIP_ID, info);
     	type = chip_id & CFG_CHIP_TYPE;
     	rev = (chip_id & CFG_CHIP_REV)>>24;
     	for (j = 0; j < ARRAY_SIZE(aty_chips); j++)
@@ -598,7 +598,7 @@ found:
 
 #if CONFIG_CONSOLE_BTEXT
 
-	info->ram_type = (aty_ld_le32(CONFIG_STAT0, info) & 0x07);
+	info->ram_type = (aty_ld_le32(CFG_STAT0, info) & 0x07);
 
         info->ref_clk_per = 1000000000000ULL/14318180;
     	xtal = "14.31818";
@@ -672,7 +672,7 @@ found:
 #endif
 
     if (M64_HAS(MAGIC_VRAM_SIZE)) {
-        if (aty_ld_le32(CONFIG_STAT1, info) & 0x40000000)
+        if (aty_ld_le32(CFG_STAT1, info) & 0x40000000)
           info->total_vram += 0x400000;
     }
 #if 0

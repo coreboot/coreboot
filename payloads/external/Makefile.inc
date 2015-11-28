@@ -32,7 +32,7 @@ endif
 # set up payload config and version files for later inclusion
 ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
 PAYLOAD_CONFIG=payloads/external/SeaBIOS/seabios/.config
-PAYLOAD_VERSION=payloads/external/SeaBIOS/seabios/out/version.c
+PAYLOAD_VERSION=payloads/external/SeaBIOS/seabios/out/autoversion.h
 endif
 ifeq ($(CONFIG_PAYLOAD_FILO),y)
 PAYLOAD_CONFIG=payloads/external/FILO/filo/.config

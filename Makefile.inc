@@ -489,7 +489,7 @@ help::
 # For the toolchain builds, use CPUS=x to use multiple processors to build
 # use BUILDGCC_OPTIONS= to set any crossgcc command line options
 # Example: BUILDGCC_OPTIONS='-t' will keep temporary files after build
-crossgcc:
+crossgcc: clean-for-update
 	$(MAKE) -C util/crossgcc all_without_gdb SKIP_CLANG=1
 
 .PHONY: crossgcc crossgcc-i386 crossgcc-x64 crossgcc-arm crossgcc-aarch64 \
@@ -515,13 +515,13 @@ crossgcc-mips: clean-for-update
 crossgcc-riscv: clean-for-update
 	$(MAKE) -C util/crossgcc build-riscv SKIP_GDB=1
 
-crosstools:
+crosstools: clean-for-update
 	$(MAKE) -C util/crossgcc all_with_gdb SKIP_CLANG=1
 
-iasl:
+iasl: clean-for-update
 	$(MAKE) -C util/crossgcc build_iasl
 
-clang:
+clang: clean-for-update
 	$(MAKE) -C util/crossgcc build_clang
 
 crosstools-i386: clean-for-update

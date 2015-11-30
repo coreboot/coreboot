@@ -56,6 +56,9 @@ seabios:
 			CONFIG_TTYS0_BASE=$(CONFIG_TTYS0_BASE) \
 			CONFIG_SEABIOS_MALLOC_UPPERMEMORY=$(CONFIG_SEABIOS_MALLOC_UPPERMEMORY)
 
+payloads/external/SeaBIOS/seabios/out/vgabios.bin: seabios
+payloads/external/SeaBIOS/seabios/out/bios.bin.elf: seabios
+
 filo:
 	$(MAKE) -C payloads/external/FILO -f Makefile.inc \
 			HOSTCC="$(HOSTCC)" \

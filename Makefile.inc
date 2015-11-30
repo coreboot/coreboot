@@ -304,6 +304,7 @@ CPPFLAGS_common += -Isrc/device/oprom/include
 VB_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VB_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
+CPPFLAGS_common += -I3rdparty
 
 CFLAGS_common += -pipe -g -nostdinc
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes

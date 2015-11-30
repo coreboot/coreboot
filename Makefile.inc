@@ -16,6 +16,10 @@
 GIT:=$(shell [ -d "$(top)/.git" ] && command -v git)
 
 #######################################################################
+# normalize Kconfig variables in a central place
+CONFIG_CBFS_PREFIX:=$(call strip_quotes,$(CONFIG_CBFS_PREFIX))
+
+#######################################################################
 # misleadingly named, this is the coreboot version
 export KERNELVERSION := $(strip $(if $(GIT),\
 	$(shell git describe --dirty --always || git describe),\
@@ -31,7 +35,7 @@ export MAINBOARDDIR
 ## Final build results, which CBFSTOOL uses to create the final
 ## rom image file, are placed under $(objcbfs).
 ## These typically have suffixes .debug .elf .bin and .map
-export objcbfs := $(obj)/cbfs/$(call strip_quotes,$(CONFIG_CBFS_PREFIX))
+export objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
 
 ## Based on the active configuration, Makefile conditionally collects
 ## the required assembly includes and saves them in a file.
@@ -189,10 +193,10 @@ endef
 # arg1: base file name
 # arg2: y or n for including in cbfs. defaults to y
 define asl_template
-$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-file = $(obj)/$(1).aml
-$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-type = raw
-$(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml-compression = none
-cbfs-files-$(if $(2),$(2),y) += $(call strip_quotes,$(CONFIG_CBFS_PREFIX))/$(1).aml
+$(CONFIG_CBFS_PREFIX)/$(1).aml-file = $(obj)/$(1).aml
+$(CONFIG_CBFS_PREFIX)/$(1).aml-type = raw
+$(CONFIG_CBFS_PREFIX)/$(1).aml-compression = none
+cbfs-files-$(if $(2),$(2),y) += $(CONFIG_CBFS_PREFIX)/$(1).aml
 $(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) $$(CPPFLAGS_ramstage) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-ramstage-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$@
@@ -622,7 +626,7 @@ prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 # Add all cbfs files to image of the form: CONFIG_CBFS_PREFIX/<filename>
 prebuild-files = \
 	$(foreach file,$(cbfs-files), \
-	       $(if $(filter $(call strip_quotes, $(CONFIG_CBFS_PREFIX))/%,\
+	       $(if $(filter $(CONFIG_CBFS_PREFIX)/%,\
 	           $(call extract_nth,2,$(file))), \
 	       $(if $(call extract_nth,6,$(file)),$(cbfs-add-cmd) -a $(call extract_nth,6,$(file)) &&,\
 	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&)))

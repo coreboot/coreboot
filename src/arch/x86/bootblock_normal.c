@@ -10,9 +10,9 @@ static const char *get_fallback(const char *stagelist) {
 
 static void main(unsigned long bist)
 {
-	unsigned long entry;
-	int boot_mode;
-	const char *default_filenames = "normal/romstage\0fallback/romstage";
+	u8 boot_mode;
+	const char *default_filenames =
+		"normal/romstage\0fallback/romstage";
 
 	if (boot_cpu()) {
 		bootblock_mainboard_init();
@@ -30,22 +30,22 @@ static void main(unsigned long bist)
 		boot_mode = boot_use_normal(cmos_read(RTC_BOOT_BYTE));
 	}
 
-	char *filenames = (char *)walkcbfs("coreboot-stages");
-	if (!filenames) {
-		filenames = default_filenames;
-	}
-	char *normal_candidate = filenames;
+	char *normal_candidate = (char *)walkcbfs("coreboot-stages");
 
-	if (boot_mode)
+	if (!normal_candidate)
+		normal_candidate = default_filenames;
+
+	unsigned long entry;
+
+	if (boot_mode) {
 		entry = findstage(normal_candidate);
-	else
-		entry = findstage(get_fallback(normal_candidate));
+		if (entry)
+			call(entry, bist);
+	}
 
-	if (entry) call(entry, bist);
-
-	/* run fallback if normal can't be found */
 	entry = findstage(get_fallback(normal_candidate));
-	if (entry) call(entry, bist);
+	if (entry)
+		call(entry, bist);
 
 	/* duh. we're stuck */
 	halt();

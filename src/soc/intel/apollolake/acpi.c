@@ -113,3 +113,10 @@ void soc_fill_common_fadt(acpi_fadt_t * fadt)
 
 	fadt->x_gpe1_blk.space_id = 1;
 }
+
+unsigned long southbridge_write_acpi_tables(device_t device,
+		unsigned long current,
+		struct acpi_rsdp *rsdp)
+{
+	return acpi_write_hpet(device, current, rsdp);
+}

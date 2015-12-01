@@ -35,6 +35,7 @@ Scope (\_SB.PCI0.SBUS)
 
 		Device (LED1)
 		{
+			Name (_HID, "PRP0001")
 			Name (_DSD, Package () {
 				ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 				Package () {
@@ -51,6 +52,7 @@ Scope (\_SB.PCI0.SBUS)
 
 		Device (LED2)
 		{
+			Name (_HID, "PRP0001")
 			Name (_DSD, Package () {
 				ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 				Package () {
@@ -63,6 +65,7 @@ Scope (\_SB.PCI0.SBUS)
 
 		Device (LED3)
 		{
+			Name (_HID, "PRP0001")
 			Name (_DSD, Package () {
 				ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 				Package () {

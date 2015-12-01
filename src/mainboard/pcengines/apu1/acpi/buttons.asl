@@ -37,6 +37,7 @@ Scope (\_SB.PCI0.SBUS)
 
 		Device (BTN1)
 		{
+			Name (_HID, "PRP0001")
 			Name (_DSD, Package () {
 				ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
 				Package () {

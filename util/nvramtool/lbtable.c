@@ -489,6 +489,9 @@ static const struct lb_header *lbtable_scan(unsigned long start,
 		}
 
 		map_pages(p, table->table_bytes + sizeof(*table));
+
+		table = (const struct lb_header *)phystov(p);
+
 		/* validate table checksum */
 		if (table->table_checksum !=
 		    compute_ip_checksum(((char *)table) + sizeof(*table),

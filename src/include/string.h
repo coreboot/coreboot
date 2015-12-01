@@ -112,7 +112,7 @@ static inline int strncmp(const char *s1, const char *s2, int maxlen)
 	int i;
 
 	for (i = 0; i < maxlen; i++) {
-		if (s1[i] != s2[i])
+		if ((s1[i] != s2[i]) || (s1[i] == '\0'))
 			return s1[i] - s2[i];
 	}
 

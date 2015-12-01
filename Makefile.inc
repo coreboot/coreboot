@@ -626,10 +626,9 @@ prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 # Add all cbfs files to image of the form: CONFIG_CBFS_PREFIX/<filename>
 prebuild-files = \
 	$(foreach file,$(cbfs-files), \
-	       $(if $(filter $(CONFIG_CBFS_PREFIX)/%,\
-	           $(call extract_nth,2,$(file))), \
+	$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null ; \
 	       $(if $(call extract_nth,6,$(file)),$(cbfs-add-cmd) -a $(call extract_nth,6,$(file)) &&,\
-	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&)))
+	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
 
 .PHONY: $(obj)/coreboot.pre1
 $(obj)/coreboot.pre1: $$(prebuilt-files) $(CBFSTOOL)

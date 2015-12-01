@@ -43,7 +43,17 @@ DefinitionBlock(
 		/* Dynamic Platform Thermal Framework */
 		#include "acpi/dptf.asl"
 	}
+	Scope (\_SB.PCI0)
+	{
+		Device (RP03)
+		{
+			Name (_ADR, 0x001C0002)  // _ADR: Address
+			OperationRegion(RPXX, PCI_Config, 0x00, 0x10)
 
+			/* Wifi Device */
+			#include <soc/intel/common/acpi/wifi.asl>
+		}
+	}
 	#include "acpi/chromeos.asl"
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 

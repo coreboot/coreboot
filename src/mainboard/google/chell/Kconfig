@@ -55,4 +55,10 @@ config TPM_PIRQ
 	hex
 	default 0x18  # GPP_E0_IRQ
 
+config INCLUDE_NHLT_BLOBS
+	bool "Include blobs for audio."
+	select NHLT_DMIC_2CH
+	select NHLT_NAU88L25
+	select NHLT_SSM4567
+
 endif

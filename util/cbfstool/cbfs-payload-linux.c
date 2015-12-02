@@ -98,7 +98,7 @@ static void bzp_add_segment(struct bzpayload *bzp, struct buffer *b, void *data,
 static int bzp_add_trampoline(struct bzpayload *bzp)
 {
 	bzp_add_segment(bzp, &bzp->trampoline, trampoline,
-	                trampoline_len);
+			trampoline_len);
 	return 0;
 }
 

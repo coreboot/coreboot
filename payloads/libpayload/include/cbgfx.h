@@ -51,6 +51,12 @@
 #define CBGFX_ERROR_BITMAP_DATA		0x12
 /* bitmap error: scaling out of range */
 #define CBGFX_ERROR_SCALE_OUT_OF_RANGE	0x13
+/* invalid framebuffer info */
+#define CBGFX_ERROR_FRAMEBUFFER_INFO	0x14
+/* invalid framebuffer address */
+#define CBGFX_ERROR_FRAMEBUFFER_ADDR	0x15
+/* portrait screen not supported */
+#define CBGFX_ERROR_PORTRAIT_SCREEN	0x16
 
 struct fraction {
 	int32_t n;

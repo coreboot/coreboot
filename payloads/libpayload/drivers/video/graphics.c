@@ -143,11 +143,11 @@ static int cbgfx_init(void)
 
 	fbinfo = lib_sysinfo.framebuffer;
 	if (!fbinfo)
-		return -1;
+		return CBGFX_ERROR_FRAMEBUFFER_INFO;
 
 	fbaddr = phys_to_virt((uint8_t *)(uintptr_t)(fbinfo->physical_address));
 	if (!fbaddr)
-		return -1;
+		return CBGFX_ERROR_FRAMEBUFFER_ADDR;
 
 	screen.size.width = fbinfo->x_resolution;
 	screen.size.height = fbinfo->y_resolution;
@@ -157,7 +157,7 @@ static int cbgfx_init(void)
 	/* Calculate canvas size & offset, assuming the screen is landscape */
 	if (screen.size.height > screen.size.width) {
 		LOG("Portrait screen not supported\n");
-		return -1;
+		return CBGFX_ERROR_PORTRAIT_SCREEN;
 	}
 	canvas.size.height = screen.size.height;
 	canvas.size.width = canvas.size.height;

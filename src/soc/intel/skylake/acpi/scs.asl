@@ -70,6 +70,7 @@ Device (EMMC)
 	}
 }
 
+#if !IS_ENABLED(CONFIG_EXCLUDE_NATIVE_SD_INTERFACE)
 Device (SDXC)
 {
 	Name (_ADR, 0x001E0006)
@@ -123,3 +124,4 @@ Device (SDXC)
 		}
 	}
 }
+#endif

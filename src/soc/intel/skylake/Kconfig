@@ -79,6 +79,12 @@ config DCACHE_RAM_SIZE
 	  The size of the cache-as-ram region required during bootblock
 	  and/or romstage.
 
+config EXCLUDE_NATIVE_SD_INTERFACE
+	bool
+	default n
+	help
+	  If you set this option to n, will not use native SD controller.
+
 config HEAP_SIZE
 	hex
 	default 0x80000

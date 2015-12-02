@@ -125,9 +125,9 @@ void main(unsigned long bist)
 
 	post_code(0x30);
 
-	printk(BIOS_DEBUG, "Start native raminit\n");
+	printk(BIOS_DEBUG, "Initializing memory\n");
 	sdram_initialize(0, spd_addrmap);
-	printk(BIOS_DEBUG, "Native raminit done\n");
+	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	post_code(0x31);
 	ram_check(0x200000,0x300000);

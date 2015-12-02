@@ -80,7 +80,12 @@ Scope (\_SB)
 
 		Method (_STA)
 		{
-			Return (0xF)
+			/* AUDIO_DB_ID = 0 If MAXIM Codec Present */
+			If (LEqual (\_SB.PCI0.GRXS (AUDIO_DB_ID), 0x0)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
 		}
 	}
 }
@@ -261,7 +266,12 @@ Scope (\_SB.PCI0.I2C4)
 
 		Method (_STA)
 		{
-			Return (0xF)
+			/* AUDIO_DB_ID = 1 If ADI Codec Present */
+			If (LEqual (GRXS (AUDIO_DB_ID), 0x1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
 		}
 	}
 
@@ -285,7 +295,12 @@ Scope (\_SB.PCI0.I2C4)
 
 		Method (_STA)
 		{
-			Return (0xF)
+			/* AUDIO_DB_ID = 1 If ADI Codec Present */
+			If (LEqual (GRXS (AUDIO_DB_ID), 0x1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
 		}
 	}
 }

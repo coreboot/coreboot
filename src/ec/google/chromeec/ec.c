@@ -121,6 +121,27 @@ int google_chromeec_clear_events_b(u32 mask)
 		EC_CMD_HOST_EVENT_CLEAR_B, mask);
 }
 
+int google_chromeec_check_feature(int feature)
+{
+	struct chromeec_command cmd;
+	struct ec_response_get_features r;
+
+	cmd.cmd_code = EC_CMD_GET_FEATURES;
+	cmd.cmd_version = 0;
+	cmd.cmd_size_in = 0;
+	cmd.cmd_data_out = &r;
+	cmd.cmd_size_out = sizeof(r);
+	cmd.cmd_dev_index = 0;
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	if (feature >= 8 * sizeof(r.flags))
+		return -1;
+
+	return r.flags[feature / 32] & EC_FEATURE_MASK_0(feature);
+}
+
 #ifndef __SMM__
 #ifdef __PRE_RAM__
 void google_chromeec_check_ec_image(int expected_type)

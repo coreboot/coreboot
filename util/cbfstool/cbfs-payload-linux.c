@@ -22,8 +22,8 @@
 #include "linux.h"
 
 /* trampoline */
-extern void *trampoline_start;
-extern long trampoline_size;
+extern unsigned char trampoline[];
+extern unsigned int trampoline_len;
 
 /*
  * Current max number of segments include:
@@ -97,8 +97,8 @@ static void bzp_add_segment(struct bzpayload *bzp, struct buffer *b, void *data,
 
 static int bzp_add_trampoline(struct bzpayload *bzp)
 {
-	bzp_add_segment(bzp, &bzp->trampoline, trampoline_start,
-	                trampoline_size);
+	bzp_add_segment(bzp, &bzp->trampoline, trampoline,
+	                trampoline_len);
 	return 0;
 }
 

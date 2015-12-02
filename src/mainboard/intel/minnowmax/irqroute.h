@@ -70,7 +70,7 @@
  * Floppy: 6
  */
 #define PIRQ_PIC_ROUTES \
-	PIRQ_PIC(A,  4), \
+	PIRQ_PIC(A,  3), \
 	PIRQ_PIC(B,  5), \
 	PIRQ_PIC(C,  7), \
 	PIRQ_PIC(D, 10), \

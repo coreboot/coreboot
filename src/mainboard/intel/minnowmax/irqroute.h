@@ -45,8 +45,9 @@
 #define PCIE_BRIDGE_IRQ_ROUTES \
 	PCIE_BRIDGE_DEV(RP, BRIDGE1_DEV,    E, F, G, H)
 
+/* Devices set as A, A, A, A evaluate as 0, and don't get set */
 #define PCI_DEV_PIRQ_ROUTES \
-	PCI_DEV_PIRQ_ROUTE(GFX_DEV,     A, A, A, A), \
+	PCI_DEV_PIRQ_ROUTE(GFX_DEV,     A, A, A, B), \
 	PCI_DEV_PIRQ_ROUTE(EMMC_DEV,    D, E, F, G), \
 	PCI_DEV_PIRQ_ROUTE(SDIO_DEV,    B, A, A, A), \
 	PCI_DEV_PIRQ_ROUTE(SD_DEV,      C, A, A, A), \

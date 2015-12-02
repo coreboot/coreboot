@@ -346,6 +346,8 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SerialIrqConfigStartFramePulse = config->SerialIrqConfigStartFramePulse;
 
 	params->SkipMpInit = config->FspSkipMpInit;
+	memcpy(params->SerialIoI2cVoltage, config->SerialIoI2cVoltage,
+			sizeof(params->SerialIoI2cVoltage));
 
 	/*
 	 * To disable Heci, the Psf needs to be left unlocked
@@ -991,6 +993,24 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 	fsp_display_upd_value("VrConfigEnable[4]", 1,
 		original->VrConfigEnable[4],
 		params->VrConfigEnable[4]);
+	fsp_display_upd_value("SerialIoI2cVoltage[0]", 1,
+		original->SerialIoI2cVoltage[0],
+		params->SerialIoI2cVoltage[0]);
+	fsp_display_upd_value("SerialIoI2cVoltage[1]", 1,
+		original->SerialIoI2cVoltage[1],
+		params->SerialIoI2cVoltage[1]);
+	fsp_display_upd_value("SerialIoI2cVoltage[2]", 1,
+		original->SerialIoI2cVoltage[2],
+		params->SerialIoI2cVoltage[2]);
+	fsp_display_upd_value("SerialIoI2cVoltage[3]", 1,
+		original->SerialIoI2cVoltage[3],
+		params->SerialIoI2cVoltage[3]);
+	fsp_display_upd_value("SerialIoI2cVoltage[4]", 1,
+		original->SerialIoI2cVoltage[4],
+		params->SerialIoI2cVoltage[4]);
+	fsp_display_upd_value("SerialIoI2cVoltage[5]", 1,
+		original->SerialIoI2cVoltage[5],
+		params->SerialIoI2cVoltage[5]);
 }
 
 static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

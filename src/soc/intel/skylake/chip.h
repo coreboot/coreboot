@@ -177,6 +177,9 @@ struct soc_intel_skylake_config {
 	 */
 	u8 SerialIoDevMode[PchSerialIoIndexMax];
 
+	/* I2C voltage select. Value: 0: 3.3V , 1: 1.8V.*/
+	u8 SerialIoI2cVoltage[6];
+
 	/* Camera */
 	u8 Cio2Enable;
 
@@ -309,6 +312,7 @@ struct soc_intel_skylake_config {
 	 */
 	u8 SerialIrqConfigStartFramePulse;
 	u8 FspSkipMpInit;
+
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
 	 * 3 = GT unsliced,  4 = GT sliced

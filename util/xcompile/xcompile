@@ -231,7 +231,7 @@ EOF
 }
 
 # Architecture definitions
-SUPPORTED_ARCHITECTURES="arm arm64 mipsel riscv x64 x86"
+SUPPORTED_ARCHITECTURES="arm arm64 mipsel riscv x64 x86 power8"
 
 arch_config_arm() {
 	TARCH="arm"
@@ -284,6 +284,16 @@ arch_config_mipsel() {
 	TSUPP="mips mipsel"
 	TABI="elf"
 	TENDIAN="EL"
+}
+
+arch_config_power8() {
+	TARCH="powerpc"
+	TBFDARCHS="powerpc"
+	TCLIST="powerpc"
+	TWIDTH="64"
+	TSUPP="power8"
+	TABI="elf"
+	CC_RT_EXTRA_GCC="-mcpu=power8"
 }
 
 test_architecture() {

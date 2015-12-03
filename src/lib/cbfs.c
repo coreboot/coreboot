@@ -202,7 +202,7 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	const struct region_device *fh = prog_rdev(pstage);
 
 	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
-		return 0;
+		return -1;
 
 	fsize = region_device_sz(fh);
 	fsize -= sizeof(stage);

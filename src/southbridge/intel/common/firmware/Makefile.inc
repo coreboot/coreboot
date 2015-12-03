@@ -71,6 +71,12 @@ else ifneq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
 
+ifeq ($(CONFIG_EM100),y)
+	printf "    IFDTOOL    Setting EM100 mode\n"
+	$(objutil)/ifdtool/ifdtool --em100 $(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+endif
+
 PHONY+=add_intel_firmware
 
 endif

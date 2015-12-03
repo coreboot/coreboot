@@ -1,0 +1,70 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+## Copyright (C) 2014 Intel Corporation
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_ESD_ATOM15
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SOC_INTEL_FSP_BAYTRAIL
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select TSC_MONOTONIC_TIMER
+	select HAVE_ACPI_RESUME
+
+config MAINBOARD_DIR
+	string
+	default "esd/atom15"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "esd atom15"
+
+config MAX_CPUS
+	int
+	default 16
+
+config CACHE_ROM_SIZE_OVERRIDE
+	hex
+	default 0x800000
+
+config FSP_FILE
+	string
+	default "../intel/fsp/baytrail/BAYTRAIL_FSP.fd"
+
+config CBFS_SIZE
+	hex
+	default 0x00300000
+
+config ENABLE_FSP_FAST_BOOT
+	bool
+	depends on HAVE_FSP_BIN
+	default y
+
+config VIRTUAL_ROM_SIZE
+	hex
+	depends on ENABLE_FSP_FAST_BOOT
+	default 0x800000
+
+config POST_DEVICE
+	bool
+	default n
+
+config VGA_BIOS
+	bool
+	default y if FSP_PACKAGE_DEFAULT
+
+endif # BOARD_ESD_ATOM15

@@ -1,0 +1,16 @@
+if VENDOR_ESD
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/esd/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/esd/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "esd"
+
+endif # VENDOR_ESD

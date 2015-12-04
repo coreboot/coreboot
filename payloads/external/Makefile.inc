@@ -54,6 +54,7 @@ filo:
 			CONFIG_FILO_MASTER=$(CONFIG_FILO_MASTER) \
 			CONFIG_FILO_STABLE=$(CONFIG_FILO_STABLE)
 
+payloads/external/FILO/filo/build/filo.elf: filo
 
 grub2:
 	$(MAKE) -C payloads/external/GRUB2 -f Makefile.inc \
@@ -61,3 +62,5 @@ grub2:
 			CC="$(CC_x86_32)" LD="$(LD_x86_32)" OBJDUMP="$(OBJDUMP_x86_32)" \
 			OBJCOPY="$(OBJCOPY_x86_32)" STRIP="$(STRIP_x86_32)" \
 			CONFIG_GRUB2_MASTER=$(CONFIG_GRUB2_MASTER)
+
+payloads/external/GRUB2/grub2/build/default_payload.elf: grub2

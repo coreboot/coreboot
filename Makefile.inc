@@ -599,8 +599,6 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 # Build the final rom image
 ###########################################################################
 
-COREBOOT_ROM_DEPENDENCIES:=
-
 extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-))))
 
 cbfs-add-cmd = \
@@ -658,7 +656,7 @@ $(REFCODE_BLOB): $(RMODTOOL)
 	$(RMODTOOL) -i $(CONFIG_REFCODE_BLOB_FILE) -o $@
 endif
 
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $$(call strip_quotes,$$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $(REFCODE_BLOB)
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 # The full ROM may be larger than the CBFS part, so create an empty
 # file (filled with \377 = 0xff) and copy the CBFS image over it.

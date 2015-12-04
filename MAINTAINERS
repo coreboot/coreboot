@@ -141,6 +141,18 @@ M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 S:	Supported
 F:	src/mainboard/google/panther/
 
+INTEL FSP IVYBRIDGE/PANTHERPOINT/CAVECREEK & CRBs
+M:	York Yang <york.yang@intel.com>
+S:	Supported
+F:	src/cpu/intel/fsp_model_206ax/
+F:	src/northbridge/intel/fsp_sandybridge/
+F:	src/southbridge/intel/fsp_bd82x6x/
+F:	src/southbridge/intel/fsp_i89xx/
+F:	src/vendorcode/intel/fsp1_0/ivybridge_bd82x6x
+F:	src/vendorcode/intel/fsp1_0/ivybridge_i89xx
+F:	src/mainboard/intel/cougar_canyon2/
+F:	src/mainboard/intel/stargo2/
+
 INTEL MINNOWBOARD MAX MAINBOARD
 M:	Martin Roth <gaumless@gmail.com>
 S:	Maintained

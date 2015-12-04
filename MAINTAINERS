@@ -150,6 +150,21 @@ M:	Martin Roth <gaumless@gmail.com>
 S:	Odd Fixes
 F:	src/soc/intel/fsp_baytrail/
 
+FSP 1.0 RANGELEY & CRB
+M:	David Guckian <david.guckian@intel.com>
+M:	Fei Wang <fei.z.wang@intel.com>
+S:	Supported
+F:	src/cpu/intel/fsp_model_406dx/
+F:	src/northbridge/intel/fsp_rangeley/
+F:	src/southbridge/intel/fsp_rangeley/
+F:	src/vendorcode/intel/fsp1_0/rangeley/
+F:	src/mainboard/intel/mohonpeak/
+
+INTEL LITTLE PLAINS MAINBOARD
+M:	Marcin Wojciechowski <marcin.wojciechowski@intel.com>
+S:	Supported
+F:	src/mainboard/intel/littleplains/
+
 INTEL FSP 1.0
 M:	Martin Roth <gaumless@gmail.com>
 S:	Odd Fixes

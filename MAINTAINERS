@@ -156,6 +156,14 @@ S:	Odd Fixes
 F:	src/drivers/intel/fsp1_0/
 F:	src/vendorcode/intel/fsp1_0/
 
+INTEL FSP 1.1
+M:	Lee Leahy <leroy.p.leahy@intel.com>
+M:	Andrey Petrov <andrey.petrov@intel.com>
+M:	Huang Jin <huang.jin@intel.com>
+M:	York Yang <york.yang@intel.com>
+S:	Supported
+F:	src/drivers/intel/fsp1_1/
+
 ATI MACH64 Driver
 S:	Orphan
 F:	drivers/ati/mach64/

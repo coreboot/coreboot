@@ -155,10 +155,10 @@ IASLFAIL:=0
 ifeq ($(CONFIG_COMPILER_GCC),y)
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
 $(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
-	$(if $(shell $(CC_$(arch)) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" || echo not-coreboot), \
+	$(if $(shell if [ -n "$(CC_$(arch))" ]; then $(CC_$(arch)) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" || echo not-coreboot; else echo not-coreboot; fi), \
 		$(eval COMPILERFAIL:=1)$(warning Please use the coreboot toolchain for '$(arch)')))
 #if iasl doesn't match the current coreboot version, fail the test
-$(if $(shell $(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || echo not-coreboot), \
+$(if $(shell if [ -n "$(IASL)" ]; then $(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || echo not-coreboot; else echo not-coreboot; fi), \
 	$(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1)$(warning Please use the coreboot toolchain version of iasl - $(shell util/crossgcc/buildgcc -s iasl)))
 endif
 endif

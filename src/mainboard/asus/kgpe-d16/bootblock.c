@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <pc80/mc146818rtc.h>
 
 void bootblock_mainboard_init(void)
@@ -27,7 +28,10 @@ void bootblock_mainboard_init(void)
 	bootblock_southbridge_init();
 
 	/* Recovery jumper is connected to SP5100 GPIO61, and clears the GPIO when placed in the Recovery position */
-	recovery_enabled = (!(pci_read_config8(PCI_DEV(0, 0x14, 0), 0x57) & 0x1));
+	byte = pci_io_read_config8(PCI_DEV(0, 0x14, 0), 0x56);
+	byte |= 0x1 << 4;	/*  Set GPIO61 to input mode */
+	pci_io_write_config8(PCI_DEV(0, 0x14, 0), 0x56, byte);
+	recovery_enabled = (!(pci_io_read_config8(PCI_DEV(0, 0x14, 0), 0x57) & 0x1));
 	if (recovery_enabled) {
 #if CONFIG_USE_OPTION_TABLE
 		/* Clear NVRAM checksum */

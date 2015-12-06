@@ -71,10 +71,10 @@ config UART_FOR_CONSOLE
 	help
 	  The Mohon Peak board uses COM2 (2f8) for the serial console.
 
-  config PAYLOAD_CONFIGFILE
-  	string
-  	default "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios"
-  	help
+config PAYLOAD_CONFIGFILE
+	string
+	default "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios"
+	help
 	  The Avoton/Rangeley chip does not allow devices to write into the 0xe000
 	  segment.  This means that USB/SATA devices will not work in SeaBIOS unless
 	  we put the SeaBIOS buffer area down in the 0x9000 segment.

@@ -146,7 +146,7 @@ $(eval $(call toolchain_to_dir))
 
 $(call init_stages)
 
-# Test for coreboot toolchain (except when explicitely not requested)
+# Test for coreboot toolchain (except when explicitly not requested)
 ifneq ($(NOCOMPILE),1)
 # only run if we're doing a build (not for tests, kconfig, ...), using gcc
 # rationale: gcc versions by Linux distributions tend to be quite messed up

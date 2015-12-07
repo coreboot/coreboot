@@ -229,7 +229,7 @@ config AZ_PIN
 endif
 
 config HUDSON_UART
-	bool "UART controller on Kern."
+	bool "UART controller on Kern"
 	default n
 	depends on SOUTHBRIDGE_AMD_PI_KERN
 	select DRIVERS_UART_8250MEM

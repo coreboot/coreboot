@@ -208,6 +208,16 @@ static void write_pci_config_irqs(void)
 		if (targ_dev == NULL || new_int_pin < 1)
 			continue;
 
+		/*
+		 * Adjust the INT routing for the PCIe root ports
+		 * See 'Interrupt Generated for INT[A-D] Interrupts'
+		 * Table 241 in Document Number: 538136, Rev. 3.9
+		 */
+		if (PCI_SLOT(targ_dev->path.pci.devfn) == PCIE_DEV &&
+				targ_dev != irq_dev)
+			new_int_pin = ((new_int_pin - 1 +
+				PCI_FUNC(targ_dev->path.pci.devfn)) % 4) + 1;
+
 		/* Get the original INT_PIN for record keeping */
 		original_int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
 

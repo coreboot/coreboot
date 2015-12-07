@@ -77,8 +77,7 @@ typedef struct ich9_spi_regs {
 	uint16_t preop;
 	uint16_t optype;
 	uint8_t opmenu[8];
-	uint32_t bbar;
-	uint8_t _reserved3[12];
+	uint8_t _reserved3[16];
 	uint32_t fdoc;
 	uint32_t fdod;
 	uint8_t _reserved4[8];
@@ -105,7 +104,6 @@ typedef struct ich_spi_controller {
 	unsigned databytes;
 	uint8_t *status;
 	uint16_t *control;
-	uint32_t *bbar;
 } ich_spi_controller;
 
 static ich_spi_controller cntlr;
@@ -248,17 +246,6 @@ static void read_reg(const void *src, void *value, uint32_t size)
 	}
 }
 
-static void ich_set_bbar(uint32_t minaddr)
-{
-	const uint32_t bbar_mask = 0x00ffff00;
-	uint32_t ichspi_bbar;
-
-	minaddr &= bbar_mask;
-	ichspi_bbar = readl_(cntlr.bbar) & ~bbar_mask;
-	ichspi_bbar |= minaddr;
-	writel_(ichspi_bbar, cntlr.bbar);
-}
-
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	ich_spi_slave *slave = malloc(sizeof(*slave));
@@ -304,9 +291,7 @@ void spi_init(void)
 	cntlr.databytes = sizeof(ich9_spi->fdata);
 	cntlr.status = &ich9_spi->ssfs;
 	cntlr.control = (uint16_t *)ich9_spi->ssfc;
-	cntlr.bbar = &ich9_spi->bbar;
 	cntlr.preop = &ich9_spi->preop;
-	ich_set_bbar(0);
 }
 
 int spi_claim_bus(struct spi_slave *slave)

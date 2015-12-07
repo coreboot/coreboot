@@ -148,19 +148,19 @@ $(call init_stages)
 
 # Test for coreboot toolchain (except when explicitly not requested)
 ifneq ($(NOCOMPILE),1)
-# only run if we're doing a build (not for tests, kconfig, ...), using gcc
+# only run if we're doing a build (not for tests, kconfig, ...)
 # rationale: gcc versions by Linux distributions tend to be quite messed up
+# llvm/clang also needs patches supplied by the coreboot build
 COMPILERFAIL:=0
 IASLFAIL:=0
-ifeq ($(CONFIG_COMPILER_GCC),y)
+
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
 $(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
-	$(if $(shell if [ -n "$(CC_$(arch))" ]; then $(CC_$(arch)) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" || echo not-coreboot; else echo not-coreboot; fi), \
+	$(if $(shell if [ -n "$(CC_$(arch))" ]; then $(CC_$(arch)) -v 2>&1 |grep -q "coreboot toolchain" || echo not-coreboot; else echo not-coreboot; fi), \
 		$(eval COMPILERFAIL:=1)$(warning Please use the coreboot toolchain for '$(arch)')))
 #if iasl doesn't match the current coreboot version, fail the test
 $(if $(shell if [ -n "$(IASL)" ]; then $(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || echo not-coreboot; else echo not-coreboot; fi), \
 	$(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1)$(warning Please use the coreboot toolchain version of iasl - $(shell util/crossgcc/buildgcc -s iasl)))
-endif
 endif
 endif
 ifeq ($(COMPILERFAIL),1)

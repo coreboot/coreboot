@@ -768,11 +768,12 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 				if (res) {
 					AtiPcieCfg.PortDetect |= 1 << port;
 				} else {
-					/* If the training failed the disable the bridge to prevent subsequent
-					 * lockup on bridge configuration register read during the PCI bus scan
+					/* Even though nothing is attached to this port
+					 * the port needs to be "enabled" to obtain
+					 * a bus number from the PCI resource allocator
 					 */
 					training_ok = 0;
-					dev->enabled = 0;
+					dev->enabled = 1;
 				}
 			}
 		}

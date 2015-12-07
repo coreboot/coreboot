@@ -101,7 +101,7 @@ static bool region_is_modern_cbfs(const char *region)
 
 /*
  * Converts between offsets from the start of the specified image region and
- * "top-aligned" offsets from the top of the entire flash image. Works in either
+ * "top-aligned" offsets from the top of the image region. Works in either
  * direction: pass in one type of offset and receive the other type.
  * N.B. A top-aligned offset is always a positive number, and should not be
  * confused with a top-aliged *address*, which is its arithmetic inverse. */
@@ -109,6 +109,14 @@ static unsigned convert_to_from_top_aligned(const struct buffer *region,
 								unsigned offset)
 {
 	assert(region);
+
+	/* cover the situation where a negative base address is given by the
+	 * user. Callers of this function negate it, so it'll be a positive
+	 * number smaller than the region.
+	 */
+	if ((offset > 0) && (offset < region->size)) {
+		return region->size - offset;
+	}
 
 	size_t image_size = partitioned_file_total_size(param.image_file);
 	return image_size - region->offset - offset;

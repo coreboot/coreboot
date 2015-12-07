@@ -162,7 +162,6 @@ $(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage
 $(if $(shell if [ -n "$(IASL)" ]; then $(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || echo not-coreboot; else echo not-coreboot; fi), \
 	$(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1)$(warning Please use the coreboot toolchain version of iasl - $(shell util/crossgcc/buildgcc -s iasl)))
 endif
-endif
 ifeq ($(COMPILERFAIL),1)
 ifneq ($(XGCCPATH),)
 $(warning )
@@ -172,10 +171,12 @@ $(warning )
 $(warning To build the entire coreboot toolchain: make crossgcc)
 ifeq ($(IASLFAIL),1)
 $(warning To build just IASL: make iasl)
-endif
+endif #($(IASLFAIL),1)
 $(warning For more toolchain build targets: make help_toolchain)
 $(warning )
 $(warning *** To try to use your own toolchain, run 'make menuconfig', then select the)
 $(warning *** config option: General setup -> Allow building with any toolchain)
 $(error Note that this is NOT supported.  Using it means you're on your own)
-endif
+endif #($(COMPILERFAIL),1)
+
+endif #($(NOCOMPILE),1)

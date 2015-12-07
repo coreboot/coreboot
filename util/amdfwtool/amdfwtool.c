@@ -377,6 +377,9 @@ int main(int argc, char **argv)
 	current = AMD_ROMSIG_OFFSET;
 	amd_romsig = rom + AMD_ROMSIG_OFFSET;
 	amd_romsig[0] = 0x55AA55AA; /* romsig */
+	amd_romsig[1] = 0;
+	amd_romsig[2] = 0;
+	amd_romsig[3] = 0;
 
 	current += 0x20;	    /* size of ROMSIG */
 

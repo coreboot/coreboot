@@ -157,10 +157,11 @@ IASLFAIL:=0
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
 $(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
 	$(if $(shell if [ -n "$(CC_$(arch))" ]; then $(CC_$(arch)) -v 2>&1 |grep -q "coreboot toolchain" || echo not-coreboot; else echo not-coreboot; fi), \
-		$(eval COMPILERFAIL:=1)$(warning Please use the coreboot toolchain for '$(arch)')))
+		$(eval COMPILERFAIL:=1)$(warning The coreboot toolchain for '$(arch)' architecture was not found.)))
 #if iasl doesn't match the current coreboot version, fail the test
+#TODO: Figure out if iasl is even needed for the build.
 $(if $(shell if [ -n "$(IASL)" ]; then $(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || echo not-coreboot; else echo not-coreboot; fi), \
-	$(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1)$(warning Please use the coreboot toolchain version of iasl - $(shell util/crossgcc/buildgcc -s iasl)))
+	$(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1)$(warning The coreboot toolchain version of iasl '$(shell util/crossgcc/buildgcc -s iasl)' was not found))
 endif
 ifeq ($(COMPILERFAIL),1)
 ifneq ($(XGCCPATH),)
@@ -168,11 +169,11 @@ $(warning )
 $(warning Path to your toolchain is currently set to '$(XGCCPATH)')
 endif
 $(warning )
-$(warning To build the entire coreboot toolchain: make crossgcc)
+$(warning To build the entire coreboot toolchain: run 'make crossgcc')
 ifeq ($(IASLFAIL),1)
-$(warning To build just IASL: make iasl)
+$(warning To build just IASL: run 'make iasl')
 endif #($(IASLFAIL),1)
-$(warning For more toolchain build targets: make help_toolchain)
+$(warning For more toolchain build targets: run 'make help_toolchain')
 $(warning )
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
 $(warning To try to use any toolchain in your path, run 'make menuconfig', then select)

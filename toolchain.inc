@@ -164,6 +164,10 @@ endif
 endif
 endif
 ifeq ($(COMPILERFAIL),1)
+ifneq ($(XGCCPATH),)
+$(warning )
+$(warning Path to your toolchain is currently set to '$(XGCCPATH)')
+endif
 $(warning )
 $(warning To build the entire coreboot toolchain: make crossgcc)
 ifeq ($(IASLFAIL),1)

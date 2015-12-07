@@ -56,8 +56,6 @@ if [ "$(${XGCCPATH}/iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
 	IASL=${XGCCPATH}iasl
 elif [ "$(iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
 	IASL=iasl
-else
-	die "no iasl found"
 fi
 
 if program_exists gcc; then
@@ -350,19 +348,13 @@ test_architecture() {
 		# that this will change in the future.
 		CLANG="clang -target ${clang_arch}-${TABI} -ccc-gcc-name ${GCC}"
 	fi
-
-	if [ -z "$GCC" -a -z "$CLANG" -a "power8" != "$architecture" ]; then
-		echo "Warning: no suitable compiler for $architecture." >&2
-		return 1
-	fi
 }
 
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURES; do
-	if test_architecture $architecture; then
-		detect_special_flags "$architecture"
-		detect_compiler_runtime "$architecture"
-		report_arch_toolchain
-	fi
+	test_architecture $architecture
+	detect_special_flags "$architecture"
+	detect_compiler_runtime "$architecture"
+	report_arch_toolchain
 done
 echo XCOMPILE_COMPLETE:=1

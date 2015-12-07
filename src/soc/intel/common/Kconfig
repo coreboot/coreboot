@@ -8,26 +8,19 @@ if SOC_INTEL_COMMON
 config CACHE_MRC_SETTINGS
 	bool "Save cached MRC settings"
 	default n
-	help
-	  If CONFIG_USE_FMAP is enabled, it is assumed that a flashmap
-	  containing an RW_MRC_CACHE entry that specifies the location and size
-	  of the cache will be added to the image and present at runtime.
 
 if CACHE_MRC_SETTINGS
 
 config MRC_SETTINGS_CACHE_BASE
 	hex
-	depends on !USE_FMAP
 	default 0xfffe0000
 
 config MRC_SETTINGS_CACHE_SIZE
 	hex
-	depends on !USE_FMAP
 	default 0x10000
 
 config MRC_SETTINGS_PROTECT
 	bool "Enable protection on MRC settings"
-	depends on !USE_FMAP
 	default n
 
 endif # CACHE_MRC_SETTINGS

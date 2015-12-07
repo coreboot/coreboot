@@ -13,6 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#include <soc/gpio_defs.h>
 
 Device (GPIO)
 {
@@ -66,4 +67,49 @@ Device (GPIO)
 	{
 		Return (0xF)
 	}
+}
+
+/*
+ * Get GPIO DW0 Address
+ * Arg0 - GPIO Number
+ */
+Method (GADD, 1, NotSerialized)
+{
+	/* GPIO Community 0 */
+	If (LAnd (LGreaterEqual (Arg0, GPP_A0), LLessEqual (Arg0, GPP_B23)))
+	{
+		Store (PID_GPIOCOM0, Local0)
+		Subtract (Arg0, GPP_A0, Local1)
+	}
+	/* GPIO Community 1 */
+	If (LAnd (LGreaterEqual (Arg0, GPP_C0), LLessEqual (Arg0, GPP_E23)))
+	{
+		Store (PID_GPIOCOM1, Local0)
+		Subtract (Arg0, GPP_C0, Local1)
+	}
+	/* GPIO Community 03*/
+	If (LAnd (LGreaterEqual (Arg0, GPP_F0), LLessEqual (Arg0, GPP_G7)))
+	{
+		Store (PID_GPIOCOM3, Local0)
+		Subtract (Arg0, GPP_F0, Local1)
+	}
+	Store (PCRB (Local0), Local2)
+	Add (Local2, PAD_CFG_DW_OFFSET, Local2)
+	Return (Add (Local2, Multiply (Local1, 8)))
+}
+
+/*
+ * Get GPIO Value
+ * Arg0 - GPIO Number
+ */
+Method (GRXS, 1, NotSerialized)
+{
+	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
+	Field (PREG, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+	And (GPIORXSTATE_MASK, ShiftRight (VAL0, GPIORXSTATE_SHIFT), Local0)
+
+	Return (Local0)
 }

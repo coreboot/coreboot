@@ -36,7 +36,7 @@ Scope(\_SB)
 	{
 		Store (2000, OSYS)
 
-		If (CondRefOf(_OSI, Local0)) {
+		If (CondRefOf(_OSI)) {
 
 			If (_OSI("Linux")) {
 				Store (1, LINX)

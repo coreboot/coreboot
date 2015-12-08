@@ -70,7 +70,7 @@ Method(GOS, 0)
 	/* Let's assume we're running at least Windows 2000 */
 	Store (2000, OSYS)
 
-	If (CondRefOf(_OSI, Local0)) {
+	If (CondRefOf(_OSI)) {
 		/* Linux answers _OSI with "True" for a couple of
 		 * Windows version queries. But unlike Windows it
 		 * needs a Video repost, so let's determine whether

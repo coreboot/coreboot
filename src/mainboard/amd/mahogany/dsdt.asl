@@ -373,7 +373,7 @@ DefinitionBlock (
 
 			if(LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
 
-			if(CondRefOf(\_OSI,Local1))
+			if(CondRefOf(\_OSI))
 			{
 				Store(1, OSVR)                /* Assume some form of XP */
 				if (\_OSI("Windows 2006"))      /* Vista */

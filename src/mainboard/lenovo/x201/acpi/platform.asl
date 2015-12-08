@@ -99,7 +99,7 @@ Scope(\_SB)
 		/* Let's assume we're running at least Windows 2000 */
 		Store (2000, OSYS)
 
-		If (CondRefOf(_OSI, Local0)) {
+		If (CondRefOf(_OSI)) {
 			If (_OSI("Windows 2001")) {
 				Store (2001, OSYS)
 			}

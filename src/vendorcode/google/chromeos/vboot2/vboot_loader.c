@@ -98,7 +98,7 @@ static void vboot_prepare(void)
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =
-			PROG_INIT(ASSET_VERSTAGE,
+			PROG_INIT(PROG_VERSTAGE,
 				CONFIG_CBFS_PREFIX "/verstage");
 
 		printk(BIOS_DEBUG, "VBOOT: Loading verstage.\n");

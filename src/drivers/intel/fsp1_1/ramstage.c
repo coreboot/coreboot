@@ -176,7 +176,7 @@ static int fsp_find_and_relocate(struct prog *fsp)
 
 void intel_silicon_init(void)
 {
-	struct prog fsp = PROG_INIT(ASSET_REFCODE, "fsp.bin");
+	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
 	int is_s3_wakeup = acpi_is_wakeup_s3();
 
 	if (is_s3_wakeup) {

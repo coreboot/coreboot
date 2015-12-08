@@ -22,7 +22,7 @@ void arch_prog_run(struct prog *prog)
 {
 	void (*doit)(void *) = prog_entry(prog);
 
-	if (ENV_RAMSTAGE && prog_type(prog) == ASSET_PAYLOAD) {
+	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
 		initVirtualMemory();
 		write_csr(mepc, doit);
 		asm volatile("eret");

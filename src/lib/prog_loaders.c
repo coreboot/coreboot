@@ -50,7 +50,7 @@ int prog_locate(struct prog *prog)
 void run_romstage(void)
 {
 	struct prog romstage =
-		PROG_INIT(ASSET_ROMSTAGE, CONFIG_CBFS_PREFIX "/romstage");
+		PROG_INIT(PROG_ROMSTAGE, CONFIG_CBFS_PREFIX "/romstage");
 
 	if (prog_locate(&romstage))
 		goto fail;
@@ -104,7 +104,7 @@ static int load_relocatable_ramstage(struct prog *ramstage)
 void run_ramstage(void)
 {
 	struct prog ramstage =
-		PROG_INIT(ASSET_RAMSTAGE, CONFIG_CBFS_PREFIX "/ramstage");
+		PROG_INIT(PROG_RAMSTAGE, CONFIG_CBFS_PREFIX "/ramstage");
 
 	timestamp_add_now(TS_END_ROMSTAGE);
 
@@ -137,7 +137,7 @@ fail:
 #ifdef __RAMSTAGE__ // gc-sections should take care of this
 
 static struct prog global_payload =
-	PROG_INIT(ASSET_PAYLOAD, CONFIG_CBFS_PREFIX "/payload");
+	PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/payload");
 
 void __attribute__((weak)) mirror_payload(struct prog *payload)
 {

@@ -61,7 +61,7 @@ void arch_prog_run(struct prog *prog)
 	void (*doit)(void *);
 	void *arg;
 
-	if (ENV_RAMSTAGE && prog_type(prog) == ASSET_PAYLOAD) {
+	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
 		run_payload(prog);
 		return;
 	}

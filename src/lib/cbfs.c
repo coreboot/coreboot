@@ -175,7 +175,7 @@ void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
 void *cbfs_boot_load_stage_by_name(const char *name)
 {
 	struct cbfsf fh;
-	struct prog stage = PROG_INIT(ASSET_UNKNOWN, name);
+	struct prog stage = PROG_INIT(PROG_UNKNOWN, name);
 	uint32_t type = CBFS_TYPE_STAGE;
 
 	if (cbfs_boot_locate(&fh, name, &type))

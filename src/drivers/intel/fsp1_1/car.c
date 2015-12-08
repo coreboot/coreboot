@@ -79,7 +79,7 @@ asmlinkage void *romstage_after_verstage(void)
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */
 	FSP_INFO_HEADER *fih;
-	struct prog fsp = PROG_INIT(ASSET_REFCODE, "fsp.bin");
+	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
 
 	console_init();
 

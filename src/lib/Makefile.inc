@@ -19,7 +19,6 @@ ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.c
 endif
 
-bootblock-y += assets.c
 bootblock-y += prog_loaders.c
 bootblock-y += prog_ops.c
 bootblock-y += cbfs.c
@@ -39,7 +38,6 @@ bootblock-y += memcmp.c
 bootblock-y += boot_device.c
 bootblock-y += fmap.c
 
-verstage-y += assets.c
 verstage-y += prog_loaders.c
 verstage-y += prog_ops.c
 verstage-y += delay.c
@@ -62,7 +60,6 @@ endif
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 
-romstage-y += assets.c
 romstage-y += prog_loaders.c
 romstage-y += prog_ops.c
 romstage-y += memchr.c
@@ -98,7 +95,6 @@ endif
 
 romstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 
-ramstage-y += assets.c
 ramstage-y += prog_loaders.c
 ramstage-y += prog_ops.c
 ramstage-y += hardwaremain.c

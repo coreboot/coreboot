@@ -44,7 +44,7 @@ void __attribute__((weak)) *soc_get_bl31_plat_params(bl31_params_t *params)
 
 void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 {
-	struct prog bl31 = PROG_INIT(ASSET_BL31, CONFIG_CBFS_PREFIX"/bl31");
+	struct prog bl31 = PROG_INIT(PROG_BL31, CONFIG_CBFS_PREFIX"/bl31");
 	void (*bl31_entry)(bl31_params_t *params, void *plat_params) = NULL;
 
 	if (prog_locate(&bl31))
@@ -58,7 +58,7 @@ void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 	SET_PARAM_HEAD(&bl31_params, PARAM_BL31, VERSION_1, 0);
 
 	if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_OS)) {
-		struct prog bl32 = PROG_INIT(ASSET_BL32, CONFIG_CBFS_PREFIX"/secure_os");
+		struct prog bl32 = PROG_INIT(PROG_BL32, CONFIG_CBFS_PREFIX"/secure_os");
 
 		if (prog_locate(&bl32))
 			die("BL31 not found");

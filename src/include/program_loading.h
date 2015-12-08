@@ -16,14 +16,25 @@
 #ifndef PROGRAM_LOADING_H
 #define PROGRAM_LOADING_H
 
+#include <commonlib/region.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <assets.h>
 
 enum {
 	/* Last segment of program. Can be used to take different actions for
 	 * cache maintenance of a program load. */
 	SEG_FINAL = 1 << 0,
+};
+
+enum prog_type {
+	PROG_UNKNOWN,
+	PROG_VERSTAGE,
+	PROG_ROMSTAGE,
+	PROG_RAMSTAGE,
+	PROG_REFCODE,
+	PROG_PAYLOAD,
+	PROG_BL31,
+	PROG_BL32,
 };
 
 /* Called for each segment of a program loaded. The SEG_FINAL flag will be
@@ -32,11 +43,13 @@ void arch_segment_loaded(uintptr_t start, size_t size, int flags);
 
 /* Representation of a program. */
 struct prog {
-	/* The region_device within the asset is the source of program content
-	 * to load. After loading program it represents the memory region of
-	 * the stages and payload. For architectures that use a bounce buffer
+	/* The region_device is the source of program content to load. After
+	 * loading program it represents the memory region of the stages and
+	 * payload. For architectures that use a bounce buffer
 	 * then it would represent the bounce buffer. */
-	struct asset asset;
+	enum prog_type type;
+	const char *name;
+	struct region_device rdev;
 	/* Entry to program with optional argument. It's up to the architecture
 	 * to decide if argument is passed. */
 	void (*entry)(void *);
@@ -45,34 +58,35 @@ struct prog {
 
 #define PROG_INIT(type_, name_)				\
 	{						\
-		.asset = ASSET_INIT(type_, name_),	\
+		.type = (type_),			\
+		.name = (name_),			\
 	}
 
 static inline const char *prog_name(const struct prog *prog)
 {
-	return asset_name(&prog->asset);
+	return prog->name;
 }
 
-static inline enum asset_type prog_type(const struct prog *prog)
+static inline enum prog_type prog_type(const struct prog *prog)
 {
-	return asset_type(&prog->asset);
+	return prog->type;
 }
 
 static inline struct region_device *prog_rdev(struct prog *prog)
 {
-	return asset_rdev(&prog->asset);
+	return &prog->rdev;
 }
 
 /* Only valid for loaded programs. */
 static inline size_t prog_size(const struct prog *prog)
 {
-	return asset_size(&prog->asset);
+	return region_device_sz(&prog->rdev);
 }
 
 /* Only valid for loaded programs. */
 static inline void *prog_start(const struct prog *prog)
 {
-	return asset_mmap(&prog->asset);
+	return rdev_mmap_full(&prog->rdev);
 }
 
 static inline void *prog_entry(const struct prog *prog)
@@ -91,7 +105,7 @@ extern const struct mem_region_device addrspace_32bit;
 static inline void prog_memory_init(struct prog *prog, uintptr_t ptr,
 					size_t size)
 {
-	rdev_chain(&prog->asset.rdev, &addrspace_32bit.rdev, ptr, size);
+	rdev_chain(&prog->rdev, &addrspace_32bit.rdev, ptr, size);
 }
 
 static inline void prog_set_area(struct prog *prog, void *start, size_t size)

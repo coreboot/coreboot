@@ -684,7 +684,8 @@ static void sb700_pci_cfg(void)
 
 	/* SMBus Device, BDF:0-20-0 */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
-	/* Enable watchdog decode timer */
+
+	/* Enable watchdog timer decode */
 	byte = pci_read_config8(dev, 0x41);
 	byte |= (1 << 3);
 	pci_write_config8(dev, 0x41, byte);

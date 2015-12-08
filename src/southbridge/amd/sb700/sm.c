@@ -30,6 +30,9 @@
 
 #define NMI_OFF 0
 
+#define SB_MMIO_CFG_REG 0x9c
+#define SB_MMIO_BASE_ADDRESS 0xfeb00000
+
 #define PRIMARY_SMBUS_RESOURCE_NUMBER 0x90
 #define AUXILIARY_SMBUS_RESOURCE_NUMBER 0x58
 
@@ -283,6 +286,13 @@ static void sm_init(device_t dev)
 
 		byte |= 1 << 3;
  		pci_write_config8(dev, 0x43, byte);
+
+		/* Enable southbridge MMIO decode */
+		dword = pci_read_config32(dev, SB_MMIO_CFG_REG);
+		dword &= ~(0xffffff << 8);
+		dword |= SB_MMIO_BASE_ADDRESS;
+		dword |= 0x1;
+		pci_write_config32(dev, SB_MMIO_CFG_REG, dword);
 	}
 	//ACPI_DISABLE_TIMER_IRQ_ENHANCEMENT_FOR_8254_TIMER
  	byte = pci_read_config8(dev, 0xAE);
@@ -412,6 +422,15 @@ static void sb700_sm_read_resources(device_t dev)
 	res = new_resource(dev, 0x74);
 	res->base  = IO_APIC_ADDR;
 	res->size = 256 * 0x10;
+	res->limit = 0xFFFFFFFFUL;	/* res->base + res->size -1; */
+	res->align = 8;
+	res->gran = 8;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
+
+	/* SB MMIO / WDT */
+	res = new_resource(dev, SB_MMIO_CFG_REG);
+	res->base  = SB_MMIO_BASE_ADDRESS;
+	res->size = 0x1000;
 	res->limit = 0xFFFFFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;
 	res->gran = 8;

@@ -898,7 +898,9 @@ DefinitionBlock (
 		}
 
 		/* Arbitrarily clear PciExpWakeStatus */
-		Store(PWST, PWST)
+		Store(PWST, Local1)
+		Store(Local1, PWST)
+
 
 		/* if(DeRefOf(Index(WKST,0))) {
 		*	Store(0, Index(WKST,1))

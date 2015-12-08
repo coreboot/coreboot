@@ -256,7 +256,8 @@ Method(\_WAK, 1) {
 
 	/* Configure southbridge for wake */
 	/* Arbitrarily clear PciExpWakeStatus */
-	Store(PWST, PWST)
+	Store(PWST, Local1)
+	Store(Local1, PWST)
 
 	Store (0x22, DBG8)
 

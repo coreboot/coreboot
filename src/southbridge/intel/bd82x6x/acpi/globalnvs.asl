@@ -238,12 +238,12 @@ External (\_TZ.SKIN)
 Method (TZUP)
 {
 	/* Update Primary Thermal Zone */
-	If (CondRefOf (\_TZ.THRM, Local0)) {
+	If (CondRefOf (\_TZ.THRM)) {
 		Notify (\_TZ.THRM, 0x81)
 	}
 
 	/* Update Secondary Thermal Zone */
-	If (CondRefOf (\_TZ.SKIN, Local0)) {
+	If (CondRefOf (\_TZ.SKIN)) {
 		Notify (\_TZ.SKIN, 0x81)
 	}
 }

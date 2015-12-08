@@ -14,7 +14,6 @@
  */
 
 #include <boot_device.h>
-#include <console/console.h>
 #include <cbfs.h>
 #include <endian.h>
 #include <stdlib.h>
@@ -30,7 +29,7 @@ const struct region_device *boot_device_ro(void)
 	return &boot_dev.rdev;
 }
 
-int cbfs_boot_region_properties(struct cbfs_props *props)
+static int cbfs_master_header_props(struct cbfs_props *props)
 {
 	struct cbfs_header header;
 	int32_t offset;
@@ -63,7 +62,10 @@ int cbfs_boot_region_properties(struct cbfs_props *props)
 	props->size -= header.bootblocksize;
 	props->size = ALIGN_DOWN(props->size, 64);
 
-	printk(BIOS_DEBUG, "CBFS @ %zx size %zx\n", props->offset, props->size);
-
 	return 0;
 }
+
+const struct cbfs_locator cbfs_master_header_locator = {
+	.name = "Master Header Locator",
+	.locate = cbfs_master_header_props,
+};

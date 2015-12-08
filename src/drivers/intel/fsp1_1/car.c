@@ -14,11 +14,11 @@
  */
 
 #include <arch/early_variables.h>
-#include <assets.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
+#include <program_loading.h>
 #include <soc/intel/common/util.h>
 #include <timestamp.h>
 
@@ -79,15 +79,17 @@ asmlinkage void *romstage_after_verstage(void)
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */
 	FSP_INFO_HEADER *fih;
-	struct asset fsp = ASSET_INIT(ASSET_REFCODE, "fsp.bin");
+	struct prog fsp = PROG_INIT(ASSET_REFCODE, "fsp.bin");
 
 	console_init();
 
-	if (asset_locate(&fsp)) {
+	if (prog_locate(&fsp)) {
 		fih = NULL;
-		printk(BIOS_ERR, "Unable to locate %s\n", asset_name(&fsp));
+		printk(BIOS_ERR, "Unable to locate %s\n", prog_name(&fsp));
 	} else
-		fih = find_fsp((uintptr_t)asset_mmap(&fsp));
+		/* This leaks a mapping which this code assumes is benign as
+		 * the flash is memory mapped CPU's address space. */
+		fih = find_fsp((uintptr_t)rdev_mmap_full(prog_rdev(&fsp)));
 
 	set_fih_car(fih);
 

@@ -40,8 +40,4 @@ config MAX_CPUS
 	int
 	default 8
 
-config VBOOT_RAMSTAGE_INDEX
-	hex
-	default 0x3
-
 endif

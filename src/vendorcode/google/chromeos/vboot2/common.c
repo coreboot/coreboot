@@ -115,21 +115,27 @@ struct vb2_shared_data *vb2_get_shared_data(void)
 	return (void *)((uintptr_t)wd + wd->buffer_offset);
 }
 
-int vb2_get_selected_region(struct region_device *rdev)
+int vb2_get_selected_region(struct region *region)
 {
 	const struct selected_region *reg = vb2_selected_region();
-	struct region region = {
-		.offset = reg->offset,
-		.size = reg->size,
-	};
-	return vboot_region_device(&region, rdev);
+
+	if (reg == NULL)
+		return -1;
+
+	if (reg->offset == 0 && reg->size == 0)
+		return -1;
+
+	region->offset = reg->offset;
+	region->size = reg->size;
+
+	return 0;
 }
 
-void vb2_set_selected_region(struct region_device *rdev)
+void vb2_set_selected_region(const struct region *region)
 {
 	struct selected_region *reg = vb2_selected_region();
-	reg->offset = region_device_offset(rdev);
-	reg->size = region_device_sz(rdev);
+	reg->offset = region_offset(region);
+	reg->size = region_sz(region);
 }
 
 int vboot_is_slot_selected(void)

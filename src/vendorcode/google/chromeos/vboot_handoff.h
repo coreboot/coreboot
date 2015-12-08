@@ -22,29 +22,13 @@
 #include "vboot_common.h"
 
 /*
- * The vboot handoff structure keeps track of a maximum number of firmware
- * components in the verfieid RW area of flash.  This is not a restriction on
- * the number of components packed in a firmware block. It's only the maximum
- * number of parsed firmware components (address and size) included in the
- * handoff structure.
- */
-#define MAX_PARSED_FW_COMPONENTS 6
-
-struct firmware_component {
-	uint32_t address;
-	uint32_t size;
-} __attribute__((packed));
-
-/*
  * The vboot_handoff structure contains the data to be consumed by downstream
  * firmware after firmware selection has been completed. Namely it provides
- * vboot shared data as well as the flags from VbInit. As noted above a finite
- * number of components are parsed from the verfieid firmare region.
+ * vboot shared data as well as the flags from VbInit.
  */
 struct vboot_handoff {
 	VbInitParams init_params;
 	uint32_t selected_firmware;
-	struct firmware_component components[MAX_PARSED_FW_COMPONENTS];
 	char shared_data[VB_SHARED_DATA_MIN_SIZE];
 } __attribute__((packed));
 

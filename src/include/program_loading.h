@@ -106,10 +106,7 @@ static inline void prog_set_entry(struct prog *prog, void *e, void *arg)
 }
 
 /* Locate the identified program to run. Return 0 on success. < 0 on error. */
-static inline int prog_locate(struct prog *prog)
-{
-	return asset_locate(&prog->asset);
-}
+int prog_locate(struct prog *prog);
 
 /* Run the program described by prog. */
 void prog_run(struct prog *prog);

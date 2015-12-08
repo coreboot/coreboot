@@ -120,12 +120,8 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 
 void vboot_fill_handoff(void)
 {
-	int i;
 	struct vboot_handoff *vh;
 	struct vb2_shared_data *sd;
-	struct region_device fw_main;
-	struct vboot_components *fw_info;
-	size_t metadata_sz;
 
 	sd = vb2_get_shared_data();
 	sd->workbuf_hash_offset = 0;
@@ -142,33 +138,6 @@ void vboot_fill_handoff(void)
 
 	/* needed until we finish transtion to vboot2 for kernel verification */
 	fill_vboot_handoff(vh, sd);
-
-	/* Nothing left to do in readonly path. */
-	if (vboot_is_readonly_path())
-		return;
-
-	if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES))
-		return;
-
-	if (vb2_get_selected_region(&fw_main))
-		die("No component metadata.\n");
-
-	metadata_sz = sizeof(*fw_info);
-	metadata_sz += MAX_PARSED_FW_COMPONENTS * sizeof(fw_info->entries[0]);
-
-	fw_info = rdev_mmap(&fw_main, 0, metadata_sz);
-
-	if (fw_info == NULL)
-		die("failed to locate firmware components\n");
-
-	/* these offset & size are used to load a rw boot loader */
-	for (i = 0; i < fw_info->num_components; i++) {
-		vh->components[i].address = region_device_offset(&fw_main);
-		vh->components[i].address += fw_info->entries[i].offset;
-		vh->components[i].size = fw_info->entries[i].size;
-	}
-
-	rdev_munmap(&fw_main, fw_info);
 }
 
 /*

@@ -55,8 +55,4 @@ config TPM_PIRQ
 	hex
 	default 0x18  # GPP_E0_IRQ
 
-config VBOOT_RAMSTAGE_INDEX
-	hex
-	default 0x3
-
 endif

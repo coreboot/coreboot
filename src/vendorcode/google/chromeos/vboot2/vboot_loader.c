@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <assets.h>
+#include <arch/early_variables.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -59,7 +59,34 @@ static int verstage_should_load(void)
 	return 0;
 }
 
-static int vboot_active(struct asset *asset)
+static int vboot_executed CAR_GLOBAL;
+
+static int vboot_logic_executed(void)
+{
+	/* If this stage is supposed to run the vboot logic ensure it has been
+	 * executed. */
+	if (verification_should_run() && car_get_var(vboot_executed))
+		return 1;
+
+	/* If this stage is supposed to load verstage and verstage is returning
+	 * back to the calling stage check that it has been executed. */
+	if (verstage_should_load() && IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE))
+		if (car_get_var(vboot_executed))
+			return 1;
+
+	/* Handle all other stages post vboot execution. */
+	if (!ENV_BOOTBLOCK) {
+		if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+			return 1;
+		if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE) &&
+				!ENV_ROMSTAGE)
+			return 1;
+	}
+
+	return 0;
+}
+
+static void vboot_prepare(void)
 {
 	int run_verification;
 
@@ -67,6 +94,7 @@ static int vboot_active(struct asset *asset)
 
 	if (run_verification) {
 		verstage_main();
+		car_set_var(vboot_executed, 1);
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =
@@ -91,7 +119,9 @@ static int vboot_active(struct asset *asset)
 		 * runtime, but this provides a hint to the compiler for dead
 		 * code elimination below. */
 		if (!IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE))
-			return 0;
+			return;
+
+		car_set_var(vboot_executed, 1);
 	}
 
 	/*
@@ -106,103 +136,27 @@ static int vboot_active(struct asset *asset)
 		vb2_store_selected_region();
 		vboot_fill_handoff();
 	}
-
-	return vboot_is_slot_selected();
 }
 
-static int vboot_locate_by_components(const struct region_device *fw_main,
-					struct asset *asset)
+static int vboot_locate(struct cbfs_props *props)
 {
-	struct vboot_components *fw_info;
-	size_t metadata_sz;
-	size_t offset;
-	size_t size;
-	struct region_device *fw = asset_rdev(asset);
-	int fw_index = 0;
+	struct region selected_region;
 
-	if (asset_type(asset) == ASSET_ROMSTAGE)
-		fw_index = CONFIG_VBOOT_ROMSTAGE_INDEX;
-	else if (asset_type(asset) == ASSET_RAMSTAGE)
-		fw_index = CONFIG_VBOOT_RAMSTAGE_INDEX;
-	else if (asset_type(asset) == ASSET_PAYLOAD)
-		fw_index = CONFIG_VBOOT_BOOT_LOADER_INDEX;
-	else if (asset_type(asset) == ASSET_REFCODE)
-		fw_index = CONFIG_VBOOT_REFCODE_INDEX;
-	else if (asset_type(asset) == ASSET_BL31)
-		fw_index = CONFIG_VBOOT_BL31_INDEX;
-	else
-		die("Invalid program type for vboot.");
-
-	metadata_sz = sizeof(*fw_info);
-	metadata_sz += MAX_PARSED_FW_COMPONENTS * sizeof(fw_info->entries[0]);
-
-	fw_info = rdev_mmap(fw_main, 0, metadata_sz);
-
-	if (fw_info == NULL) {
-		printk(BIOS_INFO, "No component metadata.\n");
+	/* Don't honor vboot results until the vboot logic has run. */
+	if (!vboot_logic_executed())
 		return -1;
-	}
 
-	if (fw_index >= fw_info->num_components) {
-		printk(BIOS_INFO, "invalid index: %d\n", fw_index);
-		rdev_munmap(fw_main, fw_info);
+	if (vb2_get_selected_region(&selected_region))
 		return -1;
-	}
 
-	offset = fw_info->entries[fw_index].offset;
-	size = fw_info->entries[fw_index].size;
-	rdev_munmap(fw_main, fw_info);
-
-	if (rdev_chain(fw, fw_main, offset, size)) {
-		printk(BIOS_INFO, "invalid offset or size\n");
-		return -1;
-	}
+	props->offset = region_offset(&selected_region);
+	props->size = region_sz(&selected_region);
 
 	return 0;
 }
 
-static int vboot_locate_by_multi_cbfs(const struct region_device *fw_main,
-					struct asset *asset)
-{
-	struct cbfsf file;
-
-	if (cbfs_locate(&file, fw_main, asset_name(asset), NULL))
-		return -1;
-
-	cbfs_file_data(asset_rdev(asset), &file);
-
-	return 0;
-}
-
-static int vboot_asset_locate(const struct region_device *fw_main,
-				struct asset *asset)
-{
-	if (IS_ENABLED(CONFIG_MULTIPLE_CBFS_INSTANCES))
-		return vboot_locate_by_multi_cbfs(fw_main, asset);
-	else
-		return vboot_locate_by_components(fw_main, asset);
-}
-
-/* This function is only called when vboot_active() returns 1. That
- * means we are taking vboot paths. */
-static int vboot_locate(struct asset *asset)
-{
-	struct region_device fw_main;
-
-	/* Code size optimization. We'd never actually get called under the
-	 * followin cirumstances because verstage was loaded and ran -- never
-	 * returning. */
-	if (verstage_should_load() && !IS_ENABLED(CONFIG_RETURN_FROM_VERSTAGE))
-		return 0;
-
-	if (vb2_get_selected_region(&fw_main))
-		die("failed to reference selected region\n");
-
-	return vboot_asset_locate(&fw_main, asset);
-}
-
-const struct asset_provider vboot_provider = {
+const struct cbfs_locator vboot_locator = {
 	.name = "VBOOT",
-	.is_active = vboot_active,
+	.prepare = vboot_prepare,
 	.locate = vboot_locate,
 };

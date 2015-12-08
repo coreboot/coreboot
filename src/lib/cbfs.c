@@ -37,8 +37,6 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	const struct region_device *boot_dev;
 	struct cbfs_props props;
 
-	boot_device_init();
-
 	if (cbfs_boot_region_properties(&props))
 		return -1;
 
@@ -254,4 +252,98 @@ out:
 	prog_set_entry(pstage, entry, NULL);
 
 	return 0;
+}
+
+static int cbfs_master_header_props(struct cbfs_props *props)
+{
+	struct cbfs_header header;
+	const struct region_device *bdev;
+	int32_t rel_offset;
+	size_t offset;
+
+	bdev = boot_device_ro();
+
+	if (bdev == NULL)
+		return -1;
+
+	/* Find location of header using signed 32-bit offset from
+	 * end of CBFS region. */
+	offset = CONFIG_CBFS_SIZE - sizeof(int32_t);
+	if (rdev_readat(bdev, &rel_offset, offset, sizeof(int32_t)) < 0)
+		return -1;
+
+	offset = CONFIG_CBFS_SIZE + rel_offset;
+	if (rdev_readat(bdev, &header, offset, sizeof(header)) < 0)
+		return -1;
+
+	header.magic = ntohl(header.magic);
+	header.romsize = ntohl(header.romsize);
+	header.offset = ntohl(header.offset);
+
+	if (header.magic != CBFS_HEADER_MAGIC)
+		return -1;
+
+	props->offset = header.offset;
+	props->size = header.romsize;
+	props->size -= props->offset;
+
+	printk(BIOS_SPEW, "CBFS @ %zx size %zx\n", props->offset, props->size);
+
+	return 0;
+}
+
+/* This struct is marked as weak to allow a particular platform to
+ * override the master header logic. This implementation should work for most
+ * devices. */
+const struct cbfs_locator __attribute__((weak)) cbfs_master_header_locator = {
+	.name = "Master Header Locator",
+	.locate = cbfs_master_header_props,
+};
+
+extern const struct cbfs_locator vboot_locator;
+
+static const struct cbfs_locator *locators[] = {
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+	&vboot_locator,
+#endif
+	&cbfs_master_header_locator,
+};
+
+int cbfs_boot_region_properties(struct cbfs_props *props)
+{
+	int i;
+
+	boot_device_init();
+
+	for (i = 0; i < ARRAY_SIZE(locators); i++) {
+		const struct cbfs_locator *ops;
+
+		ops = locators[i];
+
+		if (ops->locate == NULL)
+			continue;
+
+		if (ops->locate(props))
+			continue;
+
+		LOG("'%s' located CBFS at [%zx:%zx)\n",
+			ops->name, props->offset, props->offset + props->size);
+
+		return 0;
+	}
+
+	return -1;
+}
+
+void cbfs_prepare_program_locate(void)
+{
+	int i;
+
+	boot_device_init();
+
+	for (i = 0; i < ARRAY_SIZE(locators); i++) {
+		if (locators[i]->prepare == NULL)
+			continue;
+		locators[i]->prepare();
+	}
 }

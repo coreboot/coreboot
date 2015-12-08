@@ -107,7 +107,7 @@
 
 		Method (_PRW, 0, NotSerialized)
 		{
-			If (CondRefOf (\_S3, Local0)) { Return (Package (0x02) { 0x08, 0x03 }) }
+			If (CondRefOf (\_S3)) { Return (Package (0x02) { 0x08, 0x03 }) }
 			Else { Return (Package (0x02) { 0x08, 0x01 }) }
 		}
 
@@ -116,7 +116,7 @@
 			Name (_ADR, 0x00000000)
 			Method (_PRW, 0, NotSerialized)
 			{
-				If (CondRefOf (\_S3, Local0)) { Return (Package (0x02) { 0x0F, 0x03 }) }
+				If (CondRefOf (\_S3)) { Return (Package (0x02) { 0x0F, 0x03 }) }
 				Else { Return (Package (0x02) { 0x0F, 0x01 }) }
 			}
 		}
@@ -126,7 +126,7 @@
 			Name (_ADR, 0x00000001)
 			Method (_PRW, 0, NotSerialized)
 			{
-				If (CondRefOf (\_S3, Local0)) { Return (Package (0x02) { 0x0F, 0x03 }) }
+				If (CondRefOf (\_S3)) { Return (Package (0x02) { 0x0F, 0x03 }) }
 				Else { Return (Package (0x02) { 0x0F, 0x01 }) }
 			}
 		}

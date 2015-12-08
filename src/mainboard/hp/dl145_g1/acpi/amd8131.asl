@@ -9,7 +9,7 @@ Device (PG0A) {
 		Return (DADD(GHCD(HCIN, 0), 0x00000000))
 	}
 	Method (_PRW, 0, NotSerialized) {
-		//If (CondRefOf (\_S3, Local0)) {
+		//If (CondRefOf (\_S3)) {
 		//	Return (Package (0x02) { 0x29, 0x03 })
 		//} Else {
 			Return (Package (0x02) { 0x29, 0x01 })
@@ -75,7 +75,7 @@ Device (PG0B) {
 		Return (DADD(GHCD(HCIN, 0), 0x00010000))
 	}
 	Method (_PRW, 0, NotSerialized) {
-		//If (CondRefOf (\_S3, Local0)) {
+		//If (CondRefOf (\_S3)) {
 		//	Return (Package (0x02) { 0x22, 0x03 })
 		//} Else {
 			Return (Package (0x02) { 0x22, 0x01 })

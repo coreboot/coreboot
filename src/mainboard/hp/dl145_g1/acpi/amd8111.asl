@@ -87,7 +87,7 @@ Device (TP2P) {
 	// result :
 	// [0] Bit index into GPEx_EN in the GPE block described by FADT.
 	// [1] The lowest power state from which the system can be awakened.
-		//If (CondRefOf (\_S3, Local0)) {
+		//If (CondRefOf (\_S3)) {
 		//	Return (Package (0x02) { 0x08, 0x03 })
 		//} Else {
 			Return (Package (0x02) { 0x08, 0x01 })
@@ -96,7 +96,7 @@ Device (TP2P) {
 	Device (ETHR) {
 		Name (_ADR, 0x00010000)
 		Method (_PRW, 0, NotSerialized) { // Power Resource for Wake
-			//If (CondRefOf (\_S3, Local0)) {
+			//If (CondRefOf (\_S3)) {
 			//	Return (Package (0x02) { 0x08, 0x03 })
 			//} Else {
 				Return (Package (0x02) { 0x08, 0x01 })
@@ -109,7 +109,7 @@ Device (TP2P) {
 			And (GNBL, 0x7FFF, GNBL)
 		}
 		Method (_PRW, 0, NotSerialized) { // Power Resource for Wake
-			//If (CondRefOf (\_S3, Local0)) {
+			//If (CondRefOf (\_S3)) {
 			//	Return (Package (0x02) { 0x0F, 0x03 })
 			//} Else {
 				Return (Package (0x02) { 0x0F, 0x01 })
@@ -122,7 +122,7 @@ Device (TP2P) {
 			And (GNBL, 0x7FFF, GNBL)
 		}
 		Method (_PRW, 0, NotSerialized) { // Power Resource for Wake
-			//If (CondRefOf (\_S3, Local0)) {
+			//If (CondRefOf (\_S3)) {
 			//	Return (Package (0x02) { 0x0F, 0x03 })
 			//} Else {
 				Return (Package (0x02) { 0x0F, 0x01 })

@@ -488,7 +488,7 @@ build_IASL() {
 	test $UNAME = "Darwin" && HOST="_APPLE"
 	test $UNAME = "FreeBSD" && HOST="_FreeBSD"
 	test $UNAME = "Cygwin" && HOST="_CYGWIN"
-	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2" CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch $RDIR/.failed
+	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE\"' " CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch $RDIR/.failed
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch $RDIR/.failed
 	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch $RDIR/.failed
 }

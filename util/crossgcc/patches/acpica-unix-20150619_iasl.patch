@@ -1,0 +1,12 @@
+diff -urN acpica-unix-20150619/source/compiler/asloptions.c acpica-unix-20150619/source/compiler/asloptions.c
+--- acpica-unix-20150619/source/compiler/asloptions.c   2015-06-19 08:56:19.000000000 -0600
++++ acpica-unix-20150619/source/compiler/asloptions.c 2015-12-08 10:44:58.816669240 -0700
+@@ -717,6 +717,7 @@
+         case '^':
+
+             printf (ACPI_COMMON_SIGNON (ASL_COMPILER_NAME));
++            printf ("%s\n", COREBOOT_TOOLCHAIN_VERSION);
+             exit (0);
+
+         case 'a':
+

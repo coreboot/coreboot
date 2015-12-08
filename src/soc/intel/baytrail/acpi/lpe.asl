@@ -68,7 +68,7 @@ Device (LPEA)
 		Store (\LPFW, BAS2)
 
 		/* Append any Mainboard defined GPIOs */
-		If (CondRefOf (^GBUF, Local0)) {
+		If (CondRefOf (^GBUF)) {
 			ConcatenateResTemplate (^RBUF, ^GBUF, Local1)
 			Return (Local1)
 		}

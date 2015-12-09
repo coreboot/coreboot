@@ -139,7 +139,7 @@ static long int fmap_bsearch(const uint8_t *image, size_t len)
 	 * remainder when modding the offset with the previous stride. This
 	 * makes it so that each offset is only checked once.
 	 */
-	for (stride = len / 2; stride >= 1; stride /= 2) {
+	for (stride = len / 2; stride >= 16; stride /= 2) {
 		if (fmap_found)
 			break;
 

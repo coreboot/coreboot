@@ -62,10 +62,13 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 	/* Display parameters */
 	printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",
 		CONFIG_MMCONF_BASE_ADDRESS);
-	printk(BIOS_INFO, "Using FSP 1.1");
+	printk(BIOS_INFO, "Using FSP 1.1\n");
 
 	/* Display FSP banner */
 	print_fsp_info(fih);
+
+	/* Stash FSP version. */
+	params.fsp_version = fsp_version(fih);
 
 	/* Get power state */
 	params.power_state = fill_power_state();
@@ -125,7 +128,8 @@ void romstage_common(struct romstage_params *params)
 			/* Recovery mode does not use MRC cache */
 			printk(BIOS_DEBUG,
 			       "Recovery mode: not using MRC cache.\n");
-		} else if (!mrc_cache_get_current(&cache)) {
+		} else if (!mrc_cache_get_current_with_version(&cache,
+							params->fsp_version)) {
 			/* MRC cache found */
 			params->pei_data->saved_data_size = cache->size;
 			params->pei_data->saved_data = &cache->data[0];
@@ -151,8 +155,10 @@ void romstage_common(struct romstage_params *params)
 	if (params->pei_data->boot_mode != SLEEP_STATE_S3) {
 		if (params->pei_data->data_to_save_size != 0 &&
 		    params->pei_data->data_to_save != NULL) {
-			mrc_cache_stash_data(params->pei_data->data_to_save,
-				params->pei_data->data_to_save_size);
+			mrc_cache_stash_data_with_version(
+				params->pei_data->data_to_save,
+				params->pei_data->data_to_save_size,
+				params->fsp_version);
 		}
 	}
 

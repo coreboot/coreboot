@@ -45,6 +45,13 @@ void *get_next_resource_hob(const EFI_GUID *guid, const void *hob_start);
 void *get_first_resource_hob(const EFI_GUID *guid);
 void fsp_display_upd_value(const char *name, uint32_t size, uint64_t old,
 	uint64_t new);
+
+/* Return version of FSP associated with fih. */
+static inline uint32_t fsp_version(FSP_INFO_HEADER *fih)
+{
+	return fih->ImageRevision;
+}
+
 /*
  * Relocate FSP entire binary into ram. Returns < 0 on error, 0 on success.
  * The FSP source is pointed to by region_device and the relocation information

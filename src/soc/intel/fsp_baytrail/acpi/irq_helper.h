@@ -85,7 +85,7 @@ Name(prefix_ ## func_ ## A, Package() \
 	ACPI_DEV_IRQ(dev_, 0, a_), \
 	ACPI_DEV_IRQ(dev_, 1, b_), \
 	ACPI_DEV_IRQ(dev_, 2, c_), \
-	ACPI_DEV_IRQ(dev_, 3, d_), \
+	ACPI_DEV_IRQ(dev_, 3, d_)
 
 #define PCIE_BRIDGE_DEV(prefix_, dev_, a_, b_, c_, d_) \
 	ROOTPORT_IRQ_ROUTES(prefix_, a_, b_, c_, d_) \

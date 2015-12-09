@@ -149,13 +149,13 @@ static void asmlinkage cpu_smm_do_relocation(void *arg)
 {
 	msr_t smrr;
 	em64t100_smm_state_save_area_t *smm_state;
-        const struct smm_module_params *p;
-        const struct smm_runtime *runtime;
-        int cpu;
+	const struct smm_module_params *p;
+	const struct smm_runtime *runtime;
+	int cpu;
 
-        p = arg;
-        runtime = p->runtime;
-        cpu = p->cpu;
+	p = arg;
+	runtime = p->runtime;
+	cpu = p->cpu;
 
 	if (cpu >= CONFIG_MAX_CPUS) {
 		printk(BIOS_CRIT,

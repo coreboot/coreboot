@@ -93,9 +93,6 @@ static int mrc_cache_valid(const struct mrc_data_region *region,
 	if (cache->size > region->size)
 		return 0;
 
-	if (cache->reserved != 0)
-		return 0;
-
 	checksum = compute_ip_checksum((void *)&cache->data[0], cache->size);
 
 	if (cache->checksum != checksum)
@@ -116,7 +113,8 @@ next_cache_block(const struct mrc_saved_data *cache)
 
 /* Locate the most recently saved MRC data. */
 static int __mrc_cache_get_current(const struct mrc_data_region *region,
-                                   const struct mrc_saved_data **cache)
+                                   const struct mrc_saved_data **cache,
+                                   uint32_t version)
 {
 	const struct mrc_saved_data *msd;
 	const struct mrc_saved_data *verified_cache;
@@ -136,35 +134,47 @@ static int __mrc_cache_get_current(const struct mrc_data_region *region,
 	if (verified_cache == NULL)
 		return -1;
 
+	if (verified_cache->version != version) {
+		printk(BIOS_DEBUG, "MRC cache version mismatch: %x vs %x\n",
+			verified_cache->version, version);
+		return -1;
+	}
+
 	*cache = verified_cache;
 	printk(BIOS_DEBUG, "MRC cache slot %d @ %p\n", slot-1, verified_cache);
 
 	return 0;
 }
 
-int mrc_cache_get_current(const struct mrc_saved_data **cache)
+int mrc_cache_get_current_with_version(const struct mrc_saved_data **cache,
+					uint32_t version)
 {
 	struct mrc_data_region region;
 
 	if (mrc_cache_get_region(&region) < 0)
 		return -1;
 
-	return __mrc_cache_get_current(&region, cache);
+	return __mrc_cache_get_current(&region, cache, version);
 }
 
+int mrc_cache_get_current(const struct mrc_saved_data **cache)
+{
+	return mrc_cache_get_current_with_version(cache, 0);
+}
 /* Fill in mrc_saved_data structure with payload. */
 static void mrc_cache_fill(struct mrc_saved_data *cache, void *data,
-                           size_t size)
+                           size_t size, uint32_t version)
 {
 	cache->signature = MRC_DATA_SIGNATURE;
 	cache->size = size;
-	cache->reserved = 0;
+	cache->version = version;
 	memcpy(&cache->data[0], data, size);
 	cache->checksum = compute_ip_checksum((void *)&cache->data[0],
 	                                      cache->size);
 }
 
-int mrc_cache_stash_data(void *data, size_t size)
+int mrc_cache_stash_data_with_version(void *data, size_t size,
+					uint32_t version)
 {
 	int cbmem_size;
 	struct mrc_saved_data *cache;
@@ -184,9 +194,14 @@ int mrc_cache_stash_data(void *data, size_t size)
 	printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%zu bytes)\n",
 	       data, cache, size);
 
-	mrc_cache_fill(cache, data, size);
+	mrc_cache_fill(cache, data, size, version);
 
 	return 0;
+}
+
+int mrc_cache_stash_data(void *data, size_t size)
+{
+	return mrc_cache_stash_data_with_version(data, size, 0);
 }
 
 static int mrc_slot_valid(const struct mrc_data_region *region,
@@ -281,7 +296,8 @@ static void update_mrc_cache(void *unused)
 
 	current_saved = NULL;
 
-	if (!__mrc_cache_get_current(&region, &current_saved)) {
+	if (!__mrc_cache_get_current(&region, &current_saved,
+					current_boot->version)) {
 		if (current_saved->size == current_boot->size &&
 		    !memcmp(&current_saved->data[0], &current_boot->data[0],
 		            current_saved->size)) {

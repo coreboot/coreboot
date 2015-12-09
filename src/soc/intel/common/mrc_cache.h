@@ -24,14 +24,18 @@ struct mrc_saved_data {
 	uint32_t signature;
 	uint32_t size;
 	uint32_t checksum;
-	uint32_t reserved;
+	uint32_t version;
 	uint8_t  data[0];
 } __attribute__((packed));
 
 /* Locate the most recently saved MRC data. */
 int mrc_cache_get_current(const struct mrc_saved_data **cache);
+int mrc_cache_get_current_with_version(const struct mrc_saved_data **cache,
+					uint32_t version);
 
 /* Stash the resulting MRC data to be saved in non-volatile storage later. */
 int mrc_cache_stash_data(void *data, size_t size);
+int mrc_cache_stash_data_with_version(void *data, size_t size,
+					uint32_t version);
 
 #endif /* _COMMON_MRC_CACHE_H_ */

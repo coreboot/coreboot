@@ -50,7 +50,7 @@ static const struct soc_gpio_map gpse_gpio_map[] = {
 	NATIVE_PU20K(1), /* 34 SDMMC3_CMD */
 	NATIVE_PU20K(1), /* 35 SDMMC3_D0 */
 	NATIVE_PU20K(1), /* 45 MF_LPC_AD2 */
-	Native_M1, /* 46 LPC_CLKRUNB */
+	NATIVE_PU20K(1), /* 46 LPC_CLKRUNB */
 	NATIVE_PU20K(1), /* 47 MF_LPC_AD0 */
 	Native_M1, /* 48 LPC_FRAMEB */
 	Native_M1, /* 49 MF_LPC_CLKOUT1 */

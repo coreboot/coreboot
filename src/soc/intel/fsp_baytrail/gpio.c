@@ -15,9 +15,9 @@
 
 #include <device/pci.h>
 #include <console/console.h>
-#include <baytrail/gpio.h>
-#include <baytrail/pmc.h>
-#include <baytrail/smm.h>
+#include <soc/gpio.h>
+#include <soc/pmc.h>
+#include <soc/smm.h>
 
 /*
  * GPIO-to-Pad LUTs

@@ -30,15 +30,15 @@
 #include <pc80/i8259.h>
 #include <pc80/isa-dma.h>
 
-#include <baytrail/baytrail.h>
-#include <baytrail/iomap.h>
-#include <baytrail/irq.h>
-#include <baytrail/lpc.h>
-#include <baytrail/nvs.h>
-#include <baytrail/acpi.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/pmc.h>
-#include <baytrail/ramstage.h>
+#include <soc/baytrail.h>
+#include <soc/iomap.h>
+#include <soc/irq.h>
+#include <soc/lpc.h>
+#include <soc/nvs.h>
+#include <soc/acpi.h>
+#include <soc/pci_devs.h>
+#include <soc/pmc.h>
+#include <soc/ramstage.h>
 #include "chip.h"
 #include <arch/acpi.h>
 #include <arch/acpigen.h>

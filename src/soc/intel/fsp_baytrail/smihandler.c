@@ -23,9 +23,9 @@
 #include <elog.h>
 #include <halt.h>
 
-#include <baytrail/pci_devs.h>
-#include <baytrail/pmc.h>
-#include <baytrail/nvs.h>
+#include <soc/pci_devs.h>
+#include <soc/pmc.h>
+#include <soc/nvs.h>
 
 /* GNVS needs to be set by coreboot initiating a software SMI. */
 static global_nvs_t *gnvs;

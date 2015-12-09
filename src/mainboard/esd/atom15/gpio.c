@@ -15,7 +15,7 @@
  */
 
 #include <stdlib.h>
-#include <baytrail/gpio.h>
+#include <soc/gpio.h>
 #include "irqroute.h"
 
 /*

@@ -27,11 +27,11 @@
 #include <cpu/x86/smm.h>
 #include <reg_script.h>
 
-#include <baytrail/msr.h>
-#include <baytrail/pattrs.h>
-#include <baytrail/ramstage.h>
+#include <soc/msr.h>
+#include <soc/pattrs.h>
+#include <soc/ramstage.h>
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
-#include <baytrail/smm.h>
+#include <soc/smm.h>
 
 static void smm_relocate(void *unused);
 static void enable_smis(void *unused);

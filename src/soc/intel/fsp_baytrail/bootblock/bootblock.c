@@ -19,12 +19,12 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode/microcode.c>
-#include <baytrail/iosf.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/spi.h>
-#include <baytrail/iomap.h>
-#include <baytrail/lpc.h>
-#include <baytrail/gpio.h>
+#include <soc/iosf.h>
+#include <soc/pci_devs.h>
+#include <soc/spi.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/gpio.h>
 #include <reset.h>
 
 /*

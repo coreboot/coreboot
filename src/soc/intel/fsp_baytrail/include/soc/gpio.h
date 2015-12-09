@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <baytrail/iomap.h>
+#include <soc/iomap.h>
 
 /* #define GPIO_DEBUG */
 

@@ -2,7 +2,7 @@
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <device/pci_rom.h>
-#include <baytrail/acpi.h>
+#include <soc/acpi.h>
 
 
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt) {}

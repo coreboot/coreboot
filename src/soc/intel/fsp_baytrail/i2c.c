@@ -14,11 +14,11 @@
  */
 
 #include <device/pci.h>
-#include <baytrail/baytrail.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/iosf.h>
+#include <soc/baytrail.h>
+#include <soc/pci_devs.h>
+#include <soc/iosf.h>
 #include <delay.h>
-#include <baytrail/i2c.h>
+#include <soc/i2c.h>
 
 /* Wait for the transmit FIFO till there is at least one slot empty.
  * FIFO stall due to transmit abort will be checked and resolved

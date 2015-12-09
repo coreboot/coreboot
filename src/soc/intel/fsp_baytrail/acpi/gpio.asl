@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/intel/fsp_baytrail/baytrail/iomap.h>
-#include <soc/intel/fsp_baytrail/baytrail/irq.h>
+#include <soc/intel/fsp_baytrail/include/soc/iomap.h>
+#include <soc/intel/fsp_baytrail/include/soc/irq.h>
 
 /* SouthCluster GPIO */
 Device (GPSC)

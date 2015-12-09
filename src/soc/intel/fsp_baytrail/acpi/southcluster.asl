@@ -14,9 +14,9 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/intel/fsp_baytrail/baytrail/iomap.h>
-#include <soc/intel/fsp_baytrail/baytrail/irq.h>
-#include "../baytrail/baytrail.h"
+#include <soc/intel/fsp_baytrail/include/soc/iomap.h>
+#include <soc/intel/fsp_baytrail/include/soc/irq.h>
+#include "../include/soc/baytrail.h"
 
 Scope(\)
 {

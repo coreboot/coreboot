@@ -15,12 +15,12 @@
  * GNU General Public License for more details.
  */
 
-#include <baytrail/romstage.h>
+#include <soc/romstage.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include <baytrail/gpio.h>
-#include "chip.h"
+#include <soc/gpio.h>
+#include <soc/intel/fsp_baytrail/chip.h>
 
 /**
  * /brief mainboard call for setup that needs to be done before fsp init

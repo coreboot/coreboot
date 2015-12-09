@@ -26,13 +26,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <baytrail/gpio.h>
-#include <baytrail/lpc.h>
-#include <baytrail/nvs.h>
-#include <baytrail/msr.h>
-#include <baytrail/pattrs.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/ramstage.h>
+#include <soc/gpio.h>
+#include <soc/lpc.h>
+#include <soc/nvs.h>
+#include <soc/msr.h>
+#include <soc/pattrs.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 
 /* Global PATTRS */
 DEFINE_PATTRS;

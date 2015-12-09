@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include <string.h>
 #include "modhwinfo.h"
-#include "baytrail/gpio.h"
+#include "soc/gpio.h"
 #include "lcd_panel.h"
 #include "ptn3460.h"
 

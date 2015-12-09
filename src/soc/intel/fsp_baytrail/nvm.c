@@ -20,7 +20,7 @@
 #include <string.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include <baytrail/nvm.h>
+#include <soc/nvm.h>
 
 /* This module assumes the flash is memory mapped just below 4GiB in the
  * address space for reading. Also this module assumes an area it erased

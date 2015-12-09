@@ -17,8 +17,8 @@
 #ifndef IRQROUTE_H
 #define IRQROUTE_H
 
-#include <soc/intel/fsp_baytrail/baytrail/irq.h>
-#include <soc/intel/fsp_baytrail/baytrail/pci_devs.h>
+#include <soc/intel/fsp_baytrail/include/soc/irq.h>
+#include <soc/intel/fsp_baytrail/include/soc/pci_devs.h>
 
 /*
  *IR02h GFX      INT(A) 	- PIRQ A

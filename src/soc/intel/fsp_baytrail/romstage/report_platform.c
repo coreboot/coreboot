@@ -16,10 +16,10 @@
 
 #include <console/console.h>
 #include <arch/io.h>
-#include <baytrail/iosf.h>
-#include <baytrail/romstage.h>
+#include <soc/iosf.h>
+#include <soc/romstage.h>
 #include <cpu/x86/msr.h>
-#include <baytrail/msr.h>
+#include <soc/msr.h>
 #include <cpu/x86/name.h>
 
 static void print_dram_info(void)

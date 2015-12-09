@@ -21,18 +21,18 @@
 #include <cbmem.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <baytrail/pci_devs.h>
+#include <soc/pci_devs.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include "../chip.h"
 #include <arch/io.h>
-#include <baytrail/reset.h>
-#include <baytrail/pmc.h>
-#include <baytrail/acpi.h>
-#include <baytrail/iomap.h>
-#include <baytrail/smm.h>
+#include <soc/reset.h>
+#include <soc/pmc.h>
+#include <soc/acpi.h>
+#include <soc/iomap.h>
+#include <soc/smm.h>
 
 #ifdef __PRE_RAM__
-#include <baytrail/romstage.h>
+#include <soc/romstage.h>
 #endif
 
 #ifdef __PRE_RAM__

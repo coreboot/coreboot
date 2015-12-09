@@ -14,7 +14,7 @@
  */
 
 #include <console/console.h>
-#include "baytrail/i2c.h"
+#include "soc/i2c.h"
 #include "ptn3460.h"
 
 /** \brief This functions sets up the DP2LVDS-converter to be used with the

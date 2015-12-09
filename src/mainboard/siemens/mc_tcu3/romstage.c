@@ -25,13 +25,13 @@
 #include <cpu/x86/mtrr.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
-#include <baytrail/gpio.h>
-#include <baytrail/iomap.h>
-#include <baytrail/lpc.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/romstage.h>
-#include <baytrail/acpi.h>
-#include <baytrail/baytrail.h>
+#include <soc/gpio.h>
+#include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/pci_devs.h>
+#include <soc/romstage.h>
+#include <soc/acpi.h>
+#include <soc/baytrail.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include "modhwinfo.h"
 

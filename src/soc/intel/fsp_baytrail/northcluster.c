@@ -20,13 +20,13 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/lapic.h>
-#include <baytrail/iomap.h>
-#include <baytrail/iosf.h>
-#include <baytrail/pci_devs.h>
-#include <baytrail/ramstage.h>
+#include <soc/iomap.h>
+#include <soc/iosf.h>
+#include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 #include <device/pci.h>
 #include <cbmem.h>
-#include <baytrail/baytrail.h>
+#include <soc/baytrail.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <arch/acpi.h>
 

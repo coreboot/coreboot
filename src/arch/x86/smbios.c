@@ -46,6 +46,13 @@ int smbios_add_string(char *start, const char *str)
 	int i = 1;
 	char *p = start;
 
+	/*
+	 * Return 0 as required for empty strings.
+	 * See Section 6.1.3 "Text Strings" of the SMBIOS specification.
+	 */
+	if (*str == '\0')
+		return 0;
+
 	for(;;) {
 		if (!*p) {
 			strcpy(p, str);

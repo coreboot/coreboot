@@ -71,9 +71,11 @@ partitioned_file_t *partitioned_file_create(const char *filename,
  * caller, and must later be passed to partitioned_file_close();
  *
  * @param filename      Name of the file to read in
+ * @param write_access  True if the file needs to be modified
  * @return              Caller-owned partitioned file, or NULL on error
  */
-partitioned_file_t *partitioned_file_reopen(const char *filename);
+partitioned_file_t *partitioned_file_reopen(const char *filename,
+					    bool write_access);
 
 /**
  * Write a buffer's contents to its original region within a segmented file.

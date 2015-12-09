@@ -38,7 +38,10 @@ struct command {
 	int (*function) (void);
 	// Whether to populate param.image_region before invoking function
 	bool accesses_region;
-	// Whether to write that region's contents back to image_file at the end
+	// This set to true means two things:
+	// - in case of a command operating on a region, the region's contents
+	//   will be written back to image_file at the end
+	// - write access to the file is required
 	bool modifies_region;
 };
 
@@ -1014,7 +1017,7 @@ static const struct command commands[] = {
 	{"print", "H:r:vh?", cbfs_print, true, false},
 	{"read", "r:f:vh?", cbfs_read, true, false},
 	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
-	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, false},
+	{"update-fit", "H:r:n:x:vh?", cbfs_update_fit, true, true},
 	{"write", "r:f:udvh?", cbfs_write, true, true},
 };
 
@@ -1372,8 +1375,11 @@ int main(int argc, char **argv)
 				return 1;
 			}
 		} else {
+			bool write_access = commands[i].modifies_region;
+
 			param.image_file =
-				partitioned_file_reopen(image_name);
+				partitioned_file_reopen(image_name,
+							write_access);
 		}
 		if (!param.image_file)
 			return 1;
@@ -1429,7 +1435,6 @@ int main(int argc, char **argv)
 
 		if (commands[i].modifies_region) {
 			assert(param.image_file);
-			assert(commands[i].accesses_region);
 			for (unsigned region = 0; region < num_regions;
 								++region) {
 

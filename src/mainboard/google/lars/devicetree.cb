@@ -29,7 +29,6 @@ chip soc/intel/skylake
 	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
-	register "WakeConfigWolEnableOverride" = "0x01"
 
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
 	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s

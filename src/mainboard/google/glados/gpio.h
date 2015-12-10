@@ -57,10 +57,10 @@
 /* Pad configuration in ramstage. */
 static const struct pad_config gpio_table[] = {
 /* RCIN# */		PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),
-/* LAD0 */		PAD_CFG_NF(GPP_A1, NONE, DEEP, NF1),
-/* LAD1 */		PAD_CFG_NF(GPP_A2, NONE, DEEP, NF1),
-/* LAD2 */		PAD_CFG_NF(GPP_A3, NONE, DEEP, NF1),
-/* LAD3 */		PAD_CFG_NF(GPP_A4, NONE, DEEP, NF1),
+/* LAD0 */		PAD_CFG_NF(GPP_A1, 20K_PU, DEEP, NF1),
+/* LAD1 */		PAD_CFG_NF(GPP_A2, 20K_PU, DEEP, NF1),
+/* LAD2 */		PAD_CFG_NF(GPP_A3, 20K_PU, DEEP, NF1),
+/* LAD3 */		PAD_CFG_NF(GPP_A4, 20K_PU, DEEP, NF1),
 /* LFRAME# */		PAD_CFG_NF(GPP_A5, NONE, DEEP, NF1),
 /* SERIRQ */		PAD_CFG_NF(GPP_A6, NONE, DEEP, NF1),
 /* PIRQA# */		/* GPP_A7 */

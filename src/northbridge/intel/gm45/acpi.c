@@ -104,7 +104,6 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	return current;
 }
 
-#define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long northbridge_write_acpi_tables(device_t device,
 					    unsigned long start,
 					    struct acpi_rsdp *rsdp)
@@ -118,10 +117,10 @@ unsigned long northbridge_write_acpi_tables(device_t device,
 	dmar = (acpi_dmar_t *) current;
 	acpi_create_dmar(dmar, 0, acpi_fill_dmar);
 	current += dmar->header.length;
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 	acpi_add_table(rsdp, dmar);
 
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 

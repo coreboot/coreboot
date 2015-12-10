@@ -771,7 +771,6 @@ unsigned long __attribute__ ((weak)) fw_cfg_acpi_tables(unsigned long start)
 	return 0;
 }
 
-#define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
@@ -794,7 +793,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current = start;
 
 	/* Align ACPI tables to 16byte */
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	fw = fw_cfg_acpi_tables(current);
 	if (fw)
@@ -844,13 +843,13 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* We need at least an RSDP and an RSDT Table */
 	rsdp = (acpi_rsdp_t *) current;
 	current += sizeof(acpi_rsdp_t);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 	rsdt = (acpi_rsdt_t *) current;
 	current += sizeof(acpi_rsdt_t);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 	xsdt = (acpi_xsdt_t *) current;
 	current += sizeof(acpi_xsdt_t);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	/* clear all table memory */
 	memset((void *) start, 0, current - start);
@@ -863,7 +862,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current = (ALIGN(current, 64));
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 	acpi_create_facs(facs);
 
 	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
@@ -889,12 +888,12 @@ unsigned long write_acpi_tables(unsigned long start)
 		dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
 	}
 
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "ACPI:    * FADT\n");
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	acpi_create_fadt(fadt, facs, dsdt);
 	acpi_add_table(rsdp, fadt);
@@ -904,7 +903,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		slic = (acpi_header_t *)current;
 		memcpy(slic, slic_file, slic_file->length);
 		current += slic_file->length;
-		ALIGN_CURRENT;
+		current = acpi_align_current(current);
 		acpi_add_table(rsdp, slic);
 	}
 
@@ -914,7 +913,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	if (ssdt->length > sizeof(acpi_header_t)) {
 		current += ssdt->length;
 		acpi_add_table(rsdp, ssdt);
-		ALIGN_CURRENT;
+		current = acpi_align_current(current);
 	}
 
 	printk(BIOS_DEBUG, "ACPI:    * MCFG\n");
@@ -922,7 +921,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_mcfg(mcfg);
 	if (mcfg->header.length > sizeof(acpi_mcfg_t)) {
 		current += mcfg->header.length;
-		ALIGN_CURRENT;
+		current = acpi_align_current(current);
 		acpi_add_table(rsdp, mcfg);
 	}
 
@@ -931,7 +930,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_tcpa(tcpa);
 	if (tcpa->header.length >= sizeof(acpi_tcpa_t)) {
 		current += tcpa->header.length;
-		ALIGN_CURRENT;
+		current = acpi_align_current(current);
 		acpi_add_table(rsdp, tcpa);
 	}
 
@@ -943,14 +942,14 @@ unsigned long write_acpi_tables(unsigned long start)
 		current+=madt->header.length;
 		acpi_add_table(rsdp,madt);
 	}
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->ops && dev->ops->write_acpi_tables) {
 			current = dev->ops->write_acpi_tables(dev, current, rsdp);
-			ALIGN_CURRENT;
+			current = acpi_align_current(current);
 		}
 	}
 

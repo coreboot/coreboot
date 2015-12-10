@@ -542,8 +542,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 					     struct acpi_rsdp *rsdp)
 {
 	current = acpi_write_hpet(device, current, rsdp);
-	ALIGN_CURRENT;
-	return current;
+	return acpi_align_current(current);
 }
 
 void southcluster_inject_dsdt(device_t device)

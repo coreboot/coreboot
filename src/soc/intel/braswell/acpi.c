@@ -472,8 +472,6 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-#define ALIGN_CURRENT current = (ALIGN(current, 16))
-
 unsigned long southcluster_write_acpi_tables(device_t device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
@@ -481,7 +479,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 	acpi_header_t *ssdt2;
 
 	current = acpi_write_hpet(device, current, rsdp);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 #if CONFIG_GOP_SUPPORT
 	igd_opregion_t *opregion;
@@ -490,7 +488,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 	opregion = (igd_opregion_t *)current;
 	init_igd_opregion(opregion);
 	current += sizeof(igd_opregion_t);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 #endif
 
 	ssdt2 = (acpi_header_t *)current;
@@ -501,7 +499,7 @@ unsigned long southcluster_write_acpi_tables(device_t device,
 		acpi_add_table(rsdp, ssdt2);
 		printk(BIOS_DEBUG, "ACPI:     * SSDT2 @ %p Length %x\n",ssdt2,
 		       ssdt2->length);
-		ALIGN_CURRENT;
+		current = acpi_align_current(current);
 	} else {
 		ssdt2 = NULL;
 		printk(BIOS_DEBUG, "ACPI:     * SSDT2 not generated.\n");

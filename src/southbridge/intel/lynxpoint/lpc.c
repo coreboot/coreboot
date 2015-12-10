@@ -781,7 +781,6 @@ static void southbridge_inject_dsdt(device_t dev)
 	}
 }
 
-#define ALIGN_CURRENT current = (ALIGN(current, 16))
 static unsigned long southbridge_write_acpi_tables(device_t device,
 						   unsigned long start,
 						   struct acpi_rsdp *rsdp)
@@ -793,7 +792,7 @@ static unsigned long southbridge_write_acpi_tables(device_t device,
 	current = start;
 
 	/* Align ACPI tables to 16byte */
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	/*
 	 * We explicitly add these tables later on:
@@ -802,18 +801,18 @@ static unsigned long southbridge_write_acpi_tables(device_t device,
 
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 	acpi_create_intel_hpet(hpet);
 	acpi_add_table(rsdp, hpet);
 
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "ACPI:     * SSDT2\n");
 	ssdt = (acpi_header_t *)current;
 	acpi_create_serialio_ssdt(ssdt);
 	current += ssdt->length;
 	acpi_add_table(rsdp, ssdt);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 	return current;

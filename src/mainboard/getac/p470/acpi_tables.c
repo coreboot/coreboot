@@ -81,7 +81,6 @@ static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 	return header->length;
 }
 
-#define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long mainboard_write_acpi_tables(device_t device,
 					  unsigned long start,
 					  acpi_rsdp_t *rsdp)
@@ -92,12 +91,12 @@ unsigned long mainboard_write_acpi_tables(device_t device,
 	current = start;
 
 	/* Align ACPI tables to 16byte */
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "ACPI:     * ECDT\n");
 	ecdt = (acpi_header_t *)current;
 	current += acpi_create_ecdt((acpi_ecdt_t *)current);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 	acpi_add_table(rsdp, ecdt);
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);

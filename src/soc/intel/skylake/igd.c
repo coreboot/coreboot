@@ -177,7 +177,7 @@ static unsigned long write_acpi_igd_opregion(device_t device,
 	opregion = (igd_opregion_t *)current;
 	init_igd_opregion(opregion);
 	current += sizeof(igd_opregion_t);
-	ALIGN_CURRENT;
+	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 	return current;

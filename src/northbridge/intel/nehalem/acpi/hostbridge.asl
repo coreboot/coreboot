@@ -147,7 +147,7 @@ Device (MCHC)
 		PPCN ()
 
 		/* Set PL2 to 1.25 * PL1 */
-		Divide (Multiply (CTDD, 125), 100, Local0, PL2V)
+		Divide (Multiply (CTDD, 125), 100, , PL2V)
 
 		/* Set PL1 */
 		Store (CTDD, PL1V)
@@ -176,7 +176,7 @@ Device (MCHC)
 		Store (CTDN, PL1V)
 
 		/* Set PL2 to 1.25 * PL1 */
-		Divide (Multiply (CTDN, 125), 100, Local0, PL2V)
+		Divide (Multiply (CTDN, 125), 100, , PL2V)
 
 		/* Set PPC limit and notify OS */
 		Store (PSSS (TARN), PPCM)

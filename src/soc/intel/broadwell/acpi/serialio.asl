@@ -36,6 +36,9 @@ Method (LPD0, 2, Serialized)
 
 	And (SPCS, 0xFFFFFFFC, SPCS)
 	Store (SPCS, Local0) // Read back after writing
+
+	// Use Local0 to avoid iasl warning: Method Local is set but never used
+	And(Local0, Ones, Local0)
 }
 
 // Put SerialIO device in D3 state
@@ -56,6 +59,9 @@ Method (LPD3, 2, Serialized)
 
 	Or (SPCS, 0x3, SPCS)
 	Store (SPCS, Local0) // Read back after writing
+
+	// Use Local0 to avoid iasl warning: Method Local is set but never used
+	And(Local0, Ones, Local0)
 }
 
 // Serial IO Resource Consumption for BAR1

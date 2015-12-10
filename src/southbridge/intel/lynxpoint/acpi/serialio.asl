@@ -219,14 +219,20 @@ Device (I2C0)
 	Method (_PS0, 0, Serialized)
 	{
 		And (^PSAT, 0xfffffffc, ^PSAT)
-		Store (^PSAT, Local0)
+		Store (^PSAT, Local0) // Read back after writing
+
+		// Use Local0 to avoid iasl warning: Method Local is set but never used
+		And(Local0, Ones, Local0)
 	}
 
 	// Put controller in D3Hot state
 	Method (_PS3, 0, Serialized)
 	{
 		Or (^PSAT, 0x00000003, ^PSAT)
-		Store (^PSAT, Local0)
+		Store (^PSAT, Local0) // Read back after writing
+
+		// Use Local0 to avoid iasl warning: Method Local is set but never used
+		And(Local0, Ones, Local0)
 	}
 }
 
@@ -292,14 +298,20 @@ Device (I2C1)
 	Method (_PS0, 0, Serialized)
 	{
 		And (^PSAT, 0xfffffffc, ^PSAT)
-		Store (^PSAT, Local0)
+		Store (^PSAT, Local0) // Read back after writing
+
+		// Use Local0 to avoid iasl warning: Method Local is set but never used
+		And(Local0, Ones, Local0)
 	}
 
 	// Put controller in D3Hot state
 	Method (_PS3, 0, Serialized)
 	{
 		Or (^PSAT, 0x00000003, ^PSAT)
-		Store (^PSAT, Local0)
+		Store (^PSAT, Local0) // Read back after writing
+
+		// Use Local0 to avoid iasl warning: Method Local is set but never used
+		And(Local0, Ones, Local0)
 	}
 }
 

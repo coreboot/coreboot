@@ -143,6 +143,9 @@ Device (EC0)
 		// Force a read of CPU temperature
 		Store (CTMP, Local0)
 
+		// Use Local0 to avoid iasl warning: Method Local is set but never used
+		And(Local0, Ones, Local0)
+
 		// Find and program number of P-States
 		Store (SizeOf (\_PR.CP00._PSS), MPST)
 		Store ("Programming number of P-states: ", Debug)

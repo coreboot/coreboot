@@ -16,13 +16,13 @@
  */
 #include <arch/ioapic.h>
 #include <cpu/x86/lapic_def.h>
+#include <southbridge/amd/sb600/sb600.h>
 
 DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 {
 	/* Data to be patched by the BIOS during POST */
 	/* Memory related values */
 	Name(LOMH, 0x0)	/* Start of unused memory in C0000-E0000 range */
-	Name(HPBA, 0xFED00000)	/* Base address of HPET table */
 
 	/* USB overcurrent mapping pins.   */
 	Name(UOM0, 0)
@@ -1004,17 +1004,15 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 					})
 				} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
 
-				Device(HPET) {
+				Device(HPET) { /* HPET */
 					Name(_HID,EISAID("PNP0103"))
 					Name(CRS,ResourceTemplate()	{
-						Memory32Fixed(ReadOnly,0xFED00000, 0x00000400, HPT)	/* 1kb reserved space */
+						Memory32Fixed(ReadOnly, HPET_BASE_ADDRESS, 0x00000400, HPT)	/* 1kb reserved space */
 					})
 					Method(_STA, 0) {
-						Return(0x0F) /* sata is visible */
+						Return(0x0F) /* HPET is visible */
 					}
 					Method(_CRS, 0)	{
-						CreateDwordField(CRS, ^HPT._BAS, HPBA)
-						Store(HPBA, HPBA)
 						Return(CRS)
 					}
                 }

@@ -305,7 +305,7 @@ static void sb600_sm_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 0x14); /* hpet */
-	res->base  = 0xfed00000;	/* reset hpet to widely accepted address */
+	res->base  = HPET_BASE_ADDRESS;	/* reset hpet to widely accepted address */
 	res->size = 0x400;
 	res->limit = 0xFFFFFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;

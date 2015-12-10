@@ -16,8 +16,10 @@
 #ifndef SB600_H
 #define SB600_H
 
+#ifndef __ACPI__
 #include <device/pci_ids.h>
 #include "chip.h"
+#endif
 
 /* Power management index/data registers */
 #define PM_INDEX	0xcd6
@@ -25,6 +27,9 @@
 #define PM2_INDEX	0xcd0
 #define PM2_DATA	0xcd1
 
+#define HPET_BASE_ADDRESS 0xfed00000
+
+#ifndef __ACPI__
 extern void pm_iowrite(u8 reg, u8 value);
 extern u8 pm_ioread(u8 reg);
 extern void pm2_iowrite(u8 reg, u8 value);
@@ -36,4 +41,5 @@ void sb600_enable(device_t dev);
 void sb600_lpc_port80(void);
 void sb600_pci_port80(void);
 
+#endif /* __ACPI__ */
 #endif /* SB600_H */

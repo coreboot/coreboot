@@ -52,6 +52,10 @@ config MAX_CPUS
 	int
 	default 8
 
+config TPM_PIRQ
+	hex
+	default 0x18  # GPP_E0_IRQ
+
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."
 	select NHLT_DMIC_2CH

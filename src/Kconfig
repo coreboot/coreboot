@@ -728,6 +728,7 @@ menu "Debugging"
 config GDB_STUB
 	bool "GDB debugging support"
 	default n
+	depends on CONSOLE_SERIAL
 	help
 	  If enabled, you will be able to set breakpoints for gdb debugging.
 	  See src/arch/x86/lib/c_start.S for details.

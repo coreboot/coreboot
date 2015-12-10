@@ -673,11 +673,12 @@ config GDB_STUB
 	  See src/arch/x86/lib/c_start.S for details.
 
 config GDB_WAIT
-	bool "Wait for a GDB connection"
+	bool "Wait for a GDB connection in the ramstage"
 	default n
 	depends on GDB_STUB
 	help
-	  If enabled, coreboot will wait for a GDB connection.
+	  If enabled, coreboot will wait for a GDB connection in the ramstage.
+
 
 config FATAL_ASSERTS
 	bool "Halt when hitting a BUG() or assertion error"

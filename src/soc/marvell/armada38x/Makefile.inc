@@ -34,10 +34,10 @@ ramstage-y += clock.c
 
 CPPFLAGS_common += -Isrc/soc/marvell/armada38x/include/ -Isrc/commonlib/include/commonlib/
 
-BIN_HDR = 3rdparty/blobs/cpu/marvell/armada38x/bin_hdr.bin
-DOIMAGE = 3rdparty/blobs/cpu/marvell/armada38x/doimage
+BIN_HDR = 3rdparty/cpu/marvell/armada38x/bin_hdr.bin
+DOIMAGE = $(objutil)/marvell/doimage_mv/doimage
 
-$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(DOIMAGE)
 	@chmod a+x $(DOIMAGE)
 	$(DOIMAGE) -T flash -D 0 -E 0 -G $(BIN_HDR) $< $@
 	rm $<

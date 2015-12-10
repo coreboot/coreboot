@@ -70,8 +70,9 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 
 static void pch_log_power_and_resets(struct chipset_power_state *ps)
 {
-	/* TODO: Thermal Trip Status. There is a thermal device and
-	 * other status registers. */
+	/* Thermal Trip */
+	if (ps->gblrst_cause[0] & GBLRST_CAUSE0_THERMTRIP)
+		elog_add_event(ELOG_TYPE_THERM_TRIP);
 
 	/* PWR_FLR Power Failure */
 	if (ps->gen_pmcon_b & PWR_FLR)

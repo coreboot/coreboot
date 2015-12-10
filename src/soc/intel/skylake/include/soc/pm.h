@@ -135,6 +135,8 @@
 #define   SWGPE_EN		(1 << 2)
 #define   HOT_PLUG_EN		(1 << 1)
 
+#define GBLRST_CAUSE0_THERMTRIP	(1 << 5)
+
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2

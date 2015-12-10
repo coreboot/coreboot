@@ -92,6 +92,7 @@ void soc_memory_init_params(struct romstage_params *params,
 	upd->EnableTraceHub = config->EnableTraceHub;
 	upd->SaGv = config->SaGv;
 	upd->RMT = config->Rmt;
+	upd->DdrFreqLimit = config->DdrFreqLimit;
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,

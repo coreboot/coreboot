@@ -113,6 +113,12 @@ struct soc_intel_skylake_config {
 	u32 TsegSize;
 	u16 MmioSize;
 
+	/*
+	 * DDR Frequency Limit
+	 * 0(Auto), 1067, 1333, 1600, 1867, 2133, 2400
+	 */
+	u16 DdrFreqLimit;
+
 	/* Probeless Trace function */
 	u8 ProbelessTrace;
 

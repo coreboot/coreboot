@@ -18,7 +18,7 @@
 # revision number of the checked out files.
 VERSION=""
 
-REV="`svnversion -c . 2>/dev/null | sed 's,.*:,,' 2>/dev/null`"
+REV="`git describe --always 2>/dev/null`"
 VERSION="${VERSION:-$REV}"
 
 findprog() {

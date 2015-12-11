@@ -600,6 +600,33 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 # Build the final rom image
 ###########################################################################
 
+# extract_nth - Return a subsection of the $file string
+#
+# the input string looks like this:
+# ./build/cbfs/fallback/romstage.elf|fallback/romstage|stage|none||64|--xip*-S*.car.data*-P*0x10000
+#
+# Sections:
+# 1 - Path and name of file [FILENAME: Added to cbfs-files-y list variable]
+# 2 - Name of file in cbfs  [$(FILENAME)-file]
+# 3 - File type:            [$(FILENAME)-type]
+#                bootblock, cbfs header, stage, payload, optionrom, bootsplash, raw, vsa,
+#                mbi, microcode, fsp, mrc, cmos_default, cmos_layout, spd, mrc_cache,
+#                mma, efi, deleted, null
+# 4 - Compression type      [$(FILENAME)-compression]
+#                      none, LZMA
+# 5 - Base address          [$(FILANAME)-position]
+# 6 - Alignment             [$(FILENAME)-align]
+# 7 - cbfstool flags        [$(FILENAME)-options]
+#
+# Input:
+#  $(1) = Section to extract
+#  $(2) = Input string
+#
+# Steps:
+# 1) replace all '|' characters with the sequence '- -' within the full string, prepended and appended with the character '-'
+# 2) extract the specified section from the string - this gets us the section surrounded by '-' characters
+# 3) remove the leading and trailing '-' characters
+# 4) replace all '*' characters with spaces
 extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-))))
 
 cbfs-add-cmd = \

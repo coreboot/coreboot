@@ -396,6 +396,7 @@ config CBFS_SIZE
 
 config FMDFILE
 	string "fmap description file in fmd format"
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
 	default ""
 	help
 	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,

@@ -1073,6 +1073,9 @@ static void fixup_relocations(struct elf_writer *ew)
 	case EM_RISCV:
 		type = R_RISCV_32;
 		break;
+	case EM_PPC64:
+		type = R_PPC64_ADDR32;
+		break;
 	default:
 		ERROR("Unable to handle relocations for e_machine %x\n",
 			ew->ehdr.e_machine);

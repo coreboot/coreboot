@@ -138,6 +138,9 @@ static struct {
 	{ CBFS_ARCHITECTURE_AARCH64, "arm64" },
 	{ CBFS_ARCHITECTURE_ARM, "arm" },
 	{ CBFS_ARCHITECTURE_MIPS, "mips" },
+	{ CBFS_ARCHITECTURE_PPC64, "ppc64" },
+	/* power8 is a reasonable alias */
+	{ CBFS_ARCHITECTURE_PPC64, "power8" },
 	{ CBFS_ARCHITECTURE_RISCV, "riscv" },
 	{ CBFS_ARCHITECTURE_X86, "x86" },
 	{ CBFS_ARCHITECTURE_UNKNOWN, "unknown" }

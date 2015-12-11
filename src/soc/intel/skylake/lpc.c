@@ -209,9 +209,12 @@ static inline int pch_io_range_in_default(u16 base, u16 size)
 	if (base >= LPC_DEFAULT_IO_RANGE_UPPER)
 		return 0;
 
-	/* Is it entirely contained? */
-	if (base >= LPC_DEFAULT_IO_RANGE_LOWER &&
-	    (base + size) < LPC_DEFAULT_IO_RANGE_UPPER)
+	/*
+	 * Is it entirely contained?
+	 * Since LPC_DEFAULT_IO_RANGE_LOWER is Zero,
+	 * it need not be checked against lower base.
+	 */
+	if ((base + size) < LPC_DEFAULT_IO_RANGE_UPPER)
 		return 1;
 
 	/* This will return not in range for partial overlaps. */

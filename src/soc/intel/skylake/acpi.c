@@ -573,10 +573,14 @@ void southcluster_inject_dsdt(device_t device)
 /* Save wake source information for calculating ACPI _SWS values */
 int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 {
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	struct chipset_power_state *ps;
 	static uint32_t gpe0_sts[GPE0_REG_MAX];
 	uint32_t pm1_en;
 	int i;
+
+	ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	if (ps == NULL)
+		return -1;
 
 	/* PM1_EN state is lost in Deep S3 so enable basic wake events */
 	pm1_en = ps->pm1_en | PCIEXPWAK_STS | RTC_STS | PWRBTN_STS | BM_STS;

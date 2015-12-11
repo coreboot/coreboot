@@ -191,11 +191,6 @@ int pch_hwseq_erase(struct spi_flash *flash, u32 offset, size_t len)
 	}
 
 	flash->spi->rw = SPI_WRITE_FLAG;
-	ret = spi_claim_bus(flash->spi);
-	if (ret) {
-		printk(BIOS_ERR, "SF: Unable to claim SPI bus\n");
-		return ret;
-	}
 
 	start = offset;
 	end = start + len;

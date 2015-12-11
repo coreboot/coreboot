@@ -183,7 +183,7 @@ static void read_map_entry(device_t dev, struct map_entry *entry,
 		value <<= 32;
 	}
 
-	value |= pci_read_config32(dev, entry->reg);
+	value |= (uint64_t) pci_read_config32(dev, entry->reg);
 	value &= mask;
 
 	if (entry->is_limit)

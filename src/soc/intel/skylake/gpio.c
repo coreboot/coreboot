@@ -261,6 +261,9 @@ static void gpio_handle_pad_mode(const struct pad_config *cfg)
 	bit = 0;
 	hostsw_own_reg = gpio_hostsw_reg(cfg->pad, &bit);
 
+	if (hostsw_own_reg == NULL)
+		return;
+
 	reg = read32(hostsw_own_reg);
 	reg &= ~(1U << bit);
 
@@ -282,7 +285,8 @@ static void gpi_enable_smi(gpio_t pad)
 	uint32_t pad_mask;
 
 	comm = gpio_get_community(pad);
-
+	if (comm == NULL)
+		return;
 	regs = pcr_port_regs(comm->port_id);
 	gpi_status_reg = (void *)&regs[GPI_SMI_STS_OFFSET];
 	gpi_en_reg = (void *)&regs[GPI_SMI_EN_OFFSET];

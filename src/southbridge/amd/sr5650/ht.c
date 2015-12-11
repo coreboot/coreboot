@@ -157,8 +157,8 @@ static void sr5690_read_resource(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* rpr6.2.(1). Write the Base Address Register (BAR) */
-	pci_write_config32(dev, 0xF8, 0x1); /* set IOAPIC's index as 1 and make sure no one changes it. */
-	pci_get_resource(dev, 0xFC); /* APIC located in sr5690 */
+	pci_write_config32(dev, 0xf8, 0x1);	/* Set IOAPIC's index to 1 and make sure no one changes it */
+	pci_get_resource(dev, 0xfc);		/* APIC located in sr5690 */
 
 	compact_resources(dev);
 }
@@ -166,7 +166,7 @@ static void sr5690_read_resource(struct device *dev)
 /* If IOAPIC's index changes, we should replace the pci_dev_set_resource(). */
 static void sr5690_set_resources(struct device *dev)
 {
-	pci_write_config32(dev, 0xF8, 0x1); /* set IOAPIC's index as 1 and make sure no one changes it. */
+	pci_write_config32(dev, 0xf8, 0x1);	/* Set IOAPIC's index to 1 and make sure no one changes it */
 	pci_dev_set_resources(dev);
 }
 

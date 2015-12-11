@@ -737,16 +737,16 @@ static void amdfam10_domain_read_resources(device_t dev)
 
 	pci_domain_read_resources(dev);
 
-#if CONFIG_MMCONF_SUPPORT
-	struct resource *res = new_resource(dev, 0xc0010058);
-	res->base = CONFIG_MMCONF_BASE_ADDRESS;
-	res->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
-	res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
+	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT)) {
+		struct resource *res = new_resource(dev, 0xc0010058);
+		res->base = CONFIG_MMCONF_BASE_ADDRESS;
+		res->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
+		res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+			IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
 
-	/* Reserve lower DRAM region to force PCI MMIO region to correct location above 0xefffffff */
-	ram_resource(dev, 7, 0, rdmsr(TOP_MEM).lo >> 10);
-#endif
+		/* Reserve lower DRAM region to force PCI MMIO region to correct location above 0xefffffff */
+		ram_resource(dev, 7, 0, rdmsr(TOP_MEM).lo >> 10);
+	}
 
 	if (is_fam15h()) {
 		enable_cc6 = 0;

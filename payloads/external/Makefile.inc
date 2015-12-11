@@ -77,3 +77,8 @@ grub2:
 			CONFIG_GRUB2_MASTER=$(CONFIG_GRUB2_MASTER)
 
 payloads/external/GRUB2/grub2/build/default_payload.elf: grub2
+
+payloads/external/U-Boot/u-boot/u-boot-dtb.bin u-boot: $(top)/$(DOTCONFIG)
+	$(MAKE) -C payloads/external/U-Boot -f Makefile.inc \
+			CONFIG_UBOOT_MASTER=$(CONFIG_UBOOT_MASTER) \
+			CONFIG_UBOOT_STABLE=$(CONFIG_UBOOT_STABLE)

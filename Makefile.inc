@@ -448,6 +448,7 @@ clean-for-update-target:
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.* $(obj)/dsdt.*
 	rm -f $(obj)/cpu/x86/smm/smm_bin.c $(obj)/cpu/x86/smm/smm.* $(obj)/cpu/x86/smm/smm
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc clean
+	$(MAKE) -C payloads/external/U-Boot -f Makefile.inc clean
 
 clean-target:
 	rm -f $(obj)/coreboot*
@@ -590,10 +591,13 @@ endif
 # $(call cbfs-add-cmd-for-region,file in extract_nth format,region name)
 define cbfs-add-cmd-for-region
 	$(CBFSTOOL) $@.tmp \
-	add$(if $(filter stage,$(call extract_nth,3,$(1))),-stage)$(if $(filter payload,$(call extract_nth,3,$(1))),-payload) \
+	add$(if $(filter stage,$(call extract_nth,3,$(1))),-stage)$(if \
+		$(filter payload,$(call extract_nth,3,$(1))),-payload)$(if \
+		$(filter flat-binary,$(call extract_nth,3,$(1))),-flat-binary) \
 	-f $(call extract_nth,1,$(1)) \
 	-n $(call extract_nth,2,$(1)) \
-	$(if $(filter-out stage,$(call extract_nth,3,$(1))),-t $(call extract_nth,3,$(1))) \
+	$(if $(filter-out flat-binary,$(filter-out stage,$(call \
+		extract_nth,3,$(1)))),-t $(call extract_nth,3,$(1))) \
 	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) \
 	$(cbfs-autogen-attributes) \
 	-r $(2) \
@@ -730,6 +734,9 @@ ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_INITRD))),)
       ADDITIONAL_PAYLOAD_CONFIG+=-I $(CONFIG_LINUX_INITRD)
 endif
 endif
+ifneq ($(strip $(call strip_quotes,$(CONFIG_PAYLOAD_OPTIONS))),)
+      ADDITIONAL_PAYLOAD_CONFIG+=$(strip $(call strip_quotes,$(CONFIG_PAYLOAD_OPTIONS)))
+endif
 
 ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
 REFCODE_BLOB=$(obj)/refcode.rmod
@@ -790,7 +797,11 @@ $(CONFIG_CBFS_PREFIX)/ramstage-compression := $(CBFS_COMPRESS_FLAG)
 
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/payload
 $(CONFIG_CBFS_PREFIX)/payload-file := $(CONFIG_PAYLOAD_FILE)
+ifeq ($(CONFIG_PAYLOAD_IS_FLAT_BINARY),y)
+$(CONFIG_CBFS_PREFIX)/payload-type := flat-binary
+else
 $(CONFIG_CBFS_PREFIX)/payload-type := payload
+endif
 $(CONFIG_CBFS_PREFIX)/payload-compression := $(CBFS_PAYLOAD_COMPRESS_FLAG)
 $(CONFIG_CBFS_PREFIX)/payload-options := $(ADDITIONAL_PAYLOAD_CONFIG)
 

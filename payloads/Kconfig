@@ -47,5 +47,17 @@ config COMPRESSED_PAYLOAD_LZMA
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.
 
+config PAYLOAD_OPTIONS
+	string
+	default ""
+	help
+	  Additional cbfstool options for the payload
+
+config PAYLOAD_IS_FLAT_BINARY
+	def_bool n
+	help
+	  Add the payload to cbfs as a flat binary type instead of as an
+	  elf payload
+
 endmenu
 

@@ -87,7 +87,7 @@ bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 endif
 
 # This is a hack in case there are no per chipset linker files.
-$(objgenerated)/empty:
+$(objgenerated)/empty: build-dirs
 	touch $@
 
 $(objgenerated)/bootblock.ld: $$(filter-out $(obj)/arch/x86/bootblock.bootblock.ld, $$(filter %.ld,$$(bootblock-objs))) $(objgenerated)/empty

@@ -78,4 +78,6 @@ CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/skylake
 # Currently used for microcode path.
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)
 
+ROMCCFLAGS := -mcpu=p4 -fno-simplify-phi -O2
+
 endif

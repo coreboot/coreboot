@@ -359,28 +359,8 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	else
 		params->PsfUnlock = 0;
 
-	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++) {
-		params->VrConfigEnable[i] =
-			config->domain_vr_config[i].vr_config_enable;
-		params->Psi1Threshold[i] =
-			config->domain_vr_config[i].psi1threshold;
-		params->Psi2Threshold[i] =
-			config->domain_vr_config[i].psi2threshold;
-		params->Psi3Threshold[i] =
-			config->domain_vr_config[i].psi3threshold;
-		params->Psi3Enable[i] =
-			config->domain_vr_config[i].psi3enable;
-		params->Psi4Enable[i] =
-			config->domain_vr_config[i].psi4enable;
-		params->ImonSlope[i] =
-			config->domain_vr_config[i].imon_slope;
-		params->ImonOffset[i] =
-			config->domain_vr_config[i].imon_offset;
-		params->IccMax[i] =
-			config->domain_vr_config[i].icc_max;
-		params->VrVoltageLimit[i] =
-			config->domain_vr_config[i].voltage_limit;
-	}
+	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
+		fill_vr_domain_config(params, i, &config->domain_vr_config[i]);
 
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = dev_find_slot(0, PCH_DEVFN_SPI);

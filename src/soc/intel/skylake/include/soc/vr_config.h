@@ -23,6 +23,8 @@
 #ifndef _SOC_VR_CONFIG_H_
 #define _SOC_VR_CONFIG_H_
 
+#include <fsp/soc_binding.h>
+
 struct vr_config {
 
 	/*
@@ -61,6 +63,8 @@ struct vr_config {
 	int voltage_limit;
 };
 
+#define VR_CFG_AMP(i) ((i) * 4)
+
 /* VrConfig Settings for 5 domains
  * 0 = System Agent, 1 = IA Core, 2 = Ring,
  * 3 = GT unsliced,  4 = GT sliced
@@ -73,5 +77,8 @@ enum vr_domain{
 	VR_GT_SLICED,
 	NUM_VR_DOMAINS
 };
+
+void fill_vr_domain_config(SILICON_INIT_UPD *params, int domain,
+				const struct vr_config *cfg);
 
 #endif

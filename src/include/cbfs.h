@@ -16,18 +16,8 @@
 #ifndef _CBFS_H_
 #define _CBFS_H_
 
-#include <commonlib/cbfs_serialized.h>
-#include <commonlib/region.h>
+#include <commonlib/cbfs.h>
 #include <program_loading.h>
-
-/*
- * CBFS operations consist of the following concepts:
- * - region_device for the boot media
- * - cbfsd which is a descriptor for representing a cbfs instance
- */
-
-/* Object representing cbfs files. */
-struct cbfsf;
 
 /***********************************************
  * Perform CBFS operations on the boot device. *
@@ -48,27 +38,11 @@ void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size);
 /* Load stage into memory filling in prog. Return 0 on success. < 0 on error. */
 int cbfs_prog_stage_load(struct prog *prog);
 
-/* Locate file by name and optional type. Returns 0 on succcess else < 0 on
- * error.*/
-int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
-		const char *name, uint32_t *type);
-
 /*****************************************************************
  * Support structures and functions. Direct field access should  *
  * only be done by implementers of cbfs regions -- Not the above *
  * API.                                                          *
  *****************************************************************/
-
-struct cbfsf {
-	struct region_device metadata;
-	struct region_device data;
-};
-
-static inline void cbfs_file_data(struct region_device *data,
-					const struct cbfsf *file)
-{
-	rdev_chain(data, &file->data, 0, region_device_sz(&file->data));
-}
 
 /* The cbfs_props struct describes the properties associated with a CBFS. */
 struct cbfs_props {

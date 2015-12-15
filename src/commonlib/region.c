@@ -48,6 +48,18 @@ static const struct region_device *rdev_root(const struct region_device *rdev)
 	return rdev->root;
 }
 
+ssize_t rdev_relative_offset(const struct region_device *p,
+				const struct region_device *c)
+{
+	if (rdev_root(p) != rdev_root(c))
+		return -1;
+
+	if (!is_subregion(&p->region, &c->region))
+		return -1;
+
+	return region_device_offset(c) - region_device_offset(p);
+}
+
 void *rdev_mmap(const struct region_device *rd, size_t offset, size_t size)
 {
 	const struct region_device *rdev;

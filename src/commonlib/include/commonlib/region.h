@@ -121,6 +121,13 @@ static inline void *rdev_mmap_full(const struct region_device *rd)
 	return rdev_mmap(rd, 0, region_device_sz(rd));
 }
 
+/*
+ * Compute relative offset of the child (c) w.r.t. the parent (p). Returns < 0
+ * when child is not within the parent's region.
+ */
+ssize_t rdev_relative_offset(const struct region_device *p,
+				const struct region_device *c);
+
 struct mem_region_device {
 	char *base;
 	struct region_device rdev;

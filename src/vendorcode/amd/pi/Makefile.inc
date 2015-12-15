@@ -62,6 +62,7 @@ AGESA_INC += -I$(src)/southbridge/amd/pi/hudson
 AGESA_INC += -I$(src)/arch/x86/include
 AGESA_INC += -I$(src)/include
 AGESA_INC += -I$(src)/commonlib/include
+AGESA_INC += -I$(VB_SOURCE)/firmware/include
 
 AGESA_CFLAGS += -march=amdfam10 -mno-3dnow -fno-zero-initialized-in-bss -fno-strict-aliasing
 CFLAGS_x86_32 += $(AGESA_CFLAGS)

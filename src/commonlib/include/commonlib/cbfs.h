@@ -18,6 +18,9 @@
 
 #include <commonlib/cbfs_serialized.h>
 #include <commonlib/region.h>
+/* TODO: remove me! This is for vboot_handoff.c's benefit. */
+#define NEED_VB20_INTERNALS
+#include <vb2_api.h>
 
 /* Object representing cbfs files. */
 struct cbfsf {
@@ -51,5 +54,14 @@ static inline void cbfs_file_metadata(struct region_device *metadata,
  */
 int cbfs_for_each_file(const struct region_device *cbfs,
 			const struct cbfsf *prev, struct cbfsf *fh);
+
+/*
+ * Perform the vb2 hash over the CBFS region skipping empty file contents.
+ * Caller is responsible for providing the hash algorithm as well as storage
+ * for the final digest. Return 0 on success or non-zero on error.
+ */
+int cbfs_vb2_hash_contents(const struct region_device *cbfs,
+				enum vb2_hash_algorithm hash_alg, void *digest,
+				size_t digest_sz);
 
 #endif

@@ -49,6 +49,4 @@ else
 CFLAGS_common += -DMOCK_TPM=0
 endif
 
-VB_SOURCE ?= 3rdparty/vboot
 subdirs-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot2
-CPPFLAGS_common += -I$(VB_SOURCE)/firmware/include

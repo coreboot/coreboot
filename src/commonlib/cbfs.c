@@ -108,6 +108,19 @@ int cbfs_for_each_file(const struct region_device *cbfs,
 	return -1;
 }
 
+static int cbfsf_file_type(struct cbfsf *fh, uint32_t *ftype)
+{
+	const size_t sz = sizeof(*ftype);
+
+	if (rdev_readat(&fh->metadata, ftype,
+			offsetof(struct cbfs_file, type), sz) != sz)
+		return -1;
+
+	*ftype = read_be32(ftype);
+
+	return 0;
+}
+
 int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
 		const char *name, uint32_t *type)
 {
@@ -148,12 +161,8 @@ int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
 		if (type != NULL) {
 			uint32_t ftype;
 
-			if (rdev_readat(&fh->metadata, &ftype,
-					offsetof(struct cbfs_file, type),
-					sizeof(ftype)) != sizeof(ftype))
+			if (cbfsf_file_type(fh, &ftype))
 				break;
-
-			ftype = read_be32(&ftype);
 
 			if (*type != ftype) {
 				DEBUG(" Unmatched type %x at %zx\n", ftype,
@@ -173,4 +182,143 @@ int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
 
 	LOG("'%s' not found.\n", name);
 	return -1;
+}
+
+static int cbfs_extend_hash_buffer(struct vb2_digest_context *ctx,
+					void *buf, size_t sz)
+{
+	return vb2_digest_extend(ctx, buf, sz);
+}
+
+static int cbfs_extend_hash(struct vb2_digest_context *ctx,
+				const struct region_device *rdev)
+{
+	uint8_t buffer[1024];
+	size_t sz_left;
+	size_t offset;
+
+	sz_left = region_device_sz(rdev);
+	offset = 0;
+
+	while (sz_left) {
+		int rv;
+		size_t block_sz = MIN(sz_left, sizeof(buffer));
+
+		if (rdev_readat(rdev, buffer, offset, block_sz) != block_sz)
+			return VB2_ERROR_UNKNOWN;
+
+		rv = cbfs_extend_hash_buffer(ctx, buffer, block_sz);
+
+		if (rv)
+			return rv;
+
+		sz_left -= block_sz;
+		offset += block_sz;
+	}
+
+	return VB2_SUCCESS;
+}
+
+/* Include offsets of child regions within the parent into the hash. */
+static int cbfs_extend_hash_with_offset(struct vb2_digest_context *ctx,
+					const struct region_device *p,
+					const struct region_device *c)
+{
+	int32_t soffset;
+	int rv;
+
+	soffset = rdev_relative_offset(p, c);
+
+	if (soffset < 0)
+		return VB2_ERROR_UNKNOWN;
+
+	/* All offsets in big endian format. */
+	write_be32(&soffset, soffset);
+
+	rv = cbfs_extend_hash_buffer(ctx, &soffset, sizeof(soffset));
+
+	if (rv)
+		return rv;
+
+	return cbfs_extend_hash(ctx, c);
+}
+
+/* Hash in the potential CBFS header sitting at the beginning of the CBFS
+ * region as well as relative offset at the end. */
+static int cbfs_extend_hash_master_header(struct vb2_digest_context *ctx,
+					const struct region_device *cbfs)
+{
+	struct region_device rdev;
+	int rv;
+
+	if (rdev_chain(&rdev, cbfs, 0, sizeof(struct cbfs_header)))
+		return VB2_ERROR_UNKNOWN;
+
+	rv = cbfs_extend_hash_with_offset(ctx, cbfs, &rdev);
+
+	if (rv)
+		return rv;
+
+	/* Include potential relative offset at end of region. */
+	if (rdev_chain(&rdev, cbfs, region_device_sz(cbfs) - sizeof(int32_t),
+			sizeof(int32_t)))
+		return VB2_ERROR_UNKNOWN;
+
+	return cbfs_extend_hash_with_offset(ctx, cbfs, &rdev);
+}
+
+int cbfs_vb2_hash_contents(const struct region_device *cbfs,
+				enum vb2_hash_algorithm hash_alg, void *digest,
+				size_t digest_sz)
+{
+	struct vb2_digest_context ctx;
+	int rv;
+	struct cbfsf f;
+	struct cbfsf *prev;
+	struct cbfsf *fh;
+
+	rv = vb2_digest_init(&ctx, hash_alg);
+
+	if (rv)
+		return rv;
+
+	rv = cbfs_extend_hash_master_header(&ctx, cbfs);
+	if (rv)
+		return rv;
+
+	prev = NULL;
+	fh = &f;
+
+	while (1) {
+		uint32_t ftype;
+
+		rv = cbfs_for_each_file(cbfs, prev, fh);
+		prev = fh;
+
+		if (rv < 0)
+			return VB2_ERROR_UNKNOWN;
+
+		/* End of CBFS. */
+		if (rv > 0)
+			break;
+
+		rv = cbfs_extend_hash_with_offset(&ctx, cbfs, &fh->metadata);
+
+		if (rv)
+			return rv;
+
+		/* Include data contents in hash if file is non-empty. */
+		if (cbfsf_file_type(fh, &ftype))
+			return VB2_ERROR_UNKNOWN;
+
+		if (ftype == CBFS_TYPE_DELETED || ftype == CBFS_TYPE_DELETED2)
+			continue;
+
+		rv = cbfs_extend_hash_with_offset(&ctx, cbfs, &fh->data);
+
+		if (rv)
+			return rv;
+	}
+
+	return vb2_digest_finalize(&ctx, digest, digest_sz);
 }

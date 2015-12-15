@@ -18,6 +18,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <halt.h>
+#include <reset.h>
 #include <soc/dmc.h>
 #include <soc/power.h>
 #include <soc/setup.h>
@@ -36,6 +37,11 @@ void power_reset(void)
 	exynos_power->inform1 = 0;
 
 	setbits_le32(&exynos_power->sw_reset, 1);
+}
+
+void hard_reset(void)
+{
+	power_reset();
 }
 
 /* This function never returns */

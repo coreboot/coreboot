@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
 #include <commonlib/mem_pool.h>
-#include <stdlib.h>
 
 void *mem_pool_alloc(struct mem_pool *mp, size_t sz)
 {

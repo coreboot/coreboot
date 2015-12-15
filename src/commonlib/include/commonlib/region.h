@@ -16,6 +16,7 @@
 #ifndef _REGION_H_
 #define _REGION_H_
 
+#include <sys/types.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <commonlib/mem_pool.h>

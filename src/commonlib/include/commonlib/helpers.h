@@ -2,7 +2,9 @@
 #define COMMONLIB_HELPERS_H
 /* This file is for helpers for both coreboot firmware and its utilities. */
 
+#ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#endif
 
 #define ALIGN(x,a)              __ALIGN_MASK(x,(__typeof__(x))(a)-1UL)
 #define __ALIGN_MASK(x,mask)    (((x)+(mask))&~(mask))
@@ -53,5 +55,9 @@
 #define container_of(ptr, type, member) ({			\
 	const __typeof__( ((type *)0)->member ) *__mptr = (ptr);	\
 	(type *)( (char *)__mptr - offsetof(type,member) );})
+
+#ifndef __unused
+#define __unused __attribute__((unused))
+#endif
 
 #endif /* COMMONLIB_HELPERS_H */

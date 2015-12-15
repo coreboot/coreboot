@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <string.h>
 
@@ -133,16 +134,17 @@ void mem_region_device_init(struct mem_region_device *mdev, void *base,
 }
 
 static void *mdev_mmap(const struct region_device *rd, size_t offset,
-			size_t size)
+			size_t size __unused)
 {
 	const struct mem_region_device *mdev;
 
-	mdev = container_of(rd, typeof(*mdev), rdev);
+	mdev = container_of(rd, __typeof__(*mdev), rdev);
 
 	return &mdev->base[offset];
 }
 
-static int mdev_munmap(const struct region_device *rd, void *mapping)
+static int mdev_munmap(const struct region_device * rd __unused,
+			void *mapping __unused)
 {
 	return 0;
 }
@@ -152,7 +154,7 @@ static ssize_t mdev_readat(const struct region_device *rd, void *b,
 {
 	const struct mem_region_device *mdev;
 
-	mdev = container_of(rd, typeof(*mdev), rdev);
+	mdev = container_of(rd, __typeof__(*mdev), rdev);
 
 	memcpy(b, &mdev->base[offset], size);
 
@@ -177,7 +179,7 @@ void *mmap_helper_rdev_mmap(const struct region_device *rd, size_t offset,
 	struct mmap_helper_region_device *mdev;
 	void *mapping;
 
-	mdev = container_of((void *)rd, typeof(*mdev), rdev);
+	mdev = container_of((void *)rd, __typeof__(*mdev), rdev);
 
 	mapping = mem_pool_alloc(&mdev->pool, size);
 
@@ -196,7 +198,7 @@ int mmap_helper_rdev_munmap(const struct region_device *rd, void *mapping)
 {
 	struct mmap_helper_region_device *mdev;
 
-	mdev = container_of((void *)rd, typeof(*mdev), rdev);
+	mdev = container_of((void *)rd, __typeof__(*mdev), rdev);
 
 	mem_pool_free(&mdev->pool, mapping);
 
@@ -212,7 +214,7 @@ static void *xlate_mmap(const struct region_device *rd, size_t offset,
 		.size = size,
 	};
 
-	xldev = container_of(rd, typeof(*xldev), rdev);
+	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
 	if (!is_subregion(&xldev->sub_region, &req))
 		return NULL;
@@ -226,7 +228,7 @@ static int xlate_munmap(const struct region_device *rd, void *mapping)
 {
 	const struct xlate_region_device *xldev;
 
-	xldev = container_of(rd, typeof(*xldev), rdev);
+	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
 	return rdev_munmap(xldev->access_dev, mapping);
 }
@@ -240,7 +242,7 @@ static ssize_t xlate_readat(const struct region_device *rd, void *b,
 	};
 	const struct xlate_region_device *xldev;
 
-	xldev = container_of(rd, typeof(*xldev), rdev);
+	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
 	if (!is_subregion(&xldev->sub_region, &req))
 		return -1;

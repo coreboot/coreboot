@@ -62,6 +62,8 @@
     Users are welcome to use any other value for their
     components */
 
+#define CBFS_TYPE_DELETED    0x00000000
+#define CBFS_TYPE_DELETED2   0xffffffff
 #define CBFS_TYPE_STAGE      0x10
 #define CBFS_TYPE_PAYLOAD    0x20
 #define CBFS_TYPE_OPTIONROM  0x30

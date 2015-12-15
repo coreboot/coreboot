@@ -40,7 +40,7 @@ if [ -d "$XGCCPATH" ] && [[ ":$PATH:" != *":$XGCCPATH:"* ]]; then
 fi
 
 # Lines of error context to be printed in FAILURE case
-CONTEXT=6
+CONTEXT=12
 
 # Configure-only mode
 configureonly=0

@@ -27,6 +27,18 @@ static const struct nhlt_format_config ssm4567_render_cfg[] = {
 	},
 };
 
+/* Capture Blob used for IV feedback for Speaker Protection Algorithm */
+static const struct nhlt_format_config ssm4567_capture_cfg[] = {
+        /* 48 KHz 32-bits per sample. */
+        {
+                .num_channels = 4,
+                .sample_freq_khz = 48,
+                .container_bits_per_sample = 32,
+                .valid_bits_per_sample = 32,
+                .settings_file = "ssm4567-capture-4ch-48khz-32b.bin",
+        },
+};
+
 int nhlt_soc_add_ssm4567(struct nhlt *nhlt, int hwlink)
 {
 	struct nhlt_endpoint *endp;
@@ -40,6 +52,17 @@ int nhlt_soc_add_ssm4567(struct nhlt *nhlt, int hwlink)
 
 	if (nhlt_endpoint_add_formats(endp, ssm4567_render_cfg,
 					ARRAY_SIZE(ssm4567_render_cfg)))
+		return -1;
+
+	/* Capture Endpoint for IV Feedback */
+	endp = nhlt_soc_add_endpoint(nhlt, hwlink, AUDIO_DEV_I2S,
+					NHLT_DIR_CAPTURE);
+
+	if (endp == NULL)
+		return -1;
+
+	if (nhlt_endpoint_add_formats(endp, ssm4567_capture_cfg,
+					ARRAY_SIZE(ssm4567_capture_cfg)))
 		return -1;
 
 	nhlt_next_instance(nhlt, NHLT_LINK_SSP);

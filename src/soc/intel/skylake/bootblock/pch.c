@@ -30,7 +30,29 @@ static void enable_spi_prefetch(void)
 	pci_write_config8(PCH_DEV_SPI, 0xdc, reg8);
 }
 
+static void enable_spibar(void)
+{
+	device_t dev = PCH_DEV_SPI;
+	u8 pcireg;
+
+	/* Assign Resources to SPI Controller */
+	/* Clear BIT 1-2 SPI Command Register */
+	pcireg = pci_read_config8(dev, PCI_COMMAND);
+	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	pci_write_config8(dev, PCI_COMMAND, pcireg);
+
+	/* Program Temporary BAR for SPI */
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0,
+		SPI_BASE_ADDRESS | PCI_BASE_ADDRESS_SPACE_MEMORY);
+
+	/* Enable Bus Master and MMIO Space */
+	pcireg = pci_read_config8(dev, PCI_COMMAND);
+	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
+	pci_write_config8(dev, PCI_COMMAND, pcireg);
+}
+
 static void bootblock_southbridge_init(void)
 {
+	enable_spibar();
 	enable_spi_prefetch();
 }

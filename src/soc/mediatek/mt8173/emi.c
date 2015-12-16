@@ -25,6 +25,8 @@
 #include <soc/dramc_pi_api.h>
 #include <soc/mt6391.h>
 #include <soc/pll.h>
+#include <soc/infracfg.h>
+#include <soc/pericfg.h>
 
 struct emi_regs *emi_regs = (void *)EMI_BASE;
 
@@ -163,6 +165,17 @@ size_t sdram_size(void)
 	return ((size_t)1 << (bit_counter - 3));
 }
 
+static void init_4GB_mode(void)
+{
+	if (sdram_size() == (size_t)4 * GiB) {
+		setbits_le32(&mt8173_pericfg->axi_bus_ctl3, PERISYS_4G_SUPPORT);
+		setbits_le32(&mt8173_infracfg->infra_misc, DDR_4GB_SUPPORT_EN);
+	} else {
+		clrbits_le32(&mt8173_pericfg->axi_bus_ctl3, PERISYS_4G_SUPPORT);
+		clrbits_le32(&mt8173_infracfg->infra_misc, DDR_4GB_SUPPORT_EN);
+	}
+}
+
 void mt_set_emi(const struct mt8173_sdram_params *sdram_params)
 {
 	/* voltage info */
@@ -175,4 +188,5 @@ void mt_set_emi(const struct mt8173_sdram_params *sdram_params)
 
 	init_dram(sdram_params);
 	do_calib(sdram_params);
+	init_4GB_mode();
 }

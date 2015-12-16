@@ -89,4 +89,12 @@ enum {
         PERICFG_UART0_PDN = 1 << 19
 };
 
+/*
+ * PERI 4GB control
+ */
+
+enum {
+        PERISYS_4G_SUPPORT = 1 << 15
+};
+
 #endif	/* __SOC_MEDIATEK_MT8173_PERICFG_H__ */

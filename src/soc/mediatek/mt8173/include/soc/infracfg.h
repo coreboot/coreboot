@@ -118,4 +118,8 @@ enum {
 	L2C_SRAM_PDN = 1 << 7
 };
 
+enum {
+	DDR_4GB_SUPPORT_EN = 1 << 13
+};
+
 #endif	/* __SOC_MEDIATEK_MT8173_INFRACFG_H__ */

@@ -26,6 +26,14 @@ PAYLOAD_CONFIG=payloads/external/FILO/filo/.config
 PAYLOAD_VERSION=payloads/external/FILO/filo/build/version.h
 endif
 
+cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_config
+payload_config-file := $(PAYLOAD_CONFIG)
+payload_config-type := raw
+
+cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_revision
+payload_revision-file := $(PAYLOAD_VERSION)
+payload_revision-type := raw
+
 SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \

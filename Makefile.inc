@@ -845,14 +845,6 @@ cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += revision
 revision-file := $(obj)/build.h
 revision-type := raw
 
-cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_config
-payload_config-file := $(PAYLOAD_CONFIG)
-payload_config-type := raw
-
-cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += payload_revision
-payload_revision-file := $(PAYLOAD_VERSION)
-payload_revision-type := raw
-
 cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash.jpg
 bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash.jpg-type := bootsplash

@@ -2,10 +2,14 @@ cbfsobj :=
 cbfsobj += cbfstool.o
 cbfsobj += common.o
 cbfsobj += compress.o
+cbfsobj += cbfs.o
+cbfsobj += cbfs_hash.o
 cbfsobj += cbfs_image.o
 cbfsobj += cbfs-mkstage.o
 cbfsobj += cbfs-mkpayload.o
 cbfsobj += elfheaders.o
+cbfsobj += mem_pool.o
+cbfsobj += region.o
 cbfsobj += rmodule.o
 cbfsobj += xdr.o
 cbfsobj += fit.o
@@ -129,6 +133,10 @@ $(objutil)/cbfstool/LzmaEnc.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 # Tolerate vboot warnings
 $(objutil)/cbfstool/2sha_utility.o: TOOLCFLAGS += -Wno-sign-compare
 $(objutil)/cbfstool/2sha1.o: TOOLCFLAGS += -Wno-cast-qual
+# Tolerate commonlib warnings
+$(objutil)/cbfstool/region.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
+$(objutil)/cbfstool/cbfs.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
+$(objutil)/cbfstool/mem_pool.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 
 $(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_parser.h
 $(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_scanner.h

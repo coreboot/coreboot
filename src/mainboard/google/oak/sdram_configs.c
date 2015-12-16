@@ -21,7 +21,7 @@
 static const struct mt8173_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-lpddr3-hynix-2GB.inc"   /* ram_code = 0000 */
 #include "sdram_inf/sdram-lpddr3-samsung-2GB.inc" /* ram_code = 0001 */
-#include "sdram_inf/sdram-unused.inc"             /* ram_code = 0010 */
+#include "sdram_inf/sdram-lpddr3-samsung-4GB.inc" /* ram_code = 0010 */
 #include "sdram_inf/sdram-unused.inc"             /* ram_code = 0011 */
 #include "sdram_inf/sdram-unused.inc"             /* ram_code = 0100 */
 #include "sdram_inf/sdram-unused.inc"             /* ram_code = 0101 */

@@ -70,7 +70,7 @@ _cmd()
 	fi
 
 	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
-		ssh root@${REMOTE_HOST} "$2" > "$pipe_location" 2>&1
+		ssh "root@${REMOTE_HOST}" "$2" > "$pipe_location" 2>&1
 	else
 		$2 > "$pipe_location" 2>&1
 	fi
@@ -227,12 +227,12 @@ fi
 test_cmd $LOCAL "$cbfstool_cmd"
 echo "Extracting config.txt from build/coreboot.rom"
 $cbfstool_cmd build/coreboot.rom extract -n config -f "${tmpdir}/config.txt" >/dev/null 2>&1
-mv ${tmpdir}/config.txt ${tmpdir}/config.short.txt
-cp ${tmpdir}/config.short.txt ${tmpcfg}
-yes "" | make DOTCONFIG=${tmpcfg} oldconfig 2>/dev/null >/dev/null
-mv ${tmpcfg} ${tmpdir}/config.txt
-rm -f ${tmpcfg}.old
-$cbfstool_cmd build/coreboot.rom print > ${tmpdir}/cbfs.txt
+mv "${tmpdir}/config.txt" "${tmpdir}/config.short.txt"
+cp "${tmpdir}/config.short.txt" "${tmpcfg}"
+yes "" | make "DOTCONFIG=${tmpcfg}" oldconfig 2>/dev/null >/dev/null
+mv "${tmpcfg}" "${tmpdir}/config.txt"
+rm -f "${tmpcfg}.old"
+$cbfstool_cmd build/coreboot.rom print > "${tmpdir}/cbfs.txt"
 rom_contents=$($cbfstool_cmd build/coreboot.rom print 2>&1)
 if [ -n "$(echo $rom_contents | grep payload_config)" ]; then
 	echo "Extracting payload_config from build/coreboot.rom"
@@ -246,7 +246,7 @@ md5sum -b build/coreboot.rom > "${tmpdir}/rom_checksum.txt"
 
 # Obtain board and revision info to form the directory structure:
 # <vendor>/<board>/<revision>/<timestamp>
-mainboard_dir="$(grep CONFIG_MAINBOARD_DIR ${tmpdir}/config.txt | awk -F '"' '{ print $2 }')"
+mainboard_dir="$(grep CONFIG_MAINBOARD_DIR "${tmpdir}/config.txt" | awk -F '"' '{ print $2 }')"
 vendor=$(echo "$mainboard_dir" | awk -F '/' '{ print $1 }')
 mainboard=$(echo "$mainboard_dir" | awk -F '/' '{ print $2 }')
 
@@ -267,12 +267,12 @@ mv "${tmpdir}/config.short.txt" "${tmpdir}/${results}"
 mv "${tmpdir}/cbfs.txt" "${tmpdir}/${results}"
 mv "${tmpdir}/rom_checksum.txt" "${tmpdir}/${results}"
 
-touch ${tmpdir}/${results}/revision.txt
-printf "Local revision: %s\n" "$($getrevision -l)" >> ${tmpdir}/${results}/revision.txt
-printf "Tagged revision: %s\n" "${tagged_version}" >> ${tmpdir}/${results}/revision.txt
-printf "Upstream revision: %s\n" $($getrevision -u) >> ${tmpdir}/${results}/revision.txt
-printf "Upstream URL: %s\n" $($getrevision -U)>> ${tmpdir}/${results}/revision.txt
-printf "Timestamp: %s\n" "$timestamp" >> ${tmpdir}/${results}/revision.txt
+touch "${tmpdir}/${results}/revision.txt"
+printf "Local revision: %s\n" "$($getrevision -l)" >> "${tmpdir}/${results}/revision.txt"
+printf "Tagged revision: %s\n" "${tagged_version}" >> "${tmpdir}/${results}/revision.txt"
+printf "Upstream revision: %s\n" "$($getrevision -u)" >> "${tmpdir}/${results}/revision.txt"
+printf "Upstream URL: %s\n" "$($getrevision -U)" >> "${tmpdir}/${results}/revision.txt"
+printf "Timestamp: %s\n" "$timestamp" >> "${tmpdir}/${results}/revision.txt"
 
 if [ -z "$SERIAL_DEVICE" ]; then
 	echo "Verifying that CBMEM is available on remote device"
@@ -301,7 +301,7 @@ if [ $UPLOAD_RESULTS -eq 1 ]; then
 		# FIXME: the board-status directory might get big over time.
 		# Is there a way we can push the results without fetching the
 		# whole repo?
-		git clone $bsrepo
+		git clone "$bsrepo"
 		if [ $? -ne 0 ]; then
 			echo "Error cloning board-status repo, aborting."
 			exit $EXIT_FAILURE
@@ -334,7 +334,7 @@ fi
 cd "$coreboot_dir"
 
 if [ $CLOBBER_OUTPUT -eq 1 ]; then
-	rm -rf ${tmpdir}
+	rm -rf "${tmpdir}"
 else
 	echo
 	echo "output files are in ${tmpdir}/${results}"

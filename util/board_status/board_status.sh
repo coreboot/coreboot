@@ -122,8 +122,12 @@ cmd_nonfatal()
 # $3: filename to direct output of command into
 get_serial_bootlog () {
 
-	if [ ! -c "$1" ]; then
-		echo "$1 is not a valid serial device"
+	local TTY=$1
+	local SPEED=$2
+	local FILENAME=$3
+
+	if [ ! -c "$TTY" ]; then
+		echo "$TTY is not a valid serial device"
 		exit $EXIT_FAILURE
 	fi
 
@@ -136,27 +140,29 @@ get_serial_bootlog () {
 	fi
 
 	echo
-	echo "Waiting to receive boot log from $1"
+	echo "Waiting to receive boot log from $TTY"
 	echo "Press [Enter] when the boot is complete and the"
 	echo "system is ready for ssh to get the dmesg log."
+	echo
 
 	if [ $tput_not_available -eq 0 ]; then
 		tput sgr0
 	fi
 
 	# set up the serial port
-	cmd $LOCAL "stty -F $1 $2 cs8 -cstopb"
+	stty -F $TTY $SPEED cs8 -cstopb -parenb clocal
 
 	# read from the serial port - user must press enter when complete
 	test_cmd $LOCAL "tee"
-	cat "$SERIAL_DEVICE" | tee "$3" &
+	while read LINE; do
+		echo "$LINE" | tee -a "$FILENAME"
+	done < "$SERIAL_DEVICE" &
 	PID=$!
 
-	read
-	kill "$PID" 2>/dev/null &
+	read foo
+	kill "$PID" 2>/dev/null
 
-	# remove the binary zero value that gets inserted into the file.
-	sed -i 's/\x00//' "$3"
+	echo "Finished reading boot log."
 }
 
 show_help() {
@@ -173,7 +179,7 @@ Options
     -s  </dev/xxx>
         Obtain boot log via serial device.
     -S  <speed>
-        Set the port speed for the serial device (Default is 115200).
+        Set the port speed for the serial device (Default is $SERIAL_PORT_SPEED).
     -u
         Upload results to coreboot.org.
 "

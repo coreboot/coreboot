@@ -127,4 +127,6 @@ enum {
 	I2C_TRANSFER_INVALID_ARGUMENT = 0xA006
 };
 
+void mtk_i2c_bus_init(uint8_t bus);
+
 #endif /* SOC_MEDIATEK_MT8173_I2C_H */

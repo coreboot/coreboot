@@ -17,6 +17,7 @@ ifeq ($(CONFIG_SOC_MEDIATEK_MT8173),y)
 
 bootblock-y += bootblock.c
 bootblock-$(CONFIG_SPI_FLASH) += flash_controller.c
+bootblock-y += i2c.c
 bootblock-y += pll.c
 bootblock-y += spi.c
 bootblock-y += timer.c
@@ -64,7 +65,7 @@ ramstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 ramstage-y += soc.c mtcmos.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
-ramstage-y += pmic_wrap.c mt6391.c
+ramstage-y += pmic_wrap.c mt6391.c i2c.c
 ramstage-y += gpio.c
 ramstage-y += wdt.c
 ramstage-y += pll.c

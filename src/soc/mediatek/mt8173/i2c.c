@@ -88,6 +88,26 @@ static inline void i2c_dma_reset(struct mt8173_i2c_dma_regs *dma_regs)
 	udelay(50);
 }
 
+void mtk_i2c_bus_init(uint8_t bus)
+{
+	uint8_t sample_div;
+	uint8_t step_div;
+	uint32_t i2c_freq;
+
+	assert(bus < ARRAY_SIZE(i2c));
+
+	/* Calculate i2c frequency */
+	sample_div = 1;
+	step_div = div_round_up(I2C_CLK_HZ, (400 * KHz * sample_div * 2));
+	i2c_freq = I2C_CLK_HZ / (step_div * sample_div * 2);
+	assert(sample_div < 8 && step_div < 64 && i2c_freq < 400 * KHz &&
+	       i2c_freq >= 380 * KHz);
+
+	/* Init i2c bus Timing register */
+	write32(&i2c[bus].i2c_regs->timing, (sample_div - 1) << 8 |
+					    (step_div - 1));
+}
+
 static inline void mtk_i2c_dump_info(uint8_t bus)
 {
 	struct mt8173_i2c_regs *regs;
@@ -127,9 +147,6 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_seg *seg,
 	uint32_t read_len = 0;
 	uint8_t *write_buffer = NULL;
 	uint8_t *read_buffer = NULL;
-	uint8_t sample_div;
-	uint8_t step_div;
-	uint32_t i2c_freq;
 	struct mt8173_i2c_regs *regs;
 	struct mt8173_i2c_dma_regs *dma_regs;
 	struct stopwatch sw;
@@ -162,13 +179,6 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_seg *seg,
 		read_buffer = seg[1].buf;
 		break;
 	}
-
-	/* Calculate i2c frequency */
-	sample_div = 1;
-	step_div = div_round_up(I2C_CLK_HZ, (400 * KHz * sample_div * 2));
-	i2c_freq = I2C_CLK_HZ / (step_div * sample_div * 2);
-	assert(sample_div < 8 && i2c_freq < 400 * KHz && i2c_freq >= 380 * KHz);
-	write32(&regs->timing, (sample_div - 1) << 8 | (step_div - 1));
 
 	/* Clear interrupt status */
 	write32(&regs->intr_stat, I2C_TRANSAC_COMP | I2C_ACKERR |

@@ -3616,7 +3616,7 @@ static void XGI_SetGroup2(unsigned short ModeNo, unsigned short ModeIdIndex,
 				| (tempax & 0x00FF));
 		temp = (tempax & 0xFF00) >> 8;
 	} else {
-		temp = (tempax & 0x00FF) >> 8;
+		temp = (tempax & 0x00FF);
 	}
 
 	xgifb_reg_set(pVBInfo->Part2Port, 0x44, temp);

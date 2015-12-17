@@ -242,6 +242,7 @@ if [ -n "$(echo $rom_contents | grep payload_version)" ]; then
 	echo "Extracting payload_version from build/coreboot.rom"
 	$cbfstool_cmd build/coreboot.rom extract -n payload_version -f "${tmpdir}/payload_version.txt" >/dev/null 2>&1
 fi
+md5sum -b build/coreboot.rom > "${tmpdir}/rom_checksum.txt"
 
 # Obtain board and revision info to form the directory structure:
 # <vendor>/<board>/<revision>/<timestamp>
@@ -264,6 +265,7 @@ test -f "${tmpdir}/payload_config.txt" && mv "${tmpdir}/payload_config.txt" "${t
 test -f "${tmpdir}/payload_version.txt" && mv "${tmpdir}/payload_version.txt" "${tmpdir}/${results}"
 mv "${tmpdir}/config.short.txt" "${tmpdir}/${results}"
 mv "${tmpdir}/cbfs.txt" "${tmpdir}/${results}"
+mv "${tmpdir}/rom_checksum.txt" "${tmpdir}/${results}"
 
 touch ${tmpdir}/${results}/revision.txt
 printf "Local revision: %s\n" "$($getrevision -l)" >> ${tmpdir}/${results}/revision.txt

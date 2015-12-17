@@ -13,13 +13,15 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <console/console.h>
 #include <reset.h>
 
+#define PISTACHIO_WD_ADDR		0xB8102100
+#define PISTACHIO_WD_SW_RST_OFFSET	0x0000
+
 void hard_reset(void)
 {
-	printk(BIOS_EMERG, "reset failed!\n");
-	/* TBD */
-	for (;;)
-		;
+	/* Generate system reset */
+	write32(PISTACHIO_WD_ADDR + PISTACHIO_WD_SW_RST_OFFSET, 0x1);
 }

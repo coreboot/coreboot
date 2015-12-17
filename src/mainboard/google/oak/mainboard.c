@@ -23,6 +23,7 @@
 #include <elog.h>
 #include <gpio.h>
 #include <soc/bl31_plat_params.h>
+#include <soc/i2c.h>
 #include <soc/mt6391.h>
 #include <soc/mtcmos.h>
 #include <soc/pinmux.h>
@@ -53,6 +54,9 @@ static void register_da9212_to_bl31(void)
 		},
 	};
 	register_bl31_param(&param_da9212.h);
+
+	/* Init i2c bus Timing register for da9212 */
+	mtk_i2c_bus_init(param_da9212.i2c_bus);
 #endif
 }
 
@@ -66,6 +70,9 @@ static void register_mt6311_to_bl31(void)
 		.i2c_bus = 1,
 	};
 	register_bl31_param(&param_mt6311.h);
+
+	/* Init i2c bus Timing register for mt6311 */
+	mtk_i2c_bus_init(param_mt6311.i2c_bus);
 #endif
 }
 
@@ -118,6 +125,9 @@ static void configure_audio(void)
 	/* codec ext MCLK ON */
 	mt6391_gpio_output(MT6391_KP_COL4, 1);
 	mt6391_gpio_output(MT6391_KP_COL5, 1);
+
+	/* Init i2c bus Timing register for audio codecs */
+	mtk_i2c_bus_init(0);
 
 	/* set I2S clock to 48KHz */
 	mt_pll_set_aud_div(48 * KHz);

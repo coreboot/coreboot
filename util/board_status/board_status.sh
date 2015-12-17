@@ -232,6 +232,15 @@ yes "" | make DOTCONFIG=${tmpcfg} oldconfig 2>/dev/null >/dev/null
 mv ${tmpcfg} ${tmpdir}/config.txt
 rm -f ${tmpcfg}.old
 $cbfstool_cmd build/coreboot.rom print > ${tmpdir}/cbfs.txt
+rom_contents=$($cbfstool_cmd build/coreboot.rom print 2>&1)
+if [ -n "$(echo $rom_contents | grep payload_config)" ]; then
+	echo "Extracting payload_config from build/coreboot.rom"
+	$cbfstool_cmd build/coreboot.rom extract -n payload_config -f "${tmpdir}/payload_config.txt" >/dev/null 2>&1
+fi
+if [ -n "$(echo $rom_contents | grep payload_version)" ]; then
+	echo "Extracting payload_version from build/coreboot.rom"
+	$cbfstool_cmd build/coreboot.rom extract -n payload_version -f "${tmpdir}/payload_version.txt" >/dev/null 2>&1
+fi
 
 # Obtain board and revision info to form the directory structure:
 # <vendor>/<board>/<revision>/<timestamp>
@@ -250,6 +259,8 @@ echo "Temporarily placing output in ${tmpdir}/${results}"
 mkdir -p "${tmpdir}/${results}"
 
 mv "${tmpdir}/config.txt" "${tmpdir}/${results}"
+test -f "${tmpdir}/payload_config.txt" && mv "${tmpdir}/payload_config.txt" "${tmpdir}/${results}"
+test -f "${tmpdir}/payload_version.txt" && mv "${tmpdir}/payload_version.txt" "${tmpdir}/${results}"
 mv "${tmpdir}/config.short.txt" "${tmpdir}/${results}"
 mv "${tmpdir}/cbfs.txt" "${tmpdir}/${results}"
 

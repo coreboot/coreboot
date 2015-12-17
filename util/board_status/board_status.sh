@@ -225,7 +225,8 @@ if test ! -x build/cbfstool; then
 	make -C util/cbfstool/ && cp util/cbfstool/cbfstool build/cbfstool
 fi
 test_cmd $LOCAL "$cbfstool_cmd"
-$cbfstool_cmd build/coreboot.rom extract -n config -f ${tmpdir}/config.txt
+echo "Extracting config.txt from build/coreboot.rom"
+$cbfstool_cmd build/coreboot.rom extract -n config -f "${tmpdir}/config.txt" >/dev/null 2>&1
 mv ${tmpdir}/config.txt ${tmpdir}/config.short.txt
 cp ${tmpdir}/config.short.txt ${tmpcfg}
 yes "" | make DOTCONFIG=${tmpcfg} oldconfig 2>/dev/null >/dev/null
@@ -272,13 +273,17 @@ printf "Upstream URL: %s\n" $($getrevision -U)>> ${tmpdir}/${results}/revision.t
 printf "Timestamp: %s\n" "$timestamp" >> ${tmpdir}/${results}/revision.txt
 
 if [ -z "$SERIAL_DEVICE" ]; then
+	echo "Verifying that CBMEM is available on remote device"
 	test_cmd $REMOTE "cbmem"
+	echo "Getting coreboot boot log"
 	cmd $REMOTE "cbmem -c" "${tmpdir}/${results}/coreboot_console.txt"
+	echo "Getting timestamp data"
 	cmd_nonfatal $REMOTE "cbmem -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 else
 	get_serial_bootlog "$SERIAL_DEVICE" "$SERIAL_PORT_SPEED" "${tmpdir}/${results}/coreboot_console.txt"
 fi
 
+echo "Getting remote dmesg"
 cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 
 #

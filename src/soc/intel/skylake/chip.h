@@ -58,29 +58,6 @@ struct soc_intel_skylake_config {
 	uint32_t gen3_dec;
 	uint32_t gen4_dec;
 
-	/*
-	 * Digital Port Hotplug Enable:
-	 *  0x04 = Enabled, 2ms short pulse
-	 *  0x05 = Enabled, 4.5ms short pulse
-	 *  0x06 = Enabled, 6ms short pulse
-	 *  0x07 = Enabled, 100ms short pulse
-	 */
-	u8 gpu_dp_b_hotplug;
-	u8 gpu_dp_c_hotplug;
-	u8 gpu_dp_d_hotplug;
-
-	/* Panel power sequence timings */
-	u8 gpu_panel_port_select;
-	u8 gpu_panel_power_cycle_delay;
-	u16 gpu_panel_power_up_delay;
-	u16 gpu_panel_power_down_delay;
-	u16 gpu_panel_power_backlight_on_delay;
-	u16 gpu_panel_power_backlight_off_delay;
-
-	/* Panel backlight settings */
-	u32 gpu_cpu_backlight;
-	u32 gpu_pch_backlight;
-
 	/* Enable S0iX support */
 	int s0ix_enable;
 

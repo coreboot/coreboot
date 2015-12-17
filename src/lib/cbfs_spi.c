@@ -43,7 +43,7 @@ static const struct region_device_ops spi_ops = {
 static struct mmap_helper_region_device mdev =
 	MMAP_HELPER_REGION_INIT(&spi_ops, 0, CONFIG_ROM_SIZE);
 
-static void initialize_mdev(int unused)
+static void switch_to_postram_cache(int unused)
 {
 	/*
 	 * Call boot_device_init() to ensure spi_flash is initialized before
@@ -51,10 +51,11 @@ static void initialize_mdev(int unused)
 	 * being overwritten if spi_flash was not accessed before dram was up.
 	 */
 	boot_device_init();
-	mmap_helper_device_init(&mdev, _postram_cbfs_cache,
-				_postram_cbfs_cache_size);
+	if (_preram_cbfs_cache != _postram_cbfs_cache)
+		mmap_helper_device_init(&mdev, _postram_cbfs_cache,
+					_postram_cbfs_cache_size);
 }
-ROMSTAGE_CBMEM_INIT_HOOK(initialize_mdev);
+ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
 
 void boot_device_init(void)
 {

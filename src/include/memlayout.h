@@ -63,6 +63,10 @@
 		STR(name must be aligned to expected_align!)); \
 	SYMBOL(e##name, addr + size)
 
+#define ALIAS_REGION(name, alias) \
+	_##alias = _##name; \
+	_e##alias = _e##name;
+
 /* Declare according to SRAM/DRAM ranges in SoC hardware-defined address map. */
 #define SRAM_START(addr) SYMBOL(sram, addr)
 
@@ -77,20 +81,23 @@
 	REGION(preram_cbmem_console, addr, size, 4)
 
 /* Use either CBFS_CACHE (unified) or both (PRERAM|POSTRAM)_CBFS_CACHE */
-#define CBFS_CACHE(addr, size) REGION(cbfs_cache, addr, size, 4)
+#define CBFS_CACHE(addr, size) \
+	REGION(cbfs_cache, addr, size, 4) \
+	ALIAS_REGION(cbfs_cache, preram_cbfs_cache) \
+	ALIAS_REGION(cbfs_cache, postram_cbfs_cache)
 
-#if ENV_ROMSTAGE
-	#define PRERAM_CBFS_CACHE(addr, size) CBFS_CACHE(addr, size)
+#if defined(__PRE_RAM__)
+	#define PRERAM_CBFS_CACHE(addr, size) \
+		REGION(preram_cbfs_cache, addr, size, 4) \
+		ALIAS_REGION(preram_cbfs_cache, cbfs_cache)
 	#define POSTRAM_CBFS_CACHE(addr, size) \
 		REGION(postram_cbfs_cache, addr, size, 4)
-#elif defined(__PRE_RAM__)
-	#define PRERAM_CBFS_CACHE(addr, size) CBFS_CACHE(addr, size)
-	#define POSTRAM_CBFS_CACHE(addr, size) \
-		REGION(unused_cbfs_cache, addr, size, 4)
 #else
 	#define PRERAM_CBFS_CACHE(addr, size) \
-		REGION(unused_cbfs_cache, addr, size, 4)
-	#define POSTRAM_CBFS_CACHE(addr, size) CBFS_CACHE(addr, size)
+		REGION(preram_cbfs_cache, addr, size, 4)
+	#define POSTRAM_CBFS_CACHE(addr, size) \
+		REGION(postram_cbfs_cache, addr, size, 4) \
+		ALIAS_REGION(postram_cbfs_cache, cbfs_cache)
 #endif
 
 /* Careful: 'INCLUDE <filename>' must always be at the end of the output line */

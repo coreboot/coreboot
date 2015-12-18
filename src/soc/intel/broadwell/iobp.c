@@ -136,7 +136,8 @@ void pch_iobp_exec(u32 addr, u16 op_code, u8 route_id, u32 *data, u8 *resp)
 	/* RCBA233A[15:8] = 0xf0 RCBA233A[7:0] = Route ID */
 	RCBA16(IOBPU) = IOBPU_MAGIC | route_id;
 
-	RCBA32(IOBPD) = *data;
+	if (op_code == IOBP_PCICFG_WRITE)
+		RCBA32(IOBPD) = *data;
 	/* Set RCBA2338[0] to trigger IOBP transaction*/
 	RCBA16(IOBPS) = RCBA16(IOBPS) | 0x1;
 

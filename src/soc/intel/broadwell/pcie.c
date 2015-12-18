@@ -120,7 +120,7 @@ static void pcie_iosf_port_grant_count(device_t dev)
 static void root_port_init_config(device_t dev)
 {
 	int rp;
-	u32 data;
+	u32 data = 0;
 	u8 resp, id;
 
 	if (root_port_is_first(dev)) {

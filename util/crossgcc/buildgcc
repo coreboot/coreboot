@@ -501,6 +501,7 @@ build_LLVM() {
 	cd -
 
 	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$DESTDIR$TARGETDIR \
+		-DCLANG_VENDOR="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE - " \
 		-DCMAKE_BUILD_TYPE=Release ../$LLVM_DIR || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install || touch .failed

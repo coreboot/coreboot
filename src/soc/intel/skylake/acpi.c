@@ -217,6 +217,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
+	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	config_t *config = dev->chip_info;
 
 	fadt->sci_int = acpi_sci_irq();
 	fadt->smi_cmd = APM_CNT;
@@ -230,14 +232,16 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;
 	fadt->pm1b_cnt_blk = 0x0;
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
-	fadt->pm_tmr_blk = pmbase + PM1_TMR;
+	if (config->PmTimerDisabled == 0)
+		fadt->pm_tmr_blk = pmbase + PM1_TMR;
 	fadt->gpe0_blk = pmbase + GPE0_STS(0);
 	fadt->gpe1_blk = 0;
 
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
 	fadt->pm2_cnt_len = 1;
-	fadt->pm_tmr_len = 4;
+	if (config->PmTimerDisabled == 0)
+		fadt->pm_tmr_len = 4;
 	/* There are 4 GPE0 STS/EN pairs each 32 bits wide. */
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 	fadt->gpe1_blk_len = 0;
@@ -302,12 +306,14 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm2_cnt_blk.addrl = pmbase + PM2_CNT;
 	fadt->x_pm2_cnt_blk.addrh = 0x0;
 
-	fadt->x_pm_tmr_blk.space_id = 1;
-	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
-	fadt->x_pm_tmr_blk.bit_offset = 0;
-	fadt->x_pm_tmr_blk.resv = 0;
-	fadt->x_pm_tmr_blk.addrl = pmbase + PM1_TMR;
-	fadt->x_pm_tmr_blk.addrh = 0x0;
+	if (config->PmTimerDisabled == 0) {
+		fadt->x_pm_tmr_blk.space_id = 1;
+		fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
+		fadt->x_pm_tmr_blk.bit_offset = 0;
+		fadt->x_pm_tmr_blk.resv = 0;
+		fadt->x_pm_tmr_blk.addrl = pmbase + PM1_TMR;
+		fadt->x_pm_tmr_blk.addrh = 0x0;
+	}
 
 	fadt->x_gpe0_blk.space_id = 0;
 	fadt->x_gpe0_blk.bit_width = 0;

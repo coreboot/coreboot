@@ -325,6 +325,7 @@ struct soc_intel_skylake_config {
 	u8 HeciEnabled;
 	/* PL2 Override value in Watts */
 	u32 tdp_pl2_override;
+	u8 PmTimerDisabled;
 };
 
 typedef struct soc_intel_skylake_config config_t;

@@ -102,7 +102,7 @@ int i2c_init(unsigned bus)
 			   I2C6_MEM_BASE};
 	char *base_ptr;
 	/* Ensure the desired device is valid */
-	if (bus > ARRAY_SIZE(base_adr)) {
+	if (bus >= ARRAY_SIZE(base_adr)) {
 		printk(BIOS_ERR, "I2C: Only I2C controllers 0...6 are available.\n");
 		return I2C_ERR;
 	}

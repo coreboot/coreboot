@@ -39,7 +39,7 @@ enum twi_status {
 #define TWI_CLK_M_MASK		(0xf << 3)
 #define TWI_CLK_M(m)		(((m - 1) << 3) & TWI_CLK_M_MASK)
 #define TWI_CLK_N_MASK		(0x7 << 0)
-#define TWI_CLK_N(n)		(((n) << 3) & TWI_CLK_N_MASK)
+#define TWI_CLK_N(n)		((n) & TWI_CLK_N_MASK)
 
 struct a1x_twi {
 	u32 addr;	/**< 0x00: Slave address */

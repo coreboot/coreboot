@@ -214,10 +214,11 @@ void print_fsp_info(void) {
 
 	if (fsp_header_ptr == NULL)
 		fsp_header_ptr = (void *)find_fsp();
-		if ((u32)fsp_header_ptr < 0xff) {
-			post_code(0x4F); /* output something in case there is no serial */
-			die("Can't find the FSP!\n");
-		}
+
+	if ((u32)fsp_header_ptr < 0xff) {
+		post_code(0x4F); /* post code in case there is no serial */
+		die("Can't find the FSP!\n");
+	}
 
 	if (FspHobListPtr == NULL) {
 		FspHobListPtr = (void*)*((u32*) cbmem_find(CBMEM_ID_HOB_POINTER));

@@ -308,7 +308,7 @@ struct soc_intel_skylake_config {
 	 * Values: 0: PchSfpw4Clk, 1: PchSfpw6Clk, 2; PchSfpw8Clk.
 	 */
 	u8 SerialIrqConfigStartFramePulse;
-	u8 SkipMpInit;
+	u8 FspSkipMpInit;
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
 	 * 3 = GT unsliced,  4 = GT sliced

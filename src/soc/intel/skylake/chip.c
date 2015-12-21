@@ -345,7 +345,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SerialIrqConfigSirqMode = config->SerialIrqConfigSirqMode;
 	params->SerialIrqConfigStartFramePulse = config->SerialIrqConfigStartFramePulse;
 
-	params->SkipMpInit = config->SkipMpInit;
+	params->SkipMpInit = config->FspSkipMpInit;
 
 	/*
 	 * To disable Heci, the Psf needs to be left unlocked

@@ -163,6 +163,12 @@ Name (MCRS, ResourceTemplate()
 			Cacheable, ReadWrite,
 			0x00000000, 0xfed40000, 0xfed44fff, 0x00000000,
 			0x00005000,,, TPMR)
+
+	// High PCI Memory Region
+	QwordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+			Cacheable, ReadWrite,
+			0x00000000, 0x00000000, 0x00000000, 0x00000000,
+			0x00000000,,, UMEM)
 })
 
 Method (_CRS, 0, Serialized)
@@ -176,6 +182,15 @@ Method (_CRS, 0, Serialized)
 	Store (\TOLM, PMIN)
 	Store (Subtract(CONFIG_MMCONF_BASE_ADDRESS, 1), PMAX)
 	Add (Subtract (PMAX, PMIN), 1, PLEN)
+
+	// Update High PCI resource area
+	CreateQwordField(MCRS, ^UMEM._MIN, UMIN)
+	CreateQwordField(MCRS, ^UMEM._MAX, UMAX)
+	CreateQwordField(MCRS, ^UMEM._LEN, ULEN)
+
+	Store(0x40000000 * 48, UMIN)	// Set base address to 48GB
+	Store(0x40000000 * 16, ULEN)	// Allocate 16GB for PCI space
+	Add(UMIN, Subtract(ULEN, 1), UMAX)
 
 	Return (MCRS)
 }

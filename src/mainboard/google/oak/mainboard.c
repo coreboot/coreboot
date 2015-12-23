@@ -40,9 +40,9 @@ static void register_da9212_to_bl31(void)
 		},
 		.i2c_bus = 1,
 		.ic_en = {
-			.type = PARAM_GPIO_SOC,
+			.type = PARAM_GPIO_MT6391,
 			.polarity = PARAM_GPIO_ACTIVE_HIGH,
-			.index = PAD_UCTS2,
+			.index = MT6391_KP_ROW3,
 		},
 		.en_a = {
 			.type = PARAM_GPIO_MT6391,
@@ -53,6 +53,10 @@ static void register_da9212_to_bl31(void)
 			.type = PARAM_GPIO_NONE,
 		},
 	};
+	if (board_id() == 2) {
+		param_da9212.ic_en.type = PARAM_GPIO_SOC;
+		param_da9212.ic_en.index = PAD_UCTS2;
+	}
 	register_bl31_param(&param_da9212.h);
 
 	/* Init i2c bus Timing register for da9212 */
@@ -79,12 +83,15 @@ static void register_mt6311_to_bl31(void)
 static void configure_bl31(void)
 {
 	switch (board_id()) {
-	case 2:
-		register_da9212_to_bl31();
-		break;
-	default:
+	case 3:
+	case 4:
 		/* rev-3 and rev-4 use mt6311 as external buck */
 		register_mt6311_to_bl31();
+		break;
+	case 2:
+	default:
+		/* rev-2 and rev-5 use da9212 as external buck */
+		register_da9212_to_bl31();
 		break;
 	}
 }

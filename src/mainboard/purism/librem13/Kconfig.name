@@ -1,0 +1,2 @@
+config BOARD_PURISM_LIBREM13
+	bool "Librem 13"

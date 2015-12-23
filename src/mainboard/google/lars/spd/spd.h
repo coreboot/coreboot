@@ -30,5 +30,7 @@
 #define  SPD_PART_LEN		18
 #define SPD_MANU_OFF		148
 
-#define HYNIX_SINGLE_CHAN	0x0
+#define MEM_SINGLE_CHAN0	0x0
+#define MEM_SINGLE_CHAN3	0x3
+#define MEM_SINGLE_CHAN4	0x4
 #endif

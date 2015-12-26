@@ -1,2 +1,4 @@
 config SOUTHBRIDGE_INTEL_COMMON
 	def_bool n
+config SOUTHBRIDGE_INTEL_COMMON_GPIO
+	def_bool n

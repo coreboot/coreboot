@@ -21,4 +21,7 @@ ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 
+romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
+smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 endif

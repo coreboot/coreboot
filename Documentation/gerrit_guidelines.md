@@ -236,6 +236,20 @@ request. For major problems where the change doesn’t work as intended or
 breaks other platforms, the change really needs to go into the original
 patch.
 
+* When bringing in a patch from another git repo, update the original
+git/gerrit tags by prepending the lines with 'Original-'.  Marking
+the original text this way makes it much easier to tell what changes
+happened in which repository. This applies to these lines, not the actual
+commit message itself:
+        Commit-Id:
+        Change-Id:
+        Signed-off-by:
+        Reviewed-on:
+        Tested-by:
+        Reviewed-by:
+The script 'util/gitconfig/rebase.sh' can be used to help automate this.
+Other tags such as 'Commit-Queue' can simply be removed.
+
 
 Expectations contributors should have:
 --------------------------------------

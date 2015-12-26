@@ -14,3 +14,4 @@ fn_ctrl_swap=Disable
 sticky_fn=Disable
 trackpoint=Enable
 hyper_threading=Enable
+hybrid_graphics_mode=Integrated Only

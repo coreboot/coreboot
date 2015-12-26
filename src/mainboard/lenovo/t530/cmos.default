@@ -15,3 +15,4 @@ sticky_fn=Disable
 trackpoint=Enable
 hyper_threading=Enable
 backlight=Both
+hybrid_graphics_mode=Integrated Only

@@ -13,3 +13,4 @@ sticky_fn=Disable
 power_management_beeps=Enable
 low_battery_beep=Enable
 sata_mode=AHCI
+hybrid_graphics_mode=Integrated Only

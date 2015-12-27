@@ -659,7 +659,7 @@ FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)
 # entire "BIOS" region (everything directly of concern to the host system)
 # relative to ROM_BASE
 FMAP_BIOS_BASE := $(call int-subtract, $(CONFIG_ROM_SIZE) $(CONFIG_CBFS_SIZE))
-FMAP_BIOS_SIZE := $(CONFIG_CBFS_SIZE)
+FMAP_BIOS_SIZE := $(shell echo $(CONFIG_CBFS_SIZE) | tr A-F a-f)
 # position and size of flashmap, relative to BIOS_BASE
 FMAP_FMAP_BASE := 0
 FMAP_FMAP_SIZE := 0x100
@@ -683,7 +683,7 @@ FMAP_CBFS_BASE := $(call int-add,$(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
 FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
 endif
 
-$(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP)
+$(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
 	sed -e "s,##ROM_BASE##,$(FMAP_ROM_ADDR)," \
 	    -e "s,##ROM_SIZE##,$(FMAP_ROM_SIZE)," \
 	    -e "s,##BIOS_BASE##,$(FMAP_BIOS_BASE)," \
@@ -695,7 +695,7 @@ $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP)
 		$(DEFAULT_FLASHMAP) > $@.tmp
 	mv $@.tmp $@
 else
-$(obj)/fmap.fmd: $(CONFIG_FMDFILE)
+$(obj)/fmap.fmd: $(CONFIG_FMDFILE) $(obj)/config.h
 	cp $< $@
 endif
 
@@ -703,6 +703,7 @@ endif
 $(obj)/fmap.h: $(obj)/fmap.fmap
 
 $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
+	echo "    FMAP       $(FMAPTOOL) -h $(obj)/fmap.h $< $@"
 	$(FMAPTOOL) -h $(obj)/fmap.h $< $@
 
 $(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap

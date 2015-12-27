@@ -25,7 +25,7 @@ export TZ=UTC
 top=`dirname $0`/../..
 
 if [ -d "${top}/.git" -a -x "$(command -v git)" ]; then
-	GITREV=$(LANG= git log remotes/origin/master -1 --format=format:%h)
+	GITREV=$(LANG= git log -1 --format=format:%h)
 	TIMESOURCE=git
 	DATE=$(git log --pretty=format:%ct -1)
 else

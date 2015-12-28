@@ -38,19 +38,30 @@ struct pnp_info {
 	struct device_operations *ops;
 	unsigned int function; /* Must be at least 16 bits (virtual LDNs)! */
 	unsigned int flags;
-#define PNP_IO0  0x001
-#define PNP_IO1  0x002
-#define PNP_IO2  0x004
-#define PNP_IO3  0x008
-#define PNP_IRQ0 0x010
-#define PNP_IRQ1 0x020
-#define PNP_DRQ0 0x040
-#define PNP_DRQ1 0x080
-#define PNP_EN   0x100
-#define PNP_MSC0 0x200
-#define PNP_MSC1 0x400
-#define PNP_MSC4 0x800
-#define PNP_MSC10 0x1000
+#define PNP_IO0  0x000001
+#define PNP_IO1  0x000002
+#define PNP_IO2  0x000004
+#define PNP_IO3  0x000008
+#define PNP_IRQ0 0x000010
+#define PNP_IRQ1 0x000020
+#define PNP_DRQ0 0x000040
+#define PNP_DRQ1 0x000080
+#define PNP_EN   0x000100
+#define PNP_MSC0 0x000200
+#define PNP_MSC1 0x000400
+#define PNP_MSC2 0x000800
+#define PNP_MSC3 0x001000
+#define PNP_MSC4 0x002000
+#define PNP_MSC5 0x004000
+#define PNP_MSC6 0x008000
+#define PNP_MSC7 0x010000
+#define PNP_MSC8 0x020000
+#define PNP_MSC9 0x040000
+#define PNP_MSCA 0x080000
+#define PNP_MSCB 0x100000
+#define PNP_MSCC 0x200000
+#define PNP_MSCD 0x400000
+#define PNP_MSCE 0x800000
 	struct io_info io0, io1, io2, io3;
 };
 struct resource *pnp_get_resource(device_t dev, unsigned index);

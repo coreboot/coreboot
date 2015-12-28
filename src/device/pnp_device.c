@@ -296,13 +296,68 @@ static void get_resources(device_t dev, struct pnp_info *info)
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
 	}
+	if (info->flags & PNP_MSC2) {
+		resource = new_resource(dev, PNP_IDX_MSC2);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSC3) {
+		resource = new_resource(dev, PNP_IDX_MSC3);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
 	if (info->flags & PNP_MSC4) {
 		resource = new_resource(dev, PNP_IDX_MSC4);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
 	}
-	if (info->flags & PNP_MSC10) {
-		resource = new_resource(dev, PNP_IDX_MSC10);
+	if (info->flags & PNP_MSC5) {
+		resource = new_resource(dev, PNP_IDX_MSC5);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSC6) {
+		resource = new_resource(dev, PNP_IDX_MSC6);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSC7) {
+		resource = new_resource(dev, PNP_IDX_MSC7);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSC8) {
+		resource = new_resource(dev, PNP_IDX_MSC8);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSC9) {
+		resource = new_resource(dev, PNP_IDX_MSC9);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSCA) {
+		resource = new_resource(dev, PNP_IDX_MSCA);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSCB) {
+		resource = new_resource(dev, PNP_IDX_MSCB);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSCC) {
+		resource = new_resource(dev, PNP_IDX_MSCC);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSCD) {
+		resource = new_resource(dev, PNP_IDX_MSCD);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSCE) {
+		resource = new_resource(dev, PNP_IDX_MSCE);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
 	}

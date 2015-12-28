@@ -222,7 +222,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, IT8772F_SP1, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 	/* Environmental Controller */
 	{ &ops, IT8772F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 |
-		PNP_MSC4 | PNP_MSC10,
+		PNP_MSC4 | PNP_MSCA,
 	  {0x0ff8, 0}, {0x0ffc, 4}, },
 	/* KBC Keyboard */
 	{ &ops, IT8772F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0,

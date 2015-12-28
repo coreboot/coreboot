@@ -51,11 +51,21 @@ static struct device_operations ops = {
 	.init             = init,
 };
 
-/* TODO: FDC, PP, EC, KBCM, IR. */
+/* TODO: IR. */
 static struct pnp_info pnp_dev_info[] = {
+	{ &ops, IT8718F_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0
+			| PNP_MSC0 | PNP_MSC1, {0x0ff8, 0}, },
 	{ &ops, IT8718F_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, IT8718F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x07f8, 0}, },
-	{ &ops, IT8718F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x07f8, 0}, {0x07f8, 4}, },
+	{ &ops, IT8718F_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, IT8718F_EC,   PNP_IO0 | PNP_IO1 | PNP_IRQ0
+			| PNP_MSC0 | PNP_MSC1 | PNP_MSC2 | PNP_MSC3
+			| PNP_MSC4 | PNP_MSC5 | PNP_MSC6,
+			{0x0ff8, 0}, {0x0ff8, 4}, },
+	{ &ops, IT8718F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0
+			| PNP_MSC0, {0x07f8, 0}, {0x07f8, 4}, },
+	{ &ops, IT8718F_KBCM, PNP_IRQ0 | PNP_MSC0, },
+	{ &ops, IT8718F_PP,   PNP_IO0 | PNP_IO1 | PNP_IRQ0
+			| PNP_DRQ0 | PNP_MSC0, {0x0ff8, 0}, {0x0ff8, 4}, },
 };
 
 static void enable_dev(struct device *dev)

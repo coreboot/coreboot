@@ -176,7 +176,8 @@ static void mainboard_init(device_t dev)
 	/* TP_SHIFT_EN: Enables the level shifter for I2C bus 4 (TPAD), which
 	 * also contains the PS8640 eDP brige and the USB hub.
 	 */
-	mt6391_gpio_output(MT6391_KP_ROW2, 1);
+	if (board_id() < 5)
+		mt6391_gpio_output(MT6391_KP_ROW2, 1);
 
 	/* Config SD card detection pin */
 	gpio_input(PAD_EINT1); /* SD_DET */

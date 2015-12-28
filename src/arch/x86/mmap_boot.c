@@ -55,9 +55,8 @@ static int cbfs_master_header_props(struct cbfs_props *props)
 
 	props->offset = header.offset;
 	if (CONFIG_ROM_SIZE != header.romsize)
-		props->size = CONFIG_ROM_SIZE;
-	else
-		props->size = header.romsize;
+		props->offset += CONFIG_ROM_SIZE - header.romsize;
+	props->size = CONFIG_ROM_SIZE;
 	props->size -= props->offset;
 	props->size -= header.bootblocksize;
 	props->size = ALIGN_DOWN(props->size, 64);

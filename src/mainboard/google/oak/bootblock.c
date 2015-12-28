@@ -17,6 +17,7 @@
 #include <boardid.h>
 #include <bootblock_common.h>
 #include <delay.h>
+#include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/i2c.h>
 #include <soc/mt6391.h>
@@ -78,6 +79,10 @@ void bootblock_mainboard_init(void)
 
 	/* set nor related GPIO */
 	nor_set_gpio_pinmux();
+
+	/* SPI_LEVEL_ENABLE: Enable 1.8V to 3.3V level shifter for EC SPI bus */
+	if (board_id() > 4)
+		gpio_output(PAD_SRCLKENAI2, 1);
 
 	/* Init i2c bus 2 Timing register for TPM */
 	mtk_i2c_bus_init(CONFIG_DRIVER_TPM_I2C_BUS);

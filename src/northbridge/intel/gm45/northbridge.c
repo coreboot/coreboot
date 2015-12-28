@@ -243,6 +243,17 @@ static void enable_dev(device_t dev)
 	}
 }
 
+static u8 scan_bus_unused(struct bus *link)
+{
+	struct device *dev;
+
+	for (dev = link->children; dev; dev = dev->sibling) {
+		if (dev->enabled)
+			return 0;
+	}
+	return 1;
+}
+
 static void gm45_init(void *const chip_info)
 {
 	int dev, fn, bit_base;
@@ -268,7 +279,8 @@ static void gm45_init(void *const chip_info)
 		for (; fn >= 0; --fn) {
 			const struct device *const d =
 				dev_find_slot(0, PCI_DEVFN(dev, fn));
-			if (!d || d->enabled) continue;
+			if (d && d->enabled && d->link_list && !scan_bus_unused(d->link_list))
+				continue;
 			const u32 deven = pci_read_config32(d0f0, D0F0_DEVEN);
 			pci_write_config32(d0f0, D0F0_DEVEN,
 					   deven & ~(1 << (bit_base + fn)));

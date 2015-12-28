@@ -368,6 +368,17 @@ static void northbridge_dmi_init(struct device *dev)
 	DMIBAR32(0x88) = reg32;
 }
 
+static u8 scan_bus_unused(struct bus *link)
+{
+	struct device *dev;
+
+	for (dev = link->children; dev; dev = dev->sibling) {
+		if (dev->enabled)
+			return 0;
+	}
+	return 1;
+}
+
 /* Disable unused PEG devices based on devicetree */
 static void disable_peg(void)
 {
@@ -378,27 +389,32 @@ static void disable_peg(void)
 	reg = pci_read_config32(dev, DEVEN);
 
 	dev = dev_find_slot(0, PCI_DEVFN(1, 2));
-	if (!dev || !dev->enabled) {
+	if (!dev || !dev->enabled ||
+			(dev->link_list && scan_bus_unused(dev->link_list))) {
 		printk(BIOS_DEBUG, "Disabling PEG12.\n");
 		reg &= ~DEVEN_PEG12;
 	}
 	dev = dev_find_slot(0, PCI_DEVFN(1, 1));
-	if (!dev || !dev->enabled) {
+	if (!dev || !dev->enabled ||
+			(dev->link_list && scan_bus_unused(dev->link_list))) {
 		printk(BIOS_DEBUG, "Disabling PEG11.\n");
 		reg &= ~DEVEN_PEG11;
 	}
 	dev = dev_find_slot(0, PCI_DEVFN(1, 0));
-	if (!dev || !dev->enabled) {
+	if (!dev || !dev->enabled ||
+			(dev->link_list && scan_bus_unused(dev->link_list))) {
 		printk(BIOS_DEBUG, "Disabling PEG10.\n");
 		reg &= ~DEVEN_PEG10;
 	}
 	dev = dev_find_slot(0, PCI_DEVFN(2, 0));
-	if (!dev || !dev->enabled) {
+	if (!dev || !dev->enabled ||
+			(dev->link_list && scan_bus_unused(dev->link_list))) {
 		printk(BIOS_DEBUG, "Disabling IGD.\n");
 		reg &= ~DEVEN_IGD;
 	}
 	dev = dev_find_slot(0, PCI_DEVFN(6, 0));
-	if (!dev || !dev->enabled) {
+	if (!dev || !dev->enabled ||
+			(dev->link_list && scan_bus_unused(dev->link_list))) {
 		printk(BIOS_DEBUG, "Disabling PEG60.\n");
 		reg &= ~DEVEN_PEG60;
 	}

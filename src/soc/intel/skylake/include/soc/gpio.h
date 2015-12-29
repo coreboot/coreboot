@@ -108,6 +108,12 @@ void gpio_configure_pads(const struct pad_config *cfgs, size_t num);
 	_PAD_CFG(pad_, term_, \
 	_DW0_VALS(rst_, RAW, NO, LEVEL, NO, NO, NO, NO, NO, NO, func_, NO, NO))
 
+/* Unused PINS will be controlled by GPIO controller (PMODE = GPIO) and
+   GPIO TX/RX will be disabled. */
+#define PAD_CFG_NC(pad_) \
+	_PAD_CFG(pad_, NONE, \
+	_DW0_VALS(DEEP, RAW, NO, LEVEL, NO, NO, NO, NO, NO, NO, GPIO, YES, YES))
+
 /* General purpose output with termination. */
 #define PAD_CFG_TERM_GPO(pad_, val_, term_, rst_) \
 	_PAD_CFG(pad_, term_, \

@@ -80,7 +80,6 @@ void get_gmch_info(sysinfo_t *sysinfo)
 		sysinfo->gfx_type = gmch_gfx_types[gfx_variant][render_freq];
 	else
 		sysinfo->gfx_type = GMCH_UNKNOWN;
-	sysinfo->gs45_low_power_mode = 0;
 	switch (sysinfo->gfx_type) {
 		case GMCH_GM45:
 			printk(BIOS_SPEW, "GMCH: GM45\n");
@@ -104,8 +103,8 @@ void get_gmch_info(sysinfo_t *sysinfo)
 			printk(BIOS_SPEW, "GMCH: GS40\n");
 			break;
 		case GMCH_GS45:
-			printk(BIOS_SPEW, "GMCH: GS45, using low power mode by default\n");
-			sysinfo->gs45_low_power_mode = 1;
+			printk(BIOS_SPEW, "GMCH: GS45, using %s-power mode\n",
+			       sysinfo->gs45_low_power_mode ? "low" : "high");
 			break;
 		case GMCH_PM45:
 			printk(BIOS_SPEW, "GMCH: PM45\n");
@@ -1688,7 +1687,6 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 {
 	const dimminfo_t *const dimms = sysinfo->dimms;
 	const timings_t *const timings = &sysinfo->selected_timings;
-	const int sff = sysinfo->gfx_type == GMCH_GS45;
 
 	int ch;
 	u8 reg8;
@@ -1730,7 +1728,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	configure_dram_control_mode(timings, dimms);
 
 	/* Initialize RCOMP. */
-	rcomp_initialization(sysinfo->stepping, sff);
+	rcomp_initialization(sysinfo->stepping, sysinfo->sff);
 
 	/* Power-up DRAM. */
 	dram_powerup(s3resume);
@@ -1743,7 +1741,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 		MCHBAR32(CxDCLKDIS_MCHBAR(ch)) |= CxDCLKDIS_ENABLE;
 
 	/* Enable On-Die Termination. */
-	odt_setup(timings, sff);
+	odt_setup(timings, sysinfo->sff);
 	/* Miscellaneous settings. */
 	misc_settings(timings, sysinfo->stepping);
 	/* Program clock crossing registers. */
@@ -1751,7 +1749,8 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	/* Program egress VC1 timings. */
 	vc1_program_timings(timings->fsb_clock);
 	/* Perform system-memory i/o initialization. */
-	memory_io_init(timings->mem_clock, dimms, sysinfo->stepping, sff);
+	memory_io_init(timings->mem_clock, dimms,
+		       sysinfo->stepping, sysinfo->sff);
 
 	/* Initialize memory map with dummy values of 128MB per rank with a
 	   page size of 4KB. This makes the JEDEC initialization code easier. */

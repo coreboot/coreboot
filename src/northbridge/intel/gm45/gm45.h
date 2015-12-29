@@ -130,7 +130,6 @@ typedef struct {
 	int		txt_enabled;
 	int		cores;
 	gmch_gfx_t	gfx_type;
-	int		gs45_low_power_mode; /* low power mode of GMCH_GS45 */
 	int		max_ddr2_mhz;
 	int		max_ddr3_mt;
 	fsb_clock_t	max_fsb;
@@ -140,10 +139,13 @@ typedef struct {
 	int		enable_peg;
 	u16		ggc;
 
+	/* to be filled in romstage main: */
 	int		spd_type;
 	timings_t	selected_timings;
 	dimminfo_t	dimms[2];
 	u8		spd_map[4];
+	int		gs45_low_power_mode; /* low power mode of GMCH_GS45 */
+	int		sff; /* small form factor option (soldered down DIMM) */
 } sysinfo_t;
 #define TOTAL_CHANNELS 2
 #define CHANNEL_IS_POPULATED(dimms, idx) (dimms[idx].card_type != 0)

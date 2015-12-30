@@ -367,6 +367,7 @@ build_GMP() {
 
 build_MPFR() {
 	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
+	(cd ../${MPFR_DIR}/ && CC="$CC" automake --add-missing --copy --force-missing)
 	CC="$CC" ../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \

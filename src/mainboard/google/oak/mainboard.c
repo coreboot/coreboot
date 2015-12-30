@@ -100,24 +100,12 @@ static void configure_audio(void)
 {
 	mtcmos_audio_power_on();
 
-	/* regulator for codecs */
-	switch (board_id()) {
-	case 0:
-		/* vgp1 set to 1.22V */
-		mt6391_configure_ldo(LDO_VCAMD, LDO_1P22);
-		/* vgp4 set to 1.8V */
-		mt6391_configure_ldo(LDO_VGP4, LDO_1P8);
-		break;
-	default:
-		/* board from Rev1 */
-		/* vgp1 set to 1.8V */
-		mt6391_configure_ldo(LDO_VCAMD, LDO_1P8);
-		/* delay 1ms for realtek's power sequence request */
-		mdelay(1);
-		/* vcama set to 1.8V */
-		mt6391_configure_ldo(LDO_VCAMA, LDO_1P8);
-		break;
-	}
+	/* vgp1 set to 1.8V */
+	mt6391_configure_ldo(LDO_VCAMD, LDO_1P8);
+	/* delay 1ms for realtek's power sequence request */
+	mdelay(1);
+	/* vcama set to 1.8V */
+	mt6391_configure_ldo(LDO_VCAMA, LDO_1P8);
 
 	/* reset ALC5676 */
 	gpio_output(PAD_LCM_RST, 1);

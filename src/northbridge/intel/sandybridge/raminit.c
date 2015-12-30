@@ -3993,7 +3993,6 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		/* MRS commands */
 		dram_mrscommands(&ctrl);
 		printk(BIOS_DEBUG, "Done MRS commands\n");
-		dram_mrscommands(&ctrl);
 
 		/* Prepare for memory training */
 		prepare_training(&ctrl);

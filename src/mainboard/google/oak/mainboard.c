@@ -108,7 +108,8 @@ static void configure_audio(void)
 	mt6391_configure_ldo(LDO_VCAMA, LDO_1P8);
 
 	/* reset ALC5676 */
-	gpio_output(PAD_LCM_RST, 1);
+	if (board_id() < 5)
+		gpio_output(PAD_LCM_RST, 1);
 
 	/* SoC I2S */
 	gpio_set_mode(PAD_I2S0_LRCK, PAD_I2S0_LRCK_FUNC_I2S1_WS);
@@ -116,6 +117,8 @@ static void configure_audio(void)
 	gpio_set_mode(PAD_I2S0_MCK, PAD_I2S0_MCK_FUNC_I2S1_MCK);
 	gpio_set_mode(PAD_I2S0_DATA0, PAD_I2S0_DATA0_FUNC_I2S1_DO_1);
 	gpio_set_mode(PAD_I2S0_DATA1, PAD_I2S0_DATA1_FUNC_I2S2_DI_2);
+	if (board_id() >= 5)
+		gpio_set_mode(PAD_UCTS0, PAD_UCTS0_FUNC_I2S2_DI_1);
 
 	/* codec ext MCLK ON */
 	mt6391_gpio_output(MT6391_KP_COL4, 1);

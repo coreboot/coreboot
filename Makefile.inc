@@ -488,7 +488,7 @@ help_toolchain help::
 	@echo  '  clang           - Build coreboot clang compiler'
 	@echo  '  crossgcc-ARCH   - Build cross-compiler for specific architecture'
 	@echo  '  crosstools-ARCH - Build cross-compiler with GDB for specific architecture'
-	@echo  '  ARCH can be "i386", "x64", "arm", "aarch64", "mips", or "riscv"'
+	@echo  '  ARCH can be "i386", "x64", "arm", "aarch64", "mips", "riscv", or "power8"'
 	@echo  '  Use "make [target] CPUS=#" to build toolchain using multiple cores'
 	@echo
 
@@ -499,9 +499,9 @@ crossgcc: clean-for-update
 	$(MAKE) -C util/crossgcc all_without_gdb SKIP_CLANG=1
 
 .PHONY: crossgcc crossgcc-i386 crossgcc-x64 crossgcc-arm crossgcc-aarch64 \
-	crossgcc-mips crossgcc-riscv crossgcc-clean iasl clang tools \
-	crosstools-i386 crosstools-x64 crosstools-arm crosstools-aarch64 \
-	crosstools-mips crosstools-riscv
+	crossgcc-mips crossgcc-riscv crossgcc-power8 crossgcc-clean iasl \
+	clang tools crosstools-i386 crosstools-x64 crosstools-arm \
+	crosstools-aarch64 crosstools-mips crosstools-riscv crosstools-power8
 
 crossgcc-i386: clean-for-update
 	$(MAKE) -C util/crossgcc build-i386 SKIP_GDB=1
@@ -520,6 +520,9 @@ crossgcc-mips: clean-for-update
 
 crossgcc-riscv: clean-for-update
 	$(MAKE) -C util/crossgcc build-riscv SKIP_GDB=1
+
+crossgcc-power8: clean-for-update
+	$(MAKE) -C util/crossgcc build-power8 SKIP_GDB=1
 
 crosstools: clean-for-update
 	$(MAKE) -C util/crossgcc all_with_gdb SKIP_CLANG=1
@@ -547,6 +550,9 @@ crosstools-mips: clean-for-update
 
 crosstools-riscv: clean-for-update
 	$(MAKE) -C util/crossgcc build-riscv
+
+crosstools-power8: clean-for-update
+	$(MAKE) -C util/crossgcc build-power8
 
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean

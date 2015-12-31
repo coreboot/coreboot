@@ -61,6 +61,9 @@ build-mips:
 build-riscv:
 	@$(MAKE) build_tools BUILD_PLATFORM=riscv-elf
 
+build-power8:
+	@$(MAKE) build_tools BUILD_PLATFORM=powerpc64le-linux-gnu
+
 clean_tempfiles:
 	rm -rf build-*
 	rm -rf binutils-* gcc-* gmp-* libelf-* mpc-* mpfr-*
@@ -77,5 +80,5 @@ distclean: clean
 
 .PHONY: build_gcc build_iasl build_gdb build_clang \
 	all all_with_gdb all_without_gdb build_tools \
-	build-i386 build-x64 build-armv7a build-aarch64 build-mips build-riscv \
+	build-i386 build-x64 build-armv7a build-aarch64 build-mips build-riscv build-power8 \
 	clean distclean clean_tempfiles

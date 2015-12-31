@@ -587,16 +587,17 @@ fi
 printversion
 
 case "$TARGETARCH" in
-	x86_64-elf)	;;
-	x86_64*)	TARGETARCH=x86_64-elf;;
-	i386-elf)	;;
-	i386-mingw32)	;;
-	mipsel-elf)	;;
-	riscv-elf)	;;
-	i386*)		TARGETARCH=i386-elf;;
-	arm*)		TARGETARCH=armv7-a-eabi;;
-	aarch64*)	TARGETARCH=aarch64-elf;;
-	*)		printf "${red}WARNING: Unsupported architecture $TARGETARCH.${NC}\n\n"; ;;
+	x86_64-elf)		;;
+	x86_64*)		TARGETARCH=x86_64-elf;;
+	i386-elf)		;;
+	i386-mingw32)		;;
+	mipsel-elf)		;;
+	riscv-elf)		;;
+	powerpc64le-linux-gnu)	;;
+	i386*)			TARGETARCH=i386-elf;;
+	arm*)			TARGETARCH=armv7-a-eabi;;
+	aarch64*)		TARGETARCH=aarch64-elf;;
+	*)			printf "${red}WARNING: Unsupported architecture $TARGETARCH.${NC}\n\n"; ;;
 esac
 
 # Figure out which packages to build

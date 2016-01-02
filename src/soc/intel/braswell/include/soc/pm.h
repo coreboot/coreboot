@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015-2016 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,6 +234,8 @@ struct chipset_power_state {
 	uint32_t gen_pmcon2;
 	int prev_sleep_state;
 } __attribute__((packed));
+
+struct chipset_power_state *fill_power_state(void);
 
 /* Power Management Utility Functions. */
 uint16_t get_pmbase(void);

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015-2016 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ void set_max_freq(void);
 
 /* romstage_common.c functions */
 void program_base_addresses(void);
-struct chipset_power_state *fill_power_state(void);
 int chipset_prev_sleep_state(struct chipset_power_state *ps);
 
 #endif /* _SOC_ROMSTAGE_H_ */

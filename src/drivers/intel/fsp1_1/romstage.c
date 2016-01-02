@@ -15,8 +15,6 @@
  */
 
 #include <stddef.h>
-#include <stdint.h>
-#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/stages.h>
@@ -28,17 +26,11 @@
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #include <elog.h>
-#include <fsp/util.h>
-#include <memory_info.h>
+#include <fsp/romstage.h>
 #include <reset.h>
 #include <romstage_handoff.h>
 #include <smbios.h>
 #include <soc/intel/common/mrc_cache.h>
-#include <soc/intel/common/util.h>
-#include <soc/pei_wrapper.h>
-#include <soc/pm.h>
-#include <soc/romstage.h>
-#include <soc/spi.h>
 #include <stage_cache.h>
 #include <timestamp.h>
 #include <tpm.h>

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 
 #include <fsp/romstage.h>
 
-struct chipset_power_state;
-struct chipset_power_state *fill_power_state(void);
 void systemagent_early_init(void);
 void pch_early_init(void);
 void pch_uart_init(void);

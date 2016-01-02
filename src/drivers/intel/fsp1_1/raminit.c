@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014-2015 Intel Corporation
+ * Copyright (C) 2014-2016 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,11 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/memmap.h>
+#include <fsp/romstage.h>
 #include <fsp/util.h>
 #include <lib.h> /* hexdump */
 #include <reset.h>
 #include <soc/intel/common/mma.h>
-#include <soc/pei_data.h>
-#include <soc/romstage.h>
 #include <string.h>
 #include <timestamp.h>
 #include <bootmode.h>

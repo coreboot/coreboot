@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,6 +158,8 @@ struct chipset_power_state {
 	uint32_t gblrst_cause[2];
 	uint32_t prev_sleep_state;
 } __attribute__ ((packed));
+
+struct chipset_power_state *fill_power_state(void);
 
 /* PM1_CNT */
 void enable_pm1_control(uint32_t mask);

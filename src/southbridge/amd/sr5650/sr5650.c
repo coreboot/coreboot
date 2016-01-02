@@ -35,13 +35,13 @@ extern void set_pcie_dereset(void);
 extern void set_pcie_reset(void);
 
 struct resource * sr5650_retrieve_cpu_mmio_resource() {
-	device_t cpu;
+	device_t domain;
 	struct resource *res;
 
-	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)
+	for (domain = all_devices; domain; domain = domain->next) {
+		if (domain->bus->dev->path.type != DEVICE_PATH_DOMAIN)
 			continue;
-		res = probe_resource(cpu->bus->dev, 0xc0010058);
+		res = probe_resource(domain->bus->dev, 0xc0010058);
 		if (res)
 			return res;
 	}

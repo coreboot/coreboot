@@ -396,19 +396,12 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 
 func init() {
 	/* BD82X6X LPC */
-	for _, id := range []uint16{
-		0x1c46, 0x1c47, 0x1c49, 0x1c4a,
-		0x1c4b, 0x1c4c, 0x1c4d, 0x1c4e,
-		0x1c4f, 0x1c50, 0x1c52, 0x1c54,
-		0x1c56, 0x1c5c,
-	} {
+	for id := 0x1c40; id <= 0x1c5f; id++ {
 		RegisterPCI(0x8086, id, bd82x6x{variant: "BD82X6X"})
 	}
 
 	/* C216 LPC */
-	for _, id := range []uint16{
-		0x1e55, 0x1e57, 0x1e5d, 0x1e5e, 0x1e5f, 0x1e49,
-	} {
+	for id := 0x1e41; id <= 0x1e5f; id++ {
 		RegisterPCI(0x8086, id, bd82x6x{variant: "C216"})
 	}
 

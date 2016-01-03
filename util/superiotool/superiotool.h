@@ -34,7 +34,11 @@
 #endif
 
 #ifdef PCI_SUPPORT
+# ifdef __NetBSD__
+#include <pciutils/pci.h>
+# else
 #include <pci/pci.h>
+# endif
 #endif
 
 #if defined(__FreeBSD__)

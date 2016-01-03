@@ -43,7 +43,9 @@ LDFLAGS += -L/usr/local/lib
 LIBS = -lz
 endif
 ifeq ($(OS_ARCH), NetBSD)
-LDFLAGS = -l$(shell uname -p)
+CFLAGS += -I/usr/pkg/include
+LDFLAGS += -L/usr/pkg/lib -Wl,-rpath-link,/usr/pkg/lib
+LIBS = -lz -l$(shell uname -p)
 endif
 
 # Support for PCI-attached "Super I/Os" (e.g. in VIA VT82686A/B).
@@ -51,8 +53,11 @@ CONFIG_PCI = yes
 
 ifeq ($(CONFIG_PCI), yes)
 CFLAGS += -DPCI_SUPPORT
-LIBS += -lpci
 OBJS += pci.o via.o amd.o
+LIBS += -lpci
+ifeq ($(OS_ARCH),NetBSD)
+LIBS += -lpciutils
+endif
 endif
 
 all: $(PROGRAM)

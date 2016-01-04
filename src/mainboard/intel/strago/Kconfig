@@ -27,11 +27,6 @@ config DISPLAY_SPD_DATA
 	help
 	  When enabled displays the memory configuration data.
 
-config DISPLAY_SPD_DATA
-	bool "Display Memory Serial Presence Detect Data"
-	default n
-	help
-	  When enabled displays the memory SPD data.
 config DYNAMIC_VNN_SUPPORT
 	bool "Enables support for Dynamic VNN"
 	default n

@@ -43,7 +43,6 @@ ramstage-y += tsc_freq.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c
-
 smm-y += lpc_init.c
 smm-y += pmutil.c
 smm-y += smihandler.c
@@ -58,4 +57,16 @@ CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/braswell
 
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)
 
-endif
+ifneq ($(CONFIG_GOP_SUPPORT),y)
+ifneq ($(CONFIG_VGA_BIOS_FILE),)
+#we will assume that the vbios names will remain as they are now: vgabios.bin and vgabios_c0.bin
+BRASWELL_C0_VBIOS= $(subst .bin,_c0.bin,$(call strip_quotes,$(CONFIG_VGA_BIOS_FILE)))
+
+cbfs-files-$(CONFIG_VGA_BIOS) += pci8086,22b1.rom
+pci8086,22b1.rom-file := $(BRASWELL_C0_VBIOS)
+pci8086,22b1.rom-type := optionrom
+
+endif # ifneq ($(CONFIG_GOP_SUPPORT),y)
+endif # ifneq ($(CONFIG_VGA_BIOS_FILE),)
+
+endif # ifeq ($(CONFIG_SOC_INTEL_BRASWELL),y)

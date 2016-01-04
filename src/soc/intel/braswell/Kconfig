@@ -124,13 +124,13 @@ config ENABLE_BUILTIN_COM1
 	  the debug console.
 
 config HAVE_IFD_BIN
-	def_bool y
+	def_bool n
 
 config BUILD_WITH_FAKE_IFD
 	def_bool !HAVE_IFD_BIN
 
 config HAVE_ME_BIN
-	def_bool y
+	def_bool n
 
 config IED_REGION_SIZE
 	hex

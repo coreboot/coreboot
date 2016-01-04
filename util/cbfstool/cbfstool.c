@@ -224,6 +224,8 @@ static int cbfs_add_master_header(void)
 	struct cbfs_file *header = NULL;
 	struct buffer buffer;
 	int ret = 1;
+	size_t offset;
+	size_t size;
 
 	if (cbfs_image_from_buffer(&image, param.image_region,
 		param.headeroffset)) {
@@ -242,7 +244,6 @@ static int cbfs_add_master_header(void)
 	struct cbfs_header *h = (struct cbfs_header *)buffer.data;
 	h->magic = htonl(CBFS_HEADER_MAGIC);
 	h->version = htonl(CBFS_HEADER_VERSION);
-	h->romsize = htonl(param.image_region->size);
 	/* The 4 bytes are left out for two reasons:
 	 * 1. the cbfs master header pointer resides there
 	 * 2. some cbfs implementations assume that an image that resides
@@ -251,10 +252,17 @@ static int cbfs_add_master_header(void)
 	 */
 	h->bootblocksize = htonl(4);
 	h->align = htonl(CBFS_ENTRY_ALIGNMENT);
-	/* offset relative to romsize above, which covers precisely the CBFS
-	 * region.
+	/* The offset and romsize fields within the master header are absolute
+	 * values within the boot media. As such, romsize needs to relfect
+	 * the end 'offset' for a CBFS. To achieve that the current buffer
+	 * representing the CBFS region's size is added to the offset of
+	 * the region within a larger image.
 	 */
-	h->offset = htonl(0);
+	offset = buffer_get(param.image_region) -
+		buffer_get_original_backing(param.image_region);
+	size = buffer_size(param.image_region);
+	h->romsize = htonl(size + offset);
+	h->offset = htonl(offset);
 	h->architecture = htonl(CBFS_ARCHITECTURE_UNKNOWN);
 
 	header = cbfs_create_file_header(CBFS_COMPONENT_CBFSHEADER,

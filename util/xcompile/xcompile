@@ -343,14 +343,14 @@ test_architecture() {
 	fi
 
 	for clang_arch in $TCLIST invalid; do
-		testcc "clang" "-target ${clang_arch}-$TABI -c" && break
+		testcc "${XGCCPATH}clang" "-target ${clang_arch}-$TABI -c" && break
 	done
 
 	if [ "invalid" != "$clang_arch" ]; then
 		# FIXME: this may break in a clang && !gcc configuration,
 		# but that's more of a clang limitation. Let's be optimistic
 		# that this will change in the future.
-		CLANG="clang -target ${clang_arch}-${TABI} -ccc-gcc-name ${GCC}"
+		CLANG="${XGCCPATH}clang -target ${clang_arch}-${TABI} -ccc-gcc-name ${GCC}"
 	fi
 }
 

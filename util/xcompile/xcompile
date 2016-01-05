@@ -225,7 +225,9 @@ STRIP_${TARCH}:=${GCCPREFIX}strip
 AR_${TARCH}:=${GCCPREFIX}ar
 CROSS_COMPILE_${TARCH}:=${GCCPREFIX}
 
+
 EOF
+#The two blank lines above are intentional separators
 }
 
 # Architecture definitions
@@ -320,7 +322,9 @@ test_architecture() {
 		search="$search $toolchain-linux-gnu-"
 		search="$search $toolchain-"
 	done
-	echo "# $architecture TARCH_SEARCH=$search"
+	echo "###########################################################################"
+	echo "# $architecture"
+	echo "# TARCH_SEARCH=$search"
 
 	# Search toolchain by checking assembler capability.
 	for TBFDARCH in $TBFDARCHS; do

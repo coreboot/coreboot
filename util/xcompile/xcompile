@@ -19,15 +19,15 @@ TMPFILE=""
 XGCCPATH=$1
 
 # libpayload crossgcc path
-if [ -d "`pwd`/../../util/crossgcc/xgcc/bin/" ]
+if [ -d "$(pwd)/../../util/crossgcc/xgcc/bin/" ]
 then
-	XGCCPATH=${XGCCPATH:-"`pwd`/../../util/crossgcc/xgcc/bin/"}
+	XGCCPATH=${XGCCPATH:-"$(pwd)/../../util/crossgcc/xgcc/bin/"}
 fi
 
 # coreboot crossgcc path
-if [ -d "`pwd`/util/crossgcc/xgcc/bin/" ]
+if [ -d "$(pwd)/util/crossgcc/xgcc/bin/" ]
 then
-	XGCCPATH=${XGCCPATH:-"`pwd`/util/crossgcc/xgcc/bin/"}
+	XGCCPATH=${XGCCPATH:-"$(pwd)/util/crossgcc/xgcc/bin/"}
 fi
 
 die() {
@@ -187,9 +187,9 @@ detect_special_flags() {
 
 detect_compiler_runtime() {
 	test -z "$CLANG" || \
-	CC_RT_CLANG="`${CLANG} ${CFLAGS_CLANG} -print-librt-file-name 2>/dev/null`"
+	CC_RT_CLANG="$(${CLANG} ${CFLAGS_CLANG} -print-librt-file-name 2>/dev/null)"
 	test -z "$GCC" || \
-	CC_RT_GCC="`${GCC} ${CFLAGS_GCC} -print-libgcc-file-name`"
+	CC_RT_GCC="$(${GCC} ${CFLAGS_GCC} -print-libgcc-file-name)"
 }
 
 report_arch_toolchain() {

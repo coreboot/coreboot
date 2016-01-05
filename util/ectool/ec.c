@@ -17,8 +17,24 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
+#ifndef __NetBSD__
 #include <sys/io.h>
+#endif
 #include "ec.h"
+
+#ifdef __NetBSD__
+#include <machine/sysarch.h>
+static uint8_t inb(unsigned port)
+{
+	uint8_t data;
+	__asm volatile("inb %w1,%0" : "=a" (data) : "d" (port));
+	return data;
+}
+static __inline void outb(uint8_t data, unsigned port)
+{
+	__asm volatile("outb %0,%w1" : : "a" (data), "d" (port));
+}
+#endif
 
 extern int verbose;
 

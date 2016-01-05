@@ -18,9 +18,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
+#ifndef __NetBSD__
 #include <sys/io.h>
+#endif
 #include <ec.h>
 #include <stdlib.h>
+
+#ifdef __NetBSD__
+#include <machine/sysarch.h>
+#endif
+
 
 #define ECTOOL_VERSION "0.1"
 
@@ -106,7 +113,15 @@ int main(int argc, char *argv[])
 		}
 	}
 
+#ifdef __NetBSD__
+# ifdef __i386__
+	if (i386_iopl(3)) {
+# else
+	if (x86_64_iopl(3)) {
+# endif
+#else
 	if (iopl(3)) {
+#endif
 		printf("You need to be root.\n");
 		exit(1);
 	}

@@ -19,10 +19,14 @@ CFLAGS = -O2 -Wall -W
 PROGRAM = ectool
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
+OS_ARCH = $(shell uname)
 
-OS_ARCH = $(shell uname -o)
-ifeq ($(OS_ARCH), Cygwin)
+ifeq ($(shell uname -o 2>/dev/null), Cygwin)
 LDFLAGS = -lioperm
+endif
+
+ifeq ($(OS_ARCH), NetBSD)
+LDFLAGS = -l$(shell uname -p)
 endif
 
 all: $(PROGRAM)

@@ -74,11 +74,13 @@ HOSTCC?=${HOSTCC}
 EOF
 
 testcc() {
+	local cc="$1"
+	local cflags="$2"
 	local tmp_c="$TMPFILE.c"
 	local tmp_o="$TMPFILE.o"
 	rm -f "$tmp_c" "$tmp_o"
 	echo "void _start(void) {}" >"$tmp_c"
-	$1 -nostdlib -Werror $2 -c "$tmp_c" -o "$tmp_o" >/dev/null 2>&1
+	"$cc" -nostdlib -Werror $cflags -c "$tmp_c" -o "$tmp_o" >/dev/null 2>&1
 }
 
 testld() {
@@ -89,8 +91,8 @@ testld() {
 	local tmp_o="$TMPFILE.o"
 	local tmp_elf="$TMPFILE.elf"
 	rm -f "$tmp_elf"
-	testcc $1 $2 &&
-	$3 -nostdlib -static $4 -o "$tmp_elf" "$tmp_o" >/dev/null 2>&1
+	testcc "$gcc" "$cflags" &&
+	$ld -nostdlib -static $ldflags -o "$tmp_elf" "$tmp_o" >/dev/null 2>&1
 }
 
 testas() {

@@ -178,7 +178,7 @@ detect_special_flags() {
 		testcc "$GCC" "$CFLAGS_GCC -mno-abicalls -fno-pic" && \
 		  CFLAGS_GCC+=" -mno-abicalls -fno-pic"
 
-                # Enforce little endian mode.
+		# Enforce little endian mode.
 		testcc "$GCC" "$CFLAGS_GCC -EL" && \
 		  CFLAGS_GCC+=" -EL"
 		;;

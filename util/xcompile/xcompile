@@ -197,19 +197,32 @@ report_arch_toolchain() {
 # elf${TWIDTH}-${TBFDARCH} toolchain (${GCC})
 ARCH_SUPPORTED+=${TARCH}
 SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
+
+# GCC
+GCC_CC_${TARCH}:=${GCC}
+GCC_CFLAGS_${TARCH}:=${CFLAGS_GCC}
+GCC_COMPILER_RT_${TARCH}:=${CC_RT_GCC}
+GCC_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}
+
+# Clang
+CLANG_CC_${TARCH}:=${CLANG}
+CLANG_CFLAGS_${TARCH}:=${CFLAGS_CLANG}
+CLANG_CFLAGS_${TARCH}+=-no-integrated-as -Qunused-arguments -m${TWIDTH}
+# tone down clang compiler warnings
+CLANG_CFLAGS_${TARCH}+=-Wno-unused-variable -Wno-unused-function -Wno-tautological-compare -Wno-shift-overflow
+CLANG_COMPILER_RT_${TARCH}:=${CC_RT_CLANG}
+CLANG_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_CLANG}
+
 ifeq (\$(CONFIG_COMPILER_GCC)\$(CONFIG_LP_COMPILER_GCC),y)
-CC_${TARCH}:=${GCC}
-CFLAGS_${TARCH}:=${CFLAGS_GCC}
-COMPILER_RT_${TARCH}:=${CC_RT_GCC}
-COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}
+	CC_${TARCH}:=\$(GCC_CC_${TARCH})
+	CFLAGS_${TARCH}:=\$(GCC_CFLAGS_${TARCH})
+	COMPILER_RT_${TARCH}:=\$(GCC_COMPILER_RT_${TARCH})
+	COMPILER_RT_FLAGS_${TARCH}:=\$(GCC_COMPILER_RT_FLAGS_${TARCH})
 else
-CC_${TARCH}:=${CLANG}
-CFLAGS_${TARCH}:=${CFLAGS_CLANG}
-CFLAGS_${TARCH}+=-no-integrated-as -Qunused-arguments -m${TWIDTH}
-# tone down compiler warnings
-CFLAGS_${TARCH}+=-Wno-unused-variable -Wno-unused-function -Wno-tautological-compare -Wno-shift-overflow
-COMPILER_RT_${TARCH}:=${CC_RT_CLANG}
-COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_CLANG}
+	CC_${TARCH}:=\$(CLANG_CC_${TARCH})
+	CFLAGS_${TARCH}:=\$(CLANG_CFLAGS_${TARCH})
+	COMPILER_RT_${TARCH}:=\$(CLANG_COMPILER_RT_${TARCH})
+	COMPILER_RT_FLAGS_${TARCH}:=\$(CLANG_COMPILER_RT_FLAGS_${TARCH})
 endif
 CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}

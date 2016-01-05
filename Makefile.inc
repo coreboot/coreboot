@@ -488,6 +488,7 @@ help_toolchain help::
 	@echo  '  crossgcc-clean  - Remove all built coreboot cross-compilers'
 	@echo  '  iasl            - Build coreboot IASL compiler (built by all cross targets)'
 	@echo  '  clang           - Build coreboot clang compiler'
+	@echo  '  test-toolchain  - Reports if toolchain components are out of date'
 	@echo  '  crossgcc-ARCH   - Build cross-compiler for specific architecture'
 	@echo  '  crosstools-ARCH - Build cross-compiler with GDB for specific architecture'
 	@echo  '  ARCH can be "i386", "x64", "arm", "aarch64", "mips", "riscv", or "power8"'
@@ -560,6 +561,14 @@ crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean
 
 tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(FMAPTOOL) $(RMODTOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL)
+
+test-toolchain:
+ifeq ($(COMPILER_OUT_OF_DATE),1)
+	echo "The coreboot toolchain is not the current version."
+	$(error )
+else
+	echo "The coreboot toolchain is the current version."
+endif # ifeq ($(COMPILER_OUT_OF_DATE),1)
 
 ###########################################################################
 # Common recipes for all stages

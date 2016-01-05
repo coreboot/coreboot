@@ -25,6 +25,10 @@
 #include <unistd.h>
 #include "viatool.h"
 
+#ifdef __NetBSD__
+#include <machine/sysarch.h>
+#endif
+
 /*
  * http://pci-ids.ucw.cz/read/PC/8086
  * http://en.wikipedia.org/wiki/Intel_Tick-Tock
@@ -146,6 +150,14 @@ int main(int argc, char *argv[])
 #if defined(__FreeBSD__)
 	if (open("/dev/io", O_RDWR) < 0) {
 		perror("/dev/io");
+#elif defined(__NetBSD__)
+# ifdef __i386__
+	if (i386_iopl(3)) {
+		perror("iopl");
+# else
+	if (x86_64_iopl(3)) {
+		perror("iopl");
+# endif
 #else
 	if (iopl(3)) {
 		perror("iopl");

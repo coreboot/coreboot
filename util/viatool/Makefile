@@ -40,6 +40,10 @@ CFLAGS += -I/usr/local/include
 LDFLAGS += -L/usr/local/lib
 LIBS = -lz
 endif
+ifeq ($(OS_ARCH), NetBSD)
+CFLAGS += -I/usr/pkg/include
+LDFLAGS += -L/usr/pkg/lib -Wl,-rpath-link,/usr/pkg/lib -lz -lpciutils -lpci -l$(shell uname -p)
+endif
 
 all: pciutils dep $(PROGRAM)
 
@@ -62,7 +66,11 @@ dep:
 define LIBPCI_TEST
 /* Avoid a failing test due to libpci header symbol shadowing breakage */
 #define index shadow_workaround_index
+#ifdef __NetBSD__
+#include <pciutils/pci.h>
+#else
 #include <pci/pci.h>
+#endif
 struct pci_access *pacc;
 int main(int argc, char **argv)
 {

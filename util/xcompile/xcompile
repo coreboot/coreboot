@@ -52,7 +52,7 @@ program_exists() {
 }
 
 
-if [ "$(${XGCCPATH}/iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
+if [ "$("${XGCCPATH}/iasl" 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
 	IASL=${XGCCPATH}iasl
 elif [ "$(iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
 	IASL=iasl
@@ -107,11 +107,11 @@ testas() {
 	rm -f "$obj_file"
 	[ -n "$use_dash_twidth" ] && use_dash_twidth="--$twidth"
 	[ -n "$endian" ] && endian="-$endian"
-	${gccprefix}as $use_dash_twidth $endian -o "$obj_file" $TMPFILE \
+	"${gccprefix}as" $use_dash_twidth $endian -o "$obj_file" "$TMPFILE" \
 		2>/dev/null || return 1
 
 	# Check output content type.
-	local obj_type="$(LANG=C LC_ALL= ${gccprefix}objdump -p $obj_file 2>/dev/null)"
+	local obj_type="$(LANG=C LC_ALL='' "${gccprefix}"objdump -p "$obj_file" 2>/dev/null)"
 	local obj_arch="$(expr "$obj_type" : '.*format \(.[a-z0-9-]*\)')"
 	[ "$obj_arch" = "$full_arch" ] || return 1
 
@@ -329,8 +329,8 @@ test_architecture() {
 	unset TABI TARCH TBFDARCH TCLIST TENDIAN TSUPP TWIDTH
 	unset CC_RT_EXTRA_GCC CC_RT_EXTRA_CLANG
 	unset GCC CLANG
-	if type arch_config_$architecture > /dev/null; then
-		arch_config_$architecture
+	if type "arch_config_$architecture" > /dev/null; then
+		"arch_config_$architecture"
 	else
 		die "no architecture definition for $architecture"
 	fi
@@ -339,7 +339,7 @@ test_architecture() {
 	# environment variable.
 	# Ex: CROSS_COMPILE_arm="armv7a-cros-linux-gnueabi-"
 	#     CROSS_COMPILE_x86="i686-pc-linux-gnu-"
-	search="$(eval echo \$CROSS_COMPILE_$architecture 2>/dev/null)"
+	search="$(eval echo "\$CROSS_COMPILE_$architecture" 2>/dev/null)"
 	search="$search $CROSS_COMPILE"
 	for toolchain in $TCLIST; do
 		search="$search $XGCCPATH$toolchain-$TABI-"
@@ -382,7 +382,7 @@ test_architecture() {
 
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURES; do
-	test_architecture $architecture
+	test_architecture "$architecture"
 	detect_special_flags "$architecture"
 	detect_compiler_runtime "$architecture"
 	report_arch_toolchain

@@ -350,7 +350,8 @@ test_architecture() {
 		# FIXME: this may break in a clang && !gcc configuration,
 		# but that's more of a clang limitation. Let's be optimistic
 		# that this will change in the future.
-		CLANG="${XGCCPATH}clang -target ${clang_arch}-${TABI} -ccc-gcc-name ${GCC}"
+		CLANG="${XGCCPATH}clang"
+		CFLAGS_CLANG="-target ${clang_arch}-${TABI} $CFLAGS_CLANG -ccc-gcc-name ${GCC}"
 	fi
 }
 

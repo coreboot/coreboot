@@ -24,11 +24,36 @@
 #define __DARWIN__
 #include <DirectHW/DirectHW.h>
 #endif
+#ifdef __NetBSD__
+#include <pciutils/pci.h>
+#else
 #include <pci/pci.h>
+#endif
 
 /* This #include is needed for freebsd_{rd,wr}msr. */
 #if defined(__FreeBSD__)
 #include <machine/cpufunc.h>
+#endif
+
+#ifdef __NetBSD__
+static inline uint8_t inb(unsigned port)
+{
+	uint8_t data;
+	__asm volatile("inb %w1,%0" : "=a" (data) : "d" (port));
+	return data;
+}
+static inline uint16_t inw(unsigned port)
+{
+        uint16_t data;
+        __asm volatile("inw %w1,%0": "=a" (data) : "d" (port));
+        return data;
+}
+static inline uint32_t inl(unsigned port)
+{
+	uint32_t data;
+	__asm volatile("inl %w1,%0": "=a" (data) : "d" (port));
+	return data;
+}
 #endif
 
 #define INTELTOOL_VERSION "1.0"

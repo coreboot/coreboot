@@ -385,7 +385,7 @@ void x86_exception(struct eregs *info)
 		signo = exception_to_signal[info->vector];
 	}
 
-	/* reply to the host that an exception has occured */
+	/* reply to the host that an exception has occurred */
 	out_buffer[0] = 'S';
 	out_buffer[1] = hexchars[(signo>>4) & 0xf];
 	out_buffer[2] = hexchars[signo & 0xf];

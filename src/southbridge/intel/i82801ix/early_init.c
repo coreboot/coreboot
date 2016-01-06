@@ -42,7 +42,7 @@ void i82801ix_early_init(void)
 	/* Enable upper 128bytes of CMOS. */
 	RCBA32(0x3400) = (1 << 2);
 
-	/* Initialize power manangement initialization
+	/* Initialize power management initialization
 	   register early as it affects reboot behavior. */
 	/* Bit 20 activates global reset of host and ME on cf9 writes of 0x6
 	   and 0xe (required if ME is disabled but present), bit 31 locks it.

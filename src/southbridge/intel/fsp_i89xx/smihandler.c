@@ -743,7 +743,7 @@ void southbridge_smi_handler(void)
 			if (southbridge_smi[i]) {
 				southbridge_smi[i]();
 			} else {
-				printk(BIOS_DEBUG, "SMI_STS[%d] occured, but no "
+				printk(BIOS_DEBUG, "SMI_STS[%d] occurred, but no "
 						"handler available.\n", i);
 				dump = 1;
 			}

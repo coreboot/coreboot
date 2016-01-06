@@ -193,7 +193,7 @@
 #define RCBA_FD			0x3418 /* Function Disable, see below. */
 #define RCBA_CG			0x341c
 #define RCBA_FDSW		0x3420
-#define RCBA_MAP		0x35f0 /* UHCI cotroller #6 remapping */
+#define RCBA_MAP		0x35f0 /* UHCI controller #6 remapping */
 
 #define BUC_LAND	(1 <<  5) /* LAN */
 #define FD_SAD2		(1 << 25) /* SATA #2 */

@@ -2167,8 +2167,8 @@ static void sdram_program_clock_crossing(void)
 #if CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM
 	static const u32 data_clock_crossing[] = {
 		0x00100401, 0x00000000, /* DDR400 FSB400 */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
 		0x08040120, 0x00000000,	/* DDR400 FSB533 */
 		0x00100401, 0x00000000, /* DDR533 FSB533 */
@@ -2178,51 +2178,51 @@ static void sdram_program_clock_crossing(void)
 		0x10040280, 0x00000040, /* DDR533 FSB667 */
 		0x00100401, 0x00000000, /* DDR667 FSB667 */
 
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 	};
 
 	static const u32 command_clock_crossing[] = {
 		0x04020208, 0x00000000, /* DDR400 FSB400 */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
 		0x00060108, 0x00000000,	/* DDR400 FSB533 */
 		0x04020108, 0x00000000, /* DDR533 FSB533 */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
 		0x00040318, 0x00000000,	/* DDR400 FSB667 */
 		0x04020118, 0x00000000, /* DDR533 FSB667 */
 		0x02010804, 0x00000000, /* DDR667 FSB667 */
 
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 	};
 
 #elif CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC
 	/* i945 G/P */
 	static const u32 data_clock_crossing[] = {
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
 		0x10080201, 0x00000000,	/* DDR400 FSB533 */
 		0x00100401, 0x00000000, /* DDR533 FSB533 */
 		0x00010402, 0x00000000, /* DDR667 FSB533 - fake values */
 
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
 		0x04020108, 0x00000000, /* DDR400 FSB800 */
 		0x00020108, 0x00000000, /* DDR533 FSB800 */
@@ -2234,17 +2234,17 @@ static void sdram_program_clock_crossing(void)
 	};
 
 	static const u32 command_clock_crossing[] = {
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
 		0x00010800, 0x00000402,	/* DDR400 FSB533 */
 		0x01000400, 0x00000200, /* DDR533 FSB533 */
 		0x00020904, 0x00000000, /* DDR667 FSB533 - fake values */
 
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
+		0xffffffff, 0xffffffff, /*  nonexistent  */
 
 		0x02010804, 0x00000000, /* DDR400 FSB800 */
 		0x00010402, 0x00000000, /* DDR533 FSB800 */

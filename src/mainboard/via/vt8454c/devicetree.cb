@@ -45,7 +45,7 @@ chip northbridge/via/cx700
 				end
 			end # superio
 		end # pci 11.0
-		# 1-4 non existant
+		# 1-4 non existent
 		#device pci 11.5 on end # AC97 Audio
 		#device pci 11.6 off end # AC97 Modem
 		#device pci 12.0 on end  # Ethernet

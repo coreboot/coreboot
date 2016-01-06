@@ -275,7 +275,7 @@ static u32 GetScrubAddr_D(u32 Node)
 				/* Scrub Addr High again, detect 32-bit wrap */
 	val = Get_NB32(dev, reg);
 	if(val != hi) {
-		hi = val;	/* Scrub Addr Low again, if wrap occured */
+		hi = val;	/* Scrub Addr Low again, if wrap occurred */
 		lo = Get_NB32(dev, regx);
 	}
 

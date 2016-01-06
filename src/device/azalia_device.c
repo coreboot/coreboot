@@ -78,7 +78,7 @@ static int codec_detect(u8 *base)
 		mdelay(1);
 		reg32 = read32(base + 0x0E);
 	} while ((reg32 != 0) && --count);
-	/* Timeout occured */
+	/* Timeout occurred */
 	if (!count)
 		goto no_codec;
 

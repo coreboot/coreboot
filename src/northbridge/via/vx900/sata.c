@@ -36,7 +36,7 @@ static void vx900_print_sata_errors(u32 flags)
 	printk(BIOS_DEBUG, "\tCOMWAKE %s\n",
 	       (flags & (1 << 16)) ? "detected" : "not detected");
 	printk(BIOS_DEBUG, "\tExchange as determined by COMINIT %s\n",
-	       (flags & (1 << 26)) ? "occured" : "not occured");
+	       (flags & (1 << 26)) ? "occurred" : "not occurred");
 	printk(BIOS_DEBUG, "\tPort selector presence %s\n",
 	       (flags & (1 << 27)) ? "detected" : "not detected");
 	/* Errors */

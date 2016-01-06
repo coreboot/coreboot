@@ -42,7 +42,7 @@
 typedef struct southbridge_intel_i82801gx_config config_t;
 
 /**
- * Set miscellanous static southbridge features.
+ * Set miscellaneous static southbridge features.
  *
  * @param dev PCI device with I/O APIC control registers
  */
@@ -200,7 +200,7 @@ static void i82801gx_power_options(device_t dev)
 	}
 
 	reg8 |= (3 << 4);	/* avoid #S4 assertions */
-	reg8 &= ~(1 << 3);	/* minimum asssertion is 1 to 2 RTCCLK */
+	reg8 &= ~(1 << 3);	/* minimum assertion is 1 to 2 RTCCLK */
 
 	pci_write_config8(dev, GEN_PMCON_3, reg8);
 	printk(BIOS_INFO, "Set power %s after power failure.\n", state);

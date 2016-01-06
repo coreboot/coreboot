@@ -159,7 +159,7 @@ static int imdr_create_empty(struct imdr *imdr, size_t root_size,
 		return -1;
 
 	/*
-	 * root_size needs to be large enough to accomodate root pointer and
+	 * root_size needs to be large enough to accommodate root pointer and
 	 * root book keeping structure. The caller needs to ensure there's
 	 * enough room for tracking individual allocations.
 	 */

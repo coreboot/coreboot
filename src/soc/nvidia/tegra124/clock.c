@@ -389,7 +389,7 @@ clock_display(u32 frequency)
 
 /* Initialize the UART and put it on CLK_M so we can use it during clock_init().
  * Will later move it to PLLP in clock_config(). The divisor must be very small
- * to accomodate 12KHz OSCs, so we override the 16.0 UART divider with the 15.1
+ * to accommodate 12KHz OSCs, so we override the 16.0 UART divider with the 15.1
  * CLK_SOURCE divider to get more precision. (This might still not be enough for
  * some OSCs... if you use 13KHz, be prepared to have a bad time.) The 1900 has
  * been determined through trial and error (must lead to div 13 at 24MHz). */

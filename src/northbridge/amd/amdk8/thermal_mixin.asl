@@ -45,7 +45,7 @@
 OperationRegion(K8TR, PCI_Config, 0xE4, 0x4)
 Field(K8TR, DWordAcc, NoLock, Preserve) {
 	,     1,
-	THTP, 1, /* Temperature sensor trip occured */
+	THTP, 1, /* Temperature sensor trip occurred */
 	CORE, 1, /* Select Core */
 	TTS0, 1, /* Temperature sensor trip on CPU1 (or single core CPU0) */
 	TTS1, 1, /* Temperature sensor trip on CPU0 */

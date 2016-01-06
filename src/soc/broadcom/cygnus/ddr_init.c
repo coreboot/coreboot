@@ -1178,7 +1178,7 @@ static int clear_ddr(uint32_t offset, uint32_t size)
 	}
 	printk(BIOS_INFO, "clear_ddr: Failed: 0x%lx\n", get_timer(start));
 	if(reg32_read((volatile uint32_t *)DDR_BistErrorOccurred))
-		printk(BIOS_ERR, "clear_ddr: Error occured\n");
+		printk(BIOS_ERR, "clear_ddr: Error occurred\n");
 	return(1);
 }
 #endif /* CONFIG_IPROC_DDR_ECC */

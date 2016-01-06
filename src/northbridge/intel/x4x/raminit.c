@@ -38,7 +38,7 @@ static void sdram_read_spds(struct sysinfo *s)
 	int status = 0;
 	FOR_EACH_DIMM(i) {
 		if (s->spd_map[i] == 0) {
-			/* Non-existant SPD address */
+			/* Non-existent SPD address */
 			s->dimms[i].card_type = 0;
 			continue;
 		}

@@ -311,7 +311,7 @@
  * If the payload was built out-of-tree, check that it was compiled as
  * a coreboot payload
  * \n
- * Check the console output to see exactly where the failure occured.
+ * Check the console output to see exactly where the failure occurred.
  */
 #define POST_DIE 				0xff
 

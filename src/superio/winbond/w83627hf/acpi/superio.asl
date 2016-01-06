@@ -17,7 +17,7 @@
  * include this file into a mainboard's DSDT _SB device tree and it will expose the
  * W83627HF SuperIO and its functionality.
  *
- * Devices are marked as nonexistant if they got 0x00000000 as I/O base address
+ * Devices are marked as nonexistent if they got 0x00000000 as I/O base address
  * (compatibility with legacy bios, which disables logical devices that way)
  *
  * It allows the change of IO ports, IRQs and DMA settings on most logical

@@ -91,7 +91,7 @@ call_bootblock:
 	ldr	r0,=0x00000000
 	 /*
 	  * The current design of cpu_info places the struct at the top of the
-	  * stack. Free enough space to accomodate for that, but make sure it's
+	  * stack. Free enough space to accommodate for that, but make sure it's
 	  * 8-byte aligned for ABI compliance.
 	  */
 	sub	sp, sp, #16

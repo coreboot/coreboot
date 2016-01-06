@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,8 +128,9 @@ void romstage_common(struct romstage_params *params)
 			/* Recovery mode does not use MRC cache */
 			printk(BIOS_DEBUG,
 			       "Recovery mode: not using MRC cache.\n");
-		} else if (!mrc_cache_get_current_with_version(&cache,
-							params->fsp_version)) {
+		} else if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)
+			&& (!mrc_cache_get_current_with_version(&cache,
+							params->fsp_version))) {
 			/* MRC cache found */
 			params->pei_data->saved_data_size = cache->size;
 			params->pei_data->saved_data = &cache->data[0];
@@ -150,16 +151,16 @@ void romstage_common(struct romstage_params *params)
 	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/* Save MRC output */
-	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", pei_data->data_to_save,
-	       pei_data->data_to_save_size);
-	if (params->pei_data->boot_mode != SLEEP_STATE_S3) {
-		if (params->pei_data->data_to_save_size != 0 &&
-		    params->pei_data->data_to_save != NULL) {
-			mrc_cache_stash_data_with_version(
-				params->pei_data->data_to_save,
-				params->pei_data->data_to_save_size,
-				params->fsp_version);
-		}
+	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)) {
+		printk(BIOS_DEBUG, "MRC data at %p %d bytes\n",
+			pei_data->data_to_save, pei_data->data_to_save_size);
+		if ((params->pei_data->boot_mode != SLEEP_STATE_S3)
+			&& (params->pei_data->data_to_save_size != 0)
+			&& (params->pei_data->data_to_save != NULL))
+				mrc_cache_stash_data_with_version(
+					params->pei_data->data_to_save,
+					params->pei_data->data_to_save_size,
+					params->fsp_version);
 	}
 
 	/* Save DIMM information */

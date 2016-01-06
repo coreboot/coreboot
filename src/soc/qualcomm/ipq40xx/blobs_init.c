@@ -20,11 +20,18 @@
 #include <console/console.h>
 #include <string.h>
 #include <timer.h>
+#include <timestamp.h>
+#include <program_loading.h>
 
 #include <soc/iomap.h>
 #include <soc/soc_services.h>
 
 #include "mbn_header.h"
+
+struct cdt_info {
+	uint32_t	size;		/* size of the whole table */
+	uint8_t		*cdt_ptr;	/* pointer to CDT */
+};
 
 static void *load_ipq_blob(const char *file_name)
 {
@@ -43,6 +50,7 @@ static void *load_ipq_blob(const char *file_name)
 		return NULL;
 
 	blob_dest = (void *) blob_mbn->mbn_destination;
+
 	if (blob_mbn->mbn_destination) {
 		/* Copy the blob to the appropriate memory location. */
 		memcpy(blob_dest, blob_mbn + 1, blob_mbn->mbn_total_size);
@@ -50,25 +58,41 @@ static void *load_ipq_blob(const char *file_name)
 		return blob_dest;
 	}
 
-	/*
-	 * The blob did not have to be relocated, return its address in CBFS
-	 * cache.
-	 */
-	return blob_mbn + 1;
+	return blob_mbn;
 }
 
 #ifdef __PRE_RAM__
 
-#define DDR_VERSION() ((const char *)0x2a03f600)
+#define DDR_VERSION() ((const char *)"private build")
 #define MAX_DDR_VERSION_SIZE 48
+
+typedef struct {
+	uint64_t	entry_point; /* Write only for Core Boot */
+	uint32_t	elf_class;
+} sys_debug_qsee_info_type_t;
+
+typedef struct {
+	sys_debug_qsee_info_type_t	*qsee_info;
+	uint64_t			sdi_entry; /* Read only for Core Boot */
+} sbl_rw_ret_info_t;
+
+sbl_rw_ret_info_t *sbl_rw_ret_info;
 
 int initialize_dram(void)
 {
-	void *cdt;
-	int (*ddr_init_function)(void *cdt_header);
+	struct mbn_header *cdt;
+	struct cdt_info cdt_header;
+	uint32_t sw_entry;
+	/*
+	 * FIXME: Hard coding the address. Have to somehow get it
+	 * automatically
+	 */
+	void *tzbsp = (uint8_t *)0x87e80000;
 
-	cdt = load_ipq_blob("cdt.mbn");
-	ddr_init_function = load_ipq_blob("ddr.mbn");
+	sbl_rw_ret_info_t (*(*ddr_init_function)(struct cdt_info *cdt_header));
+
+	cdt = load_ipq_blob(CONFIG_CDT_MBN);
+	ddr_init_function = load_ipq_blob(CONFIG_DDR_MBN);
 
 	if (!cdt || !ddr_init_function) {
 		printk(BIOS_ERR, "cdt: %p, ddr_init_function: %p\n",
@@ -76,7 +100,11 @@ int initialize_dram(void)
 		die("could not find DDR initialization blobs\n");
 	}
 
-	if (ddr_init_function(cdt) < 0)
+	cdt_header.size = cdt->mbn_total_size;
+	cdt_header.cdt_ptr = (uint8_t *)(cdt + 1);
+
+	sbl_rw_ret_info = ddr_init_function(&cdt_header);
+	if (sbl_rw_ret_info == NULL)
 		die("Fail to Initialize DDR\n");
 
 	/*
@@ -86,14 +114,19 @@ int initialize_dram(void)
 	printk(BIOS_INFO, "DDR version %.*s initialized\n",
 	       MAX_DDR_VERSION_SIZE, DDR_VERSION());
 
+	printk(BIOS_INFO, "SDI Entry: 0x%llx\n", sbl_rw_ret_info->sdi_entry);
+	sw_entry = read32(TCSR_RESET_DEBUG_SW_ENTRY) & 0x1;
+	sw_entry |= (sbl_rw_ret_info->sdi_entry & ~0x1);
+	write32(TCSR_RESET_DEBUG_SW_ENTRY, sw_entry);
+	sbl_rw_ret_info->qsee_info->entry_point = (uint32_t)tzbsp;
+
 	return 0;
 }
 
 #else  /* __PRE_RAM__ */
-
 void start_tzbsp(void)
 {
-	void *tzbsp = load_ipq_blob("tz.mbn");
+	void *tzbsp = load_ipq_blob(CONFIG_TZ_MBN);
 
 	if (!tzbsp)
 		die("could not find or map TZBSP\n");
@@ -101,55 +134,6 @@ void start_tzbsp(void)
 	printk(BIOS_INFO, "Starting TZBSP\n");
 
 	tz_init_wrapper(0, 0, tzbsp);
-}
 
-/* RPM version is encoded in a 32 bit word at the fixed address */
-#define RPM_VERSION() (*((u32 *)(0x00108008)))
-void start_rpm(void)
-{
-	u32 load_addr;
-	u32 ready_mask = 1 << 10;
-	u32 rpm_version;
-
-	struct stopwatch sw;
-
-	if (read32(RPM_SIGNAL_COOKIE) == RPM_FW_MAGIC_NUM) {
-		printk(BIOS_INFO, "RPM appears to have already started\n");
-		return;
-	}
-
-	load_addr = (u32) load_ipq_blob("rpm.mbn");
-	if (!load_addr)
-		die("could not find or map RPM code\n");
-
-	printk(BIOS_INFO, "Starting RPM\n");
-
-	/* Clear 'ready' indication. */
-	/*
-	 * RPM_INT_ACK is clear-on-write type register,
-	 * read-modify-write is not recommended.
-	 */
-	write32(RPM_INT_ACK, ready_mask);
-
-	/* Set RPM entry address */
-	write32(RPM_SIGNAL_ENTRY, load_addr);
-	/* Set cookie */
-	write32(RPM_SIGNAL_COOKIE, RPM_FW_MAGIC_NUM);
-
-	/* Wait for RPM start indication, up to 100ms. */
-	stopwatch_init_usecs_expire(&sw, 100000);
-	while (!(read32(RPM_INT) & ready_mask))
-		if (stopwatch_expired(&sw))
-			die("RPM Initialization failed\n");
-
-	/* Acknowledge RPM initialization */
-	write32(RPM_INT_ACK, ready_mask);
-
-	/* Report RPM version, it is encoded in a 32 bit value. */
-	rpm_version = RPM_VERSION();
-	printk(BIOS_INFO, "Started RPM version %d.%d.%d\n",
-	       rpm_version >> 24,
-	       (rpm_version >> 16) & 0xff,
-	       rpm_version & 0xffff);
 }
 #endif  /* !__PRE_RAM__ */

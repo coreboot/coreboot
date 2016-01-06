@@ -130,6 +130,9 @@ enum {
 #define BLSP1_QUP2_BASE		((void *)0x078B7000)
 #define BLSP1_QUP3_BASE		((void *)0x078B8000)
 
+#define TCSR_BOOT_MISC_DETECT		((void *)0x0193D100)
+#define TCSR_RESET_DEBUG_SW_ENTRY	((void *)0x01940000)
+
 static inline void *blsp_qup_base(blsp_qup_id_t id)
 {
 	switch (id) {

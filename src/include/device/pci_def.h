@@ -78,13 +78,6 @@
 #define  PCI_BASE_ADDRESS_IO_ATTR_MASK	0x03
 /* bit 1 is reserved if address_space = 1 */
 
-#ifndef __ROMCC__
-static inline int pci_base_address_is_memory_space(unsigned int attr)
-{
-	return (attr & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_MEMORY;
-}
-#endif
-
 /* Header type 0 (normal devices) */
 #define PCI_CARDBUS_CIS		0x28
 #define PCI_SUBSYSTEM_VENDOR_ID	0x2c

@@ -119,6 +119,13 @@ unsigned pci_find_capability(device_t dev, unsigned cap);
 void pci_early_bridge_init(void);
 int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base);
 
+#ifndef __ROMCC__
+static inline int pci_base_address_is_memory_space(unsigned int attr)
+{
+	return (attr & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_MEMORY;
+}
+#endif
+
 #endif /* CONFIG_PCI */
 
 #endif /* PCI_H */

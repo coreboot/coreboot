@@ -20,7 +20,8 @@
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <delay.h>
-#include <northbridge/intel/x4x/x4x.h>
+#include "iomap.h"
+#include "x4x.h"
 
 static inline void barrier(void)
 {

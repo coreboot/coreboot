@@ -18,9 +18,6 @@
 #ifndef __NORTHBRIDGE_INTEL_X4X_H__
 #define __NORTHBRIDGE_INTEL_X4X_H__
 
-#include <northbridge/intel/x4x/iomap.h>
-#include <southbridge/intel/i82801gx/i82801gx.h>
-
 /*
  * D0:F0
  */
@@ -307,6 +304,7 @@ enum ddr2_signals {
         DQ8
 };
 
+#ifndef __BOOTBLOCK__
 void x4x_early_init(void);
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
@@ -316,5 +314,5 @@ void raminit_ddr2(struct sysinfo *);
 
 struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(device_t device, unsigned long start, struct acpi_rsdp *rsdp);
-
+#endif
 #endif /* __NORTHBRIDGE_INTEL_X4X_H__ */

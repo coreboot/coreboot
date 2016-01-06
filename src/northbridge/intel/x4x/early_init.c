@@ -16,6 +16,8 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include "iomap.h"
+#include <southbridge/intel/i82801gx/i82801gx.h> /* DEFAULT_PMBASE */
 #include "x4x.h"
 
 void x4x_early_init(void)

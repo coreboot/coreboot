@@ -15,10 +15,8 @@
  */
 
 #include <arch/io.h>
-
-#define D0F0_PCIEXBAR_LO 0x60
-#define TPMBASE 0xfed40000
-#define TPM32(x) *((volatile u32 *)(TPMBASE + x))
+#include "iomap.h"
+#include "x4x.h"
 
 static void bootblock_northbridge_init(void)
 {

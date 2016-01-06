@@ -22,7 +22,9 @@
 #include <delay.h>
 #include <halt.h>
 #include <lib.h>
-#include <northbridge/intel/x4x/x4x.h>
+#include "iomap.h"
+#include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */
+#include "x4x.h"
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>

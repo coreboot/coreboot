@@ -25,4 +25,7 @@
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 #define DEFAULT_HECIBAR		0xfed10000
 
+#define TPMBASE 0xfed40000
+#define TPM32(x) *((volatile u32 *)(TPMBASE + x))
+
 #endif /* X4X_IOMAP_H */

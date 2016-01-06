@@ -114,6 +114,9 @@ please_install()
 	esac
 
 	printf "${RED}ERROR:${red} Missing tool: Please install \'$1\' utility. (eg $solution)${NC}\n" >&2
+	if [ -n "$2" ]; then
+		printf "${RED}ERROR:${red}               or install \'$2\' utility. (eg $solution)${NC}\n" >&2
+	fi
 }
 
 searchtool()
@@ -121,6 +124,7 @@ searchtool()
 	# $1 short name
 	# $2 search string
 	# $3 soft fail if set
+	# $4 alternative package to install on failure
 	# result: file name of that tool on stdout
 	#         or no output if nothing suitable was found
 	search=GNU
@@ -166,8 +170,8 @@ searchtool()
 			fi
 		fi
 	fi
-	please_install $1
-	[ -z "$3" ] && exit 1
+
+	[ -z "$3" ] && please_install $1 $4 && exit 1
 	false
 }
 
@@ -643,7 +647,7 @@ searchtool bison > /dev/null
 searchtool flex flex > /dev/null
 searchtool g++ "Free Software Foundation" nofail > /dev/null || \
 searchtool clang "clang version" nofail > /dev/null || \
-searchtool clang "LLVM"  > /dev/null
+searchtool clang "LLVM" "" "g++" > /dev/null
 searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
 

@@ -123,7 +123,7 @@ void write_tables(void)
 		if (new_high_table_pointer > ( high_table_pointer + MAX_ACPI_SIZE)) {
 			printk(BIOS_ERR, "ERROR: Increase ACPI size\n");
 		}
-                printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n",
+		printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 
 		/* Now we need to create a low table copy of the RSDP. */
@@ -170,7 +170,7 @@ void write_tables(void)
 		if (new_high_table_pointer > ( high_table_pointer + MAX_SMBIOS_SIZE)) {
 			printk(BIOS_ERR, "ERROR: Increase SMBIOS size\n");
 		}
-                printk(BIOS_DEBUG, "SMBIOS tables: %ld bytes.\n",
+		printk(BIOS_DEBUG, "SMBIOS tables: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 	} else {
 		unsigned long new_rom_table_end = smbios_write_tables(rom_table_end);
@@ -204,7 +204,7 @@ void write_tables(void)
 				   __func__, new_high_table_pointer -
 				   high_table_pointer);
 
-                printk(BIOS_DEBUG, "coreboot table: %ld bytes.\n",
+			printk(BIOS_DEBUG, "coreboot table: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 	} else {
 		/* The coreboot table must be in 0-4K or 960K-1M */

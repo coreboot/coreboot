@@ -106,14 +106,14 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 		/* Save the parameters I was passed */
 #ifdef __x86_64__
 		"	pushl	$0\n\t"    /* 20 adjust */
-	        "	pushl	%%eax\n\t" /* 16 lb_start */
+		"	pushl	%%eax\n\t" /* 16 lb_start */
 		"	pushl	%%ebx\n\t" /* 12 buffer */
 		"	pushl	%%ecx\n\t" /*  8 lb_size */
 		"	pushl	%%edx\n\t" /*  4 entry */
 		"	pushl	%%esi\n\t" /*  0 elf_boot_notes */
 #else
 		"	pushl	$0\n\t" /* 20 adjust */
-	        "	pushl	%0\n\t" /* 16 lb_start */
+		"	pushl	%0\n\t" /* 16 lb_start */
 		"	pushl	%1\n\t" /* 12 buffer */
 		"	pushl	%2\n\t" /*  8 lb_size */
 		"	pushl	%3\n\t" /*  4 entry */

@@ -653,7 +653,7 @@ void acpigen_write_resourcetemplate_footer(void)
 	acpigen_emit_byte(0x79);
 	acpigen_emit_byte(0x00);
 
-     	len = gencurrent - p;
+	len = gencurrent - p;
 
 	/* patch len word */
 	p[0] = len & 0xff;

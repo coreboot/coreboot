@@ -286,6 +286,8 @@ MemPGetMaxFreqSupported (
       IDS_HDT_CONSOLE (MEM_FLOW, "\n");
     }
     ASSERT (DDR3Voltage <= VOLT1_25_ENCODED_VAL);
+    if (DDR3Voltage > VOLT1_25_ENCODED_VAL)
+      DDR3Voltage = VOLT1_5_ENCODED_VAL; // if unknown, fall back to 1.5v
     MaxFreqSupported = SpeedArray[DDR3Voltage];
   }
 

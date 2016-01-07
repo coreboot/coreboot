@@ -92,6 +92,7 @@ CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
 UNAME=$(uname | grep -iq cygwin && echo Cygwin || uname)
+HALT_FOR_TOOLS=0
 
 normalize_dirs()
 {
@@ -106,6 +107,7 @@ normalize_dirs()
 
 please_install()
 {
+	HALT_FOR_TOOLS=1
 	test -r /etc/os-release && . /etc/os-release
 	case "$ID_LIKE" in
 	debian) solution="sudo apt-get install $1" ;;
@@ -171,7 +173,7 @@ searchtool()
 		fi
 	fi
 
-	[ -z "$3" ] && please_install $1 $4 && exit 1
+	[ -z "$3" ] && please_install $1 $4
 	false
 }
 
@@ -650,6 +652,10 @@ searchtool clang "clang version" nofail > /dev/null || \
 searchtool clang "LLVM" "" "g++" > /dev/null
 searchtool wget > /dev/null
 searchtool bzip2 "bzip2," > /dev/null
+
+if [ "$HALT_FOR_TOOLS" -ne 0 ]; then
+	exit 1
+fi
 
 # This initial cleanup is useful when updating the toolchain script.
 

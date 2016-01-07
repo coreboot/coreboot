@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Galileo Gen 2</title>
+  </head>
+  <body>
+
+<h1>Intel&reg; Galileo Gen 2 Development Board</h1>
+<table>
+  <tr>
+    <td><a target="_blank" href="http://www.mouser.com/images/microsites/Intel_Galileo2_lrg.jpg"><img alt="Galileo Gen 2" src="http://www.mouser.com/images/microsites/Intel_Galileo2_lrg.jpg" width=500></a></td>
+    <td>
+<table>
+  <tr bgcolor="#ffc0c0">
+    <td>
+Warning: Use of the Intel&reg; Galileo Gen 2 mainboard code requires modification of the
+util/xcompile/xcompile file to change the machine architecture from i686 to i586 because
+the Quark&trade; processor does not support the instructions introduced with the
+Pentium&trade; 6 architecture.
+<ol>
+  <li>Edit the file util/xcompile/xcompile</li>
+  <li>Search for
+<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=util/xcompile/xcompile;hb=HEAD#l185">-march</a></li>
+  <li>Replace i686 with i586</li>
+  <li>Save the result</li>
+</ol>
+Without this change the Quark&trade; processor will halt when it executes one of the
+instructions introduced with the Pentium&trade; 6 architecture.
+    </td>
+  </tr>
+</table>
+<p>
+  The Intel&reg; Galileo Gen 2 mainboard code was developed along with the Intel&reg;
+  <a target="_blank" href="../SoC/quark.html">Quark&trade;</a> SoC:
+</p>
+<ul>
+  <li><a target="_blank" href="../x86Development.html">Overall</a> development</li>
+  <li><a target="_blank" href="../SoC/soc.html">SoC</a> support</li>
+  <li><a target="_blank" href="../fsp1_1.html">FSP 1.1</a> integration</li>
+  <li><a target="_blank" href="board.html">Board</a> support</li>
+</ul>
+    </td>
+  </tr>
+</table>
+
+
+
+<hr>
+<h1>Galileo Gen 2 Board Documentation</h1>
+<ul>
+  <li><a target="_blank" href="http://files.linuxgizmos.com/intel_galileo_gen2_blockdiagram.jpg">Block Diagram</a></li>
+  <li><a target="_blank" href="https://software.intel.com/en-us/iot/library/galileo-getting-started">Getting Started</a></li>
+  <li><a target="_blank" href="http://www.intel.com/content/www/us/en/embedded/products/galileo/galileo-overview.html">Overview</a></li>
+  <li><a target="_blank" href="http://files.linuxgizmos.com/intel_galileo_gen2_ports.jpg">Port Diagram</a></li>
+  <li><a target="_blank" href="http://download.intel.com/support/galileo/sb/intelgalileogen2prodbrief_330736_003.pdf">Product Brief</a></li>
+  <li><a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/guides/galileo-g2-schematic.pdf">Schematic</a></li>
+  <li><a target="_blank" href="http://download.intel.com/support/galileo/sb/galileo_boarduserguide_330237_001.pdf">User Guide</a></li>
+  <li>Components
+    <ul>
+      <li>A/D: Texas Instruments <a target="_blank" href="http://www.ti.com/lit/ds/symlink/adc108s102.pdf">ADC108S102</a></li>
+      <li>Analog Switch: Texas Instruments <a target="_blank" href="http://www.ti.com/lit/ds/symlink/ts5a23159.pdf">TS5A23159</a></li>
+      <li>Ethernet (10/100 MB/S): Texas Instruments <a target="_blank" href="http://www.ti.com/lit/ds/symlink/dp83848-ep.pdf">DP83848</a></li>
+      <li>Load Switch: Texas Instruments <a target="_blank" href="http://www.ti.com/lit/ds/symlink/tps22920.pdf">TPS22920x</a></li>
+      <li>Memory (256 MiB): Micron <a target="_blank" href="https://www.micron.com/~/media/Documents/Products/Data%20Sheet/DRAM/DDR3/1Gb_1_35V_DDR3L.pdf">MT41K128M8</a></li>
+      <li>SoC: Intel&reg; Quark&trade; <a target="_blank" href="../SoC/quark.html">X-1000</a></li>
+      <li>Serial EEPROM (1 KiB): ON Semiconductor&reg; <a target="_blank" href="http://www.onsemi.com/pub_link/Collateral/CAT24C01-D.PDF">CAT24C08</a></li>
+      <li>SPI Flash (8 MiB): Winbond&trade; <a target="_blank" href="http://www.winbond-usa.com/resource-files/w25q64fv_revl1_100713.pdf">W25Q64FV</a></li>
+      <li>Step Down Converter: Texas Instruments <a target="_blank" href="http://www.ti.com/lit/ds/slvsag7c/slvsag7c.pdf">TPS62130</a></li>
+      <li>Step Down Converter: Texas Instruments <a target="_blank" href="http://www.ti.com/lit/ug/slvu570/slvu570.pdf">TPS652510</a></li>
+      <li>Termination Regulator: Texas Instruments <a target="_blank" href="http://www.ti.com/lit/ds/symlink/tps51200.pdf">TPS51200</a></li>
+    </ul>
+  </li>
+</ul>
+
+
+
+<hr>
+<h1>Debug Tools</h1>
+<ul>
+  <li>Flash Programmer:
+    <ul>
+      <li>Dediprog <a target="_blank" href="http://www.dediprog.com/pd/spi-flash-solution/SF100">SF100</a> ISP IC Programmer</li>
+    </ul>
+  </li>
+  <li>JTAG Connector: <a target="_blank" href="https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=Olimex+ARM-JTAG-20-10">Olimex ARM-JTAG-20-10</a></li>
+  <li>JTAG Debugger:
+    <ul>
+      <li>Olimex LTD <a target="_blank" href="https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=Olimex+ARM-USB-OCD-H">ARM-USB-OCD-H</a></li>
+      <li>Tincan Tools <a target="_blank" href="https://www.tincantools.com/wiki/Flyswatter2">Flyswatter2</a></li>
+    </ul>
+  </li>
+  <li><a target="_blank" href="http://download.intel.com/support/processors/quark/sb/sourcedebugusingopenocd_quark_appnote_330015_003.pdf">Hardware Setup and Software Installation</a></li>
+  <li>USB Serial cable: FTDI <a target="_blank" href="https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=FTDI+TTL-232R-3V3">TTL-232R-3V3</a></li>
+</ul>
+
+
+<hr>
+<p>Modified: 30 January 2016</p>
+  </body>
+</html>

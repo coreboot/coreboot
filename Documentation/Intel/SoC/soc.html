@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SoC</title>
+  </head>
+  <body>
+
+<h1>x86 System on a Chip (SoC) Development</h1>
+<p>
+  SoC development is best done in parallel with development for a specific
+  board.  The combined steps are listed
+  <a target="_blank" href="../x86Development.html">here</a>.
+  The development steps for the SoC are listed below:
+</p>
+<ol>
+  <li><a target="_blank" href="../fsp1_1.html#RequiredFiles">FSP 1.1</a> required files</li>
+  <li>SoC <a href="#RequiredFiles">Required Files</a></li>
+  <li><a href="#Descriptor">Start Booting</a></li>
+  <li><a href="#EarlyDebug">Early Debug</a></li>
+</ol>
+
+
+<hr>
+<h1><a name="RequiredFiles">Required Files</a></h1>
+<p>
+  Create the directory as src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;.
+</p>
+
+<p>
+  The following files are required to build a new SoC:
+</p>
+<ul>
+  <li>Include files
+    <ul>
+      <li>include/soc/pei_data.h</li>
+      <li>include/soc/pm.h</li>
+    </ul>
+  </li>
+  <li>Kconfig - Defines the Kconfig value for the SoC and selects the tool
+    chains for the various stages:
+    <ul>
+      <li>select ARCH_BOOTBLOCK_&lt;Tool Chain&gt;</li>
+      <li>select ARCH_RAMSTAGE_&lt;Tool Chain&gt;</li>
+      <li>select ARCH_ROMSTAGE_&lt;Tool Chain&gt;</li>
+      <li>select ARCH_VERSTAGE_&lt;Tool Chain&gt;</li>
+    </ul>
+  </li>
+  <li>Makefile.inc - Specify the include paths</li>
+  <li>memmap.c - Top of usable RAM</li>
+</ul>
+
+
+<hr>
+<h1><a name="Descriptor">Start Booting</a></h1>
+<p>
+  Some SoC parts require additional firmware components in the flash.
+  This section describes how to add those pieces.
+</p>
+
+<h2>Intel Firmware Descriptor</h2>
+<p>
+  The Intel Firmware Descriptor (IFD) is located at the base of the flash part.
+  The following command overwrites the base of the flash image with the Intel
+  Firmware Descriptor:
+</p>
+<pre><code>dd if=descriptor.bin of=build/coreboot.rom conv=notrunc >/dev/null 2>&1</code></pre>
+
+
+<h2><a name="MEB">Management Engine Binary</a></h2>
+<p>
+  Some SoC parts contain and require that the Management Engine (ME) be running
+  before it is possible to bring the x86 processor out of reset.  A binary file
+  containing the management engine code must be added to the firmware using the
+  ifdtool.  The following commands add this binary blob:
+</p>
+<pre><code>util/ifdtool/ifdtool -i ME:me.bin  build/coreboot.rom
+mv build/coreboot.rom.new build/coreboot.rom
+</code></pre>
+
+
+<h2><a name="EarlyDebug">Early Debug</a></h2>
+<p>
+  Early debugging between the reset vector and the time the serial port is enabled
+  is most easily done by writing values to port 0x80.
+</p>
+
+
+<h2>Success</h2>
+<p>
+  When the reset vector is successfully invoked, port 0x80 will output the following value:
+</p>
+<ul>
+  <li>0x01: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l45">POST_RESET_VECTOR_CORRECT</a>
+    - Bootblock successfully executed the
+    <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc;hb=HEAD#l4">reset vector</a>
+    and entered the 16-bit code at
+    <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;hb=HEAD#l35">_start</a>
+  </li>
+</ul>
+
+
+<hr>
+<p>Modified: 31 January 2016</p>
+  </body>
+</html>

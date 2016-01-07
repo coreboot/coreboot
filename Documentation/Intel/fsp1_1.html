@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FSP 1.1</title>
+  </head>
+  <body>
+
+<h1>x86 FSP 1.1 Development</h1>
+<p>
+  Firmware Support Package (FSP) development requires System-on-a-Chip (SoC)
+  and board support.  The combined steps are listed
+  <a target="_blank" href="x86Development.html">here</a>.
+  The development steps for FSP are listed below:
+</p>
+<ol>
+  <li><a href="#RequiredFiles">Required Files</a></li>
+</ol>
+
+<p>
+  FSP Documentation:
+</p>
+<ul>
+  <li>Intel&reg; Firmware Support Package External Architecture Specification <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v1-1.pdf">V1.1</a></li>
+</ul>
+
+<hr>
+<h1><a name="RequiredFiles">Required Files</a></h1>
+<h2><a name="CorebootRequiredFiles">Coreboot Required Files</a></h2>
+<ol>
+  <li>Create the following directories if they do not already exist:
+    <ul>
+      <li>src/vendorcode/intel/fsp/fsp1_1/&lt;Chip Family&gt;</li>
+      <li>3rdparty/blobs/mainboard/&lt;Board Vendor&gt;/&lt;Board Name&gt;</li>
+    </ul>
+  </li>
+  <li>
+    The following files may need to be copied from the FSP build or release into the
+    directories above if they are not present or are out of date:
+    <ul>
+      <li>FspUpdVpd.h: src/vendorcode/intel/fsp/fsp1_1/&lt;Chip Family&gt;/FspUpdVpd.h</li>
+      <li>FSP.bin: 3rdparty/blobs/mainboard/&lt;Board Vendor&gt;/&lt;Board Name&gt;/fsp.bin</li>
+    </ul>
+  </li>
+</ol>
+
+
+<hr>
+<p>Modified: 31 January 2016</p>
+  </body>
+</html>

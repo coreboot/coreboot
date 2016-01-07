@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Board</title>
+  </head>
+  <body>
+
+<h1>x86 Board Development</h1>
+<p>
+  Board development requires System-on-a-Chip (SoC) support.
+  The combined steps are listed
+  <a target="_blank" href="../x86Development.html">here</a>.
+  The development steps for the board are listed below:
+</p>
+<ol>
+  <li><a href="#RequiredFiles">Required Files</a></li>
+</ol>
+
+
+<hr>
+<h1><a name="RequiredFiles">Required Files</a></h1>
+<p>
+  Create the board directory as src/mainboard/&lt;Vendor&gt;/&lt;Board&gt;.
+</p>
+
+<p>
+  The following files are required to build a new board:
+</p>
+<ol>
+  <li>Kconfig.name - Defines the Kconfig value for the board</li>
+  <li>Kconfig
+    <ol type="A">
+      <li>Selects the SoC for the board and specifies the SPI flash size
+        <ol type="I">
+          <li>BOARD_ROMSIZE_KB_&lt;Size&gt;</li>
+          <li>SOC_&lt;Vendor&gt;_&lt;Chip Family&gt;</li>
+        </ol>
+      </li>
+      <li>Declare the Kconfig values for:
+        <ol type="I">
+          <li>MAINBOARD_DIR</li>
+          <li>MAINBOARD_PART_NUMBER</li>
+          <li>MAINBOARD_VENDOR</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li>devicetree.cb - Enable root bridge and serial port
+    <ol type="A">
+      <li>The first line must be "chip soc/Intel/&lt;soc family&gt;";
+        this path is used by the generated static.c to include the chip.h
+        header file
+      </li>
+    </ol>
+  </li>
+  <li>romstage.c
+    <ol type="A">
+      <li>Add routine mainboard_romstage_entry which calls romstage_common</li>
+    </ol>
+  </li>
+  <li>Configure coreboot build:
+    <ol type="A">
+      <li>Set LOCALVERSION</li>
+      <li>FLASHMAP_OFFSET = 0x00700000</li>
+      <li>Select vendor for the board</li>
+      <li>Select the board</li>
+      <li>CBFS_SIZE = 0x00100000</li>
+      <li>Set the CPU_MICROCODE_CBFS_LEN</li>
+      <li>Set the CPU_MICROCODE_CBFS_LOC</li>
+      <li>Set the FSP_IMAGE_ID_STRING</li>
+      <li>Set the FSP_LOC</li>
+      <li>Disable GOP_SUPPORT</li>
+      <li>No payload</li>
+      <li>Choose the default value for all other options</li>
+    </ol>
+  </li>
+</ol>
+
+
+<hr>
+<p>Modified: 31 January 2016</p>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Development</title>
+  </head>
+  <body>
+
+<h1>Intel&reg; x86 Coreboot/FSP Development Process</h1>
+<p>
+  The x86 development process for coreboot is broken into the following components:
+</p>
+<ul>
+  <li>Coreboot <a target="_blank" href="SoC/soc.html">SoC</a> development</li>
+  <li>Coreboot <a target="_blank" href="Board/board.html">mainboard</a> development</li>
+  <li><a target="_blank" href="fsp1_1.html">FSP 1.1</a> integration</li>
+</ul>
+<p>
+  The development process has two main phases:
+</p>
+<ol>
+  <li>Minimal coreboot; This phase is single threaded</li>
+  <li>Adding coreboot features</li>
+</ol>
+
+<h2>Minimal Coreboot</h2>
+<p>
+  The combined steps below describe how to bring up a minimal coreboot for a
+  system-on-a-chip (SoC) and a development board:
+</p>
+<table>
+  <tr bgcolor="#ffffc0">
+    <td>The initial coreboot steps are single threaded!
+      The initial minimal FSP development is also single threaded.
+      Progress can speed up by adding more developers after the minimal coreboot/FSP
+      implementation reaches the payload.
+    </td>
+  </tr>
+</table>
+<ol>
+  <li>Get the necessary tools:
+    <ul>
+      <li>Linux: Use your package manager to install m4 bison flex and the libcurses development
+        package.
+        <ul>
+          <li>Ubuntu or other Linux distribution that use apt, run:
+<pre><code>sudo apt-get install m4 bison flex libncurses5-dev
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Build the cross tools for i386:
+    <ul>
+      <li>Linux:
+<pre><code>make crossgcc-i386</code></pre>
+        To use multiple processors for the toolchain build (which takes a long time), use:
+<pre><code>make crossgcc-i386 CPUS=N</code></pre>
+        where N is the number of cores to use for the build.
+      </li>
+    </ul>
+  </li>
+  <li>Get something to build:
+    <ol type="A">
+      <li><a target="_blank" href="fsp1_1.html#RequiredFiles">FSP 1.1</a> required files</li>
+      <li><a target="_blank" href="SoC/soc.html#RequiredFiles">SoC</a> required files</li>
+      <li><a target="_blank" href="Board/board.html#RequiredFiles">Board</a> required files</li>
+    </ol>
+  </li>
+  <li>Get result to start <a target="_blank" href="SoC/soc.html#Descriptor">booting</a></li>
+  <li><a target="_blank" href="SoC/soc.html#EarlyDebug">Early Debug</a></li>
+</ol>
+
+
+<hr>
+<p>Modified: 31 January 2016</p>
+  </body>
+</html>

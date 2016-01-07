@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quark&trade; SoC</title>
+  </head>
+  <body>
+
+<h1>Intel&reg; Quark&trade; SoC</h1>
+<table>
+  <tr>
+    <td><a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/images/embedded/16x9/edc-quark-block-diagram-16x9.png"><img alt="Quark Block Diagram" src="http://www.intel.com/content/dam/www/public/us/en/images/embedded/16x9/edc-quark-block-diagram-16x9.png" width=500></a></td>
+    <td>
+<table>
+  <tr bgcolor="#ffc0c0">
+    <td>
+Warning: Use of the Intel&reg; Quark&trade; SoC code requires modification of the util/xcompile/xcompile file to change the machine
+architecture from i686 to i586 because the Quark&trade; processor does not support the instructions
+introduced with the Pentium&trade; 6 architecture.
+<ol>
+  <li>Edit the file util/xcompile/xcompile</li>
+  <li>Search for
+<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=util/xcompile/xcompile;hb=HEAD#l185">-march</a></li>
+  <li>Replace i686 with i586</li>
+  <li>Save the result</li>
+</ol>
+Without this change the Quark&trade; processor will halt when it executes one of the
+instructions introduced with the Pentium&trade; 6 architecture.
+    </td>
+  </tr>
+</table>
+<p>
+  The Quark&trade; SoC code was developed using the
+  <a target="_blank" href="../Board/galileo.html">Galileo Gen 2</a>
+  board:
+</p>
+<ul>
+  <li><a target="_blank" href="../x86Development.html">Overall</a> development</li>
+  <li><a target="_blank" href="soc.html">SoC</a> support</li>
+  <li><a target="_blank" href="../fsp1_1.html">FSP 1.1</a> integration</li>
+  <li><a target="_blank" href="../Board/board.html">Board</a> support</li>
+</ul>
+    </td>
+  </tr>
+</table>
+
+
+
+<hr>
+<h1>Quark&trade; Documentation</h1>
+<ul>
+  <li><a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/images/embedded/16x9/edc-quark-block-diagram-16x9.png">Block Diagram</a></li>
+  <li>Intel&reg; 64 and IA-32 Architectures <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf">Software Developer Manual</a></li>
+  <li><a target="_blank" href="http://www.intel.com/content/www/us/en/embedded/products/quark/specifications.html">Specifications</a>:
+    <ul>
+      <li><a target="_blank" href="http://ark.intel.com/products/79084/Intel-Quark-SoC-X1000-16K-Cache-400-MHz">X1000</a>
+        - <a target="_blank" href="http://www.intel.com/content/www/us/en/search.html?keyword=X1000">Documentation</a>:
+        <ul>
+          <li><a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/datasheets/quark-x1000-datasheet.pdf">Datasheet</a></li>
+          <li><a target="_blank" href="http://www.intel.com/content/dam/support/us/en/documents/processors/quark/sb/intelquarkcore_devman_001.pdf">Developer's Manual</a></li>
+          <li><a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/product-briefs/intel-quark-product-brief-v3.pdf">Product Brief</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+
+<hr>
+<h1>Quark&trade; FSP</h1>
+<ul>
+  <li>Intel&reg; Firmware Support Package External Architecture Specification <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v1-1.pdf">V1.1</a></li>
+  <li>Intel&reg; Quark&trade; SoC X1000 <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/guides/quark-x1000-uefi-firmware-writers-guide.pdf">UEFI Firmware Writer's Guide</a></li>
+  <li>EDK2 Sources:
+    <ul>
+      <li>EDK2: git clone <a target="_blank" href="https://github.com/tianocore/edk2.git">https://github.com/tianocore/edk2.git</a></li>
+      <li>EDK2-FatPkg: git clone <a target="_blank" href="https://github.com/tianocore/edk2-FatPkg.git">https://github.com/tianocore/edk2-FatPkg.git</a> FatPkg</li>
+      <li>EDK2-non-osi: git clone <a target="_blank" href="https://github.com/tianocore/edk2-non-osi.git">https://github.com/tianocore/edk2-non-osi.git</a></li>
+      <li>Win32 BaseTools: git clone <a target="_blank" href="https://github.com/tianocore/edk2-BaseTools-win32.git">https://github.com/tianocore/edk2-BaseTools-win32.git</a></li>
+    </ul>
+  </li>
+  <li>Win32 Build Instructions:
+<pre><code>set WORKSPACE=%CD%
+set PACKAGES_PATH=%WORKSPACE%\edk2;%WORKSPACE%\FatPkg;%WORKSPACE%\edk2-non-osi
+set EDK_TOOLS_BIN=%WORKSPACE%\edk2-BaseTools-win32
+cd edk2
+edksetup.bat
+build -p QuarkPlatformPkg/Quark.dsc  -a IA32  -t VS2012x86  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
+</code></pre>
+  </li>
+</ul>
+
+
+
+<hr>
+<p>Modified: 30 January 2016</p>
+  </body>
+</html>

@@ -16,12 +16,8 @@
 #ifndef _FSP1_1_GOP_H_
 #define _FSP1_1_GOP_H_
 
-/* GOP support */
-#if IS_ENABLED(CONFIG_GOP_SUPPORT)
-
 #include <fsp/gma.h>
 
 const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len);
 
-#endif /* CONFIG_GOP_SUPPORT */
 #endif /* _FSP_GOP_H_ */

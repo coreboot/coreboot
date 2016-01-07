@@ -158,7 +158,7 @@ static int pcr_and_then_or(u8 pid, u16 offset, u32 size, u32 anddata,
 		   u32 ordata)
 {
 	u8 status;
-	u32 data32;
+	u32 data32 = 0;
 
 	status = pch_pcr_read(pid, offset, size, &data32);
 	if (status != 0)

@@ -146,6 +146,7 @@ chip soc/intel/skylake
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT" # SD
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT" # Type-A Port (card)
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT" # Type-A Port (board)
+	register "SerialIoI2cVoltage[4]" = "1"         # I2C4 is 1.8V
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{ \

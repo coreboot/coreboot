@@ -12,7 +12,7 @@
  */
 
 #include <smp/node.h>
-#include <arch/bootblock_common.h>
+#include <arch/bootblock_romcc.h>
 #include <pc80/mc146818rtc.h>
 #include <halt.h>
 

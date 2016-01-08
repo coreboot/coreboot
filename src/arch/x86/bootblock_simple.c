@@ -12,7 +12,7 @@
  */
 
 #include <smp/node.h>
-#include <arch/bootblock_common.h>
+#include <arch/bootblock_romcc.h>
 #include <halt.h>
 
 static void main(unsigned long bist)

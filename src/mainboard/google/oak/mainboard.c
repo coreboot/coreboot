@@ -17,12 +17,18 @@
 #include <arch/io.h>
 #include <boardid.h>
 #include <boot/coreboot_tables.h>
+#include <bootmode.h>
+#include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
+#include <drivers/parade/ps8640/ps8640.h>
+#include <edid.h>
 
 #include <elog.h>
 #include <gpio.h>
 #include <soc/da9212.h>
+#include <soc/ddp.h>
+#include <soc/dsi.h>
 #include <soc/i2c.h>
 #include <soc/mt6311.h>
 #include <soc/mt6391.h>
@@ -146,6 +152,47 @@ static void configure_backlight(void)
 	gpio_output(PAD_PCM_TX, 0);	/* PANEL_POWER_EN */
 }
 
+static void display_startup(void)
+{
+	struct edid edid;
+	u8 i2c_bus;
+	int ret;
+
+	switch (board_id()) {
+	case 0:
+	case 1:
+		i2c_bus = 3;
+		break;
+	default:
+		i2c_bus = 4;
+		break;
+	}
+	mtk_i2c_bus_init(i2c_bus);
+
+	ps8640_init(i2c_bus, 0x18);
+	if (ps8640_get_edid(i2c_bus, 0x18, &edid)) {
+		printk(BIOS_ERR, "Can't get panel's edid\n");
+		return;
+	}
+
+	edid.x_resolution = edid.mode.ha;
+	edid.y_resolution = edid.mode.va;
+	edid.bytes_per_line = edid.mode.ha * edid.framebuffer_bits_per_pixel /
+			      8;
+
+	mtk_ddp_init();
+	ret = mtk_dsi_init(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE,
+			   MIPI_DSI_FMT_RGB888, 4, &edid);
+	if (ret < 0) {
+		printk(BIOS_ERR, "dsi init fail\n");
+		return;
+	}
+
+	mtk_ddp_mode_set(&edid);
+
+	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
+}
+
 static void mainboard_init(device_t dev)
 {
 	/* TP_SHIFT_EN: Enables the level shifter for I2C bus 4 (TPAD), which
@@ -158,7 +205,12 @@ static void mainboard_init(device_t dev)
 	gpio_input(PAD_EINT1); /* SD_DET */
 
 	configure_audio();
-	configure_backlight();
+	if (display_init_required()) {
+		configure_backlight();
+		display_startup();
+	} else {
+		printk(BIOS_INFO, "Skipping display init.\n");
+	}
 	configure_usb();
 	configure_usb_hub();
 	configure_ext_buck();

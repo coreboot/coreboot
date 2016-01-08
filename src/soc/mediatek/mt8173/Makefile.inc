@@ -75,6 +75,9 @@ ramstage-y += rtc.c
 
 ramstage-y += usb.c
 
+ramstage-y += ddp.c
+ramstage-y += dsi.c
+
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31_plat_params.c
 
 BL31_MAKEARGS += PLAT=mt8173

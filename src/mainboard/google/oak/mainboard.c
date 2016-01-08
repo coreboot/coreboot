@@ -139,6 +139,13 @@ static void configure_usb(void)
 		gpio_output(PAD_CM2MCLK, 1);
 }
 
+static void configure_usb_hub(void)
+{
+	/* set usb hub reset pin (low active) to high */
+	if (board_id() > 4)
+		gpio_output(PAD_UTXD3, 1);
+}
+
 /* Setup backlight control pins as output pin and power-off by default */
 static void configure_backlight(void)
 {
@@ -176,6 +183,7 @@ static void mainboard_init(device_t dev)
 	configure_audio();
 	configure_backlight();
 	configure_usb();
+	configure_usb_hub();
 	configure_bl31();
 
 	elog_init();

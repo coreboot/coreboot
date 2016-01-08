@@ -14,3 +14,4 @@
 ##
 
 source src/drivers/parade/ps8625/Kconfig
+source src/drivers/parade/ps8640/Kconfig

@@ -20,6 +20,11 @@
 #include <drivers/intel/gma/i915.h>
 
 struct northbridge_intel_gm45_config {
+	u16 gpu_panel_power_up_delay;            /* T1+T2 time sequence */
+	u16 gpu_panel_power_down_delay;          /* T3 time sequence */
+	u16 gpu_panel_power_backlight_on_delay;  /* T5 time sequence */
+	u16 gpu_panel_power_backlight_off_delay; /* Tx time sequence */
+	u8 gpu_panel_power_cycle_delay;          /* T4 time sequence */
 	struct i915_gpu_controller_info gfx;
 };
 

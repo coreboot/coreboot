@@ -37,6 +37,11 @@
 
 static struct resource *gtt_res = NULL;
 
+u32 gtt_read(u32 reg)
+{
+	return read32(res2mmio(gtt_res, reg, 0));
+}
+
 void gtt_write(u32 reg, u32 data)
 {
 	write32(res2mmio(gtt_res, reg, 0), data);
@@ -413,6 +418,44 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	}
 }
 
+static void gma_pm_init_post_vbios(struct device *const dev)
+{
+	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
+
+	u32 reg32;
+
+	/* Setup Panel Power On Delays */
+	reg32 = gtt_read(PP_ON_DELAYS);
+	if (!reg32) {
+		reg32 = (conf->gpu_panel_power_up_delay & 0x1fff) << 16;
+		reg32 |= (conf->gpu_panel_power_backlight_on_delay & 0x1fff);
+		gtt_write(PP_ON_DELAYS, reg32);
+	}
+
+	/* Setup Panel Power Off Delays */
+	reg32 = gtt_read(PP_OFF_DELAYS);
+	if (!reg32) {
+		reg32 = (conf->gpu_panel_power_down_delay & 0x1fff) << 16;
+		reg32 |= (conf->gpu_panel_power_backlight_off_delay & 0x1fff);
+		gtt_write(PP_OFF_DELAYS, reg32);
+	}
+
+	/* Setup Panel Power Cycle Delay */
+	if (conf->gpu_panel_power_cycle_delay) {
+		reg32 = gtt_read(PP_DIVISOR);
+		reg32 &= ~0x1f;
+		reg32 |= conf->gpu_panel_power_cycle_delay & 0x1f;
+		gtt_write(PP_DIVISOR, reg32);
+	}
+
+	/* Enable Backlight  */
+	gtt_write(BLC_PWM_CTL2, (1 << 31));
+	if (conf->gfx.backlight == 0)
+		gtt_write(BLC_PWM_CTL, 0x06100610);
+	else
+		gtt_write(BLC_PWM_CTL, conf->gfx.backlight);
+}
+
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
@@ -430,7 +473,12 @@ static void gma_func0_init(struct device *dev)
 	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);
-	} else {
+	}
+
+	/* Post VBIOS init */
+	gma_pm_init_post_vbios(dev);
+
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		u32 physbase;
 		struct resource *lfb_res;
 		struct resource *pio_res;
@@ -453,14 +501,6 @@ static void gma_func0_init(struct device *dev)
 		generate_fake_intel_oprom(&conf->gfx, dev,
 					  "$VBT IRONLAKE-MOBILE");
 	}
-
-	/* Post VBIOS init */
-	/* Enable Backlight  */
-	gtt_write(BLC_PWM_CTL2, (1 << 31));
-	if (conf->gfx.backlight == 0)
-		gtt_write(BLC_PWM_CTL, 0x06100610);
-	else
-		gtt_write(BLC_PWM_CTL, conf->gfx.backlight);
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

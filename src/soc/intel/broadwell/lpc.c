@@ -599,7 +599,6 @@ static void southcluster_inject_dsdt(device_t device)
 	}
 
 	if (gnvs) {
-		memset(gnvs, 0, sizeof(*gnvs));
 		acpi_create_gnvs(gnvs);
 		acpi_save_gnvs((unsigned long)gnvs);
 		/* And tell SMI about it */

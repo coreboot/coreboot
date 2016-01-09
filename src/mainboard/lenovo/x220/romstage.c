@@ -54,7 +54,7 @@ void pch_enable_lpc(void)
 void rcba_config(void)
 {
 	/* Disable unused devices (board specific) */
-	RCBA32(FD) = 0x1fe41fe3;
+	RCBA32(FD) = 0x1fa41fe3;
 	RCBA32(BUC) = 0;
 }
 

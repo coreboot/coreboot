@@ -109,7 +109,9 @@ chip northbridge/intel/sandybridge
 				end
 			end # PCIe Port #5 (SD)
 			device pci 1c.5 off end # PCIe Port #6
-			device pci 1c.6 off end # PCIe Port #7
+			device pci 1c.6 on
+				subsystemid 0x17aa 0x21db
+			end # PCIe Port #7
 			device pci 1c.7 off end # PCIe Port #8
 			device pci 1d.0 on
 				subsystemid 0x17aa 0x21db

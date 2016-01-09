@@ -42,8 +42,6 @@ void gtt_write(u32 reg, u32 data)
 	write32(res2mmio(gtt_res, reg, 0), data);
 }
 
-#if IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)
-
 static void power_port(u8 *mmio)
 {
 	read32(mmio + 0x00061100); // = 0x00000000
@@ -172,33 +170,33 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 
 	target_frequency = mode->lvds_dual_channel ? mode->pixel_clock
 		: (2 * mode->pixel_clock);
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	vga_sr_write(1, 1);
-	vga_sr_write(0x2, 0xf);
-	vga_sr_write(0x3, 0x0);
-	vga_sr_write(0x4, 0xe);
-	vga_gr_write(0, 0x0);
-	vga_gr_write(1, 0x0);
-	vga_gr_write(2, 0x0);
-	vga_gr_write(3, 0x0);
-	vga_gr_write(4, 0x0);
-	vga_gr_write(5, 0x0);
-	vga_gr_write(6, 0x5);
-	vga_gr_write(7, 0xf);
-	vga_gr_write(0x10, 0x1);
-	vga_gr_write(0x11, 0);
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		vga_sr_write(1, 1);
+		vga_sr_write(0x2, 0xf);
+		vga_sr_write(0x3, 0x0);
+		vga_sr_write(0x4, 0xe);
+		vga_gr_write(0, 0x0);
+		vga_gr_write(1, 0x0);
+		vga_gr_write(2, 0x0);
+		vga_gr_write(3, 0x0);
+		vga_gr_write(4, 0x0);
+		vga_gr_write(5, 0x0);
+		vga_gr_write(6, 0x5);
+		vga_gr_write(7, 0xf);
+		vga_gr_write(0x10, 0x1);
+		vga_gr_write(0x11, 0);
 
-	edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
+		edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
 
-	write32(mmio + DSPCNTR(0), DISPPLANE_BGRX888);
-	write32(mmio + DSPADDR(0), 0);
-	write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
-	write32(mmio + DSPSURF(0), 0);
-	for (i = 0; i < 0x100; i++)
-		write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
-#else
-	vga_textmode_init();
-#endif
+		write32(mmio + DSPCNTR(0), DISPPLANE_BGRX888);
+		write32(mmio + DSPADDR(0), 0);
+		write32(mmio + DSPSTRIDE(0), edid.bytes_per_line);
+		write32(mmio + DSPSURF(0), 0);
+		for (i = 0; i < 0x100; i++)
+			write32(mmio + LGC_PALETTE(0) + 4 * i, i * 0x010101);
+	} else {
+		vga_textmode_init();
+	}
 
 	/* Find suitable divisors.  */
 	for (candp1 = 1; candp1 <= 8; candp1++) {
@@ -327,17 +325,18 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_DISABLE);
 
 	write32(mmio + PF_WIN_POS(0), 0);
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(mmio + PIPESRC(0), ((hactive - 1) << 16) | (vactive - 1));
-	write32(mmio + PF_CTL(0),0);
-	write32(mmio + PF_WIN_SZ(0), 0);
-	write32(mmio + PFIT_CONTROL, 0x20000000);
-#else
-	write32(mmio + PIPESRC(0), (639 << 16) | 399);
-	write32(mmio + PF_CTL(0),PF_ENABLE | PF_FILTER_MED_3x3);
-	write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
-	write32(mmio + PFIT_CONTROL, 0xa0000000);
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		write32(mmio + PIPESRC(0), ((hactive - 1) << 16)
+			| (vactive - 1));
+		write32(mmio + PF_CTL(0), 0);
+		write32(mmio + PF_WIN_SZ(0), 0);
+		write32(mmio + PFIT_CONTROL, 0x20000000);
+	} else {
+		write32(mmio + PIPESRC(0), (639 << 16) | 399);
+		write32(mmio + PF_CTL(0), PF_ENABLE | PF_FILTER_MED_3x3);
+		write32(mmio + PF_WIN_SZ(0), vactive | (hactive << 16));
+		write32(mmio + PFIT_CONTROL, 0xa0000000);
+	}
 
 	mdelay(1);
 
@@ -357,13 +356,14 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + PIPECONF(0), PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	write32(mmio + VGACNTRL, 0x22c4008e | VGA_DISP_DISABLE);
-	write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
-	mdelay(1);
-#else
-	write32(mmio + VGACNTRL, 0x22c4008e);
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		write32(mmio + VGACNTRL, 0x22c4008e | VGA_DISP_DISABLE);
+		write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE
+			| DISPPLANE_BGRX888);
+		mdelay(1);
+	} else {
+		write32(mmio + VGACNTRL, 0x22c4008e);
+	}
 
 	write32(mmio + TRANS_HTOTAL(0),
 		((hactive + right_border + hblank - 1) << 16)
@@ -421,13 +421,12 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
 
-#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
-	memset ((void *) lfb, 0, edid.x_resolution * edid.y_resolution * 4);
-	set_vbe_mode_info_valid(&edid, lfb);
-#endif
+	if (IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)) {
+		memset((void *) lfb, 0,
+		       edid.x_resolution * edid.y_resolution * 4);
+		set_vbe_mode_info_valid(&edid, lfb);
+	}
 }
-
-#endif
 
 static void gma_func0_init(struct device *dev)
 {
@@ -443,30 +442,32 @@ static void gma_func0_init(struct device *dev)
 
 	struct northbridge_intel_gm45_config *conf = dev->chip_info;
 
-#if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	/* PCI Init, will run VBIOS */
-	pci_dev_init(dev);
-#else
-	u32 physbase;
-	struct resource *lfb_res;
-	struct resource *pio_res;
+	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		/* PCI Init, will run VBIOS */
+		pci_dev_init(dev);
+	} else {
+		u32 physbase;
+		struct resource *lfb_res;
+		struct resource *pio_res;
 
-	lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
-	pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
+		lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
+		pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
 
-	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 
-	if (gtt_res && gtt_res->base && physbase && pio_res && pio_res->base
-	    && lfb_res && lfb_res->base) {
-		printk(BIOS_SPEW, "Initializing VGA without OPROM. MMIO 0x%llx\n",
-		       gtt_res->base);
-		intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
-			       pio_res->base, lfb_res->base);
+		if (gtt_res && gtt_res->base && physbase && pio_res
+		    && pio_res->base && lfb_res && lfb_res->base) {
+			printk(BIOS_SPEW,
+			       "Initializing VGA without OPROM. MMIO 0x%llx\n",
+			       gtt_res->base);
+			intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
+				       pio_res->base, lfb_res->base);
+		}
+
+		/* Linux relies on VBT for panel info.  */
+		generate_fake_intel_oprom(&conf->gfx, dev,
+					  "$VBT IRONLAKE-MOBILE");
 	}
-
-	/* Linux relies on VBT for panel info.  */
-	generate_fake_intel_oprom(&conf->gfx, dev, "$VBT IRONLAKE-MOBILE");
-#endif
 
 	/* Post VBIOS init */
 	/* Enable Backlight  */

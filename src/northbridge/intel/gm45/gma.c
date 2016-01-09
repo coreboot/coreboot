@@ -397,21 +397,6 @@ static void intel_gma_init(const struct northbridge_intel_gm45_config *info,
 		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
 		| LVDS_BORDER_ENABLE | LVDS_CLOCK_A_POWERUP_ALL);
 
-	write32(mmio + PP_CONTROL, PANEL_UNLOCK_REGS | PANEL_POWER_OFF);
-	write32(mmio + PP_CONTROL, PANEL_UNLOCK_REGS | PANEL_POWER_RESET);
-	mdelay(1);
-	write32(mmio + PP_CONTROL, PANEL_UNLOCK_REGS
-		| PANEL_POWER_ON | PANEL_POWER_RESET);
-
-	printk (BIOS_DEBUG, "waiting for panel powerup\n");
-	while (1) {
-		u32 reg32;
-		reg32 = read32(mmio + PP_STATUS);
-		if (((reg32 >> 28) & 3) == 0)
-			break;
-	}
-	printk (BIOS_DEBUG, "panel powered up\n");
-
 	write32(mmio + PP_CONTROL, PANEL_POWER_ON | PANEL_POWER_RESET);
 
 	/* Enable screen memory.  */

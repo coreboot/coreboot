@@ -1224,32 +1224,20 @@ static void dram_jedecreset(ramctr_timing * ctrl)
 	}
 }
 
-static odtmap get_ODT(ramctr_timing * ctrl, u8 rank)
+static odtmap get_ODT(ramctr_timing *ctrl, u8 rank, int channel)
 {
 	/* Get ODT based on rankmap: */
-	int dimms_per_ch = 0;
-	int channel;
-
-	FOR_ALL_CHANNELS {
-		dimms_per_ch = max ((ctrl->rankmap[channel] & 1)
-				    + ((ctrl->rankmap[channel] >> 2) & 1),
-				    dimms_per_ch);
-	}
+	int dimms_per_ch = (ctrl->rankmap[channel] & 1)
+					+ ((ctrl->rankmap[channel] >> 2) & 1);
 
 	if (dimms_per_ch == 1) {
 		return (const odtmap){60, 60};
-	} else if (dimms_per_ch == 2) {
-		return (const odtmap){120, 30};
 	} else {
-		printk(BIOS_DEBUG,
-		       "Huh, no dimms? m0 = %d m1 = %d dpc = %d\n",
-		       ctrl->rankmap[0],
-		       ctrl->rankmap[1], dimms_per_ch);
-		die("");
+		return (const odtmap){120, 30};
 	}
 }
 
-static void write_mrreg(ramctr_timing * ctrl, int channel, int slotrank,
+static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank,
 			int reg, u32 val)
 {
 	wait_428c(channel);
@@ -1319,12 +1307,10 @@ static u32 make_mr0(ramctr_timing * ctrl, u8 rank)
 	return mr0reg;
 }
 
-static void dram_mr0(ramctr_timing * ctrl, u8 rank)
+static void dram_mr0(ramctr_timing *ctrl, u8 rank, int channel)
 {
-	int channel;
-
-	FOR_ALL_POPULATED_CHANNELS write_mrreg(ctrl, channel, rank, 0,
-					       make_mr0(ctrl, rank));
+	write_mrreg(ctrl, channel, rank, 0,
+				make_mr0(ctrl, rank));
 }
 
 static u32 encode_odt(u32 odt)
@@ -1342,12 +1328,12 @@ static u32 encode_odt(u32 odt)
 	}
 }
 
-static u32 make_mr1(ramctr_timing * ctrl, u8 rank)
+static u32 make_mr1(ramctr_timing *ctrl, u8 rank, int channel)
 {
 	odtmap odt;
 	u32 mr1reg;
 
-	odt = get_ODT(ctrl, rank);
+	odt = get_ODT(ctrl, rank, channel);
 	mr1reg = 0x2;
 
 	mr1reg |= encode_odt(odt.rttnom);
@@ -1355,28 +1341,24 @@ static u32 make_mr1(ramctr_timing * ctrl, u8 rank)
 	return mr1reg;
 }
 
-static void dram_mr1(ramctr_timing * ctrl, u8 rank)
+static void dram_mr1(ramctr_timing *ctrl, u8 rank, int channel)
 {
 	u16 mr1reg;
-	int channel;
 
-	mr1reg = make_mr1(ctrl, rank);
+	mr1reg = make_mr1(ctrl, rank, channel);
 
-	FOR_ALL_CHANNELS {
-		write_mrreg(ctrl, channel, rank, 1, mr1reg);
-	}
+	write_mrreg(ctrl, channel, rank, 1, mr1reg);
 }
 
-static void dram_mr2(ramctr_timing * ctrl, u8 rank)
+static void dram_mr2(ramctr_timing *ctrl, u8 rank, int channel)
 {
 	u16 pasr, cwl, mr2reg;
 	odtmap odt;
-	int channel;
 	int srt;
 
 	pasr = 0;
 	cwl = ctrl->CWL - 5;
-	odt = get_ODT(ctrl, rank);
+	odt = get_ODT(ctrl, rank, channel);
 
 	srt = ctrl->extended_temperature_range && !ctrl->auto_self_refresh;
 
@@ -1387,46 +1369,34 @@ static void dram_mr2(ramctr_timing * ctrl, u8 rank)
 	mr2reg = (mr2reg & ~0x80) | (srt << 7);
 	mr2reg |= (odt.rttwr / 60) << 9;
 
-	FOR_ALL_CHANNELS {
-		write_mrreg(ctrl, channel, rank, 2, mr2reg);
-	}
+	write_mrreg(ctrl, channel, rank, 2, mr2reg);
 }
 
-static void dram_mr3(ramctr_timing * ctrl, u8 rank)
+static void dram_mr3(ramctr_timing *ctrl, u8 rank, int channel)
 {
-	int channel;
-
-	FOR_ALL_CHANNELS {
-		write_mrreg(ctrl, channel, rank, 3, 0);
-	}
+	write_mrreg(ctrl, channel, rank, 3, 0);
 }
 
 static void dram_mrscommands(ramctr_timing * ctrl)
 {
-	u8 rank;
+	u8 slotrank;
 	u32 reg, addr;
 	int channel;
 
-	for (rank = 0; rank < 4; rank++) {
-		// MR2
-		printram("MR2 rank %d...", rank);
-		dram_mr2(ctrl, rank);
-		printram("done\n");
+	FOR_ALL_POPULATED_CHANNELS {
+		FOR_ALL_POPULATED_RANKS {
+			// MR2
+			dram_mr2(ctrl, slotrank, channel);
 
-		// MR3
-		printram("MR3 rank %d...", rank);
-		dram_mr3(ctrl, rank);
-		printram("done\n");
+			// MR3
+			dram_mr3(ctrl, slotrank, channel);
 
-		// MR1
-		printram("MR1 rank %d...", rank);
-		dram_mr1(ctrl, rank);
-		printram("done\n");
+			// MR1
+			dram_mr1(ctrl, slotrank, channel);
 
-		// MR0
-		printram("MR0 rank %d...", rank);
-		dram_mr0(ctrl, rank);
-		printram("done\n");
+			// MR0
+			dram_mr0(ctrl, slotrank, channel);
+		}
 	}
 
 	/* DRAM command NOP */
@@ -1461,7 +1431,7 @@ static void dram_mrscommands(ramctr_timing * ctrl)
 
 		wait_428c(channel);
 
-		rank = (ctrl->rankmap[channel] & 1) ? 0 : 2;
+		slotrank = (ctrl->rankmap[channel] & 1) ? 0 : 2;
 
 		// Drain
 		wait_428c(channel);
@@ -1470,7 +1440,7 @@ static void dram_mrscommands(ramctr_timing * ctrl)
 		write32(DEFAULT_MCHBAR + 0x4220 + 0x400 * channel, 0x0f003);
 		write32(DEFAULT_MCHBAR + 0x4230 + 0x400 * channel, 0x659001);
 		write32(DEFAULT_MCHBAR + 0x4200 + 0x400 * channel,
-			(rank << 24) | 0x60000);
+			(slotrank << 24) | 0x60000);
 		write32(DEFAULT_MCHBAR + 0x4210 + 0x400 * channel, 0x3e0);
 		write32(DEFAULT_MCHBAR + 0x4284 + 0x400 * channel, 0x1);
 
@@ -2308,7 +2278,7 @@ static void test_timB(ramctr_timing * ctrl, int channel, int slotrank)
 {
 	/* enable DQs on this slotrank */
 	write_mrreg(ctrl, channel, slotrank, 1,
-		    0x80 | make_mr1(ctrl, slotrank));
+		    0x80 | make_mr1(ctrl, slotrank, channel));
 
 	wait_428c(channel);
 	/* DRAM command NOP */
@@ -2332,7 +2302,7 @@ static void test_timB(ramctr_timing * ctrl, int channel, int slotrank)
 
 	/* disable DQs on this slotrank */
 	write_mrreg(ctrl, channel, slotrank, 1,
-		    0x1080 | make_mr1(ctrl, slotrank));
+		    0x1080 | make_mr1(ctrl, slotrank, channel));
 }
 
 static void discover_timB(ramctr_timing * ctrl, int channel, int slotrank)
@@ -2564,7 +2534,7 @@ static void write_training(ramctr_timing * ctrl)
 	FOR_ALL_CHANNELS
 	    FOR_ALL_POPULATED_RANKS
 		write_mrreg(ctrl, channel, slotrank, 1,
-			    make_mr1(ctrl, slotrank) | 0x1080);
+			    make_mr1(ctrl, slotrank, channel) | 0x1080);
 
 	write32(DEFAULT_MCHBAR + 0x3400, 0x108052);
 
@@ -2577,7 +2547,7 @@ static void write_training(ramctr_timing * ctrl)
 	/* disable write leveling on all ranks */
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS
 		write_mrreg(ctrl, channel,
-			    slotrank, 1, make_mr1(ctrl, slotrank));
+			    slotrank, 1, make_mr1(ctrl, slotrank, channel));
 
 	write32(DEFAULT_MCHBAR + 0x3400, 0);
 
@@ -3503,7 +3473,8 @@ static void write_controller_mr(ramctr_timing * ctrl)
 		write32(DEFAULT_MCHBAR + 0x0004 + (channel << 8) +
 			lane_registers[slotrank], make_mr0(ctrl, slotrank));
 		write32(DEFAULT_MCHBAR + 0x0008 + (channel << 8) +
-			lane_registers[slotrank], make_mr1(ctrl, slotrank));
+			lane_registers[slotrank],
+			make_mr1(ctrl, slotrank, channel));
 	}
 }
 

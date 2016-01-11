@@ -323,6 +323,8 @@ struct soc_intel_skylake_config {
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS
 	 */
 	u8 HeciEnabled;
+	/* PL2 Override value in Watts */
+	u32 tdp_pl2_override;
 };
 
 typedef struct soc_intel_skylake_config config_t;

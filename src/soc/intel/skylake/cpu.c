@@ -116,8 +116,10 @@ void set_power_limits(u8 power_limit_1_time)
 	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
 	msr_t limit;
 	unsigned power_unit;
-	unsigned tdp, min_power, max_power, max_time;
+	unsigned tdp, min_power, max_power, max_time, tdp_pl2;
 	u8 power_limit_1_val;
+	device_t dev = SA_DEV_ROOT;
+	config_t *conf = dev->chip_info;
 
 	if (power_limit_1_time > ARRAY_SIZE(power_limit_time_sec_to_msr))
 		power_limit_1_time = 28;
@@ -127,7 +129,7 @@ void set_power_limits(u8 power_limit_1_time)
 
 	/* Get units */
 	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
-	power_unit = 2 << ((msr.lo & 0xf) - 1);
+	power_unit = 1 << (msr.lo & 0xf);
 
 	/* Get power defaults for this SKU */
 	msr = rdmsr(MSR_PKG_POWER_SKU);
@@ -162,15 +164,17 @@ void set_power_limits(u8 power_limit_1_time)
 
 	/* Set short term power limit to 1.25 * TDP */
 	limit.hi = 0;
-	limit.hi |= ((tdp * 125) / 100) & PKG_POWER_LIMIT_MASK;
+	tdp_pl2 = (conf->tdp_pl2_override == 0) ?
+		(tdp * 125) / 100 : (conf->tdp_pl2_override * power_unit);
+	limit.hi |= (tdp_pl2) & PKG_POWER_LIMIT_MASK;
 	limit.hi |= PKG_POWER_LIMIT_CLAMP;
 	limit.hi |= PKG_POWER_LIMIT_EN;
 
 	/* Power limit 2 time is only programmable on server SKU */
 	wrmsr(MSR_PKG_POWER_LIMIT, limit);
 
-	/* Set power limit values in MCHBAR as well */
-	MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = limit.lo;
+	/* Set PL2 power limit values in MCHBAR and disable PL1 */
+	MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = limit.lo & (~(PKG_POWER_LIMIT_EN));
 	MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = limit.hi;
 
 	/* Set DDR RAPL power limit by copying from MMIO to MSR */

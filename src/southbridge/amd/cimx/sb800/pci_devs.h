@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _CIMX_SB00_PCI_DEVS_H_
-#define _CIMX_SB00_PCI_DEVS_H_
+#ifndef _CIMX_SB800_PCI_DEVS_H_
+#define _CIMX_SB800_PCI_DEVS_H_
 
 #define BUS0 0
 

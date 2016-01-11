@@ -52,18 +52,18 @@ MAP-libverstage := verstage
 
 ARCHDIR-i386	:= x86
 ARCHDIR-x86_32	:= x86
-ARCHDIR-x86_64  := x86
+ARCHDIR-x86_64	:= x86
 ARCHDIR-arm	:= arm
 ARCHDIR-arm64	:= arm64
 ARCHDIR-riscv	:= riscv
 ARCHDIR-mips	:= mips
 
-CFLAGS_arm      +=
-CFLAGS_arm64    += -mgeneral-regs-only
+CFLAGS_arm	+=
+CFLAGS_arm64	+= -mgeneral-regs-only
 CFLAGS_mips	+= -mips32r2 -G 0 -mno-abicalls -fno-pic
 CFLAGS_riscv	+=
 CFLAGS_x86_32	+=
-CFLAGS_x86_64   += -mcmodel=large -mno-red-zone
+CFLAGS_x86_64	+= -mcmodel=large -mno-red-zone
 
 # Some boards only provide 2K stacks, so storing lots of data there leads to
 # problems. Since C rules don't allow us to statically determine the maximum
@@ -97,7 +97,10 @@ toolchain_to_dir = \
 # parameter to create_class_compiler below in init_standard_toolchain
 map_stage = $(strip $(if $(MAP-$(1)),$(MAP-$(1)),$(1)))
 set_stage_toolchain= \
-	$(foreach arch,$(ARCH_SUPPORTED),$(eval ARCH-$(1)-$($(shell echo CONFIG_ARCH_$(call map_stage,$(1))_$(arch) | tr '[:lower:]' '[:upper:]')) := $(arch)))
+	$(foreach arch,$(ARCH_SUPPORTED), \
+	$(eval ARCH-$(1)-$($(shell \
+		echo CONFIG_ARCH_$(call map_stage,$(1))_$(arch) | \
+		tr '[:lower:]' '[:upper:]')) := $(arch)))
 
 # create_class_compiler: Used to create compiler tool set for
 # special classes
@@ -140,7 +143,8 @@ init_standard_toolchain = \
 	$(eval $(call create_class_compiler,$(1),$(ARCH-$(1)-y)))
 
 init_stages = \
-	    $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(eval $(call init_standard_toolchain,$(stage))))
+	$(foreach stage,$(COREBOOT_STANDARD_STAGES), \
+	$(eval $(call init_standard_toolchain,$(stage))))
 
 $(eval $(call toolchain_to_dir))
 
@@ -155,21 +159,33 @@ COMPILERFAIL:=0
 IASLFAIL:=0
 
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
-$(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
-	$(if $(shell if [ -n "$(CC_$(arch))" ]; then $(CC_$(arch)) -v 2>&1 |grep -q "coreboot toolchain" || echo not-coreboot; else echo not-coreboot; fi), \
-		$(eval COMPILERFAIL:=1)$(warning The coreboot toolchain for '$(arch)' architecture was not found.)))
+$(foreach arch,$(sort $(foreach stage,\
+	$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
+	$(if $(shell if [ -n "$(CC_$(arch))" ]; then \
+		$(CC_$(arch)) -v 2>&1 | grep -q "coreboot toolchain" || \
+		echo not-coreboot; else echo not-coreboot; fi), \
+		$(eval COMPILERFAIL:=1)\
+		$(warning The coreboot toolchain for '$(arch)'\
+			architecture was not found.)))
 #if iasl doesn't match the current coreboot version, fail the test
 #TODO: Figure out if iasl is even needed for the build.
-$(if $(shell if [ -n "$(IASL)" ]; then $(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || echo not-coreboot; else echo not-coreboot; fi), \
-	$(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1)$(warning The coreboot toolchain version of iasl '$(shell util/crossgcc/buildgcc -s iasl)' was not found))
+$(if $(shell if [ -n "$(IASL)" ]; then \
+	$(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || \
+	echo not-coreboot; else echo not-coreboot; fi), \
+	$(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1)\
+	$(warning The coreboot toolchain version of iasl \
+		'$(shell util/crossgcc/buildgcc -s iasl)' was not found))
 else #$(CONFIG_ANY_TOOLCHAIN)
-$(foreach arch,$(sort $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
+$(foreach arch,$(sort \
+	$(foreach stage,$(COREBOOT_STANDARD_STAGES),$(ARCH-$(stage)-y))), \
 	$(if $(CC_$(arch)),, $(eval COMPILERFAIL:=1) \
-	$(warning No compiler found for '$(arch)' architecture. Install one or use the coreboot toolchain?)) )
+	$(warning No compiler found for '$(arch)' architecture. \
+		Install one or use the coreboot toolchain?)) )
 #if iasl isn't present, fail
 #TODO: Figure out if iasl is even needed for the build.
 $(if $(IASL),, $(eval COMPILERFAIL:=1)$(eval IASLFAIL:=1) \
-	$(warning iasl not found. Please install it or use the coreboot toolchain.))
+	$(warning iasl not found. \
+		Please install it or use the coreboot toolchain.))
 endif
 ifeq ($(COMPILERFAIL),1)
 ifneq ($(XGCCPATH),)
@@ -184,9 +200,12 @@ endif #($(IASLFAIL),1)
 $(warning For more toolchain build targets: run 'make help_toolchain')
 $(warning )
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
-$(warning To try to use any toolchain in your path, run 'make menuconfig', then select)
-$(warning the config option: 'General setup', and 'Allow building with any toolchain')
-$(warning Note that this is NOT supported.  Using it means you're on your own.)
+$(warning To try to use any toolchain in your path, \
+	run 'make menuconfig', then select)
+$(warning the config option: 'General setup', \
+	and 'Allow building with any toolchain')
+$(warning Note that this is NOT supported.  \
+	Using it means you're on your own.)
 $(warning )
 endif #($(CONFIG_ANY_TOOLCHAIN),y)
 $(error Halting the build)
@@ -197,14 +216,33 @@ endif #($(NOCOMPILE),1)
 ifneq ($(MAKECMDGOALS),)
 ifneq ($(filter test-toolchain,$(MAKECMDGOALS)),)
 $(foreach arch, $(ARCH_SUPPORTED), \
-	$(if $(shell if [ -n "$(GCC_CC_$(arch))" ]; then $(GCC_CC_$(arch)) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s gcc)" || echo not-current; fi), \
-		$(eval COMPILER_OUT_OF_DATE:=1)$(warning The coreboot toolchain version of gcc for '$(arch)' architecture is not the current version.)) \
-	$(if $(shell if [ -n "$(CLANG_CC_$(arch))" ]; then $(CLANG_CC_$(arch)) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s clang)" || echo not-current; fi), \
-		$(eval COMPILER_OUT_OF_DATE:=1)$(warning The coreboot toolchain version of clang for '$(arch)' architecture is not the current version.)) \
-	$(if $(shell if [ "$(OBJDUMP_$(arch))" != "invalidobjdump" ]; then $(OBJDUMP_$(arch)) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s binutils)" || echo not-current; fi), \
-		$(eval COMPILER_OUT_OF_DATE:=1)$(warning The coreboot toolchain version of binutils for '$(arch)' architecture is not the current version.)) \
+	$(if $(shell if [ -n "$(GCC_CC_$(arch))" ]; then \
+		$(GCC_CC_$(arch)) -v 2>&1 | \
+		grep -q "$(shell util/crossgcc/buildgcc -s gcc)" || \
+		echo not-current; fi), \
+		$(eval COMPILER_OUT_OF_DATE:=1) \
+		$(warning The coreboot toolchain version of gcc for '$(arch)' \
+			architecture is not the current version.)) \
+	$(if $(shell if [ -n "$(CLANG_CC_$(arch))" ]; then \
+		$(CLANG_CC_$(arch)) -v 2>&1 | \
+		grep -q "$(shell util/crossgcc/buildgcc -s clang)" || \
+		echo not-current; fi), \
+		$(eval COMPILER_OUT_OF_DATE:=1)\
+		$(warning The coreboot toolchain version of clang for \
+			'$(arch)' architecture is not the current version.)) \
+	$(if $(shell if [ "$(OBJDUMP_$(arch))" != "invalidobjdump" ]; then \
+	$(OBJDUMP_$(arch)) -v 2>&1 | \
+	grep -q "$(shell util/crossgcc/buildgcc -s binutils)" || \
+	echo not-current; fi), \
+		$(eval COMPILER_OUT_OF_DATE:=1)\
+		$(warning The coreboot toolchain version of binutils for \
+			'$(arch)' architecture is not the current version.)) \
 )
-$(if $(shell if [ -n "$(IASL)" ]; then $(IASL) -v 2>&1 | grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || echo not-coreboot; fi), \
-	$(eval COMPILER_OUT_OF_DATE:=1)$(warning The coreboot toolchain version of iasl is not the current version))
+$(if $(shell if [ -n "$(IASL)" ]; then $(IASL) -v 2>&1 | \
+	grep -q "$(shell util/crossgcc/buildgcc -s iasl)" || \
+	echo not-coreboot; fi), \
+	$(eval COMPILER_OUT_OF_DATE:=1)\
+	$(warning The coreboot toolchain version of iasl \
+		is not the current version))
 endif # ifneq ($(filter crossgcc_check%,$(MAKECMDGOALS)),)
 endif # ifneq ($(MAKECMDGOALS),)

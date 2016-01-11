@@ -445,4 +445,4 @@ void rangeley_sb_early_initialization(void);
 
 
 #endif /* __ACPI__ */
-#endif				/* SOUTHBRIDGE_INTEL_RANGELEY_PCH_H */
+#endif /* SOUTHBRIDGE_INTEL_RANGELEY_SOC_H */

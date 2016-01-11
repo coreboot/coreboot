@@ -309,4 +309,4 @@ mrs_cmd_t ddr3_get_mr2(enum ddr3_mr2_rttwr rtt_wr,
 mrs_cmd_t ddr3_get_mr3(char dataflow_from_mpr);
 mrs_cmd_t ddr3_mrs_mirror_pins(mrs_cmd_t cmd);
 
-#endif				/* DEVICE_DRAM_DDR3_H */
+#endif /* DEVICE_DRAM_DDR3L_H */

@@ -69,4 +69,4 @@
  */
 #define CALGN(code...)
 
-#endif	/* __ARM_ASMLIB_H */
+#endif /* __ARM_ASMLIB_H__ */

@@ -36,4 +36,4 @@ void nb_Late_Post_Init(void);
 void nb_Pcie_Early_Init(void);
 void nb_Pcie_Late_Init(void);
 
-#endif//_RD890_EARLY_H_
+#endif /* _NB_CIMX_H_ */

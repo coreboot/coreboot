@@ -28,4 +28,4 @@ static inline int context_avp(void)
 	return read32(uptag) == avp_id;
 }
 
-#endif /* define __SOC_NVIDIA_TEGRA210_INCLUDE_SOC_ID_H__ */
+#endif /* __SOC_NVIDIA_TEGRA210_INCLUDE_SOC_ID_H__ */

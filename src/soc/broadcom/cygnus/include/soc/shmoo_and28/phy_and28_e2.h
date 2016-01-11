@@ -11266,6 +11266,6 @@
 #define DDR34_CORE_PHY_BYTE_LANE_1_BL_SPARE_REG_reserved_for_eco0_SHIFT 0
 #define DDR34_CORE_PHY_BYTE_LANE_1_BL_SPARE_REG_reserved_for_eco0_DEFAULT 0x00000000
 
-#endif /* #ifndef __SOC_BROADCOM_CYGNUS_PHY_AND28_E2_H__ */
+#endif /* __SOC_BROADCOM_CYGNUS_PHY_AND28_E2_H__ */
 
 /* End of File */

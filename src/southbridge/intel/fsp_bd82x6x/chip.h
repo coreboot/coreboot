@@ -88,4 +88,4 @@ struct southbridge_intel_fsp_bd82x6x_config {
 	int c2_latency;
 };
 
-#endif				/* SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H */
+#endif /* SOUTHBRIDGE_INTEL_FSP_BD82X6X_CHIP_H */

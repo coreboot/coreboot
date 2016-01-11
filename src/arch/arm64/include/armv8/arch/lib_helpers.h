@@ -586,4 +586,4 @@ void tlbivaa_el1(uint64_t va);
 
 #endif // __ASSEMBLY__
 
-#endif // __ARCH_LIB_HELPERS_H__
+#endif /* __ARCH_LIB_HELPERS_H__ */

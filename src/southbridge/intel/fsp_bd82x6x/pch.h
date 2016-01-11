@@ -582,4 +582,4 @@ void display_fd_settings(void);
 #define SPIBAR_FDATA(n)             (0x3810 + (4 * n)) /* SPI flash data */
 
 #endif /* __ACPI__ */
-#endif				/* SOUTHBRIDGE_INTEL_BD82X6X_PCH_H */
+#endif /* SOUTHBRIDGE_INTEL_FSP_BD82X6X_PCH_H */

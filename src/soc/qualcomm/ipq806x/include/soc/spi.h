@@ -276,4 +276,4 @@ static inline struct ipq_spi_slave *to_ipq_spi(struct spi_slave *slave)
 	return container_of(slave, struct ipq_spi_slave, slave);
 }
 
-#endif /* _IPQ_SPI_H_ */
+#endif /* _IPQ806X_SPI_H_ */

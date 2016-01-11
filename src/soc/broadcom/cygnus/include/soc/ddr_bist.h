@@ -154,6 +154,6 @@ enum drc_reg_set {
 #define DRC_REG_WRITE(unit, channel, reg, rv) \
 	soc_reg32_set((volatile uint32*)(channel + 4 * reg), rv)
 
-#endif /* #ifndef __SOC_BROADCOM_CYGNUS_DDR_BIST_H__*/
+#endif /* __SOC_BROADCOM_CYGNUS_DDR_BIST_H__ */
 
 /* End of File */

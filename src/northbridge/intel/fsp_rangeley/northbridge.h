@@ -78,4 +78,4 @@ void northbridge_acpi_fill_ssdt_generator(device_t device);
 
 #endif /* #ifndef __ASSEMBLER__ */
 #endif /* #ifndef __ACPI__ */
-#endif /* #ifndef __NORTHBRIDGE_INTEL_RANGELEY_NORTHBRIDGE_H__ */
+#endif /* __NORTHBRIDGE_INTEL_RANGELEY_NORTHBRIDGE_H__ */

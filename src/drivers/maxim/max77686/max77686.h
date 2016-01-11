@@ -127,4 +127,4 @@ int max77686_volsetting(unsigned int bus, enum max77686_regnum reg,
  */
 int max77686_disable_backup_batt(unsigned int bus);
 
-#endif /* __MAX77686_PMIC_H_ */
+#endif /* __MAX77686_H_ */

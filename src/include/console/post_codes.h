@@ -487,4 +487,4 @@
 
 #define POST_INTR_SEG_JUMP			(0x0F0)
 
-#endif /* THE_ALMIGHTY_POST_CODES_H */
+#endif /* POST_CODES_H */

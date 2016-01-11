@@ -134,4 +134,4 @@ void avoid_lpc_dma_deadlock(device_t nb_dev, device_t sb_dev);
 void config_gpp_core(device_t nb_dev, device_t sb_dev);
 void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port);
 u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port);
-#endif				/* RS690_H */
+#endif /* __RS690_H__ */

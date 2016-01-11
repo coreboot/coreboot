@@ -194,4 +194,4 @@ void nand_clock_config(void);
 void usb_clock_config(void);
 int audio_clock_config(unsigned frequency);
 
-#endif  /*  __PLATFORM_IPQ860X_CLOCK_H_ */
+#endif /* __IPQ860X_CLOCK_H_ */

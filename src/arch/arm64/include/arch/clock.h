@@ -20,4 +20,4 @@
 
 void set_cntfrq(uint32_t);
 
-#endif //__ARM_CLOCK_H_
+#endif /* __ARM_CLOCK_H_ */

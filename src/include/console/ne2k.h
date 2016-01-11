@@ -37,4 +37,4 @@ static inline void __ne2k_tx_byte(u8 data)	{}
 static inline void __ne2k_tx_flush(void)	{}
 #endif
 
-#endif /* _NE2K_H */
+#endif /* _NE2K_H__ */

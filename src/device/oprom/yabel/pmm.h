@@ -43,4 +43,4 @@ void pmm_handleInt(void);
 
 void pmm_test(void);
 
-#endif				// _YABEL_PMM_H
+#endif /* _YABEL_PMM_H_ */

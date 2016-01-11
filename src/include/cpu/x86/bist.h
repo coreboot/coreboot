@@ -9,4 +9,4 @@ static void report_bist_failure(u32 bist)
 	}
 }
 
-#endif /* CPU_Xf86_BIST_H */
+#endif /* CPU_X86_BIST_H */

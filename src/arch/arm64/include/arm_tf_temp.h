@@ -104,4 +104,4 @@ typedef struct bl31_params {
 	image_info_t *bl33_image_info;
 } bl31_params_t;
 
-#endif /* __ARM_TF_H__ */
+#endif /* __ARM_TF_TEMP_H__ */

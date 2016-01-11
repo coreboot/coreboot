@@ -20,4 +20,4 @@
 
 const optionrom_vbt_t *fsp_get_vbt(uint32_t *vbt_len);
 
-#endif /* _FSP_GOP_H_ */
+#endif /* _FSP1_1_GOP_H_ */

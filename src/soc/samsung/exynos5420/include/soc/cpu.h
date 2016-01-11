@@ -92,4 +92,4 @@ static inline u32 get_fb_base_kb(void)
 /* Procedures to setup Exynos5420 CPU */
 void exynos5420_config_smp(void);
 
-#endif	/* _EXYNOS5420_CPU_H */
+#endif /* CPU_SAMSUNG_EXYNOS5420_CPU_H */

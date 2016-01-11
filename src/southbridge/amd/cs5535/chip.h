@@ -5,4 +5,4 @@ struct southbridge_amd_cs5535_config {
 	int setupflash;
 };
 
-#endif	/* _SOUTHBRIDGE_AMD_CS5536 */
+#endif /* _SOUTHBRIDGE_AMD_CS5535 */

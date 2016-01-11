@@ -1145,6 +1145,6 @@ extern int soc_ydc_ddr_bist_run(int unit, int phy_ndx,
 /****************************************************************************
  * Datatype Definitions.
  ***************************************************************************/
-#endif /* #ifndef __SOC_BROADCOM_CYGNUS_YDC_DDR_BIST_H__ */
+#endif /* __SOC_BROADCOM_CYGNUS_YDC_DDR_BIST_H__ */
 
 /* End of File */

@@ -81,4 +81,4 @@ static inline u32 get_fb_base_kb(void)
 	return RAM_BASE_KB + RAM_SIZE_KB - FB_SIZE_KB;
 }
 
-#endif	/* _EXYNOS5250_CPU_H */
+#endif /* CPU_SAMSUNG_EXYNOS5250_CPU_H */

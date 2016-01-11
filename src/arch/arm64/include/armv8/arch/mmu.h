@@ -157,4 +157,4 @@ void mmu_enable(void);
 /* Disable the MMU (which also disables dcache but not icache). */
 void mmu_disable(void);
 
-#endif // __ARCH_ARM64_MMU_H__
+#endif /* __ARCH_ARM64_MMU_H__ */

@@ -397,12 +397,12 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 func init() {
 	/* BD82X6X LPC */
 	for id := 0x1c40; id <= 0x1c5f; id++ {
-		RegisterPCI(0x8086, id, bd82x6x{variant: "BD82X6X"})
+		RegisterPCI(0x8086, uint16(id), bd82x6x{variant: "BD82X6X"})
 	}
 
 	/* C216 LPC */
 	for id := 0x1e41; id <= 0x1e5f; id++ {
-		RegisterPCI(0x8086, id, bd82x6x{variant: "C216"})
+		RegisterPCI(0x8086, uint16(id), bd82x6x{variant: "C216"})
 	}
 
 	/* PCIe bridge */

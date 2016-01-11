@@ -98,7 +98,7 @@ void mt6391_configure_ldo(enum ldo_power ldo, enum ldo_voltage vsel)
 		if (vsel == LDO_1P22)
 			vsel = 0;
 		break;
-	case LDO_VCAMIO:
+	case LDO_VGP2:
 		assert(vsel != 1);
 		if (vsel == LDO_1P0)
 			vsel = 1;

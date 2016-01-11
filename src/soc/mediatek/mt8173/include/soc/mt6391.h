@@ -264,7 +264,7 @@ enum{
 
 enum ldo_power {
 	LDO_VCAMD  = 0,	/* VGP1 */
-	LDO_VCAMIO = 1,	/* VGP2 */
+	LDO_VGP2   = 1,	/* VGP2 */
 	LDO_VCAMAF = 2,	/* VGP3 */
 	LDO_VGP4   = 3,
 	LDO_VGP5   = 4,

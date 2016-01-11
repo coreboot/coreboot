@@ -152,6 +152,48 @@ static void configure_backlight(void)
 	gpio_output(PAD_PCM_TX, 0);	/* PANEL_POWER_EN */
 }
 
+static void configure_display(void)
+{
+	mtcmos_display_power_on();
+
+	switch (board_id()) {
+	case 0:
+		/* board from Rev0, Rev1 */
+		/* vgp2 set to 1.8V for it6151 */
+		mt6391_configure_ldo(LDO_VGP2, LDO_1P8);
+		gpio_output(PAD_PCM_RX, 0); /* IT6151_SYSRSTN */
+		gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
+		gpio_output(PAD_PCM_SYNC, 1); /* IT6151_1V2_ENABLE */
+		gpio_output(PAD_PCM_RX, 1); /* IT6151_SYSRSTN */
+		break;
+	case 1:
+		/* board from Rev0, Rev1 */
+		/* vgp2 set to 1.8V for it6151 */
+		mt6391_configure_ldo(LDO_VGP2, LDO_1P8);
+		gpio_output(PAD_URTS0, 0); /* IT6151_SYSRSTN */
+		gpio_output(PAD_URTS2, 1); /* IT6151_1V2_ENABLE */
+		gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
+		gpio_output(PAD_URTS0, 1); /* IT6151_SYSRSTN */
+		break;
+	default:
+		/* board from Rev2 */
+		gpio_output(PAD_CMMCLK, 1); /* PANEL_3V3_ENABLE */
+		/* vgp2 set to 3.3V for ps8640 */
+		mt6391_configure_ldo(LDO_VGP2, LDO_3P3);
+		gpio_output(PAD_URTS0, 0); /* PS8640_SYSRSTN */
+		/* PS8640_1V2_ENABLE */
+		gpio_output(board_id() == 4 ? PAD_SRCLKENAI2 : PAD_URTS2, 1);
+		/* delay 2ms for vgp2 and PS8640_1V2_ENABLE stable */
+		mdelay(2);
+		/* PS8640_PDN */
+		gpio_output(board_id() > 4 ? PAD_LCM_RST : PAD_UCTS0, 1);
+		gpio_output(PAD_PCM_CLK, 1); /* PS8640_MODE_CONF */
+		gpio_output(PAD_URTS0, 1); /* PS8640_SYSRSTN */
+		/* for level shift(1.8V to 3.3V) on */
+		udelay(100);
+	}
+}
+
 static void display_startup(void)
 {
 	struct edid edid;
@@ -207,6 +249,7 @@ static void mainboard_init(device_t dev)
 	configure_audio();
 	if (display_init_required()) {
 		configure_backlight();
+		configure_display();
 		display_startup();
 	} else {
 		printk(BIOS_INFO, "Skipping display init.\n");

@@ -41,7 +41,7 @@ void mainboard_romstage_entry(struct romstage_params *params)
 
 	/* Turn on keyboard backlight to indicate we are booting */
 	if (params->power_state->prev_sleep_state != SLEEP_STATE_S3)
-		google_chromeec_kbbacklight(100);
+		google_chromeec_kbbacklight(25);
 
 	early_config_gpio();
 

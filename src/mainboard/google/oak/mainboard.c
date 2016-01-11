@@ -135,8 +135,21 @@ static void configure_usb(void)
 {
 	setup_usb_host();
 
-	if (board_id() > 3)
+	if (board_id() > 3) {
+		/* Enable current limit */
 		gpio_output(PAD_CM2MCLK, 1);
+		/* Configure USB OC pins*/
+		gpio_input_pullup(PAD_MSDC3_DSL);
+		gpio_input_pullup(PAD_CMPCLK);
+		gpio_input_pullup(PAD_PCM_SYNC);
+	}
+
+	if (board_id() > 4) {
+		/* USB 2.0 type A port over current interrupt pin(low active) */
+		gpio_input_pullup(PAD_UCTS2);
+		/* USB 2.0 type A port BC1.2 STATUS(low active) */
+		gpio_input_pullup(PAD_AUD_DAT_MISO);
+	}
 }
 
 static void configure_usb_hub(void)

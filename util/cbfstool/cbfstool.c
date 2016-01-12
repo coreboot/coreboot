@@ -1276,7 +1276,6 @@ int main(int argc, char **argv)
 				param.baseaddress = strtoul(optarg, NULL, 0);
 				// baseaddress may be zero on non-x86, so we
 				// need an explicit "baseaddress_assigned".
-				param.baseaddress = strtoul(optarg, NULL, 0);
 				param.baseaddress_assigned = 1;
 				break;
 			case 'l':

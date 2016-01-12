@@ -969,9 +969,7 @@ static void print_version(void)
     "This program is distributed in the hope that it will be useful,\n"
     "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
     "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-    "GNU General Public License for more details.\n\n"
-    "You should have received a copy of the GNU General Public License\n"
-    "along with this program.  If not, see <http://www.gnu.org/licenses/>.\n\n");
+    "GNU General Public License for more details.\n\n");
 }
 
 static void print_usage(const char *name)

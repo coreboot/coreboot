@@ -104,7 +104,7 @@ help_coreboot help::
 	@echo  '  what-jenkins-does     - Run platform build tests (Use CPUS=# for more cores)'
 	@echo  '  printall              - print makefile info for debugging'
 	@echo  '  lint / lint-stable    - run coreboot lint tools (all / minimal)'
-	@echo  '  gitconfig             - set up git to subnit patches to coreboot'
+	@echo  '  gitconfig             - set up git to submit patches to coreboot'
 	@echo  '  ctags / ctags-project - make ctags file for all of coreboot or current board'
 	@echo  '  cscope / cscope-project - make cscope.out file for coreboot or current board'
 	@echo

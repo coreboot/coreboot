@@ -2,6 +2,7 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2010 coresystems GmbH
+# Copyright (C) 2016 Google Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,8 +14,62 @@
 # GNU General Public License for more details.
 #
 #
-# DESCR: Check that all files in src/ and util/ have valid license headers
+# DESCR: Check that files in have valid license headers
+# $1 is an optional command line parameter containing directories to check
+
+# regex list of files and directories to exclude from the search
+HEADER_EXCLUDED="\
+^src/vendorcode/|\
+^util/kconfig/|\
+^util/romcc/tests|\
+^util/romcc/results|\
+^util/gitconfig|\
+Kconfig|\
+\<COPYING\>|\
+\<LICENSE\>|\
+\<README\>|\
+Changelog|\
+TODO|\
+EXAMPLE|\
+\.txt$|\
+\.jpg$|\
+\.cksum$|\
+\.bin$|\
+\.hex$|\
+\.patch$|\
+_shipped$|\
+/microcode-[^/]*.h$|\
+/sdram-.*\.inc$|\
+Makefile\.inc\
+"
+
+#space separated list of directories to test
+if [ "$1" = "" ]; then
+	HEADER_DIRS="src util"
+else
+	HEADER_DIRS="$1"
+fi
 
 LC_ALL=C export LC_ALL
-grep -L "You should have received a copy of the GNU General Public License" `git ls-files src util |egrep -v "(^3rdparty|^src/vendorcode/|^util/kconfig/|^util/romcc/tests|\<COPYING\>|\<LICENSE\>|\<README\>|_shipped$|\.patch$|/microcode-[^/]*.h$)"` | \
-	sed -e "s,^.*$,File & has no valid GPL header.,"
+
+#get initial list from git, removing HEADER_EXCLUDED files.
+#make a copy to check for the old style header later.
+headerlist=$(git ls-files $HEADER_DIRS | egrep -v "($HEADER_EXCLUDED)")
+
+#update headerlist by removing files that match the license string
+check_for_license() {
+	headerlist=$(grep -iL "$1" $headerlist 2>/dev/null)
+}
+
+#search the files for license headers
+check_for_license "GNU General Public License"
+check_for_license 'IS PROVIDED .*"AS IS"'
+check_for_license "IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE"
+check_for_license '"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES'
+
+for file in $headerlist; do
+	#verify the file exists, and has content that requires a header
+	if [ -f "$file" ] && [ "$(wc -l < "$file")" -ne 0 ]; then
+		echo "$file has no recognized license header."
+	fi
+done

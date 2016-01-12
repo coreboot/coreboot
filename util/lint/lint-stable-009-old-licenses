@@ -1,0 +1,49 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2010 coresystems GmbH
+# Copyright (C) 2016 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#
+# DESCR: verify that files don't have the old style header
+
+# regex list of files and directories to exclude from the search
+HEADER_EXCLUDED="\
+^src/vendorcode/|\
+^util/kconfig/|\
+\<COPYING\>|\
+\.jpg$|\
+\.cksum$|\
+\.bin$|\
+\.hex$|\
+\.patch$|\
+_shipped$|\
+^util/scripts/no-fsf-addresses.sh|\
+^util/lint/lint-000-license-headers|\
+^util/lint/lint-stable-000-license-headers\
+"
+
+if [ "$HEADER_DIRS" = "" ]; then
+	HEADER_DIRS="src util"
+fi
+
+LC_ALL=C export LC_ALL
+
+headerlist=$(git ls-files $HEADER_DIRS | egrep -v "($HEADER_EXCLUDED)")
+
+#check for the old style header
+headerlist=$(grep -il "You should have received a copy of the GNU" \
+	headerlist 2>/dev/null)
+
+for file in $headerlist; do
+	echo "$file has the old GPL header."
+done

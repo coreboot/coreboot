@@ -208,7 +208,7 @@ Scope (\_SB.PCI0.I2C4)
 			 */
 			Package () { "nuvoton,sar-threshold-num", 4 },
 			Package () { "nuvoton,sar-threshold",
-				Package() { 0x0a, 0x14, 0x26, 0x73 } },
+				Package() { 0x08, 0x12, 0x26, 0x73 } },
 			/*
 			 * Coeff 0-15 used to adjust threshold level
 			 * 0 for low resist range
@@ -216,6 +216,8 @@ Scope (\_SB.PCI0.I2C4)
 			Package () { "nuvoton,sar-hysteresis", 0 },
 			/* SAR tracking gain based on 2.754 micbias-voltage */
 			Package () { "nuvoton,sar-voltage", 6 },
+			Package () { "nuvoton,sar-compare-time", 1 },
+			Package () { "nuvoton,sar-sampling-time", 1 },
 			/* 100ms short key press debounce */
 			Package () { "nuvoton,short-key-debounce", 3 },
 			/* 2^(7+2) = 512 ms insert/eject debounce */

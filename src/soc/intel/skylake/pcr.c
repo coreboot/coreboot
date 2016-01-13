@@ -63,7 +63,7 @@ static int pch_pcr_read(u8 pid, u16 offset, u32 size, void *data)
 		*(u8 *) data = read8(pcr_reg_address(pid, offset));
 		break;
 	default:
-		break;
+		return -1;
 	}
 	return 0;
 }
@@ -123,7 +123,7 @@ static int pch_pcr_write(u8 pid, u16 offset, u32 size, u32 data)
 		write8(pcr_reg_address(pid, offset), (u8) data);
 		break;
 	default:
-		break;
+		return -1;
 	}
 	/* Ensure the writes complete. */
 	complete_write();

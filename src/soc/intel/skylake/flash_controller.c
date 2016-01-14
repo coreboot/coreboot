@@ -182,7 +182,7 @@ void spi_release_bus(struct spi_slave *slave)
 int pch_hwseq_erase(struct spi_flash *flash, u32 offset, size_t len)
 {
 	u32 start, end, erase_size;
-	int ret;
+	int ret = 0;
 
 	erase_size = flash->sector_size;
 	if (offset % erase_size || len % erase_size) {

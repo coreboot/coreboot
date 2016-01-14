@@ -165,11 +165,17 @@ Scope (\_SB.PCI0.I2C4)
 				 * Android specification
 				 */
 				Package () {"nuvoton,sar-threshold-num", 4},
+				/*
+				 * Thresholds determined using the Wired Headphone
+				 * Compatibility Kit and a Chell EVT
+				 */
 				Package () {"nuvoton,sar-threshold",
-					Package () {0xc, 0x1e, 0x38, 0x60}},
+					Package () {0x20, 0x32, 0x50, 0x70}},
 				Package () {"nuvoton,sar-hysteresis", 1},
 				/* VDDA for button impedance measurement */
 				Package () {"nuvoton,sar-voltage", 0},
+				Package () {"nuvoton,sar-compare-time", 0 },
+				Package () {"nuvoton,sar-sampling-time", 0 },
 				/* 100ms short key press debounce */
 				Package () {"nuvoton,short-key-debounce", 2},
 				/* 2^(7+2) = 512 ms insert/eject debounce */

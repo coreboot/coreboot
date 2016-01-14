@@ -53,6 +53,8 @@ seabios:
 
 payloads/external/SeaBIOS/seabios/out/vgabios.bin: seabios
 payloads/external/SeaBIOS/seabios/out/bios.bin.elf: seabios
+payloads/external/SeaBIOS/seabios/.config: seabios
+payloads/external/SeaBIOS/seabios/out/autoversion.h: seabios
 
 filo:
 	$(MAKE) -C payloads/external/FILO -f Makefile.inc \
@@ -63,6 +65,8 @@ filo:
 			CONFIG_FILO_STABLE=$(CONFIG_FILO_STABLE)
 
 payloads/external/FILO/filo/build/filo.elf: filo
+payloads/external/FILO/filo/.config: filo
+payloads/external/FILO/filo/build/version.h: filo
 
 grub2:
 	$(MAKE) -C payloads/external/GRUB2 -f Makefile.inc \

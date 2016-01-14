@@ -657,6 +657,10 @@ extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-)
 # multiple CBFSes in fmap regions, override it.
 regions-for-file ?= COREBOOT
 
+ifeq ($(CONFIG_CBFS_AUTOGEN_ATTRIBUTES),y)
+	cbfs-autogen-attributes=-g
+endif
+
 cbfs-add-cmd = \
                printf "    CBFS       $(call extract_nth,2,$(file))\n"; \
 	       $(CBFSTOOL) $@.tmp \
@@ -664,7 +668,7 @@ cbfs-add-cmd = \
 	       -f $(call extract_nth,1,$(file)) \
 	       -n $(call extract_nth,2,$(file)) \
 	       $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
-	       $(if $(call extract_nth,4,$(file)),-c $(call extract_nth,4,$(file))) \
+	       $(if $(call extract_nth,4,$(file)),-c $(call extract_nth,4,$(file))) $(cbfs-autogen-attributes)\
 	       -r $(call regions-for-file,$(call extract_nth,2,$(file))) \
 	       $(call extract_nth,7,$(file))
 
@@ -742,7 +746,7 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-f $(objcbfs)/bootblock.bin \
 		-n bootblock \
 		-t bootblock \
-		-b -$(call file-size,$(objcbfs)/bootblock.bin)
+		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes)
 else
 	# don't add bootblock to cbfs yet, it's just a waste of space
 	true $(CBFSTOOL) $@.tmp add \
@@ -773,7 +777,8 @@ prebuild-files = \
 	$(foreach file,$(cbfs-files), \
 	$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null ; \
 	       $(if $(call extract_nth,6,$(file)),$(cbfs-add-cmd) -a $(call extract_nth,6,$(file)) &&,\
-	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
+	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) \
+	       $(cbfs-autogen-attributes) &&))
 
 .PHONY: $(obj)/coreboot.pre
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)

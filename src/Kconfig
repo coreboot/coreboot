@@ -409,6 +409,14 @@ config SYSTEM_TYPE_LAPTOP
 	default n
 	bool
 
+config CBFS_AUTOGEN_ATTRIBUTES
+	default n
+	bool
+	help
+	  If this option is selected, every file in cbfs which has a constraint
+	  regarding position or alignment will get an additional file attribute
+	  which describes this constraint.
+
 menu "Chipset"
 
 comment "SoC"

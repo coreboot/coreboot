@@ -1,0 +1,40 @@
+--
+-- This file is part of the coreboot project.
+--
+-- This program is free software; you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation; version 2 of the License.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+
+pragma Restrictions (No_Access_Subprograms);
+pragma Restrictions (No_Allocators);
+pragma Restrictions (No_Calendar);
+pragma Restrictions (No_Dispatch);
+pragma Restrictions (No_Exception_Handlers);
+pragma Restrictions (No_Fixed_Point);
+pragma Restrictions (No_Floating_Point);
+pragma Restrictions (No_Implicit_Dynamic_Code);
+pragma Restrictions (No_Implicit_Heap_Allocations);
+pragma Restrictions (No_Implicit_Loops);
+pragma Restrictions (No_Initialize_Scalars);
+pragma Restrictions (No_IO);
+pragma Restrictions (No_Local_Allocators);
+pragma Restrictions (No_Recursion);
+pragma Restrictions (No_Secondary_Stack);
+pragma Restrictions (No_Streams);
+pragma Restrictions (No_Tasking);
+pragma Restrictions (No_Unchecked_Access);
+pragma Restrictions (No_Unchecked_Deallocation);
+pragma Restrictions (No_Wide_Characters);
+pragma Restrictions (Static_Storage_Size);
+pragma Assertion_Policy
+  (Statement_Assertions => Disable,
+   Pre                  => Disable,
+   Post                 => Disable);
+pragma Overflow_Mode (General => Strict, Assertions => Eliminated);
+pragma SPARK_Mode (On);

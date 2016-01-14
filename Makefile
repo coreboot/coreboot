@@ -183,16 +183,32 @@ add-special-class= \
 	$(eval special-classes+=$(1))
 
 # Converts one or more source file paths to their corresponding build/ paths.
-# Only .c and .S get converted to .o, other files (like .ld) keep their name.
+# Only .ads, adb, .c and .S get converted to .o, other files (like .ld) keep
+# their name.
 # $1 stage name
 # $2 file path (list)
 src-to-obj=\
 	$(patsubst $(obj)/%,$(obj)/$(1)/%,\
 	$(patsubst $(obj)/$(1)/%,$(obj)/%,\
 	$(patsubst src/%,$(obj)/%,\
+	$(patsubst %.ads,%.o,\
+	$(patsubst %.adb,%.o,\
 	$(patsubst %.c,%.o,\
 	$(patsubst %.S,%.o,\
-	$(subst .$(1),,$(2)))))))
+	$(subst .$(1),,$(2)))))))))
+
+# Converts one or more source file paths to the corresponding build/ paths
+# of their Ada library information (.ali) files.
+# $1 stage name
+# $2 file path (list)
+src-to-ali=\
+	$(patsubst $(obj)/%,$(obj)/$(1)/%,\
+	$(patsubst $(obj)/$(1)/%,$(obj)/%,\
+	$(patsubst src/%,$(obj)/%,\
+	$(patsubst %.ads,%.ali,\
+	$(patsubst %.adb,%.ali,\
+	$(subst .$(1),,\
+	$(filter %.ads %.adb,$(2))))))))
 
 # Clean -y variables, include Makefile.inc
 # Add paths to files in X-y to X-srcs
@@ -229,7 +245,22 @@ endif
 # Eliminate duplicate mentions of source files in a class
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 
+# To track dependencies, we need all Ada specification (.ads) files in
+# *-srcs. Extract / filter all specification files that have a matching
+# body (.adb) file here (specifications without a body are valid sources
+# in Ada).
+$(foreach class,$(classes),$(eval $(class)-extra-specs := \
+	$(filter \
+		$(addprefix %/,$(patsubst %.adb,%.ads,$(notdir $(filter %.adb,$($(class)-srcs))))), \
+		$(filter %.ads,$($(class)-srcs)))))
+$(foreach class,$(classes),$(eval $(class)-srcs := \
+	$(filter-out $($(class)-extra-specs),$($(class)-srcs))))
+
 $(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class),$($(class)-srcs))))
+$(foreach class,$(classes),$(eval $(class)-alis:=$(call src-to-ali,$(class),$($(class)-srcs))))
+
+# For Ada includes
+$(foreach class,$(classes),$(eval $(class)-ada-dirs:=$(sort $(dir $(filter %.ads %.adb,$($(class)-srcs)) $($(class)-extra-specs)))))
 
 # Save all objs before processing them (for dependency inclusion)
 originalobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
@@ -242,6 +273,17 @@ allsrcs:=$(foreach var, $(addsuffix -srcs,$(classes)), $($(var)))
 allobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
 alldirs:=$(sort $(abspath $(dir $(allobjs))))
 
+# Reads dependencies from an Ada library information (.ali) file
+# Only basenames (with suffix) are preserved so we have to look the
+# paths up in $($(stage)-srcs).
+# $1 stage name
+# $2 ali file
+create_ada_deps=$$(if $(2),\
+	gnat.adc \
+	$$(filter \
+		$$(addprefix %/,$$(shell sed -ne's/^D \([^\t]\+\).*$$$$/\1/p' $(2) 2>/dev/null)), \
+		$$($(1)-srcs) $$($(1)-extra-specs)))
+
 # macro to define template macros that are used by use_template macro
 define create_cc_template
 # $1 obj class
@@ -250,9 +292,13 @@ define create_cc_template
 # $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
-$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $(KCONFIG_AUTOHEADER) $(4)
+$$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $$(call create_ada_deps,$1,$$(call src-to-ali,$1,$$(1).$2)) $(KCONFIG_AUTOHEADER) $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	$(CC_$(1)) -MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@) $(3) -c -o $$$$@ $$$$<
+	$(CC_$(1)) \
+		$$(if $$(filter-out ads adb,$(2)), \
+		   -MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@), \
+		   $$$$(ADAFLAGS_$(1)) $$$$(addprefix -I,$$$$($(1)-ada-dirs))) \
+		$(3) -c -o $$$$@ $$$$<
 en$(EMPTY)def
 end$(EMPTY)if
 endef
@@ -266,6 +312,30 @@ $(foreach class,$(classes), \
 
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(basename $(file)))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))
+
+# To supported complex package initializations, we need to call the
+# emitted code explicitly. gnatbind gathers all the calls for us
+# and exports them as a procedure $(stage)_adainit(). Every stage that
+# uses Ada code has to call it!
+define gnatbind_template
+# $1 class
+$$(obj)/$(1)/b__$(1).adb: $$$$(filter-out $$(obj)/$(1)/b__$(1).ali,$$$$($(1)-alis))
+	@printf "    BIND       $$(subst $$(obj)/,,$$@)\n"
+	# We have to give gnatbind a simple filename (without leading
+	# path components) so just cd there.
+	cd $$(dir $$@) && \
+		$$(GNATBIND_$(1)) -a -n \
+			-L$(1)_ada -o $$(notdir $$@) \
+			$$(subst $$(dir $$@),,$$^)
+$$(obj)/$(1)/b__$(1).o: $$(obj)/$(1)/b__$(1).adb
+	@printf "    CC         $$(subst $$(obj)/,,$$@)\n"
+	$(CC_$(1)) $$(ADAFLAGS_$(1)) -c -o $$@ $$<
+$(1)-objs += $$(obj)/$(1)/b__$(1).o
+$($(1)-alis): %.ali: %.o
+endef
+
+$(eval $(foreach class,$(classes), \
+	$(if $($(class)-alis),$(call gnatbind_template,$(class)))))
 
 DEPENDENCIES += $(addsuffix .d,$(basename $(allobjs)))
 -include $(DEPENDENCIES)

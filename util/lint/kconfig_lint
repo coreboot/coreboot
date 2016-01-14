@@ -50,6 +50,7 @@ my %symbols;               # main structure of all symbols declared
 my %referenced_symbols;    # list of symbols referenced by expressions or select statements
 my %used_symbols;          # structure of symbols used in the tree, and where they're found
 my @collected_symbols;     #
+my %selected_symbols;      # list of symbols that are enabled by a select statement
 
 Main();
 
@@ -87,6 +88,7 @@ sub Main {
     check_for_ifdef();
     check_for_def();
     check_is_enabled();
+    check_selected_symbols();
 
     print_wholeconfig();
 
@@ -120,6 +122,48 @@ sub show_warning {
     unless ($suppress_warning_output) {
         print "#!!!!! Warning: $warning_msg\n";
         $warnings_found++;
+    }
+}
+
+#-------------------------------------------------------------------------------
+# check selected symbols for validity
+# they must be bools
+# they cannot select symbols created in 'choice' blocks
+#-------------------------------------------------------------------------------
+sub check_selected_symbols {
+
+    #loop through symbols found in expressions and used by 'select' keywords
+    foreach my $symbol ( sort ( keys %selected_symbols ) ) {
+        my $type_failure   = 0;
+        my $choice_failure = 0;
+
+        #errors selecting symbols that don't exist are already printed, so we
+        #don't need to print them again here
+
+        #make sure the selected symbols are bools
+        if ( ( exists $symbols{$symbol} ) && ( $symbols{$symbol}{type} ne "bool" ) ) {
+            $type_failure = 1;
+        }
+
+        #make sure we're not selecting choice symbols
+        if ( ( exists $symbols{$symbol} ) && ( $symbols{$symbol}{choice} ) ) {
+            $choice_failure = 1;
+        }
+
+        #loop through each instance of the symbol to print out all of the failures
+        for ( my $i = 0 ; $i <= $referenced_symbols{$symbol}{count} ; $i++ ) {
+            next if ( !exists $selected_symbols{$symbol}{$i} );
+            my $file   = $referenced_symbols{$symbol}{$i}{filename};
+            my $lineno = $referenced_symbols{$symbol}{$i}{line_no};
+            if ($type_failure) {
+                show_error(
+                    "CONFIG_$symbol' selected at $file:$lineno." . "  Selects only work on symbols of type bool." );
+            }
+            if ($choice_failure) {
+                show_error(
+                    "'CONFIG_$symbol' selected at $file:$lineno." . "  Symbols created in a choice cannot be selected." );
+            }
+        }
     }
 }
 
@@ -406,7 +450,7 @@ sub build_and_parse_kconfig_tree {
             if ($inside_choice) {
                 $configs_inside_choice++;
             }
-            add_symbol( $symbol, \@inside_menu, $filename, $line_no, \@inside_if );
+            add_symbol( $symbol, \@inside_menu, $filename, $line_no, \@inside_if, $inside_choice );
         }
 
         #bool|hex|int|string|tristate <expr> [if <expr>]
@@ -548,7 +592,7 @@ sub build_and_parse_kconfig_tree {
                 my $expression;
                 ( $line, $expression ) = handle_if_line( $line, $inside_config, $filename, $line_no );
                 if ($line) {
-                    add_referenced_symbol( $line, $filename, $line_no );
+                    add_referenced_symbol( $line, $filename, $line_no, 'select' );
                 }
             }
         }
@@ -596,16 +640,32 @@ sub handle_depends {
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 sub add_symbol {
-    my ( $symbol, $menu_array_ref, $filename, $line_no, $ifref ) = @_;
+    my ( $symbol, $menu_array_ref, $filename, $line_no, $ifref, $inside_choice ) = @_;
     my @inside_if = @{$ifref};
 
     #initialize the symbol or increment the use count.
     if ( ( !exists $symbols{$symbol} ) || ( !exists $symbols{$symbol}{count} ) ) {
         $symbols{$symbol}{count} = 0;
+        if ($inside_choice) {
+            $symbols{$symbol}{choice} = 1;
+        }
+        else {
+            $symbols{$symbol}{choice} = 0;
+        }
     }
     else {
         $symbols{$symbol}{count}++;
+
+        if ( $inside_choice && !$symbols{$symbol}{choice} ) {
+            show_error( "$symbol entry at $filename:$line_no has already been created inside a choice block "
+                  . "at $symbols{$symbol}{0}{file}:$symbols{$symbol}{0}{line_no}." );
+        }
+        elsif ( !$inside_choice && $symbols{$symbol}{choice} ) {
+            show_error( "$symbol entry at $filename:$line_no has already been created outside a choice block "
+                  . "at $symbols{$symbol}{0}{file}:$symbols{$symbol}{0}{line_no}." );
+        }
     }
+
 
     # add the location of this instance
     my $symcount = $symbols{$symbol}{count};
@@ -755,7 +815,7 @@ sub handle_expressions {
         return;
     }
     elsif ( $exprline =~ /^\s*([A-Za-z0-9_]+)\s*$/ ) {                   # <symbol>                             (1)
-        add_referenced_symbol( $1, $filename, $line_no );
+        add_referenced_symbol( $1, $filename, $line_no, 'expression' );
     }
     elsif ( $exprline =~ /^\s*!(.+)$/ ) {                                # '!' <expr>                           (5)
 
@@ -796,7 +856,7 @@ sub handle_expressions {
 # add_referenced_symbol
 #-------------------------------------------------------------------------------
 sub add_referenced_symbol {
-    my ( $symbol, $filename, $line_no ) = @_;
+    my ( $symbol, $filename, $line_no, $reftype ) = @_;
     if ( exists $referenced_symbols{$symbol} ) {
         $referenced_symbols{$symbol}{count}++;
         $referenced_symbols{$symbol}{ $referenced_symbols{$symbol}{count} }{filename} = $filename;
@@ -806,6 +866,11 @@ sub add_referenced_symbol {
         $referenced_symbols{$symbol}{count}       = 0;
         $referenced_symbols{$symbol}{0}{filename} = $filename;
         $referenced_symbols{$symbol}{0}{line_no}  = $line_no;
+    }
+
+    #mark the symbol as being selected, use referenced symbols for location
+    if ( $reftype eq 'select' ) {
+        $selected_symbols{$symbol}{ $referenced_symbols{$symbol}{count} } = 1;
     }
 }
 

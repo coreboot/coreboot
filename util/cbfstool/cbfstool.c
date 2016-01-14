@@ -4,6 +4,7 @@
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
  * Copyright (C) 2012 Google, Inc.
+ * Copyright (C) 2016 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +74,7 @@ static struct param {
 	bool fill_partial_downward;
 	bool show_immutable;
 	bool stage_xip;
+	bool autogen_attr;
 	int fit_empty_entries;
 	enum comp_algo compression;
 	enum vb2_hash_algorithm hash;
@@ -152,6 +154,13 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
 
 	/* Include cbfs_file size along with space for with name. */
 	metadata_size += cbfs_calculate_file_header_size(param.name);
+	/* Adjust metadata_size if additional attributes were added */
+	if (param.autogen_attr) {
+		if (param.alignment)
+			metadata_size += sizeof(struct cbfs_file_attr_align);
+		if (param.baseaddress_assigned || param.stage_xip)
+			metadata_size += sizeof(struct cbfs_file_attr_position);
+	}
 
 	int32_t address = cbfs_locate_entry(&image, buffer.size, param.pagesize,
 						param.alignment, metadata_size);
@@ -351,6 +360,42 @@ static int cbfs_add_component(const char *filename,
 			buffer_delete(&buffer);
 			return 1;
 		}
+
+	if (param.autogen_attr) {
+		/* Add position attribute if assigned */
+		if (param.baseaddress_assigned || param.stage_xip) {
+			struct cbfs_file_attr_position *attrs =
+				(struct cbfs_file_attr_position *)
+				cbfs_add_file_attr(header,
+					CBFS_FILE_ATTR_TAG_POSITION,
+					sizeof(struct cbfs_file_attr_position));
+			if (attrs == NULL)
+				return -1;
+			/* If we add a stage or a payload, we need to take  */
+			/* care about the additional metadata that is added */
+			/* to the cbfs file and therefore set the position  */
+			/* the real beginning of the data. */
+			if (type == CBFS_COMPONENT_STAGE)
+				attrs->position = htonl(offset +
+					sizeof(struct cbfs_stage));
+			else if (type == CBFS_COMPONENT_PAYLOAD)
+				attrs->position = htonl(offset +
+					sizeof(struct cbfs_payload));
+			else
+				attrs->position = htonl(offset);
+		}
+		/* Add alignment attribute if used */
+		if (param.alignment) {
+			struct cbfs_file_attr_align *attrs =
+				(struct cbfs_file_attr_align *)
+				cbfs_add_file_attr(header,
+					CBFS_FILE_ATTR_TAG_ALIGNMENT,
+					sizeof(struct cbfs_file_attr_align));
+			if (attrs == NULL)
+				return -1;
+			attrs->alignment = htonl(param.alignment);
+		}
+	}
 
 	if (IS_TOP_ALIGNED_ADDRESS(offset))
 		offset = convert_to_from_top_aligned(param.image_region,
@@ -1003,12 +1048,14 @@ static int cbfs_copy(void)
 }
 
 static const struct command commands[] = {
-	{"add", "H:r:f:n:t:c:b:a:vA:h?", cbfs_add, true, true},
-	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:h?", cbfs_add_flat_binary, true,
-									true},
-	{"add-payload", "H:r:f:n:t:c:b:C:I:vA:h?", cbfs_add_payload, true, true},
-	{"add-stage", "a:H:r:f:n:t:c:b:P:S:yvA:h?", cbfs_add_stage, true, true},
-	{"add-int", "H:r:i:n:b:vh?", cbfs_add_integer, true, true},
+	{"add", "H:r:f:n:t:c:b:a:vA:gh?", cbfs_add, true, true},
+	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:gh?", cbfs_add_flat_binary,
+				true, true},
+	{"add-payload", "H:r:f:n:t:c:b:C:I:vA:gh?", cbfs_add_payload,
+				true, true},
+	{"add-stage", "a:H:r:f:n:t:c:b:P:S:yvA:gh?", cbfs_add_stage,
+				true, true},
+	{"add-int", "H:r:i:n:b:vgh?", cbfs_add_integer, true, true},
 	{"add-master-header", "H:r:vh?", cbfs_add_master_header, true, true},
 	{"copy", "r:R:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
@@ -1053,6 +1100,7 @@ static struct option long_options[] = {
 	{"verbose",       no_argument,       0, 'v' },
 	{"with-readonly", no_argument,       0, 'w' },
 	{"xip",           no_argument,       0, 'y' },
+	{"gen-attribute", no_argument,       0, 'g' },
 	{NULL,            0,                 0,  0  }
 };
 
@@ -1117,6 +1165,7 @@ static void usage(char *name)
 	     "  -T               Output top-aligned memory address\n"
 	     "  -u               Accept short data; fill upward/from bottom\n"
 	     "  -d               Accept short data; fill downward/from top\n"
+	     "  -g               Generate potition and alignment arguments\n"
 	     "  -v               Provide verbose output\n"
 	     "  -h               Display this help message\n\n"
 	     "COMMANDs:\n"
@@ -1350,6 +1399,9 @@ int main(int argc, char **argv)
 				break;
 			case 'y':
 				param.stage_xip = true;
+				break;
+			case 'g':
+				param.autogen_attr = true;
 				break;
 			case 'h':
 			case '?':

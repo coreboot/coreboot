@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2016 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,6 +109,8 @@ struct cbfs_file_attribute {
 #define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
 #define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
 #define CBFS_FILE_ATTR_TAG_HASH 0x68736148
+#define CBFS_FILE_ATTR_TAG_POSITION 0x42435350  /* PSCB */
+#define CBFS_FILE_ATTR_TAG_ALIGNMENT 0x42434c41 /* ALCB */
 
 struct cbfs_file_attr_compression {
 	uint32_t tag;
@@ -123,6 +126,18 @@ struct cbfs_file_attr_hash {
 	uint32_t hash_type;
 	/* hash_data is len - sizeof(struct) bytes */
 	uint8_t  hash_data[];
+} __PACKED;
+
+struct cbfs_file_attr_position {
+	uint32_t tag;
+	uint32_t len;
+	uint32_t position;
+} __PACKED;
+
+struct cbfs_file_attr_align {
+	uint32_t tag;
+	uint32_t len;
+	uint32_t alignment;
 } __PACKED;
 
 struct cbfs_stage {

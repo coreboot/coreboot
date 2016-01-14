@@ -48,7 +48,6 @@ config DCACHE_AP_STACK_SIZE
 config GEODE_VSA
 	bool
 	default y
-	select PCI_OPTION_ROM_RUN_REALMODE
 
 config GEODE_VSA_FILE
 	bool "Add a VSA image"

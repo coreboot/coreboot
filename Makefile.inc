@@ -359,6 +359,50 @@ CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections
 
+ADAFLAGS_common += -gnatg -gnatp
+ADAFLAGS_common += -Wuninitialized -Wall -Werror
+ADAFLAGS_common += -pipe -g -nostdinc
+ADAFLAGS_common += -Wstrict-aliasing -Wshadow
+ADAFLAGS_common += -fno-common -fomit-frame-pointer
+ADAFLAGS_common += -ffunction-sections -fdata-sections
+# Ada warning options:
+#
+#  a   Activate most optional warnings.
+# .e   Activate every optional warnings.
+#  e   Treat warnings and style checks as errors.
+#
+#  D   Suppress warnings on implicit dereferences:
+#      As SPARK does not accept access types we have to map the
+#      dynamically chosen register locations to a static SPARK
+#      variable.
+#
+# .H   Suppress warnings on holes/gaps in records:
+#      We are modelling hardware here!
+#
+#  H   Suppress warnings on hiding:
+#      It's too annoying, you run out of ideas for identifiers fast.
+#
+#  T   Suppress warnings for tracking of deleted conditional code:
+#      We use static options to select code paths at compile time.
+#
+#  U   Suppress warnings on unused entities:
+#      Would have lots of warnings for unused register definitions,
+#      `withs` for debugging etc.
+#
+# .U   Deactivate warnings on unordered enumeration types:
+#      As SPARK doesn't support `pragma Ordered` by now, we don't
+#      use that, yet.
+#
+# .W   Suppress warnings on unnecessary Warnings Off pragmas:
+#      Things get really messy when you use different compiler
+#      versions, otherwise.
+# .Y   Disable information messages for why package spec needs body:
+#      Those messages are annoying. But don't forget to enable those,
+#      if you need the information.
+ADAFLAGS_common += -gnatwa.eeD.HHTU.U.W.Y
+# Disable style checks for now
+ADAFLAGS_common += -gnatyN
+
 LDFLAGS_common := --gc-sections -nostdlib -nostartfiles -static --emit-relocs
 
 ifeq ($(CONFIG_COMPILER_GCC),y)
@@ -371,8 +415,10 @@ CFLAGS_common += -Werror
 endif
 ifneq ($(GDB_DEBUG),)
 CFLAGS_common += -Og
+ADAFLAGS_common += -Og
 else
 CFLAGS_common += -Os
+ADAFLAGS_common += -Os
 endif
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \

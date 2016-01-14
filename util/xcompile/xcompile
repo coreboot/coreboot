@@ -66,10 +66,29 @@ else
 	die "no host compiler found"
 fi
 
+# try to find the core count using various methods
+CORES="$(getconf _NPROCESSORS_ONLN 2>/dev/null)"
+if [ -z "$CORES" ]; then
+	NPROC=$(command -v nproc)
+	if [ -n "$NPROC" ]; then
+		CORES="$($NPROC)"
+	fi
+fi
+if [ -z "$CORES" ]; then
+	SYSCTL=$(command -v sysctl)
+	if [ -n "$SYSCTL" ]; then
+		CORES="$(${SYSCTL} -n hw.ncpu 2>/dev/null)"
+	fi
+fi
+if [ -z "$CORES" ] && [ -f /proc/cpuinfo ]; then
+	 CORES="$(grep 'processor' /proc/cpuinfo 2>/dev/null | wc -l)"
+fi
+
 cat <<EOF
 # platform agnostic and host tools
 IASL:=${IASL}
 HOSTCC?=${HOSTCC}
+CPUS?=${CORES}
 
 EOF
 

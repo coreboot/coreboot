@@ -102,7 +102,9 @@ typedef struct _UPD_DATA_REGION {
   UINT8                       PcdEMMC45HS200Enabled;         /* Offset 0x0052 */
   UINT8                       PcdEMMC45RetuneTimerValue;     /* Offset 0x0053 */
   UINT8                       PcdEnableIgd;                  /* Offset 0x0054 */
-  UINT8                       UnusedUpdSpace1[155];          /* Offset 0x0055 */
+  UINT8                       AutoSelfRefreshEnable;         /* Offset 0x0055 */
+  UINT16                      APTaskTimeoutCnt;              /* Offset 0x0056 */
+  UINT8                       UnusedUpdSpace1[152];          /* Offset 0x0058 */
   MEMORY_DOWN_DATA            PcdMemoryParameters;           /* Offset 0x00F0 */
   UINT16                      PcdRegionTerminator;           /* Offset 0x0100 */
 } UPD_DATA_REGION;

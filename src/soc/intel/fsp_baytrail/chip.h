@@ -217,6 +217,16 @@ struct soc_intel_fsp_baytrail_config {
 	#define  ENABLE_IGD_DISABLE	UPD_DISABLE
 	#define  ENABLE_IGD_ENABLE	UPD_ENABLE
 
+	/* AutoSelfRefreshEnable */
+	uint8_t  AutoSelfRefreshEnable;
+	#define  AUTO_SELF_REFRESH_DEFAULT	UPD_DEFAULT
+	#define  AUTO_SELF_REFRESH_DISABLE	UPD_DISABLE
+	#define  AUTO_SELF_REFRESH_ENABLE	UPD_ENABLE
+
+	/* APTaskTimeoutCnt */
+	uint16_t APTaskTimeoutCnt;
+	#define  AP_TASK_TIMEOUT_CNT_DEFAULT	UPD_DEFAULT
+
 	/* Memory down data */
 	uint8_t  EnableMemoryDown;
 	#define  MEMORY_DOWN_DEFAULT	UPD_DEFAULT

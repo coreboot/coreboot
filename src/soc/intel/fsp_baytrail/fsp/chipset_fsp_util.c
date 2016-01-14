@@ -113,6 +113,8 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	UPD_DEFAULT_CHECK(PcdEMMC45HS200Enabled);
 	UPD_DEFAULT_CHECK(PcdEMMC45RetuneTimerValue);
 	UPD_DEFAULT_CHECK(PcdEnableIgd);
+	UPD_DEFAULT_CHECK(AutoSelfRefreshEnable);
+	UPD_DEFAULT_CHECK(APTaskTimeoutCnt);
 
 	if ((config->PcdeMMCBootMode != EMMC_USE_DEFAULT) ||
 			(config->PcdeMMCBootMode != EMMC_FOLLOWS_DEVICETREE))

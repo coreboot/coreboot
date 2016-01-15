@@ -116,8 +116,8 @@ static void sata_init(struct device *dev)
 		/* Combine IDE - SATA configuration */
 		pci_write_config8(dev, SATA_MAP, 0x02);
 
-		/* Port 0 & 1 enable */
-		pci_write_config8(dev, SATA_PCS, 0x0f);
+		/* Restrict ports - 0 and 2 only available */
+		ports &= 0x5;
 	} else if(config->sata_ahci) {
 		printk(BIOS_DEBUG, "SATA controller in AHCI mode.\n");
 		/* Allow both Legacy and Native mode */
@@ -126,12 +126,6 @@ static void sata_init(struct device *dev)
 		/* Set Interrupt Line */
 		/* Interrupt Pin is set by D31IP.PIP */
 		pci_write_config8(dev, INTR_LN, 0x0a);
-
-		/* In ACHI mode, bit[3:0] must always be set
-		 * (Port status is controlled through AHCI BAR)
-		 * Different settings for different controller models.
-		 */
-		pci_write_config8(dev, SATA_PCS, ports);
 
 		ahci_bar = (u32 *)(pci_read_config32(dev, 0x27) & ~0x3ff);
 		ahci_bar[3] = config->sata_ports_implemented;
@@ -172,10 +166,10 @@ static void sata_init(struct device *dev)
 		/* Set IDE I/O Configuration */
 		reg32 = SIG_MODE_PRI_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
 		pci_write_config32(dev, IDE_CONFIG, reg32);
-
-		/* Port 0 & 1 enable XXX */
-		pci_write_config8(dev, SATA_PCS, 0x15);
 	}
+
+	/* Set port control */
+	pci_write_config8(dev, SATA_PCS, ports);
 
 	/* Enable clock gating for unused ports and set initialization reg */
 	pci_write_config32(dev, SATA_IR, SIF3(ports) | SIF2 | SIF1 | SCRE);

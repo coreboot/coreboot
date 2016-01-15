@@ -64,7 +64,7 @@ index:
 		Write:
 			- Write the data to DctOffsetData
 			- Write register num to DctOffset with DctAccessWrite = 1
-			- poll the DctAccessDone untio it = 1
+			- poll the DctAccessDone until it = 1
 	*/
 
 
@@ -153,7 +153,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   100 = reserved
 	 *	   101 = reserved
 	 *	   110 = reserved
-	 *	   111 = Interleve on A[12] and A[13] and A[14] (8 nodes)
+	 *	   111 = Interleave on A[12] and A[13] and A[14] (8 nodes)
 	 * [15:11] Reserved
 	 * [13:16] DRAM Base Address i Bits 39-24
 	 *	   This field defines the upper address bits of a 40-bit address
@@ -232,7 +232,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	100 = 2.5 Memory Clocks
 	 *	101 = 3 Memory Clocks
 	 *	110 = 3.5 Memory Clocks
-	 *	111 = Reseved
+	 *	111 = Reserved
 	 * [15: 7] Reserved
 	 * [16:16] AltVidC3MemClkTriEn (AltVID Memory Clock Tristate Enable)
 	 *	Enables the DDR memory clocks to be tristated when alternate VID
@@ -244,19 +244,19 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [18:18] DqsRcvEnTrain (DQS Receiver Enable Training Mode)
 	 *	0 = Normal DQS Receiver enable operation
 	 *	1 = DQS receiver enable training mode
-	  * [31:19] reverved
+	  * [31:19] reserved
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x78), 0xfff80000, (6<<4)|(6<<0),
 
 	/* DRAM Initialization Register
 	 * F2:0x7C
 	 * [15: 0] MrsAddress (Address for MRS/EMRS Commands)
-	 *	this field specifies the dsata driven on the DRAM address pins
+	 *	this field specifies the data driven on the DRAM address pins
 	 *	15-0 for MRS and EMRS commands
 	 * [18:16] MrsBank (Bank Address for MRS/EMRS Commands)
 	 *	this files specifies the data driven on the DRAM bank pins for
 	 *	the MRS and EMRS commands
-	 * [23:19] reverved
+	 * [23:19] reserved
 	 * [24:24] SendPchgAll (Send Precharge All Command)
 	 *	Setting this bit causes the DRAM controller to send a precharge
 	 *	all command. This bit is cleared by the hardware after the
@@ -268,7 +268,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [26:26] SendMrsCmd (Send MRS/EMRS Command)
 	 *	Setting this bit causes the DRAM controller to send the MRS or
 	 *	EMRS command defined by the MrsAddress and MrsBank fields. This
-	 *	bit is cleared by the hardware adter the commmand completes
+	 *	bit is cleared by the hardware after the command completes
 	 * [27:27] DeassertMemRstX (De-assert Memory Reset)
 	 * 	Setting this bit causes the DRAM controller to de-assert the
 	 *	memory reset pin. This bit cannot be used to assert the memory
@@ -276,7 +276,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [28:28] AssertCke (Assert CKE)
 	 *	setting this bit causes the DRAM controller to assert the CKE
 	 *	pins. This bit cannot be used to de-assert the CKE pins
-	 * [30:29] reverved
+	 * [30:29] reserved
 	 * [31:31] EnDramInit (Enable DRAM Initialization)
 	 *	Setting this bit puts the DRAM controller in a BIOS controlled
 	 *	DRAM initialization mode. BIOS must clear this bit aster DRAM
@@ -388,7 +388,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   111 = 9 bus clocks
 	 * [ 7: 7] Reserved
 	 * [ 9: 8] Twtr (Internal DRAM Write-to-Read Command Delay,
-	 * minium write-to-read delay when both access the same chip select)
+	 * Minimum write-to-read delay when both access the same chip select)
 	 *	   00 = Reserved
 	 *	   01 = 1 bus clocks
 	 *	   10 = 2 bus clocks
@@ -408,7 +408,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   00 = 2 bus clocks ( 1 idle cycle on the bus)
 	 *	   01 = 3 bus clocks ( 2 idle cycles on the bus)
 	 *	   10 = 4 bus clocks ( 3 idle cycles on the bus)
-	 *	   11 = 5 bus clocks ( 4 idel cycles on the bus)
+	 *	   11 = 5 bus clocks ( 4 idle cycles on the bus)
 	 * [17:16] Tref (Refresh Rate)
 	 *	   00 = Undefined behavior
 	 *	   01 = Reserved
@@ -487,7 +487,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   010 = 333MHz
 	 *	   011 = reserved
 	 *	   1xx = reserved
-	 * [ 3: 3] MemClkFreqVal (Memory Clock Freqency Valid)
+	 * [ 3: 3] MemClkFreqVal (Memory Clock Frequency Valid)
 	 *	   1 = BIOS need to set the bit when setting up MemClkFreq to
 	 *	       the proper value
 	 * [ 7: 4] MaxAsyncLat ( Maximum Asynchronous Latency)
@@ -523,7 +523,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	       MEMCLK cycle
 	 *	   1 = One additional MEMCLK of setup time is provided on all
 	 *	       DRAM address and control signals except CS, CKE, and ODT;
-	 *	       i.e., these signals are drivern for two MEMCLK cycles
+	 *	       i.e., these signals are driven for two MEMCLK cycles
 	 *	       rather than one
 	 * [21:21] Reserved
 	 * [22:22] BankSwizzleMode ( Bank Swizzle Mode),
@@ -565,7 +565,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   1 When bit enables support for mismatched DIMMs when using
 	 *	   128-bit DRAM interface, the Width128 no effect, only for
 	 *	   AM2 and s1g1
-	 * [ 5: 5] DCC_EN ( Dynamica Idle Cycle Counter Enable)
+	 * [ 5: 5] DCC_EN ( Dynamic Idle Cycle Counter Enable)
 	 *	   When set to 1, indicates that each entry in the page tables
 	 *	   dynamically adjusts the idle cycle limit based on page
 	 *	    Conflict/Page Miss (PC/PM) traffic
@@ -581,7 +581,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [ 9: 9] DramEnabled ( DRAM Enabled)
 	 *	   When Set, this bit indicates that the DRAM is enabled, this
 	 *	   bit is set by hardware after DRAM initialization or on an exit
-	 *	   from self refresh. The DRAM controller is intialized after the
+	 *	   from self refresh. The DRAM controller is initialized after the
 	 *	   hardware-controlled initialization process ( initiated by the
 	 *	   F2 0x90[DramInit]) completes or when the BIOS-controlled
 	 *	   initialization process completes (F2 0x7c(EnDramInit] is
@@ -603,7 +603,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 
 	/* DRAM Scrub Control Register
 	 * F3:0x58
-	 * [ 4: 0] DRAM Scrube Rate
+	 * [ 4: 0] DRAM Scrub Rate
 	 * [ 7: 5] reserved
 	 * [12: 8] L2 Scrub Rate
 	 * [15:13] reserved
@@ -646,7 +646,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	PCI_ADDR(0, 0x18, 3, 0x5C), 0x0000003e, 0x00000000,
 	/* DRAM Scrub Address High Register
 	 * F3:0x60
-	 * [ 7: 0] DRAM Scrubb Address 39-32
+	 * [ 7: 0] DRAM Scrub Address 39-32
 	 * [31: 8] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 3, 0x60), 0xffffff00, 0x00000000,
@@ -673,7 +673,7 @@ index:
 		Write:
 			- Write the data to DctOffsetData
 			- Write register num to DctOffset with DctAccessWrite = 1
-			- poll the DctAccessDone untio it = 1
+			- poll the DctAccessDone until it = 1
 
 	*/
 	int i;
@@ -1161,7 +1161,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 		csbase_inc <<=1;
 	}
 
-	/* Compute the initial values for csbase and csbask.
+	/* Compute the initial values for csbase and csmask.
 	 * In csbase just set the enable bit and the base to zero.
 	 * In csmask set the mask bits for the size and page level interleave.
 	 */
@@ -1196,7 +1196,7 @@ static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 	/* Remember which registers we have used in the high 8 bits of tom */
 	tom = 0;
 	for (;;) {
-		/* Find the largest remaining canidate */
+		/* Find the largest remaining candidate */
 		unsigned index, canidate;
 		uint32_t csbase, csmask;
 		unsigned size;
@@ -1220,12 +1220,12 @@ static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 			if (tom & (1 << (index + 24))) {
 				continue;
 			}
-			/* I have a new canidate */
+			/* I have a new candidate */
 			csbase = value;
 			canidate = index;
 		}
 
-		/* See if I have found a new canidate */
+		/* See if I have found a new candidate */
 		if (csbase == 0) {
 			break;
 		}
@@ -1352,7 +1352,7 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	if (is_opteron(ctrl)) {
 #if 0
 		if ( registered != (meminfo->dimm_mask & ((1<<DIMM_SOCKETS)-1)) ) {
-			meminfo->dimm_mask &= (registered | (registered << DIMM_SOCKETS) ); //disable unbuffed dimm
+			meminfo->dimm_mask &= (registered | (registered << DIMM_SOCKETS) ); //disable unbuffered dimm
 //			die("Mixed buffered and registered dimms not supported");
 		}
 		//By yhlu for debug M2, s1g1 can do dual channel, but it use unbuffer DIMM
@@ -1503,7 +1503,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 	printk(BIOS_SPEW, "Enabling dual channel memory\n");
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	dcl &= ~DCL_BurstLength32;  /*	32byte mode may be preferred in platforms that include graphics controllers that generate a lot of 32-bytes system memory accesses
-					32byte mode is not supported when the DRAM interface is 128 bits wides, even 32byte mode is set, system still use 64 byte mode	*/
+					32byte mode is not supported when the DRAM interface is 128 bits wide, even 32byte mode is set, system still use 64 byte mode	*/
 	dcl |= DCL_Width128;
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 	meminfo->is_Width128 = 1;
@@ -1720,8 +1720,8 @@ static int find_optimum_spd_latency(u32 spd_device, unsigned *min_latency, unsig
 	/* Compute the lowest cas latency which can be expressed in this
 	 * particular SPD EEPROM. You can store at most settings for 3
 	 * contiguous CAS latencies, so by taking the highest CAS
-	 * latency maked as supported in the SPD and subtracting 2 you
-	 * get the lowest expressable CAS latency. That latency is not
+	 * latency marked as supported in the SPD and subtracting 2 you
+	 * get the lowest expressible CAS latency. That latency is not
 	 * necessarily supported, but a (maybe invalid) entry exists
 	 * for it.
 	 */
@@ -2495,7 +2495,7 @@ static void set_max_async_latency(const struct mem_controller *ctrl, const struc
 	dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
 	dch &= ~(DCH_MaxAsyncLat_MASK << DCH_MaxAsyncLat_SHIFT);
 
-	//FIXME: We need to use Max of DqsRcvEnDelay + 6ns here: After trainning and get that from index reg 0x10, 0x13, 0x16, 0x19, 0x30, 0x33, 0x36, 0x39
+	//FIXME: We need to use Max of DqsRcvEnDelay + 6ns here: After training and get that from index reg 0x10, 0x13, 0x16, 0x19, 0x30, 0x33, 0x36, 0x39
 	async_lat = 6 + 6;
 
 
@@ -2873,7 +2873,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 	if (meminfo->dimm_mask == -1)
 		goto hw_spd_err;
 
-	//store memclk set to sysinfo, incase we need rebuilt param again
+	//store memclk set to sysinfo, in case we need rebuilt param again
 	meminfo->memclk_set = param->dch_memclk;
 
 	memcpy(&paramx, param, sizeof(paramx));

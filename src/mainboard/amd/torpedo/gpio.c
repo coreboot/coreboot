@@ -88,7 +88,7 @@ gpioEarlyInit(
 	for (Index = 0; Index < MAX_GPIO_NO; Index++) {
 		if (!(((Index >= GPIO_RSVD_ZONE0_S) && (Index <= GPIO_RSVD_ZONE0_E)) || ((Index >= GPIO_RSVD_ZONE1_S) && (Index <= GPIO_RSVD_ZONE1_E)))) {
 			if ((StripInfo >= boardRevC) || ((Index != GPIO_111) && (Index != GPIO_113))) {
-				// Configure multi-funtion
+				// Configure multi-function
 				Mmio8_And_Or (IoMuxMmioAddr, Index, 0x00, (gpio_table[Index].select & ~NonGpio));
 			}
 			// Configure GPIO

@@ -585,7 +585,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 		print_debug_dqs("\tTrainRcvEn51: channel ",channel, 1);
 
 		/* for each rank */
-		/* there are four recriver pairs, loosely associated with CS */
+		/* there are four receiver pairs, loosely associated with CS */
 		for( receiver = 0; (receiver < 8) && (!Errors); receiver+=2)
 		{
 
@@ -664,14 +664,14 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 				/* FIXME: 64bit MUX */
 
 				if(is_Width128) {
-					/* Program current Receiver enable delay chaannel b */
+					/* Program current Receiver enable delay channel b */
 					pci_write_config32_index_wait(ctrl->f2, 0x98, index+ 0x20, RcvrEnDly);
 				}
 
 				/* Program the MaxAsyncLat filed with the
 				   current DQS receiver enable setting plus 6ns
 				*/
-				/*Porgram MaxAsyncLat to correspond with current delay */
+				/* Program MaxAsyncLat to correspond with current delay */
 				SetMaxAL_RcvrDly(ctrl, RcvrEnDly);
 
 				CurrTest = DQS_FAIL;
@@ -688,7 +688,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 				if(Test0 == DQS_PASS) {
 
 					Read1LTestPattern(TestAddr0B);
-			       		Test1 = CompareTestPatternQW0(channel, TestAddr0B, PatternB, TestPattern0, TestPattern1, TestPattern2, Pass, is_Width128);
+					Test1 = CompareTestPatternQW0(channel, TestAddr0B, PatternB, TestPattern0, TestPattern1, TestPattern2, Pass, is_Width128);
 					proc_IOCLFLUSH(TestAddr0B);
 
 					ResetDCTWrPtr(ctrl);
@@ -755,7 +755,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 			}
 
 			if(Pass == DQS_FIRST_PASS) {
-				// We need a better value for DQSPos trainning
+				// We need a better value for DQSPos training
 				RcvrEnDly = RcvrEnDlyRmin /* + RCVREN_MARGIN * T1000/64/50 */;
 			} else {
 				RcvrEnDly = RcvrEnDlyRmin;
@@ -1641,7 +1641,7 @@ static void set_var_mtrr_dqs(
 }
 
 
-/* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
+/* fms: find most significant bit set, stolen from Linux Kernel Source. */
 static inline unsigned int fms(unsigned int x)
 {
 	int r;
@@ -1653,7 +1653,7 @@ static inline unsigned int fms(unsigned int x)
 	return r;
 }
 
-/* fls: find least sigificant bit set */
+/* fls: find least significant bit set */
 static inline unsigned int fls(unsigned int x)
 {
 	int r;

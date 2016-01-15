@@ -92,7 +92,7 @@ static void enable_var_mtrr(unsigned char deftype)
 	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 }
 
-/* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
+/* fms: find most significant bit set, stolen from Linux Kernel Source. */
 static inline unsigned int fms(unsigned int x)
 {
 	int r;
@@ -209,7 +209,7 @@ static struct memranges *get_physical_address_space(void)
 		                               filter_vga_wrcomb);
 
 		/* The address space below 4GiB is special. It needs to be
-		 * covered entirly by range entries so that MTRR calculations
+		 * covered entirely by range entries so that MTRR calculations
 		 * can be properly done for the full 32-bit address space.
 		 * Therefore, ensure holes are filled up to 4GiB as
 		 * uncacheable */

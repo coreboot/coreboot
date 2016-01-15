@@ -34,12 +34,12 @@
 #define DCT_STATUS_LOAD_REDUCED 4	/* Load-Reduced DIMMs support */
 #define DCT_STATUS_OnDimmMirror 24	/* OnDimmMirror support */
 
-/* PCI Defintions */
-#define FUN_HT 0	  /* Funtion 0 Access */
-#define FUN_MAP 1	  /* Funtion 1 Access */
-#define FUN_DCT 2	  /* Funtion 2 Access */
-#define FUN_MISC 3	  /* Funtion 3 Access */
-#define FUN_ADD_DCT 0xF	  /* Funtion 2 Additional Register Access */
+/* PCI Definitions */
+#define FUN_HT 0	  /* Function 0 Access */
+#define FUN_MAP 1	  /* Function 1 Access */
+#define FUN_DCT 2	  /* Function 2 Access */
+#define FUN_MISC 3	  /* Function 3 Access */
+#define FUN_ADD_DCT 0xF	  /* Function 2 Additional Register Access */
 #define BOTH_DCTS 2	  /* The access is independent of DCTs */
 #define PCI_MIN_LOW 0	  /* Lowest possible PCI register location */
 #define PCI_MAX_HIGH 31	  /* Highest possible PCI register location */
@@ -60,7 +60,7 @@
 #define DRAM_CONT_ADD_ECC_PHASE_REC_CTRL 0x52
 #define DRAM_CONT_ADD_WRITE_LEV_ERROR_REG 0x53
 
-/* CPU Register defintions */
+/* CPU Register definitions */
 
 /* Register Bit Location */
 #define DctAccessDone 31
@@ -155,7 +155,7 @@ typedef struct _sDCTStruct
 	u8 ErrStatus[MAX_ERRORS];	/* Minor Error codes for DCT0 and 1 */
 	u8 DimmValid[MAX_TOTAL_DIMMS];	/* Indicates which DIMMs are valid for */
 					/* Total Number of DIMMs(per Node) */
-	u8 WLTotalDelay[MAX_BYTE_LANES];/* Write Levelization Toral Delay */
+	u8 WLTotalDelay[MAX_BYTE_LANES];/* Write Levelization Total Delay */
 					/* per byte lane */
 	u8 MaxDimmsInstalled;		/* Max Dimms Installed for current DCT */
 	u8 DimmRanks[MAX_TOTAL_DIMMS];	/* Total Number of Ranks(per Dimm) */

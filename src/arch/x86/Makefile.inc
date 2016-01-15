@@ -96,6 +96,7 @@ $(objgenerated)/bootblock.ld: $$(filter-out $(obj)/arch/x86/bootblock.bootblock.
 	mv $@.tmp $@
 
 $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(KCONFIG_AUTOHEADER)
+# The open quote in the subst messes with syntax highlighting. Fix it - ")
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d

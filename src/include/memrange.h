@@ -21,6 +21,9 @@
  * is exposed so that a memranges can be used on the stack if needed. */
 struct memranges {
 	struct range_entry *entries;
+	/* Coreboot doesn't have a free() function. Therefore, keep a cache of
+	 * free'd entries.  */
+	struct range_entry *free_list;
 };
 
 /* Each region within a memranges structure is represented by a
@@ -71,8 +74,10 @@ static inline void range_entry_update_tag(struct range_entry *r,
 #define memranges_each_entry(r, ranges) \
 	for (r = (ranges)->entries; r != NULL; r = r->next)
 
-/* Initialize memranges structure */
-void memranges_init_empty(struct memranges *ranges);
+/* Initialize memranges structure providing an optional array of range_entry
+ * to use as the free list. */
+void memranges_init_empty(struct memranges *ranges, struct range_entry *free,
+                          size_t num_free);
 
 /* Initialize and fill a memranges structure according to the
  * mask and match type for all memory resources. Tag each entry with the

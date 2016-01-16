@@ -90,6 +90,8 @@ int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels)
 		num_formats = ARRAY_SIZE(dmic_4ch_cfg);
 		mic_config.array_type = NHLT_MIC_ARRAY_4CH_L_SHAPED;
 		break;
+	default:
+		return -1;
 	}
 
 	if (nhlt_endpoint_append_config(endp, &mic_config, sizeof(mic_config)))

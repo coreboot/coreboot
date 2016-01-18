@@ -42,9 +42,6 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 		{0,   0},
 	};
 
-	if (!dev)
-		return 0;
-
 	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
 
 	// MMCFG not supported or not enabled.

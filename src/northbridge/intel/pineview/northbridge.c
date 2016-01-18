@@ -45,15 +45,15 @@ static void mch_domain_read_resources(device_t dev)
 	pci_domain_read_resources(dev);
 
 	/* Top of Upper Usable DRAM, including remap */
-	touud = pci_read_config16(dev, 0xa2);
+	touud = pci_read_config16(dev, TOUUD);
 	touud <<= 20;
 
 	/* Top of Lower Usable DRAM */
-	tolud = pci_read_config16(dev, 0xb0) & 0xfff0;
+	tolud = pci_read_config16(dev, TOLUD) & 0xfff0;
 	tolud <<= 16;
 
 	/* Top of Memory - does not account for any UMA */
-	tom = pci_read_config16(dev, 0xa0) & 0x1ff;
+	tom = pci_read_config16(dev, TOM) & 0x1ff;
 	tom <<= 27;
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",

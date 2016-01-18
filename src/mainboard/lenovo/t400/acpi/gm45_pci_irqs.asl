@@ -28,6 +28,8 @@ Method(_PRT)
 			Package() { 0x0001ffff, 0, 0, 16 },
 			// Onboard graphics (IGD)	0:2.0
 			Package() { 0x0002ffff, 0, 0, 16 },
+			// Onboard GbE
+			Package() { 0x0019ffff, 0, 0, 16 },
 			// USB and EHCI			0:1a.x
 			Package() { 0x001affff, 0, 0, 16 },
 			Package() { 0x001affff, 1, 0, 17 },
@@ -36,16 +38,14 @@ Method(_PRT)
 			Package() { 0x001bffff, 0, 0, 16 },
 			// PCIe Root Ports		0:1c.x
 			Package() { 0x001cffff, 0, 0, 16 },
+			Package() { 0x001cffff, 1, 0, 17 },
+			Package() { 0x001cffff, 2, 0, 18 },
+			Package() { 0x001cffff, 3, 0, 19 },
 			// USB and EHCI			0:1d.x
 			Package() { 0x001dffff, 0, 0, 16 },
 			Package() { 0x001dffff, 1, 0, 17 },
 			Package() { 0x001dffff, 2, 0, 18 },
-			// FIXME
-			// CardBus/IEEE1394		0:1e.2, 0:1e.3
-			// Package() { 0x001effff, 0, 0, 22 },
-			// Package() { 0x001effff, 1, 0, 20 },
-			// LPC device			0:1f.0
-			Package() { 0x001fffff, 0, 0, 16 },
+			// LPC bridge sub devices	0:1f.x
 			Package() { 0x001fffff, 1, 0, 17 },
 			Package() { 0x001fffff, 2, 0, 18 }
 		})
@@ -55,6 +55,8 @@ Method(_PRT)
 			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			// Onboard graphics (IGD)	0:2.0
 			Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			// Onboard GbE
+			Package() { 0x0019ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			// USB and EHCI			0:1a.x
 			Package() { 0x001affff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			Package() { 0x001affff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
@@ -63,19 +65,16 @@ Method(_PRT)
 			Package() { 0x001bffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			// PCIe Root Ports		0:1c.x
 			Package() { 0x001cffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			Package() { 0x001cffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
+			Package() { 0x001cffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+			Package() { 0x001cffff, 3, \_SB.PCI0.LPCB.LNKD, 0 },
 			// USB and EHCI			0:1d.x
 			Package() { 0x001dffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			Package() { 0x001dffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
 			Package() { 0x001dffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
-			// FIXME
-			// CardBus/IEEE1394		0:1e.2, 0:1e.3
-			// Package() { 0x001effff, 0, \_SB.PCI0.LPCB.LNKG, 0 },
-			// Package() { 0x001effff, 1, \_SB.PCI0.LPCB.LNKE, 0 },
-			// LPC device			0:1f.0
-			Package() { 0x001fffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			// LPC bridge sub devices	0:1f.x
 			Package() { 0x001fffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
 			Package() { 0x001fffff, 2, \_SB.PCI0.LPCB.LNKC, 0 }
 		})
 	}
 }
-

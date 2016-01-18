@@ -337,7 +337,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 		/* Allocate the new cpu device structure */
 		new = alloc_find_dev(cpu_bus, &cpu_path);
 		if (new == NULL) {
-			printk(BIOS_CRIT, "Could not allocte cpu device\n");
+			printk(BIOS_CRIT, "Could not allocate cpu device\n");
 			max_cpus--;
 		}
 		cpus[i].dev = new;

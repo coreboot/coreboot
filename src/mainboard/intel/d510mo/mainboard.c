@@ -16,15 +16,8 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <drivers/intel/gma/i915.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci.h>
-
-const struct i915_gpu_controller_info *
-intel_gma_get_controller_info(void)
-{
-	return NULL;
-}
 
 static void mainboard_enable(device_t dev)
 {

@@ -2057,8 +2057,9 @@ static void sdram_mmap_regs(struct sysinfo *s)
 	reclaimbase = 0;
 	reclaimlimit = 0;
 	ggc = pci_read_config16(PCI_DEV(0,0,0), GGC);
+	printk(BIOS_DEBUG, "GGC = 0x%04x\n", ggc);
 	gfxsize = ggc_to_uma[(ggc & 0xf0) >> 4];
-	gttsize = ggc_to_gtt[(ggc & 0xc00) >> 8];
+	gttsize = ggc_to_gtt[(ggc & 0x300) >> 8];
 	tom = s->channel_capacity[0];
 
 	tsegsize = 0x1; // 1MB
@@ -2085,16 +2086,23 @@ static void sdram_mmap_regs(struct sysinfo *s)
 	tsegbase = gttbase - tsegsize;
 
 	/* Program the regs */
-	pci_write_config16(PCI_DEV(0,0,0), 0xb0, (u16)(tolud << 4));
-	pci_write_config16(PCI_DEV(0,0,0), 0xa0, (u16)(tom >> 6));
+	pci_write_config16(PCI_DEV(0,0,0), TOLUD, (u16)(tolud << 4));
+	pci_write_config16(PCI_DEV(0,0,0), TOM, (u16)(tom >> 6));
 	if (reclaim) {
 		pci_write_config16(PCI_DEV(0,0,0), 0x98, (u16)(reclaimbase >> 6));
 		pci_write_config16(PCI_DEV(0,0,0), 0x9a, (u16)(reclaimlimit >> 6));
 	}
-	pci_write_config16(PCI_DEV(0,0,0), 0xa2, (u16)(touud));
-	pci_write_config32(PCI_DEV(0,0,0), 0xa4, gfxbase << 20);
-	pci_write_config32(PCI_DEV(0,0,0), 0xa8, gttbase << 20);
-	pci_write_config32(PCI_DEV(0,0,0), 0xac, tsegbase << 20);
+	pci_write_config16(PCI_DEV(0,0,0), TOUUD, (u16)(touud));
+	pci_write_config32(PCI_DEV(0,0,0), GBSM, gfxbase << 20);
+	pci_write_config32(PCI_DEV(0,0,0), BGSM, gttbase << 20);
+	pci_write_config32(PCI_DEV(0,0,0), TSEG, tsegbase << 20);
+
+	printk(BIOS_DEBUG, "GBSM (igd) = verified %08x (written %08x)\n",
+		pci_read_config32(PCI_DEV(0,0,0), GBSM), gfxbase << 20);
+	printk(BIOS_DEBUG, "BGSM (gtt) = verified %08x (written %08x)\n",
+		pci_read_config32(PCI_DEV(0,0,0), BGSM), gttbase << 20);
+	printk(BIOS_DEBUG, "TSEG (smm) = verified %08x (written %08x)\n",
+		pci_read_config32(PCI_DEV(0,0,0), TSEG), tsegbase << 20);
 }
 
 static void sdram_enhancedmode(struct sysinfo *s)

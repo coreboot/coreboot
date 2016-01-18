@@ -92,7 +92,6 @@
 #define GMADR		0x18
 #define GTTADR		0x1c
 #define BSM		0x5c
-#define GCFC		0xf0	/* Graphics Clock Frequency & Gating Control */
 
 #define GPIO32(x) *((volatile u32 *)(DEFAULT_GPIOBASE + x))
 

@@ -18,6 +18,7 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_PINEVIEW),y)
 
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
+ramstage-y += gma.c
 ramstage-y += acpi.c
 
 romstage-y += ram_calc.c

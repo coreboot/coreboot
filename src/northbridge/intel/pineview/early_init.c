@@ -19,82 +19,108 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
+#include <device/pci.h>
 #include <cbmem.h>
 #include <halt.h>
 #include <string.h>
 #include <northbridge/intel/pineview/pineview.h>
+#include <northbridge/intel/pineview/chip.h>
 
 #define LPC PCI_DEV(0, 0x1f, 0)
 #define D0F0 PCI_DEV(0, 0, 0)
 
-static void pineview_setup_bars(void)
+#define PCI_GCFC	0xf0
+#define MCH_GCFGC	0xc8c
+#define  CRCLK_PINEVIEW	0x02
+#define  CDCLK_PINEVIEW	0x10
+#define MCH_HPLLVCO	0xc38
+
+static void early_graphics_setup(void)
 {
 	u8 reg8;
 	u16 reg16;
 	u32 reg32;
 
-	/* Setting up Southbridge. In the northbridge code. */
-	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(LPC, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
-	pci_write_config32(LPC, PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config8(LPC, 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI */
-	pci_write_config32(LPC, GPIOBASE, DEFAULT_GPIOBASE | 1);
-	pci_write_config8(LPC, 0x4c /* GC */ , 0x10);	/* Enable GPIOs */
-	pci_write_config32(LPC, 0x88, 0x007c0291);
+	const struct device *d0f0 = dev_find_slot(0, PCI_DEVFN(0,0));
+	const struct northbridge_intel_pineview_config *config = d0f0->chip_info;
 
-	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x1b, 0x20);
-	printk(BIOS_DEBUG, " done.\n");
+	pci_write_config8(D0F0, DEVEN, BOARD_DEVEN);
+	pci_write_config16(D0F0, GGC, 0x130); /* 1MB GTT 8MB UMA */
 
-	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
-	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
-	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
-	printk(BIOS_DEBUG, " done.\n");
+	printk(BIOS_SPEW, "Set GFX clocks...");
+	reg16 = MCHBAR16(MCH_GCFGC);
+	MCHBAR16(MCH_GCFGC) = reg16 | (1 << 9);
+	reg16 &= ~0x7f;
+	reg16 |= CDCLK_PINEVIEW | CRCLK_PINEVIEW;
+	reg16 &= ~(1 << 9);
+	MCHBAR16(MCH_GCFGC) = reg16;
 
-	/* Enable upper 128bytes of CMOS */
-	RCBA32(0x3400) = (1 << 2);
+	/* Graphics core */
+	reg8 = MCHBAR8(MCH_HPLLVCO);
+	reg8 &= 0x7;
 
-	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
-	pci_write_config8(D0F0, 0x8, 0x69);
+	reg16 = pci_read_config16(PCI_DEV(0,2,0), 0xcc) & ~0x1ff;
 
-	/* Set up all hardcoded northbridge BARs */
-	pci_write_config32(D0F0, EPBAR, DEFAULT_EPBAR | 1);
-	pci_write_config32(D0F0, MCHBAR, (uintptr_t)DEFAULT_MCHBAR | 1);
-	pci_write_config32(D0F0, DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
-	pci_write_config32(D0F0, PMIOBAR, (uintptr_t)0x400 | 1);
+	if (reg8 == 0x4) {
+		/* 2666MHz */
+		reg16 |= 0xad;
+	} else if (reg8 == 0) {
+		/* 3200MHz */
+		reg16 |= 0xa0;
+	} else if (reg8 == 1) {
+		/* 4000MHz */
+		reg16 |= 0xad;
+	}
 
+	pci_write_config16(PCI_DEV(0,2,0), 0xcc, reg16);
+
+	pci_write_config8(PCI_DEV(0,2,0), 0x62,
+		pci_read_config8(PCI_DEV(0,2,0), 0x62) & ~0x3);
+	pci_write_config8(PCI_DEV(0,2,0), 0x62,
+		pci_read_config8(PCI_DEV(0,2,0), 0x62) | 2);
+
+	if (config->use_crt) {
+		/* Enable VGA */
+		MCHBAR32(0xb08) = MCHBAR32(0xb08) | (1 << 15);
+	} else {
+		/* Disable VGA */
+		MCHBAR32(0xb08) = MCHBAR32(0xb08) & ~(1 << 15);
+	}
+
+	if (config->use_lvds) {
+		/* Enable LVDS */
+		reg32 = MCHBAR32(0x3004);
+		reg32 &= ~0xf1000000;
+		reg32 |= 0x90000000;
+		MCHBAR32(0x3004) = reg32;
+		MCHBAR32(0x3008) = MCHBAR32(0x3008) | (1 << 9);
+	} else {
+		/* Disable LVDS */
+		MCHBAR32(0xb08) = MCHBAR32(0xb08) | (3 << 25);
+	}
+
+	MCHBAR32(0xff4) = 0x0c6db8b5f;
+	MCHBAR16(0xff8) = 0x24f;
+
+	MCHBAR32(0xb08) = MCHBAR32(0xb08) & 0xffffff00;
+	MCHBAR32(0xb08) = MCHBAR32(0xb08) | (1 << 5);
+
+	/* Legacy backlight control */
+	pci_write_config8(PCI_DEV(0, 2, 0), 0xf4, 0x4c);
+}
+
+static void early_misc_setup(void)
+{
+	u32 reg32;
 
 	reg32 = MCHBAR32(0x30);
 	MCHBAR32(0x30) = 0x21800;
 	DMIBAR32(0x2c) = 0x86000040;
-	pci_write_config8(D0F0, DEVEN, 0x09);
 	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x18, 0x00020200);
 	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x18, 0x00000000);
-	reg8 = pci_read_config8(D0F0, 0xe5);  // 0x10
-	reg16 = pci_read_config16(PCI_DEV(0, 0x02, 0), 0x0); // 0x8086
 
-	reg16 = pci_read_config16(D0F0, GGC);
-	pci_write_config16(D0F0, GGC, 0x130);
-	reg16 = pci_read_config16(D0F0, GGC);
-	pci_write_config16(D0F0, GGC, 0x130);
-	MCHBAR8(0xb08) = 0x20;
-	reg8 = pci_read_config8(D0F0, 0xe6); // 0x11
-	reg16 = MCHBAR16(0xc8c);
-	MCHBAR16(0xc8c) = reg16 | 0x0200;
-	reg8 = MCHBAR8(0xc8c);
-	MCHBAR8(0xc8c) = reg8;
-	MCHBAR8(0xc8c) = 0x12;
-	pci_write_config8(PCI_DEV(0, 0x02, 0), 0x62, 0x02);
-	pci_write_config16(PCI_DEV(0, 0x02, 0), 0xe8, 0x8000);
-	MCHBAR32(0x3004) = 0x48000000;
-	MCHBAR32(0x3008) = 0xfffffe00;
-	MCHBAR32(0xb08) = 0x06028220;
-	MCHBAR32(0xff4) = 0xc6db8b5f;
-	MCHBAR16(0xff8) = 0x024f;
+	early_graphics_setup();
 
-	// PLL Voltage controlled oscillator
-	//MCHBAR8(0xc38) = 0x04;
-
-	pci_write_config16(PCI_DEV(0, 0x02, 0), 0xcc, 0x014d);
 	reg32 = MCHBAR32(0x40);
 	MCHBAR32(0x40) = 0x0;
 	reg32 = MCHBAR32(0x40);
@@ -138,6 +164,38 @@ static void pineview_setup_bars(void)
 	RCBA32(0x3144) = 0x32010237;
 	RCBA32(0x3146) = 0x01463201;
 	RCBA32(0x3148) = 0x146;
+}
+
+static void pineview_setup_bars(void)
+{
+	/* Setting up Southbridge. In the northbridge code. */
+	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
+	pci_write_config32(LPC, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+	pci_write_config32(LPC, PMBASE, DEFAULT_PMBASE | 1);
+	pci_write_config8(LPC, 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI */
+	pci_write_config32(LPC, GPIOBASE, DEFAULT_GPIOBASE | 1);
+	pci_write_config8(LPC, 0x4c /* GC */ , 0x10);	/* Enable GPIOs */
+	pci_write_config32(LPC, 0x88, 0x007c0291);
+
+	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x1b, 0x20);
+	printk(BIOS_DEBUG, " done.\n");
+
+	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
+	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
+	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
+	printk(BIOS_DEBUG, " done.\n");
+
+	/* Enable upper 128bytes of CMOS */
+	RCBA32(0x3400) = (1 << 2);
+
+	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
+	pci_write_config8(D0F0, 0x8, 0x69);
+
+	/* Set up all hardcoded northbridge BARs */
+	pci_write_config32(D0F0, EPBAR, DEFAULT_EPBAR | 1);
+	pci_write_config32(D0F0, MCHBAR, (uintptr_t)DEFAULT_MCHBAR | 1);
+	pci_write_config32(D0F0, DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
+	pci_write_config32(D0F0, PMIOBAR, (uintptr_t)0x400 | 1);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(D0F0, PAM0, 0x30);
@@ -159,6 +217,9 @@ void pineview_early_initialization(void)
 
 	/* Setup all BARs required for early PCIe and raminit */
 	pineview_setup_bars();
+
+	/* Miscellaneous set up */
+	early_misc_setup();
 
 	/* Change port80 to LPC */
 	RCBA32(GCS) &= (~0x04);

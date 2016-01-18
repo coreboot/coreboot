@@ -24,6 +24,7 @@
 #include <spi-generic.h>
 #include <stdlib.h>
 #include <soc/lpc.h>
+#include <soc/me.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr.h>
 #include <soc/pm.h>
@@ -119,6 +120,9 @@ static void pch_finalize_script(void)
 	pmsyncreg = read32(pmcbase + PMSYNC_TPR_CFG);
 	pmsyncreg |= PMSYNC_LOCK;
 	write32(pmcbase + PMSYNC_TPR_CFG, pmsyncreg);
+
+	/* Display me status before we hide it */
+	intel_me_status();
 
 	/* we should disable Heci1 based on the devicetree policy */
 	config = dev->chip_info;

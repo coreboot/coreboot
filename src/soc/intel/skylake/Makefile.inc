@@ -41,6 +41,7 @@ ramstage-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += fsp_reset.c
 ramstage-y += gpio.c
 ramstage-y += igd.c
 ramstage-y += lpc.c
+ramstage-y += me_status.c
 ramstage-y += memmap.c
 ramstage-y += monotonic_timer.c
 ramstage-y += pch.c

@@ -648,6 +648,14 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 # 4) replace all '*' characters with spaces
 extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-))))
 
+# regions-for-file - Returns a cbfstool regions parameter
+# $(call regions-for-file,$(filename))
+# returns "REGION1,REGION2,..."
+#
+# This is the default implementation. When using a boot strategy employing
+# multiple CBFSes in fmap regions, override it.
+regions-for-file ?= COREBOOT
+
 cbfs-add-cmd = \
                printf "    CBFS       $(call extract_nth,2,$(file))\n"; \
 	       $(CBFSTOOL) $@.tmp \
@@ -656,6 +664,7 @@ cbfs-add-cmd = \
 	       -n $(call extract_nth,2,$(file)) \
 	       $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
 	       $(if $(call extract_nth,4,$(file)),-c $(call extract_nth,4,$(file))) \
+	       -r $(call regions-for-file,$(call extract_nth,2,$(file))) \
 	       $(call extract_nth,7,$(file))
 
 cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)

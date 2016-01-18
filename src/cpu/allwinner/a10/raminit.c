@@ -1,8 +1,5 @@
 /*
- * Allwinner A10 DRAM controller initialization
- *
- * Based on sun4i Linux kernel sources mach-sunxi/pm/standby/dram*.c
- * and earlier U-Boot Allwiner A10 SPL work
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Henrik Nordstrom <henrik@henriknordstrom.net>
  * Copyright (C) 2013 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
@@ -10,7 +7,21 @@
  *	Berg Xing <bergxing@allwinnertech.com>
  *	Tom Cubie <tangliang@allwinnertech.com>
  * Copyright (C) 2013  Alexandru Gagniuc <mr.nuke.me@gmail.com>
- * Subject to the GNU GPL v2, or (at your option) any later version.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License  or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Allwinner A10 DRAM controller initialization
+ *
+ * Based on sun4i Linux kernel sources mach-sunxi/pm/standby/dram*.c
+ * and earlier U-Boot Allwiner A10 SPL work
  */
 
 #include "clock.h"

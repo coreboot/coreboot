@@ -1,12 +1,23 @@
 /*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2012 Henrik Nordstrom <henrik@henriknordstrom.net>
+ * Copyright (C) 2013 Alexandru Gagniuc <mr.nuke.me@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * Setup helpers for Two Wire Interface (TWI) (I²C) Allwinner CPUs
  *
  * Only functionality for I²C master is provided.
  * Largely based on the uboot-sunxi code.
- *
- * Copyright (C) 2012 Henrik Nordstrom <henrik@henriknordstrom.net>
- * Copyright (C) 2013 Alexandru Gagniuc <mr.nuke.me@gmail.com>
- * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
 #include "memmap.h"

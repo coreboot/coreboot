@@ -1,12 +1,23 @@
-/* Needed so the AMD K8 runs correctly.  */
-/* this should be done by Eric
+/*
+ * This file is part of the coreboot project.
+ *
  * 2004.11 yhlu add d0 e0 support
  * 2004.12 yhlu add dual core support
  * 2005.02 yhlu add e0 memory hole support
-
  * Copyright 2005 AMD
  * 2005.08 yhlu add microcode support
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
+
+/* Needed so the AMD K8 runs correctly.  */
 
 #include <console/console.h>
 #include <cpu/x86/msr.h>

@@ -188,8 +188,13 @@ typedef struct {
 **/
   UINT8                       PcdMemoryTypeEnable;
 /** Offset 0x0042
+    CaMirrorEn
+    To Enable/Disable CaMirrorEn
 **/
-  UINT8                       ReservedMemoryInitUpd[190];
+  UINT8                       PcdCaMirrorEn;
+/** Offset 0x0043
+**/
+  UINT8                       ReservedMemoryInitUpd[189];
 } MEMORY_INIT_UPD;
 
 typedef struct {
@@ -436,8 +441,18 @@ typedef struct {
 **/
   UINT8                       PcdTurboMode;
 /** Offset 0x0161
+    Pnp-Power & Performance
+    select Pnp type
 **/
-  UINT8                       ReservedSiliconInitUpd[413];
+  UINT8                       PcdPnpSettings;
+/** Offset 0x0162
+    SdDetectChk
+    Check for Sd card detect
+**/
+  UINT8                       PcdSdDetectChk;
+/** Offset 0x0163
+**/
+  UINT8                       ReservedSiliconInitUpd[411];
 } SILICON_INIT_UPD;
 
 #define FSP_UPD_SIGNATURE                0x2444505557534224        /* '$BSWUPD$' */
@@ -472,12 +487,6 @@ typedef struct _UPD_DATA_REGION {
 /** Offset 0x02FE
 **/
   UINT16                      PcdRegionTerminator;
-/** Offset 0x0300
-**/
-  UINT8                       UnusedUpdSpace4[2123];
-/** Offset 0x0B4B
-**/
-  UINT8                       PcdPaddingSpace;
 } UPD_DATA_REGION;
 
 #define FSP_IMAGE_ID    0x2450534657534224        /* '$BSWFSP$' */
@@ -494,12 +503,6 @@ typedef struct _VPD_DATA_REGION {
 /** Offset 0x000C
 **/
   UINT32                      PcdUpdRegionOffset;
-/** Offset 0x0010
-**/
-  UINT8                       UnusedVpdSpace0[20];
-/** Offset 0x0024
-**/
-  UINT8                       PcdEnableSecureBoot;
 } VPD_DATA_REGION;
 
 #pragma pack(pop)

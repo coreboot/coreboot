@@ -285,6 +285,11 @@
 		   | PAD_GPIOFG_HI_Z | PAD_MODE_SELECTION(mode),\
 	.pad_conf1 = PAD_CONFIG1_DEFAULT0 }
 
+#define NATIVE_INT_PU20K(mode, int_sel) {\
+	.pad_conf0 = PAD_PULL_UP_20K | PAD_INT_SEL(int_sel) | PAD_GPIO_DISABLE \
+		   | PAD_GPIOFG_HI_Z | PAD_MODE_SELECTION(mode),\
+	.pad_conf1 = PAD_CONFIG1_DEFAULT0 }
+
 #define SPEAKER \
 {	.pad_conf0 = PAD_CONFIG0_DEFAULT0, \
 	.pad_conf1 = PAD_CONFIG1_DEFAULT0 }

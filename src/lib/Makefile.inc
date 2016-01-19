@@ -32,7 +32,7 @@ bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 endif
 
 bootblock-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
-bootblock-$(CONFIG_I2C_TPM) += delay.c
+bootblock-y += delay.c
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
 bootblock-y += boot_device.c

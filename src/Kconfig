@@ -58,6 +58,14 @@ choice
 	help
 	  This option allows you to select the compiler used for building
 	  coreboot.
+	  You must build the coreboot crosscompiler for the board that you
+	  have selected.
+
+	  To build all the GCC crosscompilers (takes a LONG time), run:
+	    make crossgcc
+
+	  For help on individual architectures, run the command:
+	    make help_toolchain
 
 config COMPILER_GCC
 	bool "GCC"
@@ -67,9 +75,14 @@ config COMPILER_GCC
 	  For details see http://gcc.gnu.org.
 
 config COMPILER_LLVM_CLANG
-	bool "LLVM/clang"
+	bool "LLVM/clang (TESTING ONLY - Not currently working)"
 	help
-	  Use LLVM/clang to build coreboot.
+	  Use LLVM/clang to build coreboot.  To use this, you must build the
+	  coreboot version of the clang compiler.  Run the command
+	    make clang
+	  Note that this option is not currently working correctly and should
+	  really only be selected if you're trying to work on getting clang
+	  operational.
 
 	  For details see http://clang.llvm.org.
 

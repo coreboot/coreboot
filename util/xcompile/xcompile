@@ -15,6 +15,14 @@
 # GNU General Public License for more details.
 #
 
+# Usage: [--debug] [path to xgcc/bin directory]
+
+# Enable debug output
+if [ "$1" = "--debug" ]; then
+	shift
+	set -x
+fi
+
 TMPFILE=""
 XGCCPATH=$1
 

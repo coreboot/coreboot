@@ -20,7 +20,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
-.extern fih_car
 /*
  * This is the common entry point after DRAM has been initialized.
  */
@@ -30,6 +29,14 @@
 
 	/* Switch to the stack in RAM */
 	movl	%eax, %esp
+
+#if IS_ENABLED(CONFIG_SKIP_FSP_CAR)
+
+	/* SOC specific NEM */
+	#include <soc/car_teardown.S>
+
+#else
+.extern fih_car
 
 	post_code(POST_FSP_TEMP_RAM_EXIT)
 
@@ -56,8 +63,8 @@
 	 */
 	movb	$0xBC, %ah
 	jmp	.Lhlt
-
 1:
+#endif
 	/* Display the MTRRs */
 	call	soc_display_mtrrs
 

@@ -33,17 +33,22 @@
 	 * mm0:  low 32-bits of TSC value
 	 * mm1:  high 32-bits of TSC value
 	 */
-
-	mov	%eax, %edi
-
+	movl	%eax, %edi
 cache_as_ram:
 	post_code(0x20)
 
+#if IS_ENABLED(CONFIG_SKIP_FSP_CAR)
+
 	/*
-	 * edi:  BIST value
-	 * mm0:  low 32-bits of TSC value
-	 * mm1:  high 32-bits of TSC value
+	 * SOC specific setup
+	 * NOTE: This has to preserve the registers
+	 * mm0, mm1 and edi.
 	 */
+	#include <soc/car_setup.S>
+
+	post_code(0x28)
+
+#endif
 
 	/*
 	 * Find the FSP binary in cbfs.
@@ -143,7 +148,7 @@ CAR_init_done:
 	rep	stosl
 
 before_romstage:
-	post_code(0x23)
+	post_code(0x2A)
 
 	/* Call cache_as_ram_main(struct cache_as_ram_params *) */
 	call	cache_as_ram_main

@@ -23,14 +23,6 @@ if PLATFORM_USES_FSP1_1
 
 comment "Intel FSP 1.1"
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xfef00000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x4000
-
 config HAVE_FSP_BIN
 	bool "Should the Intel FSP binary be added to the flash image"
 	help

@@ -96,6 +96,10 @@ void soc_memory_init_params(struct romstage_params *params,
 		upd->SaGv = config->SaGv;
 	upd->RMT = config->Rmt;
 	upd->DdrFreqLimit = config->DdrFreqLimit;
+	if (IS_ENABLED(CONFIG_SKIP_FSP_CAR)) {
+		upd->FspCarBase = CONFIG_DCACHE_RAM_BASE;
+		upd->FspCarSize = CONFIG_DCACHE_RAM_SIZE_TOTAL;
+	}
 }
 
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
@@ -232,6 +236,10 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 		new->ApertureSize);
 	fsp_display_upd_value("SaGv", 1, old->SaGv, new->SaGv);
 	fsp_display_upd_value("RMT", 1, old->RMT, new->RMT);
+	fsp_display_upd_value("FspCarBase", 1, old->FspCarBase,
+		new->FspCarBase);
+	fsp_display_upd_value("FspCarSize", 1, old->FspCarSize,
+		new->FspCarSize);
 }
 
 /* SOC initialization after RAM is enabled. */

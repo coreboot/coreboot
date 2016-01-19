@@ -167,6 +167,9 @@ chip soc/intel/skylake
 	# I2C4 is 1.8V
 	register "SerialIoI2cVoltage[4]" = "1"
 
+	# PL2 override 15W
+	register "tdp_pl2_override" = "15"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

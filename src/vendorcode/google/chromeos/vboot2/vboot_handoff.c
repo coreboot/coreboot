@@ -78,12 +78,26 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		vb_sd->flags |= VBSD_LF_DEV_SWITCH_ON;
 	}
 	/* TODO: Set these in depthcharge */
-	if (CONFIG_VIRTUAL_DEV_SWITCH)
+	if (IS_ENABLED(CONFIG_VIRTUAL_DEV_SWITCH))
 		vb_sd->flags |= VBSD_HONOR_VIRT_DEV_SWITCH;
-	if (CONFIG_EC_SOFTWARE_SYNC)
+	if (IS_ENABLED(CONFIG_EC_SOFTWARE_SYNC))
 		vb_sd->flags |= VBSD_EC_SOFTWARE_SYNC;
-	if (!CONFIG_PHYSICAL_REC_SWITCH)
+	if (!IS_ENABLED(CONFIG_PHYSICAL_REC_SWITCH))
 		vb_sd->flags |= VBSD_BOOT_REC_SWITCH_VIRTUAL;
+	if (IS_ENABLED(CONFIG_VBOOT_EC_SLOW_UPDATE))
+		vb_sd->flags |= VBSD_EC_SLOW_UPDATE;
+	if (IS_ENABLED(CONFIG_VBOOT_OPROM_MATTERS)) {
+		vb_sd->flags |= VBSD_OPROM_MATTERS;
+		/*
+		 * Inform vboot if the display was enabled by dev/rec
+		 * mode or was requested by vboot kernel phase.
+		 */
+		if (*oflags & VB_INIT_OUT_ENABLE_DISPLAY ||
+		    vboot_wants_oprom()) {
+			vb_sd->flags |= VBSD_OPROM_LOADED;
+			*oflags |= VB_INIT_OUT_ENABLE_DISPLAY;
+		}
+	}
 
 	/* In vboot1, VBSD_FWB_TRIED is
 	 * set only if B is booted as explicitly requested. Therefore, if B is

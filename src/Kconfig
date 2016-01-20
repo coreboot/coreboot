@@ -309,6 +309,8 @@ config UPDATE_IMAGE
 	  is a suitable file for further processing.
 	  The bootblock will not be modified.
 
+	  If unsure, select 'N'
+
 config GENERIC_GPIO_LIB
 	bool
 	default n

@@ -688,6 +688,11 @@ elif [ $UNAME = "Linux" -o $UNAME = "Cygwin" ]; then
 	if [ "$(uname -m 2>/dev/null)" = "i686" ]; then
 		OPTIONS="ABI=32"
 	fi
+elif [ $UNAME = "NetBSD" ]; then
+	# same for NetBSD but this one reports an i386
+	if [ "$(uname -m 2>/dev/null)" = "i386" ]; then
+		OPTIONS="ABI=32"
+	fi
 fi
 fi # GCC
 

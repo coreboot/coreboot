@@ -719,13 +719,14 @@ endif
 
 # generated at the same time as fmap.fmap
 $(obj)/fmap.h: $(obj)/fmap.fmap
+$(obj)/fmap.desc: $(obj)/fmap.fmap
 
 $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
 	echo "    FMAP       $(FMAPTOOL) -h $(obj)/fmap.h $< $@"
-	$(FMAPTOOL) -h $(obj)/fmap.h $< $@
+	$(FMAPTOOL) -h $(obj)/fmap.h -R $(obj)/fmap.desc $< $@
 
-$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap
-	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap
+$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap $(obj)/fmap.desc
+	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
 ifeq ($(CONFIG_ARCH_X86),y)
 	$(CBFSTOOL) $@.tmp add \
 		-f $(objcbfs)/bootblock.bin \

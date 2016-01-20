@@ -520,6 +520,7 @@ static int cbfs_add(void)
 {
 	int32_t address;
 	convert_buffer_t convert;
+	uint32_t local_baseaddress = param.baseaddress;
 
 	if (param.alignment && param.baseaddress) {
 		ERROR("Cannot specify both alignment and base address\n");
@@ -541,13 +542,13 @@ static int cbfs_add(void)
 		size_t metadata_sz = sizeof(struct cbfs_file_attr_compression);
 		if (do_cbfs_locate(&address, metadata_sz))
 			return 1;
-		param.baseaddress = address;
+		local_baseaddress = address;
 	}
 
 	return cbfs_add_component(param.filename,
 				  param.name,
 				  param.type,
-				  param.baseaddress,
+				  local_baseaddress,
 				  param.headeroffset,
 				  convert);
 }

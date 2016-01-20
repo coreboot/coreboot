@@ -85,3 +85,14 @@ else
 romstage-srcs += $(objgenerated)/libverstage.a
 endif
 endif # CONFIG_SEPARATE_VERSTAGE
+
+# Define a list of files that need to be in RO only.
+# All other files will be installed into RO and RW regions
+# Use $(sort) to cut down on extra spaces that would be translated to commas
+regions-for-file = $(subst $(spc),$(comma),$(sort \
+	$(if $(filter \
+		$(if $(filter y,$(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)),, \
+			%/romstage) \
+		mts \
+		%/verstage \
+		,$(1)),COREBOOT,COREBOOT FW_MAIN_A FW_MAIN_B)))

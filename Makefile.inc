@@ -112,6 +112,7 @@ spc :=
 spc +=
 $(spc) :=
 $(spc) +=
+comma := ,
 
 # files-in-dir-recursive,dir,files
 files-in-dir-recursive=$(filter $(1)%,$(2))

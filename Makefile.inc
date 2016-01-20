@@ -698,7 +698,7 @@ FMAP_FMAP_SIZE := 0x100
 # position and size of CBFS, relative to BIOS_BASE
 FMAP_CBFS_BASE := $(FMAP_FMAP_SIZE)
 FMAP_CBFS_SIZE := $(call int-subtract, $(FMAP_BIOS_SIZE) $(FMAP_FMAP_SIZE))
-else
+else # ifeq ($(CONFIG_ARCH_X86),y)
 DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default.fmd
 # entire flash
 FMAP_ROM_ADDR := 0
@@ -713,7 +713,7 @@ FMAP_FMAP_SIZE := 0x100
 # position and size of CBFS, relative to BIOS_BASE
 FMAP_CBFS_BASE := $(call int-add,$(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
 FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
-endif
+endif # ifeq ($(CONFIG_ARCH_X86),y)
 
 $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
 	sed -e "s,##ROM_BASE##,$(FMAP_ROM_ADDR)," \
@@ -726,10 +726,10 @@ $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
 	    -e "s,##CBFS_SIZE##,$(FMAP_CBFS_SIZE)," \
 		$(DEFAULT_FLASHMAP) > $@.tmp
 	mv $@.tmp $@
-else
+else # ifeq ($(CONFIG_FMDFILE),)
 $(obj)/fmap.fmd: $(CONFIG_FMDFILE) $(obj)/config.h
 	cp $< $@
-endif
+endif # ifeq ($(CONFIG_FMDFILE),)
 
 # generated at the same time as fmap.fmap
 $(obj)/fmap.h: $(obj)/fmap.fmap
@@ -747,7 +747,7 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-n bootblock \
 		-t bootblock \
 		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes)
-else
+else # ifeq ($(CONFIG_ARCH_X86),y)
 	# don't add bootblock to cbfs yet, it's just a waste of space
 	true $(CBFSTOOL) $@.tmp add \
 		-f $(objcbfs)/bootblock.bin \
@@ -766,11 +766,11 @@ else
 		-t "cbfs header" \
 		-b -4
 	rm -f $@.tmp.2
-endif
+endif # ifeq ($(CONFIG_ARCH_X86),y)
 	$(CBFSTOOL) $@.tmp add-master-header
 	$(prebuild-files) true
 	mv $@.tmp $@
-else
+else # ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 # Add all cbfs files to image of the form: CONFIG_CBFS_PREFIX/<filename>
 prebuild-files = \
@@ -785,7 +785,7 @@ $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)
 	mv $(obj)/coreboot.rom $@.tmp
 	$(prebuild-files) true
 	mv $@.tmp $@
-endif
+endif # ifneq ($(CONFIG_UPDATE_IMAGE),y)
 
 ifeq ($(CONFIG_PAYLOAD_LINUX),y)
 ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_COMMAND_LINE))),)

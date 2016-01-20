@@ -29,10 +29,10 @@ HEADER_EXCLUDED="\
 _shipped$|\
 ^util/scripts/no-fsf-addresses.sh|\
 ^util/lint/lint-000-license-headers|\
-^util/lint/lint-stable-000-license-headers\
+^util/lint/lint-stable-009-old-licenses\
 "
 
-if [ "$HEADER_DIRS" = "" ]; then
+if [ -z "$HEADER_DIRS" ]; then
 	HEADER_DIRS="src util"
 fi
 
@@ -42,7 +42,7 @@ headerlist=$(git ls-files $HEADER_DIRS | egrep -v "($HEADER_EXCLUDED)")
 
 #check for the old style header
 headerlist=$(grep -il "You should have received a copy of the GNU" \
-	headerlist 2>/dev/null)
+	$headerlist 2>/dev/null)
 
 for file in $headerlist; do
 	echo "$file has the old GPL header."

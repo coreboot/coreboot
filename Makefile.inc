@@ -782,7 +782,10 @@ prebuild-files = \
 
 .PHONY: $(obj)/coreboot.pre
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)
-	mv $(obj)/coreboot.rom $@.tmp
+	mv $(obj)/coreboot.rom $@.tmp || \
+	(echo "Error: You have UPDATE_IMAGE set in Kconfig, but have no existing image to update." && \
+	echo Exiting." && \
+	false)
 	$(prebuild-files) true
 	mv $@.tmp $@
 endif # ifneq ($(CONFIG_UPDATE_IMAGE),y)

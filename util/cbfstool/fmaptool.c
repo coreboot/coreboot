@@ -45,7 +45,7 @@ static void usage(const char *invoked_as)
 									stderr);
 	fputs("\nUSAGE:\n", stderr);
 	fprintf(stderr,
-		"\t%s [-h <header output file>] <fmd input file> <binary output file>\n",
+		"\t%s [-h <header output file>] [-R <region output file>] <fmd input file> <binary output file>\n",
 								invoked_as);
 	fputs("\nMANDATORY ARGUMENTS:\n", stderr);
 	fprintf(stderr,
@@ -56,6 +56,8 @@ static void usage(const char *invoked_as)
 	fprintf(stderr,
 		"-h\tAlso produce a C header defining %s to the FMAP section's flash offset.\n",
 							HEADER_FMAP_OFFSET);
+	fprintf(stderr,
+		"-R\tAlso produce a text file listing the CBFS regions, comma separated.\n");
 	fputs("\nOUTPUT:\n", stderr);
 	fputs("A successful invocation prints a summary of work done to standard error, and a comma-separated list\n",
 									stderr);
@@ -63,7 +65,7 @@ static void usage(const char *invoked_as)
 									stderr);
 }
 
-static void list_cbfs_section_names(void)
+static void list_cbfs_section_names(FILE *out)
 {
 	cbfs_section_iterator_t cbfs_it = cbfs_sections_iterator();
 	assert(cbfs_it);
@@ -73,11 +75,11 @@ static void list_cbfs_section_names(void)
 		const char *cur_name =
 				cbfs_sections_iterator_deref(cbfs_it)->name;
 		if (cbfs_sections_iterator_advance(&cbfs_it) && subsequent)
-			putchar(',');
-		fputs(cur_name, stdout);
+			fputc(',', out);
+		fputs(cur_name, out);
 		subsequent = true;
 	}
-	putchar('\n');
+	fputc('\n', out);
 }
 
 static bool write_header(const char *out_fname,
@@ -123,14 +125,18 @@ int main(int argc, char **argv)
 
 		// Optional
 		const char *header_filename;
-	} args = {NULL, NULL, NULL};
+		const char *region_filename;
+	} args = {NULL};
 
 	bool show_usage = false;
 	int each_arg;
-	while (!show_usage && (each_arg = getopt(argc, argv, ":h:")) != -1) {
+	while (!show_usage && (each_arg = getopt(argc, argv, ":h:R:")) != -1) {
 		switch (each_arg) {
 		case 'h':
 			args.header_filename = optarg;
+			break;
+		case 'R':
+			args.region_filename = optarg;
 			break;
 		case ':':
 			fprintf(stderr, "-%c: Expected an accompanying value\n",
@@ -233,7 +239,15 @@ int main(int argc, char **argv)
 							args.fmap_filename,
 			args.header_filename ? " (and generated header)" : "");
 	fputs("The sections containing CBFSes are: ", stderr);
-	list_cbfs_section_names();
+	list_cbfs_section_names(stdout);
+	if (args.region_filename) {
+		FILE *region_file = fopen(args.region_filename, "w");
+		if (region_file == NULL)
+			return FMAPTOOL_EXIT_FAILED_WRITING_OUTPUT;
+
+		list_cbfs_section_names(region_file);
+		fclose(region_file);
+	}
 
 	full_fmd_cleanup(&descriptor);
 	return FMAPTOOL_EXIT_SUCCESS;

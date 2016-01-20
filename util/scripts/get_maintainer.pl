@@ -823,7 +823,7 @@ sub top_of_kernel_tree {
     }
     if (   (-f "${lk_path}MAINTAINERS")
 	&& (-f "${lk_path}Makefile")
-	&& (-d "${lk_path}documentation")
+	&& (-d "${lk_path}Documentation")
 	&& (-d "${lk_path}src")
 	&& (-d "${lk_path}util")) {
 	return 1;

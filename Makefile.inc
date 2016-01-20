@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-GIT:=$(shell [ -d "$(top)/.git" ] && command -v git)
+GIT:=$(shell [ -e "$(top)/.git" ] && command -v git)
 
 #######################################################################
 # normalize Kconfig variables in a central place

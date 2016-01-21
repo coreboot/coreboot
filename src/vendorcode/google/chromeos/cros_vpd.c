@@ -65,11 +65,21 @@ static int32_t get_vpd_size(const char *fmap_name, int32_t *base)
 	}
 
 	/* Try if we can find a google_vpd_info, otherwise read whole VPD. */
-	if (rdev_readat(&vpd, &info, *base, sizeof(info)) == sizeof(info) &&
-	    memcmp(info.header.magic, VPD_INFO_MAGIC, sizeof(info.header.magic))
+	if (rdev_readat(&vpd, &info, *base, sizeof(info)) != sizeof(info)) {
+		printk(BIOS_ERR, "ERROR: Failed to read %s header.\n",
+		       fmap_name);
+		return 0;
+	}
+
+	if (memcmp(info.header.magic, VPD_INFO_MAGIC, sizeof(info.header.magic))
 	    == 0 && size >= info.size + sizeof(info)) {
 		*base += sizeof(info);
 		size = info.size;
+	} else if (info.header.tlv.type == VPD_TYPE_TERMINATOR ||
+		   info.header.tlv.type == VPD_TYPE_IMPLICIT_TERMINATOR) {
+		printk(BIOS_WARNING, "WARNING: %s is uninitialized or empty.\n",
+		       fmap_name);
+		size = 0;
 	} else {
 		size -= GOOGLE_VPD_2_0_OFFSET;
 	}

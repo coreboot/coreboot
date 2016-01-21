@@ -56,17 +56,51 @@ endif
 CBFS_BASE_ADDRESS=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_CBFS_SIZE)) 1)
 
 ###############################################################################
+# common support for early assembly includes
+###############################################################################
+
+# Chipset specific assembly stubs in the romstage program flow. Certain
+# boards have more than one assembly stub so collect those and put them
+# into a single generated file.
+crt0s = $(cpu_incs-y)
+
+$(objgenerated)/assembly.inc: $$(crt0s)
+	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	printf '$(foreach crt0,$(crt0s),#include "$(crt0)"\n)' > $@
+
+
+define early_x86_assembly_entry_rule
+# $1 stage name
+# Add the assembly file that pulls in the rest of the dependencies in
+# the right order. Make sure the auto generated assembly.inc is a proper
+# dependency.
+$(1)-y += assembly_entry.S
+$$(obj)/arch/x86/assembly_entry.$(1).o: $(objgenerated)/assembly.inc
+endef
+
+define early_x86_stage
+# $1 stage name
+# $2 oformat
+$(1)-y += memlayout.ld
+
+# The '.' include path is needed for the generated assembly.inc file.
+$(1)-S-ccopts += -I.
+
+$$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
+	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
+	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $$(obj)/arch/x86/memlayout.$(1).ld --oformat $(2)
+	-LANG=C LC_ALL= $$(OBJCOPY_$(1)) --only-section .illegal_globals $$(@) $$(objcbfs)/$(1)_null.offenders >/dev/null 2>&1
+	if [ -z "$$$$($$(NM_$(1)) $$(objcbfs)/$(1)_null.offenders 2>&1 | grep 'no symbols')" ];then \
+		echo "Forbidden global variables in $(1):"; \
+		$$(NM_$(1)) $$(objcbfs)/$(1)_null.offenders; false; \
+	fi
+endef
+
+###############################################################################
 # bootblock
 ###############################################################################
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
-
-# x86-specific linker flags
-ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
-LDFLAGS_bootblock += -m elf_i386 --oformat elf32-i386
-else
-LDFLAGS_bootblock += -m elf_x86_64 --oformat elf64-x86-64
-endif
 
 bootblock-y += boot.c
 bootblock-y += memcpy.c
@@ -78,6 +112,25 @@ bootblock-y += mmap_boot.c
 # dependency. Make the same true for the linker sript.
 bootblock-y += id.S
 $(obj)/arch/x86/id.bootblock.o: $(obj)/build.h
+
+ifeq ($(CONFIG_C_ENVIRONMENT_BOOTBLOCK),y)
+
+bootblock-y += memlayout.ld
+
+ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
+$(eval $(call early_x86_stage,bootblock,elf32-i386))
+else
+$(eval $(call early_x86_stage,bootblock,elf64-x86-64))
+endif
+
+else # !C_ENVIRONMENT_BOOTBLOCK
+
+# x86-specific linker flags
+ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
+LDFLAGS_bootblock += -m elf_i386 --oformat elf32-i386
+else
+LDFLAGS_bootblock += -m elf_x86_64 --oformat elf64-x86-64
+endif
 
 bootblock-y += bootblock.S
 bootblock-y += walkcbfs.S
@@ -114,44 +167,10 @@ $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 		$(filter-out %.ld,$(bootblock-objs)) \
 		-T $(obj)/arch/x86/bootblock.bootblock.ld
 
+endif # C_ENVIRONMENT_BOOTBLOCK
+
 
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
-
-###############################################################################
-# common support for early assembly includes
-###############################################################################
-
-# Chipset specific assembly stubs in the romstage program flow. Certain
-# boards have more than one assembly stub so collect those and put them
-# into a single generated file.
-crt0s = $(cpu_incs-y)
-
-$(objgenerated)/assembly.inc: $$(crt0s)
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	printf '$(foreach crt0,$(crt0s),#include "$(crt0)"\n)' > $@
-
-define early_x86_stage
-# $1 stage name
-# $2 oformat
-$(1)-y += memlayout.ld
-# Add the assembly file that pulls in the rest of the dependencies in
-# the right order. Make sure the auto generated assembly.inc is a proper
-# dependency.
-$(1)-y += assembly_entry.S
-$$(obj)/arch/x86/assembly_entry.$(1).o: $(objgenerated)/assembly.inc
-
-# The '.' include path is needed for the generated assembly.inc file.
-$(1)-S-ccopts += -I.
-
-$$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
-	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
-	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $$(obj)/arch/x86/memlayout.$(1).ld --oformat $(2)
-	-LANG=C LC_ALL= $$(OBJCOPY_$(1)) --only-section .illegal_globals $$(@) $$(objcbfs)/$(1)_null.offenders >/dev/null 2>&1
-	if [ -z "$$$$($$(NM_$(1)) $$(objcbfs)/$(1)_null.offenders 2>&1 | grep 'no symbols')" ];then \
-		echo "Forbidden global variables in $(1):"; \
-		$$(NM_$(1)) $$(objcbfs)/$(1)_null.offenders; false; \
-	fi
-endef
 
 ###############################################################################
 # verstage
@@ -170,6 +189,8 @@ verstage-y += mmap_boot.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 verstage-libs += $(objgenerated)/libverstage.a
+
+$(eval $(call early_x86_assembly_entry_rule,verstage))
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32),y)
 $(eval $(call early_x86_stage,verstage,elf32-i386))
@@ -226,6 +247,8 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/
 endif
 
 romstage-libs ?=
+
+$(eval $(call early_x86_assembly_entry_rule,romstage))
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 $(eval $(call early_x86_stage,romstage,elf32-i386))

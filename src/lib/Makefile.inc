@@ -181,11 +181,8 @@ romstage-y += halt.c
 ramstage-y += halt.c
 smm-y += halt.c
 
-ifneq ($(CONFIG_ARCH_X86),y)
-# X86 bootblock uses custom ldscripts that are all glued together,
-# so we need to exclude it here or it would pick these up as well
-bootblock-y += program.ld
-endif
+# Use program.ld for all the platforms which use C fo the bootblock.
+bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += program.ld
 
 romstage-y += program.ld
 ramstage-y += program.ld

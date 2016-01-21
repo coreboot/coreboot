@@ -40,3 +40,7 @@ PHDRS
 	ENTRY(protected_start)
 	#endif
 #endif
+
+#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK) && ENV_BOOTBLOCK
+ENTRY(reset_vector)
+#endif

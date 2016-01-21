@@ -42,5 +42,23 @@ SECTIONS
 
 	/* Pull in the cache-as-ram rules. */
 	#include "car.ld"
+#elif ENV_BOOTBLOCK
+	/* This is for C_ENVIRONMENT_BOOTBLOCK. arch/x86/bootblock.ld contains
+	 * the logic for the romcc linking. */
+	BOOTBLOCK(0xffff0000, 64K)
+
+	/* Pull in the cache-as-ram rules. */
+	#include "car.ld"
+
 #endif
 }
+
+#if ENV_BOOTBLOCK
+/* Bootblock specific scripts which provide more SECTION directives. */
+#include <cpu/x86/16bit/entry16.ld>
+#include <cpu/x86/16bit/reset16.ld>
+#include <arch/x86/id.ld>
+#if IS_ENABLED(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE)
+#include <cpu/intel/fit/fit.ld>
+#endif
+#endif  /* ENV_BOOTBLOCK */

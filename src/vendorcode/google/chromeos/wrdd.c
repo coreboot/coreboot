@@ -26,6 +26,7 @@
  * The first part is the ISO 3166-1 alpha-2 code of the country;
  * The second part is a string of up to three alphanumeric characters
  */
+#define VARIANT_SEPARATOR '.'
 struct wrdd_code_value_pair {
 	const char *code;
 	u16 value;
@@ -50,21 +51,27 @@ uint16_t wifi_regulatory_domain(void)
 			.value = WRDD_REGULATORY_DOMAIN_INDONESIA
 		}
 	};
-	const char *wrdd_domain_key = CROS_VPD_WIFI_DOMAINKEY;
+	const char *wrdd_domain_key = CROS_VPD_REGION_NAME;
 	int i;
 	struct wrdd_code_value_pair *p;
 	/* wrdd_domain_value is ISO 3166-2 */
 	char wrdd_domain_code[7];
+	char *separator;
 
 	/* If not found for any reason fall backto the default value */
 	if (!cros_vpd_gets(wrdd_domain_key, wrdd_domain_code,
-		sizeof(wrdd_domain_code))) {
+		ARRAY_SIZE(wrdd_domain_code))) {
 		printk(BIOS_DEBUG,
 		"Error: Could not locate '%s' in VPD\n", wrdd_domain_key);
 		return WRDD_DEFAULT_REGULATORY_DOMAIN;
 	}
 	printk(BIOS_DEBUG, "Found '%s'='%s' in VPD\n",
 		wrdd_domain_key, wrdd_domain_code);
+	separator = memchr(wrdd_domain_code, VARIANT_SEPARATOR,
+				ARRAY_SIZE(wrdd_domain_code));
+	if (separator) {
+		*separator = '\0';
+	}
 
 	for (i = 0; i < ARRAY_SIZE(wrdd_table); i++) {
 		p = &wrdd_table[i];

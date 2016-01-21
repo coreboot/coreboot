@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <symbols.h>
 #include <timer.h>
 #include <soc/flash_controller.h>
 
@@ -111,18 +112,71 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(65535, buf_len);
 }
 
-static int nor_read(struct spi_flash *flash, u32 addr, size_t len, void *buf)
+static int dma_read(u32 addr, u8 *buf, u32 len)
 {
-	u8 *buffer = (u8 *)buf;
+	struct stopwatch sw;
 
+	assert(IS_ALIGNED((uintptr_t)buf, SFLASH_DMA_ALIGN) &&
+	       IS_ALIGNED(len, SFLASH_DMA_ALIGN) &&
+	       len <= _dma_coherent_size);
+
+	/* do dma reset */
+	write32(&mt8173_nor->fdma_ctl, SFLASH_DMA_SW_RESET);
+	write32(&mt8173_nor->fdma_ctl, SFLASH_DMA_WDLE_EN);
+	/* flash source address and dram dest address */
+	write32(&mt8173_nor->fdma_fadr, addr);
+	write32(&mt8173_nor->fdma_dadr, ((uintptr_t)_dma_coherent ));
+	write32(&mt8173_nor->fdma_end_dadr, ((uintptr_t)_dma_coherent + len));
+	/* start dma */
+	write32(&mt8173_nor->fdma_ctl, SFLASH_DMA_TRIGGER | SFLASH_DMA_WDLE_EN);
+
+	stopwatch_init_usecs_expire(&sw, SFLASH_POLLINGREG_US);
+	while ((read32(&mt8173_nor->fdma_ctl) & SFLASH_DMA_TRIGGER) != 0) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_WARNING, "dma read timeout!\n");
+			return -1;
+		}
+	}
+
+	memcpy(buf, _dma_coherent, len);
+	return 0;
+}
+
+static int pio_read(u32 addr, u8 *buf, u32 len)
+{
 	set_sfpaddr(addr);
 	while (len) {
 		if (mt8173_nor_execute_cmd(SFLASH_RD_TRIGGER | SFLASH_AUTOINC))
 			return -1;
 
-		*buffer++ = read8(&mt8173_nor->rdata);
+		*buf++ = read8(&mt8173_nor->rdata);
 		len--;
 	}
+	return 0;
+}
+
+static int nor_read(struct spi_flash *flash, u32 addr, size_t len, void *buf)
+{
+	u32 next;
+
+	size_t done = 0;
+	if (!IS_ALIGNED((uintptr_t)buf, SFLASH_DMA_ALIGN)) {
+		next = MIN(ALIGN_UP((uintptr_t)buf, SFLASH_DMA_ALIGN) -
+			   (uintptr_t)buf, len);
+		if (pio_read(addr, buf, next))
+			return -1;
+		done += next;
+	}
+	while (len - done >= SFLASH_DMA_ALIGN) {
+		next = MIN(_dma_coherent_size, ALIGN_DOWN(len - done,
+			   SFLASH_DMA_ALIGN));
+		if (dma_read(addr + done, buf + done, next))
+			return -1;
+		done += next;
+	}
+	next = len - done;
+	if (next > 0 && pio_read(addr + done, buf + done, next))
+		return -1;
 	return 0;
 }
 

@@ -27,6 +27,7 @@ enum {
 	SFLASHNAME_LENGTH	  = 16,
 	SFLASH_WRITE_IN_PROGRESS  = 1,
 	SFLASH_COMMAND_ENABLE	  = 0x30,
+	SFLASH_DMA_ALIGN	  = 0x10,
 
 	/* NOR flash controller commands */
 	SFLASH_RD_TRIGGER	  = 1 << 0,
@@ -38,7 +39,11 @@ enum {
 	/* NOR flash commands */
 	SFLASH_OP_WREN		  = 0x6,
 	SECTOR_ERASE_CMD	  = 0x20,
-	SFLASH_UNPROTECTED	  = 0x0
+	SFLASH_UNPROTECTED	  = 0x0,
+	/* DMA commands */
+	SFLASH_DMA_TRIGGER	  = 1 << 0,
+	SFLASH_DMA_SW_RESET	  = 1 << 1,
+	SFLASH_DMA_WDLE_EN	  = 1 << 2
 };
 
 /* register Offset */
@@ -72,8 +77,14 @@ struct mt8173_nor_regs {
 	u32 radr3;
 	u32 read_dual;
 	u32 delsel[3];
+	u32 reserved[397];
+	u32 cfg1_bri[2];
+	u32 fdma_ctl;
+	u32 fdma_fadr;
+	u32 fdma_dadr;
+	u32 fdma_end_dadr;
 };
-check_member(mt8173_nor_regs, delsel[2], 0xD8);
+check_member(mt8173_nor_regs, fdma_end_dadr, 0x724);
 static struct mt8173_nor_regs * const mt8173_nor = (void *)SFLASH_REG_BASE;
 
 struct spi_flash *mt8173_nor_flash_probe(struct spi_slave *spi);

@@ -69,6 +69,9 @@ enum timestamp_id {
 	TS_DONE_LOADING = 508,
 	TS_DONE_HASHING = 509,
 	TS_END_HASH_BODY = 510,
+	TS_START_COPYVPD = 550,
+	TS_END_COPYVPD_RO = 551,
+	TS_END_COPYVPD_RW = 552,
 
 	/* 950+ reserved for vendorcode extensions (950-999: intel/fsp) */
 	TS_FSP_MEMORY_INIT_START = 950,

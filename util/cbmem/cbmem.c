@@ -520,6 +520,10 @@ static const struct timestamp_id_to_name {
 	{ TS_DONE_HASHING,	"finished calculating body hash (SHA2)" },
 	{ TS_END_HASH_BODY,	"finished verifying body signature (RSA)" },
 
+	{ TS_START_COPYVPD,	"starting to load Chrome OS VPD" },
+	{ TS_END_COPYVPD_RO,	"finished loading Chrome OS VPD (RO)" },
+	{ TS_END_COPYVPD_RW,	"finished loading Chrome OS VPD (RW)" },
+
 	{ TS_DC_START,		"depthcharge start" },
 	{ TS_RO_PARAMS_INIT,	"RO parameter init" },
 	{ TS_RO_VB_INIT,	"RO vboot init" },

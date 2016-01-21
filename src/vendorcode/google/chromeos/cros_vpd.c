@@ -10,6 +10,7 @@
 #include <fmap.h>
 #include <stdlib.h>
 #include <string.h>
+#include <timestamp.h>
 
 #include "cros_vpd.h"
 #include "lib_vpd.h"
@@ -83,6 +84,8 @@ static void cbmem_add_cros_vpd(int is_recovery)
 	int32_t ro_vpd_base = 0, rw_vpd_base = 0;
 	int32_t ro_vpd_size, rw_vpd_size;
 
+	timestamp_add_now(TS_START_COPYVPD);
+
 	ro_vpd_size = get_vpd_size("RO_VPD", &ro_vpd_base);
 	rw_vpd_size = get_vpd_size("RW_VPD", &rw_vpd_base);
 
@@ -123,6 +126,7 @@ static void cbmem_add_cros_vpd(int is_recovery)
 				__func__);
 			ro_vpd_size = 0;
 		}
+		timestamp_add_now(TS_END_COPYVPD_RO);
 	}
 
 	if (rw_vpd_size) {
@@ -143,6 +147,7 @@ static void cbmem_add_cros_vpd(int is_recovery)
 				"%s: Reading RW_VPD FMAP section failed.\n",
 				__func__);
 		}
+		timestamp_add_now(TS_END_COPYVPD_RW);
 	}
 }
 

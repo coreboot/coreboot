@@ -38,7 +38,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "southbridge/nvidia/ck804/early_smbus.h"
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
-#include "lib/delay.c"
+#include <delay.h>
 #include <cpu/x86/lapic.h>
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <superio/winbond/common/winbond.h>

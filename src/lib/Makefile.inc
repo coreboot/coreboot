@@ -69,7 +69,7 @@ $(foreach arch,$(ARCH_SUPPORTED),\
 	    $(eval rmodules_$(arch)-y += rmodule.ld))
 
 romstage-y += fmap.c
-romstage-$(CONFIG_I2C_TPM) += delay.c
+romstage-y += delay.c
 romstage-y += cbfs.c
 romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c

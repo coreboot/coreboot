@@ -28,7 +28,7 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/early_smbus.c"
 #include <northbridge/amd/amdk8/raminit.h>
-#include "lib/delay.c"
+#include <delay.h>
 #include <lib.h>
 #include <spd.h>
 #include <cpu/x86/lapic.h>

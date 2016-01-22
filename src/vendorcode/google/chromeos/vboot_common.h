@@ -64,6 +64,9 @@ int vboot_retrieve_hash(void *digest, size_t digest_size);
  */
 int vboot_platform_is_resuming(void);
 
+/* Allow the platform to do any clean up work when vboot requests a reboot. */
+void vboot_platform_prepare_reboot(void);
+
 /* Main logic for verified boot. verstage() is the stage entry point
  * while the verstage_main() is just the core logic. */
 void verstage_main(void);

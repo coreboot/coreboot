@@ -92,10 +92,15 @@ int vboot_recovery_reason(void)
 	return sd->recovery_reason;
 }
 
+void __attribute__((weak)) vboot_platform_prepare_reboot(void)
+{
+}
+
 void vboot_reboot(void)
 {
 	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))
 		cbmem_dump_console();
+	vboot_platform_prepare_reboot();
 	hard_reset();
 	die("failed to reboot");
 }

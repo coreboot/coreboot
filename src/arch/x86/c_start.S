@@ -398,6 +398,7 @@ _idt:
 	.fill	20, 8, 0	# idt is uninitialized
 _idt_end:
 
+	.section ".text._start", "ax", @progbits
 #ifdef __x86_64__
 SetCodeSelector:
 	# save rsp because iret will align it to a 16 byte boundary

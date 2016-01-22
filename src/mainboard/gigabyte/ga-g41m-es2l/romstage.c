@@ -159,5 +159,6 @@ void main(unsigned long bist)
 	printk(BIOS_DEBUG, "Initializing memory\n");
 	sdram_initialize(0, spd_addrmap);
 	quick_ram_check();
+	cbmem_initialize_empty();
 	printk(BIOS_DEBUG, "Memory initialized\n");
 }

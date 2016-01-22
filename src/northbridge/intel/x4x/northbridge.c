@@ -29,7 +29,6 @@
 #include <northbridge/intel/x4x/iomap.h>
 #include <northbridge/intel/x4x/chip.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <cbmem.h>
 
 static void mch_domain_read_resources(device_t dev)
 {
@@ -112,8 +111,6 @@ static void mch_domain_read_resources(device_t dev)
 		fixed_mem_resource(dev, index++, pcie_config_base >> 10,
 			pcie_config_size >> 10, IORESOURCE_RESERVE);
 	}
-
-	set_top_of_ram(usable_tomk * 1024);
 }
 
 static void mch_domain_set_resources(device_t dev)

@@ -17,6 +17,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <stdint.h>
 #include <arch/io.h>
@@ -85,4 +86,10 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 	*base = pciexbar;
 	*len = max_buses << 20;
 	return 1;
+}
+
+void *cbmem_top(void)
+{
+	u32 ramtop = pci_read_config32(PCI_DEV(0,0,0), D0F0_TSEG);
+	return (void*)(ramtop);
 }

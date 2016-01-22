@@ -162,6 +162,10 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size)
 			metadata_size += sizeof(struct cbfs_file_attr_position);
 	}
 
+	/* Take care of the hash attribute if it is used */
+	if (param.hash != VB2_HASH_INVALID)
+		metadata_size += sizeof(struct cbfs_file_attr_hash);
+
 	int32_t address = cbfs_locate_entry(&image, buffer.size, param.pagesize,
 						param.alignment, metadata_size);
 	buffer_delete(&buffer);

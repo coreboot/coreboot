@@ -64,62 +64,59 @@ cache_as_ram_setup:
   AMD_ENABLE_STACK
 #ifdef __x86_64__
   /* switch to 64 bit long mode */
-  .intel_syntax noprefix
+  mov     %esi, %ecx
+  add     $0, %ecx # core number
+  xor     %eax, %eax
+  lea     (0x1000+0x23)(%ecx), %edi
+  mov     %edi, (%ecx)
+  mov     %eax, 4(%ecx)
 
-  mov     ecx, esi
-  add     ecx, 0 # core number
-  xor     eax, eax
-  lea     edi, [ecx+0x1000+0x23]
-  mov     dword ptr [ecx+0], edi
-  mov     dword ptr [ecx+4], eax
-
-  lea     edi, [ecx+0x1000]
-  mov     dword ptr [edi+0x00], 0x000000e3
-  mov     dword ptr [edi+0x04], eax
-  mov     dword ptr [edi+0x08], 0x400000e3
-  mov     dword ptr [edi+0x0c], eax
-  mov     dword ptr [edi+0x10], 0x800000e3
-  mov     dword ptr [edi+0x14], eax
-  mov     dword ptr [edi+0x18], 0xc00000e3
-  mov     dword ptr [edi+0x1c], eax
+  lea     0x1000(%ecx), %edi
+  movl    $0x000000e3, 0x00(%edi)
+  movl    %eax, 0x04(%edi)
+  movl    $0x400000e3, 0x08(%edi)
+  movl    %eax, 0x0c(%edi)
+  movl    $0x800000e3, 0x10(%edi)
+  movl    %eax, 0x14(%edi)
+  movl    $0xc00000e3, 0x18(%edi)
+  movl    %eax, 0x1c(%edi)
 
   # load rom based identity mapped page tables
-  mov     eax, ecx
-  mov     cr3,eax
+  mov     %ecx, %eax
+  mov     %eax, %cr3
 
   # enable PAE
-  mov     eax, cr4
-  bts     eax, 5
-  mov     cr4, eax
+  mov     %cr4, %eax
+  bts     $5, %eax
+  mov     %eax, %cr4
 
   # enable long mode
-  mov     ecx, 0xC0000080
+  mov     $0xC0000080, %ecx
   rdmsr
-  bts     eax, 8
+  bts     $8, %eax
   wrmsr
 
   # enable paging
-  mov     eax, cr0
-  bts     eax, 31
-  mov     cr0, eax
+  mov     %cr0, %eax
+  bts     $31, %eax
+  mov     %eax, %cr0
 
   # use call far to switch to 64-bit code segment
-  jmp 0x18,.+7
-
+  ljmp $0x18, $1f
+1:
   /* Pass the BIST result */
-  cvtsd2si        esi, xmm1
+  cvtsd2si        %xmm1, %esi
 
   /* Pass the cpu_init_detected */
-  cvtsd2si        edi, xmm0
+  cvtsd2si        %xmm0, %edi
 
   /* align the stack */
-  and     esp, 0xFFFFFFF0
+  and     $0xFFFFFFF0, %esp
 
   .code64
   call    cache_as_ram_main
   .code32
 
-  .att_syntax prefix
 #else
   /* Restore the BIST result */
   cvtsd2si  %xmm0, %edx

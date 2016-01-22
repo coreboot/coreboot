@@ -26,25 +26,24 @@
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <arch/acpi.h>
+#include <northbridge/intel/x4x/iomap.h>
 #include <northbridge/intel/x4x/chip.h>
 #include <northbridge/intel/x4x/x4x.h>
-
-/* Reserve segments A and B:
- *
- * 0xa0000 - 0xbffff: legacy VGA
- */
-static const int legacy_hole_base_k = 0xa0000 / 1024;
-static const int legacy_hole_size_k = 128;
+#include <cbmem.h>
 
 static void mch_domain_read_resources(device_t dev)
 {
+	u8 index;
 	u64 tom, touud;
-	u32 tomk, tsegk, tolud, usable_tomk;
+	u32 tomk, tseg_sizek, tolud, usable_tomk;
 	u32 pcie_config_base, pcie_config_size;
 	u32 uma_sizek = 0;
 
+	const u32 top32memk = 4 * (GiB / KiB);
+	index = 3;
+
 	/* 1024KiB TSEG */
-	tsegk = 1 << 10;
+	tseg_sizek = 1024;
 
 	pci_domain_read_resources(dev);
 
@@ -77,53 +76,52 @@ static void mch_domain_read_resources(device_t dev)
 	const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
 	printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
 
-	uma_sizek = gms_sizek + gsm_sizek + tsegk;
+	uma_sizek = gms_sizek + gsm_sizek + tseg_sizek;
 	usable_tomk = tomk - uma_sizek;
 
 	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", usable_tomk >> 10);
 
 	/* Report the memory regions */
-	ram_resource(dev, 3, 0, legacy_hole_base_k);
-	ram_resource(dev, 4, legacy_hole_base_k + legacy_hole_size_k,
-		     (usable_tomk - (legacy_hole_base_k + legacy_hole_size_k)));
+	ram_resource(dev, index++, 0, 0xa0000 >> 10);
+	ram_resource(dev, index++, 1*MiB >> 10, (usable_tomk - (1*MiB >> 10)));
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
 	 * is remapped above TOM, TOUUD will account for both
 	 */
 	touud >>= 10; /* Convert to KB */
-	if (touud > 4096 * 1024) {
-		ram_resource(dev, 5, 4096 * 1024, touud - (4096 * 1024));
+	if (touud > top32memk) {
+		ram_resource(dev, index++, top32memk, touud - top32memk);
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-		       (touud >> 10) - 4096);
+		       (touud - top32memk) >> 10);
 	}
 
 	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%08x "
-	       "size=0x%08x\n", usable_tomk << 10, uma_sizek << 10);
-	fixed_mem_resource(dev, 6, usable_tomk, uma_sizek, IORESOURCE_RESERVE);
+			"size=0x%08x\n", usable_tomk << 10, uma_sizek << 10);
+	fixed_mem_resource(dev, index++, usable_tomk, uma_sizek,
+			IORESOURCE_RESERVE);
 
-	/* Some strange hole, reserve it */
-	//fixed_mem_resource(dev, 7, usable_tomk - (0x02000000 >> 10), 0x02000000 >> 10, IORESOURCE_RESERVE);
+	/* Reserve high memory where the NB BARs are up to 4GiB */
+	fixed_mem_resource(dev, index++, DEFAULT_HECIBAR >> 10,
+				top32memk - (DEFAULT_HECIBAR >> 10),
+				IORESOURCE_RESERVE);
 
 	if (decode_pciebar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
 		       "size=0x%x\n", pcie_config_base, pcie_config_size);
-		fixed_mem_resource(dev, 7, pcie_config_base >> 10,
+		fixed_mem_resource(dev, index++, pcie_config_base >> 10,
 			pcie_config_size >> 10, IORESOURCE_RESERVE);
 	}
+
+	set_top_of_ram(usable_tomk * 1024);
 }
 
 static void mch_domain_set_resources(device_t dev)
 {
-	struct resource *resource;
-	int i;
+	struct resource *res;
 
-	for (i = 3; i < 8; ++i) {
-		/* Report read resources. */
-		resource = probe_resource(dev, i);
-		if (resource)
-			report_resource_stored(dev, resource, "");
-	}
+	for (res = dev->resource_list; res; res = res->next)
+		report_resource_stored(dev, res, "");
 
 	assign_resources(dev->link_list);
 }
@@ -141,10 +139,9 @@ static void mch_domain_init(device_t dev)
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
-	.enable_resources = NULL,
 	.init             = mch_domain_init,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus	  = pci_bus_default_ops,
+	.ops_pci_bus      = pci_bus_default_ops,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
@@ -160,7 +157,6 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = cpu_bus_init,
-	.scan_bus         = 0,
 };
 
 

@@ -23,6 +23,8 @@
 #include "iomap.h"
 #include "x4x.h"
 
+#define ME_UMA_SIZEMB 0
+
 static inline void barrier(void)
 {
 	asm volatile("mfence":::);
@@ -1465,7 +1467,8 @@ static void dradrb_ddr2(struct sysinfo *s)
 	u32 dra0;
 	u32 dra1;
 	u16 totalmemorymb;
-	u16 size, offset;
+	u32 size, offset;
+	u32 size0, size1;
 	u8 dratab[2][2][2][4] = {
 	{
 		{
@@ -1562,35 +1565,51 @@ static void dradrb_ddr2(struct sysinfo *s)
 		MCHBAR16(0x606 + 2*msbpos(rankpop1)) = c0drb + c1drb;
 	}
 
-	MCHBAR8(0x111) = MCHBAR8(0x111) | 0x2;
-	MCHBAR16(0x104) = 0;
-	size = s->channel_capacity[0] + s->channel_capacity[1];
-	MCHBAR16(0x102) = size;
+	/* Populated channel sizes in MiB */
+	size0 = s->channel_capacity[0];
+	size1 = s->channel_capacity[1];
+
+	MCHBAR8(0x111) = MCHBAR8(0x111) & ~0x2;
+	MCHBAR8(0x111) = MCHBAR8(0x111) | (1 << 4);
+
+	/* Set ME UMA size in MiB */
+	MCHBAR16(0x100) = ME_UMA_SIZEMB;
+
+	/* Set ME UMA Present bit */
+	MCHBAR32(0x111) = MCHBAR32(0x111) | 1;
+
+	size = MIN(size0 - ME_UMA_SIZEMB, size1) * 2;
+
+	MCHBAR16(0x104) = size;
+	MCHBAR16(0x102) = size0 + size1 - size;
+
 	map = 0;
-	if (s->channel_capacity[0] == 0) {
+	if (size0 == 0) {
 		map = 0;
-	} else if (s->channel_capacity[1] == 0) {
+	} else if (size1 == 0) {
 		map |= 0x20;
 	} else {
 		map |= 0x40;
 	}
-	map |= 0x18;
-	if (s->channel_capacity[0] <= s->channel_capacity[1]) {
-		map |= 0x5;
-	} else if (s->channel_capacity[0] > s->channel_capacity[1]) {
+	if (size == 0) {
+		map |= 0x18;
+	}
+
+	if (size0 - ME_UMA_SIZEMB >= size1) {
 		map |= 0x4;
 	}
 	MCHBAR8(0x110) = map;
 	MCHBAR16(0x10e) = 0;
-	if (s->channel_capacity[1] != 0) {
+
+	if (size1 != 0) {
 		offset = 0;
-	} else if (s->channel_capacity[0] > s->channel_capacity[1]) {
-		offset = size;
+	} else if ((size0 > size1) && ((map & 0x7) == 0x4)) {
+		offset = size/2 + (size0 + size1 - size);
 	} else {
-		offset = 0;
+		offset = size/2 + ME_UMA_SIZEMB;
 	}
 	MCHBAR16(0x108) = offset;
-	MCHBAR16(0x10a) = 0;
+	MCHBAR16(0x10a) = size/2;
 }
 
 static void mmap_ddr2(struct sysinfo *s)
@@ -1605,7 +1624,7 @@ static void mmap_ddr2(struct sysinfo *s)
 	gttsize = ggc2gtt[(ggc & 0xf00) >> 8];
 	tsegsize = 1; // 1MB TSEG
 	mmiosize = 0x400; // 1GB MMIO
-	tom = s->channel_capacity[0] + s->channel_capacity[1];
+	tom = s->channel_capacity[0] + s->channel_capacity[1] - ME_UMA_SIZEMB;
 	tolud = MIN(0x1000 - mmiosize, tom);
 	touud = tom;
 	gfxbase = tolud - gfxsize;

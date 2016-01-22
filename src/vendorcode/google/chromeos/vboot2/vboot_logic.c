@@ -26,6 +26,9 @@
 #include "../chromeos.h"
 #include "misc.h"
 
+/* The max hash size to expect is for SHA512. */
+#define VBOOT_MAX_HASH_SIZE VB2_SHA512_DIGEST_SIZE
+
 #define TODO_BLOCK_SIZE 1024
 
 static int is_slot_a(struct vb2_context *ctx)
@@ -111,14 +114,76 @@ int vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
 	return VB2_ERROR_UNKNOWN;
 }
 
+static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
+{
+	int is_resume;
+
+	/*
+	 * Nothing to do since resuming on the platform doesn't require
+	 * vboot verification again.
+	 */
+	if (!IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT))
+		return 0;
+
+	/*
+	 * Assume that if vboot doesn't start in bootblock verified
+	 * RW memory init code is not employed. i.e. memory init code
+	 * lives in RO CBFS.
+	 */
+	if (!IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+		return 0;
+
+	is_resume = vboot_platform_is_resuming();
+
+	if (is_resume > 0) {
+		uint8_t saved_hash[VBOOT_MAX_HASH_SIZE];
+		const size_t saved_hash_sz = sizeof(saved_hash);
+
+		assert(slot_hash_sz == saved_hash_sz);
+
+		printk(BIOS_DEBUG, "Platform is resuming.\n");
+
+		if (vboot_retrieve_hash(saved_hash, saved_hash_sz)) {
+			printk(BIOS_ERR, "Couldn't retrieve saved hash.\n");
+			return -1;
+		}
+
+		if (memcmp(saved_hash, slot_hash, slot_hash_sz)) {
+			printk(BIOS_ERR, "Hash mismatch on resume.\n");
+			return -1;
+		}
+	} else if (is_resume < 0)
+		printk(BIOS_ERR, "Unable to determine if platform resuming.\n");
+
+	printk(BIOS_DEBUG, "Saving vboot hash.\n");
+
+	/* Always save the hash for the current boot. */
+	if (vboot_save_hash(slot_hash, slot_hash_sz)) {
+		printk(BIOS_ERR, "Error saving vboot hash.\n");
+		/* Though this is an error don't report it up since it could
+		 * lead to a reboot loop. The consequence of this is that
+		 * we will most likely fail resuming because of EC issues or
+		 * the hash digest not matching. */
+		return 0;
+	}
+
+	return 0;
+}
+
 static int hash_body(struct vb2_context *ctx, struct region_device *fw_main)
 {
 	uint64_t load_ts;
 	uint32_t expected_size;
 	uint8_t block[TODO_BLOCK_SIZE];
+	uint8_t hash_digest[VBOOT_MAX_HASH_SIZE];
+	const size_t hash_digest_sz = sizeof(hash_digest);
 	size_t block_size = sizeof(block);
 	size_t offset;
 	int rv;
+
+	/* Clear the full digest so that any hash digests less than the
+	 * max have trailing zeros. */
+	memset(hash_digest, 0, hash_digest_sz);
 
 	/*
 	 * Since loading the firmware and calculating its hash is intertwined,
@@ -160,11 +225,14 @@ static int hash_body(struct vb2_context *ctx, struct region_device *fw_main)
 	timestamp_add_now(TS_DONE_HASHING);
 
 	/* Check the result (with RSA signature verification) */
-	rv = vb2api_check_hash(ctx);
+	rv = vb2api_check_hash_get_digest(ctx, hash_digest, hash_digest_sz);
 	if (rv)
 		return rv;
 
 	timestamp_add_now(TS_END_HASH_BODY);
+
+	if (handle_digest_result(hash_digest, hash_digest_sz))
+		return VB2_ERROR_UNKNOWN;
 
 	return VB2_SUCCESS;
 }

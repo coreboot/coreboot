@@ -46,6 +46,24 @@ int vboot_recovery_reason(void);
 
 void vboot_reboot(void);
 
+/*
+ * Save the provided hash digest to a secure location to check against in
+ * the resume path. Returns 0 on success, < 0 on error.
+ */
+int vboot_save_hash(void *digest, size_t digest_size);
+
+/*
+ * Retrieve the previously saved hash digest.  Returns 0 on success,
+ * < 0 on error.
+ */
+int vboot_retrieve_hash(void *digest, size_t digest_size);
+
+/*
+ * Determine if the platform is resuming from suspend. Returns 0 when
+ * not resuming, > 0 if resuming, and < 0 on error.
+ */
+int vboot_platform_is_resuming(void);
+
 /* Main logic for verified boot. verstage() is the stage entry point
  * while the verstage_main() is just the core logic. */
 void verstage_main(void);

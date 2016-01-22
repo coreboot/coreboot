@@ -503,6 +503,15 @@ config HAVE_ACPI_RESUME
 	bool
 	default n
 
+config RESUME_PATH_SAME_AS_BOOT
+	bool
+	default y if ARCH_X86
+	depends on HAVE_ACPI_RESUME
+	help
+	  This option indicates that when a system resumes it takes the
+	  same path as a regular boot. e.g. an x86 system runs from the
+	  reset vector at 0xfffffff0 on both resume and warm/cold boot.
+
 config HAVE_HARD_RESET
 	bool
 	default n

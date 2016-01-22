@@ -400,29 +400,26 @@ _idt_end:
 
 #ifdef __x86_64__
 SetCodeSelector:
-.intel_syntax noprefix
-
 	# save rsp because iret will align it to a 16 byte boundary
-	mov	rdx, rsp
+	mov	%rsp, %rdx
 
 	# use iret to jump to a 64-bit offset in a new code segment
 	# iret will pop cs:rip, flags, then ss:rsp
-	mov	ax, ss		# need to push ss..
-	push	rax		# push ss instuction not valid in x64 mode, so use ax
-	push	rsp
+	mov	%ss, %ax	# need to push ss..
+	push	%rax		# push ss instuction not valid in x64 mode, so use ax
+	push	%rsp
 	pushfq
-	push	rcx		# cx is code segment selector from caller
-	mov	rax, offset setCodeSelectorLongJump
-	push	rax
+	push	%rcx		# cx is code segment selector from caller
+	mov	$setCodeSelectorLongJump, %rax
+	push	%rax
 
 	# the iret will continue at next instruction, with the new cs value loaded
 	iretq
 
 setCodeSelectorLongJump:
 	# restore rsp, it might not have been 16-byte aligned on entry
-	mov	rsp, rdx
+	mov	%rdx, %rsp
 	ret
-.att_syntax prefix
 
 	.previous
 .code64

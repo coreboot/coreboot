@@ -29,32 +29,30 @@
 	.globl __wakeup
 __wakeup:
 #ifdef __x86_64__
-	.intel_syntax noprefix
-	xor     rax,rax
-	mov     ax, ss
-	push    rax
-	mov     rax, rsp
-	add     rax, 8
-	push    rax
+	xor     %rax,%rax
+	mov     %ss, %ax
+	push    %rax
+	mov     %rsp, %rax
+	add     $8, %rax
+	push    %rax
 	pushfq
-	push    0x10
-	lea     rax,[rip+3]
-	push    rax
+	push    $0x10
+	lea     3(%rip), %rax
+	push    %rax
 	iretq
 
 	.code32
 
 	/* disable paging */
-	mov     eax, cr0
-	btc     eax, 31
-	mov     cr0, eax
+	mov     %cr0, %eax
+	btc     $31, %eax
+	mov     %eax, %cr0
 
 	/* disable long mode */
-	mov     ecx, 0xC0000080
+	mov     $0xC0000080, %ecx
 	rdmsr
-	btc     eax, 8
+	btc     $8, %eax
 	wrmsr
-	.att_syntax prefix
 #endif
 	/* First prepare the jmp to the resume vector */
 	mov	0x4(%esp), %eax	/* vector */

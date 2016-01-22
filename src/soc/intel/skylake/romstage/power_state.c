@@ -30,6 +30,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
+#include <vendorcode/google/chromeos/vboot_common.h>
 
 static struct chipset_power_state power_state CAR_GLOBAL;
 
@@ -150,4 +151,10 @@ struct chipset_power_state *fill_power_state(void)
 	dump_power_state(ps);
 
 	return ps;
+}
+
+int vboot_platform_is_resuming(void)
+{
+	int typ = (inl(ACPI_BASE_ADDRESS + PM1_CNT) & SLP_TYP) >> SLP_TYP_SHIFT;
+	return typ == SLP_TYP_S3;
 }

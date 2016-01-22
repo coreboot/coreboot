@@ -1,5 +1,6 @@
 verstage-y += cpu.c
 verstage-y += pch.c
+verstage-y += power_state.c
 verstage-y += report_platform.c
 verstage-y += romstage.c
 verstage-y += smbus.c

@@ -45,14 +45,22 @@ static u32 ddr2mhz(u32 speed)
 	return mhz[speed];
 }
 
-static u8 msbpos(u8 val) //Reverse
+/* Find MSB bitfield location using bit scan reverse instruction */
+static u8 msbpos(u32 val)
 {
-	u8 i;
-	for (i = 7; i >= 0; i--) {
-		if ((val & (1 << i)) == 0)
-			break;
+	u32 pos;
+
+	if (val == 0) {
+		printk(BIOS_WARNING, "WARNING: Input to BSR is zero\n");
+		return 0;
 	}
-	return i;
+
+	asm ("bsrl %1, %0"
+		:"=r"(pos)
+		:"r"(val)
+	);
+
+	return (u8)(pos & 0xff);
 }
 
 static void sdram_detect_smallest_params2(struct sysinfo *s)
@@ -1614,7 +1622,9 @@ static void dradrb_ddr2(struct sysinfo *s)
 
 static void mmap_ddr2(struct sysinfo *s)
 {
-	u32 gfxsize, gttsize, tsegsize, mmiosize, tom, tolud, touud, gfxbase, gttbase, tsegbase;
+	bool reclaim;
+	u32 gfxsize, gttsize, tsegsize, mmiosize, tom, tolud, touud;
+	u32 gfxbase, gttbase, tsegbase, reclaimbase, reclaimlimit;
 	u16 ggc;
 	u16 ggc2uma[] = { 0, 0, 0, 0, 0, 32, 48, 64, 128, 256, 96, 160, 224, 352 };
 	u8 ggc2gtt[] = { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4};
@@ -1626,13 +1636,34 @@ static void mmap_ddr2(struct sysinfo *s)
 	mmiosize = 0x400; // 1GB MMIO
 	tom = s->channel_capacity[0] + s->channel_capacity[1] - ME_UMA_SIZEMB;
 	tolud = MIN(0x1000 - mmiosize, tom);
+
+	reclaim = false;
+	if ((tom - tolud) > 0x40)
+		reclaim = true;
+
+	if (reclaim) {
+		tolud = tolud & ~0x3f;
+		tom = tom & ~0x3f;
+		reclaimbase = MAX(0x1000, tom);
+		reclaimlimit = reclaimbase + (MIN(0x1000, tom) - tolud) - 0x40;
+	}
+
 	touud = tom;
+	if (reclaim)
+		touud = reclaimlimit + 0x40;
+
 	gfxbase = tolud - gfxsize;
 	gttbase = gfxbase - gttsize;
 	tsegbase = gttbase - tsegsize;
 
 	pci_write_config16(PCI_DEV(0,0,0), 0xb0, tolud << 4);
 	pci_write_config16(PCI_DEV(0,0,0), 0xa0, tom >> 6);
+	if (reclaim) {
+		pci_write_config16(PCI_DEV(0,0,0), 0x98,
+					(u16)(reclaimbase >> 6));
+		pci_write_config16(PCI_DEV(0,0,0), 0x9a,
+					(u16)(reclaimlimit >> 6));
+	}
 	pci_write_config16(PCI_DEV(0,0,0), 0xa2, touud);
 	pci_write_config32(PCI_DEV(0,0,0), 0xa4, gfxbase << 20);
 	pci_write_config32(PCI_DEV(0,0,0), 0xa8, gttbase << 20);
@@ -1993,7 +2024,15 @@ void raminit_ddr2(struct sysinfo *s)
 	printk(BIOS_DEBUG, "Done power settings\n");
 
 	// ME related
-	//MCHBAR32(0xa30) = MCHBAR32(0xa30) | (1 << 26);
+	if (RANK_IS_POPULATED(s->dimms, 0, 0)
+			|| RANK_IS_POPULATED(s->dimms, 1, 0)) {
+		MCHBAR8(0xa2f) = MCHBAR8(0xa2f) | (1 << 0);
+	}
+	if (RANK_IS_POPULATED(s->dimms, 0, 1)
+			|| RANK_IS_POPULATED(s->dimms, 1, 1)) {
+		MCHBAR8(0xa2f) = MCHBAR8(0xa2f) | (1 << 1);
+	}
+	MCHBAR32(0xa30) = MCHBAR32(0xa30) | (1 << 26);
 
 	printk(BIOS_DEBUG, "Done ddr2\n");
 }

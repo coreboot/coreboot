@@ -35,27 +35,14 @@
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
-static struct resource *gtt_res = NULL;
-
-void gtt_write(u32 reg, u32 data)
-{
-	write32(res2mmio(gtt_res, reg, 0), data);
-}
-
 static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
-			   u8 *mmio, u32 physbase, u16 piobase, u32 lfb)
+			   u8 *mmio)
 {
 
 	int i;
 	u32 hactive, vactive;
-	vga_gr_write(0x18, 0);
 
-	/* Setup GTT.  */
-	for (i = 0; i < 0x2000; i++)
-	{
-		outl((i << 2) | 1, piobase);
-		outl(physbase + (i << 12) + 1, piobase + 4);
-	}
+	vga_gr_write(0x18, 0);
 
 	write32(mmio + VGA0, 0x31108);
 	write32(mmio + VGA1, 0x31406);
@@ -91,8 +78,6 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 
 	hactive = 640;
 	vactive = 400;
-
-	vga_textmode_init();
 
 	mdelay(1);
 	write32(mmio + FP0(0), 0x31108);
@@ -152,7 +137,8 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 	write32(mmio + 0x000f000c, 0x00002050);
 	write32(mmio + 0x00060100, 0x00044000);
 	mdelay(1);
-	write32(mmio + PIPECONF(0), PIPECONF_ENABLE | PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
+	write32(mmio + PIPECONF(0), PIPECONF_ENABLE
+			| PIPECONF_BPP_6 | PIPECONF_DITHER_EN);
 
 	write32(mmio + VGACNTRL, 0x0);
 	write32(mmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
@@ -168,7 +154,7 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 			| ADPA_DPMS_ON
 			);
 
-	write32(mmio + PP_CONTROL, PANEL_POWER_ON);
+	vga_textmode_init();
 
 	/* Enable screen memory.  */
 	vga_sr_write(1, vga_sr_read(1) & ~0x20);
@@ -176,6 +162,22 @@ static void intel_gma_init(const struct northbridge_intel_x4x_config *info,
 	/* Clear interrupts. */
 	write32(mmio + DEIIR, 0xffffffff);
 	write32(mmio + SDEIIR, 0xffffffff);
+}
+
+static void native_init(struct device *dev)
+{
+	struct resource *gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	struct northbridge_intel_x4x_config *conf = dev->chip_info;
+
+	if (gtt_res && gtt_res->base) {
+		printk(BIOS_SPEW,
+			"Initializing VGA without OPROM. MMIO 0x%llx\n",
+			gtt_res->base);
+		intel_gma_init(conf, res2mmio(gtt_res, 0, 0));
+	}
+
+	/* Linux relies on VBT for panel info.  */
+	generate_fake_intel_oprom(&conf->gfx, dev, "$VBT EAGLELAKE      ");
 }
 
 static void gma_func0_init(struct device *dev)
@@ -187,43 +189,10 @@ static void gma_func0_init(struct device *dev)
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
-	/* Init graphics power management */
-	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
-
-	struct northbridge_intel_x4x_config *conf = dev->chip_info;
-
-	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
-		/* PCI Init, will run VBIOS */
-		pci_dev_init(dev);
-	} else {
-		u32 physbase;
-		struct resource *lfb_res;
-		struct resource *pio_res;
-
-		lfb_res = find_resource(dev, PCI_BASE_ADDRESS_2);
-		pio_res = find_resource(dev, PCI_BASE_ADDRESS_4);
-
-		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-
-		if (gtt_res && gtt_res->base && physbase && pio_res && pio_res->base
-		    && lfb_res && lfb_res->base) {
-			printk(BIOS_SPEW, "Initializing VGA without OPROM. MMIO 0x%llx\n",
-			       gtt_res->base);
-			intel_gma_init(conf, res2mmio(gtt_res, 0, 0), physbase,
-				       pio_res->base, lfb_res->base);
-		}
-
-		/* Linux relies on VBT for panel info.  */
-		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT EAGLELAKE      ");
-	}
-
-	/* Post VBIOS init */
-	/* Enable Backlight  */
-	gtt_write(BLC_PWM_CTL2, (1 << 31));
-	if (conf->gfx.backlight == 0)
-		gtt_write(BLC_PWM_CTL, 0x06100610);
+	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+		native_init(dev);
 	else
-		gtt_write(BLC_PWM_CTL, conf->gfx.backlight);
+		pci_dev_init(dev);
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -269,8 +238,6 @@ static struct device_operations gma_func0_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.acpi_fill_ssdt_generator = gma_ssdt,
 	.init = gma_func0_init,
-	.scan_bus = 0,
-	.enable = 0,
 	.ops_pci = &gma_pci_ops,
 };
 

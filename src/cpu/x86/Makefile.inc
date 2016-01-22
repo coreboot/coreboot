@@ -16,7 +16,7 @@ ramstage-srcs += $(SIPI_BIN).manual
 endif
 rmodules_$(ARCH-ramstage-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
 
-$(SIPI_DOTO): $(dir $(SIPI_ELF))sipi_vector.rmodules_$(ARCH-ramstage-y).o
+$(SIPI_DOTO): $(call src-to-obj,rmodules_$(ARCH-ramstage-y),src/cpu/x86/sipi_vector.S)
 	$(CC_rmodules_$(ARCH-ramstage-y)) $(CFLAGS_rmodules_$(ARCH-ramstage-y)) -nostdlib -r -o $@ $^
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
@@ -28,6 +28,6 @@ endif
 $(SIPI_BIN): $(SIPI_RMOD)
 	$(OBJCOPY_ramstage) -O binary $< $@
 
-$(SIPI_BIN).ramstage.manual: $(SIPI_BIN)
+$(call src-to-obj,ramstage,$(SIPI_BIN).manual): $(SIPI_BIN)
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) $(target-objcopy) $(notdir $@)

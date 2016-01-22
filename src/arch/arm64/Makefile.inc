@@ -41,7 +41,7 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARM64),y)
 
 bootblock-y += div0.c
 bootblock-y += id.S
-$(obj)/arch/arm64/id.bootblock.o: $(obj)/build.h
+$(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
 bootblock-y += boot.c
 bootblock-y += eabi_compat.c
@@ -55,7 +55,7 @@ bootblock-y += memmove.S
 
 $(objcbfs)/bootblock.debug: $$(bootblock-objs) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.bootblock.ld
+	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) --end-group -T $(call src-to-obj,bootblock,src/mainboard/$(MAINBOARDDIR)/memlayout.ld)
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
@@ -67,7 +67,7 @@ ifeq ($(CONFIG_ARCH_VERSTAGE_ARM64),y)
 
 $(objcbfs)/verstage.debug: $(objgenerated)/libverstage.a $$(verstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_verstage) $(LDFLAGS_verstage) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(verstage-objs)) $(objgenerated)/libverstage.a --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.verstage.ld
+	$(LD_verstage) $(LDFLAGS_verstage) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(verstage-objs)) $(objgenerated)/libverstage.a --end-group -T $(call src-to-obj,verstage,src/mainboard/$(MAINBOARDDIR)/memlayout.ld)
 
 verstage-y += boot.c
 verstage-y += div0.c
@@ -101,7 +101,7 @@ rmodules_arm64-y += eabi_compat.c
 
 $(objcbfs)/romstage.debug: $$(romstage-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.romstage.ld
+	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group -T $(call src-to-obj,romstage,src/mainboard/$(MAINBOARDDIR)/memlayout.ld)
 
 endif # CONFIG_ARCH_ROMSTAGE_ARM64
 
@@ -132,7 +132,7 @@ ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
 $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) $(LDFLAGS_ramstage) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group -T $(obj)/mainboard/$(MAINBOARDDIR)/memlayout.ramstage.ld
+	$(LD_ramstage) $(LDFLAGS_ramstage) -o $@ -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group -T $(call src-to-obj,ramstage,src/mainboard/$(MAINBOARDDIR)/memlayout.ld)
 
 # Build ARM Trusted Firmware (BL31)
 

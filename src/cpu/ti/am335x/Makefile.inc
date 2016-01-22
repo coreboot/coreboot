@@ -22,7 +22,7 @@ $(eval $(call create_class_compiler,omap-header,arm))
 
 real-target: $(obj)/MLO
 
-header_ld = $(obj)/cpu/ti/am335x/header.omap-header.ld
+header_ld := $(call src-to-obj,omap-header,$(dir)/header.ld)
 
 get_header_size= \
 	$(eval omap_header_info=$(shell $(CBFSTOOL) $(1) print | grep $(2))) \

@@ -75,7 +75,7 @@ define early_x86_assembly_entry_rule
 # the right order. Make sure the auto generated assembly.inc is a proper
 # dependency.
 $(1)-y += assembly_entry.S
-$$(obj)/arch/x86/assembly_entry.$(1).o: $(objgenerated)/assembly.inc
+$(call src-to-obj,$(1),$(dir)/assembly_entry.S): $(objgenerated)/assembly.inc
 endef
 
 define early_x86_stage
@@ -88,7 +88,7 @@ $(1)-S-ccopts += -I.
 
 $$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
 	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
-	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $$(obj)/arch/x86/memlayout.$(1).ld --oformat $(2)
+	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $(call src-to-obj,$(1),$(dir)/memlayout.ld) --oformat $(2)
 	-LANG=C LC_ALL= $$(OBJCOPY_$(1)) --only-section .illegal_globals $$(@) $$(objcbfs)/$(1)_null.offenders >/dev/null 2>&1
 	if [ -z "$$$$($$(NM_$(1)) $$(objcbfs)/$(1)_null.offenders 2>&1 | grep 'no symbols')" ];then \
 		echo "Forbidden global variables in $(1):"; \
@@ -111,7 +111,7 @@ bootblock-y += mmap_boot.c
 # the right order. Make sure the auto generated bootblock.inc is a proper
 # dependency. Make the same true for the linker sript.
 bootblock-y += id.S
-$(obj)/arch/x86/id.bootblock.o: $(obj)/build.h
+$(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
 ifeq ($(CONFIG_C_ENVIRONMENT_BOOTBLOCK),y)
 
@@ -134,10 +134,10 @@ endif
 
 bootblock-y += bootblock.S
 bootblock-y += walkcbfs.S
-$(obj)/arch/x86/bootblock.bootblock.o: $(objgenerated)/bootblock.inc
+$(call src-to-obj,bootblock,$(dir)/bootblock.S): $(objgenerated)/bootblock.inc
 
 bootblock-y += bootblock.ld
-$(obj)/arch/x86/bootblock.bootblock.ld: $(objgenerated)/bootblock.ld
+$(call src-to-obj,bootblock,$(dir)/bootblock.ld): $(objgenerated)/bootblock.ld
 
 bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
 ifeq ($(CONFIG_SSE),y)
@@ -148,7 +148,7 @@ endif
 $(objgenerated)/empty: build-dirs
 	touch $@
 
-$(objgenerated)/bootblock.ld: $$(filter-out $(obj)/arch/x86/bootblock.bootblock.ld, $$(filter %.ld,$$(bootblock-objs))) $(objgenerated)/empty
+$(objgenerated)/bootblock.ld: $$(filter-out $(call src-to-obj,bootblock,src/arch/x86/bootblock.ld), $$(filter %.ld,$$(bootblock-objs))) $(objgenerated)/empty
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	cat $^ >> $@.tmp
 	mv $@.tmp $@
@@ -160,12 +160,12 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOU
 		$< > $(objgenerated)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS_bootblock) $< -o $@
 
-# $(obj)/arch/x86/bootblock.bootblock.ld is part of $(bootblock-objs)
+# bootblock.ld is part of $(bootblock-objs)
 $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) \
 		$(filter-out %.ld,$(bootblock-objs)) \
-		-T $(obj)/arch/x86/bootblock.bootblock.ld
+		-T $(call src-to-obj,bootblock,src/arch/x86/bootblock.ld)
 
 endif # C_ENVIRONMENT_BOOTBLOCK
 
@@ -328,9 +328,9 @@ endif
 
 ramstage-y += memlayout.ld
 
-$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(obj)/arch/x86/memlayout.ramstage.ld
+$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(call src-to-obj,ramstage,src/arch/x86/memlayout.ld)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) $(CPPFLAGS) $(LDFLAGS_ramstage) -o $@ -L$(obj) $< -T $(obj)/arch/x86/memlayout.ramstage.ld
+	$(LD_ramstage) $(CPPFLAGS) $(LDFLAGS_ramstage) -o $@ -L$(obj) $< -T $(call src-to-obj,ramstage,src/arch/x86/memlayout.ld)
 
 $(objgenerated)/ramstage.o: $$(ramstage-objs) $(COMPILER_RT_ramstage) $$(ramstage-libs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

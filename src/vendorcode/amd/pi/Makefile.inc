@@ -81,22 +81,21 @@ CC_x86_64 := $(CC_x86_64) $(AGESA_INC) $(AGESA_CFLAGS)
 #######################################################################
 
 define create_agesa_cp_template
-
 # $1 AGESA source file
-# $2 AGESA copy-to location
-$(agesa_src_path)/$(notdir $2): $2 $(agesa_src_path)
-	@printf "    AGESA      Copying $$(notdir $2) => $$(@D)\n"
-	if [ ! -r $(agesa_src_path)/$(notdir $2) ]; then                   \
-		cp -f $2 $$(@D);                                           \
+
+$(agesa_src_path)/$(notdir $1): $1
+	@printf "    AGESA      Copying $$(notdir $1) => $$(@D)\n"
+	if [ ! -r $(agesa_src_path)/$(notdir $1) ]; then                   \
+		cp -f $1 $$(@D);                                           \
 	fi
 
-$(agesa_obj_path)/$1.libagesa.o: $(agesa_src_path)/$(notdir $2) $(obj)/config.h $(src)/include/kconfig.h $(agesa_obj_path)
-	@printf "    CC         $(subst $(agesa_obj_path)/,,$$(@))\n"
+$(call src-to-obj,libagesa,$1): $(agesa_src_path)/$(notdir $1) $(obj)/config.h $(src)/include/kconfig.h
+	@printf "    CC         $$(subst $(obj)/,,$$(@))\n"
 	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)                 \
 	               $(AGESA_INC)                                               \
 	               -include $(obj)/config.h -include $(src)/include/kconfig.h \
 	               -o $$@                                                     \
-	               $(agesa_src_path)/$(notdir $2)
+	               $(agesa_src_path)/$(notdir $1)
 
 endef
 
@@ -120,21 +119,15 @@ $(eval $(call create_class_compiler,libagesa,x86_64))
 endif
 
 agesa_src_files := $(strip $(sort $(foreach file,$(strip $(agesa_raw_files)),$(call strip_quotes,$(file)))))
-agesa_obj_path := $(strip $(obj)/vendorcode/amd)
 agesa_src_path := $(strip $(obj)/agesa)
-agesa_src_copies := $(strip $(foreach file,$(agesa_src_files),$(agesa_obj_path)/$(notdir $(file))))
-agesa_obj_copies := $(strip $(agesa_src_copies:.c=.libagesa.o))
+agesa_dirs := $(sort $(abspath $(dir $(call src-to-obj,libagesa,$(agesa_src_files)))))
 
-$(agesa_src_path):
-	mkdir -p $@
+additional-dirs += $(agesa_src_path) $(agesa_dirs)
 
-$(agesa_obj_path):
-	mkdir -p $@
+$(foreach file,$(strip $(agesa_src_files)),$(eval $(call create_agesa_cp_template,$(file))))
 
-$(foreach file,$(strip $(agesa_src_files)),$(eval $(call create_agesa_cp_template,$(basename $(notdir $(file))),$(file))))
-
-$(obj)/agesa/libagesa.a: $(agesa_obj_copies)
-	@printf "    AGESA      $(subst $(agesa_obj_path)/,,$(@))\n"
+$(obj)/agesa/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
+	@printf "    AGESA      $(subst $(obj)/,,$(@))\n"
 	ar rcs $@ $+
 
 romstage-libs += $(obj)/agesa/libagesa.a

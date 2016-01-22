@@ -167,11 +167,11 @@ ramstage-y += version.c
 smm-y += version.c
 verstage-y += version.c
 
-$(obj)/lib/version.bootblock.o : $(obj)/build.h
-$(obj)/lib/version.romstage.o : $(obj)/build.h
-$(obj)/lib/version.ramstage.o : $(obj)/build.h
-$(obj)/lib/version.smm.o : $(obj)/build.h
-$(obj)/lib/version.verstage.o : $(obj)/build.h
+$(call src-to-obj,bootblock,$(dir)/version.c) : $(obj)/build.h
+$(call src-to-obj,romstage,$(dir)/version.c) : $(obj)/build.h
+$(call src-to-obj,ramstage,$(dir)/version.c) : $(obj)/build.h
+$(call src-to-obj,smm,$(dir)/version.c) : $(obj)/build.h
+$(call src-to-obj,verstage,$(dir)/version.c) : $(obj)/build.h
 
 romstage-y += bootmode.c
 ramstage-y += bootmode.c
@@ -202,8 +202,8 @@ RMODULE_LDFLAGS  := -z defs -Bsymbolic
 # It will create the necessary Make rules to create a rmodule. The resulting
 # rmdoule is named $(1).rmod
 define rmodule_link
-$(strip $(1)): $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) $(obj)/lib/rmodule.rmodules_$(4).ld | $$(RMODTOOL)
-	$$(LD_rmodules_$(4)) $$(LDFLAGS_rmodules_$(4)) $(RMODULE_LDFLAGS) -T $(obj)/lib/rmodule.rmodules_$(4).ld --defsym=__heap_size=$(strip $(3)) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --end-group
+$(strip $(1)): $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) $(call src-to-obj,rmodules_$(4),src/lib/rmodule.ld) | $$(RMODTOOL)
+	$$(LD_rmodules_$(4)) $$(LDFLAGS_rmodules_$(4)) $(RMODULE_LDFLAGS) -T $(call src-to-obj,rmodules_$(4),src/lib/rmodule.ld) --defsym=__heap_size=$(strip $(3)) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --end-group
 	$$(NM_rmodules_$(4)) -n $$@ > $$(basename $$@).map
 endef
 

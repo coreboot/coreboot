@@ -180,6 +180,12 @@ add-special-class= \
 	$(eval $(1):=) \
 	$(eval special-classes+=$(1))
 
+# Converts one or more source file paths to their corresponding build/ paths.
+# Only .c and .S get converted to .o, other files (like .ld) keep their name.
+# $1 stage name
+# $2 file path (list)
+src-to-obj=$(foreach file,$(2),$(subst .$(1),,$(basename $(patsubst src/%,$(obj)/%,$(file)))).$(1)$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(suffix $(file)))))
+
 # Clean -y variables, include Makefile.inc
 # Add paths to files in X-y to X-srcs
 # Add subdirs-y to subdirs
@@ -214,12 +220,6 @@ endif
 
 # Eliminate duplicate mentions of source files in a class
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
-
-# Converts one or more source file paths to their corresponding build/ paths.
-# Only .c and .S get converted to .o, other files (like .ld) keep their name.
-# $1 stage name
-# $2 file path (list)
-src-to-obj=$(foreach file,$(2),$(subst .$(1),,$(basename $(patsubst src/%,$(obj)/%,$(file)))).$(1)$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(suffix $(file)))))
 
 $(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class),$($(class)-srcs))))
 

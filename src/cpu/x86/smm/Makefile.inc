@@ -32,7 +32,7 @@ $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
 
 # change to the target path because objcopy will use the path name in its
 # ELF symbol names.
-$(obj)/cpu/x86/smm/smm.ramstage.manual: $(obj)/cpu/x86/smm/smm
+$(call src-to-obj,ramstage,$(obj)/cpu/x86/smm/smm.manual): $(obj)/cpu/x86/smm/smm
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) $(target-objcopy) $(notdir $@)
 
@@ -62,7 +62,7 @@ endif
 $(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf.rmod
 	$(OBJCOPY_smmstub) -O binary $< $@
 
-$(obj)/cpu/x86/smm/smmstub.ramstage.manual: $(obj)/cpu/x86/smm/smmstub
+$(call src-to-obj,ramstage,$(obj)/cpu/x86/smm/smmstub.manual): $(obj)/cpu/x86/smm/smmstub
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cd $(dir $@); $(OBJCOPY_smmstub) -I binary $(notdir $<) $(target-objcopy) $(notdir $@)
 

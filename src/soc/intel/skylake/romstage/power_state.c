@@ -158,3 +158,17 @@ int vboot_platform_is_resuming(void)
 	int typ = (inl(ACPI_BASE_ADDRESS + PM1_CNT) & SLP_TYP) >> SLP_TYP_SHIFT;
 	return typ == SLP_TYP_S3;
 }
+
+/*
+ * The PM1 control is set to S5 when vboot requests a reboot because the power
+ * state code above may not have collected it's data yet. Therefore, set it to
+ * S5 when vboot requests a reboot. That's necessary if vboot fails in the
+ * resume path and requests a reboot. This prevents a reboot loop where the
+ * error is continually hit on the failing vboot resume path.
+ */
+void vboot_platform_prepare_reboot(void)
+{
+	uint16_t port = ACPI_BASE_ADDRESS + PM1_CNT;
+
+	outl((inl(port) & ~(SLP_TYP)) | (SLP_TYP_S5 << SLP_TYP_SHIFT), port);
+}

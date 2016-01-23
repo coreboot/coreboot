@@ -6,6 +6,8 @@ subdirs-$(CONFIG_PARALLEL_MP) += name
 ramstage-$(CONFIG_PARALLEL_MP) += mp_init.c
 ramstage-$(CONFIG_MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING) += mirror_payload.c
 
+additional-dirs += $(obj)/cpu/x86
+
 SIPI_ELF=$(obj)/cpu/x86/sipi_vector.elf
 SIPI_RMOD=$(SIPI_ELF).rmod
 SIPI_BIN=$(SIPI_ELF:.elf=)
@@ -30,4 +32,4 @@ $(SIPI_BIN): $(SIPI_RMOD)
 
 $(call src-to-obj,ramstage,$(SIPI_BIN).manual): $(SIPI_BIN)
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) $(target-objcopy) $(notdir $@)
+	cd $(dir $<); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) $(target-objcopy) $(abspath $@)

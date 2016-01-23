@@ -415,18 +415,6 @@ ramstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 romstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 verstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
-$(obj)/%.ramstage.o $(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_ramstage) -MMD $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) $(ramstage-c-ccopts) -c -o $@ $<
-
-$(obj)/%.romstage.o $(abspath $(obj))/%.romstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) -MMD $(CFLAGS_romstage) $(CPPFLAGS_romstage) $(romstage-c-ccopts) -c -o $@ $<
-
-$(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) -MMD $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) $(bootblock-c-ccopts) -c -o $@ $<
-
 $(objgenerated)/libverstage.a: $$(libverstage-objs)
 	rm -f $@
 	$(AR_libverstage) rcsT $@ $^
@@ -437,8 +425,8 @@ clean-abuild:
 	rm -rf coreboot-builds
 
 clean-for-update-target:
-	rm -f $(obj)/ramstage* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
-	rm -rf $(obj)/bootblock* $(obj)/romstage* $(obj)/location.*
+	rm -f $(obj)/ramstage?* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
+	rm -rf $(obj)/bootblock?* $(obj)/romstage?* $(obj)/location.*
 	rm -f $(obj)/option_table.* $(obj)/crt0.S $(obj)/ldscript
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm

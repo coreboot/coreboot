@@ -106,7 +106,7 @@
 		SET_COUNTER(bootblock, addr) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Bootblock exceeded its allotted size! (sz))); \
-		INCLUDE "lib/program.bootblock.ld"
+		INCLUDE "bootblock/lib/program.ld"
 #else
 	#define BOOTBLOCK(addr, sz) \
 		SET_COUNTER(bootblock, addr) \
@@ -118,7 +118,7 @@
 		SET_COUNTER(romstage, addr) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Romstage exceeded its allotted size! (sz))); \
-		INCLUDE "lib/program.romstage.ld"
+		INCLUDE "romstage/lib/program.ld"
 #else
 	#define ROMSTAGE(addr, sz) \
 		SET_COUNTER(romstage, addr) \
@@ -130,7 +130,7 @@
 		SET_COUNTER(ramstage, addr) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Ramstage exceeded its allotted size! (sz))); \
-		INCLUDE "lib/program.ramstage.ld"
+		INCLUDE "ramstage/lib/program.ld"
 #else
 	#define RAMSTAGE(addr, sz) \
 		SET_COUNTER(ramstage, addr) \
@@ -149,7 +149,7 @@
 		SET_COUNTER(verstage, addr) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Verstage exceeded its allotted size! (sz))); \
-		INCLUDE "lib/program.verstage.ld"
+		INCLUDE "verstage/lib/program.ld"
 
 	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) VERSTAGE(addr, size)
 #else

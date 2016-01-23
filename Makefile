@@ -184,7 +184,13 @@ add-special-class= \
 # Only .c and .S get converted to .o, other files (like .ld) keep their name.
 # $1 stage name
 # $2 file path (list)
-src-to-obj=$(foreach file,$(2),$(subst .$(1),,$(basename $(patsubst src/%,$(obj)/%,$(file)))).$(1)$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(suffix $(file)))))
+src-to-obj=\
+	$(patsubst $(obj)/%,$(obj)/$(1)/%,\
+	$(patsubst $(obj)/$(1)/%,$(obj)/%,\
+	$(patsubst src/%,$(obj)/%,\
+	$(patsubst %.c,%.o,\
+	$(patsubst %.S,%.o,\
+	$(subst .$(1),,$(2)))))))
 
 # Clean -y variables, include Makefile.inc
 # Add paths to files in X-y to X-srcs

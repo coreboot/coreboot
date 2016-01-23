@@ -13,7 +13,6 @@
 
 #include <console/console.h>
 #include <arch/io.h>
-#include <arch/pciconf.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>

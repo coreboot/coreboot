@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # dtd_parser.py - DTD structure parser
 #
 # Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.

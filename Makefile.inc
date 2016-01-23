@@ -179,8 +179,8 @@ endef
 define generic-objs_a_template_gen
 de$(EMPTY)fine $(1)-objs_a_template
 $$(call src-to-obj,$1,$$(1).a): $$(1).a
-	@printf "    CP         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	cp $$$$< $$$$@.tmp
+	@printf "    AR         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	$$$$(AR_$(1)) rcsT $$$$@.tmp $$$$<
 	mv $$$$@.tmp $$$$@
 en$(EMPTY)def
 endef

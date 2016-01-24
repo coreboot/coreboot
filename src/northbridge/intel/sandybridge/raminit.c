@@ -498,6 +498,28 @@ static u32 get_COMP2(u32 tCK)
 	return frq_comp2_map[get_FRQ(tCK) - 3];
 }
 
+static u32 get_XOVER_CLK(u8 rankmap)
+{
+	return rankmap << 24;
+}
+
+static u32 get_XOVER_CMD(u8 rankmap)
+{
+	u32 reg;
+
+	// enable xover cmd
+	reg = 0x4000;
+
+	// enable xover ctl
+	if (rankmap & 0x3)
+		reg |= 0x20000;
+
+	if (rankmap & 0xc)
+		reg |= 0x4000000;
+
+	return reg;
+}
+
 static void dram_timing(ramctr_timing * ctrl)
 {
 	u8 val;
@@ -699,20 +721,13 @@ static void dram_xover(ramctr_timing * ctrl)
 
 	FOR_ALL_CHANNELS {
 		// enable xover clk
+		reg = get_XOVER_CLK(ctrl->rankmap[channel]);
 		printk(BIOS_DEBUG, "[%x] = %x\n", channel * 0x100 + 0xc14,
-		       (ctrl->rankmap[channel] << 24));
-		MCHBAR32(channel * 0x100 + 0xc14) = (ctrl->rankmap[channel] << 24);
+				reg);
+		MCHBAR32(channel * 0x100 + 0xc14) = reg;
 
-		// enable xover ctl
-		reg = 0;
-		if (ctrl->rankmap[channel] & 0x5) {
-			reg |= 0x20000;
-		}
-		if (ctrl->rankmap[channel] & 0xa) {
-			reg |= 0x4000000;
-		}
-		// enable xover cmd
-		reg |= 0x4000;
+		// enable xover ctl & xover cmd
+		reg = get_XOVER_CMD(ctrl->rankmap[channel]);
 		printk(BIOS_DEBUG, "[%x] = %x\n", 0x100 * channel + 0x320c,
 		       reg);
 		MCHBAR32(0x100 * channel + 0x320c) = reg;
@@ -1493,14 +1508,16 @@ static void program_timings(ramctr_timing * ctrl, int channel)
 			break;
 		}
 
-	reg32 = (1 << 17) | (1 << 14);
+	/* enable CMD XOVER */
+	reg32 = get_XOVER_CMD(ctrl->rankmap[channel]);
 	reg32 |= ((slot320c[0] & 0x3f) << 6) | ((slot320c[0] & 0x40) << 9);
 	reg32 |= (slot320c[1] & 0x7f) << 18;
 	reg32 |= (full_shift & 0x3f) | ((full_shift & 0x40) << 6);
 
 	MCHBAR32(0x320c + 0x100 * channel) = reg32;
 
-	reg_c14 = ctrl->rankmap[channel] << 24;
+	/* enable CLK XOVER */
+	reg_c14 = get_XOVER_CLK(ctrl->rankmap[channel]);
 	reg_c18 = 0;
 
 	FOR_ALL_POPULATED_RANKS {
@@ -1510,6 +1527,7 @@ static void program_timings(ramctr_timing * ctrl, int channel)
 		if (shift < 0)
 			shift = 0;
 		offset_val_c14 = ctrl->reg_c14_offset + shift;
+		/* set CLK phase shift */
 		reg_c14 |= (offset_val_c14 & 0x3f) << (6 * slotrank);
 		reg_c18 |= ((offset_val_c14 >> 6) & 1) << slotrank;
 	}

@@ -22,11 +22,15 @@ CONFIG_FMDFILE:=$(call strip_quotes,$(CONFIG_FMDFILE))
 
 #######################################################################
 # misleadingly named, this is the coreboot version
+ifeq ($(BUILD_TIMELESS),1)
+export KERNELVERSION := TIMELESS
+else
 export KERNELVERSION := $(strip $(if $(GIT),\
 	$(shell git describe --dirty --always || git describe),\
 	$(if $(wildcard $(top)/.coreboot-version),\
 		$(shell cat $(top)/.coreboot-version),\
 		coreboot-unknown$(KERNELREVISION))))
+endif
 
 #######################################################################
 # Basic component discovery
@@ -327,7 +331,7 @@ CPPFLAGS_common += -I3rdparty
 CFLAGS_common += -pipe -g -nostdinc
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS_common += -Wstrict-aliasing -Wshadow
+CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections
 

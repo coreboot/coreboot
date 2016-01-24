@@ -24,7 +24,11 @@ export TZ=UTC
 
 top=`dirname $0`/../..
 
-if [ -e "${top}/.git" -a -x "$(command -v git)" ]; then
+if [ "${BUILD_TIMELESS}" -eq 1 ]; then
+	GITREV=Timeless
+	TIMESOURCE="fixed"
+	DATE=0
+elif [ -e "${top}/.git" -a -x "$(command -v git)" ]; then
 	GITREV=$(LANG= git log -1 --format=format:%h)
 	TIMESOURCE=git
 	DATE=$(git log --pretty=format:%ct -1)

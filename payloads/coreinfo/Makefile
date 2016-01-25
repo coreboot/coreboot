@@ -106,6 +106,10 @@ else
 real-all: config
 endif
 
+defaultbuild:
+	$(MAKE) olddefconfig
+	$(MAKE) all
+
 ifneq ($(strip $(HAVE_LIBPAYLOAD)),)
 libpayload:
 	printf "Found Libpayload $(LIBPAYLOAD_DIR).\n"

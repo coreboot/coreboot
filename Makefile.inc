@@ -46,12 +46,19 @@ export objgenerated := $(obj)/generated
 
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
-real-target: $(obj)/config.h coreboot
+real-target: $(obj)/config.h coreboot build_complete
 coreboot: build-dirs $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool
+
+# This target can be used in site local to run scripts or additional
+# targets after the build completes by creating a Makefile.inc in the
+# site-local directory with a target named 'build_complete::'
+build_complete:: coreboot
+	printf "\nBuilt %s (%s)\n" $(CONFIG_MAINBOARD_DIR) \
+		$(CONFIG_MAINBOARD_PART_NUMBER)
 
 #######################################################################
 # our phony targets
-PHONY+= clean-abuild coreboot lint lint-stable build-dirs
+PHONY+= clean-abuild coreboot lint lint-stable build-dirs build_complete
 
 #######################################################################
 # root source directories of coreboot

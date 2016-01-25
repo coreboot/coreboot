@@ -407,6 +407,9 @@ config FMDFILE
 
 endmenu
 
+# load site-local kconfig to allow user specific defaults and overrides
+source "site-local/Kconfig"
+
 config SYSTEM_TYPE_LAPTOP
 	default n
 	bool

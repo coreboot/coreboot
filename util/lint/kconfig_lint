@@ -612,6 +612,21 @@ sub build_and_parse_kconfig_tree {
             show_error("$line  ($filename:$line_no unrecognized)");
         }
 
+        if ( defined $inside_menu[0] ) {
+            $parseline[0]{menus} = "";
+        }
+        else {
+            $parseline[0]{menus} = "top";
+        }
+
+        my $i = 0;
+        while ( defined $inside_menu[$i] ) {
+            $parseline[0]{menus} .= "$inside_menu[$i]";
+            $i++;
+            if ( defined $inside_menu[$i] ) {
+                $parseline[0]{menus} .= "->";
+            }
+        }
         push @wholeconfig, @parseline;
     }
 }
@@ -1135,7 +1150,7 @@ sub print_wholeconfig {
 
         #replace tabs with spaces for consistency
         $line->{text} =~ s/\t/        /g;
-        printf "%-120s # $line->{filename} line $line->{file_line_no}\n", $line->{text};
+        printf "%-120s # $line->{filename} line $line->{file_line_no} ($line->{menus})\n", $line->{text};
     }
 }
 

@@ -253,7 +253,7 @@ sub check_is_enabled {
             my $file   = $1;
             my $lineno = $2;
             $line = $3;
-            if ( $line !~ /(.*)IS_ENABLED\s*\(\s*CONFIG_(\w+)(.*)/ ) {
+            if ( ( $line !~ /(.*)IS_ENABLED\s*\(\s*CONFIG_(\w+)(.*)/ ) && ( $line !~ /(\/[\*\/])(.*)IS_ENABLED/ ) ) {
                 show_warning("# uninterpreted IS_ENABLED at $file:$lineno: $line");
                 next;
             }

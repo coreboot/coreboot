@@ -949,6 +949,10 @@ sub handle_type {
     my $expression;
     ( $type, $expression ) = handle_if_line( $type, $inside_config, $filename, $line_no );
 
+    if ( $type =~ /tristate/ ) {
+        show_warning("$filename:$line_no - tristate types are not used.");
+    }
+
     if ($inside_config) {
         if ( exists( $symbols{$inside_config}{type} ) ) {
             if ( $symbols{$inside_config}{type} !~ /$type/ ) {

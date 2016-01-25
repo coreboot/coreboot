@@ -428,13 +428,15 @@ build_GCC() {
 	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
 	# but it does not seem to work properly. At least the host library
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
-	CC="$CC" CFLAGS_FOR_TARGET="-O2" CFLAGS="$HOSTCFLAGS" \
+	CC="$CC" CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" CFLAGS="$HOSTCFLAGS" \
 		CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--enable-lto --enable-plugins --enable-gold --enable-ld=default \
 		--disable-libssp --disable-bootstrap --disable-nls \
 		--disable-libquadmath --without-headers \
+		--disable-threads \
+		--disable-libatomic --disable-libcc1 --disable-decimal-float \
 		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
@@ -593,7 +595,7 @@ case "$TARGETARCH" in
 	i386-mingw32)		;;
 	mipsel-elf)		;;
 	riscv-elf)		;;
-	powerpc64le-linux-gnu)	;;
+	powerpc64*-linux*)	;;
 	i386*)			TARGETARCH=i386-elf;;
 	arm*)			TARGETARCH=armv7-a-eabi;;
 	aarch64*)		TARGETARCH=aarch64-elf;;

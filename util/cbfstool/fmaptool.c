@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 		// Optional
 		const char *header_filename;
 		const char *region_filename;
-	} args = {NULL};
+	} args = {NULL, NULL, NULL, NULL};
 
 	bool show_usage = false;
 	int each_arg;

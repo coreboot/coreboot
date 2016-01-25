@@ -1,0 +1,20 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright 2016 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# DESCR: Check that source files are not executable
+
+LC_ALL=C export LC_ALL
+find src -type f -a \( -perm -100 -o -perm -010 -o -perm -001 \)  -a \! -name '*.sh'| \
+	sed -e "s,^.*$,File & has one or more executable bits set in the file permissions.,"

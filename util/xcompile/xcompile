@@ -341,13 +341,13 @@ arch_config_mipsel() {
 }
 
 arch_config_power8() {
-	TARCH="powerpc"
-	TBFDARCHS="powerpc"
-	TCLIST="powerpc"
+	TARCH="power8"
+	TBFDARCHS="powerpcle"
+	TCLIST="powerpc64 powerpc64le"
 	TWIDTH="64"
 	TSUPP="power8"
-	TABI="elf"
-	CC_RT_EXTRA_GCC="-mcpu=power8"
+	TABI="linux" # there is no generic ABI on ppc64
+	CC_RT_EXTRA_GCC="-mcpu=power8 -mlittle-endian"
 }
 
 test_architecture() {

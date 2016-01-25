@@ -993,12 +993,17 @@ sub handle_prompt {
             }
 
             my $sym_num = $symbols{$inside_config}{count};
-            unless ( exists $symbols{$inside_config}{$sym_num}{prompt_max} ) {
+            if ( !exists $symbols{$inside_config}{$sym_num}{prompt_max} ) {
                 $symbols{$inside_config}{$sym_num}{prompt_max} = 0;
+            }
+            else {
+                $symbols{$inside_config}{$sym_num}{prompt_max}++;
             }
             my $prompt_max = $symbols{$inside_config}{$sym_num}{prompt_max};
             $symbols{$inside_config}{$sym_num}{prompt}{$prompt_max}{prompt}         = $prompt;
             $symbols{$inside_config}{$sym_num}{prompt}{$prompt_max}{prompt_line_no} = $line_no;
+
+            $symbols{$inside_config}{$sym_num}{prompt}{$prompt_max}{prompt_menu} = @$menu_array_ref;
             if ($expression) {
                 $symbols{$inside_config}{$sym_num}{prompt}{$prompt_max}{prompt_depends_on} = $expression;
             }

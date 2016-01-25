@@ -74,7 +74,9 @@ static const struct soc_gpio_map gpse_gpio_map[] = {
 	Native_M1, /* 78  SDMMC3_PWR_EN_B */
 	GPIO_NC, /* 79  GPI ILB_SERIRQ */
 	Native_M1, /* 80  USB_OC0_B */
-	NATIVE_INT(1, L1), /* 81  SDMMC3_CD_B */
+	GPI(trig_edge_both, L1, P_20K_H, non_maskable,
+				en_edge_detect, NA , NA),
+	/* 81  SDMMC3_CD_B */
 	GPIO_NC,  /* 82  spkr	 asummed gpio number */
 	Native_M1, /* 83 SUSPWRDNACK */
 	SPARE_PIN,/* 84 spare pin */
@@ -112,11 +114,11 @@ static const struct soc_gpio_map  gpsw_gpio_map[] = {
 	GPI(trig_edge_both, L2, P_1K_H, non_maskable, en_edge_detect, NA, NA),
 		/* 37 MF_HDA_DOCKENB */
 	NATIVE_PU1K_CSEN_INVTX(1), /* 45 I2C5_SDA */
-	GPIO_NC, /* 46 I2C4_SDA */
+	NATIVE_PU1K_CSEN_INVTX(1), /* 46 I2C4_SDA */
 	NATIVE_PU1K_CSEN_INVTX(1), /* 47 I2C6_SDA */
 	NATIVE_PU1K_CSEN_INVTX(1), /* 48 I2C5_SCL */
 	GPIO_NC, /* 49 I2C_NFC_SDA */
-	GPIO_NC, /* 50 I2C4_SCL */
+	NATIVE_PU1K_CSEN_INVTX(1), /* 50 I2C4_SCL */
 	NATIVE_PU1K_CSEN_INVTX(1), /* 51 I2C6_SCL */
 	GPIO_NC, /* 52 I2C_NFC_SCL */
 	NATIVE_PU1K_CSEN_INVTX(1), /* 60 I2C1_SDA */
@@ -128,7 +130,7 @@ static const struct soc_gpio_map  gpsw_gpio_map[] = {
 	NATIVE_PU1K_CSEN_INVTX(1), /* 66  I2C2_SCL */
 	GPIO_INPUT_NO_PULL,/* 67  I2C3_SCL,RAMID1 */
 	GPIO_OUT_HIGH, /* 75 SATA_GP0 */
-	GPI(trig_edge_low, L0, P_1K_H, non_maskable, NA, NA, NA),
+	GPIO_NC,
 	/* 76 GPI SATA_GP1 */
 	Native_M1, /* 77 SATA_LEDN */
 	GPIO_NC, /* 80 SATA_GP3 */
@@ -169,9 +171,11 @@ static const struct soc_gpio_map  gpn_gpio_map[] = {
 	/* 17 GPIO_SUS3 */
 	GPI(trig_edge_low, L1, P_1K_H, non_maskable, NA, UNMASK_WAKE, NA),
 	/* 18 GPIO_SUS7 */
-	GPO_FUNC(0, 0), /* 19 GPIO_SUS1 */
+	GPI(trig_edge_low, L3, P_1K_H, non_maskable, NA, UNMASK_WAKE, NA),
+	/* 19 GPIO_SUS1 */
 	GPIO_NC, /* 20 GPIO_SUS5 */
-	GPI(trig_edge_high, L2, NA, non_maskable, en_edge_rx_data, NA , NA),
+	GPI(trig_edge_high, L2, P_20K_H, non_maskable,
+			en_edge_rx_data, NA , NA),
 	/* 21 SEC_GPIO_SUS11 */
 	GPIO_NC, /* 22 GPIO_SUS4 */
 	GPIO_NC,

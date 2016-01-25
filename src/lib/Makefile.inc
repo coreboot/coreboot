@@ -175,6 +175,7 @@ $(call src-to-obj,verstage,$(dir)/version.c) : $(obj)/build.h
 
 romstage-y += bootmode.c
 ramstage-y += bootmode.c
+verstage-y += bootmode.c
 
 bootblock-y += halt.c
 romstage-y += halt.c

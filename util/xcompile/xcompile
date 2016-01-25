@@ -374,6 +374,7 @@ test_architecture() {
 		search="$search $XGCCPATH$toolchain-$TABI-"
 		search="$search $toolchain-$TABI-"
 		search="$search $toolchain-linux-gnu-"
+		search="$search $toolchain-linux-"
 		search="$search $toolchain-"
 	done
 	echo "###########################################################################"

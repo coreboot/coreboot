@@ -2,6 +2,7 @@
  * CBFS Image Manipulation
  *
  * Copyright (C) 2013 The Chromium OS Authors. All rights reserved.
+ * Copyright (C) 2016 Siemens AG. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1410,6 +1411,16 @@ static int is_in_range(size_t start, size_t end, size_t metadata_size,
 	return (offset >= start + metadata_size && offset + size <= end);
 }
 
+static size_t absolute_align(const struct cbfs_image *image, size_t val,
+				size_t align)
+{
+	const size_t region_offset = buffer_offset(&image->buffer);
+	/* To perform alignment on absolute address, take the region offset */
+	/* of the image into account.					    */
+	return align_up(val + region_offset, align) - region_offset;
+
+}
+
 int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
 			  size_t page_size, size_t align, size_t metadata_size)
 {
@@ -1474,7 +1485,7 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
 		if (addr_next - addr < need_len)
 			continue;
 
-		offset = align_up(addr + metadata_size, align);
+		offset = absolute_align(image, addr + metadata_size, align);
 		if (is_in_same_page(offset, size, page_size) &&
 		    is_in_range(addr, addr_next, metadata_size, offset, size)) {
 			DEBUG("cbfs_locate_entry: FIT (PAGE1).");
@@ -1482,7 +1493,7 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
 		}
 
 		addr2 = align_up(addr, page_size);
-		offset = align_up(addr2, align);
+		offset = absolute_align(image, addr2, align);
 		if (is_in_range(addr, addr_next, metadata_size, offset, size)) {
 			DEBUG("cbfs_locate_entry: OVERLAP (PAGE2).");
 			return offset;
@@ -1492,7 +1503,7 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
 		 * definitely provide the space for header. */
 		assert(page_size >= metadata_size);
 		addr3 = addr2 + page_size;
-		offset = align_up(addr3, align);
+		offset = absolute_align(image, addr3, align);
 		if (is_in_range(addr, addr_next, metadata_size, offset, size)) {
 			DEBUG("cbfs_locate_entry: OVERLAP+ (PAGE3).");
 			return offset;

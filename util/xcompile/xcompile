@@ -279,6 +279,14 @@ EOF
 # Architecture definitions
 SUPPORTED_ARCHITECTURES="arm arm64 mipsel riscv x64 x86 power8"
 
+# TARCH: local name for the architecture
+# (used as CC_${TARCH} in the build system)
+# TBFDARCHS: architecture name in binutils (eg elf32-${TBFDARCH})
+# TCLIST: first part of the compiler triplet (eg i386 in i386-elf)
+# TWIDTH: numerical argument for cpu mode: gcc -m${TWIDTH}
+# TSUPP: supported subarchs (for -mcpu=...)
+# TABI: typically elf, eabi or linux
+
 arch_config_arm() {
 	TARCH="arm"
 	TBFDARCHS="littlearm"

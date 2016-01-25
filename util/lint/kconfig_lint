@@ -51,6 +51,8 @@ my %used_symbols;          # structure of symbols used in the tree, and where th
 my @collected_symbols;     #
 my %selected_symbols;      # list of symbols that are enabled by a select statement
 
+my $exclude_unused = '_SPECIFIC_OPTIONS|SOUTH_BRIDGE_OPTIONS';
+
 Main();
 
 #-------------------------------------------------------------------------------
@@ -379,6 +381,10 @@ sub collect_used_symbols {
 sub check_used_symbols {
     # loop through all defined symbols and see if they're used anywhere
     foreach my $key ( sort ( keys %symbols ) ) {
+
+        if ( $key =~ /$exclude_unused/ ) {
+            next;
+        }
 
         #see if they're used internal to Kconfig
         next if ( exists $referenced_symbols{$key} );

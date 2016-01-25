@@ -139,11 +139,9 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 	while (google_chromeec_get_event() != 0)
 		;
 
-	if (smm_get_gnvs()->bdid == BOARD_DVT) {
-		/* Set LPC lines to low power in S3/S5. */
-		if ((slp_typ == SLEEP_STATE_S3) || (slp_typ == SLEEP_STATE_S5))
-			lpc_set_low_power();
-	}
+	/* Set LPC lines to low power in S3/S5. */
+	if ((slp_typ == SLEEP_STATE_S3) || (slp_typ == SLEEP_STATE_S5))
+		lpc_set_low_power();
 #endif
 }
 

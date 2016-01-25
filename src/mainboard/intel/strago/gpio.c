@@ -262,12 +262,5 @@ static struct soc_gpio_config gpio_config = {
 struct soc_gpio_config *mainboard_get_gpios(void)
 {
 
-	switch (board_id()) {
-	case BOARD_DVT:
-		return get_override_gpios_dvt();
-	case BOARD_BCRD2:
-		return get_override_gpios_bcrd2();
-	default:
-		return &gpio_config;
-	}
+	return &gpio_config;
 }

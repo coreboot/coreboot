@@ -47,8 +47,9 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 
 	/* Enable DPTF */
 	gnvs->dpte = 1;
-	if (board_id() == BOARD_BCRD2)
-		gnvs->dev.lpss_en[LPSS_NVS_I2C2] = 0;
+
+	/* PMIC is configured in I2C1, hidden it from OS */
+	gnvs->dev.lpss_en[LPSS_NVS_I2C2] = 0;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

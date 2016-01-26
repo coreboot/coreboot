@@ -1,2 +1,0 @@
-config BOARD_INTEL_SKLRVP
-	bool "Skylake RVP3"

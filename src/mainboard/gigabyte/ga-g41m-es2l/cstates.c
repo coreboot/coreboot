@@ -17,18 +17,7 @@
 #include <device/device.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 
-static acpi_cstate_t cst_entries[] = {
-	{
-		/* acpi C1 / cpu C1 */
-		1, 0x01, 1000,
-		{ ACPI_ADDRESS_SPACE_FIXED, 1, 2, { 1 }, 0, 0 }
-	},
-	{
-		/* acpi C2 / cpu C2 */
-		2, 0x01,  500,
-		{ ACPI_ADDRESS_SPACE_FIXED, 1, 2, { 1 }, 0x10, 0 }
-	},
-};
+static acpi_cstate_t cst_entries[] = {};
 
 int get_cst_entries(acpi_cstate_t **entries)
 {

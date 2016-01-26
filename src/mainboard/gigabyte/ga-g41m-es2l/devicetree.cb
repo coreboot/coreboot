@@ -21,9 +21,6 @@ chip northbridge/intel/x4x		# Northbridge
     end
     chip cpu/intel/model_1067x		# CPU
       device lapic 0xACAC off end
-      register "slfm" = "1"
-      register "c5" = "1"
-      register "c6" = "1"
     end
   end
   device domain 0 on		# PCI domain

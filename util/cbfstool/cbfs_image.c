@@ -441,6 +441,127 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 	return 0;
 }
 
+static size_t cbfs_file_entry_metadata_size(const struct cbfs_file *f)
+{
+	return ntohl(f->offset);
+}
+
+static size_t cbfs_file_entry_data_size(const struct cbfs_file *f)
+{
+	return ntohl(f->len);
+}
+
+static size_t cbfs_file_entry_size(const struct cbfs_file *f)
+{
+	return cbfs_file_entry_metadata_size(f) + cbfs_file_entry_data_size(f);
+}
+
+int cbfs_compact_instance(struct cbfs_image *image)
+{
+	assert(image);
+
+	struct cbfs_file *prev;
+	struct cbfs_file *cur;
+
+	/* The prev entry will always be an empty entry. */
+	prev = NULL;
+
+	/*
+	 * Note: this function does not honor alignment or fixed location files.
+	 * It's behavior is akin to cbfs_copy_instance() in that it expects
+	 * the caller to understand the ramifications of compacting a
+	 * fragmented CBFS image.
+	 */
+
+	for (cur = cbfs_find_first_entry(image);
+	     cur && cbfs_is_valid_entry(image, cur);
+	     cur = cbfs_find_next_entry(image, cur)) {
+		size_t prev_size;
+		size_t cur_size;
+		size_t empty_metadata_size;
+		size_t spill_size;
+		uint32_t type = htonl(cur->type);
+
+		/* Current entry is empty. Kepp track of it. */
+		if ((type == htonl(CBFS_COMPONENT_NULL)) ||
+		    (type == htonl(CBFS_COMPONENT_DELETED))) {
+			prev = cur;
+			continue;
+		}
+
+		/* Need to ensure the previous entry is an empty one. */
+		if (prev == NULL)
+			continue;
+
+		/* At this point prev is an empty entry. Put the non-empty
+		 * file in prev's location. Then add a new emptry entry. This
+		 * essentialy bubbles empty entries towards the end. */
+
+		prev_size = cbfs_file_entry_size(prev);
+		cur_size = cbfs_file_entry_size(cur);
+
+		/*
+		 * Adjust the empty file size by the actual space occupied
+		 * bewtween the beginning of the empty file and the non-empty
+		 * file.
+		 */
+		prev_size += (cbfs_get_entry_addr(image, cur) -
+				cbfs_get_entry_addr(image, prev)) - prev_size;
+
+		/* Move the non-empty file over the empty file. */
+		memmove(prev, cur, cur_size);
+
+		/*
+		 * Get location of the empty file. Note that since prev was
+		 * overwritten with the non-empty file the previously moved
+		 * file needs to be used to calculate the empty file's location.
+		 */
+		cur = cbfs_find_next_entry(image, prev);
+
+		/*
+		 * The total space to work with for swapping the 2 entries
+		 * consists of the 2 files' sizes combined. However, the
+		 * cbfs_file entries start on CBFS_ALIGNMENT boundaries.
+		 * Because of this the empty file size may end up smaller
+		 * because of the non-empty file's metadata and data length.
+		 *
+		 * Calculate the spill size which is the amount of data lost
+		 * due to the alignment constraints after moving the non-empty
+		 * file.
+		 */
+		spill_size = (cbfs_get_entry_addr(image, cur) -
+				cbfs_get_entry_addr(image, prev)) - cur_size;
+
+		empty_metadata_size = cbfs_calculate_file_header_size("");
+
+		/* Check if new empty size can contain the metadata. */
+		if (empty_metadata_size + spill_size > prev_size) {
+			ERROR("Unable to swap '%s' with prev empty entry.\n",
+				prev->filename);
+			return 1;
+		}
+
+		/* Update the empty file's size. */
+		prev_size -= spill_size + empty_metadata_size;
+
+		/* Create new empty file. */
+		cbfs_create_empty_entry(cur, CBFS_COMPONENT_NULL,
+					prev_size, "");
+
+		/* Merge any potential empty entries together. */
+		cbfs_walk(image, cbfs_merge_empty_entry, NULL);
+
+		/*
+		 * Since current switched to an empty file keep track of it.
+		 * Even if any empty files were merged the empty entry still
+		 * starts at previously calculated location.
+		 */
+		prev = cur;
+	}
+
+	return 0;
+}
+
 int cbfs_image_delete(struct cbfs_image *image)
 {
 	if (image == NULL)

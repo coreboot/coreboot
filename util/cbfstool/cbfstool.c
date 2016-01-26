@@ -1054,6 +1054,16 @@ static int cbfs_copy(void)
 	return cbfs_copy_instance(&src_image, param.image_region);
 }
 
+static int cbfs_compact(void)
+{
+	struct cbfs_image image;
+	if (cbfs_image_from_buffer(&image, param.image_region,
+							param.headeroffset))
+		return 1;
+	WARN("Compacting a CBFS doesn't honor alignment or fixed addresses!\n");
+	return cbfs_compact_instance(&image);
+}
+
 static const struct command commands[] = {
 	{"add", "H:r:f:n:t:c:b:a:vA:gh?", cbfs_add, true, true},
 	{"add-flat-binary", "H:r:f:n:l:e:c:b:vA:gh?", cbfs_add_flat_binary,
@@ -1064,6 +1074,7 @@ static const struct command commands[] = {
 				true, true},
 	{"add-int", "H:r:i:n:b:vgh?", cbfs_add_integer, true, true},
 	{"add-master-header", "H:r:vh?", cbfs_add_master_header, true, true},
+	{"compact", "r:h?", cbfs_compact, true, true},
 	{"copy", "r:R:h?", cbfs_copy, true, true},
 	{"create", "M:r:s:B:b:H:o:m:vh?", cbfs_create, true, true},
 	{"hashcbfs", "r:R:A:vh?", cbfs_hash, true, true},
@@ -1198,6 +1209,8 @@ static void usage(char *name)
 			"Add a legacy CBFS master header\n"
 	     " remove [-r image,regions] -n NAME                           "
 			"Remove a component\n"
+	     " compact -r image,regions                                    "
+			"Defragment CBFS image.\n"
 	     " copy -r image,regions -R source-region                      "
 			"Create a copy (duplicate) cbfs instance in fmap\n"
 	     " create -m ARCH -s size [-b bootblock offset] \\\n"

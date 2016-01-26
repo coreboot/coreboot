@@ -76,6 +76,10 @@ int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
  * Will not succeed on new-style images without a master header. */
 int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst);
 
+/* Compact a fragmented CBFS image by placing all the non-empty files at the
+ * beginning of the image. Returns 0 on success, otherwise non-zero.  */
+int cbfs_compact_instance(struct cbfs_image *image);
+
 /* Releases the CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_delete(struct cbfs_image *image);
 

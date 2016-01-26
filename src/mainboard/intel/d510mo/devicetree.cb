@@ -43,7 +43,9 @@ chip northbridge/intel/pineview		# Northbridge
       register "gpe0_en" = "0x20000040"
 
       device pci 1b.0 on end		# Audio
-      device pci 1c.0 on end		# PCIe 1
+      device pci 1c.0 on		# PCIe 1
+        device pci 0.0 on end		# NIC
+      end
       device pci 1c.1 on end		# PCIe 2
       device pci 1c.2 on end		# PCIe 3
       device pci 1c.3 on end		# PCIe 4

@@ -15,14 +15,20 @@
 #
 
 chip northbridge/intel/pineview		# Northbridge
+  register "gfx.use_spread_spectrum_clock" = "0"
+  register "use_crt" = "1"
+  register "use_lvds" = "0"
+
   device cpu_cluster 0 on		# APIC cluster
     chip cpu/intel/socket_FCBGA559	# CPU
       device lapic 0 on end		# APIC
     end
   end
-  device domain 0 on		# PCI domain
+  device domain 0 on			# PCI domain
     device pci 0.0 on end		# Host Bridge
-    device pci 2.0 off end		# Integrated graphics controller
+    device pci 1.0 off end		# PEG
+    device pci 2.0 on end		# Integrated graphics controller
+    device pci 2.1 on end		# Integrated graphics controller 2
     chip southbridge/intel/i82801gx	# Southbridge
       register "pirqa_routing" = "0x0b"
       register "pirqb_routing" = "0x0b"

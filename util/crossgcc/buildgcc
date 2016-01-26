@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="April 16th, 2016"
-CROSSGCC_VERSION="1.39"
+CROSSGCC_DATE="June 7th, 2016"
+CROSSGCC_VERSION="1.40"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings
@@ -30,6 +30,7 @@ LANGUAGES=c
 DESTDIR=
 SAVETEMPS=0
 SKIPPYTHON=1
+BOOTSTRAP=0
 
 # GCC toolchain version numbers
 GMP_VERSION=6.1.0
@@ -341,6 +342,9 @@ build_for_target()
 build()
 {
 	if package_uses_targetarch $1; then
+		if [ $BOOTSTRAP -eq 1 -a ! -f "${TARGETDIR}/.GCC.success" ]; then
+			build_for_host GCC
+		fi
 		build_for_target $1
 	else
 		build_for_host $1
@@ -385,6 +389,8 @@ myhelp()
 	printf "    [-P|--package <package>]      Build a specific package: GCC, CLANG, IASL, GDB\n"
 	printf "                                  (defaults to $PACKAGE)\n"
 	printf "GCC specific options:\n"
+	printf "    [-b|--bootstrap]              bootstrap the host compiler before building\n"
+	printf "                                  the cross compiler\n"
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
 	printf "                                  (defaults to $TARGETARCH)\n"
 	printf "    [-l|--languages <languages>]  comma separated list of target languages\n"
@@ -497,8 +503,35 @@ build_BINUTILS() {
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 }
 
+bootstrap_GCC() {
+	CC="$CC" \
+		CFLAGS="$HOSTCFLAGS" \
+		CFLAGS_FOR_BUILD="$HOSTCFLAGS" \
+		CFLAGS_FOR_TARGET="$HOSTCFLAGS -fPIC" \
+		CXXFLAGS="$HOSTCFLAGS" \
+		CXXFLAGS_FOR_BUILD="$HOSTCFLAGS" \
+		CXXFLAGS_FOR_TARGET="$HOSTCFLAGS -fPIC" \
+		../gcc-${GCC_VERSION}/configure \
+		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
+		--enable-bootstrap \
+		--disable-werror --disable-nls \
+		--disable-shared --disable-multilib \
+		--disable-libssp --disable-libquadmath --disable-libcc1 \
+		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
+		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
+		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
+		--with-pkgversion="coreboot bootstrap v$CROSSGCC_VERSION $CROSSGCC_DATE" \
+		&& \
+	$MAKE $JOBS BOOT_CFLAGS="$HOSTCFLAGS" BUILD_CONFIG="" bootstrap && \
+	$MAKE	install-gcc \
+		install-target-libgcc \
+		maybe-install-target-libada \
+		maybe-install-target-libstdc++-v3 \
+		DESTDIR=$DESTDIR && \
+	ln -s gcc $DESTDIR$TARGETDIR/bin/cc || touch .failed
+}
 
-build_GCC() {
+build_cross_GCC() {
 	# Work around crazy code generator in GCC that confuses CLANG.
 	$CC --version | grep clang >/dev/null 2>&1 && \
 		HOSTCFLAGS="$HOSTCFLAGS -fbracket-depth=1024"
@@ -533,6 +566,14 @@ build_GCC() {
 	if [ "$(echo $TARGETARCH | grep -c -- -mingw32)" -eq 0 ]; then
 		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc || touch .failed
 		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
+	fi
+}
+
+build_GCC() {
+	if [ "$1" = host ]; then
+		bootstrap_GCC
+	else
+		build_cross_GCC
 	fi
 }
 
@@ -641,11 +682,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,help,clean,directory:,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported: Vhcd:p:l:P:j:D:tSys: -- "$@")
+	args=$(getopt -l version,help,clean,directory:,bootstrap,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported: Vhcd:bp:l:P:j:D:tSys: -- "$@")
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vhcd:p:l:P:j:D:tSys: $*)
+	args=$(getopt Vhcd:bp:l:P:j:D:tSys: $*)
 	set -- $args
 fi
 
@@ -661,6 +702,7 @@ while true ; do
 		-c|--clean)	shift; clean=1;;
 		-t|--savetemps)	shift; SAVETEMPS=1;;
 		-d|--directory)	shift; TARGETDIR="$1"; shift;;
+		-b|--bootstrap) shift; BOOTSTRAP=1;;
 		-p|--platform)	shift; TARGETARCH="$1"; shift;;
 		-l|--languages)	shift; LANGUAGES="$1"; shift;;
 		-D|--destdir)	shift; DESTDIR="$1"; shift;;

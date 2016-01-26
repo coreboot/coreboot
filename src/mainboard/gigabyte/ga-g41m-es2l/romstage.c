@@ -58,21 +58,6 @@ static void mb_gpio_init(void)
 	outl(0x000000f0, DEFAULT_GPIOBASE + 0x34);
 	outl(0x00000083, DEFAULT_GPIOBASE + 0x38);
 
-	/* Set default power management registers */
-	pci_write_config32(dev, PMBASE, DEFAULT_PMBASE | 1);
-	outw(0x0011, DEFAULT_PMBASE + 0x00);
-	outw(0x0120, DEFAULT_PMBASE + 0x02);
-	outl(0x00001c01, DEFAULT_PMBASE + 0x04);
-	outl(0x00bb29d2, DEFAULT_PMBASE + 0x08);
-	outl(0x000000a0, DEFAULT_PMBASE + 0x10);
-	outl(0xc5000000, DEFAULT_PMBASE + 0x28);
-	outl(0x00000040, DEFAULT_PMBASE + 0x2c);
-	outw(0x13e0, DEFAULT_PMBASE + 0x44);
-	outw(0x003f, DEFAULT_PMBASE + 0x60);
-	outw(0x0800, DEFAULT_PMBASE + 0x68);
-	outw(0x0008, DEFAULT_PMBASE + 0x6a);
-	outw(0x003f, DEFAULT_PMBASE + 0x72);
-
 	/* Set default GPIOs on superio */
 	ite_reg_write(GPIO_DEV, 0x25, 0x00);
 	ite_reg_write(GPIO_DEV, 0x26, 0xc7);
@@ -137,8 +122,8 @@ void main(unsigned long bist)
 	//                          ch0      ch1
 	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
 
-	/* Disable watchdog timer and route port 80 to LPC */
-	RCBA32(0x3410) = (RCBA32(0x3410) | 0x20);// & ~0x4;
+	/* Disable watchdog timer */
+	RCBA32(0x3410) = RCBA32(0x3410) | 0x20;
 
 	/* Set southbridge and Super I/O GPIOs. */
 	mb_gpio_init();

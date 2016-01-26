@@ -296,36 +296,54 @@ package_uses_targetarch()
 	fi
 }
 
-build() {
+generic_build()
+{
 	package=$1
+	host_target=$2
+	builddir=$3
+	success=$4
 
 	fn_exists build_$package || return
 
 	version="$(eval echo \$$package"_VERSION")"
-	package_uses_targetarch "$package" && \
-		BUILDDIR=build-${TARGETARCH}-$package || \
-		BUILDDIR=build-$package
 
-	mkdir -p ${BUILDDIR}
+	mkdir -p "$builddir"
 
-	is_package_enabled "$package" && \
-	if [ -f ${BUILDDIR}/.success ]; then
+	if [ -f "$success" ]; then
 		printf "Skipping $package as it is already built\n"
 	else
 		printf "Building $package $version ... "
-		DIR=$PWD
-		cd ${BUILDDIR}
+		DIR="$PWD"
+		cd "$builddir"
 		rm -f .failed
-		build_${package} > build.log 2>&1
-		cd $DIR/${BUILDDIR}
-		if [ ! -f .failed ]; then touch .success; fi
-		cd ..
-
-		if [ -r "${BUILDDIR}/.failed" ]; then
-			printf "${RED}failed${NC}. Check ${BUILDDIR}/build.log.\n"
+		build_${package} $host_target > build.log 2>&1
+		cd "$DIR"
+		if [ ! -f "$builddir/.failed" ]; then
+			touch "$success";
+		else
+			printf "${RED}failed${NC}. Check $builddir/build.log.\n"
 			exit 1
 		fi
 		printf "${green}ok${NC}\n"
+	fi
+}
+
+build_for_host()
+{
+	generic_build $1 host build-$1 "${TARGETDIR}/.$1.success"
+}
+
+build_for_target()
+{
+	generic_build $1 target build-${TARGETARCH}-$1 "${TARGETDIR}/.${TARGETARCH}-$1.success"
+}
+
+build()
+{
+	if package_uses_targetarch $1; then
+		build_for_target $1
+	else
+		build_for_host $1
 	fi
 }
 

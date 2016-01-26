@@ -784,7 +784,7 @@ prebuild-files = \
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)
 	mv $(obj)/coreboot.rom $@.tmp || \
 	(echo "Error: You have UPDATE_IMAGE set in Kconfig, but have no existing image to update." && \
-	echo Exiting." && \
+	echo "Exiting." && \
 	false)
 	$(prebuild-files) true
 	mv $@.tmp $@

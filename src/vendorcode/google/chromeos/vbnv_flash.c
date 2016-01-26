@@ -22,6 +22,7 @@
 #include <vb2_api.h>
 #include <vboot_nvstorage.h>
 #include "chromeos.h"
+#include "vbnv.h"
 #include "vbnv_layout.h"
 
 #define BLOB_SIZE VB2_NVDATA_SIZE
@@ -157,7 +158,7 @@ static int erase_nvram(void)
 	return 0;
 }
 
-void read_vbnv(uint8_t *vbnv_copy)
+void read_vbnv_flash(uint8_t *vbnv_copy)
 {
 	if (!is_initialized())
 		if (init_vbnv())
@@ -165,7 +166,7 @@ void read_vbnv(uint8_t *vbnv_copy)
 	memcpy(vbnv_copy, cache, BLOB_SIZE);
 }
 
-void save_vbnv(const uint8_t *vbnv_copy)
+void save_vbnv_flash(const uint8_t *vbnv_copy)
 {
 	int new_offset;
 	int i;
@@ -204,11 +205,4 @@ void save_vbnv(const uint8_t *vbnv_copy)
 	} else {
 		printk(BIOS_ERR, "failed to save nvdata\n");
 	}
-}
-
-int get_recovery_mode_from_vbnv(void)
-{
-	if (!is_initialized())
-		init_vbnv();
-	return cache[RECOVERY_OFFSET];
 }

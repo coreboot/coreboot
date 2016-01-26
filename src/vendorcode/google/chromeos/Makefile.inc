@@ -18,6 +18,11 @@ verstage-y += chromeos.c
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
 
+bootblock-y += vbnv.c
+verstage-y += vbnv.c
+romstage-y += vbnv.c
+ramstage-y += vbnv.c
+
 bootblock-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 verstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 romstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c

@@ -20,20 +20,13 @@
 #include <stdint.h>
 #include <bootmode.h>
 #include <rules.h>
+#include "vbnv.h"
 #include "vboot_common.h"
 #include "vboot2/misc.h"
 
 #if ENV_ROMSTAGE
 void save_chromeos_gpios(void);
 #endif
-
-/* functions implemented in vbnv.c: */
-int get_recovery_mode_from_vbnv(void);
-void set_recovery_mode_into_vbnv(int recovery_reason);
-int vboot_wants_oprom(void);
-
-void read_vbnv(uint8_t *vbnv_copy);
-void save_vbnv(const uint8_t *vbnv_copy);
 
 #if CONFIG_CHROMEOS
 /* functions implemented in elog.c */

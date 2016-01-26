@@ -42,14 +42,14 @@ my $exclude_dirs_and_files =
   '^build/\|^coreboot-builds/\|^payloads/libpayload\|^payloads/coreinfo\|^configs/\|^util/\|^\.git/'
   . '\|' .                            # directories to exclude when searching for used symbols
   '\.txt$\|\.tex$\|\.tags';           #files to exclude when looking for symbols
-my $config_file = "";                                              # name of config file to load symbol values from.
-my @wholeconfig;           # document the entire kconfig structure
-my %loaded_files;          # list of each Kconfig file loaded
-my %symbols;               # main structure of all symbols declared
-my %referenced_symbols;    # list of symbols referenced by expressions or select statements
-my %used_symbols;          # structure of symbols used in the tree, and where they're found
-my @collected_symbols;     #
-my %selected_symbols;      # list of symbols that are enabled by a select statement
+my $config_file = "";                 # name of config file to load symbol values from.
+my @wholeconfig;                      # document the entire kconfig structure
+my %loaded_files;                     # list of each Kconfig file loaded
+my %symbols;                          # main structure of all symbols declared
+my %referenced_symbols;               # list of symbols referenced by expressions or select statements
+my %used_symbols;                     # structure of symbols used in the tree, and where they're found
+my @collected_symbols;                #
+my %selected_symbols;                 # list of symbols that are enabled by a select statement
 
 my $exclude_unused = '_SPECIFIC_OPTIONS|SOUTH_BRIDGE_OPTIONS';
 
@@ -419,7 +419,6 @@ sub build_and_parse_kconfig_tree {
     #start the tree off by loading the top level kconfig
     @config_to_parse = load_kconfig_file( $top_level_kconfig, "", 0, 0, "", 0 );
 
-
     while ( ( @parseline = shift(@config_to_parse) ) && ( exists $parseline[0]{text} ) ) {
         my $line     = $parseline[0]{text};
         my $filename = $parseline[0]{filename};
@@ -504,6 +503,8 @@ sub build_and_parse_kconfig_tree {
             $inside_config         = "";
             $inside_choice         = "$filename $line_no";
             $configs_inside_choice = 0;
+
+            # Kconfig verifies that choice blocks have a prompt
         }
 
         # endchoice
@@ -535,6 +536,10 @@ sub build_and_parse_kconfig_tree {
         # mainmenu <prompt>
         elsif ( $line =~ /^\s*mainmenu/ ) {
             $inside_config = "";
+
+            # Kconfig alread checks for multiple 'mainmenu' entries and mainmenu entries with no prompt
+            # Possible check: look for 'mainmenu ""'
+            # Possible check: verify that a mainmenu has been specified
         }
 
         # menu <prompt>
@@ -564,7 +569,6 @@ sub build_and_parse_kconfig_tree {
             my $expr = $1;
             push( @inside_if, $expr );
             handle_expressions( $expr, $inside_config, $filename, $line_no );
-
         }
 
         # endif
@@ -678,7 +682,6 @@ sub add_symbol {
                   . "at $symbols{$symbol}{0}{file}:$symbols{$symbol}{0}{line_no}." );
         }
     }
-
 
     # add the location of this instance
     my $symcount = $symbols{$symbol}{count};
@@ -987,6 +990,7 @@ sub handle_prompt {
                 $prompt = $1;
             }
 
+            #display an error if there's a prompt at the top menu level
             if ( !defined @$menu_array_ref[0] ) {
                 show_error( "Symbol  '$inside_config' with prompt '$prompt' appears outside of a menu"
                       . " at $filename:$line_no." );
@@ -1144,7 +1148,6 @@ sub load_kconfig_file {
 
     return @dir_file_data;
 }
-
 
 #-------------------------------------------------------------------------------
 # print_wholeconfig - prints out the parsed Kconfig file

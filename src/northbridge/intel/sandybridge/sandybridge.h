@@ -99,6 +99,9 @@
 #define TSEG		0xb8	/* TSEG base */
 #define TOLUD		0xbc	/* Top of Low Used Memory */
 
+#define CAPID0_A	0xe4	/* Capabilities Register A */
+#define CAPID0_B	0xe8	/* Capabilities Register B */
+
 #define SKPAD		0xdc	/* Scratchpad Data */
 
 /* Device 0:1.0 PCI configuration space (PCI Express) */

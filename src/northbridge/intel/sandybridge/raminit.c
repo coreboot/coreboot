@@ -4089,26 +4089,61 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 
 static unsigned int get_mem_min_tck(void)
 {
+	u32 reg32;
+	u8 rev;
 	const struct device *dev;
-	const struct northbridge_intel_sandybridge_config *cfg;
+	const struct northbridge_intel_sandybridge_config *cfg = NULL;
 
 	dev = dev_find_slot(0, HOST_BRIDGE);
-	if (!(dev && dev->chip_info))
-		return DEFAULT_TCK;
-
-	cfg = dev->chip_info;
+	if (dev)
+		cfg = dev->chip_info;
 
 	/* If this is zero, it just means devicetree.cb didn't set it */
-	if (cfg->max_mem_clock_mhz == 0)
-		return DEFAULT_TCK;
+	if (!cfg || cfg->max_mem_clock_mhz == 0) {
+		rev = pci_read_config8(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
 
-	if (cfg->max_mem_clock_mhz >= 800)
-		return TCK_800MHZ;
-	else if (cfg->max_mem_clock_mhz >= 666)
-		return TCK_666MHZ;
-	else if (cfg->max_mem_clock_mhz >= 533)
-		return TCK_533MHZ;
-	return TCK_400MHZ;
+		if ((rev & BASE_REV_MASK) == BASE_REV_SNB) {
+			/* read Capabilities A Register DMFC bits */
+			reg32 = pci_read_config32(PCI_DEV(0, 0, 0), CAPID0_A);
+			reg32 &= 0x7;
+
+			switch (reg32) {
+			case 7: return TCK_533MHZ;
+			case 6: return TCK_666MHZ;
+			case 5: return TCK_800MHZ;
+			/* reserved: */
+			default:
+				break;
+			}
+		} else {
+			/* read Capabilities B Register DMFC bits */
+			reg32 = pci_read_config32(PCI_DEV(0, 0, 0), CAPID0_B);
+			reg32 = (reg32 >> 4) & 0x7;
+
+			switch (reg32) {
+			case 7: return TCK_533MHZ;
+			case 6: return TCK_666MHZ;
+			case 5: return TCK_800MHZ;
+			case 4: return TCK_933MHZ;
+			case 3: return TCK_1066MHZ;
+			case 2: return TCK_1200MHZ;
+			case 1: return TCK_1333MHZ;
+			/* reserved: */
+			default:
+				break;
+			}
+		}
+		return DEFAULT_TCK;
+	} else {
+		if (cfg->max_mem_clock_mhz >= 800)
+			return TCK_800MHZ;
+		else if (cfg->max_mem_clock_mhz >= 666)
+			return TCK_666MHZ;
+		else if (cfg->max_mem_clock_mhz >= 533)
+			return TCK_533MHZ;
+		else
+			return TCK_400MHZ;
+	}
 }
 
 void perform_raminit(int s3resume)

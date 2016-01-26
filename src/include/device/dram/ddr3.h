@@ -33,8 +33,10 @@
  * These values are in 1/256 ns units.
  * @{
  */
+#define TCK_1333MHZ     192
+#define TCK_1200MHZ     212
 #define TCK_1066MHZ     240
-#define TCK_933MHZ	275
+#define TCK_933MHZ      275
 #define TCK_800MHZ      320
 #define TCK_666MHZ      384
 #define TCK_533MHZ      480

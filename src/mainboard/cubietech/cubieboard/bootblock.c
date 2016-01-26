@@ -127,7 +127,7 @@ static void cubieboard_raminit(void)
 	////ram_check((u32)test_base, (u32)test_base + 0x1000);
 }
 
-void bootblock_mainboard_init(void)
+void bootblock_mainboard_early_init(void)
 {
 	/* A10 Timer init uses the 24MHz clock, not PLLs, so we can init it very
 	 * early on to get udelay, which is used almost everywhere else.
@@ -137,6 +137,9 @@ void bootblock_mainboard_init(void)
 	cubieboard_setup_clocks();
 	cubieboard_setup_gpios();
 	cubieboard_enable_uart();
+}
 
+void bootblock_mainboard_init(void)
+{
 	cubieboard_raminit();
 }

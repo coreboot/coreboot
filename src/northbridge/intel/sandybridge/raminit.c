@@ -284,7 +284,7 @@ void read_spd(spd_raw_data * spd, u8 addr)
 static void dram_find_spds_ddr3(spd_raw_data * spd, dimm_info * dimm,
 				ramctr_timing * ctrl)
 {
-	int dimms = 0;
+	int dimms = 0, dimms_on_channel;
 	int channel, slot, spd_slot;
 
 	memset (ctrl->rankmap, 0, sizeof (ctrl->rankmap));
@@ -295,9 +295,37 @@ static void dram_find_spds_ddr3(spd_raw_data * spd, dimm_info * dimm,
 	FOR_ALL_CHANNELS {
 		ctrl->channel_size_mb[channel] = 0;
 
+		dimms_on_channel = 0;
+		/* count dimms on channel */
 		for (slot = 0; slot < NUM_SLOTS; slot++) {
 			spd_slot = 2 * channel + slot;
 			spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
+			if (dimm->dimm[channel][slot].dram_type == SPD_MEMORY_TYPE_SDRAM_DDR3)
+				dimms_on_channel++;
+		}
+
+		for (slot = 0; slot < NUM_SLOTS; slot++) {
+			spd_slot = 2 * channel + slot;
+			/* search for XMP profile */
+			spd_xmp_decode_ddr3(&dimm->dimm[channel][slot],
+					spd[spd_slot],
+					DDR3_XMP_PROFILE_1);
+
+			if (dimm->dimm[channel][slot].dram_type != SPD_MEMORY_TYPE_SDRAM_DDR3) {
+				printram("No valid XMP profile found.\n");
+				spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
+			} else if (dimms_on_channel > dimm->dimm[channel][slot].dimms_per_channel) {
+				printram("XMP profile supports %u DIMMs, but %u DIMMs are installed.\n",
+						 dimm->dimm[channel][slot].dimms_per_channel,
+						 dimms_on_channel);
+				spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
+			} else if (dimm->dimm[channel][slot].voltage != 1500) {
+				/* TODO: support other DDR3 voltage than 1500mV */
+				printram("XMP profile's requested %u mV is unsupported.\n",
+						 dimm->dimm[channel][slot].voltage);
+				spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
+			}
+
 			if (dimm->dimm[channel][slot].dram_type != SPD_MEMORY_TYPE_SDRAM_DDR3) {
 				// set dimm invalid
 				dimm->dimm[channel][slot].ranks = 0;

@@ -116,6 +116,8 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 
 	/* Don't assume we memset 0 dimm struct. Clear all our flags */
 	dimm->flags.raw = 0;
+	dimm->dimms_per_channel = 3;
+
 	/* Make sure that the SPD dump is indeed from a DDR3 module */
 	if (spd[2] != SPD_MEMORY_TYPE_SDRAM_DDR3) {
 		printram("Not a DDR3 SPD!\n");
@@ -180,14 +182,17 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	printram("  Supported voltages:");
 	if (reg8 & (1 << 2)) {
 		dimm->flags.operable_1_25V = 1;
+		dimm->voltage = 1250;
 		printram(" 1.25V");
 	}
 	if (reg8 & (1 << 1)) {
 		dimm->flags.operable_1_35V = 1;
+		dimm->voltage = 1300;
 		printram(" 1.35V");
 	}
 	if (!(reg8 & (1 << 0))) {
 		dimm->flags.operable_1_50V = 1;
+		dimm->voltage = 1500;
 		printram(" 1.5V");
 	}
 	printram("\n");
@@ -334,6 +339,118 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 
 	dimm->reference_card = spd[62] & 0x1f;
 	printram("  DIMM Reference card %c\n", 'A' + dimm->reference_card);
+
+	return ret;
+}
+
+/**
+ * \brief Decode the raw SPD XMP data
+ *
+ * Decodes a raw SPD XMP data from a DDR3 DIMM, and organizes it into a
+ * @ref dimm_attr structure. The SPD data must first be read in a contiguous
+ * array, and passed to this function.
+ *
+ * @param dimm pointer to @ref dimm_attr structure where the decoded data is to
+ *        be stored
+ * @param spd array of raw data previously read from the SPD.
+ *
+ * @param profile select one of the profiles to load
+ *
+ * @return @ref spd_status enumerator
+ *		SPD_STATUS_OK -- decoding was successful
+ *		SPD_STATUS_INVALID -- invalid SPD or not a DDR3 SPD
+ *		SPD_STATUS_CRC_ERROR -- CRC did not verify
+ *		SPD_STATUS_INVALID_FIELD -- A field with an invalid value was
+ *					    detected.
+ */
+int spd_xmp_decode_ddr3(dimm_attr *dimm,
+		       spd_raw_data spd,
+		       enum ddr3_xmp_profile profile)
+{
+	int ret;
+	u32 mtb;		/* medium time base */
+	u8 *xmp;		/* pointer to XMP profile data */
+
+	/* need a valid SPD */
+	ret = spd_decode_ddr3(dimm, spd);
+	if (ret != SPD_STATUS_OK)
+		return ret;
+
+	/* search for magic header */
+	if (spd[176] != 0x0C || spd[177] != 0x4A) {
+		printram("Not a DDR3 XMP profile!\n");
+		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
+		return SPD_STATUS_INVALID;
+	}
+
+	if (profile == DDR3_XMP_PROFILE_1) {
+		if (!(spd[178] & 1)) {
+			printram("Selected XMP profile disabled!\n");
+			dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
+			return SPD_STATUS_INVALID;
+		}
+		printram("  XMP Profile 1\n");
+		xmp = &spd[185];
+
+		/* Medium Timebase =
+		 *   Medium Timebase (MTB) Dividend /
+		 *   Medium Timebase (MTB) Divisor */
+		mtb = (((u32) spd[180]) << 8) / spd[181];
+
+		dimm->dimms_per_channel = ((spd[178] >> 2) & 0x3) + 1;
+	} else {
+		if (!(spd[178] & 2)) {
+			printram("Selected XMP profile disabled!\n");
+			dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
+			return SPD_STATUS_INVALID;
+		}
+		printram("  XMP Profile 2\n");
+		xmp = &spd[220];
+
+		/* Medium Timebase =
+		 *   Medium Timebase (MTB) Dividend /
+		 *   Medium Timebase (MTB) Divisor */
+		mtb = (((u32) spd[182]) << 8) / spd[183];
+
+		dimm->dimms_per_channel = ((spd[178] >> 4) & 0x3) + 1;
+	}
+	printram("  Max DIMMs per channel: %u\n",
+			dimm->dimms_per_channel);
+
+	printram("  XMP Revision: %u.%u\n", spd[179] >> 4, spd[179] & 0xf);
+
+	/* calculate voltage in mV */
+	dimm->voltage = (xmp[0] & 1) * 50;
+	dimm->voltage += ((xmp[0] >> 1) & 0xf) * 100;
+	dimm->voltage += ((xmp[0] >> 5) & 0x3) * 1000;
+	printram("  Requested voltage: %u mV\n", dimm->voltage);
+
+	/* SDRAM Minimum Cycle Time (tCKmin) */
+	dimm->tCK = xmp[1] * mtb;
+	/* CAS Latencies Supported */
+	dimm->cas_supported = (xmp[9] << 8) + xmp[8];
+	/* Minimum CAS Latency Time (tAAmin) */
+	dimm->tAA = xmp[2] * mtb;
+	/* Minimum Write Recovery Time (tWRmin) */
+	dimm->tWR = xmp[8] * mtb;
+	/* Minimum RAS# to CAS# Delay Time (tRCDmin) */
+	dimm->tRCD = xmp[7] * mtb;
+	/* Minimum Row Active to Row Active Delay Time (tRRDmin) */
+	dimm->tRRD = xmp[17] * mtb;
+	/* Minimum Row Precharge Delay Time (tRPmin) */
+	dimm->tRP = xmp[6] * mtb;
+	/* Minimum Active to Precharge Delay Time (tRASmin) */
+	dimm->tRAS = (((xmp[9] & 0x0f) << 8) + xmp[10]) * mtb;
+	/* Minimum Active to Active/Refresh Delay Time (tRCmin) */
+	dimm->tRC = (((xmp[9] & 0xf0) << 4) + xmp[11]) * mtb;
+	/* Minimum Refresh Recovery Delay Time (tRFCmin) */
+	dimm->tRFC = ((xmp[15] << 8) + xmp[14]) * mtb;
+	/* Minimum Internal Write to Read Command Delay Time (tWTRmin) */
+	dimm->tWTR = xmp[20] * mtb;
+	/* Minimum Internal Read to Precharge Command Delay Time (tRTPmin) */
+	dimm->tRTP = xmp[16] * mtb;
+	/* Minimum Four Activate Window Delay Time (tFAWmin) */
+	dimm->tFAW = (((xmp[18] & 0x0f) << 8) + xmp[19]) * mtb;
 
 	return ret;
 }

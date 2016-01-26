@@ -1076,12 +1076,67 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 	return 0;
 }
 
+static int cbfs_print_parseable_entry_info(struct cbfs_image *image,
+					struct cbfs_file *entry, void *arg)
+{
+	FILE *fp = (FILE *)arg;
+	const char *name;
+	const char *type;
+	size_t offset;
+	size_t metadata_size;
+	size_t data_size;
+	const char *sep = "\t";
+
+	if (!cbfs_is_valid_entry(image, entry)) {
+		ERROR("cbfs_print_entry_info: Invalid entry at 0x%x\n",
+		      cbfs_get_entry_addr(image, entry));
+		return -1;
+	}
+
+	name = entry->filename;
+	if (*name == '\0')
+		name = "(empty)";
+	type = get_cbfs_entry_type_name(ntohl(entry->type)),
+	metadata_size = ntohl(entry->offset);
+	data_size = ntohl(entry->len);
+	offset = cbfs_get_entry_addr(image, entry);
+
+	fprintf(fp, "%s%s", name, sep);
+	fprintf(fp, "0x%zx%s", offset, sep);
+	fprintf(fp, "%s%s", type, sep);
+	fprintf(fp, "0x%zx%s", metadata_size, sep);
+	fprintf(fp, "0x%zx%s", data_size, sep);
+	fprintf(fp, "0x%zx\n", metadata_size + data_size);
+
+	return 0;
+}
+
 int cbfs_print_directory(struct cbfs_image *image)
 {
 	if (cbfs_is_legacy_cbfs(image))
 		cbfs_print_header_info(image);
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
 	cbfs_walk(image, cbfs_print_entry_info, NULL);
+	return 0;
+}
+
+int cbfs_print_parseable_directory(struct cbfs_image *image)
+{
+	int i;
+	const char *header[] = {
+		"Name",
+		"Offset",
+		"Type",
+		"Metadata Size",
+		"Data Size",
+		"Total Size",
+	};
+	const char *sep = "\t";
+
+	for (i = 0; i < ARRAY_SIZE(header) - 1; i++)
+		fprintf(stdout, "%s%s", header[i], sep);
+	fprintf(stdout, "%s\n", header[i]);
+	cbfs_walk(image, cbfs_print_parseable_entry_info, stdout);
 	return 0;
 }
 

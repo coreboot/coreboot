@@ -158,6 +158,7 @@ int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry);
 
 /* Print CBFS component information. */
 int cbfs_print_directory(struct cbfs_image *image);
+int cbfs_print_parseable_directory(struct cbfs_image *image);
 int cbfs_print_header_info(struct cbfs_image *image);
 int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			  void *arg);

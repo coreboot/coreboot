@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
- * Copyright (C) 2015  Damien Zammit <damien@zamaudio.com>
+ * Copyright (C) 2015 Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,7 +23,10 @@ DefinitionBlock(
 	0x20090419	// OEM revision
 )
 {
+	#include "acpi/platform.asl"
 	#include <southbridge/intel/i82801gx/acpi/globalnvs.asl>
+
+	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

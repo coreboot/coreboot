@@ -470,11 +470,13 @@ enum additional_timestamp_id {
 	TS_RW_VB_SELECT_AND_LOAD_KERNEL = 1010,
 
 	TS_VB_SELECT_AND_LOAD_KERNEL = 1020,
-
 	TS_VB_EC_VBOOT_DONE = 1030,
+	TS_VB_STORAGE_INIT_DONE = 1040,
+	TS_VB_READ_KERNEL_DONE = 1050,
+	TS_VB_VBOOT_DONE = 1100,
 
-	TS_CROSSYSTEM_DATA = 1100,
-	TS_START_KERNEL = 1101
+	TS_START_KERNEL = 1101,
+	TS_KERNEL_DECOMPRESSION = 1102,
 };
 
 static const struct timestamp_id_to_name {
@@ -531,9 +533,12 @@ static const struct timestamp_id_to_name {
 	{ TS_RO_VB_SELECT_AND_LOAD_KERNEL,	"RO vboot select&load kernel" },
 	{ TS_RW_VB_SELECT_AND_LOAD_KERNEL,	"RW vboot select&load kernel" },
 	{ TS_VB_SELECT_AND_LOAD_KERNEL,		"vboot select&load kernel" },
-	{ TS_VB_EC_VBOOT_DONE,			"finished EC verification" },
-	{ TS_CROSSYSTEM_DATA,	"crossystem data" },
-	{ TS_START_KERNEL,	"start kernel" },
+	{ TS_VB_EC_VBOOT_DONE,	"finished EC verification" },
+	{ TS_VB_STORAGE_INIT_DONE, "finished storage device initialization" },
+	{ TS_VB_READ_KERNEL_DONE, "finished reading kernel from disk" },
+	{ TS_VB_VBOOT_DONE,	"finished vboot kernel verification" },
+	{ TS_KERNEL_DECOMPRESSION, "starting kernel decompression/relocation" },
+	{ TS_START_KERNEL,	"jumping to kernel" },
 
 	/* FSP related timestamps */
 	{ TS_FSP_MEMORY_INIT_START, "calling FspMemoryInit" },

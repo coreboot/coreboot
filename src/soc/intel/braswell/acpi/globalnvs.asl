@@ -51,7 +51,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PM1I,	 32,	/* 0x15 - System Wake Source - PM1 Index */
 	GPEI,	 32,	/* 0x19 - GPE Wake Source */
 	BDID,	 8,	/* 0x1d - Board ID */
-	CID1,	 16,	/* 0x1A - Wifi Domain Type */
+	CID1,	 16,	/* 0x1e - Wifi Domain Type */
 
 	/* Device Config */
 	Offset (0x20),

@@ -202,6 +202,17 @@ static int hash_body(struct vb2_context *ctx, struct region_device *fw_main)
 	if (rv)
 		return rv;
 
+	/*
+	 * Honor vboot's RW slot size. The expected size is pulled out of
+	 * the preamble and obtained through vb2api_init_hash() above. By
+	 * creating sub region the RW slot portion of the boot media is
+	 * limited.
+	 */
+	if (rdev_chain(fw_main, fw_main, 0, expected_size)) {
+		printk(BIOS_ERR, "Unable to restrict CBFS size.\n");
+		return VB2_ERROR_UNKNOWN;
+	}
+
 	/* Extend over the body */
 	while (expected_size) {
 		uint64_t temp_ts;

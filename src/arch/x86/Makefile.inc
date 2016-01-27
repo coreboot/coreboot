@@ -112,6 +112,7 @@ $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
 ifeq ($(CONFIG_C_ENVIRONMENT_BOOTBLOCK),y)
 
+bootblock-y += bootblock_crt0.S
 bootblock-y += memlayout.ld
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)

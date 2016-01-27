@@ -1,2 +1,5 @@
 config BOARD_LENOVO_X220
 	bool "ThinkPad X220"
+
+config BOARD_LENOVO_X220I
+	bool "ThinkPad X220i"

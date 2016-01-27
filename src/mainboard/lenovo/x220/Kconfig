@@ -1,4 +1,4 @@
-if BOARD_LENOVO_X220
+if BOARD_LENOVO_X220 || BOARD_LENOVO_X220I
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -60,10 +60,12 @@ config DRAM_RESET_GATE_GPIO
 
 config VGA_BIOS_FILE
 	string
+	default "pci8086,0116.rom" if BOARD_LENOVO_X220I
 	default "pci8086,0126.rom"
 
 config VGA_BIOS_ID
 	string
+	default "8086,0116" if BOARD_LENOVO_X220I
 	default "8086,0126"
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
@@ -74,4 +76,4 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x21db
 
-endif # BOARD_LENOVO_X220
+endif # BOARD_LENOVO_X220 || BOARD_LENOVO_X220I

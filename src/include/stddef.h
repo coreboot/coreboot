@@ -34,4 +34,12 @@ typedef unsigned int wint_t;
 #define MAYBE_STATIC static
 #endif
 
+#ifndef __ROMCC__
+/* Provide a pointer to address 0 that thwarts any "accessing this is
+ * undefined behaviour and do whatever" trickery in compilers.
+ * Use when you _really_ need to read32(zeroptr) (ie. read address 0).
+ */
+extern void *zeroptr;
+#endif
+
 #endif /* STDDEF_H */

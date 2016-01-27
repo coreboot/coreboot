@@ -133,6 +133,10 @@ _eprogram = .;
 
 /* Discard the sections we don't need/want */
 
+.zeroptr 0 (NOLOAD) : {
+	zeroptr = .;
+}
+
 /DISCARD/ : {
 	*(.comment)
 	*(.comment.*)

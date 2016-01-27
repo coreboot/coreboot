@@ -28,6 +28,11 @@ verstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 romstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 ramstage-$(CONFIG_CHROMEOS_VBNV_CMOS) += vbnv_cmos.c
 
+bootblock-$(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+verstage-$(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+romstage-$(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+ramstage-$(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+
 bootblock-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
 verstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c
 romstage-$(CONFIG_CHROMEOS_VBNV_EC) += vbnv_ec.c

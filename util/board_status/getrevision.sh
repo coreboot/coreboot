@@ -96,7 +96,10 @@ timestamp() {
 	if [ -z "$t" ]; then
 		echo "Warning: Could not determine timestamp." 2>/dev/null
 	fi
-	echo "${t}"
+
+	# output the time, changing colons to underscores.
+	# gnu make doesn't work in directories with colons
+	echo "${t}" | tr ':' '_'
 }
 
 # Retrieve local SCM revision info. This is useful if we're working in a different SCM than upstream and/or

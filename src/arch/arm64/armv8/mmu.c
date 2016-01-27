@@ -199,6 +199,26 @@ static void sanity_check(uint64_t addr, uint64_t size)
 	       size >= GRANULE_SIZE);
 }
 
+/* Func : get_pte
+ * Desc : Returns the page table entry governing a specific address. */
+static uint64_t get_pte(void *addr)
+{
+	int shift = BITS_PER_VA > L1_ADDR_SHIFT ? L1_ADDR_SHIFT : L2_ADDR_SHIFT;
+	uint64_t *pte = (uint64_t *)_ttb;
+
+	while (1) {
+		int index = ((uintptr_t)addr >> shift) &
+			    ((1UL << BITS_RESOLVED_PER_LVL) - 1);
+
+		if ((pte[index] & DESC_MASK) != TABLE_DESC ||
+		    shift <= GRANULE_SIZE_SHIFT)
+			return pte[index];
+
+		pte = (uint64_t *)(pte[index] & XLAT_ADDR_MASK);
+		shift -= BITS_RESOLVED_PER_LVL;
+	}
+}
+
 /* Func : mmu_config_range
  * Desc : This function repeatedly calls init_xlat_table with the base
  * address. Based on size returned from init_xlat_table, base_addr is updated
@@ -256,6 +276,12 @@ void mmu_init(void)
 
 void mmu_enable(void)
 {
+	if (((get_pte(_ttb) >> BLOCK_INDEX_SHIFT) & BLOCK_INDEX_MASK)
+	    != BLOCK_INDEX_MEM_NORMAL ||
+	    ((get_pte(_ettb - 1) >> BLOCK_INDEX_SHIFT) & BLOCK_INDEX_MASK)
+	    != BLOCK_INDEX_MEM_NORMAL)
+		die("TTB memory type must match TCR (normal, cacheable)!");
+
 	uint32_t sctlr = raw_read_sctlr_el3();
 	sctlr |= SCTLR_C | SCTLR_M | SCTLR_I;
 	raw_write_sctlr_el3(sctlr);

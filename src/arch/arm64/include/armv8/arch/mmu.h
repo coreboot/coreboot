@@ -102,6 +102,7 @@
 #define BLOCK_INDEX_MEM_NORMAL_NC  3
 #define BLOCK_INDEX_MEM_NORMAL     4
 
+#define BLOCK_INDEX_MASK           0x7
 #define BLOCK_INDEX_SHIFT          2
 
 /* MAIR attributes */

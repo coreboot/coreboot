@@ -651,6 +651,7 @@ endif
 
 define cbfs-add-cmd
 	printf "    CBFS       $(call extract_nth,2,$(1))\n"
+	$(if $(2),-$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null)
 	$(CBFSTOOL) $@.tmp \
 	add$(if $(filter stage,$(call extract_nth,3,$(1))),-stage)$(if $(filter payload,$(call extract_nth,3,$(1))),-payload) \
 	-f $(call extract_nth,1,$(1)) \
@@ -665,10 +666,10 @@ define cbfs-add-cmd
 endef
 
 cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
-ifneq ($(CONFIG_UPDATE_IMAGE),y)
-prebuild-files = $(foreach file,$(cbfs-files), $(call cbfs-add-cmd,$(file)))
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
+prebuild-files = $(foreach file,$(cbfs-files), $(call cbfs-add-cmd,$(file),$(CONFIG_UPDATE_IMAGE)))
 
+ifneq ($(CONFIG_UPDATE_IMAGE),y)
 ifeq ($(CONFIG_FMDFILE),)
 # For a description of the flash layout described by these variables, check
 # the $(DEFAULT_FLASHMAP) .fmd files.
@@ -760,13 +761,6 @@ endif # ifeq ($(CONFIG_ARCH_X86),y)
 	$(prebuild-files) true
 	mv $@.tmp $@
 else # ifneq ($(CONFIG_UPDATE_IMAGE),y)
-prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
-# Add all cbfs files to image of the form: CONFIG_CBFS_PREFIX/<filename>
-prebuild-files = \
-	$(foreach file,$(cbfs-files), \
-	$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null ; \
-	       $(call cbfs-add-cmd,$(file)))
-
 .PHONY: $(obj)/coreboot.pre
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)
 	mv $(obj)/coreboot.rom $@.tmp || \

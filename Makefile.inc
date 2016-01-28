@@ -658,15 +658,14 @@ define cbfs-add-cmd
 	$(if $(filter-out stage,$(call extract_nth,3,$(1))),-t $(call extract_nth,3,$(1))) \
 	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) $(cbfs-autogen-attributes)\
 	-r $(call regions-for-file,$(call extract_nth,2,$(1))) \
+	$(if $(call extract_nth,6,$(1)),-a $(call extract_nth,6,$(file)), \
+		$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file)))) \
 	$(call extract_nth,7,$(1)) $(2)
 endef
 
 cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
-prebuild-files = \
-	       $(foreach file,$(cbfs-files), \
-	       $(if $(call extract_nth,6,$(file)),$(call cbfs-add-cmd,$(file),-a $(call extract_nth,6,$(file))), \
-	       $(call cbfs-add-cmd,$(file),$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))))))
+prebuild-files = $(foreach file,$(cbfs-files), $(call cbfs-add-cmd,$(file)))
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 ifeq ($(CONFIG_FMDFILE),)
@@ -765,9 +764,7 @@ prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 prebuild-files = \
 	$(foreach file,$(cbfs-files), \
 	$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null ; \
-	       $(if $(call extract_nth,6,$(file)),$(call cbfs-add-cmd,$(file),-a $(call extract_nth,6,$(file))),\
-	       $(call cbfs-add-cmd,$(file),$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) \
-	       $(cbfs-autogen-attributes))))
+	       $(call cbfs-add-cmd,$(file),$(cbfs-autogen-attributes)))
 
 .PHONY: $(obj)/coreboot.pre
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)

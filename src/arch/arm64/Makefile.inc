@@ -159,7 +159,7 @@ BL31_MAKEARGS += BUILD_PLAT="$(abspath $(obj)/3rdparty/arm-trusted-firmware)"
 # The \# \" complications exist to satisfy both gnu make's parser and editors
 # with non-semantic quote-handling (that would assume that this line starts a
 # multi line string.
-BL31_MAKEARGS += BUILD_MESSAGE_TIMESTAMP="$(shell grep "\#define COREBOOT_BUILD\>" $(obj)/build.h |cut -d\" -f2 \# \")"
+BL31_MAKEARGS += BUILD_MESSAGE_TIMESTAMP='"$(shell grep "\#define COREBOOT_BUILD\>" $(obj)/build.h |cut -d\" -f2 \# \")"'
 
 BL31_CFLAGS := -fno-pic -fno-stack-protector
 BL31_LDFLAGS := --emit-relocs

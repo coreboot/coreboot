@@ -649,8 +649,8 @@ ifeq ($(CONFIG_CBFS_AUTOGEN_ATTRIBUTES),y)
 	cbfs-autogen-attributes=-g
 endif
 
-cbfs-add-cmd = \
-	printf "    CBFS       $(call extract_nth,2,$(file))\n"; \
+define cbfs-add-cmd
+	printf "    CBFS       $(call extract_nth,2,$(file))\n"
 	$(CBFSTOOL) $@.tmp \
 	add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage)$(if $(filter payload,$(call extract_nth,3,$(file))),-payload) \
 	-f $(call extract_nth,1,$(file)) \
@@ -658,14 +658,15 @@ cbfs-add-cmd = \
 	$(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
 	$(if $(call extract_nth,4,$(file)),-c $(call extract_nth,4,$(file))) $(cbfs-autogen-attributes)\
 	-r $(call regions-for-file,$(call extract_nth,2,$(file))) \
-	$(call extract_nth,7,$(file))
+	$(call extract_nth,7,$(file)) $(1)
+endef
 
 cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuild-files = \
 	       $(foreach file,$(cbfs-files), \
-	       $(if $(call extract_nth,6,$(file)),$(cbfs-add-cmd) -a $(call extract_nth,6,$(file)) &&, \
-	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) &&))
+	       $(if $(call extract_nth,6,$(file)),$(call cbfs-add-cmd,-a $(call extract_nth,6,$(file))), \
+	       $(call cbfs-add-cmd,$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))))))
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 ifeq ($(CONFIG_FMDFILE),)
@@ -764,9 +765,9 @@ prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 prebuild-files = \
 	$(foreach file,$(cbfs-files), \
 	$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null ; \
-	       $(if $(call extract_nth,6,$(file)),$(cbfs-add-cmd) -a $(call extract_nth,6,$(file)) &&,\
-	       $(cbfs-add-cmd) $(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) \
-	       $(cbfs-autogen-attributes) &&))
+	       $(if $(call extract_nth,6,$(file)),$(call cbfs-add-cmd,-a $(call extract_nth,6,$(file))),\
+	       $(call cbfs-add-cmd,$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file))) \
+	       $(cbfs-autogen-attributes))))
 
 .PHONY: $(obj)/coreboot.pre
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)

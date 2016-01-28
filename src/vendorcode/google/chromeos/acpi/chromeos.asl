@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <vendorcode/google/chromeos/vbnv_layout.h>
+
 Device (CRHW)
 {
 	Name(_HID, EISAID("GGL0001"))
@@ -70,7 +72,7 @@ Device (CRHW)
 			// See src/vendorcode/google/chromeos/Kconfig
 			// for the definition of these:
 			CONFIG_VBNV_OFFSET,
-			CONFIG_VBNV_SIZE
+			VBNV_BLOCK_SIZE
 		})
 		Return(VNBV)
 	}

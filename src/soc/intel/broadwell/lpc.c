@@ -47,6 +47,7 @@
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <vendorcode/google/chromeos/vbnv_layout.h>
 #endif
 
 static void pch_enable_ioapic(struct device *dev)
@@ -181,7 +182,7 @@ static void pch_power_options(device_t dev)
  */
 static void pch_cmos_init_preserve(int reset)
 {
-	uint8_t vbnv[CONFIG_VBNV_SIZE];
+	uint8_t vbnv[VBNV_BLOCK_SIZE];
 
 	if (reset)
 		read_vbnv(vbnv);

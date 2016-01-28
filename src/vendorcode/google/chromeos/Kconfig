@@ -44,14 +44,6 @@ config VBNV_OFFSET
 	  CMOS offset for VbNv data. This value must match cmos.layout
 	  in the mainboard directory, minus 14 bytes for the RTC.
 
-config VBNV_SIZE
-	hex
-	default 0x10
-	depends on PC80_SYSTEM
-	help
-	  CMOS storage size for VbNv data. This value must match cmos.layout
-	  in the mainboard directory.
-
 config CHROMEOS_VBNV_CMOS
 	bool "Vboot non-volatile storage in CMOS."
 	default n

@@ -39,6 +39,7 @@
 #endif
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
+#include <vendorcode/google/chromeos/vbnv_layout.h>
 #endif
 #if CONFIG_ARCH_X86
 #include <cpu/x86/mtrr.h>
@@ -191,7 +192,7 @@ static void lb_vbnv(struct lb_header *header)
 	vbnv->tag = LB_TAG_VBNV;
 	vbnv->size = sizeof(*vbnv);
 	vbnv->range_start = CONFIG_VBNV_OFFSET + 14;
-	vbnv->range_size = CONFIG_VBNV_SIZE;
+	vbnv->range_size = VBNV_BLOCK_SIZE;
 #endif
 }
 

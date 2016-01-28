@@ -22,7 +22,7 @@ void read_vbnv_cmos(uint8_t *vbnv_copy)
 {
 	int i;
 
-	for (i = 0; i < CONFIG_VBNV_SIZE; i++)
+	for (i = 0; i < VBNV_BLOCK_SIZE; i++)
 		vbnv_copy[i] = cmos_read(CONFIG_VBNV_OFFSET + 14 + i);
 }
 
@@ -30,6 +30,6 @@ void save_vbnv_cmos(const uint8_t *vbnv_copy)
 {
 	int i;
 
-	for (i = 0; i < CONFIG_VBNV_SIZE; i++)
+	for (i = 0; i < VBNV_BLOCK_SIZE; i++)
 		cmos_write(vbnv_copy[i], CONFIG_VBNV_OFFSET + 14 + i);
 }

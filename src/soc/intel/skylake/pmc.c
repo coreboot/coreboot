@@ -37,6 +37,7 @@
 #include <soc/ramstage.h>
 #if IS_ENABLED(CONFIG_CHROMEOS)
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <vendorcode/google/chromeos/vbnv_layout.h>
 #endif
 
 static const struct reg_script pch_pmc_misc_init_script[] = {
@@ -114,7 +115,7 @@ static void pch_set_acpi_mode(void)
  */
 static void pch_cmos_init_preserve(int reset)
 {
-	uint8_t vbnv[CONFIG_VBNV_SIZE];
+	uint8_t vbnv[VBNV_BLOCK_SIZE];
 	if (reset)
 		read_vbnv(vbnv);
 

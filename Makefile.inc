@@ -656,11 +656,12 @@ define cbfs-add-cmd
 	-f $(call extract_nth,1,$(1)) \
 	-n $(call extract_nth,2,$(1)) \
 	$(if $(filter-out stage,$(call extract_nth,3,$(1))),-t $(call extract_nth,3,$(1))) \
-	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) $(cbfs-autogen-attributes)\
+	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) \
+	$(cbfs-autogen-attributes) \
 	-r $(call regions-for-file,$(call extract_nth,2,$(1))) \
 	$(if $(call extract_nth,6,$(1)),-a $(call extract_nth,6,$(file)), \
 		$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file)))) \
-	$(call extract_nth,7,$(1)) $(2)
+	$(call extract_nth,7,$(1))
 endef
 
 cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)
@@ -764,7 +765,7 @@ prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 prebuild-files = \
 	$(foreach file,$(cbfs-files), \
 	$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null ; \
-	       $(call cbfs-add-cmd,$(file),$(cbfs-autogen-attributes)))
+	       $(call cbfs-add-cmd,$(file)))
 
 .PHONY: $(obj)/coreboot.pre
 $(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL)

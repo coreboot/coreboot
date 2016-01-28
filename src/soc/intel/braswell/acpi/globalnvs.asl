@@ -25,8 +25,9 @@ Name(\PICM, 0)		/* IOAPIC/8259 */
  * we have to fix it up in coreboot's ACPI creation phase.
  */
 
+External (NVSA)
 
-OperationRegion (GNVS, SystemMemory, 0xC0DEBABE, 0x2000)
+OperationRegion (GNVS, SystemMemory, NVSA, 0x2000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */

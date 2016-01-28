@@ -645,6 +645,13 @@ extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-)
 # multiple CBFSes in fmap regions, override it.
 regions-for-file ?= COREBOOT
 
+# options-for-region
+# $(call options-for-region,$(filename),$(region),$(options))
+#
+# Returns potentially modified options, depending on file and region.
+# Default is to return it unmodified
+options-for-region ?= $(3)
+
 ifeq ($(CONFIG_CBFS_AUTOGEN_ATTRIBUTES),y)
 	cbfs-autogen-attributes=-g
 endif
@@ -660,9 +667,10 @@ define cbfs-add-cmd-for-region
 	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) \
 	$(cbfs-autogen-attributes) \
 	-r $(2) \
-	$(if $(call extract_nth,6,$(1)),-a $(call extract_nth,6,$(file)), \
-		$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file)))) \
-	$(call extract_nth,7,$(1))
+	$(call options-for-region,$(call extract_nth,2,$(1)),$(2), \
+		$(if $(call extract_nth,6,$(1)),-a $(call extract_nth,6,$(file)), \
+			$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file)))) \
+		$(call extract_nth,7,$(1)))
 
 endef
 # Empty line before endef is necessary so cbfs-add-cmd-for-region ends in a

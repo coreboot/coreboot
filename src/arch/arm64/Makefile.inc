@@ -155,12 +155,18 @@ endif # CONFIG_CONSOLE_SERIAL
 # Avoid build/release|build/debug distinction by overriding BUILD_PLAT directly
 BL31_MAKEARGS += BUILD_PLAT="$(abspath $(obj)/3rdparty/arm-trusted-firmware)"
 
+# Set a consistent build timestamp: the same coreboot has
+# The \# \" complications exist to satisfy both gnu make's parser and editors
+# with non-semantic quote-handling (that would assume that this line starts a
+# multi line string.
+BL31_MAKEARGS += BUILD_MESSAGE_TIMESTAMP="$(shell grep "\#define COREBOOT_BUILD\>" $(obj)/build.h |cut -d\" -f2 \# \")"
+
 BL31_CFLAGS := -fno-pic -fno-stack-protector
 BL31_LDFLAGS := --emit-relocs
 
 BL31 := $(obj)/bl31.elf
 
-$(BL31):
+$(BL31): $(obj)/build.h
 	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
 	CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
 	CFLAGS="$(BL31_CFLAGS)" \

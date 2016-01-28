@@ -649,9 +649,9 @@ ifeq ($(CONFIG_CBFS_AUTOGEN_ATTRIBUTES),y)
 	cbfs-autogen-attributes=-g
 endif
 
-define cbfs-add-cmd
-	printf "    CBFS       $(call extract_nth,2,$(1))\n"
-	$(if $(2),-$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null)
+# cbfs-add-cmd-for-region
+# $(call cbfs-add-cmd-for-region,file in extract_nth format,region name)
+define cbfs-add-cmd-for-region
 	$(CBFSTOOL) $@.tmp \
 	add$(if $(filter stage,$(call extract_nth,3,$(1))),-stage)$(if $(filter payload,$(call extract_nth,3,$(1))),-payload) \
 	-f $(call extract_nth,1,$(1)) \
@@ -659,10 +659,23 @@ define cbfs-add-cmd
 	$(if $(filter-out stage,$(call extract_nth,3,$(1))),-t $(call extract_nth,3,$(1))) \
 	$(if $(call extract_nth,4,$(1)),-c $(call extract_nth,4,$(1))) \
 	$(cbfs-autogen-attributes) \
-	-r $(call regions-for-file,$(call extract_nth,2,$(1))) \
+	-r $(2) \
 	$(if $(call extract_nth,6,$(1)),-a $(call extract_nth,6,$(file)), \
 		$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file)))) \
 	$(call extract_nth,7,$(1))
+
+endef
+# Empty line before endef is necessary so cbfs-add-cmd-for-region ends in a
+# newline
+
+# cbfs-add-cmd
+# $(call cbfs-add-cmd,file in extract_nth format,non-empty if file removal requested)
+define cbfs-add-cmd
+	printf "    CBFS       $(call extract_nth,2,$(1))\n"
+	$(if $(2),-$(CBFSTOOL) $@.tmp remove -n $(call extract_nth,2,$(file)) 2>/dev/null)
+	$(eval _tmp-cbfs-add-cmd-regions=$(call regions-for-file,$(call extract_nth,2,$(1)))) \
+	$(foreach region,$(subst $(comma),$(spc),$(_tmp-cbfs-add-cmd-regions)), \
+		$(call cbfs-add-cmd-for-region,$(1),$(region)))
 endef
 
 cbfs-files=$(cbfs-files-fixed) $(cbfs-files-aligned) $(cbfs-files-regular)

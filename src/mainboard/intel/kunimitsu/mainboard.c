@@ -20,9 +20,13 @@
 #include <device/device.h>
 #include <gpio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <soc/nhlt.h>
 #include "ec.h"
 #include "gpio.h"
+
+static const char *oem_id_maxim = "INTEL";
+static const char *oem_table_id_maxim = "SCRDMAX";
 
 static void mainboard_init(device_t dev)
 {
@@ -42,6 +46,8 @@ static unsigned long mainboard_write_acpi_tables(
 		uintptr_t start_addr;
 		uintptr_t end_addr;
 		struct nhlt *nhlt;
+		const char *oem_id = NULL;
+		const char *oem_table_id = NULL;
 
 		start_addr = current;
 
@@ -67,13 +73,17 @@ static unsigned long mainboard_write_acpi_tables(
 			/* MAXIM Smart Amps for left and right. */
 			if (nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP0))
 				printk(BIOS_ERR, "Couldn't add max98357.\n");
+
+			oem_id = oem_id_maxim;
+			oem_table_id = oem_table_id_maxim;
 		}
 
 		/* NAU88l25 Headset codec. */
 		if (nhlt_soc_add_nau88l25(nhlt, AUDIO_LINK_SSP1))
 			printk(BIOS_ERR, "Couldn't add headset codec.\n");
 
-		end_addr = nhlt_soc_serialize(nhlt, start_addr);
+		end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
+						 oem_id, oem_table_id);
 
 		if (end_addr != start_addr)
 			acpi_add_table(rsdp, (void *)start_addr);

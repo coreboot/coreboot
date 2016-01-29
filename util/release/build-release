@@ -1,16 +1,21 @@
 #!/bin/bash
 # $1: new version name
+# $2: commit id (if not master)
 set -e
 if [ -z "$1" ]; then
-	echo "usage: $0 version"
+	echo "usage: $0 version [commit id]"
 	echo "tags a new coreboot version and creates a tar archive"
 	exit 1
 fi
 git clone --recurse-submodules http://review.coreboot.org/coreboot.git coreboot-$1
 cd coreboot-$1
+if [ -n "$2" ]; then
+	git reset --hard $2
+fi
 git submodule update --init --checkout
 git tag -a --force $1 -m "coreboot version $1"
 printf "$1-$(git log --pretty=%H|head -1)\n" > .coreboot-version
+tstamp=$(git log --pretty=format:%ci -1)
 cd ..
-tar --exclude-vcs --exclude=coreboot-${1}/3rdparty/blobs -cvf - coreboot-${1} |xz -9 > coreboot-${1}.tar.xz
-tar --exclude-vcs -cvf - coreboot-${1}/3rdparty/blobs |xz -9 > coreboot-blobs-${1}.tar.xz
+tar --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude-vcs --exclude=coreboot-${1}/3rdparty/blobs -cvf - coreboot-${1} |xz -9 > coreboot-${1}.tar.xz
+tar --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude-vcs -cvf - coreboot-${1}/3rdparty/blobs |xz -9 > coreboot-blobs-${1}.tar.xz

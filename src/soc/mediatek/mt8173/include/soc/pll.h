@@ -286,6 +286,7 @@ void mt_pll_post_init(void);
 void mt_pll_init(void);
 void mt_pll_set_aud_div(u32 rate);
 void mt_pll_enable_ssusb_clk(void);
+void mt_pll_raise_ca53_freq(u32 freq);
 void mt_mem_pll_set_clk_cfg(void);
 void mt_mem_pll_config_pre(const struct mt8173_sdram_params *sdram_params);
 void mt_mem_pll_config_post(void);

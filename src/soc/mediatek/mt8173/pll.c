@@ -467,8 +467,6 @@ void mt_pll_post_init(void)
 	clrbits_le32(&mt8173_infracfg->top_ckdiv1, 0x3ff);
 
 	/* select ARMPLL */
-	/* TODO: possibly raise ARMPLL frequency here */
-	/* NOTICE: raise Vproc voltage before raise ARMPLL frequency */
 	write32(&mt8173_infracfg->top_ckmuxsel, (1 << 2) | 1);
 }
 
@@ -504,6 +502,10 @@ void mt_pll_set_aud_div(u32 rate)
 		clrsetbits_le32(&mt8173_topckgen->clk_auddiv_0, 0xf << 28,
 				7 << 28);
 	}
+}
+
+void mt_pll_raise_ca53_freq(u32 freq) {
+	pll_set_rate(&plls[APMIXED_ARMCA7PLL], freq); /* freq in Hz */
 }
 
 void mt_mem_pll_config_pre(const struct mt8173_sdram_params *sdram_params)

@@ -59,6 +59,23 @@ void mt6391_write(u16 reg, u16 val, u32 mask, u32 shift)
 	return;
 }
 
+int mt6391_configure_ca53_voltage(int uv)
+{
+	/* target voltage = 700mv + 6.25mv * buck_val */
+	u16 buck_val = (uv - 700000) / 6250;
+	u16 current_val = mt6391_read(PMIC_RG_VCA15_CON12, 0x7f, 0x0);
+
+	assert(buck_val < (1 << 8));
+	mt6391_write(PMIC_RG_VCA15_CON9, buck_val, 0x7f, 0x0);
+	mt6391_write(PMIC_RG_VCA15_CON10, buck_val, 0x7f, 0x0);
+
+	/* For buck delay, default slew rate is 6.25mv/0.5us */
+	if (buck_val > current_val)
+		return ((buck_val - current_val) / 2) ;
+	else
+		return 0;
+}
+
 static void mt6391_configure_vcama(enum ldo_voltage vsel)
 {
 	/* 2'b00: 1.5V

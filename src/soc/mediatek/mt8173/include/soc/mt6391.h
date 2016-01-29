@@ -98,6 +98,7 @@ enum{
 	PMIC_RG_VCA15_CON9 = 0x0226,
 	PMIC_RG_VCA15_CON10 = 0x0228,
 	PMIC_RG_VCA15_CON11 = 0x022A,
+	PMIC_RG_VCA15_CON12 = 0x022C,
 	PMIC_RG_VCA15_CON18 = 0x0238,
 	PMIC_RG_VSRMCA15_CON5 = 0x0244,
 	PMIC_RG_VSRMCA15_CON6 = 0x0246,
@@ -291,6 +292,7 @@ enum ldo_voltage {
 /*
  * PMIC Exported Function
  */
+int mt6391_configure_ca53_voltage(int uv);
 void mt6391_configure_ldo(enum ldo_power ldo, enum ldo_voltage vsel);
 u32 mt6391_read(u16 reg, u32 mask, u32 shift);
 void mt6391_write(u16 reg, u16 val, u32 mask, u32 shift);

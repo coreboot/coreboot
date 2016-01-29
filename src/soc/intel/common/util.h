@@ -17,9 +17,17 @@
 #define _INTEL_COMMON_UTIL_H_
 
 #include <arch/cpu.h>
+#include <cpu/x86/msr.h>
 #include <stdint.h>
 
 asmlinkage void soc_display_mtrrs(void);
 uint32_t soc_get_variable_mtrr_count(uint64_t *msr);
+#if IS_ENABLED(CONFIG_SOC_SETS_MTRRS)
+msr_t soc_mtrr_read(unsigned long index);
+void soc_mtrr_write(unsigned long index, msr_t msr);
+#else
+#define soc_mtrr_read	rdmsr
+#define soc_mtrr_write	wrmsr
+#endif /* CONFIG_SOC_SETS_MTRRS */
 
 #endif /* _INTEL_COMMON_UTIL_H_ */

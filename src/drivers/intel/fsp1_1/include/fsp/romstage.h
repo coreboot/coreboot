@@ -88,4 +88,11 @@ void soc_memory_init_params(struct romstage_params *params,
 			    MEMORY_INIT_UPD *upd);
 void soc_pre_ram_init(struct romstage_params *params);
 
+/*
+ * Set the MTRRs using the data on the stack from setup_stack_and_mtrrs.
+ * Return a new top_of_stack value which removes the setup_stack_and_mtrrs data.
+ */
+asmlinkage void *soc_set_mtrrs(void *top_of_stack);
+asmlinkage void soc_enable_mtrrs(void);
+
 #endif /* _COMMON_ROMSTAGE_H_ */

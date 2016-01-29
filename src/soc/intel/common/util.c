@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,6 @@
 
 #include <arch/cpu.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <soc/intel/common/util.h>
 #include <stddef.h>
@@ -25,12 +24,12 @@ uint32_t soc_get_variable_mtrr_count(uint64_t *msr)
 	union {
 		uint64_t u64;
 		msr_t s;
-	} mttrcap;
+	} mtrrcap;
 
-	mttrcap.s = rdmsr(MTRR_CAP_MSR);
+	mtrrcap.s = soc_mtrr_read(MTRR_CAP_MSR);
 	if (msr != NULL)
-		*msr = mttrcap.u64;
-	return mttrcap.u64 & MTRR_CAP_VCNT;
+		*msr = mtrrcap.u64;
+	return mtrrcap.u64 & MTRR_CAP_VCNT;
 }
 
 static const char *soc_display_mtrr_type(uint32_t type)
@@ -84,7 +83,7 @@ static void soc_display_4k_mtrr(uint32_t msr_reg, uint32_t starting_address,
 		msr_t s;
 	} msr;
 
-	msr.s = rdmsr(msr_reg);
+	msr.s = soc_mtrr_read(msr_reg);
 	printk(BIOS_DEBUG, "0x%016llx: %s\n", msr.u64, name);
 	soc_display_mtrr_fixed_types(msr.u64, starting_address, 0x1000);
 }
@@ -97,7 +96,7 @@ static void soc_display_16k_mtrr(uint32_t msr_reg, uint32_t starting_address,
 		msr_t s;
 	} msr;
 
-	msr.s = rdmsr(msr_reg);
+	msr.s = soc_mtrr_read(msr_reg);
 	printk(BIOS_DEBUG, "0x%016llx: %s\n", msr.u64, name);
 	soc_display_mtrr_fixed_types(msr.u64, starting_address, 0x4000);
 }
@@ -109,7 +108,7 @@ static void soc_display_64k_mtrr(void)
 		msr_t s;
 	} msr;
 
-	msr.s = rdmsr(MTRR_FIX_64K_00000);
+	msr.s = soc_mtrr_read(MTRR_FIX_64K_00000);
 	printk(BIOS_DEBUG, "0x%016llx: IA32_MTRR_FIX64K_00000\n", msr.u64);
 	soc_display_mtrr_fixed_types(msr.u64, 0, 0x10000);
 }
@@ -137,12 +136,13 @@ static void soc_display_mtrr_def_type(void)
 		msr_t s;
 	} msr;
 
-	msr.s = rdmsr(MTRR_DEF_TYPE_MSR);
+	msr.s = soc_mtrr_read(MTRR_DEF_TYPE_MSR);
 	printk(BIOS_DEBUG, "0x%016llx: IA32_MTRR_DEF_TYPE:%s%s %s\n",
 		msr.u64,
 		(msr.u64 & MTRR_DEF_TYPE_EN) ? " E," : "",
 		(msr.u64 & MTRR_DEF_TYPE_FIX_EN) ? " FE," : "",
-		soc_display_mtrr_type((uint32_t)(msr.u64 & MTRR_DEF_TYPE_MASK)));
+		soc_display_mtrr_type((uint32_t)(msr.u64 &
+			MTRR_DEF_TYPE_MASK)));
 }
 
 static void soc_display_variable_mtrr(uint32_t msr_reg, int index,
@@ -160,8 +160,8 @@ static void soc_display_variable_mtrr(uint32_t msr_reg, int index,
 		msr_t s;
 	} msr_m;
 
-	msr_a.s = rdmsr(msr_reg);
-	msr_m.s = rdmsr(msr_reg + 1);
+	msr_a.s = soc_mtrr_read(msr_reg);
+	msr_m.s = soc_mtrr_read(msr_reg + 1);
 	if (msr_m.u64 & MTRR_PHYS_MASK_VALID) {
 		base_address = (msr_a.u64 & 0xfffffffffffff000ULL)
 			& address_mask;

@@ -87,6 +87,13 @@
 	 *   +0: Number of variable MTRRs to clear
 	 */
 
+#if IS_ENABLED(CONFIG_SOC_SETS_MTRRS)
+	push	%esp
+	call	soc_set_mtrrs
+
+	/* eax: new top_of_stack with setup_stack_and_mtrrs data removed */
+	movl	%eax, %esp
+#else
 	/* Clear all of the variable MTRRs. */
 	popl	%ebx
 	movl	$MTRR_PHYS_BASE(0), %ecx
@@ -129,6 +136,8 @@
 	dec	%ebx
 	jmp	2b
 2:
+#endif /* CONFIG_SOC_SETS_MTRRS */
+
 	post_code(0x39)
 
 	/* And enable cache again after setting MTRRs. */
@@ -138,11 +147,15 @@
 
 	post_code(0x3a)
 
+#if IS_ENABLED(CONFIG_SOC_SETS_MTRRS)
+	call	soc_enable_mtrrs
+#else
 	/* Enable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
 	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
+#endif /* CONFIG_SOC_SETS_MTRRS */
 
 	post_code(0x3b)
 

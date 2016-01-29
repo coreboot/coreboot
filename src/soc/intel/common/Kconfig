@@ -41,6 +41,13 @@ config SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
 	bool
 	default n
 
+config SOC_SETS_MTRRS
+	bool
+	default n
+	help
+	  The SoC needs uses different access methods for reading and writing
+	  the MTRRs.  Use SoC specific routines to handle the MTRR access.
+
 config MMA
 	bool "enable MMA (Memory Margin Analysis) support"
 	default n

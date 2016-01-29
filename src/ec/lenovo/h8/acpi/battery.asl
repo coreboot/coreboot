@@ -119,7 +119,7 @@ Method(BSTA, 4, NotSerialized)
 	if (Local1) {
 		Multiply (BARC, 10, Index(Arg1, 2))
 		Multiply (Local2, BAVO, Local2)
-		Divide (Local2, 1000, Local3, Index(Arg1, 1))
+		Divide (Local2, 1000, , Index(Arg1, 1))
 	} else {
 		Store(BARC, Index(Arg1, 2))
 		Store(Local2, Index(Arg1, 1))

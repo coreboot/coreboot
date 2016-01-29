@@ -389,9 +389,17 @@ static void nhlt_serialize_endpoints(struct nhlt *nhlt, struct cursor *cur)
 
 uintptr_t nhlt_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)
 {
+	return nhlt_serialize_oem_overrides(nhlt, acpi_addr, NULL, NULL);
+}
+
+uintptr_t nhlt_serialize_oem_overrides(struct nhlt *nhlt,
+	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id)
+{
 	struct cursor cur;
 	acpi_header_t *header;
 	size_t sz;
+	size_t oem_id_len;
+	size_t oem_table_id_len;
 
 	printk(BIOS_DEBUG, "ACPI:    * NHLT\n");
 
@@ -403,8 +411,18 @@ uintptr_t nhlt_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)
 	memcpy(header->signature, "NHLT", 4);
 	write_le32(&header->length, sz);
 	write_le8(&header->revision, 5);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+
+	if (oem_id == NULL)
+		oem_id = OEM_ID;
+
+	if (oem_table_id == NULL)
+		oem_table_id = ACPI_TABLE_CREATOR;
+
+	oem_id_len = MIN(strlen(oem_id), 6);
+	oem_table_id_len = MIN(strlen(oem_table_id), 8);
+
+	memcpy(header->oem_id, oem_id, oem_id_len);
+	memcpy(header->oem_table_id, oem_table_id, oem_table_id_len);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
 	cur.buf = (void *)(acpi_addr + sizeof(acpi_header_t));

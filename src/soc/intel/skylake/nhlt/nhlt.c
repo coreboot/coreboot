@@ -87,6 +87,12 @@ struct nhlt_endpoint *nhlt_soc_add_endpoint(struct nhlt *nhlt, int soc_hwintf,
 
 uintptr_t nhlt_soc_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)
 {
+	return nhlt_soc_serialize_oem_overrides(nhlt, acpi_addr, NULL, NULL);
+}
+
+uintptr_t nhlt_soc_serialize_oem_overrides(struct nhlt *nhlt,
+	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id)
+{
 	global_nvs_t *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
@@ -98,5 +104,6 @@ uintptr_t nhlt_soc_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)
 	gnvs->nhla = (uintptr_t)acpi_addr;
 	gnvs->nhll = nhlt_current_size(nhlt);
 
-	return nhlt_serialize(nhlt, acpi_addr);
+	return nhlt_serialize_oem_overrides(nhlt, acpi_addr,
+						oem_id, oem_table_id);
 }

@@ -2,14 +2,14 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google, Inc.
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015-2016 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied wacbmem_entryanty of
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
@@ -36,7 +36,7 @@ void smm_region(void **start, size_t *size)
 	*size = smm_region_size();
 }
 
-size_t mmap_region_granluarity(void)
+size_t mmap_region_granularity(void)
 {
 	/* Align to TSEG size when SMM is in use, and 8MiB by default */
 	return IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ? smm_region_size()

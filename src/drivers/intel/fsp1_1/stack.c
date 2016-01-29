@@ -67,7 +67,7 @@ void *setup_stack_and_mtrrs(void)
 	 * of physical address bits.
 	 */
 	mtrr_mask_upper = (1 << ((cpuid_eax(0x80000008) & 0xff) - 32)) - 1;
-	alignment = mmap_region_granluarity();
+	alignment = mmap_region_granularity();
 	aligned_ram = ALIGN_DOWN(top_of_stack - romstage_ram_stack_size,
 		alignment);
 

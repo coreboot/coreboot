@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2016 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,11 @@
 #include <types.h>
 
 /*
- * mmap_region_granluarity must to return a size which is a positive non-zero
+ * mmap_region_granularity must to return a size which is a positive non-zero
  * integer multiple of the SMM size when SMM is in use.  When not using SMM,
  * this value should be set to 8 MiB.
  */
-size_t mmap_region_granluarity(void);
+size_t mmap_region_granularity(void);
 
 /* Fills in the arguments for the entire SMM region covered by chipset
  * protections. e.g. TSEG. */

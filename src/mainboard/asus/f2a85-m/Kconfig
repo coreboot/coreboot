@@ -74,6 +74,14 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
 
+config HUDSON_XHCI_FWM
+	bool
+	default n
+
+config HUDSON_IMC_FWM
+	bool
+	default n
+
 config IRQ_SLOT_COUNT
 	int
 	default 11
@@ -85,5 +93,13 @@ config ONBOARD_VGA_IS_PRIMARY
 config VGA_BIOS_ID
 	string
 	default "1002,9993"
+
+config HUDSON_LEGACY_FREE
+	bool
+	default y
+
+config POST_IO
+	bool
+	default n
 
 endif # BOARD_ASUS_F2A85_M

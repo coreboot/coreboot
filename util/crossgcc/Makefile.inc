@@ -13,6 +13,8 @@
 ## GNU General Public License for more details.
 ##
 
+TOOLCHAIN_ARCHES := i386 x86 arm aarch64 mips riscv power8
+
 help_toolchain help::
 	@echo  '*** Toolchain targets ***'
 	@echo  '  crossgcc        - Build coreboot cross-compilers for all platforms'
@@ -23,7 +25,7 @@ help_toolchain help::
 	@echo  '  test-toolchain  - Reports if toolchain components are out of date'
 	@echo  '  crossgcc-ARCH   - Build cross-compiler for specific architecture'
 	@echo  '  crosstools-ARCH - Build cross-compiler with GDB for specific architecture'
-	@echo  '  ARCH can be "i386", "x64", "arm", "aarch64", "mips", "riscv", or "power8"'
+	@echo  '  ARCH can be "$(subst $(spc),"$(comma) ",$(TOOLCHAIN_ARCHES))"'
 	@echo  '  Use "make [target] CPUS=#" to build toolchain using multiple cores'
 	@echo
 
@@ -38,26 +40,8 @@ crossgcc: clean-for-update
 	clang crosstools-i386 crosstools-x64 crosstools-arm \
 	crosstools-aarch64 crosstools-mips crosstools-riscv crosstools-power8
 
-crossgcc-i386: clean-for-update
-	$(MAKE) -C util/crossgcc build-i386 SKIP_GDB=1
-
-crossgcc-x64: clean-for-update
-	$(MAKE) -C util/crossgcc build-x64 SKIP_GDB=1
-
-crossgcc-arm: clean-for-update
-	$(MAKE) -C util/crossgcc build-arm SKIP_GDB=1
-
-crossgcc-aarch64: clean-for-update
-	$(MAKE) -C util/crossgcc build-aarch64 SKIP_GDB=1
-
-crossgcc-mips: clean-for-update
-	$(MAKE) -C util/crossgcc build-mips SKIP_GDB=1
-
-crossgcc-riscv: clean-for-update
-	$(MAKE) -C util/crossgcc build-riscv SKIP_GDB=1
-
-crossgcc-power8: clean-for-update
-	$(MAKE) -C util/crossgcc build-power8 SKIP_GDB=1
+$(foreach arch,$(TOOLCHAIN_ARCHES),crossgcc-$(arch)): clean-for-update
+	$(MAKE) -C util/crossgcc $(patsubst crossgcc-%,build-%,$@) SKIP_GDB=1
 
 crosstools: clean-for-update
 	$(MAKE) -C util/crossgcc all_with_gdb SKIP_CLANG=1
@@ -68,26 +52,8 @@ iasl: clean-for-update
 clang: clean-for-update
 	$(MAKE) -C util/crossgcc build_clang
 
-crosstools-i386: clean-for-update
-	$(MAKE) -C util/crossgcc build-i386
-
-crosstools-x64: clean-for-update
-	$(MAKE) -C util/crossgcc build-x64
-
-crosstools-arm: clean-for-update
-	$(MAKE) -C util/crossgcc build-arm
-
-crosstools-aarch64: clean-for-update
-	$(MAKE) -C util/crossgcc build-aarch64
-
-crosstools-mips: clean-for-update
-	$(MAKE) -C util/crossgcc build-mips
-
-crosstools-riscv: clean-for-update
-	$(MAKE) -C util/crossgcc build-riscv
-
-crosstools-power8: clean-for-update
-	$(MAKE) -C util/crossgcc build-power8
+$(foreach arch,$(TOOLCHAIN_ARCHES),crosstools-$(arch)): clean-for-update
+	$(MAKE) -C util/crossgcc $(patsubst crosstools-%,build-%,$@)
 
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean

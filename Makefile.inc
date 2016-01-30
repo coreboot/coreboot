@@ -506,7 +506,7 @@ crossgcc-x64: clean-for-update
 	$(MAKE) -C util/crossgcc build-x64 SKIP_GDB=1
 
 crossgcc-arm: clean-for-update
-	$(MAKE) -C util/crossgcc build-armv7a SKIP_GDB=1
+	$(MAKE) -C util/crossgcc build-arm SKIP_GDB=1
 
 crossgcc-aarch64: clean-for-update
 	$(MAKE) -C util/crossgcc build-aarch64 SKIP_GDB=1
@@ -536,7 +536,7 @@ crosstools-x64: clean-for-update
 	$(MAKE) -C util/crossgcc build-x64
 
 crosstools-arm: clean-for-update
-	$(MAKE) -C util/crossgcc build-armv7a
+	$(MAKE) -C util/crossgcc build-arm
 
 crosstools-aarch64: clean-for-update
 	$(MAKE) -C util/crossgcc build-aarch64

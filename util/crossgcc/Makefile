@@ -49,8 +49,8 @@ build-i386:
 build-x64:
 	@$(MAKE) build_tools BUILD_PLATFORM=x86_64-elf
 
-build-armv7a:
-	@$(MAKE) build_tools BUILD_PLATFORM=armv7a-eabi
+build-arm:
+	@$(MAKE) build_tools BUILD_PLATFORM=arm-eabi
 
 build-aarch64:
 	@$(MAKE) build_tools BUILD_PLATFORM=aarch64-elf
@@ -80,5 +80,5 @@ distclean: clean
 
 .PHONY: build_gcc build_iasl build_gdb build_clang \
 	all all_with_gdb all_without_gdb build_tools \
-	build-i386 build-x64 build-armv7a build-aarch64 build-mips build-riscv build-power8 \
+	build-i386 build-x64 build-arm build-aarch64 build-mips build-riscv build-power8 \
 	clean distclean clean_tempfiles

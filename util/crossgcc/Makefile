@@ -7,18 +7,16 @@ BUILD_PLATFORM ?= i386-elf
 # Example: BUILDGCC_OPTIONS=-c to remove temporary files before build
 
 all all_with_gdb:
-	$(MAKE) build-i386
-	$(MAKE) SKIP_IASL=1 \
-		 build-x64 build-armv7a build-mips build-riscv build-aarch64 \
-		 build_clang
+	$(MAKE) build-i386 build-x64 build-arm build-mips \
+		build-riscv build-aarch64 build-power8 build-nds32le \
+		build_clang build_iasl
 
 all_without_gdb:
-	$(MAKE) SKIP_GDB=1 build-i386
-	$(MAKE) SKIP_IASL=1 SKIP_GDB=1 \
-		 build-x64 build-armv7a build-mips build-riscv build-aarch64 \
-		 build_clang
+	$(MAKE) SKIP_GDB=1 build-i386 build-x64 build-arm build-mips \
+		build-riscv build-aarch64 build-power8 build-nds32le \
+		build_clang build_iasl
 
-build_tools: build_gcc build_iasl build_gdb
+build_tools: build_gcc build_gdb
 
 ###########################################################
 ### targets to do buildgcc builds
@@ -33,9 +31,7 @@ ifeq ($(SKIP_GDB),)
 endif
 
 build_iasl:
-ifeq ($(SKIP_IASL),)
 	bash ./buildgcc -P iasl $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS)
-endif
 
 build_clang:
 ifeq ($(SKIP_CLANG),)

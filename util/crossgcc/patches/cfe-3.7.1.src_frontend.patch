@@ -4,8 +4,8 @@ https://llvm.org/bugs/show_bug.cgi?id=21538
 
 Index: include/clang/Driver/Driver.h
 ===================================================================
---- cfe-3.6.1.src/include/clang/Driver/Driver.h	(revision 211898)
-+++ cfe-3.6.1.src/include/clang/Driver/Driver.h	(working copy)
+--- cfe-3.7.1.src/include/clang/Driver/Driver.h	(revision 211898)
++++ cfe-3.7.1.src/include/clang/Driver/Driver.h	(working copy)
 @@ -325,6 +325,14 @@
    // FIXME: This should be in CompilationInfo.
    std::string GetFilePath(const char *Name, const ToolChain &TC) const;
@@ -23,8 +23,8 @@ Index: include/clang/Driver/Driver.h
    /// \param TC - The provided tool chain for additional information on
 Index: include/clang/Driver/Options.td
 ===================================================================
---- cfe-3.6.1.src/include/clang/Driver/Options.td	(revision 211898)
-+++ cfe-3.6.1.src/include/clang/Driver/Options.td	(working copy)
+--- cfe-3.7.1.src/include/clang/Driver/Options.td	(revision 211898)
++++ cfe-3.7.1.src/include/clang/Driver/Options.td	(working copy)
 @@ -1269,6 +1269,8 @@
    HelpText<"Enable Objective-C Ivar layout bitmap print trace">;
  def print_libgcc_file_name : Flag<["-", "--"], "print-libgcc-file-name">,
@@ -36,8 +36,8 @@ Index: include/clang/Driver/Options.td
  def print_multi_os_directory : Flag<["-", "--"], "print-multi-os-directory">;
 Index: lib/Driver/Driver.cpp
 ===================================================================
---- cfe-3.6.1.src/lib/Driver/Driver.cpp	(revision 211898)
-+++ cfe-3.6.1.src/lib/Driver/Driver.cpp	(working copy)
+--- cfe-3.7.1.src/lib/Driver/Driver.cpp	(revision 211898)
++++ cfe-3.7.1.src/lib/Driver/Driver.cpp	(working copy)
 @@ -756,6 +756,11 @@
      return false;
    }

@@ -18,8 +18,8 @@
 
 cd $(dirname $0)
 
-CROSSGCC_DATE="November 25th, 2015"
-CROSSGCC_VERSION="1.33"
+CROSSGCC_DATE="January 29th, 2016"
+CROSSGCC_VERSION="1.35"
 
 # default settings
 PACKAGE=GCC
@@ -43,7 +43,7 @@ IASL_VERSION=20150619
 PYTHON_VERSION=3.4.3
 EXPAT_VERSION=2.1.0
 # CLANG version number
-CLANG_VERSION=3.6.1
+CLANG_VERSION=3.7.1
 
 # GCC toolchain archive locations
 GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.bz2"

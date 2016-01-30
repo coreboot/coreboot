@@ -20,22 +20,6 @@
 #include <stdint.h>
 
 /*
- * Intel's code does not have a handle on changing global packing state.
- * Therefore, one needs to protect against packing policies that are set
- * globally for a compliation unit just by including a header file.
- */
-#pragma pack(push)
-
-/* Default bind FSP 1.1 API to edk2 UEFI 2.4 types. */
-#include <vendorcode/intel/edk2/uefi_2.4/uefi_types.h>
-
-#include <vendorcode/intel/fsp/fsp1_1/IntelFspPkg/Include/FspApi.h>
-#include <vendorcode/intel/fsp/fsp1_1/IntelFspPkg/Include/FspInfoHeader.h>
-
-/* Restore original packing policy. */
-#pragma pack(pop)
-
-/*
  * Relocate FSP held within buffer defined by size to new_addr. Returns < 0
  * on error, offset to FSP_INFO_HEADER on success.
  */

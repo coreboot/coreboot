@@ -597,7 +597,7 @@ case "$TARGETARCH" in
 	riscv-elf)		;;
 	powerpc64*-linux*)	;;
 	i386*)			TARGETARCH=i386-elf;;
-	arm*)			TARGETARCH=armv7-a-eabi;;
+	arm*)			TARGETARCH=arm-eabi;;
 	aarch64*)		TARGETARCH=aarch64-elf;;
 	*)			printf "${red}WARNING: Unsupported architecture $TARGETARCH.${NC}\n\n"; ;;
 esac

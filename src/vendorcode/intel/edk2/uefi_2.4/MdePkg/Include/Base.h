@@ -94,16 +94,6 @@ VERIFY_SIZE_OF (CHAR16, 2);
 ///
 #define ASM_PFX(name) _CONCATENATE (__USER_LABEL_PREFIX__, name)
 
-#if __APPLE__
-  //
-  // Apple extension that is used by the linker to optimize code size
-  // with assembly functions. Put at the end of your .S files
-  //
-  #define ASM_FUNCTION_REMOVE_IF_UNREFERENCED  .subsections_via_symbols
-#else
-  #define ASM_FUNCTION_REMOVE_IF_UNREFERENCED
-#endif
-
 #ifdef __CC_ARM
   //
   // Older RVCT ARM compilers don't fully support #pragma pack and require __packed

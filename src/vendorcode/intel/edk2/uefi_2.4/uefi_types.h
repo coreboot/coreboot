@@ -34,7 +34,6 @@ are permitted provided that the following conditions are met:
 //
 // Set the UEFI types and attributes
 //
-#define __APPLE__ 0
 #include <stdlib.h>
 #include <Uefi/UefiBaseType.h>
 #include <Pi/PiBootMode.h>

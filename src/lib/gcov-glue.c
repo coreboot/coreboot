@@ -34,7 +34,7 @@ typedef struct file {
 
 #define COVERAGE_SIZE (32*1024)
 
-#define COVERAGE_MAGIC 0x584d41534
+#define COVERAGE_MAGIC 0x584d4153
 
 static FILE *current_file = NULL;
 static FILE *previous_file = NULL;

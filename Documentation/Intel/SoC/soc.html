@@ -18,6 +18,7 @@
   <li><a href="#Descriptor">Start Booting</a></li>
   <li><a href="#EarlyDebug">Early Debug</a></li>
   <li><a href="#Bootblock">Bootblock</a></li>
+  <li><a href="#TempRamInit">TempRamInit</a></li>
 </ol>
 
 
@@ -193,6 +194,94 @@ mv build/coreboot.rom.new build/coreboot.rom
     added by <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l137">src/arch/x86/Makefile.inc</a>
   </li>
 </ul>
+
+
+<hr>
+<h1><a name="TempRamInit">TempRamInit</a></h1>
+<p>
+  Enable the call to TempRamInit in two stages:
+</p>
+<ol>
+  <li>Finding the FSP binary in the read-only CBFS region</li>
+  <li>Call TempRamInit</li>
+</ol>
+
+
+<h2>Find FSP Binary</h2>
+<p>
+Use the following steps to locate the FSP binary:
+</p>
+<ol>
+  <li>Edit the src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/Kconfig file
+    <ol type="A">
+      <li>Add "select USE_GENERIC_FSP_CAR_INC" to enable the use of
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc">src/drivers/intel/fsp1_1/cache_as_ram.inc</a>
+      </li>
+      <li>Add "select SOC_INTEL_COMMON" to enable the use of the files from src/soc/intel/common
+        specifically building
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/soc/intel/common/util.c">util.c</a>
+      </li>
+    </ol>
+  </li>
+  <li>Debug the result until port 0x80 outputs
+    <ol type="A">
+      <li>0x90: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
+        - Just before calling
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
+      </li>
+      <li>Alternating 0xba and 0x01 - The FSP image was not found</li>
+    </ol>
+  </li>
+  <li>Add the <a target="_blank" href="../fsp1_1.html#FspBinary">FSP binary file</a> to the flash image</li>
+  <li>Set the following Kconfig values:
+    <ul>
+      <li>CONFIG_FSP_LOC to the FSP base address specified in the previous step</li>
+      <li>CONFIG_FSP_IMAGE_ID_STRING</li>
+    </ul>
+  </li>
+  <li>Debug the result until port 0x80 outputs
+    <ol type="A">
+      <li>0x90: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
+        - Just before calling
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
+      </li>
+      <li>Alternating 0xbb and 0x02 - TempRamInit executed, no CPU microcode update found</li>
+    </ol>
+  </li>
+</ol>
+
+
+<h2>Calling TempRamInit</h2>
+<p>
+Use the following steps to debug the call to TempRamInit:
+</p>
+<ol>
+  <li>Add the CPU microcode update file
+    <ol type="A">
+      <li>Add the microcode file with the following command
+<pre><code>util/cbfstool/cbfstool build/coreboot.rom add -t microcode -n cpu_microcode_blob.bin -b &lt;base address&gt; -f cpu_microcode_blob.bin</code></pre>
+      </li>
+      <li>Set the Kconfig values
+        <ul>
+          <li>CONFIG_CPU_MICROCODE_CBFS_LOC set to the value from the previous step</li>
+          <li>CONFIG_CPU_MICROCODE_CBFS_LEN</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+  <li>Debug the result until port 0x80 outputs
+    <ol type="A">
+      <li>0x90: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>
+        - Just before calling
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">TempRamInit</a>
+      </li>
+      <li>0x2A - Just before calling
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l151">cache_as_ram_main</a>
+        which is the start of the verstage code which may be part of romstage
+      </li>
+    </ol>
+  </li>
+</ol>
 
 
 <hr>

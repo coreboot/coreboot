@@ -14,6 +14,7 @@
 </p>
 <ol>
   <li><a href="#RequiredFiles">Required Files</a></li>
+  <li>Add the <a href="#FspBinary">FSP Binary File</a> to the coreboot File System</li>
 </ol>
 
 <p>
@@ -42,6 +43,18 @@
     </ul>
   </li>
 </ol>
+
+
+<hr>
+<h1><a name="FspBinary">Add the FSP Binary File to coreboot File System</a></h1>
+<p>
+  Add the FSP binary to the coreboot flash image using the following command:
+</p>
+<pre><code>util/cbfstool/cbfstool build/coreboot.rom add -t fsp -n fsp.bin -b &lt;base address&gt; -f fsp.bin</code></pre>
+<p>
+  This command relocates the FSP binary to the 4K byte aligned location in CBFS so that the
+  FSP code for TempRamInit may be executed in place.
+</p>
 
 
 <hr>

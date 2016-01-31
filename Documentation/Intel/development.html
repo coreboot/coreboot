@@ -70,7 +70,60 @@
   <li>Get result to start <a target="_blank" href="SoC/soc.html#Descriptor">booting</a></li>
   <li><a target="_blank" href="SoC/soc.html#EarlyDebug">Early Debug</a></li>
   <li>Implement and debug the <a target="_blank" href="SoC/soc.html#Bootblock">bootblock</a> code</li>
+  <li>Implement and debug the call to <a target="_blank" href="SoC/soc.html#TempRamInit">TempRamInit</a></li>
 </ol>
+
+
+
+<hr>
+<table border="1">
+  <tr bgcolor="#c0ffc0">
+    <th colspan=3><h1>Features</h1></th>
+  </tr>
+  <tr bgcolor="#c0ffc0">
+    <th>SoC</th>
+    <th>Where</th>
+    <th>Testing</th>
+  </tr>
+  <tr>
+    <td>Cache-as-RAM</td>
+    <td>
+      <a target="_blank" href="SoC/soc.html#TempRamInit">Find</a>
+      FSP binary:
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l38">cache_as_ram.inc</a><br>
+      Enable: FSP 1.1 <a target="_blank" href="SoC/soc.html#TempRamInit">TempRamInit</a>
+      called from
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l73">cache_as_ram.inc</a><br>
+      Disable: FSP 1.1 TempRamExit called from
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/after_raminit.S;hb=HEAD#l41">after_raminit.S</a><br>
+    </td>
+    <td>FindFSP: POST code 0x90
+      (<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>)
+      is displayed<br>
+      Enable: POST code
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l151">0x2A</a>
+      is displayed<br>
+      Disable: CONFIG_DISPLAY_MTRRS=y, MTRRs displayed after call to TempRamExit
+    </td>
+  </tr>
+  <tr bgcolor="#c0ffc0">
+    <th>FSP</th>
+    <th>Where</th>
+    <th>Testing</th>
+  </tr>
+  <tr>
+    <td>TempRamInit</td>
+    <td>FSP <a target="_blank" href="SoC/soc.html#TempRamInit">TempRamInit</a></td>
+    <td>FSP binary found: POST code 0x90
+      (<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l205">POST_FSP_TEMP_RAM_INIT</a>)
+      is displayed<br>
+      TempRamInit successful: POST code
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l151">0x2A</a>
+      is displayed<br>
+    </td>
+  </tr>
+</table>
+
 
 
 <hr>

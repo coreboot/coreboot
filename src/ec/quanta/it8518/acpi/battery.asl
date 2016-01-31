@@ -164,7 +164,7 @@ Device (BATX)
 		//  Design capacity of Low (1%)
 		//
 		Divide (Local0,  20, Local1, Index (PBIF, 5))
-		Divide (Local0, 100, Local1, Index (PBIF, 6))
+		Divide (Local0, 100, , Index (PBIF, 6))
 
 		//
 		//  Design voltage
@@ -301,7 +301,7 @@ Device (BATX)
 		If (Local6)
 		{
 			Multiply (ECVO, Local1, Local1)
-			Divide (Local1, 1000, Local7, Local1)
+			Divide (Local1, 1000, , Local1)
 		}
 		Store (Local1, Index (PBST, One))
 

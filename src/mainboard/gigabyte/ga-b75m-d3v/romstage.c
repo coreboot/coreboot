@@ -115,3 +115,6 @@ void mainboard_get_spd(spd_raw_data *spd) {
         read_spd (&spd[2], 0x52);
         read_spd (&spd[3], 0x53);
 }
+
+void mainboard_early_init(int s3resume) {
+}

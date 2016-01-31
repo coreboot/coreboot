@@ -205,3 +205,6 @@ static void dmi_config(void)
 	DMIBAR32(0x0e2c) = 0x20000000;
 }
 #endif
+
+void mainboard_early_init(int s3resume) {
+}

@@ -103,6 +103,9 @@ void main(unsigned long bist)
 	s3resume = southbridge_detect_s3_resume();
 
 	post_code(0x38);
+
+	mainboard_early_init(s3resume);
+
 	/* Enable SPD ROMs and DDR-III DRAM */
 	enable_smbus();
 

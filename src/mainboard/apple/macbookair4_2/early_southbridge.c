@@ -52,6 +52,9 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, -1 },
 };
 
+void mainboard_early_init(int s3resume) {
+}
+
 void mainboard_get_spd(spd_raw_data *spd)
 {
 	void *spd_file;

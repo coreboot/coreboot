@@ -93,5 +93,6 @@ Errors in coreboot source files:
   defined in coreboot's version of Kconfig.
 - The IS_ENABLED macro is only valid for bool symbols.
 - The IS_ENABLED used on unknown CONFIG_ value, like an obsolete symbol.
+- The IS_ENABLED macro is used on a symbol without the CONFIG_ prefix.
 
 TODO: check for choice entries at the top level

@@ -210,6 +210,27 @@ sub check_for_ifdef {
             }
         }
     }
+
+    my @collected_is_enabled;
+    if ($dont_use_git_grep) {
+        @collected_is_enabled =
+            `grep -Irn -- "[[:space:]]IS_ENABLED[[:space:]]*(.*)" | grep -v '$exclude_dirs_and_files' | grep -v "kconfig.h"`;
+    }
+    else {
+        @collected_is_enabled =
+            `git grep -In -- "[[:space:]]IS_ENABLED[[:space:]]*(.*)" | grep -v '$exclude_dirs_and_files' | grep -v "kconfig.h"`;
+    }
+
+    while ( my $line = shift @collected_is_enabled ) {
+        if ($line !~ /CONFIG_/ && $line =~ /^([^:]+):(\d+):.+IS_ENABLED\s*\(\s*(\w+)/ ) {
+            my $file   = $1;
+            my $lineno = $2;
+            my $symbol = $3;
+            if ( ( exists $symbols{$symbol} ) ) {
+                show_error("IS_ENABLED missing CONFIG_ prefix on symbol '$symbol' at $file:$lineno.");
+            }
+        }
+    }
 }
 
 #-------------------------------------------------------------------------------

@@ -24,6 +24,7 @@
       <li>Enable <a href="#SerialOutput">Serial Output"</a></li>
       <li>Get the <a href="#PreviousSleepState">Previous Sleep State</a></li>
       <li>Add the <a href="#MemoryInit">MemoryInit</a> Support</li>
+      <li>Disable the <a href="#DisableShadowRom">Shadow ROM</a></li>
     </ol>
   </li>
   <li><a href="#Ramstage">Ramstage</a>
@@ -389,6 +390,17 @@ Use the following steps to debug the call to TempRamInit:
 </ol>
 
 
+<h2><a name="DisableShadowRom">Disable Shadow ROM</a></h2>
+<p>
+  A shadow of the SPI flash part is mapped from 0x000e0000 to 0x000fffff.
+  This shadow needs to be disabled to allow RAM to properly respond to
+  this address range.
+</p>
+<ol>
+  <li>Edit romstage/romstage.c and add the soc_after_ram_init routine</li>
+</ol>
+
+
 <hr>
 <h1><a name="Ramstage">Ramstage</a></h1>
 
@@ -717,6 +729,6 @@ Use the following steps to debug the call to TempRamInit:
 </table>
 
 <hr>
-<p>Modified: 28 February 2016</p>
+<p>Modified: 4 March 2016</p>
   </body>
 </html>

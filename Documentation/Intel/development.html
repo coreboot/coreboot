@@ -94,6 +94,9 @@
       </li>
     </ol>
   </li>
+  <li>Disable the
+    <a target="_blank" href="SoC/soc.html#DisableShadowRom">Shadow ROM</a>
+  </li>
   <li>
     Implement the .init routine for the
     <a target="_blank" href="SoC/soc.html#ChipOperations">chip operations</a>
@@ -197,6 +200,13 @@
       During the BS_DEV_ENUMERATE state, ramstage now display the device IDs
       for the PCI devices on the bus.
     </td>
+  </tr>
+  <tr>
+    <td>ROM Shadow<br>0x000E0000 - 0x000FFFFF</td>
+    <td>
+      Disable: src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/romstage/romstage.c/<a target="_blank" href="SoC/soc.html#DisableShadowRom">soc_after_ram_init routine</a>
+    </td>
+    <td>Operates as RAM: Writes followed by a read to the 0x000E0000 - 0x000FFFFF region returns the value written</td>
   </tr>
 
 
@@ -346,6 +356,6 @@
 
 
 <hr>
-<p>Modified: 24 February 2016</p>
+<p>Modified: 4 March 2016</p>
   </body>
 </html>

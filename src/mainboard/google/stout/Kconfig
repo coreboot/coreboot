@@ -37,7 +37,11 @@ config MAX_CPUS
 
 config VGA_BIOS_FILE
 	string
-	default "pci8086,0106.rom"
+	default "pci8086,0156.rom"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0156"
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex

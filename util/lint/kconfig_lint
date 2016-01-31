@@ -186,7 +186,7 @@ sub check_for_ifdef {
             my $symbol = $3;
 
             if ( ( exists $symbols{$symbol} ) && ( $symbols{$symbol}{type} ne "string" ) ) {
-                show_error( "#ifdef 'CONFIG_$symbol' used at $file:$lineno."
+                show_warning( "#ifdef 'CONFIG_$symbol' used at $file:$lineno."
                       . "  Symbols of type '$symbols{$symbol}{type}' are always defined." );
             }
         }
@@ -205,7 +205,7 @@ sub check_for_ifdef {
               if ( $line =~ /^([^:]+):(\d+):.+defined\s*\(\s*CONFIG_$symbol.*(&&|\|\|)\s*!?\s*\(?\s*CONFIG_$symbol/ );
 
             if ( ( exists $symbols{$symbol} ) && ( $symbols{$symbol}{type} ne "string" ) ) {
-                show_error( "defined 'CONFIG_$symbol' used at $file:$lineno."
+                show_warning( "defined 'CONFIG_$symbol' used at $file:$lineno."
                       . "  Symbols of type '$symbols{$symbol}{type}' are always defined." );
             }
         }

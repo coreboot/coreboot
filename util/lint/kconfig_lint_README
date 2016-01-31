@@ -57,6 +57,8 @@ Warnings in coreboot source files:
   symbols.
 - 'IS_ENABLED()' block that could not be interpreted.
 - Kconfig files that are not loaded by a 'source' keyword.
+- '#ifdef' or '#if defined' used on bool, int, or hex - these are always
+  defined in coreboot's version of Kconfig.
 
 Errors in Kconfig files:
 - Selects do not work on symbols created in a choice block.
@@ -89,8 +91,6 @@ Errors in Kconfig that are also caught by Kconfig itself:
 - Using a 'prompt' keyword not inside a config or choice block.
 
 Errors in coreboot source files:
-- '#ifdef' or '#if defined' used on bool, int, or hex - these are always
-  defined in coreboot's version of Kconfig.
 - The IS_ENABLED macro is only valid for bool symbols.
 - The IS_ENABLED used on unknown CONFIG_ value, like an obsolete symbol.
 - The IS_ENABLED macro is used on a symbol without the CONFIG_ prefix.

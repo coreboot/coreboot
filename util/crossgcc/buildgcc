@@ -404,18 +404,28 @@ GNU General Public License for more details.
 EOF
 }
 
+have_hostcflags_from_gmp() {
+	grep -q __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h >/dev/null 2>&1
+}
+
+set_hostcflags_from_gmp() {
+	# Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
+	# as GCC 4.6.x fails if it's there.
+	export HOSTCFLAGS=$(grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
+	    sed s,-pedantic,,)
+}
+
 build_GMP() {
-	CC="$CC" CFLAGS="-Os" ../${GMP_DIR}/configure --disable-shared --enable-fat --prefix=$TARGETDIR $OPTIONS \
+	CC="$CC" CFLAGS="$HOSTCFLAGS" \
+		../${GMP_DIR}/configure --disable-shared --enable-fat \
+		--prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	normalize_dirs
 
-	# Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
-	# as GCC 4.6.x fails if it's there.
-	export HOSTCFLAGS=$(grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
-	    sed s,-pedantic,,)
+	set_hostcflags_from_gmp
 }
 
 build_MPFR() {
@@ -777,6 +787,11 @@ elif [ $UNAME = "NetBSD" ]; then
 	fi
 fi
 fi # GCC
+
+export HOSTCFLAGS="-Os"
+if have_hostcflags_from_gmp; then
+	set_hostcflags_from_gmp
+fi
 
 if [ "$USECCACHE" = 1 ]; then
 	CC="ccache $CC"

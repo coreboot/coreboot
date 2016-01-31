@@ -48,7 +48,7 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	default 0
 
 config DRIVER_TPM_I2C_BUS
-        hex
+	hex
 	default 0x2
 
 config DRIVER_TPM_I2C_ADDR

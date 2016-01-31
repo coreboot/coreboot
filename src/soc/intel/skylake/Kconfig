@@ -181,9 +181,9 @@ config DCACHE_RAM_SIZE_TOTAL
 	default 0x40000
 
 config SKIP_FSP_CAR
-        bool "Skip cache as RAM setup in FSP"
-        default y
-        help
-          Skip Cache as RAM setup in FSP.
+	bool "Skip cache as RAM setup in FSP"
+	default y
+	help
+	  Skip Cache as RAM setup in FSP.
 
 endif

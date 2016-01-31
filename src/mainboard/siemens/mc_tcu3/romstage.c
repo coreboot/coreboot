@@ -172,10 +172,6 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 	/* Initialize the Azalia Verb Tables to mainboard specific version */
 	UpdData->AzaliaConfigPtr  = (UINT32)&mainboard_AzaliaConfig;
 
-	/* Disable 2nd DIMM on Bakersport*/
-#if IS_ENABLED(BOARD_INTEL_BAKERSPORT_FSP)
-	UpdData->PcdMrcInitSPDAddr2 = 0x00; /* cannot use SPD_ADDR_DISABLED at this point */
-#endif
 	/* Get SPD data from hardware information block and setup memory down */
 	/* parameters for FSP accordingly */
 	hwi_main = get_hwinfo((char*)"hwinfo.hex");

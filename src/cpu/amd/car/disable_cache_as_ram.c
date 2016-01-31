@@ -72,7 +72,7 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(uint8_t s
 
 	family = amd_fam1x_cpu_family();
 
-#if IS_ENABLED(CPU_AMD_MODEL_10XXX)
+#if IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX)
 	if (family >= 0x6f) {
 		/* Family 15h or later */
 

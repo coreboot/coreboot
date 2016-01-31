@@ -171,7 +171,7 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 	UpdData->AzaliaConfigPtr  = (UINT32)&mainboard_AzaliaConfig;
 
 	/* Disable 2nd DIMM on Bakersport*/
-#if IS_ENABLED(BOARD_INTEL_BAKERSPORT_FSP)
+#if IS_ENABLED(CONFIG_BOARD_INTEL_BAKERSPORT_FSP)
 	UpdData->PcdMrcInitSPDAddr2 = 0x00; /* cannot use SPD_ADDR_DISABLED at this point */
 #endif
 }

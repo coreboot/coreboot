@@ -97,6 +97,7 @@
   <li>Disable the
     <a target="_blank" href="SoC/soc.html#DisableShadowRom">Shadow ROM</a>
   </li>
+  <li>Enable CONFIG_DISPLAY_MTRRS to verify the MTRR configuration</li>
   <li>
     Implement the .init routine for the
     <a target="_blank" href="SoC/soc.html#ChipOperations">chip operations</a>
@@ -115,6 +116,7 @@
     Implement the
     <a target="_blank" href="SoC/soc.html#MemoryMap">memory map</a>
   </li>
+  <li>coreboot should now attempt to load the payload</li>
 </ol>
 
 
@@ -183,6 +185,20 @@
       <a target="_blank" href="SoC/soc.html#MemoryMap">north cluster</a>
     </td>
     <td>coreboot displays the memory map correctly during the BS_WRITE_TABLES state</td>
+  </tr>
+  <tr>
+    <td>MTRRs</td>
+    <td>
+      Set values: src/drivers/intel/fsp1_1/stack.c/<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/stack.c;hb=HEAD#l42">setup_stack_and_mtrrs</a><br>
+      Load values: src/drivers/intel/fsp1_1/<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/after_raminit.S;hb=HEAD#l71">after_raminit.S</a>
+    </td>
+    <td>Set: Post code 0x91
+      (<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l213">POST_FSP_TEMP_RAM_EXIT</a>)
+      is displayed by
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/after_raminit.S;hb=HEAD#l41">after_raminit.S</a><br>
+      Load: Post code 0x3C is displayed by
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/after_raminit.S;hb=HEAD#l152">after_raminit.S</a><br>
+      and CONFIG_DISPLAY_MTRRS=y displays the correct memory regions</td>
   </tr>
   <tr>
     <td>PCI Device Support</td>

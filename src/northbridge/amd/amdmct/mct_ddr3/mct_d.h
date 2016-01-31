@@ -597,6 +597,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u8 DqsRcvEnGrossMin;
 	u8 WrDatGrossMax;
 	u8 WrDatGrossMin;
+	uint8_t tcwl_delay[2];
 
 	u16 RegMan1Present;	/* DIMM present bitmap of Register manufacture 1 */
 	u16 RegMan2Present;	/* DIMM present bitmap of Register manufacture 2 */
@@ -829,7 +830,9 @@ struct amd_s3_persistent_data {
 #define SB_SmallRCVR		13	/* DQS Rcvr En pass window too small (far right of dynamic range)*/
 #define SB_NODQSPOS		14	/* No DQS-DQ passing positions*/
 #define SB_SMALLDQS		15	/* DQS-DQ passing window too small*/
-#define SB_DCBKScrubDis	16	/* DCache scrub requested but not enabled */
+#define SB_DCBKScrubDis		16	/* DCache scrub requested but not enabled */
+#define SB_RetryConfigTrain	17	/* Retry configuration and training */
+#define SB_FatalError		18	/* Fatal training error detected */
 
 /*===============================================================================
 	Local Configuration Status (DCTStatStruc.Status[31:0])

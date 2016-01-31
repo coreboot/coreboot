@@ -3332,12 +3332,24 @@ static void exit_training_mode_fam15(struct MCTStatStruc *pMCTstat,
 static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA, uint8_t allow_config_restore)
 {
+	uint8_t Node;
 	u8 nv_DQSTrainCTL;
+	uint8_t retry_requested;
 
 	if (pMCTstat->GStatus & (1 << GSB_EnDIMMSpareNW)) {
 		return;
 	}
 
+	/* Set initial TCWL offset to zero */
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		uint8_t dct;
+		struct DCTStatStruc *pDCTstat;
+		pDCTstat = pDCTstatA + Node;
+		for (dct = 0; dct < 2; dct++)
+			pDCTstat->tcwl_delay[dct] = 0;
+	}
+
+retry_dqs_training_and_levelization:
 	// nv_DQSTrainCTL = mctGet_NVbits(NV_DQSTrainCTL);
 	nv_DQSTrainCTL = !allow_config_restore;
 
@@ -3345,7 +3357,6 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 	phyAssistedMemFnceTraining(pMCTstat, pDCTstatA, -1);
 
 	if (is_fam15h()) {
-		uint8_t Node;
 		struct DCTStatStruc *pDCTstat;
 		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
 			pDCTstat = pDCTstatA + Node;
@@ -3393,6 +3404,59 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 
 		mct_TrainDQSPos_D(pMCTstat, pDCTstatA);
 
+		/* Determine if DQS training requested a retrain attempt */
+		retry_requested = 0;
+		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+			struct DCTStatStruc *pDCTstat;
+			pDCTstat = pDCTstatA + Node;
+
+			if (pDCTstat->NodePresent) {
+				if (pDCTstat->TrainErrors & (1 << SB_FatalError)) {
+					die("DIMM training FAILED!  Halting system.");
+				}
+				if (pDCTstat->TrainErrors & (1 << SB_RetryConfigTrain)) {
+					retry_requested = 1;
+
+					/* Clear previous errors */
+					pDCTstat->TrainErrors &= ~(1 << SB_RetryConfigTrain);
+					pDCTstat->TrainErrors &= ~(1 << SB_NODQSPOS);
+					pDCTstat->ErrStatus &= ~(1 << SB_RetryConfigTrain);
+					pDCTstat->ErrStatus &= ~(1 << SB_NODQSPOS);
+				}
+			}
+		}
+
+		/* Retry training and levelization if requested */
+		if (retry_requested) {
+			printk(BIOS_DEBUG, "%s: Restarting training on algorithm request\n", __func__);
+			/* Reset frequency to minimum */
+			for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+				struct DCTStatStruc *pDCTstat;
+				pDCTstat = pDCTstatA + Node;
+				if (pDCTstat->NodePresent) {
+					uint8_t original_target_freq = pDCTstat->TargetFreq;
+					uint8_t original_auto_speed = pDCTstat->DIMMAutoSpeed;
+					pDCTstat->TargetFreq = mhz_to_memclk_config(mctGet_NVbits(NV_MIN_MEMCLK));
+					pDCTstat->Speed = pDCTstat->DIMMAutoSpeed = pDCTstat->TargetFreq;
+					SetTargetFreq(pMCTstat, pDCTstatA, Node);
+					pDCTstat->TargetFreq = original_target_freq;
+					pDCTstat->DIMMAutoSpeed = original_auto_speed;
+				}
+			}
+			/* Apply any DIMM timing changes */
+			for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+				struct DCTStatStruc *pDCTstat;
+				pDCTstat = pDCTstatA + Node;
+				if (pDCTstat->NodePresent) {
+					AutoCycTiming_D(pMCTstat, pDCTstat, 0);
+					if (!pDCTstat->GangedMode)
+						if (pDCTstat->DIMMValidDCT[1] > 0)
+							AutoCycTiming_D(pMCTstat, pDCTstat, 1);
+				}
+			}
+			goto retry_dqs_training_and_levelization;
+		}
+
 		TrainMaxRdLatency_En_D(pMCTstat, pDCTstatA);
 
 		if (is_fam15h())
@@ -3417,7 +3481,6 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (is_fam15h()) {
-		uint8_t Node;
 		struct DCTStatStruc *pDCTstat;
 
 		/* Switch DCT control register to DCT 0 per Erratum 505 */
@@ -4268,6 +4331,9 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 			Tcwl = 0x9;
 		else
 			Tcwl = 0x5;	/* Power-on default */
+
+		/* Apply offset */
+		Tcwl += pDCTstat->tcwl_delay[dct];
 	}
 
 	/* Program DRAM Timing values */

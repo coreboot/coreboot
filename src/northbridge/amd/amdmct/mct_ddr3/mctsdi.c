@@ -721,6 +721,7 @@ static u32 mct_MR2(struct MCTStatStruc *pMCTstat,
 
 		/* Obtain Tcwl, adjust, and set CWL with the adjusted value */
 		dword = Get_NB32_DCT(dev, dct, 0x20c) & 0x1f;
+		dword -= pDCTstat->tcwl_delay[dct];
 		ret |= ((dword - 5) << 3);
 
 		/* Obtain and set RttWr */

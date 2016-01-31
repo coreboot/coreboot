@@ -1664,8 +1664,10 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t lane;
 	uint32_t dword;
 	uint32_t rx_en_offset;
+	uint8_t dct_training_success;
 	uint16_t initial_phy_phase_delay[MAX_BYTE_LANES];
 	uint16_t current_phy_phase_delay[MAX_BYTE_LANES];
+	uint8_t lane_training_success[MAX_BYTE_LANES];
 	uint8_t dqs_results_array[1024];
 
  	uint16_t ren_step = 0x40;
@@ -1709,6 +1711,8 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 		/* 2.10.5.8.3 */
 		Receiver = mct_InitReceiver_D(pDCTstat, dct);
 
+		dct_training_success = 1;
+
 		/* There are four receiver pairs, loosely associated with chipselects.
 		 * This is essentially looping over each DIMM.
 		 */
@@ -1718,6 +1722,9 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 			if (!mct_RcvrRankEnabled_D(pMCTstat, pDCTstat, dct, Receiver)) {
 				continue;
 			}
+
+			for (lane = 0; lane < MAX_BYTE_LANES; lane++)
+				lane_training_success[lane] = 0;
 
 			/* 2.10.5.8.3 (2) */
 			read_dqs_receiver_enable_control_registers(initial_phy_phase_delay, dev, dct, dimm, index_reg);
@@ -1753,10 +1760,24 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 					dqs_results_array[current_phy_phase_delay[lane]] = TrainDQSRdWrPos_D_Fam15(pMCTstat, pDCTstat, dct, Receiver, Receiver + 2, lane, lane + 1);
 				}
 
+				uint16_t phase_delay;
+				for (phase_delay = 0; phase_delay < 0x3ff; phase_delay++)
+					if (dqs_results_array[phase_delay])
+						lane_training_success[lane] = 1;
+
+				if (!lane_training_success[lane]) {
+					if (pDCTstat->tcwl_delay[dct] >= 1) {
+						Errors |= 1 << SB_FatalError;
+						printk(BIOS_ERR, "%s: lane %d failed to train!  "
+							"Training for receiver %d on DCT %d aborted\n",
+							__func__, lane, Receiver, dct);
+					}
+					break;
+				}
+
 #ifdef PRINT_PASS_FAIL_BITMAPS
-				uint16_t iter;
-				for (iter = 0; iter < 0x3ff; iter++) {
-					if (dqs_results_array[iter])
+				for (phase_delay = 0; phase_delay < 0x3ff; phase_delay++) {
+					if (dqs_results_array[phase_delay])
 						printk(BIOS_DEBUG, "+");
 					else
 						printk(BIOS_DEBUG, ".");
@@ -1787,6 +1808,13 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 				Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0030 | (lane << 8), dword);
 			}
 
+			for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+				if (!lane_training_success[lane]) {
+					dct_training_success = 0;
+					Errors |= 1 << SB_NODQSPOS;
+				}
+			}
+
 #if DQS_TRAIN_DEBUG > 0
 			printk(BIOS_DEBUG, "TrainDQSReceiverEnCyc_D_Fam15 DQS receiver enable timing: ");
 			for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
@@ -1794,6 +1822,15 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 			}
 			printk(BIOS_DEBUG, "\n");
 #endif
+		}
+
+		if (!dct_training_success) {
+			if (pDCTstat->tcwl_delay[dct] < 1) {
+				/* Increase TCWL */
+				pDCTstat->tcwl_delay[dct]++;
+				/* Request retraining */
+				Errors |= 1 << SB_RetryConfigTrain;
+			}
 		}
 	}
 

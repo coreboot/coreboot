@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# DESCR: check Kconfig files for warnings and errors
+# DESCR: check Kconfig files for errors
 
 LC_ALL=C export LC_ALL
 
@@ -24,7 +24,7 @@ fi
 # If coreboot is in a git repo, use git grep to check as it will ignore any
 # files in the tree that aren't checked into git
 if [ -n "$(command -v git)" ] && [ -e ".git" ]; then
-	env perl util/lint/kconfig_lint
+	env perl util/lint/kconfig_lint --warnings_off
 else
-	env perl util/lint/kconfig_lint --no_git_grep
+	env perl util/lint/kconfig_lint --no_git_grep --warnings_off
 fi

@@ -17,6 +17,7 @@
   <li>SoC <a href="#RequiredFiles">Required Files</a></li>
   <li><a href="#Descriptor">Start Booting</a></li>
   <li><a href="#EarlyDebug">Early Debug</a></li>
+  <li><a href="#Bootblock">Bootblock</a></li>
 </ol>
 
 
@@ -95,6 +96,101 @@ mv build/coreboot.rom.new build/coreboot.rom
     <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc;hb=HEAD#l4">reset vector</a>
     and entered the 16-bit code at
     <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;hb=HEAD#l35">_start</a>
+  </li>
+</ul>
+
+
+<hr>
+<h1><a name="Bootblock">Bootblock</a></h1>
+<p>
+  Implement the bootblock using the following steps:
+</p>
+<ol>
+  <li>Create the directory as src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/bootblock</li>
+  <li>Add the timestamp.inc file which initializes the floating point registers and saves
+    the initial timestamp.
+  </li>
+  <li>Add the bootblock.c file which:
+    <ol type="A">
+      <li>Enables memory-mapped PCI config access</li>
+      <li>Updates the microcode by calling intel_update_microcode_from_cbfs</li>
+      <li>Enable ROM caching</li>
+    </ol>
+  </li>
+  <li>Edit the src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/Kconfig file
+    <ol type="A">
+      <li>Add the BOOTBLOCK_CPU_INIT value to point to the bootblock.c file</li>
+      <li>Add the CHIPSET_BOOTBLOCK_INCLUDE value to point to the timestamp.inc file</li>
+    </ol>
+  </li>
+  <li>Edit the src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/Makefile.inc file
+    <ol type="A">
+      <li>Add the bootblock subdirectory</li>
+    </ol>
+  </li>
+  <li>Edit the src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/memmap.c file
+    <ol type="A">
+      <li>Add the fsp/memmap.h include file</li>
+      <li>Add the mmap_region_granularity routine</li>
+    </ol>
+  </li>
+  <li>Add the necessary .h files to define the necessary values and structures</li>
+  <li>When successful port 0x80 will output the following values:
+    <ol type="A">
+      <li>0x01: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l45">POST_RESET_VECTOR_CORRECT</a>
+        - Bootblock successfully executed the
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc;hb=HEAD#l4">reset vector</a>
+        and entered the 16-bit code at
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;hb=HEAD#l35">_start</a>
+      </li>
+      <li>0x10: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l53">POST_ENTER_PROTECTED_MODE</a>
+        - Bootblock executing in
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc;hb=HEAD#l55">32-bit mode</a>
+      </li>
+      <li>0x10 - Verstage/romstage reached 32-bit mode</li>
+    </ol>
+  </li>
+</ol>
+
+<p>
+  <b>Build Note:</b> The following files are included into the default bootblock image:
+</p>
+<ul>
+  <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/bootblock_romcc.S;hb=HEAD">src/arch/x86/bootblock_romcc.S</a>
+    added by   <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l133">src/arch/x86/Makefile.inc</a>
+    and includes the following files:
+    <ul>
+      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/prologue.inc">src/arch/x86/prologue.inc</a></li>
+      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/reset16.inc">src/cpu/x86/16bit/reset16.inc</a></li>
+      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc">src/cpu/x86/16bit/entry16.inc</a></li>
+      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc">src/cpu/x86/32bit/entry32.inc</a></li>
+      <li>The code in
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/bootblock_romcc.S">src/arch/x86/bootblock_romcc.S</a>
+        includes src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/bootblock/timestamp.inc using the
+        CONFIG_CHIPSET_BOOTBLOCK_INCLUDE value set above
+      </li>
+      <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/sse_enable.inc">src/cpu/x86/sse_enable.inc</a></li>
+      <li>The code in
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l156">src/arch/x86/Makefile.inc</a>
+        invokes the ROMCC tool to convert the following "C" code into assembler as bootblock.inc:
+        <ul>
+          <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/include/arch/bootblock_romcc.h">src/arch/x86/include/arch/bootblock_romcc.h</a></li>
+          <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/lapic/boot_cpu.c">src/cpu/x86/lapic/boot_cpu.c</a></li>
+          <li>The CONFIG_BOOTBLOCK_CPU_INIT value set above typically points to the code in
+            src/soc/&lt;Vendor&gt;/&lt;Chip Family&gt;/bootblock/bootblock.c
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/id.S">src/arch/x86/id.S</a>
+    added by <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l110">src/arch/x86/Makefile.inc</a>
+  </li>
+  <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/intel/fit/fit.S">src/cpu/intel/fit/fit.S</a>
+    added by <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/intel/fit/Makefile.inc;hb=HEAD">src/cpu/intel/fit/Makefile.inc</a>
+  </li>
+  <li><a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/walkcbfs.S">src/arch/x86/walkcbfs.S</a>
+    added by <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/Makefile.inc;hb=HEAD#l137">src/arch/x86/Makefile.inc</a>
   </li>
 </ul>
 

@@ -82,7 +82,7 @@ endif
 # Disable implicit/built-in rules to make Makefile errors fail fast.
 .SUFFIXES:
 
-HOSTCC := $(if $(shell type gcc 2>/dev/null), gcc, cc)
+HOSTCC := $(if $(shell type gcc 2>/dev/null),gcc,cc)
 HOSTCXX = g++
 HOSTCFLAGS := -g
 HOSTCXXFLAGS := -g

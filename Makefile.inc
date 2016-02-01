@@ -60,6 +60,7 @@ subdirs-y += src/ec/acpi $(wildcard src/ec/*/*) $(wildcard src/southbridge/*/*)
 subdirs-y += $(wildcard src/soc/*/*) $(wildcard src/northbridge/*/*)
 subdirs-y += src/superio $(wildcard src/drivers/*) src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool util/broadcom
+subdirs-y += util/futility
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
 subdirs-y += payloads/external
@@ -396,6 +397,8 @@ $(AMDFWTOOL): $(top)/util/amdfwtool/amdfwtool.c
 
 CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
 
+FUTILITY:=$(objutil)/futility/futility
+
 subdirs-y += util/nvidia
 
 BIMGTOOL:=$(objutil)/bimgtool/bimgtool
@@ -550,7 +553,7 @@ crosstools-power8: clean-for-update
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean
 
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(FMAPTOOL) $(RMODTOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL)
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(FMAPTOOL) $(RMODTOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY)
 
 test-toolchain:
 ifeq ($(COMPILER_OUT_OF_DATE),1)
@@ -922,6 +925,7 @@ junit.xml:
 TOOLLIST= \
 	cbmem \
 	ectool \
+	futility \
 	inteltool \
 	intelvbttool \
 	nvramtool \

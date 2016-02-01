@@ -88,6 +88,28 @@ static inline int i2c_write_raw(unsigned bus, uint8_t chip, uint8_t *data,
 }
 
 /**
+ * Read multi-bytes with two segments in one frame
+ *
+ * [start][slave addr][w][register addr][start][slave addr][r][data...][stop]
+ */
+static inline int i2c_read_bytes(unsigned bus, uint8_t chip, uint8_t reg,
+				 uint8_t *data, int len)
+{
+	struct i2c_seg seg[2];
+
+	seg[0].read = 0;
+	seg[0].chip = chip;
+	seg[0].buf  = &reg;
+	seg[0].len  = 1;
+	seg[1].read = 1;
+	seg[1].chip = chip;
+	seg[1].buf  = data;
+	seg[1].len  = len;
+
+	return i2c_transfer(bus, seg, ARRAY_SIZE(seg));
+}
+
+/**
  * Read a byte with two segments in one frame
  *
  * [start][slave addr][w][register addr][start][slave addr][r][data][stop]

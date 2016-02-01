@@ -73,3 +73,28 @@ config EC_GOOGLE_CHROMEEC_SPI_CHIP
 	depends on EC_GOOGLE_CHROMEEC_SPI
 	hex
 	default 0
+
+config EC_EXTERNAL_FIRMWARE
+	depends on EC_GOOGLE_CHROMEEC
+	def_bool n
+	help
+	  Disable building EC firmware if it's already built externally (and
+	  added manually.)
+
+config EC_GOOGLE_CHROMEEC_BOARDNAME
+	depends on EC_GOOGLE_CHROMEEC && !EC_EXTERNAL_FIRMWARE
+	string "Chrome EC board name for EC"
+	default ""
+	help
+	  The board name used in the Chrome EC code base to build
+	  the EC firmware.  If set, the coreboot build with also
+	  build the EC firmware and add it to the image.
+
+config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
+	depends on EC_GOOGLE_CHROMEEC_PD && !EC_EXTERNAL_FIRMWARE
+	string "Chrome EC board name for PD"
+	default ""
+	help
+	  The board name used in the Chrome EC code base to build
+	  the PD firmware.  If set, the coreboot build with also
+	  build the EC firmware and add it to the image.

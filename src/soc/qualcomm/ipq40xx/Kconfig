@@ -22,13 +22,24 @@ config MBN_ENCAPSULATION
 	bool "bootblock encapsulation for ipq40xx"
 	default y
 
-config SBL_BLOB
+config CDT_MBN
+	string "CDT binary blob"
+	default "cdt-AP.DK01.1-C1.bin"
+
+config DDR_MBN
+	string "DDR driver binary blob"
+	default "ddr.mbn"
+
+config TZ_MBN
+	string "TZ binary blob"
+	default "tzbsp_no_xpu.mbn"
+
+config SBL_ELF
 	depends on USE_BLOBS
-	string "file name of the Qualcomm SBL blob"
-	default "3rdparty/blobs/cpu/qualcomm/ipq40xx/uber-sbl.mbn"
+	string "file name of the QCA SBL ELF"
+	default "3rdparty/blobs/cpu/qualcomm/ipq40xx/sbl.elf"
 	help
 	  The path and filename of the binary blob containing
 	  ipq40xx early initialization code, as supplied by the
 	  vendor.
-
 endif

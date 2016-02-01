@@ -55,4 +55,12 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
 
+config EC_GOOGLE_CHROMEEC_BOARDNAME
+	string
+	default "oak"
+
+config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
+	string
+	default "oak_pd"
+
 endif # BOARD_GOOGLE_OAK

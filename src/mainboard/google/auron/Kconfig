@@ -54,4 +54,9 @@ config MAINBOARD_FAMILY
 	string
 	depends on GENERATE_SMBIOS_TABLES
 	default "Google_Auron"
+
+config EC_GOOGLE_CHROMEEC_BOARDNAME
+	string
+	default "auron"
+
 endif

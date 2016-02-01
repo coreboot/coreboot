@@ -64,4 +64,12 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_MAX98357
 	select NHLT_NAU88L25
 
+config EC_GOOGLE_CHROMEEC_BOARDNAME
+	string
+	default "lars"
+
+config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
+	string
+	default "lars_pd"
+
 endif

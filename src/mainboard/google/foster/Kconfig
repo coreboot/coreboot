@@ -84,4 +84,8 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
 
+#config EC_GOOGLE_CHROMEEC_BOARDNAME
+#	string
+#	default "nyan"
+
 endif # BOARD_GOOGLE_FOSTER

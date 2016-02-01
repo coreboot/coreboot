@@ -38,4 +38,8 @@ config HAVE_ME_BIN
 	bool
 	default n
 
+config EC_GOOGLE_CHROMEEC_BOARDNAME
+	string
+	default "rambi"
+
 endif # BOARD_GOOGLE_RAMBI

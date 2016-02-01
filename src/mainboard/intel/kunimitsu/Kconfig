@@ -65,4 +65,12 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_NAU88L25
 	select NHLT_SSM4567
 
+config EC_GOOGLE_CHROMEEC_BOARDNAME
+	string
+	default "kunimitsu"
+
+config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
+	string
+	default "kunimitsu_pd"
+
 endif

@@ -95,4 +95,8 @@ config EC_GOOGLE_CHROMEEC_I2C_BUS
 	hex
 	default 1
 
+config EC_GOOGLE_CHROMEEC_BOARDNAME
+	string
+	default "ryu"
+
 endif # BOARD_GOOGLE_SMAUG

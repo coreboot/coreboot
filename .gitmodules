@@ -12,3 +12,6 @@
 [submodule "arm-trusted-firmware"]
 	path = 3rdparty/arm-trusted-firmware
 	url = ../arm-trusted-firmware.git
+[submodule "3rdparty/chrome-ec"]
+	path = 3rdparty/chromeec
+	url = ../chrome-ec.git

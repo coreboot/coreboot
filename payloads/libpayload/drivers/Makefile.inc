@@ -36,6 +36,7 @@ libc-$(CONFIG_LP_SPEAKER) += speaker.c
 libc-$(CONFIG_LP_8250_SERIAL_CONSOLE) += serial/8250.c serial/serial.c
 libc-$(CONFIG_LP_S5P_SERIAL_CONSOLE) += serial/s5p.c serial/serial.c
 libc-$(CONFIG_LP_IPQ806X_SERIAL_CONSOLE) += serial/ipq806x.c serial/serial.c
+libc-$(CONFIG_LP_IPQ40XX_SERIAL_CONSOLE) += serial/ipq40xx.c serial/serial.c
 libc-$(CONFIG_LP_BG4CD_SERIAL_CONSOLE) += serial/bg4cd.c serial/serial.c
 libc-$(CONFIG_LP_PC_KEYBOARD) += keyboard.c
 
@@ -50,6 +51,7 @@ libc-$(CONFIG_LP_TIMER_MCT) += timer/mct.c
 libc-$(CONFIG_LP_TIMER_RDTSC) += timer/rdtsc.c
 libc-$(CONFIG_LP_TIMER_TEGRA_1US) += timer/tegra_1us.c
 libc-$(CONFIG_LP_TIMER_IPQ806X) += timer/ipq806x.c
+libc-$(CONFIG_LP_TIMER_IPQ40XX) += timer/ipq40xx.c
 libc-$(CONFIG_LP_TIMER_RK) += timer/rktimer.c
 libc-$(CONFIG_LP_TIMER_BG4CD) += timer/bg4cd.c
 libc-$(CONFIG_LP_TIMER_IMG_PISTACHIO) += timer/img_pistachio.c

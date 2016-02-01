@@ -237,6 +237,11 @@ config IPQ806X_SERIAL_CONSOLE
 	depends on SERIAL_CONSOLE
 	default n
 
+config IPQ40XX_SERIAL_CONSOLE
+	bool "IPQ40xx SOC compatible serial port driver"
+	depends on SERIAL_CONSOLE
+	default n
+
 config BG4CD_SERIAL_CONSOLE
 	bool "Serial port driver for Marvell's BG4CD"
 	depends on SERIAL_CONSOLE
@@ -425,6 +430,12 @@ config TIMER_ARMADA38X
         bool "Timer for armada38x platforms"
 	help
 	  This is the timer driver for marvell armada38x
+	  platforms.
+
+config TIMER_IPQ40XX
+	bool "Timer for ipq40xx platforms"
+	help
+	  This is the timer driver for QCA IPQ40xx based
 	  platforms.
 
 config TIMER_RK

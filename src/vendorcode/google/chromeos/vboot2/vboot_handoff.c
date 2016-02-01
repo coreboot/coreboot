@@ -152,6 +152,17 @@ void vboot_fill_handoff(void)
 
 	/* needed until we finish transtion to vboot2 for kernel verification */
 	fill_vboot_handoff(vh, sd);
+
+	/*
+	 * The recovery mode switch is cleared (typically backed by EC) here
+	 * to allow multiple queries to get_recovery_mode_switch() and have
+	 * them return consistent results during the verified boot path as well
+	 * as dram initialization. x86 systems ignore the saved dram settings
+	 * in the recovery path in order to start from a clean slate. Therefore
+	 * clear the state here since this function is called when memory
+	 * is known to be up.
+	 */
+	clear_recovery_mode_switch();
 }
 
 /*

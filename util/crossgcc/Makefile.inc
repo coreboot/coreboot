@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-TOOLCHAIN_ARCHES := i386 x86 arm aarch64 mips riscv power8
+TOOLCHAIN_ARCHES := i386 x86 arm aarch64 mips riscv power8 nds32le
 
 help_toolchain help::
 	@echo  '*** Toolchain targets ***'

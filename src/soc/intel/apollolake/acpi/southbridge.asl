@@ -20,3 +20,6 @@
 
 /* PCI IRQ assignment */
 #include "pci_irqs.asl"
+
+/* GPIO controller */
+#include "gpio.asl"

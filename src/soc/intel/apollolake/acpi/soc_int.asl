@@ -24,6 +24,7 @@
 #define UART2_INT	6	/* Need to be shared by PMC and SCC only*/
 #define UART3_INT	7	/* Need to be shared by PMC and SCC only*/
 #define XDCI_INT	13	/* Need to be shared by PMC and SCC only*/
+#define GPIO_BANK_INT	16
 #define NPK_INT		16
 #define PIRQA_INT	16
 #define PIRQB_INT	17

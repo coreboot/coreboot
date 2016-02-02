@@ -168,5 +168,49 @@ config HAVE_REGULATORY_DOMAIN
 
 source src/vendorcode/google/chromeos/vboot2/Kconfig
 
+menu "GBB configuration"
+
+config GBB_HWID
+	string "Hardware ID"
+	default "NOCONF HWID"
+
+config GBB_BMPFV_FILE
+	string "Path to bmpfv image"
+	depends on GBB_HAVE_BMPFV
+	default ""
+
+endmenu # GBB
+
+menu "Vboot Keys"
+config VBOOT_ROOT_KEY
+	string "Root key (public)"
+	default "3rdparty/vboot/tests/devkeys/root_key.vbpubk"
+
+config VBOOT_RECOVERY_KEY
+	string "Recovery key (public)"
+	default "3rdparty/vboot/tests/devkeys/recovery_key.vbpubk"
+
+config VBOOT_FIRMWARE_PRIVKEY
+	string "Firmware key (private)"
+	default "3rdparty/vboot/tests/devkeys/firmware_data_key.vbprivk"
+
+config VBOOT_KERNEL_KEY
+	string "Kernel subkey (public)"
+	default "3rdparty/vboot/tests/devkeys/kernel_subkey.vbpubk"
+
+config VBOOT_KEYBLOCK
+	string "Keyblock to use for the RW regions"
+	default "3rdparty/vboot/tests/devkeys/firmware.keyblock"
+
+config VBOOT_KEYBLOCK_VERSION
+	int "Keyblock version number"
+	default 1
+
+config VBOOT_KEYBLOCK_PREAMBLE_FLAGS
+	hex "Keyblock preamble flags"
+	default 0
+
+endmenu # Keys
+
 endif # CHROMEOS
 endmenu

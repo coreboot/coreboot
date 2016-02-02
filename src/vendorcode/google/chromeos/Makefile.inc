@@ -51,3 +51,35 @@ CFLAGS_common += -DMOCK_TPM=0
 endif
 
 subdirs-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot2
+
+CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))
+CONFIG_GBB_BMPFV_FILE := $(call strip_quotes,$(CONFIG_GBB_BMPFV_FILE))
+
+ifneq ($(CONFIG_GBB_BMPFV_FILE),)
+$(obj)/gbb.stub: $(obj)/coreboot.rom $(FUTILITY)
+	@printf "    CREATE GBB (with BMPFV)\n"
+	$(CBFSTOOL) $< read -r GBB -f $(obj)/gbb.stub.tmp
+	$(FUTILITY) gbb_utility -c 0x100,0x1000,$(call int-subtract $(call file-size,$(obj)/gbb.stub.tmp) 0x2180),0x1000 $@.tmp
+	rm -f $(obj)/gbb.stub.tmp
+	mv $@.tmp $@
+else
+$(obj)/gbb.stub: $(obj)/coreboot.rom $(FUTILITY)
+	@printf "    CREATE GBB (without BMPFV)\n"
+	$(FUTILITY) gbb_utility -c 0x100,0x1000,0,0x1000 $@.tmp
+	mv $@.tmp $@
+endif
+
+$(obj)/gbb.region: $(obj)/gbb.stub
+	@printf "    SETUP GBB\n"
+	cp $< $@.tmp
+	$(FUTILITY) gbb_utility -s \
+		--hwid="$(CONFIG_GBB_HWID)" \
+		--rootkey="$(CONFIG_VBOOT_ROOT_KEY)" \
+		--recoverykey="$(CONFIG_VBOOT_RECOVERY_KEY)" \
+		--flags=0 \
+		$@.tmp
+	mv $@.tmp $@
+
+build_complete:: $(obj)/gbb.region
+	@printf "    WRITE GBB\n"
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r GBB -f $<

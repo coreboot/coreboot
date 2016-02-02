@@ -15,6 +15,7 @@
 
 ifeq ($(CONFIG_SOC_INTEL_QUARK),y)
 
+subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/tsc
 
 romstage-y += memmap.c
@@ -25,5 +26,11 @@ CPPFLAGS_common += -I$(src)/soc/intel/quark/include
 
 # Chipset microcode path
 CPPFLAGS_common += -I3rdparty/blobs/soc/intel/quark
+
+# Add the chipset microcode file to the CBFS image
+cbfs-files-$(CONFIG_ADD_RMU_FILE) += rmu.bin
+rmu.bin-file := $(call strip_quotes,$(CONFIG_RMU_FILE))
+rmu.bin-position := $(CONFIG_RMU_LOC)
+rmu.bin-type := raw
 
 endif # CONFIG_SOC_INTEL_QUARK

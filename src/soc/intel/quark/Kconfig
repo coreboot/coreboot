@@ -28,4 +28,48 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_VERSTAGE_X86_32
 	select USE_MARCH_586
 
+#####
+# Flash layout
+#     Specify the size of the coreboot file system in the read-only
+#     (recovery) portion of the flash part.
+#####
+
+config CBFS_SIZE
+	hex
+	default 0x200000
+	help
+	  Specify the size of the coreboot file system in the read-only (recovery)
+	  portion of the flash part.  On Quark systems the firmware image stores
+	  more than just coreboot, including:
+	   - The chipset microcode (RMU) binary file located at 0xFFF00000
+	   - Intel Trusted Execution Engine firmware
+
+#####
+# RMU binary
+#     The following options control the Quark chipset microcode file
+#     placement in the flash image.  This file is required to bring
+#     the Quark processor out of reset.
+#####
+
+config ADD_RMU_FILE
+	bool "Should the RMU binary be added to the flash image?"
+	default n
+	help
+	  The RMU file is required to get the chip out of reset.
+
+config RMU_FILE
+	string
+	default "3rdparty/blobs/soc/intel/quark/rmu.bin"
+	depends on ADD_RMU_FILE
+	help
+	  The path and filename of the Intel Quark RMU binary.
+
+config RMU_LOC
+	hex
+	default 0xfff00000
+	depends on ADD_RMU_FILE
+	help
+	  The location in CBFS that the RMU is located. It must match the
+	  strap-determined base address.
+
 endif # SOC_INTEL_QUARK

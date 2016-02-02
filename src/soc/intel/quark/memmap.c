@@ -14,6 +14,13 @@
  */
 
 #include <cbmem.h>
+#include <fsp/memmap.h>
+
+size_t mmap_region_granularity(void)
+{
+	/* Align to 8 MiB by default */
+	return 8 << 20;
+}
 
 void *cbmem_top(void)
 {

@@ -41,7 +41,7 @@ crossgcc: clean-for-update
 	crosstools-aarch64 crosstools-mips crosstools-riscv crosstools-power8
 
 $(foreach arch,$(TOOLCHAIN_ARCHES),crossgcc-$(arch)): clean-for-update
-	$(MAKE) -C util/crossgcc $(patsubst crossgcc-%,build-%,$@) SKIP_GDB=1
+	$(MAKE) -C util/crossgcc $(patsubst crossgcc-%,build-%,$@) build_iasl SKIP_GDB=1
 
 crosstools: clean-for-update
 	$(MAKE) -C util/crossgcc all_with_gdb SKIP_CLANG=1
@@ -53,7 +53,7 @@ clang: clean-for-update
 	$(MAKE) -C util/crossgcc build_clang
 
 $(foreach arch,$(TOOLCHAIN_ARCHES),crosstools-$(arch)): clean-for-update
-	$(MAKE) -C util/crossgcc $(patsubst crosstools-%,build-%,$@)
+	$(MAKE) -C util/crossgcc $(patsubst crosstools-%,build-%,$@) build_iasl
 
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean

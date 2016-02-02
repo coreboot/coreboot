@@ -179,6 +179,61 @@ config GBB_BMPFV_FILE
 	depends on GBB_HAVE_BMPFV
 	default ""
 
+config GBB_FLAG_DEV_SCREEN_SHORT_DELAY
+	bool "Reduce dev screen delay"
+	default n
+
+config GBB_FLAG_LOAD_OPTION_ROMS
+	bool "Load option ROMs"
+	default n
+
+config GBB_FLAG_ENABLE_ALTERNATE_OS
+	bool "Allow booting a non-Chrome OS kernel if dev switch is on"
+	default n
+
+config GBB_FLAG_FORCE_DEV_SWITCH_ON
+	bool "Force dev switch on"
+	default n
+
+config GBB_FLAG_FORCE_DEV_BOOT_USB
+	bool "Allow booting from USB in dev mode even if dev_boot_usb=0"
+	default y
+
+config GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK
+	bool "Disable firmware rollback protection"
+	default y
+
+config GBB_FLAG_ENTER_TRIGGERS_TONORM
+	bool "Return to normal boot with Enter"
+	default n
+
+config GBB_FLAG_FORCE_DEV_BOOT_LEGACY
+	bool "Allow booting to legacy in dev mode even if dev_boot_legacy=0"
+	default n
+
+config GBB_FLAG_FAFT_KEY_OVERIDE
+	bool "Allow booting using alternative keys for FAFT servo testing"
+	default n
+
+config GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	bool "Disable EC software sync"
+	default n
+
+config GBB_FLAG_DEFAULT_DEV_BOOT_LEGACY
+	bool "Default to booting to legacy in dev mode"
+	default n
+
+config GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	bool "Disable PD software sync"
+	default n
+
+config GBB_FLAG_DISABLE_LID_SHUTDOWN
+	bool "Disable shutdown on closed lid"
+	default n
+
+config GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP
+	bool "Allow fastboot even if dev_boot_fastboot_full_cap=0"
+	default n
 endmenu # GBB
 
 menu "Vboot Keys"

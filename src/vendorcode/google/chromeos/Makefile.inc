@@ -55,6 +55,26 @@ subdirs-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot2
 CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))
 CONFIG_GBB_BMPFV_FILE := $(call strip_quotes,$(CONFIG_GBB_BMPFV_FILE))
 
+# bool-to-mask(var, value)
+# return "value" if var is "y", 0 otherwise
+bool-to-mask = $(if $(filter y,$(1)),$(2),0)
+
+GBB_FLAGS := $(call int-add, \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_DEV_SCREEN_SHORT_DELAY),0x1) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_LOAD_OPTION_ROMS),0x2) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_ENABLE_ALTERNATE_OS),0x4) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_FORCE_DEV_SWITCH_ON),0x8) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_FORCE_DEV_BOOT_USB),0x10) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_DISABLE_FW_ROLLBACK_CHECK),0x20) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_ENTER_TRIGGERS_TONORM),0x40) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_FORCE_DEV_BOOT_LEGACY),0x80) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_FAFT_KEY_OVERIDE),0x100) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC),0x200) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_DEFAULT_DEV_BOOT_LEGACY),0x400) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC),0x800) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_DISABLE_LID_SHUTDOWN),0x1000) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP),0x2000))
+
 ifneq ($(CONFIG_GBB_BMPFV_FILE),)
 $(obj)/gbb.stub: $(obj)/coreboot.rom $(FUTILITY)
 	@printf "    CREATE GBB (with BMPFV)\n"
@@ -76,7 +96,7 @@ $(obj)/gbb.region: $(obj)/gbb.stub
 		--hwid="$(CONFIG_GBB_HWID)" \
 		--rootkey="$(CONFIG_VBOOT_ROOT_KEY)" \
 		--recoverykey="$(CONFIG_VBOOT_RECOVERY_KEY)" \
-		--flags=0 \
+		--flags=$(GBB_FLAGS) \
 		$@.tmp
 	mv $@.tmp $@
 

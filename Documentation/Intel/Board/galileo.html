@@ -10,35 +10,14 @@
   <tr>
     <td><a target="_blank" href="http://www.mouser.com/images/microsites/Intel_Galileo2_lrg.jpg"><img alt="Galileo Gen 2" src="http://www.mouser.com/images/microsites/Intel_Galileo2_lrg.jpg" width=500></a></td>
     <td>
-<table>
-  <tr bgcolor="#ffc0c0">
-    <td>
-Warning: Use of the Intel&reg; Galileo Gen 2 mainboard code requires modification of the
-util/xcompile/xcompile file to change the machine architecture from i686 to i586 because
-the Quark&trade; processor does not support the instructions introduced with the
-Pentium&trade; 6 architecture.
-<ol>
-  <li>Edit the file util/xcompile/xcompile</li>
-  <li>Search for
-<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=util/xcompile/xcompile;hb=HEAD#l185">-march</a></li>
-  <li>Replace i686 with i586</li>
-  <li>Save the result</li>
-</ol>
-Without this change the Quark&trade; processor will halt when it executes one of the
-instructions introduced with the Pentium&trade; 6 architecture.
-    </td>
-  </tr>
-</table>
-<p>
-  The Intel&reg; Galileo Gen 2 mainboard code was developed along with the Intel&reg;
-  <a target="_blank" href="../SoC/quark.html">Quark&trade;</a> SoC:
-</p>
-<ul>
-  <li><a target="_blank" href="../x86Development.html">Overall</a> development</li>
-  <li><a target="_blank" href="../SoC/soc.html">SoC</a> support</li>
-  <li><a target="_blank" href="../fsp1_1.html">FSP 1.1</a> integration</li>
-  <li><a target="_blank" href="board.html">Board</a> support</li>
-</ul>
+      The Intel&reg; Galileo Gen 2 mainboard code was developed along with the Intel&reg;
+      <a target="_blank" href="../SoC/quark.html">Quark&trade;</a> SoC:
+      <ul>
+        <li><a target="_blank" href="../x86Development.html">Overall</a> development</li>
+        <li><a target="_blank" href="../SoC/soc.html">SoC</a> support</li>
+        <li><a target="_blank" href="../fsp1_1.html">FSP 1.1</a> integration</li>
+        <li><a target="_blank" href="board.html">Board</a> support</li>
+      </ul>
     </td>
   </tr>
 </table>
@@ -95,6 +74,6 @@ instructions introduced with the Pentium&trade; 6 architecture.
 
 
 <hr>
-<p>Modified: 30 January 2016</p>
+<p>Modified: 1 February 2016</p>
   </body>
 </html>

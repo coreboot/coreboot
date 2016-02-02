@@ -1,0 +1,29 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright 2016 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# DESCR: Verify that site-local is not in the coreboot repository
+#
+# Because site-local is intended for local use only, it should never be
+# pushed to coreboot.org.  Even for committing it for local use, it's
+# recommended that it be kept in a separate repository, and pulled in
+# as a git submodule.
+
+LC_ALL=C export LC_ALL
+
+if [ -n "$(command -v git)" ]  && [ -e ".git" ]; then
+	if [ -n "$(git ls-files site-local/*)" ]; then
+		echo "Error: site-local must be kept separate from the coreboot repository."
+	fi
+fi

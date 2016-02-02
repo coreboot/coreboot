@@ -58,6 +58,12 @@ config ARCH_RAMSTAGE_X86_64
 	bool
 	default n
 
+config USE_MARCH_586
+	def_bool n
+	help
+	  Allow a platform or processor to select to be compiled using
+	  the '-march=i586' option instead of the typical '-march=i686'
+
 # This is an SMP option. It relates to starting up APs.
 # It is usually set in mainboard/*/Kconfig.
 # TODO: Improve description.

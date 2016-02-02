@@ -182,11 +182,6 @@ detect_special_flags() {
 
 	case "$architecture" in
 	x86)
-		# Always build for i686 -- no sse/mmx instructions since SMM
-		# modules are compiled using these flags. Note that this
-		# doesn't prevent a project using xcompile to explicitly
-		# specify -mmsse, etc flags.
-		CFLAGS_GCC="$CFLAGS_GCC  -march=i686"
 		;;
 	x64)
 		;;
@@ -224,6 +219,27 @@ GCC_CC_${TARCH}:=${GCC}
 GCC_CFLAGS_${TARCH}:=${CFLAGS_GCC}
 GCC_COMPILER_RT_${TARCH}:=${CC_RT_GCC}
 GCC_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}
+EOF
+
+# Generally the x86 should build for i686 -- no sse/mmx
+# instructions since SMM modules are compiled using these
+# flags. Note that this doesn't prevent a project using
+# xcompile to explicitly specify -mmsse, etc flags.
+# The Quark processor doesn't support the instructions
+# introduced with the Pentium 6 architecture, so allow it
+# to use i586 instead.
+if [ "${TARCH}" = "x86_64" ] || [ "${TARCH}" = "x86_32" ]; then
+cat <<EOF
+
+ifeq (\$(CONFIG_USE_MARCH_586),y)
+	GCC_CFLAGS_${TARCH} += -march=i586
+else
+	GCC_CFLAGS_${TARCH} += -march=i686
+endif
+EOF
+fi
+
+cat <<EOF
 
 # Clang
 CLANG_CC_${TARCH}:=${CLANG}
@@ -245,6 +261,7 @@ else
 	COMPILER_RT_${TARCH}:=\$(CLANG_COMPILER_RT_${TARCH})
 	COMPILER_RT_FLAGS_${TARCH}:=\$(CLANG_COMPILER_RT_FLAGS_${TARCH})
 endif
+
 CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
 LD_${TARCH}:=${GCCPREFIX}ld${LINKER_SUFFIX} ${LDFLAGS}

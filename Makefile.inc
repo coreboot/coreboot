@@ -46,7 +46,7 @@ export objgenerated := $(obj)/generated
 
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
-real-target: $(obj)/config.h coreboot build_complete
+real-target: $(obj)/config.h coreboot files_added
 coreboot: build-dirs $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool
 
 # This target can be used in site local to run scripts or additional
@@ -55,6 +55,10 @@ coreboot: build-dirs $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool
 build_complete:: coreboot
 	printf "\nBuilt %s (%s)\n" $(CONFIG_MAINBOARD_DIR) \
 		$(CONFIG_MAINBOARD_PART_NUMBER)
+
+# This target can be used to run rules after all files were added to CBFS,
+# for example to process FMAP regions or the entire image.
+files_added:: build_complete
 
 #######################################################################
 # our phony targets

@@ -31,7 +31,7 @@ static void run_payload(struct prog *prog)
 
 	doit = prog_entry(prog);
 	arg = prog_entry_arg(prog);
-	u64 payload_spsr = SPSR_EXCEPTION_MASK | get_eret_el(EL2, SPSR_USE_L);
+	u64 payload_spsr = get_eret_el(EL2, SPSR_USE_L);
 
 	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		arm_tf_run_bl31((u64)doit, (u64)arg, payload_spsr);

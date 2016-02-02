@@ -54,6 +54,9 @@ subdirs-$(CONFIG_VBOOT_VERIFY_FIRMWARE) += vboot2
 
 CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))
 CONFIG_GBB_BMPFV_FILE := $(call strip_quotes,$(CONFIG_GBB_BMPFV_FILE))
+CONFIG_VBOOT_KEYBLOCK := $(call strip_quotes,$(CONFIG_VBOOT_KEYBLOCK))
+CONFIG_VBOOT_FIRMWARE_PRIVKEY := $(call strip_quotes,$(CONFIG_VBOOT_FIRMWARE_PRIVKEY))
+CONFIG_VBOOT_KERNEL_KEY := $(call strip_quotes,$(CONFIG_VBOOT_KERNEL_KEY))
 
 # bool-to-mask(var, value)
 # return "value" if var is "y", 0 otherwise
@@ -103,3 +106,37 @@ $(obj)/gbb.region: $(obj)/gbb.stub
 build_complete:: $(obj)/gbb.region
 	@printf "    WRITE GBB\n"
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r GBB -f $<
+
+# Extract FW_MAIN_? region and minimize it if the last file is empty, so it
+# doesn't contain this empty file (that can have a significant size),
+# improving a lot on hash times due to a smaller amount of data loaded from
+# firmware storage.
+# When passing the minimized image to vbutil_firmware, its length is recorded
+# in the keyblock, and coreboot's vboot code clips the region_device to match,
+# which prevents any potential extension attacks.
+$(obj)/FW_MAIN_%.bin: $(obj)/coreboot.rom
+	$(CBFSTOOL) $< read -r $(basename $(notdir $@)) -f $@.tmp
+	$(CBFSTOOL) $(obj)/coreboot.rom print -k -r $(basename $(notdir $@)) | \
+		tail -1 | \
+		sed "s,^(empty)[[:space:]]\(0x[0-9a-f]*\)\tnull\t.*$$,\1," \
+		> $@.tmp.size
+	if [ -n "$$(cat $@.tmp.size)" ]; then \
+		head -c $$( printf "%d" $$(cat $@.tmp.size)) $@.tmp > $@.tmp2 && \
+		mv $@.tmp2 $@; \
+	else \
+		mv $@.tmp $@; \
+	fi
+
+$(obj)/VBLOCK_%.bin: $(obj)/FW_MAIN_%.bin $(FUTILITY)
+	$(FUTILITY) vbutil_firmware \
+		--vblock $@ \
+		--keyblock "$(CONFIG_VBOOT_KEYBLOCK)" \
+		--signprivate "$(CONFIG_VBOOT_FIRMWARE_PRIVKEY)" \
+		--version $(CONFIG_VBOOT_KEYBLOCK_VERSION) \
+		--fv $< \
+		--kernelkey "$(CONFIG_VBOOT_KERNEL_KEY)" \
+		--flags $(CONFIG_VBOOT_KEYBLOCK_PREAMBLE_FLAGS)
+
+files_added:: $(obj)/VBLOCK_A.bin $(obj)/VBLOCK_B.bin
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r VBLOCK_A -f $(obj)/VBLOCK_A.bin
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r VBLOCK_B -f $(obj)/VBLOCK_B.bin

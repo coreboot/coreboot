@@ -259,6 +259,8 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 	struct cbfs_stage stage;
 	void *rmod_loc;
 	struct region_device *fh;
+	const int use_lzma = ENV_RAMSTAGE
+		|| (ENV_ROMSTAGE && IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE));
 
 	if (rsl->prog == NULL || prog_name(rsl->prog) == NULL)
 		return -1;
@@ -286,7 +288,7 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 		if (rdev_readat(fh, rmod_loc, sizeof(stage), stage.len) !=
 		    stage.len)
 			return -1;
-	} else if (stage.compression == CBFS_COMPRESS_LZMA) {
+	} else if (use_lzma && (stage.compression == CBFS_COMPRESS_LZMA)) {
 		size_t fsize;
 		void *map = rdev_mmap(fh, sizeof(stage), stage.len);
 

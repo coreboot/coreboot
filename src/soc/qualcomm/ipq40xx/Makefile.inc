@@ -55,7 +55,7 @@ ifeq ($(CONFIG_USE_BLOBS),y)
 $(objcbfs)/bootblock.bin: $(call strip_quotes,$(CONFIG_SBL_ELF)) \
 			   $(objcbfs)/bootblock.elf
 	@printf "    CRXBL      $(subst $(obj)/,,$(^)) $(subst $(obj)/,,$(@))\n"
-	@util/ipqheader/createxbl.py -f $(CONFIG_SBL_ELF) -s $(objcbfs)/bootblock.elf -o $@ -a 32 -b 32
+	@$(CONFIG_SBL_UTIL_PATH)/createxbl.py -f $(CONFIG_SBL_ELF) -s $(objcbfs)/bootblock.elf -o $@ -a 32 -b 32
 
 endif
 

@@ -42,4 +42,12 @@ config SBL_ELF
 	  The path and filename of the binary blob containing
 	  ipq40xx early initialization code, as supplied by the
 	  vendor.
+
+config SBL_UTIL_PATH
+	depends on USE_BLOBS
+	string "Path for utils to combine SBL_ELF and bootblock"
+	default "util/ipqheader"
+	help
+	  Path for utils to combine SBL_ELF and bootblock
+
 endif

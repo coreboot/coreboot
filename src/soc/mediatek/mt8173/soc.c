@@ -17,11 +17,11 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <symbols.h>
+#include <soc/emi.h>
 
 static void soc_read_resources(device_t dev)
 {
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB,
-		     CONFIG_DRAM_SIZE_MB * (MiB / KiB));
+	ram_resource(dev, 0, (uintptr_t)_dram / KiB, sdram_size() / KiB);
 }
 
 static void soc_init(device_t dev)

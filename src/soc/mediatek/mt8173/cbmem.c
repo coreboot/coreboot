@@ -17,9 +17,9 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <symbols.h>
+#include <soc/emi.h>
 
 void *cbmem_top(void)
 {
-	return (void *)min((uintptr_t)_dram + ((size_t)CONFIG_DRAM_SIZE_MB * MiB),
-			   (uintptr_t)4 * GiB);
+	return (void *)min((uintptr_t)_dram + sdram_size(), (uintptr_t)4 * GiB);
 }

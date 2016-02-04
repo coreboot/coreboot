@@ -18,6 +18,7 @@
 
 #include <soc/dramc_common.h>
 #include <stdint.h>
+#include <types.h>
 
 /* DDR type */
 enum ram_type {
@@ -124,6 +125,17 @@ struct mt8173_mrs_params {
 	u32 mrs_63;
 };
 
+enum {
+	/* CONA = 0x000 */
+	CONA_DUAL_CH_EN  = BIT(0),
+	CONA_32BIT_EN  = BIT(1),
+	CONA_DUAL_RANK_EN  = BIT(17),
+	COL_ADDR_BITS_SHIFT = 4,
+	COL_ADDR_BITS_MASK = 3 << COL_ADDR_BITS_SHIFT,
+	ROW_ADDR_BITS_SHIFT = 12,
+	ROW_ADDR_BITS_MASK = 3 << ROW_ADDR_BITS_SHIFT
+};
+
 struct mt8173_sdram_params {
 	struct mt8173_calib_params calib_params;
 	struct mt8173_timing_params ac_timing;
@@ -136,5 +148,5 @@ struct mt8173_sdram_params {
 void mt_set_emi(const struct mt8173_sdram_params *sdram_params);
 void mt_mem_init(const struct mt8173_sdram_params *sdram_params);
 const struct mt8173_sdram_params *get_sdram_config(void);
-
+size_t sdram_size(void);
 #endif

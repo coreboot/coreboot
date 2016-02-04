@@ -20,11 +20,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <soc/addressmap.h>
+#include <soc/emi.h>
 #include <soc/infracfg.h>
 #include <soc/mcucfg.h>
 #include <soc/mmu_operations.h>
-
-static const uint64_t dram_size = (uint64_t)CONFIG_DRAM_SIZE_MB * MiB;
 
 void mt8173_mmu_init(void)
 {
@@ -48,7 +47,7 @@ void mt8173_mmu_init(void)
 void mt8173_mmu_after_dram(void)
 {
 	/* Map DRAM as cached now that it's up and running */
-	mmu_config_range(_dram, dram_size, CACHED_MEM);
+	mmu_config_range(_dram, (uintptr_t)sdram_size(), CACHED_MEM);
 
 	/* Unmap L2C SRAM so it can be reclaimed by L2 cache */
 	/* TODO: Implement true unmapping, and also use it for the zero-page! */

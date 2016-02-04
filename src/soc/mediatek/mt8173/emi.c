@@ -127,6 +127,42 @@ static void init_dram(const struct mt8173_sdram_params *sdram_params)
 	dramc_init(CHANNEL_B, sdram_params);
 }
 
+size_t sdram_size(void)
+{
+	u32 value = read32(&emi_regs->emi_cona);
+	u32 bit_counter = 0;
+
+	/* check if dual channel */
+	if (value & CONA_DUAL_CH_EN)
+		bit_counter++;
+
+	/* check if 32bit , 32 = 2^5*/
+	if (value & CONA_32BIT_EN)
+		bit_counter += 5;
+	else
+		bit_counter += 4;
+
+	/* check column address */
+	/* 00 is 9 bits, 01 is 10 bits , 10 is 11 bits */
+	bit_counter += ((value & COL_ADDR_BITS_MASK) >> COL_ADDR_BITS_SHIFT) +
+		       9;
+
+	/* check if row address */
+	/*00 is 13 bits , 01 is 14 bits , 10 is 15bits , 11 is 16 bits */
+	bit_counter += ((value & ROW_ADDR_BITS_MASK) >> ROW_ADDR_BITS_SHIFT) +
+		       13;
+
+	/* check if dual rank */
+	if (value & CONA_DUAL_RANK_EN)
+		bit_counter++;
+
+	/* add bank address bit, LPDDR3 is 8 banks =2^3 */
+	bit_counter += 3;
+
+	/*transfor bits to bytes */
+	return ((size_t)1 << (bit_counter - 3));
+}
+
 void mt_set_emi(const struct mt8173_sdram_params *sdram_params)
 {
 	/* voltage info */

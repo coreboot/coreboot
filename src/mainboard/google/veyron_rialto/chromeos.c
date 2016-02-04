@@ -25,7 +25,6 @@
 #define GPIO_POWER	GPIO(0, A, 5)
 #define GPIO_RECOVERY_SERVO	GPIO(0, B, 1)
 #define GPIO_RECOVERY_PUSHKEY	GPIO(7, B, 1)
-#define GPIO_DEVELOPER_SWITCH	GPIO(7, B, 2)
 
 
 void setup_chromeos_gpios(void)
@@ -34,7 +33,6 @@ void setup_chromeos_gpios(void)
 	gpio_input(GPIO_POWER);
 	gpio_input_pullup(GPIO_RECOVERY_SERVO);
 	gpio_input_pullup(GPIO_RECOVERY_PUSHKEY);
-	gpio_input(GPIO_DEVELOPER_SWITCH);  // board has pull up/down resistor.
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
@@ -69,7 +67,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	count++;
 
 	/* Developer: GPIO active high */
-	gpios->gpios[count].port = GPIO_DEVELOPER_SWITCH.raw;
+	gpios->gpios[count].port = -1;
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
 	gpios->gpios[count].value = get_developer_mode_switch();
 	strncpy((char *)gpios->gpios[count].name, "developer",
@@ -92,8 +90,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_developer_mode_switch(void)
 {
-	// GPIO_DEVELOPER_SWITCH is active high.
-	return gpio_get(GPIO_DEVELOPER_SWITCH);
+	return 0;
 }
 
 int get_recovery_mode_switch(void)

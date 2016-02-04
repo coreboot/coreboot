@@ -22,6 +22,8 @@
   <li><a href="#Romstage">Romstage</a>
     <ol type="A">
       <li>Enable <a href="#SerialOutput">Serial Output"</a></li>
+      <li>Get the <a href="#PreviousSleepState">Previous Sleep State</a></li>
+      <li>Add the <a href="#MemoryInit">MemoryInit</a> Support</li>
     </ol>
   </li>
 </ol>
@@ -324,6 +326,57 @@ Use the following steps to debug the call to TempRamInit:
       <li>CONFIG_UART_FOR_CONSOLE=&lt;port&gt;</li>
       <li>CONFIG_CONSOLE_SERIAL_115200=y</li>
     </ul>
+  </li>
+</ol>
+
+
+<h2><a name="PreviousSleepState">Determine Previous Sleep State</a></h2>
+<p>
+  The following steps implement the code to get the previous sleep state:
+</p>
+<ol>
+  <li>Implement the fill_power_state routine which determines the previous sleep state</li>
+  <li>Debug the result until port 0x80 outputs
+    <ol type="A">
+      <li>0x32:
+        - Just after entering
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/romstage.c;hb=HEAD#l99">romstage_common</a>
+      </li>
+      <li>0x33 - Just after calling
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/romstage.c;hb=HEAD#l113">soc_pre_ram_init</a>
+      </li>
+      <li>0x34:
+        - Just after entering
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l67">raminit</a>
+      </li>
+    </ol>
+</ol>
+
+
+<h2><a name="MemoryInit">MemoryInit Support</a></h2>
+<p>
+  The following steps implement the code to support the FSP MemoryInit call:
+</p>
+<ol>
+  <li>Add the chip.h header file to define the UPD values which get passed
+    to MemoryInit.  Skip the values containing SPD addresses and DRAM
+    configuration data which is determined by the board.
+    <p>
+      <b>Build Note</b>: The src/mainboard/&lt;Vendor&gt;/&lt;Board&gt;/devicetree.cb
+      file specifies the default values for these parameters.  The build
+      process creates the static.c module which contains the config data
+      structure containing these values.
+    </p>
+  </li>
+  <li>Edit romstage/romstage.c
+    <ol type="A">
+      <li>Implement the romstage/romstage.c/soc_memory_init_params routine to
+        copy the values from the config structure into the UPD structure
+      </li>
+      <li>Implement the soc_display_memory_init_params routine to display
+        the updated UPD parameters by calling fsp_display_upd_value
+      </li>
+    </ol>
   </li>
 </ol>
 

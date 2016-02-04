@@ -82,6 +82,18 @@
     </ol>
   </li>
   <li>Enable <a target="_blank" href="fsp1_1.html#corebootFspDebugging">coreboot/FSP</a> debugging</li>
+  <li>Determine the <a target="_blank" href="SoC/soc.html#PreviousSleepState">Previous Sleep State</a></li>
+  <li>Enable DRAM:
+    <ol type="A">
+      <li>Implement the SoC
+        <a target="_blank" href="SoC/soc.html#MemoryInit">MemoryInit</a>
+        Support
+      </li>
+      <li>Implement the board support to read the
+        <a target="_blank" href="Board/board.html#SpdData">Memory Timing Data</a>
+      </li>
+    </ol>
+  </li>
 </ol>
 
 
@@ -125,6 +137,32 @@
     <th>Testing</th>
   </tr>
   <tr>
+    <td>DRAM</td>
+    <td>
+      Load SPD data: src/soc/mainboard/&lt;Vendor&gt;/&lt;Board&gt;/spd/<a target="_blank" href="Board/board.html#SpdData">spd.c</a><br>
+      UPD Setup:
+      <ul>
+        <li>src/soc&lt;Vendor&gt;//&lt;Chip Family&gt;/romstage/<a target="_blank" href="SoC/soc.html#MemoryInit">romstage.c</a></li>
+        <li>src/mainboard/&lt;Vendor&gt;/&lt;Board&gt;/<a target="_blank" href="Board/board.html#SpdData">romstage.c</a></li>
+      </ul>
+      FSP 1.1 MemoryInit called from src/drivers/intel/fsp1_1/<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l126">raminit.c</a>
+    </td>
+    <td>Select the following Kconfig values
+      <ul>
+        <li>DISPLAY_HOBS</li>
+        <li>DISPLAY_UPD_DATA</li>
+      </ul>
+      Testing successful if:
+      <ul>
+        <li>MemoryInit UPD values are correct</li>
+        <li>MemoryInit returns 0 (success) and</li>
+        <li>The the message "ERROR - coreboot's requirements not met by FSP binary!"
+          is not displayed
+        </li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
     <td>Serial Port</td>
     <td>
       SoC <a target="_blank" href="SoC/soc.html#SerialOutput">Support</a><br>
@@ -148,6 +186,26 @@
       TempRamInit successful: POST code
       <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/cache_as_ram.inc;hb=HEAD#l151">0x2A</a>
       is displayed<br>
+    </td>
+  </tr>
+  <tr>
+    <td>MemoryInit</td>
+    <td><a target="_blank" href="SoC/soc.html#MemoryInit">SoC</a> support<br>
+      <a target="_blank" href="Board/board.html#SpdData">Board</a> support<br>
+    </td>
+    <td>Select the following Kconfig values
+      <ul>
+        <li>DISPLAY_HOBS</li>
+        <li>DISPLAY_UPD_DATA</li>
+      </ul>
+      Testing successful if:
+      <ul>
+        <li>MemoryInit UPD values are correct</li>
+        <li>MemoryInit returns 0 (success) and</li>
+        <li>The the message "ERROR - coreboot's requirements not met by FSP binary!"
+          is not displayed
+        </li>
+      </ul>
     </td>
   </tr>
 </table>

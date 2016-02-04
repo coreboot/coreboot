@@ -15,6 +15,7 @@
 <ol>
   <li><a href="#RequiredFiles">Required Files</a></li>
   <li>Enable <a href="#SerialOutput">Serial Output</a></li>
+  <li>Load the <a href="#SpdData">Memory Timing Data</a></li>
 </ol>
 
 
@@ -100,6 +101,84 @@
   </li>
 </ol>
 
+
+<hr>
+<h1><a name="SpdData">Memory Timing Data</a></h1>
+<p>
+  Memory timing data is located in the flash.  This data is in the format of
+  <a target="_blank" href="https://en.wikipedia.org/wiki/Serial_presence_detect">serial presence detect</a>
+  (SPD) data.
+  Use the following steps to load the SPD data:
+</p>
+<ol>
+  <li>Edit Kconfig to add the DISPLAY_SPD_DATA" value which enables the
+    display of the SPD data being passed to MemoryInit
+  </li>
+  <li>Create an "spd" subdirectory</li>
+  <li>Create an spd/spd.c file for the SPD implementation
+    <ol type="A">
+      <li>Implement the mainboard_fill_spd_data routine
+        <ol type="i">
+          <li>Read the SPD data either from the spd.bin file or using I2C or SMBUS</li>
+          <li>Fill in the pei_data structure with SPD data for each of the DIMMs</li>
+          <li>Set the DIMM channel configuration</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li>Add an .spd.hex file containing the memory timing data to the spd subdirectory</li>
+  <li>Create spd/Makefile.inc
+    <ol type="A">
+      <li>Add spd.c to romstage</li>
+      <li>Add the .spd.hex file to SPD_SOURCES</li>
+    </ol>
+  </li>
+  <li>Edit Makefile.inc to add the spd subdirectory</li>
+  <li>Edit romstage.c
+    <ol type="A">
+      <li>Call mainboard_fill_spd_data</li>
+      <li>Add mainboard_memory_init_params to copy the SPD and DRAM
+        configuration data from the pei_data structure into the UPDs
+        for MemoryInit
+      </li>
+    </ol>
+  </li>
+  <li>Edit devicetree.cb
+    <ol type="A">
+      <li>Include the UPD parameters for MemoryInit except for:
+        <ul>
+          <li>Address of SPD data</li>
+          <li>DRAM configuration set above</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+  <li>A working FSP
+    <a target="_blank" href="../fsp1_1.html#MemoryInit">MemoryInit</a>
+    routine is required to complete debugging</li>
+  <li>Debug the result until port 0x80 outputs
+    <ol type="A">
+      <li>0x34:
+        - Just after entering
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l67">raminit</a>
+      </li>
+      <li>0x36:
+        - Just before displaying the
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l106">UPD parameters</a>
+        for FSP MemoryInit
+      </li>
+      <li>0x92: <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l219">POST_FSP_MEMORY_INIT</a>
+        - Just before calling FSP
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l125">MemoryInit</a>
+      </li>
+      <li>0x37:
+        - Just after returning from FSP
+        <a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/raminit.c;hb=HEAD#l127">MemoryInit</a>
+      </li>
+    </ol>
+  </li>
+  <li>Continue debugging with CONFIG_DISPLAY_HOBS enabled until TempRamExit is called</li>
+</ol>
 
 
 <hr>

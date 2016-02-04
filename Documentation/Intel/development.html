@@ -71,6 +71,17 @@
   <li><a target="_blank" href="SoC/soc.html#EarlyDebug">Early Debug</a></li>
   <li>Implement and debug the <a target="_blank" href="SoC/soc.html#Bootblock">bootblock</a> code</li>
   <li>Implement and debug the call to <a target="_blank" href="SoC/soc.html#TempRamInit">TempRamInit</a></li>
+  <li>Enable the serial port
+    <ol type="A">
+      <li>Power on, enable and configure GPIOs for the
+        <a target="_blank" href="Board/board.html#SerialOutput">debug serial UART</a>
+      </li>
+      <li>Add the <a target="_blank" href="SoC/soc.html#SerialOutput">serial outupt</a>
+        support to romstage
+      </li>
+    </ol>
+  </li>
+  <li>Enable <a target="_blank" href="fsp1_1.html#corebootFspDebugging">coreboot/FSP</a> debugging</li>
 </ol>
 
 
@@ -106,6 +117,23 @@
       Disable: CONFIG_DISPLAY_MTRRS=y, MTRRs displayed after call to TempRamExit
     </td>
   </tr>
+
+
+  <tr bgcolor="#c0ffc0">
+    <th>Board</th>
+    <th>Where</th>
+    <th>Testing</th>
+  </tr>
+  <tr>
+    <td>Serial Port</td>
+    <td>
+      SoC <a target="_blank" href="SoC/soc.html#SerialOutput">Support</a><br>
+      Enable: src/soc/mainboard/&lt;Board&gt;/com_init.c/<a target="_blank" href="Board/board.html#SerialOutput">car_mainboard_pre_console_init</a>
+    </td>
+    <td>Debug serial output works</td>
+  </tr>
+
+
   <tr bgcolor="#c0ffc0">
     <th>FSP</th>
     <th>Where</th>

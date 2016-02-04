@@ -19,6 +19,11 @@
   <li><a href="#EarlyDebug">Early Debug</a></li>
   <li><a href="#Bootblock">Bootblock</a></li>
   <li><a href="#TempRamInit">TempRamInit</a></li>
+  <li><a href="#Romstage">Romstage</a>
+    <ol type="A">
+      <li>Enable <a href="#SerialOutput">Serial Output"</a></li>
+    </ol>
+  </li>
 </ol>
 
 
@@ -280,6 +285,45 @@ Use the following steps to debug the call to TempRamInit:
         which is the start of the verstage code which may be part of romstage
       </li>
     </ol>
+  </li>
+</ol>
+
+
+<hr>
+<h1><a name="Romstage">Romstage</a></h1>
+
+<h2><a name="SerialOutput">Serial Output</a></h2>
+<p>
+  The following steps add the serial output support for romstage:
+</p>
+<ol>
+  <li>Create the romstage subdirectory</li>
+  <li>Add romstage/romstage.c
+    <ol type="A">
+      <li>Program the necessary base addresses</li>
+      <li>Disable the TCO</li>
+    </ol>
+  </li>
+  <li>Add romstage/Makefile.inc
+    <ol type="A">
+      <li>Add romstage.c to romstage</li>
+    </ol>
+  </li>
+  <li>Add gpio configuration support if necessary</li>
+  <li>Add the necessary .h files to support the build</li>
+  <li>Update Makefile.inc
+    <ol type="A">
+      <li>Add the romstage subdirectory</li>
+      <li>Add the gpio configuration support file to romstage</li>
+    </ol>
+  </li>
+  <li>Set the necessary Kconfig values to enable serial output:
+    <ul>
+      <li>CONFIG_DRIVERS_UART_&lt;driver&gt;=y</li>
+      <li>CONFIG_CONSOLE_SERIAL=y</li>
+      <li>CONFIG_UART_FOR_CONSOLE=&lt;port&gt;</li>
+      <li>CONFIG_CONSOLE_SERIAL_115200=y</li>
+    </ul>
   </li>
 </ol>
 

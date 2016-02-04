@@ -15,6 +15,7 @@
 <ol>
   <li><a href="#RequiredFiles">Required Files</a></li>
   <li>Add the <a href="#FspBinary">FSP Binary File</a> to the coreboot File System</li>
+  <li>Enable <a href="#corebootFspDebugging">coreboot/FSP Debugging</a></li>
 </ol>
 
 <p>
@@ -55,6 +56,19 @@
   This command relocates the FSP binary to the 4K byte aligned location in CBFS so that the
   FSP code for TempRamInit may be executed in place.
 </p>
+
+
+<hr>
+<h1><a name="corebootFspDebugging">Enable coreboot/FSP Debugging</a></h1>
+<p>
+  Set the following Kconfig values:
+</p>
+<ul>
+  <li>CONFIG_DISPLAY_FSP_ENTRY_POINTS - Display the FSP entry points in romstage</li>
+  <li>CONFIG_DISPLAY_HOBS - Display and verify the hand-off-blocks (HOBs) returned by MemoryInit</li>
+  <li>CONFIG_DISPLAY_VBT - Display Video BIOS Table (VBT) used for GOP</li>
+  <li>CONFIG_DISPLAY_UPD_DATA - Display the user specified product data passed to MemoryInit and SiliconInit</li>
+</ul>
 
 
 <hr>

@@ -14,6 +14,7 @@
 </p>
 <ol>
   <li><a href="#RequiredFiles">Required Files</a></li>
+  <li>Enable <a href="#SerialOutput">Serial Output</a></li>
 </ol>
 
 
@@ -75,6 +76,30 @@
     </ol>
   </li>
 </ol>
+
+
+<hr>
+<h1><a name="SerialOutput">Enable Serial Output</a></h1>
+<p>
+  Use the following steps to enable serial output:
+</p>
+<ol>
+  <li>Implement the car_mainboard_pre_console_init routine in the com_init.c
+    file:
+    <ol type="A">
+      <li>Power on and enable the UART controller</li>
+      <li>Connect the UART receive and transmit data lines to the
+        appropriate SoC pins
+      </li>
+    </ol>
+  </li>
+  <li>Add Makefile.inc
+    <ol type="A">
+      <li>Add com_init.c to romstage</li>
+    </ol>
+  </li>
+</ol>
+
 
 
 <hr>

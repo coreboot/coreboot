@@ -56,4 +56,8 @@ config BOOT_MEDIA_SPI_BUS
 	int
 	default 1
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "Urara TEST 1"
 endif

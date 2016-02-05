@@ -59,4 +59,9 @@ config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
 	default "auron"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "AURON TEST A-A 9944"
+
 endif

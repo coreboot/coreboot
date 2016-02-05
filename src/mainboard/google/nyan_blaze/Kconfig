@@ -93,4 +93,8 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "BLAZE TEST 9xxx"
 endif # BOARD_GOOGLE_NYAN_BLAZE

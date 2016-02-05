@@ -56,4 +56,8 @@ config HAVE_ME_BIN
 	bool
 	default n
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "X86 PEPPY TEST 4211"
 endif

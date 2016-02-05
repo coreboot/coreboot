@@ -72,4 +72,8 @@ config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	string
 	default "glados_pd"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "GLADOS TEST 1988"
 endif

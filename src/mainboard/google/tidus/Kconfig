@@ -53,4 +53,8 @@ config MAINBOARD_FAMILY
 	depends on GENERATE_SMBIOS_TABLES
 	default "Google_Tidus"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "TIDUS TEST A-A 0595"
 endif

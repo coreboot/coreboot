@@ -44,4 +44,8 @@ config HAVE_ME_BIN
 	bool
 	default n
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "JECHT TEST A-A 8958"
 endif

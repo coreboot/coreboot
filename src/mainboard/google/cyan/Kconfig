@@ -61,4 +61,9 @@ config VGA_BIOS_ID
 	  in soc/intel/braswell/Makefile.inc as 8086,22b1
 
 endif #GOP_SUPPORT
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "CYAN TEST A-A 1829"
 endif # BOARD_GOOGLE_CYAN

@@ -68,4 +68,8 @@ config PMIC_BUS
 	int
 	default 0
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "MICKEY TEST A-A 0352"
 endif #  BOARD_GOOGLE_VEYRON_MICKEY

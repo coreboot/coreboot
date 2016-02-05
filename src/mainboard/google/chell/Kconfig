@@ -71,4 +71,8 @@ config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	string
 	default "chell_pd"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "CHELL TEST 6297"
 endif

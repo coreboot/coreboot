@@ -99,4 +99,8 @@ config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
 	default "ryu"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "SMAUG TEST 2906"
 endif # BOARD_GOOGLE_SMAUG

@@ -53,4 +53,8 @@ config MAINBOARD_FAMILY
 	depends on GENERATE_SMBIOS_TABLES
 	default "Google_Guado"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "GUADO TEST A-A 7416"
 endif

@@ -52,4 +52,8 @@ config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
 	default "pit"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "PEACH TEST A-A 9382"
 endif # BOARD_GOOGLE_PEACH_PIT

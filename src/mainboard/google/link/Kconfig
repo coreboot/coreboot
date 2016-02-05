@@ -44,4 +44,8 @@ config VGA_BIOS_FILE
 	string
 	default "pci8086,0166.rom"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "X86 LINK TEST 6638"
 endif # BOARD_GOOGLE_LINK

@@ -54,4 +54,8 @@ config UART_FOR_CONSOLE
 	int
 	default 3
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "DAISY TEST A-A 9382"
 endif # BOARD_GOOGLE_DAISY

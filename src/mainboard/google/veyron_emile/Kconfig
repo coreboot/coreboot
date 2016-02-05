@@ -68,4 +68,8 @@ config PMIC_BUS
 	int
 	default 0
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "EMILE TEST A-A 0992"
 endif #  BOARD_GOOGLE_VEYRON_EMILE

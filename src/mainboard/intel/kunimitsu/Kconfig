@@ -73,4 +73,8 @@ config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	string
 	default "kunimitsu_pd"
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "KUNIMITSU TEST 8819"
 endif

@@ -91,4 +91,8 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 1
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "RUSH TEST 9382"
 endif # BOARD_GOOGLE_RUSH

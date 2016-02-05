@@ -732,56 +732,7 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 
 endmenu
 
-menu "Payload"
-
-choice
-	prompt "Add a payload"
-	default PAYLOAD_NONE if !ARCH_X86
-	default PAYLOAD_SEABIOS if ARCH_X86
-
-config PAYLOAD_NONE
-	bool "None"
-	help
-	  Select this option if you want to create an "empty" coreboot
-	  ROM image for a certain mainboard, i.e. a coreboot ROM image
-	  which does not yet contain a payload.
-
-	  For such an image to be useful, you have to use 'cbfstool'
-	  to add a payload to the ROM image later.
-
-config PAYLOAD_ELF
-	bool "An ELF executable payload"
-	help
-	  Select this option if you have a payload image (an ELF file)
-	  which coreboot should run as soon as the basic hardware
-	  initialization is completed.
-
-	  You will be able to specify the location and file name of the
-	  payload image later.
-
-source "payloads/external/*/Kconfig.name"
-
-endchoice
-
-source "payloads/external/*/Kconfig"
-
-config PAYLOAD_FILE
-	string "Payload path and filename"
-	depends on PAYLOAD_ELF
-	default "payload.elf"
-	help
-	  The path and filename of the ELF executable file to use as payload.
-
-# TODO: Defined if no payload? Breaks build?
-config COMPRESSED_PAYLOAD_LZMA
-	bool "Use LZMA compression for payloads"
-	default y
-	depends on !PAYLOAD_NONE && !PAYLOAD_LINUX
-	help
-	  In order to reduce the size payloads take up in the ROM chip
-	  coreboot can compress them using the LZMA algorithm.
-
-endmenu
+source "payloads/Kconfig"
 
 menu "Debugging"
 

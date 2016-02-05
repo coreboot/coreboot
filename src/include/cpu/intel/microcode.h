@@ -16,7 +16,8 @@
 #ifndef __CPU__INTEL__MICROCODE__
 #define __CPU__INTEL__MICROCODE__
 
-#ifndef __PRE_RAM__
+#include <stdint.h>
+
 void intel_update_microcode_from_cbfs(void);
 /* Find a microcode that matches the revision and platform family returning
  * NULL if none found. */
@@ -29,6 +30,5 @@ void intel_microcode_load_unlocked(const void *microcode_patch);
 /* SoC specific check to determine if microcode update is really
  * required, will skip microcode update if true. */
 int soc_skip_ucode_update(u32 currrent_patch_id, u32 new_patch_id);
-#endif
 
 #endif

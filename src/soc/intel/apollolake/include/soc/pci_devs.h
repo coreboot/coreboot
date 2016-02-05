@@ -48,8 +48,11 @@
 #define  LPSS_DEV_UART2		_LPSS_PCI_DEV(UART, 2)
 #define  LPSS_DEV_UART3		_LPSS_PCI_DEV(UART, 3)
 
+#define LPC_SLOT		0x1f
+
 #define P2SB_DEV		PCI_DEV(0, 0xd, 0)
 #define PMC_DEV			PCI_DEV(0, 0xd, 1)
 #define SPI_DEV			PCI_DEV(0, 0xd, 2)
+#define LPC_DEV			PCI_DEV(0, LPC_SLOT, 0)
 
 #endif

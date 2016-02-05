@@ -32,6 +32,15 @@ struct soc_intel_apollolake_config {
 	uint8_t pcie_rp3_clkreq_pin;
 	uint8_t pcie_rp4_clkreq_pin;
 	uint8_t pcie_rp5_clkreq_pin;
+
+	/* Generic IO decode ranges */
+	uint32_t gen1_dec;
+	uint32_t gen2_dec;
+	uint32_t gen3_dec;
+	uint32_t gen4_dec;
+
+	/* LPC port ranges */
+	uint16_t lpc_dec;
 };
 
 #endif	/* _SOC_APOLLOLAKE_CHIP_H_ */

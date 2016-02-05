@@ -1,0 +1,4 @@
+Category: sbc
+ROM protocol: SPI
+Flashrom support: y
+Release year: 2014

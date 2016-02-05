@@ -95,4 +95,8 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 			%/romstage) \
 		mts \
 		%/verstage \
+		locales \
+		locale_%.bin \
+		font.bin \
+		vbgfx.bin \
 		,$(1)),COREBOOT,COREBOOT FW_MAIN_A FW_MAIN_B)))

@@ -26,8 +26,10 @@ romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 romstage-y += memmap.c
 romstage-y += mmap_boot.c
 romstage-y += tsc_freq.c
+romstage-y += pmutil.c
 
 smm-y += placeholders.c
+smm-y += pmutil.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c
@@ -42,6 +44,7 @@ ramstage-y += uart.c
 ramstage-y += northbridge.c
 ramstage-y += spi.c
 ramstage-y += tsc_freq.c
+ramstage-y += pmutil.c
 
 postcar-y += exit_car.S
 postcar-y += memmap.c

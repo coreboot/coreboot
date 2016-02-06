@@ -20,6 +20,7 @@
 #include <device/pci.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/gpio.h>
 
 #define GPIO_SPI_WP	24
 #define GPIO_REC_MODE	42
@@ -119,19 +120,16 @@ int get_recovery_mode_switch(void)
 void init_bootmode_straps(void)
 {
 #ifdef __PRE_RAM__
-	u16 gpio_base = pci_read_config32(PCH_LPC_DEV, GPIO_BASE) & 0xfffe;
-	u32 gp_lvl2 = inl(gpio_base + GP_LVL2);
-	u32 gp_lvl = inl(gpio_base + GP_LVL);
 	u32 flags = 0;
 
 	/* Write Protect: GPIO24 = KBC3_SPI_WP#, active high */
-	if (gp_lvl & (1 << GPIO_SPI_WP))
+	if (get_gpio(GPIO_SPI_WP))
 		flags |= (1 << FLAG_SPI_WP);
 	/* Recovery: GPIO42 = CHP3_REC_MODE#, active low */
-	if (!(gp_lvl2 & (1 << (GPIO_REC_MODE-32))))
+	if (!get_gpio(GPIO_REC_MODE))
 		flags |= (1 << FLAG_REC_MODE);
 	/* Developer: GPIO17 = KBC3_DVP_MODE, active high */
-	if (gp_lvl & (1 << GPIO_DEV_MODE))
+	if (get_gpio(GPIO_DEV_MODE))
 		flags |= (1 << FLAG_DEV_MODE);
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 2), SATA_SP, flags);

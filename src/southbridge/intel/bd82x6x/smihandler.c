@@ -30,6 +30,7 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <arch/pci_mmio_cfg.h>
 #include <southbridge/intel/bd82x6x/me.h>
+#include <southbridge/intel/common/gpio.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 
 /* While we read PMBASE dynamically in case it changed, let's

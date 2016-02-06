@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/gpio.h>
 #include "ec.h"
 #include <ec/google/chromeec/ec.h>
 
@@ -73,21 +74,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-	//u16 gen_pmcon_1 = pci_read_config32(dev, GEN_PMCON_1);
-
-	if (!gpio_base)
-		return -1;
-
-	u32 gp_lvl2 = inl(gpio_base + 0x38);
-
-	return (gp_lvl2 >> (57 - 32)) & 1;
+	return get_gpio(57);
 }
 
 int get_lid_switch(void)

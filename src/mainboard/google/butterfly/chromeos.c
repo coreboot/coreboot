@@ -21,6 +21,7 @@
 #include <device/pci.h>
 
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/gpio.h>
 #include <ec/quanta/ene_kb3940q/ec.h>
 #include "ec.h"
 
@@ -28,9 +29,6 @@
 #define DEVMODE_GPIO	54
 #define FORCE_RECOVERY_MODE	0
 #define FORCE_DEVELOPER_MODE	0
-
-
-int get_pch_gpio(unsigned char gpio_num);
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
@@ -92,38 +90,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 }
 #endif
 
-int get_pch_gpio(unsigned char gpio_num)
-{
-	device_t dev;
-	int retval = 0;
-
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
-#endif
-	u16 gpio_base = pci_read_config16(dev, GPIOBASE) & 0xfffe;
-
-	if (!gpio_base)
-		return(0);
-
-	if (gpio_num >= 64){
-		u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
-		retval = ((gp_lvl3 >> (gpio_num - 64)) & 1);
-	} else if (gpio_num >= 32){
-		u32 gp_lvl2 = inl(gpio_base + GP_LVL2);
-		retval = ((gp_lvl2 >> (gpio_num - 32)) & 1);
-	} else {
-		u32 gp_lvl = inl(gpio_base + GP_LVL);
-		retval = ((gp_lvl >> gpio_num) & 1);
-	}
-
-	return retval;
-}
-
 int get_write_protect_state(void)
 {
-	return !get_pch_gpio(WP_GPIO);
+	return !get_gpio(WP_GPIO);
 }
 
 int get_lid_switch(void)
@@ -141,7 +110,7 @@ int get_developer_mode_switch(void)
 #endif
 
 	/* Servo GPIO is active low, reverse it for intial state (request) */
-	dev_mode = !get_pch_gpio(DEVMODE_GPIO);
+	dev_mode = !get_gpio(DEVMODE_GPIO);
 	printk(BIOS_DEBUG,"DEVELOPER MODE FROM GPIO %d: %x\n",DEVMODE_GPIO,
 								 dev_mode);
 

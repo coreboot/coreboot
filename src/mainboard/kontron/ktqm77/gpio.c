@@ -16,7 +16,7 @@
 #ifndef KTQM77_GPIO_H
 #define KTQM77_GPIO_H
 
-#include "southbridge/intel/bd82x6x/gpio.h"
+#include <southbridge/intel/common/gpio.h>
 
 /*
  * TODO: Investigate somehow... Current values are taken from a running

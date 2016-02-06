@@ -1,4 +1,4 @@
-#include "southbridge/intel/bd82x6x/gpio.h"
+#include <southbridge/intel/common/gpio.h>
 static const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0 = GPIO_MODE_NATIVE,
 	.gpio1 = GPIO_MODE_NATIVE,

@@ -32,6 +32,7 @@
 #include "onboard.h"
 #include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/gpio.h>
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>

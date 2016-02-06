@@ -21,6 +21,7 @@
 #include <device/pci.h>
 
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/gpio.h>
 #include "ec.h"
 #include <ec/quanta/it8518/ec.h>
 
@@ -81,20 +82,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-
-	if (!gpio_base)
-		return 0;
-
-	u32 gp_lvl = inl(gpio_base + GP_LVL);
-
-	return !((gp_lvl >> 7) & 1);
+	return !get_gpio(7);
 }
 
 int get_lid_switch(void)

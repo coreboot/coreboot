@@ -21,6 +21,7 @@
 #include <device/pci.h>
 
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/gpio.h>
 #include <ec/compal/ene932/ec.h>
 #include "ec.h"
 
@@ -83,104 +84,41 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_lid_switch(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-
-	if (!gpio_base)
-		return 0;
-
-	u32 gp_lvl = inl(gpio_base + GP_LVL);
-	return (gp_lvl >> 15) & 1;
+	return get_gpio(15);
 }
 
 int get_developer_mode_switch(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
+	u8 gpio = !get_gpio(17);
+	/*
+	 * Dev mode is controlled by EC and uboot stores a flag in TPM.
+	 * This GPIO is only for the debug header.
+	 * It is AND'd to the EC request.
+	 */
 
-	if (!gpio_base)
-		return(0);
-
-/*
- * Dev mode is controled by EC and uboot stores a flag in TPM. This GPIO is only
- * for the debug header. It is AND'd to the EC request.
- */
-
-	u32 gp_lvl = inl(gpio_base + GP_LVL);
-	printk(BIOS_DEBUG,"DEV MODE GPIO 17: %x\n", !((gp_lvl >> 17) & 1));
+	printk(BIOS_DEBUG, "DEV MODE GPIO 17: %x\n", gpio);
 
 	/* GPIO17, active low -- return active high reading and let
 	 * it be inverted by the caller if needed. */
-	return !((gp_lvl >> 17) & 1);
+	return gpio;
 }
 
 int get_write_protect_state(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-
-	if (!gpio_base)
-		return 0;
-
-	u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
-
-	return !((gp_lvl3 >> (70 - 64)) & 1);
+	return !get_gpio(70);
 }
 
 int get_recovery_mode_switch(void)
 {
-	u8 rec_mode;
-
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-
-	if (!gpio_base)
-		return(0);
-
+	u8 gpio = !get_gpio(68);
 	/* GPIO68, active low. For Servo support
 	 * Treat as active high and let the caller invert if needed. */
-	u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
-	rec_mode = !((gp_lvl3 >> (68 - 64)) & 1);
-	printk(BIOS_DEBUG,"REC MODE GPIO 68: %x\n", rec_mode);
+	printk(BIOS_DEBUG, "REC MODE GPIO 68: %x\n", gpio);
 
-	return (rec_mode);
+	return gpio;
 }
 
 int parrot_ec_running_ro(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-
-	if (!gpio_base)
-		return(0);
-
-	/* GPIO68 EC_RW is active low.
-	 * Treat as active high and let the caller invert if needed. */
-	u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
-	return !((gp_lvl3 >> (68 - 64)) & 1);
+	return !get_gpio(68);
 }

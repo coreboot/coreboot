@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/common/gpio.h>
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
@@ -81,30 +82,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_developer_mode_switch(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-	u32 gp_lvl2 = inl(gpio_base + 0x38);
-
-	/* Developer: GPIO17, active high */
-	return (gp_lvl2 >> (57-32)) & 1;
+	/* Developer: GPIO57, active high */
+	return get_gpio(57);
 }
 
 int get_recovery_mode_switch(void)
 {
-	device_t dev;
-#ifdef __PRE_RAM__
-	dev = PCI_DEV(0, 0x1f, 0);
-#else
-	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
-#endif
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-	u32 gp_lvl = inl(gpio_base + 0x0c);
-
 	/* Recovery: GPIO22, active low */
-	return !((gp_lvl >> 22) & 1);
+	return !get_gpio(22);
 }

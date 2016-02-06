@@ -16,7 +16,7 @@
 #ifndef PARROT_GPIO_H
 #define PARROT_GPIO_H
 
-#include "southbridge/intel/bd82x6x/gpio.h"
+#include <southbridge/intel/common/gpio.h>
 
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0  = GPIO_MODE_NONE,	/* NOT USED */

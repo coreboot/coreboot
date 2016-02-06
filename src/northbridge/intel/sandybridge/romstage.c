@@ -31,7 +31,7 @@
 #include <tpm.h>
 #include <northbridge/intel/sandybridge/chip.h>
 #include "southbridge/intel/bd82x6x/pch.h"
-#include "southbridge/intel/bd82x6x/gpio.h"
+#include <southbridge/intel/common/gpio.h>
 
 static void early_pch_init(void)
 {

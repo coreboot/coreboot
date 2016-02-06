@@ -16,7 +16,7 @@
 #ifndef STUMPY_GPIO_H
 #define STUMPY_GPIO_H
 
-#include "southbridge/intel/bd82x6x/gpio.h"
+#include <southbridge/intel/common/gpio.h>
 
 /*
  * GPIO SET 1 includes GPIO0 to GPIO31

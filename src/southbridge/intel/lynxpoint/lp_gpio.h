@@ -163,4 +163,15 @@ struct pch_lp_gpio_map {
 /* Configure GPIOs with mainboard provided settings */
 void setup_pch_lp_gpios(const struct pch_lp_gpio_map map[]);
 
+/* get GPIO pin value */
+int get_gpio(int gpio_num);
+/*
+ * get a number comprised of multiple GPIO values. gpio_num_array points to
+ * the array of gpio pin numbers to scan, terminated by -1.
+ */
+unsigned get_gpios(const int *gpio_num_array);
+
+void set_gpio(int gpio_num, int value);
+
+int gpio_is_native(int gpio_num);
 #endif

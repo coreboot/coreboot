@@ -16,7 +16,7 @@
 #ifndef BASKING_RIDGE_GPIO_H
 #define BASKING_RIDGE_GPIO_H
 
-#include "southbridge/intel/lynxpoint/gpio.h"
+#include <southbridge/intel/common/gpio.h>
 
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0 = GPIO_MODE_GPIO,    /* PCH_GPIO0_R -> S_GPIO -> J9F4 */

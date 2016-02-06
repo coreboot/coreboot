@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/lynxpoint/pch.h>
+#include <southbridge/intel/common/gpio.h>
 
 #if CONFIG_EC_GOOGLE_CHROMEEC
 #include "ec.h"

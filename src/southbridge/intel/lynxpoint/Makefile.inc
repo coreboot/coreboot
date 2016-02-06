@@ -51,10 +51,6 @@ ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)
 romstage-y += lp_gpio.c
 ramstage-y += lp_gpio.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += lp_gpio.c
-else
-romstage-y += gpio.c
-ramstage-y += gpio.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += gpio.c
 endif
 
 endif

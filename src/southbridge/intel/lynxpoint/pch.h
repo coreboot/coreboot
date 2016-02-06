@@ -167,21 +167,6 @@ void enable_all_gpe(u32 set1, u32 set2, u32 set3, u32 set4);
 void disable_all_gpe(void);
 void enable_gpe(u32 mask);
 void disable_gpe(u32 mask);
-/*
- * get GPIO pin value
- */
-int get_gpio(int gpio_num);
-/*
- * Get a number comprised of multiple GPIO values. gpio_num_array points to
- * the array of gpio pin numbers to scan, terminated by -1.
- */
-unsigned get_gpios(const int *gpio_num_array);
-/*
- * Set GPIO pin value.
- */
-void set_gpio(int gpio_num, int value);
-/* Return non-zero if gpio is set to native function. 0 otherwise. */
-int gpio_is_native(int gpio_num);
 
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>

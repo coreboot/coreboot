@@ -27,7 +27,7 @@
 #if CONFIG_INTEL_LYNXPOINT_LP
 #include "lp_gpio.h"
 #else
-#include "gpio.h"
+#include "southbridge/intel/common/gpio.h"
 #endif
 
 const struct rcba_config_instruction pch_early_config[] = {

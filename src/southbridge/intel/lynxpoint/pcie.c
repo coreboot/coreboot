@@ -20,6 +20,7 @@
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
 #include "pch.h"
+#include <southbridge/intel/common/gpio.h>
 
 static void pcie_update_cfg8(device_t dev, int reg, u8 mask, u8 or);
 static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or);

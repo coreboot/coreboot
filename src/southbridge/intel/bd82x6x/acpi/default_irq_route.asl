@@ -20,7 +20,12 @@ Method(_PRT)
 	If (PICM) {
 		Return (Package() {
 			/* Onboard graphics (IGD)	0:2.0 */
-			Package() { 0x0002ffff, 0, 0, 16 },/*              GFX    INTA -> PIRQA (MSI) */
+			Package() { 0x0002ffff, 0, 0, 16 },/*  GFX                INTA -> PIRQA (MSI) */
+			/* PCI Express Graphics (PEG)	0:1.0 */
+			Package() { 0x0001ffff, 0, 0, 16 },/*  GFX         PCIe   INTA -> PIRQA (MSI) */
+			Package() { 0x0001ffff, 0, 0, 17 },/*  GFX         PCIe   INTB -> PIRQB (MSI) */
+			Package() { 0x0001ffff, 0, 0, 18 },/*  GFX         PCIe   INTC -> PIRQC (MSI) */
+			Package() { 0x0001ffff, 0, 0, 19 },/*  GFX         PCIe   INTD -> PIRQD (MSI) */
 			/* XHCI	0:14.0 (ivy only) */
 			Package() { 0x0014ffff, 0, 0, 19 },
 			/* High Definition Audio	0:1b.0 */
@@ -44,6 +49,11 @@ Method(_PRT)
 		Return (Package() {
 			/* Onboard graphics (IGD)	0:2.0 */
 			Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			/* PCI Express Graphics (PEG)	0:1.0 */
+			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKB, 0 },
+			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKC, 0 },
+			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKD, 0 },
 			/* XHCI   0:14.0 (ivy only) */
 			Package() { 0x0014ffff, 0, \_SB.PCI0.LPCB.LNKD, 0 },
 			/* High Definition Audio	0:1b.0 */

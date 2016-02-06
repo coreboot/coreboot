@@ -32,6 +32,7 @@
  *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
  */
 #include "northbridge/intel/nehalem/nehalem.h"
+#include <southbridge/intel/common/gpio.h>
 #include <arch/pci_mmio_cfg.h>
 
 /* While we read PMBASE dynamically in case it changed, let's

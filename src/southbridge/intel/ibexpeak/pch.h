@@ -432,22 +432,6 @@ void southbridge_configure_default_intmap(void);
 #define PCH_DISABLE_MEI1	(1 << 1)
 #define PCH_ENABLE_DBDF		(1 << 0)
 
-/* ICH7 GPIOBASE */
-#define GPIO_USE_SEL	0x00
-#define GP_IO_SEL	0x04
-#define GP_LVL		0x0c
-#define GPO_BLINK	0x18
-#define GPI_INV		0x2c
-#define GPIO_USE_SEL2	0x30
-#define GP_IO_SEL2	0x34
-#define GP_LVL2		0x38
-#define GPIO_USE_SEL3	0x40
-#define GP_IO_SEL3	0x44
-#define GP_LVL3		0x48
-#define GP_RST_SEL1	0x60
-#define GP_RST_SEL2	0x64
-#define GP_RST_SEL3	0x68
-
 /* ICH7 PMBASE */
 #define PM1_STS		0x00
 #define   WAK_STS	(1 << 15)

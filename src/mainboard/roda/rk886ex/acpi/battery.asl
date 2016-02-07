@@ -144,7 +144,7 @@ Device (BAT1)
 		Store ("Bad", Index(PBIF, 10))
 		Store ("Bad", Index(PBIF, 11))
 		Store ("Bad", Index(PBIF, 12))
-		Store (1, PBIF)
+		Store (1, Index(PBIF, 0))
 	}
 
 	Method(IVBS, 0)
@@ -284,7 +284,7 @@ Device (BAT2)
 		Store ("Bad", Index(PBIF, 10))
 		Store ("Bad", Index(PBIF, 11))
 		Store ("Bad", Index(PBIF, 12))
-		Store (1, PBIF)
+		Store (1, Index(PBIF, 0))
 	}
 
 	Method(IVBS, 0)

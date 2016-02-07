@@ -163,7 +163,7 @@ Device (BATX)
 		//  Design capacity of High (5%)
 		//  Design capacity of Low (1%)
 		//
-		Divide (Local0,  20, Local1, Index (PBIF, 5))
+		Divide (Local0,  20, , Index (PBIF, 5))
 		Divide (Local0, 100, , Index (PBIF, 6))
 
 		//

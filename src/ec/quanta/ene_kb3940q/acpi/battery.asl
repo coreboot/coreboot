@@ -85,7 +85,7 @@ Device (BATX)
 		Store (BDC0, Index (PBIF, 1)) // Batt Design Capacity
 		Store (BFC0, Index (PBIF, 2)) // Batt Last Full Charge Capacity
 		Store (BDV0, Index (PBIF, 4)) // Batt Design Voltage
-		Divide(BFC0, 0x64, Local0, Local1)
+		Divide(BFC0, 0x64, , Local1)
 		Multiply(Local1, 0x0A, Local0)
 		Store(Local0, Index(PBIF, 5))
 		Multiply(Local1, 0x05, Local0)

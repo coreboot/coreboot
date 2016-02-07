@@ -71,10 +71,10 @@ Scope(\_SB) {
 			Store(\_SB.PCI0.LPCB.EC0.BFC0, Local0)
 			Store(Local0, Index(PBIF, 2))
 
-			Divide(Local0, 10, Local1, Local2)
+			Divide(Local0, 10, , Local2)
 			Store(Local2, Index(PBIF, 5))
 
-			Divide(Local0, 20, Local1, Local2)
+			Divide(Local0, 20, , Local2)
 			Store(Local2, Index(PBIF, 6))
 
 			If(\_SB.PCI0.LPCB.EC0.BTYP) {
@@ -176,10 +176,10 @@ Scope(\_SB) {
 			Store(\_SB.PCI0.LPCB.EC0.BFC2, Local0)
 			Store(Local0, Index(PBIF, 2))
 
-			Divide(Local0, 10, Local1, Local2)
+			Divide(Local0, 10, , Local2)
 			Store(Local2, Index(PBIF, 5))
 
-			Divide(Local0, 20, Local1, Local2)
+			Divide(Local0, 20, , Local2)
 			Store(Local2, Index(PBIF, 6))
 
 			If(\_SB.PCI0.LPCB.EC0.BTY2) {

@@ -18,6 +18,12 @@
 #ifndef _QUARK_PCI_DEVS_H_
 #define _QUARK_PCI_DEVS_H_
 
+#include <device/pci.h>
+#include <soc/QuarkNcSocId.h>
+
+/* DEVICE 0 (Memroy Controller Hub) */
+#define MC_BDF		PCI_DEV(PCI_BUS_NUMBER_QNC, MC_DEV, MC_FUN)
+
 /* IO Fabric 1 */
 #define SIO1_DEV 0x14
 # define HSUART1_DEV SIO1_DEV

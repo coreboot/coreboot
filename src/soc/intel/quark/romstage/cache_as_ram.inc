@@ -154,6 +154,13 @@ before_romstage:
 
 	/* Call cache_as_ram_main(struct cache_as_ram_params *) */
 	call	cache_as_ram_main
+
+/* One will never return from cache_as_ram_main() in verstage so there's
+ * no such thing as after ram init. */
+#if !ENV_VERSTAGE
+#include "src/drivers/intel/fsp1_1/after_raminit.S"
+#endif
+
 	movb	$0x69, %ah
 	jmp	.Lhlt
 

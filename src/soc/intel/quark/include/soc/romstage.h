@@ -22,8 +22,14 @@
 #error "Don't include romstage.h from a ramstage compilation unit!"
 #endif
 
+#include <fsp/romstage.h>
 #include <fsp/util.h>
+#include <soc/QuarkNcSocId.h>
 
+void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
+uint32_t mdr_read(void);
+void mdr_write(uint32_t value);
+void mea_write(uint32_t reg_address);
 int set_base_address_and_enable_uart(u8 bus, u8 dev, u8 func, u32 mmio_base);
 
 #endif /* _QUARK_ROMSTAGE_H_ */

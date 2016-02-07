@@ -270,6 +270,8 @@ Device (EC0)
 
 		// Force a read of CPU temperature
 		Store (CTML, Local0)
+		/* So that we don't get a warning that Local0 is unused.  */
+		Increment (Local0)
 	}
 
 

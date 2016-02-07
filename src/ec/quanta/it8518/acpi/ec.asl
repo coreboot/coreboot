@@ -568,6 +568,9 @@ Device (EC0)
 		// Force a read of CPU temperature
 		// TODO Which temperature corresponds to the CPU?
 		Store (TMP0, Local0)
+		/* So that we don't get a warning that Local0 is unused.  */
+		Increment (Local0)
+
 	}
 
 /* Attention Codes

@@ -14,9 +14,12 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
+#include <console/console.h>
 #include <fsp/car.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
+#include <soc/pm.h>
 #include <soc/romstage.h>
 
 void car_soc_pre_console_init(void)
@@ -24,4 +27,15 @@ void car_soc_pre_console_init(void)
 	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART1))
 		set_base_address_and_enable_uart(0, HSUART1_DEV, HSUART1_FUNC,
 			UART_BASE_ADDRESS);
+}
+
+static struct chipset_power_state power_state CAR_GLOBAL;
+
+struct chipset_power_state *fill_power_state(void)
+{
+	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
+
+	ps->prev_sleep_state = 0;
+	printk(BIOS_DEBUG, "prev_sleep_state %d\n", ps->prev_sleep_state);
+	return ps;
 }

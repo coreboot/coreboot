@@ -115,7 +115,46 @@ CAR_init_done:
 #endif /* CONFIG_ENABLE_DEBUG_LED_TEMPRAMINIT */
 
 	/* Set up bootloader stack */
-	clrl	%eax
+	movl	%edx, %esp
+
+	/*
+	 * eax:  0
+	 * ebp:  FSP_INFO_HEADER address
+	 * ecx:  Temp RAM base
+	 * edx:  Temp RAM top
+	 * edi:  BIST value
+	 * esp:  Top of stack in temp RAM
+	 */
+
+	/* Create cache_as_ram_params on stack */
+	pushl	%edx	/* bootloader CAR end */
+	pushl	%ecx	/* bootloader CAR begin */
+	pushl	%ebp	/* FSP_INFO_HEADER */
+	pushl	$0	/* BIST - esram_init.inc catches non-zero BIST values */
+	/* TODO: Locate 64-bits of storage for initial TSC value */
+	pushl	$0	/* tsc[63:32] */
+	pushl	$0 	/* tsc[31:0] */
+	pushl	%esp	/* pointer to cache_as_ram_params */
+
+	/* Save FSP_INFO_HEADER location in ebx */
+	mov	%ebp, %ebx
+
+	/* Coreboot assumes stack/heap region will be zero */
+	cld
+	movl	%ecx, %edi
+	neg	%ecx
+	/* Only clear up to current stack value. */
+	add	%esp, %ecx
+	shrl	$2, %ecx
+	xorl	%eax, %eax
+	rep	stosl
+
+before_romstage:
+	post_code(0x2A)
+
+	/* Call cache_as_ram_main(struct cache_as_ram_params *) */
+	call	cache_as_ram_main
+	movb	$0x69, %ah
 	jmp	.Lhlt
 
 halt1:

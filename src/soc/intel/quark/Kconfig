@@ -26,7 +26,36 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_RAMSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_VERSTAGE_X86_32
+	select SOC_INTEL_COMMON
+	select TSC_CONSTANT_RATE
+	select UDELAY_TSC
 	select USE_MARCH_586
+
+#####
+# Debug serial output
+#     The following options configure the debug serial port
+#####
+
+config ENABLE_BUILTIN_HSUART1
+	bool "Enable built-in HSUART1"
+	default y
+	select NO_UART_ON_SUPERIO
+	select DRIVERS_UART_8250MEM_32
+	help
+	  The Quark SoC has two HSUART. Choose this option to configure the pads
+	  and enable HSUART1, which can be used for the debug console.
+
+config TTYS0_BASE
+	hex "HSUART1 Base Address"
+	depends on ENABLE_BUILTIN_HSUART1
+	default 0xA0019000
+	help
+	  Memory mapped MMIO of HSUART1.
+
+config TTYS0_LCS
+	int
+	depends on ENABLE_BUILTIN_HSUART1
+	default 3
 
 #####
 # Debug support
@@ -63,6 +92,19 @@ config ENABLE_DEBUG_LED_TEMPRAMINIT
 	select ENABLE_DEBUG_LED
 	help
 	  Indicate that TempRamInit was successful.
+
+#####
+# ESRAM layout
+#     Specify the portion of the ESRAM for coreboot to use as its data area.
+#####
+
+config DCACHE_RAM_BASE
+	hex
+	default 0x80070000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x00008000
 
 #####
 # Flash layout

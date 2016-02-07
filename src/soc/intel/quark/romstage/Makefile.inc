@@ -14,3 +14,4 @@
 #
 
 cpu_incs-y += $(src)/soc/intel/quark/romstage/esram_init.inc
+cpu_incs-y += $(src)/soc/intel/quark/romstage/cache_as_ram.inc

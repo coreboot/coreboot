@@ -452,6 +452,21 @@ stackless_PCIConfig_Read:
 
 esram_init_done:
 
+#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
+
+	/* Copy FSP image to eSRAM and call it. */
+	/* TODO: FSP location/size could be got in a routine. */
+	cld
+	movl	$(0x00040000), %ecx               /* 256K DWORDs = 64K */
+	shrl	$2, %ecx
+	movl	$CONFIG_FSP_LOC, %esi   /* The source address. */
+	movl	$CONFIG_FSP_ESRAM_LOC, %edi   /* FSP destination in ESRAM */
+	rep	movsl
+#endif /* CONFIG_PLATFORM_USES_FSP1_1 */
+
+#if IS_ENABLED(CONFIG_ENABLE_DEBUG_LED)
+sd_led:
+
 .equ  SD_PFA, (0x14 << 11)    		/* B0:D20:F0 - SDIO controller */
 .equ  SD_CFG_BASE, (PCI_CFG | SD_PFA)	/* SD cntrl base in PCI config space */
 .equ  SD_CFG_CMD, (SD_CFG_BASE+0x04)	/* Command reg in PCI config space */
@@ -488,6 +503,7 @@ L43:
 	jmp	stackless_PCIConfig_Read
 
 L44:
+#if IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_ESRAM)
 	/* Turn on SD LED to indicate ESRAM successfully initialized */
 	movl	$SD_HOST_CTRL, %ebx
 	movb	0(%ebx), %al
@@ -496,3 +512,5 @@ L44:
 
 	/* Loop forever */
 	jmp	.
+#endif /* CONFIG_ENABLE_DEBUG_LED_ESRAM */
+#endif /* CONFIG_ENABLE_DEBUG_LED */

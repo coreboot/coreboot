@@ -27,6 +27,18 @@ CPPFLAGS_common += -I$(src)/soc/intel/quark/include
 # Chipset microcode path
 CPPFLAGS_common += -I3rdparty/blobs/soc/intel/quark
 
+# Add the FSP binary to the CBFS image
+cbfs-files-$(CONFIG_ADD_FSP_RAW_BIN) += fsp.bin
+fsp.bin-file := $(call strip_quotes,$(CONFIG_FSP_FILE))
+fsp.bin-position := $(CONFIG_FSP_LOC)
+fsp.bin-type := raw
+
+# Add the platform data file to the CBFS image
+cbfs-files-$(CONFIG_ADD_FSP_PDAT_FILE) += pdat.bin
+pdat.bin-file := $(call strip_quotes,$(CONFIG_FSP_PDAT_FILE))
+pdat.bin-position := $(CONFIG_FSP_PDAT_LOC)
+pdat.bin-type := raw
+
 # Add the chipset microcode file to the CBFS image
 cbfs-files-$(CONFIG_ADD_RMU_FILE) += rmu.bin
 rmu.bin-file := $(call strip_quotes,$(CONFIG_RMU_FILE))

@@ -34,6 +34,11 @@ void car_soc_pre_console_init(void)
 			UART_BASE_ADDRESS);
 }
 
+void car_soc_post_console_init(void)
+{
+	report_platform_info();
+};
+
 static struct chipset_power_state power_state CAR_GLOBAL;
 
 struct chipset_power_state *fill_power_state(void)

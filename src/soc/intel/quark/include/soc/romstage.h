@@ -30,6 +30,7 @@ void mcr_write(uint8_t opcode, uint8_t port, uint32_t reg_address);
 uint32_t mdr_read(void);
 void mdr_write(uint32_t value);
 void mea_write(uint32_t reg_address);
+void report_platform_info(void);
 int set_base_address_and_enable_uart(u8 bus, u8 dev, u8 func, u32 mmio_base);
 
 #endif /* _QUARK_ROMSTAGE_H_ */

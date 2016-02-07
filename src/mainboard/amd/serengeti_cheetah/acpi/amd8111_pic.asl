@@ -27,7 +27,6 @@
                 {
                     Store (0x01, Local3)
                     And (\_SB.PCI0.SBC3.PIBA, 0x0F, Local1)
-                    Store (Local1, Local2)
                     If (LGreater (Local1, 0x07))
                     {
                         Subtract (Local1, 0x08, Local1)
@@ -115,7 +114,6 @@
                     Store (0x01, Local3)
                     And (\_SB.PCI0.SBC3.PIBA, 0xF0, Local1)
                     ShiftRight (Local1, 0x04, Local1)
-                    Store (Local1, Local2)
                     If (LGreater (Local1, 0x07))
                     {
                         Subtract (Local1, 0x08, Local1)
@@ -204,7 +202,6 @@
                 {
                     Store (0x01, Local3)
                     And (\_SB.PCI0.SBC3.PIDC, 0x0F, Local1)
-                    Store (Local1, Local2)
                     If (LGreater (Local1, 0x07))
                     {
                         Subtract (Local1, 0x08, Local1)
@@ -292,7 +289,6 @@
                     Store (0x01, Local3)
                     And (\_SB.PCI0.SBC3.PIDC, 0xF0, Local1)
                     ShiftRight (Local1, 0x04, Local1)
-                    Store (Local1, Local2)
                     If (LGreater (Local1, 0x07))
                     {
                         Subtract (Local1, 0x08, Local1)

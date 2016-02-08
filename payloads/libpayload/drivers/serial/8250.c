@@ -46,7 +46,10 @@ static uint8_t serial_read_reg(int offset)
 		return inb(IOBASE + offset);
 	else
 #endif
-		return readb(MEMBASE + offset);
+		if (lib_sysinfo.serial->regwidth == 4)
+			return readl(MEMBASE + offset) & 0xff;
+		else
+			return readb(MEMBASE + offset);
 }
 
 static void serial_write_reg(uint8_t val, int offset)
@@ -58,7 +61,10 @@ static void serial_write_reg(uint8_t val, int offset)
 		outb(val, IOBASE + offset);
 	else
 #endif
-		writeb(val, MEMBASE + offset);
+		if (lib_sysinfo.serial->regwidth == 4)
+			writel(val & 0xff, MEMBASE + offset);
+		else
+			writeb(val, MEMBASE + offset);
 }
 
 #if IS_ENABLED(CONFIG_LP_SERIAL_SET_SPEED)

@@ -439,6 +439,7 @@ build_GCC() {
 		--disable-libssp --disable-bootstrap --disable-nls \
 		--disable-libquadmath --without-headers \
 		--disable-threads \
+		--enable-interwork --enable-multilib \
 		--disable-libatomic --disable-libcc1 --disable-decimal-float \
 		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \

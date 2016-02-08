@@ -29,9 +29,12 @@
 #define kBitModelTotal (1 << kNumBitModelTotalBits)
 #define kNumMoveBits 5
 
-/* Use 32-bit reads whenever possible to avoid bad flash performance.  */
+/* Use 32-bit reads whenever possible to avoid bad flash performance. Fall back
+ * to byte reads for last 4 bytes since RC_TEST returns an error when BufferLim
+ * is *reached* (not surpassed!), meaning we can't allow that to happen while
+ * there are still bytes to decode from the algorithm's point of view. */
 #define RC_READ_BYTE (look_ahead_ptr < 4 ? look_ahead.raw[look_ahead_ptr++] \
-		      : ((((uintptr_t) Buffer & 3) || ((SizeT) (BufferLim - Buffer) < 4)) ? (*Buffer++) \
+		      : ((((uintptr_t) Buffer & 3) || ((SizeT) (BufferLim - Buffer) <= 4)) ? (*Buffer++) \
 	   : ((look_ahead.dw = *(UInt32 *)Buffer), (Buffer += 4), (look_ahead_ptr = 1), look_ahead.raw[0])))
 
 #define RC_INIT2 Code = 0; Range = 0xFFFFFFFF; \

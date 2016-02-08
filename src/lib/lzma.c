@@ -16,9 +16,10 @@
 
 #include "lzmadecode.h"
 
-unsigned long ulzma(unsigned char * src, unsigned char * dst)
+size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 {
 	unsigned char properties[LZMA_PROPERTIES_SIZE];
+	const int data_offset = LZMA_PROPERTIES_SIZE + 8;
 	UInt32 outSize;
 	SizeT inProcessed;
 	SizeT outProcessed;
@@ -26,7 +27,7 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 	CLzmaDecoderState state;
 	SizeT mallocneeds;
 	MAYBE_STATIC unsigned char scratchpad[15980];
-	unsigned char *cp;
+	const unsigned char *cp;
 
 	/* Note: these timestamps aren't useful for memory-mapped media (x86) */
 	timestamp_add_now(TS_START_ULZMA);
@@ -37,7 +38,8 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 	 * byte and re-construct. */
 	cp = src + LZMA_PROPERTIES_SIZE;
 	outSize = cp[3] << 24 | cp[2] << 16 | cp[1] << 8 | cp[0];
-	if (LzmaDecodeProperties(&state.Properties, properties, LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK) {
+	if (LzmaDecodeProperties(&state.Properties, properties,
+				 LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK) {
 		printk(BIOS_WARNING, "lzma: Incorrect stream properties.\n");
 		return 0;
 	}
@@ -47,12 +49,17 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 		return 0;
 	}
 	state.Probs = (CProb *)scratchpad;
-	res = LzmaDecode(&state, src + LZMA_PROPERTIES_SIZE + 8, (SizeT)0xffffffff, &inProcessed,
-		dst, outSize, &outProcessed);
+	res = LzmaDecode(&state, src + data_offset, srcn - data_offset,
+			 &inProcessed, dst, outSize, &outProcessed);
 	if (res != 0) {
 		printk(BIOS_WARNING, "lzma: Decoding error = %d\n", res);
 		return 0;
 	}
 	timestamp_add_now(TS_END_ULZMA);
 	return outProcessed;
+}
+
+size_t ulzma(const void *src, void *dst)
+{
+	return ulzman(src, ~(size_t)0, dst, ~(size_t)0);
 }

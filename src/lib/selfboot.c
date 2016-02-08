@@ -378,12 +378,12 @@ static int load_self_segments(
 		/* Copy data from the initial buffer */
 		if (ptr->s_filesz) {
 			unsigned char *middle, *end;
-			size_t len;
-			len = ptr->s_filesz;
+			size_t len = ptr->s_filesz;
+			size_t memsz = ptr->s_memsz;
 			switch(ptr->compression) {
 				case CBFS_COMPRESS_LZMA: {
 					printk(BIOS_DEBUG, "using LZMA\n");
-					len = ulzma(src, dest);
+					len = ulzman(src, len, dest, memsz);
 					if (!len) /* Decompression Error. */
 						return 0;
 					break;
@@ -397,7 +397,7 @@ static int load_self_segments(
 					printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", ptr->compression);
 					return -1;
 			}
-			end = dest + ptr->s_memsz;
+			end = dest + memsz;
 			middle = dest + len;
 			printk(BIOS_SPEW, "[ 0x%08lx, %08lx, 0x%08lx) <- %08lx\n",
 				(unsigned long)dest,

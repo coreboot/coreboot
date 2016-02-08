@@ -162,6 +162,13 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->ISPEnable = config->ISPEnable;
 	params->ISPPciDevConfig = config->ISPPciDevConfig;
 	params->PcdSdDetectChk = config->PcdSdDetectChk;
+	params->I2C0Frequency = config->I2C0Frequency;
+	params->I2C1Frequency = config->I2C1Frequency;
+	params->I2C2Frequency = config->I2C2Frequency;
+	params->I2C3Frequency = config->I2C3Frequency;
+	params->I2C4Frequency = config->I2C4Frequency;
+	params->I2C5Frequency = config->I2C5Frequency;
+	params->I2C6Frequency = config->I2C6Frequency;
 }
 
 void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,

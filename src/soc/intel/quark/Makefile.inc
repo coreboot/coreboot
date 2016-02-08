@@ -22,10 +22,12 @@ romstage-y += memmap.c
 romstage-y += tsc_freq.c
 romstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart.c
 
+ramstage-y += chip.c
 ramstage-y += memmap.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart.c
 
+CPPFLAGS_common += -I$(src)/soc/intel/quark
 CPPFLAGS_common += -I$(src)/soc/intel/quark/include
 
 # Chipset microcode path

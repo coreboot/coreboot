@@ -68,10 +68,19 @@ config ENABLE_MRC_CACHE
 	  This can either be used for fast boot, or just because the FSP wants
 	  it to be saved.
 
+config MRC_CACHE_FMAP
+	bool "Use MRC Cache in FMAP"
+	depends on ENABLE_MRC_CACHE
+	default n
+	help
+	  Use the region "RW_MRC_CACHE" in FMAP instead of "mrc.cache" in CBFS.
+	  You must define a region in your FMAP named "RW_MRC_CACHE".
+
 config MRC_CACHE_SIZE
 	hex "Fast Boot Data Cache Size"
 	default 0x10000
 	depends on ENABLE_MRC_CACHE
+	depends on !MRC_CACHE_FMAP
 	help
 	  This is the amount of space in NV storage that is reserved for the
 	  fast boot data cache storage.

@@ -31,6 +31,7 @@ fsp.bin-type := fsp
 endif
 
 ifeq ($(CONFIG_ENABLE_MRC_CACHE),y)
+ifneq ($(CONFIG_MRC_CACHE_FMAP),y)
 $(obj)/mrc.cache:
 	dd if=/dev/zero count=1 \
 	bs=$(shell printf "%d" $(CONFIG_MRC_CACHE_SIZE) ) | \
@@ -40,5 +41,6 @@ cbfs-files-y += mrc.cache
 mrc.cache-file := $(obj)/mrc.cache
 mrc.cache-align := 0x10000
 mrc.cache-type := mrc_cache
+endif
 endif
 

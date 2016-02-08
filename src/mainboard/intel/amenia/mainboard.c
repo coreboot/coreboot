@@ -17,6 +17,8 @@
 
 #include <device/device.h>
 #include <soc/gpio.h>
+#include <soc/pci_devs.h>
+#include "ec.h"
 
 /* TODO: Move GPIO config to its own file once we get more GPIOs in the list */
 static const struct pad_config amenia_gpios[] = {
@@ -136,6 +138,7 @@ static const struct pad_config amenia_gpios[] = {
 static void mainboard_init(void *chip_info)
 {
 	gpio_configure_pads(amenia_gpios, ARRAY_SIZE(amenia_gpios));
+	mainboard_ec_init();
 }
 
 struct chip_operations mainboard_ops = {

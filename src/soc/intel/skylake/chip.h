@@ -326,6 +326,8 @@ struct soc_intel_skylake_config {
 	/* PL2 Override value in Watts */
 	u32 tdp_pl2_override;
 	u8 PmTimerDisabled;
+	/* Intel Speed Shift Technology */
+	u8 speed_shift_enable;
 };
 
 typedef struct soc_intel_skylake_config config_t;

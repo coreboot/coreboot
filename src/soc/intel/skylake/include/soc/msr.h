@@ -36,6 +36,9 @@
 #define IA32_MISC_ENABLE		0x1a0
 #define MSR_MISC_PWR_MGMT		0x1aa
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)
+#define  MISC_PWR_MGMT_ISST_EN	(1 << 6)
+#define  MISC_PWR_MGMT_ISST_EN_INT	(1 << 7)
+#define  MISC_PWR_MGMT_ISST_EN_EPP	(1 << 12)
 #define MSR_TURBO_RATIO_LIMIT		0x1ad
 #define MSR_TEMPERATURE_TARGET		0x1a2
 #define IA32_PERF_CTL			0x199

@@ -207,6 +207,32 @@ static void configure_thermal_target(void)
 	}
 }
 
+static void configure_isst(void)
+{
+	device_t dev = SA_DEV_ROOT;
+	config_t *conf = dev->chip_info;
+	msr_t msr;
+
+	if (conf->speed_shift_enable) {
+		/*
+		* Kernel driver checks CPUID.06h:EAX[Bit 7] to determine if HWP
+		  is supported or not. Coreboot needs to configure MSR 0x1AA
+		  which is then reflected in the CPUID register.
+		*/
+		msr = rdmsr(MSR_MISC_PWR_MGMT);
+		msr.lo |= MISC_PWR_MGMT_ISST_EN; /* Enable Speed Shift */
+		msr.lo |= MISC_PWR_MGMT_ISST_EN_INT; /* Enable Interrupt */
+		msr.lo |= MISC_PWR_MGMT_ISST_EN_EPP; /* Enable EPP */
+		wrmsr(MSR_MISC_PWR_MGMT, msr);
+	} else {
+		msr = rdmsr(MSR_MISC_PWR_MGMT);
+		msr.lo &= ~MISC_PWR_MGMT_ISST_EN; /* Disable Speed Shift */
+		msr.lo &= ~MISC_PWR_MGMT_ISST_EN_INT; /* Disable Interrupt */
+		msr.lo &= ~MISC_PWR_MGMT_ISST_EN_EPP; /* Disable EPP */
+		wrmsr(MSR_MISC_PWR_MGMT, msr);
+	}
+}
+
 static void configure_misc(void)
 {
 	msr_t msr;
@@ -334,6 +360,9 @@ static void cpu_core_init(device_t cpu)
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();
+
+	/* Configure Intel Speed Shift */
+	configure_isst();
 
 	/* Thermal throttle activation offset */
 	configure_thermal_target();

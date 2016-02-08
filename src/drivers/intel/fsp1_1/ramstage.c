@@ -89,9 +89,8 @@ static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 		       "ERROR - Missing one or more required FSP HOBs!\n");
 }
 
-static void fsp_run_silicon_init(int is_s3_wakeup)
+void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 {
-	FSP_INFO_HEADER *fsp_info_header;
 	FSP_SILICON_INIT fsp_silicon_init;
 	SILICON_INIT_UPD *original_params;
 	SILICON_INIT_UPD silicon_init_params;
@@ -99,8 +98,7 @@ static void fsp_run_silicon_init(int is_s3_wakeup)
 	UPD_DATA_REGION *upd_ptr;
 	VPD_DATA_REGION *vpd_ptr;
 
-	/* Find the FSP image */
-	fsp_info_header = fsp_get_fih();
+	/* Display the FSP header */
 	if (fsp_info_header == NULL) {
 		printk(BIOS_ERR, "FSP_INFO_HEADER not set!\n");
 		return;
@@ -191,7 +189,7 @@ void intel_silicon_init(void)
 	/* FSP_INFO_HEADER is set as the program entry. */
 	fsp_update_fih(prog_entry(&fsp));
 
-	fsp_run_silicon_init(is_s3_wakeup);
+	fsp_run_silicon_init(fsp_get_fih(), is_s3_wakeup);
 }
 
 /* Initialize the UPD parameters for SiliconInit */

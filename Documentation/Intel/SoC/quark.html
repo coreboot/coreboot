@@ -59,6 +59,16 @@
       <li>Win32 BaseTools: git clone <a target="_blank" href="https://github.com/tianocore/edk2-BaseTools-win32.git">https://github.com/tianocore/edk2-BaseTools-win32.git</a></li>
     </ul>
   </li>
+  <li>Linux Build Instructions:
+<pre><code>export WORKSPACE=$PWD
+export PACKAGES_PATH="$PWD/edk2:$PWD/FatPkg:$PWD/edk2-non-osi"
+cd edk2
+export WORKSPACE=$PWD
+. edksetup.sh
+build -p QuarkPlatformPkg/Quark.dsc  -a IA32  -t GCC48  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
+ls Build/Quark/DEBUG_GCC48/FV/QUARK.fd
+</code></pre>
+  </li>
   <li>Win32 Build Instructions:
 <pre><code>set WORKSPACE=%CD%
 set PACKAGES_PATH=%WORKSPACE%\edk2;%WORKSPACE%\FatPkg;%WORKSPACE%\edk2-non-osi

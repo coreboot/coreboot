@@ -102,7 +102,7 @@ Method (GADD, 1, NotSerialized)
  * Get GPIO Value
  * Arg0 - GPIO Number
  */
-Method (GRXS, 1, NotSerialized)
+Method (GRXS, 1, Serialized)
 {
 	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
 	Field (PREG, AnyAcc, NoLock, Preserve)

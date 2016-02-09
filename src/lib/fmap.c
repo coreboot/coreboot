@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
 #include <boot_device.h>
 #include <console/console.h>
 #include <fmap.h>
@@ -23,6 +24,8 @@
 /*
  * See http://code.google.com/p/flashmap/ for more information on FMAP.
  */
+
+static int fmap_print_once CAR_GLOBAL;
 
 int find_fmap_directory(struct region_device *fmrd)
 {
@@ -50,10 +53,13 @@ int find_fmap_directory(struct region_device *fmrd)
 		return -1;
 	}
 
-	printk(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %zx.\n",
-	       fmap->name, fmap->ver_major, fmap->ver_minor, offset);
-	printk(BIOS_DEBUG, "FMAP: base = %llx size = %x #areas = %d\n",
-	       (long long)fmap->base, fmap->size, fmap->nareas);
+	if (!car_get_var(fmap_print_once)) {
+		printk(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %zx.\n",
+		       fmap->name, fmap->ver_major, fmap->ver_minor, offset);
+		printk(BIOS_DEBUG, "FMAP: base = %llx size = %x #areas = %d\n",
+		       (long long)fmap->base, fmap->size, fmap->nareas);
+		car_set_var(fmap_print_once, 1);
+	}
 
 	fmap_size += fmap->nareas * sizeof(struct fmap_area);
 
@@ -97,9 +103,8 @@ int fmap_locate_area(const char *name, struct region *ar)
 			continue;
 		}
 
-		printk(BIOS_DEBUG, "FMAP: area %s found\n", name);
-		printk(BIOS_DEBUG, "FMAP:   offset: %x\n", area->offset);
-		printk(BIOS_DEBUG, "FMAP:   size:   %d bytes\n", area->size);
+		printk(BIOS_DEBUG, "FMAP: area %s found @ %x (%d bytes)\n",
+		       name, area->offset, area->size);
 
 		ar->offset = area->offset;
 		ar->size = area->size;

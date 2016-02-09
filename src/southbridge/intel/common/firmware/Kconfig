@@ -146,4 +146,10 @@ config LOCK_MANAGEMENT_ENGINE
 
 	  If unsure, say N.
 
+config CBFS_SIZE
+	hex
+	default 0x100000
+	help
+	  Reduce CBFS size to give room to the IFD blobs.
+
 endif #INTEL_FIRMWARE

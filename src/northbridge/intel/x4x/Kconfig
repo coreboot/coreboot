@@ -28,6 +28,10 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select INTEL_GMA_ACPI
 	select EARLY_CBMEM_INIT
 
+config CBFS_SIZE
+	hex
+	default 0x100000
+
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/x4x/bootblock.c"

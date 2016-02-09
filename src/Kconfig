@@ -376,17 +376,9 @@ menu "Mainboard"
 
 source "src/mainboard/Kconfig"
 
+# defaults for CBFS_SIZE are set at the end of the file.
 config CBFS_SIZE
 	hex "Size of CBFS filesystem in ROM"
-	default 0x100000 if HAVE_INTEL_FIRMWARE || \
-	  NORTHBRIDGE_INTEL_X4X || \
-	  NORTHBRIDGE_INTEL_GM45 || NORTHBRIDGE_INTEL_SANDYBRIDGE_MRC || \
-	  NORTHBRIDGE_INTEL_IVYBRIDGE_MRC || NORTHBRIDGE_INTEL_IVYBRIDGE || \
-	  NORTHBRIDGE_INTEL_SANDYBRIDGE || \
-	  NORTHBRIDGE_INTEL_NEHALEM || SOC_INTEL_BRASWELL || \
-	  SOC_INTEL_BROADWELL
-	default 0x200000 if SOC_INTEL_SKYLAKE
-	default ROM_SIZE
 	help
 	  This is the part of the ROM actually managed by CBFS, located at the
 	  end of the ROM (passed through cbfstool -o) on x86 and at at the start
@@ -1157,3 +1149,11 @@ config MAX_REBOOT_CNT
 	  Internal option that sets the maximum number of bootblock executions allowed
 	  with the normal image enabled before assuming the normal image is defective
 	  and switching to the fallback image.
+
+config CBFS_SIZE
+	hex
+	default ROM_SIZE
+	help
+	  This is the part of the ROM actually managed by CBFS.  Set it to be
+	  equal to the full rom size if that hasn't been overridden by the
+	  chipset or mainboard.

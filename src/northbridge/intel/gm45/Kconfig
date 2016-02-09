@@ -27,6 +27,10 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select INTEL_EDID
 	select INTEL_GMA_ACPI
 
+config CBFS_SIZE
+	hex
+	default 0x100000
+
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/gm45/bootblock.c"

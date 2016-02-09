@@ -24,7 +24,7 @@ config ARCH_BOOTBLOCK_X86_32
 	bool
 	default n
 	select ARCH_X86
-	select BOOTBLOCK_CUSTOM
+	select BOOTBLOCK_CUSTOM if !C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_X86_32
 	bool
@@ -44,7 +44,7 @@ config ARCH_BOOTBLOCK_X86_64
 	bool
 	default n
 	select ARCH_X86
-	select BOOTBLOCK_CUSTOM
+	select BOOTBLOCK_CUSTOM if !C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_X86_64
 	bool

@@ -176,7 +176,6 @@ config GBB_HWID
 
 config GBB_BMPFV_FILE
 	string "Path to bmpfv image"
-	depends on GBB_HAVE_BMPFV
 	default ""
 
 config GBB_FLAG_DEV_SCREEN_SHORT_DELAY

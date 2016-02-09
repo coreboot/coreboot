@@ -25,17 +25,17 @@
 #include <rules.h>
 #include <smp/node.h>
 
-#define MAX_TIMESTAMPS 60
+#define MAX_TIMESTAMPS 84
 
-#define MAX_TIMESTAMP_CACHE 16
+#define MAX_BSS_TIMESTAMP_CACHE 16
 
 struct __attribute__((__packed__)) timestamp_cache {
 	uint32_t cache_state;
 	struct timestamp_table table;
 	/* The struct timestamp_table has a 0 length array as its last field.
 	 * The  following 'entries' array serves as the storage space for the
-	 * cache. */
-	struct timestamp_entry entries[MAX_TIMESTAMP_CACHE];
+	 * cache when allocated in the BSS. */
+	struct timestamp_entry entries[MAX_BSS_TIMESTAMP_CACHE];
 };
 
 #if (IS_ENABLED(CONFIG_HAS_PRECBMEM_TIMESTAMP_REGION) && defined(__PRE_RAM__))
@@ -62,9 +62,14 @@ static void timestamp_cache_init(struct timestamp_cache *ts_cache,
 				 uint64_t base)
 {
 	ts_cache->table.num_entries = 0;
-	ts_cache->table.max_entries = MAX_TIMESTAMP_CACHE;
+	ts_cache->table.max_entries = MAX_BSS_TIMESTAMP_CACHE;
 	ts_cache->table.base_time = base;
 	ts_cache->cache_state = TIMESTAMP_CACHE_INITIALIZED;
+
+	if (USE_TIMESTAMP_REGION)
+		ts_cache->table.max_entries = (_timestamp_size -
+			offsetof(struct timestamp_cache, entries))
+			/ sizeof(struct timestamp_entry);
 }
 
 static struct timestamp_cache *timestamp_cache_get(void)

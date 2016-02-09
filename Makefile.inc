@@ -475,7 +475,7 @@ gitconfig:
 		fi;						     \
 	done
 	# Now set up thehooks for 3rdparty/blobs
-	if [ -d .git/modules/3rdparty -a \
+	if [ -d .git/modules/3rdparty/hooks -a \
 	\( util/gitconfig/commit-msg -nt .git/modules/3rdparty/hooks/commit-msg -o \
 	! -x .git/modules/3rdparty/hooks/commit-msg \) ]; then \
 		sed -e "s,%MAKE%,$(MAKE),g" util/gitconfig/commit-msg > .git/modules/3rdparty/hooks/commit-msg; \

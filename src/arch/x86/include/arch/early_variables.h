@@ -29,10 +29,11 @@ asm(".previous");
 #endif /* __clang__ */
 
 /*
- * On x86 verstage, all CAR_GLOBAL variables are accessed unconditionally
- * because cbmem is never initialized until romstage when dram comes up.
+ * In stages that use CAR (verstage, C bootblock) all CAR_GLOBAL variables are
+ * accessed unconditionally because cbmem is never initialized until romstage
+ * when dram comes up.
  */
-#if ENV_VERSTAGE
+#if ENV_VERSTAGE || ENV_BOOTBLOCK
 static inline void *car_get_var_ptr(void *var)
 {
 	return var;

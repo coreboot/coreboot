@@ -10,6 +10,7 @@ config BOOTBLOCK_CONSOLE
 config SQUELCH_EARLY_SMP
 	bool "Squelch AP CPUs from early console."
 	default y
+	depends on SMP
 	help
 	  When selected only the BSP CPU will output to early console.
 

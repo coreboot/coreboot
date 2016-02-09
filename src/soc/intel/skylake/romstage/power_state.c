@@ -69,6 +69,14 @@ static uint32_t prev_sleep_state(struct chipset_power_state *ps)
 		}
 		/* Clear SLP_TYP. */
 		outl(ps->pm1_cnt & ~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
+	} else {
+		/*
+		 * Check for any power failure to determine if this a wake from
+		 * S5 because the PCH does not set the WAK_STS bit when waking
+		 * from a true G3 state.
+		 */
+		if (ps->gen_pmcon_b & (PWR_FLR | SUS_PWR_FLR))
+			prev_sleep_state = SLEEP_STATE_S5;
 	}
 
 	/*

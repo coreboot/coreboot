@@ -109,14 +109,9 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 
 	PutPCIDev(addr, "Host bridge")
 
-	/* FIXME:XX Move part to northbridge?  */
 	/* FIXME:XX some configs are unsupported.  */
-	KconfigBool["MAINBOARD_HAS_NATIVE_VGA_INIT"] = true
-	KconfigBool["MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG"] = true
 	KconfigBool[i.variant+"BRIDGE_LVDS"] = true
 
-	KconfigBool["VGA"] = true
-	KconfigBool["INTEL_EDID"] = true
 	KconfigBool["CPU_INTEL_SOCKET_RPGA989"] = true
 	KconfigBool["NORTHBRIDGE_INTEL_"+i.variant+"BRIDGE"] = true
 	KconfigBool["INTEL_INT15"] = true

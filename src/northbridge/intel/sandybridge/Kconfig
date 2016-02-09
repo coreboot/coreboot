@@ -54,12 +54,19 @@ config CACHE_MRC_SIZE_KB
 	default 512
 
 config IVYBRIDGE_LVDS
-	bool
-	default n
+	def_bool n
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
 
 config SANDYBRIDGE_LVDS
-	bool
-	default n
+	def_bool n
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT_TEXTMODECFG
+
+# Select VGA & INTEL_EDID if MAINBOARD_DO_NATIVE_VGA_INIT is enabled.
+config MAINBOARD_DO_NATIVE_VGA_INIT
+	select VGA
+	select INTEL_EDID
 
 config MRC_CACHE_SIZE
 	hex

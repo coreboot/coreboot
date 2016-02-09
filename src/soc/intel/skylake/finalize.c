@@ -210,6 +210,9 @@ static void soc_finalize(void *unused)
 
 	soc_lockdown();
 
+	printk(BIOS_DEBUG, "Finalizing SMM.\n");
+	outb(APM_CNT_FINALIZE, APM_CNT);
+
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);
 }

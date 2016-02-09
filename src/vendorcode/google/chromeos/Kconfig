@@ -51,7 +51,7 @@ config CHROMEOS_VBNV_CMOS
 	  VBNV is stored in CMOS
 
 config CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH
-	bool "Backup Vboot non-volatile storage from CMOS to flash."
+	bool "Back up Vboot non-volatile storage from CMOS to flash."
 	default n
 	depends on CHROMEOS_VBNV_CMOS
 	help

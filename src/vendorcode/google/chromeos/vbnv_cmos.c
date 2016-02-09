@@ -52,7 +52,7 @@ void save_vbnv_cmos(const uint8_t *vbnv_copy)
 }
 
 #if IS_ENABLED(CONFIG_CHROMEOS_VBNV_CMOS_BACKUP_TO_FLASH)
-static void backup_vbnv_cmos(void *unused)
+static void back_up_vbnv_cmos(void *unused)
 {
 	uint8_t vbnv_cmos[VBNV_BLOCK_SIZE];
 
@@ -62,5 +62,5 @@ static void backup_vbnv_cmos(void *unused)
 	/* Save to flash, will only be saved if different. */
 	save_vbnv_flash(vbnv_cmos);
 }
-BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, backup_vbnv_cmos, NULL);
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, back_up_vbnv_cmos, NULL);
 #endif

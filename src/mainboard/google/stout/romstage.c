@@ -28,6 +28,7 @@
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
@@ -138,6 +139,12 @@ static void early_ec_init(void)
 	}
 }
 
+void mainboard_get_spd(spd_raw_data *spd)
+{
+	read_spd(&spd[0], 0x50);
+	read_spd(&spd[2], 0x52);
+}
+
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 	struct pei_data pei_data_template = {
@@ -209,3 +216,21 @@ int mainboard_should_reset_usb(int s3resume)
 void mainboard_config_superio(void)
 {
 }
+
+const struct southbridge_usb_port mainboard_usb_ports[] = {
+    /* enabled   usb oc pin    length */
+    {1, 0, 0},  /* P0: USB 3.0 1  (OC0) */
+    {1, 0, 0},  /* P1: USB 3.0 2  (OC0) */
+    {0, 0, 0},  /* P2: Empty */
+    {1, 0, -1}, /* P3: Camera (no OC) */
+    {1, 0, -1}, /* P4: WLAN   (no OC) */
+    {1, 0, -1}, /* P5: WWAN   (no OC) */
+    {0, 0, 0},  /* P6: Empty */
+    {0, 0, 0},  /* P7: Empty */
+    {0, 0, 0},  /* P8: Empty */
+    {1, 0, 4},  /* P9: USB 2.0 (AUO4) (OC4) */
+    {0, 0, 0},  /* P10: Empty */
+    {0, 0, 0},  /* P11: Empty */
+    {0, 0, 0},  /* P12: Empty */
+    {1, 0, -1}, /* P13: Bluetooth (no OC) */
+};

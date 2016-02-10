@@ -362,7 +362,9 @@ load:
 			if (def == S_DEF_USER) {
 				sym = sym_find(line + strlen(CONFIG_));
 				if (!sym) {
-					conf_warning("trying to assign non-existent symbol %s", line + strlen(CONFIG_));
+					conf_message(
+						"ignoring nonexistent symbol %s",
+						line + strlen(CONFIG_));
 					sym_add_change_count(1);
 					goto setsym;
 				}

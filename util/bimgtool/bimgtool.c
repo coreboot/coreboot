@@ -69,6 +69,7 @@ struct crc_t {
 	return ret;				\
 }
 
+#if defined(CRC_X25)
 static uint16_t crc_x25(uint16_t crc, void *void_buf, size_t size)
 {
 	static const uint16_t crc_table[16] = {
@@ -87,7 +88,9 @@ static uint16_t crc_x25(uint16_t crc, void *void_buf, size_t size)
 
 	return crc;
 }
+#endif
 
+#if defined(CRC_16)
 static uint16_t crc_16(uint16_t crc, void *void_buf, size_t size)
 {
 	/*
@@ -136,8 +139,8 @@ static uint16_t crc_16(uint16_t crc, void *void_buf, size_t size)
 	}
 
 	return crc;
-
 }
+#endif
 
 static const struct crc_t crc_type = {
 #if defined(CRC_16)

@@ -27,6 +27,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
+#include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/gpio.h>
@@ -134,4 +135,56 @@ void mainboard_early_init(int s3resume) {
 
 void mainboard_config_superio(void)
 {
+}
+
+
+void mainboard_fill_pei_data(struct pei_data *pei_data)
+{
+	struct pei_data pei_data_template = {
+		.pei_version = PEI_VERSION,
+		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
+		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
+		.epbar = DEFAULT_EPBAR,
+		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
+		.smbusbar = SMBUS_IO_BASE,
+		.wdbbar = 0x4000000,
+		.wdbsize = 0x1000,
+		.hpet_address = CONFIG_HPET_ADDRESS,
+		.rcba = (uintptr_t)DEFAULT_RCBABASE,
+		.pmbase = DEFAULT_PMBASE,
+		.gpiobase = DEFAULT_GPIOBASE,
+		.thermalbase = 0xfed08000,
+		.system_type = 0, // 0 Mobile, 1 Desktop/Server
+		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.spd_addresses = { 0xA0, 0x00,0xA4,0x00 },
+		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
+		.ec_present = 1,
+		.ddr3lv_support = 0,
+		// 0 = leave channel enabled
+		// 1 = disable dimm 0 on channel
+		// 2 = disable dimm 1 on channel
+		// 3 = disable dimm 0+1 on channel
+		.dimm_channel0_disabled = 2,
+		.dimm_channel1_disabled = 2,
+		.max_ddr3_freq = 1600,
+		.usb_port_config = {
+			/* enabled   usb oc pin    length */
+			{ 1, 0, 0x0040 }, /* P0: Right USB 3.0 #1 (no OC) */
+			{ 1, 0, 0x0040 }, /* P1: Right USB 3.0 #2 (no OC) */
+			{ 1, 0, 0x0040 }, /* P2: Camera (no OC) */
+			{ 0, 0, 0x0000 }, /* P3: Empty */
+			{ 0, 0, 0x0000 }, /* P4: Empty */
+			{ 0, 0, 0x0000 }, /* P5: Empty */
+			{ 0, 0, 0x0000 }, /* P6: Empty */
+			{ 0, 0, 0x0000 }, /* P7: Empty */
+			{ 0, 4, 0x0000 }, /* P8: Empty */
+			{ 1, 4, 0x0080 }, /* P9: Left USB 1 (no OC) */
+			{ 1, 4, 0x0040 }, /* P10: Mini PCIe - WLAN / BT (no OC) */
+			{ 0, 4, 0x0000 }, /* P11: Empty */
+			{ 0, 4, 0x0000 }, /* P12: Empty */
+			{ 0, 4, 0x0000 }, /* P13: Empty */
+		},
+		.ddr_refresh_rate_config = 2, /* Force double refresh rate */
+	};
+	*pei_data = pei_data_template;
 }

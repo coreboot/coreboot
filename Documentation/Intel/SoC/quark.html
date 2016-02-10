@@ -47,42 +47,136 @@
 
 
 <hr>
-<h1>Quark&trade; FSP</h1>
-<ul>
-  <li>Intel&reg; Firmware Support Package External Architecture Specification <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v1-1.pdf">V1.1</a></li>
-  <li>Intel&reg; Quark&trade; SoC X1000 <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/guides/quark-x1000-uefi-firmware-writers-guide.pdf">UEFI Firmware Writer's Guide</a></li>
-  <li>EDK2 Sources:
+<h1>Quark&trade; EDK2 CorebootPayloadPkg</h1>
+<p>
+Build Instructions:
+</p>
+<ol>
+  <li>Set up <a href="#BuildEnvironment">build environment</a></li>
+  <li>Build Instructions:
     <ul>
+      <li>Linux:
+<pre><code>build -p CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc  -a IA32  -t GCC48  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
+ls Build/CorebootPayloadPkg/DEBUG_GCC48/FV/UEFIPAYLOAD.fd
+</code></pre>
+      </li>
+      <li>Windows:
+<pre><code>build -p CorebootPayloadPkg\CorebootPayloadPkgIa32.dsc  -a IA32  -t VS2012x86  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
+dir Build\CorebootPayloadPkg\DEBUG_VS2012x86\FV\UEFIPAYLOAD.fd
+</code></pre>
+      </li>
+    </ul>
+  </li>
+  <li>Set the following Kconfig values:
+    <ul>
+      <li>CONFIG_PAYLOAD_ELF=y</li>
+      <li>CONFIG_PAYLOAD_FILE="path to UEFIPAYLOAD.fd"</li>
+    </ul>
+  </li>
+  <li>Build coreboot</li>
+  <li>Copy the image build/coreboot.rom into flash</li>
+</ol>
+
+
+
+<hr>
+<h1><a name="BuildEnvironment">Quark&trade; EDK2 Build Environment</a></h1>
+<p>
+  Use the following steps to setup a build environment:
+</p>
+<ol>
+  <li>Get the EDK2 sources:
+    <ol type="A">
       <li>EDK2: git clone <a target="_blank" href="https://github.com/tianocore/edk2.git">https://github.com/tianocore/edk2.git</a></li>
       <li>EDK2-FatPkg: git clone <a target="_blank" href="https://github.com/tianocore/edk2-FatPkg.git">https://github.com/tianocore/edk2-FatPkg.git</a> FatPkg</li>
       <li>EDK2-non-osi: git clone <a target="_blank" href="https://github.com/tianocore/edk2-non-osi.git">https://github.com/tianocore/edk2-non-osi.git</a></li>
       <li>Win32 BaseTools: git clone <a target="_blank" href="https://github.com/tianocore/edk2-BaseTools-win32.git">https://github.com/tianocore/edk2-BaseTools-win32.git</a></li>
-    </ul>
+    </ol>
   </li>
-  <li>Linux Build Instructions:
+  <li>Set up a build window:
+    <ul>
+      <li>Linux:
 <pre><code>export WORKSPACE=$PWD
 export PACKAGES_PATH="$PWD/edk2:$PWD/FatPkg:$PWD/edk2-non-osi"
 cd edk2
 export WORKSPACE=$PWD
 . edksetup.sh
-build -p QuarkPlatformPkg/Quark.dsc  -a IA32  -t GCC48  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
-ls Build/Quark/DEBUG_GCC48/FV/QUARK.fd
 </code></pre>
-  </li>
-  <li>Win32 Build Instructions:
+      </li>
+      <li>Windows:
 <pre><code>set WORKSPACE=%CD%
 set PACKAGES_PATH=%WORKSPACE%\edk2;%WORKSPACE%\FatPkg;%WORKSPACE%\edk2-non-osi
 set EDK_TOOLS_BIN=%WORKSPACE%\edk2-BaseTools-win32
 cd edk2
 edksetup.bat
-build -p QuarkPlatformPkg/Quark.dsc  -a IA32  -t VS2012x86  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
 </code></pre>
+      </li>
+    </ul>
   </li>
+</ol>
+
+<p>
+EDK2 Documentation:
+</p>
+<ul>
+  <li>Build <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/Build_Spec_1_26.pdf">V1.26</a></li>
+  <li>Coding Standards <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/CCS_2_1_Draft.pdf">V2.1</a></li>
+  <li>DEC <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/DEC_Spec_1_25.pdf">V1.25</a></li>
+  <li>DSC <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/DSC_Spec_1_26.pdf">V1.26</a></li>
+  <li>Expression Syntax <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/ExpressionSyntax_1.1.pdf">V1.1</a></li>
+  <li>FDF <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/FDF_Spec_1_26.pdf">V1.26</a></li>
+  <li>INF <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/INF_Spec_1_25.pdf">V1.25</a></li>
+  <li>PCD <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/PCD_Infrastructure.pdf">PCD</a>V0.55</li>
+  <li>UNI <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/UNI_File_Spec_v1_2_Errata_A.pdf">V1.2 Errata A</a></li>
+  <li>VRF <a target="_blank" href="https://github.com/tianocore-docs/Docs/raw/master/Specifications/VFR_1_9.pdf">V1.9</a></li>
 </ul>
 
 
 
 <hr>
-<p>Modified: 1 February 2016</p>
+<h1>Quark&trade; FSP</h1>
+<p>
+Documentation:
+</p>
+<ul>
+  <li>Intel&reg; Firmware Support Package External Architecture Specification <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v1-1.pdf">V1.1</a></li>
+</ul>
+
+
+
+<hr>
+<h1>Quark&trade; EDK2 BIOS</h1>
+<p>
+Build Instructions:
+</p>
+<ol>
+  <li>Set up <a href="#BuildEnvironment">build environment</a></li>
+  <li>Build the image:
+    <ul>
+      <li>Linux:
+<pre><code>build -p QuarkPlatformPkg/Quark.dsc  -a IA32  -t GCC48  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
+ls Build/Quark/DEBUG_GCC48/FV/Quark.fd
+</code></pre>
+      </li>
+      <li>Windows:
+<pre><code>build -p QuarkPlatformPkg/Quark.dsc  -a IA32  -t VS2012x86  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
+dir Build\Quark\DEBUG_VS2012x86\FV\Quark.fd
+</code></pre>
+  </li>
+    </ul>
+  </li>
+</ol>
+
+<p>
+Documentation:
+</p>
+<ul>
+  <li>Intel&reg; Quark&trade; SoC X1000 <a target="_blank" href="http://www.intel.com/content/dam/www/public/us/en/documents/guides/quark-x1000-uefi-firmware-writers-guide.pdf">UEFI Firmware Writer's Guide</a></li>
+</ul>
+
+
+
+<hr>
+<p>Modified: 10 February 2016</p>
   </body>
 </html>

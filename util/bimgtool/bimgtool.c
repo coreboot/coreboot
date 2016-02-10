@@ -269,7 +269,7 @@ static int verify_file(FILE *f)
 
 	if ((file_header.data_size + sizeof(struct bimg_header)) >
 	    buf.st_size) {
-		fprintf(stderr, "Data size too big: %d > %d\n",
+		fprintf(stderr, "Data size too big: %d > %zd\n",
 			file_header.data_size, buf.st_size);
 		return -1;
 	}

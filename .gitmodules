@@ -1,4 +1,4 @@
-[submodule "3rdparty"]
+[submodule "3rdparty/blobs"]
 	path = 3rdparty/blobs
 	url = ../blobs.git
 	update = none
@@ -12,6 +12,6 @@
 [submodule "arm-trusted-firmware"]
 	path = 3rdparty/arm-trusted-firmware
 	url = ../arm-trusted-firmware.git
-[submodule "3rdparty/chrome-ec"]
+[submodule "3rdparty/chromeec"]
 	path = 3rdparty/chromeec
 	url = ../chrome-ec.git

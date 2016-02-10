@@ -231,6 +231,19 @@ static void cb_parse_boot_media_params(unsigned char *ptr,
 	info->boot_media_size = bmp->boot_media_size;
 }
 
+#if IS_ENABLED(CONFIG_LP_TIMER_RDTSC)
+static void cb_parse_tsc_info(void *ptr, struct sysinfo_t *info)
+{
+	const struct cb_tsc_info *tsc_info = ptr;
+
+	if (tsc_info->freq_khz == 0)
+		return;
+
+	/* Honor the TSC frequency passed to the payload. */
+	info->cpu_khz = tsc_info->freq_khz;
+}
+#endif
+
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -386,6 +399,11 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_BOOT_MEDIA_PARAMS:
 			cb_parse_boot_media_params(ptr, info);
 			break;
+#if IS_ENABLED(CONFIG_LP_TIMER_RDTSC)
+		case CB_TAG_TSC_INFO:
+			cb_parse_tsc_info(ptr, info);
+			break;
+#endif
 		default:
 			cb_parse_arch_specific(rec, info);
 			break;

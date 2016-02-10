@@ -29,13 +29,12 @@
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/gpio.h>
+#include <southbridge/intel/bd82x6x/pch.h>
 #include "ec/google/chromeec/ec.h"
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
-#include "gpio.h"
 #include <tpm.h>
 #include <cbfs.h>
 

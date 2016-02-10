@@ -32,12 +32,10 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/bd82x6x/gpio.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <tpm.h>
-#include "gpio.h"
 #if CONFIG_DRIVERS_UART_8250IO
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 #endif

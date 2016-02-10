@@ -15,3 +15,4 @@
 
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
+romstage-y += gpio.c

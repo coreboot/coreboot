@@ -22,3 +22,4 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += ec.c
 
 SRC_ROOT = $(src)/mainboard/google/stout
+romstage-y += gpio.c

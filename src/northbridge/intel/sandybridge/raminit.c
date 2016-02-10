@@ -1607,8 +1607,8 @@ static void program_timings(ramctr_timing * ctrl, int channel)
 			     (((ctrl->timings[channel][slotrank].lanes[lane].
 				timA + shift -
 				(post_timA_min_high << 6)) & 0x1c0) << 10)
-			     | (ctrl->timings[channel][slotrank].lanes[lane].
-				falling << 20));
+			     | ((ctrl->timings[channel][slotrank].lanes[lane].
+				falling + shift) << 20));
 
 			MCHBAR32(lane_registers[lane] + 0x20 + 0x100 * channel +
 				 4 * slotrank)

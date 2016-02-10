@@ -107,21 +107,21 @@ void rcba_config(void)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled   usb oc pin    length */
-	{ 1, 0, 0x0040 }, /* P0: Right USB 3.0 #1 (no OC) */
-	{ 1, 0, 0x0040 }, /* P1: Right USB 3.0 #2 (no OC) */
-	{ 1, 0, 0x0040 }, /* P2: Camera (no OC) */
-	{ 0, 0, 0x0000 }, /* P3: Empty */
-	{ 0, 0, 0x0000 }, /* P4: Empty */
-	{ 0, 0, 0x0000 }, /* P5: Empty */
-	{ 0, 0, 0x0000 }, /* P6: Empty */
-	{ 0, 0, 0x0000 }, /* P7: Empty */
-	{ 0, 4, 0x0000 }, /* P8: Empty */
-	{ 1, 4, 0x0080 }, /* P9: Left USB 1 (no OC) */
-	{ 1, 4, 0x0040 }, /* P10: Mini PCIe - WLAN / BT (no OC) */
-	{ 0, 4, 0x0000 }, /* P11: Empty */
-	{ 0, 4, 0x0000 }, /* P12: Empty */
-	{ 0, 4, 0x0000 }, /* P13: Empty */
+	/* enabled power  usb oc pin  */
+	{ 1, 0, -1 }, /* P0: Right USB 3.0 #1 (no OC) */
+	{ 1, 0, -1 }, /* P1: Right USB 3.0 #2 (no OC) */
+	{ 1, 0, -1 }, /* P2: Camera (no OC) */
+	{ 0, 0, -1 }, /* P3: Empty */
+	{ 0, 0, -1 }, /* P4: Empty */
+	{ 0, 0, -1 }, /* P5: Empty */
+	{ 0, 0, -1 }, /* P6: Empty */
+	{ 0, 0, -1 }, /* P7: Empty */
+	{ 0, 0, -1 }, /* P8: Empty */
+	{ 1, 1, -1 }, /* P9: Left USB 1 (no OC) */
+	{ 1, 0, -1 }, /* P10: Mini PCIe - WLAN / BT (no OC) */
+	{ 0, 0, -1 }, /* P11: Empty */
+	{ 0, 0, -1 }, /* P12: Empty */
+	{ 0, 0, -1 }, /* P13: Empty */
 };
 
 void mainboard_get_spd(spd_raw_data *spd) {

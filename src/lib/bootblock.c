@@ -19,7 +19,10 @@
 #include <console/console.h>
 #include <delay.h>
 #include <program_loading.h>
+#include <symbols.h>
 #include <timestamp.h>
+
+DECLARE_OPTIONAL_REGION(timestamp);
 
 __attribute__((weak)) void bootblock_mainboard_early_init(void) { /* no-op */ }
 __attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }
@@ -28,7 +31,9 @@ __attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
 void main(void)
 {
 	init_timer();
-	if (IS_ENABLED(CONFIG_HAS_PRECBMEM_TIMESTAMP_REGION))
+
+	/* Initialize timestamps if we have TIMESTAMP region in memlayout.ld. */
+	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && _timestamp_size > 0)
 		timestamp_init(timestamp_get());
 
 	bootblock_mainboard_early_init();

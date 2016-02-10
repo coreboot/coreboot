@@ -84,4 +84,11 @@ extern u8 _framebuffer[];
 extern u8 _eframebuffer[];
 #define _framebuffer_size (_eframebuffer - _framebuffer)
 
+/* Put this into a .c file accessing a linker script region to mark that region
+ * as "optional". If it is defined in memlayout.ld (or anywhere else), the
+ * values from that definition will be used. If not, start, end and size will
+ * all evaluate to 0. (We can't explicitly assign the symbols to 0 in the
+ * assembly due to https://sourceware.org/bugzilla/show_bug.cgi?id=1038.) */
+#define DECLARE_OPTIONAL_REGION(name) asm (".weak _" #name ", _e" #name )
+
 #endif /* __SYMBOLS_H */

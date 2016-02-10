@@ -42,9 +42,7 @@
 	 * backing store once cbmem comes online. Therefore, this data needs
 	 * to reside in the migrated area (between _car_data_start and
 	 * _car_data_end). */
-#if IS_ENABLED(CONFIG_HAS_PRECBMEM_TIMESTAMP_REGION)
 	TIMESTAMP(., 0x100)
-#endif
 	/* _car_global_start and _car_global_end provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
 	 * cbmem console. This is useful for clearing this area on a per-stage

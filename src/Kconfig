@@ -198,14 +198,6 @@ config COLLECT_TIMESTAMPS
 	  Make coreboot create a table of timer-ID/timer-value pairs to
 	  allow measuring time spent at different phases of the boot process.
 
-config HAS_PRECBMEM_TIMESTAMP_REGION
-	bool "Timestamp region exists for pre-cbmem timestamps"
-	default y if ARCH_ROMSTAGE_X86_32 && CACHE_AS_RAM
-	help
-	  A separate region is maintained to allow storing of timestamps before
-	  cbmem comes up. This is useful for storing timestamps across different
-	  stage boundaries.
-
 config USE_BLOBS
 	bool "Allow use of binary-only repository"
 	default n

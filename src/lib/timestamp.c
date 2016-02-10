@@ -38,8 +38,10 @@ struct __attribute__((__packed__)) timestamp_cache {
 	struct timestamp_entry entries[MAX_BSS_TIMESTAMP_CACHE];
 };
 
-#if (IS_ENABLED(CONFIG_HAS_PRECBMEM_TIMESTAMP_REGION) && defined(__PRE_RAM__))
-#define USE_TIMESTAMP_REGION 1
+DECLARE_OPTIONAL_REGION(timestamp);
+
+#if defined(__PRE_RAM__)
+#define USE_TIMESTAMP_REGION (_timestamp_size > 0)
 #else
 #define USE_TIMESTAMP_REGION 0
 #endif
@@ -254,21 +256,30 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 
 	/*
 	 * There's no need to worry about the base_time fields being out of
-	 * sync because the following configurations are used/supported:
+	 * sync because only the following configurations are used/supported:
 	 *
-	 * 1. CONFIG_HAS_PRECBMEM_TIMESTAMP_REGION is enabled. This
-	 *    implies CONFIG_EARLY_CBMEM_INIT so once cbmem comes
-	 *    online we sync the timestamps to the cbmem storage while
-	 *    running in romstage. In ramstage the cbmem area is
-	 *    recovered and utilized.
+	 * 1. Timestamps get initialized before ramstage, which implies
+	 *    CONFIG_EARLY_CBMEM_INIT and CBMEM initialization in romstage.
+	 *    This requires the board to define a TIMESTAMP() region in its
+	 *    memlayout.ld (default on x86). The base_time from timestamp_init()
+	 *    (usually called from bootblock.c on most non-x86 boards) persists
+	 *    in that region until it gets synced to CBMEM in romstage.
+	 *    In ramstage, the BSS cache's base_time will be 0 until the second
+	 *    sync, which will adjust the timestamps in there to the correct
+	 *    base_time (from CBMEM) with the timestamp_add_table_entry() below.
 	 *
-	 * 2. CONFIG_LATE_CBMEM_INIT (!CONFIG_EARLY_CBMEM_INIT) is
-	 *    being used. That means the only cache that exists is
-	 *    in ramstage. Once cbmem comes online in ramstage those
-	 *    values are sync'd over.
+	 * 2. Timestamps only get initialized in ramstage *and*
+	 *    CONFIG_LATE_CBMEM_INIT is set. main() will call timestamp_init()
+	 *    very early (before any timestamps get logged) to set a base_time
+	 *    in the BSS cache, which will later get synced over to CBMEM.
 	 *
-	 * Any other combinations will result in inconsistent base_time
-	 * values including bizarre timestamp values.
+	 * If you try to initialize timestamps before ramstage but don't define
+	 * a TIMESTAMP region, all operations will fail (safely), and coreboot
+	 * will behave as if timestamps only get initialized in ramstage.
+	 *
+	 * If CONFIG_EARLY_CBMEM_INIT is set but timestamps only get
+	 * initialized in ramstage, the base_time from timestamp_init() will
+	 * get ignored and all timestamps will be 0-based.
 	 */
 	for (i = 0; i < ts_cache_table->num_entries; i++) {
 		struct timestamp_entry *tse = &ts_cache_table->entries[i];

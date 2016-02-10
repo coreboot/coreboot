@@ -36,9 +36,9 @@ SECTIONS
 	 * and then through the identity mapping in ROM stage.
 	 */
 	SRAM_START(0x1a000000)
-	ROMSTAGE(0x1a005000, 40K)
-	VBOOT2_WORK(0x1a00f000, 12K)
-	PRERAM_CBFS_CACHE(0x1a012000, 56K)
+	ROMSTAGE(0x1a005000, 60K)
+	VBOOT2_WORK(0x1a014000, 12K)
+	PRERAM_CBFS_CACHE(0x1a017000, 56K)
 	SRAM_END(0x1a066000)
 
 	/* Bootblock executes out of KSEG0 and sets up the identity mapping.

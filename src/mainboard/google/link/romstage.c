@@ -29,6 +29,7 @@
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/gpio.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include "ec/google/chromeec/ec.h"
@@ -115,10 +116,10 @@ void rcba_config(void)
 	RCBA32(FD) = reg32;
 }
 
-static void copy_spd(struct pei_data *peid)
+static uint8_t *locate_spd(void)
 {
 	const int gpio_vector[] = {41, 42, 43, 10, -1};
-	char *spd_file;
+	uint8_t *spd_file;
 	size_t spd_file_len;
 	int spd_index = get_gpios(gpio_vector);
 
@@ -128,18 +129,15 @@ static void copy_spd(struct pei_data *peid)
 	if (!spd_file)
 		die("SPD data not found.");
 
-	if (spd_file_len < ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
+	if (spd_file_len < ((spd_index + 1) * 256)) {
 		printk(BIOS_ERR, "spd index override to 0 - old hardware?\n");
 		spd_index = 0;
 	}
 
-	if (spd_file_len < sizeof(peid->spd_data[0]))
+	if (spd_file_len < 256)
 		die("Missing SPD data.");
 
-	memcpy(peid->spd_data[0],
-	       spd_file +
-	       spd_index * sizeof(peid->spd_data[0]),
-	       sizeof(peid->spd_data[0]));
+	return spd_file + spd_index * 256;
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
@@ -190,7 +188,30 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		},
 	};
 	*pei_data = pei_data_template;
-	copy_spd(pei_data);
+	memcpy(pei_data->spd_data[0], locate_spd(),
+	       sizeof(pei_data->spd_data[0]));
+}
+
+const struct southbridge_usb_port mainboard_usb_ports[] = {
+	/* enabled power  usb oc pin  */
+	{ 0, 0, -1 }, /* P0: Empty */
+	{ 1, 0, 0 }, /* P1: Left USB 1  (OC0) */
+	{ 1, 0, 1 }, /* P2: Left USB 2  (OC1) */
+	{ 1, 0, -1 }, /* P3: SDCARD      (no OC) */
+	{ 0, 0, -1 }, /* P4: Empty */
+	{ 1, 0, -1 }, /* P5: WWAN        (no OC) */
+	{ 0, 0, -1 }, /* P6: Empty */
+	{ 0, 0, -1 }, /* P7: Empty */
+	{ 1, 0, -1 }, /* P8: Camera      (no OC) */
+	{ 1, 0, -1 }, /* P9: Bluetooth   (no OC) */
+	{ 0, 0, -1 }, /* P10: Empty */
+	{ 0, 0, -1 }, /* P11: Empty */
+	{ 0, 0, -1 }, /* P12: Empty */
+	{ 0, 0, -1 }, /* P13: Empty */
+};
+
+void mainboard_get_spd(spd_raw_data *spd) {
+	memcpy(&spd[0], locate_spd(), 128);
 }
 
 void mainboard_early_init(int s3resume)

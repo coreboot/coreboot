@@ -16,10 +16,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SERIRQ_CONTINUOUS_MODE
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 
-config USE_NATIVE_RAMINIT
-	bool
-	default n
-
 config CHROMEOS
 	select CHROMEOS_VBNV_CMOS
 	select LID_SWITCH

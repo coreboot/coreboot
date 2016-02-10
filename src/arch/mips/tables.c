@@ -55,3 +55,7 @@ void write_tables(void)
 	/* Print CBMEM sections */
 	cbmem_list();
 }
+
+void lb_arch_add_records(struct lb_header *header)
+{
+}

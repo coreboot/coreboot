@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <arch/io.h>
@@ -286,4 +287,8 @@ void cpu_initialize(unsigned int index)
 	printk(BIOS_INFO, "CPU #%d initialized\n", index);
 
 	return;
+}
+
+void lb_arch_add_records(struct lb_header *header)
+{
 }

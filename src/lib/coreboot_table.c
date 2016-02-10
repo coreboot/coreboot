@@ -540,6 +540,9 @@ unsigned long write_coreboot_table(
 
 	lb_boot_media_params(head);
 
+	/* Add architecture records. */
+	lb_arch_add_records(head);
+
 	/* Add all cbmem entries into the coreboot tables. */
 	cbmem_add_records_to_cbtable(head);
 

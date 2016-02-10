@@ -28,6 +28,7 @@
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
@@ -156,6 +157,30 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		},
 	};
 	*pei_data = pei_data_template;
+}
+
+const struct southbridge_usb_port mainboard_usb_ports[] = {
+	/* enabled power  usb oc pin  */
+	{ 0, 0, -1 }, /* P0: Empty */
+	{ 1, 0, 0 }, /* P1: Left USB 1  (OC0) */
+	{ 1, 0, 1 }, /* P2: Left USB 2  (OC1) */
+	{ 1, 0, 1 }, /* P3: Left USB 3  (OC1) */
+	{ 0, 0, -1 }, /* P4: Empty */
+	{ 0, 0, -1 }, /* P5: Empty */
+	{ 0, 0, -1 }, /* P6: Empty */
+	{ 0, 0, -1 }, /* P7: Empty */
+	/* Empty and onboard Ports 8-13, set to un-used pin OC4 */
+	{ 1, 0, -1 }, /* P8: MiniPCIe (WLAN) (no OC) */
+	{ 0, 0, -1 }, /* P9: Empty */
+	{ 1, 0, -1 }, /* P10: Camera (no OC) */
+	{ 0, 0, -1 }, /* P11: Empty */
+	{ 0, 0, -1 }, /* P12: Empty */
+	{ 0, 0, -1 }, /* P13: Empty */
+};
+
+void mainboard_get_spd(spd_raw_data *spd) {
+	read_spd(&spd[0], 0x50);
+	read_spd(&spd[2], 0x52);
 }
 
 void mainboard_config_superio(void)

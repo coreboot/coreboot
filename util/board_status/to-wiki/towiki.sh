@@ -326,9 +326,9 @@ EOF
 				case $northbridge in
 					INTEL_HASWELL)
 						cpu_nice="Intel® 4th Gen (Haswell) Core i3/i5/i7";;
-					INTEL_IVYBRIDGE|INTEL_IVYBRIDGE_MRC|INTEL_FSP_IVYBRIDGE)
+					INTEL_IVYBRIDGE|INTEL_FSP_IVYBRIDGE)
 						cpu_nice="Intel® 3rd Gen (Ivybridge) Core i3/i5/i7";;
-					INTEL_SANDYBRIDGE|INTEL_SANDYBRIDGE_MRC)
+					INTEL_SANDYBRIDGE)
 						cpu_nice="Intel® 2nd Gen (Sandybridge) Core i3/i5/i7";;
 					*)
 						cpu_nice="$northbridge";;

@@ -35,7 +35,7 @@ static void usb_ehci_init(struct device *dev)
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
 
 	/* For others, done in MRC.  */
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) || IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)
+#if IS_ENABLED(CONFIG_USE_NATIVE_RAMINIT)
 	pci_write_config32(dev, 0x84, 0x930c8811);
 	pci_write_config32(dev, 0x88, 0x24000d30);
 	pci_write_config32(dev, 0xf4, 0x80408588);
@@ -50,7 +50,7 @@ static void usb_ehci_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
 	/* For others, done in MRC.  */
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) || IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)
+#if IS_ENABLED(CONFIG_USE_NATIVE_RAMINIT)
 	struct resource *res;
 	u8 access_cntl;
 

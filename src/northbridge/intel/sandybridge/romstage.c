@@ -70,8 +70,7 @@ void main(unsigned long bist)
 	mainboard_config_superio();
 
 	/* USB is inited in MRC if MRC is used.  */
-	if (!(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_MRC
-	      || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_MRC)) {
+	if (CONFIG_USE_NATIVE_RAMINIT) {
 		early_usb_init(mainboard_usb_ports);
 	}
 

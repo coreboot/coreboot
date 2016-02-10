@@ -18,6 +18,8 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x000001d4"
 	register "gpu_pch_backlight" = "0x03aa0000"
 
+	register "max_mem_clock_mhz" = "666"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_rPGA989
 			device lapic 0 on end

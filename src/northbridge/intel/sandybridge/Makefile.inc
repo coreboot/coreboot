@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 #
 
-ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_MRC)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_MRC),y)
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE),y)
 
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
@@ -25,12 +25,12 @@ ramstage-y += acpi.c
 ramstage-y += mrccache.c
 
 romstage-y += ram_calc.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_MRC) += raminit_mrc.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_MRC) += raminit_mrc.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += raminit.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += ../../../device/dram/ddr3.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += raminit.c
-romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += ../../../device/dram/ddr3.c
+ifeq ($(CONFIG_USE_NATIVE_RAMINIT),y)
+romstage-y += raminit.c
+romstage-y += ../../../device/dram/ddr3.c
+else
+romstage-y += raminit_mrc.c
+endif
 romstage-y += romstage.c
 romstage-y += mrccache.c
 romstage-y += iommu.c

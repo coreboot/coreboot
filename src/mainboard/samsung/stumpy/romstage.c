@@ -31,6 +31,7 @@
 #include <superio/ite/it8772f/it8772f.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
@@ -202,6 +203,30 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	};
 	*pei_data = pei_data_template;
 }
+
+void mainboard_get_spd(spd_raw_data *spd)
+{
+       read_spd(&spd[0], 0x50);
+       read_spd(&spd[2], 0x52);
+}
+
+const struct southbridge_usb_port mainboard_usb_ports[] = {
+	/* enabled power  usb oc pin  */
+	{ 1, 1, 0 }, /* P0: Front port  (OC0) */
+	{ 1, 0, 1 }, /* P1: Back port   (OC1) */
+	{ 1, 0, -1 }, /* P2: MINIPCIE1   (no OC) */
+	{ 1, 0, -1 }, /* P3: MMC         (no OC) */
+	{ 1, 1, 2 }, /* P4: Front port  (OC2) */
+	{ 0, 0, -1 }, /* P5: Empty */
+	{ 0, 0, -1 }, /* P6: Empty */
+	{ 0, 0, -1 }, /* P7: Empty */
+	{ 1, 0, 4 }, /* P8: Back port   (OC4) */
+	{ 1, 0, -1 }, /* P9: MINIPCIE3   (no OC) */
+	{ 1, 0, -1 }, /* P10: BLUETOOTH  (no OC) */
+	{ 0, 0, -1 }, /* P11: Empty */
+	{ 1, 0, 6 }, /* P12: Back port  (OC6) */
+	{ 1, 0, 5 }, /* P13: Back port  (OC5) */
+};
 
 void mainboard_early_init(int s3resume)
 {

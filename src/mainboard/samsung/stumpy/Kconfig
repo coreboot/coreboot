@@ -15,12 +15,13 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 # LPC47N207 selected for external LPC card
 # not on board, should be made selectable.
 	select SUPERIO_SMSC_LPC47N207
-	select HAVE_MRC
 	select INTEL_INT15
 
-config USE_NATIVE_RAMINIT
-	bool
-	default n
+if !USE_NATIVE_RAMINIT
+config BOARD_SPECIFIC_OPTIONS_MRC # dummy
+       def_bool y
+       select HAVE_MRC
+endif
 
 config CHROMEOS
 	select PHYSICAL_REC_SWITCH

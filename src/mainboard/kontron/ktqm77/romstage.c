@@ -28,6 +28,7 @@
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
@@ -151,6 +152,29 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		.pcie_init = 1,
 	};
 	*pei_data = pei_data_template;
+}
+
+const struct southbridge_usb_port mainboard_usb_ports[] = {
+	/* enabled power  usb oc pin  */
+	{ 1, 0, 0 }, /* P0: lower left USB 3.0 (OC0) */
+	{ 1, 0, 0 }, /* P1: upper left USB 3.0 (OC0) */
+	{ 1, 0, 0 }, /* P2: lower right USB 3.0 (OC0) */
+	{ 1, 0, 0 }, /* P3: upper right USB 3.0 (OC0) */
+	{ 1, 0, 0 }, /* P4: lower USB 2.0 (OC0) */
+	{ 1, 0, 0 }, /* P5: upper USB 2.0 (OC0) */
+	{ 1, 0, 0 }, /* P6: front panel USB 2.0 (OC0) */
+	{ 1, 0, 0 }, /* P7: front panel USB 2.0 (OC0) */
+	{ 1, 0, 4 }, /* P8: internal USB 2.0 (OC4) */
+	{ 1, 0, 4 }, /* P9: internal USB 2.0 (OC4) */
+	{ 1, 0, 4 }, /* P10: internal USB 2.0 (OC4) */
+	{ 1, 0, 4 }, /* P11: internal USB 2.0 (OC4) */
+	{ 1, 0, 4 }, /* P12: internal USB 2.0 (OC4) */
+	{ 1, 0, 4 }, /* P13: internal USB 2.0 (OC4) */
+};
+
+void mainboard_get_spd(spd_raw_data *spd) {
+	read_spd(&spd[0], 0x50);
+	read_spd(&spd[2], 0x52);
 }
 
 void mainboard_early_init(int s3resume)

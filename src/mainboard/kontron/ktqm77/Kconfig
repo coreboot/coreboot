@@ -12,11 +12,13 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_OPTION_TABLE
 	select HAVE_ACPI_RESUME
 	select ENABLE_VMX
-	select HAVE_MRC
 
-config USE_NATIVE_RAMINIT
-	bool
-	default n
+if !USE_NATIVE_RAMINIT
+config BOARD_SPECIFIC_OPTIONS_MRC # dummy
+       def_bool y
+       select HAVE_MRC
+endif
+
 
 config MAINBOARD_DIR
 	string

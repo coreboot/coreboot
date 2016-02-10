@@ -18,6 +18,7 @@ if CPU_AMD_MODEL_10XXX
 config USE_LARGE_DCACHE
 	bool
 	default y if CPU_AMD_SOCKET_G34_NON_AGESA
+	default y if CPU_AMD_SOCKET_FM2_NON_AGESA
 	default y if CPU_AMD_SOCKET_C32_NON_AGESA
 	default n
 

@@ -9,11 +9,14 @@ subdirs-y += ../../../cpu/x86/tsc
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/cache_as_ram.S
+bootblock-y += gpio.c
 bootblock-y += placeholders.c
 
 romstage-y += placeholders.c
+romstage-y += gpio.c
 smm-y += placeholders.c
 ramstage-y += placeholders.c
+ramstage-y += gpio.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 

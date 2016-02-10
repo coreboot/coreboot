@@ -31,6 +31,7 @@
 #include <tpm.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
+#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
@@ -112,52 +113,8 @@ void rcba_config(void)
 	RCBA32(FD) = reg32;
 }
 
-void mainboard_fill_pei_data(struct pei_data *pei_data)
+static const uint8_t *locate_spd(void)
 {
-	struct pei_data pei_data_template = {
-		.pei_version = PEI_VERSION,
-		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
-		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
-		.epbar = DEFAULT_EPBAR,
-		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
-		.smbusbar = SMBUS_IO_BASE,
-		.wdbbar = 0x4000000,
-		.wdbsize = 0x1000,
-		.hpet_address = CONFIG_HPET_ADDRESS,
-		.rcba = (uintptr_t)DEFAULT_RCBABASE,
-		.pmbase = DEFAULT_PMBASE,
-		.gpiobase = DEFAULT_GPIOBASE,
-		.thermalbase = 0xfed08000,
-		.system_type = 0, // 0 Mobile, 1 Desktop/Server
-		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xa0, 0x00,0x00,0x00 },
-		.ts_addresses = { 0x30, 0x00, 0x00, 0x00 },
-		.ec_present = 1,
-		// 0 = leave channel enabled
-		// 1 = disable dimm 0 on channel
-		// 2 = disable dimm 1 on channel
-		// 3 = disable dimm 0+1 on channel
-		.dimm_channel0_disabled = 2,
-		.dimm_channel1_disabled = 2,
-		.max_ddr3_freq = 1333,
-		.usb_port_config = {
-			{ 1, 0, 0x0080 }, /* P0: Port 0      (OC0) */
-			{ 1, 1, 0x0080 }, /* P1: Port 1      (OC1) */
-			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1   (no OC) */
-			{ 1, 0, 0x0040 }, /* P3: MMC         (no OC) */
-			{ 0, 0, 0x0000 }, /* P4: Empty */
-			{ 0, 0, 0x0000 }, /* P5: Empty */
-			{ 0, 0, 0x0000 }, /* P6: Empty */
-			{ 0, 0, 0x0000 }, /* P7: Empty */
-			{ 1, 4, 0x0040 }, /* P8: MINIPCIE2   (no OC) */
-			{ 0, 4, 0x0000 }, /* P9: Empty */
-			{ 0, 4, 0x0000 }, /* P10: Empty */
-			{ 1, 4, 0x0040 }, /* P11: Camera     (no OC) */
-			{ 0, 4, 0x0000 }, /* P12: Empty */
-			{ 0, 4, 0x0000 }, /* P13: Empty */
-		},
-	};
-	*pei_data = pei_data_template;
 	typedef const uint8_t spd_blob[256];
 	spd_blob *spd_data;
 	size_t spd_file_len;
@@ -207,7 +164,80 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	if (spd_file_len < (spd_index + 1) * 256)
 		die("Missing SPD data.");
 	// leave onboard dimm address at f0, and copy spd data there.
-	memcpy(pei_data->spd_data[0], spd_data[spd_index], 256);
+	return spd_data[spd_index];
+}
+
+void mainboard_fill_pei_data(struct pei_data *pei_data)
+{
+	struct pei_data pei_data_template = {
+		.pei_version = PEI_VERSION,
+		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
+		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
+		.epbar = DEFAULT_EPBAR,
+		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
+		.smbusbar = SMBUS_IO_BASE,
+		.wdbbar = 0x4000000,
+		.wdbsize = 0x1000,
+		.hpet_address = CONFIG_HPET_ADDRESS,
+		.rcba = (uintptr_t)DEFAULT_RCBABASE,
+		.pmbase = DEFAULT_PMBASE,
+		.gpiobase = DEFAULT_GPIOBASE,
+		.thermalbase = 0xfed08000,
+		.system_type = 0, // 0 Mobile, 1 Desktop/Server
+		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.spd_addresses = { 0xa0, 0x00,0x00,0x00 },
+		.ts_addresses = { 0x30, 0x00, 0x00, 0x00 },
+		.ec_present = 1,
+		// 0 = leave channel enabled
+		// 1 = disable dimm 0 on channel
+		// 2 = disable dimm 1 on channel
+		// 3 = disable dimm 0+1 on channel
+		.dimm_channel0_disabled = 2,
+		.dimm_channel1_disabled = 2,
+		.max_ddr3_freq = 1333,
+		.usb_port_config = {
+			{ 1, 0, 0x0080 }, /* P0: Port 0      (OC0) */
+			{ 1, 1, 0x0080 }, /* P1: Port 1      (OC1) */
+			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1   (no OC) */
+			{ 1, 0, 0x0040 }, /* P3: MMC         (no OC) */
+			{ 0, 0, 0x0000 }, /* P4: Empty */
+			{ 0, 0, 0x0000 }, /* P5: Empty */
+			{ 0, 0, 0x0000 }, /* P6: Empty */
+			{ 0, 0, 0x0000 }, /* P7: Empty */
+			{ 1, 4, 0x0040 }, /* P8: MINIPCIE2   (no OC) */
+			{ 0, 4, 0x0000 }, /* P9: Empty */
+			{ 0, 4, 0x0000 }, /* P10: Empty */
+			{ 1, 4, 0x0040 }, /* P11: Camera     (no OC) */
+			{ 0, 4, 0x0000 }, /* P12: Empty */
+			{ 0, 4, 0x0000 }, /* P13: Empty */
+		},
+	};
+	*pei_data = pei_data_template;
+	// leave onboard dimm address at f0, and copy spd data there.
+	memcpy(pei_data->spd_data[0], locate_spd(), 256);
+}
+
+const struct southbridge_usb_port mainboard_usb_ports[] = {
+	/* enabled power  usb oc pin  */
+	{ 1, 1, 0 }, /* P0: Port 0      (OC0) */
+	{ 1, 1, 1 }, /* P1: Port 1      (OC1) */
+	{ 1, 0, -1 }, /* P2: MINIPCIE1   (no OC) */
+	{ 1, 0, -1 }, /* P3: MMC         (no OC) */
+	{ 0, 0, -1 }, /* P4: Empty */
+	{ 0, 0, -1 }, /* P5: Empty */
+	{ 0, 0, -1 }, /* P6: Empty */
+	{ 0, 0, -1 }, /* P7: Empty */
+	{ 1, 0, -1 }, /* P8: MINIPCIE2   (no OC) */
+	{ 0, 0, -1 }, /* P9: Empty */
+	{ 0, 0, -1 }, /* P10: Empty */
+	{ 1, 0, -1 }, /* P11: Camera     (no OC) */
+	{ 0, 0, -1 }, /* P12: Empty */
+	{ 0, 0, -1 }, /* P13: Empty */
+};
+
+void mainboard_get_spd(spd_raw_data *spd)
+{
+	memcpy(&spd[0], locate_spd(), 128);
 }
 
 void mainboard_early_init(int s3resume)

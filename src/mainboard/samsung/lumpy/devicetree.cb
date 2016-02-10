@@ -14,6 +14,8 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_backlight_on_delay" = "2100"	# T5: 210ms
 	register "gpu_panel_power_backlight_off_delay" = "2100"	# TD: 210ms
 
+	register "max_mem_clock_mhz" = "666"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_rPGA989
 			device lapic 0 on end

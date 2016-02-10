@@ -5,6 +5,7 @@
  * Copyright (C) Stefan Reinauer
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,8 +118,17 @@ static void set_agp_aperture(device_t dev, uint32_t pci_id)
 
 static void mcf3_set_resources_fam10h(device_t dev)
 {
-	/* Set the gart apeture */
+	/* Set the gart aperture */
 	set_agp_aperture(dev, 0x1203);
+
+	/* Set the generic PCI resources */
+	pci_dev_set_resources(dev);
+}
+
+static void mcf3_set_resources_fam15h_model10(device_t dev)
+{
+	/* Set the gart aperture */
+	set_agp_aperture(dev, 0x1403);
 
 	/* Set the generic PCI resources */
 	pci_dev_set_resources(dev);
@@ -126,7 +136,7 @@ static void mcf3_set_resources_fam10h(device_t dev)
 
 static void mcf3_set_resources_fam15h(device_t dev)
 {
-	/* Set the gart apeture */
+	/* Set the gart aperture */
 	set_agp_aperture(dev, 0x1603);
 
 	/* Set the generic PCI resources */
@@ -175,6 +185,15 @@ static struct device_operations mcf3_ops_fam10h  = {
 	.ops_pci          = 0,
 };
 
+static struct device_operations mcf3_ops_fam15h_model10  = {
+	.read_resources   = mcf3_read_resources,
+	.set_resources    = mcf3_set_resources_fam15h_model10,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = misc_control_init,
+	.scan_bus         = 0,
+	.ops_pci          = 0,
+};
+
 static struct device_operations mcf3_ops_fam15h  = {
 	.read_resources   = mcf3_read_resources,
 	.set_resources    = mcf3_set_resources_fam15h,
@@ -188,6 +207,12 @@ static const struct pci_driver mcf3_driver __pci_driver = {
 	.ops    = &mcf3_ops_fam10h,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1203,
+};
+
+static const struct pci_driver mcf3_driver_fam15_model10 __pci_driver = {
+	.ops    = &mcf3_ops_fam15h_model10,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x1403,
 };
 
 static const struct pci_driver mcf3_driver_fam15 __pci_driver = {

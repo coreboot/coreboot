@@ -6850,10 +6850,15 @@ static void mct_InitialMCT_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc 
 static u32 mct_NodePresent_D(void)
 {
 	u32 val;
-	if (is_fam15h())
-		val = 0x16001022;
-	else
+	if (is_fam15h()) {
+		if (is_model10_1f()) {
+			val = 0x14001022;
+		} else {
+			val = 0x16001022;
+		}
+	} else {
 		val = 0x12001022;
+	}
 	return val;
 }
 

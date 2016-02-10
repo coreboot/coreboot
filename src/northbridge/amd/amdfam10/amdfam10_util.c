@@ -101,6 +101,7 @@ uint64_t mctGetLogicalCPUID(u32 Node)
 		ret = AMD_OR_B2;
 		break;
 	case 0x15020:
+	case 0x15101:
 		ret = AMD_OR_C0;
 		break;
 	default:

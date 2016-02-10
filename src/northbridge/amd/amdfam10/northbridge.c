@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
@@ -673,25 +674,28 @@ static struct device_operations northbridge_operations = {
 	.ops_pci	  = 0,
 };
 
-
 static const struct pci_driver mcf0_driver __pci_driver = {
 	.ops	= &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1200,
 };
 
-
 static void amdfam10_nb_init(void *chip_info)
 {
 	relocate_sb_ht_chain();
 }
+
+static const struct pci_driver mcf0_driver_fam15_model10 __pci_driver = {
+	.ops	= &northbridge_operations,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x1400,
+};
 
 static const struct pci_driver mcf0_driver_fam15 __pci_driver = {
 	.ops	= &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1600,
 };
-
 
 struct chip_operations northbridge_amd_amdfam10_ops = {
 	CHIP_NAME("AMD Family 10h/15h Northbridge")

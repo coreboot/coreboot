@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,6 +153,12 @@ static const struct pci_driver mcf4_driver_fam10 __pci_driver = {
 	.ops    = &mcf4_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1204,
+};
+
+static const struct pci_driver mcf4_driver_fam15_model10 __pci_driver = {
+	.ops    = &mcf4_ops,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x1404,
 };
 
 static const struct pci_driver mcf4_driver_fam15 __pci_driver = {

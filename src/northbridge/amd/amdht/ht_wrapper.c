@@ -258,6 +258,11 @@ static BOOL AMD_CB_IgnoreLink (u8 node, u8 link)
 static void amd_ht_init(struct sys_info *sysinfo)
 {
 
+	if (!sysinfo) {
+		printk(BIOS_DEBUG, "Skipping amd_ht_init()\n");
+		return;
+	}
+
 	AMD_HTBLOCK ht_wrapper = {
 		NULL,	// u8 **topolist;
 		0,	// u8 AutoBusStart;

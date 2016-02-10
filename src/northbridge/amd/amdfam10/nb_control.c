@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +65,6 @@ static void nb_control_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
-
 static struct device_operations mcf5_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -72,6 +72,12 @@ static struct device_operations mcf5_ops  = {
 	.init             = nb_control_init,
 	.scan_bus         = 0,
 	.ops_pci          = 0,
+};
+
+static const struct pci_driver mcf5_driver_fam15_model10 __pci_driver = {
+	.ops    = &mcf5_ops,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x1405,
 };
 
 static const struct pci_driver mcf5_driver_fam15 __pci_driver = {

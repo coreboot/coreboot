@@ -579,6 +579,9 @@ static uint16_t mct_MaxLoadFreq(uint8_t count, uint8_t highest_rank_count, uint8
 //G34
 #elif CONFIG_CPU_SOCKET_TYPE == 0x15
 #include "../amdmct/mct_ddr3/mctardk5.c"
+//FM2
+#elif CONFIG_CPU_SOCKET_TYPE == 0x16
+#include "../amdmct/mct_ddr3/mctardk5.c"
 #endif
 
 #else  /* DDR2 */

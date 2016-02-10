@@ -335,6 +335,14 @@ struct lb_cbmem_entry {
 	uint32_t id;
 };
 
+#define LB_TAG_TSC_INFO 0x0032
+struct lb_tsc_info {
+	uint32_t tag;
+	uint32_t size;
+
+	uint32_t freq_khz;
+};
+
 #define LB_TAG_SERIALNO		0x002a
 #define MAX_SERIALNO_LENGTH	32
 

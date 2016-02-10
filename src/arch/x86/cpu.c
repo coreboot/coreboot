@@ -19,6 +19,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/x86/tsc.h>
 #include <arch/cpu.h>
 #include <device/path.h>
 #include <device/device.h>
@@ -291,4 +292,21 @@ void cpu_initialize(unsigned int index)
 
 void lb_arch_add_records(struct lb_header *header)
 {
+	uint32_t freq_khz;
+	struct lb_tsc_info *tsc_info;
+
+	/* Don't advertise a TSC rate unless it's constant. */
+	if (!IS_ENABLED(CONFIG_TSC_CONSTANT_RATE))
+		return;
+
+	freq_khz = tsc_freq_mhz() * 1000;
+
+	/* No use exposing a TSC frequency that is zero. */
+	if (freq_khz == 0)
+		return;
+
+	tsc_info = (void *)lb_new_record(header);
+	tsc_info->tag = LB_TAG_TSC_INFO;
+	tsc_info->size = sizeof(*tsc_info);
+	tsc_info->freq_khz = freq_khz;
 }

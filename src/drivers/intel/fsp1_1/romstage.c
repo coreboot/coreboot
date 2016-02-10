@@ -22,6 +22,7 @@
 #include <boardid.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <cpu/intel/microcode.h>
 #include <cpu/x86/mtrr.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
@@ -48,6 +49,10 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 	post_code(0x30);
 
 	timestamp_add_now(TS_START_ROMSTAGE);
+
+	/* Load microcode before ram init */
+	if (IS_ENABLED(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS))
+		intel_update_microcode_from_cbfs();
 
 	memset(&pei_data, 0, sizeof(pei_data));
 

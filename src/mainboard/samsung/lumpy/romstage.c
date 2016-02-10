@@ -34,7 +34,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/gpio.h>
 #include <arch/cpu.h>
-#include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include "option_table.h"
@@ -43,7 +42,7 @@
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 #endif
 
-static void pch_enable_lpc(void)
+void pch_enable_lpc(void)
 {
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
@@ -64,7 +63,7 @@ static void pch_enable_lpc(void)
 #endif
 }
 
-static void rcba_config(void)
+void rcba_config(void)
 {
 	u32 reg32;
 
@@ -115,23 +114,9 @@ static void rcba_config(void)
 	RCBA32(FD) = reg32;
 }
 
-static void early_pch_init(void)
+void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	u8 reg8;
-
-	// reset rtc power status
-	reg8 = pci_read_config8(PCH_LPC_DEV, 0xa4);
-	reg8 &= ~(1 << 2);
-	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
-}
-
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
-{
-	int boot_mode = 0;
-	int cbmem_was_initted;
-
-	struct pei_data pei_data = {
+	struct pei_data pei_data_template = {
 		.pei_version = PEI_VERSION,
 		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
 		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
@@ -174,57 +159,10 @@ void main(unsigned long bist)
 			{ 0, 4, 0x0000 }, /* P13: Empty */
 		},
 	};
-
+	*pei_data = pei_data_template;
 	typedef const uint8_t spd_blob[256];
 	spd_blob *spd_data;
 	size_t spd_file_len;
-
-
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	if (bist == 0)
-		enable_lapic();
-
-	pch_enable_lpc();
-
-	/* Enable GPIOs */
-	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
-	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-	setup_pch_gpios(&lumpy_gpio_map);
-
-	console_init();
-
-	init_bootmode_straps();
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
-
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected\n");
-		boot_mode = 1;
-
-		/* System is not happy after keyboard reset... */
-		printk(BIOS_DEBUG, "Issuing CF9 warm reset\n");
-		outb(0x6, 0xcf9);
-		halt();
-	}
-
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
-	sandybridge_early_initialization(SANDYBRIDGE_MOBILE);
-	printk(BIOS_DEBUG, "Back from sandybridge_early_initialization()\n");
-
-	boot_mode = southbridge_detect_s3_resume() ? 2 : 0;
-
-	post_code(0x38);
-	/* Enable SPD ROMs and DDR-III DRAM */
-	enable_smbus();
-
-	/* Prepare USB controller early in S3 resume */
-	if (boot_mode == 2)
-		enable_usb_bar();
 
 	u32 gp_lvl2 = inl(DEFAULT_GPIOBASE + 0x38);
 	u8 gpio33, gpio41, gpio49;
@@ -271,37 +209,19 @@ void main(unsigned long bist)
 	if (spd_file_len < (spd_index + 1) * 256)
 		die("Missing SPD data.");
 	// leave onboard dimm address at f0, and copy spd data there.
-	memcpy(pei_data.spd_data[0], spd_data[spd_index], 256);
+	memcpy(pei_data->spd_data[0], spd_data[spd_index], 256);
+}
 
-	post_code(0x39);
-	pei_data.boot_mode = boot_mode;
-	timestamp_add_now(TS_BEFORE_INITRAM);
-	sdram_initialize(&pei_data);
+void mainboard_early_init(int s3resume)
+{
+	init_bootmode_straps();
+}
 
-	timestamp_add_now(TS_AFTER_INITRAM);
-	post_code(0x3a);
-	/* Perform some initialization that must run before stage2 */
-	early_pch_init();
-	post_code(0x3b);
+int mainboard_should_reset_usb(int s3resume)
+{
+	return !s3resume;
+}
 
-	rcba_config();
-	post_code(0x3c);
-
-	quick_ram_check();
-	post_code(0x3e);
-
-	cbmem_was_initted = !cbmem_recovery(boot_mode==2);
-	if (boot_mode!=2)
-		save_mrc_data(&pei_data);
-
-	if (boot_mode == 2 && !cbmem_was_initted) {
-		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		halt();
-	}
-	northbridge_romstage_finalize(boot_mode==2);
-	post_code(0x3f);
-	if (CONFIG_LPC_TPM) {
-		init_tpm(boot_mode == 2);
-	}
+void mainboard_config_superio(void)
+{
 }

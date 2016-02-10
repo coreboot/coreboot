@@ -25,6 +25,7 @@
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
 #include <halt.h>
+#include <timestamp.h>
 #include "raminit.h"
 #include "pei_data.h"
 #include "sandybridge.h"
@@ -278,4 +279,30 @@ void sdram_initialize(struct pei_data *pei_data)
 		intel_early_me_status();
 
 	report_memory_config();
+}
+
+void perform_raminit(int s3resume)
+{
+	int cbmem_was_initted;
+	struct pei_data pei_data;
+
+	/* Prepare USB controller early in S3 resume */
+	if (!mainboard_should_reset_usb(s3resume))
+		enable_usb_bar();
+
+	mainboard_fill_pei_data(&pei_data);
+
+	post_code(0x3a);
+	pei_data.boot_mode = s3resume ? 2 : 0;
+	timestamp_add_now(TS_BEFORE_INITRAM);
+	sdram_initialize(&pei_data);
+	cbmem_was_initted = !cbmem_recovery(s3resume);
+	if (!s3resume)
+		save_mrc_data(&pei_data);
+
+	if (s3resume && !cbmem_was_initted) {
+		/* Failed S3 resume, reset to come up cleanly */
+		outb(0x6, 0xcf9);
+		halt();
+	}
 }

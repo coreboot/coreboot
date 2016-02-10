@@ -362,6 +362,10 @@ void mainboard_early_init(int s3resume)
 {
 }
 
+void mainboard_config_superio(void)
+{
+}
+
 /* FIXME: Put proper SPD map here. */
 void mainboard_get_spd(spd_raw_data *spd)
 {

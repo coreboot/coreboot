@@ -29,43 +29,23 @@
 #include <device/device.h>
 #include <halt.h>
 #include <tpm.h>
-#include "raminit_native.h"
 #include <northbridge/intel/sandybridge/chip.h>
 #include "southbridge/intel/bd82x6x/pch.h"
 #include "southbridge/intel/bd82x6x/gpio.h"
 
-#define HOST_BRIDGE	PCI_DEVFN(0, 0)
-#define DEFAULT_TCK	TCK_800MHZ
-
-static unsigned int get_mem_min_tck(void)
+static void early_pch_init(void)
 {
-	const struct device *dev;
-	const struct northbridge_intel_sandybridge_config *cfg;
+	u8 reg8;
 
-	dev = dev_find_slot(0, HOST_BRIDGE);
-	if (!(dev && dev->chip_info))
-		return DEFAULT_TCK;
-
-	cfg = dev->chip_info;
-
-	/* If this is zero, it just means devicetree.cb didn't set it */
-	if (cfg->max_mem_clock_mhz == 0)
-		return DEFAULT_TCK;
-
-	if (cfg->max_mem_clock_mhz >= 800)
-		return TCK_800MHZ;
-	else if (cfg->max_mem_clock_mhz >= 666)
-		return TCK_666MHZ;
-	else if (cfg->max_mem_clock_mhz >= 533)
-		return TCK_533MHZ;
-	else
-		return TCK_400MHZ;
+	// reset rtc power status
+	reg8 = pci_read_config8(PCH_LPC_DEV, 0xa4);
+	reg8 &= ~(1 << 2);
+	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
 }
 
 void main(unsigned long bist)
 {
 	int s3resume = 0;
-	spd_raw_data spd[4];
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		outb(0x6, 0xcf9);
@@ -86,7 +66,14 @@ void main(unsigned long bist)
 
 	setup_pch_gpios(&mainboard_gpio_map);
 
-	early_usb_init(mainboard_usb_ports);
+	/* Initialize superio */
+	mainboard_config_superio();
+
+	/* USB is inited in MRC if MRC is used.  */
+	if (!(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE_MRC
+	      || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_MRC)) {
+		early_usb_init(mainboard_usb_ports);
+	}
 
 	/* Initialize console device(s) */
 	console_init();
@@ -111,27 +98,25 @@ void main(unsigned long bist)
 
 	post_code(0x39);
 
-	post_code(0x3a);
-
-	memset (spd, 0, sizeof (spd));
-	mainboard_get_spd(spd);
-
-	timestamp_add_now(TS_BEFORE_INITRAM);
-
-	init_dram_ddr3(spd, 1, get_mem_min_tck(), s3resume);
+	perform_raminit(s3resume);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
+
+	post_code(0x3b);
+	/* Perform some initialization that must run before stage2 */
+	early_pch_init();
 	post_code(0x3c);
 
 	southbridge_configure_default_intmap();
 	rcba_config();
+
 	post_code(0x3d);
 
 	northbridge_romstage_finalize(s3resume);
 
-#if CONFIG_LPC_TPM
-       init_tpm(s3resume);
-#endif
+	if (CONFIG_LPC_TPM) {
+		init_tpm(s3resume);
+	}
 
 	post_code(0x3f);
 }

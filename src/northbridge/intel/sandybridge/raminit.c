@@ -24,12 +24,14 @@
 #include <cbfs.h>
 #include <halt.h>
 #include <ip_checksum.h>
+#include <timestamp.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
 #include "raminit_native.h"
 #include "sandybridge.h"
 #include <delay.h>
 #include <lib.h>
+#include <device/device.h>
 
 /* Management Engine is in the southbridge */
 #include "southbridge/intel/bd82x6x/me.h"
@@ -37,6 +39,7 @@
 #include "southbridge/intel/bd82x6x/smbus.h"
 #include "arch/cpu.h"
 #include "cpu/x86/msr.h"
+#include <northbridge/intel/sandybridge/chip.h>
 
 /* FIXME: no ECC support.  */
 /* FIXME: no support for 3-channel chipsets.  */
@@ -4033,4 +4036,45 @@ void init_dram_ddr3(spd_raw_data * spds, int mobile, int min_tck,
 		outb(0x6, 0xcf9);
 		halt();
 	}
+}
+
+#define HOST_BRIDGE	PCI_DEVFN(0, 0)
+#define DEFAULT_TCK	TCK_800MHZ
+
+static unsigned int get_mem_min_tck(void)
+{
+	const struct device *dev;
+	const struct northbridge_intel_sandybridge_config *cfg;
+
+	dev = dev_find_slot(0, HOST_BRIDGE);
+	if (!(dev && dev->chip_info))
+		return DEFAULT_TCK;
+
+	cfg = dev->chip_info;
+
+	/* If this is zero, it just means devicetree.cb didn't set it */
+	if (cfg->max_mem_clock_mhz == 0)
+		return DEFAULT_TCK;
+
+	if (cfg->max_mem_clock_mhz >= 800)
+		return TCK_800MHZ;
+	else if (cfg->max_mem_clock_mhz >= 666)
+		return TCK_666MHZ;
+	else if (cfg->max_mem_clock_mhz >= 533)
+		return TCK_533MHZ;
+	return TCK_400MHZ;
+}
+
+void perform_raminit(int s3resume)
+{
+	spd_raw_data spd[4];
+
+	post_code(0x3a);
+
+	memset (spd, 0, sizeof (spd));
+	mainboard_get_spd(spd);
+
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
+	init_dram_ddr3(spd, 1, get_mem_min_tck(), s3resume);
 }

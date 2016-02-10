@@ -34,7 +34,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/gpio.h>
 #include <arch/cpu.h>
-#include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <tpm.h>
@@ -56,7 +55,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)
 
-static void pch_enable_lpc(void)
+void pch_enable_lpc(void)
 {
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
@@ -76,7 +75,7 @@ static void pch_enable_lpc(void)
 #endif
 }
 
-static void rcba_config(void)
+void rcba_config(void)
 {
 	u32 reg32;
 
@@ -124,16 +123,6 @@ static void rcba_config(void)
 	RCBA32(FD) = reg32;
 }
 
-static void early_pch_init(void)
-{
-	u8 reg8;
-
-	// reset rtc power status
-	reg8 = pci_read_config8(PCH_LPC_DEV, 0xa4);
-	reg8 &= ~(1 << 2);
-	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
-}
-
 static void setup_sio_gpios(void)
 {
 	/*
@@ -168,13 +157,9 @@ static void setup_sio_gpios(void)
 	it8772f_gpio_setup(DUMMY_DEV, 6, 0x00, 0x00, 0x00, 0x00, 0x00);
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	int boot_mode = 0;
-	int cbmem_was_initted;
-
-	struct pei_data pei_data = {
+	struct pei_data pei_data_template = {
 		.pei_version = PEI_VERSION,
 		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
 		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
@@ -217,56 +202,17 @@ void main(unsigned long bist)
 			{ 1, 5, 0x0040 }, /* P13: Back port  (OC5) */
 		},
 	};
+	*pei_data = pei_data_template;
+}
 
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	if (bist == 0)
-		enable_lapic();
-
-	pch_enable_lpc();
-
-	/* Enable GPIOs */
-	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
-	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-	setup_pch_gpios(&stumpy_gpio_map);
-	setup_sio_gpios();
-
-	/* Early SuperIO setup */
-	it8772f_ac_resume_southbridge(DUMMY_DEV);
-	ite_kill_watchdog(GPIO_DEV);
-	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	console_init();
-
+void mainboard_early_init(int s3resume)
+{
 	init_bootmode_straps();
+}
 
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
-
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected\n");
-		boot_mode = 1;
-
-		/* System is not happy after keyboard reset... */
-		printk(BIOS_DEBUG, "Issuing CF9 warm reset\n");
-		outb(0x6, 0xcf9);
-		halt();
-	}
-
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
-	sandybridge_early_initialization(SANDYBRIDGE_MOBILE);
-	printk(BIOS_DEBUG, "Back from sandybridge_early_initialization()\n");
-
-	boot_mode = southbridge_detect_s3_resume() ? 2 : 0;
-
-	post_code(0x38);
-	/* Enable SPD ROMs and DDR-III DRAM */
-	enable_smbus();
-
-	/* Prepare USB controller early in S3 resume */
-	if (boot_mode == 2) {
+int mainboard_should_reset_usb(int s3resume)
+{
+	if (s3resume) {
 		/*
 		 * For Stumpy the back USB ports are reset on resume
 		 * so default to resetting the controller to make the
@@ -275,48 +221,26 @@ void main(unsigned long bist)
 		 * the device power loss better in the future.
 		 */
 		u8 magic = cmos_read(CMOS_USB_RESET_DISABLE);
-
 		if (magic == USB_RESET_DISABLE_MAGIC) {
 			printk(BIOS_DEBUG, "USB Controller Reset Disabled\n");
-			enable_usb_bar();
+			return 0;
 		} else {
 			printk(BIOS_DEBUG, "USB Controller Reset Enabled\n");
+			return 1;
 		}
 	} else {
 		/* Ensure USB reset on resume is enabled at boot */
 		cmos_write(0, CMOS_USB_RESET_DISABLE);
+		return 1;
 	}
+}
 
-	post_code(0x39);
-	pei_data.boot_mode = boot_mode;
-	timestamp_add_now(TS_BEFORE_INITRAM);
-	sdram_initialize(&pei_data);
+void mainboard_config_superio(void)
+{
+	setup_sio_gpios();
 
-	timestamp_add_now(TS_AFTER_INITRAM);
-	post_code(0x3a);
-	/* Perform some initialization that must run before stage2 */
-	early_pch_init();
-	post_code(0x3b);
-
-	rcba_config();
-	post_code(0x3c);
-
-	quick_ram_check();
-	post_code(0x3e);
-
-	cbmem_was_initted = !cbmem_recovery(boot_mode==2);
-	if (boot_mode!=2)
-		save_mrc_data(&pei_data);
-
-	if (boot_mode==2 && !cbmem_was_initted) {
-		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		halt();
-	}
-	northbridge_romstage_finalize(boot_mode==2);
-
-	post_code(0x3f);
-	if (CONFIG_LPC_TPM) {
-		init_tpm(boot_mode == 2);
-	}
+	/* Early SuperIO setup */
+	it8772f_ac_resume_southbridge(DUMMY_DEV);
+	ite_kill_watchdog(GPIO_DEV);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

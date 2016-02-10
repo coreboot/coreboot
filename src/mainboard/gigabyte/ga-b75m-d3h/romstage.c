@@ -208,3 +208,7 @@ static void dmi_config(void)
 
 void mainboard_early_init(int s3resume) {
 }
+
+void mainboard_config_superio(void)
+{
+}

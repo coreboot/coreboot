@@ -215,7 +215,15 @@ void dump_pci_devices(void);
 void dump_spd_registers(void);
 void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
+
 #endif /* !__SMM__ */
+
+void rcba_config(void);
+void pch_enable_lpc(void);
+void mainboard_early_init(int s3resume);
+void mainboard_config_superio(void);
+int mainboard_should_reset_usb(int s3resume);
+void perform_raminit(int s3resume);
 
 #if ENV_RAMSTAGE
 #include <device/device.h>

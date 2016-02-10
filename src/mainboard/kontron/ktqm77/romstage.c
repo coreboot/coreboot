@@ -31,12 +31,11 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/gpio.h>
 #include <arch/cpu.h>
-#include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include "gpio.h"
 
-static void pch_enable_lpc(void)
+void pch_enable_lpc(void)
 {
 	/* Set COM3/COM1 decode ranges: 0x3e8/0x3f8 */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0070);
@@ -52,11 +51,9 @@ static void pch_enable_lpc(void)
 			   COMA_LPC_EN | COMB_LPC_EN);
 }
 
-static void rcba_config(void)
+void rcba_config(void)
 {
 	u32 reg32;
-
-	southbridge_configure_default_intmap();
 
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);
@@ -79,7 +76,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, port);
 }
 
-static void superio_gpio_config(void)
+void mainboard_config_superio(void)
 {
 	int lvds_3v = 0; // 0 (5V) or 1 (3V3)
 	int dis_bl_inv = 1; // backlight inversion: 1 = disabled, 0 = enabled
@@ -100,13 +97,9 @@ static void superio_gpio_config(void)
 	pnp_exit_ext_func_mode(dev);
 }
 
-#include <cpu/intel/romstage.h>
-void main(unsigned long bist)
+void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	int boot_mode = 0;
-	int cbmem_was_initted;
-
-	struct pei_data pei_data = {
+	struct pei_data pei_data_template = {
 		.pei_version = PEI_VERSION,
 		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
 		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
@@ -159,84 +152,18 @@ void main(unsigned long bist)
 		},
 		.pcie_init = 1,
 	};
+	*pei_data = pei_data_template;
+}
 
-	timestamp_init(get_initial_timestamp());
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	if (bist == 0)
-		enable_lapic();
-
-	pch_enable_lpc();
-
-	/* Enable GPIOs */
-	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
-	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-	setup_pch_gpios(&ktqm77_gpio_map);
-	superio_gpio_config();
-
-	/* Initialize console device(s) */
-	console_init();
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
-
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected\n");
-		boot_mode = 1;
-
-		/* System is not happy after keyboard reset... */
-		printk(BIOS_DEBUG, "Issuing CF9 warm reset\n");
-		outb(0x6, 0xcf9);
-		halt();
-	}
-
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
-	sandybridge_early_initialization(SANDYBRIDGE_MOBILE);
-	printk(BIOS_DEBUG, "Back from sandybridge_early_initialization()\n");
-
+void mainboard_early_init(int s3resume)
+{
 	/* Enable PEG10 (1x16) */
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN,
 			   pci_read_config32(PCI_DEV(0, 0, 0), DEVEN) |
 			   DEVEN_PEG10);
+}
 
-	boot_mode = southbridge_detect_s3_resume() ? 2 : 0;
-
-	post_code(0x38);
-	/* Enable SPD ROMs and DDR-III DRAM */
-	enable_smbus();
-
-	/* Prepare USB controller early in S3 resume */
-	if (boot_mode == 2)
-		enable_usb_bar();
-
-	post_code(0x39);
-
-	post_code(0x3a);
-	pei_data.boot_mode = boot_mode;
-	timestamp_add_now(TS_BEFORE_INITRAM);
-	sdram_initialize(&pei_data);
-
-	timestamp_add_now(TS_AFTER_INITRAM);
-	post_code(0x3c);
-
-	rcba_config();
-	post_code(0x3d);
-
-	quick_ram_check();
-	post_code(0x3e);
-
-	cbmem_was_initted = !cbmem_recovery(boot_mode==2);
-	if (boot_mode!=2)
-		save_mrc_data(&pei_data);
-
-	if (boot_mode==2 && !cbmem_was_initted) {
-		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		halt();
-	}
-	northbridge_romstage_finalize(boot_mode==2);
-
-	post_code(0x3f);
+int mainboard_should_reset_usb(int s3resume)
+{
+	return !s3resume;
 }

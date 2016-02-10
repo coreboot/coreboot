@@ -110,11 +110,18 @@ static int cbfs_fix_legacy_size(struct cbfs_image *image, char *hdr_loc)
 	// A bug in old cbfstool may produce extra few bytes (by alignment) and
 	// cause cbfstool to overwrite things after free space -- which is
 	// usually CBFS header on x86. We need to workaround that.
+	// Except when we run across a file that contains the actual header,
+	// in which case this image is a safe, new-style
+	// `cbfstool add-master-header` based image.
 
 	struct cbfs_file *entry, *first = NULL, *last = NULL;
 	for (first = entry = cbfs_find_first_entry(image);
 	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
+		/* Is the header guarded by a CBFS file entry? Then exit */
+		if (((char *)entry) + ntohl(entry->offset) == hdr_loc) {
+			return 0;
+		}
 		last = entry;
 	}
 	if ((char *)first < (char *)hdr_loc &&

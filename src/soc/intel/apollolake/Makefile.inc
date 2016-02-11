@@ -45,6 +45,7 @@ ramstage-y += northbridge.c
 ramstage-y += spi.c
 ramstage-y += tsc_freq.c
 ramstage-y += pmutil.c
+ramstage-y += pmc.c
 
 postcar-y += exit_car.S
 postcar-y += memmap.c

@@ -29,7 +29,7 @@ static const struct pad_community {
 		.first_pad = NW_OFFSET,
 	}, {
 		.port = GPIO_NORTH,
-		.first_pad = 0,
+		.first_pad = N_OFFSET,
 	}
 };
 

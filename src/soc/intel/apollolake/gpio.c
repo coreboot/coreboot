@@ -10,6 +10,7 @@
  * (at your option) any later version.
  */
 
+#include <assert.h>
 #include <soc/gpio.h>
 #include <soc/iosf.h>
 
@@ -36,6 +37,8 @@ static const struct pad_community {
 static const struct pad_community *gpio_get_community(uint16_t pad)
 {
 	const struct pad_community *map = gpio_communities;
+
+	assert(pad < TOTAL_PADS);
 
 	while (map->first_pad > pad)
 		map++;

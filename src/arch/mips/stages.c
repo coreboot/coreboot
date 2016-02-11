@@ -20,9 +20,3 @@ void stage_entry(void)
 {
 	main();
 }
-
-void stage_exit(void *addr)
-{
-	void (*doit)(void) = addr;
-	doit();
-}

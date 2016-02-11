@@ -19,6 +19,5 @@
 extern void main(void);
 
 void stage_entry(void);
-void stage_exit(void *);
 
 #endif

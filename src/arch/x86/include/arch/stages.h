@@ -20,15 +20,4 @@
 
 void asmlinkage copy_and_run(void);
 
-static inline void stage_exit(void *entry)
-{
-	__asm__ volatile (
-#ifdef __x86_64__
-		"jmp  *%%rdi\n"
-#else
-		"jmp  *%%edi\n"
-#endif
-		:: "D"(entry)
-	);
-}
 #endif

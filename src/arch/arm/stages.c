@@ -34,19 +34,3 @@ __attribute__((weak)) void stage_entry(void)
 {
 	main();
 }
-
-/* we had marked 'doit' as 'noreturn'.
- * There is no apparent harm in leaving it as something we can return from, and in the one
- * case where we call a payload, the payload is allowed to return.
- * Hence, leave it as something we can return from.
- */
-void stage_exit(void *addr)
-{
-	void (*doit)(void) = addr;
-	/*
-	 * Most stages load code so we need to sync caches here. Should maybe
-	 * go into cbfs_load_stage() instead...
-	 */
-	cache_sync_instructions();
-	doit();
-}

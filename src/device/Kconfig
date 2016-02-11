@@ -84,13 +84,13 @@ config ALWAYS_LOAD_OPROM
 	  are needed for the kernel's display driver to know how a piece of
 	  hardware is configured to be used.
 
-config ON_DEVICE_ROM_RUN
-	bool "Run Option ROMs on PCI devices"
+config ON_DEVICE_ROM_LOAD
+	bool "Load Option ROMs on PCI devices"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
 	depends on PCI
 	help
-	  Execute Option ROMs stored on PCI/PCIe/AGP devices in coreboot.
+	  Load Option ROMs stored on PCI/PCIe/AGP devices in coreboot.
 
 	  If disabled, only Option ROMs stored in CBFS will be executed by
 	  coreboot. If you are concerned about security, you might want to

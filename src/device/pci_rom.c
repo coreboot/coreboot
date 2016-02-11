@@ -52,6 +52,10 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	if (rom_header) {
 		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",
 		       dev_path(dev), rom_header);
+	} else if (!IS_ENABLED(CONFIG_ON_DEVICE_ROM_LOAD)) {
+			printk(BIOS_DEBUG, "PCI Option ROM loading disabled "
+				"for %s\n", dev_path(dev));
+			return NULL;
 	} else {
 		uintptr_t rom_address;
 
@@ -70,15 +74,9 @@ struct rom_header *pci_rom_probe(struct device *dev)
 					   rom_address|PCI_ROM_ADDRESS_ENABLE);
 		}
 
-#if CONFIG_ON_DEVICE_ROM_RUN
 		printk(BIOS_DEBUG, "Option ROM address for %s = %lx\n",
 		       dev_path(dev), (unsigned long)rom_address);
 		rom_header = (struct rom_header *)rom_address;
-#else
-		printk(BIOS_DEBUG, "Option ROM execution disabled "
-			"for %s\n", dev_path(dev));
-		return NULL;
-#endif
 	}
 
 	printk(BIOS_SPEW, "PCI expansion ROM, signature 0x%04x, "

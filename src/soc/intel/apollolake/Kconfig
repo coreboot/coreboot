@@ -75,4 +75,9 @@ config CONSOLE_UART_BASE_ADDRESS
 	hex "MMIO base address for UART"
 	default 0xde000000
 
+# 32KiB bootblock is all that is mapped in by the CSE at top of 4GiB.
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x8000
+
 endif

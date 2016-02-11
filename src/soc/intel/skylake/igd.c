@@ -62,6 +62,23 @@ static inline void gtt_rmw(u32 reg, u32 andmask, u32 ormask)
 
 static void igd_init(struct device *dev)
 {
+	u32 ddi_buf_ctl;
+
+	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	if (!gtt_res || !gtt_res->base)
+		return;
+
+	/*
+	 * Enable DDI-A (eDP) 4-lane operation if the link is not up yet.
+	 * This will allow the kernel to use 4-lane eDP links properly
+	 * if the VBIOS or GOP driver does not execute.
+	 */
+	ddi_buf_ctl = gtt_read(DDI_BUF_CTL_A);
+	if (!acpi_is_wakeup_s3() && !(ddi_buf_ctl & DDI_BUF_CTL_ENABLE)) {
+		ddi_buf_ctl |= DDI_A_4_LANES;
+		gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
+	}
+
 	if (IS_ENABLED(CONFIG_GOP_SUPPORT))
 		return;
 
@@ -69,10 +86,6 @@ static void igd_init(struct device *dev)
 	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
-
-	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
-	if (!gtt_res || !gtt_res->base)
-		return;
 
 	/* Wait for any configured pre-graphics delay */
 	if (!acpi_is_wakeup_s3()) {

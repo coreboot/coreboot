@@ -15,7 +15,6 @@
 
 
 #include <stdlib.h>
-#include <arch/stages.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>

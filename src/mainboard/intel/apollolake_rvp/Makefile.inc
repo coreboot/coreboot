@@ -1,1 +1,1 @@
-# Nothing yet here
+bootblock-y += bootblock.c

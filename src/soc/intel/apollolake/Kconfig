@@ -32,6 +32,13 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_RAMSTAGE	# Build fails if this is not selected
 	select SOC_INTEL_COMMON
 	select UDELAY_TSC
+	select CONSOLE_SERIAL
+	select BOOTBLOCK_CONSOLE
+	select TSC_CONSTANT_RATE
+	select UDELAY_TSC
+	select TSC_CONSTANT_RATE
+	select NO_UART_ON_SUPERIO
+	select DRIVERS_UART_8250MEM_32
 
 config MMCONF_BASE_ADDRESS
 	hex "PCI MMIO Base Address"
@@ -62,5 +69,10 @@ config DCACHE_BSP_STACK_SIZE
 config CPU_ADDR_BITS
 	int
 	default 36
+
+config CONSOLE_UART_BASE_ADDRESS
+	depends on CONSOLE_SERIAL
+	hex "MMIO base address for UART"
+	default 0xde000000
 
 endif

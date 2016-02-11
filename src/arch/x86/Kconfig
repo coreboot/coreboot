@@ -146,3 +146,8 @@ config ID_SECTION_OFFSET
 config COMPILE_IN_DSDT
 	bool "compile in DSDT and use that over DSDT in CBFS"
 	default n
+
+# 64KiB default bootblock size when employing C_ENVIRONMENT_BOOTBLOCK.
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x10000

@@ -45,7 +45,8 @@ SECTIONS
 #elif ENV_BOOTBLOCK
 	/* This is for C_ENVIRONMENT_BOOTBLOCK. arch/x86/bootblock.ld contains
 	 * the logic for the romcc linking. */
-	BOOTBLOCK(0xffff0000, 64K)
+	BOOTBLOCK(0xffffffff - CONFIG_C_ENV_BOOTBLOCK_SIZE + 1,
+			CONFIG_C_ENV_BOOTBLOCK_SIZE)
 
 	/* Pull in the cache-as-ram rules. */
 	#include "car.ld"

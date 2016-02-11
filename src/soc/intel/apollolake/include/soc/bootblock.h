@@ -3,6 +3,4 @@
 #include <arch/cpu.h>
 
 void asmlinkage bootblock_c_entry(void);
-/* provide prototype for lib/bootblock.c main as workaround */
-void main(void);
 #endif

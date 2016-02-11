@@ -16,6 +16,8 @@
 #ifndef __BOOTBLOCK_COMMON_H
 #define __BOOTBLOCK_COMMON_H
 
+#include <main_decl.h>
+
 /* These are defined as weak no-ops that can be overridden by mainboard/SoC. */
 void bootblock_mainboard_early_init(void);
 void bootblock_mainboard_init(void);

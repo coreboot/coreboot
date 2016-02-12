@@ -20,12 +20,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select DRIVERS_GENERIC_IOAPIC
 	select INTEL_INT15
 
-if !USE_NATIVE_RAMINIT
-config BOARD_SPECIFIC_OPTIONS_MRC # dummy
-	def_bool y
-	select HAVE_MRC
-endif
-
 config CHROMEOS
 	select CHROMEOS_VBNV_CMOS
 

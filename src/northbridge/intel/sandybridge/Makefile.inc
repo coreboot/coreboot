@@ -30,6 +30,10 @@ romstage-y += raminit.c
 romstage-y += ../../../device/dram/ddr3.c
 else
 romstage-y += raminit_mrc.c
+cbfs-files-y += mrc.bin
+mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
+mrc.bin-position := 0xfffa0000
+mrc.bin-type := mrc
 endif
 romstage-y += romstage.c
 romstage-y += mrccache.c
@@ -40,12 +44,6 @@ romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += udelay.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
-
-# We don't ship that, but booting without it is bound to fail
-cbfs-files-$(CONFIG_HAVE_MRC) += mrc.bin
-mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
-mrc.bin-position := 0xfffa0000
-mrc.bin-type := mrc
 
 ifneq ($(CONFIG_CHROMEOS),y)
 $(obj)/mrc.cache: $(obj)/config.h

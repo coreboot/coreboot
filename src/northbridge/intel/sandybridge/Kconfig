@@ -88,18 +88,9 @@ config DCACHE_RAM_MRC_VAR_SIZE
 	hex
 	default 0x4000
 
-config HAVE_MRC
-	bool "Add a System Agent binary"
-	depends on !USE_NATIVE_RAMINIT
-	help
-	  Select this option to add a System Agent binary to
-	  the resulting coreboot image.
-
-	  Note: Without this binary coreboot will not work
-
 config MRC_FILE
 	string "Intel System Agent path and filename"
-	depends on HAVE_MRC
+	depends on !USE_NATIVE_RAMINIT
 	default "3rdparty/blobs/northbridge/intel/sandybridge/systemagent-r6.bin"
 	help
 	  The path and filename of the file to use as System Agent

@@ -442,6 +442,7 @@ build_GCC() {
 		--enable-interwork --enable-multilib \
 		--disable-libatomic --disable-libcc1 --disable-decimal-float \
 		${GCC_OPTIONS} --enable-languages="${LANGUAGES}" \
+		--with-system-zlib \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \

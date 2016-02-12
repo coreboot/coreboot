@@ -18,6 +18,7 @@
 #define CPUID_APOLLOLAKE_A0	0x506c8
 
 #define MSR_PLATFORM_INFO	0xce
+#define MSR_POWER_MISC		0x120
 
 #define BASE_CLOCK_MHZ		100
 

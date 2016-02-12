@@ -1,0 +1,53 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2014 Google Inc.
+##
+## This software is licensed under the terms of the GNU General Public
+## License version 2, as published by the Free Software Foundation, and
+## may be copied, distributed, and modified under those terms.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+# To execute, do:
+# qemu-system-??
+
+if BOARD_EMULATION_QEMU_POWER8
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select BOARD_ROMSIZE_KB_4096
+	select ARCH_BOOTBLOCK_POWER8
+	select HAVE_UART_SPECIAL
+	select ARCH_POWER8
+
+config MAINBOARD_DIR
+	string
+	default "emulation/qemu-power8"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "QEMU POWER8"
+
+config MAX_CPUS
+	int
+	default 1
+
+config MAINBOARD_VENDOR
+	string
+	default "QEMU"
+
+config DRAM_SIZE_MB
+	int
+	default 32768
+
+# Memory map for qemu power8
+
+config RAMTOP
+	hex
+	default 0x1000000
+
+endif #  BOARD_EMULATION_QEMU_POWER8

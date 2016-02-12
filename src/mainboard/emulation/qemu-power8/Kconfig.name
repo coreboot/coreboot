@@ -1,0 +1,2 @@
+config BOARD_EMULATION_QEMU_POWER8
+	bool "QEMU power8"

@@ -17,4 +17,13 @@ config MAINBOARD_VENDOR
 	string
 	default "Intel"
 
+config IFD_BIOS_END
+	hex
+	default 0x6FF000
+
+config IFD_BIOS_START
+	hex
+	default 0x1000
+
+
 endif

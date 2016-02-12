@@ -19,8 +19,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 if !USE_NATIVE_RAMINIT
 config BOARD_SPECIFIC_OPTIONS_MRC # dummy
-       def_bool y
-       select HAVE_MRC
+	def_bool y
+	select HAVE_MRC
 endif
 
 config CHROMEOS

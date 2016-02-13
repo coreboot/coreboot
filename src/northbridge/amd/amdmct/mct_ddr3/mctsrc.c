@@ -225,6 +225,9 @@ static uint16_t fam15_receiver_enable_training_seed(struct DCTStatStruc *pDCTsta
 		} else if (package_type == PT_M2) {
 			/* Socket AM3: Fam15h BKDG v3.14 Table 101 */
 			seed = 0x3a;
+		} else if (package_type == PT_FM2) {
+			/* Socket FM2: Fam15h Model10 BKDG 3.12 Table 43 */
+			seed = 0x32;
 		}
 	}
 

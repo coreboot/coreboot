@@ -31,6 +31,7 @@
 #define PT_GR		3
 #define PT_AS		4
 #define PT_C3		5
+#define PT_FM2		6
 
 #define J_MIN		0		/* j loop constraint. 1=CL 2.0 T*/
 #define J_MAX		5		/* j loop constraint. 5=CL 7.0 T*/

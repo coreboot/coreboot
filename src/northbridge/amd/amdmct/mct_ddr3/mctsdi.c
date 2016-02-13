@@ -239,6 +239,19 @@ static uint8_t fam15_rttwr(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t d
 						term = 0x2;
 					}
 				}
+			} else if (package_type == PT_FM2) {
+				/* Socket FM2: Fam15h Model10 BKDG 3.12 Table 32 */
+				if (MaxDimmsInstallable == 1) {
+					term = 0x0;
+				} else if (MaxDimmsInstallable == 2) {
+					if ((number_of_dimms == 2) && (frequency_index >= 0x12)) {
+						term = 0x1;
+					} else if (number_of_dimms == 1) {
+						term = 0x0;
+					} else {
+						term = 0x2;
+					}
+				}
 			} else {
 				/* TODO
 				* Other sockets unimplemented
@@ -603,6 +616,37 @@ static uint8_t fam15_rttnom(struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t 
 							} else {
 								term = 0x5;
 							}
+						}
+					}
+				}
+			} else if (package_type == PT_FM2) {
+				/* Socket FM2: Fam15h Model10 BKDG 3.12 Table 32 */
+				if (MaxDimmsInstallable == 1) {
+					if ((frequency_index == 0x4)
+							|| (frequency_index == 0x6)
+							|| (frequency_index == 0xa))
+						term = 0x4;
+					else if (frequency_index == 0xe)
+						term = 0x3;
+					else if (frequency_index >= 0x12)
+						term = 0x2;
+				}
+				if (MaxDimmsInstallable == 2) {
+					if (number_of_dimms == 1) {
+						if (frequency_index <= 0xa) {
+							term = 0x4;
+						} else if (frequency_index <= 0xe) {
+							term = 0x3;
+						} else {
+							term = 0x2;
+						}
+					} else {
+						if (frequency_index <= 0xa) {
+							term = 0x2;
+						} else if (frequency_index <= 0xe) {
+							term = 0x1;
+						} else {
+							term = 0x0;
 						}
 					}
 				}

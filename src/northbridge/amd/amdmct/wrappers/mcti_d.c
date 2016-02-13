@@ -59,6 +59,8 @@ static u16 mctGet_NVbits(u8 index)
 		val = 5;
 #elif CONFIG_CPU_SOCKET_TYPE == 0x15	/* G34 */
 		val = 3;
+#elif CONFIG_CPU_SOCKET_TYPE == 0x16	/* FM2 */
+		val = 6;
 //#elif SYSTEM_TYPE == MOBILE
 //		val = 2;
 #endif

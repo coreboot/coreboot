@@ -241,6 +241,9 @@ static const u8 Tab_C32CLKDis[] = {0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x0
 /* G34: Enable CS0 - CS3 clocks (DIMM0 - DIMM1) */
 static const u8 Tab_G34CLKDis[] = {0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00};
 
+/* FM2: Enable all the clocks for the dimms */
+static const u8 Tab_FM2CLKDis[] = {0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00};
+
 static const u8 Tab_ManualCLKDis[]= {0x10, 0x04, 0x08, 0x20, 0x00, 0x00, 0x00, 0x00};
 /* ========================================================================================== */
 
@@ -309,6 +312,21 @@ static uint16_t fam10h_mhz_to_memclk_config(uint16_t freq)
 		freq = 0x3;
 
 	return freq;
+}
+
+static inline uint8_t is_model10_1f(void)
+{
+	uint8_t model101f = 0;
+	uint32_t family;
+
+	family = cpuid_eax(0x80000001);
+	family = ((family & 0x0ff000) >> 12);
+
+	if (family >= 0x10 && family <= 0x1f)
+		/* Model 0x10 to 0x1f */
+		model101f = 1;
+
+	return model101f;
 }
 
 static uint16_t mhz_to_memclk_config(uint16_t freq)
@@ -684,6 +702,19 @@ static uint32_t fam15h_phy_predriver_calibration_code(struct DCTStatStruc *pDCTs
 						calibration_code = 0xfff;
 					else if (drive_strength == 0x3)
 						calibration_code = 0xb6d;
+				}
+			}
+		} else if (package_type == PT_FM2) {
+			/* Socket FM2 */
+			if (ddr_voltage_index & 0x1) {
+				/* 1.5V */
+				/* Fam15h BKDG Rev. 3.12 section 2.9.5.4.4 Table 22 */
+				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+					/* DDR3-667 - DDR3-800 */
+					calibration_code = 0xb24;
+				} else if (MemClkFreq >= 0xa) {
+					/* DDR3-1066 or higher */
+					calibration_code = 0xff6;
 				}
 			}
 		}
@@ -1242,6 +1273,66 @@ static uint32_t fam15h_output_driver_compensation_code(struct DCTStatStruc *pDCT
 				 */
 			}
 		}
+	} else if (package_type == PT_FM2) {
+		/* Socket FM2 */
+		/* Assume UDIMM */
+		/* Fam15h Model10h BKDG Rev. 3.12 section 2.9.5.6.6 Table 32 */
+		if (MaxDimmsInstallable == 1) {
+			rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+			if (MemClkFreq == 0x4) {
+				/* DDR3-667 */
+				calibration_code = 0x00112222;
+			} else if (MemClkFreq == 0x6) {
+				/* DDR3-800 */
+				calibration_code = 0x10112222;
+			} else if (MemClkFreq == 0xa) {
+				/* DDR3-1066 */
+				calibration_code = 0x20112222;
+			} else if (MemClkFreq >= 0xe) {
+				/* DDR3-1333 or higher */
+				calibration_code = 0x30112222;
+			}
+		} else if (MaxDimmsInstallable == 2) {
+			rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+			rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+			if (dimm_count == 1) {
+				/* 1 DIMM detected */
+				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+					/* DDR3-667 or DDR3-800 */
+					calibration_code = 0x00112222;
+				} else if (MemClkFreq == 0xa) {
+					/* DDR3-1066 */
+					calibration_code = 0x10112222;
+				} else if (MemClkFreq == 0xe) {
+					/* DDR3-1333 */
+					calibration_code = 0x20112222;
+				} else if (MemClkFreq >= 0x12) {
+					/* DDR3-1600 or higher */
+					calibration_code = 0x30112222;
+				}
+			} else if (dimm_count == 2) {
+				/* 2 DIMMs detected */
+				rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+				rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if (MemClkFreq == 0x4) {
+					/* DDR3-667 */
+					calibration_code = 0x10222322;
+				} else if (MemClkFreq == 0x6) {
+					/* DDR3-800 */
+					calibration_code = 0x20222322;
+				} else if (MemClkFreq >= 0xa) {
+					/* DDR3-1066 or higher */
+					calibration_code = 0x30222322;
+				}
+			}
+		} else if (MaxDimmsInstallable == 3) {
+			/* TODO
+			 * 3 DIMM/channel support unimplemented
+			 */
+		}
 	} else {
 		/* TODO
 		 * Other socket support unimplemented
@@ -1574,6 +1665,63 @@ static uint32_t fam15h_address_timing_compensation_code(struct DCTStatStruc *pDC
 				 */
 			}
 		}
+	} else if (package_type == PT_FM2) {
+		/* Socket FM2 */
+		/* Assume UDIMM */
+		/* Fam15h Model10h BKDG Rev. 3.12 section 2.9.5.6.6 Table 32 */
+		if (dimm_count == 1) {
+			/* 1 DIMM detected */
+			rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+			if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+				/* DDR3-667 or DDR3-800 */
+				if (rank_count_dimm0 == 1)
+					calibration_code = 0x00000000;
+				else
+					calibration_code = 0x003b0000;
+			} else if (MemClkFreq == 0xa) {
+				/* DDR3-1066 */
+				if (rank_count_dimm0 == 1)
+					calibration_code = 0x00000000;
+				else
+					calibration_code = 0x00380000;
+			} else if (MemClkFreq == 0xe) {
+				/* DDR3-1333 */
+				if (rank_count_dimm0 == 1)
+					calibration_code = 0x00000000;
+				else
+					calibration_code = 0x00360000;
+			} else if (MemClkFreq >= 0x12) {
+				/* DDR3-1600 or higher */
+				calibration_code = 0x00000000;
+			}
+
+		} else if (dimm_count == 2) {
+			/* 2 DIMMs detected */
+			rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+			rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+			if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)) {
+				/* DDR3-667 or DDR3-800 */
+				calibration_code = 0x00390039;
+			} else if (MemClkFreq == 0xa) {
+				/* DDR3-1066 */
+				calibration_code = 0x00350037;
+			} else if (MemClkFreq == 0xe) {
+				/* DDR3-1333 */
+				calibration_code = 0x00000035;
+			} else if (MemClkFreq == 0x12) {
+				/* DDR3-1600 */
+				calibration_code = 0x0000002b;
+			} else if (MemClkFreq > 0x12) {
+				/* DDR3-1866 or greater */
+				calibration_code = 0x00000031;
+			}
+		} else if (MaxDimmsInstallable == 3) {
+			/* TODO
+			 * 3 DIMM/channel support unimplemented
+			 */
+		}
 	} else {
 		/* TODO
 		 * Other socket support unimplemented
@@ -1723,6 +1871,59 @@ static uint8_t fam15h_slow_access_mode(struct DCTStatStruc *pDCTstat, uint8_t dc
 				 * 3 DIMM/channel support unimplemented
 				 */
 			}
+		}
+	} else if (package_type == PT_FM2) {
+		/* Socket FM2 */
+		/* UDIMM */
+		/* Fam15h Model10 BKDG Rev. 3.12 section 2.9.5.6.6 Table 32 */
+		if (MaxDimmsInstallable == 1) {
+			rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+			if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
+				|| (MemClkFreq == 0xa) | (MemClkFreq == 0xe)) {
+				/* DDR3-667 - DDR3-1333 */
+				slow_access = 0;
+			} else if (MemClkFreq >= 0x12) {
+				/* DDR3-1600 or higher */
+				if (rank_count_dimm0 == 1)
+					slow_access = 0;
+				else
+					slow_access = 1;
+			}
+		} else if (MaxDimmsInstallable == 2) {
+			if (dimm_count == 1) {
+				/* 1 DIMM detected */
+				rank_count_dimm0 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
+					|| (MemClkFreq == 0xa) | (MemClkFreq == 0xe)) {
+					/* DDR3-667 - DDR3-1333 */
+					slow_access = 0;
+				} else if (MemClkFreq >= 0x12) {
+					/* DDR3-1600 or higher */
+					if (rank_count_dimm0 == 1)
+						slow_access = 0;
+					else
+						slow_access = 1;
+				}
+			} else if (dimm_count == 2) {
+				/* 2 DIMMs detected */
+				rank_count_dimm0 = pDCTstat->DimmRanks[(0 * 2) + dct];
+				rank_count_dimm1 = pDCTstat->DimmRanks[(1 * 2) + dct];
+
+				if ((MemClkFreq == 0x4) || (MemClkFreq == 0x6)
+					|| (MemClkFreq == 0xa)) {
+					/* DDR3-667 - DDR3-1066 */
+					slow_access = 0;
+				} else if (MemClkFreq >= 0xe) {
+					/* DDR3-1333 or higher */
+					slow_access = 1;
+				}
+			}
+		} else if (MaxDimmsInstallable == 3) {
+			/* TODO
+			 * 3 DIMM/channel support unimplemented
+			 */
 		}
 	} else {
 		/* TODO
@@ -1919,6 +2120,10 @@ static uint8_t fam15h_odt_tristate_enable_code(struct DCTStatStruc *pDCTstat, ui
 				 */
 			}
 		}
+	} else if (package_type == PT_FM2) {
+		/* Socket FM2 */
+		/* UDIMM */
+		odt_tristate_code = 0x0;
 	} else {
 		/* TODO
 		 * Other socket support unimplemented
@@ -2114,6 +2319,10 @@ static uint8_t fam15h_cs_tristate_enable_code(struct DCTStatStruc *pDCTstat, uin
 				 */
 			}
 		}
+	} else if (package_type == PT_FM2) {
+		/* Socket FM2 */
+		/* UDIMM */
+		cs_tristate_code = 0x0;
 	} else {
 		/* TODO
 		 * Other socket support unimplemented
@@ -4971,6 +5180,8 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 				p = Tab_C32CLKDis;
 			else if (byte == PT_GR)
 				p = Tab_G34CLKDis;
+			else if (byte == PT_FM2)
+				p = Tab_FM2CLKDis;
 			else
 				p = Tab_S1CLKDis;
 
@@ -6527,20 +6738,23 @@ void mct_ForceNBPState0_En_Fam15(struct MCTStatStruc *pMCTstat,
 		dword |= ((dword & 0x3) << 3);
 		Set_NB32(pDCTstat->dev_nbctl, 0x170, dword);
 
-		/* Wait until CurNbPState == NbPstateLo */
-		do {
-			dword2 = Get_NB32(pDCTstat->dev_nbctl, 0x174);
-		} while (((dword2 << 19) & 0x7) != (dword & 0x3));
-
+		if (!is_model10_1f()) {
+			/* Wait until CurNbPState == NbPstateLo */
+			do {
+				dword2 = Get_NB32(pDCTstat->dev_nbctl, 0x174);
+			} while (((dword2 << 19) & 0x7) != (dword & 0x3));
+		}
 		dword = Get_NB32(pDCTstat->dev_nbctl, 0x170);
 		dword &= ~(0x3 << 6);		/* NbPstateHi = 0 */
 		dword |= (0x3 << 14);		/* SwNbPstateLoDis = 1 */
 		Set_NB32(pDCTstat->dev_nbctl, 0x170, dword);
 
-		/* Wait until CurNbPState == 0 */
-		do {
-			dword2 = Get_NB32(pDCTstat->dev_nbctl, 0x174);
-		} while (((dword2 << 19) & 0x7) != 0);
+		if (!is_model10_1f()) {
+			/* Wait until CurNbPState == 0 */
+			do {
+				dword2 = Get_NB32(pDCTstat->dev_nbctl, 0x174);
+			} while (((dword2 << 19) & 0x7) != 0);
+		}
 	}
 }
 
@@ -7022,20 +7236,23 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 		dword |= (0x8000 | tx_pre);
 		Set_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f2202, dword);
 
-		/* Be extra safe and wait for the predriver calibration to be applied
-		 * to the hardware.  The BKDG does not require this, but it does take
-		 * some time for the data to propagate, so it's probably a good idea.
-		 */
-		uint8_t predriver_cal_pending = 1;
-		printk(BIOS_DEBUG, "Waiting for predriver calibration to be applied...");
-		while (predriver_cal_pending) {
-			predriver_cal_pending = 0;
-			for (index = 0; index < 0x9; index++) {
-				if (Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0002 | (index << 8)) & 0x8000)
-					predriver_cal_pending = 1;
+		if (!is_model10_1f()) {
+			/* Be extra safe and wait for the predriver calibration
+			 * to be applied to the hardware.  The BKDG does not
+			 * require this, but it does take some time for the
+			 * data to propagate, so it's probably a good idea.
+			 */
+			uint8_t predriver_cal_pending = 1;
+			printk(BIOS_DEBUG, "Waiting for predriver calibration to be applied...");
+			while (predriver_cal_pending) {
+				predriver_cal_pending = 0;
+				for (index = 0; index < 0x9; index++) {
+					if (Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x0d0f0002 | (index << 8)) & 0x8000)
+						predriver_cal_pending = 1;
+				}
 			}
+			printk(BIOS_DEBUG, "done!\n");
 		}
-		printk(BIOS_DEBUG, "done!\n");
 	} else {
 		dword = Get_NB32_index_wait_DCT(dev, dct, index_reg, 0x00);
 		dword = 0;

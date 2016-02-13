@@ -921,3 +921,15 @@ int dev_count_cpu(void)
 
 	return count;
 }
+
+/* Get device path name */
+const char *dev_path_name(enum device_path_type type)
+{
+	static const char *const type_names[] = DEVICE_PATH_NAMES;
+	const char *type_name = "Unknown";
+
+	/* Translate the type value into a string */
+	if (type < ARRAY_SIZE(type_names))
+		type_name = type_names[type];
+	return type_name;
+}

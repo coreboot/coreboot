@@ -26,6 +26,12 @@
       <li>Add the <a href="#MemoryInit">MemoryInit</a> Support</li>
     </ol>
   </li>
+  <li><a href="#Ramstage">Ramstage</a>
+    <ol type="A">
+      <li><a href="#DeviceTree">Start Device Tree Processing</a></li>
+      <li>Set up the <a href="#MemoryMap">Memory Map"</a></li>
+    </ol>
+  </li>
 </ol>
 
 
@@ -382,6 +388,176 @@ Use the following steps to debug the call to TempRamInit:
 
 
 <hr>
-<p>Modified: 31 January 2016</p>
+<h1><a name="Ramstage">Ramstage</a></h1>
+
+<h2><a name="DeviceTree">Start Device Tree Processing</a></h2>
+<p>
+  The src/mainboard/&lt;Vendor&gt;/&lt;Board&gt;/devicetree.cb file drives the
+  execution during ramstage.  This file is processed by the util/sconfig utility
+  to generate build/mainboard/&lt;Vendor&gt;/&lt;Board&gt;/static.c.  The various
+  state routines in
+  src/lib/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/lib/hardwaremain.c;hb=HEAD#l128">hardwaremain.c</a>
+  call dev_* routines which use the tables in static.c to locate operation tables
+  associated with the various chips and devices.  After location the operation
+  tables, the state routines call one or more functions depending upon the
+  state of the state machine.
+</p>
+
+<h3><a name="ChipOperations">Chip Operations</a></h3>
+<p>
+  Kick-starting the ramstage state machine requires creating the operation table
+  for the chip listed in devicetree.cb:
+</p>
+<ol>
+  <li>Edit src/soc/&lt;SoC Vendor&gt;/&lt;SoC Family&gt;/chip.c:
+    <ol type="A">
+      <li>
+        This chip's operation table has the name
+        soc_&lt;SoC Vendor&gt;_&lt;SoC Family&gt;_ops which is derived from the
+        chip path specified in the devicetree.cb file.
+      </li>
+      <li>Use the CHIP_NAME macro to specify the name for the chip</li>
+      <li>For FSP 1.1, specify a .init routine which calls intel_silicon_init</li>
+    </ol>
+  </li>
+  <li>Edit src/soc/&lt;SoC Vendor&gt;/&lt;SoC Family&gt;/Makefile.inc and add chip.c to ramstage</li>
+</ol>
+
+<h3>Domain Operations</h3>
+<p>
+  coreboot uses the domain operation table to initiate operations on all of the
+  devices in the domain.  By default coreboot enables all PCI devices which it
+  finds.  Listing a device in devicetree.cb gives the board vendor control over
+  the device state.  Non-PCI devices may also be listed under PCI device such as
+  the LPC bus or SMbus devices.
+</p>
+<ol>
+  <li>Edit src/soc/&lt;SoC Vendor&gt;/&lt;SoC Family&gt;/chip.c:
+    <ol type="A">
+      <li>
+        The domain operation table is typically placed in
+        src/soc/&lt;SoC Vendor&gt;/&lt;SoC Family&gt;/chip.c.
+        The table typically looks like the following:
+<pre><code>static struct device_operations pci_domain_ops = {
+	.read_resources	= pci_domain_read_resources,
+	.set_resources	= pci_domain_set_resources,
+	.scan_bus	= pci_domain_scan_bus,
+	.ops_pci_bus	= pci_bus_default_ops,
+};
+</code></pre>
+      </li>
+      <li>
+        Create a .enable_dev entry in the chip operations table which points to a
+        routine which sets the domain table for the device with the DEVICE_PATH_DOMAIN.
+<pre><code>	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		dev->ops = &pci_domain_ops;
+	}
+</code></pre>
+      </li>
+      <li>
+        During the BS_DEV_ENUMERATE state, ramstage now display the device IDs
+        for the PCI devices on the bus.
+      </li>
+    </ol>
+  </li>
+  <li>Set CONFIG_DEBUG_BOOT_STATE=y in the .config file</li>
+  <li>
+    Debug the result until the PCI vendor and device IDs are displayed
+    during the BS_DEV_ENUMERATE state.
+  </li>
+</ol>
+
+
+<h2><a name="DeviceDrivers">PCI Device Drivers</a></h2>
+<p>
+  PCI device drivers consist of a ".c" file which contains a "pci_driver" data
+  structure at the end of the file with the attribute tag "__pci_driver".  This
+  attribute tag places an entry into a link time table listing the various
+  coreboot device drivers.
+</p>
+<p>
+  Specify the following fields in the table:
+</p>
+<ol>
+  <li>.vendor - PCI vendor ID value of the device</li>
+  <li>.device - PCI device ID value of the device or<br>
+  .devices - Address of a zero terminated array of PCI device IDs
+  </li>
+  <li>.ops - Operations table for the device.  This is the address
+    of a "static struct device_operations" data structure specifying
+    the routines to execute during the different states and sub-states
+    of ramstage's processing.
+  </li>
+  <li>Turn on the device in mainboard/&lt;Vendor&gt;/&lt;Board&gt;/devicetree.cb</li>
+  <li>
+    Debug until the device is on and properly configured in coreboot and
+    usable by the payload
+  </li>
+</ol>
+
+<h3><a name="SubsystemIds">Subsystem IDs</a></h3>
+<p>
+  PCI subsystem IDs are assigned during the BS_DEV_ENABLE state.  The device
+  driver may use the common mechanism to assign subsystem IDs by adding
+  the ".ops_pci" to the pci_driver data structure.  This field points to
+  a "struct pci_operations" that specifies a routine to set the subsystem
+  IDs for the device.  The routine might look something like this:
+</p>
+<pre><code>static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	if (!vendor || !device) {
+		vendor = pci_read_config32(dev, PCI_VENDOR_ID);
+		device = vendor >> 16;
+	}
+	printk(BIOS_SPEW,
+		"PCI: %02x:%02x:%d subsystem vendor: 0x%04x, device: 0x%04x\n",
+		0, PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn),
+		vendor & 0xffff, device);
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+			((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+</code></pre>
+
+
+
+<h2>Set up the <a name="MemoryMap">Memory Map</a></h2>
+<p>
+  The memory map is built by the various PCI device drivers during the
+  BS_DEV_RESOURCES state of ramstage.  The northcluster driver will typically
+  specify the DRAM resources while the other drivers will typically specify
+  the IO resources.  These resources are hung off the device_t data structure by
+  src/device/device_util.c/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/device/device_util.c;hb=HEAD#l448">new_resource</a>.
+</p>
+<p>
+  During the BS_WRITE_TABLES state, coreboot collects these resources and
+  places them into a data structure identified by LB_MEM_TABLE.
+</p>
+<p>
+  Edit the device driver file:
+</p>
+<ol>
+  <li>
+    Implement a read_resources routine which calls macros defined in
+    src/include/device/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/device/device.h;hb=HEAD#l237">device.h</a>
+    like:
+    <ul>
+      <li>ram_resource</li>
+      <li>reserved_ram_resource</li>
+      <li>bad_ram_resource</li>
+      <li>uma_resource</li>
+      <li>mmio_resource</li>
+    </ul>
+  </li>
+</ol>
+
+<p>
+  Testing: Verify that the resources are properly displayed by coreboot during the BS_WRITE_TABLES state.
+</p>
+
+
+
+
+<hr>
+<p>Modified: 18 February 2016</p>
   </body>
 </html>

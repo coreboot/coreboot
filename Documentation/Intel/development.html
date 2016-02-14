@@ -94,6 +94,24 @@
       </li>
     </ol>
   </li>
+  <li>
+    Implement the .init routine for the
+    <a target="_blank" href="SoC/soc.html#ChipOperations">chip operations</a>
+    structure which calls FSP SiliconInit
+  </li>
+  <li>
+    Start ramstage's
+    <a target="_blank" href="SoC/soc.html#DeviceTree">device tree processing</a>
+    to display the PCI vendor and device IDs
+  </li>
+  <li>
+    Disable the
+    <a target="_blank" href="Board/board.html#DisablePciDevices">PCI devices</a>
+  </li>
+  <li>
+    Implement the
+    <a target="_blank" href="SoC/soc.html#MemoryMap">memory map</a>
+  </li>
 </ol>
 
 
@@ -129,12 +147,50 @@
       Disable: CONFIG_DISPLAY_MTRRS=y, MTRRs displayed after call to TempRamExit
     </td>
   </tr>
+  <tr>
+    <td>Memory Map</td>
+    <td>
+      Implement a device driver for the
+      <a target="_blank" href="SoC/soc.html#MemoryMap">north cluster</a>
+    </td>
+    <td>coreboot displays the memory map correctly during the BS_WRITE_TABLES state</td>
+  </tr>
+  <tr>
+    <td>PCI Device Support</td>
+    <td>Implement a PCI <a target="_blank" href="SoC/soc.html#DeviceDrivers">device driver</a></td>
+    <td>The device is detected by coreboot and usable by the payload</td>
+  </tr>
+  <tr>
+    <td>Ramstage state machine</td>
+    <td>
+      Implement the chip and domain operations to start the
+      <a target="_blank" href="SoC/soc.html#DeviceTree">device tree</a>
+      processing
+    </td>
+    <td>
+      During the BS_DEV_ENUMERATE state, ramstage now display the device IDs
+      for the PCI devices on the bus.
+    </td>
+  </tr>
 
 
   <tr bgcolor="#c0ffc0">
     <th>Board</th>
     <th>Where</th>
     <th>Testing</th>
+  </tr>
+  <tr>
+    <td>Device Tree</td>
+    <td>
+      <a target="_blank" href="SoC/soc.html#DeviceTree">List</a> PCI vendor and device IDs by starting
+      the device tree processing<br>
+      <a target="_blank" href="Board/board.html#DisablePciDevices">Disable</a> PCI devices<br>
+      Enable: Implement a PCI <a target="_blank" href="SoC/soc.html#DeviceDrivers">device driver</a>
+    <td>
+      List: BS_DEV_ENUMERATE state displays PCI vendor and device IDs<br>
+      Disable: BS_DEV_ENUMERATE state shows the devices as disabled<br>
+      Enable: BS_DEV_ENUMERATE state shows the device as on and the device works for the payload
+    </td>
   </tr>
   <tr>
     <td>DRAM</td>
@@ -208,11 +264,36 @@
       </ul>
     </td>
   </tr>
+  <tr>
+    <td>SiliconInit</td>
+    <td>
+      Implement the .init routine for the
+      <a target="_blank" href="SoC/soc.html#ChipOperations">chip operations</a> structure
+    </td>
+    <td>During BS_DEV_INIT_CHIPS state, SiliconInit gets called and returns 0x00000000</td>
+  </tr>
+  <tr>
+    <td>FspNotify</td>
+    <td>
+      The code which calls FspNotify is located in
+      src/drivers/intel/fsp1_1/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/fsp_util.c;hb=HEAD#l182">fsp_util.c</a>.
+      The fsp_notify_boot_state_callback routine is called three times as specified
+      by the BOOT_STATE_INIT_ENTRY macros below the routine.
+    </td>
+    <td>
+      The FspNotify routines are called during:
+      <ul>
+        <li>BS_DEV_RESOURCES - on exit</li>
+        <li>BS_PAYLOAD_LOAD - on exit</li>
+        <li>BS_OS_RESUME - on entry (S3 resume)</li>
+      </ul>
+    </td>
+  </tr>
 </table>
 
 
 
 <hr>
-<p>Modified: 31 January 2016</p>
+<p>Modified: 15 February 2016</p>
   </body>
 </html>

@@ -16,6 +16,7 @@
   <li><a href="#RequiredFiles">Required Files</a></li>
   <li>Enable <a href="#SerialOutput">Serial Output</a></li>
   <li>Load the <a href="#SpdData">Memory Timing Data</a></li>
+  <li><a href="#DisablePciDevices">Disable</a> the PCI devices</li>
 </ol>
 
 
@@ -181,7 +182,33 @@
 </ol>
 
 
+
 <hr>
-<p>Modified: 31 January 2016</p>
+<h1><a name="DisablePciDevices">Disable PCI Devices</a></h1>
+<p>
+  Ramstage's BS_DEV_ENUMERATE state displays the PCI vendor and device IDs for all
+  of the devices in the system.  Edit the devicetree.cb file:
+</p>
+<ol>
+  <li>Edit the devicetree.cb file:
+    <ol type="A">
+      <li>Add an entry for a PCI device.function and turn it off.  The entry
+        should look similar to:
+<pre><code>device pci 14.0 off end</code></pre>
+      </li>
+      <li>Turn on the devices for:
+        <ul>
+          <li>Memory Controller</li>
+          <li>Debug serial device</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+  <li>Debug until the BS_DEV_ENUMERATE state shows the proper state for all of the devices</li>
+</ol>
+
+
+<hr>
+<p>Modified: 15 February 2016</p>
   </body>
 </html>

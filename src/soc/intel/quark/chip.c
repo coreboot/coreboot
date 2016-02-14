@@ -14,10 +14,9 @@
  * GNU General Public License for more details.
  */
 
-#include "chip.h"
 #include <console/console.h>
 #include <device/device.h>
-#include <fsp/ramstage.h>
+#include <soc/ramstage.h>
 
 static void chip_init(void *chip_info)
 {

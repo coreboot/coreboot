@@ -16,9 +16,10 @@
 
 #include "chip.h"
 #include <console/console.h>
+#include <device/device.h>
 #include <fsp/ramstage.h>
 
-static void soc_init(void *chip_info)
+static void chip_init(void *chip_info)
 {
 	/* Perform silicon specific init. */
 	if (IS_ENABLED(CONFIG_RELOCATE_FSP_INTO_DRAM))
@@ -27,7 +28,30 @@ static void soc_init(void *chip_info)
 		fsp_run_silicon_init(find_fsp(CONFIG_FSP_ESRAM_LOC), 0);
 }
 
+static void pci_domain_set_resources(device_t dev)
+{
+	assign_resources(dev->link_list);
+}
+
+static struct device_operations pci_domain_ops = {
+	.read_resources	= pci_domain_read_resources,
+	.set_resources	= pci_domain_set_resources,
+	.scan_bus	= pci_domain_scan_bus,
+	.ops_pci_bus	= pci_bus_default_ops,
+};
+
+static void chip_enable_dev(device_t dev)
+{
+	const char *type_name = dev_path_name(dev->path.type);
+
+	/* Set the operations if it is a special bus type */
+	printk(BIOS_DEBUG, "type: %s\n", type_name);
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		dev->ops = &pci_domain_ops;
+}
+
 struct chip_operations soc_intel_quark_ops = {
 	CHIP_NAME("Intel Quark")
-	.init		= &soc_init,
+	.init		= &chip_init,
+	.enable_dev	= chip_enable_dev,
 };

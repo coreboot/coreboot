@@ -39,12 +39,6 @@
 #include <timestamp.h>
 #include <thread.h>
 
-#if BOOT_STATE_DEBUG
-#define BS_DEBUG_LVL BIOS_DEBUG
-#else
-#define BS_DEBUG_LVL BIOS_NEVER
-#endif
-
 static boot_state_t bs_pre_device(void *arg);
 static boot_state_t bs_dev_init_chips(void *arg);
 static boot_state_t bs_dev_enumerate(void *arg);
@@ -296,12 +290,11 @@ static void bs_call_callbacks(struct boot_state *state,
 			phase->callbacks = bscb->next;
 			bscb->next = NULL;
 
-#if BOOT_STATE_DEBUG
-			printk(BS_DEBUG_LVL, "BS: callback (%p) @ %s.\n",
-			       bscb, bscb->location);
+#if IS_ENABLED(CONFIG_DEBUG_BOOT_STATE)
+			printk(BIOS_DEBUG, "BS: callback (%p) @ %s.\n",
+				bscb, bscb->location);
 #endif
 			bscb->callback(bscb->arg);
-
 			continue;
 		}
 
@@ -341,7 +334,9 @@ static void bs_walk_state_machine(void)
 			break;
 		}
 
-		printk(BS_DEBUG_LVL, "BS: Entering %s state.\n", state->name);
+		if (IS_ENABLED(CONFIG_DEBUG_BOOT_STATE))
+			printk(BIOS_DEBUG, "BS: Entering %s state.\n",
+				state->name);
 
 		bs_run_timers(0);
 
@@ -359,11 +354,17 @@ static void bs_walk_state_machine(void)
 
 		next_id = state->run_state(state->arg);
 
-		printk(BS_DEBUG_LVL, "BS: Exiting %s state.\n", state->name);
+		if (IS_ENABLED(CONFIG_DEBUG_BOOT_STATE))
+			printk(BIOS_DEBUG, "BS: Exiting %s state.\n",
+			state->name);
 
 		bs_sample_time(state);
 
 		bs_call_callbacks(state, current_phase.seq);
+
+		if (IS_ENABLED(CONFIG_DEBUG_BOOT_STATE))
+			printk(BIOS_DEBUG,
+				"----------------------------------------\n");
 
 		/* Update the current phase with new state id and sequence. */
 		current_phase.state_id = next_id;

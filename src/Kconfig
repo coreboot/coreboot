@@ -1149,3 +1149,10 @@ config CBFS_SIZE
 	  This is the part of the ROM actually managed by CBFS.  Set it to be
 	  equal to the full rom size if that hasn't been overridden by the
 	  chipset or mainboard.
+
+config DEBUG_BOOT_STATE
+	bool
+	default n
+	help
+	  Control debugging of the boot state machine.  When selected displays
+	  the state boundaries in ramstage.

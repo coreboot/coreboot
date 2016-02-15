@@ -25,9 +25,6 @@
 #include <main_decl.h>
 #endif
 
-/* Control debugging of the boot state machine. */
-#define BOOT_STATE_DEBUG 0
-
 /*
  * The boot state machine provides a mechanism for calls to be made through-
  * out the main boot process. The boot process is separated into discrete
@@ -119,12 +116,12 @@ struct boot_state_callback {
 	void (*callback)(void *arg);
 	/* For use internal to the boot state machine. */
 	struct boot_state_callback *next;
-#if BOOT_STATE_DEBUG
+#if IS_ENABLED(CONFIG_DEBUG_BOOT_STATE)
 	const char *location;
 #endif
 };
 
-#if BOOT_STATE_DEBUG
+#if IS_ENABLED(CONFIG_DEBUG_BOOT_STATE)
 #define BOOT_STATE_CALLBACK_LOC __FILE__ ":" STRINGIFY(__LINE__)
 #define BOOT_STATE_CALLBACK_INIT_DEBUG .location = BOOT_STATE_CALLBACK_LOC,
 #define INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_) \

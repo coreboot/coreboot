@@ -21,10 +21,33 @@ Device (TPM)
 	Name (_CID, 0x310cd041)
 	Name (_UID, 1)
 
+	OperationRegion (TREG, SystemMemory,
+			 CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000)
+	Field (TREG, ByteAcc, NoLock, Preserve)
+	{
+		/* TPM_INT_ENABLE_0 */
+		Offset (0x0008),
+		, 3,
+		ITPL, 2,  /* Interrupt type and polarity */
+
+		/* TPM_INT_VECTOR_0 */
+		Offset (0x000C),
+		IVEC, 4,  /* SERIRQ vector */
+
+		/* TPM_DID_VID */
+		Offset (0x0f00),
+		DVID, 32,  /* Device and vendor ID */
+	}
+
 	Method (_STA, 0)
 	{
 #if CONFIG_LPC_TPM && !CONFIG_TPM_DEACTIVATE
-		Return (0xf)
+		If (LAnd (LGreater (DVID, 0), LLess (DVID, 0xffffffff))) {
+			Return (0xf)
+		} Else {
+			/* TPM module missing */
+			Return (0x0)
+		}
 #else
 		Return (0x0)
 #endif
@@ -45,20 +68,6 @@ Device (TPM)
 
 	Method (_CRS, 0, Serialized)
 	{
-		OperationRegion (TREG, SystemMemory,
-				 CONFIG_TPM_TIS_BASE_ADDRESS, 0x5000)
-		Field (TREG, ByteAcc, NoLock, Preserve)
-		{
-			/* TPM_INT_ENABLE_0 */
-			Offset (0x0008),
-			, 3,
-			ITPL, 2,  /* Interrupt type and polarity */
-
-			/* TPM_INT_VECTOR_0 */
-			Offset (0x000C),
-			IVEC, 4,  /* SERIRQ vector */
-		}
-
 		CreateField (^IBUF, ^TIRQ._INT, 32, TVEC)
 		CreateBitField (^IBUF, ^TIRQ._HE, TTYP)
 		CreateBitField (^IBUF, ^TIRQ._LL, TPOL)

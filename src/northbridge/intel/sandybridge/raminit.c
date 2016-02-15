@@ -2381,6 +2381,19 @@ static void discover_timB(ramctr_timing * ctrl, int channel, int slotrank)
 	}
 	FOR_ALL_LANES {
 		struct run rn = get_longest_zero_run(statistics[lane], 128);
+		/* timC is a direct function of timB's 6 LSBs.
+		 * Some tests increments the value of timB by a small value,
+		 * which might cause the 6bit value to overflow, if it's close
+		 * to 0x3F. Increment the value by a small offset if it's likely
+		 * to overflow, to make sure it won't overflow while running
+		 * tests and bricks the system due to a non matching timC.
+		 *
+		 * TODO: find out why some tests (edge write discovery)
+		 *       increment timB. */
+		if ((rn.start & 0x3F) == 0x3E)
+			rn.start += 2;
+		else if ((rn.start & 0x3F) == 0x3F)
+			rn.start += 1;
 		ctrl->timings[channel][slotrank].lanes[lane].timB = rn.start;
 		if (rn.all)
 			die("timB discovery failed");

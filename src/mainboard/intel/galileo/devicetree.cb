@@ -30,7 +30,7 @@ chip soc/intel/quark
 		device pci 15.0 off end	# 8086 0935 - SPI controller 0
 		device pci 15.1 off end	# 8086 0935 - SPI controller 1
 		device pci 15.2 off end	# 8086 0934 - I2C/GPIO controller
-		device pci 17.0 off end	# 8086 11C3 - PCIe Root Port 0
+		device pci 17.0 on end	# 8086 11C3 - PCIe Root Port 0
 		device pci 17.1 off end	# 8086 11C4 - PCIe Root Port 1
 		device pci 1f.0 on end	# 8086 095E - Legacy Bridge
 	end

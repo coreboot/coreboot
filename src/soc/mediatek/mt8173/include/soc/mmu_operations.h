@@ -29,6 +29,10 @@ extern unsigned char _sram_l2c[];
 extern unsigned char _esram_l2c[];
 #define _sram_l2c_size (_esram_l2c - _sram_l2c)
 
+extern unsigned char _dram_dma[];
+extern unsigned char _edram_dma[];
+#define _dram_dma_size (_edram_dma - _dram_dma)
+
 void mt8173_mmu_init(void);
 void mt8173_mmu_after_dram(void);
 

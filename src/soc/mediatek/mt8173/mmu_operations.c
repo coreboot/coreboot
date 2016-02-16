@@ -53,6 +53,8 @@ void mt8173_mmu_after_dram(void)
 	/* TODO: Implement true unmapping, and also use it for the zero-page! */
 	mmu_config_range(_sram_l2c, _sram_l2c_size, DEV_MEM);
 
+	mmu_config_range(_dram_dma, _dram_dma_size, UNCACHED_MEM);
+
 	/* Careful: changing cache geometry while it's active is a bad idea! */
 	mmu_disable();
 

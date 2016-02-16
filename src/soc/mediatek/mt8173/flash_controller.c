@@ -26,6 +26,7 @@
 #include <symbols.h>
 #include <timer.h>
 #include <soc/flash_controller.h>
+#include <soc/mmu_operations.h>
 
 #define get_nth_byte(d, n)	((d >> (8 * n)) & 0xff)
 
@@ -112,21 +113,22 @@ unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 	return min(65535, buf_len);
 }
 
-static int dma_read(u32 addr, u8 *buf, u32 len)
+static int dma_read(u32 addr, u8 *buf, u32 len, uintptr_t dma_buf,
+		    size_t dma_buf_len)
 {
 	struct stopwatch sw;
 
 	assert(IS_ALIGNED((uintptr_t)buf, SFLASH_DMA_ALIGN) &&
 	       IS_ALIGNED(len, SFLASH_DMA_ALIGN) &&
-	       len <= _dma_coherent_size);
+	       len <= dma_buf_len);
 
 	/* do dma reset */
 	write32(&mt8173_nor->fdma_ctl, SFLASH_DMA_SW_RESET);
 	write32(&mt8173_nor->fdma_ctl, SFLASH_DMA_WDLE_EN);
 	/* flash source address and dram dest address */
 	write32(&mt8173_nor->fdma_fadr, addr);
-	write32(&mt8173_nor->fdma_dadr, ((uintptr_t)_dma_coherent ));
-	write32(&mt8173_nor->fdma_end_dadr, ((uintptr_t)_dma_coherent + len));
+	write32(&mt8173_nor->fdma_dadr, dma_buf);
+	write32(&mt8173_nor->fdma_end_dadr, (dma_buf + len));
 	/* start dma */
 	write32(&mt8173_nor->fdma_ctl, SFLASH_DMA_TRIGGER | SFLASH_DMA_WDLE_EN);
 
@@ -138,7 +140,7 @@ static int dma_read(u32 addr, u8 *buf, u32 len)
 		}
 	}
 
-	memcpy(buf, _dma_coherent, len);
+	memcpy(buf, (const void *)dma_buf, len);
 	return 0;
 }
 
@@ -160,6 +162,9 @@ static int nor_read(struct spi_flash *flash, u32 addr, size_t len, void *buf)
 	u32 next;
 
 	size_t done = 0;
+	uintptr_t dma_buf;
+	size_t dma_buf_len;
+
 	if (!IS_ALIGNED((uintptr_t)buf, SFLASH_DMA_ALIGN)) {
 		next = MIN(ALIGN_UP((uintptr_t)buf, SFLASH_DMA_ALIGN) -
 			   (uintptr_t)buf, len);
@@ -167,10 +172,20 @@ static int nor_read(struct spi_flash *flash, u32 addr, size_t len, void *buf)
 			return -1;
 		done += next;
 	}
+
+	if (ENV_BOOTBLOCK || ENV_VERSTAGE) {
+		dma_buf = (uintptr_t)_dma_coherent;
+		dma_buf_len = _dma_coherent_size;
+	} else {
+		dma_buf = (uintptr_t)_dram_dma;
+		dma_buf_len = _dram_dma_size;
+	}
+
 	while (len - done >= SFLASH_DMA_ALIGN) {
-		next = MIN(_dma_coherent_size, ALIGN_DOWN(len - done,
+		next = MIN(dma_buf_len, ALIGN_DOWN(len - done,
 			   SFLASH_DMA_ALIGN));
-		if (dma_read(addr + done, buf + done, next))
+		if (dma_read(addr + done, buf + done, next, dma_buf,
+			     dma_buf_len))
 			return -1;
 		done += next;
 	}

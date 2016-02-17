@@ -11,6 +11,16 @@ config GRUB2_MASTER
 
 endchoice
 
+config GRUB2_EXTRA_MODULES
+	string "Extra modules to include in GRUB image"
+	help
+	  Space-separated list of additional modules to include. Few common
+	  ones:
+	  * bsd for *BSD
+	  * png/jpg for PNG/JPG images
+	  * gfxmenu for graphical menus (you'll need a theme as well)
+	  * gfxterm_background for setting background
+
 config PAYLOAD_FILE
 	default "payloads/external/GRUB2/grub2/build/default_payload.elf"
 

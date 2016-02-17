@@ -728,12 +728,12 @@ export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 # Download, unpack, patch and build all packages
 
-printf "Downloading tar balls ... \n"
+printf "Downloading tarballs ... \n"
 mkdir -p tarballs
 for P in $PACKAGES; do
 	download $P
 done
-printf "Downloaded tar balls ... ${green}ok${NC}\n"
+printf "Downloaded tarballs ... ${green}ok${NC}\n"
 
 printf "Unpacking and patching ... \n"
 for P in $PACKAGES; do

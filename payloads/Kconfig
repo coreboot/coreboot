@@ -59,5 +59,12 @@ config PAYLOAD_IS_FLAT_BINARY
 	  Add the payload to cbfs as a flat binary type instead of as an
 	  elf payload
 
-endmenu
+config COREINFO_SECONDARY_PAYLOAD
+	bool "Load coreinfo as a secondary payload"
+	default n
+	depends on ARCH_X86
+	help
+	  coreinfo can be loaded as a secondary payload under SeaBIOS, GRUB,
+	  or any other payload that can load additional payloads.
 
+endmenu

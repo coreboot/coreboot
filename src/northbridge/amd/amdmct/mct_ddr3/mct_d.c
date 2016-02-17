@@ -183,6 +183,9 @@ static void mct_ExtMCTConfig_Bx(struct DCTStatStruc *pDCTstat);
 static void mct_ExtMCTConfig_Cx(struct DCTStatStruc *pDCTstat);
 static void mct_ExtMCTConfig_Dx(struct DCTStatStruc *pDCTstat);
 
+uint8_t is_ecc_enabled(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+uint8_t get_available_lane_count(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
+
 static void read_dqs_receiver_enable_control_registers(uint16_t* current_total_delay,
 			uint32_t dev, uint8_t dct, uint8_t dimm, uint32_t index_reg);
 
@@ -327,6 +330,31 @@ static inline uint8_t is_model10_1f(void)
 		model101f = 1;
 
 	return model101f;
+}
+
+uint8_t is_ecc_enabled(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
+{
+	uint8_t ecc_enabled = 1;
+
+	if (!mctGet_NVbits(NV_ECC_CAP) || !mctGet_NVbits(NV_ECC)) {
+		return 0;
+	}
+
+	if (pDCTstat->NodePresent && pDCTstat->DIMMValid) {
+		if (!(pDCTstat->Status & (1 << SB_ECCDIMMs))) {
+			ecc_enabled = 0;
+		}
+	}
+
+	return !!ecc_enabled;
+}
+
+uint8_t get_available_lane_count(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
+{
+	if (is_ecc_enabled(pMCTstat, pDCTstat))
+		return 9;
+	else
+		return 8;
 }
 
 static uint16_t mhz_to_memclk_config(uint16_t freq)
@@ -2625,6 +2653,7 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	uint8_t dimm;
 	uint8_t nvram;
 	uint8_t enable_cc6;
+	uint8_t ecc_enabled;
 	uint8_t allow_config_restore;
 
 	uint8_t s3resume = acpi_is_wakeup_s3();
@@ -2827,12 +2856,24 @@ restartinit:
 		InterleaveNodes_D(pMCTstat, pDCTstatA);
 		InterleaveChannels_D(pMCTstat, pDCTstatA);
 
-		printk(BIOS_DEBUG, "mctAutoInitMCT_D: ECCInit_D\n");
-		if (!ECCInit_D(pMCTstat, pDCTstatA)) {			/* Setup ECC control and ECC check-bits*/
-			/* Memory was not cleared during ECC setup */
-			/* mctDoWarmResetMemClr_D(); */
-			printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
-			MCTMemClr_D(pMCTstat,pDCTstatA);
+		ecc_enabled = 1;
+		for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+			struct DCTStatStruc *pDCTstat;
+			pDCTstat = pDCTstatA + Node;
+
+			if (pDCTstat->NodePresent)
+				if (!is_ecc_enabled(pMCTstat, pDCTstat))
+					ecc_enabled = 0;
+		}
+
+		if (ecc_enabled) {
+			printk(BIOS_DEBUG, "mctAutoInitMCT_D: ECCInit_D\n");
+			if (!ECCInit_D(pMCTstat, pDCTstatA)) {			/* Setup ECC control and ECC check-bits*/
+				/* Memory was not cleared during ECC setup */
+				/* mctDoWarmResetMemClr_D(); */
+				printk(BIOS_DEBUG, "mctAutoInitMCT_D: MCTMemClr_D\n");
+				MCTMemClr_D(pMCTstat,pDCTstatA);
+			}
 		}
 
 		if (is_fam15h()) {
@@ -3030,8 +3071,7 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		uint16_t max_cdd_we_delta;
 		uint16_t cdd_trwtto_we_delta;
 		uint8_t receiver;
-		uint8_t max_lane;
-		uint8_t ecc_enabled;
+		uint8_t lane_count;
 		uint8_t x4_present = 0;
 		uint8_t x8_present = 0;
 		uint8_t memclk_index;
@@ -3074,11 +3114,7 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		ddr_voltage_index = dct_ddr_voltage_index(pDCTstat, dct);
 		max_dimms_installable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 
-		ecc_enabled = !!(pMCTstat->GStatus & 1 << GSB_ECCDIMMs);
-		if (ecc_enabled)
-			max_lane = 9;
-		else
-			max_lane = 8;
+		lane_count = get_available_lane_count(pMCTstat, pDCTstat);
 
 		if (pDCTstat->Dimmx4Present & ((dct)?0xaa:0x55))
 			x4_present = 1;
@@ -3148,7 +3184,7 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 				first_dimm = 0;
 			}
 
-			for (lane = 0; lane < max_lane; lane++) {
+			for (lane = 0; lane < lane_count; lane++) {
 				if (current_total_delay_1[lane] > current_total_delay_2[lane])
 					difference = current_total_delay_1[lane] - current_total_delay_2[lane];
 				else
@@ -3194,7 +3230,7 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 				first_dimm = 0;
 			}
 
-			for (lane = 0; lane < max_lane; lane++) {
+			for (lane = 0; lane < lane_count; lane++) {
 				if (current_total_delay_1[lane] > current_total_delay_2[lane])
 					difference = current_total_delay_1[lane] - current_total_delay_2[lane];
 				else
@@ -3385,7 +3421,7 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 			read_dqs_write_timing_control_registers(current_total_delay_1, dev, dct, dimm, index_reg);
 			read_dqs_receiver_enable_control_registers(current_total_delay_2, dev, dct, dimm, index_reg);
 
-			for (lane = 0; lane < max_lane; lane++) {
+			for (lane = 0; lane < lane_count; lane++) {
 				if (current_total_delay_1[lane] > current_total_delay_2[lane])
 					difference = current_total_delay_1[lane] - current_total_delay_2[lane];
 				else
@@ -3439,7 +3475,7 @@ static void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 			read_dqs_receiver_enable_control_registers(current_total_delay_1, dev, dct, dimm, index_reg);
 			read_dqs_write_timing_control_registers(current_total_delay_2, dev, dct, dimm, index_reg);
 
-			for (lane = 0; lane < max_lane; lane++) {
+			for (lane = 0; lane < lane_count; lane++) {
 				if (current_total_delay_1[lane] > current_total_delay_2[lane])
 					difference = current_total_delay_1[lane] - current_total_delay_2[lane];
 				else

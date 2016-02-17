@@ -1205,6 +1205,9 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	uint8_t package_type = mctGet_NVbits(NV_PACK_TYPE);
 	uint16_t fam15h_freq_tab[] = {0, 0, 0, 0, 333, 0, 400, 0, 0, 0, 533, 0, 0, 0, 667, 0, 0, 0, 800, 0, 0, 0, 933};
 
+	uint8_t lane_count;
+	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
+
 	print_debug_dqs("\nTrainRcvEn: Node", pDCTstat->Node_ID, 0);
 	print_debug_dqs("TrainRcvEn: Pass", Pass, 0);
 
@@ -1323,7 +1326,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 						initial_seed = (uint16_t) (((((uint64_t) initial_seed) *
 							fam15h_freq_tab[mem_clk] * 100) / (min_mem_clk * 100)));
 
-						for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+						for (lane = 0; lane < lane_count; lane++) {
 							uint16_t wl_pass1_delay;
 							wl_pass1_delay = current_total_delay[lane];
 
@@ -1349,13 +1352,13 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 							register_delay = 0x0;
 						}
 
-						for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+						for (lane = 0; lane < lane_count; lane++) {
 							seed_prescaling = current_total_delay[lane] - register_delay - 0x20;
 							seed[lane] = (uint16_t) (register_delay + ((((uint64_t) seed_prescaling) * fam15h_freq_tab[mem_clk] * 100) / (min_mem_clk * 100)));
 						}
 					}
 
-					for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+					for (lane = 0; lane < lane_count; lane++) {
 						seed_gross[lane] = (seed[lane] >> 5) & 0x1f;
 						seed_fine[lane] = seed[lane] & 0x1f;
 
@@ -1413,7 +1416,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 					/* 2.10.5.8.2 (7)
 					 * Calculate and program the DQS Receiver Enable delay values
 					 */
-					for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+					for (lane = 0; lane < lane_count; lane++) {
 						current_total_delay[lane] = (phase_recovery_delays[lane] & 0x1f);
 						current_total_delay[lane] |= ((seed_gross[lane] + ((phase_recovery_delays[lane] >> 5) & 0x1f) - seed_pre_gross[lane] + 1) << 5);
 						if (nibble == 0) {
@@ -1450,7 +1453,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 					 * Compute the average delay across both ranks and program the result into
 					 * the DQS Receiver Enable delay registers
 					 */
-					for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+					for (lane = 0; lane < lane_count; lane++) {
 						current_total_delay[lane] = (rank0_current_total_delay[lane] + current_total_delay[lane]) / 2;
 						if (lane == 8)
 							pDCTstat->CH_D_BC_RCVRDLY[Channel][dimm] = current_total_delay[lane];
@@ -1576,6 +1579,9 @@ static void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	uint16_t current_rdqs_total_delay[MAX_BYTE_LANES];
 	uint8_t current_worst_case_total_delay_dimm;
 	uint16_t current_worst_case_total_delay_value;
+
+	uint8_t lane_count;
+	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
 
 	uint16_t fam15h_freq_tab[] = {0, 0, 0, 0, 333, 0, 400, 0, 0, 0, 533, 0, 0, 0, 667, 0, 0, 0, 800, 0, 0, 0, 933};
 

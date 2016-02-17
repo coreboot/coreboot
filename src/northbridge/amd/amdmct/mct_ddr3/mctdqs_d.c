@@ -875,6 +875,9 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 	printk(BIOS_DEBUG, "%s: Start\n", __func__);
 #endif
 
+	uint8_t lane_count;
+	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
+
 	mem_clk = Get_NB32_DCT(dev, dct, 0x94) & 0x1f;
 	if (fam15h_freq_tab[mem_clk] == 0) {
 		pDCTstat->CH_MaxRdLat[dct][0] = 0x55;
@@ -917,7 +920,7 @@ static void Calc_SetMaxRdLatency_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 			read_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);
 			read_dqs_read_data_timing_registers(current_read_dqs_delay, dev, dct, dimm, index_reg);
-			for (lane = 0; lane < MAX_BYTE_LANES; lane++)
+			for (lane = 0; lane < lane_count; lane++)
 				if ((current_phy_phase_delay[lane] + current_read_dqs_delay[lane]) > max_delay)
 					max_delay = (current_phy_phase_delay[lane] + current_read_dqs_delay[lane]);
 		}
@@ -1271,6 +1274,9 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint32_t index_reg = 0x98;
 	uint32_t dev = pDCTstat->dev_dct;
 
+	uint8_t lane_count;
+	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
+
 	/* Calculate and program MaxRdLatency */
 	Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, dct, 0);
 
@@ -1621,6 +1627,9 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint32_t index_reg = 0x98;
 	uint32_t dev = pDCTstat->dev_dct;
 
+	uint8_t lane_count;
+	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
+
 	print_debug_dqs("\nTrainDQSReceiverEnCyc: Node_ID ", pDCTstat->Node_ID, 0);
 	cr4 = read_cr4();
 	if (cr4 & (1<<9)) {
@@ -1678,7 +1687,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 			/* 2.10.5.8.3 (2) */
 			read_dqs_receiver_enable_control_registers(initial_phy_phase_delay, dev, dct, dimm, index_reg);
 
-			for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+			for (lane = 0; lane < lane_count; lane++) {
 				/* Initialize variables */
 				memset(dqs_results_array, 0, sizeof(dqs_results_array));
 
@@ -1780,7 +1789,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 #if DQS_TRAIN_DEBUG > 0
 			printk(BIOS_DEBUG, "TrainDQSReceiverEnCyc_D_Fam15 DQS receiver enable timing: ");
-			for (lane = 0; lane < MAX_BYTE_LANES; lane++) {
+			for (lane = 0; lane < lane_count; lane++) {
 				printk(BIOS_DEBUG, " %03x", current_phy_phase_delay[lane]);
 			}
 			printk(BIOS_DEBUG, "\n");

@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <soc/pci_devs.h>
 
 static void uart_read_resources(device_t dev)
 {
@@ -40,13 +41,8 @@ static struct device_operations device_ops = {
 	.enable_resources	= &pci_dev_enable_resources,
 };
 
-static const unsigned short uart_ids[] = {
-	0x0936, /* HSUART0, HSUART1 */
-	0
-};
-
 static const struct pci_driver uart_driver __pci_driver = {
-	.ops	 = &device_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
-	.devices = uart_ids,
+	.ops	= &device_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= HSUART_DEVID,
 };

@@ -15,26 +15,38 @@
  * GNU General Public License for more details.
  */
 
-// Use simple device model for this file even in ramstage
-#define __SIMPLE_DEVICE__
-
 #include <console/uart.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <rules.h>
-#include <soc/pci_devs.h>
+#include <device/pci_ids.h>
 
-unsigned int uart_platform_refclk(void)
+static void uart_read_resources(device_t dev)
 {
-	return 44236800;
+	struct resource *res;
+
+	/* Read the resources */
+	pci_dev_read_resources(dev);
+
+	/* Set the debug port configuration */
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res->base = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	res->size = 0x100;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-uintptr_t uart_platform_base(int idx)
-{
-	/* HSUART controller #1 (B0:D20:F5). */
-	device_t dev = PCI_DEV(0, HSUART1_DEV, HSUART1_FUNC);
+static struct device_operations device_ops = {
+	.read_resources		= &uart_read_resources,
+	.set_resources		= &pci_dev_set_resources,
+	.enable_resources	= &pci_dev_enable_resources,
+};
 
-	/* UART base address at BAR0(offset 0x10). */
-	return (unsigned int) (pci_read_config32(dev,
-		PCI_BASE_ADDRESS_0) & ~0xfff);
-}
+static const unsigned short uart_ids[] = {
+	0x0936, /* HSUART0, HSUART1 */
+	0
+};
+
+static const struct pci_driver uart_driver __pci_driver = {
+	.ops	 = &device_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = uart_ids,
+};

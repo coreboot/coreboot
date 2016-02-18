@@ -62,6 +62,24 @@ extern u8 _program[];
 extern u8 _eprogram[];
 #define _program_size (_eprogram - _program)
 
+/* _<stage>_size is always the maximum amount allocated in memlayout, whereas
+ * _program_size gives the actual memory footprint *used* by current stage. */
+extern u8 _bootblock[];
+extern u8 _ebootblock[];
+#define _bootblock_size (_ebootblock - _bootblock)
+
+extern u8 _romstage[];
+extern u8 _eromstage[];
+#define _romstage_size (_eromstage - _romstage)
+
+extern u8 _ramstage[];
+extern u8 _eramstage[];
+#define _ramstage_size (_eramstage - _ramstage)
+
+extern u8 _verstage[];
+extern u8 _everstage[];
+#define _verstage_size (_everstage - _verstage)
+
 /* Arch-specific, move to <arch/symbols.h> if they become too many. */
 
 extern u8 _ttb[];

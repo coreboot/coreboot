@@ -103,38 +103,38 @@
 /* Careful: 'INCLUDE <filename>' must always be at the end of the output line */
 #if ENV_BOOTBLOCK
 	#define BOOTBLOCK(addr, sz) \
-		SET_COUNTER(bootblock, addr) \
+		SYMBOL(bootblock, addr) \
+		_ebootblock = _bootblock + sz; \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Bootblock exceeded its allotted size! (sz))); \
 		INCLUDE "bootblock/lib/program.ld"
 #else
 	#define BOOTBLOCK(addr, sz) \
-		SET_COUNTER(bootblock, addr) \
-		. += sz;
+		REGION(bootblock, addr, sz, 1)
 #endif
 
 #if ENV_ROMSTAGE
 	#define ROMSTAGE(addr, sz) \
-		SET_COUNTER(romstage, addr) \
+		SYMBOL(romstage, addr) \
+		_eromstage = _romstage + sz; \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Romstage exceeded its allotted size! (sz))); \
 		INCLUDE "romstage/lib/program.ld"
 #else
 	#define ROMSTAGE(addr, sz) \
-		SET_COUNTER(romstage, addr) \
-		. += sz;
+		REGION(romstage, addr, sz, 1)
 #endif
 
 #if ENV_RAMSTAGE
 	#define RAMSTAGE(addr, sz) \
-		SET_COUNTER(ramstage, addr) \
+		SYMBOL(ramstage, addr) \
+		_eramstage = _ramstage + sz; \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Ramstage exceeded its allotted size! (sz))); \
 		INCLUDE "ramstage/lib/program.ld"
 #else
 	#define RAMSTAGE(addr, sz) \
-		SET_COUNTER(ramstage, addr) \
-		. += sz;
+		REGION(ramstage, addr, sz, 1)
 #endif
 
 /* Careful: required work buffer size depends on RW properties such as key size
@@ -146,7 +146,8 @@
 
 #if ENV_VERSTAGE
 	#define VERSTAGE(addr, sz) \
-		SET_COUNTER(verstage, addr) \
+		SYMBOL(verstage, addr) \
+		_everstage = _verstage + sz; \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Verstage exceeded its allotted size! (sz))); \
 		INCLUDE "verstage/lib/program.ld"
@@ -154,8 +155,7 @@
 	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) VERSTAGE(addr, size)
 #else
 	#define VERSTAGE(addr, sz) \
-		SET_COUNTER(verstage, addr) \
-		. += sz;
+		REGION(verstage, addr, sz, 1)
 
 	#define OVERLAP_VERSTAGE_ROMSTAGE(addr, size) ROMSTAGE(addr, size)
 #endif

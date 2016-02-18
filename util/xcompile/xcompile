@@ -393,6 +393,7 @@ test_architecture() {
 		search="$search $toolchain-linux-gnu-"
 		search="$search $toolchain-linux-"
 		search="$search $toolchain-"
+		search="$search $toolchain-linux-gnueabi-"
 	done
 	echo "###########################################################################"
 	echo "# $architecture"

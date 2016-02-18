@@ -18,26 +18,33 @@
 #include <arch/header.ld>
 
 /*
- * Memory map for qemu vexpress-a9:
+ * Memory map for qemu vexpress-a9 since
+ * 6ec1588e09770ac7e9c60194faff6101111fc7f0 (Jul 2014):
  *
- * 0x0000_0000: jump instruction (by qemu)
- * 0x0001_0000: bootblock (entry of kernel / firmware)
- * 0x0002_0000: romstage, assume up to 128KB in size.
- * 0x0007_ff00: stack pointer
- * 0x0010_0000: CBFS header
- * 0x0011_0000: CBFS data
- * 0x0100_0000: reserved for ramstage
+ * 0x0000_0000: NOR flash
  * 0x1000_0000: I/O map address
+ * 0x6000_0000: RAM
  */
 
+/*
+ * This map is designed to work with new qemu vexpress memory layout and
+ * with -bios option which neatly puts coreboot into flash and so payloads
+ * can find CBFS and we don't risk overwriting CBFS.
+ *
+ * Prior to Jul 2014 qemu aliased 0 to begining of RAM instead of flash
+ * and -bios was unusable as $pc pointed to 0 which was zero-filled as a
+ * workaround we suggested using -kernel but this still had all the issues
+ * of having fake-ROM in RAM. In fact it was even worse as fake ROM ends
+ * up exactly at addresses needed to load Linux.
+ */
 SECTIONS
 {
 	/* TODO: does this thing emulate SRAM? */
 
-	BOOTBLOCK(0x10000, 64K)
-	ROMSTAGE(0x20000, 128K)
-	STACK(0x000FC000, 16K)
+	BOOTBLOCK(0x00000, 64K)
 
-	DRAM_START(0x01000000)
-	RAMSTAGE(0x01000000, 16M)
+	DRAM_START(0x60000000)
+	STACK(0x60000000, 64K)
+	ROMSTAGE(0x60010000, 128K)
+	RAMSTAGE(0x60030000, 16M)
 }

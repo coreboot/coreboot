@@ -14,9 +14,9 @@
  */
 #include <boot_device.h>
 
-/* Maps directly to qemu memory mapped space of 0x10000 up to rom size. */
+/* Maps directly to NOR flash up to rom size. */
 static const struct mem_region_device boot_dev =
-	MEM_REGION_DEV_INIT((void *)0x10000, CONFIG_ROM_SIZE);
+	MEM_REGION_DEV_INIT((void *)0x0, CONFIG_ROM_SIZE);
 
 const struct region_device *boot_device_ro(void)
 {

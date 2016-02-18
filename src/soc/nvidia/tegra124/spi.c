@@ -798,69 +798,6 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	return ret;
 }
 
-#define JEDEC_READ			0x03
-#define JEDEC_READ_OUTSIZE		0x04
-#define JEDEC_FAST_READ_DUAL		0x3b
-#define JEDEC_FAST_READ_DUAL_OUTSIZE	0x05
-
-static struct spi_slave *boot_slave;
-
-static ssize_t tegra_spi_readat(const struct region_device *rdev, void *dest,
-				size_t offset, size_t count)
-{
-	u8 spi_read_cmd[JEDEC_FAST_READ_DUAL_OUTSIZE];
-	unsigned int read_cmd_bytes;
-	int ret = count;
-	struct tegra_spi_channel *channel;
-
-	channel = to_tegra_spi(boot_slave->bus);
-
-	if (channel->dual_mode) {
-		/*
-		 * Command 0x3b will interleave data only, command 0xbb will
-		 * interleave the address as well. It's nice to see the address
-		 * plainly when debugging, and we're mostly concerned with
-		 * large transfers so the optimization of using 0xbb isn't
-		 * really worthwhile.
-		 */
-		spi_read_cmd[0] = JEDEC_FAST_READ_DUAL;
-		spi_read_cmd[4] = 0x00;	/* dummy byte */
-		read_cmd_bytes = JEDEC_FAST_READ_DUAL_OUTSIZE;
-	} else {
-		spi_read_cmd[0] = JEDEC_READ;
-		read_cmd_bytes = JEDEC_READ_OUTSIZE;
-	}
-	spi_read_cmd[1] = (offset >> 16) & 0xff;
-	spi_read_cmd[2] = (offset >> 8) & 0xff;
-	spi_read_cmd[3] = offset & 0xff;
-
-	spi_claim_bus(boot_slave);
-
-	if (spi_xfer(boot_slave, spi_read_cmd,
-			read_cmd_bytes, NULL, 0) < 0) {
-		ret = -1;
-		printk(BIOS_ERR, "%s: Failed to transfer %u bytes\n",
-				__func__, sizeof(spi_read_cmd));
-		goto tegra_spi_cbfs_read_exit;
-	}
-
-	if (channel->dual_mode) {
-		setbits_le32(&channel->regs->command1, SPI_CMD1_BOTH_EN_BIT);
-	}
-	if (spi_xfer(boot_slave, NULL, 0, dest, count)) {
-		ret = -1;
-		printk(BIOS_ERR, "%s: Failed to transfer %u bytes\n",
-				__func__, count);
-	}
-	if (channel->dual_mode)
-		clrbits_le32(&channel->regs->command1, SPI_CMD1_BOTH_EN_BIT);
-
-tegra_spi_cbfs_read_exit:
-	/* de-assert /CS */
-	spi_release_bus(boot_slave);
-	return ret;
-}
-
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	struct tegra_spi_channel *channel = to_tegra_spi(bus);
@@ -868,33 +805,4 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 		return NULL;
 
 	return &channel->slave;
-}
-
-static const struct region_device_ops tegra_spi_ops = {
-	.mmap = mmap_helper_rdev_mmap,
-	.munmap = mmap_helper_rdev_munmap,
-	.readat = tegra_spi_readat,
-};
-
-static struct mmap_helper_region_device mdev =
-	MMAP_HELPER_REGION_INIT(&tegra_spi_ops, 0, CONFIG_ROM_SIZE);
-
-const struct region_device *boot_device_ro(void)
-{
-	return &mdev.rdev;
-}
-
-void boot_device_init(void)
-{
-	struct tegra_spi_channel *boot_chan;
-
-	boot_chan = &tegra_spi_channels[CONFIG_BOOT_MEDIA_SPI_BUS - 1];
-	boot_chan->slave.cs = CONFIG_BOOT_MEDIA_SPI_CHIP_SELECT;
-
-#if CONFIG_SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B == 1
-	boot_chan->dual_mode = 1;
-#endif
-	boot_slave = &boot_chan->slave;
-
-	mmap_helper_device_init(&mdev, _cbfs_cache, _cbfs_cache_size);
 }

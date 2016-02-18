@@ -40,7 +40,7 @@ func (b bd82x6x) GPIO(ctx Context, inteltool InteltoolData) {
 
 	AddROMStageFile("gpio.c", "")
 
-	gpio.WriteString(`#include "southbridge/intel/bd82x6x/gpio.h"
+	gpio.WriteString(`#include <southbridge/intel/common/gpio.h>
 `)
 
 	adresses := [3][6]int{
@@ -294,7 +294,7 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit_native.h"
 #include "southbridge/intel/bd82x6x/pch.h"
-#include "southbridge/intel/bd82x6x/gpio.h"
+#include <southbridge/intel/common/gpio.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 

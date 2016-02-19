@@ -20,6 +20,34 @@
 #include <string.h>
 #include <halt.h>
 #include "mainboard.h"
+#include <edid.h>
+
+static void init_gfx(void)
+{
+	volatile uint32_t *pl111;
+	struct edid edid;
+	/* width is at most 4096 */
+	/* height is at most 1024 */
+	int width = 800, height = 600;
+	uint32_t framebuffer = 0x4c000000;
+	pl111 = (uint32_t *) 0x10020000;
+	pl111[0] = (width / 4) - 4;
+	pl111[1] = height - 1;
+	/* registers 2, 3 and 5 are ignored by qemu. Set them correctly if
+	   we ever go for real hw.  */
+	/* framebuffer adress offset. Has to be in vram.  */
+	pl111[4] = framebuffer;
+	pl111[7] = 0;
+	pl111[10] = 0xff;
+	pl111[6] = (5 << 1) | 0x801;
+
+	edid.framebuffer_bits_per_pixel = 32;
+	edid.bytes_per_line = width * 4;
+	edid.x_resolution = width;
+	edid.y_resolution = height;
+
+	set_vbe_mode_info_valid(&edid, framebuffer);
+}
 
 static void mainboard_enable(device_t dev)
 {
@@ -33,6 +61,7 @@ static void mainboard_enable(device_t dev)
 	printk(BIOS_DEBUG, "%d MiB of RAM discovered\n", discovered);
 	ram_resource(dev, 0, 0x60000000 >> 10, discovered << 10);
 	cbmem_recovery(0);
+	init_gfx();
 }
 
 struct chip_operations mainboard_ops = {

@@ -43,11 +43,11 @@
  *
  *  PSP2 directory
  *  +------------+---------------+----------------+------------+
- *  | 'PSP2'     | Fletcher      |    Count       | Reserved   |
+ *  | 'PSP2'     | Fletcher      |    Count       |Look up mode|
  *  +------------+---------------+----------------+------------+
- *  |     1      | PSP ID        |   PSPDIR ADDR  |            | 2nd PSP directory
+ *  | ID-Sel     | PSP ID        |   PSPDIR ADDR  |            | 2nd PSP directory
  *  +------------+---------------+----------------+------------+
- *  |     2      | PSP ID        |   PSPDIR ADDR  |            | 3rd PSP directory
+ *  | ID-Sel     | PSP ID        |   PSPDIR ADDR  |            | 3rd PSP directory
  *  +------------+---------------+----------------+------------+
  *  |                                                          |
  *  |        Other PSP                                         |
@@ -537,7 +537,7 @@ int main(int argc, char **argv)
 			/* TODO: remove the hardcode. */
 			psp2count = 1;		/* Start from 1. */
 			/* for (; psp2count <= PSP2COUNT; psp2count++, current=ALIGN(current, 0x100)) { */
-			psp2dir[psp2count*4 + 0] = psp2count;		/* PSP Number */
+			psp2dir[psp2count*4 + 0] = 0; /* 0 -Compare PSP ID, 1 -Compare chip family ID */
 			psp2dir[psp2count*4 + 1] = 0x10220B00; /* TODO: PSP ID. Documentation is needed. */
 			psp2dir[psp2count*4 + 2] = current + ROM_BASE_ADDRESS;
 			pspdir = rom + current;
@@ -553,7 +553,7 @@ int main(int argc, char **argv)
 			/* fill the PSP2 head */
 			psp2dir[0] = 0x50535032;  /* 'PSP2' */
 			psp2dir[2] = psp2count;		  /* Count */
-			psp2dir[3] = 0;
+			psp2dir[3] = 0;		/* 0-Dynamic look up through all entries, 1-PSP/chip ID match */
 			psp2dir[1] = fletcher32((uint16_t *)&psp2dir[1], (psp2count*16 + 16)/2 - 2);
 		}
 #endif

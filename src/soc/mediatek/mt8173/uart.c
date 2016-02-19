@@ -177,7 +177,7 @@ void uart_fill_lb(void *data)
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = UART0_BASE;
 	serial.baud = default_baudrate();
-	serial.regwidth = 1;
+	serial.regwidth = 4;
 	lb_add_serial(&serial, data);
 
 	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);

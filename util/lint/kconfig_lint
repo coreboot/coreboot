@@ -26,6 +26,12 @@ use File::Find;
 use Getopt::Long;
 use Getopt::Std;
 
+# If taint mode is enabled, Untaint the path - git and grep must be in /bin, /usr/bin or /usr/local/bin
+if ( ${^TAINT} ) {
+    $ENV{'PATH'} = '/bin:/usr/bin:/usr/local/bin';
+    delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
+}
+
 my $suppress_error_output   = 0;      # flag to prevent error text
 my $suppress_warning_output = 0;      # flag to prevent warning text
 my $show_note_output        = 0;      # flag to show minor notes text
@@ -33,7 +39,7 @@ my $print_full_output       = 0;      # flag to print wholeconfig output
 my $output_file             = "-";    # filename of output - set stdout by default
 my $dont_use_git_grep       = 0;
 
-#globals
+# Globals
 my $top_dir        = ".";             # Directory where Kconfig is run
 my $root_dir       = "src";           # Directory of the top level Kconfig file
 my $errors_found   = 0;               # count of errors
@@ -76,9 +82,6 @@ sub Main {
     #load the Kconfig tree, checking what we can and building up all the hash tables
     build_and_parse_kconfig_tree("$root_dir/Kconfig");
 
-    #run checks based on the data that was found
-    find( \&check_if_file_referenced, $root_dir );
-
     load_config($config_file) if ($config_file);
 
     check_defaults();
@@ -90,6 +93,14 @@ sub Main {
     check_for_def();
     check_is_enabled();
     check_selected_symbols();
+
+    # Run checks based on the data that was found
+    if ( ( !$suppress_warning_output ) && ( ${^TAINT} == 0 ) ) {
+
+        # The find function is tainted - only run it if taint checking
+        # is disabled and warnings are enabled.
+        find( \&check_if_file_referenced, $root_dir );
+    }
 
     print_wholeconfig();
 

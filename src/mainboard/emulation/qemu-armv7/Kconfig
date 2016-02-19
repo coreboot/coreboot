@@ -49,8 +49,4 @@ config MAINBOARD_VENDOR
 	string
 	default "ARM Ltd."
 
-config DRAM_SIZE_MB
-	int
-	default 1024
-
 endif #  BOARD_EMULATION_QEMU_ARMV7

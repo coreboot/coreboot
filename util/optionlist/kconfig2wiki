@@ -117,7 +117,7 @@ def main():
 		sys.exit(1)
 
 	sys.stdout.write("This is an automatically generated list of '''coreboot compile-time options'''.\n")
-	sys.stdout.write("\nLast update: %s. (r%s)\n" % (time.strftime('%Y/%m/%d %H:%M:%S'),sys.argv[2]))
+	sys.stdout.write("\nLast update: %s\n" % sys.argv[2])
 	sys.stdout.write("{| border=\"0\" style=\"font-size: smaller\"\n");
 	sys.stdout.write("|- bgcolor=\"#6699dd\"\n")
 	sys.stdout.write("! align=\"left\" | Option\n")

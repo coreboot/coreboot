@@ -41,6 +41,9 @@ enum prog_type {
  * set on the last segment loaded. */
 void arch_segment_loaded(uintptr_t start, size_t size, int flags);
 
+/* Return true if arch supports bounce buffer.  */
+int arch_supports_bounce_buffer(void);
+
 /* Representation of a program. */
 struct prog {
 	/* The region_device is the source of program content to load. After

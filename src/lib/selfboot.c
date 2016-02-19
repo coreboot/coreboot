@@ -114,6 +114,9 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 	if (!overlaps_coreboot(seg))
 		return 0;
 
+	if (!arch_supports_bounce_buffer())
+		die ("bounce buffer not supported");
+
 	start = seg->s_dstaddr;
 	middle = start + seg->s_filesz;
 	end = start + seg->s_memsz;

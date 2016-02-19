@@ -72,6 +72,11 @@ void arch_prog_run(struct prog *prog)
 	doit(prog_entry_arg(prog));
 }
 
+int arch_supports_bounce_buffer(void)
+{
+	return 0;
+}
+
 /* Generic stage entry point. Can be overridden by board/SoC if needed. */
 __attribute__((weak)) void stage_entry(void)
 {

@@ -192,6 +192,11 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 		);
 }
 
+int arch_supports_bounce_buffer(void)
+{
+	return 1;
+}
+
 static void try_payload(struct prog *prog)
 {
 	if (prog_type(prog) == PROG_PAYLOAD) {

@@ -290,7 +290,8 @@ const struct reg_script_bus_entry *platform_bus_table(size_t *table_entries);
 	REG_SCRIPT_RES(POLL, 32, bar_, reg_, mask_, value_, timeout_)
 
 
-#if CONFIG_SOC_INTEL_BAYTRAIL
+#if IS_ENABLED(CONFIG_SOC_INTEL_BAYTRAIL) || \
+IS_ENABLED(CONFIG_SOC_INTEL_FSP_BAYTRAIL)
 /*
  * IO Sideband Function
  */
@@ -310,7 +311,7 @@ const struct reg_script_bus_entry *platform_bus_table(size_t *table_entries);
 	REG_IOSF_RMW(unit_, reg_, 0xffffffff, value_)
 #define REG_IOSF_POLL(unit_, reg_, mask_, value_, timeout_) \
 	REG_SCRIPT_IOSF(POLL, unit_, reg_, mask_, value_, timeout_)
-#endif	/* CONFIG_SOC_INTEL_BAYTRAIL */
+#endif	/* CONFIG_SOC_INTEL_BAYTRAIL || CONFIG_SOC_INTEL_FSP_BAYTRAIL*/
 
 /*
  * CPU Model Specific Register

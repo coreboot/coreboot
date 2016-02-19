@@ -26,7 +26,10 @@
 #include <cpu/x86/msr.h>
 #endif
 
-#if CONFIG_SOC_INTEL_BAYTRAIL
+#define HAS_IOSF (IS_ENABLED(CONFIG_SOC_INTEL_BAYTRAIL) || \
+		IS_ENABLED(CONFIG_SOC_INTEL_FSP_BAYTRAIL))
+
+#if HAS_IOSF
 #include <soc/iosf.h>	/* TODO: wrap in <soc/reg_script.h, remove #ifdef? */
 #endif
 
@@ -233,7 +236,7 @@ static void reg_script_write_res(struct reg_script_context *ctx)
 	reg_script_set_step(ctx, step);
 }
 
-#if CONFIG_SOC_INTEL_BAYTRAIL
+#if HAS_IOSF
 static uint32_t reg_script_read_iosf(struct reg_script_context *ctx)
 {
 	const struct reg_script *step = reg_script_get_step(ctx);
@@ -363,7 +366,7 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 		break;
 	}
 }
-#endif
+#endif /* HAS_IOSF */
 
 
 static uint64_t reg_script_read_msr(struct reg_script_context *ctx)
@@ -435,10 +438,10 @@ static uint64_t reg_script_read(struct reg_script_context *ctx)
 		return reg_script_read_res(ctx);
 	case REG_SCRIPT_TYPE_MSR:
 		return reg_script_read_msr(ctx);
-#if CONFIG_SOC_INTEL_BAYTRAIL
+#if HAS_IOSF
 	case REG_SCRIPT_TYPE_IOSF:
 		return reg_script_read_iosf(ctx);
-#endif
+#endif /* HAS_IOSF */
 	default:
 #ifndef __PRE_RAM__
 		{
@@ -478,11 +481,11 @@ static void reg_script_write(struct reg_script_context *ctx)
 	case REG_SCRIPT_TYPE_MSR:
 		reg_script_write_msr(ctx);
 		break;
-#if CONFIG_SOC_INTEL_BAYTRAIL
+#if HAS_IOSF
 	case REG_SCRIPT_TYPE_IOSF:
 		reg_script_write_iosf(ctx);
 		break;
-#endif
+#endif /* HAS_IOSF */
 	default:
 #ifndef __PRE_RAM__
 		{

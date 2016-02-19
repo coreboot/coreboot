@@ -15,11 +15,12 @@
 
 /*
  *  ROMSIG At ROMBASE + 0x20000:
+ *  0            4               8                C
  *  +------------+---------------+----------------+------------+
  *  | 0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |
  *  +------------+---------------+----------------+------------+
- *  | PSPDIR ADDR|PSP2DIR ADDR   |
- *  +------------+---------------+
+ *  | PSPDIR ADDR|PSPDIR ADDR    |<-- Field 0x14 could be either
+ *  +------------+---------------+   2nd PSP directory or PSP COMBO directory
  *  EC ROM should be 64K aligned.
  *
  *  PSP directory (Where "PSPDIR ADDR" points)
@@ -41,7 +42,7 @@
  *  |                                                          |
  *  +------------+---------------+----------------+------------+
  *
- *  PSP2 directory
+ *  PSP Combo directory
  *  +------------+---------------+----------------+------------+
  *  | 'PSP2'     | Fletcher      |    Count       |Look up mode|
  *  +------------+---------------+----------------+------------+
@@ -81,6 +82,13 @@
   kinds of APU.
 */
 #define PSP2 1
+#if PSP2
+/* Use PSP combo directory or not.
+ * Currently we dont have to squeeze 3 PSP directories into 1 image. So
+ * we skip the combo directory.
+ */
+   #define PSP_COMBO 0
+#endif
 
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
@@ -534,9 +542,11 @@ int main(int argc, char **argv)
 			amd_romsig[5] = current + ROM_BASE_ADDRESS;
 			current += 0x100;	/* Add conservative size of psp2dir. */
 
+			#if PSP_COMBO
 			/* TODO: remove the hardcode. */
 			psp2count = 1;		/* Start from 1. */
 			/* for (; psp2count <= PSP2COUNT; psp2count++, current=ALIGN(current, 0x100)) { */
+			/* Now the psp2dir is psp combo dir. */
 			psp2dir[psp2count*4 + 0] = 0; /* 0 -Compare PSP ID, 1 -Compare chip family ID */
 			psp2dir[psp2count*4 + 1] = 0x10220B00; /* TODO: PSP ID. Documentation is needed. */
 			psp2dir[psp2count*4 + 2] = current + ROM_BASE_ADDRESS;
@@ -550,11 +560,17 @@ int main(int argc, char **argv)
 			fill_psp_head(pspdir, count);
 			/* } */ /* End of loop */
 
-			/* fill the PSP2 head */
+			/* fill the PSP combo head */
 			psp2dir[0] = 0x50535032;  /* 'PSP2' */
 			psp2dir[2] = psp2count;		  /* Count */
 			psp2dir[3] = 0;		/* 0-Dynamic look up through all entries, 1-PSP/chip ID match */
 			psp2dir[1] = fletcher32((uint16_t *)&psp2dir[1], (psp2count*16 + 16)/2 - 2);
+			#else
+			for (count = 0; count < sizeof(amd_psp2_fw_table) / sizeof(amd_fw_entry); count ++) {
+				current = integerate_one_psp(rom, current, psp2dir, count);
+			}
+			fill_psp_head(psp2dir, count);
+			#endif
 		}
 #endif
 	}

@@ -65,7 +65,9 @@ void handle_supervisor_call(trapframe *tf) {
 			returnValue = mcall_shutdown();
 			break;
 		case SET_TIMER:
-			printk(BIOS_DEBUG, "Setting timer...\n");
+			printk(BIOS_DEBUG,
+			       "Setting timer to %p (current time is %p)...\n",
+			       (void *)arg0, (void *)rdtime());
 			returnValue = mcall_set_timer(arg0);
 			break;
 		case QUERY_MEMORY:
@@ -147,7 +149,8 @@ void trap_handler(trapframe *tf) {
 			printk(BIOS_DEBUG, "Trap: Environment call from M-mode\n");
 			break;
 		default:
-			printk(BIOS_DEBUG, "Trap: Unknown cause\n");
+			printk(BIOS_DEBUG, "Trap: Unknown cause %p\n",
+			       (void *)cause);
 			break;
 	}
 	printk(BIOS_DEBUG, "Stored ra: %p\n", (void*) tf->gpr[1]);

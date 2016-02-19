@@ -4,7 +4,7 @@
 . ~/.wikiaccount
 WIKIAPI="http://www.coreboot.org/api.php"
 TITLE="Supported_Motherboards"
-cookie_jar="/tmp/wikicookiejar"
+cookie_jar="$HOME/.wikicookiejar"
 #Will store file in wikifile
 
 #################login

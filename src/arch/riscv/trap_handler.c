@@ -84,20 +84,18 @@ void handle_supervisor_call(trapframe *tf) {
 
 void trap_handler(trapframe *tf) {
 	write_csr(mscratch, tf);
-	int cause = 0;
-	void* epc = 0;
-	void* badAddr = 0;
+	uintptr_t cause;
+	void *epc;
+	void *badAddr;
 
 	// extract cause
-	asm("csrr t0, mcause");
-	asm("move %0, t0" : "=r"(cause));
+	asm("csrr %0, mcause" : "=r"(cause));
 
 	// extract faulting Instruction pc
 	epc = (void*) tf->epc;
 
 	// extract bad address
-	asm("csrr t0, mbadaddr");
-	asm("move %0, t0" : "=r"(badAddr));
+	asm("csrr %0, mbadaddr" : "=r"(badAddr));
 
 	switch(cause) {
 		case 0:

@@ -1,9 +1,10 @@
 #!/bin/bash
 # $1: file containing text
+# $2: wiki page to update
 
 . ~/.wikiaccount
 WIKIAPI="http://www.coreboot.org/api.php"
-TITLE="Supported_Motherboards"
+TITLE="$2"
 cookie_jar="$HOME/.wikicookiejar"
 #Will store file in wikifile
 

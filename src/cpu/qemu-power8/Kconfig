@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-config CPU_QEMU_X86
+config CPU_QEMU_POWER8
 	bool
 	select ARCH_BOOTBLOCK_POWER8
 	select ARCH_VERSTAGE_POWER8

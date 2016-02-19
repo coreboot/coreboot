@@ -3,6 +3,7 @@
 #
 # Copyright (C) 2010 Google Inc.
 # Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+# Copyright (C) 2016 Siemens AG
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,6 +55,7 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smm.c
 
 ramstage-y += placeholders.c
 ramstage-y += i2c.c
+ramstage-(CONFIG_FSP_BAYTRAIL_GFX_INIT) += gfx.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/include
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_baytrail/fsp

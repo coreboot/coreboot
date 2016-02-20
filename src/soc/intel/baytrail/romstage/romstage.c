@@ -239,7 +239,7 @@ void romstage_common(struct romstage_params *params)
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
-	if (CONFIG_LPC_TPM) {
+	if (IS_ENABLED(CONFIG_LPC_TPM)) {
 		init_tpm(prev_sleep_state == 3);
 	}
 }

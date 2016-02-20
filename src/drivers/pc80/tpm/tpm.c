@@ -37,7 +37,7 @@
 
 /* coreboot wrapper for TPM driver (start) */
 #define	TPM_DEBUG(fmt, args...)		\
-	if (CONFIG_DEBUG_TPM) {		\
+	if (IS_ENABLED(CONFIG_DEBUG_TPM)) {		\
 		printk(BIOS_DEBUG, PREFIX);		\
 		printk(BIOS_DEBUG, fmt , ##args);	\
 	}

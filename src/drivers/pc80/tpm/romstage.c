@@ -183,7 +183,7 @@ void init_tpm(int s3resume)
 	u32 result;
 	u8 response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 
-	if (CONFIG_TPM_DEACTIVATE) {
+	if (IS_ENABLED(CONFIG_TPM_DEACTIVATE)) {
 		printk(BIOS_SPEW, "TPM: Deactivate\n");
 		result = TlclSendReceive(tpm_deactivate_cmd.buffer,
 					response, sizeof(response));
@@ -241,7 +241,7 @@ void init_tpm(int s3resume)
 
 	printk(BIOS_ERR, "TPM: Error code 0x%x.\n", result);
 
-	if (CONFIG_TPM_INIT_FAILURE_IS_FATAL) {
+	if (IS_ENABLED(CONFIG_TPM_INIT_FAILURE_IS_FATAL)) {
 		printk(BIOS_ERR, "Hard reset!\n");
 		post_code(POST_TPM_FAILURE);
 		if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))

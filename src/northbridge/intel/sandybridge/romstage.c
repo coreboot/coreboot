@@ -113,7 +113,7 @@ void main(unsigned long bist)
 
 	northbridge_romstage_finalize(s3resume);
 
-	if (CONFIG_LPC_TPM) {
+	if (IS_ENABLED(CONFIG_LPC_TPM)) {
 		init_tpm(s3resume);
 	}
 

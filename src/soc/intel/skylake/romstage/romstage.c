@@ -85,6 +85,15 @@ void soc_memory_init_params(struct romstage_params *params,
 	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
 	config = dev->chip_info;
 
+	/*
+	 * Set IGD stolen size to 64MB.  The FBC hardware for skylake does not
+	 * have access to the bios_reserved range so it always assumes 8MB is
+	 * used and so the kernel will avoid the last 8MB of the stolen window.
+	 * With the default stolen size of 32MB(-8MB) there is not enough space
+	 * for FBC to work with a high resolution panel.
+	 */
+	upd->IgdDvmt50PreAlloc = 2;
+
 	upd->MmioSize = 0x800; /* 2GB in MB */
 	upd->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	upd->IedSize = CONFIG_IED_REGION_SIZE;

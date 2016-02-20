@@ -73,6 +73,18 @@ choice
 	prompt "Baud rate"
 	default CONSOLE_SERIAL_115200
 
+config CONSOLE_SERIAL_921600
+	bool "921600"
+	help
+	  Set serial port Baud rate to 921600.
+config CONSOLE_SERIAL_460800
+	bool "460800"
+	help
+	  Set serial port Baud rate to 460800.
+config CONSOLE_SERIAL_230400
+	bool "230400"
+	help
+	  Set serial port Baud rate to 230400.
 config CONSOLE_SERIAL_115200
 	bool "115200"
 	help
@@ -99,6 +111,9 @@ endchoice
 #FIXME(dhendrix): Change name to SERIAL_BAUD? (Stefan sayz: yes!!)
 config TTYS0_BAUD
 	int
+	default 921600 if CONSOLE_SERIAL_921600
+	default 460800 if CONSOLE_SERIAL_460800
+	default 230400 if CONSOLE_SERIAL_230400
 	default 115200 if CONSOLE_SERIAL_115200
 	default 57600 if CONSOLE_SERIAL_57600
 	default 38400 if CONSOLE_SERIAL_38400

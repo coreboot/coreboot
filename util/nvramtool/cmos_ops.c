@@ -229,6 +229,8 @@ void cmos_checksum_verify(void)
 	if (computed != actual) {
 		fprintf(stderr, "%s: Warning: Coreboot CMOS checksum is bad.\n",
 			prog_name);
+		fprintf(stderr, "Computed checksum: 0x%x. Stored checksum: 0x%x\n",
+			computed, actual);
 		exit(1);
 	}
 }

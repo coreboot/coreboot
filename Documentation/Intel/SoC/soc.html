@@ -32,6 +32,7 @@
       <li>Set up the <a href="#MemoryMap">Memory Map"</a></li>
     </ol>
   </li>
+  <li><a href="#AcpiTables">ACPI Tables</a></li>
 </ol>
 
 
@@ -556,8 +557,52 @@ Use the following steps to debug the call to TempRamInit:
 
 
 
+<hr>
+<h1><a name="AcpiTables">ACPI Tables</a></h1>
+<p>
+  One of the payloads that needs ACPI tables is the EDK2 CorebootPayloadPkg.
+</p>
+
+<h2>FADT</h2>
+<p>
+  The EDK2 module
+  CorebootModulePkg/CbSupportPei/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootModulePkg/CbSupportPei/CbSupportPei.c#l342">CbSupportPei.c</a>
+  requires that the FADT contains the following values:
+</p>
+<table border="1">
+  <tr bgcolor="#c0ffc0">
+    <td>EDK2 Field</td>
+    <td>Coreboot Field</td>
+  </tr>
+  <tr><td>Pm1aCntBlk</td><td>pm1a_cnt_blk</td></tr>
+  <tr><td>PmTmrBlk</td><td>pm_tmr_blk</td></tr>
+  <tr><td>ResetReg.Address</td><td>reset_reg.</td></tr>
+  <tr><td>ResetValue</td><td>reset_value</td></tr>
+  <tr><td>Pm1aEvtBlk</td><td>pm1a_evt_blk</td></tr>
+  <tr><td>Gpe0Blk</td><td>gpe0_blk</td></tr>
+  <tr><td>Gpe0BlkLen</td><td>gpe0_blk_len</td></tr>
+</table>
+<p>
+  The EDK2 data structure is defined in
+  MdeModulePkg/Include/IndustryStandard/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/Acpi61.h#l111">Acpi61.h</a>
+  The coreboot data structure is defined in
+  src/arch/x86/include/arch/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/arch/x86/include/arch/acpi.h;hb=HEAD#l237">acpi.h</a>
+</p>
+
+<ol>
+  <li>
+    Select <a target="_blank" href="../Board/board.html#AcpiTables">HAVE_ACPI_TABLES</a>
+    in the board's Kconfig file
+  </li>
+  <li>Create a acpi.c module:
+    <ol type="A">
+      <li>Add the acpi_fill_in_fadt routine and initialize the values above</li>
+    </ol>
+  </li>
+</ol>
+
 
 <hr>
-<p>Modified: 18 February 2016</p>
+<p>Modified: 20 February 2016</p>
   </body>
 </html>

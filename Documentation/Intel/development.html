@@ -116,6 +116,21 @@
 
 
 
+<h2>Add coreboot Features</h2>
+<p>
+  Most of the coreboot development gets done in this phase.  Implementation tasks in this
+  phase are easily done in parallel.
+</p>
+<ul>
+  <li>Payload and OS Features:
+    <ul>
+      <li><a target="_blank" href="SoC/soc.html#AcpiTables">ACPI Tables</a></li>
+    </ul>
+  </li>
+</ul>
+
+
+
 <hr>
 <table border="1">
   <tr bgcolor="#c0ffc0">
@@ -229,6 +244,20 @@
 
 
   <tr bgcolor="#c0ffc0">
+    <th>Payload</th>
+    <th>Where</th>
+    <th>Testing</th>
+  </tr>
+  <tr>
+    <td>ACPI Tables</td>
+    <td>
+      SoC <a target="_blank" href="SoC/soc.html#AcpiTables">Support</a><br>
+    </td>
+    <td>Verified by payload or OS</td>
+  </tr>
+
+
+  <tr bgcolor="#c0ffc0">
     <th>FSP</th>
     <th>Where</th>
     <th>Testing</th>
@@ -265,6 +294,18 @@
     </td>
   </tr>
   <tr>
+    <td>TempRamExit</td>
+    <td>src/drivers/intel/fsp1_1/<a target="_blank" href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/after_raminit.S;hb=HEAD#l51">after_raminit.S</a></td>
+    <td>Post code 0x91
+      (<a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/include/console/post_codes.h;hb=HEAD#l212">POST_FSP_TEMP_RAM_EXIT</a>)
+      is displayed before calling TempRamExit by
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/after_raminit.S;hb=HEAD#l141">after_raminit.S</a>,
+      CONFIG_DISPLAY_MTRRS=y displays the correct memory regions and
+      Post code 0x39 is displayed by
+      <a target="_blank" href="https://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/drivers/intel/fsp1_1/after_raminit.S;hb=HEAD#l141">after_raminit.S</a><br>
+    </td>
+  </tr>
+  <tr>
     <td>SiliconInit</td>
     <td>
       Implement the .init routine for the
@@ -294,6 +335,6 @@
 
 
 <hr>
-<p>Modified: 15 February 2016</p>
+<p>Modified: 20 February 2016</p>
   </body>
 </html>

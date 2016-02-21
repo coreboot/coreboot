@@ -17,6 +17,7 @@
   <li>Enable <a href="#SerialOutput">Serial Output</a></li>
   <li>Load the <a href="#SpdData">Memory Timing Data</a></li>
   <li><a href="#DisablePciDevices">Disable</a> the PCI devices</li>
+  <li><a href="#AcpiTables">ACPI Tables</a></li>
 </ol>
 
 
@@ -208,7 +209,33 @@
 </ol>
 
 
+
 <hr>
-<p>Modified: 15 February 2016</p>
+<h1><a name="AcpiTables">ACPI Tables</a></h1>
+<ol>
+  <li>Edit Kconfig
+    <ol type="A">
+      <li>Add "select HAVE_ACPI_TABLES"</li>
+    </ol>
+  </li>
+  <li>Add the acpi_tables.c module:
+    <ol type="A">
+      <li>Include soc/acpi.h</li>
+      <li>Add the acpi_create_fadt routine
+        <ol type="I">
+          <li>fill in the ACPI header</li>
+          <li>Call the acpi_fill_in_fadt routine</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li>Add the dsdt.asl module:
+  </li>
+</ol>
+
+
+
+<hr>
+<p>Modified: 20 February 2016</p>
   </body>
 </html>

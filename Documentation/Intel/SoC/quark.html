@@ -53,21 +53,58 @@ Build Instructions:
 </p>
 <ol>
   <li>Set up <a href="#BuildEnvironment">build environment</a></li>
+  <li>For the Galileo Gen 2, replace the following lines in
+    CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc:
+<pre><code>  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseMmio|FALSE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|0x03F8
+</code></pre>
+with:
+<pre><code>#
+# Quark configuration
+#
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuMaxLogicalProcessorNumber|1
+
+#
+# Specify Galileo HSUART1 serial port
+#
+[PcdsPatchableInModule.common]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialPciDeviceInfo|{0xff}
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseMmio|TRUE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|0xA0019000
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterStride|4
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialClockRate|44236800
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialBaudRate|921600
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialLineControl|3 # 8-bits, no parity
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseHardwareFlowControl|FALSE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialDetectCable|FALSE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialFifoControl|1 # Enable FIFO
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialExtendedTxFifoSize|16
+</code></pre>
+  </li>
   <li>Build Instructions:
     <ul>
-      <li>Linux:
+      <li>Linux (assumes GCC48):
+        <ol type="A">
+          <li>Edit Conf/tools_def.txt to add " -march=i586" to the IA32_CC_FLAGS
+            for the GCC compiler being used:
+<pre><code>*_GCC48_IA32_CC_FLAGS             = DEF(GCC48_IA32_CC_FLAGS) -Os -march=i586</code></pre>
+          </li>
+          <li>
 <pre><code>build -p CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc  -a IA32  -t GCC48  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
-ls Build/CorebootPayloadPkg/DEBUG_GCC48/FV/UEFIPAYLOAD.fd
+ls Build/CorebootPayloadPkgIA32/DEBUG_GCC48/FV/UEFIPAYLOAD.fd
 </code></pre>
+          </li>
+        </ol>
       </li>
       <li>Windows:
 <pre><code>build -p CorebootPayloadPkg\CorebootPayloadPkgIa32.dsc  -a IA32  -t VS2012x86  -b DEBUG  -DDEBUG_PROPERTY_MASK=0x27  -DDEBUG_PRINT_ERROR_LEVEL=0x80000042
-dir Build\CorebootPayloadPkg\DEBUG_VS2012x86\FV\UEFIPAYLOAD.fd
+dir Build\CorebootPayloadPkgIA32\DEBUG_VS2012x86\FV\UEFIPAYLOAD.fd
 </code></pre>
       </li>
     </ul>
   </li>
-  <li>Set the following Kconfig values:
+  <li>In the .config for coreboot, set the following Kconfig values:
     <ul>
       <li>CONFIG_PAYLOAD_ELF=y</li>
       <li>CONFIG_PAYLOAD_FILE="path to UEFIPAYLOAD.fd"</li>
@@ -177,6 +214,6 @@ Documentation:
 
 
 <hr>
-<p>Modified: 10 February 2016</p>
+<p>Modified: 20 February 2016</p>
   </body>
 </html>

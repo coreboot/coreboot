@@ -22,6 +22,7 @@ romstage-y += memmap.c
 romstage-y += tsc_freq.c
 romstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
 
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
 ramstage-y += memmap.c
 ramstage-y += northcluster.c

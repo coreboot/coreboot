@@ -566,21 +566,83 @@ Use the following steps to debug the call to TempRamInit:
 <h2>FADT</h2>
 <p>
   The EDK2 module
-  CorebootModulePkg/CbSupportPei/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootModulePkg/CbSupportPei/CbSupportPei.c#l342">CbSupportPei.c</a>
-  requires that the FADT contains the following values:
+  CorebootModulePkg/Library/CbParseLib/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootModulePkg/Library/CbParseLib/CbParseLib.c#l450">CbParseLib.c</a>
+  requires that the FADT contains the values in the table below.
+  These values are placed into a HOB identified by
+  <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootModulePkg/CorebootModulePkg.dec#l36">gUefiAcpiBoardInfoGuid</a>
+  by routine
+  CorebootModulePkg/CbSupportPei/CbSupportPei/<a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootModulePkg/CbSupportPei/CbSupportPei.c#l364">CbPeiEntryPoint</a>.
 </p>
 <table border="1">
   <tr bgcolor="#c0ffc0">
-    <td>EDK2 Field</td>
     <td>Coreboot Field</td>
+    <td>EDK2 Field</td>
+    <td>gUefiAcpiBoardInfoGuid</td>
+    <td>Use</li>
+    <td>
+      <a target="_blank" href="http://www.uefi.org/sites/default/files/resources/ACPI_6.0.pdf">ACPI Spec.</a>
+      Section
+    </td>
   </tr>
-  <tr><td>Pm1aCntBlk</td><td>pm1a_cnt_blk</td></tr>
-  <tr><td>PmTmrBlk</td><td>pm_tmr_blk</td></tr>
-  <tr><td>ResetReg.Address</td><td>reset_reg.</td></tr>
-  <tr><td>ResetValue</td><td>reset_value</td></tr>
-  <tr><td>Pm1aEvtBlk</td><td>pm1a_evt_blk</td></tr>
-  <tr><td>Gpe0Blk</td><td>gpe0_blk</td></tr>
-  <tr><td>Gpe0BlkLen</td><td>gpe0_blk_len</td></tr>
+  <tr>
+    <td>gpe0_blk<br>gpe0_blk_len</td>
+    <td>Gpe0Blk<br>Gpe0BlkLen</td>
+    <td>
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootModulePkg/Library/CbParseLib/CbParseLib.c#l477">PmGpeEnBase</a>
+    </td>
+    <td><a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/ResetSystemLib/ResetSystemLib.c#l129">Shutdown</a></td>
+    <td>4.8.4.1</td>
+  </tr>
+  <tr>
+    <td>pm1a_cnt_blk</td>
+    <td>Pm1aCntBlk</td>
+    <td>PmCtrlRegBase</td>
+    <td>
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/ResetSystemLib/ResetSystemLib.c#l139">Shutdown</a><br>
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/ResetSystemLib/ResetSystemLib.c#l40">Suspend</a>
+    </td>
+    <td>4.8.3.2.1</td>
+  </tr>
+  <tr>
+    <td>pm1a_evt_blk</td>
+    <td>Pm1aEvtBlk</td>
+    <td>PmEvtBase</td>
+    <td><a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/ResetSystemLib/ResetSystemLib.c#l134">Shutdown</a></td>
+    <td>4.8.3.1.1</td>
+  </tr>
+  <tr>
+    <td>pm_tmr_blk</td>
+    <td>PmTmrBlk</td>
+    <td>PmTimerRegBase</td>
+    <td>
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/AcpiTimerLib/AcpiTimerLib.c#l55">Timer</a>
+    </td>
+    <td>4.8.3.3</td>
+  </tr>
+  <tr>
+    <td>reset_reg.</td>
+    <td>ResetReg.Address</td>
+    <td>ResetRegAddress</td>
+    <td>
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/ResetSystemLib/ResetSystemLib.c#l71">Cold</a>
+      and
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/ResetSystemLib/ResetSystemLib.c#l98">Warm</a>
+      resets
+    </td>
+    <td>4.3.3.6</td>
+  </tr>
+  <tr>
+    <td>reset_value</td>
+    <td>ResetValue</td>
+    <td>ResetValue</td>
+    <td>
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/ResetSystemLib/ResetSystemLib.c#l71">Cold</a>
+      and
+      <a target="_blank" href="https://github.com/tianocore/edk2/blob/master/CorebootPayloadPkg/Library/ResetSystemLib/ResetSystemLib.c#l98">Warm</a>
+      resets
+    </td>
+    <td>4.8.3.6</td>
+  </tr>
 </table>
 <p>
   The EDK2 data structure is defined in
@@ -603,6 +665,6 @@ Use the following steps to debug the call to TempRamInit:
 
 
 <hr>
-<p>Modified: 20 February 2016</p>
+<p>Modified: 28 February 2016</p>
   </body>
 </html>

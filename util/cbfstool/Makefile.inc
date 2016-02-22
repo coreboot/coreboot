@@ -150,6 +150,7 @@ $(objutil)/cbfstool/cbfs.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 $(objutil)/cbfstool/mem_pool.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 # Tolerate lz4 warnings
 $(objutil)/cbfstool/lz4.o: TOOLCFLAGS += -Wno-missing-prototypes
+$(objutil)/cbfstool/lz4_wrapper.o: TOOLCFLAGS += -Wno-sign-compare
 
 $(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_parser.h
 $(objutil)/cbfstool/fmd.o: $(objutil)/cbfstool/fmd_scanner.h

@@ -50,7 +50,7 @@ else
 	touch $(project_dir)/$(STABLE_COMMIT_ID)
 endif
 
-$(project_dir)/$(TAG-y): fetch
+$(project_dir)/tag-$(TAG-y): fetch
 	echo "    Checking out $(project_name) revision $(TAG-y)"
 	cd $(project_dir); git checkout master; git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(TAG-y)
 
@@ -58,7 +58,7 @@ config: $(project_dir)/$(TAG-y)
 	rm -f $(project_config_file)
 ifneq ($(CONFIG_PAYLOAD_CONFIGFILE),)
 ifneq ("$(wildcard $(CONFIG_PAYLOAD_CONFIGFILE))","")
-	cat $(CONFIG_PAYLOAD_CONFIGFILE)" > $(project_config_file)
+	cat $(CONFIG_PAYLOAD_CONFIGFILE)" > tag-$(project_config_file)
 else
 	echo "Error: File $(CONFIG_PAYLOAD_CONFIGFILE) does not exist"
 	false

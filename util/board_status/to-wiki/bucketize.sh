@@ -19,7 +19,7 @@ quarterly() {
 
 curr=""
 sort -r -k4 -t/ | while read file; do
-	timestamp=`printf $file | cut -d/ -f4`
+	timestamp=`printf $file | cut -d/ -f4 | tr _ :`
 	new=`$1 $timestamp`
 	if [ "$new" != "$curr" ]; then
 		if [ "$curr" != "" ]; then

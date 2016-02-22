@@ -17,9 +17,10 @@ while read line; do
 	for i in $rest; do
 		vendor_board=`echo $i | cut -d/ -f1-2`
 		commit=`echo $i | cut -d/ -f3`
-		datetime=`echo $i | cut -d/ -f4`
+		datetime_path=`echo $i | cut -d/ -f4`
+		datetime=`echo $datetime_path | tr _ :`
 		datetime_human=`LC_ALL=C TZ=UTC date --date="$datetime"`
-		upstream=`grep "^Upstream revision:" $vendor_board/$commit/$datetime/revision.txt |cut -d: -f2-`
+		upstream=`grep "^Upstream revision:" $vendor_board/$commit/$datetime_path/revision.txt |cut -d: -f2-`
 		upstream=`git log -1 --format=%H $upstream`
 		if ! echo "$have"| grep  "^$vendor_board:" > /dev/null; then
 			detailed="$detailed<span id=\"$vendor_board\"></span>$nl"
@@ -28,8 +29,8 @@ while read line; do
 
 		detailed="$detailed[[Board:$vendor_board|$vendor_board]] at $datetime_human$nl"
 		detailed="$detailed[$CODE_GITWEB$upstream upstream tree] ($nl"
-		for file in "$vendor_board/$commit/$datetime/"*; do
-			if [ "$file" = "$vendor_board/$commit/$datetime/revision.txt" ]; then
+		for file in "$vendor_board/$commit/$datetime_path/"*; do
+			if [ "$file" = "$vendor_board/$commit/$datetime_path/revision.txt" ]; then
 				continue
 			fi
 			detailed="$detailed[$STATUS_GITWEB$file `basename $file`] $nl"

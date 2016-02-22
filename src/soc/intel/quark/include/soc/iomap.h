@@ -24,4 +24,10 @@
 /* UART MMIO */
 #define UART_BASE_ADDRESS		CONFIG_TTYS0_BASE
 
+/*
+ * I/O port address space
+ */
+#define ACPI_BASE_ADDRESS	0x1000
+#define ACPI_BASE_SIZE		0x100
+
 #endif /* _QUARK_IOMAP_H_ */

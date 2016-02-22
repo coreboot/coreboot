@@ -26,6 +26,7 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
 ramstage-y += memmap.c
 ramstage-y += northcluster.c
+ramstage-y += pmc.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
 ramstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart.c

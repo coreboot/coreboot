@@ -161,7 +161,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 		}
 
 		if (b.not_compressed) {
-			size_t size = MIN((uint32_t)b.size, dst + dstn - out);
+			size_t size = MIN((uintptr_t)b.size, (uintptr_t)dst + dstn - (uintptr_t)out);
 			memcpy(out, in, size);
 			if (size < b.size)
 				break;		/* output overrun */

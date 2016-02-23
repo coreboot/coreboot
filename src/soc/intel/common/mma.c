@@ -22,10 +22,12 @@
 #include "mma.h"
 #include <soc/romstage.h>
 #include <string.h>
+#include <fmap.h>
 
 #define MMA_TEST_METADATA_FILENAME      "mma_test_metadata.bin"
 #define MMA_TEST_NAME_TAG               "MMA_TEST_NAME"
 #define MMA_TEST_PARAM_TAG              "MMA_TEST_PARAM"
+#define MMA_CBFS_REGION			"COREBOOT"
 #define TEST_NAME_MAX_SIZE              30
 #define TEST_PARAM_MAX_SIZE             100
 #define FSP_MMA_RESULTS_GUID            { 0x8f4e928, 0xf5f, 0x46d4, \
@@ -112,6 +114,30 @@ static int label_value(const char *haystack, size_t haystack_sz,
 	return 0;
 }
 
+static void *cbfs_locate_file_in_region(const char *region_name, const char *file_name,
+        uint32_t file_type, uint32_t *file_size)
+{
+        struct region_device rdev;
+        struct cbfsf fh;
+
+        if (file_size != NULL)
+                *file_size = 0;
+
+        if (fmap_locate_area_as_rdev(region_name, &rdev) == 0) {
+                if (cbfs_locate(&fh, &rdev, file_name, &file_type) == 0) {
+                        if (file_size != NULL)
+                                *file_size = region_device_sz(&fh.data);
+                        return rdev_mmap_full(&fh.data);
+                } else
+                        printk(BIOS_DEBUG, "%s file not found in %s region\n",
+                                file_name, region_name);
+        } else
+                printk(BIOS_DEBUG,"%s region not found while looking for %s\n", region_name,
+                        file_name);
+
+        return NULL;
+}
+
 void setup_mma(MEMORY_INIT_UPD *memory_params)
 {
 	void *mma_test_metadata, *mma_test_content, *mma_test_param;
@@ -127,8 +153,9 @@ void setup_mma(MEMORY_INIT_UPD *memory_params)
 	memory_params->MmaTestConfigPtr = 0;
 	memory_params->MmaTestConfigSize = 0;
 
-	mma_test_metadata = cbfs_boot_map_with_leak(MMA_TEST_METADATA_FILENAME,
-			CBFS_TYPE_MMA , &mma_test_metadata_file_len);
+	mma_test_metadata = cbfs_locate_file_in_region(MMA_CBFS_REGION,
+				MMA_TEST_METADATA_FILENAME, CBFS_TYPE_MMA,
+				&mma_test_metadata_file_len);
 
 	if (!mma_test_metadata) {
 		printk(BIOS_DEBUG, "MMA setup failed: Failed to read %s\n",
@@ -154,16 +181,18 @@ void setup_mma(MEMORY_INIT_UPD *memory_params)
 	printk(BIOS_DEBUG, "Got MMA_TEST_NAME=%s MMA_TEST_PARAM=%s\n",
 			test_filename, test_param_filename);
 
-	mma_test_content = cbfs_boot_map_with_leak(test_filename,
-				CBFS_TYPE_EFI , &mma_test_content_file_len);
+	mma_test_content = cbfs_locate_file_in_region(MMA_CBFS_REGION,
+				test_filename, CBFS_TYPE_EFI,
+				&mma_test_content_file_len);
 	if (!mma_test_content) {
 		printk(BIOS_DEBUG, "MMA setup failed: Failed to read %s.\n",
 		test_filename);
 		return;
 	}
 
-	mma_test_param = cbfs_boot_map_with_leak(test_param_filename,
-				CBFS_TYPE_MMA , &mma_test_param_file_len);
+	mma_test_param = cbfs_locate_file_in_region(MMA_CBFS_REGION,
+				test_param_filename, CBFS_TYPE_MMA,
+				&mma_test_param_file_len);
 	if (!mma_test_param) {
 		printk(BIOS_DEBUG, "MMA setup failed: Failed to read %s.\n",
 				test_param_filename);

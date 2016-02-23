@@ -64,6 +64,10 @@ get_mma_autotest_params() {
 }
 
 main() {
+	# sleep 30 sec, before we start. This would give some time if we want
+	# to stop automation.
+	sleep 30s
+	mkdir -p "${MMA_LOCAL_DATA_STORAGE}"
 	# Exit if there are no tests
 	[ -e "${MMA_AUTOMATED_TEST_CONFIG}" ] || exit 0
 
@@ -87,7 +91,15 @@ main() {
 	get_mma_autotest_params
 	${MMA_SETUP_TEST_TOOL} set ${MMA_TEST_NAME} ${MMA_TEST_PARAM}
 
-	reboot
+	# sync the filesystem, hoping this would minimize
+	# the chances of fs corruption
+	sync
+	sleep 2s
+	sync
+	sleep 2s
+	sync
+	sleep 2s
+	ectool reboot_ec
 }
 
 main "$@"

@@ -23,7 +23,6 @@
 #include <lib.h>
 #include <northbridge/via/cx700/raminit.h>
 #include <cpu/x86/bist.h>
-#include "drivers/pc80/udelay_io.c"
 #include <delay.h>
 #include "northbridge/via/cx700/early_smbus.c"
 #include "lib/debug.c"

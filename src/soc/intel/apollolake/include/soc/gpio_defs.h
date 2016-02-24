@@ -147,7 +147,7 @@
 #define SVID0_DATA			76
 #define SVID0_CLK			77
 
-/* North community pads */
+/* Northwest community pads */
 #define GPIO_187			78
 #define GPIO_188			79
 #define GPIO_189			80

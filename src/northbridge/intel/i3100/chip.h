@@ -13,8 +13,13 @@
  * GNU General Public License for more details.
  */
 
+#ifndef NORTHBRIDGE_INTEL_I3100_CHIP_H
+#define NORTHBRIDGE_INTEL_I3100_CHIP_H
+
 struct northbridge_intel_i3100_config
 {
 	/* Interrupt line connect */
 	u16 intrline;
 };
+
+#endif /* NORTHBRIDGE_INTEL_I3100_CHIP_H */

@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef NORTHBRIDGE_INTEL_I82830_I82830_H
+#define NORTHBRIDGE_INTEL_I82830_I82830_H
+
 #define RRBAR   0x48 /* Register Range Base Address (0x00000000) */
 #define GCC0    0x50 /* GMCH Control #0 (0xa072) */
 #define GCC1    0x52 /* GMCH Control #1 (0x0000) */
@@ -45,3 +48,5 @@
 #define APBASE  0x10 /* Aperture Base Configuration (0x00000008) */
 #define APSIZE  0xb4 /* Apterture Size (0x00) */
 #define ATTBASE 0xb8 /* Aperture Translation Table Base (0x00000000) */
+
+#endif /* NORTHBRIDGE_INTEL_I82830_I82830_H */

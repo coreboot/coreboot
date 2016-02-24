@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE_GMA_H
+#define NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE_GMA_H
+
 /* mailbox 0: header */
 typedef struct {
 	u8	signature[16];
@@ -161,3 +164,5 @@ typedef struct {
 } __attribute__((packed)) optionrom_vbt_t;
 
 #define VBT_SIGNATURE 0x54425624
+
+#endif /* NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE_GMA_H */

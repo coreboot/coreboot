@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef NORTHBRIDGE_INTEL_HASWELL_CHIP_H
+#define NORTHBRIDGE_INTEL_HASWELL_CHIP_H
+
 #include <drivers/intel/gma/i915.h>
 
 /*
@@ -41,3 +44,5 @@ struct northbridge_intel_haswell_config {
 };
 
 extern struct chip_operations northbridge_intel_haswell_ops;
+
+#endif /* NORTHBRIDGE_INTEL_HASWELL_CHIP_H */

@@ -14,6 +14,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef NORTHBRIDGE_INTEL_SCH_NVS_H
+#define NORTHBRIDGE_INTEL_SCH_NVS_H
+
 typedef struct {
 	u16 osys;
 	u8 smif;
@@ -100,3 +103,5 @@ typedef struct {
 	u8 idet;
 	u8 dock;
 } global_nvs_t;
+
+#endif /* NORTHBRIDGE_INTEL_SCH_NVS_H */

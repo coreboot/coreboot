@@ -13,6 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef NORTHBRIDGE_INTEL_SANDYBRIDGE_CHIP_H
+#define NORTHBRIDGE_INTEL_SANDYBRIDGE_CHIP_H
+
 #include <drivers/intel/gma/i915.h>
 
 /*
@@ -45,3 +48,5 @@ struct northbridge_intel_sandybridge_config {
 
 	struct i915_gpu_controller_info gfx;
 };
+
+#endif /* NORTHBRIDGE_INTEL_SANDYBRIDGE_CHIP_H */

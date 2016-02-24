@@ -17,6 +17,7 @@ config NORTHBRIDGE_INTEL_I440BX
 	bool
 	select HAVE_DEBUG_RAM_SETUP
 	select LATE_CBMEM_INIT
+	select UDELAY_IO
 
 config SDRAMPWR_4DIMM
 	bool

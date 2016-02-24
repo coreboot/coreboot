@@ -25,7 +25,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_512
 	select PIRQ_ROUTE
 	select HAVE_PIRQ_TABLE
-	select UDELAY_TSC
 	select SDRAMPWR_4DIMM
 
 config MAINBOARD_DIR

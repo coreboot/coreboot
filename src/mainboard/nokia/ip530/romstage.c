@@ -22,7 +22,6 @@
 #include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
-#include "drivers/pc80/udelay_io.c"
 #include <delay.h>
 #include <cpu/x86/bist.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>

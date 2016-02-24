@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <lib.h>
 #include <spd.h>
-#include "drivers/pc80/udelay_io.c"
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801dx/i82801dx.h>

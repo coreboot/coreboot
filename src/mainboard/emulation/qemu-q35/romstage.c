@@ -23,7 +23,6 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <cpu/x86/bist.h>
 #include <timestamp.h>
-#include "drivers/pc80/udelay_io.c"
 #include <delay.h>
 #include <cpu/x86/lapic.h>
 

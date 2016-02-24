@@ -30,10 +30,6 @@ config CPU_AMD_PI
 
 if CPU_AMD_PI
 
-config UDELAY_IO
-	bool
-	default n
-
 config XIP_ROM_SIZE
 	hex
 	default 0x100000

@@ -34,10 +34,6 @@ config CPU_AMD_AGESA
 
 if CPU_AMD_AGESA
 
-config UDELAY_IO
-	bool
-	default n
-
 config XIP_ROM_SIZE
 	hex
 	default 0x100000

@@ -128,10 +128,6 @@ config ONBOARD_LIGHTSENSOR
 	bool
 	default n
 
-config UDELAY_IO
-	bool
-	default n
-
 config REDIRECT_CIMX_TRACE_TO_SERIAL
 	bool "Redirect CIMX Trace to serial console"
 	default y

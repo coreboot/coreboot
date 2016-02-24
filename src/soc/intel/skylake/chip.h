@@ -312,8 +312,8 @@ struct soc_intel_skylake_config {
 	 */
 	u8 SerialIrqConfigStartFramePulse;
 	u8 FspSkipMpInit;
-
-	/* VrConfig Settings for 5 domains
+	/*
+	 * VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
 	 * 3 = GT unsliced,  4 = GT sliced
 	 */
@@ -328,6 +328,13 @@ struct soc_intel_skylake_config {
 	u8 PmTimerDisabled;
 	/* Intel Speed Shift Technology */
 	u8 speed_shift_enable;
+	/*
+	 * Enable VR specific mailbox command
+	 * When set, an extra VR mailbox command specifically
+	 * for the MPS IMPV8 VR will be sent.
+	 * 0 - Don't Send, 1 - Send
+	*/
+	u8 SendVrMbxCmd;
 };
 
 typedef struct soc_intel_skylake_config config_t;

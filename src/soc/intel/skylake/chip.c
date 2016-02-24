@@ -410,6 +410,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 		params->TcoIrqSelect = config->TcoIrqSelect;
 	/* TCO Irq enable/disable */
 	params->TcoIrqEnable = config->TcoIrqEnable;
+	params->SendVrMbxCmd = config->SendVrMbxCmd;
 }
 
 void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
@@ -1011,6 +1012,9 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *original,
 	fsp_display_upd_value("SerialIoI2cVoltage[5]", 1,
 		original->SerialIoI2cVoltage[5],
 		params->SerialIoI2cVoltage[5]);
+	fsp_display_upd_value("SendVrMbxCmd", 1,
+		original->SendVrMbxCmd,
+		params->SendVrMbxCmd);
 }
 
 static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

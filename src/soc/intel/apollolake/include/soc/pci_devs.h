@@ -36,5 +36,6 @@
 
 #define P2SB_DEV		PCI_DEV(0, 0xd, 0)
 #define PMC_DEV			PCI_DEV(0, 0xd, 1)
+#define SPI_DEV			PCI_DEV(0, 0xd, 2)
 
 #endif

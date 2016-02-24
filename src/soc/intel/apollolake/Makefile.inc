@@ -38,6 +38,7 @@ ramstage-y += memmap.c
 ramstage-y += mmap_boot.c
 ramstage-y += uart.c
 ramstage-y += northbridge.c
+ramstage-y += spi.c
 
 postcar-y += exit_car.S
 postcar-y += memmap.c

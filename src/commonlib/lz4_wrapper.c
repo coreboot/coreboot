@@ -149,7 +149,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 	}
 
 	while (1) {
-		struct lz4_block_header b = { .raw = read_le32(in) };
+		struct lz4_block_header b = { { .raw = read_le32(in) } };
 		in += sizeof(struct lz4_block_header);
 
 		if ((size_t)(in - src) + b.size > srcn)

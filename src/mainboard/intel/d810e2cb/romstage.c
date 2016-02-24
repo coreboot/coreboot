@@ -22,7 +22,6 @@
 #include <console/console.h>
 #include <southbridge/intel/i82801bx/i82801bx.h>
 #include <northbridge/intel/i82810/raminit.h>
-#include "drivers/pc80/udelay_io.c"
 #include <cpu/x86/bist.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 #include "gpio.c"

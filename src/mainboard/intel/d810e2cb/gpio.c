@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <delay.h>
+
 #define PME_DEV			PNP_DEV(0x4e, 0x0a)
 #define PME_IO_BASE_ADDR	0x800      /* Runtime register base address */
 

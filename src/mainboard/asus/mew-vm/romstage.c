@@ -24,7 +24,6 @@
 #include <northbridge/intel/i82810/raminit.h>
 #include <cpu/x86/bist.h>
 #include <southbridge/intel/i82801ax/i82801ax.h>
-#include "drivers/pc80/udelay_io.c"
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B272_SP1)

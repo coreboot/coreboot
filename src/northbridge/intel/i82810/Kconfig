@@ -17,6 +17,7 @@ config NORTHBRIDGE_INTEL_I82810
 	bool
 	select HAVE_DEBUG_RAM_SETUP
 	select LATE_CBMEM_INIT
+	select UDELAY_IO
 
 choice
 	prompt "Onboard graphics"

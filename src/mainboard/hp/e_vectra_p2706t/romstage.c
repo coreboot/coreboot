@@ -26,7 +26,6 @@
 #include <northbridge/intel/i82810/raminit.h>
 #include <cpu/x86/bist.h>
 #include <southbridge/intel/i82801ax/i82801ax.h>
-#include "drivers/pc80/udelay_io.c"
 #include <lib.h>
 
 /* TODO: It's a PC87364 actually! */

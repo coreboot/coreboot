@@ -19,6 +19,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/intel/speedstep.h>
 #include <lib.h>
+#include <delay.h>
 #include "raminit_ep80579.h"
 #include "ep80579.h"
 

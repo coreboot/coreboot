@@ -16,6 +16,8 @@
 #include <stddef.h>
 #include <memrange.h>
 #include <fsp/info_header.h>
+#include <soc/fsp/FspmUpd.h>
+#include <soc/fsp/FspsUpd.h>
 
 enum fsp_status {
 	FSP_SUCCESS = 0x00000000,
@@ -39,19 +41,14 @@ enum fsp_notify_phase {
 };
 
 
-/* Opaque structures. These are platform-specific. */
-struct FSP_M_CONFIG;
-struct FSP_S_CONFIG;
-
 /* Main FSP stages */
 enum fsp_status fsp_memory_init(void **hob_list, struct range_entry *r);
 enum fsp_status fsp_silicon_init(struct range_entry *r);
 enum fsp_status fsp_notify(enum fsp_notify_phase phase);
 
 /* Callbacks for updating stage-specific parameters */
-void platform_fsp_memory_init_params_cb(struct fsp_m_arch_upd *archupd,
-					struct FSP_M_CONFIG *mcfg);
-void platform_fsp_silicon_init_params_cb(struct FSP_S_CONFIG *silupd);
+void platform_fsp_memory_init_params_cb(struct FSPM_UPD *mupd);
+void platform_fsp_silicon_init_params_cb(struct FSPS_UPD *supd);
 
 /*
  * # DOCUMENTATION:

@@ -39,20 +39,6 @@ struct fsp_header {
 	uint8_t revision;
 };
 
-struct fsp_upd_header {
-	uint64_t	signature;
-	uint8_t		revision;
-};
-
-struct fsp_m_arch_upd {
-	uint8_t		revision;
-	uintptr_t	nvs_buffer;
-	uintptr_t	stack_base;
-	uint32_t	stack_size;
-	uint32_t	bootloader_tolumsz;
-	uint32_t	boot_mode;
-};
-
 enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob);
 void fsp_print_header_info(const struct fsp_header *hdr);
 void fsp_print_upd_info(const struct fsp_header *hdr, void *cfg_blob);

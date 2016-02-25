@@ -18,9 +18,14 @@
 
 #include <main_decl.h>
 
-/* These are defined as weak no-ops that can be overridden by mainboard/SoC. */
+/*
+ * These are defined as weak no-ops that can be overridden by mainboard/SoC.
+ * The 'early' variants are called prior to console initialization. Also, the
+ * SoC functions are called prior to the mainboard fucntions.
+ */
 void bootblock_mainboard_early_init(void);
 void bootblock_mainboard_init(void);
+void bootblock_soc_early_init(void);
 void bootblock_soc_init(void);
 
 #endif	/* __BOOTBLOCK_COMMON_H */

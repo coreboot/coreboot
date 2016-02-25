@@ -25,6 +25,7 @@
 DECLARE_OPTIONAL_REGION(timestamp);
 
 __attribute__((weak)) void bootblock_mainboard_early_init(void) { /* no-op */ }
+__attribute__((weak)) void bootblock_soc_early_init(void) { /* do nothing */ }
 __attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }
 __attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
 
@@ -36,6 +37,7 @@ void main(void)
 	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && _timestamp_size > 0)
 		timestamp_init(timestamp_get());
 
+	bootblock_soc_early_init();
 	bootblock_mainboard_early_init();
 
 	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) {

@@ -53,7 +53,8 @@ typedef struct {
 	u8	dpte; /* 0x30 - Enable DPTF */
 	u64	nhla; /* 0x31 - NHLT Address */
 	u32	nhll; /* 0x39 - NHLT Length */
-	u8	unused[195];
+	u16	cid1; /* 0x3d - Wifi Country Identifier */
+	u8	unused[193];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

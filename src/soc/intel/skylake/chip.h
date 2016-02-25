@@ -335,6 +335,8 @@ struct soc_intel_skylake_config {
 	 * 0 - Don't Send, 1 - Send
 	*/
 	u8 SendVrMbxCmd;
+	/* Statically clock gate 8254 PIT. */
+	u8 clock_gate_8254;
 };
 
 typedef struct soc_intel_skylake_config config_t;

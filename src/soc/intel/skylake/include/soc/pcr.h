@@ -60,6 +60,9 @@
 #define R_PCH_PCR_ITSS_PIRQG_ROUT	0x3106
 /* PIRQH Routing Control Register*/
 #define R_PCH_PCR_ITSS_PIRQH_ROUT	0x3107
+/* ITSS Power reduction control */
+#define R_PCH_PCR_ITSS_ITSSPRC		0x3300
+# define CGE8254			(1 << 2)
 
 /* IO Trap PCRs */
 /* Trap status Register */

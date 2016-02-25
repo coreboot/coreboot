@@ -154,6 +154,18 @@ static const struct reg_script pch_misc_init_script[] = {
 	REG_SCRIPT_END
 };
 
+static void clock_gate_8254(struct device *dev)
+{
+	config_t *config = dev->chip_info;
+	const uint32_t cge8254_mask = CGE8254;
+
+	if (!config->clock_gate_8254)
+		return;
+
+	pcr_andthenor32(PID_ITSS, R_PCH_PCR_ITSS_ITSSPRC,
+			~cge8254_mask, cge8254_mask);
+}
+
 static void lpc_init(struct device *dev)
 {
 	/* Legacy initialization */
@@ -165,6 +177,7 @@ static void lpc_init(struct device *dev)
 	pch_pirq_init(dev);
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
+	clock_gate_8254(dev);
 }
 
 static void pch_lpc_add_mmio_resources(device_t dev)

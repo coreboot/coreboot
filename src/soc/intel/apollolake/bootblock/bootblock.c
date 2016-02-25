@@ -17,6 +17,7 @@
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
+#include <soc/uart.h>
 
 void asmlinkage bootblock_c_entry(void)
 {
@@ -41,4 +42,11 @@ void platform_prog_run(struct prog *prog)
 	msr_t msr = rdmsr(MSR_POWER_MISC);
 	msr.lo |= (1 << 8);
 	wrmsr(MSR_POWER_MISC, msr);
+}
+
+void bootblock_soc_early_init(void)
+{
+	/* Prepare UART for serial console. */
+	if (IS_ENABLED(CONFIG_SOC_UART_DEBUG))
+		soc_console_uart_init();
 }

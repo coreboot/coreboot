@@ -37,11 +37,20 @@
 #define DPTF_TSR3_PASSIVE	55
 #define DPTF_TSR3_CRITICAL	70
 
-/* SKL-Y EC already has a custom charge profile based on temperature. */
-#undef DPTF_ENABLE_CHARGER
-
 /* SKL-Y is Fanless design. */
 #undef DPTF_ENABLE_FAN_CONTROL
+
+/* Enable DPTF charger control */
+#define DPTF_ENABLE_CHARGER
+
+/* Charger performance states, board-specific values from charger and EC */
+Name (CHPS, Package () {
+	Package () { 0, 0, 0, 0, 255, 0x7b7, "mA", 0 },	/* 1975mA (MAX) */
+	Package () { 0, 0, 0, 0, 24, 0x600, "mA", 0 },	/* 1500mA */
+	Package () { 0, 0, 0, 0, 16, 0x400, "mA", 0 },	/* 1000mA */
+	Package () { 0, 0, 0, 0, 8, 0x200, "mA", 0 },	/* 500mA */
+	Package () { 0, 0, 0, 0, 0, 0x000, "mA", 0 },	/* 0mA */
+})
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
@@ -55,6 +64,9 @@ Name (DTRT, Package () {
 
 	/* CPU Effect on Temp Sensor 2 */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
+
+	/* Charger Effect on Temp Sensor 2 */
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 200, 600, 0, 0, 0, 0 },
 
 	/* CPU Effect on Temp Sensor 3 */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR3, 100, 600, 0, 0, 0, 0 },
@@ -73,8 +85,8 @@ Name (MPPC, Package ()
 	},
 	Package () {	/* Power Limit 2 */
 		1,	/* PowerLimitIndex, 1 for Power Limit 2 */
-		8000,	/* PowerLimitMinimum */
-		8000,	/* PowerLimitMaximum */
+		15000,	/* PowerLimitMinimum */
+		15000,	/* PowerLimitMaximum */
 		1000,	/* TimeWindowMinimum */
 		1000,	/* TimeWindowMaximum */
 		1000	/* StepSize */

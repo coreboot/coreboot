@@ -32,13 +32,9 @@ config CPU_SPECIFIC_OPTIONS
 	select RELOCATABLE_RAMSTAGE	# Build fails if this is not selected
 	select SOC_INTEL_COMMON
 	select UDELAY_TSC
-	select CONSOLE_SERIAL
-	select BOOTBLOCK_CONSOLE
 	select TSC_CONSTANT_RATE
 	select UDELAY_TSC
 	select TSC_CONSTANT_RATE
-	select NO_UART_ON_SUPERIO
-	select DRIVERS_UART_8250MEM_32
 
 config MMCONF_BASE_ADDRESS
 	hex "PCI MMIO Base Address"
@@ -74,6 +70,15 @@ config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL
 	hex "MMIO base address for UART"
 	default 0xde000000
+
+config SOC_UART_DEBUG
+	bool "Enable SoC UART debug port selected by UART_FOR_CONSOLE."
+	default n
+	select CONSOLE_SERIAL
+	select BOOTBLOCK_CONSOLE
+	select DRIVERS_UART
+	select DRIVERS_UART_8250MEM_32
+	select NO_UART_ON_SUPERIO
 
 # 32KiB bootblock is all that is mapped in by the CSE at top of 4GiB.
 config C_ENV_BOOTBLOCK_SIZE

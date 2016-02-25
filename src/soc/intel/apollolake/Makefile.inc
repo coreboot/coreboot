@@ -13,16 +13,16 @@ bootblock-y += bootblock/bootblock.c
 bootblock-y += gpio.c
 bootblock-y += placeholders.c
 bootblock-y += tsc_freq.c
-bootblock-y += uart_early.c
+bootblock-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 
 romstage-y += placeholders.c
 romstage-y += gpio.c
-romstage-y += uart_early.c
+romstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 
 smm-y += placeholders.c
 ramstage-y += placeholders.c
 ramstage-y += gpio.c
-ramstage-y += uart_early.c
+ramstage-$(CONFIG_SOC_UART_DEBUG) += uart_early.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 

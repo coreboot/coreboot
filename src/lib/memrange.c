@@ -290,7 +290,7 @@ void memranges_add_resources(struct memranges *ranges,
 	memranges_add_resources_filter(ranges, mask, match, tag, NULL);
 }
 
-void memranges_init_empty(struct memranges *ranges, struct range_entry *free,
+void memranges_init_empty(struct memranges *ranges, struct range_entry *to_free,
                           size_t num_free)
 {
 	size_t i;
@@ -299,7 +299,7 @@ void memranges_init_empty(struct memranges *ranges, struct range_entry *free,
 	ranges->free_list = NULL;
 
 	for (i = 0; i < num_free; i++)
-		range_entry_link(&ranges->free_list, &free[i]);
+		range_entry_link(&ranges->free_list, &to_free[i]);
 }
 
 void memranges_init(struct memranges *ranges,

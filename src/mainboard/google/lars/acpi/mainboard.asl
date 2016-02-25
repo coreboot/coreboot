@@ -104,6 +104,8 @@ Scope (\_SB.PCI0.RP01)
 		Name (_ADR, 0x00000000)
 		Name (_DDN, "Wireless LAN")
 		Name (_PRW, Package () { GPE_WLAN_WAKE, 3 })
+
+		#include <drivers/intel/wifi/acpi/wrdd.asl>
 	}
 }
 

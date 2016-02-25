@@ -25,4 +25,7 @@
 
 void lpss_console_uart_init(void);
 
+/* Initialize the console UART including the pads for the configured UART. */
+void soc_console_uart_init(void);
+
 #endif /* _SOC_APOLLOLAKE_UART_H_ */

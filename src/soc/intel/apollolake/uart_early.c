@@ -22,12 +22,21 @@ static void lpss_uart_write(uint16_t reg, uint32_t val)
 	write32((void *)base, val);
 }
 
+static inline int invalid_uart_for_console(void)
+{
+	/* There are actually only 2 UARTS, and they are named UART1 and
+	 * UART2. They live at pci functions 1 and 2 respectively. */
+	if (CONFIG_UART_FOR_CONSOLE > 2 || CONFIG_UART_FOR_CONSOLE < 1)
+		return 1;
+	return 0;
+}
+
 void lpss_console_uart_init(void)
 {
 	uint32_t clk_sel;
 	device_t uart = _LPSS_PCI_DEV(UART, CONFIG_UART_FOR_CONSOLE & 3);
 
-	if (CONFIG_UART_FOR_CONSOLE > 2)
+	if (invalid_uart_for_console())
 		return;
 
 	/* Enable BAR0 for the UART -- this is where the 8250 registers hide */
@@ -58,4 +67,25 @@ unsigned int uart_platform_refclk(void)
 {
 	/* That's within 0.5% of the actual value we've set earlier */
 	return 115200 * 16;
+}
+
+static const struct pad_config uart_gpios[] = {
+	PAD_CFG_NF(GPIO_42, NATIVE, DEEP, NF1),		/* UART1 RX */
+	PAD_CFG_NF(GPIO_43, NATIVE, DEEP, NF1),		/* UART1 TX */
+	PAD_CFG_NF(GPIO_46, NATIVE, DEEP, NF1),		/* UART2 RX */
+	PAD_CFG_NF(GPIO_47, NATIVE, DEEP, NF1),		/* UART2 TX */
+};
+
+void soc_console_uart_init(void)
+{
+	/* Get a 0-based pad index. See invalid_uart_for_console() above. */
+	const int pad_index = CONFIG_UART_FOR_CONSOLE - 1;
+
+	if (invalid_uart_for_console())
+		return;
+
+	/* Configure the 2 pads per UART. */
+	gpio_configure_pads(&uart_gpios[pad_index * 2], 2);
+
+	lpss_console_uart_init();
 }
